@@ -71,6 +71,34 @@ static int get_pcie_bar(u32 *base)
 	return 0;
 }
 
+static const char *northbridge_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(0, 0):
+		return "MCHC";
+	}
+
+	return NULL;
+}
+
+/*
+ * TODO We could determine how many PCIe busses we need in the bar.
+ * For now, that number is hardcoded to a max of 64.
+ */
+static struct device_operations pci_domain_ops = {
+	.read_resources    = pci_domain_read_resources,
+	.set_resources     = pci_domain_set_resources,
+	.scan_bus          = pci_domain_scan_bus,
+	.write_acpi_tables = northbridge_write_acpi_tables,
+	.acpi_name         = northbridge_acpi_name,
+};
+
 static void add_fixed_resources(struct device *dev, int index)
 {
 	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
@@ -99,12 +127,22 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 }
 
-static void pci_domain_set_resources_sandybridge(struct device *dev)
+static void mc_read_resources(struct device *dev)
 {
+	u32 pcie_config_base;
+	int buses;
 	uint64_t tom, me_base, touud;
 	uint32_t tseg_base, uma_size, tolud;
 	uint16_t ggc;
 	unsigned long long tomk;
+
+	pci_dev_read_resources(dev);
+
+	buses = get_pcie_bar(&pcie_config_base);
+	if (buses) {
+		struct resource *resource = new_resource(dev, PCIEXBAR);
+		mmconf_resource_init(resource, pcie_config_base, buses);
+	}
 
 	/* Total Memory 2GB example:
 	 *
@@ -132,28 +170,26 @@ static void pci_domain_set_resources_sandybridge(struct device *dev)
 	 * 14fe00000   5368MB TOUUD
 	 */
 
-	struct device *mch = pcidev_on_root(0, 0);
-
 	/* Top of Upper Usable DRAM, including remap */
-	touud  = pci_read_config32(mch, TOUUD + 4);
+	touud  = pci_read_config32(dev, TOUUD + 4);
 	touud <<= 32;
-	touud |= pci_read_config32(mch, TOUUD);
+	touud |= pci_read_config32(dev, TOUUD);
 
 	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config32(mch, TOLUD);
+	tolud = pci_read_config32(dev, TOLUD);
 
 	/* Top of Memory - does not account for any UMA */
-	tom  = pci_read_config32(mch, TOM + 4);
+	tom  = pci_read_config32(dev, TOM + 4);
 	tom <<= 32;
-	tom |= pci_read_config32(mch, TOM);
+	tom |= pci_read_config32(dev, TOM);
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
 	       touud, tolud, tom);
 
 	/* ME UMA needs excluding if total memory < 4GB */
-	me_base  = pci_read_config32(mch, MESEG_BASE + 4);
+	me_base  = pci_read_config32(dev, MESEG_BASE + 4);
 	me_base <<= 32;
-	me_base |= pci_read_config32(mch, MESEG_BASE);
+	me_base |= pci_read_config32(dev, MESEG_BASE);
 
 	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
 
@@ -172,7 +208,7 @@ static void pci_domain_set_resources_sandybridge(struct device *dev)
 	}
 
 	/* Graphics memory comes next */
-	ggc = pci_read_config16(mch, GGC);
+	ggc = pci_read_config16(dev, GGC);
 	if (!(ggc & 2)) {
 		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 
@@ -192,7 +228,7 @@ static void pci_domain_set_resources_sandybridge(struct device *dev)
 	}
 
 	/* Calculate TSEG size from its base which must be below GTT */
-	tseg_base = pci_read_config32(mch, TSEGMB);
+	tseg_base = pci_read_config32(dev, TSEGMB);
 	uma_size = (uma_memory_base - tseg_base) >> 10;
 	tomk -= uma_size;
 	uma_memory_base = tomk * 1024ULL;
@@ -217,50 +253,6 @@ static void pci_domain_set_resources_sandybridge(struct device *dev)
 	}
 
 	add_fixed_resources(dev, 6);
-
-	assign_resources(dev->link_list);
-}
-
-static const char *northbridge_acpi_name(const struct device *dev)
-{
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		return "PCI0";
-
-	if (dev->path.type != DEVICE_PATH_PCI)
-		return NULL;
-
-	switch (dev->path.pci.devfn) {
-	case PCI_DEVFN(0, 0):
-		return "MCHC";
-	}
-
-	return NULL;
-}
-
-/*
- * TODO We could determine how many PCIe busses we need in the bar.
- * For now, that number is hardcoded to a max of 64.
- */
-static struct device_operations pci_domain_ops = {
-	.read_resources    = pci_domain_read_resources,
-	.set_resources     = pci_domain_set_resources_sandybridge,
-	.scan_bus          = pci_domain_scan_bus,
-	.write_acpi_tables = northbridge_write_acpi_tables,
-	.acpi_name         = northbridge_acpi_name,
-};
-
-static void mc_read_resources(struct device *dev)
-{
-	u32 pcie_config_base;
-	int buses;
-
-	pci_dev_read_resources(dev);
-
-	buses = get_pcie_bar(&pcie_config_base);
-	if (buses) {
-		struct resource *resource = new_resource(dev, PCIEXBAR);
-		mmconf_resource_init(resource, pcie_config_base, buses);
-	}
 }
 
 static void northbridge_dmi_init(struct device *dev)

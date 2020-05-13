@@ -1,6 +1,3 @@
-#
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 if BOARD_ASROCK_G41C_GS || BOARD_ASROCK_G41C_GS_R2_0 || \

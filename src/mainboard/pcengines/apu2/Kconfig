@@ -1,6 +1,3 @@
-#
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 if BOARD_PCENGINES_APU2 || BOARD_PCENGINES_APU3 || BOARD_PCENGINES_APU4 || \

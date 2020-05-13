@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 if BOARD_GIGABYTE_GA_945GCM_S2L || BOARD_GIGABYTE_GA_945GCM_S2C

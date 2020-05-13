@@ -1,7 +1,3 @@
-#
-#
-
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 if BOARD_MSI_MS7721

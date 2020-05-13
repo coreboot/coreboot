@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 if BOARD_ASUS_P2B || BOARD_ASUS_P2B_D || BOARD_ASUS_P2B_DS || BOARD_ASUS_P2B_F || BOARD_ASUS_P2B_LS || BOARD_ASUS_P3B_F

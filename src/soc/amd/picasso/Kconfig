@@ -299,36 +299,6 @@ config AMD_PUBKEY_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
 
-config PSP_APCB_FILE
-	string
-	help
-	  The name of the AGESA Parameter Customization Block.  This image is
-	  instance ID 0 in the PSP's BIOS Directory Table.
-
-config PSP_APCB1_FILE
-	string
-	help
-	  If specified, this image is instance ID 1 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB2_FILE
-	string
-	help
-	  If specified, this image is instance ID 2 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB3_FILE
-	string
-	help
-	  If specified, this image is instance ID 3 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB4_FILE
-	string
-	help
-	  If specified, this image is instance ID 4 in the PSP's BIOS
-	  Directory Table.
-
 config PSP_APOB_DESTINATION
 	hex
 	default 0x9f00000

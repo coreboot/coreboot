@@ -78,6 +78,8 @@ CPPFLAGS_common += -I$(src)/soc/amd/picasso/include
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/picasso
 
+MAINBOARD_BLOBS_DIR:=$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR)
+
 # ROMSIG Normally At ROMBASE + 0x20000
 # Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+
@@ -175,11 +177,7 @@ endif
 #
 
 # type = 0x60
-PSP_APCB0_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB_FILE))
-PSP_APCB1_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB1_FILE))
-PSP_APCB2_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB2_FILE))
-PSP_APCB3_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB3_FILE))
-PSP_APCB4_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB4_FILE))
+PSP_APCB_FILES=$(foreach f, $(APCB_SOURCES), $(obj)/APCB_$(f).bin)
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
@@ -257,11 +255,10 @@ OPT_ABL6_FILE=$(call add_opt_prefix,  $(PSP_ABL6_FILE), --abl-image)
 OPT_ABL7_FILE=$(call add_opt_prefix,  $(PSP_ABL7_FILE), --abl-image)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 
-OPT_PSP_APCB0_FILE=$(call add_opt_prefix, $(PSP_APCB0_FILE), --instance 0 --apcb)
-OPT_PSP_APCB1_FILE=$(call add_opt_prefix, $(PSP_APCB1_FILE), --instance 1 --apcb)
-OPT_PSP_APCB2_FILE=$(call add_opt_prefix, $(PSP_APCB2_FILE), --instance 2 --apcb)
-OPT_PSP_APCB3_FILE=$(call add_opt_prefix, $(PSP_APCB3_FILE), --instance 3 --apcb)
-OPT_PSP_APCB4_FILE=$(call add_opt_prefix, $(PSP_APCB4_FILE), --instance 4 --apcb)
+OPT_PSP_APCB_FILES=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
+	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
+	--instance $(shell printf "%x" $$(($(i)-1))) --apcb ))
+
 OPT_APOB_ADDR=$(call add_opt_prefix, $(PSP_APOB_BASE), --apob-base)
 OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
@@ -281,15 +278,53 @@ OPT_PSP_UCODE_FILE2=$(call add_opt_prefix, $(PSP_UCODE_FILE2), --instance 1 --uc
 OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --ucode)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 
+# Copy prebuild APCBs if they exist
+$(obj)/APCB_%.bin: $(MAINBOARD_BLOBS_DIR)/APCB_%.bin
+	cp $< $@
+
+# APCB binary with magic numbers to be replaced by apcb_edit tool
+APCB_MAGIC_BLOB:=$(MAINBOARD_BLOBS_DIR)/APCB_magic.bin
+
+$(obj)/APCB_empty.bin: $(APCB_MAGIC_BLOB) $(APCB_EDIT_TOOL)
+	$(APCB_EDIT_TOOL) \
+	$(APCB_MAGIC_BLOB) \
+	$@ \
+	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
+	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
+	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
+	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
+
+$(obj)/APCB_%_x1.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
+			$(APCB_EDIT_TOOL) \
+			$(APCB_MAGIC_BLOB)
+	$(APCB_EDIT_TOOL) \
+	$(APCB_MAGIC_BLOB) \
+	$@ \
+	--hex \
+	--spd_0_0 $< \
+	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
+	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
+	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
+	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
+
+$(obj)/APCB_%_x2.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
+			$(APCB_EDIT_TOOL) \
+			$(APCB_MAGIC_BLOB)
+	$(APCB_EDIT_TOOL) \
+	$(APCB_MAGIC_BLOB) \
+	$@ \
+	--hex \
+	--spd_0_0 $< \
+	--spd_1_0 $< \
+	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
+	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
+	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
+	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
+
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
 			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
-			$(call strip_quotes, $(PSP_APCB0_FILE)) \
-			$(call strip_quotes, $(PSP_APCB1_FILE)) \
-			$(call strip_quotes, $(PSP_APCB2_FILE)) \
-			$(call strip_quotes, $(PSP_APCB3_FILE)) \
-			$(call strip_quotes, $(PSP_APCB4_FILE)) \
 			$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(call strip_quotes, $(PSP_PMUI_FILE1)) \
 			$(call strip_quotes, $(PSP_PMUI_FILE2)) \
@@ -322,6 +357,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call_strip_quotes, $(PSP_S0I3_FILE)) \
 			$(call_strip_quotes, $(PSP_IKEK_FILE)) \
 			$(call_strip_quotes, $(PSP_SEC_DEBUG_FILE)) \
+			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL)
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
@@ -334,11 +370,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_SMUFW2_SUB2_FILE) \
 		$(OPT_SMUFW1_SUB1_FILE) \
 		$(OPT_SMUFW2_SUB1_FILE) \
-		$(OPT_PSP_APCB0_FILE) \
-		$(OPT_PSP_APCB1_FILE) \
-		$(OPT_PSP_APCB2_FILE) \
-		$(OPT_PSP_APCB3_FILE) \
-		$(OPT_PSP_APCB4_FILE) \
+		$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_APOBNV_ADDR) \
 		$(OPT_APOBNV_SIZE) \

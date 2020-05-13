@@ -6,6 +6,7 @@ bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c
+bootblock-y += ../common/wdt.c
 
 verstage-y += ../common/gpio.c gpio.c
 verstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c

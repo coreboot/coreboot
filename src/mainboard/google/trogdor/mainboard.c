@@ -22,13 +22,13 @@ static void qi2s_configure_gpios(void)
 {
 
 	gpio_configure(GPIO(49), GPIO49_FUNC_MI2S_1_SCK,
-				GPIO_PULL_UP, GPIO_8MA, GPIO_OUTPUT);
+				GPIO_NO_PULL, GPIO_8MA, GPIO_OUTPUT);
 
 	gpio_configure(GPIO(50), GPIO50_FUNC_MI2S_1_WS,
-				GPIO_PULL_UP, GPIO_8MA, GPIO_OUTPUT);
+				GPIO_NO_PULL, GPIO_8MA, GPIO_OUTPUT);
 
 	gpio_configure(GPIO(51), GPIO51_FUNC_MI2S_1_DATA0,
-				GPIO_PULL_UP, GPIO_8MA, GPIO_OUTPUT);
+				GPIO_NO_PULL, GPIO_8MA, GPIO_OUTPUT);
 }
 
 static void load_qup_fw(void)

@@ -88,11 +88,28 @@ know through which interface the EDID can be queried:
     select GFX_GMA_ANALOG_I2C_HDMI_C	# or
     select GFX_GMA_ANALOG_I2C_HDMI_D
 
-Beside Kconfig options, *libgfxinit* needs to know which ports are
-implemented on a board and should be probed for displays. The mapping
-between the physical ports and these entries depends on the hardware
-implementation and can be recovered by testing or studying the output
-of `intelvbttool` or `intel_vbt_decode`.
+*libgfxinit* needs to know which ports are implemented on a board
+and should be probed for displays. There are two mechanisms to
+constrain the list of ports to probe, 1. port presence straps on
+the mainboard, and 2. a list of ports provided by *coreboot* (see
+below).
+
+Presence straps are configured via the state of certains pins of
+the chipset at reset time. They are documented in the chipset's
+datasheets. By default, *libgfxinit* honors these straps for
+safety. However, some boards don't implement the straps correctly.
+If ports are not strapped as implemented by error, one can select
+an option to ignore the straps:
+
+    select GFX_GMA_IGNORE_PRESENCE_STRAPS
+
+In the opposite case, that ports are strapped as implemented,
+but are actually unconnected, one has to make sure that the
+list of ports in *coreboot* omits them.
+
+The mapping between the physical ports and these entries depends on
+the hardware implementation and can be recovered by testing or
+studying the output of `intelvbttool` or `intel_vbt_decode`.
 Each board has to implement the package `GMA.Mainboard` with a list:
 
     ports : HW.GFX.GMA.Display_Probing.Port_List;

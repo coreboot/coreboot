@@ -159,6 +159,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
+	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
 	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,
 			sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
 	memcpy(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable,

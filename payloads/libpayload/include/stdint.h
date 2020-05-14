@@ -45,9 +45,9 @@ typedef long ptrdiff_t;
 #define INT64_MAX	(9223372036854775807LL)
 
 #define INT8_MIN	(-INT8_MAX - 1)
-#define INT16_MIN	(-INT16_MIN - 1)
-#define INT32_MIN	(-INT32_MIN - 1)
-#define INT64_MIN	(-INT64_MIN - 1)
+#define INT16_MIN	(-INT16_MAX - 1)
+#define INT32_MIN	(-INT32_MAX - 1)
+#define INT64_MIN	(-INT64_MAX - 1)
 
 #define UINT8_MAX	(255)
 #define UINT16_MAX	(65535)

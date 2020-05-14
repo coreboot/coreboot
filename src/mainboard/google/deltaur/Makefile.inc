@@ -11,6 +11,7 @@ romstage-y += ec.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-y += mainboard.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-y += ec.c

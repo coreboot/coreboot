@@ -1,0 +1,7 @@
+config DRIVERS_INTEL_PMC
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	   When enabled, driver/intel/pmc_mux will add support for mux
+	   configuration of USB Type-C ports via the SoC's muxes.

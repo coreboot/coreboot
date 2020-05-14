@@ -6,6 +6,7 @@
  * Chapter number: 4
  */
 
+#include <acpi/acpigen.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -16,6 +17,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
+
+#define PMC_HID		"INTC1026"
 
 enum pch_pmc_xtal pmc_get_xtal_freq(void)
 {
@@ -96,9 +99,36 @@ static void soc_pmc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
+static void soc_pmc_fill_ssdt(const struct device *dev)
+{
+	acpigen_write_scope(acpi_device_scope(dev));
+	acpigen_write_device(acpi_device_name(dev));
+
+	acpigen_write_name_string("_HID", PMC_HID);
+	acpigen_write_name_string("_DDN", "Intel(R) Tiger Lake IPC Controller");
+
+	/*
+	 * Part of the PCH's reserved 32 MB MMIO range (0xFC800000 - 0xFE7FFFFF).
+	 * The PMC gets 0xFE000000 - 0xFE00FFFF.
+	 */
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+	acpigen_write_mem32fixed(1, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE);
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* PMC Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
+	       dev_path(dev));
+}
+
 struct device_operations pmc_ops = {
 	.read_resources	  = soc_pmc_read_resources,
 	.set_resources	  = noop_set_resources,
 	.enable		  = pmc_init,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt	  = soc_pmc_fill_ssdt,
+#endif
 	.scan_bus	  = scan_static_bus,
 };

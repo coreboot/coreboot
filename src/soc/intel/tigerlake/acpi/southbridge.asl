@@ -26,9 +26,6 @@
 /* PCIE Ports */
 #include "pcie.asl"
 
-/* pmc 0:1f.2 */
-#include "pmc.asl"
-
 /* Serial IO */
 #include "serialio.asl"
 

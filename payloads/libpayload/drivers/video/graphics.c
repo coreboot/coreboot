@@ -72,6 +72,35 @@ static int is_valid_fraction(const struct fraction *f)
 	return f->d != 0;
 }
 
+static int is_valid_scale(const struct scale *s)
+{
+	return is_valid_fraction(&s->x) && is_valid_fraction(&s->y);
+}
+
+static void add_fractions(struct fraction *out,
+			  const struct fraction *f1, const struct fraction *f2)
+{
+	int64_t n, d;
+	int shift;
+	n = (int64_t)f1->n * f2->d + (int64_t)f2->n * f1->d;
+	d = (int64_t)f1->d * f2->d;
+	/* Simplest way to reduce the fraction until fitting in int32_t */
+	shift = log2(MAX(ABS(n), ABS(d)) >> 31);
+	if (shift > 0) {
+		n >>= shift;
+		d >>= shift;
+	}
+	out->n = n;
+	out->d = d;
+}
+
+static void add_scales(struct scale *out,
+		       const struct scale *s1, const struct scale *s2)
+{
+	add_fractions(&out->x, &s1->x, &s2->x);
+	add_fractions(&out->y, &s1->y, &s2->y);
+}
+
 /*
  * Transform a vector:
  * 	x' = x * a_x + offset_x
@@ -82,7 +111,7 @@ static int transform_vector(struct vector *out,
 			    const struct scale *a,
 			    const struct vector *offset)
 {
-	if (!is_valid_fraction(&a->x) || !is_valid_fraction(&a->y))
+	if (!is_valid_scale(a))
 		return CBGFX_ERROR_INVALID_PARAMETER;
 	out->x = a->x.n * in->x / a->x.d + offset->x;
 	out->y = a->y.n * in->y / a->y.d + offset->y;
@@ -211,7 +240,6 @@ static int cbgfx_init(void)
 int draw_box(const struct rect *box, const struct rgb_color *rgb)
 {
 	struct vector top_left;
-	struct vector size;
 	struct vector p, t;
 
 	if (cbgfx_init())
@@ -222,14 +250,13 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 		.x = { .n = box->offset.x, .d = CANVAS_SCALE, },
 		.y = { .n = box->offset.y, .d = CANVAS_SCALE, }
 	};
-	const struct scale size_s = {
-		.x = { .n = box->size.x, .d = CANVAS_SCALE, },
-		.y = { .n = box->size.y, .d = CANVAS_SCALE, }
+	const struct scale bottom_right_s = {
+		.x = { .n = box->offset.x + box->size.x, .d = CANVAS_SCALE, },
+		.y = { .n = box->offset.y + box->size.y, .d = CANVAS_SCALE, }
 	};
 
 	transform_vector(&top_left, &canvas.size, &top_left_s, &canvas.offset);
-	transform_vector(&size, &canvas.size, &size_s, &vzero);
-	add_vectors(&t, &top_left, &size);
+	transform_vector(&t, &canvas.size, &bottom_right_s, &canvas.offset);
 	if (within_box(&t, &canvas) < 0) {
 		LOG("Box exceeds canvas boundary\n");
 		return CBGFX_ERROR_BOUNDARY;
@@ -247,8 +274,8 @@ int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
 		     const struct fraction *thickness,
 		     const struct fraction *radius)
 {
+	struct scale pos_end_rel;
 	struct vector top_left;
-	struct vector size;
 	struct vector p, t;
 
 	if (cbgfx_init())
@@ -256,9 +283,12 @@ int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
 
 	const uint32_t color = calculate_color(rgb, 0);
 
+	if (!is_valid_scale(pos_rel) || !is_valid_scale(dim_rel))
+		return CBGFX_ERROR_INVALID_PARAMETER;
+
+	add_scales(&pos_end_rel, pos_rel, dim_rel);
 	transform_vector(&top_left, &canvas.size, pos_rel, &canvas.offset);
-	transform_vector(&size, &canvas.size, dim_rel, &vzero);
-	add_vectors(&t, &top_left, &size);
+	transform_vector(&t, &canvas.size, &pos_end_rel, &canvas.offset);
 	if (within_box(&t, &canvas) < 0) {
 		LOG("Box exceeds canvas boundary\n");
 		return CBGFX_ERROR_BOUNDARY;

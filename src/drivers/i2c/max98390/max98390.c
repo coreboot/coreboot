@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <arch/acpi.h>
-#include <arch/acpi_device.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/i2c.h>
 #include <device/device.h>

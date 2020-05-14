@@ -1,3 +1,0 @@
-config DRIVERS_XGI_Z9S
-	bool
-	select DRIVERS_XGI_Z79_COMMON

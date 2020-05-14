@@ -15,3 +15,4 @@ trackpoint=Enable
 backlight=Both
 enable_dual_graphics=Disable
 usb_always_on=Disable
+f1_to_f12_as_primary=Enable

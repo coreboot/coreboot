@@ -89,6 +89,8 @@ struct fsp_load_descriptor {
 	int (*get_destination)(const struct fsp_load_descriptor *fspld,
 			void **dest, size_t final_load_size,
 			const struct region_device *source);
+	/* Optional argument to be utilized by get_destination() callback. */
+	void *arg;
 };
 
 /* Load the FSP component described by fsp_load_descriptor from cbfs. The FSP

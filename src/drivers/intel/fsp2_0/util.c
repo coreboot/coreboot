@@ -119,6 +119,21 @@ void fsp_handle_reset(uint32_t status)
 	}
 }
 
+static inline bool fspm_env(void)
+{
+	if (ENV_ROMSTAGE)
+		return true;
+	return false;
+}
+
+static inline bool fspm_xip(void)
+{
+	/* FSP-M is assumed to be loaded in romstage. */
+	if (fspm_env() && CONFIG(FSP_M_XIP))
+		return true;
+	return false;
+}
+
 static void *fsp_get_dest_and_load(struct fsp_load_descriptor *fspld, size_t size,
 				const struct region_device *source_rdev,
 				uint32_t compression_algo)
@@ -130,11 +145,19 @@ static void *fsp_get_dest_and_load(struct fsp_load_descriptor *fspld, size_t siz
 		return NULL;
 	}
 
+	/* Don't load when executing in place. */
+	if (fspm_xip())
+		return dest;
+
 	if (cbfs_load_and_decompress(source_rdev, 0, region_device_sz(source_rdev),
 			dest, size, compression_algo) != size) {
 		printk(BIOS_ERR, "Failed to load FSP component.\n");
 		return NULL;
 	}
+
+	/* Don't allow FSP-M relocation. */
+	if (fspm_env())
+		return dest;
 
 	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0) {
 		printk(BIOS_ERR, "Unable to relocate FSP component!\n");

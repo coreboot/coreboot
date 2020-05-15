@@ -187,6 +187,19 @@ config FSP_COMPRESS_FSP_S_LZMA
 config FSP_COMPRESS_FSP_S_LZ4
 	bool
 
+config FSP_COMPRESS_FSP_M_LZMA
+	bool
+	depends on !FSP_M_XIP
+
+config FSP_COMPRESS_FSP_M_LZ4
+	bool
+	depends on !FSP_M_XIP
+
+config FSP_M_ADDR
+	hex
+	help
+	  The address FSP-M will be relocated to during build time
+
 if FSP_PEIM_TO_PEIM_INTERFACE
 source "src/drivers/intel/fsp2_0/ppi/Kconfig"
 endif

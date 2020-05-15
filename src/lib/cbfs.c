@@ -99,9 +99,19 @@ static inline bool fsps_env(void)
 	return false;
 }
 
+static inline bool fspm_env(void)
+{
+	/* FSP-M is assumed to be loaded in romstage. */
+	if (ENV_ROMSTAGE)
+		return true;
+	return false;
+}
+
 static inline bool cbfs_lz4_enabled(void)
 {
 	if (fsps_env() && CONFIG(FSP_COMPRESS_FSP_S_LZ4))
+		return true;
+	if (fspm_env() && CONFIG(FSP_COMPRESS_FSP_M_LZ4))
 		return true;
 
 	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) && !CONFIG(COMPRESS_PRERAM_STAGES))
@@ -113,6 +123,8 @@ static inline bool cbfs_lz4_enabled(void)
 static inline bool cbfs_lzma_enabled(void)
 {
 	if (fsps_env() && CONFIG(FSP_COMPRESS_FSP_S_LZMA))
+		return true;
+	if (fspm_env() && CONFIG(FSP_COMPRESS_FSP_M_LZMA))
 		return true;
 	/* We assume here romstage and postcar are never compressed. */
 	if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE)

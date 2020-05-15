@@ -5,6 +5,8 @@
 
 #include <baseboard/gpio.h>
 
-/* Copied from baseboard and may need to change for the new variant. */
+#undef GPIO_EC_IN_RW
+/* EC in RW */
+#define GPIO_EC_IN_RW		GPP_F17
 
 #endif

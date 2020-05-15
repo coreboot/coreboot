@@ -770,17 +770,12 @@ struct device_operations default_pci_ops_dev = {
 };
 
 /** Default device operations for PCI bridges */
-static struct pci_operations pci_bus_ops_pci = {
-	.set_subsystem = 0,
-};
-
 struct device_operations default_pci_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
 	.scan_bus         = pci_scan_bridge,
 	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pci_bus_ops_pci,
 };
 
 /**

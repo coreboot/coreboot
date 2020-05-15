@@ -262,6 +262,29 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			params->ITbtPcieRootPortEn[i] = 0;
 	}
 
+	/* PCH FIVR settings override */
+	if (config->ext_fivr_settings.configure_ext_fivr) {
+		params->PchFivrExtV1p05RailEnabledStates =
+			config->ext_fivr_settings.v1p05_enable_bitmap;
+
+		params->PchFivrExtV1p05RailSupportedVoltageStates =
+			config->ext_fivr_settings.v1p05_supported_voltage_bitmap;
+
+		params->PchFivrExtVnnRailEnabledStates =
+			config->ext_fivr_settings.vnn_enable_bitmap;
+
+		params->PchFivrExtVnnRailSupportedVoltageStates =
+			config->ext_fivr_settings.vnn_supported_voltage_bitmap;
+
+		/* convert mV to number of 2.5 mV increments */
+		params->PchFivrExtVnnRailSxVoltage =
+			(config->ext_fivr_settings.vnn_sx_voltage_mv * 10) / 25;
+
+		params->PchFivrExtV1p05RailIccMaximum =
+			config->ext_fivr_settings.v1p05_icc_max_ma;
+
+	}
+
 	mainboard_silicon_init_params(params);
 }
 

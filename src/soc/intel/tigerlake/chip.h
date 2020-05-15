@@ -22,6 +22,33 @@
 #define MAX_HD_AUDIO_SNDW_LINKS 4
 #define MAX_HD_AUDIO_SSP_LINKS  6
 
+/*
+ * Enable External V1P05 Rail in: BIT0:S0i1/S0i2,
+ * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5
+ */
+enum fivr_enable_states {
+	FIVR_ENABLE_S0i1_S0i2	= BIT(0),
+	FIVR_ENABLE_S0i3	= BIT(1),
+	FIVR_ENABLE_S3		= BIT(2),
+	FIVR_ENABLE_S4		= BIT(3),
+	FIVR_ENABLE_S5		= BIT(4),
+};
+
+/*
+ * Enable the following for External V1p05 rail
+ * BIT1: Normal Active voltage supported
+ * BIT2: Minimum active voltage supported
+ * BIT3: Minimum Retention voltage supported
+ */
+enum fivr_voltage_supported {
+	FIVR_VOLTAGE_NORMAL		= BIT(1),
+	FIVR_VOLTAGE_MIN_ACTIVE		= BIT(2),
+	FIVR_VOLTAGE_MIN_RETENTION	= BIT(3),
+};
+
+#define FIVR_ENABLE_ALL_SX (FIVR_ENABLE_S0i1_S0i2 | FIVR_ENABLE_S0i3 |	\
+			    FIVR_ENABLE_S3 | FIVR_ENABLE_S4 | FIVR_ENABLE_S5)
+
 struct soc_intel_tigerlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -316,6 +343,19 @@ struct soc_intel_tigerlake_config {
 	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
 	 */
 	uint8_t SataPwrOptimizeDisable;
+
+	/* structure containing various settings for PCH FIVRs */
+	struct {
+		bool configure_ext_fivr;
+		enum fivr_enable_states v1p05_enable_bitmap;
+		enum fivr_enable_states vnn_enable_bitmap;
+		enum fivr_voltage_supported v1p05_supported_voltage_bitmap;
+		enum fivr_voltage_supported vnn_supported_voltage_bitmap;
+		/* External Icc Max for V1p05 rail in mA  */
+		int v1p05_icc_max_ma;
+		/* External Vnn Voltage in mV */
+		int vnn_sx_voltage_mv;
+	} ext_fivr_settings;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

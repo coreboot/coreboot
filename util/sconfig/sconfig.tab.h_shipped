@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.5.4.  */
+/* A Bison parser, made by GNU Bison 3.5.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -34,8 +34,8 @@
 /* Undocumented macros, especially those whose name start with YY_,
    are private implementation details.  Do not rely on them.  */
 
-#ifndef YY_YY_HOME_ME_REPOS_COREBOOTORG_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_HOME_ME_REPOS_COREBOOTORG_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -83,7 +83,11 @@ extern int yydebug;
     USB = 289,
     MMIO = 290,
     LPC = 291,
-    ESPI = 292
+    ESPI = 292,
+    FW_CONFIG_TABLE = 293,
+    FW_CONFIG_FIELD = 294,
+    FW_CONFIG_OPTION = 295,
+    FW_CONFIG_PROBE = 296
   };
 #endif
 
@@ -109,4 +113,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_HOME_ME_REPOS_COREBOOTORG_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */

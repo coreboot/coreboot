@@ -5,6 +5,7 @@
 /* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
+#include <stdint.h>
 #include "sconfig.h"
 #include "sconfig.tab.h"
 
@@ -321,6 +322,266 @@ struct chip_instance *new_chip_instance(char *path)
 	chip->instance = instance;
 
 	return instance;
+}
+
+/* List of fw_config fields added during parsing. */
+static struct fw_config_field *fw_config_fields;
+
+static struct fw_config_option *find_fw_config_option(struct fw_config_field *field,
+						      const char *name)
+{
+	struct fw_config_option *option = field->options;
+
+	while (option && option->name) {
+		if (!strcmp(option->name, name))
+			return option;
+		option = option->next;
+	}
+	return NULL;
+}
+
+static struct fw_config_field *find_fw_config_field(const char *name)
+{
+	struct fw_config_field *field = fw_config_fields;
+
+	while (field && field->name) {
+		if (!strcmp(field->name, name))
+			return field;
+		field = field->next;
+	}
+	return NULL;
+}
+
+struct fw_config_field *get_fw_config_field(const char *name)
+{
+	struct fw_config_field *field = find_fw_config_field(name);
+
+	/* Fail if the field does not exist, new fields must be added with a mask. */
+	if (!field) {
+		printf("ERROR: fw_config field not found: %s\n", name);
+		exit(1);
+	}
+	return field;
+}
+
+static void append_fw_config_field(struct fw_config_field *add)
+{
+	struct fw_config_field *field = fw_config_fields;
+
+	if (!fw_config_fields) {
+		fw_config_fields = add;
+	} else {
+		while (field && field->next)
+			field = field->next;
+		field->next = add;
+	}
+}
+
+struct fw_config_field *new_fw_config_field(const char *name,
+					    unsigned int start_bit, unsigned int end_bit)
+{
+	struct fw_config_field *field = find_fw_config_field(name);
+
+	/* Check that field is within 32bits. */
+	if (start_bit > end_bit || end_bit > 31) {
+		printf("ERROR: fw_config field %s has invalid range %u-%u\n", name,
+		       start_bit, end_bit);
+		exit(1);
+	}
+
+	/* Don't allow re-defining a field, only adding new fields. */
+	if (field) {
+		printf("ERROR: fw_config field %s[%u-%u] already exists with range %u-%u\n",
+		       name, start_bit, end_bit, field->start_bit, field->end_bit);
+		exit(1);
+	}
+
+	/* Check for overlap with an existing field. */
+	field = fw_config_fields;
+	while (field) {
+		/* Check if the mask overlaps. */
+		if (start_bit <= field->end_bit && end_bit >= field->start_bit) {
+			printf("ERROR: fw_config field %s[%u-%u] overlaps %s[%u-%u]\n",
+			       name, start_bit, end_bit,
+			       field->name, field->start_bit, field->end_bit);
+			exit(1);
+		}
+		field = field->next;
+	}
+
+	field = S_ALLOC(sizeof(*field));
+	field->name = name;
+	field->start_bit = start_bit;
+	field->end_bit = end_bit;
+	append_fw_config_field(field);
+
+	return field;
+}
+
+static void append_fw_config_option_to_field(struct fw_config_field *field,
+					     struct fw_config_option *add)
+{
+	struct fw_config_option *option = field->options;
+
+	if (!option) {
+		field->options = add;
+	} else {
+		while (option && option->next)
+			option = option->next;
+		option->next = add;
+	}
+}
+
+void add_fw_config_option(struct fw_config_field *field, const char *name, unsigned int value)
+{
+	struct fw_config_option *option;
+	uint32_t field_max_value;
+
+	/* Check that option value fits within field mask. */
+	field_max_value = (1 << (1 + field->end_bit - field->start_bit)) - 1;
+	if (value > field_max_value) {
+		printf("ERROR: fw_config option %s:%s value %u larger than field max %u\n",
+		       field->name, name, value, field_max_value);
+		exit(1);
+	}
+
+	/* Check for existing option with this name or value. */
+	option = field->options;
+	while (option) {
+		if (!strcmp(option->name, name)) {
+			printf("ERROR: fw_config option name %s:%s already exists\n",
+			       field->name, name);
+			exit(1);
+		}
+		/* Compare values. */
+		if (value == option->value) {
+			printf("ERROR: fw_config option %s:%s[%u] redefined as %s\n",
+			       field->name, option->name, value, name);
+			exit(1);
+		}
+		option = option->next;
+	}
+
+	option = S_ALLOC(sizeof(*option));
+	option->name = name;
+	option->value = value;
+
+	/* Add option to the current field. */
+	append_fw_config_option_to_field(field, option);
+}
+
+static void append_fw_config_probe_to_dev(struct device *dev, struct fw_config_probe *add)
+{
+	struct fw_config_probe *probe = dev->probe;
+
+	if (!probe) {
+		dev->probe = add;
+	} else {
+		while (probe && probe->next)
+			probe = probe->next;
+		probe->next = add;
+	}
+}
+
+void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
+{
+	struct fw_config_probe *probe;
+
+	probe = bus->dev->probe;
+	while (probe) {
+		if (!strcmp(probe->field, field) && !strcmp(probe->option, option)) {
+			printf("ERROR: fw_config probe %s:%s already exists\n", field, option);
+			exit(1);
+		}
+		probe = probe->next;
+	}
+
+	probe = S_ALLOC(sizeof(*probe));
+	probe->field = field;
+	probe->option = option;
+
+	append_fw_config_probe_to_dev(bus->dev, probe);
+}
+
+static void emit_fw_config(FILE *fil)
+{
+	struct fw_config_field *field = fw_config_fields;
+
+	if (!field)
+		return;
+
+	fprintf(fil, "\n/* firmware configuration */\n");
+	fprintf(fil, "#include <fw_config.h>\n");
+
+	while (field) {
+		struct fw_config_option *option = field->options;
+		uint32_t mask;
+
+		fprintf(fil, "#define FW_CONFIG_FIELD_%s_NAME \"%s\"\n",
+			field->name, field->name);
+
+		/* Compute mask from start and end bit. */
+		mask = ((1 << (1 + field->end_bit - field->start_bit)) - 1);
+		mask <<= field->start_bit;
+
+		fprintf(fil, "#define FW_CONFIG_FIELD_%s_MASK 0x%08x\n",
+			field->name, mask);
+
+		while (option) {
+			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_NAME \"%s\"\n",
+				field->name, option->name, option->name);
+			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_VALUE 0x%08x\n",
+				field->name, option->name, option->value << field->start_bit);
+
+			option = option->next;
+		}
+
+		field = field->next;
+	}
+
+	fprintf(fil, "\n");
+}
+
+static int emit_fw_config_probe(FILE *fil, struct device *dev)
+{
+	struct fw_config_probe *probe = dev->probe;
+
+	fprintf(fil, "STORAGE struct fw_config %s_probe_list[] = {\n", dev->name);
+
+	while (probe) {
+		/* Find matching field. */
+		struct fw_config_field *field;
+		struct fw_config_option *option;
+		uint32_t mask, value;
+
+		field = find_fw_config_field(probe->field);
+		if (!field) {
+			printf("ERROR: fw_config_probe field %s not found\n", probe->field);
+			return -1;
+		}
+		option = find_fw_config_option(field, probe->option);
+		if (!option) {
+			printf("ERROR: fw_config_probe field %s option %s not found\n",
+			       probe->field, probe->option);
+			return -1;
+		}
+
+		/* Fill out the probe structure with values from emit_fw_config(). */
+		fprintf(fil, "\t{\n");
+		fprintf(fil, "\t\t.field_name = FW_CONFIG_FIELD_%s_NAME,\n", probe->field);
+		fprintf(fil, "\t\t.option_name = FW_CONFIG_FIELD_%s_OPTION_%s_NAME,\n",
+			probe->field, probe->option);
+		fprintf(fil, "\t\t.mask = FW_CONFIG_FIELD_%s_MASK,\n", probe->field);
+		fprintf(fil, "\t\t.value = FW_CONFIG_FIELD_%s_OPTION_%s_VALUE,\n",
+			probe->field, probe->option);
+		fprintf(fil, "\t},\n");
+
+		probe = probe->next;
+	}
+
+	/* Add empty entry to mark end of list. */
+	fprintf(fil, "\t{ }\n};\n");
+	return 0;
 }
 
 /*
@@ -733,6 +994,13 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	if (chip_ins->base_chip_instance)
 		chip_ins = chip_ins->base_chip_instance;
 
+	/* Emit probe structures. */
+	if (ptr->probe && (emit_fw_config_probe(fil, ptr) < 0)) {
+		fclose(head);
+		fclose(fil);
+		exit(1);
+	}
+
 	if (ptr == &base_root_dev)
 		fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
 	else
@@ -780,6 +1048,8 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	else
 		fprintf(fil, "\t.sibling = NULL,\n");
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
+	if (ptr->probe)
+		fprintf(fil, "\t.probe_list = %s_probe_list,\n", ptr->name);
 	for (pin = 0; pin < 4; pin++) {
 		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
 			fprintf(fil,
@@ -1220,6 +1490,12 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	}
 
 	/*
+	 * Use probe list from override device in place of base device, in order
+	 * to allow an override to remove a probe from the base device.
+	 */
+	base_dev->probe = override_dev->probe;
+
+	/*
 	 * Update base_chip_instance member in chip instance of override tree to forward it to
 	 * the chip instance in base tree.
 	 */
@@ -1343,9 +1619,11 @@ int main(int argc, char **argv)
 	fprintf(autohead, "#ifndef __STATIC_DEVICE_TREE_H\n");
 	fprintf(autohead, "#define __STATIC_DEVICE_TREE_H\n\n");
 	fprintf(autohead, "#include <device/device.h>\n\n");
+	emit_fw_config(autohead);
 
 	fprintf(autogen, "#include <device/device.h>\n");
 	fprintf(autogen, "#include <device/pci.h>\n\n");
+	fprintf(autogen, "#include <static.h>\n");
 
 	emit_chips(autogen);
 

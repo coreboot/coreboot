@@ -28,6 +28,27 @@ struct pci_irq_info {
 	int ioapic_dst_id;
 };
 
+struct fw_config_option;
+struct fw_config_option {
+	const char *name;
+	unsigned int value;
+	struct fw_config_option *next;
+};
+struct fw_config_field;
+struct fw_config_field {
+	const char *name;
+	unsigned int start_bit;
+	unsigned int end_bit;
+	struct fw_config_field *next;
+	struct fw_config_option *options;
+};
+struct fw_config_probe;
+struct fw_config_probe {
+	const char *field;
+	const char *option;
+	struct fw_config_probe *next;
+};
+
 struct chip;
 struct chip_instance {
 	/* Monotonically increasing ID for each chip instance. */
@@ -141,6 +162,9 @@ struct device {
 
 	/* SMBIOS slot length */
 	char *smbios_slot_length;
+
+	/* List of field+option to probe. */
+	struct fw_config_probe *probe;
 };
 
 extern struct bus *root_parent;
@@ -171,3 +195,13 @@ void *chip_dequeue_tail(void);
 
 struct chip_instance *new_chip_instance(char *path);
 void add_register(struct chip_instance *chip, char *name, char *val);
+
+struct fw_config_field *get_fw_config_field(const char *name);
+
+struct fw_config_field *new_fw_config_field(const char *name,
+					    unsigned int start_bit, unsigned int end_bit);
+
+void add_fw_config_option(struct fw_config_field *field, const char *name,
+			  unsigned int value);
+
+void add_fw_config_probe(struct bus *bus, const char *field, const char *option);

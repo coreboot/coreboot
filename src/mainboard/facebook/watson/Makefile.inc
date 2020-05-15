@@ -14,3 +14,5 @@
 ##
 
 ramstage-y += irqroute.c
+
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include

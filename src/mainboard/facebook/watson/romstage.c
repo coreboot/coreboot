@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <soc/romstage.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
+#include <variants.h>
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init
@@ -40,6 +41,14 @@ void late_mainboard_romstage_entry(void)
  * /brief customize fsp parameters here if needed
  */
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
+{
+	UPD_DATA_REGION *UpdData = FspRtBuffer->Common.UpdDataRgnPtr;
+
+	/* Variant-specific memory params */
+	variant_romstage_fsp_init_params(UpdData);
+}
+
+__weak void variant_romstage_fsp_init_params(UPD_DATA_REGION *UpdData)
 {
 
 }

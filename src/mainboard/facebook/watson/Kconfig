@@ -41,6 +41,10 @@ config CBFS_SIZE
 	hex
 	default 0x00800000
 
+config VARIANT_DIR
+	string
+	default "watson_v2" if BOARD_FACEBOOK_WATSON_V2
+
 config VBOOT_FWID_MODEL
 	string
 	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"

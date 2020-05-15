@@ -1,10 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
+#include <bootstate.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+__weak void variant_isst_override(void)
+{
+	/*
+	 * Implement the override only if the board uses very early/initial revisions of
+	 * Silicon. Otherwise nothing to override.
+	 */
+}
+
+static void mainboard_config_isst(void *unused)
+{
+	variant_isst_override();
+}
 
 static void mainboard_init(void *chip_info)
 {
@@ -37,3 +51,6 @@ struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = mainboard_enable,
 };
+
+/* Configure ISST before CPU initialization */
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, mainboard_config_isst, NULL);

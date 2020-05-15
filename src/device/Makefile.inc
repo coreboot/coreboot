@@ -58,3 +58,6 @@ bootblock-y += mmio.c
 verstage-y += mmio.c
 romstage-y += mmio.c
 ramstage-y += mmio.c
+
+ramstage-y += resource_allocator_common.c
+ramstage-$(CONFIG_RESOURCE_ALLOCATOR_V3) += resource_allocator_v3.c

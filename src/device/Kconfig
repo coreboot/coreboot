@@ -777,4 +777,11 @@ config SOFTWARE_I2C
 	  I2C controller is not (yet) available. The platform code needs to
 	  provide bindings to manually toggle I2C lines.
 
+config RESOURCE_ALLOCATOR_V3
+	bool
+	default y
+	help
+	  This config option enables resource allocator v3 which performs
+	  top down allocation of resources in a single MMIO window.
+
 endmenu

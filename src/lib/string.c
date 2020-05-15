@@ -163,6 +163,31 @@ int strcspn(const char *str, const char *spn)
 	return ret;
 }
 
+char *strtok_r(char *str, const char *delim, char **ptr)
+{
+	char *start;
+	char *end;
+
+	if (str == NULL)
+		str = *ptr;
+	start = str + strspn(str, delim);
+	if (start[0] == '\0')
+		return NULL;
+
+	end = start + strcspn(start, delim);
+	*ptr = end;
+	if (end[0] != '\0')
+		*(*ptr)++ = '\0';
+	return start;
+}
+
+char *strtok(char *str, const char *delim)
+{
+	static char *strtok_ptr;
+
+	return strtok_r(str, delim, &strtok_ptr);
+}
+
 long atol(const char *str)
 {
 	long ret = 0;

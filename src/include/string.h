@@ -29,6 +29,8 @@ int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, int maxlen);
 int strspn(const char *str, const char *spn);
 int strcspn(const char *str, const char *spn);
+char *strtok_r(char *str, const char *delim, char **ptr);
+char *strtok(char *str, const char *delim);
 long atol(const char *str);
 
 /**

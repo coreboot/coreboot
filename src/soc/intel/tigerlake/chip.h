@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/power_limit.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/gpio_defs.h>
@@ -25,6 +26,9 @@ struct soc_intel_tigerlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration information */
+	struct soc_power_limits_config power_limits_config;
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */
@@ -144,8 +148,7 @@ struct soc_intel_tigerlake_config {
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
-	/* PL2 Override value in Watts */
-	uint32_t tdp_pl2_override;
+
 	/* Intel Speed Shift Technology */
 	uint8_t speed_shift_enable;
 

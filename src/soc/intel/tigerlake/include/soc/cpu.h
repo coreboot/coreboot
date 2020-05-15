@@ -24,7 +24,4 @@
 /* Common Timer Copy (CTC) frequency - 38.4MHz. */
 #define CTC_FREQ	38400000
 
-/* Configure power limits for turbo mode */
-void set_power_limits(u8 power_limit_1_time);
-
 #endif

@@ -102,21 +102,13 @@ static void sb_read_resources(struct device *dev)
 #endif
 }
 
-#if CONFIG(HAVE_ACPI_TABLES)
-static void southbridge_acpi_fill_ssdt_generator(const struct device *device)
-{
-	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
-	generate_cpu_entries(device);
-}
-#endif
-
 static const struct device_operations isa_ops = {
 	.read_resources		= sb_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables	= acpi_write_hpet,
-	.acpi_fill_ssdt		= southbridge_acpi_fill_ssdt_generator,
+	.acpi_fill_ssdt		= generate_cpu_entries,
 #endif
 	.init			= isa_init,
 	.scan_bus		= scan_static_bus,

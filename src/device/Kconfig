@@ -784,4 +784,13 @@ config RESOURCE_ALLOCATOR_V3
 	  This config option enables resource allocator v3 which performs
 	  top down allocation of resources in a single MMIO window.
 
+config RESOURCE_ALLOCATOR_V4
+	bool
+	default n if RESOURCE_ALLOCATOR_V3
+	default y if !RESOURCE_ALLOCATOR_V3
+	help
+	  This config option enables resource allocator v4 which uses multiple
+	  ranges for allocating resources. This allows allocation of resources
+	  above 4G boundary as well.
+
 endmenu

@@ -210,7 +210,8 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_COMPONENT_EFI, "efi"},
 	{CBFS_COMPONENT_STRUCT, "struct"},
 	{CBFS_COMPONENT_DELETED, "deleted"},
-	{CBFS_COMPONENT_NULL, "null"}
+	{CBFS_COMPONENT_NULL, "null"},
+	{0, NULL}
 };
 
 static const struct typedesc_t types_cbfs_hash[] unused = {

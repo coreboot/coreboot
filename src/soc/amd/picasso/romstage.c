@@ -15,6 +15,7 @@
 #include <elog.h>
 #include <soc/romstage.h>
 #include <soc/mtrr.h>
+#include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
 

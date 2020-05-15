@@ -779,10 +779,12 @@ config SOFTWARE_I2C
 
 config RESOURCE_ALLOCATOR_V3
 	bool
-	default y
+	default n
 	help
 	  This config option enables resource allocator v3 which performs
-	  top down allocation of resources in a single MMIO window.
+	  top down allocation of resources in a single MMIO window. This is the
+	  old resource allocator meant to be used only until the broken AMD
+	  chipsets are fixed. DO NOT USE THIS FOR ANY NEW CHIPSETS!
 
 config RESOURCE_ALLOCATOR_V4
 	bool

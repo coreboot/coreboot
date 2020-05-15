@@ -80,15 +80,24 @@ static void do_silicon_init(struct fsp_header *hdr)
 	}
 }
 
+static int fsps_get_dest(const struct fsp_load_descriptor *fspld, void **dest,
+				size_t size, const struct region_device *source)
+{
+	*dest = cbmem_add(CBMEM_ID_REFCODE, size);
+
+	if (*dest == NULL)
+		return -1;
+
+	return 0;
+}
+
 void fsps_load(bool s3wake)
 {
-	struct fsp_header *hdr = &fsps_hdr;
-	struct cbfsf file_desc;
-	struct region_device rdev;
-	const char *name = CONFIG_FSP_S_CBFS;
-	void *dest;
-	size_t size;
-	struct prog fsps = PROG_INIT(PROG_REFCODE, name);
+	struct fsp_load_descriptor fspld = {
+		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_S_CBFS),
+		.get_destination = fsps_get_dest,
+	};
+	struct prog *fsps = &fspld.fsp_prog;
 	static int load_done;
 
 	if (load_done)
@@ -96,45 +105,18 @@ void fsps_load(bool s3wake)
 
 	if (s3wake && !CONFIG(NO_STAGE_CACHE)) {
 		printk(BIOS_DEBUG, "Loading FSPS from stage_cache\n");
-		stage_cache_load_stage(STAGE_REFCODE, &fsps);
-		if (fsp_validate_component(hdr, prog_rdev(&fsps)) != CB_SUCCESS)
+		stage_cache_load_stage(STAGE_REFCODE, fsps);
+		if (fsp_validate_component(&fsps_hdr, prog_rdev(fsps)) != CB_SUCCESS)
 			die("On resume fsps header is invalid\n");
 		load_done = 1;
 		return;
 	}
 
-	if (cbfs_boot_locate(&file_desc, name, NULL)) {
-		printk(BIOS_ERR, "Could not locate %s in CBFS\n", name);
-		die("FSPS not available!\n");
-	}
+	if (fsp_load_component(&fspld, &fsps_hdr) != CB_SUCCESS)
+		die("FSP-S failed to load\n");
 
-	cbfs_file_data(&rdev, &file_desc);
+	stage_cache_add(STAGE_REFCODE, fsps);
 
-	/* Load and relocate into CBMEM. */
-	size = region_device_sz(&rdev);
-	dest = cbmem_add(CBMEM_ID_REFCODE, size);
-
-	if (dest == NULL)
-		die("Could not add FSPS to CBMEM!\n");
-
-	if (rdev_readat(&rdev, dest, 0, size) < 0)
-		die("Failed to read FSPS!\n");
-
-	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0)
-		die("Unable to relocate FSPS!\n");
-
-	/* Create new region device in memory after relocation. */
-	rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)dest, size);
-
-	if (fsp_validate_component(hdr, &rdev) != CB_SUCCESS)
-		die("Invalid FSPS header!\n");
-
-	prog_set_area(&fsps, dest, size);
-
-	stage_cache_add(STAGE_REFCODE, &fsps);
-
-	/* Signal that FSP component has been loaded. */
-	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 	load_done = 1;
 }
 

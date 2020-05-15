@@ -18,6 +18,7 @@ chip northbridge/intel/i440bx		# Northbridge
           device pnp 3f0.1 on		# Parallel port
             io 0x60 = 0x378
             irq 0x70 = 7
+            drq 0x74 = 0
           end
           device pnp 3f0.2 on		# COM1
             io 0x60 = 0x3f8
@@ -34,6 +35,9 @@ chip northbridge/intel/i440bx		# Northbridge
             irq 0x72 = 12		# PS/2 mouse interrupt
           end
           device pnp 3f0.7 on		# GPIO 1
+            io 0x60 = 0
+            io 0x62 = 0
+            irq 0x70 = 0
           end
           device pnp 3f0.8 on		# GPIO 2
           end

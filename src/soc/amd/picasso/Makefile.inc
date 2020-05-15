@@ -29,7 +29,6 @@ romstage-$(CONFIG_PICASSO_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
-romstage-y += soc_util.c
 romstage-y += psp.c
 romstage-y += mtrr.c
 romstage-y += config.c

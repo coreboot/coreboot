@@ -67,7 +67,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	base = 0;
 
-	printk(BIOS_SPEW, "%s %s: size: %llx align: %d gran: %d limit: %llx\n",
+	printk(BIOS_DEBUG, "%s %s: size: %llx align: %d gran: %d limit: %llx\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 
@@ -122,7 +122,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		 */
 		base = round(base, child_res->align);
 
-		printk(BIOS_SPEW, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
+		printk(BIOS_DEBUG, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
 		       dev_path(child), child_res->index, base, base + child_res->size - 1,
 		       resource2str(child_res));
 
@@ -137,7 +137,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	bridge_res->size = round(base, bridge_res->gran);
 
-	printk(BIOS_SPEW, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
+	printk(BIOS_DEBUG, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 }
@@ -371,7 +371,7 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 		if (memranges_steal(ranges, resource->limit, resource->size, resource->align,
 				    type_match, &resource->base) == false) {
 			printk(BIOS_ERR, "ERROR: Resource didn't fit!!! ");
-			printk(BIOS_SPEW, "%s %02lx *  size: 0x%llx limit: %llx %s\n",
+			printk(BIOS_DEBUG, "%s %02lx *  size: 0x%llx limit: %llx %s\n",
 			       dev_path(dev), resource->index,
 			       resource->size, resource->limit, resource2str(resource));
 			continue;
@@ -380,7 +380,7 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 		resource->limit = resource->base + resource->size - 1;
 		resource->flags |= IORESOURCE_ASSIGNED;
 
-		printk(BIOS_SPEW, "%s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
+		printk(BIOS_DEBUG, "%s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
 		       dev_path(dev), resource->index, resource->base,
 		       resource->size ? resource->base + resource->size - 1 :
 		       resource->base, resource->limit, resource2str(resource));
@@ -393,7 +393,7 @@ static void update_constraints(struct memranges *ranges, const struct device *de
 	if (!res->size)
 		return;
 
-	printk(BIOS_SPEW, "%s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
+	printk(BIOS_DEBUG, "%s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
 	       __func__, dev_path(dev), res->index, res->base,
 	       res->base + res->size - 1, resource2str(res));
 
@@ -466,7 +466,7 @@ static void constrain_domain_resources(const struct device *domain, struct memra
 static void setup_resource_ranges(const struct device *dev, const struct resource *res,
 				  unsigned long type, struct memranges *ranges)
 {
-	printk(BIOS_SPEW, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
+	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
 	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 	       res->gran, res->limit);
 
@@ -484,7 +484,7 @@ static void cleanup_resource_ranges(const struct device *dev, struct memranges *
 				    const struct resource *res)
 {
 	memranges_teardown(ranges);
-	printk(BIOS_SPEW, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx done\n",
+	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx done\n",
 	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 	       res->gran, res->limit);
 }

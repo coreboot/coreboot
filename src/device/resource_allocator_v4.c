@@ -34,6 +34,8 @@ static bool dev_has_children(const struct device *dev)
 	return bus && bus->children;
 }
 
+#define res_printk(depth, str, ...)	printk(BIOS_DEBUG, "%*c"str, depth, ' ', __VA_ARGS__)
+
 /*
  * During pass 1, once all the requirements for downstream devices of a bridge are gathered,
  * this function calculates the overall resource requirement for the bridge. It starts by
@@ -46,7 +48,7 @@ static bool dev_has_children(const struct device *dev)
  * on the tightest constraints downstream.
  */
 static void update_bridge_resource(const struct device *bridge, struct resource *bridge_res,
-				   unsigned long type_match)
+				   unsigned long type_match, int print_depth)
 {
 	const struct device *child;
 	struct resource *child_res;
@@ -67,7 +69,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	base = 0;
 
-	printk(BIOS_DEBUG, "%s %s: size: %llx align: %d gran: %d limit: %llx\n",
+	res_printk(print_depth, "%s %s: size: %llx align: %d gran: %d limit: %llx\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 
@@ -122,7 +124,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		 */
 		base = round(base, child_res->align);
 
-		printk(BIOS_DEBUG, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
+		res_printk(print_depth + 1, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
 		       dev_path(child), child_res->index, base, base + child_res->size - 1,
 		       resource2str(child_res));
 
@@ -137,7 +139,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	bridge_res->size = round(base, bridge_res->gran);
 
-	printk(BIOS_DEBUG, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
+	res_printk(print_depth, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 }
@@ -146,7 +148,8 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
  * During pass 1, resource allocator at bridge level gathers requirements from downstream
  * devices and updates its own resource windows for the provided resource type.
  */
-static void compute_bridge_resources(const struct device *bridge, unsigned long type_match)
+static void compute_bridge_resources(const struct device *bridge, unsigned long type_match,
+				     int print_depth)
 {
 	const struct device *child;
 	struct resource *res;
@@ -167,14 +170,14 @@ static void compute_bridge_resources(const struct device *bridge, unsigned long 
 		for (child = bus->children; child; child = child->sibling) {
 			if (!dev_has_children(child))
 				continue;
-			compute_bridge_resources(child, type_match);
+			compute_bridge_resources(child, type_match, print_depth + 1);
 		}
 
 		/*
 		 * Update the window for current bridge resource now that all downstream
 		 * requirements are gathered.
 		 */
-		update_bridge_resource(bridge, res, type_match);
+		update_bridge_resource(bridge, res, type_match, print_depth);
 	}
 }
 
@@ -194,6 +197,7 @@ static void compute_bridge_resources(const struct device *bridge, unsigned long 
 static void compute_domain_resources(const struct device *domain)
 {
 	const struct device *child;
+	const int print_depth = 1;
 
 	if (domain->link_list == NULL)
 		return;
@@ -204,9 +208,10 @@ static void compute_domain_resources(const struct device *domain)
 		if (!dev_has_children(child))
 			continue;
 
-		compute_bridge_resources(child, IORESOURCE_IO);
-		compute_bridge_resources(child, IORESOURCE_MEM);
-		compute_bridge_resources(child, IORESOURCE_MEM | IORESOURCE_PREFETCH);
+		compute_bridge_resources(child, IORESOURCE_IO, print_depth);
+		compute_bridge_resources(child, IORESOURCE_MEM, print_depth);
+		compute_bridge_resources(child, IORESOURCE_MEM | IORESOURCE_PREFETCH,
+					 print_depth);
 	}
 }
 
@@ -335,17 +340,17 @@ static void initialize_bridge_memranges(struct memranges *ranges, const struct r
 	memranges_insert(ranges, res->base, res->limit - res->base + 1, memrange_type);
 }
 
-static void print_resource_ranges(const struct memranges *ranges)
+static void print_resource_ranges(const struct device *dev, const struct memranges *ranges)
 {
 	const struct range_entry *r;
 
-	printk(BIOS_INFO, "Resource ranges:\n");
+	printk(BIOS_INFO, " %s: Resource ranges:\n", dev_path(dev));
 
 	if (memranges_is_empty(ranges))
-		printk(BIOS_INFO, "EMPTY!!\n");
+		printk(BIOS_INFO, " * EMPTY!!\n");
 
 	memranges_each_entry(r, ranges) {
-		printk(BIOS_INFO, "Base: %llx, Size: %llx, Tag: %lx\n",
+		printk(BIOS_INFO, " * Base: %llx, Size: %llx, Tag: %lx\n",
 		       range_entry_base(r), range_entry_size(r), range_entry_tag(r));
 	}
 }
@@ -370,8 +375,8 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 
 		if (memranges_steal(ranges, resource->limit, resource->size, resource->align,
 				    type_match, &resource->base) == false) {
-			printk(BIOS_ERR, "ERROR: Resource didn't fit!!! ");
-			printk(BIOS_DEBUG, "%s %02lx *  size: 0x%llx limit: %llx %s\n",
+			printk(BIOS_ERR, "  ERROR: Resource didn't fit!!! ");
+			printk(BIOS_DEBUG, "  %s %02lx *  size: 0x%llx limit: %llx %s\n",
 			       dev_path(dev), resource->index,
 			       resource->size, resource->limit, resource2str(resource));
 			continue;
@@ -380,7 +385,7 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 		resource->limit = resource->base + resource->size - 1;
 		resource->flags |= IORESOURCE_ASSIGNED;
 
-		printk(BIOS_DEBUG, "%s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
+		printk(BIOS_DEBUG, "  %s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
 		       dev_path(dev), resource->index, resource->base,
 		       resource->size ? resource->base + resource->size - 1 :
 		       resource->base, resource->limit, resource2str(resource));
@@ -393,7 +398,7 @@ static void update_constraints(struct memranges *ranges, const struct device *de
 	if (!res->size)
 		return;
 
-	printk(BIOS_DEBUG, "%s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
+	printk(BIOS_DEBUG, " %s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
 	       __func__, dev_path(dev), res->index, res->base,
 	       res->base + res->size - 1, resource2str(res));
 
@@ -477,7 +482,7 @@ static void setup_resource_ranges(const struct device *dev, const struct resourc
 		initialize_bridge_memranges(ranges, res, type);
 	}
 
-	print_resource_ranges(ranges);
+	print_resource_ranges(dev, ranges);
 }
 
 static void cleanup_resource_ranges(const struct device *dev, struct memranges *ranges,
@@ -665,13 +670,16 @@ void allocate_resources(const struct device *root)
 		post_log_path(child);
 
 		/* Pass 1 - Gather requirements. */
-		printk(BIOS_INFO, "Resource allocator: %s - Pass 1 (gathering requirements)\n",
+		printk(BIOS_INFO, "==== Resource allocator: %s - Pass 1 (gathering requirements) ===\n",
 		       dev_path(child));
 		compute_domain_resources(child);
 
 		/* Pass 2 - Allocate resources as per gathered requirements. */
-		printk(BIOS_INFO, "Resource allocator: %s - Pass 2 (allocating resources)\n",
+		printk(BIOS_INFO, "=== Resource allocator: %s - Pass 2 (allocating resources) ===\n",
 		       dev_path(child));
 		allocate_domain_resources(child);
+
+		printk(BIOS_INFO, "=== Resource allocator: %s - resource allocation complete ===\n",
+		       dev_path(child));
 	}
 }

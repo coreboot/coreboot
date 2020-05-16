@@ -3,6 +3,8 @@
 #ifndef INTEL_LYNXPOINT_LP_GPIO_H
 #define INTEL_LYNXPOINT_LP_GPIO_H
 
+#include <stdint.h>
+
 /* LynxPoint LP GPIOBASE Registers */
 #define GPIO_OWNER(set)		(0x00 + ((set) * 4))
 #define GPIO_PIRQ_APIC_EN	0x10

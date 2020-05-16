@@ -182,8 +182,10 @@ Method (_CRS, 0, Serialized)
 	/*
 	 * Fix up PCI memory region
 	 * Start with Top of Lower Usable DRAM
+	 * Lower 20 bits of TOLUD register need to be masked since they contain lock and
+	 * reserved bits.
 	 */
-	PMIN = \_SB.PCI0.MCHC.TLUD
+	PMIN = \_SB.PCI0.MCHC.TLUD & (0xfff << 20)
 	PLEN = PMAX - PMIN + 1
 
 	/* Patch PM02 range based on Memory Size */

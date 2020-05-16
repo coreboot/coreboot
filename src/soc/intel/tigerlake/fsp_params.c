@@ -101,6 +101,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 	}
 
+	/* D3Hot and D3Cold for TCSS */
+	params->D3HotEnable = config->TcssD3HotEnable;
+	params->D3ColdEnable = config->TcssD3ColdEnable;
+
 	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)
 		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];

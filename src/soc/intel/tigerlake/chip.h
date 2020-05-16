@@ -44,6 +44,11 @@ struct soc_intel_tigerlake_config {
 
 	/* Enable S0iX support */
 	int s0ix_enable;
+	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
+	uint8_t TcssD3HotEnable;
+	/* Support for TBT PCIe root ports and DMA controllers with D3Hot->D3Cold */
+	uint8_t TcssD3ColdEnable;
+
 	/* Enable DPTF support */
 	int dptf_enable;
 
@@ -216,11 +221,11 @@ struct soc_intel_tigerlake_config {
 		FORCE_ENABLE,
 	} CnviBtAudioOffload;
 
-	/* Tcss USB */
+	/* TCSS USB */
 	uint8_t TcssXhciEn;
 	uint8_t TcssXdciEn;
 
-	/* Tcss DMA */
+	/* TCSS DMA */
 	uint8_t TcssDma0En;
 	uint8_t TcssDma1En;
 

@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <delay.h>
 #include <device/mmio.h>
-#include <timer.h>
 #include <timestamp.h>
 #include <types.h>
 

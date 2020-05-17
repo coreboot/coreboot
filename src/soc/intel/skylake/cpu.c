@@ -26,7 +26,6 @@
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
-#include <timer.h>
 
 #include "chip.h"
 

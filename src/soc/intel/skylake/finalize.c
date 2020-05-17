@@ -24,7 +24,6 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
-#include <timer.h>
 
 #include "chip.h"
 

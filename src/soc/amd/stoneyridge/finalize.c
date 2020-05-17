@@ -5,7 +5,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <bootstate.h>
-#include <timer.h>
 #include <console/console.h>
 #include <amdblocks/acpi.h>
 

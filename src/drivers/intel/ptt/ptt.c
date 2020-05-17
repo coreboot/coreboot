@@ -3,7 +3,6 @@
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <timer.h>
 
 #include "ptt.h"
 

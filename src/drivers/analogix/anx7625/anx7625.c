@@ -5,7 +5,6 @@
 #include <device/i2c_simple.h>
 #include <edid.h>
 #include <gpio.h>
-#include <timer.h>
 #include <string.h>
 
 #include "anx7625.h"

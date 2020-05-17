@@ -5,7 +5,6 @@
 #include <cpu/amd/msr.h>
 #include <cbfs.h>
 #include <region_file.h>
-#include <timer.h>
 #include <bootstate.h>
 #include <rules.h>
 #include <console/console.h>

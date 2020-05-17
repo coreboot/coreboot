@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <memrange.h>
 #include <cbfs.h>
 #include <types.h>
 

@@ -12,7 +12,6 @@
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/agesa/nb_common.h>

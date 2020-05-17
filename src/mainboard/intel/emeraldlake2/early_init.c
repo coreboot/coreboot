@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <stdint.h>
 #include <arch/io.h>
-#include <cpu/x86/lapic.h>
 #include <superio/smsc/sio1007/sio1007.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>

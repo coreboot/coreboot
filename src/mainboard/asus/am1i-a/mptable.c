@@ -3,7 +3,6 @@
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
 #include <stdint.h>
-#include <cpu/x86/lapic.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>
 

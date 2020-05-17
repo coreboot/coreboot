@@ -2,7 +2,6 @@
 
 #include <bootblock_common.h>
 #include <stdint.h>
-#include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <bootmode.h>

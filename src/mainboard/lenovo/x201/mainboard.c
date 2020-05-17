@@ -6,7 +6,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include "dock.h"
 #include <drivers/intel/gma/int15.h>
-#include <cpu/x86/lapic.h>
 #include <drivers/lenovo/lenovo.h>
 
 static void fill_ssdt(const struct device *device)

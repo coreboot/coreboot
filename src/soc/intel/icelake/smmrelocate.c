@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>

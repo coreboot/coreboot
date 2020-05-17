@@ -19,7 +19,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/lapic.h>
 #include <memrange.h>
 #include <cpu/amd/mtrr.h>
 #include <assert.h>

@@ -2,7 +2,7 @@
 
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/x86/lapic.h>
+#include <cpu/x86/lapic_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/iomap.h>

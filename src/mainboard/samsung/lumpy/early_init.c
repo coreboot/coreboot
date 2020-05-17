@@ -4,7 +4,6 @@
 #include <string.h>
 #include <arch/io.h>
 #include <bootblock_common.h>
-#include <cpu/x86/lapic.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <bootmode.h>

@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

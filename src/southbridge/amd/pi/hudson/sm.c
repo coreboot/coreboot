@@ -4,7 +4,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/smbus.h>
-#include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 
 #include "hudson.h"

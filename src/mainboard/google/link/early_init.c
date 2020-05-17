@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/lapic.h>
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

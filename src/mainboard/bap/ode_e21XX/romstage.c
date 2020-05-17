@@ -5,7 +5,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/pi/hudson/hudson.h>

@@ -6,7 +6,6 @@
 #include <device/pci_ids.h>
 #include <device/smbus.h>
 #include <device/smbus_host.h>
-#include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 #include <soc/southbridge.h>
 

@@ -5,7 +5,6 @@
 #include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
-#include <cpu/x86/lapic.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 
 u8 picr_data[] = {

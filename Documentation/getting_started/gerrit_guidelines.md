@@ -254,6 +254,23 @@ commit message itself:
 The script 'util/gitconfig/rebase.sh' can be used to help automate this.
 Other tags such as 'Commit-Queue' can simply be removed.
 
+* Check if there's documentation that needs to be updated to remain current
+after your change. If there's no documentation for the part of coreboot
+you're working on, consider adding some.
+
+* When contributing a significant change to core parts of the code base (such
+as the boot state machine or the resource allocator), or when introducing
+a new way of doing something that you think is worthwhile to apply across
+the tree (e.g. board variants), please bring up your design on the [mailing
+list](../community/forums.md). When changing behavior substantially, an
+explanation of what changes and why may be useful to have, either in the
+commit message or, if the discussion of the subject matter needs way more
+space, in the documentation. Since "what we did in the past and why it isn't
+appropriate anymore" isn't the most useful reading several years down the road,
+such a description could be put into the release notes for the next version
+(that you can find in Documentation/releases/) where it will inform people
+now without cluttering up the regular documentation, and also gives a nice
+shout-out to your contribution by the next release.
 
 Expectations contributors should have
 -------------------------------------

@@ -187,14 +187,20 @@ Method (_CRS, 0, Serialized)
 	/*
 	 * Fix up PCI memory region
 	 * Start with Top of Lower Usable DRAM
+	 * Lower 20 bits of TOLUD register need to be masked since they contain lock and
+	 * reserved bits.
 	 */
-	Local0 = \_SB.PCI0.MCHC.TLUD
+	Local0 = \_SB.PCI0.MCHC.TLUD & (0xfff << 20)
 	Local1 = \_SB.PCI0.MCHC.MEBA
 
 	/*  Check if ME base is equal */
 	If (Local0 == Local1) {
-		/*  Use Top Of Memory instead */
-		Local0 = \_SB.PCI0.MCHC.TOM
+		/*
+		 * Use Top Of Memory instead
+		 * Lower 20 bits of TOM register need to be masked since they contain lock and
+		 * reserved bits.
+		 */
+		Local0 = \_SB.PCI0.MCHC.TOM & (0x7ffff << 20)
 	}
 
 	Store (Local0, PMIN)

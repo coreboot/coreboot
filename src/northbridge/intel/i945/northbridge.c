@@ -110,6 +110,8 @@ static void mch_domain_read_resources(struct device *dev)
 	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
 	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
 	uma_resource(dev, 7, cbmem_topk, delta_cbmem);
+	/* legacy VGA memory */
+	mmio_resource(dev, 8, 640, 768 - 640);
 }
 
 static void mch_domain_set_resources(struct device *dev)

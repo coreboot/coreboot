@@ -9,7 +9,6 @@
 #include <device/device.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/pmbase.h>
-#include <elog.h>
 #include "ec.h"
 
 void stout_ec_init(void)

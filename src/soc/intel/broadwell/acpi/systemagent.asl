@@ -147,18 +147,18 @@ Method (_CRS, 0, Serialized)
 
 	// Fix up PCI memory region
 	// Start with Top of Lower Usable DRAM
-	Store (^MCHC.TLUD, Local0)
-	Store (^MCHC.MEBA, Local1)
+	Local0 = ^MCHC.TLUD
+	Local1 = ^MCHC.MEBA
 
 	// Check if ME base is equal
-	If (LEqual (Local0, Local1)) {
+	If (Local0 == Local1) {
 		// Use Top Of Memory instead
-		Store (^MCHC.TOM, Local0)
+		Local0 = ^MCHC.TOM
 	}
 
-	Store (Local0, PMIN)
-	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
-	Add(Subtract(PMAX, PMIN), 1, PLEN)
+	PMIN = Local0
+	PMAX = CONFIG_MMCONF_BASE_ADDRESS - 1
+	PLEN = (PMAX - PMIN) + 1
 
 	Return (MCRS)
 }

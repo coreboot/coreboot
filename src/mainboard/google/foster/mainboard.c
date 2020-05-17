@@ -2,7 +2,6 @@
 
 #include <arch/mmu.h>
 #include <device/device.h>
-#include <memrange.h>
 #include <soc/addressmap.h>
 #include <soc/clk_rst.h>
 #include <soc/clock.h>

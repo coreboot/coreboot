@@ -1,6 +1,7 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			register "docking_supported" = "1"
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 			device pci 1c.2 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"

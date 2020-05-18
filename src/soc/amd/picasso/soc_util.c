@@ -39,7 +39,7 @@ void print_socket_type(void)
 
 int soc_is_pollock(void)
 {
-	return soc_is_zen_plus() && CONFIG(AMD_FT5);
+	return soc_is_zen_plus() && get_socket_type() == SOCKET_FT5;
 }
 
 /*
@@ -48,12 +48,12 @@ int soc_is_pollock(void)
  */
 int soc_is_dali(void)
 {
-	return soc_is_raven2() && CONFIG(AMD_FP5);
+	return soc_is_raven2() && get_socket_type() == SOCKET_FP5;
 }
 
 int soc_is_picasso(void)
 {
-	return soc_is_zen_plus() && CONFIG(AMD_FP5);
+	return soc_is_zen_plus() && get_socket_type() == SOCKET_FP5;
 }
 
 int soc_is_raven2(void)

@@ -1,9 +1,7 @@
-/* Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
-/* TPM error codes.
+/*
+ * TPM error codes.
  *
  * Copy-pasted and lightly edited from TCG TPM Main Part 2 TPM Structures
  * Version 1.2 Level 2 Revision 103 26 October 2006 Draft.

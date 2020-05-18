@@ -11,6 +11,7 @@ Copyright 2015 Google Inc.
 Copyright 2015, Google Inc.
 Copyright 2016 Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 Copyright 2016 The Chromium OS Authors. All rights reserved.
+Copyright 2017-2019 Eltan B.V.
 Copyright 2017 Google Inc.
 Copyright 2018 Generated Code
 Copyright 2018-present Facebook, Inc.
@@ -32,6 +33,7 @@ Copyright (c) 2010-2017, The Regents of the University of California
 Copyright (c) 2010, Code Aurora Forum. All rights reserved.
 Copyright (C) 2010 coresystems GmbH
 Copyright (c) 2010 Per Odlund <per.odlund@armagedon.se>
+Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 Copyright (c) 2011-2012 The Linux Foundation. All rights reserved.
 Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
@@ -79,7 +81,9 @@ Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor E
 Copyright (c) 2016, 2018, The Linux Foundation. All rights reserved.
 Copyright (C) 2016 Google Inc.
 Copyright (c) 2016, The Regents of the University of California (Regents).
+Copyright (C) 2018-2019 Eltan B.V.
 Copyright (C) 2018 - 2019 The Linux Foundation. All rights reserved.
+Copyright (c) 2018 Eltan B.V.
 Copyright (c) 2018, HardenedLinux.
 Copyright (C) 2018, The Linux Foundation.  All rights reserved.
 Copyright Dave Airlie <airlied@redhat.com>

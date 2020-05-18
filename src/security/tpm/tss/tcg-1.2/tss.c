@@ -1,9 +1,7 @@
-/* Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
-/* A lightweight TPM command library.
+/*
+ * A lightweight TPM command library.
  *
  * The general idea is that TPM commands are array of bytes whose
  * fields are mostly compile-time constant.  The goal is to build much
@@ -75,7 +73,8 @@ static inline int tpm_return_code(const uint8_t *buffer)
 	return tpm_command_code(buffer);
 }
 
-/* Like TlclSendReceive below, but do not retry if NEEDS_SELFTEST or
+/*
+ * Like TlclSendReceive below, but do not retry if NEEDS_SELFTEST or
  * DOING_SELFTEST errors are returned.
  */
 static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,

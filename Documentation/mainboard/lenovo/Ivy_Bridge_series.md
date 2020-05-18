@@ -1,6 +1,6 @@
 # Lenovo Ivy Bridge series
 
-This information is valid for all supported models, except T430s, [T431s](t431s.md) and [X230s](x230s.md).
+This information is valid for all supported models, except T430s and T431s.
 
 ## Flashing coreboot
 ```eval_rst

@@ -3,6 +3,3 @@ config BOARD_LENOVO_X230
 
 config BOARD_LENOVO_X230T
 	bool "ThinkPad X230t"
-
-config BOARD_LENOVO_X230S
-	bool "ThinkPad X230s"

@@ -28,6 +28,12 @@
 #define SOC_INTEL_CML_UART_DEV_MAX 3
 #define SOC_INTEL_CML_SATA_DEV_MAX 8
 
+enum chip_pl2_4_cfg {
+	baseline,
+	performance,
+	value_not_set /* vr_config internal use only */
+};
+
 struct soc_intel_cannonlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -242,10 +248,7 @@ struct soc_intel_cannonlake_config {
 	 * Performance: Maximum PLs for maximum performance.
 	 * Baseline: Baseline PLs for balanced performance at lower power.
 	 */
-	enum {
-		baseline,
-		performance
-	} cpu_pl2_4_cfg;
+	enum chip_pl2_4_cfg cpu_pl2_4_cfg;
 
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,

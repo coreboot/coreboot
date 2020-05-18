@@ -3,7 +3,7 @@
 /*
  * Configure GPIO Power Management bits
  *
- * Arg0: GPIO community (0-5)
+ * Arg0: GPIO community index
  * Arg1: PM bits in MISCCFG
  */
 Method (CGPM, 2, Serialized)

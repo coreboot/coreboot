@@ -1,10 +1,6 @@
-/*
- * Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- *
- * Ported from mosys project (http://code.google.com/p/mosys/).
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
+
+/* Ported from mosys project (http://code.google.com/p/mosys/). */
 
 #ifndef __LIB_VPD_TABLES_H__
 #define __LIB_VPD_TABLES_H__

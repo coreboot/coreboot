@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-2-Clause */
+
 /**************************************************************************
 ETHERBOOT -  BOOTP/TFTP Bootstrap Program
 
@@ -5,8 +7,6 @@ Author: Martin Renters
   Date: Jun/94
 
 **************************************************************************/
-
-//FILE_LICENCE ( BSD2 );
 
 #define VENDOR_NONE	0
 #define VENDOR_WD	1

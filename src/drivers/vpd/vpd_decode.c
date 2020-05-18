@@ -1,8 +1,6 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 /*
- * Copyright 2014 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- *
  * This is a copy from upstream:
  * https://chromium.googlesource.com/chromiumos/platform/vpd/+/master/lib/vpd_decode.c
  */

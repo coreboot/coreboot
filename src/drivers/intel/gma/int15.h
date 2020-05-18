@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 int intel_vga_int15_handler(void);
 
 enum {

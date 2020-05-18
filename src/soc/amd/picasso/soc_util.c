@@ -1,8 +1,41 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/cpu.h>
+#include <console/console.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>
+#include <types.h>
+
+#define SOCKET_TYPE_SHIFT	28
+#define SOCKET_TYPSE_MASK	(0xf << SOCKET_TYPE_SHIFT)
+
+static enum socket_type get_socket_type(void)
+{
+	uint32_t ebx = cpuid_ebx(0x80000001);
+	ebx = (ebx & SOCKET_TYPSE_MASK) >> SOCKET_TYPE_SHIFT;
+	return (enum socket_type)ebx;
+}
+
+void print_socket_type(void)
+{
+	enum socket_type socket = get_socket_type();
+
+	printk(BIOS_INFO, "Socket type: ");
+
+	switch (socket) {
+	case SOCKET_FP5:
+		printk(BIOS_INFO, "FP5\n");
+		break;
+	case SOCKET_AM4:
+		printk(BIOS_INFO, "AM4\n");
+		break;
+	case SOCKET_FT5:
+		printk(BIOS_INFO, "FT5\n");
+		break;
+	default:
+		printk(BIOS_INFO, "unknown\n");
+	}
+}
 
 int soc_is_pollock(void)
 {

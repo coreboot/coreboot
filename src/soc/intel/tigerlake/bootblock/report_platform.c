@@ -25,6 +25,7 @@ static struct {
 	const char *name;
 } cpu_table[] = {
 	{ CPUID_TIGERLAKE_A0, "Tigerlake A0" },
+	{ CPUID_TIGERLAKE_B0, "Tigerlake B0" },
 };
 
 static struct {

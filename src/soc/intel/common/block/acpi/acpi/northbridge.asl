@@ -229,7 +229,7 @@ Method (GPCB, 0, Serialized)
 /* Get PCIe Length */
 Method (GPCL, 0, Serialized)
 {
-	Local0 = 0x10000000 << \_SB.PCI0.MCHC.PXSZ
+	Local0 = 0x10000000 >> \_SB.PCI0.MCHC.PXSZ
 	Return (Local0)
 }
 

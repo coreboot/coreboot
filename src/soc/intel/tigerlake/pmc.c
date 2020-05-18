@@ -11,6 +11,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>
+#include <drivers/intel/pmc_mux/chip.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
@@ -121,6 +122,25 @@ static void soc_pmc_fill_ssdt(const struct device *dev)
 
 	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
 	       dev_path(dev));
+}
+
+/* By default, TGL uses the PMC MUX for all ports, so port_number is unused */
+const struct device *soc_get_pmc_mux_device(int port_number)
+{
+	const struct device *pmc;
+	struct device *child;
+
+	child = NULL;
+	pmc = pcidev_path_on_root(PCH_DEVFN_PMC);
+	if (!pmc || !pmc->link_list)
+		return NULL;
+
+	while ((child = dev_bus_each_child(pmc->link_list, child)) != NULL)
+		if (child->chip_ops == &drivers_intel_pmc_mux_ops)
+			break;
+
+	/* child will either be the correct device or NULL if not found */
+	return child;
 }
 
 struct device_operations pmc_ops = {

@@ -284,8 +284,9 @@ static void amdfam14_link_read_bases(struct device *dev, u32 nodeid, u32 link)
 static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 {
 	struct resource *min;
+	unsigned long mask_match = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
 	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test,
+	search_bus_resources(bus, mask_match, mask_match, tolm_test,
 			     &min);
 	if (min && tolm > min->base) {
 		tolm = min->base;

@@ -883,6 +883,13 @@ void tolm_test(void *gp, struct device *dev, struct resource *new)
 
 	best = *best_p;
 
+	/*
+	 * If resource is not allocated any space i.e. size is zero,
+	 * then do not consider this resource in tolm calculations.
+	 */
+	if (new->size == 0)
+		return;
+
 	if (!best || (best->base > new->base))
 		best = new;
 
@@ -893,9 +900,9 @@ u32 find_pci_tolm(struct bus *bus)
 {
 	struct resource *min = NULL;
 	u32 tolm;
+	unsigned long mask_match = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
 
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM,
-			     tolm_test, &min);
+	search_bus_resources(bus, mask_match, mask_match, tolm_test, &min);
 
 	tolm = 0xffffffffUL;
 

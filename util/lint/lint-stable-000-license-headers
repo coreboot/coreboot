@@ -3,20 +3,7 @@
 #
 # DESCR: Check that files have license headers
 
-# Directories requiring SPDX Identifiers only
-util/lint/lint-000-license-headers "src/acpi" SPDX_ONLY
-util/lint/lint-000-license-headers "src/arch" SPDX_ONLY
-util/lint/lint-000-license-headers "src/superio" SPDX_ONLY
-
 # Top level
-util/lint/lint-000-license-headers "src/commonlib src/console \
-	src/cpu src/device src/ec src/mainboard src/northbridge src/soc \
-	src/southbridge"
-
-# src/drivers
-util/lint/lint-000-license-headers "src/drivers/ams src/drivers/aspeed src/drivers/dec src/drivers/elog \
-	src/drivers/emulation src/drivers/gic src/drivers/ics src/drivers/ipmi src/drivers/maxim \
-	src/drivers/parade src/drivers/ricoh src/drivers/sil src/drivers/ti src/drivers/usb src/drivers/xgi"
-
-# src/security
-util/lint/lint-000-license-headers "src/security/vboot"
+util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console \
+	src/cpu src/device src/drivers src/ec src/mainboard src/northbridge \
+	src/security src/soc src/southbridge src/superio"

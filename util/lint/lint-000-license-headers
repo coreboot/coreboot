@@ -60,18 +60,11 @@ cmos\.layout|\
 cmos\.default\
 "
 
-HEADER_TEXT="license header"
-
 #space separated list of directories to test
 if [ "$1" = "" ]; then
 	HEADER_DIRS="src util"
 else
 	HEADER_DIRS="$1"
-fi
-
-if [ "$2" = "SPDX_ONLY" ]; then
-	SPDX_ONLY=1
-	HEADER_TEXT="SPDX identifier"
 fi
 
 LC_ALL=C export LC_ALL
@@ -122,24 +115,11 @@ check_for_license 'SPDX-License-Identifier: X11'
 # differentiate between this license with or without advertising.
 check_for_license 'SPDX-License-Identifier: BSD-4-Clause-UC'
 
-if [ ! "${SPDX_ONLY}" = "1" ]; then
-check_for_license "under the terms of the GNU General Public License" \
-		"WITHOUT ANY WARRANTY"
-check_for_license 'IS PROVIDED .*"AS IS"'
-check_for_license 'IS DISTRIBUTED .*"AS IS"'
-check_for_license "IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE"
-check_for_license '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES'
-check_for_license 'assumes any liability or responsibility for the use'
-check_for_license 'THE AUTHORS DISCLAIM.*ALL WARRANTIES WITH REGARD TO THIS SOFTWARE'
-check_for_license 'No license required'
-check_for_license 'GNU Lesser General Public'
-fi
-
 for file in $headerlist; do
 	# Verify the file exists, and has content that requires a header
 	# This assumes that a file that has 4 lines or fewer is not notable
 	# enough to require a license.
 	if [ -f "$file" ] && [ "$(wc -l < "$file")" -gt 4 ]; then
-		echo "$file has no recognized ${HEADER_TEXT}."
+		echo "$file has no recognized SPDX identifier."
 	fi
 done

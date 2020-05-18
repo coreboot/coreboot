@@ -51,11 +51,6 @@ chip soc/intel/tigerlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 
-	# PCIe root port 6 (WLAN), clock 1
-	register "PcieRpEnable[5]" = "1"
-	register "PcieClkSrcUsage[1]" = "5"
-	register "PcieClkSrcClkReq[1]" = "1"
-
 	# PCIe root port 7 (Card Reader), clock 4
 	register "PcieRpEnable[6]" = "1"
 	register "PcieClkSrcUsage[4]" = "6"
@@ -286,7 +281,7 @@ chip soc/intel/tigerlake
 		device pci 1c.2 off end # PCIe Root Port #3 ()
 		device pci 1c.3 off  end # PCIe Root Port #4 (WWAN)
 		device pci 1c.4 on  end # PCIe Root Port #5 (LTE)
-		device pci 1c.5 on  end # PCIe Root Port #6 (WiFi)
+		device pci 1c.5 off end # PCIe Root Port #6 (WiFi)
 		device pci 1c.6 on  end # PCIe Root Port #7 (Card reader)
 		device pci 1c.7 on
 			chip drivers/net

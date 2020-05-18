@@ -58,8 +58,6 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "0x0c15e1"
 			register "gen4_dec" = "0x0c06a1"
 
-			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
-
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
 			register "xhci_overcurrent_mapping" = "0x4000201"
@@ -89,9 +87,7 @@ chip northbridge/intel/sandybridge
 				end
 			end # PCIe Port #1
 			device pci 1c.1 on end # PCIe Port #2
-			device pci 1c.2 on
-				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
-			end # PCIe Port #3 (expresscard)
+			device pci 1c.2 off end # PCIe Port #3
 			device pci 1c.3 off end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6
@@ -136,7 +132,6 @@ chip northbridge/intel/sandybridge
 					register "event7_enable" = "0x01"
 					register "event8_enable" = "0x7b"
 					register "event9_enable" = "0xff"
-					register "eventa_enable" = "0x01"
 					register "eventb_enable" = "0x00"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"

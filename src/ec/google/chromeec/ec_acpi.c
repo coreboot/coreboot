@@ -19,6 +19,14 @@
 #define GOOGLE_CHROMEEC_USBC_DEVICE_HID		"GOOG0014"
 #define GOOGLE_CHROMEEC_USBC_DEVICE_NAME	"USBC"
 
+/* Avoid adding a false dependency on an SoC or intel/common */
+extern const struct device *soc_get_pmc_mux_device(int port_number);
+
+__weak const struct device *soc_get_pmc_mux_device(int port_number)
+{
+	return NULL;
+}
+
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
 	/*
@@ -186,6 +194,30 @@ static void add_usb_port_references(struct acpi_dp *dsd, int port_number)
 	}
 }
 
+/*
+ * Another helper for fill_ssdt_typec_device(). For each port, this one adds references to the
+ * ACPI device which control the orientation, USB data role and data muxing.
+ */
+static void add_switch_references(struct acpi_dp *dsd, int port_number)
+{
+	const struct device *dev;
+	const char *path;
+
+	dev = soc_get_pmc_mux_device(port_number);
+	if (!dev) {
+		printk(BIOS_ERR, "ERROR: %s: No SOC PMC MUX device found", __func__);
+		return;
+	}
+
+	path = acpi_device_path(dev);
+	if (!path)
+		return;
+
+	acpi_dp_add_reference(dsd, "orientation-switch", path);
+	acpi_dp_add_reference(dsd, "usb-role-switch", path);
+	acpi_dp_add_reference(dsd, "mode-switch", path);
+}
+
 static void fill_ssdt_typec_device(const struct device *dev)
 {
 	struct usb_pd_port_caps port_caps;
@@ -218,6 +250,7 @@ static void fill_ssdt_typec_device(const struct device *dev)
 		acpi_dp_add_integer(dsd, "port-number", i);
 		add_port_caps(dsd, &port_caps);
 		add_usb_port_references(dsd, i);
+		add_switch_references(dsd, i);
 
 		acpi_dp_write(dsd);
 		acpigen_pop_len(); /* Device CONx */

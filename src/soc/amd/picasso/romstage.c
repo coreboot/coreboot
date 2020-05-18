@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/cpu.h>
-#include <arch/romstage.h>
 #include <acpi/acpi.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>

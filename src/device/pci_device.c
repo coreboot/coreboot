@@ -510,10 +510,16 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 {
 	/* Make certain the resource has actually been assigned a value. */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
-		       "assigned\n", dev_path(dev), resource->index,
-		       resource_type(resource), resource->size);
-		return;
+		if (resource->flags & IORESOURCE_BRIDGE) {
+			/* If a bridge resource has no value assigned,
+			   we can treat it like an empty resource. */
+			resource->size = 0;
+		} else {
+			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
+			       "assigned\n", dev_path(dev), resource->index,
+			       resource_type(resource), resource->size);
+			return;
+		}
 	}
 
 	/* If this resource is fixed don't worry about it. */

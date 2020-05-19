@@ -207,4 +207,8 @@ config SOC_INTEL_JASPERLAKE_DEBUG_CONSENT
 	  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB),
 	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
 	  6:Enable (2-wire DCI OOB), 7:Manual
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xe00
 endif

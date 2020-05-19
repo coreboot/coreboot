@@ -45,10 +45,10 @@ Scope (\_SB)
 	}
 
 	/*
-	 * Define PCH ACPIBASE as an ACPI operating region. The base address can be
+	 * Define PCH ACPIBASE IO as an ACPI operating region. The base address can be
 	 * found in Device 31, Function 2, Offset 40h.
 	 */
-	OperationRegion (PMIO, SystemMemory, PCH_PWRM_BASE_ADDRESS, 0x80)
+	OperationRegion (PMIO, SystemIO, ACPI_BASE_ADDRESS, 0x80)
 	Field (PMIO, ByteAcc, NoLock, Preserve) {
 		Offset(0x6C),   /* 0x6C, General Purpose Event 0 Status [127:96] */
 		    ,  19,

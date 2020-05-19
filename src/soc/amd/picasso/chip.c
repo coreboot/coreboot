@@ -112,18 +112,35 @@ struct device_operations pci_domain_ops = {
 	.acpi_name	  = soc_acpi_name,
 };
 
+static struct device_operations pci_ops_ops_bus_ab = {
+	.read_resources		= pci_bus_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_bus_enable_resources,
+	.scan_bus		= pci_scan_bridge,
+	.reset_bus		= pci_bus_reset,
+	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
+};
+
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
-	else if (dev->path.type == DEVICE_PATH_PCI)
+	} else if (dev->path.type == DEVICE_PATH_PCI) {
+		if (dev->bus->dev->path.type == DEVICE_PATH_DOMAIN) {
+			switch (dev->path.pci.devfn) {
+			case PCIE_GPP_A_DEVFN:
+			case PCIE_GPP_B_DEVFN:
+				dev->ops = &pci_ops_ops_bus_ab;
+			}
+		}
 		sb_enable(dev);
-	else if (dev->path.type == DEVICE_PATH_MMIO)
+	} else if (dev->path.type == DEVICE_PATH_MMIO) {
 		if (i2c_acpi_name(dev) != NULL)
 			dev->ops = &picasso_i2c_mmio_ops;
+	}
 }
 
 static void soc_init(void *chip_info)

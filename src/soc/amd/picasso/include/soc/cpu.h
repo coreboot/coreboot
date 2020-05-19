@@ -11,6 +11,7 @@ void picasso_init_cpus(struct device *dev);
 int get_cpu_count(void);
 void check_mca(void);
 
+#define RAVEN1_CPUID			0x00810f10
 #define PICASSO_CPUID			0x00810f81
 #define RAVEN2_CPUID			0x00820f01
 

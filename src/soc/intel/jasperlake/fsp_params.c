@@ -7,6 +7,7 @@
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/xdci.h>
+#include <intelpch/lockdown.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
@@ -105,8 +106,18 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 	}
 
-	/* Unlock upper 8 bytes of RTC RAM */
-	params->RtcMemoryLock = 0;
+	/* Chipset Lockdown */
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
+		params->PchLockDownGlobalSmi = 0;
+		params->PchLockDownBiosInterface = 0;
+		params->PchUnlockGpioPads = 1;
+		params->RtcMemoryLock = 0;
+	} else {
+		params->PchLockDownGlobalSmi = 1;
+		params->PchLockDownBiosInterface = 1;
+		params->PchUnlockGpioPads = 0;
+		params->RtcMemoryLock = 1;
+	}
 
 	/* Enable End of Post in PEI phase */
 	params->EndOfPostMessage = EOP_PEI;

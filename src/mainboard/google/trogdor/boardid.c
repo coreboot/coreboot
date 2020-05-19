@@ -19,7 +19,7 @@ uint32_t ram_code(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
 
-	const gpio_t pins[] = {[2] = GPIO(13), [1] = GPIO(91), [0] = GPIO(29)};
+	const gpio_t pins[] = {[2] = GPIO(13), [1] = GPIO(19), [0] = GPIO(29)};
 
 	if (id == UNDEFINED_STRAPPING_ID)
 		id = gpio_base2_value(pins, ARRAY_SIZE(pins));
@@ -31,7 +31,7 @@ uint32_t sku_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
 
-	const gpio_t pins[] = {[1] = GPIO(90), [0] = GPIO(114)};
+	const gpio_t pins[] = {[2] = GPIO(20), [1] = GPIO(90), [0] = GPIO(105)};
 
 	if (id == UNDEFINED_STRAPPING_ID)
 		id = gpio_base2_value(pins, ARRAY_SIZE(pins));

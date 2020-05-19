@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select DRIVERS_INTEL_ISH
 	select EC_ACPI
+	select PCIEXP_HOTPLUG
 
 config CHROMEOS
 	bool
@@ -54,6 +55,18 @@ config MAINBOARD_FAMILY
 config MAX_CPUS
 	int
 	default 8
+
+config PCIEXP_HOTPLUG_BUSES
+	int
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	hex
+	default 0xc200000 # 194 MiB
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	hex
+	default 0x1c00000 # 448 MiB
 
 config DEVICETREE
 	string

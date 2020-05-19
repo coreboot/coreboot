@@ -358,6 +358,8 @@ Device (ECP)
 	#define SUPERIO_UART_LDN W83977TF_SP2
 	#define SUPERIO_UART_PM_REG UBPW
 	#include <superio/acpi/pnp_uart.asl>
+	#undef SUPERIO_UART_LDN
+	#undef SUPERIO_UART_PM_REG
 #endif
 
 /*

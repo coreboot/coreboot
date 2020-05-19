@@ -14,6 +14,30 @@
 #include <acpi/acpi_device.h>
 #include <arch/smp/mpspec.h>
 
+/*
+  USB 2.0 PHY Parameters
+*/
+struct usb2_phy_tune {
+	/* Disconnect Threshold Adjustment. Range 0 - 0x7 */
+	uint8_t	com_pds_tune;
+	/* Squelch Threshold Adjustment. Range 0 - 0x7 */
+	uint8_t	sq_rx_tune;
+	/* FS/LS Source Impedance Adjustment. Range 0 - 0xF */
+	uint8_t	tx_fsls_tune;
+	/* HS Transmitter Pre-Emphasis Curent Control. Range 0 - 0x3 */
+	uint8_t	tx_pre_emp_amp_tune;
+	/* HS Transmitter Pre-Emphasis Duration Control. Range: 0 - 0x1 */
+	uint8_t	tx_pre_emp_pulse_tune;
+	/* HS Transmitter Rise/Fall Time Adjustment. Range: 0 - 0x3 */
+	uint8_t	tx_rise_tune;
+	/* HS DC Voltage Level Adjustment. Range 0 - 0xF */
+	uint8_t	rx_vref_tune;
+	/* Transmitter High-Speed Crossover Adjustment. Range 0 - 0x3 */
+	uint8_t	tx_hsxv_tune;
+	/* USB Source Impedance Adjustment. Range 0 - 0x3. */
+	uint8_t	tx_res_tune;
+};
+
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
 	/*
@@ -108,6 +132,14 @@ struct soc_amd_picasso_config {
 	} sd_emmc_config;
 
 	uint8_t xhci0_force_gen1;
+
+	struct usb2_phy_tune usb_2_port_0_tune_params;
+	struct usb2_phy_tune usb_2_port_1_tune_params;
+	struct usb2_phy_tune usb_2_port_2_tune_params;
+	struct usb2_phy_tune usb_2_port_3_tune_params;
+	struct usb2_phy_tune usb_2_port_4_tune_params;
+	struct usb2_phy_tune usb_2_port_5_tune_params;
+
 };
 
 typedef struct soc_amd_picasso_config config_t;

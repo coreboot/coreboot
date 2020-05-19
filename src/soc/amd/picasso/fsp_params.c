@@ -98,7 +98,16 @@ static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)
 static void fsp_usb_oem_customization(FSP_S_CONFIG *scfg,
 			const struct soc_amd_picasso_config *cfg)
 {
+	size_t num = sizeof(struct usb2_phy_tune);
+
 	scfg->xhci0_force_gen1 = cfg->xhci0_force_gen1;
+
+	memcpy(scfg->fch_usb_2_port0_phy_tune, &cfg->usb_2_port_0_tune_params, num);
+	memcpy(scfg->fch_usb_2_port1_phy_tune, &cfg->usb_2_port_1_tune_params, num);
+	memcpy(scfg->fch_usb_2_port2_phy_tune, &cfg->usb_2_port_2_tune_params, num);
+	memcpy(scfg->fch_usb_2_port3_phy_tune, &cfg->usb_2_port_3_tune_params, num);
+	memcpy(scfg->fch_usb_2_port4_phy_tune, &cfg->usb_2_port_4_tune_params, num);
+	memcpy(scfg->fch_usb_2_port5_phy_tune, &cfg->usb_2_port_5_tune_params, num);
 }
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)

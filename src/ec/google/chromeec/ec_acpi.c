@@ -1,16 +1,12 @@
-/*
- *
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_ps2_keybd.h>
+#include <acpi/acpigen_usb.h>
 #include <console/console.h>
 #include <drivers/usb/acpi/chip.h>
-#include <stdlib.h>
 
 #include "chip.h"
 #include "ec.h"
@@ -41,50 +37,50 @@ const char *google_chromeec_acpi_name(const struct device *dev)
 	return "EC0.CREC";
 }
 
-static const char *power_role_to_str(enum ec_pd_power_role_caps power_role)
+/*
+ * Helper for fill_ssdt_generator. This adds references to the USB
+ * port objects so that the consumer of this information can know
+ * whether the port supports USB2 and/or USB3.
+ */
+static void get_usb_port_references(int port_number, struct device **usb2_port,
+				    struct device **usb3_port, struct device **usb4_port)
 {
-	switch (power_role) {
-	case EC_PD_POWER_ROLE_SOURCE:
-		return "source";
-	case EC_PD_POWER_ROLE_SINK:
-		return "sink";
-	case EC_PD_POWER_ROLE_DUAL:
-		return "dual";
-	default:
-		return "unknown";
-	}
-}
+	struct drivers_usb_acpi_config *config;
+	struct device *port = NULL;
 
-static const char *try_power_role_to_str(enum ec_pd_try_power_role_caps try_power_role)
-{
-	switch (try_power_role) {
-	case EC_PD_TRY_POWER_ROLE_NONE:
+	/* Search through the devicetree for matching USB Type-C ports */
+	while ((port = dev_find_path(port, DEVICE_PATH_USB)) != NULL) {
+		if (!port->enabled || port->path.type != DEVICE_PATH_USB)
+			continue;
+
+		config = port->chip_info;
+
+		/* Look at only USB Type-C ports */
+		if ((config->type != UPC_TYPE_C_USB2_ONLY) &&
+		    (config->type != UPC_TYPE_C_USB2_SS_SWITCH) &&
+		    (config->type != UPC_TYPE_C_USB2_SS))
+			continue;
+
 		/*
-		 * This should never get returned; if there is no try-power role for a device,
-		 * then the try-power-role field is not added to the DSD. Thus, this is just
-		 * for completeness.
+		 * Check for a matching port number (the 'token' field in 'group').  Note that
+		 * 'port_number' is 0-based, whereas the 'token' field is 1-based.
 		 */
-		return "none";
-	case EC_PD_TRY_POWER_ROLE_SINK:
-		return "sink";
-	case EC_PD_TRY_POWER_ROLE_SOURCE:
-		return "source";
-	default:
-		return "unknown";
-	}
-}
+		if (config->group.token != (port_number + 1))
+			continue;
 
-static const char *data_role_to_str(enum ec_pd_data_role_caps data_role)
-{
-	switch (data_role) {
-	case EC_PD_DATA_ROLE_DFP:
-		return "host";
-	case EC_PD_DATA_ROLE_UFP:
-		return "device";
-	case EC_PD_DATA_ROLE_DUAL:
-		return "dual";
-	default:
-		return "unknown";
+		switch (port->path.usb.port_type) {
+		case 2:
+			*usb2_port = port;
+			break;
+		case 3:
+			*usb3_port = port;
+			break;
+		case 4:
+			*usb4_port = port;
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -121,110 +117,21 @@ static const char *port_location_to_str(enum ec_pd_port_location port_location)
 	}
 }
 
-/* Add port capabilities as DP properties */
-static void add_port_caps(struct acpi_dp *dsd, const struct usb_pd_port_caps *port_caps)
+static struct usb_pd_port_caps port_caps;
+static void add_port_location(struct acpi_dp *dsd, int port_number)
 {
-	acpi_dp_add_string(dsd, "power-role", power_role_to_str(port_caps->power_role_cap));
-
-	if (port_caps->try_power_role_cap != EC_PD_TRY_POWER_ROLE_NONE)
-		acpi_dp_add_string(dsd, "try-power-role",
-			try_power_role_to_str(port_caps->try_power_role_cap));
-
-	acpi_dp_add_string(dsd, "data-role", data_role_to_str(port_caps->data_role_cap));
-	acpi_dp_add_string(dsd, "port-location", port_location_to_str(
-				port_caps->port_location));
-}
-
-/*
- * Helper for fill_ssdt_generator. This adds references to the USB
- * port objects so that the consumer of this information can know
- * whether the port supports USB2 and/or USB3.
- */
-static void add_usb_port_references(struct acpi_dp *dsd, int port_number)
-{
-	static const char usb2_port[] = "usb2-port";
-	static const char usb3_port[] = "usb3-port";
-	struct device *port = NULL;
-	const char *path;
-	const char *usb_port_type;
-	struct drivers_usb_acpi_config *config;
-
-	/*
-	 * Unfortunately, the acpi_dp_* API doesn't write out the data immediately, thus we need
-	 * different storage areas for all of the strings, so strdup() is used for that. It is
-	 * safe to use strdup() here, because the strings are generated at build-time and are
-	 * guaranteed to be NUL-terminated (they come from the devicetree).
-	 */
-	while ((port = dev_find_path(port, DEVICE_PATH_USB)) != NULL) {
-		if (!port->enabled || port->path.type != DEVICE_PATH_USB)
-			continue;
-
-		/* Looking for USB 2 & 3 port devices only */
-		if (port->path.usb.port_type == 2)
-			usb_port_type = usb2_port;
-		else if (port->path.usb.port_type == 3)
-			usb_port_type = usb3_port;
-		else
-			continue;
-
-		config = port->chip_info;
-
-		/*
-		 * Look at only USB Type-C ports, making sure they match the
-		 * port number we're looking for (the 'token' field in 'group').
-		 * Also note that 'port_number' is 0-based, whereas the 'token'
-		 * field is 1-based.
-		 */
-		if ((config->type != UPC_TYPE_C_USB2_ONLY) &&
-		    (config->type != UPC_TYPE_C_USB2_SS_SWITCH) &&
-		    (config->type != UPC_TYPE_C_USB2_SS))
-			continue;
-
-		if (config->group.token != (port_number + 1))
-			continue;
-
-		path = acpi_device_path(port);
-		if (path) {
-			path = strdup(path);
-			if (!path)
-				continue;
-
-			acpi_dp_add_reference(dsd, usb_port_type, path);
-		}
-	}
-}
-
-/*
- * Another helper for fill_ssdt_typec_device(). For each port, this one adds references to the
- * ACPI device which control the orientation, USB data role and data muxing.
- */
-static void add_switch_references(struct acpi_dp *dsd, int port_number)
-{
-	const struct device *dev;
-	const char *path;
-
-	dev = soc_get_pmc_mux_device(port_number);
-	if (!dev) {
-		printk(BIOS_ERR, "ERROR: %s: No SOC PMC MUX device found", __func__);
-		return;
-	}
-
-	path = acpi_device_path(dev);
-	if (!path)
-		return;
-
-	acpi_dp_add_reference(dsd, "orientation-switch", path);
-	acpi_dp_add_reference(dsd, "usb-role-switch", path);
-	acpi_dp_add_reference(dsd, "mode-switch", path);
+	acpi_dp_add_string(dsd, "port-location",
+			   port_location_to_str(port_caps.port_location));
 }
 
 static void fill_ssdt_typec_device(const struct device *dev)
 {
-	struct usb_pd_port_caps port_caps;
-	char con_name[] = "CONx";
-	struct acpi_dp *dsd;
 	int rv;
 	int i, num_ports;
+	struct device *usb2_port;
+	struct device *usb3_port;
+	struct device *usb4_port;
+	const struct device *mux;
 
 	if (google_chromeec_get_num_pd_ports(&num_ports))
 		return;
@@ -240,20 +147,25 @@ static void fill_ssdt_typec_device(const struct device *dev)
 		if (rv)
 			continue;
 
-		con_name[3] = (char)i + '0';
-		acpigen_write_device(con_name);
-		acpigen_write_name_integer("_ADR", i);
+		mux = soc_get_pmc_mux_device(i);
+		usb2_port = NULL;
+		usb3_port = NULL;
+		usb4_port = NULL;
+		get_usb_port_references(i, &usb2_port, &usb3_port, &usb4_port);
 
-		/* _DSD, Device-Specific Data */
-		dsd = acpi_dp_new_table("_DSD");
+		struct typec_connector_class_config config = {
+			.power_role = port_caps.power_role_cap,
+			.try_power_role = port_caps.try_power_role_cap,
+			.data_role = port_caps.data_role_cap,
+			.usb2_port = usb2_port,
+			.usb3_port = usb3_port,
+			.usb4_port = usb4_port,
+			.orientation_switch = mux,
+			.usb_role_switch = mux,
+			.mode_switch = mux,
+		};
 
-		acpi_dp_add_integer(dsd, "port-number", i);
-		add_port_caps(dsd, &port_caps);
-		add_usb_port_references(dsd, i);
-		add_switch_references(dsd, i);
-
-		acpi_dp_write(dsd);
-		acpigen_pop_len(); /* Device CONx */
+		acpigen_write_typec_connector(&config, i, add_port_location);
 	}
 
 	acpigen_pop_len(); /* Device GOOGLE_CHROMEEC_USBC_DEVICE_NAME */

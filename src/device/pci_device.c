@@ -444,10 +444,70 @@ void pci_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-static void pci_set_resource(struct device *dev, struct resource *resource)
+static void pci_store_resource(const struct device *const dev,
+			       const struct resource *const resource)
+{
+	unsigned long base_lo, base_hi;
+
+	base_lo = resource->base & 0xffffffff;
+	base_hi = (resource->base >> 32) & 0xffffffff;
+
+	/*
+	 * Some chipsets allow us to set/clear the I/O bit
+	 * (e.g. VIA 82C686A). So set it to be safe.
+	 */
+	if (resource->flags & IORESOURCE_IO)
+		base_lo |= PCI_BASE_ADDRESS_SPACE_IO;
+
+	pci_write_config32(dev, resource->index, base_lo);
+	if (resource->flags & IORESOURCE_PCI64)
+		pci_write_config32(dev, resource->index + 4, base_hi);
+}
+
+static void pci_store_bridge_resource(const struct device *const dev,
+				      struct resource *const resource)
 {
 	resource_t base, end;
 
+	/*
+	 * PCI bridges have no enable bit. They are disabled if the base of
+	 * the range is greater than the limit. If the size is zero, disable
+	 * by setting the base = limit and end = limit - 2^gran.
+	 */
+	if (resource->size == 0) {
+		base = resource->limit;
+		end = resource->limit - (1 << resource->gran);
+		resource->base = base;
+	} else {
+		base = resource->base;
+		end = resource_end(resource);
+	}
+
+	if (resource->index == PCI_IO_BASE) {
+		/* Set the I/O ranges. */
+		pci_write_config8(dev, PCI_IO_BASE, base >> 8);
+		pci_write_config16(dev, PCI_IO_BASE_UPPER16, base >> 16);
+		pci_write_config8(dev, PCI_IO_LIMIT, end >> 8);
+		pci_write_config16(dev, PCI_IO_LIMIT_UPPER16, end >> 16);
+	} else if (resource->index == PCI_MEMORY_BASE) {
+		/* Set the memory range. */
+		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
+		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
+	} else if (resource->index == PCI_PREF_MEMORY_BASE) {
+		/* Set the prefetchable memory range. */
+		pci_write_config16(dev, PCI_PREF_MEMORY_BASE, base >> 16);
+		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, base >> 32);
+		pci_write_config16(dev, PCI_PREF_MEMORY_LIMIT, end >> 16);
+		pci_write_config32(dev, PCI_PREF_LIMIT_UPPER32, end >> 32);
+	} else {
+		/* Don't let me think I stored the resource. */
+		resource->flags &= ~IORESOURCE_STORED;
+		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n", resource->index);
+	}
+}
+
+static void pci_set_resource(struct device *dev, struct resource *resource)
+{
 	/* Make certain the resource has actually been assigned a value. */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
@@ -482,62 +542,13 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			dev->command |= PCI_COMMAND_MASTER;
 	}
 
-	/* Get the base address. */
-	base = resource->base;
-
-	/* Get the end. */
-	end = resource_end(resource);
-
 	/* Now store the resource. */
 	resource->flags |= IORESOURCE_STORED;
 
-	/*
-	 * PCI bridges have no enable bit. They are disabled if the base of
-	 * the range is greater than the limit. If the size is zero, disable
-	 * by setting the base = limit and end = limit - 2^gran.
-	 */
-	if (resource->size == 0 && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
-		base = resource->limit;
-		end = resource->limit - (1 << resource->gran);
-		resource->base = base;
-	}
-
-	if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
-		unsigned long base_lo, base_hi;
-
-		/*
-		 * Some chipsets allow us to set/clear the I/O bit
-		 * (e.g. VIA 82C686A). So set it to be safe.
-		 */
-		base_lo = base & 0xffffffff;
-		base_hi = (base >> 32) & 0xffffffff;
-		if (resource->flags & IORESOURCE_IO)
-			base_lo |= PCI_BASE_ADDRESS_SPACE_IO;
-		pci_write_config32(dev, resource->index, base_lo);
-		if (resource->flags & IORESOURCE_PCI64)
-			pci_write_config32(dev, resource->index + 4, base_hi);
-	} else if (resource->index == PCI_IO_BASE) {
-		/* Set the I/O ranges. */
-		pci_write_config8(dev, PCI_IO_BASE, base >> 8);
-		pci_write_config16(dev, PCI_IO_BASE_UPPER16, base >> 16);
-		pci_write_config8(dev, PCI_IO_LIMIT, end >> 8);
-		pci_write_config16(dev, PCI_IO_LIMIT_UPPER16, end >> 16);
-	} else if (resource->index == PCI_MEMORY_BASE) {
-		/* Set the memory range. */
-		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
-		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
-	} else if (resource->index == PCI_PREF_MEMORY_BASE) {
-		/* Set the prefetchable memory range. */
-		pci_write_config16(dev, PCI_PREF_MEMORY_BASE, base >> 16);
-		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, base >> 32);
-		pci_write_config16(dev, PCI_PREF_MEMORY_LIMIT, end >> 16);
-		pci_write_config32(dev, PCI_PREF_LIMIT_UPPER32, end >> 32);
-	} else {
-		/* Don't let me think I stored the resource. */
-		resource->flags &= ~IORESOURCE_STORED;
-		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n",
-		       resource->index);
-	}
+	if (resource->flags & IORESOURCE_PCI_BRIDGE)
+		pci_store_bridge_resource(dev, resource);
+	else
+		pci_store_resource(dev, resource);
 
 	report_resource_stored(dev, resource, "");
 }

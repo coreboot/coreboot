@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
-#include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <smbios.h>
 
 int board_info_get_fw_config(uint32_t *fw_config)
 {

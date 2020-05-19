@@ -3,6 +3,7 @@
 bootblock-y += bootblock.c
 
 romstage-y += romstage.c
+romstage-$(CONFIG_IPMI_KCS_ROMSTAGE) += ipmi.c
 
 ramstage-y += ramstage.c ipmi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c

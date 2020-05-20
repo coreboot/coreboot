@@ -1,0 +1,72 @@
+entries
+
+# -----------------------------------------------------------------
+0            120     r       0         reserved_memory
+#120          264     r       0        unused
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       3         boot_option
+388          4       h       0         reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395          4       e       4        debug_level
+
+# -----------------------------------------------------------------
+# coreboot config options: southbridge
+
+# Non Maskable Interrupt(NMI) support, which is an interrupt that may
+# occur on a RAM or unrecoverable error.
+408          1       e       1        nmi
+
+#409	2       e       5        power_on_after_fail
+411	1       e       1        udma_enable
+
+# -----------------------------------------------------------------
+# p2b-[ld]s config options: onboard SCSI termination
+# Controls PIIX4 GPO22 (Ultra2-68) and GPO23 (SCSI-50)
+412	1	e	1	scsi_se_term
+413	1	e	2	scsi_lvd_term
+
+# -----------------------------------------------------------------
+# TODO: raminit config options
+#415	1	e	6	ram_timing
+#416	1	e	5	srp_timing
+#417	1	e	5	srcd_timing
+#418	1	e	5	cas_latency
+
+enumerations
+#ID value   text
+
+# Generic on/off enum
+1     0     Disable
+1     1     Enable
+# Inverted on/off enum
+2     0     Enable
+2     1     Disable
+
+# boot_option
+3     0     Fallback
+3     1     Normal
+
+# debug_level
+4     0     Emergency
+4     1     Alert
+4     2     Critical
+4     3     Error
+4     4     Warning
+4     5     Notice
+4     6     Info
+4     7     Debug
+4     8     Spew
+
+#5	0	3
+#5	1	2
+
+#6	0	Auto
+#6	1	Manual
+
+checksums
+
+checksum 592 975 976

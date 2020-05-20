@@ -62,9 +62,6 @@
  * needed by the system.
  */
 
-#define BLDCFG_PCI_MMIO_BASE                    CONFIG_MMCONF_BASE_ADDRESS
-#define BLDCFG_PCI_MMIO_SIZE                    CONFIG_MMCONF_BUS_NUMBER
-
 #define BLDCFG_VRM_CURRENT_LIMIT                24000
 //#define BLDCFG_VRM_NB_CURRENT_LIMIT             0
 #define BLDCFG_VRM_LOW_POWER_THRESHOLD          24000

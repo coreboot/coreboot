@@ -2418,17 +2418,9 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
   #define CFG_PLATFORM_POWER_POLICY_MODE  (Performance)
 #endif
 
-#ifdef BLDCFG_PCI_MMIO_BASE
-  #define CFG_PCI_MMIO_BASE               (BLDCFG_PCI_MMIO_BASE)
-#else
-  #define CFG_PCI_MMIO_BASE               (0)
-#endif
+#define CFG_PCI_MMIO_BASE                 (CONFIG_MMCONF_BASE_ADDRESS)
 
-#ifdef BLDCFG_PCI_MMIO_SIZE
-  #define CFG_PCI_MMIO_SIZE               (BLDCFG_PCI_MMIO_SIZE)
-#else
-  #define CFG_PCI_MMIO_SIZE               (0)
-#endif
+#define CFG_PCI_MMIO_SIZE                 (CONFIG_MMCONF_BUS_NUMBER)
 
 #ifdef BLDCFG_AP_MTRR_SETTINGS_LIST
   #define CFG_AP_MTRR_SETTINGS_LIST           (BLDCFG_AP_MTRR_SETTINGS_LIST)
@@ -2445,6 +2437,13 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 /*---------------------------------------------------------------------------
  *       Processing the options:  Third, perform the option cross checks
  *--------------------------------------------------------------------------*/
+// Check that deprecated options are not used
+#ifdef BLDCFG_PCI_MMIO_BASE
+  #error  BLDOPT: BLDCFG_PCI_MMIO_BASE has been deprecated in coreboot. Do not use!
+#endif
+#ifdef BLDCFG_PCI_MMIO_SIZE
+  #error  BLDOPT: BLDCFG_PCI_MMIO_SIZE has been deprecated in coreboot. Do not use!
+#endif
 // Assure that at least one type of memory support is included
 #if OPTION_UDIMMS == FALSE
   #if OPTION_RDIMMS == FALSE

@@ -47,6 +47,12 @@
 #ifndef _AGESA_H_
 #define _AGESA_H_
 
+/*
+ * This is the delivery package title.
+ * This string MUST be exactly 8 characters long.
+ */
+#define AGESA_PACKAGE_STRING {'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
+
 #include  "Porting.h"
 #include  "AMD.h"
 

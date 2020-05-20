@@ -216,23 +216,6 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
 
-/*****************************************************************************
- *   Define the RELEASE VERSION string
- *
- * The Release Version string should identify the next planned release.
- * When a branch is made in preparation for a release, the release manager
- * should change/confirm that the branch version of this file contains the
- * string matching the desired version for the release. The trunk version of
- * the file should always contain a trailing 'X'. This will make sure that a
- * development build from trunk will not be confused for a released version.
- * The release manager will need to remove the trailing 'X' and update the
- * version string as appropriate for the release. The trunk copy of this file
- * should also be updated/incremented for the next expected version, + trailing 'X'
- ****************************************************************************/
-                  // This is the delivery package title, "BrazosPI"
-                  // This string MUST be exactly 8 characters long
-#define AGESA_PACKAGE_STRING  {'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
-
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
 #define AGESA_VERSION_STRING  {'V', '1', '.', '1', '.', '0', '.', '3', ' ', ' ', ' ', ' '}

@@ -228,10 +228,6 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &TrinityApMtrrSettingsList
 
-                  // This is the delivery package title, "BrazosPI"
-                  // This string MUST be exactly 8 characters long
-#define AGESA_PACKAGE_STRING  {'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
-
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
 #define AGESA_VERSION_STRING  {'V', '0', '.', '0', '.', '0', '.', '1', ' ', ' ', ' ', ' '}

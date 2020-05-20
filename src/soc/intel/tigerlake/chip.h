@@ -206,9 +206,6 @@ struct soc_intel_tigerlake_config {
 		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
 	} debug_interface_flag;
 
-	/* Enable Pch iSCLK */
-	uint8_t pch_isclk;
-
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
 		FORCE_DISABLE,

@@ -26,10 +26,7 @@
 #include <vendorcode/amd/agesa/f14/Proc/Mem/mn.h>
 
 /* Select the CPU family. */
-#define INSTALL_FAMILY_10_SUPPORT FALSE
-#define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT TRUE
-#define INSTALL_FAMILY_15_SUPPORT FALSE
 
 /* Select the CPU socket type. */
 #define INSTALL_FT1_SOCKET_SUPPORT	TRUE
@@ -39,11 +36,6 @@
  * Uncomment and mark FALSE those features you wish to include in the build.
  * Comment out or mark TRUE those features you want to REMOVE from the build.
  */
-
-#define BLDOPT_REMOVE_FAMILY_10_SUPPORT			TRUE
-#define BLDOPT_REMOVE_FAMILY_12_SUPPORT			TRUE
-#define BLDOPT_REMOVE_FAMILY_14_SUPPORT			FALSE
-#define BLDOPT_REMOVE_FAMILY_15_SUPPORT			TRUE
 
 #define BLDOPT_REMOVE_UDIMMS_SUPPORT			FALSE
 #define BLDOPT_REMOVE_RDIMMS_SUPPORT			TRUE

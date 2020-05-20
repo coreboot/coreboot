@@ -307,7 +307,6 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #define DFLT_FCH_GPP_PORT1_HOTPLUG          FALSE
 #define DFLT_FCH_GPP_PORT2_HOTPLUG          FALSE
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
-//#define BLDCFG_IR_PIN_CONTROL	0x33
 
 GPIO_CONTROL   parmer_gpio[] = {
 	{183, Function1, GpioIn | GpioOutEnB | PullUpB},

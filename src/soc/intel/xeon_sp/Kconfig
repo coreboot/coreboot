@@ -68,7 +68,7 @@ config USE_FSP2_0_DRIVER
 	  def_bool y
 	  depends on MAINBOARD_USES_FSP2_0
 	  select PLATFORM_USES_FSP2_0
-	  select UDK_2015_BINDING
+	  select UDK_2017_BINDING
 	  select POSTCAR_CONSOLE
 	  select POSTCAR_STAGE
 

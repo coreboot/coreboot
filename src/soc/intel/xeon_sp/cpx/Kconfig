@@ -6,14 +6,6 @@ config MAINBOARD_USES_FSP2_0
 	  bool
 	  default y
 
-config USE_FSP2_0_DRIVER
-	  def_bool y
-	  depends on MAINBOARD_USES_FSP2_0
-	  select PLATFORM_USES_FSP2_0
-	  select UDK_2015_BINDING
-	  select POSTCAR_CONSOLE
-	  select POSTCAR_STAGE
-
 config FSP_HEADER_PATH
 	  string "Location of FSP headers"
 	  depends on MAINBOARD_USES_FSP2_0

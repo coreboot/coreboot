@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Trembyle
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

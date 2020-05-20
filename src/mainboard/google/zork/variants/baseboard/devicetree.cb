@@ -1,0 +1,189 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+chip soc/amd/picasso
+
+	# Set FADT Configuration
+	register "fadt_pm_profile" = "PM_MOBILE"
+	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
+	register "fadt_flags" = "ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
+				ACPI_FADT_C1_SUPPORTED |
+				ACPI_FADT_SLEEP_BUTTON |
+				ACPI_FADT_S4_RTC_WAKE |
+				ACPI_FADT_32BIT_TIMER |
+				ACPI_FADT_RESET_REGISTER |
+				ACPI_FADT_SEALED_CASE |
+				ACPI_FADT_PCI_EXPRESS_WAKE |
+				ACPI_FADT_REMOTE_POWER_ON"
+
+	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
+
+	# Start : OPN Performance Configuration
+	# (Configuratin that is common for all variants)
+	# For the below fields, 0 indicates use SOC default
+
+	# PROCHOT_L de-assertion Ramp Time
+	register "prochot_l_deassertion_ramp_time" = "20" #mS
+
+	# Lower die temperature limit
+	register "thermctl_limit" = "100" #degrees C
+
+	# FP5 Processor Voltage Supply PSI Currents
+	register "psi0_current_limit" = "18000" #mA
+	register "psi0_soc_current_limit" = "12000"  #mA
+	register "vddcr_soc_voltage_margin" = "0" #mV
+	register "vddcr_vdd_voltage_margin" = "0" #mV
+
+	# VRM Limits
+	register "vrm_maximum_current_limit" = "0"  #mA
+	register "vrm_soc_maximum_current_limit" = "0"  #mA
+	register "vrm_current_limit" = "0"  #mA
+	register "vrm_soc_current_limit" = "0" #mA
+
+	# Misc SMU settings
+	register "sb_tsi_alert_comparator_mode_en" = "0"
+	register "core_dldo_bypass" = "1"
+	register "min_soc_vid_offset" = "0"
+	register "aclk_dpm0_freq_400MHz" = "0"
+
+	# End : OPN Performance Configuration
+
+	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
+
+	# SPI Configuration
+	register "common_config.spi_config" = "{
+		.normal_speed = SPI_SPEED_66M, /* MHz */
+		.fast_speed = SPI_SPEED_66M, /* MHz */
+		.altio_speed = SPI_SPEED_66M, /* MHz */
+		.tpm_speed = SPI_SPEED_66M, /* MHz */
+		.read_mode = SPI_READ_MODE_DUAL112,
+	}"
+
+	# eSPI Configuration
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x62,
+			/*
+			 * Only 0x62 and 0x66 are required. But, this is not supported by
+			 * standard IO decodes and there are only 4 generic I/O windows
+			 * available. Hence, open a window from 0x62-0x67.
+			 */
+			.size = 5,
+		},
+		.generic_io_range[1] = {
+			.base = 0x800,   /* EC_HOST_CMD_REGION0 */
+			.size = 256,     /* EC_HOST_CMD_REGION_SIZE * 2 */
+		},
+		.generic_io_range[2] = {
+			.base = 0x900,   /* EC_LPC_ADDR_MEMMAP */
+			.size = 255,     /* EC_MEMMAP_SIZE */
+		},
+		.generic_io_range[3] = {
+			.base = 0x200,   /* EC_LPC_ADDR_HOST_DATA */
+			.size = 8,       /* 0x200 - 0x207 */
+		},
+
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
+		.crc_check_enable = 1,
+		.dedicated_alert_pin = 1,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 0,
+		.flash_ch_en = 0,
+
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_LOW(1) | ESPI_VW_IRQ_LEVEL_LOW(12),
+	}"
+
+	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
+	register "irq_override" = "{
+		/* PS/2 keyboard IRQ1 override */
+		{1,	MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH},
+
+		/* PS/2 mouse IRQ12 override */
+		{12,	MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH},
+	}"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
+		device pci 0.0 on  end # Root Complex
+		device pci 0.2 on  end # IOMMU
+		device pci 1.0 on  end # Dummy Host Bridge, must be enabled
+		device pci 1.1 off end # GPP Bridge 0
+		device pci 1.2 on  end # GPP Bridge 1 - Wifi
+		device pci 1.3 on  end # GPP Bridge 2 - SD
+		device pci 1.4 off end # GPP Bridge 3
+		device pci 1.5 off end # GPP Bridge 4
+		device pci 8.0 on  end # Dummy Host Bridge, must be enabled
+		device pci 8.1 on      # Internal GPP Bridge 0 to Bus A
+			device pci 0.0 on  end # Internal GPU
+			device pci 0.1 on  end # Display HDA
+			device pci 0.2 on  end # Crypto Coprocesor
+			device pci 0.5 on  end # Audio
+			device pci 0.6 on  end # HDA
+			device pci 0.7 on  end # non-Sensor Fusion Hub device
+		end
+		device pci 8.2 on      # Internal GPP Bridge 0 to Bus B
+			device pci 0.0 on  end # AHCI
+		end
+		device pci 14.0 on  end # SM
+		device pci 14.3 on  # - D14F3 bridge
+			chip ec/google/chromeec
+				device pnp 0c09.0 on
+					chip ec/google/chromeec/i2c_tunnel
+						register "uid" = "1"
+						register "remote_bus" = "8"
+						device generic 0.0 on
+							chip drivers/i2c/generic
+								register "hid" = ""10EC5682""
+								register "name" = ""RT58""
+								register "uid" = "1"
+								register "desc" = ""Realtek RT5682""
+								register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(62)"
+								register "property_count" = "1"
+								register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+								register "property_list[0].name" = ""realtek,jd-src""
+								register "property_list[0].integer" = "1"
+								device i2c 1a on end
+							end
+						end
+					end
+					chip ec/google/chromeec/i2c_tunnel
+						register "name" = ""MSTH""
+						register "uid" = "1"
+						register "remote_bus" = "9"
+						device generic 1.0 on end
+					end
+				end
+			end
+		end
+		device pci 18.0 on  end # Data fabric [0-7]
+		device pci 18.1 on  end
+		device pci 18.2 on  end
+		device pci 18.3 on  end
+		device pci 18.4 on  end
+		device pci 18.5 on  end
+		device pci 18.6 on  end
+	end # domain
+
+	chip drivers/generic/max98357a
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
+	end
+
+	device mmio 0xfedc5000 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_3)"
+			device i2c 50 on end
+		end
+	end
+
+end	# chip soc/amd/picasso

@@ -1,0 +1,331 @@
+# Number of Serial PD Bytes Written / SPD Device Size (SPD Bytes Used : 384 / SPD Bytes Total : 512)
+23
+
+# SPD Revision (Rev. 1.1)
+11
+
+# Key Byte / DRAM Device Type (DDR4 SDRAM)
+0C
+
+# Key Byte / Module Type (nECC SO-DIMM)
+03
+
+# SDRAM Density and Banks (2BG/4BK/8Gb)
+45
+
+# SDRAM Addressing (16/10)
+21
+
+# Primary SDRAM Package Type (Flipchip SDP)
+00
+
+# SDRAM Optional Features (Unlimited MAC)
+08
+
+# SDRAM Thermal and Refresh Options (Reserved)
+00
+
+# Other SDRAM Optional Features (PPR) (hPPR, sPPR supported)
+60
+
+# Secondary SDRAM Package Type
+00
+
+# Module Nominal Volatage, VDD (1.2V)
+03
+
+# Module Organization (1Rx16)
+02
+
+# Module Memory Bus Width (LP/x64)
+03
+
+# Module Thermal Sensor (Termal sensor not incorporated)
+00
+
+# Extended Module Type (Reserved)
+00
+
+# Reserved
+00
+
+# Timebases (MTB : 125ps, FTB : 1ps)
+00
+
+# SDRAM Minimum Cycle Time (tCKAVGmin) (0.75ns)
+06
+
+# SDRAM Maximum Cycle Time (tCKAVGmax) (1.6ns)
+0D
+
+# CAS Latencies Supported, First Byte (10, 11, 12, 13, 14)
+F8
+
+# CAS Latencies Supported, Second Byte (15, 16, 17, 18, 19, 20)
+3F
+
+# CAS Latencies Supported, Third Byte
+00
+
+# CAS Latencies Supported, Fourth Byte
+00
+
+# Minimum CAS Latency Time (tAAmin) (13.75ns)
+6E
+
+# Minimum RAS to CAS Delay Time (tRCDmin) (13.75ns)
+6E
+
+# Minimum RAS to CAS Delay Time (tRPmin) (13.75ns)
+6E
+
+# Upper Nibbles for tRASmin and tRCmin (32ns / 45.75ns)
+11
+
+# tRASmin, Least Significant Byte (32ns)
+00
+
+# tRCmin, Least Significant Byte (45.75ns)
+6E
+
+# tRFC1min, LSB (350ns)
+F0
+
+# tRFC1min, MSB (350ns)
+0A
+
+# tRFC2min, LSB (260ns)
+20
+
+# tRFC2min, MSB (260ns)
+08
+
+# tRFC4min, LSB (160ns)
+00
+
+# tRFC4min, MSB (160ns)
+05
+
+# Upper Nibble for tFAW (30ns)
+00
+
+# tFAWmin LSB (30ns)
+F0
+
+# tRRD_Smin (5.3ns)
+2B
+
+# tRRD_L min (6.40ns)
+34
+
+# tCCD_Lmin, same bank group (5ns)
+28
+
+# tWRmin Upper Nibbles (15ns)
+00
+
+# tWRmin (15ns)
+78
+
+# tWTRmin Upper Nibbles (2.5ns/7.5ns)
+00
+
+# tWTR_Smin (2.5ns)
+14
+
+# tWTR_Lmin (7.5ns)
+3C
+
+# Reserved
+00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Connector to SDRAM Bit Mapping (DQ0-3)
+16
+
+# Connector to SDRAM Bit Mapping (DQ4-7)
+36
+
+# Connector to SDRAM Bit Mapping (DQ8-11)
+0B
+
+# Connector to SDRAM Bit Mapping (DQ12-15)
+35
+
+# Connector to SDRAM Bit Mapping (DQ16-19)
+16
+
+# Connector to SDRAM Bit Mapping (DQ20-23)
+36
+
+# Connector to SDRAM Bit Mapping (DQ24-27)
+0B
+
+# Connector to SDRAM Bit Mapping (DQ28-31)
+35
+
+# Connector to SDRAM Bit Mapping (CB0-3)
+00
+
+# Connector to SDRAM Bit Mapping (CB4-7)
+00
+
+# Connector to SDRAM Bit Mapping (DQ32-35)
+16
+
+# Connector to SDRAM Bit Mapping (DQ36-39)
+36
+
+# Connector to SDRAM Bit Mapping (DQ40-43)
+0B
+
+# Connector to SDRAM Bit Mapping (DQ44-47)
+35
+
+# Connector to SDRAM Bit Mapping (DQ48-51)
+16
+
+# Connector to SDRAM Bit Mapping (DQ52-55)
+36
+
+# Connector to SDRAM Bit Mapping (DQ56-59)
+0B
+
+# Connector to SDRAM Bit Mapping (DQ60-63)
+35
+
+# Reserved
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00
+
+# Fine offset for tCCD_Lmin, same bank group (5ns)
+00
+
+# tRRD_L min offset (6.40ns)
+9C
+
+# tRRD_Smin offset (5.3ns)
+B5
+
+# Fine offset for tRCmin (45.75ns)
+00
+
+# Fine offset for tRPmin (13.75ns)
+00
+
+# Fine offset for tRCDmin (13.75ns)
+00
+
+# Fine offset for tAAmin (13.75ns)
+00
+
+# Fine offset for tCKAVGmax (1.6ns)
+E7
+
+# Fine offset for tCKAVGmin (0.75ns)
+00
+
+# CRC for Base Configuration Section, LSB (CRC cover 0~125 byte)
+87
+
+# CRC for Base Configuration Section, MSB (CRC cover 0~125 byte)
+2E
+
+# RC Extention, Module Nominal Height (30.00)
+0F
+
+# Module Maximum Thickness (1.0/1.2)
+01
+
+# Reference Raw Card Used (C0)
+02
+
+# Address Mapping from Edge Connector to DRAM (Standard)
+00
+
+# Reserved
+00 00 00 00 00 00 00 00
+
+# Reserved (Must be coded as 0x00)
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Reserved
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00
+
+# CRC for Module Specific Section, LSB (CRC cover 128~253 byte)
+C0
+
+# CRC for Module Specific Section, MSB (CRC cover 128~253 byte)
+E2
+
+# Reserved
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+# Module Manufacturer's ID Code, LSB (SK hynix)
+80
+
+# Module Manufacturer's ID Code, MSB (SK hynix)
+AD
+
+# Module Manufacturing Location (SK hynix (Icheon))
+01
+
+# Module Manufacturing Date (Variable)
+00
+
+# Module Manufacturing Date (Variable)
+00
+
+# Module Serial Number (Undefined)
+00
+
+# Module Serial Number (Undefined)
+00
+
+# Module Serial Number (Undefined)
+00
+
+# Module Serial Number (Undefined)
+00
+
+# Module Part Number (H5AN8G6NCJR-VKC     )
+48 35 41 4E 38 47 36 4E 43 4A 52 2D 56 4B 43 20
+20 20 20 20
+
+# Module Revision Code (Revision 0)
+00
+
+# DRAM Manufacturer's ID code, LSB (SK hynix)
+80
+
+# DRAM Manufacturer's ID code, MSB (SK hynix)
+AD
+
+# DRAM Stepping (Undefined)
+FF
+
+# Module Manufacturer's Specific Data
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 DD
+
+# Reserved
+00 00
+
+# End User Programmable
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

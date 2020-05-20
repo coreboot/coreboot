@@ -227,10 +227,6 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
 
-                  // This is the release version number of the AGESA component
-                  // This string MUST be exactly 12 characters long
-#define AGESA_VERSION_STRING  {'V', '0', '.', '0', '.', '0', '.', '1', ' ', ' ', ' ', ' '}
-
 /* MEMORY_BUS_SPEED */
 #define DDR400_FREQUENCY   200     ///< DDR 400
 #define DDR533_FREQUENCY   266     ///< DDR 533

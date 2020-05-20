@@ -216,6 +216,8 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
 
+/* FIXME: This is most likely wrong */
+#undef AGESA_VERSION_STRING
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
 #define AGESA_VERSION_STRING  {'V', '0', '.', '0', '.', '0', '.', '1', ' ', ' ', ' ', ' '}

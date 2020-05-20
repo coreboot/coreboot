@@ -53,6 +53,12 @@
  */
 #define AGESA_PACKAGE_STRING {'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
 
+/*
+ * This is the release version number of the AGESA component.
+ * This string MUST be exactly 12 characters long.
+ */
+#define AGESA_VERSION_STRING {'V', '1', '.', '1', '.', '0', '.', '3', ' ', ' ', ' ', ' '}
+
 #include  "Porting.h"
 #include  "AMD.h"
 

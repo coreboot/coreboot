@@ -161,6 +161,9 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob)
 	printk(BIOS_SPEW, "\t");
 	fsp_print_guid(res->owner_guid);
 	printk(BIOS_SPEW, ": %s\n", fsp_get_guid_name(res->owner_guid));
+
+	/* Some of the SoC FSP specific hobs are of type HOB_TYPE_GUID_EXTENSION */
+	soc_display_hob(hob);
 }
 
 __weak const char *soc_get_guid_name(const uint8_t *guid)

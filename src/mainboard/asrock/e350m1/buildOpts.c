@@ -9,19 +9,17 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
 
 #include <AGESA.h>
 
-
-/*  Select the CPU family.  */
+/* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
 #define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT TRUE
 #define INSTALL_FAMILY_15_SUPPORT FALSE
 
-/*  Select the CPU socket type.  */
+/* Select the CPU socket type. */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -85,7 +83,6 @@
 //#define BLDOPT_REMOVE_C6_STATE          TRUE
 #define BLDOPT_REMOVE_GFX_RECOVERY        TRUE
 #define BLDOPT_REMOVE_EARLY_SAMPLES            TRUE
-
 
 /*
  * Agesa configuration values selection.
@@ -206,7 +203,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define BLDCFG_HEAP_DRAM_ADDRESS                0xB0000
 #define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS  0xD0000000
 
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 #include "cpuRegisters.h"
 #include "cpuFamRegisters.h"
 #include "cpuFamilyTranslation.h"

@@ -9,7 +9,6 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
 
 #include <AGESA.h>
@@ -28,7 +27,6 @@
 #define INSTALL_FT1_SOCKET_SUPPORT  FALSE
 #define INSTALL_AM3_SOCKET_SUPPORT  FALSE
 #define INSTALL_FM2_SOCKET_SUPPORT  FALSE
-
 
 #ifdef BLDOPT_REMOVE_FT3_SOCKET_SUPPORT
   #if BLDOPT_REMOVE_FT3_SOCKET_SUPPORT == TRUE
@@ -152,7 +150,7 @@
 #define BLDCFG_PROCESSOR_SCOPE_NAME1              '0'
 #define BLDCFG_PCIE_TRAINING_ALGORITHM           PcieTrainingDistributed
 
-/*  Process the options...
+/* Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
 /*
@@ -214,8 +212,7 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &KabiniApMtrrSettingsList
 
-
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 #include "cpuRegisters.h"
 #include "cpuFamRegisters.h"
 #include "cpuFamilyTranslation.h"
@@ -250,7 +247,7 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 //#define DDR2400_FREQUENCY   1200   ///< DDR 2400
 //#define UNSUPPORTED_DDR_FREQUENCY		1201 ///< Highest limit of DDR frequency
 //
-///* QUANDRANK_TYPE*/
+///* QUANDRANK_TYPE */
 //#define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
 //#define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
 //

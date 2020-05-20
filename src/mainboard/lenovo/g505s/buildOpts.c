@@ -9,11 +9,9 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
 
 #include "mainboard.h"
-
 
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 
@@ -28,7 +26,6 @@
 /* These tables are optional and may be used to adjust memory timing settings */
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mm.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mn.h>
-
 
 /* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
@@ -157,7 +154,7 @@
 #if CONFIG(GFXUMA)
 #define BLDCFG_UMA_ALIGNMENT			UMA_4MB_ALIGNED
 #define BLDCFG_UMA_ALLOCATION_MODE		UMA_SPECIFIED
-//#define BLDCFG_UMA_ALLOCATION_SIZE		0x1000//0x1800//0x1000 /* (1000 << 16) = 256M*/
+//#define BLDCFG_UMA_ALLOCATION_SIZE		0x1000//0x1800//0x1000 /* (1000 << 16) = 256M */
 #define BLDCFG_UMA_ALLOCATION_SIZE		0x2000//512M
 #define BLDCFG_UMA_ABOVE4G_SUPPORT		FALSE
 #endif
@@ -253,7 +250,7 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #define DDR2400_FREQUENCY   1200   ///< DDR 2400
 #define UNSUPPORTED_DDR_FREQUENCY		1201 ///< Highest limit of DDR frequency
 
-/* QUANDRANK_TYPE*/
+/* QUANDRANK_TYPE */
 #define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
 #define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
 
@@ -338,7 +335,6 @@ GPIO_CONTROL lenovo_g505s_gpio[] = {
 	{-1}
 };
 #define BLDCFG_FCH_GPIO_CONTROL_LIST           (&lenovo_g505s_gpio[0])
-
 
 /* These definitions could be moved to a common Hudson header, should we decide
  * to provide our own, saner SCI mapping function

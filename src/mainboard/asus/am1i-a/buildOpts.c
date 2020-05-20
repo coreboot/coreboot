@@ -9,13 +9,11 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
-
 
 #include <vendorcode/amd/agesa/f16kb/AGESA.h>
 
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 #include <vendorcode/amd/agesa/f16kb/Include/AdvancedApi.h>
 #include <vendorcode/amd/agesa/f16kb/Include/GnbInterface.h>
 #include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuFamilyTranslation.h>
@@ -29,10 +27,10 @@
 #include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuEarlyInit.h>
 #include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuLateInit.h>
 
-/*  Select the CPU family.  */
+/* Select the CPU family. */
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
 
-/*  Select the CPU socket type.  */
+/* Select the CPU socket type. */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -178,7 +176,7 @@
 //#define BLDCFG_IGPU_HD_AUDIO_SUBSYSTEM_ID   OEM_IGPU_HD_AUDIO_SSID
 //#define BLFCFG_APU_PCIE_PORTS_SUBSYSTEM_ID  OEM_APU_PCIE_PORTS_SSID
 
-/*  Process the options...
+/* Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
 /*
@@ -262,7 +260,7 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 //#define DDR2400_FREQUENCY   1200   ///< DDR 2400
 //#define UNSUPPORTED_DDR_FREQUENCY		1201 ///< Highest limit of DDR frequency
 //
-///* QUANDRANK_TYPE*/
+///* QUANDRANK_TYPE */
 //#define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
 //#define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
 //

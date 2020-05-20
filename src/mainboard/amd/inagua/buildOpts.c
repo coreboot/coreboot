@@ -9,10 +9,7 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
-
-
 
 /* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT		FALSE
@@ -84,7 +81,6 @@
 //#define BLDOPT_REMOVE_C6_STATE		TRUE
 #define BLDOPT_REMOVE_GFX_RECOVERY		TRUE
 #define BLDOPT_REMOVE_EARLY_SAMPLES		TRUE
-
 
 #define BLDCFG_PCI_MMIO_BASE			CONFIG_MMCONF_BASE_ADDRESS
 #define BLDCFG_PCI_MMIO_SIZE			CONFIG_MMCONF_BUS_NUMBER
@@ -206,7 +202,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 	{ CPU_LIST_TERMINAL }
 };
 
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 
 #include "cpuRegisters.h"
 #include "cpuFamRegisters.h"
@@ -252,7 +248,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define DDR1866_FREQUENCY				933 ///< DDR 1866
 #define UNSUPPORTED_DDR_FREQUENCY			934 ///< Highest limit of DDR frequency
 
-/* QUANDRANK_TYPE*/
+/* QUANDRANK_TYPE */
 #define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
 #define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
 

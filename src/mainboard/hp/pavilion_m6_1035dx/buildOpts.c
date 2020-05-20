@@ -9,15 +9,13 @@
  * build option selections desired for that platform.
  *
  * For Information about this file, see @ref platforminstall.
- *
  */
 
 #include "mainboard.h"
 
-
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 #include <vendorcode/amd/agesa/f15tn/Include/AdvancedApi.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/cpuFamilyTranslation.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/Feature/cpuFeatures.h>
@@ -29,14 +27,13 @@
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mm.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mn.h>
 
-
-/*  Select the CPU family.  */
+/* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
 #define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT FALSE
 #define INSTALL_FAMILY_15_MODEL_1x_SUPPORT TRUE
 
-/*  Select the CPU socket type.  */
+/* Select the CPU socket type. */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -157,7 +154,7 @@
 #if CONFIG(GFXUMA)
 #define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
 #define BLDCFG_UMA_ALLOCATION_MODE		  UMA_SPECIFIED
-//#define BLDCFG_UMA_ALLOCATION_SIZE		  0x1000//0x1800//0x1000 /* (1000 << 16) = 256M*/
+//#define BLDCFG_UMA_ALLOCATION_SIZE		  0x1000//0x1800//0x1000 /* (1000 << 16) = 256M */
 #define BLDCFG_UMA_ALLOCATION_SIZE		  0x2000//512M
 #define BLDCFG_UMA_ABOVE4G_SUPPORT                FALSE
 #endif
@@ -169,7 +166,7 @@
 //#define BLDCFG_IGPU_HD_AUDIO_SUBSYSTEM_ID   OEM_IGPU_HD_AUDIO_SSID
 //#define BLFCFG_APU_PCIE_PORTS_SUBSYSTEM_ID  OEM_APU_PCIE_PORTS_SSID
 
-/*  Process the options...
+/* Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
 /*
@@ -253,7 +250,7 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #define DDR2400_FREQUENCY   1200   ///< DDR 2400
 #define UNSUPPORTED_DDR_FREQUENCY		1201 ///< Highest limit of DDR frequency
 
-/* QUANDRANK_TYPE*/
+/* QUANDRANK_TYPE */
 #define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
 #define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
 
@@ -338,7 +335,6 @@ GPIO_CONTROL pavilion_m6_1035dx_gpio[] = {
 	{-1}
 };
 #define BLDCFG_FCH_GPIO_CONTROL_LIST           (&pavilion_m6_1035dx_gpio[0])
-
 
 /* These definitions could be moved to a common Hudson header, should we decide
  * to provide our own, saner SCI mapping function

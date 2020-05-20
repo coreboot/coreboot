@@ -17,6 +17,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/spi.h>
 #include <soc/cpu.h>
+#include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>

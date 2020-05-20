@@ -101,17 +101,15 @@ typedef enum {
 	MAX_CONNECTOR_TYPE	// Not valid value, used to verify input
 } pcie_connector_type;
 
-/* DDI Descriptor: used for configuring display outputs */
+/* Picasso DDI Descriptor: used for configuring display outputs */
 typedef struct __packed {
 	uint8_t		connector_type;
 	uint8_t		aux_index;
 	uint8_t		hdp_index;
 	uint8_t		reserved;
-} fsp_ddi_descriptor;
+} picasso_fsp_ddi_descriptor;
 
-/* PCIe Descriptor: used for assigning lanes, bifurcation and other settings */
-/* Since the code will always be compiled as little endian, using a bitfield struct should be
-   safe here. */
+/* Picasso PCIe Descriptor: used for assigning lanes, bifurcation and other settings */
 typedef struct __packed {
 	uint8_t		engine_type;
 	uint8_t		start_lane;			// Start lane of the pci device
@@ -139,6 +137,6 @@ typedef struct __packed {
 	unsigned int	channel_type		:3;
 	unsigned int	turn_off_unused_lanes	:1;
 	uint8_t		reserved[4];
-} fsp_pcie_descriptor;
+} picasso_fsp_pcie_descriptor;
 
 #endif /* __PI_PICASSO_PLATFORM_DESCRIPTORS_H__ */

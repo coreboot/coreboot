@@ -136,12 +136,6 @@ struct soc_intel_tigerlake_config {
 	/* SMBus */
 	uint8_t SmbusEnable;
 
-	/* Integrated Sensor */
-	uint8_t PchIshEnable;
-
-	/* Heci related */
-	uint8_t Heci3Enabled;
-
 	/* Gfx related */
 	uint8_t IgdDvmt50PreAlloc;
 	uint8_t InternalGfx;

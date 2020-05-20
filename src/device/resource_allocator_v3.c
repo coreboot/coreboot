@@ -241,12 +241,8 @@ static void __allocate_resources(struct bus *bus, struct resource *bridge,
 			resource->limit = bridge->limit;
 
 		/* Size 0 resources can be skipped. */
-		if (!resource->size) {
-			/* Set the base to limit so it doesn't confuse tolm. */
-			resource->base = resource->limit;
-			resource->flags |= IORESOURCE_ASSIGNED;
+		if (!resource->size)
 			continue;
-		}
 
 		if (resource->flags & IORESOURCE_IO) {
 			/*

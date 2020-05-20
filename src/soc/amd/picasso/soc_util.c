@@ -37,7 +37,7 @@ void print_socket_type(void)
 	}
 }
 
-int soc_is_pollock(void)
+bool soc_is_pollock(void)
 {
 	return soc_is_zen_plus() && get_socket_type() == SOCKET_FT5;
 }
@@ -46,23 +46,23 @@ int soc_is_pollock(void)
  * TODO: This detection works for the Dali SKUs used in Chrome-devices, but fails for other
  * Dali SKUs, since other Dali SKUs have a Zen+ CPUID and not a Raven2 one.
  */
-int soc_is_dali(void)
+bool soc_is_dali(void)
 {
 	return soc_is_raven2() && get_socket_type() == SOCKET_FP5;
 }
 
-int soc_is_picasso(void)
+bool soc_is_picasso(void)
 {
 	return soc_is_zen_plus() && get_socket_type() == SOCKET_FP5;
 }
 
-int soc_is_raven2(void)
+bool soc_is_raven2(void)
 {
 	/* mask lower model number nibble and stepping */
 	return cpuid_eax(1) >> 8 == RAVEN2_CPUID >> 8;
 }
 
-int soc_is_zen_plus(void)
+bool soc_is_zen_plus(void)
 {
 	/* mask lower model number nibble and stepping */
 	return cpuid_eax(1) >> 8 == PICASSO_CPUID >> 8;

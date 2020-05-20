@@ -3,6 +3,8 @@
 #ifndef __PICASSO_SOC_UTIL_H__
 #define __PICASSO_SOC_UTIL_H__
 
+#include <types.h>
+
 enum socket_type {
 	SOCKET_FP5 = 0,
 	SOCKET_AM4 = 2,
@@ -11,10 +13,10 @@ enum socket_type {
 
 void print_socket_type(void);
 
-int soc_is_pollock(void);
-int soc_is_dali(void);
-int soc_is_picasso(void);
-int soc_is_raven2(void);
-int soc_is_zen_plus(void);
+bool soc_is_pollock(void);
+bool soc_is_dali(void);
+bool soc_is_picasso(void);
+bool soc_is_raven2(void);
+bool soc_is_zen_plus(void);
 
 #endif /* __PICASSO_SOC_UTIL_H__ */

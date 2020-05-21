@@ -9,6 +9,7 @@
 #define   IPMI_OEM_SET_PPIN			0x77
 #define   IPMI_OEM_GET_PCIE_CONFIG		0xf4
 #define   IPMI_OEM_GET_BOARD_ID			0x37
+#define   IPMI_BMC_SET_POST_START		0x73
 
 enum config_type {
 	PCIE_CONFIG_UNKNOWN = 0x0,
@@ -28,5 +29,6 @@ struct ppin_req {
 enum cb_err ipmi_set_ppin(struct ppin_req *req);
 enum cb_err ipmi_get_pcie_config(uint8_t *config);
 enum cb_err ipmi_get_slot_id(uint8_t *slot_id);
+enum cb_err ipmi_set_post_start(const int port);
 void init_frb2_wdt(void);
 #endif

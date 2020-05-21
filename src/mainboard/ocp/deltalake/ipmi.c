@@ -75,6 +75,29 @@ enum cb_err ipmi_get_slot_id(uint8_t *slot_id)
 	return CB_SUCCESS;
 }
 
+enum cb_err ipmi_set_post_start(const int port)
+{
+	int ret;
+	struct ipmi_rsp rsp;
+
+	ret = ipmi_kcs_message(port, IPMI_NETFN_OEM, 0x0,
+				 IPMI_BMC_SET_POST_START, NULL, 0, (u8 *) &rsp,
+				 sizeof(rsp));
+
+	if (ret < sizeof(struct ipmi_rsp) || rsp.completion_code) {
+		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d rsp=0x%x)\n",
+		       __func__, ret, rsp.completion_code);
+		return CB_ERR;
+	}
+	if (ret != sizeof(rsp)) {
+		printk(BIOS_ERR, "IPMI: %s response truncated\n", __func__);
+		return CB_ERR;
+	}
+
+	printk(BIOS_DEBUG, "IPMI BMC POST is started\n");
+	return CB_SUCCESS;
+}
+
 void init_frb2_wdt(void)
 {
 	char val[VPD_LEN];

@@ -117,8 +117,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Since it's the first IPMI command, it's better to run get BMC
 	   selftest result first */
-	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS)
+	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
+		ipmi_set_post_start(CONFIG_BMC_KCS_BASE);
 		init_frb2_wdt();
+	}
 
 	mainboard_config_gpios(mupd);
 	mainboard_config_iio(mupd);

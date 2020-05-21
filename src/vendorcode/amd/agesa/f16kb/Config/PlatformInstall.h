@@ -62,6 +62,23 @@ VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
   NULL
 };
 
+/* The default fixed MTRR values to be set after memory initialization */
+static const AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
+{
+	{ AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1E },
+	{ AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1E },
+	{ AMD_AP_MTRR_FIX16k_A0000, 0x0000000000000000 },
+	{ AMD_AP_MTRR_FIX4k_C0000,  0x0000000000000000 },
+	{ AMD_AP_MTRR_FIX4k_C8000,  0x0000000000000000 },
+	{ AMD_AP_MTRR_FIX4k_D0000,  0x0000000000000000 },
+	{ AMD_AP_MTRR_FIX4k_D8000,  0x0000000000000000 },
+	{ AMD_AP_MTRR_FIX4k_E0000,  0x1818181818181818 },
+	{ AMD_AP_MTRR_FIX4k_E8000,  0x1818181818181818 },
+	{ AMD_AP_MTRR_FIX4k_F0000,  0x1818181818181818 },
+	{ AMD_AP_MTRR_FIX4k_F8000,  0x1818181818181818 },
+	{ CPU_LIST_TERMINAL },
+};
+
 /* Process solution defined socket / family installations
  *
  * As part of the release package for each image, define the options below to select the
@@ -1433,7 +1450,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_AP_MTRR_SETTINGS_LIST
   #define CFG_AP_MTRR_SETTINGS_LIST           (BLDCFG_AP_MTRR_SETTINGS_LIST)
 #else
-  #define CFG_AP_MTRR_SETTINGS_LIST           (NULL)
+  #define CFG_AP_MTRR_SETTINGS_LIST           (KabiniApMtrrSettingsList)
 #endif
 
 #ifdef BLDCFG_IOMMU_EXCLUSION_RANGE_LIST

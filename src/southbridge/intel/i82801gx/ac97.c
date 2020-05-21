@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <delay.h>
@@ -96,7 +97,7 @@ static void init_cnr(void)
 
 static void program_sigid(struct device *dev, u32 id)
 {
-	pci_write_config32(dev, 0x2c, id);
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, id);
 }
 
 static void ac97_audio_init(struct device *dev)

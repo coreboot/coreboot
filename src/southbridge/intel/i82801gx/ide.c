@@ -40,10 +40,10 @@ static void ide_init(struct device *dev)
 	if (enable_primary) {
 		/* Enable primary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		ideTimingConfig |= (2 << 12); // ISP = 3 clocks
-		ideTimingConfig |= (3 << 8); // RCT = 1 clock
-		ideTimingConfig |= (1 << 1); // IE0
-		ideTimingConfig |= (1 << 0); // TIME0
+		ideTimingConfig |= IDE_ISP_3_CLOCKS;
+		ideTimingConfig |= IDE_RCT_1_CLOCKS;
+		ideTimingConfig |= IDE_IE0;
+		ideTimingConfig |= IDE_TIME0; // TIME0
 		printk(BIOS_DEBUG, " IDE0");
 	}
 	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
@@ -54,10 +54,10 @@ static void ide_init(struct device *dev)
 	if (enable_secondary) {
 		/* Enable secondary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		ideTimingConfig |= (2 << 12); // ISP = 3 clocks
-		ideTimingConfig |= (3 << 8); // RCT = 1 clock
-		ideTimingConfig |= (1 << 1); // IE0
-		ideTimingConfig |= (1 << 0); // TIME0
+		ideTimingConfig |= IDE_ISP_3_CLOCKS;
+		ideTimingConfig |= IDE_RCT_1_CLOCKS;
+		ideTimingConfig |= IDE_IE0;
+		ideTimingConfig |= IDE_TIME0;
 		printk(BIOS_DEBUG, " IDE1");
 	}
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);

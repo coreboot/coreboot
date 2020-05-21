@@ -45,10 +45,10 @@ const u32 cim_verb_data[] = {
 	0x01871E11,
 	0x01871F41,
 	/* Pin widget 0x19 - MIC2 (Port-F) */
-	0x01971CF0,
-	0x01971D11,
-	0x01971E11,
-	0x01971F41,
+	0x01971C30,
+	0x01971D10,
+	0x01971Ea1,
+	0x01971F02,
 	/* Pin widget 0x1A - LINE1 (Port-C) */
 	0x01A71CF0,
 	0x01A71D11,
@@ -100,7 +100,7 @@ const u32 cim_verb_data[] = {
 	0x02050038,
 	0x02043901,
 	0x02050045,
-	0x0204C489,
+	0x02045089,
 	/* H/W AGC setting-1 */
 	0x02050016,
 	0x02040C50,

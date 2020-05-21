@@ -191,16 +191,5 @@
 #define POWER_DOWN_BY_CHANNEL				0 ///< Channel power down mode
 #define POWER_DOWN_BY_CHIP_SELECT			1 ///< Chip select power down mode
 
-// The following definitions specify the default values for various parameters in which there are
-// no clearly defined defaults to be used in the common file.  The values below are based on product
-// and BKDG content, please consult the AGESA Memory team for consultation.
-#define DFLT_SCRUB_DRAM_RATE		(0)
-#define DFLT_SCRUB_L2_RATE		(0)
-#define DFLT_SCRUB_L3_RATE		(0)
-#define DFLT_SCRUB_IC_RATE		(0)
-#define DFLT_SCRUB_DC_RATE		(0)
-#define DFLT_MEMORY_QUADRANK_TYPE	QUADRANK_UNBUFFERED
-#define DFLT_VRM_SLEW_RATE		(5000)
-
 // Instantiate all solution relevant data.
 #include <PlatformInstall.h>

@@ -747,7 +747,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_VRM_SLEW_RATE
   #define CFG_VRM_SLEW_RATE                BLDCFG_VRM_SLEW_RATE
 #else
-  #define CFG_VRM_SLEW_RATE                DFLT_VRM_SLEW_RATE
+  #define CFG_VRM_SLEW_RATE                (5000)
 #endif
 
 #ifdef BLDCFG_VRM_MAXIMUM_CURRENT_LIMIT
@@ -789,7 +789,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_VRM_NB_SLEW_RATE
   #define CFG_VRM_NB_SLEW_RATE             BLDCFG_VRM_NB_SLEW_RATE
 #else
-  #define CFG_VRM_NB_SLEW_RATE             DFLT_VRM_SLEW_RATE
+  #define CFG_VRM_NB_SLEW_RATE             (5000)
 #endif
 
 #ifdef BLDCFG_PLAT_NUM_IO_APICS
@@ -897,7 +897,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_MEMORY_QUADRANK_TYPE
   #define CFG_MEMORY_QUADRANK_TYPE              BLDCFG_MEMORY_QUADRANK_TYPE
 #else
-  #define CFG_MEMORY_QUADRANK_TYPE              DFLT_MEMORY_QUADRANK_TYPE
+  #define CFG_MEMORY_QUADRANK_TYPE              QUADRANK_UNBUFFERED
 #endif
 
 #ifdef BLDCFG_MEMORY_RDIMM_CAPABLE
@@ -1029,31 +1029,31 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_SCRUB_DRAM_RATE
   #define CFG_SCRUB_DRAM_RATE         BLDCFG_SCRUB_DRAM_RATE
 #else
-  #define CFG_SCRUB_DRAM_RATE         DFLT_SCRUB_DRAM_RATE
+  #define CFG_SCRUB_DRAM_RATE         (0)
 #endif
 
 #ifdef BLDCFG_SCRUB_L2_RATE
   #define CFG_SCRUB_L2_RATE           BLDCFG_SCRUB_L2_RATE
 #else
-  #define CFG_SCRUB_L2_RATE           DFLT_SCRUB_L2_RATE
+  #define CFG_SCRUB_L2_RATE           (0)
 #endif
 
 #ifdef BLDCFG_SCRUB_L3_RATE
   #define CFG_SCRUB_L3_RATE           BLDCFG_SCRUB_L3_RATE
 #else
-  #define CFG_SCRUB_L3_RATE           DFLT_SCRUB_L3_RATE
+  #define CFG_SCRUB_L3_RATE           (0)
 #endif
 
 #ifdef BLDCFG_SCRUB_IC_RATE
   #define CFG_SCRUB_IC_RATE           BLDCFG_SCRUB_IC_RATE
 #else
-  #define CFG_SCRUB_IC_RATE           DFLT_SCRUB_IC_RATE
+  #define CFG_SCRUB_IC_RATE           (0)
 #endif
 
 #ifdef BLDCFG_SCRUB_DC_RATE
   #define CFG_SCRUB_DC_RATE           BLDCFG_SCRUB_DC_RATE
 #else
-  #define CFG_SCRUB_DC_RATE           DFLT_SCRUB_DC_RATE
+  #define CFG_SCRUB_DC_RATE           (0)
 #endif
 
 #ifdef BLDCFG_ECC_SYNC_FLOOD

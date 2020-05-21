@@ -50,18 +50,18 @@ static void fit_add_default_compat_strings(void)
 		fit_add_compat_string(compat_string);
 	}
 
-	if (sku_id() != UNDEFINED_STRAPPING_ID) {
-		snprintf(compat_string, sizeof(compat_string), "%s,%s-sku%u",
-			 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER,
-			 sku_id());
-
-		fit_add_compat_string(compat_string);
-	}
-
 	if (board_id() != UNDEFINED_STRAPPING_ID) {
 		snprintf(compat_string, sizeof(compat_string), "%s,%s-rev%u",
 			 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER,
 			 board_id());
+
+		fit_add_compat_string(compat_string);
+	}
+
+	if (sku_id() != UNDEFINED_STRAPPING_ID) {
+		snprintf(compat_string, sizeof(compat_string), "%s,%s-sku%u",
+			 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER,
+			 sku_id());
 
 		fit_add_compat_string(compat_string);
 	}

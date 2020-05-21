@@ -1,0 +1,6 @@
+DRAM Part Name                 ID to assign
+K4U6E3S4AA-MGCL                0 (0000)
+K4UBE3D4AA-MGCL                1 (0001)
+H9HCNNNBKMMLXR-NEE             0 (0000)
+MT53E1G32D2NP-046 WT:A         2 (0010)
+H9HCNNNFAMMLXR-NEE             3 (0011)

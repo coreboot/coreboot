@@ -160,36 +160,6 @@
 #define BLDCFG_HEAP_DRAM_ADDRESS				0xB0000
 #define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS	0xD0000000
 
-/**
- * AGESA configuration values selection.
- * Uncomment and specify the value for the configuration options
- * needed by the system.
- */
-
-/* MEMORY_BUS_SPEED */
-#define DDR400_FREQUENCY				200 /**< DDR 400 */
-#define DDR533_FREQUENCY				266 /**< DDR 533 */
-#define DDR667_FREQUENCY				333 /**< DDR 667 */
-#define DDR800_FREQUENCY				400 /**< DDR 800 */
-#define DDR1066_FREQUENCY				533 /**< DDR 1066 */
-#define DDR1333_FREQUENCY				667 /**< DDR 1333 */
-#define DDR1600_FREQUENCY				800 /**< DDR 1600 */
-#define DDR1866_FREQUENCY				933 /**< DDR 1866 */
-#define UNSUPPORTED_DDR_FREQUENCY		934 /**< Max limit of DDR frequency */
-
-/* QUANDRANK_TYPE */
-#define QUADRANK_REGISTERED				0 /**< Quadrank registered DIMM */
-#define QUADRANK_UNBUFFERED				1 /**< Quadrank unbuffered DIMM */
-
-/* USER_MEMORY_TIMING_MODE */
-#define TIMING_MODE_AUTO				0 /**< Use best rate possible */
-#define TIMING_MODE_LIMITED				1 /**< Set user top limit */
-#define TIMING_MODE_SPECIFIC			2 /**< Set user specified speed */
-
-/* POWER_DOWN_MODE */
-#define POWER_DOWN_BY_CHANNEL			0 /**< Channel power down mode */
-#define POWER_DOWN_BY_CHIP_SELECT		1 /**< Chip select power down mode */
-
 /* AGESA nonsense: this header depends on the definitions above */
 /* Instantiate all solution relevant data. */
 #include <PlatformInstall.h>

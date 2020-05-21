@@ -1015,37 +1015,37 @@ typedef enum {
 } TECHNOLOGY_TYPE;
 
 /// Build Configuration values for BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT & BLDCFG_MEMORY_CLOCK_SELECT
-typedef enum {
-  DDR400_FREQUENCY = 200,     ///< DDR 400
-  DDR533_FREQUENCY = 266,     ///< DDR 533
-  DDR667_FREQUENCY = 333,     ///< DDR 667
-  DDR800_FREQUENCY = 400,     ///< DDR 800
-  DDR1066_FREQUENCY = 533,    ///< DDR 1066
-  DDR1333_FREQUENCY = 667,    ///< DDR 1333
-  DDR1600_FREQUENCY = 800,    ///< DDR 1600
-  DDR1866_FREQUENCY = 933,    ///< DDR 1866
-  UNSUPPORTED_DDR_FREQUENCY   ///< Highest limit of DDR frequency
-} MEMORY_BUS_SPEED;
+typedef unsigned int MEMORY_BUS_SPEED;
+
+#define DDR400_FREQUENCY		200 ///< DDR  400
+#define DDR533_FREQUENCY		266 ///< DDR  533
+#define DDR667_FREQUENCY		333 ///< DDR  667
+#define DDR800_FREQUENCY		400 ///< DDR  800
+#define DDR1066_FREQUENCY		533 ///< DDR 1066
+#define DDR1333_FREQUENCY		667 ///< DDR 1333
+#define DDR1600_FREQUENCY		800 ///< DDR 1600
+#define DDR1866_FREQUENCY		933 ///< DDR 1866
+#define UNSUPPORTED_DDR_FREQUENCY	934 ///< Highest limit of DDR frequency
 
 /// Build Configuration values for BLDCFG_MEMORY_QUADRANK_TYPE
-typedef enum {
-  QUADRANK_REGISTERED,        ///< Quadrank registered DIMM
-  QUADRANK_UNBUFFERED         ///< Quadrank unbuffered DIMM
-} QUANDRANK_TYPE;
+typedef unsigned int QUANDRANK_TYPE;
+
+#define QUADRANK_REGISTERED		0 ///< Quadrank registered DIMM
+#define QUADRANK_UNBUFFERED		1 ///< Quadrank unbuffered DIMM
 
 /// Build Configuration values for BLDCFG_TIMING_MODE_SELECT
-typedef enum {
-  TIMING_MODE_AUTO,           ///< Use best rate possible
-  TIMING_MODE_LIMITED,        ///< Set user top limit
-  TIMING_MODE_SPECIFIC        ///< Set user specified speed
-} USER_MEMORY_TIMING_MODE;
+typedef unsigned int USER_MEMORY_TIMING_MODE;
+
+#define TIMING_MODE_AUTO		0 ///< Use best rate possible
+#define TIMING_MODE_LIMITED		1 ///< Set user top limit
+#define TIMING_MODE_SPECIFIC		2 ///< Set user specified speed
 
 /// Build Configuration values for BLDCFG_POWER_DOWN_MODE
-typedef enum {
-  POWER_DOWN_BY_CHANNEL,      ///< Channel power down mode
-  POWER_DOWN_BY_CHIP_SELECT,  ///< Chip select power down mode
-  POWER_DOWN_MODE_AUTO        ///< AGESA to select power down mode
-} POWER_DOWN_MODE;
+typedef unsigned int POWER_DOWN_MODE;
+
+#define POWER_DOWN_BY_CHANNEL		0 ///< Channel power down mode
+#define POWER_DOWN_BY_CHIP_SELECT	1 ///< Chip select power down mode
+#define POWER_DOWN_MODE_AUTO		2 ///< AGESA to select power down mode
 
 /// Low voltage support
 typedef enum {

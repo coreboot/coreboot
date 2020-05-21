@@ -42,3 +42,7 @@
 	url = ../amd_blobs
 	update = none
 	ignore = dirty
+[submodule "3rdparty/cmocka"]
+	path = 3rdparty/cmocka
+	url = ../cmocka.git
+	update = none

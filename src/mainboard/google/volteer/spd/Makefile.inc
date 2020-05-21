@@ -4,7 +4,7 @@
 ifneq ($(SPD_SOURCES),)
 SPD_BIN = $(obj)/spd.bin
 
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/spd/$(f).spd.hex)
+SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/soc/intel/tigerlake/spd/lp4x/$(f))
 
 # Include spd ROM data
 $(SPD_BIN): $(SPD_DEPS)

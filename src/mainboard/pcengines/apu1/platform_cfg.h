@@ -212,4 +212,18 @@
  */
 #define FADT_PM_PROFILE 1
 
+/**
+ * @def USB_RX_MODE
+ *    0x00 - leave Cg2Pll voltage at default value (1.222V)
+ *    0x01 - lower Cg2Pll voltage to 1.1V
+ *
+ * Workaround for reset issues via outb(0x6, 0xcf9).
+ * For details check:
+ * AMD SB800 Family Product Errata,
+ * Section 15. USB Resets Asynchronously With Port CF9h Hard Reset
+ *
+ */
+
+#define USB_RX_MODE 0x00
+
 #endif /* _PLATFORM_CFG_H_ */

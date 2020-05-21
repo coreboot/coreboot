@@ -10,6 +10,18 @@
 #define MAX_PWDB_ENTRIES	12
 #define MAX_PORT_ENTRIES	4
 #define MAX_LINK_FREQ_ENTRIES	4
+#define MAX_CLK_CONFIGS		2
+#define MAX_GPIO_CONFIGS	4
+#define MAX_PWR_OPS		5
+
+#define SEQ_OPS_CLK_ENABLE(ind, delay) \
+	{ .type = IMGCLK, .index = (ind), .action = ENABLE, .delay_ms = (delay) }
+#define SEQ_OPS_CLK_DISABLE(ind, delay) \
+	{ .type = IMGCLK, .index = (ind), .action = DISABLE, .delay_ms = (delay) }
+#define SEQ_OPS_GPIO_ENABLE(ind, delay) \
+	{ .type = GPIO, .index = (ind), .action = ENABLE, .delay_ms = (delay) }
+#define SEQ_OPS_GPIO_DISABLE(ind, delay) \
+	{ .type = GPIO, .index = (ind), .action = DISABLE, .delay_ms = (delay) }
 
 enum camera_device_type {
 	DEV_TYPE_SENSOR = 0,
@@ -56,6 +68,47 @@ enum intel_power_action_type {
 	INTEL_ACPI_CAMERA_CLK,
 	INTEL_ACPI_CAMERA_GPIO,
 };
+
+enum ctrl_type {
+	IMGCLK = 1,
+	GPIO
+};
+
+enum action_type {
+	ENABLE = 1,
+	DISABLE
+};
+
+struct clk_config {
+	/* IMGCLKOUT_x being used for a port */
+	uint8_t clknum;
+	/* frequency setting: 0:24Mhz, 1:19.2 Mhz */
+	uint8_t freq;
+} __packed;
+
+struct gpio_config {
+	uint8_t gpio_num;
+} __packed;
+
+struct clock_ctrl_panel {
+	struct clk_config clks[MAX_CLK_CONFIGS];
+} __packed;
+
+struct gpio_ctrl_panel {
+	struct gpio_config gpio[MAX_GPIO_CONFIGS];
+} __packed;
+
+struct operation_type {
+	enum ctrl_type type;
+	uint8_t index;
+	enum action_type action;
+	uint32_t delay_ms;
+} __packed;
+
+struct operation_seq {
+	struct operation_type ops[MAX_PWR_OPS];
+	uint8_t ops_cnt;
+} __packed;
 
 struct intel_ssdb {
 	uint8_t version;			/* Current version */
@@ -122,6 +175,11 @@ struct intel_pwdb {
 } __packed;
 
 struct drivers_intel_mipi_camera_config {
+	struct clock_ctrl_panel clk_panel;
+	struct gpio_ctrl_panel gpio_panel;
+	struct operation_seq on_seq;
+	struct operation_seq off_seq;
+
 	struct intel_ssdb ssdb;
 	struct intel_pwdb pwdb[MAX_PWDB_ENTRIES];
 	enum intel_camera_device_type device_type;
@@ -130,6 +188,7 @@ struct drivers_intel_mipi_camera_config {
 	const char *acpi_name;
 	const char *chip_name;
 	unsigned int acpi_uid;
+	const char *pr0;
 
 	/* Settings specific to CIO2 device */
 	uint32_t cio2_num_ports;
@@ -163,6 +222,8 @@ struct drivers_intel_mipi_camera_config {
 
 	/* Settings specific to vcm */
 	const char *vcm_compat;
+	/* Does the device have a power resource entries */
+	bool has_power_resource;
 };
 
 #endif

@@ -17,6 +17,7 @@
 #define DEFAULT_REMOTE_NAME	"\\_SB.PCI0.CIO2"
 #define CIO2_PCI_DEV		0x14
 #define CIO2_PCI_FN		0x3
+#define POWER_RESOURCE_NAME	"PRIC"
 
 /*
  * This implementation assumes there is only 1 endpoint at each end of every data port. It also
@@ -435,6 +436,58 @@ static void camera_fill_vcm(const struct device *dev)
 	acpi_dp_write(dsd);
 }
 
+static void fill_power_res_sequence(struct drivers_intel_mipi_camera_config *config,
+				    struct operation_seq *seq)
+{
+	unsigned int i;
+	uint8_t index;
+	uint8_t gpio_num;
+
+	for (i = 0; i < seq->ops_cnt; i++) {
+		switch (seq->ops[i].type) {
+		case IMGCLK:
+			index = seq->ops[i].index;
+			if (seq->ops[i].action == ENABLE) {
+				acpigen_emit_namestring("MCON");
+				acpigen_write_byte(config->clk_panel.clks[index].clknum);
+				acpigen_write_byte(config->clk_panel.clks[index].freq);
+			} else if (seq->ops[i].action == DISABLE) {
+				acpigen_emit_namestring("MCOF");
+				acpigen_write_byte(config->clk_panel.clks[index].clknum);
+			} else {
+				acpigen_write_debug_string("Unsupported clock action");
+				printk(BIOS_ERR, "Unsupported clock action: %x\n",
+				       seq->ops[i].action);
+				printk(BIOS_ERR, "OS camera driver will likely not work");
+			}
+
+			break;
+		case GPIO:
+			index = seq->ops[i].index;
+			gpio_num = config->gpio_panel.gpio[index].gpio_num;
+			if (seq->ops[i].action == ENABLE) {
+				acpigen_soc_set_tx_gpio(gpio_num);
+			} else if (seq->ops[i].action == DISABLE) {
+				acpigen_soc_clear_tx_gpio(gpio_num);
+			} else {
+				acpigen_write_debug_string("Unsupported GPIO action");
+				printk(BIOS_ERR, "Unsupported GPIO action: %x\n",
+				       seq->ops[i].action);
+				printk(BIOS_ERR, "OS camera driver will likely not work");
+			}
+
+			break;
+		default:
+			printk(BIOS_ERR, "Unsupported power operation: %x\n", seq->ops[i].type);
+			printk(BIOS_ERR, "OS camera driver will likely not work");
+			break;
+		}
+
+		if (seq->ops[i].delay_ms)
+			acpigen_write_sleep(seq->ops[i].delay_ms);
+	}
+}
+
 static void write_pci_camera_device(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
@@ -466,6 +519,40 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 	}
 
 	acpigen_write_device(acpi_device_name(dev));
+
+	/* add power resource */
+	if (config->has_power_resource) {
+		acpigen_write_power_res(POWER_RESOURCE_NAME, 0, 0, NULL, 0);
+		acpigen_write_name_integer("STA", 0);
+		acpigen_write_STA_ext("STA");
+
+		acpigen_write_method_serialized("_ON", 0);
+		acpigen_write_if();
+		acpigen_emit_byte(LEQUAL_OP);
+		acpigen_emit_namestring("STA");
+		acpigen_write_integer(0);
+
+		fill_power_res_sequence(config, &config->on_seq);
+
+		acpigen_write_store_op_to_namestr(1, "STA");
+		acpigen_pop_len(); /* if */
+		acpigen_pop_len(); /* _ON */
+
+		/* _OFF operations */
+		acpigen_write_method_serialized("_OFF", 0);
+		acpigen_write_if();
+		acpigen_emit_byte(LEQUAL_OP);
+		acpigen_emit_namestring("STA");
+		acpigen_write_integer(1);
+
+		fill_power_res_sequence(config, &config->off_seq);
+
+		acpigen_write_store_op_to_namestr(0, "STA");
+		acpigen_pop_len(); /* if */
+		acpigen_pop_len(); /* _ON */
+
+		acpigen_pop_len(); /* Power Resource */
+	}
 
 	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR)
 		acpigen_write_name_integer("_ADR", 0);
@@ -517,6 +604,17 @@ static void write_camera_device_common(const struct device *dev)
 	    config->device_type == INTEL_ACPI_CAMERA_SENSOR ||
 	    config->device_type == INTEL_ACPI_CAMERA_VCM) {
 		acpigen_write_name_integer("CAMD", config->device_type);
+	}
+
+	if (config->pr0 || config->has_power_resource) {
+		acpigen_write_name("_PR0");
+		acpigen_write_package(1);
+		if (config->pr0)
+			acpigen_emit_namestring(config->pr0); /* External power resource */
+		else
+			acpigen_emit_namestring(POWER_RESOURCE_NAME);
+
+		acpigen_pop_len(); /* _PR0 */
 	}
 
 	switch (config->device_type) {

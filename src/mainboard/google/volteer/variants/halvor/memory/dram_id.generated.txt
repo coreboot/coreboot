@@ -1,0 +1,3 @@
+DRAM Part Name                 ID to assign
+H9HKNNNCRMBVAR-NEH             0 (0000)
+MT53E1G64D4SQ-046 WT:A         1 (0001)

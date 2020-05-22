@@ -520,6 +520,9 @@ static const unsigned short mc_pci_device_ids[] = {
 	0x0c04, /* Mobile */
 	0x0a04, /* ULT */
 	0x0c08, /* Server */
+	0x0d00, /* Crystal Well Desktop */
+	0x0d04, /* Crystal Well Mobile */
+	0x0d08, /* Crystal Well Server (by extrapolation) */
 	0
 };
 

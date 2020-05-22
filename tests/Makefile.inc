@@ -2,6 +2,12 @@
 
 testsrc = $(top)/tests
 testobj = $(obj)/tests
+cmockasrc = 3rdparty/cmocka
+cmockaobj = $(cmockasrc)/build
+
+CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
+
+CMAKE:= cmake
 
 TEST_DEFAULT_CONFIG = $(top)/configs/config.emulation_qemu_x86_i440fx
 TEST_DOTCONFIG = $(testobj)/.config
@@ -26,8 +32,14 @@ TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
+# Checkout Cmocka repository
+forgetthis:=$(shell git submodule update --init --checkout 3rdparty/cmocka)
+
+TEST_CFLAGS += -I$(cmockasrc)/include
+
 # Link against Cmocka
-TEST_LDFLAGS = -lcmocka -Wl,--gc-sections
+TEST_LDFLAGS = -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
+TEST_LDFLAGS += -Wl,--gc-sections
 
 # Extra attributes for unit tests, declared per test
 attributes:= srcs cflags mocks stage
@@ -69,7 +81,7 @@ $($(1)-objs): $(obj)/$(1)/%.o: $$$$*.c $(TEST_KCONFIG_AUTOHEADER)
 		-MT $$@ -c $$< -o $$@
 
 $($(1)-bin): TEST_LDFLAGS+= $$(foreach mock,$$($(1)-mocks),-Wl,--wrap=$$(mock))
-$($(1)-bin): $($(1)-objs)
+$($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
 	$(HOSTCC) $$^ $($(1)-cflags) $$(TEST_LDFLAGS) -o $$@
 
 endef
@@ -89,6 +101,13 @@ $(foreach test, $(alltests), \
 
 DEPENDENCIES += $(addsuffix .d,$(basename $(all-test-objs)))
 -include $(DEPENDENCIES)
+
+# Build cmocka
+$(CMOCKA_LIB):
+	echo "*** Building CMOCKA ***"
+	mkdir -p $(cmockaobj)
+	cd $(cmockaobj) && $(CMAKE) $(abspath $(cmockasrc))
+	$(MAKE) -C $(cmockaobj)
 
 # Kconfig targets
 $(TEST_DOTCONFIG):

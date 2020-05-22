@@ -160,7 +160,7 @@
   #ifdef BLDCFG_PCIE_TRAINING_ALGORITHM
     #define CFG_GNB_PCIE_TRAINING_ALGORITHM               BLDCFG_PCIE_TRAINING_ALGORITHM
   #else
-    #define CFG_GNB_PCIE_TRAINING_ALGORITHM               PcieTrainingStandard
+    #define CFG_GNB_PCIE_TRAINING_ALGORITHM               PcieTrainingDistributed
   #endif
 
   #ifndef CFG_GNB_FORCE_CABLESAFE_OFF
@@ -871,7 +871,7 @@
   #if (AGESA_ENTRY_INIT_S3SAVE == TRUE)
   //---------------------------------------------------------------------------------------------------
     #ifndef OPTION_GFX_INIT_SVIEW
-      #define OPTION_GFX_INIT_SVIEW TRUE
+      #define OPTION_GFX_INIT_SVIEW FALSE
     #endif
     #if (OPTION_GFX_INIT_SVIEW == TRUE) && (GNB_TYPE_TN == TRUE || GNB_TYPE_KB == TRUE)
       OPTION_GNB_FEATURE                                  GfxInitSview;

@@ -236,7 +236,7 @@ CpuLateInitApTask (
   #endif
   #define     SCOPE_NAME_VALUE    OEM_SCOPE_NAME
 #else
-  #define     SCOPE_NAME_VALUE    SCOPE_NAME_C
+  #define     SCOPE_NAME_VALUE    SCOPE_NAME_P
 #endif  // OEM_SCOPE_NAME
 
 #ifdef OEM_SCOPE_NAME1

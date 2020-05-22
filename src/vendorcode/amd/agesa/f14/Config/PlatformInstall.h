@@ -206,8 +206,6 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
     #define OPTION_SW_DRAM_INIT  TRUE
     #undef OPTION_S3_MEM_SUPPORT
     #define OPTION_S3_MEM_SUPPORT  TRUE
-    #undef OPTION_GFX_RECOVERY
-    #define OPTION_GFX_RECOVERY  TRUE
     #undef OPTION_C6_STATE
     #define OPTION_C6_STATE  TRUE
     #undef OPTION_CPB
@@ -238,7 +236,7 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 
 #define OPTION_ACPI_PSTATES             TRUE
 #define OPTION_WHEA                     TRUE
-#define OPTION_DMI                      TRUE
+#define OPTION_DMI                      FALSE
 #define OPTION_EARLY_SAMPLES            FALSE
 #define CFG_ACPI_PSTATES_PPC            TRUE
 #define CFG_ACPI_PSTATES_PCT            TRUE
@@ -246,7 +244,7 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define CFG_ACPI_PSTATES_PSS            TRUE
 #define CFG_ACPI_PSTATES_XPSS           TRUE
 #define CFG_ACPI_PSTATE_PSD_INDPX       FALSE
-#define CFG_VRM_HIGH_SPEED_ENABLE       FALSE
+#define CFG_VRM_HIGH_SPEED_ENABLE       TRUE
 #define CFG_VRM_NB_HIGH_SPEED_ENABLE    FALSE
 #define OPTION_ALIB                     TRUE
 /*---------------------------------------------------------------------------
@@ -312,10 +310,11 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
     #define OPTION_PARALLEL_TRAINING    FALSE
   #endif
 #endif
-#ifdef BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT
-  #if  BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT == TRUE
+/* Originally BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT, but inverted alongside the default value */
+#ifdef BLDOPT_ENABLE_ONLINE_SPARE_SUPPORT
+  #if  BLDOPT_ENABLE_ONLINE_SPARE_SUPPORT == TRUE
     #undef  OPTION_ONLINE_SPARE
-    #define OPTION_ONLINE_SPARE         FALSE
+    #define OPTION_ONLINE_SPARE         TRUE
   #endif
 #endif
 #ifdef BLDOPT_REMOVE_MEM_RESTORE_SUPPORT
@@ -348,10 +347,11 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
     #define OPTION_WHEA                 FALSE
   #endif
 #endif
-#ifdef BLDOPT_REMOVE_DMI
-  #if  BLDOPT_REMOVE_DMI == TRUE
+/* Originally BLDOPT_REMOVE_DMI, but inverted alongside the default value */
+#ifdef BLDOPT_ENABLE_DMI
+  #if  BLDOPT_ENABLE_DMI == TRUE
     #undef  OPTION_DMI
-    #define OPTION_DMI                  FALSE
+    #define OPTION_DMI                  TRUE
   #endif
 #endif
 #ifdef BLDOPT_REMOVE_ADDR_TO_CS_TRANSLATOR
@@ -389,10 +389,11 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
   #endif
 #endif
 
-#ifdef BLDOPT_REMOVE_GFX_RECOVERY
-  #if  BLDOPT_REMOVE_GFX_RECOVERY == TRUE
+/* Originally BLDOPT_REMOVE_GFX_RECOVERY, but inverted alongside the default value */
+#ifdef BLDOPT_ENABLE_GFX_RECOVERY
+  #if  BLDOPT_ENABLE_GFX_RECOVERY == TRUE
     #undef  OPTION_GFX_RECOVERY
-    #define OPTION_GFX_RECOVERY         FALSE
+    #define OPTION_GFX_RECOVERY         TRUE
   #endif
 #endif
 
@@ -438,10 +439,11 @@ static const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
   #endif
 #endif
 
-#ifdef BLDCFG_VRM_HIGH_SPEED_ENABLE
-  #if  BLDCFG_VRM_HIGH_SPEED_ENABLE == TRUE
+/* Originally BLDCFG_VRM_HIGH_SPEED_ENABLE, but inverted alongside the default value */
+#ifdef BLDCFG_VRM_HIGH_SPEED_DISABLE
+  #if  BLDCFG_VRM_HIGH_SPEED_DISABLE == TRUE
     #undef  CFG_VRM_HIGH_SPEED_ENABLE
-    #define CFG_VRM_HIGH_SPEED_ENABLE       TRUE
+    #define CFG_VRM_HIGH_SPEED_ENABLE       FALSE
   #endif
 #endif
 
@@ -571,13 +573,13 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_VRM_CURRENT_LIMIT
   #define CFG_VRM_CURRENT_LIMIT            BLDCFG_VRM_CURRENT_LIMIT
 #else
-  #define CFG_VRM_CURRENT_LIMIT            0
+  #define CFG_VRM_CURRENT_LIMIT            24000
 #endif
 
 #ifdef BLDCFG_VRM_LOW_POWER_THRESHOLD
   #define CFG_VRM_LOW_POWER_THRESHOLD      BLDCFG_VRM_LOW_POWER_THRESHOLD
 #else
-  #define CFG_VRM_LOW_POWER_THRESHOLD      0
+  #define CFG_VRM_LOW_POWER_THRESHOLD      24000
 #endif
 
 #ifdef BLDCFG_VRM_SLEW_RATE
@@ -589,7 +591,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_VRM_INRUSH_CURRENT_LIMIT
   #define CFG_VRM_INRUSH_CURRENT_LIMIT     BLDCFG_VRM_INRUSH_CURRENT_LIMIT
 #else
-  #define CFG_VRM_INRUSH_CURRENT_LIMIT     0
+  #define CFG_VRM_INRUSH_CURRENT_LIMIT     (6000)
 #endif
 
 #ifdef BLDCFG_VRM_NB_ADDITIONAL_DELAY
@@ -626,7 +628,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_PLAT_NUM_IO_APICS
   #define CFG_PLAT_NUM_IO_APICS            BLDCFG_PLAT_NUM_IO_APICS
 #else
-  #define CFG_PLAT_NUM_IO_APICS            0
+  #define CFG_PLAT_NUM_IO_APICS            3
 #endif
 
 #ifdef BLDCFG_MEM_INIT_PSTATE
@@ -662,19 +664,19 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_PLATFORM_CSTATE_MODE
   #define CFG_CSTATE_MODE                     BLDCFG_PLATFORM_CSTATE_MODE
 #else
-  #define CFG_CSTATE_MODE                     CStateModeDisabled
+  #define CFG_CSTATE_MODE                     CStateModeC6
 #endif
 
 #ifdef BLDCFG_PLATFORM_CSTATE_OPDATA
   #define CFG_CSTATE_OPDATA                   BLDCFG_PLATFORM_CSTATE_OPDATA
 #else
-  #define CFG_CSTATE_OPDATA                   0
+  #define CFG_CSTATE_OPDATA                   0x840
 #endif
 
 #ifdef BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS
   #define CFG_CSTATE_IO_BASE_ADDRESS       BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS
 #else
-  #define CFG_CSTATE_IO_BASE_ADDRESS       0
+  #define CFG_CSTATE_IO_BASE_ADDRESS       0x840
 #endif
 
 #ifdef BLDCFG_PLATFORM_CPB_MODE
@@ -686,7 +688,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_CORE_LEVELING_MODE
   #define CFG_CORE_LEVELING_MODE           BLDCFG_CORE_LEVELING_MODE
 #else
-  #define CFG_CORE_LEVELING_MODE           0
+  #define CFG_CORE_LEVELING_MODE           CORE_LEVEL_LOWEST
 #endif
 
 #ifdef BLDCFG_AMD_PSTATE_CAP_VALUE
@@ -704,7 +706,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT
   #define CFG_MEMORY_BUS_FREQUENCY_LIMIT        BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT
 #else
-  #define CFG_MEMORY_BUS_FREQUENCY_LIMIT        DDR800_FREQUENCY
+  #define CFG_MEMORY_BUS_FREQUENCY_LIMIT        DDR1333_FREQUENCY
 #endif
 
 #ifdef BLDCFG_MEMORY_MODE_UNGANGED
@@ -770,13 +772,13 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_MEMORY_POWER_DOWN
   #define CFG_MEMORY_POWER_DOWN                 BLDCFG_MEMORY_POWER_DOWN
 #else
-  #define CFG_MEMORY_POWER_DOWN                 FALSE
+  #define CFG_MEMORY_POWER_DOWN                 TRUE
 #endif
 
 #ifdef BLDCFG_POWER_DOWN_MODE
   #define CFG_POWER_DOWN_MODE                   BLDCFG_POWER_DOWN_MODE
 #else
-  #define CFG_POWER_DOWN_MODE                   POWER_DOWN_MODE_AUTO
+  #define CFG_POWER_DOWN_MODE                   POWER_DOWN_BY_CHIP_SELECT
 #endif
 
 #ifdef BLDCFG_ONLINE_SPARE
@@ -806,7 +808,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_MEMORY_CLOCK_SELECT
   #define CFG_MEMORY_CLOCK_SELECT               BLDCFG_MEMORY_CLOCK_SELECT
 #else
-  #define CFG_MEMORY_CLOCK_SELECT               DDR800_FREQUENCY
+  #define CFG_MEMORY_CLOCK_SELECT               DDR1333_FREQUENCY
 #endif
 
 #ifdef BLDCFG_DQS_TRAINING_CONTROL
@@ -878,7 +880,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_ECC_SYNC_FLOOD
   #define CFG_ECC_SYNC_FLOOD          BLDCFG_ECC_SYNC_FLOOD
 #else
-  #define CFG_ECC_SYNC_FLOOD          0
+  #define CFG_ECC_SYNC_FLOOD          FALSE
 #endif
 
 #ifdef BLDCFG_ECC_SYMBOL_SIZE

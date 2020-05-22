@@ -85,25 +85,25 @@ static bool is_mystery_silicon(void)
 static bool is_fam17_1x(void)
 {
 	/* mask lower model number nibble and stepping */
-	return cpuid_eax(1) >> 8 == PICASSO_CPUID >> 8;
+	return cpuid_eax(1) >> 8 == PICASSO_B1_CPUID >> 8;
 }
 
 static bool is_fam17_11(void)
 {
 	/* only mask stepping */
-	return cpuid_eax(1) >> 4 == RAVEN1_CPUID >> 4;
+	return cpuid_eax(1) >> 4 == RAVEN1_B0_CPUID >> 4;
 }
 
 static bool is_fam17_18(void)
 {
 	/* only mask stepping */
-	return cpuid_eax(1) >> 4 == PICASSO_CPUID >> 4;
+	return cpuid_eax(1) >> 4 == PICASSO_B1_CPUID >> 4;
 }
 
 static bool is_fam17_2x(void)
 {
 	/* mask lower model number nibble and stepping */
-	return cpuid_eax(1) >> 8 == RAVEN2_CPUID >> 8;
+	return cpuid_eax(1) >> 8 == RAVEN2_A1_CPUID >> 8;
 }
 
 static bool is_fam17_20(void)

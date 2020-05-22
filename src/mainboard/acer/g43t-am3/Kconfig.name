@@ -1,0 +1,2 @@
+config BOARD_ACER_G43T_AM3
+	bool "G43T-AM3"

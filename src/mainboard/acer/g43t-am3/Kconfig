@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_ACER_G43T_AM3
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_X4X
+	select SOUTHBRIDGE_INTEL_I82801JX
+	select SUPERIO_ITE_IT8720F
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_2048
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select DRIVERS_I2C_CK505
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+
+config VGA_BIOS_ID
+	string
+	default "8086,2e22"
+
+config MAINBOARD_DIR
+	string
+	default "acer/g43t-am3"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "G43T-AM3"
+
+endif # BOARD_ACER_G43T_AM3

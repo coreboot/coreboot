@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: https://www.acer.com/ac/en/GB/content/support-product/1137?b=1
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

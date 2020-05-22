@@ -361,7 +361,7 @@ char *strsep(char **stringp, const char *delim)
 	token = walk = *stringp;
 
 	/* Walk, search for delimiters */
-	while(*walk && !strchr(delim, *walk))
+	while (*walk && !strchr(delim, *walk))
 		walk++;
 
 	if (*walk) {
@@ -424,7 +424,7 @@ long long int strtoll(const char *orig_ptr, char **endptr, int base)
 
 	/* Purge whitespace */
 
-	for( ; *ptr && isspace(*ptr); ptr++);
+	for ( ; *ptr && isspace(*ptr); ptr++);
 
 	if (ptr[0] == '-') {
 		is_negative = 1;
@@ -478,7 +478,7 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 
 	/* Purge whitespace */
 
-	for( ; *ptr && isspace(*ptr); ptr++);
+	for ( ; *ptr && isspace(*ptr); ptr++);
 
 	if (!*ptr)
 		return 0;
@@ -491,9 +491,9 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 		else if (ptr[0] == '0') {
 			base = 8;
 			ptr++;
-		}
-		else
+		} else {
 			base = 10;
+		}
 	}
 
 	/* Base 16 allows the 0x on front - so skip over it */
@@ -504,7 +504,7 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 			ptr += 2;
 	}
 
-	for( ; *ptr && _valid(*ptr, base); ptr++)
+	for ( ; *ptr && _valid(*ptr, base); ptr++)
 		ret = (ret * base) + _offset(*ptr, base);
 
 	if (endptr != NULL)
@@ -516,7 +516,8 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 unsigned long int strtoul(const char *ptr, char **endptr, int base)
 {
 	unsigned long long val = strtoull(ptr, endptr, base);
-	if (val > ULONG_MAX) return ULONG_MAX;
+	if (val > ULONG_MAX)
+		return ULONG_MAX;
 	return val;
 }
 
@@ -577,7 +578,7 @@ size_t strcspn(const char *s, const char *a)
  * @param ptr A pointer to a string pointer to keep state of the tokenizer
  * @return Pointer to token
  */
-char* strtok_r(char *str, const char *delim, char **ptr)
+char *strtok_r(char *str, const char *delim, char **ptr)
 {
 	/* start new tokenizing job or continue existing one? */
 	if (str == NULL)
@@ -607,7 +608,7 @@ static char **strtok_global;
  * @param delim A pointer to an array of characters that delimit the token
  * @return Pointer to token
  */
-char* strtok(char *str, const char *delim)
+char *strtok(char *str, const char *delim)
 {
 	return strtok_r(str, delim, strtok_global);
 }

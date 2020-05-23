@@ -5,7 +5,6 @@
 #include <bl31.h>
 #include <soc/addressmap.h>
 #include <soc/console_uart.h>
-#include <symbols.h>
 #include <types.h>
 
 typedef struct bl31_plat_params {

@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
-#include <symbols.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/i2c.h>

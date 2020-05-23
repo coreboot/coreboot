@@ -4,7 +4,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <symbols.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>

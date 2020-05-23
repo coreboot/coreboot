@@ -13,7 +13,6 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <symbols.h>
 #include <timer.h>
 #include <types.h>
 

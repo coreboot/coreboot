@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <arch/romstage.h>
-#include <bootmode.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>

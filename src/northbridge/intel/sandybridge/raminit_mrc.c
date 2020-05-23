@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <console/usb.h>
-#include <bootmode.h>
 #include <cf9_reset.h>
 #include <string.h>
 #include <device/device.h>

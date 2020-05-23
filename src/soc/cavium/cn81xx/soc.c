@@ -4,7 +4,6 @@
  * Derived from Cavium's BSD-3 Clause OCTEONTX-SDK-6.2.0.
  */
 
-#include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <soc/addressmap.h>

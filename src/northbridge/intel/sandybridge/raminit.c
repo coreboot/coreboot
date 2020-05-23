@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <commonlib/region.h>
-#include <bootmode.h>
 #include <cf9_reset.h>
 #include <string.h>
 #include <arch/cpu.h>

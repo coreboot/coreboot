@@ -69,6 +69,10 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		if (!child_res->size)
 			continue;
 
+		/* Resources with 0 limit can't be assigned anything. */
+		if (!child_res->limit)
+			continue;
+
 		/*
 		 * Propagate the resource alignment to the bridge resource. The
 		 * condition can only be true for the first (largest) resource. For all
@@ -84,15 +88,14 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 			bridge_res->align = child_res->align;
 
 		/*
-		 * Propagate the resource limit to the bridge resource only if child
-		 * resource limit is non-zero. If a downstream device has stricter
-		 * requirements w.r.t. limits for any resource, that constraint needs to
-		 * be propagated back up to the downstream bridges of the domain. This
-		 * guarantees that the resource allocation which starts at the domain
-		 * level takes into account all these constraints thus working on a
-		 * global view.
+		 * Propagate the resource limit to the bridge resource. If a downstream
+		 * device has stricter requirements w.r.t. limits for any resource, that
+		 * constraint needs to be propagated back up to the downstream bridges
+		 * of the domain. This guarantees that the resource allocation which
+		 * starts at the domain level takes into account all these constraints
+		 * thus working on a global view.
 		 */
-		if (child_res->limit && (child_res->limit < bridge_res->limit))
+		if (child_res->limit < bridge_res->limit)
 			bridge_res->limit = child_res->limit;
 
 		/*

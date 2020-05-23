@@ -5,18 +5,6 @@
 #include <memrange.h>
 #include <post.h>
 
-/**
- * Round a number up to an alignment.
- *
- * @param val The starting value.
- * @param pow Alignment as a power of two.
- * @return Rounded up number.
- */
-static resource_t round(resource_t val, unsigned long pow)
-{
-	return ALIGN_UP(val, POWER_OF_2(pow));
-}
-
 static const char *resource2str(const struct resource *res)
 {
 	if (res->flags & IORESOURCE_IO)
@@ -128,7 +116,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		 * Alignment value of 0 means that the child resource has no alignment
 		 * requirements and so the base value remains unchanged here.
 		 */
-		base = round(base, child_res->align);
+		base = ALIGN_UP(base, POWER_OF_2(child_res->align));
 
 		res_printk(print_depth + 1, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
 		       dev_path(child), child_res->index, base, base + child_res->size - 1,
@@ -144,7 +132,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 * the bridge to ensure that the upstream bridge/domain allocates big
 	 * enough window.
 	 */
-	bridge_res->size = round(base, bridge_res->gran);
+	bridge_res->size = ALIGN_UP(base, POWER_OF_2(bridge_res->gran));
 
 	res_printk(print_depth, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,

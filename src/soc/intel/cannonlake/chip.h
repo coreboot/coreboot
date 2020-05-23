@@ -181,6 +181,29 @@ struct soc_intel_cannonlake_config {
 	/* Enable/Disable HotPlug support for Root Port */
 	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 
+	/*
+	 * Enable/Disable AER (Advanced Error Reporting) for Root Port
+	 * 0: Disable AER
+	 * 1: Enable AER
+	 */
+	uint8_t PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+
+	/* PCIE RP ASPM, ASPM support for the root port */
+	enum {
+		AspmDefault,
+		AspmDisabled,
+		AspmL0s,
+		AspmL1,
+		AspmL0sL1,
+		AspmAutoConfig,
+	} PcieRpAspm[CONFIG_MAX_ROOT_PORTS];
+
+	/* PCIE RP Max Payload, Max Payload Size supported */
+	enum {
+		RpMaxPayload_128,
+		RpMaxPayload_256,
+	} PcieRpMaxPayload[CONFIG_MAX_ROOT_PORTS];
+
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;
 	/* Need to update DLL setting to get Emmc running at HS400 speed */

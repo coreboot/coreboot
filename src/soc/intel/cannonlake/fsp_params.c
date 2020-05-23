@@ -319,10 +319,22 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(config->PcieClkSrcUsage));
 	memcpy(params->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
 	       sizeof(config->PcieClkSrcClkReq));
+
+	memcpy(params->PcieRpAdvancedErrorReporting,
+		config->PcieRpAdvancedErrorReporting,
+		sizeof(params->PcieRpAdvancedErrorReporting));
+
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(config->PcieRpLtrEnable));
 	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
-	       sizeof(config->PcieRpHotPlug));
+	       sizeof(params->PcieRpHotPlug));
+
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		params->PcieRpMaxPayload[i] = config->PcieRpMaxPayload[i];
+		if (config->PcieRpAspm[i])
+			params->PcieRpAspm[i] = config->PcieRpAspm[i] - 1;
+	};
+
 
 	/* eMMC and SD */
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);

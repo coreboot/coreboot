@@ -4,7 +4,6 @@
 #define _INTEL_COMMON_VBT_H_
 
 #include <commonlib/region.h>
-#include <types.h>
 
 /*
  * Returns VBT pointer and mapping after checking prerequisites for Pre OS

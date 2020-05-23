@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <device/device.h>
 #include <device/smbus.h>
 #include <console/console.h>

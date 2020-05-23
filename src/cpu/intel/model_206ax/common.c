@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <cpu/x86/msr.h>
 #include "model_206ax.h"
 

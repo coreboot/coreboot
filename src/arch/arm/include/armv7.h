@@ -2,7 +2,6 @@
 
 #ifndef ARMV7_H
 #define ARMV7_H
-#include <types.h>
 
 /* Cortex-A9 revisions */
 #define MIDR_CORTEX_A9_R0P1	0x410FC091

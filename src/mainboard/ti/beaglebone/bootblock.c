@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <types.h>
 #include <bootblock_common.h>
 #include <console/uart.h>
 #include <cpu/ti/am335x/clock.h>

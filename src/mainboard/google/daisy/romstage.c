@@ -18,7 +18,6 @@
 #include <soc/trustzone.h>
 #include <soc/wakeup.h>
 #include <timestamp.h>
-#include <types.h>
 
 #include "exynos5250.h"
 

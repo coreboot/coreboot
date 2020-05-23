@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <types.h>
 #include <bootstate.h>
 #include <security/tpm/tspi.h>
 

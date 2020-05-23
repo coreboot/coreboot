@@ -5,7 +5,6 @@
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <types.h>
 
 void mainboard_ec_init(void)
 {

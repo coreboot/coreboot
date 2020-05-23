@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <acpi/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>

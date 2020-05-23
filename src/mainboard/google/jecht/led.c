@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <superio/ite/it8772f/it8772f.h>
 #include "onboard.h"
 

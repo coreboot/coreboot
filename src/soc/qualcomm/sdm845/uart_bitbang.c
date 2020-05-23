@@ -2,7 +2,6 @@
 
 #include <console/uart.h>
 #include <gpio.h>
-#include <types.h>
 
 #define UART_TX_PIN GPIO(4)
 

@@ -12,7 +12,6 @@
 #include <drivers/intel/gma/opregion.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <pc80/vga.h>
-#include <types.h>
 
 #include "chip.h"
 #include "drivers/intel/gma/i915_reg.h"

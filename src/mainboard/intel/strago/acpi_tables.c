@@ -7,7 +7,6 @@
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
-#include <types.h>
 #include <boardid.h>
 #include "onboard.h"
 

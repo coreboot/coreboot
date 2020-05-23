@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi_gnvs.h>
-#include <types.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 

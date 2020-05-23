@@ -7,7 +7,6 @@
  */
 
 #include <acpi/acpigen.h>
-#include <bootstate.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>

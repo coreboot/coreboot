@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 

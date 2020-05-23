@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <timer.h>
-#include <bootstate.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
 #include "psp_def.h"

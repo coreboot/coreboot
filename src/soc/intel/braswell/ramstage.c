@@ -2,7 +2,6 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
-#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>

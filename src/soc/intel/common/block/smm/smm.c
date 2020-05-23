@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm_reloc.h>

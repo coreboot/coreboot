@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
-#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <delay.h>

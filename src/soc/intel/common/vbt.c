@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <bootmode.h>
-#include <bootstate.h>
 
 #include "vbt.h"
 #include <drivers/intel/gma/opregion.h>

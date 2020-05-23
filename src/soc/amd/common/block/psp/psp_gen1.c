@@ -4,7 +4,6 @@
 #include <cbfs.h>
 #include <region_file.h>
 #include <timer.h>
-#include <bootstate.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>

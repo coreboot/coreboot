@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <boot/coreboot_tables.h>
-#include <bootstate.h>
 #include <bootmem.h>
 #include <console/console.h>
 #include <cbmem.h>

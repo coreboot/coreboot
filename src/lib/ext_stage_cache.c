@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <imd.h>

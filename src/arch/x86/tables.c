@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <bootmem.h>
-#include <bootstate.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>

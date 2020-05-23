@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/hlt.h>
-#include <bootstate.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <ip_checksum.h>

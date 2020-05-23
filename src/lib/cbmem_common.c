@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbmem.h>
-#include <bootstate.h>
 #include <symbols.h>
 
 void cbmem_run_init_hooks(int is_recovery)

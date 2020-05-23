@@ -43,7 +43,6 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	const struct device *child;
 	struct resource *child_res;
 	resource_t base;
-	bool first_child_res = true;
 	const unsigned long type_mask = IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH;
 	struct bus *bus = bridge->link_list;
 
@@ -71,20 +70,18 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 			continue;
 
 		/*
-		 * Propagate the resource alignment to the bridge resource if this is
-		 * the first child resource with non-zero size being considered. For all
+		 * Propagate the resource alignment to the bridge resource. The
+		 * condition can only be true for the first (largest) resource. For all
 		 * other children resources, alignment is taken care of by updating the
 		 * base to round up as per the child resource alignment. It is
 		 * guaranteed that pass 2 follows the exact same method of picking the
 		 * resource for allocation using largest_resource(). Thus, as long as
-		 * the alignment for first child resource is propagated up to the bridge
-		 * resource, it can be guaranteed that the alignment for all resources
-		 * is appropriately met.
+		 * the alignment for the largest child resource is propagated up to the
+		 * bridge resource, it can be guaranteed that the alignment for all
+		 * resources is appropriately met.
 		 */
-		if (first_child_res && (child_res->align > bridge_res->align))
+		if (child_res->align > bridge_res->align)
 			bridge_res->align = child_res->align;
-
-		first_child_res = false;
 
 		/*
 		 * Propagate the resource limit to the bridge resource only if child

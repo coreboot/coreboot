@@ -3,8 +3,6 @@
 #ifndef STOUT_ONBOARD_H
 #define STOUT_ONBOARD_H
 
-#include <arch/smp/mpspec.h>
-
 #define STOUT_NIC_VENDOR_ID		0x10EC
 #define STOUT_NIC_DEVICE_ID		0x8168
 

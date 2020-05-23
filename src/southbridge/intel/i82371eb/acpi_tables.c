@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include "i82371eb.h"
 

@@ -2,7 +2,6 @@
 
 #include <types.h>
 #include <acpi/acpi.h>
-#include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>

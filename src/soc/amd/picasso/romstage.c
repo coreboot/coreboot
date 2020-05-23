@@ -10,7 +10,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>
-#include <romstage_handoff.h>
 #include <elog.h>
 #include <soc/romstage.h>
 #include <soc/mtrr.h>

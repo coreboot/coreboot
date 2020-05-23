@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/data_fabric.h>

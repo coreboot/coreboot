@@ -10,7 +10,6 @@
 #include <halt.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/southbridge.h>
-#include <halt.h>
 
 void poweroff(void)
 {

@@ -12,7 +12,6 @@
 
 /* The LPC-ISA bridge is always at D14F3 */
 #if !defined(__SIMPLE_DEVICE__)
-#include <device/device.h>
 #define _LPCB_DEV pcidev_on_root(0x14, 0x3)
 #else
 #define _LPCB_DEV PCI_DEV(0, 0x14, 0x3)

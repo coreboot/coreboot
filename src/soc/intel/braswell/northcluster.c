@@ -7,7 +7,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/lapic_def.h>
-#include <cpu/x86/smm.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>

@@ -10,7 +10,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <intelblocks/power_limit.h>
-#include <variant/gpio.h>
 #include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>

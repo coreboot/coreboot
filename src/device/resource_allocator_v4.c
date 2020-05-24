@@ -18,6 +18,64 @@ static const char *resource2str(const struct resource *res)
 	return "undefined";
 }
 
+static void print_domain_res(const struct device *dev,
+			     const struct resource *res, const char *suffix)
+{
+	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %u gran: %u limit: %llx%s\n",
+	       dev_path(dev), resource2str(res), res->base, res->size,
+	       res->align, res->gran, res->limit, suffix);
+}
+
+#define res_printk(depth, str, ...)	printk(BIOS_DEBUG, "%*c"str, depth, ' ', __VA_ARGS__)
+
+static void print_bridge_res(const struct device *dev, const struct resource *res,
+			     int depth, const char *suffix)
+{
+	res_printk(depth, "%s %s: size: %llx align: %u gran: %u limit: %llx%s\n", dev_path(dev),
+		   resource2str(res), res->size, res->align, res->gran, res->limit, suffix);
+}
+
+static void print_child_res(const struct device *dev, const struct resource *res, int depth)
+{
+	res_printk(depth + 1, "%s %02lx *  [0x%llx - 0x%llx] %s\n", dev_path(dev),
+		   res->index, res->base, res->base + res->size - 1, resource2str(res));
+}
+
+static void print_fixed_res(const struct device *dev,
+			    const struct resource *res, const char *prefix)
+{
+	printk(BIOS_DEBUG, " %s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
+	       prefix, dev_path(dev), res->index, res->base, res->base + res->size - 1,
+	       resource2str(res));
+}
+
+static void print_assigned_res(const struct device *dev, const struct resource *res)
+{
+	printk(BIOS_DEBUG, "  %s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
+	       dev_path(dev), res->index, res->base, res->limit, res->limit, resource2str(res));
+}
+
+static void print_failed_res(const struct device *dev, const struct resource *res)
+{
+	printk(BIOS_DEBUG, "  %s %02lx *  size: 0x%llx limit: %llx %s\n",
+	       dev_path(dev), res->index, res->size, res->limit, resource2str(res));
+}
+
+static void print_resource_ranges(const struct device *dev, const struct memranges *ranges)
+{
+	const struct range_entry *r;
+
+	printk(BIOS_INFO, " %s: Resource ranges:\n", dev_path(dev));
+
+	if (memranges_is_empty(ranges))
+		printk(BIOS_INFO, " * EMPTY!!\n");
+
+	memranges_each_entry(r, ranges) {
+		printk(BIOS_INFO, " * Base: %llx, Size: %llx, Tag: %lx\n",
+		       range_entry_base(r), range_entry_size(r), range_entry_tag(r));
+	}
+}
+
 static bool dev_has_children(const struct device *dev)
 {
 	const struct bus *bus = dev->link_list;
@@ -34,8 +92,6 @@ static resource_t effective_limit(const struct resource *const res)
 		res->flags & IORESOURCE_ABOVE_4G ? UINT64_MAX : UINT32_MAX;
 	return MIN(res->limit, quirk_4g_limit);
 }
-
-#define res_printk(depth, str, ...)	printk(BIOS_DEBUG, "%*c"str, depth, ' ', __VA_ARGS__)
 
 /*
  * During pass 1, once all the requirements for downstream devices of a
@@ -77,9 +133,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	base = 0;
 
-	res_printk(print_depth, "%s %s: size: %llx align: %u gran: %u limit: %llx\n",
-	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
-	       bridge_res->align, bridge_res->gran, bridge_res->limit);
+	print_bridge_res(bridge, bridge_res, print_depth, "");
 
 	while ((child = largest_resource(bus, &child_res, type_mask, type_match))) {
 
@@ -123,9 +177,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		child_res->base = base;
 		child_res->flags &= ~(IORESOURCE_ASSIGNED | IORESOURCE_STORED);
 
-		res_printk(print_depth + 1, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
-		       dev_path(child), child_res->index, base, base + child_res->size - 1,
-		       resource2str(child_res));
+		print_child_res(child, child_res, print_depth);
 
 		base += child_res->size;
 	}
@@ -139,9 +191,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	bridge_res->size = ALIGN_UP(base, POWER_OF_2(bridge_res->gran));
 
-	res_printk(print_depth, "%s %s: size: %llx align: %u gran: %u limit: %llx done\n",
-	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
-	       bridge_res->align, bridge_res->gran, bridge_res->limit);
+	print_bridge_res(bridge, bridge_res, print_depth, " done");
 }
 
 /*
@@ -228,30 +278,13 @@ static unsigned char get_alignment_by_resource_type(const unsigned long type)
 	die("Unexpected resource type: flags(%lu)!\n", type);
 }
 
-static void print_resource_ranges(const struct device *dev, const struct memranges *ranges)
-{
-	const struct range_entry *r;
-
-	printk(BIOS_INFO, " %s: Resource ranges:\n", dev_path(dev));
-
-	if (memranges_is_empty(ranges))
-		printk(BIOS_INFO, " * EMPTY!!\n");
-
-	memranges_each_entry(r, ranges) {
-		printk(BIOS_INFO, " * Base: %llx, Size: %llx, Tag: %lx\n",
-		       range_entry_base(r), range_entry_size(r), range_entry_tag(r));
-	}
-}
-
 static void update_constraints(struct memranges *ranges, const struct device *dev,
 			      const struct resource *res)
 {
 	if (!res->size)
 		return;
 
-	printk(BIOS_DEBUG, " %s: %s %02lx base %08llx limit %08llx %s (fixed)\n",
-	       __func__, dev_path(dev), res->index, res->base,
-	       res->base + res->size - 1, resource2str(res));
+	print_fixed_res(dev, res, __func__);
 
 	memranges_create_hole(ranges, res->base, res->size);
 }
@@ -331,24 +364,13 @@ static void setup_resource_ranges(const struct device *const domain,
 	for (struct resource *res = domain->resource_list; res != NULL; res = res->next) {
 		if ((res->flags & type_mask) != type)
 			continue;
-
-		printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %u gran: %u limit: %llx\n",
-		       dev_path(domain), resource2str(res), res->base, res->size, res->align,
-		       res->gran, res->limit);
-
+		print_domain_res(domain, res, "");
 		memranges_insert(ranges, res->base, res->limit - res->base + 1, type);
 	}
 
 	constrain_domain_resources(domain, ranges, type);
 
 	print_resource_ranges(domain, ranges);
-}
-
-static void print_resource_done(const struct device *dev, const struct resource *res)
-{
-	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %u gran: %u limit: %llx done\n",
-	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
-	       res->gran, res->limit);
 }
 
 static void cleanup_domain_resource_ranges(const struct device *dev, struct memranges *ranges,
@@ -360,7 +382,7 @@ static void cleanup_domain_resource_ranges(const struct device *dev, struct memr
 			continue;
 		if ((res->flags & IORESOURCE_TYPE_MASK) != type)
 			continue;
-		print_resource_done(dev, res);
+		print_domain_res(dev, res, " done");
 	}
 }
 
@@ -372,8 +394,7 @@ static void assign_resource(struct resource *const res, const resource_t base,
 	res->flags |= IORESOURCE_ASSIGNED;
 	res->flags &= ~IORESOURCE_STORED;
 
-	printk(BIOS_DEBUG, "  %s %02lx *  [0x%llx - 0x%llx] limit: %llx %s\n",
-	       dev_path(dev), res->index, res->base, res->limit, res->limit, resource2str(res));
+	print_assigned_res(dev, res);
 }
 
 /*
@@ -405,10 +426,8 @@ static void allocate_toplevel_resources(const struct device *const domain,
 
 		if (!memranges_steal(&ranges, res->limit, res->size, res->align, type, &base,
 				     CONFIG(RESOURCE_ALLOCATION_TOP_DOWN))) {
-			printk(BIOS_ERR, "Resource didn't fit!!! ");
-			printk(BIOS_DEBUG, "  %s %02lx *  size: 0x%llx limit: %llx %s\n",
-			       dev_path(dev), res->index, res->size,
-			       res->limit, resource2str(res));
+			printk(BIOS_ERR, "Resource didn't fit!!!\n");
+			print_failed_res(dev, res);
 			continue;
 		}
 

@@ -378,11 +378,11 @@ struct range_entry *memranges_next_entry(struct memranges *ranges,
 
 /* Find a range entry that satisfies the given constraints to fit a hole that matches the
  * required alignment, is big enough, does not exceed the limit and has a matching tag. */
-static const struct range_entry *memranges_find_entry(struct memranges *ranges,
-						      resource_t limit, resource_t size,
-						      unsigned char align, unsigned long tag)
+static const struct range_entry *
+memranges_find_entry(struct memranges *ranges, resource_t limit, resource_t size,
+		     unsigned char align, unsigned long tag, bool last)
 {
-	const struct range_entry *r;
+	const struct range_entry *r, *last_entry = NULL;
 	resource_t base, end;
 
 	if (size == 0)
@@ -407,25 +407,35 @@ static const struct range_entry *memranges_find_entry(struct memranges *ranges,
 		if (end > limit)
 			break;
 
-		return r;
+		if (!last)
+			return r;
+
+		last_entry = r;
 	}
 
-	return NULL;
+	return last_entry;
 }
 
 bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size,
-			unsigned char align, unsigned long tag, resource_t *stolen_base)
+			unsigned char align, unsigned long tag, resource_t *stolen_base,
+			bool from_top)
 {
-	resource_t base;
-	const struct range_entry *r = memranges_find_entry(ranges, limit, size, align, tag);
+	const struct range_entry *r;
 
+	r = memranges_find_entry(ranges, limit, size, align, tag, from_top);
 	if (r == NULL)
 		return false;
 
-	base = ALIGN_UP(r->begin, POWER_OF_2(align));
-
-	memranges_create_hole(ranges, base, size);
-	*stolen_base = base;
+	if (from_top) {
+		/* Ensure we're within the range, even aligned down.
+		   Proof is simple: If ALIGN_UP(r->begin) would be
+		   higher, the stolen range wouldn't fit.*/
+		assert(r->begin <= ALIGN_DOWN(range_entry_end(r) - size, POWER_OF_2(align)));
+		*stolen_base = ALIGN_DOWN(range_entry_end(r) - size, POWER_OF_2(align));
+	} else {
+		*stolen_base = ALIGN_UP(r->begin, POWER_OF_2(align));
+	}
+	memranges_create_hole(ranges, *stolen_base, size);
 
 	return true;
 }

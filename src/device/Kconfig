@@ -933,6 +933,11 @@ config RESOURCE_ALLOCATOR_V4
 	  ranges for allocating resources. This allows allocation of resources
 	  above 4G boundary as well.
 
+config RESOURCE_ALLOCATION_TOP_DOWN
+	bool "Allocate resources from top down"
+	default y
+	depends on RESOURCE_ALLOCATOR_V4
+
 config XHCI_UTILS
 	def_bool n
 	help

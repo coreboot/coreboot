@@ -457,8 +457,9 @@ static void test_memrange_holes(void **state)
 }
 
 /*
- * This test verifies memranges_steal() function. Simple check is done by attempt so steal some
- * memory from region with READONLY_TAG.
+ * This test verifies memranges_steal() function. Simple check is done by attempt
+ * to steal some memory from the top of region with CACHEABLE_TAG and some from
+ * the bottom of region with READONLY_TAG.
  *
  * Example memory ranges (res_mock1) for test_memrange_steal.
  * Space marked with (/) is stolen during the test.
@@ -466,8 +467,8 @@ static void test_memrange_holes(void **state)
  *     +--------CACHEABLE_TAG--------+ <-0xE000
  *     |                             |
  *     |                             |
- *     |                             |
- *     +-----------------------------+ <-0x100000
+ *     |/////////////////////////////|             <-stolen_base
+ *     +-----------------------------+ <-0x100000  <-stolen_base + 0x4000
  *
  *
  *
@@ -501,13 +502,27 @@ static void test_memrange_steal(void **state)
 
 	status = memranges_steal(&test_memrange,
 				 res_mock[RESERVED_TAG].base + res_mock[RESERVED_TAG].size,
-				 stolen_range_size, 12, READONLY_TAG, &stolen);
+				 stolen_range_size, 12, CACHEABLE_TAG, &stolen, true);
+	assert_true(status);
+	assert_in_range(stolen, res_mock[CACHEABLE_TAG].base,
+			res_mock[CACHEABLE_TAG].base + res_mock[CACHEABLE_TAG].size);
+	status = memranges_steal(&test_memrange,
+				 res_mock[RESERVED_TAG].base + res_mock[RESERVED_TAG].size,
+				 stolen_range_size, 12, READONLY_TAG, &stolen, false);
 	assert_true(status);
 	assert_in_range(stolen, res_mock[READONLY_TAG].base,
 			res_mock[READONLY_TAG].base + res_mock[READONLY_TAG].size);
 
 	memranges_each_entry(ptr, &test_memrange)
 	{
+		if (range_entry_tag(ptr) == CACHEABLE_TAG) {
+			assert_int_equal(range_entry_end(ptr),
+					 ALIGN_DOWN(ALIGN_UP(res_mock[CACHEABLE_TAG].base
+								+ res_mock[CACHEABLE_TAG].size,
+							     MEMRANGE_ALIGN)
+							- stolen_range_size,
+						    MEMRANGE_ALIGN));
+		}
 		if (range_entry_tag(ptr) == READONLY_TAG) {
 			assert_int_equal(range_entry_base(ptr),
 					 ALIGN_DOWN(res_mock[READONLY_TAG].base, MEMRANGE_ALIGN)
@@ -518,20 +533,23 @@ static void test_memrange_steal(void **state)
 	assert_int_equal(count, 3);
 	count = 0;
 
-	/* Check if inserting range in previously stolen area will merge it. */
+	/* Check if inserting ranges in previously stolen areas will merge them. */
+	memranges_insert(&test_memrange,
+			 res_mock[CACHEABLE_TAG].base + res_mock[CACHEABLE_TAG].size
+				- stolen_range_size - 0x12,
+			 stolen_range_size, CACHEABLE_TAG);
 	memranges_insert(&test_memrange, res_mock[READONLY_TAG].base + 0xCC, stolen_range_size,
 			 READONLY_TAG);
 	memranges_each_entry(ptr, &test_memrange)
 	{
-		if (range_entry_tag(ptr) == READONLY_TAG) {
-			assert_int_equal(
-				range_entry_base(ptr),
-				ALIGN_DOWN(res_mock[READONLY_TAG].base, MEMRANGE_ALIGN));
-			assert_int_equal(
-				range_entry_end(ptr),
-				ALIGN_UP(res_mock[READONLY_TAG].base + res_mock[READONLY_TAG].size,
-					 MEMRANGE_ALIGN));
-		}
+		const unsigned long tag = range_entry_tag(ptr);
+		assert_true(tag == CACHEABLE_TAG || tag == READONLY_TAG || tag == RESERVED_TAG);
+		assert_int_equal(
+			range_entry_base(ptr),
+			ALIGN_DOWN(res_mock[tag].base, MEMRANGE_ALIGN));
+		assert_int_equal(
+			range_entry_end(ptr),
+			ALIGN_UP(res_mock[tag].base + res_mock[tag].size, MEMRANGE_ALIGN));
 		count++;
 	}
 	assert_int_equal(count, 3);

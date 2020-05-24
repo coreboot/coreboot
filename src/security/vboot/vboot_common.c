@@ -3,7 +3,6 @@
 #include <boot_device.h>
 #include <cbmem.h>
 #include <console/cbmem_console.h>
-#include <fmap.h>
 #include <reset.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>

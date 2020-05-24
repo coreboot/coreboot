@@ -18,7 +18,6 @@
 #include <soc/tmu.h>
 #include <soc/usb.h>
 #include <symbols.h>
-#include <vbe.h>
 
 #include "exynos5250.h"
 

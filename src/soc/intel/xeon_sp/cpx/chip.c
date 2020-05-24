@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/ioapic.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>

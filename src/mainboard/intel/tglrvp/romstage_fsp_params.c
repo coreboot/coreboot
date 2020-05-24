@@ -6,7 +6,6 @@
 #include <spd_bin.h>
 #include <soc/meminit.h>
 #include <baseboard/variants.h>
-#include <cbfs.h>
 #include "board_id.h"
 #include "spd/spd.h"
 

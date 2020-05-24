@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <boot_device.h>
-#include <cbfs.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>

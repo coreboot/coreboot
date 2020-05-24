@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <cf9_reset.h>
-#include <cpu/x86/bist.h>
 #include <timestamp.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>

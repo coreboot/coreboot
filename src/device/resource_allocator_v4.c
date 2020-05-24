@@ -268,27 +268,6 @@ static void compute_domain_resources(const struct device *domain)
 	}
 }
 
-static unsigned char get_alignment_by_resource_type(const unsigned long type)
-{
-	if (type & IORESOURCE_MEM)
-		return 12;  /* Page-aligned --> log2(4KiB) */
-	else if (type & IORESOURCE_IO)
-		return 0;   /* No special alignment required --> log2(1) */
-
-	die("Unexpected resource type: flags(%lu)!\n", type);
-}
-
-static void update_constraints(struct memranges *ranges, const struct device *dev,
-			      const struct resource *res)
-{
-	if (!res->size)
-		return;
-
-	print_fixed_res(dev, res, __func__);
-
-	memranges_create_hole(ranges, res->base, res->size);
-}
-
 /*
  * Scan the entire tree to identify any fixed resources allocated by
  * any device to ensure that the address map for domain resources are
@@ -310,7 +289,10 @@ static void avoid_fixed_resources(struct memranges *ranges, const struct device 
 	for (res = dev->resource_list; res != NULL; res = res->next) {
 		if ((res->flags & mask_match) != mask_match)
 			continue;
-		update_constraints(ranges, dev, res);
+		if (!res->size)
+			continue;
+		print_fixed_res(dev, res, __func__);
+		memranges_create_hole(ranges, res->base, res->size);
 	}
 
 	bus = dev->link_list;
@@ -319,28 +301,6 @@ static void avoid_fixed_resources(struct memranges *ranges, const struct device 
 
 	for (child = bus->children; child != NULL; child = child->sibling)
 		avoid_fixed_resources(ranges, child, mask_match);
-}
-
-static void constrain_domain_resources(const struct device *domain, struct memranges *ranges,
-				       unsigned long type)
-{
-	unsigned long mask_match = type | IORESOURCE_FIXED;
-
-	if (type == IORESOURCE_IO) {
-		/*
-		 * Don't allow allocations in the VGA I/O range. PCI has special
-		 * cases for that.
-		 */
-		memranges_create_hole(ranges, 0x3b0, 0x3df - 0x3b0 + 1);
-
-		/*
-		 * Resource allocator no longer supports the legacy behavior where
-		 * I/O resource allocation is guaranteed to avoid aliases over legacy
-		 * PCI expansion card addresses.
-		 */
-	}
-
-	avoid_fixed_resources(ranges, domain, mask_match);
 }
 
 /*
@@ -356,8 +316,10 @@ static void setup_resource_ranges(const struct device *const domain,
 				  const unsigned long type,
 				  struct memranges *const ranges)
 {
+	/* Align mem resources to 2^12 (4KiB pages) at a minimum, so they
+	   can be memory-mapped individually (e.g. for virtualization guests). */
+	const unsigned char alignment = type == IORESOURCE_MEM ? 12 : 0;
 	const unsigned long type_mask = IORESOURCE_TYPE_MASK | IORESOURCE_FIXED;
-	const unsigned char alignment = get_alignment_by_resource_type(type);
 
 	memranges_init_empty_with_alignment(ranges, NULL, 0, alignment);
 
@@ -368,7 +330,21 @@ static void setup_resource_ranges(const struct device *const domain,
 		memranges_insert(ranges, res->base, res->limit - res->base + 1, type);
 	}
 
-	constrain_domain_resources(domain, ranges, type);
+	if (type == IORESOURCE_IO) {
+		/*
+		 * Don't allow allocations in the VGA I/O range. PCI has special
+		 * cases for that.
+		 */
+		memranges_create_hole(ranges, 0x3b0, 0x3df - 0x3b0 + 1);
+
+		/*
+		 * Resource allocator no longer supports the legacy behavior where
+		 * I/O resource allocation is guaranteed to avoid aliases over legacy
+		 * PCI expansion card addresses.
+		 */
+	}
+
+	avoid_fixed_resources(ranges, domain, type | IORESOURCE_FIXED);
 
 	print_resource_ranges(domain, ranges);
 }

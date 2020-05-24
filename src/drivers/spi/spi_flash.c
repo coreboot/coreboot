@@ -4,7 +4,6 @@
 #include <boot_device.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>

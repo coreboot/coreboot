@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <elog.h>
 
 #define GSMI_RET_SUCCESS		0x00

@@ -8,7 +8,6 @@
 #include <assert.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
-#include <cpu/x86/smm.h>
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmclib.h>

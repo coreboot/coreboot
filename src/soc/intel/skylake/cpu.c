@@ -13,7 +13,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/name.h>
-#include <cpu/x86/smm.h>
 #include <cpu/intel/smm_reloc.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>

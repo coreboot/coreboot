@@ -9,7 +9,6 @@
 #include <console/console.h>
 #include <cpu/x86/pae.h>
 #include <delay.h>
-#include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <fsp/api.h>

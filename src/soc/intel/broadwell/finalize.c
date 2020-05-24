@@ -3,7 +3,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
-#include <cpu/x86/smm.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/pci_devs.h>

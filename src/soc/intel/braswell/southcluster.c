@@ -8,7 +8,6 @@
 #include <bootstate.h>
 #include "chip.h"
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

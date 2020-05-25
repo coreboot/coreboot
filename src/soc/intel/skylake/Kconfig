@@ -125,10 +125,6 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0xC000
-
 config EXCLUDE_NATIVE_SD_INTERFACE
 	bool
 	default n

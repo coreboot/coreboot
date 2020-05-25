@@ -37,10 +37,6 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x4000
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x8000
-
 config ENABLE_MRC_CACHE
 	bool "Use cached memory configuration"
 	default n

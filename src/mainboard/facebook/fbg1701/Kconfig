@@ -92,10 +92,6 @@ config TPM_INIT
 	bool "TPM Setup in RAMSTAGE"
 	default n
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex "C Bootblock Size"
-	default 0x4000
-
 config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
 	depends on USE_VENDORCODE_ELTAN
 	bool

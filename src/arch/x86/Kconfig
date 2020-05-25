@@ -186,10 +186,13 @@ config HPET_ADDRESS
 	hex
 	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE
 
-# 64KiB default bootblock size
 config C_ENV_BOOTBLOCK_SIZE
 	hex
-	default 0x10000
+	default 0x40000 if !FIXED_BOOTBLOCK_SIZE
+	help
+	   This is only the default maximum of bootblock size for linking
+	   purposes. Platforms may provide different limit and need to
+	   specify this when FIXED_BOOTBLOCK_SIZE is selected.
 
 config FIXED_BOOTBLOCK_SIZE
 	bool

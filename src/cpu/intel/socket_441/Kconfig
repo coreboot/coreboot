@@ -10,10 +10,6 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select SSE
 	select SETUP_XIP_CACHE
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x8000
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xfefc0000

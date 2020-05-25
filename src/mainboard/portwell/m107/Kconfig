@@ -63,8 +63,4 @@ config SPI_FLASH_WINBOND
 	bool
 	default y
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex "C Bootblock Size"
-	default 0x4000
-
 endif # BOARD_PORTWELL_M107

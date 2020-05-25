@@ -213,10 +213,6 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x4000
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x8000
-
 #####
 # Test support
 #####

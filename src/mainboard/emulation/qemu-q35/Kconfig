@@ -85,10 +85,6 @@ config HAVE_INTEL_FIRMWARE
 	bool
 	default n
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x4000
-
 config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x4000

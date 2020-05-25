@@ -270,10 +270,6 @@ config VBOOT
 	select VBOOT_VBNV_CMOS
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0xC000
-
 config CBFS_SIZE
 	hex
 	default 0x200000

@@ -157,10 +157,6 @@ config CONSOLE_UART_BASE_ADDRESS
 	hex "MMIO base address for UART"
 	default 0xd4000000
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x8000
-
 choice
 	prompt "Cache-as-ram implementation"
 	default USE_DENVERTON_NS_CAR_NEM_ENHANCED

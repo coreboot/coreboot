@@ -52,10 +52,6 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0x8000
-
 config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_ROMSTAGE

@@ -68,10 +68,6 @@ config CPU_MICROCODE_CBFS_LEN
 	hex
 	default 0x7C00
 
-config C_ENV_BOOTBLOCK_SIZE
-	hex
-	default 0xC000
-
 config HEAP_SIZE
 	hex
 	default 0x80000

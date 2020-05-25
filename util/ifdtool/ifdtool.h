@@ -105,7 +105,7 @@ typedef struct {
 } __attribute__((packed)) fcba_t;
 
 // pch strap
-#define MAX_PCHSTRP 18
+#define MAX_PCHSTRP 1024
 
 typedef struct {
 	uint32_t pchstrp[MAX_PCHSTRP];

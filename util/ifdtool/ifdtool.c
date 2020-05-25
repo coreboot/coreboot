@@ -145,7 +145,11 @@ static fpsba_t *find_fpsba(char *image, int size)
 		return NULL;
 	fpsba_t *fpsba =
 		(fpsba_t *) (image + (((fdb->flmap1 >> 16) & 0xff) << 4));
-	return PTR_IN_RANGE(fpsba, image, size) ? fpsba : NULL;
+
+	int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
+	if ((((char *)fpsba) + SSL) >= (image + size))
+		return NULL;
+	return fpsba;
 }
 
 static fmsba_t *find_fmsba(char *image, int size)
@@ -516,13 +520,15 @@ static void dump_fcba(const fcba_t *fcba)
 		(fcba->flpb & 0xfff) << 12);
 }
 
-static void dump_fpsba(const fpsba_t *fpsba)
+static void dump_fpsba(const fdbar_t *fdb, const fpsba_t *fpsba)
 {
 	unsigned int i;
+	/* SoC Strap Length, aka PSL, aka ISL */
+	unsigned int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
+
 	printf("Found PCH Strap Section\n");
-	for (i = 0; i < ARRAY_SIZE(fpsba->pchstrp); i++)
-		printf("PCHSTRP%u:%s 0x%08x\n", i,
-		       i < 10 ? " " : "", fpsba->pchstrp[i]);
+	for (i = 0; i < SSL; i++)
+		printf("PCHSTRP%-3u: 0x%08x\n", i, fpsba->pchstrp[i]);
 
 	if (ifd_version >= IFD_VERSION_2) {
 		printf("HAP bit is %sset\n",
@@ -751,7 +757,7 @@ static void dump_fd(char *image, int size)
 	if (frba && fcba && fpsba && fmba && fmsba) {
 		dump_frba(frba);
 		dump_fcba(fcba);
-		dump_fpsba(fpsba);
+		dump_fpsba(fdb, fpsba);
 		dump_fmba(fmba);
 		dump_fmsba(fmsba);
 	} else {
@@ -1099,6 +1105,23 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
+static void set_pchstrap(fpsba_t *fpsba, const fdbar_t *fdb, const int strap,
+			 const unsigned int value)
+{
+	if (!fpsba || !fdb) {
+		fprintf(stderr, "Internal error\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* SoC Strap Length, aka PSL, aka ISL */
+	int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
+	if (strap >= SSL) {
+		fprintf(stderr, "Strap index %d out of range (max: %d)\n", strap, SSL);
+		exit(EXIT_FAILURE);
+	}
+	fpsba->pchstrp[strap] = value;
+}
+
 /* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
 static void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
 {
@@ -1428,6 +1451,8 @@ static void print_usage(const char *name)
 	       "                                         cnl - Cannon Lake\n"
 	       "                                         glk - Gemini Lake\n"
 	       "                                         sklkbl - Skylake/Kaby Lake\n"
+	       "   -S | --setpchstrap                    Write a PCH strap\n"
+	       "   -V | --newvalue                       The new value to write into PCH strap specified by -S\n"
 	       "   -v | --version:                       print the version\n"
 	       "   -h | --help:                          print this help\n\n"
 	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
@@ -1439,12 +1464,14 @@ int main(int argc, char *argv[])
 	int opt, option_index = 0;
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
-	int mode_layout = 0, mode_newlayout = 0, mode_density = 0;
+	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
 	int mode_altmedisable = 0, altmedisable = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	char *new_filename = NULL;
 	int region_type = -1, inputfreq = 0;
+	unsigned int value = 0;
+	unsigned int pchstrap = 0;
 	unsigned int new_density = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
 
@@ -1466,14 +1493,23 @@ int main(int argc, char *argv[])
 		{"help", 0, NULL, 'h'},
 		{"platform", 0, NULL, 'p'},
 		{"validate", 0, NULL, 't'},
+		{"setpchstrap", 1, NULL, 'S'},
+		{"newvalue", 1, NULL, 'V'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:D:C:M:xi:n:O:s:p:eluvth?",
+	while ((opt = getopt_long(argc, argv, "S:V:df:D:C:M:xi:n:O:s:p:eluvth?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			mode_dump = 1;
+			break;
+		case 'S':
+			mode_setstrap = 1;
+			pchstrap = strtoul(optarg, NULL, 0);
+			break;
+		case 'V':
+			value = strtoul(optarg, NULL, 0);
 			break;
 		case 'f':
 			mode_layout = 1;
@@ -1674,7 +1710,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+	if ((mode_dump + mode_layout + mode_extract + mode_inject + mode_setstrap +
 		mode_newlayout + (mode_spifreq | mode_em100 | mode_unlocked |
 		 mode_locked) + mode_altmedisable + mode_validate) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
@@ -1682,7 +1718,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+	if ((mode_dump + mode_layout + mode_extract + mode_inject + mode_setstrap +
 	     mode_newlayout + mode_spifreq + mode_em100 + mode_locked +
 	     mode_unlocked + mode_density + mode_altmedisable + mode_validate) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
@@ -1771,6 +1807,13 @@ int main(int argc, char *argv[])
 
 	if (mode_unlocked)
 		unlock_descriptor(new_filename, image, size);
+
+	if (mode_setstrap) {
+		fpsba_t *fpsba = find_fpsba(image, size);
+		const fdbar_t *fdb = find_fd(image, size);
+		set_pchstrap(fpsba, fdb, pchstrap, value);
+		write_image(new_filename, image, size);
+	}
 
 	if (mode_altmedisable) {
 		fpsba_t *fpsba = find_fpsba(image, size);

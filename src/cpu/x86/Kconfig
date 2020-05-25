@@ -60,16 +60,6 @@ config TSC_SYNC_MFENCE
 	  to execute an mfence instruction in order to synchronize
 	  rdtsc. This is true for all modern Intel CPUs.
 
-config NO_FIXED_XIP_ROM_SIZE
-	bool
-	default n
-	help
-	  The XIP_ROM_SIZE Kconfig variable is used globally on x86
-	  with the assumption that all chipsets utilize this value.
-	  For the chipsets which do not use the variable it can lead
-	  to unnecessary alignment constraints in cbfs for romstage.
-	  Therefore, allow those chipsets a path to not be burdened.
-
 config SETUP_XIP_CACHE
 	bool
 	depends on !NO_XIP_EARLY_STAGES

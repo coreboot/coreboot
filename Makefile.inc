@@ -1177,9 +1177,10 @@ $(CONFIG_CBFS_PREFIX)/romstage-options := -S ".car.data"
 ifneq ($(CONFIG_NO_XIP_EARLY_STAGES),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options += --xip
 
-ifneq ($(CONFIG_NO_FIXED_XIP_ROM_SIZE),y)
+# For efficient MTRR utilisation use natural alignment for romstage.
+ifeq ($(CONFIG_SETUP_XIP_CACHE),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options += --pow2page
-endif    # CONFIG_NO_FIXED_XIP_ROM_SIZE
+endif    # CONFIG_SETUP_XIP_CACHE
 
 endif   # CONFIG_NO_XIP_EARLY_STAGES
 endif   # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64

@@ -599,8 +599,6 @@ char *strtok_r(char *str, const char *delim, char **ptr)
 	return start;
 }
 
-static char **strtok_global;
-
 /**
  * Extract first token in string str that is delimited by a character in tokens.
  * Destroys str, eliminates the token delimiter and uses global state.
@@ -610,7 +608,9 @@ static char **strtok_global;
  */
 char *strtok(char *str, const char *delim)
 {
-	return strtok_r(str, delim, strtok_global);
+	static char *strtok_ptr;
+
+	return strtok_r(str, delim, &strtok_ptr);
 }
 
 /**

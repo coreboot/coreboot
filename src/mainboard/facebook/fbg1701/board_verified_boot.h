@@ -6,6 +6,7 @@
 #include <vboot_check.h>
 
 /* Define the items to be measured or verified */
+#define BOOTBLOCK (const char *)"bootblock"
 #define FSP (const char *)"fsp.bin"
 #define CMOS_LAYOUT (const char *)"cmos_layout.bin"
 #define RAMSTAGE (const char *)CONFIG_CBFS_PREFIX"/ramstage"

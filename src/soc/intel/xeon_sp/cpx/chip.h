@@ -7,9 +7,34 @@
 #include <soc/irq.h>
 #include <stdint.h>
 
+#define MAX_PCH_PCIE_PORT   20
+
+/**
+ UPD_PCH_PCIE_PORT:
+ ForceEnable           -  Enable/Disable PCH PCIe port
+ PortLinkSpeed         -  Port Link Speed. Use PCIE_LINK_SPEED to set
+**/
+struct pch_pcie_port {
+	uint8_t    ForceEnable;
+	uint8_t    PortLinkSpeed;
+};
+
+/**
+ PCIe Link Speed Selection
+ **/
+typedef enum {
+	PcieAuto = 0,
+	PcieGen1,
+	PcieGen2,
+	PcieGen3
+} pcie_link_speed;
+
 struct soc_intel_xeon_sp_cpx_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Struct for configuring PCH PCIe port */
+	struct pch_pcie_port pch_pci_port[MAX_PCH_PCIE_PORT];
 
 	/**
 	 * Interrupt Routing configuration

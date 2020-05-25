@@ -7,6 +7,7 @@
 #include <FspmUpd.h>
 #include <soc/romstage.h>
 
+#include "chip.h"
 #include "ipmi.h"
 #include "vpd.h"
 
@@ -74,7 +75,21 @@ static void mainboard_config_gpios(FSPM_UPD *mupd)
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {
+	uint8_t index;
+	const config_t *config = config_of_soc();
+
 	oem_update_iio(mupd);
+
+	for (index = 0; index < MAX_PCH_PCIE_PORT; index++) {
+		mupd->FspmConfig.PchPcieForceEnable[index] =
+			config->pch_pci_port[index].ForceEnable;
+		mupd->FspmConfig.PchPciePortLinkSpeed[index] =
+			config->pch_pci_port[index].PortLinkSpeed;
+	}
+
+	mupd->FspmConfig.PchPcieRootPortFunctionSwap = 0x00;
+	/* The default value is 0XFF in FSP, set it to 0xFE by platform */
+	mupd->FspmConfig.PchPciePllSsc = 0xFE;
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

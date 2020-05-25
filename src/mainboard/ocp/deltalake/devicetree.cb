@@ -39,6 +39,12 @@ chip soc/intel/xeon_sp/cpx
 	register "gen1_dec" = "0x00fc0601" # BIC in-band update support
 	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
 
+	# configure PCH PCIe port
+	register "pch_pci_port[8]" = "{
+		.ForceEnable = 0x1,
+		.PortLinkSpeed = PcieAuto,
+	}"
+
 	device cpu_cluster 0 on
 	  device lapic 0 on end
 	end

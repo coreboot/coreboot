@@ -1177,10 +1177,8 @@ $(CONFIG_CBFS_PREFIX)/romstage-options := -S ".car.data"
 ifneq ($(CONFIG_NO_XIP_EARLY_STAGES),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options += --xip
 
-# If XIP_ROM_SIZE isn't being used don't overly constrain romstage by passing
-# -P with a default value.
 ifneq ($(CONFIG_NO_FIXED_XIP_ROM_SIZE),y)
-$(CONFIG_CBFS_PREFIX)/romstage-options += -P $(CONFIG_XIP_ROM_SIZE)
+$(CONFIG_CBFS_PREFIX)/romstage-options += --pow2page
 endif    # CONFIG_NO_FIXED_XIP_ROM_SIZE
 
 endif   # CONFIG_NO_XIP_EARLY_STAGES

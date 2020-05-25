@@ -190,10 +190,6 @@ static inline unsigned int fls(unsigned int x)
  */
 #define CACHE_TMP_RAMTOP (16<<20)
 
-#if ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE - 1)) != 0)
-# error "CONFIG_XIP_ROM_SIZE is not a power of 2"
-#endif
-
 /* For ROM caching, generally, try to use the next power of 2. */
 #define OPTIMAL_CACHE_ROM_SIZE _ALIGN_UP_POW2(CONFIG_ROM_SIZE)
 #define OPTIMAL_CACHE_ROM_BASE _FROM_4G_TOP(OPTIMAL_CACHE_ROM_SIZE)

@@ -70,11 +70,6 @@ config NO_FIXED_XIP_ROM_SIZE
 	  to unnecessary alignment constraints in cbfs for romstage.
 	  Therefore, allow those chipsets a path to not be burdened.
 
-config XIP_ROM_SIZE
-	hex
-	depends on !NO_FIXED_XIP_ROM_SIZE
-	default 0x10000
-
 config SETUP_XIP_CACHE
 	bool
 	depends on !NO_XIP_EARLY_STAGES

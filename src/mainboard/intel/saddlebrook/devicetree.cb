@@ -184,8 +184,6 @@ chip soc/intel/skylake
 	register "pirqg_routing" = "0x0b"
 	register "pirqh_routing" = "0x0b"
 
-	register "PmTimerDisabled" = "0"
-
 	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \

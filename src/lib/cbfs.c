@@ -91,6 +91,27 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 	return ret;
 }
 
+static inline bool cbfs_lz4_enabled(void)
+{
+	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) && !CONFIG(COMPRESS_PRERAM_STAGES))
+		return false;
+
+	return true;
+}
+
+static inline bool cbfs_lzma_enabled(void)
+{
+	/* We assume here romstage and postcar are never compressed. */
+	if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE)
+		return false;
+	if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
+		return false;
+	if ((ENV_ROMSTAGE || ENV_POSTCAR)
+	    && !CONFIG(COMPRESS_RAMSTAGE))
+		return false;
+	return true;
+}
+
 size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
 {
@@ -105,8 +126,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		return in_size;
 
 	case CBFS_COMPRESS_LZ4:
-		if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
-			!CONFIG(COMPRESS_PRERAM_STAGES))
+		if (!cbfs_lz4_enabled())
 			return 0;
 
 		/* Load the compressed image to the end of the available memory
@@ -123,13 +143,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		return out_size;
 
 	case CBFS_COMPRESS_LZMA:
-		/* We assume here romstage and postcar are never compressed. */
-		if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE)
-			return 0;
-		if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
-			return 0;
-		if ((ENV_ROMSTAGE || ENV_POSTCAR)
-		    && !CONFIG(COMPRESS_RAMSTAGE))
+		if (!cbfs_lzma_enabled())
 			return 0;
 		void *map = rdev_mmap(rdev, offset, in_size);
 		if (map == NULL)

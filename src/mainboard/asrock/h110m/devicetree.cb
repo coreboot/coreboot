@@ -135,7 +135,6 @@ chip soc/intel/skylake
 	}"
 
 	register "EnableLan" = "0"
-	register "PmTimerDisabled" = "0"
 
 	# USB
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"

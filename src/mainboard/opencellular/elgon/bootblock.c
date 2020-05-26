@@ -71,7 +71,7 @@ static void protect_ro_rgn_spi_flash(void)
 		* WP_RO read only and use /WP pin
 		* non-volatile programming
 		*/
-		if (spi_flash_set_write_protected(flash, &ro_rgn, 1,
+		if (spi_flash_set_write_protected(flash, &ro_rgn,
 		    SPI_WRITE_PROTECTION_PIN) != 0)
 			die("Failed to write-protect WP_RO region!");
 	}

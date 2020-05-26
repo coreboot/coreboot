@@ -555,7 +555,6 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
 
 int spi_flash_set_write_protected(const struct spi_flash *flash,
 				  const struct region *region,
-				  const bool non_volatile,
 				  const enum spi_flash_status_reg_lockdown mode)
 {
 	struct region flash_region = { 0 };
@@ -575,7 +574,7 @@ int spi_flash_set_write_protected(const struct spi_flash *flash,
 		return -1;
 	}
 
-	ret = flash->prot_ops->set_write(flash, region, non_volatile, mode);
+	ret = flash->prot_ops->set_write(flash, region, mode);
 
 	if (ret == 0 && mode != SPI_WRITE_PROTECTION_PRESERVE) {
 		printk(BIOS_INFO, "SPI: SREG lock-down was set to ");

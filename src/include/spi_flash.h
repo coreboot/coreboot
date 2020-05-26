@@ -74,7 +74,6 @@ struct spi_flash_protection_ops {
 	int
 	(*set_write)(const struct spi_flash *flash,
 				const struct region *region,
-				const bool non_volatile,
 				const enum spi_flash_status_reg_lockdown mode);
 
 };
@@ -170,7 +169,6 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
  *
  * @param flash : A SPI flash device
  * @param region: A subregion of the device's region
- * @param non_volatile: Write status register non-volatile
  * @param mode: Optional lock-down of status register
 
  * @return 0 on success
@@ -178,7 +176,6 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
 int
 spi_flash_set_write_protected(const struct spi_flash *flash,
 			      const struct region *region,
-			      const bool non_volatile,
 			      const enum spi_flash_status_reg_lockdown mode);
 
 /*

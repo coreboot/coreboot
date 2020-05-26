@@ -422,7 +422,6 @@ static int winbond_flash_cmd_status(const struct spi_flash *flash,
  *
  * @param flash: The flash to operate on
  * @param region: The region to write protect
- * @param non_volatile: Make setting permanent
  * @param mode: Optional status register lock-down mode
  *
  * @return 0 on success
@@ -430,7 +429,6 @@ static int winbond_flash_cmd_status(const struct spi_flash *flash,
 static int
 winbond_set_write_protection(const struct spi_flash *flash,
 			     const struct region *region,
-			     const bool non_volatile,
 			     const enum spi_flash_status_reg_lockdown mode)
 {
 	const struct spi_flash_part_id *params;
@@ -527,7 +525,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 		mask.reg2.srp1 = 1;
 	}
 
-	ret = winbond_flash_cmd_status(flash, mask.u, val.u, non_volatile);
+	ret = winbond_flash_cmd_status(flash, mask.u, val.u, true);
 	if (ret)
 		return ret;
 

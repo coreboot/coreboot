@@ -97,7 +97,7 @@ int boot_device_wp_region(const struct region_device *rd,
 		if (spi_flash_is_write_protected(boot_dev,
 						 region_device_region(rd)) != 1) {
 			return spi_flash_set_write_protected(boot_dev,
-						region_device_region(rd), true,
+						region_device_region(rd),
 						SPI_WRITE_PROTECTION_REBOOT);
 		}
 

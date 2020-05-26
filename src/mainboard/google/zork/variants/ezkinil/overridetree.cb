@@ -22,6 +22,8 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
+	register "xhci0_force_gen1" = "1"
+
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,

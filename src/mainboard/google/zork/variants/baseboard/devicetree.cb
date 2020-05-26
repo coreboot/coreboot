@@ -48,6 +48,8 @@ chip soc/amd/picasso
 
 	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
 
+	register "xhci0_force_gen1" = "0"
+
 	# SPI Configuration
 	register "common_config.spi_config" = "{
 		.normal_speed = SPI_SPEED_66M, /* MHz */

@@ -17,8 +17,6 @@ struct soc_intel_xeon_sp_cpx_config {
 	uint32_t gen4_dec;
 };
 
-extern struct chip_operations soc_intel_xeon_sp_cpx_ops;
-
 typedef struct soc_intel_xeon_sp_cpx_config config_t;
 
 #endif

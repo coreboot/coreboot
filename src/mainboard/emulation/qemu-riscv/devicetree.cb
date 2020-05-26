@@ -2,7 +2,4 @@
 
 chip soc/ucb/riscv
 	device cpu_cluster 0 on end
-	chip drivers/generic/generic # I2C0 controller
-		device i2c 6 on end # Fake component for testing
-	end
 end

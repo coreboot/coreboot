@@ -2,7 +2,5 @@
 
 # TODO fill with Versatile Express board data in QEMU.
 chip cpu/armltd/cortex-a9
-	chip drivers/generic/generic # I2C0 controller
-		device i2c 6 on end # Fake component for testing
-	end
+	device cpu_cluster 0 on end
 end

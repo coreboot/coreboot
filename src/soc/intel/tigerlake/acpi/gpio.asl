@@ -106,19 +106,19 @@ Method (GPID, 1, Serialized)
 {
 	Switch (ToInteger (Arg0))
 	{
-		Case (0) {
+		Case (COMM_0) {
 			Local0 = PID_GPIOCOM0
 		}
-		Case (1) {
+		Case (COMM_1) {
 			Local0 = PID_GPIOCOM1
 		}
-		Case (2) {
+		Case (COMM_2) {
 			Local0 = PID_GPIOCOM2
 		}
-		Case (4) {
+		Case (COMM_4) {
 			Local0 = PID_GPIOCOM4
 		}
-		Case (5) {
+		Case (COMM_5) {
 			Local0 = PID_GPIOCOM5
 		}
 		Default {

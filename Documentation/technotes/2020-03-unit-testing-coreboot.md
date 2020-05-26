@@ -279,41 +279,6 @@ tests/lib/string-test and tests/device/i2c-test:
                         ├── i2c.o
 ```
 
-### Adding new tests
-For purpose of this description, let's assume that we want to add a new unit test
-for src/device/i2c.c module. Since this module is rather simple, it will be enough
-to have only one test module.
-
-Firstly (assuming there is no tests/device/Makefile.inc file) we need to create
-Makefile.inc in main unit test module directory. Inside this Makefile.inc, one
-need to register new test and can specify multiple different attributes for it.
-
-```bash
-# Register new test, by adding its name to tests variable
-tests-y += i2c-test
-
-# All attributes are defined by <test_name>-<attribute> variables
-# <test_name>-srcs is used to register all input files (test harness, unit under
-# test and others) for this particular test. Remember to add relative paths.
-i2c-test-srcs += tests/device/i2c-test.c
-i2c-test-srcs += src/device/i2c.c
-
-# We can define extra cflags for this particular test
-i2c-test-cflags += -DSOME_DEFINE=1
-
-# For mocking out external dependencies (functions which cannot be resolved by
-# linker), it is possible to register a mock function. To register new mock, it
-# is enough to add function-to-be-mocked name to <test_name>-mocks variable.
-i2c-test-mocks += platform_i2c_transfer
-
-# Similar to coreboot concept, unit tests also runs in the context of stages.
-# By default all unit tests are compiled to be ramstage executables. If one want
-# to overwrite this setting, there is <test_name>-stage variable available.
-i2c-test-stage:= bootblock
-```
-
 ### Writing new tests
-Full description of how to write unit tests and Cmocka API description is out of
-the scope of this document. There are other documents related to this
-[Cmocka API](https://api.cmocka.org/) and
-[Mocks](https://lwn.net/Articles/558106/).
+Our tutorial series has [detailed guidelines](../tutorial/part3.md) for writing
+unit tests.

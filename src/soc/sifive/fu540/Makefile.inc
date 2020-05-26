@@ -23,6 +23,7 @@ ramstage-y += sdram.c
 ramstage-y += cbmem.c
 ramstage-y += otp.c
 ramstage-y += clock.c
+ramstage-y += chip.c
 
 CPPFLAGS_common += -Isrc/soc/sifive/fu540/include
 

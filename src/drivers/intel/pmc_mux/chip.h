@@ -3,8 +3,6 @@
 #ifndef __DRIVERS_INTEL_PMC_MUX_H__
 #define __DRIVERS_INTEL_PMC_MUX_H__
 
-extern struct chip_operations drivers_intel_pmc_mux_ops;
-
 struct drivers_intel_pmc_mux_config {
 };
 

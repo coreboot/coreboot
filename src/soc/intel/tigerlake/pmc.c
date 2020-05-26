@@ -126,6 +126,9 @@ static void soc_pmc_fill_ssdt(const struct device *dev)
 	       dev_path(dev));
 }
 
+/* FIXME: Rewrite loop below without this. */
+extern struct chip_operations drivers_intel_pmc_mux_ops;
+
 /* By default, TGL uses the PMC MUX for all ports, so port_number is unused */
 const struct device *soc_get_pmc_mux_device(int port_number)
 {

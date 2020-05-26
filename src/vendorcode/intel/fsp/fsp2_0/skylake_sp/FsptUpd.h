@@ -71,7 +71,7 @@ typedef struct {
 	Output, refer to FSP Integration Guide for details
 	0:VPD-Style, 1:Enable Port80 Output[Default], 2:Disable Port80 Output
 **/
-	UINT8                       PcdFsptPort80RouteDisable;
+	UINT8                       FsptPort80RouteDisable;
 
 /** Offset 0x0041
 **/

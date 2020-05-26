@@ -25,7 +25,7 @@ const FSPT_UPD temp_ram_init_params = {
 		.Reserved1 = {0},
 	},
 	.FsptConfig = {
-		.PcdFsptPort80RouteDisable = 0,
+		.FsptPort80RouteDisable = 0,
 		.ReservedTempRamInitUpd = {0},
 	},
 	.UnusedUpdSpace0 = {0},

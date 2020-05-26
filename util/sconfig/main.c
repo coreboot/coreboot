@@ -889,9 +889,6 @@ static void emit_chip_headers(FILE *fil, struct chip *chip)
 {
 	struct chip *tmp = chip;
 
-	fprintf(fil, "#include <device/device.h>\n");
-	fprintf(fil, "#include <device/pci.h>\n");
-
 	while (chip) {
 		if (chip->chiph_exists)
 			fprintf(fil, "#include \"%s/chip.h\"\n", chip->name);
@@ -1346,6 +1343,9 @@ int main(int argc, char **argv)
 	fprintf(autohead, "#ifndef __STATIC_DEVICE_TREE_H\n");
 	fprintf(autohead, "#define __STATIC_DEVICE_TREE_H\n\n");
 	fprintf(autohead, "#include <device/device.h>\n\n");
+
+	fprintf(autogen, "#include <device/device.h>\n");
+	fprintf(autogen, "#include <device/pci.h>\n\n");
 
 	emit_chips(autogen);
 

@@ -528,33 +528,34 @@ void add_resource(struct bus *bus, int type, int index, int base)
 	new_resource(bus->dev, type, index, base);
 }
 
-void add_register(struct chip_instance *chip_instance, char *name, char *val)
+static void add_reg(struct reg **const head, char *const name, char *const val)
 {
-	struct reg *r = S_ALLOC(sizeof(struct reg));
+	struct reg *const r = S_ALLOC(sizeof(struct reg));
+	struct reg *prev = NULL;
+	struct reg *cur;
 
 	r->key = name;
 	r->value = val;
-	if (chip_instance->reg) {
-		struct reg *head = chip_instance->reg;
-		// sorting to be equal to sconfig's behaviour
-		int sort = strcmp(r->key, head->key);
+
+	for (cur = *head; cur != NULL; prev = cur, cur = cur->next) {
+		const int sort = strcmp(r->key, cur->key);
 		if (sort == 0) {
 			printf("ERROR: duplicate 'register' key.\n");
 			exit(1);
 		}
-		if (sort < 0) {
-			r->next = head;
-			chip_instance->reg = r;
-		} else {
-			while ((head->next)
-			       && (strcmp(head->next->key, r->key) < 0))
-				head = head->next;
-			r->next = head->next;
-			head->next = r;
-		}
-	} else {
-		chip_instance->reg = r;
+		if (sort < 0)
+			break;
 	}
+	r->next = cur;
+	if (prev)
+		prev->next = r;
+	else
+		*head = r;
+}
+
+void add_register(struct chip_instance *chip_instance, char *name, char *val)
+{
+	add_reg(&chip_instance->reg, name, val);
 }
 
 void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,

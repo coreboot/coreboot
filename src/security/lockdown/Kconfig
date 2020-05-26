@@ -82,3 +82,31 @@ config BOOTMEDIA_LOCK_IN_VERSTAGE
 	  possible. This option prevents using write protecting facilities in
 	  ramstage, like the MRC cache for example.
 	  Use this option if you don't trust code running after verstage.
+
+choice
+	prompt "SPI Flash write protection duration"
+	default BOOTMEDIA_SPI_LOCK_REBOOT
+	depends on BOOTMEDIA_LOCK_CHIP
+	depends on BOOT_DEVICE_SPI_FLASH
+
+config BOOTMEDIA_SPI_LOCK_REBOOT
+	bool "Lock SPI flash until next reboot"
+	help
+	  The SPI chip is locked until power is removed and re-applied.
+	  Supported by Winbond parts.
+
+config BOOTMEDIA_SPI_LOCK_PIN
+	bool "Lock SPI flash using WP# pin"
+	help
+	  The SPI chip is locked using a non-volatile configuration bit. Writes
+	  are only possible if the WP# is not asserted. Supported by Winbond
+	  and Macronix parts.
+
+config BOOTMEDIA_SPI_LOCK_PERMANENT
+	bool "Lock SPI flash permanently"
+	help
+	  The SPI chip is permanently locked using a non-volatile configuration
+	  bit. No writes are ever possible again after we perform the lock.
+	  Supported by Winbond parts.
+
+endchoice

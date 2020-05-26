@@ -2,7 +2,7 @@
 
 config SMMSTORE
 	bool "Support for flash based, SMM mediated data store"
-	depends on BOOT_DEVICE_SUPPORTS_WRITES
+	depends on BOOT_DEVICE_SUPPORTS_WRITES && HAVE_SMI_HANDLER
 	default y if PAYLOAD_TIANOCORE
 	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 

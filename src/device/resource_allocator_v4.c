@@ -330,7 +330,7 @@ static void constrain_domain_resources(const struct device *domain, struct memra
 		 * Don't allow allocations in the VGA I/O range. PCI has special cases for
 		 * that.
 		 */
-		memranges_create_hole(ranges, 0x3b0, 0x3df);
+		memranges_create_hole(ranges, 0x3b0, 0x3df - 0x3b0 + 1);
 
 		/*
 		 * Resource allocator no longer supports the legacy behavior where I/O resource

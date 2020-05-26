@@ -23,7 +23,7 @@ static void smu_write32(uint32_t reg, uint32_t val)
 #define SMU_MESG_RESP_OK	0x01
 
 /* returns SMU_MESG_RESP_OK, SMU_MESG_RESP_TIMEOUT or a negative number */
-static int32_t smu_poll_response(void)
+static int32_t smu_poll_response(bool print_command_duration)
 {
 	struct stopwatch sw;
 	const long timeout_ms = 10 * MSECS_PER_SEC;
@@ -34,7 +34,8 @@ static int32_t smu_poll_response(void)
 	do {
 		result = smu_read32(REG_ADDR_MESG_RESP);
 		if (result) {
-			printk(BIOS_SPEW, "SMU command consumed %ld msecs\n",
+			if (print_command_duration)
+				printk(BIOS_SPEW, "SMU command consumed %ld usecs\n",
 					stopwatch_duration_usecs(&sw));
 			return result;
 		}
@@ -53,7 +54,7 @@ enum cb_err send_smu_message(enum smu_message_id id, struct smu_payload *arg)
 	size_t i;
 
 	/* wait until SMU can process a new request; don't care if an old request failed */
-	if (smu_poll_response() == SMU_MESG_RESP_TIMEOUT)
+	if (smu_poll_response(false) == SMU_MESG_RESP_TIMEOUT)
 		return CB_ERR;
 
 	/* clear response register */
@@ -67,7 +68,7 @@ enum cb_err send_smu_message(enum smu_message_id id, struct smu_payload *arg)
 	smu_write32(REG_ADDR_MESG_ID, id);
 
 	/* wait until SMU has processed the message and check if it was successful */
-	if (smu_poll_response() != SMU_MESG_RESP_OK)
+	if (smu_poll_response(true) != SMU_MESG_RESP_OK)
 		return CB_ERR;
 
 	/* copy returned values */

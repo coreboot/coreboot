@@ -289,7 +289,7 @@ $(obj)/APCB_%.bin: $(MAINBOARD_BLOBS_DIR)/APCB_%.bin
 	cp $< $@
 
 # APCB binary with magic numbers to be replaced by apcb_edit tool
-APCB_MAGIC_BLOB:=$(MAINBOARD_BLOBS_DIR)/APCB_magic.bin
+APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATE)/APCB_magic.bin
 
 $(obj)/APCB_empty.bin: $(APCB_MAGIC_BLOB) $(APCB_EDIT_TOOL)
 	$(APCB_EDIT_TOOL) \

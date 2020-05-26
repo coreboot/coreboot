@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 # Script for editing APCB binaries, such as injecting SPDs and GPIO
 # configurations.

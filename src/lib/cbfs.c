@@ -116,6 +116,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
 {
 	size_t out_size;
+	void *map;
 
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
@@ -129,23 +130,24 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		if (!cbfs_lz4_enabled())
 			return 0;
 
-		/* Load the compressed image to the end of the available memory
-		 * area for in-place decompression. It is the responsibility of
-		 * the caller to ensure that buffer_size is large enough
-		 * (see compression.h, guaranteed by cbfstool for stages). */
-		void *compr_start = buffer + buffer_size - in_size;
-		if (rdev_readat(rdev, compr_start, offset, in_size) != in_size)
+		/* cbfs_stage_load_and_decompress() takes care of in-place
+		   lz4 decompression by setting up the rdev to be in memory. */
+		map = rdev_mmap(rdev, offset, in_size);
+		if (map == NULL)
 			return 0;
 
 		timestamp_add_now(TS_START_ULZ4F);
-		out_size = ulz4fn(compr_start, in_size, buffer, buffer_size);
+		out_size = ulz4fn(map, in_size, buffer, buffer_size);
 		timestamp_add_now(TS_END_ULZ4F);
+
+		rdev_munmap(rdev, map);
+
 		return out_size;
 
 	case CBFS_COMPRESS_LZMA:
 		if (!cbfs_lzma_enabled())
 			return 0;
-		void *map = rdev_mmap(rdev, offset, in_size);
+		map = rdev_mmap(rdev, offset, in_size);
 		if (map == NULL)
 			return 0;
 
@@ -161,6 +163,35 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	default:
 		return 0;
 	}
+}
+
+static size_t cbfs_stage_load_and_decompress(const struct region_device *rdev,
+		size_t offset, size_t in_size, void *buffer, size_t buffer_size,
+		uint32_t compression)
+{
+	struct region_device rdev_src;
+
+	if (compression == CBFS_COMPRESS_LZ4) {
+		if (!cbfs_lz4_enabled())
+			return 0;
+		/* Load the compressed image to the end of the available memory
+		 * area for in-place decompression. It is the responsibility of
+		 * the caller to ensure that buffer_size is large enough
+		 * (see compression.h, guaranteed by cbfstool for stages). */
+		void *compr_start = buffer + buffer_size - in_size;
+		if (rdev_readat(rdev, compr_start, offset, in_size) != in_size)
+			return 0;
+		/* Create a region device backed by memory. */
+		rdev_chain(&rdev_src, &addrspace_32bit.rdev,
+				(uintptr_t)compr_start, in_size);
+
+		return cbfs_load_and_decompress(&rdev_src, 0, in_size, buffer,
+					buffer_size, compression);
+	}
+
+	/* All other algorithms can use the generic implementation. */
+	return cbfs_load_and_decompress(rdev, offset, in_size, buffer,
+					buffer_size, compression);
 }
 
 static inline int tohex4(unsigned int c)
@@ -257,7 +288,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 			goto out;
 	}
 
-	fsize = cbfs_load_and_decompress(fh, foffset, fsize, load,
+	fsize = cbfs_stage_load_and_decompress(fh, foffset, fsize, load,
 					 stage.memlen, stage.compression);
 	if (!fsize)
 		return -1;

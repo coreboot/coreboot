@@ -28,7 +28,7 @@ void boot_device_security_lockdown(void)
 			printk(BIOS_DEBUG, "'WP_RO only'");
 			lock_type = CTRLR_WP;
 		}
-		printk(BIOS_DEBUG, "using CTRL...\n");
+		printk(BIOS_DEBUG, " using CTRL...\n");
 	} else {
 		if (CONFIG(BOOTMEDIA_LOCK_WHOLE_RO)) {
 			printk(BIOS_DEBUG, "'readonly'");
@@ -37,7 +37,7 @@ void boot_device_security_lockdown(void)
 			printk(BIOS_DEBUG, "'WP_RO only'");
 			lock_type = MEDIA_WP;
 		}
-		printk(BIOS_DEBUG, "using flash chip...\n");
+		printk(BIOS_DEBUG, " using flash chip...\n");
 	}
 
 	if (CONFIG(BOOTMEDIA_LOCK_WPRO_VBOOT_RO)) {

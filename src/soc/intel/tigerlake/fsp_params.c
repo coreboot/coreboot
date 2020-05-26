@@ -327,7 +327,27 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	}
 
+	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
+	params->EnableMultiPhaseSiliconInit = 1;
 	mainboard_silicon_init_params(params);
+}
+
+/*
+ * Callbacks for SoC/Mainboard specific overrides for FspMultiPhaseSiInit
+ * This platform supports below MultiPhaseSIInit Phase(s):
+ * Phase   |  FSP return point                                |  Purpose
+ * ------- + ------------------------------------------------ + -------------------------------
+ *   1     |  After TCSS initialization completed             |  for TCSS specific init
+ */
+void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
+{
+	switch (phase_index) {
+	case 1:
+		/* TCSS specific initialization here */
+		break;
+	default:
+		break;
+	}
 }
 
 /* Mainboard GPIO Configuration */

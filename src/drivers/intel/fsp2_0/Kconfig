@@ -18,6 +18,19 @@ config PLATFORM_USES_FSP2_1
 	  1. Remove FSP stack switch and use the same stack with boot firmware
 	  2. FSP should support external PPI interface pulled in via FSP_PEIM_TO_PEIM_INTERFACE
 
+config PLATFORM_USES_FSP2_2
+	bool
+	default n
+	select PLATFORM_USES_FSP2_1
+	help
+	  Include FSP 2.2 wrappers and functionality.
+	  Features added into FSP 2.2 specification that impact coreboot are:
+	  1. Added multi-phase silicon initialization to increase the modularity of the
+	      FspSiliconInit() API
+	  2. FSP_INFO_HEADER changes to add FspMultiPhaseSiInitEntryOffset
+	  3. Added EnableMultiPhaseSiliconInit, bootloaders designed for FSP2.0/2.1 can disable
+	      the FspMultiPhaseSiInit() API and continue to use FspSiliconInit() without change.
+
 if PLATFORM_USES_FSP2_0
 
 config HAVE_INTEL_FSP_REPO

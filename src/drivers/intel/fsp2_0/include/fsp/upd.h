@@ -54,4 +54,22 @@ struct FSPM_ARCH_UPD {
 	uint8_t                       Reserved1[8];
 } __packed;
 
+struct FSPS_ARCH_UPD {
+	///
+	/// Revision of the structure. For FSP v2.2 value is 1.
+	///
+	uint8_t                       Revision;
+	uint8_t                       Reserved[3];
+	///
+	/// Length of the structure in bytes. The current value for this field is 32
+	///
+	uint32_t                      Length;
+	uint8_t                       Reserved1[4];
+	///
+	/// To enable multi-phase silicon initialization the bootloader must set non-zero value
+	///
+	uint8_t                       EnableMultiPhaseSiliconInit;
+	uint8_t                       Reserved2[19];
+} __packed;
+
 #endif /* _FSP2_0_UPD_H_ */

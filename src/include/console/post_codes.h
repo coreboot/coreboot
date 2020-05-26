@@ -289,6 +289,20 @@
 #define POST_FSP_SILICON_EXIT			0x99
 
 /**
+ * \brief Before calling FSP Multiphase SiliconInit
+ *
+ * Going to call into FSP binary for Multiple phase SI Init
+ */
+#define POST_FSP_MULTI_PHASE_SI_INIT_ENTRY	0xa0
+
+/**
+ * \brief After calling FSP Multiphase SiliconInit
+ *
+ * FSP binary returned from Multiple phase SI Init
+ */
+#define POST_FSP_MULTI_PHASE_SI_INIT_EXIT	0xa1
+
+/**
  * \brief Entry into elf boot
  *
  * This POST code is called right before invoking jmp_to_elf_entry()

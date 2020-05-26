@@ -21,6 +21,17 @@ struct fsp_notify_params {
 	enum fsp_notify_phase phase;
 };
 
+enum fsp_multi_phase_action {
+	GET_NUMBER_OF_PHASES = 0,
+	EXECUTE_PHASE = 1
+};
+
+struct fsp_multi_phase_params {
+	enum fsp_multi_phase_action multi_phase_action;
+	uint32_t phase_index;
+	void *multi_phase_param_ptr;
+};
+
 struct hob_resource {
 	uint8_t owner_guid[16];
 	uint32_t type;
@@ -115,6 +126,7 @@ typedef asmlinkage uint32_t (*temp_ram_exit_fn)(void *param);
 typedef asmlinkage uint32_t (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
 typedef asmlinkage uint32_t (*fsp_silicon_init_fn)(void *silicon_upd);
+typedef asmlinkage uint32_t (*fsp_multi_phase_si_init_fn)(struct fsp_multi_phase_params *);
 typedef asmlinkage uint32_t (*fsp_notify_fn)(struct fsp_notify_params *);
 #include <fsp/debug.h>
 

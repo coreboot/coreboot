@@ -6,7 +6,11 @@
 #include <types.h>
 
 #define FSP_HDR_OFFSET			0x94
+#if CONFIG(PLATFORM_USES_FSP2_2)
+#define FSP_HDR_LEN			0x4c
+#else
 #define FSP_HDR_LEN			0x48
+#endif
 #define FSP_HDR_SIGNATURE		"FSPH"
 #define FSP_HDR_ATTRIB_FSPT		1
 #define FSP_HDR_ATTRIB_FSPM		2
@@ -26,6 +30,7 @@ struct fsp_header {
 	size_t notify_phase_entry_offset;
 	size_t memory_init_entry_offset;
 	size_t silicon_init_entry_offset;
+	size_t multi_phase_si_init_entry_offset;
 	char image_id[sizeof(uint64_t) + 1];
 	uint8_t revision;
 };

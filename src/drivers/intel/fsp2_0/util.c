@@ -49,6 +49,8 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 	hdr->notify_phase_entry_offset = read32(raw_hdr + 56);
 	hdr->memory_init_entry_offset = read32(raw_hdr + 60);
 	hdr->silicon_init_entry_offset = read32(raw_hdr + 68);
+	if (CONFIG(PLATFORM_USES_FSP2_2))
+		hdr->multi_phase_si_init_entry_offset = read32(raw_hdr + 72);
 
 	return CB_SUCCESS;
 }

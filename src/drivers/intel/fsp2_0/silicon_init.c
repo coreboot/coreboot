@@ -16,13 +16,74 @@
 
 struct fsp_header fsps_hdr;
 
+struct fsp_multi_phase_get_number_of_phases_params {
+	uint32_t number_of_phases;
+	uint32_t phases_executed;
+};
+
+/* Callbacks for SoC/Mainboard specific overrides */
+void __weak platform_fsp_multi_phase_init_cb(uint32_t phase_index)
+{
+	/* Leave for the SoC/Mainboard to implement if necessary. */
+}
+
+int __weak soc_fsp_multi_phase_init_is_enable(void)
+{
+	return 1;
+}
+
+/* FSP Specification < 2.2 has only 1 stage like FspSiliconInit. FSP specification >= 2.2
+ * has multiple stages as below.
+ */
+enum fsp_silicon_init_phases {
+	FSP_SILICON_INIT_API,
+	FSP_MULTI_PHASE_SI_INIT_GET_NUMBER_OF_PHASES_API,
+	FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API
+};
+
+static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint32_t status)
+{
+	uint8_t postcode;
+
+	/* Handle any reset request returned by FSP-S APIs */
+	fsp_handle_reset(status);
+
+	if (status == FSP_SUCCESS)
+		return;
+	/* Handle all other errors returned by FSP-S APIs */
+	/* Assume video failure if attempted to initialize graphics */
+	if (CONFIG(RUN_FSP_GOP) && vbt_get())
+		postcode = POST_VIDEO_FAILURE;
+	else
+		postcode = POST_HW_INIT_FAILURE; /* else generic */
+
+	switch (phases) {
+	case FSP_SILICON_INIT_API:
+		die_with_post_code(postcode, "FspSiliconInit returned with error 0x%08x\n",
+				status);
+		break;
+	case FSP_MULTI_PHASE_SI_INIT_GET_NUMBER_OF_PHASES_API:
+		printk(BIOS_SPEW, "FspMultiPhaseSiInit NumberOfPhases returned 0x%08x\n",
+				status);
+		break;
+	case FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API:
+		printk(BIOS_SPEW, "FspMultiPhaseSiInit ExecutePhase returned 0x%08x\n",
+				status);
+		break;
+	default:
+		break;
+	}
+}
+
 static void do_silicon_init(struct fsp_header *hdr)
 {
 	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
-	uint8_t postcode;
 	const struct cbmem_entry *logo_entry = NULL;
+	fsp_multi_phase_si_init_fn multi_phase_si_init;
+	struct fsp_multi_phase_params multi_phase_params;
+	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
 
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
@@ -64,20 +125,49 @@ static void do_silicon_init(struct fsp_header *hdr)
 		cbmem_entry_remove(logo_entry);
 
 	fsp_debug_after_silicon_init(status);
+	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
-	/* Handle any errors returned by FspSiliconInit */
-	fsp_handle_reset(status);
-	if (status != FSP_SUCCESS) {
-		/* Assume video failure if attempted to initialize graphics */
-		if (CONFIG(RUN_FSP_GOP) && vbt_get())
-			postcode = POST_VIDEO_FAILURE;
-		else
-			postcode = POST_HW_INIT_FAILURE; /* else generic */
+	if (!CONFIG(PLATFORM_USES_FSP2_2))
+		return;
 
-		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
-		die_with_post_code(postcode,
-			"FspSiliconInit returned an error!\n");
+	/* Check if SoC user would like to call Multi Phase Init */
+	if (!soc_fsp_multi_phase_init_is_enable())
+		return;
+
+	/* Call MultiPhaseSiInit */
+	multi_phase_si_init = (void *) (hdr->image_base +
+			 hdr->multi_phase_si_init_entry_offset);
+
+	/* Implementing multi_phase_si_init() is optional as per FSP 2.2 spec */
+	if (multi_phase_si_init == NULL)
+		return;
+
+	post_code(POST_FSP_MULTI_PHASE_SI_INIT_ENTRY);
+	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_START);
+	/* Get NumberOfPhases Value */
+	multi_phase_params.multi_phase_action = GET_NUMBER_OF_PHASES;
+	multi_phase_params.phase_index = 0;
+	multi_phase_params.multi_phase_param_ptr = &multi_phase_get_number;
+	status = multi_phase_si_init(&multi_phase_params);
+	fsps_return_value_handler(FSP_MULTI_PHASE_SI_INIT_GET_NUMBER_OF_PHASES_API, status);
+
+	/* Execute Multi Phase Execution */
+	for (int i = 1; i <= multi_phase_get_number.number_of_phases; i++) {
+		printk(BIOS_SPEW, "Executing Phase %d of FspMultiPhaseSiInit\n", i);
+		/*
+		 * Give SoC/mainboard a chance to perform any operation before
+		 * Multi Phase Execution
+		 */
+		platform_fsp_multi_phase_init_cb(i);
+
+		multi_phase_params.multi_phase_action = EXECUTE_PHASE;
+		multi_phase_params.phase_index = i;
+		multi_phase_params.multi_phase_param_ptr = NULL;
+		status = multi_phase_si_init(&multi_phase_params);
+		fsps_return_value_handler(FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API, status);
 	}
+	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);
+	post_code(POST_FSP_MULTI_PHASE_SI_INIT_EXIT);
 }
 
 static int fsps_get_dest(const struct fsp_load_descriptor *fspld, void **dest,

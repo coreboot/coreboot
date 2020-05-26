@@ -47,7 +47,10 @@ void fsps_load(bool s3wake);
 /* Callbacks for updating stage-specific parameters */
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version);
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
-
+/* Callbacks for SoC/Mainboard specific overrides */
+void platform_fsp_multi_phase_init_cb(uint32_t phase_index);
+/* Check if SoC sets EnableMultiPhaseSiliconInit UPD */
+int soc_fsp_multi_phase_init_is_enable(void);
 /*
  * The following functions are used when FSP_PLATFORM_MEMORY_SETTINGS_VERSION
  * is employed allowing the mainboard and SoC to supply their own version

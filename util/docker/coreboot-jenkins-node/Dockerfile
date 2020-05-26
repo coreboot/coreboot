@@ -19,6 +19,7 @@ USER root
 
 RUN apt-get -y update && \
 	apt-get -y install \
+	meson ninja-build \
 	lua5.3 liblua5.3-dev default-jre-headless openssh-server && \
 	apt-get clean
 

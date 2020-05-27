@@ -208,9 +208,6 @@ chip soc/intel/skylake
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1f.0 on
-			chip ec/purism/librem
-				device pnp 0c09.0 on end
-			end
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

@@ -4,7 +4,6 @@
 #include <arch/bootblock.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
 #include <halt.h>
 #include <soc/rcba.h>
 #include <soc/msr.h>

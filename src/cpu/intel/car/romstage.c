@@ -4,7 +4,6 @@
 #include <arch/romstage.h>
 #include <bootblock_common.h>
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <arch/symbols.h>
 #include <commonlib/helpers.h>

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <device/pci_def.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
 

@@ -7,7 +7,6 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <cpu/intel/microcode.h>
-#include <cpu/x86/mtrr.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <elog.h>

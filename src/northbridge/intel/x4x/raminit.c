@@ -4,7 +4,6 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <arch/cpu.h>
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */

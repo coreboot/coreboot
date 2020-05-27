@@ -322,10 +322,14 @@ static void soc_init(void *data)
 	/* Allocate ACPI NVS in CBMEM */
 	cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs_t));
 
-	config = config_of_soc();
-	/* Set RAPL MSR for Package power limits */
-	soc_config = &config->power_limits_config;
-	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
+		printk(BIOS_INFO, "Skip setting RAPL per configuration\n");
+	} else {
+		config = config_of_soc();
+		/* Set RAPL MSR for Package power limits */
+		soc_config = &config->power_limits_config;
+		set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+	}
 
 	/*
 	* FSP-S routes SCI to IRQ 9. With the help of this function you can

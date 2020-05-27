@@ -165,6 +165,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PcieRpLtrEnable[i] = config->PcieRpLtrEnable[i];
 		params->PcieRpAdvancedErrorReporting[i] =
 			config->PcieRpAdvancedErrorReporting[i];
+		params->PcieRpHotPlug[i] = config->PcieRpHotPlug[i];
 	}
 
 	/* Enable ClkReqDetect for enabled port */

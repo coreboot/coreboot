@@ -197,19 +197,9 @@ void print_soc_type(void)
 	}
 }
 
-bool soc_is_pollock(void)
-{
-	return get_soc_type() == SOC_POLLOCK;
-}
-
 bool soc_is_dali(void)
 {
 	return get_soc_type() == SOC_DALI;
-}
-
-bool soc_is_picasso(void)
-{
-	return get_soc_type() == SOC_PICASSO;
 }
 
 bool soc_is_raven2(void)

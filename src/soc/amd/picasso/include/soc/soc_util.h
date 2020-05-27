@@ -33,10 +33,8 @@ void print_socket_type(void);
 void print_silicon_type(void);
 void print_soc_type(void);
 
-/* functions to determine the connectivity feature set */
-bool soc_is_pollock(void);
+/* function to determine the connectivity feature set */
 bool soc_is_dali(void);
-bool soc_is_picasso(void);
 
 /* function to determine the iGPU type */
 bool soc_is_raven2(void);

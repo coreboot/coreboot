@@ -2,6 +2,7 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
+#include <cpu/x86/mtrr.h>
 #include <soc/reg_access.h>
 
 void fill_postcar_frame(struct postcar_frame *pcf)

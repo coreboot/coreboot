@@ -523,6 +523,80 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 	acpi_device_fill_len(desc_length);
 }
 
+/* UART Serial Bus - UARTSerialBusV2() */
+void acpi_device_write_uart(const struct acpi_uart *uart)
+{
+	void *desc_length, *type_length;
+	uint16_t flags;
+
+	/* Byte 0: Descriptor Type */
+	acpigen_emit_byte(ACPI_DESCRIPTOR_SERIAL_BUS);
+
+	/* Byte 1+2: Length (filled in later) */
+	desc_length = acpi_device_write_zero_len();
+
+	/* Byte 3: Revision ID */
+	acpigen_emit_byte(ACPI_UART_SERIAL_BUS_REVISION_ID);
+
+	/* Byte 4: Resource Source Index is Reserved */
+	acpigen_emit_byte(0);
+
+	/* Byte 5: Serial Bus Type is UART */
+	acpigen_emit_byte(ACPI_SERIAL_BUS_TYPE_UART);
+
+	/*
+	 * Byte 6: Flags
+	 *  [7:2]: 0 => Reserved
+	 *    [1]: 1 => ResourceConsumer
+	 *    [0]: 0 => ControllerInitiated
+	 */
+	acpigen_emit_byte(BIT(1));
+
+	/*
+	 * Byte 7-8: Type Specific Flags
+	 *   [15:8]: 0 => Reserved
+	 *      [7]: 0 => Little Endian, 1 => Big Endian
+	 *    [6:4]: Data bits
+	 *    [3:2]: Stop bits
+	 *    [1:0]: Flow control
+	 */
+	flags = uart->flow_control & 3;
+	flags |= (uart->stop_bits & 3) << 2;
+	flags |= (uart->data_bits & 7) << 4;
+	flags |= (uart->endian & 1) << 7;
+	acpigen_emit_word(flags);
+
+	/* Byte 9: Type Specific Revision ID */
+	acpigen_emit_byte(ACPI_UART_TYPE_SPECIFIC_REVISION_ID);
+
+	/* Byte 10-11: Type Data Length */
+	type_length = acpi_device_write_zero_len();
+
+	/* Byte 12-15: Initial Baud Rate */
+	acpigen_emit_dword(uart->initial_baud_rate);
+
+	/* Byte 16-17: RX FIFO size */
+	acpigen_emit_word(uart->rx_fifo_bytes);
+
+	/* Byte 18-19: TX FIFO size */
+	acpigen_emit_word(uart->tx_fifo_bytes);
+
+	/* Byte 20: Parity */
+	acpigen_emit_byte(uart->parity);
+
+	/* Byte 21: Lines Enabled */
+	acpigen_emit_byte(uart->lines_in_use);
+
+	/* Fill in Type Data Length */
+	acpi_device_fill_len(type_length);
+
+	/* Byte 22+: ResourceSource */
+	acpigen_emit_string(uart->resource);
+
+	/* Fill in Descriptor Length */
+	acpi_device_fill_len(desc_length);
+}
+
 /* PowerResource() with Enable and/or Reset control */
 void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 {

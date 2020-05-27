@@ -323,10 +323,14 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio);
 
 #define ACPI_SERIAL_BUS_TYPE_I2C		1
 #define ACPI_SERIAL_BUS_TYPE_SPI		2
+#define ACPI_SERIAL_BUS_TYPE_UART		3
+
 #define ACPI_I2C_SERIAL_BUS_REVISION_ID		1 /* TODO: upgrade to 2 */
 #define ACPI_I2C_TYPE_SPECIFIC_REVISION_ID	1
 #define ACPI_SPI_SERIAL_BUS_REVISION_ID		1
 #define ACPI_SPI_TYPE_SPECIFIC_REVISION_ID	1
+#define ACPI_UART_SERIAL_BUS_REVISION_ID	1
+#define ACPI_UART_TYPE_SPECIFIC_REVISION_ID	1
 
 /*
  * ACPI I2C Bus
@@ -371,6 +375,91 @@ struct acpi_spi {
 
 /* Write SPI Bus descriptor to SSDT AML output */
 void acpi_device_write_spi(const struct acpi_spi *spi);
+
+/*
+ * ACPI UART Bus
+ */
+
+enum acpi_uart_data_bits {
+	ACPI_UART_DATA_BITS_5,
+	ACPI_UART_DATA_BITS_6,
+	ACPI_UART_DATA_BITS_7,
+	ACPI_UART_DATA_BITS_8,
+	ACPI_UART_DATA_BITS_9
+};
+
+enum acpi_uart_stop_bits {
+	ACPI_UART_STOP_BITS_0,
+	ACPI_UART_STOP_BITS_1,
+	ACPI_UART_STOP_BITS_1_5,
+	ACPI_UART_STOP_BITS_2
+};
+
+enum acpi_uart_lines {
+	ACPI_UART_LINE_DTD = BIT(2),	/* Data Carrier Detect */
+	ACPI_UART_LINE_RI = BIT(3),	/* Ring Indicator */
+	ACPI_UART_LINE_DSR = BIT(4),	/* Data Set Ready */
+	ACPI_UART_LINE_DTR = BIT(5),	/* Data Terminal Ready */
+	ACPI_UART_LINE_CTS = BIT(6),	/* Clear to Send */
+	ACPI_UART_LINE_RTS = BIT(7)	/* Request to Send */
+};
+
+enum acpi_uart_endian {
+	ACPI_UART_ENDIAN_LITTLE,
+	ACPI_UART_ENDIAN_BIG
+};
+
+enum acpi_uart_parity {
+	ACPI_UART_PARITY_NONE,
+	ACPI_UART_PARITY_EVEN,
+	ACPI_UART_PARITY_ODD,
+	ACPI_UART_PARITY_MARK,
+	ACPI_UART_PARITY_SPACE
+};
+
+enum acpi_uart_flow_control {
+	ACPI_UART_FLOW_NONE,
+	ACPI_UART_FLOW_HARDWARE,
+	ACPI_UART_FLOW_SOFTWARE
+};
+
+struct acpi_uart {
+	/* Initial Baud Rate in bits per second */
+	uint32_t initial_baud_rate;
+	/* Number of bits of data in a packet (value between 5-9) */
+	enum acpi_uart_data_bits data_bits;
+	/* Number of bits to signal end of packet */
+	enum acpi_uart_stop_bits stop_bits;
+	/* Bitmask indicating presence or absence of particular line */
+	unsigned int lines_in_use;
+	/* Specify if the device expects big or little endian format */
+	enum acpi_uart_endian endian;
+	/* Specify the type of parity bits included after the data in a packet */
+	enum acpi_uart_parity parity;
+	/* Specify the flow control method */
+	enum acpi_uart_flow_control flow_control;
+	/* Upper limit in bytes of the buffer sizes for this device */
+	uint16_t rx_fifo_bytes;
+	uint16_t tx_fifo_bytes;
+	/* Set true if UART is shared, false if it is exclusive for one device */
+	bool shared;
+	/* Reference to UART controller */
+	const char *resource;
+};
+
+#define ACPI_UART_RAW_DEVICE(baud_rate, fifo_bytes) { \
+	.initial_baud_rate = (baud_rate), \
+	.data_bits = ACPI_UART_DATA_BITS_8, \
+	.stop_bits = ACPI_UART_STOP_BITS_1, \
+	.endian = ACPI_UART_ENDIAN_LITTLE, \
+	.parity = ACPI_UART_PARITY_NONE, \
+	.flow_control = ACPI_UART_FLOW_NONE, \
+	.rx_fifo_bytes = (fifo_bytes), \
+	.tx_fifo_bytes = (fifo_bytes), \
+	.shared = false }
+
+/* Write UARTSerialBusV2() descriptor to SSDT AML output */
+void acpi_device_write_uart(const struct acpi_uart *uart);
 
 /* GPIO/timing information for the power on/off sequences */
 struct acpi_power_res_params {

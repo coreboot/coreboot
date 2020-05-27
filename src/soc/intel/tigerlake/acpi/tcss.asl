@@ -318,6 +318,16 @@ Scope (_GPE)
 
 Scope (\_SB.PCI0)
 {
+	Device (IOM)
+	{
+		Name (_HID, "INTC1072")
+		Name (_DDN, "Intel(R) Tiger Lake Input Output Manager(IOM) driver")
+		/* IOM preserved MMIO range from 0xFBC10000 to 0xFBC11600. */
+		Name (_CRS, ResourceTemplate () {
+			Memory32Fixed (ReadWrite, IOM_BASE_ADDRESS, IOM_BASE_SIZE)
+		})
+	}
+
 	/*
 	 * Operation region defined to access the TCSS_DEVEN. Get the MCHBAR in offset
 	 * 0x48 in B0:D0:F0. TCSS device enable base address is in offset 0x7090 of MCHBAR.

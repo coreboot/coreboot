@@ -135,7 +135,13 @@ $(TEST_KCONFIG_AUTOCONFIG): $(TEST_KCONFIG_AUTOHEADER)
 .PHONY: $(alltests) $(addprefix clean-,$(alltests))
 .PHONY: unit-tests build-unit-tests run-unit-tests clean-unit-tests
 
+ifeq ($(JUNIT_OUTPUT),y)
+$(alltests): export CMOCKA_MESSAGE_OUTPUT=xml
+$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-$(subst /,_,$^).xml
+endif
+
 $(alltests): $$($$(@)-bin)
+	rm -f $(testobj)/junit-$(subst /,_,$^).xml
 	./$^
 
 unit-tests: build-unit-tests run-unit-tests

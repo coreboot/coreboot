@@ -11,8 +11,7 @@ Scope (\_SB.PCI0) {
 
 	/* IsCLK PCH base register for clock settings */
 	Name (ICKB, 0)
-	Store (PCRB (PID_ISCLK) + R_ICLK_PCR_CAMERA1, ICKB)
-
+	ICKB = PCRB (PID_ISCLK) + R_ICLK_PCR_CAMERA1
 	/*
 	 * Arg0 : Clock Number
 	 * Return : Offset of register to control the clock in Arg0

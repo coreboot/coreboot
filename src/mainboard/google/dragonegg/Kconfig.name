@@ -1,5 +1,0 @@
-comment "DragonEgg"
-
-config BOARD_GOOGLE_DRAGONEGG
-	bool "->  DragonEgg"
-	select BOARD_GOOGLE_BASEBOARD_DRAGONEGG

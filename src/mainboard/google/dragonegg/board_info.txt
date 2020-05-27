@@ -1,6 +1,0 @@
-Vendor name: google
-Board name: Dragon Egg
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

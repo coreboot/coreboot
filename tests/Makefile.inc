@@ -3,7 +3,7 @@
 testsrc = $(top)/tests
 testobj = $(obj)/tests
 cmockasrc = 3rdparty/cmocka
-cmockaobj = $(cmockasrc)/build
+cmockaobj = $(objutil)/cmocka
 
 CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
 

@@ -84,6 +84,8 @@
 #define EARLY_I2C_BASE_ADDRESS	0xfe020000
 #define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x2000 * (x)))
 
+#define IOM_BASE_ADDRESS	0xfbc10000
+#define IOM_BASE_SIZE		0x1600
 
 /*
  * I/O port address space

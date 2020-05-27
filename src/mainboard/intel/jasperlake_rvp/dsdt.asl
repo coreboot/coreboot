@@ -45,9 +45,6 @@ DefinitionBlock(
 	}
 #endif
 
-	/* Camera */
-	#include <variant/acpi/camera.asl>
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	/* Mainboard specific */

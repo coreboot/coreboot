@@ -13,29 +13,6 @@ enum vpd_region {
 	VPD_RW = 2
 };
 
-/* VPD 2.0 data blob structure */
-struct vpd_blob {
-	bool initialized;
-	uint8_t  *ro_base;
-	uint32_t ro_size;
-	uint8_t  *rw_base;
-	uint32_t rw_size;
-};
-extern struct vpd_blob g_vpd_blob;
-
-/*
- * This function loads g_vpd_blob global variable.
- * The variable is initialized if it was not.
- */
-const struct vpd_blob *vpd_load_blob(void);
-
-/*
- * This function gets the base address and size of
- * buffers for RO_VPD/RW_VPD binary blobs, and sets
- * the struct.
- */
-void vpd_get_buffers(struct vpd_blob *blob);
-
 /*
  * Reads VPD string value by key.
  *

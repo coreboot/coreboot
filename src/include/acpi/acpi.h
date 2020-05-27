@@ -31,6 +31,14 @@
  #define  SLP_TYP_S5	5
 #endif
 
+/* ACPI Device Sleep States */
+#define ACPI_DEVICE_SLEEP_D0		0
+#define ACPI_DEVICE_SLEEP_D1		1
+#define ACPI_DEVICE_SLEEP_D2		2
+#define ACPI_DEVICE_SLEEP_D3		3
+#define ACPI_DEVICE_SLEEP_D3_HOT	ACPI_DEVICE_SLEEP_D3
+#define ACPI_DEVICE_SLEEP_D3_COLD	4
+
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
 #define OEM_ID			"COREv4"    /* Must be exactly 6 bytes long! */
 

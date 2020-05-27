@@ -12,6 +12,7 @@
 #define SOCKET_TYPE_SHIFT	28
 #define SOCKET_TYPSE_MASK	(0xf << SOCKET_TYPE_SHIFT)
 
+/* some Pollock engineering samples return the wrong socket type */
 enum socket_type get_socket_type(void)
 {
 	uint32_t ebx = cpuid_ebx(0x80000001);
@@ -132,6 +133,7 @@ enum silicon_type get_silicon_type(void)
 	return SILICON_UNKNOWN;
 }
 
+/* some Pollock engineering samples return the wrong socket type and get detected as Dali */
 enum soc_type get_soc_type(void)
 {
 	switch (get_socket_type()) {

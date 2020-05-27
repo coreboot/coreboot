@@ -141,17 +141,25 @@ $(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-$(subst /,_,$^).xml
 endif
 
 $(alltests): $$($$(@)-bin)
-	rm -f $(testobj)/junit-$(subst /,_,$^).xml
-	./$^
+	rm -f $(testobj)/junit-$(subst /,_,$^).xml $(testobj)/$(subst /,_,$^).failed
+	-./$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
 
 unit-tests: build-unit-tests run-unit-tests
 
 build-unit-tests: $(test-bins)
 
 run-unit-tests: $(alltests)
-	echo "**********************"
-	echo "   ALL TESTS PASSED"
-	echo "**********************"
+	if [ `find $(testobj) -name '*.failed' | wc -l` -gt 0 ]; then \
+		echo "**********************"; \
+		echo "     TESTS FAILED"; \
+		echo "**********************"; \
+		exit 1; \
+	else \
+		echo "**********************"; \
+		echo "   ALL TESTS PASSED"; \
+		echo "**********************"; \
+		exit 0; \
+	fi
 
 $(addprefix clean-,$(alltests)): clean-%:
 	rm -rf $(obj)/$*

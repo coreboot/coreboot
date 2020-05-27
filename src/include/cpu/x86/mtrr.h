@@ -1,7 +1,6 @@
 #ifndef CPU_X86_MTRR_H
 #define CPU_X86_MTRR_H
 
-#include <commonlib/helpers.h>
 #ifndef __ASSEMBLER__
 #include <cpu/x86/msr.h>
 #include <arch/cpu.h>
@@ -187,8 +186,8 @@ static inline unsigned int fls(unsigned int x)
 
 /* Last but not least, most (if not all) chipsets have MMIO
    between 0xfe000000 and 0xff000000, so limit to 16MiB. */
-#if CAR_CACHE_ROM_SIZE >= 16 * MiB
-# define CACHE_ROM_SIZE (16 * MiB)
+#if CAR_CACHE_ROM_SIZE >= 16 << 20
+# define CACHE_ROM_SIZE (16 << 20)
 #else
 # define CACHE_ROM_SIZE CAR_CACHE_ROM_SIZE
 #endif

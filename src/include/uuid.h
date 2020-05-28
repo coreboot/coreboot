@@ -4,6 +4,7 @@
 #define _UUID_H_
 
 #include <string.h>
+#include <stdint.h>
 
 #define UUID_LEN	16
 #define UUID_STRLEN	36

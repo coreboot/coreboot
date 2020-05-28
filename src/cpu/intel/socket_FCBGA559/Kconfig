@@ -27,4 +27,8 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
+config MAX_CPUS
+	int
+	default 4
+
 endif

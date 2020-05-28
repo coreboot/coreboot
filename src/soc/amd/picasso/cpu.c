@@ -36,7 +36,7 @@ static struct smm_relocation_params smm_reloc_params;
  */
 static void pre_mp_init(void)
 {
-	x86_setup_mtrrs_with_detect();
+	x86_setup_mtrrs_with_detect_no_above_4gb();
 	x86_mtrr_check();
 }
 

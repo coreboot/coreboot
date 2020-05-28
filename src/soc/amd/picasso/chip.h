@@ -12,7 +12,7 @@
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <acpi/acpi_device.h>
-#include <arch/smp/mpspec.h>
+#include <arch/x86/include/arch/smp/mpspec.h> /* point from top level */
 
 /*
   USB 2.0 PHY Parameters

@@ -9,6 +9,7 @@ subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
+subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
 bootblock-y += bootblock/pre_c.S
 bootblock-y += bootblock/bootblock.c
@@ -21,11 +22,13 @@ bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
 bootblock-y += smi_util.c
 bootblock-y += config.c
+bootblock-y += ../../../arch/x86/memmove.c
 
 romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += pmutil.c
+romstage-y += reset.c
 romstage-y += memmap.c
 romstage-y += uart.c
 romstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
@@ -37,14 +40,15 @@ romstage-y += psp.c
 romstage-y += config.c
 romstage-y += mrc_cache.c
 
-verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
 verstage-y += config.c
 verstage-y += aoac.c
-verstage-y += uart.c
-verstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-verstage-y += tsc_freq.c
+verstage_x86-y += gpio.c
+verstage_x86-y += uart.c
+verstage_x86-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
+verstage_x86-y += tsc_freq.c
+verstage_x86-y += reset.c
 
 ramstage-y += i2c.c
 ramstage-y += chip.c
@@ -58,6 +62,7 @@ ramstage-y += gpio.c
 ramstage-y += aoac.c
 ramstage-y += southbridge.c
 ramstage-y += pmutil.c
+ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += memmap.c
@@ -74,8 +79,6 @@ ramstage-y += fsp_params.c
 ramstage-y += config.c
 ramstage-y += update_microcode.c
 ramstage-y += graphics.c
-
-all-y += reset.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

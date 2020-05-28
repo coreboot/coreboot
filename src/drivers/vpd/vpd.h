@@ -8,9 +8,10 @@
 #define GOOGLE_VPD_2_0_OFFSET 0x600
 
 enum vpd_region {
-	VPD_RO_THEN_RW = 0,
-	VPD_RO = 1,
-	VPD_RW = 2
+	VPD_RO,
+	VPD_RW,
+	VPD_RO_THEN_RW,
+	VPD_RW_THEN_RO
 };
 
 /*

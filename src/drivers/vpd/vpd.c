@@ -209,10 +209,14 @@ const void *vpd_find(const char *key, int *size, enum vpd_region region)
 
 	init_vpd_rdevs();
 
-	if (region != VPD_RW)
+	if (region == VPD_RW_THEN_RO)
+		vpd_find_in(&rw_vpd, &arg);
+
+	if (!arg.matched && (region == VPD_RO || region == VPD_RO_THEN_RW ||
+			region == VPD_RW_THEN_RO))
 		vpd_find_in(&ro_vpd, &arg);
 
-	if (!arg.matched && region != VPD_RO)
+	if (!arg.matched && (region == VPD_RW || region == VPD_RO_THEN_RW))
 		vpd_find_in(&rw_vpd, &arg);
 
 	if (!arg.matched)

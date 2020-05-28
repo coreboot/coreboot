@@ -1,5 +1,3 @@
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/cimx/sb800

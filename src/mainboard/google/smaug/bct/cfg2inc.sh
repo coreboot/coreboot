@@ -1,7 +1,4 @@
 #!/bin/sh
-#
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 bct_cfg2inc() {

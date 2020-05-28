@@ -8,7 +8,6 @@
 #include <device/path.h>
 #include <device/soundwire.h>
 #include <stdbool.h>
-#include <stdint.h>
 
 #include "soundwire.h"
 #include "chip.h"

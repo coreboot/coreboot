@@ -4,7 +4,6 @@
 #define __SOC_MEDIATEK_MT8173_INCLUDE_SOC_ADDRESS_MAP_H__
 
 #include <stddef.h>
-#include <stdint.h>
 
 enum {
 	VER_BASE	= 0x08000000,

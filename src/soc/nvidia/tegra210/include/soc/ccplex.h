@@ -3,7 +3,6 @@
 #ifndef __SOC_NVIDIA_TEGRA210_CCPLEX_H__
 #define __SOC_NVIDIA_TEGRA210_CCPLEX_H__
 
-#include <stdint.h>
 
 #define MTS_LOAD_ADDRESS 0x82000000
 

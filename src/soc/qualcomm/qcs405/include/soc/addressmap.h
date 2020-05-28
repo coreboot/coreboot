@@ -3,7 +3,6 @@
 #ifndef __SOC_QUALCOMM_QCS405_ADDRESS_MAP_H__
 #define __SOC_QUALCOMM_QCS405_ADDRESS_MAP_H__
 
-#include <stdint.h>
 
 #define QSPI_BASE			0x88DF000
 #define TLMM_EAST_TILE_BASE		0x7B00000

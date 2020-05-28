@@ -3,8 +3,6 @@
 #include <bl_uapp/bl_syscall_public.h>
 #include <console/console.h>
 #include <reset.h>
-#include <stdint.h>
-
 
 void do_board_reset(void)
 {

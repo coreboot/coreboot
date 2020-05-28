@@ -3,7 +3,6 @@
 #ifndef __AMD_S3_RESUME_H__
 #define __AMD_S3_RESUME_H__
 
-#include <stdint.h>
 #include <agesa_headers.h>
 
 AGESA_STATUS OemInitResume(S3_DATA_BLOCK *dataBlock);

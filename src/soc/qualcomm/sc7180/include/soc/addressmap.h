@@ -3,7 +3,6 @@
 #ifndef _SOC_QUALCOMM_SC7180_ADDRESS_MAP_H_
 #define _SOC_QUALCOMM_SC7180_ADDRESS_MAP_H_
 
-#include <stdint.h>
 
 #define AOSS_CC_BASE			0x0C2A0000
 #define GCC_BASE			0x00100000

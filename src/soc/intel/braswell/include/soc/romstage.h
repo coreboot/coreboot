@@ -3,7 +3,6 @@
 #ifndef _SOC_ROMSTAGE_H_
 #define _SOC_ROMSTAGE_H_
 
-#include <stdint.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
 #include <soc/pm.h>

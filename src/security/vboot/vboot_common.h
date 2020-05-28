@@ -3,7 +3,6 @@
 #define __VBOOT_VBOOT_COMMON_H__
 
 #include <commonlib/region.h>
-#include <stdint.h>
 #include <vb2_api.h>
 
 /*

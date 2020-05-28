@@ -8,7 +8,6 @@
  * is still in the preboot phase.
  *
  */
-#include <stdint.h>
 /*
  * ptt_active
  *

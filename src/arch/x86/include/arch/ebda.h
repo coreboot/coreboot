@@ -3,7 +3,6 @@
 #ifndef __ARCH_EBDA_H
 #define __ARCH_EBDA_H
 
-#include <stdint.h>
 #include <stddef.h>
 
 #define X86_BDA_SIZE		0x200

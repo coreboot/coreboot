@@ -11,7 +11,6 @@
 #ifndef __ASSEMBLER__
 
 #include <stddef.h>
-#include <stdint.h>
 #include <arch/barrier.h>
 
 /* dcache clean by virtual address to PoC */

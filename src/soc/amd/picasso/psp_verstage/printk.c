@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <console/streams.h>
 #include <stdarg.h>
-#include <stdint.h>
 
 void console_hw_init(void)
 {

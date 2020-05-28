@@ -7,7 +7,6 @@
 #define ARM_CACHE_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 /*
  * Cache maintenance API

@@ -3,7 +3,6 @@
 #ifndef _SOC_MMA_H_
 #define _SOC_MMA_H_
 
-#include <stdint.h>
 #include <commonlib/region.h>
 
 struct mma_config_param {

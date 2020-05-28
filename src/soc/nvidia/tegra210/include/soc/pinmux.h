@@ -3,7 +3,6 @@
 #ifndef __SOC_NVIDIA_TEGRA210_PINMUX_H__
 #define __SOC_NVIDIA_TEGRA210_PINMUX_H__
 
-#include <stdint.h>
 #include <soc/nvidia/tegra/gpio.h>
 #include <soc/nvidia/tegra/pinmux.h>
 

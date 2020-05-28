@@ -4,7 +4,6 @@
 #include <intelblocks/cse.h>
 #include <console/console.h>
 #include <soc/me.h>
-#include <stdint.h>
 
 static void dump_me_status(void *unused)
 {

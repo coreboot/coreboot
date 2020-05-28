@@ -3,7 +3,6 @@
 #ifndef _SOC_ICELAKE_PCH_H_
 #define _SOC_ICELAKE_PCH_H_
 
-#include <stdint.h>
 
 #define PCH_H				1
 #define PCH_LP				2

@@ -4,7 +4,6 @@
 #define FSP1_1_CAR_H
 
 #include <fsp/api.h>
-#include <stdint.h>
 
 /* Per stage calls from the above two functions. The void * return from
  * cache_as_ram_stage_main() is the stack pointer to use in RAM after

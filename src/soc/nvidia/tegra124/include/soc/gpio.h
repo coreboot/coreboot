@@ -5,7 +5,6 @@
 
 #include <soc/nvidia/tegra/gpio.h>
 #include <soc/pinmux.h>	/* for pinmux constants in GPIO macro */
-#include <stdint.h>
 
 /* GPIO index constants. */
 

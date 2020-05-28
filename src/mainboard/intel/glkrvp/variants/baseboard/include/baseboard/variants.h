@@ -5,7 +5,6 @@
 
 #include <soc/gpio.h>
 #include <soc/meminit.h>
-#include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /**

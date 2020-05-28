@@ -4,7 +4,6 @@
 #define __SOC_NVIDIA_TEGRA124_PINGROUP_H__
 
 #include <soc/nvidia/tegra/pingroup.h>
-#include <stdint.h>
 
 enum {
 	PINGROUP_AO1_INDEX = 0,		/* offset 0x868 */

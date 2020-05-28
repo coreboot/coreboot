@@ -5,7 +5,6 @@
 
 #include <soc/cnl_memcfg_init.h>
 #include <soc/gpio.h>
-#include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* The next set of functions return the gpio table and fill in the number of

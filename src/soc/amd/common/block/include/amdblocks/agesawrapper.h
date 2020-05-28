@@ -3,7 +3,6 @@
 #ifndef __AGESAWRAPPER_H__
 #define __AGESAWRAPPER_H__
 
-#include <stdint.h>
 #include <agesa_headers.h>
 
 enum {

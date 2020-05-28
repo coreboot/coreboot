@@ -4,7 +4,6 @@
 #define __SOC_NVIDIA_TEGRA124_PINMUX_H__
 
 #include <soc/nvidia/tegra/pinmux.h>
-#include <stdint.h>
 
 enum {
 	PINMUX_FUNC_MASK = 3 << 0,

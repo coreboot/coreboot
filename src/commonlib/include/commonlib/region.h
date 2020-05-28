@@ -4,7 +4,6 @@
 #define _REGION_H_
 
 #include <sys/types.h>
-#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <commonlib/mem_pool.h>

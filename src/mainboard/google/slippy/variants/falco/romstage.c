@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>

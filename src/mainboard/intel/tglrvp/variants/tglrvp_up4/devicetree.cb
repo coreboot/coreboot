@@ -184,6 +184,12 @@ chip soc/intel/tigerlake
 		end
 
 		device pci 15.0 on	# I2C0			0xA0E8
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1308""
+				register "name" = ""RTAM""
+				register "desc" = ""Realtek RT1308 Codec""
+				device i2c 10 on end
+			end
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "4"
 				register "imon_slot_no" = "5"

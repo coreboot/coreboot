@@ -466,14 +466,13 @@ function build_config
 	required_arches=$(grep -E "^CONFIG_ARCH_(BOOTBLOCK|R.MSTAGE|VERSTAGE)" "$TARGET/${BUILD_NAME}/config.build" | \
 			sed "s,^CONFIG_ARCH_[^_]*_\([^=]*\)=.*$,\1," |sort -u |tr 'A-Z\n\r' 'a-z  ')
 
-	missing_arches="$($MAKE --no-print-directory -f Makefile -f - \
-		REQUIRED_ARCHES="$required_arches" obj="${build_dir}" <<'EOF'
+	missing_arches="$($MAKE --no-print-directory -f - \
+		REQUIRED_ARCHES="$required_arches" <<'EOF'
 include .xcompile
 .PHONY: missing_arches
 missing_arches:
 	$(if $(XCOMPILE_COMPLETE),,$(error .xcompile is invalid.))
 	@echo $(foreach arch,$(REQUIRED_ARCHES),$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))
-.DEFAULT_GOAL := missing_arches
 EOF
 )"
 	# shellcheck disable=SC2181

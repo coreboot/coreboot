@@ -14,13 +14,11 @@ config BOARD_GOOGLE_DUFFY_LEGACY
 	bool "-> Duffy Legacy (32MB)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_32768
-	select VBOOT_EC_EFS
 
 config BOARD_GOOGLE_DUFFY
 	bool "-> Duffy"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_16384
-	select VBOOT_EC_EFS
 
 config BOARD_GOOGLE_HATCH
 	bool "->  Hatch"
@@ -37,13 +35,11 @@ config BOARD_GOOGLE_KAISA_LEGACY
 	bool "-> Kaisa Legacy (32MB)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_32768
-	select VBOOT_EC_EFS
 
 config BOARD_GOOGLE_KAISA
 	bool "-> Kaisa"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_16384
-	select VBOOT_EC_EFS
 
 config BOARD_GOOGLE_KOHAKU
 	bool "->  Kohaku"

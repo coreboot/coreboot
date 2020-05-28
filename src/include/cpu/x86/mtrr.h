@@ -77,6 +77,7 @@ void x86_setup_mtrrs(void);
  * it always dynamically detects the number of variable MTRRs available.
  */
 void x86_setup_mtrrs_with_detect(void);
+void x86_setup_mtrrs_with_detect_no_above_4gb(void);
 /*
  * x86_setup_var_mtrrs() parameters:
  * address_bits - number of physical address bits supported by cpu

@@ -65,6 +65,7 @@ static struct param {
 	bool fill_partial_downward;
 	bool show_immutable;
 	bool stage_xip;
+	bool force_pow2_pagesize;
 	bool autogen_attr;
 	bool machine_parseable;
 	bool unprocessed;
@@ -168,6 +169,18 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
 	}
 
 	DEBUG("File size is %zd (0x%zx)\n", data_size, data_size);
+
+	/* Use a page size that can fit the entire file and is no smaller than
+	   optionally provided with -P parameter. */
+	if (param.force_pow2_pagesize) {
+		uint32_t pagesize = 1;
+		while (pagesize < data_size)
+			pagesize <<= 1;
+		while (pagesize < param.pagesize)
+			pagesize <<= 1;
+		param.pagesize = pagesize;
+		DEBUG("Page size is %d (0x%x)\n", param.pagesize, param.pagesize);
+	}
 
 	/* Include cbfs_file size along with space for with name. */
 	metadata_size += cbfs_calculate_file_header_size(param.name);
@@ -1256,7 +1269,7 @@ static const struct command commands[] = {
 				true, true},
 	{"add-payload", "H:r:f:n:c:b:C:I:p:vA:gh?", cbfs_add_payload,
 				true, true},
-	{"add-stage", "a:H:r:f:n:t:c:b:P:S:p:yvA:gh?", cbfs_add_stage,
+	{"add-stage", "a:H:r:f:n:t:c:b:P:QS:p:yvA:gh?", cbfs_add_stage,
 				true, true},
 	{"add-int", "H:r:i:n:b:vgh?", cbfs_add_integer, true, true},
 	{"add-master-header", "H:r:vh?j:", cbfs_add_master_header, true, true},
@@ -1308,6 +1321,7 @@ static struct option long_options[] = {
 	{"offset",        required_argument, 0, 'o' },
 	{"padding",       required_argument, 0, 'p' },
 	{"page-size",     required_argument, 0, 'P' },
+	{"pow2page",      no_argument,       0, 'Q' },
 	{"ucode-region",  required_argument, 0, 'q' },
 	{"size",          required_argument, 0, 's' },
 	{"top-aligned",   required_argument, 0, 'T' },
@@ -1402,7 +1416,8 @@ static void usage(char *name)
 			"Add a payload to the ROM\n"
 	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore] \\\n"
-	     "        [-a alignment] [-y|--xip] [-P page-size] [--ibb]     "
+	     "        [-a alignment] [-P page-size] [-Q|--pow2page] \\\n"
+	     "        [-y|--xip] [--ibb]                                   "
 			"Add a stage to the ROM\n"
 	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-A hash] -l load-address -e entry-point \\\n"
@@ -1660,6 +1675,9 @@ int main(int argc, char **argv)
 						optarg);
 					return 1;
 				}
+				break;
+			case 'Q':
+				param.force_pow2_pagesize = 1;
 				break;
 			case 'o':
 				param.cbfsoffset = strtoul(optarg, &suffix, 0);

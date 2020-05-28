@@ -7,8 +7,6 @@
 #include <console/console.h>
 #include <espi.h>
 #include <soc/pci_devs.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <timer.h>
 #include <types.h>
 

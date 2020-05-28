@@ -3,7 +3,6 @@
 #ifndef __SOC_CAVIUM_CN81XX_INCLUDE_SOC_SOC_H
 #define __SOC_CAVIUM_CN81XX_INCLUDE_SOC_SOC_H
 
-#include <stdint.h>
 #include <types.h>
 
 /* MIO BOOT Registers */

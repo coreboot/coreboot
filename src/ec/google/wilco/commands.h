@@ -3,7 +3,6 @@
 #ifndef EC_GOOGLE_WILCO_COMMANDS_H
 #define EC_GOOGLE_WILCO_COMMANDS_H
 
-#include <stdint.h>
 #include <types.h>
 
 enum {

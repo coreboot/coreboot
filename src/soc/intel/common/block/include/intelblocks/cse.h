@@ -3,7 +3,6 @@
 #ifndef SOC_INTEL_COMMON_CSE_H
 #define SOC_INTEL_COMMON_CSE_H
 
-#include <stdint.h>
 #include <types.h>
 
 /* MKHI Command groups */

@@ -3,7 +3,6 @@
 #ifndef SOC_MEDIATEK_MT8183_EMI_H
 #define SOC_MEDIATEK_MT8183_EMI_H
 
-#include <stdint.h>
 #include <types.h>
 #include <soc/dramc_common_mt8183.h>
 

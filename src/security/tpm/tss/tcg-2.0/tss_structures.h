@@ -7,7 +7,6 @@
  * This file includes a subset of definitions of TPM protocol version 2.x
  * constants and structures needed for functions used in coreboot.
  */
-#include <stdint.h>
 #include <types.h>
 #include "../common/tss_common.h"
 

@@ -9,7 +9,6 @@
 #ifndef TSS_H_
 #define TSS_H_
 
-#include <stdint.h>
 #include <types.h>
 
 #include <security/tpm/tss/common/tss_common.h>

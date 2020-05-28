@@ -4,7 +4,6 @@
 #define __AMDBLOCKS_ACPIMMIO_H__
 
 #include <device/mmio.h>
-#include <stdint.h>
 #include <types.h>
 #include <amdblocks/acpimmio_map.h>
 

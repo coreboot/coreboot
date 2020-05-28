@@ -3,7 +3,6 @@
 #ifndef __NVIDIA_TEGRA210_DMA_H__
 #define __NVIDIA_TEGRA210_DMA_H__
 
-#include <stdint.h>
 #include <soc/addressmap.h>
 #include <types.h>
 

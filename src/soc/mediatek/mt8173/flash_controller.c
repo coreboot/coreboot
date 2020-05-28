@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
-#include <stdint.h>
 #include <string.h>
 #include <symbols.h>
 #include <timer.h>

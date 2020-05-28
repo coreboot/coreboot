@@ -3,7 +3,6 @@
 #ifndef _DRAMC_REGISTER_H_
 #define _DRAMC_REGISTER_H_
 
-#include <stddef.h>
 #include <types.h>
 
 #define DRIVING_DS2_0	    7	/* DS[2:0] 7->6 */

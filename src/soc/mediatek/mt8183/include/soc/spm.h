@@ -4,7 +4,6 @@
 #define SOC_MEDIATEK_MT8183_SPM_H
 
 #include <soc/addressmap.h>
-#include <stdint.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */

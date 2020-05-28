@@ -7,7 +7,6 @@
 #ifndef __DRIVERS_UART_PL011_H
 #define __DRIVERS_UART_PL011_H
 
-#include <stdint.h>
 #include <types.h>
 
 /* PL011 r1p5 registers */

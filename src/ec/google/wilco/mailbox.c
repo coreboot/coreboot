@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <ec/google/common/mec.h>
-#include <stdint.h>
 #include <string.h>
 #include <timer.h>
 #include <types.h>

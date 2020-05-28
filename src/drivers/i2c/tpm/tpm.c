@@ -17,7 +17,6 @@
 
 
 #include <commonlib/endian.h>
-#include <stdint.h>
 #include <string.h>
 #include <types.h>
 #include <delay.h>

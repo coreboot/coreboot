@@ -4,7 +4,7 @@
 
 #ifndef __LIB_H__
 #define __LIB_H__
-#include <stdint.h>
+
 #include <types.h>
 
 /* Defined in src/lib/lzma.c. Returns decompressed size or 0 on error. */

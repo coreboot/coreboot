@@ -7,7 +7,6 @@
 #include <boot_device.h>
 #include <console/console.h>
 #include <delay.h>
-#include <stdint.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <soc/addressmap.h>

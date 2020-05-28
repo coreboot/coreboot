@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-#include <stdint.h>
 #include <types.h>
 #include <arch/cache.h>
 #include <arch/exception.h>

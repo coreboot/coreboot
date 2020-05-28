@@ -15,7 +15,6 @@
  * \brief Utilities for decoding DDR3 SPDs
  */
 
-#include <stdint.h>
 #include <spd.h>
 #include <device/dram/common.h>
 #include <types.h>

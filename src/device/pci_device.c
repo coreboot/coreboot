@@ -11,7 +11,6 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <delay.h>
 #include <device/cardbus.h>

@@ -99,7 +99,7 @@ static size_t fill_up_entries_cache(struct vpd_blob_cache_t *cache,
 			strcpy(cache->key_name, templates[i]);
 			cache->key_name[index_location] = j + '0';
 
-			payload = vpd_find(cache->key_name, &payload_size, VPD_ANY);
+			payload = vpd_find(cache->key_name, &payload_size, VPD_RO_THEN_RW);
 			if (!payload)
 				continue;
 

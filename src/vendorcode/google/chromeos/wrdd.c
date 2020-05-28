@@ -48,7 +48,7 @@ uint16_t wifi_regulatory_domain(void)
 
 	/* If not found for any reason fall backto the default value */
 	if (!vpd_gets(wrdd_domain_key, wrdd_domain_code,
-		ARRAY_SIZE(wrdd_domain_code), VPD_ANY)) {
+		ARRAY_SIZE(wrdd_domain_code), VPD_RO_THEN_RW)) {
 		printk(BIOS_DEBUG,
 		"Error: Could not locate '%s' in VPD\n", wrdd_domain_key);
 		return WRDD_DEFAULT_REGULATORY_DOMAIN;

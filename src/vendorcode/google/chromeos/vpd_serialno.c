@@ -15,7 +15,7 @@ void lb_table_add_serialno_from_vpd(struct lb_header *header)
 	size_t len;
 
 	if (!vpd_gets(serialno_key, serialno,
-				sizeof(serialno), VPD_ANY)) {
+				sizeof(serialno), VPD_RO_THEN_RW)) {
 		printk(BIOS_ERR, "no serial number in vpd\n");
 		return;
 	}

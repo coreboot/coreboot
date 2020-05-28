@@ -73,7 +73,7 @@ void lb_table_add_macs_from_vpd(struct lb_header *header)
 			 * in the VPD - move on.
 			 */
 			if (!vpd_gets(mac_addr_key, mac_addr_str,
-					   sizeof(mac_addr_str), VPD_ANY))
+					   sizeof(mac_addr_str), VPD_RO_THEN_RW))
 				break;
 
 			if (!macs) {

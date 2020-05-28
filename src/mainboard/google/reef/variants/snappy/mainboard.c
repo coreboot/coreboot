@@ -46,7 +46,7 @@ uint8_t variant_board_sku(void)
 	if (!CONFIG(CHROMEOS))
 		return board_sku_num;
 
-	if (!vpd_gets(vpd_skuid, vpd_buffer, ARRAY_SIZE(vpd_buffer), VPD_ANY))
+	if (!vpd_gets(vpd_skuid, vpd_buffer, ARRAY_SIZE(vpd_buffer), VPD_RO_THEN_RW))
 		return board_sku_num;
 
 	vpd_len = strlen(vpd_buffer);

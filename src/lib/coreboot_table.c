@@ -30,6 +30,11 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
+#if CONFIG(PLATFORM_USES_FSP2_0)
+#include <fsp/util.h>
+#else
+void lb_string_platform_blob_version(struct lb_header *header);
+#endif
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -515,6 +520,8 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	/* Record our various random string information */
 	lb_strings(head);
+	if (CONFIG(PLATFORM_USES_FSP2_0))
+		lb_string_platform_blob_version(head);
 	lb_record_version_timestamp(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);

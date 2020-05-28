@@ -12,6 +12,8 @@
 #include <program_loading.h>
 #include <types.h>
 
+#define FSP_VER_LEN	30
+
 struct hob_header {
 	uint16_t type;
 	uint16_t length;
@@ -85,7 +87,8 @@ const struct hob_resource *fsp_hob_header_to_resource(
 const struct hob_header *fsp_next_hob(const struct hob_header *parent);
 bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 void fsp_find_bootloader_tolum(struct range_entry *re);
-
+void fsp_get_version(char *buf);
+void lb_string_platform_blob_version(struct lb_header *header);
 
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,

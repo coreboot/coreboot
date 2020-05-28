@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <boot/coreboot_tables.h>
 #include <device/mmio.h>
 #include <cbfs.h>
 #include <cf9_reset.h>
@@ -207,4 +208,39 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 	prog_segment_loaded(hdr->image_base, hdr->image_size, SEG_FINAL);
 
 	return CB_SUCCESS;
+}
+
+/* Only call this function when FSP header has been read and validated */
+void fsp_get_version(char *buf)
+{
+	struct fsp_header *hdr = &fsps_hdr;
+	union {
+		uint32_t val;
+		struct {
+			uint8_t bld_num;
+			uint8_t revision;
+			uint8_t minor;
+			uint8_t major;
+		} rev;
+	} revision;
+
+	revision.val = hdr->fsp_revision;
+	snprintf(buf, FSP_VER_LEN, "%u.%u-%u.%u.%u.%u", (hdr->spec_version >> 4),
+		hdr->spec_version & 0xf, revision.rev.major,
+		revision.rev.minor, revision.rev.revision, revision.rev.bld_num);
+}
+
+/* Add FSP version to coreboot table LB_TAG_PLATFORM_BLOB_VERSION */
+void lb_string_platform_blob_version(struct lb_header *header)
+{
+	struct lb_string *rec;
+	size_t len;
+	char fsp_version[FSP_VER_LEN] = {0};
+
+	fsp_get_version(fsp_version);
+	rec = (struct lb_string *)lb_new_record(header);
+	rec->tag = LB_TAG_PLATFORM_BLOB_VERSION;
+	len = strlen(fsp_version);
+	rec->size = ALIGN_UP(sizeof(*rec) + len + 1, 8);
+	memcpy(rec->string, fsp_version, len+1);
 }

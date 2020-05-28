@@ -33,10 +33,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "H81M-HDS"
 
-config MAX_CPUS
-	int
-	default 8
-
 #
 # Since this is a desktop board, the assumption is made that most users
 # would want CMOS configuration enabled by default.

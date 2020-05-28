@@ -11,7 +11,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (PAD_CFG0_RX_STATE, ShiftRight (VAL0, PAD_CFG0_RX_STATE_BIT), Local0)
+	Local0 = PAD_CFG0_RX_STATE & (VAL0 >> PAD_CFG0_RX_STATE_BIT)
 
 	Return (Local0)
 }
@@ -27,7 +27,7 @@ Method (GTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (PAD_CFG0_TX_STATE, VAL0, Local0)
+	Local0 = PAD_CFG0_TX_STATE & VAL0
 
 	Return (Local0)
 }
@@ -43,7 +43,7 @@ Method (STXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Or (PAD_CFG0_TX_STATE, VAL0, VAL0)
+	VAL0 = PAD_CFG0_TX_STATE | VAL0
 }
 
 /*
@@ -57,7 +57,7 @@ Method (CTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (Not (PAD_CFG0_TX_STATE), VAL0, VAL0)
+	VAL0 = ~PAD_CFG0_TX_STATE & VAL0
 }
 
 /*
@@ -76,10 +76,10 @@ Method (GPMO, 2, Serialized)
 	{
 		VAL0, 32
 	}
-	Store (VAL0, Local0)
-	And (Not (PAD_CFG0_MODE_MASK), Local0, Local0)
-	And (ShiftLeft (Arg1, PAD_CFG0_MODE_SHIFT, Arg1), PAD_CFG0_MODE_MASK, Arg1)
-	Or (Local0, Arg1, VAL0)
+	Local0 = VAL0
+	Local0 = ~PAD_CFG0_MODE_MASK & Local0
+	Arg1 = (Arg1 <<= PAD_CFG0_MODE_SHIFT) & PAD_CFG0_MODE_MASK
+	VAL0 = Local0 | Arg1
 }
 
 /*
@@ -97,10 +97,10 @@ Method (GTXE, 2, Serialized)
 		VAL0, 32
 	}
 
-	If (LEqual (Arg1, 1)) {
-		And (Not (PAD_CFG0_TX_DISABLE), VAL0, VAL0)
-	} ElseIf (LEqual (Arg1, 0)){
-		Or (PAD_CFG0_TX_DISABLE, VAL0, VAL0)
+	If (Arg1 == 1) {
+		VAL0 = ~PAD_CFG0_TX_DISABLE & VAL0
+	} ElseIf (Arg1 == 0){
+		VAL0 = PAD_CFG0_TX_DISABLE | VAL0
 	}
 }
 
@@ -119,9 +119,9 @@ Method (GRXE, 2, Serialized)
 		VAL0, 32
 	}
 
-	If (LEqual (Arg1, 1)) {
-		And (Not (PAD_CFG0_RX_DISABLE), VAL0, VAL0)
-	} ElseIf (LEqual (Arg1, 0)){
-		Or (PAD_CFG0_RX_DISABLE, VAL0, VAL0)
+	If (Arg1 == 1) {
+		VAL0 = ~PAD_CFG0_RX_DISABLE & VAL0
+	} ElseIf (Arg1 == 0){
+		VAL0 = PAD_CFG0_RX_DISABLE | VAL0
 	}
 }

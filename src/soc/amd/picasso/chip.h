@@ -103,6 +103,8 @@ struct soc_amd_picasso_config {
 		SD_EMMC_EMMC_HS400,
 		SD_EMMC_EMMC_HS300,
 	} sd_emmc_config;
+
+	uint8_t xhci0_force_gen1;
 };
 
 typedef struct soc_amd_picasso_config config_t;

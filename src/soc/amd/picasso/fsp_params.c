@@ -95,6 +95,12 @@ static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)
 	fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
 }
 
+static void fsp_usb_oem_customization(FSP_S_CONFIG *scfg,
+			const struct soc_amd_picasso_config *cfg)
+{
+	scfg->xhci0_force_gen1 = cfg->xhci0_force_gen1;
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	const struct soc_amd_picasso_config *cfg;
@@ -103,4 +109,5 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	cfg = config_of_soc();
 	fsps_update_emmc_config(scfg, cfg);
 	fsp_fill_pcie_ddi_descriptors(scfg);
+	fsp_usb_oem_customization(scfg, cfg);
 }

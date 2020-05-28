@@ -32,10 +32,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config MAX_CPUS
-	int
-	default 4
-
 config MAXIMUM_SUPPORTED_FREQUENCY
 	int
 	default 400

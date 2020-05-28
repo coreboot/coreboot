@@ -26,8 +26,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P5GC-MX"
 
-config MAX_CPUS
-	int
-	default 4 ## 2 may be the chipsets limit
-
 endif # BOARD_ASUS_P5GC_MX

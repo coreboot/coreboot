@@ -53,6 +53,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* EC_SYNC_IRQ */
 	PAD_CFG_GPI_APIC(GPP_A15, NONE, PLTRST, LEVEL, INVERT), /* MECC_HPD2 */
+
+	PAD_CFG_GPO(GPP_H1, 1, DEEP), /* AUDIO_PWREN */
 };
 
 /* Early pad configuration in bootblock */

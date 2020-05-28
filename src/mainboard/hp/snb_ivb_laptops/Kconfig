@@ -52,10 +52,6 @@ config VGA_BIOS_ID
 	default "8086,0116" if SOUTHBRIDGE_INTEL_BD82X6X
 	default "8086,0166" if SOUTHBRIDGE_INTEL_C216
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 2 if BOARD_HP_2570P

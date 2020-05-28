@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P8H61-M LX"
 
-config MAX_CPUS
-	int
-	default 8
-
 #
 # These ME partitions need to be whitelisted for correct system
 # operation. Example issues from removing them include: no serial output

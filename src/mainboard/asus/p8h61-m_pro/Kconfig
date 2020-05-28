@@ -37,8 +37,4 @@ config VGA_BIOS_ID
 	string
 	default "8086,0152"
 
-config MAX_CPUS
-	int
-	default 8
-
 endif # BOARD_ASUS_P8H61_M_PRO

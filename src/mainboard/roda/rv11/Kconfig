@@ -33,8 +33,4 @@ config MAINBOARD_PART_NUMBER
 	default "Lizard RW11" if BOARD_RODA_RW11
 	default "Lizard RV11"
 
-config MAX_CPUS
-	int
-	default 8
-
 endif # BOARD_RODA_RV11 || BOARD_RODA_RW11

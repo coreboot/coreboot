@@ -24,8 +24,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "B75 Pro3-M"
 
-config MAX_CPUS
-	int
-	default 8
-
 endif

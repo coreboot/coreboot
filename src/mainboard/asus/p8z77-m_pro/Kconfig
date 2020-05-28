@@ -28,8 +28,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P8Z77-M PRO"
 
-config MAX_CPUS
-	int
-	default 8
-
 endif # BOARD_ASUS_P8Z77_M_PRO

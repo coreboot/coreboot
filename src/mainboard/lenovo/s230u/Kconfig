@@ -32,10 +32,6 @@ config EC_BASE_ADDRESS
 	hex
 	default 0xff000000
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 1

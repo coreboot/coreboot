@@ -24,8 +24,4 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "H61M-CS"
-
-config MAX_CPUS
-	int
-	default 8
 endif

@@ -25,10 +25,6 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 60
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX # FIXME: check this
 	int
 	default 2

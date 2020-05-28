@@ -65,10 +65,6 @@ config MAINBOARD_PART_NUMBER
 	default "ThinkPad T530" if BOARD_LENOVO_T530
 	default "ThinkPad W530" if BOARD_LENOVO_W530
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 2

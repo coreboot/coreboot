@@ -45,10 +45,6 @@ config OVERRIDE_DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GIGABYTE_GA_B75_D3V
 
-config MAX_CPUS
-	int
-	default 8
-
 # Override the default variant behavior, since the data.vbt is the same
 config INTEL_GMA_VBT_FILE
 	string

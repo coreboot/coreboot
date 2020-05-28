@@ -64,10 +64,6 @@ config MAINBOARD_PART_NUMBER
 	default "ThinkPad T520" if BOARD_LENOVO_T520
 	default "ThinkPad W520" if BOARD_LENOVO_W520
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 2

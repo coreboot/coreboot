@@ -89,8 +89,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	KconfigBool["HAVE_ACPI_TABLES"] = true
 	KconfigBool["HAVE_ACPI_RESUME"] = true
 
-	KconfigInt["MAX_CPUS"] = 8
-
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
 		File: "cpu/intel/common/acpi/cpu.asl",
 	})

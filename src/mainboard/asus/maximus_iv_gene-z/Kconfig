@@ -32,10 +32,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0112"
 
-config MAX_CPUS
-	int
-	default 8
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 1

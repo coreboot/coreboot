@@ -18,4 +18,8 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x2000
 
+config MAX_CPUS
+	int
+	default 2
+
 endif

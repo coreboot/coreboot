@@ -64,10 +64,6 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
-config MAX_CPUS
-	int
-	default 2
-
 config CBFS_SIZE
 	hex
 	default 0x200000

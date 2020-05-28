@@ -216,10 +216,6 @@ struct soc_intel_tigerlake_config {
 	uint8_t TcssXhciEn;
 	uint8_t TcssXdciEn;
 
-	/* TCSS DMA */
-	uint8_t TcssDma0En;
-	uint8_t TcssDma1En;
-
 	/*
 	 * IOM Port Config
 	 * If a port orientation needs to be controlled by the SOC this setting must be

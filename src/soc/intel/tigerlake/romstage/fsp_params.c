@@ -116,8 +116,17 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssXdciEn = config->TcssXdciEn;
 
 	/* TCSS DMA */
-	m_cfg->TcssDma0En = config->TcssDma0En;
-	m_cfg->TcssDma1En = config->TcssDma1En;
+	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA0);
+	if (dev)
+		m_cfg->TcssDma0En = dev->enabled;
+	else
+		m_cfg->TcssDma0En = 0;
+
+	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA1);
+	if (dev)
+		m_cfg->TcssDma1En = dev->enabled;
+	else
+		m_cfg->TcssDma1En = 0;
 
 	/* USB4/TBT */
 	dev = pcidev_path_on_root(SA_DEVFN_TBT0);

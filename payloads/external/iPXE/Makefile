@@ -45,14 +45,14 @@ ifeq ($(CONSOLE_SERIAL),yy)
 	sed 's|#define\s*COMCONSOLE.*|#define COMCONSOLE $(IPXE_UART)|' "$(project_dir)/src/config/serial.h" > "$(project_dir)/src/config/serial.h.tmp"
 	sed 's|#define\s*COMSPEED.*|#define COMSPEED $(CONFIG_TTYS0_BAUD)|'  "$(project_dir)/src/config/serial.h.tmp" > "$(project_dir)/src/config/serial.h"
 endif
-ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_PXE_NO_PROMT)),)
+ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_PXE_NO_PROMPT)),)
 	cp "$(project_dir)/src/config/general.h" "$(project_dir)/src/config/general.h.cb"
 endif
 ifeq ($(CONFIG_HAS_SCRIPT),y)
 	sed 's|//#define\s*IMAGE_SCRIPT.*|#define IMAGE_SCRIPT|' "$(project_dir)/src/config/general.h" > "$(project_dir)/src/config/general.h.tmp"
 	mv "$(project_dir)/src/config/general.h.tmp" "$(project_dir)/src/config/general.h"
 endif
-ifeq ($(CONFIG_PXE_NO_PROMT),y)
+ifeq ($(CONFIG_PXE_NO_PROMPT),y)
 	sed 's|#define\s*BANNER_TIMEOUT.*|#define BANNER_TIMEOUT 0|' "$(project_dir)/src/config/general.h" > "$(project_dir)/src/config/general.h.tmp"
 	mv "$(project_dir)/src/config/general.h.tmp" "$(project_dir)/src/config/general.h"
 endif
@@ -74,7 +74,7 @@ ifeq ($(CONSOLE_SERIAL),yy)
 	cp "$(project_dir)/src/config/console.h.cb" "$(project_dir)/src/config/console.h"
 	cp "$(project_dir)/src/config/serial.h.cb" "$(project_dir)/src/config/serial.h"
 endif
-ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_PXE_NO_PROMT)),)
+ifneq ($(filter y,$(CONFIG_HAS_SCRIPT) $(CONFIG_PXE_NO_PROMPT)),)
 	cp "$(project_dir)/src/config/general.h.cb" "$(project_dir)/src/config/general.h"
 endif
 

@@ -78,7 +78,7 @@ config PXE_SERIAL_CONSOLE
 
 	  Unselect to let only SeaBIOS handle printing output.
 
-config PXE_NO_PROMT
+config PXE_NO_PROMPT
 	bool "Do not show prompt to boot from PXE"
 	default n
 	depends on BUILD_IPXE

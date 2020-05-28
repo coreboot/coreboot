@@ -57,6 +57,41 @@ Device (GPIO)
 	}
 }
 
+Device (MMC0)
+{
+	Name (_HID, "AMDI0040")
+	Name (_UID, 0x0)
+	Method (_CRS, 0) {
+		Name (RBUF, ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Level,
+				ActiveLow,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
+		})
+		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		If (PMOD) {
+			IRQN = IMMC
+		} Else {
+			IRQN = PMMC
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate(){
+				Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
+			})
+		} Else {
+			Return (RBUF)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+}
+
 Device (FUR0)
 {
 	Name (_HID, "AMD0020")

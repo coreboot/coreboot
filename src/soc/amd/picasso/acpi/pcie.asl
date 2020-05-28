@@ -16,6 +16,9 @@
 		PIRG, 0x00000008,	/* Index 6: INTG */
 		PIRH, 0x00000008,	/* Index 7: INTH */
 
+		Offset (0x43),
+		PMMC, 0x00000008,	/* Index 0x43: eMMC */
+
 		Offset (0x62),
 		PGPI, 0x00000008,	/* Index 0x62: GPIO */
 
@@ -41,6 +44,9 @@
 		IORF, 0x00000008,	/* Index 0x85: INTF */
 		IORG, 0x00000008,	/* Index 0x86: INTG */
 		IORH, 0x00000008,	/* Index 0x87: INTH */
+
+		Offset (0xC3),
+		IMMC, 0x00000008,	/* Index 0xC3: eMMC */
 
 		Offset (0xE2),
 		IGPI, 0x00000008,	/* Index 0xE2: GPIO */

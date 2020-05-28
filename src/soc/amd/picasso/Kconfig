@@ -228,6 +228,10 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
+config FSP_M_ADDR
+	hex
+	default 0x90000000
+
 config X86_RESET_VECTOR
 	hex
 	default 0x807fff0

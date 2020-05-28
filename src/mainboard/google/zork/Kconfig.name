@@ -4,6 +4,10 @@ config BOARD_GOOGLE_DALBOZ
 	bool "->  Dalboz"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
+config BOARD_GOOGLE_VILBOZ
+	bool "-> Vilboz"
+	select BOARD_GOOGLE_BASEBOARD_DALBOZ
+
 config BOARD_GOOGLE_EZKINIL
 	bool "->  Ezkinil"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE

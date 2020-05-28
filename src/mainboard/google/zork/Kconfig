@@ -50,6 +50,7 @@ config VARIANT_DIR
 	default "trembyle" if BOARD_GOOGLE_TREMBYLE
 	default "dalboz" if BOARD_GOOGLE_DALBOZ
 	default "berknip" if BOARD_GOOGLE_BERKNIP
+	default "vilboz" if BOARD_GOOGLE_VILBOZ
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -58,6 +59,7 @@ config MAINBOARD_PART_NUMBER
 	default "Trembyle" if BOARD_GOOGLE_TREMBYLE
 	default "Dalboz" if BOARD_GOOGLE_DALBOZ
 	default "Berknip" if BOARD_GOOGLE_BERKNIP
+	default "Vilboz" if BOARD_GOOGLE_VILBOZ
 
 config DEVICETREE
 	string

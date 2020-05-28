@@ -34,8 +34,4 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 60
 
-config MAX_CPUS
-	int
-	default 4
-
 endif

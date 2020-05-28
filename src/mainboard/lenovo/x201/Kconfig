@@ -58,10 +58,6 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 10
 
-config MAX_CPUS
-	int
-	default 4
-
 # Without the Intel ME's EFFS partition some PCIe devices (like the USB and SATA
 # controllers) don't work as expected
 config ME_CLEANER_ARGS

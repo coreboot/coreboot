@@ -28,8 +28,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "GA-G41M-ES2L"
 
-config MAX_CPUS
-	int
-	default 4
-
 endif # BOARD_GIGABYTE_GA_G41M_ES2L

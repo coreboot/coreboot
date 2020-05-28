@@ -42,10 +42,6 @@ config GPIO_C
 	default "variants/p5ql_pro/gpio.c" if BOARD_ASUS_P5QL_PRO
 	default "gpio.c"
 
-config MAX_CPUS
-	int
-	default 4
-
 # The MARVELL IDE controller delays SeaBIOS a lot and results in an unbootable
 # bogus disk. Compiling SeaBIOS without ATA support is a workaround.
 

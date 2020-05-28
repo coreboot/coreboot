@@ -38,8 +38,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "DG43GT"
 
-config MAX_CPUS
-	int
-	default 4
-
 endif # BOARD_INTEL_DG43GT

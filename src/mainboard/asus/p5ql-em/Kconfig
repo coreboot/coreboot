@@ -26,8 +26,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P5QL-EM"
 
-config MAX_CPUS
-	int
-	default 4
-
 endif # BOARD_ASUS_P5QL_EM

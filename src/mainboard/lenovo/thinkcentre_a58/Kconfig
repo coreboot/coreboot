@@ -25,8 +25,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkCentre A58"
 
-config MAX_CPUS
-	int
-	default 4
-
 endif # BOARD_LENOVO_THINKCENTRE_A58

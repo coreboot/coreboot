@@ -46,10 +46,6 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config MAX_CPUS
-	int
-	default 4
-
 # Override the default variant behavior, since the data.vbt is the same
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"

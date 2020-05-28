@@ -21,6 +21,7 @@
 
 #define CBFS_TYPE_DELETED    0x00000000
 #define CBFS_TYPE_DELETED2   0xffffffff
+#define CBFS_TYPE_BOOTBLOCK  0x01
 #define CBFS_TYPE_STAGE      0x10
 #define CBFS_TYPE_SELF       0x20
 #define CBFS_TYPE_FIT        0x21

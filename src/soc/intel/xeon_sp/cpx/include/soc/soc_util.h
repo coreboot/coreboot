@@ -36,4 +36,8 @@ void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thre
 	uint8_t *package, uint8_t *core, uint8_t *thread);
 unsigned int xeon_sp_get_cpu_count(void);
 
+int get_platform_thread_count(void);
+int get_threads_per_package(void);
+const struct SystemMemoryMapHob *get_system_memory_map(void);
+
 #endif /* _SOC_UTIL_H_ */

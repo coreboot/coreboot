@@ -3,15 +3,19 @@
 #include <acpi/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
+#include <assert.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/soc_util.h>
 
 #include "chip.h"
 
@@ -168,4 +172,156 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0;
 	fadt->x_gpe1_blk.addrh = 0;
+}
+
+unsigned long acpi_create_srat_lapics(unsigned long current)
+{
+	struct device *cpu;
+	unsigned int cpu_index = 0;
+
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled)
+			continue;
+		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
+			cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current,
+			cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		cpu_index++;
+	}
+	return current;
+}
+
+static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
+{
+	const struct SystemMemoryMapHob *memory_map;
+	unsigned int mmap_index;
+
+	memory_map = get_system_memory_map();
+	assert(memory_map != NULL);
+	printk(BIOS_DEBUG, "memory_map: %p\n", memory_map);
+
+	mmap_index = 0;
+	for (int e = 0; e < memory_map->numberEntries; ++e) {
+		const struct SystemMemoryMapElement *mem_element = &memory_map->Element[e];
+		uint64_t addr =
+			(uint64_t) ((uint64_t)mem_element->BaseAddress <<
+				MEM_ADDR_64MB_SHIFT_BITS);
+		uint64_t size =
+			(uint64_t) ((uint64_t)mem_element->ElementSize <<
+				MEM_ADDR_64MB_SHIFT_BITS);
+
+		printk(BIOS_DEBUG, "memory_map %d addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
+			"ElementSize: 0x%x, reserved: %d\n",
+			e, addr, mem_element->BaseAddress, size,
+			mem_element->ElementSize, (mem_element->Type & MEM_TYPE_RESERVED));
+
+		assert(mmap_index < MAX_ACPI_MEMORY_AFFINITY_COUNT);
+
+		/* skip reserved memory region */
+		if (mem_element->Type & MEM_TYPE_RESERVED)
+			continue;
+
+		/* skip if this address is already added */
+		bool skip = false;
+		for (int idx = 0; idx < mmap_index; ++idx) {
+			uint64_t base_addr = ((uint64_t)srat_mem[idx].base_address_high << 32) +
+				srat_mem[idx].base_address_low;
+			if (addr == base_addr) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+		srat_mem[mmap_index].type = 1; /* Memory affinity structure */
+		srat_mem[mmap_index].length = sizeof(acpi_srat_mem_t);
+		srat_mem[mmap_index].base_address_low = (uint32_t) (addr & 0xffffffff);
+		srat_mem[mmap_index].base_address_high = (uint32_t) (addr >> 32);
+		srat_mem[mmap_index].length_low = (uint32_t) (size & 0xffffffff);
+		srat_mem[mmap_index].length_high = (uint32_t) (size >> 32);
+		srat_mem[mmap_index].proximity_domain = mem_element->SocketId;
+		srat_mem[mmap_index].flags = SRAT_ACPI_MEMORY_ENABLED;
+		if ((mem_element->Type & MEMTYPE_VOLATILE_MASK) == 0)
+			srat_mem[mmap_index].flags |= SRAT_ACPI_MEMORY_NONVOLATILE;
+		++mmap_index;
+	}
+
+	return mmap_index;
+}
+
+static unsigned long acpi_fill_srat(unsigned long current)
+{
+	acpi_srat_mem_t srat_mem[MAX_ACPI_MEMORY_AFFINITY_COUNT];
+	unsigned int mem_count;
+
+	/* create all subtables for processors */
+	current = acpi_create_srat_lapics(current);
+
+	mem_count = get_srat_memory_entries(srat_mem);
+	for (int i = 0; i < mem_count; ++i) {
+		printk(BIOS_DEBUG, "adding srat memory %d entry length: %d, addr: 0x%x%x, "
+			"length: 0x%x%x, proximity_domain: %d, flags: %x\n",
+			i, srat_mem[i].length,
+			srat_mem[i].base_address_high, srat_mem[i].base_address_low,
+			srat_mem[i].length_high, srat_mem[i].length_low,
+			srat_mem[i].proximity_domain, srat_mem[i].flags);
+		memcpy((acpi_srat_mem_t *)current, &srat_mem[i], sizeof(srat_mem[i]));
+		current += srat_mem[i].length;
+	}
+
+	return current;
+}
+
+static unsigned long acpi_fill_slit(unsigned long current)
+{
+	unsigned int nodes = xeon_sp_get_cpu_count();
+
+	uint8_t *p = (uint8_t *)current;
+	memset(p, 0, 8 + nodes * nodes);
+	*p = (uint8_t)nodes;
+	p += 8;
+
+	/* this assumes fully connected socket topology */
+	for (int i = 0; i < nodes; i++) {
+		for (int j = 0; j < nodes; j++) {
+			if (i == j)
+				p[i*nodes+j] = 10;
+			else
+				p[i*nodes+j] = 16;
+		}
+	}
+
+	current += 8 + nodes * nodes;
+	return current;
+}
+
+unsigned long northbridge_write_acpi_tables(const struct device *device,
+					    unsigned long current,
+					    struct acpi_rsdp *rsdp)
+{
+	acpi_srat_t *srat;
+	acpi_slit_t *slit;
+
+	/* SRAT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
+	srat = (acpi_srat_t *) current;
+	acpi_create_srat(srat, acpi_fill_srat);
+	current += srat->header.length;
+	acpi_add_table(rsdp, srat);
+
+	/* SLIT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
+	slit = (acpi_slit_t *) current;
+	acpi_create_slit(slit, acpi_fill_slit);
+	current += slit->header.length;
+	acpi_add_table(rsdp, slit);
+
+	return current;
 }

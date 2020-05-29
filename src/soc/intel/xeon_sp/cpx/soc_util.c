@@ -9,6 +9,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+int get_threads_per_package(void)
+{
+	unsigned int core_count, thread_count;
+	cpu_read_topology(&core_count, &thread_count);
+	return thread_count;
+}
+
+int get_platform_thread_count(void)
+{
+	return xeon_sp_get_cpu_count() * get_threads_per_package();
+}
+
+const struct SystemMemoryMapHob *get_system_memory_map(void)
+{
+	size_t hob_size;
+	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
+
+	const void *memmap_addr = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
+	assert(memmap_addr != NULL && hob_size != 0);
+	printk(BIOS_DEBUG, "FSP_SYSTEM_MEMORYMAP_HOB_GUID hob_size: %ld\n", hob_size);
+
+	return (const struct SystemMemoryMapHob *) memmap_addr;
+}
+
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thread_bits,
 	uint8_t *package, uint8_t *core, uint8_t *thread)
 {

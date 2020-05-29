@@ -48,7 +48,43 @@
 #define VTD_DEV				5
 #define VTD_FUNC			0
 
+#define VMD_DEV_NUM             0x05
+#define VMD_FUNC_NUM            0x05
 
+#define APIC_DEV_NUM            0x05
+#define APIC_FUNC_NUM           0x04
+
+#define CBDMA_DEV_NUM           0x04
+#define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function
+
+#define PCH_IOAPIC_BUS_NUMBER   0x00
+#define PCH_IOAPIC_DEV_NUM      0x1F
+#define PCH_IOAPIC_FUNC_NUM     0x00
+
+/* PCH Device info */
+
+#define  XHCI_BUS_NUMBER        0x0
+#define  PCH_DEV_SLOT_XHCI      0x14
+#define  XHCI_FUNC_NUM          0x0
+
+#define HPET_BUS_NUM            0x0
+#define HPET_DEV_NUM            PCH_DEV_SLOT_LPC
+#define HPET0_FUNC_NUM          0x00
+
+// ==================== IOAPIC Definitions for DMAR/ACPI ====================
+#define PCH_IOAPIC_ID                   0x08
+#define PC00_IOAPIC_ID                  0x09
+#define PC01_IOAPIC_ID                  0x0A
+#define PC02_IOAPIC_ID                  0x0B
+#define PC03_IOAPIC_ID                  0x0C
+#define PC04_IOAPIC_ID                  0x0D
+#define PC05_IOAPIC_ID                  0x0E
+#define PC06_IOAPIC_ID                  0x0F
+#define PC07_IOAPIC_ID                  0x10
+#define PC08_IOAPIC_ID                  0x11
+#define PC09_IOAPIC_ID                  0x12
+#define PC10_IOAPIC_ID                  0x13
+#define PC11_IOAPIC_ID                  0x14
 
 #define PCH_DEV_SLOT_LPC        0x1f
 #define  PCH_DEVFN_LPC          _PCH_DEVFN(LPC, 0)

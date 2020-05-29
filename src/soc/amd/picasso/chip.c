@@ -30,23 +30,6 @@ const char *soc_acpi_name(const struct device *dev)
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";
 
-	if (dev->path.type == DEVICE_PATH_USB) {
-		switch (dev->path.usb.port_type) {
-		case 0:
-			/* Root Hub */
-			return "RHUB";
-		case 3:
-			/* USB3 ports */
-			switch (dev->path.usb.port_id) {
-			case 0: return "SS01";
-			case 1: return "SS02";
-			case 2: return "SS03";
-			}
-			break;
-		}
-		return NULL;
-	}
-
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
@@ -62,20 +45,6 @@ const char *soc_acpi_name(const struct device *dev)
 			return "SBUS";
 		default:
 			printk(BIOS_WARNING, "Unknown root PCI device: dev: %d, fn: %d\n",
-			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
-			return NULL;
-		}
-	}
-
-	if (dev->bus->dev->path.type == DEVICE_PATH_PCI
-	    && dev->bus->dev->path.pci.devfn == PCIE_GPP_A_DEVFN) {
-		switch (dev->path.pci.devfn) {
-		case XHCI0_DEVFN:
-			return "XHC0";
-		case XHCI1_DEVFN:
-			return "XHC1";
-		default:
-			printk(BIOS_WARNING, "Unknown Bus A PCI device: dev: %d, fn: %d\n",
 			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
 			return NULL;
 		}

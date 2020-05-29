@@ -69,7 +69,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-y += uart.c
 ramstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c

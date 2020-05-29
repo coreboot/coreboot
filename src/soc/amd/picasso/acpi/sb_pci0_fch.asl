@@ -27,8 +27,6 @@ Device(SBUS) {
 	Name(_ADR, 0x00140000)
 } /* end SBUS */
 
-#include "usb.asl"
-
 /* 0:14.2 - I2S Audio */
 
 /* 0:14.3 - LPC */

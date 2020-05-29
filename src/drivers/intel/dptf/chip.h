@@ -4,6 +4,13 @@
 #define _DRIVERS_INTEL_DPTF_CHIP_H_
 
 #include <acpi/acpigen_dptf.h>
+#include <timer.h> /* for MSECS_PER_SEC */
+
+#define DPTF_PASSIVE(src, tgt, tmp, prd) \
+	{.source = DPTF_##src, .target = DPTF_##tgt, .temp = (tmp), .period = (prd)}
+#define DPTF_CRITICAL(src, tmp, typ) \
+	{.source = DPTF_##src, .temp = (tmp), .type = DPTF_CRITICAL_##typ}
+#define TEMP_PCT(t, p) {.temp = (t), .fan_pct = (p)}
 
 struct drivers_intel_dptf_config {
 	struct {

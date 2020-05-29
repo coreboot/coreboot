@@ -103,6 +103,26 @@ struct dptf_fan_perf {
 	uint16_t power;
 };
 
+/* Running Average Power Limits (RAPL) */
+struct dptf_power_limit_config {
+	/* Minimum level of power limit, in mW */
+	uint32_t min_power;
+	/* Maximum level of power limit, in mW */
+	uint32_t max_power;
+	/* Minimum time window running average is over, in seconds */
+	uint32_t time_window_min;
+	/* Maximum time window running average is over, in seconds */
+	uint32_t time_window_max;
+	/* Granularity of the power limit setting (between min and max), in mW */
+	uint16_t granularity;
+};
+
+/* Only PL1 and PL2 are controllable via DPTF */
+struct dptf_power_limits {
+	struct dptf_power_limit_config pl1;
+	struct dptf_power_limit_config pl2;
+};
+
 /*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
@@ -141,6 +161,13 @@ void dptf_write_charger_perf(const struct dptf_charger_perf *perf, int max_count
  *     DPTF_FIELD_UNUSED).
  */
 void dptf_write_fan_perf(const struct dptf_fan_perf *perf, int max_count);
+
+/*
+ * This function writes out a PPCC table, which indicates power ranges that different Intel
+ * Running Average Power Limits (RAPLs) can take, as well as the time period they average over
+ * and the minimum adjustment amount.
+ */
+void dptf_write_power_limits(const struct dptf_power_limits *limits);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

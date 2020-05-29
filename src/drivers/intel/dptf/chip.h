@@ -15,6 +15,7 @@ struct drivers_intel_dptf_config {
 	struct {
 		struct dptf_charger_perf charger_perf[DPTF_MAX_CHARGER_PERF_STATES];
 		struct dptf_fan_perf fan_perf[DPTF_MAX_FAN_PERF_STATES];
+		struct dptf_power_limits power_limits;
 	} controls;
 };
 

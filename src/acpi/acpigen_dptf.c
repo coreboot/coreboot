@@ -15,6 +15,9 @@ enum {
 	DEFAULT_TRIP_POINT		= 0xFFFFFFFFull,
 	DEFAULT_WEIGHT			= 100,
 	DPTF_MAX_ART_THRESHOLDS		= 10,
+	PPCC_REVISION			= 2,
+	RAPL_PL1_INDEX			= 0,
+	RAPL_PL2_INDEX			= 1,
 };
 
 /* Convert degrees C to 1/10 degree Kelvin for ACPI */
@@ -356,5 +359,48 @@ void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count)
 	}
 
 	acpigen_pop_len(); /* Package */
+	acpigen_pop_len(); /* Scope */
+}
+
+void dptf_write_power_limits(const struct dptf_power_limits *limits)
+{
+	char *pkg_count;
+
+	/* Nothing to do */
+	if (!limits->pl1.min_power && !limits->pl2.min_power)
+		return;
+
+	dptf_write_scope(DPTF_CPU);
+	acpigen_write_method("PPCC", 0);
+
+	pkg_count = acpigen_write_package(1); /* 1 for the Revision */
+	acpigen_write_integer(PPCC_REVISION); /* revision */
+
+	if (limits->pl1.min_power) {
+		(*pkg_count)++;
+		acpigen_write_package(6);
+		acpigen_write_integer(RAPL_PL1_INDEX);
+		acpigen_write_integer(limits->pl1.min_power);
+		acpigen_write_integer(limits->pl1.max_power);
+		acpigen_write_integer(limits->pl1.time_window_min);
+		acpigen_write_integer(limits->pl1.time_window_max);
+		acpigen_write_integer(limits->pl1.granularity);
+		acpigen_pop_len(); /* inner Package */
+	}
+
+	if (limits->pl2.min_power) {
+		(*pkg_count)++;
+		acpigen_write_package(6);
+		acpigen_write_integer(RAPL_PL2_INDEX);
+		acpigen_write_integer(limits->pl2.min_power);
+		acpigen_write_integer(limits->pl2.max_power);
+		acpigen_write_integer(limits->pl2.time_window_min);
+		acpigen_write_integer(limits->pl2.time_window_max);
+		acpigen_write_integer(limits->pl2.granularity);
+		acpigen_pop_len(); /* inner Package */
+	}
+
+	acpigen_pop_len(); /* outer Package */
+	acpigen_pop_len(); /* Method */
 	acpigen_pop_len(); /* Scope */
 }

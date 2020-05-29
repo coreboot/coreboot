@@ -993,8 +993,9 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &lpc_tpm_ops,
-			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	if (CONFIG(TPM1) || CONFIG(TPM2))
+		pnp_enable_devices(dev, &lpc_tpm_ops,
+			ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations drivers_pc80_tpm_ops = {

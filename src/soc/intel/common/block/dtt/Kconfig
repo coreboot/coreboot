@@ -1,0 +1,7 @@
+config SOC_INTEL_COMMON_BLOCK_DTT
+	bool
+	default n
+	help
+	  Minimal PCI Driver for enabling SSDT generation of Intel
+	  Dynamic Tuning Technology (DTT) policies and controls, also
+	  known as Intel DPTF (Dynamic Platform and Thermal Framework)

@@ -8,6 +8,7 @@
 struct drivers_intel_dptf_config {
 	struct {
 		struct dptf_active_policy active[DPTF_MAX_ACTIVE_POLICIES];
+		struct dptf_critical_policy critical[DPTF_MAX_CRITICAL_POLICIES];
 		struct dptf_passive_policy passive[DPTF_MAX_PASSIVE_POLICIES];
 	} policies;
 };

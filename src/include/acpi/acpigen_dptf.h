@@ -28,6 +28,7 @@ enum {
 	DPTF_MAX_ACX			= 10,
 	DPTF_MAX_ACTIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
 	DPTF_MAX_PASSIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
+	DPTF_MAX_CRITICAL_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
 };
 
 /* Active Policy */
@@ -59,6 +60,22 @@ struct dptf_passive_policy {
 	uint8_t priority;
 };
 
+/* Critical Policy type: graceful S4 transition or graceful shutdown */
+enum dptf_critical_policy_type {
+	DPTF_CRITICAL_S4,
+	DPTF_CRITICAL_SHUTDOWN,
+};
+
+/* Critical Policy */
+struct dptf_critical_policy {
+	/* The device that can trigger a critical event */
+	enum dptf_participant source;
+	/* What type of critical policy */
+	enum dptf_critical_policy_type type;
+	/* Temperature to activate policy, degrees C */
+	uint8_t temp;
+};
+
 /*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
@@ -73,6 +90,13 @@ void dptf_write_active_policies(const struct dptf_active_policy *policies, int m
  * applies when temperature sensors reach the _PSV threshold.
  */
 void dptf_write_passive_policies(const struct dptf_passive_policy *policies, int max_count);
+
+/*
+ * Critical policies are temperature thresholds that, when reached, will cause the system to
+ * take some emergency action in order to eliminate excess temperatures from damaging the
+ * system. The emergency actions are a graceful suspend or a graceful shutdown.
+ */
+void dptf_write_critical_policies(const struct dptf_critical_policy *policies, int max_count);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

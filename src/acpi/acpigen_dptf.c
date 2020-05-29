@@ -262,3 +262,21 @@ void dptf_write_passive_policies(const struct dptf_passive_policy *policies, int
 	write_thermal_relationship_table(policies, max_count);
 	write_all_PSV(policies, max_count);
 }
+
+void dptf_write_critical_policies(const struct dptf_critical_policy *policies, int max_count)
+{
+	int i;
+
+	for (i = 0; i < max_count; ++i) {
+		if (policies[i].source == DPTF_NONE)
+			break;
+
+		dptf_write_scope(policies[i].source);
+
+		/* Choose _CRT or _HOT */
+		write_simple_return_method(policies[i].type == DPTF_CRITICAL_SHUTDOWN ?
+					   "_CRT" : "_HOT", to_acpi_temp(policies[i].temp));
+
+		acpigen_pop_len(); /* Scope */
+	}
+}

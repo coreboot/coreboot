@@ -129,7 +129,12 @@ xhci_switchback_ppt_ports(pcidev_t addr)
 static long
 xhci_handshake(volatile u32 *const reg, u32 mask, u32 wait_for, long timeout_us)
 {
-	while ((*reg & mask) != wait_for && timeout_us--) udelay(1);
+	if (timeout_us <= 0)
+		return 0;
+	while ((*reg & mask) != wait_for && timeout_us != 0) {
+		--timeout_us;
+		udelay(1);
+	}
 	return timeout_us;
 }
 

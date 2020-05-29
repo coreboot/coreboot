@@ -7,6 +7,7 @@
 #include <acpi/acpigen_usb.h>
 #include <console/console.h>
 #include <drivers/usb/acpi/chip.h>
+#include <ec/google/common/dptf.h>
 
 #include "chip.h"
 #include "ec.h"
@@ -241,10 +242,31 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY));
 }
 
+static const char *ec_acpi_name(const struct device *dev)
+{
+	return "EC0";
+}
+
+static struct device_operations ec_ops = {
+	.acpi_name	= ec_acpi_name,
+};
+
 void google_chromeec_fill_ssdt_generator(const struct device *dev)
 {
+	struct device_path path;
+	struct device *ec;
+
 	if (!dev->enabled)
 		return;
+
+	/* Set up a minimal EC0 device to pass to the DPTF helpers */
+	path.type = DEVICE_PATH_GENERIC;
+	path.generic.id = 0;
+	ec = alloc_find_dev(dev->bus, &path);
+	ec->ops = &ec_ops;
+
+	if (CONFIG(DRIVERS_INTEL_DPTF))
+		ec_fill_dptf_helpers(ec);
 
 	fill_ssdt_typec_device(dev);
 	fill_ssdt_ps2_keyboard(dev);

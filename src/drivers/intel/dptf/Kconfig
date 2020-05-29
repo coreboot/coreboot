@@ -1,0 +1,7 @@
+config DRIVERS_INTEL_DPTF
+	bool "Support runtime generation of Intel DPTF ACPI tables"
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	   When enabled, entries in the devicetree are used to generate
+	   Intel DPTF Tables at runtime in the SSDT.

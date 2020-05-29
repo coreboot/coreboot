@@ -36,6 +36,9 @@ enum {
 
 	/* From ACPI spec 6.3 */
 	DPTF_FIELD_UNUSED		= 0xFFFFFFFFull,
+
+	/* Max supported by DPTF */
+	DPTF_MAX_TSR			= 4,
 };
 
 /* Active Policy */
@@ -168,6 +171,18 @@ void dptf_write_fan_perf(const struct dptf_fan_perf *perf, int max_count);
  * and the minimum adjustment amount.
  */
 void dptf_write_power_limits(const struct dptf_power_limits *limits);
+
+/* Set the _STR Name */
+void dptf_write_STR(const char *str);
+
+/* Set options in the _FIF table */
+void dptf_write_fan_options(bool fine_grained, int step_size, bool low_speed_notify);
+
+/*
+ * Sets the amount of inherent hysteresis in temperature sensor readings (either from hardware
+ * circuitry or possibly from the EC's firmware implementation.
+ */
+void dptf_write_tsr_hysteresis(uint8_t hysteresis);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

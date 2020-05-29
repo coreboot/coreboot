@@ -404,3 +404,31 @@ void dptf_write_power_limits(const struct dptf_power_limits *limits)
 	acpigen_pop_len(); /* Method */
 	acpigen_pop_len(); /* Scope */
 }
+
+void dptf_write_STR(const char *str)
+{
+	if (!str)
+		return;
+
+	acpigen_write_name_string("_STR", str);
+}
+
+void dptf_write_fan_options(bool fine_grained, int step_size, bool low_speed_notify)
+{
+	acpigen_write_name("_FIF");
+	acpigen_write_package(4);
+
+	acpigen_write_integer(0); /* Revision */
+	acpigen_write_integer(fine_grained);
+	acpigen_write_integer(step_size);
+	acpigen_write_integer(low_speed_notify);
+	acpigen_pop_len(); /* Package */
+}
+
+void dptf_write_tsr_hysteresis(uint8_t hysteresis)
+{
+	if (!hysteresis)
+		return;
+
+	acpigen_write_name_integer("GTSH", hysteresis);
+}

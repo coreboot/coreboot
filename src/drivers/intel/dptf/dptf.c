@@ -62,6 +62,12 @@ static const char *dptf_acpi_name(const struct device *dev)
 static void dptf_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_dptf_config *config = config_of(dev);
+	enum dptf_participant p;
+	bool tsr_en[DPTF_MAX_TSR] = {false};
+	int i;
+
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i)
+		tsr_en[i] = is_participant_used(config, p);
 
 	dptf_write_active_policies(config->policies.active,
 				   DPTF_MAX_ACTIVE_POLICIES);
@@ -76,6 +82,19 @@ static void dptf_fill_ssdt(const struct device *dev)
 	dptf_write_charger_perf(config->controls.charger_perf, DPTF_MAX_CHARGER_PERF_STATES);
 	dptf_write_fan_perf(config->controls.fan_perf, DPTF_MAX_FAN_PERF_STATES);
 	dptf_write_power_limits(&config->controls.power_limits);
+
+	/* Fan options */
+	dptf_write_fan_options(config->options.fan.fine_grained_control,
+			       config->options.fan.step_size,
+			       config->options.fan.low_speed_notify);
+
+	/* TSR options */
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
+		if (tsr_en[i]) {
+			dptf_write_tsr_hysteresis(config->options.tsr[i].hysteresis);
+			dptf_write_STR(config->options.tsr[i].desc);
+		}
+	}
 
 	printk(BIOS_INFO, "\\_SB.DPTF: %s at %s\n", dev->chip_ops->name, dev_path(dev));
 }

@@ -33,7 +33,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Bitmask for valid sockets supported by the board */
 	m_cfg->BoardTypeBitmask = 0x11111111;
 
-	m_cfg->mmiolSize = 0x0;
 	m_cfg->mmiohBase = 0x2000;
 
 	/* default: 0x1 (enable), set to 0x2 (auto) */
@@ -64,9 +63,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* the wait time in units of 1000us for PBSP to check in */
 	m_cfg->WaitTimeForPSBP = 0x7530;
-
-	m_cfg->OemHookPostTopologyDiscovery = 0xFFF7727B;
-	m_cfg->OemGetResourceMapUpdate = 0xFFF7727C;
 
 	/* Needed to avoid FSP-M reset. The default value of 0x01 is for MinPlatform */
 	m_cfg->PchAdrEn = 0x02;

@@ -97,14 +97,14 @@ void soc_display_iio_universal_data_hob(void)
 	printk(BIOS_DEBUG, "\t===================== PLATFORM DATA =====================\n");
 	printk(BIOS_DEBUG, "\tPlatGlobalIoBase: 0x%x\n", hob->PlatformData.PlatGlobalIoBase);
 	printk(BIOS_DEBUG, "\tPlatGlobalIoLimit: 0x%x\n", hob->PlatformData.PlatGlobalIoLimit);
-	printk(BIOS_DEBUG, "\tPlatGlobalMmiolBase: 0x%x\n",
-		hob->PlatformData.PlatGlobalMmiolBase);
-	printk(BIOS_DEBUG, "\tPlatGlobalMmiolLimit: 0x%x\n",
-		hob->PlatformData.PlatGlobalMmiolLimit);
-	printk(BIOS_DEBUG, "\tPlatGlobalMmiohBase: 0x%llx\n",
-		hob->PlatformData.PlatGlobalMmiohBase);
-	printk(BIOS_DEBUG, "\tPlatGlobalMmiohLimit: 0x%llx\n",
-		hob->PlatformData.PlatGlobalMmiohLimit);
+	printk(BIOS_DEBUG, "\tPlatGlobalMmio32Base: 0x%x\n",
+		hob->PlatformData.PlatGlobalMmio32Base);
+	printk(BIOS_DEBUG, "\tPlatGlobalMmio32Limit: 0x%x\n",
+		hob->PlatformData.PlatGlobalMmio32Limit);
+	printk(BIOS_DEBUG, "\tPlatGlobalMmio64Base: 0x%llx\n",
+		hob->PlatformData.PlatGlobalMmio64Base);
+	printk(BIOS_DEBUG, "\tPlatGlobalMmio64Limit: 0x%llx\n",
+		hob->PlatformData.PlatGlobalMmio64Limit);
 	printk(BIOS_DEBUG, "\tMemTsegSize: 0x%x\n", hob->PlatformData.MemTsegSize);
 	printk(BIOS_DEBUG, "\tMemIedSize: 0x%x\n", hob->PlatformData.MemIedSize);
 	printk(BIOS_DEBUG, "\tPciExpressBase: 0x%llx\n", hob->PlatformData.PciExpressBase);

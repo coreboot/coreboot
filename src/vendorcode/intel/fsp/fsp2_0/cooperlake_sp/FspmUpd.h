@@ -355,183 +355,285 @@ typedef struct {
 **/
   UINT8                       UnusedUpdSpace0;
 
-/** Offset 0x0094 - MMIO Low Base Address
-  Select MMIO Low Base Address
-  0:, 1:, 2:, 3:, 4:, 5:, 6:
-**/
-  UINT32                      mmiolBase;
-
-/** Offset 0x0098 - MMIO Low Size
-  Select MMIO Low Size
-  $EN_DIS
-**/
-  UINT32                      mmiolSize;
-
-/** Offset 0x009C - MMIO High Base Address
-  Select MMIO High Base Address
-  0:, 1:, 2:, 3:, 4:, 5:, 6:
+/** Offset 0x0094 - MMIO High Base Address
+  MMIO High Base Address, a hex number for Bit[51:32]
 **/
   UINT32                      mmiohBase;
 
-/** Offset 0x00A0 - High Gap
+/** Offset 0x0098 - High Gap
   Enable or Disable High Gap
   $EN_DIS
 **/
   UINT8                       highGap;
 
-/** Offset 0x00A1
+/** Offset 0x0099
 **/
   UINT8                       UnusedUpdSpace1;
 
-/** Offset 0x00A2 - MMIO High Size
-  Select MMIO High Size
-  0:, 1:, 2:, 3:, 4:, 5:, 6:
+/** Offset 0x009A - MMIO High Size
+  MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
+  per CPU.  Range 1-1024
 **/
   UINT16                      mmiohSize;
 
-/** Offset 0x00A4 - } TYPE:{Combo
+/** Offset 0x009C - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       isocEn;
 
-/** Offset 0x00A5 - DCA
+/** Offset 0x009D - DCA
   Enable or Disable DCA
   $EN_DIS
 **/
   UINT8                       dcaEn;
 
-/** Offset 0x00A6
+/** Offset 0x009E
 **/
   UINT8                       UnusedUpdSpace2[2];
 
-/** Offset 0x00A8 - } TYPE:{Combo
+/** Offset 0x00A0 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      BoardTypeBitmask;
 
-/** Offset 0x00AC - } TYPE:{Combo
+/** Offset 0x00A4 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      AllLanesPtr;
 
-/** Offset 0x00B0 - } TYPE:{Combo
+/** Offset 0x00A8 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      PerLanePtr;
 
-/** Offset 0x00B4 - } TYPE:{Combo
+/** Offset 0x00AC - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      AllLanesSizeOfTable;
 
-/** Offset 0x00B8 - } TYPE:{Combo
+/** Offset 0x00B0 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      PerLaneSizeOfTable;
 
-/** Offset 0x00BC - } TYPE:{Combo
+/** Offset 0x00B4 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT32                      WaitTimeForPSBP;
 
-/** Offset 0x00C0 - } TYPE:{Combo
+/** Offset 0x00B8 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       IsKtiNvramDataReady;
 
-/** Offset 0x00C1
-**/
-  UINT8                       UnusedUpdSpace3[3];
-
-/** Offset 0x00C4 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
-**/
-  UINT32                      OemHookPostTopologyDiscovery;
-
-/** Offset 0x00C8 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
-**/
-  UINT32                      OemGetResourceMapUpdate;
-
-/** Offset 0x00CC - } TYPE:{Combo
+/** Offset 0x00B9 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       BoardId;
 
-/** Offset 0x00CD - } TYPE:{Combo
+/** Offset 0x00BA - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       WaSerializationEn;
 
-/** Offset 0x00CE - } TYPE:{Combo
+/** Offset 0x00BB - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       KtiInEnableMktme;
 
-/** Offset 0x00CF
-**/
-  UINT8                       UnusedUpdSpace4;
-
-/** Offset 0x00D0 - Address of IIoBifurcationTable.
-  The address of the table of IIoBifurcation.
+/** Offset 0x00BC - IIO ConfigIOU0
+  ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
   $EN_DIS
 **/
-  UINT32                      IIoBifurcationTablePtr;
+  UINT8                       IioConfigIOU0[8];
 
-/** Offset 0x00D4 - Number of IIoBifurcationTable Entry
-  Number of IIoBifurcationTable Entry. If this is not zero, the IIoBifurcationTablePtr
-  must not be NULL.
+/** Offset 0x00C4 - IIO ConfigIOU1
+  ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
-  UINT8                       NumOfIIoBifurcationTable;
+  UINT8                       IioConfigIOU1[8];
 
-/** Offset 0x00D5 - PchAdrEn
+/** Offset 0x00CC - IIO ConfigIOU2
+  ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+**/
+  UINT8                       IioConfigIOU2[8];
+
+/** Offset 0x00D4 - IIO ConfigIOU3
+  ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+**/
+  UINT8                       IioConfigIOU3[8];
+
+/** Offset 0x00DC - IIO ConfigIOU4
+  ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+**/
+  UINT8                       IioConfigIOU4[8];
+
+/** Offset 0x00E4 - Usage type for IIO PCIE Config Table Ptr
+  IIO PCIE Config Table Ptr
+**/
+  UINT32                      IioPcieConfigTablePtr;
+
+/** Offset 0x00E8 - Usage type for IIO PCIE Config Table Number
+  IIO PCIE Config Table Number
+**/
+  UINT32                      IioPcieConfigTableNumber;
+
+/** Offset 0x00EC - Usage type for IIO PCIE Root Port Enable or Disable
+  IIO PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
+  the value is 0x00
+**/
+  UINT8                       IIOPcieRootPortEnable;
+
+/** Offset 0x00ED - Usage type for IIO DeEmphasis
+  IIO DeEmphasis
+**/
+  UINT8                       DeEmphasis;
+
+/** Offset 0x00EE - Usage type for IIO PCIE Root Port link speed
+  IIO root port link speed
+**/
+  UINT8                       IIOPciePortLinkSpeed;
+
+/** Offset 0x00EF - Usage type for IIO PCIE Root Port Max Payload
+  IIO Root Port Max Payload
+**/
+  UINT8                       IIOPcieMaxPayload;
+
+/** Offset 0x00F0 - Usage type for IIO DfxDnTxPreset
+  IIO DfxDnTxPreset
+**/
+  UINT8                       DfxDnTxPreset;
+
+/** Offset 0x00F1 - Usage type for IIO DfxRxPreset
+  IIO DfxRxPreset
+**/
+  UINT8                       DfxRxPreset;
+
+/** Offset 0x00F2 - Usage type for IIO DfxUpTxPreset
+  IIO DfxUpTxPreset
+**/
+  UINT8                       DfxUpTxPreset;
+
+/** Offset 0x00F3 - Usage type for IIO PcieCommonClock
+  IIO PcieCommonClock
+**/
+  UINT8                       PcieCommonClock;
+
+/** Offset 0x00F4 - Usage type for IIO NtbPpd
+  IIO NtbPpd
+**/
+  UINT8                       NtbPpd;
+
+/** Offset 0x00F5 - Usage type for IIO NtbBarSizeOverride
+  IIO NtbBarSizeOverride
+**/
+  UINT8                       NtbBarSizeOverride;
+
+/** Offset 0x00F6 - Usage type for IIO NtbSplitBar
+  IIO NtbSplitBar
+**/
+  UINT8                       NtbSplitBar;
+
+/** Offset 0x00F7 - Usage type for IIO NtbBarSizeImBar1
+  IIO NtbBarSizeImBar1
+**/
+  UINT8                       NtbBarSizeImBar1;
+
+/** Offset 0x00F8 - Usage type for IIO NtbBarSizeImBar2
+  IIO PNtbBarSizeImBar2
+**/
+  UINT8                       NtbBarSizeImBar2;
+
+/** Offset 0x00F9 - Usage type for IIO NtbBarSizeImBar2_0
+  IIO PNtbBarSizeImBar2_0
+**/
+  UINT8                       NtbBarSizeImBar2_0;
+
+/** Offset 0x00FA - Usage type for IIO NtbBarSizeImBar2_1
+  IIO NtbBarSizeImBar2_1
+**/
+  UINT8                       NtbBarSizeImBar2_1;
+
+/** Offset 0x00FB - Usage type for IIO NtbBarSizeEmBarSZ1
+  IIO NtbBarSizeEmBarSZ1
+**/
+  UINT8                       NtbBarSizeEmBarSZ1;
+
+/** Offset 0x00FC - Usage type for IIO NtbBarSizeEmBarSZ2
+  IIO NtbBarSizeEmBarSZ2
+**/
+  UINT8                       NtbBarSizeEmBarSZ2;
+
+/** Offset 0x00FD - Usage type for IIO NtbBarSizeEmBarSZ2_0
+  IIO NtbBarSizeEmBarSZ2_0
+**/
+  UINT8                       NtbBarSizeEmBarSZ2_0;
+
+/** Offset 0x00FE - Usage type for IIO NtbBarSizeEmBarSZ2_1
+  IIO NtbBarSizeEmBarSZ2_1
+**/
+  UINT8                       NtbBarSizeEmBarSZ2_1;
+
+/** Offset 0x00FF - Usage type for IIO NtbXlinkCtlOverride
+  IIO NtbXlinkCtlOverride
+**/
+  UINT8                       NtbXlinkCtlOverride;
+
+/** Offset 0x0100 - PchAdrEn
+  Enable or Disable PchSirqMode
+**/
+  UINT8                       PchSirqMode;
+
+/** Offset 0x0101 - PchAdrEn
   Enable or Disable PchAdr
 **/
   UINT8                       PchAdrEn;
 
-/** Offset 0x00D6 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x0102 - } TYPE:{Combo
+  Root port swapping based on device connection status : TRUE or FALSE
+  TRUE : 0x01, FALSE : 0x00
 **/
   UINT8                       PchPcieRootPortFunctionSwap;
 
-/** Offset 0x00D7 - PCH PCIE PLL Ssc
+/** Offset 0x0103 - PCH PCIE PLL Ssc
   Valid spread range : 0x00-0x14 (A value of 0 is SSC of 0.0%. A value of 20 is SSC
   of 2.0%), Auto : 0xFE(Set to hardware default), Disable : 0xFF
 **/
   UINT8                       PchPciePllSsc;
 
-/** Offset 0x00D8 - Usage type for PCH PCIE Root Port Index
+/** Offset 0x0104 - Usage type for PCH PCIE Root Port Index
   Index assigned to every PCH PCIE Root Port
 **/
   UINT8                       PchPciePortIndex[20];
 
-/** Offset 0x00EC - Usage type for PCH PCIE Root Port Enable or Disable
-  0-19: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
-  (free running), 0xFF: not used
+/** Offset 0x0118 - Usage type for PCH PCIE Root Port Enable or Disable
+  0-19: PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
+  the value is 0x00
 **/
   UINT8                       PchPcieForceEnable[20];
 
-/** Offset 0x0100 - Usage type for PCH PCIE Root Port Link Speed
-  0-19: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
-  (free running), 0xFF: not used
+/** Offset 0x012C - Usage type for PCH PCIE Root Port Link Speed
+  0-19: PCH rootport, 0x00 : Pcie Auto Speed, 0x01 : Pcie Gen1 Speed, 0x02 : Pcie
+  Gen2 Speed, 0x03 : Pcie Gen3 Speed
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
-/** Offset 0x0114
+/** Offset 0x0140
 **/
   UINT8                       ReservedMemoryInitUpd[16];
 } FSP_M_CONFIG;
@@ -552,11 +654,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                 FspmConfig;
 
-/** Offset 0x0124
+/** Offset 0x0150
 **/
-  UINT8                       UnusedUpdSpace5[2];
+  UINT8                       UnusedUpdSpace3[6];
 
-/** Offset 0x0126
+/** Offset 0x0156
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

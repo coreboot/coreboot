@@ -203,6 +203,10 @@ typedef struct _STACK_RES {
   uint16_t                  PciResourceIoLimit;
   uint32_t                  IoApicBase;
   uint32_t                  IoApicLimit;
+  uint32_t                  Mmio32Base;
+  uint32_t                  Mmio32Limit;
+  uint64_t                  Mmio64Base;
+  uint64_t                  Mmio64Limit;
   uint32_t                  PciResourceMem32Base;
   uint32_t                  PciResourceMem32Limit;
   uint64_t                  PciResourceMem64Base;
@@ -233,10 +237,10 @@ typedef struct {
 typedef struct {
     uint16_t                  PlatGlobalIoBase;       // Global IO Base
     uint16_t                  PlatGlobalIoLimit;      // Global IO Limit
-    uint32_t                  PlatGlobalMmiolBase;    // Global Mmiol base
-    uint32_t                  PlatGlobalMmiolLimit;   // Global Mmiol limit
-    uint64_t                  PlatGlobalMmiohBase;    // Global Mmioh Base [43:0]
-    uint64_t                  PlatGlobalMmiohLimit;   // Global Mmioh Limit [43:0]
+    uint32_t                  PlatGlobalMmio32Base;    // Global Mmiol base
+    uint32_t                  PlatGlobalMmio32Limit;   // Global Mmiol limit
+    uint64_t                  PlatGlobalMmio64Base;    // Global Mmioh Base [43:0]
+    uint64_t                  PlatGlobalMmio64Limit;   // Global Mmioh Limit [43:0]
     QPI_CPU_DATA              CpuQpiInfo[MAX_SOCKET]; // QPI related info per CPU
     QPI_IIO_DATA              IioQpiInfo[MAX_SOCKET]; // QPI related info per IIO
     uint32_t                  MemTsegSize;
@@ -256,10 +260,8 @@ typedef struct {
     uint32_t                  MmiolGranularity;
     UINT64_STRUCT             MmiohGranularity;
     uint8_t                   RemoteRequestThreshold;  //5370389
-    uint64_t                  softskuSocketPresentBitMap;    // bitmap of Softsku sockets with CPUs present detected
     uint32_t                  UboxMmioSize;
     uint32_t                  MaxAddressBits;
-    uint32_t                  DmiReservedMmiolSize[MAX_SOCKET];
 } PLATFORM_DATA;
 
 typedef struct {
@@ -273,7 +275,6 @@ typedef struct {
 	uint8_t                   DmiVc1;
 	uint8_t                   DmiVcm;
 	uint32_t                  CpuPCPSInfo;
-	uint8_t                   LtsxEnable;
 	uint8_t                   MctpEn;
 	uint8_t                   cpuSubType;
 	uint8_t                   SystemRasType;

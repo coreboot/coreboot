@@ -29,6 +29,9 @@ enum {
 	DPTF_MAX_ACTIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
 	DPTF_MAX_PASSIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
 	DPTF_MAX_CRITICAL_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
+
+	/* Maximum found by automatic inspection (awk) */
+	DPTF_MAX_CHARGER_PERF_STATES	= 10,
 };
 
 /* Active Policy */
@@ -76,6 +79,14 @@ struct dptf_critical_policy {
 	uint8_t temp;
 };
 
+/* Different levels of charging capability, chosen by passive policies */
+struct dptf_charger_perf {
+	/* Control value */
+	uint8_t control;
+	/* Charging performance, in mA */
+	uint16_t raw_perf;
+};
+
 /*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
@@ -97,6 +108,12 @@ void dptf_write_passive_policies(const struct dptf_passive_policy *policies, int
  * system. The emergency actions are a graceful suspend or a graceful shutdown.
  */
 void dptf_write_critical_policies(const struct dptf_critical_policy *policies, int max_count);
+
+/*
+ * These are various performance levels for battery charging. They can be used in conjunction
+ * with passive policies to lower the charging rate when the _PSV threshold is met.
+ */
+void dptf_write_charger_perf(const struct dptf_charger_perf *perf, int max_count);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

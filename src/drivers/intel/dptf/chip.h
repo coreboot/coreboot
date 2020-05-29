@@ -11,6 +11,10 @@ struct drivers_intel_dptf_config {
 		struct dptf_critical_policy critical[DPTF_MAX_CRITICAL_POLICIES];
 		struct dptf_passive_policy passive[DPTF_MAX_PASSIVE_POLICIES];
 	} policies;
+
+	struct {
+		struct dptf_charger_perf charger_perf[DPTF_MAX_CHARGER_PERF_STATES];
+	} controls;
 };
 
 #endif /* _DRIVERS_INTEL_DPTF_CHIP_H_ */

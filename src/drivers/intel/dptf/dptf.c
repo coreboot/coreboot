@@ -72,6 +72,9 @@ static void dptf_fill_ssdt(const struct device *dev)
 	dptf_write_critical_policies(config->policies.critical,
 				     DPTF_MAX_CRITICAL_POLICIES);
 
+	/* Controls */
+	dptf_write_charger_perf(config->controls.charger_perf, DPTF_MAX_CHARGER_PERF_STATES);
+
 	printk(BIOS_INFO, "\\_SB.DPTF: %s at %s\n", dev->chip_ops->name, dev_path(dev));
 }
 

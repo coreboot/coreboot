@@ -7,6 +7,8 @@
 #define TOPLEVEL_DPTF_SCOPE		"\\_SB.DPTF"
 
 /* Defaults */
+#define DEFAULT_RAW_UNIT		"ma"
+
 enum {
 	ART_REVISION			= 0,
 	DEFAULT_PRIORITY		= 100,
@@ -279,4 +281,43 @@ void dptf_write_critical_policies(const struct dptf_critical_policy *policies, i
 
 		acpigen_pop_len(); /* Scope */
 	}
+}
+
+void dptf_write_charger_perf(const struct dptf_charger_perf *states, int max_count)
+{
+	char *pkg_count;
+	int i;
+
+	if (!max_count || !states[0].control)
+		return;
+
+	dptf_write_scope(DPTF_CHARGER);
+
+	/* PPSS - Participant Performance Supported States */
+	acpigen_write_method("PPSS", 0);
+	acpigen_emit_byte(RETURN_OP);
+
+	pkg_count = acpigen_write_package(0);
+	for (i = 0; i < max_count; ++i) {
+		if (!states[i].control)
+			break;
+
+		(*pkg_count)++;
+
+		/*
+		 * 0, 0, 0, 0, # Reserved
+		 * Control, Raw Performance, Raw Unit, 0 # Reserved
+		 */
+		acpigen_write_package(8);
+		write_zeros(4);
+		acpigen_write_integer(states[i].control);
+		acpigen_write_integer(states[i].raw_perf);
+		acpigen_write_string(DEFAULT_RAW_UNIT);
+		acpigen_write_integer(0);
+		acpigen_pop_len(); /* inner Package */
+	}
+
+	acpigen_pop_len(); /* outer Package */
+	acpigen_pop_len(); /* Method PPSS */
+	acpigen_pop_len(); /* Scope */
 }

@@ -181,7 +181,7 @@ function normalize_target
 	local targets
 	local VARIANT_UC
 
-	VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]')
+	VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
 
 	targets=$(get_mainboards "$1")
 	if [ -n "$targets" ]; then

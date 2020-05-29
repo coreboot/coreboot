@@ -1,13 +1,14 @@
-config LPC_TPM
+config MAINBOARD_HAS_LPC_TPM
 	bool
 	default n
 	help
-	  LPC TPM driver is enabled!
+	  Board has LPC TPM support
+
+if MAINBOARD_HAS_LPC_TPM
 
 config TPM_TIS_BASE_ADDRESS
 	hex
 	default 0xfed40000
-	depends on LPC_TPM
 	help
 	  This can be used to adjust the TPM memory base address.
 	  The default is specified by the TCG PC Client Specific TPM
@@ -17,14 +18,8 @@ config TPM_TIS_BASE_ADDRESS
 config TPM_PIRQ
 	hex
 	default 0x0
-	depends on LPC_TPM
 	help
 	  This can be used to specify a PIRQ to use instead of SERIRQ,
 	  which is needed for SPI TPM interrupt support on x86.
 
-config MAINBOARD_HAS_LPC_TPM
-	bool
-	default n
-	select LPC_TPM
-	help
-	  Board has LPC TPM support
+endif

@@ -35,6 +35,12 @@ static bool is_participant_used(const struct drivers_intel_dptf_config *config,
 		if (config->policies.active[i].target == participant)
 			return true;
 
+	/* Passive? */
+	for (i = 0; i < DPTF_MAX_PASSIVE_POLICIES; ++i)
+		if (config->policies.passive[i].source == participant ||
+		    config->policies.passive[i].target == participant)
+			return true;
+
 	/* Check fan as well (its use is implicit in the Active policy) */
 	if (participant == DPTF_FAN && config->policies.active[0].target != DPTF_NONE)
 		return true;
@@ -54,6 +60,9 @@ static void dptf_fill_ssdt(const struct device *dev)
 
 	dptf_write_active_policies(config->policies.active,
 				   DPTF_MAX_ACTIVE_POLICIES);
+
+	dptf_write_passive_policies(config->policies.passive,
+				    DPTF_MAX_PASSIVE_POLICIES);
 
 	printk(BIOS_INFO, "\\_SB.DPTF: %s at %s\n", dev->chip_ops->name, dev_path(dev));
 }

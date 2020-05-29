@@ -27,6 +27,7 @@ enum {
 	/* A device can only define _AC0 .. _AC9 i.e. between 0 and 10 Active Cooling Methods */
 	DPTF_MAX_ACX			= 10,
 	DPTF_MAX_ACTIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
+	DPTF_MAX_PASSIVE_POLICIES	= (DPTF_PARTICIPANT_COUNT-1),
 };
 
 /* Active Policy */
@@ -44,12 +45,34 @@ struct dptf_active_policy {
 	} thresholds[DPTF_MAX_ACX];
 };
 
+/* Passive Policy */
+struct dptf_passive_policy {
+	/* The device that can be throttled */
+	enum dptf_participant source;
+	/* The device that controls the throttling */
+	enum dptf_participant target;
+	/* How often to check the temperature for required throttling (ms) */
+	uint16_t period;
+	/* The trip point for turning on throttling (degrees C) */
+	uint8_t temp;
+	/* Relative priority between Policies */
+	uint8_t priority;
+};
+
 /*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
  * of full speed.
  */
 void dptf_write_active_policies(const struct dptf_active_policy *policies, int max_count);
+
+/*
+ * This function uses the definition of the passive policies to write out _PSV Methods on all
+ * participants that define it.  It also writes out the Thermal Relationship Table
+ * (\_SB.DPTF._TRT), which describes various passive (i.e., throttling) policies that can be
+ * applies when temperature sensors reach the _PSV threshold.
+ */
+void dptf_write_passive_policies(const struct dptf_passive_policy *policies, int max_count);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

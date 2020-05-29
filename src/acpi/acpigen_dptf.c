@@ -9,6 +9,7 @@
 /* Defaults */
 enum {
 	ART_REVISION			= 0,
+	DEFAULT_PRIORITY		= 100,
 	DEFAULT_WEIGHT			= 100,
 	DPTF_MAX_ART_THRESHOLDS		= 10,
 };
@@ -19,12 +20,25 @@ static int to_acpi_temp(int deg_c)
 	return deg_c * 10 + 2732;
 }
 
+/* Converts ms to 1/10th second for ACPI */
+static int to_acpi_time(int ms)
+{
+	return ms / 100;
+}
+
 /* Writes out a 0-argument non-Serialized Method that returns an Integer */
 static void write_simple_return_method(const char *name, int value)
 {
 	acpigen_write_method(name, 0);
 	acpigen_write_return_integer(value);
 	acpigen_pop_len(); /* Method */
+}
+
+/* Writes out 'count' ZEROs in a row */
+static void write_zeros(int count)
+{
+	for (; count; --count)
+		acpigen_write_integer(0);
 }
 
 /* Return the assigned namestring of any participant */
@@ -163,4 +177,88 @@ void dptf_write_active_policies(const struct dptf_active_policy *policies, int m
 {
 	write_active_relationship_table(policies, max_count);
 	write_active_cooling_methods(policies, max_count);
+}
+
+/*
+ * This writes out the Thermal Relationship Table, which describes the thermal relationships
+ * between participants in a thermal zone. This information is used to passively cool (i.e.,
+ * throttle) the Source (source of heat), in order to indirectly cool the Target (temperature
+ * sensor).
+ */
+static void write_thermal_relationship_table(const struct dptf_passive_policy *policies,
+					     int max_count)
+{
+	char *pkg_count;
+	int i;
+
+	/* Nothing to do */
+	if (!max_count || policies[0].source == DPTF_NONE)
+		return;
+
+	acpigen_write_scope(TOPLEVEL_DPTF_SCOPE);
+
+	/*
+	 * A _TRT Revision (TRTR) of 1 means that the 'Priority' field is an arbitrary priority
+	 * value to be used for this specific relationship. The priority value determines the
+	 * order in which various sources are used in a passive thermal action for a given
+	 * target.
+	 */
+	acpigen_write_name_integer("TRTR", 1);
+
+	/* Thermal Relationship Table */
+	acpigen_write_method("_TRT", 0);
+
+	/* Return this package */
+	acpigen_emit_byte(RETURN_OP);
+	pkg_count = acpigen_write_package(0);
+
+	for (i = 0; i < max_count; ++i) {
+		/* Stop writing the table once an entry is empty */
+		if (policies[i].source == DPTF_NONE)
+			break;
+
+		/* Keep track of outer package item count */
+		(*pkg_count)++;
+
+		acpigen_write_package(8);
+
+		/* Source, Target, Priority, Sampling Period */
+		acpigen_emit_namestring(namestring_of(policies[i].source));
+		acpigen_emit_namestring(namestring_of(policies[i].target));
+		acpigen_write_integer(DEFAULT_IF_0(policies[i].priority, DEFAULT_PRIORITY));
+		acpigen_write_integer(to_acpi_time(policies[i].period));
+
+		/* Reserved */
+		write_zeros(4);
+
+		acpigen_pop_len(); /* Package */
+	}
+
+	acpigen_pop_len(); /* Package */
+	acpigen_pop_len(); /* Method */
+	acpigen_pop_len(); /* Scope */
+}
+
+/*
+ * When a temperature sensor measures above its the temperature returned in its _PSV Method,
+ * DPTF will begin throttling Sources in order to indirectly cool the sensor.
+ */
+static void write_all_PSV(const struct dptf_passive_policy *policies, int max_count)
+{
+	int i;
+
+	for (i = 0; i < max_count; ++i) {
+		if (policies[i].source == DPTF_NONE)
+			break;
+
+		dptf_write_scope(policies[i].target);
+		write_simple_return_method("_PSV", to_acpi_temp(policies[i].temp));
+		acpigen_pop_len(); /* Scope */
+	}
+}
+
+void dptf_write_passive_policies(const struct dptf_passive_policy *policies, int max_count)
+{
+	write_thermal_relationship_table(policies, max_count);
+	write_all_PSV(policies, max_count);
 }

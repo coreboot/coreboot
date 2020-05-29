@@ -124,6 +124,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Mushu" if BOARD_GOOGLE_MUSHU
+	default "Noibat" if BOARD_GOOGLE_NOIBAT
 	default "Palkia" if BOARD_GOOGLE_PALKIA
 	default "Nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "Puff" if BOARD_GOOGLE_PUFF
@@ -154,6 +155,7 @@ config VARIANT_DIR
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "mushu" if BOARD_GOOGLE_MUSHU
+	default "noibat" if BOARD_GOOGLE_NOIBAT
 	default "palkia" if BOARD_GOOGLE_PALKIA
 	default "nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "puff" if BOARD_GOOGLE_PUFF

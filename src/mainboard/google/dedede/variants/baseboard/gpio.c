@@ -175,7 +175,7 @@ static const struct pad_config gpio_table[] = {
 	/* D16 : HP_INT_ODL */
 	PAD_CFG_GPI_INT(GPP_D16, NONE, PLTRST, EDGE_BOTH),
 	/* D17 : EN_SPK */
-	PAD_CFG_GPO(GPP_D17, 1, PLTRST),
+	PAD_CFG_GPO(GPP_D17, 0, PLTRST),
 	/* D18 : I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 	/* D19 : WWAN_WLAN_COEX1 */

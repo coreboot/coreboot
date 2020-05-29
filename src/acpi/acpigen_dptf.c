@@ -12,6 +12,7 @@
 enum {
 	ART_REVISION			= 0,
 	DEFAULT_PRIORITY		= 100,
+	DEFAULT_TRIP_POINT		= 0xFFFFFFFFull,
 	DEFAULT_WEIGHT			= 100,
 	DPTF_MAX_ART_THRESHOLDS		= 10,
 };
@@ -319,5 +320,41 @@ void dptf_write_charger_perf(const struct dptf_charger_perf *states, int max_cou
 
 	acpigen_pop_len(); /* outer Package */
 	acpigen_pop_len(); /* Method PPSS */
+	acpigen_pop_len(); /* Scope */
+}
+
+void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count)
+{
+	char *pkg_count;
+	int i;
+
+	if (!max_count || !states[0].percent)
+		return;
+
+	dptf_write_scope(DPTF_FAN);
+
+	/* _FPS - Fan Performance States */
+	acpigen_write_name("_FPS");
+	pkg_count = acpigen_write_package(0);
+
+	for (i = 0; i < max_count; ++i) {
+		/*
+		 * Some _FPS tables do include a last entry where Percent is 0, but Power is
+		 * called out, so this table is finished when both are zero.
+		 */
+		if (!states[i].percent && !states[i].power)
+			break;
+
+		(*pkg_count)++;
+		acpigen_write_package(5);
+		acpigen_write_integer(states[i].percent);
+		acpigen_write_integer(DEFAULT_TRIP_POINT);
+		acpigen_write_integer(states[i].speed);
+		acpigen_write_integer(states[i].noise_level);
+		acpigen_write_integer(states[i].power);
+		acpigen_pop_len(); /* inner Package */
+	}
+
+	acpigen_pop_len(); /* Package */
 	acpigen_pop_len(); /* Scope */
 }

@@ -32,6 +32,10 @@ enum {
 
 	/* Maximum found by automatic inspection (awk) */
 	DPTF_MAX_CHARGER_PERF_STATES	= 10,
+	DPTF_MAX_FAN_PERF_STATES	= 10,
+
+	/* From ACPI spec 6.3 */
+	DPTF_FIELD_UNUSED		= 0xFFFFFFFFull,
 };
 
 /* Active Policy */
@@ -87,6 +91,18 @@ struct dptf_charger_perf {
 	uint16_t raw_perf;
 };
 
+/* Different levels of fan activity, chosen by active policies */
+struct dptf_fan_perf {
+	/* Fan percentage level */
+	uint8_t percent;
+	/* Fan speed, in RPM */
+	uint16_t speed;
+	/* Noise level, in 0.1 dBs */
+	uint16_t noise_level;
+	/* Power in mA */
+	uint16_t power;
+};
+
 /*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
@@ -114,6 +130,17 @@ void dptf_write_critical_policies(const struct dptf_critical_policy *policies, i
  * with passive policies to lower the charging rate when the _PSV threshold is met.
  */
 void dptf_write_charger_perf(const struct dptf_charger_perf *perf, int max_count);
+
+/*
+ * This function writes an ACPI table describing various performance levels possible for active
+ * policies. They indicate, for a given fan percentage level:
+ *  1) What the corresponding speed is (in RPM)
+ *  2) The expected noise level (in tenths of decibels AKA centibels, or DPTF_FIELD_UNUSED)
+ *  3) The power consumption (in mW, or DPTF_FIELD_UNUSED to indicate this field is unused).
+ *  4) The corresponding active cooling trip point (from _ART) (typically left as
+ *     DPTF_FIELD_UNUSED).
+ */
+void dptf_write_fan_perf(const struct dptf_fan_perf *perf, int max_count);
 
 /* Helper method to open the scope for a given participant. */
 void dptf_write_scope(enum dptf_participant participant);

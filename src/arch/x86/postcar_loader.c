@@ -26,12 +26,7 @@ static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
 
 static void postcar_frame_prepare(struct postcar_frame *pcf)
 {
-	msr_t msr;
-	msr = rdmsr(MTRR_CAP_MSR);
-
-	pcf->upper_mask = (1 << (cpu_phys_address_size() - 32)) - 1;
-	pcf->max_var_mtrrs = msr.lo & MTRR_CAP_VCNT;
-	pcf->num_var_mtrrs = 0;
+	var_mtrr_context_init(&pcf->ctx, pcf);
 }
 
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
@@ -60,47 +55,25 @@ int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
 	return 0;
 }
 
+static void postcar_var_mtrr_set(const struct var_mtrr_context *ctx,
+				uintptr_t addr, size_t size,
+				msr_t base, msr_t mask)
+{
+	struct postcar_frame *pcf = ctx->arg;
+
+	printk(BIOS_DEBUG, "MTRR Range: Start=%lx End=%lx (Size %zx)\n",
+			addr, addr + size, size);
+
+	stack_push(pcf, mask.hi);
+	stack_push(pcf, mask.lo);
+	stack_push(pcf, base.hi);
+	stack_push(pcf, base.lo);
+}
+
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 				uintptr_t addr, size_t size, int type)
 {
-	/*
-	 * Utilize additional MTRRs if the specified size is greater than the
-	 * base address alignment.
-	 */
-	while (size != 0) {
-		uint32_t addr_lsb;
-		uint32_t size_msb;
-		uint32_t mtrr_size;
-
-		if (pcf->num_var_mtrrs >= pcf->max_var_mtrrs) {
-			printk(BIOS_ERR, "No more variable MTRRs: %d\n",
-					pcf->max_var_mtrrs);
-			return;
-		}
-
-		addr_lsb = fls(addr);
-		size_msb = fms(size);
-
-		/* All MTRR entries need to have their base aligned to the mask
-		 * size. The maximum size is calculated by a function of the
-		 * min base bit set and maximum size bit set. */
-		if (addr_lsb > size_msb)
-			mtrr_size = 1 << size_msb;
-		else
-			mtrr_size = 1 << addr_lsb;
-
-		printk(BIOS_DEBUG, "MTRR Range: Start=%lx End=%lx (Size %x)\n",
-					addr, addr + mtrr_size, mtrr_size);
-
-		stack_push(pcf, pcf->upper_mask);
-		stack_push(pcf, ~(mtrr_size - 1) | MTRR_PHYS_MASK_VALID);
-		stack_push(pcf, 0);
-		stack_push(pcf, addr | type);
-		pcf->num_var_mtrrs++;
-
-		size -= mtrr_size;
-		addr += mtrr_size;
-	}
+	var_mtrr_set_with_cb(&pcf->ctx, addr, size, type, postcar_var_mtrr_set);
 }
 
 void postcar_frame_add_romcache(struct postcar_frame *pcf, int type)
@@ -140,8 +113,8 @@ static void postcar_commit_mtrrs(struct postcar_frame *pcf)
 	 * Place the number of used variable MTRRs on stack then max number
 	 * of variable MTRRs supported in the system.
 	 */
-	stack_push(pcf, pcf->num_var_mtrrs);
-	stack_push(pcf, pcf->max_var_mtrrs);
+	stack_push(pcf, pcf->ctx.used_var_mtrrs);
+	stack_push(pcf, pcf->ctx.max_var_mtrrs);
 }
 
 static void finalize_load(uintptr_t *stack_top_ptr, uintptr_t stack_top)

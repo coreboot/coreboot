@@ -5,6 +5,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <cpu/x86/mtrr.h>
 
 void mainboard_romstage_entry(void);
 
@@ -16,10 +17,8 @@ void mainboard_romstage_entry(void);
 
 struct postcar_frame {
 	uintptr_t stack;
-	uint32_t upper_mask;
-	int max_var_mtrrs;
-	int num_var_mtrrs;
 	int skip_common_mtrr;
+	struct var_mtrr_context ctx;
 };
 
 /*

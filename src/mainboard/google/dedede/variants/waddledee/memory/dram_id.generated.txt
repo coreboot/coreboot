@@ -1,0 +1,3 @@
+DRAM Part Name                 ID to assign
+MT53E512M32D2NP-046 WT:E       0 (0000)
+NT6AP256T32AV-J2               1 (0001)

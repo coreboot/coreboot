@@ -5,18 +5,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-enum dptf_participant {
-	DPTF_NONE,
-	DPTF_CPU,
-	DPTF_CHARGER,
-	DPTF_FAN,
-	DPTF_TEMP_SENSOR_0,
-	DPTF_TEMP_SENSOR_1,
-	DPTF_TEMP_SENSOR_2,
-	DPTF_TEMP_SENSOR_3,
-	DPTF_PARTICIPANT_COUNT,
-};
-
 /* Generic DPTF participants have a PTYP field to distinguish them */
 enum dptf_generic_participant_type {
 	DPTF_GENERIC_PARTICIPANT_TYPE_TSR	= 0x3,
@@ -40,6 +28,17 @@ enum dptf_generic_participant_type {
 static bool is_participant_used(const struct drivers_intel_dptf_config *config,
 				enum dptf_participant participant)
 {
+	int i;
+
+	/* Active? */
+	for (i = 0; i < DPTF_MAX_ACTIVE_POLICIES; ++i)
+		if (config->policies.active[i].target == participant)
+			return true;
+
+	/* Check fan as well (its use is implicit in the Active policy) */
+	if (participant == DPTF_FAN && config->policies.active[0].target != DPTF_NONE)
+		return true;
+
 	return false;
 }
 
@@ -52,6 +51,9 @@ static const char *dptf_acpi_name(const struct device *dev)
 static void dptf_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_dptf_config *config = config_of(dev);
+
+	dptf_write_active_policies(config->policies.active,
+				   DPTF_MAX_ACTIVE_POLICIES);
 
 	printk(BIOS_INFO, "\\_SB.DPTF: %s at %s\n", dev->chip_ops->name, dev_path(dev));
 }

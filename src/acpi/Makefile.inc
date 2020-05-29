@@ -4,6 +4,7 @@ ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 
 ramstage-y += acpi.c
 ramstage-y += acpigen.c
+ramstage-y += acpigen_dptf.c
 ramstage-y += acpigen_dsm.c
 ramstage-y += acpigen_ps2_keybd.c
 ramstage-y += acpigen_usb.c

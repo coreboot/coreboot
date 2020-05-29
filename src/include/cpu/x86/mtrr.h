@@ -110,6 +110,37 @@ void clear_all_var_mtrr(void);
 
 asmlinkage void display_mtrrs(void);
 
+/* Variable MTRR structure to help track and set MTRRs prior to ramstage. This
+   and the following APIs can be used to set up more complex MTRR solutions
+   instead of open coding get_free_var_mtrr() and set_var_mtrr() or for determining
+   a future solution, such as postcar_loader. */
+struct var_mtrr_context {
+	uint32_t upper_mask;
+	int max_var_mtrrs;
+	int used_var_mtrrs;
+	void *arg; /* optional callback parameter */
+};
+
+/* Returns 0-relative MTRR from context. Use MTRR_PHYS_BASE|MASK macros for calculating
+   MSR address value. */
+static inline int var_mtrr_context_current_mtrr(const struct var_mtrr_context *ctx)
+{
+	return ctx->used_var_mtrrs;
+}
+
+/* Initialize var_mtrr_context object. Assumes all variable MTRRs are not yet used. */
+void var_mtrr_context_init(struct var_mtrr_context *ctx, void *arg);
+/* Allocate a variable mtrr base and mask, calling the provided callback for each MTRR
+   MSR base-mask pair needed to accommodate the address and size request.
+   Returns < 0 on error and 0 on success. */
+int var_mtrr_set_with_cb(struct var_mtrr_context *ctx,
+			uintptr_t addr, size_t size, int type,
+			void (*callback)(const struct var_mtrr_context *ctx,
+						uintptr_t base_addr, size_t size,
+						msr_t base, msr_t mask));
+/* Same as var_mtrr_set_with_cb() but just write the MSRs directly. */
+int var_mtrr_set(struct var_mtrr_context *ctx, uintptr_t addr, size_t size, int type);
+
 /*
  * Set the MTRRs using the data on the stack from setup_stack_and_mtrrs.
  * Return a new top_of_stack value which removes the setup_stack_and_mtrrs data.

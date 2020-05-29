@@ -6,6 +6,7 @@
 #include <soc/dramc_param.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
+#include <soc/mt6359p.h>
 
 /* This must be defined in chromeos.fmd in same name and size. */
 #define CALIBRATION_REGION		"RW_DDR_TRAINING"
@@ -43,6 +44,7 @@ static struct dramc_param_ops dparam_ops = {
 
 void platform_romstage_main(void)
 {
+	mt6359p_romstage_init();
 	mt_mem_init(&dparam_ops);
 	mtk_mmu_after_dram();
 }

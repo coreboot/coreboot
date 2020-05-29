@@ -10,6 +10,7 @@ bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
 bootblock-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
+bootblock-y += mt6359p.c
 
 verstage-y += flash_controller.c
 verstage-y += ../common/gpio.c gpio.c
@@ -26,6 +27,8 @@ romstage-y += memory.c dramc_param.c ../common/memory_test.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c
+romstage-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
+romstage-y += mt6359p.c
 
 ramstage-y += flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c

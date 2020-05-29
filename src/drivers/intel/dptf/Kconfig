@@ -5,3 +5,12 @@ config DRIVERS_INTEL_DPTF
 	help
 	   When enabled, entries in the devicetree are used to generate
 	   Intel DPTF Tables at runtime in the SSDT.
+
+config DPTF_USE_EISA_HID
+	bool "If selected, use 'old' 7 character EISA IDs for DPTF _HID"
+	depends on DRIVERS_INTEL_DPTF
+	default n
+	help
+	   When selected, all DPTF devices will use the "old" style of
+	   _HIDs, which are 7-character EISA IDs. Otherwise, it will use
+	   the "new" style, which are regular 8-character _HIDs.

@@ -40,7 +40,7 @@ GCC_VERSION=8.3.0
 GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.33.1
 GDB_VERSION=9.2
-IASL_VERSION=20200110
+IASL_VERSION=20200528
 PYTHON_VERSION=3.8.1
 EXPAT_VERSION=2.2.9
 # CLANG version number
@@ -843,9 +843,9 @@ build_IASL() {
 	test "$UNAME" = "Cygwin" && HOST="_CYGWIN"
 	HOST="$HOST" CFLAGS="$CFLAGS" \
 	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE\"' " \
-	$MAKE $JOBS CC="$(hostcc host)" iasl acpibin acpidump acpiexec acpihelp acpinames acpisrc acpixtract
-	rm -f "$DESTDIR$TARGETDIR/bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpinames,acpisrc,acpixtract}" || touch "$RDIR/.failed"
-	cp bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpinames,acpisrc,acpixtract} "$DESTDIR$TARGETDIR/bin" || touch "$RDIR/.failed"
+	$MAKE $JOBS CC="$(hostcc host)" iasl acpibin acpidump acpiexec acpihelp acpisrc acpixtract
+	rm -f "$DESTDIR$TARGETDIR/bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpisrc,acpixtract}" || touch "$RDIR/.failed"
+	cp bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpisrc,acpixtract} "$DESTDIR$TARGETDIR/bin" || touch "$RDIR/.failed"
 }
 
 build_LLVM() {

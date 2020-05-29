@@ -811,4 +811,9 @@ config RESOURCE_ALLOCATOR_V4
 	  ranges for allocating resources. This allows allocation of resources
 	  above 4G boundary as well.
 
+config XHCI_UTILS
+	def_bool n
+	help
+	  Provides xHCI utility functions.
+
 endmenu

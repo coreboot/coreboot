@@ -21,8 +21,6 @@ chip northbridge/intel/x4x		# Northbridge
 		device pci 2.1 on		# Integrated graphics controller 2
 			subsystemid 0x1458 0xd001
 		end
-		device pci 3.0 off end		# ME
-		device pci 3.1 off end		# ME
 		chip southbridge/intel/i82801gx	# Southbridge
 			register "pirqa_routing" = "0x0b"
 			register "pirqb_routing" = "0x0b"

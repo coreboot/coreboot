@@ -178,7 +178,11 @@ struct mtk_apmixed_regs {
 	u32 mfgpll_con2;
 	u32 mfgpll_con3;
 	u32 ap_pllgp1_con2;
-	u32 reserved2[33];
+	u32 reserved2[13];
+	u32 ulposc1_con0;
+	u32 ulposc1_con1;
+	u32 ulposc1_con2;
+	u32 reserved3[17];
 	u32 ap_pllgp2_con0;	/* 0x0300 */
 	u32 ap_pllgp2_con1;
 	u32 univpll_con0;

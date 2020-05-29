@@ -9,6 +9,7 @@ bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
+bootblock-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
 
 verstage-y += flash_controller.c
 verstage-y += ../common/gpio.c gpio.c

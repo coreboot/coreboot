@@ -37,7 +37,7 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id)
 
 void update_microcode(u32 cpu_deviceid)
 {
-	u32 equivalent_processor_rev_id =
+	u16 equivalent_processor_rev_id =
 				get_equivalent_processor_rev_id(cpu_deviceid);
 	amd_update_microcode_from_cbfs(equivalent_processor_rev_id);
 }

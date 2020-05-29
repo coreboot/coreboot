@@ -88,7 +88,7 @@ static void apply_microcode_patch(const struct microcode *m)
 }
 
 static void amd_update_microcode(const void *ucode,  size_t ucode_len,
-				uint32_t equivalent_processor_rev_id)
+				uint16_t equivalent_processor_rev_id)
 {
 	const struct microcode *m;
 	const uint8_t *c = ucode;
@@ -99,7 +99,7 @@ static void amd_update_microcode(const void *ucode,  size_t ucode_len,
 		apply_microcode_patch(m);
 }
 
-void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
+void amd_update_microcode_from_cbfs(uint16_t equivalent_processor_rev_id)
 {
 	const void *ucode;
 	size_t ucode_len;

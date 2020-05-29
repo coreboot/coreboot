@@ -87,7 +87,7 @@ void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 }
 
 /*----------------------------------------------------------------------------------------
- *						CUSTOMER OVERIDES MEMORY TABLE
+ *						CUSTOMER OVERRIDES MEMORY TABLE
  *----------------------------------------------------------------------------------------
  */
 

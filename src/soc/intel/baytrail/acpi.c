@@ -123,7 +123,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void acpi_fill_in_fadt(acpi_fadt_t *fadt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 

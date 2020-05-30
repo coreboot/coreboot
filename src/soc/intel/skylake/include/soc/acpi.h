@@ -12,7 +12,6 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
-void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void southbridge_inject_dsdt(const struct device *device);
 unsigned long southbridge_write_acpi_tables(const struct device *device,

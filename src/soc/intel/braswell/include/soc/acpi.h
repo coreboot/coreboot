@@ -7,7 +7,6 @@
 #include <soc/nvs.h>
 
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
-void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);
 void southcluster_inject_dsdt(const struct device *device);

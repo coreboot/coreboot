@@ -40,3 +40,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	return current;
 }
+
+void motherboard_fill_fadt(acpi_fadt_t *fadt)
+{
+	fadt->preferred_pm_profile = PM_MOBILE;
+}

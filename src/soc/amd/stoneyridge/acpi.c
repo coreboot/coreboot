@@ -57,25 +57,10 @@ unsigned long acpi_fill_madt(unsigned long current)
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
  */
-void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	acpi_header_t *header = &(fadt->header);
-
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", STONEYRIDGE_ACPI_IO_BASE);
 
-	/* Prepare the header */
-	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
-	memcpy(header->signature, "FACP", 4);
-	header->length = sizeof(acpi_fadt_t);
-	header->revision = get_acpi_table_revision(FADT);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = asl_revision;
-
-	fadt->firmware_ctrl = (u32) facs;
-	fadt->dsdt = (u32) dsdt;
-	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = PM_UNSPECIFIED;
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
@@ -141,8 +126,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 	fadt->x_firmware_ctl_l = 0;	/* set to 0 if firmware_ctrl is used */
 	fadt->x_firmware_ctl_h = 0;
-	fadt->x_dsdt_l = (u32) dsdt;
-	fadt->x_dsdt_h = 0;
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
@@ -207,8 +190,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0;
 	fadt->x_gpe1_blk.addrh = 0x0;
-
-	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
 }
 
 void generate_cpu_entries(const struct device *device)

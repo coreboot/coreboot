@@ -46,6 +46,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select SSE2
 	select RTC
+	select COMMON_FADT
 
 config AMD_APU_STONEYRIDGE
 	bool

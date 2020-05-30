@@ -137,7 +137,7 @@ static void serialio_init(struct device *dev)
 	printk(BIOS_DEBUG, "Initializing Serial IO device\n");
 
 	/* Ensure memory and bus master are enabled */
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Find BAR0 and BAR1 */
 	bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);

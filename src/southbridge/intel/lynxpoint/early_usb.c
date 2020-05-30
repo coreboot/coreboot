@@ -25,7 +25,7 @@
 static void enable_usb_bar_on_device(pci_devfn_t dev, u32 bar)
 {
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, bar);
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 
 void enable_usb_bar(void)

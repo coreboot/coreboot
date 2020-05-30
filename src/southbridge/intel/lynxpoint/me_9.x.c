@@ -735,7 +735,7 @@ static int intel_mei_setup(struct device *dev)
 	mei_base_address = (u32 *)(uintptr_t)res->base;
 
 	/* Ensure Memory and Bus Master bits are set */
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Clean up status for next message */
 	read_host_csr(&host);

@@ -26,7 +26,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UNCOMPRESSED_RAMSTAGE
 	select USE_MARCH_586
 	select NO_SMM
-	select COMMON_FADT
 
 #####
 # Debug serial output

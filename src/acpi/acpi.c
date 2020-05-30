@@ -1219,8 +1219,6 @@ void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
 	header->checksum = acpi_checksum((void *)bert, header->length);
 }
 
-#if CONFIG(COMMON_FADT)
-
 __weak void soc_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void mainboard_fill_fadt(acpi_fadt_t *fadt) { }
 
@@ -1269,7 +1267,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	header->checksum =
 	    acpi_checksum((void *) fadt, header->length);
 }
-#endif
 
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {

@@ -78,17 +78,13 @@ static void ide_init(struct device *dev)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static struct pci_operations ide_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
-};
-
 static struct device_operations ide_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ide_init,
 	.enable			= i82801gx_enable,
-	.ops_pci		= &ide_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */

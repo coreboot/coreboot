@@ -43,16 +43,12 @@ static const char *xhci_acpi_name(const struct device *dev)
 	return "XHC";
 }
 
-static struct pci_operations xhci_pci_ops = {
-	.set_subsystem		= pci_dev_set_subsystem,
-};
-
 static struct device_operations usb_xhci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= usb_xhci_init,
-	.ops_pci		= &xhci_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= xhci_acpi_name,
 };
 

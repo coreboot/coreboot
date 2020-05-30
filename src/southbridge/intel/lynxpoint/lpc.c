@@ -926,10 +926,6 @@ static void lpc_final(struct device *dev)
 		outb(APM_CNT_FINALIZE, APM_CNT);
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -942,7 +938,7 @@ static struct device_operations device_ops = {
 	.final			= lpc_final,
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_static_bus,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 

@@ -129,16 +129,13 @@ static void hudson_sm_set_resources(struct device *dev)
 {
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
 static struct device_operations smbus_ops = {
 	.read_resources = hudson_sm_read_resources,
 	.set_resources = hudson_sm_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = sm_init,
 	.scan_bus = scan_smbus,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 	.ops_smbus_bus = &lops_smbus_bus,
 };
 static const struct pci_driver smbus_driver __pci_driver = {

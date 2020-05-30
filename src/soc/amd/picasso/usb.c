@@ -18,10 +18,6 @@ static void picasso_usb_init(struct device *dev)
 	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations usb_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
@@ -29,7 +25,7 @@ static struct device_operations usb_ops = {
 	.init = picasso_usb_init,
 	.scan_bus = scan_static_bus,
 	.acpi_name = soc_acpi_name,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

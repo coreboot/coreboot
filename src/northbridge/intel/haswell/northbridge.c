@@ -447,17 +447,13 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(MMIO_PAVP_MSG) = 0x00100001;
 }
 
-static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
-};
-
 static struct device_operations mc_ops = {
 	.read_resources         = mc_read_resources,
 	.set_resources          = pci_dev_set_resources,
 	.enable_resources       = pci_dev_enable_resources,
 	.init                   = northbridge_init,
 	.acpi_fill_ssdt		= generate_cpu_entries,
-	.ops_pci                = &intel_pci_ops,
+	.ops_pci                = &pci_dev_ops_pci,
 };
 
 static const unsigned short mc_pci_device_ids[] = {

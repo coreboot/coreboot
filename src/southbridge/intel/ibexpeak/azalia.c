@@ -297,16 +297,12 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x43, reg8);
 }
 
-static struct pci_operations azalia_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
-};
-
 static struct device_operations azalia_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_init,
-	.ops_pci		= &azalia_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

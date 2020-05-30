@@ -234,17 +234,13 @@ static void ac97_modem_init(struct device *dev)
 	}
 }
 
-static struct pci_operations ac97_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
-};
-
 static struct device_operations ac97_audio_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ac97_audio_init,
 	.enable			= i82801gx_enable,
-	.ops_pci		= &ac97_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static struct device_operations ac97_modem_ops = {
@@ -253,7 +249,7 @@ static struct device_operations ac97_modem_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ac97_modem_init,
 	.enable			= i82801gx_enable,
-	.ops_pci		= &ac97_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */

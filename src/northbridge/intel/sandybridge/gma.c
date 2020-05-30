@@ -646,10 +646,6 @@ static void gma_func0_disable(struct device *dev)
 	dev->enabled = 0;
 }
 
-static struct pci_operations gma_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations gma_func0_ops = {
 	.read_resources         = pci_dev_read_resources,
 	.set_resources          = pci_dev_set_resources,
@@ -657,7 +653,7 @@ static struct device_operations gma_func0_ops = {
 	.acpi_fill_ssdt		= gma_generate_ssdt,
 	.init                   = gma_func0_init,
 	.disable                = gma_func0_disable,
-	.ops_pci                = &gma_pci_ops,
+	.ops_pci                = &pci_dev_ops_pci,
 	.acpi_name              = gma_acpi_name,
 };
 

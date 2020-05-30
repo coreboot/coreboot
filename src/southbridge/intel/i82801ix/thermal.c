@@ -36,16 +36,12 @@ static void thermal_init(struct device *dev)
 	pci_write_config32(dev, 0x10, 0);
 }
 
-static struct pci_operations thermal_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= thermal_init,
-	.ops_pci		= &thermal_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const struct pci_driver ich9_thermal __pci_driver = {

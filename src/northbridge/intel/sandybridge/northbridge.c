@@ -425,16 +425,12 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(pcidev_on_root(0, 0), SMRAM, smram);
 }
 
-static struct pci_operations intel_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations mc_ops = {
 	.read_resources         = mc_read_resources,
 	.set_resources          = pci_dev_set_resources,
 	.enable_resources       = pci_dev_enable_resources,
 	.init                   = northbridge_init,
-	.ops_pci                = &intel_pci_ops,
+	.ops_pci                = &pci_dev_ops_pci,
 	.acpi_fill_ssdt		= generate_cpu_entries,
 };
 

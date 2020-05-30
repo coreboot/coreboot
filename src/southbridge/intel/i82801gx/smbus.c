@@ -65,10 +65,6 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.block_write	= lsmbus_block_write,
 };
 
-static struct pci_operations smbus_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
-};
-
 static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
@@ -86,7 +82,7 @@ static struct device_operations smbus_ops = {
 	.scan_bus		= scan_smbus,
 	.enable			= i82801gx_enable,
 	.ops_smbus_bus		= &lops_smbus_bus,
-	.ops_pci		= &smbus_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */

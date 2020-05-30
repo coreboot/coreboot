@@ -292,10 +292,6 @@ static const char *pch_pcie_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -304,7 +300,7 @@ static struct device_operations device_ops = {
 	.enable			= pch_pcie_enable,
 	.scan_bus		= pch_pciexp_scan_bridge,
 	.acpi_name		= pch_pcie_acpi_name,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c10, 0x1c12, 0x1c14, 0x1c16,

@@ -102,10 +102,6 @@ static void ahci_raid_init(struct device *dev)
 	printk(BIOS_DEBUG, "AHCI/RAID controller initialized\n");
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static void lpc_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB800 - Late.c - %s - Start.\n", __func__);
@@ -154,7 +150,7 @@ static struct device_operations lpc_ops = {
 #endif
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 	.acpi_name = lpc_acpi_name,
 };
 
@@ -169,7 +165,7 @@ static struct device_operations sata_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = ahci_raid_init,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver ahci_driver __pci_driver = {
@@ -193,7 +189,7 @@ static struct device_operations usb_ops = {
 	.read_resources = pci_ehci_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 /*
@@ -222,7 +218,7 @@ static struct device_operations azalia_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver azalia_driver __pci_driver = {
@@ -236,7 +232,7 @@ static struct device_operations gec_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver gec_driver __pci_driver = {

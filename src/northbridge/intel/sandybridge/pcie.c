@@ -50,10 +50,6 @@ static const char *pcie_acpi_name(const struct device *dev)
 }
 #endif
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -62,7 +58,7 @@ static struct device_operations device_ops = {
 	.reset_bus		= pci_bus_reset,
 	.disable		= pcie_disable,
 	.init			= pci_dev_init,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= pcie_acpi_name,
 #endif

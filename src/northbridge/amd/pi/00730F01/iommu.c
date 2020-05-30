@@ -26,15 +26,11 @@ static void iommu_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations iommu_ops = {
 	.read_resources = iommu_read_resources,
 	.set_resources = iommu_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver iommu_driver __pci_driver = {

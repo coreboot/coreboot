@@ -848,10 +848,6 @@ static void intel_me_init(struct device *dev)
 	 */
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static void intel_me_enable(struct device *dev)
 {
 	/* Avoid talking to the device in S3 path */
@@ -867,7 +863,7 @@ static struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= intel_me_enable,
 	.init			= intel_me_init,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

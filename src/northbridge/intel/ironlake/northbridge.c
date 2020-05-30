@@ -227,17 +227,13 @@ static void ironlake_init(void *const chip_info)
 
 }
 
-static struct pci_operations intel_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations mc_ops = {
 	.read_resources = mc_read_resources,
 	.set_resources = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = northbridge_init,
 	.acpi_fill_ssdt = generate_cpu_entries,
-	.ops_pci = &intel_pci_ops,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver mc_driver_ard __pci_driver = {

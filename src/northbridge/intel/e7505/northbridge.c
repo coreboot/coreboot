@@ -61,15 +61,11 @@ static void mch_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-static struct pci_operations intel_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci          = &intel_pci_ops,
+	.ops_pci          = &pci_dev_ops_pci,
 };
 
 static void cpu_bus_init(struct device *dev)

@@ -30,16 +30,12 @@ static void thermal_init(struct device *dev)
 	printk(BIOS_DEBUG, "Thermal init done.\n");
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations thermal_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = thermal_init,
-	.ops_pci = &pci_ops,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const struct pci_driver pch_thermal __pci_driver = {

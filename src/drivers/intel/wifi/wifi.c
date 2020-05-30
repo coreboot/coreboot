@@ -73,10 +73,6 @@ static void wifi_pci_dev_init(struct device *dev)
 	}
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 struct device_operations device_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -85,7 +81,7 @@ struct device_operations device_ops = {
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data  = smbios_write_wifi,
 #endif
-	.ops_pci          = &pci_ops,
+	.ops_pci          = &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = generic_wifi_acpi_name,
 	.acpi_fill_ssdt   = intel_wifi_fill_ssdt,

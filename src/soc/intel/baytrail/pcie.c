@@ -227,10 +227,6 @@ static void byt_pciexp_scan_bridge(struct device *dev)
 	do_pci_scan_bridge(dev, pciexp_scan_bus);
 }
 
-static struct pci_operations pcie_root_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -238,7 +234,7 @@ static struct device_operations device_ops = {
 	.init			= byt_pcie_init,
 	.scan_bus		= byt_pciexp_scan_bridge,
 	.enable			= byt_pcie_enable,
-	.ops_pci		= &pcie_root_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

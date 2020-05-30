@@ -91,17 +91,13 @@ static void pch_pciexp_scan_bridge(struct device *dev)
 	}
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
 	.init			= pci_init,
 	.scan_bus		= pch_pciexp_scan_bridge,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 /* 82801lJx, ICH10  */

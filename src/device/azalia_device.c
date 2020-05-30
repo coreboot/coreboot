@@ -241,14 +241,10 @@ void azalia_audio_init(struct device *dev)
 	}
 }
 
-struct pci_operations azalia_audio_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 struct device_operations default_azalia_audio_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_audio_init,
-	.ops_pci		= &azalia_audio_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };

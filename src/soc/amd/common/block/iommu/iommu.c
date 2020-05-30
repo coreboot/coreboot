@@ -21,15 +21,11 @@ static void iommu_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM;
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations iommu_ops = {
 	.read_resources = iommu_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

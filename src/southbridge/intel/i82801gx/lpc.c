@@ -653,10 +653,6 @@ static void southbridge_fill_ssdt(const struct device *device)
 	intel_acpi_gen_def_acpi_pirq(device);
 }
 
-static struct pci_operations pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations device_ops = {
 	.read_resources		= i82801gx_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -668,7 +664,7 @@ static struct device_operations device_ops = {
 	.init			= lpc_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,
-	.ops_pci		= &pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 	.final			= lpc_final,
 };
 

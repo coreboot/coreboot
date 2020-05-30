@@ -217,10 +217,6 @@ static void sata_fill_ssdt(const struct device *dev)
 	generate_sata_ssdt_ports("\\_SB_.PCI0.SATA", config->sata_port_map);
 }
 
-static struct pci_operations sata_pci_ops = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations sata_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
@@ -228,7 +224,7 @@ static struct device_operations sata_ops = {
 	.init = sata_init,
 	.enable = sata_enable,
 	.acpi_fill_ssdt = sata_fill_ssdt,
-	.ops_pci = &sata_pci_ops,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

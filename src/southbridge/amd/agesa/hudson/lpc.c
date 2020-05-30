@@ -333,10 +333,6 @@ static void lpc_final(struct device *dev)
 	}
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations lpc_ops = {
 	.read_resources = hudson_lpc_read_resources,
 	.set_resources = hudson_lpc_set_resources,
@@ -347,7 +343,7 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.final = lpc_final,
 	.scan_bus = scan_static_bus,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 	.acpi_name = lpc_acpi_name,
 };
 static const struct pci_driver lpc_driver __pci_driver = {

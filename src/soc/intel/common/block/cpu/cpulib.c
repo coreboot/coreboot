@@ -9,10 +9,6 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
-#include <soc/cpu.h>
-#include <soc/iomap.h>
-#include <soc/pm.h>
-#include <soc/pci_devs.h>
 #include <stdint.h>
 
 /*

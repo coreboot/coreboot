@@ -5,7 +5,6 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/power_limit.h>
 #include <soc/msr.h>
-#include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */

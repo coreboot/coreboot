@@ -5,6 +5,7 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT),y)
 bootblock-y += bootblock.c
 
 ramstage-y += pch.c
+ramstage-y += iobp.c
 ramstage-y += azalia.c
 ramstage-y += fadt.c
 ramstage-y += lpc.c

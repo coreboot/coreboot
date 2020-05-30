@@ -115,9 +115,6 @@ void disable_gpe(u32 mask);
 
 void pch_enable(struct device *dev);
 void pch_disable_devfn(struct device *dev);
-u32 pch_iobp_read(u32 address);
-void pch_iobp_write(u32 address, u32 data);
-void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void pch_log_state(void);
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);

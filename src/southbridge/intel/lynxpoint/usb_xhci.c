@@ -8,6 +8,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include "chip.h"
+#include "iobp.h"
 #include "pch.h"
 
 typedef struct southbridge_intel_lynxpoint_config config_t;

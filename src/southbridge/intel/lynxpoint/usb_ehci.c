@@ -8,6 +8,7 @@
 #include <device/pci_ehci.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
+#include "iobp.h"
 #include "pch.h"
 
 #ifdef __SIMPLE_DEVICE__

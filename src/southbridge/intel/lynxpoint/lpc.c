@@ -16,6 +16,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include "chip.h"
+#include "iobp.h"
 #include "nvs.h"
 #include "pch.h"
 #include <acpi/acpigen.h>

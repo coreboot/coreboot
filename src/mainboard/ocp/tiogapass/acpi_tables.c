@@ -9,3 +9,8 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	acpi_init_gnvs(gnvs);
 }
+
+void motherboard_fill_fadt(acpi_fadt_t *fadt)
+{
+	fadt->preferred_pm_profile = PM_ENTERPRISE_SERVER;
+}

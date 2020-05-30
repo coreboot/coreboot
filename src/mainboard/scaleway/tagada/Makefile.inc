@@ -6,7 +6,6 @@ romstage-y += hsio.c
 
 ramstage-y += ramstage.c
 ramstage-y += hsio.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 
 bootblock-y += bmcinfo.c
 postcar-y += bmcinfo.c

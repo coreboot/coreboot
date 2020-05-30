@@ -27,34 +27,12 @@
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
  */
-void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	u16 val = 0;
-	acpi_header_t *header = &(fadt->header);
 
 	printk(BIOS_DEBUG, "ACPI_BLK_BASE: 0x%04x\n", ACPI_BLK_BASE);
 
-	/* Prepare the header */
-	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
-	memcpy(header->signature, "FACP", 4);
-	header->length = sizeof(acpi_fadt_t);
-	header->revision = get_acpi_table_revision(FADT);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = asl_revision;
-
-	if ((uintptr_t)facs > 0xffffffff)
-		printk(BIOS_DEBUG, "ACPI: FACS lives above 4G\n");
-	else
-		fadt->firmware_ctrl = (uintptr_t)facs;
-
-	if ((uintptr_t)dsdt > 0xffffffff)
-		printk(BIOS_DEBUG, "ACPI: DSDT lives above 4G\n");
-	else
-		fadt->dsdt = (uintptr_t)dsdt;
-
-	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = PM_DESKTOP;
 	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 - ACPI SCI */
 
@@ -135,11 +113,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->ARM_boot_arch = 0;	/* MUST be 0 ACPI 3.0 */
 	fadt->FADT_MinorVersion = 0;	/* MUST be 0 ACPI 3.0 */
 
-	fadt->x_firmware_ctl_l = ((uintptr_t)facs) & 0xffffffff;
-	fadt->x_firmware_ctl_h = ((uint64_t)(uintptr_t)facs) >> 32;
-	fadt->x_dsdt_l = ((uintptr_t)dsdt) & 0xffffffff;
-	fadt->x_dsdt_h = ((uint64_t)(uintptr_t)dsdt) >> 32;
-
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
@@ -200,7 +173,4 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0;
 	fadt->x_gpe1_blk.addrh = 0x0;
-
-	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));
-
 }

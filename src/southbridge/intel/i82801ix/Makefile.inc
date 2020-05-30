@@ -3,6 +3,7 @@
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801IX),y)
 
 ramstage-y += i82801ix.c
+ramstage-y += fadt.c
 ramstage-y += pci.c
 ramstage-y += lpc.c
 ramstage-y += pcie.c

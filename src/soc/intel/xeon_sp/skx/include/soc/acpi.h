@@ -18,6 +18,5 @@ void acpi_init_gnvs(global_nvs_t *gnvs);
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 void uncore_inject_dsdt(void);
-void motherboard_fill_fadt(acpi_fadt_t *fadt);
 
 #endif /* _SOC_ACPI_H_ */

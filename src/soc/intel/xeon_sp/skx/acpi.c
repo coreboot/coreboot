@@ -176,10 +176,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-__attribute__ ((weak)) void motherboard_fill_fadt(acpi_fadt_t *fadt)
-{
-}
-
 void generate_t_state_entries(int core, int cores_per_package)
 {
 }
@@ -327,8 +323,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = fadt->gpe1_blk;
 	fadt->x_gpe1_blk.addrh = 0x00;
-
-	motherboard_fill_fadt(fadt);
 }
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
@@ -444,8 +438,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
-
-	soc_fill_fadt(fadt);
 }
 
 static acpi_tstate_t xeon_sp_tss_table[] = {

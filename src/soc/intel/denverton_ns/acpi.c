@@ -113,10 +113,6 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-__attribute__ ((weak)) void motherboard_fill_fadt(acpi_fadt_t *fadt)
-{
-}
-
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	u16 pmbase = get_pmbase();
@@ -220,8 +216,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = fadt->gpe1_blk;
 	fadt->x_gpe1_blk.addrh = 0x00;
-
-	motherboard_fill_fadt(fadt);
 }
 
 static acpi_tstate_t denverton_tss_table[] = {

@@ -63,9 +63,6 @@ acpi_tstate_t *soc_get_tss_table(int *entries);
 uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 			    const struct chipset_power_state *ps);
 
-/* Chipset specific settings for filling up fadt table */
-void soc_fill_fadt(acpi_fadt_t *fadt);
-
 /* Chipset specific settings for filling up dmar table */
 unsigned long sa_write_acpi_tables(const struct device *dev,
 				   unsigned long current,

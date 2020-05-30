@@ -89,10 +89,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-__weak void soc_fill_fadt(acpi_fadt_t *fadt)
-{
-}
-
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
@@ -165,8 +161,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.addrh = 0;
 
 	fadt->x_gpe1_blk.space_id = 1;
-
-	soc_fill_fadt(fadt);
 }
 
 unsigned long southbridge_write_acpi_tables(const struct device *device,

@@ -876,9 +876,10 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
-#if CONFIG(COMMON_FADT)
+
 void acpi_fill_fadt(acpi_fadt_t *fadt);
-#endif
+void soc_fill_fadt(acpi_fadt_t *fadt);
+void motherboard_fill_fadt(acpi_fadt_t *fadt);
 
 void update_ssdt(void *ssdt);
 void update_ssdtx(void *ssdtx, int i);

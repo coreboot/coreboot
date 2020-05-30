@@ -18,7 +18,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 	fadt->firmware_ctrl = (unsigned long) facs;
 	fadt->dsdt = (unsigned long) dsdt;
-	fadt->preferred_pm_profile = PM_MOBILE;
 
 	fadt->x_firmware_ctl_l = (unsigned long)facs;
 	fadt->x_firmware_ctl_h = 0;
@@ -26,8 +25,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_dsdt_h = 0;
 
 	acpi_fill_in_fadt(fadt);
-
-	fadt->iapc_boot_arch &= ~ACPI_FADT_8042;
+	motherboard_fill_fadt(fadt);
 
 	header->checksum =
 	    acpi_checksum((void *) fadt, header->length);

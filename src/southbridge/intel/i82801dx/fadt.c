@@ -17,24 +17,11 @@
 #define   S4_BIOS	0x77
 #define   GNVS_UPDATE   0xea
 
-void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	acpi_header_t *header = &(fadt->header);
 	u16 pmbase = pci_read_config16(pcidev_on_root(0x1f, 0), 0x40) & 0xfffe;
 
-	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
-	memcpy(header->signature, "FACP", 4);
-	header->length = sizeof(acpi_fadt_t);
-	header->revision = get_acpi_table_revision(FADT);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = asl_revision;
-
-	fadt->firmware_ctrl = (unsigned long) facs;
-	fadt->dsdt = (unsigned long) dsdt;
-	fadt->reserved = 0;
-	fadt->preferred_pm_profile = 0; /* PM_MOBILE; */
+	fadt->preferred_pm_profile = PM_UNSPECIFIED;
 
 	fadt->sci_int = 0x9;
 
@@ -85,10 +72,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reset_reg.addrh = 0x0;
 
 	fadt->reset_value = 0;
-	fadt->x_firmware_ctl_l = (unsigned long)facs;
-	fadt->x_firmware_ctl_h = 0;
-	fadt->x_dsdt_l = (unsigned long)dsdt;
-	fadt->x_dsdt_h = 0;
 
 	fadt->x_pm1a_evt_blk.space_id = 1;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
@@ -145,6 +128,4 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
-
-	header->checksum = acpi_checksum((void *) fadt, header->length);
 }

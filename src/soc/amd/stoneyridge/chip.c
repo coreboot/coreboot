@@ -25,7 +25,7 @@ extern const char *i2c_acpi_name(const struct device *dev);
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
 	.set_resources	  = noop_set_resources,
-	.init		  = stoney_init_cpus,
+	.init		  = mp_cpu_bus_init,
 	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 

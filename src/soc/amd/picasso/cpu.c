@@ -92,10 +92,10 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = enable_smi_generation,
 };
 
-void picasso_init_cpus(struct device *dev)
+void mp_init_cpus(struct bus *cpu_bus)
 {
 	/* Clear for take-off */
-	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
+	if (mp_init_with_smm(cpu_bus, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* The flash is now no longer cacheable. Reset to WP for performance. */

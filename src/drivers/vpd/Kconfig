@@ -19,3 +19,8 @@ config VPD_FMAP_SIZE
 	default 0x4000
 	help
 	  Size in bytes of the FMAP region created to store VPD tables.
+
+config SMBIOS_SERIAL_FROM_VPD
+	bool "Load device serial from VPD"
+	depends on VPD && GENERATE_SMBIOS_TABLES
+	default n

@@ -23,7 +23,7 @@ void smm_southbridge_clear_state(void)
 	pmc_clear_all_gpe_status();
 }
 
-void smm_southbridge_enable(uint16_t pm1_events)
+static void smm_southbridge_enable(uint16_t pm1_events)
 {
 	uint32_t smi_params = ENABLE_SMI_PARAMS;
 
@@ -59,6 +59,16 @@ void smm_southbridge_enable(uint16_t pm1_events)
 
 	/* Enable SMI generation: */
 	pmc_enable_smi(smi_params);
+}
+
+void global_smi_enable(void)
+{
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
+}
+
+void global_smi_enable_no_pwrbtn(void)
+{
+	smm_southbridge_enable(GBL_EN);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

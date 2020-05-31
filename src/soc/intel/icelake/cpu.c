@@ -220,7 +220,7 @@ static void post_mp_init(void)
 	 * Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
 	 */
-	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
+	global_smi_enable();
 
 	/* Lock down the SMRAM space. */
 	smm_lock();

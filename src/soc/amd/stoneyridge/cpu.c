@@ -90,7 +90,7 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = enable_smi_generation,
+	.post_mp_init = global_smi_enable,
 };
 
 void mp_init_cpus(struct bus *cpu_bus)

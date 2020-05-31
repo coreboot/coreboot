@@ -3,14 +3,14 @@
 #ifndef SOC_MEDIATEK_MT8183_DRAMC_PARAM_H
 #define SOC_MEDIATEK_MT8183_DRAMC_PARAM_H
 
+#include <soc/dramc_common_mt8183.h>
+#include <soc/emi.h>
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "emi.h"
-
 enum {
 	DRAMC_PARAM_HEADER_MAGIC = 0x44524d4b,
-	DRAMC_PARAM_HEADER_VERSION = 2,
+	DRAMC_PARAM_HEADER_VERSION = 3,
 };
 
 enum DRAMC_PARAM_STATUS_CODES {
@@ -37,10 +37,16 @@ enum DRAMC_PARAM_FLAGS {
 	DRAMC_FLAG_HAS_SAVED_DATA = 0x0001,
 };
 
+enum DRAMC_PARAM_GEOMETRY_TYPE {
+	DDR_TYPE_2CH_2RK_4GB_2_2,
+	DDR_TYPE_2CH_2RK_6GB_3_3,
+	DDR_TYPE_2CH_2RK_8GB_4_4,
+};
+
 struct dramc_param_header {
 	u32 status;	/* DRAMC_PARAM_STATUS_CODES */
 	u32 magic;
-	u32 version;
+	u32 version;	/* DRAMC_PARAM_HEADER_VERSION */
 	u32 size;	/* size of whole dramc_param */
 	u16 config;	/* DRAMC_PARAM_CONFIG */
 	u16 flags;	/* DRAMC_PARAM_FLAGS */

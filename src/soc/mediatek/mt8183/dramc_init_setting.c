@@ -5,6 +5,7 @@
 #include <delay.h>
 #include <soc/emi.h>
 #include <soc/dramc_pi_api.h>
+#include <soc/dramc_param.h>
 #include <soc/dramc_register.h>
 #include <soc/infracfg.h>
 #include <string.h>

@@ -13,8 +13,9 @@ enum DRAMC_PARAM_SOURCE {
 };
 
 struct sdram_params {
-	u16 source;	/* DRAMC_PARAM_SOURCE */
+	u16 source;		/* DRAMC_PARAM_SOURCE */
 	u16 frequency;
+	u32 ddr_geometry;	/* DRAMC_PARAM_GEOMETRY_TYPE */
 	u8 wr_level[CHANNEL_MAX][RANK_MAX][DQS_NUMBER];
 
 	/* DUTY */

@@ -7,7 +7,6 @@ bootblock-y += early_init.c
 
 romstage-y += dmi_setup.c
 romstage-y += early_init.c
-romstage-y += early_smbus.c
 
 ramstage-y += fadt.c
 ramstage-y += hdaudio.c

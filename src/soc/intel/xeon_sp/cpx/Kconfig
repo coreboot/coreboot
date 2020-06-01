@@ -66,4 +66,6 @@ config FSP_TEMP_RAM_SIZE
 config SOC_INTEL_COMMON_BLOCK_P2SB
 	def_bool y
 
+select CACHE_MRC_SETTINGS
+
 endif

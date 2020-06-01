@@ -113,6 +113,7 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 	u8 pwm_ctrl;
 	u8 pwm_start = 0;
 	u8 pwm_auto = 0;
+	u8 delta_temp;
 
 	if (mode == FAN_SMART_SOFTWARE) {
 		pwm_ctrl = ITE_EC_FAN_CTL_PWM_MODE_SOFTWARE;
@@ -145,8 +146,11 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 		/* Full speed above 127°C by default */
 		pnp_write_hwm5_index(base, ITE_EC_FAN_CTL_TEMP_LIMIT_FULL(fan),
 			conf->tmp_full ? conf->tmp_full : 127);
+
+		delta_temp = ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(conf->tmp_delta);
+		delta_temp |= ITE_EC_FAN_CTL_FULL_AT_THRML_LMT(conf->full_lmt);
 		pnp_write_hwm5_index(base, ITE_EC_FAN_CTL_DELTA_TEMP(fan),
-			ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(conf->tmp_delta));
+			delta_temp);
 	}
 
 	pnp_write_hwm5_index(base, ITE_EC_FAN_CTL_PWM_CONTROL(fan), pwm_ctrl);

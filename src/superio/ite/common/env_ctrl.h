@@ -185,6 +185,7 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 
 /* Common for ITE_EC_FAN_CTL_DELTA_TEMP */
 #define   ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(c)	((c) & 0x1f)
+#define   ITE_EC_FAN_CTL_FULL_AT_THRML_LMT(x)   (((x) & 0x1) << 6)
 #define ITE_EC_FAN_CTL_TARGET_ZONE(x)		(0x66 + ((x)-1) * 8)
 #define   ITE_EC_FAN_CTL_TARGET_ZONE_MASK	0x0f
 

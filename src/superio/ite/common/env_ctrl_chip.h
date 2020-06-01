@@ -50,15 +50,16 @@ enum ite_ec_fan_mode {
 };
 
 struct ite_ec_fan_smartconfig {
-	u8 tmpin;	/* select TMPINx (1, 2 or 3)		*/
-	u8 tmp_off;	/* turn fan off below (°C)		*/
-	u8 tmp_start;	/* turn fan on above (°C)		*/
-	u8 tmp_full;	/* 100% duty cycle above (°C)		*/
-	u8 tmp_delta;	/* adapt fan speed when temperature
-			   changed by at least `tmp_delta`°C	*/
-	u8 smoothing;	/* enable smoothing			*/
-	u8 pwm_start;	/* start at this duty cycle (%)		*/
-	u8 slope;	/* increase duty cycle by `slope`%/°C	*/
+	u8 tmpin;	/* select TMPINx (1, 2 or 3)			*/
+	u8 tmp_off;	/* turn fan off below (°C)			*/
+	u8 tmp_start;	/* turn fan on above (°C)			*/
+	u8 tmp_full;	/* 100% duty cycle above (°C)			*/
+	u8 tmp_delta;	/* adapt fan speed when temperature changed by
+			   at least `tmp_delta`°C			*/
+	u8 full_lmt;	/* force fan to full PWM at thermal limit	*/
+	u8 smoothing;	/* enable smoothing				*/
+	u8 pwm_start;	/* start at this duty cycle (%)			*/
+	u8 slope;	/* increase duty cycle by `slope`%/°C		*/
 };
 
 struct ite_ec_fan_config {

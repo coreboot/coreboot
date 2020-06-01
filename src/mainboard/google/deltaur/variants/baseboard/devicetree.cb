@@ -89,7 +89,7 @@ chip soc/intel/tigerlake
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[3] = {
-			.speed = I2C_SPEED_STANDARD,
+			.speed = I2C_SPEED_FAST,
 			.early_init = 1,
 		},
 		.i2c[5] = {

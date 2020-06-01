@@ -41,7 +41,6 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 static uint8_t mainboard_smi_ec(void)
 {
 	uint8_t cmd = google_chromeec_get_event();
@@ -65,7 +64,6 @@ static uint8_t mainboard_smi_ec(void)
 
 	return cmd;
 }
-#endif
 
 /*
  * The entire 32-bit ALT_GPIO_SMI register is passed as a parameter. Note, that
@@ -73,13 +71,11 @@ static uint8_t mainboard_smi_ec(void)
  */
 void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 {
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 	if (alt_gpio_smi & (1 << EC_SMI_GPI)) {
 		/* Process all pending events */
 		while (mainboard_smi_ec() != 0)
 			;
 	}
-#endif
 }
 
 void mainboard_smi_sleep(uint8_t slp_typ)
@@ -90,7 +86,6 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case ACPI_S3:
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s3u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
@@ -100,12 +95,10 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-#endif
 		/* Enable wake pin in GPE block. */
 		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case ACPI_S5:
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s5u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
@@ -115,7 +108,6 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-#endif
 
 		/* Disabling wake from SUS_GPIO1 (TOUCH INT) and
 		 * SUS_GPIO7 (TRACKPAD INT) in North bank as they are not
@@ -129,7 +121,6 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		break;
 	}
 
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Disable SCI and SMI events */
 	google_chromeec_set_smi_mask(0);
 	google_chromeec_set_sci_mask(0);
@@ -142,29 +133,24 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	if ((slp_typ == ACPI_S3) || (slp_typ == ACPI_S5)) {
 		lpc_set_low_power();
 	}
-#endif
 }
 
 int mainboard_smi_apmc(uint8_t apmc)
 {
 	switch (apmc) {
 	case APM_CNT_ACPI_ENABLE:
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0)
 			;
 		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
-#endif
 		break;
 	case APM_CNT_ACPI_DISABLE:
-#if CONFIG(EC_GOOGLE_CHROMEEC)
 		google_chromeec_set_sci_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0)
 			;
 		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
-#endif
 		break;
 	}
 	return 0;

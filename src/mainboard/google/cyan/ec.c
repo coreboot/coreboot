@@ -19,8 +19,7 @@ void mainboard_ec_init(void)
 	printk(BIOS_DEBUG, "mainboard_ec_init\n");
 	post_code(0xf0);
 
-	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		google_chromeec_events_init(&info, acpi_is_wakeup_s3());
+	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
 
 	post_code(0xf1);
 }

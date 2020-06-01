@@ -397,6 +397,7 @@ static void update_mrc_cache_by_type(int type)
 		return;
 
 	if (!mrc_cache_needs_update(&latest_rdev, to_be_updated)) {
+		printk(BIOS_DEBUG, "MRC: '%s' does not need update.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, ALREADY_UPTODATE);
 		return;
 	}
@@ -405,10 +406,13 @@ static void update_mrc_cache_by_type(int type)
 
 	if (region_file_update_data(&cache_file,
 				cbmem_entry_start(to_be_updated),
-				cbmem_entry_size(to_be_updated)) < 0)
+				cbmem_entry_size(to_be_updated)) < 0) {
+		printk(BIOS_DEBUG, "MRC: failed to update '%s'.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, UPDATE_FAILURE);
-	else
+	} else {
+		printk(BIOS_DEBUG, "MRC: updated '%s'.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, UPDATE_SUCCESS);
+	}
 }
 
 /* Read flash status register to determine if write protect is active */

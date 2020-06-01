@@ -555,8 +555,7 @@ static const struct pci_driver lpc_driver __pci_driver = {
 
 static void finalize_chipset(void *unused)
 {
-	printk(BIOS_DEBUG, "Finalizing SMM.\n");
-	outb(APM_CNT_FINALIZE, APM_CNT);
+	apm_control(APM_CNT_FINALIZE);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, finalize_chipset, NULL);

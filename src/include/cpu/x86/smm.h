@@ -29,6 +29,9 @@
 #define APM_CNT_ELOG_GSMI	0xef
 #define APM_STS		0xb3
 
+/* Send cmd to APM_CNT with HAVE_SMI_HANDLER checking. */
+int apm_control(u8 cmd);
+
 void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);
 int mainboard_io_trap_handler(int smif);

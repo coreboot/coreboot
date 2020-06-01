@@ -409,9 +409,7 @@ static void enable_clock_gating(struct device *dev)
 static void pch_set_acpi_mode(void)
 {
 	if (!acpi_is_wakeup_s3() && CONFIG(HAVE_SMI_HANDLER)) {
-		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
-		outb(APM_CNT_ACPI_DISABLE, APM_CNT); // Disable ACPI mode
-		printk(BIOS_DEBUG, "done.\n");
+		apm_control(APM_CNT_ACPI_DISABLE); // Disable ACPI mode
 	}
 }
 
@@ -727,7 +725,7 @@ static void lpc_final(struct device *dev)
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
 		    acpi_is_wakeup_s3()) {
-			outb(APM_CNT_FINALIZE, APM_CNT);
+			apm_control(APM_CNT_FINALIZE);
 		}
 	}
 }

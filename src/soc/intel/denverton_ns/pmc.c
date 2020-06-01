@@ -25,9 +25,7 @@ static void pch_power_options(struct device *dev) { /* TODO */ }
 static void pch_set_acpi_mode(void)
 {
 	if (CONFIG(HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
-		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
-		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
-		printk(BIOS_DEBUG, "done.\n");
+		apm_control(APM_CNT_ACPI_DISABLE);
 	}
 }
 

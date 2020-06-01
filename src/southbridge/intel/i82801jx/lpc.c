@@ -349,12 +349,9 @@ static void i82801jx_set_acpi_mode(struct device *dev)
 {
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		if (!acpi_is_wakeup_s3()) {
-			printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
-			outb(APM_CNT_ACPI_DISABLE, APM_CNT); // Disable ACPI mode
-			printk(BIOS_DEBUG, "done.\n");
+			apm_control(APM_CNT_ACPI_DISABLE);
 		} else {
-			printk(BIOS_DEBUG, "S3 wakeup, enabling ACPI via APMC\n");
-			outb(APM_CNT_ACPI_ENABLE, APM_CNT);
+			apm_control(APM_CNT_ACPI_ENABLE);
 		}
 	}
 }

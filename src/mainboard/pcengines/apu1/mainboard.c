@@ -362,8 +362,6 @@ const char *smbios_system_sku(void)
 
 static void mainboard_final(void *chip_info)
 {
-	u32 mmio_base;
-
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Final.\n");
 
 	/*
@@ -371,10 +369,9 @@ static void mainboard_final(void *chip_info)
 	 * LED2/D6/GPIO_190 should be 1
 	 * LED3/D5/GPIO_191 should be 1
 	 */
-	mmio_base = find_gpio_base();
-	configure_gpio(mmio_base, GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
-	configure_gpio(mmio_base, GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
-	configure_gpio(mmio_base, GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	configure_gpio(GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
+	configure_gpio(GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	configure_gpio(GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
 	usb_oc_setup();
 }
 

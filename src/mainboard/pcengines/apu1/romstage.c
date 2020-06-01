@@ -8,8 +8,6 @@
 
 static void early_lpc_init(void)
 {
-	u32 mmio_base;
-
 	/* PC Engines requires system boot when power is applied. This feature is
 	 * controlled in PM_REG 5Bh register. "Always Power On" works by writing a
 	 * value of 05h.
@@ -26,17 +24,16 @@ static void early_lpc_init(void)
 	pm_write8(SB_PMIOA_REGEA, bdata);
 
 	//configure required GPIOs
-	mmio_base = find_gpio_base();
-	configure_gpio(mmio_base, GPIO_10,  GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
-	configure_gpio(mmio_base, GPIO_11,  GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
-	configure_gpio(mmio_base, GPIO_15,  GPIO_FTN_1, GPIO_INPUT);
-	configure_gpio(mmio_base, GPIO_16,  GPIO_FTN_1, GPIO_INPUT);
-	configure_gpio(mmio_base, GPIO_17,  GPIO_FTN_1, GPIO_INPUT);
-	configure_gpio(mmio_base, GPIO_18,  GPIO_FTN_1, GPIO_INPUT);
-	configure_gpio(mmio_base, GPIO_187, GPIO_FTN_1, GPIO_INPUT);
-	configure_gpio(mmio_base, GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
-	configure_gpio(mmio_base, GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
-	configure_gpio(mmio_base, GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
+	configure_gpio(GPIO_10,  GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	configure_gpio(GPIO_11,  GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_HIGH);
+	configure_gpio(GPIO_15,  GPIO_FTN_1, GPIO_INPUT);
+	configure_gpio(GPIO_16,  GPIO_FTN_1, GPIO_INPUT);
+	configure_gpio(GPIO_17,  GPIO_FTN_1, GPIO_INPUT);
+	configure_gpio(GPIO_18,  GPIO_FTN_1, GPIO_INPUT);
+	configure_gpio(GPIO_187, GPIO_FTN_1, GPIO_INPUT);
+	configure_gpio(GPIO_189, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
+	configure_gpio(GPIO_190, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
+	configure_gpio(GPIO_191, GPIO_FTN_1, GPIO_OUTPUT | GPIO_DATA_LOW);
 }
 
 void board_BeforeAgesa(struct sysinfo *cb)

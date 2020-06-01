@@ -5,13 +5,10 @@
 
 #include <stdint.h>
 
-uintptr_t find_gpio_base(void);
-void configure_gpio(uintptr_t base_addr, u8 gpio, u8 iomux_ftn, u8 setting);
-u8 read_gpio(uintptr_t base_addr, u8 gpio);
+void configure_gpio(u8 gpio, u8 iomux_ftn, u8 setting);
+u8 read_gpio(u8 gpio);
 int get_spd_offset(void);
 
-#define IOMUX_OFFSET    0xD00
-#define GPIO_OFFSET     0x100
 #define GPIO_10         10    // PE3 Reset
 #define GPIO_11         11    // PE4 Reset
 #define GPIO_15         15    // board rev strap ms bit

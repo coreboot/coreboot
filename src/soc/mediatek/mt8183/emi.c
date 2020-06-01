@@ -157,7 +157,7 @@ static void set_rank_info_to_conf(const struct sdram_params *params)
 			(is_dual_rank ? 0 : 1) << 12);
 }
 
-static void set_MRR_pinmux_mapping(void)
+void set_mrr_pinmux_mapping(void)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		const u8 *map = phy_mapping[chn];
@@ -182,7 +182,7 @@ static void set_MRR_pinmux_mapping(void)
 static void global_option_init(const struct sdram_params *params)
 {
 	set_rank_info_to_conf(params);
-	set_MRR_pinmux_mapping();
+	set_mrr_pinmux_mapping();
 }
 
 static void set_vcore_voltage(u8 freq_group)

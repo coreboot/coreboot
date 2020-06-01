@@ -11,24 +11,19 @@
 #include <string.h>
 #include <timer.h>
 
-enum {
-	CKE_FIXOFF = 0,
-	CKE_FIXON,
-	CKE_DYNAMIC
-};
-
-static void cke_fix_onoff(int option, u8 chn)
+void dramc_cke_fix_onoff(enum cke_type option, u8 chn)
 {
 	u8 on = 0, off = 0;
 
 	/* if CKE is dynamic, set both CKE fix On and Off as 0 */
 	if (option != CKE_DYNAMIC) {
 		on = option;
-		off = (1 - option);
+		off = 1 - option;
 	}
 
-	clrsetbits32(&ch[chn].ao.ckectrl,
-		(0x1 << 6) | (0x1 << 7), (on << 6) | (off << 7));
+	SET32_BITFIELDS(&ch[chn].ao.ckectrl,
+			CKECTRL_CKEFIXON, on,
+			CKECTRL_CKEFIXOFF, off);
 }
 
 static void dvfs_settings(u8 freq_group)
@@ -296,8 +291,8 @@ static void ddr_phy_pll_setting(u8 chn, u8 freq_group)
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		write32(regs_bak[i].addr, regs_bak[i].value);
 
-	cke_fix_onoff(CKE_DYNAMIC, CHANNEL_A);
-	cke_fix_onoff(CKE_DYNAMIC, CHANNEL_B);
+	dramc_cke_fix_onoff(CKE_DYNAMIC, CHANNEL_A);
+	dramc_cke_fix_onoff(CKE_DYNAMIC, CHANNEL_B);
 
 	if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600) {
 		setbits32(&ch[chn].phy.shu[0].pll[5], 0x1 << 0);
@@ -522,6 +517,19 @@ static void update_initial_settings(u8 freq_group)
 		(0x1 << 31) | (0xa << 21) | (0xa << 26));
 	setbits32(&ch[0].ao.ckectrl, 0x1 << 23);
 	clrbits32(&ch[0].ao.shu[0].rodtenstb, 0x1 << 31);
+
+	/* CA prebit shift and delay */
+	SET32_BITFIELDS(&ch[0].ao.shu[0].selph_ca7,
+		SHU_SELPH_CA7_DLY_RA0, 0x0,
+		SHU_SELPH_CA7_DLY_RA1, 0x0,
+		SHU_SELPH_CA7_DLY_RA2, 0x0,
+		SHU_SELPH_CA7_DLY_RA3, 0x0,
+		SHU_SELPH_CA7_DLY_RA4, 0x0,
+		SHU_SELPH_CA7_DLY_RA5, 0x0);
+	SET32_BITFIELDS(&ch[0].phy.shu[0].rk[0].ca_cmd[9],
+		SHU1_R0_CA_CMD9_RG_RK0_ARPI_CMD, 0x20);
+	SET32_BITFIELDS(&ch[0].phy.shu[0].rk[1].ca_cmd[9],
+		SHU1_R1_CA_CMD9_RG_RK1_ARPI_CMD, 0x20);
 }
 
 static void dramc_power_on_sequence(void)
@@ -529,8 +537,8 @@ static void dramc_power_on_sequence(void)
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
 		clrbits32(&ch[chn].phy.misc_ctrl1, 0x1 << 13);
 
-	dramc_cke_fix_onoff(CHANNEL_A, false, true);
-	dramc_cke_fix_onoff(CHANNEL_B, false, true);
+	dramc_cke_fix_onoff(CKE_FIXOFF, CHANNEL_A);
+	dramc_cke_fix_onoff(CKE_FIXOFF, CHANNEL_B);
 
 	udelay(200);
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
@@ -540,8 +548,8 @@ static void dramc_power_on_sequence(void)
 		setbits32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
 
 	udelay(2000);
-	dramc_cke_fix_onoff(CHANNEL_A, true, false);
-	dramc_cke_fix_onoff(CHANNEL_B, true, false);
+	dramc_cke_fix_onoff(CKE_FIXON, CHANNEL_A);
+	dramc_cke_fix_onoff(CKE_FIXON, CHANNEL_B);
 	udelay(2);
 }
 
@@ -698,7 +706,7 @@ static u8 dramc_zq_calibration(u8 chn, u8 rank)
 		regs_bak[i].value = read32(regs_bak[i].addr);
 
 	setbits32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
-	dramc_cke_fix_onoff(chn, true, false);
+	dramc_cke_fix_onoff(CKE_FIXON, chn);
 
 	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, rank);
 	SET32_BITFIELDS(&ch[chn].ao.mpc_option, MPC_OPTION_MPCRKEN, 1);
@@ -842,8 +850,8 @@ static void auto_refresh_cke_off(void)
 		setbits32(&ch[chn].ao.refctrl0, 0x1 << 29);
 
 	udelay(3);
-	cke_fix_onoff(CKE_FIXOFF, CHANNEL_A);
-	cke_fix_onoff(CKE_FIXOFF, CHANNEL_B);
+	dramc_cke_fix_onoff(CKE_FIXOFF, CHANNEL_A);
+	dramc_cke_fix_onoff(CKE_FIXOFF, CHANNEL_B);
 
 	dramc_set_broadcast(broadcast_bak);
 }

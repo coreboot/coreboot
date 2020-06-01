@@ -27,6 +27,7 @@ struct sdram_params {
 	u8 cbt_clk_dly[CHANNEL_MAX][RANK_MAX];
 	u8 cbt_cmd_dly[CHANNEL_MAX][RANK_MAX];
 	u8 cbt_cs_dly[CHANNEL_MAX][RANK_MAX];
+	u8 cbt_ca_perbit_delay[CHANNEL_MAX][RANK_MAX][DQS_BIT_NUMBER];
 
 	/* Gating */
 	u8 gating2T[CHANNEL_MAX][RANK_MAX][DQS_NUMBER];

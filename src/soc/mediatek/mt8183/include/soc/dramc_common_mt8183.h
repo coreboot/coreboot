@@ -29,6 +29,7 @@ enum dram_odt_type {
 };
 
 enum {
+	CA_NUM_LP4 = 6,
 	DQ_DATA_WIDTH = 16,
 	DQS_BIT_NUMBER = 8,
 	DQS_NUMBER = (DQ_DATA_WIDTH / DQS_BIT_NUMBER)

@@ -7,8 +7,10 @@
 #include <FchPlatform.h>
 #include "gpio_ftns.h"
 
-static u32 gpio_read_wrapper(u32 gpio)
+static u32 gpio_read_wrapper(u32 iomux_gpio)
 {
+	u32 gpio = iomux_gpio << 2;
+
 	if (gpio < 0x100)
 		return gpio0_read32(gpio & 0xff);
 	else if (gpio >= 0x100 && gpio < 0x200)
@@ -19,8 +21,10 @@ static u32 gpio_read_wrapper(u32 gpio)
 	die("Invalid GPIO");
 }
 
-static void gpio_write_wrapper(u32 gpio, u32 setting)
+static void gpio_write_wrapper(u32 iomux_gpio, u32 setting)
 {
+	u32 gpio = iomux_gpio << 2;
+
 	if (gpio < 0x100)
 		gpio0_write32(gpio & 0xff, setting);
 	else if (gpio >= 0x100 && gpio < 0x200)
@@ -29,7 +33,7 @@ static void gpio_write_wrapper(u32 gpio, u32 setting)
 		gpio2_write32(gpio & 0xff, setting);
 }
 
-void configure_gpio(u8 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
+void configure_gpio(u32 gpio, u8 iomux_ftn, u32 setting)
 {
 	u32 bdata;
 
@@ -43,7 +47,7 @@ void configure_gpio(u8 iomux_gpio, u8 iomux_ftn, u32 gpio, u32 setting)
 			| GPIO_PULL_UP_ENABLE | GPIO_PULL_DOWN_ENABLE));
 	gpio_write_wrapper(gpio, bdata);
 
-	iomux_write8(iomux_gpio, iomux_ftn & 0x3);
+	iomux_write8(gpio, iomux_ftn & 0x3);
 }
 
 u8 read_gpio(u32 gpio)

@@ -69,7 +69,7 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pmc_init(void *unused)
+static void pmc_init(struct device *dev)
 {
 	const config_t *config = config_of_soc();
 
@@ -85,11 +85,21 @@ static void pmc_init(void *unused)
 	config_deep_sx(config->deep_sx_config);
 }
 
-/*
-* Initialize PMC controller.
-*
-* PMC controller gets hidden from PCI bus during FSP-Silicon init call.
-* Hence PCI enumeration can't be used to initialize bus device and
-* allocate resources.
-*/
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, pmc_init, NULL);
+static void soc_pmc_read_resources(struct device *dev)
+{
+	struct resource *res;
+
+	mmio_resource(dev, 0, PCH_PWRM_BASE_ADDRESS / KiB, PCH_PWRM_BASE_SIZE / KiB);
+
+	res = new_resource(dev, 1);
+	res->base = (resource_t)ACPI_BASE_ADDRESS;
+	res->size = (resource_t)ACPI_BASE_SIZE;
+	res->limit = res->base + res->size + 1;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+struct device_operations pmc_ops = {
+	.read_resources		= soc_pmc_read_resources,
+	.set_resources		= noop_set_resources,
+	.enable			= pmc_init,
+};

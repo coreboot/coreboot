@@ -801,7 +801,17 @@ typedef struct {
 
 /** Offset 0x05C1 - Reserved
 **/
-  UINT8                       Reserved30[109];
+  UINT8                       Reserved30[102];
+
+/** Offset 0x0627 - Rank Margin Tool Per Bit
+  Enable/Disable Rank Margin Tool Per Bit
+  $EN_DIS
+**/
+  UINT8                       RMTBIT;
+
+/** Offset 0x0628 - Reserved
+**/
+  UINT8                       Reserved31[6];
 
 /** Offset 0x062E - Ch Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
@@ -811,7 +821,7 @@ typedef struct {
 
 /** Offset 0x0630 - Reserved
 **/
-  UINT8                      Reserved31[62];
+  UINT8                      Reserved32[62];
 
 /** Offset 0x066E - PcdSerialDebugLevel
   Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
@@ -824,7 +834,7 @@ typedef struct {
 
 /** Offset 0x066F - Reserved
 **/
-  UINT8                       Reserved32[2];
+  UINT8                       Reserved33[2];
 
 /** Offset 0x0671 - Safe Mode Support
   This option configures the varous items in the IO and MC to be more conservative.(def=Disable)
@@ -834,7 +844,7 @@ typedef struct {
 
 /** Offset 0x0672 - Reserved
 **/
-  UINT8                       Reserved33[2];
+  UINT8                       Reserved34[2];
 
 /** Offset 0x0674 - TCSS USB Port Enable
   Bitmap for per port enabling
@@ -843,7 +853,17 @@ typedef struct {
 
 /** Offset 0x0675 - Reserved
 **/
-  UINT8                       Reserved34[80];
+  UINT8                       Reserved35[71];
+
+/** Offset 0x06BC - Command Pins Mirrored
+  BitMask where bits [3:0] are Controller 0 Channel [3:0] and bits [7:4] are Controller
+  1 Channel [3:0]. 0 = No Command Mirror and 1 = Command Mirror.
+**/
+  UINT32                      CmdMirror[1];
+
+/** Offset 0x06C0 - Reserved
+**/
+  UINT8                       Reserved36[5];
 
 /** Offset 0x06C5 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -854,7 +874,7 @@ typedef struct {
 
 /** Offset 0x06C6 - Reserved
 **/
-  UINT8                       Reserved35[2];
+  UINT8                       Reserved37[2];
 
 /** Offset 0x06C8 - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
@@ -864,7 +884,7 @@ typedef struct {
 
 /** Offset 0x06C9 - Reserved
 **/
-  UINT8                       Reserved36[122];
+  UINT8                       Reserved38[122];
 
 /** Offset 0x0743 - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
@@ -874,7 +894,7 @@ typedef struct {
 
 /** Offset 0x0744 - Reserved
 **/
-  UINT8                       Reserved37[3];
+  UINT8                       Reserved39[3];
 
 /** Offset 0x0747 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
@@ -883,7 +903,7 @@ typedef struct {
 
 /** Offset 0x0749 - Reserved
 **/
-  UINT8                       Reserved38[3];
+  UINT8                       Reserved40[3];
 
 /** Offset 0x074C - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -903,7 +923,7 @@ typedef struct {
 
 /** Offset 0x075D - Reserved
 **/
-  UINT8                       Reserved39[3];
+  UINT8                       Reserved41[3];
 
 /** Offset 0x0760 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
@@ -940,7 +960,7 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved40[297];
+  UINT8                       Reserved42[297];
 
 /** Offset 0x089E - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
@@ -951,7 +971,7 @@ typedef struct {
 
 /** Offset 0x089F - Reserved
 **/
-  UINT8                       Reserved41[121];
+  UINT8                       Reserved43[121];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

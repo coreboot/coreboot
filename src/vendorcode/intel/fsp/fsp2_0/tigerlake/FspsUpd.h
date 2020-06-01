@@ -727,7 +727,12 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved40[50];
+  UINT8                       Reserved40[42];
+
+/** Offset 0x0885 - Enable SATA Port Enable Dito Config
+  Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
+**/
+  UINT8                       SataPortsEnableDitoConfig[8];
 
 /** Offset 0x088D - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
@@ -879,7 +884,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved52[224];
+  UINT8                       Reserved52[232];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -894,11 +899,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0E90
+/** Offset 0x0E98
 **/
   UINT8                       UnusedUpdSpace36[6];
 
-/** Offset 0x0E96
+/** Offset 0x0E9E
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -2,7 +2,8 @@
 
 Device (TCHG)
 {
-	Name (_HID, "INT3403")
+	Name (_HID, DPTF_GEN_DEVICE)
+
 	Name (_UID, 0)
 	Name (PTYP, 0x0B)
 	Name (_STR, Unicode("Battery Charger"))

@@ -2,7 +2,8 @@
 
 Device (TFN1)
 {
-	Name (_HID, "INT3404")
+	Name (_HID, DPTF_FAN_DEVICE)
+
 	Name (_UID, 0)
 	Name (_STR, Unicode("Fan Control"))
 

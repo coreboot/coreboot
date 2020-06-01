@@ -1,8 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* Include common dptf ASL files */
+#include <soc/intel/common/acpi/dptf.asl>
+
 Device (DPTF)
 {
-	Name (_HID, EISAID ("INT3400"))
+	Name (_HID, DPTF_DPTF_DEVICE)
+
 	Name (_UID, 0)
 
 	Name (IDSP, Package()

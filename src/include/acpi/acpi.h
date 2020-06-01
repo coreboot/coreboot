@@ -1054,6 +1054,6 @@ static inline uintptr_t acpi_align_current(uintptr_t current)
  * coreboot default ACPI spec version supported. */
 int get_acpi_table_revision(enum acpi_tables table);
 
-#endif  // !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMC__)
+#endif  // !defined(__ASSEMBLER__) && !defined(__ACPI__)
 
 #endif  /* __ACPI_ACPI_H__ */

@@ -130,17 +130,16 @@ Device (MCHC)
 	External (\_SB.CP00._PSS)
 	Method (PSSS, 1, NotSerialized)
 	{
-		Store (One, Local0) /* Start at P1 */
-		Store (SizeOf (\_SB.CP00._PSS), Local1)
+		Local0 = 1 /* Start at P1 */
+		Local1 = SizeOf (\_SB.CP00._PSS)
 
-		While (LLess (Local0, Local1)) {
+		While (Local0 < Local1) {
 			/* Store _PSS entry Control value to Local2 */
-			ShiftRight (DeRefOf (Index (DeRefOf (Index
-			      (\_SB.CP00._PSS, Local0)), 4)), 8, Local2)
-			If (LEqual (Local2, Arg0)) {
-				Return (Subtract (Local0, 1))
+			Local2 = DeRefOf (Index (DeRefOf (Index (\_SB.CP00._PSS, Local0)), 4)) >> 8
+			If (Local2 == Arg0) {
+				Return (Local0 - 1)
 			}
-			Increment (Local0)
+			Local0++
 		}
 
 		Return (0)
@@ -160,23 +159,23 @@ Device (MCHC)
 		Store ("Set TDP Down", Debug)
 
 		/* Set CTC */
-		Store (CTCD, CTCS)
+		CTCS = CTCD
 
 		/* Set TAR */
-		Store (TARD, TARS)
+		TARS = TARD
 
 		/* Set PPC limit and notify OS */
-		Store (PSSS (TARD), PPCM)
+		PPCM = PSSS (TARD)
 		PPCN ()
 
 		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDD, 125), 100, , PL2V)
+		PL2V = (CTDD * 125) / 100
 
 		/* Set PL1 */
-		Store (CTDD, PL1V)
+		PL1V = CTDD
 
 		/* Store the new TDP Down setting */
-		Store (CTCD, CTCC)
+		CTCC = CTCD
 
 		Release (CTCM)
 		Return (1)
@@ -196,23 +195,23 @@ Device (MCHC)
 		Store ("Set TDP Nominal", Debug)
 
 		/* Set PL1 */
-		Store (CTDN, PL1V)
+		PL1V = CTDN
 
 		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDN, 125), 100, , PL2V)
+		PL2V = (CTDN * 125) / 100
 
 		/* Set PPC limit and notify OS */
-		Store (PSSS (TARN), PPCM)
+		PPCM = PSSS (TARN)
 		PPCN ()
 
 		/* Set TAR */
-		Store (TARN, TARS)
+		TARS = TARN
 
 		/* Set CTC */
-		Store (CTCN, CTCS)
+		CTCS = CTCN
 
 		/* Store the new TDP Nominal setting */
-		Store (CTCN, CTCC)
+		CTCC = CTCN
 
 		Release (CTCM)
 		Return (1)
@@ -343,18 +342,18 @@ Method (_CRS, 0, Serialized)
 
 	// Fix up PCI memory region
 	// Start with Top of Lower Usable DRAM
-	Store (^MCHC.TLUD, Local0)
-	Store (^MCHC.MEBA, Local1)
+	Local0 = ^MCHC.TLUD
+	Local1 = ^MCHC.MEBA
 
 	// Check if ME base is equal
-	If (LEqual (Local0, Local1)) {
+	If (Local0 == Local1) {
 		// Use Top Of Memory instead
-		Store (^MCHC.TOM, Local0)
+		Local0 = ^MCHC.TOM
 	}
 
-	Store (Local0, PMIN)
-	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
-	Add(Subtract(PMAX, PMIN), 1, PLEN)
+	PMIN = Local0
+	PMAX = CONFIG_MMCONF_BASE_ADDRESS - 1
+	PLEN = PMAX - PMIN + 1
 
 	Return (MCRS)
 }

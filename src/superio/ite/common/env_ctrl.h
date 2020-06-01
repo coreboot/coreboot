@@ -129,6 +129,7 @@
 #define   ITE_EC_ADC_TEMP_RESISTOR_MODE(x)	(1 << ((x)+2))
 #define   ITE_EC_ADC_TEMP_DIODE_MODE(x)		(1 << ((x)-1))
 #define ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE	0x55
+#define   ITE_EC_ADC_TEMP_EXTRA_TMPIN3_EXT	(1 << 7)
 
 /* Matches length of ITE_EC_TMPIN_CNT */
 static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };

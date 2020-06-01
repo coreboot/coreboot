@@ -61,17 +61,40 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 			 const struct ite_ec_thermal_config *const conf)
 {
 	u8 reg;
+	u8 reg_extra;
 
 	reg = pnp_read_hwm5_index(base, ITE_EC_ADC_TEMP_CHANNEL_ENABLE);
+	reg_extra = pnp_read_hwm5_index(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE);
 
 	switch (conf->mode) {
 	case THERMAL_PECI:
-		if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK) {
-			printk(BIOS_WARNING, "PECI specified for multiple TMPIN\n");
+		/* Some chips can set any TMPIN as the target for PECI readings
+		   while others can only read to TMPIN3. In the latter case a
+		   different register is used for enabling it. */
+		if (CONFIG(SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN)) {
+			/* IT8721F is an exception, it cannot use TMPIN2 for PECI. */
+			if (CONFIG(SUPERIO_ITE_IT8721F) && tmpin == 2) {
+				printk(BIOS_WARNING,
+				       "PECI to TMPIN2 not supported on IT8721F\n");
+				return;
+			}
+			if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK) {
+				printk(BIOS_WARNING,
+				       "PECI specified for multiple TMPIN\n");
+				return;
+			}
+			reg |= ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+		} else if (tmpin == 3) {
+			reg_extra |= ITE_EC_ADC_TEMP_EXTRA_TMPIN3_EXT;
+			pnp_write_hwm5_index(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE,
+					     reg_extra);
+		} else {
+			printk(BIOS_WARNING, "PECI to TMPIN%d not supported on this Super I/O",
+			       tmpin);
 			return;
 		}
 		enable_peci(base);
-		reg |= ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+
 		break;
 	case THERMAL_DIODE:
 		reg |= ITE_EC_ADC_TEMP_DIODE_MODE(tmpin);

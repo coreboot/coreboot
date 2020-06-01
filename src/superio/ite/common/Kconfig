@@ -42,4 +42,10 @@ config SUPERIO_ITE_ENV_CTRL_7BIT_SLOPE_REG
 	  Slope PWM registers have no separate BIT6 and are set directly by
 	  7-bit values instead.
 
+config SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN
+	bool
+	help
+	  Temperature can be read to any TMPIN from an external sensor via SST/PECI
+	  (instead of TMPIN3 only).
+
 endif

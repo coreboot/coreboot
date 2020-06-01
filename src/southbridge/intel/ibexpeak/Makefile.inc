@@ -28,7 +28,6 @@ ramstage-y += madt.c
 smm-y += smihandler.c me.c ../bd82x6x/me_8.x.c
 
 romstage-y += early_pch.c
-romstage-y += early_smbus.c
 romstage-y +=../bd82x6x/early_me.c
 romstage-y +=../bd82x6x/me_status.c
 romstage-y += early_thermal.c

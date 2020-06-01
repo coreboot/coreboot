@@ -194,7 +194,7 @@ struct soc_amd_gpio *variant_base_gpio_table(size_t *size)
  * calls it was modified so that when this function returns NULL then the
  * caller does nothing.
  */
-const __weak struct sci_source *get_gpe_table(size_t *num)
+const __weak struct sci_source *variant_gpe_table(size_t *num)
 {
 	return NULL;
 }

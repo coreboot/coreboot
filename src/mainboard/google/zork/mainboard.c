@@ -160,7 +160,7 @@ static void mainboard_init(void *chip_info)
 	 * For boards that only have GPIO generated events, table gpe_table[]
 	 * must be removed, and get_gpe_table() should return NULL.
 	 */
-	gpes = get_gpe_table(&num);
+	gpes = variant_gpe_table(&num);
 	if (gpes != NULL)
 		gpe_configure_sci(gpes, num);
 }

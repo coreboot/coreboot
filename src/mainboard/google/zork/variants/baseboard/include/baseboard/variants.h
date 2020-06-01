@@ -10,7 +10,7 @@
 #include <soc/platform_descriptors.h>
 #include "chip.h"
 
-const struct sci_source *get_gpe_table(size_t *num);
+const struct sci_source *variant_gpe_table(size_t *num);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 /*

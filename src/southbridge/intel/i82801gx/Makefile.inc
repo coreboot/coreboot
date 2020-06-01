@@ -23,7 +23,6 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 smm-y += smihandler.c
 
 romstage-y += early_init.c
-romstage-y += early_smbus.c
 romstage-y += early_cir.c
 
 endif

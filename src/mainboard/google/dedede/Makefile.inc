@@ -10,7 +10,7 @@ ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-y += board_info.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 subdirs-y += variants/baseboard
 subdirs-y += spd

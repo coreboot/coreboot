@@ -72,6 +72,7 @@ config MAINBOARD_PART_NUMBER
 	default "Terrador" if BOARD_GOOGLE_TERRADOR
 	default "Trondo" if BOARD_GOOGLE_TRONDO
 	default "Volteer" if BOARD_GOOGLE_VOLTEER
+	default "Voxel" if BOARD_GOOGLE_VOXEL
 
 config MAX_CPUS
 	int
@@ -103,6 +104,7 @@ config VARIANT_DIR
 	default "terrador" if BOARD_GOOGLE_TERRADOR
 	default "trondo" if BOARD_GOOGLE_TRONDO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
+	default "voxel" if BOARD_GOOGLE_VOXEL
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

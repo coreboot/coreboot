@@ -33,7 +33,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	printk(BIOS_DEBUG, "ACPI_BLK_BASE: 0x%04x\n", ACPI_BLK_BASE);
 
-	fadt->preferred_pm_profile = PM_DESKTOP;
 	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 - ACPI SCI */
 
 	val = PM1_EVT_BLK_ADDRESS;

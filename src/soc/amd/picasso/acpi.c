@@ -89,7 +89,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
 
-	fadt->preferred_pm_profile = PM_UNSPECIFIED;
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
 	if (permanent_smi_handler()) {

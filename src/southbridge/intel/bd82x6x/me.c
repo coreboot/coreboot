@@ -234,8 +234,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	return mei_wait_for_me_ready();
 }
 
-static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
-			void *rsp_data, int rsp_bytes)
+static int mei_recv_msg(struct mkhi_header *mkhi, void *rsp_data, int rsp_bytes)
 {
 	struct mei_header mei_rsp;
 	struct mkhi_header mkhi_rsp;
@@ -279,7 +278,8 @@ static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	if (mei_rsp.length & 3)
 		ndata++;
 	if (ndata != (expected - 1)) {
-		printk(BIOS_ERR, "ME: response is missing data\n");
+		printk(BIOS_ERR, "ME: response is missing data %d != %d\n",
+		       ndata, (expected - 1));
 		return -1;
 	}
 
@@ -322,7 +322,7 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 {
 	if (mei_send_msg(mei, mkhi, req_data) < 0)
 		return -1;
-	if (mei_recv_msg(mei, mkhi, rsp_data, rsp_bytes) < 0)
+	if (mei_recv_msg(mkhi, rsp_data, rsp_bytes) < 0)
 		return -1;
 	return 0;
 }

@@ -234,13 +234,12 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	return mei_wait_for_me_ready();
 }
 
-static int mei_recv_msg(struct mkhi_header *mkhi,
-			void *rsp_data, int rsp_bytes)
+static int mei_recv_msg(struct mkhi_header *mkhi, void *rsp_data, int rsp_bytes)
 {
 	struct mei_header mei_rsp;
 	struct mkhi_header mkhi_rsp;
 	struct mei_csr me, host;
-	unsigned int ndata, n/*, me_data_len*/;
+	unsigned int ndata, n;
 	unsigned int expected;
 	u32 *data;
 

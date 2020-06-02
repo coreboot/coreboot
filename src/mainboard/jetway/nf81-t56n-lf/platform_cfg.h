@@ -226,18 +226,4 @@ static const CODECTBLLIST codec_tablelist[] =
  */
 #define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
 
-/* set up an ACPI preferred power management profile */
-/*  from acpi.h
- *	PM_UNSPECIFIED          = 0,
- *	PM_DESKTOP              = 1,
- *	PM_MOBILE               = 2,
- *	PM_WORKSTATION          = 3,
- *	PM_ENTERPRISE_SERVER    = 4,
- *	PM_SOHO_SERVER          = 5,
- *	PM_APPLIANCE_PC         = 6,
- *	PM_PERFORMANCE_SERVER   = 7,
- *	PM_TABLET               = 8
- */
-#define FADT_PM_PROFILE 1
-
 #endif /* _PLATFORM_CFG_H_ */

@@ -26,14 +26,14 @@ static void max98357a_fill_ssdt(const struct device *dev)
 	if (!scope || !name)
 		return;
 
-	/* Device */
-	acpigen_write_scope(scope);
-	acpigen_write_device(name);
-
 	if (!config->hid) {
 		printk(BIOS_ERR, "%s: ERROR: _HID required\n", dev_path(dev));
 		return;
 	}
+
+	/* Device */
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
 
 	acpigen_write_name_string("_HID", config->hid);
 	acpigen_write_name_integer("_UID", 0);

@@ -1,15 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 
 #include <types.h>
-#include <device/device.h>
-#include <device/pci_def.h>
 #include <console/console.h>
-#include <acpi/acpi.h>
-#include <device/pci.h>
-#include <ec/google/chromeec/ec.h>
-#include <cpu/x86/tsc.h>
-#include <cpu/x86/msr.h>
-#include <edid.h>
 #include <drivers/intel/gma/i915.h>
 
 /* HDMI/DVI modes ignore everything but the last 2 items. So we share

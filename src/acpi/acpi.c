@@ -1222,7 +1222,7 @@ void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
 #if CONFIG(COMMON_FADT)
 
 __weak void soc_fill_fadt(acpi_fadt_t *fadt) { }
-__weak void motherboard_fill_fadt(acpi_fadt_t *fadt) { }
+__weak void mainboard_fill_fadt(acpi_fadt_t *fadt) { }
 
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
@@ -1261,7 +1261,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	acpi_fill_fadt(fadt);
 
 	soc_fill_fadt(fadt);
-	motherboard_fill_fadt(fadt);
+	mainboard_fill_fadt(fadt);
 
 	header->checksum =
 	    acpi_checksum((void *) fadt, header->length);

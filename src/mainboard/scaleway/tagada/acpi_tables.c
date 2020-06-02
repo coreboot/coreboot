@@ -23,7 +23,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->tpmp = 0;
 }
 
-void motherboard_fill_fadt(acpi_fadt_t *fadt)
+void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {
 	fadt->preferred_pm_profile = PM_ENTERPRISE_SERVER;
 }

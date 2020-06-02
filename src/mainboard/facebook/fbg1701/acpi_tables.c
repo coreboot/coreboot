@@ -38,7 +38,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-void motherboard_fill_fadt(acpi_fadt_t *fadt)
+void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {
 	fadt->preferred_pm_profile = PM_MOBILE;
 	fadt->iapc_boot_arch &= ~ACPI_FADT_8042;

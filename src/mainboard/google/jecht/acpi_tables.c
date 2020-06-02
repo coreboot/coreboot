@@ -37,7 +37,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
-void motherboard_fill_fadt(acpi_fadt_t *fadt)
+void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {
 	fadt->preferred_pm_profile = PM_MOBILE;
 }

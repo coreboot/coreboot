@@ -88,7 +88,7 @@ static void ipmi_kcs_init(struct device *dev)
 	if (conf && conf->wait_for_bmc && conf->bmc_boot_timeout) {
 		struct stopwatch sw;
 		stopwatch_init_msecs_expire(&sw, conf->bmc_boot_timeout * 1000);
-		printk(BIOS_DEBUG, "IPMI: Waiting for BMC...\n");
+		printk(BIOS_INFO, "IPMI: Waiting for BMC...\n");
 
 		while (!stopwatch_expired(&sw)) {
 			if (inb(dev->path.pnp.port) != 0xff)

@@ -347,12 +347,10 @@ static void enable_clock_gating(void)
 
 static void i82801jx_set_acpi_mode(struct device *dev)
 {
-	if (CONFIG(HAVE_SMI_HANDLER)) {
-		if (!acpi_is_wakeup_s3()) {
-			apm_control(APM_CNT_ACPI_DISABLE);
-		} else {
-			apm_control(APM_CNT_ACPI_ENABLE);
-		}
+	if (!acpi_is_wakeup_s3()) {
+		apm_control(APM_CNT_ACPI_DISABLE);
+	} else {
+		apm_control(APM_CNT_ACPI_ENABLE);
 	}
 }
 

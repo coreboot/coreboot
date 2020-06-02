@@ -404,7 +404,7 @@ static void enable_clock_gating(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-	if (!acpi_is_wakeup_s3() && CONFIG(HAVE_SMI_HANDLER)) {
+	if (!acpi_is_wakeup_s3()) {
 		apm_control(APM_CNT_ACPI_DISABLE);
 	}
 }
@@ -822,11 +822,9 @@ static void lpc_final(struct device *dev)
 	spi_finalize_ops();
 
 	/* Call SMM finalize() handlers before resume */
-	if (CONFIG(HAVE_SMI_HANDLER)) {
-		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
-		    acpi_is_wakeup_s3()) {
-			apm_control(APM_CNT_FINALIZE);
-		}
+	if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
+	    acpi_is_wakeup_s3()) {
+		apm_control(APM_CNT_FINALIZE);
 	}
 }
 

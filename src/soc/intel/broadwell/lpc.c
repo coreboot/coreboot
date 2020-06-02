@@ -409,7 +409,7 @@ static void pch_cg_init(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-	if (CONFIG(HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
+	if (!acpi_is_wakeup_s3()) {
 		apm_control(APM_CNT_ACPI_DISABLE);
 	}
 }

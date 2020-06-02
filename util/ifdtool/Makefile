@@ -4,7 +4,7 @@
 
 PROGRAM = ifdtool
 
-CC      = gcc
+CC     ?= gcc
 INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -Werror

@@ -8,7 +8,7 @@
 
 PROGRAM = nvramtool
 
-CC      = gcc
+CC     ?= gcc
 INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -I. -DCMOS_HAL=1

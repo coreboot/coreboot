@@ -339,6 +339,18 @@ void acpigen_write_scope(const char *name)
 	acpigen_emit_namestring(name);
 }
 
+void acpigen_get_package_op_element(uint8_t package_op, unsigned int element, uint8_t dest_op)
+{
+	/* <dest_op> = DeRefOf (<package_op>[<element]) */
+	acpigen_write_store();
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_byte(package_op);
+	acpigen_write_integer(element);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+	acpigen_emit_byte(dest_op);
+}
+
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
@@ -1269,6 +1281,20 @@ void acpigen_write_if_and(uint8_t arg1, uint8_t arg2)
 }
 
 /*
+ * Generates ACPI code for checking if operand1 and operand2 are equal.
+ * Both operand1 and operand2 are ACPI ops.
+ *
+ * If (Lequal (op,1 op2))
+ */
+void acpigen_write_if_lequal_op_op(uint8_t op1, uint8_t op2)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(op1);
+	acpigen_emit_byte(op2);
+}
+
+/*
  * Generates ACPI code for checking if operand1 and operand2 are equal, where,
  * operand1 is ACPI op and operand2 is an integer.
  *
@@ -1339,6 +1365,12 @@ void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size)
 void acpigen_write_return_singleton_buffer(uint8_t arg)
 {
 	acpigen_write_return_byte_buffer(&arg, 1);
+}
+
+void acpigen_write_return_op(uint8_t arg)
+{
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(arg);
 }
 
 void acpigen_write_return_byte(uint8_t arg)
@@ -1785,6 +1817,14 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 void acpigen_get_rx_gpio(struct acpi_gpio *gpio)
 {
 	acpigen_soc_read_rx_gpio(gpio->pins[0]);
+
+	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
+}
+
+void acpigen_get_tx_gpio(struct acpi_gpio *gpio)
+{
+	acpigen_soc_get_tx_gpio(gpio->pins[0]);
 
 	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
 		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);

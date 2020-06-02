@@ -43,22 +43,22 @@ Device (SBUS)
 	// Kill all SMBus communication
 	Method (KILL, 0, Serialized)
 	{
-		Or (HCNT, 0x02, HCNT)	// Send Kill
-		Or (HSTS, 0xff, HSTS)	// Clean Status
+		HCNT |= 0x02	// Send Kill
+		HSTS |= 0xff	// Clean Status
 	}
 
 	// Check if last operation completed
 	// return	Failure = 0, Success = 1
 	Method (CMPL, 0, Serialized)
 	{
-		Store (4000, Local0)		// Timeout 200ms in 50us steps
+		Local0 = 4000		// Timeout 200ms in 50us steps
 		While (Local0) {
-			If (And(HSTS, 0x02)) {	// Completion Status?
+			If (HSTS & 0x02) {	// Completion Status?
 				Return (1)	// Operation Completed
 			} Else {
 				Stall (50)
-				Decrement (Local0)
-				If (LEqual(Local0, 0)) {
+				Local0--
+				If (Local0 == 0) {
 					KILL()
 				}
 			}
@@ -71,25 +71,25 @@ Device (SBUS)
 	// Wait for SMBus to become ready
 	Method (SRDY, 0, Serialized)
 	{
-		Store (200, Local0)	// Timeout 200ms
+		Local0 = 200	// Timeout 200ms
 		While (Local0) {
-			If (And(HSTS, 0x40)) {		// IN_USE?
+			If (HSTS & 0x40) {		// IN_USE?
 				Sleep(1)		// Wait 1ms
-				Decrement(Local0)	// timeout--
-				If (LEqual(Local0, 0)) {
+				Local0--	// timeout--
+				If (Local0 == 0) {
 					Return (1)
 				}
 			} Else {
-				Store (0, Local0)	// We're ready
+				Local0 = 0	// We're ready
 			}
 		}
 
-		Store (4000, Local0)	// Timeout 200ms (50us * 4000)
+		Local0 = 4000	// Timeout 200ms (50us * 4000)
 		While (Local0) {
-			If (And (HSTS, 0x01)) {		// Host Busy?
+			If (HSTS & 0x01) {		// Host Busy?
 				Stall(50)		// Wait 50us
-				Decrement(Local0)	// timeout--
-				If (LEqual(Local0, 0)) {
+				Local0--	// timeout--
+				If (Local0 == 0) {
 					KILL()
 				}
 			} Else {
@@ -114,15 +114,15 @@ Device (SBUS)
 		}
 
 		// Send Byte
-		Store (0, I2CE)		// SMBus Enable
-		Store (0xbf, HSTS)
-		Store (Arg0, TXSA)	// Write Address
-		Store (Arg1, HCMD)	// Write Data
+		I2CE = 0		// SMBus Enable
+		HSTS = 0xbf
+		TXSA = Arg0	// Write Address
+		HCMD = Arg1	// Write Data
 
-		Store (0x48, HCNT)	// Start + Byte Data Protocol
+		HCNT = 0x48	// Start + Byte Data Protocol
 
 		If (CMPL()) {
-			Or (HSTS, 0xff, HSTS)	// Clean up
+			HSTS |= 0xff	// Clean up
 			Return (1)		// Success
 		}
 
@@ -143,14 +143,14 @@ Device (SBUS)
 		}
 
 		// Receive Byte
-		Store (0, I2CE)		// SMBus Enable
-		Store (0xbf, HSTS)
-		Store (Or (Arg0, 1), TXSA)	// Write Address
+		I2CE = 0		// SMBus Enable
+		HSTS = 0xbf
+		TXSA = Arg0 | 1	// Write Address
 
-		Store (0x44, HCNT)	// Start
+		HCNT = 0x44	// Start
 
 		If (CMPL()) {
-			Or (HSTS, 0xff, HSTS)	// Clean up
+			HSTS |= 0xff	// Clean up
 			Return (DAT0)		// Success
 		}
 
@@ -173,16 +173,16 @@ Device (SBUS)
 		}
 
 		// Send Byte
-		Store (0, I2CE)		// SMBus Enable
-		Store (0xbf, HSTS)
-		Store (Arg0, TXSA)	// Write Address
-		Store (Arg1, HCMD)	// Write Command
-		Store (Arg2, DAT0)	// Write Data
+		I2CE = 0		// SMBus Enable
+		HSTS = 0xbf
+		TXSA = Arg0	// Write Address
+		HCMD = Arg1	// Write Command
+		DAT0 = Arg2	// Write Data
 
-		Store (0x48, HCNT)	// Start + Byte Protocol
+		HCNT = 0x48	// Start + Byte Protocol
 
 		If (CMPL()) {
-			Or (HSTS, 0xff, HSTS)	// Clean up
+			HSTS |= 0xff	// Clean up
 			Return (1)		// Success
 		}
 
@@ -204,15 +204,15 @@ Device (SBUS)
 		}
 
 		// Receive Byte
-		Store (0, I2CE)			// SMBus Enable
-		Store (0xbf, HSTS)
-		Store (Or (Arg0, 1), TXSA)	// Write Address
-		Store (Arg1, HCMD)		// Command
+		I2CE = 0			// SMBus Enable
+		HSTS = 0xbf
+		TXSA = Arg0 | 1	// Write Address
+		HCMD = Arg1		// Command
 
-		Store (0x48, HCNT)		// Start
+		HCNT = 0x48		// Start
 
 		If (CMPL()) {
-			Or (HSTS, 0xff, HSTS)	// Clean up
+			HSTS |= 0xff	// Clean up
 			Return (DAT0)		// Success
 		}
 

@@ -20,8 +20,8 @@ Field (POST, ByteAcc, Lock, Preserve)
 /* SMI I/O Trap */
 Method(TRAP, 1, Serialized)
 {
-	Store (Arg0, SMIF)	// SMI Function
-	Store (0, TRP0)		// Generate trap
+	SMIF = Arg0	// SMI Function
+	TRP0 = 0		// Generate trap
 	Return (SMIF)		// Return value of SMI handler
 }
 
@@ -35,7 +35,7 @@ Method(TRAP, 1, Serialized)
 Method(_PIC, 1)
 {
 	// Remember the OS' IRQ routing choice.
-	Store(Arg0, PICM)
+	PICM = Arg0
 }
 
 Method(GOS, 0)
@@ -54,23 +54,23 @@ Method(GOS, 0)
 	 */
 
 	/* Let's assume we're running at least Windows 2000 */
-	Store (2000, OSYS)
+	OSYS = 2000
 
 	If (CondRefOf(_OSI)) {
 		If (_OSI("Windows 2001")) {
-			Store (2001, OSYS)
+			OSYS = 2001
 		}
 
 		If (_OSI("Windows 2001 SP1")) {
-			Store (2001, OSYS)
+			OSYS = 2001
 		}
 
 		If (_OSI("Windows 2001 SP2")) {
-			Store (2002, OSYS)
+			OSYS = 2002
 		}
 
 		If (_OSI("Windows 2006")) {
-			Store (2006, OSYS)
+			OSYS = 2006
 		}
 	}
 }

@@ -16,7 +16,7 @@
 #include "pch.h"
 
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] __unused = {
+static const char *const me_bios_path_values[] = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -25,7 +25,7 @@ static const char *me_bios_path_values[] __unused = {
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
 
-static inline const char *const me_get_bios_path_string(int path)
+const char *const me_get_bios_path_string(int path)
 {
 	return me_bios_path_values[path];
 }
@@ -70,14 +70,14 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
  * ME/MEI access helpers using memcpy to avoid aliasing.
  */
 
-static inline void mei_read_dword_ptr(void *ptr, int offset)
+void mei_read_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = read32(mei_base_address + (offset / sizeof(u32)));
 	memcpy(ptr, &dword, sizeof(dword));
 	mei_dump(ptr, dword, offset, "READ");
 }
 
-static inline void mei_write_dword_ptr(void *ptr, int offset)
+void mei_write_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = 0;
 	memcpy(&dword, ptr, sizeof(dword));
@@ -86,7 +86,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 }
 
 #ifndef __SIMPLE_DEVICE__
-static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
+void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
@@ -94,28 +94,28 @@ static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
 }
 #endif
 
-static inline void read_host_csr(struct mei_csr *csr)
+void read_host_csr(struct mei_csr *csr)
 {
 	mei_read_dword_ptr(csr, MEI_H_CSR);
 }
 
-static inline void write_host_csr(struct mei_csr *csr)
+void write_host_csr(struct mei_csr *csr)
 {
 	mei_write_dword_ptr(csr, MEI_H_CSR);
 }
 
-static inline void read_me_csr(struct mei_csr *csr)
+void read_me_csr(struct mei_csr *csr)
 {
 	mei_read_dword_ptr(csr, MEI_ME_CSR_HA);
 }
 
-static inline void write_cb(u32 dword)
+void write_cb(u32 dword)
 {
 	write32(mei_base_address + (MEI_H_CB_WW / sizeof(u32)), dword);
 	mei_dump(NULL, dword, MEI_H_CB_WW, "WRITE");
 }
 
-static inline u32 read_cb(void)
+u32 read_cb(void)
 {
 	u32 dword = read32(mei_base_address + (MEI_ME_CB_RW / sizeof(u32)));
 	mei_dump(NULL, dword, MEI_ME_CB_RW, "READ");
@@ -175,6 +175,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi, void *
 	/* Pad non-dword aligned request message length */
 	if (mei->length & 3)
 		ndata++;
+
 	if (!ndata) {
 		printk(BIOS_DEBUG, "ME: request does not include MKHI\n");
 		return -1;
@@ -250,6 +251,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi, void *rsp_data, int rsp_bytes)
 			break;
 		udelay(ME_DELAY);
 	}
+
 	if (!n) {
 		printk(BIOS_ERR, "ME: timeout waiting for data: expected %u, available %u\n",
 		       expected, me.buffer_write_ptr - me.buffer_read_ptr);
@@ -267,6 +269,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi, void *rsp_data, int rsp_bytes)
 	ndata = mei_rsp.length >> 2;
 	if (mei_rsp.length & 3)
 		ndata++;
+
 	if (ndata != (expected - 1)) {
 		printk(BIOS_ERR, "ME: response is missing data %d != %d\n",
 		       ndata, (expected - 1));
@@ -307,8 +310,8 @@ static int mei_recv_msg(struct mkhi_header *mkhi, void *rsp_data, int rsp_bytes)
 	return mei_wait_for_me_ready();
 }
 
-static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
-			       void *req_data, void *rsp_data, int rsp_bytes)
+int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
+		 void *req_data, void *rsp_data, int rsp_bytes)
 {
 	if (mei_send_msg(mei, mkhi, req_data) < 0)
 		return -1;
@@ -319,13 +322,13 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 
 #ifdef __SIMPLE_DEVICE__
 
-static inline void update_mei_base_address(void)
+void update_mei_base_address(void)
 {
 	uint32_t reg32 = pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf;
 	mei_base_address = (u32 *)(uintptr_t)reg32;
 }
 
-static inline bool is_mei_base_address_valid(void)
+bool is_mei_base_address_valid(void)
 {
 	return mei_base_address && mei_base_address != (u32 *)0xfffffff0;
 }
@@ -333,7 +336,7 @@ static inline bool is_mei_base_address_valid(void)
 #else
 
 /* Prepare ME for MEI messages */
-static int intel_mei_setup(struct device *dev)
+int intel_mei_setup(struct device *dev)
 {
 	struct resource *res;
 	struct mei_csr host;
@@ -364,7 +367,7 @@ static int intel_mei_setup(struct device *dev)
 #endif
 
 /* Read the Extend register hash of ME firmware */
-static int intel_me_extend_valid(struct device *dev)
+int intel_me_extend_valid(struct device *dev)
 {
 	struct me_heres status;
 	u32 extend[8] = {0};
@@ -411,7 +414,7 @@ static int intel_me_extend_valid(struct device *dev)
 }
 
 /* Hide the ME virtual PCI devices */
-static void intel_me_hide(struct device *dev)
+void intel_me_hide(struct device *dev)
 {
 	dev->enabled = 0;
 	pch_enable(dev);

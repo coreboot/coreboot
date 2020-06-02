@@ -220,6 +220,33 @@ typedef enum {
 	ME_FIRMWARE_UPDATE_BIOS_PATH,
 } me_bios_path;
 
+/* Defined in me_common.c for both ramstage and smm */
+const char *const me_get_bios_path_string(int path);
+
+void mei_read_dword_ptr(void *ptr, int offset);
+void mei_write_dword_ptr(void *ptr, int offset);
+
+#ifndef __SIMPLE_DEVICE__
+void pci_read_dword_ptr(struct device *dev, void *ptr, int offset);
+#endif
+
+void read_host_csr(struct mei_csr *csr);
+void write_host_csr(struct mei_csr *csr);
+
+void read_me_csr(struct mei_csr *csr);
+
+void write_cb(u32 dword);
+u32 read_cb(void);
+
+int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
+		 void *req_data, void *rsp_data, int rsp_bytes);
+
+void update_mei_base_address(void);
+bool is_mei_base_address_valid(void);
+int intel_mei_setup(struct device *dev);
+int intel_me_extend_valid(struct device *dev);
+void intel_me_hide(struct device *dev);
+
 /* Defined in me_status.c for both romstage and ramstage */
 void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes);
 

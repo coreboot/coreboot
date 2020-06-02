@@ -27,9 +27,6 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
-/* FIXME: For verification purposes only */
-#include "me_common.c"
-
 /* Send END OF POST message to the ME */
 static int __unused mkhi_end_of_post(void)
 {

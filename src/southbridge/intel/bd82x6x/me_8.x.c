@@ -25,12 +25,11 @@
 #include "pch.h"
 
 #if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] __unused  = {
+static const char *me_bios_path_values[] __unused = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -38,11 +37,9 @@ static const char *me_bios_path_values[] __unused  = {
 	[ME_DISABLE_BIOS_PATH]		= "Disable",
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
-static int intel_me_read_mbp(me_bios_payload *mbp_data);
 
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
-
 
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
@@ -292,7 +289,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	if (!mkhi_rsp.is_response ||
 	    mkhi->group_id != mkhi_rsp.group_id ||
 	    mkhi->command != mkhi_rsp.command) {
-		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u,"
+		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u, "
 		       "command %u ?= %u, is_response %u\n", mkhi->group_id,
 		       mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
 		       mkhi_rsp.is_response);
@@ -568,6 +565,10 @@ static int intel_mei_setup(struct device *dev)
 	return 0;
 }
 
+#if CONFIG(CHROMEOS)
+#include <vendorcode/google/chromeos/chromeos.h>
+#endif
+
 /* Read the Extend register hash of ME firmware */
 static int intel_me_extend_valid(struct device *dev)
 {
@@ -621,6 +622,8 @@ static void intel_me_hide(struct device *dev)
 	dev->enabled = 0;
 	pch_enable(dev);
 }
+
+static int intel_me_read_mbp(me_bios_payload *mbp_data);
 
 /* Check whether ME is present and do basic init */
 static void intel_me_init(struct device *dev)

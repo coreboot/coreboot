@@ -10,10 +10,10 @@
 
 #include <acpi/acpi.h>
 #include <device/mmio.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
+#include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <string.h>
@@ -564,7 +564,7 @@ static int intel_mei_setup(struct device *dev)
 		printk(BIOS_DEBUG, "ME: MEI resource not present!\n");
 		return -1;
 	}
-	mei_base_address = (u32*)(uintptr_t)res->base;
+	mei_base_address = (u32 *)(uintptr_t)res->base;
 
 	/* Ensure Memory and Bus Master bits are set */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);

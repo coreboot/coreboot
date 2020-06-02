@@ -25,7 +25,11 @@ Method (ECQP, 0, Serialized)
 		}
 	}
 
-	If (EBIT (BTSC, Local1)) {
+	/*
+	 * Battery status is cleared when read so always use the value from
+	 * PWSR directly regardless of the previous value stored in ECPR.
+	 */
+	If (EBIT (BTSC, Local0)) {
 		Printf ("BAT0 Status Change")
 		Notify (BAT0, 0x80)
 	}

@@ -18,7 +18,6 @@
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	fadt->preferred_pm_profile = 0; /* unspecified */
 	fadt->sci_int = 9;
 
 	if (permanent_smi_handler()) {

@@ -13,7 +13,7 @@ Device (DPTF_CPU_DEVICE)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -73,8 +73,8 @@ Device (DPTF_CPU_DEVICE)
 	Method (_TDL)
 	{
 		If (CondRefOf (\_SB.CP00._TSS)) {
-			Store (SizeOf (\_SB.CP00._TSS), Local0)
-			Decrement (Local0)
+			Local0 = SizeOf (\_SB.CP00._TSS)
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -92,7 +92,7 @@ Device (DPTF_CPU_DEVICE)
 
 	Method (SPPC, 1)
 	{
-		Store (Arg0, \PPCM)
+		\PPCM = Arg0
 
 		/* Notify OS to re-read _PPC limit on each CPU */
 		\PPCN ()
@@ -117,8 +117,8 @@ Device (DPTF_CPU_DEVICE)
 		If (CondRefOf (\_SB.MPDL)) {
 			Return (\_SB.MPDL)
 		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
-			Store (SizeOf (\_SB.CP00._PSS), Local0)
-			Decrement (Local0)
+			Local0 = SizeOf (\_SB.CP00._PSS)
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)

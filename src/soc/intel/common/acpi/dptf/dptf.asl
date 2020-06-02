@@ -24,7 +24,7 @@ Device (DPTF)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -41,7 +41,7 @@ Device (DPTF)
 	Method (_OSC, 4, Serialized)
 	{
 		/* Check for Passive Policy UUID */
-		If (LEqual (DeRefOf (Index (IDSP, 0)), Arg0)) {
+		If (DeRefOf (IDSP[0]) == Arg0) {
 			/* Initialize Thermal Devices */
 			^TINI ()
 
@@ -73,25 +73,25 @@ Device (DPTF)
 	/* Convert from Degrees C to 1/10 Kelvin for ACPI */
 	Method (CTOK, 1) {
 		/* 10th of Degrees C */
-		Multiply (Arg0, 10, Local0)
+		Local0 = Arg0 * 10
 
 		/* Convert to Kelvin */
-		Add (Local0, 2732, Local0)
+		Local0 += 2732
 
 		Return (Local0)
 	}
 
 	/* Convert from 1/10 Kelvin to Degrees C for ACPI */
 	Method (KTOC, 1) {
-		If (LLessEqual (Arg0, 2732)) {
+		If (Arg0 <= 2732) {
 			Return (0)
 		}
 
 		/* Convert to Celsius */
-		Subtract (Arg0, 2732, Local0)
+		Local0 = Arg0 - 2732
 
 		/* Convert from 10th of degrees */
-		Divide (Local0, 10,, Local0)
+		Local0 /= 10
 
 		Return (Local0)
 	}

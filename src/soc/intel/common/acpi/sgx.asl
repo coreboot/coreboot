@@ -37,15 +37,15 @@ Scope(\_SB)
 			CreateQwordField (RBUF, ^BAR0._MIN, EMIN)
 			CreateQwordField (RBUF, ^BAR0._MAX, EMAX)
 			CreateQwordField (RBUF, ^BAR0._LEN, ELEN)
-			Store (EMNA, EMIN)
-			Store (ELNG, ELEN)
-			Subtract (Add (EMNA, ELNG), 1, EMAX)
+			EMIN = EMNA
+			ELEN = ELNG
+			EMAX = EMNA + ELNG - 1
 			Return (RBUF)
 		}
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (LNotEqual (EPCS, 0))
+			If (EPCS != 0)
 			{
 				Return (0xF)
 			}

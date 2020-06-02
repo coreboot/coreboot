@@ -18,7 +18,7 @@ Device (WIFI)
 	})
 	Method(WRDD,0,Serialized)
 	{
-		Store(\CID1,Index (DeRefOf (Index (WRDX, 1)), 1)) // Country identifier
+		DeRefOf (WRDX[1])[1] = \CID1 // Country identifier
 
 		Return(WRDX)
 	}

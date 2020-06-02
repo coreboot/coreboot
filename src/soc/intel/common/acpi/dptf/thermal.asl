@@ -6,25 +6,25 @@
 #if CONFIG(EC_SUPPORTS_DPTF_TEVT)
 Method (TEVT, 1, NotSerialized)
 {
-	Store (ToInteger (Arg0), Local0)
+	Local0 = ToInteger (Arg0)
 
 #ifdef DPTF_TSR0_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR0_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR0_SENSOR_ID) {
 		Notify (^TSR0, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR1_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR1_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR1_SENSOR_ID) {
 		Notify (^TSR1, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR2_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR2_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR2_SENSOR_ID) {
 		Notify (^TSR2, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR3_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR3_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR3_SENSOR_ID) {
 		Notify (^TSR3, 0x90)
 	}
 #endif
@@ -77,7 +77,7 @@ External (\_SB.PCI0.LPCB.EC0.RCDP, MethodObj)
 Method (DTRP, 2, Serialized)
 {
 	If (CondRefOf (\_SB.PCI0.LPCB.EC0.RCDP)) {
-		If (LEqual (\_SB.PCI0.LPCB.EC0.RCDP, One)) {
+		If (\_SB.PCI0.LPCB.EC0.RCDP == 1) {
 			Return (CTOK (Arg0))
 		}
 	}
@@ -104,7 +104,7 @@ Device (TSR0)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -213,7 +213,7 @@ Device (TSR1)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -322,7 +322,7 @@ Device (TSR2)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -431,7 +431,7 @@ Device (TSR3)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

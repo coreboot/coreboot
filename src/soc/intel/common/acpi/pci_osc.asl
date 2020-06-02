@@ -5,13 +5,13 @@
 Scope (\_SB.PCI0) {
 	Method (_OSC, 4) {
 		/* Check for proper GUID */
-		If (LEqual (Arg0, ToUUID (PCI_OSC_UUID))) {
+		If (Arg0 == ToUUID (PCI_OSC_UUID)) {
 			/* Let OS control everything */
 			Return (Arg3)
 		} Else {
 			/* Unrecognized UUID */
 			CreateDWordField (Arg3, 0, CDW1)
-			Or (CDW1, 4, CDW1)
+			CDW1 |= 4
 			Return (Arg3)
 		}
 	}

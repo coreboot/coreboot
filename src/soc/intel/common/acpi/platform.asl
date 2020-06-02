@@ -22,7 +22,7 @@ Field (POST, ByteAcc, Lock, Preserve)
 
 Method (_PTS, 1)
 {
-	Store (POST_OS_ENTER_PTS, DBG0)
+	DBG0 = POST_OS_ENTER_PTS
 
 	If (CondRefOf (\_SB.MPTS))
 	{
@@ -42,7 +42,7 @@ Method (_PTS, 1)
 
 Method (_WAK, 1)
 {
-	Store (POST_OS_ENTER_WAKE, DBG0)
+	DBG0 = POST_OS_ENTER_WAKE
 
 	If (CondRefOf (\_SB.MWAK))
 	{

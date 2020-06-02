@@ -19,10 +19,6 @@
 	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
 #endif
 
-#ifndef FADT_PM_PROFILE
-	#define FADT_PM_PROFILE PM_UNSPECIFIED
-#endif
-
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
@@ -46,7 +42,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;
 	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
-	fadt->preferred_pm_profile = FADT_PM_PROFILE;
+	fadt->preferred_pm_profile = PM_UNSPECIFIED;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
 
 	if (permanent_smi_handler()) {

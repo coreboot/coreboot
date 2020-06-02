@@ -699,21 +699,6 @@ static u32 me_to_host_words_pending(void)
 		(me.buffer_depth - 1);
 }
 
-#if 0
-/* This function is not yet being used, keep it in for the future. */
-static u32 host_to_me_words_room(void)
-{
-	struct mei_csr csr;
-
-	read_me_csr(&csr);
-	if (!csr.ready)
-		return 0;
-
-	read_host_csr(&csr);
-	return (csr.buffer_read_ptr - csr.buffer_write_ptr - 1) &
-		(csr.buffer_depth - 1);
-}
-#endif
 /*
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.

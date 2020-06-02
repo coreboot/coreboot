@@ -432,39 +432,6 @@ static int __unused mkhi_get_fwcaps(void)
 	return 0;
 }
 
-#if CONFIG(CHROMEOS) && 0 /* DISABLED */
-/* Tell ME to issue a global reset */
-int mkhi_global_reset(void)
-{
-	struct me_global_reset reset = {
-		.request_origin	= GLOBAL_RESET_BIOS_POST,
-		.reset_type	= CBM_RR_GLOBAL_RESET,
-	};
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_CBM,
-		.command	= MKHI_GLOBAL_RESET,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.length		= sizeof(mkhi) + sizeof(reset),
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-	};
-
-	printk(BIOS_NOTICE, "ME: Requesting global reset\n");
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &reset, NULL, 0) < 0) {
-		/* No response means reset will happen shortly... */
-		halt();
-	}
-
-	/* If the ME responded it rejected the reset request */
-	printk(BIOS_ERR, "ME: Global Reset failed\n");
-	return -1;
-}
-#endif
-
 #ifdef __SIMPLE_DEVICE__
 
 static void intel_me7_finalize_smm(void)

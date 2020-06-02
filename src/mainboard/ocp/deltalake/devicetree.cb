@@ -85,6 +85,9 @@ chip soc/intel/xeon_sp/cpx
 				register "bmc_i2c_address" = "0x20"
 				register "bmc_boot_timeout" = "60"
 			end
+			chip drivers/ocp/ipmi # OCP specific IPMI porting
+				device pnp ca2.1 on end
+			end
 		end # ISA bridge: Intel Device a245
 		device pci 1f.1 on end # p2sb
 		device pci 1f.2 on end # Memory controller: Intel Device a221

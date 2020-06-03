@@ -15,6 +15,8 @@
 
 /* Supplied by i2c.c */
 extern struct device_operations picasso_i2c_mmio_ops;
+/* Supplied by uart.c */
+extern struct device_operations picasso_uart_mmio_ops;
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
@@ -125,6 +127,12 @@ static void set_mmio_dev_ops(struct device *dev)
 	case APU_I2C3_BASE:
 	case APU_I2C4_BASE:
 		dev->ops = &picasso_i2c_mmio_ops;
+		break;
+	case APU_UART0_BASE:
+	case APU_UART1_BASE:
+	case APU_UART2_BASE:
+	case APU_UART3_BASE:
+		dev->ops = &picasso_uart_mmio_ops;
 		break;
 	}
 }

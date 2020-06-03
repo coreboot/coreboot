@@ -74,3 +74,26 @@ unsigned int uart_platform_refclk(void)
 {
 	return CONFIG(PICASSO_UART_48MZ) ? 48000000 : 115200 * 16;
 }
+
+static const char *uart_acpi_name(const struct device *dev)
+{
+	switch (dev->path.mmio.addr) {
+	case APU_UART0_BASE:
+		return "FUR0";
+	case APU_UART1_BASE:
+		return "FUR1";
+	case APU_UART2_BASE:
+		return "FUR2";
+	case APU_UART3_BASE:
+		return "FUR3";
+	default:
+		return NULL;
+	}
+}
+
+struct device_operations picasso_uart_mmio_ops = {
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
+	.scan_bus = scan_static_bus,
+	.acpi_name = uart_acpi_name,
+};

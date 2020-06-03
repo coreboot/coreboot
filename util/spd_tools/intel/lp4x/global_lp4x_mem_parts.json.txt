@@ -109,6 +109,54 @@
                 "tckMaxPs": 1250,
                 "casLatencies": "14 20 24 28 32"
             }
-         }
+        },
+        {
+            "name": "K4U6E3S4AA-MGCR",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 1,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
+        },
+        {
+            "name": "MT53E512M32D2NP-046 WT:E",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 1,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
+        },
+        {
+            "name": "H9HCNNNCPMMLXR-NEE",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 4267
+            }
+        },
+        {
+            "name": "K4UBE3D4AA-MGCR",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 4267
+            }
+        }
     ]
 }

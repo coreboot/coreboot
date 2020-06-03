@@ -331,8 +331,8 @@ Scope (\_SB.PCI0.I2C3)
 	Device (VCM0)
 	{
 		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
-		Name (_UID, 0x03)  /* _UID: Unique ID */
-		Name (_DDN, "GT9769 VCM")  /* _DDN: DOS Device Name */
+		Name (_UID, 0x00)  /* _UID: Unique ID */
+		Name (_DDN, "DW9768 VCM")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
 			Return (0x0F)
@@ -364,7 +364,7 @@ Scope (\_SB.PCI0.I2C3)
 				Package (0x02)
 				{
 					"compatible",
-					"giantec,gt9769-vcm"
+					"dongwoon,dw9768"
 				}
 			}
 		})
@@ -372,8 +372,8 @@ Scope (\_SB.PCI0.I2C3)
 	Device (NVM0)
 	{
 		Name (_HID, "PRP0001")  // _HID: Hardware ID
-		Name (_UID, 0x03)  // _UID: Unique ID
-		Name (_DDN, "GT9769 EEPROM")  // _DDN: DOS Device Name
+		Name (_UID, 0x01)  // _UID: Unique ID
+		Name (_DDN, "AT24 EEPROM")  // _DDN: DOS Device Name
 		Method (_STA, 0, NotSerialized)  // _STA: Status
 		{
 			Return (0x0F)
@@ -425,7 +425,7 @@ Scope (\_SB.PCI0.I2C3)
 				Package (0x02)
 				{
 					"compatible",
-					"giantec,gt9769-eeprom"
+					"atmel,24c1024"
 				}
 			}
 		})

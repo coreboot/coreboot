@@ -1,0 +1,368 @@
+/*****************************************************************************
+ *
+ * Copyright (c) 2019, Advanced Micro Devices, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ADVANCED MICRO DEVICES, INC. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ***************************************************************************/
+
+#ifndef _BL_SYSCALL_PUBLIC_H_
+#define _BL_SYSCALL_PUBLIC_H_
+
+#include <stdint.h>
+
+#define SVC_EXIT			0x00
+#define SVC_MAP_USER_STACK		0x01
+#define SVC_DEBUG_PRINT			0x06
+#define SVC_DEBUG_PRINT_EX		0x1A
+#define SVC_WAIT_10NS_MULTIPLE		0x1B
+#define SVC_GET_BOOT_MODE		0x1C
+#define SVC_DELAY_IN_MICRO_SECONDS	0x2F
+#define SVC_GET_SPI_INFO		0x35
+#define SVC_MAP_FCH_IO_DEVICE		0x36
+#define SVC_UNMAP_FCH_IO_DEVICE		0x37
+#define SVC_MAP_SPIROM_DEVICE		0x38
+#define SVC_UNMAP_SPIROM_DEVICE		0x39
+#define SVC_UPDATE_PSP_BIOS_DIR		0x40
+#define SVC_COPY_DATA_FROM_UAPP		0x41
+#define SVC_READ_TIMER_VAL		0x42
+#define SVC_RESET_SYSTEM		0x43
+#define SVC_WRITE_POSTCODE		0x44
+#define SVC_GET_MAX_WORKBUF_SIZE	0x45
+#define SVC_SHA				0x46
+
+typedef enum _PSP_BOOT_MODE
+{
+	PSP_BOOT_MODE_S0 = 0x0,
+	PSP_BOOT_MODE_S0i3_RESUME = 0x1,
+	PSP_BOOT_MODE_S3_RESUME = 0x2,
+	PSP_BOOT_MODE_S4 = 0x3,
+	PSP_BOOT_MODE_S5_COLD = 0x4,
+	PSP_BOOT_MODE_S5_WARM = 0x5,
+} PSP_BOOT_MODE;
+
+/* TLB2_n settings for AWUSER and TLB3_n settings for ARUSER:
+ * USER[0] - ReqIO bit, 1'b1 for FCH MMIO address
+ * USER[1] - Compat bit, 1'b1 for FCH access, 0 for everything else
+ * USER[2] - ByPass_IOMMU bit, 1'b1 to always bypass IOMMU, 0 for IOMMU translation
+ */
+typedef enum SYSHUB_TARGET_TYPE_E
+{
+	// Target Type			// Address		// [2:0] =[Bypass,Compat,ReqIO]
+	AxUSER_PCIE_HT0 = 0x0,		// PCIe HT (Bypass=0)	// [2:0] =[0,0,0]
+	AxUSER_DRAM_VIA_IOMMU = 0x1,	// DRAM ACCESS via IOMMU// [2:0] =[0,0,1]
+	AxUSER_PCIE_HT1 = 0x2,		// PCIe HT  (Bypass=1)	// [2:0] =[0,1,0]
+	AxUSER_RSVD = 0x3,		// - NOT USED ,INVALID 	// [2:0] =[0,1,1]
+	AxUSER_DRAM_BYPASS_IOMMU = 0x4,	// GENERAL DRAM 	// [2:0] =[1,0,0]
+	AxUSER_PCIE_MMIO = 0x5,		// PCIe MMIO		// [2:0] =[1,0,1]
+	AxUSER_FCH_HT_IO = 0x6,		// FCH HT (port80)	// [2:0] =[1,1,0]
+	AxUSER_FCH_MMIO = 0x6		// FCH MMIO 		// [2:0] =[1,1,1]
+} SYSHUB_TARGET_TYPE;
+
+typedef enum FCH_IO_DEVICE {
+	FCH_IO_DEVICE_SPI,
+	FCH_IO_DEVICE_I2C,
+	FCH_IO_DEVICE_GPIO,
+	FCH_IO_DEVICE_ESPI,
+	FCH_IO_DEVICE_IOMUX,
+	FCH_IO_DEVICE_MISC,
+	FCH_IO_DEVICE_AOAC,
+	FCH_IO_DEVICE_IOPORT,
+
+	FCH_IO_DEVICE_END,
+} FCH_IO_DEVICE;
+
+/* Svc_UpdatePspBiosDir can be used to GET or SET the PSP or BIOS directory
+ * offsets. This enum is used to specify whether it is a GET or SET operation.
+ */
+typedef enum DIR_OFFSET_OPERATION_E {
+	DIR_OFFSET_GET = 0x0,
+	DIR_OFFSET_SET,
+	DIR_OFFSET_OPERATION_MAX
+} DIR_OFFSET_OPERATION;
+
+typedef enum FCH_I2C_CONTROLLER_ID_E
+{
+	FCH_I2C_CONTROLLER_ID_2 = 2,
+	FCH_I2C_CONTROLLER_ID_3 = 3,
+	FCH_I2C_CONTROLLER_ID_4 = 4,
+	FCH_I2C_CONTROLLER_ID_MAX,
+} FCH_I2C_CONTROLLER_ID;
+
+typedef enum UAPP_COPYBUF
+{
+	UAPP_COPYBUF_CHROME_WORKBUF = 0x0,
+	UAPP_COPYBUF_MAX = 0x1,
+} UAPP_COPYBUF;
+
+typedef struct SPIROM_INFO
+{
+	void *SpiBiosSysHubBase;
+	void *SpiBiosSmnBase;
+	uint32_t SpiBiosSize;
+} SPIROM_INFO;
+
+typedef struct SYSHUB_RW_PARMS_EX_E
+{
+	uint32_t SyshubAddressLo;
+	uint32_t SyshubAddressHi;
+	uint32_t *pValue;
+	uint32_t Size;
+	SYSHUB_TARGET_TYPE TargetType;
+} SYSHUB_RW_PARMS_EX;
+
+typedef enum PSP_TIMER_TYPE {
+	PSP_TIMER_TYPE_CHRONO     = 0,
+	PSP_TIMER_TYPE_RTC        = 1,
+	PSP_TIMER_TYPE_MAX        = 2,
+} PSP_TIMER_TYPE;
+
+typedef enum RESET_TYPE
+{
+	RESET_TYPE_COLD    = 0,
+	RESET_TYPE_WARM    = 1,
+	RESET_TYPE_MAX     = 2,
+} RESET_TYPE;
+
+/* SHA types same as ccp SHA type in crypto.h */
+typedef enum SHA_TYPE
+{
+	SHA_TYPE_256,
+	SHA_TYPE_512
+} SHA_TYPE;
+
+/* All SHA operation supported */
+typedef enum SHA_OPERATION_MODE
+{
+	SHA_GENERIC
+} SHA_OPERATION_MODE;
+
+/* SHA Supported Data Structures */
+typedef struct SHA_GENERIC_DATA_T
+{
+	SHA_TYPE	SHAType;
+	uint8_t		*Data;
+	uint32_t	DataLen;
+	uint32_t	DataMemType;
+	uint8_t		*Digest;
+	uint32_t	DigestLen;
+	uint8_t		*IntermediateDigest;
+	uint32_t	IntermediateMsgLen;
+	uint32_t	Init;
+	uint32_t	Eom;
+} SHA_GENERIC_DATA;
+
+/*
+ * Exit to the main Boot Loader. This does not return back to user application.
+ *
+ * Parameters:
+ *     status  -   either Ok or error code defined by AGESA
+ */
+void svc_exit(uint32_t status);
+
+/* Maps buffer for stack usage.
+ *
+ * Parameters:
+ *     start_addr   -   start address of the stack buffer
+ *     end_addr     -   end of the stack buffer
+ *     stack_va     -   [out] mapped stack Virtual Address
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_map_user_stack(void *start_addr,
+		void *end_addr, void *stack_va);
+
+/* Print debug message into serial console.
+ *
+ * Parameters:
+ *     string     -   null-terminated string
+ */
+void svc_debug_print(const char *string);
+
+/* Print 4 DWORD values in hex to serial console
+ *
+ * Parameters:
+ *     dword0...dword3 - 32-bit DWORD to print
+ */
+void svc_debug_print_ex(uint32_t dword0,
+		uint32_t dword1, uint32_t dword2, uint32_t dword3);
+
+/* Waits in a blocking call for multiples of 10ns (100MHz timer) before returning
+ *
+ * Parameters:
+ *     multiple    - The number of multiples of 10ns to wait
+ *
+ * Return value: BL_OK, or BL_ERR_TIMER_PARAM_OVERFLOW
+ */
+uint32_t svc_wait_10ns_multiple(uint32_t multiple);
+
+/* Description     - Returns the current boot mode from the type PSP_BOOT_MODE found in
+ *                   bl_public.h.
+ *
+ * Inputs          - boot_mode - Output parameter passed in R0
+ *
+ * Outputs         - The boot mode in boot_mode.
+ *                   See Return Values.
+ *
+ * Return Values   - BL_OK
+ *                   BL_ERR_NULL_PTR
+ *                   Other BL_ERRORs lofted up from called functions
+ */
+uint32_t svc_get_boot_mode(uint32_t *boot_mode);
+
+/* Add delay in micro seconds
+ *
+ * Parameters:
+ *     delay       - required delay value in microseconds
+ *
+ * Return value: NONE
+ */
+void svc_delay_in_usec(uint32_t delay);
+
+/* Get the SPI-ROM information
+ *
+ * Parameters:
+ *     spi_rom_iInfo  - SPI-ROM information
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_spi_rom_info(SPIROM_INFO *spi_rom_info);
+
+/* Map the FCH IO device register space (SPI/I2C/GPIO/eSPI/etc...)
+ *
+ * Parameters:
+ *     io_device         - ID for respective FCH IO controller register space to be mapped
+ *     arg1              - Based on IODevice ID, interpretation of this argument changes.
+ *     arg2              - Based on IODevice ID, interpretation of this argument changes.
+ *     io_device_axi_addr    - AXI address for respective FCH IO device register space
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
+		uint32_t arg1, uint32_t arg2, void **io_device_axi_addr);
+
+/* Unmap the FCH IO device register space mapped earlier using Svc_MapFchIODevice()
+ *
+ * Parameters:
+ *     io_device        - ID for respective FCH IO controller register space to be unmapped
+ *     io_device_addr   - AXI address for respective FCH IO device register space
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_unmap_fch_dev(FCH_IO_DEVICE io_device,
+		void *io_device_axi_addr);
+
+/* Map the SPIROM FLASH device address space
+ *
+ * Parameters:
+ *     SpiRomAddr     - Address in SPIROM tobe mapped (SMN based)
+ *     size           - Size to be mapped
+ *     pSpiRomAddrAxi - Mapped address in AXI space
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_map_spi_rom(void *spi_rom_addr,
+		uint32_t size, void **spi_rom_axi_addr);
+
+/* Unmap the SPIROM FLASH device address space mapped earlier using Svc_MapSpiRomDevice()
+ *
+ * Parameters:
+ *     pSpiRomAddrAxi - Address in AXI address space previously mapped
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_unmap_spi_rom(void *spi_rom_addr);
+
+/* Updates the offset at which PSP or BIOS Directory can be found in the
+ * SPI flash
+ *
+ * Parameters:
+ *     psp_dir_offset - [in/out] Offset at which PSP Directory can be
+ *                      found in the SPI Flash. Same pointer is used
+ *                      to return the offset in case of GET operation
+ *     bios_dir_offset - [in/out] Offset at which BIOS Directory can be
+ *                       found in the SPI Flash. Same pointer is used
+ *                       to return the offset in case of GET operation
+ *     operation      - [in] Specifies whether this call is used for
+ *                      getting or setting the offset.
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
+		uint32_t *bios_dir_offset, DIR_OFFSET_OPERATION operation);
+
+/* Copies the data that is shared by verstage to the PSP BL owned memory
+ *
+ * Parameters:
+ *     type    - enum
+ *     address - Address in UAPP controlled/owned memory
+ *     size    - Total size of memory to copy (max 16Kbytes)
+ */
+uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
+		uint32_t size);
+
+/*
+ *    Read timer raw (currently CHRONO and RTC) value
+ *
+ *    Parameters:
+ *		Type		- Type of timer UAPP would like to read from
+ *				(currently CHRONO and RTC)
+ *		counter_value	- [out] return the raw counter value read from
+ *				RTC or CHRONO_LO/HI counter register
+ */
+uint32_t svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
+
+/*
+ *    Reset the system
+ *
+ *   Parameters:
+ *      reset_type -   Cold or Warm reset
+ */
+uint32_t svc_reset_system(RESET_TYPE reset_type);
+
+/*
+ *    Write postcode to Port-80
+ *
+ *    Parameters:
+ *                postcode -   Postcode value to be written on port-80h
+ */
+uint32_t svc_write_postcode(uint32_t postcode);
+
+/*
+ *   Get the max size of workbuf memory supported by PSP BL
+ *
+ *   Parameters:
+ *               size -   [out] Max size supported by PSP BL for workbuf copy
+ */
+uint32_t svc_get_max_workbuf_size(uint32_t *size);
+
+/*
+ * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
+ */
+uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
+
+/* C entry point for the Bootloader Userspace Application */
+void Main(void);
+
+#endif /* _BL_SYSCALL__PUBLIC_H_ */

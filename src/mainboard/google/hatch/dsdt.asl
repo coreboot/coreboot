@@ -53,8 +53,6 @@ DefinitionBlock(
 	{
 		/* Per board variant specific definitions. */
 		#include <variant/acpi/dptf.asl>
-		/* Include soc specific DPTF changes */
-		#include <soc/intel/cannonlake/acpi/dptf.asl>
 		/* Include common dptf ASL files */
 		#include <soc/intel/common/acpi/dptf/dptf.asl>
 	}

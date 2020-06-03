@@ -13,9 +13,6 @@
 #include <soc/southbridge.h>
 #include "chip.h"
 
-/* Global to provide access to chip.c */
-const char *i2c_acpi_name(const struct device *dev);
-
 /*
  * We don't have addresses for I2C0-1.
  */
@@ -48,7 +45,7 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	return &config->i2c[bus];
 }
 
-const char *i2c_acpi_name(const struct device *dev)
+static const char *i2c_acpi_name(const struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
 	case APU_I2C2_BASE:

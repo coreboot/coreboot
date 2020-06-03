@@ -8,6 +8,7 @@
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/data_fabric.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"
@@ -15,7 +16,6 @@
 
 /* Supplied by i2c.c */
 extern struct device_operations picasso_i2c_mmio_ops;
-extern const char *i2c_acpi_name(const struct device *dev);
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
@@ -119,6 +119,17 @@ static struct device_operations pci_ops_ops_bus_ab = {
 	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
 };
 
+static void set_mmio_dev_ops(struct device *dev)
+{
+	switch (dev->path.mmio.addr) {
+	case APU_I2C2_BASE:
+	case APU_I2C3_BASE:
+	case APU_I2C4_BASE:
+		dev->ops = &picasso_i2c_mmio_ops;
+		break;
+	}
+}
+
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
@@ -136,8 +147,7 @@ static void enable_dev(struct device *dev)
 		}
 		sb_enable(dev);
 	} else if (dev->path.type == DEVICE_PATH_MMIO) {
-		if (i2c_acpi_name(dev) != NULL)
-			dev->ops = &picasso_i2c_mmio_ops;
+		set_mmio_dev_ops(dev);
 	}
 }
 

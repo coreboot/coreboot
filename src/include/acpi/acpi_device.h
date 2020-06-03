@@ -15,11 +15,13 @@ enum acpi_dp_type {
 	ACPI_DP_TYPE_TABLE,
 	ACPI_DP_TYPE_ARRAY,
 	ACPI_DP_TYPE_CHILD,
+	ACPI_DP_TYPE_PACKAGE,
 };
 
 struct acpi_dp {
 	enum acpi_dp_type type;
 	const char *name;
+	const char *uuid;
 	struct acpi_dp *next;
 	union {
 		struct acpi_dp *child;
@@ -463,6 +465,9 @@ void acpi_device_add_power_res(const struct acpi_power_res_params *params);
 
 /* Start a new Device Property table with provided ACPI reference */
 struct acpi_dp *acpi_dp_new_table(const char *ref);
+
+/* Add package of device properties with a unique UUID */
+struct acpi_dp *acpi_dp_add_package(struct acpi_dp *dp, struct acpi_dp *package);
 
 /* Add integer Device Property */
 struct acpi_dp *acpi_dp_add_integer(struct acpi_dp *dp, const char *name,

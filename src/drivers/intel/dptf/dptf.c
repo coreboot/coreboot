@@ -69,6 +69,11 @@ static void dptf_fill_ssdt(const struct device *dev)
 	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i)
 		tsr_en[i] = is_participant_used(config, p);
 
+	/* Policies */
+	dptf_write_enabled_policies(config->policies.active, DPTF_MAX_ACTIVE_POLICIES,
+				    config->policies.passive, DPTF_MAX_PASSIVE_POLICIES,
+				    config->policies.critical, DPTF_MAX_CRITICAL_POLICIES);
+
 	dptf_write_active_policies(config->policies.active,
 				   DPTF_MAX_ACTIVE_POLICIES);
 

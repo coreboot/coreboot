@@ -127,6 +127,17 @@ struct dptf_power_limits {
 };
 
 /*
+ * This function writes out \_SB.DPTF.IDSP, which describes the different DPTF policies that
+ * this implementation is using.
+ */
+void dptf_write_enabled_policies(const struct dptf_active_policy *active_policies,
+				 int active_count,
+				 const struct dptf_passive_policy *passive_policies,
+				 int passive_count,
+				 const struct dptf_critical_policy *critical_policies,
+				 int critical_count);
+
+/*
  * This function provides tables of temperature and corresponding fan or percent.  When the
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
  * of full speed.

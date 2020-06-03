@@ -9,6 +9,11 @@
 /* Defaults */
 #define DEFAULT_RAW_UNIT		"ma"
 
+/* DPTF-specific UUIDs */
+#define DPTF_PASSIVE_POLICY_1_0_UUID	"42A441D6-AE6A-462B-A84B-4A8CE79027D3"
+#define DPTF_CRITICAL_POLICY_UUID	"97C68AE7-15FA-499c-B8C9-5DA81D606E0A"
+#define DPTF_ACTIVE_POLICY_UUID		"3A95C389-E4B8-4629-A526-C52C88626BAE"
+
 enum {
 	ART_REVISION			= 0,
 	DEFAULT_PRIORITY		= 100,
@@ -431,4 +436,41 @@ void dptf_write_tsr_hysteresis(uint8_t hysteresis)
 		return;
 
 	acpigen_write_name_integer("GTSH", hysteresis);
+}
+
+void dptf_write_enabled_policies(const struct dptf_active_policy *active_policies,
+				 int active_count,
+				 const struct dptf_passive_policy *passive_policies,
+				 int passive_count,
+				 const struct dptf_critical_policy *critical_policies,
+				 int critical_count)
+{
+	bool is_active_used;
+	bool is_passive_used;
+	bool is_critical_used;
+	int pkg_count;
+
+	is_active_used = (active_count && active_policies[0].target != DPTF_NONE);
+	is_passive_used = (passive_count && passive_policies[0].target != DPTF_NONE);
+	is_critical_used = (critical_count && critical_policies[0].source != DPTF_NONE);
+	pkg_count = is_active_used + is_passive_used + is_critical_used;
+
+	if (!pkg_count)
+		return;
+
+	acpigen_write_scope(TOPLEVEL_DPTF_SCOPE);
+	acpigen_write_name("IDSP");
+	acpigen_write_package(pkg_count);
+
+	if (is_active_used)
+		acpigen_write_uuid(DPTF_ACTIVE_POLICY_UUID);
+
+	if (is_passive_used)
+		acpigen_write_uuid(DPTF_PASSIVE_POLICY_1_0_UUID);
+
+	if (is_critical_used)
+		acpigen_write_uuid(DPTF_CRITICAL_POLICY_UUID);
+
+	acpigen_pop_len(); /* Package */
+	acpigen_pop_len(); /* Scope */
 }

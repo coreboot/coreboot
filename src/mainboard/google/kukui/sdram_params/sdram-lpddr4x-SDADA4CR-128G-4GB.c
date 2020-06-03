@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/emi.h>
+#include <soc/dramc_param.h>
 
 struct sdram_params params = {
 	.source = DRAMC_PARAM_SOURCE_SDRAM_CONFIG,
 	.frequency = 1600,
+	.ddr_geometry = DDR_TYPE_2CH_2RK_4GB_2_2,
 	.wr_level = {
 		[CHANNEL_A] = { {0x1F, 0x1C}, {0x1C, 0x1B} },
 		[CHANNEL_B] = { {0x27, 0x28}, {0x23, 0x28} }

@@ -55,6 +55,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Boten" if BOARD_GOOGLE_BOTEN
 	default "Dedede" if BOARD_GOOGLE_DEDEDE
 	default "Drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
@@ -79,6 +80,7 @@ config UART_FOR_CONSOLE
 
 config VARIANT_DIR
 	string
+	default "boten" if BOARD_GOOGLE_BOTEN
 	default "dedede" if BOARD_GOOGLE_DEDEDE
 	default "drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO

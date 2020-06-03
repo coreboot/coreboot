@@ -494,6 +494,8 @@ const (
 	SPDIndexTAAMinFineOffset = 123
 	SPDIndexTCKMaxFineOffset = 124
 	SPDIndexTCKMinFineOffset = 125
+	SPDIndexManufacturerPartNumberStartByte = 329
+	SPDIndexManufacturerPartNumberEndByte = 348
 
 	/* SPD Byte Value */
 
@@ -549,6 +551,9 @@ const (
 
 	/* Write Latency Set A and Read Latency DBI-RD disabled. */
 	SPDValueReadWriteLatency = 0x00
+
+	/* As per JEDEC spec, unused digits of manufacturer part number are left as blank. */
+	SPDValueManufacturerPartNumberBlank = 0x20
 )
 
 var SPDAttribTable = map[int]SPDAttribTableEntry {
@@ -609,9 +614,19 @@ func writeSPDManifest(memParts *memParts, SPDDirName string) error {
 	return ioutil.WriteFile(filepath.Join(SPDDirName, SPDManifestFileName), []byte(s), 0644)
 }
 
+func isManufacturerPartNumberByte(index int) bool {
+	if index >= SPDIndexManufacturerPartNumberStartByte && index <= SPDIndexManufacturerPartNumberEndByte {
+		return true
+	}
+	return false
+}
+
 func getSPDByte(index int, memAttribs *memAttributes) byte {
 	e, ok := SPDAttribTable[index]
 	if ok == false {
+		if isManufacturerPartNumberByte(index) {
+			return SPDValueManufacturerPartNumberBlank
+		}
 		return 0x00
 	}
 

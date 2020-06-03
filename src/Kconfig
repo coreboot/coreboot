@@ -730,6 +730,16 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 	help
 	  Override the default Product name stored in SMBIOS structures.
 
+config VPD_SMBIOS_VERSION
+	bool "Populates SMBIOS type 0 version from the VPD_RO variable 'firmware_version'"
+	default n
+	depends on VPD && GENERATE_SMBIOS_TABLES
+	help
+	  Selecting this option will read firmware_version from
+	  VPD_RO and override SMBIOS type 0 version. One special
+	  scenario of using this feature is to assign a BIOS version
+	  to a coreboot image without the need to rebuild from source.
+
 endmenu
 
 source "payloads/Kconfig"

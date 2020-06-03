@@ -528,7 +528,17 @@ typedef struct {
 
 /** Offset 0x04D8 - Reserved
 **/
-  UINT8                      Reserved25[11];
+  UINT8                      Reserved25[2];
+
+/** Offset 0x04DA - ITbtConnectTopology Timeout value
+  ITbtConnectTopologyTimeout value. Specified increment values in miliseconds. Range
+  is 0-10000. 100 = 100 ms.
+**/
+  UINT16                      ITbtConnectTopologyTimeoutInMs;
+
+/** Offset 0x04DC - Reserved
+**/
+  UINT8                       Reserved26[7];
 
 /** Offset 0x04E3 - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
@@ -538,7 +548,7 @@ typedef struct {
 
 /** Offset 0x04E7 - Reserved
 **/
-  UINT8                       Reserved26[194];
+  UINT8                       Reserved27[194];
 
 /** Offset 0x05A9 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -549,7 +559,7 @@ typedef struct {
 
 /** Offset 0x05AA - Reserved
 **/
-  UINT8                      Reserved27[10];
+  UINT8                      Reserved28[10];
 
 /** Offset 0x05B4 - CpuMpPpi
   <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
@@ -560,7 +570,7 @@ typedef struct {
 
 /** Offset 0x05B8 - Reserved
 **/
-  UINT8                      Reserved28[46];
+  UINT8                      Reserved29[46];
 
 /** Offset 0x05E6 - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -570,7 +580,7 @@ typedef struct {
 
 /** Offset 0x05E7 - Reserved
 **/
-  UINT8                       Reserved29[36];
+  UINT8                       Reserved30[36];
 
 /** Offset 0x060B - Enable PCH ISH SPI Cs0 pins assigned
   Set if ISH SPI Cs0 pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -579,7 +589,7 @@ typedef struct {
 
 /** Offset 0x060C - Reserved
 **/
-  UINT8                       Reserved30[2];
+  UINT8                       Reserved31[2];
 
 /** Offset 0x060E - Enable PCH ISH SPI pins assigned
   Set if ISH SPI native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -603,7 +613,7 @@ typedef struct {
 
 /** Offset 0x061C - Reserved
 **/
-  UINT8                       Reserved31[2];
+  UINT8                       Reserved32[2];
 
 /** Offset 0x061E - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -614,7 +624,7 @@ typedef struct {
 
 /** Offset 0x061F - Reserved
 **/
-  UINT8                       Reserved32[2];
+  UINT8                       Reserved33[2];
 
 /** Offset 0x0621 - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
@@ -625,7 +635,7 @@ typedef struct {
 
 /** Offset 0x0622 - Reserved
 **/
-  UINT8                       Reserved33[24];
+  UINT8                       Reserved34[24];
 
 /** Offset 0x063A - Enable PCIE RP Pm Sci
   Indicate whether the root port power manager SCI is enabled.
@@ -634,7 +644,7 @@ typedef struct {
 
 /** Offset 0x0652 - Reserved
 **/
-  UINT8                       Reserved34[24];
+  UINT8                       Reserved35[24];
 
 /** Offset 0x066A - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -648,7 +658,7 @@ typedef struct {
 
 /** Offset 0x069A - Reserved
 **/
-  UINT8                       Reserved35[168];
+  UINT8                       Reserved36[168];
 
 /** Offset 0x0742 - PCIE RP Max Payload
   Max Payload Size supported, Default 128B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -663,7 +673,7 @@ typedef struct {
 
 /** Offset 0x075B - Reserved
 **/
-  UINT8                       Reserved36[5];
+  UINT8                       Reserved37[5];
 
 /** Offset 0x0760 - Touch Host Controller Port 1 Assignment
   Assign THC Port 1
@@ -673,7 +683,7 @@ typedef struct {
 
 /** Offset 0x0761 - Reserved
 **/
-  UINT8                       Reserved37[79];
+  UINT8                       Reserved38[79];
 
 /** Offset 0x07B0 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -694,7 +704,7 @@ typedef struct {
 
 /** Offset 0x07F8 - Reserved
 **/
-  UINT8                       Reserved38[79];
+  UINT8                       Reserved39[79];
 
 /** Offset 0x0847 - PCH Pm WoW lan Enable
   Determine if WLAN wake from Sx, corresponds to the HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
@@ -717,7 +727,7 @@ typedef struct {
 
 /** Offset 0x084A - Reserved
 **/
-  UINT8                       Reserved39[16];
+  UINT8                       Reserved40[16];
 
 /** Offset 0x085A - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -727,7 +737,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved40[42];
+  UINT8                       Reserved41[42];
 
 /** Offset 0x0885 - Enable SATA Port Enable Dito Config
   Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
@@ -741,7 +751,7 @@ typedef struct {
 
 /** Offset 0x0895 - Reserved
 **/
-  UINT8                       Reserved41;
+  UINT8                       Reserved42;
 
 /** Offset 0x0896 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -750,7 +760,7 @@ typedef struct {
 
 /** Offset 0x08A6 - Reserved
 **/
-  UINT8                       Reserved42[72];
+  UINT8                       Reserved43[72];
 
 /** Offset 0x08EE - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -764,7 +774,7 @@ typedef struct {
 
 /** Offset 0x0908 - Reserved
 **/
-  UINT8                       Reserved43[16];
+  UINT8                       Reserved44[16];
 
 /** Offset 0x0918 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
@@ -784,7 +794,7 @@ typedef struct {
 
 /** Offset 0x091A - Reserved
 **/
-  UINT8                       Reserved44[3];
+  UINT8                       Reserved45[3];
 
 /** Offset 0x091D - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
@@ -795,7 +805,7 @@ typedef struct {
 
 /** Offset 0x091E - Reserved
 **/
-  UINT8                       Reserved45[96];
+  UINT8                       Reserved46[96];
 
 /** Offset 0x097E - USB2 Port Reset Message Enable
   0: Disable USB2 Port Reset Message; 1: Enable USB2 Port Reset Message
@@ -804,7 +814,7 @@ typedef struct {
 
 /** Offset 0x098E - Reserved
 **/
-  UINT8                       Reserved46[322];
+  UINT8                       Reserved47[322];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -812,7 +822,7 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved47[101];
+  UINT8                      Reserved48[101];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -830,7 +840,7 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved48[80];
+  UINT8                       Reserved49[80];
 
 /** Offset 0x0B8A - TimeUnit for C-State Latency Control5
   TimeUnit for C-State Latency Control5;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
@@ -840,7 +850,7 @@ typedef struct {
 
 /** Offset 0x0B8B - Reserved
 **/
-  UINT8                       Reserved49[179];
+  UINT8                       Reserved50[179];
 
 /** Offset 0x0C3E - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -862,7 +872,7 @@ typedef struct {
 
 /** Offset 0x0C41 - Reserved
 **/
-  UINT8                       Reserved50;
+  UINT8                       Reserved51;
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -876,7 +886,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved51[269];
+  UINT8                       Reserved52[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -884,7 +894,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved52[232];
+  UINT8                       Reserved53[232];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -901,7 +911,7 @@ typedef struct {
 
 /** Offset 0x0E98
 **/
-  UINT8                       UnusedUpdSpace36[6];
+  UINT8                       UnusedUpdSpace35[6];
 
 /** Offset 0x0E9E
 **/

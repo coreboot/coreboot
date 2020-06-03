@@ -238,6 +238,9 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint16_t TcssAuxOri;
 
+	/* Connect Topology Command timeout value */
+	uint16_t ITbtConnectTopologyTimeoutInMs;
+
 	/*
 	 * Override GPIO PM configuration:
 	 * 0: Use FSP default GPIO PM program,

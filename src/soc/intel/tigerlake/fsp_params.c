@@ -114,6 +114,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	for (i = 0; i < 8; i++)
 		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];
 
+	/*
+	 * Set FSPS UPD ITbtConnectTopologyTimeoutInMs with value 0. FSP will
+	 * evaluate this UPD value and skip sending command. There will be no
+	 * delay for command completion.
+	 */
+	params->ITbtConnectTopologyTimeoutInMs = 0;
+
 	/* Chipset Lockdown */
 	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		params->PchLockDownGlobalSmi = 0;

@@ -32,6 +32,8 @@
 #if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
+#include <drivers/vpd/vpd.h>
+#include <stdlib.h>
 
 #define update_max(len, max_len, stmt)		\
 	do {					\
@@ -381,12 +383,64 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	return t->length + smbios_string_table_len(t->eos);
 }
 
+#define VERSION_VPD "firmware_version"
+static const char *vpd_get_bios_version(void)
+{
+	int size;
+	const char *s;
+	char *version;
+
+	s = vpd_find(VERSION_VPD, &size, VPD_RO);
+	if (!s) {
+		printk(BIOS_ERR, "Find version from VPD %s failed\n", VERSION_VPD);
+		return NULL;
+	}
+
+	version = malloc(size + 1);
+	if (!version) {
+		printk(BIOS_ERR, "Failed to malloc %d bytes for VPD version\n", size + 1);
+		return NULL;
+	}
+	memcpy(version, s, size);
+	version[size] = '\0';
+	printk(BIOS_DEBUG, "Firmware version %s from VPD %s\n", version, VERSION_VPD);
+	return version;
+}
+
+static const char *get_bios_version(void)
+{
+	const char *s;
+
+#define SPACES \
+	"                                                                  "
+
+	if (CONFIG(CHROMEOS))
+		return SPACES;
+
+	if (CONFIG(VPD_SMBIOS_VERSION)) {
+		s = vpd_get_bios_version();
+		if (s != NULL)
+			return s;
+	}
+
+	s = smbios_mainboard_bios_version();
+	if (s != NULL)
+		return s;
+
+	if (strlen(CONFIG_LOCALVERSION) != 0) {
+		printk(BIOS_DEBUG, "BIOS version set to CONFIG_LOCALVERSION: '%s'\n",
+			CONFIG_LOCALVERSION);
+		return CONFIG_LOCALVERSION;
+	}
+
+	printk(BIOS_DEBUG, "SMBIOS firmware version is set to coreboot_version: '%s'\n",
+		coreboot_version);
+	return coreboot_version;
+}
+
 const char *__weak smbios_mainboard_bios_version(void)
 {
-	if (strlen(CONFIG_LOCALVERSION))
-		return CONFIG_LOCALVERSION;
-	else
-		return coreboot_version;
+	return NULL;
 }
 
 static int smbios_write_type0(unsigned long *current, int handle)
@@ -400,27 +454,14 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->length = len - 2;
 
 	t->vendor = smbios_add_string(t->eos, "coreboot");
-#if !CONFIG(CHROMEOS)
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
-	t->bios_version = smbios_add_string(t->eos,
-		smbios_mainboard_bios_version());
-#else
-#define SPACES \
-	"                                                                  "
-	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
-#if CONFIG(HAVE_ACPI_TABLES)
+#if CONFIG(CHROMEOS) && CONFIG(HAVE_ACPI_TABLES)
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
-#endif
-	t->bios_version = smbios_add_string(t->eos, SPACES);
-
-#if CONFIG(HAVE_ACPI_TABLES)
 	/* SMBIOS offsets start at 1 rather than 0 */
-	chromeos_get_chromeos_acpi()->vbt10 =
-		(u32)t->eos + (version_offset - 1);
+	chromeos_get_chromeos_acpi()->vbt10 = (u32)t->eos + (version_offset - 1);
 #endif
-#endif /* CONFIG_CHROMEOS */
-
+	t->bios_version = smbios_add_string(t->eos, get_bios_version());
 	uint32_t rom_size = CONFIG_ROM_SIZE;
 	rom_size = MIN(CONFIG_ROM_SIZE, 16 * MiB);
 	t->bios_rom_size = (rom_size / 65535) - 1;

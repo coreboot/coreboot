@@ -519,7 +519,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->mon_alrm = 0x00;
 	fadt->century = 0x32;
 
-	fadt->reserved = 0;
 	fadt->sci_int = 0x9;
 
 	if (permanent_smi_handler()) {

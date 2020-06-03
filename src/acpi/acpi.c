@@ -1242,12 +1242,15 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	header->asl_compiler_revision = asl_revision;
 
 	fadt->firmware_ctrl = (unsigned long) facs;
-	fadt->dsdt = (unsigned long) dsdt;
-
 	fadt->x_firmware_ctl_l = (unsigned long)facs;
 	fadt->x_firmware_ctl_h = 0;
+
+	fadt->dsdt = (unsigned long) dsdt;
 	fadt->x_dsdt_l = (unsigned long)dsdt;
 	fadt->x_dsdt_h = 0;
+
+	/* should be 0 ACPI 3.0 */
+	fadt->reserved = 0;
 
 	if (CONFIG(SYSTEM_TYPE_CONVERTIBLE) ||
 	    CONFIG(SYSTEM_TYPE_LAPTOP))

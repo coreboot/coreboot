@@ -694,7 +694,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 	int c2_latency;
 
-	fadt->reserved = 0;
 
 	fadt->sci_int = 0x9;
 

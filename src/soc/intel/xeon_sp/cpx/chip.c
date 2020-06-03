@@ -504,6 +504,7 @@ static struct device_operations cpu_bus_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
 	.init = cpx_init_cpus,
+	.acpi_fill_ssdt = generate_cpu_entries,
 };
 
 /* Attach IIO stack bus numbers with dummy device to PCI DOMAIN 0000 device */

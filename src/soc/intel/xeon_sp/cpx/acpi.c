@@ -230,6 +230,41 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
+void generate_cpu_entries(const struct device *device)
+{
+	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
+	int plen = 6;
+	int total_threads = dev_count_cpu();
+	int threads_per_package = get_threads_per_package();
+	int numcpus = total_threads / threads_per_package;
+
+	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each, totalcores: %d.\n",
+	       numcpus, threads_per_package, total_threads);
+
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (core_id = 0; core_id < threads_per_package; core_id++) {
+			if (core_id > 0) {
+				pcontrol_blk = 0;
+				plen = 0;
+			}
+
+			/* Generate processor \_PR.CPUx */
+			acpigen_write_processor((cpu_id) * threads_per_package +
+						core_id, pcontrol_blk, plen);
+
+			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
+
+			/* TODO: Soc specific power states generation */
+			acpigen_pop_len();
+		}
+	}
+	/* PPKG is usually used for thermal management of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, threads_per_package);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_processor_cnot(threads_per_package);
+}
+
 int soc_madt_sci_irq_polarity(int sci)
 {
 	if (sci >= 20)

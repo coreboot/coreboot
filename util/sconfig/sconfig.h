@@ -57,6 +57,9 @@ struct chip_instance {
 	/* Pointer to registers for this chip. */
 	struct reg *reg;
 
+	/* Pointer to references for this chip. */
+	struct reg *ref;
+
 	/* Pointer to chip of which this is instance. */
 	struct chip *chip;
 
@@ -123,6 +126,9 @@ struct device {
 	/* Name of this device. */
 	char *name;
 
+	/* Alias of this device (for internal references) */
+	char *alias;
+
 	/* Path of this device. */
 	char *path;
 	int path_a;
@@ -172,7 +178,7 @@ extern struct bus *root_parent;
 struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
-			  int status);
+			  char *alias, int status);
 
 void add_resource(struct bus *bus, int type, int index, int base);
 
@@ -195,6 +201,7 @@ void *chip_dequeue_tail(void);
 
 struct chip_instance *new_chip_instance(char *path);
 void add_register(struct chip_instance *chip, char *name, char *val);
+void add_reference(struct chip_instance *chip, char *name, char *alias);
 
 struct fw_config_field *get_fw_config_field(const char *name);
 

@@ -669,15 +669,40 @@ static void set_new_child(struct bus *parent, struct device *child)
 	child->parent = parent;
 }
 
+static const struct device *find_alias(const struct device *const parent,
+				       const char *const alias)
+{
+	if (parent->alias && !strcmp(parent->alias, alias))
+		return parent;
+
+	const struct bus *bus;
+	for (bus = parent->bus; bus; bus = bus->next_bus) {
+		const struct device *child;
+		for (child = bus->children; child; child = child->sibling) {
+			const struct device *const ret = find_alias(child, alias);
+			if (ret)
+				return ret;
+		}
+	}
+
+	return NULL;
+}
+
 struct device *new_device(struct bus *parent,
 			  struct chip_instance *chip_instance,
 			  const int bustype, const char *devnum,
-			  int status)
+			  char *alias, int status)
 {
 	char *tmp;
 	int path_a;
 	int path_b = 0;
 	struct device *new_d;
+
+	/* Check for alias name conflicts. */
+	if (alias && find_alias(&base_root_dev, alias)) {
+		printf("ERROR: Alias already exists: %s\n", alias);
+		exit(1);
+	}
 
 	path_a = strtol(devnum, &tmp, 16);
 	if (*tmp == '.') {
@@ -698,6 +723,7 @@ struct device *new_device(struct bus *parent,
 
 	new_d->path_a = path_a;
 	new_d->path_b = path_b;
+	new_d->alias = alias;
 
 	new_d->enabled = status & 0x01;
 	new_d->hidden = (status >> 1) & 0x01;
@@ -817,6 +843,35 @@ static void add_reg(struct reg **const head, char *const name, char *const val)
 void add_register(struct chip_instance *chip_instance, char *name, char *val)
 {
 	add_reg(&chip_instance->reg, name, val);
+}
+
+void add_reference(struct chip_instance *const chip_instance,
+		   char *const name, char *const alias)
+{
+	add_reg(&chip_instance->ref, name, alias);
+}
+
+static void set_reference(struct chip_instance *const chip_instance,
+			  char *const name, char *const alias)
+{
+	const struct device *const dev = find_alias(&base_root_dev, alias);
+	if (!dev) {
+		printf("ERROR: Cannot find device alias '%s'.\n", alias);
+		exit(1);
+	}
+
+	char *const ref_name = S_ALLOC(strlen(dev->name) + 2);
+	sprintf(ref_name, "&%s", dev->name);
+	add_register(chip_instance, name, ref_name);
+}
+
+static void update_references(FILE *file, FILE *head, struct device *dev,
+			      struct device *next)
+{
+	struct reg *ref;
+
+	for (ref = dev->chip_instance->ref; ref; ref = ref->next)
+		set_reference(dev->chip_instance, ref->key, ref->value);
 }
 
 void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,
@@ -1203,15 +1258,11 @@ static void emit_chip_instance(FILE *fil, struct chip_instance *instance)
 	fprintf(fil, "};\n\n");
 }
 
-static void emit_chips(FILE *fil)
+static void emit_chip_configs(FILE *fil)
 {
 	struct chip *chip = chip_header.next;
 	struct chip_instance *instance;
 	int chip_id;
-
-	emit_chip_headers(fil, chip);
-
-	fprintf(fil, "\n#define STORAGE static __unused DEVTREE_CONST\n\n");
 
 	for (; chip; chip = chip->next) {
 		if (!chip->chiph_exists)
@@ -1337,9 +1388,9 @@ static void update_resource(struct device *dev, struct resource *res)
  * Add register to chip instance. If register is already present, then update
  * its value. If not, then add a new register to the chip instance.
  */
-static void update_register(struct chip_instance *c, struct reg *reg)
+static void update_register(struct reg **const head, struct reg *reg)
 {
-	struct reg *base_reg = c->reg;
+	struct reg *base_reg = *head;
 
 	while (base_reg) {
 		if (!strcmp(base_reg->key, reg->key)) {
@@ -1349,7 +1400,7 @@ static void update_register(struct chip_instance *c, struct reg *reg)
 		base_reg = base_reg->next;
 	}
 
-	add_register(c, reg->key, reg->value);
+	add_reg(head, reg->key, reg->value);
 }
 
 static void override_devicetree(struct bus *base_parent,
@@ -1419,6 +1470,19 @@ static void override_devicetree(struct bus *base_parent,
  * |                    | 2. If not, then a new resource is allocated|
  * |                    |    under the base device using type, index |
  * |                    |    and base from override res.             |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | ref                | Each reference that is present in override |
+ * |                    | device is copied over to base device with  |
+ * |                    | the same rules as registers.               |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
+ * | alias              | Base device alias is copied to override.   |
+ * |                    | Override devices cannot change/remove an   |
+ * |                    | existing alias, but they can add an alias  |
+ * |                    | if one does not exist.                     |
  * |                    |                                            |
  * +-----------------------------------------------------------------+
  * |                    |                                            |
@@ -1492,9 +1556,33 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	 */
 	struct reg *reg = override_dev->chip_instance->reg;
 	while (reg) {
-		update_register(base_dev->chip_instance, reg);
+		update_register(&base_dev->chip_instance->reg, reg);
 		reg = reg->next;
 	}
+
+	/* Copy references just as with registers. */
+	reg = override_dev->chip_instance->ref;
+	while (reg) {
+		update_register(&base_dev->chip_instance->ref, reg);
+		reg = reg->next;
+	}
+
+	/* Check for alias name conflicts. */
+	if (override_dev->alias && find_alias(&base_root_dev, override_dev->alias)) {
+		printf("ERROR: alias already exists: %s\n", override_dev->alias);
+		exit(1);
+	}
+
+	/*
+	 * Copy alias from base device.
+	 *
+	 * Override devices cannot change/remove an existing alias,
+	 * but they can add an alias to a device if one does not exist yet.
+	 */
+	if (base_dev->alias)
+		override_dev->alias = base_dev->alias;
+	else
+		base_dev->alias = override_dev->alias;
 
 	/*
 	 * Use probe list from override device in place of base device, in order
@@ -1631,12 +1719,15 @@ int main(int argc, char **argv)
 	fprintf(autogen, "#include <device/device.h>\n");
 	fprintf(autogen, "#include <device/pci.h>\n\n");
 	fprintf(autogen, "#include <static.h>\n");
-
-	emit_chips(autogen);
+	emit_chip_headers(autogen, chip_header.next);
+	fprintf(autogen, "\n#define STORAGE static __unused DEVTREE_CONST\n\n");
 
 	walk_device_tree(autogen, autohead, &base_root_dev, inherit_subsystem_ids);
 	fprintf(autogen, "\n/* pass 0 */\n");
 	walk_device_tree(autogen, autohead, &base_root_dev, pass0);
+	walk_device_tree(autogen, autohead, &base_root_dev, update_references);
+	fprintf(autogen, "\n/* chip configs */\n");
+	emit_chip_configs(autogen);
 	fprintf(autogen, "\n/* pass 1 */\n");
 	walk_device_tree(autogen, autohead, &base_root_dev, pass1);
 

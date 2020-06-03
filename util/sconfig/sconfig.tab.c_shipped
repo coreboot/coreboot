@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.5.3.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -48,7 +48,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.5.1"
+#define YYBISON_VERSION "3.5.3"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -130,42 +130,45 @@ extern int yydebug;
     CHIP = 258,
     DEVICE = 259,
     REGISTER = 260,
-    BOOL = 261,
-    STATUS = 262,
-    MANDATORY = 263,
-    BUS = 264,
-    RESOURCE = 265,
-    END = 266,
-    EQUALS = 267,
-    HEX = 268,
-    STRING = 269,
-    PCI = 270,
-    PNP = 271,
-    I2C = 272,
-    APIC = 273,
-    CPU_CLUSTER = 274,
-    CPU = 275,
-    DOMAIN = 276,
-    IRQ = 277,
-    DRQ = 278,
-    SLOT_DESC = 279,
-    IO = 280,
-    NUMBER = 281,
-    SUBSYSTEMID = 282,
-    INHERIT = 283,
-    IOAPIC_IRQ = 284,
-    IOAPIC = 285,
-    PCIINT = 286,
-    GENERIC = 287,
-    SPI = 288,
-    USB = 289,
-    MMIO = 290,
-    LPC = 291,
-    ESPI = 292,
-    FW_CONFIG_TABLE = 293,
-    FW_CONFIG_FIELD = 294,
-    FW_CONFIG_OPTION = 295,
-    FW_CONFIG_PROBE = 296
+    ALIAS = 261,
+    REFERENCE = 262,
+    ASSOCIATION = 263,
+    BOOL = 264,
+    STATUS = 265,
+    MANDATORY = 266,
+    BUS = 267,
+    RESOURCE = 268,
+    END = 269,
+    EQUALS = 270,
+    HEX = 271,
+    STRING = 272,
+    PCI = 273,
+    PNP = 274,
+    I2C = 275,
+    APIC = 276,
+    CPU_CLUSTER = 277,
+    CPU = 278,
+    DOMAIN = 279,
+    IRQ = 280,
+    DRQ = 281,
+    SLOT_DESC = 282,
+    IO = 283,
+    NUMBER = 284,
+    SUBSYSTEMID = 285,
+    INHERIT = 286,
+    IOAPIC_IRQ = 287,
+    IOAPIC = 288,
+    PCIINT = 289,
+    GENERIC = 290,
+    SPI = 291,
+    USB = 292,
+    MMIO = 293,
+    LPC = 294,
+    ESPI = 295,
+    FW_CONFIG_TABLE = 296,
+    FW_CONFIG_FIELD = 297,
+    FW_CONFIG_OPTION = 298,
+    FW_CONFIG_PROBE = 299
   };
 #endif
 
@@ -497,19 +500,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   58
+#define YYLAST   64
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  42
+#define YYNTOKENS  45
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  23
+#define YYNNTS  25
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  44
+#define YYNRULES  48
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  75
+#define YYNSTATES  83
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   296
+#define YYMAXUTOK   299
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -550,18 +553,18 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    24,    24,    24,    24,    26,    26,    26,    26,    28,
-      28,    28,    28,    28,    28,    28,    28,    28,    30,    30,
-      39,    39,    47,    47,    49,    52,    55,    58,    61,    64,
-      67,    70,    74,    77,    77,    80,    80,    83,    83,    89,
-      89,    95,    95,   101,   105
+       0,    24,    24,    24,    24,    26,    26,    26,    26,    26,
+      28,    28,    28,    28,    28,    28,    28,    28,    28,    30,
+      30,    39,    39,    47,    49,    53,    53,    55,    58,    61,
+      64,    67,    70,    73,    76,    79,    83,    86,    86,    89,
+      89,    92,    92,    98,    98,   104,   104,   110,   114
 };
 #endif
 
@@ -570,18 +573,19 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "CHIP", "DEVICE", "REGISTER", "BOOL",
-  "STATUS", "MANDATORY", "BUS", "RESOURCE", "END", "EQUALS", "HEX",
-  "STRING", "PCI", "PNP", "I2C", "APIC", "CPU_CLUSTER", "CPU", "DOMAIN",
-  "IRQ", "DRQ", "SLOT_DESC", "IO", "NUMBER", "SUBSYSTEMID", "INHERIT",
-  "IOAPIC_IRQ", "IOAPIC", "PCIINT", "GENERIC", "SPI", "USB", "MMIO", "LPC",
-  "ESPI", "FW_CONFIG_TABLE", "FW_CONFIG_FIELD", "FW_CONFIG_OPTION",
-  "FW_CONFIG_PROBE", "$accept", "devtree", "chipchildren",
-  "devicechildren", "chip", "@1", "device", "@2", "status", "resource",
-  "registers", "subsystemid", "ioapic_irq", "smbios_slot_desc",
-  "fw_config_table", "fw_config_table_children",
-  "fw_config_field_children", "fw_config_field", "$@3", "$@4", "$@5",
-  "fw_config_option", "fw_config_probe", YY_NULLPTR
+  "$end", "error", "$undefined", "CHIP", "DEVICE", "REGISTER", "ALIAS",
+  "REFERENCE", "ASSOCIATION", "BOOL", "STATUS", "MANDATORY", "BUS",
+  "RESOURCE", "END", "EQUALS", "HEX", "STRING", "PCI", "PNP", "I2C",
+  "APIC", "CPU_CLUSTER", "CPU", "DOMAIN", "IRQ", "DRQ", "SLOT_DESC", "IO",
+  "NUMBER", "SUBSYSTEMID", "INHERIT", "IOAPIC_IRQ", "IOAPIC", "PCIINT",
+  "GENERIC", "SPI", "USB", "MMIO", "LPC", "ESPI", "FW_CONFIG_TABLE",
+  "FW_CONFIG_FIELD", "FW_CONFIG_OPTION", "FW_CONFIG_PROBE", "$accept",
+  "devtree", "chipchildren", "devicechildren", "chip", "@1", "device",
+  "@2", "alias", "status", "resource", "reference", "registers",
+  "subsystemid", "ioapic_irq", "smbios_slot_desc", "fw_config_table",
+  "fw_config_table_children", "fw_config_field_children",
+  "fw_config_field", "$@3", "$@4", "$@5", "fw_config_option",
+  "fw_config_probe", YY_NULLPTR
 };
 #endif
 
@@ -594,11 +598,11 @@ static const yytype_int16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296
+     295,   296,   297,   298,   299
 };
 # endif
 
-#define YYPACT_NINF (-12)
+#define YYPACT_NINF (-21)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -612,14 +616,15 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -12,     3,   -12,     4,   -12,   -12,   -12,   -12,    -2,   -12,
-     -12,     8,   -12,     9,     1,    14,    11,   -12,   -12,   -12,
-     -12,     2,   -12,     5,    17,   -12,   -12,    -6,    10,    16,
-     -12,    -1,   -12,    18,   -12,   -12,   -12,   -12,   -12,     0,
-     -12,     7,   -12,   -12,   -12,    -3,    19,   -12,    21,    20,
-      22,    28,   -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,
-      31,    30,    23,    24,    33,    25,    36,    26,    27,   -12,
-     -12,    38,   -12,   -12,   -12
+     -21,     3,   -21,    -4,   -21,   -21,   -21,   -21,    -2,   -21,
+     -21,     4,   -21,    11,   -20,    14,     6,    13,   -21,   -21,
+     -21,   -21,   -21,    -1,   -21,     2,    17,    26,   -21,   -21,
+     -10,    29,    21,    22,   -21,    -7,   -21,    25,   -21,    30,
+      10,   -21,   -21,    -6,   -21,    19,   -21,   -21,   -21,   -21,
+     -21,   -21,   -21,    -3,    20,   -21,    33,    23,    24,    34,
+     -21,   -21,   -21,   -21,   -21,   -21,   -21,   -21,    28,    37,
+      27,    12,    38,    31,    40,    32,    35,   -21,   -21,    41,
+     -21,   -21,   -21
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -627,30 +632,31 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,     0,    34,     3,     4,    18,     0,     8,
-      32,     0,    33,     0,    41,     0,     0,    19,     6,     5,
-       7,    39,    36,     0,     0,    37,    36,     0,     0,     0,
-      36,     0,    42,     0,    35,    22,    23,    20,    25,     0,
-      40,     0,    17,    38,    43,     0,     0,    21,     0,     0,
-       0,     0,    10,     9,    11,    15,    12,    13,    14,    16,
-       0,     0,     0,     0,     0,     0,    31,    26,     0,    44,
-      24,    30,    27,    28,    29
+       2,     0,     1,     0,    38,     3,     4,    19,     0,     9,
+      36,     0,    37,     0,    45,     0,     0,     0,    20,     6,
+       5,     8,     7,    43,    40,     0,     0,     0,    41,    40,
+       0,    23,     0,     0,    40,     0,    46,     0,    39,     0,
+       0,    29,    28,     0,    44,     0,    24,    25,    26,    21,
+      42,    47,    18,     0,     0,    22,     0,     0,     0,     0,
+      11,    10,    12,    16,    13,    14,    15,    17,     0,     0,
+       0,     0,     0,     0,    35,    30,     0,    48,    27,    34,
+      31,    32,    33
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,   -12,   -12,    -9,   -12,    12,   -12,   -12,   -12,
-      13,   -12,   -12,   -12,   -12,   -12,   -11,   -12,   -12,   -12,
-     -12,   -12,   -12
+     -21,   -21,   -21,   -21,    -8,   -21,     8,   -21,   -21,   -21,
+     -21,   -21,     9,   -21,   -21,   -21,   -21,   -21,   -12,   -21,
+     -21,   -21,   -21,   -21,   -21
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,    13,    45,     5,     9,    19,    42,    37,    54,
-      20,    56,    57,    58,     6,     8,    27,    12,    30,    26,
-      22,    34,    59
+      -1,     1,    13,    53,     5,     9,    20,    52,    40,    49,
+      62,    21,    22,    64,    65,    66,     6,     8,    30,    12,
+      34,    29,    24,    38,    67
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -658,56 +664,59 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       3,    15,    16,     2,    18,    32,     3,    46,    47,    10,
-      40,    43,     3,    15,    16,    31,    35,    36,     7,    39,
-      17,    48,    14,    23,    49,    24,    50,    21,    25,    29,
-      38,    28,    41,    44,    33,    61,    52,    11,    51,    33,
-      33,     4,    64,    65,    66,    60,    62,    69,    63,    67,
-      71,    70,    74,    73,    72,    68,     0,    53,    55
+       3,    15,    16,     2,    36,    19,     3,    44,    50,    23,
+      54,    55,    10,     7,     3,    15,    16,    35,    17,    47,
+      48,    14,    43,    26,    56,    18,    25,    57,    28,    58,
+      27,    31,    32,    37,    33,    39,    37,    37,    41,    42,
+      11,    59,    45,    73,     4,    60,    76,    46,    51,    68,
+      69,    72,    70,    71,    74,    77,    75,    79,    82,     0,
+      78,    61,    63,    80,    81
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     0,    13,    11,     3,    10,    11,    11,
-      11,    11,     3,     4,     5,    26,     6,     7,    14,    30,
-      11,    24,    14,     9,    27,    14,    29,    26,    26,    12,
-      14,    26,    14,    26,    40,    14,    45,    39,    41,    40,
-      40,    38,    14,    12,    14,    26,    26,    14,    26,    26,
-      14,    26,    14,    26,    28,    31,    -1,    45,    45
+       3,     4,     5,     0,    14,    13,     3,    14,    14,    29,
+      13,    14,    14,    17,     3,     4,     5,    29,     7,     9,
+      10,    17,    34,    17,    27,    14,    12,    30,    29,    32,
+      17,    29,    15,    43,     8,     6,    43,    43,    17,    17,
+      42,    44,    17,    15,    41,    53,    34,    17,    29,    29,
+      17,    17,    29,    29,    17,    17,    29,    17,    17,    -1,
+      29,    53,    53,    31,    29
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    43,     0,     3,    38,    46,    56,    14,    57,    47,
-      11,    39,    59,    44,    14,     4,     5,    11,    46,    48,
-      52,    26,    62,     9,    14,    26,    61,    58,    26,    12,
-      60,    58,    11,    40,    63,     6,     7,    50,    14,    58,
-      11,    14,    49,    11,    26,    45,    10,    11,    24,    27,
-      29,    41,    46,    48,    51,    52,    53,    54,    55,    64,
-      26,    14,    26,    26,    14,    12,    14,    26,    31,    14,
-      26,    14,    28,    26,    14
+       0,    46,     0,     3,    41,    49,    61,    17,    62,    50,
+      14,    42,    64,    47,    17,     4,     5,     7,    14,    49,
+      51,    56,    57,    29,    67,    12,    17,    17,    29,    66,
+      63,    29,    15,     8,    65,    63,    14,    43,    68,     6,
+      53,    17,    17,    63,    14,    17,    17,     9,    10,    54,
+      14,    29,    52,    48,    13,    14,    27,    30,    32,    44,
+      49,    51,    55,    57,    58,    59,    60,    69,    29,    17,
+      29,    29,    17,    15,    17,    29,    34,    17,    29,    17,
+      31,    29,    17
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    42,    43,    43,    43,    44,    44,    44,    44,    45,
-      45,    45,    45,    45,    45,    45,    45,    45,    47,    46,
-      49,    48,    50,    50,    51,    52,    53,    53,    54,    55,
-      55,    55,    56,    57,    57,    58,    58,    60,    59,    61,
-      59,    62,    59,    63,    64
+       0,    45,    46,    46,    46,    47,    47,    47,    47,    47,
+      48,    48,    48,    48,    48,    48,    48,    48,    48,    50,
+      49,    52,    51,    53,    53,    54,    54,    55,    56,    57,
+      58,    58,    59,    60,    60,    60,    61,    62,    62,    63,
+      63,    65,    64,    66,    64,    67,    64,    68,    69
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     2,     2,     2,     2,     2,     0,     2,
-       2,     2,     2,     2,     2,     2,     2,     0,     0,     5,
-       0,     7,     1,     1,     4,     4,     3,     4,     4,     5,
-       4,     3,     3,     2,     0,     2,     0,     0,     7,     0,
-       6,     0,     5,     3,     3
+       0,     2,     0,     2,     2,     2,     2,     2,     2,     0,
+       2,     2,     2,     2,     2,     2,     2,     2,     0,     0,
+       5,     0,     8,     0,     2,     1,     1,     4,     4,     4,
+       3,     4,     4,     5,     4,     3,     3,     2,     0,     2,
+       0,     0,     7,     0,     6,     0,     5,     3,     3
 };
 
 
@@ -1406,7 +1415,7 @@ yyreduce:
          { cur_parent = root_parent; }
     break;
 
-  case 18:
+  case 19:
                                 {
 	(yyval.chip_instance) = new_chip_instance((yyvsp[0].string));
 	chip_enqueue_tail(cur_chip_instance);
@@ -1414,84 +1423,80 @@ yyreduce:
 }
     break;
 
-  case 19:
+  case 20:
                          {
 	cur_chip_instance = chip_dequeue_tail();
 }
     break;
 
-  case 20:
-                                                 {
-	(yyval.dev) = new_device(cur_parent, cur_chip_instance, (yyvsp[-2].number), (yyvsp[-1].string), (yyvsp[0].number));
+  case 21:
+                                                       {
+	(yyval.dev) = new_device(cur_parent, cur_chip_instance, (yyvsp[-3].number), (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].number));
 	cur_parent = (yyval.dev)->last_bus;
 }
     break;
 
-  case 21:
+  case 22:
                            {
 	cur_parent = (yyvsp[-2].dev)->parent;
 }
     break;
 
+  case 23:
+                   {
+	(yyval.string) = NULL;
+}
+    break;
+
   case 24:
-        { add_resource(cur_parent, (yyvsp[-3].number), strtol((yyvsp[-2].string), NULL, 0), strtol((yyvsp[0].string), NULL, 0)); }
-    break;
-
-  case 25:
-        { add_register(cur_chip_instance, (yyvsp[-2].string), (yyvsp[0].string)); }
-    break;
-
-  case 26:
-        { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[-1].string), NULL, 16), strtol((yyvsp[0].string), NULL, 16), 0); }
+                 {
+	(yyval.string) = (yyvsp[0].string);
+}
     break;
 
   case 27:
-        { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[-2].string), NULL, 16), strtol((yyvsp[-1].string), NULL, 16), 1); }
+        { add_resource(cur_parent, (yyvsp[-3].number), strtol((yyvsp[-2].string), NULL, 0), strtol((yyvsp[0].string), NULL, 0)); }
     break;
 
   case 28:
-        { add_ioapic_info(cur_parent, strtol((yyvsp[-2].string), NULL, 16), (yyvsp[-1].string), strtol((yyvsp[0].string), NULL, 16)); }
+        { add_reference(cur_chip_instance, (yyvsp[0].string), (yyvsp[-2].string)); }
     break;
 
   case 29:
-        { add_slot_desc(cur_parent, (yyvsp[-3].string), (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string)); }
+        { add_register(cur_chip_instance, (yyvsp[-2].string), (yyvsp[0].string)); }
     break;
 
   case 30:
-        { add_slot_desc(cur_parent, (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string), NULL); }
+        { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[-1].string), NULL, 16), strtol((yyvsp[0].string), NULL, 16), 0); }
     break;
 
   case 31:
-        { add_slot_desc(cur_parent, (yyvsp[-1].string), (yyvsp[0].string), NULL, NULL); }
+        { add_pci_subsystem_ids(cur_parent, strtol((yyvsp[-2].string), NULL, 16), strtol((yyvsp[-1].string), NULL, 16), 1); }
     break;
 
   case 32:
+        { add_ioapic_info(cur_parent, strtol((yyvsp[-2].string), NULL, 16), (yyvsp[-1].string), strtol((yyvsp[0].string), NULL, 16)); }
+    break;
+
+  case 33:
+        { add_slot_desc(cur_parent, (yyvsp[-3].string), (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string)); }
+    break;
+
+  case 34:
+        { add_slot_desc(cur_parent, (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].string), NULL); }
+    break;
+
+  case 35:
+        { add_slot_desc(cur_parent, (yyvsp[-1].string), (yyvsp[0].string), NULL, NULL); }
+    break;
+
+  case 36:
                                                               { }
     break;
 
-  case 37:
+  case 41:
                                                                                           {
 	cur_field = new_fw_config_field((yyvsp[-2].string), strtoul((yyvsp[-1].string), NULL, 0), strtoul((yyvsp[0].string), NULL, 0));
-}
-    break;
-
-  case 38:
-                                     { }
-    break;
-
-  case 39:
-                                                            {
-	cur_field = new_fw_config_field((yyvsp[-1].string), strtoul((yyvsp[0].string), NULL, 0), strtoul((yyvsp[0].string), NULL, 0));
-}
-    break;
-
-  case 40:
-                                     { }
-    break;
-
-  case 41:
-                                        {
-	cur_field = get_fw_config_field((yyvsp[0].string));
 }
     break;
 
@@ -1500,10 +1505,30 @@ yyreduce:
     break;
 
   case 43:
-        { add_fw_config_option(cur_field, (yyvsp[-1].string), strtoul((yyvsp[0].string), NULL, 0)); }
+                                                            {
+	cur_field = new_fw_config_field((yyvsp[-1].string), strtoul((yyvsp[0].string), NULL, 0), strtoul((yyvsp[0].string), NULL, 0));
+}
     break;
 
   case 44:
+                                     { }
+    break;
+
+  case 45:
+                                        {
+	cur_field = get_fw_config_field((yyvsp[0].string));
+}
+    break;
+
+  case 46:
+                                     { }
+    break;
+
+  case 47:
+        { add_fw_config_option(cur_field, (yyvsp[-1].string), strtoul((yyvsp[0].string), NULL, 0)); }
+    break;
+
+  case 48:
         { add_fw_config_probe(cur_parent, (yyvsp[-1].string), (yyvsp[0].string)); }
     break;
 

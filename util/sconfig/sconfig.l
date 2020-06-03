@@ -13,6 +13,9 @@ int linenum = 0;
 \r?\n			{linenum++;}
 chip			{return(CHIP);}
 device			{return(DEVICE);}
+alias			{return(ALIAS);}
+use			{return(REFERENCE);}
+as			{return(ASSOCIATION);}
 register		{return(REGISTER);}
 fw_config		{return(FW_CONFIG_TABLE);}
 field			{return(FW_CONFIG_FIELD);}

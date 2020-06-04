@@ -1,6 +1,0 @@
-Board name: ODE_e21xx
-Board URL: http://www.unibap.com/advanced-heterogeneous-computing-modules/
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

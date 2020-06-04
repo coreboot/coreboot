@@ -1,3 +1,0 @@
-# Disabled
-#config BOARD_ODE_E21XX
-#	bool "ODE_e21xx"

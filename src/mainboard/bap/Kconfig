@@ -7,9 +7,6 @@ choice
 
 source "src/mainboard/bap/*/Kconfig.name"
 
-config BAP_BOARDS_DISABLED
-	bool "Boards from vendor are disabled"
-
 endchoice
 
 source "src/mainboard/bap/*/Kconfig"

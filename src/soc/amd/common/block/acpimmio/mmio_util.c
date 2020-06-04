@@ -5,28 +5,40 @@
 #include <amdblocks/acpimmio_map.h>
 #include <amdblocks/acpimmio.h>
 
-uint8_t *const acpimmio_sm_pci	= ACPIMMIO_BASE(SM_PCI);
-uint8_t *const acpimmio_gpio_100 = ACPIMMIO_BASE(GPIO_100);
-uint8_t *const acpimmio_smi	= ACPIMMIO_BASE(SMI);
-uint8_t *const acpimmio_pmio	= ACPIMMIO_BASE(PMIO);
-uint8_t *const acpimmio_pmio2	= ACPIMMIO_BASE(PMIO2);
-uint8_t *const acpimmio_biosram	= ACPIMMIO_BASE(BIOSRAM);
-uint8_t *const acpimmio_cmosram	= ACPIMMIO_BASE(CMOSRAM);
-uint8_t *const acpimmio_cmos	= ACPIMMIO_BASE(CMOS);
-uint8_t *const acpimmio_acpi	= ACPIMMIO_BASE(ACPI);
-uint8_t *const acpimmio_asf	= ACPIMMIO_BASE(ASF);
-uint8_t *const acpimmio_smbus	= ACPIMMIO_BASE(SMBUS);
-uint8_t *const acpimmio_wdt	= ACPIMMIO_BASE(WDT);
-uint8_t *const acpimmio_hpet	= ACPIMMIO_BASE(HPET);
-uint8_t *const acpimmio_iomux	= ACPIMMIO_BASE(IOMUX);
-uint8_t *const acpimmio_misc	= ACPIMMIO_BASE(MISC);
-uint8_t *const acpimmio_dpvga	= ACPIMMIO_BASE(DPVGA);
-uint8_t *const acpimmio_gpio0	= ACPIMMIO_BASE(GPIO0);
-uint8_t *const acpimmio_gpio1	= ACPIMMIO_BASE(GPIO1);
-uint8_t *const acpimmio_gpio2	= ACPIMMIO_BASE(GPIO2);
-uint8_t *const acpimmio_xhci_pm	= ACPIMMIO_BASE(XHCIPM);
-uint8_t *const acpimmio_acdc_tmr	= ACPIMMIO_BASE(ACDCTMR);
-uint8_t *const acpimmio_aoac	= ACPIMMIO_BASE(AOAC);
+#define ACPI_BANK_PTR(bank) \
+	(void *)(uintptr_t)(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_ ## bank ## _BANK)
+
+#if CONSTANT_ACPIMMIO_BASE_ADDRESS
+#define DECLARE_ACPIMMIO(ptr, bank) \
+	uint8_t *const ptr = ACPI_BANK_PTR(bank)
+#else
+#define DECLARE_ACPIMMIO(ptr, bank) uint8_t *ptr
+#endif
+
+DECLARE_ACPIMMIO(acpimmio_sm_pci, SM_PCI);
+DECLARE_ACPIMMIO(acpimmio_gpio_100, GPIO_100);
+DECLARE_ACPIMMIO(acpimmio_smi, SMI);
+DECLARE_ACPIMMIO(acpimmio_pmio, PMIO);
+DECLARE_ACPIMMIO(acpimmio_pmio2, PMIO2);
+DECLARE_ACPIMMIO(acpimmio_biosram, BIOSRAM);
+DECLARE_ACPIMMIO(acpimmio_cmosram, CMOSRAM);
+DECLARE_ACPIMMIO(acpimmio_cmos, CMOS);
+DECLARE_ACPIMMIO(acpimmio_acpi, ACPI);
+DECLARE_ACPIMMIO(acpimmio_asf, ASF);
+DECLARE_ACPIMMIO(acpimmio_smbus, SMBUS);
+DECLARE_ACPIMMIO(acpimmio_wdt, WDT);
+DECLARE_ACPIMMIO(acpimmio_hpet, HPET);
+DECLARE_ACPIMMIO(acpimmio_iomux, IOMUX);
+DECLARE_ACPIMMIO(acpimmio_misc, MISC);
+DECLARE_ACPIMMIO(acpimmio_dpvga, DPVGA);
+DECLARE_ACPIMMIO(acpimmio_gpio0, GPIO0);
+DECLARE_ACPIMMIO(acpimmio_gpio1, GPIO1);
+DECLARE_ACPIMMIO(acpimmio_gpio2, GPIO2);
+DECLARE_ACPIMMIO(acpimmio_xhci_pm, XHCIPM);
+DECLARE_ACPIMMIO(acpimmio_acdc_tmr, ACDCTMR);
+DECLARE_ACPIMMIO(acpimmio_aoac, AOAC);
+
+#undef DECLARE_ACPIMMIO
 
 void enable_acpimmio_decode_pm24(void)
 {

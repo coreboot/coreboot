@@ -23,28 +23,39 @@
 #define   PM_04_BIOSRAM_DECODE_EN	BIT(0)
 #define   PM_04_ACPIMMIO_DECODE_EN	BIT(1)
 
-extern uint8_t *const acpimmio_gpio_100;
-extern uint8_t *const acpimmio_sm_pci;
-extern uint8_t *const acpimmio_smi;
-extern uint8_t *const acpimmio_pmio;
-extern uint8_t *const acpimmio_pmio2;
-extern uint8_t *const acpimmio_biosram;
-extern uint8_t *const acpimmio_cmosram;
-extern uint8_t *const acpimmio_cmos;
-extern uint8_t *const acpimmio_acpi;
-extern uint8_t *const acpimmio_asf;
-extern uint8_t *const acpimmio_smbus;
-extern uint8_t *const acpimmio_wdt;
-extern uint8_t *const acpimmio_hpet;
-extern uint8_t *const acpimmio_iomux;
-extern uint8_t *const acpimmio_misc;
-extern uint8_t *const acpimmio_dpvga;
-extern uint8_t *const acpimmio_gpio0;
-extern uint8_t *const acpimmio_gpio1;
-extern uint8_t *const acpimmio_gpio2;
-extern uint8_t *const acpimmio_xhci_pm;
-extern uint8_t *const acpimmio_acdc_tmr;
-extern uint8_t *const acpimmio_aoac;
+/* For x86 base is constant, while PSP does mapping runtime. */
+#define CONSTANT_ACPIMMIO_BASE_ADDRESS	ENV_X86
+
+#if CONSTANT_ACPIMMIO_BASE_ADDRESS
+#define MAYBE_CONST const
+#else
+#define MAYBE_CONST
+#endif
+
+extern uint8_t *MAYBE_CONST acpimmio_gpio_100;
+extern uint8_t *MAYBE_CONST acpimmio_sm_pci;
+extern uint8_t *MAYBE_CONST acpimmio_smi;
+extern uint8_t *MAYBE_CONST acpimmio_pmio;
+extern uint8_t *MAYBE_CONST acpimmio_pmio2;
+extern uint8_t *MAYBE_CONST acpimmio_biosram;
+extern uint8_t *MAYBE_CONST acpimmio_cmosram;
+extern uint8_t *MAYBE_CONST acpimmio_cmos;
+extern uint8_t *MAYBE_CONST acpimmio_acpi;
+extern uint8_t *MAYBE_CONST acpimmio_asf;
+extern uint8_t *MAYBE_CONST acpimmio_smbus;
+extern uint8_t *MAYBE_CONST acpimmio_wdt;
+extern uint8_t *MAYBE_CONST acpimmio_hpet;
+extern uint8_t *MAYBE_CONST acpimmio_iomux;
+extern uint8_t *MAYBE_CONST acpimmio_misc;
+extern uint8_t *MAYBE_CONST acpimmio_dpvga;
+extern uint8_t *MAYBE_CONST acpimmio_gpio0;
+extern uint8_t *MAYBE_CONST acpimmio_gpio1;
+extern uint8_t *MAYBE_CONST acpimmio_gpio2;
+extern uint8_t *MAYBE_CONST acpimmio_xhci_pm;
+extern uint8_t *MAYBE_CONST acpimmio_acdc_tmr;
+extern uint8_t *MAYBE_CONST acpimmio_aoac;
+
+#undef MAYBE_CONST
 
 /* For older discrete FCHs */
 void enable_acpimmio_decode_pm24(void);

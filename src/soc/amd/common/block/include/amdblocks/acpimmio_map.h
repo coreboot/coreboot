@@ -126,9 +126,6 @@
 #define ACPIMMIO_ACDCTMR_BANK		0x1d00
 #define ACPIMMIO_AOAC_BANK		0x1e00
 
-#define ACPIMMIO_BASE(x) \
-	(void *)(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_ ## x ## _BANK)
-
 /* FIXME: Passing host base for SMBUS is not long-term solution. */
 #define ACPIMMIO_ASF_BASE	(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_ASF_BANK)
 #define ACPIMMIO_SMBUS_BASE	(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_SMBUS_BANK)

@@ -249,21 +249,21 @@ ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
 
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 rmodules_x86_32-y += memcpy.c
 rmodules_x86_32-y += memmove.c
 rmodules_x86_32-y += memset.c
-else
+
 rmodules_x86_64-y += memcpy.c
 rmodules_x86_64-y += memmove.c
 rmodules_x86_64-y += memset.c
-endif
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 target-objcopy=-O elf32-i386 -B i386
+LD_MACHINE =-m elf_i386
 endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 target-objcopy=-O elf64-x86-64 -B i386:x86-64
+LD_MACHINE =-m elf_x86_64
 endif
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
@@ -295,11 +295,7 @@ $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(call src-to-obj,ramstage
 
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-	$(LD_ramstage) -m elf_i386 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
-else
-	$(LD_ramstage) -m elf_x86_64 -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
-endif
+	$(LD_ramstage) $(LD_MACHINE) -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 

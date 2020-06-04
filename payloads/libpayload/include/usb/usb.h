@@ -345,6 +345,13 @@ static inline void usb_debug(const char *fmt, ...)
 }
 
 /**
+ * To be implemented by libpayload-client. It's called by the USB
+ * stack just before iterating over known devices to poll them for
+ * status change.
+ */
+void __attribute__((weak)) usb_poll_prepare (void);
+
+/**
  * To be implemented by libpayload-client. It's called by the USB stack
  * when a new USB device is found which isn't claimed by a built in driver,
  * so the client has the chance to know about it.

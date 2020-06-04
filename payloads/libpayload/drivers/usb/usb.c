@@ -86,6 +86,10 @@ usb_poll (void)
 {
 	if (usb_hcs == 0)
 		return;
+
+	if (usb_poll_prepare)
+		usb_poll_prepare();
+
 	hci_t *controller = usb_hcs;
 	while (controller != NULL) {
 		int i;

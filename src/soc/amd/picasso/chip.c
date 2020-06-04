@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/amd/mtrr.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -159,7 +158,6 @@ static void soc_init(void *chip_info)
 
 	data_fabric_set_mmio_np();
 	southbridge_init(chip_info);
-	setup_bsp_ramtop();
 }
 
 static void soc_final(void *chip_info)

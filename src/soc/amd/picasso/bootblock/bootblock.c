@@ -12,6 +12,9 @@
 #include <soc/southbridge.h>
 #include <soc/i2c.h>
 #include <amdblocks/amd_pci_mmconf.h>
+#include <acpi/acpi.h>
+
+asmlinkage void bootblock_resume_entry(void);
 
 /* PSP performs the memory training and setting up DRAM map prior to x86 cores
    being released. Honor TOP_MEM and set up caching from 0 til TOP_MEM. Likewise,
@@ -84,9 +87,27 @@ static void set_caching(void)
 	enable_cache();
 }
 
+static void write_resume_eip(void)
+{
+	msr_t s3_resume_entry = {
+		.hi = (uint64_t)(uintptr_t)bootblock_resume_entry >> 32,
+		.lo = (uintptr_t)bootblock_resume_entry & 0xffffffff,
+	};
+
+	/*
+	 * Writing to the EIP register can only be done once, otherwise a fault is triggered.
+	 * When this register is written, it will trigger the microcode to stash the CPU state
+	 * (crX , mtrrs, registers, etc) into the CC6 save area. On resume, the state will be
+	 * restored and execution will continue at the EIP.
+	 */
+	if (!acpi_is_wakeup_s3())
+		wrmsr(S3_RESUME_EIP_MSR, s3_resume_entry);
+}
+
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	set_caching();
+	write_resume_eip();
 	enable_pci_mmconf();
 
 	bootblock_main_with_basetime(base_timestamp);

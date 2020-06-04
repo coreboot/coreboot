@@ -2,6 +2,17 @@
 
 #include <cpu/x86/post_code.h>
 
+.global bootblock_resume_entry
+bootblock_resume_entry:
+	post_code(0xb0)
+
+	/* Get an early timestamp */
+	rdtsc
+	movd	%eax, %mm1
+	movd	%edx, %mm2
+
+	/* Fall through to bootblock_pre_c_entry */
+
 /*
  * on entry:
  *   mm0: BIST (ignored)

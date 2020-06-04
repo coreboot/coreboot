@@ -250,10 +250,8 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
 	       stopwatch_duration_msecs(&sw));
 }
 
-static void mainboard_chip_init(void *chip_info)
+void __weak variant_chip_display_init(void)
 {
-	const struct pad_config *pads;
-	size_t num;
 	static const long display_timeout_ms = 3000;
 
 	/* This is reconfigured back to whatever FSP-S expects by
@@ -264,6 +262,14 @@ static void mainboard_chip_init(void *chip_info)
 		if (google_chromeec_wait_for_displayport(display_timeout_ms))
 			wait_for_hpd(GPIO_DP_HPD, display_timeout_ms);
 	}
+}
+
+static void mainboard_chip_init(void *chip_info)
+{
+	const struct pad_config *pads;
+	size_t num;
+
+	variant_chip_display_init();
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);

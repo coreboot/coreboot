@@ -3,8 +3,6 @@
 #ifndef __PICASSO_CPU_H__
 #define __PICASSO_CPU_H__
 
-#define CSTATE_BASE_REG 0xc0010073
-
 int get_cpu_count(void);
 void check_mca(void);
 

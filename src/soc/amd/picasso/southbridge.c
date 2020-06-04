@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <bootstate.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
@@ -318,7 +319,7 @@ static void sb_init_acpi_ports(void)
 	/* CpuControl is in \_SB.CP00, 6 bytes */
 	cst_addr.hi = 0;
 	cst_addr.lo = ACPI_CPU_CONTROL;
-	wrmsr(CSTATE_BASE_REG, cst_addr);
+	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		/* APMC - SMI Command Port */

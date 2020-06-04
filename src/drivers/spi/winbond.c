@@ -10,7 +10,7 @@
 #include "spi_flash_internal.h"
 #include "spi_winbond.h"
 
-union status_reg1_bp3 {
+union status_reg1 {
 	uint8_t u;
 	struct {
 		uint8_t busy : 1;
@@ -19,18 +19,14 @@ union status_reg1_bp3 {
 		uint8_t tb   : 1;
 		uint8_t sec  : 1;
 		uint8_t srp0 : 1;
-	};
-};
-
-union status_reg1_bp4 {
-	uint8_t u;
+	} bp3;
 	struct {
 		uint8_t busy : 1;
 		uint8_t wel  : 1;
 		uint8_t bp   : 4;
 		uint8_t tb   : 1;
 		uint8_t srp0 : 1;
-	};
+	} bp4;
 };
 
 union status_reg2 {
@@ -50,15 +46,9 @@ struct status_regs {
 		struct {
 #if defined(__BIG_ENDIAN)
 			union status_reg2 reg2;
-			union {
-				union status_reg1_bp3 reg1_bp3;
-				union status_reg1_bp4 reg1_bp4;
-			};
+			union status_reg1 reg1;
 #else
-			union {
-				union status_reg1_bp3 reg1_bp3;
-				union status_reg1_bp4 reg1_bp4;
-			};
+			union status_reg1 reg1;
 			union status_reg2 reg2;
 #endif
 		};
@@ -267,33 +257,28 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 
 	const size_t granularity = (1 << params->protection_granularity_shift);
 
+	union status_reg1 reg1 = { .u = 0 };
+
+	ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1.u,
+			    sizeof(reg1.u));
+	if (ret)
+		return ret;
+
 	if (params->bp_bits == 3) {
-		union status_reg1_bp3 reg1_bp3 = { .u = 0 };
-
-		ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1_bp3.u,
-				    sizeof(reg1_bp3.u));
-
-		if (reg1_bp3.sec) {
+		if (reg1.bp3.sec) {
 			// FIXME: not supported
 			return -1;
 		}
 
-		bp = reg1_bp3.bp;
-		tb = reg1_bp3.tb;
+		bp = reg1.bp3.bp;
+		tb = reg1.bp3.tb;
 	} else if (params->bp_bits == 4) {
-		union status_reg1_bp4 reg1_bp4 = { .u = 0 };
-
-		ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1_bp4.u,
-				    sizeof(reg1_bp4.u));
-
-		bp = reg1_bp4.bp;
-		tb = reg1_bp4.tb;
+		bp = reg1.bp4.bp;
+		tb = reg1.bp4.tb;
 	} else {
 		// FIXME: not supported
 		return -1;
 	}
-	if (ret)
-		return ret;
 
 	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg2.u,
 			    sizeof(reg2.u));
@@ -482,13 +467,19 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	/* Write block protection bits */
 
 	if (params->bp_bits == 3) {
-		val.reg1_bp3 = (union status_reg1_bp3) { .bp = bp, .tb = tb,
-							.sec = 0 };
-		mask.reg1_bp3 = (union status_reg1_bp3) { .bp = ~0, .tb = 1,
-							.sec = 1 };
+		val.reg1 = (union status_reg1) {
+			.bp3 = { .bp = bp, .tb = tb, .sec = 0 }
+		};
+		mask.reg1 = (union status_reg1) {
+			.bp3 = { .bp = ~0, .tb = 1, .sec = 1 }
+		};
 	} else {
-		val.reg1_bp4 = (union status_reg1_bp4) { .bp = bp, .tb = tb };
-		mask.reg1_bp4 = (union status_reg1_bp4) { .bp = ~0, .tb = 1 };
+		val.reg1 = (union status_reg1) {
+			.bp4 = { .bp = bp, .tb = tb }
+		};
+		mask.reg1 = (union status_reg1) {
+			.bp4 = { .bp = ~0, .tb = 1 }
+		};
 	}
 
 	val.reg2 = (union status_reg2) { .cmp = cmp };
@@ -514,11 +505,11 @@ winbond_set_write_protection(const struct spi_flash *flash,
 		}
 
 		if (params->bp_bits == 3) {
-			val.reg1_bp3.srp0 = !!(srp & 1);
-			mask.reg1_bp3.srp0 = 1;
+			val.reg1.bp3.srp0 = !!(srp & 1);
+			mask.reg1.bp3.srp0 = 1;
 		} else {
-			val.reg1_bp4.srp0 = !!(srp & 1);
-			mask.reg1_bp4.srp0 = 1;
+			val.reg1.bp4.srp0 = !!(srp & 1);
+			mask.reg1.bp4.srp0 = 1;
 		}
 
 		val.reg2.srp1 = !!(srp & 2);

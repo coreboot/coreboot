@@ -1964,3 +1964,10 @@ void acpigen_write_ADR_soundwire_device(const struct soundwire_address *address)
 			  (((uint64_t)address->part_id & 0xffff) << 8) |
 			  (((uint64_t)address->class & 0xff)));
 }
+
+void acpigen_notify(const char *namestr, int value)
+{
+	acpigen_emit_byte(NOTIFY_OP);
+	acpigen_emit_namestring(namestr);
+	acpigen_write_integer(value);
+}

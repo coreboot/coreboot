@@ -509,4 +509,7 @@ void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
 void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
 	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length);
 
+/* Emits Notify(namestr, value) */
+void acpigen_notify(const char *namestr, int value);
+
 #endif /* __ACPI_ACPIGEN_H__ */

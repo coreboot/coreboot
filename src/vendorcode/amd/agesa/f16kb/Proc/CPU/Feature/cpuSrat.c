@@ -226,7 +226,6 @@ GetAcpiSratMain (
 
   // Get Node count
   NodeCount = 1;
-  NodeCount = 1;
 
   // The worst-case buffer size to request is for the SRAT table header, one
   // entree for special region (base 640k block), two memory

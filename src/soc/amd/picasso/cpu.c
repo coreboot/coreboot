@@ -98,7 +98,7 @@ void mp_init_cpus(struct bus *cpu_bus)
 	if (mp_init_with_smm(cpu_bus, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
-	/* The flash is now no longer cacheable. Reset to WP for performance. */
+	/* pre_mp_init made the flash not cacheable. Reset to WP for performance. */
 	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 
 	set_warm_reset_flag();

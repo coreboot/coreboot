@@ -1,5 +1,8 @@
 chip northbridge/intel/haswell
 
+	# This mainboard has VGA
+	register "gpu_ddi_e_connected" = "1"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/haswell
 			register "c1_acpower" = "1"

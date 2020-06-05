@@ -26,9 +26,7 @@ chip northbridge/intel/haswell
 		device pci 03.0 on  end		# Mini-HD audio
 
 		chip southbridge/intel/lynxpoint
-			register "gen1_dec"      = "0x000c0291"
-			register "gen2_dec"      = "0x000c0241"
-			register "gen3_dec"      = "0x000c0251"
+			register "gen1_dec"      = "0x000c0291"	# Super I/O HWM
 			register "pirqa_routing" = "0x8b"
 			register "pirqb_routing" = "0x80"
 			register "pirqc_routing" = "0x83"

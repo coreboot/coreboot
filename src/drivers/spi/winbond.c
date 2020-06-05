@@ -19,14 +19,14 @@ union status_reg1 {
 		uint8_t tb   : 1;
 		uint8_t sec  : 1;
 		uint8_t srp0 : 1;
-	} bp3;
+	} bp3; /* for example: W25Q128FW */
 	struct {
 		uint8_t busy : 1;
 		uint8_t wel  : 1;
 		uint8_t bp   : 4;
 		uint8_t tb   : 1;
 		uint8_t srp0 : 1;
-	} bp4;
+	} bp4; /* for example: W25Q256J */
 };
 
 union status_reg2 {
@@ -254,16 +254,15 @@ static const struct spi_flash_part_id flash_table[] = {
  * SEC (if available) must be zero.
  */
 static void winbond_bpbits_to_region(const size_t granularity,
-				     const u8 bp,
-				     bool tb,
-				     const bool cmp,
+				     const struct spi_flash_bpbits *bits,
 				     const size_t flash_size,
 				     struct region *out)
 {
 	size_t protected_size =
-		MIN(bp ? granularity << (bp - 1) : 0, flash_size);
+		MIN(bits->bp ? granularity << (bits->bp - 1) : 0, flash_size);
 
-	if (cmp) {
+	int tb = bits->tb;
+	if (bits->cmp) {
 		protected_size = flash_size - protected_size;
 		tb = !tb;
 	}
@@ -287,8 +286,7 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 {
 	const struct spi_flash_part_id *params;
 	struct region wp_region;
-	union status_reg2 reg2;
-	u8 bp, tb;
+	struct spi_flash_bpbits bpbits;
 	int ret;
 
 	params = flash->part;
@@ -299,9 +297,15 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	const size_t granularity = (1 << params->protection_granularity_shift);
 
 	union status_reg1 reg1 = { .u = 0 };
+	union status_reg2 reg2 = { .u = 0 };
 
 	ret = spi_flash_cmd(&flash->spi, flash->status_cmd, &reg1.u,
 			    sizeof(reg1.u));
+	if (ret)
+		return ret;
+
+	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg2.u,
+			    sizeof(reg2.u));
 	if (ret)
 		return ret;
 
@@ -311,22 +315,57 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 			return -1;
 		}
 
-		bp = reg1.bp3.bp;
-		tb = reg1.bp3.tb;
+		bpbits = (struct spi_flash_bpbits){
+			.bp = reg1.bp3.bp,
+			.cmp = reg2.cmp,
+			.tb = reg1.bp3.tb,
+			/*
+			 * For W25Q*{,F}* parts:
+			 *  srp1 srp0
+			 *   0    0  | writable if WEL==1
+			 *   0    1  | writable if WEL==1 && #WP==Vcc
+			 *   1    0  | not writable until next power-down
+			 *   1    1  | not writable, permanently
+			 *
+			 * checked datasheets: W25Q128FV, (W25Q80, W25Q16,
+			 *   W25Q32)
+			 */
+			.winbond = {
+				.srp0 = reg1.bp3.srp0,
+				.srp1 = reg2.srp1,
+			},
+		};
 	} else if (params->bp_bits == 4) {
-		bp = reg1.bp4.bp;
-		tb = reg1.bp4.tb;
+		bpbits = (struct spi_flash_bpbits){
+			.bp = reg1.bp4.bp,
+			.cmp = reg2.cmp,
+			.tb = reg1.bp4.tb,
+			/*
+			 * For W25Q*{J,D}* parts:
+			 *
+			 *  srp1 srp0
+			 *   0    0  | writable if WEL==1
+			 *   0    1  | writable if WEL==1 && #WP==Vcc
+			 *   1    x  | not writable until next power-down
+			 *
+			 * checked datasheets: W25Q132JW, W25Q128JW, W25Q256JV.
+			 *   W25Q16DW
+			 *
+			 * The srp0/srp1 bits got renamed to srp/srl in the
+			 * datasheets, we retain the prior naming
+			 * convention for the structs though.
+			 */
+			.winbond = {
+				.srp0 = reg1.bp4.srp0,
+				.srp1 = reg2.srp1,
+			},
+		};
 	} else {
 		// FIXME: not supported
 		return -1;
 	}
 
-	ret = spi_flash_cmd(&flash->spi, CMD_W25_RDSR2, &reg2.u,
-			    sizeof(reg2.u));
-	if (ret)
-		return ret;
-
-	winbond_bpbits_to_region(granularity, bp, tb, reg2.cmp, flash->size,
+	winbond_bpbits_to_region(granularity, &bpbits, flash->size,
 				 &wp_region);
 
 	if (!region_sz(&wp_region)) {

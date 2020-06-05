@@ -49,6 +49,17 @@ struct spi_flash_ops {
 	int (*status)(const struct spi_flash *flash, u8 *reg);
 };
 
+struct spi_flash_bpbits {
+	unsigned int bp;   /*< block protection select bits */
+	bool cmp;          /*< complement protect */
+	bool tb;           /*< top=0 / bottom=1 select */
+	union {
+		struct {
+			bool srp1, srp0;
+		} winbond;
+	};
+};
+
 /* Current code assumes all callbacks are supplied in this object. */
 struct spi_flash_protection_ops {
 	/*

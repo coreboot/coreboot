@@ -21,6 +21,12 @@ static __always_inline uint8_t pnp_read_config(
 	return pnp_read_index(dev >> 8, reg);
 }
 
+static __always_inline void pnp_unset_and_set_config(
+	pnp_devfn_t dev, uint8_t reg, uint8_t unset, uint8_t set)
+{
+	pnp_unset_and_set_index(dev >> 8, reg, unset, set);
+}
+
 static __always_inline
 void pnp_set_logical_device(pnp_devfn_t dev)
 {

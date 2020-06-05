@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pnp.h>
 #include <device/pnp_type.h>
 
 #if ENV_PNP_SIMPLE_DEVICE
@@ -12,17 +13,13 @@
 static __always_inline void pnp_write_config(
 	pnp_devfn_t dev, uint8_t reg, uint8_t value)
 {
-	unsigned int port = dev >> 8;
-	outb(reg, port);
-	outb(value, port + 1);
+	pnp_write_index(dev >> 8, reg, value);
 }
 
 static __always_inline uint8_t pnp_read_config(
 	pnp_devfn_t dev, uint8_t reg)
 {
-	unsigned int port = dev >> 8;
-	outb(reg, port);
-	return inb(port + 1);
+	return pnp_read_index(dev >> 8, reg);
 }
 
 static __always_inline

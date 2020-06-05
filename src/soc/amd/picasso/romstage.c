@@ -12,7 +12,6 @@
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/romstage.h>
-#include <soc/mtrr.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
@@ -20,16 +19,6 @@
 void __weak mainboard_romstage_entry_s3(int s3_resume)
 {
 	/* By default, don't do anything */
-}
-
-/* TODO(b/155426691): Make FSP AGESA leave MTRRs alone */
-static void clear_agesa_mtrrs(void)
-{
-	disable_cache();
-
-	picasso_restore_mtrrs();
-
-	enable_cache();
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -95,15 +84,9 @@ asmlinkage void car_stage_entry(void)
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
 	post_code(0x43);
-	picasso_save_mtrrs();
-
-	post_code(0x44);
 	fsp_memory_init(s3_resume);
 
-	post_code(0x45);
-	clear_agesa_mtrrs();
-
-	post_code(0x46);
+	post_code(0x44);
 	run_ramstage();
 
 	post_code(0x50); /* Should never see this post code. */

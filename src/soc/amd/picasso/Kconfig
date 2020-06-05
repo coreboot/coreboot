@@ -504,4 +504,32 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	  Runs verstage on the PSP.  Only available on
 	  certain Chrome OS branded parts from AMD.
 
+if VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+
+config RWA_REGION_ONLY
+	string
+	default "apu/amdfw_a"
+	help
+	  Add a space-delimited list of filenames that should only be in the
+	  RW-A section.
+
+config RWB_REGION_ONLY
+	string
+	default "apu/amdfw_b"
+	help
+	  Add a space-delimited list of filenames that should only be in the
+	  RW-B section.
+
+config PICASSO_FW_A_POSITION
+	hex
+	help
+	  Location of the AMD firmware in the RW_A region
+
+config PICASSO_FW_B_POSITION
+	hex
+	help
+	  Location of the AMD firmware in the RW_B region
+
+endif # VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+
 endif # SOC_AMD_PICASSO

@@ -39,6 +39,12 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_RESUME
 	select DRIVERS_USB_ACPI
 
+# FMDFILE is set here so that coreboot build picks up this flash map layout
+# even when CHROMEOS is not selected when building upstream.
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+
 config MAINBOARD_DIR
 	string
 	default google/zork

@@ -141,43 +141,11 @@ chip soc/intel/jasperlake
 	# Enable Speed Shift Technology support
 	register "speed_shift_enable" = "1"
 
-	# Intel Common SoC Config
-	#+-------------------+---------------------------+
-	#| Field             |  Value                    |
-	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
-	#| GSPI0             | cr50 TPM. Early init is   |
-	#|                   | required to set up a BAR  |
-	#|                   | for TPM communication     |
-	#|                   | before memory is up       |
-	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
-	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
-	#| I2C4              | Audio                     |
-	#+-------------------+---------------------------+
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-		.gspi[0] = {
-			.speed_mhz = 1,
-			.early_init = 1,
-		},
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[4] = {
-			.speed = I2C_SPEED_FAST,
-		},
-	}"
+	# chipset_lockdown configuration
+	# Use below format to override value in overridetree.cb if required
+	# format:
+	# register "common_soc_config.<variable_name>" = "value"
+	register "common_soc_config.chipset_lockdown" = CHIPSET_LOCKDOWN_COREBOOT
 
 	device domain 0 on
 		device pci 00.0 on end # Host Bridge

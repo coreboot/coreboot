@@ -196,15 +196,6 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 
 	/* Configure bootmode */
 	if (s3wake) {
-		/*
-		 * For S3 resume case, if valid mrc cache data is not found or
-		 * RECOVERY_MRC_CACHE hash verification fails, the S3 data
-		 * pointer would be null and S3 resume fails with fsp-m
-		 * returning error. Invoking a reset here saves time.
-		 */
-		if (!arch_upd->NvsBufferPtr)
-			/* FIXME: A "system" reset is likely enough: */
-			full_reset();
 		arch_upd->BootMode = FSP_BOOT_ON_S3_RESUME;
 	} else {
 		if (arch_upd->NvsBufferPtr)
@@ -295,6 +286,16 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd, fsp_version);
+
+	/*
+	 * For S3 resume case, if valid mrc cache data is not found or
+	 * RECOVERY_MRC_CACHE hash verification fails, the S3 data
+	 * pointer would be null and S3 resume fails with fsp-m
+	 * returning error. Invoking a reset here saves time.
+	 */
+	if (s3wake && !arch_upd->NvsBufferPtr)
+		/* FIXME: A "system" reset is likely enough: */
+		full_reset();
 
 	if (CONFIG(MMA))
 		setup_mma(&fspm_upd.FspmConfig);

@@ -82,32 +82,24 @@ $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 endef
 
 ###############################################################################
-# all (bootblock,verstage,romstage,postcar,ramstage)
-###############################################################################
-
-ifeq ($(CONFIG_ARCH_X86),y)
-
-all-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-all-y += boot.c
-all-y += memcpy.c
-all-y += memset.c
-all-y += cpu_common.c
-all-y += post.c
-
-endif
-
-###############################################################################
 # bootblock
 ###############################################################################
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32)$(CONFIG_ARCH_BOOTBLOCK_X86_64),y)
 
+bootblock-y += boot.c
+bootblock-y += post.c
+bootblock-y += cpu_common.c
 bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
+bootblock-y += memcpy.c
+bootblock-y += memset.c
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 bootblock-$(CONFIG_BOOTBLOCK_NORMAL) += bootblock_normal.c
 bootblock-y += id.S
+bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 bootblock-y += bootblock_crt0.S
@@ -128,10 +120,16 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
+verstage-y += boot.c
+verstage-y += post.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
+verstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
+verstage-y += cpu_common.c
+verstage-y += memset.c
+verstage-y += memcpy.c
 verstage-y += memmove.c
 verstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 # If verstage is a separate stage it means there's no need
@@ -160,16 +158,22 @@ endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
+romstage-y += boot.c
+romstage-y += post.c
 # gdt_init.S is included by entry32.inc when romstage is the first C
 # environment.
 romstage-y += gdt_init.S
 romstage-y += cbmem.c
+romstage-y += cpu_common.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
+romstage-y += memcpy.c
 romstage-y += memmove.c
+romstage-y += memset.c
 romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
+romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
@@ -195,14 +199,20 @@ $(eval $(call create_class_compiler,postcar,x86_32))
 postcar-generic-ccopts += -D__POSTCAR__
 
 postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
+postcar-y += boot.c
+postcar-y += post.c
 postcar-y += gdt_init.S
+postcar-y += cpu_common.c
 postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 postcar-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 postcar-y += exit_car.S
+postcar-y += memcpy.c
 postcar-y += memmove.c
+postcar-y += memset.c
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 postcar-y += postcar.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
+postcar-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
 
@@ -227,14 +237,19 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 ramstage-$(CONFIG_ACPI_BERT) += acpi_bert_storage.c
+ramstage-y += boot.c
+ramstage-y += post.c
 ramstage-y += c_start.S
 ramstage-y += cpu.c
+ramstage-y += cpu_common.c
 ramstage-y += ebda.c
 ramstage-y += exception.c
 ramstage-y += idt.S
 ramstage-y += gdt.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
+ramstage-y += memcpy.c
 ramstage-y += memmove.c
+ramstage-y += memset.c
 ramstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
 ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
@@ -245,6 +260,7 @@ ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
+ramstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 rmodules_x86_32-y += memcpy.c
 rmodules_x86_32-y += memmove.c

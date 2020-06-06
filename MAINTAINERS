@@ -180,6 +180,7 @@ F:	src/mainboard/getac/p470
 
 INTEL PINEVIEW CHIPSET
 M:	Damien Zammit <damien@zamaudio.com>
+M:	Angel Pons <th3fanbus@gmail.com>
 S:	Odd Fixes
 F:	src/northbridge/intel/pineview/
 
@@ -190,6 +191,7 @@ F:	src/mainboard/intel/d510mo
 
 INTEL X4X CHIPSET
 M:	Damien Zammit <damien@zamaudio.com>
+M:	Angel Pons <th3fanbus@gmail.com>
 S:	Odd Fixes
 F:	src/northbridge/intel/x4x/
 

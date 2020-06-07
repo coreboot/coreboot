@@ -43,9 +43,7 @@ void init_iommu()
 		memset(bar, 0, 2<<20);
 
 		/* and now disable again */
-		u16 cmd = pci_read_config8(igd, PCI_COMMAND);
-		cmd &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pci_write_config16(igd, PCI_COMMAND, cmd);
+		pci_and_config16(igd, PCI_COMMAND, ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
 		pci_write_config32(igd, PCI_BASE_ADDRESS_0, 0);
 	}
 

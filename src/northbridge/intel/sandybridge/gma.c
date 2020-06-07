@@ -636,12 +636,8 @@ static const char *gma_acpi_name(const struct device *dev)
 /* Called by PCI set_vga_bridge function */
 static void gma_func0_disable(struct device *dev)
 {
-	u16 reg16;
-	struct device *dev_host = pcidev_on_root(0, 0);
-
-	reg16 = pci_read_config16(dev_host, GGC);
-	reg16 |= (1 << 1); /* Disable VGA decode */
-	pci_write_config16(dev_host, GGC, reg16);
+	/* Disable VGA decode */
+	pci_or_config16(pcidev_on_root(0, 0), GGC, 1 << 1);
 
 	dev->enabled = 0;
 }

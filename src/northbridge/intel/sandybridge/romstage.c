@@ -25,12 +25,8 @@ __weak void mainboard_late_rcba_config(void)
 
 static void early_pch_reset_pmcon(void)
 {
-	u8 reg8;
-
 	/* Reset RTC power status */
-	reg8 = pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3, reg8);
+	pci_and_config8(PCH_LPC_DEV, GEN_PMCON_3, ~(1 << 2));
 }
 
 /* The romstage entry point for this platform is not mainboard-specific, hence the name */

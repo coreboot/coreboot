@@ -64,7 +64,7 @@ static void sandybridge_setup_graphics(void)
 {
 	u32 reg32;
 	u16 reg16;
-	u8 reg8, gfxsize;
+	u8 gfxsize;
 
 	reg16 = pci_read_config16(PCI_DEV(0, 2, 0), PCI_DEVICE_ID);
 	switch (reg16) {
@@ -103,10 +103,7 @@ static void sandybridge_setup_graphics(void)
 	pci_write_config16(HOST_BRIDGE, GGC, reg16);
 
 	/* Enable 256MB aperture */
-	reg8 = pci_read_config8(PCI_DEV(0, 2, 0), MSAC);
-	reg8 &= ~0x06;
-	reg8 |= 0x02;
-	pci_write_config8(PCI_DEV(0, 2, 0), MSAC, reg8);
+	pci_update_config8(PCI_DEV(0, 2, 0), MSAC, ~0x06, 0x02);
 
 	/* Erratum workarounds */
 	reg32 = MCHBAR32(SAPMCTL);
@@ -134,7 +131,7 @@ static void sandybridge_setup_graphics(void)
 
 static void start_peg_link_training(void)
 {
-	u32 tmp, deven;
+	u32 deven;
 
 	const u16 base_rev = pci_read_config16(HOST_BRIDGE, PCI_DEVICE_ID) & BASE_REV_MASK;
 	/*
@@ -150,31 +147,22 @@ static void start_peg_link_training(void)
 	 * For each PEG device, set bit 5 to use three retries for OC (Offset Calibration).
 	 * We also clear DEFER_OC (bit 16) in order to start PEG training.
 	 */
-	if (deven & DEVEN_PEG10) {
-		tmp = pci_read_config32(PCI_DEV(0, 1, 0), AFE_PWRON) & ~(1 << 16);
-		pci_write_config32(PCI_DEV(0, 1, 0), AFE_PWRON, tmp | (1 << 5));
-	}
+	if (deven & DEVEN_PEG10)
+		pci_update_config32(PCI_DEV(0, 1, 0), AFE_PWRON, ~(1 << 16), 1 << 5);
 
-	if (deven & DEVEN_PEG11) {
-		tmp = pci_read_config32(PCI_DEV(0, 1, 1), AFE_PWRON) & ~(1 << 16);
-		pci_write_config32(PCI_DEV(0, 1, 1), AFE_PWRON, tmp | (1 << 5));
-	}
+	if (deven & DEVEN_PEG11)
+		pci_update_config32(PCI_DEV(0, 1, 1), AFE_PWRON, ~(1 << 16), 1 << 5);
 
-	if (deven & DEVEN_PEG12) {
-		tmp = pci_read_config32(PCI_DEV(0, 1, 2), AFE_PWRON) & ~(1 << 16);
-		pci_write_config32(PCI_DEV(0, 1, 2), AFE_PWRON, tmp | (1 << 5));
-	}
+	if (deven & DEVEN_PEG12)
+		pci_update_config32(PCI_DEV(0, 1, 2), AFE_PWRON, ~(1 << 16), 1 << 5);
 
-	if (deven & DEVEN_PEG60) {
-		tmp = pci_read_config32(PCI_DEV(0, 6, 0), AFE_PWRON) & ~(1 << 16);
-		pci_write_config32(PCI_DEV(0, 6, 0), AFE_PWRON, tmp | (1 << 5));
-	}
+	if (deven & DEVEN_PEG60)
+		pci_update_config32(PCI_DEV(0, 6, 0), AFE_PWRON, ~(1 << 16), 1 << 5);
 }
 
 void systemagent_early_init(void)
 {
 	u32 capid0_a;
-	u32 deven;
 	u8 reg8;
 
 	/* Device ID Override Enable should be done very early */
@@ -201,8 +189,7 @@ void systemagent_early_init(void)
 	systemagent_vtd_init();
 
 	/* Device Enable, don't touch PEG bits */
-	deven = pci_read_config32(HOST_BRIDGE, DEVEN) | DEVEN_IGD;
-	pci_write_config32(HOST_BRIDGE, DEVEN, deven);
+	pci_or_config32(HOST_BRIDGE, DEVEN, DEVEN_IGD);
 
 	sandybridge_setup_graphics();
 

@@ -48,11 +48,10 @@ static void sata_init(struct device *dev)
 		printk(BIOS_DEBUG, "SATA: Controller in combined mode.\n");
 
 		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
+		pci_write_config32(dev, 0x24, 0);
+
 		/* And without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MEMORY);
 
 		pci_write_config8(dev, 0x09, 0x80);
 
@@ -78,8 +77,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, 0x92, reg16);
 
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+		pci_write_config32(dev, 0x94, ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 	} else if (config->sata_ahci) {
 		u32 *abar;
 
@@ -129,10 +127,8 @@ static void sata_init(struct device *dev)
 		}
 		pci_write_config32(dev, 0x98, reg32);
 
-		/* Setup register 9Ch */
-		reg16 = 0;           /* Disable alternate ID */
-		reg16 |= (1 << 5);   /* BWG step 12 */
-		pci_write_config16(dev, 0x9c, reg16);
+		/* Setup register 9Ch: Disable alternate ID and BWG step 12 */
+		pci_write_config16(dev, 0x9c, 1 << 5);
 
 		/* SATA Initialization register */
 		reg32 = 0x183;
@@ -170,15 +166,16 @@ static void sata_init(struct device *dev)
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
 		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
+		pci_write_config32(dev, 0x24, 0);
 
 		/* And without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MEMORY);
 
-		/* Native mode capable on both primary and secondary (0xa)
+		/*
+		 * Native mode capable on both primary and secondary (0xa)
 		 * or'ed with enabled (0x50) = 0xf
+		 *
+		 * FIXME: Does not match the code.
 		 */
 		pci_write_config8(dev, 0x09, 0x8f);
 
@@ -209,8 +206,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, 0x92, reg16);
 
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+		pci_write_config32(dev, 0x94, ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 	}
 
 	/* Set Gen3 Transmitter settings if needed */

@@ -334,8 +334,7 @@ static void lpt_lp_pm_init(struct device *dev)
 	RCBA32_AND_OR(0x2b20,  0, 0x0005db01); /* Power Optimizer */
 	RCBA32_AND_OR(0x3a80,  0, 0x05145005);
 
-	pci_write_config32(dev, 0xac,
-		pci_read_config32(dev, 0xac) | (1 << 21));
+	pci_or_config32(dev, 0xac, 1 << 21);
 
 	pch_iobp_update(0xED00015C, ~(1 << 11), 0x00003700);
 	pch_iobp_update(0xED000118, ~0UL, 0x00c00000);
@@ -424,9 +423,7 @@ static void enable_lp_clock_gating(struct device *dev)
 	reg16 |= (1 << 2); // PCI CLKRUN# Enable
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	reg32 = pci_read_config32(dev, 0x64);
-	reg32 |= (1 << 6);
-	pci_write_config32(dev, 0x64, reg32);
+	pci_or_config32(dev, 0x64, 1 << 6);
 
 	/*
 	 * RCBA + 0x2614[27:25,14:13,10,8] = 101,11,1,1
@@ -477,22 +474,15 @@ static void pch_set_acpi_mode(void)
 
 static void pch_disable_smm_only_flashing(struct device *dev)
 {
-	u8 reg8;
-
 	printk(BIOS_SPEW, "Enabling BIOS updates outside of SMM... ");
-	reg8 = pci_read_config8(dev, BIOS_CNTL);
-	reg8 &= ~(1 << 5);
-	pci_write_config8(dev, BIOS_CNTL, reg8);
+
+	pci_and_config8(dev, BIOS_CNTL, ~(1 << 5));
 }
 
 static void pch_fixups(struct device *dev)
 {
-	u8 gen_pmcon_2;
-
 	/* Indicate DRAM init done for MRC S3 to know it can resume */
-	gen_pmcon_2 = pci_read_config8(dev, GEN_PMCON_2);
-	gen_pmcon_2 |= (1 << 7);
-	pci_write_config8(dev, GEN_PMCON_2, gen_pmcon_2);
+	pci_or_config8(dev, GEN_PMCON_2, 1 << 7);
 
 	/*
 	 * Enable DMI ASPM in the PCH

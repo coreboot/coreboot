@@ -54,7 +54,6 @@ static void busmaster_disable_on_bus(int bus)
 
 	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
-			u16 reg16;
 			pci_devfn_t dev = PCI_DEV(bus, slot, func);
 
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -64,9 +63,7 @@ static void busmaster_disable_on_bus(int bus)
 				continue;
 
 			/* Disable Bus Mastering for this one device */
-			reg16 = pci_read_config16(dev, PCI_COMMAND);
-			reg16 &= ~PCI_COMMAND_MASTER;
-			pci_write_config16(dev, PCI_COMMAND, reg16);
+			pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER);
 
 			/* If this is a bridge, then follow it. */
 			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
@@ -405,8 +402,7 @@ static void southbridge_smi_tco(void)
 			 * box.
 			 */
 			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc,
-					   (bios_cntl & ~1));
+			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
 		} /* No else for now? */
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */

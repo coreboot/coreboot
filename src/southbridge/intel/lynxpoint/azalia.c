@@ -41,9 +41,7 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 		pci_write_config32(dev, 0x120, reg32);
 
 		if (!pch_is_lp()) {
-			reg16 = pci_read_config16(dev, 0x78);
-			reg16 &= ~(1 << 11);
-			pci_write_config16(dev, 0x78, reg16);
+			pci_and_config16(dev, 0x78, ~(1 << 11));
 		}
 	} else
 		printk(BIOS_DEBUG, "Azalia: V1CTL disabled.\n");
@@ -53,8 +51,7 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 	pci_write_config32(dev, 0x114, reg32);
 
 	// Set VCi enable bit
-	if (pci_read_config32(dev, 0x120) & ((1 << 24) |
-						(1 << 25) | (1 << 26))) {
+	if (pci_read_config32(dev, 0x120) & ((1 << 24) | (1 << 25) | (1 << 26))) {
 		reg32 = pci_read_config32(dev, 0x120);
 		if (pch_is_lp())
 			reg32 &= ~(1UL << 31);
@@ -70,11 +67,8 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 		reg8 |= (1 << 4);
 	pci_write_config8(dev, 0x43, reg8);
 
-	if (!pch_is_lp()) {
-		reg32 = pci_read_config32(dev, 0xc0);
-		reg32 |= (1 << 17);
-		pci_write_config32(dev, 0xc0, reg32);
-	}
+	if (!pch_is_lp())
+		pci_or_config32(dev, 0xc0, 1 << 17);
 
 	/* Additional programming steps */
 	reg32 = pci_read_config32(dev, 0xc4);
@@ -84,19 +78,14 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 		reg32 |= (1 << 14);
 	pci_write_config32(dev, 0xc4, reg32);
 
-	if (!pch_is_lp()) {
-		reg32 = pci_read_config32(dev, 0xd0);
-		reg32 &= ~(1UL << 31);
-		pci_write_config32(dev, 0xd0, reg32);
-	}
+	if (!pch_is_lp())
+		pci_and_config32(dev, 0xd0, ~(1UL << 31));
 
-	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select Azalia mode
-	pci_write_config8(dev, 0x40, reg8);
+	// Select Azalia mode
+	pci_or_config8(dev, 0x40, 1); // Audio Control
 
-	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
-	reg8 &= ~(1 << 7); // Docking not supported
-	pci_write_config8(dev, 0x4d, reg8);
+	// Docking not supported
+	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
 	if (pch_is_lp()) {
 		reg16 = read32(base + 0x0012);
@@ -104,9 +93,7 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 		write32(base + 0x0012, reg16);
 
 		/* disable Auto Voltage Detector */
-		reg8 = pci_read_config8(dev, 0x42);
-		reg8 |= (1 << 2);
-		pci_write_config8(dev, 0x42, reg8);
+		pci_or_config8(dev, 0x42, 1 << 2);
 	}
 }
 

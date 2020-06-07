@@ -541,7 +541,6 @@ void intel_me_finalize_smm(void)
 {
 	struct me_hfs hfs;
 	u32 reg32;
-	u16 reg16;
 
 	mei_base_address = (u32 *)
 		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
@@ -569,9 +568,8 @@ void intel_me_finalize_smm(void)
 	mkhi_end_of_post();
 
 	/* Make sure IO is disabled */
-	reg16 = pci_read_config16(PCH_ME_DEV, PCI_COMMAND);
-	reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-	pci_write_config16(PCH_ME_DEV, PCI_COMMAND, reg16);
+	pci_and_config16(PCH_ME_DEV, PCI_COMMAND,
+			 ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
 
 	/* Hide the PCI device */
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);

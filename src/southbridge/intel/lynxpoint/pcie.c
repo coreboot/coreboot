@@ -232,41 +232,40 @@ static void pcie_enable_clock_gating(void)
 		rp = root_port_number(dev);
 
 		if (!is_rp_enabled(rp)) {
-			static const uint32_t high_bit = (1UL << 31);
 
 			/* Configure shared resource clock gating. */
 			if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
-				pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
+				pci_or_config8(dev, 0xe1, 0x3c);
 
 			if (!is_lp) {
 				if (rp == 1 && !is_rp_enabled(2) &&
 				    !is_rp_enabled(3) && !is_rp_enabled(4)) {
-					pci_update_config8(dev, 0xe2, ~1, 1);
-					pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+					pci_or_config8(dev, 0xe2, 1);
+					pci_or_config8(dev, 0xe1, 1 << 7);
 				}
 				if (rp == 5 && !is_rp_enabled(6) &&
 				    !is_rp_enabled(7) && !is_rp_enabled(8)) {
-					pci_update_config8(dev, 0xe2, ~1, 1);
-					pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+					pci_or_config8(dev, 0xe2, 1);
+					pci_or_config8(dev, 0xe1, 1 << 7);
 				}
 				continue;
 			}
 
-			pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-			pci_update_config32(dev, 0x420, ~high_bit, high_bit);
+			pci_or_config8(dev, 0xe2, 3 << 4);
+			pci_or_config32(dev, 0x420, 1 << 31);
 
 			/* Per-Port CLKREQ# handling. */
 			if (is_lp && gpio_is_native(18 + rp - 1))
-				pci_update_config32(dev, 0x420, ~0, (3 << 29));
+				pci_or_config32(dev, 0x420, 3 << 29);
 
 			/* Enable static clock gating. */
 			if (rp == 1 && !is_rp_enabled(2) &&
 			    !is_rp_enabled(3) && !is_rp_enabled(4)) {
-				pci_update_config8(dev, 0xe2, ~1, 1);
-				pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+				pci_or_config8(dev, 0xe2, 1);
+				pci_or_config8(dev, 0xe1, 1 << 7);
 			} else if (rp == 5 || rp == 6) {
-				pci_update_config8(dev, 0xe2, ~1, 1);
-				pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+				pci_or_config8(dev, 0xe2, 1);
+				pci_or_config8(dev, 0xe1, 1 << 7);
 			}
 			continue;
 		}
@@ -274,29 +273,30 @@ static void pcie_enable_clock_gating(void)
 		enabled_ports++;
 
 		/* Enable dynamic clock gating. */
-		pci_update_config8(dev, 0xe1, 0xfc, 0x03);
+		pci_or_config8(dev, 0xe1, 0x03);
 
 		if (is_lp) {
-			pci_update_config8(dev, 0xe2, ~(1 << 6), (1 << 6));
+			pci_or_config8(dev, 0xe2, 1 << 6);
 			pci_update_config8(dev, 0xe8, ~(3 << 2), (2 << 2));
 		}
 
 		/* Update PECR1 register. */
-		pci_update_config8(dev, 0xe8, ~0, 1);
+		pci_or_config8(dev, 0xe8, 1);
 
+		/* FIXME: Are we supposed to update this register with a constant boolean? */
 		pci_update_config8(dev, 0x324, ~(1 << 5), (1 < 5));
 
 		/* Per-Port CLKREQ# handling. */
 		if (is_lp && gpio_is_native(18 + rp - 1))
-			pci_update_config32(dev, 0x420, ~0, (3 << 29));
+			pci_or_config32(dev, 0x420, 3 << 29);
 
 		/* Configure shared resource clock gating. */
 		if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
-			pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
+			pci_or_config8(dev, 0xe1, 0x3c);
 	}
 
 	if (!enabled_ports && is_lp && rpc.ports[0])
-		pci_update_config8(rpc.ports[0], 0xe1, ~(1 << 6), (1 << 6));
+		pci_or_config8(rpc.ports[0], 0xe1, 1 << 6);
 }
 
 static void root_port_commit_config(void)
@@ -312,7 +312,6 @@ static void root_port_commit_config(void)
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		struct device *dev;
-		u16 reg16;
 
 		dev = rpc.ports[i];
 
@@ -327,9 +326,8 @@ static void root_port_commit_config(void)
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND,
+				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);
@@ -639,11 +637,11 @@ static void pch_pcie_early(struct device *dev)
 			}
 		}
 
-		pci_update_config32(dev, 0x338, ~(1 << 26), 0);
+		pci_and_config32(dev, 0x338, ~(1 << 26));
 	}
 
 	/* Enable LTR in Root Port. */
-	pci_update_config32(dev, 0x64, ~(1 << 11), (1 << 11));
+	pci_or_config32(dev, 0x64, 1 << 11);
 	pci_update_config32(dev, 0x68, ~(1 << 10), (1 << 10));
 
 	pci_update_config32(dev, 0x318, ~(0xffffUL << 16), (0x1414UL << 16));
@@ -654,7 +652,7 @@ static void pch_pcie_early(struct device *dev)
 	else
 		pci_update_config32(dev, 0x4c, ~(0x7 << 15), (0x2 << 15));
 
-	pci_update_config32(dev, 0x314, 0x0, 0x743a361b);
+	pci_update_config32(dev, 0x314, 0, 0x743a361b);
 
 	/* Set Common Clock Exit Latency in MPC register. */
 	pci_update_config32(dev, 0xd8, ~(0x7 << 15), (0x3 << 15));
@@ -662,21 +660,21 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config32(dev, 0x33c, ~0x00ffffff, 0x854c74);
 
 	/* Set Invalid Recieve Range Check Enable in MPC register. */
-	pci_update_config32(dev, 0xd8, ~0, (1 << 25));
+	pci_or_config32(dev, 0xd8, 1 << 25);
 
-	pci_update_config8(dev, 0xf5, 0x3f, 0);
+	pci_and_config8(dev, 0xf5, 0x3f);
 
 	if (rp == 1 || rp == 5 || (is_lp && rp == 6))
-		pci_update_config8(dev, 0xf7, ~0xc, 0);
+		pci_and_config8(dev, 0xf7, ~0x0c);
 
 	/* Set EOI forwarding disable. */
-	pci_update_config32(dev, 0xd4, ~0, (1 << 1));
+	pci_or_config32(dev, 0xd4, 1 << 1);
 
 	/* Set something involving advanced error reporting. */
 	pci_update_config32(dev, 0x100, ~((1 << 20) - 1), 0x10001);
 
 	if (is_lp)
-		pci_update_config32(dev, 0x100, ~0, (1 << 29));
+		pci_or_config32(dev, 0x100, 1 << 29);
 
 	/* Read and write back write-once capability registers. */
 	pci_update_config32(dev, 0x34, ~0, 0);
@@ -687,8 +685,6 @@ static void pch_pcie_early(struct device *dev)
 
 static void pci_init(struct device *dev)
 {
-	u16 reg16;
-
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
 	/* Enable SERR */
@@ -701,15 +697,11 @@ static void pci_init(struct device *dev)
 	// This has no effect but the OS might expect it
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
-	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
+	pci_and_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY);
 
 	/* Clear errors in status registers */
-	reg16 = pci_read_config16(dev, 0x06);
-	pci_write_config16(dev, 0x06, reg16);
-	reg16 = pci_read_config16(dev, 0x1e);
-	pci_write_config16(dev, 0x1e, reg16);
+	pci_update_config16(dev, 0x06, ~0, 0);
+	pci_update_config16(dev, 0x1e, ~0, 0);
 }
 
 static void pch_pcie_enable(struct device *dev)

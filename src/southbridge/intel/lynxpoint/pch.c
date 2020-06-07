@@ -86,9 +86,7 @@ u16 get_gpiobase(void)
 /* Put device in D3Hot Power State */
 static void pch_enable_d3hot(struct device *dev)
 {
-	u32 reg32 = pci_read_config32(dev, PCH_PCS);
-	reg32 |= PCH_PCS_PS_D3HOT;
-	pci_write_config32(dev, PCH_PCS, reg32);
+	pci_or_config32(dev, PCH_PCS, PCH_PCS_PS_D3HOT);
 }
 
 /* Set bit in function disable register to hide this device */
@@ -291,8 +289,6 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 
 void pch_enable(struct device *dev)
 {
-	u16 reg16;
-
 	/* PCH PCIe Root Ports are handled in PCIe driver. */
 	if (PCI_SLOT(dev->path.pci.devfn) == PCH_PCIE_DEV_SLOT)
 		return;
@@ -301,9 +297,8 @@ void pch_enable(struct device *dev)
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND,
+				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);

@@ -157,7 +157,6 @@ static void usb_xhci_reset_usb3(struct device *dev, int all)
 /* Handler for XHCI controller on entry to S3/S4/S5 */
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 {
-	u16 reg16;
 	u32 reg32;
 	u8 *mem_base = usb_xhci_mem_base(dev);
 
@@ -166,15 +165,10 @@ void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 
 	if (pch_is_lp()) {
 		/* Set D0 state */
-		reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
-		reg16 &= ~PWR_CTL_SET_MASK;
-		reg16 |= PWR_CTL_SET_D0;
-		pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+		pci_update_config16(dev, XHCI_PWR_CTL_STS, ~PWR_CTL_SET_MASK, PWR_CTL_SET_D0);
 
 		/* Clear PCI 0xB0[14:13] */
-		reg32 = pci_read_config32(dev, 0xb0);
-		reg32 &= ~((1 << 14) | (1 << 13));
-		pci_write_config32(dev, 0xb0, reg32);
+		pci_and_config32(dev, 0xb0, ~((1 << 14) | (1 << 13)));
 
 		/* Clear MMIO 0x816c[14,2] */
 		reg32 = read32(mem_base + 0x816c);
@@ -200,17 +194,13 @@ void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 void usb_xhci_route_all(void)
 {
 	u32 port_mask, route;
-	u16 reg16;
 
 	/* Skip if EHCI is already disabled */
 	if (RCBA32(FD) & PCH_DISABLE_EHCI1)
 		return;
 
 	/* Set D0 state */
-	reg16 = pci_read_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS);
-	reg16 &= ~PWR_CTL_SET_MASK;
-	reg16 |= PWR_CTL_SET_D0;
-	pci_write_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS, reg16);
+	pci_update_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS, ~PWR_CTL_SET_MASK, PWR_CTL_SET_D0);
 
 	/* Set USB3 superspeed enable */
 	port_mask = pci_read_config32(PCH_XHCI_DEV, XHCI_USB3PRM);
@@ -242,7 +232,6 @@ void usb_xhci_route_all(void)
 static void usb_xhci_clock_gating(struct device *dev)
 {
 	u32 reg32;
-	u16 reg16;
 
 	/* IOBP 0xE5004001[7:6] = 11b */
 	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
@@ -266,9 +255,7 @@ static void usb_xhci_clock_gating(struct device *dev)
 	pci_write_config8(dev, 0x40 + 2, (u8)((reg32 >> 16) & 0xff));
 
 	/* D20:F0:44h[9,7,3] = 111b */
-	reg16 = pci_read_config16(dev, 0x44);
-	reg16 |= (1 << 9) | (1 << 7) | (1 << 3);
-	pci_write_config16(dev, 0x44, reg16);
+	pci_or_config16(dev, 0x44, (1 << 9) | (1 << 7) | (1 << 3));
 
 	reg32 = pci_read_config32(dev, 0xa0);
 	if (pch_is_lp()) {
@@ -281,23 +268,17 @@ static void usb_xhci_clock_gating(struct device *dev)
 	pci_write_config32(dev, 0xa0, reg32);
 
 	/* D20:F0:A4h[13] = 0 */
-	reg32 = pci_read_config32(dev, 0xa4);
-	reg32 &= ~(1 << 13);
-	pci_write_config32(dev, 0xa4, reg32);
+	pci_and_config32(dev, 0xa4, ~(1 << 13));
 }
 
 static void usb_xhci_init(struct device *dev)
 {
 	u32 reg32;
-	u16 reg16;
 	u8 *mem_base = usb_xhci_mem_base(dev);
 	config_t *config = dev->chip_info;
 
 	/* D20:F0:74h[1:0] = 00b (set D0 state) */
-	reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
-	reg16 &= ~PWR_CTL_SET_MASK;
-	reg16 |= PWR_CTL_SET_D0;
-	pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+	pci_update_config16(dev, XHCI_PWR_CTL_STS, ~PWR_CTL_SET_MASK, PWR_CTL_SET_D0);
 
 	/* Enable clock gating first */
 	usb_xhci_clock_gating(dev);
@@ -321,10 +302,7 @@ static void usb_xhci_init(struct device *dev)
 		write32(mem_base + 0x816c, reg32);
 
 		/* D20:F0:B0h[17,14,13] = 100b */
-		reg32 = pci_read_config32(dev, 0xb0);
-		reg32 &= ~((1 << 14) | (1 << 13));
-		reg32 |= (1 << 17);
-		pci_write_config32(dev, 0xb0, reg32);
+		pci_update_config32(dev, 0xb0, ~((1 << 14) | (1 << 13)), 1 << 17);
 	}
 
 	reg32 = pci_read_config32(dev, 0x50);
@@ -340,15 +318,10 @@ static void usb_xhci_init(struct device *dev)
 	pci_write_config32(dev, 0x50, reg32);
 
 	/* D20:F0:44h[31] = 1 (Access Control Bit) */
-	reg32 = pci_read_config32(dev, 0x44);
-	reg32 |= (1UL << 31);
-	pci_write_config32(dev, 0x44, reg32);
+	pci_or_config32(dev, 0x44, 1 << 31);
 
 	/* D20:F0:40h[31,23] = 10b (OC Configuration Done) */
-	reg32 = pci_read_config32(dev, 0x40);
-	reg32 &= ~(1 << 23); /* unsupported request */
-	reg32 |= (1UL << 31);
-	pci_write_config32(dev, 0x40, reg32);
+	pci_update_config32(dev, 0x40, ~(1 << 23), 1 << 31); /* unsupported request */
 
 	if (acpi_is_wakeup_s3()) {
 		/* Reset ports that are disabled or

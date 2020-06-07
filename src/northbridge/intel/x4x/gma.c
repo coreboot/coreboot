@@ -48,11 +48,9 @@ static void gma_func0_init(struct device *dev)
 static void gma_func0_disable(struct device *dev)
 {
 	struct device *dev_host = pcidev_on_root(0, 0);
-	u16 ggc;
 
-	ggc = pci_read_config16(dev_host, D0F0_GGC);
-	ggc |= (1 << 1); /* VGA cycles to discrete GPU */
-	pci_write_config16(dev_host, D0F0_GGC, ggc);
+	/* VGA cycles to discrete GPU */
+	pci_or_config16(dev_host, D0F0_GGC, 1 << 1);
 }
 
 static void gma_generate_ssdt(const struct device *device)

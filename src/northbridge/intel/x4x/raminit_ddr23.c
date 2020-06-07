@@ -1701,7 +1701,6 @@ static void configure_mmap(struct sysinfo *s)
 	u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256, 96,
 			  160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
-	u8 reg8;
 
 	ggc = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
@@ -1745,11 +1744,8 @@ static void configure_mmap(struct sysinfo *s)
 	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, touud);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, gfxbase << 20);
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, gttbase << 20);
-	/* Enable and set tseg size to 2M */
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
-	reg8 &= ~0x7;
-	reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
-	pci_write_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, reg8);
+	/* Enable and set TSEG size to 2M */
+	pci_update_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, ~0x07, (1 << 1) | (1 << 0));
 	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
 }
 

@@ -72,6 +72,11 @@ smbios_board_type smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_SERVER_BLADE;
 }
 
+smbios_enclosure_type smbios_mainboard_enclosure_type(void)
+{
+	return SMBIOS_ENCLOSURE_MULTI_SYSTEM_CHASSIS;
+}
+
 /* Add any mainboard specific information for dimm */
 void mainboard_add_dimm_info(
 	struct memory_info *mem_info,

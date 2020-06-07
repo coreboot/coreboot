@@ -88,6 +88,9 @@ chip soc/intel/cannonlake
 	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
 	device domain 0 on
+		device pci 02.0 on	# Integrated Graphics Device
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

@@ -60,6 +60,9 @@ chip soc/intel/cannonlake
 	}"
 
 	device domain 0 on
+		device pci 02.0 on	# Integrated Graphics Device
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on

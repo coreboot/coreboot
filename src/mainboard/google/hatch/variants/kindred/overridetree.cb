@@ -105,6 +105,9 @@ chip soc/intel/cannonlake
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1515"
 
 	device domain 0 on
+		device pci 02.0 on	# Integrated Graphics Device
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

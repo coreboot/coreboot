@@ -69,6 +69,9 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 
 	device domain 0 on
+		device pci 02.0 on	# Integrated Graphics Device
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device pci 02.0 on
 			chip drivers/gfx/generic
 				register "device_count" = "1"

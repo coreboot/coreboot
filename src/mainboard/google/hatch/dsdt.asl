@@ -26,6 +26,9 @@ DefinitionBlock(
 		{
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/cannonlake/acpi/southbridge.asl>
+#if CONFIG(BOARD_GOOGLE_BASEBOARD_HATCH)
+			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
+#endif
 		}
 	}
 

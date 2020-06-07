@@ -82,78 +82,6 @@ void pci_write_config32(const struct device *dev, u16 reg, u32 val)
 
 #if ENV_PCI_SIMPLE_DEVICE
 static __always_inline
-void pci_and_config8(pci_devfn_t dev, u16 reg, u8 andmask)
-#else
-static __always_inline
-void pci_and_config8(const struct device *dev, u16 reg, u8 andmask)
-#endif
-{
-	u8 value = pci_read_config8(dev, reg);
-	pci_write_config8(dev, reg, value & andmask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
-void pci_and_config16(pci_devfn_t dev, u16 reg, u16 andmask)
-#else
-static __always_inline
-void pci_and_config16(const struct device *dev, u16 reg, u16 andmask)
-#endif
-{
-	u16 value = pci_read_config16(dev, reg);
-	pci_write_config16(dev, reg, value & andmask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
-void pci_and_config32(pci_devfn_t dev, u16 reg, u32 andmask)
-#else
-static __always_inline
-void pci_and_config32(const struct device *dev, u16 reg, u32 andmask)
-#endif
-{
-	u32 value = pci_read_config32(dev, reg);
-	pci_write_config32(dev, reg, value & andmask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
-void pci_or_config8(pci_devfn_t dev, u16 reg, u8 ormask)
-#else
-static __always_inline
-void pci_or_config8(const struct device *dev, u16 reg, u8 ormask)
-#endif
-{
-	u8 value = pci_read_config8(dev, reg);
-	pci_write_config8(dev, reg, value | ormask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
-void pci_or_config16(pci_devfn_t dev, u16 reg, u16 ormask)
-#else
-static __always_inline
-void pci_or_config16(const struct device *dev, u16 reg, u16 ormask)
-#endif
-{
-	u16 value = pci_read_config16(dev, reg);
-	pci_write_config16(dev, reg, value | ormask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
-void pci_or_config32(pci_devfn_t dev, u16 reg, u32 ormask)
-#else
-static __always_inline
-void pci_or_config32(const struct device *dev, u16 reg, u32 ormask)
-#endif
-{
-	u32 value = pci_read_config32(dev, reg);
-	pci_write_config32(dev, reg, value | ormask);
-}
-
-#if ENV_PCI_SIMPLE_DEVICE
-static __always_inline
 void pci_update_config8(pci_devfn_t dev, u16 reg, u8 mask, u8 or)
 #else
 static __always_inline
@@ -198,6 +126,72 @@ void pci_update_config32(const struct device *dev, u16 reg, u32 mask, u32 or)
 	reg32 &= mask;
 	reg32 |= or;
 	pci_write_config32(dev, reg, reg32);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_and_config8(pci_devfn_t dev, u16 reg, u8 andmask)
+#else
+static __always_inline
+void pci_and_config8(const struct device *dev, u16 reg, u8 andmask)
+#endif
+{
+	pci_update_config8(dev, reg, andmask, 0);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_and_config16(pci_devfn_t dev, u16 reg, u16 andmask)
+#else
+static __always_inline
+void pci_and_config16(const struct device *dev, u16 reg, u16 andmask)
+#endif
+{
+	pci_update_config16(dev, reg, andmask, 0);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_and_config32(pci_devfn_t dev, u16 reg, u32 andmask)
+#else
+static __always_inline
+void pci_and_config32(const struct device *dev, u16 reg, u32 andmask)
+#endif
+{
+	pci_update_config32(dev, reg, andmask, 0);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_or_config8(pci_devfn_t dev, u16 reg, u8 ormask)
+#else
+static __always_inline
+void pci_or_config8(const struct device *dev, u16 reg, u8 ormask)
+#endif
+{
+	pci_update_config8(dev, reg, 0xff, ormask);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_or_config16(pci_devfn_t dev, u16 reg, u16 ormask)
+#else
+static __always_inline
+void pci_or_config16(const struct device *dev, u16 reg, u16 ormask)
+#endif
+{
+	pci_update_config16(dev, reg, 0xffff, ormask);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_or_config32(pci_devfn_t dev, u16 reg, u32 ormask)
+#else
+static __always_inline
+void pci_or_config32(const struct device *dev, u16 reg, u32 ormask)
+#endif
+{
+	pci_update_config32(dev, reg, 0xffffffff, ormask);
 }
 
 u16 pci_s_find_next_capability(pci_devfn_t dev, u16 cap, u16 last);

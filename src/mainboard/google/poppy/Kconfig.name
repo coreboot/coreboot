@@ -1,7 +1,7 @@
 comment "Poppy"
 
 config BOARD_GOOGLE_ATLAS
-	bool "->  Atlas"
+	bool "->  Atlas (Google Pixelbook Go)"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_ATLAS
 
@@ -16,21 +16,21 @@ config BOARD_GOOGLE_NAMI
 	select VARIANT_SPECIFIC_OPTIONS_NAMI
 
 config BOARD_GOOGLE_NAUTILUS
-	bool "->  Nautilus"
+	bool "->  Nautilus (Samsung Chromebook Plus (V2 / LTE))"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 
 config BOARD_GOOGLE_NOCTURNE
-	bool "->  Nocturne"
+	bool "->  Nocturne (Google Pixel Slate)"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NOCTURNE
 
 config BOARD_GOOGLE_RAMMUS
-	bool "->  Rammus"
+	bool "->  Rammus (Asus Chromebook C425, Flip C433, Flip C434)"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_RAMMUS
 
 config BOARD_GOOGLE_SORAKA
-	bool "->  Soraka"
+	bool "->  Soraka (HP Chromebook x2)"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_SORAKA

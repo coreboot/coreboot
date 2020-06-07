@@ -1045,6 +1045,8 @@ static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
 }
 #endif
 
+uint8_t acpi_get_preferred_pm_profile(void);
+
 /* Returns ACPI_Sx values. */
 int acpi_get_sleep_type(void);
 

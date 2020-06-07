@@ -1251,14 +1251,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	/* should be 0 ACPI 3.0 */
 	fadt->reserved = 0;
 
-	if (CONFIG(SYSTEM_TYPE_CONVERTIBLE) ||
-	    CONFIG(SYSTEM_TYPE_LAPTOP))
-		fadt->preferred_pm_profile = PM_MOBILE;
-	else if (CONFIG(SYSTEM_TYPE_DETACHABLE) ||
-		 CONFIG(SYSTEM_TYPE_TABLET))
-		fadt->preferred_pm_profile = PM_TABLET;
-	else
-		fadt->preferred_pm_profile = PM_DESKTOP;
+	fadt->preferred_pm_profile = acpi_get_preferred_pm_profile();
 
 	arch_fill_fadt(fadt);
 

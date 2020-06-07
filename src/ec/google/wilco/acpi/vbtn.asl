@@ -5,7 +5,7 @@
  * the Linux kernel at drivers/platform/x86/intel-vbtn.c
  *
  * For tablet/laptop and dock/undock events to work the board must
- * select SYSTEM_TYPE_CONVERTIBLE for the SMBIOS enclosure type to
+ * have SMBIOS_ENCLOSURE_CONVERTIBLE for the SMBIOS enclosure type to
  * indicate the device is a convertible.
  */
 

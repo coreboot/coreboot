@@ -37,7 +37,6 @@ static void haswell_setup_igd(void)
 {
 	bool igd_enabled;
 	u16 ggc;
-	u8 reg8;
 
 	printk(BIOS_DEBUG, "Initializing IGD...\n");
 
@@ -59,10 +58,7 @@ static void haswell_setup_igd(void)
 	}
 
 	/* Enable 256MB aperture */
-	reg8 = pci_read_config8(PCI_DEV(0, 2, 0), MSAC);
-	reg8 &= ~0x06;
-	reg8 |= 0x02;
-	pci_write_config8(PCI_DEV(0, 2, 0), MSAC, reg8);
+	pci_update_config8(PCI_DEV(0, 2, 0), MSAC, ~0x06, 0x02);
 }
 
 static void start_peg2_link_training(const pci_devfn_t dev)

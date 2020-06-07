@@ -100,6 +100,38 @@ void pm_io_write8(uint8_t reg, uint8_t value);
 void pm_io_write16(uint8_t reg, uint16_t value);
 void pm_io_write32(uint8_t reg, uint32_t value);
 
+void iomux_set_bar(void *bar);
+void *iomux_get_bar(void);
+void misc_set_bar(void *bar);
+void *misc_get_bar(void);
+void gpio_set_bar(void *bar);
+void *gpio_get_bar(void);
+void aoac_set_bar(void *bar);
+void *aoac_get_bar(void);
+void io_set_bar(void *bar);
+u8 io_read8(u16 reg);
+void io_write8(u16 reg, u8 value);
+
+
+#if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_SEPARATE_VERSTAGE)
+
+u8 iomux_read8(u8 reg);
+u16 iomux_read16(u8 reg);
+u32 iomux_read32(u8 reg);
+void iomux_write8(u8 reg, u8 value);
+void iomux_write16(u8 reg, u16 value);
+void iomux_write32(u8 reg, u32 value);
+u8 misc_read8(u8 reg);
+u16 misc_read16(u8 reg);
+u32 misc_read32(u8 reg);
+void misc_write8(u8 reg, u8 value);
+void misc_write16(u8 reg, u16 value);
+void misc_write32(u8 reg, u32 value);
+u8 aoac_read8(u8 reg);
+void aoac_write8(u8 reg, u8 value);
+
+#else
+
 static inline uint8_t sm_pci_read8(uint8_t reg)
 {
 	return read8((void *)(ACPIMMIO_SM_PCI_BASE + reg));
@@ -515,4 +547,5 @@ static inline void aoac_write8(uint8_t reg, uint8_t value)
 	write8((void *)(ACPIMMIO_AOAC_BASE + reg), value);
 }
 
+#endif /* (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_SEPARATE_VERSTAGE) */
 #endif /* __AMDBLOCKS_ACPIMMIO_H__ */

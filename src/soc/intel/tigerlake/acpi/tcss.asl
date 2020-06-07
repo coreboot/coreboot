@@ -38,7 +38,7 @@ Scope (\_SB)
 	Method (BASE, 1)
 	{
 		Local0 = Arg0 & 0x7             /* Function number */
-		Local1 = (Arg0 >> 16) & 0x1F   /* Device number */
+		Local1 = (Arg0 >> 16) & 0x1F    /* Device number */
 		Local2 = (Local0 << 12) + (Local1 << 15)
 		Local3 = \_SB.PCI0.GPCB() + Local2
 		Return (Local3)
@@ -125,6 +125,127 @@ Scope (\_SB)
 			}
 		}
 		Return (0)
+	}
+}
+
+Scope (_GPE)
+{
+	/* PCI Express Hot-Plug wake event */
+	Method (_L61, 0, NotSerialized)
+	{
+		/*
+		 * Delay for 100ms to meet the timing requirements of the PCI Express Base
+		 * Specification, Revision 1.0A, Section 6.6 ("...software must wait at least
+		 * 100ms from the end of reset of one or more device before it is permitted
+		 * to issue Configuration Requests to those devices").
+		 */
+		Sleep (100)
+
+		If (CondRefOf (\_SB.PCI0.TXHC)) {
+			/* Invoke PCIe root ports wake event handler */
+			\_SB.PCI0.TRP0.HPEV()
+			\_SB.PCI0.TRP1.HPEV()
+			\_SB.PCI0.TRP2.HPEV()
+			\_SB.PCI0.TRP3.HPEV()
+		}
+
+		/* Check Root Port 0 for a Hot Plug Event if the port is enabled */
+		If (((\_SB.PCI0.TRP0.VDID != 0xFFFFFFFF) && \_SB.PCI0.TRP0.HPSX)) {
+			If (\_SB.PCI0.TRP0.PDCX) {
+				/* Clear all status bits */
+				\_SB.PCI0.TRP0.PDCX = 1
+				\_SB.PCI0.TRP0.HPSX = 1
+				/*
+				 * Intercept Presence Detect Changed interrupt and make sure
+				 * the L0s is disabled on empty slots.
+				 */
+				If (!\_SB.PCI0.TRP0.PDSX) {
+					/*
+					 * The PCIe slot is empty, so disable L0s on hot unplug.
+					 */
+					\_SB.PCI0.TRP0.L0SE = 0
+				}
+				/* Performs proper notification to the OS. */
+				Notify (\_SB.PCI0.TRP0, 0)
+			} Else {
+				/* False event. Clear Hot-Plug status, then exit. */
+				\_SB.PCI0.TRP0.HPSX = 1
+			}
+		}
+
+		/* Check Root Port 1 for a Hot Plug Event if the port is enabled */
+		If (((\_SB.PCI0.TRP1.VDID != 0xFFFFFFFF) && \_SB.PCI0.TRP1.HPSX)) {
+			If (\_SB.PCI0.TRP1.PDCX) {
+				\_SB.PCI0.TRP1.PDCX = 1
+				\_SB.PCI0.TRP1.HPSX = 1
+				If (!\_SB.PCI0.TRP1.PDSX) {
+					\_SB.PCI0.TRP1.L0SE = 0
+				}
+				Notify (\_SB.PCI0.TRP1, 0)
+			} Else {
+				\_SB.PCI0.TRP1.HPSX = 1
+			}
+		}
+
+		/* Check Root Port 2 for a Hot Plug Event if the port is enabled */
+		If (((\_SB.PCI0.TRP2.VDID != 0xFFFFFFFF) && \_SB.PCI0.TRP2.HPSX)) {
+			If (\_SB.PCI0.TRP2.PDCX) {
+				\_SB.PCI0.TRP2.PDCX = 1
+				\_SB.PCI0.TRP2.HPSX = 1
+				If (!\_SB.PCI0.TRP2.PDSX) {
+					\_SB.PCI0.TRP2.L0SE = 0
+				}
+				Notify (\_SB.PCI0.TRP2, 0)
+			} Else {
+				\_SB.PCI0.TRP2.HPSX = 1
+			}
+		}
+
+		/* Check Root Port 3 for a Hot Plug Event if the port is enabled */
+		If (((\_SB.PCI0.TRP3.VDID != 0xFFFFFFFF) && \_SB.PCI0.TRP3.HPSX)) {
+			If (\_SB.PCI0.TRP3.PDCX) {
+				\_SB.PCI0.TRP3.PDCX = 1
+				\_SB.PCI0.TRP3.HPSX = 1
+				If (!\_SB.PCI0.TRP3.PDSX) {
+					\_SB.PCI0.TRP3.L0SE = 0
+				}
+				Notify (\_SB.PCI0.TRP3, 0)
+			} Else {
+				\_SB.PCI0.TRP3.HPSX = 1
+			}
+		}
+	}
+
+	/* PCI Express power management event */
+	Method (_L69, 0, Serialized)
+	{
+		If (CondRefOf (\_SB.PCI0.TXHC)) {
+			If (\_SB.PCI0.TRP0.HPME() == 1) {
+				Notify (\_SB.PCI0.TDM0, 0x2)
+				Notify (\_SB.PCI0.TRP0, 0x2)
+			}
+
+			If (\_SB.PCI0.TRP1.HPME() == 1) {
+				Notify (\_SB.PCI0.TDM0, 0x2)
+				Notify (\_SB.PCI0.TRP1, 0x2)
+			}
+
+			If (\_SB.PCI0.TRP2.HPME() == 1) {
+				Notify (\_SB.PCI0.TDM1, 0x2)
+				Notify (\_SB.PCI0.TRP2, 0x2)
+			}
+
+			If (\_SB.PCI0.TRP3.HPME() == 1) {
+				Notify (\_SB.PCI0.TDM1, 0x2)
+				Notify (\_SB.PCI0.TRP3, 0x2)
+			}
+		}
+
+		/* Invoke PCIe root ports power management status handler */
+		\_SB.PCI0.TRP0.HPME()
+		\_SB.PCI0.TRP1.HPME()
+		\_SB.PCI0.TRP2.HPME()
+		\_SB.PCI0.TRP3.HPME()
 	}
 }
 
@@ -320,48 +441,49 @@ Scope (\_SB.PCI0)
 	{
 		If (\_SB.PCI0.TDM0.VDID == 0xFFFFFFFF) {
 			Printf("TDM0 does not exist.")
-		}
-
-		If (\_SB.PCI0.TDM0.STAT == 0) {
-			/* DMA0 is in D3Cold early. */
-			\_SB.PCI0.TDM0.D3CX()  /* RTD3 Exit */
-
-			Printf("Bring TBT RPs out of D3Code.")
-			If (\_SB.PCI0.TRP0.VDID != 0xFFFFFFFF) {
-				/* RP0 D3 cold exit. */
-				\_SB.PCI0.TRP0.D3CX()
-			}
-			If (\_SB.PCI0.TRP1.VDID != 0xFFFFFFFF) {
-				/* RP1 D3 cold exit. */
-				\_SB.PCI0.TRP1.D3CX()
-			}
-
-			/*
-			 * Need to send Connect-Topology command when TBT host
-			 * controller back to D0 from D3.
-			 */
-			If (\_SB.PCI0.TDM0.ALCT == 1) {
-				If (CTP0 == 1) {
-					/*
-					 * Send Connect-Topology command if there is
-					 * device present on PCIe RP.
-					 */
-					\_SB.PCI0.TDM0.CNTP()
-
-					/* Indicate to wait Connect-Topology command. */
-					\_SB.PCI0.TDM0.WACT = 1
-
-					/* Clear the connect states. */
-					CTP0 = 0
-				}
-				/* Disallow to send Connect-Topology command. */
-				\_SB.PCI0.TDM0.ALCT = 0
-			}
 		} Else {
-			Printf("Drop TG0N due to it is already exit D3 cold.")
+			If (\_SB.PCI0.TDM0.STAT == 0) {
+				/* DMA0 is in D3Cold early. */
+				\_SB.PCI0.TDM0.D3CX()  /* RTD3 Exit */
+
+				Printf("Bring TBT RPs out of D3Code.")
+				If (\_SB.PCI0.TRP0.VDID != 0xFFFFFFFF) {
+					/* RP0 D3 cold exit. */
+					\_SB.PCI0.TRP0.D3CX()
+				}
+				If (\_SB.PCI0.TRP1.VDID != 0xFFFFFFFF) {
+					/* RP1 D3 cold exit. */
+					\_SB.PCI0.TRP1.D3CX()
+				}
+
+				/*
+				 * Need to send Connect-Topology command when TBT host
+				 * controller back to D0 from D3.
+				 */
+				If (\_SB.PCI0.TDM0.ALCT == 1) {
+					If (CTP0 == 1) {
+						/*
+						 * Send Connect-Topology command if there is
+						 * device present on PCIe RP.
+						 */
+						\_SB.PCI0.TDM0.CNTP()
+
+						/* Indicate to wait Connect-Topology command. */
+						\_SB.PCI0.TDM0.WACT = 1
+
+						/* Clear the connect states. */
+						CTP0 = 0
+					}
+					/* Disallow to send Connect-Topology command. */
+					\_SB.PCI0.TDM0.ALCT = 0
+				}
+			} Else {
+				Printf("Drop TG0N due to it is already exit D3 cold.")
+			}
+
+			/* TBT RTD3 exit 10ms delay. */
+			Sleep (10)
 		}
-		/* TBT RTD3 exit 10ms delay. */
-		Sleep (10)
 	}
 
 	/*
@@ -371,26 +493,26 @@ Scope (\_SB.PCI0)
 	{
 		If (\_SB.PCI0.TDM0.VDID == 0xFFFFFFFF) {
 			Printf("TDM0 does not exist.")
-		}
+		} Else {
+			If (\_SB.PCI0.TDM0.STAT == 1) {
+				/* DMA0 is not in D3Cold now. */
+				\_SB.PCI0.TDM0.D3CE()  /* Enable DMA RTD3 */
 
-		If (\_SB.PCI0.TDM0.STAT == 1) {
-			/* DMA0 is not in D3Cold now. */
-			\_SB.PCI0.TDM0.D3CE()  /* Enable DMA RTD3 */
-
-			Printf("Push TBT RPs to D3Cold together")
-			If (\_SB.PCI0.TRP0.VDID != 0xFFFFFFFF) {
-				If (\_SB.PCI0.TRP0.PDSX == 1) {
-					CTP0 = 1
+				Printf("Push TBT RPs to D3Cold together")
+				If (\_SB.PCI0.TRP0.VDID != 0xFFFFFFFF) {
+					If (\_SB.PCI0.TRP0.PDSX == 1) {
+						CTP0 = 1
+					}
+					/* Put RP0 to D3 cold. */
+					\_SB.PCI0.TRP0.D3CE()
 				}
-				/* Put RP0 to D3 cold. */
-				\_SB.PCI0.TRP0.D3CE()
-			}
-			If (\_SB.PCI0.TRP1.VDID != 0xFFFFFFFF) {
-				If (\_SB.PCI0.TRP1.PDSX == 1) {
-					CTP0 = 1
+				If (\_SB.PCI0.TRP1.VDID != 0xFFFFFFFF) {
+					If (\_SB.PCI0.TRP1.PDSX == 1) {
+						CTP0 = 1
+					}
+					/* Put RP1 to D3 cold. */
+					\_SB.PCI0.TRP1.D3CE()
 				}
-				/* Put RP1 to D3 cold. */
-				\_SB.PCI0.TRP1.D3CE()
 			}
 		}
 	}
@@ -402,48 +524,49 @@ Scope (\_SB.PCI0)
 	{
 		If (\_SB.PCI0.TDM1.VDID == 0xFFFFFFFF) {
 			Printf("TDM1 does not exist.")
-		}
-
-		If (\_SB.PCI0.TDM1.STAT == 0) {
-			/* DMA1 is in D3Cold early. */
-			\_SB.PCI0.TDM1.D3CX()  /* RTD3 Exit */
-
-			Printf("Bring TBT RPs out of D3Code.")
-			If (\_SB.PCI0.TRP2.VDID != 0xFFFFFFFF) {
-				/* RP2 D3 cold exit. */
-				\_SB.PCI0.TRP2.D3CX()
-			}
-			If (\_SB.PCI0.TRP3.VDID != 0xFFFFFFFF) {
-				/* RP3 D3 cold exit. */
-				\_SB.PCI0.TRP3.D3CX()
-			}
-
-			/*
-			 * Need to send Connect-Topology command when TBT host
-			 * controller back to D0 from D3.
-			 */
-			If (\_SB.PCI0.TDM1.ALCT == 1) {
-				If (CTP1 == 1) {
-					/*
-					 * Send Connect-Topology command if there is
-					 * device present on PCIe RP.
-					 */
-					\_SB.PCI0.TDM1.CNTP()
-
-					/* Indicate to wait Connect-Topology command. */
-					\_SB.PCI0.TDM1.WACT = 1
-
-					/* Clear the connect states. */
-					CTP1 = 0
-				}
-				/* Disallow to send Connect-Topology cmd. */
-				\_SB.PCI0.TDM1.ALCT = 0
-			}
 		} Else {
-			Printf("Drop TG1N due to it is already exit D3 cold.")
+			If (\_SB.PCI0.TDM1.STAT == 0) {
+				/* DMA1 is in D3Cold early. */
+				\_SB.PCI0.TDM1.D3CX()  /* RTD3 Exit */
+
+				Printf("Bring TBT RPs out of D3Code.")
+				If (\_SB.PCI0.TRP2.VDID != 0xFFFFFFFF) {
+					/* RP2 D3 cold exit. */
+					\_SB.PCI0.TRP2.D3CX()
+				}
+				If (\_SB.PCI0.TRP3.VDID != 0xFFFFFFFF) {
+					/* RP3 D3 cold exit. */
+					\_SB.PCI0.TRP3.D3CX()
+				}
+
+				/*
+				 * Need to send Connect-Topology command when TBT host
+				 * controller back to D0 from D3.
+				 */
+				If (\_SB.PCI0.TDM1.ALCT == 1) {
+					If (CTP1 == 1) {
+						/*
+						 * Send Connect-Topology command if there is
+						 * device present on PCIe RP.
+						 */
+						\_SB.PCI0.TDM1.CNTP()
+
+						/* Indicate to wait Connect-Topology command. */
+						\_SB.PCI0.TDM1.WACT = 1
+
+						/* Clear the connect states. */
+						CTP1 = 0
+					}
+					/* Disallow to send Connect-Topology cmd. */
+					\_SB.PCI0.TDM1.ALCT = 0
+				}
+			} Else {
+				Printf("Drop TG1N due to it is already exit D3 cold.")
+			}
+
+			/* TBT RTD3 exit 10ms delay. */
+			Sleep (10)
 		}
-		/* TBT RTD3 exit 10ms delay. */
-		Sleep (10)
 	}
 
 	/*
@@ -453,26 +576,26 @@ Scope (\_SB.PCI0)
 	{
 		If (\_SB.PCI0.TDM1.VDID == 0xFFFFFFFF) {
 			 Printf("TDM1 does not exist.")
-		}
+		} Else {
+			If (\_SB.PCI0.TDM1.STAT == 1) {
+				/* DMA1 is not in D3Cold now */
+				\_SB.PCI0.TDM1.D3CE()  /* Enable DMA RTD3. */
 
-		If (\_SB.PCI0.TDM1.STAT == 1) {
-			/* DMA1 is not in D3Cold now */
-			\_SB.PCI0.TDM1.D3CE()  /* Enable DMA RTD3. */
-
-			Printf("Push TBT RPs to D3Cold together")
-			If (\_SB.PCI0.TRP2.VDID != 0xFFFFFFFF) {
-				If (\_SB.PCI0.TRP2.PDSX == 1) {
-					CTP1 = 1
+				Printf("Push TBT RPs to D3Cold together")
+				If (\_SB.PCI0.TRP2.VDID != 0xFFFFFFFF) {
+					If (\_SB.PCI0.TRP2.PDSX == 1) {
+						CTP1 = 1
+					}
+					/* Put RP2 to D3 cold. */
+					\_SB.PCI0.TRP2.D3CE()
 				}
-				/* Put RP2 to D3 cold. */
-				\_SB.PCI0.TRP2.D3CE()
-			}
-			If (\_SB.PCI0.TRP3.VDID != 0xFFFFFFFF) {
-				If (\_SB.PCI0.TRP3.PDSX == 1) {
-					CTP1 = 1
+				If (\_SB.PCI0.TRP3.VDID != 0xFFFFFFFF) {
+					If (\_SB.PCI0.TRP3.PDSX == 1) {
+						CTP1 = 1
+					}
+					/* Put RP3 to D3 cold */
+					\_SB.PCI0.TRP3.D3CE()
 				}
-				/* Put RP3 to D3 cold */
-				\_SB.PCI0.TRP3.D3CE()
 			}
 		}
 	}
@@ -536,7 +659,7 @@ Scope (\_SB.PCI0)
 			}
 
 			If (Local0 == TCSS_IOM_ACK_TIMEOUT_IN_MS) {
-				Printf("Error: Error: Timeout occurred.")
+				Printf("Error: Timeout occurred.")
 			}
 			Else
 			{

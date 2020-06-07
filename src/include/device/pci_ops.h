@@ -82,6 +82,42 @@ void pci_write_config32(const struct device *dev, u16 reg, u32 val)
 
 #if ENV_PCI_SIMPLE_DEVICE
 static __always_inline
+void pci_and_config8(pci_devfn_t dev, u16 reg, u8 andmask)
+#else
+static __always_inline
+void pci_and_config8(const struct device *dev, u16 reg, u8 andmask)
+#endif
+{
+	u8 value = pci_read_config8(dev, reg);
+	pci_write_config8(dev, reg, value & andmask);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_and_config16(pci_devfn_t dev, u16 reg, u16 andmask)
+#else
+static __always_inline
+void pci_and_config16(const struct device *dev, u16 reg, u16 andmask)
+#endif
+{
+	u16 value = pci_read_config16(dev, reg);
+	pci_write_config16(dev, reg, value & andmask);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
+void pci_and_config32(pci_devfn_t dev, u16 reg, u32 andmask)
+#else
+static __always_inline
+void pci_and_config32(const struct device *dev, u16 reg, u32 andmask)
+#endif
+{
+	u32 value = pci_read_config32(dev, reg);
+	pci_write_config32(dev, reg, value & andmask);
+}
+
+#if ENV_PCI_SIMPLE_DEVICE
+static __always_inline
 void pci_or_config8(pci_devfn_t dev, u16 reg, u8 ormask)
 #else
 static __always_inline

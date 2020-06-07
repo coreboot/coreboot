@@ -479,9 +479,24 @@ smbios_board_type __weak smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
+/*
+ * System Enclosure or Chassis Types as defined in SMBIOS specification.
+ * The default value is SMBIOS_ENCLOSURE_DESKTOP (0x03) but laptop,
+ * convertible, or tablet enclosure will be used if the appropriate
+ * system type is selected.
+ */
 smbios_enclosure_type __weak smbios_mainboard_enclosure_type(void)
 {
-	return CONFIG_SMBIOS_ENCLOSURE_TYPE;
+	if (CONFIG(SYSTEM_TYPE_LAPTOP))
+		return SMBIOS_ENCLOSURE_LAPTOP;
+	else if (CONFIG(SYSTEM_TYPE_TABLET))
+		return SMBIOS_ENCLOSURE_TABLET;
+	else if (CONFIG(SYSTEM_TYPE_CONVERTIBLE))
+		return SMBIOS_ENCLOSURE_CONVERTIBLE;
+	else if (CONFIG(SYSTEM_TYPE_DETACHABLE))
+		return SMBIOS_ENCLOSURE_DETACHABLE;
+	else
+		return SMBIOS_ENCLOSURE_DESKTOP;
 }
 
 const char *__weak smbios_system_serial_number(void)

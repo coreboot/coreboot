@@ -215,8 +215,6 @@ static void azalia_init(struct device *dev)
 	u8 *base;
 	struct resource *res;
 	u32 codec_mask;
-	u8 reg8;
-	u16 reg16;
 	u32 reg32;
 
 	/* Find base address */
@@ -236,48 +234,30 @@ static void azalia_init(struct device *dev)
 		reg32 |= RCBA32(CIR31) & 0xfe;
 		pci_write_config32(dev, 0x120, reg32);
 
-		reg16 = pci_read_config16(dev, 0x78);
-		reg16 |= (1 << 11);
-		pci_write_config16(dev, 0x78, reg16);
+		pci_or_config16(dev, 0x78, 1 << 11);
 	} else
 		printk(BIOS_DEBUG, "Azalia: V1CTL disabled.\n");
 
-	reg32 = pci_read_config32(dev, 0x114);
-	reg32 &= ~0xfe;
-	pci_write_config32(dev, 0x114, reg32);
+	pci_and_config32(dev, 0x114, ~0xfe);
 
 	// Set VCi enable bit
-	reg32 = pci_read_config32(dev, 0x120);
-	reg32 |= (1 << 31);
-	pci_write_config32(dev, 0x120, reg32);
+	pci_or_config32(dev, 0x120, 1 << 31);
 
 	// Enable HDMI codec:
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 1);
-	pci_write_config32(dev, 0xc4, reg32);
+	pci_or_config32(dev, 0xc4, 1 << 1);
 
-	reg8 = pci_read_config8(dev, 0x43);
-	reg8 |= (1 << 6);
-	pci_write_config8(dev, 0x43, reg8);
+	pci_or_config8(dev, 0x43, 1 << 6);
 
 	/* Additional programming steps */
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 13);
-	pci_write_config32(dev, 0xc4, reg32);
+	pci_or_config32(dev, 0xc4, 1 << 13);
 
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 10);
-	pci_write_config32(dev, 0xc4, reg32);
+	pci_or_config32(dev, 0xc4, 1 << 10);
 
-	reg32 = pci_read_config32(dev, 0xd0);
-	reg32 &= ~(1 << 31);
-	pci_write_config32(dev, 0xd0, reg32);
+	pci_and_config32(dev, 0xd0, ~(1 << 31));
 
 	if (dev->device == 0x1e20) {
 		/* Additional step on Panther Point */
-		reg32 = pci_read_config32(dev, 0xc4);
-		reg32 |= (1 << 17);
-		pci_write_config32(dev, 0xc4, reg32);
+		pci_or_config32(dev, 0xc4, 1 << 17);
 	}
 
 	/* Set Bus Master */
@@ -294,14 +274,11 @@ static void azalia_init(struct device *dev)
 	/* Wait 1ms */
 	udelay(1000);
 
-	//
-	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select Azalia mode. This needs to be controlled via devicetree.cb
-	pci_write_config8(dev, 0x40, reg8);
+	// Select Azalia mode. This needs to be controlled via devicetree.cb
+	pci_or_config8(dev, 0x40, 1); // Audio Control
 
-	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
-	reg8 &= ~(1 << 7); // Docking not supported
-	pci_write_config8(dev, 0x4d, reg8);
+	// Docking not supported
+	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
 	codec_mask = codec_detect(base);
 
@@ -311,10 +288,7 @@ static void azalia_init(struct device *dev)
 	}
 
 	/* Enable dynamic clock gating */
-	reg8 = pci_read_config8(dev, 0x43);
-	reg8 &= ~0x7;
-	reg8 |= (1 << 2) | (1 << 0);
-	pci_write_config8(dev, 0x43, reg8);
+	pci_update_config8(dev, 0x43, ~0x07, (1 << 2) | (1 << 0));
 }
 
 static const char *azalia_acpi_name(const struct device *dev)

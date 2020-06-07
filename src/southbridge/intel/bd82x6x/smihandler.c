@@ -99,15 +99,15 @@ static void xhci_sleep(u8 slp_typ)
 	switch (slp_typ) {
 	case ACPI_S3:
 	case ACPI_S4:
+		/* FIXME: Unbalanced width in read/write ops (16-bit read then 32-bit write) */
 		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 &= ~0x03UL;
 		pci_write_config32(PCH_XHCI_DEV, 0x74, reg16);
 
-		pci_or_config16(PCH_XHCI_DEV, PCI_COMMAND, PCI_COMMAND_MASTER |
-				PCI_COMMAND_MEMORY);
+		pci_or_config16(PCH_XHCI_DEV, PCI_COMMAND,
+				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
-		xhci_bar = pci_read_config32(PCH_XHCI_DEV,
-				              PCI_BASE_ADDRESS_0) & ~0xFUL;
+		xhci_bar = pci_read_config32(PCH_XHCI_DEV, PCI_BASE_ADDRESS_0) & ~0xFUL;
 
 		if ((xhci_bar + 0x4C0) & 1)
 			pch_iobp_update(0xEC000082, ~0UL, (3 << 2));
@@ -118,19 +118,14 @@ static void xhci_sleep(u8 slp_typ)
 		if ((xhci_bar + 0x4F0) & 1)
 			pch_iobp_update(0xEC000382, ~0UL, (3 << 2));
 
-		reg16 = pci_read_config16(PCH_XHCI_DEV, PCI_COMMAND);
-		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pci_write_config16(PCH_XHCI_DEV, PCI_COMMAND, reg16);
+		pci_and_config16(PCH_XHCI_DEV, PCI_COMMAND,
+				 ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
 
-		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
-		reg16 |= 0x03;
-		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		pci_or_config16(PCH_XHCI_DEV, 0x74, 0x03);
 		break;
 
 	case ACPI_S5:
-		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
-		reg16 |= ((1 << 8) | 0x03);
-		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		pci_or_config16(PCH_XHCI_DEV, 0x74, (1 << 8) | 0x03);
 		break;
 	}
 }

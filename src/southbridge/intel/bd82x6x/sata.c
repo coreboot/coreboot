@@ -138,8 +138,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, 0x92, reg16);
 
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+		pci_write_config32(dev, 0x94, ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 
 		/* Initialize AHCI memory-mapped space */
 		abar = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
@@ -172,9 +171,7 @@ static void sata_init(struct device *dev)
 	        /* IDE */
 
 		/* Without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MEMORY);
 
 		if (sata_mode == 1) {
 			/* Native mode on both primary and secondary. */
@@ -182,7 +179,7 @@ static void sata_init(struct device *dev)
 			printk(BIOS_DEBUG, "SATA: Controller in IDE compat mode.\n");
 		} else {
 			/* Legacy mode on both primary and secondary. */
-			pci_update_config8(dev, 0x09, ~0x05, 0x00);
+			pci_and_config8(dev, 0x09, ~0x05);
 			printk(BIOS_DEBUG, "SATA: Controller in IDE legacy mode.\n");
 		}
 
@@ -191,14 +188,10 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE);
 
 		/* Port enable + OOB retry mode */
-		reg16 = pci_read_config16(dev, 0x92);
-		reg16 &= ~0x3f;
-		reg16 |= config->sata_port_map | 0x8000;
-		pci_write_config16(dev, 0x92, reg16);
+		pci_update_config16(dev, 0x92, ~0x3f, config->sata_port_map | 0x8000);
 
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+		pci_write_config32(dev, 0x94, ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 	}
 
 	/* Set Gen3 Transmitter settings if needed */

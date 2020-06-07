@@ -9,13 +9,7 @@
  */
 static void enable_spi_prefetch(void)
 {
-	u8 reg8;
-	pci_devfn_t dev = PCH_LPC_DEV;
-
-	reg8 = pci_read_config8(dev, BIOS_CNTL);
-	reg8 &= ~(3 << 2);
-	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(dev, BIOS_CNTL, reg8);
+	pci_update_config8(PCH_LPC_DEV, BIOS_CNTL, ~(3 << 2), 2 << 2);
 }
 
 static void enable_port80_on_lpc(void)

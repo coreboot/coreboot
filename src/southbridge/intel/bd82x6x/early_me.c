@@ -110,7 +110,6 @@ static inline void set_global_reset(int enable)
 int intel_early_me_init_done(u8 status)
 {
 	u8 reset, errorcode, opmode;
-	u16 reg16;
 	u32 mebase_l, mebase_h;
 	u32 millisec;
 	u32 hfs, me_fws2;
@@ -163,8 +162,7 @@ int intel_early_me_init_done(u8 status)
 	} else if ((me_fws2 & 0x100) == 0x100) {
 		if ((me_fws2 & 0x80) == 0x80) {
 			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
-			reg16 = pci_read_config16(PCI_DEV(0, 31, 0), 0xa2) & ~0x80;
-			pci_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
+			pci_and_config16(PCI_DEV(0, 31, 0), 0xa2, ~0x80);
 			set_global_reset(0);
 			system_reset();
 		}

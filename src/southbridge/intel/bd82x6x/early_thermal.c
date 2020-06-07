@@ -38,7 +38,7 @@ void early_thermal_init(void)
 	pci_write_config32(dev, 0x44, 0x0);
 
 	/* Activate temporary BAR.  */
-	pci_write_config32(dev, 0x40, pci_read_config32(dev, 0x40) | 5);
+	pci_or_config32(dev, 0x40, 5);
 
 	write16p(TBARB_TEMP + 0x04, 0x3a2b);
 
@@ -61,7 +61,8 @@ void early_thermal_init(void)
 	write16p(TBARB_TEMP + 0x1a, (read16p(TBARB_TEMP + 0x1a) & ~0xf) | 0x10f0);
 
 	/* Disable temporary BAR */
-	pci_write_config32(dev, 0x40, pci_read_config32(dev, 0x40) & ~1);
+	pci_and_config32(dev, 0x40, ~1);
+
 	pci_write_config32(dev, 0x40, 0);
 
 	write32(DEFAULT_RCBA + 0x38b0, (read32(DEFAULT_RCBA + 0x38b0) & 0xffff8003) | 0x403c);

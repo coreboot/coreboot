@@ -417,22 +417,15 @@ static void pch_set_acpi_mode(void)
 
 static void pch_disable_smm_only_flashing(struct device *dev)
 {
-	u8 reg8;
-
 	printk(BIOS_SPEW, "Enabling BIOS updates outside of SMM... ");
-	reg8 = pci_read_config8(dev, BIOS_CNTL);
-	reg8 &= ~(1 << 5);
-	pci_write_config8(dev, BIOS_CNTL, reg8);
+
+	pci_and_config8(dev, BIOS_CNTL, ~(1 << 5));
 }
 
 static void pch_fixups(struct device *dev)
 {
-	u8 gen_pmcon_2;
-
 	/* Indicate DRAM init done for MRC S3 to know it can resume */
-	gen_pmcon_2 = pci_read_config8(dev, GEN_PMCON_2);
-	gen_pmcon_2 |= (1 << 7);
-	pci_write_config8(dev, GEN_PMCON_2, gen_pmcon_2);
+	pci_or_config8(dev, GEN_PMCON_2, 1 << 7);
 
 	/*
 	 * Enable DMI ASPM in the PCH

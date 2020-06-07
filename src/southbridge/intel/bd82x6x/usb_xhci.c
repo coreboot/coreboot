@@ -20,9 +20,7 @@ static void usb_xhci_init(struct device *dev)
 		pci_write_config32(dev, XOCM, config->xhci_overcurrent_mapping);
 
 	/* lock overcurrent map */
-	reg32 = pci_read_config32(dev, 0x44);
-	reg32 |= 1;
-	pci_write_config32(dev, 0x44, reg32);
+	pci_or_config32(dev, 0x44, 1);
 
 	pci_write_config32(dev, XUSB2PRM, config->xhci_switchable_ports);
 	pci_write_config32(dev, USB3PRM, config->superspeed_capable_ports);

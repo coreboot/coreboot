@@ -80,9 +80,8 @@ void mainboard_romstage_entry(void)
 
 	mb_post_raminit_setup();
 
-	const u32 deven = pci_read_config32(MCH_DEV, D0F0_DEVEN);
 	/* Disable D4F0 (unknown signal controller). */
-	pci_write_config32(MCH_DEV, D0F0_DEVEN, deven & ~0x4000);
+	pci_and_config32(MCH_DEV, D0F0_DEVEN, ~0x4000);
 
 	init_pm(&sysinfo, 0);
 

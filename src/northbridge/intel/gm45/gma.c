@@ -31,8 +31,8 @@ void gtt_write(u32 reg, u32 data)
 
 static u32 get_cdclk(struct device *const dev)
 {
-	const u16 cdclk_sel =
-		pci_read_config16 (dev, GCFGC_OFFSET) & GCFGC_CD_MASK;
+	const u16 cdclk_sel = pci_read_config16(dev, GCFGC_OFFSET) & GCFGC_CD_MASK;
+
 	switch (MCHBAR8(HPLLVCO_MCHBAR) & 0x7) {
 	case VCO_2666:
 	case VCO_4000:

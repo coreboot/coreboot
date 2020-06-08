@@ -40,12 +40,12 @@ void gm45_early_reset(void/*const timings_t *const timings*/)
 				CxDRBy_BOUND_MB(r+1, 128);
 	}
 	/* Set DCC mode to no operation and do magic 0xf0 thing. */
-	MCHBAR32(DCC_MCHBAR) =
-		(MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_CMD_NOP;
-	u8 reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
-	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~(1 << 2));
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
-	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
+	MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_CMD_NOP;
+
+	pci_and_config8(PCI_DEV(0, 0, 0), 0xf0, ~(1 << 2));
+
+	pci_or_config8(PCI_DEV(0, 0, 0), 0xf0, (1 << 2));
+
 	/* Normally, we would set this after successful raminit. */
 	MCHBAR32(DCC_MCHBAR) |= (1 << 19);
 

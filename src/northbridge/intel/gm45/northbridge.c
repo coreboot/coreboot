@@ -259,12 +259,12 @@ static void gm45_init(void *const chip_info)
 			break;
 		}
 		for (; fn >= 0; --fn) {
-			const struct device *const d =
-				pcidev_on_root(dev, fn);
-			if (!d || d->enabled) continue;
-			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
+			const struct device *const d = pcidev_on_root(dev, fn);
+			if (!d || d->enabled)
+				continue;
+			/* FIXME: Using bitwise ops changes the binary */
 			pci_write_config32(d0f0, D0F0_DEVEN,
-					   deven & ~(1 << (bit_base + fn)));
+				pci_read_config32(d0f0, D0F0_DEVEN) & ~(1 << (bit_base + fn)));
 		}
 	}
 

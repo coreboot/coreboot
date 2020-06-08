@@ -19,9 +19,6 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	const pci_devfn_t peg_dev = PCI_DEV(0, 1, 0);
 	const pci_devfn_t igd_dev = PCI_DEV(0, 2, 0);
 
-	u16 reg16;
-	u32 reg32;
-
 	printk(BIOS_DEBUG, "Enabling IGD.\n");
 
 	/* HSync/VSync */
@@ -35,15 +32,10 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	};
 	const int f0_12 = (pci_read_config16(igd_dev, 0xf0) >> 12) & 1;
 	const int vco = raminit_read_vco_index();
-	reg16 = pci_read_config16(igd_dev, 0xcc);
-	reg16 &= 0xfc00;
-	reg16 |= display_clock_from_f0_and_vco[f0_12][vco];
-	pci_write_config16(igd_dev, 0xcc, reg16);
 
-	reg16 = pci_read_config16(mch_dev, D0F0_GGC);
-	reg16 &= 0xf00f;
-	reg16 |= sysinfo->ggc;
-	pci_write_config16(mch_dev, D0F0_GGC, reg16);
+	pci_update_config16(igd_dev, 0xcc, 0xfc00, display_clock_from_f0_and_vco[f0_12][vco]);
+
+	pci_update_config16(mch_dev, D0F0_GGC, 0xf00f, sysinfo->ggc);
 
 	if ((sysinfo->gfx_type != GMCH_GL40) &&
 			(sysinfo->gfx_type != GMCH_GS40) &&
@@ -54,21 +46,13 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 			pci_write_config32(mch_dev, D0F0_DEVEN, deven | 2);
 
 		/* Some IGD related settings on D1:F0. */
-		reg16 = pci_read_config16(peg_dev, 0xa08);
-		reg16 &= ~(1 << 15);
-		pci_write_config16(peg_dev, 0xa08, reg16);
+		pci_and_config16(peg_dev, 0xa08, (u16)~(1 << 15));
 
-		reg16 = pci_read_config16(peg_dev, 0xa84);
-		reg16 |= (1 << 8);
-		pci_write_config16(peg_dev, 0xa84, reg16);
+		pci_or_config16(peg_dev, 0xa84, 1 << 8);
 
-		reg16 = pci_read_config16(peg_dev, 0xb00);
-		reg16 |= (3 << 8) | (7 << 3);
-		pci_write_config16(peg_dev, 0xb00, reg16);
+		pci_or_config16(peg_dev, 0xb00, (3 << 8) | (7 << 3));
 
-		reg32 = pci_read_config32(peg_dev, 0xb14);
-		reg32 &= ~(1 << 17);
-		pci_write_config32(peg_dev, 0xb14, reg32);
+		pci_and_config32(peg_dev, 0xb14, ~(1 << 17));
 
 		if (!(deven & 2) || no_peg) {
 			/* Disable PEG finally. */
@@ -76,16 +60,14 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 					   "PEG in favor of IGD.\n");
 			MCHBAR8(0xc14) |= (1 << 5) | (1 << 0);
 
-			reg32 = pci_read_config32(peg_dev, 0x200);
-			reg32 |= (1 << 18);
-			pci_write_config32(peg_dev, 0x200, reg32);
-			reg16 = pci_read_config16(peg_dev, 0x224);
-			reg16 |= (1 << 8);
-			pci_write_config16(peg_dev, 0x224, reg16);
-			reg32 = pci_read_config32(peg_dev, 0x200);
-			reg32 &= ~(1 << 18);
-			pci_write_config32(peg_dev, 0x200, reg32);
-			while (pci_read_config32(peg_dev, 0x214) & 0x000f0000);
+			pci_or_config32(peg_dev, 0x200, 1 << 18);
+
+			pci_or_config16(peg_dev, 0x224, 1 << 8);
+
+			pci_and_config32(peg_dev, 0x200, ~(1 << 18));
+
+			while (pci_read_config32(peg_dev, 0x214) & (0xf << 16))
+				;
 
 			pci_write_config32(mch_dev, D0F0_DEVEN, deven & ~2);
 			MCHBAR8(0xc14) &= ~((1 << 5) | (1 << 0));
@@ -99,12 +81,9 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 
 	printk(BIOS_DEBUG, "Disabling IGD.\n");
 
-	u16 reg16;
+	/* Disable Graphics Stolen Memory. */
+	pci_update_config16(mch_dev, D0F0_GGC, 0xff0f, 0x0002);
 
-	reg16 = pci_read_config16(mch_dev, D0F0_GGC);
-	reg16 &= 0xff0f; /* Disable Graphics Stolen Memory. */
-	reg16 |= 0x0002; /* Disable IGD. */
-	pci_write_config16(mch_dev, D0F0_GGC, reg16);
 	MCHBAR8(0xf10) |= (1 << 0);
 
 	if (!(pci_read_config8(mch_dev, D0F0_CAPID0 + 4) & (1 << (33 - 32)))) {
@@ -114,9 +93,7 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 	}
 
 	/* Hide IGD. */
-	u32 deven = pci_read_config32(mch_dev, D0F0_DEVEN);
-	deven &= ~(3 << 3);
-	pci_write_config32(mch_dev, D0F0_DEVEN, deven);
+	pci_and_config32(mch_dev, D0F0_DEVEN, ~(3 << 3));
 }
 
 void init_igd(const sysinfo_t *const sysinfo)

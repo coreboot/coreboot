@@ -50,11 +50,10 @@ void init_iommu()
 	if (stepping == STEPPING_B3) {
 		MCHBAR8(0xffc) |= 1 << 4;
 		const pci_devfn_t peg = PCI_DEV(0, 1, 0);
+
 		/* FIXME: proper test? */
-		if (pci_read_config8(peg, PCI_CLASS_REVISION) != 0xff) {
-			int val = pci_read_config32(peg, 0xfc) | (1 << 15);
-			pci_write_config32(peg, 0xfc, val);
-		}
+		if (pci_read_config8(peg, PCI_CLASS_REVISION) != 0xff)
+			pci_or_config32(peg, 0xfc, 1 << 15);
 	}
 
 	/* final */

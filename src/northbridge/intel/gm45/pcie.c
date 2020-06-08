@@ -92,9 +92,6 @@ static void init_pcie(const int peg_enabled,
 		      const int sdvo_enabled,
 		      const int peg_x16)
 {
-	u8 tmp8;
-	u16 tmp16;
-	u32 tmp;
 	const pci_devfn_t mch = PCI_DEV(0, 0, 0);
 	const pci_devfn_t pciex = PCI_DEV(0, 1, 0);
 
@@ -103,20 +100,17 @@ static void init_pcie(const int peg_enabled,
 		sdvo_enabled?"enabled":"disabled");
 
 	if (peg_enabled) {
-		tmp8 = pci_read_config8(mch, D0F0_DEVEN) | (1 << 1);
-		pci_write_config8(mch, D0F0_DEVEN, tmp8);
+		pci_or_config8(mch, D0F0_DEVEN, 1 << 1);
 
-		tmp8 = pci_read_config8(pciex, 0x224) & ~31;
-		pci_write_config8(pciex, 0x224, tmp8 | (peg_x16?16:0) | 1);
+		pci_write_config8(pciex, 0x224,
+			(pci_read_config8(pciex, 0x224) & ~31) | (peg_x16 ? 16 : 0) | 1);
 
-		tmp16 = pci_read_config16(pciex, 0x224) & ~(1 << 8);
-		pci_write_config16(pciex, 0x224, tmp16);
+		pci_and_config16(pciex, 0x224, ~(1 << 8));
 
 		/* FIXME: fill in: slot or fixed? -> devicetree */
 		int peg_is_slot = 0;
 		if (peg_is_slot) {
-			tmp16 = pci_read_config16(pciex, PEG_CAP) | (1 << 8);
-			pci_write_config16(pciex, PEG_CAP, tmp16);
+			pci_or_config16(pciex, PEG_CAP, 1 << 8);
 		}
 
 		/* FIXME: fill in: slot number, slot power -> devicetree */
@@ -125,20 +119,16 @@ static void init_pcie(const int peg_enabled,
 		/* peg_power := val * 10^-exp */
 		int peg_power_val = 75;
 		int peg_power_exp = 0; /* 0..3 */
-		tmp = (peg_slot << 17) | (peg_power_exp << 15) |
-			(peg_power_val << 7);
+		const u32 tmp = (peg_slot << 17) | (peg_power_exp << 15) | (peg_power_val << 7);
 		pci_write_config32(pciex, SLOTCAP, tmp);
 
 		/* GPEs */
-		tmp8 = pci_read_config8(pciex, PEGLC) | 7;
-		pci_write_config8(pciex, PEGLC, tmp8);
+		pci_or_config8(pciex, PEGLC, 7);
 
 		/* VC0: TC0 only, VC0 only */
-		tmp8 = pci_read_config8(pciex, D1F0_VC0RCTL);
-		pci_write_config8(pciex, D1F0_VC0RCTL, tmp8 & 1);
+		pci_and_config8(pciex, D1F0_VC0RCTL, 1);
 
-		tmp8 = pci_read_config8(pciex, D1F0_VCCAP);
-		pci_write_config8(pciex, D1F0_VCCAP, tmp8 & ~7);
+		pci_and_config8(pciex, D1F0_VCCAP, ~7);
 	}
 }
 
@@ -149,37 +139,26 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 
 	/* Prerequisites for ASPM: */
 	if (peg_enabled) {
-		tmp32 = pci_read_config32(pciex, 0x200) | (3 << 13);
-		pci_write_config32(pciex, 0x200, tmp32);
+		pci_or_config32(pciex, 0x200, 3 << 13);
 
-		tmp32 = pci_read_config32(pciex, 0x0f0);
-		tmp32 &= ~((1 << 27) | (1 << 26));
-		pci_write_config32(pciex, 0x0f0, tmp32);
+		pci_and_config32(pciex, 0x0f0, ~((1 << 27) | (1 << 26)));
 
-		tmp32 = pci_read_config32(pciex, 0x0f0) | (3 << 24);
-		pci_write_config32(pciex, 0x0f0, tmp32);
+		pci_or_config32(pciex, 0x0f0, 3 << 24);
 
-		tmp32 = pci_read_config32(pciex, 0x0f4) & ~(1 << 4);
-		pci_write_config32(pciex, 0x0f4, tmp32);
+		pci_and_config32(pciex, 0x0f4, ~(1 << 4));
 
-		tmp32 = pci_read_config32(pciex, 0x0fc) | (1 << 0);
-		pci_write_config32(pciex, 0x0fc, tmp32);
+		pci_or_config32(pciex, 0x0fc, 1 << 0);
 
-		tmp32 = pci_read_config32(pciex, 0x0fc) | (1 << 1);
-		pci_write_config32(pciex, 0x0fc, tmp32);
+		pci_or_config32(pciex, 0x0fc, 1 << 1);
 
-		tmp32 = pci_read_config32(pciex, 0x0fc) | (1 << 4);
-		pci_write_config32(pciex, 0x0fc, tmp32);
+		pci_or_config32(pciex, 0x0fc, 1 << 4);
 
-		tmp32 = pci_read_config32(pciex, 0x0fc) & ~(7 << 5);
-		pci_write_config32(pciex, 0x0fc, tmp32);
+		pci_and_config32(pciex, 0x0fc, ~(7 << 5));
 
 		/* Set L0s, L1 supported in LCTL? */
-		tmp32 = pci_read_config32(pciex, 0x0b0) | (3 << 0);
-		pci_write_config32(pciex, 0x0b0, tmp32);
+		pci_or_config32(pciex, 0x0b0, 3 << 0);
 
-		tmp32 = pci_read_config32(pciex, 0x0f0) | (3 << 24);
-		pci_write_config32(pciex, 0x0f0, tmp32);
+		pci_or_config32(pciex, 0x0f0, 3 << 24);
 
 		tmp32 = pci_read_config32(pciex, 0x0f0);
 		if ((stepping >= STEPPING_B0) && (stepping <= STEPPING_B1))
@@ -217,38 +196,25 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 		DMIBAR32(0x0e2c) = 0x88d07333;
 	}
 	if (peg_enabled) {
-		tmp32 = pci_read_config32(pciex, 0xa08) & ~(1 << 15);
-		pci_write_config32(pciex, 0xa08, tmp32);
+		pci_and_config32(pciex, 0xa08, ~(1 << 15));
 
-		tmp32 = pci_read_config32(pciex, 0xa84) | (1 << 8);
-		pci_write_config32(pciex, 0xa84, tmp32);
+		pci_or_config32(pciex, 0xa84, 1 << 8);
 
-		tmp32 = pci_read_config32(pciex, 0xb14) & ~(1 << 17);
-		pci_write_config32(pciex, 0xb14, tmp32);
+		pci_and_config32(pciex, 0xb14, ~(1 << 17));
 
-		tmp32 = pci_read_config32(pciex, 0xb00) | (3 << 8);
-		pci_write_config32(pciex, 0xb00, tmp32);
+		pci_or_config32(pciex, 0xb00, 3 << 8);
 
-		tmp32 = pci_read_config32(pciex, 0xb00) | (7 << 3);
-		pci_write_config32(pciex, 0xb00, tmp32);
+		pci_or_config32(pciex, 0xb00, 7 << 3);
 
-		tmp32 = pci_read_config32(pciex, 0xa84) & ~(1 << 8);
-		pci_write_config32(pciex, 0xa84, tmp32);
+		pci_and_config32(pciex, 0xa84, ~(1 << 8));
 
-		tmp32 = pci_read_config32(pciex, 0xa84) | (1 << 8);
-		pci_write_config32(pciex, 0xa84, tmp32);
+		pci_or_config32(pciex, 0xa84, 1 << 8);
 
-		tmp32 = pci_read_config32(pciex, 0xb04);
-		tmp32 = (tmp32 & ~(0x1f << 23)) | (0xe << 23);
-		pci_write_config32(pciex, 0xb04, tmp32);
+		pci_update_config32(pciex, 0xb04, ~(0x1f << 23), 0x0e << 23);
 
-		tmp32 = pci_read_config32(pciex, 0xb04);
-		tmp32 |= (1 << 31);
-		pci_write_config32(pciex, 0xb04, tmp32);
+		pci_or_config32(pciex, 0xb04, 1 << 31);
 
-		tmp32 = pci_read_config32(pciex, 0xb04);
-		tmp32 = (tmp32 & ~(0x03 << 29)) | (0x1 << 29);
-		pci_write_config32(pciex, 0xb04, tmp32);
+		pci_update_config32(pciex, 0xb04, ~(0x03 << 29), 0x01 << 29);
 	}
 
 

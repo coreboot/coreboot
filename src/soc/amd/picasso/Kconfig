@@ -53,7 +53,6 @@ config CPU_SPECIFIC_OPTIONS
 	select FSP_COMPRESS_FSP_S_LZMA
 	select FSP_USES_CB_STACK
 	select UDK_2017_BINDING
-	select CACHE_MRC_SETTINGS
 	select HAVE_CF9_RESET
 
 config PRERAM_CBMEM_CONSOLE_SIZE
@@ -302,17 +301,6 @@ config PSP_APOB_DRAM_ADDRESS
 	help
 	  Location in DRAM where the PSP will copy the AGESA PSP Output
 	  Block.
-
-# This value is currently the same as the default defined in
-# drivers/mrc_cache/Kconfig. We do this in in case the default
-# changes. The PSP requires this value to be 64KiB.
-config MRC_SETTINGS_CACHE_SIZE
-	hex
-	default 0x10000
-	help
-	  Size of flash area used to save APOB NV data which occupies the
-	  RW_MRC_CACHE region.  Make this granularity the flash device can
-	  erase.
 
 config USE_PSPSCUREOS
 	bool

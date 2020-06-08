@@ -12,6 +12,7 @@
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/romstage.h>
+#include <soc/mrc_cache.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
@@ -25,6 +26,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
 	const config_t *config = config_of_soc();
+
+	mupd->FspmArchUpd.NvsBufferPtr = soc_fill_mrc_cache();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 	mcfg->tseg_size = CONFIG_SMM_TSEG_SIZE;
@@ -85,6 +88,7 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x43);
 	fsp_memory_init(s3_resume);
+	soc_update_mrc_cache();
 
 	post_code(0x44);
 	run_ramstage();

@@ -31,6 +31,7 @@ romstage-y += southbridge.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += config.c
+romstage-y += mrc_cache.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c

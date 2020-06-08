@@ -203,8 +203,9 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 		if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 			gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 				ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-		} else
+		} else {
 			gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+		}
 	}
 
 	/* Enable DPTF based on mainboard configuration */

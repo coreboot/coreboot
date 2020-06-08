@@ -13,6 +13,26 @@
 #include "chip.h"
 #include "pch.h"
 
+static const char *pch_pcie_acpi_name(const struct device *dev)
+{
+	ASSERT(dev);
+
+	if (PCI_SLOT(dev->path.pci.devfn) == 0x1c) {
+		static const char *names[] = { "RP01",
+				"RP02",
+				"RP03",
+				"RP04",
+				"RP05",
+				"RP06",
+				"RP07",
+				"RP08"};
+
+		return names[PCI_FUNC(dev->path.pci.devfn)];
+	}
+
+	return NULL;
+}
+
 static void pch_pcie_pm_early(struct device *dev)
 {
 	u16 link_width_p0, link_width_p4;
@@ -270,26 +290,6 @@ static void pch_pciexp_scan_bridge(struct device *dev)
 
 	/* Late Power Management init after bridge device enumeration */
 	pch_pcie_pm_late(dev);
-}
-
-static const char *pch_pcie_acpi_name(const struct device *dev)
-{
-	ASSERT(dev);
-
-	if (PCI_SLOT(dev->path.pci.devfn) == 0x1c) {
-		static const char *names[] = { "RP01",
-				"RP02",
-				"RP03",
-				"RP04",
-				"RP05",
-				"RP06",
-				"RP07",
-				"RP08"};
-
-		return names[PCI_FUNC(dev->path.pci.devfn)];
-	}
-
-	return NULL;
 }
 
 static struct device_operations device_ops = {

@@ -174,8 +174,8 @@ static void setup_ied_area(struct smm_relocation_params *params)
 
 	ied_base = (void *)params->ied_base;
 
-	printk(BIOS_DEBUG, "IED base = 0x%08x\n", (u32) params->ied_base);
-	printk(BIOS_DEBUG, "IED size = 0x%08x\n", (u32) params->ied_size);
+	printk(BIOS_DEBUG, "IED base = 0x%08x\n", (u32)params->ied_base);
+	printk(BIOS_DEBUG, "IED size = 0x%08x\n", (u32)params->ied_size);
 
 	/* Place IED header at IEDBASE. */
 	memcpy(ied_base, &ied, sizeof(ied));

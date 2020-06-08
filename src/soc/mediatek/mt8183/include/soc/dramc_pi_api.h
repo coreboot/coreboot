@@ -106,5 +106,6 @@ void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off);
 u32 get_shu_freq(u8 shu);
 void dramc_hw_dqsosc(u8 chn);
 void dramc_dqs_precalculation_preset(void);
+void get_dram_info_after_cal(u8 *density);
 
 #endif /* _DRAMC_PI_API_MT8183_H */

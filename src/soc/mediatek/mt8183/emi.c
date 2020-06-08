@@ -49,10 +49,10 @@ const u8 phy_mapping[CHANNEL_MAX][16] = {
 };
 
 struct optimize_ac_time {
-	u8 rfc;
-	u8 rfc_05t;
-	u8 rfc_pb;
-	u8 rfrc_pb05t;
+	u8 trfc;
+	u8 trfrc_05t;
+	u8 trfc_pb;
+	u8 trfrc_pb05t;
 	u16 tx_ref_cnt;
 };
 
@@ -319,30 +319,102 @@ static void dramc_init_pre_settings(void)
 	setbits32(&ch[0].phy.misc_ctrl1, 0x1 << 31);
 }
 
-static void dramc_ac_timing_optimize(u8 freq_group)
+static void dramc_ac_timing_optimize(u8 freq_group, u8 density)
 {
-	struct optimize_ac_time rf_cab_opt[LP4X_DDRFREQ_MAX] = {
-		[LP4X_DDR1600] = {.rfc = 44, .rfc_05t = 0, .rfc_pb = 16,
-			.rfrc_pb05t = 0, .tx_ref_cnt = 62},
-		[LP4X_DDR2400] = {.rfc = 72, .rfc_05t = 0, .rfc_pb = 30,
-			.rfrc_pb05t = 0, .tx_ref_cnt = 91},
-		[LP4X_DDR3200] = {.rfc = 100, .rfc_05t = 0, .rfc_pb = 44,
-			.rfrc_pb05t = 0, .tx_ref_cnt = 119},
-		[LP4X_DDR3600] = {.rfc = 118, .rfc_05t = 1, .rfc_pb = 53,
-			.rfrc_pb05t = 1, .tx_ref_cnt = 138},
+	u8 rfcab_grp = 0;
+	u8 trfc, trfrc_05t, trfc_pb, trfrc_pb05t, tx_ref_cnt;
+	enum tRFCAB {
+		tRFCAB_130 = 0,
+		tRFCAB_180,
+		tRFCAB_280,
+		tRFCAB_380,
+		tRFCAB_NUM
 	};
+
+	const struct optimize_ac_time rf_cab_opt[LP4X_DDRFREQ_MAX][tRFCAB_NUM] = {
+		[LP4X_DDR1600] = {
+			[tRFCAB_130] = {.trfc = 14, .trfrc_05t = 0, .trfc_pb = 0,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 32},
+			[tRFCAB_180] = {.trfc = 24, .trfrc_05t = 0, .trfc_pb = 6,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 42},
+			[tRFCAB_280] = {.trfc = 44, .trfrc_05t = 0, .trfc_pb = 16,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 62},
+			[tRFCAB_380] = {.trfc = 64, .trfrc_05t = 0, .trfc_pb = 26,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 82}
+		},
+		[LP4X_DDR2400] = {
+			[tRFCAB_130] = {.trfc = 27, .trfrc_05t = 0, .trfc_pb = 6,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 46},
+			[tRFCAB_180] = {.trfc = 42, .trfrc_05t = 0, .trfc_pb = 15,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 61},
+			[tRFCAB_280] = {.trfc = 72, .trfrc_05t = 0, .trfc_pb = 30,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 91},
+			[tRFCAB_380] = {.trfc = 102, .trfrc_05t = 0, .trfc_pb = 45,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 121}
+		},
+		[LP4X_DDR3200] = {
+			[tRFCAB_130] = {.trfc = 40, .trfrc_05t = 0, .trfc_pb = 12,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 59},
+			[tRFCAB_180] = {.trfc = 60, .trfrc_05t = 0, .trfc_pb = 24,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 79},
+			[tRFCAB_280] = {.trfc = 100, .trfrc_05t = 0, .trfc_pb = 44,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 119},
+			[tRFCAB_380] = {.trfc = 140, .trfrc_05t = 0, .trfc_pb = 64,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 159}
+		},
+		[LP4X_DDR3600] = {
+			[tRFCAB_130] = {.trfc = 48, .trfrc_05t = 1, .trfc_pb = 16,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 68},
+			[tRFCAB_180] = {.trfc = 72, .trfrc_05t = 0, .trfc_pb = 30,
+				.trfrc_pb05t = 0, .tx_ref_cnt = 92},
+			[tRFCAB_280] = {.trfc = 118, .trfrc_05t = 1, .trfc_pb = 53,
+				.trfrc_pb05t = 1, .tx_ref_cnt = 138},
+			[tRFCAB_380] = {.trfc = 165, .trfrc_05t = 0, .trfc_pb = 76,
+				.trfrc_pb05t = 1, .tx_ref_cnt = 185}
+		},
+	};
+
+	switch (density) {
+	case 0x0:
+		rfcab_grp = tRFCAB_130;
+		break;
+	case 0x1:
+	case 0x2:
+		rfcab_grp = tRFCAB_180;
+		break;
+	case 0x3:
+	case 0x4:
+		rfcab_grp = tRFCAB_280;
+		break;
+	case 0x5:
+	case 0x6:
+		rfcab_grp = tRFCAB_380;
+		break;
+	default:
+		dramc_err("density err!\n");
+		break;
+	}
+
+	const struct optimize_ac_time *ac_tim = &rf_cab_opt[freq_group][rfcab_grp];
+	trfc = ac_tim->trfc;
+	trfrc_05t = ac_tim->trfrc_05t;
+	trfc_pb = ac_tim->trfc_pb;
+	trfrc_pb05t = ac_tim->trfrc_pb05t;
+	tx_ref_cnt = ac_tim->tx_ref_cnt;
+	dramc_dbg("Density %d, trfc %u, trfrc_05t %d, tx_ref_cnt %d, trfc_pb %d, trfrc_pb05t %d\n",
+		density, trfc, trfrc_05t, tx_ref_cnt, trfc_pb, trfrc_pb05t);
 
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		clrsetbits32(&ch[chn].ao.shu[0].actim[3],
-			0xff << 16, rf_cab_opt[freq_group].rfc << 16);
+			0xff << 16, trfc << 16);
 		clrsetbits32(&ch[chn].ao.shu[0].ac_time_05t,
-			0x1 << 2, rf_cab_opt[freq_group].rfc_05t << 2);
+			0x1 << 2, trfrc_05t << 2);
 		clrsetbits32(&ch[chn].ao.shu[0].actim[4],
-			0x3ff << 0, rf_cab_opt[freq_group].tx_ref_cnt << 0);
+			0x3ff << 0, tx_ref_cnt << 0);
 		clrsetbits32(&ch[chn].ao.shu[0].actim[3],
-			0xff << 0, rf_cab_opt[freq_group].rfc_pb << 0);
+			0xff << 0, trfc_pb << 0);
 		clrsetbits32(&ch[chn].ao.shu[0].ac_time_05t,
-			0x1 << 1, rf_cab_opt[freq_group].rfrc_pb05t << 1);
+			0x1 << 1, trfrc_pb05t << 1);
 	}
 }
 
@@ -494,6 +566,7 @@ static int run_calib(const struct dramc_param *dparam,
 		     struct dram_shared_data *shared,
 		     const int shuffle, bool *first_run)
 {
+	u8 density;
 	const u8 *freq_tbl;
 
 	if (CONFIG(MT8183_DRAM_EMCP))
@@ -518,7 +591,8 @@ static int run_calib(const struct dramc_param *dparam,
 	dramc_dbg("Start K (current clock: %u\n", params->frequency);
 	if (dramc_calibrate_all_channels(params, freq_group, &shared->mr) != 0)
 		return -1;
-	dramc_ac_timing_optimize(freq_group);
+	get_dram_info_after_cal(&density);
+	dramc_ac_timing_optimize(freq_group, density);
 	dramc_dbg("K finished (current clock: %u\n", params->frequency);
 
 	dramc_save_result_to_shuffle(DRAM_DFS_SHUFFLE_1, shuffle);

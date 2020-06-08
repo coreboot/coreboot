@@ -130,6 +130,19 @@ void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
 	dramc_dbg("Write MR%d =0x%x\n", mr_idx, value);
 }
 
+static u8 dramc_mode_reg_read_by_rank(u8 chn, u8 rank, u8 mr_idx)
+{
+	u8 value;
+	u32 rk_bak = READ32_BITFIELD(&ch[chn].ao.mrs, MRS_MRRRK);
+
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRRRK, rank);
+	value = dramc_mode_reg_read(chn, mr_idx);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRRRK, rk_bak);
+
+	dramc_dbg("Mode reg read rank%d MR%d = %#x\n", rank, mr_idx, value);
+	return value;
+}
+
 static void dramc_mode_reg_write_by_rank(u8 chn, u8 rank,
 		u8 mr_idx, u8 value)
 {
@@ -2692,6 +2705,55 @@ void dramc_dqs_precalculation_preset(void)
 		SET32_BITFIELDS(&ch[chn].ao.pre_tdqsck[0],
 				PRE_TDQSCK1_TDQSCK_HW_SW_UP_SEL, 1);
 	}
+}
+
+void get_dram_info_after_cal(u8 *density_result)
+{
+	u8 vendor_id, density, max_density = 0;
+	u32 ddr_size, max_size = 0;
+
+	vendor_id = dramc_mode_reg_read_by_rank(CHANNEL_A, RANK_0, 5);
+	dramc_show("Vendor id is %#x\n", vendor_id);
+
+	for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
+		density = dramc_mode_reg_read_by_rank(CHANNEL_A, rk, 8);
+		dramc_dbg("MR8 %#x\n", density);
+		density = (density >> 2) & 0xf;
+
+		switch (density) {
+		case 0x0:
+			ddr_size = 4;
+			break;
+		case 0x1:
+			ddr_size = 6;
+			break;
+		case 0x2:
+			ddr_size = 8;
+			break;
+		case 0x3:
+			ddr_size = 12;
+			break;
+		case 0x4:
+			ddr_size = 16;
+			break;
+		case 0x5:
+			ddr_size = 24;
+			break;
+		case 0x6:
+			ddr_size = 32;
+			break;
+		default:
+			ddr_size = 0;
+			break;
+		}
+		if (ddr_size > max_size) {
+			max_size = ddr_size;
+			max_density = density;
+		}
+		dramc_dbg("RK%d size %dGb, density:%d\n", rk, ddr_size, max_density);
+	}
+
+	*density_result = max_density;
 }
 
 int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group,

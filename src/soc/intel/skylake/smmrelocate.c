@@ -150,7 +150,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	uintptr_t tseg_base;
 	size_t tseg_size;
 	/* All range registers are aligned to 4KiB */
-	const u32 rmask = ~((1 << 12) - 1);
+	const u32 rmask = ~(4 * KiB - 1);
 
 	smm_region(&tseg_base, &tseg_size);
 	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
@@ -181,7 +181,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 	memcpy(ied_base, &ied, sizeof(ied));
 
 	/* Zero out 32KiB at IEDBASE + 1MiB */
-	memset(ied_base + (1 << 20), 0, (32 << 10));
+	memset(ied_base + 1 * MiB, 0, 32 * KiB);
 }
 
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,

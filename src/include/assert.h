@@ -12,31 +12,41 @@
 #undef ASSERT
 #endif
 
+/* Do not use filenames nor line numbers on timeless builds, to preserve reproducibility */
+#if ENV_TIMELESS
+#define __ASSERT_FILE__ "(filenames not available on timeless builds)"
+#define __ASSERT_LINE__ 404
+#else
+#define __ASSERT_FILE__ __FILE__
+#define __ASSERT_LINE__ __LINE__
+#endif
+
 /* GCC and CAR versions */
-#define ASSERT(x) {						\
-	if (!(x)) {						\
-		printk(BIOS_EMERG, "ASSERTION ERROR: file '%s'"	\
-			", line %d\n", __FILE__, __LINE__);	\
-		if (CONFIG(FATAL_ASSERTS))		\
-			hlt();					\
-	}							\
+#define ASSERT(x) {							\
+	if (!(x)) {							\
+		printk(BIOS_EMERG,					\
+			"ASSERTION ERROR: file '%s', line %d\n",	\
+			__ASSERT_FILE__, __ASSERT_LINE__);		\
+		if (CONFIG(FATAL_ASSERTS))				\
+			hlt();						\
+	}								\
 }
-
-#define ASSERT_MSG(x, msg) {					\
-	if (!(x)) {						\
-		printk(BIOS_EMERG, "ASSERTION ERROR: file '%s'"	\
-			", line %d\n", __FILE__, __LINE__);	\
-		printk(BIOS_EMERG, "%s", msg);                  \
-		if (CONFIG(FATAL_ASSERTS))			\
-			hlt();					\
-	}							\
+#define ASSERT_MSG(x, msg) {						\
+	if (!(x)) {							\
+		printk(BIOS_EMERG,					\
+			"ASSERTION ERROR: file '%s', line %d\n",	\
+			__ASSERT_FILE__, __ASSERT_LINE__);		\
+		printk(BIOS_EMERG, "%s", msg);				\
+		if (CONFIG(FATAL_ASSERTS))				\
+			hlt();						\
+	}								\
 }
-
-#define BUG() {							\
-	printk(BIOS_EMERG, "ERROR: BUG ENCOUNTERED at file '%s'"\
-		", line %d\n", __FILE__, __LINE__);		\
-	if (CONFIG(FATAL_ASSERTS))			\
-		hlt();						\
+#define BUG() {								\
+	printk(BIOS_EMERG,						\
+		"ERROR: BUG ENCOUNTERED at file '%s', line %d\n",	\
+		__ASSERT_FILE__, __ASSERT_LINE__);			\
+	if (CONFIG(FATAL_ASSERTS))					\
+		hlt();							\
 }
 
 #define assert(statement)	ASSERT(statement)

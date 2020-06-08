@@ -411,6 +411,10 @@ CPPFLAGS_common += -include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.
 CPPFLAGS_common += -I3rdparty
 CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
 
+ifeq ($(BUILD_TIMELESS),1)
+CPPFLAGS_common += -D__TIMELESS__
+endif
+
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL)$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE),y)
 CPPFLAGS_ramstage += -Isrc/device/oprom/include
 endif

@@ -3,6 +3,12 @@
 #ifndef _RULES_H
 #define _RULES_H
 
+#if defined(__TIMELESS__)
+#define ENV_TIMELESS 1
+#else
+#define ENV_TIMELESS 0
+#endif
+
 /* Useful helpers to tell whether the code is executing in bootblock,
  * romstage, ramstage or SMM.
  */

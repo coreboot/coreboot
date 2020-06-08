@@ -276,18 +276,13 @@ static void i82801ix_power_options(struct device *dev)
 
 static void i82801ix_configure_cstates(struct device *dev)
 {
-	u8 reg8;
-
-	reg8 = pci_read_config8(dev, D31F0_CxSTATE_CNF);
-	reg8 |= (1 << 4) | (1 << 3) | (1 << 2);	// Enable Popup & Popdown
-	pci_write_config8(dev, D31F0_CxSTATE_CNF, reg8);
+	// Enable Popup & Popdown
+	pci_or_config8(dev, D31F0_CxSTATE_CNF, (1 << 4) | (1 << 3) | (1 << 2));
 
 	// Set Deeper Sleep configuration to recommended values
-	reg8 = pci_read_config8(dev, D31F0_C4TIMING_CNT);
-	reg8 &= 0xf0;
-	reg8 |= (2 << 2);	// Deeper Sleep to Stop CPU: 34-40us
-	reg8 |= (2 << 0);	// Deeper Sleep to Sleep: 15us
-	pci_write_config8(dev, D31F0_C4TIMING_CNT, reg8);
+	// Deeper Sleep to Stop CPU: 34-40us
+	// Deeper Sleep to Sleep: 15us
+	pci_update_config8(dev, D31F0_C4TIMING_CNT, ~0x0f, (2 << 2) | (2 << 0));
 
 	/* We could enable slow-C4 exit here, if someone needs it? */
 }

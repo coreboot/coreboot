@@ -11,12 +11,8 @@
 
 static void pch_smbus_init(struct device *dev)
 {
-	u16 reg16;
-
 	/* Enable clock gating */
-	reg16 = pci_read_config16(dev, 0x80);
-	reg16 &= ~((1 << 8)|(1 << 10)|(1 << 12)|(1 << 14));
-	pci_write_config16(dev, 0x80, reg16);
+	pci_and_config16(dev, 0x80, ~((1 << 8) | (1 << 10) | (1 << 12) | (1 << 14)));
 }
 
 static int lsmbus_read_byte(struct device *dev, u8 address)

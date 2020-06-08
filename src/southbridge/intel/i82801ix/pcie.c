@@ -12,8 +12,6 @@
 
 static void pci_init(struct device *dev)
 {
-	u16 reg16;
-	u32 reg32;
 	struct southbridge_intel_i82801ix_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "Initializing ICH9 PCIe root port.\n");
@@ -25,56 +23,39 @@ static void pci_init(struct device *dev)
 	// This has no effect but the OS might expect it
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
-	reg16 |= PCI_BRIDGE_CTL_NO_ISA;
-	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
+	pci_update_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY,
+			    PCI_BRIDGE_CTL_NO_ISA);
 
 	/* Enable IO xAPIC on this PCIe port */
-	reg32 = pci_read_config32(dev, 0xd8);
-	reg32 |= (1 << 7);
-	pci_write_config32(dev, 0xd8, reg32);
+	pci_or_config32(dev, 0xd8, 1 << 7);
 
 	/* Enable Backbone Clock Gating */
-	reg32 = pci_read_config32(dev, 0xe1);
-	reg32 |= (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
-	pci_write_config32(dev, 0xe1, reg32);
+	pci_or_config32(dev, 0xe1, (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0));
 
 	/* Set VC0 transaction class */
-	reg32 = pci_read_config32(dev, 0x114);
-	reg32 &= 0xffffff00;
-	reg32 |= 1;
-	pci_write_config32(dev, 0x114, reg32);
+	pci_update_config32(dev, 0x114, ~0x000000ff, 1);
 
 	/* Mask completion timeouts */
-	reg32 = pci_read_config32(dev, 0x148);
-	reg32 |= (1 << 14);
-	pci_write_config32(dev, 0x148, reg32);
+	pci_or_config32(dev, 0x148, 1 << 14);
 
 	/* Lock R/WO Correctable Error Mask. */
-	pci_write_config32(dev, 0x154, pci_read_config32(dev, 0x154));
+	pci_update_config32(dev, 0x154, ~0, 0);
 
 	/* Clear errors in status registers */
-	reg16 = pci_read_config16(dev, 0x06);
-	pci_write_config16(dev, 0x06, reg16);
-	reg16 = pci_read_config16(dev, 0x1e);
-	pci_write_config16(dev, 0x1e, reg16);
+	pci_update_config16(dev, 0x06, ~0, 0);
+	pci_update_config16(dev, 0x1e, ~0, 0);
 
 	/* Get configured ASPM state */
 	const enum aspm_type apmc = pci_read_config32(dev, 0x50) & 3;
 
 	/* If both L0s and L1 enabled then set root port 0xE8[1]=1 */
-	if (apmc == PCIE_ASPM_BOTH) {
-		reg32 = pci_read_config32(dev, 0xe8);
-		reg32 |= (1 << 1);
-		pci_write_config32(dev, 0xe8, reg32);
-	}
+	if (apmc == PCIE_ASPM_BOTH)
+		pci_or_config32(dev, 0xe8, 1 << 1);
 
 	/* Enable expresscard hotplug events.  */
 	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
-		pci_write_config32(dev, 0xd8,
-				   pci_read_config32(dev, 0xd8)
-				   | (1 << 30));
+
+		pci_or_config32(dev, 0xd8, 1 << 30);
 		pci_write_config16(dev, 0x42, 0x142);
 	}
 }

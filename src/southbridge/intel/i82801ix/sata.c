@@ -205,8 +205,7 @@ static void sata_init(struct device *const dev)
 
 	if (is_mobile && config->sata_traffic_monitor) {
 		struct device *const lpc_dev = pcidev_on_root(0x1f, 0);
-		if (((pci_read_config8(lpc_dev, D31F0_CxSTATE_CNF)
-							>> 3) & 3) == 3) {
+		if (((pci_read_config8(lpc_dev, D31F0_CxSTATE_CNF) >> 3) & 3) == 3) {
 			u8 reg8 = pci_read_config8(dev, 0x9c);
 			reg8 &= ~(0x1f << 2);
 			reg8 |= 3 << 2;

@@ -9,18 +9,14 @@
 static void pci_init(struct device *dev)
 {
 	u16 reg16;
-	u8 reg8;
 
 	/* This device has no interrupt */
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0xff);
 
 	/* Master Latency Count must be set to 0x04! */
-	reg8 = pci_read_config8(dev, D30F0_SMLT);
-	reg8 &= 0x07;
-	reg8 |= (0x04 << 3);
-	pci_write_config8(dev, D30F0_SMLT, reg8);
+	pci_update_config8(dev, D30F0_SMLT, 0x07, 0x04 << 3);
 
-	/* Clear errors in status registers */
+	/* Clear errors in status registers. FIXME: Do something? */
 	reg16 = pci_read_config16(dev, PCI_STATUS);
 	//reg16 |= 0xf900;
 	pci_write_config16(dev, PCI_STATUS, reg16);

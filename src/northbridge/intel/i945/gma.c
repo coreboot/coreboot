@@ -701,9 +701,7 @@ static void gma_func0_disable(struct device *dev)
 	pci_write_config16(dev, GCFC, 0xa00);
 	pci_write_config16(dev_host, GGC, (1 << 1));
 
-	unsigned int reg32 = pci_read_config32(dev_host, DEVEN);
-	reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);
-	pci_write_config32(dev_host, DEVEN, reg32);
+	pci_and_config32(dev_host, DEVEN, ~(DEVEN_D2F0 | DEVEN_D2F1));
 
 	dev->enabled = 0;
 }
@@ -730,13 +728,8 @@ static void gma_generate_ssdt(const struct device *device)
 
 static void gma_func0_read_resources(struct device *dev)
 {
-	u8 reg8;
-
-	/* Set Untrusted Aperture Size to 256mb */
-	reg8 = pci_read_config8(dev, MSAC);
-	reg8 &= ~0x3;
-	reg8 |= 0x2;
-	pci_write_config8(dev, MSAC, reg8);
+	/* Set Untrusted Aperture Size to 256MB */
+	pci_update_config8(dev, MSAC, ~0x3, 0x2);
 
 	pci_dev_read_resources(dev);
 }

@@ -158,10 +158,7 @@ static void i945_setup_bars(void)
 	pci_write_config16(PCI_DEV(0, 0x00, 0), GGC, ((gfxsize + 1) << 4));
 	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
 	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
-	reg8 &= ~0x7;
-	reg8 |= (1 << 1) | (1 << 0); /* 2M and TSEG_Enable */
-	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAMC, reg8);
+	pci_update_config8(PCI_DEV(0, 0, 0), ESMRAMC, ~0x07, (1 << 1) | (1 << 0));
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);
@@ -505,13 +502,9 @@ static void i945_setup_pci_express_x16(void)
 
 	printk(BIOS_DEBUG, "Enabling PCI Express x16 Link\n");
 
-	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
-	reg16 |= DEVEN_D1F0;
-	pci_write_config16(PCI_DEV(0, 0x00, 0), DEVEN, reg16);
+	pci_or_config16(PCI_DEV(0, 0x00, 0), DEVEN, DEVEN_D1F0);
 
-	reg32 = pci_read_config32(p2peg, PEGCC);
-	reg32 &= ~(1 << 8);
-	pci_write_config32(p2peg, PEGCC, reg32);
+	pci_and_config32(p2peg, PEGCC, ~(1 << 8));
 
 	/* We have no success with querying the usual PCIe registers
 	 * for link setup success on the i945. Hence we assign a temporary
@@ -531,16 +524,12 @@ static void i945_setup_pci_express_x16(void)
 
 	pci_s_bridge_set_secondary(p2peg, tmp_secondary);
 
-	reg32 = pci_read_config32(p2peg, 0x224);
-	reg32 &= ~(1 << 8);
-	pci_write_config32(p2peg, 0x224, reg32);
+	pci_and_config32(p2peg, 0x224, ~(1 << 8));
 
 	MCHBAR16(UPMC1) &= ~((1 << 5) | (1 << 0));
 
 	/* Initialize PEG_CAP */
-	reg16 = pci_read_config16(p2peg, PEG_CAP);
-	reg16 |= (1 << 8);
-	pci_write_config16(p2peg, PEG_CAP, reg16);
+	pci_or_config16(p2peg, PEG_CAP, 1 << 8);
 
 	/* Setup SLOTCAP */
 	/* TODO: These values are mainboard dependent and should be set from devicetree.cb.
@@ -556,8 +545,7 @@ static void i945_setup_pci_express_x16(void)
 	/* Wait for training to succeed */
 	printk(BIOS_DEBUG, "PCIe link training ...");
 	timeout = 0x7ffff;
-	while ((((pci_read_config32(p2peg, PEGSTS) >> 16) & 3) != 3)
-		&& --timeout)
+	while ((((pci_read_config32(p2peg, PEGSTS) >> 16) & 3) != 3) && --timeout)
 		;
 
 	reg32 = pci_read_config32(peg_plugin, PCI_VENDOR_ID);
@@ -569,10 +557,7 @@ static void i945_setup_pci_express_x16(void)
 
 		printk(BIOS_DEBUG, "Restrain PCIe port to x1\n");
 
-		reg32 = pci_read_config32(p2peg, PEGSTS);
-		reg32 &= ~(0xf << 1);
-		reg32 |= 1;
-		pci_write_config32(p2peg, PEGSTS, reg32);
+		pci_update_config32(p2peg, PEGSTS, ~(0xf << 1), 1);
 
 		/* Force PCIRST# */
 		pci_s_assert_secondary_reset(p2peg);
@@ -580,8 +565,7 @@ static void i945_setup_pci_express_x16(void)
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
-		while ((((pci_read_config32(p2peg, PEGSTS) >> 16) & 3) != 3)
-			&& --timeout)
+		while ((((pci_read_config32(p2peg, PEGSTS) >> 16) & 3) != 3) && --timeout)
 			;
 
 		reg32 = pci_read_config32(peg_plugin, PCI_VENDOR_ID);
@@ -619,25 +603,17 @@ static void i945_setup_pci_express_x16(void)
 		reg16 = (1 << 1);
 		pci_write_config16(PCI_DEV(0, 0x0, 0), GGC, reg16);
 
-		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), DEVEN);
-		reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);
-		pci_write_config32(PCI_DEV(0, 0x0, 0), DEVEN, reg32);
+		pci_and_config32(PCI_DEV(0, 0x0, 0), DEVEN, ~(DEVEN_D2F0 | DEVEN_D2F1));
 	}
 
-	/* Enable GPEs */
-	reg32 = pci_read_config32(p2peg, PEG_LC);
-	reg32 |= (1 << 2) | (1 << 1) | (1 << 0); /* PMEGPE, HPGPE, GENGPE */
-	pci_write_config32(p2peg, PEG_LC, reg32);
+	/* Enable GPEs: PMEGPE, HPGPE, GENGPE */
+	pci_or_config32(p2peg, PEG_LC, (1 << 2) | (1 << 1) | (1 << 0));
 
 	/* Virtual Channel Configuration: Only VC0 on PCIe x16 */
-	reg32 = pci_read_config32(p2peg, VC0RCTL);
-	reg32 &= 0xffffff01;
-	pci_write_config32(p2peg, VC0RCTL, reg32);
+	pci_and_config32(p2peg, VC0RCTL, ~0x000000fe);
 
 	/* Extended VC count */
-	reg32 = pci_read_config32(p2peg, PVCCAP1);
-	reg32 &= ~(7 << 0);
-	pci_write_config32(p2peg, PVCCAP1, reg32);
+	pci_and_config32(p2peg, PVCCAP1, ~(7 << 0));
 
 	/* Active State Power Management ASPM */
 
@@ -653,35 +629,17 @@ static void i945_setup_pci_express_x16(void)
 	pci_write_config32(p2peg, 0x228, 0xffffffff);
 
 	/* Program R/WO registers */
-	reg32 = pci_read_config32(p2peg, 0x308);
-	pci_write_config32(p2peg, 0x308, reg32);
-
-	reg32 = pci_read_config32(p2peg, 0x314);
-	pci_write_config32(p2peg, 0x314, reg32);
-
-	reg32 = pci_read_config32(p2peg, 0x324);
-	pci_write_config32(p2peg, 0x324, reg32);
-
-	reg32 = pci_read_config32(p2peg, 0x328);
-	pci_write_config32(p2peg, 0x328, reg32);
+	pci_update_config32(p2peg, 0x308, ~0, 0);
+	pci_update_config32(p2peg, 0x314, ~0, 0);
+	pci_update_config32(p2peg, 0x324, ~0, 0);
+	pci_update_config32(p2peg, 0x328, ~0, 0);
 
 	/* Additional PCIe graphics setup */
-	reg32 = pci_read_config32(p2peg, 0xf0);
-	reg32 |= (3 << 26);
-	pci_write_config32(p2peg, 0xf0, reg32);
+	pci_or_config32(p2peg, 0xf0, 3 << 26);
+	pci_or_config32(p2peg, 0xf0, 3 << 24);
+	pci_or_config32(p2peg, 0xf0, 1 <<  5);
 
-	reg32 = pci_read_config32(p2peg, 0xf0);
-	reg32 |= (3 << 24);
-	pci_write_config32(p2peg, 0xf0, reg32);
-
-	reg32 = pci_read_config32(p2peg, 0xf0);
-	reg32 |= (1 << 5);
-	pci_write_config32(p2peg, 0xf0, reg32);
-
-	reg32 = pci_read_config32(p2peg, 0x200);
-	reg32 &= ~(3 << 26);
-	reg32 |= (2 << 26);
-	pci_write_config32(p2peg, 0x200, reg32);
+	pci_update_config32(p2peg, 0x200, ~(3 << 26), 2 << 26);
 
 	reg32 = pci_read_config32(p2peg, 0xe80);
 	if (i945_silicon_revision() >= 2)
@@ -690,13 +648,9 @@ static void i945_setup_pci_express_x16(void)
 		reg32 &= ~(1 << 12);
 	pci_write_config32(p2peg, 0xe80, reg32);
 
-	reg32 = pci_read_config32(p2peg, 0xeb4);
-	reg32 &= ~(1 << 31);
-	pci_write_config32(p2peg, 0xeb4, reg32);
+	pci_and_config32(p2peg, 0xeb4, ~(1 << 31));
 
-	reg32 = pci_read_config32(p2peg, 0xfc);
-	reg32 |= (1 << 31);
-	pci_write_config32(p2peg, 0xfc, reg32);
+	pci_or_config32(p2peg, 0xfc, 1 << 31);
 
 	if (i945_silicon_revision() >= 3) {
 		static const u32 reglist[] = {
@@ -705,12 +659,8 @@ static void i945_setup_pci_express_x16(void)
 		};
 
 		int i;
-		for (i = 0; i < ARRAY_SIZE(reglist); i++) {
-			reg32 = pci_read_config32(p2peg, reglist[i]);
-			reg32 &= 0x0fffffff;
-			reg32 |= (2 << 28);
-			pci_write_config32(p2peg, reglist[i], reg32);
-		}
+		for (i = 0; i < ARRAY_SIZE(reglist); i++)
+			pci_update_config32(p2peg, reglist[i], ~(0xf << 28), 2 << 28);
 	}
 
 	if (i945_silicon_revision() <= 2) {
@@ -734,9 +684,7 @@ disable_pciexpress_x16_link:
 	/* Toggle PCIRST# */
 	pci_s_assert_secondary_reset(p2peg);
 
-	reg32 = pci_read_config32(p2peg, 0x224);
-	reg32 |= (1 << 8);
-	pci_write_config32(p2peg, 0x224, reg32);
+	pci_or_config32(p2peg, 0x224, 1 << 8);
 
 	pci_s_deassert_secondary_reset(p2peg);
 
@@ -751,9 +699,7 @@ disable_pciexpress_x16_link:
 		printk(BIOS_DEBUG, "ok\n");
 
 	/* Finally: Disable the PCI config header */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
-	reg16 &= ~DEVEN_D1F0;
-	pci_write_config16(PCI_DEV(0, 0x00, 0), DEVEN, reg16);
+	pci_and_config16(PCI_DEV(0, 0x00, 0), DEVEN, ~DEVEN_D1F0);
 }
 
 static void i945_setup_root_complex_topology(void)
@@ -795,9 +741,7 @@ static void i945_setup_root_complex_topology(void)
 	/* PCI Express x16 Port Root Topology */
 	if (pci_read_config8(PCI_DEV(0, 0x00, 0), DEVEN) & DEVEN_D1F0) {
 		pci_write_config32(p2peg, LE1A, DEFAULT_EPBAR);
-		reg32 = pci_read_config32(p2peg, LE1D);
-		reg32 |= (1 << 0);
-		pci_write_config32(p2peg, LE1D, reg32);
+		pci_or_config32(p2peg, LE1D, 1 << 0);
 	}
 }
 

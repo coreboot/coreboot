@@ -257,9 +257,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	}
 
 	/* Set DRAM initialization bit in ICH7 */
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
-	reg8 |= (1<<7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
+	pci_or_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, 1 << 7);
 
 	/* clear self refresh status if check is disabled or not a resume */
 	if (!CONFIG(CHECK_SLFRCS_ON_RESUME) || sysinfo->boot_path != BOOT_PATH_RESUME) {
@@ -1615,7 +1613,6 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 {
 	u8 reg8;
-	u16 reg16;
 	u8 freq, second_vco, voltage;
 
 #define CRCLK_166MHz	0x00
@@ -1716,14 +1713,11 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 		sysinfo->clkcfg_bit7 = 0;
 
 	/* Graphics Core Render Clock */
-	reg16 = pci_read_config16(PCI_DEV(0, 2, 0), GCFC);
-	reg16 &= ~((7 << 0) | (1 << 13));
-	reg16 |= freq;
-	pci_write_config16(PCI_DEV(0, 2, 0), GCFC, reg16);
+	pci_update_config16(PCI_DEV(0, 2, 0), GCFC, ~((7 << 0) | (1 << 13)), freq);
 
 	/* Graphics Core Display Clock */
 	reg8 = pci_read_config8(PCI_DEV(0, 2, 0), GCFC);
-	reg8 &= ~((1<<7) | (7<<4));
+	reg8 &= ~((1 << 7) | (7 << 4));
 
 	if (voltage == VOLTAGE_1_05) {
 		reg8 |= CDCLK_200MHz;
@@ -1736,7 +1730,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 
 	reg8 = pci_read_config8(PCI_DEV(0, 2, 0), GCFC + 1);
 
-	reg8 |= (1<<3) | (1<<1);
+	reg8 |= (1 << 3) | (1 << 1);
 	pci_write_config8(PCI_DEV(0, 2, 0), GCFC + 1, reg8);
 
 	reg8 |= 0x0f;
@@ -1750,7 +1744,6 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 {
 	u32 clkcfg;
-	u8 reg8;
 	u8 offset = CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GM) ? 1 : 0;
 
 	printk(BIOS_DEBUG, "Setting Memory Frequency... ");
@@ -1795,9 +1788,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	/* Make sure the following code is in the cache before we execute it. */
 	goto cache_code;
 vco_update:
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
-	reg8 &= ~(1 << 7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
+	pci_and_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, (u8)~(1 << 7));
 
 	clkcfg &= ~(1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
@@ -2142,7 +2133,6 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 
 static void sdram_power_management(struct sys_info *sysinfo)
 {
-	u8 reg8;
 	u16 reg16;
 	u32 reg32;
 	int integrated_graphics = 1;
@@ -2293,13 +2283,9 @@ static void sdram_power_management(struct sys_info *sysinfo)
 		MCHBAR32(FSBPMC4) |= (1 << 4);
 	}
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x0, 0), 0xfc);
-	reg8 |= (1 << 4);
-	pci_write_config8(PCI_DEV(0, 0x0, 0), 0xfc, reg8);
+	pci_or_config8(PCI_DEV(0, 0x0, 0), 0xfc, 1 << 4);
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x2, 0), 0xc1);
-	reg8 |= (1 << 2);
-	pci_write_config8(PCI_DEV(0, 0x2, 0), 0xc1, reg8);
+	pci_or_config8(PCI_DEV(0, 0x2, 0), 0xc1, 1 << 2);
 
 #ifdef C2_SELF_REFRESH_DISABLE
 
@@ -2729,7 +2715,6 @@ static void sdram_setup_processor_side(void)
 void sdram_initialize(int boot_path, const u8 *spd_addresses)
 {
 	struct sys_info sysinfo;
-	u8 reg8;
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
@@ -2826,9 +2811,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	sdram_enable_rcomp();
 
 	/* Tell ICH7 that we're done */
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
-	reg8 &= ~(1 << 7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
+	pci_and_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, (u8)~(1 << 7));
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 

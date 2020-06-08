@@ -12,11 +12,8 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/dimmSpd.h>
 
-#if CONFIG(NORTHBRIDGE_AMD_PI)
-#if CONFIG(ARCH_ROMSTAGE_X86_64) || \
-	CONFIG(ARCH_RAMSTAGE_X86_64)
+#if ENV_X86_64 && CONFIG(NORTHBRIDGE_AMD_PI)
 #error "FIXME: CALLOUT_ENTRY is UINT32 Data, not UINT Data"
-#endif
 #endif
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)

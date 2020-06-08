@@ -14,19 +14,13 @@ static void usb_ehci_init(struct device *dev)
 	struct resource *res;
 	u8 *base;
 	u32 reg32;
-	u8 reg8;
 
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_SERR);
 
-	reg32 = pci_read_config32(dev, 0xdc);
-	reg32 |= (1 << 31) | (1 << 27);
-	pci_write_config32(dev, 0xdc, reg32);
+	pci_or_config32(dev, 0xdc, (1 << 31) | (1 << 27));
 
-	reg32 = pci_read_config32(dev, 0xfc);
-	reg32 &= ~(3 << 2);
-	reg32 |= (2 << 2) | (1 << 29) | (1 << 17);
-	pci_write_config32(dev, 0xfc, reg32);
+	pci_update_config32(dev, 0xfc, ~(3 << 2), (2 << 2) | (1 << 29) | (1 << 17));
 
 	/* Clear any pending port changes */
 	res = find_resource(dev, 0x10);
@@ -35,9 +29,7 @@ static void usb_ehci_init(struct device *dev)
 	write32(base + 0x24, reg32);
 
 	/* workaround */
-	reg8 = pci_read_config8(dev, 0x84);
-	reg8 |= (1 << 4);
-	pci_write_config8(dev, 0x84, reg8);
+	pci_or_config8(dev, 0x84, 1 << 4);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

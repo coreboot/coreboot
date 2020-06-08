@@ -194,37 +194,21 @@ static void azalia_init(struct device *dev)
 	struct resource *res;
 	u32 codec_mask;
 	u8 reg8;
-	u32 reg32;
 
 	// ESD
-	reg32 = pci_read_config32(dev, 0x134);
-	reg32 &= 0xff00ffff;
-	reg32 |= (2 << 16);
-	pci_write_config32(dev, 0x134, reg32);
+	pci_update_config32(dev, 0x134, ~(0xff << 16), 2 << 16);
 
 	// Link1 description
-	reg32 = pci_read_config32(dev, 0x140);
-	reg32 &= 0xff00ffff;
-	reg32 |= (2 << 16);
-	pci_write_config32(dev, 0x140, reg32);
+	pci_update_config32(dev, 0x140, ~(0xff << 16), 2 << 16);
 
 	// Port VC0 Resource Control Register
-	reg32 = pci_read_config32(dev, 0x114);
-	reg32 &= 0xffffff00;
-	reg32 |= 1;
-	pci_write_config32(dev, 0x114, reg32);
+	pci_update_config32(dev, 0x114, ~(0xff << 0), 1);
 
 	// VCi traffic class
-	reg8 = pci_read_config8(dev, 0x44);
-	reg8 |= (7 << 0); // TC7
-	pci_write_config8(dev, 0x44, reg8);
+	pci_or_config8(dev, 0x44, 7 << 0); // TC7
 
 	// VCi Resource Control
-	reg32 = pci_read_config32(dev, 0x120);
-	reg32 |= (1 << 31);
-	reg32 |= (1 << 24); // VCi ID
-	reg32 |= (0x80 << 0); // VCi map
-	pci_write_config32(dev, 0x120, reg32);
+	pci_or_config32(dev, 0x120, (1 << 31) | (1 << 24) | (0x80 << 0)); /* VCi ID and map */
 
 	/* Set Bus Master */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
@@ -244,14 +228,11 @@ static void azalia_init(struct device *dev)
 	reg8 = pci_read_config8(dev, 0x40);
 	printk(BIOS_DEBUG, "Azalia: codec type: %s\n", (reg8 & (1 << 1))?"Azalia":"AC97");
 
-	//
-	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select Azalia mode. This needs to be controlled via devicetree.cb
-	pci_write_config8(dev, 0x40, reg8);
+	// Select Azalia mode. This needs to be controlled via devicetree.cb
+	pci_or_config8(dev, 0x40, 1); // Audio Control
 
-	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
-	reg8 &= ~(1 << 7); // Docking not supported
-	pci_write_config8(dev, 0x4d, reg8);
+	// Docking not supported
+	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
 	res = find_resource(dev, 0x10);
 	if (!res)

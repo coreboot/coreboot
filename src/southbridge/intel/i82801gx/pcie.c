@@ -41,7 +41,6 @@ static inline int root_port_number(struct device *dev)
 static void pci_init(struct device *dev)
 {
 	u16 reg16;
-	u32 reg32;
 
 	printk(BIOS_DEBUG, "Initializing ICH7 PCIe bridge.\n");
 
@@ -52,38 +51,25 @@ static void pci_init(struct device *dev)
 	// This has no effect but the OS might expect it
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 0x10);
 
-	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
-	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
+	pci_and_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY);
 
 	/* Enable IO xAPIC on this PCIe port */
-	reg32 = pci_read_config32(dev, 0xd8);
-	reg32 |= (1 << 7);
-	pci_write_config32(dev, 0xd8, reg32);
+	pci_or_config32(dev, 0xd8, 1 << 7);
 
 	/* Enable Backbone Clock Gating */
-	reg32 = pci_read_config32(dev, 0xe1);
-	reg32 |= (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
-	pci_write_config32(dev, 0xe1, reg32);
+	pci_or_config32(dev, 0xe1, (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0));
 
 	/* Set VC0 transaction class */
-	reg32 = pci_read_config32(dev, 0x114);
-	reg32 &= 0xffffff00;
-	reg32 |= 1;
-	pci_write_config32(dev, 0x114, reg32);
+	pci_update_config32(dev, 0x114, ~0x000000ff, 1);
 
 	/* Mask completion timeouts */
-	reg32 = pci_read_config32(dev, 0x148);
-	reg32 |= (1 << 14);
-	pci_write_config32(dev, 0x148, reg32);
+	pci_or_config32(dev, 0x148, 1 << 14);
 
 	/* Enable common clock configuration */
 	// Are there cases when we don't want that?
-	reg16 = pci_read_config16(dev, 0x50);
-	reg16 |= (1 << 6);
-	pci_write_config16(dev, 0x50, reg16);
+	pci_or_config16(dev, 0x50, 1 << 6);
 
-	/* Clear errors in status registers */
+	/* Clear errors in status registers. FIXME: Do something? */
 	reg16 = pci_read_config16(dev, 0x06);
 	//reg16 |= 0xf900;
 	pci_write_config16(dev, 0x06, reg16);

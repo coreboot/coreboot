@@ -59,11 +59,10 @@ void sata_enable(struct device *dev)
 
 	if (config->sata_mode == SATA_MODE_AHCI) {
 		/* Set map to ahci */
-		pci_write_config8(dev, SATA_MAP,
-				  (pci_read_config8(dev, SATA_MAP) & ~0xc3) | 0x40);
+		pci_update_config8(dev, SATA_MAP, (u8)~0xc3, 0x40);
 	} else {
-	/* Set map to ide */
-		pci_write_config8(dev, SATA_MAP, pci_read_config8(dev, SATA_MAP) & ~0xc3);
+		/* Set map to ide */
+		pci_and_config8(dev, SATA_MAP, (u8)~0xc3);
 	}
 	/* At this point, the new pci id will appear on the bus */
 }
@@ -71,7 +70,6 @@ void sata_enable(struct device *dev)
 static void sata_init(struct device *dev)
 {
 	u32 reg32;
-	u16 reg16;
 	u8 ports;
 
 	/* Get the chip configuration */
@@ -95,11 +93,10 @@ static void sata_init(struct device *dev)
 	case SATA_MODE_IDE_LEGACY_COMBINED:
 		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
 		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
+		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0);
+
 		/* And without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MEMORY);
 
 		pci_write_config8(dev, 0x09, 0x80);
 
@@ -148,9 +145,7 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
 
 		/* And without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MEMORY);
 
 		/* Native mode capable on both primary and secondary (0xa)
 		 * or'ed with enabled (0x50) = 0xf
@@ -191,23 +186,15 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, 0xa0, 0x78);
 	pci_write_config8(dev, 0xa6, 0x22);
 	pci_write_config8(dev, 0xa0, 0x88);
-	reg32 = pci_read_config32(dev, 0xa4);
-	reg32 &= 0xc0c0c0c0;
-	reg32 |= 0x1b1b1212;
-	pci_write_config32(dev, 0xa4, reg32);
+	pci_update_config32(dev, 0xa4, 0xc0c0c0c0, 0x1b1b1212);
 	pci_write_config8(dev, 0xa0, 0x8c);
-	reg32 = pci_read_config32(dev, 0xa4);
-	reg32 &= 0xc0c0ff00;
-	reg32 |= 0x121200aa;
-	pci_write_config32(dev, 0xa4, reg32);
+	pci_update_config32(dev, 0xa4, 0xc0c0ff00, 0x121200aa);
 	pci_write_config8(dev, 0xa0, 0x00);
 
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
 
 	/* Sata Initialization Register */
-	reg32 = pci_read_config32(dev, SATA_IR);
-	reg32 |= SCRD; // due to some bug
-	pci_write_config32(dev, SATA_IR, reg32);
+	pci_or_config32(dev, SATA_IR, SCRD); // due to some bug
 }
 
 static struct device_operations sata_ops = {

@@ -9,8 +9,6 @@
 
 static void usb_init(struct device *dev)
 {
-	u8 reg8;
-
 	/* USB Specification says the device must be Bus Master */
 	printk(BIOS_DEBUG, "UHCI: Setting up controller.. ");
 
@@ -20,9 +18,7 @@ static void usb_init(struct device *dev)
 	pci_write_config8(dev, 0xca, 0x00);
 
 	// Yes. Another Erratum
-	reg8 = pci_read_config8(dev, 0xca);
-	reg8 |= (1 << 0);
-	pci_write_config8(dev, 0xca, reg8);
+	pci_or_config8(dev, 0xca, 1 << 0);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

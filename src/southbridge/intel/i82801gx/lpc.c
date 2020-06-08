@@ -247,18 +247,13 @@ static void i82801gx_power_options(struct device *dev)
 
 static void i82801gx_configure_cstates(struct device *dev)
 {
-	u8 reg8;
-
-	reg8 = pci_read_config8(dev, 0xa9); // Cx state configuration
-	reg8 |= (1 << 4) | (1 << 3) | (1 << 2);	// Enable Popup & Popdown
-	pci_write_config8(dev, 0xa9, reg8);
+	// Enable Popup & Popdown
+	pci_or_config8(dev, 0xa9, (1 << 4) | (1 << 3) | (1 << 2));
 
 	// Set Deeper Sleep configuration to recommended values
-	reg8 = pci_read_config8(dev, 0xaa);
-	reg8 &= 0xf0;
-	reg8 |= (2 << 2);	// Deeper Sleep to Stop CPU: 34-40us
-	reg8 |= (2 << 0);	// Deeper Sleep to Sleep: 15us
-	pci_write_config8(dev, 0xaa, reg8);
+	// Deeper Sleep to Stop CPU: 34-40us
+	// Deeper Sleep to Sleep: 15us
+	pci_update_config8(dev, 0xaa, 0xf0, (2 << 2) | (2 << 0));
 }
 
 static void i82801gx_rtc_init(struct device *dev)

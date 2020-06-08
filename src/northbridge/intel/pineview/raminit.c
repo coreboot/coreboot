@@ -2152,8 +2152,7 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	MCHBAR8_OR(C0CWBCTRL, 1);
 	MCHBAR16_OR(C0ARBSPL, 0x0100);
 
-	reg8 = pci_read_config8(HOST_BRIDGE, 0xf0);
-	pci_write_config8(HOST_BRIDGE, 0xf0, reg8 | 1);
+	pci_or_config8(HOST_BRIDGE, 0xf0, 1);
 	MCHBAR32(SBCTL)  = 0x00000002;
 	MCHBAR32(SBCTL2) = 0x20310002;
 	MCHBAR32(SLIMCFGTMG) = 0x02020302;
@@ -2162,8 +2161,7 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	MCHBAR32(HIT2) = 0x07000000;
 	MCHBAR32(HIT3) = 0x01014010;
 	MCHBAR32(HIT4) = 0x0f038000;
-	reg8 = pci_read_config8(HOST_BRIDGE, 0xf0);
-	pci_write_config8(HOST_BRIDGE, 0xf0, reg8 & ~1);
+	pci_and_config8(HOST_BRIDGE, 0xf0, ~1);
 
 	u32 nranks, curranksize, maxranksize, dra;
 	u8 rankmismatch;
@@ -2569,7 +2567,6 @@ static void sdram_programdqdqs(struct sysinfo *s)
 void sdram_initialize(int boot_path, const u8 *spd_addresses)
 {
 	struct sysinfo si;
-	u8 reg8;
 	const char *boot_str[] = {"Normal", "Reset", "Resume"};
 
 	PRINTK_DEBUG("Setting up RAM controller.\n");
@@ -2685,12 +2682,10 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	MCHBAR32_OR(C0REFRCTRL2, 1 << 30);
 
 	/* Tell ICH7 that we're done */
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8 & ~0x80);
+	pci_and_config8(PCI_DEV(0, 0x1f, 0), 0xa2, (u8)~(1 << 7));
 
 	/* Tell northbridge we're done */
-	reg8 = pci_read_config8(HOST_BRIDGE, 0xf4);
-	pci_write_config8(HOST_BRIDGE, 0xf4, reg8 | 1);
+	pci_or_config8(HOST_BRIDGE, 0xf4, 1);
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 }

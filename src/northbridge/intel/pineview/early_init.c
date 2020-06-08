@@ -62,8 +62,8 @@ static void early_graphics_setup(void)
 
 	pci_write_config16(GMCH_IGD, 0xcc, reg16);
 
-	pci_write_config8(GMCH_IGD, 0x62, pci_read_config8(GMCH_IGD, 0x62) & ~0x3);
-	pci_write_config8(GMCH_IGD, 0x62, pci_read_config8(GMCH_IGD, 0x62) | 2);
+	pci_and_config8(GMCH_IGD, 0x62, ~0x3);
+	pci_or_config8(GMCH_IGD,  0x62, 2);
 
 	if (config->use_crt) {
 		/* Enable VGA */

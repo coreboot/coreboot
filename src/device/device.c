@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>
-#if CONFIG(ARCH_X86)
+#if ENV_X86
 #include <arch/ebda.h>
 #endif
 #include <timer.h>
@@ -566,7 +566,7 @@ void dev_initialize(void)
 
 	printk(BIOS_INFO, "Initializing devices...\n");
 
-#if CONFIG(ARCH_X86)
+#if ENV_X86
 	/* Ensure EBDA is prepared before Option ROMs. */
 	setup_default_ebda();
 #endif

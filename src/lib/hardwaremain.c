@@ -425,7 +425,7 @@ void main(void)
 
 	/* TODO: Understand why this is here and move to arch/platform code. */
 	/* For MMIO UART this needs to be called before any other printk. */
-	if (CONFIG(ARCH_X86))
+	if (ENV_X86)
 		init_timer();
 
 	/* console_init() MUST PRECEDE ALL printk()! Additionally, ensure

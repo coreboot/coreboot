@@ -145,7 +145,7 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
  * and CBMEM_CONSOLE. Sometimes it is necessary to have cbmem_top()
  * value stored in nvram to enable early recovery on S3 path.
  */
-#if CONFIG(ARCH_X86)
+#if ENV_X86
 void backup_top_of_low_cacheable(uintptr_t ramtop);
 uintptr_t restore_top_of_low_cacheable(void);
 #endif

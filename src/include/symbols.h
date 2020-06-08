@@ -63,7 +63,7 @@ DECLARE_REGION(bl31)
  * (Does not necessarily mean that the memory is accessible.) */
 static inline int preram_symbols_available(void)
 {
-	return !CONFIG(ARCH_X86) || ENV_ROMSTAGE_OR_BEFORE;
+	return !ENV_X86 || ENV_ROMSTAGE_OR_BEFORE;
 }
 
 #endif /* __SYMBOLS_H */

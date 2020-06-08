@@ -748,7 +748,7 @@ static bool elog_do_add_boot_count(void)
 /* Check and log POST codes from previous boot */
 static void log_last_boot_post(void)
 {
-#if CONFIG(ARCH_X86)
+#if ENV_X86
 	u8 code;
 	u32 extra;
 

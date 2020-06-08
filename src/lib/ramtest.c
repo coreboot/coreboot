@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 
-#if CONFIG(ARCH_X86) && CONFIG(SSE2)
+#if ENV_X86 && CONFIG(SSE2)
 /* Assembler in lib/ is ugly. */
 static void write_phys(uintptr_t addr, u32 value)
 {

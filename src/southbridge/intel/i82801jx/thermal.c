@@ -14,11 +14,9 @@ static void thermal_init(struct device *dev)
 		return;
 
 	u8 reg8;
-	u32 reg32;
 
 	pci_write_config32(dev, 0x10, (uintptr_t)DEFAULT_TBAR);
-	reg32 = pci_read_config32(dev, 0x04);
-	pci_write_config32(dev, 0x04, reg32 | (1 << 1));
+	pci_or_config32(dev, 0x04, 1 << 1);
 
 	write32(DEFAULT_TBAR + 0x04, 0); /* Clear thermal trip points. */
 	write32(DEFAULT_TBAR + 0x44, 0);
@@ -31,8 +29,7 @@ static void thermal_init(struct device *dev)
 	reg8 = read8(DEFAULT_TBAR + 0x48);
 	write8(DEFAULT_TBAR + 0x48, reg8 | (1 << 7));
 
-	reg32 = pci_read_config32(dev, 0x04);
-	pci_write_config32(dev, 0x04, reg32 & ~(1 << 1));
+	pci_and_config32(dev, 0x04, ~(1 << 1));
 	pci_write_config32(dev, 0x10, 0);
 }
 

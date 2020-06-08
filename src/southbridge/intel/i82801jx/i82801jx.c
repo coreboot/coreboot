@@ -34,7 +34,6 @@ static void i82801jx_pcie_init(const config_t *const info)
 {
 	struct device *pciePort[6];
 	int i, slot_number = 1; /* Reserve slot number 0 for nb's PEG. */
-	u32 reg32;
 
 	/* PCIe - BIOS must program... */
 	for (i = 0; i < 6; ++i) {
@@ -43,26 +42,21 @@ static void i82801jx_pcie_init(const config_t *const info)
 			printk(BIOS_EMERG, "PCIe port 00:1c.%x", i);
 			die(" is not listed in devicetree.\n");
 		}
-		reg32 = pci_read_config32(pciePort[i], 0x300);
-		pci_write_config32(pciePort[i], 0x300, reg32 | (1 << 21));
+		pci_or_config32(pciePort[i], 0x300, 1 << 21);
 		pci_write_config8(pciePort[i], 0x324, 0x40);
 	}
 
 	if (LPC_IS_MOBILE(pcidev_on_root(0x1f, 0))) {
 		for (i = 0; i < 6; ++i) {
 			if (pciePort[i]->enabled) {
-				reg32 = pci_read_config32(pciePort[i], 0xe8);
-				reg32 |= 1;
-				pci_write_config32(pciePort[i], 0xe8, reg32);
+				pci_or_config32(pciePort[i], 0xe8, 1);
 			}
 		}
 	}
 
 	for (i = 5; (i >= 0) && !pciePort[i]->enabled; --i) {
 		/* Only for the top disabled ports. */
-		reg32 = pci_read_config32(pciePort[i], 0x300);
-		reg32 |= 0x3 << 16;
-		pci_write_config32(pciePort[i], 0x300, reg32);
+		pci_or_config32(pciePort[i], 0x300, 0x3 << 16);
 	}
 
 	/* Set slot implemented, slot number and slot power limits. */
@@ -88,10 +82,8 @@ static void i82801jx_pcie_init(const config_t *const info)
 	}
 
 	/* Lock R/WO ASPM support bits. */
-	for (i = 0; i < 6; ++i) {
-		reg32 = pci_read_config32(pciePort[i], 0x4c);
-		pci_write_config32(pciePort[i], 0x4c, reg32);
-	}
+	for (i = 0; i < 6; ++i)
+		pci_update_config32(pciePort[i], 0x4c, ~0, 0);
 }
 
 static void i82801jx_ehci_init(void)

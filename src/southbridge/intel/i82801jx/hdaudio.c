@@ -212,49 +212,30 @@ static void azalia_init(struct device *dev)
 	u8 *base;
 	struct resource *res;
 	u32 codec_mask;
-	u8 reg8;
-	u32 reg32;
 
 	// ESD
-	reg32 = pci_read_config32(dev, 0x134);
-	reg32 &= 0xff00ffff;
-	reg32 |= (2 << 16);
-	pci_write_config32(dev, 0x134, reg32);
+	pci_update_config32(dev, 0x134, ~0x00ff0000, 2 << 16);
 
 	// Link1 description
-	reg32 = pci_read_config32(dev, 0x140);
-	reg32 &= 0xff00ffff;
-	reg32 |= (2 << 16);
-	pci_write_config32(dev, 0x140, reg32);
+	pci_update_config32(dev, 0x140, ~0x00ff0000, 2 << 16);
 
 	// Port VC0 Resource Control Register
-	reg32 = pci_read_config32(dev, 0x114);
-	reg32 &= 0xffffff00;
-	reg32 |= 1;
-	pci_write_config32(dev, 0x114, reg32);
+	pci_update_config32(dev, 0x114, ~0x000000ff, 1);
 
 	// VCi traffic class
-	reg8 = pci_read_config8(dev, 0x44);
-	reg8 |= (7 << 0); // TC7
-	pci_write_config8(dev, 0x44, reg8);
+	pci_or_config8(dev, 0x44, 7 << 0);
 
 	// VCi Resource Control
-	reg32 = pci_read_config32(dev, 0x120);
-	reg32 |= (1 << 31);
-	reg32 |= (1 << 24); // VCi ID
-	reg32 |= (0x80 << 0); // VCi map
-	pci_write_config32(dev, 0x120, reg32);
+	pci_or_config32(dev, 0x120, (1 << 31) | (1 << 24) | (0x80 << 0)); /* VCi ID and map */
 
 	/* Set Bus Master */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
-	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
-	reg8 &= ~(1 << 7); // Docking not supported
-	pci_write_config8(dev, 0x4d, reg8);
+	// Docking not supported
+	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
 	/* Lock some R/WO bits by writing their current value. */
-	reg32 = pci_read_config32(dev, 0x74);
-	pci_write_config32(dev, 0x74, reg32);
+	pci_update_config32(dev, 0x74, ~0, 0);
 
 	res = find_resource(dev, 0x10);
 	if (!res)

@@ -365,12 +365,30 @@ void dramc_hw_gating_onoff(u8 chn, bool on)
 	clrsetbits32(&ch[chn].ao.stbcal, 0x1 << 22, (on ? 0x1 : 0) << 22);
 }
 
-static void dramc_rx_input_delay_tracking_init_by_freq(u8 chn)
+static void dramc_rx_input_delay_tracking_init_by_freq(u8 chn, u8 freq_group)
 {
+	u8 dvs_delay;
+
 	struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[0];
 
-	clrsetbits32(&shu->b[0].dq[5], 0x7 << 20, 0x3 << 20);
-	clrsetbits32(&shu->b[1].dq[5], 0x7 << 20, 0x3 << 20);
+	switch (freq_group) {
+	case LP4X_DDR1600:
+		dvs_delay = 5;
+		break;
+	case LP4X_DDR2400:
+		dvs_delay = 4;
+		break;
+	case LP4X_DDR3200:
+	case LP4X_DDR3600:
+		dvs_delay = 3;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
+
+	clrsetbits32(&shu->b[0].dq[5], 0x7 << 20, dvs_delay << 20);
+	clrsetbits32(&shu->b[1].dq[5], 0x7 << 20, dvs_delay << 20);
 	clrbits32(&shu->b[0].dq[7], (0x1 << 12) | (0x1 << 13));
 	clrbits32(&shu->b[1].dq[7], (0x1 << 12) | (0x1 << 13));
 }
@@ -408,7 +426,13 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 		dramc_hw_gating_onoff(chn, false);
 		clrbits32(&ch[chn].ao.stbcal2, 0x1 << 28);
 
-		setbits32(&ch[chn].phy.misc_ctrl1, (0x1 << 7) | (0x1 << 11));
+		for (size_t r = 0; r < 2; r++) {
+			for (size_t b = 0; b < 2; b++)
+				clrbits32(&ch[chn].phy.r[r].b[b].rxdvs[2],
+					(0x1 << 28) | (0x1 << 23) | (0x3 << 30));
+			clrbits32(&ch[chn].phy.r0_ca_rxdvs[2], 0x3 << 30);
+		}
+		setbits32(&ch[chn].phy.misc_ctrl1, 0x1 << 7);
 		clrbits32(&ch[chn].ao.refctrl0, 0x1 << 18);
 		clrbits32(&ch[chn].ao.mrs, 0x3 << 24);
 		setbits32(&ch[chn].ao.mpc_option, 0x1 << 17);
@@ -416,21 +440,14 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 		clrsetbits32(&ch[chn].phy.b[1].dq[6], 0x3 << 0, 0x1 << 0);
 		clrsetbits32(&ch[chn].phy.ca_cmd[6], 0x3 << 0, 0x1 << 0);
 
-		dramc_rx_input_delay_tracking_init_by_freq(chn);
+		dramc_rx_input_delay_tracking_init_by_freq(chn, freq_group);
 
 		setbits32(&ch[chn].ao.dummy_rd, 0x1 << 25);
 		setbits32(&ch[chn].ao.drsctrl, 0x1 << 0);
 		if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600)
-			clrbits32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
+			clrbits32(&ch[chn].ao.shu[0].drving[0], 0x1 << 31);
 		else
-			setbits32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
-	}
-
-	for (size_t r = 0; r < 2; r++) {
-		for (size_t b = 0; b < 2; b++)
-			clrbits32(&ch[0].phy.r[r].b[b].rxdvs[2],
-				(0x1 << 28) | (0x1 << 23) | (0x3 << 30));
-		clrbits32(&ch[0].phy.r0_ca_rxdvs[2], 0x3 << 30);
+			setbits32(&ch[chn].ao.shu[0].drving[0], 0x1 << 31);
 	}
 }
 

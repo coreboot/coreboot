@@ -56,9 +56,9 @@ static void dvfs_settings(u8 freq_group)
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		setbits32(&ch[chn].ao.dvfsdll, 0x1 << 5);
 		setbits32(&ch[chn].phy.dvfs_emi_clk, 0x1 << 29);
-		clrsetbits32(&ch[0].ao.shuctrl2, 0x7f, dll_idle);
+		clrsetbits32(&ch[chn].ao.shuctrl2, 0x7f, dll_idle);
 
-		setbits32(&ch[0].phy.misc_ctrl0, 0x3 << 19);
+		setbits32(&ch[chn].phy.misc_ctrl0, 0x3 << 19);
 		setbits32(&ch[chn].phy.dvfs_emi_clk, 0x1 << 24);
 		setbits32(&ch[chn].ao.dvfsdll, 0x1 << 7);
 	}
@@ -889,12 +889,12 @@ static void dramc_setting_DDR1600(void)
 
 	clrsetbits32(&ch[0].ao.shu[0].dqsg_retry, (0x1 << 2) | (0xf << 8),
 		(0x0 << 2) | (0x3 << 8));
-	clrsetbits32(&ch[0].phy.b[0].dq[5], 0x7 << 20, 0x4 << 20);
-
-	clrsetbits32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
-			(0x2 << 4) | (0x0 << 7) | (0x0 << 13));
-	clrsetbits32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x4 << 20);
-	clrbits32(&ch[0].phy.b[1].dq[7], (0x1 << 7) | (0x1 << 13));
+	clrsetbits32(&ch[0].phy.shu[0].b[0].dq[5], 0x7 << 20, 0x4 << 20);
+	clrsetbits32(&ch[0].phy.shu[0].b[0].dq[7],
+		(0x3 << 4) | (0x1 << 7) | (0x1 << 13),
+		(0x2 << 4) | (0x0 << 7) | (0x0 << 13));
+	clrsetbits32(&ch[0].phy.shu[0].b[1].dq[5], 0x7 << 20, 0x4 << 20);
+	clrbits32(&ch[0].phy.shu[0].b[1].dq[7], (0x1 << 7) | (0x1 << 13));
 
 	for (size_t r = 0; r < 2; r++) {
 		int value = ((r == 0) ? 0x1a : 0x26);
@@ -948,11 +948,12 @@ static void dramc_setting_DDR2400(void)
 
 	clrsetbits32(&ch[0].ao.shu[0].dqsg_retry,
 		(0x1 << 2) | (0xf << 8), (0x1 << 2) | (0x4 << 8));
-	clrsetbits32(&ch[0].phy.b[0].dq[5], 0x7 << 20, 0x3 << 20);
-	clrsetbits32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
+	clrsetbits32(&ch[0].phy.shu[0].b[0].dq[5], 0x7 << 20, 0x3 << 20);
+	clrsetbits32(&ch[0].phy.shu[0].b[0].dq[7],
+		(0x3 << 4) | (0x1 << 7) | (0x1 << 13),
 		(0x1 << 4) | (0x1 << 7) | (0x1 << 13));
-	clrsetbits32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x3 << 20);
-	clrsetbits32(&ch[0].phy.b[1].dq[7],
+	clrsetbits32(&ch[0].phy.shu[0].b[1].dq[5], 0x7 << 20, 0x3 << 20);
+	clrsetbits32(&ch[0].phy.shu[0].b[1].dq[7],
 		(0x1 << 7) | (0x1 << 13), (0x1 << 7) | (0x1 << 13));
 
 	for (size_t r = 0; r < 2; r++) {
@@ -1056,7 +1057,7 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group,
 	clrsetbits32(&ch[0].phy.ca_cmd[6], (0x1 << 6) | (0x3 << 14) | (0x1 << 16),
 		(0x0 << 6) | (0x0 << 14) | (0x0 << 16));
 
-	clrbits32(&ch[0].phy.pll3, 0x1 < 0);
+	clrbits32(&ch[0].phy.pll3, 0x1 << 0);
 	setbits32(&ch[0].phy.b[0].dq[3], 0x1 << 3);
 	setbits32(&ch[0].phy.b[1].dq[3], 0x1 << 3);
 
@@ -1087,7 +1088,11 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group,
 
 	for (size_t b = 0; b < 2; b++)
 		setbits32(&ch[0].phy.b[b].dq[3], (0x3 << 1) | (0x1 << 10));
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
 	setbits32(&ch[0].phy.shu[0].ca_dll[0], 0x1 << 0);
+	setbits32(&ch[1].phy.shu[0].ca_dll[0], 0x1 << 0);
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
 
 	for (size_t b = 0; b < 2; b++)
 		clrsetbits32(&ch[0].phy.shu[0].b[b].dll[0],

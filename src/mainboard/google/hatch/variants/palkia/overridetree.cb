@@ -136,12 +136,12 @@ chip soc/intel/cannonlake
 					"ACPI_IRQ_EDGE_LOW(GPP_C7_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.enable_gpio" =
-					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D9)"
+					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D10)"
 				register "generic.enable_delay_ms" = "12"
 				register "generic.enable_off_delay_ms" = "10"
 				register "generic.has_power_resource" = "1"
 				register "generic.stop_gpio" =
-					"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
+					"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 				register "generic.stop_delay_ms" = "15"
 				register "generic.stop_off_delay_ms" = "5"
 				register "hid_desc_reg_offset" = "0x01"

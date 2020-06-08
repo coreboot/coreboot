@@ -24,8 +24,8 @@ chip soc/intel/jasperlake
 		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 66,
-			.fall_time_ns = 90,
+			.rise_time_ns = 270,
+			.fall_time_ns = 270,
 			.data_hold_time_ns = 350,
 		},
 		.i2c[1] = {
@@ -33,6 +33,8 @@ chip soc/intel/jasperlake
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 200,
+			.fall_time_ns = 200,
 		},
 		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
@@ -41,8 +43,8 @@ chip soc/intel/jasperlake
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 176,
-				.scl_hcnt = 95,
+				.scl_lcnt = 200,
+				.scl_hcnt = 120,
 				.sda_hold = 36,
 			}
 		},

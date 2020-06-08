@@ -27,7 +27,7 @@ Device (GPIO)
 	Name (_DDN, GPIO_DEVICE_DESC)
 
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Level,
@@ -35,8 +35,8 @@ Device (GPIO)
 				Exclusive, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IGPI
 		} Else {
@@ -47,7 +47,7 @@ Device (GPIO)
 				Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -62,7 +62,7 @@ Device (MMC0)
 	Name (_HID, "AMDI0040")
 	Name (_UID, 0x0)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Level,
@@ -70,8 +70,8 @@ Device (MMC0)
 				Exclusive, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IMMC
 		} Else {
@@ -82,7 +82,7 @@ Device (MMC0)
 				Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -97,7 +97,7 @@ Device (FUR0)
 	Name (_HID, "AMD0020")
 	Name (_UID, 0x0)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -106,8 +106,8 @@ Device (FUR0)
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_UART0_BASE, 0x1000)
 			Memory32Fixed (ReadWrite, APU_DMAC0_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IUA0
 		} Else {
@@ -119,7 +119,7 @@ Device (FUR0)
 				Memory32Fixed (ReadWrite, APU_DMAC0_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -133,7 +133,7 @@ Device (FUR1) {
 	Name (_HID, "AMD0020")
 	Name (_UID, 0x1)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -142,8 +142,8 @@ Device (FUR1) {
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_UART1_BASE, 0x1000)
 			Memory32Fixed (ReadWrite, APU_DMAC1_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IUA1
 		} Else {
@@ -155,7 +155,7 @@ Device (FUR1) {
 				Memory32Fixed (ReadWrite, APU_DMAC1_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -169,7 +169,7 @@ Device (FUR2) {
 	Name (_HID, "AMD0020")
 	Name (_UID, 0x2)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -178,8 +178,8 @@ Device (FUR2) {
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_UART2_BASE, 0x1000)
 			Memory32Fixed (ReadWrite, APU_DMAC2_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IUA2
 		} Else {
@@ -191,7 +191,7 @@ Device (FUR2) {
 				Memory32Fixed (ReadWrite, APU_DMAC2_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -205,7 +205,7 @@ Device (FUR3) {
 	Name (_HID, "AMD0020")
 	Name (_UID, 0x3)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -214,8 +214,8 @@ Device (FUR3) {
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_UART3_BASE, 0x1000)
 			Memory32Fixed (ReadWrite, APU_DMAC3_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = IUA3
 		} Else {
@@ -227,7 +227,7 @@ Device (FUR3) {
 				Memory32Fixed (ReadWrite, APU_DMAC3_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -241,7 +241,7 @@ Device (I2C2) {
 	Name (_HID, "AMD0010")
 	Name (_UID, 0x2)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -249,8 +249,8 @@ Device (I2C2) {
 				Exclusive, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_I2C2_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = II22
 		} Else {
@@ -261,7 +261,7 @@ Device (I2C2) {
 				Memory32Fixed (ReadWrite, APU_I2C2_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 
@@ -276,7 +276,7 @@ Device (I2C3)
 	Name (_HID, "AMD0010")
 	Name (_UID, 0x3)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -284,8 +284,8 @@ Device (I2C3)
 				Exclusive, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_I2C3_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = II23
 		} Else {
@@ -296,7 +296,7 @@ Device (I2C3)
 				Memory32Fixed (ReadWrite, APU_I2C3_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 	Method (_STA, 0x0, NotSerialized)
@@ -309,7 +309,7 @@ Device (I2C4) {
 	Name (_HID, "AMD0010")
 	Name (_UID, 0x4)
 	Method (_CRS, 0) {
-		Name (RBUF, ResourceTemplate() {
+		Local0 = ResourceTemplate() {
 			Interrupt (
 				ResourceConsumer,
 				Edge,
@@ -317,8 +317,8 @@ Device (I2C4) {
 				Exclusive, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, APU_I2C4_BASE, 0x1000)
-		})
-		CreateDWordField (RBUF, IRQR._INT, IRQN)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
 			IRQN = II24
 		} Else {
@@ -329,7 +329,7 @@ Device (I2C4) {
 				Memory32Fixed (ReadWrite, APU_I2C4_BASE, 0x1000)
 			})
 		} Else {
-			Return (RBUF)
+			Return (Local0)
 		}
 	}
 

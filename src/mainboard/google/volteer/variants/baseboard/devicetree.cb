@@ -244,6 +244,20 @@ chip soc/intel/tigerlake
 		},
 	}"
 
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+						  FIVR_VOLTAGE_MIN_ACTIVE |
+						  FIVR_VOLTAGE_MIN_RETENTION,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+						FIVR_VOLTAGE_MIN_ACTIVE |
+						FIVR_VOLTAGE_MIN_RETENTION,
+		.v1p05_icc_max_ma = 500,
+		.vnn_sx_voltage_mv = 1250,
+	}"
+
 	device domain 0 on
 		#From EDS(575683)
 		device pci 00.0 on  end # Host Bridge			0x9A14:U/0x9A12:Y

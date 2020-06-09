@@ -595,19 +595,23 @@ $(obj)/config.h: $(objutil)/kconfig/conf
 # Creation of these is architecture and mainboard independent
 DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_DEVICETREE)
 
+SCONFIG_OPTIONS := --mainboard_devtree=$(DEVICETREE_FILE)
+
 ifneq ($(CONFIG_OVERRIDE_DEVICETREE),)
-
 OVERRIDE_DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_OVERRIDE_DEVICETREE)
-
+SCONFIG_OPTIONS += --override_devtree=$(OVERRIDE_DEVICETREE_FILE)
 endif
 
 DEVICETREE_STATIC_C := $(obj)/mainboard/$(MAINBOARDDIR)/static.c
+SCONFIG_OPTIONS += --output_c=$(DEVICETREE_STATIC_C)
+
 DEVICETREE_STATIC_H := $(obj)/static.h
+SCONFIG_OPTIONS += --output_h=$(DEVICETREE_STATIC_H)
 
 $(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(dir $(DEVICETREE_STATIC_C))
-	$(objutil)/sconfig/sconfig $(DEVICETREE_FILE) $(DEVICETREE_STATIC_C) $(DEVICETREE_STATIC_H) $(OVERRIDE_DEVICETREE_FILE)
+	$(objutil)/sconfig/sconfig $(SCONFIG_OPTIONS)
 
 ramstage-y+=$(DEVICETREE_STATIC_C)
 romstage-y+=$(DEVICETREE_STATIC_C)

@@ -2,6 +2,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <ctype.h>
+#include <getopt.h>
 /* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
@@ -1309,20 +1310,13 @@ static void inherit_subsystem_ids(FILE *file, FILE *head, struct device *dev,
 
 static void usage(void)
 {
-	printf("usage: sconfig devicetree_file output_file header_file [override_devicetree_file]\n");
+	printf("usage: sconfig <options>\n");
+	printf("  -c | --output_c          : Path to output static.c file (required)\n");
+	printf("  -r | --output_h          : Path to header static.h file (required)\n");
+	printf("  -m | --mainboard_devtree : Path to mainboard devicetree file (required)\n");
+	printf("  -o | --override_devtree  : Path to override devicetree file (optional)\n");
 	exit(1);
 }
-
-enum {
-	DEVICEFILE_ARG = 1,
-	OUTPUTFILE_ARG,
-	HEADERFILE_ARG,
-	OVERRIDE_DEVICEFILE_ARG,
-};
-
-#define MANDATORY_ARG_COUNT		4
-#define OPTIONAL_ARG_COUNT		1
-#define TOTAL_ARG_COUNT		(MANDATORY_ARG_COUNT + OPTIONAL_ARG_COUNT)
 
 static void parse_devicetree(const char *file, struct bus *parent)
 {
@@ -1674,18 +1668,47 @@ static void override_devicetree(struct bus *base_parent,
 
 int main(int argc, char **argv)
 {
-	if ((argc < MANDATORY_ARG_COUNT) || (argc > TOTAL_ARG_COUNT))
-		usage();
+	static const struct option long_options[] = {
+		{ "mainboard_devtree", 1, NULL, 'm' },
+		{ "override_devtree", 1, NULL, 'o' },
+		{ "output_c", 1, NULL, 'c' },
+		{ "output_h", 1, NULL, 'r' },
+		{ "help", 1, NULL, 'h' },
+		{ }
+	};
+	const char *override_devtree = NULL;
+	const char *base_devtree = NULL;
+	const char *outputc = NULL;
+	const char *outputh = NULL;
+	int opt, option_index;
 
-	const char *base_devtree = argv[DEVICEFILE_ARG];
-	const char *outputc = argv[OUTPUTFILE_ARG];
-	const char *outputh = argv[HEADERFILE_ARG];
-	const char *override_devtree;
+	while ((opt = getopt_long(argc, argv, "m:o:c:r:h", long_options,
+				  &option_index)) != EOF) {
+		switch (opt) {
+		case 'm':
+			base_devtree = strdup(optarg);
+			break;
+		case 'o':
+			override_devtree = strdup(optarg);
+			break;
+		case 'c':
+			outputc = strdup(optarg);
+			break;
+		case 'r':
+			outputh = strdup(optarg);
+			break;
+		case 'h':
+		default:
+			usage();
+		}
+	}
+
+	if (!base_devtree || !outputc || !outputh)
+		usage();
 
 	parse_devicetree(base_devtree, &base_root_bus);
 
-	if (argc == TOTAL_ARG_COUNT) {
-		override_devtree = argv[OVERRIDE_DEVICEFILE_ARG];
+	if (override_devtree) {
 		parse_devicetree(override_devtree, &override_root_bus);
 
 		if (!dev_has_children(&override_root_dev)) {

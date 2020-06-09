@@ -64,6 +64,7 @@ ramstage-y += soc_util.c
 ramstage-y += psp.c
 ramstage-y += fsp_params.c
 ramstage-y += config.c
+ramstage-y += update_microcode.c
 
 all-y += reset.c
 
@@ -281,9 +282,6 @@ OPT_PSP_PMUD_FILE1=$(call add_opt_prefix, $(PSP_PMUD_FILE1), --subprogram 0 --in
 OPT_PSP_PMUD_FILE2=$(call add_opt_prefix, $(PSP_PMUD_FILE2), --subprogram 0 --instance 4 --pmu-data)
 OPT_PSP_PMUD_FILE3=$(call add_opt_prefix, $(PSP_PMUD_FILE3), --subprogram 1 --instance 1 --pmu-data)
 OPT_PSP_PMUD_FILE4=$(call add_opt_prefix, $(PSP_PMUD_FILE4), --subprogram 1 --instance 4 --pmu-data)
-OPT_PSP_UCODE_FILE1=$(call add_opt_prefix, $(PSP_UCODE_FILE1), --instance 0 --ucode)
-OPT_PSP_UCODE_FILE2=$(call add_opt_prefix, $(PSP_UCODE_FILE2), --instance 1 --ucode)
-OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --ucode)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 
 # Copy prebuild APCBs if they exist
@@ -342,9 +340,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSP_PMUD_FILE2)) \
 			$(call strip_quotes, $(PSP_PMUD_FILE3)) \
 			$(call strip_quotes, $(PSP_PMUD_FILE4)) \
-			$(call strip_quotes, $(PSP_UCODE_FILE1)) \
-			$(call strip_quotes, $(PSP_UCODE_FILE2)) \
-			$(call strip_quotes, $(PSP_UCODE_FILE3)) \
 			$(call strip_quotes, $(PSP_MP2CFG_FILE)) \
 			$(call strip_quotes, $(PSP_SMUFW1_SUB1_FILE)) \
 			$(call strip_quotes, $(PSP_SMUFW1_SUB2_FILE)) \
@@ -399,9 +394,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_PSP_PMUD_FILE2) \
 		$(OPT_PSP_PMUD_FILE3) \
 		$(OPT_PSP_PMUD_FILE4) \
-		$(OPT_PSP_UCODE_FILE1) \
-		$(OPT_PSP_UCODE_FILE2) \
-		$(OPT_PSP_UCODE_FILE3) \
 		$(OPT_MP2CFG_FILE) \
 		$(OPT_ABL0_FILE) \
 		$(OPT_ABL1_FILE) \
@@ -460,5 +452,7 @@ apu/amdfw-type := raw
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)
+
+cpu_microcode_bins += $(wildcard 3rdparty/amd_blobs/picasso/PSP/UcodePatch_*.bin)
 
 endif # ($(CONFIG_SOC_AMD_PICASSO),y)

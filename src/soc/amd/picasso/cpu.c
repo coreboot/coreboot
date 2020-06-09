@@ -16,6 +16,7 @@
 #include <soc/smi.h>
 #include <soc/iomap.h>
 #include <console/console.h>
+#include <cpu/amd/microcode.h>
 
 /*
  * MP and SMM loading initialization.
@@ -108,6 +109,8 @@ static void model_17_init(struct device *dev)
 {
 	check_mca();
 	setup_lapic();
+
+	amd_update_microcode_from_cbfs();
 }
 
 static struct device_operations cpu_dev_ops = {

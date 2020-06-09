@@ -67,7 +67,7 @@ asmlinkage void console_init(void)
 	if (CONFIG(DEBUG_CONSOLE_INIT))
 		console_inited = 1;
 
-	if (CONFIG(EARLY_PCI_BRIDGE) && !ENV_SMM && !ENV_RAMSTAGE)
+	if (CONFIG(EARLY_PCI_BRIDGE) && (ENV_BOOTBLOCK || ENV_ROMSTAGE))
 		pci_early_bridge_init();
 
 	console_hw_init();

@@ -430,6 +430,7 @@ static inline void print_cap(const char *name, int state)
 #define PCI_DEVICE_ID_INTEL_WILDCAT_1 0x9CBA /* Wildcat Point LP */
 #define PCI_DEVICE_ID_INTEL_WILDCAT_2 0x9CBB /* Wildcat Point LP 2 */
 #define PCI_DEVICE_ID_INTEL_SUNRISE_LP 0x9d3a /* SUNRISE Point-LP */
+#define PCI_DEVICE_ID_INTEL_CANNONPOINT_LP 0x9de0 /* Cannon Point-LP */
 #define PCI_DEVICE_ID_INTEL_SUNRISE_H1_ME 0xa13a /* SUNRISE Point-H 1 */
 #define PCI_DEVICE_ID_INTEL_SUNRISE_H2_ME 0xa13b /* SUNRISE Point-H 2 */
 #define PCI_DEVICE_ID_INTEL_SUNRISE_H3_ME 0xA13E /* SUNRISE Point-H 3 */
@@ -482,6 +483,7 @@ static inline void print_cap(const char *name, int state)
 	((x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_1) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_WILDCAT_2) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_LP) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANNONPOINT_LP) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H1_ME) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H2_ME) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_SUNRISE_H3_ME) || \

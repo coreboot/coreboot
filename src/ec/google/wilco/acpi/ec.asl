@@ -7,6 +7,8 @@ Device (EC0)
 	Name (_GPE, EC_SCI_GPI)
 	Name (_STA, 0xf)
 	Name (DBUG, Zero)
+	Name (ISSX, Zero) /* Is the EC in S0ix mode? */
+	Name (UCEP, Zero) /* Is there a pending UCSI event? */
 
 	Name (_CRS, ResourceTemplate() {
 		IO (Decode16,
@@ -140,6 +142,8 @@ Device (EC0)
 	 */
 	Method (S0IX, 1, Serialized)
 	{
+		^ISSX = Arg0 /* Update S0ix state. */
+
 		If (Arg0) {
 			Printf ("EC Enter S0ix")
 			W (CSEX, One)
@@ -152,6 +156,11 @@ Device (EC0)
 		} Else {
 			Printf ("EC Exit S0ix")
 			W (CSEX, Zero)
+
+			/* If UCSI event happened during S0ix send it now. */
+			If (^UCEP == One) {
+				^_Q79 ()
+			}
 		}
 	}
 

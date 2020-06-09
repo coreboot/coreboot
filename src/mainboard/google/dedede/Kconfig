@@ -56,6 +56,7 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	string
 	default "Dedede" if BOARD_GOOGLE_DEDEDE
+	default "Drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "Waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "Wheelie" if BOARD_GOOGLE_WHEELIE
@@ -79,6 +80,7 @@ config UART_FOR_CONSOLE
 config VARIANT_DIR
 	string
 	default "dedede" if BOARD_GOOGLE_DEDEDE
+	default "drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "wheelie" if BOARD_GOOGLE_WHEELIE

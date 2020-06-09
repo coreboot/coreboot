@@ -133,6 +133,23 @@ struct soc_intel_tigerlake_config {
 	uint8_t SataPortsEnable[8];
 	uint8_t SataPortsDevSlp[8];
 
+	/*
+	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
+	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
+	 */
+	uint8_t SataPwrOptimizeDisable;
+
+	/*
+	 * SATA Port Enable Dito Config.
+	 * Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
+	 */
+	uint8_t SataPortsEnableDitoConfig[8];
+
+	/* SataPortsDmVal is the DITO multiplier. Default is 15. */
+	uint8_t SataPortsDmVal[8];
+	/* SataPortsDitoVal is the DEVSLP Idle Timeout, default is 625ms */
+	uint16_t SataPortsDitoVal[8];
+
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
 	uint8_t PchHdaAudioLinkHdaEnable;
@@ -336,12 +353,6 @@ struct soc_intel_tigerlake_config {
 	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
 	 */
 	uint8_t DmiPwrOptimizeDisable;
-
-	/*
-	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
-	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
-	 */
-	uint8_t SataPwrOptimizeDisable;
 
 	/* structure containing various settings for PCH FIVRs */
 	struct {

@@ -24,6 +24,10 @@
 #define THC_0		1
 #define THC_1		2
 
+/* SATA DEVSLP idle timeout default values */
+#define DEF_DMVAL	15
+#define DEF_DITOVAL	625
+
 /*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
  * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
@@ -211,6 +215,26 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	params->PchPwrOptEnable = !(config->DmiPwrOptimizeDisable);
 	params->SataPwrOptEnable = !(config->SataPwrOptimizeDisable);
+
+	/*
+	 *  Enable DEVSLP Idle Timeout settings DmVal and DitoVal.
+	 *  SataPortsDmVal is the DITO multiplier. Default is 15.
+	 *  SataPortsDitoVal is the DEVSLP Idle Timeout (DITO), Default is 625ms.
+	 *  The default values can be changed from devicetree.
+	 */
+	for (i = 0; i < ARRAY_SIZE(config->SataPortsEnableDitoConfig); i++) {
+		if (config->SataPortsEnableDitoConfig[i]) {
+			if (config->SataPortsDmVal[i])
+				params->SataPortsDmVal[i] = config->SataPortsDmVal[i];
+			else
+				params->SataPortsDmVal[i] = DEF_DMVAL;
+
+			if (config->SataPortsDitoVal[i])
+				params->SataPortsDitoVal[i] = config->SataPortsDitoVal[i];
+			else
+				params->SataPortsDitoVal[i] = DEF_DITOVAL;
+		}
+	}
 
 	/* Enable TCPU for processor thermal control */
 	params->Device4Enable = config->Device4Enable;

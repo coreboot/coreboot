@@ -1666,6 +1666,18 @@ static void override_devicetree(struct bus *base_parent,
 	}
 }
 
+static void parse_override_devicetree(const char *file, struct device *dev)
+{
+	parse_devicetree(file, dev->bus);
+
+	if (!dev_has_children(dev)) {
+		fprintf(stderr, "ERROR: Override tree needs at least one device!\n");
+		exit(1);
+	}
+
+	override_devicetree(&base_root_bus, dev->bus);
+}
+
 int main(int argc, char **argv)
 {
 	static const struct option long_options[] = {
@@ -1708,16 +1720,8 @@ int main(int argc, char **argv)
 
 	parse_devicetree(base_devtree, &base_root_bus);
 
-	if (override_devtree) {
-		parse_devicetree(override_devtree, &override_root_bus);
-
-		if (!dev_has_children(&override_root_dev)) {
-			fprintf(stderr, "ERROR: Override tree needs at least one device!\n");
-			exit(1);
-		}
-
-		override_devicetree(&base_root_bus, &override_root_bus);
-	}
+	if (override_devtree)
+		parse_override_devicetree(override_devtree, &override_root_dev);
 
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {

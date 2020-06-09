@@ -87,7 +87,7 @@ static void model_16_init(struct device *dev)
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
 
-	update_microcode(cpuid_eax(1));
+	amd_update_microcode_from_cbfs();
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -73,6 +73,7 @@
 #define LS_CFG2_MSR			0xC001102D
 #define IBS_OP_DATA3_MSR		0xC0011037
 
+#define MSR_PATCH_LEVEL			0x0000008B
 #define CORE_PERF_BOOST_CTRL		0x15c
 
 #endif /* CPU_AMD_MSR_H */

@@ -742,6 +742,17 @@ void acpigen_write_STA(uint8_t status)
 	acpigen_pop_len();
 }
 
+void acpigen_write_STA_ext(const char *namestring)
+{
+	/*
+	 * Method (_STA, 0, NotSerialized) { Return (ext_val) }
+	 */
+	acpigen_write_method("_STA", 0);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring(namestring);
+	acpigen_pop_len();
+}
+
 /*
  * Generates a func with max supported P-states.
  */

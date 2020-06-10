@@ -16,7 +16,7 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 }
 
 /** Set the EOS bit and enable SMI generation from southbridge */
-void hudson_enable_smi_generation(void)
+void global_smi_enable(void)
 {
 	uint32_t reg = smi_read32(SMI_REG_SMITRIG0);
 	reg &= ~SMITRG0_SMIENB;	/* Enable SMI generation */

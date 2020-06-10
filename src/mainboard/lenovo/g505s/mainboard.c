@@ -4,6 +4,7 @@
 
 #include <acpi/acpi.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 
 #include <southbridge/amd/agesa/hudson/smi.h>
@@ -21,7 +22,7 @@ static void mainboard_enable(struct device *dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
-	hudson_enable_smi_generation();
+	global_smi_enable();
 
 	if (!acpi_is_wakeup_s3())
 		pavilion_cold_boot_init();

@@ -32,11 +32,11 @@ void smm_southbridge_clear_state(void)
 	clear_gpe_status();
 }
 
-void smm_southbridge_enable_smi(void)
+static void smm_southbridge_enable(uint16_t pm1_events)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
-	enable_pm1(PWRBTN_EN | GBL_EN);
+	enable_pm1(pm1_events);
 	disable_gpe(PME_B0_EN);
 
 	/* Enable SMI generation:
@@ -48,6 +48,11 @@ void smm_southbridge_enable_smi(void)
 	 *  - on TCO events
 	 */
 	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+}
+
+void global_smi_enable(void)
+{
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
 
 static void __unused southbridge_trigger_smi(void)

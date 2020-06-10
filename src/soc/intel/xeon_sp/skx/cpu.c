@@ -199,6 +199,7 @@ static void post_mp_init(void)
 	 * TODO: Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
 	 */
+	if (0) global_smi_enable();
 }
 
 /*

@@ -17,10 +17,9 @@ u16 get_pmbase(void)
 	return lpc_get_pmbase();
 }
 
-void smm_southbridge_enable_smi(void)
+static void smm_southbridge_enable(uint16_t pm1_events)
 {
 	u32 smi_en;
-	u16 pm1_en;
 	u32 gpe0_en;
 
 	if (CONFIG(ELOG))
@@ -49,10 +48,7 @@ void smm_southbridge_enable_smi(void)
 	gpe0_en &= ~PME_B0_EN;
 	write_pmbase32(GPE0_EN, gpe0_en);
 
-	pm1_en = 0;
-	pm1_en |= PWRBTN_EN;
-	pm1_en |= GBL_EN;
-	write_pmbase16(PM1_EN, pm1_en);
+	write_pmbase16(PM1_EN, pm1_events);
 
 	/* Enable SMI generation:
 	 *  - on TCO events
@@ -73,6 +69,11 @@ void smm_southbridge_enable_smi(void)
 	smi_en |= EOS | GBL_SMI_EN;
 
 	write_pmbase32(SMI_EN, smi_en);
+}
+
+void global_smi_enable(void)
+{
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

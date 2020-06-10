@@ -33,12 +33,12 @@ void smm_southbridge_clear_state(void)
 	clear_pmc_status();
 }
 
-void smm_southbridge_enable_smi(void)
+static void smm_southbridge_enable(uint16_t pm1_events)
 {
 
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events Disable PCIe wake. */
-	enable_pm1(PWRBTN_EN | GBL_EN | PCIEXPWAK_DIS);
+	enable_pm1(pm1_events | PCIEXPWAK_DIS);
 	disable_gpe(PME_B0_EN);
 
 	/* Enable SMI generation:
@@ -50,6 +50,11 @@ void smm_southbridge_enable_smi(void)
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
 	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+}
+
+void global_smi_enable(void)
+{
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

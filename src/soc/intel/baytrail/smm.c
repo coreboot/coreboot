@@ -70,9 +70,8 @@ static void smm_southcluster_route_gpios(void)
 	outl(alt_gpio_reg, alt_gpio_smi);
 }
 
-void smm_southbridge_enable_smi(void)
+static void smm_southbridge_enable(uint16_t pm1_events)
 {
-	uint16_t pm1_events = PWRBTN_EN | GBL_EN;
 
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	if (!smm_save_params[SMM_SAVE_PARAM_PCIE_WAKE_ENABLE])
@@ -92,6 +91,11 @@ void smm_southbridge_enable_smi(void)
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
 	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+}
+
+void global_smi_enable(void)
+{
+	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

@@ -152,6 +152,12 @@ static void post_mp_init(void)
 {
 	/* Set Max Ratio */
 	set_max_turbo_freq();
+
+	/*
+	 * TODO: Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing.
+	 */
+	if (0) global_smi_enable();
 }
 
 static const struct mp_ops mp_ops = {

@@ -178,6 +178,11 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 	smm_state->smbase = staggered_smbase;
 }
 
+static void post_mp_init(void)
+{
+	global_smi_enable();
+}
+
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
@@ -186,7 +191,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = smm_southbridge_enable_smi,
+	.post_mp_init = post_mp_init,
 };
 
 void baytrail_init_cpus(struct device *dev)

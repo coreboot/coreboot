@@ -7,10 +7,10 @@
 #define DPTF_CPU_ACTIVE_AC2	65
 #define DPTF_CPU_ACTIVE_AC3	60
 #define DPTF_CPU_ACTIVE_AC4	50
-#define DPTF_CPU_ACTIVE_AC5     40
+#define DPTF_CPU_ACTIVE_AC5	40
 
 #define DPTF_TSR0_SENSOR_ID	0
-#define DPTF_TSR0_SENSOR_NAME	"Thermal Sensor 1"
+#define DPTF_TSR0_SENSOR_NAME	"Charger"
 #define DPTF_TSR0_PASSIVE	90
 #define DPTF_TSR0_CRITICAL	99
 #define DPTF_TSR0_ACTIVE_AC0	80
@@ -18,29 +18,40 @@
 #define DPTF_TSR0_ACTIVE_AC2	65
 #define DPTF_TSR0_ACTIVE_AC3	60
 #define DPTF_TSR0_ACTIVE_AC4	55
-#define DPTF_TSR0_ACTIVE_AC5    50
+#define DPTF_TSR0_ACTIVE_AC5	50
 
-#define DPTF_TSR1_SENSOR_ID	1
-#define DPTF_TSR1_SENSOR_NAME	"Thermal Sensor 2"
-#define DPTF_TSR1_PASSIVE	90
+#define DPTF_TSR1_SENSOR_ID	2
+#define DPTF_TSR1_SENSOR_NAME	"GPU"
+#define DPTF_TSR1_PASSIVE	93
 #define DPTF_TSR1_CRITICAL	99
-#define DPTF_TSR1_ACTIVE_AC0	80
+#define DPTF_TSR1_ACTIVE_AC0	85
 #define DPTF_TSR1_ACTIVE_AC1	70
 #define DPTF_TSR1_ACTIVE_AC2	65
 #define DPTF_TSR1_ACTIVE_AC3	60
-#define DPTF_TSR1_ACTIVE_AC4	55
-#define DPTF_TSR1_ACTIVE_AC5    50
+#define DPTF_TSR1_ACTIVE_AC4	50
+#define DPTF_TSR1_ACTIVE_AC5	40
 
-#define DPTF_TSR2_SENSOR_ID     2
-#define DPTF_TSR2_SENSOR_NAME   "dGPU"
-#define DPTF_TSR2_PASSIVE        93
-#define DPTF_TSR2_CRITICAL       99
-#define DPTF_TSR2_ACTIVE_AC0     85
-#define DPTF_TSR2_ACTIVE_AC1     70
-#define DPTF_TSR2_ACTIVE_AC2     65
-#define DPTF_TSR2_ACTIVE_AC3     60
-#define DPTF_TSR2_ACTIVE_AC4     50
-#define DPTF_TSR2_ACTIVE_AC5     40
+#define DPTF_TSR2_SENSOR_ID	4
+#define DPTF_TSR2_SENSOR_NAME	"F75303_GPU"
+#define DPTF_TSR2_PASSIVE	93
+#define DPTF_TSR2_CRITICAL	99
+#define DPTF_TSR2_ACTIVE_AC0	85
+#define DPTF_TSR2_ACTIVE_AC1	70
+#define DPTF_TSR2_ACTIVE_AC2	65
+#define DPTF_TSR2_ACTIVE_AC3	60
+#define DPTF_TSR2_ACTIVE_AC4	50
+#define DPTF_TSR2_ACTIVE_AC5	40
+
+#define DPTF_TSR3_SENSOR_ID	5
+#define DPTF_TSR3_SENSOR_NAME	"F75303_GPU_POWER"
+#define DPTF_TSR3_PASSIVE	90
+#define DPTF_TSR3_CRITICAL	99
+#define DPTF_TSR3_ACTIVE_AC0	80
+#define DPTF_TSR3_ACTIVE_AC1	70
+#define DPTF_TSR3_ACTIVE_AC2	65
+#define DPTF_TSR3_ACTIVE_AC3	60
+#define DPTF_TSR3_ACTIVE_AC4	55
+#define DPTF_TSR3_ACTIVE_AC5	50
 
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
@@ -93,23 +104,30 @@ Name (DART, Package () {
 			0, 0, 0
 	},
 	Package () {
-                \_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 77, 71, 68, 65, 59, 55, 0,
-                        0, 0, 0
-        }
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 77, 71, 68, 65, 59, 55, 0,
+			0, 0, 0
+	},
+	Package () {
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR3, 100, 77, 71, 68, 65, 59, 55, 0,
+			0, 0, 0
+	}
 })
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 10, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on TSR0 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 10, 0, 0, 0, 0 },
-
-	/* CPU Throttle Effect on TSR1 */
+	/* CPU Throttle Effect on GPU (TSR1) */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 10, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on dGPU (TSR2) */
-        Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 10, 0, 0, 0, 0 },
+	/* CPU Throttle Effect on F75303_GPU (TSR2) */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 10, 0, 0, 0, 0 },
+
+	/* CPU Throttle Effect on F75303_GPU_POWER (TSR3) */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 10, 0, 0, 0, 0 },
+
+	/* Charger Throttle Effect on Charger (TSR0) */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 10, 0, 0, 0, 0 }
 })
 
 Name (MPPC, Package ()

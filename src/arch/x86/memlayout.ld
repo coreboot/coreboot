@@ -3,15 +3,6 @@
 #include <memlayout.h>
 #include <arch/header.ld>
 
-/* Pull in the either CAR or early DRAM rules. */
-#if ENV_ROMSTAGE_OR_BEFORE
-#if ENV_CACHE_AS_RAM
-#define EARLY_MEMLAYOUT	"car.ld"
-#else
-#define EARLY_MEMLAYOUT	"early_ram.ld"
-#endif
-#endif
-
 SECTIONS
 {
 	/*
@@ -30,18 +21,18 @@ SECTIONS
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, 1M)
 
-	#include EARLY_MEMLAYOUT
+	#include "car.ld"
 #elif ENV_SEPARATE_VERSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	VERSTAGE(CONFIG_VERSTAGE_ADDR, 1M)
 
-	#include EARLY_MEMLAYOUT
+	#include "car.ld"
 #elif ENV_BOOTBLOCK
 	BOOTBLOCK(CONFIG_X86_RESET_VECTOR - CONFIG_C_ENV_BOOTBLOCK_SIZE + 0x10,
 			CONFIG_C_ENV_BOOTBLOCK_SIZE)
 
-	#include EARLY_MEMLAYOUT
+	#include "car.ld"
 
 #elif ENV_POSTCAR
 	POSTCAR(32M, 1M)

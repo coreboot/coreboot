@@ -676,7 +676,161 @@ typedef struct {
 
 /** Offset 0x0368 - Reserved
 **/
-  UINT8                      Reserved24[522];
+  UINT8                      Reserved24[87];
+
+/** Offset 0x03BF - Enble PCH HSIO PCIE TX Gen 1 Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen1DownscaleAmpEnable[24];
+
+/** Offset 0x03D7 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
+  PCH PCIe Gen 2 TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchPcieHsioTxGen1DownscaleAmp[24];
+
+/** Offset 0x03EF - Enable PCH HSIO PCIE TX Gen 2 Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen2DownscaleAmpEnable[24];
+
+/** Offset 0x0407 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
+  PCH PCIe Gen 2 TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchPcieHsioTxGen2DownscaleAmp[24];
+
+/** Offset 0x041F - Enable PCH HSIO PCIE TX Gen 3 Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen3DownscaleAmpEnable[24];
+
+/** Offset 0x0437 - PCH HSIO PCIE Gen 3 TX Output Downscale Amplitude Adjustment value
+  PCH PCIe Gen 3 TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchPcieHsioTxGen3DownscaleAmp[24];
+
+/** Offset 0x044F - Enable PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen1DeEmphEnable[24];
+
+/** Offset 0x0467 - PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment value
+  PCH PCIe Gen 1 TX Output De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchPcieHsioTxGen1DeEmph[24];
+
+/** Offset 0x047F - Enable PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen2DeEmph3p5Enable[24];
+
+/** Offset 0x0497 - PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment value
+  PCH PCIe Gen 2 TX Output -3.5dB De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchPcieHsioTxGen2DeEmph3p5[24];
+
+/** Offset 0x04AF - Enable PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchPcieHsioTxGen2DeEmph6p0Enable[24];
+
+/** Offset 0x04C7 - PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment value
+  PCH PCIe Gen 2 TX Output -6.0dB De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchPcieHsioTxGen2DeEmph6p0[24];
+
+/** Offset 0x04DF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioRxGen1EqBoostMagEnable[8];
+
+/** Offset 0x04E7 - PCH HSIO SATA 1.5 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+  PCH HSIO SATA 1.5 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
+**/
+  UINT8                       PchSataHsioRxGen1EqBoostMag[8];
+
+/** Offset 0x04EF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioRxGen2EqBoostMagEnable[8];
+
+/** Offset 0x04F7 - PCH HSIO SATA 3.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+  PCH HSIO SATA 3.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
+**/
+  UINT8                       PchSataHsioRxGen2EqBoostMag[8];
+
+/** Offset 0x04FF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioRxGen3EqBoostMagEnable[8];
+
+/** Offset 0x0507 - PCH HSIO SATA 6.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+  PCH HSIO SATA 6.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
+**/
+  UINT8                       PchSataHsioRxGen3EqBoostMag[8];
+
+/** Offset 0x050F - Enable PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen1DownscaleAmpEnable[8];
+
+/** Offset 0x0517 - PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value
+  PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchSataHsioTxGen1DownscaleAmp[8];
+
+/** Offset 0x051F - Enable PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen2DownscaleAmpEnable[8];
+
+/** Offset 0x0527 - PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value
+  PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchSataHsioTxGen2DownscaleAmp[8];
+
+/** Offset 0x052F - Enable PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen3DownscaleAmpEnable[8];
+
+/** Offset 0x0537 - PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value
+  PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value.
+**/
+  UINT8                       PchSataHsioTxGen3DownscaleAmp[8];
+
+/** Offset 0x053F - Enable PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen1DeEmphEnable[8];
+
+/** Offset 0x0547 - PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting
+  PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchSataHsioTxGen1DeEmph[8];
+
+/** Offset 0x054F - Enable PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen2DeEmphEnable[8];
+
+/** Offset 0x0557 - PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting
+  PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchSataHsioTxGen2DeEmph[8];
+
+/** Offset 0x055F - Enable PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
+  0: Disable; 1: Enable.
+**/
+  UINT8                       PchSataHsioTxGen3DeEmphEnable[8];
+
+/** Offset 0x0567 - PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting
+  PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting.
+**/
+  UINT8                       PchSataHsioTxGen3DeEmph[8];
+
+/** Offset 0x056F - Reserved
+**/
+  UINT8                       Reserved25[3];
 
 /** Offset 0x0572 - Number of RsvdSmbusAddressTable.
   The number of elements in the RsvdSmbusAddressTable.
@@ -685,7 +839,7 @@ typedef struct {
 
 /** Offset 0x0573 - Reserved
 **/
-  UINT8                       Reserved25[4];
+  UINT8                       Reserved26[4];
 
 /** Offset 0x0577 - Usage type for ClkSrc
   0-23: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
@@ -700,7 +854,7 @@ typedef struct {
 
 /** Offset 0x0597 - Reserved
 **/
-  UINT8                       Reserved26[5];
+  UINT8                       Reserved27[5];
 
 /** Offset 0x059C - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -723,7 +877,7 @@ typedef struct {
 
 /** Offset 0x05A2 - Reserved
 **/
-  UINT8                       Reserved27[14];
+  UINT8                       Reserved28[14];
 
 /** Offset 0x05B0 - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
@@ -733,7 +887,7 @@ typedef struct {
 
 /** Offset 0x05B1 - Reserved
 **/
-  UINT8                       Reserved28[4];
+  UINT8                       Reserved29[4];
 
 /** Offset 0x05B5 - MRC Safe Config
   Enables/Disable MRC Safe Config
@@ -791,7 +945,7 @@ typedef struct {
 
 /** Offset 0x05BE - Reserved
 **/
-  UINT8                       Reserved29[2];
+  UINT8                       Reserved30[2];
 
 /** Offset 0x05C0 - Early Command Training
   Enables/Disable Early Command Training
@@ -801,7 +955,7 @@ typedef struct {
 
 /** Offset 0x05C1 - Reserved
 **/
-  UINT8                       Reserved30[102];
+  UINT8                       Reserved31[102];
 
 /** Offset 0x0627 - Rank Margin Tool Per Bit
   Enable/Disable Rank Margin Tool Per Bit
@@ -811,7 +965,7 @@ typedef struct {
 
 /** Offset 0x0628 - Reserved
 **/
-  UINT8                       Reserved31[6];
+  UINT8                       Reserved32[6];
 
 /** Offset 0x062E - Ch Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
@@ -821,7 +975,7 @@ typedef struct {
 
 /** Offset 0x0630 - Reserved
 **/
-  UINT8                      Reserved32[62];
+  UINT8                      Reserved33[62];
 
 /** Offset 0x066E - PcdSerialDebugLevel
   Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
@@ -834,7 +988,7 @@ typedef struct {
 
 /** Offset 0x066F - Reserved
 **/
-  UINT8                       Reserved33[2];
+  UINT8                       Reserved34[2];
 
 /** Offset 0x0671 - Safe Mode Support
   This option configures the varous items in the IO and MC to be more conservative.(def=Disable)
@@ -844,7 +998,7 @@ typedef struct {
 
 /** Offset 0x0672 - Reserved
 **/
-  UINT8                       Reserved34[2];
+  UINT8                       Reserved35[2];
 
 /** Offset 0x0674 - TCSS USB Port Enable
   Bitmap for per port enabling
@@ -853,7 +1007,7 @@ typedef struct {
 
 /** Offset 0x0675 - Reserved
 **/
-  UINT8                       Reserved35[71];
+  UINT8                       Reserved36[71];
 
 /** Offset 0x06BC - Command Pins Mirrored
   BitMask where bits [3:0] are Controller 0 Channel [3:0] and bits [7:4] are Controller
@@ -863,7 +1017,7 @@ typedef struct {
 
 /** Offset 0x06C0 - Reserved
 **/
-  UINT8                       Reserved36[5];
+  UINT8                       Reserved37[5];
 
 /** Offset 0x06C5 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -874,7 +1028,7 @@ typedef struct {
 
 /** Offset 0x06C6 - Reserved
 **/
-  UINT8                       Reserved37[2];
+  UINT8                       Reserved38[2];
 
 /** Offset 0x06C8 - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
@@ -884,7 +1038,7 @@ typedef struct {
 
 /** Offset 0x06C9 - Reserved
 **/
-  UINT8                       Reserved38[122];
+  UINT8                       Reserved39[122];
 
 /** Offset 0x0743 - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
@@ -894,7 +1048,7 @@ typedef struct {
 
 /** Offset 0x0744 - Reserved
 **/
-  UINT8                       Reserved39[3];
+  UINT8                       Reserved40[3];
 
 /** Offset 0x0747 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
@@ -903,7 +1057,7 @@ typedef struct {
 
 /** Offset 0x0749 - Reserved
 **/
-  UINT8                       Reserved40[3];
+  UINT8                       Reserved41[3];
 
 /** Offset 0x074C - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -923,7 +1077,7 @@ typedef struct {
 
 /** Offset 0x075D - Reserved
 **/
-  UINT8                       Reserved41[3];
+  UINT8                       Reserved42[3];
 
 /** Offset 0x0760 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
@@ -960,7 +1114,17 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved42[297];
+  UINT8                       Reserved43[295];
+
+/** Offset 0x089C - Skip CPU replacement check
+  Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
+  $EN_DIS
+**/
+  UINT8                       SkipCpuReplacementCheck;
+
+/** Offset 0x089D - Reserved
+**/
+  UINT8                       Reserved44;
 
 /** Offset 0x089E - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
@@ -971,7 +1135,7 @@ typedef struct {
 
 /** Offset 0x089F - Reserved
 **/
-  UINT8                       Reserved43[121];
+  UINT8                       Reserved45[121];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

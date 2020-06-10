@@ -633,9 +633,10 @@ typedef struct {
 **/
   UINT8                       RtcMemoryLock;
 
-/** Offset 0x0622 - Reserved
+/** Offset 0x0622 - Enable PCIE RP HotPlug
+  Indicate whether the root port is hot plug available.
 **/
-  UINT8                       Reserved34[24];
+  UINT8                       PcieRpHotPlug[24];
 
 /** Offset 0x063A - Enable PCIE RP Pm Sci
   Indicate whether the root port power manager SCI is enabled.
@@ -644,7 +645,7 @@ typedef struct {
 
 /** Offset 0x0652 - Reserved
 **/
-  UINT8                       Reserved35[24];
+  UINT8                       Reserved34[24];
 
 /** Offset 0x066A - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -658,7 +659,7 @@ typedef struct {
 
 /** Offset 0x069A - Reserved
 **/
-  UINT8                       Reserved36[168];
+  UINT8                       Reserved35[168];
 
 /** Offset 0x0742 - PCIE RP Max Payload
   Max Payload Size supported, Default 128B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -673,7 +674,7 @@ typedef struct {
 
 /** Offset 0x075B - Reserved
 **/
-  UINT8                       Reserved37[5];
+  UINT8                       Reserved36[5];
 
 /** Offset 0x0760 - Touch Host Controller Port 1 Assignment
   Assign THC Port 1
@@ -683,7 +684,7 @@ typedef struct {
 
 /** Offset 0x0761 - Reserved
 **/
-  UINT8                       Reserved38[79];
+  UINT8                       Reserved37[79];
 
 /** Offset 0x07B0 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -704,7 +705,7 @@ typedef struct {
 
 /** Offset 0x07F8 - Reserved
 **/
-  UINT8                       Reserved39[79];
+  UINT8                       Reserved38[79];
 
 /** Offset 0x0847 - PCH Pm WoW lan Enable
   Determine if WLAN wake from Sx, corresponds to the HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
@@ -727,7 +728,7 @@ typedef struct {
 
 /** Offset 0x084A - Reserved
 **/
-  UINT8                       Reserved40[16];
+  UINT8                       Reserved39[16];
 
 /** Offset 0x085A - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -737,7 +738,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved41[42];
+  UINT8                       Reserved40[42];
 
 /** Offset 0x0885 - Enable SATA Port Enable Dito Config
   Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
@@ -751,7 +752,7 @@ typedef struct {
 
 /** Offset 0x0895 - Reserved
 **/
-  UINT8                       Reserved42;
+  UINT8                       Reserved41;
 
 /** Offset 0x0896 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -760,7 +761,7 @@ typedef struct {
 
 /** Offset 0x08A6 - Reserved
 **/
-  UINT8                       Reserved43[72];
+  UINT8                       Reserved42[72];
 
 /** Offset 0x08EE - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -774,7 +775,7 @@ typedef struct {
 
 /** Offset 0x0908 - Reserved
 **/
-  UINT8                       Reserved44[16];
+  UINT8                       Reserved43[16];
 
 /** Offset 0x0918 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
@@ -794,7 +795,7 @@ typedef struct {
 
 /** Offset 0x091A - Reserved
 **/
-  UINT8                       Reserved45[3];
+  UINT8                       Reserved44[3];
 
 /** Offset 0x091D - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
@@ -805,7 +806,7 @@ typedef struct {
 
 /** Offset 0x091E - Reserved
 **/
-  UINT8                       Reserved46[96];
+  UINT8                       Reserved45[96];
 
 /** Offset 0x097E - USB2 Port Reset Message Enable
   0: Disable USB2 Port Reset Message; 1: Enable USB2 Port Reset Message
@@ -814,7 +815,7 @@ typedef struct {
 
 /** Offset 0x098E - Reserved
 **/
-  UINT8                       Reserved47[322];
+  UINT8                       Reserved46[322];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -822,7 +823,23 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved48[101];
+  UINT8                      Reserved47[36];
+
+/** Offset 0x0AF8 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 2
+  Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 2, Each
+  value in array can be between 0-1. One byte for each port.
+**/
+  UINT8                       Usb3HsioTxRate2UniqTranEnable[10];
+
+/** Offset 0x0B02 - USB 3.0 TX Output Unique Transition Bit Scale for rate 2
+  USB 3.0 TX Output Unique Transition Bit Scale for rate 2, HSIO_TX_DWORD9[14:8],
+  <b>Default = 4Ch</b>. One byte for each port.
+**/
+  UINT8                       Usb3HsioTxRate2UniqTran[10];
+
+/** Offset 0x0B0C - Reserved
+**/
+  UINT8                       Reserved48[45];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -840,7 +857,34 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved49[80];
+  UINT8                       Reserved49[31];
+
+/** Offset 0x0B59 - TCC Activation Offset
+  TCC Activation Offset. Offset from factory set TCC activation temperature at which
+  the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
+  Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
+  <b>10</b>, For all other SKUs the recommended default are <b>0</b>
+**/
+  UINT8                       TccActivationOffset;
+
+/** Offset 0x0B5A - Tcc Offset Clamp Enable/Disable
+  Tcc Offset Clamp for Runtime Average Temperature Limit (RATL) allows CPU to throttle
+  below P1.For SKL Y SKU, the recommended default for this policy is <b>1: Enabled</b>,
+  For all other SKUs the recommended default are  <b>0: Disabled</b>.
+  $EN_DIS
+**/
+  UINT8                       TccOffsetClamp;
+
+/** Offset 0x0B5B - Tcc Offset Lock
+  Tcc Offset Lock for Runtime Average Temperature Limit (RATL) to lock temperature
+  target; <b>0: Disabled</b>; 1: Enabled.
+  $EN_DIS
+**/
+  UINT8                       TccOffsetLock;
+
+/** Offset 0x0B5C - Reserved
+**/
+  UINT8                       Reserved50[46];
 
 /** Offset 0x0B8A - TimeUnit for C-State Latency Control5
   TimeUnit for C-State Latency Control5;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
@@ -850,7 +894,17 @@ typedef struct {
 
 /** Offset 0x0B8B - Reserved
 **/
-  UINT8                       Reserved50[179];
+  UINT8                       Reserved51[89];
+
+/** Offset 0x0BE4 - Tcc Offset Time Window for RATL
+  Package PL4 power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.Valid
+  Range 0 to 4095875 in Step size of 125
+**/
+  UINT32                      TccOffsetTimeWindowForRatl;
+
+/** Offset 0x0BE8 - Reserved
+**/
+  UINT8                      Reserved52[86];
 
 /** Offset 0x0C3E - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -872,7 +926,7 @@ typedef struct {
 
 /** Offset 0x0C41 - Reserved
 **/
-  UINT8                       Reserved51;
+  UINT8                       Reserved53;
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -886,7 +940,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved52[269];
+  UINT8                       Reserved54[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -894,7 +948,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved53[232];
+  UINT8                       Reserved55[232];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -911,7 +965,7 @@ typedef struct {
 
 /** Offset 0x0E98
 **/
-  UINT8                       UnusedUpdSpace35[6];
+  UINT8                       UnusedUpdSpace36[6];
 
 /** Offset 0x0E9E
 **/

@@ -153,6 +153,18 @@ Device (FUR1) {
 			Return (Local0)
 		}
 	}
+
+	Name (_PR0, Package () { \_SB.AOAC.FUR1 })
+	Name (_PR2, Package () { \_SB.AOAC.FUR1 })
+	Name (_PR3, Package () { \_SB.AOAC.FUR1 })
+	Method (_PS0, 0, Serialized) {
+		Printf("FUR1._PS0")
+		\_SB.AOAC.FUR1.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("FUR1._PS3")
+		\_SB.AOAC.FUR1.TDS = 3
+	}
 }
 
 Device (FUR2) {
@@ -184,6 +196,18 @@ Device (FUR2) {
 			Return (Local0)
 		}
 	}
+
+	Name (_PR0, Package () { \_SB.AOAC.FUR2 })
+	Name (_PR2, Package () { \_SB.AOAC.FUR2 })
+	Name (_PR3, Package () { \_SB.AOAC.FUR2 })
+	Method (_PS0, 0, Serialized) {
+		Printf("FUR2._PS0")
+		\_SB.AOAC.FUR2.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("FUR2._PS3")
+		\_SB.AOAC.FUR2.TDS = 3
+	}
 }
 
 Device (FUR3) {
@@ -214,6 +238,18 @@ Device (FUR3) {
 		} Else {
 			Return (Local0)
 		}
+	}
+
+	Name (_PR0, Package () { \_SB.AOAC.FUR3 })
+	Name (_PR2, Package () { \_SB.AOAC.FUR3 })
+	Name (_PR3, Package () { \_SB.AOAC.FUR3 })
+	Method (_PS0, 0, Serialized) {
+		Printf("FUR3._PS0")
+		\_SB.AOAC.FUR3.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("FUR3._PS3")
+		\_SB.AOAC.FUR3.TDS = 3
 	}
 }
 
@@ -249,6 +285,18 @@ Device (I2C2) {
 	{
 		Return (0x0F)
 	}
+
+	Name (_PR0, Package () { \_SB.AOAC.I2C2 })
+	Name (_PR2, Package () { \_SB.AOAC.I2C2 })
+	Name (_PR3, Package () { \_SB.AOAC.I2C2 })
+	Method (_PS0, 0, Serialized) {
+		Printf("I2C2._PS0")
+		\_SB.AOAC.I2C2.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("I2C2._PS3")
+		\_SB.AOAC.I2C2.TDS = 3
+	}
 }
 
 Device (I2C3)
@@ -283,6 +331,18 @@ Device (I2C3)
 	{
 		Return (0x0F)
 	}
+
+	Name (_PR0, Package () { \_SB.AOAC.I2C3 })
+	Name (_PR2, Package () { \_SB.AOAC.I2C3 })
+	Name (_PR3, Package () { \_SB.AOAC.I2C3 })
+	Method (_PS0, 0, Serialized) {
+		Printf("I2C3._PS0")
+		\_SB.AOAC.I2C3.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("I2C3._PS3")
+		\_SB.AOAC.I2C3.TDS = 3
+	}
 }
 
 Device (I2C4) {
@@ -316,6 +376,18 @@ Device (I2C4) {
 	Method (_STA, 0x0, NotSerialized)
 	{
 		Return (0x0F)
+	}
+
+	Name (_PR0, Package () { \_SB.AOAC.I2C4 })
+	Name (_PR2, Package () { \_SB.AOAC.I2C4 })
+	Name (_PR3, Package () { \_SB.AOAC.I2C4 })
+	Method (_PS0, 0, Serialized) {
+		Printf("I2C4._PS0")
+		\_SB.AOAC.I2C4.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("I2C4._PS3")
+		\_SB.AOAC.I2C4.TDS = 3
 	}
 }
 

@@ -16,4 +16,8 @@ else ifeq ($(CONFIG_UDK_2017_BINDING),y)
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include/Ia32
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2017/IntelFsp2Pkg/Include
+else ifeq ($(CONFIG_UDK_202005_BINDING),y)
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202005/MdePkg/Include/Ia32
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202005/MdePkg/Include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202005/IntelFsp2Pkg/Include
 endif

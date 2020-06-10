@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/spi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -163,6 +164,13 @@ static void soc_init(void *chip_info)
 	default_dev_ops_root.write_acpi_tables = agesa_write_acpi_tables;
 
 	fsp_silicon_init(acpi_is_wakeup_s3());
+
+	/*
+	 * TODO(furquan): Get rid of this once FSP is fixed to not touch SPI
+	 * registers(b/153506142). Currently, FSP-S reconfigures SPI frequency causing em100 to
+	 * stop working. Thus, reconfigure SPI speeds here.
+	 */
+	fch_spi_config_modes();
 
 	data_fabric_set_mmio_np();
 	southbridge_init(chip_info);

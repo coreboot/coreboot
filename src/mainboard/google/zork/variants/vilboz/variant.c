@@ -3,7 +3,7 @@
 #include <baseboard/variants.h>
 #include <soc/pci_devs.h>
 
-static const picasso_fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
+static const fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	{ // DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
@@ -21,9 +21,9 @@ static const picasso_fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	}
 };
 
-void variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+void variant_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
 				      size_t *pcie_num,
-				      const picasso_fsp_ddi_descriptor **ddi_descs,
+				      const fsp_ddi_descriptor **ddi_descs,
 				      size_t *ddi_num)
 {
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);

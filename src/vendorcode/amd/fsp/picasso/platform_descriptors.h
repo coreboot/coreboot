@@ -107,7 +107,7 @@ typedef struct __packed {
 	uint8_t		aux_index;
 	uint8_t		hdp_index;
 	uint8_t		reserved;
-} picasso_fsp_ddi_descriptor;
+} fsp_ddi_descriptor;
 
 /* Picasso PCIe Descriptor: used for assigning lanes, bifurcation and other settings */
 typedef struct __packed {
@@ -137,6 +137,6 @@ typedef struct __packed {
 	unsigned int	channel_type		:3;
 	unsigned int	turn_off_unused_lanes	:1;
 	uint8_t		reserved[4];
-} picasso_fsp_pcie_descriptor;
+} fsp_pcie_descriptor;
 
 #endif /* __PI_PICASSO_PLATFORM_DESCRIPTORS_H__ */

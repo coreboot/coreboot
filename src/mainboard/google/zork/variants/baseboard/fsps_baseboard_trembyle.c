@@ -5,9 +5,9 @@
 #include <commonlib/bsd/compiler.h>
 #include <soc/soc_util.h>
 
-void __weak variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+void __weak variant_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
 					     size_t *pcie_num,
-					     const picasso_fsp_ddi_descriptor **ddi_descs,
+					     const fsp_ddi_descriptor **ddi_descs,
 					     size_t *ddi_num)
 {
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
@@ -18,7 +18,7 @@ void __weak variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor *
  * Type 1 parts, while reporting as Picasso through cpuid, are fused like a Dali.
  * Those parts need to be configured as Type 2. */
 
-static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] = {
+static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -64,7 +64,7 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	}
 };
 
-static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] = {
+static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -111,7 +111,7 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	}
 };
 
-const picasso_fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
+const fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
 	if (soc_is_dali()) {
@@ -125,7 +125,7 @@ const picasso_fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
 
 }
 
-static const picasso_fsp_ddi_descriptor pco_ddi_descriptors[] = {
+static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
 	{
 		// DDI0, DP0, eDP
 		.connector_type = EDP,
@@ -152,7 +152,7 @@ static const picasso_fsp_ddi_descriptor pco_ddi_descriptors[] = {
 	}
 };
 
-static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] = {
+static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 	{
 		// DDI0, DP0, eDP
 		.connector_type = EDP,
@@ -173,7 +173,7 @@ static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] = {
 	}
 };
 
-const picasso_fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
+const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
 	if (soc_is_dali()) {

@@ -4,16 +4,16 @@
 #include <baseboard/variants.h>
 #include <commonlib/bsd/compiler.h>
 
-void __weak variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+void __weak variant_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
 					     size_t *pcie_num,
-					     const picasso_fsp_ddi_descriptor **ddi_descs,
+					     const fsp_ddi_descriptor **ddi_descs,
 					     size_t *ddi_num)
 {
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
 	*ddi_descs = baseboard_get_ddi_descriptors(ddi_num);
 }
 
-static const picasso_fsp_pcie_descriptor pcie_descriptors[] = {
+static const fsp_pcie_descriptor pcie_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -60,13 +60,13 @@ static const picasso_fsp_pcie_descriptor pcie_descriptors[] = {
 	}
 };
 
-const picasso_fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
+const fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
 {
 	*num = ARRAY_SIZE(pcie_descriptors);
 	return pcie_descriptors;
 }
 
-const picasso_fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
+const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
 {
 	/* Different configurations of dalboz have different ddi configurations.
 	 * Therefore, don't provide any baseboard defaults. */

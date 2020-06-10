@@ -187,9 +187,9 @@ static void mainboard_init(void *chip_info)
 		gpe_configure_sci(gpes, num);
 }
 
-void mainboard_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+void mainboard_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
 					size_t *pcie_num,
-					const picasso_fsp_ddi_descriptor **ddi_descs,
+					const fsp_ddi_descriptor **ddi_descs,
 					size_t *ddi_num)
 {
 	variant_get_pcie_ddi_descriptors(pcie_descs, pcie_num, ddi_descs, ddi_num);

@@ -1,6 +1,51 @@
 chip soc/intel/tigerlake
 
+	# USB Port Config
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C C1
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C C0
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+
+	# I2C Port Config
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+	}"
+
 	device domain 0 on
+		device pci 07.0 off end # TBT_PCIe0			0x9A23
+		device pci 07.1 off end # TBT_PCIe1			0x9A25
+		device pci 07.2 off end # TBT_PCIe2			0x9A27
+		device pci 07.3 off end # TBT_PCIe3			0x9A29
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F8)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end # I2C0
 		device pci 15.1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
@@ -61,5 +106,13 @@ chip soc/intel/tigerlake
 				device i2c 15 on end
 			end
 		end # I2C5				0xA0C6
+		device pci 1f.3 on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end # Intel HD audio
 	end
 end

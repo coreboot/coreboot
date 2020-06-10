@@ -32,7 +32,7 @@ static const struct _uart_info {
 
 uintptr_t uart_platform_base(int idx)
 {
-	if (idx < 0 || idx > ARRAY_SIZE(uart_info))
+	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
 		return 0;
 
 	return uart_info[idx].base;
@@ -43,7 +43,7 @@ void set_uart_config(int idx)
 	uint32_t uart_ctrl;
 	uint16_t uart_leg;
 
-	if (idx < 0 || idx > ARRAY_SIZE(uart_info))
+	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
 		return;
 
 	program_gpios(uart_info[idx].mux, 2);

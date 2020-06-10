@@ -43,9 +43,7 @@ SECTIONS
 /* Bootblock specific scripts which provide more SECTION directives. */
 #include <cpu/x86/16bit/entry16.ld>
 #include <cpu/x86/16bit/reset16.ld>
-#if !CONFIG(RESET_VECTOR_IN_RAM)
 #include <arch/x86/id.ld>
-#endif
 #if CONFIG(CPU_INTEL_FIRMWARE_INTERFACE_TABLE)
 #include <cpu/intel/fit/fit.ld>
 #endif

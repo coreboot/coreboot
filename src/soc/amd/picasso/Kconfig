@@ -56,6 +56,10 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_CF9_RESET
 	select SUPPORT_CPU_UCODE_IN_CBFS
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/amd/picasso/memlayout.ld"
+
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600

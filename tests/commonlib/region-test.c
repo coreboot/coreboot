@@ -69,6 +69,8 @@ static ssize_t mock_readat(const struct region_device *rdev, void *buffer,
 	ssize_t ret = mock();
 	if (!ret)
 		return size;
+	else
+		return ret;
 }
 
 static ssize_t mock_writeat(const struct region_device *rdev, const void *buffer,
@@ -82,6 +84,8 @@ static ssize_t mock_writeat(const struct region_device *rdev, const void *buffer
 	ssize_t ret = mock();
 	if (!ret)
 		return size;
+	else
+		return ret;
 }
 
 static ssize_t mock_eraseat(const struct region_device *rdev, size_t offset, size_t size)
@@ -93,6 +97,8 @@ static ssize_t mock_eraseat(const struct region_device *rdev, size_t offset, siz
 	ssize_t ret = mock();
 	if (!ret)
 		return size;
+	else
+		return ret;
 }
 
 struct region_device_ops mock_rdev_ops = {
@@ -155,8 +161,6 @@ static void rdev_mock_defaults(void)
 
 static void test_rdev_success(void **state)
 {
-	struct region_device child;
-
 	expect_value(mock_mmap, size, region_device_sz(&mock_rdev));
 
 	rdev_mock_defaults();

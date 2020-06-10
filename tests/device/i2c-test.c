@@ -48,7 +48,7 @@ int __wrap_platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 	reg = tmp->buf[0];
 
 	/* Find object for requested device */
-	for (i = 0; i < ARRAY_SIZE(i2c_ex_devs); i++, i2c_dev++)
+	for (i = 0; i < ARRAY_SIZE(i2c_ex_devs); i++)
 		if (i2c_ex_devs[i].slave == tmp->slave) {
 			i2c_dev = &i2c_ex_devs[i];
 			break;
@@ -67,6 +67,8 @@ int __wrap_platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 		if (tmp->flags & I2C_M_RD) {
 			*(tmp->buf) = i2c_dev->regs[reg].data;
 		};
+
+	return 0;
 }
 
 static void mock_expect_params_platform_i2c_transfer(void)
@@ -90,7 +92,6 @@ static void mock_expect_params_platform_i2c_transfer(void)
 
 static void i2c_read_field_test(void **state)
 {
-	int bus, slave, reg;
 	int i, j;
 	uint8_t buf;
 
@@ -121,7 +122,6 @@ static void i2c_read_field_test(void **state)
 
 static void i2c_write_field_test(void **state)
 {
-	int bus, slave, reg;
 	int i, j;
 	uint8_t buf, tmp;
 

@@ -12,6 +12,7 @@
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/romstage.h>
+#include <soc/memmap.h>
 #include <soc/mrc_cache.h>
 #include <types.h>
 #include "chip.h"
@@ -89,6 +90,8 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x43);
 	fsp_memory_init(s3_resume);
 	soc_update_mrc_cache();
+
+	memmap_stash_early_dram_usage();
 
 	post_code(0x44);
 	run_ramstage();

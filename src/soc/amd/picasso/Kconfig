@@ -60,11 +60,121 @@ config MEMLAYOUT_LD_FILE
 	string
 	default "src/soc/amd/picasso/memlayout.ld"
 
+config EARLY_RESERVED_DRAM_BASE
+	hex
+	default 0x2000000
+	help
+	  This variable defines the base address of the DRAM which is reserved
+	  for usage by coreboot in early stages (i.e. before ramstage is up).
+	  This memory gets reserved in BIOS tables to ensure that the OS does
+	  not use it, thus preventing corruption of OS memory in case of S3
+	  resume.
+
+config EARLYRAM_BSP_STACK_SIZE
+	hex
+	default 0x1000
+
+config PSP_APOB_DRAM_ADDRESS
+	hex
+	default 0x2001000
+	help
+	  Location in DRAM where the PSP will copy the AGESA PSP Output
+	  Block.
+
+config PSP_SHAREDMEM_BASE
+	hex
+	default 0x2011000 if VBOOT
+	default 0x0
+	help
+	  This variable defines the base address in DRAM memory where PSP copies
+	  vboot workbuf to. This is used in linker script to have a static
+	  allocation for the buffer as well as for adding relevant entries in
+	  BIOS directory table for the PSP.
+
+config PSP_SHAREDMEM_SIZE
+	hex
+	default 0x8000 if VBOOT
+	default 0x0
+	help
+	  Sets the maximum size for the PSP to pass the vboot workbuf and
+	  any logs or timestamps back to coreboot.  This will be copied
+	  into main memory by the PSP and will be available when the x86 is
+	  started.  The workbuf's base depends on the address of the reset
+	  vector.
+
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600
 	help
 	  Increase this value if preram cbmem console is getting truncated
+
+config BOOTBLOCK_ADDR
+	hex
+	default 0x2030000
+	help
+	  Sets the address in DRAM where bootblock should be loaded.
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x10000
+	help
+	  Sets the size of the bootblock stage that should be loaded in DRAM.
+	  This variable controls the DRAM allocation size in linker script
+	  for bootblock stage.
+
+config X86_RESET_VECTOR
+	hex
+	depends on ARCH_X86
+	default 0x203fff0
+	help
+	  Sets the reset vector within bootblock where x86 starts execution.
+	  Reset vector is supposed to live at offset -0x10 from end of
+	  bootblock i.e. BOOTBLOCK_ADDR + C_ENV_BOOTBLOCK_SIZE - 0x10.
+
+config ROMSTAGE_ADDR
+	hex
+	default 0x2040000
+	help
+	  Sets the address in DRAM where romstage should be loaded.
+
+config ROMSTAGE_SIZE
+	hex
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for romstage in linker script.
+
+config FSP_M_ADDR
+	hex
+	default 0x20C0000
+	help
+	  Sets the address in DRAM where FSP-M should be loaded. cbfstool
+	  performs relocation of FSP-M to this address.
+
+config FSP_M_SIZE
+	hex
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for FSP-M in linker script.
+
+config VERSTAGE_ADDR
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x2140000
+	help
+	  Sets the address in DRAM where verstage should be loaded if running
+	  as a separate stage on x86.
+
+config VERSTAGE_SIZE
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for verstage in linker script if
+	  running as a separate stage on x86.
+
+config RAMBASE
+	hex
+	default 0x10000000
 
 config CPU_ADDR_BITS
 	int
@@ -234,18 +344,6 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
-config FSP_M_ADDR
-	hex
-	default 0x90000000
-
-config X86_RESET_VECTOR
-	hex
-	default 0x807fff0
-
-config EARLYRAM_BSP_STACK_SIZE
-	hex
-	default 0x800
-
 config FSP_TEMP_RAM_SIZE
 	hex
 	depends on FSP_USES_CB_STACK
@@ -299,13 +397,6 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 config AMD_PUBKEY_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
-
-config PSP_APOB_DRAM_ADDRESS
-	hex
-	default 0x9f00000
-	help
-	  Location in DRAM where the PSP will copy the AGESA PSP Output
-	  Block.
 
 config USE_PSPSCUREOS
 	bool

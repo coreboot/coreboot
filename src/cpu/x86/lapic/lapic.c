@@ -2,16 +2,11 @@
 
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
+#include <smp/node.h>
 
 void do_lapic_init(void)
 {
-	/* this is so interrupts work. This is very limited scope --
-	 * linux will do better later, we hope ...
-	 */
-	/* this is the first way we learned to do it. It fails on real SMP
-	 * stuff. So we have to do things differently ...
-	 * see the Intel mp1.4 spec, page A-3
-	 */
+	uint32_t lvt0_val;
 
 	printk(BIOS_INFO, "Setting up local APIC...\n");
 
@@ -28,15 +23,16 @@ void do_lapic_init(void)
 	lapic_write_around(LAPIC_SPIV,
 		(lapic_read_around(LAPIC_SPIV) & ~(LAPIC_VECTOR_MASK))
 		| LAPIC_SPIV_ENABLE);
-	lapic_write_around(LAPIC_LVT0,
-		(lapic_read_around(LAPIC_LVT0) &
-			~(LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER |
+
+	lvt0_val = (lapic_read_around(LAPIC_LVT0) &
+				~(LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER |
 				LAPIC_LVT_REMOTE_IRR | LAPIC_INPUT_POLARITY |
-				LAPIC_SEND_PENDING | LAPIC_LVT_RESERVED_1 |
-				LAPIC_DELIVERY_MODE_MASK))
-		| (LAPIC_LVT_REMOTE_IRR | LAPIC_SEND_PENDING |
-			LAPIC_DELIVERY_MODE_EXTINT)
-		);
+				LAPIC_SEND_PENDING | LAPIC_LVT_RESERVED_1)) |
+				(LAPIC_LVT_REMOTE_IRR | LAPIC_SEND_PENDING);
+	if (boot_cpu())
+		lvt0_val = SET_LAPIC_DELIVERY_MODE(lvt0_val, LAPIC_MODE_EXINT);
+	lapic_write_around(LAPIC_LVT0, lvt0_val);
+
 	lapic_write_around(LAPIC_LVT1,
 		(lapic_read_around(LAPIC_LVT1) &
 			~(LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER |

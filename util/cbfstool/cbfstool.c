@@ -642,20 +642,17 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 			do_relocation = 0;
 		} else {
 			address = param.baseaddress;
-		}
-
-		/*
-		 * *offset should either be 0 or the value returned by
-		 * do_cbfs_locate. do_cbfs_locate should not ever return a value
-		 * that is TOP_ALIGNED_ADDRESS. Thus, if *offset contains a top
-		 * aligned address, set it to 0.
-		 *
-		 * The only requirement in this case is that the binary should
-		 * be relocated to the base address that is requested. There is
-		 * no requirement on where the file ends up in the cbfs.
-		 */
-		if (IS_TOP_ALIGNED_ADDRESS(*offset))
+			/*
+			 * *offset should either be 0 or the value returned by
+			 * do_cbfs_locate. do_cbfs_locate is called only when param.baseaddress
+			 * is not provided by user. Thus, set *offset to 0 if user provides
+			 * a baseaddress i.e. params.baseaddress_assigned is set. The only
+			 * requirement in this case is that the binary should be relocated to
+			 * the base address that is requested. There is no requirement on where
+			 * the file ends up in the cbfs.
+			 */
 			*offset = 0;
+		}
 	}
 
 	/*

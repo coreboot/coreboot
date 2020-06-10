@@ -270,6 +270,19 @@ config UBSAN
 	  say N because it adds a small performance penalty and may abort
 	  on code that happens to work in spite of the UB.
 
+config ASAN_IN_RAMSTAGE
+	bool "Address sanitizer support"
+	depends on ARCH_X86
+	default n
+	help
+	  Enable address sanitizer - runtime memory debugger,
+	  designed to find out-of-bounds accesses and use-after-scope bugs.
+
+	  This feature consumes up to 1/8 of available memory and brings about
+	  ~1.5x performance slowdown.
+
+	  If unsure, say N.
+
 choice
 	prompt "Stage Cache for ACPI S3 resume"
 	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME

@@ -7,6 +7,18 @@ ramstage-y += ubsan.c
 CFLAGS_ramstage += -fsanitize=undefined
 endif
 
+ifeq ($(CONFIG_ASAN_IN_RAMSTAGE),y)
+ramstage-y += asan.c
+CFLAGS_asan += -fsanitize=kernel-address \
+		--param asan-stack=1 --param asan-globals=1 \
+		--param asan-instrumentation-with-call-threshold=0 \
+		-fsanitize-address-use-after-scope \
+		--param use-after-scope-direct-emission-threshold=0
+CFLAGS_ramstage += $(CFLAGS_asan)
+# Allow memory access without __asan_load and __asan_store checks.
+$(obj)/ramstage/lib/asan.o: CFLAGS_asan =
+endif
+
 decompressor-y += decompressor.c
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): $(objcbfs)/bootblock.lz4
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): CCACHE_EXTRAFILES=$(objcbfs)/bootblock.lz4

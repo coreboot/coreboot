@@ -38,6 +38,9 @@ int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
+void global_smi_enable(void);
+void global_smi_enable_no_pwrbtn(void);
+
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);

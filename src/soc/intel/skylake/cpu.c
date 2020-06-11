@@ -355,6 +355,6 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	if (msr2.lo && (current_patch_id == new_patch_id - 1))
 		return 0;
 	else
-		return (msr1.lo & PRMRR_SUPPORTED) &&
+		return (msr1.lo & MTRR_CAP_PRMRR) &&
 			(current_patch_id == new_patch_id - 1);
 }

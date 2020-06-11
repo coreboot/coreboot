@@ -16,6 +16,7 @@
 
 #define MTRR_CAP_MSR			0x0fe
 
+#define MTRR_CAP_PRMRR			(1 << 12)
 #define MTRR_CAP_SMRR			(1 << 11)
 #define MTRR_CAP_WC			(1 << 10)
 #define MTRR_CAP_FIX			(1 << 8)

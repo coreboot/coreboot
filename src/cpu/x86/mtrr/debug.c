@@ -92,8 +92,9 @@ static void display_mtrrcap(void)
 
 	msr = rdmsr(MTRR_CAP_MSR);
 	printk(BIOS_DEBUG,
-		"0x%08x%08x: IA32_MTRRCAP: %s%s%s%u variable MTRRs\n",
+		"0x%08x%08x: IA32_MTRRCAP: %s%s%s%s%u variable MTRRs\n",
 		msr.hi, msr.lo,
+		(msr.lo & MTRR_CAP_PRMRR) ? "PRMRR, " : "",
 		(msr.lo & MTRR_CAP_SMRR) ? "SMRR, " : "",
 		(msr.lo & MTRR_CAP_WC) ? "WC, " : "",
 		(msr.lo & MTRR_CAP_FIX) ? "FIX, " : "",

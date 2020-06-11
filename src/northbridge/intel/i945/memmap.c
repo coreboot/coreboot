@@ -36,20 +36,20 @@ static uintptr_t northbridge_get_tseg_base(void)
 {
 	uintptr_t tom;
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1))
+	if (pci_read_config8(HOST_BRIDGE, DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1))
 		/* IGD enabled, get top of Memory from BSM register */
-		tom = pci_read_config32(PCI_DEV(0, 2, 0), BSM);
+		tom = pci_read_config32(IGD_DEV, BSM);
 	else
-		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
+		tom = (pci_read_config8(HOST_BRIDGE, TOLUD) & 0xf7) << 24;
 
 	/* subtract TSEG size */
-	tom -= decode_tseg_size(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC));
+	tom -= decode_tseg_size(pci_read_config8(HOST_BRIDGE, ESMRAMC));
 	return tom;
 }
 
 static size_t northbridge_get_tseg_size(void)
 {
-	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
+	const u8 esmramc = pci_read_config8(HOST_BRIDGE, ESMRAMC);
 	return decode_tseg_size(esmramc);
 }
 

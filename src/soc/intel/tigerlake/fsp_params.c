@@ -7,9 +7,11 @@
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -255,7 +257,19 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Enable8254ClockGatingOnS3 = !CONFIG_USE_LEGACY_8254_TIMER;
 
 	/* Enable Hybrid storage auto detection */
-	params->HybridStorageMode = config->HybridStorageMode;
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && cse_is_hfs3_fw_sku_lite()
+		&& vboot_recovery_mode_enabled() && !cse_is_hfs1_com_normal()) {
+		/*
+		 * CSE Lite SKU does not support hybrid storage dynamic configuration
+		 * in CSE RO boot, and FSP does not allow to send the strap override
+		 * HECI commands if CSE is not in normal mode; hence, hybrid storage
+		 * mode is disabled on CSE RO boot in recovery boot mode.
+		 */
+		printk(BIOS_INFO, "cse_lite: CSE RO boot. HybridStorageMode disabled\n");
+		params->HybridStorageMode = 0;
+	} else {
+		params->HybridStorageMode = config->HybridStorageMode;
+	}
 
 	/* USB4/TBT */
 	for (i = 0; i < ARRAY_SIZE(params->ITbtPcieRootPortEn); i++) {

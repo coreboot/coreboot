@@ -19,7 +19,9 @@
 #define SPI_BASE_ADDRESS             0xfe010000
 #define SPI_BASE_SIZE                0x1000
 
+#define TCO_BASE_ADDRESS             0x400
 #define ACPI_BASE_ADDRESS            0x500
+#define ACPI_BASE_SIZE		0x100
 
 /* Video RAM */
 #define VGA_BASE_ADDRESS             0xa0000
@@ -27,6 +29,9 @@
 
 /* High Performance Event Timer */
 #define HPET_BASE_ADDRESS            0xfed00000
+
+#define PCH_PWRM_BASE_ADDRESS	0xfe000000
+#define PCH_PWRM_BASE_SIZE	0x10000
 
 #define P2SB_BAR                     CONFIG_PCR_BASE_ADDRESS
 

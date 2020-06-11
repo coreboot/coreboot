@@ -21,10 +21,22 @@
 #define  SCIS_IRQ23		7
 #define PWRMBASE		0x48
 #define GEN_PMCON_A		0xa0
+#define  DISB			(1 << 23)
+#define  GBL_RST_STS		(1 << 16)
 #define  SMI_LOCK		(1 << 4)
 #define GEN_PMCON_B		0xa4
 #define  SLP_STR_POL_LOCK	(1 << 18)
 #define  ACPI_BASE_LOCK		(1 << 17)
 #define  RTC_BATTERY_DEAD	(1 << 2)
+#define  SUS_PWR_FLR		(1 << 14)
+#define  HOST_RST_STS		(1 << 9)
+#define  PWR_FLR		(1 << 1)
+#define  SLEEP_AFTER_POWER_FAIL	(1 << 0)
 
+/* Memory mapped IO registers in PMC */
+#define GPIO_GPE_CFG		0x120
+#define  GPE0_DWX_MASK		0xf
+#define GPE0_DW_SHIFT(x)	(4 * (x))
+#define GBLRST_CAUSE0		0x124
+#define GBLRST_CAUSE1		0x128
 #endif

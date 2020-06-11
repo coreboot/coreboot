@@ -63,37 +63,26 @@ bool is_aoac_device_enabled(int dev)
 		return false;
 }
 
-static void enable_aoac_console_uart(void)
+void wait_for_aoac_enabled(int dev)
 {
-	if (!CONFIG(PICASSO_UART))
-		return;
-
-	power_on_aoac_device(FCH_AOAC_UART_FOR_CONSOLE);
-}
-
-static bool is_aoac_console_uart_enabled(void)
-{
-	if (!CONFIG(PICASSO_UART))
-		return true;
-
-	return is_aoac_device_enabled(FCH_AOAC_UART_FOR_CONSOLE);
+	while (!is_aoac_device_enabled(dev))
+		udelay(100);
 }
 
 void enable_aoac_devices(void)
 {
-	bool status;
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
 		power_on_aoac_device(aoac_devs[i]);
-	enable_aoac_console_uart();
+
+	if (CONFIG(PICASSO_UART))
+		power_on_aoac_device(FCH_AOAC_UART_FOR_CONSOLE);
 
 	/* Wait for AOAC devices to indicate power and clock OK */
-	do {
-		udelay(100);
-		status = true;
-		for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
-			status &= is_aoac_device_enabled(aoac_devs[i]);
-		status &= is_aoac_console_uart_enabled();
-	} while (!status);
+	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
+		wait_for_aoac_enabled(aoac_devs[i]);
+
+	if (CONFIG(PICASSO_UART))
+		wait_for_aoac_enabled(FCH_AOAC_UART_FOR_CONSOLE);
 }

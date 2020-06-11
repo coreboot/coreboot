@@ -226,6 +226,13 @@ void fch_pre_init(void)
 	sb_enable_legacy_io();
 	enable_aoac_devices();
 	sb_reset_i2c_slaves();
+
+	/*
+	 * On reset Range_0 defaults to enabled. We want to start with a clean
+	 * slate to not have things unexpectedly enabled.
+	 */
+	clear_uart_legacy_config();
+
 	if (CONFIG(PICASSO_UART))
 		set_uart_config(CONFIG_UART_FOR_CONSOLE);
 }

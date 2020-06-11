@@ -207,6 +207,10 @@
 
 /* Bit definitions for Device D3 Control AOACx0000[40...7E] step 2 */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
+#define     FCH_AOAC_D0_UNINITIALIZED	0
+#define     FCH_AOAC_D0_INITIALIZED	1
+#define     FCH_AOAC_D1_2_3_WARM	2
+#define     FCH_AOAC_D3_COLD		3
 #define   FCH_AOAC_DEVICE_STATE		BIT(2)
 #define   FCH_AOAC_PWR_ON_DEV		BIT(3)
 #define   FCH_AOAC_SW_PWR_ON_RSTB	BIT(4)

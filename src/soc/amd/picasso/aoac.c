@@ -36,6 +36,8 @@ void power_on_aoac_device(int dev)
 	/* Power on the UART and AMBA devices */
 	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
 	byte |= FCH_AOAC_PWR_ON_DEV;
+	byte &= ~FCH_AOAC_TARGET_DEVICE_STATE;
+	byte |= FCH_AOAC_D0_INITIALIZED;
 	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 

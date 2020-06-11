@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <console/uart.h>
+#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <device/mmio.h>
 #include <amdblocks/gpio_banks.h>
@@ -108,9 +110,52 @@ static const char *uart_acpi_name(const struct device *dev)
 	}
 }
 
+/* Even though this is called enable, it gets called for both enabled and disabled devices. */
+static void uart_enable(struct device *dev)
+{
+	int dev_id;
+
+	switch (dev->path.mmio.addr) {
+	case APU_UART0_BASE:
+		dev_id = FCH_AOAC_DEV_UART0;
+		break;
+	case APU_UART1_BASE:
+		dev_id = FCH_AOAC_DEV_UART1;
+		break;
+	case APU_UART2_BASE:
+		dev_id = FCH_AOAC_DEV_UART2;
+		break;
+	case APU_UART3_BASE:
+		dev_id = FCH_AOAC_DEV_UART3;
+		break;
+	default:
+		printk(BIOS_ERR, "%s: Unknown device: %s\n", __func__, dev_path(dev));
+		return;
+	}
+
+	if (dev->enabled) {
+		power_on_aoac_device(dev_id);
+		wait_for_aoac_enabled(dev_id);
+	} else {
+		power_off_aoac_device(dev_id);
+	}
+}
+
+/* This gets called for both enabled and disabled devices. */
+static void uart_inject_ssdt(const struct device *dev)
+{
+	acpigen_write_scope(acpi_device_path(dev));
+
+	acpigen_write_STA(acpi_device_status(dev));
+
+	acpigen_pop_len(); /* Scope */
+}
+
 struct device_operations picasso_uart_mmio_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_static_bus,
 	.acpi_name = uart_acpi_name,
+	.enable = uart_enable,
+	.acpi_fill_ssdt = uart_inject_ssdt,
 };

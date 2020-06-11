@@ -122,11 +122,6 @@ Device (FUR0)
 			Return (Local0)
 		}
 	}
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
-	}
 }
 
 Device (FUR1) {
@@ -157,11 +152,6 @@ Device (FUR1) {
 		} Else {
 			Return (Local0)
 		}
-	}
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
 	}
 }
 
@@ -194,11 +184,6 @@ Device (FUR2) {
 			Return (Local0)
 		}
 	}
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
-	}
 }
 
 Device (FUR3) {
@@ -229,11 +214,6 @@ Device (FUR3) {
 		} Else {
 			Return (Local0)
 		}
-	}
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
 	}
 }
 

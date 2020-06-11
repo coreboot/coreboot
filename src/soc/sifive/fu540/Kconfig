@@ -17,6 +17,10 @@ config SOC_SIFIVE_FU540
 
 if SOC_SIFIVE_FU540
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/sifive/fu540/memlayout.ld"
+
 config RISCV_ARCH
 	string
 	default "rv64imac"

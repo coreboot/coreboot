@@ -13,6 +13,10 @@ config SOC_NVIDIA_TEGRA210
 
 if SOC_NVIDIA_TEGRA210
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/nvidia/tegra210/memlayout.ld"
+
 config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_SEPARATE_VERSTAGE

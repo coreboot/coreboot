@@ -316,4 +316,8 @@ config MAX_ACPI_TABLE_SIZE_KB
 	help
 	  Set the maximum size of all ACPI tables in KiB.
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/arch/x86/memlayout.ld"
+
 endif

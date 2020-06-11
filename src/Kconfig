@@ -1182,6 +1182,15 @@ config BOOTBLOCK_CUSTOM
 	# src/lib/bootblock.c#main() C entry point.
 	bool
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
+	help
+	  This variable allows SoC/mainboard to supply in a custom linker file
+	  if required. This determines the linker file used for all the stages
+	  (bootblock, romstage, verstage, ramstage, postcar) in
+	  src/arch/${ARCH}/Makefile.inc.
+
 ###############################################################################
 # Set default values for symbols created before mainboards.  This allows the
 # option to be displayed in the general menu, but the default to be loaded in

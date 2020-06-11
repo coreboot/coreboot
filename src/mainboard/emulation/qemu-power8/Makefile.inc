@@ -7,7 +7,3 @@ romstage-y += romstage.c
 ramstage-y += timer.c
 romstage-y += uart.c
 ramstage-y += uart.c
-
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld

@@ -30,6 +30,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_UART_8250MEM
 	select RISCV_HAS_OPENSBI
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/emulation/qemu-riscv/memlayout.ld"
+
 config MAINBOARD_DIR
 	string
 	default "emulation/qemu-riscv"

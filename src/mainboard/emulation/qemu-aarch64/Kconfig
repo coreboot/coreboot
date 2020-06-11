@@ -24,6 +24,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select MISSING_BOARD_RESET
 	select ARM64_USE_ARM_TRUSTED_FIRMWARE
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/emulation/qemu-aarch64/memlayout.ld"
+
 config MAINBOARD_DIR
 	string
 	default "emulation/qemu-aarch64"

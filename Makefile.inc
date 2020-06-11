@@ -13,6 +13,7 @@ CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
 CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
 CONFIG_OVERRIDE_DEVICETREE:=$(call strip_quotes, $(CONFIG_OVERRIDE_DEVICETREE))
+CONFIG_MEMLAYOUT_LD_FILE:=$(call strip_quotes, $(CONFIG_MEMLAYOUT_LD_FILE))
 
 #######################################################################
 # misleadingly named, this is the coreboot version
@@ -608,6 +609,13 @@ smm-c-deps+=$(DEVICETREE_STATIC_C)
 
 .PHONY: devicetree
 devicetree: $(DEVICETREE_STATIC_C)
+
+ramstage-y += $(CONFIG_MEMLAYOUT_LD_FILE)
+romstage-y += $(CONFIG_MEMLAYOUT_LD_FILE)
+bootblock-y += $(CONFIG_MEMLAYOUT_LD_FILE)
+verstage-y += $(CONFIG_MEMLAYOUT_LD_FILE)
+postcar-y += $(CONFIG_MEMLAYOUT_LD_FILE)
+decompressor-y += $(CONFIG_MEMLAYOUT_LD_FILE)
 
 #######################################################################
 # Clean up rules

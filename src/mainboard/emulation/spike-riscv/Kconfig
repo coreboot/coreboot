@@ -11,6 +11,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOOT_DEVICE_NOT_SPI_FLASH
 	select MISSING_BOARD_RESET
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/emulation/spike-riscv/memlayout.ld"
+
 config MAINBOARD_DIR
 	string
 	default "emulation/spike-riscv"

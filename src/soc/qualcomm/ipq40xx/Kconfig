@@ -10,6 +10,10 @@ config SOC_QC_IPQ40XX
 
 if SOC_QC_IPQ40XX
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/ipq40xx/memlayout.ld"
+
 config GENERIC_UDELAY
 	def_bool n
 

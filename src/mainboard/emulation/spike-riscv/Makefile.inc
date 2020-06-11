@@ -10,7 +10,3 @@ romstage-y += clint.c
 ramstage-y += uart.c
 ramstage-y += rom_media.c
 ramstage-y += clint.c
-
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld

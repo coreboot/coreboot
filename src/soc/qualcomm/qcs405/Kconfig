@@ -13,6 +13,10 @@ config SOC_QUALCOMM_QCS405
 
 if SOC_QUALCOMM_QCS405
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/qcs405/memlayout.ld"
+
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE

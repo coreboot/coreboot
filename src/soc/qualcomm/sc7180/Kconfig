@@ -16,6 +16,10 @@ config SOC_QUALCOMM_SC7180
 
 if SOC_QUALCOMM_SC7180
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/sc7180/memlayout.ld"
+
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE

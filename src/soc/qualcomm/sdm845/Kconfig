@@ -12,6 +12,10 @@ config SOC_QUALCOMM_SDM845
 
 if SOC_QUALCOMM_SDM845
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/sdm845/memlayout.ld"
+
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE

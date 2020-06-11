@@ -14,6 +14,10 @@ config SOC_ROCKCHIP_RK3399
 
 if SOC_ROCKCHIP_RK3399
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/rockchip/rk3399/memlayout.ld"
+
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE

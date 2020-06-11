@@ -15,6 +15,10 @@ config SOC_NVIDIA_TEGRA124
 
 if SOC_NVIDIA_TEGRA124
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/nvidia/tegra124/memlayout.ld"
+
 config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK

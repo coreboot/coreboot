@@ -11,6 +11,10 @@ config CPU_SAMSUNG_EXYNOS5420
 
 if CPU_SAMSUNG_EXYNOS5420
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/samsung/exynos5420/memlayout.ld"
+
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
 

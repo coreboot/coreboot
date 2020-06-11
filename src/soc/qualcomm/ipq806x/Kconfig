@@ -11,6 +11,10 @@ config SOC_QC_IPQ806X
 
 if SOC_QC_IPQ806X
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/ipq806x/memlayout.ld"
+
 config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_VBNV_FLASH

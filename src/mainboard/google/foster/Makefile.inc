@@ -27,8 +27,3 @@ ramstage-y += mainboard.c
 ramstage-y += reset.c
 ramstage-y += chromeos.c
 ramstage-y += sdram_configs.c
-
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld
-verstage-y += memlayout.ld

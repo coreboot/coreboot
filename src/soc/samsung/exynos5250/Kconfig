@@ -9,6 +9,10 @@ config CPU_SAMSUNG_EXYNOS5250
 
 if CPU_SAMSUNG_EXYNOS5250
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/samsung/exynos5250/memlayout.ld"
+
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
 

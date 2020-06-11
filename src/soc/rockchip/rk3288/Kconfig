@@ -20,6 +20,10 @@ config SOC_ROCKCHIP_RK3288
 
 if SOC_ROCKCHIP_RK3288
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/rockchip/rk3288/memlayout.ld"
+
 config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK

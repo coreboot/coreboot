@@ -25,6 +25,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select MISSING_BOARD_RESET
 	select NO_MONOTONIC_TIMER
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/emulation/qemu-armv7/memlayout.ld"
+
 config MAINBOARD_DIR
 	string
 	default "emulation/qemu-armv7"

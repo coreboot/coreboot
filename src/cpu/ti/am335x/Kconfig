@@ -8,3 +8,11 @@ config CPU_TI_AM335X
 	select BOOT_DEVICE_NOT_SPI_FLASH
 	bool
 	default n
+
+if CPU_TI_AM335X
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/cpu/ti/am335x/memlayout.ld"
+
+endif

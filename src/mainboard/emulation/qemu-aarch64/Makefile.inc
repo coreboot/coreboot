@@ -12,10 +12,6 @@ bootblock-y += mmio.c
 romstage-y += mmio.c
 ramstage-y += mmio.c
 
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld
-
 bootblock-y += bootblock_custom.S
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include

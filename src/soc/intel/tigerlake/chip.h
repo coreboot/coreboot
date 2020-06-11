@@ -115,6 +115,9 @@ struct soc_intel_tigerlake_config {
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;
 
+	/* Command Pins Mirrored */
+	uint32_t CmdMirror;
+
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];

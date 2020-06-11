@@ -150,12 +150,12 @@ chip soc/intel/tigerlake
 	register "TcssAuxOri" = "1"
 	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
-	register "IomTypeCPortPadCfg[2]" = "0x0"
-	register "IomTypeCPortPadCfg[3]" = "0x0"
-	register "IomTypeCPortPadCfg[4]" = "0x0"
-	register "IomTypeCPortPadCfg[5]" = "0x0"
-	register "IomTypeCPortPadCfg[6]" = "0x0"
-	register "IomTypeCPortPadCfg[7]" = "0x0"
+	register "IomTypeCPortPadCfg[2]" = "0x09000000"
+	register "IomTypeCPortPadCfg[3]" = "0x09000000"
+	register "IomTypeCPortPadCfg[4]" = "0x09000000"
+	register "IomTypeCPortPadCfg[5]" = "0x09000000"
+	register "IomTypeCPortPadCfg[6]" = "0x09000000"
+	register "IomTypeCPortPadCfg[7]" = "0x09000000"
 
 	# D3Hot and D3Cold for TCSS
 	register "TcssD3HotEnable" = "1"

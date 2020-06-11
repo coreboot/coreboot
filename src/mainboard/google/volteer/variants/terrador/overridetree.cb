@@ -1,4 +1,9 @@
 chip soc/intel/tigerlake
+	# BitMask where bits [3:0] are Controller 0 Channel [3:0] and
+	# bits [7:4] are Controller 1 Channel [3:0].
+	# Enable Command Mirroring for controller 0 channel 0 and 1,
+	# and controller 1 channel 0 and 1.
+	register "CmdMirror" = "0x00000033"
 	device domain 0 on
 		device pci 15.1 on
 			chip drivers/i2c/hid

@@ -4,10 +4,32 @@
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <soc/ramstage.h>
+#include <stdio.h>
 
 #include "ipmi.h"
 
+#define SLOT_ID_LEN 2
+
 extern struct fru_info_str fru_strings;
+static char slot_id_str[SLOT_ID_LEN];
+
+/* Override SMBIOS 2 Location In Chassis from BMC */
+const char *smbios_mainboard_location_in_chassis(void)
+{
+	uint8_t slot_id = 0;
+
+	if (ipmi_get_slot_id(&slot_id) != CB_SUCCESS) {
+		printk(BIOS_ERR, "IPMI get slot_id failed\n");
+		return "";
+	}
+	/* Sanity check, slot_id can only be 1~4 since there are 4 slots in YV3 */
+	if (slot_id < PCIE_CONFIG_A || slot_id > PCIE_CONFIG_D) {
+		printk(BIOS_ERR, "slot_id %d is not between 1~4\n", slot_id);
+		return "";
+	}
+	snprintf(slot_id_str, SLOT_ID_LEN, "%d", slot_id);
+	return slot_id_str;
+}
 
 static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {

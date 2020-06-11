@@ -291,7 +291,7 @@ static int receive_enable_autoconfig(int channel_offset, struct sys_info *sysinf
 	 * It can be removed when the output message is not printed anymore
 	 */
 	if (MCHBAR8(C0WL0REOST + channel_offset) == 0)
-		printk(BIOS_DEBUG, "Weird. No C%sWL0REOST\n", channel_offset?"1":"0");
+		printk(BIOS_DEBUG, "Weird. No C%sWL0REOST\n", channel_offset ? "1" : "0");
 
 	return 0;
 }

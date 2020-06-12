@@ -1,5 +1,6 @@
 config BOARD_GOOGLE_BASEBOARD_DEDEDE
 	def_bool n
+	select BOARD_ROMSIZE_KB_16384 if !BOARD_ROMSIZE_KB_32768
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
 	select DRIVERS_SPI_ACPI
@@ -46,6 +47,11 @@ config DIMM_SPD_SIZE
 
 config DRIVER_TPM_SPI_BUS
 	default 0x1
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
 
 config MAINBOARD_DIR
 	string

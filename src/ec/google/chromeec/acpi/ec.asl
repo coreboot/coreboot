@@ -147,6 +147,12 @@ Device (EC0)
 	{
 		// Initialize AC power state
 		Store (ACEX, \PWRS)
+		/*
+		 * Inform platform code about the current AC power state.
+		 * This allows the platform to take any action based on the initialized state.
+		 * PWRS isn't valid before this point.
+		 */
+		\PNOT ()
 
 		// Initialize LID switch state
 		Store (LIDS, \LIDS)

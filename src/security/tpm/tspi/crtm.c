@@ -85,21 +85,21 @@ uint32_t tspi_init_crtm(void)
 
 static bool is_runtime_data(const char *name)
 {
-	const char *whitelist = CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA;
-	size_t whitelist_len = sizeof(CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA) - 1;
+	const char *allowlist = CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA;
+	size_t allowlist_len = sizeof(CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA) - 1;
 	size_t name_len = strlen(name);
 	const char *end;
 
-	if (!whitelist_len || !name_len)
+	if (!allowlist_len || !name_len)
 		return false;
 
-	while ((end = strchr(whitelist, ' '))) {
-		if (end - whitelist == name_len && !strncmp(whitelist, name, name_len))
+	while ((end = strchr(allowlist, ' '))) {
+		if (end - allowlist == name_len && !strncmp(allowlist, name, name_len))
 			return true;
-		whitelist = end + 1;
+		allowlist = end + 1;
 	}
 
-	return !strcmp(whitelist, name);
+	return !strcmp(allowlist, name);
 }
 
 uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name)

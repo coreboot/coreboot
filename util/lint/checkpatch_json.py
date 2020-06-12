@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
 
 """
@@ -41,14 +41,14 @@ def parse_file(input_file):
 
 def main():
     if (len(sys.argv) < 3) or (sys.argv[1] == "-h"):
-        print "HELP:"
-        print  sys.argv[0] + " <input file> <output file in json>"
+        print("HELP:")
+        print(sys.argv[0] + " <input file> <output file in json>")
         sys.exit()
 
-    print sys.argv[1]
+    print(sys.argv[1])
     parse_file(sys.argv[1])
     data['comments'] = list_temp
-    print json.dumps(data)
+    print(json.dumps(data))
     out_file = open( sys.argv[2] , "w")
     json.dump(data, out_file, sort_keys=True, indent=4)
     out_file.close()

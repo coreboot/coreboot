@@ -22,6 +22,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_GOOGLE_CHROMEEC_ESPI
 	select EC_GOOGLE_CHROMEEC_I2C_TUNNEL
 	select EC_GOOGLE_CHROMEEC_SKUID
+	select ELOG
+	select ELOG_BOOT_COUNT
+	select ELOG_GSMI
 	select HAVE_ACPI_TABLES
 	select GFXUMA
 	select GOOGLE_SMBIOS_MAINBOARD_VERSION
@@ -38,6 +41,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_GENERIC_MAX98357A
 	select HAVE_ACPI_RESUME
 	select DRIVERS_USB_ACPI
+
+config ELOG_BOOT_COUNT_CMOS_OFFSET
+	int
+	default 144
 
 # FMDFILE is set here so that coreboot build picks up this flash map layout
 # even when CHROMEOS is not selected when building upstream.

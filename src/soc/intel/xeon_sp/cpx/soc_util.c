@@ -173,11 +173,10 @@ uint8_t get_iiostack_info(struct iiostack_resource *info)
 	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
 		for (int x = 0; x < MAX_IIO_STACK; ++x) {
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
-			// TODO: do we have situation with only bux 0 and one stack?
-			if (ri->BusBase >= ri->BusLimit)
-				continue;
-			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
-			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
+			if (ri->Personality == TYPE_UBOX_IIO) {
+				assert(info->no_of_stacks < ARRAY_SIZE(info->res));
+				memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
+			}
 		}
 	}
 

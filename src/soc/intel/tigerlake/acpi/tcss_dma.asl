@@ -26,118 +26,7 @@ Field (DPME, AnyAcc, NoLock, Preserve)
 	DMAD, 8         /* 31:24 DMA Active Delay */
 }
 
-/*
- * TBT MailBox Command Method
- * Arg0 - MailBox Cmd ID
- */
-Method (ITMB, 1, Serialized)
-{
-	Local0 = Arg0 | 0x1  /* 0x1, PCIE2TBT_VLD_B */
-	P2TB = Local0
-}
-
-/*
- * Wait For Command Completed
- * Arg0 - TimeOut value (unit is 1 millisecond)
- */
-Method (WFCC, 1, Serialized)
-{
-	WTBS (Arg0)
-	P2TB = 0
-	WTBC (Arg0)
-}
-
-/*
- * Wait For Command Set
- * Arg0 - TimeOut value
- */
-Method (WTBS, 1, Serialized)
-{
-	Local0 = Arg0
-	While (Local0 > 0) {
-		/* Wait for Bit to Set. */
-		If (TB2P & 0x1) {  /* 0x1, TBT2PCIE_DON_R */
-			Break
-		}
-		Local0--
-		Sleep (1)
-	}
-}
-
-/*
- * Wait For Command Clear
- * Arg0 - TimeOut value
- */
-Method (WTBC, 1, Serialized)
-{
-	Local0 = Arg0
-	While (Local0 > 0) {
-		/* Wait for Bit to Clear. */
-		If ((TB2P & 0x1) != 0x0) {  /* 0x1, TBT2PCIE_DON_R */
-			Break
-		}
-		Local0--
-		Sleep (1)
-	}
-}
-
-/*
- * TCSS TBT CONNECT_TOPOLOGY MailBox Command Method
- */
-Method (CNTP, 0, Serialized)
-{
-	Local0 = 0
-	/* Set Force Power if it is not set */
-	If (DFPE == 0) {
-		DMAD = 0x22
-		DFPE = 1
-		/*
-		 * Poll the TBT NVM FW Ready bit with timeout(default is 500ms) before
-		 * send the TBT MailBox command.
-		 */
-		While ((INFR == 0) && (Local0 < 500)) {
-			Sleep (1)
-			Local0++
-		}
-	}
-	If (Local0 != 100) {
-		ITMB (0x3E)  /* 0x3E, PCIE2TBT_CONNECT_TOPOLOGY_COMMAND */
-	}
-}
-
 Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
-Name (ALCT, 0x0)  /* Connect-Topology cmd can be sent or not 1 - yes, 0 - no */
-/*
- * Wait Connect-Topology cmd done
- * 0 - no need to wait
- * 1 - need to wait
- * 2 - wait in progress
- */
-Name (WACT, 0x0)
-
-Method (_PS0, 0, Serialized)
-{
-	If (WACT == 1) {
-		/*
-		 * PCIe rp0/rp1 is grouped with DMA0 and PCIe rp2/rp3 is grouped wit DMA1.
-		 * Whenever the Connect-Topology command is in the process, WACT flag is set 1.
-		 * PCIe root ports 0/1/2/3/ and DMA 0/1 _PS0 method set WACT to 2 to indicate
-		 * other thread's _PS0 to wait for the command completion. WACT is cleared to
-		 * be 0 after command is finished.
-		 */
-		WACT = 2
-		WFCC (100)  /* Wait for command complete. */
-		WACT = 0
-	} ElseIf (WACT == 2) {
-		While (WACT != 0) {
-			Sleep (5)
-		}
-	}
-}
-
-Method (_PS3, 0, Serialized)
-{
-}
 
 Method (_S0W, 0x0)
 {
@@ -178,7 +67,6 @@ Method (D3CE, 0, Serialized)
 {
 	DD3E = 1  	/* Enable DMA RTD3 */
 	STAT = 0
-	ALCT = 0x1  	/* Allow to send Connect-Topology cmd. */
 }
 
 /*

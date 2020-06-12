@@ -284,7 +284,7 @@ config SMM_TSEG_SIZE
 
 config SMM_RESERVED_SIZE
 	hex
-	default 0x150000
+	default 0x180000
 
 config SMM_MODULE_STACK_SIZE
 	hex

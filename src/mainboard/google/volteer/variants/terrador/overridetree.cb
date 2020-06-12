@@ -4,7 +4,53 @@ chip soc/intel/tigerlake
 	# Enable Command Mirroring for controller 0 channel 0 and 1,
 	# and controller 1 channel 0 and 1.
 	register "CmdMirror" = "0x00000033"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A / Type-C Port 0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A / Type-C Port 1
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+
 	device domain 0 on
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_R5)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+				end
+			end
+		end # I2C #0			0xA0E8
 		device pci 15.1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""

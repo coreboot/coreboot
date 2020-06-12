@@ -12,6 +12,9 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# Enable heci1 communication
+	register "HeciEnabled" = "1"
+
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "SmbusEnable" = "1"

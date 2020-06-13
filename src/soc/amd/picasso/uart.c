@@ -30,6 +30,16 @@ static const struct _uart_info {
 	} },
 };
 
+/*
+ * Don't provide uart_platform_base and uart_platform_refclk functions if PICASSO_UART
+ * isn't selected. Those two functions are used by the console UART driver and need to be
+ * provided exactly once and only by the UART that is used for console.
+ *
+ * TODO: Replace the #if block by factoring out the two functions into a different compilation
+ *       unit.
+ */
+#if CONFIG(PICASSO_UART)
+
 uintptr_t uart_platform_base(int idx)
 {
 	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
@@ -37,6 +47,13 @@ uintptr_t uart_platform_base(int idx)
 
 	return uart_info[idx].base;
 }
+
+unsigned int uart_platform_refclk(void)
+{
+	return CONFIG(PICASSO_UART_48MZ) ? 48000000 : 115200 * 16;
+}
+
+#endif /* PICASSO_UART */
 
 void clear_uart_legacy_config(void)
 {
@@ -73,11 +90,6 @@ void set_uart_config(int idx)
 
 		write16((void *)FCH_UART_LEGACY_DECODE, uart_leg);
 	}
-}
-
-unsigned int uart_platform_refclk(void)
-{
-	return CONFIG(PICASSO_UART_48MZ) ? 48000000 : 115200 * 16;
 }
 
 static const char *uart_acpi_name(const struct device *dev)

@@ -121,10 +121,6 @@ addrsize_set_high:
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
-	/*
-	 * IMPORTANT: The following calculation _must_ be done at runtime. See
-	 * https://mail.coreboot.org/pipermail/coreboot/2010-October/060922.html
-	 */
 	movl	$_program, %eax
 	andl	$_xip_mtrr_mask, %eax
 	orl	$MTRR_TYPE_WRPROT, %eax

@@ -9,6 +9,8 @@
 #include <console/console.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
+#include <string.h>
+
 #include "psp_def.h"
 
 #define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */

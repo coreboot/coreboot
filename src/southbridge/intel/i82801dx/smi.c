@@ -330,14 +330,3 @@ void aseg_smm_lock(void)
 	printk(BIOS_DEBUG, "Locking SMM.\n");
 	northbridge_write_smram(D_LCK | G_SMRAME | C_BASE_SEG);
 }
-
-void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
-{
-	/* The GDT or coreboot table is going to live here. But a long time
-	 * after we relocated the GNVS, so this is not troublesome.
-	 */
-	*(u32 *)0x500 = (u32)gnvs;
-	*(u32 *)0x504 = (u32)tcg;
-	*(u32 *)0x508 = (u32)smi1;
-	outb(0xea, 0xb2);
-}

@@ -3,6 +3,7 @@
 #ifndef __SOC_AMD_PICASSO_MEMMAP_H__
 #define __SOC_AMD_PICASSO_MEMMAP_H__
 
+#include <stdint.h>
 #include <symbols.h>
 
 DECLARE_REGION(early_reserved_dram)

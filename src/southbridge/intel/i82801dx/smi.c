@@ -261,18 +261,10 @@ static void aseg_smm_relocate(void)
 	 */
 
 	smi_en = 0; /* reset SMI enables */
-
-#if 0
-	smi_en |= LEGACY_USB2_EN | LEGACY_USB_EN;
-#endif
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in i82801gx.h to debug using
-	 * periodic SMIs.
-	 */
-	smi_en |= PERIODIC_EN;
-#endif
+	if (CONFIG(DEBUG_PERIODIC_SMI))
+		smi_en |= PERIODIC_EN;
 	smi_en |= SLP_SMI_EN;
 	smi_en |= BIOS_EN;
 

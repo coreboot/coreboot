@@ -829,6 +829,10 @@ config DEBUG_SMI
 
 	  If unsure, say N.
 
+config DEBUG_PERIODIC_SMI
+	bool "Trigger SMI periodically"
+	depends on DEBUG_SMI
+
 # Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
 # printk(BIOS_DEBUG, ...) calls.
 config DEBUG_MALLOC

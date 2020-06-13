@@ -228,12 +228,8 @@ static void i82801ix_power_options(struct device *dev)
 	// another laptop wants this?
 	// reg16 &= ~(1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
 	reg16 |= (1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in i82801ix.h to debug using
-	 * periodic SMIs.
-	 */
-	reg16 |= (3 << 0); // Periodic SMI every 8s
-#endif
+	if (CONFIG(DEBUG_PERIODIC_SMI))
+		reg16 |= (3 << 0); // Periodic SMI every 8s
 	if (config->c5_enable)
 		reg16 |= (1 << 11); /* Enable C5, C6 and PMSYNC# */
 	pci_write_config16(dev, D31F0_GEN_PMCON_1, reg16);

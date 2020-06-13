@@ -12,8 +12,6 @@
 
 #include "pmutil.h"
 
-#define DEBUG_PERIODIC_SMIS 0
-
 u16 get_pmbase(void)
 {
 	return lpc_get_pmbase();
@@ -60,28 +58,16 @@ void smm_southbridge_enable_smi(void)
 	 *  - on TCO events
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
-	 *  - on writes to GBL_RLS (bios commands)
 	 * No SMIs:
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
 
 	smi_en = 0; /* reset SMI enables */
-
-#if 0
-	smi_en |= LEGACY_USB2_EN | LEGACY_USB_EN;
-#endif
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in pch.h to debug using
-	 * periodic SMIs.
-	 */
-	smi_en |= PERIODIC_EN;
-#endif
+	if (CONFIG(DEBUG_PERIODIC_SMI))
+		smi_en |= PERIODIC_EN;
 	smi_en |= SLP_SMI_EN;
-#if 0
-	smi_en |= BIOS_EN;
-#endif
 
 	/* The following need to be on for SMIs to happen */
 	smi_en |= EOS | GBL_SMI_EN;

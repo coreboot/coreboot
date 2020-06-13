@@ -225,12 +225,8 @@ static void pch_power_options(struct device *dev)
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
 	reg16 &= ~(3 << 0);	// SMI# rate 1 minute
 	reg16 &= ~(1 << 10);	// Disable BIOS_PCI_EXP_EN for native PME
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in pch.h to debug using
-	 * periodic SMIs.
-	 */
-	reg16 |= (3 << 0); // Periodic SMI every 8s
-#endif
+	if (CONFIG(DEBUG_PERIODIC_SMI))
+		reg16 |= (3 << 0); // Periodic SMI every 8s
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	// Set the board's GPI routing.

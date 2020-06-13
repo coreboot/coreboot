@@ -40,8 +40,6 @@
 #endif
 
 #ifndef __ACPI__
-#define DEBUG_PERIODIC_SMIS 0
-
 
 int pch_silicon_revision(void);
 int pch_silicon_type(void);

@@ -88,16 +88,6 @@ config AP_IN_SIPI_WAIT
 	default n
 	depends on ARCH_X86 && SMP
 
-config X86_RESET_VECTOR
-	hex
-	depends on ARCH_X86
-	default 0xfffffff0
-	help
-	  Specify the location of the x86 reset vector.  In traditional devices
-	  this must match the architectural reset vector to produce a bootable
-	  image.  Nontraditional designs may use this to position the reset
-	  vector into its desired location.
-
 config RESET_VECTOR_IN_RAM
 	bool
 	depends on ARCH_X86

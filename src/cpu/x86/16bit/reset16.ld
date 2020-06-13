@@ -1,13 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* _RESET_VECTOR: typically the top of the ROM */
+/*
+ *      _ROMTOP                 : The top of the ROM used where we
+ *				  need to put the reset vector.
+ */
 
 SECTIONS {
 	/* Trigger an error if I have an unuseable start address */
-	_TOO_LOW = CONFIG_X86_RESET_VECTOR - 0xfff0;
-	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
-
-	. = CONFIG_X86_RESET_VECTOR;
+	_bogus = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");
+	_ROMTOP = 0xfffffff0;
+	. = _ROMTOP;
 	.reset . : {
 		*(.reset);
 		. = 15;

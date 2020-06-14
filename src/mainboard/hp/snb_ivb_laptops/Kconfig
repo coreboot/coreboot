@@ -29,6 +29,7 @@ config VARIANT_DIR
 	default "8470p"          if BOARD_HP_8470P
 	default "8770w"          if BOARD_HP_8770W
 	default "folio_9470m"    if BOARD_HP_FOLIO_9470M
+	default "probook_6360b"  if BOARD_HP_PROBOOK_6360B
 	default "revolve_810_g1" if BOARD_HP_REVOLVE_810_G1
 
 config MAINBOARD_PART_NUMBER
@@ -40,6 +41,7 @@ config MAINBOARD_PART_NUMBER
 	default "EliteBook 8470p"          if BOARD_HP_8470P
 	default "EliteBook 8770w"          if BOARD_HP_8770W
 	default "EliteBook Folio 9470m"    if BOARD_HP_FOLIO_9470M
+	default "ProBook 6360b"            if BOARD_HP_PROBOOK_6360B
 	default "EliteBook Revolve 810 G1" if BOARD_HP_REVOLVE_810_G1
 
 config OVERRIDE_DEVICETREE
@@ -65,6 +67,7 @@ config USBDEBUG_HCD_INDEX
 	default 2 if BOARD_HP_8470P
 	default 2 if BOARD_HP_8770W
 	default 0 if BOARD_HP_FOLIO_9470M
+	default 1 if BOARD_HP_PROBOOK_6360B # FIXME: check this
 	default 2 if BOARD_HP_REVOLVE_810_G1 # FIXME: check this
 
 endif

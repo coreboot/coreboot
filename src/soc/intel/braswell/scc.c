@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 
-#include <cbmem.h>
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -18,11 +18,9 @@ void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 			__FILE__, __func__, dev_name(dev), iosf_reg, nvs_index);
 
 	/* Find ACPI NVS to update BARs */
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		printk(BIOS_ERR, "Unable to locate Global NVS\n");
+	gnvs = acpi_get_gnvs();
+	if (!gnvs)
 		return;
-	}
 
 	/* Save BAR0 and BAR1 to ACPI NVS */
 	bar = find_resource(dev, PCI_BASE_ADDRESS_0);

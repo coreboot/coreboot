@@ -6,6 +6,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
@@ -456,7 +457,7 @@ void generate_cpu_entries(const struct device *device)
 /* Save wake source data for ACPI _SWS methods in NVS */
 static void acpi_save_wake_source(void *unused)
 {
-	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	global_nvs_t *gnvs = acpi_get_gnvs();
 	uint32_t pm1, *gpe0;
 	int gpe_reg, gpe_reg_count;
 	int reg_size = sizeof(uint32_t) * 8;

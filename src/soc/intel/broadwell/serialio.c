@@ -2,7 +2,7 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -236,11 +236,9 @@ static void serialio_init(struct device *dev)
 		global_nvs_t *gnvs;
 
 		/* Find ACPI NVS to update BARs */
-		gnvs = (global_nvs_t *)cbmem_find(CBMEM_ID_ACPI_GNVS);
-		if (!gnvs) {
-			printk(BIOS_ERR, "Unable to locate Global NVS\n");
+		gnvs = acpi_get_gnvs();
+		if (!gnvs)
 			return;
-		}
 
 		/* Save BAR0 and BAR1 to ACPI NVS */
 		gnvs->dev.bar0[sio_index] = (u32)bar0->base;

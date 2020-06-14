@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cbmem.h>
+#include <acpi/acpi_gnvs.h>
 #include <nhlt.h>
 #include <soc/nvs.h>
 
@@ -15,7 +15,7 @@ uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
 {
 	global_nvs_t *gnvs;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	gnvs = acpi_get_gnvs();
 
 	if (gnvs == NULL)
 		return acpi_addr;

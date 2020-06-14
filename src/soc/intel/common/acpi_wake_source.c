@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <soc/nvs.h>
 #include <stdint.h>
@@ -16,7 +16,7 @@ __weak int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 /* Save wake source data for ACPI _SWS methods in NVS */
 static void acpi_save_wake_source(void *unused)
 {
-	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	global_nvs_t *gnvs = acpi_get_gnvs();
 	uint32_t pm1, *gpe0;
 	int gpe_reg, gpe_reg_count;
 	int reg_size = sizeof(uint32_t) * 8;

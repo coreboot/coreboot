@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <cbmem.h>
+#include <acpi/acpi_gnvs.h>
 #include <console/uart.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -167,7 +167,7 @@ static void uart_read_resources(struct device *dev)
  */
 static bool pch_uart_init_debug_controller_on_resume(void)
 {
-	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	global_nvs_t *gnvs = acpi_get_gnvs();
 
 	if (gnvs)
 		return !!gnvs->uior;

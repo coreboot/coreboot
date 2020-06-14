@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
-#include <cbmem.h>
 #include <types.h>
 #include <string.h>
 #include <version.h>
@@ -51,7 +51,7 @@ static void acpi_create_serialio_ssdt_entry(int id, global_nvs_t *gnvs)
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
-	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	global_nvs_t *gnvs = acpi_get_gnvs();
 	int id;
 
 	if (!gnvs)

@@ -10,6 +10,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <acpi/acpi_gnvs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
@@ -308,7 +309,7 @@ static void set_nvs_sws(void *unused)
 	sws = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (sws == NULL)
 		return;
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	gnvs = acpi_get_gnvs();
 	if (gnvs == NULL)
 		return;
 
@@ -336,7 +337,7 @@ void southbridge_init(void *chip_info)
 
 static void set_sb_final_nvs(void)
 {
-	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	struct global_nvs_t *gnvs = acpi_get_gnvs();
 	if (gnvs == NULL)
 		return;
 

@@ -5,9 +5,9 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
-#include <cbmem.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <smbios.h>
@@ -165,7 +165,7 @@ static void mainboard_final(void *chip_info)
 {
 	struct global_nvs_t *gnvs;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	gnvs = acpi_get_gnvs();
 
 	if (gnvs) {
 		gnvs->tmps = CTL_TDP_SENSOR_ID;

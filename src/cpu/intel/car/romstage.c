@@ -2,7 +2,6 @@
 
 #include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <bootblock_common.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <arch/symbols.h>

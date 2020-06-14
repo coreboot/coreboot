@@ -13,9 +13,7 @@
 #include <soc/southbridge.h>
 #include "chip.h"
 
-/*
- * We don't have addresses for I2C0-1.
- */
+#if ENV_X86
 static const uintptr_t i2c_bus_address[I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT] = {
 	0,
 	0,
@@ -23,6 +21,9 @@ static const uintptr_t i2c_bus_address[I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUN
 	APU_I2C3_BASE,
 	APU_I2C4_BASE, /* Can only be used in slave mode */
 };
+#else
+static uintptr_t i2c_bus_address[I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT];
+#endif
 
 uintptr_t dw_i2c_base_address(unsigned int bus)
 {
@@ -31,6 +32,18 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 
 	return i2c_bus_address[bus];
 }
+
+#if !ENV_X86
+void i2c_set_bar(unsigned int bus, uintptr_t bar)
+{
+	if (bus >= ARRAY_SIZE(i2c_bus_address)) {
+		printk(BIOS_ERR, "Error: i2c index out of bounds: %u.", bus);
+		return;
+	}
+
+	i2c_bus_address[bus] = bar;
+}
+#endif
 
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
@@ -47,28 +60,23 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 
 static const char *i2c_acpi_name(const struct device *dev)
 {
-	switch (dev->path.mmio.addr) {
-	case APU_I2C2_BASE:
+	if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[2])
 		return "I2C2";
-	case APU_I2C3_BASE:
+	else if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[3])
 		return "I2C3";
-	case APU_I2C4_BASE:
+	else if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[4])
 		return "I2C4";
-	default:
-		return NULL;
-	}
+	return NULL;
 }
 
 int dw_i2c_soc_dev_to_bus(const struct device *dev)
 {
-	switch (dev->path.mmio.addr) {
-	case APU_I2C2_BASE:
+	if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[2])
 		return 2;
-	case APU_I2C3_BASE:
+	else if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[3])
 		return 3;
-	case APU_I2C4_BASE:
+	else if ((uintptr_t)dev->path.mmio.addr == i2c_bus_address[4])
 		return 4;
-	}
 	return -1;
 }
 

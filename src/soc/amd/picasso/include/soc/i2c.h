@@ -22,4 +22,7 @@ struct soc_amd_i2c_save {
 
 void sb_reset_i2c_slaves(void);
 
+/* Sets the base address for the specific I2C bus. */
+void i2c_set_bar(unsigned int bus, uintptr_t bar);
+
 #endif /* __PICASSO_I2C_H__ */

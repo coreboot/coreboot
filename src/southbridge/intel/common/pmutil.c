@@ -215,3 +215,12 @@ u16 reset_alt_gp_smi_status(void)
 
 	return reg16;
 }
+
+void dump_all_status(void)
+{
+	dump_smi_status(reset_smi_status());
+	dump_pm1_status(reset_pm1_status());
+	dump_gpe0_status(reset_gpe0_status());
+	dump_alt_gp_smi_status(reset_alt_gp_smi_status());
+	dump_tco_status(reset_tco_status());
+}

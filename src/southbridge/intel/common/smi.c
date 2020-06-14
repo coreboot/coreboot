@@ -17,31 +17,30 @@ u16 get_pmbase(void)
 	return lpc_get_pmbase();
 }
 
-static void smm_southbridge_enable(uint16_t pm1_events)
+static int smi_enabled(void)
 {
 	u32 smi_en;
-	u32 gpe0_en;
 
-	if (CONFIG(ELOG))
 	/* Log events from chipset before clearing */
+	if (CONFIG(ELOG))
 		pch_log_state();
 
 	printk(BIOS_DEBUG, "Initializing southbridge SMI...");
-
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", lpc_get_pmbase());
 
 	smi_en = read_pmbase32(SMI_EN);
 	if (smi_en & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
-		return;
+		return 1;
 	}
-
 	printk(BIOS_DEBUG, "\n");
-	dump_smi_status(reset_smi_status());
-	dump_pm1_status(reset_pm1_status());
-	dump_gpe0_status(reset_gpe0_status());
-	dump_alt_gp_smi_status(reset_alt_gp_smi_status());
-	dump_tco_status(reset_tco_status());
+	return 0;
+}
+
+static void smm_southbridge_enable(uint16_t pm1_events)
+{
+	u32 smi_en;
+	u32 gpe0_en;
 
 	/* Disable GPE0 PME_B0 */
 	gpe0_en = read_pmbase32(GPE0_EN);
@@ -73,6 +72,10 @@ static void smm_southbridge_enable(uint16_t pm1_events)
 
 void global_smi_enable(void)
 {
+	if (smi_enabled())
+		return;
+
+	dump_all_status();
 	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
 
@@ -97,22 +100,8 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 
 void smm_southbridge_clear_state(void)
 {
-	u32 smi_en;
-
-	if (CONFIG(ELOG))
-	/* Log events from chipset before clearing */
-		pch_log_state();
-
-	printk(BIOS_DEBUG, "Initializing Southbridge SMI...\n");
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", get_pmbase());
-
-	smi_en = inl(get_pmbase() + SMI_EN);
-	if (smi_en & APMC_EN) {
-		printk(BIOS_INFO, "SMI# handler already enabled?\n");
+	if (smi_enabled())
 		return;
-	}
-
-	printk(BIOS_DEBUG, "\n");
 
 	/* Dump and clear status registers */
 	reset_smi_status();

@@ -125,6 +125,8 @@ void alt_gpi_mask(u16 clr, u16 set);
 void smi_set_eos(void);
 void dump_alt_gp_smi_status(u16 alt_gp_smi_sts);
 u16 reset_alt_gp_smi_status(void);
+void dump_all_status(void);
+
 void southbridge_smm_xhci_sleep(u8 slp_type);
 void gpi_route_interrupt(u8 gpi, u8 mode);
 void southbridge_gate_memory_reset(void);

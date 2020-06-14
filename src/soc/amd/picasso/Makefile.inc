@@ -238,6 +238,18 @@ PSP_UCODE_FILE1=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
 PSP_UCODE_FILE2=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
 PSP_UCODE_FILE3=$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
 
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+# type = 0x6B - PSP Shared memory location
+ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
+PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
+_PSP_SHAREDMEM_BASE=$(shell grep _psp_sharedmem_dram $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)/bootblock.map | cut -f1 -d' ')
+PSP_SHAREDMEM_BASE=$(shell printf "0x%s" $(_PSP_SHAREDMEM_BASE))
+endif
+
+# type = 0x52 - PSP Bootloader Userspace Application (verstage)
+PSP_VERSTAGE_FILE=$(obj)/psp_verstage.bin
+endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
+
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28
 
@@ -280,6 +292,7 @@ OPT_ABL5_FILE=$(call add_opt_prefix,  $(PSP_ABL5_FILE), --abl-image)
 OPT_ABL6_FILE=$(call add_opt_prefix,  $(PSP_ABL6_FILE), --abl-image)
 OPT_ABL7_FILE=$(call add_opt_prefix,  $(PSP_ABL7_FILE), --abl-image)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
+OPT_VERSTAGE_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_FILE), --verstage)
 
 OPT_PSP_APCB_FILES=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
 	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
@@ -298,6 +311,8 @@ OPT_PSP_PMUD_FILE2=$(call add_opt_prefix, $(PSP_PMUD_FILE2), --subprogram 0 --in
 OPT_PSP_PMUD_FILE3=$(call add_opt_prefix, $(PSP_PMUD_FILE3), --subprogram 1 --instance 1 --pmu-data)
 OPT_PSP_PMUD_FILE4=$(call add_opt_prefix, $(PSP_PMUD_FILE4), --subprogram 1 --instance 4 --pmu-data)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
+OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
+OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 
 # Copy prebuild APCBs if they exist
 $(obj)/APCB_%.bin: $(MAINBOARD_BLOBS_DIR)/APCB_%.bin
@@ -375,6 +390,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call_strip_quotes, $(PSP_S0I3_FILE)) \
 			$(call_strip_quotes, $(PSP_IKEK_FILE)) \
 			$(call_strip_quotes, $(PSP_SEC_DEBUG_FILE)) \
+			$(PSP_VERSTAGE_FILE) \
 			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap.fmd
@@ -429,6 +445,9 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_SEC_DEBUG_FILE) \
 		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
+		$(OPT_VERSTAGE_FILE) \
+		$(OPT_PSP_SHAREDMEM_BASE) \
+		$(OPT_PSP_SHAREDMEM_SIZE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
 		--output	$@

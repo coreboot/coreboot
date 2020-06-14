@@ -277,8 +277,22 @@ chip soc/intel/cannonlake
 			# RFU - Reserved for Future Use.
 		end # I2C #0
 		device pci 15.1 off end # I2C #1
-		device pci 15.2 on end # I2C #2, PCON PS175.
-		device pci 15.3 on end # I2C #3, Realtek RTD2142.
+		device pci 15.2 on
+			chip drivers/i2c/generic
+				register "hid" = ""1AF80175""
+				register "name" = ""PS17""
+				register "desc" = ""Parade PS175""
+				device i2c 4a on end
+			end
+		end # I2C #2, PCON PS175.
+		device pci 15.3 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC2142""
+				register "name" = ""RTD2""
+				register "desc" = ""Realtek RTD2142""
+				device i2c 4a on end
+			end
+		end # I2C #3, Realtek RTD2142.
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

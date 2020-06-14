@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <device/dram/ddr3.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>

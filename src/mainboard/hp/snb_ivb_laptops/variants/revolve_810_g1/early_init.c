@@ -4,7 +4,6 @@
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/hp/kbc1126/ec.h>

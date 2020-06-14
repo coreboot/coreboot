@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 

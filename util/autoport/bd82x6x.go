@@ -297,7 +297,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb.WriteString(`
 
 #include <bootblock_common.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 

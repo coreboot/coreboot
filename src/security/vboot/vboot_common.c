@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <boot_device.h>
 #include <console/cbmem_console.h>
 #include <reset.h>
 #include <security/vboot/misc.h>

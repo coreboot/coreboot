@@ -4,7 +4,6 @@
 #include <arch/cache.h>
 #include <device/mmio.h>
 #include <assert.h>
-#include <boot_device.h>
 #include <console/console.h>
 #include <delay.h>
 #include <spi-generic.h>

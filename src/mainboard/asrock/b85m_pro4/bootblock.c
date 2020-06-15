@@ -13,9 +13,13 @@ void mainboard_config_superio(void)
 {
 	nuvoton_pnp_enter_conf_state(GLOBAL_DEV);
 
-	/* Select HWM/LED functions instead of floppy functions */
-	pnp_write_config(GLOBAL_DEV, 0x1c, 0x03);
-	pnp_write_config(GLOBAL_DEV, 0x24, 0x24);
+	/* Select SIO pin mux states */
+	pnp_write_config(GLOBAL_DEV, 0x1b, 0x68);
+	pnp_write_config(GLOBAL_DEV, 0x1c, 0x80);
+	pnp_write_config(GLOBAL_DEV, 0x24, 0x1c);
+	pnp_write_config(GLOBAL_DEV, 0x27, 0xd0);
+	pnp_write_config(GLOBAL_DEV, 0x2a, 0x62);
+	pnp_write_config(GLOBAL_DEV, 0x2f, 0x03);
 
 	/* Power RAM in S3 and let the PCH handle power failure actions */
 	pnp_set_logical_device(ACPI_DEV);

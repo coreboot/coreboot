@@ -80,20 +80,21 @@ chip northbridge/intel/haswell
 					device pnp 2e.108 on		# GPIO0
 						irq 0xe0 = 0xf9		# + GPIO0 direction
 						irq 0xe1 = 0xfb		# + GPIO0 value
-						irq 0xf0 = 0xf1		# + GPIO1 direction
-						irq 0xf1 = 0xf1		# + GPIO1 value
 					end
 					device pnp 2e.208 off end	# GPIOA
 					device pnp 2e.308 off end	# GPIO base
-					device pnp 2e.109 on  end	# GPIO1
-					device pnp 2e.209 on		# GPIO2
-						irq 0xe0 = 0xff		# + GPIO2 direction
+					device pnp 2e.109 on		# GPIO1
+						irq 0xf0 = 0xf1		# + GPIO1 direction
+						irq 0xf1 = 0xf1		# + GPIO1 value
 					end
+					device pnp 2e.209 off end	# GPIO2
 					device pnp 2e.309 off end	# GPIO3
 					device pnp 2e.409 off end	# GPIO4
 					device pnp 2e.509 off end	# GPIO5
 					device pnp 2e.609 off end	# GPIO6
-					device pnp 2e.709 off end	# GPIO7
+					device pnp 2e.709 on		# GPIO7
+						irq 0xe0 = 0xff		# + GPIO7 direction
+					end
 					device pnp 2e.a   on		# ACPI
 						irq 0xe0 = 0x41		# + Enable KBC wakeup
 						irq 0xe4 = 0x10		# + Power RAM in S3

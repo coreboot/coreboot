@@ -215,7 +215,31 @@ static void usage(void)
 	printf("-q | --anywhere                Use any 64-byte aligned addr for Directory\n");
 	printf("-R | --sharedmem               Location of PSP/FW shared memory\n");
 	printf("-P | --sharedmem-size          Maximum size of the PSP/FW shared memory area\n");
+	printf("-C | --soc-name <socname>      Specify SOC name. Supported names are\n");
+	printf("                               Stoneyridge, Raven, Picasso, Renoir or Lucienne");
 	printf("-h | --help                    show this help\n");
+	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
+	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
+	printf("                               0x0 66.66Mhz\n");
+	printf("                               0x1 33.33MHz\n");
+	printf("                               0x2 22.22MHz\n");
+	printf("                               0x3 16.66MHz\n");
+	printf("                               0x4 100MHz\n");
+	printf("                               0x5 800KHz\n");
+	printf("--spi-read-mode <HEX_VAL>      SPI read mode to place in EFS Table\n");
+	printf("                               0x0 Normal Read (up to 33M)\n");
+	printf("                               0x1 Reserved\n");
+	printf("                               0x2 Dual IO (1-1-2)\n");
+	printf("                               0x3 Quad IO (1-1-4)\n");
+	printf("                               0x4 Dual IO (1-2-2)\n");
+	printf("                               0x5 Quad IO (1-4-4)\n");
+	printf("                               0x6 Normal Read (up to 66M)\n");
+	printf("                               0x7 Fast Read\n");
+	printf("--spi-micron-flag <HEX_VAL>    Micron SPI part support for RV and later SOC\n");
+	printf("                               0x0 Micron parts are not used\n");
+	printf("                               0x1 Micron parts are always used\n");
+	printf("                               0x2 Micron parts optional, this option is only\n");
+	printf("                                   supported with RN/LCN SOC\n");
 }
 
 typedef enum _amd_bios_type {
@@ -413,7 +437,26 @@ typedef struct _embedded_firmware {
 	uint32_t bios0_entry; /* todo: add way to select correct entry */
 	uint32_t bios1_entry;
 	uint32_t bios2_entry;
-	uint32_t reserved[0x2c]; /* 0x24 - 0x4f */
+	uint32_t second_gen_efs;
+	uint32_t bios3_entry;
+	uint32_t reserved_2Ch;
+	uint32_t promontory_fw_ptr;
+	uint32_t lp_promontory_fw_ptr;
+	uint32_t reserved_38h;
+	uint32_t reserved_3Ch;
+	uint8_t spi_readmode_f15_mod_60_6f;
+	uint8_t fast_speed_new_f15_mod_60_6f;
+	uint8_t reserved_42h;
+	uint8_t spi_readmode_f17_mod_00_2f;
+	uint8_t spi_fastspeed_f17_mod_00_2f;
+	uint8_t qpr_dummy_cycle_f17_mod_00_2f;
+	uint8_t reserved_46h;
+	uint8_t spi_readmode_f17_mod_30_3f;
+	uint8_t spi_fastspeed_f17_mod_30_3f;
+	uint8_t micron_detect_f17_mod_30_3f;
+	uint8_t reserved_4Ah;
+	uint8_t reserved_4Bh;
+	uint32_t reserved_4Ch;
 } __attribute__((packed, aligned(16))) embedded_firmware;
 
 typedef struct _psp_directory_header {
@@ -1038,8 +1081,16 @@ static void integrate_bios_firmwares(context *ctx,
 
 	fill_dir_header(biosdir, count, cookie);
 }
-// Unused values: CDE
-static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:qR:P:";
+
+enum {
+	/* begin after ASCII characters */
+	LONGOPT_SPI_READ_MODE	= 256,
+	LONGOPT_SPI_SPEED	= 257,
+	LONGOPT_SPI_MICRON_FLAG	= 258,
+};
+
+// Unused values: DE
+static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:qR:P:C:";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -1086,6 +1137,10 @@ static struct option long_options[] = {
 	{"mp2-config",       required_argument, 0, 'X' },
 	{"apob-nv-base",     required_argument, 0, 'F' },
 	{"apob-nv-size",     required_argument, 0, 'H' },
+	/* Embedded Firmware Structure items*/
+	{"spi-read-mode",    required_argument, 0, LONGOPT_SPI_READ_MODE },
+	{"spi-speed",        required_argument, 0, LONGOPT_SPI_SPEED },
+	{"spi-micron-flag",  required_argument, 0, LONGOPT_SPI_MICRON_FLAG },
 	/* other */
 	{"output",           required_argument, 0, 'o' },
 	{"flashsize",        required_argument, 0, 'f' },
@@ -1093,6 +1148,7 @@ static struct option long_options[] = {
 	{"anywhere",         no_argument,       0, 'q' },
 	{"sharedmem",        required_argument, 0, 'R' },
 	{"sharedmem-size",   required_argument, 0, 'P' },
+	{"soc-name",         required_argument, 0, 'C' },
 	{"help",             no_argument,       0, 'h' },
 	{NULL,               0,                 0,  0  }
 };
@@ -1178,6 +1234,91 @@ static void register_fw_addr(amd_bios_type type, char *src_str,
 	}
 }
 
+enum platform {
+	PLATFORM_UNKNOWN,
+	PLATFORM_STONEYRIDGE,
+	PLATFORM_RAVEN,
+	PLATFORM_PICASSO,
+	PLATFORM_RENOIR,
+	PLATFORM_LUCIENNE,
+};
+
+static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
+			 uint8_t efs_spi_readmode, uint8_t efs_spi_speed,
+			 uint8_t efs_spi_micron_flag)
+{
+	if ((efs_spi_readmode == 0xFF) || (efs_spi_speed == 0xFF)) {
+		printf("Error: EFS read mode and SPI speed must be set\n");
+		return 1;
+	}
+	switch (soc_id) {
+	case PLATFORM_STONEYRIDGE:
+		amd_romsig->second_gen_efs = 0;
+		amd_romsig->spi_readmode_f15_mod_60_6f = efs_spi_readmode;
+		amd_romsig->fast_speed_new_f15_mod_60_6f = efs_spi_speed;
+		break;
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+		amd_romsig->second_gen_efs = 0;
+		amd_romsig->spi_readmode_f17_mod_00_2f = efs_spi_readmode;
+		amd_romsig->spi_fastspeed_f17_mod_00_2f = efs_spi_speed;
+		switch (efs_spi_micron_flag) {
+		case 0:
+			amd_romsig->qpr_dummy_cycle_f17_mod_00_2f = 0xff;
+			break;
+		case 1:
+			amd_romsig->qpr_dummy_cycle_f17_mod_00_2f = 0xa;
+			break;
+		default:
+			printf("Error: EFS Micron flag must be correctly set.\n\n");
+			return 1;
+		}
+		break;
+	case PLATFORM_RENOIR:
+	case PLATFORM_LUCIENNE:
+		amd_romsig->second_gen_efs = 1;
+		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
+		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
+		switch (efs_spi_micron_flag) {
+		case 0:
+			amd_romsig->micron_detect_f17_mod_30_3f = 0xff;
+			break;
+		case 1:
+			amd_romsig->micron_detect_f17_mod_30_3f = 0xaa;
+			break;
+		case 2:
+			amd_romsig->micron_detect_f17_mod_30_3f = 0x55;
+			break;
+		default:
+			printf("Error: EFS Micron flag must be correctly set.\n\n");
+			return 1;
+		}
+		break;
+	case PLATFORM_UNKNOWN:
+	default:
+		printf("Error: Invalid SOC name.\n\n");
+		return 1;
+	}
+	return 0;
+}
+
+static int identify_platform(char *soc_name)
+{
+	if (!strcasecmp(soc_name, "Stoneyridge"))
+		return PLATFORM_STONEYRIDGE;
+	else if (!strcasecmp(soc_name, "Raven"))
+		return PLATFORM_RAVEN;
+	else if (!strcasecmp(soc_name, "Picasso"))
+		return PLATFORM_PICASSO;
+	else if (!strcasecmp(soc_name, "Renoir"))
+		return PLATFORM_RENOIR;
+	else if (!strcasecmp(soc_name, "Lucienne"))
+		return PLATFORM_LUCIENNE;
+	else
+		return PLATFORM_UNKNOWN;
+
+}
+
 int main(int argc, char **argv)
 {
 	int c;
@@ -1200,6 +1341,11 @@ int main(int argc, char **argv)
 	bool any_location = 0;
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
+	uint8_t soc_id = PLATFORM_UNKNOWN;
+	uint8_t efs_spi_readmode = 0xff;
+	uint8_t efs_spi_speed = 0xff;
+	uint8_t efs_spi_micron_flag = 0xff;
+
 	int multi = 0;
 
 	while (1) {
@@ -1394,6 +1540,26 @@ int main(int argc, char **argv)
 			register_fw_filename(AMD_FW_PSP_VERSTAGE, sub, optarg);
 			sub = instance = 0;
 			break;
+		case 'C':
+			soc_id = identify_platform(optarg);
+			if (soc_id == PLATFORM_UNKNOWN) {
+				printf("Error: Invalid SOC name specified\n\n");
+				retval = 1;
+			}
+			sub = instance = 0;
+			break;
+		case LONGOPT_SPI_READ_MODE:
+			efs_spi_readmode = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_SPI_SPEED:
+			efs_spi_speed = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
+		case LONGOPT_SPI_MICRON_FLAG:
+			efs_spi_micron_flag = strtoull(optarg, NULL, 16);
+			sub = instance = 0;
+			break;
 		case 'o':
 			output = optarg;
 			break;
@@ -1511,6 +1677,17 @@ int main(int argc, char **argv)
 	amd_romsig->imc_entry = 0;
 	amd_romsig->gec_entry = 0;
 	amd_romsig->xhci_entry = 0;
+
+	if (soc_id != PLATFORM_UNKNOWN) {
+		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,
+					efs_spi_speed, efs_spi_micron_flag);
+		if (retval) {
+			printf("ERROR: Failed to initialize EFS table!\n");
+			return retval;
+		}
+	} else {
+		printf("WARNING: No SOC name specified.\n");
+	}
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 

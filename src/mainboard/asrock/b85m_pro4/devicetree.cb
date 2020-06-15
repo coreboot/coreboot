@@ -70,7 +70,7 @@ chip northbridge/intel/haswell
 					device pnp 2e.5   on		# PS/2 KBC
 						io  0x60 = 0x0060
 						io  0x62 = 0x0064
-						irq 0x70 = 12		# + Keyboard
+						irq 0x70 = 1		# + Keyboard
 						irq 0x72 = 12		# + Mouse
 					end
 					device pnp 2e.6   off end	# CIR

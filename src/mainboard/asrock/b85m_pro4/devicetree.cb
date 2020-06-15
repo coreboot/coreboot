@@ -60,18 +60,18 @@ chip northbridge/intel/haswell
 						io  0x60 = 0x0378
 						irq 0x70 = 6
 						drq 0x74 = 2
-						irq 0xf0 = 0x3b
+						irq 0xf0 = 0x3b		# + ECP and EPP 1.9
 					end
 					device pnp 2e.2   on		# UART A
 						io  0x60 = 0x03f8
 						irq 0x70 = 4
 					end
 					device pnp 2e.3   off end	# UART B, IR
-					device pnp 2e.5   on		# PS/2 KBC
+					device pnp 2e.5   on		# PS/2 Keyboard/Mouse
 						io  0x60 = 0x0060
 						io  0x62 = 0x0064
-						irq 0x70 = 1		# + Keyboard
-						irq 0x72 = 12		# + Mouse
+						irq 0x70 = 1		# + Keyboard IRQ
+						irq 0x72 = 12		# + Mouse IRQ (unused)
 					end
 					device pnp 2e.6   off end	# CIR
 					device pnp 2e.7   off end	# GPIO8
@@ -100,8 +100,8 @@ chip northbridge/intel/haswell
 						irq 0xf0 = 0x20
 					end
 					device pnp 2e.b   on		# HWM, LED
-						irq 0x30 = 0xe1
-						io  0x60 = 0x0290
+						irq 0x30 = 0xe1		# + Fan RPM sense pins
+						io  0x60 = 0x0290	# + HWM base address
 					end
 					device pnp 2e.d   off end	# VID
 					device pnp 2e.e   off end	# CIR wake-up

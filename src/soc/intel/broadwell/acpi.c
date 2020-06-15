@@ -161,15 +161,16 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if CONFIG(CHROMEOS)
-	/* Initialize Verified Boot data */
-	chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-#if CONFIG(EC_GOOGLE_CHROMEEC)
-	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-#endif
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-#endif
+	if (CONFIG(CHROMEOS)) {
+		/* Initialize Verified Boot data */
+		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
+		if (CONFIG(EC_GOOGLE_CHROMEEC)) {
+			gnvs->chromeos.vbt2 = google_ec_running_ro() ?
+				ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
+		} else {
+			gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+		}
+	}
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

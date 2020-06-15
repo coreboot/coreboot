@@ -103,6 +103,7 @@ chip northbridge/intel/haswell
 					device pnp 2e.b   on		# HWM, LED
 						irq 0x30 = 0xe1		# + Fan RPM sense pins
 						io  0x60 = 0x0290	# + HWM base address
+						irq 0x70 = 0
 					end
 					device pnp 2e.d   off end	# VID
 					device pnp 2e.e   off end	# CIR wake-up

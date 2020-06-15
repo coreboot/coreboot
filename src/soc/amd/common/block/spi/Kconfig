@@ -9,3 +9,46 @@ config SOC_AMD_COMMON_BLOCK_SPI
 config SOC_AMD_COMMON_BLOCK_SPI_DEBUG
 	bool
 	default n
+
+config EFS_SPI_READ_MODE
+	int
+	range 0 7
+	default 2
+	help
+	  SPI read mode to be programmed by the PSP.
+	  The numbers in the options below indicate how many wires
+	  are utilized for command, address and data. For instance 1-1-2
+	  means 1 command, 1 address and 2 data wires.
+	    0: Normal Read (up to 33M)
+	    1: Reserved
+	    2: Dual IO (1-1-2)
+	    3: Quad IO (1-1-4)
+	    4: Dual IO (1-2-2)
+	    5: Quad IO (1-4-4)
+	    6: Normal Read (up to 66M)
+	    7: Fast Read
+
+config EFS_SPI_SPEED
+	int
+	range 0 5
+	default 0
+	help
+	  SPI Fast Speed to be programmed by the PSP.
+	    0: 66.66Mhz
+	    1: 33.33MHz
+	    2: 22.22MHz
+	    3: 16.66MHz
+	    4: 100MHz
+	    5: 800KHz
+
+config EFS_SPI_MICRON_FLAG
+	int
+	range 0 2
+	default 0
+	help
+	  For Family 17h Model 00h and later SoC the PSP must be aware if a Micron
+	  part is present in EFS. Automatic detection (option 2) is available
+	  for Family 17h Model 30h-3Fh but is unsupported otherwise.
+	    0: Board does not use Micron parts
+	    1: Board always uses Micron parts
+	    2: Micron parts are optional

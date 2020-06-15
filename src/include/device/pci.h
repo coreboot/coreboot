@@ -128,6 +128,18 @@ static inline int pci_base_address_is_memory_space(unsigned int attr)
 }
 
 void pci_dev_disable_bus_master(const struct device *dev);
+
+static __always_inline
+#if ENV_PCI_SIMPLE_DEVICE
+void pci_dev_request_bus_master(pci_devfn_t dev)
+#else
+void pci_dev_request_bus_master(const struct device *dev)
+#endif /* ENV_PCI_SIMPLE_DEVICE */
+{
+	if (CONFIG(PCI_ALLOW_BUS_MASTER))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+}
+
 #endif /* CONFIG_PCI */
 
 void pci_early_bridge_init(void);

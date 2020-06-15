@@ -9,7 +9,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <cpu/intel/smm_reloc.h>
-#include <cpu/intel/common/common.h>
+
 #include "chip.h"
 
 static void init_timer(void)

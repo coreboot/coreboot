@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/cache.h>

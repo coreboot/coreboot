@@ -10,7 +10,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/tsc.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>

@@ -10,7 +10,6 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
-#include <cpu/x86/tsc.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
 #include <drivers/intel/gma/opregion.h>

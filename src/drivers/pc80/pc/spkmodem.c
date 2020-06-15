@@ -2,7 +2,6 @@
 
 #include <arch/io.h>
 #include <console/spkmodem.h>
-#include <cpu/x86/tsc.h>
 
 #define SPEAKER_PIT_FREQUENCY		0x1234dd
 

@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/streams.h>
-#include <cpu/x86/tsc.h>
 #include <program_loading.h>
 #include <rmodule.h>
 #include <stage_cache.h>

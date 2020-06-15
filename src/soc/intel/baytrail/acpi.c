@@ -10,7 +10,6 @@
 #include <cpu/x86/smm.h>
 #include <types.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/tsc.h>
 #include <cpu/intel/turbo.h>
 
 #include <soc/acpi.h>

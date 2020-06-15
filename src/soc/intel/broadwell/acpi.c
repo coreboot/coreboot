@@ -12,7 +12,6 @@
 #include <string.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/tsc.h>
 #include <cpu/intel/turbo.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>

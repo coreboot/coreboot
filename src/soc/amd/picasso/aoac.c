@@ -76,13 +76,13 @@ void enable_aoac_devices(void)
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
 		power_on_aoac_device(aoac_devs[i]);
 
-	if (CONFIG(PICASSO_UART))
+	if (CONFIG(PICASSO_CONSOLE_UART))
 		power_on_aoac_device(FCH_AOAC_UART_FOR_CONSOLE);
 
 	/* Wait for AOAC devices to indicate power and clock OK */
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
 		wait_for_aoac_enabled(aoac_devs[i]);
 
-	if (CONFIG(PICASSO_UART))
+	if (CONFIG(PICASSO_CONSOLE_UART))
 		wait_for_aoac_enabled(FCH_AOAC_UART_FOR_CONSOLE);
 }

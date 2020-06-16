@@ -152,7 +152,7 @@ void fch_pre_init(void)
 	 */
 	clear_uart_legacy_config();
 
-	if (CONFIG(PICASSO_UART))
+	if (CONFIG(PICASSO_CONSOLE_UART))
 		set_uart_config(CONFIG_UART_FOR_CONSOLE);
 }
 

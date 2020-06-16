@@ -254,8 +254,8 @@ config PICASSO_ACPI_IO_BASE
 	help
 	  Base address for the ACPI registers.
 
-config PICASSO_UART
-	bool "UART controller on Picasso"
+config PICASSO_CONSOLE_UART
+	bool "Use Picasso UART controller for console"
 	default n
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
@@ -270,7 +270,7 @@ config PICASSO_UART
 
 choice PICASSO_UART_CLOCK_SOURCE
 	prompt "UART Frequency"
-	depends on PICASSO_UART
+	depends on PICASSO_CONSOLE_UART
 	default PICASSO_UART_48MZ
 
 config PICASSO_UART_48MZ
@@ -288,7 +288,7 @@ endchoice
 
 config PICASSO_UART_LEGACY
 	bool "Decode legacy I/O range"
-	depends on PICASSO_UART
+	depends on PICASSO_CONSOLE_UART # TODO: shouldn't depend on this
 	help
 	  Assign I/O 3F8, 2F8, etc. to a Picasso UART.  Only a single UART may
 	  decode legacy addresses and this option enables the one used for the
@@ -296,7 +296,7 @@ config PICASSO_UART_LEGACY
 	  of MMIO.  The MMIO decode is still present when this option is used.
 
 config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL && PICASSO_UART
+	depends on CONSOLE_SERIAL && PICASSO_CONSOLE_UART
 	hex
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1

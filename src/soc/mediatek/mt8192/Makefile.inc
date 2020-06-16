@@ -30,6 +30,7 @@ ramstage-y += flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += emi.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
+ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += soc.c
 ramstage-y += ../common/timer.c

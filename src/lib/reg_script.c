@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
@@ -13,6 +12,13 @@
 
 #if ENV_X86
 #include <cpu/x86/msr.h>
+#endif
+
+#if ENV_X86
+#include <arch/io.h>
+#define HAS_ARCH_IO 1
+#else
+#define HAS_ARCH_IO 0
 #endif
 
 #define HAS_IOSF (CONFIG(SOC_INTEL_BAYTRAIL))
@@ -104,6 +110,7 @@ static void reg_script_write_pci(struct reg_script_context *ctx)
 	}
 }
 
+#if HAS_ARCH_IO
 static uint32_t reg_script_read_io(struct reg_script_context *ctx)
 {
 	const struct reg_script *step = reg_script_get_step(ctx);
@@ -135,6 +142,7 @@ static void reg_script_write_io(struct reg_script_context *ctx)
 		break;
 	}
 }
+#endif
 
 static uint32_t reg_script_read_mmio(struct reg_script_context *ctx)
 {
@@ -441,10 +449,12 @@ static uint64_t reg_script_read(struct reg_script_context *ctx)
 		ctx->display_prefix = "PCI";
 		value = reg_script_read_pci(ctx);
 		break;
+#if HAS_ARCH_IO
 	case REG_SCRIPT_TYPE_IO:
 		ctx->display_prefix = "IO";
 		value = reg_script_read_io(ctx);
 		break;
+#endif
 	case REG_SCRIPT_TYPE_MMIO:
 		ctx->display_prefix = "MMIO";
 		value = reg_script_read_mmio(ctx);
@@ -495,10 +505,12 @@ static void reg_script_write(struct reg_script_context *ctx)
 		ctx->display_prefix = "PCI";
 		reg_script_write_pci(ctx);
 		break;
+#if HAS_ARCH_IO
 	case REG_SCRIPT_TYPE_IO:
 		ctx->display_prefix = "IO";
 		reg_script_write_io(ctx);
 		break;
+#endif
 	case REG_SCRIPT_TYPE_MMIO:
 		ctx->display_prefix = "MMIO";
 		reg_script_write_mmio(ctx);

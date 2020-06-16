@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <string.h>
+#include <acpi/acpi_gnvs.h>
 #include <rmodule.h>
 #include <cpu/x86/smm.h>
 #include <commonlib/helpers.h>
@@ -261,6 +262,7 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	stub_params->runtime.smm_size = smm_size;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 	stub_params->runtime.num_cpus = params->num_concurrent_stacks;
+	stub_params->runtime.gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
 	for (i = 0; i < params->num_concurrent_stacks; i++)

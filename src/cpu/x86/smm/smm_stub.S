@@ -36,6 +36,8 @@ save_state_size:
 .long 0
 num_cpus:
 .long 0
+gnvs_ptr:
+.long 0
 /* allows the STM to bring up SMM in 32-bit mode */
 start32_offset:
 .long smm_trampoline32 - _start

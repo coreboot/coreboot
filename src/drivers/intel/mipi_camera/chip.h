@@ -95,6 +95,19 @@ struct drivers_intel_mipi_camera_config {
 	const char *vcm_name;		/* defaults to |vcm_address| device */
 	uint16_t rom_address;		/* I2C to use if ssdb.rom_type != 0 */
 	uint16_t vcm_address;		/* I2C to use if ssdb.vcm_type != 0 */
+	/*
+	 * Settings specific to nvram. Many values, if left as zero, will be assigned a default.
+	 * Set disable_nvm_defaults to non-zero if you want to disable the defaulting behavior
+	 * so you can use zero for a value.
+	 */
+	bool disable_nvm_defaults;
+	uint32_t nvm_size;
+	uint32_t nvm_pagesize;
+	uint32_t nvm_readonly;
+	uint32_t nvm_width;
+
+	/* Settings specific to vcm */
+	const char *vcm_compat;
 };
 
 #endif

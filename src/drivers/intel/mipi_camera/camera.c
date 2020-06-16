@@ -10,6 +10,46 @@
 #include <device/pci_def.h>
 #include "chip.h"
 
+static void camera_fill_nvm(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+
+	/* It might be possible to default size or width based on type. */
+	if (!config->disable_nvm_defaults && !config->nvm_pagesize)
+		config->nvm_pagesize = 1;
+
+	if (!config->disable_nvm_defaults && !config->nvm_readonly)
+		config->nvm_readonly = 1;
+
+	if (config->nvm_size)
+		acpi_dp_add_integer(dsd, "size", config->nvm_size);
+
+	if (config->nvm_pagesize)
+		acpi_dp_add_integer(dsd, "pagesize", config->nvm_pagesize);
+
+	if (config->nvm_readonly)
+		acpi_dp_add_integer(dsd, "read-only", config->nvm_readonly);
+
+	if (config->nvm_width)
+		acpi_dp_add_integer(dsd, "address-width", config->nvm_width);
+
+	acpi_dp_write(dsd);
+}
+
+static void camera_fill_vcm(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	struct acpi_dp *dsd;
+
+	if (!config->vcm_compat)
+		return;
+
+	dsd = acpi_dp_new_table("_DSD");
+	acpi_dp_add_string(dsd, "compatible", config->vcm_compat);
+	acpi_dp_write(dsd);
+}
+
 static void write_pci_camera_device(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
@@ -92,6 +132,17 @@ static void write_camera_device_common(const struct device *dev)
 	    config->device_type == INTEL_ACPI_CAMERA_SENSOR ||
 	    config->device_type == INTEL_ACPI_CAMERA_VCM) {
 		acpigen_write_name_integer("CAMD", config->device_type);
+	}
+
+	switch (config->device_type) {
+	case INTEL_ACPI_CAMERA_VCM:
+		camera_fill_vcm(dev);
+		break;
+	case INTEL_ACPI_CAMERA_NVM:
+		camera_fill_nvm(dev);
+		break;
+	default:
+		break;
 	}
 }
 

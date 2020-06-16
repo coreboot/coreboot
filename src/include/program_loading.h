@@ -174,10 +174,6 @@ int legacy_romstage_selector(struct prog *romstage);
 /* Run ramstage from romstage. */
 void run_ramstage(void);
 
-/* Backup OS memory to CBMEM_ID_RESUME on ACPI S3 resume path,
- * if ramstage overwrites low memory. */
-void backup_ramstage_section(uintptr_t base, size_t size);
-
 /***********************
  *   PAYLOAD LOADING   *
  ***********************/

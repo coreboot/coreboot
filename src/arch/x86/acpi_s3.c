@@ -6,12 +6,10 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
+#include <cpu/x86/smm.h>
 #include <fallback.h>
 #include <timestamp.h>
-#include <program_loading.h>
 #include <romstage_handoff.h>
-#include <symbols.h>
-#include <cpu/x86/smm.h>
 
 #if ENV_RAMSTAGE || ENV_POSTCAR
 

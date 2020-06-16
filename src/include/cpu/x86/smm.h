@@ -22,11 +22,10 @@
 #define APM_CNT_PST_CONTROL	0x80
 #define APM_CNT_ACPI_DISABLE	0x1e
 #define APM_CNT_ACPI_ENABLE	0xe1
-#define APM_CNT_MBI_UPDATE	0xeb
-#define APM_CNT_GNVS_UPDATE	0xea
 #define APM_CNT_ROUTE_ALL_XHCI	0xca
 #define APM_CNT_FINALIZE	0xcb
 #define APM_CNT_LEGACY		0xcc
+#define APM_CNT_MBI_UPDATE	0xeb
 #define APM_CNT_SMMINFO		0xec
 #define APM_CNT_SMMSTORE	0xed
 #define APM_CNT_ELOG_GSMI	0xef

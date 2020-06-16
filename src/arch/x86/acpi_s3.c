@@ -5,7 +5,6 @@
 #include <acpi/acpi.h>
 #include <arch/cpu.h>
 #include <commonlib/helpers.h>
-#include <cpu/x86/smm.h>
 #include <fallback.h>
 #include <timestamp.h>
 
@@ -18,9 +17,6 @@ extern unsigned int __wakeup_size;
 
 void __noreturn acpi_resume(void *wake_vec)
 {
-	/* Restore GNVS pointer in SMM if found. */
-	apm_control(APM_CNT_GNVS_UPDATE);
-
 	/* Call mainboard resume handler first, if defined. */
 	mainboard_suspend_resume();
 

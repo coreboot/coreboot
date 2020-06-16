@@ -4,7 +4,6 @@
 #define _SC7180_QUPV3_CONFIG_H_
 
 #include <assert.h>
-#include <cbfs.h>
 #include <soc/clock.h>
 #include <soc/qcom_qup_se.h>
 

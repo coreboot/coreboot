@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cbfs.h>
+#include <string.h>
 #include <soc/qupv3_config.h>
 
 static struct elf_se_hdr *fw_list[SE_PROTOCOL_MAX];

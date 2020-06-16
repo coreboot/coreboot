@@ -25,7 +25,6 @@
  * initialize it with a sane value
  */
 u16 pmbase = PMBASE_ADDR;
-u8 smm_initialized = 0;
 
 unsigned char *mbi = NULL;
 u32 mbi_len;
@@ -361,17 +360,6 @@ static void southbridge_smi_apmc(void)
 		pmctrl |= SCI_EN;
 		outl(pmctrl, pmbase + PM1_CNT);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
-		break;
-	case APM_CNT_GNVS_UPDATE:
-		if (smm_initialized) {
-			printk(BIOS_DEBUG, "SMI#: SMM structures already initialized!\n");
-			return;
-		}
-		gnvs = *(global_nvs_t **)0x500;
-		tcg  = *(void **)0x504;
-		smi1 = *(void **)0x508;
-		smm_initialized = 1;
-		printk(BIOS_DEBUG, "SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
 		break;
 	case APM_CNT_MBI_UPDATE: // FIXME
 		if (mbi_initialized) {

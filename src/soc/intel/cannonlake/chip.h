@@ -315,6 +315,23 @@ struct soc_intel_cannonlake_config {
 	uint8_t PchPmSlpAMinAssert;
 
 	/*
+	 * PCH PM Reset Power Cycle Duration
+	 *  0 = 4s
+	 *  1 = 1s
+	 *  2 = 2s
+	 *  3 = 3s
+	 *  4 = 4s (default)
+	 *
+	 * NOTE: Duration programmed in the PchPmPwrCycDur should never be smaller than the
+	 * stretch duration programmed in the following registers -
+	 *  - GEN_PMCON_A.SLP_S3_MIN_ASST_WDTH (PchPmSlpS3MinAssert)
+	 *  - GEN_PMCON_A.S4MAW (PchPmSlpS4MinAssert)
+	 *  - PM_CFG.SLP_A_MIN_ASST_WDTH (PchPmSlpAMinAssert)
+	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
+	 */
+	uint8_t PchPmPwrCycDur;
+
+	/*
 	 * SerialIO device mode selection:
 	 *
 	 * Device index:

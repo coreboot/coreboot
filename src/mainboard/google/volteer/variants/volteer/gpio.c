@@ -170,8 +170,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
 	/* H22 : IMGCLKOUT3 ==> CAM_MCLK0 */
 	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
-	/* H23 : IMGCLKOUT4 ==> WWAN_ESIM_SEL_ODL */
-	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 
 	/* R0 : HDA_BCLK ==> I2S0_HP_SCLK */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),

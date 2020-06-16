@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Include common dptf ASL files */
-#include <soc/intel/common/acpi/dptf.asl>
+#include <soc/intel/common/acpi/dptf_common.asl>
 
 Device (DPTF)
 {

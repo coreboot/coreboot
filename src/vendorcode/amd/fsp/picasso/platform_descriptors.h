@@ -115,27 +115,27 @@ typedef struct __packed {
 	uint8_t		start_lane;			// Start lane of the pci device
 	uint8_t		end_lane;			// End lane of the pci device
 	uint8_t		gpio_group_id;			// FCH reset number. 0 is global reset
-	unsigned int	port_present		:1;	// Should be TRUE if train link
-	unsigned int	reserved_3		:7;
-	unsigned int	device_number		:5;	// Desired root port device number
-	unsigned int	function_number		:3;	// Desired root port function number
-	unsigned int	link_speed_capability	:2;
-	unsigned int	auto_spd_change		:2;
-	unsigned int	eq_preset		:4;
-	unsigned int	link_aspm		:2;
-	unsigned int	link_aspm_L1_1		:1;
-	unsigned int	link_aspm_L1_2		:1;
-	unsigned int	clk_req			:4;
+	uint32_t	port_present		:1;	// Should be TRUE if train link
+	uint32_t	reserved_3		:7;
+	uint32_t	device_number		:5;	// Desired root port device number
+	uint32_t	function_number		:3;	// Desired root port function number
+	uint32_t	link_speed_capability	:2;
+	uint32_t	auto_spd_change		:2;
+	uint32_t	eq_preset		:4;
+	uint32_t	link_aspm		:2;
+	uint32_t	link_aspm_L1_1		:1;
+	uint32_t	link_aspm_L1_2		:1;
+	uint32_t	clk_req			:4;
 	uint8_t		link_hotplug;
 	uint8_t		slot_power_limit;
-	unsigned int	slot_power_limit_scale	:2;
-	unsigned int	reserved_4		:6;
-	unsigned int	link_compliance_mode	:1;
-	unsigned int	link_safe_mode		:1;
-	unsigned int	sb_link			:1;
-	unsigned int	clk_pm_support		:1;
-	unsigned int	channel_type		:3;
-	unsigned int	turn_off_unused_lanes	:1;
+	uint32_t	slot_power_limit_scale	:2;
+	uint32_t	reserved_4		:6;
+	uint32_t	link_compliance_mode	:1;
+	uint32_t	link_safe_mode		:1;
+	uint32_t	sb_link			:1;
+	uint32_t	clk_pm_support		:1;
+	uint32_t	channel_type		:3;
+	uint32_t	turn_off_unused_lanes	:1;
 	uint8_t		reserved[4];
 } fsp_pcie_descriptor;
 

@@ -18,15 +18,17 @@
 #ifndef _MEM_INFO_HOB_H_
 #define _MEM_INFO_HOB_H_
 
+#pragma pack (push, 1)
+
 #include <Uefi/UefiMultiPhase.h>
 #include <Pi/PiBootMode.h>
 #include <Pi/PiHob.h>
 
-#pragma pack (push, 1)
-
 extern EFI_GUID gSiMemoryS3DataGuid;
 extern EFI_GUID gSiMemoryInfoDataGuid;
 extern EFI_GUID gSiMemoryPlatformDataGuid;
+
+#define MAX_TRACE_CACHE_TYPE  3
 
 #define MAX_NODE        1
 #define MAX_CH          2
@@ -42,6 +44,7 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 #define   B_RANK1_PRS           BIT1
 #define   B_RANK2_PRS           BIT4
 #define   B_RANK3_PRS           BIT5
+
 
 ///
 /// Defines taken from MRC so avoid having to include MrcInterface.h
@@ -64,8 +67,7 @@ typedef struct {
   UINT8  Build;     ///< Build number
 } SiMrcVersion;
 
-//
-// Matches MrcChannelSts enum in MRC
+//// Matches MrcChannelSts enum in MRC
 //
 #ifndef CHANNEL_NOT_PRESENT
 #define CHANNEL_NOT_PRESENT     0  // There is no channel present on the controller.
@@ -96,18 +98,20 @@ typedef struct {
 //
 // Matches MrcBootMode enum in MRC
 //
-#ifndef bmCold
-#define bmCold 0            // Cold boot
-#endif
-#ifndef bmWarm
-#define bmWarm 1            // Warm boot
-#endif
-#ifndef bmS3
-#define bmS3   2            // S3 resume
-#endif
-#ifndef bmFast
-#define bmFast 3            // Fast boot
-#endif
+#ifndef __MRC_BOOT_MODE__
+#define __MRC_BOOT_MODE__                 //The below values are originated from MrcCommonTypes.h
+  #ifndef INT32_MAX
+  #define INT32_MAX                       (0x7FFFFFFF)
+  #endif  //INT32_MAX
+typedef enum {
+  bmCold,                                 ///< Cold boot
+  bmWarm,                                 ///< Warm boot
+  bmS3,                                   ///< S3 resume
+  bmFast,                                 ///< Fast boot
+  MrcBootModeMax,                         ///< MRC_BOOT_MODE enumeration maximum value.
+  MrcBootModeDelim = INT32_MAX            ///< This value ensures the enum size is consistent on both sides of the PPI.
+} MRC_BOOT_MODE;
+#endif  //__MRC_BOOT_MODE__
 
 //
 // Matches MrcDdrType enum in MRC
@@ -121,15 +125,15 @@ typedef struct {
 #ifndef MRC_DDR_TYPE_LPDDR3
 #define MRC_DDR_TYPE_LPDDR3   2
 #endif
-#ifndef CPU_CFL//CNL
 #ifndef MRC_DDR_TYPE_LPDDR4
 #define MRC_DDR_TYPE_LPDDR4   3
 #endif
-#else//CFL
-#ifndef MRC_DDR_TYPE_UNKNOWN
-#define MRC_DDR_TYPE_UNKNOWN  3
+#ifndef MRC_DDR_TYPE_WIO2
+#define MRC_DDR_TYPE_WIO2     4
 #endif
-#endif//CPU_CFL-endif
+#ifndef MRC_DDR_TYPE_UNKNOWN
+#define MRC_DDR_TYPE_UNKNOWN  5
+#endif
 
 #define MAX_PROFILE_NUM     4 // number of memory profiles supported
 #define MAX_XMP_PROFILE_NUM 2 // number of XMP profiles supported
@@ -162,13 +166,6 @@ typedef struct {
   UINT16 tCCD_L;  ///< Number of tCK cycles for the channel DIMM's minimum CAS-to-CAS delay for same bank group.
 } MRC_CH_TIMING;
 
-typedef struct {
-  UINT8 SG;         ///< Number of tCK cycles between transactions in the same bank group.
-  UINT8 DG;         ///< Number of tCK cycles between transactions when switching bank groups.
-  UINT8 DR;         ///< Number of tCK cycles between transactions when switching between Ranks (in the same DIMM).
-  UINT8 DD;         ///< Number of tCK cycles between transactions when switching between DIMMs.
-} MRC_TA_TIMING;
-
 ///
 /// Memory SMBIOS & OC Memory Data Hob
 ///
@@ -183,7 +180,8 @@ typedef struct {
   UINT8            SpdModuleType;           ///< Save SPD ModuleType information needed for SMBIOS structure creation.
   UINT8            SpdModuleMemoryBusWidth; ///< Save SPD ModuleMemoryBusWidth information needed for SMBIOS structure creation.
   UINT8            SpdSave[MAX_SPD_SAVE];   ///< Save SPD Manufacturing information needed for SMBIOS structure creation.
-  UINT16           Speed;                   ///< The maximum capable speed of the device, in MHz.
+  UINT16           Speed;                   ///< The maximum capable speed of the device, in MHz
+  UINT8            MdSocket;                ///< MdSocket: 0 = Memory Down, 1 = Socketed. Needed for SMBIOS structure creation.
 } DIMM_INFO;
 
 typedef struct {
@@ -192,23 +190,23 @@ typedef struct {
   UINT8            DimmCount;               ///< Number of valid DIMMs that exist in the channel.
   MRC_CH_TIMING    Timing[MAX_PROFILE_NUM]; ///< The channel timing values.
   DIMM_INFO        DimmInfo[MAX_DIMM];      ///< Save the DIMM output characteristics.
-  MRC_TA_TIMING    tRd2Rd;                  ///< Read-to-Read   Turn Around Timings
-  MRC_TA_TIMING    tRd2Wr;                  ///< Read-to-Write  Turn Around Timings
-  MRC_TA_TIMING    tWr2Rd;                  ///< Write-to-Read  Turn Around Timings
-  MRC_TA_TIMING    tWr2Wr;                  ///< Write-to-Write Turn Around Timings
 } CHANNEL_INFO;
 
 typedef struct {
-  UINT8             Status;                  ///< Indicates whether this controller should be used.
-  UINT16            DeviceId;                ///< The PCI device id of this memory controller.
-  UINT8             RevisionId;              ///< The PCI revision id of this memory controller.
-  UINT8             ChannelCount;            ///< Number of valid channels that exist on the controller.
-  CHANNEL_INFO      ChannelInfo[MAX_CH];     ///< The following are channel level definitions.
-  MRC_TA_TIMING    tRd2Rd;                   ///< Deprecated and moved to CHANNEL_INFO. Read-to-Read   Turn Around Timings
-  MRC_TA_TIMING    tRd2Wr;                   ///< Deprecated and moved to CHANNEL_INFO. Read-to-Write  Turn Around Timings
-  MRC_TA_TIMING    tWr2Rd;                   ///< Deprecated and moved to CHANNEL_INFO. Write-to-Read  Turn Around Timings
-  MRC_TA_TIMING    tWr2Wr;                   ///< Deprecated and moved to CHANNEL_INFO. Write-to-Write Turn Around Timings
+  UINT8            Status;                  ///< Indicates whether this controller should be used.
+  UINT16           DeviceId;                ///< The PCI device id of this memory controller.
+  UINT8            RevisionId;              ///< The PCI revision id of this memory controller.
+  UINT8            ChannelCount;            ///< Number of valid channels that exist on the controller.
+  CHANNEL_INFO     ChannelInfo[MAX_CH];     ///< The following are channel level definitions.
 } CONTROLLER_INFO;
+
+typedef struct {
+  UINT64   BaseAddress;   ///< Trace Base Address
+  UINT64   TotalSize;     ///< Total Trace Region of Same Cache type
+  UINT8    CacheType;     ///< Trace Cache Type
+  UINT8    ErrorCode;     ///< Trace Region Allocation Fail Error code
+  UINT8    Rsvd[2];
+} PSMI_MEM_INFO;
 
 typedef struct {
   UINT8             Revision;
@@ -251,16 +249,15 @@ typedef struct {
   UINT32            TsegSize;
   UINT32            TsegBase;
   UINT32            PrmrrSize;
-  UINT32            PrmrrBase;
+  UINT64            PrmrrBase;
+  UINT32            PramSize;
+  UINT64            PramBase;
+  UINT64            DismLimit;
+  UINT64            DismBase;
   UINT32            GttBase;
   UINT32            MmioSize;
   UINT32            PciEBaseAddress;
-#ifdef CPU_CFL
-  UINT32            GdxcIotBase;
-  UINT32            GdxcIotSize;
-  UINT32            GdxcMotBase;
-  UINT32            GdxcMotSize;
-#endif //CPU_CFL
+  PSMI_MEM_INFO     PsmiInfo[MAX_TRACE_CACHE_TYPE];
 } MEMORY_PLATFORM_DATA;
 
 typedef struct {

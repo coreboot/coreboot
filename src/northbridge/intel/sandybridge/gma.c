@@ -453,18 +453,15 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0xa06c, 0x000493e0); /* RP Down EI */
 	gtt_write(0xa070, 0x0000000a); /* RP Idle Hysteresis */
 
-	/* 11a: Enable Render Standby (RC6) */
-	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_IVB) {
-		/*
-		 * IvyBridge should also support DeepRenderStandby.
-		 *
-		 * Unfortunately it does not work reliably on all SKUs so
-		 * disable it here and it can be enabled by the kernel.
-		 */
-		gtt_write(0xa090, 0x88040000); /* HW RC Control */
-	} else {
-		gtt_write(0xa090, 0x88040000); /* HW RC Control */
-	}
+	/*
+	 * 11a: Enable Render Standby (RC6)
+	 *
+	 * IvyBridge should also support DeepRenderStandby.
+	 *
+	 * Unfortunately it does not work reliably on all SKUs so
+	 * disable it here and it can be enabled by the kernel.
+	 */
+	gtt_write(0xa090, 0x88040000); /* HW RC Control */
 
 	/* 12: Normal Frequency Request */
 	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 */

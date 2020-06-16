@@ -22,6 +22,11 @@
 #define MAX_HD_AUDIO_SNDW_LINKS 4
 #define MAX_HD_AUDIO_SSP_LINKS  6
 
+/* The first two are for TGL-U */
+#define POWER_LIMITS_U_4_CORE	0
+#define POWER_LIMITS_U_2_CORE	1
+#define POWER_LIMITS_MAX	2
+
 /*
  * Enable External V1P05 Rail in: BIT0:S0i1/S0i2,
  * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5
@@ -55,7 +60,7 @@ struct soc_intel_tigerlake_config {
 	struct soc_intel_common_config common_soc_config;
 
 	/* Common struct containing power limits configuration information */
-	struct soc_power_limits_config power_limits_config;
+	struct soc_power_limits_config power_limits_config[POWER_LIMITS_MAX];
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */

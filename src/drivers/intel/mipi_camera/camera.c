@@ -7,12 +7,27 @@
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <device/pci_def.h>
 #include "chip.h"
 
-static void camera_fill_ssdt(const struct device *dev)
+static void write_pci_camera_device(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	const char *scope = acpi_device_scope(dev);
+
+	if (dev->path.type != DEVICE_PATH_PCI) {
+		printk(BIOS_ERR, "CIO2/IMGU devices require PCI\n");
+		return;
+	}
+
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_ADR_pci_device(dev);
+	acpigen_write_name_string("_DDN", config->device_type == INTEL_ACPI_CAMERA_CIO2 ?
+				  "Camera and Imaging Subsystem" : "Imaging Unit");
+}
+
+static void write_i2c_camera_device(const struct device *dev, const char *scope)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	struct acpi_i2c i2c = {
 		.address = dev->path.i2c.device,
 		.mode_10bit = dev->path.i2c.mode_10bit,
@@ -20,13 +35,23 @@ static void camera_fill_ssdt(const struct device *dev)
 		.resource = scope,
 	};
 
-	if (!dev->enabled || !scope)
+	if (dev->path.type != DEVICE_PATH_I2C) {
+		printk(BIOS_ERR, "Non-CIO2/IMGU devices require I2C\n");
 		return;
+	}
 
-	/* Device */
-	acpigen_write_scope(scope);
 	acpigen_write_device(acpi_device_name(dev));
-	acpigen_write_name_string("_HID", config->acpi_hid);
+
+	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR)
+		acpigen_write_name_integer("_ADR", 0);
+
+	if (config->acpi_hid)
+		acpigen_write_name_string("_HID", config->acpi_hid);
+	else if (config->device_type == INTEL_ACPI_CAMERA_VCM)
+		acpigen_write_name_string("_HID", ACPI_DT_NAMESPACE_HID);
+	else if (config->device_type == INTEL_ACPI_CAMERA_NVM)
+		acpigen_write_name_string("_HID", "INT3499");
+
 	acpigen_write_name_integer("_UID", config->acpi_uid);
 	acpigen_write_name_string("_DDN", config->chip_name);
 	acpigen_write_STA(acpi_device_status(dev));
@@ -35,35 +60,111 @@ static void camera_fill_ssdt(const struct device *dev)
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpigen_write_resourcetemplate_footer();
 
-	/* Mark it as Camera related device */
-	acpigen_write_name_integer("CAMD", config->device_type);
-
-	/* Create Device specific data */
-	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR) {
-		acpigen_write_method_serialized("SSDB", 0);
-		acpigen_write_return_byte_buffer((uint8_t *)&config->ssdb,
-						sizeof(config->ssdb));
-		acpigen_pop_len(); /* Method */
+	/*
+	 * The optional vcm/nvram devices are presumed to be on the same I2C bus as the camera
+	 * sensor.
+	 */
+	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
+	    config->ssdb.vcm_type && config->vcm_address) {
+		struct acpi_i2c i2c_vcm = i2c;
+		i2c_vcm.address = config->vcm_address;
+		acpi_device_write_i2c(&i2c_vcm);
 	}
 
-	/* Fill Power Sequencing Data */
-	acpigen_write_method_serialized("PWDB", 0);
-	acpigen_write_return_byte_buffer((uint8_t *)&config->pwdb,
-			(sizeof(struct intel_pwdb) * config->num_pwdb_entries));
-	acpigen_pop_len(); /* Method */
+	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR &&
+	    config->ssdb.rom_type && config->rom_address) {
+		struct acpi_i2c i2c_rom = i2c;
+		i2c_rom.address = config->rom_address;
+		acpi_device_write_i2c(&i2c_rom);
+	}
+
+	acpigen_write_resourcetemplate_footer();
+}
+
+static void write_camera_device_common(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+
+	/* Mark it as Camera related device */
+	if (config->device_type == INTEL_ACPI_CAMERA_CIO2 ||
+	    config->device_type == INTEL_ACPI_CAMERA_IMGU ||
+	    config->device_type == INTEL_ACPI_CAMERA_SENSOR ||
+	    config->device_type == INTEL_ACPI_CAMERA_VCM) {
+		acpigen_write_name_integer("CAMD", config->device_type);
+	}
+}
+
+static void camera_fill_ssdt(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	const char *scope = acpi_device_scope(dev);
+
+	if (!dev->enabled || !scope)
+		return;
+
+	/* Device */
+	acpigen_write_scope(scope);
+
+	if (config->device_type == INTEL_ACPI_CAMERA_CIO2 ||
+	    config->device_type == INTEL_ACPI_CAMERA_IMGU)
+		write_pci_camera_device(dev);
+	else
+		write_i2c_camera_device(dev, scope);
+
+	write_camera_device_common(dev);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
-	printk(BIOS_INFO, "%s: %s address 0%xh\n", acpi_device_path(dev),
-			dev->chip_ops->name, dev->path.i2c.device);
+
+	if (dev->path.type == DEVICE_PATH_PCI) {
+		printk(BIOS_INFO, "%s: %s PCI address 0%x\n", acpi_device_path(dev),
+		       dev->chip_ops->name, dev->path.pci.devfn);
+	} else {
+		printk(BIOS_INFO, "%s: %s I2C address 0%xh\n", acpi_device_path(dev),
+		       dev->chip_ops->name, dev->path.i2c.device);
+	}
 }
 
 static const char *camera_acpi_name(const struct device *dev)
 {
+	const char *prefix = NULL;
+	static char name[5];
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	return config->acpi_name;
+
+	if (config->acpi_name)
+		return config->acpi_name;
+
+	switch (config->device_type) {
+	case INTEL_ACPI_CAMERA_CIO2:
+		return "CIO2";
+	case INTEL_ACPI_CAMERA_IMGU:
+		return "IMGU";
+	case INTEL_ACPI_CAMERA_PMIC:
+		return "PMIC";
+	case INTEL_ACPI_CAMERA_SENSOR:
+		prefix = "CAM";
+		break;
+	case INTEL_ACPI_CAMERA_VCM:
+		prefix = "VCM";
+		break;
+	case INTEL_ACPI_CAMERA_NVM:
+		prefix = "NVM";
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid device type: %x\n", config->device_type);
+		return NULL;
+	}
+
+	/*
+	 * The camera # knows which link # they use, so that's used as the basis for the
+	 * instance #. The VCM and NVM don't have this information, so the best we can go on is
+	 * the _UID.
+	 */
+	snprintf(name, sizeof(name), "%s%1u", prefix,
+		 config->device_type == INTEL_ACPI_CAMERA_SENSOR ?
+		 config->ssdb.link_used : config->acpi_uid);
+	return name;
 }
 
 static struct device_operations camera_ops = {

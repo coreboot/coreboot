@@ -12,6 +12,7 @@ enum intel_camera_device_type {
 	INTEL_ACPI_CAMERA_IMGU,
 	INTEL_ACPI_CAMERA_SENSOR,
 	INTEL_ACPI_CAMERA_VCM,
+	INTEL_ACPI_CAMERA_NVM,
 	INTEL_ACPI_CAMERA_PMIC = 100,
 };
 
@@ -90,6 +91,10 @@ struct drivers_intel_mipi_camera_config {
 	const char *acpi_name;
 	const char *chip_name;
 	unsigned int acpi_uid;
+	const char *remote_name;	/* default "\_SB.PCI0.CIO2" */
+	const char *vcm_name;		/* defaults to |vcm_address| device */
+	uint16_t rom_address;		/* I2C to use if ssdb.rom_type != 0 */
+	uint16_t vcm_address;		/* I2C to use if ssdb.vcm_type != 0 */
 };
 
 #endif

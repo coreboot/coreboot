@@ -46,7 +46,9 @@ chip northbridge/intel/ironlake
 			register "alt_gp_smi_en" = "0x0000"
 			register "gen1_dec" = "0x040069"
 
-			device pci 16.0 off end # Management Engine Interface 1
+			device pci 16.0 on # Management Engine Interface 1
+				subsystemid 0x1025 0x0379
+			end
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R, only management boot
 			device pci 16.3 off end # Management Engine KT

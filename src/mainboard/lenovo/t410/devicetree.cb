@@ -53,7 +53,9 @@ chip northbridge/intel/ironlake
 
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
-			device pci 16.0 off end # MEI
+			device pci 16.0 on # MEI
+				subsystemid 0x17aa 0x215f
+			end
 			device pci 16.2 on # IDE/SATA
 				subsystemid 0x17aa 0x2161
 			end

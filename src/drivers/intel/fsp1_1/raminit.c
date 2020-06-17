@@ -145,12 +145,10 @@ void raminit(struct romstage_params *params)
 			fsp_reserved_bytes);
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 		fsp_reserved_bytes)) {
-#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		/* FIXME: A "system" reset is likely enough: */
 		full_reset();
-#endif
 	}
 
 	/* Save the FSP runtime parameters. */

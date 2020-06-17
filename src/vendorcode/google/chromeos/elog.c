@@ -1,13 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <elog.h>
 #include <security/vboot/vboot_common.h>
-
-#if CONFIG(HAVE_ACPI_RESUME)
-#include <acpi/acpi.h>
-#endif
 
 static void elog_add_boot_reason(void *unused)
 {
@@ -28,11 +25,9 @@ static void elog_add_boot_reason(void *unused)
 	if (dev) {
 		int log_event = 1;
 
-#if CONFIG(HAVE_ACPI_RESUME)
 		/* Skip logging developer mode in ACPI resume path */
 		if (acpi_is_wakeup())
 			log_event = 0;
-#endif
 
 		if (log_event) {
 			elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);

@@ -187,13 +187,16 @@ chip soc/intel/jasperlake
 						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Discrete Bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H19)"
-						device usb 2.4 on end
+						device usb 2.4 off end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Integrated Bluetooth""
+						device usb 2.5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H19)"
 						device usb 2.7 on end

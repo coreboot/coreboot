@@ -348,6 +348,14 @@ F:	src/mainboard/protectli/
 
 
 
+PRODRIVE HERMES MAINBOARD
+M:	Christian Walter <christian.walter@9elements.com>
+M:	Patrick Rudolph <patrick.rudolph@9elements.com>
+S:	Maintained
+F:	src/mainboard/prodrive/hermes
+
+
+
 PURISM MAINBOARDS
 M:	Matt DeVillier <matt.devillier@puri.sm>
 S:	Supported

@@ -233,7 +233,7 @@ static void serialio_init(struct device *dev)
 	}
 
 	if (config->sio_acpi_mode) {
-		global_nvs_t *gnvs;
+		struct global_nvs *gnvs;
 
 		/* Find ACPI NVS to update BARs */
 		gnvs = acpi_get_gnvs();

@@ -4,7 +4,7 @@
 #define SOUTHBRIDGE_INTEL_I82801JX_NVS_H
 #include <stdint.h>
 
-typedef struct {
+struct __packed global_nvs {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
@@ -96,8 +96,6 @@ typedef struct {
 	u8	dock; /* 0xf0 - Docking Status */
 	u8	bten;
 	u8	rsvd13[14];
-} __packed global_nvs_t;
-
-void acpi_create_gnvs(global_nvs_t *gnvs);
+};
 
 #endif /* SOUTHBRIDGE_INTEL_I82801JX_NVS_H */

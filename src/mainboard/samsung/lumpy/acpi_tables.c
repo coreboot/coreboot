@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <device/device.h>
 #include <ec/acpi/ec.h>
 #if CONFIG(CHROMEOS)
@@ -11,7 +12,7 @@
 
 #include "thermal.h"
 
-void acpi_create_gnvs(global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	/*
 	 * Disable 3G in suspend by default.

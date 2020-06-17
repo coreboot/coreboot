@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -482,7 +483,7 @@ void southcluster_enable_dev(struct device *dev)
 
 static void southcluster_inject_dsdt(const struct device *device)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {

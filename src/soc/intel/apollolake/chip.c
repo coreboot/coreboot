@@ -320,7 +320,7 @@ static void soc_init(void *data)
 	p2sb_unhide();
 
 	/* Allocate ACPI NVS in CBMEM */
-	cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs_t));
+	cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
 
 	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
 		printk(BIOS_INFO, "Skip setting RAPL per configuration\n");

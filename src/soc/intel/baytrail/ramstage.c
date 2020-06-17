@@ -117,7 +117,7 @@ static void fill_in_pattrs(void)
 }
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
-static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
+static void s3_save_acpi_wake_source(struct global_nvs *gnvs)
 {
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 	uint16_t pm1;
@@ -144,14 +144,14 @@ static void s3_save_acpi_wake_source(global_nvs_t *gnvs)
 
 static void s3_resume_prepare(void)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
 	if (gnvs == NULL)
 		return;
 
 	if (!acpi_is_wakeup_s3())
-		memset(gnvs, 0, sizeof(global_nvs_t));
+		memset(gnvs, 0, sizeof(struct global_nvs));
 	else
 		s3_save_acpi_wake_source(gnvs);
 }

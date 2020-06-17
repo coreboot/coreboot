@@ -137,16 +137,16 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 
 static void s3_resume_prepare(void)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
 	if (!acpi_is_wakeup_s3() && gnvs)
-		memset(gnvs, 0, sizeof(global_nvs_t));
+		memset(gnvs, 0, sizeof(struct global_nvs));
 }
 
 static void set_board_id(void)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {

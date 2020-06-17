@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
@@ -57,7 +58,7 @@ static acpi_cstate_t cstate_map[] = {
 	}
 };
 
-void acpi_init_gnvs(global_nvs_t *gnvs)
+void acpi_init_gnvs(struct global_nvs *gnvs)
 {
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;

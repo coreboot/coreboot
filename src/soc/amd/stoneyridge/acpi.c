@@ -7,6 +7,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
@@ -219,7 +220,7 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 	return acpi_write_hpet(device, current, rsdp);
 }
 
-static void acpi_create_gnvs(struct global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
@@ -243,7 +244,7 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	struct global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 

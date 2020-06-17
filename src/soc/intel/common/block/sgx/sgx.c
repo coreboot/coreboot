@@ -235,7 +235,7 @@ void sgx_configure(void *unused)
 		activate_sgx();
 }
 
-void sgx_fill_gnvs(global_nvs_t *gnvs)
+void sgx_fill_gnvs(struct global_nvs *gnvs)
 {
 	struct cpuid_result cpuid_regs;
 

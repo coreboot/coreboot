@@ -27,7 +27,7 @@
 #include <stdint.h>
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */
-static struct global_nvs_t *gnvs;
+static struct global_nvs *gnvs;
 
 /* SoC overrides. */
 
@@ -125,7 +125,7 @@ void southbridge_smi_set_eos(void)
 	pmc_enable_smi(EOS);
 }
 
-struct global_nvs_t *smm_get_gnvs(void)
+struct global_nvs *smm_get_gnvs(void)
 {
 	return gnvs;
 }
@@ -380,7 +380,7 @@ void smihandler_southbridge_apmc(
 		if (state) {
 			/* EBX in the state save contains the GNVS pointer */
 			uint32_t reg_ebx = save_state_ops->get_reg(state, RBX);
-			gnvs = (struct global_nvs_t *)(uintptr_t)reg_ebx;
+			gnvs = (struct global_nvs *)(uintptr_t)reg_ebx;
 			smm_initialized = 1;
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}

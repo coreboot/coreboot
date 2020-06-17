@@ -12,6 +12,7 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
@@ -490,9 +491,9 @@ static void lpc_final(struct device *dev)
 	outb(POST_OS_BOOT, 0x80);
 }
 
-static void southbridge_inject_dsdt(const struct device *dev)
+void southbridge_inject_dsdt(const struct device *dev)
 {
-	global_nvs_t *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	struct global_nvs *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
 	if (gnvs) {
 		memset(gnvs, 0, sizeof(*gnvs));

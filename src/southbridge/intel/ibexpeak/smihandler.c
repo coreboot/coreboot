@@ -26,8 +26,8 @@
 /* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
  * by coreboot.
  */
-static global_nvs_t *gnvs;
-global_nvs_t *smm_get_gnvs(void)
+static struct global_nvs *gnvs;
+struct global_nvs *smm_get_gnvs(void)
 {
 	return gnvs;
 }
@@ -160,7 +160,7 @@ void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)
 		smi_apmc_find_state_save(apm_cnt);
 	if (state) {
 		/* EBX in the state save contains the GNVS pointer */
-		gnvs = (global_nvs_t *)((u32)state->rbx);
+		gnvs = (struct global_nvs *)((u32)state->rbx);
 		*smm_done = 1;
 		printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 	}

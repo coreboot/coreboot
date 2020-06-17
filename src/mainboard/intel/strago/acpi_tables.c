@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
 #include <soc/acpi.h>
@@ -10,7 +11,7 @@
 #include <boardid.h>
 #include "onboard.h"
 
-void acpi_create_gnvs(global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	acpi_init_gnvs(gnvs);
 

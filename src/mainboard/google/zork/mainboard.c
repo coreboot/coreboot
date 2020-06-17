@@ -194,7 +194,7 @@ static void reset_backlight_gpio(void *unused)
 
 static void mainboard_final(void *chip_info)
 {
-	struct global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = acpi_get_gnvs();
 

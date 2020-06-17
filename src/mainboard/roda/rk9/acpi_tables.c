@@ -2,11 +2,12 @@
 
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <southbridge/intel/i82801ix/nvs.h>
 
-void acpi_create_gnvs(global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->apic = 1;
 	gnvs->mpen = 1; /* Enable Multi Processing */

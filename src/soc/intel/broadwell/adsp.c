@@ -80,7 +80,7 @@ static void adsp_init(struct device *dev)
 
 	if (config->sio_acpi_mode) {
 		/* Configure for ACPI mode */
-		global_nvs_t *gnvs;
+		struct global_nvs *gnvs;
 
 		printk(BIOS_INFO, "ADSP: Enable ACPI Mode IRQ3\n");
 

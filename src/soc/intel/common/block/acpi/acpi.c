@@ -222,13 +222,13 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 }
 #endif
 
-__weak void acpi_create_gnvs(struct global_nvs_t *gnvs)
+__weak void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 }
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	struct global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {
@@ -457,7 +457,7 @@ void generate_cpu_entries(const struct device *device)
 /* Save wake source data for ACPI _SWS methods in NVS */
 static void acpi_save_wake_source(void *unused)
 {
-	global_nvs_t *gnvs = acpi_get_gnvs();
+	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint32_t pm1, *gpe0;
 	int gpe_reg, gpe_reg_count;
 	int reg_size = sizeof(uint32_t) * 8;

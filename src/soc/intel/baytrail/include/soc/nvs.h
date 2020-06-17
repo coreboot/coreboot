@@ -7,7 +7,7 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
-typedef struct global_nvs_t {
+struct __packed global_nvs {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
@@ -53,12 +53,8 @@ typedef struct global_nvs_t {
 
 	/* Baytrail LPSS (0x1000) */
 	device_nvs_t dev;
-} __packed global_nvs_t;
-check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
+};
 
-void acpi_create_gnvs(global_nvs_t *gnvs);
-
-/* Used in SMM to find the ACPI GNVS address */
-global_nvs_t *smm_get_gnvs(void);
+check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif /* _BAYTRAIL_NVS_H_ */

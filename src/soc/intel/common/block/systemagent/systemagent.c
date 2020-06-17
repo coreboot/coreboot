@@ -103,7 +103,7 @@ static void sa_read_map_entry(struct device *dev,
 }
 
 /* Fill MMIO resource above 4GB into GNVS */
-void sa_fill_gnvs(global_nvs_t *gnvs)
+void sa_fill_gnvs(struct global_nvs *gnvs)
 {
 	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 

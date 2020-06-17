@@ -53,7 +53,7 @@ static void lpe_enable_acpi_mode(struct device *dev)
 
 		REG_SCRIPT_END
 	};
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	/* Find ACPI NVS to update BARs */
 	gnvs = acpi_get_gnvs();

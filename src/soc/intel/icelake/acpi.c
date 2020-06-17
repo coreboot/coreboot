@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
@@ -178,7 +179,7 @@ uint32_t soc_read_sci_irq_select(void)
 	return read32((void *)pmc_bar + IRQ_REG);
 }
 
-void acpi_create_gnvs(struct global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	config_t *config = config_of_soc();
 

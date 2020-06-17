@@ -11,6 +11,7 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <reg_script.h>
@@ -553,7 +554,7 @@ static void pch_lpc_add_io_resources(struct device *dev)
 
 static void pch_lpc_read_resources(struct device *dev)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
@@ -565,14 +566,14 @@ static void pch_lpc_read_resources(struct device *dev)
 	pch_lpc_add_io_resources(dev);
 
 	/* Allocate ACPI NVS in CBMEM */
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
 	if (!acpi_is_wakeup_s3() && gnvs)
-		memset(gnvs, 0, sizeof(global_nvs_t));
+		memset(gnvs, 0, sizeof(struct global_nvs));
 }
 
 static void southcluster_inject_dsdt(const struct device *device)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {

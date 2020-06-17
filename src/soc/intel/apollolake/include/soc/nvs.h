@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /*
- * NOTE: The layout of the global_nvs_t structure below must match the layout
+ * NOTE: The layout of the global_nvs structure below must match the layout
  * in soc/intel/apollolake/acpi/globalnvs.asl !!!
  *
  */
@@ -12,7 +12,7 @@
 #include <commonlib/helpers.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 
-typedef struct global_nvs_t {
+struct __packed global_nvs {
 	/* Miscellaneous */
 	uint8_t		pcnt; /* 0x00 - Processor Count */
 	uint8_t		ppcm; /* 0x01 - Max PPC State */
@@ -38,7 +38,8 @@ typedef struct global_nvs_t {
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;
-} __packed global_nvs_t;
-check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
+};
+
+check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif	/* _SOC_APOLLOLAKE_NVS_H_ */

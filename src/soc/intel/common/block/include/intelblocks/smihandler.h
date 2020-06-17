@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 struct gpi_status;
-struct global_nvs_t;
+struct global_nvs;
 
 /*
  * The register value is used with get_reg and set_reg
@@ -126,11 +126,6 @@ void smihandler_southbridge_gpi(
  */
 void smihandler_southbridge_espi(
 	const struct smm_save_state_ops *save_state_ops);
-
-/*
- * Returns gnvs pointer within SMM context
- */
-struct global_nvs_t *smm_get_gnvs(void);
 
 /* SoC overrides. */
 

@@ -537,7 +537,7 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 static void set_nvs_sws(void *unused)
 {
 	struct soc_power_reg *sws;
-	struct global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 	int index;
 
 	sws = cbmem_find(CBMEM_ID_POWER_STATE);
@@ -576,7 +576,7 @@ static void set_sb_final_nvs(void)
 	size_t fwsize;
 	const struct device *sd, *sata;
 
-	struct global_nvs_t *gnvs = acpi_get_gnvs();
+	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (gnvs == NULL)
 		return;
 

@@ -3,7 +3,7 @@
 #ifndef _DENVERTON_NS_NVS_H_
 #define _DENVERTON_NS_NVS_H_
 
-typedef struct global_nvs_t {
+struct __packed global_nvs {
 	/* Miscellaneous */
 	u16 osys; /* 0x00 - Operating System */
 	u8 smif;  /* 0x02 - SMI function call ("TRAP") */
@@ -47,9 +47,6 @@ typedef struct global_nvs_t {
 	u32 tsegl;	 /* 0x58 - TSEG Length/Size */
 	u8 rsvd3[164];
 
-} __packed global_nvs_t;
-
-/* Used in SMM to find the ACPI GNVS address */
-global_nvs_t *smm_get_gnvs(void);
+};
 
 #endif /* _DENVERTON_NS_NVS_H_ */

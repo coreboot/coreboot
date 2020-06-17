@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -70,7 +71,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	return cstate_map;
 }
 
-void acpi_create_gnvs(struct global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();

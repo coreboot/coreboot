@@ -167,7 +167,7 @@ static void uart_read_resources(struct device *dev)
  */
 static bool pch_uart_init_debug_controller_on_resume(void)
 {
-	global_nvs_t *gnvs = acpi_get_gnvs();
+	struct global_nvs *gnvs = acpi_get_gnvs();
 
 	if (gnvs)
 		return !!gnvs->uior;

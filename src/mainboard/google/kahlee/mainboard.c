@@ -163,7 +163,7 @@ static void kahlee_enable(struct device *dev)
 
 static void mainboard_final(void *chip_info)
 {
-	struct global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = acpi_get_gnvs();
 

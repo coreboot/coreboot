@@ -81,7 +81,7 @@ void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 		REG_SCRIPT_END
 	};
 	struct resource *bar;
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	/* Find ACPI NVS to update BARs */
 	gnvs = acpi_get_gnvs();

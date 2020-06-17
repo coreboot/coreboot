@@ -2,13 +2,14 @@
 
 #include <types.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <device/device.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 
 #include "thermal.h"
 
-void acpi_create_gnvs(global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	/* Enable Front USB ports in S3 by default */
 	gnvs->s3u0 = 1;

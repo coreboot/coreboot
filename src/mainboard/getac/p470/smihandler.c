@@ -14,7 +14,7 @@
 /* The southbridge SMI handler checks whether gnvs has a
  * valid pointer before calling the trap handler
  */
-extern global_nvs_t *gnvs;
+extern struct global_nvs *gnvs;
 
 int mainboard_io_trap_handler(int smif)
 {

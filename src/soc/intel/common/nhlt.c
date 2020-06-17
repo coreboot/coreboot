@@ -13,7 +13,7 @@ uintptr_t nhlt_soc_serialize_oem_overrides(struct nhlt *nhlt,
 	uintptr_t acpi_addr, const char *oem_id, const char *oem_table_id,
 	uint32_t oem_revision)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = acpi_get_gnvs();
 

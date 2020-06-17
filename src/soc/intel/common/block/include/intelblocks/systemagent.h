@@ -71,7 +71,7 @@ uintptr_t sa_get_tseg_base(void);
 /* API to get TSEG size */
 size_t sa_get_tseg_size(void);
 /* Fill MMIO resource above 4GB into GNVS */
-void sa_fill_gnvs(global_nvs_t *gnvs);
+void sa_fill_gnvs(struct global_nvs *gnvs);
 /*
  * SoC overrides
  *

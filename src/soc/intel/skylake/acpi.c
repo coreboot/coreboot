@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <arch/ioapic.h>
@@ -155,7 +156,7 @@ static int get_cores_per_package(void)
 	return cores;
 }
 
-static void acpi_create_gnvs(global_nvs_t *gnvs)
+void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	const struct soc_intel_skylake_config *config = config_of_soc();
 
@@ -643,7 +644,7 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {

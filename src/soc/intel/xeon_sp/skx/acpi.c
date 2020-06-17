@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <intelblocks/acpi.h>
@@ -47,7 +48,7 @@ static int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-void acpi_init_gnvs(global_nvs_t *gnvs)
+void acpi_init_gnvs(struct global_nvs *gnvs)
 {
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
@@ -956,7 +957,7 @@ void uncore_inject_dsdt(void)
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	global_nvs_t *gnvs;
+	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (!gnvs) {

@@ -12,9 +12,10 @@ void acpi_inject_nvsa(void);
 void gnvs_assign_chromeos(void);
 
 /* Platform code must implement these. */
+struct global_nvs;
 size_t gnvs_size_of_array(void);
-uint32_t *gnvs_cbmc_ptr(void);
-void *gnvs_chromeos_ptr(void);
+uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs);
+void *gnvs_chromeos_ptr(struct global_nvs *gnvs);
 
 /*
  * Creates acpi gnvs and adds it to the DSDT table.
@@ -28,7 +29,6 @@ void southbridge_inject_dsdt(const struct device *device);
  * Defined as weak in common acpi as gnvs structure definition is
  * chipset specific.
  */
-struct global_nvs;
 
 void acpi_create_gnvs(struct global_nvs *gnvs);
 void acpi_init_gnvs(struct global_nvs *gnvs);

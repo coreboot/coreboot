@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 
@@ -24,11 +23,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 
 	/* TPM Present */
 	gnvs->tpmp = 1;
-
-#if CONFIG(CHROMEOS)
-	/* Emerald Lake has no EC (?) */
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-#endif
 
 	gnvs->f4of = FAN4_THRESHOLD_OFF;
 	gnvs->f4on = FAN4_THRESHOLD_ON;

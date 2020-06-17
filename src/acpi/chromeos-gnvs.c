@@ -18,3 +18,12 @@ void gnvs_assign_chromeos(void)
 	if (CONFIG(EC_GOOGLE_CHROMEEC) && !google_ec_running_ro())
 		gnvs_chromeos->vbt2 = ACTIVE_ECFW_RW;
 }
+
+void gnvs_set_ecfw_rw(void)
+{
+	chromeos_acpi_t *gnvs_chromeos = gnvs_chromeos_ptr(acpi_get_gnvs());
+	if (!gnvs_chromeos)
+		return;
+
+	gnvs_chromeos->vbt2 = ACTIVE_ECFW_RW;
+}

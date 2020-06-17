@@ -10,6 +10,7 @@ void *gnvs_get_or_create(void);
 void acpi_inject_nvsa(void);
 
 void gnvs_assign_chromeos(void);
+void gnvs_set_ecfw_rw(void);
 
 /* Platform code must implement these. */
 struct global_nvs;

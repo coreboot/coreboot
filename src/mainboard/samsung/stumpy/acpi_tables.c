@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 
 #include "thermal.h"
@@ -45,7 +44,4 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
 	gnvs->flvl = 5;
-
-	// Stumpy has no arms^H^H^H^HEC.
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 }

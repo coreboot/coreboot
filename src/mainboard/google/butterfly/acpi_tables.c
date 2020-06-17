@@ -2,7 +2,6 @@
 
 #include <acpi/acpi_gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include "thermal.h"
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
@@ -19,7 +18,8 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	// The firmware read/write status is a "virtual" switch and
 	// will be handled elsewhere.  Until then hard-code to
 	// read/write instead of read-only for developer mode.
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RW;
+	if (CONFIG(CHROMEOS))
+		gnvs_set_ecfw_rw();
 
 	// the lid is open by default.
 	gnvs->lids = 1;
@@ -27,5 +27,4 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	/* EC handles all thermal and fan control on Butterfly. */
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
-
 }

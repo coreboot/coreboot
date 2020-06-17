@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <bootmode.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"
@@ -23,10 +22,8 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-#if CONFIG(CHROMEOS)
-	gnvs->chromeos.vbt2 = get_recovery_mode_switch() ?
-			ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-#endif
+	if (CONFIG(CHROMEOS) && !get_recovery_mode_switch())
+		gnvs_set_ecfw_rw();
 
 	/* EC handles all thermal and fan control on Stout. */
 	gnvs->tcrt = CRITICAL_TEMPERATURE;

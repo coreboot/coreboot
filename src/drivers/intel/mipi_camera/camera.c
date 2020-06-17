@@ -14,6 +14,88 @@
 #define SENSOR_TYPE_UUID	"26257549-9271-4ca4-bb43-c4899d5a4881"
 #define DEFAULT_ENDPOINT	0
 
+static uint32_t address_for_dev_type(const struct device *dev, uint8_t dev_type)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	uint16_t i2c_bus = dev->bus ? dev->bus->secondary : 0xFFFF;
+	uint16_t i2c_addr;
+
+	switch (dev_type) {
+	case DEV_TYPE_SENSOR:
+		i2c_addr = dev->path.i2c.device;
+		break;
+	case DEV_TYPE_VCM:
+		i2c_addr = config->vcm_address;
+		break;
+	case DEV_TYPE_ROM:
+		i2c_addr = config->rom_address;
+		break;
+	default:
+		return 0;
+	}
+
+	return (((uint32_t)i2c_bus) << 24 | ((uint32_t)i2c_addr) << 8 | dev_type);
+}
+
+static void camera_generate_dsm(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	int local1_ret = 1 + (config->ssdb.vcm_type ? 1 : 0) + (config->ssdb.rom_type ? 1 : 0);
+	int next_local1 = 1;
+	/* Method (_DSM, 4, NotSerialized) */
+	acpigen_write_method("_DSM", 4);
+
+	/* ToBuffer (Arg0, Local0) */
+	acpigen_write_to_buffer(ARG0_OP, LOCAL0_OP);
+
+	/* If (LEqual (Local0, ToUUID(uuid))) */
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_uuid(SENSOR_NAME_UUID);
+	acpigen_write_return_string(config->sensor_name ? config->sensor_name : "UNKNOWN");
+	acpigen_pop_len();	/* If */
+
+	/* If (LEqual (Local0, ToUUID(uuid))) */
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_uuid(SENSOR_TYPE_UUID);
+	/* ToInteger (Arg2, Local1) */
+	acpigen_write_to_integer(ARG2_OP, LOCAL1_OP);
+
+	/* If (LEqual (Local1, 1)) */
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, next_local1++);
+	acpigen_write_return_integer(local1_ret);
+	acpigen_pop_len();	/* If Arg2=1 */
+
+	/* If (LEqual (Local1, 2)) */
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, next_local1++);
+	acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_SENSOR));
+	acpigen_pop_len();	/* If Arg2=2 */
+
+	if (config->ssdb.vcm_type) {
+		/* If (LEqual (Local1, 3)) */
+		acpigen_write_if_lequal_op_int(LOCAL1_OP, next_local1++);
+		acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_VCM));
+		acpigen_pop_len();      /* If Arg2=3 */
+	}
+
+	if (config->ssdb.rom_type) {
+		/* If (LEqual (Local1, 3 or 4)) */
+		acpigen_write_if_lequal_op_int(LOCAL1_OP, next_local1);
+		acpigen_write_return_integer(address_for_dev_type(dev, DEV_TYPE_ROM));
+		acpigen_pop_len();      /* If Arg2=3 or 4 */
+	}
+
+	acpigen_pop_len();      /* If uuid */
+
+	/* Return (Buffer (One) { 0x0 }) */
+	acpigen_write_return_singleton_buffer(0x0);
+
+	acpigen_pop_len();      /* Method _DSM */
+}
+
 static void camera_fill_sensor_defaults(struct drivers_intel_mipi_camera_config *config)
 {
 	if (config->disable_ssdb_defaults)
@@ -65,6 +147,9 @@ static void camera_fill_sensor(const struct device *dev)
 	struct acpi_dp *lens_focus = NULL;
 
 	camera_fill_sensor_defaults(config);
+
+	/* _DSM */
+	camera_generate_dsm(dev);
 
 	ep00 = acpi_dp_new_table("EP00");
 	acpi_dp_add_integer(ep00, "endpoint", DEFAULT_ENDPOINT);

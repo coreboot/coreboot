@@ -690,6 +690,11 @@ uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs)
 	return &gnvs->cbmc;
 }
 
+void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
+{
+	return &gnvs->chromeos;
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs;
@@ -702,12 +707,6 @@ void southbridge_inject_dsdt(const struct device *dev)
 		gnvs->apic = 1;
 		gnvs->mpen = 1; /* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
-
-#if CONFIG(CHROMEOS)
-		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-#endif
-
-
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");

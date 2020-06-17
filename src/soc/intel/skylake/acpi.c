@@ -12,7 +12,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/turbo.h>
-#include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/sgx.h>
@@ -30,7 +29,6 @@
 #include <soc/systemagent.h>
 #include <string.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
 #include <device/pci_ops.h>
 
@@ -167,17 +165,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
-
-	if (CONFIG(CHROMEOS)) {
-		/* Initialize Verified Boot data */
-		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-		if (CONFIG(EC_GOOGLE_CHROMEEC)) {
-			gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-				ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-		} else {
-			gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-		}
-	}
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = config->dptf_enable;

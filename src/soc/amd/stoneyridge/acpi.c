@@ -164,12 +164,6 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
-	if (CONFIG(CHROMEOS)) {
-		/* Initialize Verified Boot data */
-		chromeos_init_chromeos_acpi(&gnvs->chromeos);
-		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-	}
-
 	/* Set unknown wake source */
 	gnvs->pm1i = ~0ULL;
 	gnvs->gpei = ~0ULL;

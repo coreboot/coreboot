@@ -2,8 +2,6 @@
 
 #include <acpi/acpi_gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
-#include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include "thermal.h"
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
@@ -15,11 +13,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	/* Disable USB ports in S5 by default */
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
-
-#if CONFIG(CHROMEOS)
-	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-#endif
 
 	gnvs->tmps = CTDP_SENSOR_ID;
 

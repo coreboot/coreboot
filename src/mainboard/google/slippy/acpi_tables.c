@@ -3,8 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <vendorcode/google/chromeos/gnvs.h>
-#include <ec/google/chromeec/ec.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 
@@ -22,11 +20,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 
 	/* TPM Present */
 	gnvs->tpmp = 1;
-
-#if CONFIG(CHROMEOS)
-	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-#endif
 
 	gnvs->tmps = TEMPERATURE_SENSOR_ID;
 	gnvs->tcrt = CRITICAL_TEMPERATURE;

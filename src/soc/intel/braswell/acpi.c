@@ -11,7 +11,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
-#include <ec/google/chromeec/ec.h>
 #include <drivers/intel/gma/opregion.h>
 #include <soc/acpi.h>
 #include <soc/gfx.h>
@@ -24,7 +23,6 @@
 #include <soc/pm.h>
 #include <string.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
 
 #define MWAIT_RES(state, sub_state)                         \
@@ -72,17 +70,6 @@ void acpi_init_gnvs(struct global_nvs *gnvs)
 
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = nc_read_top_of_low_memory();
-
-	if (CONFIG(CHROMEOS)) {
-		/* Initialize Verified Boot data */
-		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-		if (CONFIG(EC_GOOGLE_CHROMEEC)) {
-			gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-				ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-		} else {
-			gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-		}
-	}
 }
 
 int acpi_sci_irq(void)

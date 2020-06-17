@@ -13,8 +13,6 @@
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
-#include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <string.h>
 #include <soc/gpio.h>
 #include <soc/iobp.h>
@@ -617,17 +615,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 
 		/* CPU core count */
 		gnvs->pcnt = dev_count_cpu();
-
-		if (CONFIG(CHROMEOS)) {
-			/* Initialize Verified Boot data */
-			chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-			if (CONFIG(EC_GOOGLE_CHROMEEC)) {
-				gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-					ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-			} else {
-				gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-			}
-		}
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");

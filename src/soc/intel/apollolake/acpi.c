@@ -77,12 +77,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();
 
-	if (CONFIG(CHROMEOS)) {
-		/* Initialize Verified Boot data */
-		chromeos_init_chromeos_acpi(&gnvs->chromeos);
-		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-	}
-
 	/* Set unknown wake source */
 	gnvs->pm1i = ~0ULL;
 

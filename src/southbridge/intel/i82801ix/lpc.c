@@ -458,6 +458,12 @@ size_t gnvs_size_of_array(void)
 	return sizeof(struct global_nvs);
 }
 
+/* To build emulation/qemu-q35 with CHROMEOS. */
+void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
+{
+	return 0;
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs = acpi_get_gnvs();

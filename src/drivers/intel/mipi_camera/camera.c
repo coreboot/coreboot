@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdlib.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
@@ -13,6 +14,82 @@
 #define SENSOR_NAME_UUID	"822ace8f-2814-4174-a56b-5f029fe079ee"
 #define SENSOR_TYPE_UUID	"26257549-9271-4ca4-bb43-c4899d5a4881"
 #define DEFAULT_ENDPOINT	0
+#define DEFAULT_REMOTE_NAME	"\\_SB.PCI0.CIO2"
+#define CIO2_PCI_DEV		0x14
+#define CIO2_PCI_FN		0x3
+
+/*
+ * This implementation assumes there is only 1 endpoint at each end of every data port. It also
+ * assumes there are no clock lanes.  It also assumes that any VCM or NVM for a CAM is on the
+ * same I2C bus as the CAM.
+ */
+
+/*
+ * Adds settings for a CIO2 device (typically at "\_SB.PCI0.CIO2").  A _DSD is added that
+ * specifies a child table for each port (e.g., PRT0 for "port0" and PRT1 for "port1").  Each
+ * PRTx table specifies a table for each endpoint (though only 1 endpoint is supported by this
+ * implementation so the table only has an "endpoint0" that points to a EPx0 table). The EPx0
+ * table primarily describes the # of lanes in "data-lines" and specifies the name of the other
+ * side in "remote-endpoint" (the name is usually of the form "\_SB.PCI0.I2Cx.CAM0" for the
+ * first port/cam and "\_SB.PCI0.I2Cx.CAM1" if there's a second port/cam).
+ */
+static void camera_fill_cio2(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+	char *ep_table_name[MAX_PORT_ENTRIES] = {NULL};
+	char *port_table_name[MAX_PORT_ENTRIES] = {NULL};
+	char *port_name[MAX_PORT_ENTRIES] = {NULL};
+	unsigned int i, j;
+	char name[BUS_PATH_MAX];
+	struct acpi_dp *ep_table = NULL;
+	struct acpi_dp *port_table = NULL;
+	struct acpi_dp *remote = NULL;
+	struct acpi_dp *lanes = NULL;
+
+	for (i = 0; i < config->cio2_num_ports && i < MAX_PORT_ENTRIES; ++i) {
+		snprintf(name, sizeof(name), "EP%u0", i);
+		ep_table_name[i] = strdup(name);
+		ep_table = acpi_dp_new_table(ep_table_name[i]);
+		acpi_dp_add_integer(ep_table, "endpoint", 0);
+		acpi_dp_add_integer(ep_table, "clock-lanes", 0);
+
+		if (config->cio2_lanes_used[i] > 0) {
+			lanes = acpi_dp_new_table("data-lanes");
+
+			for (j = 1; j <= config->cio2_lanes_used[i] &&
+			     j <= MAX_PORT_ENTRIES; ++j)
+				acpi_dp_add_integer(lanes, NULL, j);
+			acpi_dp_add_array(ep_table, lanes);
+		}
+
+		if (config->cio2_lane_endpoint[i]) {
+			remote = acpi_dp_new_table("remote-endpoint");
+			acpi_dp_add_reference(remote, NULL, config->cio2_lane_endpoint[i]);
+			acpi_dp_add_integer(remote, NULL, 0);
+			acpi_dp_add_integer(remote, NULL, 0);
+			acpi_dp_add_array(ep_table, remote);
+		}
+
+		snprintf(name, sizeof(name), "PRT%u", i);
+		port_table_name[i] = strdup(name);
+		port_table = acpi_dp_new_table(port_table_name[i]);
+		acpi_dp_add_integer(port_table, "port", config->cio2_prt[i]);
+		acpi_dp_add_child(port_table, "endpoint0", ep_table);
+
+		snprintf(name, sizeof(name), "port%u", i);
+		port_name[i] = strdup(name);
+		acpi_dp_add_child(dsd, port_name[i], port_table);
+	}
+
+	acpi_dp_write(dsd);
+
+	for (i = 0; i < config->cio2_num_ports; ++i) {
+		free(ep_table_name[i]);
+		free(port_table_name[i]);
+		free(port_name[i]);
+	}
+}
 
 static void apply_pld_defaults(struct drivers_intel_mipi_camera_config *config)
 {
@@ -144,10 +221,16 @@ static void camera_generate_dsm(const struct device *dev)
 	acpigen_pop_len();      /* Method _DSM */
 }
 
-static void camera_fill_sensor_defaults(struct drivers_intel_mipi_camera_config *config)
+static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *config)
 {
+	struct device *cio2 = pcidev_on_root(CIO2_PCI_DEV, CIO2_PCI_FN);
+	struct drivers_intel_mipi_camera_config *cio2_config;
+
 	if (config->disable_ssdb_defaults)
 		return;
+
+	if (!config->ssdb.bdf_value)
+		config->ssdb.bdf_value = PCI_DEVFN(CIO2_PCI_DEV, CIO2_PCI_FN);
 
 	if (!config->ssdb.platform)
 		config->ssdb.platform = PLATFORM_SKC;
@@ -163,6 +246,24 @@ static void camera_fill_sensor_defaults(struct drivers_intel_mipi_camera_config 
 
 	if (!config->ssdb.mclk_speed)
 		config->ssdb.mclk_speed = CLK_FREQ_19_2MHZ;
+
+	if (!config->ssdb.lanes_used) {
+		cio2_config = cio2 ? cio2->chip_info : NULL;
+
+		if (!cio2_config) {
+			printk(BIOS_ERR, "Failed to get CIO2 config\n");
+		} else if (cio2_config->device_type != INTEL_ACPI_CAMERA_CIO2) {
+			printk(BIOS_ERR, "Device type isn't CIO2: %u\n",
+			       (u32)cio2_config->device_type);
+		} else if (config->ssdb.link_used >= cio2_config->cio2_num_ports) {
+			printk(BIOS_ERR, "%u exceeds CIO2's %u links\n",
+			       (u32)config->ssdb.link_used,
+			       (u32)cio2_config->cio2_num_ports);
+		} else {
+			config->ssdb.lanes_used =
+				cio2_config->cio2_lanes_used[config->ssdb.link_used];
+		}
+	}
 }
 
 /*
@@ -193,10 +294,12 @@ static void camera_fill_sensor(const struct device *dev)
 	struct acpi_dp *remote = NULL;
 	const char *vcm_name = NULL;
 	struct acpi_dp *lens_focus = NULL;
+	const char *remote_name;
+	struct device *cio2 = pcidev_on_root(CIO2_PCI_DEV, CIO2_PCI_FN);
 
 	camera_generate_pld(dev);
 
-	camera_fill_sensor_defaults(config);
+	camera_fill_ssdb_defaults(config);
 
 	/* _DSM */
 	camera_generate_dsm(dev);
@@ -223,7 +326,16 @@ static void camera_fill_sensor(const struct device *dev)
 
 	remote = acpi_dp_new_table("remote-endpoint");
 
-	acpi_dp_add_reference(remote, NULL, config->remote_name);
+	if (config->remote_name) {
+		remote_name = config->remote_name;
+	} else {
+		if (cio2)
+			remote_name = acpi_device_path(cio2);
+		else
+			remote_name = DEFAULT_REMOTE_NAME;
+	}
+
+	acpi_dp_add_reference(remote, NULL, remote_name);
 	acpi_dp_add_integer(remote, NULL, config->ssdb.link_used);
 	acpi_dp_add_integer(remote, NULL, DEFAULT_ENDPOINT);
 	acpi_dp_add_array(ep00, remote);
@@ -408,6 +520,9 @@ static void write_camera_device_common(const struct device *dev)
 	}
 
 	switch (config->device_type) {
+	case INTEL_ACPI_CAMERA_CIO2:
+		camera_fill_cio2(dev);
+		break;
 	case INTEL_ACPI_CAMERA_SENSOR:
 		camera_fill_sensor(dev);
 		break;

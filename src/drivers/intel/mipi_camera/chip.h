@@ -131,6 +131,12 @@ struct drivers_intel_mipi_camera_config {
 	const char *chip_name;
 	unsigned int acpi_uid;
 
+	/* Settings specific to CIO2 device */
+	uint32_t cio2_num_ports;
+	uint32_t cio2_lanes_used[MAX_PORT_ENTRIES];
+	const char *cio2_lane_endpoint[MAX_PORT_ENTRIES];
+	uint32_t cio2_prt[MAX_PORT_ENTRIES];
+
 	/* Settings specific to camera sensor */
 	bool disable_ssdb_defaults;
 

@@ -81,6 +81,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VtdDisable = 0;
 
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
+	m_cfg->SerialIoUartDebugMode = config->SerialIoUartMode[CONFIG_UART_FOR_CONSOLE];
 
 	/* Display */
 	m_cfg->DdiPortAConfig = config->DdiPortAConfig;

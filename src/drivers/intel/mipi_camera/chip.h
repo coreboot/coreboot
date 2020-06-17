@@ -5,7 +5,41 @@
 
 #include <stdint.h>
 
-#define MAX_PWDB_ENTRIES 12
+#define DEFAULT_LINK_FREQ	450000000
+#define MAX_PWDB_ENTRIES	12
+#define MAX_PORT_ENTRIES	4
+#define MAX_LINK_FREQ_ENTRIES	4
+
+enum camera_device_type {
+	DEV_TYPE_SENSOR = 0,
+	DEV_TYPE_VCM,
+	DEV_TYPE_ROM
+};
+
+enum intel_camera_platform_type {
+	PLATFORM_SKC = 9,
+	PLATFORM_CNL = 10
+};
+
+enum intel_camera_flash_type {
+	FLASH_DEFAULT = 0,
+	FLASH_DISABLE = 2,
+	FLASH_ENABLE = 3
+};
+
+enum intel_camera_led_type {
+	PRIVACY_LED_DEFAULT = 0,
+	PRIVACY_LED_A_16mA
+};
+
+enum intel_camera_mipi_info {
+	MIPI_INFO_SENSOR_DRIVER = 0,
+	MIPI_INFO_ACPI_DEFINED
+};
+
+#define CLK_FREQ_19_2MHZ	19200000
+#define CLK_FREQ_24MHZ		24000000
+#define CLK_FREQ_20MHZ		20000000
 
 enum intel_camera_device_type {
 	INTEL_ACPI_CAMERA_CIO2,
@@ -65,12 +99,16 @@ struct intel_ssdb {
 	uint8_t degree;				/* Camera Orientation */
 	uint8_t mipi_define;			/* MIPI info defined in ACPI or
 						sensor driver */
+	uint32_t mclk_speed;			/* Clock info for sensor */
 	uint32_t mclk;				/* Clock info for sensor */
 	uint8_t control_logic_id;		/* PMIC device node used for
 						the camera sensor */
 	uint8_t mipi_data_format;		/* MIPI data format */
 	uint8_t silicon_version;		/* Silicon version */
 	uint8_t customer_id;			/* Customer ID */
+	uint8_t mclk_port;
+	uint8_t reserved[13];			/* Pads SSDB out so the binary blob in ACPI is
+						   the same size as seen on other firmwares.*/
 } __packed;
 
 struct intel_pwdb {
@@ -91,6 +129,13 @@ struct drivers_intel_mipi_camera_config {
 	const char *acpi_name;
 	const char *chip_name;
 	unsigned int acpi_uid;
+
+	/* Settings specific to camera sensor */
+	bool disable_ssdb_defaults;
+
+	uint8_t num_freq_entries;	/* # of elements in link_freq */
+	uint32_t link_freq[MAX_LINK_FREQ_ENTRIES];
+	const char *sensor_name;	/* default "UNKNOWN" */
 	const char *remote_name;	/* default "\_SB.PCI0.CIO2" */
 	const char *vcm_name;		/* defaults to |vcm_address| device */
 	uint16_t rom_address;		/* I2C to use if ssdb.rom_type != 0 */

@@ -10,6 +10,144 @@
 #include <device/pci_def.h>
 #include "chip.h"
 
+#define SENSOR_NAME_UUID	"822ace8f-2814-4174-a56b-5f029fe079ee"
+#define SENSOR_TYPE_UUID	"26257549-9271-4ca4-bb43-c4899d5a4881"
+#define DEFAULT_ENDPOINT	0
+
+static void camera_fill_sensor_defaults(struct drivers_intel_mipi_camera_config *config)
+{
+	if (config->disable_ssdb_defaults)
+		return;
+
+	if (!config->ssdb.platform)
+		config->ssdb.platform = PLATFORM_SKC;
+
+	if (!config->ssdb.flash_support)
+		config->ssdb.flash_support = FLASH_DISABLE;
+
+	if (!config->ssdb.privacy_led)
+		config->ssdb.privacy_led = PRIVACY_LED_A_16mA;
+
+	if (!config->ssdb.mipi_define)
+		config->ssdb.mipi_define = MIPI_INFO_ACPI_DEFINED;
+
+	if (!config->ssdb.mclk_speed)
+		config->ssdb.mclk_speed = CLK_FREQ_19_2MHZ;
+}
+
+/*
+ * Adds settings for a camera sensor device (typically at "\_SB.PCI0.I2Cx.CAMy"). The drivers
+ * for Linux tends to expect the camera sensor device and any related nvram / vcm devices to be
+ * separate ACPI devices, while the drivers for Windows want all of these to be grouped
+ * together in the camera sensor ACPI device. This implementation tries to satisfy both,
+ * though the unfortunate tradeoff is that the same I2C address for nvram and vcm is advertised
+ * by multiple devices in ACPI (via "_CRS"). The Windows driver can use the "_DSM" method to
+ * disambiguate the I2C resources in the camera sensor ACPI device.  Drivers for Windows
+ * typically query "SSDB" for configuration information (represented as a binary blob dump of
+ * struct), while Linux drivers typically consult individual parameters in "_DSD".
+ *
+ * The tree of tables in "_DSD" is analogous to what's used for the "CIO2" device.  The _DSD
+ * specifies a child table for the sensor's port (e.g., PRT0 for "port0"--this implementation
+ * assumes a camera only has 1 port). The PRT0 table specifies a table for each endpoint
+ * (though only 1 endpoint is supported by this implementation so the table only has an
+ * "endpoint0" that points to a EP00 table). The EP00 table primarily describes the # of lanes
+ * in "data-lines", a list of frequencies in "list-frequencies", and specifies the name of the
+ * other side in "remote-endpoint" (typically "\_SB.PCI0.CIO2").
+ */
+static void camera_fill_sensor(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+	struct acpi_dp *ep00 = NULL;
+	struct acpi_dp *prt0 = NULL;
+	struct acpi_dp *dsd = NULL;
+	struct acpi_dp *remote = NULL;
+	const char *vcm_name = NULL;
+	struct acpi_dp *lens_focus = NULL;
+
+	camera_fill_sensor_defaults(config);
+
+	ep00 = acpi_dp_new_table("EP00");
+	acpi_dp_add_integer(ep00, "endpoint", DEFAULT_ENDPOINT);
+	acpi_dp_add_integer(ep00, "clock-lanes", 0);
+
+	if (config->ssdb.lanes_used > 0) {
+		struct acpi_dp *lanes = acpi_dp_new_table("data-lanes");
+		uint32_t i;
+		for (i = 1; i <= config->ssdb.lanes_used; ++i)
+			acpi_dp_add_integer(lanes, NULL, i);
+		acpi_dp_add_array(ep00, lanes);
+	}
+
+	if (config->num_freq_entries) {
+		struct acpi_dp *freq = acpi_dp_new_table("link-frequencies");
+		uint32_t i;
+		for (i = 0; i < config->num_freq_entries && i < MAX_LINK_FREQ_ENTRIES; ++i)
+			acpi_dp_add_integer(freq, NULL, config->link_freq[i]);
+		acpi_dp_add_array(ep00, freq);
+	}
+
+	remote = acpi_dp_new_table("remote-endpoint");
+
+	acpi_dp_add_reference(remote, NULL, config->remote_name);
+	acpi_dp_add_integer(remote, NULL, config->ssdb.link_used);
+	acpi_dp_add_integer(remote, NULL, DEFAULT_ENDPOINT);
+	acpi_dp_add_array(ep00, remote);
+
+	prt0 = acpi_dp_new_table("PRT0");
+
+	acpi_dp_add_integer(prt0, "port", 0);
+	acpi_dp_add_child(prt0, "endpoint0", ep00);
+	dsd = acpi_dp_new_table("_DSD");
+
+	acpi_dp_add_integer(dsd, "clock-frequency", config->ssdb.mclk_speed);
+
+	if (config->ssdb.degree)
+		acpi_dp_add_integer(dsd, "rotation", 180);
+
+	if (config->ssdb.vcm_type) {
+		if (config->vcm_name) {
+			vcm_name = config->vcm_name;
+		} else {
+			const struct device_path path = {
+				.type = DEVICE_PATH_I2C,
+				.i2c.device = config->vcm_address,
+			};
+			struct device *vcm_dev = find_dev_path(dev->bus, &path);
+			struct drivers_intel_mipi_camera_config *vcm_config;
+			vcm_config = vcm_dev ? vcm_dev->chip_info : NULL;
+
+			if (!vcm_config)
+				printk(BIOS_ERR, "Failed to get VCM\n");
+			else if (vcm_config->device_type != INTEL_ACPI_CAMERA_VCM)
+				printk(BIOS_ERR, "Device isn't VCM\n");
+			else
+				vcm_name = acpi_device_path(vcm_dev);
+		}
+	}
+
+	if (vcm_name) {
+		lens_focus = acpi_dp_new_table("lens-focus");
+		acpi_dp_add_reference(lens_focus, NULL, vcm_name);
+		acpi_dp_add_array(dsd, lens_focus);
+	}
+
+	acpi_dp_add_child(dsd, "port0", prt0);
+	acpi_dp_write(dsd);
+
+	acpigen_write_method_serialized("SSDB", 0);
+	acpigen_write_return_byte_buffer((uint8_t *)&config->ssdb, sizeof(config->ssdb));
+	acpigen_pop_len(); /* Method */
+
+	/* Fill Power Sequencing Data */
+	if (config->num_pwdb_entries > 0) {
+		acpigen_write_method_serialized("PWDB", 0);
+		acpigen_write_return_byte_buffer((uint8_t *)&config->pwdb,
+						 sizeof(struct intel_pwdb) *
+						 config->num_pwdb_entries);
+		acpigen_pop_len(); /* Method */
+	}
+}
+
 static void camera_fill_nvm(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
@@ -135,6 +273,9 @@ static void write_camera_device_common(const struct device *dev)
 	}
 
 	switch (config->device_type) {
+	case INTEL_ACPI_CAMERA_SENSOR:
+		camera_fill_sensor(dev);
+		break;
 	case INTEL_ACPI_CAMERA_VCM:
 		camera_fill_vcm(dev);
 		break;

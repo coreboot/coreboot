@@ -16,15 +16,11 @@
 static void init(struct device *dev)
 {
 	const struct soc_amd_picasso_config *cfg;
-	const struct device *nb_dev = pcidev_path_on_root(GNB_DEVFN);
 	struct resource *res;
 	uintptr_t bar;
 
 	/* Set the proper I2S_PIN_CONFIG state */
-	if (!nb_dev || !nb_dev->chip_info)
-		return;
-
-	cfg = nb_dev->chip_info;
+	cfg = config_of_soc();
 
 	res = dev->resource_list;
 	if (!res || !res->base) {

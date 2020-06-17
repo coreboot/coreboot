@@ -23,6 +23,15 @@ bootblock_resume_entry:
 bootblock_pre_c_entry:
 	post_code(0xa0)
 
+	/* Clear .bss section */
+	cld
+	xor	%eax, %eax
+	movl	$(_ebss), %ecx
+	movl	$(_bss), %edi
+	sub	%edi, %ecx
+	shrl	$2, %ecx
+	rep	stosl
+
 	movl	$_eearlyram_stack, %esp
 
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */

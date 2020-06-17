@@ -56,19 +56,3 @@ void global_smi_enable(void)
 {
 	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 }
-
-void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
-{
-	/*
-	 * Issue SMI to set the gnvs pointer in SMM.
-	 * tcg and smi1 are unused.
-	 *
-	 * EAX = APM_CNT_GNVS_UPDATE
-	 * EBX = gnvs pointer
-	 * EDX = APM_CNT
-	 */
-	asm volatile("outb %%al, %%dx\n\t"
-		     : /* ignore result */
-		     : "a"(APM_CNT_GNVS_UPDATE), "b"((uint32_t)gnvs),
-		       "d"(APM_CNT));
-}

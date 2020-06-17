@@ -566,7 +566,7 @@ static void southbridge_inject_dsdt(const struct device *dev)
 		gnvs->pcnt = dev_count_cpu();
 
 		/* And tell SMI about it */
-		smm_setup_structures(gnvs, NULL, NULL);
+		apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to SSDT.  */
 		acpigen_write_scope("\\");

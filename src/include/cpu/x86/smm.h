@@ -48,8 +48,6 @@ void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
 
-void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
-
 void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);

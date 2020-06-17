@@ -968,7 +968,7 @@ void southbridge_inject_dsdt(const struct device *device)
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
 		/* TODO: tell SMI about it, if HAVE_SMI_HANDLER */
-		// smm_setup_structures(gnvs, NULL, NULL);
+		// apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to DSDT.  */
 		printk(BIOS_SPEW, "%s injecting NVSA with 0x%x\n", __FILE__, (uint32_t)gnvs);

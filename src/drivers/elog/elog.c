@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#if CONFIG(HAVE_ACPI_RESUME)
 #include <acpi/acpi.h>
-#endif
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -738,11 +736,7 @@ static bool elog_do_add_boot_count(void)
 	if (ENV_SMM)
 		return false;
 
-#if CONFIG(HAVE_ACPI_RESUME)
 	return !acpi_is_wakeup_s3();
-#else
-	return true;
-#endif
 }
 
 /* Check and log POST codes from previous boot */

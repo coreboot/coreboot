@@ -17,6 +17,8 @@ chip soc/intel/tigerlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
 
+	register "SaGv" = "SaGv_Disabled"
+
 	# I2C Port Config
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

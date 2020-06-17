@@ -1,4 +1,5 @@
 chip soc/intel/tigerlake
+	register "SaGv" = "SaGv_Disabled"
 	device domain 0 on
 		device pci 15.1 on
 			chip drivers/i2c/hid

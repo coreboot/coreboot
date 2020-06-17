@@ -1782,6 +1782,10 @@ static void send_heci_uma_message(struct raminfo *info)
 		u8 field2;
 		u8 unk3[0x48 - 4 - 1];
 	} __packed reply;
+
+	/* FIXME: recv_heci_message() does not always initialize 'reply' */
+	reply.command = 0;
+
 	struct uma_message {
 		u8 group_id;
 		u8 cmd;

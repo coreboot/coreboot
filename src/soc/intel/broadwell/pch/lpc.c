@@ -618,11 +618,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 		/* CPU core count */
 		gnvs->pcnt = dev_count_cpu();
 
-#if CONFIG(CONSOLE_CBMEM)
-		/* Update the mem console pointer. */
-		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
-#endif
-
 		if (CONFIG(CHROMEOS)) {
 			/* Initialize Verified Boot data */
 			chromeos_init_chromeos_acpi(&(gnvs->chromeos));

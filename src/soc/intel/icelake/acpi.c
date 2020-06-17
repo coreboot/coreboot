@@ -189,10 +189,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-	if (CONFIG(CONSOLE_CBMEM))
-		/* Update the mem console pointer. */
-		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
-
 	if (CONFIG(CHROMEOS)) {
 		/* Initialize Verified Boot data */
 		chromeos_init_chromeos_acpi(&(gnvs->chromeos));

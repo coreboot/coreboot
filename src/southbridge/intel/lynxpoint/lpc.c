@@ -685,6 +685,11 @@ size_t gnvs_size_of_array(void)
 	return sizeof(struct global_nvs);
 }
 
+uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs)
+{
+	return &gnvs->cbmc;
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs;
@@ -702,8 +707,6 @@ void southbridge_inject_dsdt(const struct device *dev)
 		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
 #endif
 
-		/* Update the mem console pointer. */
-		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 
 
 		/* Add it to DSDT.  */

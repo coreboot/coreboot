@@ -68,11 +68,6 @@ void acpi_init_gnvs(struct global_nvs *gnvs)
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = (uintptr_t)cbmem_top();
 
-#if CONFIG(CONSOLE_CBMEM)
-	/* Update the mem console pointer. */
-	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
-#endif
-
 	/* MMIO Low/High & TSEG base and length */
 	gnvs->mmiob = (u32)get_top_of_low_memory();
 	gnvs->mmiol = (u32)(get_pciebase() - 1);

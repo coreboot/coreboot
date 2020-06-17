@@ -33,10 +33,6 @@ void acpi_init_gnvs(struct global_nvs *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
-
-	/* Update the mem console pointer. */
-	if (CONFIG(CONSOLE_CBMEM))
-		gnvs->cbmc = (uint32_t)cbmem_find(CBMEM_ID_CONSOLE);
 }
 
 int soc_madt_sci_irq_polarity(int sci)

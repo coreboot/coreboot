@@ -77,10 +77,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();
 
-
-	if (CONFIG(CONSOLE_CBMEM))
-		gnvs->cbmc = (uintptr_t) cbmem_find(CBMEM_ID_CONSOLE);
-
 	if (CONFIG(CHROMEOS)) {
 		/* Initialize Verified Boot data */
 		chromeos_init_chromeos_acpi(&gnvs->chromeos);

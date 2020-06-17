@@ -177,13 +177,10 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 void sb_reset_i2c_slaves(void)
 {
 	const struct soc_amd_picasso_config *cfg;
-	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct soc_amd_i2c_save save_table[saved_pins_count];
 	uint8_t i, j, control;
 
-	if (!dev || !dev->chip_info)
-		return;
-	cfg = dev->chip_info;
+	cfg = config_of_soc();
 	control = cfg->i2c_scl_reset & GPIO_I2C_MASK;
 	if (control == 0)
 		return;

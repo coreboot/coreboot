@@ -284,6 +284,13 @@ struct soc_intel_jasperlake_config {
 	 */
 	uint8_t cpu_ratio_override;
 
+	/* Skip CPU replacement check
+	 * 0: disable
+	 * 1: enable
+	 * Setting this option to skip CPU replacement check to avoid the forced MRC training
+	 * for the platforms with soldered down SOC.
+	 */
+	uint8_t SkipCpuReplacementCheck;
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

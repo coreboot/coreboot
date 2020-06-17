@@ -12,11 +12,11 @@ static u32 gpio_read_wrapper(u32 iomux_gpio)
 	u32 gpio = iomux_gpio << 2;
 
 	if (gpio < 0x100)
-		return gpio0_read32(gpio & 0xff);
+		return read32((void *)(ACPIMMIO_GPIO0_BASE + (gpio & 0xff)));
 	else if (gpio >= 0x100 && gpio < 0x200)
-		return gpio1_read32(gpio & 0xff);
+		return read32((void *)(ACPIMMIO_GPIO1_BASE + (gpio & 0xff)));
 	else if (gpio >= 0x200 && gpio < 0x300)
-		return gpio2_read32(gpio & 0xff);
+		return read32((void *)(ACPIMMIO_GPIO2_BASE + (gpio & 0xff)));
 
 	die("Invalid GPIO");
 }
@@ -26,11 +26,11 @@ static void gpio_write_wrapper(u32 iomux_gpio, u32 setting)
 	u32 gpio = iomux_gpio << 2;
 
 	if (gpio < 0x100)
-		gpio0_write32(gpio & 0xff, setting);
+		write32((void *)(ACPIMMIO_GPIO0_BASE + (gpio & 0xff)), setting);
 	else if (gpio >= 0x100 && gpio < 0x200)
-		gpio1_write32(gpio & 0xff, setting);
+		write32((void *)(ACPIMMIO_GPIO1_BASE + (gpio & 0xff)), setting);
 	else if (gpio >= 0x200 && gpio < 0x300)
-		gpio2_write32(gpio & 0xff, setting);
+		write32((void *)(ACPIMMIO_GPIO2_BASE + (gpio & 0xff)), setting);
 }
 
 void configure_gpio(u32 gpio, u8 iomux_ftn, u32 setting)
@@ -70,9 +70,9 @@ int get_spd_offset(void)
 	 * One SPD file contains all 4 options, determine which index to
 	 * read here, then call into the standard routines.
 	 */
-	if (gpio1_read8(0x02) & BIT0)
+	if (read32((void *)(ACPIMMIO_GPIO1_BASE + 0x02)) & BIT0)
 		index |= BIT0;
-	if (gpio1_read8(0x06) & BIT0)
+	if (read32((void *)(ACPIMMIO_GPIO1_BASE + 0x06)) & BIT0)
 		index |= BIT1;
 
 	return index;

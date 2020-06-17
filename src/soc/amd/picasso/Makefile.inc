@@ -429,32 +429,10 @@ $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
 		--maxsize $(PSP_BIOSBIN_SIZE)
 
-ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
-PHONY+=add_amdfw
-INTERMEDIATE+=add_amdfw
-
-# Calculate firmware position inside the ROM
-PICASSO_FWM_ROM_POSITION=$(call int-add, \
-	$(call int-subtract, $(CONFIG_ROM_SIZE) \
-	$(call int-shift-left, \
-	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000)
-
-add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
-	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
-		"$(PICASSO_FWM_ROM_POSITION)"
-	dd oflag=seek_bytes \
-		if=$(obj)/amdfw.rom \
-		of=$(obj)/coreboot.pre conv=notrunc \
-		seek=$(PICASSO_FWM_ROM_POSITION) >/dev/null 2>&1
-
-else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
-
 cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(PICASSO_FWM_POSITION)
 apu/amdfw-type := raw
-
-endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)
 

@@ -36,7 +36,7 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

@@ -417,7 +417,7 @@ config OVERRIDE_DEVICETREE
 
 config FMDFILE
 	string "fmap description file in fmd format"
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 	default ""
 	help
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
@@ -1188,7 +1188,7 @@ config BOOTBLOCK_CUSTOM
 
 config MEMLAYOUT_LD_FILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
 	help
 	  This variable allows SoC/mainboard to supply in a custom linker file
 	  if required. This determines the linker file used for all the stages

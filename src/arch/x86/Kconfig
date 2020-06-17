@@ -162,7 +162,7 @@ config HAVE_CMOS_DEFAULT
 
 config CMOS_DEFAULT_FILE
 	string
-	default "src/mainboard/$(MAINBOARDDIR)/cmos.default"
+	default "src/mainboard/\$(MAINBOARDDIR)/cmos.default"
 	depends on HAVE_CMOS_DEFAULT
 
 config IOAPIC_INTERRUPTS_ON_FSB

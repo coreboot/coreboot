@@ -75,7 +75,7 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_OCTOPUS
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_OCTOPUS
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -138,6 +138,6 @@ config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	default 255 if BOARD_GOOGLE_OCTOPUS
 
 config FMDFILE
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
 
 endif # BOARD_GOOGLE_OCTOPUS

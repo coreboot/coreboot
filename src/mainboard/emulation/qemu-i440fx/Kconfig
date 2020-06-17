@@ -34,7 +34,7 @@ endif
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A
 
 config VBOOT_VBNV_OFFSET
 	hex

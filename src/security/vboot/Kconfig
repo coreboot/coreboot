@@ -181,15 +181,15 @@ config VBOOT_WIPEOUT_SUPPORTED
 
 config VBOOT_FWID_MODEL
 	string "Firmware ID model"
-	default "Google_$(CONFIG_MAINBOARD_PART_NUMBER)" if CHROMEOS
-	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"
+	default "Google_\$(CONFIG_MAINBOARD_PART_NUMBER)" if CHROMEOS
+	default "\$(CONFIG_MAINBOARD_VENDOR)_\$(CONFIG_MAINBOARD_PART_NUMBER)"
 	help
 	  This is the first part of the FWID written to various regions of a
 	  vboot firmware image to identify its version.
 
 config VBOOT_FWID_VERSION
 	string "Firmware ID version"
-	default ".$(KERNELVERSION)"
+	default ".\$(KERNELVERSION)"
 	help
 	  This is the second part of the FWID written to various regions of a
 	  vboot firmware image to identify its version.
@@ -326,23 +326,23 @@ endmenu # GBB
 menu "Vboot Keys"
 config VBOOT_ROOT_KEY
 	string "Root key (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/root_key.vbpubk"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/root_key.vbpubk"
 
 config VBOOT_RECOVERY_KEY
 	string "Recovery key (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/recovery_key.vbpubk"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/recovery_key.vbpubk"
 
 config VBOOT_FIRMWARE_PRIVKEY
 	string "Firmware key (private)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/firmware_data_key.vbprivk"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/firmware_data_key.vbprivk"
 
 config VBOOT_KERNEL_KEY
 	string "Kernel subkey (public)"
-	default "$(VBOOT_SOURCE)/tests/devkeys/kernel_subkey.vbpubk"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/kernel_subkey.vbpubk"
 
 config VBOOT_KEYBLOCK
 	string "Keyblock to use for the RW regions"
-	default "$(VBOOT_SOURCE)/tests/devkeys/firmware.keyblock"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/firmware.keyblock"
 
 config VBOOT_KEYBLOCK_VERSION
 	int "Keyblock version number"

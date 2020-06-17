@@ -18,6 +18,6 @@ config MAINBOARD_PART_NUMBER
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 endif

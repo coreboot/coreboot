@@ -29,8 +29,8 @@ config VBOOT
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwab-16M.fmd" if VBOOT_SLOTS_RW_AB
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab-16M.fmd" if VBOOT_SLOTS_RW_AB
 
 if VBOOT
 

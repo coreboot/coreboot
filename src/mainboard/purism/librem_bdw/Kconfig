@@ -19,7 +19,7 @@ config VARIANT_DIR
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRIVERS_UART_8250IO
 	def_bool n
@@ -68,7 +68,7 @@ config VGA_BIOS_ID
 # Override the default variant behavior, since the data.vbt is the same
 # for both variants.
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 # This platform has limited means to display POST codes
 config NO_POST

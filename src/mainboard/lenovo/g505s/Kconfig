@@ -45,6 +45,6 @@ config VGA_BIOS_ID
 
 config PAYLOAD_CONFIGFILE
 	string
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
+	default "\$(top)/src/mainboard/\$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
 
 endif # BOARD_LENOVO_G505S

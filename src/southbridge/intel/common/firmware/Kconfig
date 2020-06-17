@@ -21,7 +21,7 @@ config HAVE_IFD_BIN
 
 config IFD_BIN_PATH
 	string "Path and filename of the descriptor.bin file"
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/descriptor.bin"
 	depends on HAVE_IFD_BIN
 
 config HAVE_ME_BIN
@@ -39,7 +39,7 @@ config HAVE_ME_BIN
 
 config ME_BIN_PATH
 	string "Path to management engine firmware"
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/me.bin"
 	depends on HAVE_ME_BIN
 
 config CHECK_ME
@@ -107,7 +107,7 @@ config HAVE_GBE_BIN
 config GBE_BIN_PATH
 	string "Path to gigabit ethernet configuration"
 	depends on HAVE_GBE_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/gbe.bin"
 
 config MAINBOARD_USES_IFD_EC_REGION
 	def_bool n
@@ -125,7 +125,7 @@ config HAVE_EC_BIN
 config EC_BIN_PATH
 	string "Path to EC firmware"
 	depends on HAVE_EC_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/ec.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/ec.bin"
 
 choice
 	prompt "Protect flash regions"

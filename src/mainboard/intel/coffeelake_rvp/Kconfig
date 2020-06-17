@@ -64,13 +64,13 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config FMDFILE
 	string
 	depends on VBOOT
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos_32MB.fmd" if BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_32MB.fmd" if BOARD_ROMSIZE_KB_32768
 
 config INCLUDE_SND_MAX98357_DA7219_NHLT
 	bool "Include blobs for audio with MAX98357_DA7219"

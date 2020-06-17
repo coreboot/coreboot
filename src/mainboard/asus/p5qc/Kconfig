@@ -35,7 +35,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config GPIO_C
 	string
@@ -50,6 +50,6 @@ config GPIO_C
 config PAYLOAD_CONFIGFILE
 	string
 	default "" if PAYLOAD_SEABIOS && BOARD_ASUS_P5QL_PRO
-	default "$(top)/src/mainboard/$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
+	default "\$(top)/src/mainboard/\$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
 
 endif # BOARD_ASUS_P5Q*

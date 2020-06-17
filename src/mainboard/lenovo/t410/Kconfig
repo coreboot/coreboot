@@ -44,7 +44,7 @@ config CBFS_SIZE
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_DIR
 	string

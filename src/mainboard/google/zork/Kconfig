@@ -50,7 +50,7 @@ config ELOG_BOOT_COUNT_CMOS_OFFSET
 # even when CHROMEOS is not selected when building upstream.
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR
 	string
@@ -80,7 +80,7 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_FAMILY
 	string

@@ -107,7 +107,7 @@ config DRIVER_TPM_I2C_ADDR
 config FMDFILE
 	string "FMAP description file in fmd format"
 	depends on VBOOT
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot.fmd"
 	help
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
 	  but in some cases more complex setups are required.

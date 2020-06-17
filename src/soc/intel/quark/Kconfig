@@ -178,11 +178,11 @@ config FSP_ESRAM_LOC
 
 config FSP_M_FILE
 	string
-	default "3rdparty/blobs/soc/intel/quark/$(CONFIG_FSP_TYPE)/$(CONFIG_FSP_BUILD_TYPE)/FSP_M.fd"
+	default "3rdparty/blobs/soc/intel/quark/\$(CONFIG_FSP_TYPE)/\$(CONFIG_FSP_BUILD_TYPE)/FSP_M.fd"
 
 config FSP_S_FILE
 	string
-	default "3rdparty/blobs/soc/intel/quark/$(CONFIG_FSP_TYPE)/$(CONFIG_FSP_BUILD_TYPE)/FSP_S.fd"
+	default "3rdparty/blobs/soc/intel/quark/\$(CONFIG_FSP_TYPE)/\$(CONFIG_FSP_BUILD_TYPE)/FSP_S.fd"
 
 #####
 # RMU binary

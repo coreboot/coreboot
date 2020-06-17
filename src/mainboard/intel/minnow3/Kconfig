@@ -17,7 +17,7 @@ config MAINBOARD_PART_NUMBER
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/minnow3.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/minnow3.fmd"
 
 config UART_FOR_CONSOLE
 	default 2

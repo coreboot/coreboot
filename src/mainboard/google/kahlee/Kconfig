@@ -62,7 +62,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_FAMILY
 	string
@@ -70,7 +70,7 @@ config MAINBOARD_FAMILY
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/variants/baseboard/chromeos.fmd" if CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/baseboard/chromeos.fmd" if CHROMEOS
 	default ""
 	help
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,

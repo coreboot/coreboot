@@ -43,9 +43,9 @@ config AGESA_BINARY_PI_FILE
 	string "AGESA PI binary file name"
 	default "3rdparty/blobs/pi/amd/00630F01/FP3/AGESA.bin" if CPU_AMD_PI_00630F01
 	default "3rdparty/blobs/pi/amd/00730F01/FT3b/AGESA.bin" if CPU_AMD_PI_00730F01
-	default "3rdparty/amd_blobs/stoneyridge/pi/CZ/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_MERLINFALCON && USE_AMD_BLOBS
-	default "3rdparty/amd_blobs/stoneyridge/pi/ST/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_PRAIRIEFALCON && USE_AMD_BLOBS
-	default "3rdparty/amd_blobs/stoneyridge/pi/ST/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_STONEYRIDGE && USE_AMD_BLOBS
+	default "3rdparty/amd_blobs/stoneyridge/pi/CZ/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_MERLINFALCON && USE_AMD_BLOBS
+	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_PRAIRIEFALCON && USE_AMD_BLOBS
+	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_STONEYRIDGE && USE_AMD_BLOBS
 	default "3rdparty/blobs/pi/amd/00660F01/FP4/AGESA.bin" if CPU_AMD_PI_00660F01
 	help
 	  Specify the binary file to use for AMD platform initialization.

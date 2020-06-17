@@ -27,7 +27,7 @@ config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
 
 config VENDORCODE_ELTAN_VBOOT_MANIFEST
 	string "Verified boot manifest file"
-	default "mainboard/$(MAINBOARD_DIR)/manifest.h"
+	default "mainboard/\$(MAINBOARD_DIR)/manifest.h"
 
 config VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS
 	int "Manifest Items"

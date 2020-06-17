@@ -35,10 +35,10 @@ config MAINBOARD_PART_NUMBER
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 # Override the default variant behavior, since the data.vbt is the same
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_ASUS_P5QPL_AM || BOARD_ASUS_P5G41T_M_LX

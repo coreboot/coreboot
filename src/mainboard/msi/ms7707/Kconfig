@@ -35,7 +35,7 @@ config CBFS_SIZE
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vgabios.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/vgabios.bin"
 
 config VGA_BIOS_ID
 	string

@@ -38,7 +38,7 @@ config MAX_CPUS
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config INCLUDE_SND_MAX98357_DA7219_NHLT
 	bool "Include blobs for audio with MAX98357_DA7219"

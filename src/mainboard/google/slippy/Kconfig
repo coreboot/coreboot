@@ -50,7 +50,7 @@ config MAINBOARD_FAMILY
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config VGA_BIOS_FILE
 	string
@@ -59,7 +59,7 @@ config VGA_BIOS_FILE
 # Override the default variant behavior, since the data.vbt is the same
 # for all variants.
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string

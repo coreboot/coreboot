@@ -102,10 +102,10 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	default 0xc00
 
 config FMDFILE
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
 
 # Override the default behavior, since the data.vbt is the same for all variants
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_GOOGLE_REEF

@@ -43,11 +43,11 @@ config MAINBOARD_PART_NUMBER
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GIGABYTE_GA_B75_D3V
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GIGABYTE_GA_B75_D3V
 
 # Override the default variant behavior, since the data.vbt is the same
 config INTEL_GMA_VBT_FILE
 	string
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_GIGABYTE_GA_B75*

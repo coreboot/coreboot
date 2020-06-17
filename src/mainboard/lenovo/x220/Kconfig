@@ -52,7 +52,7 @@ config VARIANT_DIR
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -62,7 +62,7 @@ config MAINBOARD_PART_NUMBER
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config USBDEBUG_HCD_INDEX
 	int

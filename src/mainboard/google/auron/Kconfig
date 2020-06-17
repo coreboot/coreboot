@@ -50,7 +50,7 @@ config MAINBOARD_PART_NUMBER
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

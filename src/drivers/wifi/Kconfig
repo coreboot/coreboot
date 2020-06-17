@@ -45,7 +45,7 @@ config WIFI_SAR_CBFS
 config WIFI_SAR_CBFS_FILEPATH
 	string "The cbfs file which has WIFI SAR defaults"
 	depends on WIFI_SAR_CBFS
-	default "src/mainboard/$(MAINBOARDDIR)/wifi_sar_defaults.hex"
+	default "src/mainboard/\$(MAINBOARDDIR)/wifi_sar_defaults.hex"
 
 config DSAR_SET_NUM
 	hex "Number of SAR sets when D-SAR is enabled"

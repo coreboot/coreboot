@@ -90,15 +90,15 @@ config UART_FOR_CONSOLE
 if BOARD_GOOGLE_BASEBOARD_HATCH
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
 endif
 
 if BOARD_GOOGLE_BASEBOARD_PUFF
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-puff-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-puff-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
 endif
 
 config MAINBOARD_DIR
@@ -134,7 +134,7 @@ config MAINBOARD_PART_NUMBER
 config OVERRIDE_DEVICETREE
 	string
 	default "variants/helios_diskswap/overridetree.cb" if BOARD_GOOGLE_HELIOS_DISKSWAP
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config TPM_TIS_ACPI_INTERRUPT
 	int

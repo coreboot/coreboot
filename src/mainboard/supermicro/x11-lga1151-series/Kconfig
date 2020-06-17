@@ -38,7 +38,7 @@ config VARIANT_DIR
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT
@@ -60,7 +60,7 @@ config VBOOT_VBNV_OFFSET
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-ro-rwab.fmd" if VBOOT_SLOTS_RW_AB
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-ro-rwab.fmd" if VBOOT_SLOTS_RW_AB
 
 config CBFS_SIZE
 	hex

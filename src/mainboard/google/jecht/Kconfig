@@ -50,7 +50,7 @@ config VGA_BIOS_FILE
 # Override the default variant behavior, since the data.vbt is the same
 # for all variants except tidus
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/data.vbt" if !BOARD_GOOGLE_TIDUS
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt" if !BOARD_GOOGLE_TIDUS
 
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string

@@ -88,7 +88,7 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

@@ -88,6 +88,6 @@ config FSP1_1_DISPLAY_LOGO
 config FSP1_1_LOGO_FILE_NAME
 	string "Logo file"
 	depends on FSP1_1_DISPLAY_LOGO
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/logo.bmp"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
 
 endif #PLATFORM_USES_FSP1_1

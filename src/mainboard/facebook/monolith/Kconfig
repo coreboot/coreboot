@@ -40,17 +40,17 @@ config MAX_CPUS
 config IFD_BIN_PATH
 	string
 	depends on HAVE_IFD_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/descriptor.bin"
 
 config ME_BIN_PATH
 	string
 	depends on HAVE_ME_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/me.bin"
 
 config GBE_BIN_PATH
 	string
 	depends on HAVE_GBE_BIN
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/gbe.bin"
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex

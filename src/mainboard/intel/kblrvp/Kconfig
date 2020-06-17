@@ -57,21 +57,21 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config IFD_BIN_PATH
 	string
 	depends on HAVE_IFD_BIN
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.rvp3.bin" if BOARD_INTEL_KBLRVP3
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.rvp7.bin" if BOARD_INTEL_KBLRVP7
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/descriptor.rvp8.bin" if BOARD_INTEL_KBLRVP8
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/descriptor.rvp3.bin" if BOARD_INTEL_KBLRVP3
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/descriptor.rvp7.bin" if BOARD_INTEL_KBLRVP7
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/descriptor.rvp8.bin" if BOARD_INTEL_KBLRVP8
 
 config ME_BIN_PATH
 	string
 	depends on HAVE_ME_BIN
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp3.bin" if BOARD_INTEL_KBLRVP3
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp7.bin" if BOARD_INTEL_KBLRVP7
-	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/me.rvp8.bin" if BOARD_INTEL_KBLRVP8
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/me.rvp3.bin" if BOARD_INTEL_KBLRVP3
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/me.rvp7.bin" if BOARD_INTEL_KBLRVP7
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/me.rvp8.bin" if BOARD_INTEL_KBLRVP8
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex

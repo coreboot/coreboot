@@ -126,7 +126,7 @@ config USE_GOOGLE_FSP
 
 config FSP_HEADER_PATH
 	string
-	default "$(src)/vendorcode/intel/fsp/fsp1_1/braswell" if USE_GOOGLE_FSP
+	default "\$(src)/vendorcode/intel/fsp/fsp1_1/braswell" if USE_GOOGLE_FSP
 	default "3rdparty/fsp/BraswellFspBinPkg/Include/"
 	help
 	 Location of FSP header file FspUpdVpd.h

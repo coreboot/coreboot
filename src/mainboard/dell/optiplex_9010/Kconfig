@@ -22,7 +22,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default dell/optiplex_9010
+	default "dell/optiplex_9010"
 
 config MAINBOARD_PART_NUMBER
 	string

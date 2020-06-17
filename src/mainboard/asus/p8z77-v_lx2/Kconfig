@@ -18,7 +18,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/p8z77-v_lx2
+	default "asus/p8z77-v_lx2"
 
 config MAINBOARD_PART_NUMBER
 	string

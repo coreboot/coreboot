@@ -23,7 +23,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default system76/lemp9
+	default "system76/lemp9"
 
 config MAINBOARD_PART_NUMBER
 	string

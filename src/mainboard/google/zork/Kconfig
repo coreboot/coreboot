@@ -54,7 +54,7 @@ config FMDFILE
 
 config MAINBOARD_DIR
 	string
-	default google/zork
+	default "google/zork"
 
 config VARIANT_DIR
 	string

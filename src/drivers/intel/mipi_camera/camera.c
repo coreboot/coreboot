@@ -14,6 +14,54 @@
 #define SENSOR_TYPE_UUID	"26257549-9271-4ca4-bb43-c4899d5a4881"
 #define DEFAULT_ENDPOINT	0
 
+static void apply_pld_defaults(struct drivers_intel_mipi_camera_config *config)
+{
+	if (!config->pld.ignore_color)
+		config->pld.ignore_color = 1;
+
+	if (!config->pld.visible)
+		config->pld.visible = 1;
+
+	if (!config->pld.vertical_offset)
+		config->pld.vertical_offset = 0xffff;
+
+	if (!config->pld.horizontal_offset)
+		config->pld.horizontal_offset = 0xffff;
+
+	/*
+	 * PLD_PANEL_TOP has a value of zero, so the following will change any instance of
+	 * PLD_PANEL_TOP to PLD_PANEL_FRONT unless disable_pld_defaults is set.
+	 */
+	if (!config->pld.panel)
+		config->pld.panel = PLD_PANEL_FRONT;
+
+	/*
+	 * PLD_HORIZONTAL_POSITION_LEFT has a value of zero, so the following will change any
+	 * instance of that value to PLD_HORIZONTAL_POSITION_CENTER unless disable_pld_defaults
+	 * is set.
+	 */
+	if (!config->pld.horizontal_position)
+		config->pld.horizontal_position = PLD_HORIZONTAL_POSITION_CENTER;
+
+	/*
+	 * The desired default for |vertical_position| is PLD_VERTICAL_POSITION_UPPER, which
+	 * has a value of zero so no work is needed to set a default. The same applies for
+	 * setting |shape| to PLD_SHAPE_ROUND.
+	 */
+}
+
+static void camera_generate_pld(const struct device *dev)
+{
+	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
+
+	if (config->use_pld) {
+		if (!config->disable_pld_defaults)
+			apply_pld_defaults(config);
+
+		acpigen_write_pld(&config->pld);
+	}
+}
+
 static uint32_t address_for_dev_type(const struct device *dev, uint8_t dev_type)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
@@ -145,6 +193,8 @@ static void camera_fill_sensor(const struct device *dev)
 	struct acpi_dp *remote = NULL;
 	const char *vcm_name = NULL;
 	struct acpi_dp *lens_focus = NULL;
+
+	camera_generate_pld(dev);
 
 	camera_fill_sensor_defaults(config);
 

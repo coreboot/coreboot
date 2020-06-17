@@ -6,6 +6,7 @@
  */
 
 #include <adainit.h>
+#include <acpi/acpi.h>
 #include <arch/exception.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -19,9 +20,6 @@
 #include <stdlib.h>
 #include <boot/tables.h>
 #include <program_loading.h>
-#if CONFIG(HAVE_ACPI_RESUME)
-#include <acpi/acpi.h>
-#endif
 #include <timer.h>
 #include <timestamp.h>
 #include <thread.h>
@@ -151,16 +149,16 @@ static boot_state_t bs_post_device(void *arg)
 
 static boot_state_t bs_os_resume_check(void *arg)
 {
-#if CONFIG(HAVE_ACPI_RESUME)
-	void *wake_vector;
+	void *wake_vector = NULL;
 
-	wake_vector = acpi_find_wakeup_vector();
+	if (CONFIG(HAVE_ACPI_RESUME))
+		wake_vector = acpi_find_wakeup_vector();
 
 	if (wake_vector != NULL) {
 		boot_states[BS_OS_RESUME].arg = wake_vector;
 		return BS_OS_RESUME;
 	}
-#endif
+
 	timestamp_add_now(TS_CBMEM_POST);
 
 	return BS_WRITE_TABLES;
@@ -168,10 +166,11 @@ static boot_state_t bs_os_resume_check(void *arg)
 
 static boot_state_t bs_os_resume(void *wake_vector)
 {
-#if CONFIG(HAVE_ACPI_RESUME)
-	arch_bootstate_coreboot_exit();
-	acpi_resume(wake_vector);
-#endif
+	if (CONFIG(HAVE_ACPI_RESUME)) {
+		arch_bootstate_coreboot_exit();
+		acpi_resume(wake_vector);
+	}
+
 	return BS_WRITE_TABLES;
 }
 
@@ -445,9 +444,7 @@ void main(void)
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* Handoff sleep type from romstage. */
-#if CONFIG(HAVE_ACPI_RESUME)
 	acpi_is_wakeup();
-#endif
 	threads_initialize();
 
 	/* Schedule the static boot state entries. */

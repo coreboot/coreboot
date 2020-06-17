@@ -8,8 +8,7 @@
  */
 Method (PCRB, 1, NotSerialized)
 {
-	Return (Add (CONFIG_PCR_BASE_ADDRESS,
-				ShiftLeft (Arg0, PCR_PORTID_SHIFT)))
+	Return (CONFIG_PCR_BASE_ADDRESS + (Arg0 << PCR_PORTID_SHIFT))
 }
 
 /*

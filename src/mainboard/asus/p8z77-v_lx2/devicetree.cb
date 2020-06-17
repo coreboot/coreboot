@@ -68,13 +68,15 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.6   off end	# CIR
 					device pnp 2e.7   off end	# GPIO6-8
 					device pnp 2e.8   off end	# WDT1, GPIO0, GPIO1
-					device pnp 2e.108 on  end	# GPIO0
-					device pnp 2e.9   off end	# GPIO1-8
+					device pnp 2e.108 off end	# GPIO0
+					device pnp 2e.9   off end	# GPIO8
 					device pnp 2e.109 off end	# GPIO1
-					device pnp 2e.209 off end	# GPIO2
+					device pnp 2e.209 on		# GPIO2
+						irq 0xe0 = 0xff
+					end
 					device pnp 2e.309 off end	# GPIO3
 					device pnp 2e.409 off end	# GPIO4
-					device pnp 2e.509 on  end	# GPIO5
+					device pnp 2e.509 off end	# GPIO5
 					device pnp 2e.609 off end	# GPIO6
 					device pnp 2e.709 off end	# GPIO7
 					device pnp 2e.a   on  end	# ACPI

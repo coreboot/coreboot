@@ -11,12 +11,10 @@ config PLATFORM_USES_FSP2_1
 	default n
 	select PLATFORM_USES_FSP2_0
 	select FSP_USES_CB_STACK
-	select FSP_PEIM_TO_PEIM_INTERFACE
 	help
 	  Include FSP 2.1 wrappers and functionality.
-	  Features added into FSP 2.1 specification that impacts coreboot are:
+	  Feature added into FSP 2.1 specification that impacts coreboot is:
 	  1. Remove FSP stack switch and use the same stack with boot firmware
-	  2. FSP should support external PPI interface pulled in via FSP_PEIM_TO_PEIM_INTERFACE
 
 config PLATFORM_USES_FSP2_2
 	bool

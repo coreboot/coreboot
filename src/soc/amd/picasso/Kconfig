@@ -327,12 +327,12 @@ config ACPI_BERT
 	depends on HAVE_ACPI_TABLES
 	help
 	  Report Machine Check errors identified in POST to the OS in an
-	  ACPI Boot Error Record Table.  This option reserves an 8MB region
-	  for building the error structures.
+	  ACPI Boot Error Record Table.
 
 config ACPI_BERT_SIZE
 	hex
-	default 0x4000
+	default 0x4000 if ACPI_BERT
+	default 0x0
 	help
 	  Specify the amount of DRAM reserved for gathering the data used to
 	  generate the ACPI table.

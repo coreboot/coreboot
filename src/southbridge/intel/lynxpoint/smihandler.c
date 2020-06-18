@@ -330,7 +330,7 @@ static void southbridge_smi_apmc(void)
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-	case 0xca:
+	case APM_CNT_ROUTE_ALL_XHCI:
 		usb_xhci_route_all();
 		break;
 	case APM_CNT_ELOG_GSMI:

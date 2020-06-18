@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/smm.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include "chip.h"
@@ -356,7 +356,7 @@ static void usb_xhci_init(struct device *dev)
 		usb_xhci_reset_usb3(dev, 0);
 	} else if (config->xhci_default) {
 		/* Route all ports to XHCI */
-		outb(0xca, 0xb2);
+		apm_control(APM_CNT_ROUTE_ALL_XHCI);
 	}
 }
 

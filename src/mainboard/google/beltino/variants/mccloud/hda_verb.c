@@ -27,15 +27,15 @@ const u32 cim_verb_data[] = {
 	/* Pin Complex (NID 0x17) MONO Out - Disabled */
 	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
-	/* Pin Complex (NID 0x18) MIC1 PORTB */
+	/* Pin Complex (NID 0x18) MIC1 PORTB - Disabled */
+	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
+
+	/* Pin Complex (NID 0x19) MIC2 PORTF */
 	// group 1, cap 1
 	// black, jack detect
 	// mic in, analog
 	// connector, left panel
-	AZALIA_PIN_CFG(0, 0x18, 0x03a71011),
-
-	/* Pin Complex (NID 0x19) MIC2 PORTF - Disabled */
-	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x03a71011),
 
 	/* Pin Complex (NID 0x1A) LINE1 PORTC - Disabled */
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),

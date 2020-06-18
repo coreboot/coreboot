@@ -21,7 +21,6 @@ DECLARE_ACPIMMIO(acpimmio_gpio0, GPIO0);
 DECLARE_ACPIMMIO(acpimmio_misc, MISC);
 
 #if ENV_X86
-DECLARE_ACPIMMIO(acpimmio_sm_pci, SM_PCI);
 DECLARE_ACPIMMIO(acpimmio_gpio_100, GPIO_100);
 DECLARE_ACPIMMIO(acpimmio_smi, SMI);
 DECLARE_ACPIMMIO(acpimmio_pmio, PMIO);

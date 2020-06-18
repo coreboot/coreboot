@@ -56,7 +56,6 @@
 #endif
 
 extern uint8_t *MAYBE_CONST acpimmio_gpio_100;
-extern uint8_t *MAYBE_CONST acpimmio_sm_pci;
 extern uint8_t *MAYBE_CONST acpimmio_smi;
 extern uint8_t *MAYBE_CONST acpimmio_pmio;
 extern uint8_t *MAYBE_CONST acpimmio_pmio2;
@@ -102,36 +101,6 @@ void pm_io_write32(uint8_t reg, uint32_t value);
 
 /* Print source of last reset */
 void fch_print_pmxc0_status(void);
-
-static inline uint8_t sm_pci_read8(uint8_t reg)
-{
-	return read8(acpimmio_sm_pci + reg);
-}
-
-static inline uint16_t sm_pci_read16(uint8_t reg)
-{
-	return read16(acpimmio_sm_pci + reg);
-}
-
-static inline uint32_t sm_pci_read32(uint8_t reg)
-{
-	return read32(acpimmio_sm_pci + reg);
-}
-
-static inline void sm_pci_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_sm_pci + reg, value);
-}
-
-static inline void sm_pci_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_sm_pci + reg, value);
-}
-
-static inline void sm_pci_write32(uint8_t reg, uint32_t value)
-{
-	write32(acpimmio_sm_pci + reg, value);
-}
 
 static inline uint8_t smi_read8(uint8_t reg)
 {

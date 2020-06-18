@@ -277,7 +277,7 @@ static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
 		return -1;
 	}
-	uintptr_t addr = (uintptr_t) gpio_get_address(gpio_num);
+	uintptr_t addr = gpio_get_address(gpio_num);
 
 	acpigen_soc_get_gpio_in_local5(addr);
 
@@ -307,7 +307,7 @@ static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
 					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
 		return -1;
 	}
-	uintptr_t addr = (uintptr_t) gpio_get_address(gpio_num);
+	uintptr_t addr = gpio_get_address(gpio_num);
 
 	/* Store (0x40, Local0) */
 	acpigen_write_store();

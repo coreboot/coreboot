@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <amdblocks/acpimmio.h>
 
 struct soc_amd_gpio {
 	uint8_t gpio;
@@ -18,10 +17,6 @@ struct soc_amd_event {
 	uint8_t gpio;
 	uint8_t event;
 };
-
-#define GPIO_BANK0_CONTROL(gpio) ((uintptr_t)acpimmio_gpio0 + ((gpio) * 4))
-#define GPIO_BANK1_CONTROL(gpio) ((uintptr_t)acpimmio_gpio1 + (((gpio) - 64) * 4))
-#define GPIO_BANK2_CONTROL(gpio) ((uintptr_t)acpimmio_gpio2 + (((gpio) - 128) * 4))
 
 #define GPIO_MASTER_SWITCH	0xFC
 #define   GPIO_MASK_STS_EN	BIT(28)

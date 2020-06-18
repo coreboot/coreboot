@@ -137,23 +137,16 @@ static const struct soc_amd_gpio i2c_2_gpi[] = {
 static void save_i2c_pin_registers(uint8_t gpio,
 					struct soc_amd_i2c_save *save_table)
 {
-	uint32_t *gpio_ptr;
-
-	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
 	save_table->mux_value = iomux_read8(gpio);
-	save_table->control_value = read32(gpio_ptr);
+	save_table->control_value = gpio_read32(gpio);
 }
 
 static void restore_i2c_pin_registers(uint8_t gpio,
 					struct soc_amd_i2c_save *save_table)
 {
-	uint32_t *gpio_ptr;
-
-	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
 	iomux_write8(gpio, save_table->mux_value);
 	iomux_read8(gpio);
-	write32(gpio_ptr, save_table->control_value);
-	read32(gpio_ptr);
+	gpio_write32_rb(gpio, save_table->control_value);
 }
 
 /* Slaves to be reset are controlled by devicetree register i2c_scl_reset */
@@ -182,27 +175,27 @@ void sb_reset_i2c_slaves(void)
 	 */
 	for (j = 0; j < 9; j++) {
 		if (control & GPIO_I2C0_SCL)
-			write32((uint32_t *)GPIO_I2C0_ADDRESS, GPIO_SCL_LOW);
+			gpio_write32(I2C0_SCL_PIN, GPIO_OUTPUT_ENABLE);
 		if (control & GPIO_I2C1_SCL)
-			write32((uint32_t *)GPIO_I2C1_ADDRESS, GPIO_SCL_LOW);
+			gpio_write32(I2C1_SCL_PIN, GPIO_OUTPUT_ENABLE);
 		if (control & GPIO_I2C2_SCL)
-			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_LOW);
+			gpio_write32(I2C2_SCL_PIN, GPIO_OUTPUT_ENABLE);
 		if (control & GPIO_I2C3_SCL)
-			write32((uint32_t *)GPIO_I2C3_ADDRESS, GPIO_SCL_LOW);
+			gpio_write32(I2C3_SCL_PIN, GPIO_OUTPUT_ENABLE);
 
-		read32((uint32_t *)GPIO_I2C3_ADDRESS); /* Flush posted write */
+		gpio_read32(0); /* Flush posted write */
 		udelay(4); /* 4usec gets 85KHz for 1 pin, 70KHz for 4 pins */
 
 		if (control & GPIO_I2C0_SCL)
-			write32((uint32_t *)GPIO_I2C0_ADDRESS, GPIO_SCL_HIGH);
+			gpio_write32(I2C0_SCL_PIN, 0);
 		if (control & GPIO_I2C1_SCL)
-			write32((uint32_t *)GPIO_I2C1_ADDRESS, GPIO_SCL_HIGH);
+			gpio_write32(I2C1_SCL_PIN, 0);
 		if (control & GPIO_I2C2_SCL)
-			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_HIGH);
+			gpio_write32(I2C2_SCL_PIN, 0);
 		if (control & GPIO_I2C3_SCL)
-			write32((uint32_t *)GPIO_I2C3_ADDRESS, GPIO_SCL_HIGH);
+			gpio_write32(I2C3_SCL_PIN, 0);
 
-		read32((uint32_t *)GPIO_I2C3_ADDRESS); /* Flush posted write */
+		gpio_read32(0); /* Flush posted write */
 		udelay(4);
 	}
 

@@ -162,7 +162,7 @@ static void find_bgx(int node, int qlm, int *bgx, int *bgx_lane_mask)
         }
     }
     else
-        bdk_error("N%d.QLM%d: Unsupported chip, update %s()\n", node, qlm, __FUNCTION__);
+        bdk_error("N%d.QLM%d: Unsupported chip, update %s()\n", node, qlm, __func__);
 }
 
 /**

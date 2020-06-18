@@ -49,7 +49,7 @@ static void setup_marvell_phy(bdk_node_t node, int mdio_bus, int mdio_addr)
 {
       int phy_status = 0;
 
-           BDK_TRACE(PHY, "%s In SGMII mode for Marvell PHY 88E1512\n", __FUNCTION__);
+           BDK_TRACE(PHY, "%s In SGMII mode for Marvell PHY 88E1512\n", __func__);
           /* Switch to Page 18 */
             phy_status = bdk_mdio_write(node, mdio_bus, mdio_addr, 22, 18);
           if (phy_status < 0)
@@ -89,7 +89,7 @@ static void setup_marvell_phy(bdk_node_t node, int mdio_bus, int mdio_addr)
 
 int bdk_if_phy_marvell_setup(bdk_node_t node, int qlm, int mdio_bus, int phy_addr)
 {
-    BDK_TRACE(PHY,"In %s\n",__FUNCTION__);
+    BDK_TRACE(PHY,"In %s\n",__func__);
 
     /* Check if the PHY is marvell PHY we expect */
     int phy_status = bdk_mdio_read(node, mdio_bus, phy_addr, BDK_MDIO_PHY_REG_ID1);
@@ -100,13 +100,13 @@ int bdk_if_phy_marvell_setup(bdk_node_t node, int qlm, int mdio_bus, int phy_add
     /* Switch the marvell PHY to the correct mode */
     bdk_qlm_modes_t qlm_mode = bdk_qlm_get_mode(node, qlm);
 
-    BDK_TRACE(PHY,"%s: QLM:%d QLM_MODE:%d\n",__FUNCTION__, qlm, qlm_mode);
+    BDK_TRACE(PHY,"%s: QLM:%d QLM_MODE:%d\n",__func__, qlm, qlm_mode);
 
     if ((qlm_mode != BDK_QLM_MODE_SGMII_1X1) &&
         (qlm_mode != BDK_QLM_MODE_SGMII_2X1))
         return 0;
 
-    BDK_TRACE(PHY,"%s: Detected Marvell Phy in SGMII mode\n", __FUNCTION__);
+    BDK_TRACE(PHY,"%s: Detected Marvell Phy in SGMII mode\n", __func__);
     for (int port = 0; port < 2; port++)
     {
         setup_marvell_phy(node, mdio_bus, phy_addr + port);

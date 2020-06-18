@@ -395,7 +395,7 @@ static u32 tis_probe(void)
 
 	didvid = tpm_read_did_vid(0);
 	if (!didvid || (didvid == 0xffffffff)) {
-		printf("%s: No TPM device found\n", __FUNCTION__);
+		printf("%s: No TPM device found\n", __func__);
 		return TPM_DRIVER_ERR;
 	}
 

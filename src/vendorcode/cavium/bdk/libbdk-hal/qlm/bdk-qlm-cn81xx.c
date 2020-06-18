@@ -773,7 +773,7 @@ static void __bdk_qlm_sff81xx_set_reference(bdk_node_t node, int qlm, int ref_cl
     }
     else
     {
-        bdk_error("Update %s for qlm auto config of this chip\n",__FUNCTION__);
+        bdk_error("Update %s for qlm auto config of this chip\n",__func__);
         return;
     }
     BDK_CSR_MODIFY(c, node, BDK_GSERX_REFCLK_SEL(qlm),

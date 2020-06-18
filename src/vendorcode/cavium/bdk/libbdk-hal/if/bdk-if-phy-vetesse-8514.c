@@ -91,7 +91,7 @@ static void vitesse_init_script(bdk_node_t node, int mdio_bus, int phy_addr)
     uint16_t    reg_val;
     uint16_t    mask;
 
-    BDK_TRACE(PHY,"In %s\n",__FUNCTION__);
+    BDK_TRACE(PHY,"In %s\n",__func__);
     BDK_TRACE(PHY,"Loading init script for VSC8514\n");
 
     ptr = init_script_rev_a;

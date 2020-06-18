@@ -158,7 +158,7 @@ static inline int get_ddr_type(bdk_node_t node, const dimm_config_t *dimm_config
 #define DEVICE_TYPE DDR4_SPD_KEY_BYTE_DEVICE_TYPE // same for DDR3 and DDR4
     spd_ddr_type = read_spd(node, dimm_config, DEVICE_TYPE);
 
-    debug_print("%s:%d spd_ddr_type=0x%02x\n", __FUNCTION__, __LINE__, spd_ddr_type);
+    debug_print("%s:%d spd_ddr_type=0x%02x\n", __func__, __LINE__, spd_ddr_type);
 
     /* we return only DDR4 or DDR3 */
     return (spd_ddr_type == 0x0C) ? DDR4_DRAM : DDR3_DRAM;

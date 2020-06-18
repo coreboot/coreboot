@@ -529,7 +529,7 @@ static int mkhi_global_reset(void)
 	};
 
 	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
+	printk(BIOS_NOTICE, "ME: %s\n", __func__);
 	if (mei_sendrecv_mkhi(&mkhi, &reset, sizeof(reset), NULL, 0) < 0) {
 		/* No response means reset will happen shortly... */
 		halt();
@@ -551,7 +551,7 @@ static int __unused mkhi_end_of_post(void)
 	u32 eop_ack;
 
 	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
+	printk(BIOS_NOTICE, "ME: %s\n", __func__);
 	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, &eop_ack, sizeof(eop_ack)) < 0) {
 		printk(BIOS_ERR, "ME: END OF POST message failed\n");
 		return -1;
@@ -698,7 +698,7 @@ static me_bios_path intel_me_path(struct device *dev)
 	/* Check if the MBP is ready */
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_CRIT, "%s: mbp is not ready!\n",
-		       __FUNCTION__);
+		       __func__);
 		path = ME_ERROR_BIOS_PATH;
 	}
 

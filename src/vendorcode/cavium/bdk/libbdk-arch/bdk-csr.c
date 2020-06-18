@@ -70,7 +70,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
         case BDK_CSR_TYPE_RVU_PFVF_BAR2:
         case BDK_CSR_TYPE_RVU_VF_BAR2:
             /* Handled by inline code, we should never get here */
-            bdk_error("%s: Passed type that should be handled inline\n", __FUNCTION__);
+            bdk_error("%s: Passed type that should be handled inline\n", __func__);
             break;
 
         case BDK_CSR_TYPE_PCCBR:
@@ -80,7 +80,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
         case BDK_CSR_TYPE_MDSB:
         case BDK_CSR_TYPE_PCICONFIGEP_SHADOW:
         case BDK_CSR_TYPE_PCICONFIGEPVF:
-            bdk_error("%s: Register not supported\n", __FUNCTION__);
+            bdk_error("%s: Register not supported\n", __func__);
             break;
 
         case BDK_CSR_TYPE_SYSREG:
@@ -99,7 +99,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC0_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 1:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -109,7 +109,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC1_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 2:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -119,7 +119,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC2_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 3:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -127,7 +127,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN83XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC3_CN83XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 4:
                     dev_con.u = BDK_PCC_DEV_CON_E_PCIERC4;
@@ -136,7 +136,7 @@ uint64_t __bdk_csr_read_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, i
                     dev_con.u = BDK_PCC_DEV_CON_E_PCIERC5;
                     break;
                 default:
-                    bdk_error("%s: Illegal PCIe bus number\n", __FUNCTION__);
+                    bdk_error("%s: Illegal PCIe bus number\n", __func__);
                     return -1;
             }
             return bdk_pcie_config_read32(node, 100 + dev_con.cn8.ecam, dev_con.s.bus, dev_con.s.func >> 3, dev_con.s.func & 7, address);
@@ -180,7 +180,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
         case BDK_CSR_TYPE_RVU_PFVF_BAR2:
         case BDK_CSR_TYPE_RVU_VF_BAR2:
             /* Handled by inline code, we should never get here */
-            bdk_error("%s: Passed type that should be handled inline\n", __FUNCTION__);
+            bdk_error("%s: Passed type that should be handled inline\n", __func__);
             break;
 
         case BDK_CSR_TYPE_PCCBR:
@@ -190,7 +190,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
         case BDK_CSR_TYPE_MDSB:
         case BDK_CSR_TYPE_PCICONFIGEP_SHADOW:
         case BDK_CSR_TYPE_PCICONFIGEPVF:
-            bdk_error("%s: Register not supported\n", __FUNCTION__);
+            bdk_error("%s: Register not supported\n", __func__);
             break;
 
         case BDK_CSR_TYPE_SYSREG:
@@ -210,7 +210,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC0_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 1:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -220,7 +220,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC1_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 2:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -230,7 +230,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN81XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC2_CN81XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 3:
                     if (CAVIUM_IS_MODEL(CAVIUM_CN88XX))
@@ -238,7 +238,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
                     else if (CAVIUM_IS_MODEL(CAVIUM_CN83XX))
                         dev_con.u = BDK_PCC_DEV_CON_E_PCIERC3_CN83XX;
                     else
-                        bdk_fatal("Update PCICONFIG in %s\n", __FUNCTION__);
+                        bdk_fatal("Update PCICONFIG in %s\n", __func__);
                     break;
                 case 4:
                     dev_con.u = BDK_PCC_DEV_CON_E_PCIERC4;
@@ -247,7 +247,7 @@ void __bdk_csr_write_slow(bdk_node_t node, bdk_csr_type_t type, int busnum, int 
                     dev_con.u = BDK_PCC_DEV_CON_E_PCIERC5;
                     break;
                 default:
-                    bdk_error("%s: Illegal PCIe bus number\n", __FUNCTION__);
+                    bdk_error("%s: Illegal PCIe bus number\n", __func__);
                     return;
             }
             bdk_pcie_config_write32(node, 100 + dev_con.cn8.ecam, dev_con.s.bus, dev_con.s.func >> 3, dev_con.s.func & 7, address, value);

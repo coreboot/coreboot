@@ -50,6 +50,8 @@ static const struct soc_amd_gpio gpio_set_wifi_pre_v3[] = {
 static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
+	/* EN_PWR_TOUCHPAD_PS2 - reset */
+	PAD_GPO(GPIO_13, LOW),
 	/* EC_FCH_WAKE_L */
 	PAD_GPI(GPIO_24, PULL_UP),
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
@@ -60,14 +62,12 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
-	/* WIFI_AUX_RESET_L */
-	PAD_GPO(GPIO_42, HIGH),
-	/* EN_PWR_TOUCHPAD_PS2 - reset */
-	PAD_GPO(GPIO_67, LOW),
 	/* EMMC_RESET - reset (default stuffing unused)*/
 	PAD_GPO(GPIO_68, HIGH),
 	/* EN_PWR_CAMERA - reset */
 	PAD_GPO(GPIO_76, LOW),
+	/* WIFI_AUX_RESET_L */
+	PAD_GPO(GPIO_86, HIGH),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 	/* CLK_REQ1_L - SD Card */
@@ -84,7 +84,7 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 
 static const struct soc_amd_gpio gpio_set_wifi_v3[] = {
 	/* EN_PWR_WIFI */
-	PAD_GPO(GPIO_29, HIGH),
+	PAD_GPO(GPIO_42, HIGH),
 };
 
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {

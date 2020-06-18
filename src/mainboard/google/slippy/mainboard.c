@@ -2,10 +2,10 @@
 
 #include <types.h>
 #include <smbios.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 #include <acpi/acpi.h>
-#include <arch/io.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
@@ -14,7 +14,7 @@
 void mainboard_suspend_resume(void)
 {
 	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
+	apm_control(APM_CNT_FINALIZE);
 }
 
 

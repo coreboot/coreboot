@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <types.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 #include <acpi/acpi.h>
-#include <arch/io.h>
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -15,7 +15,7 @@
 void mainboard_suspend_resume(void)
 {
 	/* Enable ACPI mode before OS resume */
-	outb(0xe1, 0xb2);
+	apm_control(APM_CNT_ACPI_ENABLE);
 }
 
 

@@ -28,20 +28,10 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_GPO(GPIO_68, HIGH),
 	/* EN_PWR_CAMERA - reset */
 	PAD_GPO(GPIO_76, LOW),
-	/* RAM_ID_4 */
-	PAD_GPI(GPIO_84, PULL_NONE),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 	/* CLK_REQ1_L - SD Card */
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
-	/*  RAM_ID_3  */
-	PAD_GPI(GPIO_116, PULL_NONE),
-	/* RAM_ID_1  */
-	PAD_GPI(GPIO_120, PULL_NONE),
-	/* RAM_ID_0  */
-	PAD_GPI(GPIO_121, PULL_NONE),
-	/* RAM_ID_2 */
-	PAD_GPI(GPIO_131, PULL_NONE),
 	/* CLK_REQ4_L - SSD */
 	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_UP),
 	/* BIOS_FLASH_WP_ODL */

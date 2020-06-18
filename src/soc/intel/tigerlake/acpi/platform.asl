@@ -16,5 +16,5 @@
 Method (_PIC, 1)
 {
 	/* Remember the OS' IRQ routing choice. */
-	Store (Arg0, PICM)
+	PICM = Arg0
 }

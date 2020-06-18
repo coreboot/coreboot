@@ -21,6 +21,7 @@
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
+#include <soc/uart.h>
 #include <soc/amd_pci_int_defs.h>
 #include <delay.h>
 #include <soc/pci_devs.h>

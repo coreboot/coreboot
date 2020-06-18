@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
-#include <console/uart.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <device/mmio.h>
@@ -9,6 +8,7 @@
 #include <amdblocks/acpimmio.h>
 #include <soc/southbridge.h>
 #include <soc/gpio.h>
+#include <soc/uart.h>
 
 static const struct _uart_info {
 	uintptr_t base;
@@ -32,30 +32,13 @@ static const struct _uart_info {
 	} },
 };
 
-/*
- * Don't provide uart_platform_base and uart_platform_refclk functions if PICASSO_CONSOLE_UART
- * isn't selected. Those two functions are used by the console UART driver and need to be
- * provided exactly once and only by the UART that is used for console.
- *
- * TODO: Replace the #if block by factoring out the two functions into a different compilation
- *       unit.
- */
-#if CONFIG(PICASSO_CONSOLE_UART)
-
-uintptr_t uart_platform_base(int idx)
+uintptr_t get_uart_base(int idx)
 {
 	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
 		return 0;
 
 	return uart_info[idx].base;
 }
-
-unsigned int uart_platform_refclk(void)
-{
-	return CONFIG(PICASSO_UART_48MZ) ? 48000000 : 115200 * 16;
-}
-
-#endif /* PICASSO_CONSOLE_UART */
 
 void clear_uart_legacy_config(void)
 {

@@ -287,8 +287,6 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void fch_pre_init(void);
 void fch_early_init(void);
-void set_uart_config(int idx);
-void clear_uart_legacy_config(void);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

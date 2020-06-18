@@ -7,7 +7,7 @@
 #include <boardid.h>
 #include <variant/gpio.h>
 
-static const struct soc_amd_gpio gpio_set_stage_rom[] = {
+static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
 	/* EC_FCH_WAKE_L */
@@ -42,7 +42,47 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_GPO(GPIO_142, HIGH),
 };
 
-static const struct soc_amd_gpio gpio_set_wifi[] = {
+static const struct soc_amd_gpio gpio_set_wifi_pre_v3[] = {
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
+};
+
+static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
+	/* PEN_POWER_EN - reset */
+	PAD_GPO(GPIO_5, LOW),
+	/* EC_FCH_WAKE_L */
+	PAD_GPI(GPIO_24, PULL_UP),
+	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
+	/* PCIE_RST0_L - Fixed timings */
+	/* TODO: Make sure this gets locked at end of post */
+	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
+	/* PCIE_RST1_L - Variable timings (May remove) */
+	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, HIGH),
+	/* WIFI_AUX_RESET_L */
+	PAD_GPO(GPIO_42, HIGH),
+	/* EN_PWR_TOUCHPAD_PS2 - reset */
+	PAD_GPO(GPIO_67, LOW),
+	/* EMMC_RESET - reset (default stuffing unused)*/
+	PAD_GPO(GPIO_68, HIGH),
+	/* EN_PWR_CAMERA - reset */
+	PAD_GPO(GPIO_76, LOW),
+	/* CLK_REQ0_L - WIFI */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
+	/* CLK_REQ1_L - SD Card */
+	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
+	/* CLK_REQ4_L - SSD */
+	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_UP),
+	/* BIOS_FLASH_WP_ODL */
+	PAD_GPI(GPIO_137, PULL_NONE),
+	/* USI_RESET - reset */
+	PAD_GPO(GPIO_140, HIGH),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_142, HIGH),
+};
+
+static const struct soc_amd_gpio gpio_set_wifi_v3[] = {
 	/* EN_PWR_WIFI */
 	PAD_GPO(GPIO_29, HIGH),
 };
@@ -163,15 +203,31 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 const __weak
 struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
 {
-	*size = ARRAY_SIZE(gpio_set_stage_rom);
-	return gpio_set_stage_rom;
+	uint32_t board_version;
+
+	if (!google_chromeec_cbi_get_board_version(&board_version) &&
+	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS)) {
+		*size = ARRAY_SIZE(gpio_set_stage_rom_v3);
+		return gpio_set_stage_rom_v3;
+	}
+
+	*size = ARRAY_SIZE(gpio_set_stage_rom_pre_v3);
+	return gpio_set_stage_rom_pre_v3;
 }
 
 const __weak
 struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size)
 {
-	*size = ARRAY_SIZE(gpio_set_wifi);
-	return gpio_set_wifi;
+	uint32_t board_version;
+
+	if (!google_chromeec_cbi_get_board_version(&board_version) &&
+	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS)) {
+		*size = ARRAY_SIZE(gpio_set_wifi_v3);
+		return gpio_set_wifi_v3;
+	}
+
+	*size = ARRAY_SIZE(gpio_set_wifi_pre_v3);
+	return gpio_set_wifi_pre_v3;
 }
 
 const __weak

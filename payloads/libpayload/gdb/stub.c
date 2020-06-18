@@ -73,7 +73,8 @@ static void gdb_output_write(const void *buffer, size_t count)
 	if (!gdb_state.resumed) {
 		/* Must be a die_if() in GDB (or a bug), so bail out and die. */
 		gdb_exit(-1);
-		video_console_init();
+		if (CONFIG(LP_VIDEO_CONSOLE))
+			video_console_init();
 		puts("GDB died, redirecting its last words to the screen:\n");
 		console_write(buffer, count);
 	} else {

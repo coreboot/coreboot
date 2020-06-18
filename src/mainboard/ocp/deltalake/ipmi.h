@@ -28,4 +28,5 @@ struct ppin_req {
 enum cb_err ipmi_set_ppin(struct ppin_req *req);
 enum cb_err ipmi_get_pcie_config(uint8_t *config);
 enum cb_err ipmi_get_slot_id(uint8_t *slot_id);
+void init_frb2_wdt(void);
 #endif

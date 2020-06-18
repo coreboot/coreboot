@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <drivers/ipmi/ipmi_kcs.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <soc/romstage.h>
@@ -60,6 +61,11 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
+	/* Since it's the first IPMI command, it's better to run get BMC
+	   selftest result first */
+	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS)
+		init_frb2_wdt();
+
 	mainboard_config_gpios(mupd);
 	mainboard_config_iio(mupd);
 }

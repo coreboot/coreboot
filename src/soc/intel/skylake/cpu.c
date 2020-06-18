@@ -27,26 +27,6 @@
 
 #include "chip.h"
 
-static void configure_thermal_target(void)
-{
-	config_t *conf = config_of_soc();
-	msr_t msr;
-
-
-	/* Set TCC activation offset if supported */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
-		msr = rdmsr(MSR_TEMPERATURE_TARGET);
-		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
-		msr.lo |= (conf->tcc_offset & 0xf) << 24;
-		wrmsr(MSR_TEMPERATURE_TARGET, msr);
-	}
-	msr = rdmsr(MSR_TEMPERATURE_TARGET);
-	msr.lo &= ~0x7f; /* Bits 6:0 */
-	msr.lo |= 0xe6; /* setting 100ms thermal time window */
-	wrmsr(MSR_TEMPERATURE_TARGET, msr);
-}
-
 static void configure_isst(void)
 {
 	config_t *conf = config_of_soc();
@@ -333,7 +313,7 @@ void soc_init_cpus(struct bus *cpu_bus)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* Thermal throttle activation offset */
-	configure_thermal_target();
+	configure_tcc_thermal_target();
 }
 
 int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)

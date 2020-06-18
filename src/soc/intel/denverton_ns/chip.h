@@ -56,6 +56,9 @@ struct soc_intel_denverton_ns_config {
 	uint32_t ipc1;
 	uint32_t ipc2;
 	uint32_t ipc3;
+
+	/* TCC activation offset */
+	uint32_t tcc_offset;
 };
 
 typedef struct soc_intel_denverton_ns_config config_t;

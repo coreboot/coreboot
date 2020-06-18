@@ -8,6 +8,7 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
+#include <soc/soc_chip.h>
 #include <stdint.h>
 
 /*
@@ -252,6 +253,26 @@ uint32_t cpu_get_max_ratio(void)
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
 	return ratio_max;
+}
+
+void configure_tcc_thermal_target(void)
+{
+	const config_t *conf = config_of_soc();
+	msr_t msr;
+
+	/* Set TCC activation offset */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	if ((msr.lo & BIT(30)) && conf->tcc_offset) {
+		msr = rdmsr(MSR_TEMPERATURE_TARGET);
+		msr.lo &= ~(0xf << 24);
+		msr.lo |= (conf->tcc_offset & 0xf) << 24;
+		wrmsr(MSR_TEMPERATURE_TARGET, msr);
+	}
+	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	/* Time Window Tau Bits [6:0] */
+	msr.lo &= ~0x7f;
+	msr.lo |= 0xe6; /* setting 100ms thermal time window */
+	wrmsr(MSR_TEMPERATURE_TARGET, msr);
 }
 
 uint32_t cpu_get_bus_clock(void)

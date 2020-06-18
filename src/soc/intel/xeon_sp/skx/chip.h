@@ -69,6 +69,9 @@ struct soc_intel_xeon_sp_skx_config {
 	uint32_t gen2_dec;
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
+
+	/* TCC activation offset */
+	uint32_t tcc_offset;
 };
 
 typedef struct soc_intel_xeon_sp_skx_config config_t;

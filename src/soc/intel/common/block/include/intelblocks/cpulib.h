@@ -133,6 +133,9 @@ uint32_t cpu_get_min_ratio(void);
  */
 uint32_t cpu_get_max_ratio(void);
 
+/* Thermal throttle activation offset */
+void configure_tcc_thermal_target(void);
+
 /*
  * cpu_get_power_max calculates CPU TDP in mW
  */

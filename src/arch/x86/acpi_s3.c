@@ -55,18 +55,6 @@ asmlinkage void (*acpi_do_wakeup)(uintptr_t vector) = (void *)WAKEUP_BASE;
 extern unsigned char __wakeup;
 extern unsigned int __wakeup_size;
 
-static void acpi_jump_to_wakeup(void *vector)
-{
-	/* Copy wakeup trampoline in place. */
-	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
-
-	set_boot_successful();
-
-	timestamp_add_now(TS_ACPI_WAKE_JUMP);
-
-	acpi_do_wakeup((uintptr_t)vector);
-}
-
 void __weak mainboard_suspend_resume(void)
 {
 }
@@ -79,8 +67,15 @@ void __noreturn acpi_resume(void *wake_vec)
 	/* Call mainboard resume handler first, if defined. */
 	mainboard_suspend_resume();
 
+	/* Copy wakeup trampoline in place. */
+	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
+
+	set_boot_successful();
+
+	timestamp_add_now(TS_ACPI_WAKE_JUMP);
+
 	post_code(POST_OS_RESUME);
-	acpi_jump_to_wakeup(wake_vec);
+	acpi_do_wakeup((uintptr_t)wake_vec);
 
 	die("Failed the jump to wakeup vector\n");
 }

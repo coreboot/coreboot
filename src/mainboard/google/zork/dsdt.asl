@@ -35,7 +35,7 @@ DefinitionBlock (
 	#include <variant/acpi/sleep.asl>
 
 	/* Contains _SWS methods */
-	#include <acpi_wake_source.asl>
+	#include <soc/amd/common/acpi/acpi_wake_source.asl>
 
 	/* System Bus */
 	Scope(\_SB) { /* Start \_SB scope */

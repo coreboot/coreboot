@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* The SoC-specific code needs to provide the PM1I and GPEI fields */
+
 Scope (\_SB)
 {
 	Method (_SWS)

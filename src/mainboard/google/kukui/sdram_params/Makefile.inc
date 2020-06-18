@@ -7,6 +7,7 @@ sdram-params += sdram-lpddr4x-KMDP6001DA-B425-4GB
 sdram-params += sdram-lpddr4x-MT29VZZZAD8DQKSL-4GB
 sdram-params += sdram-lpddr4x-KMDV6001DA-B620-4GB
 sdram-params += sdram-lpddr4x-SDADA4CR-128G-4GB
+sdram-params += sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB
 
 $(foreach params,$(sdram-params), \
 	$(eval cbfs-files-y += $(params)) \

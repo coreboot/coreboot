@@ -1,8 +1,11 @@
 fw_config
-	field USB_DB 0 3
-		option NONE 0
-		option USB4 1
-		option USB3 2
+	field DB_USB 0 3
+		option USB_ABSENT 0
+		option USB4_GEN2 1
+		option USB3_ACTIVE 2
+		option USB4_GEN3 3
+		option USB3_PASSIVE 4
+		option USB3_NO_A 5
 	end
 	field THERMAL 4 7 end
 	field AUDIO 8 10
@@ -12,12 +15,17 @@ fw_config
 		option MAX98373_ALC5682_SNDW 3
 	end
 	field TABLETMODE 11
-		option DISABLED 0
-		option ENABLED 1
+		option TABLETMODE_DISABLED 0
+		option TABLETMODE_ENABLED 1
 	end
-	field LTE_DB 12
-		option ABSENT 0
-		option PRESENT 1
+	field DB_LTE 12 13
+		option LTE_ABSENT 0
+		option LTE_PRESENT 1
+	end
+	field DB_SD 16 19
+		option SD_ABSENT 0
+		option SD_GL9755S 1
+		option SD_RTS5261 2
 	end
 end
 

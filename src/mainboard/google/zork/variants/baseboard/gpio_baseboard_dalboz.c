@@ -103,8 +103,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_4, PULL_UP),
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
-	/* DMIC_SEL */
-	PAD_GPO(GPIO_6, LOW), // Select Camera 1 Dmic
+	/* EN_PWR_TOUCHPAD */
+	PAD_GPO(GPIO_6, HIGH),
 	/* I2S_SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S_LRCLK - Bit banged in depthcharge */
@@ -134,12 +134,12 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_31, PULL_UP),
 	/*  */
 	PAD_GPI(GPIO_32, PULL_DOWN),
-	/* EN_PWR_TOUCHPAD_PS2 */
+	/* DMIC_SEL */
 	/*
-	 * EN_PWR_TOUCHPAD_PS2 - Make sure Ext ROM Sharing is disabled before
-	 * using this GPIO.  Otherwise SPI flash access will be very slow.
+	 * Make sure Ext ROM Sharing is disabled before using this GPIO.  Otherwise SPI flash
+	 * access will be very slow.
 	 */
-	PAD_GPO(GPIO_67, HIGH),
+	PAD_GPO(GPIO_67, LOW),  // Select Camera 1 Dmic
 	/* EMMC_RESET */
 	PAD_GPO(GPIO_68, LOW),
 	/* RAM ID 3*/

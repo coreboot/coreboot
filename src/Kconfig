@@ -234,6 +234,26 @@ config USE_AMD_BLOBS
 	  Note that for some products, omitting PSP, SMU images, or other items
 	  may result in a nonbooting coreboot.rom.
 
+config USE_QC_BLOBS
+	bool "Allow QC blobs repository (selecting this agrees to the license!)
+	depends on USE_BLOBS
+	help
+	  This draws in the qc_blobs repository, which contains binary files
+	  distributed by Qualcomm that are required to build firmware for
+	  certain Qualcomm SoCs (including QcLib, QC-SEC, qtiseclib and QUP
+	  firmware). If you say Y here you are implicitly agreeing to the
+	  Qualcomm license agreement which can be found at:
+	  https://review.coreboot.org/cgit/qc_blobs.git/tree/LICENSE
+
+	  *****************************************************
+	  PLEASE MAKE SURE YOU READ AND AGREE TO ALL TERMS IN
+	  ABOVE LICENSE AGREEMENT BEFORE SELECTING THIS OPTION!
+	  *****************************************************
+
+	  Not selecting this option means certain Qualcomm SoCs and related
+	  mainboards cannot be built and will be hidden from the "Mainboards"
+	  section.
+
 config COVERAGE
 	bool "Code coverage support"
 	depends on COMPILER_GCC

@@ -72,6 +72,7 @@ exclude_paths="3rdparty/blobs "
 exclude_paths+="3rdparty/fsp "
 exclude_paths+="3rdparty/intel-microcode "
 exclude_paths+="3rdparty/amd_blobs "
+exclude_paths+="3rdparty/qc_blobs "
 for i in ${exclude_paths}; do
 	blobs_paths+="coreboot-${VERSION_NAME}/${i} "
 	exclude_opts+="--exclude=coreboot-${VERSION_NAME}/${i} "

@@ -46,3 +46,8 @@
 	path = 3rdparty/cmocka
 	url = ../cmocka.git
 	update = none
+[submodule "3rdparty/qc_blobs"]
+	path = 3rdparty/qc_blobs
+	url = ../qc_blobs.git
+	update = none
+	ignore = dirty

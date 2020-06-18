@@ -202,6 +202,9 @@ endif
 ifeq ($(CONFIG_USE_AMD_BLOBS),y)
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/amd_blobs))
 endif
+ifeq ($(CONFIG_USE_QC_BLOBS),y)
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/qc_blobs))
+endif
 endif
 UPDATED_SUBMODULES:=1
 COREBOOT_EXPORTS += UPDATED_SUBMODULES

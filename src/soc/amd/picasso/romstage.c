@@ -81,7 +81,6 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x41);
 	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 	mainboard_romstage_entry_s3(s3_resume);
-	elog_boot_notify(s3_resume);
 
 	post_code(0x42);
 	u32 val = cpuid_eax(1);

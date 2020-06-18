@@ -12,7 +12,7 @@ static void setup_gpio(void)
 	size_t num_gpios;
 
 	printk(BIOS_DEBUG, "Setting GPIOs\n");
-	gpios = variant_romstage_gpio_table(&num_gpios);
+	gpios = variant_early_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
 	printk(BIOS_DEBUG, "GPIOs setup\n");
 }

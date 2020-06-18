@@ -99,6 +99,10 @@ config FMDFILE
 	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
+
+config POWER_OFF_ON_CR50_UPDATE
+	bool
+	default n
 endif
 
 config MAINBOARD_DIR

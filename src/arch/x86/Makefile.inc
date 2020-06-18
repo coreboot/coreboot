@@ -158,7 +158,6 @@ endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
-romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 romstage-y += boot.c
 romstage-y += post.c
 # gdt_init.S is included by entry32.inc when romstage is the first C
@@ -202,7 +201,6 @@ $(eval $(call create_class_compiler,postcar,x86_64))
 endif
 postcar-generic-ccopts += -D__POSTCAR__
 
-postcar-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 postcar-y += boot.c
 postcar-y += post.c
 postcar-y += gdt_init.S

@@ -193,31 +193,3 @@ void check_mca(void)
 	for (i = 0 ; i < num_banks ; i++)
 		wrmsr(IA32_MC0_STATUS + (i * 4), mci.sts);
 }
-
-void bert_reserved_region(void **start, size_t *size)
-{
-	const struct cbmem_entry *bert;
-
-	*start = NULL;
-	*size = 0;
-
-	bert = cbmem_entry_find(CBMEM_ID_BERT_RAW_DATA);
-	if (!bert)
-		return;
-
-	*start = cbmem_entry_start(bert);
-	*size = cbmem_entry_size(bert);
-}
-
-static void alloc_bert_in_cbmem(int unused)
-{
-	void *p;
-
-	if (CONFIG(ACPI_BERT)) {
-		p = cbmem_add(CBMEM_ID_BERT_RAW_DATA, CONFIG_ACPI_BERT_SIZE);
-		if (!p)
-			printk(BIOS_ERR, "Error: BERT region was not added\n");
-	}
-}
-
-ROMSTAGE_CBMEM_INIT_HOOK(alloc_bert_in_cbmem)

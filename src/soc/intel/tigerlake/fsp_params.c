@@ -213,6 +213,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable TCPU for processor thermal control */
 	params->Device4Enable = config->Device4Enable;
 
+	/* Set TccActivationOffset */
+	params->TccActivationOffset = config->tcc_offset;
+
 	/* LAN */
 	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
 	if (!dev)

@@ -91,6 +91,10 @@ _start:
 
 	andl	$0xFFFFFFF0, %esp
 
+#if CONFIG(ASAN_IN_RAMSTAGE)
+	call asan_init
+#endif
+
 #if CONFIG(GDB_WAIT)
 	call gdb_hw_init
 	call gdb_stub_breakpoint

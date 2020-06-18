@@ -24,6 +24,12 @@ DECLARE_REGION(cbfs_cache)
 DECLARE_REGION(fmap_cache)
 DECLARE_REGION(tpm_tcpa_log)
 
+#if CONFIG(ASAN_IN_RAMSTAGE)
+DECLARE_REGION(data)
+DECLARE_REGION(heap)
+DECLARE_REGION(asan_shadow)
+#endif
+
 /* Regions for execution units. */
 
 DECLARE_REGION(payload)

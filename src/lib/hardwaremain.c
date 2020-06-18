@@ -169,9 +169,9 @@ static boot_state_t bs_os_resume(void *wake_vector)
 	if (CONFIG(HAVE_ACPI_RESUME)) {
 		arch_bootstate_coreboot_exit();
 		acpi_resume(wake_vector);
+		/* We will not come back. */
 	}
-
-	return BS_WRITE_TABLES;
+	die("Failed OS resume\n");
 }
 
 static boot_state_t bs_write_tables(void *arg)

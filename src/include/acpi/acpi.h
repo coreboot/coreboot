@@ -987,7 +987,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 
 /* For ACPI S3 support. */
-void acpi_resume(void *wake_vec);
+void __noreturn acpi_resume(void *wake_vec);
 void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 

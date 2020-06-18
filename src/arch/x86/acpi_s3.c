@@ -57,11 +57,6 @@ extern unsigned int __wakeup_size;
 
 static void acpi_jump_to_wakeup(void *vector)
 {
-	if (!acpi_s3_resume_allowed()) {
-		printk(BIOS_WARNING, "ACPI: S3 resume not allowed.\n");
-		return;
-	}
-
 	/* Copy wakeup trampoline in place. */
 	memcpy((void *)WAKEUP_BASE, &__wakeup, __wakeup_size);
 
@@ -76,7 +71,7 @@ void __weak mainboard_suspend_resume(void)
 {
 }
 
-void acpi_resume(void *wake_vec)
+void __noreturn acpi_resume(void *wake_vec)
 {
 	/* Restore GNVS pointer in SMM if found. */
 	apm_control(APM_CNT_GNVS_UPDATE);
@@ -86,4 +81,6 @@ void acpi_resume(void *wake_vec)
 
 	post_code(POST_OS_RESUME);
 	acpi_jump_to_wakeup(wake_vec);
+
+	die("Failed the jump to wakeup vector\n");
 }

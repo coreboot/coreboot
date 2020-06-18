@@ -44,7 +44,8 @@ typedef struct {
 	/** Offset 0x00EC**/	uint8_t                     fch_usb_early_debug_select_enable;
 	/** Offset 0x00ED**/	uint8_t                     unused8;
 	/** Offset 0x00EE**/	uint32_t                    xhci_oc_pin_select;
-	/** Offset 0x00F2**/	uint8_t                     UnusedUpdSpace0[46];
+	/** Offset 0x00F2**/	uint8_t                     xhci0_force_gen1;
+	/** Offset 0x00F3**/	uint8_t                     UnusedUpdSpace0[45];
 	/** Offset 0x0120**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

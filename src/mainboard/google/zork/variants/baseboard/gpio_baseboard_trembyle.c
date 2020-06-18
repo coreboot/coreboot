@@ -115,8 +115,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_11, HIGH),
 	/* USI_INT_ODL */
 	PAD_GPI(GPIO_12, PULL_UP),
-	/* DMIC_SEL */
-	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
+	/* EN_PWR_TOUCHPAD_PS2 */
+	PAD_GPO(GPIO_13, HIGH),
 	/* BT_DISABLE */
 	PAD_GPO(GPIO_14, LOW),
 	/* USB_OC0_L - USB C0 + USB A0 */
@@ -135,12 +135,12 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_31, PULL_UP),
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, HIGH),
-	/* EN_PWR_TOUCHPAD_PS2 */
+	/* DMIC SEL */
 	/*
-	 * EN_PWR_TOUCHPAD_PS2 - Make sure Ext ROM Sharing is disabled before
-	 * using this GPIO.  Otherwise SPI flash access will be very slow.
+	 * Make sure Ext ROM Sharing is disabled before using this GPIO.  Otherwise SPI flash
+	 * access will be very slow.
 	 */
-	PAD_GPO(GPIO_67, HIGH),
+	PAD_GPO(GPIO_67, LOW), // Select Camera 1 Dmic
 	/* EMMC_RESET */
 	PAD_GPO(GPIO_68, LOW),
 	/* FPMCU_BOOT0 - TODO: Check this */
@@ -155,16 +155,14 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_76, HIGH),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
-	/* MST_GPIO_2 (Fw Update HDMI hub) */
-	PAD_GPI(GPIO_86, PULL_NONE),
 	/* EMMC_DATA7 */
 	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
 	/* EMMC_DATA5 */
 	PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
 	/*  EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
-	/* MST_GPIO_3 (Fw Update HDMI hub) */
-	PAD_GPI(GPIO_90, PULL_NONE),
+	/* Testpoint */
+	PAD_GPI(GPIO_90, PULL_UP),
 	/* EN_SPKR TODO: Verify driver enables this (add to ACPI) */
 	PAD_GPO(GPIO_91, LOW),
 	/* EMMC_DATA0 */

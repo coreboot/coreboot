@@ -2,9 +2,10 @@
 
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
+#include <gpio.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 #include "gpio_ftns.h"
@@ -28,52 +29,63 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	pm_write8(0xea, 1);
 }
 
+static void pin_input(gpio_t gpio, u8 iomux_ftn)
+{
+	iomux_write8(gpio, iomux_ftn);
+	gpio_input(gpio);
+}
+
+static void pin_low(gpio_t gpio, u8 iomux_ftn)
+{
+	iomux_write8(gpio, iomux_ftn);
+	gpio_output(gpio, 0);
+}
+
+static void pin_high(gpio_t gpio, u8 iomux_ftn)
+{
+	iomux_write8(gpio, iomux_ftn);
+	gpio_output(gpio, 1);
+}
+
 static void early_lpc_init(void)
 {
-	u32 setting = 0x0;
-
 	//
-	// Configure output disabled, value low, pull up/down disabled
+	// Configure output disabled, pull up/down disabled
 	//
-	if (CONFIG(BOARD_PCENGINES_APU5)) {
-		configure_gpio(GPIO_22, Function0, setting);
-	}
+	if (CONFIG(BOARD_PCENGINES_APU5))
+		pin_input(GPIO_22, Function0);
 
 	if (CONFIG(BOARD_PCENGINES_APU2) ||
 		CONFIG(BOARD_PCENGINES_APU3) ||
 		CONFIG(BOARD_PCENGINES_APU4)) {
-		configure_gpio(GPIO_32, Function0, setting);
+		pin_input(GPIO_32, Function0);
 	}
 
-	configure_gpio(GPIO_49, Function2, setting);
-	configure_gpio(GPIO_50, Function2, setting);
-	configure_gpio(GPIO_71, Function0, setting);
+	pin_input(GPIO_49, Function2);
+	pin_input(GPIO_50, Function2);
+	pin_input(GPIO_71, Function0);
 
 	//
 	// Configure output enabled, value low, pull up/down disabled
 	//
-	setting = GPIO_OUTPUT_ENABLE;
 	if (CONFIG(BOARD_PCENGINES_APU3) ||
 		CONFIG(BOARD_PCENGINES_APU4)) {
-		configure_gpio(GPIO_33, Function0, setting);
+		pin_low(GPIO_33, Function0);
 	}
-
-	configure_gpio(GPIO_57, Function1, setting);
-	configure_gpio(GPIO_58, Function1, setting);
-	configure_gpio(GPIO_59, Function3, setting);
+	pin_low(GPIO_57, Function1);
+	pin_low(GPIO_58, Function1);
+	pin_low(GPIO_59, Function3);
 
 	//
 	// Configure output enabled, value high, pull up/down disabled
 	//
-	setting = GPIO_OUTPUT_ENABLE | GPIO_OUTPUT_VALUE;
-
 	if (CONFIG(BOARD_PCENGINES_APU5)) {
-		configure_gpio(GPIO_32, Function0, setting);
-		configure_gpio(GPIO_33, Function0, setting);
+		pin_high(GPIO_32, Function0);
+		pin_high(GPIO_33, Function0);
 	}
 
-	configure_gpio(GPIO_51, Function2, setting);
-	configure_gpio(GPIO_55, Function3, setting);
-	configure_gpio(GPIO_64, Function2, setting);
-	configure_gpio(GPIO_68, Function0, setting);
+	pin_high(GPIO_51, Function2);
+	pin_high(GPIO_55, Function3);
+	pin_high(GPIO_64, Function2);
+	pin_high(GPIO_68, Function0);
 }

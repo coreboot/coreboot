@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <gpio.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
@@ -265,8 +266,8 @@ static void mainboard_final(void *chip_info)
 	//
 	// Turn off LED 2 and LED 3
 	//
-	write_gpio(GPIO_58, 1);
-	write_gpio(GPIO_59, 1);
+	gpio_set(GPIO_58, 1);
+	gpio_set(GPIO_59, 1);
 }
 
 /*

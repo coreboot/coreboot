@@ -47,4 +47,12 @@ config CBFS_SIZE
 config USE_PM_ACPI_TIMER
 	default n
 
+config BEEP_ON_BOOT
+	bool "Beep on successful boot"
+	default y
+	help
+	  Make the platform beep using the PC speaker in final coreboot phase.
+	  May serve as a useful indicator in headless mode that platform is
+	  properly booting.
+
 endif

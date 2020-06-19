@@ -35,6 +35,8 @@ const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
 void variant_romstage_entry(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
+/* Update audio configuration in devicetree during ramstage. */
+void variant_audio_update(void);
 /* Configure PCIe power and reset lines as per variant sequencing requirements. */
 void variant_pcie_power_reset_configure(void);
 

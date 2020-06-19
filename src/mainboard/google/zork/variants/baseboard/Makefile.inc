@@ -23,6 +23,7 @@ ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += fsps_baseboard_dalboz.c
 ramstage-y += helpers.c
 ramstage-y += tpm_tis.c
+ramstage-y += ramstage_common.c
 
 smm-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
 smm-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c

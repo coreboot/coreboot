@@ -16,6 +16,16 @@ chip soc/amd/picasso
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
+	# DMIC select GPIO for ACP machine device
+	# This GPIO is used to select DMIC0 or DMIC1 by the kernel driver. It does not
+	# really have a polarity since low and high control the selection of DMIC and
+	# hence does not have an active polarity.
+	# Kernel driver does not use the polarity field and instead treats the GPIO
+	# selection as follows:
+	# Set low (0) = Select DMIC0
+	# Set high (1) = Select DMIC1
+	register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+
 	# Start : OPN Performance Configuration
 	# (Configuratin that is common for all variants)
 	# For the below fields, 0 indicates use SOC default

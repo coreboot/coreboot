@@ -28,9 +28,9 @@ void platform_romstage_main(void)
 
 	/* Set to maximum frequency */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 5)
-		mt_pll_raise_ca53_freq(1600 * MHz);
+		mt_pll_raise_little_cpu_freq(1600 * MHz);
 	else
-		mt_pll_raise_ca53_freq(1700 * MHz);
+		mt_pll_raise_little_cpu_freq(1700 * MHz);
 
 	mtk_mmu_after_dram();
 }

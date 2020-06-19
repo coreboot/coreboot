@@ -58,6 +58,6 @@ void pll_set_pcw_change(const struct pll *pll);
 void mux_set_sel(const struct mux *mux, u32 sel);
 int pll_set_rate(const struct pll *pll, u32 rate);
 void mt_pll_init(void);
-void mt_pll_raise_ca53_freq(u32 freq);
+void mt_pll_raise_little_cpu_freq(u32 freq);
 
 #endif

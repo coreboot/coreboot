@@ -249,6 +249,7 @@ enum {
 
 	MCU_MUX_MASK = 0x3 << 9,
 	MCU_MUX_SRC_PLL = 0x1 << 9,
+	MCU_MUX_SRC_DIV_PLL1 = 0x2 << 9,
 };
 
 enum {

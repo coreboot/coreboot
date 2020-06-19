@@ -362,7 +362,7 @@ void mt_pll_init(void)
 	setbits32(&mt8183_infracfg->module_sw_cg_2_clr, 1 << 4);
 }
 
-void mt_pll_raise_ca53_freq(u32 freq)
+void mt_pll_raise_little_cpu_freq(u32 freq)
 {
 	/* enable [4] intermediate clock armpll_divider_pll1_ck */
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);

@@ -57,7 +57,7 @@ void platform_romstage_main(void)
 	mt6358_init();
 	/* Adjust VSIM2 down to 2.7V because it is shared with IT6505. */
 	pmic_set_vsim2_cali(2700);
-	mt_pll_raise_ca53_freq(1989 * MHz);
+	mt_pll_raise_little_cpu_freq(1989 * MHz);
 	pmic_init_scp_voltage();
 	rtc_boot();
 	mt_mem_init(&dparam_ops);

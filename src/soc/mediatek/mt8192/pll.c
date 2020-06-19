@@ -434,3 +434,28 @@ void mt_pll_init(void)
 	/* enable [14] dramc_pll104m_ck */
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 14);
 }
+
+void mt_pll_raise_little_cpu_freq(u32 freq)
+{
+	/* enable [4] intermediate clock armpll_divider_pll1_ck */
+	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
+
+	/* switch ca55 clock source to intermediate clock */
+	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
+
+	/* disable armpll_ll frequency output */
+	clrbits32(plls[APMIXED_ARMPLL_LL].reg, PLL_EN);
+
+	/* raise armpll_ll frequency */
+	pll_set_rate(&plls[APMIXED_ARMPLL_LL], freq);
+
+	/* enable armpll_ll frequency output */
+	setbits32(plls[APMIXED_ARMPLL_LL].reg, PLL_EN);
+	udelay(PLL_EN_DELAY);
+
+	/* switch ca55 clock source back to armpll_ll */
+	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+
+	/* disable [4] intermediate clock armpll_divider_pll1_ck */
+	clrbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
+}

@@ -35,12 +35,19 @@ static void init(struct device *dev)
 		sb_clk_output_48Mhz(); /* Internal connection to I2S */
 }
 
+static const char *acp_acpi_name(const struct device *dev)
+{
+	return "ACPD";
+}
+
 static struct device_operations acp_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = init,
 	.ops_pci = &pci_dev_ops_pci,
+	.acpi_name = acp_acpi_name,
+	.acpi_fill_ssdt = acpi_device_write_pci_dev,
 };
 
 static const struct pci_driver acp_driver __pci_driver = {

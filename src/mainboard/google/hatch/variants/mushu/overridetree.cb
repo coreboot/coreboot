@@ -185,7 +185,6 @@ chip soc/intel/cannonlake
 				device i2c 1a on end
 			end
 		end #I2C #4
-		device pci 1d.4 on  end # PCI Express port 13
 		device pci 1e.3 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

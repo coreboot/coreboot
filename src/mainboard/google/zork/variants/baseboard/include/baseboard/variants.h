@@ -25,6 +25,13 @@ const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
  * configuration provided by variant_base_gpio_table().
  */
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
+
+/*
+ * This function provides GPIO table for the pads that need to be configured when entering
+ * sleep.
+ */
+const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
+
 void variant_romstage_entry(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);

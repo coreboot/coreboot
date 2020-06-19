@@ -24,6 +24,8 @@ ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += fsps_baseboard_dalboz.c
 ramstage-y += helpers.c
 ramstage-y += tpm_tis.c
 
+smm-y += gpio_baseboard_common.c
+
 # Add OEM ID table
 ifeq ($(CONFIG_USE_OEM_BIN),y)
 cbfs-files-y += oem.bin

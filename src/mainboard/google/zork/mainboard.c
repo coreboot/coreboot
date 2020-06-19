@@ -70,7 +70,7 @@ static const struct pirq_struct mainboard_pirq_data[] = {
  * This controls the device -> IRQ routing.
  * The PIC values are limited to 0,1, 3 - 12, 14, 15.
  */
-static const struct fch_apic_routing {
+static const struct fch_irq_routing {
 	uint8_t intr_index;
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
@@ -96,7 +96,7 @@ static const struct fch_apic_routing {
 
 static void init_tables(void)
 {
-	const struct fch_apic_routing *entry;
+	const struct fch_irq_routing *entry;
 	int i;
 
 	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));

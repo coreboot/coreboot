@@ -38,6 +38,9 @@
 #include <soc/ubox.h>
 #include <build.h>
 
+#include <security/intel/txt/txt.h>
+#include <security/intel/txt/txt_register.h>
+
 static void init_rtc(void)
 {
 	u16 gen_pmcon3 = pci_read_config16(PCI_DEV(0, LPC_DEV, LPC_FUNC), GEN_PMCON_3);
@@ -156,6 +159,12 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	early_iio_hide();
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	post_code(0x48);
+
+	if (CONFIG(INTEL_TXT)) {
+		printk(BIOS_DEBUG, "Check TXT_ERROR register\n");
+		intel_txt_log_acm_error(read32((void *)TXT_ERROR));
+	}
+
 	/*
 	 * Call early init to initialize memory and chipset. This function returns
 	 * to the romstage_main_continue function with a pointer to the HOB

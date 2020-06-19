@@ -5,8 +5,7 @@
 #include <commonlib/helpers.h>
 
 /* Pad configuration in ramstage */
-/* Leave eSPI pins untouched from default settings */
-static const struct pad_config gpio_table[] = {
+static const struct pad_config override_gpio_table[] = {
 	/* A7  : I2S2_SCLK ==> EN_PP3300_TRACKPAD */
 	PAD_CFG_GPO(GPP_A7, 1, DEEP),
 	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
@@ -211,31 +210,24 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* A12 : SATAXPCIE1 ==> M2_SSD_PEDET */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
-
 	/* A17 : DDSP_HPDC ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
 
 	/* B11 : PMCALERT# ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B11, NONE, DEEP),
-
 	/* B15 : GSPI0_CS0# ==> PCH_GSPI0_H1_TPM_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
-
 	/* B16 : GSPI0_CLK ==> PCH_GSPI0_H1_TPM_CLK */
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
-
 	/* B17 : GSPI0_MISO ==> PCH_GSPIO_H1_TPM_MISO */
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
-
 	/* B18 : GSPI0_MOSI ==> PCH_GSPI0_H1_TPM_MOSI_STRAP */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 
 	/* C0  : SMBCLK ==> EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
-
 	/* C21 : UART2_TXD ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, PLTRST, LEVEL, INVERT),
-
 	/* C22 : UART2_RTS# ==> PCH_FPMCU_BOOT0 */
 	PAD_CFG_GPO(GPP_C22, 0, DEEP),
 
@@ -244,7 +236,6 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* F11 : THC1_SPI2_CLK ==> EN_PP3300_WWAN */
 	PAD_CFG_GPO(GPP_F11, 1, DEEP),
-
 	/* F12 : GSXDOUT ==> WWAN_RST_ODL
 	   To meet timing constrains - drive reset low.
 	   Deasserted in ramstage. */
@@ -256,8 +247,8 @@ static const struct pad_config early_gpio_table[] = {
 
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
-	*num = ARRAY_SIZE(gpio_table);
-	return gpio_table;
+	*num = ARRAY_SIZE(override_gpio_table);
+	return override_gpio_table;
 }
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

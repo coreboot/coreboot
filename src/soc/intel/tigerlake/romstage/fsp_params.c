@@ -217,6 +217,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Skip CPU replacement check */
 	m_cfg->SkipCpuReplacementCheck = !config->CpuReplacementCheck;
+
+	/* Skip CPU side PCIe enablement in FSP if device is disabled in devicetree */
+	dev = pcidev_path_on_root(SA_DEVFN_CPU_PCIE);
+	m_cfg->CpuPcieRpEnableMask = dev && dev->enabled;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

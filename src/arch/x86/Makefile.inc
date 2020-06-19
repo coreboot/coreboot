@@ -288,9 +288,6 @@ endif
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c
 endif
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/reset.c),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
-endif
 
 ramstage-libs ?=
 

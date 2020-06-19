@@ -305,4 +305,7 @@ chip soc/intel/skylake
 		device pci 1f.5 off end # PCH SPI
 		device pci 1f.6 off end # GbE
 	end
+	chip drivers/crb
+		device mmio 0xfed40000 on end
+	end
 end

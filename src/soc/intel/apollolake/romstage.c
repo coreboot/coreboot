@@ -229,6 +229,19 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 	}
 }
 
+static void soc_gpu_init_params(FSPM_UPD *mupd)
+{
+	enum {
+		GPU_PRIMARY_IGD = 2,
+		GPU_PRIMARY_PCI = 3,
+	};
+	/* Select primary GPU device */
+	if (CONFIG(ONBOARD_VGA_IS_PRIMARY) && is_devfn_enabled(SA_DEVFN_IGD))
+		mupd->FspmConfig.PrimaryVideoAdaptor = GPU_PRIMARY_IGD;
+	else
+		mupd->FspmConfig.PrimaryVideoAdaptor = GPU_PRIMARY_PCI;
+}
+
 static void soc_memory_init_params(FSPM_UPD *mupd)
 {
 #if CONFIG(SOC_INTEL_GEMINILAKE)
@@ -268,6 +281,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	check_full_retrain(mupd);
 
 	fill_console_params(mupd);
+	soc_gpu_init_params(mupd);
 
 	if (CONFIG(SOC_INTEL_GEMINILAKE))
 		soc_memory_init_params(mupd);

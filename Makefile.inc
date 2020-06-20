@@ -35,7 +35,8 @@ COREBOOT_EXPORTS += KERNELVERSION
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
-COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR
+CARRIER_DIR:=$(call strip_quotes,$(CONFIG_CARRIER_DIR))
+COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR CARRIER_DIR
 
 ## Final build results, which CBFSTOOL uses to create the final
 ## rom image file, are placed under $(objcbfs).

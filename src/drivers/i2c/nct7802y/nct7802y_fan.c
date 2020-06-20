@@ -68,7 +68,7 @@ void nct7802y_init_fan(struct device *const dev)
 {
 	const struct drivers_i2c_nct7802y_config *const config = dev->chip_info;
 	unsigned int i;
-	u8 set;
+	u8 value;
 
 	if (nct7802y_select_bank(dev, 0) != CB_SUCCESS)
 		return;
@@ -78,21 +78,27 @@ void nct7802y_init_fan(struct device *const dev)
 			init_fan(dev, &config->fan[i], i);
 	}
 
+	value = 0;
+	for (i = 0; i < NCT7802Y_RTD_CNT; ++i)
+		value |= MODE_SELECTION_RTDx(i, config->sensors.rtd[i]);
+	if (config->sensors.local_enable)
+		value |= MODE_SELECTION_LTD_EN;
+	nct7802y_write(dev, MODE_SELECTION, value);
+
 	switch (config->on_pecierror) {
 	case PECI_ERROR_KEEP:
-		set = CLOSE_LOOP_FAN_PECI_ERR_CURR;
+		value = CLOSE_LOOP_FAN_PECI_ERR_CURR;
 		break;
 	case PECI_ERROR_VALUE:
-		set = CLOSE_LOOP_FAN_PECI_ERR_VALUE;
+		value = CLOSE_LOOP_FAN_PECI_ERR_VALUE;
 		break;
 	case PECI_ERROR_FULLSPEED:
-		set = CLOSE_LOOP_FAN_PECI_ERR_MAX;
+		value = CLOSE_LOOP_FAN_PECI_ERR_MAX;
 		break;
 	default:
-		set = 0;
+		value = 0;
 		break;
 	}
-	nct7802y_update(dev, CLOSE_LOOP_FAN_RPM_CTRL,
-			CLOSE_LOOP_FAN_PECI_ERR_MASK, set);
+	nct7802y_update(dev, CLOSE_LOOP_FAN_RPM_CTRL, CLOSE_LOOP_FAN_PECI_ERR_MASK, value);
 	nct7802y_write(dev, FAN_DUTY_ON_PECI_ERROR, config->pecierror_minduty);
 }

@@ -11,6 +11,9 @@
 #define BANK_SELECT			0x00
 
 /* Bank 0 */
+#define MODE_SELECTION			0x22
+#define  MODE_SELECTION_LTD_EN		(1 << 6)
+#define  MODE_SELECTION_RTDx(x, val)	((val) << (x) * 2)
 
 #define PECI_ENABLE			0x23
 #define  PECI_ENABLE_AGENTx(x)		(1 << (x))

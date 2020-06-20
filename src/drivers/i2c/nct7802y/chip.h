@@ -7,6 +7,15 @@
 
 #define NCT7802Y_PECI_CNT	2
 #define NCT7802Y_FAN_CNT	3
+#define NCT7802Y_RTD_CNT	3
+
+/* Remote temperature diode sensors mode */
+enum nct7802y_rtd_mode {
+	RTD_CLOSED = 0,
+	RTD_CURRENT_MODE,
+	RTD_THERMISTOR_MODE,
+	RTD_VOLTAGE_MODE,
+};
 
 enum nct7802y_peci_mode {
 	PECI_DISABLED = 0,
@@ -53,6 +62,11 @@ enum nct7802y_temp_source {
 	TEMP_SOURCE_PROGRAMMABLE_1,
 };
 
+struct nct7802y_sensors_config {
+	bool local_enable;
+	enum nct7802y_rtd_mode rtd[NCT7802Y_RTD_CNT];
+};
+
 struct nct7802y_fan_smartconfig {
 	enum nct7802y_fan_smartmode mode;
 	enum nct7802y_fan_speed speed;
@@ -76,6 +90,7 @@ struct nct7802y_fan_config {
 struct drivers_i2c_nct7802y_config {
 	struct nct7802y_peci_config peci[NCT7802Y_PECI_CNT];
 	struct nct7802y_fan_config fan[NCT7802Y_FAN_CNT];
+	struct nct7802y_sensors_config sensors;
 	enum nct7802y_fan_pecierror on_pecierror;
 	u8 pecierror_minduty;
 };

@@ -59,7 +59,7 @@ static void minihd_init(struct device *dev)
 	printk(BIOS_DEBUG, "Mini-HD: base = %p\n", base);
 
 	/* Set Bus Master */
-	pci_or_config32(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* Mini-HD configuration */
 	reg32 = read32(base + 0x100c);

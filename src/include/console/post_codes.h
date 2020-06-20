@@ -59,7 +59,6 @@
  */
 #define POST_RAMSTAGE_IS_PREPARED		0x12
 
-
 /**
  * \brief Entry into c_start
  *
@@ -82,21 +81,6 @@
  * to prepare params for FSP memory init.
  */
 #define POST_MEM_PREINIT_PREP_END		0x36
-
-/**
- * \brief Pre call to RAM stage main()
- *
- * POSTed right before RAM stage main() is called from c_start.S
- */
-#define POST_PRE_HARDWAREMAIN			0x79
-
-/**
- * \brief Entry into coreboot in RAM stage main()
- *
- * This is the first call in hardwaremain.c. If this code is POSTed, then
- * ramstage has successfully loaded and started executing.
- */
-#define POST_ENTRY_RAMSTAGE			0x80
 
 /**
  * \brief Console is initialized
@@ -189,6 +173,21 @@
  * Boot State Machine: bs_write_tables()
  */
 #define POST_BS_WRITE_TABLES			0x79
+
+/**
+ * \brief Pre call to RAM stage main()
+ *
+ * POSTed right before RAM stage main() is called from c_start.S
+ */
+#define POST_PRE_HARDWAREMAIN			0x79
+
+/**
+ * \brief Entry into coreboot in RAM stage main()
+ *
+ * This is the first call in hardwaremain.c. If this code is POSTed, then
+ * ramstage has successfully loaded and started executing.
+ */
+#define POST_ENTRY_RAMSTAGE			0x80
 
 /**
  * \brief Load Payload
@@ -303,22 +302,6 @@
 #define POST_FSP_MULTI_PHASE_SI_INIT_EXIT	0xa1
 
 /**
- * \brief Entry into elf boot
- *
- * This POST code is called right before invoking jmp_to_elf_entry()
- * jmp_to_elf_entry() invokes the payload, and should never return
- */
-#define POST_ENTER_ELF_BOOT			0xf8
-
-/**
- * \brief Jumping to payload
- *
- * Called right before jumping to a payload. If the boot sequence stops with
- * this code, chances are the payload freezes.
- */
-#define POST_JUMPING_TO_PAYLOAD			0xf3
-
-/**
  * \brief Invalid or corrupt ROM
  *
  * Set if firmware failed to find or validate a resource that is stored in ROM.
@@ -385,6 +368,22 @@
  * unable to do so.
  */
 #define POST_RESUME_FAILURE			0xef
+
+/**
+ * \brief Jumping to payload
+ *
+ * Called right before jumping to a payload. If the boot sequence stops with
+ * this code, chances are the payload freezes.
+ */
+#define POST_JUMPING_TO_PAYLOAD			0xf3
+
+/**
+ * \brief Entry into elf boot
+ *
+ * This POST code is called right before invoking jmp_to_elf_entry()
+ * jmp_to_elf_entry() invokes the payload, and should never return
+ */
+#define POST_ENTER_ELF_BOOT			0xf8
 
 /**
  * \brief Final code before OS resumes

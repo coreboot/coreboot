@@ -20,9 +20,7 @@ static void qemu_nb_init(struct device *dev)
 	for (i = 0; i < 6; i++)
 	pci_write_config8(dev, 0x5a + i, 0x33);
 
-	/* This sneaked in here, because Qemu does not
-	 * emulate a SuperIO chip
-	 */
+	/* This sneaked in here, because Qemu does not emulate a SuperIO chip. */
 	pc_keyboard_init(NO_AUX_DEVICE);
 
 	/* setup IRQ routing */

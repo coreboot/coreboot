@@ -168,7 +168,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	config->RmtCheckRun = 0x3;		// 0x0
 	config->RmtMarginCheckScaleHighThreshold = 0xC8;	// 0x0
 	config->EnhancePort8xhDecoding = 0x0;	// 0x1
-	config->PrimaryVideoAdaptor = 0x2;	// 0x0
 
 	config->Ch0_DeviceWidth = 0x1;		// 0x0
 	config->Ch0_Option = 0x3;		// 0x0

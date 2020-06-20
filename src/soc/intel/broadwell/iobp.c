@@ -91,8 +91,12 @@ void pch_iobp_write(u32 address, u32 data)
 
 	/* Check for successful transaction */
 	status = RCBA16(IOBPS);
-	if (status & IOBPS_TX_MASK)
+	if (status & IOBPS_TX_MASK) {
 		printk(BIOS_ERR, "IOBP: write 0x%08x failed\n", address);
+		return;
+	}
+
+	printk(BIOS_INFO, "IOBP: set 0x%08x to 0x%08x\n", address, data);
 }
 
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)

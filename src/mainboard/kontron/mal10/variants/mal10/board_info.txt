@@ -1,0 +1,8 @@
+Vendor name: Kontron
+Board name: COMe-mAL10
+Board URL: https://www.kontron.com/products/iot/iot-industry-4.0/iot-ready-boards-and-modules/com-express/com-express-mini/come-mal10-e2-.html
+Category: mini
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2019

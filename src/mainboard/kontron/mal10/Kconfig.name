@@ -1,0 +1,2 @@
+config BOARD_KONTRON_COME_MAL10
+	bool "COMe-mAL10"

@@ -76,6 +76,10 @@ The boards in this section are not real mainboards, but emulators.
 - [IceLake RVP](intel/icelake_rvp.md)
 - [KBLRVP11](intel/kblrvp11.md)
 
+## Kontron
+
+- [mAL-10](kontron/mal10.md)
+
 ## Lenovo
 
 - [Mainboard codenames](lenovo/codenames.md)

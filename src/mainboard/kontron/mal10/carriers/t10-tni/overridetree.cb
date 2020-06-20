@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/apollolake
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# Override USB port configuration
+	register "usb_config_override" = "1"
+	# USB 2.0
+	register "usb2_port[0]" = "PORT_EN(OC1)"
+	register "usb2_port[1]" = "PORT_EN(OC1)"
+	register "usb2_port[2]" = "PORT_EN(OC1)"
+	register "usb2_port[3]" = "PORT_EN(OC1)"
+	register "usb2_port[4]" = "PORT_EN(OC1)"
+	register "usb2_port[5]" = "PORT_EN(OC1)"
+	register "usb2_port[6]" = "PORT_EN(OC_SKIP)"
+	register "usb2_port[7]" = "PORT_EN(OC_SKIP)"
+	# USB 3.0
+	register "usb3_port[0]" = "PORT_EN(OC0)"
+	register "usb3_port[1]" = "PORT_EN(OC0)"
+
+	device domain 0 on
+		device pci 0e.0 off end # TODO: Audio
+		device pci 13.0 on      # PCIe-A 1 (Root Port 2)
+			register "pcie_rp_clkreq_pin[2]" = "0"
+		end
+		device pci 13.1 on      # PCIe-A 2 (Root Port 3)
+			register "pcie_rp_clkreq_pin[3]" = "0"
+		end
+		device pci 13.2 on      # PCIe-A 3 (Root Port 4)
+			register "pcie_rp_clkreq_pin[4]" = "0"
+		end
+		device pci 13.3 on      # PCIe-A 4 (Root Port 5)
+			register "pcie_rp_clkreq_pin[5]" = "0"
+		end
+		device pci 14.0 on      # PCIe-B 1 (Root Port 0)
+			register "pcie_rp_clkreq_pin[0]" = "1"
+		end
+	end
+end

@@ -1,0 +1,8 @@
+Vendor name: Kontron
+Board name: COMe-Ref-Carrier-i-T10-TNI
+Board URL: https://www.kontron.com/products/boards-and-standard-form-factors/com-express/starterkits-and-evaluation-boards/come-ref.carrier-i-t10-tni.html
+Category: mini
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2019

@@ -1,0 +1,6 @@
+baud_rate = 115200
+debug_level = Info
+power_on_after_fail = Enable
+boot_devices = (hd0,0);(hd1,0)
+boot_default = 0xff
+cmos_defaults_loaded = No

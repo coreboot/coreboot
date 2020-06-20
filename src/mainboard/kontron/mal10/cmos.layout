@@ -1,0 +1,55 @@
+# -----------------------------------------------------------------
+entries
+
+# -----------------------------------------------------------------
+0          120       r       0        reserved_memory
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395          4       e       3        debug_level
+
+# -----------------------------------------------------------------
+# coreboot config options: cpu
+400          1       e       2        hyper_threading
+
+# coreboot config options: pch
+408          2       e       4        power_on_after_fail
+
+# coreboot config options: mainboard
+440          1       e       2        ethernet1
+441          1       e       2        ethernet2
+
+# payload config options
+512        256       s       0        boot_devices
+768          8       h       0        boot_default
+776          1       e       1        cmos_defaults_loaded
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     No
+1     1     Yes
+2     0     Disable
+2     1     Enable
+3     1     Emergency
+3     2     Alert
+3     3     Critical
+3     4     Error
+3     5     Warning
+3     6     Notice
+3     7     Info
+3     8     Debug
+3     9     Spew
+4     0     Disable
+4     1     Enable
+4     2     Keep
+# -----------------------------------------------------------------
+
+checksums
+
+checksum 392 983 984

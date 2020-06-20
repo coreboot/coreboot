@@ -1,0 +1,58 @@
+if BOARD_KONTRON_COME_MAL10
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select INTEL_GMA_HAVE_VBT
+	select SOC_INTEL_APOLLOLAKE
+	select BOARD_ROMSIZE_KB_16384
+	select ONBOARD_VGA_IS_PRIMARY
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_CRB_TPM
+	select EC_KONTRON_KEMPLD
+	select DRIVERS_I2C_NCT7802Y
+
+config MAINBOARD_DIR
+	string
+	default "kontron/mal10"
+
+# TODO: Add a new carrier boards here
+choice
+	prompt "Carrier board"
+	default BOARD_KONTRON_T10_TNI
+	help
+	  This option sets the type of carrier board to be used with
+	  the Kontron mAL10 COMe module.
+
+config BOARD_KONTRON_T10_TNI
+	bool "Kontron i-T10-TNIx"
+	help
+	  By selecting this option, the target ROM image will be built for
+	  the Kontron Ref.Carrier-i T10-TNI carrier board.
+
+endchoice
+
+config VARIANT_DIR
+	string
+	default "mal10"
+
+config CARRIER_DIR
+	string
+	default "t10-tni" if BOARD_KONTRON_T10_TNI
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "COMe-mAL10"
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "carriers/$(CONFIG_CARRIER_DIR)/overridetree.cb"
+
+endif

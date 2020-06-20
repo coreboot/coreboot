@@ -13,6 +13,7 @@
 #include <timer.h>
 #include <delay.h>
 
+#include "chip.h"
 #include "kempld.h"
 #include "kempld_internal.h"
 
@@ -39,9 +40,6 @@
 #define  I2C_CMD_READ_ACK	0x21
 #define  I2C_CMD_READ_NACK	0x29
 #define  I2C_CMD_IACK		0x01
-
-#define KEMPLD_I2C_FREQ_MAX	2700	/* 2.7 mHz */
-#define KEMPLD_I2C_FREQ_STD	100	/* 100 kHz */
 
 #define EIO		  5
 #define ENXIO		  6
@@ -230,7 +228,8 @@ static struct device_operations kempld_i2c_dev_ops = {
 
 void kempld_i2c_device_init(struct device *const dev)
 {
-	u16 prescale_corr;
+	const struct ec_kontron_kempld_config *const config = dev->chip_info;
+	u16 prescale_corr, frequency;
 	long prescale;
 	u8 ctrl;
 	u8 stat;
@@ -244,11 +243,23 @@ void kempld_i2c_device_init(struct device *const dev)
 	ctrl &= ~(I2C_CTRL_EN | I2C_CTRL_IEN);
 	kempld_write8(KEMPLD_I2C_CTRL, ctrl);
 
+	frequency = KEMPLD_I2C_FREQ_STANDARD_MODE_100KHZ;
+	if (config && config->i2c_frequency) {
+		if (config->i2c_frequency <= KEMPLD_I2C_FREQ_MAX) {
+			frequency = config->i2c_frequency;
+		} else {
+			printk(BIOS_NOTICE,
+				"kempld_i2c: %d kHz is too high!\n",
+				config->i2c_frequency);
+		}
+	}
+	printk(BIOS_INFO, "kempld_i2c: Use frequency %d\n", frequency);
+
 	const u8 spec_major = KEMPLD_SPEC_GET_MAJOR(kempld_read8(KEMPLD_SPEC));
 	if (spec_major == 1)
-		prescale = KEMPLD_CLK / (KEMPLD_I2C_FREQ_STD * 5) - 1000;
+		prescale = KEMPLD_CLK / (frequency * 5) - 1000;
 	else
-		prescale = KEMPLD_CLK / (KEMPLD_I2C_FREQ_STD * 4) - 3000;
+		prescale = KEMPLD_CLK / (frequency * 4) - 3000;
 
 	if (prescale < 0)
 		prescale = 0;

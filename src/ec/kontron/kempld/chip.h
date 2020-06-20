@@ -12,6 +12,13 @@ enum kempld_uart_io {
 	KEMPLD_UART_2E8 = 3,
 };
 
+enum kempld_i2c_frequency {
+	KEMPLD_I2C_FREQ_STANDARD_MODE_100KHZ	= 100,
+	KEMPLD_I2C_FREQ_FAST_MODE_400KHZ	= 400,
+	KEMPLD_I2C_FREQ_FAST_PLUS_MODE_1MHZ	= 1000,
+	KEMPLD_I2C_FREQ_MAX			= 2700,
+};
+
 struct kempld_uart {
 	enum kempld_uart_io io;
 	unsigned int irq;
@@ -19,6 +26,7 @@ struct kempld_uart {
 
 struct ec_kontron_kempld_config {
 	struct kempld_uart uart[KEMPLD_NUM_UARTS];
+	unsigned short i2c_frequency;
 };
 
 #endif /* EC_KONTRON_KEMPLD_CHIP_H */

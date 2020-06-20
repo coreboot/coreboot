@@ -250,7 +250,7 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 	[TOLUD_REG] = MAP_ENTRY_BASE_32(TOLUD, "TOLUD"),
 	[BDSM_REG] = MAP_ENTRY_BASE_32(BDSM, "BDSM"),
 	[BGSM_REG] = MAP_ENTRY_BASE_32(BGSM, "BGSM"),
-	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
+	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TSEGMB"),
 };
 
 static void mc_read_map_entries(struct device *dev, uint64_t *values)

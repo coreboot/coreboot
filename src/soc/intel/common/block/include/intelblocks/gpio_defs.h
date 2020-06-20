@@ -124,6 +124,7 @@
 
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
+#define PAD_TRIG(value)		PAD_CFG0_TRIG_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
 /* Disable the input/output buffer of the pad */
@@ -145,14 +146,14 @@
 
 #define PAD_IRQ_CFG(route, trig, inv) \
 				(PAD_CFG0_ROUTE_##route | \
-				PAD_CFG0_TRIG_##trig | \
+				PAD_TRIG(trig) | \
 				PAD_CFG0_RX_POL_##inv)
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
 #define PAD_IRQ_CFG_DUAL_ROUTE(route1, route2, trig, inv)  \
 				(PAD_CFG0_ROUTE_##route1 | \
 				PAD_CFG0_ROUTE_##route2 | \
-				PAD_CFG0_TRIG_##trig | \
+				PAD_TRIG(trig) | \
 				PAD_CFG0_RX_POL_##inv)
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 
@@ -186,7 +187,7 @@
  * input/output buffer if necessary
  */
 #define PAD_CFG_NF_BUF_TRIG(pad, pull, rst, func, bufdis, trig) \
-	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_CFG0_TRIG_##trig | \
+	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_TRIG(trig) | \
 		PAD_BUF(bufdis) | PAD_FUNC(func), \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
@@ -225,28 +226,28 @@
 #define PAD_CFG_GPO(pad, val, rst)	\
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
-		PAD_CFG0_TRIG_OFF | PAD_BUF(RX_DISABLE) | !!val, \
+		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val, \
 		PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose output, with termination specified */
 #define PAD_CFG_TERM_GPO(pad, val, pull, rst)	\
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
-		PAD_CFG0_TRIG_OFF | PAD_BUF(RX_DISABLE) | !!val, \
+		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO_GPIO_DRIVER(pad, val, rst, pull)	\
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
-		PAD_CFG0_TRIG_OFF | PAD_BUF(RX_DISABLE) | !!val, \
+		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE) | PAD_CFG_OWN_GPIO(DRIVER))
 
 /* General purpose output. */
 #define PAD_CFG_GPO_IOSSTATE_IOSTERM(pad, val, rst, pull, iosstate, ioterm)	\
 	_PAD_CFG_STRUCT(pad,		\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
-		PAD_CFG0_TRIG_OFF | PAD_BUF(RX_DISABLE) | !!val, \
+		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(ioterm))
 
 /* General purpose input */
@@ -271,7 +272,7 @@
  */
 #define PAD_CFG_GPI_TRIG_OWN(pad, pull, rst, trig, own)					\
 	_PAD_CFG_STRUCT(pad, PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
-		PAD_CFG0_TRIG_##trig | PAD_CFG0_RX_POL_NONE | PAD_BUF(TX_DISABLE),	\
+		PAD_TRIG(trig) | PAD_CFG0_RX_POL_NONE | PAD_BUF(TX_DISABLE),	\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE) | PAD_CFG_OWN_GPIO(own))
 
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst) \
@@ -302,7 +303,7 @@
 #define PAD_NC(pad, pull)			\
 	_PAD_CFG_STRUCT(pad,					\
 		PAD_FUNC(GPIO) | PAD_RESET(DEEP) |		\
-		PAD_CFG0_TRIG_OFF | PAD_BUF(TX_RX_DISABLE),	\
+		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),	\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS)

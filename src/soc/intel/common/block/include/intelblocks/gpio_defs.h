@@ -124,6 +124,7 @@
 
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
+#define PAD_RX_POL(value)	PAD_CFG0_RX_POL_##value
 #define PAD_TRIG(value)		PAD_CFG0_TRIG_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
@@ -147,14 +148,14 @@
 #define PAD_IRQ_CFG(route, trig, inv) \
 				(PAD_CFG0_ROUTE_##route | \
 				PAD_TRIG(trig) | \
-				PAD_CFG0_RX_POL_##inv)
+				PAD_RX_POL(inv))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
 #define PAD_IRQ_CFG_DUAL_ROUTE(route1, route2, trig, inv)  \
 				(PAD_CFG0_ROUTE_##route1 | \
 				PAD_CFG0_ROUTE_##route2 | \
 				PAD_TRIG(trig) | \
-				PAD_CFG0_RX_POL_##inv)
+				PAD_RX_POL(inv))
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 
 #define _PAD_CFG_STRUCT(__pad, __config0, __config1)	\
@@ -272,7 +273,7 @@
  */
 #define PAD_CFG_GPI_TRIG_OWN(pad, pull, rst, trig, own)					\
 	_PAD_CFG_STRUCT(pad, PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
-		PAD_TRIG(trig) | PAD_CFG0_RX_POL_NONE | PAD_BUF(TX_DISABLE),	\
+		PAD_TRIG(trig) | PAD_RX_POL(NONE) | PAD_BUF(TX_DISABLE),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE) | PAD_CFG_OWN_GPIO(own))
 
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst) \

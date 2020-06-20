@@ -125,6 +125,7 @@
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
 #define PAD_RX_POL(value)	PAD_CFG0_RX_POL_##value
+#define PAD_IRQ_ROUTE(value)	PAD_CFG0_ROUTE_##value
 #define PAD_TRIG(value)		PAD_CFG0_TRIG_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
@@ -146,14 +147,14 @@
 #endif
 
 #define PAD_IRQ_CFG(route, trig, inv) \
-				(PAD_CFG0_ROUTE_##route | \
+				(PAD_IRQ_ROUTE(route) | \
 				PAD_TRIG(trig) | \
 				PAD_RX_POL(inv))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
 #define PAD_IRQ_CFG_DUAL_ROUTE(route1, route2, trig, inv)  \
-				(PAD_CFG0_ROUTE_##route1 | \
-				PAD_CFG0_ROUTE_##route2 | \
+				(PAD_IRQ_ROUTE(route1) | \
+				PAD_IRQ_ROUTE(route2) | \
 				PAD_TRIG(trig) | \
 				PAD_RX_POL(inv))
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */

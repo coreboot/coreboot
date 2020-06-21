@@ -6,6 +6,7 @@ bootblock-y += early_init.c
 bootblock-y += bootblock.c
 
 ramstage-y += i82801gx.c
+ramstage-y += fadt.c
 ramstage-y += ac97.c
 ramstage-y += azalia.c
 ramstage-y += ide.c

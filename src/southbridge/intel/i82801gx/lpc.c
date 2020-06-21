@@ -494,7 +494,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.space_id = 1;
 	fadt->x_gpe0_blk.bit_width = 64;
 	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
+	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = pmbase + GPE0_STS;
 	fadt->x_gpe0_blk.addrh = 0x0;
 

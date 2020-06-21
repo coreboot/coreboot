@@ -32,7 +32,7 @@
 #endif
 
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] __unused = {
+static const char *const me_bios_path_values[] __unused = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",

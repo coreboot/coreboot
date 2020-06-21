@@ -5,23 +5,23 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801JX),y)
 bootblock-y += bootblock.c
 bootblock-y += early_init.c
 
-ramstage-y += i82801jx.c
+romstage-y += early_init.c
+romstage-y += early_smbus.c
+
 ramstage-y += fadt.c
-ramstage-y += pci.c
-ramstage-y += lpc.c
-ramstage-y += pcie.c
-ramstage-y += usb_ehci.c
-ramstage-y += sata.c
 ramstage-y += hdaudio.c
-ramstage-y += thermal.c
+ramstage-y += i82801jx.c
+ramstage-y += lpc.c
+ramstage-y += pci.c
+ramstage-y += pcie.c
+ramstage-y += sata.c
 ramstage-y += smbus.c
+ramstage-y += thermal.c
+ramstage-y += usb_ehci.c
 ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
 smm-y += smihandler.c
-
-romstage-y += early_init.c
-romstage-y += early_smbus.c
 
 endif

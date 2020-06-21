@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef SOUTHBRIDGE_INTEL_I82801GX_NVS_H
+#define SOUTHBRIDGE_INTEL_I82801GX_NVS_H
 #include <stdint.h>
 
 typedef struct {
@@ -97,3 +99,5 @@ typedef struct {
 } __packed global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
+
+#endif /* SOUTHBRIDGE_INTEL_I82801GX_NVS_H */

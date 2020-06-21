@@ -10,18 +10,7 @@
 #include <reg_script.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-
-/*
- * Enable Prefetching and Caching.
- */
-static void enable_spi_prefetch(void)
-{
-	u8 reg8 = pci_read_config8(PCH_DEV_LPC, 0xdc);
-	reg8 &= ~(3 << 2);
-	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(PCH_DEV_LPC, 0xdc, reg8);
-}
-
+#include <southbridge/intel/common/early_spi.h>
 
 static void map_rcba(void)
 {
@@ -105,7 +94,7 @@ static void pch_early_lpc(void)
 void bootblock_early_southbridge_init(void)
 {
 	map_rcba();
-	enable_spi_prefetch();
+	enable_spi_prefetching_and_caching();
 	enable_port80_on_lpc();
 	set_spi_speed();
 	pch_early_lpc();

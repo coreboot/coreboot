@@ -142,7 +142,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	u32 verb_size;
 	int i;
 
-	printk(BIOS_DEBUG, "HD Audio: Initializing codec #%d\n", addr);
+	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
 
 	/* 1 */
 	if (wait_for_ready(base) == -1)

@@ -46,10 +46,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
-	if (chip->p_cnt_throttling_supported)
-		fadt->duty_width = 3;
-	else
-		fadt->duty_width = 0;
+	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
 	fadt->century = 0x32;

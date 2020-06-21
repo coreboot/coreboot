@@ -36,11 +36,11 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* Thermal policy */
 	Offset (0x14),
 	ACTT,	 8,	// 0x14 - active trip point
-	PSVT,	 8,	// 0x15 - passive trip point
+	TPSV,	 8,	// 0x15 - passive trip point
 	TC1V,	 8,	// 0x16 - passive trip point TC1
 	TC2V,	 8,	// 0x17 - passive trip point TC2
 	TSPV,	 8,	// 0x18 - passive trip point TSP
-	CRTT,	 8,	// 0x19 - critical trip point
+	TCRT,	 8,	// 0x19 - critical trip point
 	DTSE,	 8,	// 0x1a - Digital Thermal Sensor enable
 	DTS1,	 8,	// 0x1b - DT sensor 1
 	FLVL,	 8,	// 0x1c - current fan level

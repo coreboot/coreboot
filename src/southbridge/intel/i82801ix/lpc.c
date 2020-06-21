@@ -20,6 +20,7 @@
 #include "i82801ix.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
+#include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 
 #define NMI_OFF	0

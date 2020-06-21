@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
+#include <southbridge/intel/common/pmutil.h>
 #include "i82801ix.h"
 #include "chip.h"
 

@@ -36,7 +36,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 16;
 	fadt->p_lvl2_lat = 1;
-	fadt->p_lvl3_lat = chip->c3_latency;
+	fadt->p_lvl3_lat = 0;	/* FIXME: Is this correct? */
 	fadt->duty_offset = 1;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;

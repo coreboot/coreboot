@@ -786,10 +786,6 @@ if ! mkdir -p "$TARGET"; then
 	exit 1
 fi
 
-# Generate a single xcompile for all boards
-export xcompile="${TARGET}/xcompile"
-$MAKE -C"${ROOT}" obj="$TARGET/temp" objutil="$TARGET/sharedutils" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
-
 customizing=$(echo "$customizing" | cut -c3-)
 if [ "$customizing" = "" ]; then
 	customizing="default configuration"
@@ -798,7 +794,11 @@ fi
 FAILED_BOARDS="$(realpath ${TARGET}/failed_boards)"
 PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
 
+# Generate a single xcompile for all boards
+export xcompile="${TARGET}/xcompile"
+
 if [ "$recursive" = "false" ]; then
+	$MAKE -C"${ROOT}" obj="$TARGET/temp" objutil="$TARGET/sharedutils" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"
 fi
 

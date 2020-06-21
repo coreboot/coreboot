@@ -51,7 +51,7 @@ void i82801ix_early_init(void)
 	         before they get cleared. */
 }
 
-void i82801ix_lpc_decode(void)
+void i82801ix_lpc_setup(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
 	const struct device *dev = pcidev_on_root(0x1f, 0);

@@ -14,5 +14,5 @@ void bootblock_early_southbridge_init(void)
 	enable_spi_prefetch();
 
 	i82801ix_early_init();
-	i82801ix_lpc_decode();
+	i82801ix_lpc_setup();
 }

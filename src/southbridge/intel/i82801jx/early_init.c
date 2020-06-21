@@ -5,6 +5,7 @@
 #include <device/smbus_host.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/common/pmutil.h>
 #include "i82801jx.h"
 #include "chip.h"
 

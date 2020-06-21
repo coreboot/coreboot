@@ -2,6 +2,7 @@
 
 #include <device/pci_ops.h>
 #include <bootblock_common.h>
+#include <southbridge/intel/common/early_spi.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <console/console.h>
 
@@ -37,20 +38,9 @@ static void bootblock_northbridge_init(void)
 		die("You must run qemu for machine Q35 (-M q35)");
 }
 
-static void enable_spi_prefetch(void)
-{
-	u8 reg8;
-	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
-
-	reg8 = pci_read_config8(dev, 0xdc);
-	reg8 &= ~(3 << 2);
-	reg8 |= (2 << 2); /* Prefetching and Caching Enabled */
-	pci_write_config8(dev, 0xdc, reg8);
-}
-
 static void bootblock_southbridge_init(void)
 {
-	enable_spi_prefetch();
+	enable_spi_prefetching_and_caching();
 
 	/* Enable RCBA */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA,

@@ -13,6 +13,16 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	struct southbridge_intel_i82801jx_config *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 
+	fadt->sci_int = 0x9;
+
+	if (permanent_smi_handler()) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+		fadt->pstate_cnt = APM_CNT_PST_CONTROL;
+		fadt->cst_cnt = APM_CNT_CST_CONTROL;
+	}
+
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1b_evt_blk = 0x0;
 	fadt->pm1a_cnt_blk = pmbase + 0x4;
@@ -29,6 +39,25 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 16;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
+	fadt->p_lvl2_lat = 1;
+	fadt->p_lvl3_lat = chip->c3_latency;
+	fadt->flush_size = 0;
+	fadt->flush_stride = 0;
+	fadt->duty_offset = 1;
+	if (chip->p_cnt_throttling_supported)
+		fadt->duty_width = 3;
+	else
+		fadt->duty_width = 0;
+	fadt->day_alrm = 0xd;
+	fadt->mon_alrm = 0x00;
+	fadt->century = 0x32;
+	fadt->iapc_boot_arch = 0x03;
+	fadt->flags = (ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED
+		       | ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_S4_RTC_WAKE
+		       | ACPI_FADT_PLATFORM_CLOCK | ACPI_FADT_RESET_REGISTER
+		       | ACPI_FADT_C2_MP_SUPPORTED);
+	if (chip->docking_supported)
+		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;
 
 	fadt->reset_reg.space_id = 1;
 	fadt->reset_reg.bit_width = 8;
@@ -93,34 +122,4 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
-	fadt->day_alrm = 0xd;
-	fadt->mon_alrm = 0x00;
-	fadt->century = 0x32;
-
-	fadt->sci_int = 0x9;
-
-	if (permanent_smi_handler()) {
-		fadt->smi_cmd = APM_CNT;
-		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-		fadt->cst_cnt = APM_CNT_CST_CONTROL;
-		fadt->pstate_cnt = APM_CNT_PST_CONTROL;
-	}
-
-	fadt->p_lvl2_lat = 1;
-	fadt->p_lvl3_lat = chip->c3_latency;
-	fadt->flush_size = 0;
-	fadt->flush_stride = 0;
-	fadt->duty_offset = 1;
-	if (chip->p_cnt_throttling_supported)
-		fadt->duty_width = 3;
-	else
-		fadt->duty_width = 0;
-	fadt->iapc_boot_arch = 0x03;
-	fadt->flags = (ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED
-		       | ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_S4_RTC_WAKE
-		       | ACPI_FADT_PLATFORM_CLOCK | ACPI_FADT_RESET_REGISTER
-		       | ACPI_FADT_C2_MP_SUPPORTED);
-	if (chip->docking_supported)
-		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;
 }

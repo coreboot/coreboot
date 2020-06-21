@@ -20,9 +20,14 @@ static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map,
 {
 	int i;
 	u32 reg32;
+	struct resource *res;
 
 	/* Initialize AHCI memory-mapped space */
-	u8 *abar = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_5);
+	if (!res)
+		return;
+
+	u8 *abar = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 
 	/* Set AHCI access mode.

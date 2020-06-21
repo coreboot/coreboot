@@ -2,16 +2,12 @@
 
 #include <arch/bootblock.h>
 #include <device/pci_ops.h>
+#include <southbridge/intel/common/early_spi.h>
 #include "i82801jx.h"
-
-static void enable_spi_prefetch(void)
-{
-	pci_update_config8(PCI_DEV(0, 0x1f, 0), 0xdc, ~(3 << 2), 2 << 2);
-}
 
 void bootblock_early_southbridge_init(void)
 {
-	enable_spi_prefetch();
+	enable_spi_prefetching_and_caching();
 
 	i82801jx_setup_bars();
 

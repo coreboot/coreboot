@@ -6,6 +6,39 @@
 #include "i82801ix.h"
 #include "chip.h"
 
+void i82801ix_lpc_setup(void)
+{
+	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
+	const struct device *dev = pcidev_on_root(0x1f, 0);
+	const struct southbridge_intel_i82801ix_config *config = NULL;
+
+	/* Configure serial IRQs.*/
+	pci_write_config8(d31f0, D31F0_SERIRQ_CNTL, 0xd0);
+	/*
+	 * Enable some common LPC IO ranges:
+	 * - 0x2e/0x2f, 0x4e/0x4f often SuperIO
+	 * - 0x60/0x64, 0x62/0x66 often KBC/EC
+	 * - 0x3f0-0x3f5/0x3f7 FDD
+	 * - 0x378-0x37f and 0x778-0x77f LPT
+	 * - 0x2f8-0x2ff COMB
+	 * - 0x3f8-0x3ff COMA
+	 * - 0x208-0x20f GAMEH
+	 * - 0x200-0x207 GAMEL
+	 */
+	pci_write_config16(d31f0, D31F0_LPC_IODEC, 0x0010);
+	pci_write_config16(d31f0, D31F0_LPC_EN, 0x3f0f);
+
+	/* Set up generic decode ranges */
+	if (!dev || !dev->chip_info)
+		return;
+	config = dev->chip_info;
+
+	pci_write_config32(d31f0, D31F0_GEN1_DEC, config->gen1_dec);
+	pci_write_config32(d31f0, D31F0_GEN2_DEC, config->gen2_dec);
+	pci_write_config32(d31f0, D31F0_GEN3_DEC, config->gen3_dec);
+	pci_write_config32(d31f0, D31F0_GEN4_DEC, config->gen4_dec);
+}
+
 void i82801ix_early_init(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
@@ -49,37 +82,4 @@ void i82801ix_early_init(void)
 
 	/* TODO: Check power state bits in GEN_PMCON_2 (D31F0 0xa2)
 	         before they get cleared. */
-}
-
-void i82801ix_lpc_setup(void)
-{
-	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
-	const struct device *dev = pcidev_on_root(0x1f, 0);
-	const struct southbridge_intel_i82801ix_config *config = NULL;
-
-	/* Configure serial IRQs.*/
-	pci_write_config8(d31f0, D31F0_SERIRQ_CNTL, 0xd0);
-	/*
-	 * Enable some common LPC IO ranges:
-	 * - 0x2e/0x2f, 0x4e/0x4f often SuperIO
-	 * - 0x60/0x64, 0x62/0x66 often KBC/EC
-	 * - 0x3f0-0x3f5/0x3f7 FDD
-	 * - 0x378-0x37f and 0x778-0x77f LPT
-	 * - 0x2f8-0x2ff COMB
-	 * - 0x3f8-0x3ff COMA
-	 * - 0x208-0x20f GAMEH
-	 * - 0x200-0x207 GAMEL
-	 */
-	pci_write_config16(d31f0, D31F0_LPC_IODEC, 0x0010);
-	pci_write_config16(d31f0, D31F0_LPC_EN, 0x3f0f);
-
-	/* Set up generic decode ranges */
-	if (!dev || !dev->chip_info)
-		return;
-	config = dev->chip_info;
-
-	pci_write_config32(d31f0, D31F0_GEN1_DEC, config->gen1_dec);
-	pci_write_config32(d31f0, D31F0_GEN2_DEC, config->gen2_dec);
-	pci_write_config32(d31f0, D31F0_GEN3_DEC, config->gen3_dec);
-	pci_write_config32(d31f0, D31F0_GEN4_DEC, config->gen4_dec);
 }

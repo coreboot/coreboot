@@ -67,6 +67,7 @@ config VARIANT_DIR
 	default "dalboz" if BOARD_GOOGLE_DALBOZ
 	default "berknip" if BOARD_GOOGLE_BERKNIP
 	default "vilboz" if BOARD_GOOGLE_VILBOZ
+	default "woomax" if BOARD_GOOGLE_WOOMAX
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -76,6 +77,7 @@ config MAINBOARD_PART_NUMBER
 	default "Dalboz" if BOARD_GOOGLE_DALBOZ
 	default "Berknip" if BOARD_GOOGLE_BERKNIP
 	default "Vilboz" if BOARD_GOOGLE_VILBOZ
+	default "Woomax" if BOARD_GOOGLE_WOOMAX
 
 config DEVICETREE
 	string
@@ -181,6 +183,7 @@ config VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH
 	default y if VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	default y if BOARD_GOOGLE_BERKNIP
 	default y if BOARD_GOOGLE_VILBOZ
+	default y if BOARD_GOOGLE_WOOMAX
 	default n
 	help
 	  Whether this variant supports active high power enable for
@@ -197,6 +200,7 @@ config VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW
 	depends on VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH
 	default 3 if BOARD_GOOGLE_BERKNIP
 	default 2 if BOARD_GOOGLE_VILBOZ
+	default 1 if BOARD_GOOGLE_WOOMAX
 	default VARIANT_MIN_BOARD_ID_V3_SCHEMATICS
 	help
 	  Minimum board version where the variant starts supporting

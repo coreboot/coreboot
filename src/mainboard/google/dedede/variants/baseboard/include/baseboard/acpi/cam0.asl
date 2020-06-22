@@ -139,7 +139,7 @@ Scope (\_SB.PCI0.I2C3)
 		Name (EP00, Package (0x02)
 		{
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package (0x03)
+			Package (0x05)
 			{
 				Package (0x02)
 				{
@@ -149,10 +149,25 @@ Scope (\_SB.PCI0.I2C3)
 
 				Package (0x02)
 				{
+					"clock-lanes",
+					Zero
+				},
+
+				Package (0x02)
+				{
+					"data-lanes",
+					Package (0x01)
+					{
+						One
+					}
+				},
+
+				Package (0x02)
+				{
 					"link-frequencies",
 					Package (0x01)
 					{
-						0x325AA000
+						180000000
 					}
 				},
 

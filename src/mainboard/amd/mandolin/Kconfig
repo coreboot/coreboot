@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_AMD_MANDOLIN
+if BOARD_AMD_MANDOLIN || BOARD_AMD_CEREME
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -8,6 +8,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_PICASSO
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_8192 if BOARD_AMD_MANDOLIN
+	select BOARD_ROMSIZE_KB_16384 if BOARD_AMD_CEREME
 	select AZALIA_PLUGIN_SUPPORT
 	select HAVE_ACPI_RESUME
 	select DRIVERS_UART_ACPI
@@ -31,6 +32,7 @@ config AMD_LPC_DEBUG_CARD
 config CBFS_SIZE
 	hex
 	default 0x7cf000 if BOARD_AMD_MANDOLIN # Maximum size for the Mandolin FMAP
+	default 0xfcf000 if BOARD_AMD_CEREME # Maximum size for the Cereme FMAP
 
 config MAINBOARD_DIR
 	string
@@ -39,10 +41,12 @@ config MAINBOARD_DIR
 config VARIANT_DIR
 	string
 	default "mandolin" if BOARD_AMD_MANDOLIN
+	default "cereme" if BOARD_AMD_CEREME
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "MANDOLIN" if BOARD_AMD_MANDOLIN
+	default "CEREME" if BOARD_AMD_CEREME
 
 config DEVICETREE
 	string
@@ -59,6 +63,7 @@ config ONBOARD_VGA_IS_PRIMARY
 config AMD_FWM_POSITION_INDEX
 	int
 	default 3 if BOARD_AMD_MANDOLIN
+	default 4 if BOARD_AMD_CEREME
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
 
@@ -70,6 +75,7 @@ config MANDOLIN_MCHP_FW_FILE
 	string
 	depends on MANDOLIN_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/mandolin/EC_mandolin.bin" if BOARD_AMD_MANDOLIN
+	default "3rdparty/blobs/mainboard/amd/mandolin/EC_cereme.bin" if BOARD_AMD_CEREME
 
 if !AMD_LPC_DEBUG_CARD
 choice
@@ -106,19 +112,22 @@ config VGA_BIOS_DGPU_ID
 config VGA_BIOS_DGPU_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin" if BOARD_AMD_MANDOLIN
+	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin" if BOARD_AMD_CEREME
 
 config EFS_SPI_READ_MODE
 	int
 	default 0 if EM100
+	default 0 if BOARD_AMD_CEREME
 	default 3
 
 config EFS_SPI_SPEED
 	int
 	default 3 if EM100
+	default 1 if BOARD_AMD_CEREME
 	default 0
 
 config EFS_SPI_MICRON_FLAG
 	int
 	default 0
 
-endif # BOARD_AMD_MANDOLIN
+endif # BOARD_AMD_MANDOLIN || BOARD_AMD_CEREME

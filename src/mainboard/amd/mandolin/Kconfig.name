@@ -1,2 +1,5 @@
 config BOARD_AMD_MANDOLIN
 	bool "Mandolin"
+
+config BOARD_AMD_CEREME
+	bool "Cereme"

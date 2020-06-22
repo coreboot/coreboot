@@ -1,0 +1,184 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/amd/picasso
+	register "acp_pin_cfg" = "I2S_PINS_MAX_HDA"
+
+	# Set FADT Configuration
+	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
+	register "fadt_flags" = "ACPI_FADT_SLEEP_BUTTON" # See table 5-34 ACPI 6.3 spec
+
+	register "emmc_config" = "{
+		.timing = SD_EMMC_DISABLE,
+	}"
+
+	register "has_usb2_phy_tune_params" = "1"
+
+	# Controller0 Port0 Default
+	register "usb_2_port_tune_params[0]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port1 Default
+	register "usb_2_port_tune_params[1]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port2 Default
+	register "usb_2_port_tune_params[2]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port3 Default
+	register "usb_2_port_tune_params[3]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port4 Default
+	register "usb_2_port_tune_params[4]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x02,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x5,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port5 Default
+	register "usb_2_port_tune_params[5]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x02,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x5,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# USB OC pin mapping; all ports share one OC pin
+	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[2]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[3]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[4]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[5]" = "USB_OC_PIN_0"
+
+	# SPI Configuration
+	register "common_config.spi_config" = "{
+		.normal_speed = SPI_SPEED_33M, /* MHz */
+		.fast_speed = SPI_SPEED_66M, /* MHz */
+		.altio_speed = SPI_SPEED_33M, /* MHz */
+		.tpm_speed = SPI_SPEED_33M, /* MHz */
+		.read_mode = SPI_READ_MODE_QUAD114,
+	}"
+
+	# eSPI Configuration
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x662,
+			.size = 8,
+		},
+
+		.io_mode = ESPI_IO_MODE_SINGLE,
+		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
+		.crc_check_enable = 1,
+		.dedicated_alert_pin = 1,
+		.periph_ch_en = 0,
+		.vw_ch_en = 0,
+		.oob_ch_en = 0,
+		.flash_ch_en = 0,
+	}"
+
+	# genral purpose PCIe clock output configuration
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[3]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[4]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[5]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[6]" = "GPP_CLK_OFF"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
+		device pci 0.0 on  end # Root Complex
+		device pci 0.2 on  end # IOMMU
+		device pci 1.0 on  end # Dummy Host Bridge
+		device pci 1.1 on  end # Bridge to PCIe Ethernet chip
+		device pci 8.0 on  end # Dummy Host Bridge
+		device pci 8.1 on      # Bridge to Bus A
+			device pci 0.0 on  end # Internal GPU
+			device pci 0.1 on  end # Display HDA
+			device pci 0.2 on  end # Crypto Coprocessor
+			device pci 0.3 on  end # USB 3.1
+			device pci 0.4 off end # USB 3.1
+			device pci 0.5 on  end # Audio
+			device pci 0.6 on  end # HDA
+			device pci 0.7 on  end # non-Sensor Fusion Hub device
+		end
+		device pci 8.2 on      # Bridge to Bus B
+			device pci 0.0 off end # AHCI
+			device pci 0.1 off end # integrated Ethernet MAC
+			device pci 0.2 off end # integrated Ethernet MAC
+		end
+		device pci 14.0 on end # SMBus
+		device pci 14.3 on     # D14F3 bridge
+			chip superio/smsc/sio1036 # optional debug card
+			end
+		end
+		device pci 14.6 off end # SDHCI
+		device pci 18.0 on  end # Data fabric [0-7]
+		device pci 18.1 on  end
+		device pci 18.2 on  end
+		device pci 18.3 on  end
+		device pci 18.4 on  end
+		device pci 18.5 on  end
+		device pci 18.6 on  end
+		device pci 18.7 on  end
+	end # domain
+
+	device mmio 0xfedc9000 on  end # UART0
+	device mmio 0xfedca000 on  end # UART1
+	device mmio 0xfedce000 off end # UART2
+	device mmio 0xfedcf000 off end # UART3
+
+end	# chip soc/amd/picasso

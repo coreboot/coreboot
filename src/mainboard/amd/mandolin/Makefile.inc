@@ -10,7 +10,11 @@ ifneq ($(CONFIG_PICASSO_LPC_IOMUX),y)
 ramstage-y += emmc_gpio.c
 endif
 
+ifeq ($(CONFIG_BOARD_AMD_MANDOLIN),y)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_mandolin.bin
+else # CONFIG_BOARD_AMD_CEREME
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_cereme.bin
+endif
 
 PHONY+=add_mchp_fw
 INTERMEDIATE+=add_mchp_fw

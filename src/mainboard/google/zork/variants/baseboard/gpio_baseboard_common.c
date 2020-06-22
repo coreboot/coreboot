@@ -13,6 +13,8 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_UP),
 	/* I2C3_SDA - H1 */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_UP),
+	/* PCIE_RST0_L - Fixed timings */
+	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* FCH_ESPI_EC_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* ESPI_ALERT_L (may be unused) */

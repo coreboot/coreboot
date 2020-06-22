@@ -15,9 +15,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* EC_FCH_WAKE_L */
 	PAD_GPI(GPIO_24, PULL_UP),
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
-	/* PCIE_RST0_L - Fixed timings */
-	/* TODO: Make sure this gets locked at end of post */
-	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
@@ -52,9 +49,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	/* EC_FCH_WAKE_L */
 	PAD_GPI(GPIO_24, PULL_UP),
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
-	/* PCIE_RST0_L - Fixed timings */
-	/* TODO: Make sure this gets locked at end of post */
-	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */

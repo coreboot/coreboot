@@ -114,8 +114,6 @@ enum {
 };
 
 #define GPIO_TRIGGER_INVALID		-1
-#define SCI_TRIGGER_EDGE		0
-#define SCI_TRIGGER_LEVEL		1
 
 #define GPIO_SPECIAL_FLAG		(1 << 31)
 #define GPIO_DEBOUNCE_FLAG		(1 << 30)

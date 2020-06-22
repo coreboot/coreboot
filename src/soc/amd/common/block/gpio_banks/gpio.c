@@ -32,11 +32,8 @@ static void mem_read_write32(uint32_t *address, uint32_t value, uint32_t mask)
 	write32(address, reg32);
 }
 
-static void program_smi(uint32_t flag, int gevent_num)
+static void program_smi(uint32_t trigger, int gevent_num)
 {
-	uint32_t trigger;
-
-	trigger = flag & FLAGS_TRIGGER_MASK;
 	/*
 	 * Only level trigger is allowed for SMI. Trigger values are 0
 	 * through 3, with 0-1 being level trigger and 2-3 being edge
@@ -46,38 +43,58 @@ static void program_smi(uint32_t flag, int gevent_num)
 	assert(trigger < GPIO_TRIGGER_EDGE_LOW);
 
 	if (trigger == GPIO_TRIGGER_LEVEL_HIGH)
-		configure_gevent_smi(gevent_num, SMI_MODE_SMI,
-					SMI_SCI_LVL_HIGH);
+		configure_gevent_smi(gevent_num, SMI_MODE_SMI, SMI_SCI_LVL_HIGH);
+
 	if (trigger == GPIO_TRIGGER_LEVEL_LOW)
-		configure_gevent_smi(gevent_num, SMI_MODE_SMI,
-					SMI_SCI_LVL_LOW);
+		configure_gevent_smi(gevent_num, SMI_MODE_SMI, SMI_SCI_LVL_LOW);
 }
 
-static void get_sci_config_bits(uint32_t flag, uint32_t *edge, uint32_t *level)
-{
-	uint32_t trigger;
+struct sci_trigger_regs {
+	uint32_t mask;
+	uint32_t polarity;
+	uint32_t level;
+};
 
-	trigger = flag & FLAGS_TRIGGER_MASK;
-	switch (trigger) {
-	case GPIO_TRIGGER_LEVEL_LOW:
-		*edge = SCI_TRIGGER_LEVEL;
-		*level = 0;
-		break;
-	case GPIO_TRIGGER_LEVEL_HIGH:
-		*edge = SCI_TRIGGER_LEVEL;
-		*level = 1;
-		break;
-	case GPIO_TRIGGER_EDGE_LOW:
-		*edge = SCI_TRIGGER_EDGE;
-		*level = 0;
-		break;
-	case GPIO_TRIGGER_EDGE_HIGH:
-		*edge = SCI_TRIGGER_EDGE;
-		*level = 1;
-		break;
-	default:
-		break;
-	}
+/*
+ * For each general purpose event, GPE, the choice of edge/level triggered
+ * event is represented as a single bit in SMI_SCI_LEVEL register.
+ *
+ * In a similar fashion, polarity (rising/falling, hi/lo) of each GPE is
+ * represented as a single bit in SMI_SCI_TRIG register.
+ */
+static void fill_sci_trigger(uint32_t trigger, int gpe, struct sci_trigger_regs *regs)
+{
+	uint32_t mask = 1 << gpe;
+
+	regs->mask |= mask;
+
+	/* Select level vs. edge triggered event. */
+	if ((trigger == GPIO_TRIGGER_LEVEL_LOW) || (trigger == GPIO_TRIGGER_LEVEL_HIGH))
+		regs->level |= mask;
+	else
+		regs->level &= ~mask;
+
+	/* Select rising/high vs falling/low trigger. */
+	if ((trigger == GPIO_TRIGGER_EDGE_HIGH) || (trigger == GPIO_TRIGGER_LEVEL_HIGH))
+		regs->polarity |= mask;
+	else
+		regs->polarity &= ~mask;
+}
+
+/* TODO: See configure_scimap() implementations. */
+static void set_sci_trigger(const struct sci_trigger_regs *regs)
+{
+	uint32_t value;
+
+	value = smi_read32(SMI_SCI_TRIG);
+	value &= ~regs->mask;
+	value |= regs->polarity;
+	smi_write32(SMI_SCI_TRIG, value);
+
+	value = smi_read32(SMI_SCI_LEVEL);
+	value &= ~regs->mask;
+	value |= regs->level;
+	smi_write32(SMI_SCI_LEVEL, value);
 }
 
 uintptr_t gpio_get_address(gpio_t gpio_num)
@@ -166,16 +183,12 @@ __weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
 	uint32_t *gpio_ptr;
-	uint32_t control, control_flags, edge_level, direction;
-	uint32_t mask, bit_edge, bit_level;
+	uint32_t control, control_flags;
 	uint8_t mux, index, gpio;
 	int gevent_num;
 	const struct soc_amd_event *gev_tbl;
+	struct sci_trigger_regs sci_trigger_cfg = { 0 };
 	size_t gev_items;
-
-	direction = 0;
-	edge_level = 0;
-	mask = 0;
 
 	/*
 	 * Disable blocking wake/interrupt status generation while updating
@@ -227,16 +240,16 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 			case GPIO_SMI_FLAG:
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
-				program_smi(control_flags, gevent_num);
+
+				program_smi(control_flags & FLAGS_TRIGGER_MASK, gevent_num);
 				break;
 			case GPIO_SCI_FLAG:
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
-				get_sci_config_bits(control_flags, &bit_edge,
-							&bit_level);
-				edge_level |= bit_edge << gevent_num;
-				direction |= bit_level << gevent_num;
-				mask |= (1 << gevent_num);
+
+				fill_sci_trigger(control_flags & FLAGS_TRIGGER_MASK, gevent_num,
+						 &sci_trigger_cfg);
+
 				soc_route_sci(gevent_num);
 				break;
 			default:
@@ -259,11 +272,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	master_switch_set(GPIO_INTERRUPT_EN);
 
-	/* Set all SCI trigger direction (high/low) */
-	mem_read_write32((void *)(acpimmio_smi + SMI_SCI_TRIG), direction, mask);
-
-	/* Set all SCI trigger level (edge/level) */
-	mem_read_write32((void *)(acpimmio_smi + SMI_SCI_LEVEL), edge_level, mask);
+	/* Set all SCI trigger polarity (high/low) and level (edge/level). */
+	set_sci_trigger(&sci_trigger_cfg);
 }
 
 int gpio_interrupt_status(gpio_t gpio)

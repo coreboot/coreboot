@@ -30,7 +30,6 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	AGESA_STATUS      Status;
 	UINTN             FcnData;
 	MEM_DATA_STRUCT   *MemData;
-	UINT32            AcpiMmioAddr;
 	UINT32            GpioMmioAddr;
 	UINT8             Data8;
 	UINT8             TempData8;
@@ -39,8 +38,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	MemData = ConfigPtr;
 
 	Status  = AGESA_SUCCESS;
-	AcpiMmioAddr = AMD_SB_ACPI_MMIO_ADDR;
-	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
+	GpioMmioAddr = ACPIMMIO_GPIO_BASE_100;
 
 	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
 	Data8 &= ~BIT5;
@@ -107,13 +105,11 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	PCIe_SLOT_RESET_INFO  *ResetInfo;
 
 	UINT32  GpioMmioAddr;
-	UINT32  AcpiMmioAddr;
 	UINT8   Data8;
 
 	FcnData   = Data;
 	ResetInfo = ConfigPtr;
-	AcpiMmioAddr = AMD_SB_ACPI_MMIO_ADDR;
-	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
+	GpioMmioAddr = ACPIMMIO_GPIO_BASE_100;
 	Status = AGESA_UNSUPPORTED;
 	switch (ResetInfo->ResetId) {
 	case 4:

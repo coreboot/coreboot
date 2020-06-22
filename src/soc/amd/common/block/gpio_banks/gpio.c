@@ -94,7 +94,7 @@ uintptr_t gpio_get_address(gpio_t gpio_num)
 	return (uintptr_t)gpio_ctrl_ptr(gpio_num);
 }
 
-static void __gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
+static void gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
 {
 	uint32_t reg;
 
@@ -105,31 +105,31 @@ static void __gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
 }
 
 /* Set specified bits of a register to match those of ctrl. */
-static void __gpio_setbits32(gpio_t gpio_num, uint32_t mask, uint32_t ctrl)
+static void gpio_setbits32(gpio_t gpio_num, uint32_t mask, uint32_t ctrl)
 {
-	__gpio_update32(gpio_num, ~mask, ctrl & mask);
+	gpio_update32(gpio_num, ~mask, ctrl & mask);
 }
 
-static void __gpio_and32(gpio_t gpio_num, uint32_t mask)
+static void gpio_and32(gpio_t gpio_num, uint32_t mask)
 {
-	__gpio_update32(gpio_num, mask, 0);
+	gpio_update32(gpio_num, mask, 0);
 }
 
-static void __gpio_or32(gpio_t gpio_num, uint32_t or)
+static void gpio_or32(gpio_t gpio_num, uint32_t or)
 {
-	__gpio_update32(gpio_num, -1UL, or);
+	gpio_update32(gpio_num, -1UL, or);
 }
 
 static void master_switch_clr(uint32_t mask)
 {
 	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
-	__gpio_and32(master_reg, ~mask);
+	gpio_and32(master_reg, ~mask);
 }
 
 static void master_switch_set(uint32_t or)
 {
 	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
-	__gpio_or32(master_reg, or);
+	gpio_or32(master_reg, or);
 }
 
 int gpio_get(gpio_t gpio_num)
@@ -142,27 +142,27 @@ int gpio_get(gpio_t gpio_num)
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	__gpio_setbits32(gpio_num, GPIO_OUTPUT_VALUE, value ? GPIO_OUTPUT_VALUE : 0);
+	gpio_setbits32(gpio_num, GPIO_OUTPUT_VALUE, value ? GPIO_OUTPUT_VALUE : 0);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)
 {
-	__gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLDOWN_ENABLE);
+	gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLDOWN_ENABLE);
 }
 
 void gpio_input_pullup(gpio_t gpio_num)
 {
-	__gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLUP_ENABLE);
+	gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLUP_ENABLE);
 }
 
 void gpio_input(gpio_t gpio_num)
 {
-	__gpio_and32(gpio_num, ~GPIO_OUTPUT_ENABLE);
+	gpio_and32(gpio_num, ~GPIO_OUTPUT_ENABLE);
 }
 
 void gpio_output(gpio_t gpio_num, int value)
 {
-	__gpio_or32(gpio_num, GPIO_OUTPUT_ENABLE);
+	gpio_or32(gpio_num, GPIO_OUTPUT_ENABLE);
 	gpio_set(gpio_num, value);
 }
 
@@ -217,9 +217,9 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		soc_gpio_hook(gpio, mux);
 
-		__gpio_setbits32(gpio, PAD_CFG_MASK, control);
+		gpio_setbits32(gpio, PAD_CFG_MASK, control);
 		/* Clear interrupt and wake status (write 1-to-clear bits) */
-		__gpio_or32(gpio, GPIO_INT_STATUS | GPIO_WAKE_STATUS);
+		gpio_or32(gpio, GPIO_INT_STATUS | GPIO_WAKE_STATUS);
 		if (control_flags == 0)
 			continue;
 

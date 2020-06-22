@@ -14,64 +14,47 @@
 /*
  * D0:F0
  */
-#define D0F0_EPBAR_LO 0x40
-#define D0F0_EPBAR_HI 0x44
-#define D0F0_MCHBAR_LO 0x48
-#define D0F0_MCHBAR_HI 0x4c
-#define D0F0_GGC 0x52
-#define D0F0_DEVEN 0x54
-#define  DEVEN_IGD	(1 << 3)
-#define  DEVEN_PEG10	(1 << 1)
-#define  DEVEN_HOST	(1 << 0)
-#define D0F0_PCIEXBAR_LO 0x60
-#define D0F0_PCIEXBAR_HI 0x64
-#define D0F0_DMIBAR_LO 0x68
-#define D0F0_DMIBAR_HI 0x6c
-#define D0F0_PMBASE 0x78
-#define QPD0F1_PAM(x) (0x40+(x)) /* 0-6*/
-#define D0F0_REMAPBASE 0x98
-#define D0F0_REMAPLIMIT 0x9a
-#define D0F0_TOM 0xa0
-#define D0F0_TOUUD 0xa2
-#define D0F0_IGD_BASE 0xa4
-#define D0F0_GTT_BASE 0xa8
-#define D0F0_TOLUD 0xb0
-#define D0F0_SKPD 0xdc /* Scratchpad Data */
+#define D0F0_EPBAR_LO		0x40
+#define D0F0_EPBAR_HI		0x44
+#define D0F0_MCHBAR_LO		0x48
+#define D0F0_MCHBAR_HI		0x4c
+#define D0F0_GGC		0x52
+#define D0F0_DEVEN		0x54
+#define  DEVEN_IGD		(1 << 3)
+#define  DEVEN_PEG10		(1 << 1)
+#define  DEVEN_HOST		(1 << 0)
+#define D0F0_PCIEXBAR_LO	0x60
+#define D0F0_PCIEXBAR_HI	0x64
+#define D0F0_DMIBAR_LO		0x68
+#define D0F0_DMIBAR_HI		0x6c
+#define D0F0_PMBASE		0x78
+#define QPD0F1_PAM(x)		(0x40 + (x)) /* 0-6 */
+#define D0F0_REMAPBASE		0x98
+#define D0F0_REMAPLIMIT		0x9a
+#define D0F0_TOM		0xa0
+#define D0F0_TOUUD		0xa2
+#define D0F0_IGD_BASE		0xa4
+#define D0F0_GTT_BASE		0xa8
+#define D0F0_TOLUD		0xb0
+#define D0F0_SKPD		0xdc /* Scratchpad Data */
 
-#define D0F0_CAPID0 0xe0
+#define D0F0_CAPID0		0xe0
 
-#define TSEG		0xac	/* TSEG base */
+#define TSEG			0xac /* TSEG base */
 
 /*
  * D1:F0 PEG
  */
-#define PEG_CAP 0xa2
-#define SLOTCAP 0xb4
-#define PEGLC 0xec
-#define D1F0_VCCAP 0x104
-#define D1F0_VC0RCTL 0x114
+#define PEG_CAP		0xa2
+#define SLOTCAP		0xb4
+#define PEGLC		0xec
+#define D1F0_VCCAP	0x104
+#define D1F0_VC0RCTL	0x114
 
 /* Chipset types */
-#define IRONLAKE_MOBILE	0
+#define IRONLAKE_MOBILE		0
 #define IRONLAKE_DESKTOP	1
-#define IRONLAKE_SERVER	2
-
-/* Device ID for SandyBridge and IvyBridge */
-#define BASE_REV_SNB	0x00
-#define BASE_REV_IVB	0x50
-#define BASE_REV_MASK	0x50
-
-/* SandyBridge CPU stepping */
-#define SNB_STEP_D0	(BASE_REV_SNB + 5) /* Also J0 */
-#define SNB_STEP_D1	(BASE_REV_SNB + 6)
-#define SNB_STEP_D2	(BASE_REV_SNB + 7) /* Also J1/Q0 */
-
-/* IvyBridge CPU stepping */
-#define IVB_STEP_A0	(BASE_REV_IVB + 0)
-#define IVB_STEP_B0	(BASE_REV_IVB + 2)
-#define IVB_STEP_C0	(BASE_REV_IVB + 4)
-#define IVB_STEP_K0	(BASE_REV_IVB + 5)
-#define IVB_STEP_D0	(BASE_REV_IVB + 6)
+#define IRONLAKE_SERVER		2
 
 /* Northbridge BARs */
 #ifndef __ACPI__
@@ -113,28 +96,25 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR8_AND(x, and) (MCHBAR8(x) = MCHBAR8(x) & (and))
-#define MCHBAR8_OR(x, or) (MCHBAR8(x) = MCHBAR8(x) | (or))
-#define MCHBAR8_AND_OR(x, and, or) \
-	(MCHBAR8(x) = (MCHBAR8(x) & (and)) | (or))
-#define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
-#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
-#define MCHBAR16_AND_OR(x, and, or) \
-	(MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
-#define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
-#define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
-#define MCHBAR32_AND_OR(x, and, or) \
-	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
+#define MCHBAR8(x)			(*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x)			(*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x)			(*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR8_AND(x,  and)		(MCHBAR8(x)  = MCHBAR8(x)  & (and))
+#define MCHBAR16_AND(x, and)		(MCHBAR16(x) = MCHBAR16(x) & (and))
+#define MCHBAR32_AND(x, and)		(MCHBAR32(x) = MCHBAR32(x) & (and))
+#define MCHBAR8_OR(x,  or)		(MCHBAR8(x)  = MCHBAR8(x)  | (or))
+#define MCHBAR16_OR(x, or)		(MCHBAR16(x) = MCHBAR16(x) | (or))
+#define MCHBAR32_OR(x, or)		(MCHBAR32(x) = MCHBAR32(x) | (or))
+#define MCHBAR8_AND_OR(x,  and, or)	(MCHBAR8(x)  = (MCHBAR8(x)  & (and)) | (or))
+#define MCHBAR16_AND_OR(x, and, or)	(MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
+#define MCHBAR32_AND_OR(x, and, or)	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 /*
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR8(x)	(*((volatile u8  *)(DEFAULT_EPBAR + (x))))
+#define EPBAR16(x)	(*((volatile u16 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR32(x)	(*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
@@ -163,9 +143,9 @@
  * DMIBAR
  */
 
-#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR8(x)	(*((volatile u8  *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR16(x)	(*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR32(x)	(*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */
@@ -198,9 +178,6 @@
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
 #ifndef __ASSEMBLER__
-
-#define PCI_DEVICE_ID_SB 0x0104
-#define PCI_DEVICE_ID_IB 0x0154
 
 void intel_ironlake_finalize_smm(void);
 

@@ -35,8 +35,6 @@ DECLARE_ACPIMMIO(acpimmio_smbus, SMBUS);
 DECLARE_ACPIMMIO(acpimmio_wdt, WDT);
 DECLARE_ACPIMMIO(acpimmio_hpet, HPET);
 DECLARE_ACPIMMIO(acpimmio_dpvga, DPVGA);
-DECLARE_ACPIMMIO(acpimmio_gpio1, GPIO1);
-DECLARE_ACPIMMIO(acpimmio_gpio2, GPIO2);
 DECLARE_ACPIMMIO(acpimmio_xhci_pm, XHCIPM);
 DECLARE_ACPIMMIO(acpimmio_acdc_tmr, ACDCTMR);
 #endif

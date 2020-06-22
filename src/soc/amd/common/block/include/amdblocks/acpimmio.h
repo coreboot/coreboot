@@ -61,8 +61,6 @@ extern uint8_t *MAYBE_CONST acpimmio_iomux;
 extern uint8_t *MAYBE_CONST acpimmio_misc;
 extern uint8_t *MAYBE_CONST acpimmio_dpvga;
 extern uint8_t *MAYBE_CONST acpimmio_gpio0;
-extern uint8_t *MAYBE_CONST acpimmio_gpio1;
-extern uint8_t *MAYBE_CONST acpimmio_gpio2;
 extern uint8_t *MAYBE_CONST acpimmio_xhci_pm;
 extern uint8_t *MAYBE_CONST acpimmio_acdc_tmr;
 extern uint8_t *MAYBE_CONST acpimmio_aoac;
@@ -347,99 +345,6 @@ static inline uint32_t gpio_read32(uint8_t gpio_num)
 static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
 {
 	write32(gpio_ctrl_ptr(gpio_num), value);
-}
-
-/* GPIO bank 0 */
-static inline uint8_t gpio0_read8(uint8_t reg)
-{
-	return read8(acpimmio_gpio0 + reg);
-}
-
-static inline uint16_t gpio0_read16(uint8_t reg)
-{
-	return read16(acpimmio_gpio0 + reg);
-}
-
-static inline uint32_t gpio0_read32(uint8_t reg)
-{
-	return read32(acpimmio_gpio0 + reg);
-}
-
-static inline void gpio0_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_gpio0 + reg, value);
-}
-
-static inline void gpio0_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_gpio0 + reg, value);
-}
-
-static inline void gpio0_write32(uint8_t reg, uint32_t value)
-{
-	write32(acpimmio_gpio0 + reg, value);
-}
-
-/* GPIO bank 1 */
-static inline uint8_t gpio1_read8(uint8_t reg)
-{
-	return read8(acpimmio_gpio1 + reg);
-}
-
-static inline uint16_t gpio1_read16(uint8_t reg)
-{
-	return read16(acpimmio_gpio1 + reg);
-}
-
-static inline uint32_t gpio1_read32(uint8_t reg)
-{
-	return read32(acpimmio_gpio1 + reg);
-}
-
-static inline void gpio1_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_gpio1 + reg, value);
-}
-
-static inline void gpio1_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_gpio1 + reg, value);
-}
-
-static inline void gpio1_write32(uint8_t reg, uint32_t value)
-{
-	write32(acpimmio_gpio1 + reg, value);
-}
-
-/* GPIO bank 2 */
-static inline uint8_t gpio2_read8(uint8_t reg)
-{
-	return read8(acpimmio_gpio2 + reg);
-}
-
-static inline uint16_t gpio2_read16(uint8_t reg)
-{
-	return read16(acpimmio_gpio2 + reg);
-}
-
-static inline uint32_t gpio2_read32(uint8_t reg)
-{
-	return read32(acpimmio_gpio2 + reg);
-}
-
-static inline void gpio2_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_gpio2 + reg, value);
-}
-
-static inline void gpio2_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_gpio2 + reg, value);
-}
-
-static inline void gpio2_write32(uint8_t reg, uint32_t value)
-{
-	write32(acpimmio_gpio2 + reg, value);
 }
 
 static inline uint8_t xhci_pm_read8(uint8_t reg)

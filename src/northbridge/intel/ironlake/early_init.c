@@ -63,8 +63,7 @@ static void early_cpu_init (void)
 	/* bit 0 = disable multicore,
 	   bit 1 = disable quadcore,
 	   bit 8 = disable hyperthreading.  */
-	pci_write_config32(PCI_DEV(0xff, 0x00, 0), 0x80,
-			   (pci_read_config32(PCI_DEV(0xff, 0x0, 0x0), 0x80) & 0xfffffefc) | 0x10000);
+	pci_update_config32(PCI_DEV(0xff, 0x00, 0), 0x80, 0xfffffefc, 0x10000);
 
 	u8 reg8;
 	struct cpuid_result result;

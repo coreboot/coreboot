@@ -8,7 +8,7 @@
 #include <soc/dramc_common_mt8192.h>
 
 enum {
-	DRAMC_PARAM_HEADER_VERSION = 2,
+	DRAMC_PARAM_HEADER_VERSION = 3,
 };
 
 enum DRAMC_PARAM_STATUS_CODES {

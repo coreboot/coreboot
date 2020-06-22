@@ -8,3 +8,7 @@ size_t sdram_size(void)
 
 	return dram_size;
 }
+
+void mt_set_emi(const struct dramc_data *dparam)
+{
+}

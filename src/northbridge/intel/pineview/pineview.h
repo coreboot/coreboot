@@ -239,7 +239,4 @@ u8 decode_pciebar(u32 *const base, u32 *const len);
 void get_mb_spd_addrmap(u8 *spd_addr_map);
 void mb_pirq_setup(void); /* optional */
 
-struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
-
 #endif /* NORTHBRIDGE_INTEL_PINEVIEW_H */

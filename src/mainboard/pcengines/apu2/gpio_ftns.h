@@ -8,9 +8,6 @@ u8 read_gpio(u32 gpio);
 void write_gpio(u32 gpio, u8 value);
 int get_spd_offset(void);
 
-#define ACPIMMIO_GPIO0_BASE		0xfed81500
-#define ACPIMMIO_GPIO1_BASE		0xfed81600
-#define ACPIMMIO_GPIO2_BASE		0xfed81700
 //
 // Based on PC Engines APU2C and APU3A schematics
 // http://www.pcengines.ch/schema/apu2c.pdf

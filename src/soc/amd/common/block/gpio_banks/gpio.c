@@ -105,6 +105,18 @@ static void __gpio_or32(gpio_t gpio_num, uint32_t or)
 	__gpio_update32(gpio_num, -1UL, or);
 }
 
+static void master_switch_clr(uint32_t mask)
+{
+	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+	__gpio_and32(master_reg, ~mask);
+}
+
+static void master_switch_set(uint32_t or)
+{
+	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+	__gpio_or32(master_reg, or);
+}
+
 int gpio_get(gpio_t gpio_num)
 {
 	uint32_t reg;
@@ -153,7 +165,7 @@ __weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
 
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
-	uint32_t *gpio_ptr, *inter_master;
+	uint32_t *gpio_ptr;
 	uint32_t control, control_flags, edge_level, direction;
 	uint32_t mask, bit_edge, bit_level;
 	uint8_t mux, index, gpio;
@@ -161,7 +173,6 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	const struct soc_amd_event *gev_tbl;
 	size_t gev_items;
 
-	inter_master = (void *)(acpimmio_gpio0 + GPIO_MASTER_SWITCH);
 	direction = 0;
 	edge_level = 0;
 	mask = 0;
@@ -176,7 +187,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 * Additionally disable interrupt generation so we don't get any
 	 * spurious interrupts while updating the registers.
 	 */
-	mem_read_write32(inter_master, 0, GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
+	master_switch_clr(GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
 	soc_get_gpio_event_table(&gev_tbl, &gev_items);
 
@@ -246,7 +257,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 * debounce registers while the drivers load. This will cause interrupts
 	 * to be missed during boot.
 	 */
-	mem_read_write32(inter_master, GPIO_INTERRUPT_EN, GPIO_INTERRUPT_EN);
+	master_switch_set(GPIO_INTERRUPT_EN);
 
 	/* Set all SCI trigger direction (high/low) */
 	mem_read_write32((void *)(acpimmio_smi + SMI_SCI_TRIG), direction, mask);

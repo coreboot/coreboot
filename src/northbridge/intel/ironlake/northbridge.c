@@ -147,13 +147,7 @@ static void mc_read_resources(struct device *dev)
 	add_fixed_resources(dev, 10);
 }
 
-static void mc_set_resources(struct device *dev)
-{
-	/* And call the normal set_resources */
-	pci_dev_set_resources(dev);
-}
-
-static void northbridge_dmi_init(struct device *dev)
+static void northbridge_init(struct device *dev)
 {
 	u32 reg32;
 
@@ -172,11 +166,6 @@ static void northbridge_dmi_init(struct device *dev)
 	reg32 = DMIBAR32(0x88);
 	reg32 |= (1 << 1) | (1 << 0);
 	DMIBAR32(0x88) = reg32;
-}
-
-static void northbridge_init(struct device *dev)
-{
-	northbridge_dmi_init(dev);
 }
 
 /* Disable unused PEG devices based on devicetree before PCI enumeration */
@@ -203,7 +192,7 @@ static void ironlake_init(void *const chip_info)
 
 static struct device_operations mc_ops = {
 	.read_resources = mc_read_resources,
-	.set_resources = mc_set_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = northbridge_init,
 	.acpi_fill_ssdt = generate_cpu_entries,

@@ -60,4 +60,10 @@ int pll_set_rate(const struct pll *pll, u32 rate);
 void mt_pll_init(void);
 void mt_pll_raise_little_cpu_freq(u32 freq);
 
+enum fmeter_type {
+	FMETER_ABIST = 0,
+	FMETER_CKGEN,
+};
+u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id);
+
 #endif

@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <device/mmio.h>
 #include <delay.h>
 #include <stddef.h>
+#include <timer.h>
 
 #include <soc/addressmap.h>
 #include <soc/infracfg.h>
@@ -458,4 +460,64 @@ void mt_pll_raise_little_cpu_freq(u32 freq)
 
 	/* disable [4] intermediate clock armpll_divider_pll1_ck */
 	clrbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
+}
+
+u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
+{
+	u32 output, count, clk_dbg_cfg, clk_misc_cfg_0;
+
+	/* backup */
+	clk_dbg_cfg = read32(&mtk_topckgen->clk_dbg_cfg);
+	clk_misc_cfg_0 = read32(&mtk_topckgen->clk_misc_cfg_0);
+
+	/* set up frequency meter */
+	if (type == FMETER_ABIST) {
+		SET32_BITFIELDS(&mtk_topckgen->clk_dbg_cfg,
+				CLK_DBG_CFG_ABIST_CK_SEL, id,
+				CLK_DBG_CFG_CKGEN_CK_SEL, 0,
+				CLK_DBG_CFG_METER_CK_SEL, 0);
+		SET32_BITFIELDS(&mtk_topckgen->clk_misc_cfg_0,
+				CLK_MISC_CFG_0_METER_DIV, 1);
+	} else if (type == FMETER_CKGEN) {
+		SET32_BITFIELDS(&mtk_topckgen->clk_dbg_cfg,
+				CLK_DBG_CFG_ABIST_CK_SEL, 0,
+				CLK_DBG_CFG_CKGEN_CK_SEL, id,
+				CLK_DBG_CFG_METER_CK_SEL, 1);
+		SET32_BITFIELDS(&mtk_topckgen->clk_misc_cfg_0,
+				CLK_MISC_CFG_0_METER_DIV, 0);
+	} else {
+		die("unsupport fmeter type\n");
+	}
+
+	/* enable frequency meter */
+	write32(&mtk_topckgen->clk26cali_0, 0x1000);
+
+	/* set load count = 1024-1 */
+	SET32_BITFIELDS(&mtk_topckgen->clk26cali_1, CLK26CALI_1_LOAD_CNT, 0x3ff);
+
+	/* trigger frequency meter */
+	SET32_BITFIELDS(&mtk_topckgen->clk26cali_0, CLK26CALI_0_TRIGGER, 1);
+
+	/* wait frequency meter until finished */
+	if (wait_us(200, !READ32_BITFIELD(&mtk_topckgen->clk26cali_0, CLK26CALI_0_TRIGGER))) {
+		count = read32(&mtk_topckgen->clk26cali_1) & 0xffff;
+		output = (count * 26000) / 1024; /* KHz */
+	} else {
+		printk(BIOS_WARNING, "fmeter timeout\n");
+		output = 0;
+	}
+
+	/* disable frequency meter */
+	write32(&mtk_topckgen->clk26cali_0, 0x0000);
+
+	/* restore */
+	write32(&mtk_topckgen->clk_dbg_cfg, clk_dbg_cfg);
+	write32(&mtk_topckgen->clk_misc_cfg_0, clk_misc_cfg_0);
+
+	if (type == FMETER_ABIST)
+		return output * 2;
+	else if (type == FMETER_CKGEN)
+		return output;
+
+	return 0;
 }

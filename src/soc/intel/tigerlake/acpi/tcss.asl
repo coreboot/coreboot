@@ -159,13 +159,14 @@ Scope (\_SB)
 		 *         control of the respectively capabilities or features.
 		 */
 		Name (CTRL, 0)  /* Control field value */
+		CreateDWordField (Arg3, 0, CDW1)
 		If (Arg0 == ToUUID("23A0D13A-26AB-486C-9C5F-0FFA525A575A")) {
-			CreateDWordField(Arg3, 0, CDW1)
-			CreateDWordField(Arg3, 2, CDW3)
+			CreateDWordField (Arg3, 2, CDW3)
 			CTRL = CDW3
 
 			If (Arg1 != REVISION_ID) {
 				CDW1 |= UNRECOGNIZED_REVISION
+				Return (Arg3)
 			}
 			CTRL |= USB_TUNNELING | DISPLAY_PORT_TUNNELING | PCIE_TUNNELING |
 				INTER_DOMAIN_USB4_INTERNET_PROTOCOL

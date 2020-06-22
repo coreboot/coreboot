@@ -5,7 +5,8 @@ config BOARD_GOOGLE_TROGDOR_COMMON  # Umbrella option to be selected by variants
 if BOARD_GOOGLE_TROGDOR_COMMON
 
 config TROGDOR_REV0
-	def_bool y
+	def_bool y if BOARD_GOOGLE_TROGDOR
+	def_bool n
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y

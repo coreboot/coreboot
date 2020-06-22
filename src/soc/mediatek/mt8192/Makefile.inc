@@ -37,6 +37,16 @@ ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c usb.c
 
+MT8192_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8192
+
+DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
+$(DRAM_CBFS)-file := $(MT8192_BLOB_DIR)/dram.elf
+$(DRAM_CBFS)-type := stage
+$(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
+        cbfs-files-y += $(DRAM_CBFS)
+endif
+
 BL31_MAKEARGS += PLAT=mt8192
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8192/include

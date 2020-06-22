@@ -2,16 +2,25 @@
 
 #include <types.h>
 #include <arch/io.h>
-#include <amdblocks/acpimmio_map.h>
 #include <amdblocks/acpimmio.h>
 
-#if CONSTANT_ACPIMMIO_BASE_ADDRESS
+#if ENV_X86
+#include <amdblocks/acpimmio_map.h>
+#endif
+
+#if ENV_X86 && CONSTANT_ACPIMMIO_BASE_ADDRESS
 #define DECLARE_ACPIMMIO(ptr, bank) \
 	uint8_t *const ptr = (void *)(uintptr_t)ACPIMMIO_BASE(bank)
 #else
 #define DECLARE_ACPIMMIO(ptr, bank) uint8_t *ptr
 #endif
 
+DECLARE_ACPIMMIO(acpimmio_aoac, AOAC);
+DECLARE_ACPIMMIO(acpimmio_iomux, IOMUX);
+DECLARE_ACPIMMIO(acpimmio_gpio0, GPIO0);
+DECLARE_ACPIMMIO(acpimmio_misc, MISC);
+
+#if ENV_X86
 DECLARE_ACPIMMIO(acpimmio_sm_pci, SM_PCI);
 DECLARE_ACPIMMIO(acpimmio_gpio_100, GPIO_100);
 DECLARE_ACPIMMIO(acpimmio_smi, SMI);
@@ -25,15 +34,12 @@ DECLARE_ACPIMMIO(acpimmio_asf, ASF);
 DECLARE_ACPIMMIO(acpimmio_smbus, SMBUS);
 DECLARE_ACPIMMIO(acpimmio_wdt, WDT);
 DECLARE_ACPIMMIO(acpimmio_hpet, HPET);
-DECLARE_ACPIMMIO(acpimmio_iomux, IOMUX);
-DECLARE_ACPIMMIO(acpimmio_misc, MISC);
 DECLARE_ACPIMMIO(acpimmio_dpvga, DPVGA);
-DECLARE_ACPIMMIO(acpimmio_gpio0, GPIO0);
 DECLARE_ACPIMMIO(acpimmio_gpio1, GPIO1);
 DECLARE_ACPIMMIO(acpimmio_gpio2, GPIO2);
 DECLARE_ACPIMMIO(acpimmio_xhci_pm, XHCIPM);
 DECLARE_ACPIMMIO(acpimmio_acdc_tmr, ACDCTMR);
-DECLARE_ACPIMMIO(acpimmio_aoac, AOAC);
+#endif
 
 #undef DECLARE_ACPIMMIO
 

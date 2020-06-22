@@ -45,8 +45,5 @@ DefinitionBlock (
 		#include <soc.asl>
 
 	} /* End \_SB scope */
-
-	/* Define the General Purpose Events for the platform */
-	#include "acpi/gpe.asl"
 }
 /* End of ASL file */

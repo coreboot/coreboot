@@ -19,16 +19,15 @@ static int bridge_revision_id = -1;
 int bridge_silicon_revision(void)
 {
 	if (bridge_revision_id < 0) {
-		uint8_t stepping = cpuid_eax(1) & 0xf;
-		uint8_t bridge_id =
-		    pci_read_config16(pcidev_on_root(0, 0),
-				      PCI_DEVICE_ID) & 0xf0;
-		bridge_revision_id = bridge_id | stepping;
+		uint8_t stepping = cpuid_eax(1) & 0x0f;
+		uint8_t bridge_id = pci_read_config16(pcidev_on_root(0, 0), PCI_DEVICE_ID);
+		bridge_revision_id = (bridge_id & 0xf0) | stepping;
 	}
 	return bridge_revision_id;
 }
 
-/* Reserve everything between A segment and 1MB:
+/*
+ * Reserve everything between A segment and 1MB:
  *
  * 0xa0000 - 0xbffff: legacy VGA
  * 0xc0000 - 0xcffff: VGA OPROM (needed by kernel)
@@ -52,13 +51,12 @@ static void add_fixed_resources(struct device *dev, int index)
 	resource = new_resource(dev, index++);
 	resource->base = (resource_t) 0xfed00000;
 	resource->size = (resource_t) 0x00100000;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-	  IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_FIXED |
+			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	mmio_resource(dev, index++, legacy_hole_base_k,
-		      (0xc0000 >> 10) - legacy_hole_base_k);
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
-			      (0x100000 - 0xc0000) >> 10);
+	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
+
+	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 #if CONFIG(CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
@@ -86,11 +84,11 @@ static const char *northbridge_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations pci_domain_ops = {
-	.read_resources = pci_domain_read_resources,
-	.set_resources = pci_domain_set_resources,
-	.scan_bus = pci_domain_scan_bus,
+	.read_resources	= pci_domain_read_resources,
+	.set_resources	= pci_domain_set_resources,
+	.scan_bus	= pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name = northbridge_acpi_name,
+	.acpi_name	= northbridge_acpi_name,
 #endif
 };
 
@@ -191,18 +189,18 @@ static void ironlake_init(void *const chip_info)
 }
 
 static struct device_operations mc_ops = {
-	.read_resources = mc_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = northbridge_init,
-	.acpi_fill_ssdt = generate_cpu_entries,
-	.ops_pci = &pci_dev_ops_pci,
+	.read_resources		= mc_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= northbridge_init,
+	.acpi_fill_ssdt		= generate_cpu_entries,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const struct pci_driver mc_driver_ard __pci_driver = {
-	.ops = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0044,	/* Arrandale DRAM controller */
+	.ops	= &mc_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x0044,	/* Arrandale DRAM controller */
 };
 
 static struct device_operations cpu_bus_ops = {

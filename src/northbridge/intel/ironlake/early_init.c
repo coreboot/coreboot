@@ -31,8 +31,7 @@ static void ironlake_setup_bars(void)
 	/* halt timer */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);
 	/* halt timer */
-	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2,
-	     DEFAULT_PMBASE | 0x60 | 0x06);
+	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2, DEFAULT_PMBASE | 0x60 | 0x06);
 	printk(BIOS_DEBUG, " done.\n");
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
@@ -56,7 +55,7 @@ static void ironlake_setup_bars(void)
 	printk(BIOS_DEBUG, " done.\n");
 }
 
-static void early_cpu_init (void)
+static void early_cpu_init(void)
 {
 	msr_t m;
 
@@ -121,8 +120,7 @@ void ironlake_early_initialization(int chipset_type)
 	elog_boot_notify(s3_resume);
 
 	/* Device Enable */
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN,
-			   DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN, DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
 
 	early_cpu_init();
 
@@ -132,7 +130,7 @@ void ironlake_early_initialization(int chipset_type)
 
 	/* Magic for S3 resume. Must be done early.  */
 	if (s3_resume) {
-		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
-		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
+		MCHBAR32(0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
+		MCHBAR32(0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
 	}
 }

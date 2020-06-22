@@ -17,7 +17,8 @@
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/ibexpeak/me.h>
 
-/* Platform has no romstage entry point under mainboard directory,
+/*
+ * Platform has no romstage entry point under mainboard directory,
  * so this one is named with prefix mainboard.
  */
 void mainboard_romstage_entry(void)
@@ -59,7 +60,8 @@ void mainboard_romstage_entry(void)
 	intel_early_me_status();
 
 	if (s3resume) {
-		/* Clear SLP_TYPE. This will break stage2 but
+		/*
+		 * Clear SLP_TYPE. This will break stage2 but
 		 * we care for that when we get there.
 		 */
 		reg32 = inl(DEFAULT_PMBASE + 0x04);

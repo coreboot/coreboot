@@ -152,8 +152,7 @@ static void gma_func0_init(struct device *dev)
 
 		gma_gfxinit(&lightup_ok);
 		/* Linux relies on VBT for panel info. */
-		generate_fake_intel_oprom(&conf->gfx, dev,
-					  "$VBT IRONLAKE-MOBILE");
+		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT IRONLAKE-MOBILE");
 	} else {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
@@ -208,7 +207,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver gma __pci_driver = {
-	.ops = &gma_func0_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.ops	 = &gma_func0_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };

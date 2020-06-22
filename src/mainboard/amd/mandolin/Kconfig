@@ -27,9 +27,7 @@ config AMD_LPC_DEBUG_CARD
 	  Note that Kconfig does not currently enforce this restriction.
 
 config CBFS_SIZE
-	default 0x780000
-	help
-	  TODO: Adjust this to maximize CBFS size
+	default 0x7cf000 # Maximum size for the Mandolin FMAP
 
 config MAINBOARD_DIR
 	string

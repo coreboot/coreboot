@@ -3,38 +3,6 @@
 #ifndef __NORTHBRIDGE_INTEL_IRONLAKE_IRONLAKE_H__
 #define __NORTHBRIDGE_INTEL_IRONLAKE_IRONLAKE_H__
 
-#ifndef __ASSEMBLER__
-
-typedef struct {
-	unsigned int	CAS;
-	unsigned int	tRAS;
-	unsigned int	tRP;
-	unsigned int	tRCD;
-	unsigned int	tRFC;
-	unsigned int	tWR;
-	unsigned int	tRD;
-	unsigned int	tRRD;
-	unsigned int	tFAW;
-	unsigned int	tWL;
-} timings_t;
-
-/* The setup is one DIMM per channel, so there's no need to find a
-   common timing setup between multiple chips (but chip and controller
-   still need to be coordinated */
-typedef struct {
-	int		txt_enabled;
-	int		cores;
-	int		max_ddr2_mhz;
-	int		max_ddr3_mt;
-	int		max_fsb_mhz;
-	int		max_render_mhz;
-
-	int		spd_type;
-	timings_t	selected_timings;
-} sysinfo_t;
-
-#endif
-
 #define DEFAULT_HECIBAR		((u8 *)0xfed17000)
 
 

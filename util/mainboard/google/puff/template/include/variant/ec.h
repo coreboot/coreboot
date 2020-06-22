@@ -3,6 +3,6 @@
 #ifndef VARIANT_EC_H
 #define VARIANT_EC_H
 
-#include <baseboard/ec.h>
+#include <puff/ec.h>
 
 #endif

@@ -9,7 +9,8 @@ External (OIPG)
 
 Device (CRHW)
 {
-	Name(_HID, EISAID("GGL0001"))
+	Name(_HID, "GOOG0016")
+	Name(_CID, EISAID("GGL0001"))
 
 	Method(_STA, 0, Serialized)
 	{

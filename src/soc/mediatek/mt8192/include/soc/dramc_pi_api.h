@@ -34,6 +34,8 @@
 #define REG_SHU_OFFSET_WIDTH		0x700
 #define SHU_OFFSET			(REG_SHU_OFFSET_WIDTH / 4)
 
+#define DQS_LEVEL_UNKNOWN		0xff
+
 typedef enum {
 	DDRFREQ_400,
 	DDRFREQ_600,

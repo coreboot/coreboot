@@ -1,0 +1,7 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_TI_SN65DSI86BRIDGE
+	bool
+	default n
+	help
+	  TI SN65DSI86 eDP bridge driver

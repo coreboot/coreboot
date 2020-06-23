@@ -119,6 +119,7 @@ config MAINBOARD_PART_NUMBER
 	default "Dratini" if BOARD_GOOGLE_DRATINI
 	default "Duffy" if BOARD_GOOGLE_DUFFY
 	default "Duffy" if BOARD_GOOGLE_DUFFY_LEGACY
+	default "Faffy" if BOARD_GOOGLE_FAFFY
 	default "Hatch" if BOARD_GOOGLE_HATCH
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Helios_Diskswap" if BOARD_GOOGLE_HELIOS_DISKSWAP
@@ -150,6 +151,7 @@ config VARIANT_DIR
 	default "dratini" if BOARD_GOOGLE_DRATINI
 	default "duffy" if BOARD_GOOGLE_DUFFY
 	default "duffy" if BOARD_GOOGLE_DUFFY_LEGACY
+	default "faffy" if BOARD_GOOGLE_FAFFY
 	default "hatch" if BOARD_GOOGLE_HATCH
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "helios" if BOARD_GOOGLE_HELIOS_DISKSWAP

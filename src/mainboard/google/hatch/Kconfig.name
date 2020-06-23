@@ -17,6 +17,10 @@ config BOARD_GOOGLE_DUFFY
 	bool "-> Duffy"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
+config BOARD_GOOGLE_FAFFY
+	bool "-> Faffy"
+	select BOARD_GOOGLE_BASEBOARD_PUFF
+
 config BOARD_GOOGLE_HATCH
 	bool "->  Hatch"
 	select BOARD_GOOGLE_BASEBOARD_HATCH

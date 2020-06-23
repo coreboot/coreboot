@@ -687,7 +687,7 @@ void acpigen_write_empty_PTC(void)
 		.space_id    = ACPI_ADDRESS_SPACE_FIXED,
 		.bit_width   = 0,
 		.bit_offset  = 0,
-		.access_size = 0,
+		.access_size = ACPI_ACCESS_SIZE_UNDEFINED,
 		.addrl       = 0,
 		.addrh       = 0,
 	};
@@ -1553,7 +1553,7 @@ void acpigen_write_CPPC_package(const struct cppc_config *config)
 	for (i = 0; i < max; ++i) {
 		const acpi_addr_t *reg = &(config->regs[i]);
 		if (reg->space_id == ACPI_ADDRESS_SPACE_MEMORY &&
-		    reg->bit_width == 32 && reg->access_size == 0) {
+		    reg->bit_width == 32 && reg->access_size == ACPI_ACCESS_SIZE_UNDEFINED) {
 			acpigen_write_dword(reg->addrl);
 		} else {
 			acpigen_write_register_resource(reg);

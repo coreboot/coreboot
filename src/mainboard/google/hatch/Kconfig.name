@@ -93,3 +93,7 @@ config BOARD_GOOGLE_STRYKE
 config BOARD_GOOGLE_SUSHI
 	bool "-> Sushi"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
+
+config BOARD_GOOGLE_WYVERN
+	bool "-> Wyvern"
+	select BOARD_GOOGLE_BASEBOARD_PUFF

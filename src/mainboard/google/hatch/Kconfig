@@ -135,6 +135,7 @@ config MAINBOARD_PART_NUMBER
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
 	default "Sushi" if BOARD_GOOGLE_SUSHI
+	default "Wyvern" if BOARD_GOOGLE_WYVERN
 
 config OVERRIDE_DEVICETREE
 	string
@@ -167,6 +168,7 @@ config VARIANT_DIR
 	default "puff" if BOARD_GOOGLE_PUFF
 	default "stryke" if BOARD_GOOGLE_STRYKE
 	default "sushi" if BOARD_GOOGLE_SUSHI
+	default "wyvern" if BOARD_GOOGLE_WYVERN
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

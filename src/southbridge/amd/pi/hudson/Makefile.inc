@@ -40,7 +40,6 @@ verstage-$(CONFIG_HUDSON_UART) += uart.c
 
 ramstage-y += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += gpio.c
 ramstage-y += hda.c
 ramstage-y += hudson.c
 ramstage-y += ide.c

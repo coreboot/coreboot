@@ -314,6 +314,17 @@ void emi_mdl_init(const struct emi_mdl *emi_con)
 		write32(&ch[chn].emi_chn.cona, emi_con->chn_cona_val);
 }
 
+u32 get_column_num(void)
+{
+	u32 ma_type = read32(&emi_reg->cona);
+	u32 ma_type_r0 = ((ma_type >> 20) & 0x3) + 1;
+	u32 ma_type_r1 = ((ma_type >> 22) & 0x3) + 1;
+
+	ma_type = MIN(ma_type_r0, ma_type_r1);
+
+	return ma_type;
+}
+
 static void emi_sw_setting(void)
 {
 	setbits32(&emi_mpu->mpu_ctrl_d[1], BIT(4));

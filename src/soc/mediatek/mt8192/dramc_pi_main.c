@@ -61,6 +61,7 @@ void init_dram(const struct dramc_data *dparam)
 	global_option_init(&cali);
 	bc_bak = dramc_get_broadcast();
 	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	emi_mdl_init(cali.emi_config);
 	dramc_set_broadcast(bc_bak);
 
 	if (ddr_info->config_dvfs == DRAMC_ENABLE_DVFS)
@@ -72,6 +73,9 @@ void init_dram(const struct dramc_data *dparam)
 		set_cali_datas(&cali, dparam, k_shuffle);
 		set_vcore_voltage(&cali);
 		dfs_init_for_calibration(&cali);
+
+		if (first_freq_k)
+			emi_init2();
 
 		dramc_calibration_all_channels(&cali);
 

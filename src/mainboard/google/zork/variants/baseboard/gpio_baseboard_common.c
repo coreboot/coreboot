@@ -32,6 +32,10 @@ const __weak struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 }
 
 static const struct soc_amd_gpio gpio_sleep_table[] = {
+	/* PEN_POWER_EN */
+	PAD_GPO(GPIO_5, LOW),
+	/* EN_PWR_CAMERA */
+	PAD_GPO(GPIO_76, LOW),
 };
 
 const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ)

@@ -3,6 +3,7 @@
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 #include <soc/gpio.h>
+#include <timer.h>
 
 static const u8 mrr_o1_pinmux_mapping[PINMUX_MAX][CHANNEL_MAX][DQ_DATA_WIDTH] = {
 	[PINMUX_DSC] = {
@@ -106,6 +107,74 @@ void global_option_init(struct ddr_cali *cali)
 	get_dram_pinmux_sel(cali);
 	set_mrr_pinmux_mapping(cali);
 	set_dqo1_pinmux_mapping(cali);
+}
+
+static void dramc_init_default_mr_value(const struct ddr_cali *cali)
+{
+	struct mr_values *mr_value = cali->mr_value;
+	dram_freq_grp freq_group = cali->freq_group;
+	u8 highest_freq = get_highest_freq_group();
+
+	mr_value->mr01[FSP_0] = 0x26;
+	mr_value->mr01[FSP_1] = 0x56;
+	mr_value->mr02[FSP_0] = 0x1a;
+	mr_value->mr02[FSP_1] = 0x1a;
+
+	mr_value->mr03[FSP_0] = 0x30 | 0x4;
+	mr_value->mr03[FSP_1] = 0x30 | 0x4 | 0x2;
+
+	mr_value->mr04[RANK_0] = 0x3;
+	mr_value->mr04[RANK_1] = 0x3;
+
+	mr_value->mr21[FSP_0] = 0x0;
+	mr_value->mr21[FSP_1] = 0x0;
+	mr_value->mr51[FSP_0] = 0x0;
+	mr_value->mr51[FSP_1] = 0x0;
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		for (u8 rk = 0; rk < RANK_MAX; rk++) {
+			mr_value->mr23[chn][rk] = 0x3f;
+			for (u8 fsp = 0; fsp < FSP_MAX; fsp++) {
+				mr_value->mr14[chn][rk][fsp] = (fsp == FSP_0) ? 0x5d : 0x18;
+				mr_value->mr12[chn][rk][fsp] = (fsp == FSP_0) ? 0x5d : 0x1b;
+			}
+		}
+
+	mr_value->mr01[FSP_0] &= 0x8F;
+	mr_value->mr01[FSP_1] &= 0x8F;
+
+	if (highest_freq == DDRFREQ_2133) {
+		mr_value->mr01[FSP_0] |= (0x7 << 4);
+		mr_value->mr01[FSP_1] |= (0x7 << 4);
+	} else {
+		mr_value->mr01[FSP_0] |= (0x5 << 4);
+		mr_value->mr01[FSP_1] |= (0x5 << 4);
+	}
+
+	switch (freq_group) {
+	case DDRFREQ_400:
+		mr_value->mr02[FSP_0] = 0x12;
+		break;
+	case DDRFREQ_600:
+	case DDRFREQ_800:
+		mr_value->mr02[FSP_0] = 0x12;
+		break;
+	case DDRFREQ_933:
+		mr_value->mr02[FSP_0] = 0x1b;
+		break;
+	case DDRFREQ_1200:
+		mr_value->mr02[FSP_0] = 0x24;
+		break;
+	case DDRFREQ_1600:
+		mr_value->mr02[FSP_1] = 0x2d;
+		break;
+	case DDRFREQ_2133:
+		mr_value->mr02[FSP_1] = 0x3f;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
 }
 
 static void sv_algorithm_assistance_lp4_800(void)
@@ -3700,6 +3769,235 @@ void cke_fix_onoff(const struct ddr_cali *cali, u8 chn, u8 rank, int option)
 	}
 }
 
+static void dramc_power_on_sequence(const struct ddr_cali *cali)
+{
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl1,
+			MISC_CTRL1_R_DMDA_RRESETB_I, 0x0);
+		cke_fix_onoff(cali, chn, RANK_MAX, CKE_FIXOFF);
+		udelay(200);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl1,
+			MISC_CTRL1_R_DMDA_RRESETB_I, 0x1);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl,
+			DRAMC_PD_CTRL_APHYCKCG_FIXOFF, 1);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl,
+			DRAMC_PD_CTRL_TCKFIXON, 1);
+		mdelay(2);
+		cke_fix_onoff(cali, chn, RANK_MAX, CKE_FIXON);
+		udelay(2);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl,
+			DRAMC_PD_CTRL_TCKFIXON, 0);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl,
+			DRAMC_PD_CTRL_APHYCKCG_FIXOFF, 0);
+	}
+}
+
+static void dramc_zq_calibration(const struct ddr_cali *cali, u8 chn, u8 rank)
+{
+	const u32 timeout = 100;
+
+	struct reg_bak regs_bak[] = {
+		{&ch[chn].ao.swcmd_en},
+		{&ch[chn].ao.swcmd_ctrl0},
+		{&ch[chn].ao.dramc_pd_ctrl},
+		{&ch[chn].ao.ckectrl},
+	};
+
+	for (int i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		regs_bak[i].value = read32(regs_bak[i].addr);
+
+	SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl, DRAMC_PD_CTRL_APHYCKCG_FIXOFF, 1);
+	SET32_BITFIELDS(&ch[chn].ao.dramc_pd_ctrl, DRAMC_PD_CTRL_TCKFIXON, 1);
+	udelay(1);
+	cke_fix_onoff(cali, chn, rank, CKE_FIXON);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_SWTRIG_ZQ_RK, rank);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_ZQCEN_SWTRIG, 1);
+	if (!wait_us(timeout, READ32_BITFIELD(&ch[chn].nao.spcmdresp3,
+					      SPCMDRESP3_ZQC_SWTRIG_RESPONSE))) {
+		dramc_err("ZQCAL Start failed (time out)\n");
+		return;
+	}
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_ZQCEN_SWTRIG, 0);
+
+	udelay(1);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_ZQLATEN_SWTRIG, 1);
+	if (!wait_us(timeout, READ32_BITFIELD(&ch[chn].nao.spcmdresp3,
+					      SPCMDRESP3_ZQLAT_SWTRIG_RESPONSE))) {
+		dramc_err("ZQCAL Latch failed (time out)\n");
+		return;
+	}
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_ZQLATEN_SWTRIG, 0);
+
+	udelay(1);
+	for (int i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		write32(regs_bak[i].addr, regs_bak[i].value);
+}
+
+void dramc_mode_reg_write_by_rank(const struct ddr_cali *cali,
+				  u8 chn, u8 rank, u8 mr_idx, u8 value)
+{
+	u32 bk_bak, ckectrl_bak;
+	dramc_info("MRW CH%d RK%d MR%d = %#x\n", chn, rank, mr_idx, value);
+
+	bk_bak = READ32_BITFIELD(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK);
+	ckectrl_bak = read32(&ch[chn].ao.ckectrl);
+
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK, rank);
+	cke_fix_onoff(cali, chn, rank, CKE_FIXON);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSMA, mr_idx);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSOP, value);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_MRWEN, 1);
+	while (READ32_BITFIELD(&ch[chn].nao.spcmdresp, SPCMDRESP_MRW_RESPONSE) == 0)
+		udelay(1);
+
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_MRWEN, 0);
+	write32(&ch[chn].ao.ckectrl, ckectrl_bak);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK, bk_bak);
+}
+
+void cbt_switch_freq(const struct ddr_cali *cali, cbt_freq freq)
+{
+	static u8 _cur_freq = CBT_UNKNOWN_FREQ;
+
+	/* if frequency is the same as before, do nothing */
+	if (_cur_freq == freq)
+		return;
+	_cur_freq = freq;
+
+	enable_dfs_hw_mode_clk();
+
+	if (freq == CBT_LOW_FREQ)
+		dramc_dfs_direct_jump_rg_mode(cali, DRAM_DFS_SHU1);
+	else
+		dramc_dfs_direct_jump_rg_mode(cali, DRAM_DFS_SHU0);
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_clk_ctrl,
+			MISC_CLK_CTRL_DVFS_CLK_MEM_SEL, 0,
+			MISC_CLK_CTRL_DVFS_MEM_CK_MUX_UPDATE_EN, 0);
+}
+
+static void dramc_mode_reg_init(const struct ddr_cali *cali)
+{
+	u8 chn;
+	u8 set_mrsrk;
+	u8 operate_fsp = get_fsp(cali);
+	struct mr_values *mr_value = cali->mr_value;
+
+	u32 bc_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	dramc_power_on_sequence(cali);
+
+	if (get_fsp(cali) == FSP_1) {
+		for (chn = 0; chn < CHANNEL_MAX; chn++)
+			SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+				CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 1,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 0,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+		cbt_switch_freq(cali, CBT_LOW_FREQ);
+		for (chn = 0; chn < CHANNEL_MAX; chn++)
+			SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+				CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 0,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 1,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+	}
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++) {
+		for (u8 rk = 0; rk < cali->support_ranks; rk++) {
+			dramc_dbg("ModeRegInit CH%u RK%u\n", chn, rk);
+			for (u8 fsp = FSP_0; fsp < FSP_MAX; fsp++) {
+				if (fsp == FSP_0) {
+					dramc_dbg("FSP0\n");
+					mr_value->mr13[rk] = BIT(4) | BIT(3);
+					mr_value->mr22[fsp] = 0x38;
+					mr_value->mr11[fsp] = 0x0;
+				} else {
+					dramc_dbg("FSP1\n");
+					mr_value->mr13[rk] |= 0x40;
+
+					if (cali->cbt_mode[rk] == CBT_NORMAL_MODE)
+						mr_value->mr11[fsp] = 0x3 | 0x40;
+					else
+						mr_value->mr11[fsp] = 0x3 | 0x20;
+
+					if (rk == RANK_0)
+						mr_value->mr22[fsp] = 0x4;
+					else
+						mr_value->mr22[fsp] = 0x2c;
+				}
+
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 13,
+					mr_value->mr13[rk]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 12,
+					mr_value->mr12[chn][rk][fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 1,
+					mr_value->mr01[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 2,
+					mr_value->mr02[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 11,
+					mr_value->mr11[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 21,
+					mr_value->mr21[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 51,
+					mr_value->mr51[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 22,
+					mr_value->mr22[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 14,
+					mr_value->mr14[chn][rk][fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 3,
+					mr_value->mr03[fsp]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 4,
+					mr_value->mr04[rk]);
+				dramc_mode_reg_write_by_rank(cali, chn, rk, 3,
+					mr_value->mr03[fsp]);
+			}
+
+			dramc_zq_calibration(cali, chn, rk);
+
+			if (operate_fsp == FSP_0)
+				mr_value->mr13[rk] &= 0x3f;
+			else
+				mr_value->mr13[rk] |= 0xc0;
+		}
+
+		if (cali->support_ranks == DUAL_RANK_DDR)
+			set_mrsrk = 0x3;
+		else
+			set_mrsrk = RANK_0;
+
+		dramc_mode_reg_write_by_rank(cali, chn, set_mrsrk, 13, mr_value->mr13[RANK_0]);
+
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_mr13,
+			SHU_HWSET_MR13_HWSET_MR13_OP, mr_value->mr13[RANK_0] | BIT(3),
+			SHU_HWSET_MR13_HWSET_MR13_MRSMA, 13);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_vrcg,
+			SHU_HWSET_VRCG_HWSET_VRCG_OP, mr_value->mr13[RANK_0] | BIT(3),
+			SHU_HWSET_VRCG_HWSET_VRCG_MRSMA, 13);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_mr2,
+			SHU_HWSET_MR2_HWSET_MR2_OP, mr_value->mr02[operate_fsp],
+			SHU_HWSET_MR2_HWSET_MR2_MRSMA, 2);
+	}
+
+	if (operate_fsp == FSP_1) {
+		for (chn = 0; chn < CHANNEL_MAX; chn++)
+			SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+				CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 1,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 0,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+		cbt_switch_freq(cali, CBT_HIGH_FREQ);
+		for (chn = 0; chn < CHANNEL_MAX; chn++)
+			SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+				CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 0,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 1,
+				CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+	}
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK, RANK_0);
+
+	dramc_set_broadcast(bc_bak);
+}
+
 static void set_cke2rank_independent(void)
 {
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
@@ -3792,6 +4090,7 @@ static void dramc_init(const struct ddr_cali *cali)
 	dramc_reset_delay_chain_before_calibration();
 	dramc_8_phase_cal(cali);
 	dramc_duty_calibration(cali->params);
+	dramc_mode_reg_init(cali);
 }
 
 static void dramc_before_calibration(const struct ddr_cali *cali)
@@ -3870,6 +4169,7 @@ static void dramc_before_calibration(const struct ddr_cali *cali)
 
 void dfs_init_for_calibration(const struct ddr_cali *cali)
 {
+	dramc_init_default_mr_value(cali);
 	dramc_init(cali);
 	dramc_before_calibration(cali);
 }

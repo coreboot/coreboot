@@ -25,6 +25,7 @@ verstage-y += ../common/uart.c
 
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
+romstage-y += dramc_pi_main.c dramc_pi_basic_api.c dramc_utility.c
 romstage-y += emi.c
 romstage-y += flash_controller.c
 romstage-y += ../common/gpio.c gpio.c

@@ -2,6 +2,8 @@
 
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
+#include <soc/pll.h>
+#include <soc/pll_common.h>
 #include <soc/regulator.h>
 
 static void set_vcore_voltage(const struct ddr_cali *cali)
@@ -14,6 +16,25 @@ static void set_vcore_voltage(const struct ddr_cali *cali)
 
 static void dramc_calibration_all_channels(struct ddr_cali *cali)
 {
+}
+
+static void mem_pll_init(void)
+{
+	SET32_BITFIELDS(&mtk_apmixed->mpll_con3, PLL_POWER_ISO_ENABLE, 3);
+
+	udelay(30);
+	SET32_BITFIELDS(&mtk_apmixed->mpll_con3, PLL_ISO_ENABLE, 0);
+
+	udelay(1);
+	SET32_BITFIELDS(&mtk_apmixed->mpll_con1, PLL_CON1, MPLL_CON1_FREQ);
+	SET32_BITFIELDS(&mtk_apmixed->mpll_con0, PLL_ENABLE, 1);
+
+	udelay(20);
+	SET32_BITFIELDS(&mtk_apmixed->pllon_con0, MPLL_IOS_SEL, 0);
+	SET32_BITFIELDS(&mtk_apmixed->pllon_con0, MPLL_EN_SEL, 0);
+	SET32_BITFIELDS(&mtk_apmixed->pllon_con1, MPLL_PWR_SEL, 0);
+	SET32_BITFIELDS(&mtk_apmixed->pllon_con2, MPLL_BY_ISO_DLY, 0);
+	SET32_BITFIELDS(&mtk_apmixed->pllon_con3, MPLL_BY_PWR_DLY, 0);
 }
 
 void init_dram(const struct dramc_data *dparam)
@@ -35,6 +56,7 @@ void init_dram(const struct dramc_data *dparam)
 	cali.emi_config = &ddr_info->emi_config;
 
 	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+	mem_pll_init();
 
 	global_option_init(&cali);
 	bc_bak = dramc_get_broadcast();

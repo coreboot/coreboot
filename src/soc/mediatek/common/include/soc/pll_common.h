@@ -3,6 +3,7 @@
 #ifndef SOC_MEDIATEK_PLL_COMMON_H
 #define SOC_MEDIATEK_PLL_COMMON_H
 
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <types.h>
 
@@ -53,6 +54,15 @@ struct pll {
 		.pcw_shift = _pcw_shift,				\
 		.div_rate = _div_rate,					\
 	}
+
+/* every PLL can share the same POWER_EN/ISO_EN/EN bits, use the common BITFIELD macro */
+DEFINE_BIT(PLL_ENABLE, 0)
+
+DEFINE_BIT(PLL_POWER_ENABLE, 0)
+DEFINE_BIT(PLL_ISO_ENABLE, 1)
+DEFINE_BITFIELD(PLL_POWER_ISO_ENABLE, 1, 0)
+
+DEFINE_BITFIELD(PLL_CON1, 31, 0)
 
 void pll_set_pcw_change(const struct pll *pll);
 void mux_set_sel(const struct mux *mux, u32 sel);

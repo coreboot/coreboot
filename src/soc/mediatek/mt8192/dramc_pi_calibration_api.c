@@ -577,3 +577,81 @@ void dramc_8_phase_cal(const struct ddr_cali *cali)
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		write32(regs_bak[i].addr, regs_bak[i].value);
 }
+
+static void duty_delay_reg_convert(s8 duty_delay, u8 *delay)
+{
+	if (duty_delay < 0)
+		*delay = -duty_delay;
+	else if (duty_delay > 0)
+		*delay = duty_delay + (1 << 5);
+	else
+		*delay = 0;
+}
+
+static void dramc_duty_set_clk_delay_cell(u8 chn, const s8 *duty_delay)
+{
+	u8 delay;
+
+	duty_delay_reg_convert(duty_delay[RANK_0], &delay);
+	SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_txduty,
+		SHU_CA_TXDUTY_DA_TX_ARCLK_DUTY_DLY, delay);
+}
+
+static void dramc_duty_set_dqs_delay_cell(u8 chn, const s8 *duty_delay)
+{
+	u8 dqs;
+	u8 delay;
+
+	for (dqs = 0; dqs < DQS_NUMBER; dqs++) {
+		duty_delay_reg_convert(duty_delay[dqs], &delay);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[dqs].shu_b0_txduty,
+			SHU_B0_TXDUTY_DA_TX_ARDQS_DUTY_DLY_B0, delay);
+	}
+}
+
+static void dramc_duty_set_wck_delay_cell(u8 chn, const s8 *duty_delay)
+{
+	u8 dqs;
+	u8 delay;
+
+	for (dqs = 0; dqs < DQS_NUMBER; dqs++) {
+		duty_delay_reg_convert(duty_delay[dqs], &delay);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[dqs].shu_b0_txduty,
+			SHU_B0_TXDUTY_DA_TX_ARWCK_DUTY_DLY_B0, delay);
+	}
+}
+
+static void dramc_duty_set_dqdqm_delay_cell(u8 chn, const s8 *duty_delay,
+					    u8 k_type)
+{
+	u8 dqs;
+	u8 delay;
+
+	for (dqs = 0; dqs < DQS_NUMBER; dqs++) {
+		duty_delay_reg_convert(duty_delay[dqs], &delay);
+
+		if (k_type == DUTYSCAN_K_DQ)
+			SET32_BITFIELDS(&ch[chn].phy_ao.byte[dqs].shu_b0_txduty,
+				SHU_B0_TXDUTY_DA_TX_ARDQ_DUTY_DLY_B0, delay);
+		else if (k_type == DUTYSCAN_K_DQM)
+			SET32_BITFIELDS(&ch[chn].phy_ao.byte[dqs].shu_b0_txduty,
+				SHU_B0_TXDUTY_DA_TX_ARDQM_DUTY_DLY_B0, delay);
+	}
+}
+
+void dramc_duty_calibration(const struct sdram_params *params)
+{
+	u32 bc_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		dramc_duty_set_clk_delay_cell(chn, params->duty_clk_delay[chn]);
+		dramc_duty_set_dqs_delay_cell(chn, params->duty_dqs_delay[chn]);
+		dramc_duty_set_wck_delay_cell(chn, params->duty_wck_delay[chn]);
+		dramc_duty_set_dqdqm_delay_cell(chn, params->duty_dqm_delay[chn],
+			DUTYSCAN_K_DQM);
+		dramc_duty_set_dqdqm_delay_cell(chn, params->duty_dq_delay[chn],
+			DUTYSCAN_K_DQ);
+	}
+
+	dramc_set_broadcast(bc_bak);
+}

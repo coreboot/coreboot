@@ -3791,6 +3791,7 @@ static void dramc_init(const struct ddr_cali *cali)
 	dramc_setting(cali);
 	dramc_reset_delay_chain_before_calibration();
 	dramc_8_phase_cal(cali);
+	dramc_duty_calibration(cali->params);
 }
 
 static void dramc_before_calibration(const struct ddr_cali *cali)

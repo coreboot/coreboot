@@ -150,21 +150,44 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 		_BF_APPLY6(op, __VA_ARGS__))
 #define _BF_APPLY8(op, name, value, ...) ((op(name, value)) | \
 		_BF_APPLY7(op, __VA_ARGS__))
+#define _BF_APPLY9(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY8(op, __VA_ARGS__))
+#define _BF_APPLY10(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY9(op, __VA_ARGS__))
+#define _BF_APPLY11(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY10(op, __VA_ARGS__))
+#define _BF_APPLY12(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY11(op, __VA_ARGS__))
+#define _BF_APPLY13(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY12(op, __VA_ARGS__))
+#define _BF_APPLY14(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY13(op, __VA_ARGS__))
+#define _BF_APPLY15(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY14(op, __VA_ARGS__))
+#define _BF_APPLY16(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY15(op, __VA_ARGS__))
 #define _BF_APPLYINVALID(...) \
 		_Static_assert(0, "Invalid arguments for {WRITE,SET}*_BITFIELDS")
 
 #define _BF_IMPL2(op, addr, \
 	n1, v1, n2, v2, n3, v3, n4, v4, n5, v5, n6, v6, n7, v7, n8, v8, \
+	n9, v9, n10, v10, n11, v11, n12, v12, n13, v13, n14, v14, n15, v15, n16, v16, \
 	NARGS, ...) \
 	\
 	op(addr, \
 	   _BF_APPLY##NARGS(_BF_MASK, n1, v1, n2, v2, n3, v3, n4, v4, \
-			    n5, v5, n6, v6, n7, v7, n8, v8), \
+			    n5, v5, n6, v6, n7, v7, n8, v8, \
+			    n9, v9, n10, v10, n11, v11, n12, v12, \
+			    n13, v13, n14, v14, n15, v15, n16, v16), \
 	   _BF_APPLY##NARGS(_BF_VALUE, n1, v1, n2, v2, n3, v3, n4, v4, \
-			    n5, v5, n6, v6, n7, v7, n8, v8))
+			    n5, v5, n6, v6, n7, v7, n8, v8,\
+			    n9, v9, n10, v10, n11, v11, n12, v12, \
+			    n13, v13, n14, v14, n15, v15, n16, v16))
 
 #define _BF_IMPL(op, addr, ...) \
 	_BF_IMPL2(op, addr, __VA_ARGS__, \
+		16, INVALID, 15, INVALID, 14, INVALID, 13, INVALID, \
+		12, INVALID, 11, INVALID, 10, INVALID, 9, INVALID, \
 		  8, INVALID, 7, INVALID, 6, INVALID, 5, INVALID, \
 		  4, INVALID, 3, INVALID, 2, INVALID, 1, INVALID)
 

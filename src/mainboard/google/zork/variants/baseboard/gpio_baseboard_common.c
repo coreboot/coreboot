@@ -36,6 +36,8 @@ static const struct soc_amd_gpio gpio_sleep_table[] = {
 	PAD_GPO(GPIO_5, LOW),
 	/* PCIE_RST1_L */
 	PAD_GPO(GPIO_27, LOW),
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, LOW),
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, LOW),
 };

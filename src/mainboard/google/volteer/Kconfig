@@ -73,6 +73,7 @@ config MAINBOARD_PART_NUMBER
 	default "Trondo" if BOARD_GOOGLE_TRONDO
 	default "Volteer" if BOARD_GOOGLE_VOLTEER
 	default "Voxel" if BOARD_GOOGLE_VOXEL
+	default "Delbin" if BOARD_GOOGLE_DELBIN
 
 config MAX_CPUS
 	int
@@ -105,6 +106,7 @@ config VARIANT_DIR
 	default "trondo" if BOARD_GOOGLE_TRONDO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
 	default "voxel" if BOARD_GOOGLE_VOXEL
+	default "delbin" if BOARD_GOOGLE_DELBIN
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

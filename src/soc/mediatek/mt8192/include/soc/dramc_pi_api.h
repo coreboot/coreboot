@@ -337,7 +337,7 @@ void ana_clk_div_config(ana_dvfs_core *tr, dvfs_group_config *dfs);
 void apply_write_dbi_power_improve(bool onoff);
 void dramc_write_dbi_onoff(u8 onoff);
 void cbt_delay_ca_clk(u8 chn, u8 rank, s32 iDelay);
-void dramc_cmd_UI_delay_setting(u8 chn, u8 value);
+void dramc_cmd_ui_delay_setting(u8 chn, u8 value);
 void dramc_dqsosc_set_mr18_mr19(const struct ddr_cali *cali,
 	u16 *osc_thrd_inc, u16 *osc_thrd_dec);
 void dqsosc_shu_settings(const struct ddr_cali *cali,

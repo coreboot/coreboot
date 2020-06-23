@@ -2,6 +2,7 @@
 
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
+#include <string.h>
 
 static const u8 imp_vref_sel[ODT_MAX][IMP_DRV_MAX] = {
 	/* DRVP  DRVN  ODTP  ODTN */
@@ -166,5 +167,61 @@ void dramc_sw_impedance_cal(dram_odt_state odt, struct dram_impedance *imp)
 		odt, drvp_result, drvn_result, odtn_result);
 
 	write32(&ch[chn].phy_ao.misc_impcal, impcal_bak);
+	dramc_set_broadcast(bc_bak);
+}
+
+void dramc_sw_impedance_save_register(const struct ddr_cali *cali)
+{
+	u8 ca_term, dq_term;
+	u32 bc_bak = dramc_get_broadcast();
+	const u32 (*result)[IMP_DRV_MAX] = cali->impedance.result;
+	struct ddrphy_ao_regs *phy_ao = &ch[0].phy_ao;
+
+	ca_term = get_odt_state(cali);
+	dq_term = (get_freq_group(cali) < DDRFREQ_2133) ? ODT_OFF : ODT_ON;
+
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving1,
+		SHU_MISC_DRVING1_DQDRVP2, result[dq_term][DRVP],
+		SHU_MISC_DRVING1_DQDRVN2, result[dq_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving2,
+		SHU_MISC_DRVING2_DQDRVP1, result[dq_term][DRVP],
+		SHU_MISC_DRVING2_DQDRVN1, result[dq_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving3,
+		SHU_MISC_DRVING3_DQODTP2, result[dq_term][ODTP],
+		SHU_MISC_DRVING3_DQODTN2, result[dq_term][ODTN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving4,
+		SHU_MISC_DRVING4_DQODTP1, result[dq_term][ODTP],
+		SHU_MISC_DRVING4_DQODTN1, result[dq_term][ODTN]);
+
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving1,
+		SHU_MISC_DRVING1_DQSDRVP2, result[dq_term][DRVP],
+		SHU_MISC_DRVING1_DQSDRVN2, result[dq_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving1,
+		SHU_MISC_DRVING1_DQSDRVP1, result[dq_term][DRVP],
+		SHU_MISC_DRVING1_DQSDRVN1, result[dq_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving3,
+		SHU_MISC_DRVING3_DQSODTP2, result[dq_term][ODTP],
+		SHU_MISC_DRVING3_DQSODTN2, result[dq_term][ODTN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving3,
+		SHU_MISC_DRVING3_DQSODTP, result[dq_term][ODTP],
+		SHU_MISC_DRVING3_DQSODTN, result[dq_term][ODTN]);
+
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving2,
+		SHU_MISC_DRVING2_CMDDRVP2, result[ca_term][DRVP],
+		SHU_MISC_DRVING2_CMDDRVN2, result[ca_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving2,
+		SHU_MISC_DRVING2_CMDDRVP1, result[ca_term][DRVP],
+		SHU_MISC_DRVING2_CMDDRVN1, result[ca_term][DRVN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving4,
+		SHU_MISC_DRVING4_CMDODTP2, result[ca_term][ODTP],
+		SHU_MISC_DRVING4_CMDODTN2, result[ca_term][ODTN]);
+	SET32_BITFIELDS(&phy_ao->shu_misc_drving4,
+		SHU_MISC_DRVING4_CMDODTP1, result[ca_term][ODTP],
+		SHU_MISC_DRVING4_CMDODTN1, result[ca_term][ODTN]);
+
+	SET32_BITFIELDS(&phy_ao->misc_shu_drving8, MISC_SHU_DRVING8_CS_DRVP, 0xF);
+	SET32_BITFIELDS(&phy_ao->misc_shu_drving8, MISC_SHU_DRVING8_CS_DRVN, 0x14);
+
 	dramc_set_broadcast(bc_bak);
 }

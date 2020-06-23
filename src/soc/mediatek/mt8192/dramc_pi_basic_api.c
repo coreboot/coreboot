@@ -3082,6 +3082,572 @@ static void tx_path_algorithm(const struct ddr_cali *cali)
 	}
 }
 
+static void replace_dv_init(const struct ddr_cali *cali)
+{
+	bool is_4266;
+	u8 dq_hyst_sel, ca_hyst_sel;
+	u8 dq_cap_sel, ca_cap_sel;
+	u8 dq_bw_sel_b0 = 0, dq_bw_sel_b1 = 0, ca_bw_sel_ca = 0, clk_bw_sel_ca = 0;
+
+	dram_freq_grp freq_group = cali->freq_group;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[1].b0_dq5,
+		B1_DQ5_RG_RX_ARDQS0_DVS_EN_B1, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[0].b0_dq5,
+		B0_DQ5_RG_RX_ARDQS0_DVS_EN_B0, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[0].b0_rxdvs0,
+		B0_RXDVS0_R_RX_DLY_TRACK_ENA_B0, 0,
+		B0_RXDVS0_R_RX_DLY_TRACK_CG_EN_B0, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[1].b0_rxdvs0,
+		B1_RXDVS0_R_RX_DLY_TRACK_ENA_B1, 0,
+		B1_RXDVS0_R_RX_DLY_TRACK_CG_EN_B1, 0);
+
+	for (u8 rk = RANK_0; rk < cali->support_ranks; rk++) {
+		SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[0].rk[rk].rk_b0_rxdvs2,
+			RK_B0_RXDVS2_R_RK0_RX_DLY_FAL_TRACK_GATE_ENA_B0, 0,
+			RK_B0_RXDVS2_R_RK0_RX_DLY_RIS_TRACK_GATE_ENA_B0, 0,
+			RK_B0_RXDVS2_R_RK0_DVS_MODE_B0, 0);
+		SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[1].rk[rk].rk_b0_rxdvs2,
+			RK_B1_RXDVS2_R_RK0_RX_DLY_FAL_TRACK_GATE_ENA_B1, 0,
+			RK_B1_RXDVS2_R_RK0_RX_DLY_RIS_TRACK_GATE_ENA_B1, 0,
+			RK_B1_RXDVS2_R_RK0_DVS_MODE_B1, 0);
+	}
+
+	SET32_BITFIELDS(&ch[0].ao.cbt_wlev_ctrl1, CBT_WLEV_CTRL1_CATRAINLAT, 0);
+	SET32_BITFIELDS(&ch[0].ao.swcmd_ctrl1, SWCMD_CTRL1_WRFIFO_MODE2, 0);
+
+	u32 bc_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+
+	switch (freq_group) {
+	case DDRFREQ_400:
+	case DDRFREQ_600:
+	case DDRFREQ_800:
+	case DDRFREQ_933:
+		dq_cap_sel = 0x18;
+		ca_cap_sel = 0x18;
+		break;
+	case DDRFREQ_1200:
+		dq_cap_sel = 0x14;
+		ca_cap_sel = 0x14;
+		break;
+	case DDRFREQ_1600:
+		dq_cap_sel = 0x4;
+		ca_cap_sel = 0x4;
+		break;
+	case DDRFREQ_2133:
+		dq_cap_sel = 0x2;
+		ca_cap_sel = 0x2;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
+
+	if (freq_group <= DDRFREQ_933) {
+		dq_hyst_sel = 0x1;
+		ca_hyst_sel = 0x1;
+	} else {
+		dq_hyst_sel = 0x0;
+		ca_hyst_sel = 0x0;
+	}
+
+	if (freq_group <= DDRFREQ_1200)
+		clk_bw_sel_ca = 1;
+
+	is_4266 = freq_group >= DDRFREQ_2133;
+	if (is_4266) {
+		dq_bw_sel_b0 = 1;
+		dq_bw_sel_b1 = 1;
+		ca_bw_sel_ca = 1;
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq6,
+			SHU_B0_DQ6_RG_ARPI_HYST_SEL_B0, dq_hyst_sel,
+			SHU_B0_DQ6_RG_ARPI_CAP_SEL_B0, dq_cap_sel);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq6,
+			SHU_B1_DQ6_RG_ARPI_HYST_SEL_B1, dq_hyst_sel,
+			SHU_B1_DQ6_RG_ARPI_CAP_SEL_B1, dq_cap_sel);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd6,
+			SHU_CA_CMD6_RG_ARPI_HYST_SEL_CA, ca_hyst_sel,
+			SHU_CA_CMD6_RG_ARPI_CAP_SEL_CA, ca_cap_sel);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq2,
+			SHU_B0_DQ2_RG_ARPI_PSMUX_XLATCH_FORCE_DQS_B0, is_4266,
+			SHU_B0_DQ2_RG_ARPI_PSMUX_XLATCH_FORCE_DQ_B0, is_4266,
+			SHU_B0_DQ2_RG_ARPI_SMT_XLATCH_FORCE_DQS_B0, 0,
+			SHU_B0_DQ2_RG_ARPI_SMT_XLATCH_DQ_FORCE_B0, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq2,
+			SHU_B1_DQ2_RG_ARPI_PSMUX_XLATCH_FORCE_DQS_B1, is_4266,
+			SHU_B1_DQ2_RG_ARPI_PSMUX_XLATCH_FORCE_DQ_B1, is_4266,
+			SHU_B1_DQ2_RG_ARPI_SMT_XLATCH_FORCE_DQS_B1, 0,
+			SHU_B1_DQ2_RG_ARPI_SMT_XLATCH_DQ_FORCE_B1, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd2,
+			SHU_CA_CMD2_RG_ARPI_PSMUX_XLATCH_FORCE_CLK_CA, is_4266,
+			SHU_CA_CMD2_RG_ARPI_PSMUX_XLATCH_FORCE_CA_CA, is_4266,
+			SHU_CA_CMD2_RG_ARPI_SMT_XLATCH_FORCE_CLK_CA, 0,
+			SHU_CA_CMD2_RG_ARPI_SMT_XLATCH_CA_FORCE_CA, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_misc_rx_pipe_ctrl,
+			SHU_MISC_RX_PIPE_CTRL_RX_PIPE_BYPASS_EN, 0x0);
+		write32(&ch[chn].phy_ao.misc_dbg_irq_ctrl1, 0x0);
+		write32(&ch[chn].phy_ao.misc_dbg_irq_ctrl4, 0x0);
+		write32(&ch[chn].phy_ao.misc_dbg_irq_ctrl7, 0x0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_rx_cg_ctrl,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_WAIT_DLE_EXT_DLY, 0,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_EXT_DLY, 2,
+			MISC_SHU_RX_CG_CTRL_RX_APHY_CTRL_DCM_OPT, 0,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_OPT, 0);
+		SET32_BITFIELDS(&ch[chn].ao.hmr4, HMR4_MR4INT_LIMITEN, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFPEND_OPT1, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl3, REFCTRL3_REF_DERATING_EN, 0);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_irq_en,
+			DRAMC_IRQ_EN_DRAMC_IRQ_EN_RSV, 0x3fff,
+			DRAMC_IRQ_EN_MR4INT_EN, 0x0);
+		SET32_BITFIELDS(&ch[chn].ao.shu_conf0, SHU_CONF0_PBREFEN, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_tx_mck,
+			CA_TX_MCK_R_DMRESET_FRPHY_OPT, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_dvfsctl2,
+			MISC_DVFSCTL2_RG_ADA_MCK8X_EN_SHUFFLE, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_impcal, MISC_IMPCAL_IMPBINARY, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq10,
+			SHU_B0_DQ10_RG_RX_ARDQS_DQSSTB_RPST_HS_EN_B0, 0x1,
+			SHU_B0_DQ10_RG_RX_ARDQS_DQSSTB_CG_EN_B0, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq10,
+			SHU_B1_DQ10_RG_RX_ARDQS_DQSSTB_RPST_HS_EN_B1, 0x1,
+			SHU_B1_DQ10_RG_RX_ARDQS_DQSSTB_CG_EN_B1, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq8,
+			SHU_B0_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMRANK_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMDQSIEN_RDSEL_TOG_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMDQSIEN_RDSEL_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMDQSIEN_FLAG_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMDQSIEN_FLAG_SYNC_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMRXDLY_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMRXDVS_RDSEL_TOG_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMRXDVS_RDSEL_PIPE_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_RMRODTEN_CG_IG_B0, 1,
+			SHU_B0_DQ8_R_DMRANK_RXDLY_PIPE_CG_IG_B0, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq8,
+			SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMRANK_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMDQSIEN_RDSEL_TOG_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMDQSIEN_RDSEL_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMDQSIEN_FLAG_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMDQSIEN_FLAG_SYNC_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMRXDLY_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMRXDVS_RDSEL_TOG_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMRXDVS_RDSEL_PIPE_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_RMRODTEN_CG_IG_B1, 1,
+			SHU_B1_DQ8_R_DMRANK_RXDLY_PIPE_CG_IG_B1, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dll2,
+			SHU_B0_DLL2_RG_ARDQ_REV_B0, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dll2,
+			SHU_B1_DLL2_RG_ARDQ_REV_B1, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_dll2,
+			SHU_CA_DLL2_RG_ARCMD_REV, 0x1);
+		SET32_BITFIELDS(&ch[chn].ao.dummy_rd, DUMMY_RD_DQSG_DMYRD_EN, 0);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_dbg_sel1,
+			DRAMC_DBG_SEL1_DEBUG_SEL_0, 0x1e);
+		SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl2, SWCMD_CTRL2_RTSWCMD_AGE, 0x20);
+		SET32_BITFIELDS(&ch[chn].ao.rtmrw_ctrl0, RTMRW_CTRL0_RTMRW_AGE, 0x20);
+		SET32_BITFIELDS(&ch[chn].ao.dllfrz_ctrl,
+			DLLFRZ_CTRL_DLLFRZ, 0,
+			DLLFRZ_CTRL_DLLFRZ_MON_PBREF_OPT, 0);
+		SET32_BITFIELDS(&ch[chn].ao.mpc_ctrl,
+			MPC_CTRL_RTSWCMD_HPRI_EN, 1,
+			MPC_CTRL_RTMRW_HPRI_EN, 1);
+		SET32_BITFIELDS(&ch[chn].ao.hw_mrr_fun,
+			HW_MRR_FUN_R2MRRHPRICTL, 0,
+			HW_MRR_FUN_TR2MRR_ENA, 0);
+		SET32_BITFIELDS(&ch[chn].ao.actiming_ctrl,
+			ACTIMING_CTRL_REFNA_OPT, 1,
+			ACTIMING_CTRL_SEQCLKRUN3, 1);
+		SET32_BITFIELDS(&ch[chn].ao.ckectrl, CKECTRL_RUNTIMEMRRCKEFIX, 1);
+		SET32_BITFIELDS(&ch[chn].ao.dvfs_ctrl0,
+			DVFS_CTRL0_DVFS_SYNC_MASK, 0,
+			DVFS_CTRL0_R_DVFS_SREF_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].ao.dvfs_timing_ctrl1,
+			DVFS_TIMING_CTRL1_SHU_PERIOD_GO_ZERO_CNT, 1);
+		SET32_BITFIELDS(&ch[chn].ao.hmr4,
+			HMR4_REFRCNT_OPT, 1,
+			HMR4_REFR_PERIOD_OPT, 0,
+			HMR4_SPDR_MR4_OPT, 1,
+			HMR4_HMR4_TOG_OPT, 0);
+		SET32_BITFIELDS(&ch[chn].ao.rx_set0, RX_SET0_SMRR_UPD_OLD, 0);
+		SET32_BITFIELDS(&ch[chn].ao.dramctrl, DRAMCTRL_SHORTQ_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].ao.misctl0,
+			MISCTL0_REFP_ARBMASK_PBR2PBR_PA_DIS, 1);
+		SET32_BITFIELDS(&ch[chn].ao.perfctl0, PERFCTL0_EBG_EN, 0);
+		SET32_BITFIELDS(&ch[chn].ao.clkar,
+			CLKAR_REQQUECLKRUN, 1,
+			CLKAR_REQQUE_PACG_DIS, 0x7fff);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl0,
+			REFCTRL0_PBREF_BK_REFA_ENA, 0,
+			REFCTRL0_PBREF_BK_REFA_NUM, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1,
+			REFCTRL1_REF_OVERHEAD_SLOW_REFPB_ENA, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFPB2AB_IGZQCS, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFPENDINGINT_OPT1, 1);
+		SET32_BITFIELDS(&ch[chn].ao.ref_bounce1,
+			REF_BOUNCE1_REFRATE_DEBOUNCE_TH, 5);
+		SET32_BITFIELDS(&ch[chn].ao.refpend2, REFPEND2_MPENDREFCNT_TH8, 8);
+		SET32_BITFIELDS(&ch[chn].ao.scsmctrl, SCSMCTRL_SC_PG_MAN_DIS, 0);
+		SET32_BITFIELDS(&ch[chn].ao.scsmctrl_cg,
+			SCSMCTRL_CG_SCSM_CGAR, 1,
+			SCSMCTRL_CG_SCARB_SM_CGAR, 1);
+		SET32_BITFIELDS(&ch[chn].ao.rtswcmd_cnt,
+			RTSWCMD_CNT_RTSWCMD_CNT, 0x30);
+		SET32_BITFIELDS(&ch[chn].ao.dramc_irq_en,
+			DRAMC_IRQ_EN_DRAMC_IRQ_EN_RSV, 0x3fff);
+		SET32_BITFIELDS(&ch[chn].ao.shu_dcm_ctrl0,
+			SHU_DCM_CTRL0_DDRPHY_CLK_EN_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hmr4_dvfs_ctrl0,
+			SHU_HMR4_DVFS_CTRL0_REFRCNT, 0x1ff,
+			SHU_HMR4_DVFS_CTRL0_FSPCHG_PRDCNT, 0);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_vrcg,
+			SHU_HWSET_VRCG_VRCGDIS_PRDCNT, 11);
+		SET32_BITFIELDS(&ch[chn].ao.shu_misc, SHU_MISC_REQQUE_MAXCNT, 2);
+		SET32_BITFIELDS(&ch[chn].phy_ao.dvs_b[0].b0_dll_arpi4,
+			B0_DLL_ARPI4_RG_ARPI_BYPASS_SR_DQS_B0, 1,
+			B0_DLL_ARPI4_RG_ARPI_BYPASS_SR_DQ_B0, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.dvs_b[1].b0_dll_arpi4,
+			B1_DLL_ARPI4_RG_ARPI_BYPASS_SR_DQS_B1, 1,
+			B1_DLL_ARPI4_RG_ARPI_BYPASS_SR_DQ_B1, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_dll_arpi4,
+			CA_DLL_ARPI4_RG_ARPI_BYPASS_SR_CLK_CA, 1,
+			CA_DLL_ARPI4_RG_ARPI_BYPASS_SR_CA_CA, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd11,
+			CA_CMD11_RG_RRESETB_DRVN, 0xa,
+			CA_CMD11_RG_RRESETB_DRVP, 0xa);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_cg_ctrl2,
+			MISC_CG_CTRL2_RG_MEM_DCM_IDLE_FSEL, 0x1f);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_cg_ctrl9,
+			MISC_CG_CTRL9_RG_MCK4X_O_FB_CK_CG_OFF, 0,
+			MISC_CG_CTRL9_RG_CG_DDR400_MCK4X_O_OFF, 0,
+			MISC_CG_CTRL9_RG_MCK4X_O_OPENLOOP_MODE_EN, 0,
+			MISC_CG_CTRL9_RG_MCK4X_Q_FB_CK_CG_OFF, 0,
+			MISC_CG_CTRL9_RG_CG_DDR400_MCK4X_Q_OFF, 0,
+			MISC_CG_CTRL9_RG_MCK4X_Q_OPENLOOP_MODE_EN, 0,
+			MISC_CG_CTRL9_RG_MCK4X_I_FB_CK_CG_OFF, 0,
+			MISC_CG_CTRL9_RG_CG_DDR400_MCK4X_I_OFF, 0,
+			MISC_CG_CTRL9_RG_MCK4X_I_OPENLOOP_MODE_EN, 0,
+			MISC_CG_CTRL9_RG_M_CK_OPENLOOP_MODE_EN, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_dvfsctl2,
+			MISC_DVFSCTL2_RG_ADA_MCK8X_EN_SHUFFLE, 1,
+			MISC_DVFSCTL2_RG_DLL_SHUFFLE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_dvfsctl3,
+			MISC_DVFSCTL3_RG_CNT_PHY_ST_DELAY_AFT_CHG_TO_BCLK, 0x10,
+			MISC_DVFSCTL3_RG_DVFS_MEM_CK_SEL_SOURCE, 1,
+			MISC_DVFSCTL3_RG_DVFS_MEM_CK_SEL_DESTI, 3,
+			MISC_DVFSCTL3_RG_PHY_ST_DELAY_BEF_CHG_TO_BCLK, 1,
+			MISC_DVFSCTL3_RG_PHY_ST_DELAY_AFT_CHG_TO_MCLK, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ddr_reserve,
+			MISC_DDR_RESERVE_WDT_CONF_ISO_CNT, 0xf);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_imp_ctrl1,
+			MISC_IMP_CTRL1_RG_RIMP_SUS_ECO_OPT, 1,
+			MISC_IMP_CTRL1_IMP_ABN_LAT_CLR, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_impcal,
+			MISC_IMPCAL_IMPCAL_BYPASS_UP_CA_DRV, 1,
+			MISC_IMPCAL_IMPCAL_DRVUPDOPT, 1,
+			MISC_IMPCAL_IMPBINARY, 1,
+			MISC_IMPCAL_DQDRVSWUPD, 1,
+			MISC_IMPCAL_DRVCGWREF, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_dutyscan1,
+			MISC_DUTYSCAN1_EYESCAN_DQS_OPT, 1,
+			MISC_DUTYSCAN1_RX_EYE_SCAN_CG_EN, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_dvfs_emi_clk,
+			MISC_DVFS_EMI_CLK_RG_DLL_SHUFFLE_DDRPHY, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl0,
+			MISC_CTRL0_IDLE_DCM_CHB_CDC_ECO_OPT, 0,
+			MISC_CTRL0_IMPCAL_CDC_ECO_OPT, 1,
+			MISC_CTRL0_IMPCAL_LP_ECO_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl4,
+			MISC_CTRL4_R_OPT2_CG_CS, 0,
+			MISC_CTRL4_R_OPT2_CG_CLK, 0,
+			MISC_CTRL4_R_OPT2_CG_CMD, 0,
+			MISC_CTRL4_R_OPT2_CG_DQSIEN, 0,
+			MISC_CTRL4_R_OPT2_CG_DQ, 0,
+			MISC_CTRL4_R_OPT2_CG_DQS, 0,
+			MISC_CTRL4_R_OPT2_CG_DQM, 0,
+			MISC_CTRL4_R_OPT2_CG_MCK, 0,
+			MISC_CTRL4_R_OPT2_MPDIV_CG, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl6,
+			MISC_CTRL6_RG_ADA_MCK8X_EN_SHU_OPT, 1,
+			MISC_CTRL6_RG_PHDET_EN_SHU_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_rx_autok_cfg0,
+			MISC_RX_AUTOK_CFG0_RX_CAL_CG_EN, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq1,
+			SHU_B0_DQ1_RG_ARPI_MIDPI_BYPASS_EN_B0, 1,
+			SHU_B0_DQ1_RG_ARPI_MIDPI_DUMMY_EN_B0, 1,
+			SHU_B0_DQ1_RG_ARPI_8PHASE_XLATCH_FORCE_B0, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq1,
+			SHU_B1_DQ1_RG_ARPI_MIDPI_BYPASS_EN_B1, 1,
+			SHU_B1_DQ1_RG_ARPI_MIDPI_DUMMY_EN_B1, 1,
+			SHU_B1_DQ1_RG_ARPI_8PHASE_XLATCH_FORCE_B1, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq10,
+			SHU_B0_DQ10_RG_RX_ARDQS_BW_SEL_B0, 1,
+			SHU_B0_DQ10_RG_RX_ARDQS_DQSSTB_RPST_HS_EN_B0, 1,
+			SHU_B0_DQ10_RG_RX_ARDQS_DQSSTB_CG_EN_B0, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq10,
+			SHU_B1_DQ10_RG_RX_ARDQS_BW_SEL_B1, 1,
+			SHU_B1_DQ10_RG_RX_ARDQS_DQSSTB_RPST_HS_EN_B1, 1,
+			SHU_B1_DQ10_RG_RX_ARDQS_DQSSTB_CG_EN_B1, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[0].shu_b0_dq11,
+			SHU_B0_DQ11_RG_RX_ARDQ_BW_SEL_B0, dq_bw_sel_b0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.byte[1].shu_b0_dq11,
+			SHU_B1_DQ11_RG_RX_ARDQ_BW_SEL_B1, dq_bw_sel_b1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd11,
+			SHU_CA_CMD11_RG_RX_ARCA_BW_SEL_CA, ca_bw_sel_ca);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd10,
+			SHU_CA_CMD10_RG_RX_ARCLK_BW_SEL_CA, clk_bw_sel_ca);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd1,
+			SHU_CA_CMD1_RG_ARPI_MIDPI_BYPASS_EN_CA, 1,
+			SHU_CA_CMD1_RG_ARPI_MIDPI_DUMMY_EN_CA, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd8,
+			SHU_CA_CMD8_R_DMRANK_CHG_PIPE_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_DMRANK_PIPE_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_DMDQSIEN_RDSEL_TOG_PIPE_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_DMDQSIEN_RDSEL_PIPE_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_DMDQSIEN_FLAG_PIPE_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_DMDQSIEN_FLAG_SYNC_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_RMRX_TOPHY_CG_IG_CA, 1,
+			SHU_CA_CMD8_R_RMRODTEN_CG_IG_CA, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_ca_cmd12,
+			SHU_CA_CMD12_RG_RIMP_REV, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_impedamce_upd_dis1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CMD1_ODTN_UPD_DIS, 1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CMD1_DRVN_UPD_DIS, 1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CMD1_DRVP_UPD_DIS, 1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CS_ODTN_UPD_DIS, 1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CS_DRVN_UPD_DIS, 1,
+			MISC_SHU_IMPEDAMCE_UPD_DIS1_CS_DRVP_UPD_DIS, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_rx_cg_ctrl,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_WAIT_DLE_EXT_DLY, 0,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_EXT_DLY, 2,
+			MISC_SHU_RX_CG_CTRL_RX_APHY_CTRL_DCM_OPT, 0,
+			MISC_SHU_RX_CG_CTRL_RX_DCM_OPT, 0);
+	}
+
+	dramc_set_broadcast(bc_bak);
+}
+
+static void rx_picg_setting(const struct ddr_cali *cali)
+{
+	u8 talk_lat = (get_div_mode(cali) == DIV4_MODE) ? 1 : 0;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_stbcal,
+		MISC_SHU_STBCAL_STBCALEN, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_stbcal,
+		MISC_SHU_STBCAL_STB_SELPHCALEN, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_stbcal1,
+		MISC_STBCAL1_STBCNT_SHU_RST_EN, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_stbcal2,
+		MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_stbcal,
+		MISC_SHU_STBCAL_DQSIEN_PICG_MODE, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_rx_in_gate_en_ctrl,
+		MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_OPT, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_rx_in_buff_en_ctrl,
+		MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_OPT, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_stbcal2,
+		MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN, 0);
+	for (u8 rk = 0; rk < cali->support_ranks; rk++)
+		SET32_BITFIELDS(&ch[0].phy_ao.misc_rk[rk].misc_shu_rk_dqsien_picg_ctrl,
+			MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_TAIL_EXT_LAT, talk_lat,
+			MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_HEAD_EXT_LAT, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_rx_in_buff_en_ctrl,
+		MISC_RX_IN_BUFF_EN_CTRL_DIS_IN_BUFF_EN, 0,
+		MISC_RX_IN_BUFF_EN_CTRL_FIX_IN_BUFF_EN, 0,
+		MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_4BYTE_EN, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_rx_in_gate_en_ctrl,
+		MISC_RX_IN_GATE_EN_CTRL_DIS_IN_GATE_EN, 0,
+		MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN, 0,
+		MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_4BYTE_EN, 0);
+}
+
+static void dqs_stb_settings(void)
+{
+	u32 dqsien_mode = 1;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_stbcal,
+		MISC_SHU_STBCAL_DQSIEN_DQSSTB_MODE, dqsien_mode);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq10,
+		SHU_B0_DQ10_RG_RX_ARDQS_DQSIEN_MODE_B0, dqsien_mode);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq10,
+		SHU_B1_DQ10_RG_RX_ARDQS_DQSIEN_MODE_B1, dqsien_mode);
+}
+
+static void rodt_settings(const struct ddr_cali *cali)
+{
+	u8 vref_sel;
+	u8 odt_onoff = get_odt_state(cali);
+	if (get_odt_state(cali) == ODT_ON)
+		vref_sel = 0x2c;
+	else
+		vref_sel = 0x37;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[0].b0_dq5,
+		B0_DQ5_RG_RX_ARDQ_VREF_EN_B0, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.dvs_b[1].b0_dq5,
+		B1_DQ5_RG_RX_ARDQ_VREF_EN_B1, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_vref,
+		SHU_B0_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B0, !odt_onoff);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_vref,
+		SHU_B1_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B1, !odt_onoff);
+
+	for (u8 rk = 0; rk < cali->support_ranks; rk++) {
+		SET32_BITFIELDS(&ch[0].phy_ao.byte[0].rk[rk].shu_b0_phy_vref_sel,
+			RG_RX_ARDQ_VREF_SEL_LB_B0, vref_sel,
+			RG_RX_ARDQ_VREF_SEL_UB_B0, vref_sel);
+		SET32_BITFIELDS(&ch[0].phy_ao.byte[1].rk[rk].shu_b0_phy_vref_sel,
+			RG_RX_ARDQ_VREF_SEL_LB_B1, vref_sel,
+			RG_RX_ARDQ_VREF_SEL_UB_B1, vref_sel);
+	}
+
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_vref,
+		SHU_B0_VREF_RG_RX_ARDQ_VREF_RANK_SEL_EN_B0, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_vref,
+		SHU_B1_VREF_RG_RX_ARDQ_VREF_RANK_SEL_EN_B1, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_odtctrl, MISC_SHU_ODTCTRL_RODTEN, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq7, SHU_B0_DQ7_R_DMRODTEN_B0, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq7, SHU_B1_DQ7_R_DMRODTEN_B1, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_rodtenstb,
+		MISC_SHU_RODTENSTB_RODTENSTB_TRACK_EN, 1,
+		MISC_SHU_RODTENSTB_RODTENSTB_TRACK_UDFLWCTRL, 1,
+		MISC_SHU_RODTENSTB_RODTENSTB_SELPH_BY_BITTIME, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq13,
+		SHU_B0_DQ13_RG_TX_ARDQ_IO_ODT_DIS_B0, !odt_onoff);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq13,
+		SHU_B1_DQ13_RG_TX_ARDQ_IO_ODT_DIS_B1, !odt_onoff);
+	SET32_BITFIELDS(&ch[0].phy_ao.shu_ca_cmd13,
+		SHU_CA_CMD13_RG_TX_ARCA_IO_ODT_DIS_CA, !odt_onoff);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq13,
+		SHU_B0_DQ13_RG_TX_ARDQS_OE_ODTEN_CG_EN_B0, 0,
+		SHU_B0_DQ13_RG_TX_ARDQM_OE_ODTEN_CG_EN_B0, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq14,
+		SHU_B0_DQ14_RG_TX_ARDQ_OE_ODTEN_CG_EN_B0, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq13,
+		SHU_B1_DQ13_RG_TX_ARDQS_OE_ODTEN_CG_EN_B1, 0,
+		SHU_B1_DQ13_RG_TX_ARDQM_OE_ODTEN_CG_EN_B1, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq14,
+		SHU_B1_DQ14_RG_TX_ARDQ_OE_ODTEN_CG_EN_B1, 0);
+}
+
+void dramc_cmd_ui_delay_setting(u8 chn, u8 value)
+{
+	SET32_BITFIELDS(&ch[chn].ao.shu_selph_ca7,
+		SHU_SELPH_CA7_DLY_RA0, value,
+		SHU_SELPH_CA7_DLY_RA1, value,
+		SHU_SELPH_CA7_DLY_RA2, value,
+		SHU_SELPH_CA7_DLY_RA3, value,
+		SHU_SELPH_CA7_DLY_RA4, value,
+		SHU_SELPH_CA7_DLY_RA5, value,
+		SHU_SELPH_CA7_DLY_RA6, value);
+	SET32_BITFIELDS(&ch[chn].ao.shu_selph_ca5, SHU_SELPH_CA5_DLY_CKE, value);
+	SET32_BITFIELDS(&ch[chn].ao.shu_selph_ca6, SHU_SELPH_CA6_DLY_CKE1, value);
+}
+
+void cbt_delay_ca_clk(u8 chn, u8 rank, s32 delay)
+{
+	if (delay < 0)
+		/* Set CLK delay */
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_rk[rank].shu_r0_ca_cmd0,
+			SHU_R0_CA_CMD0_RG_ARPI_CMD, 0,
+			SHU_R0_CA_CMD0_RG_ARPI_CLK, -delay,
+			SHU_R0_CA_CMD0_RG_ARPI_CS, -delay);
+	else
+		/* Set CA output delay */
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_rk[rank].shu_r0_ca_cmd0,
+			SHU_R0_CA_CMD0_RG_ARPI_CMD, delay,
+			SHU_R0_CA_CMD0_RG_ARPI_CLK, 0,
+			SHU_R0_CA_CMD0_RG_ARPI_CS, 0);
+}
+
+static void set_mck_8x_low_pwr_option(void)
+{
+	const u32 mck_8x_mode = 1;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_lp_ctrl,
+		MISC_LP_CTRL_RG_SC_ARPI_RESETB_8X_SEQ_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_ADA_MCK8X_8X_SEQ_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_AD_MCK8X_8X_SEQ_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_MIDPI_EN_8X_SEQ_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_MIDPI_CKDIV4_EN_8X_SEQ_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_MCK8X_CG_SRC_LP_SEL, mck_8x_mode,
+		MISC_LP_CTRL_RG_MCK8X_CG_SRC_AND_LP_SEL, mck_8x_mode);
+}
+
+static void update_initial_settings(const struct ddr_cali *cali)
+{
+	const u8 ca_pi = 0, ca_ui = 1;
+	u8 fsp = get_fsp(cali);
+	dram_freq_grp freq_group = get_freq_group(cali);
+	u8 buf_en_head;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_ctrl3, MISC_CTRL3_ARPI_CG_CLK_OPT, 0);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_ctrl4, MISC_CTRL4_R_OPT2_CG_CLK, 0);
+
+	replace_dv_init(cali);
+
+	SET32_BITFIELDS(&ch[0].phy_ao.shu_ca_cmd14,
+		SHU_CA_CMD14_RG_TX_ARCA_MCKIO_SEL_CA, 0xc0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[0].shu_b0_dq7,
+		SHU_B0_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B0, 0x0,
+		SHU_B0_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B0, 0x0,
+		SHU_B0_DQ7_R_DMRXDVS_DQM_FLAGSEL_B0, 0x0);
+	SET32_BITFIELDS(&ch[0].phy_ao.byte[1].shu_b0_dq7,
+		SHU_B1_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B1, 0x0,
+		SHU_B1_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B1, 0x0,
+		SHU_B1_DQ7_R_DMRXDVS_DQM_FLAGSEL_B1, 0x0);
+
+	rx_picg_setting(cali);
+	dramc_sw_impedance_save_register(cali);
+	dqs_stb_settings();
+	rodt_settings(cali);
+	SET32_BITFIELDS(&ch[0].ao.shu_tx_set0, SHU_TX_SET0_DBIWR, 0x0);
+
+	dramc_cmd_ui_delay_setting(CHANNEL_A, ca_ui);
+	SET32_BITFIELDS(&ch[0].ao.shu_selph_ca5,
+		SHU_SELPH_CA5_DLY_CS, 0x1,
+		SHU_SELPH_CA5_DLY_CS1, 0x1);
+
+	for (u8 rk = 0; rk < cali->support_ranks; rk++)
+		cbt_delay_ca_clk(CHANNEL_A, rk, ca_pi);
+
+	SET32_BITFIELDS(&ch[0].ao.refctrl1, REFCTRL1_REF_OVERHEAD_PBR2PB_ENA, 0x1);
+	SET32_BITFIELDS(&ch[0].ao.misctl0, MISCTL0_REFP_ARBMASK_PBR2PBR_ENA, 0x1);
+	SET32_BITFIELDS(&ch[0].ao.scheduler_com, SCHEDULER_COM_PBR2PBR_OPT, 0x1);
+	SET32_BITFIELDS(&ch[0].ao.shu_tx_set0, SHU_TX_SET0_WPST1P5T, fsp);
+	SET32_BITFIELDS(&ch[0].ao.dummy_rd,
+		DUMMY_RD_DMYRD_REORDER_DIS, 0x1,
+		DUMMY_RD_SREF_DMYRD_EN, 0x1);
+	SET32_BITFIELDS(&ch[0].ao.dramctrl,
+		DRAMCTRL_ALL_BLOCK_CTO_ALE_DBG_EN, 0x0,
+		DRAMCTRL_DVFS_BLOCK_CTO_ALE_DBG_EN, 0x1,
+		DRAMCTRL_SELFREF_BLOCK_CTO_ALE_DBG_EN, 0x1);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_stbcal2, MISC_STBCAL2_DQSGCNT_BYP_REF, 1);
+
+	if (freq_group <= DDRFREQ_800)
+		buf_en_head = 0;
+	else if (freq_group <= DDRFREQ_1200)
+		buf_en_head = 1;
+	else
+		buf_en_head = 2;
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_phy_rx_ctrl,
+			MISC_SHU_PHY_RX_CTRL_RX_IN_BUFF_EN_HEAD, buf_en_head);
+
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_ctrl1, MISC_CTRL1_R_DMARPIDQ_SW, 1);
+	SET32_BITFIELDS(&ch[0].phy_ao.ca_tx_mck,
+		CA_TX_MCK_R_DMRESETB_DRVP_FRPHY, 0xa,
+		CA_TX_MCK_R_DMRESETB_DRVN_FRPHY, 0xa);
+	SET32_BITFIELDS(&ch[0].phy_ao.misc_shu_rank_sel_lat,
+		MISC_SHU_RANK_SEL_LAT_RANK_SEL_LAT_B0, 0x3,
+		MISC_SHU_RANK_SEL_LAT_RANK_SEL_LAT_B1, 0x3,
+		MISC_SHU_RANK_SEL_LAT_RANK_SEL_LAT_CA, 0x3);
+	set_mck_8x_low_pwr_option();
+}
+
 static void dramc_setting(const struct ddr_cali *cali)
 {
 	dram_freq_grp freq_group = cali->freq_group;
@@ -3108,6 +3674,7 @@ static void dramc_setting(const struct ddr_cali *cali)
 		return;
 	}
 
+	update_initial_settings(cali);
 	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
 }
 

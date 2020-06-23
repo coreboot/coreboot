@@ -64,6 +64,9 @@ void init_dram(const struct dramc_data *dparam)
 	emi_mdl_init(cali.emi_config);
 	dramc_set_broadcast(bc_bak);
 
+	dramc_sw_impedance_cal(ODT_OFF, &cali.impedance);
+	dramc_sw_impedance_cal(ODT_ON, &cali.impedance);
+
 	if (ddr_info->config_dvfs == DRAMC_ENABLE_DVFS)
 		k_shuffle_end = CALI_SEQ_MAX;
 	else

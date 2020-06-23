@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/dramc_ac_timing.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 #include <soc/gpio.h>
+#include <string.h>
 #include <timer.h>
 
 static const u8 mrr_o1_pinmux_mapping[PINMUX_MAX][CHANNEL_MAX][DQ_DATA_WIDTH] = {
@@ -4033,6 +4035,206 @@ static void dramc_mode_reg_init(const struct ddr_cali *cali)
 	dramc_set_broadcast(bc_bak);
 }
 
+static void ddr_update_ac_timing(const struct ddr_cali *cali)
+{
+	u8 table_idx;
+	const struct ac_timing *ac_tim;
+	const dram_freq_grp freq_group = cali->freq_group;
+
+	u8 rank_inctl, tx_dly, datlat_dsel;
+	const u8 root = 0;
+	u8 tx_rank_inctl;
+	const u8 tref_bw = 0;
+	u8 tfaw_05t, trrd_05t;
+	u16 xrtwtw, xtrtrt, xrtw2r, xrtr2w, tfaw;
+	u16 trtw, trtw_05t, tmrr2w, trrd;
+	u16 phs_inctl;
+	u32 rank_inctl_root;
+
+	for (table_idx = 0; table_idx < AC_TIMING_NUMBER; table_idx++)
+		if (ac_timing_tbl[table_idx].freq_group == freq_group &&
+		     ac_timing_tbl[table_idx].div_mode == get_div_mode(cali) &&
+		     ac_timing_tbl[table_idx].cbt_mode == get_cbt_mode(cali)) {
+			dramc_dbg("Found matched AC timing table %u\n", table_idx);
+			break;
+		}
+
+	if (table_idx == AC_TIMING_NUMBER) {
+		dramc_err("Error: no matched AC timing table found\n");
+		return;
+	}
+
+	ac_tim = &ac_timing_tbl[table_idx];
+
+	trtw = ac_tim->trtw_odt_on;
+	trtw_05t = ac_tim->trtw_odt_on_05T;
+	xrtw2r = ac_tim->xrtw2r_odt_on;
+	xrtr2w = ac_tim->xrtr2w_odt_on;
+	tfaw = ac_tim->tfaw_4266;
+	tfaw_05t = ac_tim->tfaw_4266_05T;
+	trrd = ac_tim->trrd_4266;
+	trrd_05t = ac_tim->trrd_4266_05T;
+	xtrtrt = ac_tim->xrtr2r_new_mode;
+	xrtwtw = ac_tim->xrtw2w_new_mode;
+	tmrr2w = ac_tim->tmrr2w_odt_on;
+
+	if (READ32_BITFIELD(&ch[0].phy_ao.shu_misc_rx_pipe_ctrl,
+			    SHU_MISC_RX_PIPE_CTRL_RX_PIPE_BYPASS_EN))
+		datlat_dsel = ac_tim->datlat;
+	else
+		datlat_dsel = ac_tim->datlat > 1 ? ac_tim->datlat - 1 : 0;
+
+	if (ac_tim->dqsinctl >= 2) {
+		rank_inctl_root = ac_tim->dqsinctl - 2;
+	} else {
+		dramc_err("rank_inctl_root <2, need check\n");
+		rank_inctl_root = 0;
+	}
+	phs_inctl = (ac_tim->dqsinctl == 0) ? 0 : (ac_tim->dqsinctl - 1);
+
+	if (freq_group <= DDRFREQ_800) {
+		if (get_div_mode(cali) == DIV4_MODE)	{
+			tx_rank_inctl = 1;
+			tx_dly = 2;
+		} else {
+			tx_rank_inctl = 0;
+			tx_dly = 1;
+		}
+	} else {
+		tx_rank_inctl = 1;
+		tx_dly = 2;
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim1,
+			SHU_ACTIM1_TRAS, ac_tim->tras,
+			SHU_ACTIM1_TRP, ac_tim->trp,
+			SHU_ACTIM1_TRPAB, ac_tim->trpab,
+			SHU_ACTIM1_TMRWCKEL, ac_tim->tmrwckel,
+			SHU_ACTIM1_TRC, ac_tim->trc);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim3,
+			SHU_ACTIM3_TRFC, ac_tim->trfc,
+			SHU_ACTIM3_TR2MRR, ac_tim->tr2mrr,
+			SHU_ACTIM3_TRFCPB, ac_tim->trfcpb);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim2,
+			SHU_ACTIM2_TXP, ac_tim->txp,
+			SHU_ACTIM2_TMRRI, ac_tim->tmrri,
+			SHU_ACTIM2_TFAW, tfaw,
+			SHU_ACTIM2_TR2W, trtw,
+			SHU_ACTIM2_TRTP, ac_tim->trtp);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim0,
+			SHU_ACTIM0_TRCD, ac_tim->trcd,
+			SHU_ACTIM0_TWR, ac_tim->twr,
+			SHU_ACTIM0_TRRD, trrd);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim5,
+			SHU_ACTIM5_TPBR2PBR, ac_tim->tpbr2pbr,
+			SHU_ACTIM5_TWTPD, ac_tim->twtpd,
+			SHU_ACTIM5_TPBR2ACT, ac_tim->tpbr2act);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim6,
+			SHU_ACTIM6_TR2MRW, ac_tim->tr2mrw,
+			SHU_ACTIM6_TW2MRW, ac_tim->tw2mrw,
+			SHU_ACTIM6_TMRD, ac_tim->tmrd,
+			SHU_ACTIM6_TZQLAT2, ac_tim->zqlat2,
+			SHU_ACTIM6_TMRW, ac_tim->tmrw);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim4,
+			SHU_ACTIM4_TMRR2MRW, ac_tim->tmrr2mrw,
+			SHU_ACTIM4_TMRR2W, tmrr2w,
+			SHU_ACTIM4_TZQCS, ac_tim->tzqcs,
+			SHU_ACTIM4_TXREFCNT, ac_tim->txrefcnt);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ckectrl, SHU_CKECTRL_TCKEPRD, ac_tim->ckeprd);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim_xrt,
+			SHU_ACTIM_XRT_XRTW2W, xrtwtw,
+			SHU_ACTIM_XRT_XRTW2R, xrtw2r,
+			SHU_ACTIM_XRT_XRTR2W, xrtr2w,
+			SHU_ACTIM_XRT_XRTR2R, xtrtrt);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_vrcg,
+			SHU_HWSET_VRCG_VRCGDIS_PRDCNT, ac_tim->vrcgdis_prdcnt);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_mr2,
+			SHU_HWSET_MR2_HWSET_MR2_OP, ac_tim->hwset_mr2_op);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hwset_mr13,
+			SHU_HWSET_MR13_HWSET_MR13_OP, ac_tim->hwset_mr13_op);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_time_05t,
+			SHU_AC_TIME_05T_TWTR_M05T, ac_tim->twtr_05T,
+			SHU_AC_TIME_05T_TR2W_05T, trtw_05t,
+			SHU_AC_TIME_05T_TWTPD_M05T, ac_tim->twtpd_05T,
+			SHU_AC_TIME_05T_TFAW_05T, tfaw_05t,
+			SHU_AC_TIME_05T_TRRD_05T, trrd_05t,
+			SHU_AC_TIME_05T_TWR_M05T, ac_tim->twr_05T,
+			SHU_AC_TIME_05T_TRAS_05T, ac_tim->tras_05T,
+			SHU_AC_TIME_05T_TRPAB_05T, ac_tim->trpab_05T,
+			SHU_AC_TIME_05T_TRP_05T, ac_tim->trp_05T,
+			SHU_AC_TIME_05T_TRCD_05T, ac_tim->trcd_05T,
+			SHU_AC_TIME_05T_TRTP_05T, ac_tim->trtp_05T,
+			SHU_AC_TIME_05T_TXP_05T, ac_tim->txp_05T);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_time_05t,
+			SHU_AC_TIME_05T_TRFC_05T, ac_tim->trfc_05T,
+			SHU_AC_TIME_05T_TRFCPB_05T, ac_tim->trfcpb_05T,
+			SHU_AC_TIME_05T_TPBR2PBR_05T, ac_tim->tpbr2pbr_05T,
+			SHU_AC_TIME_05T_TPBR2ACT_05T, ac_tim->tpbr2act_05T,
+			SHU_AC_TIME_05T_TR2MRW_05T, ac_tim->tr2mrw_05T,
+			SHU_AC_TIME_05T_TW2MRW_05T, ac_tim->tw2mrw_05T,
+			SHU_AC_TIME_05T_TMRR2MRW_05T, ac_tim->tmrr2mrw_05T,
+			SHU_AC_TIME_05T_TMRW_05T, ac_tim->tmrw_05T,
+			SHU_AC_TIME_05T_TMRD_05T, ac_tim->tmrd_05T,
+			SHU_AC_TIME_05T_TMRWCKEL_05T, ac_tim->tmrwckel_05T,
+			SHU_AC_TIME_05T_TMRRI_05T, ac_tim->tmrri_05T,
+			SHU_AC_TIME_05T_TRC_05T, ac_tim->trc_05T);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim0, SHU_ACTIM0_TWTR, ac_tim->twtr);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ckectrl,
+			SHU_CKECTRL_TPDE, ac_tim->tpde,
+			SHU_CKECTRL_TPDX, ac_tim->tpdx,
+			SHU_CKECTRL_TPDE_05T, ac_tim->tpde_05T,
+			SHU_CKECTRL_TPDX_05T, ac_tim->tpdx_05T);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actim5, SHU_ACTIM5_TR2PD, ac_tim->trtpd);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_time_05t,
+			SHU_AC_TIME_05T_TR2PD_05T, ac_tim->trtpd_05T);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_derating0,
+			SHU_AC_DERATING0_TRCD_DERATE, ac_tim->trcd_derate,
+			SHU_AC_DERATING0_TRRD_DERATE, ac_tim->trrd_derate);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_derating1,
+			SHU_AC_DERATING1_TRC_DERATE, ac_tim->trc_derate,
+			SHU_AC_DERATING1_TRAS_DERATE, ac_tim->tras_derate,
+			SHU_AC_DERATING1_TRP_DERATE, ac_tim->trp_derate,
+			SHU_AC_DERATING1_TRPAB_DERATE, ac_tim->trpab_derate);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_derating_05t,
+			SHU_AC_DERATING_05T_TRRD_05T_DERATE, ac_tim->trrd_derate_05T,
+			SHU_AC_DERATING_05T_TRAS_05T_DERATE, ac_tim->tras_derate_05T,
+			SHU_AC_DERATING_05T_TRPAB_05T_DERATE, ac_tim->trpab_derate_05T,
+			SHU_AC_DERATING_05T_TRP_05T_DERATE, ac_tim->trp_derate_05T,
+			SHU_AC_DERATING_05T_TRCD_05T_DERATE, ac_tim->trcd_derate_05T,
+			SHU_AC_DERATING_05T_TRC_05T_DERATE, ac_tim->trc_derate_05T);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl3, REFCTRL3_REF_DERATING_EN, 0xc0);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ac_derating0,
+			SHU_AC_DERATING0_ACDERATEEN, 0x1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_rk[0].misc_shu_rk_dqsctl,
+			MISC_SHU_RK_DQSCTL_DQSINCTL, ac_tim->dqsinctl);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_rk[1].misc_shu_rk_dqsctl,
+			MISC_SHU_RK_DQSCTL_DQSINCTL, ac_tim->dqsinctl);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_odtctrl,
+			MISC_SHU_ODTCTRL_RODT_LAT, ac_tim->dqsinctl);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_rankctl,
+			MISC_SHU_RANKCTL_RANKINCTL_PHY, ac_tim->dqsinctl,
+			MISC_SHU_RANKCTL_RANKINCTL_ROOT1, rank_inctl_root,
+			MISC_SHU_RANKCTL_RANKINCTL, rank_inctl_root);
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_misc_rank_sel_stb,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_PHSINCTL, phs_inctl);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_rdat,
+			MISC_SHU_RDAT_DATLAT, ac_tim->datlat,
+			MISC_SHU_RDAT_DATLAT_DSEL, datlat_dsel,
+			MISC_SHU_RDAT_DATLAT_DSEL_PHY, datlat_dsel);
+		SET32_BITFIELDS(&ch[chn].ao.shu_actiming_conf,
+			SHU_ACTIMING_CONF_REFBW_FR, tref_bw);
+		rank_inctl = READ32_BITFIELD(&ch[0].phy_ao.misc_shu_rankctl,
+			MISC_SHU_RANKCTL_RANKINCTL);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_shu_rankctl,
+			MISC_SHU_RANKCTL_RANKINCTL_RXDLY, rank_inctl);
+		SET32_BITFIELDS(&ch[chn].ao.shu_tx_rankctl,
+			SHU_TX_RANKCTL_TXRANKINCTL_ROOT, root,
+			SHU_TX_RANKCTL_TXRANKINCTL, tx_rank_inctl,
+			SHU_TX_RANKCTL_TXRANKINCTL_TXDLY, tx_dly);
+	}
+}
+
 static void set_cke2rank_independent(void)
 {
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
@@ -4126,6 +4328,8 @@ static void dramc_init(const struct ddr_cali *cali)
 	dramc_8_phase_cal(cali);
 	dramc_duty_calibration(cali->params);
 	dramc_mode_reg_init(cali);
+
+	ddr_update_ac_timing(cali);
 }
 
 static void dramc_before_calibration(const struct ddr_cali *cali)

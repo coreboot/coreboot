@@ -31,7 +31,7 @@ config CBFS_SIZE
 
 config MAINBOARD_DIR
 	string
-	default amd/mandolin
+	default "amd/mandolin"
 
 config MAINBOARD_PART_NUMBER
 	string

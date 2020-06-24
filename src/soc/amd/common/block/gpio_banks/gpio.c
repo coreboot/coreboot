@@ -183,6 +183,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	const struct soc_amd_event *gev_tbl;
 	struct sci_trigger_regs sci_trigger_cfg = { 0 };
 	size_t gev_items;
+	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
+			ENV_SEPARATE_VERSTAGE);
 
 	/*
 	 * Disable blocking wake/interrupt status generation while updating
@@ -196,7 +198,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	master_switch_clr(GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
-	soc_get_gpio_event_table(&gev_tbl, &gev_items);
+	if (can_set_smi_flags)
+		soc_get_gpio_event_table(&gev_tbl, &gev_items);
 
 	for (index = 0; index < size; index++) {
 		gpio = gpio_list_ptr[index].gpio;
@@ -214,6 +217,10 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 		__gpio_setbits32(gpio, PAD_CFG_MASK, control);
 
 		if (control_flags == 0)
+			continue;
+
+		/* Can't set SMI flags from PSP */
+		if (!can_set_smi_flags)
 			continue;
 
 		gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
@@ -241,7 +248,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	master_switch_set(GPIO_INTERRUPT_EN);
 
 	/* Set all SCI trigger polarity (high/low) and level (edge/level). */
-	set_sci_trigger(&sci_trigger_cfg);
+	if (can_set_smi_flags)
+		set_sci_trigger(&sci_trigger_cfg);
 }
 
 int gpio_interrupt_status(gpio_t gpio)

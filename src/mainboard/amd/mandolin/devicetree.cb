@@ -45,7 +45,7 @@ chip soc/amd/picasso
 		device pci 0.0 on  end # Root Complex
 		device pci 0.2 on  end # IOMMU
 		device pci 1.0 on  end # Dummy Host Bridge
-		device pci 1.3 on  end # Bridge
+		device pci 1.3 on  end # Bridge to PCIe Ethernet chip
 		device pci 8.0 on  end # Dummy Host Bridge
 		device pci 8.1 on      # Bridge to Bus A
 			device pci 0.0 on  end # Internal GPU

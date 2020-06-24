@@ -81,7 +81,8 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "variants/baseboard/devicetree.cb"
+	default "variants/baseboard/devicetree_trembyle.cb" if BOARD_GOOGLE_BASEBOARD_TREMBYLE
+	default "variants/baseboard/devicetree_dalboz.cb" if BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config OVERRIDE_DEVICETREE
 	string

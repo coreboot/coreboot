@@ -6,6 +6,16 @@
 #include <soc/pll_common.h>
 #include <soc/regulator.h>
 
+static void dramc_write_shift_mck_write_dbi(const struct ddr_cali *cali, s8 shift_value)
+{
+	u8 div_shift;
+	s8 ui_move;
+
+	div_shift = get_mck2ui_div_shift(cali);
+	ui_move = shift_value * (1 << div_shift);
+	shift_dq_ui(cali, cali->rank, ui_move);
+}
+
 static void dramc_ac_timing_optimize(const struct ddr_cali *cali)
 {
 	u8 rf_group, cab_id;
@@ -248,8 +258,57 @@ static void get_dram_info_after_cal(struct ddr_cali *cali)
 	cali->density = max_density;
 }
 
+static void dramc_calibration_single_channel(struct ddr_cali *cali, u8 chn)
+{
+	cali->chn = chn;
+	SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+		CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 0,
+		CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 1,
+		CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+}
+
 static void dramc_calibration_all_channels(struct ddr_cali *cali)
 {
+	u8 chn_bak, rank_bak;
+	const dbi_mode w_dbi = get_write_dbi(cali);
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].phy_ao.ca_cmd2,
+			CA_CMD2_RG_TX_ARCMD_OE_DIS_CA, 1,
+			CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA, 0,
+			CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA, 0xff);
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		dramc_calibration_single_channel(cali, chn);
+
+	if (w_dbi == DBI_ON) {
+		chn_bak = cali->chn;
+		rank_bak = cali->rank;
+		for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+			for (u8 rank = RANK_0; rank < RANK_MAX; rank++) {
+				cali->chn = chn;
+				cali->rank = rank;
+				dramc_write_shift_mck_write_dbi(cali, -1);
+			}
+		cali->chn = chn_bak;
+		cali->rank = rank_bak;
+		apply_write_dbi_power_improve(true);
+	}
+
+	dramc_write_dbi_onoff(w_dbi);
+
+	tx_picg_setting(cali);
+	if (cali->support_ranks == DUAL_RANK_DDR)
+		xrtrtr_shu_setting(cali);
+	freq_jump_ratio_calculation(cali);
+
+	dramc_hmr4_presetting(cali);
+	dramc_enable_perbank_refresh(true);
+	dramc_modified_refresh_mode();
+	dramc_cke_debounce(cali);
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		dramc_hw_dqsosc(cali, chn);
 }
 
 static void mem_pll_init(void)
@@ -328,5 +387,6 @@ void init_dram(const struct dramc_data *dparam)
 			dramc_load_shuffle_to_dramc(cali.shu, DRAM_DFS_SHU1);
 
 		first_freq_k = false;
+		dramc_info("Calibration of data rate %u finished\n", get_frequency(&cali) * 2);
 	}
 }

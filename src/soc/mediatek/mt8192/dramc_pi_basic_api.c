@@ -4035,6 +4035,55 @@ static void dramc_mode_reg_init(const struct ddr_cali *cali)
 	dramc_set_broadcast(bc_bak);
 }
 
+static void move_dramc_delay(const struct ddr_cali *cali, reg_transfer *ui,
+			     reg_transfer *mck, s8 shift_ui)
+{
+	s32 sum;
+	u8 ui_offset = ui->offset, ui_width = 4, mck_offset = mck->offset, mck_width = 3;
+	u32 *ui_reg = ui->addr, *mck_reg = mck->addr;
+
+	u32 tmp_ui, tmp_mck, ui_mask, mck_mask;
+	u8 div_shift = get_mck2ui_div_shift(cali);
+
+	ui_mask = BIT(ui_width) - 1;
+	mck_mask = BIT(mck_width) - 1;
+	tmp_ui = ((read32(ui_reg) >> ui_offset) & ui_mask) & ~(1 << div_shift);
+	tmp_mck = (read32(mck_reg) >> mck_offset) & mck_mask;
+
+	sum = (tmp_mck << div_shift) + tmp_ui + shift_ui;
+
+	if (sum < 0) {
+		tmp_ui = 0;
+		tmp_mck = 0;
+	} else {
+		tmp_mck = sum >> div_shift;
+		tmp_ui = sum - (tmp_mck << div_shift);
+	}
+
+	clrsetbits32(ui_reg, ui_mask << ui_offset, tmp_ui << ui_offset);
+	clrsetbits32(mck_reg, mck_mask << mck_offset, tmp_mck << mck_offset);
+}
+
+void shift_dq_ui(const struct ddr_cali *cali, u8 rk, s8 shift_ui)
+{
+	u8 chn = cali->chn;
+	reg_transfer ui_regs[] = {
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq3, 0},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq3, 4},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq2, 0},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq2, 4}
+	};
+	reg_transfer mck_regs[] = {
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq1, 0},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq1, 4},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq0, 0},
+		{&ch[chn].ao.shu_rk[rk].shurk_selph_dq0, 4}
+	};
+
+	for (int idx = 0; idx < ARRAY_SIZE(ui_regs); idx++)
+		move_dramc_delay(cali, &ui_regs[idx], &mck_regs[idx], shift_ui);
+}
+
 static void ddr_update_ac_timing(const struct ddr_cali *cali)
 {
 	u8 table_idx;
@@ -4411,4 +4460,252 @@ void dfs_init_for_calibration(const struct ddr_cali *cali)
 	dramc_init_default_mr_value(cali);
 	dramc_init(cali);
 	dramc_before_calibration(cali);
+}
+
+void tx_picg_setting(const struct ddr_cali *cali)
+{
+	u32 dqs_oen_final, dq_oen_final;
+	u16 dqs_oen_2t[2], dqs_oen_05t[2], dqs_oen_delay[2];
+	u16 dq_oen_2t[2], dq_oen_05t[2], dq_oen_delay[2];
+	u16 comb_tx_sel[2];
+	u16 shift_dqs_div[2], shift_dq_div[2];
+	u16 comb_tx_picg_cnt;
+	u8 div_ratio;
+
+	comb_tx_picg_cnt = 3;
+	if (get_div_mode(cali) == DIV8_MODE) {
+		shift_dqs_div[0] = 10;
+		shift_dqs_div[1] = 6;
+		shift_dq_div[0] = 8;
+		shift_dq_div[1] = 4;
+		div_ratio = 3;
+	} else {
+		shift_dqs_div[0] = 2;
+		shift_dqs_div[1] = 0;
+		shift_dq_div[0] = 0;
+		shift_dq_div[1] = 0;
+		div_ratio = 2;
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		struct dramc_ao_regs *dramc_ao = &ch[chn].ao;
+
+		dqs_oen_2t[0] = READ32_BITFIELD(&dramc_ao->shu_selph_dqs0,
+			SHU_SELPH_DQS0_TXDLY_OEN_DQS0);
+		dqs_oen_05t[0] = READ32_BITFIELD(&dramc_ao->shu_selph_dqs1,
+			SHU_SELPH_DQS1_DLY_OEN_DQS0);
+		dqs_oen_delay[0] = (dqs_oen_2t[0] << div_ratio) + dqs_oen_05t[0];
+		dqs_oen_2t[1] = READ32_BITFIELD(&dramc_ao->shu_selph_dqs0,
+			SHU_SELPH_DQS0_TXDLY_OEN_DQS1);
+		dqs_oen_05t[1] = READ32_BITFIELD(&dramc_ao->shu_selph_dqs1,
+			SHU_SELPH_DQS1_DLY_OEN_DQS1);
+		dqs_oen_delay[1] = (dqs_oen_2t[1] << div_ratio) + dqs_oen_05t[1];
+
+		dqs_oen_final = MIN(dqs_oen_delay[0], dqs_oen_delay[1]) + 1;
+
+		comb_tx_sel[0] = (dqs_oen_final > shift_dqs_div[0]) ?
+			((dqs_oen_final - shift_dqs_div[0]) >> div_ratio) : 0;
+
+		if (get_div_mode(cali) == DIV4_MODE)
+			comb_tx_sel[1] = 0;
+		else
+			comb_tx_sel[1] = (dqs_oen_final > shift_dqs_div[1]) ?
+				((dqs_oen_final - shift_dqs_div[1]) >> div_ratio) : 0;
+
+		SET32_BITFIELDS(&dramc_ao->shu_aphy_tx_picg_ctrl,
+			SHU_APHY_TX_PICG_CTRL_TX_DQS_SEL_P0, comb_tx_sel[0],
+			SHU_APHY_TX_PICG_CTRL_TX_DQS_SEL_P1, comb_tx_sel[1],
+			SHU_APHY_TX_PICG_CTRL_TX_PICG_CNT, comb_tx_picg_cnt);
+		for (int rk = RANK_0; rk < cali->support_ranks; rk++) {
+			dq_oen_2t[0] = READ32_BITFIELD(&dramc_ao->shu_rk[rk].shurk_selph_dq0,
+				SHURK_SELPH_DQ0_TXDLY_OEN_DQ0);
+			dq_oen_05t[0] = READ32_BITFIELD(&dramc_ao->shu_rk[rk].shurk_selph_dq2,
+				SHURK_SELPH_DQ2_DLY_OEN_DQ0);
+			dq_oen_delay[0] = (dq_oen_2t[0] << div_ratio) + dq_oen_05t[0];
+			dq_oen_2t[1] = READ32_BITFIELD(&dramc_ao->shu_rk[rk].shurk_selph_dq0,
+				SHURK_SELPH_DQ0_TXDLY_OEN_DQ1);
+			dq_oen_05t[1] = READ32_BITFIELD(&dramc_ao->shu_rk[rk].shurk_selph_dq2,
+				SHURK_SELPH_DQ2_DLY_OEN_DQ1);
+			dq_oen_delay[1] = (dq_oen_2t[1] << div_ratio) + dq_oen_05t[1];
+
+			dq_oen_final = MIN(dq_oen_delay[0], dq_oen_delay[1]) + 1;
+
+			comb_tx_sel[0] = (dq_oen_final > shift_dq_div[0]) ?
+				((dq_oen_final - shift_dq_div[0]) >> div_ratio) : 0;
+
+			if (get_div_mode(cali) == DIV4_MODE)
+				comb_tx_sel[1] = 0;
+			else
+				comb_tx_sel[1] = (dq_oen_final > shift_dq_div[1]) ?
+					((dq_oen_final - shift_dq_div[1]) >> div_ratio) : 0;
+
+			SET32_BITFIELDS(&dramc_ao->shu_rk[rk].shurk_aphy_tx_picg_ctrl,
+				SHURK_APHY_TX_PICG_CTRL_TX_DQ_RK_SEL_P0, comb_tx_sel[0],
+				SHURK_APHY_TX_PICG_CTRL_TX_DQ_RK_SEL_P1, comb_tx_sel[1]);
+		}
+	}
+}
+
+void xrtrtr_shu_setting(const struct ddr_cali *cali)
+{
+	const dram_freq_grp freq_group = get_freq_group(cali);
+	u8 rk_sel_ui_minus = 0, rk_sel_mck_minus = 0;
+
+	if (freq_group == DDRFREQ_400)
+		rk_sel_mck_minus = 1;
+	else if (freq_group >= DDRFREQ_1600)
+		rk_sel_ui_minus = 2;
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].phy_ao.shu_misc_rank_sel_stb,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_MCK_MINUS, rk_sel_mck_minus,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_UI_MINUS, rk_sel_ui_minus,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_MCK_PLUS, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_UI_PLUS, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_PHASE_EN, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_RXDLY_TRACK, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_TRACK, 0x1,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_SERMODE, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_EN_B23, 0x0,
+			SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_EN, 0x1);
+}
+
+void freq_jump_ratio_calculation(const struct ddr_cali *cali)
+{
+	u32 src_freq, dst_freq, src_shu, dst_shu, jump_ratio_index;
+	u16 jump_ratio[DRAM_DFS_SHU_MAX] = {0};
+
+	jump_ratio_index = 0;
+	src_freq = get_frequency(cali);
+	src_shu = get_shu(cali);
+
+	if (get_freq_group_by_shu_save(src_shu) != DDRFREQ_400) {
+		for (dst_shu = DRAM_DFS_SHU0; dst_shu < DRAM_DFS_SHU_MAX; dst_shu++) {
+			dst_freq = get_frequency_by_shu(dst_shu);
+			jump_ratio[jump_ratio_index] =
+				DIV_ROUND_CLOSEST(dst_freq * 32, src_freq);
+
+			dramc_dbg("Jump ratio [%u]: %#x Freq %d -> %d, DDR%u -> DDR%u\n",
+				jump_ratio_index, jump_ratio[jump_ratio_index],
+				src_shu, dst_shu, src_freq << 1, dst_freq << 1);
+			jump_ratio_index++;
+		}
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].ao.shu_freq_ratio_set0,
+			SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO0, jump_ratio[0],
+			SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO1, jump_ratio[1],
+			SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO2, jump_ratio[2],
+			SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO3, jump_ratio[3]);
+		SET32_BITFIELDS(&ch[chn].ao.shu_freq_ratio_set1,
+			SHU_FREQ_RATIO_SET1_TDQSCK_JUMP_RATIO4, jump_ratio[4],
+			SHU_FREQ_RATIO_SET1_TDQSCK_JUMP_RATIO5, jump_ratio[5],
+			SHU_FREQ_RATIO_SET1_TDQSCK_JUMP_RATIO6, jump_ratio[6]);
+	}
+}
+
+void dramc_hmr4_presetting(const struct ddr_cali *cali)
+{
+	for (u8 chn = CHANNEL_A; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].ao.hmr4, HMR4_REFR_PERIOD_OPT, 1);
+		SET32_BITFIELDS(&ch[chn].ao.hmr4, HMR4_REFRCNT_OPT, 0);
+		SET32_BITFIELDS(&ch[chn].ao.shu_hmr4_dvfs_ctrl0,
+			SHU_HMR4_DVFS_CTRL0_REFRCNT, 0x80);
+
+		if (get_cbt_mode(cali) == CBT_BYTE_MODE1)
+			SET32_BITFIELDS(&ch[chn].ao.hmr4, HMR4_HMR4_BYTEMODE_EN, 1);
+		else
+			SET32_BITFIELDS(&ch[chn].ao.hmr4, HMR4_HMR4_BYTEMODE_EN, 0);
+
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFRATE_MON_CLR, 0);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFRATE_MON_CLR, 1);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFRATE_MON_CLR, 0);
+	}
+}
+
+void dramc_enable_perbank_refresh(bool en)
+{
+	if (en) {
+		for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+			SET32_BITFIELDS(&ch[chn].ao.refctrl0,
+				REFCTRL0_PBREF_BK_REFA_ENA, 1,
+				REFCTRL0_PBREF_BK_REFA_NUM, 2);
+			SET32_BITFIELDS(&ch[chn].ao.refctrl0,
+				REFCTRL0_KEEP_PBREF, 0,
+				REFCTRL0_KEEP_PBREF_OPT, 1);
+			SET32_BITFIELDS(&ch[chn].ao.refctrl1, REFCTRL1_REFPB2AB_IGZQCS, 1);
+		}
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].ao.shu_conf0, SHU_CONF0_PBREFEN, en);
+}
+
+void dramc_modified_refresh_mode(void)
+{
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].ao.refpend1,
+			REFPEND1_MPENDREFCNT_TH0, 2,
+			REFPEND1_MPENDREFCNT_TH1, 2,
+			REFPEND1_MPENDREFCNT_TH2, 4,
+			REFPEND1_MPENDREFCNT_TH3, 5,
+			REFPEND1_MPENDREFCNT_TH4, 5,
+			REFPEND1_MPENDREFCNT_TH5, 3,
+			REFPEND1_MPENDREFCNT_TH6, 3,
+			REFPEND1_MPENDREFCNT_TH7, 3);
+		SET32_BITFIELDS(&ch[chn].ao.refctrl1,
+			REFCTRL1_REFPEND_OPT1, 1,
+			REFCTRL1_REFPEND_OPT2, 1);
+		SET32_BITFIELDS(&ch[chn].ao.shu_ref0, SHU_REF0_MPENDREF_CNT, 4);
+	}
+}
+
+void dramc_cke_debounce(const struct ddr_cali *cali)
+{
+	if (get_freq_group(cali) < DDRFREQ_2133)
+		return;
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		for (u8 rk = 0; rk < cali->support_ranks; rk++)
+			SET32_BITFIELDS(&ch[chn].ao.shu_rk[rk].shurk_cke_ctrl,
+				SHURK_CKE_CTRL_CKE_DBE_CNT, 15);
+}
+
+void dramc_hw_dqsosc(const struct ddr_cali *cali, u8 chn)
+{
+	SET32_BITFIELDS(&ch[chn].ao.tx_freq_ratio_old_mode0,
+		TX_FREQ_RATIO_OLD_MODE0_SHUFFLE_LEVEL_MODE_SELECT, 1);
+	SET32_BITFIELDS(&ch[chn].ao.tx_tracking_set0,
+		TX_TRACKING_SET0_SHU_PRELOAD_TX_HW, 1,
+		TX_TRACKING_SET0_SHU_PRELOAD_TX_START, 0,
+		TX_TRACKING_SET0_SW_UP_TX_NOW_CASE, 0);
+
+	SET32_BITFIELDS(&ch[chn].ao.mpc_ctrl, MPC_CTRL_MPC_BLOCKALE_OPT, 1);
+	SET32_BITFIELDS(&ch[chn].phy_ao.misc_ctrl1, MISC_CTRL1_R_DMARPIDQ_SW, 0);
+	SET32_BITFIELDS(&ch[chn].ao.dcm_sub_ctrl, DCM_SUB_CTRL_SUBCLK_CTRL_TX_TRACKING, 1);
+	SET32_BITFIELDS(&ch[chn].ao.dqsoscr, DQSOSCR_ARUIDQ_SW, 1);
+	SET32_BITFIELDS(&ch[chn].ao.dqsoscr, DQSOSCR_DQSOSCRDIS, 0);
+	SET32_BITFIELDS(&ch[chn].ao.rk[0].rk_dqsosc, RK_DQSOSC_DQSOSCR_RK0EN, 1);
+	if (cali->support_ranks == DUAL_RANK_DDR)
+		SET32_BITFIELDS(&ch[chn].ao.rk[1].rk_dqsosc, RK_DQSOSC_DQSOSCR_RK0EN, 1);
+	SET32_BITFIELDS(&ch[chn].ao.tx_set0, TX_SET0_DRSCLR_RK0_EN, 1);
+	SET32_BITFIELDS(&ch[chn].ao.dqsoscr, DQSOSCR_DQSOSC_CALEN, 1);
+}
+
+void apply_write_dbi_power_improve(bool en)
+{
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].ao.dbiwr_protect,
+			DBIWR_PROTECT_DBIWR_OPT_B1, 0,
+			DBIWR_PROTECT_DBIWR_OPT_B0, 0,
+			DBIWR_PROTECT_DBIWR_PINMUX_EN, 0,
+			DBIWR_PROTECT_DBIWR_IMP_EN, en);
+}
+
+void dramc_write_dbi_onoff(u8 onoff)
+{
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].ao.shu_tx_set0, SHU_TX_SET0_DBIWR, onoff);
+	dramc_info("Dramc Write-DBI: %s\n", (onoff == DBI_ON) ? "on" : "off");
 }

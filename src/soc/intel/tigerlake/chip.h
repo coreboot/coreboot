@@ -365,6 +365,12 @@ struct soc_intel_tigerlake_config {
 		/* External Vnn Voltage in mV */
 		int vnn_sx_voltage_mv;
 	} ext_fivr_settings;
+
+	/*
+	 * Enable(1)/Disable(0) CPU Replacement check.
+	 * Default 0. Setting this to 1 to check CPU replacement.
+	 */
+	uint8_t CpuReplacementCheck;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

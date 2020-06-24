@@ -268,6 +268,9 @@ __weak void variant_pcie_power_reset_configure(void)
 {
 	uint32_t board_version;
 
+	/* Deassert PCIE_RST1_L */
+	gpio_set(GPIO_27, 1);
+
 	if (!google_chromeec_cbi_get_board_version(&board_version) &&
 	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS))
 		wifi_power_reset_configure_v3();

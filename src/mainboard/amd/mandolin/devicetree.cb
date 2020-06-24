@@ -59,8 +59,8 @@ chip soc/amd/picasso
 		end
 		device pci 8.2 on      # Bridge to Bus B
 			device pci 0.0 on  end # AHCI
-			device pci 0.1 on  end # Ethernet
-			device pci 0.2 on  end # Ethernet
+			device pci 0.1 off end # Ethernet
+			device pci 0.2 off end # Ethernet
 		end
 		device pci 14.0 on     # SM
 			chip drivers/generic/generic # dimm 0-0-0

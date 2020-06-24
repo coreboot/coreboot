@@ -29,14 +29,12 @@ verstage-y += ../common/uart.c
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/dram_init.c
-romstage-y += dramc_pi_main.c dramc_pi_basic_api.c dramc_pi_calibration_api.c
-romstage-y += dramc_utility.c dramc_dvfs.c
-romstage-y += emi.c
+romstage-y += ../common/dramc_param.c
 romstage-y += ../common/flash_controller.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/i2c.c i2c.c
+romstage-y += ../common/memory.c ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
-romstage-y += ../common/memory.c ../common/dramc_param.c ../common/memory_test.c
 romstage-y += ../common/pll.c pll.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c
@@ -53,7 +51,6 @@ ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += ../common/flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/i2c.c i2c.c
-ramstage-y += emi.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += mcupm.c
@@ -97,6 +94,7 @@ BL31_MAKEARGS += PLAT=mt8192
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8192/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
+CPPFLAGS_common += -Isrc/vendorcode/mediatek/mt8192/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@

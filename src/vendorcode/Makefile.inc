@@ -4,3 +4,4 @@ subdirs-y += intel
 subdirs-y += siemens
 subdirs-y += cavium
 subdirs-y += eltan
+subdirs-y += mediatek

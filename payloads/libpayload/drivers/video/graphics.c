@@ -113,22 +113,26 @@ static int transform_vector(struct vector *out,
 {
 	if (!is_valid_scale(a))
 		return CBGFX_ERROR_INVALID_PARAMETER;
-	out->x = a->x.n * in->x / a->x.d + offset->x;
-	out->y = a->y.n * in->y / a->y.d + offset->y;
+	out->x = (int64_t)a->x.n * in->x / a->x.d + offset->x;
+	out->y = (int64_t)a->y.n * in->y / a->y.d + offset->y;
 	return CBGFX_SUCCESS;
 }
 
 /*
  * Returns 1 if v is exclusively within box, 0 if v is inclusively within box,
- * or -1 otherwise. Note that only the right and bottom edges are examined.
+ * or -1 otherwise.
  */
 static int within_box(const struct vector *v, const struct rect *bound)
 {
-	if (v->x < bound->offset.x + bound->size.width &&
-			v->y < bound->offset.y + bound->size.height)
+	if (v->x > bound->offset.x &&
+	    v->y > bound->offset.y &&
+	    v->x < bound->offset.x + bound->size.width &&
+	    v->y < bound->offset.y + bound->size.height)
 		return 1;
-	else if (v->x <= bound->offset.x + bound->size.width &&
-			v->y <= bound->offset.y + bound->size.height)
+	else if (v->x >= bound->offset.x &&
+		 v->y >= bound->offset.y &&
+		 v->x <= bound->offset.x + bound->size.width &&
+		 v->y <= bound->offset.y + bound->size.height)
 		return 0;
 	else
 		return -1;

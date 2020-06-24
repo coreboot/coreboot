@@ -7,13 +7,13 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select SOC_AMD_PICASSO
 	select HAVE_ACPI_TABLES
-	select BOARD_ROMSIZE_KB_8192
+	select BOARD_ROMSIZE_KB_8192 if BOARD_AMD_MANDOLIN
 	select AZALIA_PLUGIN_SUPPORT
 	select HAVE_ACPI_RESUME
 
 config FMDFILE
 	string
-	default "src/mainboard/amd/mandolin/mandolin.fmd"
+	default "src/mainboard/amd/mandolin/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
 
 config AMD_LPC_DEBUG_CARD
 	bool "Enable LPC-Serial debug card on the debug header"
@@ -28,15 +28,23 @@ config AMD_LPC_DEBUG_CARD
 
 config CBFS_SIZE
 	hex
-	default 0x7cf000 # Maximum size for the Mandolin FMAP
+	default 0x7cf000 if BOARD_AMD_MANDOLIN # Maximum size for the Mandolin FMAP
 
 config MAINBOARD_DIR
 	string
 	default "amd/mandolin"
 
+config VARIANT_DIR
+	string
+	default "mandolin" if BOARD_AMD_MANDOLIN
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "MANDOLIN"
+	default "MANDOLIN" if BOARD_AMD_MANDOLIN
+
+config DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAX_CPUS
 	int
@@ -48,7 +56,7 @@ config ONBOARD_VGA_IS_PRIMARY
 
 config AMD_FWM_POSITION_INDEX
 	int
-	default 3
+	default 3 if BOARD_AMD_MANDOLIN
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
 
@@ -59,7 +67,7 @@ config MANDOLIN_HAVE_MCHP_FW
 config MANDOLIN_MCHP_FW_FILE
 	string
 	depends on MANDOLIN_HAVE_MCHP_FW
-	default "3rdparty/blobs/mainboard/amd/mandolin/mchp.bin"
+	default "3rdparty/blobs/mainboard/amd/mandolin/EC_mandolin.bin" if BOARD_AMD_MANDOLIN
 
 if !AMD_LPC_DEBUG_CARD
 choice MANDOLIN_LPC_IOMUX
@@ -95,6 +103,6 @@ config VGA_BIOS_DGPU_ID
 
 config VGA_BIOS_DGPU_FILE
 	string
-	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin"
+	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin" if BOARD_AMD_MANDOLIN
 
 endif # BOARD_AMD_MANDOLIN

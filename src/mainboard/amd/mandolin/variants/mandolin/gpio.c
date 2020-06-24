@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/gpio.h>
-#include "gpio.h"
+#include "../../gpio.h"
 
 /*
  * As a rule of thumb, GPIO pins used by coreboot should be initialized at

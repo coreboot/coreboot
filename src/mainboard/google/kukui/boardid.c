@@ -3,8 +3,14 @@
 #include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
-#include <soc/auxadc.h>
+#include <delay.h>
+#include <device/i2c_simple.h>
+#include <drivers/camera/cros_camera.h>
 #include <ec/google/chromeec/ec.h>
+#include <soc/auxadc.h>
+#include <soc/i2c.h>
+#include <soc/pmic_wrap_common.h>
+#include <string.h>
 
 /* For CBI un-provisioned/corrupted Flapjack board. */
 #define FLAPJACK_UNDEF_SKU_ID 0
@@ -72,6 +78,97 @@ static uint32_t get_adc_index(unsigned int channel)
 	return id;
 }
 
+static uint8_t eeprom_random_read(uint8_t bus, uint8_t slave, uint16_t offset,
+				  uint8_t *data, uint16_t len)
+{
+	struct i2c_msg seg[2];
+	uint8_t address[2];
+
+	address[0] = offset >> 8;
+	address[1] = offset & 0xff;
+
+	seg[0].flags = 0;
+	seg[0].slave = slave;
+	seg[0].buf   = address;
+	seg[0].len   = sizeof(address);
+	seg[1].flags = I2C_M_RD;
+	seg[1].slave = slave;
+	seg[1].buf   = data;
+	seg[1].len   = len;
+
+	return i2c_transfer(bus, seg, ARRAY_SIZE(seg));
+}
+
+/* Regulator for world facing camera. */
+#define PMIC_LDO_VCAMIO_CON0 0x1cb0
+
+#define CROS_CAMERA_INFO_OFFSET 0x1f80
+#define MT8183_FORMAT 0x8183
+#define KODAMA_PID 0x00c7
+
+/* Returns the ID for world facing camera. */
+static uint8_t wfc_id(void)
+{
+	if (!CONFIG(BOARD_GOOGLE_KODAMA))
+		return 0;
+
+	int i, ret;
+	uint8_t bus = 2;
+	uint8_t dev_addr = 0x50;  /* at24c32/64 device address */
+
+	struct cros_camera_info data = {0};
+
+	const uint16_t sensor_pids[] = {
+		[0] = 0x5965,  /* OV5965 */
+		[1] = 0x5035,  /* GC5035 */
+	};
+
+	mtk_i2c_bus_init(bus);
+
+	/* Turn on camera sensor EEPROM */
+	pwrap_write(PMIC_LDO_VCAMIO_CON0, 0x1);
+	udelay(270);
+
+	ret = eeprom_random_read(bus, dev_addr, CROS_CAMERA_INFO_OFFSET,
+				 (uint8_t *)&data, sizeof(data));
+	pwrap_write(PMIC_LDO_VCAMIO_CON0, 0x0);
+
+	if (ret) {
+		printk(BIOS_ERR,
+		       "Failed to read from EEPROM; using default WFC id 0\n");
+		return 0;
+	}
+
+	if (check_cros_camera_info(&data)) {
+		printk(BIOS_ERR,
+		       "Failed to check camera info; using default WFC id 0\n");
+		return 0;
+	}
+
+	if (data.data_format != MT8183_FORMAT) {
+		printk(BIOS_ERR, "Incompatible camera format: %#04x\n",
+		       data.data_format);
+		return 0;
+	}
+	if (data.module_pid != KODAMA_PID) {
+		printk(BIOS_ERR, "Incompatible module pid: %#04x\n",
+		       data.module_pid);
+		return 0;
+	}
+
+	printk(BIOS_DEBUG, "Camera sensor pid: %#04x\n", data.sensor_pid);
+
+	for (i = 0; i < ARRAY_SIZE(sensor_pids); i++) {
+		if (data.sensor_pid == sensor_pids[i]) {
+			printk(BIOS_INFO, "Detected WFC id: %d\n", i);
+			return i;
+		}
+	}
+
+	printk(BIOS_WARNING, "Unknown WFC id; using default id 0\n");
+	return 0;
+}
+
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 
 uint32_t sku_id(void)
@@ -98,11 +195,14 @@ uint32_t sku_id(void)
 
 	/*
 	 * The SKU (later used for device tree matching) is combined from:
+	 * World facing camera (WFC) ID.
 	 * ADC2[4bit/H] = straps on LCD module (type of panel).
 	 * ADC4[4bit/L] = SKU ID from board straps.
 	 */
-	cached_sku_id = (get_adc_index(LCM_ID_CHANNEL) << 4 |
+	cached_sku_id = (wfc_id() << 8 |
+			 get_adc_index(LCM_ID_CHANNEL) << 4 |
 			 get_adc_index(SKU_ID_CHANNEL));
+
 	return cached_sku_id;
 }
 

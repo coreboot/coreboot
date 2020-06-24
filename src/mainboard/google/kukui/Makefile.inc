@@ -1,7 +1,6 @@
 subdirs-y += sdram_params/
 subdirs-y += panel_params/
 
-bootblock-y += boardid.c
 bootblock-y += bootblock.c
 bootblock-y += reset.c
 

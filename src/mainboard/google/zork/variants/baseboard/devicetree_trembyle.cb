@@ -206,6 +206,98 @@ chip soc/amd/picasso
 			device pci 0.0 on  end # Internal GPU
 			device pci 0.1 on  end # Display HDA
 			device pci 0.2 on  end # Crypto Coprocesor
+			device pci 0.3 on # USB 3.1
+				chip drivers/usb/acpi
+					register "desc" = ""Root Hub""
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 on
+						chip drivers/usb/acpi
+							register "desc" = ""Left Type-C Port""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(1, 1)"
+							device usb 2.0 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Left Type-A Port""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(1, 2)"
+							device usb 2.1 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Right Type-A Port""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(2, 1)"
+							device usb 2.2 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Right Type-C Port""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(2, 2)"
+							device usb 2.3 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Left Type-C Port""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(1, 1)"
+							device usb 3.0 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Left Type-A Port""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(1, 2)"
+							device usb 3.1 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Right Type-A Port""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(2, 1)"
+							device usb 3.2 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Right Type-C Port""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(2, 2)"
+							device usb 3.3 on end
+						end
+
+						# The following devices are only enabled on Dali SKUs
+						chip drivers/usb/acpi
+							register "desc" = ""User-Facing Camera""
+							register "type" = "UPC_TYPE_INTERNAL"
+							device usb 2.4 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Bluetooth""
+							register "type" = "UPC_TYPE_INTERNAL"
+							device usb 2.5 on end
+						end
+					end
+				end
+			end
+			device pci 0.4 on # USB 3.1
+				chip drivers/usb/acpi
+					# The following devices are only enabled on Picasso SKUs
+					register "desc" = ""Root Hub""
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 on
+						chip drivers/usb/acpi
+							register "desc" = ""User-Facing Camera""
+							register "type" = "UPC_TYPE_INTERNAL"
+							device usb 2.0 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""Bluetooth""
+							register "type" = "UPC_TYPE_INTERNAL"
+							device usb 2.1 on end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""World-Facing Camera""
+							register "type" = "UPC_TYPE_INTERNAL"
+							device usb 3.0 on end
+						end
+					end
+				end
+			end
 			device pci 0.5 on  end # Audio
 			device pci 0.6 on  end # HDA
 			device pci 0.7 on  end # non-Sensor Fusion Hub device

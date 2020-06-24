@@ -131,6 +131,9 @@ chip soc/intel/cannonlake
 	# Disable S0ix
 	register "s0ix_enable" = "0"
 
+	# Enable Turbo
+	register "eist_enable" = "1"
+
 	register "common_soc_config" = "{
 		.gspi[0] = {
 			.speed_mhz = 1,

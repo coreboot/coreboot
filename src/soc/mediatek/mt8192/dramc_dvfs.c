@@ -104,3 +104,87 @@ void dramc_dfs_direct_jump_rg_mode(const struct ddr_cali *cali, u8 shu_level)
 	pll_mode = !pll_mode;
 	*(cali->pll_mode) = pll_mode;
 }
+
+void dramc_save_result_to_shuffle(dram_dfs_shu src, dram_dfs_shu dst)
+{
+	u8 tmp;
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_DMA_FIRE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_APB_SLV_SEL, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_STEP_EN_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SRAM_WR_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_APB_WR_MODE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_SHU_LEVEL_APB, src);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_SHU_LEVEL_SRAM, dst);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_DMA_FIRE, 1);
+		do {
+			tmp = READ32_BITFIELD(&ch[chn].phy_nao.misc_dma_debug0,
+				MISC_DMA_DEBUG0_SRAM_DONE);
+			tmp |= (READ32_BITFIELD(&ch[chn].phy_nao.misc_dma_debug0,
+						MISC_DMA_DEBUG0_APB_DONE) << 1);
+			dramc_dbg("Waiting dramc to shuffle sram, tmp: %u\n", tmp);
+		} while (tmp != 0x3);
+
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_DMA_FIRE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_STEP_EN_MODE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_MODE, 0);
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SRAM_WR_MODE, 0);
+}
+
+void dramc_load_shuffle_to_dramc(dram_dfs_shu src, dram_dfs_shu dst)
+{
+	u8 tmp;
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_DMA_FIRE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_APB_SLV_SEL, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_STEP_EN_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SRAM_WR_MODE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_APB_WR_MODE, 1);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_SHU_LEVEL_APB, dst);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_SHU_LEVEL_SRAM, src);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+			MISC_SRAM_DMA0_SW_DMA_FIRE, 1);
+		do {
+			tmp = READ32_BITFIELD(&ch[chn].phy_nao.misc_dma_debug0,
+				MISC_DMA_DEBUG0_SRAM_DONE);
+			tmp |= (READ32_BITFIELD(&ch[chn].phy_nao.misc_dma_debug0,
+				MISC_DMA_DEBUG0_APB_DONE) << 1);
+			dramc_dbg("Waiting shuffle sram to dramc, tmp: %u\n", tmp);
+		} while (tmp != 0x3);
+
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+				MISC_SRAM_DMA0_SW_DMA_FIRE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+				MISC_SRAM_DMA0_SW_STEP_EN_MODE, 0);
+		SET32_BITFIELDS(&ch[chn].phy_ao.misc_sram_dma0,
+				MISC_SRAM_DMA0_SW_MODE, 0);
+	}
+}

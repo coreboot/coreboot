@@ -321,6 +321,11 @@ void init_dram(const struct dramc_data *dparam)
 			get_dram_info_after_cal(&cali);
 
 		dramc_ac_timing_optimize(&cali);
+		dramc_save_result_to_shuffle(DRAM_DFS_SHU0, cali.shu);
+
+		/* for frequency switch in dramc_mode_reg_init phase */
+		if (first_freq_k)
+			dramc_load_shuffle_to_dramc(cali.shu, DRAM_DFS_SHU1);
 
 		first_freq_k = false;
 	}

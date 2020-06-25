@@ -218,6 +218,22 @@ config RW_REGION_ONLY
 	  Add a space delimited list of filenames that should only be in the
 	  RW sections.
 
+config RWA_REGION_ONLY
+	string
+	default ""
+	depends on VBOOT_SLOTS_RW_AB
+	help
+	  Add a space-delimited list of filenames that should only be in the
+	  RW-A section.
+
+config RWB_REGION_ONLY
+	string
+	default ""
+	depends on VBOOT_SLOTS_RW_AB
+	help
+	  Add a space-delimited list of filenames that should only be in the
+	  RW-B section.
+
 config VBOOT_ENABLE_CBFS_FALLBACK
 	bool
 	default n

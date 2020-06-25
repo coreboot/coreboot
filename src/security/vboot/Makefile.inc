@@ -165,8 +165,9 @@ RW_PARTITIONS += FW_MAIN_B
 endif
 
 # Return the regions a specific file should be placed in. The files listed below and the ones
-# that are specified in CONFIG_RO_REGION_ONLY are only specified in the RO region. The files
-# specified in the CONFIG_RW_REGION_ONLY are only placed in the RW regions.
+# that are specified in CONFIG_RO_REGION_ONLY, are only specified in the RO region. The files
+# specified in the CONFIG_RW_REGION_ONLY are placed in all RW regions.  Files specified
+# in CONFIG_RWA_REGION_ONLY or CONFIG_RWB_REGION_ONLY get placed only in those sections.
 # All other files will be installed into RO and RW regions
 # Use $(sort) to cut down on extra spaces that would be translated to commas
 regions-for-file = $(subst $(spc),$(comma),$(sort \
@@ -185,9 +186,15 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
 		,$(1)),COREBOOT,\
 		$(if $(filter \
+			$(call strip_quotes,$(CONFIG_RWA_REGION_ONLY)) \
+			,$(1)), FW_MAIN_A, \
+		$(if $(filter \
+			$(call strip_quotes,$(CONFIG_RWB_REGION_ONLY)) \
+			,$(1)), FW_MAIN_B, \
+		$(if $(filter \
 			$(call strip_quotes,$(CONFIG_RW_REGION_ONLY)) \
 			,$(1)), $(RW_PARTITIONS), $(VBOOT_PARTITIONS) ) \
-		)))
+		)))))
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))

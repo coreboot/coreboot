@@ -447,15 +447,13 @@ static int nvm_is_write_protected(void)
 /* Apply protection to a range of flash */
 static int nvm_protect(const struct region *r)
 {
-	const struct spi_flash *flash = boot_device_spi_flash();
-
 	if (!CONFIG(MRC_SETTINGS_PROTECT))
 		return 0;
 
 	if (!CONFIG(BOOT_DEVICE_SPI_FLASH))
 		return 0;
 
-	return spi_flash_ctrlr_protect_region(flash, r, WRITE_PROTECT);
+	return spi_flash_ctrlr_protect_region(boot_device_spi_flash(), r, WRITE_PROTECT);
 }
 
 /* Protect mrc region with a Protected Range Register */

@@ -361,4 +361,8 @@ void cse_fw_sync(void *unused)
 	}
 }
 
+#if CONFIG(SOC_INTEL_TIGERLAKE)
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, cse_fw_sync, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, cse_fw_sync, NULL);
+#endif

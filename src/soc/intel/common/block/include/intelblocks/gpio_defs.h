@@ -266,15 +266,16 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE),	\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
-#define PAD_CFG_GPI_IOSSTATE(pad, pull, rst, iosstate)			\
-	_PAD_CFG_STRUCT(pad,						\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE,	\
-		PAD_PULL(pull) | PAD_IOSSTATE(iosstate))
+#define PAD_CFG_GPI_TRIG_IOSSTATE_OWN(pad, pull, rst, trig, iosstate, own)		\
+	_PAD_CFG_STRUCT(pad,								\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) | PAD_BUF(TX_DISABLE),	\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own) | PAD_IOSSTATE(iosstate))
 
-#define PAD_CFG_GPI_IOSSTATE_IOSTERM(pad, pull, rst, iosstate, iosterm)	\
-	_PAD_CFG_STRUCT(pad,						\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE,	\
-		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
+#define PAD_CFG_GPI_TRIG_IOS_OWN(pad, pull, rst, trig, iosstate, iosterm, own)		\
+	_PAD_CFG_STRUCT(pad,								\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) | PAD_BUF(TX_DISABLE),	\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own) |				\
+		PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
 
 /*
  * General purpose input. The following macro sets the

@@ -22,7 +22,6 @@ bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
 bootblock-y += smi_util.c
 bootblock-y += config.c
-bootblock-y += ../../../arch/x86/memmove.c
 
 romstage-y += i2c.c
 romstage-y += romstage.c

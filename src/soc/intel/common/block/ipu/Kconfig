@@ -1,0 +1,4 @@
+config SOC_INTEL_COMMON_BLOCK_IPU
+	bool
+	help
+	  Intel Image Processing Unit driver

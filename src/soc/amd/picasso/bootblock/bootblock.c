@@ -13,6 +13,12 @@
 #include <soc/i2c.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <acpi/acpi.h>
+#include <security/vboot/symbols.h>
+
+/* vboot includes directory may not be in include path if vboot is not enabled */
+#if CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
+#include <2struct.h>
+#endif
 
 asmlinkage void bootblock_resume_entry(void);
 
@@ -122,6 +128,16 @@ void bootblock_soc_init(void)
 {
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
+
+#if CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
+	if (*(uint32_t *)_vboot2_work != VB2_SHARED_DATA_MAGIC) {
+		printk(BIOS_ERR, "ERROR: VBOOT workbuf not valid.\n");
+
+		printk(BIOS_DEBUG, "Signature: %#08x\n", *(uint32_t *)_vboot2_work);
+
+		die("Halting.\n");
+	}
+#endif
 
 	fch_early_init();
 }

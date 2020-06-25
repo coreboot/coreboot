@@ -28,6 +28,7 @@
 
 #include <libpayload.h>
 #include <cbfs.h>
+#include <fpmath.h>
 #include <sysinfo.h>
 #include "bitmap.h"
 
@@ -468,33 +469,116 @@ int clear_screen(const struct rgb_color *rgb)
 	return CBGFX_SUCCESS;
 }
 
-/*
- * Bi-linear Interpolation
- *
- * It estimates the value of a middle point (tx, ty) using the values from four
- * adjacent points (q00, q01, q10, q11).
- */
-static uint32_t bli(uint32_t q00, uint32_t q10, uint32_t q01, uint32_t q11,
-		    struct fraction *tx, struct fraction *ty)
+static int pal_to_rgb(uint8_t index, const struct bitmap_palette_element_v3 *pal,
+		      size_t palcount, struct rgb_color *out)
 {
-	uint32_t r0 = (tx->n * q10 + (tx->d - tx->n) * q00) / tx->d;
-	uint32_t r1 = (tx->n * q11 + (tx->d - tx->n) * q01) / tx->d;
-	uint32_t p = (ty->n * r1 + (ty->d - ty->n) * r0) / ty->d;
-	return p;
+	if (index >= palcount) {
+		LOG("Color index %d exceeds palette boundary\n", index);
+		return CBGFX_ERROR_BITMAP_DATA;
+	}
+
+	out->red = pal[index].red;
+	out->green = pal[index].green;
+	out->blue = pal[index].blue;
+	return CBGFX_SUCCESS;
+}
+
+/*
+ * We're using the Lanczos resampling algorithm to rescale images to a new size.
+ * Since output size is often not cleanly divisible by input size, an output
+ * pixel (ox,oy) corresponds to a point that lies in the middle between several
+ * input pixels (ix,iy), meaning that if you transformed the coordinates of the
+ * output pixel into the input image space, they would be fractional. To sample
+ * the color of this "virtual" pixel with fractional coordinates, we gather the
+ * 6x6 grid of nearest real input pixels in a sample array. Then we multiply the
+ * color values for each of those pixels (separately for red, green and blue)
+ * with a "weight" value that was calculated from the distance between that
+ * input pixel and the fractional output pixel coordinates. This is done for
+ * both X and Y dimensions separately. The combined weights for all 36 sample
+ * pixels add up to 1.0, so by adding up the multiplied color values we get the
+ * interpolated color for the output pixel.
+ *
+ * The CONFIG_LP_CBGFX_FAST_RESAMPLE option let's the user change the 'a'
+ * parameter from the Lanczos weight formula from 3 to 2, which effectively
+ * reduces the size of the sample array from 6x6 to 4x4. This is a bit faster
+ * but doesn't look as good. Most use cases should be fine without it.
+ */
+#if CONFIG(LP_CBGFX_FAST_RESAMPLE)
+#define LNCZ_A 2
+#else
+#define LNCZ_A 3
+#endif
+
+/*
+ * When walking the sample array we often need to start at a pixel close to our
+ * fractional output pixel (for convenience we choose the pixel on the top-left
+ * which corresponds to the integer parts of the output pixel coordinates) and
+ * then work our way outwards in both directions from there. Arrays in C must
+ * start at 0 but we'd really prefer indexes to go from -2 to 3 (for 6x6)
+ * instead, so that this "start pixel" could be 0. Since we cannot do that,
+ * define a constant for the index of that "0th" pixel instead.
+ */
+#define S0 (LNCZ_A - 1)
+
+/* The size of the sample array, which we need a lot. */
+#define SSZ (LNCZ_A * 2)
+
+/*
+ * This is implementing the Lanczos kernel according to:
+ * https://en.wikipedia.org/wiki/Lanczos_resampling
+ *
+ *         / 1							if x = 0
+ * L(x) = <  a * sin(pi * x) * sin(pi * x / a) / (pi^2 * x^2)	if -a < x <= a
+ *	   \ 0							otherwise
+ */
+static fpmath_t lanczos_weight(fpmath_t in, int off)
+{
+	/*
+	 * |in| is the output pixel coordinate scaled into the input pixel
+	 * space. |off| is the offset in the sample array for the pixel whose
+	 * weight we're calculating. (off - S0) is the distance from that
+	 * sample pixel to the S0 pixel, and the fractional part of |in|
+	 * (in - floor(in)) is by definition the distance between S0 and the
+	 * output pixel.
+	 *
+	 * So (off - S0) - (in - floor(in)) is the distance from the sample
+	 * pixel to S0 minus the distance from S0 to the output pixel, aka
+	 * the distance from the sample pixel to the output pixel.
+	 */
+	fpmath_t x = fpisub(off - S0, fpsubi(in, fpfloor(in)));
+
+	if (fpequals(x, fp(0)))
+		return fp(1);
+
+	/* x * 2 / a can save some instructions if a == 2 */
+	fpmath_t x2a = x;
+	if (LNCZ_A != 2)
+		x2a = fpmul(x, fpfrac(2, LNCZ_A));
+
+	fpmath_t x_times_pi = fpmul(x, fppi());
+
+	/*
+	 * Rather than using sinr(pi*x), we leverage the "one-based" sine
+	 * function (see <fpmath.h>) with sin1(2*x) so that the pi is eliminated
+	 * since multiplication by an integer is a slightly faster operation.
+	 */
+	fpmath_t tmp = fpmuli(fpdiv(fpsin1(fpmuli(x, 2)), x_times_pi), LNCZ_A);
+	return fpdiv(fpmul(tmp, fpsin1(x2a)), x_times_pi);
 }
 
 static int draw_bitmap_v3(const struct vector *top_left,
-			  const struct scale *scale,
 			  const struct vector *dim,
 			  const struct vector *dim_org,
 			  const struct bitmap_header_v3 *header,
 			  const struct bitmap_palette_element_v3 *pal,
-			  const uint8_t *pixel_array,
-			  uint8_t invert)
+			  const uint8_t *pixel_array, uint8_t invert)
 {
 	const int bpp = header->bits_per_pixel;
 	int32_t dir;
 	struct vector p;
+	int32_t ox, oy;		/* output (resampled) pixel coordinates */
+	int32_t ix, iy;		/* input (source image) pixel coordinates */
+	int sx, sy;	/* index into |sample| (not ringbuffer adjusted) */
 
 	if (header->compression) {
 		LOG("Compressed bitmaps are not supported\n");
@@ -507,10 +591,6 @@ static int draw_bitmap_v3(const struct vector *top_left,
 	if (bpp != 8) {
 		LOG("Unsupported bits per pixel: %d\n", bpp);
 		return CBGFX_ERROR_BITMAP_FORMAT;
-	}
-	if (scale->x.n == 0 || scale->y.n == 0) {
-		LOG("Scaling out of range\n");
-		return CBGFX_ERROR_SCALE_OUT_OF_RANGE;
 	}
 
 	const int32_t y_stride = ROUNDUP(dim_org->width * bpp / 8, 4);
@@ -530,63 +610,202 @@ static int draw_bitmap_v3(const struct vector *top_left,
 		p.y += dim->height - 1;
 		dir = -1;
 	}
-	/*
-	 * Plot pixels scaled by the bilinear interpolation. We scan over the
-	 * image on canvas (using d) and find the corresponding pixel in the
-	 * bitmap data (using s0, s1).
-	 *
-	 * When d hits the right bottom corner, s0 also hits the right bottom
-	 * corner of the pixel array because that's how scale->x and scale->y
-	 * have been set. Since the pixel array size is already validated in
-	 * parse_bitmap_header_v3, s0 is guaranteed not to exceed pixel array
-	 * boundary.
-	 */
-	struct vector s0, s1, d;
-	struct fraction tx, ty;
-	for (d.y = 0; d.y < dim->height; d.y++, p.y += dir) {
-		s0.y = d.y * scale->y.d / scale->y.n;
-		s1.y = s0.y;
-		if (s1.y + 1 < dim_org->height)
-			s1.y++;
-		ty.d = scale->y.n;
-		ty.n = (d.y * scale->y.d) % scale->y.n;
-		const uint8_t *data0 = pixel_array + s0.y * y_stride;
-		const uint8_t *data1 = pixel_array + s1.y * y_stride;
-		p.x = top_left->x;
-		for (d.x = 0; d.x < dim->width; d.x++, p.x++) {
-			s0.x = d.x * scale->x.d / scale->x.n;
-			s1.x = s0.x;
-			if (s1.x + 1 < dim_org->width)
-				s1.x++;
-			tx.d = scale->x.n;
-			tx.n = (d.x * scale->x.d) % scale->x.n;
-			uint8_t c00 = data0[s0.x];
-			uint8_t c10 = data0[s1.x];
-			uint8_t c01 = data1[s0.x];
-			uint8_t c11 = data1[s1.x];
-			if (c00 >= header->colors_used
-					|| c10 >= header->colors_used
-					|| c01 >= header->colors_used
-					|| c11 >= header->colors_used) {
-				LOG("Color index exceeds palette boundary\n");
-				return CBGFX_ERROR_BITMAP_DATA;
+
+	/* Don't waste time resampling when the scale is 1:1. */
+	if (dim_org->width == dim->width && dim_org->height == dim->height) {
+		for (oy = 0; oy < dim->height; oy++, p.y += dir) {
+			p.x = top_left->x;
+			for (ox = 0; ox < dim->width; ox++, p.x++) {
+				struct rgb_color rgb;
+				if (pal_to_rgb(pixel_array[oy * y_stride + ox],
+					       pal, header->colors_used, &rgb))
+					return CBGFX_ERROR_BITMAP_DATA;
+				set_pixel(&p, calculate_color(&rgb, invert));
 			}
-			const struct rgb_color rgb = {
-				.red = bli(pal[c00].red, pal[c10].red,
-					   pal[c01].red, pal[c11].red,
-					   &tx, &ty),
-				.green = bli(pal[c00].green, pal[c10].green,
-					     pal[c01].green, pal[c11].green,
-					     &tx, &ty),
-				.blue = bli(pal[c00].blue, pal[c10].blue,
-					    pal[c01].blue, pal[c11].blue,
-					    &tx, &ty),
+		}
+		return CBGFX_SUCCESS;
+	}
+
+	/* Precalculate the X-weights for every possible ox so that we only have
+	   to multiply weights together in the end. */
+	fpmath_t (*weight_x)[SSZ] = malloc(sizeof(fpmath_t) * SSZ * dim->width);
+	if (!weight_x)
+		return CBGFX_ERROR_UNKNOWN;
+	for (ox = 0; ox < dim->width; ox++) {
+		for (sx = 0; sx < SSZ; sx++) {
+			fpmath_t ixfp = fpfrac(ox * dim_org->width, dim->width);
+			weight_x[ox][sx] = lanczos_weight(ixfp, sx);
+		}
+	}
+
+	/*
+	 * For every sy in the sample array, we directly cache a pointer into
+	 * the .BMP pixel array for the start of the corresponding line. On the
+	 * edges of the image (where we don't have any real pixels to fill all
+	 * lines in the sample array), we just reuse the last valid lines inside
+	 * the image for all lines that would lie outside.
+	 */
+	const uint8_t *ypix[SSZ];
+	for (sy = 0; sy < SSZ; sy++) {
+		if (sy <= S0)
+			ypix[sy] = pixel_array;
+		else if (sy - S0 >= dim_org->height)
+			ypix[sy] = ypix[sy - 1];
+		else
+			ypix[sy] = &pixel_array[y_stride * (sy - S0)];
+	}
+
+	/* iy and ix track the input pixel corresponding to sample[S0][S0]. */
+	iy = 0;
+	for (oy = 0; oy < dim->height; oy++, p.y += dir) {
+		struct rgb_color sample[SSZ][SSZ];
+
+		/* Like with X weights, we also cache all Y weights. */
+		fpmath_t iyfp = fpfrac(oy * dim_org->height, dim->height);
+		fpmath_t weight_y[SSZ];
+		for (sy = 0; sy < SSZ; sy++)
+			weight_y[sy] = lanczos_weight(iyfp, sy);
+
+		/*
+		 * If we have a new input pixel line between the last oy and
+		 * this one, we have to adjust iy forward. When upscaling, this
+		 * is not always the case for each new output line. When
+		 * downscaling, we may even cross more than one line per output
+		 * pixel.
+		 */
+		while (fpfloor(iyfp) > iy) {
+			iy++;
+
+			/* Shift ypix array up to center around next iy line. */
+			for (sy = 0; sy < SSZ - 1; sy++)
+				ypix[sy] = ypix[sy + 1];
+
+			/* Calculate the last ypix that is being shifted in,
+			   but beware of reaching the end of the input image. */
+			if (iy + LNCZ_A < dim_org->height)
+				ypix[SSZ - 1] = &pixel_array[y_stride *
+							     (iy + LNCZ_A)];
+		}
+
+		/*
+		 * Initialize the sample array for this line. For pixels to the
+		 * left of S0 there are no corresponding input pixels so just
+		 * copy the S0 values over.
+		 *
+		 * Also initialize the equals counter, which counts how many of
+		 * the latest pixels were exactly equal. We know the columns
+		 * left of S0 must be equal to S0, so start with that number.
+		 */
+		int equals = S0 * SSZ;
+		uint8_t last_equal = ypix[0][0];
+		for (sy = 0; sy < SSZ; sy++) {
+			for (sx = S0; sx < SSZ; sx++) {
+				if (sx >= dim_org->width) {
+					sample[sx][sy] = sample[sx - 1][sy];
+					equals++;
+					continue;
+				}
+				uint8_t i = ypix[sy][sx - S0];
+				if (pal_to_rgb(i, pal, header->colors_used,
+					       &sample[sx][sy]))
+					goto bitmap_error;
+				if (i == last_equal) {
+					equals++;
+				} else {
+					last_equal = i;
+					equals = 1;
+				}
+			}
+			for (sx = S0 - 1; sx >= 0; sx--)
+				sample[sx][sy] = sample[S0][sy];
+		}
+
+		ix = 0;
+		p.x = top_left->x;
+		for (ox = 0; ox < dim->width; ox++, p.x++) {
+			/* Adjust ix forward, same as iy above. */
+			fpmath_t ixfp = fpfrac(ox * dim_org->width, dim->width);
+			while (fpfloor(ixfp) > ix) {
+				ix++;
+
+				/*
+				 * We want to reuse the sample columns we
+				 * already have, but we don't want to copy them
+				 * all around for every new column either.
+				 * Instead, treat the X dimension of the sample
+				 * array like a ring buffer indexed by ix. rx is
+				 * the ringbuffer-adjusted offset of the new
+				 * column in sample (the rightmost one) we're
+				 * trying to fill.
+				 */
+				int rx = (SSZ - 1 + ix) % SSZ;
+				for (sy = 0; sy < SSZ; sy++) {
+					if (ix + LNCZ_A >= dim_org->width) {
+						sample[rx][sy] = sample[(SSZ - 2
+							+ ix) % SSZ][sy];
+						equals++;
+						continue;
+					}
+					uint8_t i = ypix[sy][ix + LNCZ_A];
+					if (i == last_equal) {
+						if (equals++ >= (SSZ * SSZ))
+							continue;
+					} else {
+						last_equal = i;
+						equals = 1;
+					}
+					if (pal_to_rgb(i, pal,
+						       header->colors_used,
+						       &sample[rx][sy]))
+						goto bitmap_error;
+				}
+			}
+
+			/* If all pixels in sample are equal, fast path. */
+			if (equals >= (SSZ * SSZ)) {
+				set_pixel(&p, calculate_color(&sample[0][0],
+							      invert));
+				continue;
+			}
+
+			fpmath_t red = fp(0);
+			fpmath_t green = fp(0);
+			fpmath_t blue = fp(0);
+			for (sy = 0; sy < SSZ; sy++) {
+				for (sx = 0; sx < SSZ; sx++) {
+					int rx = (sx + ix) % SSZ;
+					fpmath_t weight = fpmul(weight_x[ox][sx],
+								weight_y[sy]);
+					red = fpadd(red, fpmuli(weight,
+						sample[rx][sy].red));
+					green = fpadd(green, fpmuli(weight,
+						sample[rx][sy].green));
+					blue = fpadd(blue, fpmuli(weight,
+						sample[rx][sy].blue));
+				}
+			}
+
+			/*
+			 * Weights *should* sum up to 1.0 (making this not
+			 * necessary) but just to hedge against rounding errors
+			 * we should clamp color values to their legal limits.
+			 */
+			struct rgb_color rgb = {
+				.red = MAX(0, MIN(UINT8_MAX, fpround(red))),
+				.green = MAX(0, MIN(UINT8_MAX, fpround(green))),
+				.blue = MAX(0, MIN(UINT8_MAX, fpround(blue))),
 			};
+
 			set_pixel(&p, calculate_color(&rgb, invert));
 		}
 	}
 
+	free(weight_x);
 	return CBGFX_SUCCESS;
+
+bitmap_error:
+	free(weight_x);
+	return CBGFX_ERROR_BITMAP_DATA;
 }
 
 static int get_bitmap_file_header(const void *bitmap, size_t size,
@@ -780,7 +999,6 @@ int draw_bitmap(const void *bitmap, size_t size,
 	const struct bitmap_palette_element_v3 *palette;
 	const uint8_t *pixel_array;
 	struct vector top_left, dim, dim_org;
-	struct scale scale;
 	int rv;
 	const uint8_t pivot = flags & PIVOT_MASK;
 	const uint8_t invert = (flags & INVERT_COLORS) >> INVERT_SHIFT;
@@ -799,12 +1017,6 @@ int draw_bitmap(const void *bitmap, size_t size,
 	if (rv)
 		return rv;
 
-	/* Calculate self scale */
-	scale.x.n = dim.width;
-	scale.x.d = dim_org.width;
-	scale.y.n = dim.height;
-	scale.y.d = dim_org.height;
-
 	/* Calculate coordinate */
 	rv = calculate_position(&dim, pos_rel, pivot, &top_left);
 	if (rv)
@@ -816,7 +1028,7 @@ int draw_bitmap(const void *bitmap, size_t size,
 		return rv;
 	}
 
-	return draw_bitmap_v3(&top_left, &scale, &dim, &dim_org,
+	return draw_bitmap_v3(&top_left, &dim, &dim_org,
 			      &header, palette, pixel_array, invert);
 }
 
@@ -827,7 +1039,6 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
 	const struct bitmap_palette_element_v3 *palette;
 	const uint8_t *pixel_array;
 	struct vector dim;
-	struct scale scale;
 	int rv;
 
 	if (cbgfx_init())
@@ -839,19 +1050,13 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
 	if (rv)
 		return rv;
 
-	/* Calculate self scale */
-	scale.x.n = 1;
-	scale.x.d = 1;
-	scale.y.n = 1;
-	scale.y.d = 1;
-
 	rv = check_boundary(top_left, &dim, &screen);
 	if (rv) {
 		LOG("Bitmap image exceeds screen boundary\n");
 		return rv;
 	}
 
-	return draw_bitmap_v3(top_left, &scale, &dim, &dim,
+	return draw_bitmap_v3(top_left, &dim, &dim,
 			      &header, palette, pixel_array, 0);
 }
 

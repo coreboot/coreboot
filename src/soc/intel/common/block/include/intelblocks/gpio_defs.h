@@ -285,7 +285,7 @@
 	_PAD_CFG_STRUCT(pad,							\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
 		PAD_TRIG(trig) | PAD_RX_POL(NONE) | PAD_BUF(TX_DISABLE),	\
-		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE) | PAD_CFG_OWN_GPIO(own))
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
 
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst)					\
 	_PAD_CFG_STRUCT(pad,							\

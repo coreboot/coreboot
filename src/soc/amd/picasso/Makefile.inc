@@ -249,6 +249,12 @@ endif
 PSP_VERSTAGE_FILE=$(obj)/psp_verstage.bin
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
+APOB_NV_SIZE=$(shell printf "0x%x" 	$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))
+APOB_NV_BASE=$(shell printf "0x%x" $(call int-add, \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_BASE))))
+
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28
 
@@ -312,6 +318,8 @@ OPT_PSP_PMUD_FILE4=$(call add_opt_prefix, $(PSP_PMUD_FILE4), --subprogram 1 --in
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
 OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
+OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
+OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE),--apob-nv-base)
 
 AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \
@@ -323,12 +331,8 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_SMUFW2_SUB1_FILE) \
 		$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
-		--apob-nv-size $(shell printf "0x%x" \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE))) \
-		--apob-nv-base $(shell printf "0x%x" $(call int-add, \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_BASE)))) \
+		$(OPT_APOB_NV_SIZE) \
+		$(OPT_APOB_NV_BASE) \
 		$(OPT_PSP_BIOSBIN_FILE) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \

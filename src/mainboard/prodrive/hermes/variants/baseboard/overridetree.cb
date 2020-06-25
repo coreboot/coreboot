@@ -19,6 +19,15 @@ chip soc/intel/cannonlake
 	register "SataPortsEnable[6]" = "1"
 	register "SataPortsEnable[7]" = "1"
 
+	register "SataPortsHotPlug[0]" = "1"
+	register "SataPortsHotPlug[1]" = "1"
+	register "SataPortsHotPlug[2]" = "0"
+	register "SataPortsHotPlug[3]" = "0"
+	register "SataPortsHotPlug[4]" = "1"
+	register "SataPortsHotPlug[5]" = "1"
+	register "SataPortsHotPlug[6]" = "1"
+	register "SataPortsHotPlug[7]" = "1"
+
 	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
 

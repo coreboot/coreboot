@@ -297,6 +297,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			sizeof(params->SataPortsEnable));
 		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
 			sizeof(params->SataPortsDevSlp));
+
+		memcpy(params->SataPortsHotPlug, config->SataPortsHotPlug,
+			sizeof(params->SataPortsHotPlug));
+
 #if CONFIG(SOC_INTEL_COMETLAKE)
 		memcpy(params->SataPortsDevSlpResetConfig,
 			config->SataPortsDevSlpResetConfig,

@@ -147,6 +147,7 @@ struct soc_intel_cannonlake_config {
 	uint8_t SataPortsEnable[8];
 	uint8_t SataPortsDevSlp[8];
 	uint8_t SataPortsDevSlpResetConfig[8];
+	uint8_t SataPortsHotPlug[8];
 
 	/* Enable/Disable SLP_S0 with GBE Support. 0: disable, 1: enable */
 	uint8_t SlpS0WithGbeSupport;

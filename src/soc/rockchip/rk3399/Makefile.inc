@@ -69,7 +69,7 @@ CPPFLAGS_common += -Isrc/soc/rockchip/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
-	@mkdir -p $(dir $@)
-	@$(IDBTOOL) --from=$< --to=$@ --enable-align --chip=RK33
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(IDBTOOL) --from=$< --to=$@ --enable-align --chip=RK33
 
 endif

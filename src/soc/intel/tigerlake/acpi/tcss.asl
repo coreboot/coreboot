@@ -139,38 +139,54 @@ Scope (\_SB)
 
 	Method (_OSC, 4, Serialized)
 	{
-		/*
-		 * Operating System Capabilities for USB4
-		 * Arg0: UUID = {23A0D13A-26AB-486C-9C5F-0FFA525A575A}
-		 * Arg1: Revision ID = 1
-		 * Arg2: Count of entries (DWORD) in Arg3 (Integer): 3
-		 * Arg3: DWORD capabilities buffer:
-		 *      First DWORD: The standard definition bits are used to return errors.
-		 *      Second DWORD: OSPM support field for USB4, bits [31:0] reserved.
-		 *      Third DWORD: OSPM control field for USB4.
-		 *              bit 0: USB tunneling
-		 *              bit 1: DisplayPort tunneling
-		 *              bit 2: PCIe tunneling
-		 *              bit 3: Inter-domain USB4 internet protocol
-		 *              bit 31:4: reserved
-		 * Return: The platform acknowledges the capabilities buffer by returning
-		 *         a buffer of DWORD of the same length. Masked/Cleared bits in the
-		 *	   control field indicate that the platform does not permit OSPM
-		 *         control of the respectively capabilities or features.
-		 */
-		Name (CTRL, 0)  /* Control field value */
 		CreateDWordField (Arg3, 0, CDW1)
-		If (Arg0 == ToUUID("23A0D13A-26AB-486C-9C5F-0FFA525A575A")) {
-			CreateDWordField (Arg3, 2, CDW3)
-			CTRL = CDW3
+		If (Arg0 == ToUUID("0811B06E-4A27-44F9-8D60-3CBBC22E7B48")) {
+			/* Platform-Wide _OSC Capabilities
+			 * Arg0: UUID = {0811B06E-4A27-44F9-8D60-3CBBC22E7B48}
+			 * Arg1: Revision ID = 1
+			 * Arg2: Count of entries (DWORD) in Arge3 (Integer): 3
+			 * Arg3: DWORD capabilities buffer:
+			 * First DWORD: The standard definition bits are used to return errors.
+			 * Second DWORD: See ACPI specification Platform-Wide _OSC Capabilities
+			 * DWORD2 table for Bits 0-17. Bit 18 is newly defined as native USB4
+			 * support. The OS sets this bit to indicate support for an OSPM-native
+			 * USB4 Connection Manager which handles USB4 connection events and
+			 * link management.
+			 */
+			If (Arg1 != REVISION_ID) {
+				CDW1 |= UNRECOGNIZED_REVISION
+			}
+			Return (Arg3)
+		} ElseIf (Arg0 == ToUUID("23A0D13A-26AB-486C-9C5F-0FFA525A575A")) {
+			/*
+			 * Operating System Capabilities for USB4
+			 * Arg0: UUID = {23A0D13A-26AB-486C-9C5F-0FFA525A575A}
+			 * Arg1: Revision ID = 1
+			 * Arg2: Count of entries (DWORD) in Arg3 (Integer): 3
+			 * Arg3: DWORD capabilities buffer:
+			 * First DWORD: The standard definition bits are used to return errors.
+			 * Second DWORD: OSPM support field for USB4, bits [31:0] reserved.
+			 * Third DWORD: OSPM control field for USB4.
+			 *       bit 0: USB tunneling
+			 *       bit 1: DisplayPort tunneling
+			 *       bit 2: PCIe tunneling
+			 *       bit 3: Inter-domain USB4 internet protocol
+			 *       bit 31:4: reserved
+			 * Return: The platform acknowledges the capabilities buffer by
+			 * returning a buffer of DWORD of the same length. Masked/Cleared bits
+			 * in the control field indicate that the platform does not permit OSPM
+			 * control of the respectively capabilities or features.
+			 */
+			CreateDWordField (Arg3, 8, CDW3)
+			Local0 = CDW3
 
 			If (Arg1 != REVISION_ID) {
 				CDW1 |= UNRECOGNIZED_REVISION
 				Return (Arg3)
 			}
-			CTRL |= USB_TUNNELING | DISPLAY_PORT_TUNNELING | PCIE_TUNNELING |
+			Local0 |= USB_TUNNELING | DISPLAY_PORT_TUNNELING | PCIE_TUNNELING |
 				INTER_DOMAIN_USB4_INTERNET_PROTOCOL
-			CDW3 = CTRL
+			CDW3 = Local0
 			Return (Arg3)
 		} Else {
 			CDW1 |= UNRECOGNIZED_UUID

@@ -225,12 +225,6 @@
 		PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) |		\
 		PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
 
-/* Configure native function, iosstate, iosterm and disable input/output buffer */
-#define PAD_CFG_NF_BUF_IOSSTATE_IOSTERM(pad, pull, rst, func, bufdis, iosstate, iosterm) \
-	_PAD_CFG_STRUCT(pad,								\
-		PAD_RESET(rst) | PAD_BUF(bufdis) | PAD_FUNC(func),			\
-		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
-
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO(pad, val, rst)				\
 	_PAD_CFG_STRUCT(pad,					\

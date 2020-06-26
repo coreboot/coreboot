@@ -113,8 +113,6 @@ enum {
 	GPIO_TRIGGER_EDGE_HIGH,
 };
 
-#define GPIO_TRIGGER_INVALID		-1
-
 #define GPIO_SPECIAL_FLAG		(1 << 31)
 #define GPIO_DEBOUNCE_FLAG		(1 << 30)
 #define GPIO_WAKE_FLAG			(1 << 29)

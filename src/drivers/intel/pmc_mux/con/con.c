@@ -29,13 +29,20 @@ static void con_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_pmc_mux_con_config *config = dev->chip_info;
 	struct acpi_dp *dsd;
+	const char *scope;
+	const char *name;
 
 	if (!dev->enabled)
 		return;
 
 	/* Reference the existing scope and write CONx device */
-	acpigen_write_scope(acpi_device_scope(dev));
-	acpigen_write_device(acpi_device_name(dev));
+	scope = acpi_device_scope(dev);
+	name = acpi_device_name(dev);
+	if (!scope || !name)
+		return;
+
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
 
 	acpigen_write_name_integer("_ADR", dev->path.generic.id);
 

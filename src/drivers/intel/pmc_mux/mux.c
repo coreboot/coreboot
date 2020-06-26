@@ -13,8 +13,14 @@ static const char *mux_acpi_name(const struct device *dev)
 
 static void mux_fill_ssdt(const struct device *dev)
 {
-	acpigen_write_scope(acpi_device_scope(dev));
-	acpigen_write_device(acpi_device_name(dev));
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+
+	if (!scope || !name)
+		return;
+
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
 
 	acpigen_write_name_string("_HID", TGL_PMC_MUX_HID);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);

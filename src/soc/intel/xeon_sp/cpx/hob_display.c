@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <assert.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
+#include <lib.h>
 #include <soc/soc_util.h>
 
 static const uint8_t fsp_hob_iio_uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
@@ -61,20 +62,24 @@ void soc_display_memmap_hob(void)
 	assert(hob != NULL);
 
 	printk(BIOS_DEBUG, "===================== MEMORY MAP HOB DATA =====================\n");
-	printk(BIOS_DEBUG, "hob: %p\n", hob);
+	printk(BIOS_DEBUG, "hob: %p, size: 0x%lx, structure size: 0x%lx\n",
+		hob, hob_size, sizeof(*hob));
 	printk(BIOS_DEBUG, "\tlowMemBase: 0x%x, lowMemSize: 0x%x, highMemBase: 0x%x, "
 		"highMemSize: 0x%x\n",
 		hob->lowMemBase, hob->lowMemSize, hob->highMemBase, hob->highMemSize);
 	printk(BIOS_DEBUG, "\tmemSize: 0x%x, memFreq: 0x%x\n",
 		hob->memSize, hob->memFreq);
 
-	printk(BIOS_DEBUG, "\tSystemMemoryMapElement Entries: %d\n", hob->numberEntries);
+	printk(BIOS_DEBUG, "\tSystemMemoryMapElement Entries: %d, entry size: %ld\n",
+		hob->numberEntries, sizeof(SYSTEM_MEMORY_MAP_ELEMENT));
 	for (int e = 0; e < hob->numberEntries; ++e) {
 		const struct SystemMemoryMapElement *mem_element = &hob->Element[e];
 		printk(BIOS_DEBUG, "\t\tmemory_map %d BaseAddress: 0x%x, ElementSize: 0x%x, Type: 0x%x\n",
 			e, mem_element->BaseAddress,
 			mem_element->ElementSize, mem_element->Type);
 	}
+
+	hexdump(hob, sizeof(*hob));
 }
 
 void soc_display_iio_universal_data_hob(void)

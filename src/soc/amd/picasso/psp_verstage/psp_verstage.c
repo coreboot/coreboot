@@ -4,7 +4,10 @@
 
 #include <bl_uapp/bl_syscall_public.h>
 #include <boot_device.h>
+#include <cbfs.h>
+#include <commonlib/region.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
@@ -31,6 +34,19 @@ static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 	vboot_reboot();
 }
 
+static uintptr_t locate_amdfw(const char *name, struct region_device *rdev)
+{
+	struct cbfsf fh;
+	uint32_t type = CBFS_TYPE_RAW;
+
+	if (cbfs_locate(&fh, rdev, name, &type))
+		return 0;
+
+	cbfs_file_data(rdev, &fh);
+
+	return (uintptr_t)rdev_mmap_full(rdev);
+}
+
 /*
  * Tell the PSP where to load the rest of the firmware from
  */
@@ -39,6 +55,9 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	struct psp_ef_table *ef_table;
 	uint32_t psp_dir_addr, bios_dir_addr;
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
+	const char *rname, *fname;
+	struct region_device rdev;
+	uintptr_t amdfw_location;
 
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
@@ -47,15 +66,24 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	}
 
 	if (vboot_is_firmware_slot_a(ctx)) {
-		printk(BIOS_SPEW, "Using FMAP RW_A region.\n");
-		ef_table = (struct psp_ef_table *)((CONFIG_PICASSO_FW_A_POSITION &
-						SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+		rname = "FW_MAIN_A";
+		fname = "apu/amdfw_a";
 	} else {
-		printk(BIOS_SPEW, "Using FMAP RW_B region.\n");
-		ef_table = (struct psp_ef_table *)((CONFIG_PICASSO_FW_B_POSITION &
-						SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+		rname = "FW_MAIN_B";
+		fname = "apu/amdfw_b";
 	}
 
+	if (fmap_locate_area_as_rdev(rname, &rdev)) {
+		printk(BIOS_ERR, "Error: Could not locate fmap region %s.\n", rname);
+		return POSTCODE_FMAP_REGION_MISSING;
+	}
+
+	amdfw_location = locate_amdfw(fname, &rdev);
+	if (!amdfw_location) {
+		printk(BIOS_ERR, "Error: AMD Firmware table not found.\n");
+		return POSTCODE_AMD_FW_MISSING;
+	}
+	ef_table = (struct psp_ef_table *)amdfw_location;
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
 		printk(BIOS_ERR, "Error: ROMSIG address is not correct.\n");
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;

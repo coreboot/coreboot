@@ -169,9 +169,11 @@ static void save_i2c_pin_registers(uint8_t gpio,
 static void restore_i2c_pin_registers(uint8_t gpio,
 					struct soc_amd_i2c_save *save_table)
 {
+	/* Write and flush posted writes. */
 	iomux_write8(gpio, save_table->mux_value);
 	iomux_read8(gpio);
-	gpio_write32_rb(gpio, save_table->control_value);
+	gpio_write32(gpio, save_table->control_value);
+	gpio_read32(gpio);
 }
 
 /* Slaves to be reset are controlled by devicetree register i2c_scl_reset */

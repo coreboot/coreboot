@@ -387,12 +387,6 @@ static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
 	write32(gpio_ctrl_ptr(gpio_num), value);
 }
 
-static inline void gpio_write32_rb(uint8_t gpio_num, uint32_t value)
-{
-	write32(gpio_ctrl_ptr(gpio_num), value);
-	read32(gpio_ctrl_ptr(gpio_num));
-}
-
 /* GPIO bank 0 */
 static inline uint8_t gpio0_read8(uint8_t reg)
 {

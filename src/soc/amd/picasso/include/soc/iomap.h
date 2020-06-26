@@ -12,7 +12,12 @@
 #endif
 #define HPET_BASE_ADDRESS		0xfed00000
 
+/* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
+#define AL2AHB_CONTROL_CLK_OFFSET	0x10
+#define   AL2AHB_CLK_GATE_EN		(1 << 1)
+#define AL2AHB_CONTROL_HCLK_OFFSET	0x30
+#define   AL2AHB_HCLK_GATE_EN		(1 << 1)
 
 /* Reserved				0xfecd1000-0xfedc3fff */
 

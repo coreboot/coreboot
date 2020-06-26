@@ -328,11 +328,29 @@ static void set_nvs_sws(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
 
+/*
+ * A-Link to AHB bridge, part of the AMBA fabric. These are internal clocks
+ * and unneeded for Raven/Picasso so gate them to save power.
+ */
+static void al2ahb_clock_gate(void)
+{
+	uint8_t al2ahb_val;
+	uintptr_t al2ahb_base = ALINK_AHB_ADDRESS;
+
+	al2ahb_val = read8((void *)(al2ahb_base + AL2AHB_CONTROL_CLK_OFFSET));
+	al2ahb_val |= AL2AHB_CLK_GATE_EN;
+	write8((void *)(al2ahb_base + AL2AHB_CONTROL_CLK_OFFSET), al2ahb_val);
+	al2ahb_val = read8((void *)(al2ahb_base + AL2AHB_CONTROL_HCLK_OFFSET));
+	al2ahb_val |= AL2AHB_HCLK_GATE_EN;
+	write8((void *)(al2ahb_base + AL2AHB_CONTROL_HCLK_OFFSET), al2ahb_val);
+}
+
 void southbridge_init(void *chip_info)
 {
 	i2c_soc_init();
 	sb_init_acpi_ports();
 	acpi_clear_pm1_status();
+	al2ahb_clock_gate();
 }
 
 static void set_sb_final_nvs(void)

@@ -153,8 +153,17 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
+static void cse_log_status_registers(void)
+{
+	printk(BIOS_DEBUG, "cse_lite: CSE status registers: HFSTS1: 0x%x, HFSTS2: 0x%x "
+			"HFSTS3: 0x%x\n", me_read_config32(PCI_ME_HFSTS1),
+			me_read_config32(PCI_ME_HFSTS2), me_read_config32(PCI_ME_HFSTS3));
+}
+
 static void cse_trigger_recovery(uint8_t rec_sub_code)
 {
+	/* Log CSE Firmware Status Registers to help debugging */
+	cse_log_status_registers();
 	if (CONFIG(VBOOT)) {
 		struct vb2_context *ctx;
 		ctx = vboot_get_context();

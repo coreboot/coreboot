@@ -594,7 +594,7 @@ typedef struct {
 **/
   UINT8                       NtbXlinkCtlOverride;
 
-/** Offset 0x0100 - PchAdrEn
+/** Offset 0x0100 - PchSirqMode
   Enable or Disable PchSirqMode
 **/
   UINT8                       PchSirqMode;
@@ -633,7 +633,23 @@ typedef struct {
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
-/** Offset 0x0140
+/** Offset 0x0140 - SerialIoUartDebugEnable
+  Enable SerialIo Uart debug library in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       SerialIoUartDebugEnable;
+
+/** Offset 0x0141
+**/
+  UINT8                       UnusedUpdSpace3;
+
+/** Offset 0x0142 - ISA Serial Base selection
+  Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
+  0x3F8, 0x2F8
+**/
+  UINT16                      SerialIoUartDebugIoBase;
+
+/** Offset 0x0144
 **/
   UINT8                       ReservedMemoryInitUpd[16];
 } FSP_M_CONFIG;
@@ -654,9 +670,9 @@ typedef struct {
 **/
   FSP_M_CONFIG                 FspmConfig;
 
-/** Offset 0x0150
+/** Offset 0x0154
 **/
-  UINT8                       UnusedUpdSpace3[6];
+  UINT8                       UnusedUpdSpace4[2];
 
 /** Offset 0x0156
 **/

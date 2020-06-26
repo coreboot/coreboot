@@ -14,7 +14,9 @@ static void mainboard_config_gpios(FSPM_UPD *mupd)
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {
-	/* To be implemented */
+	/* Send FSP log message to SOL */
+	mupd->FspmConfig.SerialIoUartDebugEnable = 1;
+	mupd->FspmConfig.SerialIoUartDebugIoBase = 0x2f8;
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

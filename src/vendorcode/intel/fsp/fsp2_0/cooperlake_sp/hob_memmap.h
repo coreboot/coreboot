@@ -85,7 +85,7 @@ typedef struct SystemMemoryMapElement {
 
 /* NOTE - Reserved sizes need to be calibrated if any of the above #define values change */
 typedef struct SystemMemoryMapHob {
-  UINT8    reserved1[61];
+  UINT8    reserved1[58];
 
   UINT32   lowMemBase;                            // Mem base in 64MB units for below 4GB mem.
   UINT32   lowMemSize;                            // Mem size in 64MB units for below 4GB mem.
@@ -99,11 +99,11 @@ typedef struct SystemMemoryMapHob {
   UINT8    numberEntries;                         // Number of Memory Map Elements
   SYSTEM_MEMORY_MAP_ELEMENT Element[MAX_SOCKET * MAX_DRAM_CLUSTERS * MAX_SAD_RULES];
 
-  UINT8    reserved3[24417];
+  UINT8    reserved3[24514];
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 
-  UINT8    reserved4[10];
+  UINT8    reserved4[2];
 
 } SYSTEM_MEMORY_MAP_HOB;
 

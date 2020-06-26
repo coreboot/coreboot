@@ -9,6 +9,14 @@
 #include <soc/soc_util.h>
 #include <types.h>
 
+/*
+ * The Zen/Zen+ based APUs can be RV (sometimes called RV1), PCO or RV2 silicon. RV2 has less
+ * PCIe, USB3 and DisplayPort connectivity than RV(1) or PCO. A Picasso SoC is always PCO
+ * silicon, a Dali SoC can either be RV2 or fused-down PCO silicon that has the same
+ * connectivity as the RV2 one and Pollock is always RV2 silicon. Picasso and Dali are in a FP5
+ * package while Pollock is in the smaller FT5 package.
+ */
+
 #define SOCKET_TYPE_SHIFT	28
 #define SOCKET_TYPSE_MASK	(0xf << SOCKET_TYPE_SHIFT)
 

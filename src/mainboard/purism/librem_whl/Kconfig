@@ -1,0 +1,62 @@
+config BOARD_PURISM_BASEBOARD_LIBREM_WHL
+	def_bool n
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_GENERIC_CBFS_SERIAL
+	select DRIVERS_USB_ACPI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_WHISKEYLAKE
+	select SPD_READ_BY_WORD
+	select USE_LEGACY_8254_TIMER
+
+if BOARD_PURISM_BASEBOARD_LIBREM_WHL
+
+config MAINBOARD_DIR
+	string
+	default "purism/librem_whl"
+
+config MAINBOARD_FAMILY
+	string
+	default "Librem Mini" if BOARD_PURISM_LIBREM_MINI
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Librem Mini" if BOARD_PURISM_LIBREM_MINI
+
+config VARIANT_DIR
+	string
+	default "librem_mini" if BOARD_PURISM_LIBREM_MINI
+
+config CBFS_SIZE
+	hex
+	default 0x800000
+
+config MAX_CPUS
+	int
+	default 8
+
+config DIMM_MAX
+	int
+	default 2
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config VGA_BIOS_ID
+	string
+	default "8086,3ea0"
+
+config PXE_ROM_ID
+	string
+	default "10ec,8168"
+
+# This platform has limited means to display POST codes
+config NO_POST
+	default y
+
+endif

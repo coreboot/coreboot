@@ -6,6 +6,10 @@ bootblock-y += early_gpio.c
 ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
 
+ifneq ($(CONFIG_PICASSO_LPC_IOMUX),y)
+ramstage-y += emmc_gpio.c
+endif
+
 # APCB_mandolin.bin
 APCB_SOURCES = mandolin
 

@@ -115,6 +115,12 @@ static void mainboard_init(void *chip_info)
 		cfg->sd_emmc_config = SD_EMMC_EMMC_HS400;
 
 	mainboard_program_gpios();
+
+	/* Re-muxing LPCCLK0 can hang the system if LPC is in use. */
+	if (CONFIG(PICASSO_LPC_IOMUX))
+		printk(BIOS_INFO, "eMMC not available due to LPC requirement\n");
+	else
+		mainboard_program_emmc_gpios();
 }
 
 static void mandolin_enable(struct device *dev)

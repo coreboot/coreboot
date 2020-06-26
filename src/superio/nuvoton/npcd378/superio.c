@@ -325,7 +325,11 @@ static void npcd378_ssdt_pwr(const struct device *dev)
 	acpigen_pop_len();		/* Pop Scope */
 
 	/* Inject into parent: */
-	acpigen_write_scope(acpi_device_scope(dev));
+	if (!scope) {
+		printk(BIOS_ERR, "%s: Missing ACPI path/scope\n", dev_path(dev));
+		return;
+	}
+	acpigen_write_scope(scope);
 
 	acpigen_write_name_integer("MSFG", 1);
 	acpigen_write_name_integer("KBFG", 1);
@@ -404,6 +408,9 @@ static void npcd378_ssdt_pwr(const struct device *dev)
 
 static void npcd378_fill_ssdt_generator(const struct device *dev)
 {
+	if (!dev)
+		return;
+
 	superio_common_fill_ssdt_generator(dev);
 
 	switch (dev->path.pnp.device) {

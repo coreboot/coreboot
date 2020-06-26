@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
+#include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
@@ -134,14 +135,13 @@ static void read_resources(struct device *dev)
 static void root_complex_fill_ssdt(const struct device *device)
 {
 	msr_t msr;
+	const char *scope;
 
-	if (!device) {
-		printk(BIOS_ERR, "%s: device is NULL! ACPI SSDT will be incomplete.\n",
-			__func__);
-		return;
-	}
+	assert(device);
 
-	acpigen_write_scope(acpi_device_scope(device));
+	scope = acpi_device_scope(device);
+	assert(scope);
+	acpigen_write_scope(scope);
 
 	msr = rdmsr(TOP_MEM);
 	acpigen_write_name_dword("TOM1", msr.lo);

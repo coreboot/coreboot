@@ -26,9 +26,12 @@ static struct acpi_dp *gpio_keys_add_child_node(
 				    key->linux_input_type);
 	if (key->label)
 		acpi_dp_add_string(dsd, "label", key->label);
-	if (key->wake) {
+
+	if (key->wakeup_route == WAKEUP_ROUTE_SCI)
+		acpigen_write_PRW(key->wake_gpe, 3);
+
+	if (key->wakeup_route != WAKEUP_ROUTE_DISABLED) {
 		acpi_dp_add_integer(dsd, "wakeup-source", 1);
-		acpigen_write_PRW(key->wake, 3);
 		acpi_dp_add_integer(dsd, "wakeup-event-action",
 					key->wakeup_event_action);
 	}

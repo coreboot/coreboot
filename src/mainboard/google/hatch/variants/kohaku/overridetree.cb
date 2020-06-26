@@ -218,7 +218,8 @@ chip soc/intel/cannonlake
 				register "name" = ""PENH""
 				# GPP_A16 is the IRQ source, and GPP_A8 is the wake source
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_A16)"
-				register "key.wake" = "GPE0_DW0_08"
+				register "key.wake_gpe" = "GPE0_DW0_08"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
 				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
 				register "key.dev_name" = ""EJCT""
 				register "key.linux_code" = "SW_PEN_INSERTED"

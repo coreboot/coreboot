@@ -172,7 +172,8 @@ chip soc/intel/cannonlake
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A8)"
-				register "key.wake" = "GPE0_DW0_08"
+				register "key.wake_gpe" = "GPE0_DW0_08"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
 				register "key.wakeup_event_action" = "EV_ACT_ASSERTED"
 				register "key.dev_name" = ""EJCT""
 				register "key.linux_code" = "SW_PEN_INSERTED"

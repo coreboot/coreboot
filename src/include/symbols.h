@@ -60,6 +60,7 @@ DECLARE_REGION(framebuffer)
 DECLARE_REGION(pdpt)
 DECLARE_REGION(opensbi)
 DECLARE_REGION(bl31)
+DECLARE_REGION(transfer_buffer)
 
 /*
  * Put this into a .c file accessing a linker script region to mark that region

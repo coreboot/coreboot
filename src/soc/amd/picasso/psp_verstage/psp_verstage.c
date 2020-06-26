@@ -8,6 +8,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <soc/psp_transfer.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
@@ -120,8 +121,9 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 static uint32_t save_buffers(struct vb2_context **ctx)
 {
 	uint32_t retval;
-	uint32_t buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
+	uint32_t buffer_size = MIN_TRANSFER_BUFFER_SIZE;
 	uint32_t max_buffer_size;
+	struct transfer_info_struct buffer_info = {0};
 
 	/*
 	 * This should never fail, but if it does, we should still try to
@@ -130,28 +132,47 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	if (svc_get_max_workbuf_size(&max_buffer_size)) {
 		post_code(POSTCODE_DEFAULT_BUFFER_SIZE_NOTICE);
 		printk(BIOS_NOTICE, "Notice: using default transfer buffer size.\n");
-		max_buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
+		max_buffer_size = MIN_TRANSFER_BUFFER_SIZE;
 	}
 	printk(BIOS_DEBUG, "\nMaximum buffer size: %d bytes\n", max_buffer_size);
 
-	retval = vb2api_relocate(_vboot2_work, _vboot2_work, buffer_size, ctx);
-	if (retval != VB2_SUCCESS) {
-		printk(BIOS_ERR, "Error shrinking workbuf. Error code %#x\n", retval);
-		buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
-		post_code(POSTCODE_WORKBUF_RESIZE_WARNING);
+	/* Shrink workbuf if MP2 is in use and cannot be used to save buffer */
+	if (max_buffer_size < VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE) {
+		retval = vb2api_relocate(_vboot2_work, _vboot2_work, MIN_WORKBUF_TRANSFER_SIZE,
+				ctx);
+		if (retval != VB2_SUCCESS) {
+			printk(BIOS_ERR, "Error shrinking workbuf. Error code %#x\n", retval);
+			buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
+			post_code(POSTCODE_WORKBUF_RESIZE_WARNING);
+		}
+	} else {
+		buffer_size =
+			(uint32_t)((uintptr_t)_etransfer_buffer - (uintptr_t)_transfer_buffer);
+
+		buffer_info.console_offset = (uint32_t)((uintptr_t)_preram_cbmem_console -
+					(uintptr_t)_transfer_buffer);
+		buffer_info.timestamp_offset = (uint32_t)((uintptr_t)_timestamp -
+					(uintptr_t)_transfer_buffer);
+		buffer_info.fmap_offset = (uint32_t)((uintptr_t)_fmap_cache -
+					(uintptr_t)_transfer_buffer);
 	}
 
 	if (buffer_size > max_buffer_size) {
-		printk(BIOS_ERR, "Error: Workbuf is larger than max buffer size.\n");
+		printk(BIOS_ERR, "Error: Buffer is larger than max buffer size.\n");
 		post_code(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
 		return POSTCODE_WORKBUF_BUFFER_SIZE_ERROR;
 	}
 
-	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_vboot2_work,
-			buffer_size);
+	buffer_info.magic_val = TRANSFER_MAGIC_VAL;
+	buffer_info.struct_bytes = sizeof(buffer_info);
+	buffer_info.buffer_size = buffer_size;
+	buffer_info.workbuf_offset = (uint32_t)((uintptr_t)_fmap_cache -
+					(uintptr_t)_vboot2_work);
+
+	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_transfer_buffer,
+				    buffer_size);
 	if (retval) {
-		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n",
-				retval);
+		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n", retval);
 		return POSTCODE_WORKBUF_SAVE_ERROR;
 	}
 
@@ -192,6 +213,9 @@ void Main(void)
 	post_code(POSTCODE_VERSTAGE_MAIN);
 
 	verstage_main();
+
+	vb2api_relocate(_vboot2_work, _vboot2_work, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
+			&ctx);
 
 	post_code(POSTCODE_SAVE_BUFFERS);
 	retval = save_buffers(&ctx);

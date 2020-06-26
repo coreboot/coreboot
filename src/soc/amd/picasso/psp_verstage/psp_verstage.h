@@ -4,6 +4,7 @@
 #define PSP_VERSTAGE_H
 
 #include <stdint.h>
+#include <soc/psp_transfer.h>
 
 #define EMBEDDED_FW_SIGNATURE			0x55aa55aa
 #define PSP_COOKIE				0x50535024	/* 'PSP$' */
@@ -36,7 +37,8 @@
 #define POSTCODE_LEAVING_VERSTAGE		0xF2
 
 #define SPI_ADDR_MASK				0x00ffffff
-#define DEFAULT_WORKBUF_TRANSFER_SIZE		(8 * KiB)
+#define MIN_TRANSFER_BUFFER_SIZE		(8 * KiB)
+#define MIN_WORKBUF_TRANSFER_SIZE		(MIN_TRANSFER_BUFFER_SIZE - TRANSFER_INFO_SIZE)
 
 struct psp_ef_table {
 	uint32_t signature; /* 0x55aa55aa */

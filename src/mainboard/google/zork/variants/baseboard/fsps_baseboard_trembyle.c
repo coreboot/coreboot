@@ -114,7 +114,7 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 const fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
-	if (soc_is_dali()) {
+	if (soc_is_reduced_io_sku()) {
 		*num = ARRAY_SIZE(dali_pcie_descriptors);
 		return dali_pcie_descriptors;
 	} else {
@@ -176,7 +176,7 @@ static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)
 {
 	/* Type 2 or Type 1 fused like Type 2. */
-	if (soc_is_dali()) {
+	if (soc_is_reduced_io_sku()) {
 		*num = ARRAY_SIZE(dali_ddi_descriptors);
 		return dali_ddi_descriptors;
 	} else {

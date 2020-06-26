@@ -310,7 +310,7 @@ void mainboard_get_pcie_ddi_descriptors(
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	/* Dali */
-	if (soc_is_dali()) {
+	if (soc_is_reduced_io_sku()) {
 		*pcie_descs = dali_pcie_descriptors;
 		*pcie_num = ARRAY_SIZE(dali_pcie_descriptors);
 		*ddi_descs = dali_ddi_descriptors;

@@ -199,9 +199,9 @@ void print_soc_type(void)
 	}
 }
 
-bool soc_is_dali(void)
+bool soc_is_reduced_io_sku(void)
 {
-	return get_soc_type() == SOC_DALI;
+	return get_silicon_type() == SILICON_RV2 || get_soc_type() == SOC_DALI;
 }
 
 bool soc_is_raven2(void)

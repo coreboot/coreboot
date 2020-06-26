@@ -34,7 +34,7 @@ void print_silicon_type(void);
 void print_soc_type(void);
 
 /* function to determine the connectivity feature set */
-bool soc_is_dali(void);
+bool soc_is_reduced_io_sku(void);
 
 /* function to determine the iGPU type */
 bool soc_is_raven2(void);

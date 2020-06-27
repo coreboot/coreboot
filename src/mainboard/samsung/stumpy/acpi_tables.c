@@ -8,12 +8,8 @@
 
 #include "thermal.h"
 
-static global_nvs_t *gnvs_;
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs_ = gnvs;
-
 	/* Enable Front USB ports in S3 by default */
 	gnvs->s3u0 = 1;
 	gnvs->s3u1 = 1;

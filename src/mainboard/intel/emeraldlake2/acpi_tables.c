@@ -8,12 +8,8 @@
 
 #include "thermal.h"
 
-static global_nvs_t *gnvs_;
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs_ = gnvs;
-
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;
 	gnvs->s3u1 = 1;

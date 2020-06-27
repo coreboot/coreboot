@@ -11,12 +11,8 @@
 
 #include "thermal.h"
 
-static global_nvs_t *gnvs_;
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs_ = gnvs;
-
 	/*
 	 * Disable 3G in suspend by default.
 	 * Provide option to enable for http://crosbug.com/p/7925

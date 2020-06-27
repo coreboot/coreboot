@@ -26,7 +26,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* DEVSLP1 */
 	PAD_NF(GPIO_70, DEVSLP1, PULL_UP),
 	/* WLAND */
-	PAD_SCI(GPIO_137, PULL_UP, LEVEL_LOW),
 	PAD_WAKE(GPIO_137, PULL_UP, LEVEL_LOW, S3),
 #else
 	/* PCIE_WAKE */

@@ -207,6 +207,9 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 		iomux_read8(gpio); /* Flush posted write */
 
 		soc_gpio_hook(gpio, mux);
+
+		/* Clear interrupt and wake status (write 1-to-clear bits) */
+		control |= GPIO_INT_STATUS | GPIO_WAKE_STATUS;
 		__gpio_setbits32(gpio, PAD_CFG_MASK, control);
 
 		if (control_flags == 0)

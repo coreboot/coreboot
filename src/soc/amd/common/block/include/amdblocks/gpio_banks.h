@@ -26,18 +26,37 @@ struct soc_amd_event {
 #define GPIO_PIN_IN		(1 << 0)	/* for byte access */
 #define GPIO_PIN_OUT		(1 << 6)	/* for byte access */
 
-#define GPIO_EDGE_TRIG		(0 << 8)
-#define GPIO_LEVEL_TRIG		(1 << 8)
+/* Pad trigger type - Level or Edge */
+#define GPIO_TRIGGER_EDGE	(0 << 8)
+#define GPIO_TRIGGER_LEVEL	(1 << 8)
 #define GPIO_TRIGGER_MASK	(1 << 8)
 
+/*
+ * Pad polarity:
+ * Level trigger - High or Low
+ * Edge trigger - High (Rising), Low (Falling), Both
+ */
 #define GPIO_ACTIVE_HIGH	(0 << 9)
 #define GPIO_ACTIVE_LOW		(1 << 9)
 #define GPIO_ACTIVE_BOTH	(2 << 9)
 #define GPIO_ACTIVE_MASK	(3 << 9)
 
-#define GPIO_INT_STATUS_EN	(1 << 11)
-#define GPIO_INT_DELIVERY_EN	(1 << 12)
-#define GPIO_INTERRUPT_MASK	(3 << 11)
+/*
+ * Pad trigger and polarity configuration.
+ * This determines the filtering applied on the input signal at the pad.
+ */
+#define GPIO_TRIGGER_EDGE_HIGH		(GPIO_ACTIVE_HIGH | GPIO_TRIGGER_EDGE)
+#define GPIO_TRIGGER_EDGE_LOW		(GPIO_ACTIVE_LOW | GPIO_TRIGGER_EDGE)
+#define GPIO_TRIGGER_BOTH_EDGES		(GPIO_ACTIVE_BOTH | GPIO_TRIGGER_EDGE)
+#define GPIO_TRIGGER_LEVEL_HIGH		(GPIO_ACTIVE_HIGH | GPIO_TRIGGER_LEVEL)
+#define GPIO_TRIGGER_LEVEL_LOW		(GPIO_ACTIVE_LOW | GPIO_TRIGGER_LEVEL)
+
+#define GPIO_INT_ENABLE_STATUS		(1 << 11)
+#define GPIO_INT_ENABLE_DELIVERY	(1 << 12)
+#define GPIO_INT_ENABLE_STATUS_DELIVERY	\
+				(GPIO_INT_ENABLE_STATUS | GPIO_INT_ENABLE_STATUS_DELIVERY)
+#define GPIO_INT_ENABLE_MASK		(3 << 11)
+
 #define GPIO_S0I3_WAKE_EN	(1 << 13)
 #define GPIO_S3_WAKE_EN		(1 << 14)
 #define GPIO_S4_S5_WAKE_EN	(1 << 15)
@@ -100,12 +119,6 @@ enum {
 #define AMD_GPIO_CONTROL_MASK			0x00f4ff00
 #define AMD_GPIO_MUX_MASK			0x03
 
-/* Definitions for PAD_INT. */
-#define GPIO_INT_EDGE_HIGH		(GPIO_ACTIVE_HIGH | GPIO_EDGE_TRIG)
-#define GPIO_INT_EDGE_LOW		(GPIO_ACTIVE_LOW | GPIO_EDGE_TRIG)
-#define GPIO_INT_BOTH_EDGES		(GPIO_ACTIVE_BOTH | GPIO_EDGE_TRIG)
-#define GPIO_INT_LEVEL_HIGH		(GPIO_ACTIVE_HIGH | GPIO_LEVEL_TRIG)
-#define GPIO_INT_LEVEL_LOW		(GPIO_ACTIVE_LOW | GPIO_LEVEL_TRIG)
 
 /*
  * Flags used for GPIO configuration. These provide additional information that does not go
@@ -185,10 +198,6 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 #define GPIO_IN_200mS			(13 | GPIO_TIMEBASE_15560uS)
 #define GPIO_IN_500mS			(8 | GPIO_TIMEBASE_62440uS)
 
-#define GPIO_EVENT_INT_STATUS		GPIO_INT_STATUS_EN
-#define GPIO_EVENT_INT_DELIVER		GPIO_INT_DELIVERY_EN
-#define GPIO_EVENT_INT_STATUS_DELIVER	(GPIO_INT_STATUS_EN | \
-					GPIO_INT_DELIVERY_EN)
 #define GPIO_WAKE_S0i3			(1 << 13)
 #define GPIO_WAKE_S3			(1 << 14)
 #define GPIO_WAKE_S4_S5			(1 << 15)
@@ -256,13 +265,13 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 		.flags = 0 }
 /* Auxiliary macro for legacy interrupt and wake */
 #define PAD_AUX1(pull, trigger) (GPIO_PULL ## _ ## pull | \
-				 GPIO_INT ## _ ## trigger)
+				 GPIO_TRIGGER ## _ ## trigger)
 /* Legacy interrupt pad configuration */
 #define PAD_INT(pin, pull, trigger, action) \
 	{ .gpio = (pin), \
 		.function = pin ## _IOMUX_ ## GPIOxx, \
 		.control = (PAD_AUX1(pull, trigger) | \
-			    GPIO_EVENT_INT ## _ ## action), \
+			    GPIO_INT_ENABLE ## _ ## action), \
 		.flags = GPIO_FLAG_INT }
 /* Auxiliary macro for SCI and SMI */
 #define PAD_AUX2(trigger, flag) (GPIO_FLAG_EVENT_TRIGGER ## _ ## trigger | flag)

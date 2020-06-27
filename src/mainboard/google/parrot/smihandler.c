@@ -68,14 +68,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 	}
 }
 
-#define APMC_ACPI_EN  0xe1
-#define APMC_ACPI_DIS 0x1e
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	printk(BIOS_DEBUG, "mainboard_smi_apmc: %x\n", apmc);
 	switch (apmc) {
-	case APMC_ACPI_EN:
+	case APM_CNT_ACPI_ENABLE:
 		printk(BIOS_DEBUG, "APMC: ACPI_EN\n");
 		/* Clear all pending events */
 		/* EC cmd:59 data:E8 */
@@ -85,7 +82,7 @@ int mainboard_smi_apmc(u8 apmc)
 		/* Set LID GPI to generate SCIs */
 		gpi_route_interrupt(EC_LID_GPI, GPI_IS_SCI);
 		break;
-	case APMC_ACPI_DIS:
+	case APM_CNT_ACPI_DISABLE:
 		printk(BIOS_DEBUG, "APMC: ACPI_DIS\n");
 		/* Clear all pending events */
 		/* EC cmd:59 data:e9 */

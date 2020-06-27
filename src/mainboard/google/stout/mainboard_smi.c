@@ -70,22 +70,19 @@ void mainboard_smi_sleep(u8 slp_typ)
 	ec_it8518_enable_wake_events();
 }
 
-#define APMC_ACPI_EN  0xe1
-#define APMC_ACPI_DIS 0x1e
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
 	case APM_CNT_FINALIZE:
 		stout_ec_finalize_smm();
 		break;
-	case APMC_ACPI_EN:
+	case APM_CNT_ACPI_ENABLE:
 		/*
 		 * TODO(kimarie) Clear all pending events and enable SCI.
 		 */
 		ec_write_cmd(EC_CMD_NOTIFY_ACPI_ENTER);
 		break;
-	case APMC_ACPI_DIS:
+	case APM_CNT_ACPI_DISABLE:
 		/*
 		 * TODO(kimarie) Clear all pending events and enable SMI.
 		 */

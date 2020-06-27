@@ -170,7 +170,7 @@ F0
 00
 
 #	33 SDRAM device type
-# 		byte [1:0] : 00b = Signal Loading not specified
+#		byte [1:0] : 00b = Signal Loading not specified
 #		byte [6:4] : 000b = Die count not specified
 #		byte [7]   : 0 = Standard Monolithic DRAM Device
 00

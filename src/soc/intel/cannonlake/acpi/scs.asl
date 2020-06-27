@@ -82,7 +82,7 @@ Scope (\_SB.PCI0) {
 					 * containing one bit for each function index, starting
 					 * with zero.
 					 * Bit 0 - Indicates whether there is support for any
-					 * 	   functions other than function 0
+					 *	   functions other than function 0
 					 * Bit 1 - Indicates support to clear power control
 					 *	   register
 					 * Bit 2 - Indicates support to set power control

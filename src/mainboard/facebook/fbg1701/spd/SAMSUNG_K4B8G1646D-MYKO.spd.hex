@@ -168,7 +168,7 @@ FE
 
 #	33 SDRAM device type
 #		byte [1:0] : 01b = multi load stack
-# 		byte [6:4] : 100b = 8 die
+#		byte [6:4] : 100b = 8 die
 #		byte [7]   : 0 = Standard Device
 41
 

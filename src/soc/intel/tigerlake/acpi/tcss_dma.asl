@@ -56,7 +56,7 @@ Method (_PR3)
  */
 Method (D3CX, 0, Serialized)
 {
-	DD3E = 0  	/* Disable DMA RTD3 */
+	DD3E = 0	/* Disable DMA RTD3 */
 	STAT = 0x1
 }
 
@@ -65,7 +65,7 @@ Method (D3CX, 0, Serialized)
  */
 Method (D3CE, 0, Serialized)
 {
-	DD3E = 1  	/* Enable DMA RTD3 */
+	DD3E = 1	/* Enable DMA RTD3 */
 	STAT = 0
 }
 

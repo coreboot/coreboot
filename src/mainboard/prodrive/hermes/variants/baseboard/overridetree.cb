@@ -25,7 +25,7 @@ chip soc/intel/cannonlake
 	# Enumeration starts at 0 for PCIE1
 	# Ports are not hotplugable
 	register "PcieRpEnable[0]" = "1"	# Slot3 x4
- 	# Set MaxPayload to 256 bytes
+	# Set MaxPayload to 256 bytes
 	register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
 	# Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[0]" = "1"

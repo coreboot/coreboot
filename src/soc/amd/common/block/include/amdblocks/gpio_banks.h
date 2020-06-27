@@ -172,31 +172,31 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 #define INT_WAKE_MASK			0x0000e700
 #define INT_SCI_SMI_MASK		0x00f40000
 
-#define IN_GLITCH_SHIFT			5
-#define GLITCH_LOW			1
-#define GLITCH_HIGH			2
-#define GLITCH_NONE			3
-#define GPIO_IN_PRESERVE_LOW_GLITCH	(GLITCH_LOW << IN_GLITCH_SHIFT)
-#define GPIO_IN_PRESERVE_HIGH_GLITCH	(GLITCH_HIGH << IN_GLITCH_SHIFT)
-#define GPIO_IN_REMOVE_GLITCH		(GLITCH_NONE << IN_GLITCH_SHIFT)
+#define DEB_GLITCH_SHIFT		5
+#define DEB_GLITCH_LOW			1
+#define DEB_GLITCH_HIGH			2
+#define DEB_GLITCH_NONE			3
+#define GPIO_DEB_PRESERVE_LOW_GLITCH	(DEB_GLITCH_LOW << DEB_GLITCH_SHIFT)
+#define GPIO_DEB_PRESERVE_HIGH_GLITCH	(DEB_GLITCH_HIGH << DEB_GLITCH_SHIFT)
+#define GPIO_DEB_REMOVE_GLITCH		(DEB_GLITCH_NONE << DEB_GLITCH_SHIFT)
 
 #define GPIO_TIMEBASE_61uS		0
 #define GPIO_TIMEBASE_183uS		(1 << 4)
 #define GPIO_TIMEBASE_15560uS		(1 << 7)
 #define GPIO_TIMEBASE_62440uS		(GPIO_TIMEBASE_183uS | \
 					GPIO_TIMEBASE_15560uS)
-#define GPIO_IN_DEBOUNCE_DISABLED	(0 | GPIO_TIMEBASE_61uS)
-#define GPIO_IN_60uS			(1 | GPIO_TIMEBASE_61uS)
-#define GPIO_IN_120uS			(2 | GPIO_TIMEBASE_61uS)
-#define GPIO_IN_200uS			(3 | GPIO_TIMEBASE_61uS)
-#define GPIO_IN_500uS			(8 | GPIO_TIMEBASE_61uS)
-#define GPIO_IN_1mS			(5 | GPIO_TIMEBASE_183uS)
-#define GPIO_IN_2mS			(11 | GPIO_TIMEBASE_183uS)
-#define GPIO_IN_15mS			(1 | GPIO_TIMEBASE_15560uS)
-#define GPIO_IN_50mS			(3 | GPIO_TIMEBASE_15560uS)
-#define GPIO_IN_100mS			(6 | GPIO_TIMEBASE_15560uS)
-#define GPIO_IN_200mS			(13 | GPIO_TIMEBASE_15560uS)
-#define GPIO_IN_500mS			(8 | GPIO_TIMEBASE_62440uS)
+#define GPIO_DEB_DEBOUNCE_DISABLED	(0 | GPIO_TIMEBASE_61uS)
+#define GPIO_DEB_60uS			(1 | GPIO_TIMEBASE_61uS)
+#define GPIO_DEB_120uS			(2 | GPIO_TIMEBASE_61uS)
+#define GPIO_DEB_200uS			(3 | GPIO_TIMEBASE_61uS)
+#define GPIO_DEB_500uS			(8 | GPIO_TIMEBASE_61uS)
+#define GPIO_DEB_1mS			(5 | GPIO_TIMEBASE_183uS)
+#define GPIO_DEB_2mS			(11 | GPIO_TIMEBASE_183uS)
+#define GPIO_DEB_15mS			(1 | GPIO_TIMEBASE_15560uS)
+#define GPIO_DEB_50mS			(3 | GPIO_TIMEBASE_15560uS)
+#define GPIO_DEB_100mS			(6 | GPIO_TIMEBASE_15560uS)
+#define GPIO_DEB_200mS			(13 | GPIO_TIMEBASE_15560uS)
+#define GPIO_DEB_500mS			(8 | GPIO_TIMEBASE_62440uS)
 
 #define GPIO_WAKE_S0i3			(1 << 13)
 #define GPIO_WAKE_S3			(1 << 14)
@@ -298,7 +298,7 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 #define PAD_DEBOUNCE(pin, type, time) \
 	{ .gpio = (pin), \
 		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = (GPIO_IN  ## _ ## type | GPIO_IN  ## _ ## time), \
+		.control = (GPIO_DEB  ## _ ## type | GPIO_DEB  ## _ ## time), \
 		.flags = GPIO_FLAG_DEBOUNCE }
 
 typedef uint32_t gpio_t;

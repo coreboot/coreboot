@@ -85,13 +85,9 @@ static void add_fractions(struct fraction *out,
 	n = (int64_t)f1->n * f2->d + (int64_t)f2->n * f1->d;
 	d = (int64_t)f1->d * f2->d;
 	/* Simplest way to reduce the fraction until fitting in int32_t */
-	shift = log2(MAX(ABS(n), ABS(d)) >> 31);
-	if (shift > 0) {
-		n >>= shift;
-		d >>= shift;
-	}
-	out->n = n;
-	out->d = d;
+	shift = log2(MAX(ABS(n), ABS(d)) >> 31) + 1;
+	out->n = n >> shift;
+	out->d = d >> shift;
 }
 
 static void add_scales(struct scale *out,

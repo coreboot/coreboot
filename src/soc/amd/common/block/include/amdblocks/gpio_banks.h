@@ -245,61 +245,61 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
  *	debounce_time	the debounce time
  */
 
+#define PAD_CFG_STRUCT(__pin, __function, __control, __flags)	\
+	{							\
+		.gpio = __pin,					\
+		.function = __function,				\
+		.control = __control,				\
+		.flags = __flags,				\
+	}
+
+#define PAD_PULL(__pull)		GPIO_PULL_ ## __pull
+#define PAD_OUTPUT(__dir)		GPIO_OUTPUT_OUT_ ## __dir
+#define PAD_TRIGGER(__trig)		GPIO_TRIGGER_ ## __trig
+#define PAD_INT_ENABLE(__action)	GPIO_INT_ENABLE_ ## __action
+#define PAD_FLAG_EVENT_TRIGGER(__trig)	GPIO_FLAG_EVENT_TRIGGER_ ## __trig
+#define PAD_WAKE_ENABLE(__wake)		GPIO_WAKE_ ## __wake
+#define PAD_DEBOUNCE_CONFIG(__deb)	GPIO_DEB_ ## __deb
+
 /* Native function pad configuration */
-#define PAD_NF(pin, func, pull) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## func, \
-		.control = GPIO_PULL ## _ ## pull, \
-		.flags = 0 }
+#define PAD_NF(pin, func, pull)						\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_ ## func, PAD_PULL(pull), 0)
+
 /* General purpose input pad configuration */
-#define PAD_GPI(pin, pull) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = GPIO_PULL ## _ ## pull, \
-		.flags = 0 }
+#define PAD_GPI(pin, pull)							\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(pull), 0)
+
 /* General purpose output pad configuration */
-#define PAD_GPO(pin, direction) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = GPIO_OUTPUT ## _OUT_ ## direction, \
-		.flags = 0 }
-/* Auxiliary macro for legacy interrupt and wake */
-#define PAD_AUX1(pull, trigger) (GPIO_PULL ## _ ## pull | \
-				 GPIO_TRIGGER ## _ ## trigger)
+#define PAD_GPO(pin, direction)			\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_OUTPUT(direction), 0)
+
 /* Legacy interrupt pad configuration */
-#define PAD_INT(pin, pull, trigger, action) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = (PAD_AUX1(pull, trigger) | \
-			    GPIO_INT_ENABLE ## _ ## action), \
-		.flags = GPIO_FLAG_INT }
-/* Auxiliary macro for SCI and SMI */
-#define PAD_AUX2(trigger, flag) (GPIO_FLAG_EVENT_TRIGGER ## _ ## trigger | flag)
+#define PAD_INT(pin, pull, trigger, action)				\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+		PAD_PULL(pull) | PAD_TRIGGER(trigger) | PAD_INT_ENABLE(action), \
+		GPIO_FLAG_INT)
+
 /* SCI pad configuration */
-#define PAD_SCI(pin, pull, trigger) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = GPIO_PULL ## _ ## pull, \
-		.flags = PAD_AUX2(trigger, GPIO_FLAG_SCI) }
+#define PAD_SCI(pin, pull, trigger)					\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(pull),	\
+		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SCI)
+
 /* SMI pad configuration */
-#define PAD_SMI(pin, pull, trigger) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = GPIO_PULL ## _ ## pull, \
-		.flags = PAD_AUX2(trigger, GPIO_FLAG_SMI) }
+#define PAD_SMI(pin, pull, trigger)					\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(pull),	\
+		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SMI)
+
 /* WAKE pad configuration */
-#define PAD_WAKE(pin, pull, trigger, type) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = (PAD_AUX1(pull, trigger) | \
-			    GPIO_WAKE ## _ ## type), \
-		.flags = GPIO_FLAG_WAKE }
+#define PAD_WAKE(pin, pull, trigger, type)				\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+		PAD_PULL(pull) | PAD_TRIGGER(trigger) | PAD_WAKE_ENABLE(type), \
+		GPIO_FLAG_WAKE)
+
 /* pin debounce configuration */
-#define PAD_DEBOUNCE(pin, type, time) \
-	{ .gpio = (pin), \
-		.function = pin ## _IOMUX_ ## GPIOxx, \
-		.control = (GPIO_DEB  ## _ ## type | GPIO_DEB  ## _ ## time), \
-		.flags = GPIO_FLAG_DEBOUNCE }
+#define PAD_DEBOUNCE(pin, type, time)					\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+			PAD_DEBOUNCE_CONFIG(type) | PAD_DEBOUNCE_CONFIG(time), \
+			GPIO_FLAG_DEBOUNCE)
 
 typedef uint32_t gpio_t;
 

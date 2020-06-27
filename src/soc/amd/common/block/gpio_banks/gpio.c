@@ -32,21 +32,22 @@ static void mem_read_write32(uint32_t *address, uint32_t value, uint32_t mask)
 	write32(address, reg32);
 }
 
-static void program_smi(uint32_t trigger, int gevent_num)
+static void program_smi(uint32_t flags, int gevent_num)
 {
-	/*
-	 * Only level trigger is allowed for SMI. Trigger values are 0
-	 * through 3, with 0-1 being level trigger and 2-3 being edge
-	 * trigger. GPIO_TRIGGER_EDGE_LOW is 2, so trigger has to be
-	 * less than GPIO_TRIGGER_EDGE_LOW.
-	 */
-	assert(trigger < GPIO_TRIGGER_EDGE_LOW);
+	uint8_t level;
 
-	if (trigger == GPIO_TRIGGER_LEVEL_HIGH)
-		configure_gevent_smi(gevent_num, SMI_MODE_SMI, SMI_SCI_LVL_HIGH);
+	if (!is_gpio_event_level_triggered(flags)) {
+		printk(BIOS_ERR, "ERROR: %s - Only level trigger allowed for SMI!\n", __func__);
+		assert(0);
+		return;
+	}
 
-	if (trigger == GPIO_TRIGGER_LEVEL_LOW)
-		configure_gevent_smi(gevent_num, SMI_MODE_SMI, SMI_SCI_LVL_LOW);
+	if (is_gpio_event_active_high(flags))
+		level = SMI_SCI_LVL_HIGH;
+	else
+		level = SMI_SCI_LVL_LOW;
+
+	configure_gevent_smi(gevent_num, SMI_MODE_SMI, level);
 }
 
 struct sci_trigger_regs {
@@ -62,20 +63,18 @@ struct sci_trigger_regs {
  * In a similar fashion, polarity (rising/falling, hi/lo) of each GPE is
  * represented as a single bit in SMI_SCI_TRIG register.
  */
-static void fill_sci_trigger(uint32_t trigger, int gpe, struct sci_trigger_regs *regs)
+static void fill_sci_trigger(uint32_t flags, int gpe, struct sci_trigger_regs *regs)
 {
 	uint32_t mask = 1 << gpe;
 
 	regs->mask |= mask;
 
-	/* Select level vs. edge triggered event. */
-	if ((trigger == GPIO_TRIGGER_LEVEL_LOW) || (trigger == GPIO_TRIGGER_LEVEL_HIGH))
+	if (is_gpio_event_level_triggered(flags))
 		regs->level |= mask;
 	else
 		regs->level &= ~mask;
 
-	/* Select rising/high vs falling/low trigger. */
-	if ((trigger == GPIO_TRIGGER_EDGE_HIGH) || (trigger == GPIO_TRIGGER_LEVEL_HIGH))
+	if (is_gpio_event_active_high(flags))
 		regs->polarity |= mask;
 	else
 		regs->polarity &= ~mask;
@@ -217,38 +216,37 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		gpio_ptr = gpio_ctrl_ptr(gpio);
 
-		if (control_flags & GPIO_SPECIAL_FLAG) {
+		if (control_flags & GPIO_FLAG_SPECIAL_MASK) {
 			gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
 			if (gevent_num < 0) {
 				printk(BIOS_WARNING, "Warning: GPIO pin %d has"
 					" no associated gevent!\n", gpio);
 				continue;
 			}
-			switch (control_flags & GPIO_SPECIAL_MASK) {
-			case GPIO_DEBOUNCE_FLAG:
+			switch (control_flags & GPIO_FLAG_SPECIAL_MASK) {
+			case GPIO_FLAG_DEBOUNCE:
 				mem_read_write32(gpio_ptr, control,
 						GPIO_DEBOUNCE_MASK);
 				break;
-			case GPIO_WAKE_FLAG:
+			case GPIO_FLAG_WAKE:
 				mem_read_write32(gpio_ptr, control,
 						INT_WAKE_MASK);
 				break;
-			case GPIO_INT_FLAG:
+			case GPIO_FLAG_INT:
 				mem_read_write32(gpio_ptr, control,
 						AMD_GPIO_CONTROL_MASK);
 				break;
-			case GPIO_SMI_FLAG:
+			case GPIO_FLAG_SMI:
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
 
-				program_smi(control_flags & FLAGS_TRIGGER_MASK, gevent_num);
+				program_smi(control_flags, gevent_num);
 				break;
-			case GPIO_SCI_FLAG:
+			case GPIO_FLAG_SCI:
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
 
-				fill_sci_trigger(control_flags & FLAGS_TRIGGER_MASK, gevent_num,
-						 &sci_trigger_cfg);
+				fill_sci_trigger(control_flags, gevent_num, &sci_trigger_cfg);
 
 				soc_route_sci(gevent_num);
 				break;

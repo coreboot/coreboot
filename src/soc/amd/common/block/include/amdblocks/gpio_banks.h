@@ -4,6 +4,7 @@
 #define __AMDBLOCK_GPIO_BANKS_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 struct soc_amd_gpio {
@@ -106,27 +107,53 @@ enum {
 #define GPIO_INT_LEVEL_HIGH		(GPIO_ACTIVE_HIGH | GPIO_LEVEL_TRIG)
 #define GPIO_INT_LEVEL_LOW		(GPIO_ACTIVE_LOW | GPIO_LEVEL_TRIG)
 
-enum {
-	GPIO_TRIGGER_LEVEL_LOW,
-	GPIO_TRIGGER_LEVEL_HIGH,
-	GPIO_TRIGGER_EDGE_LOW,
-	GPIO_TRIGGER_EDGE_HIGH,
-};
+/*
+ * Flags used for GPIO configuration. These provide additional information that does not go
+ * directly into GPIO control register. These are stored in `flags` field in soc_amd_gpio.
+ */
+#define GPIO_FLAG_EVENT_TRIGGER_LEVEL	(1 << 0)
+#define GPIO_FLAG_EVENT_TRIGGER_EDGE	(0 << 0)
+#define GPIO_FLAG_EVENT_TRIGGER_MASK	(1 << 0)
+#define GPIO_FLAG_EVENT_ACTIVE_HIGH	(1 << 1)
+#define GPIO_FLAG_EVENT_ACTIVE_LOW	(0 << 1)
+#define GPIO_FLAG_EVENT_ACTIVE_MASK	(1 << 1)
+#define GPIO_FLAG_SCI			(1 << 2)
+#define GPIO_FLAG_SMI			(1 << 3)
+#define GPIO_FLAG_DEBOUNCE		(1 << 4)
+#define GPIO_FLAG_WAKE			(1 << 5)
+#define GPIO_FLAG_INT			(1 << 6)
+#define GPIO_FLAG_SPECIAL_MASK	        (0x1f << 2)
 
-#define GPIO_SPECIAL_FLAG		(1 << 31)
-#define GPIO_DEBOUNCE_FLAG		(1 << 30)
-#define GPIO_WAKE_FLAG			(1 << 29)
-#define GPIO_INT_FLAG			(1 << 28)
-#define GPIO_SMI_FLAG			(1 << 27)
-#define GPIO_SCI_FLAG			(1 << 26)
-#define GPIO_FLAG_DEBOUNCE		(GPIO_SPECIAL_FLAG | GPIO_DEBOUNCE_FLAG)
-#define GPIO_FLAG_WAKE			(GPIO_SPECIAL_FLAG | GPIO_WAKE_FLAG)
-#define GPIO_FLAG_INT			(GPIO_SPECIAL_FLAG | GPIO_INT_FLAG)
-#define GPIO_FLAG_SCI			(GPIO_SPECIAL_FLAG | GPIO_SCI_FLAG)
-#define GPIO_FLAG_SMI			(GPIO_SPECIAL_FLAG | GPIO_SMI_FLAG)
+/* Trigger configuration for GPIO SCI/SMI events. */
+#define GPIO_FLAG_EVENT_TRIGGER_LEVEL_HIGH	(GPIO_FLAG_EVENT_TRIGGER_LEVEL | \
+						 GPIO_FLAG_EVENT_ACTIVE_HIGH)
+#define GPIO_FLAG_EVENT_TRIGGER_LEVEL_LOW	(GPIO_FLAG_EVENT_TRIGGER_LEVEL | \
+						 GPIO_FLAG_EVENT_ACTIVE_LOW)
+#define GPIO_FLAG_EVENT_TRIGGER_EDGE_HIGH	(GPIO_FLAG_EVENT_TRIGGER_EDGE | \
+						 GPIO_FLAG_EVENT_ACTIVE_HIGH)
+#define GPIO_FLAG_EVENT_TRIGGER_EDGE_LOW	(GPIO_FLAG_EVENT_TRIGGER_EDGE | \
+						 GPIO_FLAG_EVENT_ACTIVE_LOW)
 
-#define FLAGS_TRIGGER_MASK		0x00000003
-#define GPIO_SPECIAL_MASK		0x7c000000
+static inline bool is_gpio_event_level_triggered(uint32_t flags)
+{
+	return (flags & GPIO_FLAG_EVENT_TRIGGER_MASK) == GPIO_FLAG_EVENT_TRIGGER_LEVEL;
+}
+
+static inline bool is_gpio_event_edge_triggered(uint32_t flags)
+{
+	return (flags & GPIO_FLAG_EVENT_TRIGGER_MASK) == GPIO_FLAG_EVENT_TRIGGER_EDGE;
+}
+
+static inline bool is_gpio_event_active_high(uint32_t flags)
+{
+	return (flags & GPIO_FLAG_EVENT_ACTIVE_MASK) == GPIO_FLAG_EVENT_ACTIVE_HIGH;
+}
+
+static inline bool is_gpio_event_active_low(uint32_t flags)
+{
+	return (flags & GPIO_FLAG_EVENT_ACTIVE_MASK) == GPIO_FLAG_EVENT_ACTIVE_LOW;
+}
+
 #define GPIO_DEBOUNCE_MASK		0x000000ff
 #define INT_TRIGGER_MASK		0x00000700
 #define INT_WAKE_MASK			0x0000e700
@@ -238,7 +265,7 @@ enum {
 			    GPIO_EVENT_INT ## _ ## action), \
 		.flags = GPIO_FLAG_INT }
 /* Auxiliary macro for SCI and SMI */
-#define PAD_AUX2(trigger, flag) (GPIO_TRIGGER ## _ ## trigger | flag)
+#define PAD_AUX2(trigger, flag) (GPIO_FLAG_EVENT_TRIGGER ## _ ## trigger | flag)
 /* SCI pad configuration */
 #define PAD_SCI(pin, pull, trigger) \
 	{ .gpio = (pin), \

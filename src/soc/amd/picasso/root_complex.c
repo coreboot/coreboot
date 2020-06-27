@@ -135,6 +135,12 @@ static void root_complex_fill_ssdt(const struct device *device)
 {
 	msr_t msr;
 
+	if (!device) {
+		printk(BIOS_ERR, "%s: device is NULL! ACPI SSDT will be incomplete.\n",
+			__func__);
+		return;
+	}
+
 	acpigen_write_scope(acpi_device_scope(device));
 
 	msr = rdmsr(TOP_MEM);

@@ -697,6 +697,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	silconfig->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
 
+	silconfig->PavpEnable = CONFIG(PAVP);
+
 	mainboard_silicon_init_params(silconfig);
 }
 

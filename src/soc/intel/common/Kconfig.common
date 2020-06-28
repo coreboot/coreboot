@@ -30,6 +30,20 @@ config ACPI_CONSOLE
 	help
 	  Provide a mechanism for serial console based ACPI debug.
 
+config PAVP
+	bool "Enable PAVP (Protected Audio-Video Path) support"
+	default y
+	help
+	  Protected Audio-Video Path is an Intel technology used to enforce digital
+	  rights protections on multimedia content. Streaming or other media playback
+	  services may require it to be enabled for correct functioning.
+
+	  Users might disable PAVP if the concept of digital rights management (DRM)
+	  offends them, or if they have concerns about the security of
+	  the Management Engine, which is where this technology is implemented.
+
+	  Set this option to n to disable support.
+
 config MMA
 	bool "Enable MMA (Memory Margin Analysis) support for Intel Core"
 	default n

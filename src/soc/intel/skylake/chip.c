@@ -428,6 +428,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->PeiGraphicsPeimInit = 0;
 
+	params->PavpEnable = CONFIG(PAVP);
+
 	soc_irq_settings(params);
 }
 

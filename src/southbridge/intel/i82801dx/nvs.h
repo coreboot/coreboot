@@ -1,5 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef SOUTHBRIDGE_INTEL_I82801DX_NVS_H
+#define SOUTHBRIDGE_INTEL_I82801DX_NVS_H
+
+#include <stdint.h>
+
 struct __packed global_nvs {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
@@ -96,3 +101,5 @@ struct __packed global_nvs {
 	u8	bten;
 	u8	rsvd13[14];
 };
+
+#endif /* SOUTHBRIDGE_INTEL_I82801DX_NVS_H */

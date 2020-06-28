@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef SOUTHBRIDGE_INTEL_BD82X6X_NVS_H
+#define SOUTHBRIDGE_INTEL_BD82X6X_NVS_H
+
 #include <commonlib/helpers.h>
 #include <stdint.h>
 #include "vendorcode/google/chromeos/gnvs.h"
@@ -105,3 +108,5 @@ struct __packed global_nvs {
 };
 
 check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
+
+#endif /* SOUTHBRIDGE_INTEL_BD82X6X_NVS_H */

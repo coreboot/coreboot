@@ -13,7 +13,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
-#include <cbmem.h>
 #include <string.h>
 #include "chip.h"
 #include "iobp.h"
@@ -697,22 +696,17 @@ void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
 
 void southbridge_inject_dsdt(const struct device *dev)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	acpi_create_gnvs(gnvs);
 
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
+	gnvs->apic = 1;
+	gnvs->mpen = 1; /* Enable Multi Processing */
+	gnvs->pcnt = dev_count_cpu();
 
-		gnvs->apic = 1;
-		gnvs->mpen = 1; /* Enable Multi Processing */
-		gnvs->pcnt = dev_count_cpu();
-
-		/* Add it to DSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32)gnvs);
-		acpigen_pop_len();
-	}
+	acpi_inject_nvsa();
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

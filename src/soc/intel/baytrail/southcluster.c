@@ -7,7 +7,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -486,18 +485,13 @@ void southcluster_enable_dev(struct device *dev)
 
 static void southcluster_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	acpi_create_gnvs(gnvs);
 
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
-
-		/* Add it to DSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) gnvs);
-		acpigen_pop_len();
-	}
+	acpi_inject_nvsa();
 }
 
 static struct device_operations device_ops = {

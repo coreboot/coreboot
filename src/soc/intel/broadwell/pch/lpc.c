@@ -12,7 +12,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
-#include <cbmem.h>
 #include <string.h>
 #include <soc/gpio.h>
 #include <soc/iobp.h>
@@ -603,24 +602,18 @@ static void pch_lpc_read_resources(struct device *dev)
 
 static void southcluster_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	/* Set unknown wake source */
+	gnvs->pm1i = -1;
 
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
 
-		/* Set unknown wake source */
-		gnvs->pm1i = -1;
-
-		/* CPU core count */
-		gnvs->pcnt = dev_count_cpu();
-
-		/* Add it to DSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) gnvs);
-		acpigen_pop_len();
-	}
+	acpi_create_gnvs(gnvs);
+	acpi_inject_nvsa();
 }
 
 static unsigned long broadwell_write_acpi_tables(const struct device *device,

@@ -524,18 +524,12 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
-
-		/* Add it to DSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) (uintptr_t)gnvs);
-		acpigen_pop_len();
-	}
+	acpi_create_gnvs(gnvs);
+	acpi_inject_nvsa();
 }
 
 /* Save wake source information for calculating ACPI _SWS values */

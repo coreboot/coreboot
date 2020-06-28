@@ -70,6 +70,12 @@ void acpi_init_gnvs(struct global_nvs *gnvs)
 
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = nc_read_top_of_low_memory();
+
+	/* Fill in the Wi-Fi Region ID */
+	if (CONFIG(HAVE_REGULATORY_DOMAIN))
+		gnvs->cid1 = wifi_regulatory_domain();
+	else
+		gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
 }
 
 int acpi_sci_irq(void)
@@ -367,12 +373,6 @@ void southcluster_inject_dsdt(const struct device *device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
-
-		/* Fill in the Wi-Fi Region ID */
-		if (CONFIG(HAVE_REGULATORY_DOMAIN))
-			gnvs->cid1 = wifi_regulatory_domain();
-		else
-			gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
 
 		/* Add it to DSDT */
 		acpigen_write_scope("\\");

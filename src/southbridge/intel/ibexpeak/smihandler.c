@@ -23,15 +23,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmutil.h>
 
-/* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
- * by coreboot.
- */
-static struct global_nvs *gnvs;
-struct global_nvs *smm_get_gnvs(void)
-{
-	return gnvs;
-}
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {

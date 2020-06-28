@@ -91,6 +91,8 @@ static void smi_restore_pci_address(void)
 
 static const struct smm_runtime *smm_runtime;
 
+struct global_nvs *gnvs;
+
 void *smm_get_save_state(int cpu)
 {
 	char *base;

@@ -65,7 +65,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case ACPI_S3:
-		if (smm_get_gnvs()->s3u0 == 0) {
+		if (gnvs->s3u0 == 0) {
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
 			google_chromeec_set_usb_charge_mode(
@@ -78,7 +78,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case ACPI_S5:
-		if (smm_get_gnvs()->s5u0 == 0) {
+		if (gnvs->s5u0 == 0) {
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
 			google_chromeec_set_usb_charge_mode(

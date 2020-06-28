@@ -86,7 +86,9 @@ struct smm_module_params {
 typedef asmlinkage void (*smm_handler_t)(void *);
 
 /* SMM Runtime helpers. */
-struct global_nvs *smm_get_gnvs(void);
+#if ENV_SMM
+extern struct global_nvs *gnvs;
+#endif
 
 /* Entry point for SMM modules. */
 asmlinkage void smm_handler_start(void *params);

@@ -24,7 +24,7 @@ int mainboard_io_trap_handler(int smif)
 	switch (smif) {
 	case 0x99:
 		printk(BIOS_DEBUG, "Sample\n");
-		smm_get_gnvs()->smif = 0;
+		gnvs->smif = 0;
 		break;
 	default:
 		return 0;
@@ -86,10 +86,10 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case ACPI_S3:
-		if (smm_get_gnvs()->s3u0 == 0)
+		if (gnvs->s3u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
-		if (smm_get_gnvs()->s3u1 == 0)
+		if (gnvs->s3u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
 
@@ -99,10 +99,10 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case ACPI_S5:
-		if (smm_get_gnvs()->s5u0 == 0)
+		if (gnvs->s5u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
-		if (smm_get_gnvs()->s5u1 == 0)
+		if (gnvs->s5u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
 

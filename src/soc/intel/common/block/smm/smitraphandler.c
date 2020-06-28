@@ -24,7 +24,6 @@
 /* Inherited from cpu/x86/smm.h resulting in a different signature */
 int southbridge_io_trap_handler(int smif)
 {
-	struct global_nvs *gnvs = smm_get_gnvs();
 	switch (smif) {
 	case 0x32:
 		printk(BIOS_DEBUG, "OS Init\n");
@@ -61,7 +60,6 @@ void smihandler_southbridge_monitor(
 	u32 data, mask = 0;
 	u8 trap_sts;
 	int i;
-	struct global_nvs *gnvs = smm_get_gnvs();
 
 	/* TRSR - Trap Status Register */
 	trap_sts = pcr_read8(PID_PSTH, PCR_PSTH_TRPST);

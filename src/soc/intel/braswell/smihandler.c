@@ -18,8 +18,6 @@
 #include <soc/gpio.h>
 #include <smmstore.h>
 
-/* GNVS needs to be set by coreboot initiating a software SMI. */
-static struct global_nvs *gnvs;
 static int smm_initialized;
 
 int southbridge_io_trap_handler(int smif)
@@ -43,11 +41,6 @@ int southbridge_io_trap_handler(int smif)
 void southbridge_smi_set_eos(void)
 {
 	enable_smi(EOS);
-}
-
-struct global_nvs *smm_get_gnvs(void)
-{
-	return gnvs;
 }
 
 static void busmaster_disable_on_bus(int bus)

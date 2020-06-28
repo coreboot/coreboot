@@ -23,7 +23,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	printk(BIOS_DEBUG, "mainboard_smi_sleep: %x\n", slp_typ);
 
 	/* Tell the EC to Enable USB power for S3 if requested */
-	if (smm_get_gnvs()->s3u0 != 0 || smm_get_gnvs()->s3u1 != 0)
+	if (gnvs->s3u0 != 0 || gnvs->s3u1 != 0)
 		ec_mem_write(EC_EC_PSW, ec_mem_read(EC_EC_PSW) | EC_PSW_USB);
 
 	/* Disable wake on USB, LAN & RTC */

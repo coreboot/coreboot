@@ -9,10 +9,11 @@
 
 #include "nvs.h"
 
-/* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
- * by coreboot.
- */
-struct global_nvs *gnvs = (struct global_nvs *)0x0;
+#if !CONFIG(SMM_TSEG)
+/* For qemu/x86-q35 to build properly. */
+struct global_nvs *gnvs;
+#endif
+
 void *tcg = (void *)0x0;
 void *smi1 = (void *)0x0;
 

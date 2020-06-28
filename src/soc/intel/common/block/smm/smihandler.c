@@ -26,9 +26,6 @@
 #include <spi-generic.h>
 #include <stdint.h>
 
-/* GNVS needs to be set by coreboot initiating a software SMI. */
-static struct global_nvs *gnvs;
-
 /* SoC overrides. */
 
 __weak const struct smm_save_state_ops *get_smm_save_state_ops(void)
@@ -123,11 +120,6 @@ static void *find_save_state(const struct smm_save_state_ops *save_state_ops,
 void southbridge_smi_set_eos(void)
 {
 	pmc_enable_smi(EOS);
-}
-
-struct global_nvs *smm_get_gnvs(void)
-{
-	return gnvs;
 }
 
 static void busmaster_disable_on_bus(int bus)

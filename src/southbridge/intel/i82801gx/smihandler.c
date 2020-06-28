@@ -21,9 +21,6 @@
 u16 pmbase = DEFAULT_PMBASE;
 u8 smm_initialized = 0;
 
-/* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located by coreboot. */
-struct global_nvs *gnvs = (struct global_nvs *)0x0;
-
 void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)
 {
 	gnvs = *(struct global_nvs **)0x500;

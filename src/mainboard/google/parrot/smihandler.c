@@ -62,7 +62,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 
 	/* Tell the EC to Disable USB power */
-	if (smm_get_gnvs()->s3u0 == 0 && smm_get_gnvs()->s3u1 == 0) {
+	if (gnvs->s3u0 == 0 && gnvs->s3u1 == 0) {
 		ec_kbc_write_cmd(0x45);
 		ec_kbc_write_ib(0xF2);
 	}

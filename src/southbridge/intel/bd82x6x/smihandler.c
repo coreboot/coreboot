@@ -17,12 +17,6 @@
 #include "pch.h"
 #include "nvs.h"
 
-static struct global_nvs *gnvs;
-struct global_nvs *smm_get_gnvs(void)
-{
-	return gnvs;
-}
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -186,7 +180,7 @@ void southbridge_smi_monitor(void)
 
 void southbridge_smm_xhci_sleep(u8 slp_type)
 {
-	if (smm_get_gnvs()->xhci)
+	if (gnvs->xhci)
 		xhci_sleep(slp_type);
 }
 

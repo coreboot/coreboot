@@ -59,7 +59,7 @@ static acpi_cstate_t cstate_map[] = {
 	}
 };
 
-void acpi_init_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
@@ -370,6 +370,7 @@ void southcluster_inject_dsdt(const struct device *device)
 	if (!gnvs)
 		return;
 
+	soc_fill_gnvs(gnvs);
 	mainboard_fill_gnvs(gnvs);
 
 	acpi_inject_nvsa();

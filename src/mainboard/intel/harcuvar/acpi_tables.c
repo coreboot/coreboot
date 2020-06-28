@@ -10,8 +10,6 @@
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
-	acpi_init_gnvs(gnvs);
-
 	/* Disable USB ports in S5 */
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;

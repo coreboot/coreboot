@@ -32,7 +32,6 @@ void southbridge_inject_dsdt(const struct device *device);
  */
 
 void acpi_create_gnvs(struct global_nvs *gnvs);
-void acpi_init_gnvs(struct global_nvs *gnvs);
 
 void soc_fill_gnvs(struct global_nvs *gnvs);
 void mainboard_fill_gnvs(struct global_nvs *gnvs);

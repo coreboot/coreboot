@@ -469,7 +469,7 @@ void southbridge_inject_dsdt(const struct device *dev)
 	if (!gnvs)
 		return;
 
-	acpi_create_gnvs(gnvs);
+	mainboard_fill_gnvs(gnvs);
 	acpi_inject_nvsa();
 }
 

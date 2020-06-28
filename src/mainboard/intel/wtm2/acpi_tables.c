@@ -7,7 +7,7 @@
 #include <soc/nvs.h>
 #include "thermal.h"
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;

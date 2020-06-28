@@ -616,7 +616,8 @@ static void southcluster_inject_dsdt(const struct device *device)
 		return;
 
 	soc_fill_gnvs(gnvs);
-	acpi_create_gnvs(gnvs);
+	mainboard_fill_gnvs(gnvs);
+
 	acpi_inject_nvsa();
 }
 

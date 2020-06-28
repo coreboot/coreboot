@@ -4,7 +4,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <southbridge/intel/i82801jx/nvs.h>
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->pwrs = 1;    /* Power state (AC = 1) */
 	gnvs->osys = 2002; /* At least WINXP SP2 (HPET fix) */

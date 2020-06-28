@@ -3,7 +3,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* The lid is open by default */
 	gnvs->lids = 1;

@@ -11,7 +11,7 @@
 #include "thermal.h"
 #include "onboard.h"
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Disable USB ports in S3 by default */
 	gnvs->s3u0 = 0;

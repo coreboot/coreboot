@@ -9,7 +9,7 @@
 
 #include "mainboard.h"
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Enable COM port(s) */
 	gnvs->cmap = 0x01;

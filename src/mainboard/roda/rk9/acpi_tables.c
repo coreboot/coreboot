@@ -7,7 +7,7 @@
 #include <device/device.h>
 #include <southbridge/intel/i82801ix/nvs.h>
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->apic = 1;
 	gnvs->mpen = 1; /* Enable Multi Processing */

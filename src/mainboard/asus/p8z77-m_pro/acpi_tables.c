@@ -3,7 +3,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* critical temp that will shutdown the pc == 95C degrees */
 	gnvs->tcrt = 95;

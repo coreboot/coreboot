@@ -2,6 +2,7 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
@@ -143,15 +144,9 @@ static void s3_save_acpi_wake_source(struct global_nvs *gnvs)
 
 static void s3_resume_prepare(void)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
 
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
-	if (gnvs == NULL)
-		return;
-
-	if (!acpi_is_wakeup_s3())
-		memset(gnvs, 0, sizeof(struct global_nvs));
-	else
+	if (gnvs && acpi_is_wakeup_s3())
 		s3_save_acpi_wake_source(gnvs);
 }
 

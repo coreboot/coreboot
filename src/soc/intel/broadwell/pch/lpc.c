@@ -593,8 +593,6 @@ static void pch_lpc_add_io_resources(struct device *dev)
 
 static void pch_lpc_read_resources(struct device *dev)
 {
-	struct global_nvs *gnvs;
-
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
@@ -603,11 +601,6 @@ static void pch_lpc_read_resources(struct device *dev)
 
 	/* Add IO resources. */
 	pch_lpc_add_io_resources(dev);
-
-	/* Allocate ACPI NVS in CBMEM */
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
-	if (!acpi_is_wakeup_s3() && gnvs)
-		memset(gnvs, 0, sizeof(struct global_nvs));
 }
 
 static void southcluster_inject_dsdt(const struct device *device)
@@ -615,11 +608,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-		if (gnvs)
-			memset(gnvs, 0, sizeof(*gnvs));
-	}
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <arch/ioapic.h>
@@ -7,7 +8,6 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
-#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/intel/common/common.h>
@@ -244,11 +244,6 @@ void southbridge_inject_dsdt(const struct device *device)
 	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-		if (gnvs)
-			memset(gnvs, 0, sizeof(*gnvs));
-	}
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);

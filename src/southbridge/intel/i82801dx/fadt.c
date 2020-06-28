@@ -2,6 +2,7 @@
 
 #include <device/pci_ops.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <version.h>
 
 /* FIXME: This needs to go into a separate .h file
@@ -78,4 +79,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
 	fadt->x_gpe0_blk.addrl = pmbase + 0x28;
 	fadt->x_gpe0_blk.addrh = 0x0;
+}
+
+size_t gnvs_size_of_array(void)
+{
+	return 0;
 }

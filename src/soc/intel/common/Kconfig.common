@@ -2,6 +2,7 @@ config SOC_INTEL_COMMON
 	bool
 	select AZALIA_PLUGIN_SUPPORT
 	select HAVE_DISPLAY_MTRRS
+	select ACPI_SOC_NVS
 	help
 	  common code for Intel SOCs
 

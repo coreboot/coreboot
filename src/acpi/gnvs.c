@@ -29,12 +29,7 @@ static void gnvs_assign_cbmc(void)
 		*gnvs_cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 }
 
-/* Platforms that implement GNVS will need to implement these. */
-__weak size_t gnvs_size_of_array(void)
-{
-	return 0;
-}
-
+/* Needs implementation in platform code. */
 __weak uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs_)
 {
 	return NULL;

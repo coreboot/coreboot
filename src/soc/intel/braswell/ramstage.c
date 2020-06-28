@@ -2,6 +2,7 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
@@ -135,24 +136,11 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	return 1;
 }
 
-static void s3_resume_prepare(void)
-{
-	struct global_nvs *gnvs;
-
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs));
-	if (!acpi_is_wakeup_s3() && gnvs)
-		memset(gnvs, 0, sizeof(struct global_nvs));
-}
-
 static void set_board_id(void)
 {
-	struct global_nvs *gnvs;
-
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		printk(BIOS_ERR, "Unable to locate Global NVS\n");
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
 		return;
-	}
 	gnvs->bdid = board_id();
 }
 
@@ -164,9 +152,6 @@ void soc_init_pre_device(struct soc_intel_braswell_config *config)
 
 	/* Allow for SSE instructions to be executed. */
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
-
-	/* Indicate S3 resume to rest of ramstage. */
-	s3_resume_prepare();
 
 	/* Perform silicon specific init. */
 	intel_silicon_init();

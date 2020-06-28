@@ -382,11 +382,6 @@ void southcluster_inject_dsdt(const struct device *device)
 	struct global_nvs *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
-		if (gnvs)
-			memset(gnvs, 0, sizeof(*gnvs));
-	}
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);

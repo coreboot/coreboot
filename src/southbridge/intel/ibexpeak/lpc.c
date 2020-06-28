@@ -542,12 +542,16 @@ static void pch_lpc_enable(struct device *dev)
 	pch_enable(dev);
 }
 
+size_t gnvs_size_of_array(void)
+{
+	return sizeof(struct global_nvs);
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
-	struct global_nvs *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	struct global_nvs *gnvs = acpi_get_gnvs();
 
 	if (gnvs) {
-		memset(gnvs, 0, sizeof(*gnvs));
 
 		acpi_create_gnvs(gnvs);
 

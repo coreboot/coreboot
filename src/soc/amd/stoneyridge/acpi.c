@@ -164,8 +164,6 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
-	/* Clear out GNVS. */
-	memset(gnvs, 0, sizeof(*gnvs));
 
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);

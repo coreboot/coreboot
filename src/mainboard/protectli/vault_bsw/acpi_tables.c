@@ -8,7 +8,6 @@
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
-	memset(gnvs, 0, sizeof(*gnvs));
 
 	acpi_init_gnvs(gnvs);
 

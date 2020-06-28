@@ -77,8 +77,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();
 
-	/* Clear out GNVS. */
-	memset(gnvs, 0, sizeof(*gnvs));
 
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t) cbmem_find(CBMEM_ID_CONSOLE);

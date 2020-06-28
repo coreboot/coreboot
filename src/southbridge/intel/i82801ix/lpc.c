@@ -15,7 +15,6 @@
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
-#include <cbmem.h>
 #include <string.h>
 #include "chip.h"
 #include "i82801ix.h"
@@ -467,16 +466,11 @@ void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
-
-
-		/* Add it to SSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
-		acpigen_pop_len();
-	}
+	acpi_create_gnvs(gnvs);
+	acpi_inject_nvsa();
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

@@ -24,10 +24,6 @@
  */
 u16 pmbase = PMBASE_ADDR;
 
-unsigned char *mbi = NULL;
-u32 mbi_len;
-u8 mbi_initialized = 0;
-
 /**
  * @brief read and clear PM1_STS
  * @return PM1_STS register
@@ -335,17 +331,6 @@ static void southbridge_smi_apmc(void)
 		outl(pmctrl, pmbase + PM1_CNT);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
-	case APM_CNT_MBI_UPDATE: // FIXME
-		if (mbi_initialized) {
-			printk(BIOS_DEBUG, "SMI#: mbi already registered!\n");
-			return;
-		}
-		mbi = *(void **)0x500;
-		mbi_len = *(u32 *)0x504;
-		mbi_initialized = 1;
-		printk(BIOS_DEBUG, "SMI#: Registered MBI at %p (%d bytes)\n", mbi, mbi_len);
-		break;
-
 	default:
 		printk(BIOS_DEBUG, "SMI#: Unknown function APM_CNT=%02x\n", reg8);
 	}

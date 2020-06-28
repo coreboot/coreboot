@@ -16,7 +16,6 @@
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
-#include <cbmem.h>
 #include <string.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmbase.h>
@@ -484,23 +483,21 @@ size_t gnvs_size_of_array(void)
 	return sizeof(struct global_nvs);
 }
 
+void soc_fill_gnvs(struct global_nvs *gnvs)
+{
+	gnvs->apic = 1;
+	gnvs->mpen = 1; /* Enable Multi Processing */
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	if (gnvs) {
-
-		gnvs->apic = 1;
-		gnvs->mpen = 1; /* Enable Multi Processing */
-
-		acpi_create_gnvs(gnvs);
-
-
-		/* Add it to SSDT.  */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) gnvs);
-		acpigen_pop_len();
-	}
+	soc_fill_gnvs(gnvs);
+	acpi_create_gnvs(gnvs);
+	acpi_inject_nvsa();
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

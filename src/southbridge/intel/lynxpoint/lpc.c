@@ -694,17 +694,21 @@ void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
 	return &gnvs->chromeos;
 }
 
+void soc_fill_gnvs(struct global_nvs *gnvs)
+{
+	gnvs->apic = 1;
+	gnvs->mpen = 1; /* Enable Multi Processing */
+	gnvs->pcnt = dev_count_cpu();
+}
+
 void southbridge_inject_dsdt(const struct device *dev)
 {
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (!gnvs)
 		return;
 
+	soc_fill_gnvs(gnvs);
 	acpi_create_gnvs(gnvs);
-
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
-	gnvs->pcnt = dev_count_cpu();
 
 	acpi_inject_nvsa();
 }

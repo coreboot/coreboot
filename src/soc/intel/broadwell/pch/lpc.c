@@ -600,18 +600,22 @@ static void pch_lpc_read_resources(struct device *dev)
 	pch_lpc_add_io_resources(dev);
 }
 
+void soc_fill_gnvs(struct global_nvs *gnvs)
+{
+	/* Set unknown wake source */
+	gnvs->pm1i = -1;
+
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+}
+
 static void southcluster_inject_dsdt(const struct device *device)
 {
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (!gnvs)
 		return;
 
-	/* Set unknown wake source */
-	gnvs->pm1i = -1;
-
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
-
+	soc_fill_gnvs(gnvs);
 	acpi_create_gnvs(gnvs);
 	acpi_inject_nvsa();
 }

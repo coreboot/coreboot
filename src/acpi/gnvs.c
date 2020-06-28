@@ -35,6 +35,8 @@ __weak uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs_)
 	return NULL;
 }
 
+__weak void soc_fill_gnvs(struct global_nvs *gnvs_) { }
+
 void *gnvs_get_or_create(void)
 {
 	size_t gnvs_size;

@@ -246,7 +246,7 @@ unsigned long sa_write_acpi_tables(const struct device *dev, unsigned long curre
 	return current;
 }
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	config_t *config = config_of_soc();
 

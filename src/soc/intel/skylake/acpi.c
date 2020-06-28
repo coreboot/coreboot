@@ -156,7 +156,7 @@ static int get_cores_per_package(void)
 	return cores;
 }
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	const struct soc_intel_skylake_config *config = config_of_soc();
 
@@ -528,7 +528,7 @@ void southbridge_inject_dsdt(const struct device *device)
 	if (!gnvs)
 		return;
 
-	acpi_create_gnvs(gnvs);
+	soc_fill_gnvs(gnvs);
 	acpi_inject_nvsa();
 }
 

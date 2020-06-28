@@ -177,7 +177,7 @@ uint32_t soc_read_sci_irq_select(void)
 	return read32((void *)pmc_bar + IRQ_REG);
 }
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	config_t *config = config_of_soc();
 

@@ -72,7 +72,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	return cstate_map;
 }
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();

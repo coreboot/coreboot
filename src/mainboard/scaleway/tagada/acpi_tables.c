@@ -2,13 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <device/device.h>
-
-#include <intelblocks/acpi.h>
-#include <soc/acpi.h>
 #include <soc/nvs.h>
-
-extern const unsigned char AmlCode[];
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {

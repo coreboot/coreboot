@@ -8,8 +8,6 @@
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 
-extern const unsigned char AmlCode[];
-
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
 	acpi_init_gnvs(gnvs);

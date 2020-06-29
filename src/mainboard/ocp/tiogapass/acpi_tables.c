@@ -1,10 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <intelblocks/acpi.h>
-#include <soc/acpi.h>
-
-extern const unsigned char AmlCode[];
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {

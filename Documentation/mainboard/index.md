@@ -51,10 +51,6 @@ The boards in this section are not real mainboards, but emulators.
 
 - [GA-H61M-S2PV](gigabyte/ga-h61m-s2pv.md)
 
-## Google
-
-- [Dragonegg](google/dragonegg.md)
-
 ## HP
 
 - [Compaq 8200 Elite SFF](hp/compaq_8200_sff.md)

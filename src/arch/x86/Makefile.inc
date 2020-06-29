@@ -50,7 +50,7 @@ pci$(stripped_vgabios_dgpu_id).rom-type := optionrom
 # into a single generated file.
 crt0s = $(cpu_incs-y)
 
-$(objgenerated)/assembly.inc: $$(crt0s)
+$(objgenerated)/assembly.inc: build-dirs $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
 

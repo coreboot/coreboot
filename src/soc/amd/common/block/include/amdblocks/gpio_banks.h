@@ -74,6 +74,7 @@ struct soc_amd_event {
 
 #define GPIO_INT_STATUS		(1 << 28)
 #define GPIO_WAKE_STATUS	(1 << 29)
+#define GPIO_STATUS_MASK	(3 << 28)
 
 enum {
 	GEVENT_0,
@@ -118,7 +119,6 @@ enum {
 #define GPIO_PULL_PULL_DOWN GPIO_PULLDOWN_ENABLE
 #define GPIO_PULL_PULL_NONE 0
 
-#define AMD_GPIO_CONTROL_MASK			0x00f4ff00
 #define AMD_GPIO_MUX_MASK			0x03
 
 
@@ -134,10 +134,6 @@ enum {
 #define GPIO_FLAG_EVENT_ACTIVE_MASK	(1 << 1)
 #define GPIO_FLAG_SCI			(1 << 2)
 #define GPIO_FLAG_SMI			(1 << 3)
-#define GPIO_FLAG_DEBOUNCE		(1 << 4)
-#define GPIO_FLAG_WAKE			(1 << 5)
-#define GPIO_FLAG_INT			(1 << 6)
-#define GPIO_FLAG_SPECIAL_MASK	        (0x1f << 2)
 
 /* Trigger configuration for GPIO SCI/SMI events. */
 #define GPIO_FLAG_EVENT_TRIGGER_LEVEL_HIGH	(GPIO_FLAG_EVENT_TRIGGER_LEVEL | \
@@ -169,11 +165,6 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 	return (flags & GPIO_FLAG_EVENT_ACTIVE_MASK) == GPIO_FLAG_EVENT_ACTIVE_LOW;
 }
 
-#define GPIO_DEBOUNCE_MASK		0x000000ff
-#define INT_TRIGGER_MASK		0x00000700
-#define INT_WAKE_MASK			0x0000e700
-#define INT_SCI_SMI_MASK		0x00f40000
-
 #define DEB_GLITCH_SHIFT		5
 #define DEB_GLITCH_LOW			1
 #define DEB_GLITCH_HIGH			2
@@ -200,18 +191,29 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 #define GPIO_DEB_200mS			(13 | GPIO_TIMEBASE_15560uS)
 #define GPIO_DEB_500mS			(8 | GPIO_TIMEBASE_62440uS)
 
+#define GPIO_DEB_MASK			0xff
+
 #define GPIO_WAKE_S0i3			(1 << 13)
 #define GPIO_WAKE_S3			(1 << 14)
 #define GPIO_WAKE_S4_S5			(1 << 15)
 #define GPIO_WAKE_S0i3_S4_S5		(GPIO_WAKE_S0i3 | GPIO_WAKE_S4_S5)
 #define GPIO_WAKE_S3_S4_S5		(GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
+#define GPIO_WAKE_MASK			(7 << 13)
 
 /*
- * Several macros are available to declare programming of GPIO pins, and if
- * needed, more than 1 macro can be used for any pin. However, some macros
- * will have no effect if combined. For example debounce only affects input
- * or one of the interrupts. Some macros should not be combined, such as SMI
- * and regular interrupt. The defined macros and their parameters are:
+ * Mask used to reset bits in GPIO control register when configuring pad using `program_gpios()`
+ * Bits that are preserved/untouched:
+ * - Reserved bits
+ * - Drive strength bits
+ * - Read only bits
+ */
+#define PAD_CFG_MASK		(GPIO_DEB_MASK | GPIO_TRIGGER_MASK | GPIO_ACTIVE_MASK | \
+				 GPIO_INT_ENABLE_MASK | GPIO_WAKE_MASK | GPIO_PULL_MASK | \
+				 GPIO_OUTPUT_MASK | GPIO_STATUS_MASK)
+
+/*
+ * Several macros are available to declare programming of GPIO pins. The defined macros and
+ * their parameters are:
  * PAD_NF		Define native alternate function for the pin.
  *	pin		the pin to be programmed
  *	function	the native function
@@ -230,19 +232,19 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
  * PAD_SCI		The pin is a SCI source
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
- *	trigger		LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH
+ *	event trigger		LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH
  * PAD_SMI		The pin is a SMI source
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
- *	trigger		LEVEL_LOW, LEVEL_HIGH
+ *	event trigger		LEVEL_LOW, LEVEL_HIGH
  * PAD_WAKE		The pin can wake, use after PAD_INT or PAD_SCI
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
  *	trigger		LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH, BOTH_EDGES
  *	type		S0i3, S3, S4_S5 or S4_S5 combinations (S0i3_S3 invalid)
- * PAD_DEBOUNCE		The input or interrupt will be debounced, invalid after
- *			PAD_NF
+ * PAD_DEBOUNCE		The input or interrupt will be debounced
  *	pin		the pin to be programmed
+ *	pull		pull up, pull down or no pull
  *	debounce_type	preserve low glitch, preserve high glitch, no glitch
  *	debounce_time	the debounce time
  */
@@ -279,29 +281,31 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 #define PAD_INT(pin, pull, trigger, action)				\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
 		PAD_PULL(pull) | PAD_TRIGGER(trigger) | PAD_INT_ENABLE(action), \
-		GPIO_FLAG_INT)
+		0)
 
 /* SCI pad configuration */
 #define PAD_SCI(pin, pull, trigger)					\
-	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(pull),	\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+		PAD_PULL(pull) | PAD_TRIGGER(LEVEL_HIGH),		\
 		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SCI)
 
 /* SMI pad configuration */
 #define PAD_SMI(pin, pull, trigger)					\
-	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(pull),	\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+		PAD_PULL(pull) | PAD_TRIGGER(LEVEL_HIGH),		\
 		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SMI)
 
 /* WAKE pad configuration */
 #define PAD_WAKE(pin, pull, trigger, type)				\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
 		PAD_PULL(pull) | PAD_TRIGGER(trigger) | PAD_WAKE_ENABLE(type), \
-		GPIO_FLAG_WAKE)
+		0)
 
 /* pin debounce configuration */
-#define PAD_DEBOUNCE(pin, type, time)					\
+#define PAD_DEBOUNCE(pin, pull, type, time)				\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
-			PAD_DEBOUNCE_CONFIG(type) | PAD_DEBOUNCE_CONFIG(time), \
-			GPIO_FLAG_DEBOUNCE)
+		PAD_PULL(pull) | PAD_DEBOUNCE_CONFIG(type) | PAD_DEBOUNCE_CONFIG(time), \
+		0)
 
 typedef uint32_t gpio_t;
 

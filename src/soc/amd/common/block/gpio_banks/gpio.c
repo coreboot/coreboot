@@ -21,17 +21,6 @@ static int get_gpio_gevent(uint8_t gpio, const struct soc_amd_event *table,
 	return -1;
 }
 
-static void mem_read_write32(uint32_t *address, uint32_t value, uint32_t mask)
-{
-	uint32_t reg32;
-
-	value &= mask;
-	reg32 = read32(address);
-	reg32 &= ~mask;
-	reg32 |= value;
-	write32(address, reg32);
-}
-
 static void program_smi(uint32_t flags, int gevent_num)
 {
 	uint8_t level;
@@ -187,7 +176,6 @@ __weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
 
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
-	uint32_t *gpio_ptr;
 	uint32_t control, control_flags;
 	uint8_t mux, index, gpio;
 	int gevent_num;
@@ -219,51 +207,23 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 		iomux_read8(gpio); /* Flush posted write */
 
 		soc_gpio_hook(gpio, mux);
+		__gpio_setbits32(gpio, PAD_CFG_MASK, control);
 
-		gpio_ptr = gpio_ctrl_ptr(gpio);
+		if (control_flags == 0)
+			continue;
 
-		if (control_flags & GPIO_FLAG_SPECIAL_MASK) {
-			gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
-			if (gevent_num < 0) {
-				printk(BIOS_WARNING, "Warning: GPIO pin %d has"
-					" no associated gevent!\n", gpio);
-				continue;
-			}
-			switch (control_flags & GPIO_FLAG_SPECIAL_MASK) {
-			case GPIO_FLAG_DEBOUNCE:
-				mem_read_write32(gpio_ptr, control,
-						GPIO_DEBOUNCE_MASK);
-				break;
-			case GPIO_FLAG_WAKE:
-				mem_read_write32(gpio_ptr, control,
-						INT_WAKE_MASK);
-				break;
-			case GPIO_FLAG_INT:
-				mem_read_write32(gpio_ptr, control,
-						AMD_GPIO_CONTROL_MASK);
-				break;
-			case GPIO_FLAG_SMI:
-				mem_read_write32(gpio_ptr, control,
-						INT_SCI_SMI_MASK);
+		gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
+		if (gevent_num < 0) {
+			printk(BIOS_WARNING, "Warning: GPIO pin %d has no associated gevent!\n",
+			       gpio);
+			continue;
+		}
 
-				program_smi(control_flags, gevent_num);
-				break;
-			case GPIO_FLAG_SCI:
-				mem_read_write32(gpio_ptr, control,
-						INT_SCI_SMI_MASK);
-
-				fill_sci_trigger(control_flags, gevent_num, &sci_trigger_cfg);
-
-				soc_route_sci(gevent_num);
-				break;
-			default:
-				printk(BIOS_WARNING, "Error, flags 0x%08x\n",
-							control_flags);
-				break;
-			}
-		} else {
-			mem_read_write32(gpio_ptr, control,
-						AMD_GPIO_CONTROL_MASK);
+		if (control_flags & GPIO_FLAG_SMI) {
+			program_smi(control_flags, gevent_num);
+		} else if (control_flags & GPIO_FLAG_SCI) {
+			fill_sci_trigger(control_flags, gevent_num, &sci_trigger_cfg);
+			soc_route_sci(gevent_num);
 		}
 	}
 

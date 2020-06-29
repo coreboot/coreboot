@@ -544,7 +544,18 @@ void x86_exception(struct eregs *info)
 			printk(BIOS_EMERG, "\n%p:\t", code + i);
 		printk(BIOS_EMERG, "%.2x ", code[i]);
 	}
-	die("");
+
+	/* Align to 4-byte boundary and up the stack. */
+	u32 *ptr = (u32 *)(ALIGN_DOWN((uintptr_t)info->esp, sizeof(u32)) + MDUMP_SIZE - 4);
+	for (i = 0; i < MDUMP_SIZE / sizeof(u32); ++i, --ptr) {
+		printk(BIOS_EMERG, "\n%p:\t0x%08x", ptr, *ptr);
+		if ((uintptr_t)ptr == info->ebp)
+			printk(BIOS_EMERG, " <-ebp");
+		else if ((uintptr_t)ptr == info->esp)
+			printk(BIOS_EMERG, " <-esp");
+	}
+
+	die("\n");
 #endif
 }
 

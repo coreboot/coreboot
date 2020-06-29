@@ -133,7 +133,7 @@ $(VBOOT_HOSTLIB):
 	unset CFLAGS LDFLAGS; $(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$(VBOOT_HOST_BUILD) \
 		CC="$(HOSTCC)" \
-		$(if $(HOSTPKGCONFIG), PKG_CONFIG="$(HOSTPKGCONFIG)") \
+		PKG_CONFIG="true" \
 		V=$(V) \
 		hostlib
 

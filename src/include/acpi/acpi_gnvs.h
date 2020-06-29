@@ -26,13 +26,10 @@ struct device;
 void southbridge_inject_dsdt(const struct device *device);
 
 /*
- * This function populates the gnvs structure in acpi table.
+ * These functions populate the gnvs structure in acpi table.
  * Defined as weak in common acpi as gnvs structure definition is
  * chipset specific.
  */
-
-void acpi_create_gnvs(struct global_nvs *gnvs);
-
 void soc_fill_gnvs(struct global_nvs *gnvs);
 void mainboard_fill_gnvs(struct global_nvs *gnvs);
 

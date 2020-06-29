@@ -15,7 +15,6 @@
 #include <cpu/amd/cpuid.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
-#include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <amdblocks/acpimmio.h>
@@ -394,7 +393,7 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 	return acpi_write_hpet(device, current, rsdp);
 }
 
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Set unknown wake source */
 	gnvs->pm1i = ~0ULL;
@@ -406,18 +405,12 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
 
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
-
-		/* Add it to DSDT */
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
-		acpigen_pop_len();
-	}
+	soc_fill_gnvs(gnvs);
+	acpi_inject_nvsa();
 }
 
 static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)

@@ -217,25 +217,60 @@ const __weak struct sci_source *get_gpe_table(size_t *num)
 	return NULL;
 }
 
-static void wifi_power_reset_configure_v3(void)
+static void wifi_power_reset_configure_active_low_power(void)
 {
 	/*
 	 * Configure WiFi GPIOs such that:
 	 * - WIFI_AUX_RESET is configured first to assert PERST# to WiFi device.
-	 * - Enable power to WiFi using EN_PWR_WIFI.
+	 * - Enable power to WiFi using EN_PWR_WIFI_L.
 	 * - Wait for 50ms after power to WiFi is enabled.
-	 * - Deassert PERST# to WiFi device by driving WIFI_AUX_RESET low.
+	 * - Deassert WIFI_AUX_RESET.
 	 */
 	static const struct soc_amd_gpio v3_wifi_table[] = {
 		/* WIFI_AUX_RESET */
 		PAD_GPO(GPIO_29, HIGH),
-		/* EN_PWR_WIFI */
-		PAD_GPO(GPIO_42, HIGH),
+		/* EN_PWR_WIFI_L */
+		PAD_GPO(GPIO_42, LOW),
 	};
 	program_gpios(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
 
 	mdelay(50);
 	gpio_set(GPIO_29, 0);
+}
+
+static void wifi_power_reset_configure_active_high_power(void)
+{
+	/*
+	 * When GPIO_42 is configured as active high for enabling WiFi power, WIFI_AUX_RESET
+	 * gets pulled high because of external PU to PP3300_WIFI. Thus, EN_PWR_WIFI needs to be
+	 * set low before driving it high to trigger a WiFi power cycle to meet PCIe
+	 * requirements. Thus, configure GPIOs such that:
+	 * - WIFI_AUX_RESET is configured first to assert PERST# to WiFi device
+	 * - Disable power to WiFi.
+	 * - Wait 10ms for WiFi power to go low.
+	 * - Enable power to WiFi using EN_PWR_WIFI.
+	 * - Deassert WIFI_AUX_RESET.
+	 */
+	static const struct soc_amd_gpio v3_wifi_table[] = {
+		/* WIFI_AUX_RESET */
+		PAD_GPO(GPIO_29, HIGH),
+		/* EN_PWR_WIFI */
+		PAD_GPO(GPIO_42, LOW),
+	};
+	program_gpios(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
+
+	mdelay(10);
+	gpio_set(GPIO_42, 1);
+	mdelay(50);
+	gpio_set(GPIO_29, 0);
+}
+
+static void wifi_power_reset_configure_v3(uint32_t board_version)
+{
+	if (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW)
+		wifi_power_reset_configure_active_low_power();
+	else
+		wifi_power_reset_configure_active_high_power();
 }
 
 static void wifi_power_reset_configure_pre_v3(void)
@@ -273,7 +308,7 @@ __weak void variant_pcie_power_reset_configure(void)
 
 	if (!google_chromeec_cbi_get_board_version(&board_version) &&
 	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS))
-		wifi_power_reset_configure_v3();
+		wifi_power_reset_configure_v3(board_version);
 	else
 		wifi_power_reset_configure_pre_v3();
 }
@@ -283,6 +318,12 @@ static const struct soc_amd_gpio gpio_sleep_table[] = {
 	PAD_GPO(GPIO_5, LOW),
 	/* PCIE_RST1_L */
 	PAD_GPO(GPIO_27, LOW),
+	/*
+	 * On pre-v3 schematics, GPIO_29 is EN_PWR_WIFI. So, setting to high should be no-op.
+	 * On v3+ schematics, GPIO_29 is WIFI_AUX_RESET. Setting to high ensures that PERST# is
+	 * asserted to WiFi device until coreboot reconfigures GPIO_29 on resume path.
+	 */
+	PAD_GPO(GPIO_29, HIGH),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, LOW),
 	/* EN_PWR_CAMERA */

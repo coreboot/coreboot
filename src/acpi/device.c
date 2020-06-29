@@ -770,7 +770,7 @@ static bool acpi_dp_write_properties(struct acpi_dp *prop, const char *uuid)
 	return false;
 }
 
-void acpi_dp_write(struct acpi_dp *table)
+static void acpi_dp_write_(struct acpi_dp *table)
 {
 	struct acpi_dp *dp, *prop;
 	char *dp_count;
@@ -826,7 +826,12 @@ void acpi_dp_write(struct acpi_dp *table)
 	/* Recursively parse children into separate tables */
 	for (dp = prop; dp; dp = dp->next)
 		if (dp->type == ACPI_DP_TYPE_CHILD)
-			acpi_dp_write(dp->child);
+			acpi_dp_write_(dp->child);
+}
+
+void acpi_dp_write(struct acpi_dp *table)
+{
+	acpi_dp_write_(table);
 
 	/* Clean up */
 	acpi_dp_free(table);

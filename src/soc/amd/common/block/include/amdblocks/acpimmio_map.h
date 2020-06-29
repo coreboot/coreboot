@@ -95,13 +95,10 @@
 #define AMD_SB_ACPI_MMIO_ADDR		0xfed80000
 
 #ifdef __ACPI__
-
-/* ASL fails on additions. */
+/* ASL MemoryFixed32() fails if these are additions. */
 #define ACPIMMIO_MISC_BASE		0xfed80e00
 #define ACPIMMIO_GPIO0_BASE		0xfed81500
-#define ACPIMMIO_AOAC_BASE		0xfed81e00
-
-#else
+#endif
 
 #define ACPIMMIO_SM_PCI_BANK		0x0000
 #define ACPIMMIO_GPIO_100_BANK		0x0100
@@ -126,6 +123,6 @@
 #define ACPIMMIO_ACDCTMR_BANK		0x1d00
 #define ACPIMMIO_AOAC_BANK		0x1e00
 
-#endif
+#define ACPIMMIO_BASE(bank)	(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_ ## bank ## _BANK)
 
 #endif /* AMD_BLOCK_ACPIMMIO_MAP_H */

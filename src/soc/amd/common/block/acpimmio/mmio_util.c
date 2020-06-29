@@ -5,12 +5,9 @@
 #include <amdblocks/acpimmio_map.h>
 #include <amdblocks/acpimmio.h>
 
-#define ACPI_BANK_PTR(bank) \
-	(void *)(uintptr_t)(AMD_SB_ACPI_MMIO_ADDR + ACPIMMIO_ ## bank ## _BANK)
-
 #if CONSTANT_ACPIMMIO_BASE_ADDRESS
 #define DECLARE_ACPIMMIO(ptr, bank) \
-	uint8_t *const ptr = ACPI_BANK_PTR(bank)
+	uint8_t *const ptr = (void *)(uintptr_t)ACPIMMIO_BASE(bank)
 #else
 #define DECLARE_ACPIMMIO(ptr, bank) uint8_t *ptr
 #endif

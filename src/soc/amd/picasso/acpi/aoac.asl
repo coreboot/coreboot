@@ -4,7 +4,7 @@
 
 #define AOAC_DEVICE(DEV_NAME, DEV_ID, SX) \
 	PowerResource(DEV_NAME, SX, 0) { \
-		OperationRegion (AOAC, SystemMemory, ACPIMMIO_AOAC_BASE + 0x40 + (DEV_ID << 1), 2) \
+		OperationRegion (AOAC, SystemMemory, ACPIMMIO_BASE(AOAC) + 0x40 + (DEV_ID << 1), 2) \
 		Field (AOAC, ByteAcc, NoLock, Preserve) { \
 			/* \
 			 * Target Device State \

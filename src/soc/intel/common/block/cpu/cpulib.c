@@ -260,15 +260,20 @@ void configure_tcc_thermal_target(void)
 	const config_t *conf = config_of_soc();
 	msr_t msr;
 
+	if (!conf->tcc_offset)
+		return;
+
 	/* Set TCC activation offset */
 	msr = rdmsr(MSR_PLATFORM_INFO);
-	if ((msr.lo & BIT(30)) && conf->tcc_offset) {
+	if ((msr.lo & BIT(30))) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
 		msr.lo &= ~(0xf << 24);
 		msr.lo |= (conf->tcc_offset & 0xf) << 24;
 		wrmsr(MSR_TEMPERATURE_TARGET, msr);
 	}
+
 	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+
 	/* Time Window Tau Bits [6:0] */
 	msr.lo &= ~0x7f;
 	msr.lo |= 0xe6; /* setting 100ms thermal time window */

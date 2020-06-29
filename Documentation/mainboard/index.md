@@ -136,6 +136,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Hermes](prodrive/hermes.md)
 
+## Purism
+
+- [Librem Mini](purism/librem_mini.md)
+
 ## Protectli
 
 - [FW2B / FW4B](protectli/fw2b_fw4b.md)

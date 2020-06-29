@@ -712,8 +712,6 @@ void southbridge_inject_dsdt(const struct device *dev)
 		/* Update the mem console pointer. */
 		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 
-		/* And tell SMI about it */
-		apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");

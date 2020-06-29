@@ -19,8 +19,6 @@
 #include "pch.h"
 #include "nvs.h"
 
-static u8 smm_initialized = 0;
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -262,7 +260,6 @@ static void southbridge_smi_store(void)
 static void southbridge_smi_apmc(void)
 {
 	u8 reg8;
-	em64t101_smm_state_save_area_t *state;
 	static int chipset_finalized = 0;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
@@ -303,24 +300,6 @@ static void southbridge_smi_apmc(void)
 	case APM_CNT_ACPI_ENABLE:
 		enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
-		break;
-	case APM_CNT_GNVS_UPDATE:
-		if (smm_initialized) {
-			printk(BIOS_DEBUG,
-			       "SMI#: SMM structures already initialized!\n");
-			return;
-		}
-		state = smi_apmc_find_state_save(reg8);
-		if (state) {
-			/* EBX in the state save contains the GNVS pointer */
-			gnvs = (struct global_nvs *)((u32)state->rbx);
-			if (smm_points_to_smram(gnvs, sizeof(*gnvs))) {
-				printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
-				return;
-			}
-			smm_initialized = 1;
-			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
-		}
 		break;
 	case APM_CNT_ROUTE_ALL_XHCI:
 		usb_xhci_route_all();

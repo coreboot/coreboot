@@ -4,7 +4,6 @@
 #define INTEL_COMMON_PMUTIL_H
 
 #include <cpu/x86/smm.h>
-#include <cpu/intel/em64t101_save_state.h>
 
 #define D31F0_PMBASE		0x40
 #define D31F0_GEN_PMCON_1	0xa0
@@ -129,10 +128,8 @@ void dump_all_status(void);
 void southbridge_smm_xhci_sleep(u8 slp_type);
 void gpi_route_interrupt(u8 gpi, u8 mode);
 void southbridge_gate_memory_reset(void);
-void southbridge_update_gnvs(u8 apm_cnt, int *smm_done);
 void southbridge_finalize_all(void);
 void southbridge_smi_monitor(void);
-em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd);
 void pch_log_state(void);
 
 #endif /*INTEL_COMMON_PMUTIL_H */

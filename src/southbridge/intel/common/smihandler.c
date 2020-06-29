@@ -17,8 +17,6 @@
 
 #include "pmutil.h"
 
-static int smm_initialized = 0;
-
 u16 get_pmbase(void)
 {
 	return lpc_get_pmbase();
@@ -198,7 +196,7 @@ static void southbridge_smi_sleep(void)
  * core in case we are not running on the same core that
  * initiated the IO transaction.
  */
-em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
+static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 {
 	em64t101_smm_state_save_area_t *state;
 	int node;
@@ -301,14 +299,6 @@ static void southbridge_smi_apmc(void)
 	case APM_CNT_ACPI_ENABLE:
 		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
-		break;
-	case APM_CNT_GNVS_UPDATE:
-		if (smm_initialized) {
-			printk(BIOS_DEBUG,
-				"SMI#: SMM structures already initialized!\n");
-			return;
-		}
-		southbridge_update_gnvs(reg8, &smm_initialized);
 		break;
 	case APM_CNT_FINALIZE:
 		if (mainboard_finalized) {

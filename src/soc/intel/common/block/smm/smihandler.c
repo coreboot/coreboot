@@ -330,8 +330,6 @@ void smihandler_southbridge_apmc(
 	const struct smm_save_state_ops *save_state_ops)
 {
 	uint8_t reg8;
-	void *state = NULL;
-	static int smm_initialized = 0;
 
 	/* Emulate B2 register as the FADT / Linux expects it */
 
@@ -360,25 +358,6 @@ void smihandler_southbridge_apmc(
 	case APM_CNT_ACPI_ENABLE:
 		pmc_enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
-		break;
-	case APM_CNT_GNVS_UPDATE:
-		if (smm_initialized) {
-			printk(BIOS_DEBUG,
-			       "SMI#: SMM structures already initialized!\n");
-			return;
-		}
-		state = find_save_state(save_state_ops, reg8);
-		if (state) {
-			/* EBX in the state save contains the GNVS pointer */
-			uint32_t reg_ebx = save_state_ops->get_reg(state, RBX);
-			gnvs = (struct global_nvs *)(uintptr_t)reg_ebx;
-			if (smm_points_to_smram(gnvs, sizeof(*gnvs))) {
-				printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
-				return;
-			}
-			smm_initialized = 1;
-			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
-		}
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))

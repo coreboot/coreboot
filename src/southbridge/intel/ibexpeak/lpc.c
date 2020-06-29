@@ -555,8 +555,6 @@ void southbridge_inject_dsdt(const struct device *dev)
 		gnvs->mpen = 1;		/* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
 
-		/* And tell SMI about it */
-		apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to SSDT.  */
 		acpigen_write_scope("\\");

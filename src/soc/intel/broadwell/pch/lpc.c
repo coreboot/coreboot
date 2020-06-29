@@ -646,9 +646,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 			}
 		}
 
-		/* And tell SMI about it */
-		apm_control(APM_CNT_GNVS_UPDATE);
-
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");
 		acpigen_write_name_dword("NVSA", (u32) gnvs);

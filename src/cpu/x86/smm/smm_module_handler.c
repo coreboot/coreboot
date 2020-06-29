@@ -134,8 +134,10 @@ asmlinkage void smm_handler_start(void *arg)
 
 	/* Make sure to set the global runtime. It's OK to race as the value
 	 * will be the same across CPUs as well as multiple SMIs. */
-	if (smm_runtime == NULL)
+	if (smm_runtime == NULL) {
 		smm_runtime = runtime;
+		gnvs = (void *)(uintptr_t)smm_runtime->gnvs_ptr;
+	}
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		console_init();

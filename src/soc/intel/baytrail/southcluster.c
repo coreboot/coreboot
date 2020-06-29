@@ -497,8 +497,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
-		/* And tell SMI about it */
-		apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");

@@ -185,23 +185,6 @@ void southbridge_smm_xhci_sleep(u8 slp_type)
 		xhci_sleep(slp_type);
 }
 
-void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)
-{
-	em64t101_smm_state_save_area_t *state =
-		smi_apmc_find_state_save(apm_cnt);
-	if (state) {
-		/* EBX in the state save contains the GNVS pointer */
-		gnvs = (struct global_nvs *)((u32)state->rbx);
-		struct region r = {(uintptr_t)gnvs, sizeof(struct global_nvs)};
-		if (smm_region_overlaps_handler(&r)) {
-			printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
-			return;
-		}
-		*smm_done = 1;
-		printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
-	}
-}
-
 void southbridge_finalize_all(void)
 {
 	intel_me_finalize_smm();

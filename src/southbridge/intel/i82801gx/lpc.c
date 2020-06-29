@@ -491,8 +491,6 @@ void southbridge_inject_dsdt(const struct device *dev)
 
 		acpi_create_gnvs(gnvs);
 
-		/* And tell SMI about it */
-		apm_control(APM_CNT_GNVS_UPDATE);
 
 		/* Add it to SSDT.  */
 		acpigen_write_scope("\\");

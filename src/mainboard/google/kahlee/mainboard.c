@@ -5,14 +5,12 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/smi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <smbios.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
@@ -161,19 +159,6 @@ static void kahlee_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
-static void mainboard_final(void *chip_info)
-{
-	struct global_nvs *gnvs;
-
-	gnvs = acpi_get_gnvs();
-
-	if (gnvs) {
-		gnvs->tmps = CTL_TDP_SENSOR_ID;
-		gnvs->tcrt = CRITICAL_TEMPERATURE;
-		gnvs->tpsv = PASSIVE_TEMPERATURE;
-	}
-}
-
 int mainboard_get_xhci_oc_map(uint16_t *map)
 {
 	return variant_get_xhci_oc_map(map);
@@ -192,7 +177,6 @@ void mainboard_suspend_resume(void)
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = kahlee_enable,
-	.final = mainboard_final,
 };
 
 /* Variants may override these functions so see definitions in variants/ */

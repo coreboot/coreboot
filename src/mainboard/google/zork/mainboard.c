@@ -7,7 +7,6 @@
 #include <device/mmio.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <acpi/acpi_gnvs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/smi.h>
@@ -17,7 +16,6 @@
 #include <smbios.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
 #include <soc/southbridge.h>
@@ -216,16 +214,6 @@ static void zork_enable(struct device *dev)
 
 static void mainboard_final(void *chip_info)
 {
-	struct global_nvs *gnvs;
-
-	gnvs = acpi_get_gnvs();
-
-	if (gnvs) {
-		gnvs->tmps = CTL_TDP_SENSOR_ID;
-		gnvs->tcrt = CRITICAL_TEMPERATURE;
-		gnvs->tpsv = PASSIVE_TEMPERATURE;
-	}
-
 	finalize_gpios(acpi_get_sleep_type());
 }
 

@@ -3833,6 +3833,41 @@ static void dramc_zq_calibration(const struct ddr_cali *cali, u8 chn, u8 rank)
 		write32(regs_bak[i].addr, regs_bak[i].value);
 }
 
+u8 dramc_mode_reg_read(u8 chn, u8 mr_idx)
+{
+	const u32 timeout = 10000;
+	u8 value;
+
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSMA, mr_idx);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_MRREN, 1);
+
+	/* Wait until MRW command fired */
+	if (!wait_ms(timeout, READ32_BITFIELD(&ch[chn].nao.spcmdresp,
+					      SPCMDRESP_MRR_RESPONSE))) {
+		dramc_err("Read mode register time out\n");
+		return -1;
+	}
+
+	value = READ32_BITFIELD(&ch[chn].nao.mrr_status, MRR_STATUS_MRR_SW_REG);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_en, SWCMD_EN_MRREN, 0);
+	dramc_dbg("Read MR%d = %#x\n", mr_idx, value);
+
+	return value;
+}
+
+u8 dramc_mode_reg_read_by_rank(u8 chn, u8 rank, u8 mr_idx)
+{
+	u8 value;
+	u8 rank_bak;
+
+	rank_bak = READ32_BITFIELD(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK, rank);
+	value = dramc_mode_reg_read(chn, mr_idx);
+	SET32_BITFIELDS(&ch[chn].ao.swcmd_ctrl0, SWCMD_CTRL0_MRSRK, rank_bak);
+
+	return value;
+}
+
 void dramc_mode_reg_write_by_rank(const struct ddr_cali *cali,
 				  u8 chn, u8 rank, u8 mr_idx, u8 value)
 {

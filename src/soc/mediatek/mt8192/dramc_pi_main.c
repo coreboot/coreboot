@@ -14,6 +14,60 @@ static void set_vcore_voltage(const struct ddr_cali *cali)
 	mainboard_set_regulator_vol(MTK_REGULATOR_VCORE, vcore);
 }
 
+static void get_dram_info_after_cal(struct ddr_cali *cali)
+{
+	u8 vendor_id, density, max_density = 0;
+	u32 size_gb, max_size = 0;
+
+	vendor_id = dramc_mode_reg_read_by_rank(CHANNEL_A, RANK_0, 5) & 0xff;
+	dramc_info("Vendor id is %#x\n", vendor_id);
+
+	for (u8 rk = RANK_0; rk < cali->support_ranks; rk++) {
+		density = dramc_mode_reg_read_by_rank(CHANNEL_A, rk, 8) & 0xff;
+		dramc_dbg("MR8 %#x\n", density);
+		density = (density >> 2) & 0xf;
+
+		switch (density) {
+		/* these case values are from JESD209-4C MR8 Density OP[5:2] */
+		case 0x0:
+			size_gb = 4;
+			break;
+		case 0x1:
+			size_gb = 6;
+			break;
+		case 0x2:
+			size_gb = 8;
+			break;
+		case 0x3:
+			size_gb = 12;
+			break;
+		case 0x4:
+			size_gb = 16;
+			break;
+		case 0x5:
+			size_gb = 24;
+			break;
+		case 0x6:
+			size_gb = 32;
+			break;
+		case 0xC:
+			size_gb = 2;
+			break;
+		default:
+			dramc_err("Unexpected mode register density value: %#x\n", density);
+			size_gb = 0;
+			break;
+		}
+		if (size_gb > max_size) {
+			max_size = size_gb;
+			max_density = density;
+		}
+		dramc_dbg("RK%u size %uGb, density:%u\n", rk, size_gb, max_density);
+	}
+
+	cali->density = max_density;
+}
+
 static void dramc_calibration_all_channels(struct ddr_cali *cali)
 {
 }
@@ -81,6 +135,10 @@ void init_dram(const struct dramc_data *dparam)
 			emi_init2();
 
 		dramc_calibration_all_channels(&cali);
+
+		/* only need to do once to get DDR's base information */
+		if (first_freq_k)
+			get_dram_info_after_cal(&cali);
 
 		first_freq_k = false;
 	}

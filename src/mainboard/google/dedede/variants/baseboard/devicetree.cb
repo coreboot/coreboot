@@ -155,6 +155,8 @@ chip soc/intel/jasperlake
 	# Enable processor thermal control
 	register "Device4Enable" = "1"
 
+	register "tcc_offset" = "10"     # TCC of 90C
+
 	# chipset_lockdown configuration
 	# Use below format to override value in overridetree.cb if required
 	# format:

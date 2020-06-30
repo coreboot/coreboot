@@ -65,10 +65,12 @@ struct soc_amd_event {
 #define GPIO_8KPULLUP_SELECT	(1 << 19)
 #define GPIO_PULLUP_ENABLE	(1 << 20)
 #define GPIO_PULLDOWN_ENABLE	(1 << 21)
+#define GPIO_PULL_MASK		(7 << 19)
+
 #define GPIO_OUTPUT_SHIFT	22
-#define GPIO_OUTPUT_MASK	(1 << GPIO_OUTPUT_SHIFT)
 #define GPIO_OUTPUT_VALUE	(1 << GPIO_OUTPUT_SHIFT)
 #define GPIO_OUTPUT_ENABLE	(1 << 23)
+#define GPIO_OUTPUT_MASK	(3 << GPIO_OUTPUT_SHIFT)
 
 #define GPIO_INT_STATUS		(1 << 28)
 #define GPIO_WAKE_STATUS	(1 << 29)

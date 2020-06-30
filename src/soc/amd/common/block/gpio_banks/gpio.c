@@ -111,6 +111,12 @@ static void __gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
 	gpio_write32(gpio_num, reg);
 }
 
+/* Set specified bits of a register to match those of ctrl. */
+static void __gpio_setbits32(gpio_t gpio_num, uint32_t mask, uint32_t ctrl)
+{
+	__gpio_update32(gpio_num, ~mask, ctrl & mask);
+}
+
 static void __gpio_and32(gpio_t gpio_num, uint32_t mask)
 {
 	__gpio_update32(gpio_num, mask, 0);
@@ -143,17 +149,17 @@ int gpio_get(gpio_t gpio_num)
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	__gpio_update32(gpio_num, ~GPIO_OUTPUT_MASK, !!value << GPIO_OUTPUT_SHIFT);
+	__gpio_setbits32(gpio_num, GPIO_OUTPUT_VALUE, value ? GPIO_OUTPUT_VALUE : 0);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)
 {
-	__gpio_update32(gpio_num, ~GPIO_PULLUP_ENABLE, GPIO_PULLDOWN_ENABLE);
+	__gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLDOWN_ENABLE);
 }
 
 void gpio_input_pullup(gpio_t gpio_num)
 {
-	__gpio_update32(gpio_num, ~GPIO_PULLDOWN_ENABLE, GPIO_PULLUP_ENABLE);
+	__gpio_setbits32(gpio_num, GPIO_PULL_MASK, GPIO_PULLUP_ENABLE);
 }
 
 void gpio_input(gpio_t gpio_num)

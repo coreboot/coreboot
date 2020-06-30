@@ -1,5 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define PORTSCN_OFFSET 0x480
+#define PORTSCXUSB3_OFFSET 0x540
+
+#define WAKE_ON_CONNECT_DISCONNECT_ENABLE 0x6000000
+#define RO_BITS_OFF_MASK ~0x80FE0012
+
 /*
  * USB Port Wake Enable (UPWE) on usb attach/detach
  * Arg0 - Port Number
@@ -8,8 +14,7 @@
  */
 Method (UPWE, 3, Serialized)
 {
-	/* Local0 = Arg1 + ((Arg0 - 1) * 0x10) */
-	Add (Arg1, Multiply (Subtract (Arg0, 1), 0x10), Local0)
+	Local0 = Arg1 + ((Arg0 - 1) * 0x10)
 
 	/* Map ((XMEM << 16) + Local0 in PSCR */
 	OperationRegion (PSCR, SystemMemory,
@@ -18,16 +23,16 @@ Method (UPWE, 3, Serialized)
 	{
 		PSCT, 32,
 	}
-	Store(PSCT, Local0)
+	Local0 = PSCT
 	/*
 	 * And port status/control reg with RO and RWS bits
 	 * RO bits: 0, 2:3, 10:13, 24, 28:30
 	 * RWS bits: 5:9, 14:16, 25:27
 	 */
-	And (Local0, ~0x80FE0012, Local0)
+	Local0 = Local0 & RO_BITS_OFF_MASK
 	/* Set WCE and WDE bits */
-	Or (Local0, 0x6000000, Local0)
-	Store(Local0, PSCT)
+	Local0 = Local0 | WAKE_ON_CONNECT_DISCONNECT_ENABLE
+	PSCT = Local0
 }
 
 /*
@@ -38,20 +43,19 @@ Method (UPWE, 3, Serialized)
  */
 Method (UWES, 3, Serialized)
 {
-	Store (Arg0, Local0)
+	Local0 = Arg0
 
 	While (One) {
 		FindSetRightBit (Local0, Local1)
-		If (LEqual (Local1, Zero)) {
+		If (Local1 == Zero) {
 			Break
 		}
 		UPWE (Local1, Arg1, Arg2)
 		/*
 		 * Clear the lowest set bit in Local0 since it was
 		 * processed.
-		 * Local0 = Local0 & (Local0 - 1)
 		 */
-		And (Local0, Subtract (Local0, 1), Local0)
+		Local0 = Local0 & (Local0 - 1)
 	}
 }
 
@@ -65,9 +69,9 @@ Device (XHCI)
 
 	Method (_DSW, 3)
 	{
-		Store (Arg0, PMEE)
-		UWES (And (\U2WE, 0x3FF), 0x480, XMEM)
-		UWES (And (\U3WE, 0x3F), 0x540, XMEM)
+		PMEE = Arg0
+		UWES ((\U2WE & 0x3FF), PORTSCN_OFFSET, XMEM)
+		UWES ((\U3WE & 0x3F ), PORTSCXUSB3_OFFSET, XMEM)
 	}
 
 	Name (_S3D, 3)	/* D3 supported in S3 */
@@ -221,11 +225,11 @@ Device (XHCI)
 
 			// REV: Revision 0x02 for ACPI 5.0
 			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
-			Store (0x02, REV)
+			REV = 0x02
 
 			// VISI: Port visibility to user per port
 			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
-			Store (Arg0, VISI)
+			VISI = Arg0
 
 			Return (PCKG)
 		}

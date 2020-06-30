@@ -277,3 +277,20 @@ __weak void variant_pcie_power_reset_configure(void)
 	else
 		wifi_power_reset_configure_pre_v3();
 }
+
+static const struct soc_amd_gpio gpio_sleep_table[] = {
+	/* PEN_POWER_EN */
+	PAD_GPO(GPIO_5, LOW),
+	/* PCIE_RST1_L */
+	PAD_GPO(GPIO_27, LOW),
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, LOW),
+	/* EN_PWR_CAMERA */
+	PAD_GPO(GPIO_76, LOW),
+};
+
+const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ)
+{
+	*size = ARRAY_SIZE(gpio_sleep_table);
+	return gpio_sleep_table;
+}

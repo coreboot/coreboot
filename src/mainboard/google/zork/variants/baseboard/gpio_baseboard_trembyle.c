@@ -13,7 +13,7 @@ static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
 	/* EC_FCH_WAKE_L */
-	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
+	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
@@ -42,7 +42,7 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
 	PAD_GPO(GPIO_13, LOW),
 	/* EC_FCH_WAKE_L */
-	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
+	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EMMC_RESET - reset (default stuffing unused)*/
@@ -76,14 +76,13 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
 	/* FPMCU_INT_L */
-	PAD_WAKE(GPIO_6, PULL_UP, EDGE_LOW, S3_S4_S5),
+	PAD_SCI(GPIO_6, PULL_NONE, EDGE_LOW),
 	/* I2S_SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S_LRCLK - Bit banged in depthcharge */
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
-	/* TODO: Make sure driver sets as wake source */
-	PAD_GPI(GPIO_9, PULL_UP),
+	PAD_SCI(GPIO_9, PULL_NONE, EDGE_LOW),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_GPI(GPIO_10, PULL_UP),
 	/* FPMCU_RST_L */

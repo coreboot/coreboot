@@ -961,6 +961,8 @@ void arch_fill_fadt(acpi_fadt_t *fadt);
 void soc_fill_fadt(acpi_fadt_t *fadt);
 void mainboard_fill_fadt(acpi_fadt_t *fadt);
 
+void acpi_fill_gnvs(void);
+
 void update_ssdt(void *ssdt);
 void update_ssdtx(void *ssdtx, int i);
 

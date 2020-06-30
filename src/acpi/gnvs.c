@@ -77,3 +77,12 @@ void acpi_inject_nvsa(void)
 	acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
 	acpigen_pop_len();
 }
+
+void acpi_fill_gnvs(void)
+{
+	if (!gnvs)
+		return;
+
+	soc_fill_gnvs(gnvs);
+	mainboard_fill_gnvs(gnvs);
+}

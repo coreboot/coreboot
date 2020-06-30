@@ -1472,6 +1472,9 @@ unsigned long write_acpi_tables(unsigned long start)
 		current += sizeof(acpi_header_t);
 
 		acpigen_set_current((char *) current);
+
+		acpi_fill_gnvs();
+
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_inject_dsdt)
 				dev->ops->acpi_inject_dsdt(dev);

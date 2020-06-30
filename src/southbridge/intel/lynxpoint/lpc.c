@@ -703,13 +703,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 
 void southbridge_inject_dsdt(const struct device *dev)
 {
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
-
-	soc_fill_gnvs(gnvs);
-	mainboard_fill_gnvs(gnvs);
-
 	acpi_inject_nvsa();
 }
 

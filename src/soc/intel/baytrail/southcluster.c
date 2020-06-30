@@ -19,7 +19,6 @@
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
@@ -485,13 +484,6 @@ void southcluster_enable_dev(struct device *dev)
 
 static void southcluster_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
-
-	soc_fill_gnvs(gnvs);
-	mainboard_fill_gnvs(gnvs);
-
 	acpi_inject_nvsa();
 }
 

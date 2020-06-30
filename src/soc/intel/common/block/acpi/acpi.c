@@ -238,13 +238,6 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 
 void southbridge_inject_dsdt(const struct device *device)
 {
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
-
-	soc_fill_gnvs(gnvs);
-	mainboard_fill_gnvs(gnvs);
-
 	acpi_inject_nvsa();
 }
 

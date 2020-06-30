@@ -49,6 +49,15 @@ At the moment *$n* is 4, which results in identity mapping the lower 4 GiB.
 * Add assembly code to return to protected mode - *TODO*
 * Implement reference code for mainboard `emulation/qemu-q35` - *TODO*
 
+## Future work
+
+1. Fine grained page tables for SMM:
+   * Must not have execute and write permissions for the same page.
+   * Must allow only that TSEG pages can be marked executable
+   * Must reside in SMRAM
+2. Support 64bit PCI BARs above 4GiB
+3. Place and run code above 4GiB
+
 ## Porting other boards
 * Fix compilation errors
 * Test how well CAR works with x86_64 and paging

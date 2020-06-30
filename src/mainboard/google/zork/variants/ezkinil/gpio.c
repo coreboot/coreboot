@@ -40,8 +40,6 @@ static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_11, PULL_UP),
 	/* FPMCU_BOOT0 Change NC */
 	PAD_GPI(GPIO_69, PULL_UP),
-	/* MST_GPIO_2 (Fw Update HDMI hub) Change NC */
-	PAD_GPI(GPIO_86, PULL_UP),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)

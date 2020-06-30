@@ -181,16 +181,62 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 
 __weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
 
-void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
+static void set_single_gpio(const struct soc_amd_gpio *gpio_list_ptr,
+			    struct sci_trigger_regs *sci_trigger_cfg)
 {
 	uint32_t control, control_flags;
-	uint8_t mux, index, gpio;
+	uint8_t mux, gpio;
+	static const struct soc_amd_event *gev_tbl;
+	static size_t gev_items;
 	int gevent_num;
-	const struct soc_amd_event *gev_tbl;
-	struct sci_trigger_regs sci_trigger_cfg = { 0 };
-	size_t gev_items;
 	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
 			ENV_SEPARATE_VERSTAGE);
+
+	gpio = gpio_list_ptr->gpio;
+	mux = gpio_list_ptr->function;
+	control = gpio_list_ptr->control;
+	control_flags = gpio_list_ptr->flags;
+
+	iomux_write8(gpio, mux & AMD_GPIO_MUX_MASK);
+	iomux_read8(gpio); /* Flush posted write */
+
+	soc_gpio_hook(gpio, mux);
+
+	gpio_setbits32(gpio, PAD_CFG_MASK, control);
+	/* Clear interrupt and wake status (write 1-to-clear bits) */
+	gpio_or32(gpio, GPIO_INT_STATUS | GPIO_WAKE_STATUS);
+	if (control_flags == 0)
+		return;
+
+	/* Can't set SMI flags from PSP */
+	if (!can_set_smi_flags)
+		return;
+
+	if (gev_tbl == NULL)
+		soc_get_gpio_event_table(&gev_tbl, &gev_items);
+
+	gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
+	if (gevent_num < 0) {
+		printk(BIOS_WARNING, "Warning: GPIO pin %d has no associated gevent!\n",
+				     gpio);
+		return;
+	}
+
+	if (control_flags & GPIO_FLAG_SMI) {
+		program_smi(control_flags, gevent_num);
+	} else if (control_flags & GPIO_FLAG_SCI) {
+		fill_sci_trigger(control_flags, gevent_num, sci_trigger_cfg);
+		soc_route_sci(gevent_num);
+	}
+}
+
+void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
+{
+	struct sci_trigger_regs sci_trigger_cfg = { 0 };
+	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
+			ENV_SEPARATE_VERSTAGE);
+	size_t i;
+
 	if (!gpio_list_ptr || !size)
 		return;
 
@@ -206,44 +252,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	master_switch_clr(GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
-	if (can_set_smi_flags)
-		soc_get_gpio_event_table(&gev_tbl, &gev_items);
-
-	for (index = 0; index < size; index++) {
-		gpio = gpio_list_ptr[index].gpio;
-		mux = gpio_list_ptr[index].function;
-		control = gpio_list_ptr[index].control;
-		control_flags = gpio_list_ptr[index].flags;
-
-		iomux_write8(gpio, mux & AMD_GPIO_MUX_MASK);
-		iomux_read8(gpio); /* Flush posted write */
-
-		soc_gpio_hook(gpio, mux);
-
-		gpio_setbits32(gpio, PAD_CFG_MASK, control);
-		/* Clear interrupt and wake status (write 1-to-clear bits) */
-		gpio_or32(gpio, GPIO_INT_STATUS | GPIO_WAKE_STATUS);
-		if (control_flags == 0)
-			continue;
-
-		/* Can't set SMI flags from PSP */
-		if (!can_set_smi_flags)
-			continue;
-
-		gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
-		if (gevent_num < 0) {
-			printk(BIOS_WARNING, "Warning: GPIO pin %d has no associated gevent!\n",
-			       gpio);
-			continue;
-		}
-
-		if (control_flags & GPIO_FLAG_SMI) {
-			program_smi(control_flags, gevent_num);
-		} else if (control_flags & GPIO_FLAG_SCI) {
-			fill_sci_trigger(control_flags, gevent_num, &sci_trigger_cfg);
-			soc_route_sci(gevent_num);
-		}
-	}
+	for (i = 0; i < size; i++)
+		set_single_gpio(&gpio_list_ptr[i], &sci_trigger_cfg);
 
 	/*
 	 * Re-enable interrupt status generation.

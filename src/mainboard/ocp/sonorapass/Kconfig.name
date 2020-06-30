@@ -1,2 +1,0 @@
-config BOARD_OCP_SONORAPASS
-	bool "SonoraPass"

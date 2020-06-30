@@ -12,8 +12,6 @@
 static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
-	/* EC_FCH_WAKE_L */
-	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
@@ -41,8 +39,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	PAD_GPO(GPIO_5, LOW),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
 	PAD_GPO(GPIO_13, LOW),
-	/* EC_FCH_WAKE_L */
-	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EMMC_RESET - reset (default stuffing unused)*/
@@ -105,6 +101,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
+	/* EC_FCH_WAKE_L */
+	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_UP),
 	/* EN_PWR_FP */

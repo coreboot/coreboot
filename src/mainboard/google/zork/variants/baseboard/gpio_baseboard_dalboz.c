@@ -12,8 +12,6 @@
 static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
-	/* EC_FCH_WAKE_L */
-	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
@@ -45,8 +43,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	PAD_GPO(GPIO_5, LOW),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
 	PAD_GPO(GPIO_6, LOW),
-	/* EC_FCH_WAKE_L */
-	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
@@ -109,6 +105,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
+	/* EC_FCH_WAKE_L */
+	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_UP),
 	/*  */

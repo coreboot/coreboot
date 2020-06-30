@@ -11,4 +11,7 @@
 /* Default countdown is 15 minutes. */
 #define DEFAULT_COUNTDOWN 9000
 
+/* Define the VPD keys for UPD variables that can be overwritten */
+#define FSP_LOG "fsp_log_enable" /* 1 or 0: enable or disable FSP SOL log */
+
 #endif

@@ -2,11 +2,32 @@
 
 #include <console/console.h>
 #include <drivers/ipmi/ipmi_kcs.h>
+#include <drivers/vpd/vpd.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <soc/romstage.h>
 
 #include "ipmi.h"
+#include "vpd.h"
+
+/*
+ * Search from VPD_RW first then VPD_RO for UPD config variables,
+ * overwrites them from VPD if it's found.
+ */
+static void mainboard_config_upd(FSPM_UPD *mupd)
+{
+	uint8_t val;
+
+	/* Send FSP log message to SOL */
+	if (vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
+		mupd->FspmConfig.SerialIoUartDebugEnable = val;
+	else {
+		printk(BIOS_INFO, "Not able to get VPD %s, default set "
+			"SerialIoUartDebugEnable to 1\n", FSP_LOG);
+		mupd->FspmConfig.SerialIoUartDebugEnable = 1;
+	}
+	mupd->FspmConfig.SerialIoUartDebugIoBase = 0x2f8;
+}
 
 /* Update bifurcation settings according to different Configs */
 static void oem_update_iio(FSPM_UPD *mupd)
@@ -53,9 +74,6 @@ static void mainboard_config_gpios(FSPM_UPD *mupd)
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {
-	/* Send FSP log message to SOL */
-	mupd->FspmConfig.SerialIoUartDebugEnable = 1;
-	mupd->FspmConfig.SerialIoUartDebugIoBase = 0x2f8;
 	oem_update_iio(mupd);
 }
 
@@ -68,4 +86,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	mainboard_config_gpios(mupd);
 	mainboard_config_iio(mupd);
+	mainboard_config_upd(mupd);
 }

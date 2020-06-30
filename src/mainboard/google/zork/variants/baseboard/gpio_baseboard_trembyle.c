@@ -14,8 +14,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	PAD_GPO(GPIO_5, LOW),
 	/* EC_FCH_WAKE_L */
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
-	/* PCIE_RST1_L - Variable timings (May remove) */
-	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
@@ -45,8 +43,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	PAD_GPO(GPIO_13, LOW),
 	/* EC_FCH_WAKE_L */
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
-	/* PCIE_RST1_L - Variable timings (May remove) */
-	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
 	/* EMMC_RESET - reset (default stuffing unused)*/
@@ -307,8 +303,6 @@ __weak void variant_pcie_power_reset_configure(void)
 static const struct soc_amd_gpio gpio_sleep_table[] = {
 	/* PEN_POWER_EN */
 	PAD_GPO(GPIO_5, LOW),
-	/* PCIE_RST1_L */
-	PAD_GPO(GPIO_27, LOW),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, LOW),
 	/* EN_PWR_CAMERA */

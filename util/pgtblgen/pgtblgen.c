@@ -23,7 +23,7 @@ static void usage(char *argv[])
  * For reference see "AMD64 ArchitectureProgrammer's Manual Volume 2",
  * Document 24593-Rev. 3.31-July 2019 Chapter 5.3.4
  *
- * Page table attributes: WB, User+Supervisor, Present, Writeable
+ * Page table attributes: WB, User+Supervisor, Present, Writeable, Accessed, Dirty
  */
 #define _PRES (1ULL << 0)
 #define _RW   (1ULL << 1)

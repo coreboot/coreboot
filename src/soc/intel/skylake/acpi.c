@@ -522,11 +522,6 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 	return acpi_align_current(current);
 }
 
-void southbridge_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {

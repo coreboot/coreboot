@@ -531,7 +531,6 @@ void southcluster_enable_dev(struct device *dev)
 static struct device_operations device_ops = {
 	.read_resources			= sc_read_resources,
 	.set_resources			= pci_dev_set_resources,
-	.acpi_inject_dsdt		= southcluster_inject_dsdt,
 	.write_acpi_tables		= southcluster_write_acpi_tables,
 	.init				= sc_init,
 	.enable				= southcluster_enable_dev,

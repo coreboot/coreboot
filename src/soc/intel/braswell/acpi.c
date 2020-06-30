@@ -364,11 +364,6 @@ unsigned long southcluster_write_acpi_tables(const struct device *device, unsign
 	return current;
 }
 
-void southcluster_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 __weak void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
 }

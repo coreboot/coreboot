@@ -536,7 +536,6 @@ static struct device_operations device_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = pci_dev_set_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_inject_dsdt = southcluster_inject_dsdt,
 	.write_acpi_tables = southcluster_write_acpi_tables,
 #endif
 	.enable_resources = lpc_enable_resources,

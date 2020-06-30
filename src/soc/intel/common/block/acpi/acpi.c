@@ -236,11 +236,6 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 }
 #endif
 
-void southbridge_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio)
 {
 	u32 m;

@@ -609,11 +609,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->pcnt = dev_count_cpu();
 }
 
-static void southcluster_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 static unsigned long broadwell_write_acpi_tables(const struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
@@ -630,7 +625,6 @@ static struct device_operations device_ops = {
 	.read_resources		= &pch_lpc_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
-	.acpi_inject_dsdt	= southcluster_inject_dsdt,
 	.write_acpi_tables      = broadwell_write_acpi_tables,
 	.init			= &lpc_init,
 	.scan_bus		= &scan_static_bus,

@@ -107,7 +107,6 @@ static struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables	= southbridge_write_acpi_tables,
-	.acpi_inject_dsdt	= southbridge_inject_dsdt,
 	.acpi_name		= lpc_acpi_name,
 #endif
 	.init			= lpc_soc_init,

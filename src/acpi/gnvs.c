@@ -68,16 +68,6 @@ void *gnvs_get_or_create(void)
 	return gnvs;
 }
 
-void acpi_inject_nvsa(void)
-{
-	if (!gnvs)
-		return;
-
-	acpigen_write_scope("\\");
-	acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
-	acpigen_pop_len();
-}
-
 void acpi_fill_gnvs(void)
 {
 	if (!gnvs)
@@ -85,4 +75,8 @@ void acpi_fill_gnvs(void)
 
 	soc_fill_gnvs(gnvs);
 	mainboard_fill_gnvs(gnvs);
+
+	acpigen_write_scope("\\");
+	acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
+	acpigen_pop_len();
 }

@@ -403,11 +403,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->pcnt = dev_count_cpu();
 }
 
-void southbridge_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
 {
 	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {

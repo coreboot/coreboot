@@ -323,7 +323,6 @@ static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = lpc_enable_resources,
-	.acpi_inject_dsdt = southbridge_inject_dsdt,
 	.write_acpi_tables = southbridge_write_acpi_tables,
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,

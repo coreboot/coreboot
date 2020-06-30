@@ -171,11 +171,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->pcnt = dev_count_cpu();
 }
 
-void southbridge_inject_dsdt(const struct device *device)
-{
-	acpi_inject_nvsa();
-}
-
 static void acpigen_soc_get_gpio_in_local5(uintptr_t addr)
 {
 	/*

@@ -64,6 +64,7 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	string
 	default "Boten" if BOARD_GOOGLE_BOTEN
+	default "Boten" if BOARD_GOOGLE_BOTEN_LEGACY
 	default "Dedede" if BOARD_GOOGLE_DEDEDE
 	default "Drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "Drawcia" if BOARD_GOOGLE_DRAWCIA_LEGACY
@@ -90,6 +91,7 @@ config UART_FOR_CONSOLE
 config VARIANT_DIR
 	string
 	default "boten" if BOARD_GOOGLE_BOTEN
+	default "boten" if BOARD_GOOGLE_BOTEN_LEGACY
 	default "dedede" if BOARD_GOOGLE_DEDEDE
 	default "drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "drawcia" if BOARD_GOOGLE_DRAWCIA_LEGACY

@@ -86,6 +86,7 @@ chip soc/intel/tigerlake
 	# Enable SD Card PCIE 8 using clk 3
 	register "PcieRpEnable[7]" = "1"
 	register "PcieRpLtrEnable[7]" = "1"
+	register "PcieRpHotPlug[7]" = "1"
 	register "PcieClkSrcUsage[3]" = "7"
 	register "PcieClkSrcClkReq[3]" = "3"
 

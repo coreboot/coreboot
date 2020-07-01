@@ -81,12 +81,18 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 	smm_state->smbase = staggered_smbase;
 }
 
+static void post_mp_init(void)
+{
+	global_smi_enable();
+	apm_control(APM_CNT_SMMINFO);
+}
+
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = global_smi_enable,
+	.post_mp_init = post_mp_init,
 };
 
 void mp_init_cpus(struct bus *cpu_bus)

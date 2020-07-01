@@ -9,12 +9,12 @@
 
 static __always_inline uint32_t lapic_read(unsigned int reg)
 {
-	return read32((volatile void *)(LAPIC_DEFAULT_BASE + reg));
+	return read32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg));
 }
 
 static __always_inline void lapic_write(unsigned int reg, uint32_t v)
 {
-	write32((volatile void *)(LAPIC_DEFAULT_BASE + reg), v);
+	write32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg), v);
 }
 
 static __always_inline void lapic_wait_icr_idle(void)

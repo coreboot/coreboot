@@ -26,17 +26,25 @@ Device(LPCB) {
 		{
 			Memory32Fixed(ReadWrite,	// Setup for fixed resource location for SPI base address
 			0x00000000,			// Address Base
-			0x00000000,			// Address Length
+			0x00001000,			// Address Length
 			BAR0				// Descriptor Name
+			)
+
+			Memory32Fixed(ReadWrite,	// Setup for fixed resource location for eSPI base address
+			0x00000000,			// Address Base
+			0x00001000,			// Address Length
+			BAR1				// Descriptor Name
 			)
 		})
 
 		Method(_CRS,0,Serialized)
 		{
 			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
-			CreateDwordField(^CRS,^BAR0._LEN,SPIL)	// Field to hold SPI address length
-			Store(BAR,SPIB)		// SPI base address mapped
-			Store(0x1000,SPIL)	// 4k space mapped
+			CreateDwordField(^CRS,^BAR1._BAS,ESPB)	// Field to hold eSPI base address
+			And(BAR, 0xffffff00, Local0)
+			Store(Local0, SPIB)	// SPI base address mapped
+			Add(Local0, 0x10000, Local1)
+			Store(Local1, ESPB)	// eSPI base address mapped
 			Return(CRS)
 		}
 	}

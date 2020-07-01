@@ -46,6 +46,9 @@ struct soc_amd_picasso_config {
 		uint8_t flags;
 	} irq_override[16];
 
+	/* DMIC select GPIO for I2S machine driver AMDI5682 */
+	struct acpi_gpio dmic_select_gpio;
+
 	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;

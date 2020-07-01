@@ -235,7 +235,7 @@ config USE_AMD_BLOBS
 	  may result in a nonbooting coreboot.rom.
 
 config USE_QC_BLOBS
-	bool "Allow QC blobs repository (selecting this agrees to the license!)
+	bool "Allow QC blobs repository (selecting this agrees to the license!)"
 	depends on USE_BLOBS
 	help
 	  This draws in the qc_blobs repository, which contains binary files

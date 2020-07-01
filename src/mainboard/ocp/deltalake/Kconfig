@@ -14,6 +14,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select VPD
 	select VPD_SMBIOS_VERSION
 
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
+
 config IPMI_KCS_REGISTER_SPACING
 	int
 	default 4

@@ -4,8 +4,8 @@
 #include <console/console.h>
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/acpimmio_map.h>
 #include <amdblocks/smbus.h>
+#include <soc/southbridge.h>
 
 /*
  * Between 1-10 seconds, We should never timeout normally
@@ -13,37 +13,27 @@
  */
 #define SMBUS_TIMEOUT (100 * 1000 * 10)
 
-static u8 controller_read8(uintptr_t base, u8 reg)
+/* FIXME: Passing host base for SMBUS is not long-term solution.
+   It is possible to have multiple buses behind same host. */
+
+static u8 controller_read8(const uintptr_t base, const u8 reg)
 {
-	switch (base) {
-	case ACPIMMIO_SMBUS_BASE:
-		return smbus_read8(reg);
-	case ACPIMMIO_ASF_BASE:
-		return asf_read8(reg);
-	default:
-		printk(BIOS_ERR, "Error attempting to read SMBus at address 0x%lx\n",
-				base);
-	}
-	return 0xff;
+	return read8((void *)(base + reg));
 }
 
-static void controller_write8(uintptr_t base, u8 reg, u8 val)
+static void controller_write8(const uintptr_t base, const u8 reg, const u8 val)
 {
-	switch (base) {
-	case ACPIMMIO_SMBUS_BASE:
-		smbus_write8(reg, val);
-		break;
-	case ACPIMMIO_ASF_BASE:
-		asf_write8(reg, val);
-		break;
-	default:
-		printk(BIOS_ERR, "Error attempting to write SMBus at address 0x%lx\n",
-				base);
-	}
+	write8((void *)(base + reg), val);
 }
 
 static int smbus_wait_until_ready(uintptr_t mmio)
 {
+	if ((mmio != (uintptr_t)acpimmio_smbus) &&
+	   (mmio != (uintptr_t)acpimmio_asf)) {
+		printk(BIOS_ERR, "Invalid SMBus or ASF base %#zx\n", mmio);
+		return -1;
+	}
+
 	u32 loops;
 	loops = SMBUS_TIMEOUT;
 	do {

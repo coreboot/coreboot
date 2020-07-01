@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/acpimmio_map.h>
+#include <amdblocks/acpimmio.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -27,9 +27,9 @@ static u32 get_sm_mmio(struct device *dev)
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, 0x90);
 	if (res->base == SMB_BASE_ADDR)
-		return ACPIMMIO_SMBUS_BASE;
+		return (uintptr_t)acpimmio_smbus;
 
-	return ACPIMMIO_ASF_BASE;
+	return (uintptr_t)acpimmio_asf;
 }
 
 static int lsmbus_recv_byte(struct device *dev)

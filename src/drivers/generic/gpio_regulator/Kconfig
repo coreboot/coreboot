@@ -1,5 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
-config DRIVERS_GENERIC_GPIO_REGULATOR
-	bool
-	depends on HAVE_ACPI_TABLES

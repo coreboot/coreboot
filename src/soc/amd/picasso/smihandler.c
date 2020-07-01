@@ -208,7 +208,8 @@ static void sb_slp_typ_handler(void)
 						reg32);
 		} /* if (CONFIG(ELOG_GSMI)) */
 
-		psp_notify_sx_info(slp_typ);
+		if (slp_typ == ACPI_S3)
+			psp_notify_sx_info(ACPI_S3);
 
 		smu_sx_entry(); /* Leave SlpTypeEn clear, SMU will set */
 		printk(BIOS_ERR, "Error: System did not go to sleep\n");

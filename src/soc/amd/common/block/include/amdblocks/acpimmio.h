@@ -244,19 +244,9 @@ static inline uint8_t asf_read8(uint8_t reg)
 	return read8(acpimmio_asf + reg);
 }
 
-static inline uint16_t asf_read16(uint8_t reg)
-{
-	return read16(acpimmio_asf + reg);
-}
-
 static inline void asf_write8(uint8_t reg, uint8_t value)
 {
 	write8(acpimmio_asf + reg, value);
-}
-
-static inline void asf_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_asf + reg, value);
 }
 
 static inline uint8_t smbus_read8(uint8_t reg)
@@ -264,19 +254,9 @@ static inline uint8_t smbus_read8(uint8_t reg)
 	return read8(acpimmio_smbus + reg);
 }
 
-static inline uint16_t smbus_read16(uint8_t reg)
-{
-	return read16(acpimmio_smbus + reg);
-}
-
 static inline void smbus_write8(uint8_t reg, uint8_t value)
 {
 	write8(acpimmio_smbus + reg, value);
-}
-
-static inline void smbus_write16(uint8_t reg, uint16_t value)
-{
-	write16(acpimmio_smbus + reg, value);
 }
 
 static inline uint8_t iomux_read8(uint8_t reg)

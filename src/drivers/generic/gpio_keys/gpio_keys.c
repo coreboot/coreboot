@@ -43,7 +43,7 @@ static struct acpi_dp *gpio_keys_add_child_node(
 		acpi_dp_add_integer(dsd, "debounce-interval",
 				    key->debounce_interval);
 	acpi_dp_add_gpio(dsd, "gpios", parent_path, 0, 0,
-			 config->gpio.polarity);
+			 config->gpio.active_low);
 
 	return dsd;
 }

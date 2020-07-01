@@ -53,7 +53,7 @@ static void rt5663_fill_ssdt(const struct device *dev)
 	dp = acpi_dp_new_table("_DSD");
 	if (config->irq_gpio.pin_count)
 		acpi_dp_add_gpio(dp, "irq-gpios", acpi_device_path(dev), 0, 0,
-			 config->irq_gpio.polarity == ACPI_GPIO_ACTIVE_LOW);
+			 config->irq_gpio.active_low);
 	RT5663_DP_INT("dc_offset_l_manual", config->dc_offset_l_manual);
 	RT5663_DP_INT("dc_offset_r_manual", config->dc_offset_r_manual);
 	RT5663_DP_INT("dc_offset_l_manual_mic", config->dc_offset_l_manual_mic);

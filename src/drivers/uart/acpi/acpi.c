@@ -103,15 +103,15 @@ static void uart_acpi_fill_ssdt(const struct device *dev)
 		if (irq_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "irq-gpios", path,
 					 irq_gpio_index, 0,
-					 config->irq_gpio.polarity);
+					 config->irq_gpio.active_low);
 		if (reset_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "reset-gpios", path,
 					 reset_gpio_index, 0,
-					 config->reset_gpio.polarity);
+					 config->reset_gpio.active_low);
 		if (enable_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "enable-gpios", path,
 					 enable_gpio_index, 0,
-					 config->enable_gpio.polarity);
+					 config->enable_gpio.active_low);
 		acpi_dp_write(dsd);
 	}
 

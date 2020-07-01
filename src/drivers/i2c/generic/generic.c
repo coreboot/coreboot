@@ -114,16 +114,15 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 		if (irq_gpio_index != -1)
 			acpi_dp_add_gpio(dsd, "irq-gpios", path,
 					 irq_gpio_index, 0,
-					 config->irq_gpio.polarity ==
-					 ACPI_GPIO_ACTIVE_LOW);
+					 config->irq_gpio.active_low);
 		if (reset_gpio_index != -1)
 			acpi_dp_add_gpio(dsd, "reset-gpios", path,
 					reset_gpio_index, 0,
-					config->reset_gpio.polarity);
+					config->reset_gpio.active_low);
 		if (enable_gpio_index != -1)
 			acpi_dp_add_gpio(dsd, "enable-gpios", path,
 					enable_gpio_index, 0,
-					config->enable_gpio.polarity);
+					config->enable_gpio.active_low);
 		/* Add generic property list */
 		acpi_dp_add_property_list(dsd, config->property_list,
 					  config->property_count);

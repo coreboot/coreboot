@@ -158,11 +158,6 @@ enum acpi_gpio_io_restrict {
 	ACPI_GPIO_IO_RESTRICT_PRESERVE
 };
 
-enum acpi_gpio_polarity {
-	ACPI_GPIO_ACTIVE_HIGH = 0,
-	ACPI_GPIO_ACTIVE_LOW = 1,
-};
-
 #define ACPI_GPIO_REVISION_ID		1
 #define ACPI_GPIO_MAX_PINS		8
 
@@ -182,37 +177,43 @@ struct acpi_gpio {
 	uint16_t output_drive_strength;		/* 1/100 mA */
 	int io_shared;
 	enum acpi_gpio_io_restrict io_restrict;
-	enum acpi_gpio_polarity polarity;
+	/*
+	 * As per ACPI spec, GpioIo does not have any polarity associated with it. Linux kernel
+	 * uses `active_low` argument within GPIO _DSD property to allow BIOS to indicate if the
+	 * corresponding GPIO should be treated as active low. Thus, if the GPIO has active high
+	 * polarity or if it does not have any polarity, then the `active_low` argument is
+	 * supposed to be set to 0.
+	 *
+	 * Reference:
+	 * https://www.kernel.org/doc/html/latest/firmware-guide/acpi/gpio-properties.html
+	 */
+	bool active_low;
 };
 
 /* GpioIo-related macros */
-#define ACPI_GPIO_CFG(_gpio, _io_restrict, _polarity) { \
+#define ACPI_GPIO_CFG(_gpio, _io_restrict, _active_low) { \
 	.type = ACPI_GPIO_TYPE_IO, \
 	.pull = ACPI_GPIO_PULL_DEFAULT, \
 	.io_restrict = _io_restrict, \
-	.polarity = _polarity,     \
+	.active_low = _active_low, \
 	.pin_count = 1, \
 	.pins = { (_gpio) } }
 
 /* Basic output GPIO with default pull settings */
-#define ACPI_GPIO_OUTPUT_CFG(gpio, polarity) \
-		ACPI_GPIO_CFG(gpio, ACPI_GPIO_IO_RESTRICT_OUTPUT, polarity)
+#define ACPI_GPIO_OUTPUT_CFG(gpio, active_low) \
+		ACPI_GPIO_CFG(gpio, ACPI_GPIO_IO_RESTRICT_OUTPUT, active_low)
 
-#define ACPI_GPIO_OUTPUT_ACTIVE_HIGH(gpio) \
-		ACPI_GPIO_OUTPUT_CFG(gpio, ACPI_GPIO_ACTIVE_HIGH)
-
-#define ACPI_GPIO_OUTPUT_ACTIVE_LOW(gpio) \
-		ACPI_GPIO_OUTPUT_CFG(gpio, ACPI_GPIO_ACTIVE_LOW)
+#define ACPI_GPIO_OUTPUT(gpio)			ACPI_GPIO_OUTPUT_CFG(gpio, 0)
+#define ACPI_GPIO_OUTPUT_ACTIVE_HIGH(gpio)	ACPI_GPIO_OUTPUT_CFG(gpio, 0)
+#define ACPI_GPIO_OUTPUT_ACTIVE_LOW(gpio)	ACPI_GPIO_OUTPUT_CFG(gpio, 1)
 
 /* Basic input GPIO with default pull settings */
 #define ACPI_GPIO_INPUT_CFG(gpio, polarity) \
 		ACPI_GPIO_CFG(gpio, ACPI_GPIO_IO_RESTRICT_INPUT, polarity)
 
-#define ACPI_GPIO_INPUT_ACTIVE_HIGH(gpio) \
-		ACPI_GPIO_INPUT_CFG(gpio, ACPI_GPIO_ACTIVE_HIGH)
-
-#define ACPI_GPIO_INPUT_ACTIVE_LOW(gpio) \
-		ACPI_GPIO_INPUT_CFG(gpio, ACPI_GPIO_ACTIVE_LOW)
+#define ACPI_GPIO_INPUT(gpio)			ACPI_GPIO_INPUT_CFG(gpio, 0)
+#define ACPI_GPIO_INPUT_ACTIVE_HIGH(gpio)	ACPI_GPIO_INPUT_CFG(gpio, 0)
+#define ACPI_GPIO_INPUT_ACTIVE_LOW(gpio)	ACPI_GPIO_INPUT_CFG(gpio, 1)
 
 /* GpioInt-related macros */
 #define ACPI_GPIO_IRQ_CFG(_gpio, _mode, _polarity, _wake) { \

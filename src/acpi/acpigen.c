@@ -1800,15 +1800,15 @@ int __weak acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
  */
 int acpigen_enable_tx_gpio(struct acpi_gpio *gpio)
 {
-	if (gpio->polarity == ACPI_GPIO_ACTIVE_HIGH)
-		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
-	else
+	if (gpio->active_low)
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
+	else
+		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
 }
 
 int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 {
-	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+	if (gpio->active_low)
 		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
 	else
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
@@ -1818,7 +1818,7 @@ void acpigen_get_rx_gpio(struct acpi_gpio *gpio)
 {
 	acpigen_soc_read_rx_gpio(gpio->pins[0]);
 
-	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+	if (gpio->active_low)
 		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
 }
 
@@ -1826,7 +1826,7 @@ void acpigen_get_tx_gpio(struct acpi_gpio *gpio)
 {
 	acpigen_soc_get_tx_gpio(gpio->pins[0]);
 
-	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+	if (gpio->active_low)
 		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
 }
 

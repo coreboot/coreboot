@@ -51,7 +51,7 @@ static void max98357a_fill_ssdt(const struct device *dev)
 	path = acpi_device_path(dev);
 	dp = acpi_dp_new_table("_DSD");
 	acpi_dp_add_gpio(dp, "sdmode-gpio", path, 0, 0,
-			 config->sdmode_gpio.polarity);
+			 config->sdmode_gpio.active_low);
 	acpi_dp_add_integer(dp, "sdmode-delay", config->sdmode_delay);
 	acpi_dp_write(dp);
 

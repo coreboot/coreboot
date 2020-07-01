@@ -57,7 +57,7 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 
 		dsd = acpi_dp_new_table("_DSD");
 		acpi_dp_add_gpio(dsd, "reset-gpio", path, 0, 0,
-				config->reset_gpio.polarity);
+				config->reset_gpio.active_low);
 		acpi_dp_write(dsd);
 	}
 

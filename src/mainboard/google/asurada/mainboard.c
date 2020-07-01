@@ -1,15 +1,31 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bl31.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <soc/gpio.h>
 #include <soc/usb.h>
 
+#include "gpio.h"
+
+#include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
+
 #define MSDC0_DRV_MASK	0x3fffffff
 #define MSDC1_DRV_MASK	0x3ffff000
 #define MSDC0_DRV_VALUE	0x24924924
 #define MSDC1_DRV_VALUE	0x24924000
+
+static void register_reset_to_bl31(void)
+{
+	static struct bl_aux_param_gpio param_reset = {
+		.h = { .type = BL_AUX_PARAM_MTK_RESET_GPIO },
+		.gpio = { .polarity = ARM_TF_GPIO_LEVEL_HIGH },
+	};
+
+	param_reset.gpio.index = GPIO_RESET.id;
+	register_bl31_aux_param(&param_reset.h);
+}
 
 static void configure_emmc(void)
 {
@@ -68,6 +84,8 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_sdcard();
 	setup_usb_host();
+
+	register_reset_to_bl31();
 }
 
 static void mainboard_enable(struct device *dev)

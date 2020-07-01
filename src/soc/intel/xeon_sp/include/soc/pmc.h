@@ -25,6 +25,6 @@
 #define GEN_PMCON_B		0xa4
 #define  SLP_STR_POL_LOCK	(1 << 18)
 #define  ACPI_BASE_LOCK		(1 << 17)
-
+#define  RTC_BATTERY_DEAD	(1 << 2)
 
 #endif

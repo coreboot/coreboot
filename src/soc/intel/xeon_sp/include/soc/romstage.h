@@ -8,5 +8,6 @@
 
 /* These functions are weak and can be overridden by a mainboard functions. */
 void mainboard_memory_init_params(FSPM_UPD * mupd);
+void mainboard_rtc_failed(void);
 
 #endif /* _SOC_ROMSTAGE_H_ */

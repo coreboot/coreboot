@@ -18,6 +18,8 @@ asmlinkage void car_stage_entry(void)
 
 	console_init();
 	rtc_init();
+	if (soc_get_rtc_failed())
+		mainboard_rtc_failed();
 
 	fsp_memory_init(false);
 	printk(BIOS_DEBUG, "coreboot fsp_memory_init finished...\n");
@@ -46,4 +48,9 @@ asmlinkage void car_stage_entry(void)
 __weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	printk(BIOS_SPEW, "WARNING: using default FSP-M parameters!\n");
+}
+
+__weak void mainboard_rtc_failed(void)
+{
+
 }

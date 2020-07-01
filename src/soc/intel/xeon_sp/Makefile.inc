@@ -6,7 +6,7 @@ subdirs-$(CONFIG_SOC_INTEL_SKYLAKE_SP) += skx
 subdirs-$(CONFIG_SOC_INTEL_COOPERLAKE_SP) += cpx
 
 bootblock-y += bootblock.c spi.c lpc.c gpio.c pch.c
-romstage-y += romstage.c reset.c util.c spi.c gpio.c
+romstage-y += romstage.c reset.c util.c spi.c gpio.c pmutil.c
 ramstage-y += uncore.c reset.c util.c lpc.c spi.c gpio.c
 postcar-y += spi.c
 

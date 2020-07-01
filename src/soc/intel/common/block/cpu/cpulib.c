@@ -272,9 +272,17 @@ void configure_tcc_thermal_target(void)
 		wrmsr(MSR_TEMPERATURE_TARGET, msr);
 	}
 
-	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	/*
+	 * SoCs prior to Comet Lake/Cannon Lake do not support the time window
+	 * bits, so return early.
+	 */
+	if (CONFIG(SOC_INTEL_APOLLOLAKE) || CONFIG(SOC_INTEL_SKYLAKE) ||
+	    CONFIG(SOC_INTEL_KABYLAKE) || CONFIG(SOC_INTEL_BRASWELL) ||
+	    CONFIG(SOC_INTEL_BROADWELL))
+		return;
 
 	/* Time Window Tau Bits [6:0] */
+	msr = rdmsr(MSR_TEMPERATURE_TARGET);
 	msr.lo &= ~0x7f;
 	msr.lo |= 0xe6; /* setting 100ms thermal time window */
 	wrmsr(MSR_TEMPERATURE_TARGET, msr);

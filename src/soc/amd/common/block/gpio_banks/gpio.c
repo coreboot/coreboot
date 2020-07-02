@@ -45,12 +45,6 @@ static void program_smi(uint32_t flags, int gevent_num)
 	configure_gevent_smi(gevent_num, SMI_MODE_SMI, level);
 }
 
-struct sci_trigger_regs {
-	uint32_t mask;
-	uint32_t polarity;
-	uint32_t level;
-};
-
 /*
  * For each general purpose event, GPE, the choice of edge/level triggered
  * event is represented as a single bit in SMI_SCI_LEVEL register.
@@ -58,37 +52,24 @@ struct sci_trigger_regs {
  * In a similar fashion, polarity (rising/falling, hi/lo) of each GPE is
  * represented as a single bit in SMI_SCI_TRIG register.
  */
-static void fill_sci_trigger(uint32_t flags, int gpe, struct sci_trigger_regs *regs)
+static void program_sci(uint32_t flags, int gevent_num)
 {
-	uint32_t mask = 1 << gpe;
+	struct sci_source sci;
 
-	regs->mask |= mask;
+	sci.scimap = gevent_num;
+	sci.gpe = gevent_num;
 
 	if (is_gpio_event_level_triggered(flags))
-		regs->level |= mask;
+		sci.level = SMI_SCI_LVL;
 	else
-		regs->level &= ~mask;
+		sci.level = SMI_SCI_EDG;
 
 	if (is_gpio_event_active_high(flags))
-		regs->polarity |= mask;
+		sci.direction = SMI_SCI_LVL_HIGH;
 	else
-		regs->polarity &= ~mask;
-}
+		sci.direction = SMI_SCI_LVL_LOW;
 
-/* TODO: See configure_scimap() implementations. */
-static void set_sci_trigger(const struct sci_trigger_regs *regs)
-{
-	uint32_t value;
-
-	value = smi_read32(SMI_SCI_TRIG);
-	value &= ~regs->mask;
-	value |= regs->polarity;
-	smi_write32(SMI_SCI_TRIG, value);
-
-	value = smi_read32(SMI_SCI_LEVEL);
-	value &= ~regs->mask;
-	value |= regs->level;
-	smi_write32(SMI_SCI_LEVEL, value);
+	configure_scimap(&sci);
 }
 
 uintptr_t gpio_get_address(gpio_t gpio_num)
@@ -179,8 +160,7 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
-static void set_single_gpio(const struct soc_amd_gpio *g,
-			    struct sci_trigger_regs *sci_trigger_cfg)
+static void set_single_gpio(const struct soc_amd_gpio *g)
 {
 	static const struct soc_amd_event *gev_tbl;
 	static size_t gev_items;
@@ -214,16 +194,12 @@ static void set_single_gpio(const struct soc_amd_gpio *g,
 	if (g->flags & GPIO_FLAG_SMI) {
 		program_smi(g->flags, gevent_num);
 	} else if (g->flags & GPIO_FLAG_SCI) {
-		fill_sci_trigger(g->flags, gevent_num, sci_trigger_cfg);
-		soc_route_sci(gevent_num);
+		program_sci(g->flags, gevent_num);
 	}
 }
 
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
-	struct sci_trigger_regs sci_trigger_cfg = { 0 };
-	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
-			ENV_SEPARATE_VERSTAGE);
 	size_t i;
 
 	if (!gpio_list_ptr || !size)
@@ -242,7 +218,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	master_switch_clr(GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
 	for (i = 0; i < size; i++)
-		set_single_gpio(&gpio_list_ptr[i], &sci_trigger_cfg);
+		set_single_gpio(&gpio_list_ptr[i]);
 
 	/*
 	 * Re-enable interrupt status generation.
@@ -252,10 +228,6 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 * to be missed during boot.
 	 */
 	master_switch_set(GPIO_INTERRUPT_EN);
-
-	/* Set all SCI trigger polarity (high/low) and level (edge/level). */
-	if (can_set_smi_flags)
-		set_sci_trigger(&sci_trigger_cfg);
 }
 
 int gpio_interrupt_status(gpio_t gpio)

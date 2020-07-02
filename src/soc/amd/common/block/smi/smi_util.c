@@ -72,11 +72,6 @@ void southbridge_smi_set_eos(void)
 	smi_write32(SMI_REG_SMITRIG0, reg);
 }
 
-void soc_route_sci(uint8_t event)
-{
-	smi_write8(SMI_SCI_MAP(event), event);
-}
-
 /**
  * Configure generation of SCIs.
  */

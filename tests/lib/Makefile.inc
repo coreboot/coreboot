@@ -2,9 +2,13 @@
 
 tests-y += string-test
 tests-y += b64_decode-test
+tests-y += hexstrtobin-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
 
 b64_decode-test-srcs += tests/lib/b64_decode-test.c
 b64_decode-test-srcs += src/lib/b64_decode.c
+
+hexstrtobin-test-srcs += tests/lib/hexstrtobin-test.c
+hexstrtobin-test-srcs += src/lib/hexstrtobin.c

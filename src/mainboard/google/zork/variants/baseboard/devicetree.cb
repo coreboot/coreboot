@@ -103,18 +103,10 @@ chip soc/amd/picasso
 		.oob_ch_en = 0,
 		.flash_ch_en = 0,
 
-		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_LOW(1) | ESPI_VW_IRQ_LEVEL_LOW(12),
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1) | ESPI_VW_IRQ_LEVEL_HIGH(12),
 	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
-
-	register "irq_override" = "{
-		/* PS/2 keyboard IRQ1 override */
-		{1,	MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH},
-
-		/* PS/2 mouse IRQ12 override */
-		{12,	MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH},
-	}"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

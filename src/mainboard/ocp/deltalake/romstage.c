@@ -126,3 +126,11 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mainboard_config_iio(mupd);
 	mainboard_config_upd(mupd);
 }
+
+void mainboard_rtc_failed(void)
+{
+	if (ipmi_set_cmos_clear() == CB_SUCCESS)
+		printk(BIOS_DEBUG, "%s: IPMI set cmos clear successful\n", __func__);
+	else
+		printk(BIOS_ERR, "%s: IPMI set cmos clear failed\n", __func__);
+}

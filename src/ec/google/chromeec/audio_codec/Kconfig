@@ -1,0 +1,10 @@
+if EC_GOOGLE_CHROMEEC
+
+config EC_GOOGLE_CHROMEEC_AUDIO_CODEC
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  This enables the Cros EC audio codec driver that is required to fill the
+	  SSDT nodes for the codec device used by the mainboard.
+
+endif

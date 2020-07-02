@@ -1,5 +1,6 @@
 ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC),y)
 
+subdirs-y += audio_codec
 subdirs-y += i2c_tunnel
 
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c

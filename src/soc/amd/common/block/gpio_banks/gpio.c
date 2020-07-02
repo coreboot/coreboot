@@ -179,8 +179,6 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
-__weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
-
 static void set_single_gpio(const struct soc_amd_gpio *g,
 			    struct sci_trigger_regs *sci_trigger_cfg)
 {
@@ -192,8 +190,6 @@ static void set_single_gpio(const struct soc_amd_gpio *g,
 
 	iomux_write8(g->gpio, g->function & AMD_GPIO_MUX_MASK);
 	iomux_read8(g->gpio); /* Flush posted write */
-
-	soc_gpio_hook(g->gpio, g->function);
 
 	gpio_setbits32(g->gpio, PAD_CFG_MASK, g->control);
 	/* Clear interrupt and wake status (write 1-to-clear bits) */

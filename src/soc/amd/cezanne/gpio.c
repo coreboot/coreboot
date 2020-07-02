@@ -1,10 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/gpio_banks.h>
-#include <amdblocks/acpimmio.h>
-#include <amdblocks/smi.h>
 #include <soc/gpio.h>
-#include <soc/smi.h>
 #include <types.h>
 
 /* see the IOMUX function table for the mapping from GPIO number to GEVENT number */
@@ -39,11 +36,4 @@ void soc_get_gpio_event_table(const struct soc_amd_event **table, size_t *items)
 {
 	*table = gpio_event_table;
 	*items = ARRAY_SIZE(gpio_event_table);
-}
-
-void soc_gpio_hook(uint8_t gpio, uint8_t mux)
-{
-	/* Always program Gevent when WAKE_L_AGPIO2 is configured as WAKE_L */
-	if ((gpio == 2) && !(mux & AMD_GPIO_MUX_MASK))
-		soc_route_sci(GPIO_2_EVENT);
 }

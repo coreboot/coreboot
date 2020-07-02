@@ -245,7 +245,6 @@ ramstage-y += cpu_common.c
 ramstage-y += ebda.c
 ramstage-y += exception.c
 ramstage-y += idt.S
-ramstage-y += gdt.c
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
 ramstage-y += memcpy.c
 ramstage-y += memmove.c
@@ -291,13 +290,9 @@ endif
 
 ramstage-libs ?=
 
-ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
-
 # The rmodule_link definition creates an elf file with .rmod extension.
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@
-
-endif
 
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE))
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

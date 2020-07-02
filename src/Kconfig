@@ -270,20 +270,9 @@ config UBSAN
 	  say N because it adds a small performance penalty and may abort
 	  on code that happens to work in spite of the UB.
 
-config RELOCATABLE_RAMSTAGE
-	bool
-	default y if ARCH_X86
-	select RELOCATABLE_MODULES
-	help
-	 The reloctable ramstage support allows for the ramstage to be built
-	 as a relocatable module. The stage loader can identify a place
-	 out of the OS way so that copying memory is unnecessary during an S3
-	 wake. When selecting this option the romstage is responsible for
-	 determing a stack location to use for loading the ramstage.
-
 choice
 	prompt "Stage Cache for ACPI S3 resume"
-	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME || !RELOCATABLE_RAMSTAGE
+	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME
 	default TSEG_STAGE_CACHE if SMM_TSEG
 
 config NO_STAGE_CACHE
@@ -576,7 +565,6 @@ source "src/console/Kconfig"
 config HAVE_ACPI_RESUME
 	bool
 	default n
-	depends on RELOCATABLE_RAMSTAGE
 
 config DISABLE_ACPI_HIBERNATE
 	bool

@@ -129,10 +129,9 @@ void run_ramstage(void)
 
 	timestamp_add_now(TS_START_COPYRAM);
 
-	if (CONFIG(RELOCATABLE_RAMSTAGE)) {
-		if (load_relocatable_ramstage(&ramstage))
-			goto fail;
-	} else if (cbfs_prog_stage_load(&ramstage))
+	if (ENV_X86 && load_relocatable_ramstage(&ramstage))
+		goto fail;
+	else if (cbfs_prog_stage_load(&ramstage))
 		goto fail;
 
 	stage_cache_add(STAGE_RAMSTAGE, &ramstage);

@@ -77,8 +77,7 @@ static void clear_memory(void *unused)
 	void *baseptr = NULL;
 	size_t size = 0;
 
-	/* Only skip CBMEM, as RELOCATABLE_RAMSTAGE is a requirement, no need
-	 * to separately protect stack or heap */
+	/* Only skip CBMEM, stage program, stack and heap are included there. */
 
 	cbmem_get_region(&baseptr, &size);
 	memranges_insert(&mem, (uintptr_t)baseptr, size, BM_MEM_TABLE);

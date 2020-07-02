@@ -13,8 +13,7 @@ SECTIONS
 	 * conditionalize with macros.
 	 */
 #if ENV_RAMSTAGE
-	RAMSTAGE(CONFIG_RAMBASE, (CONFIG(RELOCATABLE_RAMSTAGE) ? 8M :
-					CONFIG_RAMTOP - CONFIG_RAMBASE))
+	RAMSTAGE(CONFIG_RAMBASE, 8M)
 
 #elif ENV_ROMSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.

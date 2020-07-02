@@ -4,9 +4,8 @@ menu "Memory initialization"
 
 config PLATFORM_HAS_DRAM_CLEAR
 	bool
-	default y if ARCH_X86
-	default n
-	depends on RELOCATABLE_RAMSTAGE
+	default y
+	depends on ARCH_X86
 	help
 	  Selected by platforms that support clearing all DRAM
 	  after DRAM initialization.

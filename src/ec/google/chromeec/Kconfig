@@ -197,8 +197,4 @@ config EC_GOOGLE_CHROMEEC_SWITCHES
 	  Enable support for Chrome OS mode switches provided by the Chrome OS
 	  EC.
 
-if EC_GOOGLE_CHROMEEC
-
 source "src/ec/google/chromeec/*/Kconfig"
-
-endif

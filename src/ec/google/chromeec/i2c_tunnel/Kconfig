@@ -1,6 +1,10 @@
+if EC_GOOGLE_CHROMEEC
+
 config EC_GOOGLE_CHROMEEC_I2C_TUNNEL
 	bool
 	depends on HAVE_ACPI_TABLES
 	help
 	  This enables the Cros EC I2C tunnel driver that is required to fill the
 	  SSDT nodes for the I2C tunnel used by the mainboard.
+
+endif

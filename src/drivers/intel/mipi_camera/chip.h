@@ -13,6 +13,7 @@
 #define MAX_CLK_CONFIGS		2
 #define MAX_GPIO_CONFIGS	4
 #define MAX_PWR_OPS		5
+#define MAX_GUARDED_RESOURCES	10
 
 #define SEQ_OPS_CLK_ENABLE(ind, delay) \
 	{ .type = IMGCLK, .index = (ind), .action = ENABLE, .delay_ms = (delay) }
@@ -70,13 +71,34 @@ enum intel_power_action_type {
 };
 
 enum ctrl_type {
-	IMGCLK = 1,
+	UNKNOWN_CTRL,
+	IMGCLK,
 	GPIO
 };
 
 enum action_type {
-	ENABLE = 1,
+	UNKNOWN_ACTION,
+	ENABLE,
 	DISABLE
+};
+
+struct camera_resource {
+	uint8_t type;
+	uint8_t id;
+};
+
+struct camera_resource_manager {
+	uint8_t cnt;
+	struct camera_resource resource[MAX_GUARDED_RESOURCES];
+};
+
+struct resource_config {
+	enum action_type action;
+	enum ctrl_type type;
+	union {
+		const struct clk_config *clk_conf;
+		const struct gpio_config *gpio_conf;
+	};
 };
 
 struct clk_config {

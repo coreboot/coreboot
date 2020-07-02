@@ -18,6 +18,59 @@
 #define CIO2_PCI_DEV		0x14
 #define CIO2_PCI_FN		0x3
 #define POWER_RESOURCE_NAME	"PRIC"
+#define GUARD_VARIABLE_FORMAT	"RES%1d"
+#define ENABLE_METHOD_FORMAT	"ENB%1d"
+#define DISABLE_METHOD_FORMAT	"DSB%1d"
+#define UNKNOWN_METHOD_FORMAT	"UNK%1d"
+#define CLK_ENABLE_METHOD	"MCON"
+#define CLK_DISABLE_METHOD	"MCOF"
+
+static struct camera_resource_manager res_mgr;
+
+static void resource_set_action_type(struct resource_config *res_config,
+				     enum action_type action)
+{
+	if (res_config)
+		res_config->action = action;
+}
+
+static enum action_type resource_get_action_type(const struct resource_config *res_config)
+{
+	return res_config ? res_config->action : UNKNOWN_ACTION;
+}
+
+static enum ctrl_type resource_get_ctrl_type(const struct resource_config *res_config)
+{
+	return res_config ? res_config->type : UNKNOWN_CTRL;
+}
+
+static void resource_set_clk_config(struct resource_config *res_config,
+				    const struct clk_config *clk_conf)
+{
+	if (res_config) {
+		res_config->type = IMGCLK;
+		res_config->clk_conf = clk_conf;
+	}
+}
+
+static const struct clk_config *resource_clk_config(const struct resource_config *res_config)
+{
+	return res_config ? res_config->clk_conf : NULL;
+}
+
+static void resource_set_gpio_config(struct resource_config *res_config,
+				     const struct gpio_config *gpio_conf)
+{
+	if (res_config) {
+		res_config->type = GPIO;
+		res_config->gpio_conf = gpio_conf;
+	}
+}
+
+static const struct gpio_config *resource_gpio_config(const struct resource_config *res_config)
+{
+	return res_config ? res_config->gpio_conf : NULL;
+}
 
 /*
  * This implementation assumes there is only 1 endpoint at each end of every data port. It also
@@ -436,53 +489,271 @@ static void camera_fill_vcm(const struct device *dev)
 	acpi_dp_write(dsd);
 }
 
-static void fill_power_res_sequence(struct drivers_intel_mipi_camera_config *config,
-				    struct operation_seq *seq)
+static int get_resource_index(const struct resource_config *res_config)
+{
+	enum ctrl_type type = resource_get_ctrl_type(res_config);
+	const struct clk_config *clk_config;
+	const struct gpio_config *gpio_config;
+	unsigned int i;
+	uint8_t res_id;
+
+	switch (type) {
+	case IMGCLK:
+		clk_config = resource_clk_config(res_config);
+		res_id = clk_config->clknum;
+		break;
+	case GPIO:
+		gpio_config = resource_gpio_config(res_config);
+		res_id = gpio_config->gpio_num;
+		break;
+	default:
+		printk(BIOS_ERR, "Unsupported power operation: %x\n"
+				 "OS camera driver will likely not work", type);
+		return -1;
+	}
+
+	for (i = 0; i < res_mgr.cnt; i++)
+		if (res_mgr.resource[i].type == type && res_mgr.resource[i].id == res_id)
+			return i;
+
+	return -1;
+}
+
+static void add_guarded_method_namestring(struct resource_config *res_config, int res_index)
+{
+	char method_name[ACPI_NAME_BUFFER_SIZE];
+	enum action_type action = resource_get_action_type(res_config);
+
+	switch (action) {
+	case ENABLE:
+		snprintf(method_name, sizeof(method_name), ENABLE_METHOD_FORMAT, res_index);
+		break;
+	case DISABLE:
+		snprintf(method_name, sizeof(method_name), DISABLE_METHOD_FORMAT, res_index);
+		break;
+	default:
+		snprintf(method_name, sizeof(method_name), UNKNOWN_METHOD_FORMAT, res_index);
+		printk(BIOS_ERR, "Unsupported resource action: %x\n", action);
+	}
+
+	acpigen_emit_namestring(method_name);
+}
+
+static void call_guarded_method(struct resource_config *res_config)
+{
+	int res_index;
+
+	if (res_config == NULL)
+		return;
+
+	res_index = get_resource_index(res_config);
+
+	if (res_index != -1)
+		add_guarded_method_namestring(res_config, res_index);
+}
+
+static void add_clk_op(const struct clk_config *clk_config, enum action_type action)
+{
+	if (clk_config == NULL)
+		return;
+
+	switch (action) {
+	case ENABLE:
+		acpigen_write_if();
+		acpigen_emit_ext_op(COND_REFOF_OP);
+		acpigen_emit_string(CLK_ENABLE_METHOD);
+		acpigen_emit_namestring(CLK_ENABLE_METHOD);
+		acpigen_write_integer(clk_config->clknum);
+		acpigen_write_integer(clk_config->freq);
+		acpigen_pop_len(); /* CondRefOf */
+		break;
+	case DISABLE:
+		acpigen_write_if();
+		acpigen_emit_ext_op(COND_REFOF_OP);
+		acpigen_emit_string(CLK_DISABLE_METHOD);
+		acpigen_emit_namestring(CLK_DISABLE_METHOD);
+		acpigen_write_integer(clk_config->clknum);
+		acpigen_pop_len(); /* CondRefOf */
+		break;
+	default:
+		acpigen_write_debug_string("Unsupported clock action");
+		printk(BIOS_ERR, "Unsupported clock action: %x\n"
+				 "OS camera driver will likely not work", action);
+	}
+}
+
+static void add_gpio_op(const struct gpio_config *gpio_config, enum action_type action)
+{
+	if (gpio_config == NULL)
+		return;
+
+	switch (action) {
+	case ENABLE:
+		acpigen_soc_set_tx_gpio(gpio_config->gpio_num);
+		break;
+	case DISABLE:
+		acpigen_soc_clear_tx_gpio(gpio_config->gpio_num);
+		break;
+	default:
+		acpigen_write_debug_string("Unsupported GPIO action");
+		printk(BIOS_ERR, "Unsupported GPIO action: %x\n"
+				 "OS camera driver will likely not work\n", action);
+	}
+}
+
+static void add_power_operation(const struct resource_config *res_config)
+{
+	const struct clk_config *clk_config;
+	const struct gpio_config *gpio_config;
+	enum ctrl_type type = resource_get_ctrl_type(res_config);
+	enum action_type action = resource_get_action_type(res_config);
+
+	if (res_config == NULL)
+		return;
+
+	switch (type) {
+	case IMGCLK:
+		clk_config = resource_clk_config(res_config);
+		add_clk_op(clk_config, action);
+		break;
+	case GPIO:
+		gpio_config = resource_gpio_config(res_config);
+		add_gpio_op(gpio_config, action);
+		break;
+	default:
+		printk(BIOS_ERR, "Unsupported power operation: %x\n"
+				 "OS camera driver will likely not work\n", type);
+		break;
+	}
+}
+
+static void write_guard_variable(uint8_t res_index)
+{
+	char varname[ACPI_NAME_BUFFER_SIZE];
+
+	snprintf(varname, sizeof(varname), GUARD_VARIABLE_FORMAT, res_index);
+	acpigen_write_name_integer(varname, 0);
+}
+
+static void write_enable_method(struct resource_config *res_config, uint8_t res_index)
+{
+	char method_name[ACPI_NAME_BUFFER_SIZE];
+	char varname[ACPI_NAME_BUFFER_SIZE];
+
+	snprintf(varname, sizeof(varname), GUARD_VARIABLE_FORMAT, res_index);
+
+	snprintf(method_name, sizeof(method_name), ENABLE_METHOD_FORMAT, res_index);
+
+	acpigen_write_method_serialized(method_name, 0);
+	acpigen_write_if_lequal_namestr_int(varname, 0);
+	resource_set_action_type(res_config, ENABLE);
+	add_power_operation(res_config);
+	acpigen_pop_len(); /* if */
+
+	acpigen_emit_byte(INCREMENT_OP);
+	acpigen_emit_namestring(varname);
+	acpigen_pop_len(); /* method_name */
+}
+
+static void write_disable_method(struct resource_config *res_config, uint8_t res_index)
+{
+	char method_name[ACPI_NAME_BUFFER_SIZE];
+	char varname[ACPI_NAME_BUFFER_SIZE];
+
+	snprintf(varname, sizeof(varname), GUARD_VARIABLE_FORMAT, res_index);
+
+	snprintf(method_name, sizeof(method_name), DISABLE_METHOD_FORMAT, res_index);
+
+	acpigen_write_method_serialized(method_name, 0);
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_namestring(varname);
+	acpigen_write_integer(0x0);
+	acpigen_emit_byte(DECREMENT_OP);
+	acpigen_emit_namestring(varname);
+	acpigen_pop_len(); /* if */
+
+	acpigen_write_if_lequal_namestr_int(varname, 0);
+	resource_set_action_type(res_config, DISABLE);
+	add_power_operation(res_config);
+	acpigen_pop_len(); /* if */
+	acpigen_pop_len(); /* method_name */
+}
+
+static void add_guarded_operations(const struct drivers_intel_mipi_camera_config *config,
+				   const struct operation_seq *seq)
 {
 	unsigned int i;
 	uint8_t index;
-	uint8_t gpio_num;
+	uint8_t res_id;
+	struct resource_config res_config;
+	int res_index;
 
-	for (i = 0; i < seq->ops_cnt; i++) {
+	for (i = 0; i < seq->ops_cnt && i < MAX_PWR_OPS; i++) {
+		index = seq->ops[i].index;
 		switch (seq->ops[i].type) {
 		case IMGCLK:
-			index = seq->ops[i].index;
-			if (seq->ops[i].action == ENABLE) {
-				acpigen_emit_namestring("MCON");
-				acpigen_write_byte(config->clk_panel.clks[index].clknum);
-				acpigen_write_byte(config->clk_panel.clks[index].freq);
-			} else if (seq->ops[i].action == DISABLE) {
-				acpigen_emit_namestring("MCOF");
-				acpigen_write_byte(config->clk_panel.clks[index].clknum);
-			} else {
-				acpigen_write_debug_string("Unsupported clock action");
-				printk(BIOS_ERR, "Unsupported clock action: %x\n",
-				       seq->ops[i].action);
-				printk(BIOS_ERR, "OS camera driver will likely not work");
-			}
-
+			res_id = config->clk_panel.clks[index].clknum;
+			resource_set_clk_config(&res_config, &config->clk_panel.clks[index]);
 			break;
 		case GPIO:
-			index = seq->ops[i].index;
-			gpio_num = config->gpio_panel.gpio[index].gpio_num;
-			if (seq->ops[i].action == ENABLE) {
-				acpigen_soc_set_tx_gpio(gpio_num);
-			} else if (seq->ops[i].action == DISABLE) {
-				acpigen_soc_clear_tx_gpio(gpio_num);
-			} else {
-				acpigen_write_debug_string("Unsupported GPIO action");
-				printk(BIOS_ERR, "Unsupported GPIO action: %x\n",
-				       seq->ops[i].action);
-				printk(BIOS_ERR, "OS camera driver will likely not work");
-			}
-
+			res_id = config->gpio_panel.gpio[index].gpio_num;
+			resource_set_gpio_config(&res_config, &config->gpio_panel.gpio[index]);
 			break;
 		default:
-			printk(BIOS_ERR, "Unsupported power operation: %x\n", seq->ops[i].type);
-			printk(BIOS_ERR, "OS camera driver will likely not work");
-			break;
+			printk(BIOS_ERR, "Unsupported power operation: %x\n"
+					 "OS camera driver will likely not work\n",
+					 seq->ops[i].type);
+			return;
 		}
 
+		res_index = get_resource_index(&res_config);
+
+		if (res_index == -1) {
+			if (res_mgr.cnt >= MAX_GUARDED_RESOURCES) {
+				printk(BIOS_ERR, "Unable to add guarded camera resource\n"
+						 "OS camera driver will likely not work\n");
+				return;
+			}
+
+			res_mgr.resource[res_mgr.cnt].id = res_id;
+			res_mgr.resource[res_mgr.cnt].type = seq->ops[i].type;
+
+			write_guard_variable(res_mgr.cnt);
+			write_enable_method(&res_config, res_mgr.cnt);
+			write_disable_method(&res_config, res_mgr.cnt);
+
+			res_mgr.cnt++;
+		}
+	}
+}
+
+static void fill_power_res_sequence(struct drivers_intel_mipi_camera_config *config,
+				    struct operation_seq *seq)
+{
+	struct resource_config res_config;
+	unsigned int i;
+	uint8_t index;
+
+	for (i = 0; i < seq->ops_cnt && i < MAX_PWR_OPS; i++) {
+		index = seq->ops[i].index;
+
+		switch (seq->ops[i].type) {
+		case IMGCLK:
+			resource_set_clk_config(&res_config, &config->clk_panel.clks[index]);
+			break;
+		case GPIO:
+			resource_set_gpio_config(&res_config, &config->gpio_panel.gpio[index]);
+			break;
+		default:
+			printk(BIOS_ERR, "Unsupported power operation: %x\n"
+					 "OS camera driver will likely not work\n",
+					 seq->ops[i].type);
+			return;
+		}
+
+		resource_set_action_type(&res_config, seq->ops[i].action);
+		call_guarded_method(&res_config);
 		if (seq->ops[i].delay_ms)
 			acpigen_write_sleep(seq->ops[i].delay_ms);
 	}
@@ -638,12 +909,32 @@ static void write_camera_device_common(const struct device *dev)
 static void camera_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	const char *scope = acpi_device_scope(dev);
+	const char *scope = NULL;
+	const struct device *pdev;
 
-	if (!dev->enabled || !scope)
+	if (!dev->enabled)
 		return;
 
+	if (config->has_power_resource) {
+		pdev = dev->bus->dev;
+		if (!pdev || !pdev->enabled)
+			return;
+
+		scope = acpi_device_scope(pdev);
+		if (!scope)
+			return;
+
+		acpigen_write_scope(scope);
+		add_guarded_operations(config, &config->on_seq);
+		add_guarded_operations(config, &config->off_seq);
+		acpigen_pop_len(); /* Guarded power resource operations scope */
+	}
+
 	/* Device */
+	scope = acpi_device_scope(dev);
+	if (!scope)
+		return;
+
 	acpigen_write_scope(scope);
 
 	if (config->device_type == INTEL_ACPI_CAMERA_CIO2 ||
@@ -669,7 +960,7 @@ static void camera_fill_ssdt(const struct device *dev)
 static const char *camera_acpi_name(const struct device *dev)
 {
 	const char *prefix = NULL;
-	static char name[5];
+	static char name[ACPI_NAME_BUFFER_SIZE];
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 
 	if (config->acpi_name)

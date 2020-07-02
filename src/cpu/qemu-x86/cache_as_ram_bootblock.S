@@ -29,11 +29,12 @@ cache_as_ram:
 
 	/* Restore the BIST result and timestamps. */
 #if defined(__x86_64__)
-	movd	%mm1, %rdi
+	movd	%mm2, %rdi
 	shld	%rdi, 32
 	movd	%mm1, %rsi
 	or	%rsi, %rdi
-	movd	%mm2, %rsi
+
+	movd	%mm0, %rsi
 #else
 	sub	$4, %esp
 

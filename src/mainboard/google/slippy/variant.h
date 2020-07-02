@@ -3,6 +3,6 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
-void variant_romstage_entry(void);
+void variant_romstage_entry(struct romstage_params *rp);
 
 #endif

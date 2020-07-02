@@ -38,3 +38,4 @@ libc-$(CONFIG_LP_LIBC) += hexdump.c
 libc-$(CONFIG_LP_LIBC) += die.c
 libc-$(CONFIG_LP_LIBC) += coreboot.c
 libc-$(CONFIG_LP_LIBC) += fmap.c
+libc-$(CONFIG_LP_LIBC) += fpmath.c

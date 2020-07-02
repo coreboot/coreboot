@@ -6,5 +6,5 @@
 
 int tis_plat_irq_status(void)
 {
-	return gpio_interrupt_status(H1_PCH_INT);
+	return gpio_interrupt_status(GPIO_9);
 }

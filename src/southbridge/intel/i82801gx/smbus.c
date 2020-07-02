@@ -68,7 +68,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 static void smbus_read_resources(struct device *dev)
 {
 	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
-	res->base = SMBUS_IO_BASE;
+	res->base = CONFIG_FIXED_SMBUS_IO_BASE;
 	res->size = 32;
 	res->limit = res->base + res->size - 1;
 	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |

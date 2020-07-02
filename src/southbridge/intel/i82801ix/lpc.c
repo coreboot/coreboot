@@ -424,7 +424,7 @@ static void i82801ix_lpc_read_resources(struct device *dev)
 	 * 0x00c0 ~ 0x00de....ISA DMA
 	 * 0x00c1 ~ 0x00df....ISA DMA aliases
 	 * 0x00f0.............Coprocessor Error
-	 * (0x0400-0x041f)....SMBus (SMBUS_IO_BASE, during raminit)
+	 * (0x0400-0x041f)....SMBus (CONFIG_FIXED_SMBUS_IO_BASE, during raminit)
 	 * 0x04d0 - 0x04d1....PIC
 	 * 0x0500 - 0x057f....PM (DEFAULT_PMBASE)
 	 * 0x0580 - 0x05bf....SB GPIO (DEFAULT_GPIOBASE)

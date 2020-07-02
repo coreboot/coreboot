@@ -251,7 +251,7 @@ static void southbridge_fill_pei_data(struct pei_data *pei_data)
 {
 	const struct device *dev = pcidev_on_root(0x19, 0);
 
-	pei_data->smbusbar   = SMBUS_IO_BASE;
+	pei_data->smbusbar   = CONFIG_FIXED_SMBUS_IO_BASE;
 	pei_data->wdbbar     = 0x04000000;
 	pei_data->wdbsize    = 0x1000;
 	pei_data->rcba       = (uintptr_t)DEFAULT_RCBABASE;

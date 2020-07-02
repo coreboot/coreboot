@@ -80,8 +80,6 @@
 #define D28Fx_SLCAP		0x54
 
 
-#define SMBUS_IO_BASE		0x0400
-
 /* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20
 #define HOSTC			0x40

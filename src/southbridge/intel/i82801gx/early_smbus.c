@@ -7,7 +7,7 @@
 
 uintptr_t smbus_base(void)
 {
-	return SMBUS_IO_BASE;
+	return CONFIG_FIXED_SMBUS_IO_BASE;
 }
 
 int smbus_enable_iobar(uintptr_t base)

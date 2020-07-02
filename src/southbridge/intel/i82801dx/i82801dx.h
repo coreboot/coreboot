@@ -94,8 +94,6 @@ void aseg_smm_lock(void);
 #define RTC_FAILED      (1 <<2)
 
 
-#define SMBUS_IO_BASE	0x400
-
 #define PM1_STS		0x00
 #define   WAK_STS	(1 << 15)
 #define   PCIEXPWAK_STS	(1 << 14)

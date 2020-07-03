@@ -15,7 +15,6 @@
 
 void romstage_common(const struct romstage_params *params)
 {
-	int boot_mode;
 	int wake_from_s3;
 
 	enable_lapic();
@@ -37,16 +36,14 @@ void romstage_common(const struct romstage_params *params)
 #endif
 	}
 
-	/* There are hard coded assumptions of 2 meaning s3 wake. Normalize
-	 * the users of the 2 literal here based off wake_from_s3. */
-	boot_mode = wake_from_s3 ? 2 : 0;
-
 	/* Prepare USB controller early in S3 resume */
 	if (wake_from_s3)
 		enable_usb_bar();
 
 	post_code(0x3a);
-	params->pei_data->boot_mode = boot_mode;
+
+	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
+	params->pei_data->boot_mode = wake_from_s3 ? 2 : 0;
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 

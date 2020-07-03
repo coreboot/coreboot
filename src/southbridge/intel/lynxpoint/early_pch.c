@@ -17,15 +17,6 @@
 #include <southbridge/intel/common/gpio.h>
 #endif
 
-const struct rcba_config_instruction pch_early_config[] = {
-	/* Enable IOAPIC */
-	RCBA_SET_REG_16(OIC, 0x0100),
-	/* PCH BWG says to read back the IOAPIC enable register */
-	RCBA_READ_REG_16(OIC),
-
-	RCBA_END_CONFIG,
-};
-
 int pch_is_lp(void)
 {
 	u8 id = pci_read_config8(PCH_LPC_DEV, PCI_DEVICE_ID + 1);
@@ -103,8 +94,11 @@ int early_pch_init(const void *gpio_map,
 	/* Enable SMBus for reading SPDs. */
 	enable_smbus();
 
-	/* Early PCH RCBA settings */
-	pch_config_rcba(pch_early_config);
+	/* Enable IOAPIC */
+	RCBA16(OIC) = 0x0100;
+
+	/* PCH BWG says to read back the IOAPIC enable register */
+	(void) RCBA16(OIC);
 
 	/* Mainboard RCBA settings */
 	pch_config_rcba(rcba_config);

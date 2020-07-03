@@ -204,6 +204,9 @@ static void sc_disable_devfn(struct device *dev)
 	uint32_t mask2 = 0;
 
 	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
+		mask |= MMC_DIS;
+		break;
 	case PCI_DEVFN(SDIO_DEV, SDIO_FUNC):
 		mask |= SDIO_DIS;
 		break;
@@ -221,8 +224,8 @@ static void sc_disable_devfn(struct device *dev)
 	case PCI_DEVFN(LPE_DEV, LPE_FUNC):
 		mask |= LPE_DIS;
 		break;
-	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
-		mask |= MMC_DIS;
+	case PCI_DEVFN(MMC45_DEV, MMC45_FUNC):
+		mask |= MMC45_DIS;
 		break;
 	case PCI_DEVFN(SIO_DMA1_DEV, SIO_DMA1_FUNC):
 		mask |= SIO_DMA1_DIS;
@@ -362,13 +365,16 @@ static int place_device_in_d3hot(struct device *dev)
 	 * Work around this by hard coding the offset.
 	 */
 	switch (dev->path.pci.devfn) {
+	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
+		offset = 0x80;
+		break;
 	case PCI_DEVFN(SDIO_DEV, SDIO_FUNC):
 		offset = 0x80;
 		break;
 	case PCI_DEVFN(SD_DEV, SD_FUNC):
 		offset = 0x80;
 		break;
-	case PCI_DEVFN(MMC_DEV, MMC_FUNC):
+	case PCI_DEVFN(MMC45_DEV, MMC45_FUNC):
 		offset = 0x80;
 		break;
 	case PCI_DEVFN(LPE_DEV, LPE_FUNC):

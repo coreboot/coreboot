@@ -3,7 +3,6 @@
 bootblock-y += bootblock.c
 
 romstage-y += chromeos.c
-romstage-y += ec.c
 romstage-y += sku_id.c
 
 ramstage-y += chromeos.c
@@ -14,7 +13,6 @@ ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += verstage.c
 else
 verstage-y += chromeos.c
-verstage-y += ec.c
 endif
 
 smm-y += smihandler.c

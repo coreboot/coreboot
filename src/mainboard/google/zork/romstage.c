@@ -1,11 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
-#include <ec/ec.h>
-#include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include <soc/romstage.h>
-#include <variant/ec.h>
 #include <console/console.h>
 
 void mainboard_romstage_entry_s3(int s3_resume)
@@ -16,6 +13,4 @@ void mainboard_romstage_entry_s3(int s3_resume)
 	gpios = variant_romstage_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
 	variant_pcie_power_reset_configure();
-
-	mainboard_ec_init();
 }

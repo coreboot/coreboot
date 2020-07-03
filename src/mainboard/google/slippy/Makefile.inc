@@ -7,6 +7,7 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 smm-y += smihandler.c
 
+romstage-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/romstage.c
 
 subdirs-y += variants/$(VARIANT_DIR)

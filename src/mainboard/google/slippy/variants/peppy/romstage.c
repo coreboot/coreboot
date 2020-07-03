@@ -10,7 +10,6 @@
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
-#include <variant/gpio.h>
 #include "../../onboard.h"
 #include "../../variant.h"
 
@@ -97,6 +96,5 @@ void variant_romstage_entry(struct romstage_params *rp)
 	memcpy(rp->pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
 	memcpy(rp->pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
 
-	rp->gpio_map = &mainboard_gpio_map;
 	rp->copy_spd = copy_spd;
 }

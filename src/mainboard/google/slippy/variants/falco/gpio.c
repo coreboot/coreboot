@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef PEPPY_GPIO_H
-#define PEPPY_GPIO_H
-
-struct pch_lp_gpio_map;
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 0: UNUSED */
@@ -48,10 +45,10 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 39: UNUSED */
 	LP_GPIO_NATIVE,        /* 40: NATIVE: USB_OC0# */
 	LP_GPIO_UNUSED,        /* 41: UNUSED */
-	LP_GPIO_NATIVE,        /* 42: NATIVE: USB_OC2# */
-	LP_GPIO_UNUSED,        /* 43: UNUSED */
-	LP_GPIO_OUT_HIGH,      /* 44: PP3300_SSD_EN */
-	LP_GPIO_OUT_HIGH,      /* 45: PP3300_CODEC_EN */
+	LP_GPIO_UNUSED,        /* 42: UNUSED */
+	LP_GPIO_NATIVE,        /* 43: NATIVE: USB_OC3# */
+	LP_GPIO_UNUSED,        /* 44: UNUSED */
+	LP_GPIO_UNUSED,        /* 45: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 46: WLAN_DISABLE_L */
 	LP_GPIO_INPUT,         /* 47: RAM_ID2 */
 	LP_GPIO_UNUSED,        /* 48: UNUSED */
@@ -59,11 +56,11 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 50: UNUSED */
 	LP_GPIO_INPUT,         /* 51: ALS_INT_L */
 	LP_GPIO_INPUT,         /* 52: SIM_DET */
-	LP_GPIO_PIRQ,          /* 53: TRACKPAD_INT_DX */
-	LP_GPIO_PIRQ,          /* 54: TOUCH_INT_L_DX */
+	LP_GPIO_PIRQ,          /* 53: TRACKPAD_INT_DX (PIRQV) */
+	LP_GPIO_PIRQ,          /* 54: TOUCH_INT_L_DX (PIRQW) */
 	LP_GPIO_UNUSED,        /* 55: UNUSED */
 	LP_GPIO_UNUSED,        /* 56: UNUSED */
-	LP_GPIO_OUT_HIGH,      /* 57: PP3300_CCD_EN */
+	LP_GPIO_UNUSED,        /* 57: UNUSED */
 	LP_GPIO_INPUT,         /* 58: PCH_SPI_WP_D */
 	LP_GPIO_OUT_HIGH,      /* 59: LTE_DISABLE_L */
 	LP_GPIO_NATIVE,        /* 60: NATIVE: SML0ALERT */
@@ -78,8 +75,8 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 69: UNUSED */
 	LP_GPIO_UNUSED,        /* 70: UNUSED */
 	LP_GPIO_NATIVE,        /* 71: NATIVE: MODPHY_EN */
-	LP_GPIO_NATIVE,        /* 72: NATIVE: PCH_BATLOW# */
-	LP_GPIO_NATIVE,        /* 73: NATIVE: SMB1ALERT# */
+	LP_GPIO_UNUSED,        /* 72: UNUSED */
+	LP_GPIO_UNUSED,        /* 73: UNUSED */
 	LP_GPIO_NATIVE,        /* 74: NATIVE: SMB_ME1_DAT */
 	LP_GPIO_NATIVE,        /* 75: NATIVE: SMB_ME1_CLK */
 	LP_GPIO_UNUSED,        /* 76: UNUSED */
@@ -103,5 +100,3 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 94: UNUSED */
 	LP_GPIO_END
 };
-
-#endif

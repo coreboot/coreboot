@@ -7,11 +7,11 @@
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <romstage_handoff.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
-#include "haswell.h"
 
 void romstage_common(const struct romstage_params *params)
 {

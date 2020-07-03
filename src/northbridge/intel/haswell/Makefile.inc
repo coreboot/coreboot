@@ -14,6 +14,7 @@ ramstage-y += minihd.c
 
 romstage-y += memmap.c
 romstage-y += raminit.c
+romstage-y += romstage.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 

@@ -32,10 +32,10 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_U, "Tigerlake-U-4-2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2, "Tigerlake-U-2-2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2, "Tigerlake-U-4-2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y_2_2, "Tigerlake-Y-2-2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y_4_2, "Tigerlake-Y-4-2" },
 };
 
 static struct {

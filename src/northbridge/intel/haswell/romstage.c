@@ -29,6 +29,18 @@ void mainboard_romstage_entry(void)
 	int wake_from_s3;
 
 	struct pei_data pei_data = {
+		.pei_version = PEI_VERSION,
+		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
+		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
+		.smbusbar = SMBUS_IO_BASE,
+		.hpet_address = HPET_ADDR,
+		.rcba = (uintptr_t)DEFAULT_RCBA,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.temp_mmio_base = 0xfed08000,
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
 	};
 
 	mainboard_fill_pei_data(&pei_data);

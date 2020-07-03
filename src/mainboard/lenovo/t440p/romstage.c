@@ -23,6 +23,26 @@ void mainboard_config_rcba(void)
 	RCBA16(D20IR) = DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
+void mb_late_romstage_setup(void)
+{
+	u8 enable_peg;
+	if (get_option(&enable_peg, "enable_dual_graphics") != CB_SUCCESS)
+		enable_peg = 0;
+
+	bool power_en = pmh7_dgpu_power_state();
+
+	if (enable_peg != power_en)
+		pmh7_dgpu_power_enable(!power_en);
+
+	if (!enable_peg) {
+		// Hide disabled dGPU device
+		u32 reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
+		reg32 &= ~DEVEN_D1F0EN;
+
+		pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
+	}
+}
+
 void mainboard_romstage_entry(void)
 {
 	struct pei_data pei_data = {
@@ -77,21 +97,4 @@ void mainboard_romstage_entry(void)
 	};
 
 	romstage_common(&romstage_params);
-
-	u8 enable_peg;
-	if (get_option(&enable_peg, "enable_dual_graphics") != CB_SUCCESS)
-		enable_peg = 0;
-
-	bool power_en = pmh7_dgpu_power_state();
-
-	if (enable_peg != power_en)
-		pmh7_dgpu_power_enable(!power_en);
-
-	if (!enable_peg) {
-		// Hide disabled dGPU device
-		u32 reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
-		reg32 &= ~DEVEN_D1F0EN;
-
-		pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
-	}
 }

@@ -13,6 +13,10 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
 
+void __weak mb_late_romstage_setup(void)
+{
+}
+
 void romstage_common(const struct romstage_params *params)
 {
 	int wake_from_s3;
@@ -76,6 +80,8 @@ void romstage_common(const struct romstage_params *params)
 	setup_sdram_meminfo(params->pei_data);
 
 	romstage_handoff_init(wake_from_s3);
+
+	mb_late_romstage_setup();
 
 	post_code(0x3f);
 }

@@ -195,6 +195,7 @@ struct romstage_params {
 	void (*copy_spd)(struct pei_data *peid);
 };
 void romstage_common(const struct romstage_params *params);
+void mb_late_romstage_setup(void); /* optional */
 
 void haswell_early_initialization(void);
 void haswell_late_initialization(void);

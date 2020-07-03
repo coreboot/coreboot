@@ -48,7 +48,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	pei_data->spd_addresses[0] = 0xff;
 	pei_data->spd_addresses[2] = 0xff;
 	pei_data->ec_present = 1;
-	pei_data->max_ddr3_freq = 1600;
 	pei_data->usb_xhci_on_resume = 1;
 
 	variant_romstage_entry(pei_data);

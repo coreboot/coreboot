@@ -51,7 +51,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* Enable 2x refresh mode */
 	pei_data->ddr_refresh_2x = 1;
 	pei_data->dq_pins_interleaved = 1;
-	pei_data->max_ddr3_freq = 1600;
 	pei_data->usb_xhci_on_resume = 1;
 
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {

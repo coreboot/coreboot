@@ -52,6 +52,7 @@ void mainboard_romstage_entry(void)
 		.gpiobase = DEFAULT_GPIOBASE,
 		.temp_mmio_base = 0xfed08000,
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.max_ddr3_freq = 1600,
 	};
 
 	mainboard_fill_pei_data(&pei_data);

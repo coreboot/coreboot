@@ -52,7 +52,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	pei_data->spd_addresses[2] = 0xa4;
 	pei_data->spd_addresses[3] = 0xa6;
 	pei_data->ec_present = 0;
-	pei_data->max_ddr3_freq = 1600;
 
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */

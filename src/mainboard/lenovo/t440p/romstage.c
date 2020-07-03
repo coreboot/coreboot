@@ -42,7 +42,6 @@ void mb_late_romstage_setup(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->system_type = 0; /* Mobile */
 	pei_data->spd_addresses[0] = 0xa0;
 	pei_data->spd_addresses[2] = 0xa2;
 	pei_data->ec_present = 1;

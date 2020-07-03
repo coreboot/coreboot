@@ -51,6 +51,7 @@ void mainboard_romstage_entry(void)
 		.pmbase = DEFAULT_PMBASE,
 		.gpiobase = DEFAULT_GPIOBASE,
 		.temp_mmio_base = 0xfed08000,
+		.system_type = get_pch_platform_type(),
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
 		.ddr_refresh_2x = CONFIG(ENABLE_DDR_2X_REFRESH),
 		.max_ddr3_freq = 1600,

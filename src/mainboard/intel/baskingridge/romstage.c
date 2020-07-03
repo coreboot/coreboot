@@ -42,7 +42,6 @@ void mainboard_config_rcba(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->system_type = 0; /* 0 Mobile, 1 Desktop/Server */
 	pei_data->spd_addresses[0] = 0xa0;
 	pei_data->spd_addresses[1] = 0xa2;
 	pei_data->spd_addresses[2] = 0xa4;

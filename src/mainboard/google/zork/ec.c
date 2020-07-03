@@ -3,10 +3,9 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/southbridge.h>
 #include <variant/ec.h>
 
-static void ramstage_ec_init(void)
+void mainboard_ec_init(void)
 {
 	const struct google_chromeec_event_info info = {
 		.log_events = MAINBOARD_EC_LOG_EVENTS,
@@ -18,10 +17,4 @@ static void ramstage_ec_init(void)
 	printk(BIOS_DEBUG, "mainboard: EC init\n");
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
-}
-
-void mainboard_ec_init(void)
-{
-	if (ENV_RAMSTAGE)
-		ramstage_ec_init();
 }

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/romstage.h>
 #include <console/console.h>
 #include <cf9_reset.h>
 #include <timestamp.h>
@@ -22,9 +23,15 @@ void __weak mb_late_romstage_setup(void)
 {
 }
 
-void romstage_common(struct pei_data *pei_data)
+/* The romstage entry point for this platform is not mainboard-specific, hence the name */
+void mainboard_romstage_entry(void)
 {
 	int wake_from_s3;
+
+	struct pei_data pei_data = {
+	};
+
+	mainboard_fill_pei_data(&pei_data);
 
 	enable_lapic();
 
@@ -52,15 +59,15 @@ void romstage_common(struct pei_data *pei_data)
 	post_code(0x3a);
 
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
-	pei_data->boot_mode = wake_from_s3 ? 2 : 0;
+	pei_data.boot_mode = wake_from_s3 ? 2 : 0;
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	report_platform_info();
 
-	copy_spd(pei_data);
+	copy_spd(&pei_data);
 
-	sdram_initialize(pei_data);
+	sdram_initialize(&pei_data);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
@@ -71,7 +78,7 @@ void romstage_common(struct pei_data *pei_data)
 	if (!wake_from_s3) {
 		cbmem_initialize_empty();
 		/* Save data returned from MRC on non-S3 resumes. */
-		save_mrc_data(pei_data);
+		save_mrc_data(&pei_data);
 	} else if (cbmem_initialize()) {
 	#if CONFIG(HAVE_ACPI_RESUME)
 		/* Failed S3 resume, reset to come up cleanly */
@@ -81,7 +88,7 @@ void romstage_common(struct pei_data *pei_data)
 
 	haswell_unhide_peg();
 
-	setup_sdram_meminfo(pei_data);
+	setup_sdram_meminfo(&pei_data);
 
 	romstage_handoff_init(wake_from_s3);
 

@@ -8,6 +8,9 @@
 /* Optional function to copy SPD data for on-board memory */
 void copy_spd(struct pei_data *peid);
 
+/* Necessary function to initialize pei_data with mainboard-specific settings */
+void mainboard_fill_pei_data(struct pei_data *pei_data);
+
 void sdram_initialize(struct pei_data *pei_data);
 void setup_sdram_meminfo(struct pei_data *pei_data);
 int fixup_haswell_errata(void);

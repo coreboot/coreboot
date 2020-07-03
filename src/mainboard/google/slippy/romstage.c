@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
@@ -43,9 +42,9 @@ void mainboard_config_rcba(void)
 	RCBA16(D23IR) = DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH); /* SDIO */
 }
 
-void mainboard_romstage_entry(void)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data pei_data = {
+	struct pei_data mainboard_pei_data = {
 		.pei_version = PEI_VERSION,
 		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
 		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
@@ -73,8 +72,7 @@ void mainboard_romstage_entry(void)
 		.usb_xhci_on_resume = 1,
 	};
 
-	variant_romstage_entry(&pei_data);
+	*pei_data = mainboard_pei_data; /* FIXME: Do not overwrite everything */
 
-	/* Call into the real romstage main with this board's attributes. */
-	romstage_common(&pei_data);
+	variant_romstage_entry(pei_data);
 }

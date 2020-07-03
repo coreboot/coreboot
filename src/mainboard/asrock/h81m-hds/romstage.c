@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
-#include <arch/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <device/pnp_ops.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/pei_data.h>
+#include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
@@ -21,9 +21,9 @@ void mainboard_config_rcba(void)
 	RCBA16(D20IR) = DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
-void mainboard_romstage_entry(void)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data pei_data = {
+	struct pei_data mainboard_pei_data = {
 		.pei_version = PEI_VERSION,
 		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
 		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
@@ -70,5 +70,5 @@ void mainboard_romstage_entry(void)
 		},
 	};
 
-	romstage_common(&pei_data);
+	*pei_data = mainboard_pei_data; /* FIXME: Do not overwrite everything */
 }

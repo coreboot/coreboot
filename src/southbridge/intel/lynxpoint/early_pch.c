@@ -13,6 +13,7 @@
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
 #include "lp_gpio.h"
+extern const struct pch_lp_gpio_map mainboard_gpio_map[];
 #else
 #include <southbridge/intel/common/gpio.h>
 #endif
@@ -77,16 +78,16 @@ void __weak mainboard_config_superio(void)
 {
 }
 
-int early_pch_init(const void *gpio_map)
+int early_pch_init(void)
 {
 	int wake_from_s3;
 
 	pch_enable_bars();
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
-	setup_pch_lp_gpios(gpio_map);
+	setup_pch_lp_gpios(mainboard_gpio_map);
 #else
-	setup_pch_gpios(gpio_map);
+	setup_pch_gpios(&mainboard_gpio_map);
 #endif
 	pch_generic_setup();
 

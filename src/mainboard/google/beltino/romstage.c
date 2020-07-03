@@ -11,8 +11,6 @@
 #include <superio/ite/it8772f/it8772f.h>
 #include "onboard.h"
 
-extern const struct pch_lp_gpio_map mainboard_gpio_map[];
-
 void mainboard_config_rcba(void)
 {
 	/*
@@ -107,7 +105,6 @@ void mainboard_romstage_entry(void)
 
 	struct romstage_params romstage_params = {
 		.pei_data = &pei_data,
-		.gpio_map = &mainboard_gpio_map,
 	};
 
 	/* Early SuperIO setup */

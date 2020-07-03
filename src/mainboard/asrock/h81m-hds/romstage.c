@@ -72,7 +72,6 @@ void mainboard_romstage_entry(void)
 
 	struct romstage_params romstage_params = {
 		.pei_data = &pei_data,
-		.gpio_map = &mainboard_gpio_map,
 	};
 
 	romstage_common(&romstage_params);

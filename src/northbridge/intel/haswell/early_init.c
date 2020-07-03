@@ -176,7 +176,7 @@ static void haswell_setup_iommu(void)
 			reg32 | DMAR_LCKDN | GLBIOTLBINV | GLBCTXTINV);
 }
 
-void haswell_early_initialization(int chipset_type)
+void haswell_early_initialization(void)
 {
 	/* Setup all BARs required for early PCIe and raminit */
 	haswell_setup_bars();

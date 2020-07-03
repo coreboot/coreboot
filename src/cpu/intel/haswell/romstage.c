@@ -25,7 +25,7 @@ void romstage_common(const struct romstage_params *params)
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
-	haswell_early_initialization(HASWELL_MOBILE);
+	haswell_early_initialization();
 	printk(BIOS_DEBUG, "Back from haswell_early_initialization()\n");
 
 	if (wake_from_s3) {

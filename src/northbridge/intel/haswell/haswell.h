@@ -189,7 +189,7 @@
 
 void intel_northbridge_haswell_finalize_smm(void);
 
-void haswell_early_initialization(int chipset_type);
+void haswell_early_initialization(void);
 void haswell_late_initialization(void);
 void set_translation_table(int start, int end, u64 base, int inc);
 void haswell_unhide_peg(void);

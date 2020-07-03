@@ -45,52 +45,48 @@ void mb_late_romstage_setup(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data mainboard_pei_data = {
-		.pei_version = PEI_VERSION,
-		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
-		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
-		.epbar = DEFAULT_EPBAR,
-		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
-		.smbusbar = SMBUS_IO_BASE,
-		.hpet_address = HPET_ADDR,
-		.rcba = (uintptr_t)DEFAULT_RCBA,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.temp_mmio_base = 0xfed08000,
-		.system_type = 0, /* mobile */
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xa0, 0, 0xa2, 0 },
-		.ec_present = 1,
-		.gbe_enable = 1,
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
-		.max_ddr3_freq = 1600,
-		.usb2_ports = {
-			/* Length, Enable, OCn#, Location */
-			{ 0x0040, 1, 0, USB_PORT_BACK_PANEL }, /* USB3 */
-			{ 0x0040, 1, 0, USB_PORT_BACK_PANEL }, /* USB3 */
-			{ 0x0110, 1, 1, USB_PORT_BACK_PANEL }, /* USB2 charge */
-			{ 0x0040, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL },
-			{ 0x0080, 1, USB_OC_PIN_SKIP, USB_PORT_DOCK },
-			{ 0x0080, 1, 2, USB_PORT_BACK_PANEL }, /* USB2 */
-			{ 0x0040, 1, 3, USB_PORT_BACK_PANEL },
-			{ 0x0040, 1, 3, USB_PORT_BACK_PANEL },
-			{ 0x0040, 1, 4, USB_PORT_BACK_PANEL },
-			{ 0x0110, 1, 4, USB_PORT_BACK_PANEL }, /* WWAN */
-			{ 0x0040, 1, 5, USB_PORT_INTERNAL }, /* WLAN */
-			{ 0x0040, 1, 5, USB_PORT_BACK_PANEL }, /* webcam */
-			{ 0x0080, 1, 6, USB_PORT_BACK_PANEL },
-			{ 0x0040, 1, 6, USB_PORT_BACK_PANEL },
-		},
-		.usb3_ports = {
-			{ 1, 0 },
-			{ 1, 0 },
-			{ 1, USB_OC_PIN_SKIP },
-			{ 1, USB_OC_PIN_SKIP },
-			{ 1, 1 },
-			{ 1, 1 }, /* WWAN */
-		},
+	pei_data->system_type = 0; /* Mobile */
+	pei_data->spd_addresses[0] = 0xa0;
+	pei_data->spd_addresses[2] = 0xa2;
+	pei_data->ec_present = 1;
+	pei_data->gbe_enable = 1;
+	/*
+	 * 0 = leave channel enabled
+	 * 1 = disable dimm 0 on channel
+	 * 2 = disable dimm 1 on channel
+	 * 3 = disable dimm 0+1 on channel
+	 */
+	pei_data->dimm_channel0_disabled = 2;
+	pei_data->dimm_channel1_disabled = 2;
+	pei_data->max_ddr3_freq = 1600;
+
+	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
+		/* Length, Enable, OCn#, Location */
+		{ 0x0040, 1, 0, USB_PORT_BACK_PANEL }, /* USB3 */
+		{ 0x0040, 1, 0, USB_PORT_BACK_PANEL }, /* USB3 */
+		{ 0x0110, 1, 1, USB_PORT_BACK_PANEL }, /* USB2 charge */
+		{ 0x0040, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL },
+		{ 0x0080, 1, USB_OC_PIN_SKIP, USB_PORT_DOCK },
+		{ 0x0080, 1, 2, USB_PORT_BACK_PANEL }, /* USB2 */
+		{ 0x0040, 1, 3, USB_PORT_BACK_PANEL },
+		{ 0x0040, 1, 3, USB_PORT_BACK_PANEL },
+		{ 0x0040, 1, 4, USB_PORT_BACK_PANEL },
+		{ 0x0110, 1, 4, USB_PORT_BACK_PANEL }, /* WWAN */
+		{ 0x0040, 1, 5, USB_PORT_INTERNAL }, /* WLAN */
+		{ 0x0040, 1, 5, USB_PORT_BACK_PANEL }, /* webcam */
+		{ 0x0080, 1, 6, USB_PORT_BACK_PANEL },
+		{ 0x0040, 1, 6, USB_PORT_BACK_PANEL },
 	};
 
-	*pei_data = mainboard_pei_data; /* FIXME: Do not overwrite everything */
+	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS] = {
+		{ 1, 0 },
+		{ 1, 0 },
+		{ 1, USB_OC_PIN_SKIP },
+		{ 1, USB_OC_PIN_SKIP },
+		{ 1, 1 },
+		{ 1, 1 }, /* WWAN */
+	};
+
+	memcpy(pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
+	memcpy(pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
 }

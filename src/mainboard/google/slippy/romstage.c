@@ -1,10 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "variant.h"
 
 void mainboard_config_rcba(void)

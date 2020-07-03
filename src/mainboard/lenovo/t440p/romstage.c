@@ -1,11 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
-#include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
-#include <northbridge/intel/haswell/pei_data.h>
 #include <northbridge/intel/haswell/raminit.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <option.h>
 #include <ec/lenovo/pmh7/pmh7.h>

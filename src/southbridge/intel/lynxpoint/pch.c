@@ -40,19 +40,25 @@ int pch_silicon_id(void)
 	return pch_id;
 }
 
-int pch_silicon_type(void)
+enum pch_platform_type get_pch_platform_type(void)
 {
-	static int pch_type = -1;
+	const u16 did = pci_read_config16(pch_get_lpc_device(), PCI_DEVICE_ID);
 
-	if (pch_type < 0)
-		pch_type = pci_read_config8(pch_get_lpc_device(),
-					    PCI_DEVICE_ID + 1);
-	return pch_type;
+	/* Check if this is a LPT-LP or WPT-LP device ID */
+	if ((did & 0xff00) == 0x9c00)
+		return PCH_TYPE_ULT;
+
+	/* Non-LP laptop SKUs have an odd device ID (least significant bit is one) */
+	if (did & 1)
+		return PCH_TYPE_MOBILE;
+
+	/* Desktop and Server SKUs have an even device ID */
+	return PCH_TYPE_DESKTOP;
 }
 
 int pch_is_lp(void)
 {
-	return pch_silicon_type() == PCH_TYPE_LPT_LP;
+	return get_pch_platform_type() == PCH_TYPE_ULT;
 }
 
 u16 get_pmbase(void)

@@ -34,10 +34,6 @@
  * Bus 0:Device 20:Function 0 xHCI Controller
 */
 
-/* PCH types */
-#define PCH_TYPE_LPT		0x8c
-#define PCH_TYPE_LPT_LP		0x9c
-
 /* PCH stepping values for LPC device */
 #define LPT_H_STEP_B0		0x02
 #define LPT_H_STEP_C0		0x03
@@ -74,14 +70,21 @@
 
 #ifndef __ACPI__
 
+/* PCH platform types, safe for MRC consumption */
+enum pch_platform_type {
+	PCH_TYPE_MOBILE	 = 0,
+	PCH_TYPE_DESKTOP = 1, /* or server */
+	PCH_TYPE_ULT	 = 5,
+};
+
 void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_ehci_disable(pci_devfn_t dev);
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_xhci_route_all(void);
 
+enum pch_platform_type get_pch_platform_type(void);
 int pch_silicon_revision(void);
 int pch_silicon_id(void);
-int pch_silicon_type(void);
 int pch_is_lp(void);
 u16 get_pmbase(void);
 u16 get_gpiobase(void);

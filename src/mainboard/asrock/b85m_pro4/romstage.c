@@ -28,7 +28,6 @@ void mb_get_spd_map(uint8_t spd_map[4])
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	pei_data->ec_present = 0;
-	pei_data->gbe_enable = 1;
 
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */

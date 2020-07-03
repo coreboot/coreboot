@@ -3,6 +3,7 @@
 #include <arch/romstage.h>
 #include <console/console.h>
 #include <cf9_reset.h>
+#include <device/device.h>
 #include <timestamp.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
@@ -37,6 +38,8 @@ static int make_channel_disabled_mask(const struct pei_data *pd, int ch)
 /* The romstage entry point for this platform is not mainboard-specific, hence the name */
 void mainboard_romstage_entry(void)
 {
+	const struct device *gbe = pcidev_on_root(0x19, 0);
+
 	int wake_from_s3;
 
 	struct pei_data pei_data = {
@@ -53,6 +56,7 @@ void mainboard_romstage_entry(void)
 		.temp_mmio_base = 0xfed08000,
 		.system_type = get_pch_platform_type(),
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.gbe_enable = gbe && gbe->enabled,
 		.ddr_refresh_2x = CONFIG(ENABLE_DDR_2X_REFRESH),
 		.max_ddr3_freq = 1600,
 	};

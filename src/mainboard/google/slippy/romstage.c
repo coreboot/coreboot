@@ -48,14 +48,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	pei_data->spd_addresses[0] = 0xff;
 	pei_data->spd_addresses[2] = 0xff;
 	pei_data->ec_present = 1;
-	/*
-	 * 0 = leave channel enabled
-	 * 1 = disable dimm 0 on channel
-	 * 2 = disable dimm 1 on channel
-	 * 3 = disable dimm 0+1 on channel
-	 */
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
 	pei_data->max_ddr3_freq = 1600;
 	pei_data->usb_xhci_on_resume = 1;
 

@@ -23,6 +23,17 @@ void __weak mb_late_romstage_setup(void)
 {
 }
 
+/*
+ * 0 = leave channel enabled
+ * 1 = disable dimm 0 on channel
+ * 2 = disable dimm 1 on channel
+ * 3 = disable dimm 0+1 on channel
+ */
+static int make_channel_disabled_mask(const struct pei_data *pd, int ch)
+{
+	return (!pd->spd_addresses[ch + ch] << 0) | (!pd->spd_addresses[ch + ch + 1] << 1);
+}
+
 /* The romstage entry point for this platform is not mainboard-specific, hence the name */
 void mainboard_romstage_entry(void)
 {
@@ -72,6 +83,10 @@ void mainboard_romstage_entry(void)
 
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
 	pei_data.boot_mode = wake_from_s3 ? 2 : 0;
+
+	/* Calculate unimplemented DIMM slots for each channel */
+	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);
+	pei_data.dimm_channel1_disabled = make_channel_disabled_mask(&pei_data, 1);
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 

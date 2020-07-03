@@ -29,4 +29,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "X10SLM+-F"
 
+config ENABLE_DDR_2X_REFRESH
+	default y
+
 endif

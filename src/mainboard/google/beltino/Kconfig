@@ -57,4 +57,7 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"
 
+config ENABLE_DDR_2X_REFRESH
+	default y
+
 endif # BOARD_GOOGLE_BASEBOARD_BELTINO

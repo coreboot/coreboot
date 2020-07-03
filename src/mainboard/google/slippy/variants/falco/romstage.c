@@ -52,8 +52,6 @@ void copy_spd(struct pei_data *peid)
 
 void variant_romstage_entry(struct pei_data *pei_data)
 {
-	pei_data->ddr_refresh_2x = 1; /* Enable 2x refresh mode */
-
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */
 		{ 0x0064, 1, 0,               /* P0: Port A, CN8 */

@@ -98,4 +98,12 @@ config RO_REGION_ONLY
 config INTEL_GMA_BCLV_OFFSET
 	default 0x48254
 
+config ENABLE_DDR_2X_REFRESH
+	bool "Enable DRAM Refresh 2x support"
+	default n
+	help
+	  When enabled, the memory controller will refresh the DRAM twice as often.
+	  This probably only happens when the DRAM gets hot, but what MRC exactly
+	  does when this setting is enabled has not been investigated.
+
 endif

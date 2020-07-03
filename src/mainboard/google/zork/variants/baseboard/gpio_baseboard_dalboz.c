@@ -28,8 +28,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
 	/* CLK_REQ2_L - NVMe */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* BIOS_FLASH_WP_ODL */
-	PAD_GPI(GPIO_137, PULL_NONE),
 	/* USI_RESET - reset */
 	PAD_GPO(GPIO_140, HIGH),
 	/* USB_HUB_RST_L - reset*/
@@ -57,8 +55,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
 	/* CLK_REQ2_L - NVMe */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* BIOS_FLASH_WP_ODL */
-	PAD_GPI(GPIO_137, PULL_NONE),
 	/* USI_RESET - reset */
 	PAD_GPO(GPIO_140, HIGH),
 	/* USB_HUB_RST_L - reset*/
@@ -165,6 +161,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_132, PULL_NONE),
 	/* DEV_BEEP_CODEC_IN (Dev beep Data out) */
 	PAD_GPI(GPIO_135, PULL_NONE),
+	/* BIOS_FLASH_WP_ODL */
+	PAD_GPI(GPIO_137, PULL_NONE),
 	/* DEV_BEEP_BCLK */
 	PAD_GPI(GPIO_139, PULL_NONE),
 	/* USI_RESET */

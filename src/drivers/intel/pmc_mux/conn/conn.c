@@ -5,7 +5,7 @@
 #include <intelblocks/acpi.h>
 #include "chip.h"
 
-static const char *con_acpi_name(const struct device *dev)
+static const char *conn_acpi_name(const struct device *dev)
 {
 	static char name[5];
 	snprintf(name, sizeof(name), "CON%1X", dev->path.generic.id);
@@ -25,9 +25,9 @@ static const char *orientation_to_str(enum typec_orientation ori)
 	}
 }
 
-static void con_fill_ssdt(const struct device *dev)
+static void conn_fill_ssdt(const struct device *dev)
 {
-	struct drivers_intel_pmc_mux_con_config *config = dev->chip_info;
+	struct drivers_intel_pmc_mux_conn_config *config = dev->chip_info;
 	struct acpi_dp *dsd;
 	const char *scope;
 	const char *name;
@@ -72,19 +72,19 @@ static void con_fill_ssdt(const struct device *dev)
 	       dev_path(dev));
 }
 
-static struct device_operations con_dev_ops = {
+static struct device_operations conn_dev_ops = {
 	.read_resources	= noop_read_resources,
 	.set_resources	= noop_set_resources,
-	.acpi_name	= con_acpi_name,
-	.acpi_fill_ssdt	= con_fill_ssdt,
+	.acpi_name	= conn_acpi_name,
+	.acpi_fill_ssdt	= conn_fill_ssdt,
 };
 
-static void con_enable(struct device *dev)
+static void conn_enable(struct device *dev)
 {
-	dev->ops = &con_dev_ops;
+	dev->ops = &conn_dev_ops;
 }
 
-struct chip_operations drivers_intel_pmc_mux_con_ops = {
-	CHIP_NAME("Intel PMC MUX CON Driver")
-	.enable_dev	= con_enable,
+struct chip_operations drivers_intel_pmc_mux_conn_ops = {
+	CHIP_NAME("Intel PMC MUX CONN Driver")
+	.enable_dev	= conn_enable,
 };

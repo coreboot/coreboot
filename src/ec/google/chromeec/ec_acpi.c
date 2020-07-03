@@ -124,17 +124,17 @@ static void add_port_location(struct acpi_dp *dsd, int port_number)
 			   port_location_to_str(port_caps.port_location));
 }
 
-static int con_id_to_match;
+static int conn_id_to_match;
 
 /* A callback to match a port's connector for dev_find_matching_device_on_bus */
 static bool match_connector(DEVTREE_CONST struct device *dev)
 {
 	if (CONFIG(DRIVERS_INTEL_PMC)) {
-		extern struct chip_operations drivers_intel_pmc_mux_con_ops;
+		extern struct chip_operations drivers_intel_pmc_mux_conn_ops;
 
-		return (dev->chip_ops == &drivers_intel_pmc_mux_con_ops &&
+		return (dev->chip_ops == &drivers_intel_pmc_mux_conn_ops &&
 			dev->path.type == DEVICE_PATH_GENERIC &&
-			dev->path.generic.id == con_id_to_match);
+			dev->path.generic.id == conn_id_to_match);
 	}
 
 	return false;
@@ -148,7 +148,7 @@ static void fill_ssdt_typec_device(const struct device *dev)
 	struct device *usb3_port;
 	struct device *usb4_port;
 	const struct device *mux;
-	const struct device *con;
+	const struct device *conn;
 
 	if (google_chromeec_get_num_pd_ports(&num_ports))
 		return;
@@ -165,11 +165,11 @@ static void fill_ssdt_typec_device(const struct device *dev)
 			continue;
 
 		/* Get the MUX device, and find the matching connector on its bus */
-		con = NULL;
+		conn = NULL;
 		mux = soc_get_pmc_mux_device(i);
 		if (mux) {
-			con_id_to_match = i;
-			con = dev_find_matching_device_on_bus(mux->link_list, match_connector);
+			conn_id_to_match = i;
+			conn = dev_find_matching_device_on_bus(mux->link_list, match_connector);
 		}
 
 		usb2_port = NULL;
@@ -184,9 +184,9 @@ static void fill_ssdt_typec_device(const struct device *dev)
 			.usb2_port = usb2_port,
 			.usb3_port = usb3_port,
 			.usb4_port = usb4_port,
-			.orientation_switch = con,
-			.usb_role_switch = con,
-			.mode_switch = con,
+			.orientation_switch = conn,
+			.usb_role_switch = conn,
+			.mode_switch = conn,
 		};
 
 		acpigen_write_typec_connector(&config, i, add_port_location);

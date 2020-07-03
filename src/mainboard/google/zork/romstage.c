@@ -8,11 +8,6 @@
 #include <variant/ec.h>
 #include <console/console.h>
 
-void __weak variant_romstage_entry(void)
-{
-	/* By default, don't do anything */
-}
-
 void mainboard_romstage_entry_s3(int s3_resume)
 {
 	size_t num_gpios;
@@ -23,6 +18,4 @@ void mainboard_romstage_entry_s3(int s3_resume)
 	variant_pcie_power_reset_configure();
 
 	mainboard_ec_init();
-
-	variant_romstage_entry();
 }

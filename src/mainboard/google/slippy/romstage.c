@@ -7,8 +7,8 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 #include "variant.h"
 
-const struct rcba_config_instruction rcba_config[] = {
-
+void mainboard_config_rcba(void)
+{
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  PCIE   INTA -> PIRQA
@@ -21,28 +21,26 @@ const struct rcba_config_instruction rcba_config[] = {
 	 */
 
 	/* Device interrupt pin register (board specific) */
-	RCBA_SET_REG_32(D31IP, (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
-			(INTB << D31IP_SMIP) | (INTA << D31IP_SIP)),
-	RCBA_SET_REG_32(D29IP, (INTA << D29IP_E1P)),
-	RCBA_SET_REG_32(D28IP, (INTA << D28IP_P1IP) | (INTC << D28IP_P3IP) |
-			(INTB << D28IP_P4IP)),
-	RCBA_SET_REG_32(D27IP, (INTA << D27IP_ZIP)),
-	RCBA_SET_REG_32(D26IP, (INTA << D26IP_E2P)),
-	RCBA_SET_REG_32(D22IP, (NOINT << D22IP_MEI1IP)),
-	RCBA_SET_REG_32(D20IP, (INTA << D20IP_XHCI)),
+	RCBA32(D31IP) = (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
+			(INTB << D31IP_SMIP) | (INTA << D31IP_SIP);
+	RCBA32(D29IP) = (INTA << D29IP_E1P);
+	RCBA32(D28IP) = (INTA << D28IP_P1IP) | (INTC << D28IP_P3IP) |
+			(INTB << D28IP_P4IP);
+	RCBA32(D27IP) = (INTA << D27IP_ZIP);
+	RCBA32(D26IP) = (INTA << D26IP_E2P);
+	RCBA32(D22IP) = (NOINT << D22IP_MEI1IP);
+	RCBA32(D20IP) = (INTA << D20IP_XHCI);
 
 	/* Device interrupt route registers */
-	RCBA_SET_REG_32(D31IR, DIR_ROUTE(PIRQG, PIRQC, PIRQB, PIRQA)),/* LPC */
-	RCBA_SET_REG_32(D29IR, DIR_ROUTE(PIRQD, PIRQD, PIRQD, PIRQD)),/* EHCI */
-	RCBA_SET_REG_32(D28IR, DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD)),/* PCIE */
-	RCBA_SET_REG_32(D27IR, DIR_ROUTE(PIRQG, PIRQG, PIRQG, PIRQG)),/* HDA */
-	RCBA_SET_REG_32(D22IR, DIR_ROUTE(PIRQA, PIRQA, PIRQA, PIRQA)),/* ME */
-	RCBA_SET_REG_32(D21IR, DIR_ROUTE(PIRQE, PIRQF, PIRQF, PIRQF)),/* SIO */
-	RCBA_SET_REG_32(D20IR, DIR_ROUTE(PIRQC, PIRQC, PIRQC, PIRQC)),/* XHCI */
-	RCBA_SET_REG_32(D23IR, DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH)),/* SDIO */
-
-	RCBA_END_CONFIG,
-};
+	RCBA32(D31IR) = DIR_ROUTE(PIRQG, PIRQC, PIRQB, PIRQA); /* LPC */
+	RCBA32(D29IR) = DIR_ROUTE(PIRQD, PIRQD, PIRQD, PIRQD); /* EHCI */
+	RCBA32(D28IR) = DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD); /* PCIE */
+	RCBA32(D27IR) = DIR_ROUTE(PIRQG, PIRQG, PIRQG, PIRQG); /* HDA */
+	RCBA32(D22IR) = DIR_ROUTE(PIRQA, PIRQA, PIRQA, PIRQA); /* ME */
+	RCBA32(D21IR) = DIR_ROUTE(PIRQE, PIRQF, PIRQF, PIRQF); /* SIO */
+	RCBA32(D20IR) = DIR_ROUTE(PIRQC, PIRQC, PIRQC, PIRQC); /* XHCI */
+	RCBA32(D23IR) = DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH); /* SDIO */
+}
 
 void mainboard_romstage_entry(void)
 {
@@ -76,7 +74,6 @@ void mainboard_romstage_entry(void)
 
 	struct romstage_params romstage_params = {
 		.pei_data = &pei_data,
-		.rcba_config = rcba_config,
 	};
 
 	variant_romstage_entry(&romstage_params);

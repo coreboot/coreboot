@@ -77,8 +77,7 @@ void __weak mainboard_config_superio(void)
 {
 }
 
-int early_pch_init(const void *gpio_map,
-		   const struct rcba_config_instruction *rcba_config)
+int early_pch_init(const void *gpio_map)
 {
 	int wake_from_s3;
 
@@ -101,7 +100,7 @@ int early_pch_init(const void *gpio_map,
 	(void) RCBA16(OIC);
 
 	/* Mainboard RCBA settings */
-	pch_config_rcba(rcba_config);
+	mainboard_config_rcba();
 
 	RCBA32_OR(FD, PCH_DISABLE_ALWAYS);
 

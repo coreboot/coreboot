@@ -19,7 +19,7 @@ void romstage_common(const struct romstage_params *params)
 
 	enable_lapic();
 
-	wake_from_s3 = early_pch_init(params->gpio_map, params->rcba_config);
+	wake_from_s3 = early_pch_init(params->gpio_map);
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work

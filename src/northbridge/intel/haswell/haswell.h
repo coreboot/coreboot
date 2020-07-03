@@ -190,11 +190,9 @@
 void intel_northbridge_haswell_finalize_smm(void);
 
 struct pei_data;
-struct rcba_config_instruction;
 struct romstage_params {
 	struct pei_data *pei_data;
 	const void *gpio_map;
-	const struct rcba_config_instruction *rcba_config;
 	void (*copy_spd)(struct pei_data *peid);
 };
 void romstage_common(const struct romstage_params *params);

@@ -161,10 +161,10 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 void enable_usb_bar(void);
-int early_pch_init(const void *gpio_map,
-                   const struct rcba_config_instruction *rcba_config);
+int early_pch_init(const void *gpio_map);
 void pch_enable_lpc(void);
 void mainboard_config_superio(void);
+void mainboard_config_rcba(void);
 
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1

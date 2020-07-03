@@ -13,7 +13,7 @@
 #include "../../variant.h"
 
 /* Copy SPD data for on-board memory */
-static void copy_spd(struct pei_data *peid)
+void copy_spd(struct pei_data *peid)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
 	int spd_index = get_gpios(gpio_vector);
@@ -84,6 +84,4 @@ void variant_romstage_entry(struct romstage_params *rp)
 
 	memcpy(rp->pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
 	memcpy(rp->pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
-
-	rp->copy_spd = copy_spd;
 }

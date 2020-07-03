@@ -13,6 +13,11 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
 
+/* Copy SPD data for on-board memory */
+void __weak copy_spd(struct pei_data *peid)
+{
+}
+
 void __weak mb_late_romstage_setup(void)
 {
 }
@@ -53,8 +58,7 @@ void romstage_common(const struct romstage_params *params)
 
 	report_platform_info();
 
-	if (params->copy_spd != NULL)
-		params->copy_spd(params->pei_data);
+	copy_spd(params->pei_data);
 
 	sdram_initialize(params->pei_data);
 

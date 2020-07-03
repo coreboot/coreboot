@@ -114,7 +114,6 @@ void mainboard_romstage_entry(void)
 
 	struct romstage_params romstage_params = {
 		.pei_data = &pei_data,
-		.copy_spd = NULL,
 	};
 
 	/* Call into the real romstage main with this board's attributes. */

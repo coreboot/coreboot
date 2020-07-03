@@ -5,6 +5,9 @@
 
 #include "pei_data.h"
 
+/* Optional function to copy SPD data for on-board memory */
+void copy_spd(struct pei_data *peid);
+
 void sdram_initialize(struct pei_data *pei_data);
 void setup_sdram_meminfo(struct pei_data *pei_data);
 int fixup_haswell_errata(void);

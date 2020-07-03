@@ -1,0 +1,19 @@
+if VENDOR_BOSTENTECH
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/bostentech/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/bostentech/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Shenzhen Bostrontium Teng Technology"
+
+config MAINBOARD_FAMILY
+	string
+	default MAINBOARD_PART_NUMBER
+
+endif # VENDOR_BOSTENTECH

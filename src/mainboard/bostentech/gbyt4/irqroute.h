@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <soc/irq.h>
+#include <soc/pci_devs.h>
+
+#define PCI_DEV_PIRQ_ROUTES \
+	PCI_DEV_PIRQ_ROUTE(GFX_DEV,  A, B, C, D), \
+	PCI_DEV_PIRQ_ROUTE(SATA_DEV, A, B, C, D), \
+	PCI_DEV_PIRQ_ROUTE(TXE_DEV,  A, B, C, D), \
+	PCI_DEV_PIRQ_ROUTE(PCIE_DEV, A, B, C, D), \
+	PCI_DEV_PIRQ_ROUTE(EHCI_DEV, A, B, C, D), \
+	PCI_DEV_PIRQ_ROUTE(PCU_DEV,  A, B, C, D)
+
+#define PIRQ_PIC_ROUTES \
+	PIRQ_PIC(A, DISABLE), \
+	PIRQ_PIC(B, DISABLE), \
+	PIRQ_PIC(C, DISABLE), \
+	PIRQ_PIC(D, DISABLE), \
+	PIRQ_PIC(E, DISABLE), \
+	PIRQ_PIC(F, DISABLE), \
+	PIRQ_PIC(G, DISABLE), \
+	PIRQ_PIC(H, DISABLE)

@@ -1,0 +1,24 @@
+if BOARD_BOSTENTECH_GBYT4
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_BAYTRAIL
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select SUPERIO_ITE_IT8728F
+
+config MAINBOARD_DIR
+	string
+	default "bostentech/gbyt4"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "GBYT4-4L"
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "Shenzhen Bostrontium Teng Technology"
+
+endif # BOARD_BOSTENTECH_GBYT4

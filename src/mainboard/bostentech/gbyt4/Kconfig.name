@@ -1,0 +1,2 @@
+config BOARD_BOSTENTECH_GBYT4
+	bool "GBYT4"

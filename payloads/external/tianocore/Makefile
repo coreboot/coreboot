@@ -69,7 +69,7 @@ update: $(project_dir)
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi; \
-		git submodule update --init --recursive
+		git submodule update --init
 
 checktools:
 	echo "Checking uuid-dev..."

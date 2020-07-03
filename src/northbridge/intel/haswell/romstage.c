@@ -10,6 +10,7 @@
 #include <commonlib/helpers.h>
 #include <romstage_handoff.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <northbridge/intel/haswell/chip.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
@@ -40,6 +41,8 @@ void mainboard_romstage_entry(void)
 {
 	const struct device *gbe = pcidev_on_root(0x19, 0);
 
+	const struct northbridge_intel_haswell_config *cfg = config_of_soc();
+
 	int wake_from_s3;
 
 	struct pei_data pei_data = {
@@ -56,9 +59,12 @@ void mainboard_romstage_entry(void)
 		.temp_mmio_base = 0xfed08000,
 		.system_type = get_pch_platform_type(),
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.ec_present = cfg->ec_present,
 		.gbe_enable = gbe && gbe->enabled,
 		.ddr_refresh_2x = CONFIG(ENABLE_DDR_2X_REFRESH),
+		.dq_pins_interleaved = cfg->dq_pins_interleaved,
 		.max_ddr3_freq = 1600,
+		.usb_xhci_on_resume = cfg->usb_xhci_on_resume,
 	};
 
 	mainboard_fill_pei_data(&pei_data);

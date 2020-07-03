@@ -48,10 +48,6 @@ void mb_get_spd_map(uint8_t spd_map[4])
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 0;
-	pei_data->dq_pins_interleaved = 1;
-	pei_data->usb_xhci_on_resume = 1;
-
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */
 		{ 0x0064, 1, 0,               /* P0: VP8 */

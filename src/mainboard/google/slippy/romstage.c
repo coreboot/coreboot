@@ -49,8 +49,5 @@ void mb_get_spd_map(uint8_t spd_map[4])
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 1;
-	pei_data->usb_xhci_on_resume = 1;
-
 	variant_romstage_entry(pei_data);
 }

@@ -32,6 +32,12 @@ struct northbridge_intel_haswell_config {
 
 	bool gpu_ddi_e_connected;
 
+	bool ec_present;
+
+	bool dq_pins_interleaved;
+
+	bool usb_xhci_on_resume;
+
 	struct i915_gpu_controller_info gfx;
 };
 

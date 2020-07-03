@@ -79,46 +79,6 @@ void usb_ehci_disable(pci_devfn_t dev);
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_xhci_route_all(void);
 
-/* State Machine configuration. */
-#define RCBA_REG_SIZE_MASK 0x8000
-#define   RCBA_REG_SIZE_16   0x8000
-#define   RCBA_REG_SIZE_32   0x0000
-#define RCBA_COMMAND_MASK  0x000f
-#define   RCBA_COMMAND_SET   0x0001
-#define   RCBA_COMMAND_READ  0x0002
-#define   RCBA_COMMAND_RMW   0x0003
-#define   RCBA_COMMAND_END   0x0007
-
-#define RCBA_ENCODE_COMMAND(command_, reg_, mask_, or_value_) \
-	{ .command = command_,   \
-	  .reg = reg_,           \
-	  .mask = mask_,         \
-	  .or_value = or_value_  \
-	}
-#define RCBA_SET_REG_32(reg_, value_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_SET, reg_, 0, value_)
-#define RCBA_READ_REG_32(reg_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_READ, reg_, 0, 0)
-#define RCBA_RMW_REG_32(reg_, mask_, or_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_32|RCBA_COMMAND_RMW, reg_, mask_, or_)
-#define RCBA_SET_REG_16(reg_, value_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_SET, reg_, 0, value_)
-#define RCBA_READ_REG_16(reg_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_READ, reg_, 0, 0)
-#define RCBA_RMW_REG_16(reg_, mask_, or_) \
-	RCBA_ENCODE_COMMAND(RCBA_REG_SIZE_16|RCBA_COMMAND_RMW, reg_, mask_, or_)
-#define RCBA_END_CONFIG \
-	RCBA_ENCODE_COMMAND(RCBA_COMMAND_END, 0, 0, 0)
-
-struct rcba_config_instruction
-{
-	u16 command;
-	u16 reg;
-	u32 mask;
-	u32 or_value;
-};
-
-void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
 int pch_silicon_revision(void);
 int pch_silicon_id(void);
 int pch_silicon_type(void);

@@ -44,35 +44,20 @@ void mainboard_config_rcba(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data mainboard_pei_data = {
-		.pei_version = PEI_VERSION,
-		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
-		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
-		.epbar = DEFAULT_EPBAR,
-		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
-		.smbusbar = SMBUS_IO_BASE,
-		.hpet_address = HPET_ADDR,
-		.rcba = (uintptr_t)DEFAULT_RCBA,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.temp_mmio_base = 0xfed08000,
-		.system_type = 5, /* ULT */
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xff, 0x00, 0xff, 0x00 },
-		.ec_present = 1,
-		/*
-		 * 0 = leave channel enabled
-		 * 1 = disable dimm 0 on channel
-		 * 2 = disable dimm 1 on channel
-		 * 3 = disable dimm 0+1 on channel
-		 */
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
-		.max_ddr3_freq = 1600,
-		.usb_xhci_on_resume = 1,
-	};
-
-	*pei_data = mainboard_pei_data; /* FIXME: Do not overwrite everything */
+	pei_data->system_type = 5; /* ULT */
+	pei_data->spd_addresses[0] = 0xff;
+	pei_data->spd_addresses[2] = 0xff;
+	pei_data->ec_present = 1;
+	/*
+	 * 0 = leave channel enabled
+	 * 1 = disable dimm 0 on channel
+	 * 2 = disable dimm 1 on channel
+	 * 3 = disable dimm 0+1 on channel
+	 */
+	pei_data->dimm_channel0_disabled = 2;
+	pei_data->dimm_channel1_disabled = 2;
+	pei_data->max_ddr3_freq = 1600;
+	pei_data->usb_xhci_on_resume = 1;
 
 	variant_romstage_entry(pei_data);
 }

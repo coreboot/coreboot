@@ -103,6 +103,8 @@ int early_pch_init(const void *gpio_map,
 	/* Mainboard RCBA settings */
 	pch_config_rcba(rcba_config);
 
+	RCBA32_OR(FD, PCH_DISABLE_ALWAYS);
+
 	wake_from_s3 = southbridge_detect_s3_resume();
 
 	elog_boot_notify(wake_from_s3);

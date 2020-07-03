@@ -46,9 +46,6 @@ const struct rcba_config_instruction rcba_config[] = {
 	RCBA_SET_REG_32(D20IR, DIR_ROUTE(PIRQC, PIRQC, PIRQC, PIRQC)),/* XHCI */
 	RCBA_SET_REG_32(D23IR, DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH)),/* SDIO */
 
-	/* Disable unused devices (board specific) */
-	RCBA_RMW_REG_32(FD, ~0, PCH_DISABLE_ALWAYS),
-
 	RCBA_END_CONFIG,
 };
 

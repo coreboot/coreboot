@@ -7,7 +7,7 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include "gpio.h"
+#include <southbridge/intel/common/gpio.h>
 
 const struct rcba_config_instruction rcba_config[] = {
 	/*

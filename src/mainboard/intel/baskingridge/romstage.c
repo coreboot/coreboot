@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
@@ -40,12 +41,16 @@ void mainboard_config_rcba(void)
 	RCBA16(D22IR) = DIR_ROUTE(PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
+void mb_get_spd_map(uint8_t spd_map[4])
+{
+	spd_map[0] = 0xa0;
+	spd_map[1] = 0xa2;
+	spd_map[2] = 0xa4;
+	spd_map[3] = 0xa6;
+}
+
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->spd_addresses[0] = 0xa0;
-	pei_data->spd_addresses[1] = 0xa2;
-	pei_data->spd_addresses[2] = 0xa4;
-	pei_data->spd_addresses[3] = 0xa6;
 	pei_data->ec_present = 0;
 
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {

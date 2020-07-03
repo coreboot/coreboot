@@ -40,10 +40,14 @@ void mb_late_romstage_setup(void)
 	}
 }
 
+void mb_get_spd_map(uint8_t spd_map[4])
+{
+	spd_map[0] = 0xa0;
+	spd_map[2] = 0xa2;
+}
+
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->spd_addresses[0] = 0xa0;
-	pei_data->spd_addresses[2] = 0xa2;
 	pei_data->ec_present = 1;
 	pei_data->gbe_enable = 1;
 

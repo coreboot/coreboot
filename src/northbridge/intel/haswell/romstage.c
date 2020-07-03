@@ -87,6 +87,9 @@ void mainboard_romstage_entry(void)
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
 	pei_data.boot_mode = wake_from_s3 ? 2 : 0;
 
+	/* Obtain the SPD addresses from mainboard code */
+	mb_get_spd_map(pei_data.spd_addresses);
+
 	/* Calculate unimplemented DIMM slots for each channel */
 	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);
 	pei_data.dimm_channel1_disabled = make_channel_disabled_mask(&pei_data, 1);

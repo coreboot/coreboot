@@ -112,10 +112,6 @@ void mainboard_romstage_entry(void)
 		},
 	};
 
-	struct romstage_params romstage_params = {
-		.pei_data = &pei_data,
-	};
-
 	/* Call into the real romstage main with this board's attributes. */
-	romstage_common(&romstage_params);
+	romstage_common(&pei_data);
 }

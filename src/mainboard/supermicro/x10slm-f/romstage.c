@@ -68,9 +68,5 @@ void mainboard_romstage_entry(void)
 		},
 	};
 
-	struct romstage_params romstage_params = {
-		.pei_data = &pei_data,
-	};
-
-	romstage_common(&romstage_params);
+	romstage_common(&pei_data);
 }

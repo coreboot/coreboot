@@ -190,10 +190,7 @@
 void intel_northbridge_haswell_finalize_smm(void);
 
 struct pei_data;
-struct romstage_params {
-	struct pei_data *pei_data;
-};
-void romstage_common(const struct romstage_params *params);
+void romstage_common(struct pei_data *pei_data);
 void mb_late_romstage_setup(void); /* optional */
 
 void haswell_early_initialization(void);

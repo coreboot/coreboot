@@ -50,9 +50,9 @@ void copy_spd(struct pei_data *peid)
 	}
 }
 
-void variant_romstage_entry(struct romstage_params *rp)
+void variant_romstage_entry(struct pei_data *pei_data)
 {
-	rp->pei_data->ddr_refresh_2x = 1; /* Enable 2x refresh mode */
+	pei_data->ddr_refresh_2x = 1; /* Enable 2x refresh mode */
 
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */
@@ -82,6 +82,6 @@ void variant_romstage_entry(struct romstage_params *rp)
 		{ 0, USB_OC_PIN_SKIP }, /* P4; */
 	};
 
-	memcpy(rp->pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
-	memcpy(rp->pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
+	memcpy(pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
+	memcpy(pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
 }

@@ -22,7 +22,7 @@ void __weak mb_late_romstage_setup(void)
 {
 }
 
-void romstage_common(const struct romstage_params *params)
+void romstage_common(struct pei_data *pei_data)
 {
 	int wake_from_s3;
 
@@ -52,15 +52,15 @@ void romstage_common(const struct romstage_params *params)
 	post_code(0x3a);
 
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
-	params->pei_data->boot_mode = wake_from_s3 ? 2 : 0;
+	pei_data->boot_mode = wake_from_s3 ? 2 : 0;
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	report_platform_info();
 
-	copy_spd(params->pei_data);
+	copy_spd(pei_data);
 
-	sdram_initialize(params->pei_data);
+	sdram_initialize(pei_data);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
@@ -71,7 +71,7 @@ void romstage_common(const struct romstage_params *params)
 	if (!wake_from_s3) {
 		cbmem_initialize_empty();
 		/* Save data returned from MRC on non-S3 resumes. */
-		save_mrc_data(params->pei_data);
+		save_mrc_data(pei_data);
 	} else if (cbmem_initialize()) {
 	#if CONFIG(HAVE_ACPI_RESUME)
 		/* Failed S3 resume, reset to come up cleanly */
@@ -81,7 +81,7 @@ void romstage_common(const struct romstage_params *params)
 
 	haswell_unhide_peg();
 
-	setup_sdram_meminfo(params->pei_data);
+	setup_sdram_meminfo(pei_data);
 
 	romstage_handoff_init(wake_from_s3);
 

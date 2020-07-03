@@ -35,19 +35,6 @@ int main_argc;    /**< The argc value to pass to main() */
 /** The argv value to pass to main() */
 char *main_argv[MAX_ARGC_COUNT];
 
-unsigned int test_exc;
-
-static int test_exception(void)
-{
-	uint64_t *a = (uint64_t *)0xfffffffff0000000ULL;
-
-	test_exc = 1;
-
-	printf("%llx\n", *a);
-
-	return 0;
-}
-
 /*
  * Func: pre_sysinfo_scan_mmu_setup
  * Desc: We need to setup and enable MMU before we can go to scan coreboot
@@ -126,10 +113,8 @@ void start_main(void)
 	console_init();
 #endif
 
-	printf("ARM64: Libpayload %s\n",__func__);
 	exception_init();
 
-	test_exception();
 	/*
 	 * Any other system init that has to happen before the
 	 * user gets control goes here.

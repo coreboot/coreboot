@@ -7,9 +7,6 @@
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <superio/ite/common/ite.h>
-#include <superio/ite/it8772f/it8772f.h>
-#include "onboard.h"
 
 void mainboard_config_rcba(void)
 {
@@ -106,15 +103,6 @@ void mainboard_romstage_entry(void)
 	struct romstage_params romstage_params = {
 		.pei_data = &pei_data,
 	};
-
-	/* Early SuperIO setup */
-	ite_kill_watchdog(IT8772F_GPIO_DEV);
-	it8772f_ac_resume_southbridge(IT8772F_SUPERIO_DEV);
-	pch_enable_lpc();
-	ite_enable_serial(IT8772F_SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-    /* Turn on Power LED */
-	set_power_led(LED_ON);
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(&romstage_params);

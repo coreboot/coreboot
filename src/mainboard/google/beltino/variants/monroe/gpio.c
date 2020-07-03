@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef MONROE_GPIO_H
-#define MONROE_GPIO_H
-
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 const struct pch_lp_gpio_map mainboard_gpio_map[] = {
@@ -103,5 +100,3 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 94: UNUSED */
 	LP_GPIO_END
 };
-
-#endif

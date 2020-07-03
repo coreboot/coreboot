@@ -7,6 +7,7 @@ ramstage-y += lan.c
 
 smm-y += smihandler.c variants/$(VARIANT_DIR)/led.c
 
+romstage-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/led.c
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

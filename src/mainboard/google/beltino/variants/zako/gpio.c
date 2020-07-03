@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef TRICKY_GPIO_H
-#define TRICKY_GPIO_H
-
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 const struct pch_lp_gpio_map mainboard_gpio_map[] = {
@@ -34,7 +31,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 25: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 26: USB_CTL_1 */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
-	LP_GPIO_OUT_LOW,       /* 28: USB_ILIM_SEL */
+	LP_GPIO_OUT_HIGH,      /* 28: USB_ILIM_SEL */
 	LP_GPIO_UNUSED,        /* 29: UNUSED */
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSPWRACK_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: PCH_ACPRESENT */
@@ -54,7 +51,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_OUT_HIGH,      /* 45: PP5000_CODEC_EN */
 	LP_GPIO_OUT_HIGH,      /* 46: BT_DISABLE_L */
 	LP_GPIO_OUT_HIGH,      /* 47: USB1_PWR_EN */
-	LP_GPIO_UNUSED,        /* 48: UNUSED */
+	LP_GPIO_INPUT,         /* 48: ADP_ID */
 	LP_GPIO_UNUSED,        /* 49: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 50: VP8_DISABLE_L */
 	LP_GPIO_UNUSED,        /* 51: UNUSED */
@@ -103,5 +100,3 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 94: UNUSED */
 	LP_GPIO_END
 };
-
-#endif

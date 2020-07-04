@@ -540,7 +540,7 @@ typedef enum {
 
 /* enum for port types */
 typedef enum {
-	TYPE_NONE = 0x00,
+	TYPE_NONE_PORT = 0x00,
 	TYPE_PARALLEL_PORT_XT_AT_COMPATIBLE = 0x01,
 	TYPE_PARALLEL_PORT_PS_2 = 0x02,
 	TYPE_PARALLEL_PORT_ECP = 0x03,
@@ -578,7 +578,7 @@ typedef enum {
 	TYPE_THUNDERBOLT = 0x23,
 	TYPE_8251_COMPATIBLE = 0xA0,
 	TYPE_8251_FIFO_COMPATIBLE = 0xA1,
-	TYPE_OTHER = 0xFF,
+	TYPE_OTHER_PORT = 0xFF,
 } type8_port_types;
 
 struct port_information {

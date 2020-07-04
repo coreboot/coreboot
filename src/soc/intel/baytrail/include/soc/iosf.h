@@ -9,34 +9,33 @@
 /*
  * The Bay Trail SoC has a message network called IOSF Sideband. The access
  * routines are through 3 registers in PCI config space of 00:00.0:
- *  MCR - control register
- *  MDR - data register
+ *  MCR  - control register
+ *  MDR  - data register
  *  MCRX - control register extension
  * The extension register is only used for addresses that don't fit
  * into the 8 bit register address.
  */
 
-#ifndef PCI_DEV
-#define PCI_DEV(SEGBUS, DEV, FN) ( \
-	(((SEGBUS) & 0xFFF) << 20) | \
-	(((DEV) & 0x1F) << 15) | \
-	(((FN)  & 0x07) << 12))
-#endif
 #define IOSF_PCI_DEV PCI_DEV(0, SOC_DEV, SOC_FUNC)
 
-#define MCR_REG 0xd0
-#define  IOSF_OPCODE(x) ((x) << 24)
-#define  IOSF_PORT(x) ((0xff & (x)) << 16)
-#define  IOSF_REG(x) ((0xff & (x)) << 8)
-#define  IOSF_REG_UPPER(x) (((~0xff) & (x)))
-#define  IOSF_BYTE_EN_0 0x10
-#define  IOSF_BYTE_EN_1 0x20
-#define  IOSF_BYTE_EN_2 0x40
-#define  IOSF_BYTE_EN_3 0x80
-#define  IOSF_BYTE_EN \
-	  (IOSF_BYTE_EN_0 | IOSF_BYTE_EN_1 | IOSF_BYTE_EN_2 | IOSF_BYTE_EN_3)
-#define MDR_REG 0xd4
-#define MCRX_REG 0xd8
+#define IOSF_OPCODE(x)		((x) << 24)
+#define IOSF_PORT(x)		((0xff & (x)) << 16)
+#define IOSF_REG(x)		((0xff & (x)) << 8)
+#define IOSF_REG_UPPER(x)	((~0xff) & (x))
+
+#define IOSF_BYTE_EN_0 0x10
+#define IOSF_BYTE_EN_1 0x20
+#define IOSF_BYTE_EN_2 0x40
+#define IOSF_BYTE_EN_3 0x80
+#define IOSF_BYTE_EN \
+	(IOSF_BYTE_EN_0 | IOSF_BYTE_EN_1 | IOSF_BYTE_EN_2 | IOSF_BYTE_EN_3)
+
+#define MCR_REG		0xd0
+#define MDR_REG		0xd4
+#define MCRX_REG	0xd8
+
+uint32_t iosf_read_port(uint32_t cr, int reg);
+void iosf_write_port(uint32_t cr, int reg, uint32_t val);
 
 uint32_t iosf_aunit_read(int reg);
 void iosf_aunit_write(int reg, uint32_t val);
@@ -49,6 +48,8 @@ void iosf_dunit_write(int reg, uint32_t val);
 /* Some registers are per channel while the globals live in dunit 0 */
 uint32_t iosf_dunit_ch0_read(int reg);
 uint32_t iosf_dunit_ch1_read(int reg);
+uint32_t iosf_cunit_read(int reg);
+void iosf_cunit_write(int reg, uint32_t val);
 uint32_t iosf_punit_read(int reg);
 void iosf_punit_write(int reg, uint32_t val);
 uint32_t iosf_usbphy_read(int reg);
@@ -87,12 +88,13 @@ void iosf_ssus_write(int reg, uint32_t val);
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
 #define IOSF_PORT_SYSMEMC	0x01 /* System Memory Controller */
-#define IOSF_PORT_DUNIT_CH0	0x07 /* DUNIT Channel 0 */
 #define IOSF_PORT_CPU_BUS	0x02 /* CPU Bus Interface Controller */
 #define IOSF_PORT_BUNIT		0x03 /* System Memory Arbiter/Bunit */
 #define IOSF_PORT_PMC		0x04 /* Power Management Controller */
 #define IOSF_PORT_GFX		0x06 /* Graphics Adapter */
+#define IOSF_PORT_DUNIT_CH0	0x07 /* DUNIT Channel 0 */
 #define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
+#define IOSF_PORT_CUNIT		0x08
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
 #define IOSF_PORT_SEC		0x44 /* SEC */
@@ -109,7 +111,7 @@ void iosf_ssus_write(int reg, uint32_t val);
 #define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
 #define IOSF_PORT_0xa2		0xa2
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
-#define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
+#define IOSF_PORT_PCIEPHY	0xa6 /* PCIE PHY */
 #define IOSF_PORT_SSUS		0xa8 /* SUS */
 #define IOSF_PORT_CCU		0xa9 /* Clock control unit. */
 
@@ -122,6 +124,8 @@ void iosf_ssus_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_CPU_BUS	(IOSF_OP_READ_CPU_BUS | 1)
 #define IOSF_OP_READ_BUNIT	0x10
 #define IOSF_OP_WRITE_BUNIT	(IOSF_OP_READ_BUNIT | 1)
+#define IOSF_OP_READ_CUNIT	0x10
+#define IOSF_OP_WRITE_CUNIT	(IOSF_OP_READ_CUNIT | 1)
 #define IOSF_OP_READ_PMC	0x06
 #define IOSF_OP_WRITE_PMC	(IOSF_OP_READ_PMC | 1)
 #define IOSF_OP_READ_GFX	0x00

@@ -15,7 +15,7 @@ static inline uint32_t read_iosf_reg(int reg)
 }
 
 /* Common sequences for all the port accesses. */
-static uint32_t iosf_read_port(uint32_t cr, int reg)
+uint32_t iosf_read_port(uint32_t cr, int reg)
 {
 	cr |= IOSF_REG(reg) | IOSF_BYTE_EN;
 	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
@@ -23,7 +23,7 @@ static uint32_t iosf_read_port(uint32_t cr, int reg)
 	return read_iosf_reg(MDR_REG);
 }
 
-static void iosf_write_port(uint32_t cr, int reg, uint32_t val)
+void iosf_write_port(uint32_t cr, int reg, uint32_t val)
 {
 	cr |= IOSF_REG(reg) | IOSF_BYTE_EN;
 	write_iosf_reg(MDR_REG, val);
@@ -66,6 +66,16 @@ uint32_t iosf_dunit_ch1_read(int reg)
 void iosf_dunit_write(int reg, uint32_t val)
 {
 	iosf_write_port(IOSF_WRITE(SYSMEMC), reg, val);
+}
+
+uint32_t iosf_cunit_read(int reg)
+{
+	return iosf_read_port(IOSF_READ(CUNIT), reg);
+}
+
+void iosf_cunit_write(int reg, uint32_t val)
+{
+	iosf_write_port(IOSF_WRITE(CUNIT), reg, val);
 }
 
 uint32_t iosf_punit_read(int reg)

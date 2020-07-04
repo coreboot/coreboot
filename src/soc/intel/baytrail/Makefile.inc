@@ -49,7 +49,12 @@ ramstage-y += smm.c
 ramstage-y += southcluster.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
+
+ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
+ramstage-y += refcode.c
+else
+ramstage-y += modphy_table.c refcode_native.c
+endif
 
 smm-y += iosf.c
 smm-y += pmutil.c

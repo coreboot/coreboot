@@ -11,11 +11,9 @@
 void baytrail_init_pre_device(struct soc_intel_baytrail_config *config);
 void baytrail_init_cpus(struct device *dev);
 void southcluster_enable_dev(struct device *dev);
-#if CONFIG(HAVE_REFCODE_BLOB)
+/* The baytrail_run_reference_code() function is provided by either
+ * native refcode or the ChromeBook refcode wrapper */
 void baytrail_run_reference_code(void);
-#else
-static inline void baytrail_run_reference_code(void) {}
-#endif
 void baytrail_init_scc(void);
 void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index);
 

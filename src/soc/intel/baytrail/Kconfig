@@ -133,13 +133,15 @@ config ENABLE_BUILTIN_COM1
 
 config HAVE_REFCODE_BLOB
 	depends on ARCH_X86
-	bool "An external reference code blob should be put into cbfs."
+	bool "Use a binary refcode blob instead of native ModPHY init"
 	default n
 	help
-	 The reference code blob will be placed into cbfs.
+	 Use the ChromeBook refcode to intitialize high-speed PHYs instead of
+	 native code.
 
 if HAVE_REFCODE_BLOB
 
+# Ask for the blob if the user wants it
 config REFCODE_BLOB_FILE
 	string "Path and filename to reference code blob."
 	default "refcode.elf"

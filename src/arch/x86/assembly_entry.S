@@ -15,12 +15,22 @@
 	#define _STACK_TOP _ecar_stack
 #endif
 
+#ifdef __x86_64__
+.code64
+#else
+.code32
+#endif
+
 .section ".text._start", "ax", @progbits
 .global _start
 _start:
 
 	/* Migrate GDT to this text segment */
+#ifdef __x86_64__
+	call	gdt_init64
+#else
 	call	gdt_init
+#endif
 
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp

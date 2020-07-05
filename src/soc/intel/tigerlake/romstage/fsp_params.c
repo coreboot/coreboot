@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -63,7 +64,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	memcpy(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
 		sizeof(config->PcieClkSrcClkReq));
 
-	m_cfg->PrmrrSize = config->PrmrrSize;
+	m_cfg->PrmrrSize = get_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;

@@ -10,7 +10,6 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
-#include <reg_script.h>
 #include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>

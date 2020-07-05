@@ -12,7 +12,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
-#include <reg_script.h>
 
 #include <soc/msr.h>
 #include <soc/cpu.h>

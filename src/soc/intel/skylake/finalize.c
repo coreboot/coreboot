@@ -15,7 +15,6 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
-#include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/me.h>
 #include <soc/p2sb.h>

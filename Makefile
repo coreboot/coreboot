@@ -61,8 +61,6 @@ endif
 # Disable implicit/built-in rules to make Makefile errors fail fast.
 .SUFFIXES:
 
-HOSTCC := $(if $(shell type gcc 2>/dev/null),gcc,cc)
-HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
 
@@ -128,6 +126,11 @@ endif
 	rm -f $@.tmp
 
 ifeq ($(NOCOMPILE),1)
+# We also don't use .xcompile in the no-compile situations, so
+# provide some reasonable defaults.
+HOSTCC ?= $(if $(shell type gcc 2>/dev/null),gcc,cc)
+HOSTCXX ?= g++
+
 include $(TOPLEVEL)/Makefile.inc
 include $(TOPLEVEL)/payloads/Makefile.inc
 include $(TOPLEVEL)/util/testing/Makefile.inc

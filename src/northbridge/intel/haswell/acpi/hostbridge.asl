@@ -88,7 +88,7 @@ Device (MCHC)
 	Name (CTCU, 2)		/* CTDP Up Select */
 	Name (SPL1, 0)		/* Saved PL1 value */
 
-	OperationRegion (MCHB, SystemMemory, Add(DEFAULT_MCHBAR,0x5000), 0x1000)
+	OperationRegion (MCHB, SystemMemory, DEFAULT_MCHBAR + 0x5000, 0x1000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x930), /* PACKAGE_POWER_SKU */
@@ -140,7 +140,7 @@ Device (MCHC)
 	External (\_SB.CP00._PSS)
 	Method (PSSS, 1, NotSerialized)
 	{
-		Local0 = One /* Start at P1 */
+		Local0 = 1 /* Start at P1 */
 		Local1 = SizeOf (\_SB.CP00._PSS)
 
 		While (Local0 < Local1) {
@@ -252,7 +252,7 @@ Device (MCHC)
 			Return (0)
 		}
 
-		Store ("Enable PL1 Limit", Debug)
+		Debug = "Enable PL1 Limit"
 
 		/* Set _PPC to LFM */
 		Local0 = PSSS (LFM_)
@@ -280,7 +280,7 @@ Device (MCHC)
 			Return (0)
 		}
 
-		Store ("Disable PL1 Limit", Debug)
+		Debug = "Disable PL1 Limit"
 
 		/* Clear PL1 CLAMP bit */
 		PL1C = 0

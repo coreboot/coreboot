@@ -352,6 +352,14 @@ Device (MISC)
 	Name (_CRS, ResourceTemplate() {
 		Memory32Fixed (ReadWrite, ACPIMMIO_MISC_BASE, 0x100)
 	})
+	Name (_DSD, Package ()
+	{
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package ()
+		{
+			Package () { "is-rv", 1 },
+		},
+	})
 	Method (_STA, 0x0, NotSerialized)
 	{
 		Return (0x0F)

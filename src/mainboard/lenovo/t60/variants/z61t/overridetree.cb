@@ -42,6 +42,7 @@ chip northbridge/intel/i945
 					# vendor clockgen setup
 					register "regs" = "{ 0x6d, 0xff, 0xff,
 						0x20, 0x41, 0x7f, 0x18, 0x00 }"
+					device i2c 69 on end
 				end
 			end
 		end

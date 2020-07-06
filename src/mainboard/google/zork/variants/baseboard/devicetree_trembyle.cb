@@ -334,10 +334,13 @@ chip soc/amd/picasso
 								register "uid" = "1"
 								register "desc" = ""Realtek RT5682""
 								register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(62)"
-								register "property_count" = "1"
+								register "property_count" = "2"
 								register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 								register "property_list[0].name" = ""realtek,jd-src""
 								register "property_list[0].integer" = "1"
+								register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+								register "property_list[1].name" = ""realtek,mclk-name""
+								register "property_list[1].string" = ""oscout1""
 								device i2c 1a on end
 							end
 						end

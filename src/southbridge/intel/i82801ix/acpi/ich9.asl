@@ -151,7 +151,7 @@ Scope(\)
 }
 
 // 0:1b.0 High Definition Audio (Azalia)
-#include "audio.asl"
+#include <southbridge/intel/common/acpi/audio_ich.asl>
 
 // PCI Express Ports
 #include <southbridge/intel/common/acpi/pcie.asl>

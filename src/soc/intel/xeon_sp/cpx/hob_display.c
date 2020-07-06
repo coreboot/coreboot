@@ -33,37 +33,14 @@ const char *soc_get_guid_name(const uint8_t *guid)
 	return NULL;
 }
 
-void soc_display_hob(const struct hob_header *hob)
+static void soc_display_memmap_hob(const struct SystemMemoryMapHob *hob_addr)
 {
-	const struct hob_resource *res;
+	struct SystemMemoryMapHob *hob = (struct SystemMemoryMapHob *)hob_addr;
 
-	res = fsp_hob_header_to_resource(hob);
-	assert(res != NULL);
-	printk(BIOS_DEBUG, "\tResource type: 0x%x, attribute: 0x%x, addr: 0x%08llx, len: 0x%08llx\n",
-		res->type, res->attribute_type, res->addr, res->length);
-	printk(BIOS_DEBUG, "\tOwner GUID: ");
-	fsp_print_guid(res->owner_guid);
-	printk(BIOS_DEBUG, " (%s)\n", fsp_get_guid_name(res->owner_guid));
+	printk(BIOS_DEBUG, "================== MEMORY MAP HOB DATA ==================\n");
+	printk(BIOS_DEBUG, "hob: %p, structure size: 0x%lx\n",
+		hob, sizeof(*hob));
 
-	if (fsp_guid_compare(res->owner_guid, fsp_hob_iio_uds_guid))
-		soc_display_iio_universal_data_hob();
-	else if (fsp_guid_compare(res->owner_guid, fsp_hob_memmap_guid))
-		soc_display_memmap_hob();
-}
-
-void soc_display_memmap_hob(void)
-{
-	size_t hob_size;
-	const struct SystemMemoryMapHob *hob;
-	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
-
-	hob = (const struct SystemMemoryMapHob *)fsp_find_extension_hob_by_guid(
-		mem_hob_guid, &hob_size);
-	assert(hob != NULL);
-
-	printk(BIOS_DEBUG, "===================== MEMORY MAP HOB DATA =====================\n");
-	printk(BIOS_DEBUG, "hob: %p, size: 0x%lx, structure size: 0x%lx\n",
-		hob, hob_size, sizeof(*hob));
 	printk(BIOS_DEBUG, "\tlowMemBase: 0x%x, lowMemSize: 0x%x, highMemBase: 0x%x, "
 		"highMemSize: 0x%x\n",
 		hob->lowMemBase, hob->lowMemSize, hob->highMemBase, hob->highMemSize);
@@ -82,17 +59,11 @@ void soc_display_memmap_hob(void)
 	hexdump(hob, sizeof(*hob));
 }
 
-void soc_display_iio_universal_data_hob(void)
+static void soc_display_iio_universal_data_hob(const IIO_UDS *hob)
 {
-	size_t hob_size;
-	const IIO_UDS *hob;
-	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-
-	hob = (const IIO_UDS *)fsp_find_extension_hob_by_guid(
-		fsp_hob_iio_universal_data_guid, &hob_size);
-	assert(hob != NULL);
-
 	printk(BIOS_DEBUG, "===================== IIO_UDS HOB DATA =====================\n");
+	printk(BIOS_DEBUG, "hob: %p, structure size: 0x%lx\n",
+		hob, sizeof(*hob));
 
 	printk(BIOS_DEBUG, "\t===================== SYSTEM STATUS =====================\n");
 	printk(BIOS_DEBUG, "\tnumCpus: 0x%x\n", hob->SystemStatus.numCpus);
@@ -194,4 +165,21 @@ void soc_display_iio_universal_data_hob(void)
 				iio_resource.PcieInfo.PortInfo[p].Function);
 		}
 	}
+
+	hexdump(hob, sizeof(*hob));
+}
+
+void soc_display_hob(const struct hob_header *hob)
+{
+	uint8_t *guid;
+
+	if (hob->type != HOB_TYPE_GUID_EXTENSION)
+		return;
+
+	guid = (uint8_t *) fsp_hob_header_to_resource(hob);
+
+	if (fsp_guid_compare(guid, fsp_hob_iio_uds_guid))
+		soc_display_iio_universal_data_hob((const IIO_UDS *)(guid + 16));
+	else if (fsp_guid_compare(guid, fsp_hob_memmap_guid))
+		soc_display_memmap_hob((const struct SystemMemoryMapHob *)(guid + 16));
 }

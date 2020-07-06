@@ -109,6 +109,4 @@ typedef struct SystemMemoryMapHob {
 
 #pragma pack()
 
-void soc_display_memmap_hob(void);
-
 #endif

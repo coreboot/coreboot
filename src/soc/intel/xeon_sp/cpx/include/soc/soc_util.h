@@ -42,6 +42,5 @@ int get_threads_per_package(void);
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 
 void set_bios_init_completion(void);
-void soc_display_iio_universal_data_hob(void);
 
 #endif /* _SOC_UTIL_H_ */

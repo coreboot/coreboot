@@ -36,7 +36,7 @@ Device (LPCB)
 		RCBA,	18,
 	}
 
-	#include "irqlinks.asl"
+	#include <southbridge/intel/common/acpi/irqlinks.asl>
 
 	#include "acpi/ec.asl"
 

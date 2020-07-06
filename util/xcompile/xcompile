@@ -56,12 +56,28 @@ elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=iasl
 fi
 
-if program_exists gcc; then
+if program_exists "${XGCCPATH}/gcc"; then
+	HOSTCC="${XGCCPATH}/gcc"
+elif program_exists gcc; then
 	HOSTCC=gcc
 elif program_exists cc; then
 	HOSTCC=cc
 else
 	die "no host compiler found"
+fi
+
+# Look for a C++ compiler (for kconfig's qconf), but don't fail if there is
+# none, just set the compiler to false(1) which will break early enough if
+# used while being less confusing than errors about "g not found" when
+# "$HOSTCXX -g" evaluates to "-g" and make drops the leading dash.
+if program_exists "${XGCCPATH}/g++"; then
+	HOSTCXX="${XGCCPATH}/g++"
+elif program_exists g++; then
+	HOSTCXX=g++
+elif program_exists c++; then
+	HOSTCXX=c++
+else
+	HOSTCXX=false
 fi
 
 # try to find the core count using various methods
@@ -87,6 +103,7 @@ cat <<EOF
 XGCCPATH:=${XGCCPATH}
 IASL:=${IASL}
 HOSTCC?=${HOSTCC}
+HOSTCXX?=${HOSTCXX}
 CPUS?=${CORES}
 
 EOF

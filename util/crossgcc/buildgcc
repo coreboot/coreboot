@@ -1178,32 +1178,24 @@ if [ -z "${LANGUAGES}" ]; then
 		LANGUAGES="${DEFAULT_LANGUAGES}"
 	fi
 fi
+if [ "$BOOTSTRAP" != 1 ] && \
+	{ [ "$(hostcc_major)" -lt 4 ] || \
+	{ [ "$(hostcc_major)" -eq 4 ] && \
+	[ "$(hostcc_minor)" -lt 9 ] ; } ; }
+then
+	printf "\n${red}WARNING${NC}\n"
+	printf "Building coreboot requires a host compiler newer than 4.9.x while\n"
+	printf "yours is $(hostcc_version).\n"
+	printf "Enabling bootstrapping to provide a sufficiently new compiler:\n"
+	printf "This will take significantly longer than a usual build.\n"
+	printf "Alternatively you can abort now and update your host compiler.\n"
+	timeout 15
+	BOOTSTRAP=1
+fi
 if ada_requested; then
-	if have_gnat; then
-		if [ "$BOOTSTRAP" != 1 ] && \
-			{ [ "$(hostcc_major)" -lt 4 ] || \
-			{ [ "$(hostcc_major)" -eq 4 ] && \
-			[ "$(hostcc_minor)" -lt 9 ] ; } ; }
-		then
-			printf "\n${red}WARNING${NC}\n"
-			printf "Building the Ada compiler (GNAT $(buildcc_version)) with a host compiler older\n"
-			printf "than 4.9.x (yours $(hostcc_version)) requires bootstrapping. This will take\n"
-			printf "significantly longer than a usual build. You can abort and update\n"
-			printf "your host GNAT or disable Ada support with BUILD_LANGUAGES=c (or\n"
-			printf "\`-l c\` in case you invoke \`buildgcc\` directly).\n"
-			timeout 15
-			BOOTSTRAP=1
-		fi
-	else
+	if ! have_gnat; then
 		please_install gnat gcc-ada
 		exit 1
-	fi
-else
-	if [ "$(hostcc_major)" -lt 4 ] && [ "$BOOTSTRAP" != 1 ]; then
-		printf "\n${red}WARNING${NC}\n"
-		printf "Building GCC $(buildcc_version) with a very old host compiler ($(hostcc_version)).\n"
-		printf "Bootstrapping (-b) is recommended.\n"
-		timeout 10
 	fi
 fi
 fi # GCC

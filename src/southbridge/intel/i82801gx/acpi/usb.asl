@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Intel i82801G USB support */
+/* Intel ICH USB support */
 
 // USB Controller 0:1d.0
 

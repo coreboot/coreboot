@@ -1,13 +1,17 @@
 comment "Trogdor"
 
-config BOARD_GOOGLE_TROGDOR
-	bool "Trogdor"
+config BOARD_GOOGLE_BUBS
+	bool "Bubs"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_LAZOR
 	bool "Lazor"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
-config BOARD_GOOGLE_BUBS
-	bool "Bubs"
+config BOARD_GOOGLE_POMPOM
+	bool "Pompom"
+	select BOARD_GOOGLE_TROGDOR_COMMON
+
+config BOARD_GOOGLE_TROGDOR
+	bool "Trogdor"
 	select BOARD_GOOGLE_TROGDOR_COMMON

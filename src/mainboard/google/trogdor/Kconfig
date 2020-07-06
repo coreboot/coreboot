@@ -50,8 +50,9 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Trogdor" if BOARD_GOOGLE_TROGDOR
-	default "Lazor" if BOARD_GOOGLE_LAZOR
 	default "Bubs" if BOARD_GOOGLE_BUBS
+	default "Lazor" if BOARD_GOOGLE_LAZOR
+	default "Pompom" if BOARD_GOOGLE_POMPOM
+	default "Trogdor" if BOARD_GOOGLE_TROGDOR
 
 endif # BOARD_GOOGLE_TROGDOR_COMMON

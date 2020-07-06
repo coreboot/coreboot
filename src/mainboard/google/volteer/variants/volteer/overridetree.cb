@@ -163,7 +163,7 @@ chip soc/intel/tigerlake
 							probe DB_USB USB3_NO_A
 						end
 					end
-					chip drivers/intel/pmc_mux/con
+					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "4"
 						register "usb3_port_number" = "2"
 						# SBU & HSL follow CC

@@ -111,14 +111,14 @@ chip soc/intel/tigerlake
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux
 				device generic 0 on
-					chip drivers/intel/pmc_mux/con
+					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "9"
 						register "usb3_port_number" = "1"
 						# SBU is fixed, HSL follows CC
 						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
 						device generic 0 on end
 					end
-					chip drivers/intel/pmc_mux/con
+					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "4"
 						register "usb3_port_number" = "2"
 						# SBU is fixed, HSL follows CC

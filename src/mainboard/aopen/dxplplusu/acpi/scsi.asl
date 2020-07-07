@@ -27,19 +27,3 @@ Device (SCS1)
 		Offset (0xFF),   IDW,   8
 	}
 }
-
-#if 0
-/* Set subsystem id for both SCSI devices.
- * It may require some delay on wake-up before this can be done.
- */
-	Method ( )
-	{
-		Or (\_SB.PCI0.HLIB.P64A.SCS0.IDW, 0x01, \_SB.PCI0.HLIB.P64A.SCS0.IDW)
-		Store (0x1106A0A0, \_SB.PCI0.HLIB.P64A.SCS0.SID)
-		And (\_SB.PCI0.HLIB.P64A.SCS0.IDW, 0xFE, \_SB.PCI0.HLIB.P64A.SCS0.IDW)
-
-		Or (\_SB.PCI0.HLIB.P64A.SCS1.IDW, 0x01, \_SB.PCI0.HLIB.P64A.SCS1.IDW)
-		Store (0x1106A0A0, \_SB.PCI0.HLIB.P64A.SCS1.SID)
-		And (\_SB.PCI0.HLIB.P64A.SCS1.IDW, 0xFE, \_SB.PCI0.HLIB.P64A.SCS1.IDW)
-	}
-#endif

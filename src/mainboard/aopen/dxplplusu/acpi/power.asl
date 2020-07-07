@@ -32,13 +32,7 @@ Scope (\_GPE)
 	/* PME# */
 	Method (_L0B, 0, NotSerialized)
 	{
-#if 1
 		Notify (\_SB.LID0, 0x02)
-#else
-		Notify (\_SB.PCI0.HLIB.P64B.ETH0, 0x02)
-		Notify (\_SB.PCI0.HLIB.P64B, 0x02)
-		Notify (\_SB.PCI0.HLIB.P64A, 0x02)
-#endif
 	}
 
 	Method (_L0C, 0, NotSerialized)

@@ -104,11 +104,7 @@ Method (_INI, 0, NotSerialized)
 	Store (0x01, GC33)
 	Store (0x01, GC34) /* GPI password jumper */
 	Store (0x01, GC35) /* GPI scsi enable jumper */
-#if 1
 	Store (0x01, GC42)  /* GPI */
-#else
-	Store (0x84, GC42)  /* nIO_PME */
-#endif
 	Store (0x86, GC60) /* led 1 */
 	Store (0x81, GC61) /* led 2 ?? */
 

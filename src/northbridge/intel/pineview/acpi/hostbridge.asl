@@ -32,7 +32,7 @@ Device (MCHC)
 
 		Offset (0x68),	/* DMIBAR */
 		DMEN,	 1,	/* Enable */
-		,	11,	/*
+		,	11,
 		DMBR,	20,	/* DMIBAR */
 
 		/* ... */

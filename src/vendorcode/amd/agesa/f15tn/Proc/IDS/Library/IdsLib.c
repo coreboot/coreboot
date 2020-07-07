@@ -107,38 +107,6 @@ AmdGetIdsNvTable (
 
 /**
  *
- *  Get IDS Override Image Base Address
- *
- *  @param[in,out] IdsImageBase The Base Address of IDS Override Image.
- *  @param[in,out] StdHeader    The Pointer of Standard Header.
- *
- *  @retval AGESA_SUCCESS       Success to get the pointer of NV Table.
- *  @retval AGESA_ERROR         Fail to get the pointer of NV Table.
- *
- **/
-#if 0
-AGESA_STATUS
-AmdGetIdsImagebase (
-  IN OUT   UINT64 *IdsImageBase,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  )
-{
-  AGESA_STATUS status;
-  LOCATE_HEAP_PTR LocateHeapStructPtr;
-  IDS_CONTROL_STRUCT *IdsCtrlPtr;
-
-  LocateHeapStructPtr.BufferHandle = IDS_CONTROL_HANDLE;
-  LocateHeapStructPtr.BufferPtr = NULL;
-  status = HeapLocateBuffer (&LocateHeapStructPtr, StdHeader);
-  if (status == AGESA_SUCCESS) {
-    IdsCtrlPtr = (IDS_CONTROL_STRUCT *) LocateHeapStructPtr.BufferPtr;
-    *IdsImageBase = IdsCtrlPtr->IdsImageBase;
-  }
-  return status;
-}
-#endif
-/**
- *
  * Read IDS NV value in NV table.
  *
  * It searches the table until the Nv Id is found and return the NV value

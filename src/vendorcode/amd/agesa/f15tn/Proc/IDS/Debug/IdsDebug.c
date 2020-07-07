@@ -78,27 +78,6 @@ IdsAgesaTestPoint (
 }
 
 /**
- *
- *  HDT out Function for Assert.
- *
- *  fire a HDTOUT Command of assert to let hdtout script do corresponding things.
- *
- *  @param[in,out] FileCode    FileCode of the line
- *
- **/
-#if 0
-VOID
-AmdIdsDebugPrintAssert (
-  IN      UINT32 FileCode
-  )
-{
-  //TODO:if (AmdIdsHdtOutSupport ()) {
-  //  IdsOutPort (HDTOUT_ASSERT, FileCode, 0);
-  //}
-}
-#endif
-
-/**
  *  IDS Backend Function for ASSERT
  *
  * Halt execution with stop code display.  Stop Code is displayed on port 80, with rotation so that
@@ -123,7 +102,6 @@ IdsAssert (
   IDS_HDT_CONSOLE (MAIN_FLOW, "ASSERT on File[%x] Line[%x]\n", (UINTN) file, (UINTN) line);
   IDS_HDT_CONSOLE_FLUSH_BUFFER (NULL);
   IDS_HDT_CONSOLE_ASSERT (FileCode);
-  //IdsErrorStop (FileCode);
   return TRUE;
 }
 
@@ -140,18 +118,6 @@ IdsMemTimeOut (
   IN OUT   VOID *DataPtr
   )
 {
-//TODO:  UINTN i;
-//
-//  IDS_DEBUG_PRINT **DebugPrintList;
-//
-//  GetDebugPrintList (&DebugPrintList);
-//
-//  for (i = 0; DebugPrintList[i] != NULL; i++) {
-//    if (DebugPrintList[i]->support ()) {
-//      // Turn timeout off if any Debug service is on
-//      *((UINT8 *)DataPtr) = (UINT8)0;
-//    }
-//  }
 }
 
 /**

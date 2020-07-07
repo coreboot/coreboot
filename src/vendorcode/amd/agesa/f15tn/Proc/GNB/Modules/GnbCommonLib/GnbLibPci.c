@@ -200,44 +200,7 @@ GnbLibFindPciCapability (
   }
   return  CapabilityPtr;
 }
-/*----------------------------------------------------------------------------------------*/
-/*
- * Find PCIe extended capability pointer
- *
- *
- *
- * @param[in] Address               PCI address (as described in PCI_ADDR)
- * @param[in] ExtendedCapabilityId  Extended PCIe capability ID
- * @param[in] StdHeader             Standard configuration header
- * @retval                          Register address of extended capability pointer
- *
- */
 
-#if 0 /* Not used */
-UINT16
-GnbLibFindPcieExtendedCapability (
-  IN      UINT32              Address,
-  IN      UINT16              ExtendedCapabilityId,
-  IN      AMD_CONFIG_PARAMS   *StdHeader
-  )
-{
-  UINT16  CapabilityPtr;
-  UINT32  ExtendedCapabilityIdBlock;
-  if (GnbLibPciIsPcieDevice (Address, StdHeader)) {
-    GnbLibPciRead (Address | 0x100 , AccessWidth32 , &ExtendedCapabilityIdBlock, StdHeader);
-    if ((ExtendedCapabilityIdBlock != 0) && ((UINT16)ExtendedCapabilityIdBlock != 0xffff)) {
-      do {
-        CapabilityPtr = (UINT16) ((ExtendedCapabilityIdBlock >> 20) & 0xfff);
-        if ((UINT16)ExtendedCapabilityIdBlock == ExtendedCapabilityId) {
-          return  CapabilityPtr;
-        }
-        GnbLibPciRead (Address | CapabilityPtr , AccessWidth32 , &ExtendedCapabilityIdBlock, StdHeader);
-      } while (((ExtendedCapabilityIdBlock >> 20) & 0xfff) !=  0);
-    }
-  }
-  return  0;
-}
-#endif
 /*----------------------------------------------------------------------------------------*/
 /*
  * Scan range of device on PCI bus.

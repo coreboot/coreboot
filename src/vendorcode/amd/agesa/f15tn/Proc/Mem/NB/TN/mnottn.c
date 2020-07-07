@@ -80,13 +80,6 @@ RDATA_GROUP (G3_DXE)
  *
  *----------------------------------------------------------------------------
  */
-#if 0
-UINT32
-STATIC
-MemNGetODTDelaysTN (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  );
-#endif
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
@@ -273,49 +266,3 @@ MemNSetOtherTimingTN (
   IDS_HDT_CONSOLE (MEM_FLOW, "\t\tCDDTwrrd     : %02x           Twrrd     : %02x\n", (UINT8) CDDTwrrd, (UINT8) Twrrd );
   IDS_HDT_CONSOLE (MEM_FLOW, "\t\tCDDTrwtTO    : %02x           TrwtTO    : %02x\n\n", (UINT8) CDDTrwtTO, (UINT8) TrwtTO );
 }
-
-/* -----------------------------------------------------------------------------*/
-/**
- *
- *
- *   This function gets the ODT delays
- *
- *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
- *
- */
-#if 0
-UINT32
-STATIC
-MemNGetODTDelaysTN (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  )
-{
-  INT8 Ld;
-  UINT32 ODTDelays;
-  //
-  // The BIOS must additionally configure the ODT pattern
-  // and the ODT switching delays.
-  //
-  // Program F2x[1, 0]9C_x83 DRAM Phy ODT Assertion Control Register based on Burst length.
-  //     -Read the Burst Length from F2x[1, 0]84[BurstCtrl].
-  //     -Value of 2, BL = 4 else assume BL=8.
-  //     -Initialize ODTDelays based on BL value
-  //     -WrOdtOnDuration [14:12] = BL / 2 + 1
-  //     -WrOdtTrnOnDly [10:8] = 0
-  //     -RdOdtOnDuration [6:4] = BL / 2 + 1
-  //
-  ODTDelays = (MemNGetBitFieldNb (NBPtr, BFBurstCtrl) == 2) ? 0x00003030 : 0x00005050;
-
-  // RdOdtTrnOnDly [3:0] < (CL-CWL) or (CL-CWL - 1)
-  // See BKDG F2x[1, 0]9C_x83 DRAM Phy ODT Assertion Control Register [3:0]
-  Ld = ((INT8)MemNGetBitFieldNb (NBPtr, BFTcl) + 1) - ((INT8)MemNGetBitFieldNb (NBPtr, BFTcwl) + 5);
-  if (Ld < 0) {
-    Ld = 0;
-  }
-  if (Ld > 7) {
-    Ld = 7;
-  }
-  ODTDelays += Ld;
-  return ODTDelays;
-}
-#endif

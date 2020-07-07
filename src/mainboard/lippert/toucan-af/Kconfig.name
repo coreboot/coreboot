@@ -1,2 +1,0 @@
-config BOARD_LIPPERT_TOUCAN_AF
-	bool "Toucan-AF aka cExpress-GFR (+W83627DHG SIO)"

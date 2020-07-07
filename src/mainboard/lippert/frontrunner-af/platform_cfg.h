@@ -45,7 +45,11 @@
  *  Usb Ehci3 Controller (Bus 0 Dev 22 Func2) is define at BIT5
  *  Usb Ohci4 Controller (Bus 0 Dev 20 Func5) is define at BIT6
  */
+#if CONFIG(BOARD_LIPPERT_FRONTRUNNER_AF)
 #define USB_CONFIG		0x3F
+#elif CONFIG(BOARD_LIPPERT_TOUCAN_AF)
+#define USB_CONFIG		0x0F
+#endif
 
 /**
  * @def PCI_CLOCK_CTRL
@@ -58,7 +62,11 @@
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
+#if CONFIG(BOARD_LIPPERT_FRONTRUNNER_AF)
 #define PCI_CLOCK_CTRL			0x1F
+#elif CONFIG(BOARD_LIPPERT_TOUCAN_AF)
+#define PCI_CLOCK_CTRL			0x1E
+#endif
 
 /**
  * @def SATA_CONTROLLER
@@ -148,12 +156,20 @@
  *  SDIN2 is define at BIT4 & BIT5
  *  SDIN3 is define at BIT6 & BIT7
  */
+#if CONFIG(BOARD_LIPPERT_FRONTRUNNER_AF)
 #define AZALIA_SDIN_PIN			0x02
+#elif CONFIG(BOARD_LIPPERT_TOUCAN_AF)
+#define AZALIA_SDIN_PIN			0x2A
+#endif
 
 /**
  * @def GPP_CONTROLLER
  */
+#if CONFIG(BOARD_LIPPERT_FRONTRUNNER_AF)
 #define GPP_CONTROLLER			CIMX_OPTION_DISABLED
+#elif CONFIG(BOARD_LIPPERT_TOUCAN_AF)
+#define GPP_CONTROLLER			CIMX_OPTION_ENABLED
+#endif
 
 /**
  * @def GPP_CFGMODE

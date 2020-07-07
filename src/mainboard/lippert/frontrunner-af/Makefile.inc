@@ -7,15 +7,31 @@ pci$(stripped_ahcibios_id).rom-file := $(call strip_quotes,$(CONFIG_AHCI_BIOS_FI
 pci$(stripped_ahcibios_id).rom-type := optionrom
 endif
 
-bootblock-y += bootblock.c
+ifeq ($(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF),y)
+bootblock-y += bootblock-fr.c
+else ifeq ($(CONFIG_BOARD_LIPPERT_TOUCAN_AF),y)
+bootblock-y += bootblock-tc.c
+endif
 
 romstage-y += buildOpts.c
-romstage-y += BiosCallOuts.c
-romstage-y += OemCustomize.c
+ifeq ($(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF),y)
+romstage-y += BiosCallOuts-fr.c
+romstage-y += OemCustomize-fr.c
+else ifeq ($(CONFIG_BOARD_LIPPERT_TOUCAN_AF),y)
+romstage-y += BiosCallOuts-tc.c
+romstage-y += OemCustomize-tc.c
+endif
 
 ramstage-y += buildOpts.c
-ramstage-y += BiosCallOuts.c
-ramstage-y += OemCustomize.c
+ifeq ($(CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF),y)
+ramstage-y += BiosCallOuts-fr.c
+ramstage-y += OemCustomize-fr.c
+ramstage-y += mainboard-fr.c
+else ifeq ($(CONFIG_BOARD_LIPPERT_TOUCAN_AF),y)
+ramstage-y += BiosCallOuts-tc.c
+ramstage-y += OemCustomize-tc.c
+ramstage-y += mainboard-tc.c
+endif
 
 # Minimal SEMA watchdog support
 romstage-y += sema.c

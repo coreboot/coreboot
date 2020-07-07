@@ -1174,7 +1174,9 @@ DefinitionBlock (
 					,, PSB0)	/* ResourceSourceIndex, ResourceSource, DescriptorName */
 
 				IO(Decode16, 0x004E, 0x004E, 1, 2)	/* SIO config regs */
+#if CONFIG(BOARD_LIPPERT_FRONTRUNNER_AF)
 				IO(Decode16, 0x0E00, 0x0E00, 1, 0x80)	/* SIO runtime regs */
+#endif
 				IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
 
 				WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,

@@ -22,10 +22,9 @@
 #include <soc/ramstage.h>
 #include <soc/iosf.h>
 
-/* Global PATTRS */
-DEFINE_PATTRS;
-
 #define SHOW_PATTRS 1
+
+struct pattrs __global_pattrs;
 
 static void detect_num_cpus(struct pattrs *attrs)
 {

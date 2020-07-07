@@ -37,13 +37,10 @@ struct pattrs {
  * This is just to hide the abstraction w/o relying on how the underlying
  * storage is allocated.
  */
-#define PATTRS_GLOB_NAME __global_pattrs
-#define DEFINE_PATTRS struct pattrs PATTRS_GLOB_NAME
-extern DEFINE_PATTRS;
-
+extern struct pattrs __global_pattrs;
 static inline const struct pattrs *pattrs_get(void)
 {
-	return &PATTRS_GLOB_NAME;
+	return &__global_pattrs;
 }
 
 #endif /* _PATTRS_H_ */

@@ -24,12 +24,6 @@ const char *invalid[] = {
 	"SGVsbG-8="
 };
 
-/* Provide necessary definition in order to satisfy dependencies. */
-int do_printk(int msg_level, const char *fmt, ...)
-{
-	return 0;
-}
-
 static void test_b64_decode(void **state)
 {
 	uint8_t *decoded;

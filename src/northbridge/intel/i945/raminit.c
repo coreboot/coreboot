@@ -194,19 +194,6 @@ static int sdram_capabilities_enhanced_addressing_xor(void)
 	return (!reg8);
 }
 
-/* TODO check if we ever need this function */
-#if 0
-static int sdram_capabilities_MEM4G_disable(void)
-{
-	u8 reg8;
-
-	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5); /* CAPID0 + 5 */
-	reg8 &= (1 << 0);
-
-	return (reg8 != 0);
-}
-#endif
-
 #define GFX_FREQUENCY_CAP_166MHZ	0x04
 #define GFX_FREQUENCY_CAP_200MHZ	0x03
 #define GFX_FREQUENCY_CAP_250MHZ	0x02
@@ -2198,11 +2185,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 		reg16 |= (4 << 11);
 	MCHBAR16(CPCTL) = reg16;
 
-#if 0
-	if ((MCHBAR32(ECO) & (1 << 16)) != 0) {
-#else
 	if (i945_silicon_revision() != 0) {
-#endif
 		switch (sysinfo->fsb_frequency) {
 		case 667:
 			MCHBAR32(HGIPMC2) = 0x0d590d59;
@@ -2253,13 +2236,6 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	else
 		MCHBAR32(ECO) |= (1 << 16);
 
-#if 0
-
-	if (i945_silicon_revision() == 0)
-		MCHBAR32(FSBPMC3) &= ~(1 << 29);
-	else
-		MCHBAR32(FSBPMC3) |= (1 << 29);
-#endif
 	MCHBAR32(FSBPMC3) &= ~(1 << 29);
 
 	MCHBAR32(FSBPMC3) |= (1 << 21);
@@ -2288,19 +2264,6 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 	pci_or_config8(PCI_DEV(0, 0x2, 0), 0xc1, 1 << 2);
 
-#ifdef C2_SELF_REFRESH_DISABLE
-
-	if (integrated_graphics) {
-		printk(BIOS_DEBUG, "C2 self-refresh with IGD\n");
-		MCHBAR16(MIPMC4) = 0x0468;
-		MCHBAR16(MIPMC5) = 0x046c;
-		MCHBAR16(MIPMC6) = 0x046c;
-	} else {
-		MCHBAR16(MIPMC4) = 0x6468;
-		MCHBAR16(MIPMC5) = 0x646c;
-		MCHBAR16(MIPMC6) = 0x646c;
-	}
-#else
 	if (integrated_graphics) {
 		MCHBAR16(MIPMC4) = 0x04f8;
 		MCHBAR16(MIPMC5) = 0x04fc;
@@ -2310,8 +2273,6 @@ static void sdram_power_management(struct sys_info *sysinfo)
 		MCHBAR16(MIPMC5) = 0x64fc;
 		MCHBAR16(MIPMC6) = 0x64fc;
 	}
-
-#endif
 
 	reg32 = MCHBAR32(PMCFG);
 	reg32 &= ~(3 << 17);

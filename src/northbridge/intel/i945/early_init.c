@@ -364,7 +364,7 @@ static void i945_setup_dmi_rcrb(void)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
 		printk(BIOS_DEBUG, "done..\n");
-#if 1
+
 	/* Enable Active State Power Management (ASPM) L0 state */
 
 	reg32 = DMIBAR32(DMILCAP);
@@ -387,7 +387,6 @@ static void i945_setup_dmi_rcrb(void)
 
 	if (activate_aspm)
 		DMIBAR32(DMILCTL) |= (3 << 0);
-#endif
 
 	/* Last but not least, some additional steps */
 	reg32 = MCHBAR32(FSBSNPCTL);
@@ -771,10 +770,6 @@ static void ich7_setup_pci_express(void)
 
 	/* Initialize slot power limit for root ports */
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0x54, 0x00000060);
-#if 0
-	pci_write_config32(PCI_DEV(0, 0x1c, 4), 0x54, 0x00480ce0);
-	pci_write_config32(PCI_DEV(0, 0x1c, 5), 0x54, 0x00500ce0);
-#endif
 
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
 }

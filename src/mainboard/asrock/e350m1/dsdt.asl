@@ -11,7 +11,6 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
-	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
 
 	#include "acpi/mainboard.asl"
 

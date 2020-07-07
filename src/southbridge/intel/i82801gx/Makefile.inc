@@ -11,7 +11,6 @@ ramstage-y += ac97.c
 ramstage-y += azalia.c
 ramstage-y += ide.c
 ramstage-y += lpc.c
-ramstage-y += nic.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sata.c

@@ -28,7 +28,6 @@ static inline int is_first_port(struct device *dev)
 
 static void pcie_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 }
 
 static const struct reg_script no_dev_behind_port[] = {
@@ -41,9 +40,6 @@ static const struct reg_script no_dev_behind_port[] = {
 static void check_port_enabled(struct device *dev)
 {
 	int rp_config = (strpfusecfg & LANECFG_MASK) >> LANECFG_SHIFT;
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
 
 	switch (root_port_offset(dev)) {
 	case PCIE_PORT1_FUNC:
@@ -83,8 +79,6 @@ static void check_device_present(struct device *dev)
 
 	static uint32_t rootports_in_use = MAX_ROOT_PORTS_BSW;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
 	/* Set slot implemented. */
 	pci_write_config32(dev, XCAP, pci_read_config32(dev, XCAP) | SI);
 
@@ -121,8 +115,6 @@ static void check_device_present(struct device *dev)
 
 static void pcie_enable(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
-
 	if (is_first_port(dev)) {
 		struct soc_intel_braswell_config *config = config_of(dev);
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);

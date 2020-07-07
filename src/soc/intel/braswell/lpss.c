@@ -125,9 +125,6 @@ static void lpss_init(struct device *dev)
 	struct soc_intel_braswell_config *config = config_of(dev);
 	int iosf_reg, nvs_index;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
-	printk(BIOS_SPEW, "%s - %s\n", get_pci_class_name(dev), get_pci_subclass_name(dev));
-
 	dev_ctl_reg(dev, &iosf_reg, &nvs_index);
 
 	if (iosf_reg < 0) {

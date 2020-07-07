@@ -49,16 +49,11 @@ static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 static inline void add_mmio_resource(struct device *dev, int i, unsigned long addr,
 				     unsigned long size)
 {
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%016lx, 0x%016lx)\n",
-			__FILE__, __func__, dev_name(dev), addr, size);
-
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
 static void sc_add_mmio_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
-
 	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
 	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
 	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
@@ -207,9 +202,6 @@ static void sc_add_io_resource(struct device *dev, int base, int size, int index
 {
 	struct resource *res;
 
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%08x, 0x%08x, 0x%08x)\n",
-			__FILE__, __func__, dev_name(dev), base, size, index);
-
 	if (io_range_in_default(base, size))
 		return;
 
@@ -222,8 +214,6 @@ static void sc_add_io_resource(struct device *dev, int base, int size, int index
 static void sc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Add the default claimed IO range for the LPC device. */
 	res = new_resource(dev, 0);
@@ -240,8 +230,6 @@ static void sc_add_io_resources(struct device *dev)
 
 static void sc_read_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
-
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
@@ -262,8 +250,6 @@ static void sc_init(struct device *dev)
 	void *gen_pmcon1 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	const struct soc_irq_route *ir = &global_soc_irq_route;
 	struct soc_intel_braswell_config *config = config_of(dev);
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND,
@@ -324,8 +310,6 @@ static void sc_disable_devfn(struct device *dev)
 	void *func_dis2 = (void *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t mask  = 0;
 	uint32_t mask2 = 0;
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 #define SET_DIS_MASK(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
@@ -410,9 +394,6 @@ static void sc_disable_devfn(struct device *dev)
 static inline void set_d3hot_bits(struct device *dev, int offset)
 {
 	uint32_t reg8;
-
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%08x)\n",
-			__FILE__, __func__, dev_name(dev), offset);
 	printk(BIOS_DEBUG, "Power management CAP offset 0x%x.\n", offset);
 	reg8 = pci_read_config8(dev, offset + 4);
 	reg8 |= 0x3;
@@ -426,8 +407,6 @@ static inline void set_d3hot_bits(struct device *dev, int offset)
 static void hda_work_around(struct device *dev)
 {
 	void *gctl = (void *)(TEMP_BASE_ADDRESS + 0x8);
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
@@ -447,8 +426,6 @@ static void hda_work_around(struct device *dev)
 static int place_device_in_d3hot(struct device *dev)
 {
 	unsigned int offset;
-
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/*
 	 * Parts of the HDA block are used for LPE audio as well.
@@ -526,8 +503,6 @@ void southcluster_enable_dev(struct device *dev)
 {
 	uint16_t reg16;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
-
 	if (!dev->enabled) {
 		int slot = PCI_SLOT(dev->path.pci.devfn);
 		int func = PCI_FUNC(dev->path.pci.devfn);
@@ -580,8 +555,6 @@ static void finalize_chipset(void *unused)
 	uint8_t *spi = (uint8_t *)SPI_BASE_ADDRESS;
 
 	struct vscc_config cfg;
-
-	printk(BIOS_SPEW, "%s/%s (%p)\n", __FILE__, __func__, unused);
 
 	/* Set the lock enable on the BIOS control register */
 	write32(bcr, read32(bcr) | BCR_LE);

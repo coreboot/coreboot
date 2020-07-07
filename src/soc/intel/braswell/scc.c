@@ -14,9 +14,6 @@ void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 	struct resource *bar;
 	struct global_nvs *gnvs;
 
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%08x, 0x%08x)\n",
-			__FILE__, __func__, dev_name(dev), iosf_reg, nvs_index);
-
 	/* Find ACPI NVS to update BARs */
 	gnvs = acpi_get_gnvs();
 	if (!gnvs)

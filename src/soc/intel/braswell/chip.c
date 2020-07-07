@@ -25,22 +25,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk(BIOS_SPEW, "----------\n%s/%s (%s), type: %d\n", __FILE__, __func__,
-			dev_name(dev), dev->path.type);
-
-	printk(BIOS_SPEW, "vendor: 0x%04x. device: 0x%04x\n",
-			pci_read_config16(dev, PCI_VENDOR_ID),
-			pci_read_config16(dev, PCI_DEVICE_ID));
-
-	printk(BIOS_SPEW, "class: 0x%02x %s\nsubclass: 0x%02x %s\n"
-			"prog: 0x%02x\nrevision: 0x%02x\n",
-			pci_read_config16(dev, PCI_CLASS_DEVICE) >> 8,
-			get_pci_class_name(dev),
-			pci_read_config16(dev, PCI_CLASS_DEVICE) & 0xff,
-			get_pci_subclass_name(dev),
-			pci_read_config8(dev, PCI_CLASS_PROG),
-			pci_read_config8(dev, PCI_REVISION_ID));
-
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
@@ -314,7 +298,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old, SILICON_INIT_U
 /* Called at BS_DEV_INIT_CHIPS time -- very early. Just after BS_PRE_DEVICE. */
 static void soc_init(void *chip_info)
 {
-	printk(BIOS_SPEW, "%s/%s\n", __FILE__, __func__);
 	soc_init_pre_device(chip_info);
 }
 

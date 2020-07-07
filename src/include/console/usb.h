@@ -36,20 +36,4 @@ static inline void __usb_tx_byte(u8 data)	{}
 static inline void __usb_tx_flush(void)	{}
 #endif
 
-/*  */
-#if 0 && CONFIG(GDB_STUB) && \
-	((ENV_ROMSTAGE && CONFIG(USBDEBUG_IN_PRE_RAM)) \
-	 || ENV_RAMSTAGE)
-static inline void __gdb_hw_init(void)	{ usbdebug_init(); }
-static inline void __gdb_tx_byte(u8 data)
-{
-	usb_tx_byte(USB_PIPE_FOR_GDB, data);
-}
-static inline void __gdb_tx_flush(void)	{ usb_tx_flush(USB_PIPE_FOR_GDB); }
-static inline u8 __gdb_rx_byte(void)
-{
-	return usb_rx_byte(USB_PIPE_FOR_GDB);
-}
-#endif
-
 #endif /* _CONSOLE_USB_H_ */

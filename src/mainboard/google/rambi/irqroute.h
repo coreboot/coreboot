@@ -2,7 +2,7 @@
 
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 
 #define PCI_DEV_PIRQ_ROUTES \
 	PCI_DEV_PIRQ_ROUTE(GFX_DEV,  A, B, C, D), \

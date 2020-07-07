@@ -5,7 +5,7 @@
 #include <device/pci.h>
 #include <console/console.h>
 #include <soc/gpio.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/smm.h>
 
 /* GPIO-to-Pad LUTs */

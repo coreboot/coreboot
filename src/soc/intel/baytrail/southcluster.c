@@ -22,7 +22,7 @@
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/spi.h>
 #include "chip.h"

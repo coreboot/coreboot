@@ -9,7 +9,7 @@
 #include <soc/iosf.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/romstage.h>
 #include "../chip.h"
 

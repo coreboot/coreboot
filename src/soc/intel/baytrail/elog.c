@@ -8,7 +8,7 @@
 #include <device/pci.h>
 #include <elog.h>
 #include <soc/iomap.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 
 static void log_power_and_resets(const struct chipset_power_state *ps)
 {

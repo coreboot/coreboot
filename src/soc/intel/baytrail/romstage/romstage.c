@@ -17,7 +17,7 @@
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/romstage.h>
 
 static struct chipset_power_state power_state;

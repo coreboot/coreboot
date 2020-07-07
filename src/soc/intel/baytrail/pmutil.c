@@ -14,7 +14,7 @@
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <security/vboot/vbnv.h>
 
 #if defined(__SIMPLE_DEVICE__)

@@ -11,7 +11,7 @@
 #include "ec.h"
 
 #include <soc/nvs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 
 /* The wake gpio is SUS_GPIO[0]. */
 #define WAKE_GPIO_EN SUS_GPIO_EN0

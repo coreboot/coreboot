@@ -7,7 +7,7 @@
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/spi.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 
 static void setup_mmconfig(void)
 {

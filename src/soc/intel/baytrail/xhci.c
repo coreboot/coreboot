@@ -14,7 +14,7 @@
 #include <soc/lpc.h>
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/xhci.h>
 

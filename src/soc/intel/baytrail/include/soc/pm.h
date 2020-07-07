@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef _BAYTRAIL_PMC_H_
-#define _BAYTRAIL_PMC_H_
+#ifndef _BAYTRAIL_PM_H_
+#define _BAYTRAIL_PM_H_
 
 #include <acpi/acpi.h>
 
@@ -275,4 +275,4 @@ int rtc_failure(void);
 
 #endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
-#endif /* _BAYTRAIL_PMC_H_ */
+#endif /* _BAYTRAIL_PM_H_ */

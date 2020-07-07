@@ -8,7 +8,7 @@
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm_reloc.h>
 #include <soc/iomap.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/smm.h>
 
 /* Save settings which will be committed in SMI functions. */

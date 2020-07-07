@@ -10,7 +10,7 @@
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
-#include <soc/pmc.h>
+#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/ehci.h>
 

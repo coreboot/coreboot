@@ -60,11 +60,6 @@ static void print_num_status_bits(int num_bits, uint32_t status,
 	}
 }
 
-static void print_status_bits(uint32_t status, const char *bit_names[])
-{
-	print_num_status_bits(32, status, bit_names);
-}
-
 static uint32_t print_smi_status(uint32_t smi_sts)
 {
 	static const char *smi_sts_bits[] = {
@@ -91,7 +86,7 @@ static uint32_t print_smi_status(uint32_t smi_sts)
 		return 0;
 
 	printk(BIOS_DEBUG, "SMI_STS: ");
-	print_status_bits(smi_sts, smi_sts_bits);
+	print_num_status_bits(30, smi_sts, smi_sts_bits);
 	printk(BIOS_DEBUG, "\n");
 
 	return smi_sts;
@@ -167,7 +162,7 @@ static uint16_t print_pm1_status(uint16_t pm1_sts)
 		return 0;
 
 	printk(BIOS_SPEW, "PM1_STS: ");
-	print_status_bits(pm1_sts, pm1_sts_bits);
+	print_num_status_bits(16, pm1_sts, pm1_sts_bits);
 	printk(BIOS_SPEW, "\n");
 
 	return pm1_sts;
@@ -194,7 +189,7 @@ static uint32_t print_tco_status(uint32_t tco_sts)
 		return 0;
 
 	printk(BIOS_DEBUG, "TCO_STS: ");
-	print_status_bits(tco_sts, tco_sts_bits);
+	print_num_status_bits(18, tco_sts, tco_sts_bits);
 	printk(BIOS_DEBUG, "\n");
 
 	return tco_sts;
@@ -281,7 +276,7 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 		return gpe_sts;
 
 	printk(BIOS_DEBUG, "GPE0a_STS: ");
-	print_status_bits(gpe_sts, gpe_sts_bits);
+	print_num_status_bits(32, gpe_sts, gpe_sts_bits);
 	printk(BIOS_DEBUG, "\n");
 
 	return gpe_sts;

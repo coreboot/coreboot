@@ -22,6 +22,5 @@ Device (PEGP)
 				Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
 			})
 		}
-
 	}
 }

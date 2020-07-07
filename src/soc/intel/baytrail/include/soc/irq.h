@@ -140,8 +140,8 @@ extern const struct baytrail_irq_route global_baytrail_irq_route;
 
 /* The following macros are used for ACPI by the ASL compiler */
 #define PCI_DEV_PIRQ_ROUTE(dev_, a_, b_, c_, d_) \
-	[dev_] = ((PIRQ ## d_) << 12) | ((PIRQ ## c_) << 8) | \
-		   ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0)
+	[dev_] = (((PIRQ ## d_) << 12) | ((PIRQ ## c_) << 8) | \
+		   ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0))
 
 #define PIRQ_PIC(pirq_, pic_irq_) \
 	[PIRQ ## pirq_] = PIRQ_PIC_IRQ ## pic_irq_

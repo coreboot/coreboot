@@ -113,3 +113,35 @@ int variant_has_nvme(void)
 {
 	return !!extract_field(FW_CONFIG_MASK_NVME, FW_CONFIG_SHIFT_NVME);
 }
+
+bool variant_uses_v3_schematics(void)
+{
+	uint32_t board_version;
+
+	if (!CONFIG(VARIANT_SUPPORTS_PRE_V3_SCHEMATICS))
+		return true;
+
+	if (google_chromeec_cbi_get_board_version(&board_version))
+		return false;
+
+	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS)
+		return false;
+
+	return true;
+}
+
+bool variant_has_active_low_wifi_power(void)
+{
+	uint32_t board_version;
+
+	if (!CONFIG(VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH))
+		return true;
+
+	if (google_chromeec_cbi_get_board_version(&board_version))
+		return false;
+
+	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW)
+		return false;
+
+	return true;
+}

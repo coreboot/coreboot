@@ -149,8 +149,24 @@ config VARIANT_BOARD_VER_FW_CONFIG_VALID
 	help
 	  Which board version did FW_CONFIG become valid in CBI.
 
+config VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
+	bool
+	default y if BOARD_GOOGLE_TREMBYLE
+	default y if BOARD_GOOGLE_EZKINIL
+	default y if BOARD_GOOGLE_MORPHIUS
+	default y if BOARD_GOOGLE_BERKNIP
+	default y if BOARD_GOOGLE_DALBOZ
+	default y if BOARD_GOOGLE_VILBOZ
+	default n
+	help
+	  Whether this variant supports pre-v3 version of schematics.
+	  Eventually, when a variant moves to a point where it no
+	  longer has to support pre-v3 schematics, `default y` entry
+	  for it can be dropped.
+
 config VARIANT_MIN_BOARD_ID_V3_SCHEMATICS
 	int
+	depends on VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	default 4 if BOARD_GOOGLE_TREMBYLE
 	default 3 if BOARD_GOOGLE_EZKINIL
 	default 3 if BOARD_GOOGLE_MORPHIUS
@@ -158,12 +174,35 @@ config VARIANT_MIN_BOARD_ID_V3_SCHEMATICS
 	default 3 if BOARD_GOOGLE_DALBOZ
 	default 1 if BOARD_GOOGLE_VILBOZ
 	default 256
+	help
+	  Minimum board version where the variant starts supporting
+	  v3 version of reference schematics.
+
+config VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH
+	bool
+	default y if VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
+	default y if BOARD_GOOGLE_BERKNIP
+	default y if BOARD_GOOGLE_VILBOZ
+	default n
+	help
+	  Whether this variant supports active high power enable for
+	  WiFi. For pre-v3 schematics, this is always true. There are
+	  some variants which used v3 schematics, but did not pick up
+	  the change for active low WiFi power enable. Those variants
+	  will have to set this config to true. Eventually, when a
+	  variant needs to only support v3 schematics with active low
+	  power enable for WiFi, `default y` entry for it can be
+	  dropped.
 
 config VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW
 	int
+	depends on VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH
 	default 3 if BOARD_GOOGLE_BERKNIP
 	default 2 if BOARD_GOOGLE_VILBOZ
 	default VARIANT_MIN_BOARD_ID_V3_SCHEMATICS
+	help
+	  Minimum board version where the variant starts supporting
+	  active low power enable for WiFi.
 
 config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool "PSP verstage"

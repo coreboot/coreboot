@@ -171,10 +171,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 const __weak
 struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
 {
-	uint32_t board_version;
-
-	if (!google_chromeec_cbi_get_board_version(&board_version) &&
-	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS)) {
+	if (variant_uses_v3_schematics()) {
 		*size = ARRAY_SIZE(gpio_set_stage_rom_v3);
 		return gpio_set_stage_rom_v3;
 	}
@@ -250,9 +247,9 @@ static void wifi_power_reset_configure_active_high_power(void)
 	gpio_set(GPIO_86, 1);
 }
 
-static void wifi_power_reset_configure_v3(uint32_t board_version)
+static void wifi_power_reset_configure_v3(void)
 {
-	if (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW)
+	if (variant_has_active_low_wifi_power())
 		wifi_power_reset_configure_active_low_power();
 	else
 		wifi_power_reset_configure_active_high_power();
@@ -286,11 +283,8 @@ static void wifi_power_reset_configure_pre_v3(void)
 
 __weak void variant_pcie_power_reset_configure(void)
 {
-	uint32_t board_version;
-
-	if (!google_chromeec_cbi_get_board_version(&board_version) &&
-	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS))
-		wifi_power_reset_configure_v3(board_version);
+	if (variant_uses_v3_schematics())
+		wifi_power_reset_configure_v3();
 	else
 		wifi_power_reset_configure_pre_v3();
 }

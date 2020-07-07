@@ -63,4 +63,9 @@ int variant_has_nvme(void);
 /* Determine if booting in factory by using CROS_SKU_UNPROVISIONED. */
 int boot_is_factory_unprovisioned(void);
 
+/* Return true if variant uses v3 version of reference schematics. */
+bool variant_uses_v3_schematics(void);
+/* Return true if variant has active low power enable fow WiFi. */
+bool variant_has_active_low_wifi_power(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

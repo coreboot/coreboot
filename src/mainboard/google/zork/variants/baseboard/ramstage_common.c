@@ -8,11 +8,9 @@
 void variant_audio_update(void)
 {
 	struct soc_amd_picasso_config *cfg = config_of_soc();
-	uint32_t board_version;
 	struct acpi_gpio *gpio = &cfg->dmic_select_gpio;
 
-	if (!google_chromeec_cbi_get_board_version(&board_version) &&
-	    (board_version >= CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS))
+	if (!variant_uses_v3_schematics())
 		return;
 
 	if (CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE))

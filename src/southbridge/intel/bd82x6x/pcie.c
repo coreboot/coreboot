@@ -219,18 +219,6 @@ static void pci_init(struct device *dev)
 	pci_update_config16(dev, PCI_BRIDGE_CONTROL,
 			    ~PCI_BRIDGE_CTL_PARITY, PCI_BRIDGE_CTL_NO_ISA);
 
-#ifdef EVEN_MORE_DEBUG
-	u32 reg32;
-	reg32 = pci_read_config32(dev, 0x20);
-	printk(BIOS_SPEW, "    MBL    = 0x%08x\n", reg32);
-	reg32 = pci_read_config32(dev, 0x24);
-	printk(BIOS_SPEW, "    PMBL   = 0x%08x\n", reg32);
-	reg32 = pci_read_config32(dev, 0x28);
-	printk(BIOS_SPEW, "    PMBU32 = 0x%08x\n", reg32);
-	reg32 = pci_read_config32(dev, 0x2c);
-	printk(BIOS_SPEW, "    PMLU32 = 0x%08x\n", reg32);
-#endif
-
 	/* Clear errors in status registers. FIXME: Do something? */
 	reg16 = pci_read_config16(dev, 0x06);
 	//reg16 |= 0xf900;

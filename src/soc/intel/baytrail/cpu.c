@@ -13,14 +13,13 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <reg_script.h>
-
 #include <soc/iosf.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
 
 /* Core level MSRs */
-const struct reg_script core_msr_script[] = {
+static const struct reg_script core_msr_script[] = {
 	/* Dynamic L2 shrink enable and threshold, clear SINGLE_PCTL bit 11 */
 	REG_MSR_RMW(MSR_PKG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
 	REG_MSR_RMW(MSR_POWER_MISC, ~(ENABLE_ULFM_AUTOCM_MASK | ENABLE_INDP_AUTOCM_MASK), 0),
@@ -31,7 +30,7 @@ const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
-static void baytrail_core_init(struct device *cpu)
+static void soc_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
 
@@ -54,7 +53,7 @@ static void baytrail_core_init(struct device *cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init = baytrail_core_init,
+	.init = soc_core_init,
 };
 
 static const struct cpu_device_id cpu_table[] = {

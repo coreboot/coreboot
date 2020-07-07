@@ -68,8 +68,7 @@ static void busmaster_disable_on_bus(int bus)
 			/* If this is a bridge, then follow it. */
 			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
 			hdr &= 0x7f;
-			if (hdr == PCI_HEADER_TYPE_BRIDGE ||
-			    hdr == PCI_HEADER_TYPE_CARDBUS) {
+			if (hdr == PCI_HEADER_TYPE_BRIDGE || hdr == PCI_HEADER_TYPE_CARDBUS) {
 				unsigned int buses;
 				buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
 				busmaster_disable_on_bus((buses >> 8) & 0xff);
@@ -191,18 +190,17 @@ static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
 	uint8_t sub_command;
-	em64t100_smm_state_save_area_t *io_smi =
-		smi_apmc_find_state_save(APM_CNT_ELOG_GSMI);
+	em64t100_smm_state_save_area_t *io_smi = smi_apmc_find_state_save(APM_CNT_ELOG_GSMI);
 
 	if (!io_smi)
 		return;
 
 	/* Command and return value in EAX */
-	ret = (u32*)&io_smi->rax;
+	ret = (u32 *)&io_smi->rax;
 	sub_command = (uint8_t)(*ret >> 8);
 
 	/* Parameter buffer in EBX */
-	param = (u32*)&io_smi->rbx;
+	param = (u32 *)&io_smi->rbx;
 
 	/* drivers/elog/gsmi.c */
 	*ret = gsmi_exec(sub_command, param);
@@ -265,8 +263,7 @@ static void soc_legacy(void)
 static void southbridge_smi_store(void)
 {
 	u8 sub_command, ret;
-	em64t100_smm_state_save_area_t *io_smi =
-		smi_apmc_find_state_save(APM_CNT_SMMSTORE);
+	em64t100_smm_state_save_area_t *io_smi = smi_apmc_find_state_save(APM_CNT_SMMSTORE);
 	uint32_t reg_ebx;
 
 	if (!io_smi)
@@ -317,8 +314,7 @@ static void southbridge_smi_apmc(void)
 		break;
 	case APM_CNT_GNVS_UPDATE:
 		if (smm_initialized) {
-			printk(BIOS_DEBUG,
-			       "SMI#: SMM structures already initialized!\n");
+			printk(BIOS_DEBUG, "SMI#: SMM structures already initialized!\n");
 			return;
 		}
 		state = smi_apmc_find_state_save(reg8);
@@ -447,8 +443,7 @@ void southbridge_smi_handler(void)
 			southbridge_smi[i]();
 		} else {
 			printk(BIOS_DEBUG,
-			       "SMI_STS[%d] occurred, but no "
-			       "handler available.\n", i);
+			       "SMI_STS[%d] occurred, but no handler available.\n", i);
 		}
 	}
 

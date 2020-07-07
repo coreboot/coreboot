@@ -173,7 +173,6 @@ Device (LPCB)
 			IO (Decode16, 0x80, 0x80, 0x1, 0x01)		// Port 80 Post
 			IO (Decode16, 0x92, 0x92, 0x1, 0x01)		// CPU Reserved
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02)		// SWSMI
-			//IO (Decode16, 0x800, 0x800, 0x1, 0x10)		// ACPI I/O trap
 			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE, 0x1, 0x80)	// ICH7-M ACPI
 			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE, 0x1, 0x40)	// ICH7-M GPIO
 		})

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #define ENABLE_TPM
-#undef  ENABLE_FDC	// There is no Floppy for this laptop
 
 #include <acpi/acpi.h>
 DefinitionBlock(

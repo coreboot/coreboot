@@ -214,32 +214,4 @@ Device (LPCB)
 			Return (0xf)
 		}
 	}
-
-#ifdef ENABLE_FDC
-	Device (FDC0)		// Floppy controller
-	{
-		Name (_HID, EisaId ("PNP0700"))
-		Method (_STA, 0, NotSerialized)
-		{
-			Return (0x0f) // FIXME
-		}
-
-		Name(_CRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
-			IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
-			IRQNoFlags () {6}
-			DMA (Compatibility, NotBusMaster, Transfer8) {2}
-		})
-
-		Name(_PRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
-			IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
-			IRQNoFlags () {6}
-			DMA (Compatibility, NotBusMaster, Transfer8) {2}
-		})
-
-	}
-#endif
 }

@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: http://biostar-usa.com/app/en-us/mb/introduction.php?S_ID=548
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

@@ -1,0 +1,2 @@
+config BOARD_BIOSTAR_TH61_ITX
+	bool "TH61-ITX"

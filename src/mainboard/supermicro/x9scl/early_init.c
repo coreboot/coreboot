@@ -43,7 +43,6 @@ static const uint8_t superio_initvals[][2] = {
 	SUPERIO_INITVAL(0x1b, 0x68),
 	SUPERIO_INITVAL(0x1c, 0x83),
 	SUPERIO_INITVAL(0x24, 0x24),
-	//SUPERIO_INITVAL(0x27, 0x00),
 	SUPERIO_INITVAL(0x2a, 0x00),
 	SUPERIO_INITVAL(0x2b, 0x42),
 	SUPERIO_INITVAL(0x2c, 0x80),
@@ -71,17 +70,6 @@ static const uint8_t superio_initvals[][2] = {
 
 	SUPERIO_BANK(0x0), /* FDC */
 	SUPERIO_INITVAL(0x30, 0x80),
-
-#if 0
-	SUPERIO_BANK(8),
-	SUPERIO_INITVAL(0x30, 0x0a),
-	SUPERIO_INITVAL(0x60, X9SCL_NCT6776_GPIO_BASE >> 8),
-	SUPERIO_INITVAL(0x61, X9SCL_NCT6776_GPIO_BASE & 0xff),
-	SUPERIO_INITVAL(0xe1, 0xf9),
-
-	SUPERIO_BANK(0xa),
-	SUPERIO_INITVAL(0xe4, 0x60),
-#endif
 };
 
 
@@ -107,25 +95,6 @@ static void bmc_init(void)
 	pnp_set_iobase(dev, PNP_IDX_IO1, X9SCL_WPCM450_KCS_BASE + 1);
 	pnp_set_iobase(dev, PNP_IDX_IRQ0, 0);
 	pnp_set_enable(dev, 1);
-
-#if 0
-	//wpcm450_enable_dev(WPCM450_SP2, X9SCL_WPCM450_PNP_BASE, 0x03e8);
-	//wpcm450_enable_dev(WPCM450_SP1, X9SCL_WPCM450_PNP_BASE, 0x02e8);
-#endif
-
-#if 0
-	dev = PNP_DEV(X9SCL_WPCM450_PNP_BASE, WPCM450_SP2);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x03e8);
-	pnp_set_enable(dev, 1);
-
-	dev = PNP_DEV(X9SCL_WPCM450_PNP_BASE, WPCM450_SP1);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x02e8);
-	pnp_set_enable(dev, 0);
-#endif
 }
 
 void bootblock_mainboard_early_init(void)

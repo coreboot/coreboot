@@ -140,14 +140,6 @@ void fb_init(unsigned long int fb_size, void *lcdbase,
 	write32(&exynos_fimd->dpclkcon, 1 << 1);
 }
 
-#ifdef UNUSED_CODE
-void exynos_fimd_disable(void)
-{
-	write32(&exynos_fimd->wincon0, 0);
-	clrbits32(&exynos_fimd->shadowcon, CHANNEL0_EN);
-}
-#endif
-
 /*
  * Configure DP in slave mode and wait for video stream.
  *

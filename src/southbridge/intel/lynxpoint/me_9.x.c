@@ -515,32 +515,6 @@ static void __unused me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
 
-#if CONFIG(CHROMEOS) && 0 /* DISABLED */
-/* Tell ME to issue a global reset */
-static int mkhi_global_reset(void)
-{
-	struct me_global_reset reset = {
-		.request_origin	= GLOBAL_RESET_BIOS_POST,
-		.reset_type	= CBM_RR_GLOBAL_RESET,
-	};
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_CBM,
-		.command	= MKHI_GLOBAL_RESET,
-	};
-
-	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __func__);
-	if (mei_sendrecv_mkhi(&mkhi, &reset, sizeof(reset), NULL, 0) < 0) {
-		/* No response means reset will happen shortly... */
-		halt();
-	}
-
-	/* If the ME responded it rejected the reset request */
-	printk(BIOS_ERR, "ME: Global Reset failed\n");
-	return -1;
-}
-#endif
-
 /* Send END OF POST message to the ME */
 static int __unused mkhi_end_of_post(void)
 {
@@ -891,22 +865,6 @@ static u32 me_to_host_words_pending(void)
 	return (me.buffer_write_ptr - me.buffer_read_ptr) &
 		(me.buffer_depth - 1);
 }
-
-#if 0
-/* This function is not yet being used, keep it in for the future. */
-static u32 host_to_me_words_room(void)
-{
-	struct mei_csr csr;
-
-	read_me_csr(&csr);
-	if (!csr.ready)
-		return 0;
-
-	read_host_csr(&csr);
-	return (csr.buffer_read_ptr - csr.buffer_write_ptr - 1) &
-		(csr.buffer_depth - 1);
-}
-#endif
 
 struct mbp_payload {
 	mbp_header header;

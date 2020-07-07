@@ -208,8 +208,8 @@ Method (_CRS, 0, Serialized)
 	 * Enter actual TOLUD. The TOLUD register contains bits 20-31 of
 	 * the top of memory address.
 	 */
-	ShiftLeft (^MCHC.TLUD, 20, PMIN)
-	Add(Subtract(PMAX, PMIN), 1, PLEN)
+	PMIN = ^MCHC.TLUD << 20
+	PLEN = PMAX - PMIN + 1
 
 	Return (MCRS)
 }

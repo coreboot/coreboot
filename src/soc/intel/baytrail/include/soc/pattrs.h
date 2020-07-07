@@ -14,7 +14,8 @@ enum {
 	IACORE_END
 };
 
-/* The pattrs structure is a common place to stash pertinent information
+/*
+ * The pattrs structure is a common place to stash pertinent information
  * about the processor or platform. Instead of going to the source (msrs, cpuid)
  * every time an attribute is needed use the pattrs structure.
  */
@@ -32,8 +33,10 @@ struct pattrs {
 	unsigned int bclk_khz;
 };
 
-/* This is just to hide the abstraction w/o relying on how the underlying
- * storage is allocated. */
+/*
+ * This is just to hide the abstraction w/o relying on how the underlying
+ * storage is allocated.
+ */
 #define PATTRS_GLOB_NAME __global_pattrs
 #define DEFINE_PATTRS struct pattrs PATTRS_GLOB_NAME
 extern DEFINE_PATTRS;
@@ -42,6 +45,5 @@ static inline const struct pattrs *pattrs_get(void)
 {
 	return &PATTRS_GLOB_NAME;
 }
-
 
 #endif /* _PATTRS_H_ */

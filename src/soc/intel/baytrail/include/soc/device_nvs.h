@@ -35,7 +35,7 @@ typedef struct {
 	u32	scc_bar0[3];
 	u32	lpe_bar0;
 
-	/* BAR 0 */
+	/* BAR 1 */
 	u32	lpss_bar1[14];
 	u32	scc_bar1[3];
 	u32	lpe_bar1;

@@ -26,7 +26,8 @@ static inline pci_devfn_t get_pcu_dev(void)
 	return pcu_dev;
 }
 
-#else
+#else /* __SIMPLE_DEVICE__ */
+
 static struct device *pcu_dev;
 static struct device *get_pcu_dev(void)
 {
@@ -34,7 +35,7 @@ static struct device *get_pcu_dev(void)
 		pcu_dev = pcidev_on_root(PCU_DEV, 0);
 	return pcu_dev;
 }
-#endif
+#endif /* __SIMPLE_DEVICE__ */
 
 uint16_t get_pmbase(void)
 {
@@ -363,7 +364,6 @@ int rtc_failure(void)
 		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	rtc_fail = !!(gen_pmcon1 & RPS);
-
 	if (rtc_fail)
 		printk(BIOS_DEBUG, "RTC failure.\n");
 

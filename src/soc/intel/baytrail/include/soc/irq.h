@@ -11,6 +11,7 @@
 #define PIRQF_APIC_IRQ			21
 #define PIRQG_APIC_IRQ			22
 #define PIRQH_APIC_IRQ			23
+
 /* The below IRQs are for when devices are in ACPI mode. Active low. */
 #define LPE_DMA0_IRQ			24
 #define LPE_DMA1_IRQ			25
@@ -110,9 +111,11 @@
 # define SCIS_IRQ22				0x06
 # define SCIS_IRQ23				0x07
 
-/* In each mainboard directory there should exist a header file irqroute.h that
+/*
+ * In each mainboard directory there should exist a header file irqroute.h that
  * defines the PCI_DEV_PIRQ_ROUTES and PIRQ_PIC_ROUTES macros which
- * consist of PCI_DEV_PIRQ_ROUTE and PIRQ_PIC entries. */
+ * consist of PCI_DEV_PIRQ_ROUTE and PIRQ_PIC entries.
+ */
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #include <stdint.h>
@@ -135,9 +138,10 @@ extern const struct baytrail_irq_route global_baytrail_irq_route;
 		.pic = { PIRQ_PIC_ROUTES, }, \
 	}
 
+/* The following macros are used for ACPI by the ASL compiler */
 #define PCI_DEV_PIRQ_ROUTE(dev_, a_, b_, c_, d_) \
 	[dev_] = ((PIRQ ## d_) << 12) | ((PIRQ ## c_) << 8) | \
-	         ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0)
+		   ((PIRQ ## b_) <<  4) | ((PIRQ ## a_) << 0)
 
 #define PIRQ_PIC(pirq_, pic_irq_) \
 	[PIRQ ## pirq_] = PIRQ_PIC_IRQ ## pic_irq_

@@ -2,7 +2,8 @@
 
 #include <southbridge/intel/common/acpi/platform.asl>
 
-/* The _PTS method (Prepare To Sleep) is called before the OS is
+/*
+ * The _PTS method (Prepare To Sleep) is called before the OS is
  * entering a sleep state. The sleep state number is passed in Arg0
  */
 

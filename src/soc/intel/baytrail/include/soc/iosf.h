@@ -12,17 +12,17 @@
  *  MCR - control register
  *  MDR - data register
  *  MCRX - control register extension
- * The extension regist is only used for addresses that don't fit into the
- * 8 bit register address.
+ * The extension register is only used for addresses that don't fit
+ * into the 8 bit register address.
  */
 
 #ifndef PCI_DEV
 #define PCI_DEV(SEGBUS, DEV, FN) ( \
-        (((SEGBUS) & 0xFFF) << 20) | \
-        (((DEV) & 0x1F) << 15) | \
-        (((FN)  & 0x07) << 12))
+	(((SEGBUS) & 0xFFF) << 20) | \
+	(((DEV) & 0x1F) << 15) | \
+	(((FN)  & 0x07) << 12))
 #endif
-#define IOSF_PCI_DEV PCI_DEV(0,SOC_DEV,SOC_FUNC)
+#define IOSF_PCI_DEV PCI_DEV(0, SOC_DEV, SOC_FUNC)
 
 #define MCR_REG 0xd0
 #define  IOSF_OPCODE(x) ((x) << 24)

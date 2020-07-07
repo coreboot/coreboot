@@ -204,21 +204,21 @@
 #define   _ACPI_ENABLE_WAKE_SUS_GPIO(x) SUS_GPIO_EN##x##_BIT
 #define   ACPI_ENABLE_WAKE_SUS_GPIO(x) _ACPI_ENABLE_WAKE_SUS_GPIO(x)
 #define SMI_EN			0x30
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   USB_EN	 (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define   INTEL_USB2_EN	 (1 << 18) /* Intel-Specific USB2 SMI logic */
+#define   USB_EN	 (1 << 17) /* Legacy USB2 SMI logic */
+#define   PERIODIC_EN	 (1 << 14) /* SMI on PERIODIC_STS in SMI_STS */
+#define   TCO_EN	 (1 << 13) /* Enable TCO Logic (BIOSWE et al) */
+#define   BIOS_RLS	 (1 <<  7) /* asserts SCI on bit set */
+#define   SWSMI_TMR_EN	 (1 <<  6) /* start software smi timer on bit set */
+#define   APMC_EN	 (1 <<  5) /* Writes to APM_CNT cause SMI# */
+#define   SLP_SMI_EN	 (1 <<  4) /* Write to SLP_EN in PM1_CNT asserts SMI# */
+#define   BIOS_EN	 (1 <<  2) /* Assert SMI# on setting GBL_RLS bit */
+#define   EOS		 (1 <<  1) /* End of SMI (deassert SMI#) */
+#define   GBL_SMI_EN	 (1 <<  0) /* SMI# generation at all? */
 #define SMI_STS			0x34
 #define ALT_GPIO_SMI		0x38
 #define UPRWC			0x3c
-# define  UPRWC_WR_EN	 (1 << 1) // USB Per-Port Registers Write Enable
+# define  UPRWC_WR_EN	 (1 << 1) /* USB Per-Port Registers Write Enable */
 #define GPE_CTRL		0x40
 #define PM2A_CNT_BLK		0x50
 #define TCO_RLD			0x60

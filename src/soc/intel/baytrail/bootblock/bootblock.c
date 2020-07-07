@@ -13,10 +13,11 @@ static void setup_mmconfig(void)
 {
 	uint32_t reg;
 
-	/* Set up the MMCONF range. The register lives in the BUNIT. The
-	 * IO variant of the config access needs to be used initially to
-	 * properly configure as the IOSF access registers live in PCI
-	 * config space. */
+	/*
+	 * Set up the MMCONF range. The register lives in the BUNIT. The IO variant of the
+	 * config access needs to be used initially to properly configure as the IOSF access
+	 * registers live in PCI config space.
+	 */
 	reg = 0;
 	/* Clear the extended register. */
 	pci_io_write_config32(IOSF_PCI_DEV, MCRX_REG, reg);
@@ -98,11 +99,11 @@ static void byt_config_com1_and_enable(void)
    just pick the one that is called first. */
 void bootblock_early_northbridge_init(void)
 {
-	/* Allow memory-mapped PCI config access. */
+	/* Allow memory-mapped PCI config access */
 	setup_mmconfig();
 
+	/* Early chipset initialization */
 	program_base_addresses();
-
 	tco_disable();
 
 	if (CONFIG(ENABLE_BUILTIN_COM1))

@@ -48,7 +48,7 @@ struct __packed global_nvs {
 
 	u8	unused[76];
 
-	/* ChromeOS specific (0x100-0xfff)*/
+	/* ChromeOS specific (0x100-0xfff) */
 	chromeos_acpi_t chromeos;
 
 	/* Baytrail LPSS (0x1000) */

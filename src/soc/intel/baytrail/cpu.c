@@ -35,10 +35,11 @@ static void baytrail_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
 
-	/* On bay trail the turbo disable bit is actually scoped at building
-	 * block level -- not package. For non-bsp cores that are within a
-	 * building block enable turbo. The cores within the BSP's building
-	 * block will just see it already enabled and move on. */
+	/*
+	 * The turbo disable bit is actually scoped at building block level -- not package.
+	 * For non-BSP cores that are within a building block, enable turbo. The cores within
+	 * the BSP's building block will just see it already enabled and move on.
+	 */
 	if (lapicid())
 		enable_turbo();
 
@@ -95,9 +96,8 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 
 	/*
-	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM
-	 * mode for the lines that were dirtied while in SMM mode. Otherwise
-	 * the writes would be silently dropped.
+	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM mode for lines
+	 * that were dirtied while in SMM mode. Otherwise the writes would be silently dropped.
 	 */
 	bsmrwac = iosf_bunit_read(BUNIT_SMRWAC) | SAI_IA_UNTRUSTED;
 	iosf_bunit_write(BUNIT_SMRWAC, bsmrwac);

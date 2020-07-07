@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-// Intel LPC Bus Device  - 0:1f.0
+/* Intel LPC Bus Device  - 0:1f.0 */
 
 Device (LPCB)
 {
@@ -10,7 +10,7 @@ Device (LPCB)
 
 	#include "acpi/ec.asl"
 
-	Device (DMAC)		// DMA Controller
+	Device (DMAC)		/* DMA Controller */
 	{
 		Name(_HID, EISAID("PNP0200"))
 		Name(_CRS, ResourceTemplate()
@@ -23,7 +23,7 @@ Device (LPCB)
 		})
 	}
 
-	Device (FWH)		// Firmware Hub
+	Device (FWH)		/* Firmware Hub */
 	{
 		Name (_HID, EISAID("INT0800"))
 		Name (_CRS, ResourceTemplate()
@@ -37,9 +37,9 @@ Device (LPCB)
 		Name (_HID, EISAID("PNP0103"))
 		Name (_CID, 0x010CD041)
 
-		Method (_STA, 0)	// Device Status
+		Method (_STA, 0)	/* Device Status */
 		{
-			Return (0xf)	// Enable and show device
+			Return (0xf)	/* Enable and show device */
 		}
 
 		Name(_CRS, ResourceTemplate()
@@ -48,7 +48,7 @@ Device (LPCB)
 		})
 	}
 
-	Device(PIC)	// 8259 Interrupt Controller
+	Device(PIC)	/* 8259 Interrupt Controller */
 	{
 		Name(_HID,EISAID("PNP0000"))
 		Name(_CRS, ResourceTemplate()
@@ -74,20 +74,20 @@ Device (LPCB)
 		})
 	}
 
-	Device(LDRC)	// LPC device: Resource consumption
+	Device(LDRC)	/* LPC device: Resource consumption */
 	{
 		Name (_HID, EISAID("PNP0C02"))
 		Name (_UID, 2)
 
 		Name (RBUF, ResourceTemplate()
 		{
-			IO (Decode16, 0x61, 0x61, 0x1, 0x01) // NMI Status
-			IO (Decode16, 0x63, 0x63, 0x1, 0x01) // CPU Reserved
-			IO (Decode16, 0x65, 0x65, 0x1, 0x01) // CPU Reserved
-			IO (Decode16, 0x67, 0x67, 0x1, 0x01) // CPU Reserved
-			IO (Decode16, 0x80, 0x80, 0x1, 0x01) // Port 80 Post
-			IO (Decode16, 0x92, 0x92, 0x1, 0x01) // CPU Reserved
-			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02) // SWSMI
+			IO (Decode16, 0x61, 0x61, 0x1, 0x01) /* NMI Status */
+			IO (Decode16, 0x63, 0x63, 0x1, 0x01) /* CPU Reserved */
+			IO (Decode16, 0x65, 0x65, 0x1, 0x01) /* CPU Reserved */
+			IO (Decode16, 0x67, 0x67, 0x1, 0x01) /* CPU Reserved */
+			IO (Decode16, 0x80, 0x80, 0x1, 0x01) /* Port 80 Post */
+			IO (Decode16, 0x92, 0x92, 0x1, 0x01) /* CPU Reserved */
+			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02) /* SWSMI */
 		})
 
 		Method (_CRS, 0, NotSerialized)
@@ -96,18 +96,20 @@ Device (LPCB)
 		}
 	}
 
-	Device (RTC)	// Real Time Clock
+	Device (RTC)	/* Real Time Clock */
 	{
 		Name (_HID, EISAID("PNP0B00"))
 		Name (_CRS, ResourceTemplate()
 		{
 			IO (Decode16, 0x70, 0x70, 1, 8)
-// Disable as Windows doesn't like it, and systems don't seem to use it.
-//			IRQNoFlags() { 8 }
+/*
+ * Disable as Windows doesn't like it, and systems don't seem to use it.
+ *			IRQNoFlags() { 8 }
+ */
 		})
 	}
 
-	Device (TIMR)	// Intel 8254 timer
+	Device (TIMR)	/* Intel 8254 timer */
 	{
 		Name(_HID, EISAID("PNP0100"))
 		Name(_CRS, ResourceTemplate()
@@ -118,6 +120,6 @@ Device (LPCB)
 		})
 	}
 
-	// Include mainboard's superio.asl file.
+	/* Include mainboard's superio.asl file. */
 	#include "acpi/superio.asl"
 }

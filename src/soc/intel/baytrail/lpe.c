@@ -19,9 +19,10 @@
 #include <soc/ramstage.h>
 #include "chip.h"
 
-
-/* The LPE audio devices needs 1MiB of memory reserved aligned to a 512MiB
- * address. Just take 1MiB @ 512MiB. */
+/*
+ * The LPE audio devices needs 1MiB of memory reserved aligned to a 512MiB
+ * address. Just take 1MiB @ 512MiB.
+ */
 #define FIRMWARE_PHYS_BASE (512 << 20)
 #define FIRMWARE_PHYS_LENGTH (1 << 20)
 #define FIRMWARE_PCI_REG_BASE 0xa8
@@ -82,10 +83,12 @@ static void setup_codec_clock(struct device *dev)
 		freq_str = "19.2";
 		reg = CLK_FREQ_19P2MHZ;
 		break;
+
 	case 25:
 		freq_str = "25";
 		reg = CLK_FREQ_25MHZ;
 		break;
+
 	default:
 		printk(BIOS_DEBUG, "LPE codec clock not required.\n");
 		return;
@@ -138,7 +141,6 @@ static void lpe_init(struct device *dev)
 	struct soc_intel_baytrail_config *config = config_of(dev);
 
 	lpe_stash_firmware_info(dev);
-
 	setup_codec_clock(dev);
 
 	if (config->lpe_acpi_mode)

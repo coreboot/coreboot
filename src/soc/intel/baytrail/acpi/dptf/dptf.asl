@@ -26,7 +26,8 @@ Device (DPTF)
 		}
 	}
 
-	/* Arg0: Buffer containing UUID
+	/*
+	 * Arg0: Buffer containing UUID
 	 * Arg1: Integer containing Revision ID of buffer format
 	 * Arg2: Integer containing count of entries in Arg3
 	 * Arg3: Buffer containing list of DWORD capabilities

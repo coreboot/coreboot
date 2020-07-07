@@ -25,7 +25,8 @@ int southbridge_io_trap_handler(int smif)
 	switch (smif) {
 	case 0x32:
 		printk(BIOS_DEBUG, "OS Init\n");
-		/* gnvs->smif:
+		/*
+		 * gnvs->smif:
 		 *  On success, the IO Trap Handler returns 0
 		 *  On failure, the IO Trap Handler returns a value != 0
 		 */
@@ -98,9 +99,7 @@ static void southbridge_smi_sleep(void)
 	if (slp_typ >= ACPI_S3)
 		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
-	/* Next, do the deed.
-	 */
-
+	/* Next, do the deed. */
 	switch (slp_typ) {
 	case ACPI_S0:
 		printk(BIOS_DEBUG, "SMI#: Entering S0 (On)\n");
@@ -123,7 +122,7 @@ static void southbridge_smi_sleep(void)
 		/* Disable all GPE */
 		disable_all_gpe();
 
-		/* also iterates over all bridges on bus 0 */
+		/* Also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
 		break;
 	default:
@@ -131,9 +130,9 @@ static void southbridge_smi_sleep(void)
 		break;
 	}
 
-	/* Write back to the SLP register to cause the originally intended
-	 * event again. We need to set BIT13 (SLP_EN) though to make the
-	 * sleep happen.
+	/*
+	 * Write back to the SLP register to cause the originally intended event again.
+	 * We need to set BIT13 (SLP_EN) though to make the sleep happen.
 	 */
 	enable_pm1_control(SLP_EN);
 
@@ -141,7 +140,8 @@ static void southbridge_smi_sleep(void)
 	if (slp_typ >= ACPI_S3)
 		halt();
 
-	/* In most sleep states, the code flow of this function ends at
+	/*
+	 * In most sleep states, the code flow of this function ends at
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
@@ -153,9 +153,8 @@ static void southbridge_smi_sleep(void)
 }
 
 /*
- * Look for Synchronous IO SMI and use save state from that
- * core in case we are not running on the same core that
- * initiated the IO transaction.
+ * Look for Synchronous IO SMI and use save state from that core in case
+ * we are not running on the same core that initiated the IO transaction.
  */
 static em64t100_smm_state_save_area_t *smi_apmc_find_state_save(uint8_t cmd)
 {
@@ -293,14 +292,16 @@ static void southbridge_smi_apmc(void)
 	reg8 = inb(APM_CNT);
 	switch (reg8) {
 	case APM_CNT_CST_CONTROL:
-		/* Calling this function seems to cause
+		/*
+		 * Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
 		printk(BIOS_DEBUG, "C-state control\n");
 		break;
 	case APM_CNT_PST_CONTROL:
-		/* Calling this function seems to cause
+		/*
+		 * Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
@@ -348,11 +349,9 @@ static void southbridge_smi_pm1(void)
 {
 	uint16_t pm1_sts = clear_pm1_status();
 
-	/* While OSPM is not active, poweroff immediately
-	 * on a power button event.
-	 */
+	/* While OSPM is not active, poweroff immediately on a power button event */
 	if (pm1_sts & PWRBTN_STS) {
-		// power button pressed
+		/* Power button pressed */
 		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
 		disable_pm1_control(-1UL);
 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
@@ -394,38 +393,38 @@ static void southbridge_smi_periodic(void)
 typedef void (*smi_handler_t)(void);
 
 static const smi_handler_t southbridge_smi[32] = {
-	NULL,			  //  [0] reserved
-	NULL,			  //  [1] reserved
-	NULL,			  //  [2] BIOS_STS
-	NULL,			  //  [3] LEGACY_USB_STS
-	southbridge_smi_sleep,	  //  [4] SLP_SMI_STS
-	southbridge_smi_apmc,	  //  [5] APM_STS
-	NULL,			  //  [6] SWSMI_TMR_STS
-	NULL,			  //  [7] reserved
-	southbridge_smi_pm1,	  //  [8] PM1_STS
-	southbridge_smi_gpe0,	  //  [9] GPE0_STS
-	NULL,			  // [10] reserved
-	NULL,			  // [11] reserved
-	NULL,			  // [12] reserved
-	southbridge_smi_tco,	  // [13] TCO_STS
-	southbridge_smi_periodic, // [14] PERIODIC_STS
-	NULL,			  // [15] SERIRQ_SMI_STS
-	NULL,			  // [16] SMBUS_SMI_STS
-	NULL,			  // [17] LEGACY_USB2_STS
-	NULL,			  // [18] INTEL_USB2_STS
-	NULL,			  // [19] reserved
-	NULL,			  // [20] PCI_EXP_SMI_STS
-	NULL,			  // [21] reserved
-	NULL,			  // [22] reserved
-	NULL,			  // [23] reserved
-	NULL,			  // [24] reserved
-	NULL,			  // [25] reserved
-	NULL,			  // [26] SPI_STS
-	NULL,			  // [27] reserved
-	NULL,			  // [28] PUNIT
-	NULL,			  // [29] GUNIT
-	NULL,			  // [30] reserved
-	NULL			  // [31] reserved
+	NULL,			  /*  [0] reserved */
+	NULL,			  /*  [1] reserved */
+	NULL,			  /*  [2] BIOS_STS */
+	NULL,			  /*  [3] LEGACY_USB_STS */
+	southbridge_smi_sleep,	  /*  [4] SLP_SMI_STS */
+	southbridge_smi_apmc,	  /*  [5] APM_STS */
+	NULL,			  /*  [6] SWSMI_TMR_STS */
+	NULL,			  /*  [7] reserved */
+	southbridge_smi_pm1,	  /*  [8] PM1_STS */
+	southbridge_smi_gpe0,	  /*  [9] GPE0_STS */
+	NULL,			  /* [10] reserved */
+	NULL,			  /* [11] reserved */
+	NULL,			  /* [12] reserved */
+	southbridge_smi_tco,	  /* [13] TCO_STS */
+	southbridge_smi_periodic, /* [14] PERIODIC_STS */
+	NULL,			  /* [15] SERIRQ_SMI_STS */
+	NULL,			  /* [16] SMBUS_SMI_STS */
+	NULL,			  /* [17] LEGACY_USB2_STS */
+	NULL,			  /* [18] INTEL_USB2_STS */
+	NULL,			  /* [19] reserved */
+	NULL,			  /* [20] PCI_EXP_SMI_STS */
+	NULL,			  /* [21] reserved */
+	NULL,			  /* [22] reserved */
+	NULL,			  /* [23] reserved */
+	NULL,			  /* [24] reserved */
+	NULL,			  /* [25] reserved */
+	NULL,			  /* [26] SPI_STS */
+	NULL,			  /* [27] reserved */
+	NULL,			  /* [28] PUNIT */
+	NULL,			  /* [29] GUNIT */
+	NULL,			  /* [30] reserved */
+	NULL			  /* [31] reserved */
 };
 
 void southbridge_smi_handler(void)
@@ -433,7 +432,8 @@ void southbridge_smi_handler(void)
 	int i;
 	uint32_t smi_sts;
 
-	/* We need to clear the SMI status registers, or we won't see what's
+	/*
+	 * We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.
 	 */
 	smi_sts = clear_smi_status();
@@ -452,7 +452,9 @@ void southbridge_smi_handler(void)
 		}
 	}
 
-	/* The GPIO SMI events do not have a status bit in SMI_STS. Therefore,
-	 * these events need to be cleared and checked unconditionally. */
+	/*
+	 * The GPIO SMI events do not have a status bit in SMI_STS. Therefore,
+	 * these events need to be cleared and checked unconditionally.
+	 */
 	mainboard_smi_gpi(clear_alt_status());
 }

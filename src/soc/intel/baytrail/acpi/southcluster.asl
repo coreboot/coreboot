@@ -5,16 +5,16 @@
 
 Scope(\)
 {
-	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
+	/* IO-Trap at 0x800. This is the ACPI->SMI communication interface. */
 
 	OperationRegion(IO_T, SystemIO, 0x800, 0x10)
 	Field(IO_T, ByteAcc, NoLock, Preserve)
 	{
 		Offset(0x8),
-		TRP0, 8		// IO-Trap at 0x808
+		TRP0, 8		/* IO-Trap at 0x808 */
 	}
 
-	// Intel Legacy Block
+	/* Intel Legacy Block */
 	OperationRegion(ILBS, SystemMemory, ILB_BASE_ADDRESS, ILB_BASE_SIZE)
 	Field (ILBS, AnyAcc, NoLock, Preserve)
 	{
@@ -30,8 +30,8 @@ Scope(\)
 	}
 }
 
-Name(_HID,EISAID("PNP0A08"))	// PCIe
-Name(_CID,EISAID("PNP0A03"))	// PCI
+Name(_HID,EISAID("PNP0A08"))	/* PCIe */
+Name(_CID,EISAID("PNP0A03"))	/* PCI */
 
 Name(_BBN, 0)
 
@@ -152,12 +152,12 @@ Name (MCRS, ResourceTemplate()
 Method (_CRS, 0, Serialized)
 {
 
-	// Update PCI resource area
+	/* Update PCI resource area */
 	CreateDwordField(MCRS, ^PMEM._MIN, PMIN)
 	CreateDwordField(MCRS, ^PMEM._MAX, PMAX)
 	CreateDwordField(MCRS, ^PMEM._LEN, PLEN)
 
-	// TOLM is BMBOUND accessible from IOSF so is saved in NVS
+	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
 	Store (\TOLM, PMIN)
 	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
@@ -182,7 +182,7 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE)
 	})
 
-	// Current Resource Settings
+	/* Current Resource Settings */
 	Method (_CRS, 0, Serialized)
 	{
 		Return(PDRS)
@@ -227,13 +227,13 @@ Device (IOSF)
 	}
 }
 
-// LPC Bridge 0:1f.0
+/* LPC Bridge 0:1f.0 */
 #include "lpc.asl"
 
-// USB XHCI 0:14.0
+/* USB XHCI 0:14.0 */
 #include "xhci.asl"
 
-// IRQ routing for each PCI device
+/* IRQ routing for each PCI device */
 #include "irqroute.asl"
 
 // PCI Express Ports 0:1c.x
@@ -241,16 +241,16 @@ Device (IOSF)
 
 Scope (\_SB)
 {
-	// GPIO Devices
+	/* GPIO Devices */
 	#include "gpio.asl"
 }
 
 Scope (\_SB.PCI0)
 {
-	// LPSS Devices
+	/* LPSS Devices */
 	#include "lpss.asl"
 
-	// SCC Devices
+	/* SCC Devices */
 	#include "scc.asl"
 
 	// LPE Device

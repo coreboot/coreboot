@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-// PCI Interrupt Routing
+/* PCI Interrupt Routing */
 Method(_PRT)
 {
 	If (PICM) {

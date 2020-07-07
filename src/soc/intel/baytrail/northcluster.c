@@ -11,7 +11,8 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
-/* Host Memory Map:
+/*
+ * Host Memory Map:
  *
  * +--------------------------+ BMBOUND_HI
  * |     Usable DRAM          |

@@ -62,7 +62,7 @@ static inline int io_range_in_default(int base, int size)
 	    (base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
 		return 1;
 
-	/* This will return not in range for partial overlaps. */
+	/* This will return not in range for partial overlaps */
 	return 0;
 }
 
@@ -294,13 +294,13 @@ static void sc_disable_devfn(struct device *dev)
 
 	if (mask != 0) {
 		write32(func_dis, read32(func_dis) | mask);
-		/* Ensure posted write hits. */
+		/* Ensure posted write hits */
 		read32(func_dis);
 	}
 
 	if (mask2 != 0) {
 		write32(func_dis2, read32(func_dis2) | mask2);
-		/* Ensure posted write hits. */
+		/* Ensure posted write hits */
 		read32(func_dis2);
 	}
 }
@@ -314,9 +314,10 @@ static inline void set_d3hot_bits(struct device *dev, int offset)
 	pci_write_config8(dev, offset + 4, reg8);
 }
 
-/* Parts of the audio subsystem are powered by the HDA device. Therefore, one
- * cannot put HDA into D3Hot. Instead perform this workaround to make some of
- * the audio paths work for LPE audio. */
+/*
+ * Parts of the audio subsystem are powered by the HDA device. Thus, one cannot put HDA into
+ * D3Hot. Instead, perform this workaround to make some of the audio paths work for LPE audio.
+ */
 static void hda_work_around(struct device *dev)
 {
 	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
@@ -324,8 +325,10 @@ static void hda_work_around(struct device *dev)
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
 
-	/* Need to set bit 0 of GCTL to take the device out of reset. However,
-	 * that requires setting up the 64-bit BAR. */
+	/*
+	 * Need to set bit 0 of GCTL to take the device out of reset.
+	 * However, that requires setting up the 64-bit BAR.
+	 */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, TEMP_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
 	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
@@ -338,8 +341,10 @@ static int place_device_in_d3hot(struct device *dev)
 {
 	unsigned int offset;
 
-	/* Parts of the HDA block are used for LPE audio as well.
-	 * Therefore assume the HDA will never be put into D3Hot. */
+	/*
+	 * Parts of the HDA block are used for LPE audio as well.
+	 * Therefore assume the HDA will never be put into D3Hot.
+	 */
 	if (dev->path.pci.devfn == PCI_DEVFN(HDA_DEV, HDA_FUNC)) {
 		hda_work_around(dev);
 		return 0;
@@ -352,8 +357,10 @@ static int place_device_in_d3hot(struct device *dev)
 		return 0;
 	}
 
-	/* For some reason some of the devices don't have the capability
-	 * pointer set correctly. Work around this by hard coding the offset. */
+	/*
+	 * For some reason some of the devices don't have the capability pointer set correctly.
+	 * Work around this by hard coding the offset.
+	 */
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(SDIO_DEV, SDIO_FUNC):
 		offset = 0x80;
@@ -536,16 +543,16 @@ static void finalize_chipset(void *unused)
 	u8 *spi = (u8 *)SPI_BASE_ADDRESS;
 	struct spi_config cfg;
 
-	/* Set the lock enable on the BIOS control register. */
+	/* Set the lock enable on the BIOS control register */
 	write32(bcr, read32(bcr) | BCR_LE);
 
-	/* Set BIOS lock down bit controlling boot block size and swapping. */
+	/* Set BIOS lock down bit controlling boot block size and swapping */
 	write32(gcs, read32(gcs) | BILD);
 
-	/* Lock sleep stretching policy and set SMI lock. */
+	/* Lock sleep stretching policy and set SMI lock */
 	write32(gen_pmcon2, read32(gen_pmcon2) | SLPSX_STR_POL_LOCK | SMI_LOCK);
 
-	/*  Set the CF9 lock. */
+	/*  Set the CF9 lock */
 	write32(etr, read32(etr) | CF9LOCK);
 
 	if (mainboard_get_spi_config(&cfg) < 0) {

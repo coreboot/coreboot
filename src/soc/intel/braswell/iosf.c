@@ -94,7 +94,7 @@ uint32_t iosf_scc_read(int reg)
 
 void iosf_scc_write(int reg, uint32_t val)
 {
-	return iosf_write_port(IOSF_WRITE(SCC), reg, val);
+	iosf_write_port(IOSF_WRITE(SCC), reg, val);
 }
 
 uint32_t iosf_usbphy_read(int reg)
@@ -104,7 +104,7 @@ uint32_t iosf_usbphy_read(int reg)
 
 void iosf_usbphy_write(int reg, uint32_t val)
 {
-	return iosf_write_port(IOSF_WRITE(USBPHY), reg, val);
+	iosf_write_port(IOSF_WRITE(USBPHY), reg, val);
 }
 
 #if ENV_RAMSTAGE

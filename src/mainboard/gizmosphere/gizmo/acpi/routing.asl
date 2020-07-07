@@ -1,14 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/*
-#include <acpi/acpi.h>
-DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001
-		)
-	{
-		#include "routing.asl"
-	}
-*/
-
 /* Routing is in System Bus scope */
 Scope(\_SB) {
 	Name(PR0, Package(){

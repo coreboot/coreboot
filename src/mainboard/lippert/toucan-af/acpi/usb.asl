@@ -1,14 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* simple name description */
-/*
-#include <acpi/acpi.h>
-DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001
-		)
-	{
-		#include "usb.asl"
-	}
-*/
 Method(UCOC, 0) {
 	Sleep(20)
 	Store(0x13,CMTI)

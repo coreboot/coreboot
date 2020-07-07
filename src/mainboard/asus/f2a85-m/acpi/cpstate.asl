@@ -5,33 +5,6 @@
  * core.  It assumes that each core of the system has the same performance
  * characteristics.
 */
-/*
-#include <acpi/acpi.h>
-DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001)
-	{
-	Scope (\_SB) {
-		Device (CPU0) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 0)
-			#include "cpstate.asl"
-		}
-		Device (CPU1) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 1)
-			#include "cpstate.asl"
-		}
-		Device (CPU2) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 2)
-			#include "cpstate.asl"
-		}
-		Device (CPU3) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 3)
-			#include "cpstate.asl"
-		}
-	}
-*/
 	/* P-state support: The maximum number of P-states supported by the */
 	/* CPUs we'll use is 6. */
 	/* Get from AMI BIOS. */

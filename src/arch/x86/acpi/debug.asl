@@ -1,21 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
-	#include <acpi/acpi.h>
-	DefinitionBlock (
-		"DSDT.AML",
-		"DSDT",
-		0x01,
-		OEM_ID,
-		ACPI_TABLE_CREATOR,
-		0x00010001
-		)
-	{
-		#include "debug.asl"
-	}
-*/
-
-/*
 * 0x80: POST_BASE
 * 0x3F8: DEBCOM_BASE
 * X80: POST_REGION

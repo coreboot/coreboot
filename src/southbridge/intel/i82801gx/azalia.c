@@ -252,17 +252,6 @@ static void azalia_init(struct device *dev)
 	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
 	reg8 &= ~(1 << 7); // Docking not supported
 	pci_write_config8(dev, 0x4d, reg8);
-#if 0
-	/* Set routing pin */
-	pci_write_config32(dev, 0xf8, 0x0);
-	pci_write_config8(dev, 0xfc, 0xAA);
-
-	/* Set INTA */
-	pci_write_config8(dev, 0x63, 0x0);
-
-	/* Enable azalia, disable ac97 */
-	// pm_iowrite(0x59, 0xB);
-#endif
 
 	res = find_resource(dev, 0x10);
 	if (!res)

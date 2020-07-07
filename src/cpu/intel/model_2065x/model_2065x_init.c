@@ -147,13 +147,6 @@ static void configure_misc(void)
 	msr.lo = 0;
 	msr.hi = 0;
 	wrmsr(IA32_THERM_INTERRUPT, msr);
-
-#ifdef DISABLED
-	/* Enable package critical interrupt only */
-	msr.lo = 1 << 4;
-	msr.hi = 0;
-	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
-#endif
 }
 
 static void enable_lapic_tpr(void)
@@ -186,22 +179,6 @@ static void set_max_ratio(void)
 
 	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
 	       ((perf_ctl.lo >> 8) & 0xff) * IRONLAKE_BCLK);
-}
-
-static void set_energy_perf_bias(u8 policy)
-{
-#ifdef DISABLED
-	msr_t msr;
-
-	/* Energy Policy is bits 3:0 */
-	msr = rdmsr(IA32_ENERGY_PERF_BIAS);
-	msr.lo &= ~0xf;
-	msr.lo |= policy & 0xf;
-	wrmsr(IA32_ENERGY_PERF_BIAS, msr);
-
-	printk(BIOS_DEBUG, "model_x06ax: energy policy set to %u\n",
-	       policy);
-#endif
 }
 
 static void configure_mca(void)
@@ -246,9 +223,6 @@ static void model_2065x_init(struct device *cpu)
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
-
-	/* Set energy policy */
-	set_energy_perf_bias(ENERGY_POLICY_NORMAL);
 
 	/* Set Max Ratio */
 	set_max_ratio();

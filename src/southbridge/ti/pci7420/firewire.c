@@ -11,15 +11,6 @@
 static void pci7420_firewire_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "TI PCI7420/7620 FireWire init\n");
-
-#ifdef ODD_IRQ_FIXUP
-	/* This is a workaround for buggy kernels. This should
-	 * probably be read from the device tree, but as long
-	 * as only one mainboard is using this bridge it does
-	 * not matter
-	 */
-	pci_write_config8(dev, PCI_INTERRUPT_PIN, INTC);
-#endif
 }
 
 static struct device_operations ti_pci7420_firewire_ops = {

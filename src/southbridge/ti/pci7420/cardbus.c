@@ -8,10 +8,6 @@
 #include "pci7420.h"
 #include "chip.h"
 
-#ifdef ODD_IRQ_FIXUP
-static int cardbus_count = 0;
-#endif
-
 static void pci7420_cardbus_init(struct device *dev)
 {
 	u8 reg8;
@@ -47,20 +43,6 @@ static void pci7420_cardbus_init(struct device *dev)
 
 	/* Multifunction routing status */
 	pci_write_config32(dev, MFUNC, 0x018a1b22);
-
-#ifdef ODD_IRQ_FIXUP
-	/* This is a workaround for buggy kernels. This should
-	 * probably be read from the device tree, but as long
-	 * as only one mainboard is using this bridge it does
-	 * not matter.
-	 *
-	 * Basically what we do here is assign INTA to the first
-	 * cardbus controller, and INTB to the second one. We know
-	 * there are only two of them.
-	 */
-	pci_write_config8(dev, PCI_INTERRUPT_PIN, cardbus_count);
-	cardbus_count++;
-#endif
 }
 
 static void pci7420_cardbus_read_resources(struct device *dev)

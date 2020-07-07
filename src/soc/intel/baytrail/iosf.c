@@ -32,9 +32,9 @@ static void iosf_write_port(uint32_t cr, int reg, uint32_t val)
 }
 
 #define IOSF_READ(port) \
-	IOSF_OPCODE(IOSF_OP_READ_##port) | IOSF_PORT(IOSF_PORT_##port)
+	(IOSF_OPCODE(IOSF_OP_READ_##port) | IOSF_PORT(IOSF_PORT_##port))
 #define IOSF_WRITE(port) \
-	IOSF_OPCODE(IOSF_OP_WRITE_##port) | IOSF_PORT(IOSF_PORT_##port)
+	(IOSF_OPCODE(IOSF_OP_WRITE_##port) | IOSF_PORT(IOSF_PORT_##port))
 
 uint32_t iosf_bunit_read(int reg)
 {

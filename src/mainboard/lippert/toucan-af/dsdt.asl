@@ -1237,7 +1237,6 @@ DefinitionBlock (
 			*     value is based on user choice in BIOS setup.
 			*/
 			Method(_INI, 0) {
-
 				/* Determine the OS we're running on */
 				OSFL()
 			} /* End Method(_SB._INI) */

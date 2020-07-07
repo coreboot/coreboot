@@ -21,7 +21,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopUnsupported },
-	{AGESA_HOOKBEFORE_DRAM_INIT,		board_BeforeDramInit},
+	{AGESA_HOOKBEFORE_DRAM_INIT,		board_BeforeDramInit },
 	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },

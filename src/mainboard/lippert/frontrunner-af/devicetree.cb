@@ -83,7 +83,6 @@ chip northbridge/amd/agesa/family14/root_complex
 				{ {0xA0, 0xA2}, {0x00, 0x00}, }, // socket 0 - Channel 0 & 1 - 8-bit SPD addresses
 				{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 - 8-bit SPD addresses
 			}"
-
 		end # agesa northbridge
 
 	end #domain

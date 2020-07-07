@@ -835,7 +835,6 @@ DefinitionBlock (
 		Method(_L10) {
 		}
 
-
 		/*  ExtEvent1 SCI event  */
 		Method(_L11) {
 		}
@@ -855,7 +854,6 @@ DefinitionBlock (
 			Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 		}
-
 	}	/* End Scope GPE */
 
 	#include "acpi/usb.asl"

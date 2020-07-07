@@ -11,7 +11,6 @@ chip northbridge/amd/agesa/family14/root_complex
 		chip northbridge/amd/agesa/family14
 			device pci 0.0 on end # Root Complex
 			device pci 1.0 on end # Internal Graphics P2P bridge 0x980[2456]
-			#device pci 1.1 on end # Internal HDMI Audio
 			device pci 4.0 on end # PCIE P2P bridge
 			device pci 5.0 on end # PCIE P2P bridge
 			device pci 6.0 on end # PCIE P2P bridge

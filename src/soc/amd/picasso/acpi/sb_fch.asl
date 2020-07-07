@@ -345,52 +345,6 @@ Device (I2C3)
 	}
 }
 
-Device (I2C4) {
-	Name (_HID, "AMD0010")
-	Name (_UID, 0x4)
-	Method (_CRS, 0) {
-		Local0 = ResourceTemplate() {
-			Interrupt (
-				ResourceConsumer,
-				Edge,
-				ActiveHigh,
-				Exclusive, , , IRQR)
-			{ 0 }
-			Memory32Fixed (ReadWrite, APU_I2C4_BASE, 0x1000)
-		}
-		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
-			IRQN = II24
-		} Else {
-			IRQN = PI24
-		}
-		If (IRQN == 0x1f) {
-			Return (ResourceTemplate() {
-				Memory32Fixed (ReadWrite, APU_I2C4_BASE, 0x1000)
-			})
-		} Else {
-			Return (Local0)
-		}
-	}
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
-	}
-
-	Name (_PR0, Package () { \_SB.AOAC.I2C4 })
-	Name (_PR2, Package () { \_SB.AOAC.I2C4 })
-	Name (_PR3, Package () { \_SB.AOAC.I2C4 })
-	Method (_PS0, 0, Serialized) {
-		Printf("I2C4._PS0")
-		\_SB.AOAC.I2C4.TDS = 1
-	}
-	Method (_PS3, 0, Serialized) {
-		Printf("I2C4._PS3")
-		\_SB.AOAC.I2C4.TDS = 3
-	}
-}
-
 Device (MISC)
 {
 	Name (_HID, "AMD0040")

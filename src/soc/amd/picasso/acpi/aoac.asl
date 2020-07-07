@@ -139,7 +139,6 @@ Device (AOAC) {
 
 	AOAC_DEVICE(I2C2,	7, 0)
 	AOAC_DEVICE(I2C3,	8, 0)
-	AOAC_DEVICE(I2C4,	9, 5) /* I2C4 is powered from the S5 power group. */
 	AOAC_DEVICE(FUR1,	12, 0)
 	AOAC_DEVICE(FUR2,	16, 0)
 	AOAC_DEVICE(FUR3,	26, 0)

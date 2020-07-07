@@ -355,13 +355,6 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 	initcol(decdata->dquant);
 	setinput(&glob_in, datap);
 
-#if 0
-	/* landing zone */
-	img[len] = 0;
-	img[len + 1] = 0xff;
-	img[len + 2] = M_EOF;
-#endif
-
 	dec_initscans();
 
 	dscans[0].next = 6 - 4;

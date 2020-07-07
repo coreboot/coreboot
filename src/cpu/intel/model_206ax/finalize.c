@@ -16,24 +16,6 @@ void intel_model_206ax_finalize_smm(void)
 	if (cpuid_ecx(1) & (1 << 25))
 		msr_set_bit(MSR_FEATURE_CONFIG, 0);
 
-#ifdef LOCK_POWER_CONTROL_REGISTERS
-	/*
-	 * Lock the power control registers.
-	 *
-	 * These registers can be left unlocked if modifying power
-	 * limits from the OS is desirable. Modifying power limits
-	 * from the OS can be especially useful for experimentation
-	 * during  early phases of system bringup while the thermal
-	 * power envelope is being proven.
-	 */
-
-	msr_set_bit(MSR_PP0_CURRENT_CONFIG, 31);
-	msr_set_bit(MSR_PP1_CURRENT_CONFIG, 31);
-	msr_set_bit(MSR_PKG_POWER_LIMIT, 63);
-	msr_set_bit(MSR_PP0_POWER_LIMIT, 31);
-	msr_set_bit(MSR_PP1_POWER_LIMIT, 31);
-#endif
-
 	/* Lock TM interrupts - route thermal events to all processors */
 	msr_set_bit(MSR_MISC_PWR_MGMT, 22);
 

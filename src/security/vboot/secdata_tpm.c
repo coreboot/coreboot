@@ -13,13 +13,8 @@
 #include <vb2_api.h>
 #include <console/console.h>
 
-#ifdef FOR_TEST
-#include <stdio.h>
-#define VBDEBUG(format, args...) printf(format, ## args)
-#else
 #define VBDEBUG(format, args...) \
 	printk(BIOS_INFO, "%s():%d: " format,  __func__, __LINE__, ## args)
-#endif
 
 #define RETURN_ON_FAILURE(tpm_cmd) do {				\
 		uint32_t result_;					\

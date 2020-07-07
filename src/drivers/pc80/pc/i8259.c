@@ -108,18 +108,4 @@ void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 	/* Write new values */
 	outb((u8)(int_bits & 0xff), ELCR1);
 	outb((u8)(int_bits >> 8), ELCR2);
-
-#ifdef PARANOID_IRQ_TRIGGERS
-	/* Try reading back the new values. This seems like an error
-	 * but it is not. */
-	if (inb(ELCR1) != (int_bits & 0xff)) {
-		printk(BIOS_ERR, "%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
-				__func__, (int_bits & 0xff), inb(ELCR1));
-	}
-
-	if (inb(ELCR2) != (int_bits >> 8)) {
-		printk(BIOS_ERR, "%s: higher order bits are wrong: want 0x%x, got 0x%x\n",
-				__func__, (int_bits>>8), inb(ELCR2));
-	}
-#endif
 }

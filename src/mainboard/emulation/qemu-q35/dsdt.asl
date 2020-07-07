@@ -58,24 +58,6 @@ DefinitionBlock (
 					// Never allow SHPC (no SHPC controller in this system)
 					And(CTRL, 0x1D, CTRL)
 
-#if 0 // For now, nothing to do
-					If (Not(And(CDW1, 1))) { // Query flag clear?
-						// Disable GPEs for features granted native control.
-						If (And(CTRL, 0x01)) { // Hot plug control granted?
-							Store(0, HPCE) // clear the hot plug SCI enable bit
-							Store(1, HPCS) // clear the hot plug SCI status bit
-						}
-						If (And(CTRL, 0x04)) { // PME control granted?
-							Store(0, PMCE) // clear the PME SCI enable bit
-							Store(1, PMCS) // clear the PME SCI status bit
-						}
-						If (And(CTRL, 0x10)) { // OS restoring PCI Express cap structure?
-							// Set status to not restore PCI Express cap structure
-							// upon resume from S3
-							Store(1, S3CR)
-						}
-					}
-#endif
 					If (LNotEqual(Arg1, One)) {
 						// Unknown revision
 						Or(CDW1, 0x08, CDW1)
@@ -385,11 +367,6 @@ DefinitionBlock (
 		define_gsi_link(GSIH, 0, 0x17)
 	}
 
-#if 0
-#include "../qemu-i440fx/acpi/cpu-hotplug.asl"
-#endif
-
-
 /****************************************************************
  * General purpose events
  ****************************************************************/
@@ -400,10 +377,6 @@ DefinitionBlock (
 		Method(_L00) {
 		}
 		Method(_L01) {
-#if 0
-			// CPU hotplug event
-			\_SB.PRSC()
-#endif
 		}
 		Method(_L02) {
 		}

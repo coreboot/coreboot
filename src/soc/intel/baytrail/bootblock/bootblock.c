@@ -58,8 +58,8 @@ static void program_base_addresses(void)
 
 static void spi_init(void)
 {
-	u32 *scs = (u32 *)(SPI_BASE_ADDRESS + SCS);
-	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
+	void *scs = (void *)(SPI_BASE_ADDRESS + SCS);
+	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
 	uint32_t reg;
 
 	/* Disable generating SMI when setting WPD bit. */

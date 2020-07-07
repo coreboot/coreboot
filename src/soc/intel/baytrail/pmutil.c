@@ -338,12 +338,12 @@ void clear_pmc_status(void)
 	uint32_t prsts;
 	uint32_t gen_pmcon1;
 
-	prsts = read32((u32 *)(PMC_BASE_ADDRESS + PRSTS));
-	gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
+	prsts = read32((void *)(PMC_BASE_ADDRESS + PRSTS));
+	gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	/* Clear the status bits. The RPS field is cleared on a 0 write. */
-	write32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1), gen_pmcon1 & ~RPS);
-	write32((u32 *)(PMC_BASE_ADDRESS + PRSTS), prsts);
+	write32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1), gen_pmcon1 & ~RPS);
+	write32((void *)(PMC_BASE_ADDRESS + PRSTS), prsts);
 }
 
 int rtc_failure(void)

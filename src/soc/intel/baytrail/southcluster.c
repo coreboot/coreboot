@@ -198,8 +198,8 @@ static void sc_init(struct device *dev)
 /* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(struct device *dev)
 {
-	u32 *func_dis = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS);
-	u32 *func_dis2 = (u32 *)(PMC_BASE_ADDRESS + FUNC_DIS2);
+	void *func_dis  = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	void *func_dis2 = (void *)(PMC_BASE_ADDRESS + FUNC_DIS2);
 	uint32_t mask = 0;
 	uint32_t mask2 = 0;
 
@@ -323,7 +323,7 @@ static inline void set_d3hot_bits(struct device *dev, int offset)
  */
 static void hda_work_around(struct device *dev)
 {
-	u32 *gctl = (u32 *)(TEMP_BASE_ADDRESS + 0x8);
+	void *gctl = (void *)(TEMP_BASE_ADDRESS + 0x8);
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
@@ -542,10 +542,10 @@ int __weak mainboard_get_spi_config(struct spi_config *cfg)
 
 static void finalize_chipset(void *unused)
 {
-	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
-	u32 *gcs = (u32 *)(RCBA_BASE_ADDRESS + GCS);
-	u32 *gen_pmcon2 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON2);
-	u32 *etr = (u32 *)(PMC_BASE_ADDRESS + ETR);
+	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
+	void *gcs = (void *)(RCBA_BASE_ADDRESS + GCS);
+	void *gen_pmcon2 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON2);
+	void *etr = (void *)(PMC_BASE_ADDRESS + ETR);
 	u8 *spi = (u8 *)SPI_BASE_ADDRESS;
 	struct spi_config cfg;
 

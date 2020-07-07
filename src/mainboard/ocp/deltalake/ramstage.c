@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <bootstate.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
+#include <gpio.h>
+#include <soc/lewisburg_pch_gpio_defs.h>
 #include <soc/ramstage.h>
 #include <stdio.h>
 
@@ -92,3 +95,11 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.final = mainboard_final,
 };
+
+static void pull_post_complete_pin(void *unused)
+{
+	/* Pull Low post complete pin */
+	gpio_output(GPP_B20, 0);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, pull_post_complete_pin, NULL);

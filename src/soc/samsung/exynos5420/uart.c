@@ -13,34 +13,6 @@
 #define RX_FIFO_FULL_MASK	(1 << 8)
 #define TX_FIFO_FULL_MASK	(1 << 24)
 
-#if 0
-/*
- * The coefficient, used to calculate the baudrate on S5P UARTs is
- * calculated as
- * C = UBRDIV * 16 + number_of_set_bits_in_UDIVSLOT
- * however, section 31.6.11 of the datasheet doesn't recommend using 1 for 1,
- * 3 for 2, ... (2^n - 1) for n, instead, they suggest using these constants:
- */
-static const int udivslot[] = {
-	0,
-	0x0080,
-	0x0808,
-	0x0888,
-	0x2222,
-	0x4924,
-	0x4a52,
-	0x54aa,
-	0x5555,
-	0xd555,
-	0xd5d5,
-	0xddd5,
-	0xdddd,
-	0xdfdd,
-	0xdfdf,
-	0xffdf,
-};
-#endif
-
 static void serial_setbrg_dev(struct s5p_uart *uart)
 {
 	u32 uclk;
@@ -51,18 +23,6 @@ static void serial_setbrg_dev(struct s5p_uart *uart)
 	val = uclk / get_uart_baudrate();
 
 	write32(&uart->ubrdiv, val / 16 - 1);
-
-	/*
-	 * FIXME(dhendrix): the original uart.h had a "br_rest" value which
-	 * does not seem relevant to the exynos5420... not entirely sure
-	 * where/if we need to worry about it here
-	 */
-#if 0
-	if (s5p_uart_divslot())
-		writel(udivslot[val % 16], &uart->rest.slot);
-	else
-		writeb(val % 16, &uart->rest.value);
-#endif
 }
 
 /*

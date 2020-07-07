@@ -34,30 +34,6 @@ static void ec_enable(void)
 	send_ec_oem_data(0x01);
 }
 
-static void pcie_limit_power(void)
-{
-#if 0
-	// This piece of code needs further debugging as it crashes the
-	// machine. It should set the slot numbers and enable power
-	// limitation for the PCIe slots.
-
-	struct device *dev;
-
-	dev = pcidev_on_root(28, 0);
-	if (dev) pci_write_config32(dev, 0x54, 0x0010a0e0);
-
-	dev = pcidev_on_root(28, 1);
-	if (dev) pci_write_config32(dev, 0x54, 0x0018a0e0);
-
-	dev = pcidev_on_root(28, 2);
-	if (dev) pci_write_config32(dev, 0x54, 0x0020a0e0);
-
-	dev = pcidev_on_root(28, 3);
-	if (dev) pci_write_config32(dev, 0x54, 0x0028a0e0);
-#endif
-}
-
-
 static void mainboard_init(struct device *dev)
 {
 	ec_enable();
@@ -70,8 +46,6 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
-
-	pcie_limit_power();
 }
 
 struct chip_operations mainboard_ops = {

@@ -3652,12 +3652,6 @@ void chipset_init(const int s3resume)
 		MCHBAR8(0x2ca8) = 0;
 		system_reset();
 	}
-#if 0
-	if (!s3resume) {
-		pre_raminit_3(x2ca8);
-	}
-	pre_raminit_4a(x2ca8);
-#endif
 
 	dmi_setup();
 
@@ -3850,10 +3844,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	collect_system_info(&info);
 	calculate_timings(&info);
-
-#if 0
-	pci_write_config8(NORTHBRIDGE, 0xdf, 0x82);
-#endif
 
 	if (!s3resume) {
 		u8 reg8 = pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2);
@@ -4583,7 +4573,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR8_OR(0xff4, 0x2);
 	MCHBAR32_AND_OR(0xff8, ~0xe008, 0x1020);
 
-#if 1
 	MCHBAR32(0xd00) = IOMMU_BASE2 | 1;
 	MCHBAR32(0xd40) = IOMMU_BASE1 | 1;
 	MCHBAR32(0xdc0) = IOMMU_BASE4 | 1;
@@ -4591,18 +4580,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write32p(IOMMU_BASE1 | 0xffc, 0x80000000);
 	write32p(IOMMU_BASE2 | 0xffc, 0xc0000000);
 	write32p(IOMMU_BASE4 | 0xffc, 0x80000000);
-
-#else
-	{
-		u32 eax;
-		// = 0xe911714b
-		eax = read32p(0xffc + (MCHBAR32(0xd00) & ~1)) | 0x08000000;
-		write32p(0xffc + (MCHBAR32(0xd00) & ~1), eax);
-		// = 0xe911714b
-		eax = read32p(0xffc + (MCHBAR32(0xdc0) & ~1)) | 0x40000000;
-		write32p(0xffc + (MCHBAR32(0xdc0) & ~1), eax);
-	}
-#endif
 
 	{
 		u32 eax;

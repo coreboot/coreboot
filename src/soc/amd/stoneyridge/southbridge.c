@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/spi.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <bootstate.h>
@@ -256,25 +257,17 @@ void sb_clk_output_48Mhz(u32 osc)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
-static uintptr_t sb_init_spi_base(void)
+static void sb_init_spi_base(void)
 {
-	uintptr_t base;
-
 	/* Make sure the base address is predictable */
-	base = lpc_get_spibase();
-
-	if (base)
-		return base;
-
-	lpc_set_spibase(SPI_BASE_ADDRESS);
+	if (ENV_X86)
+		lpc_set_spibase(SPI_BASE_ADDRESS);
 	lpc_enable_spi_rom(SPI_ROM_ENABLE);
-
-	return SPI_BASE_ADDRESS;
 }
 
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
-	uintptr_t base = sb_init_spi_base();
+	uintptr_t base = spi_get_bar();
 	write16((void *)(base + SPI100_SPEED_CONFIG),
 				(norm << SPI_NORM_SPEED_NEW_SH) |
 				(fast << SPI_FAST_SPEED_NEW_SH) |
@@ -285,7 +278,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 
 void sb_disable_4dw_burst(void)
 {
-	uintptr_t base = sb_init_spi_base();
+	uintptr_t base = spi_get_bar();
 	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
 			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
 					& ~SPI_RD4DW_EN_HOST);
@@ -293,7 +286,7 @@ void sb_disable_4dw_burst(void)
 
 void sb_read_mode(u32 mode)
 {
-	uintptr_t base = sb_init_spi_base();
+	uintptr_t base = spi_get_bar();
 	write32((void *)(base + SPI_CNTRL0),
 			(read32((void *)(base + SPI_CNTRL0))
 					& ~SPI_READ_MODE_MASK) | mode);

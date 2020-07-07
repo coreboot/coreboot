@@ -3,6 +3,8 @@
 #ifndef __AMDBLOCKS_SPI_H__
 #define __AMDBLOCKS_SPI_H__
 
+#include <stdint.h>
+
 #define SPI_CNTRL0			0x00
 #define   SPI_BUSY			BIT(31)
 
@@ -93,5 +95,11 @@ void fch_spi_early_init(void);
  * settings from mainboard devicetree to configure speed and read mode.
  */
 void fch_spi_config_modes(void);
+
+/* Set the SPI base address variable */
+void spi_set_base(void *base);
+
+/* Get the SPI base address variable's value */
+uintptr_t spi_get_bar(void);
 
 #endif /* __AMDBLOCKS_SPI_H__ */

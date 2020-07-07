@@ -1631,11 +1631,6 @@ void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, pIntAtoD[line - 1]);
 
-#ifdef PARANOID_IRQ_ASSIGNMENTS
-		irq = pci_read_config8(pdev, PCI_INTERRUPT_LINE);
-		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
-#endif
-
 #if CONFIG(PC80_SYSTEM)
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],

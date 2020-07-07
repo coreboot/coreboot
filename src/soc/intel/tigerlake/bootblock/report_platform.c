@@ -84,6 +84,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_1, "Tigerlake U GT2 1" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

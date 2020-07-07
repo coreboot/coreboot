@@ -10,9 +10,7 @@ Device (PDRC)
 	Name (_HID, EISAID("PNP0C02"))
 	Name (_UID, 1)
 
-	/* This does not seem to work correctly yet - set values statically for
-	 * now.
-	 */
+	/* This does not seem to work correctly yet - set values statically for now. */
 
 	Name (PDRS, ResourceTemplate() {
 		Memory32Fixed(ReadWrite, DEFAULT_RCBA, 0x00004000)

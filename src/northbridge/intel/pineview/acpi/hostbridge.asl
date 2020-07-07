@@ -24,7 +24,7 @@ Device (MCHC)
 		,	13,
 		MHBR,	22,	/* MCHBAR */
 
-		Offset (0x60),	/* PCIec BAR */
+		Offset (0x60),	/* PCIe BAR */
 		PXEN,	 1,	/* Enable */
 		PXSZ,	 2,	/* BAR size */
 		,	23,
@@ -35,7 +35,7 @@ Device (MCHC)
 		,	11,	/*
 		DMBR,	20,	/* DMIBAR */
 
-		// ...
+		/* ... */
 
 		Offset (0x90),	/* PAM0 */
 		,	 4,
@@ -73,18 +73,14 @@ Device (MCHC)
 		,	 2,
 
 		Offset (0xa0),	/* Top of Memory */
-		TOM,	8,
+		TOM,	 8,
 
 		Offset (0xb0),	/* Top of Low Used Memory */
 		,	 4,
 		TLUD,	12,
-
 	}
-
 }
 
-
-/* Current Resource Settings */
 Name (MCRS, ResourceTemplate()
 {
 	/* Bus Numbers */
@@ -199,6 +195,7 @@ Name (MCRS, ResourceTemplate()
 			0x00005000,,, TPMR)
 })
 
+/* Current Resource Settings */
 Method (_CRS, 0, Serialized)
 {
 	/* Find PCI resource area in MCRS */
@@ -206,7 +203,8 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField(MCRS, ^PM01._MAX, PMAX)
 	CreateDwordField(MCRS, ^PM01._LEN, PLEN)
 
-	/* Fix up PCI memory region:
+	/*
+	 * Fix up PCI memory region:
 	 * Enter actual TOLUD. The TOLUD register contains bits 27-31 of
 	 * the top of memory address.
 	 */

@@ -3,4 +3,3 @@
 subdirs-y += ./spd
 
 ramstage-y += variant.c
-ramstage-y += gpio.c

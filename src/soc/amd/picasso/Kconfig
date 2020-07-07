@@ -340,6 +340,8 @@ config ACPI_BERT_SIZE
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
+	select ALWAYS_LOAD_OPROM
+	select ALWAYS_RUN_OPROM
 
 config RO_REGION_ONLY
 	string

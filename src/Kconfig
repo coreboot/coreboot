@@ -283,6 +283,11 @@ config ASAN_IN_RAMSTAGE
 
 	  If unsure, say N.
 
+if ASAN_IN_RAMSTAGE
+	comment "Before using this feature, make sure that           "
+	comment "asan_shadow_offset_callback patch is applied to GCC."
+endif
+
 choice
 	prompt "Stage Cache for ACPI S3 resume"
 	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME

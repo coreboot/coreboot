@@ -9,7 +9,8 @@ endif
 
 ifeq ($(CONFIG_ASAN_IN_RAMSTAGE),y)
 ramstage-y += asan.c
-CFLAGS_asan += -fsanitize=kernel-address \
+# Ensure that asan_shadow_offset_callback patch is applied to GCC before ASan is used.
+CFLAGS_asan += -fsanitize=kernel-address --param asan-use-shadow-offset-callback=1 \
 		--param asan-stack=1 --param asan-globals=1 \
 		--param asan-instrumentation-with-call-threshold=0 \
 		-fsanitize-address-use-after-scope \

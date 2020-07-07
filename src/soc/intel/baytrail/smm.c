@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/device.h>
-#include <device/pci.h>
-#include <console/console.h>
 #include <arch/io.h>
 #include <device/mmio.h>
+#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm_reloc.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
@@ -60,9 +60,9 @@ static void smm_southcluster_route_gpios(void)
 
 	/* Enable SMIs for the gpios that are set to trigger the SMI. */
 	for (i = 0; i < 16; i++) {
-		if ((route_reg & ROUTE_MASK) == ROUTE_SMI) {
+		if ((route_reg & ROUTE_MASK) == ROUTE_SMI)
 			alt_gpio_reg |= (1 << i);
-		}
+
 		route_reg >>= 2;
 	}
 	printk(BIOS_DEBUG, "ALT_GPIO_SMI = %08x\n", alt_gpio_reg);

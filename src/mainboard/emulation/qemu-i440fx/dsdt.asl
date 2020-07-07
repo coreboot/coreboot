@@ -275,11 +275,6 @@ DefinitionBlock (
 		}
 	}
 
-#if 0
-#include "acpi/cpu-hotplug.asl"
-#endif
-
-
 /****************************************************************
  * General purpose events
  ****************************************************************/
@@ -290,16 +285,8 @@ DefinitionBlock (
 		Method(_L00) {
 		}
 		Method(_E01) {
-#if 0
-			// PCI hotplug event
-			\_SB.PCI0.PCNF()
-#endif
 		}
 		Method(_E02) {
-#if 0
-			// CPU hotplug event
-			\_SB.PRSC()
-#endif
 		}
 		Method(_L03) {
 		}

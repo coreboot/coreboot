@@ -21,13 +21,8 @@
 #include "tss_internal.h"
 #include "tss_commands.h"
 
-#ifdef FOR_TEST
-#include <stdio.h>
-#define VBDEBUG(format, args...) printf(format, ## args)
-#else
 #include <console/console.h>
 #define VBDEBUG(format, args...) printk(BIOS_DEBUG, format, ## args)
-#endif
 
 static int tpm_send_receive(const uint8_t *request,
 				uint32_t request_length,

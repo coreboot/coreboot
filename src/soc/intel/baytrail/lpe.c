@@ -44,11 +44,12 @@ static void lpe_enable_acpi_mode(struct device *dev)
 	static const struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
 		REG_PCI_OR16(PCI_COMMAND,
-			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
+			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | PCI_COMMAND_INT_DISABLE),
+
 		/* Enable ACPI mode */
 		REG_IOSF_OR(IOSF_PORT_0x58, LPE_PCICFGCTR1,
-			    LPE_PCICFGCTR1_PCI_CFG_DIS |
-			    LPE_PCICFGCTR1_ACPI_INT_EN),
+			    LPE_PCICFGCTR1_PCI_CFG_DIS | LPE_PCICFGCTR1_ACPI_INT_EN),
+
 		REG_SCRIPT_END
 	};
 	struct global_nvs *gnvs;
@@ -123,7 +124,7 @@ static void lpe_stash_firmware_info(struct device *dev)
 	}
 
 	/* Continue using old way of informing firmware address / size. */
-	pci_write_config32(dev, FIRMWARE_PCI_REG_BASE, res->base);
+	pci_write_config32(dev, FIRMWARE_PCI_REG_BASE,   res->base);
 	pci_write_config32(dev, FIRMWARE_PCI_REG_LENGTH, res->size);
 
 	/* C0 and later steppings use an offset in the MMIO space. */

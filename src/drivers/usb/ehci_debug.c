@@ -563,13 +563,6 @@ try_next_port:
 	}
 	dprintk(BIOS_INFO, "EHCI debug port enabled.\n");
 
-#if 0
-	/* Completely transfer the debug device to the debug controller */
-	portsc = read32(&ehci_regs->port_status[debug_port - 1]);
-	portsc &= ~PORT_PE;
-	write32(&ehci_regs->port_status[debug_port - 1], portsc);
-#endif
-
 	dbgp_mdelay(100);
 
 	struct ehci_dbg_port *port = (void *)(uintptr_t)info->ehci_debug;

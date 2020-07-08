@@ -224,9 +224,9 @@ static const struct pad_config gpio_table[] = {
 	/* E16 : GPP_E16/DDI1_DDC_SDA */
 	PAD_NC(GPP_E16, NONE),
 	/* E17 : HDMI_DDC_SCL */
-	PAD_NC(GPP_E17, NONE),
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 	/* E18 : HDMI_DDC_SDA */
-	PAD_NC(GPP_E18, NONE),
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF1),
 	/* E19 : GPP_E19/IMGCLKOUT_5/PCIE_LNK_DOWN */
 	PAD_NC(GPP_E19, NONE),
 	/* E20 : CNV_BRI_DT_R */

@@ -226,4 +226,18 @@ config VBOOT_STARTS_IN_BOOTBLOCK
 	  bootblock. This implies that a static VBOOT2_WORK() buffer must be
 	  allocated in memlayout.
 
+config EFS_SPI_READ_MODE
+	int
+	default 4 if EM100
+	default 2
+
+config EFS_SPI_SPEED
+	int
+	default 3 if EM100
+	default 0
+
+config EFS_SPI_MICRON_FLAG
+	int
+	default 0
+
 endif # BOARD_GOOGLE_BASEBOARD_TREMBYLE || BOARD_GOOGLE_BASEBOARD_DALBOZ

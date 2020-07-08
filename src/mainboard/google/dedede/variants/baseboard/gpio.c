@@ -420,10 +420,16 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_S0, NONE, DEEP),
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+const struct pad_config *__weak variant_base_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
+}
+
+const struct pad_config *__weak variant_override_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
 }
 
 const struct pad_config *__weak variant_early_gpio_table(size_t *num)

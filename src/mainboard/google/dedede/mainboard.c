@@ -22,11 +22,15 @@ static void mainboard_config_isst(void *unused)
 
 static void mainboard_init(void *chip_info)
 {
-	const struct pad_config *pads;
-	size_t num;
+	const struct pad_config *base_pads;
+	const struct pad_config *override_pads;
+	size_t base_num, override_num;
 
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
+	base_pads = variant_base_gpio_table(&base_num);
+	override_pads = variant_override_gpio_table(&override_num);
+
+	gpio_configure_pads_with_override(base_pads, base_num,
+		override_pads, override_num);
 }
 
 static void mainboard_dev_init(struct device *dev)

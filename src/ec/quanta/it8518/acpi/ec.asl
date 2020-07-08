@@ -16,7 +16,7 @@ Device (EC0)
 	OperationRegion(ERAM, EmbeddedControl, 0, 0xFF)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
-		Offset(0x00),   // [Configuration Space 0]
+				//   [Configuration Space 0]
 		    , 1,        //   Reserved bit[0]
 		ENGA, 1,        //   Enable Global attention
 		ENHY, 1,        //   Enable Hotkey function

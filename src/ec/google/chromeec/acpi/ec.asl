@@ -31,7 +31,6 @@ Device (EC0)
 	OperationRegion (ERAM, EmbeddedControl, 0x00, EC_ACPI_MEM_MAPPED_BEGIN)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
-		Offset (0x00),
 		RAMV, 8,	// EC RAM Version
 		TSTB, 8,	// Test Byte
 		TSTC, 8,	// Complement of Test Byte

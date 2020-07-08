@@ -12,7 +12,6 @@ Device (XHCI)
 	OperationRegion (XPRT, PCI_Config, 0, 0x100)
 	Field (XPRT, AnyAcc, NoLock, Preserve)
 	{
-		Offset (0x0),
 		DVID, 16,
 		Offset (0x10),
 		, 16,

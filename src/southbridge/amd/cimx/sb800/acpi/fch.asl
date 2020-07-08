@@ -213,8 +213,7 @@ Scope(\){
 		PIOD, 0x00000008,
 	}
 	IndexField (PIOI, PIOD, ByteAcc, NoLock, Preserve) {
-		Offset(0x00),	/* MiscControl */
-		, 1,
+		    , 1,	/* MiscControl */
 		T1EE, 1,
 		T2EE, 1,
 		Offset(0x01),	/* MiscStatus */

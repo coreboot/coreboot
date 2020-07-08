@@ -32,8 +32,7 @@ Scope(\)
 	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x3c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)
 	{
-		Offset(0x00),	// GPIO Use Select
-		GU00, 8,
+		GU00, 8,	// GPIO Use Select
 		GU01, 8,
 		GU02, 8,
 		GU03, 8,

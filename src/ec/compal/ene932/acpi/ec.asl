@@ -16,8 +16,7 @@ Device (EC0)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
 		// EC Name Space Configuration
-		Offset(0x00),
-		, 1,            // Reserved                              ; 00h.0
+		    , 1,        // Reserved                              ; 00h.0
 		LCDS, 1,        // 1= BACKLIGHT ON , 0= BACKLIGHT OFF    ; 00h.1
 		, 6,            // Reserved                              ; 00h.2 ~ 00h.6
 		HTBN, 8,        // HOTKEY_BUTTON_NUMBER                  ; 01h For ABO Hot Key Function

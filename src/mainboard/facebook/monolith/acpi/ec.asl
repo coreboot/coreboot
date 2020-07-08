@@ -29,7 +29,6 @@ Device (EC0)
 	OperationRegion (ERAM, EmbeddedControl, 0x00, 0xFF)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0x00),
 		CPUT,   8,
 	}
 

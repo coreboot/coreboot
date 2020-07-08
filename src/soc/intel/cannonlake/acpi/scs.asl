@@ -23,8 +23,7 @@ Scope (\_SB.PCI0) {
 
 		OperationRegion(SCSR, PCI_Config, 0x00, 0x100)
 		Field(SCSR, WordAcc, NoLock, Preserve) {
-			Offset (0x0),	/* PCI VID DID */
-			VDID, 32,
+			VDID, 32,	/* PCI VID DID */
 			Offset (0x84),	/* PMECTRLSTATUS */
 			PMCR, 16,
 			Offset (0xA2),	/* PG_CONFIG */

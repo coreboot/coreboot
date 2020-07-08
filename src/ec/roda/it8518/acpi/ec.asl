@@ -14,7 +14,6 @@ Device (EC0)
 	OperationRegion(ERAM, EmbeddedControl, 0, 0xFF)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
-		Offset(0x00),		// [Configuration Space 0x0]
 		Offset(0x02),		// [Configuration Space 0x2]
 		B0ST, 16,		// Battery 0 State
 		B0FC, 16,		// Battery 0 Last Full Charge Capacity

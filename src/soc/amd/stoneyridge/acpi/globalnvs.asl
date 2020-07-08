@@ -12,7 +12,6 @@ OperationRegion (GNVS, SystemMemory, NVSA, 0x1000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	Offset (0x00),
 	PCNT,	8,	// 0x00 - Processor Count
 	LIDS,	8,	// 0x01 - LID State
 	PWRS,	8,	// 0x02 - AC Power State

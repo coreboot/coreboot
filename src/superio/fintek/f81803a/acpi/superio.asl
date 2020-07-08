@@ -234,9 +234,8 @@ Device(SUPERIO_DEV) {
 	OperationRegion(APCx, SystemIO, APC5, 0x01)
 	Field(APCx, ByteAcc, Nolock, Preserve) /* bits in PME ACPI CONTROL Reg 5*/
 	{
-		Offset(0x00), /*Control Reg 5 */
-		, 7,
-		PSIN, 1 /* PSIN_FLAG */
+		    , 7, /*Control Reg 5 */
+		PSIN, 1  /* PSIN_FLAG */
 	}
 
 	/* routine to clear PSIN_FLAG in ACPI_CONTROL_REG_5 of SIO */

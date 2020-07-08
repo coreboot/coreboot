@@ -12,7 +12,6 @@ Device (EC0)
 	OperationRegion (ERAM, SystemMemory, (CONFIG_EC_BASE_ADDRESS + 0x100), 0x100)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
-		Offset(0x00),
 		    ,   1,
 		    ,   1,
 		HKFA,   1,  // FN lock (Hotkey / FN row toggle)

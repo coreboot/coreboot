@@ -142,7 +142,6 @@
     Add (Arg1, Local0, Local0)
     OperationRegion(varOperationRegionMmio, SystemMemory, Local0, 0x4)
       Field(varOperationRegionMmio, DWordAcc, NoLock, Preserve) {
-      Offset (0x0),
       varPciReg32, 32,
       }
     return (varPciReg32)
@@ -160,7 +159,6 @@
     Add (Arg1, Local0, Local0)
     OperationRegion(varOperationRegionMmio, SystemMemory, Local0, 0x4)
       Field(varOperationRegionMmio, DWordAcc, NoLock, Preserve) {
-      Offset (0x0),
       varPciReg32, 32,
       }
     Store (Arg2, varPciReg32)

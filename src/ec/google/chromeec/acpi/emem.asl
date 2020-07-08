@@ -4,7 +4,6 @@
  * EMEM data may be accessed through port 62/66 or through LPC at 900h.
  */
 
-Offset (0x00),
 TIN0, 8,	// Temperature 0
 TIN1, 8,	// Temperature 1
 TIN2, 8,	// Temperature 2

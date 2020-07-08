@@ -56,24 +56,6 @@ const char *soc_acpi_name(const struct device *dev)
 			return "GNB";
 		case IOMMU_DEVFN:
 			return "IOMM";
-		case PCIE_GPP_0_DEVFN:
-			return "PBR0";
-		case PCIE_GPP_1_DEVFN:
-			return "PBR1";
-		case PCIE_GPP_2_DEVFN:
-			return "PBR2";
-		case PCIE_GPP_3_DEVFN:
-			return "PBR3";
-		case PCIE_GPP_4_DEVFN:
-			return "PBR4";
-		case PCIE_GPP_5_DEVFN:
-			return "PBR5";
-		case PCIE_GPP_6_DEVFN:
-			return "PBR6";
-		case PCIE_GPP_A_DEVFN:
-			return "PBRA";
-		case PCIE_GPP_B_DEVFN:
-			return "PBRB";
 		case LPC_DEVFN:
 			return "LPCB";
 		case SMBUS_DEVFN:
@@ -111,15 +93,6 @@ struct device_operations pci_domain_ops = {
 	.acpi_name	  = soc_acpi_name,
 };
 
-static struct device_operations pci_ops_ops_bus_ab = {
-	.read_resources		= pci_bus_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_bus_enable_resources,
-	.scan_bus		= pci_scan_bridge,
-	.reset_bus		= pci_bus_reset,
-	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
-};
-
 static void set_mmio_dev_ops(struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
@@ -144,15 +117,6 @@ static void enable_dev(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_PCI) {
-		if (dev->bus->dev->path.type == DEVICE_PATH_DOMAIN) {
-			switch (dev->path.pci.devfn) {
-			case PCIE_GPP_A_DEVFN:
-			case PCIE_GPP_B_DEVFN:
-				dev->ops = &pci_ops_ops_bus_ab;
-			}
-		}
-		sb_enable(dev);
 	} else if (dev->path.type == DEVICE_PATH_MMIO) {
 		set_mmio_dev_ops(dev);
 	}

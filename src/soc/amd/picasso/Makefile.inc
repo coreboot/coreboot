@@ -78,6 +78,7 @@ ramstage-y += fsp_params.c
 ramstage-y += config.c
 ramstage-y += update_microcode.c
 ramstage-y += graphics.c
+ramstage-y += pcie_gpp.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

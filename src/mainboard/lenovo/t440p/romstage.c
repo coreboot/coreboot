@@ -24,10 +24,6 @@ static const struct rcba_config_instruction rcba_config[] = {
 	RCBA_END_CONFIG,
 };
 
-void mainboard_config_superio(void)
-{
-}
-
 void mainboard_romstage_entry(void)
 {
 	struct pei_data pei_data = {

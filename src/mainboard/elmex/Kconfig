@@ -5,9 +5,6 @@ choice
 
 source "src/mainboard/elmex/*/Kconfig.name"
 
-config ELMEX_BOARDS_DISABLED
-	bool "Boards from vendor are disabled"
-
 endchoice
 
 source "src/mainboard/elmex/*/Kconfig"

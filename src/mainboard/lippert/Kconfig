@@ -5,9 +5,6 @@ comment "was acquired by ADLINK"
 choice
 	prompt "Mainboard model"
 
-config LIPPERT_BOARDS_DISABLED
-	bool "Boards from vendor are disabled"
-
 source "src/mainboard/lippert/*/Kconfig.name"
 
 endchoice

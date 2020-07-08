@@ -17,6 +17,7 @@
 #define MC4_MISC2			0xC0000409
 #define FS_Base				0xC0000100
 #define HWCR_MSR                        0xC0010015
+#define  SMM_LOCK			(1 << 0)
 #define NB_CFG_MSR                      0xC001001f
 #define FidVidStatus			0xC0010042
 #define MC1_CTL_MASK			0xC0010045
@@ -53,7 +54,6 @@
 #define SMM_BASE_MSR			0xC0010111
 #define SMM_ADDR_MSR			0xC0010112
 #define SMM_MASK_MSR			0xC0010113
-#define  SMM_LOCK			(1 << 0)
 #define  SMM_TSEG_VALID			(1 << 1)
 #define  SMM_TSEG_WB			(6 << 12)
 

@@ -32,8 +32,7 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
-	default "devicetree-fr.cb" if BOARD_LIPPERT_FRONTRUNNER_AF
-	default "devicetree-tc.cb" if BOARD_LIPPERT_TOUCAN_AF
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string

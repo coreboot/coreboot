@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+# The code for this board is under elmex/pcm205400
+
 if BOARD_ELMEX_PCM205401
 
 config MAINBOARD_PART_NUMBER

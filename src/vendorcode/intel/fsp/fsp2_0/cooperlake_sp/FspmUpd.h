@@ -35,6 +35,14 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
+/*
+ * Intel CPX-SP FSP has been using FSPM_CONFIG intead of FSP_M_CONFIG.
+ * Other Intel FSPs have been using FSP_M_CONFIG. The feedback from Intel
+ * is that they will converge to use FSPM_CONFIG over time. So both will
+ * co-exist for some time. Today coreboot common code expects FSP_M_CONFIG.
+ */
+#define FSP_M_CONFIG	FSPM_CONFIG
+
 #define SPEED_REC_96GT      0
 #define SPEED_REC_104GT     1
 #define ADAPTIVE_CTLE 	    0x3f
@@ -452,207 +460,217 @@ typedef struct {
 **/
   UINT8                       KtiInEnableMktme;
 
-/** Offset 0x00BC - IIO ConfigIOU0
+/** Offset 0x00BC - Usage type for Processor VmxEnable Function
+  Processor VmxEnable Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+  $EN_DIS
+**/
+  UINT8                       VmxEnable;
+
+/** Offset 0x00BD - IIO ConfigIOU0
   ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
-  $EN_DIS
 **/
   UINT8                       IioConfigIOU0[8];
 
-/** Offset 0x00C4 - IIO ConfigIOU1
+/** Offset 0x00C5 - IIO ConfigIOU1
   ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU1[8];
 
-/** Offset 0x00CC - IIO ConfigIOU2
+/** Offset 0x00CD - IIO ConfigIOU2
   ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU2[8];
 
-/** Offset 0x00D4 - IIO ConfigIOU3
+/** Offset 0x00D5 - IIO ConfigIOU3
   ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU3[8];
 
-/** Offset 0x00DC - IIO ConfigIOU4
+/** Offset 0x00DD - IIO ConfigIOU4
   ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU4[8];
 
-/** Offset 0x00E4 - Usage type for IIO PCIE Config Table Ptr
+/** Offset 0x00E5
+**/
+  UINT8                       UnusedUpdSpace3[3];
+
+/** Offset 0x00E8 - Usage type for IIO PCIE Config Table Ptr
   IIO PCIE Config Table Ptr
 **/
   UINT32                      IioPcieConfigTablePtr;
 
-/** Offset 0x00E8 - Usage type for IIO PCIE Config Table Number
+/** Offset 0x00EC - Usage type for IIO PCIE Config Table Number
   IIO PCIE Config Table Number
 **/
   UINT32                      IioPcieConfigTableNumber;
 
-/** Offset 0x00EC - Usage type for IIO PCIE Root Port Enable or Disable
+/** Offset 0x00F0 - Usage type for IIO PCIE Root Port Enable or Disable
   IIO PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
   the value is 0x00
 **/
   UINT8                       IIOPcieRootPortEnable;
 
-/** Offset 0x00ED - Usage type for IIO DeEmphasis
+/** Offset 0x00F1 - Usage type for IIO DeEmphasis
   IIO DeEmphasis
 **/
   UINT8                       DeEmphasis;
 
-/** Offset 0x00EE - Usage type for IIO PCIE Root Port link speed
+/** Offset 0x00F2 - Usage type for IIO PCIE Root Port link speed
   IIO root port link speed
 **/
   UINT8                       IIOPciePortLinkSpeed;
 
-/** Offset 0x00EF - Usage type for IIO PCIE Root Port Max Payload
+/** Offset 0x00F3 - Usage type for IIO PCIE Root Port Max Payload
   IIO Root Port Max Payload
 **/
   UINT8                       IIOPcieMaxPayload;
 
-/** Offset 0x00F0 - Usage type for IIO DfxDnTxPreset
+/** Offset 0x00F4 - Usage type for IIO DfxDnTxPreset
   IIO DfxDnTxPreset
 **/
   UINT8                       DfxDnTxPreset;
 
-/** Offset 0x00F1 - Usage type for IIO DfxRxPreset
+/** Offset 0x00F5 - Usage type for IIO DfxRxPreset
   IIO DfxRxPreset
 **/
   UINT8                       DfxRxPreset;
 
-/** Offset 0x00F2 - Usage type for IIO DfxUpTxPreset
+/** Offset 0x00F6 - Usage type for IIO DfxUpTxPreset
   IIO DfxUpTxPreset
 **/
   UINT8                       DfxUpTxPreset;
 
-/** Offset 0x00F3 - Usage type for IIO PcieCommonClock
+/** Offset 0x00F7 - Usage type for IIO PcieCommonClock
   IIO PcieCommonClock
 **/
   UINT8                       PcieCommonClock;
 
-/** Offset 0x00F4 - Usage type for IIO NtbPpd
+/** Offset 0x00F8 - Usage type for IIO NtbPpd
   IIO NtbPpd
 **/
   UINT8                       NtbPpd;
 
-/** Offset 0x00F5 - Usage type for IIO NtbBarSizeOverride
+/** Offset 0x00F9 - Usage type for IIO NtbBarSizeOverride
   IIO NtbBarSizeOverride
 **/
   UINT8                       NtbBarSizeOverride;
 
-/** Offset 0x00F6 - Usage type for IIO NtbSplitBar
+/** Offset 0x00FA - Usage type for IIO NtbSplitBar
   IIO NtbSplitBar
 **/
   UINT8                       NtbSplitBar;
 
-/** Offset 0x00F7 - Usage type for IIO NtbBarSizeImBar1
+/** Offset 0x00FB - Usage type for IIO NtbBarSizeImBar1
   IIO NtbBarSizeImBar1
 **/
   UINT8                       NtbBarSizeImBar1;
 
-/** Offset 0x00F8 - Usage type for IIO NtbBarSizeImBar2
+/** Offset 0x00FC - Usage type for IIO NtbBarSizeImBar2
   IIO PNtbBarSizeImBar2
 **/
   UINT8                       NtbBarSizeImBar2;
 
-/** Offset 0x00F9 - Usage type for IIO NtbBarSizeImBar2_0
+/** Offset 0x00FD - Usage type for IIO NtbBarSizeImBar2_0
   IIO PNtbBarSizeImBar2_0
 **/
   UINT8                       NtbBarSizeImBar2_0;
 
-/** Offset 0x00FA - Usage type for IIO NtbBarSizeImBar2_1
+/** Offset 0x00FE - Usage type for IIO NtbBarSizeImBar2_1
   IIO NtbBarSizeImBar2_1
 **/
   UINT8                       NtbBarSizeImBar2_1;
 
-/** Offset 0x00FB - Usage type for IIO NtbBarSizeEmBarSZ1
+/** Offset 0x00FF - Usage type for IIO NtbBarSizeEmBarSZ1
   IIO NtbBarSizeEmBarSZ1
 **/
   UINT8                       NtbBarSizeEmBarSZ1;
 
-/** Offset 0x00FC - Usage type for IIO NtbBarSizeEmBarSZ2
+/** Offset 0x0100 - Usage type for IIO NtbBarSizeEmBarSZ2
   IIO NtbBarSizeEmBarSZ2
 **/
   UINT8                       NtbBarSizeEmBarSZ2;
 
-/** Offset 0x00FD - Usage type for IIO NtbBarSizeEmBarSZ2_0
+/** Offset 0x0101 - Usage type for IIO NtbBarSizeEmBarSZ2_0
   IIO NtbBarSizeEmBarSZ2_0
 **/
   UINT8                       NtbBarSizeEmBarSZ2_0;
 
-/** Offset 0x00FE - Usage type for IIO NtbBarSizeEmBarSZ2_1
+/** Offset 0x0102 - Usage type for IIO NtbBarSizeEmBarSZ2_1
   IIO NtbBarSizeEmBarSZ2_1
 **/
   UINT8                       NtbBarSizeEmBarSZ2_1;
 
-/** Offset 0x00FF - Usage type for IIO NtbXlinkCtlOverride
+/** Offset 0x0103 - Usage type for IIO NtbXlinkCtlOverride
   IIO NtbXlinkCtlOverride
 **/
   UINT8                       NtbXlinkCtlOverride;
 
-/** Offset 0x0100 - PchSirqMode
+/** Offset 0x0104 - Usage type for IIO VT-D Function
+  IIO VT-D Function, if supported, the value is 0x01, if not supported, the value is 0x00
+**/
+  UINT8                       VtdSupport;
+
+/** Offset 0x0105 - PchSirqMode
   Enable or Disable PchSirqMode
 **/
   UINT8                       PchSirqMode;
 
-/** Offset 0x0101 - PchAdrEn
+/** Offset 0x0106 - PchAdrEn
   Enable or Disable PchAdr
 **/
   UINT8                       PchAdrEn;
 
-/** Offset 0x0102 - } TYPE:{Combo
+/** Offset 0x0107 - } TYPE:{Combo
   Root port swapping based on device connection status : TRUE or FALSE
   TRUE : 0x01, FALSE : 0x00
 **/
   UINT8                       PchPcieRootPortFunctionSwap;
 
-/** Offset 0x0103 - PCH PCIE PLL Ssc
+/** Offset 0x0108 - PCH PCIE PLL Ssc
   Valid spread range : 0x00-0x14 (A value of 0 is SSC of 0.0%. A value of 20 is SSC
   of 2.0%), Auto : 0xFE(Set to hardware default), Disable : 0xFF
 **/
   UINT8                       PchPciePllSsc;
 
-/** Offset 0x0104 - Usage type for PCH PCIE Root Port Index
+/** Offset 0x0109 - Usage type for PCH PCIE Root Port Index
   Index assigned to every PCH PCIE Root Port
 **/
   UINT8                       PchPciePortIndex[20];
 
-/** Offset 0x0118 - Usage type for PCH PCIE Root Port Enable or Disable
+/** Offset 0x011D - Usage type for PCH PCIE Root Port Enable or Disable
   0-19: PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
   the value is 0x00
 **/
   UINT8                       PchPcieForceEnable[20];
 
-/** Offset 0x012C - Usage type for PCH PCIE Root Port Link Speed
+/** Offset 0x0131 - Usage type for PCH PCIE Root Port Link Speed
   0-19: PCH rootport, 0x00 : Pcie Auto Speed, 0x01 : Pcie Gen1 Speed, 0x02 : Pcie
   Gen2 Speed, 0x03 : Pcie Gen3 Speed
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
-/** Offset 0x0140 - SerialIoUartDebugEnable
+/** Offset 0x0145 - SerialIoUartDebugEnable
   Enable SerialIo Uart debug library in FSP.
   0:Disable, 1:Enable
 **/
   UINT8                       SerialIoUartDebugEnable;
 
-/** Offset 0x0141
-**/
-  UINT8                       UnusedUpdSpace3;
-
-/** Offset 0x0142 - ISA Serial Base selection
+/** Offset 0x0146 - ISA Serial Base selection
   Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
   0x3F8, 0x2F8
 **/
   UINT16                      SerialIoUartDebugIoBase;
 
-/** Offset 0x0144
+/** Offset 0x0148
 **/
   UINT8                       ReservedMemoryInitUpd[16];
-} FSP_M_CONFIG;
+} FSPM_CONFIG;
 
 /** Fsp M UPD Configuration
 **/
@@ -668,13 +686,13 @@ typedef struct {
 
 /** Offset 0x0040
 **/
-  FSP_M_CONFIG                 FspmConfig;
+  FSPM_CONFIG                 FspmConfig;
 
-/** Offset 0x0154
+/** Offset 0x0158
 **/
-  UINT8                       UnusedUpdSpace4[2];
+  UINT8                       UnusedUpdSpace4[6];
 
-/** Offset 0x0156
+/** Offset 0x015E
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

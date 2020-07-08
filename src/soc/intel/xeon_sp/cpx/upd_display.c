@@ -12,8 +12,8 @@ void soc_display_fspm_upd_params(
 	const FSPM_UPD *fspm_old_upd,
 	const FSPM_UPD *fspm_new_upd)
 {
-	const FSP_M_CONFIG *new;
-	const FSP_M_CONFIG *old;
+	const FSPM_CONFIG *new;
+	const FSPM_CONFIG *old;
 
 	old = &fspm_old_upd->FspmConfig;
 	new = &fspm_new_upd->FspmConfig;

@@ -110,6 +110,7 @@ typedef struct __packed {
 } fsp_ddi_descriptor;
 
 /* Picasso PCIe Descriptor: used for assigning lanes, bifurcation and other settings */
+/* Beware that the lane numbers in here are the logical and not the physical lane numbers! */
 typedef struct __packed {
 	uint8_t		engine_type;
 	uint8_t		start_lane;			// Start lane of the pci device

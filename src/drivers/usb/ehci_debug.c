@@ -584,23 +584,21 @@ err:
 	//return ret;
 
 next_debug_port:
-#if CONFIG_USBDEBUG_DEFAULT_PORT == 0
-	port_map_tried |= (1 << (debug_port - 1));
-	new_debug_port = ((debug_port-1 + 1) % n_ports) + 1;
-	if (port_map_tried != ((1 << n_ports) - 1)) {
-		ehci_debug_select_port(new_debug_port);
-		goto try_next_port;
+	if (CONFIG_USBDEBUG_DEFAULT_PORT == 0) {
+		port_map_tried |= (1 << (debug_port - 1));
+		new_debug_port = ((debug_port-1 + 1) % n_ports) + 1;
+		if (port_map_tried != ((1 << n_ports) - 1)) {
+			ehci_debug_select_port(new_debug_port);
+			goto try_next_port;
+		}
+		if (--playtimes) {
+			ehci_debug_select_port(new_debug_port);
+			goto try_next_time;
+		}
+	} else {
+		if (--playtimes)
+			goto try_next_time;
 	}
-	if (--playtimes) {
-		ehci_debug_select_port(new_debug_port);
-		goto try_next_time;
-	}
-#else
-	if (0)
-		goto try_next_port;
-	if (--playtimes)
-		goto try_next_time;
-#endif
 
 	return -10;
 }

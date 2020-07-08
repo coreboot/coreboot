@@ -93,6 +93,14 @@ struct soc_amd_picasso_config {
 	/* PROCHOT_L de-assertion Ramp Time */
 	uint32_t prochot_l_deassertion_ramp_time;
 
+	enum {
+		DOWNCORE_AUTO = 0,
+		DOWNCORE_1 = 1, /* Run with single core */
+		DOWNCORE_2 = 3, /* Run with two cores */
+		DOWNCORE_3 = 4, /* Run with three cores */
+	} downcore_mode;
+	uint8_t smt_disable; /* 1=disable SMT, 0=enable SMT */
+
 	/* Lower die temperature limit */
 	uint32_t thermctl_limit;
 

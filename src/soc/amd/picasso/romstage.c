@@ -43,6 +43,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mcfg->stapm_time_constant = config->stapm_time_constant;
 	}
 
+	mcfg->ccx_down_core_mode = config->downcore_mode;
+	mcfg->ccx_disable_smt = config->smt_disable;
+
 	mcfg->sustained_power_limit = config->sustained_power_limit;
 	mcfg->prochot_l_deassertion_ramp_time = config->prochot_l_deassertion_ramp_time;
 	mcfg->thermctl_limit = config->thermctl_limit;

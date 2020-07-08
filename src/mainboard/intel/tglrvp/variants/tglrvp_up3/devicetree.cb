@@ -13,7 +13,7 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw2" = "GPP_E"
 
 	# FSP configuration
-	register "SaGv" = "SaGv_Disabled"
+	register "SaGv" = "SaGv_Enabled"
 	register "SmbusEnable" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1

@@ -3,6 +3,7 @@
 #ifndef __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
 #define __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
 
+#include <types.h>
 
 #define SMI_GEVENTS			24
 #define SCIMAPS				58

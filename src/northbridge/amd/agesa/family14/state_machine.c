@@ -2,8 +2,8 @@
 
 #include <Porting.h>
 #include <AGESA.h>
+#include <amdblocks/biosram.h>
 #include <arch/io.h>
-#include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <device/device.h>

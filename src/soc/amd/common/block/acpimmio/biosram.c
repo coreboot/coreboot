@@ -2,7 +2,6 @@
 
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/biosram.h>
-#include <cbmem.h>
 #include <device/mmio.h>
 #include <stdint.h>
 

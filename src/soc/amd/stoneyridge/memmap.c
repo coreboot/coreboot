@@ -13,7 +13,7 @@
 #include <arch/bert_storage.h>
 #include <soc/northbridge.h>
 #include <soc/iomap.h>
-#include <amdblocks/acpimmio.h>
+#include <amdblocks/biosram.h>
 
 #if CONFIG(ACPI_BERT)
  #if CONFIG_SMM_TSEG_SIZE == 0x0

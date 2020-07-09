@@ -107,3 +107,9 @@ asmlinkage void car_stage_entry(void)
 {
 	romstage_main();
 }
+
+void *cbmem_top_chipset(void)
+{
+	/* Top of CBMEM is at highest usable DRAM address below 4GiB. */
+	return (void *)restore_top_of_low_cacheable();
+}

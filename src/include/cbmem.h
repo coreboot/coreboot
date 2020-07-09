@@ -139,17 +139,6 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
 	static cbmem_init_hook_t init_fn_ ## _unused3_ = init_fn_;
 #endif /* ENV_RAMSTAGE */
 
-
-/* Any new chipset and board must implement cbmem_top() for both
- * romstage and ramstage to support early features like COLLECT_TIMESTAMPS
- * and CBMEM_CONSOLE. Sometimes it is necessary to have cbmem_top()
- * value stored in nvram to enable early recovery on S3 path.
- */
-#if ENV_X86
-void backup_top_of_low_cacheable(uintptr_t ramtop);
-uintptr_t restore_top_of_low_cacheable(void);
-#endif
-
 /*
  * Returns 0 for the stages where we know that cbmem does not come online.
  * Even if this function returns 1 for romstage, depending upon the point in

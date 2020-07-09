@@ -5,6 +5,14 @@
 
 #include <stdint.h>
 
+/* Any new chipset and board must implement cbmem_top() for both
+ * romstage and ramstage to support early features like COLLECT_TIMESTAMPS
+ * and CBMEM_CONSOLE. With AMD it is necessary to have cbmem_top()
+ * value stored in nvram to enable early recovery on S3 path.
+ */
+void backup_top_of_low_cacheable(uintptr_t ramtop);
+uintptr_t restore_top_of_low_cacheable(void);
+
 /* Returns the bootblock C entry point for APs */
 void *get_ap_entry_ptr(void);
 /* Used by BSP to store the bootblock entry point for APs */

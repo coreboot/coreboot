@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/biosram.h>
+
 #include <Porting.h>
 #include <AGESA.h>
-
-#include <cbmem.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 

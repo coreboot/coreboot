@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cbmem.h>
+#include <amdblocks/biosram.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/cpu.h>

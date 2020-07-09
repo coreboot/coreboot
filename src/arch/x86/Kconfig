@@ -133,12 +133,6 @@ config NUM_IPI_STARTS
 	int
 	default 2
 
-config CBMEM_TOP_BACKUP
-	def_bool n
-	help
-	  Platform implements non-volatile storage to cache cbmem_top()
-	  over stage transitions and optionally also over S3 suspend.
-
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xc00

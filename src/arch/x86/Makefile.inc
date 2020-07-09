@@ -164,7 +164,6 @@ romstage-y += post.c
 # gdt_init.S is included by entry32.inc when romstage is the first C
 # environment.
 romstage-y += gdt_init.S
-romstage-y += cbmem.c
 romstage-y += cpu_common.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S

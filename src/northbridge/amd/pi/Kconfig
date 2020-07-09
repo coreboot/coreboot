@@ -4,7 +4,6 @@ config NORTHBRIDGE_AMD_PI
 	bool
 	default y if CPU_AMD_PI
 	default n
-	select CBMEM_TOP_BACKUP
 
 if NORTHBRIDGE_AMD_PI
 

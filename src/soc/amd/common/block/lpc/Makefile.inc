@@ -3,7 +3,7 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC),y)
 ramstage-y += lpc.c
 
 bootblock-y += lpc_util.c
-verstage-y += lpc_util.c
+verstage_x86-y += lpc_util.c
 romstage-y += lpc_util.c
 postcar-y += lpc_util.c
 ramstage-y += lpc_util.c

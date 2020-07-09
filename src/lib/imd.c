@@ -143,9 +143,6 @@ static int imdr_create_empty(struct imdr *imdr, size_t root_size,
 	assert(IS_POWER_OF_2(root_size));
 	assert(IS_POWER_OF_2(entry_align));
 
-	if (!imdr->limit)
-		return -1;
-
 	/*
 	 * root_size needs to be large enough to accommodate root pointer and
 	 * root book keeping structure. The caller needs to ensure there's

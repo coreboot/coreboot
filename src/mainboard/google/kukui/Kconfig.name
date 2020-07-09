@@ -43,3 +43,7 @@ config BOARD_GOOGLE_CERISE
 config BOARD_GOOGLE_STERN
 	bool "->  Stern"
 	select BOARD_GOOGLE_KUKUI_COMMON
+
+config BOARD_GOOGLE_WILLOW
+	bool "->  Willow"
+	select BOARD_GOOGLE_KUKUI_COMMON

@@ -40,5 +40,7 @@ uint8_t apic_id(void);
 void apic_eoi(uint8_t vector);
 
 void apic_delay(unsigned int usec);
+void apic_start_delay(unsigned int usec);
+void apic_wait_delay(void);
 
 #endif /* __ARCH_X86_INCLUDES_ARCH_APIC_H__ */

@@ -104,7 +104,7 @@ uint8_t apic_id(void)
 	return id;
 }
 
-void apic_delay(unsigned int usec)
+void apic_start_delay(unsigned int usec)
 {
 	die_if(!ticks_per_ms, "apic_init_timer was not run.");
 	die_if(timer_waiting, "timer already started.");
@@ -124,9 +124,17 @@ void apic_delay(unsigned int usec)
 	timer_waiting = 1;
 
 	apic_write32(APIC_TIMER_INIT_COUNT, ticks);
+	enable_interrupts();
+}
 
+
+void apic_wait_delay(void)
+{
 	/* Loop in case another interrupt has fired and resumed execution. */
-	do {
+	disable_interrupts();
+	/* Note: when we test timer_waiting, interrupts are disabled by the line
+	 * above and the cli below. */
+	while (timer_waiting) {
 		asm volatile(
 			"sti\n\t"
 			"hlt\n\t"
@@ -134,15 +142,22 @@ void apic_delay(unsigned int usec)
 			 * between checking timer_waiting and executing the hlt
 			 * instruction again. */
 			"cli\n\t");
-	} while (timer_waiting);
+	}
 
 	/* Leave hardware interrupts enabled. */
 	enable_interrupts();
 }
 
+void apic_delay(unsigned int usec)
+{
+	apic_start_delay(usec);
+	apic_wait_delay();
+}
+
 static void timer_interrupt_handler(u8 vector)
 {
 	timer_waiting = 0;
+	apic_eoi(APIC_TIMER_VECTOR);
 }
 
 static void suprious_interrupt_handler(u8 vector) {}
@@ -204,6 +219,7 @@ static void apic_reset_all_lvts(void)
 	uint8_t max = apic_max_lvt_entries();
 	for (int i = 0; i <= max; ++i) {
 		uint32_t offset = APIC_LVT_TIMER + APIC_LVT_SIZE * i;
+		apic_eoi(i);
 		apic_write32(offset, APIC_MASKED_BIT);
 	}
 }
@@ -248,6 +264,16 @@ static void apic_init_timer(void)
 	apic_write32(APIC_LVT_TIMER, APIC_TIMER_VECTOR);
 }
 
+static void apic_sw_disable(void)
+{
+	uint32_t reg = apic_read32(APIC_SPURIOUS);
+
+	reg &= ~APIC_SW_ENABLED_BIT;
+	printf("%s: writing %#x to %#x\n", __func__, reg, APIC_SPURIOUS);
+
+	apic_write32(APIC_SPURIOUS, reg);
+}
+
 static void apic_sw_enable(void)
 {
 	uint32_t reg = apic_read32(APIC_SPURIOUS);
@@ -280,6 +306,7 @@ void apic_init(void)
 	die_if(!(apic_capabilities() & XACPI), "APIC is not supported");
 
 	apic_bar_reg = _rdmsr(APIC_BASE_MSR);
+	printf("apic_bar_reg is 0x%llx\n", apic_bar_reg);
 
 	die_if(!(apic_bar_reg & XAPIC_ENABLED_BIT), "APIC is not enabled");
 	die_if(apic_bar_reg & X2APIC_ENABLED_BIT,
@@ -287,6 +314,7 @@ void apic_init(void)
 
 	apic_bar = (uint32_t)(apic_bar_reg & APIC_BASE_MASK);
 
+	apic_sw_disable();
 	apic_reset_all_lvts();
 	apic_set_task_priority(0);
 	apic_setup_spurious();

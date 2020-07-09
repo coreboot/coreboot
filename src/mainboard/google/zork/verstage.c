@@ -31,5 +31,6 @@ void verstage_mainboard_early_init(void)
 
 void verstage_mainboard_init(void)
 {
+	enable_aoac_devices();
 	setup_i2c();
 }

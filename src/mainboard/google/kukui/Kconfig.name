@@ -35,3 +35,11 @@ config BOARD_GOOGLE_KAPPA
 config BOARD_GOOGLE_DAMU
 	bool "->  Damu"
 	select BOARD_GOOGLE_KUKUI_COMMON
+
+config BOARD_GOOGLE_CERISE
+	bool "->  Cerise"
+	select BOARD_GOOGLE_KUKUI_COMMON
+
+config BOARD_GOOGLE_STERN
+	bool "->  Stern"
+	select BOARD_GOOGLE_KUKUI_COMMON

@@ -63,6 +63,11 @@ void io_write8(u16 reg, u8 value)
 	write8((void *)(io_bar + reg), value);
 }
 
+static void aoac_set_bar(void *bar)
+{
+	acpimmio_aoac = bar;
+}
+
 static struct {
 	const char *name;
 	struct {
@@ -79,6 +84,7 @@ static struct {
 	{"eSPI", {FCH_IO_DEVICE_ESPI}, espi_set_bar},
 	{"I2C2", {FCH_IO_DEVICE_I2C, 2}, i2c2_set_bar},
 	{"I2C3", {FCH_IO_DEVICE_I2C, 3}, i2c3_set_bar},
+	{"AOAC", {FCH_IO_DEVICE_AOAC}, aoac_set_bar},
 };
 
 uintptr_t *map_spi_rom(void)

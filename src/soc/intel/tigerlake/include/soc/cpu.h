@@ -7,11 +7,11 @@
 
 /* Latency times in us */
 #define C1_LATENCY	1
-#define C6_LATENCY	127
-#define C7_LATENCY	253
-#define C8_LATENCY	260
-#define C9_LATENCY	487
-#define C10_LATENCY	1048
+#define C6_LATENCY	121
+#define C7_LATENCY	152
+#define C8_LATENCY	256
+#define C9_LATENCY	340
+#define C10_LATENCY	1034
 
 /* Power in units of mW */
 #define C1_POWER	0x3e8

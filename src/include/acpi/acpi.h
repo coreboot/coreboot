@@ -52,6 +52,8 @@
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
 
+#define ACPI_NAME_BUFFER_SIZE	5 /* 4 chars + 1 NUL */
+
 /*
  * The assigned ACPI ID for the coreboot project is 'BOOT'
  * http://www.uefi.org/acpi_id_list

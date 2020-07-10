@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <vm.h>
 #include <arch/exception.h>

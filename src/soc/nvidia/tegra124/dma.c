@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <soc/addressmap.h>
 #include <soc/dma.h>
-#include <stddef.h>
 
 struct apb_dma * const apb_dma = (struct apb_dma *)TEGRA_APB_DMA_BASE;
 

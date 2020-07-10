@@ -12,7 +12,6 @@
 #include "iobp.h"
 #include "pch.h"
 #include <southbridge/intel/common/gpio.h>
-#include <stddef.h>
 #include <stdint.h>
 #include "chip.h"
 

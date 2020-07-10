@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <arch/encoding.h>
 #include <console/console.h>
-#include <stddef.h>
 #include <timer.h>
 #include <mcall.h>
 

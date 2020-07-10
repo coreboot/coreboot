@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stddef.h>
 #include <arch/encoding.h>
 #include <arch/smp/smp.h>
 #include <arch/smp/spinlock.h>

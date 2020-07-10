@@ -10,7 +10,6 @@
 #include <console/vtxprintf.h>
 #include <smp/spinlock.h>
 #include <smp/node.h>
-#include <stddef.h>
 #include <trace.h>
 #include <timer.h>
 

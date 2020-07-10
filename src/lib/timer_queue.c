@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-#include <stddef.h>
+
 #include <timer.h>
 
 #define MAX_TIMER_QUEUE_ENTRIES 64

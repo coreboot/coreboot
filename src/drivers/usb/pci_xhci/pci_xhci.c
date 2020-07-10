@@ -7,7 +7,6 @@
 #include <device/pci_ids.h>
 #include <device/xhci.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define PCI_XHCI_CLASSCODE	0x0c0330 /* USB3.0 xHCI controller */
 
@@ -57,26 +56,14 @@ static const char *xhci_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static void handle_xhci_ext_cap(void *context, const struct xhci_ext_cap *cap)
+static void xhci_generate_port_acpi(void *context, const struct xhci_supported_protocol *data)
 {
-	const struct xhci_supported_protocol *data;
 	const char *format;
 	char buf[16];
 	struct port_counts *counts = context;
 	unsigned int *dev_num;
 
-	if (cap->cap_id != XHCI_ECP_CAP_ID_SUPP)
-		return;
-
-	data = &cap->supported_protocol;
-
 	xhci_print_supported_protocol(data);
-
-	if (memcmp(data->name, "USB ", 4)) {
-		printk(BIOS_INFO, "%s: Unknown Protocol: %.*s\n", __func__,
-		       (int)sizeof(data->name), data->name);
-		return;
-	}
 
 	if (data->major_rev == 3) {
 		format = "SS%02d";
@@ -105,7 +92,7 @@ static void xhci_add_devices(const struct device *dev)
 	acpigen_write_device("RHUB");
 	acpigen_write_name_integer("_ADR", 0x00000000);
 
-	xhci_for_each_ext_cap(dev, &counts, handle_xhci_ext_cap);
+	xhci_for_each_supported_usb_cap(dev, &counts, xhci_generate_port_acpi);
 
 	acpigen_pop_len();
 }

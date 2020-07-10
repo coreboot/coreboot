@@ -5,6 +5,8 @@
 
 #include "sandybridge.h"
 #include <device/dram/ddr3.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 /* The order is: ch0dimmA, ch0dimmB, ch1dimmA, ch1dimmB */
 void read_spd(spd_raw_data *spd, u8 addr, bool id_only);

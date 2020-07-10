@@ -3,6 +3,8 @@
 #ifndef NORTHBRIDGE_INTEL_SANDYBRIDGE_GMA_H
 #define NORTHBRIDGE_INTEL_SANDYBRIDGE_GMA_H
 
+#include <stdint.h>
+
 struct i915_gpu_controller_info;
 
 int i915lightup_sandy(const struct i915_gpu_controller_info *info, u32 physbase, u16 pio,

@@ -10,6 +10,8 @@
 #include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include "sandybridge.h"
+#include <stddef.h>
+#include <stdint.h>
 
 static uintptr_t smm_region_start(void)
 {

@@ -8,6 +8,9 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/chip.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "raminit_tables.h"

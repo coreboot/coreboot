@@ -3,7 +3,7 @@
 #ifndef RAMINIT_TABLES_H
 #define RAMINIT_TABLES_H
 
-#include <types.h>
+#include <stdint.h>
 
 extern const u32 frq_refi_map[2][8];
 

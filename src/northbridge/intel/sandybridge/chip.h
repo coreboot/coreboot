@@ -4,6 +4,8 @@
 #define NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H
 
 #include <drivers/intel/gma/i915.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 /*
  * Digital Port Hotplug Enable:

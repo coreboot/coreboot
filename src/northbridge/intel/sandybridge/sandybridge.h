@@ -36,7 +36,7 @@
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
-#include <cpu/intel/model_206ax/model_206ax.h>
+#include <stdint.h>
 
 /* Chipset types */
 enum platform_type {

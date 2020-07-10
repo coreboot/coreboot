@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
 #include "sandybridge.h"
 
 enum platform_type get_platform_type(void)

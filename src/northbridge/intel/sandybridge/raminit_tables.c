@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
 #include "raminit_tables.h"
 
 const u32 frq_refi_map[2][8] = {

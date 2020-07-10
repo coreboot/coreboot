@@ -9,6 +9,7 @@
 #include <northbridge/intel/sandybridge/chip.h>
 #include <device/pci_def.h>
 #include <delay.h>
+#include <types.h>
 
 #include "raminit_native.h"
 #include "raminit_common.h"

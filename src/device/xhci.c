@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <device/xhci.h>
+#include <arch/mmio.h>
 #include <console/console.h>
 #include <device/pci_def.h>
-#include <arch/mmio.h>
+#include <device/xhci.h>
+#include <string.h>
 
 union xhci_ext_caps_header {
 	uint32_t val;
@@ -73,6 +74,42 @@ enum cb_err xhci_for_each_ext_cap(const struct device *device, void *context,
 	}
 
 	return CB_SUCCESS;
+}
+
+struct supported_usb_cap_context {
+	void *context;
+	void (*callback)(void *context, const struct xhci_supported_protocol *data);
+};
+
+static void xhci_supported_usb_cap_handler(void *context, const struct xhci_ext_cap *cap)
+{
+	const struct xhci_supported_protocol *data;
+	struct supported_usb_cap_context *internal_context = context;
+
+	if (cap->cap_id != XHCI_ECP_CAP_ID_SUPP)
+		return;
+
+	data = &cap->supported_protocol;
+
+	if (memcmp(data->name, "USB ", 4)) {
+		printk(BIOS_DEBUG, "%s: Unknown Protocol: %.*s\n", __func__,
+		       (int)sizeof(data->name), data->name);
+		return;
+	}
+
+	internal_context->callback(internal_context->context, data);
+}
+
+enum cb_err xhci_for_each_supported_usb_cap(
+	const struct device *device, void *context,
+	void (*callback)(void *context, const struct xhci_supported_protocol *data))
+{
+	struct supported_usb_cap_context internal_context = {
+		.context = context,
+		.callback = callback,
+	};
+
+	return xhci_for_each_ext_cap(device, &internal_context, xhci_supported_usb_cap_handler);
 }
 
 void xhci_print_supported_protocol(const struct xhci_supported_protocol *supported_protocol)

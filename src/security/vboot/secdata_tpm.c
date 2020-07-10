@@ -404,6 +404,16 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
 	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
 	vb2api_secdata_kernel_check(ctx, &size);
 
+	/*
+	 * Ensure that the TPM actually commits our changes to NVMEN in case
+	 * there is a power loss or other unexpected event. The AP does not
+	 * write to the TPM during normal boot flow; it only writes during
+	 * recovery, software sync, or other special boot flows. When the AP
+	 * wants to write, it is imporant to actually commit changes.
+	 */
+	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
+		tlcl_cr50_enable_nvcommits();
+
 	return safe_write(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
 }
 

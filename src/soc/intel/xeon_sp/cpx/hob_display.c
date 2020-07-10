@@ -33,9 +33,9 @@ const char *soc_get_guid_name(const uint8_t *guid)
 	return NULL;
 }
 
-static void soc_display_memmap_hob(const struct SystemMemoryMapHob *hob_addr)
+static void soc_display_memmap_hob(const struct SystemMemoryMapHob **hob_addr)
 {
-	struct SystemMemoryMapHob *hob = (struct SystemMemoryMapHob *)hob_addr;
+	struct SystemMemoryMapHob *hob = (struct SystemMemoryMapHob *)*hob_addr;
 
 	printk(BIOS_DEBUG, "================== MEMORY MAP HOB DATA ==================\n");
 	printk(BIOS_DEBUG, "hob: %p, structure size: 0x%lx\n",
@@ -47,6 +47,7 @@ static void soc_display_memmap_hob(const struct SystemMemoryMapHob *hob_addr)
 	printk(BIOS_DEBUG, "\tmemSize: 0x%x, memFreq: 0x%x\n",
 		hob->memSize, hob->memFreq);
 
+	printk(BIOS_DEBUG, "\tNumChPerMC: %d\n", hob->NumChPerMC);
 	printk(BIOS_DEBUG, "\tSystemMemoryMapElement Entries: %d, entry size: %ld\n",
 		hob->numberEntries, sizeof(SYSTEM_MEMORY_MAP_ELEMENT));
 	for (int e = 0; e < hob->numberEntries; ++e) {
@@ -55,6 +56,9 @@ static void soc_display_memmap_hob(const struct SystemMemoryMapHob *hob_addr)
 			e, mem_element->BaseAddress,
 			mem_element->ElementSize, mem_element->Type);
 	}
+
+	printk(BIOS_DEBUG, "\tBiosFisVersion: 0x%x\n", hob->BiosFisVersion);
+	printk(BIOS_DEBUG, "\tMmiohBase: 0x%x\n", hob->MmiohBase);
 
 	hexdump(hob, sizeof(*hob));
 }
@@ -181,5 +185,5 @@ void soc_display_hob(const struct hob_header *hob)
 	if (fsp_guid_compare(guid, fsp_hob_iio_uds_guid))
 		soc_display_iio_universal_data_hob((const IIO_UDS *)(guid + 16));
 	else if (fsp_guid_compare(guid, fsp_hob_memmap_guid))
-		soc_display_memmap_hob((const struct SystemMemoryMapHob *)(guid + 16));
+		soc_display_memmap_hob((const struct SystemMemoryMapHob **)(guid + 16));
 }

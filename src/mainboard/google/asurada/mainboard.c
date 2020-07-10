@@ -6,6 +6,7 @@
 #include <device/mmio.h>
 #include <soc/gpio.h>
 #include <soc/regulator.h>
+#include <soc/spm.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
@@ -107,6 +108,9 @@ static void mainboard_init(struct device *dev)
 	setup_usb_host();
 
 	register_reset_to_bl31();
+
+	if (spm_init())
+		printk(BIOS_ERR, "spm init fail, system suspend may stuck\n");
 }
 
 static void mainboard_enable(struct device *dev)

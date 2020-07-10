@@ -45,4 +45,10 @@ config MEMORY_TEST
 	  This option enables memory basic compare test to verify the DRAM read
 	  or write is as expected.
 
+config SPM_FIRMWARE
+	string
+	default "spm_firmware.bin"
+	help
+	  The file name of the MediaTek SPM firmware.
+
 endif

@@ -3,7 +3,6 @@
 #ifndef _SMM_STM_H_
 #define _SMM_STM_H_
 
-#include <cpu/x86/msr.h>
 #include "StmApi.h"
 
 /*

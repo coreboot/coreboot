@@ -3,7 +3,6 @@
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <console/uart.h>
 #include <cbmem.h>

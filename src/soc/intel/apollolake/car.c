@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
-#include <cpu/x86/msr.h>
 #include <intelblocks/msr.h>
 #include <program_loading.h>
 #include <soc/cpu.h>

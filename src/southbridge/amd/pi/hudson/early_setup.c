@@ -16,7 +16,6 @@
 
 #if CONFIG(HUDSON_UART)
 
-#include <cpu/x86/msr.h>
 #include <delay.h>
 
 void configure_hudson_uart(void)

@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <cpu/x86/msr.h>
 
 #include <intelblocks/acpi.h>
 #include <soc/acpi.h>

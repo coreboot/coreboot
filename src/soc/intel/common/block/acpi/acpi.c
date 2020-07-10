@@ -9,7 +9,6 @@
 #include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/msr.h>

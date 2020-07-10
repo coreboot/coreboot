@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <commonlib/sort.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <delay.h>
 #include <device/pci.h>
 #include <hob_iiouds.h>

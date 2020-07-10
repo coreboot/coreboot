@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <thread.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 
 void init_timer(void)

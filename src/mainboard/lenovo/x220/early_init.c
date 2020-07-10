@@ -7,7 +7,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <cpu/x86/msr.h>
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {

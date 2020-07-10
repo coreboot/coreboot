@@ -5,7 +5,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include <cpu/intel/fsb.h>
 #include <cpu/intel/speedstep.h>
 #include <device/device.h>

@@ -210,3 +210,33 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
  * in the original size are returned.
  */
 int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel);
+
+/**
+ * Setup alpha and rgb values for alpha blending.  When alpha is != 0,
+ * this enables a translucent layer of color (defined by rgb) to be
+ * blended at a given translucency (alpha) to all things drawn.  Call
+ * clear_blend() to disable alpha blending.
+ *
+ * @param[in] rgb       Color for transparency
+ * @param[in] alpha     Opacity of color, from 0-255 where
+ *                      0   = completely transparent (no blending)
+ *                      255 = max alpha argument
+ *
+ * @return CBGFX_* error codes
+ */
+int set_blend(const struct rgb_color *rgb, uint8_t alpha);
+
+/**
+ * Clear alpha and rgb values, thus disabling any alpha blending.
+ *
+ * @return CBGFX_* error codes
+ */
+void clear_blend(void);
+
+/**
+ * For calculating Alpha value from % opacity
+ * For reference:
+ *	255 = max alpha argument
+ *	0   = min alpha argument, 0% opacity
+ */
+#define ALPHA(percentage) MIN(255, (256 * percentage / 100))

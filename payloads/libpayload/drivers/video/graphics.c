@@ -61,6 +61,37 @@ static const struct vector vzero = {
 	.y = 0,
 };
 
+struct blend_value {
+	uint8_t alpha;
+	struct rgb_color rgb;
+};
+
+static struct blend_value blend = {
+	.alpha = 0,
+	.rgb.red = 0,
+	.rgb.green = 0,
+	.rgb.blue = 0,
+};
+
+int set_blend(const struct rgb_color *rgb, uint8_t alpha)
+{
+	if (rgb == NULL)
+		return CBGFX_ERROR_INVALID_PARAMETER;
+
+	blend.alpha = alpha;
+	blend.rgb = *rgb;
+
+	return CBGFX_SUCCESS;
+}
+
+void clear_blend(void)
+{
+	blend.alpha = 0;
+	blend.rgb.red = 0;
+	blend.rgb.green = 0;
+	blend.rgb.blue = 0;
+}
+
 static void add_vectors(struct vector *out,
 			const struct vector *v1, const struct vector *v2)
 {
@@ -135,16 +166,33 @@ static int within_box(const struct vector *v, const struct rect *bound)
 		return -1;
 }
 
+/*
+ * Helper function that applies color and opacity from blend struct
+ * into the color.
+ */
+static inline uint8_t apply_blend(uint8_t color, uint8_t blend_color)
+{
+	if (blend.alpha == 0 || color == blend_color)
+		return color;
+
+	return (color * (256 - blend.alpha) +
+		blend_color * blend.alpha) / 256;
+}
+
 static inline uint32_t calculate_color(const struct rgb_color *rgb,
 				       uint8_t invert)
 {
 	uint32_t color = 0;
-	color |= (rgb->red >> (8 - fbinfo->red_mask_size))
-		<< fbinfo->red_mask_pos;
-	color |= (rgb->green >> (8 - fbinfo->green_mask_size))
-		<< fbinfo->green_mask_pos;
-	color |= (rgb->blue >> (8 - fbinfo->blue_mask_size))
-		<< fbinfo->blue_mask_pos;
+
+	color |= (apply_blend(rgb->red, blend.rgb.red)
+		  >> (8 - fbinfo->red_mask_size))
+		 << fbinfo->red_mask_pos;
+	color |= (apply_blend(rgb->green, blend.rgb.green)
+		  >> (8 - fbinfo->green_mask_size))
+		 << fbinfo->green_mask_pos;
+	color |= (apply_blend(rgb->blue, blend.rgb.blue)
+		  >> (8 - fbinfo->blue_mask_size))
+		 << fbinfo->blue_mask_pos;
 	if (invert)
 		color ^= 0xffffffff;
 	return color;

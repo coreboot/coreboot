@@ -24,11 +24,72 @@ __weak enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 	return CB_SUCCESS;
 }
 
+
+static void xhci_count_ports(void *context, const struct xhci_supported_protocol *data)
+{
+	struct port_counts *counts = context;
+
+	switch (data->major_rev) {
+	case 3:
+		counts->super_speed += data->port_count;
+		return;
+	case 2:
+		counts->high_speed += data->port_count;
+		return;
+	default:
+		printk(BIOS_INFO, "%s: Unknown USB Version: %#x\n", __func__, data->major_rev);
+		return;
+	}
+}
+
+static bool xhci_port_exists(const struct device *dev, const struct usb_path *path)
+{
+	/* Cache the counts so we don't have to iterate on each invocation. */
+	static struct {
+		const struct device *dev;
+		struct port_counts counts;
+	} cache;
+
+	if (cache.dev != dev) {
+		cache.counts.high_speed = 0;
+		cache.counts.super_speed = 0;
+		cache.dev = dev;
+
+		xhci_for_each_supported_usb_cap(dev, &cache.counts, xhci_count_ports);
+	}
+
+	/* port_ids are 0 based */
+	switch (path->port_type) {
+	case 3:
+		return path->port_id < cache.counts.super_speed;
+	case 2:
+		return path->port_id < cache.counts.high_speed;
+	default:
+		printk(BIOS_INFO, "%s: Unknown USB Version: %#x\n", __func__, path->port_type);
+		return false;
+	}
+}
+
+static const struct device *get_xhci_dev(const struct device *dev)
+{
+	while (dev && dev->ops != &xhci_pci_ops) {
+		if (dev->path.type == DEVICE_PATH_ROOT)
+			return NULL;
+
+		dev = dev->bus->dev;
+	}
+
+	return dev;
+}
+
 static const char *xhci_acpi_name(const struct device *dev)
 {
 	char *name;
 	unsigned int port_id;
+	const char *pattern;
+	const struct device *xhci_dev;
 
+	/* Generate ACPI names for the usb_acpi driver */
 	if (dev->path.type == DEVICE_PATH_USB) {
 		/* Ports index start at 1 */
 		port_id = dev->path.usb.port_id + 1;
@@ -37,22 +98,48 @@ static const char *xhci_acpi_name(const struct device *dev)
 		case 0:
 			return "RHUB";
 		case 2:
-			name = malloc(ACPI_NAME_BUFFER_SIZE);
-			snprintf(name, ACPI_NAME_BUFFER_SIZE, "HS%02d", port_id);
-			name[4] = '\0';
-
-			return name;
+			pattern = "HS%02d";
+			break;
 		case 3:
-			name = malloc(ACPI_NAME_BUFFER_SIZE);
-			snprintf(name, ACPI_NAME_BUFFER_SIZE, "SS%02d", port_id);
-			name[4] = '\0';
-			return name;
+			pattern = "SS%02d";
+			break;
+		default:
+			printk(BIOS_INFO, "%s: Unknown USB Version: %#x\n", __func__,
+			       dev->path.usb.port_type);
+			return NULL;
 		}
+
+		xhci_dev = get_xhci_dev(dev);
+		if (!xhci_dev)
+			die("%s: xHCI controller not found for %s\n", __func__, dev_path(dev));
+
+		/*
+		 * We only want to return an ACPI name for a USB port if the controller
+		 * physically has the port. This has the desired side effect of making the
+		 * usb_acpi driver skip generating an ACPI node for a device which has
+		 * no port. This prevents writing an invalid SSDT table which the OS then
+		 * complains about.
+		 */
+		if (!xhci_port_exists(xhci_dev, &dev->path.usb)) {
+			printk(BIOS_WARNING, "%s: %s does not exist on xHC ", __func__,
+			       dev_path(dev));
+			/* dev_path uses a static buffer :( */
+			printk(BIOS_WARNING, "%s\n", dev_path(xhci_dev));
+
+			return NULL;
+		}
+
+		name = malloc(ACPI_NAME_BUFFER_SIZE);
+		snprintf(name, ACPI_NAME_BUFFER_SIZE, pattern, port_id);
+		name[4] = '\0';
+
+		return name;
 	} else if (dev->ops == &xhci_pci_ops) {
 		return dev->name;
 	}
 
 	printk(BIOS_ERR, "%s: Unknown device %s\n", __func__, dev_path(dev));
+
 	return NULL;
 }
 

@@ -4,10 +4,16 @@ config SOC_INTEL_COMMON_BLOCK_PMC
 	bool
 	select HAVE_POWER_STATE_AFTER_FAILURE
 	select HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
-	select POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	help
 	  Intel Processor common code for Power Management controller(PMC)
 	  subsystem
+
+if SOC_INTEL_COMMON_BLOCK_PMC
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default y
+
+endif # SOC_INTEL_COMMON_BLOCK_PMC
 
 config PMC_INVALID_READ_AFTER_WRITE
 	bool

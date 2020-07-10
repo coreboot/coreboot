@@ -2,7 +2,6 @@
 
 #include <cbfs.h>
 #include <cf9_reset.h>
-#include <string.h>
 #include <option.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>

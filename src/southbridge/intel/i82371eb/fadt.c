@@ -4,7 +4,6 @@
  * Based on src/southbridge/via/vt8237r/vt8237_fadt.c
  */
 
-#include <string.h>
 #include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>

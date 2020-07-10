@@ -293,7 +293,7 @@ static void dump_me_info(void)
 	printf("\n");
 
 	if (stat & 0xf000)
-		printf("ME: has a broken implementation on your board with"
+		printf("ME: has a broken implementation on your board with "
 		       "this firmware\n");
 
 	if (intel_mei_setup(dev))

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
+#include <stddef.h>
 
 /*
  * Used in probe_ramsize(). This is a weak function and it's overridden for

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>

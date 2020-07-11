@@ -2,7 +2,6 @@
 
 #include <arch/romstage.h>
 #include <arch/io.h>
-#include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <device/pci_ops.h>

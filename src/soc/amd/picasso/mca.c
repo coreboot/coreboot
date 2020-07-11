@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <arch/bert_storage.h>
 #include <cper.h>
-#include <cbmem.h>
 
 struct mca_bank {
 	int bank;

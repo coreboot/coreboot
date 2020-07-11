@@ -5,7 +5,6 @@
 #include <acpi/acpi.h>
 #include <bootstate.h>
 #include <cbfs.h>
-#include <cbmem.h>
 #include <timestamp.h>
 
 #include <northbridge/amd/agesa/state_machine.h>

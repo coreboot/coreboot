@@ -5,7 +5,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 #include <console/uart.h>
-#include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>

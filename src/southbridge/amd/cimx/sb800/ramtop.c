@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <acpi/acpi.h>
-#include <cbmem.h>
 #include "SBPLATFORM.h"
 
 int acpi_get_sleep_type(void)

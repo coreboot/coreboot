@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>

@@ -143,6 +143,17 @@ void mainboard_config_rcba(void);
 #define PCH_PCS			0x84
 #define  PCH_PCS_PS_D3HOT	3
 
+/* SerialIO */
+#define PCH_DEVFN_SDMA		PCI_DEVFN(0x15, 0)
+#define PCH_DEVFN_I2C0		PCI_DEVFN(0x15, 1)
+#define PCH_DEVFN_I2C1		PCI_DEVFN(0x15, 2)
+#define PCH_DEVFN_SPI0		PCI_DEVFN(0x15, 3)
+#define PCH_DEVFN_SPI1		PCI_DEVFN(0x15, 4)
+#define PCH_DEVFN_UART0		PCI_DEVFN(0x15, 5)
+#define PCH_DEVFN_UART1		PCI_DEVFN(0x15, 6)
+
+#define PCH_DEVFN_SDIO		PCI_DEVFN(0x17, 0)
+
 #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
 #define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)

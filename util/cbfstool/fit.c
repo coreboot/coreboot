@@ -434,6 +434,43 @@ static void update_fit_txt_policy_entry(struct fit_table *fit,
 	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
 }
 
+/*
+ * There can be zero or one FIT_TYPE_BOOT_POLICY entries
+ *
+ * The caller has to provide valid arguments as those aren't verified.
+ */
+static void update_fit_boot_policy_entry(struct fit_table *fit,
+					struct fit_entry *entry,
+					uint64_t boot_policy_addr,
+					uint32_t boot_policy_size)
+{
+	entry->address = boot_policy_addr;
+	entry->type_checksum_valid = FIT_TYPE_BOOT_POLICY;
+	entry->size_reserved = boot_policy_size;
+	entry->version = FIT_TXT_VERSION;
+	entry->checksum = 0;
+	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
+}
+
+/*
+ * There can be zero or one FIT_TYPE_KEY_MANIFEST entries
+ *
+ * The caller has to provide valid arguments as those aren't verified.
+ */
+static void update_fit_key_manifest_entry(struct fit_table *fit,
+					struct fit_entry *entry,
+					uint64_t key_manifest_addr,
+					uint32_t key_manifest_size)
+{
+	entry->address = key_manifest_addr;
+
+	entry->type_checksum_valid = FIT_TYPE_KEY_MANIFEST;
+	entry->size_reserved = key_manifest_size;
+	entry->version = FIT_TXT_VERSION;
+	entry->checksum = 0;
+	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
+}
+
 /* Special case for ucode CBFS file, as it might contain more than one ucode */
 int fit_add_microcode_file(struct fit_table *fit,
 			   struct cbfs_image *image,
@@ -626,10 +663,10 @@ int fit_is_supported_type(const enum fit_type type)
 	case FIT_TYPE_BIOS_STARTUP:
 	case FIT_TYPE_BIOS_POLICY:
 	case FIT_TYPE_TXT_POLICY:
-		return 1;
-	case FIT_TYPE_TPM_POLICY:
 	case FIT_TYPE_KEY_MANIFEST:
 	case FIT_TYPE_BOOT_POLICY:
+		return 1;
+	case FIT_TYPE_TPM_POLICY:
 	default:
 		return 0;
 	}
@@ -683,6 +720,12 @@ int fit_add_entry(struct fit_table *fit,
 		break;
 	case FIT_TYPE_TXT_POLICY:
 		update_fit_txt_policy_entry(fit, entry, offset);
+		break;
+	case FIT_TYPE_KEY_MANIFEST:
+		update_fit_key_manifest_entry(fit, entry, offset, len);
+		break;
+	case FIT_TYPE_BOOT_POLICY:
+		update_fit_boot_policy_entry(fit, entry, offset, len);
 		break;
 	default:
 		return 1;

@@ -31,6 +31,7 @@ ramstage-y += hda.c
 ramstage-y += igd.c
 ramstage-y += iobp.c
 romstage-y += iobp.c
+ramstage-y += fadt.c
 ramstage-y += lpc.c
 ramstage-y += me.c
 ramstage-y += me_status.c

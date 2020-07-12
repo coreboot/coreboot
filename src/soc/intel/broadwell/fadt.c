@@ -25,15 +25,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
 	fadt->gpe0_blk = pmbase + GPE0_STS(0);
-	fadt->gpe1_blk = 0;
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 32;
-	fadt->gpe1_blk_len = 0;
-	fadt->gpe1_base = 0;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 87;
 	fadt->flush_size = 1024;
@@ -112,12 +109,4 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
 	fadt->x_gpe0_blk.addrh = 0;
-
-
-	fadt->x_gpe1_blk.space_id = 1;
-	fadt->x_gpe1_blk.bit_width = 0;
-	fadt->x_gpe1_blk.bit_offset = 0;
-	fadt->x_gpe1_blk.access_size = 0;
-	fadt->x_gpe1_blk.addrl = 0x0;
-	fadt->x_gpe1_blk.addrh = 0x0;
 }

@@ -121,14 +121,11 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	/* Power Control */
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
-	fadt->gpe1_blk = 0;
 
 	/* Control Registers - Length */
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 8;
-	fadt->gpe1_blk_len = 0;
-	fadt->gpe1_base = 0;
 
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
@@ -210,13 +207,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
 	fadt->x_gpe0_blk.addrh = 0x00;
-
-	fadt->x_gpe1_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe1_blk.bit_width = 0;
-	fadt->x_gpe1_blk.bit_offset = 0;
-	fadt->x_gpe1_blk.access_size = 0;
-	fadt->x_gpe1_blk.addrl = fadt->gpe1_blk;
-	fadt->x_gpe1_blk.addrh = 0x00;
 }
 
 static acpi_tstate_t denverton_tss_table[] = {

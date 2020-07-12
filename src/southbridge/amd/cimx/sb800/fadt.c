@@ -65,15 +65,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_blk = ACPI_PMA_CNT_BLK_ADDRESS;
 	fadt->pm_tmr_blk = PM1_TMR_BLK_ADDRESS;
 	fadt->gpe0_blk = GPE0_BLK_ADDRESS;
-	fadt->gpe1_blk = 0;		/* No gpe1 block in hudson1 */
 
 	fadt->pm1_evt_len = 4;	/* 32 bits */
 	fadt->pm1_cnt_len = 2;	/* 16 bits */
 	fadt->pm2_cnt_len = 1;	/* 8 bits */
 	fadt->pm_tmr_len = 4;	/* 32 bits */
 	fadt->gpe0_blk_len = 8;	/* 64 bits */
-	fadt->gpe1_blk_len = 0;
-	fadt->gpe1_base = 0;
 
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
@@ -162,12 +159,4 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = GPE0_BLK_ADDRESS;
 	fadt->x_gpe0_blk.addrh = 0x0;
-
-
-	fadt->x_gpe1_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe1_blk.bit_width = 0;
-	fadt->x_gpe1_blk.bit_offset = 0;
-	fadt->x_gpe1_blk.access_size = 0;
-	fadt->x_gpe1_blk.addrl = 0;
-	fadt->x_gpe1_blk.addrh = 0x0;
 }

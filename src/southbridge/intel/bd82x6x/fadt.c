@@ -29,15 +29,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_blk = pmbase + 0x50;
 	fadt->pm_tmr_blk = pmbase + 0x8;
 	fadt->gpe0_blk = pmbase + 0x20;
-	fadt->gpe1_blk = 0;
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 16;
-	fadt->gpe1_blk_len = 0;
-	fadt->gpe1_base = 0;
 	c2_latency = chip->c2_latency;
 	if (!c2_latency) {
 		c2_latency = 101; /* c2 unsupported */
@@ -126,11 +123,4 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = pmbase + 0x20;
 	fadt->x_gpe0_blk.addrh = 0x0;
-
-	fadt->x_gpe1_blk.space_id = 1;
-	fadt->x_gpe1_blk.bit_width = 0;
-	fadt->x_gpe1_blk.bit_offset = 0;
-	fadt->x_gpe1_blk.access_size = 0;
-	fadt->x_gpe1_blk.addrl = 0x0;
-	fadt->x_gpe1_blk.addrh = 0x0;
 }

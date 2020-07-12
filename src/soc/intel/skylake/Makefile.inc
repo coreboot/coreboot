@@ -43,6 +43,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += elog.c
+ramstage-y += fadt.c
 ramstage-y += finalize.c
 ramstage-y += gpio.c
 ramstage-y += gspi.c

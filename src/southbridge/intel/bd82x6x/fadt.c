@@ -39,9 +39,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	}
 	fadt->p_lvl2_lat = c2_latency;
 	fadt->p_lvl3_lat = 87;
-	/* flush_* is ignored if ACPI_FADT_WBINVD is set */
-	fadt->flush_size = 0;
-	fadt->flush_stride = 0;
 	/* P_CNT not supported */
 	fadt->duty_offset = 0;
 	fadt->duty_width = 0;

@@ -37,8 +37,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 16;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = chip->c3_latency;
-	fadt->flush_size = 0;
-	fadt->flush_stride = 0;
 	fadt->duty_offset = 1;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;

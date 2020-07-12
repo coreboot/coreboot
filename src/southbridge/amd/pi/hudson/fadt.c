@@ -46,8 +46,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
-	fadt->flush_size = 0;	/* set to 0 if WBINVD is 1 in flags */
-	fadt->flush_stride = 0;	/* set to 0 if WBINVD is 1 in flags */
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
 	fadt->day_alrm = 0;	/* 0x7d these have to be */

@@ -35,8 +35,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 87;
-	fadt->flush_size = 1024;
-	fadt->flush_stride = 16;
 	fadt->duty_offset = 1;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;

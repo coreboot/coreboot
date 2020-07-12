@@ -114,8 +114,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 
-	fadt->flush_size = 0x400;	/* twice of cache size */
-	fadt->flush_stride = 0x10;	/* Cache line width  */
 	fadt->duty_offset = 1;
 	fadt->day_alrm = 0xd;
 

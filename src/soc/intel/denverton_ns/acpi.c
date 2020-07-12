@@ -129,8 +129,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
-	fadt->flush_size = 0;   /* set to 0 if WBINVD is 1 in flags */
-	fadt->flush_stride = 0; /* set to 0 if WBINVD is 1 in flags */
 	fadt->duty_offset = 1;
 	fadt->duty_width = 0;
 

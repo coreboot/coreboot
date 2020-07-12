@@ -52,16 +52,16 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
-			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
+			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_RESET_REGISTER |
+			ACPI_FADT_PLATFORM_CLOCK;
 
-	fadt->reset_reg.space_id = 0;
-	fadt->reset_reg.bit_width = 0;
+	fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->reset_reg.bit_width = 8;
 	fadt->reset_reg.bit_offset = 0;
-	fadt->reset_reg.access_size = 0;
-	fadt->reset_reg.addrl = 0x0;
-	fadt->reset_reg.addrh = 0x0;
-
-	fadt->reset_value = 0;
+	fadt->reset_reg.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+	fadt->reset_reg.addrl = 0xcf9;
+	fadt->reset_reg.addrh = 0;
+	fadt->reset_value = 0x06;
 
 	fadt->x_pm1a_evt_blk.space_id = 1;
 	fadt->x_pm1a_evt_blk.bit_width = 32;

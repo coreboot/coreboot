@@ -2,6 +2,7 @@
 #define CPU_CPU_H
 
 #include <arch/cpu.h>
+#include <stdint.h>
 
 void cpu_initialize(unsigned int cpu_index);
 /* Returns default APIC id based on logical_cpu number or < 0 on failure. */

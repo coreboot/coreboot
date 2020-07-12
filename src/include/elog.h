@@ -3,6 +3,8 @@
 #ifndef ELOG_H_
 #define ELOG_H_
 
+#include <stdint.h>
+
 #define MAX_EVENT_SIZE                    0x7F
 
 /* End of log */

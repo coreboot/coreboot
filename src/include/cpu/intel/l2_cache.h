@@ -13,6 +13,8 @@
 #ifndef __P6_L2_CACHE_H
 #define __P6_L2_CACHE_H
 
+#include <stdint.h>
+
 #define EBL_CR_POWERON	0x2A
 
 #define BBL_CR_D0	0x88

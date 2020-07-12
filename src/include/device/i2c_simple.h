@@ -5,6 +5,7 @@
 
 #include <commonlib/helpers.h>
 #include <device/i2c.h>
+#include <stdint.h>
 
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int count);

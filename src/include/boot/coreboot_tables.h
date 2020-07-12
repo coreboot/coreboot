@@ -3,6 +3,8 @@
 
 #include <commonlib/coreboot_tables.h>
 #include <stddef.h>
+#include <stdint.h>
+
 /* function prototypes for building the coreboot table */
 
 /*

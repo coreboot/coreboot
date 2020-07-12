@@ -4,6 +4,7 @@
 #define __TIMESTAMP_H__
 
 #include <commonlib/timestamp_serialized.h>
+#include <stdint.h>
 
 #if CONFIG(COLLECT_TIMESTAMPS)
 /*

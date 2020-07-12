@@ -4,6 +4,8 @@
 #define __SPD_CACHE_H
 
 #include <spd_bin.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define SPD_CACHE_FMAP_NAME	"RW_SPD_CACHE"
 #define SC_SPD_NUMS		(CONFIG_DIMM_MAX)

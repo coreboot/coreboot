@@ -5,6 +5,7 @@
 
 #include <device/device.h>
 #include <device/pci_type.h>
+#include <stdint.h>
 
 #define EHCI_BAR_INDEX		0x10
 #define PCI_EHCI_CLASSCODE	0x0c0320  /* USB2.0 with EHCI controller */

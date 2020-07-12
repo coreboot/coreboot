@@ -3,6 +3,7 @@
 #ifndef __ACPI_ACPIGEN_H__
 #define __ACPI_ACPIGEN_H__
 
+#include <stddef.h>
 #include <stdint.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>

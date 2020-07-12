@@ -11,6 +11,8 @@
 #ifndef __ACPI_ACPI_IVRS_H__
 #define __ACPI_ACPI_IVRS_H__
 
+#include <stdint.h>
+
 /* I/O Virtualization Reporting Structure (IVRS) */
 #define IVHD_BLOCK_TYPE_LEGACY__FIXED		0x10
 #define IVHD_BLOCK_TYPE_FULL__FIXED		0x11

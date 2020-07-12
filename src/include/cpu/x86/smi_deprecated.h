@@ -3,6 +3,8 @@
 #ifndef __X86_SMI_DEPRECATED_H__
 #define __X86_SMI_DEPRECATED_H__
 
+#include <stdint.h>
+
 #if CONFIG(PARALLEL_MP) || !CONFIG(HAVE_SMI_HANDLER)
 /* Empty stubs for platforms without SMI handlers. */
 static inline void smm_init(void) { }

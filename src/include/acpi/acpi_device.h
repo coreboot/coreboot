@@ -4,8 +4,8 @@
 #define __ACPI_ACPI_DEVICE_H__
 
 #include <device/i2c.h>
-#include <stdint.h>
 #include <spi-generic.h>
+#include <types.h>
 
 enum acpi_dp_type {
 	ACPI_DP_TYPE_UNKNOWN,

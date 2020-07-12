@@ -3,6 +3,7 @@
 #ifndef __DEVICE_SMBUS_HOST_H__
 #define __DEVICE_SMBUS_HOST_H__
 
+#include <stddef.h>
 #include <stdint.h>
 #include <console/console.h>
 

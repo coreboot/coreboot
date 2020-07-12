@@ -3,6 +3,8 @@
 #ifndef PC80_I8259_H
 #define PC80_I8259_H
 
+#include <stdint.h>
+
 /*
  * IRQ numbers and common usage
  * If an IRQ does not say it is 'Reserved'

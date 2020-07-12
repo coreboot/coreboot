@@ -4,6 +4,7 @@
 
 #include <device/resource.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 /* A memranges structure consists of a list of range_entry(s). The structure
  * is exposed so that a memranges can be used on the stack if needed. */

@@ -3,6 +3,7 @@
 #ifndef CRC_BYTE_H
 #define CRC_BYTE_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /* This function is used to calculate crc7 byte by byte, with polynomial

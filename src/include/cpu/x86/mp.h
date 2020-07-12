@@ -5,6 +5,8 @@
 
 #include <arch/smp/atomic.h>
 #include <cpu/x86/smm.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define CACHELINE_SIZE 64
 

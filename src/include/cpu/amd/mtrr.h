@@ -41,6 +41,7 @@
 #if !defined(__ASSEMBLER__)
 
 #include <cpu/x86/msr.h>
+#include <stdint.h>
 
 void amd_setup_mtrrs(void);
 struct device;

@@ -16,8 +16,7 @@
 #ifndef __DEVICE_SOUNDWIRE_H__
 #define __DEVICE_SOUNDWIRE_H__
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <types.h>
 
 /**
  * enum soundwire_limits - Limits on number of SoundWire devices in topology.

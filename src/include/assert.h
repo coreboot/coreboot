@@ -5,6 +5,7 @@
 
 #include <arch/hlt.h>
 #include <console/console.h>
+#include <stdint.h>
 
 /* TODO: Fix vendorcode headers to not define macros coreboot uses or to be more
    properly isolated. */

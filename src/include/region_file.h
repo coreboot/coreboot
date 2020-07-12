@@ -4,6 +4,7 @@
 #define REGION_FILE_H
 
 #include <commonlib/region.h>
+#include <stddef.h>
 #include <stdint.h>
 
 /*

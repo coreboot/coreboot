@@ -4,6 +4,7 @@
 #define DEVICE_PNP_HWM5_CONF_H
 
 #include <device/pnp.h>
+#include <stdint.h>
 
 /* The address/data register pair for the indirect/indexed IO space of the
  * hardware monitor (HWM) that does temperature and voltage sensing and fan

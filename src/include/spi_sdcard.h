@@ -3,6 +3,8 @@
 #ifndef _SPI_SDCARD_H_
 #define _SPI_SDCARD_H_
 
+#include <stddef.h>
+
 struct spi_sdcard {
 	int type;
 	struct spi_slave slave;

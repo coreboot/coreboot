@@ -5,6 +5,8 @@
 
 #include <commonlib/cbfs.h>
 #include <program_loading.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /***********************************************
  * Perform CBFS operations on the boot device. *

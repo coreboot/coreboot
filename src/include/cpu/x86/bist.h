@@ -2,6 +2,7 @@
 #define CPU_X86_BIST_H
 
 #include <console/console.h>
+#include <stdint.h>
 
 static inline void report_bist_failure(u32 bist)
 {

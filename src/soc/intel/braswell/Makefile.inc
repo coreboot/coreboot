@@ -31,6 +31,7 @@ ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += emmc.c
+ramstage-y += fadt.c
 ramstage-y += gpio.c
 ramstage-y += gfx.c
 ramstage-y += smbus.c

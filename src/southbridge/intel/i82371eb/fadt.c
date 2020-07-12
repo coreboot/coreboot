@@ -27,14 +27,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm1a_evt_blk = DEFAULT_PMBASE;
 	fadt->pm1a_cnt_blk = DEFAULT_PMBASE + PMCNTRL;
 
-	fadt->pm2_cnt_blk = 0;
 	fadt->pm_tmr_blk = DEFAULT_PMBASE + PMTMR;
 	fadt->gpe0_blk = DEFAULT_PMBASE + GPSTS;
 
 	/* *_len define register width in bytes */
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
-	fadt->pm2_cnt_len = 0; /* not supported */
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 4;
 
@@ -128,13 +126,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
 	fadt->x_pm1a_cnt_blk.addrl = fadt->pm1a_cnt_blk;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
-
-	fadt->x_pm2_cnt_blk.space_id = 1;
-	fadt->x_pm2_cnt_blk.bit_width = fadt->pm2_cnt_len * 8;
-	fadt->x_pm2_cnt_blk.bit_offset = 0;
-	fadt->x_pm2_cnt_blk.access_size = 0;
-	fadt->x_pm2_cnt_blk.addrl = fadt->pm2_cnt_blk;
-	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm_tmr_blk.space_id = 1;
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;

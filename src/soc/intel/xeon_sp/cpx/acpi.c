@@ -298,7 +298,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_offset = 1;
 	fadt->day_alrm = 0xd;
 
-	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED | ACPI_FADT_C2_MP_SUPPORTED |
+	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED | ACPI_FADT_C2_MP_SUPPORTED |
 			ACPI_FADT_RESET_REGISTER | ACPI_FADT_PLATFORM_CLOCK;
 
 	fadt->reset_reg.space_id = 1;

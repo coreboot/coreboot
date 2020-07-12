@@ -55,14 +55,14 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
-	fadt->flags = ACPI_FADT_WBINVD |
-		      ACPI_FADT_C1_SUPPORTED |
-		      ACPI_FADT_C2_MP_SUPPORTED |
-		      ACPI_FADT_SLEEP_BUTTON |
-		      ACPI_FADT_RESET_REGISTER |
-		      ACPI_FADT_SEALED_CASE |
-		      ACPI_FADT_S4_RTC_WAKE |
-		      ACPI_FADT_PLATFORM_CLOCK;
+	fadt->flags |= ACPI_FADT_WBINVD |
+		       ACPI_FADT_C1_SUPPORTED |
+		       ACPI_FADT_C2_MP_SUPPORTED |
+		       ACPI_FADT_SLEEP_BUTTON |
+		       ACPI_FADT_RESET_REGISTER |
+		       ACPI_FADT_SEALED_CASE |
+		       ACPI_FADT_S4_RTC_WAKE |
+		       ACPI_FADT_PLATFORM_CLOCK;
 
 	if (cfg->docking_supported)
 		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;

@@ -25,7 +25,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	uint32_t pmbase = pci_read_config32(dev, R_QNC_LPC_PM1BLK)
 		& B_QNC_LPC_PM1BLK_MASK;
 
-	fadt->flags = ACPI_FADT_RESET_REGISTER | ACPI_FADT_PLATFORM_CLOCK;
+	fadt->flags |= ACPI_FADT_RESET_REGISTER | ACPI_FADT_PLATFORM_CLOCK;
 
 	/* PM1 Status: ACPI 4.8.3.1.1 */
 	fadt->pm1a_evt_blk = pmbase + R_QNC_PM1BLK_PM1S;

@@ -103,7 +103,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	 * 18   FORCE_APIC_CLUSTER_MODEL
 	 * 19   FORCE_APIC_PHYSICAL_DESTINATION_MODE
 	 */
-	fadt->flags = 0xa5 | ACPI_FADT_RESET_REGISTER;
+	fadt->flags |= 0xa5 | ACPI_FADT_RESET_REGISTER;
 
 	fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->reset_reg.bit_width = 8;

@@ -283,9 +283,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->sci_int = SCI_INT_NUM;
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
-	fadt->pm1b_evt_blk = 0x0;
 	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
-	fadt->pm1b_cnt_blk = 0x0;
 
 	fadt->gpe0_blk = pmbase + GPE0_STS(0);
 
@@ -313,13 +311,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
 	fadt->x_pm1a_evt_blk.addrl = pmbase + PM1_STS;
 
-	fadt->x_pm1b_evt_blk.space_id = 1;
-
 	fadt->x_pm1a_cnt_blk.space_id = 1;
 	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
 	fadt->x_pm1a_cnt_blk.addrl = pmbase + PM1_CNT;
-
-	fadt->x_pm1b_cnt_blk.space_id = 1;
 
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;

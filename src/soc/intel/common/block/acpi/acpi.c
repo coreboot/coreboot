@@ -104,9 +104,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	}
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
-	fadt->pm1b_evt_blk = 0x0;
 	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
-	fadt->pm1b_cnt_blk = 0x0;
 
 	fadt->gpe0_blk = pmbase + GPE0_STS(0);
 
@@ -137,15 +135,10 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm1a_evt_blk.addrl = pmbase + PM1_STS;
 	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 
-
-	fadt->x_pm1b_evt_blk.space_id = 1;
-
 	fadt->x_pm1a_cnt_blk.space_id = 1;
 	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
 	fadt->x_pm1a_cnt_blk.addrl = pmbase + PM1_CNT;
 	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-
-	fadt->x_pm1b_cnt_blk.space_id = 1;
 
 	/*
 	 * Windows 10 requires x_gpe0_blk to be set starting with FADT revision 5.

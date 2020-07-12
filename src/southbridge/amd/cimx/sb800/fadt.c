@@ -59,9 +59,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
 	outl(0x1, PM1_CNT_BLK_ADDRESS);		  /* set SCI_EN */
 	fadt->pm1a_evt_blk = PM1_EVT_BLK_ADDRESS;
-	fadt->pm1b_evt_blk = 0x0000;
 	fadt->pm1a_cnt_blk = PM1_CNT_BLK_ADDRESS;
-	fadt->pm1b_cnt_blk = 0x0000;
 	fadt->pm2_cnt_blk = ACPI_PMA_CNT_BLK_ADDRESS;
 	fadt->pm_tmr_blk = PM1_TMR_BLK_ADDRESS;
 	fadt->gpe0_blk = GPE0_BLK_ADDRESS;
@@ -114,28 +112,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm1a_evt_blk.addrl = PM1_EVT_BLK_ADDRESS;
 	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
-	fadt->x_pm1b_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1b_evt_blk.bit_width = 0;
-	fadt->x_pm1b_evt_blk.bit_offset = 0;
-	fadt->x_pm1b_evt_blk.access_size = 0;
-	fadt->x_pm1b_evt_blk.addrl = 0x0;
-	fadt->x_pm1b_evt_blk.addrh = 0x0;
-
-
 	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_cnt_blk.bit_width = 16;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
 	fadt->x_pm1a_cnt_blk.access_size = 0;
 	fadt->x_pm1a_cnt_blk.addrl = PM1_CNT_BLK_ADDRESS;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
-
-	fadt->x_pm1b_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1b_cnt_blk.bit_width = 0;
-	fadt->x_pm1b_cnt_blk.bit_offset = 0;
-	fadt->x_pm1b_cnt_blk.access_size = 0;
-	fadt->x_pm1b_cnt_blk.addrl = 0x0;
-	fadt->x_pm1b_cnt_blk.addrh = 0x0;
-
 
 	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm2_cnt_blk.bit_width = 8;	/* Hudson 1 Pm2Control is 8 bits */

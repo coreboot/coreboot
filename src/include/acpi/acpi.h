@@ -880,6 +880,7 @@ void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);
+void arch_fill_fadt(acpi_fadt_t *fadt);
 void soc_fill_fadt(acpi_fadt_t *fadt);
 void mainboard_fill_fadt(acpi_fadt_t *fadt);
 

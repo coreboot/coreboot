@@ -84,21 +84,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 				ACPI_FADT_SLEEP_BUTTON |
 				ACPI_FADT_S4_RTC_WAKE |
 				ACPI_FADT_32BIT_TIMER |
-				ACPI_FADT_RESET_REGISTER |
 				ACPI_FADT_PCI_EXPRESS_WAKE |
 				ACPI_FADT_S4_RTC_VALID |
 				ACPI_FADT_REMOTE_POWER_ON;
-
-	/* Format is from 5.2.3.1: Generic Address Structure */
-	/* reset_reg: see section 4.7.3.6 ACPI 3.0a spec */
-	/* 8 bit write of value 0x06 to 0xCF9 in IO space */
-	fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->reset_reg.bit_width = 8;
-	fadt->reset_reg.bit_offset = 0;
-	fadt->reset_reg.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->reset_reg.addrl = 0xcf9;
-	fadt->reset_reg.addrh = 0x0;
-	fadt->reset_value = 6;
 
 	fadt->ARM_boot_arch = 0;	/* MUST be 0 ACPI 3.0 */
 	fadt->FADT_MinorVersion = 0;	/* MUST be 0 ACPI 3.0 */

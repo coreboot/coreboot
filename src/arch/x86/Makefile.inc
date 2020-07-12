@@ -235,6 +235,7 @@ $(CONFIG_CBFS_PREFIX)/postcar-compression := none
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
+ramstage-y += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 ramstage-$(CONFIG_ACPI_BERT) += acpi_bert_storage.c
 ramstage-y += boot.c

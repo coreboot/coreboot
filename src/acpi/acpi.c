@@ -1219,6 +1219,7 @@ void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
 	header->checksum = acpi_checksum((void *)bert, header->length);
 }
 
+__weak void arch_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void soc_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void mainboard_fill_fadt(acpi_fadt_t *fadt) { }
 
@@ -1258,6 +1259,8 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 		fadt->preferred_pm_profile = PM_TABLET;
 	else
 		fadt->preferred_pm_profile = PM_DESKTOP;
+
+	arch_fill_fadt(fadt);
 
 	acpi_fill_fadt(fadt);
 

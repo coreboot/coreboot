@@ -25,7 +25,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	uint32_t pmbase = pci_read_config32(dev, R_QNC_LPC_PM1BLK)
 		& B_QNC_LPC_PM1BLK_MASK;
 
-	fadt->flags |= ACPI_FADT_RESET_REGISTER | ACPI_FADT_PLATFORM_CLOCK;
+	fadt->flags |= ACPI_FADT_PLATFORM_CLOCK;
 
 	/* PM1 Status: ACPI 4.8.3.1.1 */
 	fadt->pm1a_evt_blk = pmbase + R_QNC_PM1BLK_PM1S;
@@ -59,17 +59,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
-
-	/* Reset Register: ACPI 4.8.3.6, 5.2.3.2 */
-	fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->reset_reg.bit_width = 8;
-	fadt->reset_reg.bit_offset = 0;
-	fadt->reset_reg.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->reset_reg.addrl = 0xcf9;
-	fadt->reset_reg.addrh = 0;
-
-	/* Soft/Warm Reset */
-	fadt->reset_value = 6;
 
 	/* General-Purpose Event 0 Registers: ACPI 4.8.4.1 */
 	fadt->gpe0_blk = gpe0_base;

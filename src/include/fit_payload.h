@@ -4,7 +4,6 @@
 #define __FIT_PAYLOAD_H_
 
 #include <program_loading.h>
-#include <stdint.h>
 
 void fit_payload(struct prog *payload);
 

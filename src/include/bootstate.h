@@ -4,7 +4,6 @@
 
 #include <string.h>
 #include <stddef.h>
-#include <stdint.h>
 /* Only declare main() when in ramstage. */
 #if ENV_RAMSTAGE
 #include <main_decl.h>

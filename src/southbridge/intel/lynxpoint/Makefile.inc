@@ -6,6 +6,7 @@ bootblock-y += bootblock.c
 
 ramstage-y += pch.c
 ramstage-y += azalia.c
+ramstage-y += fadt.c
 ramstage-y += lpc.c
 ramstage-y += pcie.c
 ramstage-y += sata.c

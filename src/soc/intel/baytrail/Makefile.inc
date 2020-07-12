@@ -29,6 +29,7 @@ ramstage-y += cpu.c
 ramstage-y += dptf.c
 ramstage-y += ehci.c
 ramstage-y += emmc.c
+ramstage-y += fadt.c
 ramstage-y += gfx.c
 ramstage-y += gpio.c
 ramstage-y += hda.c

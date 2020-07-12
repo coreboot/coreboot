@@ -2,7 +2,6 @@
 #ifndef THREAD_H_
 #define THREAD_H_
 
-#include <stddef.h>
 #include <stdint.h>
 #include <bootstate.h>
 #include <arch/cpu.h>

@@ -3,7 +3,7 @@
 #ifndef __AMDBLOCKS_ACPI_H__
 #define __AMDBLOCKS_ACPI_H__
 
-#include <stdint.h>
+#include <types.h>
 
 /* ACPI MMIO registers 0xfed80800 */
 #define MMIO_ACPI_PM1_STS		0x00

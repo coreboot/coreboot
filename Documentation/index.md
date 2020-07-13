@@ -166,6 +166,7 @@ Contents:
 * [Project Ideas](contributing/project_ideas.md)
 * [Documentation Ideas](contributing/documentation_ideas.md)
 * [Code of Conduct](community/code_of_conduct.md)
+* [Language style](community/language_style.md)
 * [Community forums](community/forums.md)
 * [Project services](community/services.md)
 * [coreboot at conferences](community/conferences.md)

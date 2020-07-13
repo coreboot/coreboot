@@ -10,7 +10,7 @@ void variant_audio_update(void)
 	struct soc_amd_picasso_config *cfg = config_of_soc();
 	struct acpi_gpio *gpio = &cfg->dmic_select_gpio;
 
-	if (!variant_uses_v3_schematics())
+	if (variant_uses_v3_schematics())
 		return;
 
 	if (CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE))

@@ -9,10 +9,7 @@
 
 #include <FspUpd.h>
 
-#pragma pack(1)
-
-
-typedef struct {
+typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
 	/** Offset 0x0024**/	uint8_t                     unused0[12];
 	/** Offset 0x0030**/	uint8_t                     dxio_descriptor0[16];
@@ -51,11 +48,9 @@ typedef struct {
 
 /** Fsp S UPD Configuration
 **/
-typedef struct {
+typedef struct __packed {
 	/** Offset 0x0000**/	FSP_UPD_HEADER              FspUpdHeader;
 	/** Offset 0x0020**/	FSP_S_CONFIG                FspsConfig;
 } FSPS_UPD;
-
-#pragma pack()
 
 #endif

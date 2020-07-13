@@ -9,12 +9,9 @@
 
 #include <FspUpd.h>
 
-#pragma pack(1)
-
-
 /** Fsp M Configuration
 **/
-typedef struct {
+typedef struct __packed {
 	/** Offset 0x0040**/	uint32_t                    pci_express_base_addr;
 	/** Offset 0x0044**/	uint32_t                    serial_port_base;
 	/** Offset 0x0048**/	uint32_t                    serial_port_use_mmio;
@@ -71,12 +68,10 @@ typedef struct {
 
 /** Fsp M UPD Configuration
 **/
-typedef struct {
+typedef struct __packed {
 	/** Offset 0x0000**/	FSP_UPD_HEADER              FspUpdHeader;
 	/** Offset 0x0020**/	FSPM_ARCH_UPD               FspmArchUpd;
 	/** Offset 0x0040**/	FSP_M_CONFIG                FspmConfig;
 } FSPM_UPD;
-
-#pragma pack()
 
 #endif

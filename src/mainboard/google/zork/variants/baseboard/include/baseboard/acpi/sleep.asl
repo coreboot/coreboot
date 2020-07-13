@@ -23,7 +23,6 @@ Method(_PTS, 1) {
 	/* DBGO("\n") */
 
 	Store(0, PEWD)
-	Store(7, UPWS)
 } /* End Method(\_PTS) */
 
 /*

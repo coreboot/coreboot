@@ -74,8 +74,6 @@
 	IndexField (PIOI, PIOD, ByteAcc, NoLock, Preserve) {
 		Offset(0x60),		/* AcpiPm1EvgBlk */
 		P1EB, 16,
-		Offset(0xee),
-		UPWS, 3,
 	}
 	OperationRegion (P1E0, SystemIO, P1EB, 0x04)
 		Field (P1E0, ByteAcc, Nolock, Preserve) {

@@ -49,7 +49,3 @@ Method(_PRT,0, NotSerialized)
 {
 	Return(PR0)
 }
-
-Device(AMRT) {
-	Name(_ADR, 0x00000000)
-} /* end AMRT */

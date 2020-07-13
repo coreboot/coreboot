@@ -20,15 +20,6 @@ Method(_OSC,4)
 	}
 }
 
-/* Describe the Southbridge devices */
-
-/* 0:14.0 - SMBUS */
-Device(SBUS) {
-	Name(_ADR, 0x00140000)
-} /* end SBUS */
-
-/* 0:14.2 - I2S Audio */
-
 /* 0:14.3 - LPC */
 #include <soc/amd/common/acpi/lpc.asl>
 

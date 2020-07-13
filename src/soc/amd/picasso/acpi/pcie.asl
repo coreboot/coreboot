@@ -64,54 +64,6 @@
 		IUA3, 0x00000008,	/* Index 0xF9: UART3 */
 	}
 
-	/* PCI Error control register */
-	OperationRegion(PERC, SystemIO, 0x00000c14, 0x00000001)
-		Field(PERC, ByteAcc, NoLock, Preserve) {
-		SENS, 0x00000001,
-		PENS, 0x00000001,
-		SENE, 0x00000001,
-		PENE, 0x00000001,
-	}
-
-	/* Client Management index/data registers */
-	OperationRegion(CMT, SystemIO, 0x00000c50, 0x00000002)
-		Field(CMT, ByteAcc, NoLock, Preserve) {
-		CMTI,	8,
-		/* Client Management Data register */
-		G64E,	1,
-		G64O,	1,
-		G32O,	2,
-		,		2,
-		GPSL,	2,
-	}
-
-	/* GPM Port register */
-	OperationRegion(GPT, SystemIO, 0x00000c52, 0x00000001)
-		Field(GPT, ByteAcc, NoLock, Preserve) {
-		GPB0,1,
-		GPB1,1,
-		GPB2,1,
-		GPB3,1,
-		GPB4,1,
-		GPB5,1,
-		GPB6,1,
-		GPB7,1,
-	}
-
-	/* Flash ROM program enable register */
-	OperationRegion(FRE, SystemIO, 0x00000c6F, 0x00000001)
-		Field(FRE, ByteAcc, NoLock, Preserve) {
-		,     0x00000006,
-		FLRE, 0x00000001,
-	}
-
-	/* PM2 index/data registers */
-	OperationRegion(PM2R, SystemIO, 0x00000Cd0, 0x00000002)
-		Field(PM2R, ByteAcc, NoLock, Preserve) {
-		PM2I, 0x00000008,
-		PM2D, 0x00000008,
-	}
-
 	/* Power Management I/O registers, TODO:PMIO is quite different in SB800. */
 	OperationRegion(PIOR, SystemIO, 0x00000Cd6, 0x00000002)
 		Field(PIOR, ByteAcc, NoLock, Preserve) {

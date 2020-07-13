@@ -50,8 +50,7 @@ fetch: $(project_dir)
 
 # Check out the requested version of the tree
 # Don't write a file for master branch so the latest remote version is always used
-$(project_dir)/.version_$(TAG-y):
-	$(MAKE) fetch
+$(project_dir)/.version_$(TAG-y): fetch
 	echo "    Checking out $(project_name) revision $(TAG-y)"
 	rm -f $(project_dir)/.version_*
 	cd $(project_dir); \

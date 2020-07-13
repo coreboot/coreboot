@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/amd/picasso
+
+	# Start : OPN Performance Configuration
+	# See devhub #55593 Chapter 3.2 for documentation
+	# For the below fields, 0 indicates use SOC default
+
+	# System config index
+	register "system_config" = "2"
+
+	# Set STAPM confiuration. All of these fields must be set >0 to take affect
+	register "slow_ppt_limit" = "25000" #mw
+	register "fast_ppt_limit" = "30000" #mw
+	register "slow_ppt_time_constant" = "5" #second
+	register "stapm_time_constant" = "200" #second
+	register "sustained_power_limit" = "15000" #mw
+
+	register "telemetry_vddcr_vdd_slope" = "71222" #mA
+	register "telemetry_vddcr_vdd_offset" = "0"
+	register "telemetry_vddcr_soc_slope" = "28977" #mA
+	register "telemetry_vddcr_soc_offset" = "0"
+
+	# End : OPN Performance Configuration
+
+	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	# Enable I2C3 for H1 400kHz
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+
+	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
+		device pci 1.6 off end # GPP Bridge 5
+		device pci 1.7 on  end # GPP Bridge 6 - NVME
+		device pci 14.6 off end # Non-Functional SDHCI
+	end # domain
+
+	device mmio 0xfedc4000 on end
+
+end	# chip soc/amd/picasso

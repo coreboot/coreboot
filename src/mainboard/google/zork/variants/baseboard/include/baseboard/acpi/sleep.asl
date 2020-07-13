@@ -21,8 +21,6 @@ Method(_PTS, 1) {
 	/* DBGO("From S0 to S") */
 	/* DBGO(Arg0) */
 	/* DBGO("\n") */
-
-	Store(0, PEWD)
 } /* End Method(\_PTS) */
 
 /*

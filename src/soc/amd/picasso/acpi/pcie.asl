@@ -63,21 +63,3 @@
 		IUA2, 0x00000008,	/* Index 0xF8: UART2 */
 		IUA3, 0x00000008,	/* Index 0xF9: UART3 */
 	}
-
-	/* Power Management I/O registers, TODO:PMIO is quite different in SB800. */
-	OperationRegion(PIOR, SystemIO, 0x00000Cd6, 0x00000002)
-		Field(PIOR, ByteAcc, NoLock, Preserve) {
-		PIOI, 0x00000008,
-		PIOD, 0x00000008,
-	}
-
-	IndexField (PIOI, PIOD, ByteAcc, NoLock, Preserve) {
-		Offset(0x60),		/* AcpiPm1EvgBlk */
-		P1EB, 16,
-	}
-	OperationRegion (P1E0, SystemIO, P1EB, 0x04)
-		Field (P1E0, ByteAcc, Nolock, Preserve) {
-		Offset(0x02),
-		, 14,
-		PEWD, 1,
-	}

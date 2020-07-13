@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <device/pci.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
@@ -60,6 +61,9 @@ static void fill_dxio_descriptors(FSP_S_CONFIG *scfg,
 {
 	size_t i;
 
+	ASSERT_MSG(num <= FSPS_UPD_DXIO_DESCRIPTOR_COUNT,
+			"Too many DXIO descriptors provided.");
+
 	for (i = 0; i < num; i++) {
 		memcpy(scfg->dxio_descriptor[i], &descs[i], sizeof(scfg->dxio_descriptor[0]));
 	}
@@ -69,6 +73,9 @@ static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 			const fsp_ddi_descriptor *descs, size_t num)
 {
 	size_t i;
+
+	ASSERT_MSG(num <= FSPS_UPD_DDI_DESCRIPTOR_COUNT,
+			"Too many DDI descriptors provided.");
 
 	for (i = 0; i < num; i++) {
 		memcpy(&scfg->ddi_descriptor[i], &descs[i], sizeof(scfg->ddi_descriptor[0]));

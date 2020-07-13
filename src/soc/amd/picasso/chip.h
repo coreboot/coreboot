@@ -74,7 +74,6 @@ struct soc_amd_picasso_config {
 	struct acpi_gpio dmic_select_gpio;
 
 	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
-	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;
 	uint32_t fadt_flags;
 

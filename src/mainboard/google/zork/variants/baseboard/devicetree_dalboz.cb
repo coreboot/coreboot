@@ -2,7 +2,6 @@
 chip soc/amd/picasso
 
 	# Set FADT Configuration
-	register "fadt_pm_profile" = "PM_MOBILE"
 	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
 	register "fadt_flags" = "ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
 				ACPI_FADT_C1_SUPPORTED |

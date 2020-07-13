@@ -4,7 +4,6 @@ chip soc/amd/picasso
 	register "acp_pin_cfg" = "I2S_PINS_MAX_HDA"
 
 	# Set FADT Configuration
-	register "fadt_pm_profile" = "PM_UNSPECIFIED"
 	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
 	register "fadt_flags" = "ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
 				ACPI_FADT_C1_SUPPORTED |

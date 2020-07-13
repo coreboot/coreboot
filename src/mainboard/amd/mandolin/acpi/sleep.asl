@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Wake status package */
-Name(WKST,Package(){Zero, Zero})
-
 /*
 * \_PTS - Prepare to Sleep method
 *
@@ -25,10 +22,7 @@ Method(_PTS, 1) {
 	/* DBGO(Arg0) */
 	/* DBGO("\n") */
 
-	/* Clear wake status structure. */
 	Store(0, PEWD)
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
 	Store(7, UPWS)
 } /* End Method(\_PTS) */
 
@@ -53,5 +47,5 @@ Method(\_WAK, 1) {
 	/* DBGO(Arg0) */
 	/* DBGO(" to S0\n") */
 
-	Return(WKST)
+	Return(Package(){Zero, Zero})
 } /* End Method(\_WAK) */

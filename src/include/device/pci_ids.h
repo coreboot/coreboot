@@ -3720,6 +3720,7 @@
 
 /* Intel Dynamic Tuning Technology Device */
 #define PCI_DEVICE_ID_INTEL_TGL_DTT		0x9A03
+#define PCI_DEVICE_ID_INTEL_JSL_DTT		0x4E03
 
 #define PCI_VENDOR_ID_COMPUTONE		0x8e0e
 #define PCI_DEVICE_ID_COMPUTONE_IP2EX	0x0291

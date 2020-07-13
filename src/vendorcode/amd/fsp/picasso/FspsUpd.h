@@ -9,19 +9,14 @@
 
 #include <FspUpd.h>
 
+#define FSPS_UPD_DXIO_DESCRIPTOR_COUNT	6
+#define FSPS_UPD_DDI_DESCRIPTOR_COUNT	4
+
 typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
 	/** Offset 0x0024**/	uint8_t                     unused0[12];
-	/** Offset 0x0030**/	uint8_t                     dxio_descriptor0[16];
-	/** Offset 0x0040**/	uint8_t                     dxio_descriptor1[16];
-	/** Offset 0x0050**/	uint8_t                     dxio_descriptor2[16];
-	/** Offset 0x0060**/	uint8_t                     dxio_descriptor3[16];
-	/** Offset 0x0070**/	uint8_t                     dxio_descriptor4[16];
-	/** Offset 0x0080**/	uint8_t                     dxio_descriptor5[16];
-	/** Offset 0x0090**/	uint32_t                    ddi_descriptor0;
-	/** Offset 0x0094**/	uint32_t                    ddi_descriptor1;
-	/** Offset 0x0098**/	uint32_t                    ddi_descriptor2;
-	/** Offset 0x009C**/	uint32_t                    ddi_descriptor3;
+	/** Offset 0x0030**/	uint8_t                     dxio_descriptor[FSPS_UPD_DXIO_DESCRIPTOR_COUNT][16];
+	/** Offset 0x0090**/	uint32_t                    ddi_descriptor[FSPS_UPD_DDI_DESCRIPTOR_COUNT];
 	/** Offset 0x00A0**/	uint32_t                    unused1;
 	/** Offset 0x00A4**/	uint32_t                    unused2;
 	/** Offset 0x00A8**/	uint32_t                    unused3;

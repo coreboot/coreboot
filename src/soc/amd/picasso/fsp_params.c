@@ -59,13 +59,9 @@ static void fill_pcie_descriptors(FSP_S_CONFIG *scfg,
 			const fsp_pcie_descriptor *descs, size_t num)
 {
 	size_t i;
-	fsp_pcie_descriptor *fsp_pcie;
-
-	/* FIXME: this violates C rules. */
-	fsp_pcie = (fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
 
 	for (i = 0; i < num; i++) {
-		fsp_pcie[i] = descs[i];
+		memcpy(scfg->dxio_descriptor[i], &descs[i], sizeof(scfg->dxio_descriptor[0]));
 	}
 }
 
@@ -73,13 +69,9 @@ static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 			const fsp_ddi_descriptor *descs, size_t num)
 {
 	size_t i;
-	fsp_ddi_descriptor *fsp_ddi;
-
-	/* FIXME: this violates C rules. */
-	fsp_ddi = (fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
 	for (i = 0; i < num; i++) {
-		fsp_ddi[i] = descs[i];
+		memcpy(&scfg->ddi_descriptor[i], &descs[i], sizeof(scfg->ddi_descriptor[0]));
 	}
 }
 static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)

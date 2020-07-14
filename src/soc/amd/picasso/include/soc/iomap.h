@@ -6,7 +6,6 @@
 /* MMIO Ranges */
 /* IO_APIC_ADDR defined in arch/x86	0xfec00000 */
 #define SPI_BASE_ADDRESS		0xfec10000
-#define ESPI_BASE_ADDRESS		0xfec20000
 
 #if CONFIG(HPET_ADDRESS_OVERRIDE)
 #error HPET address override is not allowed and must be fixed at 0xfed00000

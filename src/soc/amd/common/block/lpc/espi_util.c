@@ -19,14 +19,8 @@ void espi_update_static_bar(uintptr_t bar)
 
 static uintptr_t espi_get_bar(void)
 {
-	uintptr_t espi_spi_base;
-
-	if (espi_bar)
-		return espi_bar;
-
-	espi_spi_base = lpc_get_spibase();
-	espi_update_static_bar(espi_spi_base + ESPI_OFFSET_FROM_BAR);
-
+	if (ENV_X86 && !espi_bar)
+		espi_update_static_bar(lpc_get_spibase() + ESPI_OFFSET_FROM_BAR);
 	return espi_bar;
 }
 

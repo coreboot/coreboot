@@ -158,7 +158,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* DEV_BEEP_BCLK */
 	PAD_GPI(GPIO_139, PULL_NONE),
 	/* USI_RESET */
-	PAD_GPO(GPIO_140, LOW),
+	PAD_GPO(GPIO_140, HIGH),
 	/* UART1_RXD - FPMCU */
 	PAD_NF(GPIO_141, UART1_RXD, PULL_NONE),
 	/* UART1_TXD - FPMCU */

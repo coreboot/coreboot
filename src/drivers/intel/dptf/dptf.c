@@ -215,9 +215,12 @@ static void write_options(const struct drivers_intel_dptf_config *config)
 
 	/* TSR options */
 	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
-		if (is_participant_used(config, p)) {
+		if (is_participant_used(config, p) && (config->options.tsr[i].hysteresis ||
+						       config->options.tsr[i].desc)) {
+			dptf_write_scope(p);
 			dptf_write_tsr_hysteresis(config->options.tsr[i].hysteresis);
 			dptf_write_STR(config->options.tsr[i].desc);
+			acpigen_pop_len(); /* Scope */
 		}
 	}
 }

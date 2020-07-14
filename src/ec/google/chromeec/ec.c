@@ -393,7 +393,14 @@ void google_chromeec_log_events(uint64_t mask)
 		return;
 
 	events = google_chromeec_get_events_b() & mask;
-	for (i = 0; i < sizeof(events) * 8; i++) {
+
+	/*
+	 * This loop starts at 1 because the EC_HOST_EVENT_MASK macro subtracts
+	 * 1 from its argument before applying the left-shift operator. This
+	 * prevents a left-shift of -1 happening, and covers the entire 64-bit
+	 * range of the event mask.
+	 */
+	for (i = 1; i <= sizeof(events) * 8; i++) {
 		if (EC_HOST_EVENT_MASK(i) & events)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT, i);
 	}

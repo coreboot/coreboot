@@ -187,11 +187,16 @@ static void xhci_add_devices(const struct device *dev)
 static void xhci_fill_ssdt(const struct device *dev)
 {
 	int gpe;
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+
+	if (!scope || !name)
+		return;
 
 	printk(BIOS_DEBUG, "xHCI SSDT generation\n");
 
-	acpigen_write_scope(acpi_device_scope(dev));
-	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
 
 	acpigen_write_ADR_pci_device(dev);
 	acpigen_write_name_string("_DDN", "xHC - Extensible Host Controller");

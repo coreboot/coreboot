@@ -108,8 +108,7 @@ in the source files. To see errors that are already present, build the files in
 the repository by running `make lint` in the coreboot directory. Alternatively,
 if you want to run `make lint` on a specific directory, run:
 
-	for file in $(git ls-files | grep <filepath>); do \
-	util/lint/checkpatch.pl --file $file --terse; done
+	util/lint/lint-007-checkpatch <filepath>
 
 where `filepath` is the filepath of the directory (ex. `src/cpu/amd/car`).
 

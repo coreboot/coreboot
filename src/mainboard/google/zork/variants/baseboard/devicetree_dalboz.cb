@@ -140,8 +140,8 @@ chip soc/amd/picasso
 
 	# SPI Configuration
 	register "common_config.spi_config" = "{
-		.normal_speed = SPI_SPEED_100M, /* MHz */
-		.fast_speed = SPI_SPEED_100M, /* MHz */
+		.normal_speed = SPI_SPEED_33M, /* MHz */
+		.fast_speed = SPI_SPEED_66M, /* MHz */
 		.altio_speed = SPI_SPEED_66M, /* MHz */
 		.tpm_speed = SPI_SPEED_66M, /* MHz */
 		.read_mode = SPI_READ_MODE_DUAL122,

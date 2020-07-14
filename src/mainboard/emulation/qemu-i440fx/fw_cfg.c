@@ -118,7 +118,7 @@ uintptr_t fw_cfg_tolud(void)
 	uint64_t top = 0;
 	uint32_t size = 0, pos = 0;
 
-	if (fw_cfg_e820_select(&size)) {
+	if (fw_cfg_e820_select(&size) == 0) {
 		while (!fw_cfg_e820_read(&e, &size, &pos)) {
 			uint64_t limit = e.address + e.length;
 			if (e.type == 1 && limit < 4ULL * GiB && limit > top)

@@ -74,9 +74,11 @@ static int fw_cfg_find_file(FWCfgFile *file, const char *name)
 		if (strcmp(file->name, name) == 0) {
 			file->size = be32_to_cpu(file->size);
 			file->select = be16_to_cpu(file->select);
+			printk(BIOS_INFO, "QEMU: firmware config: Found '%s'\n", name);
 			return 0;
 		}
 	}
+	printk(BIOS_INFO, "QEMU: firmware config: Couldn't find '%s'\n", name);
 	return -1;
 }
 

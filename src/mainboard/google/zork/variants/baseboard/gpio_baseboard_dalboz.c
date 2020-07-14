@@ -9,22 +9,7 @@
 #include <boardid.h>
 #include <variant/gpio.h>
 
-static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
-	/* PCIE_RST1_L - Variable timings (May remove) */
-	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
-	/* NVME_AUX_RESET_L */
-	PAD_GPO(GPIO_40, HIGH),
-	/* CLK_REQ0_L - WIFI */
-	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
-	/* CLK_REQ1_L - SD Card */
-	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
-	/* CLK_REQ2_L - NVMe */
-	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_142, HIGH),
-};
-
-static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
+static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
@@ -157,13 +142,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 const __weak
 struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
 {
-	if (variant_uses_v3_schematics()) {
-		*size = ARRAY_SIZE(gpio_set_stage_rom_v3);
-		return gpio_set_stage_rom_v3;
-	}
-
-	*size = ARRAY_SIZE(gpio_set_stage_rom_pre_v3);
-	return gpio_set_stage_rom_pre_v3;
+	*size = ARRAY_SIZE(gpio_set_stage_rom);
+	return gpio_set_stage_rom;
 }
 
 const __weak

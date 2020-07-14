@@ -10,55 +10,31 @@
 #include <variant/gpio.h>
 
 static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
-	/* PEN_POWER_EN - reset */
-	PAD_GPO(GPIO_5, LOW),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
-	/* EN_PWR_TOUCHPAD_PS2 - reset */
-	PAD_GPO(GPIO_67, LOW),
-	/* EMMC_RESET - reset (default stuffing unused)*/
-	PAD_GPO(GPIO_68, HIGH),
-	/* EN_PWR_CAMERA - reset */
-	PAD_GPO(GPIO_76, LOW),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 	/* CLK_REQ1_L - SD Card */
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
 	/* CLK_REQ2_L - NVMe */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* USI_RESET - reset */
-	PAD_GPO(GPIO_140, HIGH),
-	/* USB_HUB_RST_L - reset*/
-	PAD_GPO(GPIO_141, LOW),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_142, HIGH),
 };
 
 static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
-	/* PEN_POWER_EN - reset */
-	PAD_GPO(GPIO_5, LOW),
-	/* EN_PWR_TOUCHPAD_PS2 - reset */
-	PAD_GPO(GPIO_6, LOW),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
-	/* EMMC_RESET - reset (default stuffing unused)*/
-	PAD_GPO(GPIO_68, HIGH),
-	/* EN_PWR_CAMERA - reset */
-	PAD_GPO(GPIO_76, LOW),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 	/* CLK_REQ1_L - SD Card */
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
 	/* CLK_REQ2_L - NVMe */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* USI_RESET - reset */
-	PAD_GPO(GPIO_140, HIGH),
-	/* USB_HUB_RST_L - reset*/
-	PAD_GPO(GPIO_141, LOW),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_142, HIGH),
 };

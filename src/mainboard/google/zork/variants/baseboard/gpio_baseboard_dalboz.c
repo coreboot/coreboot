@@ -303,8 +303,6 @@ __weak void variant_pcie_power_reset_configure(void)
 }
 
 static const struct soc_amd_gpio gpio_sleep_table[] = {
-	/* PEN_POWER_EN */
-	PAD_GPO(GPIO_5, LOW),
 	/* PCIE_RST1_L */
 	PAD_GPO(GPIO_27, LOW),
 	/*

@@ -43,22 +43,6 @@ Method(\_PTS, 1) {
 } /* End Method(\_PTS) */
 
 /*
-*	\_BFS OEM Back From Sleep method
-*
-*	Entry:
-*		Arg0=The value of the sleeping state S1=1, S2=2
-*
-*	Exit:
-*		-none-
-*/
-Method(\_BFS, 1) {
-	/* DBGO("\\_BFS\n") */
-	/* DBGO("From S") */
-	/* DBGO(Arg0) */
-	/* DBGO(" to S0\n") */
-}
-
-/*
 *  \_WAK System Wake method
 *
 *	Entry:

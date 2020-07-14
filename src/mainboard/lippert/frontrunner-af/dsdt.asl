@@ -761,18 +761,6 @@ DefinitionBlock (
 	} /* End Method(\_PTS) */
 
 	/*
-	*	\_BFS OEM Back From Sleep method
-	*
-	*	Entry:
-	*		Arg0=The value of the sleeping state S1=1, S2=2
-	*
-	*	Exit:
-	*		-none-
-	*/
-	Method(\_BFS, 1) {
-	}
-
-	/*
 	*  \_WAK System Wake method
 	*
 	*	Entry:

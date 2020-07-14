@@ -29,16 +29,16 @@ chip soc/intel/cannonlake
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
-	#| Field             |  Value                    |
+	#| Field	     |	Value			 |
 	#+-------------------+---------------------------+
-	#| GSPI0             | cr50 TPM. Early init is   |
-	#|                   | required to set up a BAR  |
-	#|                   | for TPM communication     |
-	#|                   | before memory is up       |
-	#| GSPI1             | FP MCU                    |
-	#| I2C0              | Touchpad                  |
-	#| I2C1              | Touch screen              |
-	#| I2C4              | Audio                     |
+	#| GSPI0	     | cr50 TPM. Early init is	 |
+	#|		     | required to set up a BAR	 |
+	#|		     | for TPM communication	 |
+	#|		     | before memory is up	 |
+	#| GSPI1	     | FP MCU			 |
+	#| I2C0		     | Touchpad			 |
+	#| I2C1		     | Touch screen		 |
+	#| I2C4		     | Audio			 |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.gspi[0] = {
@@ -47,18 +47,18 @@ chip soc/intel/cannonlake
 		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
-                        .rise_time_ns = 50,
-                        .fall_time_ns = 15,
+			.rise_time_ns = 50,
+			.fall_time_ns = 15,
 		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
-                        .rise_time_ns = 60,
-                        .fall_time_ns = 25,
+			.rise_time_ns = 60,
+			.fall_time_ns = 25,
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
-                        .rise_time_ns = 60,
-                        .fall_time_ns = 60,
+			.rise_time_ns = 60,
+			.fall_time_ns = 60,
 		},
 	}"
 
@@ -169,6 +169,25 @@ chip soc/intel/cannonlake
 				device spi 1 on end
 			end # FPMCU
 		end # GSPI #1
+		device pci 1f.0 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on
+					chip ec/google/chromeec/i2c_tunnel
+						register "uid" = "1"
+						register "remote_bus" = "5"
+						device generic 0 on
+							chip drivers/i2c/generic
+								register "hid" = ""ACPI_DT_NAMESPACE_HID""
+								register "name" = ""SBS0""
+								register "uid" = "1"
+								register "compat_string" = ""sbs,sbs-battery""
+								device i2c 0b on end
+							end
+						end
+					end
+				end
+			end
+		end # eSPI Interface
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""

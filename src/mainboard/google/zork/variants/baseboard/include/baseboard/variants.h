@@ -12,7 +12,6 @@
 
 const struct sci_source *variant_gpe_table(size_t *num);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
-const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 /*
  * This function provides base GPIO configuration table. It is typically provided by
  * baseboard using a weak implementation. If GPIO configuration for a variant differs
@@ -36,8 +35,8 @@ const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
 void variant_devtree_update(void);
 /* Update audio configuration in devicetree during ramstage. */
 void variant_audio_update(void);
-/* Configure PCIe power and reset lines as per variant sequencing requirements. */
-void variant_pcie_power_reset_configure(void);
+/* Configure PCIe GPIOs as per variant sequencing requirements. */
+void variant_pcie_gpio_configure(void);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
  * overrideable by the variant. */

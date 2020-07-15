@@ -9,21 +9,6 @@
 #include <boardid.h>
 #include <variant/gpio.h>
 
-static const struct soc_amd_gpio gpio_set_stage_rom[] = {
-	/* PCIE_RST1_L - Variable timings (May remove) */
-	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
-	/* NVME_AUX_RESET_L */
-	PAD_GPO(GPIO_40, HIGH),
-	/* CLK_REQ0_L - WIFI */
-	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
-	/* CLK_REQ1_L - SD Card */
-	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
-	/* CLK_REQ2_L - NVMe */
-	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_142, HIGH),
-};
-
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 
 	/* PWR_BTN_L */
@@ -140,13 +125,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 };
 
 const __weak
-struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
-{
-	*size = ARRAY_SIZE(gpio_set_stage_rom);
-	return gpio_set_stage_rom;
-}
-
-const __weak
 struct soc_amd_gpio *variant_base_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
@@ -247,8 +225,25 @@ static void wifi_power_reset_configure_pre_v3(void)
 	gpio_set(GPIO_42, 1);
 }
 
-__weak void variant_pcie_power_reset_configure(void)
+__weak void variant_pcie_gpio_configure(void)
 {
+	static const struct soc_amd_gpio pcie_gpio_table[] = {
+		/* PCIE_RST1_L - Variable timings (May remove) */
+		PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
+		/* NVME_AUX_RESET_L */
+		PAD_GPO(GPIO_40, HIGH),
+		/* CLK_REQ0_L - WIFI */
+		PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
+		/* CLK_REQ1_L - SD Card */
+		PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
+		/* CLK_REQ2_L - NVMe */
+		PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
+		/* SD_AUX_RESET_L */
+		PAD_GPO(GPIO_142, HIGH),
+	};
+
+	program_gpios(pcie_gpio_table, ARRAY_SIZE(pcie_gpio_table));
+
 	/* Deassert PCIE_RST1_L */
 	gpio_set(GPIO_27, 1);
 

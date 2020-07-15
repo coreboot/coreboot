@@ -399,21 +399,21 @@ static const struct gpio_group cannonlake_pch_h_group_g = {
 };
 
 static const struct gpio_group cannonlake_pch_h_group_aza = {
-	.display	= "------- GPIO Grpoup AZA -------",
+	.display	= "------- GPIO Group AZA -------",
 	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_aza_names) / 1,
 	.func_count	= 1,
 	.pad_names	= cannonlake_pch_h_group_aza_names,
 };
 
 static const struct gpio_group cannonlake_pch_h_group_vgpio_0 = {
-	.display	= "------- GPIO Grpoup VGPIO_0 -------",
+	.display	= "------- GPIO Group VGPIO_0 -------",
 	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_vgpio_0_names) / 1,
 	.func_count	= 1,
 	.pad_names	= cannonlake_pch_h_group_vgpio_0_names,
 };
 
 static const struct gpio_group cannonlake_pch_h_group_vgpio_1 = {
-	.display	= "------- GPIO Grpoup VGPIO_1 -------",
+	.display	= "------- GPIO Group VGPIO_1 -------",
 	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_vgpio_1_names) / 1,
 	.func_count	= 1,
 	.pad_names	= cannonlake_pch_h_group_vgpio_1_names,
@@ -427,7 +427,7 @@ static const struct gpio_group cannonlake_pch_h_group_h = {
 };
 
 static const struct gpio_group cannonlake_pch_h_group_i = {
-	.display	= "-------GPIO Group GPP_I -------",
+	.display	= "------- GPIO Group GPP_I -------",
 	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_i_names) / 3,
 	.func_count	= 3,
 	.pad_names	= cannonlake_pch_h_group_i_names,

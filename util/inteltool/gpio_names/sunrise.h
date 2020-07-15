@@ -391,7 +391,7 @@ static const struct gpio_group sunrise_group_a = {
 };
 
 static const struct gpio_group sunrise_lp_group_a = {
-	.display	= "------- GPIO group GPP_A -------",
+	.display	= "------- GPIO Group GPP_A -------",
 	.pad_count	= ARRAY_SIZE(sunrise_lp_group_a_names) / 4,
 	.func_count	= 4,
 	.pad_names	= sunrise_lp_group_a_names,

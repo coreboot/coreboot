@@ -146,6 +146,14 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ1
+	},
+	{ /* SATA */
+		.port_present = true,
+		.engine_type = SATA_ENGINE,
+		.start_lane = 2,
+		.end_lane = 3,
+		.gpio_group_id = 1,
+		.channel_type = SATA_CHANNEL_LONG,
 	}
 };
 

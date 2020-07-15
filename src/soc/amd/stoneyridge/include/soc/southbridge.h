@@ -255,8 +255,6 @@
 #define   SPI_FIFO_PTR_CLR		BIT(20)
 #define   SPI_ARB_ENABLE		BIT(19)
 #define   EXEC_OPCODE			BIT(16)
-#define SPI_FIFO			0x80
-#define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
 
 #define SPI100_ENABLE			0x20
 #define   SPI_USE_SPI100		BIT(0)

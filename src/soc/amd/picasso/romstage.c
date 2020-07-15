@@ -10,17 +10,11 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <elog.h>
-#include <soc/romstage.h>
 #include <soc/memmap.h>
 #include <soc/mrc_cache.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
-
-void __weak mainboard_romstage_entry_s3(int s3_resume)
-{
-	/* By default, don't do anything */
-}
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
@@ -80,7 +74,6 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x41);
 	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
-	mainboard_romstage_entry_s3(s3_resume);
 
 	post_code(0x42);
 	u32 val = cpuid_eax(1);

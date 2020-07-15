@@ -68,6 +68,14 @@ config GFX_GMA_ANALOG_I2C_HDMI_C
 config GFX_GMA_ANALOG_I2C_HDMI_D
 	bool
 
+config GFX_GMA_IGNORE_PRESENCE_STRAPS
+	def_bool n
+	depends on MAINBOARD_HAS_LIBGFXINIT
+	help
+	  libgfxinit uses the GPU presence straps to determine if a display port
+	  is present/enabled. Select this option if a board doesn't correctly implement
+	  these straps, causing libgfxinit to fail to detect an attached panel.
+
 config GFX_GMA
 	def_bool y
 	depends on NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_X4X \
@@ -126,12 +134,5 @@ config GFX_GMA_ANALOG_I2C_PORT
 	  Boards with a DVI-I connector share the I2C pins for both analog and
 	  digital displays. In that case, the EDID for a VGA display has to be
 	  read over the I2C interface of the coupled digital port.
-
-config GFX_GMA_IGNORE_PRESENCE_STRAPS
-	def_bool n
-	help
-	  libgfxinit uses the GPU presence straps to determine if a display port
-	  is present/enabled. Select this option if a board doesn't correctly implement
-	  these straps, causing libgfxinit to fail to detect an attached panel.
 
 endif

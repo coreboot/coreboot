@@ -14,7 +14,6 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input_pullup(GPIO_EC_IN_RW);
 	gpio_input_pullup(GPIO_AP_EC_INT);
-	gpio_output(GPIO_AP_SUSPEND, 1);
 	gpio_input(GPIO_WP_STATE);
 	gpio_input_pullup(GPIO_SD_CD_L);
 	gpio_input_irq(GPIO_H1_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);

@@ -4,6 +4,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/name.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/mp_init.h>
@@ -58,35 +59,14 @@ static inline uint16_t get_dev_id(pci_devfn_t dev)
 
 static void report_cpu_info(void)
 {
-	struct cpuid_result cpuidr;
-	u32 i, index, cpu_id, cpu_feature_flag;
-	const char cpu_not_found[] = "Platform info not available";
-	const char *cpu_name = cpu_not_found; /* 48 bytes are reported */
+	u32 i, cpu_id, cpu_feature_flag;
+	char cpu_name[49];
 	int vt, txt, aes;
 	msr_t microcode_ver;
 	static const char *const mode[] = {"NOT ", ""};
 	const char *cpu_type = "Unknown";
-	u32 p[13];
 
-	index = 0x80000000;
-	cpuidr = cpuid(index);
-	if (cpuidr.eax >= 0x80000004) {
-		int j = 0;
-
-		for (i = 2; i <= 4; i++) {
-			cpuidr = cpuid(index + i);
-			p[j++] = cpuidr.eax;
-			p[j++] = cpuidr.ebx;
-			p[j++] = cpuidr.ecx;
-			p[j++] = cpuidr.edx;
-		}
-		p[12] = 0;
-		cpu_name = (char *)p;
-
-		/* Skip leading spaces in CPU name string */
-		while (cpu_name[0] == ' ' && strlen(cpu_name) > 0)
-			cpu_name++;
-	}
+	fill_processor_name(cpu_name);
 
 	microcode_ver.lo = 0;
 	microcode_ver.hi = 0;

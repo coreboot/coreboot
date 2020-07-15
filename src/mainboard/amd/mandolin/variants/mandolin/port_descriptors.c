@@ -60,8 +60,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* WWAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 2,
-		.end_lane = 2,
+		.start_lane = 6,
+		.end_lane = 6,
 		.device_number = 1,
 		.function_number = 4,
 		.link_aspm = ASPM_L1,
@@ -73,8 +73,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* WIFI */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 3,
-		.end_lane = 3,
+		.start_lane = 7,
+		.end_lane = 7,
 		.gpio_group_id = 1,
 		.device_number = 1,
 		.function_number = 5,
@@ -87,8 +87,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* SATA EXPRESS */
 		.port_present = true,
 		.engine_type = SATA_ENGINE,
-		.start_lane = 6,
-		.end_lane = 7,
+		.start_lane = 2,
+		.end_lane = 3,
 		.gpio_group_id = 1,
 		.channel_type = SATA_CHANNEL_LONG,
 	}

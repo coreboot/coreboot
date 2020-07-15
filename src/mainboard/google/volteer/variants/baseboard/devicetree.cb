@@ -311,18 +311,26 @@ chip soc/intel/tigerlake
 						     TEMP_PCT(45, 56),
 						     TEMP_PCT(42, 46),
 						     TEMP_PCT(39, 36),}}"
+				register "policies.active[4]" = "{.target=DPTF_TEMP_SENSOR_3,
+					.thresholds={TEMP_PCT(50, 90),
+						     TEMP_PCT(47, 69),
+						     TEMP_PCT(45, 56),
+						     TEMP_PCT(42, 46),
+						     TEMP_PCT(39, 36),}}"
 
 				## Passive Policy
 				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,     CPU,           95, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_0, 65, 6000)"
-				register "policies.passive[2]" = "DPTF_PASSIVE(CHARGER, TEMP_SENSOR_1, 65, 6000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_1, 65, 6000)"
+				register "policies.passive[2]" = "DPTF_PASSIVE(CHARGER, TEMP_SENSOR_0, 65, 6000)"
 				register "policies.passive[3]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_2, 65, 6000)"
+				register "policies.passive[4]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_3, 65, 6000)"
 
 				## Critical Policy
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          105, SHUTDOWN)"
 				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
 				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 75, SHUTDOWN)"
 				register "policies.critical[3]" = "DPTF_CRITICAL(TEMP_SENSOR_2, 75, SHUTDOWN)"
+				register "policies.critical[4]" = "DPTF_CRITICAL(TEMP_SENSOR_3, 75, SHUTDOWN)"
 
 				## Power Limits Control
 				# 10-15W PL1 in 200mW increments, avg over 28-32s interval

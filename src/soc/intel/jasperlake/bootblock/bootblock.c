@@ -25,7 +25,7 @@ void bootblock_soc_early_init(void)
 void bootblock_soc_init(void)
 {
 	report_platform_info();
-	pch_init();
+	bootblock_pch_init();
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	tco_configure();

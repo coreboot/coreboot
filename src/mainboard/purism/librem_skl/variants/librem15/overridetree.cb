@@ -1,7 +1,7 @@
 chip soc/intel/skylake
 
-	# Enable CLKREQ# for RP9
-	register "PcieRpClkReqSupport[8]" = "1"
+	# Disable CLKREQ# for RP9
+	register "PcieRpClkReqSupport[8]" = "0"
 	# SRCCLKREQ2# for NVMe per schematic
 	register "PcieRpClkReqNumber[8]" = "2"
 

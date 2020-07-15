@@ -274,6 +274,13 @@
 #define ENV_USER_SPACE		0
 #endif
 
+/* Define the first stage to run */
+#if CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
+#define ENV_INITIAL_STAGE		ENV_SEPARATE_VERSTAGE
+#else
+#define ENV_INITIAL_STAGE		ENV_BOOTBLOCK
+#endif
+
 /**
  * For pre-DRAM stages and post-CAR always build with simple device model, ie.
  * PCI, PNP and CPU functions operate without use of devicetree. The reason

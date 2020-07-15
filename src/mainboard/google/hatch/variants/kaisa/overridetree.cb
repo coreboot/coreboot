@@ -74,12 +74,76 @@ chip soc/intel/cannonlake
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # BT
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"     # Type-A Port 2
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"     # Type-A Port 3
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
+	register "usb3_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC2,
+		.tx_de_emp = 0x00,
+		.tx_downscale_amp = 0x00,
+		.gen2_tx_rate0_uniq_tran_enable = 0,
+		.gen2_tx_rate0_uniq_tran = 0x00,
+		.gen2_tx_rate1_uniq_tran_enable = 0,
+		.gen2_tx_rate1_uniq_tran = 0x00,
+		.gen2_tx_rate2_uniq_tran_enable = 1,
+		.gen2_tx_rate2_uniq_tran = 0x4c,
+		.gen2_tx_rate3_uniq_tran_enable = 0,
+		.gen2_tx_rate3_uniq_tran = 0x00,
+		.gen2_rx_tuning_enable = 0x0f,
+		.gen2_rx_tuning_params = 0x45,
+		.gen2_rx_filter_sel = 0x44,
+	}" # Type-A Port 2
+	register "usb3_ports[1]" = "USB3_PORT_GEN2_DEFAULT(OC3)"     # Type-A Port 3
+	register "usb3_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC1,
+		.tx_de_emp = 0x00,
+		.tx_downscale_amp = 0x00,
+		.gen2_tx_rate0_uniq_tran_enable = 0,
+		.gen2_tx_rate0_uniq_tran = 0x00,
+		.gen2_tx_rate1_uniq_tran_enable = 0,
+		.gen2_tx_rate1_uniq_tran = 0x00,
+		.gen2_tx_rate2_uniq_tran_enable = 1,
+		.gen2_tx_rate2_uniq_tran = 0x4c,
+		.gen2_tx_rate3_uniq_tran_enable = 0,
+		.gen2_tx_rate3_uniq_tran = 0x00,
+		.gen2_rx_tuning_enable = 0x0f,
+		.gen2_rx_tuning_params = 0x3d,
+		.gen2_rx_filter_sel = 0x44,
+	}" # Type-A Port 1
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port 4
+	register "usb3_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC0,
+		.tx_de_emp = 0x00,
+		.tx_downscale_amp = 0x00,
+		.gen2_tx_rate0_uniq_tran_enable = 0,
+		.gen2_tx_rate0_uniq_tran = 0x00,
+		.gen2_tx_rate1_uniq_tran_enable = 0,
+		.gen2_tx_rate1_uniq_tran = 0x00,
+		.gen2_tx_rate2_uniq_tran_enable = 1,
+		.gen2_tx_rate2_uniq_tran = 0x4c,
+		.gen2_tx_rate3_uniq_tran_enable = 0,
+		.gen2_tx_rate3_uniq_tran = 0x00,
+		.gen2_rx_tuning_enable = 0x0f,
+		.gen2_rx_tuning_params = 0x45,
+		.gen2_rx_filter_sel = 0x44,
+	}" # Type-A Port 0
+	register "usb3_ports[5]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_de_emp = 0x00,
+		.tx_downscale_amp = 0x00,
+		.gen2_tx_rate0_uniq_tran_enable = 0,
+		.gen2_tx_rate0_uniq_tran = 0x00,
+		.gen2_tx_rate1_uniq_tran_enable = 0,
+		.gen2_tx_rate1_uniq_tran = 0x00,
+		.gen2_tx_rate2_uniq_tran_enable = 1,
+		.gen2_tx_rate2_uniq_tran = 0x4c,
+		.gen2_tx_rate3_uniq_tran_enable = 0,
+		.gen2_tx_rate3_uniq_tran = 0x00,
+		.gen2_rx_tuning_enable = 0x0f,
+		.gen2_rx_tuning_params = 0x45,
+		.gen2_rx_filter_sel = 0x44,
+	}" # Type-A Port 4
 
 	# Bitmap for Wake Enable on USB attach/detach
 	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \

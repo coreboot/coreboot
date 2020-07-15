@@ -99,6 +99,11 @@ static void add_vectors(struct vector *out,
 	out->y = v1->y + v2->y;
 }
 
+static int fraction_equal(const struct fraction *f1, const struct fraction *f2)
+{
+	return (int64_t)f1->n * f2->d == (int64_t)f2->n * f1->d;
+}
+
 static int is_valid_fraction(const struct fraction *f)
 {
 	return f->d != 0;
@@ -109,17 +114,31 @@ static int is_valid_scale(const struct scale *s)
 	return is_valid_fraction(&s->x) && is_valid_fraction(&s->y);
 }
 
+static void reduce_fraction(struct fraction *out, int64_t n, int64_t d)
+{
+	/* Simplest way to reduce the fraction until fitting in int32_t */
+	int shift = log2(MAX(ABS(n), ABS(d)) >> 31) + 1;
+	out->n = n >> shift;
+	out->d = d >> shift;
+}
+
+/* out = f1 + f2 */
 static void add_fractions(struct fraction *out,
 			  const struct fraction *f1, const struct fraction *f2)
 {
-	int64_t n, d;
-	int shift;
-	n = (int64_t)f1->n * f2->d + (int64_t)f2->n * f1->d;
-	d = (int64_t)f1->d * f2->d;
-	/* Simplest way to reduce the fraction until fitting in int32_t */
-	shift = log2(MAX(ABS(n), ABS(d)) >> 31) + 1;
-	out->n = n >> shift;
-	out->d = d >> shift;
+	reduce_fraction(out,
+			(int64_t)f1->n * f2->d + (int64_t)f2->n * f1->d,
+			(int64_t)f1->d * f2->d);
+}
+
+/* out = f1 - f2 */
+static void subtract_fractions(struct fraction *out,
+			       const struct fraction *f1,
+			       const struct fraction *f2)
+{
+	reduce_fraction(out,
+			(int64_t)f1->n * f2->d - (int64_t)f2->n * f1->d,
+			(int64_t)f1->d * f2->d);
 }
 
 static void add_scales(struct scale *out,
@@ -473,6 +492,59 @@ int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
 		x_end = x;
 		/* (x_begin <= x_end) must hold now */
 	}
+
+	return CBGFX_SUCCESS;
+}
+
+int draw_line(const struct scale *pos1, const struct scale *pos2,
+	      const struct fraction *thickness, const struct rgb_color *rgb)
+{
+	struct fraction len;
+	struct vector top_left;
+	struct vector size;
+	struct vector p, t;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	const uint32_t color = calculate_color(rgb, 0);
+
+	if (!is_valid_fraction(thickness))
+		return CBGFX_ERROR_INVALID_PARAMETER;
+
+	transform_vector(&top_left, &canvas.size, pos1, &canvas.offset);
+	if (fraction_equal(&pos1->y, &pos2->y)) {
+		/* Horizontal line */
+		subtract_fractions(&len, &pos2->x, &pos1->x);
+		struct scale dim = {
+			.x = { .n = len.n, .d = len.d },
+			.y = { .n = thickness->n, .d = thickness->d },
+		};
+		transform_vector(&size, &canvas.size, &dim, &vzero);
+		size.y = MAX(size.y, 1);
+	} else if (fraction_equal(&pos1->x, &pos2->x)) {
+		/* Vertical line */
+		subtract_fractions(&len, &pos2->y, &pos1->y);
+		struct scale dim = {
+			.x = { .n = thickness->n, .d = thickness->d },
+			.y = { .n = len.n, .d = len.d },
+		};
+		transform_vector(&size, &canvas.size, &dim, &vzero);
+		size.x = MAX(size.x, 1);
+	} else {
+		LOG("Only support horizontal and vertical lines\n");
+		return CBGFX_ERROR_INVALID_PARAMETER;
+	}
+
+	add_vectors(&t, &top_left, &size);
+	if (within_box(&t, &canvas) < 0) {
+		LOG("Line exceeds canvas boundary\n");
+		return CBGFX_ERROR_BOUNDARY;
+	}
+
+	for (p.y = top_left.y; p.y < t.y; p.y++)
+		for (p.x = top_left.x; p.x < t.x; p.x++)
+			set_pixel(&p, color);
 
 	return CBGFX_SUCCESS;
 }

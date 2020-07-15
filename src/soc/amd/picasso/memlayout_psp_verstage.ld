@@ -11,8 +11,6 @@
 #define PSP_SRAM_SIZE			160K
 
 #define VERSTAGE_START			0x15000
-#define VERSTAGE_SIZE			60K
-#define VBOOT_WORK_START		VERSTAGE_START + VERSTAGE_SIZE
 #define VBOOT_WORK_SIZE			12K
 #define FMAP_CACHE_SIZE			2K
 
@@ -50,9 +48,11 @@ SECTIONS
 		.bss : { *(.bss*) }
 		_bss_end = .;
 
-	_everstage = _verstage + VERSTAGE_SIZE;
+	ALIGN_COUNTER(64)
+	_everstage = .;
 
-	REGION(vboot2_work, VBOOT_WORK_START, VBOOT_WORK_SIZE, 64)
+	ALIGN_COUNTER(64)
+	REGION(vboot2_work, ., VBOOT_WORK_SIZE, 64)
 
 	FMAP_CACHE(., FMAP_SIZE)
 

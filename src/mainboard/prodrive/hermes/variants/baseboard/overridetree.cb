@@ -173,7 +173,10 @@ chip soc/intel/cannonlake
 			device pci 14.3 on  end # CNVi wifi
 		end
 
-		device pci 19.2 on  end # UART #2
+		# This device does not have any function on CNP-H, but it needs
+		# to be here so that the resource allocator is aware of UART 2.
+		device pci 19.0 hidden end
+		device pci 19.2 hidden end # UART #2, in ACPI mode
 
 		device pci 1b.4 on
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"

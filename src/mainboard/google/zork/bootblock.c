@@ -12,4 +12,6 @@ void bootblock_mainboard_early_init(void)
 		gpios = variant_early_gpio_table(&num_gpios);
 		program_gpios(gpios, num_gpios);
 	}
+
+	variant_pcie_gpio_configure();
 }

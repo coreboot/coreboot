@@ -43,15 +43,42 @@ employer is aware and you are authorized to submit the code. For
 clarification, see the Developer's Certificate of Origin in the coreboot
 [Signed-off-by policy](https://www.coreboot.org/Development_Guidelines#Sign-off_Procedure).
 
-* Let non-trivial patches sit in a review state for at least 24 hours
-before submission. Remember that there are coreboot developers in timezones
-all over the world, and everyone should have a chance to contribute.
-Trivial patches would be things like whitespace changes or spelling fixes,
-in general those that don’t impact the final binary output. The
-24-hour period would start at submission, and would be restarted at any
-update which significantly changes any part of the patch. Patches can be
-'Fast-tracked' and submitted in under 24 hours with the agreement of at
-least 3 +2 votes.
+* In general, patches should remain open for review for at least 24 hours
+since the last significant modification to the change. The purpose is to
+let coreboot developers around the world have a chance to review. Complex
+reworks, even if they don't change the purpose of the patch but the way
+it's implemented, should restart the wait period.
+
+* A change can go in without the wait period if its purpose is to fix
+a recently-introduced issue (build, boot or OS-level compatibility, not
+necessarily identified by coreboot.org facilities). Its commit message
+has to explain what change introduced the problem and the nature of
+the problem so that the emergency need becomes apparent. The change
+itself should be as limited in scope and impact as possible to make it
+simple to assess the impact. Such a change can be merged early with 3
+Code-Review+2. For emergency fixes that affect a single project (SoC,
+mainboard, ...) it's _strongly_ recommended to get a review by somebody
+not involved with that project to ensure that the documentation of the
+issue is clear enough.
+
+* Trivial changes that deal with minor issues like inconsistencies in
+whitespace or spelling fixes that don't impact the final binary output
+also don't need to wait. Such changes should point out in their commit
+messages how the the author verified that the binary output is identical
+(e.g. a TIMELESS build for a given configuration). When submitting
+such changes early, the submitter must be different from the author
+and must document the intent in the Gerrit discussion, e.g. "landed the
+change early because it's trivial". Note that trivial fixes shouldn't
+necessarily be expedited: Just like they're not critical enough for
+things to go wrong because of them, they're not critical enough to
+require quick handling. This exception merely serves to acknowledge that
+a round-the-world review just isn't necessary for some types of changes.
+
+* As explained in our Code of Conduct, we try to assume the best of each
+other in this community. It's okay to discuss mistakes (e.g. isolated
+instances of non-trivial and non-critical changes submitted early) but
+try to keep such inquiries blameless. If a change leads to problems with
+our code, the focus should be on fixing the issue, not on assigning blame.
 
 * Do not +2 patches that you authored or own, even for something as trivial
 as whitespace fixes. When working on your own patches, it’s easy to

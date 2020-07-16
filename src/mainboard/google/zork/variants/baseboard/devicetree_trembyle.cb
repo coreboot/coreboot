@@ -14,6 +14,8 @@ chip soc/amd/picasso
 				ACPI_FADT_REMOTE_POWER_ON"
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
+	register "acp_i2s_wake_enable" = "1"
+	register "acpi_pme_enable" = "1"
 
 	# DMIC select GPIO for ACP machine device
 	# This GPIO is used to select DMIC0 or DMIC1 by the kernel driver. It does not

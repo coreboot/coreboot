@@ -307,6 +307,10 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
 		PAD_PULL(pull) | PAD_DEBOUNCE_CONFIG(type) | PAD_DEBOUNCE_CONFIG(time))
 
+/* No-connect pad - configured as input with PULL_DOWN */
+#define PAD_NC(pin)							\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(PULL_DOWN))
+
 typedef uint32_t gpio_t;
 
 /*

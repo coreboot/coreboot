@@ -6,7 +6,7 @@
 
 LC_ALL=C export LC_ALL
 EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$'
-INCLUDELIST="src util payloads Makefile* toolchain.inc"
+INCLUDELIST="src util payloads Makefile* toolchain.inc tests"
 
 # shellcheck disable=SC2086,SC2046
 if uname | grep -qi "linux"; then

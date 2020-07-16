@@ -22,7 +22,7 @@ opts="--max-line-length 96"
 
 # default: test src and util
 if [ "$1" = "" ]; then
-	INCLUDED_DIRS="src util"
+	INCLUDED_DIRS="src util tests"
 # special mode: take diff from stdin, but exclude the dirs
 elif [ "$1" = "diff" ]; then
 	args=$( echo $EXCLUDED_DIRS | \

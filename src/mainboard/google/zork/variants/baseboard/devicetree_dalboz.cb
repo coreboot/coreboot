@@ -17,16 +17,6 @@ chip soc/amd/picasso
 	register "acp_i2s_wake_enable" = "1"
 	register "acpi_pme_enable" = "1"
 
-	# DMIC select GPIO for ACP machine device
-	# This GPIO is used to select DMIC0 or DMIC1 by the kernel driver. It does not
-	# really have a polarity since low and high control the selection of DMIC and
-	# hence does not have an active polarity.
-	# Kernel driver does not use the polarity field and instead treats the GPIO
-	# selection as follows:
-	# Set low (0) = Select DMIC0
-	# Set high (1) = Select DMIC1
-	register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
-
 	# Start : OPN Performance Configuration
 	# (Configuratin that is common for all variants)
 	# For the below fields, 0 indicates use SOC default
@@ -273,7 +263,22 @@ chip soc/amd/picasso
 					end
 				end
 			end
-			device pci 0.5 on  end # Audio
+			device pci 0.5 on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI5682""
+					# DMIC select GPIO for ACP machine device
+					# This GPIO is used to select DMIC0 or DMIC1 by the
+					# kernel driver. It does not really have a polarity
+					# since low and high control the selection of DMIC and
+					# hence does not have an active polarity.
+					# Kernel driver does not use the polarity field and
+					# instead treats the GPIO selection as follows:
+					# Set low (0) = Select DMIC0
+					# Set high (1) = Select DMIC1
+					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+					device generic 0.0 on end
+				end
+			end # Audio
 			device pci 0.6 on  end # HDA
 			device pci 0.7 on  end # non-Sensor Fusion Hub device
 		end

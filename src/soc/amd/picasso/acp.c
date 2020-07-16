@@ -41,7 +41,7 @@ static void init(struct device *dev)
 	}
 
 	bar = (uintptr_t)res->base;
-	write32((void *)(bar + ACP_I2S_PIN_CONFIG), cfg->acp_pin_cfg);
+	acp_update32(bar, ACP_I2S_PIN_CONFIG, PIN_CONFIG_MASK, cfg->acp_pin_cfg);
 
 	/* Enable ACP_PME_EN and ACP_I2S_WAKE_EN for I2S_WAKE event */
 	acp_update32(bar, ACP_I2S_WAKE_EN, WAKE_EN_MASK, !!cfg->acp_i2s_wake_enable);

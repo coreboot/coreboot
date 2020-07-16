@@ -24,6 +24,7 @@ tests-y += crc_byte-test
 tests-y += compute_ip_checksum-test
 tests-y += memrange-test
 tests-y += uuid-test
+tests-y += bootmem-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -116,3 +117,10 @@ memrange-test-srcs += src/device/device_util.c
 uuid-test-srcs += tests/lib/uuid-test.c
 uuid-test-srcs += src/lib/hexstrtobin.c
 uuid-test-srcs += src/lib/uuid.c
+
+bootmem-test-srcs += tests/lib/bootmem-test.c
+bootmem-test-srcs += tests/stubs/console.c
+bootmem-test-srcs += src/device/device_util.c
+bootmem-test-srcs += src/lib/bootmem.c
+bootmem-test-srcs += src/lib/memrange.c
+

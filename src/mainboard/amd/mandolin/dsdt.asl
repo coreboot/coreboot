@@ -17,9 +17,6 @@ DefinitionBlock (
 	/* global NVS and variables */
 	#include <globalnvs.asl>
 
-	/* Globals for the platform */
-	#include "acpi/mainboard.asl"
-
 	/* PCI IRQ mapping for the Southbridge */
 	#include <pcie.asl>
 

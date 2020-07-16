@@ -11,7 +11,6 @@
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
-#include <acpi/acpi_device.h>
 #include <arch/x86/include/arch/smp/mpspec.h> /* point from top level */
 
 /*
@@ -74,9 +73,6 @@ struct soc_amd_picasso_config {
 		/* See MP_IRQ_* from mpspec.h */
 		uint8_t flags;
 	} irq_override[16];
-
-	/* DMIC select GPIO for I2S machine driver AMDI5682 */
-	struct acpi_gpio dmic_select_gpio;
 
 	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint16_t fadt_boot_arch;

@@ -19,9 +19,21 @@ Download, configure, and build coreboot
     $ cd coreboot
 
 ### Step 3 - Build the coreboot toolchain
-Please note that this can take a significant amount of time.
+Please note that this can take a significant amount of time. Use `CPUS=` to
+specify number of `make` jobs to run in parallel.
 
-    $ make crossgcc-i386 CPUS=$(nproc)
+This will list toolchain options and supported architectures:
+
+    $ make help_toolchain
+
+Here are some examples:
+
+    $ make crossgcc-i386 CPUS=$(nproc)       # build i386 toolchain
+    $ make crossgcc-aarch64 CPUS=$(nproc)    # build Aarch64 toolchain
+    $ make crossgcc-riscv CPUS=$(nproc)      # build RISC-V toolchain
+
+Note that the i386 toolchain is currently used for all x86 platforms, including
+x86_64.
 
 Also note that you can possibly use your system toolchain, but the results are
 not reproducible, and may have issues, so this is not recommended.  See step 5

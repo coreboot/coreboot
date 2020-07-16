@@ -76,6 +76,7 @@ config MAINBOARD_PART_NUMBER
 	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "Waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "Wheelie" if BOARD_GOOGLE_WHEELIE
+	default "Magolor" if BOARD_GOOGLE_MAGOLOR
 
 config MAX_CPUS
 	int
@@ -104,6 +105,7 @@ config VARIANT_DIR
 	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "wheelie" if BOARD_GOOGLE_WHEELIE
+	default "magolor" if BOARD_GOOGLE_MAGOLOR
 
 config VARIANT_HAS_CAMERA_ACPI
 	bool

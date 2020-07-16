@@ -102,13 +102,13 @@ const struct imd_entry *imd_entry_find_or_add(const struct imd *imd,
 						uint32_t id, size_t size);
 
 /* Returns size of entry or 0 on failure. */
-size_t imd_entry_size(const struct imd *imd, const struct imd_entry *entry);
+size_t imd_entry_size(const struct imd_entry *entry);
 
 /* Returns pointer to region described by entry or NULL on failure. */
 void *imd_entry_at(const struct imd *imd, const struct imd_entry *entry);
 
 /* Returns id for the imd entry. */
-uint32_t imd_entry_id(const struct imd *imd, const struct imd_entry *entry);
+uint32_t imd_entry_id(const struct imd_entry *entry);
 
 /* Attempt to remove entry from imd. */
 int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry);

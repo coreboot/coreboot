@@ -111,7 +111,7 @@ void stage_cache_get_raw(int stage_id, void **base, size_t *size)
 	}
 
 	*base = imd_entry_at(imd, e);
-	*size = imd_entry_size(imd, e);
+	*size = imd_entry_size(e);
 }
 
 void stage_cache_load_stage(int stage_id, struct prog *stage)
@@ -141,7 +141,7 @@ void stage_cache_load_stage(int stage_id, struct prog *stage)
 	}
 
 	c = imd_entry_at(imd, e);
-	size = imd_entry_size(imd, e);
+	size = imd_entry_size(e);
 
 	memcpy((void *)(uintptr_t)meta->load_addr, c, size);
 

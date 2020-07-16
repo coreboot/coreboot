@@ -76,4 +76,22 @@ config CONSOLE_POST
 	bool
 	default y
 
+choice
+	prompt "Mini PCIe port mode"
+	default MINI_PCIE_MODE_PCIE
+	help
+	  Choose the operating mode of the mini PCIe port.
+
+config MINI_PCIE_MODE_PCIE
+	bool "PCIe"
+	help
+	  Select this option to leave the mini PCIe port in PCIe mode. This is
+	  also the default mode of the vendor firmware.
+
+config MINI_PCIE_MODE_MSATA
+	bool "mSATA"
+	help
+	  Select this option to put the mini PCIe port into mSATA mode.
+endchoice
+
 endif

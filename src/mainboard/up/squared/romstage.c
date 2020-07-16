@@ -103,6 +103,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	FSP_M_CONFIG *config = &memupd->FspmConfig;
 
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	if (CONFIG(MINI_PCIE_MODE_MSATA))
+		gpio_configure_pads(msata_mode_gpio_table, ARRAY_SIZE(msata_mode_gpio_table));
 
 	uint8_t memory_skuid = get_memory_skuid();
 	printk(BIOS_DEBUG, "MAINBOARD: Found memory SKU ID: 0x%02x\n", memory_skuid);

@@ -777,4 +777,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_43, UP_20K, DEEP, NF1, HIZCRx0, DISPUPD),
 };
 
+/*
+ * Pad configuration to put MiniPCIe port into mSATA mode.
+ */
+static const struct pad_config msata_mode_gpio_table[] = {
+	/*  ------- GPIO Group North-West ------- */
+
+	/* GPIO_213 - GPIO */
+	PAD_CFG_TERM_GPO(GPIO_213, 0, UP_20K, DEEP),
+};
+
 #endif /* CFG_GPIO_H */

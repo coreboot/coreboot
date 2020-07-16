@@ -138,7 +138,7 @@ struct device_path {
 };
 
 
-#define DEVICE_PATH_MAX 30
+#define DEVICE_PATH_MAX 40
 #define BUS_PATH_MAX (DEVICE_PATH_MAX+10)
 
 extern const char *dev_path_name(enum device_path_type type);

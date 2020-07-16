@@ -262,7 +262,7 @@ static void write_dppm_methods(const struct device *ec)
 
 	/* TEVT */
 	if (CONFIG(EC_SUPPORTS_DPTF_TEVT)) {
-		acpigen_write_method("TEVT", 0);
+		acpigen_write_method("TEVT", 1);
 
 		/* Local0 = ToInteger(Arg0) */
 		acpigen_write_to_integer(ARG0_OP, LOCAL0_OP);
@@ -308,8 +308,11 @@ static void write_thermal_methods(const struct device *ec, enum dptf_participant
 {
 	dptf_write_scope(participant);
 
-	/* GTSH - Amount of hysteresis inherent in temperature reading */
-	acpigen_write_name_integer("GTSH", 2);
+	/*
+	 * GTSH - Amount of hysteresis inherent in temperature reading (2 degrees, in units of
+	 * 1/10th degree K)
+	 */
+	acpigen_write_name_integer("GTSH", 20);
 
 	/* _TMP - read temperature from EC */
 	acpigen_write_method_serialized("_TMP", 0);

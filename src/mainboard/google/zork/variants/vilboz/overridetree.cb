@@ -36,6 +36,24 @@ chip soc/amd/picasso
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
+		device pci 8.1 on
+			device pci 0.5 on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI1015""
+					# DMIC select GPIO for ACP machine device
+					# This GPIO is used to select DMIC0 or DMIC1 by the
+					# kernel driver. It does not really have a polarity
+					# since low and high control the selection of DMIC and
+					# hence does not have an active polarity.
+					# Kernel driver does not use the polarity field and
+					# instead treats the GPIO selection as follows:
+					# Set low (0) = Select DMIC0
+					# Set high (1) = Select DMIC1
+					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+					device generic 0.0 on end
+				end
+			end # Audio
+		end
 		device pci 14.3 on  # - D14F3 bridge
 			chip ec/google/chromeec
 				device pnp 0c09.0 on

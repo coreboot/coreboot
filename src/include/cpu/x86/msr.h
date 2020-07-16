@@ -90,6 +90,9 @@
 #define IA32_L3_MASK_1			0xc91
 #define IA32_L3_MASK_2			0xc92
 
+#define IA32_CR_SF_QOS_MASK_1           0x1891
+#define IA32_CR_SF_QOS_MASK_2           0x1892
+
 #ifndef __ASSEMBLER__
 #include <types.h>
 

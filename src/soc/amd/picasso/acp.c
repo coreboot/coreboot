@@ -116,6 +116,7 @@ static struct device_operations acp_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = init,
 	.ops_pci = &pci_dev_ops_pci,
+	.scan_bus = scan_static_bus,
 	.acpi_name = acp_acpi_name,
 	.acpi_fill_ssdt = acp_fill_ssdt,
 };

@@ -124,11 +124,17 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_C627:
 	case PCI_DEVICE_ID_INTEL_C628:
 	case PCI_DEVICE_ID_INTEL_C629:
+	case PCI_DEVICE_ID_INTEL_C621A:
+	case PCI_DEVICE_ID_INTEL_C627A:
+	case PCI_DEVICE_ID_INTEL_C629A:
 	case PCI_DEVICE_ID_INTEL_C624_SUPER:
 	case PCI_DEVICE_ID_INTEL_C627_SUPER_1:
 	case PCI_DEVICE_ID_INTEL_C621_SUPER:
 	case PCI_DEVICE_ID_INTEL_C627_SUPER_2:
 	case PCI_DEVICE_ID_INTEL_C628_SUPER:
+	case PCI_DEVICE_ID_INTEL_C621A_SUPER:
+	case PCI_DEVICE_ID_INTEL_C627A_SUPER:
+	case PCI_DEVICE_ID_INTEL_C629A_SUPER:
 		*community_count = ARRAY_SIZE(lewisburg_communities);
 		return lewisburg_communities;
 	case PCI_DEVICE_ID_INTEL_DNV_LPC:

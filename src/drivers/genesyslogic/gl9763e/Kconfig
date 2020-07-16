@@ -1,0 +1,2 @@
+config DRIVERS_GENESYSLOGIC_GL9763E
+	bool

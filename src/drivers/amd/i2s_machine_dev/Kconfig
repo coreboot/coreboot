@@ -1,0 +1,3 @@
+config DRIVERS_AMD_I2S_MACHINE_DEV
+	bool
+	depends on HAVE_ACPI_TABLES

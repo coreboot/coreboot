@@ -3,9 +3,6 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_dptf.h>
 
-/* Hardcoded paths */
-#define TOPLEVEL_DPTF_SCOPE		"\\_SB.DPTF"
-
 /* Defaults */
 #define DEFAULT_RAW_UNIT		"ma"
 
@@ -81,12 +78,25 @@ static const char *scope_of(enum dptf_participant participant)
 	static char scope[16];
 
 	if (participant == DPTF_CPU)
-		snprintf(scope, sizeof(scope), "\\_SB.%s", namestring_of(participant));
+		snprintf(scope, sizeof(scope), TCPU_SCOPE ".%s", namestring_of(participant));
 	else
-		snprintf(scope, sizeof(scope), TOPLEVEL_DPTF_SCOPE ".%s",
+		snprintf(scope, sizeof(scope), DPTF_DEVICE_PATH ".%s",
 			 namestring_of(participant));
 
 	return scope;
+}
+
+/*
+ * Most of the DPTF participants are underneath the \_SB.DPTF scope, so we can just get away
+ * with using the simple namestring for references, but the TCPU has a different scope, so
+ * either an absolute or relative path must be used instead.
+ */
+static const char *path_of(enum dptf_participant participant)
+{
+	if (participant == DPTF_CPU)
+		return scope_of(participant);
+	else
+		return namestring_of(participant);
 }
 
 /* Write out scope of a participant */
@@ -111,7 +121,7 @@ static void write_active_relationship_table(const struct dptf_active_policy *pol
 	if (!max_count || policies[0].target == DPTF_NONE)
 		return;
 
-	acpigen_write_scope(TOPLEVEL_DPTF_SCOPE);
+	acpigen_write_scope(DPTF_DEVICE_PATH);
 	acpigen_write_method("_ART", 0);
 
 	/* Return this package */
@@ -133,8 +143,8 @@ static void write_active_relationship_table(const struct dptf_active_policy *pol
 
 		/* Source, Target, Percent, Fan % for each of _AC0 ... _AC9 */
 		acpigen_write_package(13);
-		acpigen_emit_namestring(namestring_of(DPTF_FAN));
-		acpigen_emit_namestring(namestring_of(policies[i].target));
+		acpigen_emit_namestring(path_of(DPTF_FAN));
+		acpigen_emit_namestring(path_of(policies[i].target));
 		acpigen_write_integer(DEFAULT_IF_0(policies[i].weight, DEFAULT_WEIGHT));
 
 		/* Write out fan %; corresponds with target's _ACx methods */
@@ -206,7 +216,7 @@ static void write_thermal_relationship_table(const struct dptf_passive_policy *p
 	if (!max_count || policies[0].source == DPTF_NONE)
 		return;
 
-	acpigen_write_scope(TOPLEVEL_DPTF_SCOPE);
+	acpigen_write_scope(DPTF_DEVICE_PATH);
 
 	/*
 	 * A _TRT Revision (TRTR) of 1 means that the 'Priority' field is an arbitrary priority
@@ -234,8 +244,8 @@ static void write_thermal_relationship_table(const struct dptf_passive_policy *p
 		acpigen_write_package(8);
 
 		/* Source, Target, Priority, Sampling Period */
-		acpigen_emit_namestring(namestring_of(policies[i].source));
-		acpigen_emit_namestring(namestring_of(policies[i].target));
+		acpigen_emit_namestring(path_of(policies[i].source));
+		acpigen_emit_namestring(path_of(policies[i].target));
 		acpigen_write_integer(DEFAULT_IF_0(policies[i].priority, DEFAULT_PRIORITY));
 		acpigen_write_integer(to_acpi_time(policies[i].period));
 
@@ -458,7 +468,7 @@ void dptf_write_enabled_policies(const struct dptf_active_policy *active_policie
 	if (!pkg_count)
 		return;
 
-	acpigen_write_scope(TOPLEVEL_DPTF_SCOPE);
+	acpigen_write_scope(DPTF_DEVICE_PATH);
 	acpigen_write_name("IDSP");
 	acpigen_write_package(pkg_count);
 

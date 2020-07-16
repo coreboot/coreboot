@@ -58,52 +58,6 @@ static const char *dptf_acpi_name(const struct device *dev)
 	return "DPTF";
 }
 
-/* Add custom tables and methods to SSDT */
-static void dptf_fill_ssdt(const struct device *dev)
-{
-	struct drivers_intel_dptf_config *config = config_of(dev);
-	enum dptf_participant p;
-	bool tsr_en[DPTF_MAX_TSR] = {false};
-	int i;
-
-	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i)
-		tsr_en[i] = is_participant_used(config, p);
-
-	/* Policies */
-	dptf_write_enabled_policies(config->policies.active, DPTF_MAX_ACTIVE_POLICIES,
-				    config->policies.passive, DPTF_MAX_PASSIVE_POLICIES,
-				    config->policies.critical, DPTF_MAX_CRITICAL_POLICIES);
-
-	dptf_write_active_policies(config->policies.active,
-				   DPTF_MAX_ACTIVE_POLICIES);
-
-	dptf_write_passive_policies(config->policies.passive,
-				    DPTF_MAX_PASSIVE_POLICIES);
-
-	dptf_write_critical_policies(config->policies.critical,
-				     DPTF_MAX_CRITICAL_POLICIES);
-
-	/* Controls */
-	dptf_write_charger_perf(config->controls.charger_perf, DPTF_MAX_CHARGER_PERF_STATES);
-	dptf_write_fan_perf(config->controls.fan_perf, DPTF_MAX_FAN_PERF_STATES);
-	dptf_write_power_limits(&config->controls.power_limits);
-
-	/* Fan options */
-	dptf_write_fan_options(config->options.fan.fine_grained_control,
-			       config->options.fan.step_size,
-			       config->options.fan.low_speed_notify);
-
-	/* TSR options */
-	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
-		if (tsr_en[i]) {
-			dptf_write_tsr_hysteresis(config->options.tsr[i].hysteresis);
-			dptf_write_STR(config->options.tsr[i].desc);
-		}
-	}
-
-	printk(BIOS_INFO, "\\_SB.DPTF: %s at %s\n", dev->chip_ops->name, dev_path(dev));
-}
-
 static int get_STA_value(const struct drivers_intel_dptf_config *config,
 			 enum dptf_participant participant)
 {
@@ -112,6 +66,7 @@ static int get_STA_value(const struct drivers_intel_dptf_config *config,
 		ACPI_STATUS_DEVICE_ALL_OFF;
 }
 
+/* Devices with GENERIC _HID (distinguished by PTYP) */
 static void dptf_write_generic_participant(const char *name,
 					   enum dptf_generic_participant_type ptype,
 					   const char *str, int sta_val)
@@ -120,13 +75,11 @@ static void dptf_write_generic_participant(const char *name,
 	static int generic_uid = 0;
 
 	acpigen_write_device(name);
-
-	if (CONFIG(DPTF_USE_EISA_HID)) {
-		acpigen_write_name("_HID");
+	acpigen_write_name("_HID");
+	if (CONFIG(DPTF_USE_EISA_HID))
 		acpigen_emit_eisaid(GENERIC_HID_EISAID);
-	} else {
-		acpigen_write_name_string("_HID", GENERIC_HID);
-	}
+	else
+		acpigen_write_string(GENERIC_HID);
 
 	acpigen_write_name_integer("_UID", generic_uid++);
 	acpigen_write_STA(sta_val);
@@ -139,62 +92,40 @@ static void dptf_write_generic_participant(const char *name,
 	acpigen_pop_len(); /* Device */
 }
 
-/* Add static definitions of DPTF devices into the DSDT */
-static void dptf_inject_dsdt(const struct device *dev)
+/* \_SB.PCI0.TCPU */
+static void write_tcpu(const struct device *pci_dev,
+		       const struct drivers_intel_dptf_config *config)
 {
-	const struct drivers_intel_dptf_config *config;
-	enum dptf_participant participant;
-	struct device *parent;
-	char name[5];
-	int i;
-
-	/* The CPU device gets an _ADR that matches the ACPI PCI address for 00:04.00 */
-	parent = dev && dev->bus ? dev->bus->dev : NULL;
-	if (!parent || parent->path.type != DEVICE_PATH_PCI) {
-		printk(BIOS_ERR, "%s: DPTF objects must live under 00:04.0 PCI device\n",
-		       __func__);
-		return;
-	}
-
-	config = config_of(dev);
-	acpigen_write_scope("\\_SB");
-
-	/* DPTF CPU device - \_SB.TCPU */
+	/* DPTF CPU device - \_SB.PCI0.TCPU */
+	acpigen_write_scope(TCPU_SCOPE);
 	acpigen_write_device("TCPU");
-	acpigen_write_ADR_pci_device(parent);
+	acpigen_write_ADR_pci_device(pci_dev);
 	acpigen_write_STA(get_STA_value(config, DPTF_CPU));
 	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* TCPU Scope */
+}
 
-	/* Toplevel DPTF device - \_SB.DPTF*/
-	acpigen_write_device(acpi_device_name(dev));
-	if (CONFIG(DPTF_USE_EISA_HID)) {
-		acpigen_write_name("_HID");
-		acpigen_emit_eisaid(DPTF_DEVICE_HID_EISAID);
-	} else {
-		acpigen_write_name_string("_HID", DPTF_DEVICE_HID);
-	}
-
-	acpigen_write_name_integer("_UID", 0);
-	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
-
-	/*
-	 * The following devices live underneath \_SB.DPTF:
-	 * - Fan, \_SB.DPTF.TFN1
-	 * - Charger, \_SB.DPTF.TCHG
-	 * - Temperature Sensors, \_SB.DPTF.TSRn
-	 */
-
+/* \_SB.DPTF.TFN1 */
+static void write_fan(const struct drivers_intel_dptf_config *config)
+{
 	acpigen_write_device("TFN1");
-	if (CONFIG(DPTF_USE_EISA_HID)) {
-		acpigen_write_name("_HID");
+	acpigen_write_name("_HID");
+	if (CONFIG(DPTF_USE_EISA_HID))
 		acpigen_emit_eisaid(FAN_HID_EISAID);
-	} else {
-		acpigen_write_name_string("_HID", FAN_HID);
-	}
+	else
+		acpigen_write_string(FAN_HID);
 
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_STA(get_STA_value(config, DPTF_FAN));
 	acpigen_pop_len(); /* Device */
+}
+
+/* \_SB.DPTF.xxxx */
+static void write_generic_devices(const struct drivers_intel_dptf_config *config)
+{
+	enum dptf_participant participant;
+	char name[ACPI_NAME_BUFFER_SIZE];
+	int i;
 
 	dptf_write_generic_participant("TCHG", DPTF_GENERIC_PARTICIPANT_TYPE_CHARGER,
 				       DEFAULT_CHARGER_STR, get_STA_value(config,
@@ -205,9 +136,103 @@ static void dptf_inject_dsdt(const struct device *dev)
 		dptf_write_generic_participant(name, DPTF_GENERIC_PARTICIPANT_TYPE_TSR,
 					       NULL, get_STA_value(config, participant));
 	}
+}
 
-	acpigen_pop_len(); /* DPTF Device */
+/* \_SB.DPTF - note: leaves the Scope open for child devices*/
+static void write_open_dptf_device(const struct device *dev)
+{
+	acpigen_write_scope("\\_SB");
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name("_HID");
+	if (CONFIG(DPTF_USE_EISA_HID))
+		acpigen_emit_eisaid(DPTF_DEVICE_HID_EISAID);
+	else
+		acpigen_write_string(DPTF_DEVICE_HID);
+
+	acpigen_write_name_integer("_UID", 0);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+}
+
+/* Add minimal definitions of DPTF devices into the SSDT */
+static void write_device_definitions(const struct device *dev)
+{
+	const struct drivers_intel_dptf_config *config;
+	struct device *parent;
+
+	/* The CPU device gets an _ADR that matches the ACPI PCI address for 00:04.00 */
+	parent = dev && dev->bus ? dev->bus->dev : NULL;
+	if (!parent || parent->path.type != DEVICE_PATH_PCI) {
+		printk(BIOS_ERR, "%s: DPTF objects must live under 00:04.0 PCI device\n",
+		       __func__);
+		return;
+	}
+
+	config = config_of(dev);
+	write_tcpu(parent, config);
+	write_open_dptf_device(dev);
+	write_fan(config);
+	write_generic_devices(config);
+
+	acpigen_pop_len(); /* DPTF Device (write_open_dptf_device) */
 	acpigen_pop_len(); /* Scope */
+}
+
+/* Emites policy definitions for each policy type */
+static void write_policies(const struct drivers_intel_dptf_config *config)
+{
+	dptf_write_enabled_policies(config->policies.active, DPTF_MAX_ACTIVE_POLICIES,
+				    config->policies.passive, DPTF_MAX_PASSIVE_POLICIES,
+				    config->policies.critical, DPTF_MAX_CRITICAL_POLICIES);
+
+	dptf_write_active_policies(config->policies.active,
+				   DPTF_MAX_ACTIVE_POLICIES);
+
+	dptf_write_passive_policies(config->policies.passive,
+				    DPTF_MAX_PASSIVE_POLICIES);
+
+	dptf_write_critical_policies(config->policies.critical,
+				     DPTF_MAX_CRITICAL_POLICIES);
+}
+
+/* Writes other static tables that are used by DPTF */
+static void write_controls(const struct drivers_intel_dptf_config *config)
+{
+	dptf_write_charger_perf(config->controls.charger_perf, DPTF_MAX_CHARGER_PERF_STATES);
+	dptf_write_fan_perf(config->controls.fan_perf, DPTF_MAX_FAN_PERF_STATES);
+	dptf_write_power_limits(&config->controls.power_limits);
+}
+
+/* Options to control the behavior of devices */
+static void write_options(const struct drivers_intel_dptf_config *config)
+{
+	enum dptf_participant p;
+	int i;
+
+	/* Fan options */
+	dptf_write_fan_options(config->options.fan.fine_grained_control,
+			       config->options.fan.step_size,
+			       config->options.fan.low_speed_notify);
+
+	/* TSR options */
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
+		if (is_participant_used(config, p)) {
+			dptf_write_tsr_hysteresis(config->options.tsr[i].hysteresis);
+			dptf_write_STR(config->options.tsr[i].desc);
+		}
+	}
+}
+
+/* Add custom tables and methods to SSDT */
+static void dptf_fill_ssdt(const struct device *dev)
+{
+	struct drivers_intel_dptf_config *config = config_of(dev);
+
+	write_device_definitions(dev);
+	write_policies(config);
+	write_controls(config);
+	write_options(config);
+
+	printk(BIOS_INFO, DPTF_DEVICE_PATH ": %s at %s\n", dev->chip_ops->name, dev_path(dev));
 }
 
 static struct device_operations dptf_ops = {
@@ -215,7 +240,6 @@ static struct device_operations dptf_ops = {
 	.set_resources		= noop_set_resources,
 	.acpi_name		= dptf_acpi_name,
 	.acpi_fill_ssdt		= dptf_fill_ssdt,
-	.acpi_inject_dsdt	= dptf_inject_dsdt,
 };
 
 static void dptf_enable_dev(struct device *dev)

@@ -9,6 +9,10 @@
 /* A common idiom is to use a default value if none is provided (i.e., == 0) */
 #define DEFAULT_IF_0(thing, default_) ((thing) ? (thing) : (default_))
 
+/* Hardcoded paths */
+#define DPTF_DEVICE_PATH	"\\_SB.DPTF"
+#define TCPU_SCOPE		"\\_SB.PCI0"
+
 /* List of available participants (i.e., they can participate in policies) */
 enum dptf_participant {
 	DPTF_NONE,

@@ -249,6 +249,13 @@ static const char *const lewisburg_group_k_names[] = {
 };
 
 static const char *const lewisburg_group_l_names[] = {
+	/*
+	 * The description for L0 and L1 was missed in the datasheet, however, the chipset
+	 * contains the GPP_L0/CSME_INTR_IN and GPP_L1/CSME_INTR_OUT pads in a schematic
+	 * diagram and configuration registers for these pads are present.
+	 */
+	"GPP_L0",	"CSME_INTR_IN",		"n/a",		"n/a",
+	"GPP_L1",	"CSME_INTR_OUT",	"n/a",		"n/a",
 	"GPP_L2",	"TESTCH0_D0",		"n/a",		"n/a",
 	"GPP_L3",	"TESTCH0_D1",		"n/a",		"n/a",
 	"GPP_L4",	"TESTCH0_D2",		"n/a",		"n/a",

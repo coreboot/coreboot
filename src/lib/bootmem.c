@@ -231,13 +231,13 @@ void *bootmem_allocate_buffer(size_t size)
 	size = ALIGN(size, 4096);
 	region = NULL;
 	memranges_each_entry(r, &bootmem) {
+		if (range_entry_base(r) >= max_addr)
+			break;
+
 		if (range_entry_size(r) < size)
 			continue;
 
 		if (range_entry_tag(r) != BM_MEM_RAM)
-			continue;
-
-		if (range_entry_base(r) >= max_addr)
 			continue;
 
 		end = range_entry_end(r);

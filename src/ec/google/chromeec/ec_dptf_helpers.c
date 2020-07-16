@@ -124,25 +124,91 @@ static void write_fan_fsl(const struct device *ec)
 	acpigen_pop_len(); /* Method _FSL */
 }
 
-/* Note: requires manual insertion of acpigen_pop_len() for the If */
-static void write_is_policy_enabled(unsigned int index, bool enabled)
+/*
+ * Emit code to execute if the policy is enabled after this function is called, and also
+ * remember to manually add a acpigen_pop_len() afterwards!
+ */
+static void write_is_policy_enabled(bool enabled)
 {
 	/*
-	 * If (And (LEqual (Deref (Index (IDSP, index)), Arg0))
-	 *	   (LEqual (Arg1, enabled)))
+	 * Local0 = SizeOf (IDSP)
+	 * Local1 = 0
+	 * Local2 = 0
+	 *
+	 * While (Local1 < Local) {
+	 *    If (IDSP[Local1] == Arg0 && Arg1 == enabled) {
+	 *        Local2 = 1
+	 *    }
+	 *    Local1++
+	 * }
+	 *
+	 * If (Local2 == 1) {
+	 * ..........
 	 */
+
+	/* Local0 = SizeOf (IDSP) */
+	acpigen_write_store();
+	acpigen_emit_byte(SIZEOF_OP);
+	acpigen_emit_namestring("IDSP");
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* Local1 = 0 (index variable) */
+	acpigen_write_store();
+	acpigen_write_zero();
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* Local2 = 0 (out variable, 1=found, 0=not found) */
+	acpigen_write_store();
+	acpigen_write_zero();
+	acpigen_emit_byte(LOCAL2_OP);
+
+	/*
+	 * While (Local1 < Local0) {
+	 */
+	acpigen_emit_byte(WHILE_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LNOT_OP);
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	/* If (IDSP[Local1] == Arg0 && Arg1 == 1) { */
 	acpigen_write_if();
 	acpigen_emit_byte(LAND_OP);
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(DEREF_OP);
 	acpigen_emit_byte(INDEX_OP);
 	acpigen_emit_namestring("IDSP");
-	acpigen_write_integer(index);
+	acpigen_emit_byte(LOCAL1_OP);
 	acpigen_emit_byte(ZERO_OP); /* 3rd arg of index - unused */
 	acpigen_emit_byte(ARG0_OP); /* end lequal */
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(ARG1_OP);
 	acpigen_write_integer(enabled ? 1 : 0);
+
+	/* { Local2 = 1 } */
+	acpigen_write_store();
+	acpigen_write_one();
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_pop_len(); /* If */
+
+	/*
+	 * Local1++
+	 * } # End of While
+	 */
+	acpigen_emit_byte(INCREMENT_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_pop_len(); /* While */
+
+	/*
+	 * If (Local2 == 1)
+	 */
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_write_one();
+
+	/* caller must insert acpigen_pop_len() ! */
 }
 
 static void write_dptf_OSC(const struct device *ec)
@@ -165,21 +231,21 @@ static void write_dptf_OSC(const struct device *ec)
 	 * 1) Disable temperature sensor trip points in the EC (replaces TINI)
 	 * 2) Disable the charge limit in the EC (replaces TCHG.INIT)
 	 */
-	write_is_policy_enabled(0, true);
+	write_is_policy_enabled(true);
 	for (i = 0; i < DPTF_MAX_TSR; ++i) {
 		snprintf(name, sizeof(name), "^TSR%1d.PATD", i);
 		acpigen_emit_namestring(name);
 	}
 
 	acpigen_emit_namestring(acpi_device_path_join(ec, "CHGD"));
-	acpigen_pop_len(); /* If */
+	acpigen_pop_len(); /* If (from write_is_policy_enabled) */
 
 	/* If the Active Policy is disabled, disable DPTF fan control in the EC */
-	write_is_policy_enabled(2, false);
+	write_is_policy_enabled(false);
 	acpigen_write_store();
 	acpigen_write_integer(EC_FAN_DUTY_AUTO);
 	acpigen_emit_namestring(acpi_device_path_join(ec, "FAND"));
-	acpigen_pop_len(); /* If */
+	acpigen_pop_len(); /* If (from write_is_policy_enabled) */
 
 	acpigen_write_return_op(ARG3_OP);
 	acpigen_pop_len(); /* Method _OSC */

@@ -3,6 +3,7 @@
 #include <bootblock_common.h>
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
@@ -65,4 +66,7 @@ void bootblock_soc_init(void)
 	gpi_clear_int_cfg();
 	report_platform_info();
 	bootblock_pch_init();
+
+	/* Program TCO_BASE_ADDRESS and TCO Timer Halt */
+	tco_configure();
 }

@@ -97,7 +97,20 @@ SECTIONS
 }
 
 #if ENV_BOOTBLOCK
-/* Bootblock specific scripts which provide more SECTION directives. */
-#include <cpu/x86/16bit/entry16.ld>
-#include <cpu/x86/16bit/reset16.ld>
+
+gdtptr16_offset = gdtptr16 & 0xffff;
+nullidt_offset = nullidt & 0xffff;
+
+SECTIONS {
+	/* Trigger an error if I have an unusable start address */
+	_TOO_LOW = CONFIG_X86_RESET_VECTOR - 0xfff0;
+	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
+
+	. = CONFIG_X86_RESET_VECTOR;
+	.reset . : {
+		*(.reset);
+		. = 15;
+		BYTE(0x00);
+	}
+}
 #endif  /* ENV_BOOTBLOCK */

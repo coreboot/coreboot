@@ -9,6 +9,9 @@ static void generic_set_resources(struct device *dev)
 {
 	struct resource *res;
 
+	if (!dev)
+		return;
+
 	if (dev->link_list)
 		assign_resources(dev->link_list);
 

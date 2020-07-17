@@ -11,8 +11,7 @@ private package GMA.Mainboard is
    ports : constant Port_List :=
      (HDMI1,  -- DVI-D
       HDMI3,  -- HDMI
-      -- FIXME: Haswell VGA support in libgfxinit is broken
-      -- Analog, -- VGA
+      Analog, -- VGA
       others => Disabled);
 
 end GMA.Mainboard;

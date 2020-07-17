@@ -11,9 +11,9 @@ static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
 	/* USB_OC4_L - USB_A1 */
-	PAD_NF(GPIO_14, USB_OC4_L, PULL_UP),
+	PAD_NF(GPIO_14, USB_OC4_L, PULL_NONE),
 	/* USB_OC2_L - USB A0 */
-	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
+	PAD_NF(GPIO_18, USB_OC2_L, PULL_NONE),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
@@ -24,22 +24,22 @@ static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
 
 static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
 	/* FPMCU_RST_L Change NC */
-	PAD_GPI(GPIO_11, PULL_UP),
+	PAD_NC(GPIO_11),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* FPMCU_BOOT0 Change NC */
-	PAD_GPI(GPIO_69, PULL_UP),
+	PAD_NC(GPIO_69),
 	/* MST_GPIO_2 (Fw Update HDMI hub) Change NC */
-	PAD_GPI(GPIO_86, PULL_UP),
+	PAD_NC(GPIO_86),
 };
 
 static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
 	/* FPMCU_RST_L Change NC */
-	PAD_GPI(GPIO_11, PULL_UP),
+	PAD_NC(GPIO_11),
 	/* FPMCU_BOOT0 Change NC */
-	PAD_GPI(GPIO_69, PULL_UP),
+	PAD_NC(GPIO_69),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)

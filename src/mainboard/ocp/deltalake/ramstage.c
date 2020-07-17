@@ -14,6 +14,7 @@
 #include <device/pci_ops.h>
 #include <soc/util.h>
 #include <hob_iiouds.h>
+#include <cpxsp_dl_gpio.h>
 
 #include "ipmi.h"
 
@@ -222,6 +223,8 @@ static void mainboard_enable(struct device *dev)
 
 void mainboard_silicon_init_params(FSPS_UPD *params)
 {
+	/* configure Lewisburg PCH GPIO controller after FSP-M */
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }
 
 static void mainboard_final(void *chip_info)

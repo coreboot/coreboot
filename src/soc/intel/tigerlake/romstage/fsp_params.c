@@ -5,6 +5,7 @@
 #include <cpu/x86/msr.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/mp_init.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -17,7 +18,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_tigerlake_config *config)
 {
 	unsigned int i;
-	uint32_t mask = 0;
+	uint32_t cpu_id, mask = 0;
 	const struct device *dev;
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
@@ -182,18 +183,31 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 
 	/* Vt-D config */
-	m_cfg->VtdDisable = 0;
-	m_cfg->VtdIgdEnable = 0x1;
-	m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
-	m_cfg->VtdIpuEnable = 0x1;
-	m_cfg->VtdBaseAddress[1] = IPUVT_BASE_ADDRESS;
-	m_cfg->VtdIopEnable = 0x1;
-	m_cfg->VtdBaseAddress[2] = VTVC0_BASE_ADDRESS;
-	m_cfg->VtdItbtEnable = 0x1;
-	m_cfg->VtdBaseAddress[3] = TBT0_BASE_ADDRESS;
-	m_cfg->VtdBaseAddress[4] = TBT1_BASE_ADDRESS;
-	m_cfg->VtdBaseAddress[5] = TBT2_BASE_ADDRESS;
-	m_cfg->VtdBaseAddress[6] = TBT3_BASE_ADDRESS;
+	cpu_id = cpu_get_cpuid();
+	if (cpu_id == CPUID_TIGERLAKE_A0) {
+		/* Disable VT-d support for pre-QS platform */
+		m_cfg->VtdDisable = 1;
+	} else {
+		/* Enable VT-d support for QS platform */
+		m_cfg->VtdDisable = 0;
+		m_cfg->VtdIgdEnable = 0x1;
+		m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+		m_cfg->VtdIpuEnable = 0x1;
+		m_cfg->VtdBaseAddress[1] = IPUVT_BASE_ADDRESS;
+		m_cfg->VtdIopEnable = 0x1;
+		m_cfg->VtdBaseAddress[2] = VTVC0_BASE_ADDRESS;
+
+		if (m_cfg->TcssDma0En || m_cfg->TcssDma1En)
+			m_cfg->VtdItbtEnable = 0x1;
+		if (m_cfg->TcssItbtPcie0En)
+			m_cfg->VtdBaseAddress[3] = TBT0_BASE_ADDRESS;
+		if (m_cfg->TcssItbtPcie1En)
+			m_cfg->VtdBaseAddress[4] = TBT1_BASE_ADDRESS;
+		if (m_cfg->TcssItbtPcie2En)
+			m_cfg->VtdBaseAddress[5] = TBT2_BASE_ADDRESS;
+		if (m_cfg->TcssItbtPcie3En)
+			m_cfg->VtdBaseAddress[6] = TBT3_BASE_ADDRESS;
+	}
 
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);

@@ -42,10 +42,11 @@
 #include <coreboot_tables.h>
 
 /*
- * All pointers in here shall be virtual.
+ * This is a collection of information and pointers gathered
+ * mostly from the coreboot table.
  *
- * If a relocation happens after the last call to lib_get_sysinfo(),
- * it is up to the user to call lib_get_sysinfo() again.
+ * We do not store virtual pointers in here to avoid problems
+ * with self-relocating payloads.
  */
 struct sysinfo_t {
 	unsigned int cpu_khz;
@@ -68,18 +69,18 @@ struct sysinfo_t {
 	u32 vbnv_start;
 	u32 vbnv_size;
 
-	char *version;
-	char *extra_version;
-	char *build;
-	char *compile_time;
-	char *compile_by;
-	char *compile_host;
-	char *compile_domain;
-	char *compiler;
-	char *linker;
-	char *assembler;
+	uintptr_t version;
+	uintptr_t extra_version;
+	uintptr_t build;
+	uintptr_t compile_time;
+	uintptr_t compile_by;
+	uintptr_t compile_host;
+	uintptr_t compile_domain;
+	uintptr_t compiler;
+	uintptr_t linker;
+	uintptr_t assembler;
 
-	char *cb_version;
+	uintptr_t cb_version;
 
 	struct cb_framebuffer framebuffer;
 
@@ -87,7 +88,7 @@ struct sysinfo_t {
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];
 	int num_macs;
 	struct mac_address macs[SYSINFO_MAX_MACS];
-	char *serialno;
+	uintptr_t serialno;
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */
 

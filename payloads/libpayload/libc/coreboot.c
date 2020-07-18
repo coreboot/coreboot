@@ -184,9 +184,12 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 }
 #endif
 
-static void cb_parse_string(unsigned char *ptr, char **info)
+static void cb_parse_string(const void *const ptr, uintptr_t *const info)
 {
-	*info = (char *)((struct cb_string *)ptr)->string;
+	/* ptr is already virtual (str->string just an offset to that),
+	   but we want to keep physical addresses */
+	const struct cb_string *const str = ptr;
+	*info = virt_to_phys(str->string);
 }
 
 static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)

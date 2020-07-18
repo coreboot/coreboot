@@ -60,7 +60,7 @@ static const u32 vga_colors[] = {
 	(0xFF << 16) | (0xFF << 8) | 0xFF,
 };
 
-struct cb_framebuffer fbinfo;
+static struct cb_framebuffer fbinfo;
 static unsigned short *chars;
 
 /* Shorthand for up-to-date virtual framebuffer address */
@@ -223,13 +223,10 @@ static void corebootfb_set_cursor(unsigned int x, unsigned int y)
 
 static int corebootfb_init(void)
 {
-	if (lib_sysinfo.framebuffer == NULL)
+	if (!lib_sysinfo.framebuffer.physical_address)
 		return -1;
 
-	fbinfo = *lib_sysinfo.framebuffer;
-
-	if (fbinfo.physical_address == 0)
-		return -1;
+	fbinfo = lib_sysinfo.framebuffer;
 
 	font_init(fbinfo.x_resolution);
 

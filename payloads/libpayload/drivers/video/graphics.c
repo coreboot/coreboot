@@ -45,8 +45,10 @@ static struct rect screen;
  * Framebuffer is assumed to assign a higher coordinate (larger x, y) to
  * a higher address
  */
-static struct cb_framebuffer *fbinfo;
-static uint8_t *fbaddr;
+static const struct cb_framebuffer *fbinfo;
+
+/* Shorthand for up-to-date virtual framebuffer address */
+#define FB ((unsigned char *)phys_to_virt(fbinfo->physical_address))
 
 #define LOG(x...)	printf("CBGFX: " x)
 #define PIVOT_H_MASK	(PIVOT_H_LEFT|PIVOT_H_CENTER|PIVOT_H_RIGHT)
@@ -296,7 +298,7 @@ static inline void set_pixel(struct vector *coord, uint32_t color)
 		break;
 	}
 
-	uint8_t * const pixel = fbaddr + rcoord.y * bpl + rcoord.x * bpp / 8;
+	uint8_t * const pixel = FB + rcoord.y * bpl + rcoord.x * bpp / 8;
 	for (i = 0; i < bpp / 8; i++)
 		pixel[i] = (color >> (i * 8));
 }
@@ -310,12 +312,9 @@ static int cbgfx_init(void)
 	if (initialized)
 		return 0;
 
-	fbinfo = lib_sysinfo.framebuffer;
-	if (!fbinfo)
-		return CBGFX_ERROR_FRAMEBUFFER_INFO;
+	fbinfo = &lib_sysinfo.framebuffer;
 
-	fbaddr = phys_to_virt((uint8_t *)(uintptr_t)(fbinfo->physical_address));
-	if (!fbaddr)
+	if (!fbinfo->physical_address)
 		return CBGFX_ERROR_FRAMEBUFFER_ADDR;
 
 	switch (fbinfo->orientation) {
@@ -627,7 +626,7 @@ int clear_screen(const struct rgb_color *rgb)
 	 * We assume that for 32bpp the high byte gets ignored anyway. */
 	if ((((color >> 8) & 0xff) == (color & 0xff)) && (bpp == 16 ||
 	    (((color >> 16) & 0xff) == (color & 0xff)))) {
-		memset(fbaddr, color & 0xff, fbinfo->y_resolution * bpl);
+		memset(FB, color & 0xff, fbinfo->y_resolution * bpl);
 	} else {
 		for (p.y = 0; p.y < screen.size.height; p.y++)
 			for (p.x = 0; p.x < screen.size.width; p.x++)

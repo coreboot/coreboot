@@ -81,7 +81,7 @@ struct sysinfo_t {
 
 	char *cb_version;
 
-	struct cb_framebuffer *framebuffer;
+	struct cb_framebuffer framebuffer;
 
 	int num_gpios;
 	struct cb_gpio gpios[SYSINFO_MAX_GPIOS];

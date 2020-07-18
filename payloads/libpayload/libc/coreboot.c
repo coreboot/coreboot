@@ -186,8 +186,7 @@ static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)
 #if CONFIG(LP_COREBOOT_VIDEO_CONSOLE)
 static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 {
-	/* ptr points to a coreboot table entry and is already virtual */
-	info->framebuffer = ptr;
+	info->framebuffer = *(struct cb_framebuffer *)ptr;
 }
 #endif
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later  */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Enable ACPI _SWS methods */
 #include <soc/intel/common/acpi/acpi_wake_source.asl>

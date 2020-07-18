@@ -343,9 +343,9 @@ int serial_getchar(void)
 /* For simplicity's sake, let's rely on coreboot initializing the UART. */
 void serial_console_init(void)
 {
-	struct cb_serial *sc_ptr = lib_sysinfo.serial;
+	struct cb_serial *sc_ptr = phys_to_virt(lib_sysinfo.cb_serial);
 
-	if (!sc_ptr)
+	if (!lib_sysinfo.cb_serial)
 		return;
 
 	base_uart_addr = (void *) sc_ptr->baseaddr;

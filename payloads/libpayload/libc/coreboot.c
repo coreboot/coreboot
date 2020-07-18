@@ -86,7 +86,7 @@ static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 {
-	info->serial = ((struct cb_serial *)ptr);
+	info->cb_serial = virt_to_phys(ptr);
 }
 
 static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)

@@ -553,9 +553,7 @@ static struct console_output_driver consout = {};
 /* For simplicity's sake, let's rely on coreboot initializing the UART. */
 void serial_console_init(void)
 {
-	struct cb_serial *sc_ptr = lib_sysinfo.serial;
-
-	if (!sc_ptr)
+	if (!lib_sysinfo.cb_serial)
 		return;
 
 	consin.havekey = serial_havechar;

@@ -275,7 +275,8 @@ static struct console_output_driver consout = {
 
 static struct qup_regs *uart_base_address(void)
 {
-	return (void *)(uintptr_t)lib_sysinfo.serial->baseaddr;
+	const struct cb_serial *const serial = phys_to_virt(lib_sysinfo.cb_serial);
+	return phys_to_virt(serial->baseaddr);
 }
 
 static void uart_qupv3_tx_flush(void)
@@ -332,7 +333,7 @@ int serial_getchar(void)
 
 void serial_console_init(void)
 {
-	if (!lib_sysinfo.serial)
+	if (!lib_sysinfo.cb_serial)
 		return;
 
 	console_add_output_driver(&consout);

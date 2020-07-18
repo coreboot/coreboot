@@ -41,8 +41,6 @@
 
 #include <coreboot_tables.h>
 
-struct cb_serial;
-
 /*
  * All pointers in here shall be virtual.
  *
@@ -51,7 +49,7 @@ struct cb_serial;
  */
 struct sysinfo_t {
 	unsigned int cpu_khz;
-	struct cb_serial *serial;
+	uintptr_t cb_serial;
 	unsigned short ser_ioport;
 	unsigned long ser_base; // for mmapped serial
 

@@ -90,10 +90,12 @@ static struct console_input_driver s5p_serial_input =
 
 void serial_init(void)
 {
-	if (!lib_sysinfo.serial || !lib_sysinfo.serial->baseaddr)
+	const struct cb_serial *const serial = phys_to_virt(lib_sysinfo.cb_serial);
+
+	if (!lib_sysinfo.cb_serial || !serial->baseaddr)
 		return;
 
-	uart_regs = (struct s5p_uart *)lib_sysinfo.serial->baseaddr;
+	uart_regs = (struct s5p_uart *)serial->baseaddr;
 }
 
 void serial_console_init(void)

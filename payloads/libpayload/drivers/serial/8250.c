@@ -132,9 +132,9 @@ void serial_init(void)
 
 void serial_console_init(void)
 {
-	if (!lib_sysinfo.serial)
+	if (!lib_sysinfo.cb_serial)
 		return;
-	cb_serial = *lib_sysinfo.serial;
+	cb_serial = *(struct cb_serial *)phys_to_virt(lib_sysinfo.cb_serial);
 
 	serial_init();
 

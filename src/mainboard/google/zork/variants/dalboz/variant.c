@@ -127,9 +127,21 @@ void variant_devtree_update(void)
 	cfg = config_of_soc();
 
 	if (sku_has_emmc()) {
-		if (sku_id() == 0x5A800003)
-			/* rev0 boards have issues with HS400 */
+		if ((sku_id() == 0x5A800003) || (sku_id() == 0x5A80000C)) {
+			/*
+			 * rev0 and rev1 boards have issues with HS400
+			 *
+			 * There is a tuning fix with ES which shows promise
+			 * for some boards, and a HW fix with stitching vias.
+			 * There were also concerns that these boards did not
+			 * have good margins for certain skus.
+			 *
+			 * But these original boards have none of these fixes.
+			 * So we keep the speed low here, with the intent that
+			 * other variants implement these corrections.
+			 */
 			cfg->sd_emmc_config = SD_EMMC_EMMC_HS200;
+		}
 	} else {
 		cfg->sd_emmc_config = SD_EMMC_DISABLE;
 	}

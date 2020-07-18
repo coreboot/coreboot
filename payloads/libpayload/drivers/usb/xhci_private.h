@@ -363,7 +363,7 @@ typedef struct erst_entry {
 #define CAP_CSZ_LEN			1
 
 #define CAP_MASK(tok)		MASK(CAP_##tok##_START, CAP_##tok##_LEN)
-#define CAP_GET(tok, cap)	(((cap)->CAP_##tok##_FIELD & CAP_MASK(tok)) \
+#define CAP_GET(tok, cap)	((read32(&(cap)->CAP_##tok##_FIELD) & CAP_MASK(tok)) \
 				 >> CAP_##tok##_START)
 
 #define CTXSIZE(xhci) (CAP_GET(CSZ, (xhci)->capreg) ? 64 : 32)

@@ -185,16 +185,6 @@
 		PAD_RESET(rst) | PAD_FUNC(func),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
-/*
- * Set native function with RX Level/Edge configuration and disable
- * input/output buffer if necessary
- */
-#define PAD_CFG_NF_BUF_TRIG(pad, pull, rst, func, bufdis, trig)	\
-	_PAD_CFG_STRUCT(pad,					\
-		PAD_RESET(rst) | PAD_TRIG(trig) |		\
-		PAD_BUF(bufdis) | PAD_FUNC(func),		\
-		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
-
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 /* Native 1.8V tolerant pad, only applies to some pads like I2C/I2S
     Not applicable to all SOCs. Refer EDS

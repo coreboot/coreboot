@@ -88,11 +88,6 @@ configurations together into a set of macros, e.g.,
 ```C
     /* Native function configuration */
     #define PAD_CFG_NF(pad, pull, rst, func)
-    /*
-     * Set native function with RX Level/Edge configuration and disable
-     * input/output buffer if necessary
-     */
-    #define PAD_CFG_NF_BUF_TRIG(pad, pull, rst, func, bufdis, trig)
     /* General purpose output, no pullup/down. */
     #define PAD_CFG_GPO(pad, val, rst)
     /* General purpose output, with termination specified */

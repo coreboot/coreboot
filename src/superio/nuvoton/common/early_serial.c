@@ -47,6 +47,9 @@ void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev)
 /* Bring up early serial debugging output before the RAM is initialized. */
 void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
+	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
 	nuvoton_pnp_enter_conf_state(dev);
 
 	if (CONFIG(SUPERIO_NUVOTON_NCT5539D_COM_A))

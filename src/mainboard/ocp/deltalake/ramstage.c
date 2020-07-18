@@ -54,17 +54,17 @@ slot_info slotinfo[] = {
 	{CSTACK,  SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0xE8, "DL on board M.2 #1 - boot"},
 	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "DL on board M.2 #2"},
 	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "Mezz Card"},
-	{PSTACK3, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "1ou expansion M.2 #1"},
-	{PSTACK3, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "1ou expansion M.2 #2"},
-	{PSTACK3, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "1ou expansion M.2 #3"},
-	{PSTACK3, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "1ou expansion M.2 #4"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "1ou expansion M.2 #1"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "1ou expansion M.2 #2"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "1ou expansion M.2 #3"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "1ou expansion M.2 #4"},
 	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "2ou expansion M.2 #1"},
 	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "2ou expansion M.2 #2"},
 	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "2ou expansion M.2 #3"},
 	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "2ou expansion M.2 #4"},
 	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "2ou expansion M.2 #5"},
 	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "2ou expansion M.2 #6"},
-	{PSTACK3, SlotTypePciExpressGen3X16, SlotDataBusWidth16X, 0x00, "Mezz Card(Class-2)"},
+	{PSTACK2, SlotTypePciExpressGen3X16, SlotDataBusWidth16X, 0x00, "Mezz Card(Class-2)"},
 };
 
 static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)

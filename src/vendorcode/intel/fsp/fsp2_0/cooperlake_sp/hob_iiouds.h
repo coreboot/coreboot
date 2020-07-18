@@ -90,32 +90,23 @@ typedef struct {
  IIO PCIe Ports
  **/
 typedef enum {
+	// IOU0, CSTACK
 	PORT_0 = 0,
-	// IOU0
+	// IOU1, PSTACK0
 	PORT_1A,
 	PORT_1B,
 	PORT_1C,
 	PORT_1D,
-	// IOU1
+	// IOU2, PSTACK1
 	PORT_2A,
 	PORT_2B,
 	PORT_2C,
 	PORT_2D,
-	// IOU2
-	PORT_4A,
-	PORT_4B,
-	PORT_4C,
-	PORT_4D,
-	// MCP0
-	PORT_5A,
-	PORT_5B,
-	PORT_5C,
-	PORT_5D,
-	// MCP1
-	PORT_6A,
-	PORT_6B,
-	PORT_6C,
-	PORT_6D,
+	// IOU3, PSTACK2
+	PORT_3A,
+	PORT_3B,
+	PORT_3C,
+	PORT_3D,
 	MAX_PORTS
 } PCIE_PORTS;
 
@@ -127,8 +118,6 @@ typedef enum {
 	PSTACK0,
 	PSTACK1,
 	PSTACK2,
-	PSTACK3,
-	PSTACK4,
 	MAX_STACKS
 } IIO_STACKS;
 

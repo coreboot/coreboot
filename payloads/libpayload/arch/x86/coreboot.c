@@ -49,7 +49,7 @@ static void cb_parse_x86_rom_var_mtrr(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_mrc_cache(void *ptr, struct sysinfo_t *info)
 {
-	info->mrc_cache = get_cbmem_ptr(ptr);
+	info->mrc_cache = get_cbmem_addr(ptr);
 }
 
 int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info)

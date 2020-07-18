@@ -41,12 +41,6 @@
 /* === Parsing code === */
 /* This is the generic parsing code. */
 
-void *get_cbmem_ptr(unsigned char *ptr)
-{
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	return phys_to_virt(cbmem->cbmem_tab);
-}
-
 uintptr_t get_cbmem_addr(const void *const cbmem_tab_entry)
 {
 	const struct cb_cbmem_tab *const cbmem = cbmem_tab_entry;
@@ -91,7 +85,7 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->vboot_workbuf = get_cbmem_ptr(ptr);
+	info->vboot_workbuf = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
@@ -136,7 +130,7 @@ static void cb_parse_mac_addresses(unsigned char *ptr,
 
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->tstamp_table = get_cbmem_ptr(ptr);
+	info->tstamp_table = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
@@ -146,7 +140,7 @@ static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->acpi_gnvs = get_cbmem_ptr(ptr);
+	info->acpi_gnvs = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_board_id(unsigned char *ptr, struct sysinfo_t *info)
@@ -197,7 +191,7 @@ static void cb_parse_string(unsigned char *ptr, char **info)
 
 static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)
 {
-	info->wifi_calibration = get_cbmem_ptr(ptr);
+	info->wifi_calibration = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
@@ -238,12 +232,12 @@ static void cb_parse_boot_media_params(unsigned char *ptr,
 
 static void cb_parse_vpd(void *ptr, struct sysinfo_t *info)
 {
-	info->chromeos_vpd = get_cbmem_ptr(ptr);
+	info->chromeos_vpd = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_fmap_cache(void *ptr, struct sysinfo_t *info)
 {
-	info->fmap_cache = get_cbmem_ptr(ptr);
+	info->fmap_cache = get_cbmem_addr(ptr);
 }
 
 #if CONFIG(LP_TIMER_RDTSC)

@@ -147,7 +147,7 @@ static int timestamps_module_init(void)
 	if (ret)
 		return -1;
 
-	struct timestamp_table *timestamps = lib_sysinfo.tstamp_table;
+	struct timestamp_table *timestamps = phys_to_virt(lib_sysinfo.tstamp_table);
 
 	if (timestamps == NULL)
 		return -1;

@@ -94,23 +94,23 @@ struct sysinfo_t {
 	uintptr_t cb_header;
 	uintptr_t cb_mainboard;
 
-	void *vboot_workbuf;
+	uintptr_t vboot_workbuf;
 
 #if CONFIG(LP_ARCH_X86)
 	int x86_rom_var_mtrr_index;
 #endif
 
-	void		*tstamp_table;
+	uintptr_t tstamp_table;
 	uintptr_t cbmem_cons;
-	void		*mrc_cache;
-	void		*acpi_gnvs;
+	uintptr_t mrc_cache;
+	uintptr_t acpi_gnvs;
 
 #define UNDEFINED_STRAPPING_ID (~0)
 	u32		board_id;
 	u32		ram_code;
 	u32		sku_id;
 
-	void		*wifi_calibration;
+	uintptr_t	wifi_calibration;
 	uint64_t	ramoops_buffer;
 	uint32_t	ramoops_buffer_size;
 	struct {
@@ -124,11 +124,11 @@ struct sysinfo_t {
 	uint64_t boot_media_size;
 	uint64_t mtc_start;
 	uint32_t mtc_size;
-	void	*chromeos_vpd;
-	int	mmc_early_wake_status;
+	uintptr_t chromeos_vpd;
+	int mmc_early_wake_status;
 
 	/* Pointer to FMAP cache in CBMEM */
-	void	*fmap_cache;
+	uintptr_t fmap_cache;
 };
 
 extern struct sysinfo_t lib_sysinfo;

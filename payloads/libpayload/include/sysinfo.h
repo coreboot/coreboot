@@ -29,6 +29,8 @@
 #ifndef _SYSINFO_H
 #define _SYSINFO_H
 
+#include <stdint.h>
+
 /* Maximum number of memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 32
 /* Allow a maximum of 8 GPIOs */
@@ -101,7 +103,7 @@ struct sysinfo_t {
 #endif
 
 	void		*tstamp_table;
-	void		*cbmem_cons;
+	uintptr_t cbmem_cons;
 	void		*mrc_cache;
 	void		*acpi_gnvs;
 

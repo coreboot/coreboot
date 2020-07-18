@@ -47,6 +47,12 @@ void *get_cbmem_ptr(unsigned char *ptr)
 	return phys_to_virt(cbmem->cbmem_tab);
 }
 
+uintptr_t get_cbmem_addr(const void *const cbmem_tab_entry)
+{
+	const struct cb_cbmem_tab *const cbmem = cbmem_tab_entry;
+	return cbmem->cbmem_tab;
+}
+
 static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 {
 	struct cb_memory *mem = ptr;
@@ -135,7 +141,7 @@ static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
 {
-	info->cbmem_cons = get_cbmem_ptr(ptr);
+	info->cbmem_cons = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)

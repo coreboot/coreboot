@@ -110,7 +110,7 @@ static int bootlog_module_init(void)
 		return -1;
 	}
 
-	struct cbmem_console *console = lib_sysinfo.cbmem_cons;
+	struct cbmem_console *console = phys_to_virt(lib_sysinfo.cbmem_cons);
 	if (console == NULL) {
 		return -1;
 	}

@@ -91,8 +91,8 @@ struct sysinfo_t {
 
 	unsigned long *mbtable; /** Pointer to the multiboot table */
 
-	struct cb_header *header;
-	struct cb_mainboard *mainboard;
+	uintptr_t cb_header;
+	uintptr_t cb_mainboard;
 
 	void *vboot_workbuf;
 

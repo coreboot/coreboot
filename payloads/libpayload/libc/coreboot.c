@@ -287,7 +287,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		     header->table_bytes) != header->table_checksum)
 		return -1;
 
-	info->header = header;
+	info->cb_header = virt_to_phys(header);
 
 	/* Initialize IDs as undefined in case they don't show up in table. */
 	info->board_id = UNDEFINED_STRAPPING_ID;
@@ -358,7 +358,7 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 #endif
 		case CB_TAG_MAINBOARD:
-			info->mainboard = (struct cb_mainboard *)ptr;
+			info->cb_mainboard = virt_to_phys(ptr);
 			break;
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);

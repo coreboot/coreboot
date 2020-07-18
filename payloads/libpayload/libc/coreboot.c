@@ -170,8 +170,8 @@ static void cb_parse_sku_id(unsigned char *ptr, struct sysinfo_t *info)
 #if CONFIG(LP_NVRAM)
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
-	/* ptr points to a coreboot table entry and is already virtual */
-	info->option_table = ptr;
+	/* ptr is already virtual, but we want to keep physical addresses */
+	info->cmos_option_table = virt_to_phys(ptr);
 }
 
 static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)

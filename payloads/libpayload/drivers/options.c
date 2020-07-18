@@ -53,7 +53,7 @@ struct nvram_accessor *use_mem = &(struct nvram_accessor) {
 
 struct cb_cmos_option_table *get_system_option_table(void)
 {
-	return lib_sysinfo.option_table;
+	return phys_to_virt(lib_sysinfo.cmos_option_table);
 }
 
 int options_checksum_valid(const struct nvram_accessor *nvram)

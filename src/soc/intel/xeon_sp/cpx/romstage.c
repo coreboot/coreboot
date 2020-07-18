@@ -15,6 +15,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSPM_CONFIG *m_cfg = &mupd->FspmConfig;
 	const struct device *dev;
+	const config_t *config = config_of_soc();
 
 	/* ErrorLevel - 0 (disable) to 8 (verbose) */
 	m_cfg->DebugPrintLevel = 8;
@@ -67,6 +68,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	   0: Disable, 1: Enabled in PCI mode, 2: Enabled in ACPI mode */
 	dev = pcidev_path_on_root(PCH_DEVFN_THERMAL);
 	m_cfg->ThermalDeviceEnable = dev && dev->enabled;
+
+	/* Enable VT-d according to DTB */
+	m_cfg->VtdSupport = config->vtd_support;
+	m_cfg->X2apic = config->x2apic;
 
 	mainboard_memory_init_params(mupd);
 }

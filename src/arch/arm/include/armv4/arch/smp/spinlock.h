@@ -9,7 +9,6 @@
 #define spin_unlock_wait(lock)	do {} while (0)
 #define spin_lock(lock)		do {} while (0)
 #define spin_unlock(lock)	do {} while (0)
-#define cpu_relax()		do {} while (0)
 
 #include <smp/node.h>
 #define boot_cpu() 1

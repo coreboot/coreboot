@@ -269,6 +269,12 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 
 }
 
+/* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
+static __always_inline void cpu_relax(void)
+{
+	__asm__ __volatile__("rep;nop" : : : "memory");
+}
+
 #define asmlinkage __attribute__((regparm(0)))
 
 /*

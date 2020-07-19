@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <cpu/x86/tsc.h>
-#include <pc80/i8254.h>
-#include <smp/spinlock.h>
 #include <delay.h>
 #include <thread.h>
 

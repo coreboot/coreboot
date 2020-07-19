@@ -1,8 +1,4 @@
-/*
- *
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /*
  * Memory map for QEMU virt machine since

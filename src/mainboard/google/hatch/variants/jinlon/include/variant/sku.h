@@ -1,8 +1,4 @@
-/*
- *
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef __JINLON_SKU_H__
 #define __JINLON_SKU_H__

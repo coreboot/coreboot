@@ -1,8 +1,4 @@
-/*
- *
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
 #ifndef __DRIVERS_UART_PL011_H
 #define __DRIVERS_UART_PL011_H

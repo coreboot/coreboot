@@ -1,8 +1,7 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 /*
  * Early initialization code for aarch64 (a.k.a. armv8)
- *
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <arch/asm.h>

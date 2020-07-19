@@ -1,7 +1,4 @@
-/*
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef __ACPI_ACPIGEN_PS2_KEYBD_H__
 #define __ACPI_ACPIGEN_PS2_KEYBD_H__

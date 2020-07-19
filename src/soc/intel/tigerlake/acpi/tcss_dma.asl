@@ -1,7 +1,4 @@
-/*
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 OperationRegion (DPME, SystemMemory, BASE(_ADR), 0x100)
 Field (DPME, AnyAcc, NoLock, Preserve)

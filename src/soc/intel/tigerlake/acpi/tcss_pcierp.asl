@@ -1,7 +1,4 @@
-/*
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 OperationRegion (PXCS, SystemMemory, BASE(_ADR), 0x800)
 Field (PXCS, AnyAcc, NoLock, Preserve)

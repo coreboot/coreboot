@@ -1,8 +1,4 @@
-/*
- *
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef _SOC_TIGERLAKE_MEMINIT_H_
 #define _SOC_TIGERLAKE_MEMINIT_H_

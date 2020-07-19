@@ -192,10 +192,10 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 	t->size = qemu_get_memory_size() / 1024;
 	t->data_width = 64;
 	t->total_width = 64;
-	t->form_factor = 9; /* DIMM */
+	t->form_factor = MEMORY_FORMFACTOR_DIMM;
 	t->device_locator = smbios_add_string(t->eos, "Virtual");
-	t->memory_type = 0x12; /* DDR */
-	t->type_detail = 0x80; /* Synchronous */
+	t->memory_type = MEMORY_TYPE_DDR;
+	t->type_detail = MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 	t->speed = 200;
 	t->clock_speed = 200;
 	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);

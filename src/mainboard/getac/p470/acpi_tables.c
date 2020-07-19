@@ -44,7 +44,7 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 	ecdt->ec_control.addrl = 0x66;
 	ecdt->ec_control.addrh = 0;
 
-	ecdt->ec_data.space_id = ACPI_ADDRESS_SPACE_IO;	/* Memory */
+	ecdt->ec_data.space_id = ACPI_ADDRESS_SPACE_IO;
 	ecdt->ec_data.bit_width = 8;
 	ecdt->ec_data.bit_offset = 0;
 	ecdt->ec_data.addrl = 0x62;

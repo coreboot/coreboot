@@ -321,9 +321,9 @@ static const struct pad_config gpio_table[] = {
 		// NC
 		PAD_NC(GPP_E0, UP_20K),
 		// SATAGP1
-		PAD_CFG_NF(GPP_E1, UP_20K, DEEP, NF1),
+		PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
 		// SATAGP2
-		PAD_CFG_NF(GPP_E2, UP_20K, DEEP, NF1),
+		PAD_CFG_NF(GPP_E2, NONE, DEEP, NF1),
 
 	// CPU Misc
 		// NC

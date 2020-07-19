@@ -51,23 +51,6 @@ static void cardbus_record_bridge_resource(struct device *dev, resource_t moving
 	resource->size = min_size;
 }
 
-static void cardbus_size_bridge_resource(struct device *dev, unsigned int index)
-{
-	struct resource *resource;
-	resource_t min_size;
-
-	resource = find_resource(dev, index);
-	if (resource) {
-		min_size = resource->size;
-		/*
-		 * Always allocate at least the minimum size to a
-		 * cardbus bridge in case a new card is plugged in.
-		 */
-		if (resource->size < min_size)
-			resource->size = min_size;
-	}
-}
-
 void cardbus_read_resources(struct device *dev)
 {
 	resource_t moving_base, moving_limit, moving;
@@ -88,7 +71,6 @@ void cardbus_read_resources(struct device *dev)
 	/* Initialize the I/O space constraints on the current bus. */
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_IO_SIZE,
 				       PCI_CB_IO_BASE_0, IORESOURCE_IO);
-	cardbus_size_bridge_resource(dev, PCI_CB_IO_BASE_0);
 
 	/* See which bridge I/O resources are implemented. */
 	moving_base = pci_moving_config32(dev, PCI_CB_IO_BASE_1);
@@ -118,8 +100,6 @@ void cardbus_read_resources(struct device *dev)
 		type |= IORESOURCE_PREFETCH;
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_MEM_SIZE,
 				       PCI_CB_MEMORY_BASE_0, type);
-	if (type & IORESOURCE_PREFETCH)
-		cardbus_size_bridge_resource(dev, PCI_CB_MEMORY_BASE_0);
 
 	/* See which bridge memory resources are implemented. */
 	moving_base = pci_moving_config32(dev, PCI_CB_MEMORY_BASE_1);
@@ -129,7 +109,6 @@ void cardbus_read_resources(struct device *dev)
 	/* Initialize the memory space constraints on the current bus. */
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_MEM_SIZE,
 				       PCI_CB_MEMORY_BASE_1, IORESOURCE_MEM);
-	cardbus_size_bridge_resource(dev, PCI_CB_MEMORY_BASE_1);
 
 	compact_resources(dev);
 }

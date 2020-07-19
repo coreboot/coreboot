@@ -238,12 +238,16 @@ chip soc/intel/cannonlake
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
-		device pci 1f.0 on  end # LPC Interface
+		device pci 1f.0 on	# LPC Interface
+			chip drivers/pc80/tpm	# TPM
+				device pnp 0c31.0 on  end
+			end
+		end
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 off end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.5 on  end	# PCH SPI
 		device pci 1f.6 off end # GbE
 	end
 end

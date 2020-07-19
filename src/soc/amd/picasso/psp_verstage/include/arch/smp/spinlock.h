@@ -4,7 +4,6 @@
 #define _ARCH_SMP_SPINLOCK_H
 
 #define DECLARE_SPIN_LOCK(x)
-#define barrier()		do {} while (0)
 #define spin_is_locked(lock)	0
 #define spin_unlock_wait(lock)	do {} while (0)
 #define spin_lock(lock)		do {} while (0)

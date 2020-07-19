@@ -360,7 +360,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->maximum_voltage = dimm->vdd_voltage;
 
 	/* Synchronous = 1 */
-	t->type_detail = 0x0080;
+	t->type_detail = MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 	/* no handle for error information */
 	t->memory_error_information_handle = 0xFFFE;
 	t->attributes = dimm->rank_per_dimm;

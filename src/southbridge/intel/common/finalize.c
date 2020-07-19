@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
-#include <console/post_codes.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/pmutil.h>
@@ -48,5 +48,5 @@ void intel_pch_finalize_smm(void)
 
 	write_pmbase16(TCO1_CNT, read_pmbase16(TCO1_CNT) | TCO_LOCK);
 
-	outb(POST_OS_BOOT, CONFIG_POST_IO_PORT);
+	post_code(POST_OS_BOOT);
 }

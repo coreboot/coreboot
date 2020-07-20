@@ -117,7 +117,7 @@ static const struct pad_config gpio_table[] = {
 		// NC
 		PAD_NC(GPP_A19, UP_20K),
 		// TEST_R
-		PAD_CFG_TERM_GPO(GPP_A20, 0, NONE, DEEP),
+		PAD_CFG_GPO(GPP_A20, 0, DEEP),
 		// NC
 		PAD_NC(GPP_A21, UP_20K),
 		// NC
@@ -225,7 +225,7 @@ static const struct pad_config gpio_table[] = {
 		// NC
 		PAD_NC(GPP_C12, UP_20K),
 		// SSD_PWR_DN#
-		PAD_CFG_TERM_GPO(GPP_C13, 1, NONE, PLTRST),
+		PAD_CFG_GPO(GPP_C13, 1, PLTRST),
 		// NC
 		PAD_NC(GPP_C14, UP_20K),
 		// NC
@@ -274,7 +274,7 @@ static const struct pad_config gpio_table[] = {
 		// NC
 		PAD_NC(GPP_D7, UP_20K),
 		// SB_BLON
-		PAD_CFG_TERM_GPO(GPP_D8, 1, NONE, DEEP),
+		PAD_CFG_GPO(GPP_D8, 1, DEEP),
 
 	// GSPI2
 		// SWI#
@@ -290,7 +290,7 @@ static const struct pad_config gpio_table[] = {
 		// NC
 		PAD_NC(GPP_D13, UP_20K),
 		// SSD2_PWR_DN#
-		PAD_CFG_TERM_GPO(GPP_D14, 1, NONE, PLTRST),
+		PAD_CFG_GPO(GPP_D14, 1, PLTRST),
 		// NC
 		PAD_NC(GPP_D15, UP_20K),
 		// NC

@@ -49,6 +49,10 @@ debug_spinloop:
 #if CONFIG(IDT_IN_EVERY_STAGE)
 	call	exception_init
 #endif
+
+#if CONFIG(ASAN_IN_ROMSTAGE)
+	call	asan_init
+#endif
 	call	car_stage_entry
 
 	/* Expect to never return. */

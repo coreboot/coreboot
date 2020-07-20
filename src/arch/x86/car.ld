@@ -72,8 +72,12 @@
 	*(.sbss.*)
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
-	_car_unallocated_start = .;
 
+#if ENV_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)
+	_shadow_size = (_ebss - _car_region_start) >> 3;
+	REGION(asan_shadow, ., _shadow_size, ARCH_POINTER_ALIGN_SIZE)
+#endif
+	_car_unallocated_start = .;
 	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
 }
 . = _car_region_end;

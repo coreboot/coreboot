@@ -7,16 +7,24 @@ ramstage-y += ubsan.c
 CFLAGS_ramstage += -fsanitize=undefined
 endif
 
-ifeq ($(CONFIG_ASAN_IN_RAMSTAGE),y)
-ramstage-y += asan.c
 # Ensure that asan_shadow_offset_callback patch is applied to GCC before ASan is used.
 CFLAGS_asan += -fsanitize=kernel-address --param asan-use-shadow-offset-callback=1 \
-		--param asan-stack=1 --param asan-globals=1 \
+		--param asan-stack=1 -fsanitize-address-use-after-scope \
 		--param asan-instrumentation-with-call-threshold=0 \
-		-fsanitize-address-use-after-scope \
 		--param use-after-scope-direct-emission-threshold=0
-CFLAGS_ramstage += $(CFLAGS_asan)
+
+ifeq ($(CONFIG_ASAN_IN_ROMSTAGE),y)
+romstage-y += asan.c
+CFLAGS_asan += --param asan-globals=0
+CFLAGS_romstage += $(CFLAGS_asan)
 # Allow memory access without __asan_load and __asan_store checks.
+$(obj)/romstage/lib/asan.o: CFLAGS_asan =
+endif
+
+ifeq ($(CONFIG_ASAN_IN_RAMSTAGE),y)
+ramstage-y += asan.c
+CFLAGS_asan += --param asan-globals=1
+CFLAGS_ramstage += $(CFLAGS_asan)
 $(obj)/ramstage/lib/asan.o: CFLAGS_asan =
 endif
 

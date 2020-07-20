@@ -288,6 +288,13 @@ if ASAN_IN_RAMSTAGE
 	comment "asan_shadow_offset_callback patch is applied to GCC."
 endif
 
+config ASAN_IN_ROMSTAGE
+	bool
+	depends on ASAN_IN_RAMSTAGE
+	default n
+	help
+	  Enable address sanitizer in romstage for platform.
+
 choice
 	prompt "Stage Cache for ACPI S3 resume"
 	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME

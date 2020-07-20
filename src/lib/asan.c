@@ -10,18 +10,29 @@
 
 #include <symbols.h>
 #include <assert.h>
+#include <arch/symbols.h>
 #include <asan.h>
 
 static inline void *asan_mem_to_shadow(const void *addr)
 {
+#if ENV_ROMSTAGE
+	return (void *)((uintptr_t)&_asan_shadow + (((uintptr_t)addr -
+		(uintptr_t)&_car_region_start) >> ASAN_SHADOW_SCALE_SHIFT));
+#elif ENV_RAMSTAGE
 	return (void *)((uintptr_t)&_asan_shadow + (((uintptr_t)addr -
 		(uintptr_t)&_data) >> ASAN_SHADOW_SCALE_SHIFT));
+#endif
 }
 
 static inline const void *asan_shadow_to_mem(const void *shadow_addr)
 {
+#if ENV_ROMSTAGE
+	return (void *)((uintptr_t)&_car_region_start + (((uintptr_t)shadow_addr -
+		(uintptr_t)&_asan_shadow) << ASAN_SHADOW_SCALE_SHIFT));
+#elif ENV_RAMSTAGE
 	return (void *)((uintptr_t)&_data + (((uintptr_t)shadow_addr -
 		(uintptr_t)&_asan_shadow) << ASAN_SHADOW_SCALE_SHIFT));
+#endif
 }
 
 static void asan_poison_shadow(const void *address, size_t size, u8 value)
@@ -225,10 +236,15 @@ static __always_inline void check_memory_region_inline(unsigned long addr,
 						size_t size, bool write,
 						unsigned long ret_ip)
 {
-	if (((uintptr_t)addr < (uintptr_t)&_data) ||
-			((uintptr_t)addr > (uintptr_t)&_eheap))
+#if ENV_ROMSTAGE
+	if (((uintptr_t)addr < (uintptr_t)&_car_region_start) ||
+		((uintptr_t)addr > (uintptr_t)&_ebss))
 		return;
-
+#elif ENV_RAMSTAGE
+	if (((uintptr_t)addr < (uintptr_t)&_data) ||
+		((uintptr_t)addr > (uintptr_t)&_eheap))
+		return;
+#endif
 	if (unlikely(size == 0))
 		return;
 
@@ -252,8 +268,13 @@ static void check_memory_region(unsigned long addr, size_t size, bool write,
 
 uintptr_t __asan_shadow_offset(uintptr_t addr)
 {
+#if ENV_ROMSTAGE
+	return (uintptr_t)&_asan_shadow - (((uintptr_t)&_car_region_start) >>
+		ASAN_SHADOW_SCALE_SHIFT);
+#elif ENV_RAMSTAGE
 	return (uintptr_t)&_asan_shadow - (((uintptr_t)&_data) >>
 		ASAN_SHADOW_SCALE_SHIFT);
+#endif
 }
 
 static void register_global(struct asan_global *global)
@@ -285,6 +306,7 @@ void __asan_unregister_globals(struct asan_global *globals, size_t size)
  * to it so we could poison variable's redzone.
  * This function calls those constructors.
  */
+#if ENV_RAMSTAGE
 static void asan_ctors(void)
 {
 	extern long __CTOR_LIST__;
@@ -296,12 +318,18 @@ static void asan_ctors(void)
 	for (; *ctor != (func_ptr) 0; ctor++)
 		(*ctor)();
 }
+#endif
 
 void asan_init(void)
 {
+#if ENV_ROMSTAGE
+	size_t size = (size_t)&_ebss - (size_t)&_car_region_start;
+	asan_unpoison_shadow((void *)&_car_region_start, size);
+#elif ENV_RAMSTAGE
 	size_t size = (size_t)&_eheap - (size_t)&_data;
 	asan_unpoison_shadow((void *)&_data, size);
 	asan_ctors();
+#endif
 }
 
 void __asan_poison_stack_memory(const void *addr, size_t size)

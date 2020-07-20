@@ -61,7 +61,10 @@ typedef struct __packed {
 	/** Offset 0x00CE**/	uint8_t                     unused8;
 	/** Offset 0x00CF**/	uint8_t                     unused9;
 	/** Offset 0x00D0**/	uint32_t                    bert_size;
-	/** Offset 0x00D4**/	uint8_t                     UnusedUpdSpace0[44];
+	/** Offset 0x00D4**/	uint8_t                     UnusedUpdSpace0;
+	/** Offset 0x00D5**/	uint8_t                     ccx_down_core_mode;
+	/** Offset 0x00D6**/	uint8_t                     ccx_disable_smt;
+	/** Offset 0x00D7**/	uint8_t                     UnusedUpdSpace1[41];
 	/** Offset 0x0100**/	uint16_t                    Reserved100;
 	/** Offset 0x0102**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;

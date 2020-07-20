@@ -151,7 +151,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
-	fadt->x_pm_tmr_blk.space_id = 1;
+	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
 	fadt->x_pm_tmr_blk.addrl = ACPI_BASE_ADDRESS + PM1_TMR;
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;

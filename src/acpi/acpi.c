@@ -752,7 +752,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->revision = get_acpi_table_revision(HPET);
 
 	/* Fill out HPET address. */
-	addr->space_id = 0; /* Memory */
+	addr->space_id = ACPI_ADDRESS_SPACE_MEMORY;
 	addr->bit_width = 64;
 	addr->bit_offset = 0;
 	addr->addrl = CONFIG_HPET_ADDRESS & 0xffffffff;

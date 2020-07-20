@@ -122,12 +122,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE |
 			ACPI_FADT_PLATFORM_CLOCK;
 
-	fadt->x_pm1a_evt_blk.space_id = 1;
+	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
 	fadt->x_pm1a_evt_blk.addrl = pmbase + PM1_STS;
 	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
 
-	fadt->x_pm1a_cnt_blk.space_id = 1;
+	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
 	fadt->x_pm1a_cnt_blk.addrl = pmbase + PM1_CNT;
 	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;

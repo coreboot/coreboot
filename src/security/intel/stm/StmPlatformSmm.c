@@ -9,6 +9,7 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <arch/rom_segs.h>
 

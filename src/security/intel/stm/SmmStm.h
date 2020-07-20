@@ -4,6 +4,7 @@
 #define _SMM_STM_H_
 
 #include "StmApi.h"
+#include <stdbool.h>
 
 /*
  *  Load STM image.

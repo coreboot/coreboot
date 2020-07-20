@@ -69,6 +69,7 @@ config VARIANT_DIR
 	default "berknip" if BOARD_GOOGLE_BERKNIP
 	default "vilboz" if BOARD_GOOGLE_VILBOZ
 	default "woomax" if BOARD_GOOGLE_WOOMAX
+	default "dirinboz" if BOARD_GOOGLE_DIRINBOZ
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -79,6 +80,7 @@ config MAINBOARD_PART_NUMBER
 	default "Berknip" if BOARD_GOOGLE_BERKNIP
 	default "Vilboz" if BOARD_GOOGLE_VILBOZ
 	default "Woomax" if BOARD_GOOGLE_WOOMAX
+	default "Dirinboz" if BOARD_GOOGLE_DIRINBOZ
 
 config DEVICETREE
 	string

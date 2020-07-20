@@ -9,6 +9,6 @@ Scope (\_SB) {
 	#include "sleep.asl"
 }
 
-Scope (_GPE) {
+Scope (\_GPE) {
 	#include "gpe.asl"
 }

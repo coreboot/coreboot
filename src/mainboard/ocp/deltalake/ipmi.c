@@ -77,19 +77,18 @@ enum cb_err ipmi_get_slot_id(uint8_t *slot_id)
 
 void init_frb2_wdt(void)
 {
-
 	char val[VPD_LEN];
-	/* Enable FRB2 timer by default. */
-	u8 enable = 1;
+	u8 enable;
 	uint16_t countdown;
 
 	if (vpd_get_bool(FRB2_TIMER, VPD_RW_THEN_RO, &enable)) {
-		if (!enable) {
-			printk(BIOS_DEBUG, "Disable FRB2 timer\n");
-			ipmi_stop_bmc_wdt(CONFIG_BMC_KCS_BASE);
-			return;
-		}
+		printk(BIOS_DEBUG, "Got VPD %s value: %d\n", FRB2_TIMER, enable);
+	} else {
+		printk(BIOS_INFO, "Not able to get VPD %s, default set to %d\n", FRB2_TIMER,
+			FRB2_TIMER_DEFAULT);
+		enable = FRB2_TIMER_DEFAULT;
 	}
+
 	if (enable) {
 		if (vpd_gets(FRB2_COUNTDOWN, val, VPD_LEN, VPD_RW_THEN_RO)) {
 			countdown = (uint16_t)atol(val);
@@ -97,10 +96,13 @@ void init_frb2_wdt(void)
 				countdown * 100);
 		} else {
 			printk(BIOS_DEBUG, "FRB2 timer use default value: %d ms\n",
-				DEFAULT_COUNTDOWN * 100);
-			countdown = DEFAULT_COUNTDOWN;
+				FRB2_COUNTDOWN_DEFAULT * 100);
+			countdown = FRB2_COUNTDOWN_DEFAULT;
 		}
 		ipmi_init_and_start_bmc_wdt(CONFIG_BMC_KCS_BASE, countdown,
 			TIMEOUT_HARD_RESET);
+	} else {
+		printk(BIOS_DEBUG, "Disable FRB2 timer\n");
+		ipmi_stop_bmc_wdt(CONFIG_BMC_KCS_BASE);
 	}
 }

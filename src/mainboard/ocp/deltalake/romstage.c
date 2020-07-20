@@ -6,6 +6,7 @@
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <soc/romstage.h>
+#include <string.h>
 
 #include "chip.h"
 #include "ipmi.h"
@@ -18,16 +19,36 @@
 static void mainboard_config_upd(FSPM_UPD *mupd)
 {
 	uint8_t val;
+	char val_str[VPD_LEN];
 
 	/* Send FSP log message to SOL */
 	if (vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
 		mupd->FspmConfig.SerialIoUartDebugEnable = val;
 	else {
 		printk(BIOS_INFO, "Not able to get VPD %s, default set "
-			"SerialIoUartDebugEnable to 1\n", FSP_LOG);
-		mupd->FspmConfig.SerialIoUartDebugEnable = 1;
+			"SerialIoUartDebugEnable to %d\n", FSP_LOG, FSP_LOG_DEFAULT);
+		mupd->FspmConfig.SerialIoUartDebugEnable = FSP_LOG_DEFAULT;
 	}
 	mupd->FspmConfig.SerialIoUartDebugIoBase = 0x2f8;
+
+	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
+		/* FSP debug log level */
+		if (vpd_gets(FSP_LOG_LEVEL, val_str, VPD_LEN, VPD_RW_THEN_RO)) {
+			val = (uint8_t)atol(val_str);
+			if (val > 0x0f) {
+				printk(BIOS_DEBUG, "Invalid DebugPrintLevel value from VPD: "
+					"%d\n", val);
+				val = FSP_LOG_LEVEL_DEFAULT;
+			}
+			printk(BIOS_DEBUG, "Setting DebugPrintLevel %d from VPD\n", val);
+			mupd->FspmConfig.DebugPrintLevel = val;
+		} else {
+			printk(BIOS_INFO, "Not able to get VPD %s, default set "
+				"DebugPrintLevel to %d\n", FSP_LOG_LEVEL,
+				FSP_LOG_LEVEL_DEFAULT);
+			mupd->FspmConfig.DebugPrintLevel = FSP_LOG_LEVEL_DEFAULT;
+		}
+	}
 }
 
 /* Update bifurcation settings according to different Configs */

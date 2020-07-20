@@ -1,0 +1,9 @@
+config EC_SYSTEM76_EC
+	bool
+	help
+	  System76 EC
+
+config EC_SYSTEM76_EC_COLOR_KEYBOARD
+	depends on EC_SYSTEM76_EC
+	bool
+	default n

@@ -14,6 +14,9 @@ Device (S76D) {
 		Debug = "S76D: RSET"
 		SAPL(0)
 		SKBL(0)
+#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+			SKBC(0xFFFFFF)
+#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
 	}
 
 	Method (INIT, 0, Serialized) {
@@ -61,6 +64,32 @@ Device (S76D) {
 		}
 	}
 
+#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+	// Set KB LED Brightness
+	Method (SKBL, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.FDAT = 6
+			^^PCI0.LPCB.EC0.FBUF = Arg0
+			^^PCI0.LPCB.EC0.FBF1 = 0
+			^^PCI0.LPCB.EC0.FBF2 = Arg0
+			^^PCI0.LPCB.EC0.FCMD = 0xCA
+		}
+	}
+
+	// Set Keyboard Color
+	Method (SKBC, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.FDAT = 0x3
+			^^PCI0.LPCB.EC0.FBUF = (Arg0 & 0xFF)
+			^^PCI0.LPCB.EC0.FBF1 = ((Arg0 >> 16) & 0xFF)
+			^^PCI0.LPCB.EC0.FBF2 = ((Arg0 >> 8) & 0xFF)
+			^^PCI0.LPCB.EC0.FCMD = 0xCA
+			Return (Arg0)
+		} Else {
+			Return (0)
+		}
+	}
+#else // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
 	// Get KB LED
 	Method (GKBL, 0, Serialized) {
 		Local0 = 0
@@ -81,4 +110,5 @@ Device (S76D) {
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 		}
 	}
+#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
 }

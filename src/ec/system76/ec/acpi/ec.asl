@@ -1,9 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Device (EC0)
+Scope (\_SB) {
+	#include "ac.asl"
+	#include "battery.asl"
+	#include "buttons.asl"
+	#include "hid.asl"
+	#include "lid.asl"
+	#include "s76.asl"
+}
+
+Device (\_SB.PCI0.LPCB.EC0)
 {
 	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)  // _HID: Hardware ID
-	Name (_GPE, 0x50 /* GPP_E16 */)  // _GPE: General Purpose Events
+	Name (_GPE, EC_GPE_SCI)  // _GPE: General Purpose Events
 	Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
 	{
 		IO (Decode16,
@@ -20,7 +29,7 @@ Device (EC0)
 			)
 	})
 
-	#include "acpi/ec_ram.asl"
+	#include "ec_ram.asl"
 
 	Name (ECOK, Zero)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
@@ -38,6 +47,10 @@ Device (EC0)
 			// Update battery information and status
 			^^^^BAT0.UPBI()
 			^^^^BAT0.UPBS()
+
+			// Notify of changes
+			Notify(^^^^AC, Zero)
+			Notify(^^^^BAT0, Zero)
 
 			PNOT ()
 
@@ -70,8 +83,6 @@ Device (EC0)
 			// Notify of changes
 			Notify(^^^^AC, Zero)
 			Notify(^^^^BAT0, Zero)
-
-			Sleep (1000)
 
 			// Reset System76 Device
 			^^^^S76D.RSET()
@@ -116,13 +127,17 @@ Device (EC0)
 	Method (_Q11, 0, NotSerialized) // Brightness Down
 	{
 		Debug = "EC: Brightness Down"
-		^^^^HIDD.HPEM (20)
+		if (^^^^HIDD.HRDY) {
+			^^^^HIDD.HPEM (20)
+		}
 	}
 
 	Method (_Q12, 0, NotSerialized) // Brightness Up
 	{
 		Debug = "EC: Brightness Up"
-		^^^^HIDD.HPEM (19)
+		if (^^^^HIDD.HRDY) {
+			^^^^HIDD.HPEM (19)
+		}
 	}
 
 	Method (_Q13, 0, NotSerialized) // Camera Toggle
@@ -133,10 +148,10 @@ Device (EC0)
 	Method (_Q14, 0, NotSerialized) // Airplane Mode
 	{
 		Debug = "EC: Airplane Mode"
-		// Only send HIDD message when hardware airplane mode not in use
-		If (ECOS == 2) {
+		if (^^^^HIDD.HRDY) {
 			^^^^HIDD.HPEM (8)
 		}
+		// TODO: hardware airplane mode
 	}
 
 	Method (_Q15, 0, NotSerialized) // Suspend Button
@@ -150,13 +165,10 @@ Device (EC0)
 		Debug = "EC: AC Detect"
 		^^^^AC.ACFG = ADP
 		Notify (AC, 0x80) // Status Change
-		Sleep (0x01F4)
 		If (BAT0)
 		{
 			Notify (^^^^BAT0, 0x81) // Information Change
-			Sleep (0x32)
 			Notify (^^^^BAT0, 0x80) // Status Change
-			Sleep (0x32)
 		}
 	}
 

@@ -25,7 +25,6 @@ DefinitionBlock(
 	Scope (\_SB.PCI0.LPCB)
 	{
 		#include <drivers/pc80/pc/ps2_controller.asl>
-		#include "acpi/ec.asl"
 	}
 
 	#include "acpi/mainboard.asl"

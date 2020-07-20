@@ -147,14 +147,14 @@ chip soc/intel/cannonlake
 
 # LPC (soc/intel/cannonlake/lpc.c)
 	# LPC configuration from lspci -s 1f.0 -xxx
-	# Address 0x84: Decode 0x80 - 0x8F
+	# Address 0x84: Decode 0x80 - 0x8F (Port 80)
 	register "gen1_dec" = "0x000c0081"
-	# Address 0x88: Decode 0x68 - 0x6F
+	# Address 0x88: Decode 0x68 - 0x6F (PMC)
 	register "gen2_dec" = "0x00040069"
-	# Address 0x8C: Decode 0x3320 - 0x332F
-	register "gen3_dec" = "0x000c3321"
-	# Address 0x90: Disabled
-	register "gen4_dec" = "0x00000000"
+	# Address 0x8C: Decode 0xE00 - 0xEFF (AP/EC command)
+	register "gen3_dec" = "0x00fc0E01"
+	# Address 0x90: Decode 0xF00 - 0xFFF (AP/EC debug)
+	register "gen4_dec" = "0x00fc0F01"
 
 # PMC (soc/intel/cannonlake/pmc.c)
 	# Enable deep Sx states

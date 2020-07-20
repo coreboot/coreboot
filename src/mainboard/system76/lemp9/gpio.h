@@ -467,7 +467,7 @@ static const struct pad_config gpio_table[] = {
 		// CNV_RF_RESET# / CNVI_RST#
 		PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3),
 		// MODEM_CLKREQ / CNVI_CLKREQ
-		PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
+		PAD_CFG_NF(GPP_H2, DN_20K, DEEP, NF3),
 		// NC
 		PAD_NC(GPP_H3, UP_20K),
 

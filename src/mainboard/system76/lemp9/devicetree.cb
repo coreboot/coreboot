@@ -1,7 +1,12 @@
 chip soc/intel/cannonlake
-	# Lock Down
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		/* Touchpad */
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 80,
+			.fall_time_ns = 110,
+		},
 	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
@@ -35,6 +40,11 @@ chip soc/intel/cannonlake
 	#register "enable_c6dram" = "1"
 
 # FSP Silicon (soc/intel/cannonlake/fsp_params.c)
+	# Serial I/O
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci, // Touchpad
+	}"
+
 	# SATA
 	register "SataMode" = "Sata_AHCI"
 	register "SataSalpSupport" = "0"
@@ -185,7 +195,16 @@ chip soc/intel/cannonlake
 			device pci 14.3 on end
 		end
 		device pci 14.5 off end # SDCard
-		device pci 15.0 off end # I2C #0
+		device pci 15.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN040D""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+		end # I2C #0
 		device pci 15.1 off end # I2C #1
 		device pci 15.2 off end # I2C #2
 		device pci 15.3 off end # I2C #3

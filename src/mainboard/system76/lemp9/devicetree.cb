@@ -25,8 +25,8 @@ chip soc/intel/cannonlake
 # CPU (soc/intel/cannonlake/cpu.c)
 	# Power limit
 	register "power_limits_config" = "{
-		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 25,
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 30,
 	}"
 
 	# Enable "Intel Speed Shift Technology"

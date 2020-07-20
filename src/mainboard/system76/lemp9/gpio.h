@@ -278,8 +278,8 @@ static const struct pad_config gpio_table[] = {
 		PAD_CFG_GPO(GPP_D8, 1, DEEP),
 
 	// GSPI2
-		// SWI#
-		_PAD_CFG_STRUCT(GPP_D9, 0x40880100, 0x0000),
+		// EC SWI#
+		PAD_CFG_GPI_SCI(GPP_D9, NONE, DEEP, LEVEL, INVERT),
 		// DDR_TYPE_D10 (unused; there is only one on-board ram type/model)
 		PAD_NC(GPP_D10, NONE),
 		// BOARD_ID (unused in cb; we already know the device model)
@@ -361,10 +361,10 @@ static const struct pad_config gpio_table[] = {
 		PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
 		// DDPC_HPD1 / HDMI_HPD
 		PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
-		// SMI#
-		_PAD_CFG_STRUCT(GPP_E15, 0x42840100, 0x0),
-		// SCI#
-		_PAD_CFG_STRUCT(GPP_E16, 0x80880100, 0x0000),
+		// EC SMI#
+		PAD_CFG_GPI_SMI(GPP_E15, NONE, DEEP, EDGE_SINGLE, INVERT),
+		// EC SCI#
+		PAD_CFG_GPI_SCI(GPP_E16, NONE, PLTRST, LEVEL, INVERT),
 		// EDP_HPD
 		PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
 		// NC

@@ -86,8 +86,8 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_A10, UP_20K),
 
 	// GSPI1
-		// INTP_OUT
-		_PAD_CFG_STRUCT(GPP_A11, 0x80100100, 0x0000),
+		// INTP_OUT (Type-C VBUS_SENSE; unused in cb)
+		PAD_NC(GPP_A11, UP_20K),
 
 	// ISH_GP
 		// NC

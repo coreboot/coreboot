@@ -179,8 +179,8 @@ chip soc/intel/cannonlake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 off     # SA Thermal device
-			register "Device4Enable" = "0"
+		device pci 04.0 on      # SA Thermal device
+			register "Device4Enable" = "1"
 		end
 		device pci 12.0 on  end # Thermal Subsystem
 		device pci 12.5 off end # UFS SCS

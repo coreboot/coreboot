@@ -84,6 +84,12 @@ void soc_systemagent_init(struct device *dev)
 	case PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2:
 		soc_config = &config->power_limits_config[POWER_LIMITS_U_4_CORE];
 		break;
+	case PCI_DEVICE_ID_INTEL_TGL_ID_Y_2_2:
+		soc_config = &config->power_limits_config[POWER_LIMITS_Y_2_CORE];
+		break;
+	case PCI_DEVICE_ID_INTEL_TGL_ID_Y_4_2:
+		soc_config = &config->power_limits_config[POWER_LIMITS_Y_4_CORE];
+		break;
 	default:
 		printk(BIOS_ERR, "TGL: unknown SA ID: 0x%4x, skipping power limits "
 		       "configuration\n", sa_pci_id);

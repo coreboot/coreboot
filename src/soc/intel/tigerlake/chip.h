@@ -23,9 +23,11 @@
 #define MAX_HD_AUDIO_SSP_LINKS  6
 
 /* The first two are for TGL-U */
-#define POWER_LIMITS_U_4_CORE	0
-#define POWER_LIMITS_U_2_CORE	1
-#define POWER_LIMITS_MAX	2
+#define POWER_LIMITS_U_2_CORE	0
+#define POWER_LIMITS_U_4_CORE	1
+#define POWER_LIMITS_Y_2_CORE	2
+#define POWER_LIMITS_Y_4_CORE	3
+#define POWER_LIMITS_MAX	4
 
 /*
  * Enable External V1P05 Rail in: BIT0:S0i1/S0i2,

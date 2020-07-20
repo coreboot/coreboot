@@ -27,15 +27,15 @@ static const struct pad_config gpio_table[] = {
 	// Power Management
 		// NC
 		PAD_NC(GPD0, NONE),
-		// AC_PRESENT
+		// ACPRESENT / AC_PRESENT
 		PAD_CFG_NF(GPD1, NATIVE, DEEP, NF1),
 		// NC
 		PAD_NC(GPD2, UP_20K),
-		// PWR_BTN#
+		// PWRBTN# / PWR_BTN#
 		PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),
-		// SUSB#_PCH
+		// SLP_S3# / SUSB#_PCH
 		PAD_CFG_NF(GPD4, NONE, DEEP, NF1),
-		// SUSC#_PCH
+		// SLP_S4# / SUSC#_PCH
 		PAD_CFG_NF(GPD5, NONE, DEEP, NF1),
 		// NC
 		PAD_NC(GPD6, UP_20K),
@@ -45,7 +45,7 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPD7, NONE),
 
 	// Clock Signals
-		// SUS_CLK
+		// SUSCLK / SUS_CLK
 		PAD_CFG_NF(GPD8, NONE, DEEP, NF1),
 
 	// Power Management
@@ -58,19 +58,19 @@ static const struct pad_config gpio_table[] = {
 
 // GPP_A
 	// LPC
-		// SB_KBCRST#
+		// RCIN# / SB_KBCRST#
 		PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),
-		// LPC_AD0
+		// LAD0 / LPC_AD0
 		PAD_CFG_NF(GPP_A1, NATIVE, DEEP, NF1),
-		// LPC_AD1
+		// LAD1 / LPC_AD1
 		PAD_CFG_NF(GPP_A2, NATIVE, DEEP, NF1),
-		// LPC_AD2
+		// LAD2 / LPC_AD2
 		PAD_CFG_NF(GPP_A3, NATIVE, DEEP, NF1),
-		// LPC_AD3
+		// LAD3 / LPC_AD3
 		PAD_CFG_NF(GPP_A4, NATIVE, DEEP, NF1),
-		// LPC_FRAME#
+		// LFRAME# / LPC_FRAME#
 		PAD_CFG_NF(GPP_A5, NONE, DEEP, NF1),
-		// SERIRQ with pull up
+		// SERIRQ
 		PAD_CFG_NF(GPP_A6, NONE, DEEP, NF1),
 
 	// GSPI0
@@ -78,9 +78,10 @@ static const struct pad_config gpio_table[] = {
 		PAD_CFG_NF(GPP_A7, NONE, DEEP, NF1),
 
 	// LPC
-		// PM_CLKRUN# with pull-up
+		// CLKRUN# / PM_CLKRUN#
+		// Note: R209 is populated despite being marked no-stuff in schematic
 		PAD_CFG_NF(GPP_A8, NONE, DEEP, NF1),
-		// PCLK_KBC
+		// CLKOUT_LPC0 / PCLK_KBC
 		PAD_CFG_NF(GPP_A9, DN_20K, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_A10, UP_20K),
@@ -116,7 +117,7 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_A18, UP_20K),
 		// NC
 		PAD_NC(GPP_A19, UP_20K),
-		// TEST_R
+		// GPP_A20 / TEST_R
 		PAD_CFG_GPO(GPP_A20, 0, DEEP),
 		// NC
 		PAD_NC(GPP_A21, UP_20K),
@@ -147,13 +148,13 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_B5, UP_20K),
 		// NC
 		PAD_NC(GPP_B6, UP_20K),
-		// WLAN_CLKREQ#
+		// SRCCLKREQ2# / WLAN_CLKREQ#
 		PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
-		// LAN_CLKREQ#
+		// SRCCLKREQ3# / CARD_CLKREQ#
 		PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
-		// TBT_CLKREQ#
+		// SRCCLKREQ4# / SSD2_CLKREQ#
 		PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
-		// SSD_CLKREQ#
+		// SRCCLKREQ5# / SSD1_CLKREQ#
 		PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
 
 	// Power Management
@@ -165,7 +166,7 @@ static const struct pad_config gpio_table[] = {
 		PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 
 	// SPKR
-		// PCH_SPKR
+		// SPKR / PCH_SPKR
 		PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 
 	// GSPI0
@@ -194,9 +195,9 @@ static const struct pad_config gpio_table[] = {
 
 // GPP_C
 	// SMBUS
-		// SMB_CLK_DDR
+		// SMBCLK / SMB_CLK_DDR
 		PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
-		// SMB_DAT_DDR
+		// SMBDATA / SMB_DAT_DDR
 		PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_C2, UP_20K),
@@ -224,7 +225,7 @@ static const struct pad_config gpio_table[] = {
 	// UART1
 		// NC
 		PAD_NC(GPP_C12, UP_20K),
-		// SSD_PWR_DN#
+		// GPP_C13 / SSD1_PWR_DN#
 		PAD_CFG_GPO(GPP_C13, 1, PLTRST),
 		// NC
 		PAD_NC(GPP_C14, UP_20K),
@@ -232,9 +233,9 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_C15, UP_20K),
 
 	// I2C
-		// T_SDA
+		// I2C0_SDA / T_SDA
 		PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
-		// T_SCL
+		// I2C0_SCL / T_SCL
 		PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_C18, UP_20K),
@@ -320,9 +321,9 @@ static const struct pad_config gpio_table[] = {
 	// SATA
 		// NC
 		PAD_NC(GPP_E0, UP_20K),
-		// SATAGP1
+		// SATAXPCIE1 / SATAGP1
 		PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
-		// SATAGP2
+		// SATAXPCIE2 / SATAGP2
 		PAD_CFG_NF(GPP_E2, NONE, DEEP, NF1),
 
 	// CPU Misc
@@ -356,9 +357,9 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_E12, NONE),
 
 	// Display Signals
-		// MUX_HPD
+		// DDPB_HPD0 / MUX_HPD
 		PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
-		// HDMI_HPD
+		// DDPC_HPD1 / HDMI_HPD
 		PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 		// SMI#
 		_PAD_CFG_STRUCT(GPP_E15, 0x42840100, 0x0),
@@ -370,9 +371,9 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_E18, UP_20K),
 		// NC
 		PAD_NC(GPP_E19, NONE),
-		// HDMI_CTRLCLK
+		// DPPC_CTRLCLK / HDMI_CTRLCLK
 		PAD_CFG_NF(GPP_E20, NONE, DEEP, NF1),
-		// HDMI_CTRLDATA
+		// DPPC_CTRLDATA / HDMI_CTRLDATA
 		PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_E22, UP_20K),
@@ -393,13 +394,13 @@ static const struct pad_config gpio_table[] = {
 		PAD_NC(GPP_F3, UP_20K),
 
 	// CNVI
-		// CNVI_BRI_DT
+		// CNV_BRI_DT / CNVI_BRI_DT
 		PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
-		// CNVI_BRI_RSP
+		// CNV_BRI_RSP / CNVI_BRI_RSP
 		PAD_CFG_NF(GPP_F5, UP_20K, DEEP, NF1),
-		// CNVI_RGI_DT
+		// CNV_RGI_DT / CNVI_RGI_DT
 		PAD_CFG_NF(GPP_F6, NONE, DEEP, NF1),
-		// CNVI_RGI_RSP
+		// CNV_RGI_RSP / CNVI_RGI_RSP
 		PAD_CFG_NF(GPP_F7, UP_20K, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_F8, UP_20K),
@@ -463,17 +464,17 @@ static const struct pad_config gpio_table[] = {
 	// CNVI
 		// NC
 		PAD_NC(GPP_H0, UP_20K),
-		// CNVI_RST#
+		// CNV_RF_RESET# / CNVI_RST#
 		PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3),
-		// CNVI_CLKREQ
+		// MODEM_CLKREQ / CNVI_CLKREQ
 		PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
 		// NC
 		PAD_NC(GPP_H3, UP_20K),
 
 	// I2C
-		// SMD_7411
+		// I2C2_SDA / SMD_7411
 		PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
-		// SMC_7411
+		// I2C2_SCL / SMC_7411
 		PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
 		// NC
 		PAD_NC(GPP_H6, UP_20K),

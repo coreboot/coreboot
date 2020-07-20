@@ -153,14 +153,6 @@ chip soc/intel/cannonlake
 	# Address 0x90: Decode 0xF00 - 0xFFF (AP/EC debug)
 	register "gen4_dec" = "0x00fc0F01"
 
-# PMC (soc/intel/cannonlake/pmc.c)
-	# Enable deep Sx states
-	register "deep_s3_enable_ac" = "0"
-	register "deep_s3_enable_dc" = "0"
-	register "deep_s5_enable_ac" = "1"
-	register "deep_s5_enable_dc" = "1"
-	register "deep_sx_config" = "DSX_EN_WAKE_PIN"
-
 # PM Util (soc/intel/cannonlake/pmutil.c)
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this

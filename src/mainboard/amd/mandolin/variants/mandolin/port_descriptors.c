@@ -8,8 +8,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 8,
-		.end_lane = 15,
+		.start_logical_lane = 8,
+		.end_logical_lane = 15,
 		.device_number = 1,
 		.function_number = 1,
 		.link_aspm = ASPM_L1,
@@ -21,8 +21,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* SSD */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 0,
-		.end_lane = 1,
+		.start_logical_lane = 0,
+		.end_logical_lane = 1,
 		.device_number = 1,
 		.function_number = 7,
 		.link_aspm = ASPM_L1,
@@ -34,8 +34,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* WLAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 4,
-		.end_lane = 4,
+		.start_logical_lane = 4,
+		.end_logical_lane = 4,
 		.device_number = 1,
 		.function_number = 2,
 		.link_aspm = ASPM_L1,
@@ -47,8 +47,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* LAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 5,
-		.end_lane = 5,
+		.start_logical_lane = 5,
+		.end_logical_lane = 5,
 		.device_number = 1,
 		.function_number = 3,
 		.link_aspm = ASPM_L1,
@@ -60,8 +60,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* WWAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 6,
-		.end_lane = 6,
+		.start_logical_lane = 6,
+		.end_logical_lane = 6,
 		.device_number = 1,
 		.function_number = 4,
 		.link_aspm = ASPM_L1,
@@ -73,8 +73,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* WIFI */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 7,
-		.end_lane = 7,
+		.start_logical_lane = 7,
+		.end_logical_lane = 7,
 		.gpio_group_id = 1,
 		.device_number = 1,
 		.function_number = 5,
@@ -87,8 +87,8 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	{ /* SATA EXPRESS */
 		.port_present = true,
 		.engine_type = SATA_ENGINE,
-		.start_lane = 2,
-		.end_lane = 3,
+		.start_logical_lane = 2,
+		.end_logical_lane = 3,
 		.gpio_group_id = 1,
 		.channel_type = SATA_CHANNEL_LONG,
 	}
@@ -98,8 +98,8 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 8,
-		.end_lane = 11,
+		.start_logical_lane = 8,
+		.end_logical_lane = 11,
 		.device_number = 1,
 		.function_number = 1,
 		.link_aspm = ASPM_L1,
@@ -111,8 +111,8 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{ /* SSD */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 0,
-		.end_lane = 1,
+		.start_logical_lane = 0,
+		.end_logical_lane = 1,
 		.device_number = 1,
 		.function_number = 7,
 		.link_aspm = ASPM_L1,
@@ -124,8 +124,8 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{ /* WLAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 4,
-		.end_lane = 4,
+		.start_logical_lane = 4,
+		.end_logical_lane = 4,
 		.device_number = 1,
 		.function_number = 2,
 		.link_aspm = ASPM_L1,
@@ -137,8 +137,8 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{ /* LAN */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = 5,
-		.end_lane = 5,
+		.start_logical_lane = 5,
+		.end_logical_lane = 5,
 		.device_number = 1,
 		.function_number = 3,
 		.link_aspm = ASPM_L1,
@@ -150,8 +150,8 @@ static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
 	{ /* SATA */
 		.port_present = true,
 		.engine_type = SATA_ENGINE,
-		.start_lane = 2,
-		.end_lane = 3,
+		.start_logical_lane = 2,
+		.end_logical_lane = 3,
 		.gpio_group_id = 1,
 		.channel_type = SATA_CHANNEL_LONG,
 	}

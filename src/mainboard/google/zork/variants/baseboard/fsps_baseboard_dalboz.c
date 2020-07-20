@@ -18,8 +18,8 @@ static const fsp_pcie_descriptor pcie_descriptors[] = {
 		// NVME SSD
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = NVME_START_LANE,
-		.end_lane = NVME_END_LANE,
+		.start_logical_lane = NVME_START_LANE,
+		.end_logical_lane = NVME_END_LANE,
 		.device_number = 1,
 		.function_number = 7,
 		.link_aspm = ASPM_L1,
@@ -33,8 +33,8 @@ static const fsp_pcie_descriptor pcie_descriptors[] = {
 		// WLAN
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = WLAN_START_LANE,
-		.end_lane = WLAN_END_LANE,
+		.start_logical_lane = WLAN_START_LANE,
+		.end_logical_lane = WLAN_END_LANE,
 		.device_number = 1,
 		.function_number = 2,
 		.link_aspm = ASPM_L1,
@@ -48,8 +48,8 @@ static const fsp_pcie_descriptor pcie_descriptors[] = {
 		// SD Reader
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_lane = SD_START_LANE,
-		.end_lane = SD_END_LANE,
+		.start_logical_lane = SD_START_LANE,
+		.end_logical_lane = SD_END_LANE,
 		.device_number = 1,
 		.function_number = 3,
 		.link_aspm = ASPM_L1,

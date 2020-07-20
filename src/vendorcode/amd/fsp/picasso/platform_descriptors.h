@@ -113,8 +113,8 @@ typedef struct __packed {
 /* Beware that the lane numbers in here are the logical and not the physical lane numbers! */
 typedef struct __packed {
 	uint8_t		engine_type;
-	uint8_t		start_lane;			// Start lane of the pci device
-	uint8_t		end_lane;			// End lane of the pci device
+	uint8_t		start_logical_lane;		// Start lane of the pci device
+	uint8_t		end_logical_lane;		// End lane of the pci device
 	uint8_t		gpio_group_id;			// FCH reset number. 0 is global reset
 	uint32_t	port_present		:1;	// Should be TRUE if train link
 	uint32_t	reserved_3		:7;

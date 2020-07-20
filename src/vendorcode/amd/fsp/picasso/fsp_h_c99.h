@@ -27,7 +27,7 @@ typedef enum {
 	EnumInitPhaseEndOfFirmware		= 0xF0
 } FSP_INIT_PHASE;
 
-typedef struct {
+typedef struct __packed {
 	uint64_t	Signature;
 	uint8_t		Revision;
 	uint8_t		Reserved[23];
@@ -35,7 +35,7 @@ typedef struct {
 
 _Static_assert(sizeof(FSP_UPD_HEADER) == 32, "FSP_UPD_HEADER not packed");
 
-typedef struct {
+typedef struct __packed {
 	uint8_t		Revision;
 	uint8_t		Reserved[3];
 	void		*NvsBufferPtr;

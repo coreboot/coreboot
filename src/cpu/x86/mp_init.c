@@ -736,12 +736,21 @@ static void asmlinkage smm_do_relocation(void *arg)
 	 * the location of the new SMBASE. If using SMM modules then this
 	 * calculation needs to match that of the module loader.
 	 */
+#if CONFIG(X86_SMM_LOADER_VERSION2)
+	perm_smbase = smm_get_cpu_smbase(cpu);
+	mp_state.perm_smbase = perm_smbase;
+	if (!perm_smbase) {
+		printk(BIOS_ERR, "%s: bad SMBASE for CPU %d\n", __func__, cpu);
+		return;
+	}
+#else
 	perm_smbase = mp_state.perm_smbase;
 	perm_smbase -= cpu * runtime->save_state_size;
-
-	printk(BIOS_DEBUG, "New SMBASE 0x%08lx\n", perm_smbase);
+#endif
 
 	/* Setup code checks this callback for validity. */
+	printk(BIOS_INFO, "%s : curr_smbase 0x%x perm_smbase 0x%x, cpu = %d\n",
+		__func__, (int)curr_smbase, (int)perm_smbase, cpu);
 	mp_state.ops.relocation_handler(cpu, curr_smbase, perm_smbase);
 
 	if (CONFIG(STM)) {
@@ -773,9 +782,17 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 
 static int install_relocation_handler(int num_cpus, size_t save_state_size)
 {
+	int cpus = num_cpus;
+#if CONFIG(X86_SMM_LOADER_VERSION2)
+	/* Default SMRAM size is not big enough to concurrently
+	 * handle relocation for more than ~32 CPU threads
+	 * therefore, relocate 1 by 1. */
+	cpus = 1;
+#endif
+
 	struct smm_loader_params smm_params = {
 		.per_cpu_stack_size = CONFIG_SMM_STUB_STACK_SIZE,
-		.num_concurrent_stacks = num_cpus,
+		.num_concurrent_stacks = cpus,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = 1,
 		.handler = smm_do_relocation,
@@ -785,9 +802,10 @@ static int install_relocation_handler(int num_cpus, size_t save_state_size)
 	if (mp_state.ops.adjust_smm_params != NULL)
 		mp_state.ops.adjust_smm_params(&smm_params, 0);
 
-	if (smm_setup_relocation_handler(&smm_params))
+	if (smm_setup_relocation_handler(&smm_params)) {
+		printk(BIOS_ERR, "%s: smm setup failed\n", __func__);
 		return -1;
-
+	}
 	adjust_smm_apic_id_map(&smm_params);
 
 	return 0;
@@ -796,8 +814,13 @@ static int install_relocation_handler(int num_cpus, size_t save_state_size)
 static int install_permanent_handler(int num_cpus, uintptr_t smbase,
 					size_t smsize, size_t save_state_size)
 {
-	/* There are num_cpus concurrent stacks and num_cpus concurrent save
-	 * state areas. Lastly, set the stack size to 1KiB. */
+	/*
+	 * All the CPUs will relocate to permanaent handler now. Set parameters
+	 * needed for all CPUs. The placement of each CPUs entry point is
+	 * determined by the loader. This code simply provides the beginning of
+	 * SMRAM region, the number of CPUs who will use the handler, the stack
+	 * size and save state size for each CPU.
+	 */
 	struct smm_loader_params smm_params = {
 		.per_cpu_stack_size = CONFIG_SMM_MODULE_STACK_SIZE,
 		.num_concurrent_stacks = num_cpus,
@@ -809,7 +832,7 @@ static int install_permanent_handler(int num_cpus, uintptr_t smbase,
 	if (mp_state.ops.adjust_smm_params != NULL)
 		mp_state.ops.adjust_smm_params(&smm_params, 1);
 
-	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08lx\n", smbase);
+	printk(BIOS_DEBUG, "Installing permanent SMM handler to 0x%08lx\n", smbase);
 
 	if (smm_load_module((void *)smbase, smsize, &smm_params))
 		return -1;

@@ -11,7 +11,11 @@
 ## GNU General Public License for more details.
 ##
 
+ifeq ($(CONFIG_X86_SMM_LOADER_VERSION2),y)
+ramstage-y += smm_module_loaderv2.c
+else
 ramstage-y += smm_module_loader.c
+endif
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,smm,x86_32))

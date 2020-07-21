@@ -43,6 +43,7 @@ chip soc/intel/cannonlake
 	# Serial I/O
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci, // Touchpad
+		[PchSerialIoIndexUART2] = PchSerialIoSkipInit, // LPSS UART
 	}"
 
 	# Misc

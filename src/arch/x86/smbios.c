@@ -1079,6 +1079,56 @@ static int smbios_write_type17(unsigned long *current, int *handle)
 	return totallen;
 }
 
+static int smbios_write_type19(unsigned long *current, int *handle)
+{
+	struct smbios_type19 *t = (struct smbios_type19 *)*current;
+	int len = sizeof(struct smbios_type19);
+	int i;
+
+	struct memory_info *meminfo;
+	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
+	if (meminfo == NULL)
+		return 0;	/* can't find mem info in cbmem */
+
+	memset(t, 0, sizeof(struct smbios_type19));
+
+	t->type = SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS;
+	t->length = len - 2;
+	t->handle = *handle;
+
+	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
+		if (meminfo->dimm[i].dimm_size > 0) {
+			t->extended_ending_address += meminfo->dimm[i].dimm_size;
+			t->partition_width++;
+		}
+	}
+	t->extended_ending_address *= MiB;
+
+	/* Check if it fits into regular address */
+	if (t->extended_ending_address >= KiB &&
+	    t->extended_ending_address < 0x40000000000ULL) {
+		/*
+		 * FIXME: The starting address is SoC specific, but SMBIOS tables are only
+		 * exported on x86 where it's always 0.
+		 */
+
+		t->starting_address = 0;
+		t->ending_address = t->extended_ending_address / KiB - 1;
+		t->extended_starting_address = ~0;
+		t->extended_ending_address = ~0;
+	} else {
+		t->starting_address = ~0;
+		t->ending_address = ~0;
+		t->extended_starting_address = 0;
+		t->extended_ending_address--;
+	}
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = (struct smbios_type32 *)*current;
@@ -1295,6 +1345,8 @@ unsigned long smbios_write_tables(unsigned long current)
 		update_max(len, max_struct_size,
 			elog_smbios_write_type15(&current,handle++));
 	update_max(len, max_struct_size, smbios_write_type17(&current,
+		&handle));
+	update_max(len, max_struct_size, smbios_write_type19(&current,
 		&handle));
 	update_max(len, max_struct_size, smbios_write_type32(&current,
 		handle++));

@@ -828,6 +828,19 @@ struct smbios_type17 {
 	u8 eos[2];
 } __packed;
 
+struct smbios_type19 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u32 starting_address;
+	u32 ending_address;
+	u16 memory_array_handle;
+	u8 partition_width;
+	u64 extended_starting_address;
+	u64 extended_ending_address;
+	u8 eos[2];
+} __packed;
+
 struct smbios_type32 {
 	u8 type;
 	u8 length;

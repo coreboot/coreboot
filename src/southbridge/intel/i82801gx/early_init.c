@@ -66,7 +66,6 @@ void i82801gx_early_init(void)
 
 	enable_smbus();
 
-	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
 	i82801gx_setup_bars();
 

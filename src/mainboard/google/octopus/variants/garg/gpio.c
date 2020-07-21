@@ -66,6 +66,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	case SKU_9_HDMI:
 	case SKU_19_HDMI_TS:
 	case SKU_50_HDMI:
+	case SKU_52_HDMI_TS:
 		*num = ARRAY_SIZE(hdmi_override_table);
 		return hdmi_override_table;
 	case SKU_17_LTE:

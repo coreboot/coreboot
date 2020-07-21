@@ -47,6 +47,7 @@ const char *mainboard_vbt_filename(void)
 	case SKU_9_HDMI:
 	case SKU_19_HDMI_TS:
 	case SKU_50_HDMI:
+	case SKU_52_HDMI_TS:
 		return "vbt_garg_hdmi.bin";
 	default:
 		return "vbt.bin";

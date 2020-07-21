@@ -55,8 +55,8 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 	scfg->emmc0_mode = val;
 }
 
-static void fill_pcie_descriptors(FSP_S_CONFIG *scfg,
-			const fsp_pcie_descriptor *descs, size_t num)
+static void fill_dxio_descriptors(FSP_S_CONFIG *scfg,
+			const fsp_dxio_descriptor *descs, size_t num)
 {
 	size_t i;
 
@@ -76,14 +76,14 @@ static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 }
 static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)
 {
-	const fsp_pcie_descriptor *fsp_pcie;
+	const fsp_dxio_descriptor *fsp_dxio;
 	const fsp_ddi_descriptor *fsp_ddi;
-	size_t num_pcie;
+	size_t num_dxio;
 	size_t num_ddi;
 
-	mainboard_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie,
+	mainboard_get_dxio_ddi_descriptors(&fsp_dxio, &num_dxio,
 						&fsp_ddi, &num_ddi);
-	fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
+	fill_dxio_descriptors(scfg, fsp_dxio, num_dxio);
 	fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
 }
 

@@ -179,14 +179,14 @@ static const fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	}
 };
 
-void variant_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
-				      size_t *pcie_num,
+void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+				      size_t *dxio_num,
 				      const fsp_ddi_descriptor **ddi_descs,
 				      size_t *ddi_num)
 {
 	uint32_t board_sku = sku_id();
 
-	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
+	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
 
 	/* SKU 1, A, and D DB have HDMI, as well as unknown */
 	/* FIXME: this needs to be fw_config controlled. */

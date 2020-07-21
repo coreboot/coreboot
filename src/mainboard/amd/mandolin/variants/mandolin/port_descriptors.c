@@ -4,7 +4,7 @@
 #include <soc/soc_util.h>
 #include <types.h>
 
-static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
+static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -94,7 +94,7 @@ static const fsp_pcie_descriptor pco_pcie_descriptors[] = {
 	}
 };
 
-static const fsp_pcie_descriptor dali_pcie_descriptors[] = {
+static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
 	{ /* MXM */
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
@@ -198,18 +198,18 @@ static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 	}
 };
 
-void mainboard_get_pcie_ddi_descriptors(
-		const fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
+void mainboard_get_dxio_ddi_descriptors(
+		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	if (soc_is_reduced_io_sku()) { /* Dali */
-		*pcie_descs = dali_pcie_descriptors;
-		*pcie_num = ARRAY_SIZE(dali_pcie_descriptors);
+		*dxio_descs = dali_dxio_descriptors;
+		*dxio_num = ARRAY_SIZE(dali_dxio_descriptors);
 		*ddi_descs = dali_ddi_descriptors;
 		*ddi_num = ARRAY_SIZE(dali_ddi_descriptors);
 	} else { /* Picasso and default */
-		*pcie_descs = pco_pcie_descriptors;
-		*pcie_num = ARRAY_SIZE(pco_pcie_descriptors);
+		*dxio_descs = pco_dxio_descriptors;
+		*dxio_num = ARRAY_SIZE(pco_dxio_descriptors);
 		*ddi_descs = pco_ddi_descriptors;
 		*ddi_num = ARRAY_SIZE(pco_ddi_descriptors);
 	}

@@ -165,12 +165,12 @@ static void mainboard_init(void *chip_info)
 		gpe_configure_sci(gpes, num);
 }
 
-void mainboard_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
-					size_t *pcie_num,
+void mainboard_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+					size_t *dxio_num,
 					const fsp_ddi_descriptor **ddi_descs,
 					size_t *ddi_num)
 {
-	variant_get_pcie_ddi_descriptors(pcie_descs, pcie_num, ddi_descs, ddi_num);
+	variant_get_dxio_ddi_descriptors(dxio_descs, dxio_num, ddi_descs, ddi_num);
 }
 
 /*************************************************

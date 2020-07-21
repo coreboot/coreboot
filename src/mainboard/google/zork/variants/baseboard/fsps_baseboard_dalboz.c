@@ -4,16 +4,16 @@
 #include <baseboard/variants.h>
 #include <commonlib/bsd/compiler.h>
 
-void __weak variant_get_pcie_ddi_descriptors(const fsp_pcie_descriptor **pcie_descs,
-					     size_t *pcie_num,
+void __weak variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
+					     size_t *dxio_num,
 					     const fsp_ddi_descriptor **ddi_descs,
 					     size_t *ddi_num)
 {
-	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
+	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
 	*ddi_descs = baseboard_get_ddi_descriptors(ddi_num);
 }
 
-static const fsp_pcie_descriptor pcie_descriptors[] = {
+static const fsp_dxio_descriptor dxio_descriptors[] = {
 	{
 		// NVME SSD
 		.port_present = true,
@@ -60,10 +60,10 @@ static const fsp_pcie_descriptor pcie_descriptors[] = {
 	}
 };
 
-const fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
+const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
 {
-	*num = ARRAY_SIZE(pcie_descriptors);
-	return pcie_descriptors;
+	*num = ARRAY_SIZE(dxio_descriptors);
+	return dxio_descriptors;
 }
 
 const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num)

@@ -53,10 +53,6 @@ config CONSOLE_POST
 	bool
 	default y
 
-config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
 config UART_FOR_CONSOLE
 	int
 	default 2

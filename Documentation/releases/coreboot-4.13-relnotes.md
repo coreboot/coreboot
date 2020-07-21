@@ -39,4 +39,14 @@ attributes as per their datasheet and convert those attributes into SPD files fo
 the platforms. More details about the tools are added in
 [README.md](https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/util/spd_tools/intel/lp4x/README.md).
 
+### New version of SMM loader
+
+A new version of the SMM loader which accomodates platforms with over 32 CPU
+CPU threads.  The existing version of SMM loader uses a 64K code/data
+segment and only a limited number of CPU threads can fit into one segment
+(because of save state, STM, other features, etc). This loader extends beyond
+the 64K segment to accomodate additional CPUs and in theory allows as many
+CPU threads as possible limited only by SMRAM space and not by 64K. By default
+this loader version is disabled. Please see cpu/x86/Kconfig for more info.
+
 ### Add significant changes here

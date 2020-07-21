@@ -23,7 +23,7 @@ static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map,
 	struct resource *res;
 
 	/* Initialize AHCI memory-mapped space */
-	res = find_resource(dev, PCI_BASE_ADDRESS_5);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_5);
 	if (!res)
 		return;
 

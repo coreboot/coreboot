@@ -382,6 +382,10 @@ chip soc/intel/cannonlake
 		device pci 1d.2 on  end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on
+			chip drivers/generic/bayhub
+				register "power_saving" = "1"
+				device pci 00.0 on end
+			end
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
 		end # PCI Express Port 13 (x4)
 		device pci 1e.0 off end # UART #0

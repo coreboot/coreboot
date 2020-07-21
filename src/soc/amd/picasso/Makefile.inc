@@ -129,7 +129,7 @@ ifeq ($(CONFIG_PSP_BOOTLOADER_FILE),)
 $(error CONFIG_PSP_BOOTLOADER_FILE was not defined)
 endif
 PSPBTLDR_FILE=$(realpath $(call strip_quotes, $(CONFIG_PSP_BOOTLOADER_FILE)))
-$(info Adding PSP $(shell md5sum $(PSPBTLDR_FILE)))
+$(info Adding PSP $(shell dd if=$(PSPBTLDR_FILE) | md5sum))
 
 # types = 0x8 and 0x12
 PSP_SMUFW1_SUB1_FILE=$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin

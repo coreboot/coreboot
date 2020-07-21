@@ -15,25 +15,6 @@
 
 static void ironlake_setup_bars(void)
 {
-	/* Setting up Southbridge. In the northbridge code. */
-	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
-
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	/* Enable ACPI BAR */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */, 0x80);
-
-	printk(BIOS_DEBUG, " done.\n");
-
-	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	/* No reset */
-	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);
-	/* halt timer */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);
-	/* halt timer */
-	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2, DEFAULT_PMBASE | 0x60 | 0x06);
-	printk(BIOS_DEBUG, " done.\n");
-
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
@@ -112,6 +93,7 @@ void ironlake_early_initialization(int chipset_type)
 	}
 
 	/* Setup all BARs required for early PCIe and raminit */
+	ibexpeak_setup_bars();
 	ironlake_setup_bars();
 
 	s3_resume = (inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&

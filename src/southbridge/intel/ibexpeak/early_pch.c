@@ -25,6 +25,27 @@ static void pch_default_disable(void)
 	RCBA32(FD2) = 1;
 }
 
+void ibexpeak_setup_bars(void)
+{
+	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
+	/* Enable ACPI BAR */
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */, 0x80);
+
+	printk(BIOS_DEBUG, " done.\n");
+
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	/* No reset */
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);
+	/* halt timer */
+	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);
+	/* halt timer */
+	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2, DEFAULT_PMBASE | 0x60 | 0x06);
+	printk(BIOS_DEBUG, " done.\n");
+}
+
 void early_pch_init(void)
 {
 	early_gpio_init();

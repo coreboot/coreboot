@@ -38,6 +38,7 @@
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void enable_usb_bar(void);
 
+void ibexpeak_setup_bars(void);
 void early_pch_init(void);
 
 void early_thermal_init(void);

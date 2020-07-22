@@ -65,6 +65,11 @@
  */
 #define QPI_LINK_0		PCI_DEV(QUICKPATH_BUS, 2, 0)
 
+#define QPI_QPILCP		0x40 /* QPI Link Capability */
+#define QPI_QPILCL		0x48 /* QPI Link Control */
+#define QPI_QPILS		0x50 /* QPI Link Status */
+#define QPI_DEF_RMT_VN_CREDITS	0x58 /* Default Available Remote Credits */
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

@@ -218,7 +218,7 @@ static void display_fsp_version_info_hob(const void *hob, size_t size)
 
 	fvi = (void *)&fvih[1];
 	str_ptr = (char *)((uintptr_t)fvi +
-			 (fvih->Count * sizeof (FIRMWARE_VERSION_INFO)));
+			 (fvih->Count * sizeof(FIRMWARE_VERSION_INFO)));
 	size -= sizeof(SMBIOS_STRUCTURE);
 
 	for (index = 0; index < fvih->Count; index++) {

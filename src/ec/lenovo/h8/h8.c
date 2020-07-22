@@ -172,14 +172,14 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	for (i = 0; i < 8; i++) {
 		c = ec_read(0xf0 + i);
 		if (c < 0x20 || c > 0x7f) {
-			i = snprintf(str, sizeof (str), "*INVALID");
+			i = snprintf(str, sizeof(str), "*INVALID");
 			break;
 		}
 		str[i] = c;
 	}
 
 	/* EC firmware function specification version */
-	i += snprintf(str + i, sizeof (str) - i, "-%u.%u", ec_read(0xef), ec_read(0xeb));
+	i += snprintf(str + i, sizeof(str) - i, "-%u.%u", ec_read(0xef), ec_read(0xeb));
 
 	i = MIN(buf_len, i);
 	memcpy(buf, str, i);

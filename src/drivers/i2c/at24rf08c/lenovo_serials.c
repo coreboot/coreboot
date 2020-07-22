@@ -45,7 +45,7 @@ static void at24rf08c_read_string_dev(struct device *dev, u8 start,
 		int t = at24rf08c_read_byte(dev, start + i);
 
 		if (t < 0x20 || t > 0x7f) {
-			memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+			memcpy(result, ERROR_STRING, sizeof(ERROR_STRING));
 			return;
 		}
 		result[i] = t;
@@ -60,7 +60,7 @@ static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 	dev = at24rf08c_find_bank(bank);
 	if (dev == NULL) {
 		printk(BIOS_WARNING, "EEPROM not found\n");
-		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		memcpy(result, ERROR_STRING, sizeof(ERROR_STRING));
 		return;
 	}
 
@@ -75,7 +75,7 @@ const char *smbios_mainboard_serial_number(void)
 	if (already_read)
 		return result;
 
-	memset(result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 	at24rf08c_read_string(0, 0x2e, 7, result);
 
 	already_read = 1;
@@ -90,7 +90,7 @@ const char *lenovo_mainboard_partnumber(void)
 	if (already_read)
 		return result;
 
-	memset(result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 	at24rf08c_read_string(0, 0x27, 7, result);
 
 	already_read = 1;
@@ -119,7 +119,7 @@ void smbios_system_set_uuid(u8 *uuid)
 		return;
 	}
 
-	memset(result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 
 	dev = dev_find_slot_on_smbus(1, 0x56);
 	if (dev == NULL) {
@@ -141,7 +141,7 @@ void smbios_system_set_uuid(u8 *uuid)
 				break;
 		}
 		if (t < 0) {
-			memset(result, 0, sizeof (result));
+			memset(result, 0, sizeof(result));
 			break;
 		}
 		result[remap[i]] = t;
@@ -162,17 +162,17 @@ const char *smbios_mainboard_version(void)
 	if (already_read)
 		return result;
 
-	memset(result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 
 	dev = at24rf08c_find_bank(2);
 	if (dev == NULL) {
-		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		memcpy(result, ERROR_STRING, sizeof(ERROR_STRING));
 		return result;
 	}
 
 	len = at24rf08c_read_byte(dev, 0x26) - 2;
 	if (len < 0 || len > sizeof(result) - 1) {
-		memcpy(result, ERROR_STRING, sizeof (ERROR_STRING));
+		memcpy(result, ERROR_STRING, sizeof(ERROR_STRING));
 		return result;
 	}
 

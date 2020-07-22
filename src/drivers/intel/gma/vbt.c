@@ -15,31 +15,31 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *const conf,
 {
 	u8 *ptr;
 
-	memset(head, 0, sizeof (*head));
+	memset(head, 0, sizeof(*head));
 
-	memset(head->signature, ' ', sizeof (head->signature));
+	memset(head->signature, ' ', sizeof(head->signature));
 	memcpy(head->signature, idstr,
-		MIN(strlen(idstr), sizeof (head->signature)));
+		MIN(strlen(idstr), sizeof(head->signature)));
 	head->version = 100;
-	head->header_size = sizeof (*head);
-	head->bdb_offset = sizeof (*head);
+	head->header_size = sizeof(*head);
+	head->bdb_offset = sizeof(*head);
 
 	struct bdb_header *const bdb_head = (struct bdb_header *)(head + 1);
-	memset(bdb_head, 0, sizeof (*bdb_head));
+	memset(bdb_head, 0, sizeof(*bdb_head));
 	memcpy(bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
 	bdb_head->version = 0xa8;
-	bdb_head->header_size = sizeof (*bdb_head);
+	bdb_head->header_size = sizeof(*bdb_head);
 
 	ptr = (u8 *)(bdb_head + 1);
 
 	ptr[0] = BDB_GENERAL_FEATURES;
-	ptr[1] = sizeof (struct bdb_general_features);
-	ptr[2] = sizeof (struct bdb_general_features) >> 8;
+	ptr[1] = sizeof(struct bdb_general_features);
+	ptr[2] = sizeof(struct bdb_general_features) >> 8;
 	ptr += 3;
 
 	struct bdb_general_features *const genfeat =
 		(struct bdb_general_features *)ptr;
-	memset(genfeat, 0, sizeof (*genfeat));
+	memset(genfeat, 0, sizeof(*genfeat));
 	genfeat->panel_fitting = 3;
 	genfeat->flexaim = 1;
 	genfeat->download_ext_vbt = 1;
@@ -50,7 +50,7 @@ static size_t generate_vbt(const struct i915_gpu_controller_info *const conf,
 	genfeat->int_crt_support = 1;
 	genfeat->dp_ssc_enb = 1;
 
-	ptr += sizeof (*genfeat);
+	ptr += sizeof(*genfeat);
 
 	bdb_head->bdb_size = ptr - (u8 *)bdb_head;
 	head->vbt_size = ptr - (u8 *)head;

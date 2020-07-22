@@ -436,7 +436,7 @@ static int usbdebug_init_(uintptr_t ehci_bar, unsigned int offset, struct ehci_d
 	int playtimes = 3;
 
 	/* Keep all endpoints disabled before any printk() call. */
-	memset(info, 0, sizeof (*info));
+	memset(info, 0, sizeof(*info));
 	info->ehci_base = ehci_bar;
 	info->ehci_debug = ehci_bar + offset;
 	info->ep_pipe[0].status	|= DBGP_EP_NOT_PRESENT;

@@ -8,6 +8,7 @@
 #include <device/pci_ops.h>
 #include <lib.h>
 #include <timer.h>
+#include <types.h>
 
 #define GRANULARITY_TEST_4k		0x0000f000		/* bits 15-12 */
 #define WORD_TO_DWORD_UPPER(x)		((x << 16) & 0xffff0000)

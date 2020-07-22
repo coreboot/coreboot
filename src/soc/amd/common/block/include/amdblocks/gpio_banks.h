@@ -3,9 +3,7 @@
 #ifndef __AMDBLOCK_GPIO_BANKS_H__
 #define __AMDBLOCK_GPIO_BANKS_H__
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
+#include <types.h>
 
 struct soc_amd_gpio {
 	uint8_t gpio;

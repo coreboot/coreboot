@@ -3,6 +3,7 @@
 #ifndef __PICASSO_I2C_H__
 #define __PICASSO_I2C_H__
 
+#include <types.h>
 #include <soc/gpio.h>
 
 struct soc_amd_i2c_save {

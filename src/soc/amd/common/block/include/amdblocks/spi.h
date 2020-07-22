@@ -3,7 +3,7 @@
 #ifndef __AMDBLOCKS_SPI_H__
 #define __AMDBLOCKS_SPI_H__
 
-#include <stdint.h>
+#include <types.h>
 
 #define SPI_CNTRL0			0x00
 #define   SPI_BUSY			BIT(31)

@@ -8,6 +8,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdlib.h>
+#include <types.h>
 #include <crc_byte.h>
 
 #if CONFIG(GENERIC_GPIO_LIB)

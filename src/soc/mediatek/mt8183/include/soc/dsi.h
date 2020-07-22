@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8183_DSI_H
 
 #include <soc/dsi_common.h>
+#include <types.h>
 
 /* DSI features */
 #define MTK_DSI_MIPI_RATIO_NUMERATOR 100

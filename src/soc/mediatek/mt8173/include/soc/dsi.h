@@ -4,6 +4,7 @@
 #define _DSI_REG_H_
 
 #include <soc/dsi_common.h>
+#include <types.h>
 
 /* DSI features */
 #define MTK_DSI_MIPI_RATIO_NUMERATOR 102

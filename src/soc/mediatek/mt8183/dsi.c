@@ -5,6 +5,7 @@
 #include <delay.h>
 #include <soc/dsi.h>
 #include <soc/pll.h>
+#include <types.h>
 
 void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes)
 {

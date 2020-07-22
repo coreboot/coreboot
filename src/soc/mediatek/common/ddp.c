@@ -4,6 +4,7 @@
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/ddp.h>
+#include <types.h>
 
 #define RDMA_FIFO_PSEUDO_SIZE(bytes)            (((bytes) / 16) << 16)
 #define RDMA_OUTPUT_VALID_FIFO_THRESHOLD(bytes) ((bytes) / 16)

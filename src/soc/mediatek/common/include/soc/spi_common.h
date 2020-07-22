@@ -5,6 +5,7 @@
 
 #include <soc/gpio_base.h>
 #include <spi-generic.h>
+#include <types.h>
 
 enum {
 	SPI_CFG1_CS_IDLE_SHIFT = 0,

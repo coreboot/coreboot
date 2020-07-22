@@ -4,6 +4,7 @@
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/ddp.h>
+#include <types.h>
 
 static void disp_config_main_path_connection(void)
 {

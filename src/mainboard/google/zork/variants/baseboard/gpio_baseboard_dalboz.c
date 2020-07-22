@@ -158,11 +158,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_142, HIGH),
 	/* BT_DISABLE */
 	PAD_GPO(GPIO_143, LOW),
-	/*
-	 * USI_REPORT_EN - TODO: Driver resets this later.
-	 * Do we want it high or low initially?
-	 */
-	PAD_GPO(GPIO_144, HIGH),
+	/*  USI_REPORT_EN */
+	PAD_GPO(GPIO_144, LOW),
 };
 
 const __weak

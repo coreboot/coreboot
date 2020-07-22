@@ -173,8 +173,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* UART1_TXD - FPMCU */
 	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
 	/* USI_REPORT_EN */
-	/* TODO: Driver resets this later.  Do we want it high or low initially? */
-	PAD_GPO(GPIO_144, HIGH),
+	PAD_GPO(GPIO_144, LOW),
 };
 
 const __weak

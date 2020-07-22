@@ -5,9 +5,6 @@
 
 #define EPBAR		0x40
 #define MCHBAR		0x48
-#define PCIEXBAR	0x60
-#define DMIBAR		0x68
-#define PMIOBAR		0x78
 
 #define GGC		0x52	/* GMCH Graphics Control */
 
@@ -20,6 +17,10 @@
 #ifndef BOARD_DEVEN
 #define BOARD_DEVEN (DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1)
 #endif /* BOARD_DEVEN */
+
+#define PCIEXBAR	0x60
+#define DMIBAR		0x68
+#define PMIOBAR		0x78
 
 #define PAM0		0x90
 #define PAM1		0x91

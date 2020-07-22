@@ -6,7 +6,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <arch/ioapic.h>
-#include <stdint.h>
+#include <types.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

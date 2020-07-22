@@ -734,6 +734,8 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;
 	t->serial_number = smbios_add_string(t->eos, smbios_processor_serial_number());
+	t->status = SMBIOS_PROCESSOR_STATUS_CPU_ENABLED |
+		    SMBIOS_PROCESSOR_STATUS_POPULATED;
 	t->processor_upgrade = get_socket_type();
 	len = t->length + smbios_string_table_len(t->eos);
 	if (cpu_have_cpuid() && cpuid_get_max_func() >= 0x16) {

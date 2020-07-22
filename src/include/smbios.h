@@ -405,6 +405,11 @@ struct smbios_type4 {
 	u8 eos[2];
 } __packed;
 
+/* defines for smbios_type4 */
+
+#define SMBIOS_PROCESSOR_STATUS_POPULATED		(1 << 6)
+#define SMBIOS_PROCESSOR_STATUS_CPU_ENABLED		(1 << 0)
+
 /* defines for supported_sram_type/current_sram_type */
 
 #define SMBIOS_CACHE_SRAM_TYPE_OTHER			(1 << 0)

@@ -724,12 +724,17 @@ static int smbios_write_type4(unsigned long *current, int handle)
 		if (leaf_b_threads == 0) {
 			leaf_b_threads = 1;
 		}
-		t->core_count = leaf_b_cores / leaf_b_threads;
+		t->core_count2 = leaf_b_cores / leaf_b_threads;
+		t->core_count = t->core_count2 > 0xff ? 0xff : t->core_count2;
+		t->thread_count2 = leaf_b_threads;
 	} else {
 		t->core_count = (res.ebx >> 16) & 0xff;
+		t->core_count2 = t->core_count;
+		t->thread_count2 = t->core_count2;
 	}
 	/* Assume we enable all the cores always, capped only by MAX_CPUS */
 	t->core_enabled = MIN(t->core_count, CONFIG_MAX_CPUS);
+	t->core_enabled2 = MIN(t->core_count2, CONFIG_MAX_CPUS);
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;
@@ -1313,6 +1318,7 @@ static int smbios_walk_device_tree(struct device *tree, int *handle,
 unsigned long smbios_write_tables(unsigned long current)
 {
 	struct smbios_entry *se;
+	struct smbios_entry30 *se3;
 	unsigned long tables;
 	int len = 0;
 	int max_struct_size = 0;
@@ -1323,6 +1329,10 @@ unsigned long smbios_write_tables(unsigned long current)
 
 	se = (struct smbios_entry *)current;
 	current += sizeof(struct smbios_entry);
+	current = ALIGN_UP(current, 16);
+
+	se3 = (struct smbios_entry30 *)current;
+	current += sizeof(struct smbios_entry30);
 	current = ALIGN_UP(current, 16);
 
 	tables = current;
@@ -1359,11 +1369,12 @@ unsigned long smbios_write_tables(unsigned long current)
 	update_max(len, max_struct_size, smbios_write_type127(&current,
 		handle++));
 
+	/* Install SMBIOS 2.1 entry point */
 	memset(se, 0, sizeof(struct smbios_entry));
 	memcpy(se->anchor, "_SM_", 4);
 	se->length = sizeof(struct smbios_entry);
-	se->major_version = 2;
-	se->minor_version = 8;
+	se->major_version = 3;
+	se->minor_version = 0;
 	se->max_struct_size = max_struct_size;
 	se->struct_count = handle;
 	memcpy(se->intermediate_anchor_string, "_DMI_", 5);
@@ -1375,5 +1386,18 @@ unsigned long smbios_write_tables(unsigned long current)
 						    sizeof(struct smbios_entry)
 						    - 0x10);
 	se->checksum = smbios_checksum((u8 *)se, sizeof(struct smbios_entry));
+
+	/* Install SMBIOS 3.0 entry point */
+	memset(se3, 0, sizeof(struct smbios_entry30));
+	memcpy(se3->anchor, "_SM3_", 5);
+	se3->length = sizeof(struct smbios_entry30);
+	se3->major_version = 3;
+	se3->minor_version = 0;
+
+	se3->struct_table_address = (u64)tables;
+	se3->struct_table_length = len;
+
+	se3->checksum = smbios_checksum((u8 *)se3, sizeof(struct smbios_entry30));
+
 	return current;
 }

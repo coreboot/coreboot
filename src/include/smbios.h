@@ -247,6 +247,19 @@ struct smbios_entry {
 	u8 smbios_bcd_revision;
 } __packed;
 
+struct smbios_entry30 {
+	u8 anchor[5];
+	u8 checksum;
+	u8 length;
+	u8 major_version;
+	u8 minor_version;
+	u8 smbios_doc_rev;
+	u8 entry_point_rev;
+	u8 reserved;
+	u32 struct_table_length;
+	u64 struct_table_address;
+} __packed;
+
 struct smbios_type0 {
 	u8 type;
 	u8 length;
@@ -402,6 +415,9 @@ struct smbios_type4 {
 	u8 thread_count;
 	u16 processor_characteristics;
 	u16 processor_family2;
+	u16 core_count2;
+	u16 core_enabled2;
+	u16 thread_count2;
 	u8 eos[2];
 } __packed;
 

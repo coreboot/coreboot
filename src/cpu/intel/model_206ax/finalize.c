@@ -2,7 +2,6 @@
 
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/intel/speedstep.h>
 #include "model_206ax.h"
 
 /* MSR Documentation based on

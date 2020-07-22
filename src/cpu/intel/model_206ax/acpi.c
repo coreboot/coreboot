@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
@@ -9,6 +8,8 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
+#include <stdint.h>
+
 #include "model_206ax.h"
 #include "chip.h"
 

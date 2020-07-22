@@ -1362,8 +1362,6 @@ static unsigned int get_mmio_size(void)
 		return cfg->pci_mmio_size;
 }
 
-#define BETTER_MEMORY_MAP 0
-
 static void program_total_memory_map(struct raminfo *info)
 {
 	unsigned int TOM, TOLUD, TOUUD;

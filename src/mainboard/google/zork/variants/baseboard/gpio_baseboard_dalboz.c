@@ -107,7 +107,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_89, HIGH),
 	/* RAM ID 1 */
 	PAD_GPI(GPIO_90, PULL_NONE),
-	/* EN_SPKR TODO: Verify driver enables this (add to ACPI) */
+	/* EN_SPKR */
 	PAD_GPO(GPIO_91, LOW),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),

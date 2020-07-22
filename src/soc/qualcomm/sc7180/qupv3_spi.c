@@ -8,6 +8,7 @@
 #include <soc/qcom_qup_se.h>
 #include <soc/qupv3_config.h>
 #include <soc/qupv3_spi.h>
+#include <types.h>
 
 /* SE_SPI_LOOPBACK register fields */
 #define LOOPBACK_ENABLE	0x1

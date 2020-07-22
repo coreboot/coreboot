@@ -5,6 +5,7 @@
 #include <delay.h>
 #include <soc/usb.h>
 #include <soc/clock.h>
+#include <types.h>
 
 /* USB BASE ADDRESS */
 #define USB_HOST0_DWC3_BASE		0x758C100

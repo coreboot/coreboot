@@ -1380,7 +1380,7 @@ static void program_total_memory_map(struct raminfo *info)
 	memset(memory_map, 0, sizeof(memory_map));
 
 	if (info->uma_enabled) {
-		u16 t = pci_read_config16(NORTHBRIDGE, D0F0_GGC);
+		u16 t = pci_read_config16(NORTHBRIDGE, GGC);
 		gav(t);
 		const int uma_sizes_gtt[16] =
 		    { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
@@ -1433,17 +1433,17 @@ static void program_total_memory_map(struct raminfo *info)
 		tseg_base -= quickpath_reserved;
 	tseg_base = ALIGN_DOWN(tseg_base, 8);
 
-	pci_write_config16(NORTHBRIDGE, D0F0_TOLUD, tolud << 4);
-	pci_write_config16(NORTHBRIDGE, D0F0_TOM, tom >> 6);
+	pci_write_config16(NORTHBRIDGE, TOLUD, tolud << 4);
+	pci_write_config16(NORTHBRIDGE, TOM, tom >> 6);
 	if (memory_remap) {
-		pci_write_config16(NORTHBRIDGE, D0F0_REMAPBASE, remap_base >> 6);
-		pci_write_config16(NORTHBRIDGE, D0F0_REMAPLIMIT, (touud - 64) >> 6);
+		pci_write_config16(NORTHBRIDGE, REMAPBASE, remap_base >> 6);
+		pci_write_config16(NORTHBRIDGE, REMAPLIMIT, (touud - 64) >> 6);
 	}
-	pci_write_config16(NORTHBRIDGE, D0F0_TOUUD, touud);
+	pci_write_config16(NORTHBRIDGE, TOUUD, touud);
 
 	if (info->uma_enabled) {
-		pci_write_config32(NORTHBRIDGE, D0F0_IGD_BASE, uma_base_igd << 20);
-		pci_write_config32(NORTHBRIDGE, D0F0_GTT_BASE, uma_base_gtt << 20);
+		pci_write_config32(NORTHBRIDGE, IGD_BASE, uma_base_igd << 20);
+		pci_write_config32(NORTHBRIDGE, GTT_BASE, uma_base_gtt << 20);
 	}
 	pci_write_config32(NORTHBRIDGE, TSEG, tseg_base << 20);
 
@@ -1480,7 +1480,7 @@ static void collect_system_info(struct raminfo *info)
 
 	for (i = 0; i < 3; i++)
 		gav(capid0[i] =
-		    pci_read_config32(NORTHBRIDGE, D0F0_CAPID0 | (i << 2)));
+		    pci_read_config32(NORTHBRIDGE, CAPID0 | (i << 2)));
 	gav(info->revision = pci_read_config8(NORTHBRIDGE, PCI_REVISION_ID));
 	info->max_supported_clock_speed_index = (~capid0[1] & 7);
 
@@ -1488,7 +1488,7 @@ static void collect_system_info(struct raminfo *info)
 		info->uma_enabled = 0;
 	else
 		gav(info->uma_enabled =
-		    pci_read_config8(NORTHBRIDGE, D0F0_DEVEN) & 8);
+		    pci_read_config8(NORTHBRIDGE, DEVEN) & 8);
 	/* Unrecognised: [0000:fffd3d2d] 37f81.37f82 ! CPUID: eax: 00000001; ecx: 00000e00 => 00020655.00010800.029ae3ff.bfebfbff */
 	info->silicon_revision = 0;
 
@@ -1823,7 +1823,7 @@ static void setup_heci_uma(struct raminfo *info)
 	info->memory_reserved_for_heci_mb = reg44 & 0x3f;
 	info->heci_uma_addr =
 	    ((u64)
-	     ((((u64) pci_read_config16(NORTHBRIDGE, D0F0_TOM)) << 6) -
+	     ((((u64) pci_read_config16(NORTHBRIDGE, TOM)) << 6) -
 	      info->memory_reserved_for_heci_mb)) << 20;
 
 	pci_read_config32(NORTHBRIDGE, DMIBAR);
@@ -3669,10 +3669,10 @@ void chipset_init(const int s3resume)
 
 	ggc = 0xb00 | ((gfxsize + 5) << 4);
 
-	pci_write_config16(NORTHBRIDGE, D0F0_GGC, ggc | 2);
+	pci_write_config16(NORTHBRIDGE, GGC, ggc | 2);
 
 	u16 deven;
-	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);	// = 0x3
+	deven = pci_read_config16(NORTHBRIDGE, DEVEN);	// = 0x3
 
 	if (deven & 8) {
 		MCHBAR8(0x2c30) = 0x20;
@@ -3690,7 +3690,7 @@ void chipset_init(const int s3resume)
 
 	MCHBAR32_AND_OR(0x30, 0, 0x40);
 
-	pci_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
+	pci_write_config16(NORTHBRIDGE, GGC, ggc);
 	gav(read32(DEFAULT_RCBA + 0x3428));
 	write32(DEFAULT_RCBA + 0x3428, 0x1d);
 }
@@ -3708,7 +3708,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	printk(RAM_DEBUG, "Scratchpad MCHBAR8(0x2ca8): 0x%04x\n", x2ca8);
 
-	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);
+	deven = pci_read_config16(NORTHBRIDGE, DEVEN);
 
 	memset(&info, 0x5a, sizeof(info));
 
@@ -3836,7 +3836,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 		gav(0x55);
 
-		gav(pci_read_config32(NORTHBRIDGE, D0F0_CAPID0 + 4));
+		gav(pci_read_config32(NORTHBRIDGE, CAPID0 + 4));
 	}
 
 	/* after SPD  */

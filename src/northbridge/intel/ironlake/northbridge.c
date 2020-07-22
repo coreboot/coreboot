@@ -103,7 +103,7 @@ static void mc_read_resources(struct device *dev)
 
 	tseg_base = pci_read_config32(pcidev_on_root(0, 0), TSEG);
 	touud = pci_read_config16(pcidev_on_root(0, 0),
-				  D0F0_TOUUD);
+				  TOUUD);
 
 	printk(BIOS_DEBUG, "ram_before_4g_top: 0x%x\n", tseg_base);
 	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)touud);
@@ -114,7 +114,7 @@ static void mc_read_resources(struct device *dev)
 
 	mmio_resource(dev, 5, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
 
-	reg16 = pci_read_config16(pcidev_on_root(0, 0), D0F0_GGC);
+	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	const int uma_sizes_gtt[16] =
 	    { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
 	/* Igd memory */
@@ -128,9 +128,9 @@ static void mc_read_resources(struct device *dev)
 	uma_size_gtt = uma_sizes_gtt[(reg16 >> 8) & 0xF];
 
 	igd_base =
-	    pci_read_config32(pcidev_on_root(0, 0), D0F0_IGD_BASE);
+	    pci_read_config32(pcidev_on_root(0, 0), IGD_BASE);
 	gtt_base =
-	    pci_read_config32(pcidev_on_root(0, 0), D0F0_GTT_BASE);
+	    pci_read_config32(pcidev_on_root(0, 0), GTT_BASE);
 	mmio_resource(dev, 6, gtt_base >> 10, uma_size_gtt << 10);
 	mmio_resource(dev, 7, igd_base >> 10, uma_size_igd << 10);
 
@@ -183,7 +183,7 @@ static void ironlake_init(void *const chip_info)
 	}
 	const struct device *const d0f0 = pcidev_on_root(0, 0);
 	if (d0f0)
-		pci_update_config32(d0f0, D0F0_DEVEN, deven_mask, 0);
+		pci_update_config32(d0f0, DEVEN, deven_mask, 0);
 
 }
 

@@ -32,7 +32,7 @@ static void hybrid_graphics_init(void)
 	early_hybrid_graphics(&igd, &peg);
 
 	/* Hide disabled devices */
-	reg32 = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN);
+	reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
 	reg32 &= ~(DEVEN_PEG10 | DEVEN_IGD);
 
 	if (peg)
@@ -42,9 +42,9 @@ static void hybrid_graphics_init(void)
 		reg32 |= DEVEN_IGD;
 	else
 		/* Disable IGD VGA decode, no GTT or GFX stolen */
-		pci_write_config16(PCI_DEV(0, 0, 0), D0F0_GGC, 2);
+		pci_write_config16(PCI_DEV(0, 0, 0), GGC, 2);
 
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN, reg32);
+	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
 void mainboard_pre_raminit(void)

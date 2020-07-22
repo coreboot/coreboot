@@ -102,7 +102,7 @@ void ironlake_early_initialization(int chipset_type)
 	elog_boot_notify(s3_resume);
 
 	/* Device Enable */
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN, DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
+	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
 
 	early_cpu_init();
 

@@ -14,8 +14,6 @@
 #define PCIEXBAR	0x60
 #define DMIBAR		0x68
 
-#define D0F0_PMBASE	0x78
-
 #define LAC		0x87 /* Legacy Access Control */
 
 #define D0F0_REMAPBASE	0x98

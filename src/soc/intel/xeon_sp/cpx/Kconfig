@@ -2,10 +2,6 @@
 
 if SOC_INTEL_COOPERLAKE_SP
 
-config MAINBOARD_USES_FSP2_0
-	  bool
-	  default y
-
 config FSP_HEADER_PATH
 	  string "Location of FSP headers"
 	  depends on MAINBOARD_USES_FSP2_0
@@ -25,18 +21,24 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
-# currently FSP hardcodes [0fe800000;fe930000] for its heap
 config DCACHE_RAM_BASE
 	hex
-	default 0xfe9a0000
+	default 0xfe8b0000
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x60000
+	default 0x170000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x10000
+	default 0xA0000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages. It needs to include FSP-M stack requirement and
+	  CB romstage stack requirement.
 
 config CPU_MICROCODE_CBFS_LOC
 	hex
@@ -57,7 +59,7 @@ config HEAP_SIZE
 config FSP_TEMP_RAM_SIZE
 	hex
 	depends on FSP_USES_CB_STACK
-	default 0x70000
+	default 0xA0000
 	help
 	  The amount of anticipated heap usage in CAR by FSP.
 	  Refer to Platform FSP integration guide document to know

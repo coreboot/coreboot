@@ -13,16 +13,6 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSPM_CONFIG *m_cfg = &mupd->FspmConfig;
-	FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
-
-	/*
-	 * Currently FSP for CPX does not implement user-provided StackBase/Size
-	 * properly. When KTI link needs to be trained, inter-socket communication
-	 * library needs quite a bit of memory for its heap usage. However, location
-	 * is hardcoded so this workaround is needed.
-	 */
-	arch_upd->StackBase = (void *) 0xfe930000;
-	arch_upd->StackSize = 0x70000;
 
 	/* ErrorLevel - 0 (disable) to 8 (verbose) */
 	m_cfg->DebugPrintLevel = 8;

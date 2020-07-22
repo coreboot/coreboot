@@ -9,12 +9,14 @@ config XEON_SP_COMMON_BASE
 config SOC_INTEL_SKYLAKE_SP
 	bool
 	select XEON_SP_COMMON_BASE
+	select PLATFORM_USES_FSP2_0
 	help
 	  Intel Skylake-SP support
 
 config SOC_INTEL_COOPERLAKE_SP
 	bool
 	select XEON_SP_COMMON_BASE
+	select PLATFORM_USES_FSP2_2
 	help
 	  Intel Cooperlake-SP support
 
@@ -31,7 +33,6 @@ config	CPU_SPECIFIC_OPTIONS
 	select POSTCAR_CONSOLE
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_RESET
-	select PLATFORM_USES_FSP2_0
 	select FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	select FSP_T_XIP
 	select FSP_M_XIP

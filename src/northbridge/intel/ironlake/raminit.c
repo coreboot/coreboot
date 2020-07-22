@@ -3955,8 +3955,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS);	// !!!!
 	pci_write_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS, 0x64555);
 	pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS);	// !!!!
-	pci_read_config32(PCI_DEV (0xff, 0, 0), 0xd0);	// !!!!
-	pci_write_config32(PCI_DEV (0xff, 0, 0), 0xd0, 0x180);
+	pci_read_config32(QPI_NON_CORE, 0xd0);	// !!!!
+	pci_write_config32(QPI_NON_CORE, 0xd0, 0x180);
 	gav(MCHBAR32(0x1af0));	// !!!!
 	gav(MCHBAR32(0x1af0));	// !!!!
 	MCHBAR32(0x1af0) = 0x1f020003;
@@ -4225,7 +4225,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8);
 	MCHBAR32_AND_OR(0x2c80, 0, 0x53688);	// !!!!
-	pci_write_config32(PCI_DEV (0xff, 0, 0), 0x60, 0x20220);
+	pci_write_config32(QPI_NON_CORE, 0x60, 0x20220);
 	MCHBAR16(0x2c20);	// !!!!
 	MCHBAR16(0x2c10);	// !!!!
 	MCHBAR16(0x2c00);	// !!!!

@@ -48,6 +48,11 @@
 #include "hostbridge_regs.h"
 
 /*
+ * Generic Non-Core Registers
+ */
+#define QPI_NON_CORE		PCI_DEV(QUICKPATH_BUS, 0, 0)
+
+/*
  * SAD - System Address Decoder
  */
 #define QPI_SAD			PCI_DEV(QUICKPATH_BUS, 0, 1)

@@ -13,7 +13,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar_reg;
 	int max_buses;
 
-	pciexbar_reg = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x50);
+	pciexbar_reg = pci_read_config32(QPI_SAD, 0x50);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))

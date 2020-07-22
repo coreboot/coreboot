@@ -1337,9 +1337,9 @@ static void program_board_delay(struct raminfo *info)
 	MCHBAR16_OR(0x612, 0x100);
 	MCHBAR16_OR(0x214, 0x3E00);
 	for (i = 0; i < 8; i++) {
-		pci_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0x80 + 4 * i,
+		pci_write_config32(QPI_SAD, 0x80 + 4 * i,
 			       (info->total_memory_mb - 64) | !i | 2);
-		pci_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0xc0 + 4 * i, 0);
+		pci_write_config32(QPI_SAD, 0xc0 + 4 * i, 0);
 	}
 }
 
@@ -1412,7 +1412,7 @@ static void program_total_memory_map(struct raminfo *info)
 		memory_map[2] = touud | 1;
 	quickpath_reserved = 0;
 
-	u32 t = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68);
+	u32 t = pci_read_config32(QPI_SAD, 0x68);
 
 	gav(t);
 
@@ -1452,10 +1452,10 @@ static void program_total_memory_map(struct raminfo *info)
 	memory_map[1] = 4096;
 	for (i = 0; i < ARRAY_SIZE(memory_map); i++) {
 		current_limit = MAX(current_limit, memory_map[i] & ~1);
-		pci_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0x80,
+		pci_write_config32(QPI_SAD, 4 * i + 0x80,
 			       (memory_map[i] & 1) | ALIGN_DOWN(current_limit -
 								1, 64) | 2);
-		pci_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0xc0, 0);
+		pci_write_config32(QPI_SAD, 4 * i + 0xc0, 0);
 	}
 }
 

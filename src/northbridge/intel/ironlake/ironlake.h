@@ -48,8 +48,10 @@
 #include "hostbridge_regs.h"
 
 /*
- * QPI D0:F1
+ * SAD - System Address Decoder
  */
+#define QPI_SAD			PCI_DEV(QUICKPATH_BUS, 0, 1)
+
 #define QPD0F1_PAM(x)		(0x40 + (x)) /* 0-6 */
 #define QPD0F1_SMRAM		0x4d	/* System Management RAM Control */
 

@@ -25,13 +25,13 @@ static void ironlake_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, 0);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(0), 0x30);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(1), 0x33);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(2), 0x33);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(3), 0x33);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(4), 0x33);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(5), 0x33);
-	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(6), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(0), 0x30);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(1), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(2), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(3), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(4), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(5), 0x33);
+	pci_write_config8(QPI_SAD, QPD0F1_PAM(6), 0x33);
 
 	printk(BIOS_DEBUG, " done.\n");
 }

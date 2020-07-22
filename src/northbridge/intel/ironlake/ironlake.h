@@ -57,6 +57,9 @@
 
 #define SAD_PCIEXBAR		0x50
 
+#define SAD_DRAM_RULE(x)	(0x80 + 4 * (x)) /* 0-7 */
+#define SAD_INTERLEAVE_LIST(x)	(0xc0 + 4 * (x)) /* 0-7 */
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

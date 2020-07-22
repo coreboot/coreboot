@@ -9,7 +9,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
 #include <soc/soc_chip.h>
-#include <stdint.h>
+#include <types.h>
 
 /*
  * Set PERF_CTL MSR (0x199) P_Req with

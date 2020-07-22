@@ -46,7 +46,7 @@ EXPAT_VERSION=2.2.9
 # CLANG version number
 CLANG_VERSION=9.0.0
 CMAKE_VERSION=3.16.2
-NASM_VERSION=2.14.02
+NASM_VERSION=2.15.03
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if

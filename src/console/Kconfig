@@ -302,6 +302,13 @@ config SPI_CONSOLE
 	  This is currently working only in ramstage due to how the spi
 	  drivers are written.
 
+config CONSOLE_SYSTEM76_EC
+	bool "System76 EC console output"
+	default n
+	depends on EC_SYSTEM76_EC
+	help
+	  Send coreboot debug output to a System76 embedded controller.
+
 config CONSOLE_OVERRIDE_LOGLEVEL
 	bool
 	help

@@ -18,9 +18,9 @@ patch: download
 	cd tint; \
 	if [ -e debian ]; then \
 		rm -rf debian typedefs.h Makefile; \
-    		touch Makefile; \
-    		patch -l -p1 < ../libpayload_tint.patch; \
-  	fi
+		touch Makefile; \
+		patch -l -p1 < ../libpayload_tint.patch; \
+	fi
 
 download:
 	test -d tint || { wget $(project_url); \

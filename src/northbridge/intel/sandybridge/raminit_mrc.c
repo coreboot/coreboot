@@ -120,7 +120,6 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
  */
 void sdram_initialize(struct pei_data *pei_data)
 {
-	struct sys_info sysinfo;
 	int (*entry)(struct pei_data *pei_data) __attribute__((regparm(1)));
 
 	/* Wait for ME to be ready */
@@ -128,10 +127,6 @@ void sdram_initialize(struct pei_data *pei_data)
 	intel_early_me_uma_size();
 
 	printk(BIOS_DEBUG, "Starting UEFI PEI System Agent\n");
-
-	memset(&sysinfo, 0, sizeof(sysinfo));
-
-	sysinfo.boot_path = pei_data->boot_mode;
 
 	/*
 	 * Do not pass MRC data in for recovery mode boot,

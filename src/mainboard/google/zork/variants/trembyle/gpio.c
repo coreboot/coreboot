@@ -14,6 +14,8 @@ static const struct soc_amd_gpio trembyle_bid1_bid2_gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_14, USB_OC4_L, PULL_NONE),
 	/* USB_OC2_L - USB A0 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_NONE),
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* DMIC_AD_EN */
@@ -31,6 +33,8 @@ static const struct soc_amd_gpio trembyle_bid3_gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_14, USB_OC4_L, PULL_NONE),
 	/* USB_OC2_L - USB A0 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_NONE),
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */

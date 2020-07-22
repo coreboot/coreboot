@@ -16,6 +16,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* PCIE_WAKE_L */
 	PAD_NF(GPIO_2, WAKE_L, PULL_NONE),
+	/* H1_FCH_INT_ODL */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_4, PULL_NONE, EDGE_HIGH, S3),
 	/* PEN_POWER_EN - Enabled*/
@@ -38,12 +40,17 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_13, HIGH),
 	/* BT_DISABLE */
 	PAD_GPO(GPIO_14, LOW),
+	/* GPIO_15: Not available */
 	/* USB_OC0_L - USB C0 + USB A0 */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_NONE),
 	/* USB_OC1_L - USB C1 + USB A1 */
 	PAD_NF(GPIO_17, USB_OC1_L, PULL_NONE),
 	/* WIFI_DISABLE */
 	PAD_GPO(GPIO_18, LOW),
+	/* I2C3_SCL - H1 */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA - H1 */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* EMMC_CMD */
 	PAD_NF(GPIO_21, EMMC_CMD, PULL_NONE),
 	/* EC_FCH_SCI_ODL */
@@ -52,10 +59,26 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/* EC_FCH_WAKE_L */
 	PAD_SCI(GPIO_24, PULL_NONE, EDGE_LOW),
+	/* GPIO_25: Not available */
+	/* PCIE_RST0_L - Fixed timings */
+	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
+	/* PCIE_RST1_L (unused) */
+	PAD_NC(GPIO_27),
+	/* GPIO_28: Not available */
+	/* GPIO_29: unused */
+	PAD_NC(GPIO_29),
+	/* FCH_ESPI_EC_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_NONE),
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, HIGH),
+	/* GPIO_33 - GPIO_39: Not available */
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, HIGH),
+	/* GPIO_41: Not available */
+	/* GPIO_42: Handled in bootblock for wifi power/reset control. */
+	/* GPIO_43 - GPIO_66: Not available */
 	/* DMIC SEL */
 	/*
 	 * Make sure Ext ROM Sharing is disabled before using this GPIO.  Otherwise SPI flash
@@ -68,14 +91,20 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_69, LOW),
 	/* EMMC_CLK */
 	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
+	/* GPIO_71 - GPIO_73: Not available */
 	/* EMMC_DATA4 */
 	PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
 	/* EMMC_DATA6 */
 	PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, HIGH),
+	/* GPIO_77 - GPIO_83: Not available */
+	/* RAM_ID_4 */
+	PAD_GPI(GPIO_84, PULL_NONE),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
+	/* WIFI_AUX_RESET_L */
+	PAD_GPO(GPIO_86, HIGH),
 	/* EMMC_DATA7 */
 	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
 	/* EMMC_DATA5 */
@@ -86,6 +115,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_90),
 	/* EN_SPKR TODO: Verify driver enables this (add to ACPI) */
 	PAD_GPO(GPIO_91, LOW),
+	/* CLK_REQ0_L - WIFI */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
+	/* GPIO_93 - GPIO_103: Not available */
 	/* EMMC_DATA0 */
 	PAD_NF(GPIO_104, EMMC_DATA0, PULL_NONE),
 	/* EMMC_DATA1 */
@@ -94,26 +126,50 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_106, EMMC_DATA2, PULL_NONE),
 	/* EMMC_DATA3 */
 	PAD_NF(GPIO_107, EMMC_DATA3, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_108, ESPI_ALERT_L, PULL_UP),
 	/* EMMC_DS */
 	PAD_NF(GPIO_109, EMMC_DS, PULL_NONE),
+	/* GPIO_110 - GPIO112: Not available */
 	/* I2C2_SCL - USI/Touchpad */
 	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
 	/* I2C2_SDA - USI/Touchpad */
 	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
+	/* CLK_REQ1_L - SD Card */
+	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_NONE),
+	/* RAM_ID_3 */
+	PAD_GPI(GPIO_116, PULL_NONE),
+	/* GPIO_117 - GPIO_119: Not available */
+	/* RAM_ID_1 */
+	PAD_GPI(GPIO_120, PULL_NONE),
+	/* RAM_ID_0 */
+	PAD_GPI(GPIO_121, PULL_NONE),
+	/* GPIO_122 - GPIO_128: Not available */
 	/* KBRST_L */
 	PAD_NF(GPIO_129, KBRST_L, PULL_NONE),
 	/* EC_IN_RW_OD */
 	PAD_GPI(GPIO_130, PULL_NONE),
+	/* RAM_ID_2 */
+	PAD_GPI(GPIO_131, PULL_NONE),
+	/* CLK_REQ4_L - SSD */
+	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_NONE),
+	/* GPIO_133 - GPIO_134: Not available */
 	/* DEV_BEEP_CODEC_IN (Dev beep Data out) */
 	PAD_GPI(GPIO_135, PULL_NONE),
+	/* UART0_RXD - DEBUG */
+	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 	/* BIOS_FLASH_WP_ODL */
 	PAD_GPI(GPIO_137, PULL_NONE),
+	/* UART0_TXD - DEBUG */
+	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 	/* DEV_BEEP_BCLK */
 	PAD_GPI(GPIO_139, PULL_NONE),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
 	/* UART1_RXD - FPMCU */
 	PAD_NF(GPIO_141, UART1_RXD, PULL_NONE),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_142, HIGH),
 	/* UART1_TXD - FPMCU */
 	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
 	/* USI_REPORT_EN */

@@ -14,6 +14,8 @@ static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_14, USB_OC4_L, PULL_NONE),
 	/* USB_OC2_L - USB A0 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_NONE),
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
@@ -27,6 +29,8 @@ static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_11),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* FPMCU_BOOT0 Change NC */

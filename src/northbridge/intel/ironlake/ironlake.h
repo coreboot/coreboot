@@ -70,6 +70,11 @@
 #define QPI_QPILS		0x50 /* QPI Link Status */
 #define QPI_DEF_RMT_VN_CREDITS	0x58 /* Default Available Remote Credits */
 
+/*
+ * QPI Physical Layer 0
+ */
+#define QPI_PHY_0		PCI_DEV(QUICKPATH_BUS, 2, 1)
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

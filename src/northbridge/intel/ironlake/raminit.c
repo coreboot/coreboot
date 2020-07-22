@@ -3882,8 +3882,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR32_OR(0x1890, 0x2000000);
 	MCHBAR32_OR(0x18b4, 0x8000);
 
-	gav(pci_read_config32(PCI_DEV(0xff, 2, 1), 0x50));	// !!!!
-	pci_write_config8(PCI_DEV(0xff, 2, 1), 0x54, 0x12);
+	gav(pci_read_config32(QPI_PHY_0, 0x50));	// !!!!
+	pci_write_config8(QPI_PHY_0, 0x54, 0x12);
 
 	gav(MCHBAR16(0x2c10));
 	MCHBAR16(0x2c10) = 0x412;
@@ -3893,8 +3893,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	gav(MCHBAR8(0x2ca8));	// !!!!
 	MCHBAR32_AND_OR(0x1804, 0xfffffffc, 0x8400080);
 
-	pci_read_config32(PCI_DEV(0xff, 2, 1), 0x6c);	// !!!!
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0x6c, 0x40a0a0);
+	pci_read_config32(QPI_PHY_0, 0x6c);	// !!!!
+	pci_write_config32(QPI_PHY_0, 0x6c, 0x40a0a0);
 	gav(MCHBAR32(0x1c04));	// !!!!
 	gav(MCHBAR32(0x1804));	// !!!!
 
@@ -3904,16 +3904,16 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR32(0x18d8) = 0x120000;
 	MCHBAR32(0x18dc) = 0x30a484a;
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x0);
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x9444a);
+	pci_write_config32(QPI_PHY_0, 0xe0, 0x0);
+	pci_write_config32(QPI_PHY_0, 0xf4, 0x9444a);
 	MCHBAR32(0x18d8) = 0x40000;
 	MCHBAR32(0x18dc) = 0xb000000;
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x60000);
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x0);
+	pci_write_config32(QPI_PHY_0, 0xe0, 0x60000);
+	pci_write_config32(QPI_PHY_0, 0xf4, 0x0);
 	MCHBAR32(0x18d8) = 0x180000;
 	MCHBAR32(0x18dc) = 0xc0000142;
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x20000);
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x142);
+	pci_write_config32(QPI_PHY_0, 0xe0, 0x20000);
+	pci_write_config32(QPI_PHY_0, 0xf4, 0x142);
 	MCHBAR32(0x18d8) = 0x1e0000;
 
 	gav(MCHBAR32(0x18dc));	// !!!!
@@ -3925,7 +3925,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	MCHBAR32(0x188c) = 0x20bc09;
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xd0, 0x40b0c09);
+	pci_write_config32(QPI_PHY_0, 0xd0, 0x40b0c09);
 	MCHBAR32(0x1a10) = 0x4200010e;
 	MCHBAR32_OR(0x18b8, 0x200);
 	gav(MCHBAR32(0x1918));	// !!!!
@@ -3935,8 +3935,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR32(0x18b8) = 0xe00;
 	gav(MCHBAR32(0x182c));	// !!!!
 	MCHBAR32(0x182c) = 0x10202;
-	gav(pci_read_config32(PCI_DEV(0xff, 2, 1), 0x94));	// !!!!
-	pci_write_config32(PCI_DEV(0xff, 2, 1), 0x94, 0x10202);
+	gav(pci_read_config32(QPI_PHY_0, 0x94));	// !!!!
+	pci_write_config32(QPI_PHY_0, 0x94, 0x10202);
 	MCHBAR32_AND(0x1a1c, 0x8fffffff);
 	MCHBAR32_OR(0x1a70, 0x100000);
 

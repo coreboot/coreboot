@@ -61,8 +61,8 @@ chip soc/amd/picasso
 			device i2c 2c on end
 		end
 		chip drivers/i2c/hid
-			register "generic.hid" = ""GTCH7375L""
-			register "generic.desc" = ""G2TOUCH Touchscreen""
+			register "generic.hid" = ""GDIX0000""
+			register "generic.desc" = ""Goodix Touchscreen""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_12)"
 			register "generic.probed" = "1"
 			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"

@@ -1364,9 +1364,9 @@ static unsigned int get_mmio_size(void)
 
 static void program_total_memory_map(struct raminfo *info)
 {
-	unsigned int TOM, TOLUD, TOUUD;
+	unsigned int tom, tolud, touud;
 	unsigned int quickpath_reserved;
-	unsigned int REMAPbase;
+	unsigned int remap_base;
 	unsigned int uma_base_igd;
 	unsigned int uma_base_gtt;
 	unsigned int mmio_size;
@@ -1396,20 +1396,20 @@ static void program_total_memory_map(struct raminfo *info)
 
 	mmio_size = get_mmio_size();
 
-	TOM = info->total_memory_mb;
-	if (TOM == 4096)
-		TOM = 4032;
-	TOUUD = ALIGN_DOWN(TOM - info->memory_reserved_for_heci_mb, 64);
-	TOLUD = ALIGN_DOWN(MIN(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
-			      , TOUUD), 64);
+	tom = info->total_memory_mb;
+	if (tom == 4096)
+		tom = 4032;
+	touud = ALIGN_DOWN(tom - info->memory_reserved_for_heci_mb, 64);
+	tolud = ALIGN_DOWN(MIN(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
+			      , touud), 64);
 	memory_remap = 0;
-	if (TOUUD - TOLUD > 64) {
+	if (touud - tolud > 64) {
 		memory_remap = 1;
-		REMAPbase = MAX(4096, TOUUD);
-		TOUUD = TOUUD - TOLUD + 4096;
+		remap_base = MAX(4096, touud);
+		touud = touud - tolud + 4096;
 	}
-	if (TOUUD > 4096)
-		memory_map[2] = TOUUD | 1;
+	if (touud > 4096)
+		memory_map[2] = touud | 1;
 	quickpath_reserved = 0;
 
 	u32 t = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68);
@@ -1424,22 +1424,22 @@ static void program_total_memory_map(struct raminfo *info)
 	}
 
 	if (memory_remap)
-		TOUUD -= quickpath_reserved;
+		touud -= quickpath_reserved;
 
-	uma_base_igd = TOLUD - uma_size_igd;
+	uma_base_igd = tolud - uma_size_igd;
 	uma_base_gtt = uma_base_igd - uma_size_gtt;
 	tseg_base = ALIGN_DOWN(uma_base_gtt, 64) - (CONFIG_SMM_TSEG_SIZE >> 20);
 	if (!memory_remap)
 		tseg_base -= quickpath_reserved;
 	tseg_base = ALIGN_DOWN(tseg_base, 8);
 
-	pci_write_config16(NORTHBRIDGE, D0F0_TOLUD, TOLUD << 4);
-	pci_write_config16(NORTHBRIDGE, D0F0_TOM, TOM >> 6);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOLUD, tolud << 4);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOM, tom >> 6);
 	if (memory_remap) {
-		pci_write_config16(NORTHBRIDGE, D0F0_REMAPBASE, REMAPbase >> 6);
-		pci_write_config16(NORTHBRIDGE, D0F0_REMAPLIMIT, (TOUUD - 64) >> 6);
+		pci_write_config16(NORTHBRIDGE, D0F0_REMAPBASE, remap_base >> 6);
+		pci_write_config16(NORTHBRIDGE, D0F0_REMAPLIMIT, (touud - 64) >> 6);
 	}
-	pci_write_config16(NORTHBRIDGE, D0F0_TOUUD, TOUUD);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOUUD, touud);
 
 	if (info->uma_enabled) {
 		pci_write_config32(NORTHBRIDGE, D0F0_IGD_BASE, uma_base_igd << 20);

@@ -94,7 +94,7 @@ static struct device_operations pci_domain_ops = {
 static void mc_read_resources(struct device *dev)
 {
 	uint32_t tseg_base;
-	uint64_t TOUUD;
+	uint64_t touud;
 	uint16_t reg16;
 
 	pci_dev_read_resources(dev);
@@ -102,11 +102,11 @@ static void mc_read_resources(struct device *dev)
 	mmconf_resource(dev, 0x50);
 
 	tseg_base = pci_read_config32(pcidev_on_root(0, 0), TSEG);
-	TOUUD = pci_read_config16(pcidev_on_root(0, 0),
+	touud = pci_read_config16(pcidev_on_root(0, 0),
 				  D0F0_TOUUD);
 
 	printk(BIOS_DEBUG, "ram_before_4g_top: 0x%x\n", tseg_base);
-	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)TOUUD);
+	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)touud);
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, 640);
@@ -134,11 +134,11 @@ static void mc_read_resources(struct device *dev)
 	mmio_resource(dev, 6, gtt_base >> 10, uma_size_gtt << 10);
 	mmio_resource(dev, 7, igd_base >> 10, uma_size_igd << 10);
 
-	if (TOUUD > 4096)
-		ram_resource(dev, 8, (4096 << 10), ((TOUUD - 4096) << 10));
+	if (touud > 4096)
+		ram_resource(dev, 8, (4096 << 10), ((touud - 4096) << 10));
 
 	/* This memory is not DMA-capable. */
-	if (TOUUD >= 8192 - 64)
+	if (touud >= 8192 - 64)
 	    bad_ram_resource(dev, 9, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
 
 	add_fixed_resources(dev, 10);

@@ -55,6 +55,8 @@
 #define QPD0F1_PAM(x)		(0x40 + (x)) /* 0-6 */
 #define QPD0F1_SMRAM		0x4d	/* System Management RAM Control */
 
+#define SAD_PCIEXBAR		0x50
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

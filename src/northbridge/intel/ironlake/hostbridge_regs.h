@@ -11,7 +11,6 @@
 #define  DEVEN_PEG10	(1 << 1)
 #define  DEVEN_HOST	(1 << 0)
 
-#define PCIEXBAR	0x60
 #define DMIBAR		0x68
 
 #define LAC		0x87 /* Legacy Access Control */

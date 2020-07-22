@@ -52,6 +52,10 @@
  */
 #define QPI_NON_CORE		PCI_DEV(QUICKPATH_BUS, 0, 0)
 
+#define MAX_RTIDS		0x60
+#define DESIRED_CORES		0x80
+#define MIRROR_PORT_CTL		0xd0
+
 /*
  * SAD - System Address Decoder
  */

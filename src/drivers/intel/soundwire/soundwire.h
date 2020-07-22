@@ -4,7 +4,7 @@
 #define __DRIVERS_INTEL_SOUNDWIRE_H__
 
 #include <device/soundwire.h>
-#include <stdint.h>
+#include <types.h>
 
 /**
  * enum intel_soundwire_quirk - Quirks for controller master links.

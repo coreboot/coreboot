@@ -60,6 +60,11 @@
 #define SAD_DRAM_RULE(x)	(0x80 + 4 * (x)) /* 0-7 */
 #define SAD_INTERLEAVE_LIST(x)	(0xc0 + 4 * (x)) /* 0-7 */
 
+/*
+ * QPI Link 0
+ */
+#define QPI_LINK_0		PCI_DEV(QUICKPATH_BUS, 2, 0)
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

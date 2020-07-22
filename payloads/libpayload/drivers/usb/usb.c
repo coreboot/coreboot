@@ -275,7 +275,7 @@ usb_decode_mps0(usb_speed speed, u8 bMaxPacketSize0)
 			bMaxPacketSize0 = 9;
 		}
 		return 1 << bMaxPacketSize0;
-	default: 	/* GCC is stupid and cannot deal with enums correctly */
+	default:	/* GCC is stupid and cannot deal with enums correctly */
 		return 8;
 	}
 }

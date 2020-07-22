@@ -75,6 +75,16 @@
  */
 #define QPI_PHY_0		PCI_DEV(QUICKPATH_BUS, 2, 1)
 
+#define QPI_PLL_STATUS		0x50
+#define QPI_PLL_RATIO		0x54
+#define QPI_PHY_CAPABILITY	0x68 /* QPI Phys. Layer Capability */
+#define QPI_PHY_CONTROL		0x6c /* QPI Phys. Layer Control */
+#define QPI_PHY_INIT_STATUS	0x80 /* QPI Phys. Layer Initialization Status */
+#define QPI_PHY_PRIM_TIMEOUT	0x94 /* QPI Phys. Layer Primary Timeout Value */
+#define QPI_PHY_PWR_MGMT	0xd0 /* QPI Phys. Layer Power Management */
+#define QPI_PHY_EP_SELECT	0xe0 /* QPI Phys. Layer Electrical Parameter Select */
+#define QPI_PHY_EP_MCTR		0xf4 /* QPI Phys. Layer Electrical Parameter Misc. Control */
+
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

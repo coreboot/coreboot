@@ -1,4 +1,4 @@
-config DRIVERS_GENERIC_WIFI
+config DRIVERS_WIFI_GENERIC
 	bool
 	default n
 	depends on HAVE_ACPI_TABLES
@@ -6,7 +6,7 @@ config DRIVERS_GENERIC_WIFI
 	  When enabled, add identifiers in ACPI tables that are common
 	  to WiFi chipsets from multiple vendors.
 
-if DRIVERS_GENERIC_WIFI
+if DRIVERS_WIFI_GENERIC
 
 config USE_SAR
 	bool
@@ -54,4 +54,4 @@ config DSAR_SET_NUM
 	help
 	  There can be up to 3 optional SAR table sets.
 
-endif # DRIVERS_GENERIC_WIFI
+endif # DRIVERS_WIFI_GENERIC

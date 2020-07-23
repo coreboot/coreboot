@@ -8,7 +8,7 @@
 #include <sar.h>
 #include <string.h>
 #include <wrdd.h>
-#include "generic_wifi.h"
+#include "chip.h"
 
 /* WRDS Spec Revision */
 #define WRDS_REVISION 0x0
@@ -159,8 +159,8 @@ static void emit_sar_acpi_structures(void)
 	acpigen_pop_len();
 }
 
-void generic_wifi_fill_ssdt(const struct device *dev,
-			    const struct generic_wifi_config *config)
+void wifi_generic_fill_ssdt(const struct device *dev,
+			    const struct drivers_wifi_generic_config *config)
 {
 	const char *path;
 	u32 address;
@@ -222,7 +222,7 @@ void generic_wifi_fill_ssdt(const struct device *dev,
 	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
 }
 
-const char *generic_wifi_acpi_name(const struct device *dev)
+const char *wifi_generic_acpi_name(const struct device *dev)
 {
 	static char wifi_acpi_name[WIFI_ACPI_NAME_MAX_LEN];
 
@@ -231,3 +231,30 @@ const char *generic_wifi_acpi_name(const struct device *dev)
 		 (dev_path_encode(dev) & 0xff));
 	return wifi_acpi_name;
 }
+
+static void wifi_generic_fill_ssdt_generator(const struct device *dev)
+{
+	wifi_generic_fill_ssdt(dev, dev->chip_info);
+}
+
+static struct device_operations wifi_generic_ops = {
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
+	.acpi_name		= wifi_generic_acpi_name,
+	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,
+};
+
+static void wifi_generic_enable(struct device *dev)
+{
+	struct drivers_wifi_generic_config *config = dev ? dev->chip_info : NULL;
+
+	if (!config)
+		return;
+
+	dev->ops = &wifi_generic_ops;
+}
+
+struct chip_operations drivers_wifi_generic_ops = {
+	CHIP_NAME("WIFI Device")
+	.enable_dev = wifi_generic_enable
+};

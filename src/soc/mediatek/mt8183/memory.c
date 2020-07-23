@@ -97,7 +97,8 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam,
 	return 0;
 }
 
-static int dram_run_full_calibration(struct dramc_param *dparam, u16 config)
+static int dram_run_full_calibration(struct dramc_param *dparam,
+				     u32 ddr_geometry, u16 config)
 {
 	initialize_dramc_param(dparam, config);
 
@@ -111,6 +112,8 @@ static int dram_run_full_calibration(struct dramc_param *dparam, u16 config)
 		return -2;
 
 	dparam->do_putc = do_putchar;
+	dparam->freq_params[0].ddr_geometry = ddr_geometry;
+	printk(BIOS_INFO, "ddr_geometry: %d, config: %#x\n", ddr_geometry, config);
 	prog_set_entry(&dram, prog_entry(&dram), dparam);
 	prog_run(&dram);
 
@@ -184,9 +187,11 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops)
 		       "Failed to read calibration data from flash\n");
 	}
 
+	const struct sdram_params *sdram_cfg = get_sdram_config();
+
 	/* Run full calibration */
 	printk(BIOS_INFO, "DRAM-K: Full Calibration\n");
-	int err = dram_run_full_calibration(dparam, config);
+	int err = dram_run_full_calibration(dparam, sdram_cfg->ddr_geometry, config);
 	if (err == 0) {
 		printk(BIOS_INFO, "Successfully loaded DRAM blobs and "
 		       "ran DRAM calibration\n");
@@ -211,7 +216,7 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops)
 
 	/* Init params from sdram configs and run partial calibration */
 	printk(BIOS_INFO, "DRAM-K: Partial Calibration\n");
-	init_sdram_params(dparam->freq_params, get_sdram_config());
+	init_sdram_params(dparam->freq_params, sdram_cfg);
 	if (mt_set_emi(dparam) != 0)
 		die("Set emi failed with params from sdram config\n");
 	if (mt_mem_test() != 0)

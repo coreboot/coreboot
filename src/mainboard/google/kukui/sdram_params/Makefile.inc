@@ -14,6 +14,7 @@ else
   sdram-params += sdram-lpddr4x-KMDV6001DA-B620-4GB
   sdram-params += sdram-lpddr4x-SDADA4CR-128G-4GB
   sdram-params += sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB
+  sdram-params += sdram-lpddr4x-MT53E2G32D4NQ-046-8GB
 endif
 
 $(foreach params,$(sdram-params), \

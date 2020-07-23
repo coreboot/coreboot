@@ -20,6 +20,7 @@ static const char *const sdram_configs[] = {
 	[6] = "sdram-lpddr4x-KMDV6001DA-B620-4GB",
 	[7] = "sdram-lpddr4x-SDADA4CR-128G-4GB",
 	[8] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
+	[9] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
 	[10] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
 #endif
 };

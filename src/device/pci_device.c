@@ -1297,6 +1297,10 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		/* Unlink it from list. */
 		*prev = dev->sibling;
 
+		/* If disabled in devicetree, do not print any messages. */
+		if (!dev->enabled)
+			continue;
+
 		if (!once++)
 			printk(BIOS_WARNING, "PCI: Leftover static devices:\n");
 		printk(BIOS_WARNING, "%s\n", dev_path(dev));

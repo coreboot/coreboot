@@ -104,7 +104,7 @@ solution. Wires need to be connected to be able to flash using an external progr
 - SMBus
 - Initialization with FSP
 - SeaBIOS payload (commit a5cab58e9a3fb6e168aba919c5669bea406573b4)
-- TianoCore payload (commit a5cab58e9a3fb6e168aba919c5669bea406573b4)
+- TianoCore payload (commit 860a8d95c2ee89c9916d6e11230f246afa1cd629)
 - LinuxBoot (kernel kernel-4_19_97) (uroot commit 9c9db9dbd6b532f5f91a511a0de885c6562aadd7)
 - eMMC
 

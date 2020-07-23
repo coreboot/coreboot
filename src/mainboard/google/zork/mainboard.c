@@ -135,6 +135,7 @@ static void mainboard_configure_gpios(void)
 static void mainboard_devtree_update(void)
 {
 	variant_audio_update();
+	variant_bluetooth_update();
 	variant_devtree_update();
 }
 

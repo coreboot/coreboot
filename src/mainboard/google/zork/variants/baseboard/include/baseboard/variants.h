@@ -35,6 +35,8 @@ const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
 void variant_devtree_update(void);
 /* Update audio configuration in devicetree during ramstage. */
 void variant_audio_update(void);
+/* Update bluetooth configuration in devicetree during ramstage. */
+void variant_bluetooth_update(void);
 /* Configure PCIe GPIOs as per variant sequencing requirements. */
 void variant_pcie_gpio_configure(void);
 

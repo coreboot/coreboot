@@ -263,6 +263,7 @@ chip soc/amd/picasso
 						chip drivers/usb/acpi
 							register "desc" = ""Bluetooth""
 							register "type" = "UPC_TYPE_INTERNAL"
+							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_14)"
 							device usb 2.5 on end
 						end
 					end
@@ -282,6 +283,7 @@ chip soc/amd/picasso
 						chip drivers/usb/acpi
 							register "desc" = ""Bluetooth""
 							register "type" = "UPC_TYPE_INTERNAL"
+							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_14)"
 							device usb 2.1 on end
 						end
 						chip drivers/usb/acpi

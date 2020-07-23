@@ -267,29 +267,24 @@ static void sb_init_spi_base(void)
 
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
-	uintptr_t base = spi_get_bar();
-	write16((void *)(base + SPI100_SPEED_CONFIG),
+	spi_write16(SPI100_SPEED_CONFIG,
 				(norm << SPI_NORM_SPEED_NEW_SH) |
 				(fast << SPI_FAST_SPEED_NEW_SH) |
 				(alt << SPI_ALT_SPEED_NEW_SH) |
 				(tpm << SPI_TPM_SPEED_NEW_SH));
-	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100);
+	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
 }
 
 void sb_disable_4dw_burst(void)
 {
-	uintptr_t base = spi_get_bar();
-	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
-			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
-					& ~SPI_RD4DW_EN_HOST);
+	spi_write16(SPI100_HOST_PREF_CONFIG,
+			spi_read16(SPI100_HOST_PREF_CONFIG) & ~SPI_RD4DW_EN_HOST);
 }
 
 void sb_read_mode(u32 mode)
 {
-	uintptr_t base = spi_get_bar();
-	write32((void *)(base + SPI_CNTRL0),
-			(read32((void *)(base + SPI_CNTRL0))
-					& ~SPI_READ_MODE_MASK) | mode);
+	spi_write32(SPI_CNTRL0,
+			(spi_read32(SPI_CNTRL0) & ~SPI_READ_MODE_MASK) | mode);
 }
 
 static void setup_spread_spectrum(int *reboot)

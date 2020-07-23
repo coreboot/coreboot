@@ -36,12 +36,6 @@ static const struct mb_cfg baseboard_memcfg_cfg = {
 	.dqs_map[DDR_CH0] = {1, 3, 0, 2, 7, 5, 4, 6},
 	.dqs_map[DDR_CH1] = {3, 1, 2, 0, 4, 5, 7, 6},
 
-	/* WaddleDoo uses 100, 100 and 100 rcomp resistors */
-	.rcomp_resistor = {100, 100, 100},
-
-	/* WaddleDoo Rcomp target values */
-	.rcomp_targets = {80, 40, 40, 40, 30},
-
 	/* Disable Early Command Training */
 	.ect = 1,
 

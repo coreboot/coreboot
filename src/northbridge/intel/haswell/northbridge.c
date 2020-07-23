@@ -418,9 +418,51 @@ static void disable_devices(void)
 	pci_write_config32(host_dev, DEVEN, deven);
 }
 
+static void northbridge_dmi_init(void)
+{
+	const bool is_haswell_h = !CONFIG(INTEL_LYNXPOINT_LP);
+
+	u16 reg16;
+	u32 reg32;
+
+	/* Steps prior to DMI ASPM */
+	if (is_haswell_h) {
+		/* Configure DMI De-Emphasis */
+		reg16 = DMIBAR16(DMILCTL2);
+		reg16 |= (1 << 6);	/* 0b: -6.0 dB, 1b: -3.5 dB */
+		DMIBAR16(DMILCTL2) = reg16;
+
+		reg32 = DMIBAR32(DMIL0SLAT);
+		reg32 |= (1 << 31);
+		DMIBAR32(DMIL0SLAT) = reg32;
+
+		reg32 = DMIBAR32(DMILLTC);
+		reg32 |= (1 << 29);
+		DMIBAR32(DMILLTC) = reg32;
+
+		reg32 = DMIBAR32(DMI_AFE_PM_TMR);
+		reg32 &= ~0x1f;
+		reg32 |= 0x13;
+		DMIBAR32(DMI_AFE_PM_TMR) = reg32;
+	}
+
+	/* Clear error status bits */
+	DMIBAR32(DMIUESTS) = 0xffffffff;
+	DMIBAR32(DMICESTS) = 0xffffffff;
+
+	if (is_haswell_h) {
+		/* Enable ASPM L0s and L1 on SA link, should happen before PCH link */
+		reg16 = DMIBAR16(DMILCTL);
+		reg16 |= (1 << 1) | (1 << 0);
+		DMIBAR16(DMILCTL) = reg16;
+	}
+}
+
 static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl, pair;
+
+	northbridge_dmi_init();
 
 	/* Enable Power Aware Interrupt Routing. */
 	pair = MCHBAR8(INTRDIRCTL);

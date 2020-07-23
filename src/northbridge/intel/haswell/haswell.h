@@ -127,10 +127,20 @@
 #define DMILCTL		0x088	/* 16bit */
 #define DMILSTS		0x08a	/* 16bit */
 
+#define DMILCTL2	0x098	/* 16bit */
+
 #define DMICTL1		0x0f0	/* 32bit */
 #define DMICTL2		0x0fc	/* 32bit */
 
+#define DMIUESTS	0x1c4	/* 32bit */
+#define DMICESTS	0x1d0	/* 32bit */
+
 #define DMICC		0x208	/* 32bit */
+
+#define DMIL0SLAT	0x22c	/* 32bit */
+#define DMILLTC		0x238	/* 32bit */
+
+#define DMI_AFE_PM_TMR	0xc28	/* 32bit */
 
 #define DMIDRCCFG	0xeb4	/* 32bit */
 

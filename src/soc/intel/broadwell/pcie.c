@@ -587,7 +587,6 @@ static void pch_pcie_init(struct device *dev)
 
 	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
-	reg16 |= PCI_BRIDGE_CTL_NO_ISA;
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
 
 	/* Clear errors in status registers */

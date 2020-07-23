@@ -24,9 +24,8 @@ static void pch_pcie_init(struct device *dev)
 	/* Set Cache Line Size to 0x10 */
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, CACHE_LINE_SIZE);
 
-	/* disable parity error response, enable ISA */
-	pci_update_config16(dev, PCI_BRIDGE_CONTROL,
-			    ~PCI_BRIDGE_CTL_PARITY, PCI_BRIDGE_CTL_NO_ISA);
+	/* disable parity error response */
+	pci_and_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY);
 
 	if (CONFIG(PCIE_DEBUG_INFO)) {
 		printk(BIOS_SPEW, "    MBL    = 0x%08x\n",

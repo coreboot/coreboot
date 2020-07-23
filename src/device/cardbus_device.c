@@ -119,7 +119,6 @@ void cardbus_enable_resources(struct device *dev)
 
 	ctrl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
 	ctrl |= (dev->link_list->bridge_ctrl & (
-			PCI_BRIDGE_CTL_NO_ISA |
 			PCI_BRIDGE_CTL_VGA |
 			PCI_BRIDGE_CTL_MASTER_ABORT |
 			PCI_BRIDGE_CTL_BUS_RESET));

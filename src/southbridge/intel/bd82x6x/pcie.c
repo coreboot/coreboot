@@ -216,8 +216,7 @@ static void pci_init(struct device *dev)
 	// This has no effect but the OS might expect it
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	pci_update_config16(dev, PCI_BRIDGE_CONTROL,
-			    ~PCI_BRIDGE_CTL_PARITY, PCI_BRIDGE_CTL_NO_ISA);
+	pci_and_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY);
 
 	/* Clear errors in status registers. FIXME: Do something? */
 	reg16 = pci_read_config16(dev, 0x06);

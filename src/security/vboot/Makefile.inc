@@ -171,8 +171,9 @@ endif
 # All other files will be installed into RO and RW regions
 # Use $(sort) to cut down on extra spaces that would be translated to commas
 regions-for-file = $(subst $(spc),$(comma),$(sort \
-	$(if $(filter \
-		$(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)), \
+	$(if $(value regions-for-file-$(1)), \
+		$(regions-for-file-$(1)), \
+		$(if $(filter $(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)), \
 			%/romstage,) \
 		mts \
 		%/verstage \
@@ -186,15 +187,15 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
 		,$(1)),COREBOOT,\
 		$(if $(filter \
-			$(call strip_quotes,$(CONFIG_RWA_REGION_ONLY)) \
-			,$(1)), FW_MAIN_A, \
+		$(call strip_quotes,$(CONFIG_RWA_REGION_ONLY)) \
+		,$(1)), FW_MAIN_A, \
 		$(if $(filter \
 			$(call strip_quotes,$(CONFIG_RWB_REGION_ONLY)) \
 			,$(1)), FW_MAIN_B, \
 		$(if $(filter \
 			$(call strip_quotes,$(CONFIG_RW_REGION_ONLY)) \
 			,$(1)), $(RW_PARTITIONS), $(VBOOT_PARTITIONS) ) \
-		)))))
+		))))))
 
 CONFIG_GBB_HWID := $(call strip_quotes,$(CONFIG_GBB_HWID))
 CONFIG_GBB_BMPFV_FILE := $(call strip_quotes,$(CONFIG_GBB_BMPFV_FILE))

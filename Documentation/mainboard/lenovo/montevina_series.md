@@ -89,7 +89,7 @@ $ make
 ```
 
 If your flash is not 8 MB, you need to change values of `flcomp_density1` and
-`flreg1_limit` in the ifd-x200.set file according to following table:
+`flreg1_limit` in the `ifd-x200.set` file according to following table:
 
 ```eval_rst
 +-----------------+-------+-------+--------+

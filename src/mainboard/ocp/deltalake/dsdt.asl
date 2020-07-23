@@ -14,12 +14,12 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 
 	// global NVS and variables
-	#include <soc/intel/xeon_sp/cpx/acpi/globalnvs.asl>
+	#include <soc/intel/xeon_sp/acpi/globalnvs.asl>
 
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	// CPX-SP ACPI tables
-	#include <soc/intel/xeon_sp/cpx/acpi/uncore.asl>
+	#include <soc/intel/xeon_sp/acpi/uncore.asl>
 
 	// LPC related entries
 	Scope (\_SB.PC00)

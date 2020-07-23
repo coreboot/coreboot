@@ -110,6 +110,13 @@ chip soc/intel/jasperlake
 				device i2c 29 on end
 			end
 		end
+		device pci 1c.7 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW2_03"
+				register "maxsleep" = "3"
+				device pci 00.0 on  end
+			end
+		end # PCI Express Root Port 8 - WLAN
 		device pci 1f.3 on end # Intel HDA
 	end
 end

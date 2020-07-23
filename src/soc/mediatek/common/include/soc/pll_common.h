@@ -69,6 +69,7 @@ void mux_set_sel(const struct mux *mux, u32 sel);
 int pll_set_rate(const struct pll *pll, u32 rate);
 void mt_pll_init(void);
 void mt_pll_raise_little_cpu_freq(u32 freq);
+void mt_pll_raise_cci_freq(u32 freq);
 
 enum fmeter_type {
 	FMETER_ABIST = 0,

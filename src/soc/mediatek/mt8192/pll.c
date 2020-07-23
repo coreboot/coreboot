@@ -559,3 +559,28 @@ u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 
 	return 0;
 }
+
+void mt_pll_raise_cci_freq(u32 freq)
+{
+	/* enable [4] intermediate clock armpll_divider_pll1_ck */
+	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
+
+	/* switch cci clock source to intermediate clock */
+	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
+
+	/* disable ccipll frequency output */
+	clrbits32(plls[APMIXED_CCIPLL].reg, PLL_EN);
+
+	/* raise ccipll frequency */
+	pll_set_rate(&plls[APMIXED_CCIPLL], freq);
+
+	/* enable ccipll frequency output */
+	setbits32(plls[APMIXED_CCIPLL].reg, PLL_EN);
+	udelay(PLL_EN_DELAY);
+
+	/* switch cci clock source back to ccipll */
+	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+
+	/* disable [4] intermediate clock armpll_divider_pll1_ck */
+	clrbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
+}

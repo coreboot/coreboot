@@ -2,6 +2,7 @@
 
 verstage-generic-ccopts += -I$(src)/soc/amd/picasso/psp_verstage/include
 verstage-generic-ccopts += -I$(src)/vendorcode/amd/fsp/picasso/include
+verstage-generic-ccopts += -D__USER_SPACE__
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/2lib/include/
 
 verstage-y += delay.c

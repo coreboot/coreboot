@@ -196,6 +196,33 @@ DEVTREE_CONST struct device *find_dev_path(
 	return child;
 }
 
+/**
+ * Find the device structure given an array of nested device paths,
+ *
+ * @param parent The parent bus to start the search on.
+ * @param nested_path An array of relative paths from the parent bus to the target device.
+ * @param nested_path_length Number of path elements in nested_path array.
+ * @return Pointer to a device structure for the device at nested path
+ *         or 0/NULL if no device is found.
+ */
+DEVTREE_CONST struct device *find_dev_nested_path(
+	const struct bus *parent, const struct device_path nested_path[],
+	size_t nested_path_length)
+{
+	DEVTREE_CONST struct device *child;
+
+	if (!parent || !nested_path || !nested_path_length)
+		return NULL;
+
+	child = find_dev_path(parent, nested_path);
+
+	/* Terminate recursion at end of nested path or child not found */
+	if (nested_path_length == 1 || !child)
+		return child;
+
+	return find_dev_nested_path(child->link_list, nested_path + 1, nested_path_length - 1);
+}
+
 DEVTREE_CONST struct device *pcidev_path_behind(
 	const struct bus *parent, pci_devfn_t devfn)
 {

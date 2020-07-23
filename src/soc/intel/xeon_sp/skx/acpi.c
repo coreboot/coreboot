@@ -82,7 +82,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_madt_irq_overrides(unsigned long current)
+static unsigned long acpi_madt_irq_overrides(unsigned long current)
 {
 	int sci = acpi_sci_irq();
 	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
@@ -747,7 +747,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	return current;
 }
 
-void uncore_inject_dsdt(void)
+static void uncore_inject_dsdt(void)
 {
 	size_t hob_size;
 	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;

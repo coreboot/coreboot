@@ -11,10 +11,9 @@ typedef struct {
 	uint8_t   buf[32];
 } MEM_BLK;
 
-void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
-unsigned long acpi_madt_irq_overrides(unsigned long current);
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
-void uncore_inject_dsdt(void);
+
+void motherboard_fill_fadt(acpi_fadt_t *fadt);
 
 #endif /* _SOC_ACPI_H_ */

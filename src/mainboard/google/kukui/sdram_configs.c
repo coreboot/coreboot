@@ -6,6 +6,12 @@
 #include <soc/emi.h>
 
 static const char *const sdram_configs[] = {
+#if CONFIG(BOARD_GOOGLE_BURNET)
+	[1] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
+	[2] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
+	[3] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
+	[4] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+#else /* The default unified table */
 	[1] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
 	[2] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
 	[3] = "sdram-lpddr4x-KMDH6001DA-B422-4GB",
@@ -15,6 +21,7 @@ static const char *const sdram_configs[] = {
 	[7] = "sdram-lpddr4x-SDADA4CR-128G-4GB",
 	[8] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
 	[10] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+#endif
 };
 
 static struct sdram_params params;

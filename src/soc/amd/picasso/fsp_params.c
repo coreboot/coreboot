@@ -81,6 +81,7 @@ static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 		memcpy(&scfg->ddi_descriptor[i], &descs[i], sizeof(scfg->ddi_descriptor[0]));
 	}
 }
+
 static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)
 {
 	const fsp_dxio_descriptor *fsp_dxio;

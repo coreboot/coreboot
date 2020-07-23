@@ -18,4 +18,11 @@ ifeq ($(CONFIG_SPI_FLASH_SMM),y)
 smm-y += fch_spi.c
 endif
 
-endif
+bootblock-y += fch_spi_util.c
+romstage-y += fch_spi_util.c
+postcar-y += fch_spi_util.c
+ramstage-y += fch_spi_util.c
+verstage-y += fch_spi_util.c
+smm-$(CONFIG_SPI_FLASH_SMM) += fch_spi_util.c
+
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_SPI

@@ -4,26 +4,9 @@
 #include <amdblocks/lpc.h>
 #include <amdblocks/spi.h>
 #include <arch/mmio.h>
-#include <assert.h>
 #include <console/console.h>
 #include <soc/iomap.h>
 #include <stdint.h>
-
-static uintptr_t spi_base;
-
-void spi_set_base(void *base)
-{
-	spi_base = (uintptr_t)base;
-}
-
-uintptr_t spi_get_bar(void)
-{
-	if (ENV_X86 && !spi_base)
-		spi_set_base((void *)lpc_get_spibase());
-	ASSERT(spi_base);
-
-	return spi_base;
-}
 
 static void fch_spi_set_spi100(int norm, int fast, int alt, int tpm)
 {

@@ -101,5 +101,11 @@ void spi_set_base(void *base);
 
 /* Get the SPI base address variable's value */
 uintptr_t spi_get_bar(void);
+uint8_t spi_read8(uint8_t reg);
+uint16_t spi_read16(uint8_t reg);
+uint32_t spi_read32(uint8_t reg);
+void spi_write8(uint8_t reg, uint8_t val);
+void spi_write16(uint8_t reg, uint16_t val);
+void spi_write32(uint8_t reg, uint32_t val);
 
 #endif /* __AMDBLOCKS_SPI_H__ */

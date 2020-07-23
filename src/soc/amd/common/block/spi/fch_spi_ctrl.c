@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <soc/pci_devs.h>
@@ -29,26 +28,6 @@
 #define   SPI_FIFO_WR_PTR_MASK		0x7f
 #define   SPI_FIFO_RD_PTR_SHIFT		16
 #define   SPI_FIFO_RD_PTR_MASK		0x7f
-
-static uint8_t spi_read8(uint8_t reg)
-{
-	return read8((void *)(spi_get_bar() + reg));
-}
-
-static uint32_t spi_read32(uint8_t reg)
-{
-	return read32((void *)(spi_get_bar() + reg));
-}
-
-static void spi_write8(uint8_t reg, uint8_t val)
-{
-	write8((void *)(spi_get_bar() + reg), val);
-}
-
-static void spi_write32(uint8_t reg, uint32_t val)
-{
-	write32((void *)(spi_get_bar() + reg), val);
-}
 
 static void dump_state(const char *str, u8 phase)
 {

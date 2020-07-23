@@ -28,7 +28,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Padmelon"
 
-choice PADMELON_SOC
+choice
 	prompt "SOC used in padmelon board"
 	default PADMELON_MERLIN_FALCON
 

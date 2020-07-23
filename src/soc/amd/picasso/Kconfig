@@ -271,7 +271,7 @@ config PICASSO_CONSOLE_UART
 	  2: 0xfedc3000
 	  3: 0xfedcf000
 
-choice PICASSO_UART_CLOCK_SOURCE
+choice
 	prompt "UART Frequency"
 	depends on PICASSO_CONSOLE_UART
 	default PICASSO_UART_48MZ

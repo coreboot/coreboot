@@ -122,8 +122,8 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 {
 	int ret;
 	mrc_wrapper_entry_t mrc_entry;
-	struct region_device rdev;
 	size_t i;
+	size_t mrc_size;
 
 	/* Fill in default entries. */
 	mp->version = MRC_PARAMS_VER;
@@ -135,11 +135,14 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	if (!mp->io_hole_mb)
 		mp->io_hole_mb = 2048;
 
-	if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {
-		mp->saved_data_size = region_device_sz(&rdev);
-		mp->saved_data = rdev_mmap_full(&rdev);
-		/* Assume boot device is memory mapped. */
-		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+	/* Assume boot device is memory mapped. */
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+
+	mp->saved_data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+						     0,
+						     &mrc_size);
+	if (mp->saved_data) {
+		mp->saved_data_size = mrc_size;
 	} else if (prev_sleep_state == ACPI_S3) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");

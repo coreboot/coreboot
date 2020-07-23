@@ -267,8 +267,6 @@ static void parse_devicetree_setting(FSPM_UPD *m_upd)
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	struct region_device rdev;
-
 	check_full_retrain(mupd);
 
 	fill_console_params(mupd);
@@ -310,11 +308,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * wrong/missing key renders DRAM contents useless.
 	 */
 
-	if (mrc_cache_get_current(MRC_VARIABLE_DATA, version, &rdev) == 0) {
-		/* Assume leaking is ok. */
-		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
-		mupd->FspmConfig.VariableNvsBufferPtr = rdev_mmap_full(&rdev);
-	}
+	mupd->FspmConfig.VariableNvsBufferPtr =
+		mrc_cache_current_mmap_leak(MRC_VARIABLE_DATA, version,
+					    NULL);
+
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
 	fsp_version = version;
 

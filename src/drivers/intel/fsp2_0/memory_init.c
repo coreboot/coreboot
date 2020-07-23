@@ -93,8 +93,8 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 
 static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 {
-	struct region_device rdev;
 	void *data;
+	size_t mrc_size;
 
 	arch_upd->NvsBufferPtr = NULL;
 
@@ -113,25 +113,22 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 			return;
 	}
 
-	if (mrc_cache_get_current(MRC_TRAINING_DATA, fsp_version, &rdev) < 0)
-		return;
-
 	/* Assume boot device is memory mapped. */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
-	data = rdev_mmap_full(&rdev);
 
+	data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, fsp_version,
+					   &mrc_size);
 	if (data == NULL)
 		return;
 
 	if (CONFIG(FSP2_0_USES_TPM_MRC_HASH) &&
-	    !mrc_cache_verify_hash(data, region_device_sz(&rdev)))
+	    !mrc_cache_verify_hash(data, mrc_size))
 		return;
 
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = data;
 
-	printk(BIOS_SPEW, "MRC cache found, size %zx\n",
-			region_device_sz(&rdev));
+	printk(BIOS_SPEW, "MRC cache found, size %zx\n", mrc_size);
 }
 
 static enum cb_err check_region_overlap(const struct memranges *ranges,

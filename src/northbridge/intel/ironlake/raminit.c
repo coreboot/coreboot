@@ -1618,11 +1618,9 @@ static void save_timings(struct raminfo *info)
 
 static const struct ram_training *get_cached_training(void)
 {
-	struct region_device rdev;
-	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
-					&rdev))
-		return 0;
-	return (void *)rdev_mmap_full(&rdev);
+	return mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+					   MRC_CACHE_VERSION,
+					   NULL);
 }
 
 /* FIXME: add timeout.  */

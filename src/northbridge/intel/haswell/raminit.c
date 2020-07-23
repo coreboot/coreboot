@@ -31,21 +31,24 @@ void save_mrc_data(struct pei_data *pei_data)
 
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
-	struct region_device rdev;
+	size_t mrc_size;
 
 	/* Preset just in case there is an error */
 	pei_data->mrc_input = NULL;
 	pei_data->mrc_input_len = 0;
 
-	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION, &rdev))
+	pei_data->mrc_input =
+		mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+					    MRC_CACHE_VERSION,
+					    &mrc_size);
+	if (!pei_data->mrc_input)
 		/* Error message printed in find_current_mrc_cache */
 		return;
 
-	pei_data->mrc_input = rdev_mmap_full(&rdev);
-	pei_data->mrc_input_len = region_device_sz(&rdev);
+	pei_data->mrc_input_len = mrc_size;
 
-	printk(BIOS_DEBUG, "%s: at %p, size %x\n", __func__, pei_data->mrc_input,
-	       pei_data->mrc_input_len);
+	printk(BIOS_DEBUG, "%s: at %p, size %zx\n", __func__,
+	       pei_data->mrc_input, mrc_size);
 }
 
 static const char *ecc_decoder[] = {

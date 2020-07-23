@@ -297,7 +297,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 	int me_uma_size, cbmem_was_inited, fast_boot, err;
 	ramctr_timing ctrl;
 	spd_raw_data spds[4];
-	struct region_device rdev;
+	size_t mrc_size;
 	ramctr_timing *ctrl_cached = NULL;
 
 	MCHBAR32(SAPMCTL) |= 1;
@@ -324,10 +324,11 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 	early_thermal_init();
 
 	/* Try to find timings in MRC cache */
-	err = mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION, &rdev);
-
-	if (!err && !(region_device_sz(&rdev) < sizeof(ctrl)))
-		ctrl_cached = rdev_mmap_full(&rdev);
+	ctrl_cached = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+						  MRC_CACHE_VERSION,
+						  &mrc_size);
+	if (mrc_size < sizeof(ctrl))
+		ctrl_cached = NULL;
 
 	/* Before reusing training data, assert that the CPU has not been replaced */
 	if (ctrl_cached && cpuid != ctrl_cached->cpu) {

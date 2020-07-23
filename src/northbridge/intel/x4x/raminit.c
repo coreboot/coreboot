@@ -610,8 +610,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 {
 	struct sysinfo s, *ctrl_cached;
 	u8 reg8;
-	int fast_boot, cbmem_was_inited, cache_not_found;
-	struct region_device rdev;
+	int fast_boot, cbmem_was_inited;
+	size_t mrc_size;
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
@@ -620,10 +620,11 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	memset(&s, 0, sizeof(struct sysinfo));
 
-	cache_not_found = mrc_cache_get_current(MRC_TRAINING_DATA,
-						MRC_CACHE_VERSION, &rdev);
+	ctrl_cached = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+						  MRC_CACHE_VERSION,
+						  &mrc_size);
 
-	if (cache_not_found || (region_device_sz(&rdev) < sizeof(s))) {
+	if (!ctrl_cached || mrc_size < sizeof(s)) {
 		if (boot_path == BOOT_PATH_RESUME) {
 			/* Failed S3 resume, reset to come up cleanly */
 			system_reset();
@@ -632,9 +633,6 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 			   and therefore requiring valid cached settings */
 			full_reset();
 		}
-		ctrl_cached = NULL;
-	} else {
-		ctrl_cached = rdev_mmap_full(&rdev);
 	}
 
 	/* verify MRC cache for fast boot */

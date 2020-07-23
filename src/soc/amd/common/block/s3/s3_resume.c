@@ -25,14 +25,10 @@ AGESA_STATUS OemInitResume(S3_DATA_BLOCK *dataBlock)
 	size_t size;
 	int i;
 	uint32_t erased = 0xffffffff;
-	struct region_device rdev;
 
-	if (mrc_cache_get_current(MRC_TRAINING_DATA, DEFAULT_MRC_VERSION,
-					&rdev))
-		reboot_from_resume("mrc_cache_get_current error, rebooting.\n");
-
-	base = rdev_mmap_full(&rdev);
-	size = region_device_sz(&rdev);
+	base = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+					   DEFAULT_MRC_VERSION,
+					   &size);
 	if (!base || !size)
 		reboot_from_resume("Error: S3 NV data not found, rebooting.\n");
 

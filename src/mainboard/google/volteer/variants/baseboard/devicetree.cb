@@ -381,8 +381,14 @@ chip soc/intel/tigerlake
 		end # DPTF				0x9A03
 		device pci 05.0 off end # IPU				0x9A19
 		device pci 06.0 off end # PEG60				0x9A09
-		device pci 07.0 on  end # TBT_PCIe0			0x9A23
-		device pci 07.1 on  end # TBT_PCIe1			0x9A25
+		device pci 07.0 on	# TBT_PCIe0			0x9A23
+			probe DB_USB USB4_GEN2
+			probe DB_USB USB4_GEN3
+		end
+		device pci 07.1 on	# TBT_PCIe1			0x9A25
+			probe DB_USB USB4_GEN2
+			probe DB_USB USB4_GEN3
+		end
 		device pci 07.2 off end # TBT_PCIe2			0x9A27
 		device pci 07.3 off end # TBT_PCIe3			0x9A29
 		device pci 08.0 on  end # GNA				0x9A11
@@ -390,7 +396,10 @@ chip soc/intel/tigerlake
 		device pci 0a.0 off end # Crash-log SRAM		0x9A0D
 		device pci 0d.0 on  end # USB xHCI			0x9A13
 		device pci 0d.1 off end # USB xDCI (OTG)		0x9A15
-		device pci 0d.2 on  end # TBT DMA0			0x9A1B
+		device pci 0d.2 on	# TBT DMA0			0x9A1B
+			probe DB_USB USB4_GEN2
+			probe DB_USB USB4_GEN3
+		end
 		device pci 0d.3 off end # TBT DMA1			0x9A1D
 		device pci 0e.0 off end # VMD				0x9A0B
 

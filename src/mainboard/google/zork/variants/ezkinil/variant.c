@@ -17,7 +17,8 @@ static int sku_has_emmc(void)
 	    (board_sku == 0x5A020001) || (board_sku == 0x5A020002) ||
 	    (board_sku == 0x5A020005) || (board_sku == 0x5A020006) ||
 	    (board_sku == 0x5A020009) || (board_sku == 0x5A02000A) ||
-	    (board_sku == 0x5A02000D) || (board_sku == 0x5A02000E))
+	    (board_sku == 0x5A02000D) || (board_sku == 0x5A02000E) ||
+	    (board_sku == 0x5A020016) || (board_sku == 0x5A020017))
 		return 1;
 
 	return 0;

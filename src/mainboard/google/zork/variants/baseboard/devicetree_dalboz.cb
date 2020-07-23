@@ -54,7 +54,7 @@ chip soc/amd/picasso
 	register "has_usb2_phy_tune_params" = "1"
 
 	# Controller0 Port0 Default
-	register "usb_2_port_0_tune_params" = "{
+	register "usb_2_port_tune_params[0]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,
@@ -67,7 +67,7 @@ chip soc/amd/picasso
 	}"
 
 	# Controller0 Port1 Default
-	register "usb_2_port_1_tune_params" = "{
+	register "usb_2_port_tune_params[1]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,
@@ -80,7 +80,7 @@ chip soc/amd/picasso
 	}"
 
 	# Controller0 Port2 Default
-	register "usb_2_port_2_tune_params" = "{
+	register "usb_2_port_tune_params[2]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,
@@ -93,7 +93,7 @@ chip soc/amd/picasso
 	}"
 
 	# Controller0 Port3 Default
-	register "usb_2_port_3_tune_params" = "{
+	register "usb_2_port_tune_params[3]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,
@@ -106,7 +106,7 @@ chip soc/amd/picasso
 	}"
 
 	# Controller1 Port0 Default
-	register "usb_2_port_4_tune_params" = "{
+	register "usb_2_port_tune_params[4]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,
@@ -119,7 +119,7 @@ chip soc/amd/picasso
 	}"
 
 	# Controller1 Port1 Default
-	register "usb_2_port_5_tune_params" = "{
+	register "usb_2_port_tune_params[5]" = "{
 		.com_pds_tune = 0x03,
 		.sq_rx_tune = 0x3,
 		.tx_fsls_tune = 0x3,

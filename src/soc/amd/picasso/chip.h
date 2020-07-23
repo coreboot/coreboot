@@ -37,6 +37,8 @@ struct __packed usb2_phy_tune {
 	uint8_t	tx_res_tune;
 };
 
+#define USB_PORT_COUNT	6
+
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
 	/*
@@ -134,12 +136,7 @@ struct soc_amd_picasso_config {
 	uint8_t xhci0_force_gen1;
 
 	uint8_t has_usb2_phy_tune_params;
-	struct usb2_phy_tune usb_2_port_0_tune_params;
-	struct usb2_phy_tune usb_2_port_1_tune_params;
-	struct usb2_phy_tune usb_2_port_2_tune_params;
-	struct usb2_phy_tune usb_2_port_3_tune_params;
-	struct usb2_phy_tune usb_2_port_4_tune_params;
-	struct usb2_phy_tune usb_2_port_5_tune_params;
+	struct usb2_phy_tune usb_2_port_tune_params[USB_PORT_COUNT];
 };
 
 typedef struct soc_amd_picasso_config config_t;

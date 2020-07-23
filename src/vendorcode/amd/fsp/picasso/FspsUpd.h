@@ -11,6 +11,7 @@
 
 #define FSPS_UPD_DXIO_DESCRIPTOR_COUNT	8
 #define FSPS_UPD_DDI_DESCRIPTOR_COUNT	4
+#define FSPS_UPD_USB2_PORT_COUNT	6
 
 typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
@@ -21,12 +22,7 @@ typedef struct __packed {
 	/** Offset 0x00D0**/	uint8_t                     unused2[16];
 	/** Offset 0x00E0**/	uint8_t                     fch_usb_version_major;
 	/** Offset 0x00E1**/	uint8_t                     fch_usb_version_minor;
-	/** Offset 0x00E2**/	uint8_t                     fch_usb_2_port0_phy_tune[9];
-	/** Offset 0x00EB**/	uint8_t                     fch_usb_2_port1_phy_tune[9];
-	/** Offset 0x00F4**/	uint8_t                     fch_usb_2_port2_phy_tune[9];
-	/** Offset 0x00FD**/	uint8_t                     fch_usb_2_port3_phy_tune[9];
-	/** Offset 0x0106**/	uint8_t                     fch_usb_2_port4_phy_tune[9];
-	/** Offset 0x010F**/	uint8_t                     fch_usb_2_port5_phy_tune[9];
+	/** Offset 0x00E2**/	uint8_t                     fch_usb_2_port_phy_tune[FSPS_UPD_USB2_PORT_COUNT][9];
 	/** Offset 0x0118**/	uint8_t                     fch_usb_device_removable;
 	/** Offset 0x0119**/	uint8_t                     fch_usb_3_port_force_gen1;
 	/** Offset 0x011A**/	uint8_t                     fch_usb_u3_rx_det_wa_enable;

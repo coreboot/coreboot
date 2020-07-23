@@ -71,23 +71,6 @@
 #define VTD_CAP_HIGH			0x0C
 #define VTD_EXT_CAP_HIGH		0x14
 
-#define MMAP_VTD_CFG_REG_DEVID	0x2024
-#define VTD_DEV			5
-#define VTD_FUNC		0
-
-#define VMD_DEV_NUM             0x05
-#define VMD_FUNC_NUM            0x05
-
-#define APIC_DEV_NUM            0x05
-#define APIC_FUNC_NUM           0x04
-
-#define CBDMA_DEV_NUM           0x04
-#define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function
-
-#define PCH_IOAPIC_BUS_NUMBER   0x00
-#define PCH_IOAPIC_DEV_NUM      0x1F
-#define PCH_IOAPIC_FUNC_NUM     0x00
-
 /* PCH Device info */
 
 #define  XHCI_BUS_NUMBER        0x0
@@ -113,7 +96,6 @@
 #define  PCH_DEV_P2SB           _PCH_DEV(LPC, 1)
 #define  PCH_DEV_PMC            _PCH_DEV(LPC, 2)
 #define  PCH_DEV_SPI            _PCH_DEV(LPC, 5)
-
 
 #define CBDMA_DEV_NUM           0x04
 #define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function

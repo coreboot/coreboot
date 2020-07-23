@@ -51,6 +51,8 @@ chip soc/amd/picasso
 
 	register "xhci0_force_gen1" = "0"
 
+	register "has_usb2_phy_tune_params" = "1"
+
 	# Controller0 Port0 Default
 	register "usb_2_port_0_tune_params" = "{
 		.com_pds_tune = 0x03,

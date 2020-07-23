@@ -498,12 +498,77 @@ static void northbridge_dmi_init(void)
 	}
 }
 
+static void northbridge_topology_init(void)
+{
+	const u32 eple_a[3] = { EPLE2A, EPLE3A, EPLE4A };
+	const u32 eple_d[3] = { EPLE2D, EPLE3D, EPLE4D };
+
+	u32 reg32;
+
+	/* Set the CID1 Egress Port 0 Root Topology */
+	reg32 = EPBAR32(EPESD);
+	reg32 &= ~(0xff << 16);
+	reg32 |= 1 << 16;
+	EPBAR32(EPESD) = reg32;
+
+	reg32 = EPBAR32(EPLE1D);
+	reg32 &= ~(0xff << 16);
+	reg32 |= 1 | (1 << 16);
+	EPBAR32(EPLE1D) = reg32;
+	EPBAR64(EPLE1A) = (uintptr_t)DEFAULT_DMIBAR;
+
+	for (unsigned int i = 0; i <= 2; i++) {
+		const struct device *const dev = pcidev_on_root(1, i);
+
+		if (!dev || !dev->enabled)
+			continue;
+
+		EPBAR64(eple_a[i]) = (u64)PCI_DEV(0, 1, i);
+
+		reg32 = EPBAR32(eple_d[i]);
+		reg32 &= ~(0xff << 16);
+		reg32 |= 1 | (1 << 16);
+		EPBAR32(eple_d[i]) = reg32;
+
+		pci_update_config32(dev, PEG_ESD, ~(0xff << 16), (1 << 16));
+		pci_write_config32(dev, PEG_LE1A, (uintptr_t)DEFAULT_EPBAR);
+		pci_write_config32(dev, PEG_LE1A + 4, 0);
+		pci_update_config32(dev, PEG_LE1D, ~(0xff << 16), (1 << 16) | 1);
+
+		/* Read and write to lock register */
+		pci_or_config32(dev, PEG_DCAP2, 0);
+	}
+
+	/* Set the CID1 DMI Port Root Topology */
+	reg32 = DMIBAR32(DMIESD);
+	reg32 &= ~(0xff << 16);
+	reg32 |= 1 << 16;
+	DMIBAR32(DMIESD) = reg32;
+
+	reg32 = DMIBAR32(DMILE1D);
+	reg32 &= ~(0xffff << 16);
+	reg32 |= 1 | (2 << 16);
+	DMIBAR32(DMILE1D) = reg32;
+	DMIBAR64(DMILE1A) = (uintptr_t)DEFAULT_RCBA;
+
+	DMIBAR64(DMILE2A) = (uintptr_t)DEFAULT_EPBAR;
+	reg32 = DMIBAR32(DMILE2D);
+	reg32 &= ~(0xff << 16);
+	reg32 |= 1 | (1 << 16);
+	DMIBAR32(DMILE2D) = reg32;
+
+	/* Program RO and Write-Once Registers */
+	DMIBAR32(DMIPVCCAP1) = DMIBAR32(DMIPVCCAP1);
+	DMIBAR32(DMILCAP)    = DMIBAR32(DMILCAP);
+}
+
 static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl, pair;
 
 	init_egress();
 	northbridge_dmi_init();
+	northbridge_topology_init();
 
 	/* Enable Power Aware Interrupt Routing. */
 	pair = MCHBAR8(INTRDIRCTL);

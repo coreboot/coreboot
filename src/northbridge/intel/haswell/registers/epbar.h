@@ -20,5 +20,9 @@
 #define EPLE1A		0x058	/* 64bit */
 #define EPLE2D		0x060	/* 32bit */
 #define EPLE2A		0x068	/* 64bit */
+#define EPLE3D		0x070	/* 32bit */
+#define EPLE3A		0x078	/* 64bit */
+#define EPLE4D		0x080	/* 32bit */
+#define EPLE4A		0x088	/* 64bit */
 
 #endif /* __HASWELL_REGISTERS_EPBAR_H__ */

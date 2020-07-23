@@ -16,7 +16,7 @@
 /*
   USB 2.0 PHY Parameters
 */
-struct usb2_phy_tune {
+struct __packed usb2_phy_tune {
 	/* Disconnect Threshold Adjustment. Range 0 - 0x7 */
 	uint8_t	com_pds_tune;
 	/* Squelch Threshold Adjustment. Range 0 - 0x7 */

@@ -2,7 +2,6 @@
 
 #include <console/vtxprintf.h>
 #include <string.h>
-#include <trace.h>
 
 struct vsnprintf_context {
 	char *str_buf;
@@ -24,15 +23,11 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 	int i;
 	struct vsnprintf_context ctx;
 
-	DISABLE_TRACE;
-
 	ctx.str_buf = buf;
 	ctx.buf_limit = size ? size - 1 : 0;
 	i = vtxprintf(str_tx_byte, fmt, args, &ctx);
 	if (size)
 		*ctx.str_buf = '\0';
-
-	ENABLE_TRACE;
 
 	return i;
 }

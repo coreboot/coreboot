@@ -183,9 +183,6 @@ decompressor-generic-ccopts += -D__DECOMPRESSOR__
 bootblock-generic-ccopts += -D__BOOTBLOCK__
 romstage-generic-ccopts += -D__ROMSTAGE__
 ramstage-generic-ccopts += -D__RAMSTAGE__
-ifeq ($(CONFIG_TRACE),y)
-ramstage-c-ccopts += -finstrument-functions
-endif
 ifeq ($(CONFIG_COVERAGE),y)
 ramstage-c-ccopts += -fprofile-arcs -ftest-coverage
 endif

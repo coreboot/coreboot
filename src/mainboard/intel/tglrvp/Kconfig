@@ -77,7 +77,7 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
-choice TGL_EC
+choice
 	prompt "ON BOARD EC"
 	default TGL_CHROME_EC
 	help

@@ -211,6 +211,16 @@ static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long 
 }
 #endif
 
+unsigned int smbios_processor_family(struct cpuid_result res)
+{
+	return 0xb3; /* Xeon */
+}
+
+unsigned int smbios_processor_characteristics(void)
+{
+	/* 64-bit Capable, Multi-Core, Power/Performance Control */
+	return 0x8c; /* BIT2 + BIT3 + BIT7 */
+}
 
 static void mainboard_enable(struct device *dev)
 {

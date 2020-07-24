@@ -449,8 +449,25 @@ static int get_socket_type(void)
 		return 0x13;
 	if (CONFIG(CPU_INTEL_SOCKET_LGA775))
 		return 0x15;
+	if (CONFIG(XEON_SP_COMMON_BASE))
+		return 0x36;
 
 	return 0x02; /* Unknown */
+}
+
+unsigned int __weak smbios_processor_external_clock(void)
+{
+	return 0; /* Unknown */
+}
+
+unsigned int __weak smbios_processor_characteristics(void)
+{
+	return 0;
+}
+
+unsigned int __weak smbios_processor_family(struct cpuid_result res)
+{
+	return (res.eax > 0) ? 0x0c : 0x6;
 }
 
 static int smbios_write_type1(unsigned long *current, int handle)
@@ -528,6 +545,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	struct cpuid_result res;
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
 	int len = sizeof(struct smbios_type4);
+	uint16_t characteristics = 0;
 
 	/* Provide sane defaults even for CPU without CPUID */
 	res.eax = res.edx = 0;
@@ -544,7 +562,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_id[1] = res.edx;
 	t->processor_manufacturer = smbios_cpu_vendor(t->eos);
 	t->processor_version = smbios_processor_name(t->eos);
-	t->processor_family = (res.eax > 0) ? 0x0c : 0x6;
+	t->processor_family = smbios_processor_family(res);
 	t->processor_type = 3; /* System Processor */
 	/*
 	 * If CPUID leaf 11 is available, calculate "core count" by dividing
@@ -583,10 +601,31 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	if (cpu_have_cpuid() && cpuid_get_max_func() >= 0x16) {
 		t->max_speed = cpuid_ebx(0x16);
 		t->current_speed = cpuid_eax(0x16); /* base frequency */
+		t->external_clock = cpuid_ecx(0x16);
 	} else {
 		t->max_speed = smbios_cpu_get_max_speed_mhz();
 		t->current_speed = smbios_cpu_get_current_speed_mhz();
+		t->external_clock = smbios_processor_external_clock();
 	}
+
+	if (cpu_have_cpuid()) {
+		res = cpuid(1);
+
+		if ((res.ecx) & BIT(5))
+			characteristics |= BIT(6); /* BIT6: Enhanced Virtualization */
+
+		if ((res.edx) & BIT(28))
+			characteristics |= BIT(4); /* BIT4: Hardware Thread */
+
+		if (((cpuid_eax(0x80000000) - 0x80000000) + 1) > 2) {
+			res = cpuid(0x80000001);
+
+			if ((res.edx) & BIT(20))
+				characteristics |= BIT(5); /* BIT5: Execute Protection */
+		}
+	}
+	t->processor_characteristics = characteristics | smbios_processor_characteristics();
+
 	*current += len;
 	return len;
 }

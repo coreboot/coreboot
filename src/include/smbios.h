@@ -54,6 +54,11 @@ const char *smbios_chassis_version(void);
 const char *smbios_chassis_serial_number(void);
 const char *smbios_processor_serial_number(void);
 
+unsigned int smbios_processor_external_clock(void);
+unsigned int smbios_processor_characteristics(void);
+struct cpuid_result;
+unsigned int smbios_processor_family(struct cpuid_result res);
+
 /* Used by mainboard to add port information of type 8 */
 struct port_information;
 int smbios_write_type8(unsigned long *current, int *handle,

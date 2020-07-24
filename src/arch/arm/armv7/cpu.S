@@ -23,6 +23,19 @@
  * THIS FUNCTION MUST PRESERVE THE VALUE OF r10
  */
 
+#if ENV_USER_SPACE
+/*
+ * Empty macro for code running in userspace.  Trying to manipulate the
+ * cache from userspace hangs the system. To run code at a privileged level,
+ * the userspace code needs to execute an API call to the privileged mode
+ * code.
+ */
+.macro	dcache_apply_all crm
+	bx	lr
+.endm
+
+#else
+
 .macro	dcache_apply_all crm
 	dsb
 	mov	r3, #-2			@ initialize level so that we start at 0
@@ -81,6 +94,8 @@
 	isb
 	bx	lr
 .endm
+
+#endif /* ENV_USER_SPACE */
 
 /*
  * Bring an ARM processor we just gained control of (e.g. from IROM) into a

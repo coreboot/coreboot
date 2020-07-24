@@ -18,6 +18,86 @@ chip soc/amd/picasso
 
 	register "sd_emmc_config" = "SD_EMMC_DISABLE"
 
+	register "has_usb2_phy_tune_params" = "1"
+
+	# Controller0 Port0 Default
+	register "usb_2_port_tune_params[0]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port1 Default
+	register "usb_2_port_tune_params[1]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port2 Default
+	register "usb_2_port_tune_params[2]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port3 Default
+	register "usb_2_port_tune_params[3]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller1 Port0 Default
+	register "usb_2_port_tune_params[4]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x02,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x5,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller1 Port1 Default
+	register "usb_2_port_tune_params[5]" = "{
+		.com_pds_tune = 0x03,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x02,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x5,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN,

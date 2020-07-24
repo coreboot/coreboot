@@ -135,7 +135,7 @@ static void write_is_policy_enabled(bool enabled)
 	 * Local1 = 0
 	 * Local2 = 0
 	 *
-	 * While (Local1 < Local) {
+	 * While (Local1 < Local0) {
 	 *    If (IDSP[Local1] == Arg0 && Arg1 == enabled) {
 	 *        Local2 = 1
 	 *    }
@@ -167,8 +167,7 @@ static void write_is_policy_enabled(bool enabled)
 	 */
 	acpigen_emit_byte(WHILE_OP);
 	acpigen_write_len_f();
-	acpigen_emit_byte(LNOT_OP);
-	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LLESS_OP);
 	acpigen_emit_byte(LOCAL1_OP);
 	acpigen_emit_byte(LOCAL0_OP);
 

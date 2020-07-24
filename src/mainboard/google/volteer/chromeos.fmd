@@ -7,16 +7,16 @@ FLASH@0xfe000000 0x2000000 {
 		# Place RW_LEGACY at the start of BIOS region such that the rest
 		# of BIOS regions start at 16MiB boundary. Since this is a 32MiB
 		# SPI flash only the top 16MiB actually gets memory mapped.
-		RW_LEGACY(CBFS)@0x0 0xf00000
-		RW_SECTION_A@0xf00000 0x3e0000 {
+		RW_LEGACY(CBFS)@0x0 0xb00000
+		RW_SECTION_A@0xb00000 0x5e0000 {
 			VBLOCK_A@0x0 0x10000
-			FW_MAIN_A(CBFS)@0x10000 0x3cffc0
-			RW_FWID_A@0x3dffc0 0x40
+			FW_MAIN_A(CBFS)@0x10000 0x5cffc0
+			RW_FWID_A@0x5dffc0 0x40
 		}
-		RW_SECTION_B@0x12e0000 0x3e0000 {
+		RW_SECTION_B@0x10e0000 0x5e0000 {
 			VBLOCK_B@0x0 0x10000
-			FW_MAIN_B(CBFS)@0x10000 0x3cffc0
-			RW_FWID_B@0x3dffc0 0x40
+			FW_MAIN_B(CBFS)@0x10000 0x5cffc0
+			RW_FWID_B@0x5dffc0 0x40
 		}
 		RW_MISC@0x16c0000 0x40000 {
 			UNIFIED_MRC_CACHE(PRESERVE)@0x0 0x30000 {

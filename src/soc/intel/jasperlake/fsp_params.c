@@ -103,7 +103,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
 		params->SkipMpInit = 0;
 	} else {
-		params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+		params->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 	}
 
 	/* Chipset Lockdown */
@@ -123,7 +123,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->EndOfPostMessage = EOP_PEI;
 
 	/* Legacy 8254 timer support */
-	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
+	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
 	params->Enable8254ClockGatingOnS3 = 1;
 
 	/* disable Legacy PME */

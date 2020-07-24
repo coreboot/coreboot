@@ -74,7 +74,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 
 #if CONFIG(SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS)
-	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	m_cfg->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 #endif
 
 	if (config->cpu_ratio_override) {

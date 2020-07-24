@@ -223,7 +223,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
 	/* Legacy 8254 timer support */
-	params->Early8254ClockGatingEnable = !CONFIG_USE_LEGACY_8254_TIMER;
+	params->Early8254ClockGatingEnable = !CONFIG(USE_LEGACY_8254_TIMER);
 
 	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
 	       sizeof(params->SerialIoDevMode));
@@ -328,7 +328,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchSirqEnable = config->serirq_mode != SERIRQ_OFF;
 	params->PchSirqMode = config->serirq_mode == SERIRQ_CONTINUOUS;
 
-	params->CpuConfig.Bits.SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	params->CpuConfig.Bits.SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c_voltage); i++)
 		params->SerialIoI2cVoltage[i] = config->i2c_voltage[i];

@@ -668,7 +668,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	if (!CONFIG(SOC_INTEL_GLK))
 		silconfig->MonitorMwaitEnable = 0;
 
-	silconfig->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	silconfig->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 
 	/* Disable setting of EISS bit in FSP. */
 	silconfig->SpiEiss = 0;

@@ -98,6 +98,14 @@ chip soc/amd/picasso
 		.tx_res_tune = 0x01,
 	}"
 
+	# USB OC pin mapping; all ports share one OC pin
+	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[2]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[3]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[4]" = "USB_OC_PIN_0"
+	register "usb_port_overcurrent_pin[5]" = "USB_OC_PIN_0"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN,

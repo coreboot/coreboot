@@ -418,6 +418,22 @@ static void disable_devices(void)
 	pci_write_config32(host_dev, DEVEN, deven);
 }
 
+static void init_egress(void)
+{
+	/* VC0: Enable, ID0, TC0 */
+	EPBAR32(EPVC0RCTL) = (1 << 31) | (0 << 24) | (1 << 0);
+
+	/* No Low Priority Extended VCs, one Extended VC */
+	EPBAR32(EPPVCCAP1) = (0 << 4) | (1 << 0);
+
+	/* VC1: Enable, ID1, TC1 */
+	EPBAR32(EPVC1RCTL) = (1 << 31) | (1 << 24) | (1 << 1);
+
+	/* Poll the VC1 Negotiation Pending bit */
+	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) != 0)
+		;
+}
+
 static void northbridge_dmi_init(void)
 {
 	const bool is_haswell_h = !CONFIG(INTEL_LYNXPOINT_LP);
@@ -462,6 +478,7 @@ static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl, pair;
 
+	init_egress();
 	northbridge_dmi_init();
 
 	/* Enable Power Aware Interrupt Routing. */

@@ -137,6 +137,15 @@ struct soc_amd_picasso_config {
 
 	uint8_t has_usb2_phy_tune_params;
 	struct usb2_phy_tune usb_2_port_tune_params[USB_PORT_COUNT];
+	enum {
+		USB_OC_PIN_0	= 0x0,
+		USB_OC_PIN_1	= 0x1,
+		USB_OC_PIN_2	= 0x2,
+		USB_OC_PIN_3	= 0x3,
+		USB_OC_PIN_4	= 0x4,
+		USB_OC_PIN_5	= 0x5,
+		USB_OC_NONE	= 0xf,
+	} usb_port_overcurrent_pin[USB_PORT_COUNT];
 };
 
 typedef struct soc_amd_picasso_config config_t;

@@ -267,6 +267,13 @@
 /* Currently rmodules, ramstage and smm have heap. */
 #define ENV_STAGE_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)
 
+/* Set USER_SPACE in the makefile for the rare code that runs in userspace */
+#if defined(__USER_SPACE__)
+#define ENV_USER_SPACE		1
+#else
+#define ENV_USER_SPACE		0
+#endif
+
 /**
  * For pre-DRAM stages and post-CAR always build with simple device model, ie.
  * PCI, PNP and CPU functions operate without use of devicetree. The reason

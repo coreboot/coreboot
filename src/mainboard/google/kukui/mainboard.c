@@ -8,6 +8,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
+#include <ec/google/chromeec/ec.h>
 #include <edid.h>
 #include <gpio.h>
 #include <soc/ddp.h>
@@ -53,6 +54,13 @@ static void configure_audio(void)
 	gpio_set_mode(GPIO(CAM_PDN1), PAD_CAM_PDN1_FUNC_I2S2_BCK);
 	gpio_set_mode(GPIO(CAM_PDN0), PAD_CAM_PDN0_FUNC_I2S2_MCK);
 	gpio_set_mode(GPIO(EINT3), PAD_EINT3_FUNC_I2S3_DO);
+}
+
+static void configure_ec(void)
+{
+	/* EC may need SKU ID to identify if it is clamshell or convertible. */
+	if (CONFIG(BOARD_GOOGLE_JACUZZI_COMMON))
+		google_chromeec_set_sku_id(sku_id());
 }
 
 /* Default implementation for boards without panels defined yet. */
@@ -191,6 +199,7 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_usb();
 	configure_audio();
+	configure_ec();
 	if (spm_init())
 		printk(BIOS_ERR,
 		       "SPM initialization failed, suspend/resume may fail.\n");

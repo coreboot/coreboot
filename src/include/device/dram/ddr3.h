@@ -34,10 +34,10 @@
 /** @} */
 
 /**
- * \brief Convenience macro for enabling printk with CONFIG_DEBUG_RAM_SETUP
+ * \brief Convenience macro for enabling printk with CONFIG(DEBUG_RAM_SETUP)
  *
  * Use this macro instead of printk(); for verbose RAM initialization messages.
- * When CONFIG_DEBUG_RAM_SETUP is not selected, these messages are automatically
+ * When CONFIG(DEBUG_RAM_SETUP) is not selected, these messages are automatically
  * disabled.
  * @{
  */

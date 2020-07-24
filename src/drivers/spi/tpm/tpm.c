@@ -41,7 +41,7 @@ static struct spi_slave spi_slave;
 static struct tpm2_info tpm_info;
 
 /*
- * TODO(vbendeb): make CONFIG_DEBUG_TPM an int to allow different level of
+ * TODO(vbendeb): make CONFIG(DEBUG_TPM) an int to allow different level of
  * debug traces. Right now it is either 0 or 1.
  */
 static const int debug_level_ = CONFIG_DEBUG_TPM;

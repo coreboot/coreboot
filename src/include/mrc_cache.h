@@ -14,7 +14,7 @@ enum {
 
 /*
  * It's up to the caller to decide when to retrieve and stash data. There is
- * differentiation on recovery mode CONFIG_HAS_RECOVERY_MRC_CACHE, but that's
+ * differentiation on recovery mode CONFIG(HAS_RECOVERY_MRC_CACHE), but that's
  * only for locating where to retrieve and save the data. If a platform doesn't
  * want to update the data then it shouldn't stash the data for saving.
  * Similarly, if the platform doesn't need the data for booting because of a

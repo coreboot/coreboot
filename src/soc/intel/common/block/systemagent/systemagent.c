@@ -226,7 +226,7 @@ static void imr_resource(struct device *dev, int idx, uint32_t base,
 
 /*
  * Add IMR ranges that hang off the host bridge/memory
- * controller device in case CONFIG_SA_ENABLE_IMR is selected by SoC.
+ * controller device in case CONFIG(SA_ENABLE_IMR) is selected by SoC.
  */
 static void sa_add_imr_resources(struct device *dev, int *resource_cnt)
 {

@@ -40,7 +40,7 @@
 #define MCH_PAIR	0x5418
 
 /*
- * IMR register in case CONFIG_SA_ENABLE_IMR is selected by SoC.
+ * IMR register in case CONFIG(SA_ENABLE_IMR) is selected by SoC.
  *
  * IMR registers are found under MCHBAR.
  */

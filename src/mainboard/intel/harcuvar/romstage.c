@@ -12,7 +12,7 @@
 /*
  * Define platform specific Memory Down Configure structure.
  *
- * If CONFIG_ENABLE_FSP_MEMORY_DOWN is enabled, the MEMORY_DOWN_CONFIG
+ * If CONFIG(ENABLE_FSP_MEMORY_DOWN) is enabled, the MEMORY_DOWN_CONFIG
  * structure should be customized to match the design.
  *
  * .SlotState indicates the memory down state of the specific channel/DIMM.

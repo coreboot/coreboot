@@ -33,7 +33,7 @@ int get_recovery_mode_switch(void)
 }
 
 /**
- * Only used if CONFIG_CHROMEOS is set.
+ * Only used if CONFIG(CHROMEOS) is set.
  * Always zero as the #WP pin of the flash is tied high.
  */
 int get_write_protect_state(void)

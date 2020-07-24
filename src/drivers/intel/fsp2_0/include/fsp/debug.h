@@ -24,7 +24,7 @@ void fsp_verify_memory_init_hobs(void);
 void fsp_print_header_info(const struct fsp_header *hdr);
 
 /* Callbacks for displaying UPD parameters - place in a separate file
- * that is conditionally build with CONFIG_DISPLAY_UPD_DATA.
+ * that is conditionally build with CONFIG(DISPLAY_UPD_DATA).
  */
 void soc_display_fspm_upd_params(const FSPM_UPD *fspm_old_upd,
 	const FSPM_UPD *fspm_new_upd);
@@ -32,7 +32,7 @@ void soc_display_fsps_upd_params(const FSPS_UPD *fsps_old_upd,
 	const FSPS_UPD *fsps_new_upd);
 
 /* Callbacks for displaying HOBs - place in a separate file that is
- * conditionally build with CONFIG_DISPLAY_HOBS.
+ * conditionally build with CONFIG(DISPLAY_HOBS).
  */
 const char *soc_get_hob_type_name(const struct hob_header *hob);
 const char *soc_get_guid_name(const uint8_t *guid);

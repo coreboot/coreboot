@@ -653,7 +653,7 @@ static void print_us(const char *msg, u32 val)
 /**
 * \brief Print the info in DIMM
 *
-* Print info about the DIMM. Useful to use when CONFIG_DEBUG_RAM_SETUP is
+* Print info about the DIMM. Useful to use when CONFIG(DEBUG_RAM_SETUP) is
 * selected, or for a purely informative output.
 *
 * @param dimm pointer to already decoded @ref dimm_attr structure

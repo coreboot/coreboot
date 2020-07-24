@@ -6,8 +6,8 @@
 
 /*
  * vboot callbacks implemented by coreboot -- necessary for making general API
- * calls when CONFIG_VBOOT_LIB is enabled.  For callbacks specific to verstage
- * (CONFIG_VBOOT), please see vboot_logic.c.
+ * calls when CONFIG(VBOOT_LIB) is enabled.  For callbacks specific to verstage
+ * CONFIG(VBOOT), please see vboot_logic.c.
  */
 
 void vb2ex_printf(const char *func, const char *fmt, ...)

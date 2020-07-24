@@ -9,7 +9,7 @@
  * This function performs early initialization of the EC:
  *
  * - Enable EC UART passthru for COM1 if serial console support
- *   is enabled with CONFIG_DRIVERS_UART_8250IO.
+ *   is enabled with CONFIG(DRIVERS_UART_8250IO).
  */
 void wilco_ec_early_init(void);
 

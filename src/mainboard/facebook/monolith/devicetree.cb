@@ -36,7 +36,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "1"
 
 	# FSP Configuration
-	register "EnableAzalia" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"

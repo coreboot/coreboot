@@ -1,7 +1,6 @@
 chip soc/intel/skylake
 
 	# FSP Configuration
-	register "EnableAzalia" = "1"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
@@ -126,6 +125,7 @@ chip soc/intel/skylake
 		device pci 1e.3 on  end # GSPI #1
 		device pci 1e.4 off end # eMMC
 		device pci 1e.6 off end # SDCard
+		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.6 on  end # GbE
 	end
 end

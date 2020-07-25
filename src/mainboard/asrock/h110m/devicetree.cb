@@ -36,7 +36,6 @@ chip soc/intel/skylake
 	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Enabled"
 	register "PmTimerDisabled" = "0"
-	register "EnableAzalia" = "1"
 	register "DspEnable" = "0"
 	register "PchHdaVcType" = "Vc1"
 

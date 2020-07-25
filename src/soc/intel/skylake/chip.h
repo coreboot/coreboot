@@ -157,7 +157,6 @@ struct soc_intel_skylake_config {
 	u8 SataSpeedLimit;
 
 	/* Audio related */
-	u8 EnableAzalia;
 	u8 DspEnable;
 
 	/* HDA Virtual Channel Type Select */

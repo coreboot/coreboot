@@ -157,7 +157,7 @@ chip soc/intel/skylake
 		device pci 1f.0 on  end # LPC Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.3 off end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE

@@ -18,7 +18,6 @@ chip soc/intel/skylake
 	register "speed_shift_enable" = "1"
 
 	# FSP Configuration
-	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
 	register "ScsEmmcHs400Enabled" = "0"

@@ -46,7 +46,6 @@ chip soc/intel/skylake
 	register "SataPortsDevSlp[0]" = "1"
 	register "SataPortsDevSlp[1]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
-	register "EnableAzalia" = "1"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SsicPortEnable" = "0"

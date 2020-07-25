@@ -7,7 +7,6 @@ chip soc/intel/skylake
 	register "gen2_dec" = "0x000c0201"
 
 	# FSP Configuration
-        register "EnableAzalia" = "1"
         register "DspEnable" = "1"
         register "IoBufferOwnership" = "0"
 	register "HeciEnabled" = "0"
@@ -134,5 +133,6 @@ chip soc/intel/skylake
 				device pnp 0c31.0 on end
 			end
 		end # LPC Interface
+		device pci 1f.3 on  end # Intel HDA
 	end
 end

@@ -272,7 +272,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	params->PchIshEnable = dev ? dev->enabled : 0;
 
-	params->PchHdaEnable = config->EnableAzalia;
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
+	params->PchHdaEnable = dev ? dev->enabled : 0;
+
 	params->PchHdaVcType = config->PchHdaVcType;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;

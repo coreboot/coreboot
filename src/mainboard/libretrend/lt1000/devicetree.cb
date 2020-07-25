@@ -50,7 +50,6 @@ chip soc/intel/skylake
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "0"
-	register "EnableTraceHub" = "0"
 	register "SsicPortEnable" = "0"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "0"

@@ -175,7 +175,6 @@ struct soc_intel_skylake_config {
 	u8 IoBufferOwnership;
 
 	/* Trace Hub function */
-	u8 EnableTraceHub;
 	u32 TraceHubMemReg0Size;
 	u32 TraceHubMemReg1Size;
 

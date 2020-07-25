@@ -293,7 +293,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* DCI and TraceHub configs */
 	m_t_cfg->PchDciEn = config->PchDciEn;
-	m_cfg->EnableTraceHub = config->EnableTraceHub;
+
+	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
+	m_cfg->EnableTraceHub = dev ? dev->enabled : 0;
 	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
 	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
 

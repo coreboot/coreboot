@@ -99,13 +99,17 @@ chip soc/intel/skylake
 							io 0x62 = 0xa10
 							io 0x64 = 0xa20
 							io 0x66 = 0xa30
-							irq 0x70 = 0xb
+							irq 0x70 = 0x00
 						end
 						device pnp 2e.5 off end	# KBC
-						device pnp 2e.7 on  end	# GPIO
+						device pnp 2e.7 on	# GPIO
+							irq 0x70 = 0x00
+						end
 						device pnp 2e.b off end	# SUART3
 						device pnp 2e.c off end	# SUART4
-						device pnp 2e.d on end	# iLPC2AHB
+						device pnp 2e.d on	# iLPC2AHB
+							irq 0x70 = 0x00
+						end
 						device pnp 2e.e on	# Mailbox
 							io 0x60 = 0xa40
 							irq 0x70 = 0x00

@@ -175,14 +175,14 @@ chip soc/intel/skylake
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 
-	register "pirqa_routing" = "0x0b"
-	register "pirqb_routing" = "0x0a"
-	register "pirqc_routing" = "0x0b"
-	register "pirqd_routing" = "0x0b"
-	register "pirqe_routing" = "0x0b"
-	register "pirqf_routing" = "0x0b"
-	register "pirqg_routing" = "0x0b"
-	register "pirqh_routing" = "0x0b"
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
 
 	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"

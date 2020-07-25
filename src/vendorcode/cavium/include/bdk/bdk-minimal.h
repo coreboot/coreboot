@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
  * reserved.
  * Copyright 2017-present Facebook, Inc.

@@ -50,8 +50,6 @@ chip soc/intel/skylake
 	# RP17, uses uses CLK SRC 7
 	register "PcieRpClkSrcNumber[16]" = "7"
 
-	register EnableLan = "1"
-
 	# USB related
 	register "SsicPortEnable" = "1"
 

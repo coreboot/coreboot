@@ -125,8 +125,6 @@ chip soc/intel/skylake
 		.voltage_limit = 1520 \
 	}"
 
-	register "EnableLan" = "0"
-
 	# USB
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"

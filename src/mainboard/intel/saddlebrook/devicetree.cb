@@ -140,8 +140,6 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[5]" = "0"
 	register "PcieRpClkReqNumber[12]" = "1"
 
-	register "EnableLan" = "1"
-
 	# USB related
 	register "SsicPortEnable" = "1"
 

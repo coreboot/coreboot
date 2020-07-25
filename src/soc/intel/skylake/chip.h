@@ -136,7 +136,6 @@ struct soc_intel_skylake_config {
 	u8 CmdTriStateDis;
 
 	/* Lan */
-	u8 EnableLan;
 	u8 EnableLanLtr;
 	u8 EnableLanK1Off;
 	u8 LanClkReqSupported;

@@ -47,7 +47,6 @@ chip soc/intel/skylake
 	register "Cio2Enable" = "0"
 	register "PmTimerDisabled" = "1"
 	register "HeciEnabled" = "0"
-	register "EnableLan" = "1"
 
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \

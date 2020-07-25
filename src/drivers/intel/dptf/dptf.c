@@ -209,9 +209,11 @@ static void write_options(const struct drivers_intel_dptf_config *config)
 	int i;
 
 	/* Fan options */
+	dptf_write_scope(DPTF_FAN);
 	dptf_write_fan_options(config->options.fan.fine_grained_control,
 			       config->options.fan.step_size,
 			       config->options.fan.low_speed_notify);
+	acpigen_pop_len(); /* Scope */
 
 	/* TSR options */
 	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {

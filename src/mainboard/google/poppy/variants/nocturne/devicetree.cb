@@ -73,15 +73,6 @@ chip soc/intel/skylake
 	}"
 	register "tcc_offset" = "10"
 
-	register "pirqa_routing" = "PCH_IRQ11"
-	register "pirqb_routing" = "PCH_IRQ10"
-	register "pirqc_routing" = "PCH_IRQ11"
-	register "pirqd_routing" = "PCH_IRQ11"
-	register "pirqe_routing" = "PCH_IRQ11"
-	register "pirqf_routing" = "PCH_IRQ11"
-	register "pirqg_routing" = "PCH_IRQ11"
-	register "pirqh_routing" = "PCH_IRQ11"
-
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

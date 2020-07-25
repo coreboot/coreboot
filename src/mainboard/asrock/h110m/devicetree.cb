@@ -42,15 +42,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "PchHdaVcType" = "Vc1"
 
-	register "pirqa_routing" = "PCH_IRQ11"
-	register "pirqb_routing" = "PCH_IRQ10"
-	register "pirqc_routing" = "PCH_IRQ11"
-	register "pirqd_routing" = "PCH_IRQ11"
-	register "pirqe_routing" = "PCH_IRQ11"
-	register "pirqf_routing" = "PCH_IRQ11"
-	register "pirqg_routing" = "PCH_IRQ11"
-	register "pirqh_routing" = "PCH_IRQ11"
-
 	# Set LPC Serial IRQ mode
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 

@@ -64,15 +64,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
 
-	register "pirqa_routing" = "PCH_IRQ11"
-	register "pirqb_routing" = "PCH_IRQ10"
-	register "pirqc_routing" = "PCH_IRQ11"
-	register "pirqd_routing" = "PCH_IRQ11"
-	register "pirqe_routing" = "PCH_IRQ11"
-	register "pirqf_routing" = "PCH_IRQ11"
-	register "pirqg_routing" = "PCH_IRQ11"
-	register "pirqh_routing" = "PCH_IRQ11"
-
 	# Enable Root port 1
 	register "PcieRpEnable[0]" = "1"
 	# Enable CLKREQ#

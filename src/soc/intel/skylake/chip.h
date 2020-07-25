@@ -49,19 +49,6 @@ struct soc_intel_skylake_config {
 		GPU_BACKLIGHT_POLARITY_LOW,
 	} gpu_pch_backlight_polarity;
 
-	/*
-	 * Interrupt Routing configuration
-	 * If bit7 is 1, the interrupt is disabled.
-	 */
-	uint8_t pirqa_routing;
-	uint8_t pirqb_routing;
-	uint8_t pirqc_routing;
-	uint8_t pirqd_routing;
-	uint8_t pirqe_routing;
-	uint8_t pirqf_routing;
-	uint8_t pirqg_routing;
-	uint8_t pirqh_routing;
-
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form GPP_[A:G] or GPD. */
 	uint8_t gpe0_dw0; /* GPE0_31_0 STS/EN */

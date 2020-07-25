@@ -240,18 +240,17 @@ void soc_irq_settings(FSP_SIL_UPD *params)
 
 void soc_pch_pirq_init(const struct device *dev)
 {
-	const config_t *config = config_of(dev);
 	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
 	struct device *irq_dev;
 
-	pch_interrupt_routing[0] = config->pirqa_routing;
-	pch_interrupt_routing[1] = config->pirqb_routing;
-	pch_interrupt_routing[2] = config->pirqc_routing;
-	pch_interrupt_routing[3] = config->pirqd_routing;
-	pch_interrupt_routing[4] = config->pirqe_routing;
-	pch_interrupt_routing[5] = config->pirqf_routing;
-	pch_interrupt_routing[6] = config->pirqg_routing;
-	pch_interrupt_routing[7] = config->pirqh_routing;
+	pch_interrupt_routing[0] = PCH_IRQ11;
+	pch_interrupt_routing[1] = PCH_IRQ10;
+	pch_interrupt_routing[2] = PCH_IRQ11;
+	pch_interrupt_routing[3] = PCH_IRQ11;
+	pch_interrupt_routing[4] = PCH_IRQ11;
+	pch_interrupt_routing[5] = PCH_IRQ11;
+	pch_interrupt_routing[6] = PCH_IRQ11;
+	pch_interrupt_routing[7] = PCH_IRQ11;
 
 	itss_irq_init(pch_interrupt_routing);
 
@@ -265,16 +264,16 @@ void soc_pch_pirq_init(const struct device *dev)
 
 		switch (int_pin) {
 		case 1: /* INTA# */
-			int_line = config->pirqa_routing;
+			int_line = pch_interrupt_routing[0];
 			break;
 		case 2: /* INTB# */
-			int_line = config->pirqb_routing;
+			int_line = pch_interrupt_routing[1];
 			break;
 		case 3: /* INTC# */
-			int_line = config->pirqc_routing;
+			int_line = pch_interrupt_routing[2];
 			break;
 		case 4: /* INTD# */
-			int_line = config->pirqd_routing;
+			int_line = pch_interrupt_routing[3];
 			break;
 		}
 

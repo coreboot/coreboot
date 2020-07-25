@@ -62,15 +62,6 @@ chip soc/intel/skylake
 			[7]	= 0, \
 		}"
 
-	register "pirqa_routing" = "PCH_IRQ11"
-	register "pirqb_routing" = "PCH_IRQ10"
-	register "pirqc_routing" = "PCH_IRQ11"
-	register "pirqd_routing" = "PCH_IRQ11"
-	register "pirqe_routing" = "PCH_IRQ11"
-	register "pirqf_routing" = "PCH_IRQ11"
-	register "pirqg_routing" = "PCH_IRQ11"
-	register "pirqh_routing" = "PCH_IRQ11"
-
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
 	register "PmConfigSlpS3MinAssert" = "2"

@@ -315,7 +315,6 @@ struct soc_intel_skylake_config {
 	u8 PttSwitch;
 	u8 HeciTimeouts;
 	u8 HsioMessaging;
-	u8 Heci3Enabled;
 
 	/* Gfx related */
 	u8 IgdDvmt50PreAlloc;

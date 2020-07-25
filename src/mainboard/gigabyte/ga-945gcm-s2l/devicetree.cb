@@ -27,14 +27,14 @@ chip northbridge/intel/i945
 		end
 
 		chip southbridge/intel/i82801gx
-			register "pirqa_routing" = "0x8c"
-			register "pirqb_routing" = "0x8a"
-			register "pirqc_routing" = "0x83"
-			register "pirqd_routing" = "0x8b"
+			register "pirqa_routing" = "0x80"
+			register "pirqb_routing" = "0x80"
+			register "pirqc_routing" = "0x80"
+			register "pirqd_routing" = "0x80"
 			register "pirqe_routing" = "0x80"
 			register "pirqf_routing" = "0x80"
 			register "pirqg_routing" = "0x80"
-			register "pirqh_routing" = "0x85"
+			register "pirqh_routing" = "0x80"
 
 			# GPI routing
 			#  0 No effect (default)

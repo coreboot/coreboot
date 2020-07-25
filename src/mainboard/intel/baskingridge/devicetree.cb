@@ -32,10 +32,10 @@ chip northbridge/intel/haswell
 		device pci 02.0 on end # vga controller
 
 		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
-			register "pirqa_routing" = "0x8b"
-			register "pirqb_routing" = "0x8a"
-			register "pirqc_routing" = "0x8b"
-			register "pirqd_routing" = "0x8b"
+			register "pirqa_routing" = "0x80"
+			register "pirqb_routing" = "0x80"
+			register "pirqc_routing" = "0x80"
+			register "pirqd_routing" = "0x80"
 			register "pirqe_routing" = "0x80"
 			register "pirqf_routing" = "0x80"
 			register "pirqg_routing" = "0x80"

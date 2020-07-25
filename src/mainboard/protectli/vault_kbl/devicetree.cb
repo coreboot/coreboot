@@ -41,7 +41,6 @@ chip soc/intel/skylake
 	register "IoBufferOwnership" = "0"
 	register "SsicPortEnable" = "0"
 	register "Cio2Enable" = "0"
-	register "ScsEmmcEnabled" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
 	register "SkipExtGfxScan" = "1"

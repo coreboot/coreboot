@@ -7,7 +7,6 @@ chip soc/intel/skylake
 	register "speed_shift_enable" = "1"
 
 	# FSP Configuration
-	register "ScsEmmcEnabled" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
 	register "SkipExtGfxScan" = "1"

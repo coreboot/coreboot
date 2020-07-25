@@ -27,7 +27,6 @@ chip soc/intel/skylake
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
-	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "2"
 	register "SkipExtGfxScan" = "1"

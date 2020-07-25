@@ -306,7 +306,6 @@ struct soc_intel_skylake_config {
 	u8 SaImguEnable;
 
 	/* eMMC and SD */
-	u8 ScsEmmcEnabled;
 	u8 ScsEmmcHs400Enabled;
 	u8 ScsSdCardEnabled;
 	u8 EmmcHs400DllNeed;

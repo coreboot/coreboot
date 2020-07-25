@@ -4,7 +4,6 @@ chip soc/intel/skylake
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
-	register "ScsEmmcEnabled" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
 	register "Device4Enable" = "0"

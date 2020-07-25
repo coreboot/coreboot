@@ -1,6 +1,130 @@
 chip soc/intel/tigerlake
+	# BitMask where bits [3:0] are Controller 0 Channel [3:0] and
+	# bits [7:4] are Controller 1 Channel [3:0].
+	# Enable Command Mirroring for controller 0 channel 0 and 1,
+	# and controller 1 channel 0 and 1.
+	register "CmdMirror" = "0x00000033"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A / Type-C Port 0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A / Type-C Port 1
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
+
+	register "SaGv" = "SaGv_Disabled"
 
 	device domain 0 on
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_R5)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+				end
+			end
+		end # I2C #0			0xA0E8
+		device pci 15.1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 14 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN90FC""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end # I2C1				0xA0E9
+		device pci 15.2 on
+			chip drivers/i2c/sx9310
+				register "desc" = ""SAR0 Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
+				register "speed" = "I2C_SPEED_FAST"
+				register "uid" = "0"
+				register "reg_prox_ctrl0" = "0x10"
+				register "reg_prox_ctrl1" = "0x00"
+				register "reg_prox_ctrl2" = "0x84"
+				register "reg_prox_ctrl3" = "0x0e"
+				register "reg_prox_ctrl4" = "0x07"
+				register "reg_prox_ctrl5" = "0xc6"
+				register "reg_prox_ctrl6" = "0x20"
+				register "reg_prox_ctrl7" = "0x0d"
+				register "reg_prox_ctrl8" = "0x8d"
+				register "reg_prox_ctrl9" = "0x43"
+				register "reg_prox_ctrl10" = "0x1f"
+				register "reg_prox_ctrl11" = "0x00"
+				register "reg_prox_ctrl12" = "0x00"
+				register "reg_prox_ctrl13" = "0x00"
+				register "reg_prox_ctrl14" = "0x00"
+				register "reg_prox_ctrl15" = "0x00"
+				register "reg_prox_ctrl16" = "0x00"
+				register "reg_prox_ctrl17" = "0x00"
+				register "reg_prox_ctrl18" = "0x00"
+				register "reg_prox_ctrl19" = "0x00"
+				register "reg_sar_ctrl0" = "0x50"
+				register "reg_sar_ctrl1" = "0x8a"
+				register "reg_sar_ctrl2" = "0x3c"
+				device i2c 28 on end
+			end
+		end # I2C2				0xA0EA
+		device pci 19.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end # I2C5				0xA0C6
 	end
-
 end

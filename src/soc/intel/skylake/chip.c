@@ -166,14 +166,29 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		}
 	}
 
-	memcpy(params->SataPortsEnable, config->SataPortsEnable,
-	       sizeof(params->SataPortsEnable));
-	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
-	       sizeof(params->SataPortsDevSlp));
-	memcpy(params->SataPortsHotPlug, config->SataPortsHotPlug,
-	       sizeof(params->SataPortsHotPlug));
-	memcpy(params->SataPortsSpinUp, config->SataPortsSpinUp,
-	       sizeof(params->SataPortsSpinUp));
+	params->SataEnable = config->EnableSata;
+	if (config->EnableSata) {
+		memcpy(params->SataPortsEnable, config->SataPortsEnable,
+				sizeof(params->SataPortsEnable));
+		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+				sizeof(params->SataPortsDevSlp));
+		memcpy(params->SataPortsHotPlug, config->SataPortsHotPlug,
+				sizeof(params->SataPortsHotPlug));
+		memcpy(params->SataPortsSpinUp, config->SataPortsSpinUp,
+				sizeof(params->SataPortsSpinUp));
+
+		params->SataSalpSupport = config->SataSalpSupport;
+		params->SataMode = config->SataMode;
+		params->SataSpeedLimit = config->SataSpeedLimit;
+		/*
+		 * For unknown reasons FSP skips writing some essential SATA init registers
+		 * (SIR) when SataPwrOptEnable=0. This results in link errors, "unaligned
+		 * write" errors and others. Enabling this option solves these problems.
+		 */
+		params->SataPwrOptEnable = 1;
+		tconfig->SataTestMode = config->SataTestMode;
+	}
+
 	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
 	       sizeof(params->PcieRpClkReqSupport));
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
@@ -233,7 +248,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchLanClkReqSupported = config->LanClkReqSupported;
 		params->PchLanClkReqNumber = config->LanClkReqNumber;
 	}
-	params->SataSalpSupport = config->SataSalpSupport;
 	params->SsicPortEnable = config->SsicPortEnable;
 	params->ScsEmmcEnabled = config->ScsEmmcEnabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
@@ -257,22 +271,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;
 	params->Device4Enable = config->Device4Enable;
-	params->SataEnable = config->EnableSata;
-	params->SataMode = config->SataMode;
-	params->SataSpeedLimit = config->SataSpeedLimit;
 	params->EnableTcoTimer = !config->PmTimerDisabled;
 
-	/*
-	 * For unknown reasons FSP skips writing some essential SATA init registers (SIR) when
-	 * SataPwrOptEnable=0. This results in link errors, "unaligned write" errors and others.
-	 * Enabling this option solves these problems.
-	 */
-	params->SataPwrOptEnable = 1;
 
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	tconfig->PowerLimit4 = config->PowerLimit4;
-	tconfig->SataTestMode = config->SataTestMode;
 	/*
 	 * To disable HECI, the Psf needs to be left unlocked
 	 * by FSP till end of post sequence. Based on the devicetree

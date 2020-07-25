@@ -520,7 +520,9 @@ static void lpc_init(struct device *dev)
 	report_pch_info(dev);
 
 	/* Set the value for PCI command register. */
-	pci_write_config16(dev, PCI_COMMAND, 0x000f);
+	pci_write_config16(dev, PCI_COMMAND,
+			   PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL |
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	/* IO APIC initialization. */
 	pch_enable_ioapic(dev);

@@ -36,7 +36,7 @@ int smbus_enable_iobar(uintptr_t base)
 	pci_write_config32(smbus_dev, PCI_BASE_ADDRESS_4, reg);
 	/* Enable decode of I/O space. */
 	reg = pci_read_config16(smbus_dev, PCI_COMMAND);
-	reg |= 0x1;
+	reg |= PCI_COMMAND_IO;
 	pci_write_config16(smbus_dev, PCI_COMMAND, reg);
 	/* Enable Host Controller */
 	reg = pci_read_config8(smbus_dev, 0x40);

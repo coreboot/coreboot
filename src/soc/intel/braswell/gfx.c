@@ -14,7 +14,7 @@
 
 static const struct reg_script gpu_pre_vbios_script[] = {
 	/* Make sure GFX is bus master with MMIO access */
-	REG_PCI_OR32(PCI_COMMAND, PCI_COMMAND_MASTER|PCI_COMMAND_MEMORY),
+	REG_PCI_OR32(PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY),
 	REG_SCRIPT_END
 };
 

@@ -88,7 +88,8 @@ static void sata_init(struct device *dev)
 	ports = get_ich7_sata_ports();
 
 	/* Enable BARs */
-	pci_write_config16(dev, PCI_COMMAND, 0x0007);
+	pci_write_config16(dev, PCI_COMMAND,
+			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	switch (config->sata_mode) {
 	case SATA_MODE_IDE_LEGACY_COMBINED:

@@ -57,7 +57,6 @@ chip soc/intel/skylake
 	register "IoBufferOwnership" = "0"
 	register "EnableTraceHub" = "0"
 	register "SsicPortEnable" = "0"
-	register "SmbusEnable" = "1"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "0"
 	register "ScsEmmcHs400Enabled" = "0"

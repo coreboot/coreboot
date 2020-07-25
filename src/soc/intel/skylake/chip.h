@@ -272,9 +272,6 @@ struct soc_intel_skylake_config {
 	struct usb3_port_config usb3_ports[10];
 	u8 SsicPortEnable;
 
-	/* SMBus */
-	u8 SmbusEnable;
-
 	/*
 	 * SerialIO device mode selection:
 	 *

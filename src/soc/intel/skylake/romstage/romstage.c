@@ -272,6 +272,7 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_skylake_config *config;
+	const struct device *dev;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;
 
@@ -296,8 +297,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
 	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
 
-	/* Enable SMBus controller based on config */
-	m_cfg->SmbusEnable = config->SmbusEnable;
+	/* Enable SMBus controller */
+	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);
+	m_cfg->SmbusEnable = dev ? dev->enabled : 0;
 
 	/* Set primary graphic device */
 	soc_primary_gfx_config_params(m_cfg, config);

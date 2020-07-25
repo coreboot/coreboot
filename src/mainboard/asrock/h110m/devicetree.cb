@@ -28,7 +28,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "1"
 
 	# FSP Configuration
-	register "SmbusEnable" = "1"
 	register "ScsEmmcEnabled" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"

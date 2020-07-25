@@ -3,11 +3,13 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
+#include <device/pci_rom.h>
 #include <device/resource.h>
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <intelblocks/graphics.h>
 #include <soc/ramstage.h>
+#include <soc/systemagent.h>
 #include <types.h>
 
 void graphics_soc_init(struct device *dev)
@@ -75,4 +77,22 @@ intel_igd_get_controller_info(const struct device *device)
 {
 	struct soc_intel_skylake_config *chip = device->chip_info;
 	return &chip->gfx;
+}
+
+/*
+ * Some VGA option roms are used for several chipsets but they only have one PCI ID in their
+ * header. If we encounter such an option rom, we need to do the mapping ourselves.
+ */
+u32 map_oprom_vendev(u32 vendev)
+{
+	u32 new_vendev = vendev;
+
+	switch (vendev) {
+	case 0x80865916: /* PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM */
+	case 0x80865917: /* PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR */
+		new_vendev = SA_IGD_OPROM_VENDEV;
+		break;
+	}
+
+	return new_vendev;
 }

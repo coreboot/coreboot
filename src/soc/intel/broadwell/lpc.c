@@ -90,17 +90,18 @@ static void enable_hpet(struct device *dev)
 static void pch_pirq_init(struct device *dev)
 {
 	struct device *irq_dev;
-	config_t *config = config_of(dev);
 
-	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
-	pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
-	pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
-	pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
+	const uint8_t pirq = 0x80;
 
-	pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
-	pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
-	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
-	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
+	pci_write_config8(dev, PIRQA_ROUT, pirq);
+	pci_write_config8(dev, PIRQB_ROUT, pirq);
+	pci_write_config8(dev, PIRQC_ROUT, pirq);
+	pci_write_config8(dev, PIRQD_ROUT, pirq);
+
+	pci_write_config8(dev, PIRQE_ROUT, pirq);
+	pci_write_config8(dev, PIRQF_ROUT, pirq);
+	pci_write_config8(dev, PIRQG_ROUT, pirq);
+	pci_write_config8(dev, PIRQH_ROUT, pirq);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
 		u8 int_pin = 0, int_line = 0;
@@ -112,16 +113,10 @@ static void pch_pirq_init(struct device *dev)
 
 		switch (int_pin) {
 		case 1: /* INTA# */
-			int_line = config->pirqa_routing;
-			break;
 		case 2: /* INTB# */
-			int_line = config->pirqb_routing;
-			break;
 		case 3: /* INTC# */
-			int_line = config->pirqc_routing;
-			break;
 		case 4: /* INTD# */
-			int_line = config->pirqd_routing;
+			int_line = pirq;
 			break;
 		}
 

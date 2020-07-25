@@ -96,18 +96,18 @@ static void pch_enable_serial_irqs(struct device *dev)
 static void pch_pirq_init(struct device *dev)
 {
 	struct device *irq_dev;
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
 
-	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
-	pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
-	pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
-	pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
+	const uint8_t pirq = 0x80;
 
-	pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
-	pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
-	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
-	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
+	pci_write_config8(dev, PIRQA_ROUT, pirq);
+	pci_write_config8(dev, PIRQB_ROUT, pirq);
+	pci_write_config8(dev, PIRQC_ROUT, pirq);
+	pci_write_config8(dev, PIRQD_ROUT, pirq);
+
+	pci_write_config8(dev, PIRQE_ROUT, pirq);
+	pci_write_config8(dev, PIRQF_ROUT, pirq);
+	pci_write_config8(dev, PIRQG_ROUT, pirq);
+	pci_write_config8(dev, PIRQH_ROUT, pirq);
 
 	/* Eric Biederman once said we should let the OS do this.
 	 * I am not so sure anymore he was right.
@@ -122,10 +122,12 @@ static void pch_pirq_init(struct device *dev)
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
 		switch (int_pin) {
-		case 1: /* INTA# */ int_line = config->pirqa_routing; break;
-		case 2: /* INTB# */ int_line = config->pirqb_routing; break;
-		case 3: /* INTC# */ int_line = config->pirqc_routing; break;
-		case 4: /* INTD# */ int_line = config->pirqd_routing; break;
+		case 1: /* INTA# */
+		case 2: /* INTB# */
+		case 3: /* INTC# */
+		case 4: /* INTD# */
+			int_line = pirq;
+			break;
 		}
 
 		if (!int_line)

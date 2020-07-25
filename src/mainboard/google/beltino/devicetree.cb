@@ -36,15 +36,6 @@ chip northbridge/intel/haswell
 		device pci 03.0 on end # mini-hd audio
 
 		chip southbridge/intel/lynxpoint
-			register "pirqa_routing" = "0x80"
-			register "pirqb_routing" = "0x80"
-			register "pirqc_routing" = "0x80"
-			register "pirqd_routing" = "0x80"
-			register "pirqe_routing" = "0x80"
-			register "pirqf_routing" = "0x80"
-			register "pirqg_routing" = "0x80"
-			register "pirqh_routing" = "0x80"
-
 			# SuperIO range is 0x700-0x73f
 			register "gen2_dec" = "0x003c0701"
 

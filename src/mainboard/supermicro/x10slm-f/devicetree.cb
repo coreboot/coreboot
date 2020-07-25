@@ -26,15 +26,6 @@ chip northbridge/intel/haswell
 		device pci 03.0 off end # Mini-HD audio
 
 		chip southbridge/intel/lynxpoint
-			register "pirqa_routing" = "0x80"
-			register "pirqb_routing" = "0x80"
-			register "pirqc_routing" = "0x80"
-			register "pirqd_routing" = "0x80"
-			register "pirqe_routing" = "0x80"
-			register "pirqf_routing" = "0x80"
-			register "pirqg_routing" = "0x80"
-			register "pirqh_routing" = "0x80"
-
 			register "sata_ahci" = "1"
 			register "sata_port_map" = "0x3f"
 

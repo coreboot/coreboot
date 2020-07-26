@@ -360,13 +360,12 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 		set_vbe_mode_info_valid(&edid, pgfx);
 	} else {
-			vga_misc_write(0x67);
+		vga_misc_write(0x67);
 
-			write32(mmiobase + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
-			write32(mmiobase + VGACNTRL, 0x02c4008e
-				| VGA_PIPE_B_SELECT);
+		write32(mmiobase + DSPCNTR(0), DISPPLANE_SEL_PIPE_B);
+		write32(mmiobase + VGACNTRL, 0x02c4008e | VGA_PIPE_B_SELECT);
 
-			vga_textmode_init();
+		vga_textmode_init();
 	}
 	return 0;
 }

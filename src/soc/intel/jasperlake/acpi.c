@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
@@ -187,7 +188,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
-	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten) {
+	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
 		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
@@ -200,7 +201,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
 	bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
 
-	if (ipu_dev && ipu_dev->enabled && ipuvtbar && ipuvten) {
+	if (is_dev_enabled(ipu_dev) && ipuvtbar && ipuvten) {
 		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, ipuvtbar);

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <assert.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
@@ -92,11 +93,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-
-	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
-		params->PeiGraphicsPeimInit = 1;
-	else
-		params->PeiGraphicsPeimInit = 0;
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
 
 	/* Use coreboot MP PPI services if Kconfig is enabled */
 	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI)) {
@@ -161,8 +158,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* SATA */
 	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	if (dev) {
-		params->SataEnable = dev->enabled;
+	params->SataEnable = is_dev_enabled(dev);
+	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
 
@@ -175,18 +172,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 				ARRAY_SIZE(config->SataPortsDevSlp), "copy buffer overflow!");
 		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
 				sizeof(params->SataPortsDevSlp));
-	} else {
-		params->SataEnable = 0;
 	}
 
 	/* SDCard related configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
-	if (!dev) {
-		params->ScsSdCardEnabled = 0;
-	} else {
-		params->ScsSdCardEnabled = dev->enabled;
+	params->ScsSdCardEnabled = is_dev_enabled(dev);
+	if (params->ScsSdCardEnabled)
 		params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
-	}
 
 	params->Device4Enable = config->Device4Enable;
 
@@ -195,12 +187,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* eMMC configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
-	if (!dev) {
-		params->ScsEmmcEnabled = 0;
-	} else {
-		params->ScsEmmcEnabled = dev->enabled;
+	params->ScsEmmcEnabled = is_dev_enabled(dev);
+	if (params->ScsEmmcEnabled)
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
-	}
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);

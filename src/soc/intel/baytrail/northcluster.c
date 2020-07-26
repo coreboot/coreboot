@@ -101,14 +101,17 @@ static void nc_read_resources(struct device *dev)
 	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
 	mmio_resource(dev, index++, smmrrh, bmbound_k - smmrrh);
 
-	/* The BMBOUND_HI register matches register bits of 31:24 with address
-	 * bits of 35:28. Therefore, shift register to align properly. */
+	/*
+	 * The BMBOUND_HI register matches register bits of 31:24 with address
+	 * bits of 35:28. Therefore, shift register to align properly.
+	 */
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
 	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
 	if (bmbound_hi > four_gig_kib)
 		ram_resource(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
 
-	/* Reserve everything between A segment and 1MB:
+	/*
+	 * Reserve everything between A segment and 1MB:
 	 *
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM

@@ -2,7 +2,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "DspEnable" = "0"
-	register "IoBufferOwnership" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
 	register "Device4Enable" = "0"

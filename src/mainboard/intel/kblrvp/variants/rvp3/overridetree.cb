@@ -8,7 +8,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "DspEnable" = "1"
-	register "IoBufferOwnership" = "0"
 	register "PmTimerDisabled" = "1"
 	register "Cio2Enable" = "1"
 	register "SaImguEnable" = "1"

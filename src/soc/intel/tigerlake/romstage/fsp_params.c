@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
@@ -21,16 +22,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	uint32_t cpu_id, mask = 0;
 	const struct device *dev;
 
+	/*
+	 * If IGD is enabled, set IGD stolen size to 60MB.
+	 * Otherwise, skip IGD init in FSP.
+	 */
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (!dev || !dev->enabled) {
-		/* Skip IGD initialization in FSP if device is disabled in devicetree.cb */
-		m_cfg->InternalGfx = 0;
-		m_cfg->IgdDvmt50PreAlloc = 0;
-	} else {
-		m_cfg->InternalGfx = 1;
-		/* Set IGD stolen size to 60MB. */
-		m_cfg->IgdDvmt50PreAlloc = 0xFE;
-	}
+	m_cfg->InternalGfx = is_dev_enabled(dev);
+	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? 0xFE : 0;
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
@@ -76,7 +74,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* TraceHub configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
-	if (dev && dev->enabled && config->TraceHubMode) {
+	if (is_dev_enabled(dev) && config->TraceHubMode) {
 		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
 		m_cfg->PchTraceHubMode = config->TraceHubMode;
 		m_cfg->CpuTraceHubMode = config->TraceHubMode;
@@ -87,10 +85,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* ISH */
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	if (!dev || !dev->enabled)
-		m_cfg->PchIshEnable = 0;
-	else
-		m_cfg->PchIshEnable = 1;
+	m_cfg->PchIshEnable = is_dev_enabled(dev);
 
 	/* DP port config */
 	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
@@ -119,39 +114,23 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* TCSS DMA */
 	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA0);
-	if (dev)
-		m_cfg->TcssDma0En = dev->enabled;
-	else
-		m_cfg->TcssDma0En = 0;
+	m_cfg->TcssDma0En = is_dev_enabled(dev);
 
 	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA1);
-	if (dev)
-		m_cfg->TcssDma1En = dev->enabled;
-	else
-		m_cfg->TcssDma1En = 0;
+	m_cfg->TcssDma1En = is_dev_enabled(dev);
 
 	/* USB4/TBT */
 	dev = pcidev_path_on_root(SA_DEVFN_TBT0);
-	if (dev)
-		m_cfg->TcssItbtPcie0En = dev->enabled;
-	else
-		m_cfg->TcssItbtPcie0En = 0;
+	m_cfg->TcssItbtPcie0En = is_dev_enabled(dev);
+
 	dev = pcidev_path_on_root(SA_DEVFN_TBT1);
-	if (dev)
-		m_cfg->TcssItbtPcie1En = dev->enabled;
-	else
-		m_cfg->TcssItbtPcie1En = 0;
+	m_cfg->TcssItbtPcie1En = is_dev_enabled(dev);
 
 	dev = pcidev_path_on_root(SA_DEVFN_TBT2);
-	if (dev)
-		m_cfg->TcssItbtPcie2En = dev->enabled;
-	else
-		m_cfg->TcssItbtPcie2En = 0;
+	m_cfg->TcssItbtPcie2En = is_dev_enabled(dev);
+
 	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
-	if (dev)
-		m_cfg->TcssItbtPcie3En = dev->enabled;
-	else
-		m_cfg->TcssItbtPcie3En = 0;
+	m_cfg->TcssItbtPcie3En = is_dev_enabled(dev);
 
 	/* Hyper Threading */
 	m_cfg->HyperThreading = !config->HyperThreadingDisable;
@@ -167,10 +146,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
 	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	if (!dev)
-		m_cfg->PchHdaEnable = 0;
-	else
-		m_cfg->PchHdaEnable = dev->enabled;
+	m_cfg->PchHdaEnable = is_dev_enabled(dev);
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;

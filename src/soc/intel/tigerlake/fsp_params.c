@@ -99,10 +99,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
-		params->PeiGraphicsPeimInit = 1;
-	else
-		params->PeiGraphicsPeimInit = 0;
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
 
 	/* Use coreboot MP PPI services if Kconfig is enabled */
 	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI)) {
@@ -195,10 +192,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* SATA */
 	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	if (!dev)
-		params->SataEnable = 0;
-	else {
-		params->SataEnable = dev->enabled;
+	params->SataEnable = is_dev_enabled(dev);
+	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
 		memcpy(params->SataPortsEnable, config->SataPortsEnable,
@@ -244,37 +239,22 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* LAN */
 	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
-	if (!dev)
-		params->PchLanEnable = 0;
-	else
-		params->PchLanEnable = dev->enabled;
+	params->PchLanEnable = is_dev_enabled(dev);
 
 	/* CNVi */
 	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI);
-	if (dev)
-		params->CnviMode = dev->enabled;
-	else
-		params->CnviMode = 0;
+	params->CnviMode = is_dev_enabled(dev);
 
 	/* VMD */
 	dev = pcidev_path_on_root(SA_DEVFN_VMD);
-	if (dev)
-		params->VmdEnable = dev->enabled;
-	else
-		params->VmdEnable = 0;
+	params->VmdEnable = is_dev_enabled(dev);
 
 	/* THC */
 	dev = pcidev_path_on_root(PCH_DEVFN_THC0);
-	if (!dev)
-		params->ThcPort0Assignment = 0;
-	else
-		params->ThcPort0Assignment = dev->enabled ? THC_0 : THC_NONE;
+	params->ThcPort0Assignment = is_dev_enabled(dev) ? THC_0 : THC_NONE;
 
 	dev =  pcidev_path_on_root(PCH_DEVFN_THC1);
-	if (!dev)
-		params->ThcPort1Assignment = 0;
-	else
-		params->ThcPort1Assignment = dev->enabled ? THC_1 : THC_NONE;
+	params->ThcPort1Assignment = is_dev_enabled(dev) ? THC_1 : THC_NONE;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);

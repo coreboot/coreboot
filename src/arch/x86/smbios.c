@@ -493,6 +493,12 @@ unsigned int __weak smbios_cache_conf_operation_mode(u8 level)
 	return SMBIOS_CACHE_OP_MODE_UNKNOWN; /* Unknown */
 }
 
+/* Returns the processor voltage in 100mV units */
+unsigned int __weak smbios_cpu_get_voltage(void)
+{
+	return 0; /* Unknown */
+}
+
 static size_t get_number_of_caches(struct cpuid_result res_deterministic_cache)
 {
 	size_t max_logical_cpus_sharing_cache = 0;
@@ -595,6 +601,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 
 static int smbios_write_type4(unsigned long *current, int handle)
 {
+	unsigned int cpu_voltage;
 	struct cpuid_result res;
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
 	int len = sizeof(struct smbios_type4);
@@ -686,6 +693,9 @@ static int smbios_write_type4(unsigned long *current, int handle)
 		}
 	}
 	t->processor_characteristics = characteristics | smbios_processor_characteristics();
+	cpu_voltage = smbios_cpu_get_voltage();
+	if (cpu_voltage > 0)
+		t->voltage = 0x80 | cpu_voltage;
 
 	*current += len;
 	return len;

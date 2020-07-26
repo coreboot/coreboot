@@ -32,6 +32,9 @@ config CPU_INTEL_COMMON_TIMEBASE
 
 endif
 
+config CPU_INTEL_COMMON_VOLTAGE
+	bool
+
 config CPU_INTEL_COMMON_SMM
 	bool
 	default y if CPU_INTEL_COMMON

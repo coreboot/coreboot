@@ -40,6 +40,7 @@ const char *smbios_system_sku(void);
 
 unsigned int smbios_cpu_get_max_speed_mhz(void);
 unsigned int smbios_cpu_get_current_speed_mhz(void);
+unsigned int smbios_cpu_get_voltage(void);
 
 const char *smbios_mainboard_manufacturer(void);
 const char *smbios_mainboard_product_name(void);

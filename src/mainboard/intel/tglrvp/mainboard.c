@@ -3,6 +3,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <ec/ec.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <smbios.h>
@@ -24,6 +25,8 @@ static void mainboard_init(void *chip_info)
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
+
+	mainboard_ec_init();
 }
 
 static void mainboard_enable(struct device *dev)

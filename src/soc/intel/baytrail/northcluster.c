@@ -106,8 +106,7 @@ static void nc_read_resources(struct device *dev)
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
 	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
 	if (bmbound_hi > four_gig_kib)
-		ram_resource(dev, index++, four_gig_kib,
-		             bmbound_hi - four_gig_kib);
+		ram_resource(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
 
 	/* Reserve everything between A segment and 1MB:
 	 *
@@ -115,8 +114,7 @@ static void nc_read_resources(struct device *dev)
 	 * 0xc0000 - 0xfffff: RAM
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-	                      (0x100000 - 0xc0000) >> 10);
+	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
 
 	if (CONFIG(CHROMEOS))
 		chromeos_reserve_ram_oops(dev, index++);

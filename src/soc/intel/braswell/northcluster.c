@@ -51,7 +51,7 @@
  * |     Cacheable/Usable     |
  * +--------------------------+ 0
  */
-#define RES_IN_KIB(r) ((r) >> 10)
+#define RES_IN_KiB(r) ((r) >> 10)
 
 uint32_t nc_read_top_of_low_memory(void)
 {
@@ -85,14 +85,14 @@ static void nc_read_resources(struct device *dev)
 
 	/* Determine TSEG data */
 	smm_region(&smm_base, &smm_size);
-	tseg_base_k = RES_IN_KIB(smm_base);
-	tseg_top_k = tseg_base_k + RES_IN_KIB(smm_size);
+	tseg_base_k = RES_IN_KiB(smm_base);
+	tseg_top_k = tseg_base_k + RES_IN_KiB(smm_size);
 
 	/* Determine the base of the FSP reserved memory */
 	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
 	if (fsp_reserved_memory_area) {
 		fsp_res_base_k =
-			RES_IN_KIB((unsigned int)fsp_reserved_memory_area);
+			RES_IN_KiB((unsigned int)fsp_reserved_memory_area);
 	} else {
 		/* If no FSP reserverd area */
 		fsp_res_base_k = tseg_base_k;
@@ -100,15 +100,15 @@ static void nc_read_resources(struct device *dev)
 
 	/* PCIe memory-mapped config space access - 256 MiB. */
 	mmconf = iosf_bunit_read(BUNIT_MMCONF_REG) & ~((1 << 28) - 1);
-	mmio_resource(dev, BUNIT_MMCONF_REG, RES_IN_KIB(mmconf), 256 * 1024);
+	mmio_resource(dev, BUNIT_MMCONF_REG, RES_IN_KiB(mmconf), 256 * 1024);
 
 	/* 0 -> 0xa0000 */
-	base_k = RES_IN_KIB(0);
-	size_k = RES_IN_KIB(0xa0000) - base_k;
+	base_k = RES_IN_KiB(0);
+	size_k = RES_IN_KiB(0xa0000) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
 	/* High memory -> fsp_res_base - cacheable and usable */
-	base_k = RES_IN_KIB(0x100000);
+	base_k = RES_IN_KiB(0x100000);
 	size_k = fsp_res_base_k - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
@@ -118,7 +118,7 @@ static void nc_read_resources(struct device *dev)
 	reserved_ram_resource(dev, index++, base_k, size_k);
 
 	/* TSEG TOP -> bmbound is memory backed mmio. */
-	bmbound_k = RES_IN_KIB(nc_read_top_of_low_memory());
+	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
 	mmio_resource(dev, index++, tseg_top_k, bmbound_k - tseg_top_k);
 
 	/*
@@ -126,7 +126,7 @@ static void nc_read_resources(struct device *dev)
 	 * bits of 35:28. Therefore, shift register to align properly.
 	 */
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
-	bmbound_hi = RES_IN_KIB(bmbound_hi) << 4;
+	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
 	if (bmbound_hi > four_gig_kib)
 		ram_resource(dev, index++, four_gig_kib,
 			     bmbound_hi - four_gig_kib);
@@ -144,8 +144,8 @@ static void nc_read_resources(struct device *dev)
 	/*
 	 * Reserve local APIC
 	 */
-	base_k = RES_IN_KIB(LAPIC_DEFAULT_BASE);
-	size_k = RES_IN_KIB(0x00100000);
+	base_k = RES_IN_KiB(LAPIC_DEFAULT_BASE);
+	size_k = RES_IN_KiB(0x00100000);
 	mmio_resource(dev, index++, base_k, size_k);
 
 	if (CONFIG(CHROMEOS))

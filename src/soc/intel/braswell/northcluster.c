@@ -91,8 +91,7 @@ static void nc_read_resources(struct device *dev)
 	/* Determine the base of the FSP reserved memory */
 	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
 	if (fsp_reserved_memory_area) {
-		fsp_res_base_k =
-			RES_IN_KiB((unsigned int)fsp_reserved_memory_area);
+		fsp_res_base_k = RES_IN_KiB((unsigned int)fsp_reserved_memory_area);
 	} else {
 		/* If no FSP reserverd area */
 		fsp_res_base_k = tseg_base_k;
@@ -128,8 +127,7 @@ static void nc_read_resources(struct device *dev)
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
 	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
 	if (bmbound_hi > four_gig_kib)
-		ram_resource(dev, index++, four_gig_kib,
-			     bmbound_hi - four_gig_kib);
+		ram_resource(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -138,8 +136,7 @@ static void nc_read_resources(struct device *dev)
 	 * 0xc0000 - 0xfffff: RAM
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-			      (0x100000 - 0xc0000) >> 10);
+	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
 
 	/*
 	 * Reserve local APIC

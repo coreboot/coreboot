@@ -13,7 +13,6 @@ chip soc/intel/skylake
 	register "gen2_dec" = "0x000c0201"
 
 	# FSP Configuration
-	register "HeciEnabled" = "0"
 	register "PmTimerDisabled" = "1"
 
 	# VR Settings Configuration for 4 Domains

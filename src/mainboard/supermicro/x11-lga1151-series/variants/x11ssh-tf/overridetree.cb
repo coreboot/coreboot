@@ -14,19 +14,15 @@ chip soc/intel/skylake
 	# PCIe configuration
 	# Enable JPCIE1
 	register "PcieRpEnable[0]" = "1"
-	register "PcieRpClkReqSupport[0]" = "0"
 
 	# Enable ASpeed PCI bridge
 	register "PcieRpEnable[2]" = "1"
-	register "PcieRpClkReqSupport[2]" = "0"
 
 	# Enable X550T (10GbE)
 	register "PcieRpEnable[4]" = "1"
-	register "PcieRpClkReqSupport[4]" = "0"
 
 	# Enable M.2
 	register "PcieRpEnable[8]" = "1"
-	register "PcieRpClkReqSupport[8]" = "0"
 
 	# FIXME: find out why FSP crashes without this
 	register "PchHdaVcType" = "Vc1"

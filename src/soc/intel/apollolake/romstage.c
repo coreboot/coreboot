@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <cpu/x86/pae.h>
 #include <delay.h>
 #include <device/pci_def.h>
@@ -258,9 +259,9 @@ static void parse_devicetree_setting(FSPM_UPD *m_upd)
 	DEVTREE_CONST struct device *dev = pcidev_path_on_root(PCH_DEVFN_NPK);
 
 #if CONFIG(SOC_INTEL_GLK)
-	m_upd->FspmConfig.TraceHubEn = dev ? dev->enabled : 0;
+	m_upd->FspmConfig.TraceHubEn = is_dev_enabled(dev);
 #else
-	m_upd->FspmConfig.NpkEn = dev ? dev->enabled : 0;
+	m_upd->FspmConfig.NpkEn = is_dev_enabled(dev);
 #endif
 }
 

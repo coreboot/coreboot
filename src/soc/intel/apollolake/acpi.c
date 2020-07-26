@@ -4,6 +4,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <assert.h>
@@ -170,7 +171,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	unsigned long tmp;
 
 	/* IGD has to be enabled, GFXVTBAR set and enabled. */
-	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten) {
+	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
 		tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);

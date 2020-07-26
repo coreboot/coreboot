@@ -64,7 +64,7 @@ uint32_t nc_read_top_of_low_memory(void)
 static void nc_read_resources(struct device *dev)
 {
 	unsigned long mmconf;
-	unsigned long bmbound;
+	unsigned long bmbound_k;
 	unsigned long bmbound_hi;
 	unsigned long smmrrh;
 	unsigned long smmrrl;
@@ -98,8 +98,8 @@ static void nc_read_resources(struct device *dev)
 		reserved_ram_resource(dev, index++, smmrrl, smmrrh - smmrrl);
 
 	/* All address space between bmbound and smmrrh is unusable. */
-	bmbound = RES_IN_KiB(nc_read_top_of_low_memory());
-	mmio_resource(dev, index++, smmrrh, bmbound - smmrrh);
+	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
+	mmio_resource(dev, index++, smmrrh, bmbound_k - smmrrh);
 
 	/* The BMBOUND_HI register matches register bits of 31:24 with address
 	 * bits of 35:28. Therefore, shift register to align properly. */

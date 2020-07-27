@@ -8,6 +8,7 @@
 #include <soc/spi.h>
 #include <spi_bitbang.h>
 #include <spi_flash.h>
+#include <stddef.h>
 
 struct rockchip_bitbang_slave {
 	struct spi_bitbang_ops ops;

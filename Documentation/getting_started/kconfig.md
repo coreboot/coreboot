@@ -52,7 +52,7 @@ command line.
   not have an answer yet, it stops and queries the user for the desired value.
 - olddefconfig - Generates a config, using the default value for any symbols not
   listed in the .config file.
-- savedefconfig - Creates a ‘mini-config’ file, stripping out all of the symbols
+- savedefconfig - Creates a ‘defconfig’ file, stripping out all of the symbols
   that were left as default values.  This is very useful for debugging, and is
   how config files should be saved.
 - silentoldconfig - This evaluates the .config file the same way that the

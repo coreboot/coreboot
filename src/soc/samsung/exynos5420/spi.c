@@ -6,6 +6,8 @@
 #include <soc/cpu.h>
 #include <soc/spi.h>
 #include <spi-generic.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include <symbols.h>
 

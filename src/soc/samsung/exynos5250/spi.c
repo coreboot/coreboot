@@ -7,6 +7,8 @@
 #include <soc/clk.h>
 #include <soc/gpio.h>
 #include <soc/spi.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <symbols.h>
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI

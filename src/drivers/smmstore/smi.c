@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <commonlib/region.h>
+#include <cpu/x86/smm.h>
 #include <smmstore.h>
 #include <stddef.h>
 #include <stdint.h>

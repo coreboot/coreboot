@@ -25,12 +25,12 @@ permissions described in the GCC Runtime Library Exception, version
 #ifdef __COREBOOT__
 #include <stdlib.h>
 #include <string.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <assert.h>
 typedef s32 pid_t;
 #define gcc_assert(x) ASSERT(x)
 #define fprintf(file, x...) printk(BIOS_ERR, x)
-#define alloca(size)   __builtin_alloca(size)
 #include "gcov-glue.c"
 
 /* Define MACROs to be used by coreboot compilation.  */

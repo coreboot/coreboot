@@ -13,6 +13,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+#include <types.h>
 #include "systemagent_def.h"
 
 /* SoC override function */
@@ -44,6 +45,38 @@ __weak unsigned long sa_write_acpi_tables(const struct device *dev,
 __weak uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
 {
 	return 32768;	/* 32 GiB per channel */
+}
+
+static bool sa_supports_ecc(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_ECCDIS);
+}
+
+static size_t sa_slots_per_channel(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_DDPCD) + 1;
+}
+
+static size_t sa_number_of_channels(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_PDCD) + 1;
+}
+
+static void sa_soc_systemagent_init(struct device *dev)
+{
+	soc_systemagent_init(dev);
+
+	struct memory_info *m = cbmem_find(CBMEM_ID_MEMINFO);
+	if (m == NULL)
+		return;
+
+	const uint32_t capid0_a = pci_read_config32(dev, CAPID0_A);
+
+	m->ecc_capable = sa_supports_ecc(capid0_a);
+	m->max_capacity_mib = soc_systemagent_max_chan_capacity_mib(CAPID_DDRSZ(capid0_a)) *
+			      sa_number_of_channels(capid0_a);
+	m->number_of_devices = sa_slots_per_channel(capid0_a) *
+			       sa_number_of_channels(capid0_a);
 }
 
 /*
@@ -262,55 +295,6 @@ static void systemagent_read_resources(struct device *dev)
 		sa_add_imr_resources(dev, &index);
 }
 
-#if CONFIG(GENERATE_SMBIOS_TABLES)
-static bool sa_supports_ecc(const uint32_t capida)
-{
-	return !(capida & CAPID_ECCDIS);
-}
-
-static size_t sa_slots_per_channel(const uint32_t capida)
-{
-	return !(capida & CAPID_DDPCD) + 1;
-}
-
-static size_t sa_number_of_channels(const uint32_t capida)
-{
-	return !(capida & CAPID_PDCD) + 1;
-}
-
-static int sa_smbios_write_type_16(struct device *dev, int *handle,
-		unsigned long *current)
-{
-	struct smbios_type16 *t = (struct smbios_type16 *)*current;
-	int len = sizeof(struct smbios_type16);
-	const uint32_t capida = pci_read_config32(dev, CAPID0_A);
-
-	struct memory_info *meminfo;
-	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
-	if (meminfo == NULL)
-		return 0;	/* can't find mem info in cbmem */
-
-	memset(t, 0, sizeof(struct smbios_type16));
-	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
-	t->handle = *handle;
-	t->length = len - 2;
-	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
-	t->use = MEMORY_ARRAY_USE_SYSTEM;
-	t->memory_error_correction = sa_supports_ecc(capida) ? MEMORY_ARRAY_ECC_SINGLE_BIT :
-		MEMORY_ARRAY_ECC_NONE;
-	/* no error information handle available */
-	t->memory_error_information_handle = 0xFFFE;
-	t->maximum_capacity = soc_systemagent_max_chan_capacity_mib(CAPID_DDRSZ(capida)) *
-			      sa_number_of_channels(capida) * (MiB / KiB);
-	t->number_of_memory_devices = sa_slots_per_channel(capida) *
-				      sa_number_of_channels(capida);
-
-	*current += len;
-	*handle += 1;
-	return len;
-}
-#endif
-
 void enable_power_aware_intr(void)
 {
 	uint8_t pair;
@@ -326,13 +310,10 @@ static struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = soc_systemagent_init,
+	.init             = sa_soc_systemagent_init,
 	.ops_pci          = &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = sa_write_acpi_tables,
-#endif
-#if CONFIG(GENERATE_SMBIOS_TABLES)
-	.get_smbios_data = sa_smbios_write_type_16,
 #endif
 };
 

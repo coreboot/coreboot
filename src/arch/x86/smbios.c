@@ -310,7 +310,8 @@ static void smbios_fill_dimm_serial_number(const struct dimm_info *dimm,
 }
 
 static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
-					 unsigned long *current, int *handle)
+					 unsigned long *current, int *handle,
+					 int type16_handle)
 {
 	struct smbios_type17 *t = (struct smbios_type17 *)*current;
 
@@ -365,6 +366,8 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->memory_error_information_handle = 0xFFFE;
 	t->attributes = dimm->rank_per_dimm;
 	t->handle = *handle;
+	t->phys_memory_array_handle = type16_handle;
+
 	*handle += 1;
 	t->length = sizeof(struct smbios_type17) - 2;
 	return t->length + smbios_string_table_len(t->eos);
@@ -1063,7 +1066,53 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 	return len;
 }
 
-static int smbios_write_type17(unsigned long *current, int *handle)
+static int smbios_write_type16(unsigned long *current, int *handle)
+{
+	struct smbios_type16 *t = (struct smbios_type16 *)*current;
+
+	int len;
+	int i;
+
+	struct memory_info *meminfo;
+	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
+	if (meminfo == NULL)
+		return 0;	/* can't find mem info in cbmem */
+
+	printk(BIOS_INFO, "Create SMBIOS type 16\n");
+
+	if (meminfo->max_capacity_mib == 0 || meminfo->number_of_devices == 0) {
+		/* Fill in defaults if not provided */
+		meminfo->number_of_devices = 0;
+		meminfo->max_capacity_mib = 0;
+		for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
+			meminfo->max_capacity_mib += meminfo->dimm[i].dimm_size;
+			meminfo->number_of_devices += !!meminfo->dimm[i].dimm_size;
+		}
+	}
+
+	memset(t, 0, sizeof(*t));
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->handle = *handle;
+	t->length = len = sizeof(*t) - 2;
+
+	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
+	t->use = MEMORY_ARRAY_USE_SYSTEM;
+	t->memory_error_correction = meminfo->ecc_capable ?
+				MEMORY_ARRAY_ECC_SINGLE_BIT : MEMORY_ARRAY_ECC_NONE;
+
+	/* no error information handle available */
+	t->memory_error_information_handle = 0xFFFE;
+	t->maximum_capacity = meminfo->max_capacity_mib * (MiB / KiB);
+	t->number_of_memory_devices = meminfo->number_of_devices;
+
+	len += smbios_string_table_len(t->eos);
+
+	*current += len;
+	(*handle)++;
+	return len;
+}
+
+static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 {
 	int len = sizeof(struct smbios_type17);
 	int totallen = 0;
@@ -1079,7 +1128,13 @@ static int smbios_write_type17(unsigned long *current, int *handle)
 		i++) {
 		struct dimm_info *dimm;
 		dimm = &meminfo->dimm[i];
-		len = create_smbios_type17_for_dimm(dimm, current, handle);
+		/*
+		 * Windows 10 GetPhysicallyInstalledSystemMemory functions reads SMBIOS tables
+		 * type 16 and type 17. The type 17 tables need to point to a type 16 table.
+		 * Otherwise, the physical installed memory size is guessed from the system
+		 * memory map, which results in a slightly smaller value than the actual size.
+		 */
+		len = create_smbios_type17_for_dimm(dimm, current, handle, type16);
 		*current += len;
 		totallen += len;
 	}
@@ -1356,8 +1411,12 @@ unsigned long smbios_write_tables(unsigned long current)
 	if (CONFIG(ELOG))
 		update_max(len, max_struct_size,
 			elog_smbios_write_type15(&current,handle++));
-	update_max(len, max_struct_size, smbios_write_type17(&current,
+
+	const int type16 = handle;
+	update_max(len, max_struct_size, smbios_write_type16(&current,
 		&handle));
+	update_max(len, max_struct_size, smbios_write_type17(&current,
+		&handle, type16));
 	update_max(len, max_struct_size, smbios_write_type19(&current,
 		&handle));
 	update_max(len, max_struct_size, smbios_write_type32(&current,

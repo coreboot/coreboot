@@ -5,6 +5,7 @@
 #define _MEMORY_INFO_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define DIMM_INFO_SERIAL_SIZE		4
 #define DIMM_INFO_PART_NUMBER_SIZE	33
@@ -81,6 +82,14 @@ struct dimm_info {
 } __packed;
 
 struct memory_info {
+	/* controller specific */
+	bool ecc_capable;
+	/* Maximum capacity the DRAM controller/mainboard supports */
+	uint32_t max_capacity_mib;
+	/* Maximum number of DIMMs the DRAM controller/mainboard supports */
+	uint16_t number_of_devices;
+
+	/* active DIMM configuration */
 	uint8_t dimm_cnt;
 	struct dimm_info dimm[DIMM_INFO_TOTAL];
 } __packed;

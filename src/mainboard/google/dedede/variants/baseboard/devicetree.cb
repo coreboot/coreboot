@@ -16,9 +16,9 @@ chip soc/intel/jasperlake
 	#   - GPP_D0 - WWAN_HOST_WAKE
 	#   - GPP_D3 - WLAN_PCIE_WAKE_ODL
 	# EC_AP_WAKE_ODL is routed to LAN_WAKE#/GPD02 & is part of DW3.
-	register "pmc_gpe0_dw0" = "GPP_B"
-	register "pmc_gpe0_dw1" = "GPP_C"
-	register "pmc_gpe0_dw2" = "GPP_D"
+	register "pmc_gpe0_dw0" = "PMC_GPP_B"
+	register "pmc_gpe0_dw1" = "PMC_GPP_C"
+	register "pmc_gpe0_dw2" = "PMC_GPP_D"
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"

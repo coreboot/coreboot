@@ -2,6 +2,8 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_dptf.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 /* Defaults */
 #define DEFAULT_RAW_UNIT		"ma"

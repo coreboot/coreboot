@@ -5,6 +5,8 @@
 #include <acpi/acpigen_ps2_keybd.h>
 #include <console/console.h>
 #include <input-event-codes.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #define KEYMAP(scancode, keycode) (((uint32_t)(scancode) << 16) | (keycode & 0xFFFF))
 #define SCANCODE(keymap) ((keymap >> 16) & 0xFFFF)

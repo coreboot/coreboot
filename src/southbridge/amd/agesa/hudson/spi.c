@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <stdint.h>
 #include <device/mmio.h>
 #include <console/console.h>
@@ -7,6 +8,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <stddef.h>
 
 #include <Proc/Fch/FchPlatform.h>
 

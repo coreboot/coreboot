@@ -10,6 +10,7 @@
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <device/dram/ddr3.h>
 #include <smbios.h>
 #include <spd.h>
@@ -170,6 +171,45 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
+static bool nb_supports_ecc(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_ECCDIS);
+}
+
+static uint16_t nb_slots_per_channel(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_DDPCD) + 1;
+}
+
+static uint16_t nb_number_of_channels(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_PDCD) + 1;
+}
+
+static uint32_t nb_max_chan_capacity_mib(const uint32_t capid0_a)
+{
+	uint32_t ddrsz;
+
+	/* Values from documentation, which assume two DIMMs per channel */
+	switch (CAPID_DDRSZ(capid0_a)) {
+	case 1:
+		ddrsz = 8192;
+		break;
+	case 2:
+		ddrsz = 2048;
+		break;
+	case 3:
+		ddrsz = 512;
+		break;
+	default:
+		ddrsz = 16384;
+		break;
+	}
+
+	/* Account for the maximum number of DIMMs per channel */
+	return (ddrsz / 2) * nb_slots_per_channel(capid0_a);
+}
+
 void setup_sdram_meminfo(struct pei_data *pei_data)
 {
 	u32 addr_decode_ch[2];
@@ -221,4 +261,12 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		}
 	}
 	mem_info->dimm_cnt = dimm_cnt;
+
+	const uint32_t capid0_a = pci_read_config32(HOST_BRIDGE, CAPID0_A);
+
+	const uint16_t channels = nb_number_of_channels(capid0_a);
+
+	mem_info->ecc_capable = nb_supports_ecc(capid0_a);
+	mem_info->max_capacity_mib = channels * nb_max_chan_capacity_mib(capid0_a);
+	mem_info->number_of_devices = channels * nb_slots_per_channel(capid0_a);
 }

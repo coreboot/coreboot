@@ -60,7 +60,11 @@
 #define SKPAD		0xdc	/* Scratchpad Data */
 
 #define CAPID0_A	0xe4
+#define  CAPID_ECCDIS	(1 << 25)
 #define  VTD_DISABLE	(1 << 23)
+#define  CAPID_DDPCD	(1 << 14)
+#define  CAPID_PDCD	(1 << 12)
+#define  CAPID_DDRSZ(x)	(((x) >> 19) & 0x3)
 
 #define CAPID0_B	0xe8
 

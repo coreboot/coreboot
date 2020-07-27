@@ -54,8 +54,47 @@ static void disable_channel(ramctr_timing *ctrl, int channel)
 	memset(&ctrl->info.dimm[channel][0], 0, sizeof(ctrl->info.dimm[0]));
 }
 
-/* Fill cbmem with information for SMBIOS type 17 */
-static void fill_smbios17(ramctr_timing *ctrl)
+static bool nb_supports_ecc(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_ECCDIS);
+}
+
+static uint16_t nb_slots_per_channel(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_DDPCD) + 1;
+}
+
+static uint16_t nb_number_of_channels(const uint32_t capid0_a)
+{
+	return !(capid0_a & CAPID_PDCD) + 1;
+}
+
+static uint32_t nb_max_chan_capacity_mib(const uint32_t capid0_a)
+{
+	uint32_t ddrsz;
+
+	/* Values from documentation, which assume two DIMMs per channel */
+	switch (CAPID_DDRSZ(capid0_a)) {
+	case 1:
+		ddrsz = 8192;
+		break;
+	case 2:
+		ddrsz = 2048;
+		break;
+	case 3:
+		ddrsz = 512;
+		break;
+	default:
+		ddrsz = 16384;
+		break;
+	}
+
+	/* Account for the maximum number of DIMMs per channel */
+	return (ddrsz / 2) * nb_slots_per_channel(capid0_a);
+}
+
+/* Fill cbmem with information for SMBIOS type 16 and type 17 */
+static void setup_sdram_meminfo(ramctr_timing *ctrl)
 {
 	int channel, slot;
 	const u16 ddr_freq = (1000 << 8) / ctrl->tCK;
@@ -66,6 +105,19 @@ static void fill_smbios17(ramctr_timing *ctrl)
 		if (ret != CB_SUCCESS)
 			printk(BIOS_ERR, "RAMINIT: Failed to add SMBIOS17\n");
 	}
+
+	/* The 'spd_add_smbios17' function allocates this CBMEM area */
+	struct memory_info *m = cbmem_find(CBMEM_ID_MEMINFO);
+	if (m == NULL)
+		return;
+
+	const uint32_t capid0_a = pci_read_config32(HOST_BRIDGE, CAPID0_A);
+
+	const uint16_t channels = nb_number_of_channels(capid0_a);
+
+	m->ecc_capable = nb_supports_ecc(capid0_a);
+	m->max_capacity_mib = channels * nb_max_chan_capacity_mib(capid0_a);
+	m->number_of_devices = channels * nb_slots_per_channel(capid0_a);
 }
 
 /* Return CRC16 match for all SPDs */
@@ -386,7 +438,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 	}
 
 	if (!s3resume)
-		fill_smbios17(&ctrl);
+		setup_sdram_meminfo(&ctrl);
 }
 
 void perform_raminit(int s3resume)

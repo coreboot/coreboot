@@ -68,4 +68,15 @@ config SOC_INTEL_COMMON_BLOCK_P2SB
 
 select CACHE_MRC_SETTINGS
 
+# CPX-SP has 2 IMCs, 3 channels per IMC, 2 DIMMs per channel
+# Default value is set to one socket, full config.
+config DIMM_MAX
+	int
+	default 12
+
+# DDR4
+config DIMM_SPD_SIZE
+	int
+	default 512
+
 endif

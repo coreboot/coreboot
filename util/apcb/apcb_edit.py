@@ -59,6 +59,10 @@ def parseargs():
         action='store_true',
         help='SPD input file is hex encoded, binary otherwise')
     parser.add_argument(
+        '--strip_manufacturer_information',
+        action='store_true',
+        help='Strip all manufacturer information from SPD')
+    parser.add_argument(
         '--board_id_gpio0',
         type=int,
         required=True,
@@ -154,6 +158,13 @@ def main():
 
             assert len(spd) == 512, \
                             "Expected SPD to be 512 bytes, got %d" % len(spd)
+
+            if args.strip_manufacturer_information:
+                print("Stripping manufacturer information from SPD")
+                spd = spd[0:320] + b'\x00'*64 + spd[320+64:]
+
+                assert len(spd) == 512, \
+                                "Error while stripping SPD manufacurer information"
 
             print("Enabling channel %d, dimm %d and injecting SPD" %
                   (spd_ssp.ChannelNumber, spd_ssp.DimmNumber))

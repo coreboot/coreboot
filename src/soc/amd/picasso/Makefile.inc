@@ -395,6 +395,7 @@ $(obj)/APCB_%_x1.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
 	$(APCB_MAGIC_BLOB) \
 	$@ \
 	--hex \
+	--strip_manufacturer_information \
 	--spd_0_0 $< \
 	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
 	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
@@ -408,6 +409,7 @@ $(obj)/APCB_%_x2.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
 	$(APCB_MAGIC_BLOB) \
 	$@ \
 	--hex \
+	--strip_manufacturer_information \
 	--spd_0_0 $< \
 	--spd_1_0 $< \
 	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \

@@ -9,6 +9,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
+#include <intelblocks/mp_init.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <security/vboot/vboot_common.h>
@@ -85,6 +86,7 @@ static const pci_devfn_t serial_io_dev[] = {
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
+	uint32_t cpu_id;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 
 	struct device *dev;
@@ -110,8 +112,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* D3Hot and D3Cold for TCSS */
-	params->D3HotEnable = config->TcssD3HotEnable;
-	params->D3ColdEnable = config->TcssD3ColdEnable;
+	params->D3HotEnable = !config->TcssD3HotDisable;
+	cpu_id = cpu_get_cpuid();
+	if (cpu_id == CPUID_TIGERLAKE_A0)
+		params->D3ColdEnable = 0;
+	else
+		params->D3ColdEnable = !config->TcssD3ColdDisable;
 
 	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)

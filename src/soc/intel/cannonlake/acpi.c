@@ -285,8 +285,8 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
-
-	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten) {
+	const bool emit_igd = igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten;
+	if (emit_igd) {
 		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
@@ -326,12 +326,15 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	/* Add RMRR entry */
-	const unsigned long tmp = current;
-	current += acpi_create_dmar_rmrr(current, 0,
-		sa_get_gsm_base(), sa_get_tolud_base() - 1);
-	current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
-	acpi_dmar_rmrr_fixup(tmp, current);
+	/* Add RMRR entry after all DRHD entries */
+	if (emit_igd) {
+		const unsigned long tmp = current;
+
+		current += acpi_create_dmar_rmrr(current, 0,
+			sa_get_gsm_base(), sa_get_tolud_base() - 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_rmrr_fixup(tmp, current);
+	}
 
 	return current;
 }

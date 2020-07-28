@@ -1,0 +1,5 @@
+config IPMI_OCP
+	bool
+	default n
+	help
+	  This implements OCP specific IPMI command

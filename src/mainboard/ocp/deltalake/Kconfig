@@ -13,6 +13,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select OCP_DMI
 	select VPD
 	select VPD_SMBIOS_VERSION
+	select IPMI_OCP
 
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n

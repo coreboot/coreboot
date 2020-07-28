@@ -113,10 +113,6 @@ chip soc/intel/tigerlake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
-	# D3Hot and D3Cold for TCSS
-	register "TcssD3HotEnable" = "1"
-	register "TcssD3ColdEnable" = "1"
-
 	#HD Audio
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHdaEnable" = "0"

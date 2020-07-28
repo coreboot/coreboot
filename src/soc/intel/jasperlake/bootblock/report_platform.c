@@ -44,6 +44,7 @@ static struct {
 } igd_table[] = {
 	{ PCI_DEVICE_ID_INTEL_JSL_GT1, "Jasperlake GT1" },
 	{ PCI_DEVICE_ID_INTEL_JSL_GT2, "Jasperlake GT2" },
+	{ PCI_DEVICE_ID_INTEL_JSL_GT3, "Jasperlake GT3" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

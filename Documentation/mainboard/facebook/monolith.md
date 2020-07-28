@@ -2,7 +2,7 @@
 
 This page describes how to run coreboot on the Facebook Monolith.
 
-Please note: the coreboot implementation for this boards is in its
+Please note: the coreboot implementation for this board is in its
 Beta state and isn't fully tested yet.
 
 ## Required blobs

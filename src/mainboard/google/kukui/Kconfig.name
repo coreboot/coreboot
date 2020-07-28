@@ -51,9 +51,9 @@ config BOARD_GOOGLE_WILLOW
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_ESCHE
-	bool "-> Esche"
+	bool "->  Esche"
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_BURNET
-	bool "-> Burnet"
+	bool "->  Burnet"
 	select BOARD_GOOGLE_JACUZZI_COMMON

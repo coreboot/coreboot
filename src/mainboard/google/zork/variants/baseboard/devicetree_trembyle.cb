@@ -139,6 +139,10 @@ chip soc/amd/picasso
 		.read_mode = SPI_READ_MODE_DUAL122,
 	}"
 
+	# common USB OC pin mapping
+	register "usb_port_overcurrent_pin[4]" = "USB_OC_NONE"	# Camera or internal hub
+	register "usb_port_overcurrent_pin[5]" = "USB_OC_NONE"	# Bluetooth
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,

@@ -187,5 +187,6 @@ Contents:
 * [SuperIO](superio/index.md)
 * [Vendorcode](vendorcode/index.md)
 * [Utilities](util.md)
+* [coreboot infrastructure](infrastructure/index.md)
 * [Release notes for past releases](releases/index.md)
 * [Flashing firmware tutorial](flash_tutorial/index.md)

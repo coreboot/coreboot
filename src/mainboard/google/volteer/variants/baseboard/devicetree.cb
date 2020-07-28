@@ -170,10 +170,6 @@ chip soc/intel/tigerlake
 	register "IomTypeCPortPadCfg[6]" = "0x09000000"
 	register "IomTypeCPortPadCfg[7]" = "0x09000000"
 
-	# D3Hot and D3Cold for TCSS
-	register "TcssD3HotEnable" = "1"
-	register "TcssD3ColdEnable" = "0"
-
 	# DP port
 	register "DdiPortAConfig" = "1"	# eDP
 	register "DdiPortBConfig" = "0"

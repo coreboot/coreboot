@@ -110,7 +110,10 @@ uint32_t ram_code(void)
 {
 	static uint32_t cached_ram_code = BOARD_ID_INIT;
 
-	if (cached_ram_code == BOARD_ID_INIT)
+	if (cached_ram_code == BOARD_ID_INIT) {
 		cached_ram_code = get_adc_index(RAM_ID_CHANNEL);
+		/* Model-specific offset - see sdram_configs.c for details. */
+		cached_ram_code += CONFIG_BOARD_SDRAM_TABLE_OFFSET;
+	}
 	return cached_ram_code;
 }

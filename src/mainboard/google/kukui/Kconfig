@@ -71,4 +71,9 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x2
 
+config BOARD_SDRAM_TABLE_OFFSET
+	hex
+	default 0x10 if BOARD_GOOGLE_BURNET || BOARD_GOOGLE_ESCHE
+	default 0x0
+
 endif

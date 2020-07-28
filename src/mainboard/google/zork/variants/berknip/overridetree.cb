@@ -9,11 +9,11 @@ chip soc/amd/picasso
 	register "system_config" = "3"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
-	register "slow_ppt_limit" = "25000" #mw
-	register "fast_ppt_limit" = "30000" #mw
+	register "slow_ppt_limit" = "20000" #mw
+	register "fast_ppt_limit" = "24000" #mw
 	register "slow_ppt_time_constant" = "5" #second
 	register "stapm_time_constant" = "200" #second
-	register "sustained_power_limit" = "25000" #mw
+	register "sustained_power_limit" = "12000" #mw
 
 	register "telemetry_vddcr_vdd_slope" = "62451" #mA
 	register "telemetry_vddcr_vdd_offset" = "0"

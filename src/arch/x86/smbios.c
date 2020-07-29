@@ -157,56 +157,52 @@ static int smbios_processor_name(u8 *start)
 	return smbios_add_string(start, str);
 }
 
-/* this function will fill the corresponding manufacturer */
-void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
+static const char *get_dimm_manufacturer_name(const uint16_t mod_id)
 {
 	switch (mod_id) {
 	case 0x9b85:
-		t->manufacturer = smbios_add_string(t->eos, "Crucial");
-		break;
+		return "Crucial";
 	case 0x4304:
-		t->manufacturer = smbios_add_string(t->eos, "Ramaxel");
-		break;
+		return "Ramaxel";
 	case 0x4f01:
-		t->manufacturer = smbios_add_string(t->eos, "Transcend");
-		break;
+		return "Transcend";
 	case 0x9801:
-		t->manufacturer = smbios_add_string(t->eos, "Kingston");
-		break;
+		return "Kingston";
 	case 0x987f:
-		t->manufacturer = smbios_add_string(t->eos, "Hynix");
-		break;
+		return "Hynix";
 	case 0x9e02:
-		t->manufacturer = smbios_add_string(t->eos, "Corsair");
-		break;
+		return "Corsair";
 	case 0xb004:
-		t->manufacturer = smbios_add_string(t->eos, "OCZ");
-		break;
+		return "OCZ";
 	case 0xad80:
-		t->manufacturer = smbios_add_string(t->eos, "Hynix/Hyundai");
-		break;
+		return "Hynix/Hyundai";
 	case 0x3486:
-		t->manufacturer = smbios_add_string(t->eos, "Super Talent");
-		break;
+		return "Super Talent";
 	case 0xcd04:
-		t->manufacturer = smbios_add_string(t->eos, "GSkill");
-		break;
+		return "GSkill";
 	case 0xce80:
-		t->manufacturer = smbios_add_string(t->eos, "Samsung");
-		break;
+		return "Samsung";
 	case 0xfe02:
-		t->manufacturer = smbios_add_string(t->eos, "Elpida");
-		break;
+		return "Elpida";
 	case 0x2c80:
-		t->manufacturer = smbios_add_string(t->eos, "Micron");
-		break;
-	default: {
-			char string_buffer[256];
+		return "Micron";
+	default:
+		return NULL;
+	}
+}
 
-			snprintf(string_buffer, sizeof(string_buffer), "Unknown (%x)", mod_id);
-			t->manufacturer = smbios_add_string(t->eos, string_buffer);
-			break;
-		}
+/* this function will fill the corresponding manufacturer */
+void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id, struct smbios_type17 *t)
+{
+	const char *const manufacturer = get_dimm_manufacturer_name(mod_id);
+
+	if (manufacturer) {
+		t->manufacturer = smbios_add_string(t->eos, manufacturer);
+	} else {
+		char string_buffer[256];
+
+		snprintf(string_buffer, sizeof(string_buffer), "Unknown (%x)", mod_id);
+		t->manufacturer = smbios_add_string(t->eos, string_buffer);
 	}
 }
 /* this function will fill the corresponding locator */

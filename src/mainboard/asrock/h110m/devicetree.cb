@@ -265,9 +265,7 @@ chip soc/intel/skylake
 		device pci 1e.3 off end # GSPI #1
 		device pci 1e.4 off end # eMMC
 		device pci 1e.5 off end # SDIO
-		device pci 1e.6 off     # SDCard
-			register "ScsSdCardEnabled" = "0"
-		end
+		device pci 1e.6 off end # SDCard
 		device pci 1f.0 on      # LPC bridge
 			subsystemid 0x1849 0x1a43
 

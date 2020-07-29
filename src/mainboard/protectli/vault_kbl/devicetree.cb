@@ -41,7 +41,6 @@ chip soc/intel/skylake
 	register "SsicPortEnable" = "0"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
-	register "ScsSdCardEnabled" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "HeciEnabled" = "1"
 	register "PmTimerDisabled" = "1"

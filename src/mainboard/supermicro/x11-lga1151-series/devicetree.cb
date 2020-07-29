@@ -8,7 +8,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "0"
-	register "ScsSdCardEnabled" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Disabled"
 
@@ -140,6 +139,7 @@ chip soc/intel/skylake
 		device pci 1e.0 off end	# UART #0
 		device pci 1e.1 off end	# UART #1
 		device pci 1e.2 off end	# SPI #0
+		device pci 1e.6 off end # SDXC
 		device pci 1f.0 on	# LPC Interface
 			chip superio/common
 				device pnp 2e.0 on  end

@@ -1,7 +1,5 @@
 chip soc/intel/skylake
 
-	register "ScsSdCardEnabled" = "2"
-
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-C Port 1
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-C Port 2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth

@@ -57,7 +57,6 @@ chip soc/intel/skylake
 	register "SsicPortEnable" = "0"
 	register "Cio2Enable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
-	register "ScsSdCardEnabled" = "0"
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "HeciEnabled" = "0"
@@ -192,6 +191,7 @@ chip soc/intel/skylake
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1e.6 off end # SDXC
 		device pci 1f.0 on
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

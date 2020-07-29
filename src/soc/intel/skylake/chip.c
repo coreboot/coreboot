@@ -257,7 +257,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
 	params->ScsEmmcEnabled = dev ? dev->enabled : 0;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
-	params->ScsSdCardEnabled = config->ScsSdCardEnabled;
+
+	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
+	params->ScsSdCardEnabled = dev && dev->enabled;
 
 	if (!!params->ScsEmmcHs400Enabled && !!config->EmmcHs400DllNeed) {
 		params->PchScsEmmcHs400DllDataValid =

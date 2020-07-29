@@ -49,18 +49,17 @@ chip soc/intel/skylake
 	register "HeciEnabled" = "0"
 	register "EnableLan" = "1"
 
-	register "EnableSata" = "1"
-		register "SataSalpSupport" = "1"
-		register "SataPortsEnable" = "{ \
-			[0]	= 1, \
-			[1]	= 0, \
-			[2]	= 0, \
-			[3]	= 0, \
-			[4]	= 0, \
-			[5]	= 0, \
-			[6]	= 0, \
-			[7]	= 0, \
-		}"
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable" = "{ \
+		[0]	= 1, \
+		[1]	= 0, \
+		[2]	= 0, \
+		[3]	= 0, \
+		[4]	= 0, \
+		[5]	= 0, \
+		[6]	= 0, \
+		[7]	= 0, \
+	}"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s

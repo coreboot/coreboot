@@ -166,8 +166,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		}
 	}
 
-	params->SataEnable = config->EnableSata;
-	if (config->EnableSata) {
+	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
+	params->SataEnable = dev ? dev->enabled : 0;
+	if (params->SataEnable) {
 		memcpy(params->SataPortsEnable, config->SataPortsEnable,
 				sizeof(params->SataPortsEnable));
 		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,

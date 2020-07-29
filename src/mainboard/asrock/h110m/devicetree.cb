@@ -154,7 +154,6 @@ chip soc/intel/skylake
 	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC_SKIP)"
 
 	# SATA
-	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	# SATA4 and SATA5 are located in the lower right corner of the board,
 	# but they are not populated. This is because the same PCB is used to

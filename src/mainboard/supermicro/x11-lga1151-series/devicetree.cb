@@ -17,7 +17,6 @@ chip soc/intel/skylake
 
 	# SATA configuration
 	register "SataMode" = "KBLFSP_SATA_MODE_AHCI"
-	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \
 		[0]	= 1, \

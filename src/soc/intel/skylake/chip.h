@@ -143,7 +143,6 @@ struct soc_intel_skylake_config {
 	u8 LanClkReqNumber;
 
 	/* SATA related */
-	u8 EnableSata;
 	enum {
 		/* Documentation and header files of Skylake FSP disagree on
 		   the values, Kaby Lake FSP (KabylakeFsp0001 on github) uses

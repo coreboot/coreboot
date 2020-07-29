@@ -175,7 +175,6 @@ chip soc/intel/skylake
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 
-	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \
 		[0]	= 1, \

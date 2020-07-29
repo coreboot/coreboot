@@ -84,7 +84,6 @@ chip soc/intel/skylake
 
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
 
-	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \
 		[0]	= 1, \

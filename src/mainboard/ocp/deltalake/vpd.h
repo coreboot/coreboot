@@ -15,6 +15,11 @@
 /* Default countdown is 15 minutes when the VPD variable is not found */
 #define FRB2_COUNTDOWN_DEFAULT 9000
 
+/* VPD variable for setting FRB2 timer action.
+   0: No action, 1: hard reset, 2: power down, 3: power cycle */
+#define FRB2_ACTION "frb2_action"
+#define FRB2_ACTION_DEFAULT 0 /* Default no action when the VPD variable is not found */
+
 /* Define the VPD keys for UPD variables that can be overwritten */
 #define FSP_LOG "fsp_log_enable" /* 1 or 0: enable or disable FSP SOL log */
 #define FSP_LOG_DEFAULT 1 /* Default value when the VPD variable is not found */

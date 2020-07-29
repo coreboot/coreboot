@@ -101,7 +101,7 @@ enum cb_err ipmi_set_post_start(const int port)
 void init_frb2_wdt(void)
 {
 	char val[VPD_LEN];
-	u8 enable;
+	uint8_t enable, action;
 	uint16_t countdown;
 
 	if (vpd_get_bool(FRB2_TIMER, VPD_RW_THEN_RO, &enable)) {
@@ -122,8 +122,16 @@ void init_frb2_wdt(void)
 				FRB2_COUNTDOWN_DEFAULT * 100);
 			countdown = FRB2_COUNTDOWN_DEFAULT;
 		}
-		ipmi_init_and_start_bmc_wdt(CONFIG_BMC_KCS_BASE, countdown,
-			TIMEOUT_HARD_RESET);
+
+		if (vpd_gets(FRB2_ACTION, val, VPD_LEN, VPD_RW_THEN_RO)) {
+			action = (uint8_t)atol(val);
+			printk(BIOS_DEBUG, "FRB2 timer action set to: %d\n", action);
+		} else {
+			printk(BIOS_DEBUG, "FRB2 timer action use default value: %d\n",
+				FRB2_ACTION_DEFAULT);
+			action = FRB2_ACTION_DEFAULT;
+		}
+		ipmi_init_and_start_bmc_wdt(CONFIG_BMC_KCS_BASE, countdown, action);
 	} else {
 		printk(BIOS_DEBUG, "Disable FRB2 timer\n");
 		ipmi_stop_bmc_wdt(CONFIG_BMC_KCS_BASE);

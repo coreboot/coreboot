@@ -19,11 +19,12 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 	device domain 0 on
-		device pci 07.0 off end # TBT_PCIe0			0x9A23
-		device pci 07.1 off end # TBT_PCIe1			0x9A25
-		device pci 07.2 off end # TBT_PCIe2			0x9A27
-		device pci 07.3 off end # TBT_PCIe3			0x9A29
-		device pci 15.0 on
+		# Baseboard has these on, so they must be disabled here.
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 off end
+		device ref tbt_dma0 off end
+
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -36,8 +37,8 @@ chip soc/intel/tigerlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-		end # I2C0
-		device pci 15.1 on
+		end
+		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
@@ -59,9 +60,8 @@ chip soc/intel/tigerlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 14 on end
 			end
-		end # I2C1
-		device pci 15.2 off end # I2C2				0xA0EA
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -70,6 +70,6 @@ chip soc/intel/tigerlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5				0xA0C6
+		end
 	end
 end

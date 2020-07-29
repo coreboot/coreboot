@@ -2,7 +2,7 @@ chip soc/intel/tigerlake
 	register "SaGv" = "SaGv_Disabled"
 
 	device domain 0 on
-		device pci 15.1 on
+		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
@@ -32,8 +32,8 @@ chip soc/intel/tigerlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
-		end # I2C1				0xA0E9
-		device pci 15.2 on
+		end
+		device ref i2c2 on
 			chip drivers/i2c/sx9310
 				register "desc" = ""SAR0 Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
@@ -64,8 +64,8 @@ chip soc/intel/tigerlake
 				register "reg_sar_ctrl2" = "0x3c"
 				device i2c 28 on end
 			end
-		end # I2C2				0xA0EA
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -74,6 +74,6 @@ chip soc/intel/tigerlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5				0xA0C6
+		end
 	end
 end

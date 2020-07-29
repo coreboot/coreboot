@@ -13,7 +13,7 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
-		device pci 04.0 on
+		device ref dptf on
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active" = "{
@@ -61,8 +61,8 @@ chip soc/intel/tigerlake
 
 				device generic 0 on end
 			end
-		end # DPTF				0x9A03
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -94,8 +94,8 @@ chip soc/intel/tigerlake
 				device i2c 32 on
 				end
 			end
-		end # I2C #0			0xA0E8
-		device pci 15.1 on
+		end
+		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
@@ -139,8 +139,8 @@ chip soc/intel/tigerlake
 				register "has_power_resource" = "1"
 				device i2c 39 on end
 			end
-		end # I2C1				0xA0E9
-		device pci 15.2 on
+		end
+		device ref i2c2 on
 			chip drivers/i2c/sx9310
 				register "desc" = ""SAR0 Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
@@ -171,8 +171,8 @@ chip soc/intel/tigerlake
 				register "reg_sar_ctrl2" = "0x3c"
 				device i2c 28 on end
 			end
-		end # I2C2				0xA0EA
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -181,8 +181,8 @@ chip soc/intel/tigerlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5				0xA0C6
-		device pci 1f.2 hidden
+		end
+		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux
@@ -203,6 +203,6 @@ chip soc/intel/tigerlake
 					end
 				end
 			end
-		end # PMC
+		end
 	end
 end

@@ -58,8 +58,8 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
-		device pci 04.0 off end
-		device pci 15.0 on
+		device ref dptf off end
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -73,7 +73,7 @@ chip soc/intel/tigerlake
 				device i2c 1a on end
 			end
 		end
-		device pci 15.1 on
+		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
@@ -105,8 +105,8 @@ chip soc/intel/tigerlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
-		end # I2C1				0xA0E9
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -115,8 +115,8 @@ chip soc/intel/tigerlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5				0xA0C6
-		device pci 1f.3 on
+		end
+		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
@@ -124,7 +124,7 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
-		device pci 1f.2 hidden
+		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux

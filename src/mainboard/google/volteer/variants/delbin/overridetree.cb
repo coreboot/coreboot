@@ -3,7 +3,7 @@ chip soc/intel/tigerlake
 	register "DdiPort2Hpd" = "0"
 
 	device domain 0 on
-		device pci 15.0 on
+		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -33,7 +33,7 @@ chip soc/intel/tigerlake
 				device i2c 32 on end
 			end
 		end
-		device pci 15.1 on
+		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9008""
 				register "generic.desc" = ""ELAN Touchscreen""
@@ -48,8 +48,8 @@ chip soc/intel/tigerlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end
-		end # I2C1				0xA0E9
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -58,8 +58,8 @@ chip soc/intel/tigerlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5				0xA0C6
-		device pci 1f.2 hidden
+		end
+		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux
@@ -80,6 +80,6 @@ chip soc/intel/tigerlake
 					end
 				end
 			end
-		end # PMC
+		end
 	end
 end

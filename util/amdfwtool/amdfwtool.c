@@ -918,26 +918,19 @@ static void integrate_bios_firmwares(context *ctx,
 
 		/* BIOS Directory items may have additional requirements */
 
-		/* APOB_NV must have a size if it has a source */
-		if (fw_table[i].type == AMD_BIOS_APOB_NV && fw_table[i].src) {
-			if (!fw_table[i].size) {
+		/* Check APOB_NV requirements */
+		if (fw_table[i].type == AMD_BIOS_APOB_NV) {
+			if (!fw_table[i].size && !fw_table[i].src)
+				continue; /* APOB_NV not used */
+			if (fw_table[i].src && !fw_table[i].size) {
 				printf("Error: APOB NV address provided, but no size\n");
 				free(ctx->rom);
 				exit(1);
 			}
-		}
-		/* APOB_NV needs a size, else no choice but to skip the item */
-		if (fw_table[i].type == AMD_BIOS_APOB_NV && !fw_table[i].size) {
-			/* Attempt to determine whether this is an error */
+			/* If the APOB isn't used, APOB_NV isn't used either */
 			apob_idx = find_bios_entry(AMD_BIOS_APOB);
-			if (apob_idx < 0 || !fw_table[apob_idx].dest) {
-				/* APOV NV not expected to be used */
-				continue;
-			} else {
-				printf("Error: APOB NV must have a size\n");
-				free(ctx->rom);
-				exit(1);
-			}
+			if (apob_idx < 0 || !fw_table[apob_idx].dest)
+				continue; /* APOV NV not supported */
 		}
 
 		/* APOB_DATA needs destination */

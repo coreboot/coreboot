@@ -761,8 +761,6 @@ static void fill_power_res_sequence(struct drivers_intel_mipi_camera_config *con
 
 static void write_pci_camera_device(const struct device *dev)
 {
-	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-
 	if (dev->path.type != DEVICE_PATH_PCI) {
 		printk(BIOS_ERR, "CIO2/IMGU devices require PCI\n");
 		return;
@@ -770,8 +768,7 @@ static void write_pci_camera_device(const struct device *dev)
 
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_ADR_pci_device(dev);
-	acpigen_write_name_string("_DDN", config->device_type == INTEL_ACPI_CAMERA_CIO2 ?
-				  "Camera and Imaging Subsystem" : "Imaging Unit");
+	acpigen_write_name_string("_DDN", "Camera and Imaging Subsystem");
 }
 
 static void write_i2c_camera_device(const struct device *dev, const char *scope)
@@ -783,11 +780,6 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 		.speed = I2C_SPEED_FAST,
 		.resource = scope,
 	};
-
-	if (dev->path.type != DEVICE_PATH_I2C) {
-		printk(BIOS_ERR, "Non-CIO2/IMGU devices require I2C\n");
-		return;
-	}
 
 	acpigen_write_device(acpi_device_name(dev));
 
@@ -930,18 +922,29 @@ static void camera_fill_ssdt(const struct device *dev)
 		acpigen_pop_len(); /* Guarded power resource operations scope */
 	}
 
-	/* Device */
-	scope = acpi_device_scope(dev);
-	if (!scope)
-		return;
+	switch (dev->path.type) {
+	case DEVICE_PATH_I2C:
+		scope = acpi_device_scope(dev);
+		if (!scope)
+			return;
 
-	acpigen_write_scope(scope);
-
-	if (config->device_type == INTEL_ACPI_CAMERA_CIO2 ||
-	    config->device_type == INTEL_ACPI_CAMERA_IMGU)
-		write_pci_camera_device(dev);
-	else
+		acpigen_write_scope(scope);
 		write_i2c_camera_device(dev, scope);
+		break;
+	case DEVICE_PATH_GENERIC:
+		pdev = dev->bus->dev;
+		scope = acpi_device_scope(pdev);
+		if (!scope)
+			return;
+
+		acpigen_write_scope(scope);
+		write_pci_camera_device(pdev);
+		break;
+	default:
+		printk(BIOS_ERR, "Unsupported device type: %x\n"
+				 "OS camera driver will likely not work\n", dev->path.type);
+		return;
+	}
 
 	write_camera_device_common(dev);
 

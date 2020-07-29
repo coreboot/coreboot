@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.5.3.  */
+/* A Bison parser, made by GNU Bison 3.6.3.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 # define YY_YY_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
@@ -44,54 +45,59 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    CHIP = 258,
-    DEVICE = 259,
-    REGISTER = 260,
-    ALIAS = 261,
-    REFERENCE = 262,
-    ASSOCIATION = 263,
-    BOOL = 264,
-    STATUS = 265,
-    MANDATORY = 266,
-    BUS = 267,
-    RESOURCE = 268,
-    END = 269,
-    EQUALS = 270,
-    HEX = 271,
-    STRING = 272,
-    PCI = 273,
-    PNP = 274,
-    I2C = 275,
-    APIC = 276,
-    CPU_CLUSTER = 277,
-    CPU = 278,
-    DOMAIN = 279,
-    IRQ = 280,
-    DRQ = 281,
-    SLOT_DESC = 282,
-    IO = 283,
-    NUMBER = 284,
-    SUBSYSTEMID = 285,
-    INHERIT = 286,
-    IOAPIC_IRQ = 287,
-    IOAPIC = 288,
-    PCIINT = 289,
-    GENERIC = 290,
-    SPI = 291,
-    USB = 292,
-    MMIO = 293,
-    LPC = 294,
-    ESPI = 295,
-    FW_CONFIG_TABLE = 296,
-    FW_CONFIG_FIELD = 297,
-    FW_CONFIG_OPTION = 298,
-    FW_CONFIG_PROBE = 299
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    CHIP = 258,                    /* CHIP  */
+    DEVICE = 259,                  /* DEVICE  */
+    REGISTER = 260,                /* REGISTER  */
+    ALIAS = 261,                   /* ALIAS  */
+    REFERENCE = 262,               /* REFERENCE  */
+    ASSOCIATION = 263,             /* ASSOCIATION  */
+    BOOL = 264,                    /* BOOL  */
+    STATUS = 265,                  /* STATUS  */
+    MANDATORY = 266,               /* MANDATORY  */
+    BUS = 267,                     /* BUS  */
+    RESOURCE = 268,                /* RESOURCE  */
+    END = 269,                     /* END  */
+    EQUALS = 270,                  /* EQUALS  */
+    HEX = 271,                     /* HEX  */
+    STRING = 272,                  /* STRING  */
+    PCI = 273,                     /* PCI  */
+    PNP = 274,                     /* PNP  */
+    I2C = 275,                     /* I2C  */
+    APIC = 276,                    /* APIC  */
+    CPU_CLUSTER = 277,             /* CPU_CLUSTER  */
+    CPU = 278,                     /* CPU  */
+    DOMAIN = 279,                  /* DOMAIN  */
+    IRQ = 280,                     /* IRQ  */
+    DRQ = 281,                     /* DRQ  */
+    SLOT_DESC = 282,               /* SLOT_DESC  */
+    IO = 283,                      /* IO  */
+    NUMBER = 284,                  /* NUMBER  */
+    SUBSYSTEMID = 285,             /* SUBSYSTEMID  */
+    INHERIT = 286,                 /* INHERIT  */
+    IOAPIC_IRQ = 287,              /* IOAPIC_IRQ  */
+    IOAPIC = 288,                  /* IOAPIC  */
+    PCIINT = 289,                  /* PCIINT  */
+    GENERIC = 290,                 /* GENERIC  */
+    SPI = 291,                     /* SPI  */
+    USB = 292,                     /* USB  */
+    MMIO = 293,                    /* MMIO  */
+    LPC = 294,                     /* LPC  */
+    ESPI = 295,                    /* ESPI  */
+    FW_CONFIG_TABLE = 296,         /* FW_CONFIG_TABLE  */
+    FW_CONFIG_FIELD = 297,         /* FW_CONFIG_FIELD  */
+    FW_CONFIG_OPTION = 298,        /* FW_CONFIG_OPTION  */
+    FW_CONFIG_PROBE = 299          /* FW_CONFIG_PROBE  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */

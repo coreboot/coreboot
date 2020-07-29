@@ -69,6 +69,9 @@ typedef enum {
 /* Root device of primary tree. */
 static struct device base_root_dev;
 
+/* Root device of chipset tree. */
+static struct device chipset_root_dev;
+
 /* Root device of override tree (if applicable). */
 static struct device override_root_dev;
 
@@ -86,6 +89,20 @@ static struct device base_root_dev = {
 	.parent = &base_root_bus,
 	.enabled = 1,
 	.bus = &base_root_bus,
+};
+
+static struct bus chipset_root_bus = {
+	.id = 0,
+	.dev = &chipset_root_dev,
+};
+
+static struct device chipset_root_dev = {
+	.name = "chipset_root",
+	.chip_instance = &mainboard_instance,
+	.path = " .type = DEVICE_PATH_ROOT ",
+	.parent = &chipset_root_bus,
+	.enabled = 1,
+	.bus = &chipset_root_bus,
 };
 
 static struct bus override_root_bus = {
@@ -689,27 +706,12 @@ static const struct device *find_alias(const struct device *const parent,
 	return NULL;
 }
 
-struct device *new_device(struct bus *parent,
-			  struct chip_instance *chip_instance,
-			  const int bustype, const char *devnum,
-			  char *alias, int status)
+static struct device *new_device_with_path(struct bus *parent,
+					   struct chip_instance *chip_instance,
+					   const int bustype, int path_a, int path_b,
+					   char *alias, int status)
 {
-	char *tmp;
-	int path_a;
-	int path_b = 0;
 	struct device *new_d;
-
-	/* Check for alias name conflicts. */
-	if (alias && find_alias(&base_root_dev, alias)) {
-		printf("ERROR: Alias already exists: %s\n", alias);
-		exit(1);
-	}
-
-	path_a = strtol(devnum, &tmp, 16);
-	if (*tmp == '.') {
-		tmp++;
-		path_b = strtol(tmp, NULL, 16);
-	}
 
 	/* If device is found under parent, no need to allocate new device. */
 	new_d = get_dev(parent, path_a, path_b, bustype, chip_instance);
@@ -792,6 +794,46 @@ struct device *new_device(struct bus *parent,
 	}
 
 	return new_d;
+}
+
+struct device *new_device_reference(struct bus *parent,
+				    struct chip_instance *chip_instance,
+				    const char *reference, int status)
+{
+	const struct device *dev = find_alias(&base_root_dev, reference);
+
+	if (!dev) {
+		printf("ERROR: Unable to find device reference %s\n", reference);
+		exit(1);
+	}
+
+	return new_device_with_path(parent, chip_instance, dev->bustype, dev->path_a,
+				    dev->path_b, NULL, status);
+}
+
+struct device *new_device_raw(struct bus *parent,
+			      struct chip_instance *chip_instance,
+			      const int bustype, const char *devnum,
+			      char *alias, int status)
+{
+	char *tmp;
+	int path_a;
+	int path_b = 0;
+
+	/* Check for alias name conflicts. */
+	if (alias && find_alias(root_parent->dev, alias)) {
+		printf("ERROR: Alias already exists: %s\n", alias);
+		exit(1);
+	}
+
+	path_a = strtol(devnum, &tmp, 16);
+	if (*tmp == '.') {
+		tmp++;
+		path_b = strtol(tmp, NULL, 16);
+	}
+
+	return new_device_with_path(parent, chip_instance, bustype, path_a, path_b, alias,
+				    status);
 }
 
 static void new_resource(struct device *dev, int type, int index, int base)
@@ -1315,6 +1357,7 @@ static void usage(void)
 	printf("  -r | --output_h          : Path to header static.h file (required)\n");
 	printf("  -m | --mainboard_devtree : Path to mainboard devicetree file (required)\n");
 	printf("  -o | --override_devtree  : Path to override devicetree file (optional)\n");
+	printf("  -p | --chipset_devtree   : Path to chipset/SOC devicetree file (optional)\n");
 	exit(1);
 }
 
@@ -1683,6 +1726,7 @@ int main(int argc, char **argv)
 	static const struct option long_options[] = {
 		{ "mainboard_devtree", 1, NULL, 'm' },
 		{ "override_devtree", 1, NULL, 'o' },
+		{ "chipset_devtree", 1, NULL, 'p' },
 		{ "output_c", 1, NULL, 'c' },
 		{ "output_h", 1, NULL, 'r' },
 		{ "help", 1, NULL, 'h' },
@@ -1690,11 +1734,12 @@ int main(int argc, char **argv)
 	};
 	const char *override_devtree = NULL;
 	const char *base_devtree = NULL;
+	const char *chipset_devtree = NULL;
 	const char *outputc = NULL;
 	const char *outputh = NULL;
 	int opt, option_index;
 
-	while ((opt = getopt_long(argc, argv, "m:o:c:r:h", long_options,
+	while ((opt = getopt_long(argc, argv, "m:o:p:c:r:h", long_options,
 				  &option_index)) != EOF) {
 		switch (opt) {
 		case 'm':
@@ -1702,6 +1747,9 @@ int main(int argc, char **argv)
 			break;
 		case 'o':
 			override_devtree = strdup(optarg);
+			break;
+		case 'p':
+			chipset_devtree = strdup(optarg);
 			break;
 		case 'c':
 			outputc = strdup(optarg);
@@ -1718,7 +1766,14 @@ int main(int argc, char **argv)
 	if (!base_devtree || !outputc || !outputh)
 		usage();
 
-	parse_devicetree(base_devtree, &base_root_bus);
+	if (chipset_devtree) {
+		/* Use the chipset devicetree as the base, then override
+		   with the mainboard "base" devicetree. */
+		parse_devicetree(chipset_devtree, &base_root_bus);
+		parse_override_devicetree(base_devtree, &chipset_root_dev);
+	} else {
+		parse_devicetree(base_devtree, &base_root_bus);
+	}
 
 	if (override_devtree)
 		parse_override_devicetree(override_devtree, &override_root_dev);

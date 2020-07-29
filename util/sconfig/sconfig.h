@@ -175,10 +175,14 @@ struct device {
 
 extern struct bus *root_parent;
 
-struct device *new_device(struct bus *parent,
-			  struct chip_instance *chip_instance,
-			  const int bustype, const char *devnum,
-			  char *alias, int status);
+struct device *new_device_raw(struct bus *parent,
+			      struct chip_instance *chip_instance,
+			      const int bustype, const char *devnum,
+			      char *alias, int status);
+
+struct device *new_device_reference(struct bus *parent,
+				    struct chip_instance *chip_instance,
+				    const char *reference, int status);
 
 void add_resource(struct bus *bus, int type, int index, int base);
 

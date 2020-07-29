@@ -13,6 +13,7 @@ CONFIG_CBFS_PREFIX:=$(call strip_quotes,$(CONFIG_CBFS_PREFIX))
 CONFIG_FMDFILE:=$(call strip_quotes,$(CONFIG_FMDFILE))
 CONFIG_DEVICETREE:=$(call strip_quotes, $(CONFIG_DEVICETREE))
 CONFIG_OVERRIDE_DEVICETREE:=$(call strip_quotes, $(CONFIG_OVERRIDE_DEVICETREE))
+CONFIG_CHIPSET_DEVICETREE:=$(call strip_quotes, $(CONFIG_CHIPSET_DEVICETREE))
 CONFIG_MEMLAYOUT_LD_FILE:=$(call strip_quotes, $(CONFIG_MEMLAYOUT_LD_FILE))
 
 #######################################################################
@@ -599,13 +600,18 @@ OVERRIDE_DEVICETREE_FILE := $(src)/mainboard/$(MAINBOARDDIR)/$(CONFIG_OVERRIDE_D
 SCONFIG_OPTIONS += --override_devtree=$(OVERRIDE_DEVICETREE_FILE)
 endif
 
+ifneq ($(CONFIG_CHIPSET_DEVICETREE),)
+CHIPSET_DEVICETREE_FILE := $(src)/$(CONFIG_CHIPSET_DEVICETREE)
+SCONFIG_OPTIONS += --chipset_devtree=$(CHIPSET_DEVICETREE_FILE)
+endif
+
 DEVICETREE_STATIC_C := $(obj)/mainboard/$(MAINBOARDDIR)/static.c
 SCONFIG_OPTIONS += --output_c=$(DEVICETREE_STATIC_C)
 
 DEVICETREE_STATIC_H := $(obj)/static.h
 SCONFIG_OPTIONS += --output_h=$(DEVICETREE_STATIC_H)
 
-$(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
+$(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(CHIPSET_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(dir $(DEVICETREE_STATIC_C))
 	$(objutil)/sconfig/sconfig $(SCONFIG_OPTIONS)

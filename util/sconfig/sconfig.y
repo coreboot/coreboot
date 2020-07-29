@@ -37,11 +37,19 @@ chip: CHIP STRING /* == path */ {
 };
 
 device: DEVICE BUS NUMBER /* == devnum */ alias status {
-	$<dev>$ = new_device(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<string>4, $<number>5);
+	$<dev>$ = new_device_raw(cur_parent, cur_chip_instance, $<number>2, $<string>3, $<string>4, $<number>5);
 	cur_parent = $<dev>$->last_bus;
 }
 	devicechildren END {
 	cur_parent = $<dev>6->parent;
+};
+
+device: DEVICE REFERENCE STRING status {
+	$<dev>$ = new_device_reference(cur_parent, cur_chip_instance, $<string>3, $<number>4);
+	cur_parent = $<dev>$->last_bus;
+}
+	devicechildren END {
+	cur_parent = $<dev>5->parent;
 };
 
 alias: /* empty */ {

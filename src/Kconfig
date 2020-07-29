@@ -536,6 +536,17 @@ source "src/vendorcode/*/Kconfig"
 
 source "src/arch/*/Kconfig"
 
+config CHIPSET_DEVICETREE
+	string
+	default ""
+	help
+	  This symbol allows a chipset to provide a set of default settings in
+	  a devicetree which are common to all mainboards. This may include
+	  devices (including alias names), chip drivers, register settings,
+	  and others. This path is relative to the src/ directory.
+
+	  Example: "chipset.cb"
+
 endmenu
 
 source "src/device/Kconfig"

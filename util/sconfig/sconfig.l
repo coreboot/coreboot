@@ -15,6 +15,7 @@ chip			{return(CHIP);}
 device			{return(DEVICE);}
 alias			{return(ALIAS);}
 use			{return(REFERENCE);}
+ref			{return(REFERENCE);}
 as			{return(ASSOCIATION);}
 register		{return(REGISTER);}
 fw_config		{return(FW_CONFIG_TABLE);}

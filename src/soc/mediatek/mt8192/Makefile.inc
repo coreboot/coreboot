@@ -40,6 +40,7 @@ ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += emi.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += ../common/mcu.c
+ramstage-y += mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += soc.c
@@ -51,6 +52,7 @@ ramstage-y += ../common/usb.c usb.c
 MT8192_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8192
 
 mcu-firmware-files := \
+	$(CONFIG_MCUPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \

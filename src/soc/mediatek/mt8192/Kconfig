@@ -45,6 +45,12 @@ config MEMORY_TEST
 	  This option enables memory basic compare test to verify the DRAM read
 	  or write is as expected.
 
+config MCUPM_FIRMWARE
+	string
+	default "mcupm.bin"
+	help
+	  The file name of the MediaTek MCUPM firmware.
+
 config SPM_FIRMWARE
 	string
 	default "spm_firmware.bin"

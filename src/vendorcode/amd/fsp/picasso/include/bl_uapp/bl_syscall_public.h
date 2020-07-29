@@ -35,6 +35,7 @@
 #define SVC_EXIT			0x00
 #define SVC_MAP_USER_STACK		0x01
 #define SVC_DEBUG_PRINT			0x06
+#define SVC_RSAPSS_VERIFY		0x0D
 #define SVC_DEBUG_PRINT_EX		0x1A
 #define SVC_WAIT_10NS_MULTIPLE		0x1B
 #define SVC_GET_BOOT_MODE		0x1C
@@ -52,6 +53,17 @@
 #define SVC_GET_MAX_WORKBUF_SIZE	0x45
 #define SVC_SHA				0x46
 
+typedef struct _RSAPSS_VERIFY_PARAMS_T
+{
+	char		*pHash;         // Message digest to verify the RSA signature
+	unsigned int	HashLen;        // hash length in bytes
+	char		*pModulus;      // Modulus address
+	unsigned int	ModulusSize;    // Modulus length in bytes
+	char		*pExponent;     // Exponent address
+	unsigned int	ExpSize;        // Exponent length in bytes
+	char		*pSig;          // Signature to be verified, same size as ModulusSize
+} RSAPSS_VERIFY_PARAMS;
+
 typedef enum _PSP_BOOT_MODE
 {
 	PSP_BOOT_MODE_S0 = 0x0,
@@ -61,24 +73,6 @@ typedef enum _PSP_BOOT_MODE
 	PSP_BOOT_MODE_S5_COLD = 0x4,
 	PSP_BOOT_MODE_S5_WARM = 0x5,
 } PSP_BOOT_MODE;
-
-/* TLB2_n settings for AWUSER and TLB3_n settings for ARUSER:
- * USER[0] - ReqIO bit, 1'b1 for FCH MMIO address
- * USER[1] - Compat bit, 1'b1 for FCH access, 0 for everything else
- * USER[2] - ByPass_IOMMU bit, 1'b1 to always bypass IOMMU, 0 for IOMMU translation
- */
-typedef enum SYSHUB_TARGET_TYPE_E
-{
-	// Target Type			// Address		// [2:0] =[Bypass,Compat,ReqIO]
-	AxUSER_PCIE_HT0 = 0x0,		// PCIe HT (Bypass=0)	// [2:0] =[0,0,0]
-	AxUSER_DRAM_VIA_IOMMU = 0x1,	// DRAM ACCESS via IOMMU// [2:0] =[0,0,1]
-	AxUSER_PCIE_HT1 = 0x2,		// PCIe HT  (Bypass=1)	// [2:0] =[0,1,0]
-	AxUSER_RSVD = 0x3,		// - NOT USED ,INVALID 	// [2:0] =[0,1,1]
-	AxUSER_DRAM_BYPASS_IOMMU = 0x4,	// GENERAL DRAM 	// [2:0] =[1,0,0]
-	AxUSER_PCIE_MMIO = 0x5,		// PCIe MMIO		// [2:0] =[1,0,1]
-	AxUSER_FCH_HT_IO = 0x6,		// FCH HT (port80)	// [2:0] =[1,1,0]
-	AxUSER_FCH_MMIO = 0x6		// FCH MMIO 		// [2:0] =[1,1,1]
-} SYSHUB_TARGET_TYPE;
 
 typedef enum FCH_IO_DEVICE {
 	FCH_IO_DEVICE_SPI,
@@ -122,15 +116,6 @@ typedef struct SPIROM_INFO
 	void *SpiBiosSmnBase;
 	uint32_t SpiBiosSize;
 } SPIROM_INFO;
-
-typedef struct SYSHUB_RW_PARMS_EX_E
-{
-	uint32_t SyshubAddressLo;
-	uint32_t SyshubAddressHi;
-	uint32_t *pValue;
-	uint32_t Size;
-	SYSHUB_TARGET_TYPE TargetType;
-} SYSHUB_RW_PARMS_EX;
 
 typedef enum PSP_TIMER_TYPE {
 	PSP_TIMER_TYPE_CHRONO     = 0,
@@ -361,6 +346,15 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size);
  * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
  */
 uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
+
+/* RSA PSS Verification of signature and data
+ *
+ * Parameters:
+ *     RSAPSS_VERIFY_PARAMS   -   Pointer to RSA PSS parameters
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_rsa_pss_verify(const RSAPSS_VERIFY_PARAMS *params);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

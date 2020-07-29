@@ -35,7 +35,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SsicPortEnable" = "0"
-	register "Cio2Enable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
@@ -192,6 +191,7 @@ chip soc/intel/skylake
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
+		device pci 14.3 off end # Camera
 		device pci 15.0 on  end # I2C Controller #0
 		device pci 15.1 on
 			chip drivers/i2c/hid

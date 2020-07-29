@@ -300,9 +300,6 @@ struct soc_intel_skylake_config {
 	/* Bus voltage level, default is 3.3V */
 	enum skylake_i2c_voltage i2c_voltage[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 
-	/* Camera */
-	u8 Cio2Enable;
-
 	/* eMMC and SD */
 	u8 ScsEmmcHs400Enabled;
 	u8 EmmcHs400DllNeed;

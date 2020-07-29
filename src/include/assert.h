@@ -22,9 +22,16 @@
 #define __ASSERT_LINE__ __LINE__
 #endif
 
+#ifndef _PORTING_H_	/* TODO: Isolate AGESA properly. */
+#define __build_time_assert(x) \
+	(__builtin_constant_p(x) ? ((x) ? 1 : dead_code_t(int)) : 0)
+#else
+#define __build_time_assert(x) 0
+#endif
+
 /* GCC and CAR versions */
 #define ASSERT(x) {							\
-	if (!(x)) {							\
+	if (!__build_time_assert(x) && !(x)) {				\
 		printk(BIOS_EMERG,					\
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\
@@ -33,7 +40,7 @@
 	}								\
 }
 #define ASSERT_MSG(x, msg) {						\
-	if (!(x)) {							\
+	if (!__build_time_assert(x) && !(x)) {				\
 		printk(BIOS_EMERG,					\
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\

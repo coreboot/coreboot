@@ -278,7 +278,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaVcType = config->PchHdaVcType;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;
-	params->Device4Enable = config->Device4Enable;
+
+	dev = pcidev_path_on_root(SA_DEVFN_TS);
+	params->Device4Enable = dev && dev->enabled;
 	params->EnableTcoTimer = !config->PmTimerDisabled;
 
 

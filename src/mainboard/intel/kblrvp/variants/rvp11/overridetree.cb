@@ -4,7 +4,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
-	register "Device4Enable" = "0"
 	register "PmTimerDisabled" = "0"
 
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
@@ -117,6 +116,7 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
+		device pci 04.0 off end # SA thermal subsystem
 		device pci 17.0 on  end # SATA
 		device pci 19.1 on  end # I2C #5
 		device pci 1e.1 on  end # UART #1

@@ -38,7 +38,6 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "1"
 	register "SkipExtGfxScan" = "1"
-	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Enabled"
 	register "SaImguEnable" = "0"
 	register "Cio2Enable" = "0"

@@ -54,7 +54,6 @@ chip soc/intel/skylake
 	register "ScsSdCardEnabled" = "0"
 	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
-	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
 	register "SaGv" = "3"
 	register "PmConfigSlpS3MinAssert" = "2"        # 50ms
@@ -248,6 +247,7 @@ chip soc/intel/skylake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 on  end # SA thermal subsystem
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on
 			chip drivers/usb/acpi

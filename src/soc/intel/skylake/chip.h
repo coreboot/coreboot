@@ -336,7 +336,6 @@ struct soc_intel_skylake_config {
 	u32 LogoPtr;
 	u32 LogoSize;
 	u32 GraphicsConfigPtr;
-	u8 Device4Enable;
 	u8 RtcLock;
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
 	u8 GpioIrqSelect;

@@ -10,7 +10,6 @@ chip soc/intel/skylake
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsSdCardEnabled" = "0"
 	register "SkipExtGfxScan" = "1"
-	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Disabled"
 
 	# SATA configuration

@@ -3,7 +3,7 @@
 #include <intelblocks/smbus.h>
 #include <soc/romstage.h>
 
-void pch_init(void)
+void romstage_pch_init(void)
 {
 	/* Program SMBUS_BASE_ADDRESS and Enable it */
 	smbus_common_init();

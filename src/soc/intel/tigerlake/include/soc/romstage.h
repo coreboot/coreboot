@@ -9,7 +9,7 @@
 bool mainboard_get_dram_part_num(const char **part_num, size_t *len);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
-void pch_init(void);
+void romstage_pch_init(void);
 
 /* Board type */
 enum board_type {

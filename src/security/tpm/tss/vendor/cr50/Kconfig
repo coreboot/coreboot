@@ -12,4 +12,11 @@ config POWER_OFF_ON_CR50_UPDATE
 	help
 	  Power off machine while waiting for CR50 update to take effect.
 
+config CR50_USE_LONG_INTERRUPT_PULSES
+	bool
+	default n
+	help
+	  Whether to request longer interrupt pulses using Cr50 BOARD_CFG register.
+	  If the Cr50 firmware is too old, it will not be able to honor the request.
+
 endif

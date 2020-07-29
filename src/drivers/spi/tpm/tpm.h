@@ -41,4 +41,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 /* Get information about previously initialized TPM device. */
 void tpm2_get_info(struct tpm2_info *info);
 
+/* Indicates whether Cr50 ready pulses are guaranteed to be at least 100us. */
+bool cr50_is_long_interrupt_pulse_enabled(void);
+
 #endif  /* ! __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H */

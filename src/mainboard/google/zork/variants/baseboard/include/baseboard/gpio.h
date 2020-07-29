@@ -7,31 +7,10 @@
 #include <soc/gpio.h>
 #include <platform_descriptors.h>
 
-#define WLAN_CLKREQ		CLK_REQ0
-#define SD_CLKREQ		CLK_REQ1
-
-#if CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)
-#define NVME_START_LANE 4
-#define NVME_END_LANE 5
-#define WLAN_START_LANE 0
-#define WLAN_END_LANE 0
-#define SD_START_LANE 1
-#define SD_END_LANE 1
-#else
-#define NVME_START_LANE 0
-#define NVME_END_LANE 1
-#define WLAN_START_LANE 4
-#define WLAN_END_LANE 4
-#define SD_START_LANE 5
-#define SD_END_LANE 5
-#endif
-
 #if CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE)
 #define EC_IN_RW_OD		GPIO_130
-#define NVME_CLKREQ		CLK_REQ4
 #else
 #define EC_IN_RW_OD		GPIO_11
-#define NVME_CLKREQ		CLK_REQ2
 #endif
 
 /* SPI Write protect */

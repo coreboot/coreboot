@@ -31,7 +31,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = NVME_CLKREQ,
+		.clk_req = CLK_REQ4,
 	},
 	{
 		// WLAN
@@ -45,7 +45,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = WLAN_CLKREQ,
+		.clk_req = CLK_REQ0,
 		.clk_pm_support = true,
 	},
 	{
@@ -60,7 +60,7 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = SD_CLKREQ,
+		.clk_req = CLK_REQ1,
 	}
 };
 
@@ -69,45 +69,45 @@ static const fsp_dxio_descriptor dali_dxio_descriptors[] = {
 		// NVME SSD
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_logical_lane = NVME_START_LANE,
-		.end_logical_lane = NVME_END_LANE,
+		.start_logical_lane = 0,
+		.end_logical_lane = 1,
 		.device_number = 1,
 		.function_number = 7,
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = NVME_CLKREQ,
+		.clk_req = CLK_REQ4,
 		.clk_pm_support = true,
 	},
 	{
 		// WLAN
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_logical_lane = WLAN_START_LANE,
-		.end_logical_lane = WLAN_END_LANE,
+		.start_logical_lane = 4,
+		.end_logical_lane = 4,
 		.device_number = 1,
 		.function_number = 2,
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = WLAN_CLKREQ,
+		.clk_req = CLK_REQ0,
 		.clk_pm_support = true,
 	},
 	{
 		// SD Reader
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
-		.start_logical_lane = SD_START_LANE,
-		.end_logical_lane = SD_END_LANE,
+		.start_logical_lane = 5,
+		.end_logical_lane = 5,
 		.device_number = 1,
 		.function_number = 3,
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = SD_CLKREQ,
+		.clk_req = CLK_REQ1,
 	}
 };
 

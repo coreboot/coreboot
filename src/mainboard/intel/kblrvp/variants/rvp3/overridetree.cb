@@ -10,7 +10,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "1"
 	register "PmTimerDisabled" = "1"
 	register "Cio2Enable" = "1"
-	register "SaImguEnable" = "1"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
@@ -121,6 +120,7 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
+		device pci 05.0 on  end # SA IMGU
 		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
 		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
 		device pci 1c.5 on  end # PCI Express Port 6 x1 SLOT3

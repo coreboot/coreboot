@@ -45,7 +45,6 @@ chip soc/intel/skylake
 	register "HeciEnabled" = "1"
 	register "PmTimerDisabled" = "1"
 	register "SaGv" = "SaGv_Enabled"
-	register "SaImguEnable" = "0"
 	register "IslVrCmd" = "2"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
 	register "PmConfigSlpS4MinAssert" = "4"		# 4s
@@ -218,6 +217,7 @@ chip soc/intel/skylake
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 04.0 off end # SA thermal subsystem
+		device pci 05.0 off end # SA IMGU
 		device pci 08.0 off end # Gaussian Mixture Model
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on  end # USB xHCI

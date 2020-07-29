@@ -1,0 +1,71 @@
+chip soc/intel/tigerlake
+	device domain 0 on
+		device pci 00.0 alias system_agent on end
+		device pci 02.0 alias igpu off end
+		device pci 04.0 alias dptf off end
+		device pci 05.0 alias ipu off end
+		device pci 06.0 alias peg off end
+		device pci 07.0 alias tbt_pcie_rp0 off end
+		device pci 07.1 alias tbt_pcie_rp1 off end
+		device pci 07.2 alias tbt_pcie_rp2 off end
+		device pci 07.3 alias tbt_pcie_rp3 off end
+		device pci 08.0 alias gna off end
+		device pci 09.0 alias npk off end
+		device pci 0a.0 alias crashlog off end
+		device pci 0d.0 alias north_xhci off end
+		device pci 0d.1 alias north_xdci off end
+		device pci 0d.2 alias tbt_dma0 off end
+		device pci 0d.3 alias tbt_dma1 off end
+		device pci 0e.0 alias vmd off end
+		device pci 10.2 alias cnvi_bt off end
+		device pci 10.6 alias thc0 off end
+		device pci 10.7 alias thc1 off end
+		device pci 12.0 alias ish off end
+		device pci 12.6 alias gspi2 off end
+		device pci 13.0 alias gspi3 off end
+		device pci 14.0 alias south_xhci off end
+		device pci 14.1 alias south_xdci off end
+		device pci 14.2 alias shared_ram off end
+		chip drivers/intel/wifi
+			device pci 14.3 alias cnvi_wifi off end
+		end
+		device pci 15.0 alias i2c0 off end
+		device pci 15.1 alias i2c1 off end
+		device pci 15.2 alias i2c2 off end
+		device pci 15.3 alias i2c3 off end
+		device pci 16.0 alias heci1 off end
+		device pci 16.1 alias heci2 off end
+		device pci 16.2 alias csme1 off end
+		device pci 16.3 alias csme2 off end
+		device pci 16.4 alias heci3 off end
+		device pci 16.5 alias heci4 off end
+		device pci 17.0 alias sata off end
+		device pci 19.0 alias i2c4 off end
+		device pci 19.1 alias i2c5 off end
+		device pci 19.2 alias uart2 off end
+		device pci 1c.0 alias pcie_rp1 off end
+		device pci 1c.1 alias pcie_rp2 off end
+		device pci 1c.2 alias pcie_rp3 off end
+		device pci 1c.3 alias pcie_rp4 off end
+		device pci 1c.4 alias pcie_rp5 off end
+		device pci 1c.5 alias pcie_rp6 off end
+		device pci 1c.6 alias pcie_rp7 off end
+		device pci 1c.7 alias pcie_rp8 off end
+		device pci 1d.0 alias pcie_rp9 off end
+		device pci 1d.1 alias pcie_rp10 off end
+		device pci 1d.2 alias pcie_rp11 off end
+		device pci 1d.3 alias pcie_rp12 off end
+		device pci 1e.0 alias uart0 off end
+		device pci 1e.1 alias uart1 off end
+		device pci 1e.2 alias gspi0 off end
+		device pci 1e.3 alias gspi1 off end
+		device pci 1f.0 alias pch_espi on end
+		device pci 1f.1 alias p2sb off end
+		device pci 1f.2 alias pmc hidden end
+		device pci 1f.3 alias hda off end
+		device pci 1f.4 alias smbus off end
+		device pci 1f.5 alias fast_spi on end
+		device pci 1f.6 alias gbe off end
+		device pci 1f.7 alias thermal off end
+	end
+end

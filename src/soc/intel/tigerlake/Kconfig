@@ -86,6 +86,10 @@ config FSP_TEMP_RAM_SIZE
 	  Refer to Platform FSP integration guide document to know
 	  the exact FSP requirement for Heap setup.
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/tigerlake/chipset.cb"
+
 config IFD_CHIPSET
 	string
 	default "tgl"

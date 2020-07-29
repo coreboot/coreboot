@@ -983,10 +983,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 	t->type = SMBIOS_SYSTEM_SLOTS;
 	t->handle = *handle;
 	t->length = len - 2;
-	if (name)
-		t->slot_designation = smbios_add_string(t->eos, name);
-	else
-		t->slot_designation = smbios_add_string(t->eos, "SLOT");
+	t->slot_designation = smbios_add_string(t->eos, name ? name : "SLOT");
 	t->slot_type = type;
 	/* TODO add slot_id supoort, will be "_SUN" for ACPI devices */
 	t->slot_data_bus_width = bandwidth;

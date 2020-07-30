@@ -71,8 +71,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	for (i = 0; i < ARRAY_SIZE(params->Usb3OverCurrentPin); i++)
 		params->Usb3OverCurrentPin[i] = 0;
 
-	/* Mandatory to make use of CpuMpPpi implementation from ICL onwards */
-	params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+	/* Use coreboot MP PPI services if Kconfig is enabled */
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
+		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
 
 	mainboard_silicon_init_params(params);
 

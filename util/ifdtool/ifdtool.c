@@ -1017,6 +1017,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_ICL:
 	case PLATFORM_SKLKBL:
 	case PLATFORM_TGL:
+	case PLATFORM_JSL:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;

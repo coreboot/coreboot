@@ -113,6 +113,32 @@ typedef struct __packed {
  * Picasso DXIO Descriptor: Used for assigning lanes to PCIe/SATA/XGBE engines, configure
  * bifurcation and other settings. Beware that the lane numbers in here are the logical and not
  * the physical lane numbers!
+ *
+ * Picasso DXIO lane mapping:
+ *
+ * physical | logical | protocol
+ * ---------|---------|-----------
+ * GFX[7:0] | [15:8]  | PCIe
+ * GPP[3:0] |  [7:4]  | PCIe
+ * GPP[5:4] |  [1:0]  | PCIe, XGBE
+ * GPP[7:6] |  [3:2]  | PCIe, SATA
+ *
+ * Dali has less DXIO connectivity than Picasso:
+ *
+ * physical | logical | protocol
+ * ---------|---------|-----------
+ * GFX[3:0] | [11:8]  | PCIe
+ * GPP[1:0] |  [5:4]  | PCIe
+ * GPP[5:4] |  [1:0]  | PCIe, XGBE
+ * GPP[7:6] |  [3:2]  | SATA
+ *
+ * Pollock has even less DXIO lanes and the mapping of GPP lane numbers to the logical lane
+ * numbers differs to Picasso/Dali:
+ *
+ * physical | logical | protocol
+ * ---------|---------|----------
+ * GPP[1:0] |  [1:0]  | PCIe
+ * GPP[3:2] |  [5:4]  | PCIe
  */
 typedef struct __packed {
 	uint8_t		engine_type;

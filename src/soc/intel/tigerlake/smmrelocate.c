@@ -17,7 +17,6 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
-#include <soc/systemagent.h>
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,
@@ -232,16 +231,4 @@ void smm_relocate(void)
 		smm_initiate_relocation_parallel();
 	else if (!boot_cpu())
 		smm_initiate_relocation();
-}
-
-void smm_lock(void)
-{
-	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-	/*
-	 * LOCK the SMM memory window and enable normal SMM.
-	 * After running this function, only a full reset can
-	 * make the SMM registers writable again.
-	 */
-	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(sa_dev, SMRAM, D_LCK | G_SMRAME | C_BASE_SEG);
 }

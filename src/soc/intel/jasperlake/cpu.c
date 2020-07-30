@@ -185,9 +185,6 @@ static void post_mp_init(void)
 	 * start flowing.
 	 */
 	global_smi_enable();
-
-	/* Lock down the SMRAM space. */
-	smm_lock();
 }
 
 static const struct mp_ops mp_ops = {

@@ -9,12 +9,6 @@
 
 #define EPBAR		0x40
 #define DMIBAR		0x68
-#define SMRAM		0x88	/* System Management RAM Control */
-#define  D_OPEN		(1 << 6)
-#define  D_CLS		(1 << 5)
-#define  D_LCK		(1 << 4)
-#define  G_SMRAME	(1 << 3)
-#define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 #define CAPID0_A	0xe4
 
 #define BIOS_RESET_CPL		0x5da8

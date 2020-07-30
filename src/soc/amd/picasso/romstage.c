@@ -64,6 +64,29 @@ static bool devtree_hda_dev_enabled(void)
 }
 
 
+static const struct device_path sata_path[] = {
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = PCIE_GPP_B_DEVFN
+	},
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = SATA_DEVFN
+	},
+};
+
+static bool devtree_sata_dev_enabled(void)
+{
+	const struct device *ahci_dev;
+
+	ahci_dev = find_dev_nested_path(pci_root_bus(), sata_path, ARRAY_SIZE(sata_path));
+
+	if (!ahci_dev)
+		return false;
+
+	return ahci_dev->enabled;
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
@@ -115,6 +138,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcr_soc_slope = config->telemetry_vddcr_soc_slope;
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
+	mcfg->sata_enable = devtree_sata_dev_enabled();
 }
 
 asmlinkage void car_stage_entry(void)

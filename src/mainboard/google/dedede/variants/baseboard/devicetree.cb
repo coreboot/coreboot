@@ -175,7 +175,7 @@ chip soc/intel/jasperlake
 				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000)"
 				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 55, 15000)"
 
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           99, SHUTDOWN)"
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           105, SHUTDOWN)"
 				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN)"
 				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN)"
 

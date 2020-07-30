@@ -315,8 +315,8 @@ chip soc/amd/picasso
 			device pci 0.6 off end # HDA
 			device pci 0.7 on  end # non-Sensor Fusion Hub device
 		end
-		device pci 8.2 on      # Internal GPP Bridge 0 to Bus B
-			device pci 0.0 on  end # AHCI
+		device pci 8.2 off     # Internal GPP Bridge 0 to Bus B
+			device pci 0.0 off end # AHCI
 		end
 		device pci 14.0 on  end # SM
 		device pci 14.3 on  # - D14F3 bridge

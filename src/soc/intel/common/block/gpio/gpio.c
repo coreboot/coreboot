@@ -78,7 +78,7 @@ static inline size_t gpio_group_index(const struct pad_community *comm,
 	}
 	printk(BIOS_ERR, "%s: pad %d is not found in community %s!\n",
 			__func__, relative_pad, comm->name);
-	assert(0);
+	BUG();
 
 	return i;
 }

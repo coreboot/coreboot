@@ -187,7 +187,7 @@ static void lpc_wideio_window(uint16_t base, uint16_t size)
 			pci_write_config32(dev, LPC_WIDEIO2_GENERIC_PORT, tmp);
 			enable_wideio(2, size);
 		} else {	/* All WIDEIO locations used*/
-			assert(0);
+			BUG();
 		}
 	}
 }

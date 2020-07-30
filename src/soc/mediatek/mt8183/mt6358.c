@@ -831,7 +831,7 @@ void pmic_set_vsim2_cali(unsigned int vsim2_mv)
 		break;
 
 	default:
-		assert(0);
+		BUG();
 		return;
 	};
 

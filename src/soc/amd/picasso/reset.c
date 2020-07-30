@@ -49,6 +49,6 @@ void chipset_handle_reset(uint32_t status)
 {
 	printk(BIOS_ERR, "Error: unexpected call to %s(0x%08x).  Doing cold reset.\n",
 			__func__, status);
-	assert(0);
+	BUG();
 	do_cold_reset();
 }

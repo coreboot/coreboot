@@ -184,7 +184,7 @@ DEVTREE_CONST struct device *find_dev_path(
 	DEVTREE_CONST struct device *child;
 
 	if (!parent) {
-		assert(0);
+		BUG();
 		/* Return NULL in case asserts are considered non-fatal. */
 		return NULL;
 	}
@@ -282,7 +282,7 @@ DEVTREE_CONST struct device *pcidev_path_behind_pci2pci_bridge(
 							pci_devfn_t devfn)
 {
 	if (!bridge || (bridge->path.type != DEVICE_PATH_PCI)) {
-		assert(0);
+		BUG();
 		/* Return NULL in case asserts are non-fatal. */
 		return NULL;
 	}

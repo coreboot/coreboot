@@ -28,7 +28,7 @@ static void program_smi(uint32_t flags, int gevent_num)
 
 	if (!is_gpio_event_level_triggered(flags)) {
 		printk(BIOS_ERR, "ERROR: %s - Only level trigger allowed for SMI!\n", __func__);
-		assert(0);
+		BUG();
 		return;
 	}
 

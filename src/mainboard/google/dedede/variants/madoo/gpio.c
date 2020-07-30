@@ -5,6 +5,10 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
+	/* C18 : AP_I2C_EMR_SDA */
+	PAD_NC(GPP_C18, NONE),
+	/* C19 : AP_I2C_EMR_SCL */
+	PAD_NC(GPP_C19, NONE),
 	/* D12 : WCAM_RST_L */
 	PAD_NC(GPP_D12, NONE),
 	/* D13 : EN_PP2800_CAMERA */

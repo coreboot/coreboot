@@ -57,6 +57,7 @@ config MAINBOARD_PART_NUMBER
 	default "Willow" if BOARD_GOOGLE_WILLOW
 	default "Esche" if BOARD_GOOGLE_ESCHE
 	default "Burnet" if BOARD_GOOGLE_BURNET
+	default "Fennel" if BOARD_GOOGLE_FENNEL
 
 config DRIVER_TPM_SPI_BUS
 	hex

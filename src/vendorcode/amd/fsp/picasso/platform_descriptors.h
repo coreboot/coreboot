@@ -123,7 +123,16 @@ typedef struct __packed {
  * GPP[5:4] |  [1:0]  | PCIe, XGBE
  * GPP[7:6] |  [3:2]  | PCIe, SATA
  *
- * Dali has less DXIO connectivity than Picasso:
+ * Picasso supports up to 7 PCIe ports. The 8 GFX PCIe lanes can either be used as an x8 port
+ * or split into two x4 ports. The GPP general purpose lanes can be used as PCIe x4, x2 and x1
+ * ports. The ports can only start at logical lane numbers that are integer multiples of the
+ * lane width, so for example an x4 port can only start with the logical lane 0, 4, 8 or 12.
+ * Different ports mustn't overlap or be assigned to the same lane(s). Within ports with the
+ * same width the one with a higher start logical lane number needs to be assigned to a higher
+ * PCIe root port number; ports of the same size don't have to be assigned to consecutive PCIe
+ * root ports though.
+ *
+ * Dali only supports up to 5 PCIe ports and has less DXIO connectivity than Picasso:
  *
  * physical | logical | protocol
  * ---------|---------|-----------

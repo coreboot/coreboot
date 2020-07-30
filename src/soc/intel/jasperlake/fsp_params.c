@@ -96,12 +96,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
 
 	/* Use coreboot MP PPI services if Kconfig is enabled */
-	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI)) {
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
 		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
-		params->SkipMpInit = 0;
-	} else {
-		params->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
-	}
 
 	/* Chipset Lockdown */
 	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {

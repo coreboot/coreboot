@@ -71,6 +71,7 @@ config MAINBOARD_PART_NUMBER
 	default "Delbin" if BOARD_GOOGLE_DELBIN
 	default "Eldrid" if BOARD_GOOGLE_ELDRID
 	default "Halvor" if BOARD_GOOGLE_HALVOR
+	default "Lindar" if BOARD_GOOGLE_LINDAR
 	default "Malefor" if BOARD_GOOGLE_MALEFOR
 	default "Terrador" if BOARD_GOOGLE_TERRADOR
 	default "Todor" if BOARD_GOOGLE_TODOR
@@ -106,6 +107,7 @@ config VARIANT_DIR
 	default "delbin" if BOARD_GOOGLE_DELBIN
 	default "eldrid" if BOARD_GOOGLE_ELDRID
 	default "halvor" if BOARD_GOOGLE_HALVOR
+	default "lindar" if BOARD_GOOGLE_LINDAR
 	default "malefor" if BOARD_GOOGLE_MALEFOR
 	default "terrador" if BOARD_GOOGLE_TERRADOR
 	default "todor" if BOARD_GOOGLE_TODOR

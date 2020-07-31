@@ -2,6 +2,7 @@
 
 #include <device/mmio.h>
 #include <assert.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -256,6 +257,17 @@ static uintptr_t gspi_get_bus_base_addr(unsigned int gspi_bus)
 
 	return gspi_base[gspi_bus];
 }
+
+/*
+ * PCI resource allocation will likely change the base address of the mapped
+ * I/O registers.  Clearing the cached value after the allocation step will
+ * cause it to be recomputed by gspi_calc_base_addr() on next access.
+ */
+static void gspi_clear_cached_base(void *unused)
+{
+	memset(gspi_base, 0, sizeof(gspi_base));
+}
+BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_EXIT, gspi_clear_cached_base, NULL);
 
 /* Parameters for GSPI controller operation. */
 struct gspi_ctrlr_params {

@@ -163,6 +163,16 @@ int strcspn(const char *str, const char *spn)
 	return ret;
 }
 
+char *strstr(const char *haystack, const char *needle)
+{
+	size_t needle_len = strlen(needle);
+	for (; *haystack; haystack++) {
+		if (!strncmp(haystack, needle, needle_len))
+			return (char *)haystack;
+	}
+	return NULL;
+}
+
 char *strtok_r(char *str, const char *delim, char **ptr)
 {
 	char *start;

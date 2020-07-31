@@ -2,7 +2,6 @@
 
 #include <soc/spi.h>
 #include <string.h>
-#include <drivers/spi/spi_winbond.h>
 
 /*
  * SPI VSCC configuration

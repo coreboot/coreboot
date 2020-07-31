@@ -128,14 +128,12 @@ static void sata_init(struct device *dev)
 
 	/* Enable clock for ports */
 	reg32 = pci_read_config32(dev, 0x94);
-	reg32 |= 0x3f << 24;
-	pci_write_config32(dev, 0x94, reg32);
-	reg32 &= (config->sata_port_map ^ 0x3) << 24;
+	reg32 &= ~(config->sata_port_map << 24);
 	pci_write_config32(dev, 0x94, reg32);
 
 	/* Lock SataGc register */
 	reg32 = (0x1 << 31) | (0x7 << 12);
-	pci_write_config32(dev, 0x98, reg32);
+	pci_write_config32(dev, 0x9c, reg32);
 }
 
 static void sata_enable(struct device *dev)

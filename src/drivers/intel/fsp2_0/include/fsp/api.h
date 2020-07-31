@@ -75,6 +75,13 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	struct mma_config_param *mma_cfg);
 
 /*
+ * As per FSP integration guide:
+ * If bootloader needs to take control of APs back, a full AP re-initialization is
+ * required after FSP-S is completed and control has been transferred back to bootloader
+ */
+void do_mpinit_after_fsp(void);
+
+/*
  * # DOCUMENTATION:
  *
  * This file defines the interface between coreboot and the FSP 2.0 wrapper

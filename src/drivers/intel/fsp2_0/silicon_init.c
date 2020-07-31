@@ -127,6 +127,10 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_debug_after_silicon_init(status);
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
+	/* Reinitialize CPUs if FSP-S has done MP Init */
+	if (CONFIG(USE_INTEL_FSP_MP_INIT))
+		do_mpinit_after_fsp();
+
 	if (!CONFIG(PLATFORM_USES_FSP2_2))
 		return;
 

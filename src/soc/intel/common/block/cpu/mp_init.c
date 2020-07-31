@@ -127,19 +127,32 @@ void get_microcode_info(const void **microcode, int *parallel)
 	*parallel = 1;
 }
 
-static void init_cpus(void *unused)
+/*
+ * Perform BSP and AP initialization
+ * This function can be called in below cases:
+ * 1. During coreboot is doing MP initialization as part of BS_DEV_INIT_CHIPS (exclude
+ *    this call if user has selected USE_INTEL_FSP_MP_INIT).
+ * 2. coreboot would like to take APs control back after FSP-S has done with MP
+ *    initialization based on user select USE_INTEL_FSP_MP_INIT.
+ */
+void init_cpus(void)
 {
 	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);
 
+	if (dev && dev->link_list)
+		soc_init_cpus(dev->link_list);
+}
+
+static void coreboot_init_cpus(void *unused)
+{
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
 	microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 
-	if (dev && dev->link_list)
-		soc_init_cpus(dev->link_list);
+	init_cpus();
 }
 
 static void wrapper_x86_setup_mtrrs(void *unused)
@@ -150,9 +163,6 @@ static void wrapper_x86_setup_mtrrs(void *unused)
 /* Ensure to re-program all MTRRs based on DRAM resource settings */
 static void post_cpus_init(void *unused)
 {
-	if (CONFIG(USE_INTEL_FSP_MP_INIT))
-		return;
-
 	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
 
@@ -160,6 +170,6 @@ static void post_cpus_init(void *unused)
 }
 
 /* Do CPU MP Init before FSP Silicon Init */
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, init_cpus, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, coreboot_init_cpus, NULL);
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_EXIT, post_cpus_init, NULL);
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, post_cpus_init, NULL);

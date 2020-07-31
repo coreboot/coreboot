@@ -178,7 +178,6 @@ typedef struct {
   OUT DMI_T17_MEMORY_TYPE       MemoryType;             ///< The type of memory used in this device.
   OUT DMI_T17_TYPE_DETAIL       TypeDetail;             ///< Additional detail on the memory device type
   OUT UINT16                    Speed;                  ///< Identifies the speed of the device, in megahertz (MHz).
-  OUT UINT32                    _Reserved1_;
   OUT UINT64                    ManufacturerIdCode;     ///< Manufacturer ID code.
   OUT CHAR8                     SerialNumber[9];        ///< Serial Number.
   OUT CHAR8                     PartNumber[21];         ///< Part Number.
@@ -188,8 +187,7 @@ typedef struct {
   OUT UINT16                    MinimumVoltage;         ///< Minimum operating voltage for this device, in millivolts
   OUT UINT16                    MaximumVoltage;         ///< Maximum operating voltage for this device, in millivolts
   OUT UINT16                    ConfiguredVoltage;      ///< Configured voltage for this device, in millivolts
-  OUT UINT32                    _Reserved2_;
-} TYPE17_DMI_INFO;
+}__packed  TYPE17_DMI_INFO;
 
 /// Collection of pointers to the DMI records
 typedef struct {

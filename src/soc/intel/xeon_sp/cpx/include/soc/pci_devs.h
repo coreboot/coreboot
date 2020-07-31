@@ -92,6 +92,8 @@
 
 #define  XHCI_BUS_NUMBER        0x0
 #define  PCH_DEV_SLOT_XHCI      0x14
+#define   PCH_DEVFN_THERMAL	_PCH_DEVFN(XHCI, 2)
+
 #define  XHCI_FUNC_NUM          0x0
 
 #define HPET_BUS_NUM            0x0

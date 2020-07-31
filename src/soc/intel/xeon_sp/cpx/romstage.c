@@ -3,6 +3,7 @@
 #include <arch/romstage.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
+#include <soc/pci_devs.h>
 #include "chip.h"
 
 void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
@@ -13,6 +14,7 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSPM_CONFIG *m_cfg = &mupd->FspmConfig;
+	const struct device *dev;
 
 	/* ErrorLevel - 0 (disable) to 8 (verbose) */
 	m_cfg->DebugPrintLevel = 8;
@@ -60,6 +62,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Make all IIO PCIe ports and port menus visible */
 	m_cfg->PEXPHIDE = 0x0;
 	m_cfg->HidePEXPMenu = 0x0;
+
+	/* Enable PCH thermal device in FSP, the definition of ThermalDeviceEnable is
+	   0: Disable, 1: Enabled in PCI mode, 2: Enabled in ACPI mode */
+	dev = pcidev_path_on_root(PCH_DEVFN_THERMAL);
+	m_cfg->ThermalDeviceEnable = dev && dev->enabled;
 
 	mainboard_memory_init_params(mupd);
 }

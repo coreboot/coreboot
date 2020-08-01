@@ -91,7 +91,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D14 : ISH_UART0_TXD ==> UART_ISH_TX_DEBUG_RX */
 	PAD_CFG_NF(GPP_D14, NONE, DEEP, NF1),
 	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),
+	PAD_NC(GPP_D16, UP_20K),
 	/* D17 : ISH_GP4 ==> EN_FCAM_PWR */
 	PAD_CFG_GPO(GPP_D17, 1, DEEP),
 	/* D18 : ISH_GP5 ==> FCAM_SNRPWR_EN */

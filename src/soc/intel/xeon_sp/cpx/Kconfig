@@ -56,6 +56,10 @@ config HEAP_SIZE
 	hex
 	default 0x80000
 
+config STACK_SIZE
+	hex
+	default 0x4000
+
 config FSP_TEMP_RAM_SIZE
 	hex
 	depends on FSP_USES_CB_STACK

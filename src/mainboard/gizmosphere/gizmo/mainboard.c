@@ -40,7 +40,7 @@ static void mainboard_final(void *chip_info)
 	ABAR &= 0xFFFFFC00;
 	memptr = (u8 *)(ABAR + 0x100 + 0x80 + 0x2C); /* we're on the 2nd port */
 	*memptr = 0x21; /* force to GEN2 and start re-negotiate */
-	mdelay (1);
+	mdelay(1);
 	*memptr = 0x20;
 }
 

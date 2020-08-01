@@ -115,11 +115,15 @@ static void print_dram_info(void *dram_data)
 	populate_smbios_tables(dram_data, speed, num_channels);
 }
 
+#define SPD_SIZE 256
+static u8 spd_buf[NUM_CHANNELS][SPD_SIZE];
+
 void raminit(struct mrc_params *mp, int prev_sleep_state)
 {
 	int ret;
 	mrc_wrapper_entry_t mrc_entry;
 	struct region_device rdev;
+	size_t i;
 
 	/* Fill in default entries. */
 	mp->version = MRC_PARAMS_VER;
@@ -158,8 +162,20 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	 */
 	mrc_entry = (void *)(uintptr_t)CONFIG_MRC_BIN_ADDRESS;
 
-	if (mp->mainboard.dram_info_location == DRAM_INFO_SPD_SMBUS)
+	if (mp->mainboard.dram_info_location == DRAM_INFO_SPD_SMBUS) {
+		/* Workaround for broken SMBus support in the MRC */
 		enable_smbus();
+		mp->mainboard.dram_info_location = DRAM_INFO_SPD_MEM;
+		for (i = 0; i < NUM_CHANNELS; ++i) {
+			if (mp->mainboard.spd_addrs[i]) {
+				i2c_eeprom_read(mp->mainboard.spd_addrs[i],
+					0, SPD_SIZE, spd_buf[i]);
+				/* NOTE: MRC looks for Channel 1 SPD at array
+					index 1 */
+				mp->mainboard.dram_data[i] = spd_buf;
+			}
+		}
+	}
 
 	ret = mrc_entry(mp);
 

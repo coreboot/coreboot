@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <delay.h>
 #include <gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>

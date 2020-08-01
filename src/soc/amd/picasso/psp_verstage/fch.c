@@ -11,7 +11,6 @@
 #include <bl_uapp/bl_errorcodes_public.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <console/console.h>
-#include <delay.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <stdint.h>

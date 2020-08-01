@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/io.h>
-#include <delay.h>
 #include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <stdint.h>

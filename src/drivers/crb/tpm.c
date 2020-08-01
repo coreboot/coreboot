@@ -14,7 +14,6 @@
 
 #include <timer.h>
 #include <console/console.h>
-#include <delay.h>
 #include <device/mmio.h>
 #include <string.h>
 #include <soc/pci_devs.h>

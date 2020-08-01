@@ -24,7 +24,6 @@
 #include <soc/smi.h>
 #include <soc/uart.h>
 #include <soc/amd_pci_int_defs.h>
-#include <delay.h>
 #include <soc/pci_devs.h>
 #include <soc/nvs.h>
 #include <types.h>

@@ -6,7 +6,6 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
 #include <device/pci_ops.h>
 #include <intelblocks/imc.h>
 #include <soc/pci_devs.h>

@@ -4,7 +4,6 @@
 #include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <delay.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <device/device.h>
 #include <device/pci.h>

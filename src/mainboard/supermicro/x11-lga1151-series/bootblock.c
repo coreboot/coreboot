@@ -5,7 +5,6 @@
 #include <variant/gpio.h>
 #include <superio/aspeed/common/aspeed.h>
 #include <superio/aspeed/ast2400/ast2400.h>
-#include <delay.h>
 #include <console/uart.h>
 
 static void early_config_gpio(void)

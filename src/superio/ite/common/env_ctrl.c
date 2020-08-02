@@ -264,6 +264,13 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 				ITE_EC_INTERFACE_SMB_ENABLE);
 	}
 
+	/* Set SST/PECI Host Controller Clock to either 24 MHz or internal 32 MHz */
+	if (conf->smbus_24mhz) {
+		pnp_write_hwm5_index(base, ITE_EC_INTERFACE_SELECT,
+			pnp_read_hwm5_index(base, ITE_EC_INTERFACE_SELECT) |
+				ITE_EC_INTERFACE_CLOCK_24MHZ);
+	}
+
 	/* Enable reading of voltage pins */
 	pnp_write_hwm5_index(base, ITE_EC_ADC_VOLTAGE_CHANNEL_ENABLE, conf->vin_mask);
 

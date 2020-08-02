@@ -91,6 +91,11 @@ struct ite_ec_config {
 	 * Enable SMBus for external thermal sensor.
 	 */
 	bool smbus_en;
+	/*
+	 * Select 24 MHz clock for external host instead of an
+	 * internally generated 32 MHz clock.
+	 */
+	bool smbus_24mhz;
 };
 
 /* Some shorthands for device trees */

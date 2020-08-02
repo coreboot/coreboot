@@ -6,7 +6,6 @@
 #include <fallback.h>
 #include <version.h>
 #include <console/console.h>
-#include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <rtc.h>
 #include <security/vboot/vbnv.h>

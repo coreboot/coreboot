@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <option.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

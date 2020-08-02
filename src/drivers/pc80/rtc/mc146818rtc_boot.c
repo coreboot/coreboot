@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <console/console.h>
-#include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
 

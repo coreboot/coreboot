@@ -56,6 +56,9 @@
 /* Enable EC backed ALS device in ACPI */
 #define EC_ENABLE_ALS_DEVICE
 
+/* Enable EC sync interrupt, EC_SYNC_IRQ is defined in baseboard/gpio.h */
+#define EC_ENABLE_SYNC_IRQ
+
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 

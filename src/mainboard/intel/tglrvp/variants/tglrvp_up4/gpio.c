@@ -51,6 +51,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1), /* I2S_MCLK1 */
 	PAD_CFG_NF(GPP_F8, NONE, DEEP, NF1),  /* I2S_MCLK2 */
 
+	/* EC_SYNC_IRQ */
+	PAD_CFG_GPI_APIC(GPP_A15, NONE, PLTRST, LEVEL, INVERT), /* MECC_HPD2 */
 };
 
 /* Early pad configuration in bootblock */

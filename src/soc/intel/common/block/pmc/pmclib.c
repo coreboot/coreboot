@@ -10,7 +10,6 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/tco.h>
 #include <option.h>
-#include <pc80/mc146818rtc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/pm.h>
 #include <stdint.h>

@@ -7,7 +7,6 @@
 #include <commonlib/region.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
-#include <lib.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <vb2_api.h>

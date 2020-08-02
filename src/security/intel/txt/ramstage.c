@@ -10,7 +10,6 @@
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
 
-#include <lib.h>
 #include <device/pci_ops.h>
 
 #include "txt.h"

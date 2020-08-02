@@ -19,7 +19,6 @@
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
-#include <halt.h>
 
 #include "me.h"
 #include "pch.h"

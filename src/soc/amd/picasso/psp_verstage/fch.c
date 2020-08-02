@@ -15,7 +15,6 @@
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <stdint.h>
-#include <timestamp.h>
 
 static void i2c3_set_bar(void *bar)
 {

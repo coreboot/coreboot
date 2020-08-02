@@ -2,7 +2,6 @@
 
 #include <bootblock_common.h>
 #include <halt.h>
-#include <timestamp.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
 #include <arch/bootblock.h>

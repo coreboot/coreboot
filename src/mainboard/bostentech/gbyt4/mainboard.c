@@ -1,20 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <device/device.h>
 #include <console/console.h>
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <acpi/acpi.h>
 #include <arch/interrupt.h>
-#include <smbios.h>
-#include <soc/gpio.h>
-#include <bootstate.h>
-
-void mainboard_suspend_resume(void)
-{
-}
 
 #if CONFIG(VGA_ROM_RUN)
 static int int15_handler(void)
@@ -102,27 +93,14 @@ static int int15_handler(void)
 }
 #endif
 
-static void mainboard_init(struct device *dev)
-{
-
-}
-
-static int mainboard_smbios_data(struct device *dev, int *handle,
-				 unsigned long *current)
-{
-	return 0;
-}
-
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->init = mainboard_init;
-	dev->ops->get_smbios_data = mainboard_smbios_data;
 #if CONFIG(VGA_ROM_RUN)
-		/* Install custom int15 handler for VGA OPROM */
-		mainboard_interrupt_handlers(0x15, &int15_handler);
+	/* Install custom int15 handler for VGA OPROM */
+	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 }
 

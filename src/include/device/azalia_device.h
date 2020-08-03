@@ -3,10 +3,10 @@
 #ifndef DEVICE_AZALIA_H
 #define DEVICE_AZALIA_H
 
-#include <types.h>
 #include <acpi/acpi.h>
 #include <device/mmio.h>
 #include <device/device.h>
+#include <stdint.h>
 
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;

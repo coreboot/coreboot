@@ -379,7 +379,7 @@ void generate_cpu_entries(const struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	if (config->eist_enable && config->speed_shift_enable) {
+	if (config->speed_shift_enable) {
 		struct cppc_config cppc_config;
 		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
 		acpigen_write_CPPC_package(&cppc_config);
@@ -403,9 +403,11 @@ void generate_cpu_entries(const struct device *device)
 				/* Generate P-state tables */
 				generate_p_state_entries(core_id,
 						cores_per_package);
-				if (config->speed_shift_enable)
-					acpigen_write_CPPC_method();
 			}
+
+			if (config->speed_shift_enable)
+				acpigen_write_CPPC_method();
+
 			acpigen_pop_len();
 		}
 	}

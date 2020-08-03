@@ -57,7 +57,7 @@ u32 decode_tseg_size(const u32 esmramc)
 	}
 }
 
-u8 decode_pciebar(u32 *const base, u32 *const len)
+int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;

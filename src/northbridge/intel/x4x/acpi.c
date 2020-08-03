@@ -12,7 +12,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar = 0;
 	u32 length = 0;
 
-	if (!decode_pciebar(&pciexbar, &length))
+	if (!decode_pcie_bar(&pciexbar, &length))
 		return current;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,

@@ -331,7 +331,7 @@ void mb_pre_raminit_setup(int s3_resume);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u32 decode_tseg_size(const u32 esmramc);
-u8 decode_pciebar(u32 *const base, u32 *const len);
+int decode_pcie_bar(u32 *const base, u32 *const len);
 void sdram_initialize(int boot_path, const u8 *spd_map);
 void do_raminit(struct sysinfo *, int fast_boot);
 void rcven(struct sysinfo *s);

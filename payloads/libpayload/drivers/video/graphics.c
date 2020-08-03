@@ -61,17 +61,53 @@ static const struct vector vzero = {
 	.y = 0,
 };
 
+struct color_transformation {
+	uint8_t base;
+	int16_t scale;
+};
+
+struct color_mapping {
+	struct color_transformation red;
+	struct color_transformation green;
+	struct color_transformation blue;
+	int enabled;
+};
+
+static struct color_mapping color_map;
+
+static inline void set_color_trans(struct color_transformation *trans,
+				   uint8_t bg_color, uint8_t fg_color)
+{
+	trans->base = bg_color;
+	trans->scale = fg_color - bg_color;
+}
+
+int set_color_map(const struct rgb_color *background,
+		  const struct rgb_color *foreground)
+{
+	if (background == NULL || foreground == NULL)
+		return CBGFX_ERROR_INVALID_PARAMETER;
+
+	set_color_trans(&color_map.red, background->red, foreground->red);
+	set_color_trans(&color_map.green, background->green,
+			foreground->green);
+	set_color_trans(&color_map.blue, background->blue, foreground->blue);
+	color_map.enabled = 1;
+
+	return CBGFX_SUCCESS;
+}
+
+void clear_color_map(void)
+{
+	color_map.enabled = 0;
+}
+
 struct blend_value {
 	uint8_t alpha;
 	struct rgb_color rgb;
 };
 
-static struct blend_value blend = {
-	.alpha = 0,
-	.rgb.red = 0,
-	.rgb.green = 0,
-	.rgb.blue = 0,
-};
+static struct blend_value blend;
 
 int set_blend(const struct rgb_color *rgb, uint8_t alpha)
 {
@@ -185,6 +221,15 @@ static int within_box(const struct vector *v, const struct rect *bound)
 		return -1;
 }
 
+/* Helper function that applies color_map to the color. */
+static inline uint8_t apply_map(uint8_t color,
+				const struct color_transformation *trans)
+{
+	if (!color_map.enabled)
+		return color;
+	return trans->base + trans->scale * color / UINT8_MAX;
+}
+
 /*
  * Helper function that applies color and opacity from blend struct
  * into the color.
@@ -203,13 +248,16 @@ static inline uint32_t calculate_color(const struct rgb_color *rgb,
 {
 	uint32_t color = 0;
 
-	color |= (apply_blend(rgb->red, blend.rgb.red)
+	color |= (apply_blend(apply_map(rgb->red, &color_map.red),
+			      blend.rgb.red)
 		  >> (8 - fbinfo->red_mask_size))
 		 << fbinfo->red_mask_pos;
-	color |= (apply_blend(rgb->green, blend.rgb.green)
+	color |= (apply_blend(apply_map(rgb->green, &color_map.green),
+			      blend.rgb.green)
 		  >> (8 - fbinfo->green_mask_size))
 		 << fbinfo->green_mask_pos;
-	color |= (apply_blend(rgb->blue, blend.rgb.blue)
+	color |= (apply_blend(apply_map(rgb->blue, &color_map.blue),
+			      blend.rgb.blue)
 		  >> (8 - fbinfo->blue_mask_size))
 		 << fbinfo->blue_mask_pos;
 	if (invert)

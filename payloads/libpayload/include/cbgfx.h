@@ -228,6 +228,24 @@ int draw_bitmap_direct(const void *bitmap, size_t size,
 int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel);
 
 /**
+ * Setup color mappings of background and foreground colors. Black and white
+ * pixels will be mapped to the background and foreground colors, respectively.
+ * Call clear_color_map() to disabled color mapping.
+ *
+ * @param[in] background	Background color.
+ * @param[in] foreground	Foreground color.
+ *
+ * @return CBGFX_* error codes
+ */
+int set_color_map(const struct rgb_color *background,
+		  const struct rgb_color *foreground);
+
+/**
+ * Clear color mappings.
+ */
+void clear_color_map(void);
+
+/**
  * Setup alpha and rgb values for alpha blending.  When alpha is != 0,
  * this enables a translucent layer of color (defined by rgb) to be
  * blended at a given translucency (alpha) to all things drawn.  Call
@@ -244,8 +262,6 @@ int set_blend(const struct rgb_color *rgb, uint8_t alpha);
 
 /**
  * Clear alpha and rgb values, thus disabling any alpha blending.
- *
- * @return CBGFX_* error codes
  */
 void clear_blend(void);
 

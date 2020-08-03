@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/azalia_device.h>
 #include <device/mmio.h>
 #include <delay.h>
 #include "pch.h"

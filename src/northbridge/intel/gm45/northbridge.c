@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -37,15 +38,15 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: /* 256MB */
 		*base = pciexbar_reg & (0x0f << 28);
-		*len = 256 * 1024 * 1024;
+		*len = 256 * MiB;
 		return 1;
 	case 1: /* 128M */
 		*base = pciexbar_reg & (0x1f << 27);
-		*len = 128 * 1024 * 1024;
+		*len = 128 * MiB;
 		return 1;
 	case 2: /* 64M */
 		*base = pciexbar_reg & (0x3f << 26);
-		*len = 64 * 1024 * 1024;
+		*len = 64 * MiB;
 		return 1;
 	}
 

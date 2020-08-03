@@ -7,10 +7,6 @@
 #include <device/mmio.h>
 #include <delay.h>
 
-#define HDA_ICII_REG 0x68
-#define HDA_ICII_BUSY (1 << 0)
-#define HDA_ICII_VALID (1 << 1)
-
 static int set_bits(void *port, u32 mask, u32 val)
 {
 	u32 reg32;
@@ -46,13 +42,13 @@ static int codec_detect(u8 *base)
 	int count;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 1) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, 1) == -1)
 		goto no_codec;
 
 	/* clear STATESTS bits (BAR + 0xE)[2:0] */
-	reg32 = read32(base + 0x0E);
+	reg32 = read32(base + HDA_STATESTS_REG);
 	reg32 |= 7;
-	write32(base + 0x0E, reg32);
+	write32(base + HDA_STATESTS_REG, reg32);
 
 	/* Wait for readback of register to
 	 * match what was just written to it
@@ -61,22 +57,22 @@ static int codec_detect(u8 *base)
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
-		reg32 = read32(base + 0x0E);
+		reg32 = read32(base + HDA_STATESTS_REG);
 	} while ((reg32 != 0) && --count);
 	/* Timeout occurred */
 	if (!count)
 		goto no_codec;
 
 	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 0) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, 0) == -1)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 1) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, 1) == -1)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
-	reg32 = read32(base + 0xe);
+	reg32 = read32(base + HDA_STATESTS_REG);
 	reg32 &= 0x0f;
 	if (!reg32)
 		goto no_codec;
@@ -86,7 +82,7 @@ static int codec_detect(u8 *base)
 no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
-	set_bits(base + 0x08, 1, 0);
+	set_bits(base + HDA_GCTL_REG, 1, 0);
 	printk(BIOS_DEBUG, "azalia_audio: No codec!\n");
 	return 0;
 }
@@ -178,12 +174,12 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 		return;
 
 	reg32 = (addr << 28) | 0x000f0000;
-	write32(base + 0x60, reg32);
+	write32(base + HDA_IC_REG, reg32);
 
 	if (wait_for_valid(base) == -1)
 		return;
 
-	reg32 = read32(base + 0x64);
+	reg32 = read32(base + HDA_IR_REG);
 
 	/* 2 */
 	printk(BIOS_DEBUG, "azalia_audio: codec viddid: %08x\n", reg32);
@@ -200,7 +196,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 		if (wait_for_ready(base) == -1)
 			return;
 
-		write32(base + 0x60, verb[i]);
+		write32(base + HDA_IC_REG, verb[i]);
 
 		if (wait_for_valid(base) == -1)
 			return;

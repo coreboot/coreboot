@@ -8,8 +8,7 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	u32 length = 0;
-	u32 pciexbar = 0;
+	u32 length, pciexbar;
 	int max_buses;
 
 	if (!decode_pciebar(&pciexbar, &length))

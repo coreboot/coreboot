@@ -3,6 +3,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/romstage.h>
+#include <commonlib/helpers.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -51,7 +52,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 	}
 
 	*base = pciexbar;
-	*len = max_buses << 20;
+	*len = max_buses * MiB;
 	return 1;
 }
 
@@ -87,11 +88,11 @@ static u32 decode_tseg_size(const u32 esmramc)
 
 	switch ((esmramc >> 1) & 3) {
 	case 0:
-		return 1 << 20;
+		return 1 * MiB;
 	case 1:
-		return 2 << 20;
+		return 2 * MiB;
 	case 2:
-		return 8 << 20;
+		return 8 * MiB;
 	case 3:
 	default:
 		die("Bad TSEG setting.\n");

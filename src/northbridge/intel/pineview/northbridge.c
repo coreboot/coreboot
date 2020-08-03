@@ -18,7 +18,7 @@
  * 0xc0000 - 0xcffff: VGA OPROM (needed by kernel)
  * 0xe0000 - 0xfffff: SeaBIOS, if used, otherwise DMI
  */
-static const int legacy_hole_base_k = 0xa0000 / 1024;
+static const int legacy_hole_base_k = 0xa0000 / KiB;
 
 static void add_fixed_resources(struct device *dev, int index)
 {
@@ -33,8 +33,8 @@ static void add_fixed_resources(struct device *dev, int index)
 			| IORESOURCE_STORED
 			| IORESOURCE_ASSIGNED;
 
-	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
+	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 / KiB) - legacy_hole_base_k);
+	reserved_ram_resource(dev, index++, 0xc0000 / KiB, (0x100000 - 0xc0000) / KiB);
 }
 
 static void mch_domain_read_resources(struct device *dev)

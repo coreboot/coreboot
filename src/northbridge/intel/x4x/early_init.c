@@ -15,32 +15,30 @@
 
 void x4x_early_init(void)
 {
-	const pci_devfn_t d0f0 = PCI_DEV(0, 0, 0);
-
 	/* Setup MCHBAR. */
-	pci_write_config32(d0f0, D0F0_MCHBAR_LO, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(HOST_BRIDGE, D0F0_MCHBAR_LO, (uintptr_t)DEFAULT_MCHBAR | 1);
 
 	/* Setup DMIBAR. */
-	pci_write_config32(d0f0, D0F0_DMIBAR_LO, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(HOST_BRIDGE, D0F0_DMIBAR_LO, (uintptr_t)DEFAULT_DMIBAR | 1);
 
 	/* Setup EPBAR. */
-	pci_write_config32(d0f0, D0F0_EPBAR_LO, DEFAULT_EPBAR | 1);
+	pci_write_config32(HOST_BRIDGE, D0F0_EPBAR_LO, DEFAULT_EPBAR | 1);
 
 	/* Setup HECIBAR */
 	pci_write_config32(PCI_DEV(0, 3, 0), 0x10, DEFAULT_HECIBAR);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	pci_write_config8(d0f0, D0F0_PAM(0), 0x30);
-	pci_write_config8(d0f0, D0F0_PAM(1), 0x33);
-	pci_write_config8(d0f0, D0F0_PAM(2), 0x33);
-	pci_write_config8(d0f0, D0F0_PAM(3), 0x33);
-	pci_write_config8(d0f0, D0F0_PAM(4), 0x33);
-	pci_write_config8(d0f0, D0F0_PAM(5), 0x33);
-	pci_write_config8(d0f0, D0F0_PAM(6), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(0), 0x30);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(1), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(2), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(3), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(4), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(5), 0x33);
+	pci_write_config8(HOST_BRIDGE, D0F0_PAM(6), 0x33);
 
-	if (!(pci_read_config32(d0f0, D0F0_CAPID0 + 4) & (1 << (46 - 32)))) {
+	if (!(pci_read_config32(HOST_BRIDGE, D0F0_CAPID0 + 4) & (1 << (46 - 32)))) {
 		/* Enable internal GFX */
-		pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
+		pci_write_config32(HOST_BRIDGE, D0F0_DEVEN, BOARD_DEVEN);
 
 		/* Set preallocated IGD size from CMOS */
 		u8 gfxsize = 6; /* 6 for 64MiB, default if not set in CMOS */
@@ -51,10 +49,10 @@ void x4x_early_init(void)
 		else if (gfxsize < 1)
 			gfxsize = 1;
 		/* Set GTT size to 2+2M */
-		pci_write_config16(d0f0, D0F0_GGC, 0x0b00 | (gfxsize + 1) << 4);
+		pci_write_config16(HOST_BRIDGE, D0F0_GGC, 0x0b00 | (gfxsize + 1) << 4);
 	} else { /* Does not feature internal graphics */
-		pci_write_config32(d0f0, D0F0_DEVEN, D0EN | D1EN | PEG1EN);
-		pci_write_config16(d0f0, D0F0_GGC, (1 << 1));
+		pci_write_config32(HOST_BRIDGE, D0F0_DEVEN, D0EN | D1EN | PEG1EN);
+		pci_write_config16(HOST_BRIDGE, D0F0_GGC, (1 << 1));
 	}
 }
 

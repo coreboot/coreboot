@@ -122,11 +122,11 @@ static void mchinfo_ddr2(struct sysinfo *s)
 	const u32 eax = cpuid_ext(0x04, 0).eax;
 	printk(BIOS_WARNING, "%d CPU cores\n", ((eax >> 26) & 0x3f) + 1);
 
-	u32 capid = pci_read_config16(PCI_DEV(0, 0, 0), 0xe8);
+	u32 capid = pci_read_config16(HOST_BRIDGE, 0xe8);
 	if (!(capid & (1<<(79-64))))
 		printk(BIOS_WARNING, "iTPM enabled\n");
 
-	capid = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
+	capid = pci_read_config32(HOST_BRIDGE, 0xe4);
 	if (!(capid & (1<<(57-32))))
 		printk(BIOS_WARNING, "ME enabled\n");
 
@@ -246,7 +246,7 @@ static void select_cas_dramfreq_ddr3(struct sysinfo *s,
 
 	u32 min_tCLK;
 	u8 try_CAS;
-	u16 capid = (pci_read_config16(PCI_DEV(0, 0, 0), 0xea) >> 4) & 0x3f;
+	u16 capid = (pci_read_config16(HOST_BRIDGE, 0xea) >> 4) & 0x3f;
 
 	switch (s->max_fsb) {
 	default:
@@ -344,7 +344,7 @@ static void workaround_stacked_mode(struct sysinfo *s)
 	if (s->selected_timings.mem_clk != MEM_CLOCK_1066MHz)
 		return;
 	/* IGD0EN gets disabled if not present before this code runs */
-	deven = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN);
+	deven = pci_read_config32(HOST_BRIDGE, D0F0_DEVEN);
 	if (deven & IGD0EN)
 		s->stacked_mode = 1;
 }
@@ -593,9 +593,9 @@ static void checkreset_ddr2(int boot_path)
 		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
 
 		/* do magic 0xf0 thing. */
-		pci_and_config8(PCI_DEV(0, 0, 0), 0xf0, ~(1 << 2));
+		pci_and_config8(HOST_BRIDGE, 0xf0, ~(1 << 2));
 
-		pci_or_config8(PCI_DEV(0, 0, 0), 0xf0, (1 << 2));
+		pci_or_config8(HOST_BRIDGE, 0xf0, (1 << 2));
 
 		full_reset();
 	}
@@ -616,7 +616,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
-	pci_write_config8(PCI_DEV(0, 0, 0), 0xdf, 0xff);
+	pci_write_config8(HOST_BRIDGE, 0xdf, 0xff);
 
 	memset(&s, 0, sizeof(struct sysinfo));
 
@@ -671,7 +671,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 		checkreset_ddr2(s.boot_path);
 
 		/* Detect dimms per channel */
-		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xe9);
+		reg8 = pci_read_config8(HOST_BRIDGE, 0xe9);
 		printk(BIOS_DEBUG, "Dimms per channel: %d\n",
 			(reg8 & 0x10) ? 1 : 2);
 
@@ -687,7 +687,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	pci_and_config8(PCI_DEV(0, 0x1f, 0), 0xa2, (u8)~0x80);
 
-	pci_or_config8(PCI_DEV(0, 0, 0), 0xf4, 1);
+	pci_or_config8(HOST_BRIDGE, 0xf4, 1);
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 

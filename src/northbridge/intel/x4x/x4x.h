@@ -9,6 +9,8 @@
 /*
  * D0:F0
  */
+#define HOST_BRIDGE	PCI_DEV(0, 0, 0)
+
 #include "hostbridge_regs.h"
 
 /*

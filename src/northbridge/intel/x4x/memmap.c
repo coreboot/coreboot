@@ -72,7 +72,7 @@ int decode_pcie_bar(u32 *const base, u32 *const len)
 		{0,   0},
 	};
 
-	const u32 pciexbar_reg = pci_read_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_LO);
+	const u32 pciexbar_reg = pci_read_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO);
 
 	if (!(pciexbar_reg & 1)) {
 		printk(BIOS_WARNING, "WARNING: MMCONF not set\n");
@@ -95,13 +95,13 @@ int decode_pcie_bar(u32 *const base, u32 *const len)
 
 static size_t northbridge_get_tseg_size(void)
 {
-	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC);
+	const u8 esmramc = pci_read_config8(HOST_BRIDGE, D0F0_ESMRAMC);
 	return decode_tseg_size(esmramc);
 }
 
 static uintptr_t northbridge_get_tseg_base(void)
 {
-	return pci_read_config32(PCI_DEV(0, 0, 0), D0F0_TSEG);
+	return pci_read_config32(HOST_BRIDGE, D0F0_TSEG);
 }
 
 

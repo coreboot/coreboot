@@ -1270,14 +1270,14 @@ static void pre_jedec_memory_map(void)
 	MCHBAR8(0x110) = (2 << 5) | (3 << 3);
 	MCHBAR16(0x10e) = 0;
 	MCHBAR32(0x108) = 0;
-	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOLUD, 0x4000);
+	pci_write_config16(HOST_BRIDGE, D0F0_TOLUD, 0x4000);
 	/* TOM(64M unit) = 1G = TOTAL_CHANNELS * RANKS_PER_CHANNEL * 128M */
-	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOM, 0x10);
+	pci_write_config16(HOST_BRIDGE, D0F0_TOM, 0x10);
 	/* TOUUD(1M unit) = 1G = TOTAL_CHANNELS * RANKS_PER_CHANNEL * 128M */
-	pci_write_config16(PCI_DEV(0, 0, 0), D0F0_TOUUD, 0x0400);
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_GBSM, 0x40000000);
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_BGSM, 0x40000000);
-	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_TSEG, 0x40000000);
+	pci_write_config16(HOST_BRIDGE, D0F0_TOUUD, 0x0400);
+	pci_write_config32(HOST_BRIDGE, D0F0_GBSM, 0x40000000);
+	pci_write_config32(HOST_BRIDGE, D0F0_BGSM, 0x40000000);
+	pci_write_config32(HOST_BRIDGE, D0F0_TSEG, 0x40000000);
 }
 
 u32 test_address(int channel, int rank)
@@ -1702,7 +1702,7 @@ static void configure_mmap(struct sysinfo *s)
 			  160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
 
-	ggc = pci_read_config16(PCI_DEV(0, 0, 0), 0x52);
+	ggc = pci_read_config16(HOST_BRIDGE, 0x52);
 	gfxsize = ggc2uma[(ggc & 0xf0) >> 4];
 	gttsize = ggc2gtt[(ggc & 0xf00) >> 8];
 	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
@@ -1733,20 +1733,20 @@ static void configure_mmap(struct sysinfo *s)
 	gttbase = gfxbase - gttsize;
 	tsegbase = gttbase - tsegsize;
 
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xb0, tolud << 4);
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xa0, tom >> 6);
+	pci_write_config16(HOST_BRIDGE, 0xb0, tolud << 4);
+	pci_write_config16(HOST_BRIDGE, 0xa0, tom >> 6);
 	if (reclaim) {
-		pci_write_config16(PCI_DEV(0, 0, 0), 0x98,
+		pci_write_config16(HOST_BRIDGE, 0x98,
 					(u16)(reclaimbase >> 6));
-		pci_write_config16(PCI_DEV(0, 0, 0), 0x9a,
+		pci_write_config16(HOST_BRIDGE, 0x9a,
 					(u16)(reclaimlimit >> 6));
 	}
-	pci_write_config16(PCI_DEV(0, 0, 0), 0xa2, touud);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xa4, gfxbase << 20);
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xa8, gttbase << 20);
+	pci_write_config16(HOST_BRIDGE, 0xa2, touud);
+	pci_write_config32(HOST_BRIDGE, 0xa4, gfxbase << 20);
+	pci_write_config32(HOST_BRIDGE, 0xa8, gttbase << 20);
 	/* Enable and set TSEG size to 2M */
-	pci_update_config8(PCI_DEV(0, 0, 0), D0F0_ESMRAMC, ~0x07, (1 << 1) | (1 << 0));
-	pci_write_config32(PCI_DEV(0, 0, 0), 0xac, tsegbase << 20);
+	pci_update_config8(HOST_BRIDGE, D0F0_ESMRAMC, ~0x07, (1 << 1) | (1 << 0));
+	pci_write_config32(HOST_BRIDGE, 0xac, tsegbase << 20);
 }
 
 static void set_enhanced_mode(struct sysinfo *s)
@@ -1779,8 +1779,8 @@ static void set_enhanced_mode(struct sysinfo *s)
 		MCHBAR32(0x400*ch + 0x290) = 0x4f2091c;
 	}
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
-	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 | 1);
+	reg8 = pci_read_config8(HOST_BRIDGE, 0xf0);
+	pci_write_config8(HOST_BRIDGE, 0xf0, reg8 | 1);
 	MCHBAR32_AND_OR(0xfa0, ~0x20002, 0x2 | (s->selected_timings.fsb_clk ==
 		FSB_CLOCK_1333MHz ? 0x20000 : 0));
 	reg32 = 0x219100c2;
@@ -1822,7 +1822,7 @@ static void set_enhanced_mode(struct sysinfo *s)
 	if (s->selected_timings.fsb_clk < FSB_CLOCK_1333MHz)
 		reg32 |= 0x20000;
 	MCHBAR32(0x20) = reg32;
-	pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 & ~1);
+	pci_write_config8(HOST_BRIDGE, 0xf0, reg8 & ~1);
 }
 
 static void power_settings(struct sysinfo *s)
@@ -1943,7 +1943,7 @@ static void power_settings(struct sysinfo *s)
 	MCHBAR32(0x1110) = 0x10810350 & ~0x78;
 	MCHBAR32(0x1114) = 0;
 	x592 = 0xff;
-	if (pci_read_config8(PCI_DEV(0, 0, 0), 0x8) < 3)
+	if (pci_read_config8(HOST_BRIDGE, 0x8) < 3)
 		x592 = ~0x4;
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
@@ -2056,7 +2056,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		MCHBAR8_OR(0x5d8, 0x7);
 	}
 	if (CHANNEL_IS_POPULATED(s->dimms, 1)) {
-		if (pci_read_config8(PCI_DEV(0, 0, 0), 0x8) < 2) {
+		if (pci_read_config8(HOST_BRIDGE, 0x8) < 2) {
 			MCHBAR8_AND_OR(0x5dd, ~0x3f, 0x3f);
 			MCHBAR8_OR(0x5d8, 1);
 		}

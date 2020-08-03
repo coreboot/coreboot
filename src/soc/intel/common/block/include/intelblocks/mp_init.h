@@ -43,7 +43,8 @@
 #define CPUID_TIGERLAKE_A0	0x806c0
 #define CPUID_TIGERLAKE_B0	0x806c1
 #define CPUID_ELKHARTLAKE_A0	0x90660
-
+#define CPUID_ALDERLAKE_S_A0	0x90670
+#define CPUID_ALDERLAKE_P_A0	0x906a0
 /*
  * MP Init callback function to Find CPU Topology. This function is common
  * among all SOCs and thus its in Common CPU block.

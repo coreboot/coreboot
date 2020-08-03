@@ -12,7 +12,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include "i945.h"
 
-static int decode_pcie_bar(u32 *const base, u32 *const len)
+int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;

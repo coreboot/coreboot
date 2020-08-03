@@ -130,6 +130,31 @@ bool variant_uses_v3_schematics(void)
 	return true;
 }
 
+bool variant_uses_v3_6_schematics(void)
+{
+	uint32_t board_version;
+
+	if (!CONFIG(VARIANT_SUPPORTS_PRE_V3_6_SCHEMATICS))
+		return true;
+
+	if (google_chromeec_cbi_get_board_version(&board_version))
+		return false;
+
+	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_V3_6_SCHEMATICS)
+		return false;
+
+	return true;
+}
+
+/*
+ * pre-v3.6, CODEC_GPI was used as headphone jack interrupt.
+ * Starting v3.6 this was changed to a separate GPIO.
+ */
+bool variant_uses_codec_gpi(void)
+{
+	return !variant_uses_v3_6_schematics();
+}
+
 bool variant_has_active_low_wifi_power(void)
 {
 	uint32_t board_version;

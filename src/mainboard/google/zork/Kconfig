@@ -169,6 +169,34 @@ config VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	  longer has to support pre-v3 schematics, `default y` entry
 	  for it can be dropped.
 
+config VARIANT_SUPPORTS_PRE_V3_6_SCHEMATICS
+	bool
+	default y if BOARD_GOOGLE_TREMBYLE
+	default y if BOARD_GOOGLE_EZKINIL
+	default y if BOARD_GOOGLE_MORPHIUS
+	default y if BOARD_GOOGLE_BERKNIP
+	default y if BOARD_GOOGLE_DALBOZ
+	default y if BOARD_GOOGLE_WOOMAX
+	default y if BOARD_GOOGLE_VILBOZ
+	default y if BOARD_GOOGLE_DIRINBOZ
+	default n
+
+config VARIANT_MIN_BOARD_ID_V3_6_SCHEMATICS
+	int
+	depends on VARIANT_SUPPORTS_PRE_V3_6_SCHEMATICS
+	default 4 if BOARD_GOOGLE_TREMBYLE
+	default 3 if BOARD_GOOGLE_EZKINIL
+	default 4 if BOARD_GOOGLE_MORPHIUS
+	default 3 if BOARD_GOOGLE_BERKNIP
+	default 3 if BOARD_GOOGLE_DALBOZ
+	default 2 if BOARD_GOOGLE_WOOMAX
+	default 2 if BOARD_GOOGLE_VILBOZ
+	default 2 if BOARD_GOOGLE_DIRINBOZ
+	default 256
+	help
+	  Minimum board version where the variant starts supporting
+	  v3.6+ version of reference schematics.
+
 config VARIANT_MIN_BOARD_ID_V3_SCHEMATICS
 	int
 	depends on VARIANT_SUPPORTS_PRE_V3_SCHEMATICS

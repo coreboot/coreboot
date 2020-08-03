@@ -66,6 +66,10 @@ int boot_is_factory_unprovisioned(void);
 
 /* Return true if variant uses v3 version of reference schematics. */
 bool variant_uses_v3_schematics(void);
+/* Return true if variant uses v3.6 version of reference schematics. */
+bool variant_uses_v3_6_schematics(void);
+/* Return true if variant uses CODEC_GPI pin for headphone jack interrupt. */
+bool variant_uses_codec_gpi(void);
 /* Return true if variant has active low power enable fow WiFi. */
 bool variant_has_active_low_wifi_power(void);
 

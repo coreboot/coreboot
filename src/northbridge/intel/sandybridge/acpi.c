@@ -50,7 +50,6 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 		current += acpi_create_dmar_drhd(current, 0, 0, GFXVT_BASE);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
-		current += acpi_create_dmar_ds_pci(current, 0, 2, 1);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
@@ -76,7 +75,6 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		current += acpi_create_igfx_rmrr(current);
 		if (current != tmp) {
 			current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
-			current += acpi_create_dmar_ds_pci(current, 0, 2, 1);
 			acpi_dmar_rmrr_fixup(tmp, current);
 		}
 	}

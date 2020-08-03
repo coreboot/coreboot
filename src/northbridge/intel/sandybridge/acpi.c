@@ -11,47 +11,18 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	u32 pciexbar = 0;
-	u32 pciexbar_reg;
-	int max_buses;
+	u32 length, pciexbar;
 
-	struct device *const dev = pcidev_on_root(0, 0);
-
-	if (!dev)
+	if (!decode_pcie_bar(&pciexbar, &length))
 		return current;
 
-	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
-
-	/* MMCFG not supported or not enabled */
-	if (!(pciexbar_reg & (1 << 0)))
-		return current;
-
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: /* 256MB */
-		pciexbar = pciexbar_reg & (0xffffffffULL << 28);
-		max_buses = 256;
-		break;
-	case 1: /* 128M */
-		pciexbar = pciexbar_reg & (0xffffffffULL << 27);
-		max_buses = 128;
-		break;
-	case 2: /* 64M */
-		pciexbar = pciexbar_reg & (0xffffffffULL << 26);
-		max_buses = 64;
-		break;
-	default: /* RSVD */
-		return current;
-	}
-
-	if (!pciexbar)
-		return current;
+	const int max_buses = length / MiB;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current, pciexbar, 0, 0,
-			max_buses - 1);
+					     max_buses - 1);
 
 	return current;
 }
-
 
 static unsigned long acpi_create_igfx_rmrr(const unsigned long current)
 {

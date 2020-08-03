@@ -40,7 +40,7 @@ int bridge_silicon_revision(void)
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-static int decode_pcie_bar(u32 *const base, u32 *const len)
+int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;

@@ -32,8 +32,8 @@ chip soc/intel/tigerlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Not used
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# USB3/USB2 Flex Connector
 
-        # CPU replacement check
-        register "CpuReplacementCheck" = "1"
+	# CPU replacement check
+	register "CpuReplacementCheck" = "1"
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
@@ -138,7 +138,7 @@ chip soc/intel/tigerlake
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
-                },
+		},
 		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 		},

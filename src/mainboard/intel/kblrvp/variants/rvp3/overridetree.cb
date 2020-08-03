@@ -7,8 +7,8 @@ chip soc/intel/skylake
 	register "gen2_dec" = "0x000c0201"
 
 	# FSP Configuration
-        register "DspEnable" = "1"
-        register "IoBufferOwnership" = "0"
+	register "DspEnable" = "1"
+	register "IoBufferOwnership" = "0"
 	register "HeciEnabled" = "0"
 	register "PmTimerDisabled" = "1"
 	register "Cio2Enable" = "1"

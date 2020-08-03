@@ -54,13 +54,13 @@ chip soc/intel/cannonlake
 	register "PcieRpEnable[15]" = "1"	# M2 Slot E x1
 	register "PcieRpEnable[20]" = "1"	# Slot 1 x4
 	# Set MaxPayload to 256 bytes
-        register "PcieRpMaxPayload[20]" = "RpMaxPayload_256"
-        # Enable Latency Tolerance Reporting Mechanism
-        register "PcieRpLtrEnable[20]" = "1"
-        # Enable Advanced Error Reporting
-        register "PcieRpAdvancedErrorReporting[20]" = "1"
-        # Disable Aspm
-        register "PcieRpAspm[20]" = "AspmDisabled"
+	register "PcieRpMaxPayload[20]" = "RpMaxPayload_256"
+	# Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[20]" = "1"
+	# Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[20]" = "1"
+	# Disable Aspm
+	register "PcieRpAspm[20]" = "AspmDisabled"
 
 	# Controls the CLKREQ, not the output directly.
 	# Depends on the CLKREQ to CLK gen mapping below

@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/amd/agesa/family14/root_complex
-        device cpu_cluster 0 on
-                chip cpu/amd/agesa/family14
+	device cpu_cluster 0 on
+		chip cpu/amd/agesa/family14
 			device lapic 0 on end
-                end
-        end
-        device domain 0 on
-                subsystemid 0x1022 0x1510 inherit
+		end
+	end
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
 		chip northbridge/amd/agesa/family14
 			device pci 0.0 on end # Root Complex
 			device pci 1.0 on end # Internal Graphics P2P bridge 0x9804
@@ -85,5 +85,5 @@ chip northbridge/amd/agesa/family14/root_complex
 
 		end # agesa northbridge
 
-        end #domain
+	end #domain
 end #northbridge/amd/agesa/family14/root_complex

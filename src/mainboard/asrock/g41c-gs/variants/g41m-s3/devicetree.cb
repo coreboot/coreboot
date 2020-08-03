@@ -69,8 +69,8 @@ chip northbridge/intel/x4x		# Northbridge
 					chip superio/winbond/w83627dhg
 					device pnp 2e.0 on		# Floppy
 						io 0x60 = 0x3f0
-                                                irq 0x70 = 6
-                                                drq 0x74 = 2
+						irq 0x70 = 6
+						drq 0x74 = 2
 					end
 					device pnp 2e.1 on		# Parallel port
 						# global

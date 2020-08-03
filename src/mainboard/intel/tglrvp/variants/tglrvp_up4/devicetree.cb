@@ -32,8 +32,8 @@ chip soc/intel/tigerlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Not used
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/USB2 Flex Connector
 
-        # CPU replacement check
-        register "CpuReplacementCheck" = "1"
+	# CPU replacement check
+	register "CpuReplacementCheck" = "1"
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"

@@ -366,19 +366,19 @@ chip soc/intel/skylake
 			end
 		end # I2C #1
 		device pci 15.2 on
-                        chip drivers/i2c/hid
-                                register "generic.hid" = ""WCOM005C""
-                                register "generic.desc" = ""WCOM Digitizer""
-                                register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D1_IRQ)"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOM005C""
+				register "generic.desc" = ""WCOM Digitizer""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D1_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D3)"
 				register "generic.reset_delay_ms" = "20"
 				register "generic.has_power_resource" = "1"
 				register "generic.disable_gpio_export_in_crs" = "1"
 				register "generic.wake" = "GPE0_DW2_01"
-                                register "hid_desc_reg_offset" = "0x1"
-                                device i2c 0x9 on end
-                        end
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0x9 on end
+			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_HIGH(GPP_E8)"

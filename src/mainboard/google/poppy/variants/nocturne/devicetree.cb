@@ -147,19 +147,19 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
 
-        # Root port 9 (x2)
-        #  PcieRpEnable:                 Enable root port
-        #  PcieRpClkReqSupport:          Enable CLKREQ#
-        #  PcieRpClkReqNumber:           Uses SRCCLKREQ2#
-        #  PcieRpClkSrcNumber:           Uses 3
-        #  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
-        #  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
-        register "PcieRpEnable[8]" = "1"
-        register "PcieRpClkReqSupport[8]" = "1"
-        register "PcieRpClkReqNumber[8]" = "2"
-        register "PcieRpClkSrcNumber[8]" = "3"
-        register "PcieRpAdvancedErrorReporting[8]" = "1"
-        register "PcieRpLtrEnable[8]" = "1"
+	# Root port 9 (x2)
+	#  PcieRpEnable:                 Enable root port
+	#  PcieRpClkReqSupport:          Enable CLKREQ#
+	#  PcieRpClkReqNumber:           Uses SRCCLKREQ2#
+	#  PcieRpClkSrcNumber:           Uses 3
+	#  PcieRpAdvancedErrorReporting: Enable Advanced Error Reporting
+	#  PcieRpLtrEnable:              Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpClkReqSupport[8]" = "1"
+	register "PcieRpClkReqNumber[8]" = "2"
+	register "PcieRpClkSrcNumber[8]" = "3"
+	register "PcieRpAdvancedErrorReporting[8]" = "1"
+	register "PcieRpLtrEnable[8]" = "1"
 
 	# USB 2.0
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
@@ -306,12 +306,12 @@ chip soc/intel/skylake
 				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.speed" = "I2C_SPEED_FAST_PLUS"
-                                register "generic.probed" = "1"
-                                register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E11)"
-                                register "generic.reset_delay_ms" = "20"
-                                register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
-                                register "generic.enable_delay_ms" = "1"
-                                register "generic.has_power_resource" = "1"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E11)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
 				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end

@@ -114,7 +114,7 @@ static void mch_domain_read_resources(struct device *dev)
 			(touud - top32memk) >> 10);
 	}
 
-	if (decode_pciebar(&pcie_config_base, &pcie_config_size)) {
+	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x size=0x%x\n",
 			pcie_config_base, pcie_config_size);
 

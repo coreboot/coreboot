@@ -15,7 +15,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <stdint.h>
 
-u8 decode_pciebar(u32 *const base, u32 *const len)
+int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;

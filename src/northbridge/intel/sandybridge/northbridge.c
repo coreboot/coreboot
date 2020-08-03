@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <acpi/acpi.h>
+#include <commonlib/helpers.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <delay.h>
@@ -39,18 +40,16 @@ int bridge_silicon_revision(void)
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-static int get_pcie_bar(u32 *base)
+static int decode_pcie_bar(u32 *const base, u32 *const len)
 {
-	struct device *dev;
-	u32 pciexbar_reg;
-
 	*base = 0;
+	*len = 0;
 
-	dev = pcidev_on_root(0, 0);
+	struct device *dev = pcidev_on_root(0, 0);
 	if (!dev)
 		return 0;
 
-	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
+	const u32 pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
 	/* MMCFG not supported or not enabled */
 	if (!(pciexbar_reg & (1 << 0)))
@@ -58,14 +57,17 @@ static int get_pcie_bar(u32 *base)
 
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: /* 256MB */
-		*base = pciexbar_reg & (0xffffffffULL << 28);
-		return 256;
+		*base = pciexbar_reg & (0x0f << 28);
+		*len = 256 * MiB;
+		return 1;
 	case 1: /* 128M */
-		*base = pciexbar_reg & (0xffffffffULL << 27);
-		return 128;
+		*base = pciexbar_reg & (0x1f << 27);
+		*len = 128 * MiB;
+		return 1;
 	case 2: /* 64M */
-		*base = pciexbar_reg & (0xffffffffULL << 26);
-		return 64;
+		*base = pciexbar_reg & (0x3f << 26);
+		*len = 64 * MiB;
+		return 1;
 	}
 
 	return 0;
@@ -129,8 +131,7 @@ static void add_fixed_resources(struct device *dev, int index)
 
 static void mc_read_resources(struct device *dev)
 {
-	u32 pcie_config_base;
-	int buses;
+	u32 pcie_config_base, pcie_config_len;
 	uint64_t tom, me_base, touud;
 	uint32_t tseg_base, uma_size, tolud;
 	uint16_t ggc;
@@ -139,8 +140,8 @@ static void mc_read_resources(struct device *dev)
 
 	pci_dev_read_resources(dev);
 
-	buses = get_pcie_bar(&pcie_config_base);
-	if (buses) {
+	if (decode_pcie_bar(&pcie_config_base, &pcie_config_len)) {
+		const int buses = pcie_config_len / MiB;
 		struct resource *resource = new_resource(dev, PCIEXBAR);
 		mmconf_resource_init(resource, pcie_config_base, buses);
 	}

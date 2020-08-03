@@ -73,16 +73,35 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	const struct device *const igfx = pcidev_on_root(2, 0);
 
+	/* First, add DRHD entries */
 	if (igfx && igfx->enabled) {
-		unsigned long tmp;
+		const unsigned long tmp = current;
 
-		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, GFXVT_BASE);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 1);
 		acpi_dmar_drhd_fixup(tmp, current);
+	}
 
-		tmp = current;
+	{
+		const unsigned long tmp = current;
+		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE);
+
+		current += acpi_create_dmar_ds_ioapic(current, 2, PCH_IOAPIC_PCI_BUS,
+				PCH_IOAPIC_PCI_SLOT, 0);
+
+		size_t i;
+		for (i = 0; i < 8; ++i)
+			current += acpi_create_dmar_ds_msi_hpet(current, 0, PCH_HPET_PCI_BUS,
+					PCH_HPET_PCI_SLOT, i);
+
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	/* Then, add RMRR entries after all DRHD entries */
+	if (igfx && igfx->enabled) {
+		const unsigned long tmp = current;
+
 		current += acpi_create_igfx_rmrr(current);
 		if (current != tmp) {
 			current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
@@ -90,19 +109,6 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 			acpi_dmar_rmrr_fixup(tmp, current);
 		}
 	}
-
-	const unsigned long tmp = current;
-	current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE);
-
-	current += acpi_create_dmar_ds_ioapic(current, 2, PCH_IOAPIC_PCI_BUS,
-			PCH_IOAPIC_PCI_SLOT, 0);
-
-	size_t i;
-	for (i = 0; i < 8; ++i)
-		current += acpi_create_dmar_ds_msi_hpet(current, 0, PCH_HPET_PCI_BUS,
-				PCH_HPET_PCI_SLOT, i);
-
-	acpi_dmar_drhd_fixup(tmp, current);
 
 	return current;
 }

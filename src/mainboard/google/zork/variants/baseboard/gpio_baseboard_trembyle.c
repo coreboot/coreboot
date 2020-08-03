@@ -65,8 +65,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* PCIE_RST1_L (unused) */
 	PAD_NC(GPIO_27),
 	/* GPIO_28: Not available */
-	/* GPIO_29: unused */
-	PAD_NC(GPIO_29),
+	/* GPIO_29: HP_INT_ODL */
+	PAD_GPI(GPIO_29, PULL_NONE),
 	/* FCH_ESPI_EC_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */

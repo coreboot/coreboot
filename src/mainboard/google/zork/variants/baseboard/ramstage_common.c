@@ -5,12 +5,65 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <drivers/amd/i2s_machine_dev/chip.h>
+#include <drivers/i2c/generic/chip.h>
 #include <drivers/usb/acpi/chip.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
 
 extern struct chip_operations drivers_amd_i2s_machine_dev_ops;
+extern struct chip_operations drivers_i2c_generic_ops;
+
+
+static void update_hp_int_odl(void)
+{
+
+	static const struct device_path rt5682_path[] = {
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = LPC_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_PNP,
+			.pnp.port = 0xc09,
+			.pnp.device = 0x0
+		},
+		{
+			.type = DEVICE_PATH_GENERIC,
+			.generic.id = 0,
+			.generic.subid = 0
+		},
+		{
+			.type = DEVICE_PATH_I2C,
+			.i2c.device = 0x1a
+		}
+	};
+
+	const struct device *rt5682_dev;
+	struct drivers_i2c_generic_config *cfg;
+	struct acpi_gpio *gpio;
+
+	if (!variant_uses_codec_gpi())
+		return;
+
+	rt5682_dev = find_dev_nested_path(
+		pci_root_bus(), rt5682_path, ARRAY_SIZE(rt5682_path));
+	if (!rt5682_dev) {
+		printk(BIOS_ERR, "%s: Failed to find audio device\n",
+				__func__);
+		return;
+	}
+
+	if (rt5682_dev->chip_ops != &drivers_i2c_generic_ops) {
+		printk(BIOS_ERR, "%s: Incorrect device found\n", __func__);
+		return;
+	}
+
+	cfg = config_of(rt5682_dev);
+	gpio = &cfg->irq_gpio;
+	gpio->pins[0] = 62;
+
+}
 
 void variant_audio_update(void)
 {
@@ -49,6 +102,8 @@ void variant_audio_update(void)
 
 		break;
 	}
+
+	update_hp_int_odl();
 }
 
 static const struct device_path xhci0_bt_path[] = {

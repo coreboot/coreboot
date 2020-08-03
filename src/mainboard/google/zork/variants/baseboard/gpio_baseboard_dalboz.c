@@ -93,8 +93,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, HIGH),
 	/* GPIO_77 - GPIO_83: Not available */
-	/* UNUSED */
-	PAD_NC(GPIO_84),
+	/* HP_INT_ODL */
+	PAD_GPI(GPIO_84, PULL_NONE),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
 	/* RAM ID 2 */

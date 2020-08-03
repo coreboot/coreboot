@@ -173,12 +173,12 @@ Device (MCHC)
 		If (Acquire (CTCM, 100)) {
 			Return (0)
 		}
-		If (LEqual (CTCD, CTCC)) {
+		If (CTCD == CTCC) {
 			Release (CTCM)
 			Return (0)
 		}
 
-		Store ("Set TDP Down", Debug)
+		Debug = "Set TDP Down"
 
 		/* Set CTC */
 		CTCS = CTCD
@@ -214,7 +214,7 @@ Device (MCHC)
 			Return (0)
 		}
 
-		Store ("Set TDP Nominal", Debug)
+		Debug = "Set TDP Nominal"
 
 		/* Set PL1 */
 		PL1V = CTDN

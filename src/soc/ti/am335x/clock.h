@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __CPU_TI_AM335X_CLOCK_H__
-#define __CPU_TI_AM335X_CLOCK_H__
+#ifndef __SOC_TI_AM335X_CLOCK_H__
+#define __SOC_TI_AM335X_CLOCK_H__
 
 #include <stdint.h>
 
@@ -219,4 +219,4 @@ struct am335x_cm_cefuse_regs {
 static struct am335x_cm_cefuse_regs * const am335x_cm_cefuse =
 		(void *)0x44e00a00;
 
-#endif	/* __CPU_TI_AM335X_CLOCK_H__ */
+#endif	/* __SOC_TI_AM335X_CLOCK_H__ */

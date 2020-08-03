@@ -3,9 +3,9 @@
 #include <device/mmio.h>
 #include <bootblock_common.h>
 #include <console/uart.h>
-#include <cpu/ti/am335x/clock.h>
-#include <cpu/ti/am335x/gpio.h>
-#include <cpu/ti/am335x/pinmux.h>
+#include <soc/ti/am335x/clock.h>
+#include <soc/ti/am335x/gpio.h>
+#include <soc/ti/am335x/pinmux.h>
 
 #include "leds.h"
 

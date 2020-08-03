@@ -1,4 +1,4 @@
-config CPU_TI_AM335X
+config SOC_TI_AM335X
 	select ARCH_BOOTBLOCK_ARMV7
 	select ARCH_VERSTAGE_ARMV7
 	select ARCH_ROMSTAGE_ARMV7
@@ -9,10 +9,10 @@ config CPU_TI_AM335X
 	bool
 	default n
 
-if CPU_TI_AM335X
+if SOC_TI_AM335X
 
 config MEMLAYOUT_LD_FILE
 	string
-	default "src/cpu/ti/am335x/memlayout.ld"
+	default "src/soc/ti/am335x/memlayout.ld"
 
 endif

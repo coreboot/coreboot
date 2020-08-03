@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __CPU_TI_AM335X_DMTIMER_H__
-#define __CPU_TI_AM335X_DMTIMER_H__
+#ifndef __SOC_TI_AM335X_DMTIMER_H__
+#define __SOC_TI_AM335X_DMTIMER_H__
 
 #include <stdint.h>
 

@@ -4,7 +4,7 @@
 #include <console/uart.h>
 #include <device/mmio.h>
 #include <boot/coreboot_tables.h>
-#include <cpu/ti/am335x/uart.h>
+#include <soc/ti/am335x/uart.h>
 
 #define EFR_ENHANCED_EN		(1 << 4)
 #define FCR_FIFO_EN		(1 << 0)

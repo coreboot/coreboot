@@ -1,3 +1,4 @@
+ifeq ($(CONFIG_SOC_TI_AM335X),y)
 bootblock-y	+= bootblock.c
 bootblock-y	+= bootblock_media.c
 bootblock-y	+= dmtimer.c
@@ -13,6 +14,7 @@ romstage-y	+= monotonic_timer.c
 ramstage-y	+= dmtimer.c
 ramstage-y	+= monotonic_timer.c
 ramstage-y	+= nand.c
+ramstage-y  += soc.c
 
 bootblock-y	+= uart.c
 romstage-y	+= uart.c
@@ -51,3 +53,4 @@ omap-header-y	+= header.c
 
 omap-header-srcs += $(CONFIG_MEMLAYOUT_LD_FILE)
 omap-header-y += header.ld
+endif

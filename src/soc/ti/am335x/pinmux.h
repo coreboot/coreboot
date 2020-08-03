@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __CPU_TI_AM335X_PINMUX_H
-#define __CPU_TI_AM335X_PINMUX_H
+#ifndef __SOC_TI_AM335X_PINMUX_H
+#define __SOC_TI_AM335X_PINMUX_H
 
 #include <stdint.h>
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __CPU_TI_AM335X_GPIO_H__
-#define __CPU_TI_AM335X_GPIO_H__
+#ifndef __SOC_TI_AM335X_GPIO_H__
+#define __SOC_TI_AM335X_GPIO_H__
 
 #include <stdint.h>
 
@@ -55,4 +55,4 @@ int gpio_direction_output(unsigned int gpio, int value);
 int gpio_get_value(unsigned int gpio);
 int gpio_set_value(unsigned int gpio, int value);
 
-#endif	/* __CPU_TI_AM335X_CLOCK_H__ */
+#endif	/* __SOC_TI_AM335X_CLOCK_H__ */

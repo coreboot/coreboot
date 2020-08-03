@@ -550,7 +550,7 @@ F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp
 ORPHANED ARM SOCS
 S:	Orphaned
 F:	src/cpu/armltd/
-F:	src/cpu/ti/
+F:	src/soc/ti/
 F:	src/soc/qualcomm/
 F:	src/soc/samsung/
 F:	util/exynos/

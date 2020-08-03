@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
-#include <cpu/ti/am335x/gpio.h>
+#include <soc/ti/am335x/gpio.h>
 
 #include "leds.h"
 

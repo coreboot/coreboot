@@ -46,6 +46,15 @@ int get_cpu_count(void)
 	return 1 + (cpuid_ecx(0x80000008) & 0xff);
 }
 
+static void set_cstate_io_addr(void)
+{
+	msr_t cst_addr;
+
+	cst_addr.hi = 0;
+	cst_addr.lo = ACPI_CPU_CONTROL;
+	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
+}
+
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
 	uintptr_t tseg_base;
@@ -109,6 +118,7 @@ static void model_17_init(struct device *dev)
 {
 	check_mca();
 	setup_lapic();
+	set_cstate_io_addr();
 
 	amd_update_microcode_from_cbfs();
 }

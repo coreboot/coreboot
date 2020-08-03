@@ -233,7 +233,6 @@ void sb_enable(struct device *dev)
 static void sb_init_acpi_ports(void)
 {
 	u32 reg;
-	msr_t cst_addr;
 
 	/* We use some of these ports in SMM regardless of whether or not
 	 * ACPI tables are generated. Enable these ports indiscriminately.
@@ -243,11 +242,6 @@ static void sb_init_acpi_ports(void)
 	pm_write16(PM1_CNT_BLK, ACPI_PM1_CNT_BLK);
 	pm_write16(PM_TMR_BLK, ACPI_PM_TMR_BLK);
 	pm_write16(PM_GPE0_BLK, ACPI_GPE0_BLK);
-
-	/* CpuControl is in \_SB.CP00, 6 bytes */
-	cst_addr.hi = 0;
-	cst_addr.lo = ACPI_CPU_CONTROL;
-	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		/* APMC - SMI Command Port */

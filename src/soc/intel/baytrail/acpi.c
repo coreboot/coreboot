@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
@@ -122,6 +123,20 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
 					     MCFG_BASE_ADDRESS, 0, 0, 255);
+	return current;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
+{
+	/* Local APICs */
+	current = acpi_create_madt_lapics(current);
+
+	/* IOAPIC */
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+				2, IO_APIC_ADDR, 0);
+
+	current = acpi_madt_irq_overrides(current);
+
 	return current;
 }
 

@@ -2,11 +2,8 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <arch/ioapic.h>
-#include <device/device.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
-#include <soc/iomap.h>
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
@@ -25,20 +22,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 
 	/* Enable DPTF */
 	gnvs->dpte = 1;
-}
-
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
-
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
-
-	current = acpi_madt_irq_overrides(current);
-
-	return current;
 }
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)

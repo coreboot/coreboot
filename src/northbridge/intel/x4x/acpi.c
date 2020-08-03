@@ -9,8 +9,7 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	u32 pciexbar = 0;
-	u32 length = 0;
+	u32 pciexbar, length;
 
 	if (!decode_pcie_bar(&pciexbar, &length))
 		return current;

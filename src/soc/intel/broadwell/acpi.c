@@ -435,22 +435,19 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	const bool vtvc0en = MCHBAR32(VTVC0BAR) & 0x1;
 
 	/* iGFX has to be enabled; GFXVTBAR set, enabled, in 32-bit space */
-	if (igfx_dev && igfx_dev->enabled && gfxvtbar
-			&& gfxvten && !MCHBAR32(GFXVTBAR + 4)) {
-		unsigned long tmp = current;
+	const bool emit_igd =
+			igfx_dev && igfx_dev->enabled &&
+			gfxvtbar && gfxvten &&
+			!MCHBAR32(GFXVTBAR + 4);
+
+	/* First, add DRHD entries */
+	if (emit_igd) {
+		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
-
-		/* Add RMRR entry */
-		tmp = current;
-
-		current += acpi_create_dmar_rmrr(current, 0,
-				sa_get_gsm_base(), sa_get_tolud_base() - 1);
-		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
-		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 
 	/* VTVC0BAR has to be set, enabled, and in 32-bit space */
@@ -466,6 +463,16 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 					0, PCH_HPET_PCI_BUS,
 					PCH_HPET_PCI_SLOT, i);
 		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	/* Then, add RMRR entries after all DRHD entries */
+	if (emit_igd) {
+		const unsigned long tmp = current;
+
+		current += acpi_create_dmar_rmrr(current, 0,
+				sa_get_gsm_base(), sa_get_tolud_base() - 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 
 	return current;

@@ -19,11 +19,7 @@ int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;
-	const pci_devfn_t dev = HOST_BRIDGE;
-	u32 pciexbar = 0;
-	u32 pciexbar_reg;
-	u32 reg32;
-	int max_buses;
+
 	const struct {
 		u16 num_buses;
 		u32 addr_mask;
@@ -34,7 +30,7 @@ int decode_pcie_bar(u32 *const base, u32 *const len)
 		{0,   0},
 	};
 
-	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
+	const u32 pciexbar_reg = pci_read_config32(HOST_BRIDGE, PCIEXBAR);
 
 	/* MMCFG not supported or not enabled */
 	if (!(pciexbar_reg & (1 << 0))) {
@@ -42,9 +38,9 @@ int decode_pcie_bar(u32 *const base, u32 *const len)
 		return 0;
 	}
 
-	reg32 = (pciexbar_reg >> 1) & 3;
-	pciexbar = pciexbar_reg & busmask[reg32].addr_mask;
-	max_buses = busmask[reg32].num_buses;
+	const u32 index = (pciexbar_reg >> 1) & 3;
+	const u32 pciexbar = pciexbar_reg & busmask[index].addr_mask;
+	const int max_buses = busmask[index].num_buses;
 
 	if (!pciexbar) {
 		printk(BIOS_WARNING, "WARNING: pciexbar invalid\n");

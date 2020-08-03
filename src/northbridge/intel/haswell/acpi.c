@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
@@ -10,44 +11,12 @@
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	struct device *dev;
-	u32 pciexbar = 0;
-	u32 pciexbar_reg;
-	int max_buses;
-	u32 mask;
+	u32 length, pciexbar;
 
-	dev = pcidev_on_root(0, 0);
-	if (!dev)
+	if (!decode_pcie_bar(&pciexbar, &length))
 		return current;
 
-	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
-
-	/* MMCFG not supported or not enabled. */
-	if (!(pciexbar_reg & (1 << 0)))
-		return current;
-
-	mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: /* 256MB */
-		pciexbar = pciexbar_reg & mask;
-		max_buses = 256;
-		break;
-	case 1: /* 128M */
-		mask |= (1 << 27);
-		pciexbar = pciexbar_reg & mask;
-		max_buses = 128;
-		break;
-	case 2: /* 64M */
-		mask |= (1 << 27) | (1 << 26);
-		pciexbar = pciexbar_reg & mask;
-		max_buses = 64;
-		break;
-	default: /* RSVD */
-		return current;
-	}
-
-	if (!pciexbar)
-		return current;
+	const int max_buses = length / MiB;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current, pciexbar, 0, 0,
 					     max_buses - 1);

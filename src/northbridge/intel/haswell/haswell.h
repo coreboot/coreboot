@@ -157,6 +157,8 @@ void haswell_unhide_peg(void);
 
 void report_platform_info(void);
 
+int decode_pcie_bar(u32 *const base, u32 *const len);
+
 #include <device/device.h>
 
 struct acpi_rsdp;

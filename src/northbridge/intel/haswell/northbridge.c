@@ -51,6 +51,11 @@ static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base, u32 *
 	return 0;
 }
 
+int decode_pcie_bar(u32 *const base, u32 *const len)
+{
+	return get_pcie_bar(pcidev_on_root(0, 0), PCIEXBAR, base, len);
+}
+
 static const char *northbridge_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)

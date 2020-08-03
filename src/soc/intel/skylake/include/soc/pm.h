@@ -141,6 +141,12 @@
 
 #define PRSTS		0x10
 
+/* P-state configuration */
+#define PSS_MAX_ENTRIES		8
+#define PSS_RATIO_STEP		2
+#define PSS_LATENCY_TRANSITION	10
+#define PSS_LATENCY_BUSMASTER	10
+
 struct chipset_power_state {
 	uint16_t pm1_sts;
 	uint16_t pm1_en;

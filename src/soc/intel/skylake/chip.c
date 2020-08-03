@@ -10,6 +10,7 @@
 #include <fsp/util.h>
 #include <gpio.h>
 #include <option.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
@@ -18,7 +19,6 @@
 #include <intelblocks/xdci.h>
 #include <intelblocks/p2sb.h>
 #include <intelpch/lockdown.h>
-#include <soc/acpi.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/interrupt.h>
 #include <soc/iomap.h>
@@ -191,7 +191,6 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables	= &northbridge_write_acpi_tables,
 	.acpi_name		= &soc_acpi_name,
 #endif
 };

@@ -59,6 +59,8 @@
 #define ETR3			0xac
 #define  ETR3_CF9LOCK		(1 << 31)
 #define  ETR3_CF9GR		(1 << 20)
+#define SCI_IRQ_ADJUST		0
+#define IRQ_REG			ACTL
 
 /* Memory mapped IO registers in PMC */
 #define S3_PWRGATE_POL		0x28

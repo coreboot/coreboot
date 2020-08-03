@@ -100,6 +100,38 @@ static void root_port_config_update_gbe_port(void)
 	}
 }
 
+static void update_num_ports(void)
+{
+	/*
+	 * According to existing code in 'root_port_check_disable()', which does
+	 * not agree with the confusing information on the datasheets, the last
+	 * visible function depends on the strapped root port width as follows:
+	 *
+	 * +-----+----+----+----+----+
+	 * | RPC | #5 | #6 | #7 | #8 |
+	 * +-----+----+----+----+----+
+	 * |  0  | x1 | x1 | x1 | x1 |
+	 * |  1  | x2 |    | x1 | x1 |
+	 * |  2  | x2 |    | x2 |    |
+	 * |  3  | x4 |    |    |    |
+	 * +-----+----+----+----+----+
+	 */
+	switch ((rpc.strpfusecfg2 >> 14) & 0x3) {
+	case 0:
+	case 1:
+		break;
+	case 2:
+		rpc.num_ports = MIN(rpc.num_ports, 7);
+		break;
+	case 3:
+		rpc.num_ports = MIN(rpc.num_ports, 5);
+		break;
+	}
+
+	printk(BIOS_DEBUG, "Adjusted number of PCIe root ports to %d as per strpfusecfg2\n",
+	       rpc.num_ports);
+}
+
 static void root_port_init_config(struct device *dev)
 {
 	int rp;
@@ -137,6 +169,10 @@ static void root_port_init_config(struct device *dev)
 	case 5:
 		rpc.strpfusecfg2 = pci_read_config32(dev, 0xfc);
 		rpc.b0d28f4_32c = pci_read_config32(dev, 0x32c);
+
+		if (!pch_is_lp())
+			update_num_ports();
+
 		break;
 	case 6:
 		rpc.b0d28f5_32c = pci_read_config32(dev, 0x32c);

@@ -82,7 +82,7 @@ static int fseek(FILE *stream, long offset, int whence)
 static long ftell(FILE *stream)
 {
 	/* ftell should currently not be called */
-	gcc_assert(0);
+	BUG();
 #if CONFIG(DEBUG_COVERAGE)
 	printk(BIOS_DEBUG, "ftell %s\n", stream->filename);
 #endif

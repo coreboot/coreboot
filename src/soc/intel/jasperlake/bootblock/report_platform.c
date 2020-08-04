@@ -3,6 +3,7 @@
 #include <arch/cpu.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/name.h>
 #include <device/pci.h>
@@ -12,8 +13,6 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <string.h>
-
-#define BIOS_SIGN_ID	0x8B
 
 static struct {
 	u32 cpuid;
@@ -62,17 +61,11 @@ static void report_cpu_info(void)
 	u32 i, cpu_id, cpu_feature_flag;
 	char cpu_name[49];
 	int vt, txt, aes;
-	msr_t microcode_ver;
 	static const char *const mode[] = {"NOT ", ""};
 	const char *cpu_type = "Unknown";
 
 	fill_processor_name(cpu_name);
-
-	microcode_ver.lo = 0;
-	microcode_ver.hi = 0;
-	wrmsr(BIOS_SIGN_ID, microcode_ver);
 	cpu_id = cpu_get_cpuid();
-	microcode_ver = rdmsr(BIOS_SIGN_ID);
 
 	/* Look for string to match the name */
 	for (i = 0; i < ARRAY_SIZE(cpu_table); i++) {
@@ -84,7 +77,7 @@ static void report_cpu_info(void)
 
 	printk(BIOS_DEBUG, "CPU: %s\n", cpu_name);
 	printk(BIOS_DEBUG, "CPU: ID %x, %s, ucode: %08x\n",
-	       cpu_id, cpu_type, microcode_ver.hi);
+	       cpu_id, cpu_type, get_current_microcode_rev());
 
 	cpu_feature_flag = cpu_get_feature_flags_ecx();
 	aes = (cpu_feature_flag & CPUID_AES) ? 1 : 0;

@@ -2,6 +2,39 @@
 
 #include <soc/nhlt.h>
 
+static const struct nhlt_format_config dmic_1ch_formats[] = {
+	/* 48 KHz 16-bits per sample. */
+	{
+		.num_channels = 1,
+		.sample_freq_khz = 48,
+		.container_bits_per_sample = 16,
+		.valid_bits_per_sample = 16,
+		.speaker_mask = SPEAKER_FRONT_CENTER,
+		.settings_file = "dmic-1ch-48khz-16b.bin",
+	},
+};
+
+static const struct nhlt_dmic_array_config dmic_1ch_mic_config = {
+	.tdm_config = {
+		.config_type = NHLT_TDM_BASIC,
+	},
+	.array_type = NHLT_MIC_ARRAY_VENDOR_DEFINED,
+};
+
+static const struct nhlt_endp_descriptor dmic_1ch_descriptors[] = {
+	{
+		.link = NHLT_LINK_PDM,
+		.device = NHLT_PDM_DEV_CAVS15,
+		.direction = NHLT_DIR_CAPTURE,
+		.vid = NHLT_VID,
+		.did = NHLT_DID_DMIC,
+		.cfg = &dmic_1ch_mic_config,
+		.cfg_size = sizeof(dmic_1ch_mic_config),
+		.formats = dmic_1ch_formats,
+		.num_formats = ARRAY_SIZE(dmic_1ch_formats),
+	},
+};
+
 static const struct nhlt_format_config dmic_2ch_formats[] = {
 	/* 48 KHz 16-bits per sample. */
 	{
@@ -91,6 +124,9 @@ static const struct nhlt_endp_descriptor dmic_4ch_descriptors[] = {
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels)
 {
 	switch (num_channels) {
+	case 1:
+		return nhlt_add_endpoints(nhlt, dmic_1ch_descriptors,
+					ARRAY_SIZE(dmic_1ch_descriptors));
 	case 2:
 		return nhlt_add_endpoints(nhlt, dmic_2ch_descriptors,
 					ARRAY_SIZE(dmic_2ch_descriptors));

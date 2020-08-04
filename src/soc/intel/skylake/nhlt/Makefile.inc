@@ -15,6 +15,7 @@ else
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/skylake/nhlt-blobs
 endif
 
+DMIC_1CH_48KHZ_16B = dmic-1ch-48khz-16b.bin
 DMIC_2CH_48KHZ_16B = dmic-2ch-48khz-16b.bin
 DMIC_2CH_48KHZ_32B = dmic-2ch-48khz-32b.bin
 DMIC_4CH_48KHZ_16B = dmic-4ch-48khz-16b.bin
@@ -30,6 +31,10 @@ RT5663 = rt5663-2ch-48khz-24b.bin
 SSM4567_RENDER = ssm4567-render-2ch-48khz-24b.bin
 SSM4567_CAPTURE = ssm4567-capture-4ch-48khz-32b.bin
 DA7219_RENDER_CAPTURE = dialog-2ch-48khz-24b.bin
+
+cbfs-files-$(CONFIG_NHLT_DMIC_1CH) += $(DMIC_1CH_48KHZ_16B)
+$(DMIC_1CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_1CH_48KHZ_16B)
+$(DMIC_1CH_48KHZ_16B)-type := raw
 
 cbfs-files-$(CONFIG_NHLT_DMIC_2CH) += $(DMIC_2CH_48KHZ_16B)
 $(DMIC_2CH_48KHZ_16B)-file := $(NHLT_BLOB_PATH)/$(DMIC_2CH_48KHZ_16B)

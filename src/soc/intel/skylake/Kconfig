@@ -161,6 +161,12 @@ config SKYLAKE_SOC_PCH_H
 	help
 	  Choose this option if you have a PCH-H chipset.
 
+config NHLT_DMIC_1CH
+	bool
+	default n
+	help
+	  Include DSP firmware settings for 1 channel DMIC array.
+
 config NHLT_DMIC_2CH
 	bool
 	default n

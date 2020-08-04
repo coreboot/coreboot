@@ -1,12 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mmio.h>
 #include <assert.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/auxadc.h>
 #include <soc/efuse.h>
-#include <soc/infracfg.h>
 #include <timer.h>
 
 static struct mtk_auxadc_regs *const mtk_auxadc = (void *)AUXADC_BASE;
@@ -36,9 +35,10 @@ static void mt_auxadc_update_cali(void)
 		cali_oe = cali_oe_a - 512;
 	}
 }
+
 static uint32_t auxadc_get_rawdata(int channel)
 {
-	setbits32(&mt8183_infracfg->module_sw_cg_1_clr, 1 << 10);
+	setbits32(&mtk_infracfg->module_sw_cg_1_clr, 1 << 10);
 	assert(wait_ms(300, !(read32(&mtk_auxadc->con2) & 0x1)));
 
 	clrbits32(&mtk_auxadc->con1, 1 << channel);
@@ -50,12 +50,12 @@ static uint32_t auxadc_get_rawdata(int channel)
 
 	uint32_t value = read32(&mtk_auxadc->data[channel]) & 0x0FFF;
 
-	setbits32(&mt8183_infracfg->module_sw_cg_1_set, 1 << 10);
+	setbits32(&mtk_infracfg->module_sw_cg_1_set, 1 << 10);
 
 	return value;
 }
 
-int auxadc_get_voltage(unsigned int channel)
+unsigned int auxadc_get_voltage_uv(unsigned int channel)
 {
 	uint32_t raw_value;
 	assert(channel < 16);
@@ -67,7 +67,6 @@ int auxadc_get_voltage(unsigned int channel)
 
 	/* 1.5V in 4096 steps */
 	raw_value = auxadc_get_rawdata(channel);
-
 	raw_value = raw_value - cali_oe;
-	return (int)((int64_t)raw_value * 1500000 / (4096 + cali_ge));
+	return (unsigned int)((int64_t)raw_value * 1500000 / (4096 + cali_ge));
 }

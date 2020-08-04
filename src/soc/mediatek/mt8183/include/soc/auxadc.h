@@ -3,6 +3,8 @@
 #ifndef _MTK_ADC_H
 #define _MTK_ADC_H
 
+#include <soc/auxadc_common.h>
+#include <soc/infracfg.h>
 #include <stdint.h>
 
 typedef struct mtk_auxadc_regs {
@@ -16,6 +18,6 @@ typedef struct mtk_auxadc_regs {
 	uint32_t misc;
 } mtk_auxadc_regs;
 
-/* Return voltage in uVolt */
-int auxadc_get_voltage(unsigned int channel);
+static struct mt8183_infracfg_regs *const mtk_infracfg = mt8183_infracfg;
+
 #endif

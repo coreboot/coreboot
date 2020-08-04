@@ -1,7 +1,7 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8183),y)
 
-bootblock-y += auxadc.c
 bootblock-y += bootblock.c
+bootblock-y += ../common/auxadc.c
 bootblock-y += ../common/gpio.c gpio.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
@@ -15,7 +15,7 @@ decompressor-y += decompressor.c
 decompressor-y += ../common/mmu_operations.c
 decompressor-y += ../common/timer.c
 
-verstage-y += auxadc.c
+verstage-y += ../common/auxadc.c
 verstage-y += ../common/gpio.c gpio.c
 verstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 verstage-y += mt8183.c
@@ -24,7 +24,7 @@ verstage-y += ../common/timer.c
 verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c
 
-romstage-y += auxadc.c
+romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c emi.c
 romstage-y += dramc_init_setting.c
 romstage-y += dramc_param.c
@@ -44,8 +44,8 @@ romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c
 
-ramstage-y += auxadc.c
 ramstage-y += emi.c
+ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/dsi.c dsi.c
 ramstage-y += ../common/gpio.c gpio.c

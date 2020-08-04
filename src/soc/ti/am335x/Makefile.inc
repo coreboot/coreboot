@@ -1,18 +1,15 @@
 ifeq ($(CONFIG_SOC_TI_AM335X),y)
 bootblock-y	+= bootblock.c
 bootblock-y	+= bootblock_media.c
-bootblock-y	+= dmtimer.c
+bootblock-y	+= timer.c
 bootblock-y	+= gpio.c
 bootblock-y	+= pinmux.c
-bootblock-y	+= monotonic_timer.c
 
 romstage-y	+= nand.c
 romstage-y	+= cbmem.c
-romstage-y	+= dmtimer.c
-romstage-y	+= monotonic_timer.c
+romstage-y	+= timer.c
 
-ramstage-y	+= dmtimer.c
-ramstage-y	+= monotonic_timer.c
+ramstage-y	+= timer.c
 ramstage-y	+= nand.c
 ramstage-y  += soc.c
 

@@ -220,7 +220,7 @@ static int find_dq_limit(const struct sysinfo *s, const u8 channel,
 		expected_result == FAILING ? "failing" : "succeeding", channel);
 	memset(pass_count, 0, sizeof(pass_count));
 
-	while(succes_mask) {
+	while (succes_mask) {
 		test_result = test_dq_aligned(s, channel);
 		FOR_EACH_BYTELANE(lane) {
 			if (((test_result >> lane) & 1) != expected_result) {
@@ -390,7 +390,7 @@ static int rt_find_dqs_limit(struct sysinfo *s, u8 channel,
 	FOR_EACH_BYTELANE(lane)
 		rt_set_dqs(channel, lane, 0, &dqs_setting[lane]);
 
-	while(status == CB_SUCCESS) {
+	while (status == CB_SUCCESS) {
 		test_result = test_dqs_aligned(s, channel);
 		if (test_result == (expected_result == SUCCEEDING ? 0 : 0xff))
 			return CB_SUCCESS;

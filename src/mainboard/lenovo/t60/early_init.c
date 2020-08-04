@@ -25,7 +25,7 @@ static void early_superio_config(void)
 
 	pnp_write_config(dev, 0x29, 0xa0);
 
-	while(!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
+	while (!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
 		udelay(1000);
 
 	/* Enable COM1 */

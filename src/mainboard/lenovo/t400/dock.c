@@ -23,7 +23,7 @@ static int poll_clk_stable(pnp_devfn_t dev, int timeout)
 {
 	/* Enable 14.318MHz CLK on CLKIN */
 	pnp_write_config(dev, 0x29, 0xa0);
-	while(!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
+	while (!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
 		udelay(1000);
 	if (!timeout)
 		return 1;

@@ -72,7 +72,7 @@ int dlpc_init(void)
 
 	/* Enable 14.318MHz CLK on CLKIN */
 	dlpc_write_register(0x29, 0xa0);
-	while(!(dlpc_read_register(0x29) & 0x10) && timeout--)
+	while (!(dlpc_read_register(0x29) & 0x10) && timeout--)
 		udelay(1000);
 
 	if (!timeout)
@@ -99,7 +99,7 @@ int dock_connect(void)
 
 	timeout = 1000;
 
-	while(!(inb(0x164c) & 8) && timeout--)
+	while (!(inb(0x164c) & 8) && timeout--)
 		udelay(1000);
 
 	if (!timeout) {
@@ -121,7 +121,7 @@ int dock_connect(void)
 	dock_write_register(0x29, 0x06);
 	/* wait until clock is settled */
 	timeout = 1000;
-	while(!(dock_read_register(0x29) & 0x08) && timeout--)
+	while (!(dock_read_register(0x29) & 0x08) && timeout--)
 		udelay(1000);
 
 	if (!timeout)

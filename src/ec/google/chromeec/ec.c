@@ -1539,3 +1539,21 @@ int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd)
 
 	return 0;
 }
+
+int google_chromeec_ap_reset(void)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_AP_RESET,
+		.cmd_version = 0,
+		.cmd_data_in = NULL,
+		.cmd_size_in = 0,
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	return 0;
+}

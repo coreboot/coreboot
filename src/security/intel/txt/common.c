@@ -149,6 +149,9 @@ static int validate_acm(const void *ptr)
 	if (acm_header->module_vendor != INTEL_ACM_VENDOR)
 		return ACM_E_MODULE_VENDOR_NOT_INTEL;
 
+	if (acm_header->size == 0)
+		return ACM_E_SIZE_INCORRECT;
+
 	if (((acm_header->header_len + acm_header->scratch_size) * sizeof(uint32_t) +
 	    sizeof(struct acm_info_table)) > (acm_header->size & 0xffffff) * sizeof(uint32_t)) {
 		return ACM_E_SIZE_INCORRECT;

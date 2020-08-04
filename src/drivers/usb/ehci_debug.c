@@ -600,7 +600,7 @@ next_debug_port:
 			goto try_next_time;
 	}
 
-	return -10;
+	return ret;
 }
 
 static int dbgp_enabled(void)

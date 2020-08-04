@@ -466,7 +466,7 @@ int imd_recover(struct imd *imd)
 	if (imdr_recover(imdr) != 0)
 		return -1;
 
-	/* Determine if small region is region is present. */
+	/* Determine if small region is present. */
 	e = imdr_entry_find(imdr, SMALL_REGION_ID);
 
 	if (e == NULL)

@@ -64,6 +64,18 @@ static void each_cpu_init(struct device *cpu)
 		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
 	setup_lapic();
 
+	/*
+	 * Set HWP base feature, EPP reg enumeration, lock thermal and msr
+	 * This is package level MSR. Need to check if it updates correctly on
+	 * multi-socket platform.
+	 */
+	msr = rdmsr(MSR_MISC_PWR_MGMT);
+	if (!(msr.lo & LOCK_MISC_PWR_MGMT_MSR)) { /* if already locked skip update */
+		msr.lo = (HWP_ENUM_ENABLE | HWP_EPP_ENUM_ENABLE | LOCK_MISC_PWR_MGMT_MSR |
+			LOCK_THERM_INT);
+		wrmsr(MSR_MISC_PWR_MGMT, msr);
+	}
+
 	/* Enable Fast Strings */
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= FAST_STRINGS_ENABLE_BIT;

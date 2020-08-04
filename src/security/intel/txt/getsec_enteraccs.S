@@ -27,46 +27,6 @@
 	wrmsr
 .endm
 
-/* Variable MTRR index is passed through %ebx */
-.macro PUSH_VAR_MTRR
-	movl	%ebx, %ecx
-	shll	%ecx
-	addl	MTRR_PHYS_BASE(0), %ecx
-	rdmsr
-	push	%eax
-	push	%edx
-	incl	%ecx	/* MTRR_PHYS_MASK */
-	rdmsr
-	push	%eax
-	push	%edx
-.endm
-
-.macro POP_VAR_MTRR
-	movl	%ebx, %ecx
-	shll	%ecx
-	addl	MTRR_PHYS_MASK(0), %ecx
-	pop	%edx
-	pop	%eax
-	wrmsr
-	decl	%ecx	/* MTRR_PHYS_BASE */
-	pop	%edx
-	pop	%eax
-	wrmsr
-.endm
-
-.macro CLEAR_VAR_MTRR
-	movl	%ebx, %ecx
-	shll	%ecx
-	addl	MTRR_PHYS_BASE(0), %ecx
-	xorl	%edx, %edx
-	xorl	%eax, %eax
-	wrmsr
-	incl	%ecx	/* MTRR_PHYS_MASK */
-	xorl	%edx, %edx
-	xorl	%eax, %eax
-	wrmsr
-.endm
-
 .align 4
 .text
 
@@ -111,12 +71,23 @@ getsec_enteraccs:
 	PUSH_MSR MTRR_FIX_4K_F8000
 
 	/* Push variable MTRRs in ascending order */
+
 	xorl	%ebx, %ebx
 	jmp	cond_push_var_mtrrs
 
 body_push_var_mtrrs:
 
-	PUSH_VAR_MTRR
+	movl	%ebx, %ecx
+	shll	%ecx
+	addl	$(MTRR_PHYS_BASE(0)), %ecx
+	rdmsr
+	push	%eax
+	push	%edx
+	incl	%ecx	/* MTRR_PHYS_MASK */
+	rdmsr
+	push	%eax
+	push	%edx
+
 	incl	%ebx
 
 cond_push_var_mtrrs:
@@ -125,7 +96,7 @@ cond_push_var_mtrrs:
 	rdmsr
 	andl	$(0xff), %eax
 	cmp	%ebx, %eax
-	jge	body_push_var_mtrrs
+	jg	body_push_var_mtrrs
 
 	/*
 	 * Disable cache.
@@ -168,10 +139,24 @@ cond_push_var_mtrrs:
 	andl	$(0xff), %eax
 	movl	%eax, %ebx
 
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+
+	jmp	cond_clear_var_mtrrs
+
 body_clear_var_mtrrs:
 
-	CLEAR_VAR_MTRR
 	decl	%ebx
+	movl	%ebx, %ecx
+	shll	%ecx
+	addl	$(MTRR_PHYS_BASE(0)), %ecx
+	wrmsr
+	incl	%ecx	/* MTRR_PHYS_MASK */
+	wrmsr
+
+cond_clear_var_mtrrs:
+
+	cmpl	$0, %ebx
 	jnz	body_clear_var_mtrrs
 
 	/*
@@ -266,19 +251,33 @@ body_clear_var_mtrrs:
 	orl	$(CR0_CD | CR0_NW), %eax
 	movl	%eax, %cr0
 
-	/* Restore MTTRs */
-
 	/* Pop variable MTRRs in descending order */
+
 	movl	$(MTRR_CAP_MSR), %ecx
 	rdmsr
 	andl	$(0xff), %eax
 	movl	%eax, %ebx
 
+	jmp	cond_pop_var_mtrrs
+
 body_pop_var_mtrrs:
 
-	POP_VAR_MTRR
 	decl	%ebx
-	jnz	body_pop_var_mtrrs
+	movl	%ebx, %ecx
+	shll	%ecx
+	addl	$(MTRR_PHYS_MASK(0)), %ecx
+	pop	%edx
+	pop	%eax
+	wrmsr
+	decl	%ecx	/* MTRR_PHYS_BASE */
+	pop	%edx
+	pop	%eax
+	wrmsr
+
+cond_pop_var_mtrrs:
+
+	cmpl	$0, %ebx
+	jne	body_pop_var_mtrrs
 
 	POP_MSR MTRR_FIX_4K_F8000
 	POP_MSR MTRR_FIX_4K_F0000
@@ -301,7 +300,7 @@ body_pop_var_mtrrs:
 	/* Enable cache */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CD | CR0_NW)), %eax
-	movl	%eax,    %cr0
+	movl	%eax, %cr0
 
 	/* Pop GDT */
 	addl	$8, %esp

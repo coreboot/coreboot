@@ -103,6 +103,9 @@ chip northbridge/intel/haswell
 					device pnp 2e.16  off end	# Deep sleep
 					device pnp 2e.17  off end	# GPIOA
 				end
+				chip drivers/pc80/tpm
+					device pnp 4e.0 on end		# TPM
+				end
 			end
 			device pci 1f.2 on  end		# SATA (AHCI)
 			device pci 1f.3 on  end		# SMBus

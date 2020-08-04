@@ -29,8 +29,6 @@ chip soc/intel/cannonlake
 	register "satapwroptimize" = "1"
 	# Enable System Agent dynamic frequency
 	register "SaGv" = "SaGv_Enabled"
-	# Enable heci communication
-	register "HeciEnabled" = "0"
 	# Enable Speed Shift Technology support
 	register "speed_shift_enable" = "1"
 	# Enable S0ix
@@ -312,7 +310,7 @@ chip soc/intel/cannonlake
 		device pci 15.1 on  end # I2C #1
 		device pci 15.2 on  end # I2C #2
 		device pci 15.3 on  end # I2C #3
-		device pci 16.0 on  end # Management Engine Interface 1
+		device pci 16.0 off end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection

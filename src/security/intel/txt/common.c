@@ -10,10 +10,26 @@
 #include <cpu/x86/mp.h>
 #include <lib.h>
 #include <smp/node.h>
+
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
 #include <soc/intel/common/reset.h>
+#else
+#include <cf9_reset.h>
+#endif
+
 #include "txt.h"
 #include "txt_register.h"
 #include "txt_getsec.h"
+
+/* Usual security practice: if an unexpected error happens, reboot */
+static void __noreturn txt_reset_platform(void)
+{
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
+	global_reset();
+#else
+	full_reset();
+#endif
+}
 
 /**
  * Dump the ACM error status bits.
@@ -310,7 +326,7 @@ bool intel_txt_prepare_txt_env(void)
 	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
 	if (!(msr.lo & BIT(0))) {
 		printk(BIOS_ERR, "TEE-TXT: IA32_FEATURE_CONTROL is not locked\n");
-		global_reset();
+		txt_reset_platform();
 	}
 
 	printk(BIOS_DEBUG, "TEE-TXT: IA32_FEATURE_CONTROL\n");

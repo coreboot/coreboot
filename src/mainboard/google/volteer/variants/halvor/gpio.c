@@ -58,6 +58,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
+	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	/* D9  : ISH_SPI_CS# ==> TBT_LSX2_TXD */
 	PAD_CFG_NF(GPP_D9, NONE, DEEP, NF4),
 	/* D10 : ISH_SPI_CLK ==> TBT_LSX2_RXD */
@@ -66,6 +68,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D11, NONE),
 	/* D12 : ISH_SPI_MOSI ==> NC */
 	PAD_NC(GPP_D12, NONE),
+	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 
 	/* E0  : SATAXPCIE0 ==> NC */
 	PAD_NC(GPP_E0, NONE),
@@ -77,6 +81,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E5, NONE),
 	/* E10 : SPI1_CS# ==> NC */
 	PAD_NC(GPP_E10, NONE),
+	/* E11 : SPI1_CLK ==> SD_PE_WAKE_ODL */
+	PAD_CFG_GPI(GPP_E11, NONE, DEEP),
 	/* E12 : SPI1_MISO_IO1 ==> NC */
 	PAD_NC(GPP_E12, NONE),
 	/* E13 : SPI1_MOSI_IO0 ==> NC */
@@ -113,6 +119,8 @@ static const struct pad_config gpio_table[] = {
 	/* F19 : SRCCLKREQ6# ==> NC */
 	PAD_NC(GPP_F19, NONE),
 
+	/* H3  : SX_EXIT_HOLDOFF# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H3, 1, DEEP),
 	/* H6  : I2C3_SDA */
 	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
 	/* H7  : I2C3_SCL */
@@ -187,6 +195,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* C22 : UART2_RTS# ==> PCH_FPMCU_BOOT0 */
 	PAD_CFG_GPO(GPP_C22, 0, DEEP),
+
+	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 
 	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H11, 1, DEEP),

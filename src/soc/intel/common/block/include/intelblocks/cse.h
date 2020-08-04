@@ -219,4 +219,8 @@ uint8_t cse_wait_com_soft_temp_disable(void);
  * currently selected partition.
  */
 void cse_fw_sync(void *unused);
+
+/* Perform a board-specific reset sequence for CSE RO<->RW jump */
+void cse_board_reset(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H

@@ -364,12 +364,21 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 	return true;
 }
 
+__weak void cse_board_reset(void)
+{
+	/* Default weak implementation, does nothing. */
+}
+
 /* Set the CSE's next boot partition and issues system reset */
 static bool cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 {
 	if (!cse_set_next_boot_partition(bp))
 		return false;
 
+	/* Allow the board to perform a reset for CSE RO<->RW jump */
+	cse_board_reset();
+
+	/* If board does not perform the reset, then perform global_reset */
 	do_global_reset();
 
 	die("cse_lite: Failed to reset the system\n");

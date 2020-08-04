@@ -106,8 +106,6 @@ static u8 pirq_get_next_free_irq(u8 *pirq, u16 bitmap)
 		/* If it's not yet routed, use it */
 		if (!already_routed)
 			break;
-		/* But if it was already routed, try the next one */
-		continue;
 	}
 	/* Now we got our IRQ */
 	return irq;

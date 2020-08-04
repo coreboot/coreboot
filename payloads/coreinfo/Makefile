@@ -128,10 +128,9 @@ include $(srck)/Makefile
 else
 
 clean:
-	rm -rf build/*.elf build/*.o .xcompile
+	rm -rf build lpbuild .xcompile
 
 distclean: clean
-	rm -rf build lpbuild
 	rm -f .config* lp.config*
 
 .PHONY: clean distclean

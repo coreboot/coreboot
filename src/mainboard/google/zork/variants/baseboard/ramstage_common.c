@@ -65,44 +65,56 @@ static void update_hp_int_odl(void)
 
 }
 
-void variant_audio_update(void)
+static void update_dmic_gpio(void)
 {
-	const struct device *gpp_a_dev;
-	const struct device *acp_dev;
-	struct device *machine_dev = NULL;
+	static const struct device_path acp_machine_path[] = {
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = PCIE_GPP_A_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = AUDIO_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_GENERIC,
+			.generic.id = 0,
+			.generic.subid = 0
+		}
+	};
+
+	const struct device *machine_dev;
+	struct drivers_amd_i2s_machine_dev_config *cfg;
+	struct acpi_gpio *gpio;
 
 	if (variant_uses_v3_schematics())
 		return;
 
-	gpp_a_dev = pcidev_path_on_root(PCIE_GPP_A_DEVFN);
-	if (gpp_a_dev == NULL)
+	machine_dev = find_dev_nested_path(
+		pci_root_bus(), acp_machine_path, ARRAY_SIZE(acp_machine_path));
+	if (!machine_dev) {
+		printk(BIOS_ERR, "%s: Failed to find ACP machine device\n", __func__);
 		return;
-
-	acp_dev = pcidev_path_behind(gpp_a_dev->link_list, AUDIO_DEVFN);
-	if (acp_dev == NULL)
-		return;
-
-	while ((machine_dev = dev_bus_each_child(acp_dev->link_list, machine_dev)) != NULL) {
-		struct drivers_amd_i2s_machine_dev_config *cfg;
-		struct acpi_gpio *gpio;
-
-		if (machine_dev->chip_info == NULL)
-			continue;
-
-		if (machine_dev->chip_ops != &drivers_amd_i2s_machine_dev_ops)
-			continue;
-
-		cfg = machine_dev->chip_info;
-		gpio = &cfg->dmic_select_gpio;
-
-		if (CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE))
-			gpio->pins[0] = GPIO_13;
-		else
-			gpio->pins[0] = GPIO_6;
-
-		break;
 	}
 
+	if (machine_dev->chip_ops != &drivers_amd_i2s_machine_dev_ops) {
+		printk(BIOS_ERR, "%s: Incorrect device found\n", __func__);
+		return;
+	}
+
+	cfg = config_of(machine_dev);
+	gpio = &cfg->dmic_select_gpio;
+
+	if (CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE))
+		gpio->pins[0] = GPIO_13;
+	else
+		gpio->pins[0] = GPIO_6;
+
+}
+
+void variant_audio_update(void)
+{
+	update_dmic_gpio();
 	update_hp_int_odl();
 }
 

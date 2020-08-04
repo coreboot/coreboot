@@ -498,7 +498,7 @@ int do_read_training(struct sysinfo *s)
 		FOR_EACH_BYTELANE(lane) {
 			saved_dqs_center[channel][lane] /= RT_LOOPS;
 			while (saved_dqs_center[channel][lane]--) {
-				if(rt_increment_dqs(&s->rt_dqs[channel][lane])
+				if (rt_increment_dqs(&s->rt_dqs[channel][lane])
 							== CB_ERR)
 					/* Should never happen */
 					printk(BIOS_ERR,

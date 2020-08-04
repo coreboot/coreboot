@@ -2166,7 +2166,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 
 	if (!fast_boot) {
 		if (s->selected_timings.mem_clk > MEM_CLOCK_667MHz) {
-			if(do_write_training(s))
+			if (do_write_training(s))
 				die("DQ write training failed!");
 		}
 		if (do_read_training(s))

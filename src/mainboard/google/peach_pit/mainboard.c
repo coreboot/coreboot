@@ -254,7 +254,7 @@ static void parade_dp_bridge_setup(void)
 	 * we're out of here.
 	 * If it's not ready after a second, then we're in big trouble.
 	 */
-	for(i = 0; i < 1000; i++){
+	for (i = 0; i < 1000; i++){
 		if (gpio_get_value(dp_hpd))
 			break;
 		mdelay(1);

@@ -130,7 +130,7 @@ static void setup_interrupt_handlers(void)
 	{
 		/* If the mainboard_interrupt_handler isn't called first.
 		 */
-		if(!intXX_handler[i])
+		if (!intXX_handler[i])
 		{
 			/* Now set the default functions that are actually
 			 * needed to initialize the option roms. This is

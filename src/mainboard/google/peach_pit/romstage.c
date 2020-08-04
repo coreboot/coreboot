@@ -129,13 +129,13 @@ static unsigned long primitive_mem_test(void)
 	unsigned long *l = (void *)0x40000000;
 	int bad = 0;
 	unsigned long i;
-	for(i = 0; i < 256*1048576; i++){
+	for (i = 0; i < 256*1048576; i++){
 		if (! (i%1048576))
 			printk(BIOS_SPEW, "%lu ...", i);
 		l[i] = 0xffffffff - i;
 	}
 
-	for(i = 0; i < 256*1048576; i++){
+	for (i = 0; i < 256*1048576; i++){
 		if (! (i%1048576))
 			printk(BIOS_SPEW, "%lu ...", i);
 		if (l[i] != (0xffffffff - i)){
@@ -177,7 +177,7 @@ static void simple_spi_test(void)
 	}
 
 
-	for(i = 0; i < amt; i += 4){
+	for (i = 0; i < amt; i += 4){
 		if (rdev_readat(boot_dev, &in, i, 4) < 4) {
 			printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
 			return;

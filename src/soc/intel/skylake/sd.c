@@ -8,7 +8,7 @@ int sd_fill_soc_gpio_info(struct acpi_gpio* gpio, const struct device *dev)
 	config_t *config = config_of(dev);
 
 	/* Nothing to write if GPIO is not set in devicetree */
-	if(!config->sdcard_cd_gpio_default && !config->sdcard_cd_gpio.pins[0])
+	if (!config->sdcard_cd_gpio_default && !config->sdcard_cd_gpio.pins[0])
 		return -1;
 
 	if (config->sdcard_cd_gpio_default) {

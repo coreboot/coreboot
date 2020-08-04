@@ -264,8 +264,8 @@ void pci_rom_ssdt(const struct device *device)
 {
 	static size_t ngfx;
 
-	/* Only handle VGA devices */
-	if ((device->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+	/* Only handle display devices */
+	if ((device->class >> 16) != PCI_BASE_CLASS_DISPLAY)
 		return;
 
 	/* Only handle enabled devices */

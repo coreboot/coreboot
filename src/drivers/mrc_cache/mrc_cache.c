@@ -109,41 +109,6 @@ static const struct cache_region *lookup_region_type(int type)
 	return NULL;
 }
 
-int mrc_cache_stash_data(int type, uint32_t version, const void *data,
-			size_t size)
-{
-	const struct cache_region *cr;
-	size_t cbmem_size;
-	struct mrc_metadata *md;
-
-	cr = lookup_region_type(type);
-	if (cr == NULL) {
-		printk(BIOS_ERR, "MRC: failed to add to cbmem for type %d.\n",
-			type);
-		return -1;
-	}
-
-	cbmem_size = sizeof(*md) + size;
-
-	md = cbmem_add(cr->cbmem_id, cbmem_size);
-
-	if (md == NULL) {
-		printk(BIOS_ERR, "MRC: failed to add '%s' to cbmem.\n",
-			cr->name);
-		return -1;
-	}
-
-	memset(md, 0, sizeof(*md));
-	md->signature = MRC_DATA_SIGNATURE;
-	md->data_size = size;
-	md->version = version;
-	md->data_checksum = compute_ip_checksum(data, size);
-	md->header_checksum = compute_ip_checksum(md, sizeof(*md));
-	memcpy(&md[1], data, size);
-
-	return 0;
-}
-
 static const struct cache_region *lookup_region(struct region *r, int type)
 {
 	const struct cache_region *cr;
@@ -594,6 +559,41 @@ static void update_mrc_cache(void *unused)
 		invalidate_normal_cache();
 
 	protect_mrc_region();
+}
+
+int mrc_cache_stash_data(int type, uint32_t version, const void *data,
+			size_t size)
+{
+	const struct cache_region *cr;
+	size_t cbmem_size;
+	struct mrc_metadata *md;
+
+	cr = lookup_region_type(type);
+	if (cr == NULL) {
+		printk(BIOS_ERR, "MRC: failed to add to cbmem for type %d.\n",
+			type);
+		return -1;
+	}
+
+	cbmem_size = sizeof(*md) + size;
+
+	md = cbmem_add(cr->cbmem_id, cbmem_size);
+
+	if (md == NULL) {
+		printk(BIOS_ERR, "MRC: failed to add '%s' to cbmem.\n",
+			cr->name);
+		return -1;
+	}
+
+	memset(md, 0, sizeof(*md));
+	md->signature = MRC_DATA_SIGNATURE;
+	md->data_size = size;
+	md->version = version;
+	md->data_checksum = compute_ip_checksum(data, size);
+	md->header_checksum = compute_ip_checksum(md, sizeof(*md));
+	memcpy(&md[1], data, size);
+
+	return 0;
 }
 
 /*

@@ -5,11 +5,13 @@
 #include <fsp/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
+#include <hob_prevbooterr.h>
 #include <lib.h>
 #include <soc/soc_util.h>
 
 static const uint8_t fsp_hob_iio_uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
 static const uint8_t fsp_hob_memmap_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
+static const uint8_t fsp_hob_prevbooterr_guid[16] = FSP_PREV_BOOT_ERR_SRC_HOB_GUID;
 
 struct guid_name_map {
 	const void *guid;
@@ -19,6 +21,7 @@ struct guid_name_map {
 static const struct guid_name_map  guid_names[] = {
 	{ fsp_hob_iio_uds_guid, "FSP_HOB_IIO_UNIVERSAL_DATA_GUID" },
 	{ fsp_hob_memmap_guid, "FSP_SYSTEM_MEMORYMAP_HOB_GUID" },
+	{ fsp_hob_prevbooterr_guid, "FSP_PREV_BOOT_ERR_SRC_HOB_GUID" },
 };
 
 const char *soc_get_guid_name(const uint8_t *guid)
@@ -167,6 +170,55 @@ static void soc_display_iio_universal_data_hob(const IIO_UDS *hob)
 	hexdump(hob, sizeof(*hob));
 }
 
+/*
+ * Display PREV_BOOT_ERR_SRC_HOB. Check various issues:
+ * a. Length field of the HOB needs to be more than 2.
+ * b. CPX-SP FSP only implements MC_BANK_INFO type.
+ * c. Type field (first field of each record) needs to be of enum ERROR_ACCESS_TYPE.
+ */
+static void soc_display_prevbooterr_hob(const PREV_BOOT_ERR_SRC_HOB *hob)
+{
+	printk(BIOS_DEBUG, "================ PREV_BOOT_ERR_SRC HOB DATA ================\n");
+	printk(BIOS_DEBUG, "hob: %p, Length: 0x%x\n", hob, hob->Length);
+
+	if (hob->Length <= 2) {
+		printk(BIOS_INFO, "PREV_BOOT_ERR_SRC_HOB does not have valid error record.\n");
+		return;
+	}
+
+	MCBANK_ERR_INFO *mcbinfo;
+	for (uint16_t len = 2; len < hob->Length; ) {
+		const uint8_t type = *(uint8_t *)((void *)hob + len);
+		switch (type) {
+		case McBankType:
+			printk(BIOS_DEBUG, "\t MCBANK ERR INFO:\n");
+			mcbinfo = (MCBANK_ERR_INFO *)((void *)hob + len);
+			printk(BIOS_DEBUG, "\t\t Segment: %d, Socket: %d, ApicId: 0x%x\n",
+				mcbinfo->Segment, mcbinfo->Socket, mcbinfo->ApicId);
+			printk(BIOS_DEBUG, "\t\t McBankNum: 0x%x\n", mcbinfo->McBankNum);
+			printk(BIOS_DEBUG, "\t\t McBankStatus: 0x%llx\n",
+				mcbinfo->McBankStatus);
+			printk(BIOS_DEBUG, "\t\t McBankAddr: 0x%llx\n", mcbinfo->McbankAddr);
+			printk(BIOS_DEBUG, "\t\t McBankMisc: 0x%llx\n", mcbinfo->McBankMisc);
+			len += sizeof(MCBANK_ERR_INFO);
+			break;
+		case PciExType:
+			printk(BIOS_ERR, "\t PCI EX ERR INFO:\n");
+			len += sizeof(PCI_EX_ERR_INFO);
+			break;
+		case CsrOtherType:
+			printk(BIOS_ERR, "\t CSR ERR INFO:\n");
+			len += sizeof(CSR_ERR_INFO);
+			break;
+		default:
+			printk(BIOS_ERR, "\t illegal ERROR_ACCESS_TYPE:%d\n", type);
+			break;
+		}
+	}
+
+	hexdump(hob, hob->Length);
+}
+
 void soc_display_hob(const struct hob_header *hob)
 {
 	uint8_t *guid;
@@ -180,4 +232,6 @@ void soc_display_hob(const struct hob_header *hob)
 		soc_display_iio_universal_data_hob((const IIO_UDS *)(guid + 16));
 	else if (fsp_guid_compare(guid, fsp_hob_memmap_guid))
 		soc_display_memmap_hob((const struct SystemMemoryMapHob **)(guid + 16));
+	else if (fsp_guid_compare(guid, fsp_hob_prevbooterr_guid))
+		soc_display_prevbooterr_hob((const PREV_BOOT_ERR_SRC_HOB *)(guid + 16));
 }

@@ -26,9 +26,9 @@ else
 endif
 
 clean:
-	rm -f nvramcui.elf
+	rm -rf build libpayload nvramcui.elf
 
 distclean: clean
-	rm -rf build libpayload .config .config.old
+	rm -rf .config .config.old
 
 .PHONY: all clean distclean

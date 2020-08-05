@@ -3,6 +3,13 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/common/common.h>
 #include <arch/cpu.h>
+#include <types.h>
+
+bool intel_ht_supported(void)
+{
+	/* Is HyperThreading supported? */
+	return !!(cpuid_edx(1) & CPUID_FEAURE_HTT);
+}
 
 /*
  * Return true if running thread does not have the smallest lapic ID
@@ -13,8 +20,7 @@ bool intel_ht_sibling(void)
 	struct cpuid_result result;
 	unsigned int core_ids, apic_ids, threads;
 
-	/* Is Hyper-Threading supported */
-	if (!(cpuid_edx(1) & CPUID_FEAURE_HTT))
+	if (!intel_ht_supported())
 		return false;
 
 	apic_ids = 1;

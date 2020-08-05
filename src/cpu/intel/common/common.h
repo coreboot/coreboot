@@ -3,7 +3,7 @@
 #ifndef _CPU_INTEL_COMMON_H
 #define _CPU_INTEL_COMMON_H
 
-#include <stdint.h>
+#include <types.h>
 
 void set_vmx_and_lock(void);
 void set_feature_ctrl_vmx(void);
@@ -16,6 +16,11 @@ void set_feature_ctrl_lock(void);
  */
 struct cppc_config;
 void cpu_init_cppc_config(struct cppc_config *config, u32 version);
+
+/*
+ * Returns true if CPU supports Hyper-Threading.
+ */
+bool intel_ht_supported(void);
 
 /*
  * Returns true if it's not thread 0 on a hyperthreading enabled core.

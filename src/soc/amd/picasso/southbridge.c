@@ -347,22 +347,6 @@ void southbridge_init(void *chip_info)
 	al2ahb_clock_gate();
 }
 
-static void set_sb_final_nvs(void)
-{
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (gnvs == NULL)
-		return;
-
-	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
-	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C3);
-	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C4);
-	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
-	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
-	gnvs->aoac.ut2e = is_aoac_device_enabled(FCH_AOAC_DEV_UART2);
-	gnvs->aoac.ut3e = is_aoac_device_enabled(FCH_AOAC_DEV_UART3);
-	gnvs->aoac.espi = 1;
-}
-
 void southbridge_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
@@ -370,8 +354,6 @@ void southbridge_final(void *chip_info)
 	if (CONFIG(MAINBOARD_POWER_RESTORE))
 		restored_power = PM_RESTORE_S0_IF_PREV_S0;
 	pm_write8(PM_RTC_SHADOW, restored_power);
-
-	set_sb_final_nvs();
 }
 
 /*

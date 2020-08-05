@@ -25,19 +25,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TMPS,	8,	// 0x17 - Temperature Sensor ID
 	TCRT,	8,	// 0x18 - Critical Threshold
 	TPSV,	8,	// 0x19 - Passive Threshold
-	Offset (0x20),  // 0x20 - AOAC Device Enables
-	, 7,
-	IC2E,	1,	//        I2C2, 7
-	IC3E,	1,	//        I2C3, 8
-	IC4E,	1,	//        I2C4, 9
-	, 1,
-	UT0E,	1,	//        UART0, 11
-	UT1E,	1,	//        UART1, 12
-	, 3,
-	UT2E,	1,	//        UART2, 16
-	, 9,
-	UT23,	1,	//        UART3, 26
-	ESPI,	1,	//        ESPI, 27
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>

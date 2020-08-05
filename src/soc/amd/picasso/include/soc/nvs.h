@@ -25,9 +25,7 @@ struct __packed global_nvs {
 	uint8_t		tmps; /* 0x17 - Temperature Sensor ID */
 	uint8_t		tcrt; /* 0x18 - Critical Threshold */
 	uint8_t		tpsv; /* 0x19 - Passive Threshold */
-	uint8_t		pad1[6];
-	aoac_devs_t	aoac; /* 0x20 - AOAC device enables */
-	uint8_t		unused[220];
+	uint8_t		unused[230];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

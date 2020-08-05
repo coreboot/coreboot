@@ -49,26 +49,20 @@
 
 static void soc_config_pwrmbase(void)
 {
-	uint32_t reg32;
-	uint16_t reg16;
-
 	/*
 	 * Assign Resources to PWRMBASE
-	 * Clear BIT 1-2  Command Register
+	 * Clear BIT 1-2 Command Register
 	 */
-	reg16 = pci_read_config16(PCH_DEV_PMC, PCI_COMMAND);
-	reg16 &= ~(PCI_COMMAND_MEMORY);
-	pci_write_config16(PCH_DEV_PMC, PCI_COMMAND, reg16);
+	pci_and_config16(PCH_DEV_PMC, PCI_COMMAND, ~(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
 
 	/* Program PWRM Base */
 	pci_write_config32(PCH_DEV_PMC, PWRMBASE, PCH_PWRM_BASE_ADDRESS);
 
 	/* Enable Bus Master and MMIO Space */
-	pci_or_config16(PCH_DEV_PMC, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	pci_or_config16(PCH_DEV_PMC, PCI_COMMAND, (PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
 
 	/* Enable PWRM in PMC */
-	reg32 = read32((void *)(PCH_PWRM_BASE_ADDRESS + ACTL));
-	write32((void *)(PCH_PWRM_BASE_ADDRESS + ACTL), reg32 | PWRM_EN);
+	setbits32((void *) PCH_PWRM_BASE_ADDRESS + ACTL, PWRM_EN);
 }
 
 void bootblock_pch_early_init(void)

@@ -84,7 +84,12 @@ static void soc_lockdown(struct device *dev)
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
 	}
 
-	cpu_lt_lock_memory();
+	/*
+	 * Lock chipset memory registers to protect SMM.
+	 * When SkipMpInit=0, this is done by FSP.
+	 */
+	if (!CONFIG(USE_INTEL_FSP_MP_INIT))
+		cpu_lt_lock_memory();
 }
 
 static void soc_finalize(void *unused)

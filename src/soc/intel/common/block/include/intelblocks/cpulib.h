@@ -151,7 +151,7 @@ uint32_t cpu_get_max_turbo_ratio(void);
 void mca_configure(void);
 
 /* Lock chipset memory registers to protect SMM */
-void cpu_lt_lock_memory(void *unused);
+void cpu_lt_lock_memory(void);
 
 /* Get a supported PRMRR size in bytes with respect to users choice */
 int get_valid_prmrr_size(void);

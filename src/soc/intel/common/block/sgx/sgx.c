@@ -205,9 +205,9 @@ void sgx_configure(void *unused)
 	if (owner_epoch_update() < 0)
 		return;
 
+	/* Ensure to lock memory before reloading microcode patch */
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_LOCK_MEMORY))
-		/* Ensure to lock memory before reload microcode patch */
-		cpu_lt_lock_memory(NULL);
+		cpu_lt_lock_memory();
 
 	/*
 	 * Update just on the first CPU in the core. Other siblings

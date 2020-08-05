@@ -84,8 +84,7 @@ static void soc_lockdown(struct device *dev)
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
 	}
 
-	/* Lock chipset memory registers to protect SMM */
-	mp_run_on_all_cpus(cpu_lt_lock_memory, NULL);
+	cpu_lt_lock_memory();
 }
 
 static void soc_finalize(void *unused)

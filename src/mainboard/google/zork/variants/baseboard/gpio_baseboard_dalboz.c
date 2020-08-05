@@ -65,8 +65,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_NONE),
-	/* TP */
-	PAD_NC(GPIO_32),
+	/* EN_PWR_TOUCHSCREEN */
+	PAD_GPO(GPIO_32, LOW),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),

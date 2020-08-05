@@ -13,6 +13,8 @@ static const struct soc_amd_gpio bid_1_gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_6, LOW), // Select Camera 1 DMIC
 	/* USB_OC2_L - USB A0 & A1 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_NONE),
+	/* TP */
+	PAD_NC(GPIO_32),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* USI_RESET */
@@ -24,6 +26,8 @@ static const struct soc_amd_gpio bid_1_gpio_set_stage_ram[] = {
 static const struct soc_amd_gpio bid_2_gpio_set_stage_ram[] = {
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_6, LOW), // Select Camera 1 DMIC
+	/* TP */
+	PAD_NC(GPIO_32),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
 	/* USI_RESET */

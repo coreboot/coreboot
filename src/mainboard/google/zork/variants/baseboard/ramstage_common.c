@@ -251,5 +251,7 @@ void variant_touchscreen_update(void)
 			continue;
 
 		cfg->reset_gpio.active_low = 0;
+		cfg->enable_gpio.pin_count = 0;
+		cfg->enable_gpio.pins[0] = 0;
 	}
 }

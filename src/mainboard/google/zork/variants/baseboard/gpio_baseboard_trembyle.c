@@ -111,8 +111,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
 	/*  EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
-	/* Testpoint */
-	PAD_NC(GPIO_90),
+	/* EN_PWR_TOUCHSCREEN */
+	PAD_GPO(GPIO_90, LOW),
 	/* EN_SPKR */
 	PAD_GPO(GPIO_91, LOW),
 	/* CLK_REQ0_L - WIFI */

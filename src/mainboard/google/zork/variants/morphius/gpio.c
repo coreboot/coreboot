@@ -48,6 +48,8 @@ static const struct soc_amd_gpio morphius_bid2_gpio_set_stage_ram[] = {
 };
 
 static const struct soc_amd_gpio morphius_bid3_gpio_set_stage_ram[] = {
+	/* TP */
+	PAD_NC(GPIO_90),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
 };

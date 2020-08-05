@@ -6,14 +6,16 @@
 #include <device/device.h>
 #include <drivers/amd/i2s_machine_dev/chip.h>
 #include <drivers/i2c/generic/chip.h>
+#include <drivers/i2c/hid/chip.h>
 #include <drivers/usb/acpi/chip.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
 extern struct chip_operations drivers_amd_i2s_machine_dev_ops;
 extern struct chip_operations drivers_i2c_generic_ops;
-
+extern struct chip_operations drivers_i2c_hid_ops;
 
 static void update_hp_int_odl(void)
 {
@@ -201,4 +203,53 @@ void variant_bluetooth_update(void)
 		return;
 
 	baseboard_remove_bluetooth_reset_gpio();
+}
+
+void variant_touchscreen_update(void)
+{
+	DEVTREE_CONST struct device *mmio_dev = NULL;
+	struct device *child = NULL;
+
+	/*
+	 * By default, devicetree/overridetree entries for touchscreen device are configured to
+	 * match v3.6 of reference schematics. So, if the board is using v3.6+ schematics, no
+	 * additional work is required here. For maintaining support for pre-v3.6 boards, rest
+	 * of the code in this function finds all entries that correspond to touchscreen
+	 * devices (identified by reset_gpio being set to GPIO_140) and updates them as per
+	 * pre-v3.6 version of schematics:
+	 * 1. reset_gpio is marked as active high.
+	 */
+	if (variant_uses_v3_6_schematics())
+		return;
+
+	while (1) {
+		mmio_dev = dev_find_path(mmio_dev, DEVICE_PATH_MMIO);
+		if (mmio_dev == NULL)
+			break;
+		if (mmio_dev->path.mmio.addr == APU_I2C2_BASE)
+			break;
+	}
+
+	if (mmio_dev == NULL)
+		return;
+
+	while ((child = dev_bus_each_child(mmio_dev->link_list, child)) != NULL) {
+		struct drivers_i2c_generic_config *cfg;
+
+		if (child->chip_ops == &drivers_i2c_generic_ops) {
+			cfg = config_of(child);
+		} else if (child->chip_ops == &drivers_i2c_hid_ops) {
+			struct drivers_i2c_hid_config *hid_cfg;
+			hid_cfg = config_of(child);
+			cfg = &hid_cfg->generic;
+		} else {
+			continue;
+		}
+
+		/* If reset_gpio is set to GPIO_140, assume that this is touchscreen device. */
+		if (cfg->reset_gpio.pins[0] != GPIO_140)
+			continue;
+
+		cfg->reset_gpio.active_low = 0;
+	}
 }

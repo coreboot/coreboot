@@ -22,6 +22,13 @@ static const struct soc_amd_gpio berknip_bid1_gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, HIGH),
+};
+
+static const struct soc_amd_gpio berknip_bid2_gpio_set_stage_ram[] = {
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, HIGH),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -39,6 +46,9 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 	if (board_version <= 1) {
 		*size = ARRAY_SIZE(berknip_bid1_gpio_set_stage_ram);
 		return berknip_bid1_gpio_set_stage_ram;
+	} else if (board_version <= 2) {
+		*size = ARRAY_SIZE(berknip_bid2_gpio_set_stage_ram);
+		return berknip_bid2_gpio_set_stage_ram;
 	}
 
 	*size = 0;

@@ -24,6 +24,8 @@ static const struct soc_amd_gpio morphius_bid1_gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, HIGH),
 };
 
 static const struct soc_amd_gpio morphius_bid2_gpio_set_stage_ram[] = {
@@ -41,6 +43,13 @@ static const struct soc_amd_gpio morphius_bid2_gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, HIGH),
+};
+
+static const struct soc_amd_gpio morphius_bid3_gpio_set_stage_ram[] = {
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, HIGH),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -61,6 +70,9 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 	} else if (board_version <= 2) {
 		*size = ARRAY_SIZE(morphius_bid2_gpio_set_stage_ram);
 		return morphius_bid2_gpio_set_stage_ram;
+	} else if (board_version <= 3) {
+		*size = ARRAY_SIZE(morphius_bid3_gpio_set_stage_ram);
+		return morphius_bid3_gpio_set_stage_ram;
 	}
 
 	*size = 0;

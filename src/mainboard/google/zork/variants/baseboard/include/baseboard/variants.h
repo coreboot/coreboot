@@ -37,6 +37,8 @@ void variant_devtree_update(void);
 void variant_audio_update(void);
 /* Update bluetooth configuration in devicetree during ramstage. */
 void variant_bluetooth_update(void);
+/* Update touchscreen configuration in devicetree during ramstage. */
+void variant_touchscreen_update(void);
 /* Configure PCIe GPIOs as per variant sequencing requirements. */
 void variant_pcie_gpio_configure(void);
 

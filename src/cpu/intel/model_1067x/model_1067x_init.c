@@ -292,7 +292,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x10676 }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x10676 },
 	{ X86_VENDOR_INTEL, 0x10677 },
 	{ X86_VENDOR_INTEL, 0x1067A },
 	{ 0, 0 },

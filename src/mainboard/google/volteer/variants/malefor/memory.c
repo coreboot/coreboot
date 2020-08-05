@@ -54,7 +54,12 @@ static const struct lpddr4x_cfg malefor_memcfg = {
 	.ect = 1, /* Enable Early Command Training */
 };
 
-const struct lpddr4x_cfg *variant_memory_params(void)
+static const struct ddr_memory_cfg board_memcfg = {
+	.mem_type = MEMTYPE_LPDDR4X,
+	.lpddr4_cfg = &malefor_memcfg
+};
+
+const struct ddr_memory_cfg *variant_memory_params(void)
 {
-	return &malefor_memcfg;
+	return &board_memcfg;
 }

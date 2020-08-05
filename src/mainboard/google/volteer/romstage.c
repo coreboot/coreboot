@@ -15,7 +15,7 @@
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
-	const struct lpddr4x_cfg *board_cfg = variant_memory_params();
+	const struct ddr_memory_cfg *board_cfg = variant_memory_params();
 	const struct spd_info spd_info = {
 		.topology = MEMORY_DOWN,
 		.md_spd_loc = SPD_CBFS,
@@ -27,7 +27,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	if (fw_config_probe(FW_CONFIG(AUDIO, NONE)))
 		mem_cfg->PchHdaEnable = 0;
 
-	meminit_lpddr4x(mem_cfg, board_cfg, &spd_info, half_populated);
+	meminit_ddr(mem_cfg, board_cfg, &spd_info, half_populated);
 }
 
 bool mainboard_get_dram_part_num(const char **part_num, size_t *len)

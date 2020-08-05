@@ -18,6 +18,8 @@ static const struct soc_amd_gpio woomax_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_69),
 	/* RAM_ID_4  */
 	PAD_NC(GPIO_84),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* TP */
 	PAD_NC(GPIO_90),
 	/* USI_RESET */

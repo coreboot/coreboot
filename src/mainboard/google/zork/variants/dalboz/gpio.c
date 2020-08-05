@@ -17,6 +17,8 @@ static const struct soc_amd_gpio bid_1_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_32),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
 	/* Unused */
@@ -30,6 +32,8 @@ static const struct soc_amd_gpio bid_2_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_32),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	PAD_GPO(GPIO_67, HIGH),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
 };

@@ -22,6 +22,8 @@ static const struct soc_amd_gpio trembyle_bid1_bid2_gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_84, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_86, PULL_NONE),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
 	/* USI_RESET */
@@ -41,6 +43,8 @@ static const struct soc_amd_gpio trembyle_bid3_gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_67, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_86, PULL_NONE),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
 	/* USI_RESET */

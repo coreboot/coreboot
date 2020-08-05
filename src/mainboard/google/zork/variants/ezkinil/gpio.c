@@ -20,6 +20,8 @@ static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_67, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_86, PULL_NONE),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_90, PULL_NONE),
 	/* USI_RESET */
@@ -39,6 +41,8 @@ static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_69),
 	/* MST_GPIO_2 (Fw Update HDMI hub) Change NC */
 	PAD_NC(GPIO_86),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* TP */
 	PAD_NC(GPIO_90),
 	/* USI_RESET */
@@ -50,6 +54,8 @@ static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_11),
 	/* FPMCU_BOOT0 Change NC */
 	PAD_NC(GPIO_69),
+	/* EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
 	/* TP */
 	PAD_NC(GPIO_90),
 	/* USI_RESET */

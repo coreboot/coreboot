@@ -4,10 +4,10 @@
 #define _SOC_IRQ_H_
 
 #define SDCARD_INT      3       /* Need to be shared by PMC and SCC only*/
-#define UART0_INT       4       /* Need to be shared by PMC and SCC only*/
-#define UART1_INT       5       /* Need to be shared by PMC and SCC only*/
-#define UART2_INT       6       /* Need to be shared by PMC and SCC only*/
-#define UART3_INT       7       /* Need to be shared by PMC and SCC only*/
+#define LPSS_UART0_IRQ  4       /* Need to be shared by PMC and SCC only*/
+#define LPSS_UART1_IRQ  5       /* Need to be shared by PMC and SCC only*/
+#define LPSS_UART2_IRQ  6       /* Need to be shared by PMC and SCC only*/
+#define LPSS_UART3_IRQ  7       /* Need to be shared by PMC and SCC only*/
 #define XDCI_INT        13      /* Need to be shared by PMC and SCC only*/
 #define GPIO_BANK_INT   14
 #define NPK_INT         16

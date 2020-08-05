@@ -8,11 +8,6 @@
 #define DPTF_TSR0_PASSIVE	60
 #define DPTF_TSR0_CRITICAL	85
 
-#define DPTF_TSR1_SENSOR_ID	1
-#define DPTF_TSR1_SENSOR_NAME	"Thermal Sensor 2"
-#define DPTF_TSR1_PASSIVE	60
-#define DPTF_TSR1_CRITICAL	85
-
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
 
@@ -58,10 +53,6 @@ Name (DART, Package () {
 	Package () {
 		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 95, 85, 75, 65, 55, 45, 0, 0,
 			0, 0, 0
-	},
-	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 95, 85, 75, 65, 55, 45, 0, 0,
-			0, 0, 0
 	}
 })
 
@@ -71,9 +62,6 @@ Name (DTRT, Package () {
 
 	/* CPU Throttle Effect on Ambient (TSR0) */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
-
-	/* Charger Throttle Effect on Charger (TSR1) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 60, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

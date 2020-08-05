@@ -21,8 +21,13 @@ enum mem_topology {
 	MIXED,		/* CH0 = MD, CH1 = SODIMM (only for DDR4). */
 };
 
+enum ddr_memtype {
+	MEMTYPE_DDR4,		/* Uses DDR4 memory */
+	MEMTYPE_LPDDR4X,	/* Uses LPDDR4x memory */
+};
+
 enum md_spd_loc {
-	 /* Read SPD from pointer provided to memory location. */
+	/* Read SPD from pointer provided to memory location. */
 	SPD_MEMPTR,
 	/* Read SPD using index into spd.bin in CBFS.  */
 	SPD_CBFS,
@@ -127,9 +132,24 @@ struct mb_ddr4_cfg {
 	uint8_t ect;
 };
 
+/* DDR Memory Information - Supports DDR4 and LPDDR4x */
+struct ddr_memory_cfg {
+	enum ddr_memtype mem_type;
+	union {
+		const struct mb_ddr4_cfg *ddr4_cfg;
+		const struct lpddr4x_cfg *lpddr4_cfg;
+	};
+};
+
+/* Initialize LPDDR4x memory configurations */
 void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
-		const struct spd_info *spd, bool half_populated);
+			const struct spd_info *spd, bool half_populated);
+
 /* Initialize DDR4 memory configurations */
 void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
-			  const struct spd_info *spd, const bool half_populated);
+			const struct spd_info *spd, const bool half_populated);
+
+/* Determine which DDR memory is used and call appropriate init routine */
+void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct ddr_memory_cfg *board_cfg,
+			const struct spd_info *info, bool half_populated);
 #endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

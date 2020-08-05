@@ -435,3 +435,20 @@ void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
 		}
 	}
 }
+
+void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct ddr_memory_cfg *board_cfg,
+			const struct spd_info *info, bool half_populated)
+{
+	switch (board_cfg->mem_type) {
+	case MEMTYPE_DDR4:
+		meminit_ddr4(mem_cfg, board_cfg->ddr4_cfg, info,
+				half_populated);
+		break;
+	case MEMTYPE_LPDDR4X:
+		meminit_lpddr4x(mem_cfg, board_cfg->lpddr4_cfg, info,
+				half_populated);
+		break;
+	default:
+		die("Unsupported memory type = %d!\n", board_cfg->mem_type);
+	}
+}

@@ -26,6 +26,7 @@ Device (I2C3)
 	Name (_DDN, "Serial IO I2C Controller 3")
 }
 
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 Device (I2C4)
 {
 	Name (_ADR, 0x00190000)
@@ -37,6 +38,7 @@ Device (I2C5)
 	Name (_ADR, 0x00190001)
 	Name (_DDN, "Serial IO I2C Controller 5")
 }
+#endif
 
 Device (SPI0)
 {
@@ -68,8 +70,10 @@ Device (UAR1)
 	Name (_DDN, "Serial IO UART Controller 1")
 }
 
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 Device (UAR2)
 {
 	Name (_ADR, 0x00190002)
 	Name (_DDN, "Serial IO UART Controller 2")
 }
+#endif

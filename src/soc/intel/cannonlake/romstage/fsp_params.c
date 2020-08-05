@@ -157,6 +157,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Configure VT-d */
 	tconfig->VtdDisable = 0;
 
+	/* Set HECI1 PCI BAR address */
+	m_cfg->Heci1BarAddress = HECI1_BASE_ADDRESS;
+
 	mainboard_memory_init_params(mupd);
 }
 

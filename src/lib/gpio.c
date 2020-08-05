@@ -114,6 +114,12 @@ uint32_t _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 		printk(BIOS_DEBUG, "%c ", tristate_char[temp]);
 		result = (result * 3) + temp;
 
+		/* Disable pull to avoid wasting power. For HiZ we leave the
+		   pull-down enabled, since letting them float freely back and
+		   forth may waste power in the SoC's GPIO input logic. */
+		if (temp != Z)
+			gpio_input(gpio[index]);
+
 		/*
 		 * For binary_first we keep track of the normal ternary result
 		 * and whether we found any pin that was a Z. We also determine
@@ -158,10 +164,6 @@ uint32_t _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 
 	printk(BIOS_DEBUG, "= %d (%s base3 number system)\n", result,
 	       binary_first ? "binary_first" : "standard");
-
-	/* Disable pull up / pull down to conserve power */
-	for (index = 0; index < num_gpio; ++index)
-		gpio_input(gpio[index]);
 
 	return result;
 }

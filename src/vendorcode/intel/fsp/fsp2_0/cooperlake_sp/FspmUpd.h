@@ -326,42 +326,44 @@ typedef struct {
 **/
   UINT8                       TorThresLoctoremEmpty;
 
-/** Offset 0x008D - TSC Sync in Sockets
+/** Offset 0x008D - MBA BW Calibration
+  MBA BW Calibration setting
+  0:Linear, 1:Biased, 2:Legacy, 3:Auto
+**/
+  UINT8                       MbeBwCal;
+
+/** Offset 0x008E - TSC Sync in Sockets
   Enable or Disable TSC Sync in Sockets
 **/
   UINT8                       TscSyncEn;
 
-/** Offset 0x008E - HA A to S directory optimization
+/** Offset 0x008F - HA A to S directory optimization
   Enable or Disable HA A to S directory optimization
 **/
   UINT8                       StaleAtoSOptEn;
 
-/** Offset 0x008F - LLC Deadline Allocation
+/** Offset 0x0090 - LLC Deadline Allocation
   Enable or Disable LLC Deadline Allocation
   $EN_DIS
 **/
   UINT8                       LLCDeadLineAlloc;
 
-/** Offset 0x0090 - Split Lock
+/** Offset 0x0091 - Split Lock
   Enable or Disable Split Lock
 **/
   UINT8                       SplitLock;
 
-/** Offset 0x0091 - MMCFG Base Address
+/** Offset 0x0092 - MMCFG Base Address
   Setup MMCFG Base Address
   0:1G, 1:1.5G, 2:1.75G, 3:2G, 4:2.25G, 5:3G, 6:Auto
 **/
   UINT8                       mmCfgBase;
 
-/** Offset 0x0092 - MMCFG Size
+/** Offset 0x0093 - MMCFG Size
   Select MMCFG Size
   0:64M, 1:128M, 2:256M, 3:512M, 4:1G, 5:2G, 6: Auto
 **/
   UINT8                       mmCfgSize;
-
-/** Offset 0x0093
-**/
-  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x0094 - MMIO High Base Address
   MMIO High Base Address, a hex number for Bit[51:32]
@@ -376,7 +378,7 @@ typedef struct {
 
 /** Offset 0x0099
 **/
-  UINT8                       UnusedUpdSpace1;
+  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x009A - MMIO High Size
   MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
@@ -398,7 +400,7 @@ typedef struct {
 
 /** Offset 0x009E
 **/
-  UINT8                       UnusedUpdSpace2[2];
+  UINT8                       UnusedUpdSpace1[2];
 
 /** Offset 0x00A0 - } TYPE:{Combo
   Enable or Disable
@@ -466,39 +468,44 @@ typedef struct {
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x00BD - IIO ConfigIOU0
+/** Offset 0x00BD - Usage type for Processor X2apic Function
+  Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+**/
+  UINT8                       X2apic;
+
+/** Offset 0x00BE - IIO ConfigIOU0
   ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU0[8];
 
-/** Offset 0x00C5 - IIO ConfigIOU1
+/** Offset 0x00C6 - IIO ConfigIOU1
   ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU1[8];
 
-/** Offset 0x00CD - IIO ConfigIOU2
+/** Offset 0x00CE - IIO ConfigIOU2
   ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU2[8];
 
-/** Offset 0x00D5 - IIO ConfigIOU3
+/** Offset 0x00D6 - IIO ConfigIOU3
   ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU3[8];
 
-/** Offset 0x00DD - IIO ConfigIOU4
+/** Offset 0x00DE - IIO ConfigIOU4
   ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU4[8];
 
-/** Offset 0x00E5
+/** Offset 0x00E6
 **/
-  UINT8                       UnusedUpdSpace3[3];
+  UINT8                       UnusedUpdSpace2[2];
 
 /** Offset 0x00E8 - Usage type for IIO PCIE Config Table Ptr
   IIO PCIE Config Table Ptr
@@ -616,58 +623,77 @@ typedef struct {
 **/
   UINT8                       VtdSupport;
 
-/** Offset 0x0105 - PchSirqMode
+/** Offset 0x0105 - Usage type for IIO Pcie Port Hide
+  Hide or visible for IIO Pcie Port, 1 : Hide, 0 : Visible
+**/
+  UINT8                       PEXPHIDE;
+
+/** Offset 0x0106 - Usage type for IIO Pcie Port Menu Hide
+  Hide or visible for IIO Pcie Port Menu, 1 : Hide, 0 : Visible
+**/
+  UINT8                       HidePEXPMenu;
+
+/** Offset 0x0107 - PchSirqMode
   Enable or Disable PchSirqMode
 **/
   UINT8                       PchSirqMode;
 
-/** Offset 0x0106 - PchAdrEn
+/** Offset 0x0108 - PchAdrEn
   Enable or Disable PchAdr
 **/
   UINT8                       PchAdrEn;
 
-/** Offset 0x0107 - } TYPE:{Combo
+/** Offset 0x0109 - ThermalDeviceEnable
+  Enable or Disable ThermalDeviceEnable with PCI or ACPI mode
+**/
+  UINT8                       ThermalDeviceEnable;
+
+/** Offset 0x010A - } TYPE:{Combo
   Root port swapping based on device connection status : TRUE or FALSE
   TRUE : 0x01, FALSE : 0x00
 **/
   UINT8                       PchPcieRootPortFunctionSwap;
 
-/** Offset 0x0108 - PCH PCIE PLL Ssc
+/** Offset 0x010B - PCH PCIE PLL Ssc
   Valid spread range : 0x00-0x14 (A value of 0 is SSC of 0.0%. A value of 20 is SSC
   of 2.0%), Auto : 0xFE(Set to hardware default), Disable : 0xFF
 **/
   UINT8                       PchPciePllSsc;
 
-/** Offset 0x0109 - Usage type for PCH PCIE Root Port Index
+/** Offset 0x010C - Usage type for PCH PCIE Root Port Index
   Index assigned to every PCH PCIE Root Port
 **/
   UINT8                       PchPciePortIndex[20];
 
-/** Offset 0x011D - Usage type for PCH PCIE Root Port Enable or Disable
+/** Offset 0x0120 - Usage type for PCH PCIE Root Port Enable or Disable
   0-19: PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
   the value is 0x00
 **/
   UINT8                       PchPcieForceEnable[20];
 
-/** Offset 0x0131 - Usage type for PCH PCIE Root Port Link Speed
+/** Offset 0x0134 - Usage type for PCH PCIE Root Port Link Speed
   0-19: PCH rootport, 0x00 : Pcie Auto Speed, 0x01 : Pcie Gen1 Speed, 0x02 : Pcie
   Gen2 Speed, 0x03 : Pcie Gen3 Speed
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
-/** Offset 0x0145 - SerialIoUartDebugEnable
+/** Offset 0x0148 - SerialIoUartDebugEnable
   Enable SerialIo Uart debug library in FSP.
   0:Disable, 1:Enable
 **/
   UINT8                       SerialIoUartDebugEnable;
 
-/** Offset 0x0146 - ISA Serial Base selection
+/** Offset 0x0149
+**/
+  UINT8                       UnusedUpdSpace3;
+
+/** Offset 0x014A - ISA Serial Base selection
   Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
   0x3F8, 0x2F8
 **/
   UINT16                      SerialIoUartDebugIoBase;
 
-/** Offset 0x0148
+/** Offset 0x014C
 **/
   UINT8                       ReservedMemoryInitUpd[16];
 } FSPM_CONFIG;
@@ -688,9 +714,9 @@ typedef struct {
 **/
   FSPM_CONFIG                 FspmConfig;
 
-/** Offset 0x0158
+/** Offset 0x015C
 **/
-  UINT8                       UnusedUpdSpace4[6];
+  UINT8                       UnusedUpdSpace4[2];
 
 /** Offset 0x015E
 **/

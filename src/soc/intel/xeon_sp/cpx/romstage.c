@@ -57,5 +57,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Needed to avoid FSP-M reset. The default value of 0x01 is for MinPlatform */
 	m_cfg->PchAdrEn = 0x02;
 
+	/* Make all IIO PCIe ports and port menus visible */
+	m_cfg->PEXPHIDE = 0x0;
+	m_cfg->HidePEXPMenu = 0x0;
+
 	mainboard_memory_init_params(mupd);
 }

@@ -155,7 +155,6 @@ typedef struct {
   uint8_t                     PcieSegment;
   UINT64_STRUCT               SegMmcfgBase;
   uint16_t                    stackPresentBitmap;
-  uint16_t                    CxlPresentBitmap;
   uint16_t                    M2PciePresentBitmap;
   uint8_t                     TotM3Kti;
   uint8_t                     TotCha;

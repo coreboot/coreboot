@@ -632,12 +632,18 @@ const char *soc_acpi_name(const struct device *dev)
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
-	/* Only match devices on the root bus */
-	if (dev->bus && dev->bus->secondary > 0)
+	/* Match functions 0 and 1 for possible GPUs on a secondary bus */
+	if (dev->bus && dev->bus->secondary > 0) {
+		switch (PCI_FUNC(dev->path.pci.devfn)) {
+		case 0: return "DEV0";
+		case 1: return "DEV1";
+		}
 		return NULL;
+	}
 
 	switch (dev->path.pci.devfn) {
 	case SA_DEVFN_ROOT:	return "MCHC";
+	case SA_DEVFN_PEG0:	return "PEGP";
 	case SA_DEVFN_IGD:	return "GFX0";
 	case PCH_DEVFN_ISH:	return "ISHB";
 	case PCH_DEVFN_XHCI:	return "XHCI";

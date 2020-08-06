@@ -24,7 +24,7 @@ config MAX_CPUS
 
 config DRAM_SIZE_MB
 	int
-	default 256
+	default 512
 
 config UART_FOR_CONSOLE
 	int

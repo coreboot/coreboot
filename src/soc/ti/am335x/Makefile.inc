@@ -8,6 +8,7 @@ bootblock-y	+= mmc.c
 romstage-y	+= cbmem.c
 romstage-y	+= timer.c
 romstage-y	+= mmc.c
+romstage-y	+= sdram.c
 
 ramstage-y	+= timer.c
 ramstage-y	+= soc.c

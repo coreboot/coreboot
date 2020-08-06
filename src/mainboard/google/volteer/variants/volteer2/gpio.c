@@ -102,7 +102,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E2  : SPI1_IO3 ==> WLAN_PCIE_WAKE_ODL */
 	PAD_CFG_GPI(GPP_E2, NONE, DEEP),
 	/* E3  : CPU_GP0 ==> USI_REPORT_EN */
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),
+	PAD_CFG_GPO(GPP_E3, 0, DEEP),
 	/* E7  : CPU_GP1 ==> USI_INT */
 	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST, LEVEL, NONE),
 	/* E8  : SPI1_CS1# ==> SLP_S0IX */

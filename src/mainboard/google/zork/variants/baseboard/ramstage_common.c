@@ -127,81 +127,80 @@ void variant_audio_update(void)
 	update_hp_int_odl();
 }
 
-static const struct device_path xhci0_bt_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_A_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = XHCI0_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_USB,
-		.usb.port_type = 0,
-		.usb.port_id = 0
-	},
-	{
-		.type = DEVICE_PATH_USB,
-		.usb.port_type = 2,
-		.usb.port_id = 5
-	}
-};
-
-static const struct device_path xhci1_bt_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_A_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = XHCI1_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_USB,
-		.usb.port_type = 0,
-		.usb.port_id = 0
-	},
-	{
-		.type = DEVICE_PATH_USB,
-		.usb.port_type = 2,
-		.usb.port_id = 1
-	}
-};
 
 /*
- * Removes reset_gpio from bluetooth device in device tree.
+ * Removes reset_gpio from usb device in device tree.
  *
- * The bluetooth device may be on XHCI0 or XHCI1 depending on SOC.
- * There's no harm in removing from both here.
+ * debug_device_name is used for debug messaging only.
  */
-static void baseboard_remove_bluetooth_reset_gpio(void)
+static void remove_usb_device_reset_gpio(const struct device_path usb_path[],
+					 size_t path_length, const char *debug_device_name)
 {
-	const struct device *xhci0_bt_dev, *xhci1_bt_dev;
-	struct drivers_usb_acpi_config *xhci0_bt_cfg, *xhci1_bt_cfg;
 
-	xhci0_bt_dev = find_dev_nested_path(
-		pci_root_bus(), xhci0_bt_path, ARRAY_SIZE(xhci0_bt_path));
-	if (!xhci0_bt_dev) {
-		printk(BIOS_ERR, "%s: Failed to find bluetooth device on XHCI0!", __func__);
+	const struct device *usb_dev;
+	struct drivers_usb_acpi_config *usb_cfg;
+
+	usb_dev = find_dev_nested_path(pci_root_bus(), usb_path, path_length);
+	if (!usb_dev) {
+		printk(BIOS_ERR, "%s: Failed to find %s!", __func__, debug_device_name);
 		return;
 	}
 	/* config_of dies on failure, so a NULL check is not required */
-	xhci0_bt_cfg = config_of(xhci0_bt_dev);
-	xhci0_bt_cfg->reset_gpio.pin_count = 0;
+	usb_cfg = config_of(usb_dev);
+	usb_cfg->reset_gpio.pin_count = 0;
+}
 
-	/* There's no bluetooth device on XHCI1 on Dalboz */
-	if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ))
-		return;
+/*
+ * The bluetooth device may be on XHCI0 or XHCI1 depending on SOC.
+ * There's no harm in removing reset_gpio from both here.
+ */
+static void baseboard_trembyle_remove_bluetooth_reset_gpio(void)
+{
+	static const struct device_path xhci0_bt_path[] = {
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = PCIE_GPP_A_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = XHCI0_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_USB,
+			.usb.port_type = 0,
+			.usb.port_id = 0
+		},
+		{
+			.type = DEVICE_PATH_USB,
+			.usb.port_type = 2,
+			.usb.port_id = 5
+		}
+	};
+	static const struct device_path xhci1_bt_path[] = {
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = PCIE_GPP_A_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_PCI,
+			.pci.devfn = XHCI1_DEVFN
+		},
+		{
+			.type = DEVICE_PATH_USB,
+			.usb.port_type = 0,
+			.usb.port_id = 0
+		},
+		{
+			.type = DEVICE_PATH_USB,
+			.usb.port_type = 2,
+			.usb.port_id = 1
+		}
+	};
 
-	xhci1_bt_dev = find_dev_nested_path(
-		pci_root_bus(), xhci1_bt_path, ARRAY_SIZE(xhci1_bt_path));
-	if (!xhci1_bt_dev) {
-		printk(BIOS_ERR, "%s: Failed to find bluetooth device on XHCI1!", __func__);
-		return;
-	}
-	xhci1_bt_cfg = config_of(xhci1_bt_dev);
-	xhci1_bt_cfg->reset_gpio.pin_count = 0;
+	remove_usb_device_reset_gpio(xhci0_bt_path, ARRAY_SIZE(xhci0_bt_path),
+				     "XHCI0 Bluetoth USB Device");
+	remove_usb_device_reset_gpio(xhci1_bt_path, ARRAY_SIZE(xhci1_bt_path),
+				     "XHCI1 Bluetoth USB Device");
 }
 
 void variant_bluetooth_update(void)
@@ -209,7 +208,7 @@ void variant_bluetooth_update(void)
 	if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ) || variant_uses_v3_schematics())
 		return;
 
-	baseboard_remove_bluetooth_reset_gpio();
+	baseboard_trembyle_remove_bluetooth_reset_gpio();
 }
 
 void variant_touchscreen_update(void)

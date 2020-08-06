@@ -4,6 +4,7 @@ config ARCH_X86
 	bool
 	select PCI
 	select RELOCATABLE_MODULES
+	select HAVE_ASAN_IN_RAMSTAGE
 
 # stage selectors for x86
 

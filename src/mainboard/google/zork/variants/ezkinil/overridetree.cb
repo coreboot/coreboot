@@ -22,12 +22,6 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	# USB OC pin mapping
-	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"	# USB C0
-	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"	# USB A0
-	register "usb_port_overcurrent_pin[2]" = "USB_OC_PIN_1"	# USB A1
-	register "usb_port_overcurrent_pin[3]" = "USB_OC_PIN_1"	# USB C1
-
 	register "xhci0_force_gen1" = "1"
 
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz

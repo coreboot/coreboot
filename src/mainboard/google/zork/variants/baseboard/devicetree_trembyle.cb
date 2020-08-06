@@ -139,7 +139,11 @@ chip soc/amd/picasso
 		.read_mode = SPI_READ_MODE_DUAL122,
 	}"
 
-	# common USB OC pin mapping
+	# USB OC pin mapping
+	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"	# USB C0
+	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"	# USB A0
+	register "usb_port_overcurrent_pin[2]" = "USB_OC_PIN_1"	# USB A1
+	register "usb_port_overcurrent_pin[3]" = "USB_OC_PIN_1"	# USB C1
 	register "usb_port_overcurrent_pin[4]" = "USB_OC_NONE"	# Camera or internal hub
 	register "usb_port_overcurrent_pin[5]" = "USB_OC_NONE"	# Bluetooth
 

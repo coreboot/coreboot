@@ -66,9 +66,12 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->CpuTraceHubMode = config->TraceHubMode;
 	}
 
+	/* IPU configuration */
+	dev = pcidev_path_on_root(SA_DEVFN_IPU);
+	m_cfg->SaIpuEnable = is_dev_enabled(dev);
+
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
-
 
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = config->SmbusEnable;

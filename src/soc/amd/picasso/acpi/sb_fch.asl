@@ -122,6 +122,18 @@ Device (FUR0)
 			Return (Local0)
 		}
 	}
+
+	Name (_PR0, Package () { \_SB.AOAC.FUR0 })
+	Name (_PR2, Package () { \_SB.AOAC.FUR0 })
+	Name (_PR3, Package () { \_SB.AOAC.FUR0 })
+	Method (_PS0, 0, Serialized) {
+		Printf("FUR0._PS0")
+		\_SB.AOAC.FUR0.TDS = 1
+	}
+	Method (_PS3, 0, Serialized) {
+		Printf("FUR0._PS3")
+		\_SB.AOAC.FUR0.TDS = 3
+	}
 }
 
 Device (FUR1) {

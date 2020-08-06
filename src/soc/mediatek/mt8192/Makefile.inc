@@ -35,6 +35,7 @@ romstage-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
 romstage-y += mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += dpm.c
 ramstage-y += flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += emi.c
@@ -52,6 +53,8 @@ ramstage-y += ../common/usb.c usb.c
 MT8192_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8192
 
 mcu-firmware-files := \
+	$(CONFIG_DPM_DM_FIRMWARE) \
+	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 

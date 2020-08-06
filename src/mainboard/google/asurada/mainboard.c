@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <soc/dpm.h>
 #include <soc/gpio.h>
 #include <soc/regulator.h>
 #include <soc/spm.h>
@@ -108,6 +109,9 @@ static void mainboard_init(struct device *dev)
 	setup_usb_host();
 
 	register_reset_to_bl31();
+
+	if (dpm_init())
+		printk(BIOS_ERR, "dpm init fail, system can't do DVFS switch\n");
 
 	if (spm_init())
 		printk(BIOS_ERR, "spm init fail, system suspend may stuck\n");

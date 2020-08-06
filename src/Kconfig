@@ -270,10 +270,31 @@ config UBSAN
 	  say N because it adds a small performance penalty and may abort
 	  on code that happens to work in spite of the UB.
 
-config ASAN_IN_RAMSTAGE
-	bool "Address sanitizer support"
-	depends on ARCH_X86
+config HAVE_ASAN_IN_ROMSTAGE
+	bool
 	default n
+
+config ASAN_IN_ROMSTAGE
+	bool
+	default n
+	help
+	  Enable address sanitizer in romstage for platform.
+
+config HAVE_ASAN_IN_RAMSTAGE
+	bool
+	default n
+
+config ASAN_IN_RAMSTAGE
+	bool
+	default n
+	help
+	  Enable address sanitizer in ramstage for platform.
+
+config ASAN
+	bool "Address sanitizer support"
+	default n
+	select ASAN_IN_ROMSTAGE if HAVE_ASAN_IN_ROMSTAGE
+	select ASAN_IN_RAMSTAGE if HAVE_ASAN_IN_RAMSTAGE
 	help
 	  Enable address sanitizer - runtime memory debugger,
 	  designed to find out-of-bounds accesses and use-after-scope bugs.
@@ -283,17 +304,10 @@ config ASAN_IN_RAMSTAGE
 
 	  If unsure, say N.
 
-if ASAN_IN_RAMSTAGE
+if ASAN
 	comment "Before using this feature, make sure that           "
 	comment "asan_shadow_offset_callback patch is applied to GCC."
 endif
-
-config ASAN_IN_ROMSTAGE
-	bool
-	depends on ASAN_IN_RAMSTAGE
-	default n
-	help
-	  Enable address sanitizer in romstage for platform.
 
 choice
 	prompt "Stage Cache for ACPI S3 resume"

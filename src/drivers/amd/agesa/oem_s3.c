@@ -9,45 +9,24 @@
 #include <AGESA.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-typedef enum {
-	S3DataTypeNonVolatile = 0,	///< NonVolatile Data Type
-	S3DataTypeMTRR			///< MTRR storage
-} S3_DATA_TYPE;
-
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
-#define S3_DATA_MTRR_SIZE			0x1000
 #define S3_DATA_NONVOLATILE_SIZE	0x1000
 
-#if CONFIG(HAVE_ACPI_RESUME) && \
-	(S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
+#if CONFIG(HAVE_ACPI_RESUME) && S3_DATA_NONVOLATILE_SIZE > CONFIG_S3_DATA_SIZE
 #error "Please increase the value of S3_DATA_SIZE"
 #endif
 
-static void get_s3nv_data(S3_DATA_TYPE S3DataType, uintptr_t *pos, uintptr_t *len)
+static void get_s3nv_data(uintptr_t *pos, uintptr_t *len)
 {
 	/* FIXME: Find file from CBFS. */
-	u32 s3_data = CONFIG_S3_DATA_POS;
-
-	switch (S3DataType) {
-	case S3DataTypeMTRR:
-		*pos = s3_data;
-		*len = S3_DATA_MTRR_SIZE;
-		break;
-	case S3DataTypeNonVolatile:
-		*pos = s3_data + S3_DATA_MTRR_SIZE;
-		*len = S3_DATA_NONVOLATILE_SIZE;
-		break;
-	default:
-		*pos = 0;
-		*len = 0;
-		break;
-	}
+	*pos = CONFIG_S3_DATA_POS;
+	*len = S3_DATA_NONVOLATILE_SIZE;
 }
 
 AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock)
 {
 	uintptr_t pos, size;
-	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
+	get_s3nv_data(&pos, &size);
 
 	u32 len = *(u32*)pos;
 
@@ -101,15 +80,12 @@ static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 #endif
 }
 
-__aligned((sizeof(msr_t))) static u8 MTRRStorage[S3_DATA_MTRR_SIZE];
-
 AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock)
 {
-	u32 MTRRStorageSize = 0;
 	uintptr_t pos, size;
 
 	/* To be consumed in AmdInitResume. */
-	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);
+	get_s3nv_data(&pos, &size);
 	if (size && dataBlock->NvStorageSize)
 		spi_SaveS3info(pos, size, dataBlock->NvStorage,
 			dataBlock->NvStorageSize);
@@ -127,24 +103,9 @@ AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock)
 	}
 
 	/* Collect MTRR setup. */
-	backup_mtrr(MTRRStorage, &MTRRStorageSize);
-
-	/* To be consumed in restore_mtrr, CPU enumeration in ramstage. */
-	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
-	if (size && MTRRStorageSize)
-		spi_SaveS3info(pos, size, MTRRStorage, MTRRStorageSize);
+	backup_mtrr();
 
 	return AGESA_SUCCESS;
 }
 
 #endif /* ENV_RAMSTAGE */
-
-const void *OemS3Saved_MTRR_Storage(void)
-{
-	uintptr_t pos, size;
-	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
-	if (!size)
-		return NULL;
-
-	return (void *)(pos + sizeof(UINT32));
-}

@@ -38,7 +38,7 @@ void EmptyHeap(void);
 void fixup_cbmem_to_UC(int s3resume);
 
 void restore_mtrr(void);
-void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size);
+void backup_mtrr(void);
 const void *OemS3Saved_MTRR_Storage(void);
 
 #endif /* _AGESA_HELPER_H_ */

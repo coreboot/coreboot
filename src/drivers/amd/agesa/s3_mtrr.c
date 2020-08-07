@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
+#include <cbmem.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
@@ -42,10 +43,13 @@ static const uint32_t msr_backup[] = {
 	TOP_MEM2,
 };
 
-void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
+void backup_mtrr(void)
 {
 	msr_t syscfg_msr;
-	msr_t *mtrr_save = (msr_t *)mtrr_store;
+	msr_t *mtrr_save = (msr_t *)cbmem_add(CBMEM_ID_AGESA_MTRR,
+					      sizeof(msr_t) * ARRAY_SIZE(msr_backup));
+	if (!mtrr_save)
+		return;
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	syscfg_msr = rdmsr(SYSCFG_MSR);
@@ -59,14 +63,15 @@ void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
 	syscfg_msr = rdmsr(SYSCFG_MSR);
 	syscfg_msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
 	wrmsr(SYSCFG_MSR, syscfg_msr);
-
-	*mtrr_store_size = sizeof(msr_t) * ARRAY_SIZE(msr_backup);
 }
 
 void restore_mtrr(void)
 {
 	msr_t syscfg_msr;
-	msr_t *mtrr_save = (msr_t *)OemS3Saved_MTRR_Storage();
+	msr_t *mtrr_save = (msr_t *)cbmem_find(CBMEM_ID_AGESA_MTRR);
+
+	if (!mtrr_save)
+		return;
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	syscfg_msr = rdmsr(SYSCFG_MSR);

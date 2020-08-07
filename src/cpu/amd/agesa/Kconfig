@@ -13,6 +13,7 @@ config CPU_AMD_AGESA
 	select LAPIC_MONOTONIC_TIMER
 	select SPI_FLASH if HAVE_ACPI_RESUME
 	select SSE2
+	select CACHE_MRC_SETTINGS
 
 if CPU_AMD_AGESA
 
@@ -43,14 +44,6 @@ config ENABLE_MRC_CACHE
 	help
 	  Try to restore memory training results
 	  from non-volatile memory.
-
-config S3_DATA_POS
-	hex
-	default 0xFFFF0000
-
-config S3_DATA_SIZE
-	int
-	default 4096
 
 endif # CPU_AMD_AGESA
 

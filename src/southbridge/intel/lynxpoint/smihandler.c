@@ -427,7 +427,7 @@ static void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
 	u32 trap_sts, trap_cycle;
-	u32 data, mask = 0;
+	u32 mask = 0;
 	int i;
 
 	trap_sts = RCBA32(0x1e00); // TRSR - Trap Status Register
@@ -454,8 +454,9 @@ static void southbridge_smi_monitor(void)
 	if (IOTRAP(0)) {
 		if (!(trap_cycle & (1 << 24))) { // It's a write
 			printk(BIOS_DEBUG, "SMI1 command\n");
-			data = RCBA32(0x1e18);
-			data &= mask;
+			(void)RCBA32(0x1e18);
+			// data = RCBA32(0x1e18);
+			// data &= mask;
 			// if (smi1)
 			//	southbridge_smi_command(data);
 			// return;
@@ -474,8 +475,7 @@ static void southbridge_smi_monitor(void)
 
 	if (!(trap_cycle & (1 << 24))) {
 		/* Write Cycle */
-		data = RCBA32(0x1e18);
-		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
+		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", RCBA32(0x1e18));
 	}
 #undef IOTRAP
 }

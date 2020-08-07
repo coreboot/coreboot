@@ -8,114 +8,76 @@
 #include <string.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-static void write_mtrr(u8 **p_nvram_pos, unsigned int idx)
-{
-	msr_t  msr_data;
-	msr_data = rdmsr(idx);
-
-	memcpy(*p_nvram_pos, &msr_data, sizeof(msr_data));
-	*p_nvram_pos += sizeof(msr_data);
-}
+/* TODO: Do we want MTRR_DEF_TYPE_MSR too? */
+static const uint32_t msr_backup[] = {
+	MTRR_FIX_64K_00000,
+	MTRR_FIX_16K_80000,
+	MTRR_FIX_16K_A0000,
+	MTRR_FIX_4K_C0000,
+	MTRR_FIX_4K_C8000,
+	MTRR_FIX_4K_D0000,
+	MTRR_FIX_4K_D8000,
+	MTRR_FIX_4K_E0000,
+	MTRR_FIX_4K_E8000,
+	MTRR_FIX_4K_F0000,
+	MTRR_FIX_4K_F8000,
+	MTRR_PHYS_BASE(0),
+	MTRR_PHYS_MASK(0),
+	MTRR_PHYS_BASE(1),
+	MTRR_PHYS_MASK(1),
+	MTRR_PHYS_BASE(2),
+	MTRR_PHYS_MASK(2),
+	MTRR_PHYS_BASE(3),
+	MTRR_PHYS_MASK(3),
+	MTRR_PHYS_BASE(4),
+	MTRR_PHYS_MASK(4),
+	MTRR_PHYS_BASE(5),
+	MTRR_PHYS_MASK(5),
+	MTRR_PHYS_BASE(6),
+	MTRR_PHYS_MASK(6),
+	MTRR_PHYS_BASE(7),
+	MTRR_PHYS_MASK(7),
+	SYSCFG_MSR,
+	TOP_MEM,
+	TOP_MEM2,
+};
 
 void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size)
 {
-	u8 *nvram_pos = mtrr_store;
-	msr_t  msr_data;
-	u32 i;
+	msr_t syscfg_msr;
+	msr_t *mtrr_save = (msr_t *)mtrr_store;
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYSCFG_MSR);
-	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr_data);
+	syscfg_msr = rdmsr(SYSCFG_MSR);
+	syscfg_msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg_msr);
 
-	/* Fixed MTRRs */
-	write_mtrr(&nvram_pos, MTRR_FIX_64K_00000);
-	write_mtrr(&nvram_pos, MTRR_FIX_16K_80000);
-	write_mtrr(&nvram_pos, MTRR_FIX_16K_A0000);
-
-	for (i = MTRR_FIX_4K_C0000; i <= MTRR_FIX_4K_F8000; i++)
-		write_mtrr(&nvram_pos, i);
+	for (int i = 0; i < ARRAY_SIZE(msr_backup); i++)
+		*mtrr_save++ = rdmsr(msr_backup[i]);
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYSCFG_MSR);
-	msr_data.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr_data);
+	syscfg_msr = rdmsr(SYSCFG_MSR);
+	syscfg_msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg_msr);
 
-	/* Variable MTRRs */
-	for (i = MTRR_PHYS_BASE(0); i < MTRR_PHYS_BASE(8); i++)
-		write_mtrr(&nvram_pos, i);
-
-	/* SYSCFG_MSR */
-	write_mtrr(&nvram_pos, SYSCFG_MSR);
-	/* TOM */
-	write_mtrr(&nvram_pos, TOP_MEM);
-	/* TOM2 */
-	write_mtrr(&nvram_pos, TOP_MEM2);
-
-	*mtrr_store_size = nvram_pos - (u8*) mtrr_store;
+	*mtrr_store_size = sizeof(msr_t) * ARRAY_SIZE(msr_backup);
 }
 
 void restore_mtrr(void)
 {
-	volatile u32 *msrPtr = (u32 *) OemS3Saved_MTRR_Storage();
-	u32 msr;
-	msr_t msr_data;
-
-	if (!msrPtr)
-		return;
-
-	disable_cache();
+	msr_t syscfg_msr;
+	msr_t *mtrr_save = (msr_t *)OemS3Saved_MTRR_Storage();
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYSCFG_MSR);
-	msr_data.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr_data);
+	syscfg_msr = rdmsr(SYSCFG_MSR);
+	syscfg_msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg_msr);
 
-	/* Now restore the Fixed MTRRs */
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(MTRR_FIX_64K_00000, msr_data);
-
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(MTRR_FIX_16K_80000, msr_data);
-
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(MTRR_FIX_16K_A0000, msr_data);
-
-	for (msr = MTRR_FIX_4K_C0000; msr <= MTRR_FIX_4K_F8000; msr++) {
-		msr_data.lo = *msrPtr;
-		msrPtr ++;
-		msr_data.hi = *msrPtr;
-		msrPtr ++;
-		wrmsr(msr, msr_data);
-	}
+	for (int i = 0; i < ARRAY_SIZE(msr_backup); i++)
+		wrmsr(msr_backup[i], *mtrr_save++);
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
-	msr_data = rdmsr(SYSCFG_MSR);
-	msr_data.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, msr_data);
-
-	/* Restore the Variable MTRRs */
-	for (msr = MTRR_PHYS_BASE(0); msr <= MTRR_PHYS_MASK(7); msr++) {
-		msr_data.lo = *msrPtr;
-		msrPtr ++;
-		msr_data.hi = *msrPtr;
-		msrPtr ++;
-		wrmsr(msr, msr_data);
-	}
-
-	/* Restore SYSCFG MTRR */
-	msr_data.lo = *msrPtr;
-	msrPtr ++;
-	msr_data.hi = *msrPtr;
-	msrPtr ++;
-	wrmsr(SYSCFG_MSR, msr_data);
+	syscfg_msr = rdmsr(SYSCFG_MSR);
+	syscfg_msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, syscfg_msr);
 }

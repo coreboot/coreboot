@@ -101,7 +101,7 @@ static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 #endif
 }
 
-static u8 MTRRStorage[S3_DATA_MTRR_SIZE];
+__aligned((sizeof(msr_t))) static u8 MTRRStorage[S3_DATA_MTRR_SIZE];
 
 AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock)
 {

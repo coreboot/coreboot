@@ -919,9 +919,6 @@ static void program_dll(struct sysinfo *s)
 		break;
 	}
 
-	if (async != 1)
-		reg8 = MCHBAR8(0x188) & 0x1e;
-
 	MCHBAR8_AND(0x180, ~0x80);
 
 	if ((s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)

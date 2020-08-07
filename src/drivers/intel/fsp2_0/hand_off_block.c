@@ -207,7 +207,7 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 	return NULL;
 }
 
-static void display_fsp_version_info_hob(const void *hob, size_t size)
+static void display_fsp_version_info_hob(const void *hob)
 {
 #if CONFIG(DISPLAY_FSP_VERSION_INFO)
 	const FIRMWARE_VERSION_INFO *fvi;
@@ -219,7 +219,6 @@ static void display_fsp_version_info_hob(const void *hob, size_t size)
 	fvi = (void *)&fvih[1];
 	str_ptr = (char *)((uintptr_t)fvi +
 			 (fvih->Count * sizeof(FIRMWARE_VERSION_INFO)));
-	size -= sizeof(SMBIOS_STRUCTURE);
 
 	for (index = 0; index < fvih->Count; index++) {
 		cnt = strlen(str_ptr);
@@ -279,7 +278,7 @@ void fsp_display_fvi_version_hob(void)
 
 		if (fsp_guid_compare(hob_uuid, uuid_fv_info)) {
 			size = hob->length - (HOB_HEADER_LEN + 16);
-			display_fsp_version_info_hob(hob, size);
+			display_fsp_version_info_hob(hob);
 		}
 	}
 }

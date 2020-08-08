@@ -395,6 +395,20 @@
 #define PAD_CFG_GPI_INT_LOCK_SWAPPED(pad, pull, trig, lock_action)	\
 		PAD_CFG_GPI_TRIG_OWN_LOCK_SWAPPED(pad, pull, PWROK, trig, DRIVER, lock_action)
 
+/* Bidirectional GPIO port when both RX and TX buffer is enabled */
+#define PAD_CFG_GPIO_BIDIRECT_IOS(pad, val, pull, rst, trig, iosstate, iosterm, own) \
+	_PAD_CFG_STRUCT(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) |	\
+		PAD_BUF(NO_DISABLE) | val,				\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own) |		\
+		PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
+
+#define PAD_CFG_GPIO_BIDIRECT(pad, val, pull, rst, trig, own)		\
+	_PAD_CFG_STRUCT(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) |	\
+		PAD_BUF(NO_DISABLE) | val,				\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
+
 /*
  * No Connect configuration for unconnected or unused pad.
  * Both TX and RX are disabled. RX disabling is done to avoid unnecessary

@@ -146,6 +146,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_U_IHDCP_PREM	0x9d4e
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_Y_IHDCP_PREM	0x9d4b
 #define PCI_DEVICE_ID_INTEL_CANNONPOINT_LP_U_PREM	0x9d84
+#define PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_PREM	0x0284
+#define PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_BASE	0x0285
 #define PCI_DEVICE_ID_INTEL_H110		0xa143
 #define PCI_DEVICE_ID_INTEL_H170		0xa144
 #define PCI_DEVICE_ID_INTEL_Z170		0xa145
@@ -293,6 +295,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_8TH_GEN_U_1	0x3ed0 /* Coffeelake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_8TH_GEN_U_2	0x3e34 /* Whiskeylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_10TH_GEN_U	0x8a12 /* Icelake U */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_U1		0x9b51 /* Cometlake U (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_U2		0x9b61 /* Cometlake U (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_U3		0x9b71 /* Cometlake U (Mobile) */
 
 
 /* Intel GPUs */
@@ -362,6 +367,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_IRIS_PLUS_650	0x5927
 #define PCI_DEVICE_ID_INTEL_IRIS_PLUS_655	0x3EA5
 #define PCI_DEVICE_ID_INTEL_IRIS_PLUS_G7	0x8A52
+#define PCI_DEVICE_ID_INTEL_UHD_GRAPHICS	0x9b41
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;

@@ -144,6 +144,8 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(apl_communities);
 		return apl_communities;
 	case PCI_DEVICE_ID_INTEL_CANNONPOINT_LP_U_PREM:
+	case PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_PREM:
+	case PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_BASE:
 		*community_count = ARRAY_SIZE(cannonlake_pch_lp_communities);
 		*pad_stepping = 16;
 		return cannonlake_pch_lp_communities;

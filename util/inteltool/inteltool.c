@@ -134,6 +134,12 @@ static const struct {
 	  "8th generation (Whiskey Lake family) Core Processor (Mobile)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_10TH_GEN_U,
 	  "10th generation (Icelake family) Core Processor (Mobile)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_CML_U1,
+	  "10th generation (Comet Lake family) Core Processor (Mobile)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_CML_U2,
+	  "10th generation (Comet Lake family) Core Processor (Mobile)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_CML_U3,
+	  "10th generation (Comet Lake family) Core Processor (Mobile)" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },
@@ -250,6 +256,10 @@ static const struct {
 	  "Sunrise Point-LP Y iHDCP 2.2 Premium/Kabylake" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CANNONPOINT_LP_U_PREM,
 	  "Cannon Point-LP U Premium/CoffeeLake/Whiskeylake" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_PREM,
+	  "Comet Point-LP U Premium/Cometlake" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_COMETPOINT_LP_U_BASE,
+	  "Comet Point-LP U Base/Cometlake" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_H110, "H110" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_H170, "H170" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_Z170, "Z170" },
@@ -437,6 +447,8 @@ static const struct {
 	  "Intel(R) Iris Plus Graphics 655" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IRIS_PLUS_G7,
 	  "Intel(R) Iris Plus Graphics G7" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_UHD_GRAPHICS,
+	  "Intel(R) UHD Graphics" },
 };
 
 #ifndef __DARWIN__

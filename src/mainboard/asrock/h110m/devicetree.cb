@@ -152,9 +152,7 @@ chip soc/intel/skylake
 		device pci 02.0 on # Integrated Graphics Device
 			subsystemid 0x1849 0x1912
 		end
-		device pci 04.0 on      # Thermal Subsystem
-			register "Device4Enable" = "1"
-		end
+		device pci 04.0 on  end # Thermal Subsystem
 		device pci 08.0 off end # Gaussian Mixture Model
 		device pci 14.0 on # USB xHCI
 			subsystemid 0x1849 0xa131

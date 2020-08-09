@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <string.h>
 #include <arch/cpu.h>
-#include <device/device.h>
 #include <cpu/x86/name.h>
+#include <stdint.h>
+#include <string.h>
 
 void fill_processor_name(char *processor_name)
 {

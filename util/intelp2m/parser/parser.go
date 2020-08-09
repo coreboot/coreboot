@@ -10,6 +10,7 @@ import (
 import "../platforms/snr"
 import "../platforms/lbg"
 import "../platforms/apl"
+import "../platforms/cnl"
 import "../config"
 
 // PlatformSpecific - platform-specific interface
@@ -141,6 +142,9 @@ func (parser *ParserData) PlatformSpecificInterfaceSet() {
 			InheritanceTemplate : snr.PlatformSpecific{},
 		},
 		config.ApolloType    : apl.PlatformSpecific{},
+		config.CannonType    : cnl.PlatformSpecific{
+			InheritanceTemplate : snr.PlatformSpecific{},
+		},
 	}
 	parser.platform = platform[config.PlatformGet()]
 }
@@ -198,7 +202,7 @@ func (parser *ParserData) padOwnershipExtract() bool {
 // padConfigurationExtract - reads GPIO configuration registers and returns true if the
 //                           information from the inteltool log was successfully parsed.
 func (parser *ParserData) padConfigurationExtract() bool {
-	// Only for Sunrise PCH and only for inteltool.log file template
+	// Only for Sunrise or CannonLake, and only for inteltool.log file template
 	if config.TemplateGet() != config.TempInteltool || config.IsPlatformApollo() {
 		return false
 	}

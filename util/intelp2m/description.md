@@ -37,6 +37,7 @@ platform type is set using the -p option (Sunrise by default):
 		snr - Sunrise PCH with Skylake/Kaby Lake CPU
 		lbg - Lewisburg PCH with Xeon SP CPU
 		apl - Apollo Lake SoC
+		cnl - CannonLake-LP or Whiskeylake/Coffelake/Cometlake-U SoC
 	(default "snr")
 
 (shell)$ ./intelp2m -p <platform> -file path/to/inteltool.log
@@ -198,4 +199,4 @@ PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_39, UP_20K, DEEP, NF1, TxLASTRxE, DISPUPD),
 ```
 ### Supports Chipsets
 
-  Sunrise PCH, Lewisburg PCH, Apollo Lake SoC
+  Sunrise PCH, Lewisburg PCH, Apollo Lake SoC, CannonLake-LP SoCs

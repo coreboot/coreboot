@@ -81,7 +81,8 @@ func main() {
 	platform :=  flag.String("p", "snr", "set platform:\n"+
 		"\tsnr - Sunrise PCH or Skylake/Kaby Lake SoC\n"+
 		"\tlbg - Lewisburg PCH with Xeon SP\n"+
-		"\tapl - Apollo Lake SoC\n")
+		"\tapl - Apollo Lake SoC\n"+
+		"\tcnl - CannonLake-LP or Whiskeylake/Coffelake/Cometlake-U SoC\n")
 
 	filedstyle :=  flag.String("fld", "none", "set fileds macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+

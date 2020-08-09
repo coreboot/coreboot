@@ -15,6 +15,6 @@ void smm_init_completion(void);
 #endif
 
 /* Entry from smmhandler.S. */
-void smi_handler(u32 smm_revision);
+void smi_handler(void);
 
 #endif

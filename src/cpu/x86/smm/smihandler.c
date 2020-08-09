@@ -141,9 +141,10 @@ bool smm_region_overlaps_handler(const struct region *r)
  * @param smm_revision revision of the smm state save map
  */
 
-void smi_handler(u32 smm_revision)
+void smi_handler(void)
 {
 	unsigned int node;
+	const uint32_t smm_rev = smm_revision();
 	smm_state_save_area_t state_save;
 	u32 smm_base = SMM_BASE; /* ASEG */
 
@@ -171,7 +172,7 @@ void smi_handler(u32 smm_revision)
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", node);
 
-	switch (smm_revision) {
+	switch (smm_rev) {
 	case 0x00030002:
 	case 0x00030007:
 		state_save.type = LEGACY;
@@ -199,7 +200,7 @@ void smi_handler(u32 smm_revision)
 				       SMM_AMD64_ARCH_OFFSET, node);
 		break;
 	default:
-		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_revision);
+		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_rev);
 		printk(BIOS_DEBUG, "SMI# not supported on your CPU\n");
 		/* Don't release lock, so no further SMI will happen,
 		 * if we don't handle it anyways.

@@ -2,6 +2,9 @@
 
 /* Maximum number of CPUs/cores */
 CPUS = 4;
+
+_ = ASSERT(CPUS >= CONFIG_MAX_CPUS, "The ASEG SMM code only supports up to 4 CPUS");
+
 ENTRY(smm_handler_start);
 
 SECTIONS

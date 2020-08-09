@@ -176,6 +176,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Lemur Pro](system76/lemp9.md)
 
+## Texas Instruments
+
+- [Beaglebone Black](ti/beaglebone-black.md)
+
 ## UP
 
 - [Squared](up/squared/index.md)

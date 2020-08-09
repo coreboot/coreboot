@@ -193,4 +193,9 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size);
 /* Print the SMM memory layout on console. */
 void smm_list_regions(void);
 
+#define SMM_REVISION_OFFSET_FROM_TOP (0x8000 - 0x7efc)
+/* Return the SMM save state revision. The revision can be fetched from the smm savestate
+   which is always at the same offset downward from the top of the save state. */
+uint32_t smm_revision(void);
+
 #endif /* CPU_X86_SMM_H */

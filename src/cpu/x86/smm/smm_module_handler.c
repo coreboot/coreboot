@@ -106,6 +106,13 @@ void *smm_get_save_state(int cpu)
 	return base;
 }
 
+uint32_t smm_revision(void)
+{
+	const uintptr_t save_state = (uintptr_t)(smm_get_save_state(0));
+
+	return *(uint32_t *)(save_state + smm_runtime->save_state_size - SMM_REVISION_OFFSET_FROM_TOP);
+}
+
 bool smm_region_overlaps_handler(const struct region *r)
 {
 	const struct region r_smm = {smm_runtime->smbase, smm_runtime->smm_size};

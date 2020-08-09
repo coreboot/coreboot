@@ -120,6 +120,14 @@ static inline void *smm_save_state(uintptr_t base, int arch_offset, int node)
 	return (void *)base;
 }
 
+/* This returns the SMM revision from the savestate of CPU0,
+   which is assumed to be the same for all CPU's. See the memory
+   map in smmhandler.S */
+uint32_t smm_revision(void)
+{
+	return *(uint32_t *)(SMM_BASE + SMM_ENTRY_OFFSET * 2 - SMM_REVISION_OFFSET_FROM_TOP);
+}
+
 bool smm_region_overlaps_handler(const struct region *r)
 {
 	const struct region r_smm = {SMM_BASE, SMM_DEFAULT_SIZE};

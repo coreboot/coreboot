@@ -10,6 +10,4 @@ subdirs-y += w83627hf
 subdirs-y += w83627thg
 subdirs-y += w83627uhg
 subdirs-y += w83667hg-a
-subdirs-y += w83697hf
 subdirs-y += w83977tf
-subdirs-y += wpcd376i

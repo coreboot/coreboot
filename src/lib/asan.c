@@ -260,7 +260,7 @@ static __always_inline void check_memory_region_inline(unsigned long addr,
 	asan_report(addr, size, write, ret_ip);
 }
 
-static void check_memory_region(unsigned long addr, size_t size, bool write,
+void check_memory_region(unsigned long addr, size_t size, bool write,
 				unsigned long ret_ip)
 {
 	check_memory_region_inline(addr, size, write, ret_ip);

@@ -57,6 +57,8 @@ void asan_unpoison_shadow(const void *address, size_t size);
 void asan_report(unsigned long addr, size_t size, bool is_write,
 	unsigned long ip);
 void asan_init(void);
+void check_memory_region(unsigned long addr, size_t size, bool write,
+				unsigned long ret_ip);
 
 uintptr_t __asan_shadow_offset(uintptr_t addr);
 void __asan_register_globals(struct asan_global *globals, size_t size);

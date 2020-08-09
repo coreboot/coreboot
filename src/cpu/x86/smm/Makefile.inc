@@ -32,6 +32,8 @@ ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 endif
 
+smm-y += save_state.c
+
 ifeq ($(CONFIG_SMM_TSEG),y)
 
 ramstage-y += tseg_region.c

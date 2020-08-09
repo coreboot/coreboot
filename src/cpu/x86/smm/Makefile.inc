@@ -20,7 +20,7 @@ smm-generic-ccopts += -D__SMM__
 smm-c-deps:=$$(OPTION_TABLE_H)
 
 $(obj)/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
-	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(smm-objs) --no-whole-archive $(COMPILER_RT_smm) --end-group
+	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(filter-out %.ld, $(smm-objs)) --no-whole-archive $(COMPILER_RT_smm) --end-group
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
@@ -76,8 +76,10 @@ $(obj)/smm/smm: $(obj)/smm/smm.elf.rmod
 
 else # CONFIG_SMM_TSEG
 
-$(obj)/smm/smm: $(obj)/smm/smm.o $(src)/cpu/x86/smm/smm.ld
-	$(LD_smm) $(LDFLAGS_smm) -o $(obj)/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/smm/smm.o
+smm-y += smm.ld
+
+$(obj)/smm/smm: $(obj)/smm/smm.o $(call src-to-obj,smm,$(src)/cpu/x86/smm/smm.ld)
+	$(LD_smm) $(LDFLAGS_smm) -o $(obj)/smm/smm.elf -T $(call src-to-obj,smm,$(src)/cpu/x86/smm/smm.ld) $(obj)/smm/smm.o
 	$(NM_smm) -n $(obj)/smm/smm.elf | sort > $(obj)/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/smm/smm.elf $@
 

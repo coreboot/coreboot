@@ -100,6 +100,7 @@ static struct device_operations cpu_dev_ops = {
 
 static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_INTEL, CPUID_COOPERLAKE_SP_A0},
+	{X86_VENDOR_INTEL, CPUID_COOPERLAKE_SP_A1},
 	{0, 0},
 };
 

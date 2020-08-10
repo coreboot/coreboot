@@ -7,6 +7,7 @@
 #include <cpu/x86/msr.h>
 
 #define CPUID_COOPERLAKE_SP_A0			0x05065a
+#define CPUID_COOPERLAKE_SP_A1			0x05065b
 
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK 100

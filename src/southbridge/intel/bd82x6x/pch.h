@@ -155,8 +155,7 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define LGMR			0x98 /* LPC Generic Memory Range */
 #define BIOS_DEC_EN1		0xd8 /* BIOS Decode Enable */
 
-/* PCI Configuration Space (D31:F1): IDE */
-#define PCH_IDE_DEV		PCI_DEV(0, 0x1f, 1)
+/* PCI Configuration Space (D31:F2): SATA */
 #define PCH_SATA_DEV		PCI_DEV(0, 0x1f, 2)
 #define PCH_SATA2_DEV		PCI_DEV(0, 0x1f, 5)
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */

@@ -212,8 +212,7 @@ void mainboard_config_rcba(void);
 #define LPC_GEN4_DEC		0x90 /* LPC IF Generic Decode Range 4 */
 #define LGMR			0x98 /* LPC Generic Memory Range */
 
-/* PCI Configuration Space (D31:F1): IDE */
-#define PCH_IDE_DEV		PCI_DEV(0, 0x1f, 1)
+/* PCI Configuration Space (D31:F2): SATA */
 #define PCH_SATA_DEV		PCI_DEV(0, 0x1f, 2)
 #define PCH_SATA2_DEV		PCI_DEV(0, 0x1f, 5)
 #define INTR_LN			0x3c

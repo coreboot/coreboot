@@ -169,12 +169,6 @@
 
 #include <device/pci_ops.h>
 
-static inline int lpc_is_mobile(const u16 devid)
-{
-	return (devid == 0x2917) || (devid == 0x2919);
-}
-#define LPC_IS_MOBILE(dev) lpc_is_mobile(pci_read_config16(dev, PCI_DEVICE_ID))
-
 void i82801jx_lpc_setup(void);
 void i82801jx_setup_bars(void);
 void i82801jx_early_init(void);

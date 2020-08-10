@@ -46,14 +46,6 @@ static void i82801jx_pcie_init(const config_t *const info)
 		pci_write_config8(pciePort[i], 0x324, 0x40);
 	}
 
-	if (LPC_IS_MOBILE(pcidev_on_root(0x1f, 0))) {
-		for (i = 0; i < 6; ++i) {
-			if (pciePort[i]->enabled) {
-				pci_or_config32(pciePort[i], 0xe8, 1);
-			}
-		}
-	}
-
 	for (i = 5; (i >= 0) && !pciePort[i]->enabled; --i) {
 		/* Only for the top disabled ports. */
 		pci_or_config32(pciePort[i], 0x300, 0x3 << 16);

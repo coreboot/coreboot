@@ -10,9 +10,6 @@
 
 static void thermal_init(struct device *dev)
 {
-	if (LPC_IS_MOBILE(pcidev_on_root(0x1f, 0)))
-		return;
-
 	u8 reg8;
 
 	pci_write_config32(dev, 0x10, (uintptr_t)DEFAULT_TBAR);

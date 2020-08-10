@@ -406,7 +406,7 @@ static void espi_clear_status(void)
  * Wait up to ESPI_CMD_TIMEOUT_US for interrupt status register to update after sending a
  * command.
  */
-static int espi_check_status(uint32_t *status)
+static int espi_poll_status(uint32_t *status)
 {
 	struct stopwatch sw;
 
@@ -457,8 +457,8 @@ static int espi_send_command(const struct espi_cmd *cmd)
 		return -1;
 	}
 
-	if (espi_check_status(&status) == -1) {
-		espi_show_failure(cmd, "Error: eSPI check status failed", 0);
+	if (espi_poll_status(&status) == -1) {
+		espi_show_failure(cmd, "Error: eSPI poll status failed", 0);
 		return -1;
 	}
 

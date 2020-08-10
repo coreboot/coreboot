@@ -34,7 +34,6 @@ void i82801jx_lpc_setup(void)
 			   | GAMEL_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
 			   | COMB_LPC_EN | COMA_LPC_EN);
 
-
 	/* Set up generic decode ranges */
 	if (!dev || !dev->chip_info)
 		return;

@@ -183,9 +183,9 @@ int espi_open_io_window(uint16_t base, size_t size)
 	if (std_io != -1) {
 		espi_enable_decode(std_io);
 		return 0;
+	} else {
+		return espi_open_generic_io_window(base, size);
 	}
-
-	return espi_open_generic_io_window(base, size);
 }
 
 static int espi_find_mmio_window(uint32_t win_base)

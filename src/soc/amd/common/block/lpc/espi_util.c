@@ -104,29 +104,21 @@ static int espi_get_unused_io_window(void)
  */
 static int espi_std_io_decode(uint16_t base, size_t size)
 {
-	int ret = -1;
-
 	if (size != 1)
-		return ret;
+		return -1;
 
 	switch (base) {
 	case 0x80:
-		ret = ESPI_DECODE_IO_0x80_EN;
-		break;
+		return ESPI_DECODE_IO_0x80_EN;
 	case 0x60:
 	case 0x64:
-		ret = ESPI_DECODE_IO_0X60_0X64_EN;
-		break;
+		return ESPI_DECODE_IO_0X60_0X64_EN;
 	case 0x2e:
 	case 0x2f:
-		ret = ESPI_DECODE_IO_0X2E_0X2F_EN;
-		break;
+		return ESPI_DECODE_IO_0X2E_0X2F_EN;
 	default:
-		ret = -1;
-		break;
+		return -1;
 	}
-
-	return ret;
 }
 
 static size_t espi_get_io_window_size(int idx)

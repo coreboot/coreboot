@@ -24,32 +24,32 @@ static uintptr_t espi_get_bar(void)
 	return espi_bar;
 }
 
-static uint32_t espi_read32(int reg)
+static uint32_t espi_read32(unsigned int reg)
 {
 	return read32((void *)(espi_get_bar() + reg));
 }
 
-static void espi_write32(int reg, uint32_t val)
+static void espi_write32(unsigned int reg, uint32_t val)
 {
 	write32((void *)(espi_get_bar() + reg), val);
 }
 
-static uint16_t espi_read16(int reg)
+static uint16_t espi_read16(unsigned int reg)
 {
 	return read16((void *)(espi_get_bar() + reg));
 }
 
-static void espi_write16(int reg, uint16_t val)
+static void espi_write16(unsigned int reg, uint16_t val)
 {
 	write16((void *)(espi_get_bar() + reg), val);
 }
 
-static uint8_t espi_read8(int reg)
+static uint8_t espi_read8(unsigned int reg)
 {
 	return read8((void *)(espi_get_bar() + reg));
 }
 
-static void espi_write8(int reg, uint8_t val)
+static void espi_write8(unsigned int reg, uint8_t val)
 {
 	write8((void *)(espi_get_bar() + reg), val);
 }

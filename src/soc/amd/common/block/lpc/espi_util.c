@@ -470,7 +470,8 @@ static int espi_send_command(const struct espi_cmd *cmd)
 	}
 
 	if (status & ~ESPI_STATUS_DNCMD_COMPLETE) {
-		espi_show_failure(cmd, "Error: eSPI status register bits set", status);
+		espi_show_failure(cmd, "Error: unexpected eSPI status register bits set",
+				  status);
 		return -1;
 	}
 

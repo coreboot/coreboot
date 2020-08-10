@@ -36,14 +36,14 @@ Method (PNOT)
  * Processor Object
  */
 /* These devices are created at runtime */
-External (\_PR.C000, DeviceObj)
-External (\_PR.C001, DeviceObj)
-External (\_PR.C002, DeviceObj)
-External (\_PR.C003, DeviceObj)
-External (\_PR.C004, DeviceObj)
-External (\_PR.C005, DeviceObj)
-External (\_PR.C006, DeviceObj)
-External (\_PR.C007, DeviceObj)
+External (\_SB.C000, DeviceObj)
+External (\_SB.C001, DeviceObj)
+External (\_SB.C002, DeviceObj)
+External (\_SB.C003, DeviceObj)
+External (\_SB.C004, DeviceObj)
+External (\_SB.C005, DeviceObj)
+External (\_SB.C006, DeviceObj)
+External (\_SB.C007, DeviceObj)
 
 /* Return a package containing enabled processor entries */
 Method (PPKG)
@@ -51,33 +51,33 @@ Method (PPKG)
 	If (LGreaterEqual (\PCNT, 8)) {
 		Return (Package ()
 		{
-			\_PR.C000,
-			\_PR.C001,
-			\_PR.C002,
-			\_PR.C003,
-			\_PR.C004,
-			\_PR.C005,
-			\_PR.C006,
-			\_PR.C007
+			\_SB.C000,
+			\_SB.C001,
+			\_SB.C002,
+			\_SB.C003,
+			\_SB.C004,
+			\_SB.C005,
+			\_SB.C006,
+			\_SB.C007
 		})
 	} ElseIf (LGreaterEqual (\PCNT, 4)) {
 		Return (Package ()
 		{
-			\_PR.C000,
-			\_PR.C001,
-			\_PR.C002,
-			\_PR.C003
+			\_SB.C000,
+			\_SB.C001,
+			\_SB.C002,
+			\_SB.C003
 		})
 	} ElseIf (LGreaterEqual (\PCNT, 2)) {
 		Return (Package ()
 		{
-			\_PR.C000,
-			\_PR.C001
+			\_SB.C000,
+			\_SB.C001
 		})
 	} Else {
 		Return (Package ()
 		{
-			\_PR.C000
+			\_SB.C000
 		})
 	}
 }

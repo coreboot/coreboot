@@ -54,7 +54,7 @@ static void espi_write8(unsigned int reg, uint8_t val)
 	write8((void *)(espi_get_bar() + reg), val);
 }
 
-static void espi_enable_decode(int decode_en)
+static void espi_enable_decode(uint32_t decode_en)
 {
 	uint32_t val;
 
@@ -63,7 +63,7 @@ static void espi_enable_decode(int decode_en)
 	espi_write32(ESPI_DECODE, val);
 }
 
-static bool espi_is_decode_enabled(int decode)
+static bool espi_is_decode_enabled(uint32_t decode)
 {
 	uint32_t val;
 

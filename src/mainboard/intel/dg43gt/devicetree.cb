@@ -22,7 +22,6 @@ chip northbridge/intel/x4x		# Northbridge
 			# Set AHCI mode.
 			register "sata_port_map"	= "0x1f"
 			register "sata_clock_request"	= "0"
-			register "sata_traffic_monitor"	= "0"
 
 			# Enable PCIe ports 0,2,3 as slots.
 			register "pcie_slot_implemented" = "0xb"

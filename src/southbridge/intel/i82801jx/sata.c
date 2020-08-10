@@ -138,9 +138,6 @@ static void sata_init(struct device *const dev)
 
 	/* Get the chip configuration */
 	const config_t *const config = dev->chip_info;
-
-	const u16 devid = pci_read_config16(dev, PCI_DEVICE_ID);
-	const int is_mobile = (devid == 0x2928) || (devid == 0x2929);
 	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "i82801jx_sata: initializing...\n");
@@ -202,20 +199,10 @@ static void sata_init(struct device *const dev)
 	sclkcg |= 0x193;
 	pci_write_config32(dev, 0x94, sclkcg);
 
-	if (is_mobile && config->sata_traffic_monitor) {
-		struct device *const lpc_dev = pcidev_on_root(0x1f, 0);
-		if (((pci_read_config8(lpc_dev, D31F0_CxSTATE_CNF) >> 3) & 3) == 3) {
-			u8 reg8 = pci_read_config8(dev, 0x9c);
-			reg8 &= ~(0x1f << 2);
-			reg8 |= 3 << 2;
-			pci_write_config8(dev, 0x9c, reg8);
-		}
-	}
-
 	if (sata_mode == 0)
-		sata_enable_ahci_mmap(dev, config->sata_port_map, is_mobile);
+		sata_enable_ahci_mmap(dev, config->sata_port_map, 0);
 
-	sata_program_indexed(dev, is_mobile);
+	sata_program_indexed(dev, 0);
 }
 
 static void sata_enable(struct device *dev)

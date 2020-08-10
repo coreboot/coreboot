@@ -404,40 +404,6 @@ void mainboard_config_rcba(void);
 
 #define PMBASE		0x40
 
-#define VCH		0x0000	/* 32bit */
-#define VCAP1		0x0004	/* 32bit */
-#define VCAP2		0x0008	/* 32bit */
-#define PVC		0x000c	/* 16bit */
-#define PVS		0x000e	/* 16bit */
-
-#define V0CAP		0x0010	/* 32bit */
-#define V0CTL		0x0014	/* 32bit */
-#define V0STS		0x001a	/* 16bit */
-
-#define V1CAP		0x001c	/* 32bit */
-#define V1CTL		0x0020	/* 32bit */
-#define V1STS		0x0026	/* 16bit */
-
-#define RCTCL		0x0100	/* 32bit */
-#define ESD		0x0104	/* 32bit */
-#define ULD		0x0110	/* 32bit */
-#define ULBA		0x0118	/* 64bit */
-
-#define RP1D		0x0120	/* 32bit */
-#define RP1BA		0x0128	/* 64bit */
-#define RP2D		0x0130	/* 32bit */
-#define RP2BA		0x0138	/* 64bit */
-#define RP3D		0x0140	/* 32bit */
-#define RP3BA		0x0148	/* 64bit */
-#define RP4D		0x0150	/* 32bit */
-#define RP4BA		0x0158	/* 64bit */
-#define HDD		0x0160	/* 32bit */
-#define HDBA		0x0168	/* 64bit */
-#define RP5D		0x0170	/* 32bit */
-#define RP5BA		0x0178	/* 64bit */
-#define RP6D		0x0180	/* 32bit */
-#define RP6BA		0x0188	/* 64bit */
-
 #define RPC		0x0400	/* 32bit */
 #define RPFN		0x0404	/* 32bit */
 

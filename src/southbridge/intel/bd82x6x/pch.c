@@ -41,7 +41,7 @@ int pch_silicon_type(void)
 	return pch_type;
 }
 
-int pch_silicon_supported(int type, int rev)
+static int pch_silicon_supported(int type, int rev)
 {
 	int cur_type = pch_silicon_type();
 	int cur_rev = pch_silicon_revision();

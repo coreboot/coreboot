@@ -45,8 +45,8 @@ struct iosav_ssq {
 	/* IOSAV_n_SP_CMD_CTRL */
 	union {
 		struct {
-			u32 command    : 16;
-			u32 ranksel_ap :  2;
+			u32 command    : 16; /* [15.. 0] */
+			u32 ranksel_ap :  2; /* [17..16] */
 			u32            : 14;
 		};
 		u32 raw;
@@ -55,13 +55,13 @@ struct iosav_ssq {
 	/* IOSAV_n_SUBSEQ_CTRL */
 	union {
 		struct {
-			u32 cmd_executions : 9;
+			u32 cmd_executions : 9; /* [ 8.. 0] */
 			u32                : 1;
-			u32 cmd_delay_gap  : 5;
+			u32 cmd_delay_gap  : 5; /* [14..10] */
 			u32                : 1;
-			u32 post_ssq_wait  : 9;
+			u32 post_ssq_wait  : 9; /* [24..16] */
 			u32                : 1;
-			u32 data_direction : 2;
+			u32 data_direction : 2; /* [27..26] */
 			u32                : 4;
 		};
 		u32 raw;
@@ -70,12 +70,12 @@ struct iosav_ssq {
 	/* IOSAV_n_SP_CMD_ADDR */
 	union {
 		struct {
-			u32 address : 16;
-			u32 rowbits :  3;
+			u32 address : 16; /* [15.. 0] */
+			u32 rowbits :  3; /* [18..16] */
 			u32         :  1;
-			u32 bank    :  3;
+			u32 bank    :  3; /* [22..20] */
 			u32         :  1;
-			u32 rank    :  2;
+			u32 rank    :  2; /* [25..24] */
 			u32         :  6;
 		};
 		u32 raw;
@@ -84,14 +84,14 @@ struct iosav_ssq {
 	/* IOSAV_n_ADDR_UPDATE */
 	union {
 		struct {
-			u32 inc_addr_1 :  1;
-			u32 inc_addr_8 :  1;
-			u32 inc_bank   :  1;
-			u32 inc_rank   :  2;
-			u32 addr_wrap  :  5;
-			u32 lfsr_upd   :  2;
-			u32 upd_rate   :  4;
-			u32 lfsr_xors  :  2;
+			u32 inc_addr_1 :  1; /* [ 0.. 0] */
+			u32 inc_addr_8 :  1; /* [ 1.. 1] */
+			u32 inc_bank   :  1; /* [ 2.. 2] */
+			u32 inc_rank   :  2; /* [ 4.. 3] */
+			u32 addr_wrap  :  5; /* [ 9.. 5] */
+			u32 lfsr_upd   :  2; /* [11..10] */
+			u32 upd_rate   :  4; /* [15..12] */
+			u32 lfsr_xors  :  2; /* [17..16] */
 			u32            : 14;
 		};
 		u32 raw;

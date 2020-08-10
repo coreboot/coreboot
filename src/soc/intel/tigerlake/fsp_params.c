@@ -204,6 +204,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			sizeof(params->SataPortsDevSlp));
 	}
 
+	/* S0iX: Selectively enable individual sub-states,
+	 * by default all are enabled.
+	 *
+	 * LPM0-s0i2.0, LPM1-s0i2.1, LPM2-s0i2.2, LPM3-s0i3.0,
+	 * LPM4-s0i3.1, LPM5-s0i3.2, LPM6-s0i3.3, LPM7-s0i3.4
+	 */
+	params->LpmStateEnableMask = LPM_S0iX_ALL & ~config->LpmStateDisableMask;
+
 	/*
 	 * Power Optimizer for DMI and SATA.
 	 * DmiPwrOptimizeDisable and SataPwrOptimizeDisable is default to 0.

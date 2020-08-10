@@ -19,6 +19,10 @@ chip soc/intel/tigerlake
 
 	register "SaGv" = "SaGv_Disabled"
 
+	register "TcssAuxOri" = "1"
+	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
+	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
+
 	# I2C Port Config
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

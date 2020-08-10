@@ -160,9 +160,9 @@ chip soc/intel/tigerlake
 
 	# TCSS USB3
 	register "TcssXhciEn" = "1"
-	register "TcssAuxOri" = "1"
-	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
-	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
+	register "TcssAuxOri" = "0"
+	register "IomTypeCPortPadCfg[0]" = "0x09000000"
+	register "IomTypeCPortPadCfg[1]" = "0x09000000"
 	register "IomTypeCPortPadCfg[2]" = "0x09000000"
 	register "IomTypeCPortPadCfg[3]" = "0x09000000"
 	register "IomTypeCPortPadCfg[4]" = "0x09000000"

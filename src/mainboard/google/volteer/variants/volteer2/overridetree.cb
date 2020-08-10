@@ -1,4 +1,8 @@
 chip soc/intel/tigerlake
+	register "TcssAuxOri" = "1"
+	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
+	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
+
 	device domain 0 on
 		device pci 15.0 on
 			chip drivers/i2c/generic

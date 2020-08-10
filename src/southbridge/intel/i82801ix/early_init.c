@@ -11,7 +11,7 @@ void i82801ix_lpc_setup(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
 	const struct device *dev = pcidev_on_root(0x1f, 0);
-	const struct southbridge_intel_i82801ix_config *config = NULL;
+	const struct southbridge_intel_i82801ix_config *config;
 
 	/* Configure serial IRQs.*/
 	pci_write_config8(d31f0, D31F0_SERIRQ_CNTL, 0xd0);

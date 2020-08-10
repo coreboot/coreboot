@@ -327,6 +327,33 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
+/* Send END OF POST message to the ME */
+static int __unused mkhi_end_of_post(void)
+{
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_GEN,
+		.command	= MKHI_END_OF_POST,
+	};
+	struct mei_header mei = {
+		.is_complete	= 1,
+		.host_address	= MEI_HOST_ADDRESS,
+		.client_address	= MEI_ADDRESS_MKHI,
+		.length		= sizeof(mkhi),
+	};
+
+	u32 eop_ack;
+
+	/* Send request and wait for response */
+	printk(BIOS_NOTICE, "ME: %s\n", __func__);
+	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
+		printk(BIOS_ERR, "ME: END OF POST message failed\n");
+		return -1;
+	}
+
+	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
+	return 0;
+}
+
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -396,33 +423,6 @@ static void __unused me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("Virtual LAN (VLAN)", cap->vlan);
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
-}
-
-/* Send END OF POST message to the ME */
-static int __unused mkhi_end_of_post(void)
-{
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_GEN,
-		.command	= MKHI_END_OF_POST,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi),
-	};
-
-	u32 eop_ack;
-
-	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __func__);
-	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
-		printk(BIOS_ERR, "ME: END OF POST message failed\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
-	return 0;
 }
 
 #ifdef __SIMPLE_DEVICE__

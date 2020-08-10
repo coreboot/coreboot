@@ -104,6 +104,9 @@ static int espi_get_unused_io_window(void)
  */
 static int espi_std_io_decode(uint16_t base, size_t size)
 {
+	if (size == 2 && base == 0x2e)
+		return ESPI_DECODE_IO_0X2E_0X2F_EN;
+
 	if (size != 1)
 		return -1;
 

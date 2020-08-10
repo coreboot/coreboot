@@ -35,7 +35,6 @@ static void i82801ix_pcie_init(const config_t *const info)
 {
 	struct device *pciePort[6];
 	int i, slot_number = 1; /* Reserve slot number 0 for nb's PEG. */
-	u32 reg32;
 
 	/* PCIe - BIOS must program... */
 	for (i = 0; i < 6; ++i) {
@@ -44,8 +43,7 @@ static void i82801ix_pcie_init(const config_t *const info)
 			printk(BIOS_EMERG, "PCIe port 00:1c.%x", i);
 			die(" is not listed in devicetree.\n");
 		}
-		reg32 = pci_read_config32(pciePort[i], 0x300);
-		pci_write_config32(pciePort[i], 0x300, reg32 | (1 << 21));
+		pci_or_config32(pciePort[i], 0x300, 1 << 21);
 		pci_write_config8(pciePort[i], 0x324, 0x40);
 	}
 
@@ -85,9 +83,8 @@ static void i82801ix_pcie_init(const config_t *const info)
 	}
 
 	/* Lock R/WO ASPM support bits. */
-	for (i = 0; i < 6; ++i) {
+	for (i = 0; i < 6; ++i)
 		pci_update_config32(pciePort[i], 0x4c, ~0, 0);
-	}
 }
 
 static void i82801ix_ehci_init(void)

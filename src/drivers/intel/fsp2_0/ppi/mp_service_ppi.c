@@ -10,6 +10,7 @@
 #include <intelblocks/mp_init.h>
 
 #define BSP_CPU_SLOT 0
+#define SINGLE_CHIP_PACKAGE 0
 
 static efi_return_status_t mp_get_number_of_processors(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
@@ -31,6 +32,8 @@ static efi_return_status_t mp_get_processor_info(const
 	efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
+	unsigned int num_virt_cores, num_phys_cores;
+
 	if (cpu_index() < 0)
 		return FSP_DEVICE_ERROR;
 
@@ -48,7 +51,14 @@ static efi_return_status_t mp_get_processor_info(const
 	if (processor_number == BSP_CPU_SLOT)
 		processor_info_buffer->StatusFlag |= PROCESSOR_AS_BSP_BIT;
 
-	/* TODO: Fill EFI_CPU_PHYSICAL_LOCATION structure information */
+	/* Fill EFI_CPU_PHYSICAL_LOCATION structure information */
+	cpu_read_topology(&num_phys_cores, &num_virt_cores);
+
+	/* FSP will add one to the value in this Package field */
+	processor_info_buffer->Location.Package = SINGLE_CHIP_PACKAGE;
+	processor_info_buffer->Location.Core = num_phys_cores;
+	processor_info_buffer->Location.Thread = num_virt_cores;
+
 	return FSP_SUCCESS;
 }
 

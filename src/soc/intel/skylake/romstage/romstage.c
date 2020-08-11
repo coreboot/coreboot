@@ -170,7 +170,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 	 * If PEG port is not defined in the device tree, it will be disabled
 	 * in FSP
 	 */
-	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 0); /* PEG 0:1:0 */
+	dev = pcidev_path_on_root(SA_DEVFN_PEG0); /* PEG 0:1:0 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg0Enable = 0;
 	else if (dev->enabled) {
@@ -185,7 +185,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 		m_t_cfg->Peg0Gen3EqPh3Method = 0;
 	}
 
-	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 1); /* PEG 0:1:1 */
+	dev = pcidev_path_on_root(SA_DEVFN_PEG1); /* PEG 0:1:1 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg1Enable = 0;
 	else if (dev->enabled) {
@@ -197,7 +197,7 @@ static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
 		m_t_cfg->Peg1Gen3EqPh3Method = 0;
 	}
 
-	dev = pcidev_on_root(SA_DEV_SLOT_PEG, 2); /* PEG 0:1:2 */
+	dev = pcidev_path_on_root(SA_DEVFN_PEG2); /* PEG 0:1:2 */
 	if (!dev || !dev->enabled)
 		m_cfg->Peg2Enable = 0;
 	else if (dev->enabled) {

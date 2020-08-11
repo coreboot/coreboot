@@ -625,9 +625,6 @@ int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry)
 
 	r = imdr_root(imdr);
 
-	if (r == NULL)
-		return -1;
-
 	if (root_is_locked(r))
 		return -1;
 

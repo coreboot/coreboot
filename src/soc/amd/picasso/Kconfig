@@ -53,7 +53,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PLATFORM_USES_FSP2_0
 	select FSP_COMPRESS_FSP_M_LZMA
 	select FSP_COMPRESS_FSP_S_LZMA
-	select FSP_USES_CB_STACK
 	select UDK_2017_BINDING
 	select HAVE_CF9_RESET
 	select SUPPORT_CPU_UCODE_IN_CBFS
@@ -377,7 +376,6 @@ config MAINBOARD_POWER_RESTORE
 
 config FSP_TEMP_RAM_SIZE
 	hex
-	depends on FSP_USES_CB_STACK
 	default 0x40000
 	help
 	  The amount of coreboot-allocated heap and stack usage by the FSP.

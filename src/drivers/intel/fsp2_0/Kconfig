@@ -132,12 +132,14 @@ config FSP_USES_CB_STACK
 
 config FSP_TEMP_RAM_SIZE
 	hex
-	depends on FSP_USES_CB_STACK
 	help
-	  The amount of anticipated heap usage in CAR by FSP to setup HOB.
-	  This configuration is applicable for FSP specification using shared
-	  stack with coreboot/bootloader.
-	  Sync this value with Platform FSP integration guide recommendation.
+	  The amount of memory coreboot reserves for the FSP to use. In the
+	  case of FSP 2.1 and newer that share the stack with coreboot instead
+	  of having its own stack, this is the amount of anticipated heap usage
+	  in CAR by FSP to setup HOB and needs to be the recommended value from
+	  the Platform FSP integration guide. In the case of the FSP having its
+	  own stack that will be placed in DRAM and not in CAR, this is the
+	  amount of memory the FSP needs for its stack and heap.
 
 config FSP2_0_USES_TPM_MRC_HASH
 	bool

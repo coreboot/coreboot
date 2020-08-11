@@ -184,8 +184,9 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 	 * top and does not reinitialize stack pointer. The parameters passed
 	 * as StackBase and StackSize are actually for temporary RAM and HOBs
 	 * and are not related to FSP stack at all.
+	 * Non-CAR FSP 2.0 platforms pass a DRAM location for the FSP stack.
 	 */
-	if (CONFIG(FSP_USES_CB_STACK)) {
+	if (CONFIG(FSP_USES_CB_STACK) || !ENV_CACHE_AS_RAM) {
 		arch_upd->StackBase = temp_ram;
 		arch_upd->StackSize = sizeof(temp_ram);
 	} else if (setup_fsp_stack_frame(arch_upd, memmap)) {

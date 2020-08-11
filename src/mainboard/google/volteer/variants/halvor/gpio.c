@@ -23,6 +23,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),
 	/* A10 : I2S2_RXD ==> I2S1_RXD */
 	PAD_CFG_NF(GPP_A10, NONE, DEEP, NF1),
+	/* A13 : PMC_I2C_SCL ==> BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A18 : DDSP_HPDB ==> NC */
 	PAD_NC(GPP_A18, NONE),
 	/* A22 : DDPC_CTRLDATA ==> NC */
@@ -96,6 +98,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F11, NONE),
 	/* F12 : GSXDOUT ==> EN_PP3300_TRACKPAD */
 	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	/* F13 : GSXDOUT ==> WiFi_DISABLE_L */
+	PAD_CFG_GPO(GPP_F13, 1, DEEP),
 	/* F14 : GSXDIN ==> NC */
 	PAD_NC(GPP_F14, NONE),
 	/* F15 : GSXSRESET# ==> NC */

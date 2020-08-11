@@ -33,9 +33,6 @@ chip soc/intel/xeon_sp/cpx
 	# configure PSTATE_REQ_RATIO for MSR_IA32_PERF_CTRL
 	register "pstate_req_ratio" = "0xa"
 
-	register "coherency_support" = "0"
-	register "ats_support" = "0"
-
 	register "gen1_dec" = "0x00fc0601" # BIC in-band update support
 	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
 

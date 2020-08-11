@@ -39,6 +39,7 @@ romstage-y += mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-y += dpm.c
+ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/i2c.c i2c.c

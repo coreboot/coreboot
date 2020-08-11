@@ -247,25 +247,20 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 	const struct device *dev;
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (!dev || !dev->enabled) {
-		/*
-		 * If iGPU is disabled or not defined in the devicetree.cb,
-		 * the FSP does not initialize this device
-		 */
-		m_cfg->InternalGfx = 0;
-		m_cfg->IgdDvmt50PreAlloc = 0;
-	} else {
-		m_cfg->InternalGfx = 1;
-		/*
-		 * Set IGD stolen size to 64MB.  The FBC hardware for skylake
-		 * does not have access to the bios_reserved range so it always
-		 * assumes 8MB is used and so the kernel will avoid the last
-		 * 8MB of the stolen window. With the default stolen size of
-		 * 32MB(-8MB) there is not enough space for FBC to work with
-		 * a high resolution panel
-		 */
-		m_cfg->IgdDvmt50PreAlloc = 2;
-	}
+	m_cfg->InternalGfx = dev && dev->enabled;
+
+	/*
+	 * If iGPU is enabled, set IGD stolen size to 64MB. The FBC
+	 * hardware for skylake does not have access to the bios
+	 * reserved range so it always assumes 8MB is used and so the
+	 * kernel will avoid the last 8MB of the stolen window. With
+	 * the default stolen size of 32MB(-8MB) there is not enough
+	 * space for FBC to work with a high resolution panel.
+	 *
+	 * If disabled, don't reserve memory for it.
+	 */
+	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? 2 : 0;
+
 	m_cfg->PrimaryDisplay = config->PrimaryDisplay;
 }
 

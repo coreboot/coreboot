@@ -8,6 +8,7 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <cpu/intel/turbo.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
@@ -16,6 +17,7 @@
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
+#include <soc/msr.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -231,6 +233,133 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return acpi_madt_irq_overrides(current);
 }
 
+static int calculate_power(int tdp, int p1_ratio, int ratio)
+{
+	u32 m;
+	u32 power;
+
+	/*
+	 * M = ((1.1 - ((p1_ratio - ratio) * 0.00625)) / 1.1) ^ 2
+	 *
+	 * Power = (ratio / p1_ratio) * m * tdp
+	 */
+
+	m = (110000 - ((p1_ratio - ratio) * 625)) / 11;
+	m = (m * m) / 1000;
+
+	power = ((ratio * 100000 / p1_ratio) / 100);
+	power *= (m / 100) * (tdp / 1000);
+	power /= 1000;
+
+	return (int)power;
+}
+
+static void cpx_generate_p_state_entries(int core, int cores_per_package)
+{
+	int ratio_min, ratio_max, ratio_turbo, ratio_step;
+	int coord_type, power_max, power_unit, num_entries;
+	int ratio, power, clock, clock_max;
+	msr_t msr;
+
+	/* Determine P-state coordination type from MISC_PWR_MGMT[0] */
+	msr = rdmsr(MSR_MISC_PWR_MGMT);
+	if (msr.lo & MISC_PWR_MGMT_EIST_HW_DIS)
+		coord_type = SW_ANY;
+	else
+		coord_type = HW_ALL;
+
+	/* Get bus ratio limits and calculate clock speeds */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	ratio_min = (msr.hi >> (40-32)) & 0xff; /* Max Efficiency Ratio */
+
+	/* Determine if this CPU has configurable TDP */
+	if (cpu_config_tdp_levels()) {
+		/* Set max ratio to nominal TDP ratio */
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		ratio_max = msr.lo & 0xff;
+	} else {
+		/* Max Non-Turbo Ratio */
+		ratio_max = (msr.lo >> 8) & 0xff;
+	}
+	clock_max = ratio_max * CONFIG_CPU_BCLK_MHZ;
+
+	/* Calculate CPU TDP in mW */
+	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	power_unit = 2 << ((msr.lo & 0xf) - 1);
+	msr = rdmsr(MSR_PKG_POWER_SKU);
+	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
+
+	/* Write _PCT indicating use of FFixedHW */
+	acpigen_write_empty_PCT();
+
+	/* Write _PPC with no limit on supported P-state */
+	acpigen_write_PPC_NVS();
+
+	/* Write PSD indicating configured coordination type */
+	acpigen_write_PSD_package(core, 1, coord_type);
+
+	/* Add P-state entries in _PSS table */
+	acpigen_write_name("_PSS");
+
+	/* Determine ratio points */
+	ratio_step = PSS_RATIO_STEP;
+	num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
+	if (num_entries > PSS_MAX_ENTRIES) {
+		ratio_step += 1;
+		num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
+	}
+
+	/* P[T] is Turbo state if enabled */
+	if (get_turbo_state() == TURBO_ENABLED) {
+		/* _PSS package count including Turbo */
+		acpigen_write_package(num_entries + 2);
+
+		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
+		ratio_turbo = msr.lo & 0xff;
+
+		/* Add entry for Turbo ratio */
+		acpigen_write_PSS_package(
+			clock_max + 1,		/* MHz */
+			power_max,		/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio_turbo << 8,	/* control */
+			ratio_turbo << 8);	/* status */
+	} else {
+		/* _PSS package count without Turbo */
+		acpigen_write_package(num_entries + 1);
+	}
+
+	/* First regular entry is max non-turbo ratio */
+	acpigen_write_PSS_package(
+		clock_max,		/* MHz */
+		power_max,		/* mW */
+		PSS_LATENCY_TRANSITION,	/* lat1 */
+		PSS_LATENCY_BUSMASTER,	/* lat2 */
+		ratio_max << 8,		/* control */
+		ratio_max << 8);	/* status */
+
+	/* Generate the remaining entries */
+	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
+	     ratio >= ratio_min; ratio -= ratio_step) {
+
+		/* Calculate power at this ratio */
+		power = calculate_power(power_max, ratio_max, ratio);
+		clock = ratio * CONFIG_CPU_BCLK_MHZ;
+		//clock = 1;
+		acpigen_write_PSS_package(
+			clock,			/* MHz */
+			power,			/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio << 8,		/* control */
+			ratio << 8);		/* status */
+	}
+
+	/* Fix package length */
+	acpigen_pop_len();
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
@@ -255,7 +384,8 @@ void generate_cpu_entries(const struct device *device)
 
 			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
 
-			/* TODO: Soc specific power states generation */
+			/* Generate P-state tables */
+			cpx_generate_p_state_entries(core_id, threads_per_package);
 			acpigen_pop_len();
 		}
 	}

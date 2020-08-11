@@ -72,6 +72,10 @@ config FSP_TEMP_RAM_SIZE
 config SOC_INTEL_COMMON_BLOCK_P2SB
 	def_bool y
 
+config CPU_BCLK_MHZ
+	int
+	default 100
+
 select CACHE_MRC_SETTINGS
 
 # CPX-SP has 2 IMCs, 3 channels per IMC, 2 DIMMs per channel

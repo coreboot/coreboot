@@ -132,7 +132,7 @@ static void set_max_turbo_freq(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "cpu: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
+	       ((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
 	FUNC_EXIT();
 }
 

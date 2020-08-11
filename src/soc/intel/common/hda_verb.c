@@ -7,9 +7,6 @@
 
 #include "hda_verb.h"
 
-/*
- * Set bits in a register and wait for status
- */
 static int set_bits(void *port, u32 mask, u32 val)
 {
 	u32 reg32;
@@ -22,9 +19,7 @@ static int set_bits(void *port, u32 mask, u32 val)
 	reg32 |= val;
 	write32(port, reg32);
 
-	/* Wait for readback of register to
-	 * match what was just written to it
-	 */
+	/* Wait for readback of register to match what was just written to it */
 	count = 50;
 	do {
 		/* Wait 1ms based on BKDG wait time */
@@ -39,9 +34,6 @@ static int set_bits(void *port, u32 mask, u32 val)
 	return 0;
 }
 
-/*
- * Probe for supported codecs
- */
 int hda_codec_detect(u8 *base)
 {
 	u8 reg8;
@@ -83,18 +75,16 @@ no_codec:
 }
 
 /*
- * Wait 50usec for the codec to indicate it is ready
- * no response would imply that the codec is non-operative
+ * Wait 50usec for the codec to indicate it is ready.
+ * No response would imply that the codec is non-operative.
  */
 static int hda_wait_for_ready(u8 *base)
 {
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
 	int timeout = 50;
 
 	while (timeout--) {
-		u32 reg32 = read32(base +  HDA_ICII_REG);
+		u32 reg32 = read32(base + HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);
@@ -104,27 +94,23 @@ static int hda_wait_for_ready(u8 *base)
 }
 
 /*
- * Wait 50usec for the codec to indicate that it accepted
- * the previous command.  No response would imply that the code
- * is non-operative
+ * Wait 50usec for the codec to indicate that it accepted the previous command.
+ * No response would imply that the code is non-operative.
  */
 static int hda_wait_for_valid(u8 *base)
 {
 	u32 reg32;
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
+	int timeout = 50;
 
 	/* Send the verb to the codec */
 	reg32 = read32(base + HDA_ICII_REG);
 	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
 	write32(base + HDA_ICII_REG, reg32);
 
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
-	int timeout = 50;
 	while (timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);
-		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
-			HDA_ICII_VALID)
+		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)
 			return 0;
 		udelay(1);
 	}
@@ -177,9 +163,6 @@ static u32 hda_find_verb(u32 verb_table_bytes,
 	return 0;
 }
 
-/*
- * Write a supplied verb table
- */
 int hda_codec_write(u8 *base, u32 size, const u32 *data)
 {
 	int i;
@@ -197,9 +180,6 @@ int hda_codec_write(u8 *base, u32 size, const u32 *data)
 	return 0;
 }
 
-/*
- * Initialize codec, then find the verb table and write it
- */
 int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)
 {
 	const u32 *verb;

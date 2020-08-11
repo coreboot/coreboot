@@ -188,6 +188,85 @@
  *   [6]        Cleared with a new sequence, and set when done and refresh counter is drained.
  */
 
+/*
+ * ### ECC error injection registers ###
+ *
+ * ECC_INJECT_COUNT_ch(channel)
+ *  Defines the count of write chunks (64-bit data packets) until the
+ *  next ECC error injection. This only seems to apply if the ECC_inject
+ *  field in the ECC_DFT register is 110 or 111. The count is of chunks
+ *  in order to allow creating ECC errors on different 64-bit chunks.
+ *
+ *  Note that this register is only 32-bit.
+ *
+ * ECC_DFT_ch(channel)
+ *  Control ECC DFT features, such as ECC4ANA, error inject, etc.
+ *
+ *  Bitfields:
+ *  [7..0]      8-bit fill value for ECC4ANA function.
+ *  [9..8]      ECC4ANA trigger:
+ *                  00: ECC4ANA is off, no trigger.
+ *                  10: Trigger on single-bit or uncorrectable error.
+ *                  11: Trigger on uncorrectable error.
+ *
+ *  [10]        ECC4ANA byte select:
+ *                  0: Byte 0
+ *                  1: Byte 7
+ *
+ *  [13..11]    ECC_inject: ECC error inject options:
+ *                  000: No ECC error injection.
+ *                  100: Inject non-recoverable ECC error on GODLAT indication.
+ *                  101: Inject non-recoverable ECC error on ECC_INJ_ADDR_COMPARE reg match.
+ *                  110: Reserved.
+ *                  111: Inject non-recoverable ECC error on ECC error insertion counter.
+ *
+ *  [14]        ECC correction disable: when set, the MC reports every error as uncorrectable.
+ *  [15]        Mark incoming transactions for ECC4ANA based on ECC_INJ_ADDR_COMPARE reg match.
+ *
+ * SCHED_SECOND_CBIT
+ *  More chicken bits!
+ *
+ *  Bitfields:
+ *
+ *  [11]        Disable ECC4ANA Bug Fix. WARNING: This register is only for Ivy Bridge!
+ *
+ * MAD_DIMM_ch(channel)
+ *  Channel characteristics: number of DIMMs, number of ranks, size,
+ *  (enhanced) interleave options and ECC options.
+ *
+ *  Bitfields:
+ *  [7..0]      DIMM A size in 256 MiB units.
+ *  [15..8]     DIMM B size in 256 MiB units.
+ *  [16]        Select which of the DIMMs is DIMM A, should be the larger DIMM.
+ *  [17]        DIMM A number of ranks. (0 => Single Rank, 1 => Dual Rank)
+ *  [18]        DIMM B number of ranks.
+ *  [19]        DIMM A DDR chip width. (0 => x8, 1 => x16)
+ *  [20]        DIMM B DDR chip width.
+ *  [21]        Enable Rank Interleave.
+ *  [22]        Enable Enhanced Rank Interleave.
+ *  [25..24]    ECC control:
+ *                  00: No ECC.
+ *                  01: ECC is active in IO, ECC logic is not active. Used with IOSAV training.
+ *                  10: ECC is disabled in IO, but ECC logic is enabled. Used with ECC4ANA mode.
+ *                  11: ECC active in both IO and ECC logic.
+ *
+ * ECC_INJ_ADDR_COMPARE, ECC_INJ_ADDR_MASK
+ *
+ *  Address compare for ECC error inject. Error injection is issued when
+ *  ECC_INJ_ADDR_COMPARE[31..0] = ADDR[37..6] & ECC_INJ_ADDR_MASK[31..0].
+ *
+ * MC_LOCK
+ *
+ *  Locking of MC registers. Each bit locks one group of registers.
+ *
+ *  Bitfields:
+ *  [0]         Lock all the address map registers.
+ *  [1]         Lock all the MC configuration registers including MCIO.
+ *  [2]         Lock all IOSAV and Init registers.
+ *  [3]         Lock all power management registers.
+ *  [7]         Lock all DFT features.
+ */
+
 /* Indexed register helper macros */
 #define Gz(r, z)	((r) + ((z) <<  8))
 #define Ly(r, y)	((r) + ((y) <<  2))
@@ -400,6 +479,9 @@
 #define MRC_REVISION		0x5034 /* MRC Revision */
 #define PM_DLL_CONFIG		0x5064 /* Memory Controller I/O DLL config */
 #define RCOMP_TIMER		0x5084 /* RCOMP evaluation timer register */
+
+#define ECC_INJ_ADDR_COMPARE	0x5090 /* Address compare for ECC error inject */
+#define ECC_INJ_ADDR_MASK	0x5094 /* Address mask for ECC error inject */
 
 #define MC_LOCK			0x50fc /* Memory Controlller Lock register */
 

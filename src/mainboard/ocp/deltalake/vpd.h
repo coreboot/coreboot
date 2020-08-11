@@ -28,4 +28,8 @@
 #define FSP_LOG_LEVEL "fsp_log_level"
 #define FSP_LOG_LEVEL_DEFAULT 8 /* Default value when the VPD variable is not found */
 
+/* DCI enable */
+#define FSP_DCI "fsp_dci_enable" /* 1 or 0: enable or disable DCI */
+#define FSP_DCI_DEFAULT 0 /* Default value when the VPD variable is not found */
+
 #endif

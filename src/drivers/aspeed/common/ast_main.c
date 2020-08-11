@@ -4,6 +4,7 @@
  */
 
 #include <delay.h>
+#include <device/pci_def.h>
 
 #include "ast_drv.h"
 #include "ast_dram_tables.h"
@@ -329,7 +330,7 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 	ast->dev = dev;
 
 	/* PCI BAR 1 */
-	res = find_resource(dev->pdev, 0x14);
+	res = find_resource(dev->pdev, PCI_BASE_ADDRESS_1);
 	if (!res) {
 		dev_err(dev->pdev, "BAR1 resource not found.\n");
 		ret = -EIO;
@@ -343,7 +344,7 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 
 	/* PCI BAR 2 */
 	ast->io_space_uses_mmap = false;
-	res = find_resource(dev->pdev, 0x18);
+	res = find_resource(dev->pdev, PCI_BASE_ADDRESS_2);
 	if (!res) {
 		dev_err(dev->pdev, "BAR2 resource not found.\n");
 		ret = -EIO;

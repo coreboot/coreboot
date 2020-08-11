@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include "pch.h"
 #include <device/mmio.h>
@@ -13,7 +14,7 @@ static void thermal_init(struct device *dev)
 	u8 *base;
 	printk(BIOS_DEBUG, "Thermal init start.\n");
 
-	res = find_resource(dev, 0x10);
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 

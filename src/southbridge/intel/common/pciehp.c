@@ -5,6 +5,7 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 
 #include "pciehp.h"
 
@@ -121,7 +122,7 @@ static void slot_dev_read_resources(struct device *dev)
 {
 	struct resource *resource;
 
-	resource = new_resource(dev, 0x10);
+	resource = new_resource(dev, PCI_BASE_ADDRESS_0);
 	resource->size = 1 << 23;
 	resource->align = 22;
 	resource->gran = 22;

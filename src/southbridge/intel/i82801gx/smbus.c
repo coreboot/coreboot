@@ -4,6 +4,7 @@
 #include <device/path.h>
 #include <device/smbus.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/smbus_host.h>
 #include "i82801gx.h"
@@ -16,7 +17,7 @@ static int lsmbus_read_byte(struct device *dev, u8 address)
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -29,7 +30,7 @@ static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 	return do_smbus_write_byte(res->base, device, address, data);
 }
 
@@ -41,7 +42,7 @@ static int lsmbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *bu
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 	return do_smbus_block_write(res->base, device, cmd, bytes, buf);
 }
 
@@ -53,7 +54,7 @@ static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 	return do_smbus_block_read(res->base, device, cmd, bytes, buf);
 }
 

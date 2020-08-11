@@ -6,6 +6,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <drivers/intel/gma/i915_reg.h>
@@ -234,9 +235,9 @@ static void gma_func0_init(struct device *dev)
 		int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
 
 		/* Find base addresses */
-		mmio_res = find_resource(dev, 0x10);
-		gtt_res  = find_resource(dev, 0x1c);
-		pio_res  = find_resource(dev, 0x14);
+		mmio_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+		gtt_res  = find_resource(dev, PCI_BASE_ADDRESS_3);
+		pio_res  = find_resource(dev, PCI_BASE_ADDRESS_1);
 		physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 
 		if (gtt_res && gtt_res->base && physbase && pio_res && pio_res->base) {

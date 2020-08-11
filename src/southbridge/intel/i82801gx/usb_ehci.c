@@ -7,6 +7,7 @@
 #include "i82801gx.h"
 #include <device/pci_ehci.h>
 #include <device/mmio.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 
 static void usb_ehci_init(struct device *dev)
@@ -23,7 +24,7 @@ static void usb_ehci_init(struct device *dev)
 	pci_update_config32(dev, 0xfc, ~(3 << 2), (2 << 2) | (1 << 29) | (1 << 17));
 
 	/* Clear any pending port changes */
-	res = find_resource(dev, 0x10);
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	base = res2mmio(res, 0, 0);
 	reg32 = read32(base + 0x24) | (1 << 2);
 	write32(base + 0x24, reg32);

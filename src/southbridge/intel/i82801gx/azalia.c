@@ -42,15 +42,15 @@ static int codec_detect(u8 *base)
 {
 	u32 reg32;
 
-	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
+	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
 	if (set_bits(base + HDA_GCTL_REG, 1, 0) == -1)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, 1) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) == -1)
 		goto no_codec;
 
-	/* Read in Codec location (BAR + 0xe)[2..0]*/
+	/* Read in Codec location (BAR + 0xe)[2..0] */
 	reg32 = read32(base + HDA_STATESTS_REG);
 	reg32 &= 0x0f;
 	if (!reg32)
@@ -71,12 +71,12 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 	int idx = 0;
 
 	while (idx < (cim_verb_data_size / sizeof(u32))) {
-		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
+		u32 verb_size = 4 * cim_verb_data[idx + 2];	// in u32
 		if (cim_verb_data[idx] != viddid) {
-			idx += verb_size + 3; // skip verb + header
+			idx += verb_size + 3;	// skip verb + header
 			continue;
 		}
-		*verb = &cim_verb_data[idx+3];
+		*verb = &cim_verb_data[idx + 3];
 		return verb_size;
 	}
 
@@ -84,9 +84,9 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 	return 0;
 }
 
-/**
- *  Wait 50usec for the codec to indicate it is ready
- *  no response would imply that the codec is non-operative
+/*
+ * Wait 50usec for the codec to indicate it is ready.
+ * No response would imply that the codec is non-operative.
  */
 
 static int wait_for_ready(u8 *base)
@@ -104,23 +104,22 @@ static int wait_for_ready(u8 *base)
 	return -1;
 }
 
-/**
- *  Wait 50usec for the codec to indicate that it accepted the previous command.
- *  No response would imply that the code is non-operative.
+/*
+ * Wait 50usec for the codec to indicate that it accepted the previous command.
+ * No response would imply that the code is non-operative.
  */
 
 static int wait_for_valid(u8 *base)
 {
 	u32 reg32;
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
+	int timeout = 50;
 
 	/* Send the verb to the codec */
 	reg32 = read32(base + HDA_ICII_REG);
 	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
 	write32(base + HDA_ICII_REG, reg32);
 
-	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
-
-	int timeout = 50;
 	while (timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)
@@ -141,18 +140,21 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
 
 	/* 1 */
-	if (wait_for_ready(base) == -1)
+	if (wait_for_ready(base) == -1) {
+		printk(BIOS_DEBUG, "  codec not ready.\n");
 		return;
+	}
 
 	reg32 = (addr << 28) | 0x000f0000;
 	write32(base + HDA_IC_REG, reg32);
 
-	if (wait_for_valid(base) == -1)
+	if (wait_for_valid(base) == -1) {
+		printk(BIOS_DEBUG, "  codec not valid.\n");
 		return;
-
-	reg32 = read32(base + HDA_IR_REG);
+	}
 
 	/* 2 */
+	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "Azalia: codec viddid: %08x\n", reg32);
 	verb_size = find_verb(dev, reg32, &verb);
 
@@ -178,6 +180,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 {
 	int i;
+
 	for (i = 2; i >= 0; i--) {
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
@@ -230,12 +233,12 @@ static void azalia_init(struct device *dev)
 	// Docking not supported
 	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
-	res = find_resource(dev, 0x10);
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 
-	// NOTE this will break as soon as the Azalia get's a bar above
-	// 4G. Is there anything we can do about it?
+	// NOTE this will break as soon as the Azalia get's a bar above 4G.
+	// Is there anything we can do about it?
 	base = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
 	codec_mask = codec_detect(base);

@@ -19,9 +19,7 @@ static int set_bits(void *port, u32 mask, u32 val)
 	reg32 |= val;
 	write32(port, reg32);
 
-	/* Wait for readback of register to
-	 * match what was just written to it
-	 */
+	/* Wait for readback of register to match what was just written to it */
 	count = 50;
 	do {
 		/* Wait 1ms based on BKDG wait time */
@@ -42,10 +40,10 @@ static int codec_detect(u8 *base)
 	int count;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, 1) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) == -1)
 		goto no_codec;
 
-	/* clear STATESTS bits (BAR + 0xE)[2:0] */
+	/* clear STATESTS bits (BAR + 0xe)[2:0] */
 	reg32 = read32(base + HDA_STATESTS_REG);
 	reg32 |= 7;
 	write32(base + HDA_STATESTS_REG, reg32);
@@ -63,12 +61,12 @@ static int codec_detect(u8 *base)
 	if (!count)
 		goto no_codec;
 
-	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
+	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
 	if (set_bits(base + HDA_GCTL_REG, 1, 0) == -1)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, 1) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) == -1)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
@@ -108,16 +106,14 @@ static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 	return 0;
 }
 
-/**
- *  Wait 50usec for the codec to indicate it is ready
- *  no response would imply that the codec is non-operative
+/*
+ * Wait 50usec for the codec to indicate it is ready.
+ * No response would imply that the codec is non-operative.
  */
 
 static int wait_for_ready(u8 *base)
 {
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
 	int timeout = 50;
 
 	while (timeout--) {
@@ -130,29 +126,29 @@ static int wait_for_ready(u8 *base)
 	return -1;
 }
 
-/**
- *  Wait 50usec for the codec to indicate that it accepted
- *  the previous command.  No response would imply that the code
- *  is non-operative
+/*
+ * Wait 50usec for the codec to indicate that it accepted the previous command.
+ * No response would imply that the code is non-operative.
  */
 
 static int wait_for_valid(u8 *base)
 {
-	/* Use a 50 usec timeout - the Linux kernel uses the
-	 * same duration */
-
+	u32 reg32;
+	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
 	int timeout = 25;
 
-	write32(base + HDA_ICII_REG,
-		HDA_ICII_VALID | HDA_ICII_BUSY);
+	/* Send the verb to the codec */
+	reg32 = read32(base + HDA_ICII_REG);
+	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
+	write32(base + HDA_ICII_REG, reg32);
+
 	while (timeout--) {
 		udelay(1);
 	}
 	timeout = 50;
 	while (timeout--) {
-		u32 reg32 = read32(base + HDA_ICII_REG);
-		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
-			HDA_ICII_VALID)
+		reg32 = read32(base + HDA_ICII_REG);
+		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)
 			return 0;
 		udelay(1);
 	}
@@ -170,18 +166,21 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "azalia_audio: Initializing codec #%d\n", addr);
 
 	/* 1 */
-	if (wait_for_ready(base) == -1)
+	if (wait_for_ready(base) == -1) {
+		printk(BIOS_DEBUG, "  codec not ready.\n");
 		return;
+	}
 
 	reg32 = (addr << 28) | 0x000f0000;
 	write32(base + HDA_IC_REG, reg32);
 
-	if (wait_for_valid(base) == -1)
+	if (wait_for_valid(base) == -1) {
+		printk(BIOS_DEBUG, "  codec not valid.\n");
 		return;
-
-	reg32 = read32(base + HDA_IR_REG);
+	}
 
 	/* 2 */
+	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "azalia_audio: codec viddid: %08x\n", reg32);
 	verb_size = find_verb(dev, reg32, &verb);
 
@@ -220,19 +219,18 @@ void azalia_audio_init(struct device *dev)
 	struct resource *res;
 	u32 codec_mask;
 
-	res = find_resource(dev, 0x10);
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 
-	// NOTE this will break as soon as the azalia_audio get's a bar above
-	// 4G. Is there anything we can do about it?
+	// NOTE this will break as soon as the azalia_audio get's a bar above 4G.
+	// Is there anything we can do about it?
 	base = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "azalia_audio: base = %p\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {
-		printk(BIOS_DEBUG, "azalia_audio: codec_mask = %02x\n",
-		       codec_mask);
+		printk(BIOS_DEBUG, "azalia_audio: codec_mask = %02x\n", codec_mask);
 		codecs_init(dev, base, codec_mask);
 	}
 }

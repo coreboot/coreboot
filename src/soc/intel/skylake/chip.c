@@ -167,7 +167,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	params->SataEnable = dev ? dev->enabled : 0;
+	params->SataEnable = dev && dev->enabled;
 	if (params->SataEnable) {
 		memcpy(params->SataPortsEnable, config->SataPortsEnable,
 				sizeof(params->SataPortsEnable));
@@ -236,7 +236,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SaImguEnable = dev && dev->enabled;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_CSE_3);
-	params->Heci3Enabled = dev ? dev->enabled : 0;
+	params->Heci3Enabled = dev && dev->enabled;
 
 	params->LogoPtr = config->LogoPtr;
 	params->LogoSize = config->LogoSize;
@@ -248,7 +248,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmLanWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
-	params->PchLanEnable = dev ? dev->enabled : 0;
+	params->PchLanEnable = dev && dev->enabled;
 	if (params->PchLanEnable) {
 		params->PchLanLtrEnable = config->EnableLanLtr;
 		params->PchLanK1OffEnable = config->EnableLanK1Off;
@@ -258,7 +258,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SsicPortEnable = config->SsicPortEnable;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
-	params->ScsEmmcEnabled = dev ? dev->enabled : 0;
+	params->ScsEmmcEnabled = dev && dev->enabled;
 	params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
@@ -275,10 +275,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* If ISH is enabled, enable ISH elements */
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	params->PchIshEnable = dev ? dev->enabled : 0;
+	params->PchIshEnable = dev && dev->enabled;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	params->PchHdaEnable = dev ? dev->enabled : 0;
+	params->PchHdaEnable = dev && dev->enabled;
 
 	params->PchHdaVcType = config->PchHdaVcType;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
@@ -353,7 +353,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = pcidev_path_on_root(PCH_DEVFN_SPI);
-	params->ShowSpiController = dev ? dev->enabled : 0;
+	params->ShowSpiController = dev && dev->enabled;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
@@ -367,7 +367,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable or disable Gaussian Mixture Model in devicetree */
 	dev = pcidev_path_on_root(SA_DEVFN_GMM);
-	params->GmmEnable = dev ? dev->enabled : 0;
+	params->GmmEnable = dev && dev->enabled;
 
 	/*
 	 * Send VR specific mailbox commands:

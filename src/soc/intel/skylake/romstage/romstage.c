@@ -295,13 +295,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_t_cfg->PchDciEn = config->PchDciEn;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
-	m_cfg->EnableTraceHub = dev ? dev->enabled : 0;
+	m_cfg->EnableTraceHub = dev && dev->enabled;
 	m_cfg->TraceHubMemReg0Size = config->TraceHubMemReg0Size;
 	m_cfg->TraceHubMemReg1Size = config->TraceHubMemReg1Size;
 
 	/* Enable SMBus controller */
 	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);
-	m_cfg->SmbusEnable = dev ? dev->enabled : 0;
+	m_cfg->SmbusEnable = dev && dev->enabled;
 
 	/* Set primary graphic device */
 	soc_primary_gfx_config_params(m_cfg, config);

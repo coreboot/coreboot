@@ -416,12 +416,12 @@ chip soc/intel/jasperlake
 
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.1 on  end # PCI Express Port 2 - WLAN
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
-		device pci 1c.5 on  end # PCI Express Port 6
+		device pci 1c.4 on  end # PCI Express Port 5 - NVMe
+		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
 		device pci 1e.0 on  end # UART #0

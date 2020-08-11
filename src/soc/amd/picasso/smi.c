@@ -4,6 +4,7 @@
  * Utilities for SMM setup
  */
 
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -19,5 +20,6 @@ void global_smi_enable(void)
 	reg |= SMITRG0_EOS;	/* Set EOS bit */
 	smi_write32(SMI_REG_SMITRIG0, reg);
 
-	outb(APM_CNT_SMMINFO, APM_CNT);
+	if (!acpi_is_wakeup_s3())
+		outb(APM_CNT_SMMINFO, APM_CNT);
 }

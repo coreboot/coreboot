@@ -251,7 +251,7 @@ typedef struct {
   UINT8                       Reserved1[3];
 
 /** Offset 0x0130 - Intel Enhanced Debug
-  DEPRECATED
+  <b>@deprecated</b> - Not used and has no effect
   0 : Disable, 0x400000 : Enable
 **/
   UINT32                      IedSize;
@@ -310,8 +310,8 @@ typedef struct {
 **/
   UINT8                       DciDbcMode;
 
-/** Offset 0x014F - Enable DCI ModPHY Pwoer Gate
-  Enable ModPHY Pwoer Gate when DCI is enabled
+/** Offset 0x014F - Enable DCI ModPHY Power Gate
+  Enable ModPHY Power Gate when DCI is enabled
   $EN_DIS
 **/
   UINT8                       DciModphyPg;
@@ -797,7 +797,7 @@ typedef struct {
 **/
   UINT8                       RealtimeMemoryTiming;
 
-/** Offset 0x025A - This is policy to control iTBT PCIe Multiple Segment setting.
+/** Offset 0x025A - iTBT PCIe Multiple Segment setting
   When Disabled all the TBT PCIe RP are located at Segment0, When Enabled all the
   TBT PCIe RP are located at Segment1. <b>0: Disable</b>; 1: Enable.
   $EN_DIS
@@ -1468,7 +1468,7 @@ typedef struct {
 **/
   UINT8                       PchSataHsioTxGen3DeEmph[8];
 
-/** Offset 0x056F - PCH LPC Enhance the port 8xh decoding
+/** Offset 0x056F - PCH LPC Enhanced Port 80 Decoding
   Original LPC only decodes one byte of port 80h.
   $EN_DIS
 **/
@@ -1476,7 +1476,7 @@ typedef struct {
 
 /** Offset 0x0570 - PCH Port80 Route
   Control where the Port 80h cycles are sent, 0: LPC; 1: PCI.
-  $EN_DIS
+  0:LPC, 1:PCI
 **/
   UINT8                       PchPort80Route;
 
@@ -2036,7 +2036,7 @@ typedef struct {
   UINT16                      ChHashMask;
 
 /** Offset 0x0630 - Base reference clock value
-  Base reference clock value, in Hertz(Default is 125Hz)
+  Base reference clock value, in Hertz(Default is 100Hz)
   100000000:100Hz, 125000000:125Hz, 167000000:167Hz, 250000000:250Hz
 **/
   UINT32                      BClkFrequency;
@@ -2508,7 +2508,7 @@ typedef struct {
 
 /** Offset 0x0920
 **/
-  UINT8                       UnusedUpdSpace25[6];
+  UINT8                       UnusedUpdSpace26[6];
 
 /** Offset 0x0926
 **/

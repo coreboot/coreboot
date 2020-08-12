@@ -129,7 +129,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config PICASSO_FW_A_POSITION
 	hex
-	default 0xFF031040
+	default 0xFF012040
 	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 	help
 	  Location of the AMD firmware in the RW_A region. This is the
@@ -137,7 +137,7 @@ config PICASSO_FW_A_POSITION
 
 config PICASSO_FW_B_POSITION
 	hex
-	default 0xFF3CF040
+	default 0xFF312040
 	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 	help
 	  Location of the AMD firmware in the RW_B region. This is the

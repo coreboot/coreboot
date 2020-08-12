@@ -123,10 +123,10 @@ func registerInfoTemplate(line string, name *string, offset *uint32, value *uint
 	// 0x0088: 0x00ffffff (HOSTSW_OWN_GPP_F)
 	// 0x0100: 0x00000000 (GPI_IS_GPP_A)
 	if fields := strings.FieldsFunc(line, tokenCheck); len(fields) == 3 {
-			*name = fields[2]
-			fmt.Sscanf(fields[1], "0x%x", value)
-			fmt.Sscanf(fields[0], "0x%x", offset)
-			return 0
+		*name = fields[2]
+		fmt.Sscanf(fields[1], "0x%x", value)
+		fmt.Sscanf(fields[0], "0x%x", offset)
+		return 0
 	}
 	return -1
 }

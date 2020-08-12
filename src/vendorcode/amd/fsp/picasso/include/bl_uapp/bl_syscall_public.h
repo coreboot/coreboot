@@ -52,6 +52,7 @@
 #define SVC_WRITE_POSTCODE		0x44
 #define SVC_GET_MAX_WORKBUF_SIZE	0x45
 #define SVC_SHA				0x46
+#define SVC_RSAPKCS_VERIFY		0x47
 
 typedef struct _RSAPSS_VERIFY_PARAMS_T
 {
@@ -63,6 +64,17 @@ typedef struct _RSAPSS_VERIFY_PARAMS_T
 	unsigned int	ExpSize;        // Exponent length in bytes
 	char		*pSig;          // Signature to be verified, same size as ModulusSize
 } RSAPSS_VERIFY_PARAMS;
+
+typedef struct RSAPKCS_VERIFY_PARAMS_T
+{
+	char		*pHash;         // Message digest to verify the RSA signature
+	unsigned int	HashLen;        // hash length in bytes
+	char		*pModulus;      // Modulus address
+	unsigned int	ModulusSize;    // Modulus length in bytes
+	char		*pExponent;     // Exponent address
+	unsigned int	ExpSize;        // Exponent length in bytes
+	char		*pSig;          // Signature to be verified, same size as ModulusSize
+} RSAPKCS_VERIFY_PARAMS;
 
 typedef enum _PSP_BOOT_MODE
 {
@@ -347,7 +359,8 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size);
  */
 uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
 
-/* RSA PSS Verification of signature and data
+/*
+ * RSA PSS Verification of signature and data
  *
  * Parameters:
  *     RSAPSS_VERIFY_PARAMS   -   Pointer to RSA PSS parameters
@@ -355,6 +368,16 @@ uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
  * Return value: BL_OK or error code
  */
 uint32_t svc_rsa_pss_verify(const RSAPSS_VERIFY_PARAMS *params);
+
+/*
+ * RSA PKCS Verification of signature and data
+ *
+ * Parameters:
+ *     RSAPKCS_VERIFY_PARAMS   -   Pointer to RSA PKCS parameters
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *params);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

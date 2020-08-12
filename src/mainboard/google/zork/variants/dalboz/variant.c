@@ -10,6 +10,8 @@
 #include <string.h>
 
 #define EC_PNP_ID 0x0c09
+#define DALBOZ_DB_USBC 0x0
+#define DALBOZ_DB_HDMI 0x1
 
 /* Look for an EC device of type PNP with id 0x0c09 */
 static bool match_ec_dev(DEVTREE_CONST struct device *dev)
@@ -104,30 +106,22 @@ static void update_audio_configuration(void)
 	cfg->remote_bus = 5;
 }
 
-static int sku_has_emmc(void)
-{
-	uint32_t board_sku = sku_id();
-
-	/* Factory flow requires all OS boot media to be enabled. */
-	if (boot_is_factory_unprovisioned())
-		return 1;
-
-	/* FIXME: This needs to be fw_config controlled. */
-	/* Enable emmc0 for unknown skus. Only sku3/0xC really has it. */
-	if (board_sku == 0x5A80000C || board_sku == 0x5A800003 || board_sku == CROS_SKU_UNKNOWN)
-		return 1;
-
-	return 0;
-}
-
 void variant_devtree_update(void)
 {
+	uint32_t board_version;
 	struct soc_amd_picasso_config *cfg;
 
 	cfg = config_of_soc();
 
-	if (sku_has_emmc()) {
-		if ((sku_id() == 0x5A800003) || (sku_id() == 0x5A80000C)) {
+	/*
+	 * If CBI board version cannot be read, assume this is an older revision
+	 * of hardware.
+	 */
+	if (google_chromeec_cbi_get_board_version(&board_version) != 0)
+		board_version = 1;
+
+	if (variant_has_emmc() || boot_is_factory_unprovisioned()) {
+		if (board_version <= 2) {
 			/*
 			 * rev0 and rev1 boards have issues with HS400
 			 *
@@ -196,14 +190,15 @@ void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
 				      const fsp_ddi_descriptor **ddi_descs,
 				      size_t *ddi_num)
 {
-	uint32_t board_sku = sku_id();
+	uint32_t daughterboard_id = variant_get_daughterboard_id();
 
 	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
 
-	/* SKU 1, A, and D DB have HDMI, as well as unknown */
-	/* FIXME: this needs to be fw_config controlled. */
-	if ((board_sku == 0x5A80000A) || (board_sku == 0x5A80000D) || (board_sku == 0x5A800001)
-	    || (board_sku == CROS_SKU_UNKNOWN)) {
+	/*
+	 * Get daughterboard id from FW_CONFIG and configure descriptors accordingly.
+	 * For unprovisioned boards use DB_HDMI as default.
+	 */
+	if ((daughterboard_id == DALBOZ_DB_HDMI) || boot_is_factory_unprovisioned()) {
 		*ddi_descs = &hdmi_ddi_descriptors[0];
 		*ddi_num = ARRAY_SIZE(hdmi_ddi_descriptors);
 	} else {

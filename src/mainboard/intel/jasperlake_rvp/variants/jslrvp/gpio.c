@@ -31,6 +31,9 @@ static const struct pad_config gpio_table[] = {
 	/* PMC_PLT_RST_N */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 
+	/* CAM1_RST_N */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),
+
 	/* M.2_WLAN_PERST_N */
 	PAD_CFG_GPO(GPP_B17, 1, PLTRST),
 
@@ -76,8 +79,17 @@ static const struct pad_config gpio_table[] = {
 	/* CAM2_PWREN */
 	PAD_CFG_GPO(GPP_D4, 0, PLTRST),
 
+	/* CAM1_PWREN */
+	PAD_CFG_GPO(GPP_D5, 0, PLTRST),
+
 	/*LAN_RST_N*/
 	PAD_CFG_GPO(GPP_D6, 1, PLTRST),
+
+	/* I2C4B_SDA */
+	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF3),
+
+	/* I2C4B_SCL */
+	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF3),
 
 	/* AVS_I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
@@ -96,6 +108,9 @@ static const struct pad_config gpio_table[] = {
 
 	/* I2C5_SCL */
 	PAD_CFG_NF(GPP_D23, NONE, PLTRST, NF1),
+
+	/* IMGCLKOUT_0 */
+	PAD_CFG_NF(GPP_E0, NONE, DEEP, NF2),
 
 	/* IMGCLKOUT_1 */
 	PAD_CFG_NF(GPP_E2, NONE, PLTRST, NF1),

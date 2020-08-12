@@ -60,6 +60,8 @@ struct ite_ec_fan_smartconfig {
 	u8 smoothing;	/* enable smoothing				*/
 	u8 pwm_start;	/* start at this duty cycle (%)			*/
 	u8 slope;	/* increase duty cycle by `slope`%/°C		*/
+	u8 clsd_loop;	/* tachometer closed-loop mode enable		*/
+	u16 rpm_start;	/* start at this RPM (clsd_loop = 1)		*/
 };
 
 struct ite_ec_fan_config {

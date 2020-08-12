@@ -91,6 +91,7 @@
 						? (0x1e + ((x)-4))	\
 						: (0x15 + ((x)-1))	\
 	)
+#define   ITE_EC_FAN_PWM_CLSD_LOOP		(1 << 2)
 
 #if CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS)
 #define   ITE_EC_FAN_CTL_TEMPIN_MASK		(7 << 3)
@@ -109,6 +110,13 @@
 		(_p >= 100)					\
 			? ITE_EC_FAN_MAX_PWM			\
 			: (_p * ITE_EC_FAN_MAX_PWM) / 100;	\
+	  })
+#define   ITE_EC_FAN_CTL_PWM_RPM(p)		\
+	  ({					\
+		const unsigned int _p = p;			\
+		(_p >= 4080)					\
+			? 0xFF			\
+			: (_p / 16);	\
 	  })
 
 #define ITE_EC_HIGH_TEMP_LIMIT(x)		(0x40 + ((x-1) * 2))
@@ -178,6 +186,7 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 /* Common for ITE_EC_FAN_CTL_PWM_START */
 #define   ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(s)	(((s) & 0x40) << 1)
 #define   ITE_EC_FAN_CTL_PWM_START_DUTY(p)	ITE_EC_FAN_CTL_PWM_DUTY(p)
+#define   ITE_EC_FAN_CTL_PWM_START_RPM(p)	ITE_EC_FAN_CTL_PWM_RPM(p)
 
 /* Common for ITE_EC_FAN_CTL_PWM_AUTO */
 #define   ITE_EC_FAN_CTL_AUTO_SMOOTHING_EN	(1 << 7)

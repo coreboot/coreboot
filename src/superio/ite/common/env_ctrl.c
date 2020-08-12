@@ -128,13 +128,19 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 		pwm_ctrl = ITE_EC_FAN_CTL_PWM_MODE_AUTOMATIC;
 		pwm_ctrl |= ITE_EC_FAN_CTL_TEMPIN(conf->tmpin);
 
-		pwm_start = ITE_EC_FAN_CTL_PWM_START_DUTY(conf->pwm_start);
-
-		if (CONFIG(SUPERIO_ITE_ENV_CTRL_7BIT_SLOPE_REG)) {
-			pwm_auto = conf->slope & 0x7f;
-		} else {
-			pwm_start |= ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(conf->slope);
+		if (conf->clsd_loop) {
+			pwm_ctrl |= ITE_EC_FAN_PWM_CLSD_LOOP;
+			pwm_start = ITE_EC_FAN_CTL_PWM_START_RPM(conf->rpm_start);
 			pwm_auto = ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(conf->slope);
+		} else {
+			pwm_start = ITE_EC_FAN_CTL_PWM_START_DUTY(conf->pwm_start);
+
+			if (CONFIG(SUPERIO_ITE_ENV_CTRL_7BIT_SLOPE_REG)) {
+				pwm_auto = conf->slope & 0x7f;
+			} else {
+				pwm_start |= ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(conf->slope);
+				pwm_auto = ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(conf->slope);
+			}
 		}
 
 		if (conf->smoothing)

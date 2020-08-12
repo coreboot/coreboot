@@ -72,5 +72,7 @@ bool variant_uses_v3_6_schematics(void);
 bool variant_uses_codec_gpi(void);
 /* Return true if variant has active low power enable fow WiFi. */
 bool variant_has_active_low_wifi_power(void);
+/* Return value of daughterboard ID */
+int variant_get_daughterboard_id(void);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

@@ -144,3 +144,8 @@ bool variant_has_active_low_wifi_power(void)
 
 	return true;
 }
+
+int variant_get_daughterboard_id(void)
+{
+	return extract_field(FW_CONFIG_MASK_DB_INDEX, FW_CONFIG_DB_INDEX_SHIFT);
+}

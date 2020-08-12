@@ -74,7 +74,7 @@ static const struct pad_config gpio_table[] = {
 	/* SDCARD_WP_1V8 */
 	PAD_CFG_GPI_GPIO_DRIVER(GPIO_186, DN_20K, DEEP),
 	/* SD_PWR_EN_1V8 - Always enabled SDCard. */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_183, 0, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_183, 0, UP_20K, DEEP),
 
 	/* West Community */
 
@@ -208,15 +208,15 @@ static const struct pad_config gpio_table[] = {
 	/* EDP_VDD_EN_1V8  (DNI) - Alternative stuffing option for
 	 * PTN3460 LVDS_VDD_EN.
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_196, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_196, 1, UP_20K, DEEP),
 	/* EDP_BKLT_EN_1V8 (DNI) - Alternative stuffing option for
 	 * PTN3460 LVDS_BKLT_EN
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_197, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_197, 1, UP_20K, DEEP),
 	/* EDP_BKLT_CTRL_1V8 - Alternative stuffing option for
 	 * PTN3460 LVDS_BKLT_CTRL
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_198, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_198, 1, UP_20K, DEEP),
 
 	/* DDI1_HPD# - Connect to DP1_HPD Hot plug detection signal of SMARC
 	 * Connector.
@@ -263,8 +263,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* Not connected */
 	PAD_CFG_NF(PMIC_PWRGOOD, UP_20K, DEEP, NF1),
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_214, 1, DEEP, DN_20K),
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_215, 1, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_214, 1, DN_20K, DEEP),
+	PAD_CFG_TERM_GPO(GPIO_215, 1, DN_20K, DEEP),
 	/* THERMTRIP_1V8# - Connected to CPLD */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(PMIC_THERMTRIP_B, UP_20K, DEEP, NF1,
 				    TxLASTRxE, SAME),
@@ -390,15 +390,15 @@ static const struct pad_config gpio_table[] = {
 	/* OTG_SEL_1V8 - Connected to a USB MUX to select between USB2_DP0 (OTG)
 	 * and USB2_DP6. 1:OTG, 0:USB
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_9, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_9, 1, UP_20K, DEEP),
 	/* EN_I2CPM_EXT_1V8 - Connected to OE pin of I2C Re-driver.
 	 * Allow/Disallow I2C signal to pass through to SMARC Connector.
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_10, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_10, 1, UP_20K, DEEP),
 	/* EN_SMB_EXT_1V8 - Connected to OE pin of I2C Re-driver.
 	 * Allow/Disallow SMBUS signal to pass through to SMARC Connector.
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_11, 0, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_11, 0, UP_20K, DEEP),
 	/* BOOT_SEL2_1V8# - Three Module pins allow the Carrier board user to
 	 * select from eight possible boot devices.
 	 */
@@ -413,13 +413,13 @@ static const struct pad_config gpio_table[] = {
 	 */
 	PAD_CFG_GPI_INT(GPIO_14, UP_20K, DEEP, OFF),
 	/* GPIO_CPLD_TCK_1V8 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_15, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_15, 0, DN_20K, DEEP),
 	/* GPIO_CPLD_TMS_1V8 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_16, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_16, 0, DN_20K, DEEP),
 	/* GPIO_CPLD_TDI_1V8 */
 	PAD_CFG_GPI_INT(GPIO_17, DN_20K, DEEP, OFF),
 	/* GPIO_CPLD_TDO_1V8 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_18, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_18, 0, DN_20K, DEEP),
 	/* PM_TEST_1V8# connect to the SMARC Connector TEST# pin.
 	 * Held low by Carrier to invoke Module vendor specific test function.
 	 * Pulled up on Module. Driven by OD part on Carrier.
@@ -464,9 +464,9 @@ static const struct pad_config gpio_table[] = {
 	/* SMB_ALERT_GPIO# */
 	PAD_CFG_GPI_INT(GPIO_27, UP_20K, DEEP, OFF),
 	/* GPIO_28_DEBUG - Connect to HOOK5 (ClkOut#) pin of XDP connector */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_28, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_28, 1, UP_20K, DEEP),
 	/* GPIO_29_DEBUG - Connect to HOOK4 (ClkOut) pin of XDP connector */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_29, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_29, 0, DN_20K, DEEP),
 
 	/* Not connected */
 	PAD_CFG_GPI_INT(GPIO_30, DN_20K, DEEP, OFF),
@@ -484,21 +484,21 @@ static const struct pad_config gpio_table[] = {
 	/* STRAP_GPIO_36 (int. PD) */
 	PAD_CFG_GPI_INT(GPIO_36, DN_20K, DEEP, OFF),
 	/* Not connected */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_37, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_37, 0, DN_20K, DEEP),
 
 	/* GPIO_VALID (CPLD=gpio_valid/pi_gpio_en)- This pin Enable the CPLD
 	 * GPIO to the SMARC Connector.
 	 */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_62, 1, DEEP, UP_20K),
+	PAD_CFG_TERM_GPO(GPIO_62, 1, UP_20K, DEEP),
 	/* LVDS_ENABLE_1V8# connect to PTN3460 DP to LVDS converter chip. */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_63, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_63, 0, DN_20K, DEEP),
 	/* Not connected */
 	PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_64, DN_20K, DEEP, HIZCRx0, SAME),
 	/* Not connected */
 	PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_65, DN_20K, DEEP, HIZCRx0, SAME),
 	/* CAM_CS0_CS1_SEL - Serial Cameras interfaces Select - to select
 	 * between the two MIPI CSI camera interfaces on the SMARC connector. */
-	PAD_CFG_GPO_GPIO_DRIVER(GPIO_66, 0, DEEP, DN_20K),
+	PAD_CFG_TERM_GPO(GPIO_66, 0, DN_20K, DEEP),
 	/* MCSI0_RST_1V8# - Reset the MIPI CSI camera interfaces 0 */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_67, 0, DEEP, DN_20K, HIZCRx0, SAME),
 	/* MCSI1_RST_1V8# - Reset the MIPI CSI camera interfaces 1 */

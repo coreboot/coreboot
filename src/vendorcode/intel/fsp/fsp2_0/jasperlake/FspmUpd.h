@@ -2268,7 +2268,7 @@ typedef struct {
   UINT8                       EpgEnable;
 
 /** Offset 0x0567 - Row Hammer Solution
-  Type of method used to prevent Row Hammer. Default is Hardware RHP
+  Type of method used to prevent Row Hammer. Default is 2x Refresh
   0:Hardware RHP, 1:2x Refresh
 **/
   UINT8                       RhSolution;
@@ -2526,189 +2526,189 @@ typedef struct {
 
 /** Offset 0x05B6 - Reserved
 **/
-  UINT8                       Reserved32[98];
+  UINT8                       Reserved32[100];
 
-/** Offset 0x0618 - TotalFlashSize
+/** Offset 0x061A - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
 **/
   UINT16                      TotalFlashSize;
 
-/** Offset 0x061A - BiosSize
+/** Offset 0x061C - BiosSize
   The size of the BIOS region of the IFWI. Used if FspmUpd->FspmConfig.BiosGuard !=
   0. If BiosGuard is enabled, MRC will increase the size of the DPR (DMA Protected
   Range) so that a BIOS Update Script can be stored in the DPR.
 **/
   UINT16                      BiosSize;
 
-/** Offset 0x061C - TxtAcheckRequest
+/** Offset 0x061E - TxtAcheckRequest
   Enable/Disable. When Enabled, after memory training is done MRC will request an
   ACHECK (Memory Alias Check) be done by TXT.
   $EN_DIS
 **/
   UINT8                       TxtAcheckRequest;
 
-/** Offset 0x061D - Reserved
+/** Offset 0x061F - Reserved
 **/
   UINT8                       Reserved33[11];
 
-/** Offset 0x0628 - Smbus dynamic power gating
+/** Offset 0x062A - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
   $EN_DIS
 **/
   UINT8                       SmbusDynamicPowerGating;
 
-/** Offset 0x0629 - Disable and Lock Watch Dog Register
+/** Offset 0x062B - Disable and Lock Watch Dog Register
   Set 1 to clear WDT status, then disable and lock WDT registers.
   $EN_DIS
 **/
   UINT8                       WdtDisableAndLock;
 
-/** Offset 0x062A - SMBUS SPD Write Disable
+/** Offset 0x062C - SMBUS SPD Write Disable
   Set/Clear Smbus SPD Write Disable. 0: leave SPD Write Disable bit; 1: set SPD Write
   Disable bit. For security recommendations, SPD write disable bit must be set.
   $EN_DIS
 **/
   UINT8                       SmbusSpdWriteDisable;
 
-/** Offset 0x062B - VC Type
+/** Offset 0x062D - VC Type
   Virtual Channel Type Select: 0: VC0, 1: VC1.
   0: VC0, 1: VC1
 **/
   UINT8                       PchHdaVcType;
 
-/** Offset 0x062C - Universal Audio Architecture compliance for DSP enabled system
+/** Offset 0x062E - Universal Audio Architecture compliance for DSP enabled system
   0: Not-UAA Compliant (Intel SST driver supported only), 1: UAA Compliant (HDA Inbox
   driver or SST driver supported).
   $EN_DIS
 **/
   UINT8                       PchHdaDspUaaCompliance;
 
-/** Offset 0x062D - Enable HD Audio Link
+/** Offset 0x062F - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
   $EN_DIS
 **/
   UINT8                       PchHdaAudioLinkHdaEnable;
 
-/** Offset 0x062E - Reserved
+/** Offset 0x0630 - Reserved
 **/
   UINT8                       Reserved34[3];
 
-/** Offset 0x0631 - Enable HD Audio DMIC_N Link
+/** Offset 0x0633 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
 **/
   UINT8                       PchHdaAudioLinkDmicEnable[2];
 
-/** Offset 0x0633 - Reserved
+/** Offset 0x0635 - Reserved
 **/
-  UINT8                       Reserved35[17];
+  UINT8                       Reserved35[19];
 
-/** Offset 0x0644 - Enable HD Audio DSP
+/** Offset 0x0648 - Enable HD Audio DSP
   Enable/disable HD Audio DSP feature.
   $EN_DIS
 **/
   UINT8                       PchHdaDspEnable;
 
-/** Offset 0x0645 - Reserved
+/** Offset 0x0649 - Reserved
 **/
   UINT8                       Reserved36[11];
 
-/** Offset 0x0650 - Enable HD Audio SSP0 Link
+/** Offset 0x0654 - Enable HD Audio SSP0 Link
   Enable/disable HD Audio SSP_N/I2S link. Muxed with HDA. N-number 0-5
 **/
   UINT8                       PchHdaAudioLinkSspEnable[6];
 
-/** Offset 0x0656 - Enable HD Audio SoundWire#N Link
+/** Offset 0x065A - Enable HD Audio SoundWire#N Link
   Enable/disable HD Audio SNDW#N link. Muxed with HDA.
 **/
   UINT8                       PchHdaAudioLinkSndwEnable[4];
 
-/** Offset 0x065A - iDisp-Link Frequency
+/** Offset 0x065E - iDisp-Link Frequency
   iDisp-Link Freq (PCH_HDAUDIO_LINK_FREQUENCY enum): 4: 96MHz, 3: 48MHz.
   4: 96MHz, 3: 48MHz
 **/
   UINT8                       PchHdaIDispLinkFrequency;
 
-/** Offset 0x065B - iDisp-Link T-mode
+/** Offset 0x065F - iDisp-Link T-mode
   iDisp-Link T-Mode (PCH_HDAUDIO_IDISP_TMODE enum): 0: 2T, 2: 4T, 3: 8T, 4: 16T
   0: 2T, 2: 4T, 3: 8T, 4: 16T
 **/
   UINT8                       PchHdaIDispLinkTmode;
 
-/** Offset 0x065C - iDisplay Audio Codec disconnection
+/** Offset 0x0660 - iDisplay Audio Codec disconnection
   0: Not disconnected, enumerable, 1: Disconnected SDI, not enumerable.
   $EN_DIS
 **/
   UINT8                       PchHdaIDispCodecDisconnect;
 
-/** Offset 0x065D - Force ME DID Init Status
+/** Offset 0x0661 - Force ME DID Init Status
   Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, Set
   ME DID init stat value
   $EN_DIS
 **/
   UINT8                       DidInitStat;
 
-/** Offset 0x065E - CPU Replaced Polling Disable
+/** Offset 0x0662 - CPU Replaced Polling Disable
   Test, 0: disable, 1: enable, Setting this option disables CPU replacement polling loop
   $EN_DIS
 **/
   UINT8                       DisableCpuReplacedPolling;
 
-/** Offset 0x065F - Check HECI message before send
+/** Offset 0x0663 - Check HECI message before send
   Test, 0: disable, 1: enable, Enable/Disable message check.
   $EN_DIS
 **/
   UINT8                       DisableMessageCheck;
 
-/** Offset 0x0660 - Skip MBP HOB
+/** Offset 0x0664 - Skip MBP HOB
   Test, 0: disable, 1: enable, Enable/Disable MOB HOB.
   $EN_DIS
 **/
   UINT8                       SkipMbpHob;
 
-/** Offset 0x0661 - HECI2 Interface Communication
+/** Offset 0x0665 - HECI2 Interface Communication
   Test, 0: disable, 1: enable, Adds or Removes HECI2 Device from PCI space.
   $EN_DIS
 **/
   UINT8                       HeciCommunication2;
 
-/** Offset 0x0662 - Enable KT device
+/** Offset 0x0666 - Enable KT device
   Test, 0: disable, 1: enable, Enable or Disable KT device.
   $EN_DIS
 **/
   UINT8                       KtDeviceEnable;
 
-/** Offset 0x0663 - Skip CPU replacement check
+/** Offset 0x0667 - Skip CPU replacement check
   Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
   $EN_DIS
 **/
   UINT8                       SkipCpuReplacementCheck;
 
-/** Offset 0x0664 - Serial Io Uart Debug Mode
+/** Offset 0x0668 - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
   0:SerialIoUartDisabled, 1:SerialIoUartPci, 2:SerialIoUartHidden, 3:SerialIoUartCom,
   4:SerialIoUartSkipInit
 **/
   UINT8                       SerialIoUartDebugMode;
 
-/** Offset 0x0665 - Reserved
+/** Offset 0x0669 - Reserved
 **/
   UINT8                       Reserved37[19];
 
-/** Offset 0x0678 - Avx2 Voltage Guardband Scaling Factor
+/** Offset 0x067C - Avx2 Voltage Guardband Scaling Factor
   AVX2 Voltage Guardband Scale factor applied to AVX2 workloads. Range is 0-200 in
   1/100 units, where a value of 125 would apply a 1.25 scale factor.
 **/
   UINT8                       Avx2VoltageScaleFactor;
 
-/** Offset 0x0679 - Avx512 Voltage Guardband Scaling Factor
+/** Offset 0x067D - Avx512 Voltage Guardband Scaling Factor
   AVX512 Voltage Guardband Scale factor applied to AVX512 workloads. Range is 0-200
   in 1/100 units, where a value of 125 would apply a 1.25 scale factor.
 **/
   UINT8                       Avx512VoltageScaleFactor;
 
-/** Offset 0x067A - Reserved
+/** Offset 0x067E - Reserved
 **/
-  UINT8                       Reserved38[22];
+  UINT8                       Reserved38[18];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -2729,7 +2729,7 @@ typedef struct {
 
 /** Offset 0x0690
 **/
-  UINT8                       UnusedUpdSpace21[6];
+  UINT8                       UnusedUpdSpace22[6];
 
 /** Offset 0x0696
 **/

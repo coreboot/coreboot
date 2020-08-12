@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/smbus_host.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 #include "pch.h"
@@ -57,7 +58,7 @@ static void pch_generic_setup(void)
 {
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
+	write_pmbase16(0x60 | 0x08, (1 << 11));	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
 }
 

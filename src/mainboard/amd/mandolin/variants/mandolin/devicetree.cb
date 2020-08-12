@@ -5,15 +5,7 @@ chip soc/amd/picasso
 
 	# Set FADT Configuration
 	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
-	register "fadt_flags" = "ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
-				ACPI_FADT_C1_SUPPORTED |
-				ACPI_FADT_SLEEP_BUTTON |
-				ACPI_FADT_S4_RTC_WAKE |
-				ACPI_FADT_32BIT_TIMER |
-				ACPI_FADT_PCI_EXPRESS_WAKE |
-				ACPI_FADT_PLATFORM_CLOCK |
-				ACPI_FADT_S4_RTC_VALID |
-				ACPI_FADT_REMOTE_POWER_ON"
+	register "fadt_flags" = "ACPI_FADT_SLEEP_BUTTON" # See table 5-34 ACPI 6.3 spec
 
 	register "sd_emmc_config" = "SD_EMMC_DISABLE"
 

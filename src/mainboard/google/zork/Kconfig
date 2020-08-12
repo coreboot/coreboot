@@ -143,18 +143,6 @@ config PICASSO_FW_B_POSITION
 	  Location of the AMD firmware in the RW_B region. This is the
 	  start of the RW-A region + 64 bytes for the cbfs header.
 
-config VARIANT_HAS_FW_CONFIG
-	bool
-	help
-	  Honor FW_CONFIG in CBI.
-
-config VARIANT_BOARD_VER_FW_CONFIG_VALID
-	int
-	default 256
-	depends on VARIANT_HAS_FW_CONFIG
-	help
-	  Which board version did FW_CONFIG become valid in CBI.
-
 config VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	bool
 	default y if BOARD_GOOGLE_TREMBYLE

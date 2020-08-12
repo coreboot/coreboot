@@ -48,35 +48,9 @@ enum {
 	FW_CONFIG_SHIFT_FAN = 27,
 };
 
-int variant_fw_config_valid(void)
-{
-	static uint32_t board_version;
-	const uint32_t bv_valid = CONFIG_VARIANT_BOARD_VER_FW_CONFIG_VALID;
-
-	if (!CONFIG(VARIANT_HAS_FW_CONFIG))
-		return 0;
-
-	/* Fast path for non-zero board version. */
-	if (board_version >= bv_valid)
-		return 1;
-
-	if (google_chromeec_cbi_get_board_version(&board_version)) {
-		printk(BIOS_ERR, "Unable to obtain board version for FW_CONFIG\n");
-		return 0;
-	}
-
-	if (board_version >= bv_valid)
-		return 1;
-
-	return 0;
-}
-
 static int get_fw_config(uint32_t *val)
 {
 	static uint32_t known_value;
-
-	if (!variant_fw_config_valid())
-		return -1;
 
 	if (known_value) {
 		*val = known_value;

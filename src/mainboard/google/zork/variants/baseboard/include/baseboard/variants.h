@@ -56,8 +56,6 @@ const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num);
 const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num);
 
 /* Retrieve attributes from FW_CONFIG in CBI. */
-/* Return 1 if FW_CONFIG expected to be valid, else 0. */
-int variant_fw_config_valid(void);
 /* Return 0 if non-existent, 1 if present. */
 int variant_has_emmc(void);
 /* Return 0 if non-existent, 1 if present. */

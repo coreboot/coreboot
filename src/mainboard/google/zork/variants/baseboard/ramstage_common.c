@@ -19,7 +19,6 @@ extern struct chip_operations drivers_i2c_hid_ops;
 
 static void update_hp_int_odl(void)
 {
-
 	static const struct device_path rt5682_path[] = {
 		{
 			.type = DEVICE_PATH_PCI,
@@ -44,6 +43,7 @@ static void update_hp_int_odl(void)
 	const struct device *rt5682_dev;
 	struct drivers_i2c_generic_config *cfg;
 	struct acpi_gpio *gpio;
+	struct soc_amd_picasso_config *soc_cfg;
 
 	if (!variant_uses_codec_gpi())
 		return;
@@ -65,6 +65,13 @@ static void update_hp_int_odl(void)
 	gpio = &cfg->irq_gpio;
 	gpio->pins[0] = 62;
 
+	/*
+	 * When using CODEC_GPI for headphone jack interrupt, ACP_PME_EN and ACP_I2S_WAKE_EN
+	 * need to be set to trigger I2S_WAKE event for headphone jack.
+	 */
+	soc_cfg = config_of_soc();
+	soc_cfg->acp_i2s_wake_enable = 1;
+	soc_cfg->acpi_pme_enable = 1;
 }
 
 static void update_dmic_gpio(void)

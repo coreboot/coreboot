@@ -1715,33 +1715,33 @@ typedef struct {
 **/
   UINT8                       SkipSpiPCP;
 
-/** Offset 0x03AB - PMIC PCH_PWROK delay configuration - IPC Configuration
-  Upd for changing PCH_PWROK delay configuration : I2C_Slave_Address (31:24) + Register_Offset
-  (23:16) + OR Value (15:8) + AND Value (7:0)
-**/
-  UINT32                      PmicPmcIpcCtrl;
-
-/** Offset 0x03AF - ModPhyIfValue
+/** Offset 0x03AB - ModPhyIfValue
   Upd To modify the Integrated Filter (IF) value as 0x12(Default) for WIN and 0x16
   for Chrome
 **/
   UINT8                       ModPhyIfValue;
 
-/** Offset 0x03B0 - ModPhyVoltageBump
-  ModPhyVoltageBump. 1: enable, 0: disable
-  $EN_DIS
+/** Offset 0x03AC - PMIC PCH_PWROK delay configuration - IPC Configuration
+  Upd for changing PCH_PWROK delay configuration : I2C_Slave_Address (31:24) + Register_Offset
+  (23:16) + OR Value (15:8) + AND Value (7:0)
 **/
-  UINT8                       ModPhyVoltageBump;
+  UINT32                      PmicPmcIpcCtrl;
 
-/** Offset 0x03B1 - Vdd2 Voltage configuration
+/** Offset 0x03B0 - Vdd2 Voltage configuration
   Upd for changing Vdd2 Voltage configuration : I2C_Slave_Address (31:23) + Register_Offset
   (23:16) + OR Value (15:8) + AND Value (7:0)
 **/
   UINT32                      PmicVdd2Voltage;
 
+/** Offset 0x03B4 - ModPhyVoltageBump
+  ModPhyVoltageBump. 1: enable, 0: disable
+  $EN_DIS
+**/
+  UINT8                       ModPhyVoltageBump;
+
 /** Offset 0x03B5
 **/
-  UINT8                       ReservedFspsUpd[1];
+  UINT8                       ReservedFspsUpd[3];
 } FSP_S_CONFIG;
 
 /** Fsp S SGX Configuration
@@ -1810,9 +1810,9 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x03B6
+/** Offset 0x03B8
 **/
-  UINT8                       UnusedUpdSpace7[10];
+  UINT8                       UnusedUpdSpace7[8];
 
 /** Offset 0x03C0
 **/

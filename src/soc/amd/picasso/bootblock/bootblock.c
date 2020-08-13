@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <symbols.h>
+#include <amdblocks/reset.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
@@ -9,6 +10,8 @@
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+#include <pc80/mc146818rtc.h>
+#include <soc/psp_transfer.h>
 #include <soc/southbridge.h>
 #include <soc/i2c.h>
 #include <amdblocks/amd_pci_mmconf.h>
@@ -135,7 +138,11 @@ void bootblock_soc_init(void)
 
 		printk(BIOS_DEBUG, "Signature: %#08x\n", *(uint32_t *)_vboot2_work);
 
-		die("Halting.\n");
+		cmos_init(0);
+		cmos_write(CMOS_RECOVERY_MAGIC_VAL, CMOS_RECOVERY_BYTE);
+		warm_reset();
+	} else {
+		cmos_write(0x00, CMOS_RECOVERY_BYTE);
 	}
 #endif
 

@@ -5,10 +5,11 @@
 #include <bl_uapp/bl_syscall_public.h>
 #include <boot_device.h>
 #include <cbfs.h>
-#include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <pc80/mc146818rtc.h>
 #include <soc/psp_transfer.h>
+#include <security/vboot/vbnv.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
@@ -33,6 +34,22 @@ static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 
 	svc_debug_print("Rebooting into recovery\n");
 	vboot_reboot();
+}
+
+static uint32_t check_cmos_recovery(void)
+{
+	/* Only reset if cmos is valid */
+	if (vbnv_cmos_failed())
+		return 0;
+
+	/* If the byte is set, clear it, then return error to reboot */
+	if (cmos_read(CMOS_RECOVERY_BYTE) == CMOS_RECOVERY_MAGIC_VAL) {
+		cmos_write(0x00, CMOS_RECOVERY_BYTE);
+		printk(BIOS_DEBUG, "Reboot into recovery requested by coreboot\n");
+		return POSTCODE_CMOS_RECOVERY;
+	}
+
+	return 0;
 }
 
 static uintptr_t locate_amdfw(const char *name, struct region_device *rdev)
@@ -216,6 +233,9 @@ void Main(void)
 
 	vb2api_relocate(_vboot2_work, _vboot2_work, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
 			&ctx);
+	retval = check_cmos_recovery();
+	if (retval)
+		goto err;
 
 	post_code(POSTCODE_SAVE_BUFFERS);
 	retval = save_buffers(&ctx);

@@ -62,7 +62,7 @@ config PXE_ROM_ID
 
 config MAX_CPUS
 	int
-	default 2
+	default 4
 
 config LINUX_COMMAND_LINE
 	string

@@ -47,4 +47,8 @@ config DIMM_MAX
 	int
 	default 6
 
+config CONSOLE_POST
+	bool
+	default y
+
 endif # BOARD_OCP_DELTALAKE

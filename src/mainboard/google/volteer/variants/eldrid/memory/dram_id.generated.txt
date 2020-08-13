@@ -1,0 +1,7 @@
+DRAM Part Name                 ID to assign
+H5AN8G6NDJR-XNC                0 (0000)
+MT40A512M16TB-062E:J           1 (0001)
+H5ANAG6NCMR-XNC                2 (0010)
+K4A8G165WC-BCWE                0 (0000)
+K4AAG165WA-BCWE                3 (0011)
+MT40A1G16KD-062E:E             3 (0011)

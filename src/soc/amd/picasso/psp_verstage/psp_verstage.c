@@ -12,8 +12,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define RUN_PSP_SVC_TESTS 0
-
 extern char _bss_start, _bss_end;
 static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);

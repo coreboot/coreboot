@@ -1,0 +1,37 @@
+{
+    "parts": [
+        {
+            "name": "H5AN8G6NDJR-XNC",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "deviceBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        },
+        {
+            "name": "MT40A512M16TB-062E:J",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "deviceBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        },
+        {
+            "name": "H5ANAG6NCMR-XNC",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 2,
+                "deviceBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        }
+    ]
+}

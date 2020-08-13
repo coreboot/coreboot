@@ -285,4 +285,8 @@ chip soc/intel/apollolake
 	# PWROKDELAY[2:0]: 000=2.5ms, 001=5.0ms, 010=10ms, 011=15ms, 100=20ms,
 	#                  101=50ms, 110=75ms, 111=100ms (default)
 	register "PmicPmcIpcCtrl" = "0x5e4302f8"
+
+	# FSP UPD to modify the Integrated Filter (IF) value
+	# 0x12(Default) for Windows, 0x16 for Chrome
+	register "ModPhyIfValue" = "0x16"
 end

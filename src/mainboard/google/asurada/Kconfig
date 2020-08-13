@@ -41,9 +41,11 @@ config DRIVER_TPM_SPI_BUS
 	hex
 	default 0x0
 
+# On MT8192 the SPI flash is actually using a SPI-NOR controller with its own bus.
+# The number here should be a virtual value as (SPI_BUS_NUMBER + 1).
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int
-	default 1
+	default 9
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex

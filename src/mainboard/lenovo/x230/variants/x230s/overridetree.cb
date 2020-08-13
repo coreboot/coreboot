@@ -8,7 +8,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_port_select" = "1"			# eDP
 	register "gpu_panel_power_backlight_off_delay" = "1"	# 0.1ms
 	register "gpu_panel_power_backlight_on_delay" = "1"	# 0.1ms
-	register "gpu_panel_power_down_delay" = "500" 		# 50ms
+	register "gpu_panel_power_down_delay" = "500"		# 50ms
 	register "gpu_panel_power_up_delay" = "2000"		# 200ms
 
 	device domain 0 on

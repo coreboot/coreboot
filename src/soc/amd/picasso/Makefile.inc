@@ -251,7 +251,7 @@ endif
 PSP_VERSTAGE_FILE=$(obj)/psp_verstage.bin
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
-APOB_NV_SIZE=$(shell printf "0x%x" 	$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))
+APOB_NV_SIZE=$(shell printf "0x%x" $(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))
 APOB_NV_BASE=$(shell printf "0x%x" $(call int-add, \
 			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
 			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \

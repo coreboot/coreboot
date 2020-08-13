@@ -379,7 +379,7 @@ Scope (\_SB.PCI0)
 	 * Poll pCode MailBox Ready
 	 *
 	 * Return 0xFF - Timeout
-	 * 	  0x00 - Ready
+	 *	  0x00 - Ready
 	 */
 	Method (PMBY, 0)
 	{
@@ -405,13 +405,13 @@ Scope (\_SB.PCI0)
 	 * DATA[1:1] TCSS_DEVEN_REQUEST_STATUS:
 	 *	0 - IDLE. TCSS DEVEN has reached its final requested state.
 	 *	1 - In Progress. TCSS DEVEN is currently in progress of switching state
-	 *     	    according to given request (bit 0 reflects source state).
+	 *	    according to given request (bit 0 reflects source state).
 	 *
 	 * Return 0x00 - TCSS Deven in normal state
-	 * 	  0x01 - TCSS Deven is cleared by BIOS Mailbox request
-	 * 	  0x1x - TCSS Deven is in progress of switching state according to given request
-	 * 	  0xFE - Command timeout
-	 * 	  0xFF - Command corrupt
+	 *	  0x01 - TCSS Deven is cleared by BIOS Mailbox request
+	 *	  0x1x - TCSS Deven is in progress of switching state according to given request
+	 *	  0xFE - Command timeout
+	 *	  0xFF - Command corrupt
 	 */
 	Method (DSGS, 0)
 	{

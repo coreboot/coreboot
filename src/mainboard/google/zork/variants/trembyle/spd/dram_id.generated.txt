@@ -1,0 +1,3 @@
+DRAM Part Name                 ID to assign
+H5AN8G6NCJR-VKC                0 (0000)
+H5ANAG6NCMR-VKC                1 (0001)

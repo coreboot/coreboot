@@ -1,18 +1,16 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
+## SPDX-License-Identifier: GPL-2.0-or-later
+## This is an auto-generated file. Do not edit!!
 
-APCB_SOURCES =  micron-MT40A512M16TB-062E-J_x1	# 0b00000
-APCB_SOURCES += hynix-H5AN8G6NCJR-XNC_x1	# 0b00001
-APCB_SOURCES += micron-MT40A1G16KD-062E-E_x1	# 0b00010
-APCB_SOURCES += samsung-K4AAG165WA-BCWE_x1	# 0b00011
-APCB_SOURCES += empty				# 0b00100
-APCB_SOURCES += empty				# 0b00101
-APCB_SOURCES += empty				# 0b00110
-APCB_SOURCES += empty				# 0b00111
-APCB_SOURCES += micron-MT40A512M16TB-062E-J_x2	# 0b01000
-APCB_SOURCES += hynix-H5AN8G6NCJR-XNC_x2	# 0b01001
-APCB_SOURCES += micron-MT40A1G16KD-062E-E_x2	# 0b01010
-APCB_SOURCES += samsung-K4AAG165WA-BCWE_x2	# 0b01011
-APCB_SOURCES += empty				# 0b01100
-APCB_SOURCES += empty				# 0b01101
-APCB_SOURCES += empty				# 0b01110
-APCB_SOURCES += empty				# 0b01111
+SPD_SOURCES =
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 0(0b0000)  Parts = MT40A512M16TB-062E:J
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 1(0b0001)  Parts = H5AN8G6NCJR-XNC
+SPD_SOURCES += ddr4-spd-7.hex      # ID = 2(0b0010)  Parts = MT40A1G16KD-062E:E
+SPD_SOURCES += ddr4-spd-7.hex      # ID = 3(0b0011)  Parts = K4AAG165WA-BCWE
+SPD_SOURCES += ddr4-spd-empty.hex      # ID = 4(0b0100)
+SPD_SOURCES += ddr4-spd-empty.hex      # ID = 5(0b0101)
+SPD_SOURCES += ddr4-spd-empty.hex      # ID = 6(0b0110)
+SPD_SOURCES += ddr4-spd-empty.hex      # ID = 7(0b0111)
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 8(0b1000)  Parts = MT40A512M16TB-062E:J
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 9(0b1001)  Parts = H5AN8G6NCJR-XNC
+SPD_SOURCES += ddr4-spd-7.hex      # ID = 10(0b1010)  Parts = MT40A1G16KD-062E:E
+SPD_SOURCES += ddr4-spd-7.hex      # ID = 11(0b1011)  Parts = K4AAG165WA-BCWE

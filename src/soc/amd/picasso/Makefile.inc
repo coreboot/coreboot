@@ -198,7 +198,7 @@ endif
 #
 
 # type = 0x60
-PSP_APCB_FILES=$(foreach f, $(APCB_SOURCES), $(obj)/APCB_$(f).bin)
+PSP_APCB_FILES=$(foreach f, $(basename $(SPD_SOURCES)), $(obj)/APCB_$(f).bin)
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DRAM_ADDRESS)
@@ -390,16 +390,7 @@ $(obj)/APCB_%.bin: $(MAINBOARD_BLOBS_DIR)/APCB_%.bin
 # APCB binary with magic numbers to be replaced by apcb_edit tool
 APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATE)/APCB_magic.bin
 
-$(obj)/APCB_empty.bin: $(APCB_MAGIC_BLOB) $(APCB_EDIT_TOOL)
-	$(APCB_EDIT_TOOL) \
-	$(APCB_MAGIC_BLOB) \
-	$@ \
-	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
-	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
-	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
-	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
-
-$(obj)/APCB_%_x1.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
+$(obj)/APCB_%.bin:	$$(SPD_SOURCES_DIR)/%.hex \
 			$(APCB_EDIT_TOOL) \
 			$(APCB_MAGIC_BLOB)
 	$(APCB_EDIT_TOOL) \
@@ -408,21 +399,7 @@ $(obj)/APCB_%_x1.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
 	--hex \
 	--strip_manufacturer_information \
 	--spd_0_0 $< \
-	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
-	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
-	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
-	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
-
-$(obj)/APCB_%_x2.bin:	$$(SPD_SOURCES_DIR)/%.spd.hex \
-			$(APCB_EDIT_TOOL) \
-			$(APCB_MAGIC_BLOB)
-	$(APCB_EDIT_TOOL) \
-	$(APCB_MAGIC_BLOB) \
-	$@ \
-	--hex \
-	--strip_manufacturer_information \
-	--spd_0_0 $< \
-	--spd_1_0 $< \
+	$(if $(APCB_POPULATE_2ND_CHANNEL), --spd_1_0 $<, ) \
 	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
 	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
 	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \

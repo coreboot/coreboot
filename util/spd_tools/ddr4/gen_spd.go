@@ -1068,7 +1068,14 @@ func verifySupportedCASLatencies(part *memPart) error {
 }
 
 func validateMemoryParts(memParts *memParts) error {
+	memPartExists := make(map[string]bool)
+
 	for i := 0; i < len(memParts.MemParts); i++ {
+		if memPartExists[memParts.MemParts[i].Name] {
+			return fmt.Errorf(memParts.MemParts[i].Name + " is duplicated in mem_parts_list_json")
+		}
+		memPartExists[memParts.MemParts[i].Name] = true
+
 		if err := validateSpeedMTps(memParts.MemParts[i].Attribs.SpeedMTps); err != nil {
 			return err
 		}

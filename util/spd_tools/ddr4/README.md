@@ -1,14 +1,13 @@
 # DDR4 SPD tools README
 
-Tools for generating SPD files for DDR4 memory used in memory down
-configurations on Intel Tiger Lake (TGL) based
-platforms. These tools generate SPDs following JESD79-4C
+Tools for generating SPD files for DDR4 memory used in platforms with
+memory down configuration. These tools generate SPDs following JESD79-4C
 and Jedec 4.1.2.L-5 R29 v103 specifications.
 
-There are two tools provided that assist TGL based mainboards
-to generate SPDs and Makefile to integrate these SPDs in coreboot
-build. These tools can also be used to allocate DRAM IDs (configure
-DRAM hardware straps) for any DDR4 memory part used by the board.
+There are two tools provided that assist with generating SPDs and Makefiles
+to integrate in coreboot build. These tools can also be used to allocate
+DRAM IDs (configure DRAM hardware straps) for any DDR4 memory part used
+by the board.
 
 * gen_spd.go: Generates de-duplicated SPD files using a global memory
   part list provided by the mainboard in JSON format. Additionally,
@@ -31,7 +30,7 @@ This program takes as input:
   attributes as per the datasheet. This is the list of all known
   DDR4 memory parts irrespective of their usage on the board.
 * SoC platform name for which the SPDs are being generated. Currently
-  supported platform names are `TGL`.
+  supported platform names are `TGL`, `PCO` and `PLK`.
 
 Input JSON file requires the following two fields for every memory part:
 * `name`: Name of the memory part

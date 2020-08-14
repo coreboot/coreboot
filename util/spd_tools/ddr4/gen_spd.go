@@ -29,10 +29,14 @@ const (
 	SPDManifestFileName = "spd_manifest.generated.txt"
 
 	PlatformTGL = 0
+	PlatformPCO = 1
+	PlatformPLK = 2
 )
 
 var platformMap = map[string]int {
 	"TGL": PlatformTGL,
+	"PCO": PlatformPCO,
+	"PLK": PlatformPLK,
 }
 
 var currPlatform int

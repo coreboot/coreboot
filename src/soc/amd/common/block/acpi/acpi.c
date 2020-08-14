@@ -4,7 +4,6 @@
 #include <amdblocks/acpi.h>
 #include <acpi/acpi.h>
 #include <bootmode.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
 #include <halt.h>
@@ -23,13 +22,6 @@ void poweroff(void)
 	 */
 	if (!ENV_SMM)
 		halt();
-}
-
-static uint16_t reset_pm1_status(void)
-{
-	uint16_t pm1_sts = acpi_read16(MMIO_ACPI_PM1_STS);
-	acpi_write16(MMIO_ACPI_PM1_STS, pm1_sts);
-	return pm1_sts;
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
@@ -149,35 +141,6 @@ void acpi_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *sta
 		gnvs->gpei = ~0ULL;
 	else
 		gnvs->gpei = index;
-}
-
-static void save_sws(uint16_t pm1_status)
-{
-	struct soc_power_reg *sws;
-	uint32_t reg32;
-	uint16_t reg16;
-
-	sws = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(struct soc_power_reg));
-	if (sws == NULL)
-		return;
-	sws->pm1_sts = pm1_status;
-	sws->pm1_en = acpi_read16(MMIO_ACPI_PM1_EN);
-	reg32 = acpi_read32(MMIO_ACPI_GPE0_STS);
-	acpi_write32(MMIO_ACPI_GPE0_STS, reg32);
-	sws->gpe0_sts = reg32;
-	sws->gpe0_en = acpi_read32(MMIO_ACPI_GPE0_EN);
-	reg16 = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
-	reg16 &= SLP_TYP;
-	sws->wake_from = reg16 >> SLP_TYP_SHIFT;
-}
-
-void acpi_clear_pm1_status(void)
-{
-	uint16_t pm1_sts = reset_pm1_status();
-
-	save_sws(pm1_sts);
-	log_pm1_status(pm1_sts);
-	print_pm1_status(pm1_sts);
 }
 
 int acpi_get_sleep_type(void)

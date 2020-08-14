@@ -36,8 +36,6 @@ void acpi_clear_pm_gpe_status(void);
 /* Fill GNVS object from PM GPE object. */
 void acpi_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *state);
 
-void acpi_clear_pm1_status(void);
-
 /*
  * If a system reset is about to be requested, modify the PM1 register so it
  * will never be misinterpreted as an S3 resume.

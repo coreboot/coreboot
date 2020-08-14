@@ -968,7 +968,10 @@ func createSPD(memAttribs *memAttributes) string {
 	var s string
 
 	for i := 0; i < 512; i++ {
-		b := getSPDByte(i, memAttribs)
+		var b byte = 0
+		if memAttribs != nil {
+			b = getSPDByte(i, memAttribs)
+		}
 
 		if (i + 1) % 16 == 0 {
 			s += fmt.Sprintf("%02X\n", b)
@@ -995,6 +998,13 @@ func generateSPD(memPart *memPart, SPDId int, SPDDirName string) {
 	s := createSPD(&memPart.Attribs)
 	memPart.SPDFileName = fmt.Sprintf("ddr4-spd-%d.hex", SPDId)
 	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), []byte(s), 0644)
+}
+
+func generateEmptySPD(SPDDirName string) {
+
+	s := createSPD(nil)
+	SPDFileName := "ddr4-spd-empty.hex"
+	ioutil.WriteFile(filepath.Join(SPDDirName, SPDFileName), []byte(s), 0644)
 }
 
 func readMemoryParts(memParts *memParts, memPartsFileName string) error {
@@ -1395,6 +1405,8 @@ func main() {
 			dedupedParts = append(dedupedParts, &memParts.MemParts[i])
 		}
 	}
+
+	generateEmptySPD(SPDDir)
 
 	if err := writeSPDManifest(&memParts, SPDDir); err != nil {
 		log.Fatal(err)

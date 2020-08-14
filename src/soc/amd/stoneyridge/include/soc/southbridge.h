@@ -318,14 +318,6 @@ typedef struct aoac_devs {
 	unsigned int :4;
 } __packed aoac_devs_t;
 
-struct soc_power_reg {
-	uint16_t pm1_sts;
-	uint16_t pm1_en;
-	uint32_t gpe0_sts;
-	uint32_t gpe0_en;
-	uint16_t wake_from;
-};
-
 #define XHCI_FW_SIG_OFFSET			0xc
 #define XHCI_FW_ADDR_OFFSET			0x6
 #define XHCI_FW_SIZE_OFFSET			0x8

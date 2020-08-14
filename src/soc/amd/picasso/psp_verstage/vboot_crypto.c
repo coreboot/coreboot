@@ -102,3 +102,49 @@ vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size
 
 	return VB2_SUCCESS;
 }
+
+vb2_error_t vb2ex_hwcrypto_rsa_verify_digest(const struct vb2_public_key *key,
+					     const uint8_t *sig, const uint8_t *digest)
+{
+	RSAPKCS_VERIFY_PARAMS RSAParams;
+	uint32_t retval;
+	uint32_t exp = 65537;
+	uint32_t sig_size;
+	size_t digest_size;
+
+	/* PSP only supports 2K and 4K RSA */
+	if (key->sig_alg != VB2_SIG_RSA2048 &&
+	    key->sig_alg != VB2_SIG_RSA2048_EXP3 &&
+	    key->sig_alg != VB2_SIG_RSA4096) {
+		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
+	}
+
+	/* PSP only supports SHA256, SHA384 and SHA512*/
+	if (key->hash_alg != VB2_HASH_SHA256 &&
+	    key->hash_alg != VB2_HASH_SHA384 &&
+	    key->hash_alg != VB2_HASH_SHA512) {
+		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
+	}
+
+	if (key->sig_alg == VB2_SIG_RSA2048_EXP3)
+		exp = 3;
+	sig_size = vb2_rsa_sig_size(key->sig_alg);
+	digest_size = vb2_digest_size(key->hash_alg);
+
+	RSAParams.pHash = (char *)digest;
+	RSAParams.HashLen = digest_size;
+	RSAParams.pModulus = (char *)key->n;
+	RSAParams.ModulusSize = sig_size;
+	RSAParams.pExponent = (char *)&exp;
+	RSAParams.ExpSize = sizeof(exp);
+	RSAParams.pSig = (char *)sig;
+
+	retval = svc_rsa_pkcs_verify(&RSAParams);
+	if (retval) {
+		printk(BIOS_ERR, "ERROR: HW crypto failed - errorcode: %#x\n",
+				retval);
+		return VB2_ERROR_RSA_VERIFY_DIGEST;
+	}
+
+	return VB2_SUCCESS;
+}

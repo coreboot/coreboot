@@ -150,3 +150,10 @@ uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode)
 	SVC_CALL2(SVC_SHA, sha_op, sha_mode, retval);
 	return retval;
 }
+
+uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *rsa_params)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_RSAPKCS_VERIFY, rsa_params, retval);
+	return retval;
+}

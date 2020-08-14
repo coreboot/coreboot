@@ -2,6 +2,8 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
+#include <amdblocks/acpi.h>
+#include <cbmem.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 #include <console/uart.h>
@@ -14,6 +16,25 @@
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
+
+static struct acpi_pm_gpe_state chipset_state;
+
+static void fill_chipset_state(void)
+{
+	acpi_fill_pm_gpe_state(&chipset_state);
+}
+
+static void add_chipset_state_cbmem(int unused)
+{
+	struct acpi_pm_gpe_state *state;
+
+	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
+
+	if (state)
+		acpi_fill_pm_gpe_state(state);
+}
+
+ROMSTAGE_CBMEM_INIT_HOOK(add_chipset_state_cbmem);
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
@@ -80,6 +101,9 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x42);
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
+
+	/* Snapshot chipset state prior to any FSP call. */
+	fill_chipset_state();
 
 	post_code(0x43);
 	fsp_memory_init(s3_resume);

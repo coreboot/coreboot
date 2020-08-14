@@ -314,11 +314,9 @@ void southbridge_init(void *chip_info)
 	i2c_soc_init();
 	sb_init_acpi_ports();
 
-	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
-	if (state) {
-		acpi_fill_pm_gpe_state(state);
+	state = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (state)
 		acpi_pm_gpe_add_events_print_events(state);
-	}
 	acpi_clear_pm_gpe_status();
 
 	al2ahb_clock_gate();

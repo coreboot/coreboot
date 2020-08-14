@@ -91,6 +91,28 @@ static void log_pm1_status(uint16_t pm1_sts)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 }
 
+void acpi_fill_pm_gpe_state(struct acpi_pm_gpe_state *state)
+{
+	state->pm1_sts = acpi_read16(MMIO_ACPI_PM1_STS);
+	state->pm1_en = acpi_read16(MMIO_ACPI_PM1_EN);
+	state->gpe0_sts = acpi_read32(MMIO_ACPI_GPE0_STS);
+	state->gpe0_en = acpi_read32(MMIO_ACPI_GPE0_EN);
+	state->previous_sx_state = acpi_get_sleep_type();
+	state->aligning_field = 0;
+}
+
+void acpi_pm_gpe_add_events_print_events(const struct acpi_pm_gpe_state *state)
+{
+	log_pm1_status(state->pm1_sts);
+	print_pm1_status(state->pm1_sts);
+}
+
+void acpi_clear_pm_gpe_status(void)
+{
+	acpi_write16(MMIO_ACPI_PM1_STS, acpi_read16(MMIO_ACPI_PM1_STS));
+	acpi_write32(MMIO_ACPI_GPE0_STS, acpi_read32(MMIO_ACPI_GPE0_STS));
+}
+
 static void save_sws(uint16_t pm1_status)
 {
 	struct soc_power_reg *sws;

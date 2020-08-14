@@ -1,0 +1,288 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+#
+# Datasheets:
+#
+# https://cdrdv2.intel.com/v1/dl/getContent/613456
+
+# The datasheet says that this spec covers the following pci ids:
+# 8086:1502 - Intel 82579LM gigabit ethernet controller
+# 8086:1503 - Intel 82579V gigabit ethernet controller
+
+# Naming convention
+# * Word groups separated by a blank line
+# * Word groups with known meaning given a prefix
+#	* prefix will be defined in comment before group
+# * Variable names to be named using a prefix, descriptive name and bit offset
+#   within the word, separated by an underscore.
+#	* Example: "prefix_description_0"
+# * Unidentified reserved word groups will be named reserved and LAN Word
+#	* EXCEPTION: Word 0x24, Word 0x25, Word 0x26 also include bit offset
+#   	  within the word
+#   Offset hex address, separated by an underscore.
+#	* Example: "reserved_x03"
+# * Nonprefixed names will be  named reserved and LAN Word Offset hex address,
+#   separated by an underscore.
+#	* Example: "imageversioninfo_x05"
+# * Unspecified words are prefixed with "offset_"
+
+# GbE values for 82579LM
+{
+	# This example sets MAC address to 00:DE:AD:C0:FF:EE
+	# USE YOUR DEVICES MAC ADDRESS!!
+	# prefix: "mac_"
+	"mac_address_0" = 0x00,
+	"mac_address_1" = 0xDE,
+	"mac_address_2" = 0xAD,
+	"mac_address_3" = 0xC0,
+	"mac_address_4" = 0xFF,
+	"mac_address_5" = 0xEE,
+
+	# Reserved (Word 0x3)
+	"reserved_x03" = 0x0800,
+
+	# Reserved (Word 0x04)
+	"reserved_x04" = 0xffff,
+
+	# Image Version Information (Word 0x05)
+	"imageversioninfo_x05" = 0x00D3,
+
+	"reserved_x06" = 0xffff,
+	"reserved_x07" = 0xffff,
+
+	# PBA Low and PBA High (Words 0x08 and 0x09)
+	# prefix: "pba_"
+	"pba_low_x08" = 0xffff,
+	"pba_high_x09" = 0xffff,
+
+	# PCI Init Control Word (Word 0x0A)
+	# prefix: "pci_"
+	"pci_loaddeviceid_0" = 1,
+	"pci_loadsubsystemid_1" = 1,
+	"pci_reserved_2" = 0,
+	"pci_reserved_3" = 0x0,
+	"pci_pmenable_6" = 1,
+	"pci_auxpwr_7" = 1,
+	"pci_reserved_8" = 0x10,
+
+	# ************* Configurable PCI IDs ****************
+	# TODO: make command line switch for these
+	# Subsystem ID (Word 0x0B)
+	"subsystemid_x0B" = 0,
+	# Subsystem Vendor ID (Word 0x0C)
+	"subsystemvendorid_x0C" = 0x8086,
+	# Device ID (Word 0x0D)
+	# TODO: 82579V uses "deviceid_x0D" = 0x1503,
+	"deviceid_x0D" = 0x1502,
+	# ************* END Configurable PCI IDs ****************
+
+	# Words 0x0E and 0x0F Are Reserved
+	"reserved_x0E" = 0x0,
+	"reserved_x0F" = 0x0,
+
+	# LAN Power Consumption (Word 0x10)
+	# prefix: "lanpwr_"
+	"lanpwr_d3pwr_0" = 0x2,
+	"lanpwr_reserved_5" = 0,
+	"lanpwr_d0pwr_8" = 0x7,
+
+	# Word 0x12 and Word 0x11 Are Reserved
+	"reserved_x11" = 0x0000,
+	"reserved_x12" = 0x0000,
+
+	# Shared Init Control Word (Word 0x13)
+	# prefix: "sicw_"
+	"sicw_dynamicclock_0" = 1,
+	"sicw_clkcnt_1" = 0,
+	"sicw_reserved_2" = 1,
+	"sicw_fullduplex_3" = 0,
+	"sicw_forcespeed_4" = 0,
+	"sicw_reserved_5" = 0,
+	"sicw_phydeviceype_6" = 0,
+	"sicw_reserved_8" = 1,
+	"sicw_phy_enpwrdown_9" = 0,
+	"sicw_reserved_10" = 1,
+	"sicw_macsecdisable_13" = 1,
+	"sicw_sign_14" = 0x2,
+
+	# Extended Configuration Word 1 (Word 0x14)
+	# prefix: "ecw1_"
+	"ecw1_extcfgptr_0" = 0x0028,
+	"ecw1_oemload_12" = 1,
+	"ecw1_phyload_13" = 1,
+	"ecw1_reserved_14" = 0,
+
+	# Extended Configuration Word 2 (Word 0x15)
+	# prefix: "ecw2_"
+	"ecw2_reserved_0" = 0x00,
+	"ecw2_extphylen_8" = 0x12,
+
+	# Extended Configuration Word 3 (Word 0x16)
+	# prefix: "ecw3_"
+	"ecw3_extcfg1_0" = 0x00,
+
+	# OEM Configuration Defaults (Word 0x17)
+	# prefix: "oem_"
+	"oem_reserved_0" = 0x000,
+	"oem_lpluenind0a_9" = 0,
+	"oem_lplueninnond0a_10" = 1,
+	"oem_gbedisinnond0a_11" = 1,
+	"oem_reserved_12" = 0,
+	"oem_gbedis_14" = 0,
+	"oem_reserved_15" = 0,
+
+	# LED 0 - 2 Configuration Defaults (Word 0x18)
+	# prefix: "l02_"
+	# Lenovo default values
+	"l02_led0mode_0" = 0x4,
+	"l02_led0invert_3" = 0,
+	"l02_led0blink_4" = 0,
+	"l02_led1mode_5" = 0x3,
+	"l02_led1invert_8" = 0,
+	"l02_led1blink_9" = 1,
+	"l02_led2mode_10" = 0x2,
+	"l02_led2invert_13" = 1,
+	"l02_led2blink_14" = 0,
+	"l02_blinkrate_15" = 0,
+
+	# Intel default Values
+	#"l02_led0mode_0" = 0x4,
+	#"l02_led0invert_3" = 0,
+	#"l02_led0blink_4" = 1,
+	#"l02_led1mode_5" = 0x7,
+	#"l02_led1invert_8" = 0,
+	#"l02_led1blink_9" = 0,
+	#"l02_led2mode_10" = 0x6,
+	#"l02_led2invert_13" = 0,
+	#"l02_led2blink_14" = 0,
+	#"l02_blinkrate_15" = 0,
+
+
+	# Reserved (Word 0x19)
+	# NOTE: bit 6 must be 1 for validation.  See datasheet.
+	"reserved_x19" = 0x2B40,
+
+	# Reserved (Word 0x1A)
+	# Advanced Power Management Wake Up Enable
+	# prefix: "amp_"
+	"amp_enable_0" = 1,
+	"amp_reserved_1" = 0x0421,
+
+	# Reserved (Word 0x1B)
+	"reserved_x1B" = 0x0113,
+
+	# Reserved (Word 0x1C)
+	"reserved_x1C" = 0x1502,
+
+	# Reserved (Word 0x1D)
+	"reserved_x1D" = 0xBAAD,
+
+	# Reserved (Word 0x1E)
+	"reserved_x1E" = 0x1502,
+
+	# Reserved (Word 0x1F)
+	"reserved_x1F" = 0x1503,
+
+	# Reserved (Word 0x20)
+	"reserved_x20" = 0xBAAD,
+
+	# Reserved (Word 0x21)
+	"reserved_x21" = 0xBAAD,
+
+	# Reserved (Word 0x22)
+	"reserved_x22" = 0xBAAD,
+
+	# Reserved (Word 0x23)
+	"reserved_x23" = 0x1502,
+
+	# Reserved (Word 0x24)
+	"reserved_x24_0" = 0x0000,
+	"reserved_x24_14" = 0,
+	"reserved_x24_15" = 1,
+
+	# Reserved (Word 0x25)
+	"reserved_x25_0" = 0x0000,
+	"reserved_x25_4" = 1,
+	"reserved_x25_5" = 0,
+	"reserved_x25_7" = 1,
+	"reserved_x25_8" = 0x00,
+	"reserved_x25_15" = 1,
+
+	# Reserved (Word 0x26)
+	"reserved_x26_0" = 0x00,
+	"reserved_x26_9" = 1,
+	"reserved_x26_10" = 1,
+	"reserved_x26_11" = 1,
+	"reserved_x26_12" = 0,
+	"reserved_x26_14" = 1,
+	"reserved_x26_15" = 0,
+
+	# Reserved (Word 0x27)
+	"reserved_x27" = 0x80,
+
+	# Offsets 0x28-0x2F
+	"offset_x28" = 0x0000,
+	"offset_x29" = 0x0000,
+	"offset_x2A" = 0x0000,
+	"offset_x2B" = 0x0000,
+	"offset_x2C" = 0x0000,
+	"offset_x2D" = 0x0000,
+	"offset_x2E" = 0x0000,
+	"offset_x2F" = 0x0000,
+
+	# Boot Agent Main Setup Options (Word 0x30)
+	# Hardcoded PXE setup (disabled)
+	# prefix: "pxe30_"
+	"pxe30_protocolsel_0" = 0,
+	"pxe30_reserved_2" = 0,
+	"pxe30_defbootsel_3" = 0x3,
+	"pxe30_reserved_5" = 0,
+	"pxe30_prompttime_6" = 0x3,
+	"pxe30_dispsetup_8" = 0,
+	"pxe30_reserved_9" = 0,
+	"pxe30_forcespeed_10" = 0,
+	"pxe30_forcefullduplex_12" = 0,
+	"pxe30_reserved_13" = 0,
+	"pxe30_reserved_14" = 0,
+
+	# Boot Agent Configuration Customization Options (Word 0x31)
+	# prefix: "pxe31_"
+	"pxe31_disablemenu_0" = 1,
+ 	"pxe31_disabletitle_1" = 1,
+	"pxe31_disableprotsel_2" = 0,
+	"pxe31_disbootorder_3" = 0,
+	"pxe31_dislegacywak_4" = 0,
+	"pxe31_disableflasicwpro_5" = 0,
+	"pxe31_reserved_6" = 0,
+	"pxe31_ibootagentmode_8" = 0,
+	"pxe31_contretrydis_11" = 0,
+	"pxe31_reserved_12" = 0,
+	"pxe31_signature_14" = 10,
+
+	# Boot Agent Configuration Customization Options (Word 0x32)
+	# prefix: "pxe32_"
+	"pxe32_buildnum_0" = 0x28,
+	"pxe32_minorversion_8" = 0x2,
+	"pxe32_majorversion_12" = 0x1,
+
+	# IBA Capabilities (Word 0x33)
+	# prefix: "pxe33_"
+	"pxe33_basecodepresent_0" = 1,
+	"pxe33_undipresent_1" = 1,
+	"pxe33_reserved_2" = 1,
+	"pxe33_efiundipresent_3" = 0,
+	"pxe33_iscsi_4" = 0,
+	"pxe33_reserved_5" = 0,
+	"pxe33_signature_14" = 10,
+
+	"pxe_padding"[11] = 0xffff,
+
+	# Checksum is generated by bincfg
+	# "checksum_gbe" = xxx,
+
+	# G3 -> S5 PHY Configuration
+	"g3_s5_phy_conf"[0x16] = 0,
+
+	# Padding 0xf80 bytes
+	"padding"[0xf6a] = 0xff
+}

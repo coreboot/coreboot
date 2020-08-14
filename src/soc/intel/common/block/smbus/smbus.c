@@ -75,6 +75,7 @@ static struct device_operations smbus_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_APL_SMBUS,
 	PCI_DEVICE_ID_INTEL_CNL_SMBUS,
 	PCI_DEVICE_ID_INTEL_SPT_LP_SMBUS,
 	PCI_DEVICE_ID_INTEL_SPT_H_SMBUS,

@@ -17,4 +17,6 @@
 #define  TCO_INTRD_SEL_SMI		(1 << 2)
 #define  TCO_INTRD_SEL_INT		(1 << 1)
 
+#define SMBUS_SLAVE_ADDR		0x24
+
 #endif

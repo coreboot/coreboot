@@ -268,14 +268,6 @@ typedef struct aoac_devs {
 	unsigned int :4;
 } __packed aoac_devs_t;
 
-struct soc_power_reg {
-	uint16_t pm1_sts;
-	uint16_t pm1_en;
-	uint32_t gpe0_sts;
-	uint32_t gpe0_en;
-	uint16_t wake_from;
-};
-
 void enable_aoac_devices(void);
 bool is_aoac_device_enabled(int dev);
 void power_on_aoac_device(int dev);

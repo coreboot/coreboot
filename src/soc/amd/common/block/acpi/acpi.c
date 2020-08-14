@@ -113,6 +113,44 @@ void acpi_clear_pm_gpe_status(void)
 	acpi_write32(MMIO_ACPI_GPE0_STS, acpi_read32(MMIO_ACPI_GPE0_STS));
 }
 
+static int get_index_bit(uint32_t value, uint16_t limit)
+{
+	uint16_t i;
+	uint32_t t;
+
+	if (limit >= TOTAL_BITS(uint32_t))
+		return -1;
+
+	/* get a mask of valid bits. Ex limit = 3, set bits 0-2 */
+	t = (1 << limit) - 1;
+	if ((value & t) == 0)
+		return -1;
+	t = 1;
+	for (i = 0; i < limit; i++) {
+		if (value & t)
+			break;
+		t <<= 1;
+	}
+	return i;
+}
+
+void acpi_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *state)
+{
+	int index;
+
+	index = get_index_bit(state->pm1_sts & state->pm1_en, PM1_LIMIT);
+	if (index < 0)
+		gnvs->pm1i = ~0ULL;
+	else
+		gnvs->pm1i = index;
+
+	index = get_index_bit(state->gpe0_sts & state->gpe0_en, GPE0_LIMIT);
+	if (index < 0)
+		gnvs->gpei = ~0ULL;
+	else
+		gnvs->gpei = index;
+}
+
 static void save_sws(uint16_t pm1_status)
 {
 	struct soc_power_reg *sws;

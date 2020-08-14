@@ -273,51 +273,19 @@ static void sb_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
-static int get_index_bit(uint32_t value, uint16_t limit)
-{
-	uint16_t i;
-	uint32_t t;
-
-	if (limit >= TOTAL_BITS(uint32_t))
-		return -1;
-
-	/* get a mask of valid bits. Ex limit = 3, set bits 0-2 */
-	t = (1 << limit) - 1;
-	if ((value & t) == 0)
-		return -1;
-	t = 1;
-	for (i = 0; i < limit; i++) {
-		if (value & t)
-			break;
-		t <<= 1;
-	}
-	return i;
-}
-
 static void set_nvs_sws(void *unused)
 {
-	struct soc_power_reg *sws;
+	struct acpi_pm_gpe_state *state;
 	struct global_nvs *gnvs;
-	int index;
 
-	sws = cbmem_find(CBMEM_ID_POWER_STATE);
-	if (sws == NULL)
+	state = cbmem_find(CBMEM_ID_POWER_STATE);
+	if (state == NULL)
 		return;
 	gnvs = acpi_get_gnvs();
 	if (gnvs == NULL)
 		return;
 
-	index = get_index_bit(sws->pm1_sts & sws->pm1_en, PM1_LIMIT);
-	if (index < 0)
-		gnvs->pm1i = ~0ULL;
-	else
-		gnvs->pm1i = index;
-
-	index = get_index_bit(sws->gpe0_sts & sws->gpe0_en, GPE0_LIMIT);
-	if (index < 0)
-		gnvs->gpei = ~0ULL;
-	else
-		gnvs->gpei = index;
+	acpi_fill_gnvs(gnvs, state);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
@@ -341,9 +309,18 @@ static void al2ahb_clock_gate(void)
 
 void southbridge_init(void *chip_info)
 {
+	struct acpi_pm_gpe_state *state;
+
 	i2c_soc_init();
 	sb_init_acpi_ports();
-	acpi_clear_pm1_status();
+
+	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
+	if (state) {
+		acpi_fill_pm_gpe_state(state);
+		acpi_pm_gpe_add_events_print_events(state);
+	}
+	acpi_clear_pm_gpe_status();
+
 	al2ahb_clock_gate();
 }
 

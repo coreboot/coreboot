@@ -83,6 +83,17 @@ static void log_pm1_status(uint16_t pm1_sts)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 }
 
+static void log_gpe_events(const struct acpi_pm_gpe_state *state)
+{
+	int i;
+	uint32_t valid_gpe = state->gpe0_sts & state->gpe0_en;
+
+	for (i = 0; i <= 31; i++) {
+		if (valid_gpe & (1U << i))
+			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i);
+	}
+}
+
 void acpi_fill_pm_gpe_state(struct acpi_pm_gpe_state *state)
 {
 	state->pm1_sts = acpi_read16(MMIO_ACPI_PM1_STS);
@@ -97,6 +108,7 @@ void acpi_pm_gpe_add_events_print_events(const struct acpi_pm_gpe_state *state)
 {
 	log_pm1_status(state->pm1_sts);
 	print_pm1_status(state->pm1_sts);
+	log_gpe_events(state);
 }
 
 void acpi_clear_pm_gpe_status(void)

@@ -29,13 +29,18 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 {
 	size_t hob_size;
 	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
+	const struct SystemMemoryMapHob **memmap_addr;
 
-	const void *memmap_addr = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
+	memmap_addr = (const struct SystemMemoryMapHob **)
+		fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
+	/* hob_size is the size of the 8-byte address not the hob data */
 	assert(memmap_addr != NULL && hob_size != 0);
-	printk(BIOS_DEBUG, "FSP_SYSTEM_MEMORYMAP_HOB_GUID hob_size: %ld\n", hob_size);
+	/* assert the pointer to the hob is not NULL */
+	assert(*memmap_addr != NULL);
 
-	return (const struct SystemMemoryMapHob *) memmap_addr;
+	return *memmap_addr;
 }
+
 
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thread_bits,
 	uint8_t *package, uint8_t *core, uint8_t *thread)

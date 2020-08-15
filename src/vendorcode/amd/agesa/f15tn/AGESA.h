@@ -1546,9 +1546,10 @@ typedef enum {
 ///
 /// SPD Data for each DIMM.
 ///
+#define DDR3_SPD_SIZE 256
 typedef struct _SPD_DEF_STRUCT {
   IN BOOLEAN DimmPresent;       ///< Indicates that the DIMM is present and Data is valid
-  IN UINT8 Data[256];           ///< Buffer for 256 Bytes of SPD data from DIMM
+  IN UINT8 Data[DDR3_SPD_SIZE]; ///< Buffer for 256 Bytes of SPD data from DIMM
 } SPD_DEF_STRUCT;
 
 ///

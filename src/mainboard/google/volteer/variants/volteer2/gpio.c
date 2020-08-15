@@ -19,9 +19,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* A18 : DDSP_HPDB ==> HDMI_HPD */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A19 : DDSP_HPD1 ==> USB_C0_DP_HPD */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
+	PAD_NC(GPP_A19, NONE),
 	/* A20 : DDSP_HPD2 ==> USB_C1_DP_HPD */
-	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
+	PAD_NC(GPP_A20, NONE),
 	/* A21 : DDPC_CTRCLK ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_A21, 1, DEEP),
 	/* A22 : DDPC_CTRLDATA ==> EN_HDMI_PWR */

@@ -155,4 +155,10 @@ chip soc/amd/picasso
 		device pci 18.6 on  end
 		device pci 18.7 on  end
 	end # domain
+
+	device mmio 0xfedc9000 on  end # UART0
+	device mmio 0xfedca000 on  end # UART1
+	device mmio 0xfedce000 off end # UART2
+	device mmio 0xfedcf000 off end # UART3
+
 end	# chip soc/amd/picasso

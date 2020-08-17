@@ -18,6 +18,7 @@
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/spi.h>
+#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
@@ -274,7 +275,7 @@ static void sb_init_acpi_ports(void)
 
 static void set_nvs_sws(void *unused)
 {
-	struct acpi_pm_gpe_state *state;
+	struct chipset_state *state;
 	struct global_nvs *gnvs;
 
 	state = cbmem_find(CBMEM_ID_POWER_STATE);
@@ -284,7 +285,7 @@ static void set_nvs_sws(void *unused)
 	if (gnvs == NULL)
 		return;
 
-	acpi_fill_gnvs(gnvs, state);
+	acpi_fill_gnvs(gnvs, &state->gpe_state);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
@@ -308,14 +309,16 @@ static void al2ahb_clock_gate(void)
 
 void southbridge_init(void *chip_info)
 {
-	struct acpi_pm_gpe_state *state;
+	struct chipset_state *state;
 
 	i2c_soc_init();
 	sb_init_acpi_ports();
 
 	state = cbmem_find(CBMEM_ID_POWER_STATE);
-	if (state)
-		acpi_pm_gpe_add_events_print_events(state);
+	if (state) {
+		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
+		gpio_add_events(&state->gpio_state);
+	}
 	acpi_clear_pm_gpe_status();
 
 	al2ahb_clock_gate();

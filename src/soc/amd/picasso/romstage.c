@@ -11,22 +11,24 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <elog.h>
+#include <soc/acpi.h>
 #include <soc/memmap.h>
 #include <soc/mrc_cache.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
 
-static struct acpi_pm_gpe_state chipset_state;
+static struct chipset_state chipset_state;
 
 static void fill_chipset_state(void)
 {
-	acpi_fill_pm_gpe_state(&chipset_state);
+	acpi_fill_pm_gpe_state(&chipset_state.gpe_state);
+	gpio_fill_wake_state(&chipset_state.gpio_state);
 }
 
 static void add_chipset_state_cbmem(int unused)
 {
-	struct acpi_pm_gpe_state *state;
+	struct chipset_state *state;
 
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 

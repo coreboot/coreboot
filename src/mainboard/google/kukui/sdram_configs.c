@@ -28,6 +28,7 @@ static const char *const sdram_configs[] = {
 	[0x12] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
 	[0x13] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
 	[0x14] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+	[0x16] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
 };
 
 static struct sdram_params params;

@@ -78,8 +78,6 @@ static void pmc_init(struct device *dev)
 	pmc_set_power_failure_state(true);
 	pmc_gpe_init();
 
-	pmc_set_acpi_mode();
-
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);
 	config_deep_sx(config->deep_sx_config);
@@ -98,8 +96,23 @@ static void soc_pmc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
+static void soc_acpi_mode_init(struct device *dev)
+{
+	/*
+	 * pmc_set_acpi_mode() should be delayed until BS_DEV_INIT in order
+	 * to ensure the ordering does not break the assumptions that other
+	 * drivers make about ACPI mode (e.g. Chrome EC). Since it disables
+	 * ACPI mode, other drivers may take different actions based on this
+	 * (e.g. Chrome EC will flush any pending hostevent bits). Because
+	 * JSL has its PMC device available for device_operations, it can be
+	 * done from the "ops->init" callback.
+	 */
+	pmc_set_acpi_mode();
+}
+
 struct device_operations pmc_ops = {
 	.read_resources		= soc_pmc_read_resources,
 	.set_resources		= noop_set_resources,
+	.init			= soc_acpi_mode_init,
 	.enable			= pmc_init,
 };

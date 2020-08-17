@@ -101,7 +101,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_cnt_blk.bit_width = 16;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
-	fadt->x_pm1a_cnt_blk.access_size = 0;
+	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
 	fadt->x_pm1a_cnt_blk.addrl = PM1_CNT_BLK_ADDRESS;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 

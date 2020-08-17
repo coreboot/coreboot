@@ -50,7 +50,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	 * 2    0: VGA is ok to probe
 	 * 3    1: MSI are not supported
 	 */
-	fadt->iapc_boot_arch = 0xb;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042 |
+			       ACPI_FADT_MSI_NOT_SUPPORTED;
 	/*
 	 * bit  meaning
 	 * 0    WBINVD

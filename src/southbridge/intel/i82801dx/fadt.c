@@ -46,7 +46,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
 	fadt->century = 0x00;
-	fadt->iapc_boot_arch = 0x03;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
 	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |

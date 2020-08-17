@@ -90,7 +90,7 @@ static void log_gpe_events(const struct acpi_pm_gpe_state *state)
 
 	for (i = 0; i <= 31; i++) {
 		if (valid_gpe & (1U << i))
-			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i);
+			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
 	}
 }
 

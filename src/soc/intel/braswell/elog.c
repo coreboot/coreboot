@@ -68,7 +68,7 @@ static void log_wake_events(const struct chipset_power_state *ps)
 	i = 0;
 	while (gpio_mask) {
 		if (gpio_mask & gpe0_sts)
-			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i);
+			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
 		gpio_mask <<= 1;
 		i++;
 	}

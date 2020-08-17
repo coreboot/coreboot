@@ -16,7 +16,7 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 
 	for (i = 0; i <= 31; i++) {
 		if (gpe0_sts & (1 << i))
-			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i + start);
+			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i + start);
 	}
 }
 
@@ -48,7 +48,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 	/* GPIO27 */
 	if (ps->gpe0_sts[GPE_STD] & GP27_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, 27);
+		elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, 27);
 
 	/* Log GPIO events in set 1-3 */
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE_31_0], ps->gpe0_en[GPE_31_0], 0);

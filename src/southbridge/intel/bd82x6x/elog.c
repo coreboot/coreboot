@@ -87,7 +87,7 @@ void pch_log_state(void)
 	/* GPIO 0-15 */
 	for (i = 0; i < 16; i++) {
 		if ((gpe0_sts & (1 << (16+i))) && (gpe0_en & (1 << (16+i))))
-			elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, i);
+			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
 	}
 
 	/* SMBUS Wake */

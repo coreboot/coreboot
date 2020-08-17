@@ -103,7 +103,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 		.space_id   = ACPI_ADDRESS_SPACE_FIXED,
 		.bit_width  = 8,
 		.bit_offset = 0,
-		.access_size = 4,
+		.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS,
 		.addrl      = 0,
 		.addrh      = 0,
 	};
@@ -111,7 +111,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 		.space_id   = ACPI_ADDRESS_SPACE_MEMORY,
 		.bit_width  = 0,
 		.bit_offset = 0,
-		.access_size = 0,
+		.access_size = ACPI_ACCESS_SIZE_UNDEFINED,
 		.addrl      = 0,
 		.addrh      = 0,
 	};
@@ -259,7 +259,7 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 		msr.space_id    = ACPI_ADDRESS_SPACE_MEMORY;
 		msr.bit_width   = 32;
 		msr.bit_offset  = 0;
-		msr.access_size = 0;
+		msr.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
 		msr.addrl       = 1;
 		config->regs[CPPC_AUTO_SELECT] = msr;
 	}

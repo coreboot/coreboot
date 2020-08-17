@@ -31,7 +31,7 @@ static void add_chipset_state_cbmem(int unused)
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 
 	if (state)
-		acpi_fill_pm_gpe_state(state);
+		memcpy(state, &chipset_state, sizeof(*state));
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(add_chipset_state_cbmem);

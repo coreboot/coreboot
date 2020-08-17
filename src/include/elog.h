@@ -119,6 +119,7 @@
 #define  ELOG_WAKE_SOURCE_PME_PCIE22       0x29
 #define  ELOG_WAKE_SOURCE_PME_PCIE23       0x2a
 #define  ELOG_WAKE_SOURCE_PME_PCIE24       0x2b
+#define  ELOG_WAKE_SOURCE_GPIO             0x2c
 
 struct elog_event_data_wake {
 	u8 source;

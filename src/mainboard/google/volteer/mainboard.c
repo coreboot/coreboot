@@ -6,9 +6,17 @@
 #include <device/device.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
+#include <halt.h>
+#include <intelblocks/cse.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
+
+void cse_board_reset(void)
+{
+	if (!google_chromeec_ap_reset())
+		halt();
+}
 
 static void mainboard_init(struct device *dev)
 {

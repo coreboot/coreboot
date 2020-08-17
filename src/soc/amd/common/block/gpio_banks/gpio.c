@@ -3,12 +3,14 @@
 #include <device/mmio.h>
 #include <device/device.h>
 #include <console/console.h>
+#include <elog.h>
 #include <gpio.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio_banks.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
 #include <assert.h>
+#include <string.h>
 
 static int get_gpio_gevent(uint8_t gpio, const struct soc_amd_event *table,
 				size_t items)
@@ -297,4 +299,73 @@ void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 				override_num_pads);
 		program_gpios(c, 1);
 	}
+}
+
+static void check_and_add_wake_gpio(int begin, int end, struct gpio_wake_state *state)
+{
+	int i;
+	uint32_t reg;
+
+	for (i = begin; i < end; i++) {
+		reg = gpio_read32(i);
+		if (!(reg & GPIO_WAKE_STATUS))
+			continue;
+		printk(BIOS_INFO, "GPIO %d woke system.\n", i);
+		if (state->num_valid_wake_gpios >= ARRAY_SIZE(state->wake_gpios))
+			continue;
+		state->wake_gpios[state->num_valid_wake_gpios++] = i;
+	}
+}
+
+static void check_gpios(uint32_t wake_stat, int bit_limit, int gpio_base,
+			struct gpio_wake_state *state)
+{
+	int i;
+	int begin;
+	int end;
+
+	for (i = 0; i < bit_limit; i++) {
+		if (!(wake_stat & BIT(i)))
+			continue;
+		begin = gpio_base + i * 4;
+		end = begin + 4;
+		/* There is no gpio 63. */
+		if (begin == 60)
+			end = 63;
+		check_and_add_wake_gpio(begin, end, state);
+	}
+}
+
+void gpio_fill_wake_state(struct gpio_wake_state *state)
+{
+	/* Turn the wake registers into "gpio" index to conform to existing API. */
+	const uint8_t stat0 = GPIO_WAKE_STAT_0 / sizeof(uint32_t);
+	const uint8_t stat1 = GPIO_WAKE_STAT_1 / sizeof(uint32_t);
+	const uint8_t control_switch = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+
+	/* Register fields and gpio availability need to be confirmed on other chipsets. */
+	if (!CONFIG(SOC_AMD_PICASSO))
+		dead_code();
+
+	memset(state, 0, sizeof(*state));
+
+	state->control_switch = gpio_read32(control_switch);
+	state->wake_stat[0] = gpio_read32(stat0);
+	state->wake_stat[1] = gpio_read32(stat1);
+
+	printk(BIOS_INFO, "GPIO Control Switch: 0x%08x, Wake Stat 0: 0x%08x, Wake Stat 1: 0x%08x\n",
+		state->control_switch, state->wake_stat[0], state->wake_stat[1]);
+
+	check_gpios(state->wake_stat[0], 32, 0, state);
+	check_gpios(state->wake_stat[1], 14, 128, state);
+}
+
+void gpio_add_events(const struct gpio_wake_state *state)
+{
+	int i;
+	int end;
+
+	end = MIN(state->num_valid_wake_gpios, ARRAY_SIZE(state->wake_gpios));
+	for (i = 0; i < end; i++)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_GPIO, state->wake_gpios[i]);
 }

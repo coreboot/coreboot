@@ -20,6 +20,23 @@ struct soc_amd_event {
 #define GPIO_MASTER_SWITCH	0xFC
 #define   GPIO_MASK_STS_EN	BIT(28)
 #define   GPIO_INTERRUPT_EN	BIT(30)
+#define   GPIO_WAKE_EN		BIT(31)
+
+#define GPIO_WAKE_STAT_0	0x2F0
+#define GPIO_WAKE_STAT_1	0x2F4
+struct gpio_wake_state {
+	uint32_t control_switch;
+	uint32_t wake_stat[2];
+	/* Number of wake_gpio with a valid setting. */
+	uint32_t num_valid_wake_gpios;
+	/* GPIO index number that caused a wake. */
+	uint8_t wake_gpios[16];
+};
+
+/* Fill gpio_wake_state object for future event reporting. */
+void gpio_fill_wake_state(struct gpio_wake_state *state);
+/* Add gpio events to the eventlog. */
+void gpio_add_events(const struct gpio_wake_state *state);
 
 #define GPIO_PIN_IN		(1 << 0)	/* for byte access */
 #define GPIO_PIN_OUT		(1 << 6)	/* for byte access */

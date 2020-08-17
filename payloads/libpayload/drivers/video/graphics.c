@@ -41,6 +41,8 @@
 static struct rect canvas;
 static struct rect screen;
 
+static uint8_t *gfx_buffer;
+
 /*
  * Framebuffer is assumed to assign a higher coordinate (larger x, y) to
  * a higher address
@@ -48,7 +50,8 @@ static struct rect screen;
 static const struct cb_framebuffer *fbinfo;
 
 /* Shorthand for up-to-date virtual framebuffer address */
-#define FB ((unsigned char *)phys_to_virt(fbinfo->physical_address))
+#define REAL_FB ((unsigned char *)phys_to_virt(fbinfo->physical_address))
+#define FB	(gfx_buffer ? gfx_buffer : REAL_FB)
 
 #define LOG(x...)	printf("CBGFX: " x)
 #define PIVOT_H_MASK	(PIVOT_H_LEFT|PIVOT_H_CENTER|PIVOT_H_RIGHT)
@@ -1256,4 +1259,38 @@ int get_bitmap_dimension(const void *bitmap, size_t sz, struct scale *dim_rel)
 	dim_rel->y.d = canvas.size.height;
 
 	return CBGFX_SUCCESS;
+}
+
+int enable_graphics_buffer(void)
+{
+	if (gfx_buffer)
+		return CBGFX_SUCCESS;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	size_t buffer_size = fbinfo->y_resolution * fbinfo->bytes_per_line;
+	gfx_buffer = malloc(buffer_size);
+	if (!gfx_buffer) {
+		LOG("%s: Failed to create graphics buffer (%zu bytes).\n",
+		    __func__, buffer_size);
+		return CBGFX_ERROR_GRAPHICS_BUFFER;
+	}
+
+	return CBGFX_SUCCESS;
+}
+
+int flush_graphics_buffer(void)
+{
+	if (!gfx_buffer)
+		return CBGFX_ERROR_GRAPHICS_BUFFER;
+
+	memcpy(REAL_FB, gfx_buffer, fbinfo->y_resolution * fbinfo->bytes_per_line);
+	return CBGFX_SUCCESS;
+}
+
+void disable_graphics_buffer(void)
+{
+	free(gfx_buffer);
+	gfx_buffer = NULL;
 }

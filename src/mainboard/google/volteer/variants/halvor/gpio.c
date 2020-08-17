@@ -44,6 +44,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
 	/* B8  : ISH_I2C1_SCL ==> I2C_SENSOR_SCL */
 	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
+	/* B9  : I2C5_SDA ==> PCH_I2C5_TRACKPAD_SDA */
+	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
+	/* B10 : I2C5_SCL ==> PCH_I2C5_TRACKPAD_SCL */
+	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
 
 	/* C1  : SMBDATA ==> FPMCU_BOOT1 */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
@@ -87,6 +91,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E12, NONE),
 	/* E13 : SPI1_MOSI_IO0 ==> NC */
 	PAD_NC(GPP_E13, NONE),
+	/* E15 : ISH_GP6 ==> TRACKPAD_INT_ODL */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_E15, NONE, DEEP, LEVEL, INVERT),
 	/* E16 : ISH_GP7 ==> SD_PRSNT# */
 	PAD_CFG_GPI(GPP_E16, NONE, DEEP),
 	/* E17 : THC0_SPI1_INT# ==> NC */

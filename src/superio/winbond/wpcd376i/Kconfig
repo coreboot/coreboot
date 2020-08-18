@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SUPERIO_WINBOND_WPCD376I
+	bool
+	select SUPERIO_WINBOND_COMMON_PRE_RAM

@@ -36,3 +36,8 @@ void elog_gsmi_cb_mainboard_log_wake_source(void)
 {
 	google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS | MAINBOARD_EC_S0IX_WAKE_EVENTS);
 }
+
+void mainboard_smi_espi_handler(void)
+{
+	chromeec_smi_process_events();
+}

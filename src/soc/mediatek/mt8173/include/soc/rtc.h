@@ -3,6 +3,7 @@
 #ifndef SOC_MEDIATEK_MT8173_RTC_H
 #define SOC_MEDIATEK_MT8173_RTC_H
 
+#include <soc/pmic_wrap_common.h>
 #include <soc/rtc_common.h>
 #include <stdint.h>
 #include "mt6391.h"
@@ -98,8 +99,29 @@ enum {
 };
 
 /* external API */
-void rtc_osc_init(void);
-int rtc_init(u8 recover);
+int rtc_init(int recover);
 void rtc_boot(void);
+
+static inline s32 rtc_read(u16 addr, u16 *rdata)
+{
+	s32 ret;
+
+	ret = pwrap_read(addr, rdata);
+	if (ret < 0)
+		rtc_info("pwrap_read failed: ret=%d\n", ret);
+
+	return ret;
+}
+
+static inline s32 rtc_write(u16 addr, u16 wdata)
+{
+	s32 ret;
+
+	ret = pwrap_write(addr, wdata);
+	if (ret < 0)
+		rtc_info("pwrap_write failed: ret=%d\n", ret);
+
+	return ret;
+}
 
 #endif /* SOC_MEDIATEK_MT8173_RTC_H */

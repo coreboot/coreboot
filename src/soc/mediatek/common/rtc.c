@@ -2,7 +2,6 @@
 
 #include <soc/rtc_common.h>
 #include <soc/rtc.h>
-#include <soc/pmic_wrap.h>
 #include <timer.h>
 
 /* ensure rtc write success */
@@ -94,6 +93,30 @@ int rtc_xosc_write(u16 val)
 	return rtc_write_trigger();
 }
 
+/* enable lpd subroutine */
+int rtc_lpen(u16 con)
+{
+	con &= ~RTC_CON_LPRST;
+	rtc_write(RTC_CON, con);
+
+	if (!rtc_write_trigger())
+		return 0;
+
+	con |= RTC_CON_LPRST;
+	rtc_write(RTC_CON, con);
+
+	if (!rtc_write_trigger())
+		return 0;
+
+	con &= ~RTC_CON_LPRST;
+	rtc_write(RTC_CON, con);
+
+	if (!rtc_write_trigger())
+		return 0;
+
+	return 1;
+}
+
 /* initialize rtc related registers */
 int rtc_reg_init(void)
 {
@@ -126,6 +149,14 @@ int rtc_reg_init(void)
 	rtc_write(RTC_TC_MIN, 0);
 	rtc_write(RTC_TC_SEC, 0);
 
+	return rtc_write_trigger();
+}
+
+/* write powerkeys to enable rtc functions */
+int rtc_powerkey_init(void)
+{
+	rtc_write(RTC_POWERKEY1, RTC_POWERKEY1_KEY);
+	rtc_write(RTC_POWERKEY2, RTC_POWERKEY2_KEY);
 	return rtc_write_trigger();
 }
 
@@ -164,18 +195,21 @@ void rtc_boot_common(void)
 
 	switch (rtc_check_state()) {
 	case RTC_STATE_REBOOT:
-		pwrap_write_field(RTC_BBPU, RTC_BBPU_KEY | RTC_BBPU_RELOAD,
-				  0xFFFF, 0);
+		rtc_read(RTC_BBPU, &bbpu);
+		rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 		rtc_write_trigger();
 		rtc_osc_init();
+		rtc_info("RTC_STATE_REBOOT\n");
 		break;
 	case RTC_STATE_RECOVER:
 		rtc_init(1);
+		rtc_info("RTC_STATE_RECOVER\n");
 		break;
 	case RTC_STATE_INIT:
 	default:
 		if (rtc_init(0))
 			rtc_init(1);
+		rtc_info("RTC_STATE_INIT\n");
 		break;
 	}
 

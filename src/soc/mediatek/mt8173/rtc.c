@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <delay.h>
-#include <soc/rtc_common.h>
 #include <soc/rtc.h>
+#include <soc/rtc_common.h>
 #include <soc/mt6391.h>
 #include <soc/pmic_wrap.h>
 #include <types.h>
@@ -59,7 +59,7 @@ static int rtc_lpd_init(void)
 }
 
 /* rtc init check */
-int rtc_init(u8 recover)
+int rtc_init(int recover)
 {
 	int ret;
 
@@ -84,6 +84,7 @@ int rtc_init(u8 recover)
 		goto err;
 	}
 
+	/* In recovery mode, we need delay for register setting. */
 	if (recover)
 		mdelay(1000);
 

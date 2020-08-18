@@ -12,6 +12,7 @@ bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
 bootblock-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
+bootblock-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 bootblock-y += mt6315.c
 bootblock-y += mt6359p.c
 

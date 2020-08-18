@@ -6,7 +6,6 @@
 #include <bcd.h>
 #include <console/console.h>
 #include <rtc.h>
-#include <soc/pmic_wrap_common.h>
 
 #define RTCTAG			"[RTC]"
 #define rtc_info(fmt, arg ...)	printk(BIOS_INFO, RTCTAG "%s,%d: " fmt, \
@@ -99,29 +98,10 @@ int rtc_busy_wait(void);
 int rtc_write_trigger(void);
 int rtc_writeif_unlock(void);
 int rtc_xosc_write(u16 val);
+int rtc_lpen(u16 con);
 int rtc_reg_init(void);
+void rtc_osc_init(void);
+int rtc_powerkey_init(void);
 void rtc_boot_common(void);
-
-static inline s32 rtc_read(u16 addr, u16 *rdata)
-{
-	s32 ret;
-
-	ret = pwrap_read(addr, rdata);
-	if (ret < 0)
-		rtc_info("pwrap_read fail: ret=%d\n", ret);
-
-	return ret;
-}
-
-static inline s32 rtc_write(u16 addr, u16 wdata)
-{
-	s32 ret;
-
-	ret = pwrap_write(addr, wdata);
-	if (ret < 0)
-		rtc_info("pwrap_write fail: ret=%d\n", ret);
-
-	return ret;
-}
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

@@ -54,6 +54,7 @@ void mainboard_config_superio(void)
 	pnp_write_config(GLOBAL_DEV, 0x24, 0x1c);
 	pnp_write_config(GLOBAL_DEV, 0x27, 0xd0);
 	pnp_write_config(GLOBAL_DEV, 0x2a, 0x62);
+	pnp_write_config(GLOBAL_DEV, 0x2c, 0x80);
 	pnp_write_config(GLOBAL_DEV, 0x2f, 0x03);
 
 	/* Power RAM in S3 and let the PCH handle power failure actions */

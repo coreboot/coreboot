@@ -181,22 +181,22 @@ chip soc/intel/cannonlake
 				register "devid" = "PCI_DEVICE_ID_INTEL_CNP_H_UART2"
 			end # UART #2, in ACPI mode
 		end
-		device pci 1b.4 on
+		device pci 1b.4 on	# PCIe root port 21 (Slot 1)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
-		end # PCIe Slot 1
-		device pci 1c.0 on
+		end
+		device pci 1c.0 on	# PCIe root port 1 (Slot 3)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT3" "SlotDataBusWidth4X"
-		end # PCIe Slot 3
-		device pci 1c.4 on end # PHY 3
-		device pci 1c.5 on end # PHY 4
-		device pci 1c.6 on end # PHY 2
-		device pci 1c.7 on end # PHY 1
+		end
+		device pci 1c.4 on end # PCIe root port 5 (PHY 3)
+		device pci 1c.5 on end # PCIe root port 6 (PHY 4)
+		device pci 1c.6 on end # PCIe root port 7 (PHY 2)
+		device pci 1c.7 on end # PCIe root port 8 (PHY 1)
 
-		device pci 1d.0 on
+		device pci 1d.0 on	# PCIe root port 9 (M2 M)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "M2 M" "SlotDataBusWidth4X"
-		end # M2 M
-		device pci 1d.5 on end # PHY 0
-		device pci 1d.6 on end # BMC
+		end
+		device pci 1d.5 on end # PCIe root port 14 (PHY 0)
+		device pci 1d.6 on end # PCIe root port 15 (BMC)
 
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 on  end # UART #1

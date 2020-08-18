@@ -1,8 +1,10 @@
 # Purism Librem Mini
 
+This page describes how to run coreboot on the [Purism Librem Mini].
+
 ```eval_rst
 +------------------+--------------------------------------------------+
-| CPU              | Intel Core i7-8665U                              |
+| CPU              | Intel Core i7-8565U                              |
 +------------------+--------------------------------------------------+
 | PCH              | Whiskey Lake / Cannon Point LP                   |
 +------------------+--------------------------------------------------+
@@ -80,7 +82,7 @@ One has to remove all screws (in order):
 
 The m.2 SSD will need to be removed if the Wi-Fi antenna are connected to
 an internal Wi-Fi/BT module. Use a SOIC-8 chip clip to program the chip.
-Specifically, it's a Winbond W25Q128JV (3.3V) -[datasheet][W25Q128JV].
+Specifically, it's a Winbond W25Q128JV (3.3V) - [datasheet][W25Q128JV].
 
 The EC firmware is stored on a separate SOIC-8 chip (a Winbond W25Q80DV),
 but is not protected by a diode and therefore cannot be read/written to without
@@ -115,6 +117,6 @@ desoldering it from the mainboard.
 
 
 [Purism Librem Mini]: https://puri.sm/products/librem-mini/
-[purism-blobs] : https://source.puri.sm/coreboot/purism-blobs
+[purism-blobs]: https://source.puri.sm/coreboot/purism-blobs
 [W25Q128JV]: https://www.winbond.com/resource-files/w25q128jv%20revf%2003272018%20plus.pdf
 [flashrom]: https://flashrom.org/Flashrom

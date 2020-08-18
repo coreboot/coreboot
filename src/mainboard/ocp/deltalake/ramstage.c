@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <bootstate.h>
 #include <drivers/ipmi/ipmi_ops.h>
@@ -7,6 +8,7 @@
 #include <gpio.h>
 #include <soc/lewisburg_pch_gpio_defs.h>
 #include <soc/ramstage.h>
+#include <soc/soc_util.h>
 #include <stdio.h>
 #include <string.h>
 #include <smbios.h>
@@ -14,6 +16,7 @@
 #include <device/pci_ops.h>
 #include <soc/util.h>
 #include <hob_iiouds.h>
+#include <hob_memmap.h>
 #include <cpxsp_dl_gpio.h>
 
 #include "ipmi.h"
@@ -67,15 +70,37 @@ slot_info slotinfo[] = {
 	{PSTACK2, SlotTypePciExpressGen3X16, SlotDataBusWidth16X, 0x00, "Mezz Card(Class-2)"},
 };
 
+#define SPD_REGVID_LEN 6
+/* A 4-digit long number plus a space */
+static void write_oem_word(uint16_t val, char *str)
+{
+	snprintf(str, SPD_REGVID_LEN, "%04x ", val);
+}
+
 static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	uint8_t pcie_config = 0;
+	const struct SystemMemoryMapHob *hob;
+	char spd_reg_vid[SPD_REGVID_LEN];
+	char empty[1] = "";
+	char *oem_str7 = empty;
 
 	/* OEM string 1 to 6 */
 	ocp_oem_smbios_strings(dev, t);
 
-	/* TODO: Add real OEM string 7, add TBF for now */
-	t->count = smbios_add_oem_string(t->eos, TBF);
+	/* OEM string 7 is the register vendor ID in SPD for each DIMM strung together */
+	hob = get_system_memory_map();
+	assert(hob != NULL);
+	/* There are at most 6 channels and 2 DIMMs per channel, but Delta Lake has 6 DIMMs,
+	   e.g. b300 0000 b300 0000 b300 0000 b300 0000 b300 0000 b300 0000 */
+	for (int ch = 0; ch < MAX_CH; ch++) {
+		for (int dimm = 0; dimm < MAX_IMC; dimm++) {
+			write_oem_word(hob->Socket[0].ChannelInfo[ch].DimmInfo[dimm].SPDRegVen,
+				spd_reg_vid);
+			oem_str7 = strconcat(oem_str7, spd_reg_vid);
+		}
+	}
+	t->count = smbios_add_oem_string(t->eos, oem_str7);
 
 	/* Add OEM string 8 */
 	if (ipmi_get_pcie_config(&pcie_config) == CB_SUCCESS) {

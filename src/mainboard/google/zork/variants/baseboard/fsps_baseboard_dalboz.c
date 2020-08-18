@@ -27,7 +27,6 @@ static const fsp_dxio_descriptor dxio_descriptors[] = {
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ2,
-		.clk_pm_support = true,
 	},
 	{
 		// WLAN
@@ -42,7 +41,6 @@ static const fsp_dxio_descriptor dxio_descriptors[] = {
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ0,
-		.clk_pm_support = true,
 	},
 	{
 		// SD Reader

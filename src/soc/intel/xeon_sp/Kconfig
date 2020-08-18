@@ -17,6 +17,7 @@ config SOC_INTEL_COOPERLAKE_SP
 	bool
 	select XEON_SP_COMMON_BASE
 	select PLATFORM_USES_FSP2_2
+	select CACHE_MRC_SETTINGS
 	help
 	  Intel Cooperlake-SP support
 

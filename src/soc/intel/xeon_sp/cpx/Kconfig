@@ -76,8 +76,6 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
-select CACHE_MRC_SETTINGS
-
 # CPX-SP has 2 IMCs, 3 channels per IMC, 2 DIMMs per channel
 # Default value is set to one socket, full config.
 config DIMM_MAX

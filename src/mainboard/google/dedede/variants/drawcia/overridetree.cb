@@ -58,7 +58,7 @@ chip soc/intel/jasperlake
 				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           80, 1000)"
 				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 70, 4000)"
 				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 75, 1000)"
-				register "policies.passive[3]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 65, 1000)"
+				register "policies.passive[3]" = "DPTF_PASSIVE(CHARGER, TEMP_SENSOR_2, 75, 5000)"
 				register "policies.passive[4]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_3, 60, 1000)"
 
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           119, SHUTDOWN)"
@@ -79,6 +79,12 @@ chip soc/intel/jasperlake
 					.time_window_min = 1 * MSECS_PER_SEC,
 					.time_window_max = 1 * MSECS_PER_SEC,
 					.granularity = 1000,}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf[0]" = "{ 255, 3000 }"
+				register "controls.charger_perf[1]" = "{  24, 1500 }"
+				register "controls.charger_perf[2]" = "{  16, 1000 }"
+				register "controls.charger_perf[3]" = "{   8,  500 }"
 
 				device generic 0 on end
 			end

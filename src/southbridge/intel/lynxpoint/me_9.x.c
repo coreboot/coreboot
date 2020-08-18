@@ -548,10 +548,8 @@ void intel_me_finalize_smm(void)
 	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
 		return;
 
-#if CONFIG(ME_MBP_CLEAR_LATE)
 	/* Wait for ME MBP Cleared indicator */
 	intel_me_mbp_clear(PCH_ME_DEV);
-#endif
 
 	/* Make sure ME is in a mode that expects EOP */
 	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
@@ -926,11 +924,6 @@ static int __unused intel_me_read_mbp(me_bios_payload *mbp_data, struct device *
 	read_host_csr(&host);
 	host.interrupt_generate = 1;
 	write_host_csr(&host);
-
-#if !CONFIG(ME_MBP_CLEAR_LATE)
-	/* Wait for the mbp_cleared indicator. */
-	intel_me_mbp_clear(dev);
-#endif
 
 	/* Dump out the MBP contents. */
 	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {

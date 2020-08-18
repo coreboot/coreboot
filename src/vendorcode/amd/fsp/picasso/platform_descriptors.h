@@ -28,6 +28,14 @@ typedef enum {
 	GEN_INVALID		// Max Gen for boundary check
 } dxio_link_speed_cap;
 
+/* Upstream Auto Speed Change Allowed */
+typedef enum {
+	SPDC_DEFAULT = 0,      // Enabled for Gen2 and Gen3
+	SPDC_DISBLED,
+	SPDC_ENABLED,
+	SPDC_INVALID
+} dxio_upstream_auto_speed_change;
+
 /* SATA ChannelType initialization */
 typedef enum {
 	SATA_CHANNEL_OTHER = 0,	// Default Channel Type
@@ -150,31 +158,31 @@ typedef struct __packed {
  * GPP[3:2] |  [5:4]  | PCIe
  */
 typedef struct __packed {
-	uint8_t		engine_type;
+	uint8_t		engine_type;			// See dxio_engine_type
 	uint8_t		start_logical_lane;		// Start lane of the pci device
 	uint8_t		end_logical_lane;		// End lane of the pci device
-	uint8_t		gpio_group_id;			// FCH reset number. 0 is global reset
+	uint8_t		gpio_group_id;			// Currently unused by FSP
 	uint32_t	port_present		:1;	// Should be TRUE if train link
 	uint32_t	reserved_3		:7;
 	uint32_t	device_number		:5;	// Desired root port device number
 	uint32_t	function_number		:3;	// Desired root port function number
-	uint32_t	link_speed_capability	:2;
-	uint32_t	auto_spd_change		:2;
-	uint32_t	eq_preset		:4;
-	uint32_t	link_aspm		:2;
-	uint32_t	link_aspm_L1_1		:1;
-	uint32_t	link_aspm_L1_2		:1;
-	uint32_t	clk_req			:4;
-	uint8_t		link_hotplug;
-	uint8_t		slot_power_limit;
-	uint32_t	slot_power_limit_scale	:2;
+	uint32_t	link_speed_capability	:2;	// See dxio_link_speed_cap
+	uint32_t	auto_spd_change		:2;	// See dxio_upstream_auto_speed_change
+	uint32_t	eq_preset		:4;	// Gen3 equalization preset
+	uint32_t	link_aspm		:2;	// See dxio_aspm_type
+	uint32_t	link_aspm_L1_1		:1;	// En/Dis root port capabilities for L1.1
+	uint32_t	link_aspm_L1_2		:1;	// En/Dis root port capabilities for L1.2
+	uint32_t	clk_req			:4;	// See cpm_clk_req
+	uint8_t		link_hotplug;			// Currently unused by FSP
+	uint8_t		slot_power_limit;		// Currently unused by FSP
+	uint32_t	slot_power_limit_scale	:2;	// Currently unused by FSP
 	uint32_t	reserved_4		:6;
-	uint32_t	link_compliance_mode	:1;
-	uint32_t	link_safe_mode		:1;
-	uint32_t	sb_link			:1;
-	uint32_t	clk_pm_support		:1;
-	uint32_t	channel_type		:3;
-	uint32_t	turn_off_unused_lanes	:1;
+	uint32_t	link_compliance_mode	:1;	// Currently unused by FSP
+	uint32_t	link_safe_mode		:1;	// Currently unused by FSP
+	uint32_t	sb_link			:1;	// Currently unused by FSP
+	uint32_t	clk_pm_support		:1;	// Currently unused by FSP
+	uint32_t	channel_type		:3;	// See dxio_sata_channel_type
+	uint32_t	turn_off_unused_lanes	:1;	// Power down lanes if device not present
 	uint8_t		reserved[4];
 } fsp_dxio_descriptor;
 

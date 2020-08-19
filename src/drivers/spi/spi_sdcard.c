@@ -358,7 +358,6 @@ static int spi_sdcard_do_app_command(const struct spi_sdcard *card,
 	return spi_sdcard_do_command_help(card, 1, cmd, argument, out_register);
 }
 
-
 size_t spi_sdcard_size(const struct spi_sdcard *card)
 {
 	int wait;

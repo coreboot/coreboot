@@ -5,7 +5,6 @@
 #include <smbios.h>
 #include <string.h>
 
-
 #define MAX_SERIAL_LENGTH 0x100
 
 const char *smbios_mainboard_serial_number(void)

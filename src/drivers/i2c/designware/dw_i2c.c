@@ -698,7 +698,6 @@ static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	return 0;
 }
 
-
 /*
  * Initialize this bus controller and set the speed.
  *

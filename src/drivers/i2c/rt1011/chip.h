@@ -4,7 +4,6 @@
  * Realtek RT1011 audio codec devicetree bindings
  */
 
-
 struct drivers_i2c_rt1011_config {
 	const char *name; /* ACPI Device Name */
 	const char *desc; /* Device Description */

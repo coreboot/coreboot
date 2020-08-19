@@ -77,7 +77,6 @@ unsigned long calibrate_tsc_with_pit(void)
 		if (end.hi)
 			goto bad_ctc;
 
-
 		/* Error: ECPUTOOSLOW */
 		if (end.lo <= CALIBRATE_DIVISOR)
 			goto bad_ctc;

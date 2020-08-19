@@ -16,7 +16,6 @@
 #define  I210_DONE		0x02      /* command done bit */
 #define I210_TARGET_CHECKSUM	0xBABA    /* resulting checksum */
 
-
 /*define some other useful values here */
 #define I210_POLL_TIMEOUT_US	300000    /* 300 ms */
 /*Define some error states here*/

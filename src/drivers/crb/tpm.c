@@ -121,7 +121,6 @@ static uint8_t crb_activate_locality(void)
 	if (rc)
 		write8(CRB_REG(locality, CRB_REG_LOC_CTRL), LOC_CTRL_REQ_ACCESS);
 
-
 	rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 750, LOC_STATE_LOC_ASSIGN,
 				LOC_STATE_LOC_ASSIGN);
 	if (rc) {
@@ -136,7 +135,6 @@ static uint8_t crb_activate_locality(void)
 		       locality);
 		return 0;
 	}
-
 
 	return locality;
 }
@@ -175,7 +173,6 @@ static int crb_switch_to_ready(void)
  */
 int tpm2_init(void)
 {
-
 
 	if (crb_probe()) {
 		printk(BIOS_ERR, "TPM: Probe failed.\n");

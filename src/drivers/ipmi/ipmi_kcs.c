@@ -53,7 +53,6 @@ static int wait_obf_timeout(int port)
 	}
 }
 
-
 static int ipmi_kcs_send_data_byte(int port, const unsigned char byte)
 {
 	unsigned char status;

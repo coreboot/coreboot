@@ -365,7 +365,6 @@ int ww_ring_display_pattern(unsigned int i2c_bus, enum display_pattern pattern)
 	return -1;
 }
 
-
 #define LP55231_I2C_BASE_ADDR 0x32
 
 static void ww_ring_init(unsigned int i2c_bus)

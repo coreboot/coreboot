@@ -105,7 +105,6 @@ static void emit_sar_acpi_structures(void)
 	acpigen_pop_len();
 	acpigen_pop_len();
 
-
 	if (!CONFIG(GEO_SAR_ENABLE))
 		return;
 

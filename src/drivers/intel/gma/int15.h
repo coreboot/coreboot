@@ -27,7 +27,6 @@ enum {
 	GMA_INT15_ACTIVE_LFP_EDP	= 0x03,
 };
 
-
 #if CONFIG(VGA_ROM_RUN)
 /* Install custom int15 handler for VGA OPROM */
 void install_intel_vga_int15_handler(int active_lfp, int pfit, int display, int panel_type);

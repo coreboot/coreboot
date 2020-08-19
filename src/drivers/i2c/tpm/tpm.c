@@ -15,7 +15,6 @@
  * Version: 2.1.1
  */
 
-
 #include <commonlib/endian.h>
 #include <string.h>
 #include <types.h>

@@ -6,7 +6,6 @@
 #include "ast_drv.h"
 #include "ast_tables.h"
 
-
 static inline void ast_load_palette_index(struct ast_private *ast,
 				     u8 index, u8 red, u8 green,
 				     u8 blue)

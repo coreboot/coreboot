@@ -31,7 +31,6 @@
 #include <FirmwareVersionInfoHob.h>
 #endif
 
-
 #pragma pack(pop)
 
 #endif

@@ -220,7 +220,6 @@ static const struct ast_vbios_enhtable res_800x600[] = {
 	 (SyncPP | Charx8Dot), 0xFF, 5, 0x30 },
 };
 
-
 static const struct ast_vbios_enhtable res_1024x768[] = {
 	{1344, 1024, 24, 136, 806, 768, 3, 6, VCLK65,	/* 60Hz */
 	 (SyncNN | Charx8Dot), 60, 1, 0x31 },
@@ -279,7 +278,6 @@ static const struct ast_vbios_enhtable res_1920x1080[] = {
 	 (SyncNP | Charx8Dot | LineCompareOff | WideScreenMode | NewModeInfo |
 	  AST2500PreCatchCRT), 0xFF, 1, 0x38 },
 };
-
 
 /* 16:10 */
 static const struct ast_vbios_enhtable res_1280x800[] = {

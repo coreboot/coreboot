@@ -174,7 +174,6 @@ struct fsp_runtime {
 	uint32_t hob_list;
 } __packed;
 
-
 void fsp_set_runtime(FSP_INFO_HEADER *fih, void *hob_list)
 {
 	struct fsp_runtime *fspr;

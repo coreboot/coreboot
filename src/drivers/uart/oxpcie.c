@@ -26,7 +26,6 @@ static void oxford_oxpcie_enable(struct device *dev)
 	printk(BIOS_DEBUG, "OXPCIe952: UART BAR: 0x%x\n", (u32)res->base);
 }
 
-
 static void oxford_oxpcie_set_resources(struct device *dev)
 {
 	pci_dev_set_resources(dev);

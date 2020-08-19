@@ -98,7 +98,6 @@ int intel_vga_int15_handler(void)
 	return res;
 }
 
-
 void install_intel_vga_int15_handler(int active_lfp_, int pfit_, int display_, int panel_type_)
 {
 	active_lfp = active_lfp_;

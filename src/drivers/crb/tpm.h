@@ -39,7 +39,6 @@
 #define CRB_INTF_REG_INTF_SEL	(1<<17)
 #define CRB_INTF_REG_INTF_LOCK	(1<<19)
 
-
 /*REQUEST Register related */
 #define CRB_REG_REQUEST_CMD_RDY		0x01
 #define CRB_REG_REQUEST_GO_IDLE		0x02
@@ -57,7 +56,6 @@ struct tpm2_info {
 	uint16_t device_id;
 	uint16_t revision;
 };
-
 
 int tpm2_init(void);
 void tpm2_get_info(struct tpm2_info *tpm2_info);

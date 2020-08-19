@@ -32,7 +32,6 @@ struct cr50_firmware_version {
  */
 int tpm2_init(struct spi_slave *spi_if);
 
-
 /*
  * Each command processing consists of sending the command to the TPM, by
  * writing it into the FIFO register, then polling the status register until

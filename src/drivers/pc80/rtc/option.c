@@ -228,7 +228,6 @@ int cmos_lb_cks_valid(void)
 	return cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC);
 }
 
-
 void sanitize_cmos(void)
 {
 	const unsigned char *cmos_default;

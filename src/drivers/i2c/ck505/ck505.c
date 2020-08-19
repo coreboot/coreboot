@@ -31,7 +31,6 @@ static void ck505_init(struct device *dev)
 	nregs = MIN(MIN(dev_nregs, config->nregs == 0 ? SMBUS_BLOCK_SIZE
 				: config->nregs), ARRAY_SIZE(config->mask));
 
-
 	printk(BIOS_DEBUG, "Changing %d of the %d ck505 config bytes.\n",
 		nregs, dev_nregs);
 

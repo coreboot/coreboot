@@ -17,7 +17,6 @@
 #include <elog.h>
 #include "elog_internal.h"
 
-
 #if CONFIG(ELOG_DEBUG)
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
 #else

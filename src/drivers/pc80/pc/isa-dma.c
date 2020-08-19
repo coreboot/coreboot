@@ -32,7 +32,6 @@
 
 #define DMA_AUTOINIT	0x10
 
-
 void isa_dma_init(void)
 {
 	/* slave at 0x00 - 0x0f */

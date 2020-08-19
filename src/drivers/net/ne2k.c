@@ -36,7 +36,6 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 
 #include "ns8390.h"
 
-
 #define ETH_ALEN		6	/* Size of Ethernet address */
 #define ETH_HLEN		14	/* Size of ethernet header */
 #define	ETH_ZLEN		60	/* Minimum packet */
@@ -47,7 +46,6 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 #define MEM_SIZE MEM_32768
 #define TX_START 64
 #define RX_START (64 + D8390_TXBUF_SIZE)
-
 
 static unsigned int get_count(unsigned int eth_nic_base)
 {
@@ -145,7 +143,6 @@ static void str2mac(const char *str, unsigned char *mac)
 		i++;
 	} while (c != '\0');
 }
-
 
 static void ns8390_tx_header(unsigned int eth_nic_base, int pktlen)
 {

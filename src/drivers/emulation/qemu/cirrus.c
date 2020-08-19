@@ -299,7 +299,6 @@ static void cirrus_init_linear_fb(struct device *dev)
 	vga_sr_write (CIRRUS_SR_EXTENDED_MODE, sr_ext);
 	write_hidden_dac (hidden_dac);
 
-
 	struct edid edid;
 	edid.mode.ha = width;
 	edid.mode.va = height;

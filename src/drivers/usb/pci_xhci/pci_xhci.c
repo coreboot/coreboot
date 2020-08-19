@@ -24,7 +24,6 @@ __weak enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 	return CB_SUCCESS;
 }
 
-
 static void xhci_count_ports(void *context, const struct xhci_supported_protocol *data)
 {
 	struct port_counts *counts = context;

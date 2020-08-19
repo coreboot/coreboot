@@ -5,7 +5,6 @@
 
 #define SPEAKER_PIT_FREQUENCY		0x1234dd
 
-
 enum {
 	PIT_COUNTER_0 = 0x40,
 	PIT_COUNTER_1 = 0x41,
@@ -13,7 +12,6 @@ enum {
 	PIT_CTRL = 0x43,
 	PIT_SPEAKER_PORT = 0x61,
 };
-
 
 enum {
 	PIT_SPK_TMR2 = 0x01,
@@ -44,12 +42,10 @@ enum {
 
 	PIT_CTRL_HARDSTROBE = 0x0a,
 
-
 	PIT_CTRL_COUNT_MASK = 0x01,
 	PIT_CTRL_COUNT_BINARY = 0x00,
 	PIT_CTRL_COUNT_BCD = 0x01
 };
-
 
 static void
 make_tone(uint16_t freq_count, unsigned int duration)

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <console/console.h>
 #include <device/i2c_bus.h>
 #include <types.h>

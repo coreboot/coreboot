@@ -85,7 +85,6 @@ void *get_first_hob(uint16_t type);
 void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_guid_hob(const EFI_GUID *guid);
 
-
 asmlinkage void chipset_teardown_car_main(void);
 
 #endif	/* FSP1_1_UTIL_H */

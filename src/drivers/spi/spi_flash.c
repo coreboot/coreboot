@@ -373,7 +373,6 @@ static const struct spi_flash_part_id *find_part(const struct spi_flash_vendor_i
 		[1] = id[1] & vi->match_id_mask[1],
 	};
 
-
 	for (i = 0; i < vi->nr_part_ids; i++) {
 		const struct spi_flash_part_id *part = &vi->ids[i];
 
@@ -665,7 +664,6 @@ void lb_spi_flash(struct lb_header *header)
 		flash->erase_cmd = CMD_BLOCK_ERASE;
 	}
 }
-
 
 int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
 				   const struct region *region,

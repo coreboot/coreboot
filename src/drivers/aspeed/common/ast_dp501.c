@@ -331,7 +331,6 @@ static bool ast_init_dvo(struct drm_device *dev)
 	return true;
 }
 
-
 static void ast_init_analog(struct drm_device *dev)
 {
 	struct ast_private *ast = dev->dev_private;

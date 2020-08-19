@@ -113,7 +113,6 @@ void smbios_system_set_uuid(u8 *uuid)
 		3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15
 	};
 
-
 	if (already_read) {
 		memcpy(uuid, result, 16);
 		return;

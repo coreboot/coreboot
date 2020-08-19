@@ -31,7 +31,6 @@ enum fsp_notify_phase {
 	END_OF_FIRMWARE = 0xF0
 };
 
-
 /* Main FSP stages */
 void fsp_memory_init(bool s3wake);
 void fsp_silicon_init(bool s3wake);

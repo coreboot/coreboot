@@ -737,7 +737,6 @@ static int anx7625_power_on_init(uint8_t bus)
 		}
 		ANXINFO("Init interface.\n");
 
-
 		anx7625_disable_pd_protocol(bus);
 		anx7625_reg_read(bus, RX_P0_ADDR, OCM_FW_VERSION, &version);
 		anx7625_reg_read(bus, RX_P0_ADDR, OCM_FW_REVERSION, &revision);

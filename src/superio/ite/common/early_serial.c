@@ -45,7 +45,6 @@ void ite_reg_write(pnp_devfn_t dev, u8 reg, u8 value)
 	pnp_exit_conf_state(dev);
 }
 
-
 /*
  * in romstage.c
  * #define CLKIN_DEV PNP_DEV(0x2e, ITE_GPIO)

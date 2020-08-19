@@ -19,5 +19,4 @@
 #define IT8528E_PMC4 0x18 /* Power Management Channel 4 */
 #define IT8528E_PMC5 0x19 /* Power Management Channel 5 */
 
-
 #endif /* SUPERIO_ITE_IT8528E_H */

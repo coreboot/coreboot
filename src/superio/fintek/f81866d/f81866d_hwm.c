@@ -10,7 +10,6 @@
 #include "fintek_internal.h"
 #include "chip.h"
 
-
 /* Register addresses */
 // Choose between AMD and Intel
 #define HWM_AMD_TSI_ADDR		0x08
@@ -36,7 +35,6 @@
 #define HWM_FAN2_SEG3_SPEED_COUNT	0xBC
 #define HWM_FAN2_SEG4_SPEED_COUNT	0xBD
 #define HWM_FAN2_SEG5_SPEED_COUNT	0xBE
-
 
 void f81866d_hwm_init(struct device *dev)
 {

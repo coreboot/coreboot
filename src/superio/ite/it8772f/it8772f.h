@@ -129,5 +129,4 @@ void it8772f_exit_conf(pnp_devfn_t dev);
 void it8772f_gpio_led(pnp_devfn_t dev, int set, u8 select, u8 polarity, u8 pullup,
 			u8 output, u8 enable, u8 led_pin_map, u8 led_freq);
 
-
 #endif /* SUPERIO_ITE_IT8772F_H */

@@ -24,7 +24,6 @@ static void pnp_exit_conf_state(pnp_devfn_t dev)
 	outb(SMSC_EXIT_KEY, port);
 }
 
-
 /**
  * Enable the specified serial port.
  *

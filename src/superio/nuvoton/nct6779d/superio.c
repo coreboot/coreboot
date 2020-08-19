@@ -7,7 +7,6 @@
 
 #include "nct6779d.h"
 
-
 static void nct6779d_init(struct device *dev)
 {
 	if (!dev->enabled)

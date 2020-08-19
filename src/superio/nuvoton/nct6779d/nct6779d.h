@@ -20,7 +20,6 @@
 #define NCT6779D_PRT80		0x14 /* Port 80 UART */
 #define NCT6779D_DSLP		0x16 /* Deep sleep */
 
-
 /* virtual LDN for GPIO */
 
 #define NCT6779D_GPIOBASE	((0 << 8) | NCT6779D_WDT1_GPIO01_V)

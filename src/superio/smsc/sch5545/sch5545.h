@@ -131,7 +131,6 @@
 #define SCH5545_IRQ_PARPORT			0x11
 #define SCH5545_IRQ_DISABLED			0xff
 
-
 /* runtime registers */
 #define SCH5545_RR_PME_STS			0x00
 #define   SCH5545_GLOBAL_PME_STS		0x01

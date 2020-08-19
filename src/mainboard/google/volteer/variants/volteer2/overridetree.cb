@@ -6,6 +6,7 @@ chip soc/intel/tigerlake
 	register "DdiPort2Hpd" = "0"
 
 	device domain 0 on
+		device pci 05.0 on end # IPU                           0x9A19
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

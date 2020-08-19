@@ -16,10 +16,10 @@ void list_insert_after(struct list_node *node, struct list_node *after);
 // Insert list_node node before list_node before in a doubly linked list.
 void list_insert_before(struct list_node *node, struct list_node *before);
 
-#define list_for_each(ptr, head, member)                                \
-	for ((ptr) = container_of((head).next, typeof(*(ptr)), member); \
-		&((ptr)->member);                                       \
-		(ptr) = container_of((ptr)->member.next,                \
+#define list_for_each(ptr, head, member)                                      \
+	for ((ptr) = container_of((head).next, typeof(*(ptr)), member);       \
+		(uintptr_t)ptr + (uintptr_t)offsetof(typeof(*(ptr)), member); \
+		(ptr) = container_of((ptr)->member.next,                      \
 			typeof(*(ptr)), member))
 
 #endif /* __LIST_H__ */

@@ -66,7 +66,6 @@ extern int errno;
 #define MODULE_ID(id) /*nothing*/
 #endif
 
-
 /* Maximum regular 8-bit character code */
 #define MAX_REGULAR_CHARACTER (0xff)
 

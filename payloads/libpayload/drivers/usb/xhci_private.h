@@ -515,7 +515,6 @@ static inline int xhci_ep_id(const endpoint_t *const ep) {
 	return ((ep->endpoint & 0x7f) * 2) + (ep->direction != OUT);
 }
 
-
 #ifdef XHCI_DUMPS
 void xhci_dump_slotctx(const slotctx_t *);
 void xhci_dump_epctx(const epctx_t *);

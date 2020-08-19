@@ -521,7 +521,6 @@ unsigned long int strtoul(const char *ptr, char **endptr, int base)
 	return val;
 }
 
-
 /**
  * Determine the number of leading characters in s that match characters in a
  * @param s A pointer to the string to analyse

@@ -42,7 +42,6 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-
 /**
  * PCs can have either 64 (very old ones), 128, or 256 bytes of CMOS RAM.
  *

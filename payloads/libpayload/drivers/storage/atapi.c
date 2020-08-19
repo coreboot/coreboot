@@ -33,7 +33,6 @@
 #include <storage/ata.h>
 #include <storage/atapi.h>
 
-
 static int atapi_request_sense(atapi_dev_t *const dev)
 {
 	u8 cdb[12] = { 0, };

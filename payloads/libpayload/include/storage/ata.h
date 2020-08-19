@@ -33,7 +33,6 @@
 
 #include "storage.h"
 
-
 /* ATA commands */
 enum {
 	ATA_READ_DMA			= 0xc8,

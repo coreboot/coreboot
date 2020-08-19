@@ -132,7 +132,6 @@ typedef struct tagMENU
 
 } MENU;
 
-
 /* Define keys */
 
 #define REQ_LEFT_ITEM           (KEY_MAX + 1)
@@ -169,7 +168,6 @@ typedef struct tagMENU
 #else
 #  define MAX_COMMAND (KEY_MAX + 128)
 #endif
-
 
 /* --------- prototypes for libmenu functions ----------------------------- */
 
@@ -243,7 +241,6 @@ extern NCURSES_EXPORT(int)	unpost_menu (MENU *);
 extern NCURSES_EXPORT(int)	menu_request_by_name (const char *);
 extern NCURSES_EXPORT(int)	set_menu_spacing (MENU *,int,int,int);
 extern NCURSES_EXPORT(int)	menu_spacing (const MENU *,int *,int *,int *);
-
 
 extern NCURSES_EXPORT(bool)	item_value (const ITEM *);
 extern NCURSES_EXPORT(bool)	item_visible (const ITEM *);

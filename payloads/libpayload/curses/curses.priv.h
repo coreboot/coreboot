@@ -32,7 +32,6 @@
  *     and: Thomas E. Dickey                        1996-on                 *
  ****************************************************************************/
 
-
 /*
  * $Id: curses.priv.h,v 1.314 2006/12/10 00:55:14 tom Exp $
  *
@@ -496,7 +495,6 @@ struct screen {
 	chtype		_xmc_triggers;	/* attributes to process if xmc	     */
 	chtype *	_acs_map;	/* the real alternate-charset map    */
 	bool *		_screen_acs_map;
-
 
 	/* used in lib_vidattr.c */
 	bool		_use_rmso;	/* true if we may use 'rmso'	     */
@@ -979,7 +977,6 @@ extern	NCURSES_EXPORT(void) name (void); \
       (S) |= (at);\
    }\
    TR(TRACE_ATTRS, ("new attribute is %s", _traceattr((S))));}
-
 
 #define toggle_attr_off(S,at) {\
    if (PAIR_NUMBER(at) > 0) {\

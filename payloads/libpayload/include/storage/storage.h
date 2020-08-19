@@ -32,13 +32,11 @@
 #include <stdint.h>
 #include <unistd.h>
 
-
 #if !CONFIG(LP_STORAGE_64BIT_LBA)
 typedef u32 lba_t;
 #else
 typedef u64 lba_t;
 #endif
-
 
 typedef enum {
 	PORT_TYPE_IDE	= (1 << 0),
@@ -54,7 +52,6 @@ typedef enum {
 	POLL_MEDIUM_PRESENT	=  1,
 } storage_poll_t;
 
-
 struct storage_dev;
 
 typedef struct storage_dev {
@@ -69,7 +66,6 @@ typedef struct storage_dev {
 
 int storage_device_count(void);
 int storage_attach_device(storage_dev_t *dev);
-
 
 storage_poll_t storage_probe(size_t dev_num);
 ssize_t storage_read_blocks512(size_t dev_num, lba_t start, size_t count, unsigned char *buf);

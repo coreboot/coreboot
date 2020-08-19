@@ -138,7 +138,6 @@ static void corebootfb_putchar(u8 row, u8 col, unsigned int ch)
 			((((vga_colors[fg] >> 16) & 0xff) >> (8 - fbinfo.red_mask_size)) << fbinfo.red_mask_pos);
 	}
 
-
 	dst = FB + ((row * font_height) * fbinfo.bytes_per_line);
 	dst += (col * font_width * (fbinfo.bits_per_pixel >> 3));
 

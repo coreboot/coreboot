@@ -27,7 +27,6 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /* For simplicity sake let's rely on coreboot initializing the UART. */
 #include <config.h>
 #include <libpayload.h>

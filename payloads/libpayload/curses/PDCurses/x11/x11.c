@@ -276,7 +276,6 @@ static char *program_name;
 
 #define RCOLOR(name, value) RPIXEL(color##name, Color##name, value)
 
-
 #define RSTRINGP(name1, name2, param) { \
                 #name1, #name2, XtRString, \
                 MAX_PATH, APPDATAOFF(name1), XtRString, (XtPointer)param \

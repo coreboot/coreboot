@@ -116,7 +116,6 @@ ScrollBoxClassRec scrollBoxClassRec = {
 
 WidgetClass scrollBoxWidgetClass = (WidgetClass)&scrollBoxClassRec;
 
-
 /************************************************************************
  *                                                                      *
  * Private Routines                                                     *

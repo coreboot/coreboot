@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <usb/usb.h>
 #include "generic_hub.h"
 #include "dwc2_private.h"

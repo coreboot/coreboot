@@ -37,7 +37,6 @@
 
 #include "ahci_private.h"
 
-
 #ifdef DEBUG_STATUS
 static inline u32 _ahci_clear_status(volatile u32 *const reg,
 				     const char *const r,
@@ -61,7 +60,6 @@ static inline u32 _ahci_clear_status(volatile u32 *const reg)
 }
 #define ahci_clear_status(p, r) _ahci_clear_status(&(p)->r)
 #endif
-
 
 /** Give a buffer with even address. */
 static u8 *ahci_prdbuf_init(ahci_dev_t *const dev,

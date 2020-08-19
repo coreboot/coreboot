@@ -171,7 +171,6 @@ ehci_rh_poll (usbdev_t *dev)
 		ehci_rh_scanport (dev, port);
 }
 
-
 void
 ehci_rh_init (usbdev_t *dev)
 {

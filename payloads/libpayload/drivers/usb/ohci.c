@@ -627,7 +627,6 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 	return result;
 }
 
-
 struct _intr_queue;
 
 struct _intrq_td {

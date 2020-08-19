@@ -426,7 +426,6 @@ oom:
 	return -1;
 }
 
-
 /* FIXME: Handle control transfers as 3 QHs, so the 2nd stage can be >0x4000 bytes */
 static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup,
 			 int dalen, u8 *src)
@@ -543,7 +542,6 @@ oom:
 	free_qh_and_tds(qh, head);
 	return -1;
 }
-
 
 typedef struct _intr_qtd_t intr_qtd_t;
 

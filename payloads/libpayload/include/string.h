@@ -83,5 +83,4 @@ size_t strlcpy(char *d, const char *s, size_t n);
 size_t strlcat(char *d, const char *s, size_t n);
 /** @} */
 
-
 #endif

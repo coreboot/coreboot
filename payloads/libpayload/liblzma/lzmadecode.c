@@ -33,11 +33,9 @@
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \
   { int i; for(i = 0; i < 5; i++) { RC_TEST; Code = (Code << 8) | RC_READ_BYTE; }}
 
-
 #define RC_TEST { if (Buffer == BufferLim) return LZMA_RESULT_DATA_ERROR; }
 
 #define RC_INIT(buffer, bufferSize) Buffer = buffer; BufferLim = buffer + bufferSize; RC_INIT2
-
 
 #define RC_NORMALIZE if (Range < kTopValue) { RC_TEST; Range <<= 8; Code = (Code << 8) | RC_READ_BYTE; }
 
@@ -56,7 +54,6 @@
   do { CProb *cp = probs + res; RC_GET_BIT(cp, res) } while(--i != 0); \
   res -= (1 << numLevels); }
 
-
 #define kNumPosBitsMax 4
 #define kNumPosStatesMax (1 << kNumPosBitsMax)
 
@@ -73,7 +70,6 @@
 #define LenMid (LenLow + (kNumPosStatesMax << kLenNumLowBits))
 #define LenHigh (LenMid + (kNumPosStatesMax << kLenNumMidBits))
 #define kNumLenProbs (LenHigh + kLenNumHighSymbols)
-
 
 #define kNumStates 12
 #define kNumLitStates 7
@@ -143,7 +139,6 @@ int LzmaDecode(CLzmaDecoderState *vs,
   UInt32 literalPosMask = (1 << (vs->Properties.lp)) - 1;
   int lc = vs->Properties.lc;
 
-
   int state = 0;
   UInt32 rep0 = 1, rep1 = 1, rep2 = 1, rep3 = 1;
   int len = 0;
@@ -163,7 +158,6 @@ int LzmaDecode(CLzmaDecoderState *vs,
   }
 
   RC_INIT(inStream, inSize);
-
 
   while(nowPos < outSize)
   {
@@ -379,7 +373,6 @@ int LzmaDecode(CLzmaDecoderState *vs,
       if (rep0 > nowPos)
         return LZMA_RESULT_DATA_ERROR;
 
-
       do
       {
         previousByte = outStream[nowPos - rep0];
@@ -390,7 +383,6 @@ int LzmaDecode(CLzmaDecoderState *vs,
     }
   }
   RC_NORMALIZE;
-
 
   *inSizeProcessed = (SizeT)(Buffer - inStream);
   *outSizeProcessed = nowPos;

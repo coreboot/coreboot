@@ -46,13 +46,11 @@ void rmerror(void);
 # define EDITBOXCOLOR     (A_BOLD | A_REVERSE)
 #endif
 
-
 #define th 1     /* title window height */
 #define mh 1     /* main menu height */
 #define sh 2     /* status window height */
 #define bh (LINES - th - mh - sh)   /* body window height */
 #define bw COLS  /* body window width */
-
 
 /******************************* STATIC ************************************/
 
@@ -359,7 +357,6 @@ static void cleanup(void)   /* cleanup curses settings */
         incurses = FALSE;
     }
 }
-
 
 /******************************* EXTERNAL **********************************/
 

@@ -56,7 +56,6 @@ typedef struct {
     XtGeometryMask last_query_mode;
 } ScrollBoxPart;
 
-
 /************************************************************************
  *                                                                      *
  * Full instance record declaration                                     *

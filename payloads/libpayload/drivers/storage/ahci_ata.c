@@ -37,7 +37,6 @@
 
 #include "ahci_private.h"
 
-
 ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
 				     const lba_t start, size_t count,
 				     u8 *const buf)

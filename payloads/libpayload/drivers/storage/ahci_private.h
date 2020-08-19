@@ -120,7 +120,6 @@ typedef volatile struct {
 #define HBA_CTRL_INTR_EN	(1 <<  1)
 #define HBA_CTRL_RESET		(1 <<  0)
 
-
 typedef volatile struct {
 	u8 dma_setup_fis[28];
 	u8 _reserved0[4];
@@ -228,6 +227,5 @@ ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
 ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
 		     const lba_t start, size_t count,
 		     u8 *const buf);
-
 
 #endif /* _AHCI_PRIVATE_H */

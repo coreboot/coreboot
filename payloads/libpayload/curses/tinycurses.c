@@ -163,7 +163,6 @@ chtype console_acs_map[128] =
 // FIXME: Ugly (and insecure!) hack!
 char sprintf_tmp[1024];
 
-
 int curses_flags = (F_ENABLE_CONSOLE | F_ENABLE_SERIAL);
 
 /* Return bit mask for clearing color pair number if given ch has color */

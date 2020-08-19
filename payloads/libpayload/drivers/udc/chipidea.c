@@ -300,7 +300,6 @@ static void start_setup(struct usbdev_ctrl *this, int ep)
 	udc_handle_setup(this, ep, &dr);
 }
 
-
 static void chipidea_enqueue_packet(struct usbdev_ctrl *this, int endpoint,
 	int in_dir, void *data, int len, int zlp, int autofree)
 {

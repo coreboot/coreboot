@@ -127,7 +127,6 @@ void apic_start_delay(unsigned int usec)
 	enable_interrupts();
 }
 
-
 void apic_wait_delay(void)
 {
 	/* Loop in case another interrupt has fired and resumed execution. */

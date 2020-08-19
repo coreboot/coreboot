@@ -33,7 +33,6 @@
 
 #include <storage/ata.h>
 
-
 /** Reads non-sector-aligned blocks of 512 bytes. */
 static ssize_t ata_read_unaligned(ata_dev_t *const dev,
 				  const lba_t blk_start, size_t blk_count,

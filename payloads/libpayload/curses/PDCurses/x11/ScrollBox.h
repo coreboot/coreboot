@@ -42,7 +42,6 @@
 
 */
 
-
 /* Class record constants */
 
 extern WidgetClass scrollBoxWidgetClass;

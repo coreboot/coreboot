@@ -34,7 +34,6 @@
 #include "storage.h"
 #include "ata.h"
 
-
 /* ATAPI commands */
 enum {
 	ATAPI_TEST_UNIT_READY			= 0x00,

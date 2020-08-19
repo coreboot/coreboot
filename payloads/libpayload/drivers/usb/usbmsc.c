@@ -613,7 +613,6 @@ usb_msc_init (usbdev_t *dev)
 	usb_debug ("  it uses %s protocol\n",
 		msc_protocol_strings[interface->bInterfaceProtocol]);
 
-
 	if (interface->bInterfaceProtocol != 0x50) {
 		usb_debug ("  Protocol not supported.\n");
 		usb_detach_device (dev->controller, dev->address);

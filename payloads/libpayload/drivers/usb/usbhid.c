@@ -131,8 +131,6 @@ const char *countries[36][2] = {
 	/* 36 - 255: Reserved */
 };
 
-
-
 struct layout_maps {
 	const char *country;
 	const short map[4][0x80];
@@ -247,7 +245,6 @@ static const struct layout_maps keyboard_layouts[] = {
 //#endif
 };
 
-
 static void usb_hid_keyboard_queue(int ch) {
 	/* ignore key presses if buffer full */
 	if (keycount < KEYBOARD_BUFFER_SIZE)
@@ -315,7 +312,6 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 		}
 		if (skip)
 			continue;
-
 
 		/* Mask off KB_MOD_CTRL */
 		keypress = map->map[modifiers & 0x03][current->keys[i]];
@@ -396,7 +392,6 @@ static struct console_input_driver cons = {
 	.getchar = usbhid_getchar,
 	.input_type = CONSOLE_INPUT_TYPE_USB,
 };
-
 
 static int usb_hid_set_layout (const char *country)
 {

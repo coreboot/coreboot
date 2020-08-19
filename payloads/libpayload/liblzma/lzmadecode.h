@@ -32,7 +32,6 @@ typedef UInt32 SizeT;
 #define LZMA_RESULT_OK 0
 #define LZMA_RESULT_DATA_ERROR 1
 
-
 #define LZMA_BASE_SIZE 1846
 #define LZMA_LIT_SIZE 768
 
@@ -56,9 +55,7 @@ typedef struct _CLzmaDecoderState
   CLzmaProperties Properties;
   CProb *Probs;
 
-
 } CLzmaDecoderState;
-
 
 int LzmaDecode(CLzmaDecoderState *vs,
     const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,

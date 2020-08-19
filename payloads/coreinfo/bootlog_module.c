@@ -7,13 +7,11 @@
 #define LINES_SHOWN 19
 #define TAB_WIDTH 2
 
-
 /* Globals that are used for tracking screen state */
 static char *g_buf = NULL;
 static s32 g_line = 0;
 static s32 g_lines_count = 0;
 static s32 g_max_cursor_line = 0;
-
 
 /* Copied from libpayload/drivers/cbmem_console.c */
 struct cbmem_console {
@@ -24,7 +22,6 @@ struct cbmem_console {
 
 #define CURSOR_MASK ((1 << 28) - 1)
 #define OVERFLOW (1 << 31)
-
 
 static u32 char_width(char c, u32 cursor, u32 screen_width)
 {

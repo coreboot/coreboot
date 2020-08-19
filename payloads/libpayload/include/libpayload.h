@@ -456,7 +456,6 @@ static inline int log2(u32 x) { return (int)sizeof(x) * 8 - clz(x) - 1; }
 static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
 /** @} */
 
-
 /**
  * @defgroup mmio MMIO helper functions
  * @{
@@ -474,7 +473,6 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 }
 #endif
 /** @} */
-
 
 /**
  * @defgroup hash Hashing functions

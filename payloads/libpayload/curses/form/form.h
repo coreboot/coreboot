@@ -106,7 +106,6 @@ typedef struct fieldnode {
   NCURSES_FIELD_INTERNALS
 } FIELD;
 
-
 	/*********
 	*  FORM  *
 	*********/
@@ -137,7 +136,6 @@ typedef struct formnode {
   void			(*fieldterm)(struct formnode *);
 
 } FORM;
-
 
 	/**************
 	*  FIELDTYPE  *

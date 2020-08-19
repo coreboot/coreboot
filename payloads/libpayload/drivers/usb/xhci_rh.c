@@ -135,7 +135,6 @@ xhci_rh_enable_port(usbdev_t *const dev, int port)
 	return 0;
 }
 
-
 static const generic_hub_ops_t xhci_rh_ops = {
 	.hub_status_changed	= xhci_rh_hub_status_changed,
 	.port_status_changed	= xhci_rh_port_status_changed,

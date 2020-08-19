@@ -176,7 +176,6 @@ static void init_video_mode(void)
 	writel(((vga_mode.hactive - 1) << 16) | (vga_mode.vactive - 1),
 	       DC + 0x5C);
 
-
 	/* Write the VG configuration */
 
 	writel(0x290000F | vga_mode.synccfg, VG + 0x08);

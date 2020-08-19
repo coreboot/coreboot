@@ -144,10 +144,11 @@ static int imdr_create_empty(struct imdr *imdr, size_t root_size,
 
 	/*
 	 * root_size needs to be large enough to accommodate root pointer and
-	 * root book keeping structure. The caller needs to ensure there's
-	 * enough room for tracking individual allocations.
+	 * root book keeping structure. Furthermore, there needs to be a space
+	 * for at least one entry covering root region. The caller needs to
+	 * ensure there's enough room for tracking individual allocations.
 	 */
-	if (root_size < (sizeof(*rp) + sizeof(*r)))
+	if (root_size < (sizeof(*rp) + sizeof(*r) + sizeof(*e)))
 		return -1;
 
 	/* For simplicity don't allow sizes or alignments to exceed LIMIT_ALIGN.

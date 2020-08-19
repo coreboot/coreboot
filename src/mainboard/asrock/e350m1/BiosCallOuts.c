@@ -6,7 +6,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <SB800.h>
 
-
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =

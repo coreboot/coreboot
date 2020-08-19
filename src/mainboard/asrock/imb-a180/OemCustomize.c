@@ -5,7 +5,6 @@
 
 #include <northbridge/amd/agesa/state_machine.h>
 
-
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,

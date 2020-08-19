@@ -32,7 +32,6 @@ const u32 cim_verb_data[] = {
 
 	AZALIA_PIN_CFG(1, 0x03, 0x18560010),
 
-
 	/* coreboot specific header */
 	/* Realtek ALC662 rev1 */
 	0x10ec0662, /* Vendor ID */

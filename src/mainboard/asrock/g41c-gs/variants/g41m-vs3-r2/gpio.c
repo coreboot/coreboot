@@ -88,7 +88,6 @@ static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio33 = GPIO_LEVEL_HIGH,
 };
 
-
 const struct pch_gpio_map mainboard_gpio_map = {
 	.set1 = {
 		.mode		= &pch_gpio_set1_mode,

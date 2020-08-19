@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
@@ -8,7 +7,6 @@
 #include <string.h>
 
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
-
 
 u8 intr_data[] = {
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17, /* INTA# - INTH# */

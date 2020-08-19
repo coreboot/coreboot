@@ -392,6 +392,10 @@ void mt_pll_init(void)
 	for (i = 0; i < ARRAY_SIZE(rates); i++)
 		pll_set_rate(&plls[rates[i].id], rates[i].rate);
 
+	/* AUDPLL Tuner Frequency Set */
+	write32(&mtk_apmixed->apll1_tuner_con0, read32(&mtk_apmixed->apll1_con2) + 1);
+	write32(&mtk_apmixed->apll2_tuner_con0, read32(&mtk_apmixed->apll2_con2) + 1);
+
 	/* xPLL Frequency Enable */
 	for (i = 0; i < APMIXED_PLL_MAX; i++) {
 		if (i == APMIXED_USBPLL)

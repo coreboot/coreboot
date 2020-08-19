@@ -22,7 +22,6 @@
 #define PM_RTC_CONTROL	    0x56
 #define PM_S_STATE_CONTROL  0xBA
 
-
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
  * This table is responsible for physically routing the PIC and

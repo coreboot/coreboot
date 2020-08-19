@@ -27,7 +27,6 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 //{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_NoopUnsupported }
 
-
 /*
  * Hardware Monitor Fan Control
  * Hardware limitation:
@@ -57,7 +56,6 @@ void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams)
 void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams)
 {
 	printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
-
 
 	FchParams->Azalia.AzaliaEnable = AzDisable;
 

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <AGESA.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>

@@ -62,7 +62,6 @@ static void *smp_write_config_table(void *v)
 #define PCI_INT(bus, dev, int_sign, pin)				\
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), ioapic_id, (pin))
 
-
 	/* SMBUS / ACPI */
 	PCI_INT(0x0, 0x14, 0x0, intr_data_ptr[PIRQ_SMBUS]);
 
@@ -84,7 +83,6 @@ static void *smp_write_config_table(void *v)
 	/* on board NIC & Slot PCIE */
 	PCI_INT(0x1, 0x0, 0x0, intr_data_ptr[PIRQ_E]);
 	PCI_INT(0x2, 0x0, 0x0, intr_data_ptr[PIRQ_F]);
-
 
 	/* GPP0 */
 	PCI_INT(0x0, 0x2, 0x0, 0x10);	// Network 3

@@ -85,7 +85,6 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.DdiLinkList  = DdiList
 };
 
-
 void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
 	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;

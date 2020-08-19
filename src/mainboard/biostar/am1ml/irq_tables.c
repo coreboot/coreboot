@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-
 #include <arch/pirq_routing.h>
 
 const struct irq_routing_table intel_irq_routing_table = {

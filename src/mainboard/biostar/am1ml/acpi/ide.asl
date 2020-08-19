@@ -2,7 +2,6 @@
 
 /* No IDE functionality */
 
-
 /*
 Scope (_SB) {
 	Device(PCI0) {

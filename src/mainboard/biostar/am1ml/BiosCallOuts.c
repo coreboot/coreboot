@@ -38,7 +38,6 @@ const CODEC_ENTRY Alc662_VerbTbl[] =
   { 0xff, 0xffffffff }
 };
 
-
 static const CODEC_TBL_LIST CodecTableList[] =
 {
 	{0x10ec0662, (CODEC_ENTRY*)&Alc662_VerbTbl[0]},

@@ -284,7 +284,6 @@ static void acpigen_emit_multi_namestring(const char *name)
 	pathlen[0] = count;
 }
 
-
 void acpigen_emit_namestring(const char *namepath)
 {
 	int dotcount = 0, i;
@@ -929,8 +928,6 @@ void acpigen_write_TSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 	acpigen_pop_len();
 	acpigen_pop_len();
 }
-
-
 
 void acpigen_write_mem32fixed(int readwrite, u32 base, u32 size)
 {
@@ -1778,7 +1775,6 @@ void acpigen_write_rom(void *bios, const size_t length)
 	/* Pop method */
 	acpigen_pop_len();
 }
-
 
 /* Soc-implemented functions -- weak definitions. */
 int __weak acpigen_soc_read_rx_gpio(unsigned int gpio_num)

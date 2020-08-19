@@ -22,7 +22,6 @@ typedef union {
 } spi_reg_sckmode;
 _ASSERT_SIZEOF(spi_reg_sckmode, 4);
 
-
 typedef union {
 	struct {
 		uint32_t mode : 2;
@@ -31,7 +30,6 @@ typedef union {
 	uint32_t raw_bits;
 } spi_reg_csmode;
 _ASSERT_SIZEOF(spi_reg_csmode, 4);
-
 
 typedef union {
 	struct {
@@ -44,7 +42,6 @@ typedef union {
 } spi_reg_delay0;
 _ASSERT_SIZEOF(spi_reg_delay0, 4);
 
-
 typedef union {
 	struct {
 		uint32_t intercs : 8;
@@ -55,7 +52,6 @@ typedef union {
 	uint32_t raw_bits;
 } spi_reg_delay1;
 _ASSERT_SIZEOF(spi_reg_delay1, 4);
-
 
 typedef union {
 	struct {
@@ -70,7 +66,6 @@ typedef union {
 } spi_reg_fmt;
 _ASSERT_SIZEOF(spi_reg_fmt, 4);
 
-
 typedef union {
 	struct {
 		uint32_t data : 8;
@@ -80,7 +75,6 @@ typedef union {
 	uint32_t raw_bits;
 } spi_reg_txdata;
 _ASSERT_SIZEOF(spi_reg_txdata, 4);
-
 
 typedef union {
 	struct {
@@ -92,7 +86,6 @@ typedef union {
 } spi_reg_rxdata;
 _ASSERT_SIZEOF(spi_reg_rxdata, 4);
 
-
 typedef union {
 	struct {
 		uint32_t txmark : 3;
@@ -101,7 +94,6 @@ typedef union {
 	uint32_t raw_bits;
 } spi_reg_txmark;
 _ASSERT_SIZEOF(spi_reg_txmark, 4);
-
 
 typedef union {
 	struct {
@@ -112,7 +104,6 @@ typedef union {
 } spi_reg_rxmark;
 _ASSERT_SIZEOF(spi_reg_rxmark, 4);
 
-
 typedef union {
 	struct {
 		uint32_t en : 1;
@@ -121,7 +112,6 @@ typedef union {
 	uint32_t raw_bits;
 } spi_reg_fctrl;
 _ASSERT_SIZEOF(spi_reg_fctrl, 4);
-
 
 typedef union {
 	struct {
@@ -139,7 +129,6 @@ typedef union {
 } spi_reg_ffmt;
 _ASSERT_SIZEOF(spi_reg_ffmt, 4);
 
-
 typedef union {
 	struct {
 		uint32_t txwm : 1;
@@ -153,7 +142,6 @@ _ASSERT_SIZEOF(spi_reg_ie, 4);
 _ASSERT_SIZEOF(spi_reg_ip, 4);
 
 #undef _ASSERT_SIZEOF
-
 
 /**
  * SPI control register memory map.

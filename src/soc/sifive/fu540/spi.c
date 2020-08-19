@@ -13,7 +13,6 @@ static struct spi_ctrl *spictrls[] = {
 	(struct spi_ctrl *)FU540_QSPI2
 };
 
-
 /**
  * Wait until SPI is ready for transmission and transmit byte.
  */
@@ -34,7 +33,6 @@ static void spi_tx(volatile struct spi_ctrl *spictrl, uint8_t in)
 	spictrl->txdata.data = in;
 #endif
 }
-
 
 /**
  * Wait until SPI receive queue has data and read byte.

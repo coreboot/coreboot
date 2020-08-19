@@ -47,7 +47,6 @@ static inline void phy_reset(volatile uint32_t *ddrphyreg, const uint32_t *physe
   }
 }
 
-
 static inline void ux00ddr_writeregmap(size_t ahbregaddr, const uint32_t *ctlsettings, const uint32_t *physettings) {
   volatile uint32_t *ddrctlreg = (volatile uint32_t *) ahbregaddr;
   volatile uint32_t *ddrphyreg = ((volatile uint32_t *) ahbregaddr) + (0x2000 / sizeof(uint32_t));

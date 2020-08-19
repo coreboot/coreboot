@@ -177,14 +177,12 @@ static void init_gemgxlclk(void)
 	write32(&prci->gemgxlpllcfg1, cfg1);
 }
 
-
 #define FU540_UART_DEVICES 2
 #define FU540_UART_REG_DIV 0x18
 #define FU540_UART_DIV_VAL 4
 
 #define FU540_SPI_DIV 0x00
 #define FU540_SPI_DIV_VAL 4
-
 
 static void update_peripheral_clock_dividers(void)
 {

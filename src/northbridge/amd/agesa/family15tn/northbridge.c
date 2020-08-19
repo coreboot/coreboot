@@ -543,7 +543,6 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	return current;
 }
 
-
 static struct device_operations northbridge_operations = {
 	.read_resources	  = nb_read_resources,
 	.set_resources	  = nb_set_resources,

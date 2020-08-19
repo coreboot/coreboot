@@ -78,7 +78,6 @@ static void report_pch_info(void)
 	int i;
 	u16 dev_id = pci_read_config16(PCH_LPC_DEV, 2);
 
-
 	const char *pch_type = "Unknown";
 	for (i = 0; i < ARRAY_SIZE(pch_table); i++) {
 		if (pch_table[i].dev_id == dev_id) {

@@ -216,7 +216,6 @@ void enter_raminit_or_reset(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8 | (1 << 7));
 }
 
-
 /* For a detected DIMM, test the value of an SPD byte to
    match the expected value after masking some bits. */
 static int test_dimm(sysinfo_t *const sysinfo,
@@ -280,7 +279,6 @@ static void verify_ddr3(sysinfo_t *const sysinfo, int mask)
 		cur++;
 	}
 }
-
 
 typedef struct {
 	int dimm_mask;
@@ -1710,7 +1708,6 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Check for bad warm boot. */
 	reset_on_bad_warmboot();
 
-
 	/***** From now on, program according to collected infos: *****/
 
 	/* Program DRAM type. */
@@ -1772,9 +1769,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 	pci_and_config8(PCI_DEV(0, 0, 0), 0xf0, ~(1 << 2));
 
-
 	/* Take a breath (the reader). */
-
 
 	/* Perform ZQ calibration for DDR3. */
 	if (sysinfo->spd_type == DDR3)

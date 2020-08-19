@@ -243,7 +243,6 @@ static void mchtest_control(mchtst_cc cmd)
 	pci_write_config32(MCHDEV, MCHTST, dword);
 }
 
-
 /**
  *
  */

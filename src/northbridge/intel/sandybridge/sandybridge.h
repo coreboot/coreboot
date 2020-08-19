@@ -32,17 +32,14 @@ enum platform_type {
 	PLATFORM_DESKTOP_SERVER,
 };
 
-
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 #define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
 #include "registers/host_bridge.h"
 
-
 /* Devices 0:1.0, 0:1.1, 0:1.2, 0:6.0 PCI configuration space (PCI Express Graphics) */
 
 #define AFE_PWRON	0xc24	/* PEG Analog Front-End Power-On */
-
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

@@ -37,7 +37,6 @@ void platform_AfterInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 		backup_top_of_low_cacheable(Post->MemConfig.Sub4GCacheTop);
 }
 
-
 void platform_BeforeInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env)
 {
 	EmptyHeap();

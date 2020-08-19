@@ -318,7 +318,6 @@ static void gather_common_timing(struct sys_info *sysinfo, struct timings *saved
 		printk(BIOS_DEBUG, "only Single Channel Operation.\n");
 	}
 
-
 	for (i = 0; i < (2 * DIMM_SOCKETS); i++) {
 		int device = get_dimm_spd_address(sysinfo, i), bytes_read;
 		struct dimm_attr_ddr2_st dimm_info;
@@ -431,7 +430,6 @@ static void gather_common_timing(struct sys_info *sysinfo, struct timings *saved
 			printk(BIOS_DEBUG, "DIMM %d side 1 = %d MB\n",
 				i, sysinfo->banksize[(i * 2) + 1] * 32);
 		}
-
 
 		sysinfo->rows[i] = dimm_info.row_bits;
 		sysinfo->cols[i] = dimm_info.col_bits;

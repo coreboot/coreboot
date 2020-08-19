@@ -23,7 +23,6 @@ void early_init_dmi(void)
 		DMIBAR32(0x090c + (i << 5)) &= ~0x000e0000;
 	}
 
-
 	for (i = 0; i < 2; i++) {
 		DMIBAR32(0x090c + (i << 5)) &= ~0x01e00000;
 	}

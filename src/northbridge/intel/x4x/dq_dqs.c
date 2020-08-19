@@ -129,7 +129,6 @@ static int decrement_dq_dqs(const struct sysinfo *s,
 	return CB_SUCCESS;
 }
 
-
 #define WT_PATTERN_SIZE 80
 
 static const u32 write_training_schedule[WT_PATTERN_SIZE] = {

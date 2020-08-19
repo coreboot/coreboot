@@ -104,7 +104,6 @@ static uintptr_t northbridge_get_tseg_base(void)
 	return pci_read_config32(HOST_BRIDGE, D0F0_TSEG);
 }
 
-
 /* Depending of UMA and TSEG configuration, TSEG might start at any
  * 1 MiB alignment. As this may cause very greedy MTRR setup, push
  * CBMEM top downwards to 4 MiB boundary.

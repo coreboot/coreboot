@@ -87,7 +87,6 @@
 #define PEGCC		0x208	/* 32bit */
 #define PEGSTS		0x214	/* 32bit */
 
-
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 #define IGD_DEV		PCI_DEV(0, 2, 0)
 
@@ -95,7 +94,6 @@
 #define GTTADR		0x1c
 #define BSM		0x5c
 #define GCFC		0xf0	/* Graphics Clock Frequency & Gating Control */
-
 
 /*
  * MCHBAR

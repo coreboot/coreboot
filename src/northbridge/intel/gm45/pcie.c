@@ -217,7 +217,6 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 		pci_update_config32(pciex, 0xb04, ~(0x03 << 29), 0x01 << 29);
 	}
 
-
 	/*\ Setup ASPM on DMI \*/
 
 	/* Exit latencies should be checked to be supported by
@@ -231,7 +230,6 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 	DMIBAR32(0x84) = (DMIBAR32(0x84) & ~(63 << 12)) | (2 << 12) | (2 << 15);
 	DMIBAR8(0x208 + 3) = 0;
 	DMIBAR32(0x208) &= ~(3 << 20);
-
 
 	/*\ Setup ASPM on PEG \*/
 	/*
@@ -257,7 +255,6 @@ static void setup_rcrb(const int peg_enabled)
 	if (peg_enabled)
 		/* Link2: link_valid. */
 		EPBAR8(EPLE2D) |= (1 << 0); /* link valid */
-
 
 	/*\ RCRB setup: DMI Port \*/
 

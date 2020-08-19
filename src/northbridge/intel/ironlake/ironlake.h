@@ -5,7 +5,6 @@
 
 #define DEFAULT_HECIBAR		((u8 *)0xfed17000)
 
-
 #define IOMMU_BASE1 0xfed90000
 #define IOMMU_BASE2 0xfed91000
 #define IOMMU_BASE3 0xfed92000
@@ -92,7 +91,6 @@
 #define QPI_PHY_PWR_MGMT	0xd0 /* QPI Phys. Layer Power Management */
 #define QPI_PHY_EP_SELECT	0xe0 /* QPI Phys. Layer Electrical Parameter Select */
 #define QPI_PHY_EP_MCTR		0xf4 /* QPI Phys. Layer Electrical Parameter Misc. Control */
-
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

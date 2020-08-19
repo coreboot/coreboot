@@ -27,7 +27,6 @@ static struct device *__f2_dev[FX_DEVS];
 static struct device *__f4_dev[FX_DEVS];
 static unsigned int fx_devs = 0;
 
-
 struct dram_base_mask_t {
 	u32 base; //[47:27] at [28:8]
 	u32 mask; //[47:27] at [28:8] and enable at bit 0

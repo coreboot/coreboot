@@ -170,7 +170,6 @@ enum {
 #define CMOS_WRITE_TRAINING	0x90 /* 16 bytes
 					(could be reduced to 10 bytes) */
 
-
 #ifndef __ACPI__
 #define DEFAULT_MCHBAR		((u8 *)0xfed14000)
 #define DEFAULT_DMIBAR		((u8 *)0xfed18000)
@@ -180,7 +179,6 @@ enum {
 #endif
 #define DEFAULT_EPBAR		0xfed19000
 #define DEFAULT_HECIBAR		((u8 *)0xfed1a000)
-
 
 #define IOMMU_BASE1 0xfed90000
 #define IOMMU_BASE2 0xfed91000
@@ -358,7 +356,6 @@ enum {
 #define CxDTAEW(x)		(0x1280+(x*0x100))
 #define CxDTC(x)		(0x1288+(x*0x100))
 
-
 /*
  * DMIBAR
  */
@@ -376,7 +373,6 @@ enum {
 #define DMILE2D 0x60
 #define DMILE2A 0x68
 
-
 /*
  * EPBAR
  */
@@ -389,7 +385,6 @@ enum {
 #define EPLE1D 0x50
 #define EPLE1A 0x58
 #define EPLE2D 0x60
-
 
 #ifndef __ACPI__
 void gm45_early_init(void);

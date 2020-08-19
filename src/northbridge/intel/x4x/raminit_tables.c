@@ -290,7 +290,6 @@ const u8 post_jedec_tab[3][4][2]= /* [FSB][DDR freq][17:13 or 12:8] */
 	},
 };
 
-
 const u32 ddr3_c2_tab[2][3][6][2] = { /* [n-mode][ddr3 freq][CAS][reg] */
 		/* 115h[15:0]	117h[23:0] */
 	{ /* 1N mode */

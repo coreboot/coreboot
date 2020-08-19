@@ -99,7 +99,6 @@ static void mch_domain_read_resources(struct device *dev)
 
 	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n", delta_cbmem);
 
-
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */

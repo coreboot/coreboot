@@ -941,7 +941,6 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	MCHBAR8_AND_OR(C0TXDQS0R0DLL + j, ~0x3f, reg8);
 }
 
-
 static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 {
 	u8 rank, dq, reg8, j;

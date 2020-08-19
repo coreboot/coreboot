@@ -584,7 +584,6 @@ static u32 freq_to_blc_pwm_ctl(struct device *const dev, u16 pwm_freq)
 	return BLM_LEGACY_MODE | ((blc_mod / 2) << 17) | ((blc_mod / 2) << 1);
 }
 
-
 static void panel_setup(u8 *mmiobase, struct device *const dev)
 {
 	const struct northbridge_intel_i945_config *const conf = dev->chip_info;
@@ -748,7 +747,6 @@ static struct device_operations gma_func0_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= gma_acpi_name,
 };
-
 
 static struct device_operations gma_func1_ops = {
 	.read_resources		= pci_dev_read_resources,

@@ -300,7 +300,6 @@ static void find_cas_tck(ramctr_timing *ctrl)
 	ctrl->CAS = val;
 }
 
-
 static void dram_timing(ramctr_timing *ctrl)
 {
 	/*

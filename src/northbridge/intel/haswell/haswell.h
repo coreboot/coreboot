@@ -20,7 +20,6 @@
 
 #include "registers/host_bridge.h"
 
-
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
 #define MSAC		0x62	/* Multi Size Aperture Control */

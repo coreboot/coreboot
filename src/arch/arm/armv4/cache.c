@@ -5,7 +5,6 @@
  * Reference: ARM Architecture Reference Manual, ARMv7-A and ARMv7-R edition
  */
 
-
 #include <arch/cache.h>
 
 void tlb_invalidate_all(void)

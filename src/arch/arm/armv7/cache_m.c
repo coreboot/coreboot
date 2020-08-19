@@ -3,7 +3,6 @@
  * cache.c: Cache maintenance routines for ARMv7-M
  */
 
-
 #include <arch/cache.h>
 
 void tlb_invalidate_all(void)

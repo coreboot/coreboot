@@ -23,7 +23,6 @@
  */
 #define MAX_APICS 16
 
-
 #define SMP_FLOATING_TABLE_LEN sizeof(struct intel_mp_floating)
 
 struct intel_mp_floating {
@@ -129,7 +128,6 @@ enum mp_irq_source_types {
 #define MP_IRQ_TRIGGER_EDGE	0x4
 #define MP_IRQ_TRIGGER_LEVEL	0xc
 #define MP_IRQ_TRIGGER_MASK     0xc
-
 
 struct mpc_config_lintsrc {
 	u8 mpc_type;

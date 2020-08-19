@@ -73,7 +73,6 @@ static inline void outsl(uint16_t port, const void *addr, unsigned long count)
 		);
 }
 
-
 static inline void insb(uint16_t port, void *addr, unsigned long count)
 {
 	__asm__ __volatile__ (

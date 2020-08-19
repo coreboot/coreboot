@@ -287,7 +287,6 @@ void cpu_initialize(unsigned int index)
 		printk(BIOS_DEBUG, "Using generic CPU ops (good)\n");
 	}
 
-
 	/* Initialize the CPU */
 	if (cpu->ops && cpu->ops->init) {
 		cpu->enabled = 1;

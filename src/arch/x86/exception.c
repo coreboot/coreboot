@@ -180,8 +180,6 @@ static uint32_t gdb_stub_registers[NUM_REGS];
 #define GDB_EXC_SOFTWARE       149 /* Software generated exception */
 #define GDB_EXC_BREAKPOINT     150 /* Breakpoint */
 
-
-
 static unsigned char exception_to_signal[] = {
 	[0]  = GDB_SIGFPE,  /* divide by zero */
 	[1]  = GDB_SIGTRAP, /* debug exception */
@@ -221,7 +219,6 @@ static unsigned char exception_to_signal[] = {
 static const char hexchars[] = "0123456789abcdef";
 static char in_buffer[BUFMAX];
 static char out_buffer[BUFMAX];
-
 
 static inline void stub_putc(int ch)
 {
@@ -283,7 +280,6 @@ static void copy_to_hex(char *buf, void *addr, unsigned long count)
 	*buf = 0;
 }
 
-
 /* convert the hex array pointed to by buf into binary to be placed in mem */
 /* return a pointer to the character AFTER the last byte written */
 static void copy_from_hex(void *addr, char *buf, unsigned long count)
@@ -297,7 +293,6 @@ static void copy_from_hex(void *addr, char *buf, unsigned long count)
 		*mem++ = ch;
 	}
 }
-
 
 /* scan for the sequence $<data>#<checksum>	*/
 

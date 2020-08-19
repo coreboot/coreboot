@@ -27,7 +27,6 @@ struct exception_handler {
 	struct exception_handler *next;
 };
 
-
 /*
  * Register a handler provided with the associated vector id. Returns 0 on
  * success, < 0 on error. Note that registration is not thread/interrupt safe.

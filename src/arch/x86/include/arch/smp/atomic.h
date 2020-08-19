@@ -67,6 +67,4 @@ static __always_inline void atomic_dec(atomic_t *v)
 		: "m" (v->counter));
 }
 
-
-
 #endif /* ARCH_SMP_ATOMIC_H */

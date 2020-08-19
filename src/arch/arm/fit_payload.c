@@ -28,7 +28,6 @@ static bool fit_place_mem(const struct range_entry *r, void *arg)
 	return true;
 }
 
-
 bool fit_payload_arch(struct prog *payload, struct fit_config_node *config,
 		      struct region *kernel,
 		      struct region *fdt,

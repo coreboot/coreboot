@@ -17,12 +17,10 @@ static inline void outl(uint32_t value, uint16_t port)
 {
 }
 
-
 static inline uint8_t inb(uint16_t port)
 {
 	return 0;
 }
-
 
 static inline uint16_t inw(uint16_t port)
 {

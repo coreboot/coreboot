@@ -12,7 +12,6 @@
 
 void mstatus_init(void); // need to setup mstatus so we know we have virtual memory
 
-
 #define DEFINE_MPRV_READ_FLAGS(name, type, insn, flags)			\
 	static inline type name(type *p);				\
 	static inline type name(type *p)				\

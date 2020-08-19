@@ -63,9 +63,7 @@ static void print_regs(struct exc_state *exc_state)
 	       regs->x[30], regs->sp);
 }
 
-
 static struct exception_handler *handlers[NUM_EXC_VIDS];
-
 
 int exception_handler_register(uint64_t vid, struct exception_handler *h)
 {
@@ -121,7 +119,6 @@ static void print_exception_and_die(struct exc_state *state, uint64_t idx)
 	print_exception_info(state, idx);
 	die("exception death");
 }
-
 
 static int handle_exception(struct exc_state *state, uint64_t idx)
 {

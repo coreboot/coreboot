@@ -82,7 +82,6 @@ static inline acpi_hest_generic_data_v300_t *acpi_hest_generic_data3(
 /* Find the address of a Generic Data structure's CPER error record section */
 #define section_of_acpientry(A, B) ((typeof(A))((u8 *)(B) + sizeof(*(B))))
 
-
 /* Add a context to an existing IA32/X64-type error entry */
 cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 		acpi_generic_error_status_t *status,

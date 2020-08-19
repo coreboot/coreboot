@@ -49,7 +49,6 @@ static uintptr_t sbi_clear_ipi(void)
 	return 0;
 }
 
-
 /*
  * sbi is triggered by the s-mode ecall
  * parameter : register a0 a1 a2

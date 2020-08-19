@@ -131,7 +131,6 @@ static struct memory_instruction_info *match_instruction(uintptr_t insn)
 	return NULL;
 }
 
-
 static int fetch_16bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 {
 	uint16_t ins = mprv_read_mxr_u16((uint16_t *)vaddr);
@@ -156,7 +155,6 @@ static int fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn, int *size)
 	}
 	return -1;
 }
-
 
 void handle_misaligned(trapframe *tf)
 {

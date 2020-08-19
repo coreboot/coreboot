@@ -91,7 +91,6 @@ int update_display_mode(struct display_controller *disp_ctrl,
 	WRITEL(config->vsync_width << 16 | config->hsync_width,
 		&disp_ctrl->disp.sync_width);
 
-
 	WRITEL((config->vback_porch << 16) | config->hback_porch,
 		&disp_ctrl->disp.back_porch);
 

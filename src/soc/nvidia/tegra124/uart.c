@@ -5,7 +5,6 @@
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 
-
 struct tegra124_uart {
 	union {
 		uint32_t thr; // Transmit holding register.

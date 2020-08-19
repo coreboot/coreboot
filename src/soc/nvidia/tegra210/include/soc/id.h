@@ -3,7 +3,6 @@
 #ifndef __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ID_H__
 #define __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ID_H__
 
-
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 

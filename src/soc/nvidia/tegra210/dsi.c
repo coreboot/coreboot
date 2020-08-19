@@ -434,7 +434,6 @@ static int tegra_output_dsi_enable(struct tegra_dsi *dsi,
 	return 0;
 }
 
-
 static void tegra_dsi_set_timeout(struct tegra_dsi *dsi, unsigned long bclk,
 				  unsigned int vrefresh)
 {
@@ -519,8 +518,6 @@ static int tegra_output_dsi_setup_clock(struct tegra_dsi *dsi,
 	tegra_dsi_set_timeout(dsi, bclk, config->refresh);
 	return plld/1000000;
 }
-
-
 
 static int tegra_dsi_pad_enable(struct tegra_dsi *dsi)
 {

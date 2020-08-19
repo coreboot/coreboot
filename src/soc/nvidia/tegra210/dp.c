@@ -631,7 +631,6 @@ static int tegra_dc_dp_calc_config(struct tegra_dc_dp_data *dp,
 	if (link_cfg->hblank_sym < 0)
 		link_cfg->hblank_sym = 0;
 
-
 	/* Refer to dev_disp.ref for more information. */
 	/* # symbols/vblank = ((SetRasterBlankStart.X - */
 	/*                      SetRasterBlankEen.X - 25) * link_clk / pclk) */
@@ -1188,7 +1187,6 @@ static int tegra_dc_dp_fast_link_training(struct tegra_dc_dp_data *dp,
 	u32	status;
 	int	j;
 	u32	mask = 0xffff >> ((4 - link_cfg->lane_count) * 4);
-
 
 	printk(BIOS_INFO, "dp: %s\n", __func__);
 

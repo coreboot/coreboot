@@ -26,7 +26,6 @@ struct tegra210_uart {
 	uint32_t msr; // Modem status register.
 } __packed;
 
-
 static struct tegra210_uart * const uart_ptr =
 	(void *)CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
 

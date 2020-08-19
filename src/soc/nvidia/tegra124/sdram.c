@@ -11,7 +11,6 @@
 #include <soc/sdram.h>
 #include <symbols.h>
 
-
 static void sdram_patch(uintptr_t addr, uint32_t value)
 {
 	if (addr)

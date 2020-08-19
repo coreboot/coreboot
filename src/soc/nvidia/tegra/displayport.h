@@ -326,7 +326,6 @@ struct tegra_dc_dp_data {
 	int				enabled;
 };
 
-
 /* DPCD definitions */
 /* you know, all the vendors pick their own set of defines.
  * All of them.

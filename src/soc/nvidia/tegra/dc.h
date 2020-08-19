@@ -348,7 +348,6 @@ struct display_controller {
 };
 check_member(display_controller, winbuf, 0x800 * 4);
 
-
 /* DC_CMD_DISPLAY_COMMAND 0x032 */
 #define  DISP_COMMAND_RAISE			(1 << 0)
 #define  DISP_CTRL_MODE_STOP			(0 << 5)

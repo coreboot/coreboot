@@ -179,7 +179,6 @@ void tegra210_main(void)
 
 	pmc_print_rst_status();
 
-
 	bootblock_mainboard_init();
 
 	printk(BIOS_INFO, "T210 bootblock: Mainboard bootblock init done\n");

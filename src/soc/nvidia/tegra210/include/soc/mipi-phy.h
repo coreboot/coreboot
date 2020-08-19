@@ -2,7 +2,6 @@
 #ifndef _TEGRA_MIPI_PHY_H
 #define _TEGRA_MIPI_PHY_H
 
-
 /*
  * Macros for calculating the phy timings
  */

@@ -319,7 +319,6 @@ static void tegra_spi_wait(struct tegra_spi_channel *spi)
 	ASSERT(spi_byte_count(spi) == dma_blk_count);
 }
 
-
 static int fifo_error(struct tegra_spi_channel *spi)
 {
 	return read32(&spi->regs->fifo_status) & SPI_FIFO_STATUS_ERR ? 1 : 0;
@@ -550,8 +549,6 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	setbits32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
 	if (spi->dma_in)
 		dma_start(spi->dma_in);
-
-
 }
 
 static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)

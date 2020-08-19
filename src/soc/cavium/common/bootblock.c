@@ -13,12 +13,10 @@ __attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
 
-
 /* C code entry point for the boot block */
 void bootblock_main(const uint64_t reg_x0,
 		    const uint64_t reg_pc)
 {
-
 	init_timer();
 
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */

@@ -51,7 +51,6 @@ check_member(cn81xx_timer, ctl_cntacr0, 0x20040);
 check_member(cn81xx_timer, cwd_wdog[0], 0x40000);
 check_member(cn81xx_timer, cwd_poke[0], 0x50000);
 
-
 #define GTI_CC_CNTCR_EN			(1 << 0)
 #define GTI_CC_CNTCR_HDBG		(1 << 1)
 #define GTI_CC_CNTCR_FCREQ		(1 << 8)

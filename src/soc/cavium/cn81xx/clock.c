@@ -39,7 +39,6 @@ u64 thunderx_get_ref_clock(void)
 	return PLL_REF_CLK;
 }
 
-
 /**
  * Returns the I/O clock speed in Hz
  */

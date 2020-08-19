@@ -47,7 +47,6 @@ struct cn81xx_uart {
 #define UART_FBRD_BAUD_DIVFRAC_SHIFT		0
 #define UART_FBRD_BAUD_DIVFRAC_MASK		0x3f
 
-
 check_member(cn81xx_uart, uctl_ctl, 0x1000);
 check_member(cn81xx_uart, uctl_spare1, 0x10f8);
 

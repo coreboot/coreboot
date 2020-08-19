@@ -9,8 +9,6 @@ typedef u32 gpio_t;
 #include <gpio.h>
 
 /* The following functions must be implemented by SoC/board code. */
-
-
 gpio_t gpio_pin_count(void);
 void gpio_invert(gpio_t gpio, int value);
 int gpio_strap_value(gpio_t gpio);

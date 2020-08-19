@@ -12,5 +12,4 @@ void bootblock_mainboard_init(void);
 void bootblock_main(const uint64_t reg_x0,
 		    const uint64_t reg_pc);
 
-
 #endif /* SRC_SOC_CAVIUM_COMMON_INCLUDE_SOC_BOOTBLOCK_H_ */

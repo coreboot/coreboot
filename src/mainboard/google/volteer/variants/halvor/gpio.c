@@ -27,6 +27,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A18 : DDSP_HPDB ==> NC */
 	PAD_NC(GPP_A18, NONE),
+	/* A21 : DDPC_CTRCLK ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_A21, 1, DEEP),
 	/* A22 : DDPC_CTRLDATA ==> NC */
 	PAD_NC(GPP_A22, NONE),
 	/* A23 : I2S1_SCLK ==> HP_INT_L */
@@ -48,6 +50,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
 	/* B10 : I2C5_SCL ==> PCH_I2C5_TRACKPAD_SCL */
 	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
+	/* B19 : GSPI1_CS0# ==> PCH_GSPI1_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
+	/* B20 : GSPI1_CLK ==> PCH_GSPI1_FPMCU_CLK */
+	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
+	/* B21 : GSPI1_MISO ==> PCH_GSPI1_FPMCU_MISO */
+	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
 
 	/* C1  : SMBDATA ==> FPMCU_BOOT1 */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
@@ -59,6 +67,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C11, NONE),
 	/* C13 : UART1_TXD ==> NC */
 	PAD_NC(GPP_C13, NONE),
+	/* C20 : UART2_RXD ==> FPMCU_INT_L */
+	PAD_CFG_GPI_INT(GPP_C20, NONE, PLTRST, LEVEL),
+	/* C22 : UART2_RTS# ==> PCH_FPMCU_BOOT0 */
+	PAD_CFG_GPO(GPP_C22, 0, DEEP),
+	/* C23 : UART2_CTS# ==> FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
@@ -143,6 +157,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H16, NONE),
 	/* H17 : DDPB_CTRLDATA ==> NC */
 	PAD_NC(GPP_H17, NONE),
+	/* H19 : TIME_SYNC0 ==> USER_PRES_FP_ODL */
+	PAD_CFG_GPI(GPP_H19, NONE, DEEP),
 	/* H23 : IMGCLKOUT4 ==> NC */
 	PAD_NC(GPP_H23, NONE),
 

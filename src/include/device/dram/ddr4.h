@@ -21,7 +21,6 @@
 #define SPD_DDR4_PART_OFF	329
 #define SPD_DDR4_PART_LEN	20
 
-
 /*
  * Module type (byte 3, bits 3:0) of SPD
  * This definition is specific to DDR4. DDR2/3 SPDs have a different structure.

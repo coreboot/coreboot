@@ -27,5 +27,4 @@ static inline void __flashconsole_tx_byte(u8 data)	{}
 static inline void __flashconsole_tx_flush(void)	{}
 #endif /* __CONSOLE_FLASH_ENABLE__ */
 
-
 #endif /* CONSOLE_FLASH_H */

@@ -305,7 +305,6 @@
 #define  PCI_MSIX_PBA_OFFSET	~0x7	/* Offset into specified BAR */
 #define PCI_CAP_MSIX_SIZEOF	12	/* size of MSIX registers */
 
-
 /* CompactPCI Hotswap Register */
 
 #define PCI_CHSWP_CSR		2	/* Control and Status Register */
@@ -520,7 +519,6 @@
 #define  PCI_PWR_DATA_RAIL(x)	(((x) >> 18) & 7)   /* Power Rail */
 #define PCI_PWR_CAP		12	/* Capability */
 #define  PCI_PWR_CAP_BUDGET(x)	((x) & 1)	/* Included in system budget */
-
 
 /*
  * The PCI interface treats multi-function devices as independent

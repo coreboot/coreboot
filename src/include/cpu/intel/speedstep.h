@@ -18,7 +18,6 @@
  */
 #define PMB1_BASE 0x800
 
-
 /* Speedstep related MSRs */
 #define MSR_THERM2_CTL		0x19D
 #define MSR_EBC_FREQUENCY_ID	0x2c

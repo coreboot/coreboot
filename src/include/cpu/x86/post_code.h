@@ -3,7 +3,6 @@
 
 #include <console/post_codes.h>
 
-
 #if CONFIG(POST_IO)
 #define post_code(value)        \
 	movb    $value, %al;    \

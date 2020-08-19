@@ -870,7 +870,6 @@
 #define ABS_MT_TOOL_X		0x3c	/* Center X tool position */
 #define ABS_MT_TOOL_Y		0x3d	/* Center Y tool position */
 
-
 #define ABS_MAX			0x3f
 #define ABS_CNT			(ABS_MAX+1)
 

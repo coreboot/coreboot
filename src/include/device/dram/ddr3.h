@@ -19,7 +19,6 @@
 #include <device/dram/common.h>
 #include <types.h>
 
-
 /**
  * Convenience definitions for SPD offsets
  *

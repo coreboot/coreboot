@@ -7,7 +7,6 @@
 #include <device/mmio.h>
 #include <device/pci_type.h>
 
-
 /* By not assigning this to CONFIG_MMCONF_BASE_ADDRESS here we
  * prevent some sub-optimal constant folding. */
 extern u8 *const pci_mmconf;

@@ -136,7 +136,6 @@
 /* SDRAM Device Minimum Auto Refresh to Active/Auto Refresh (tRFC) */
 #define SPD_tRFC			    42
 
-
 /* SPD_MEMORY_TYPE values. */
 enum spd_memory_type {
 	SPD_MEMORY_TYPE_UNDEFINED		= 0x00,

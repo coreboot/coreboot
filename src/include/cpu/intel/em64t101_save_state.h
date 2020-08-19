@@ -6,7 +6,6 @@
 #include <types.h>
 #include <cpu/x86/smm.h>
 
-
 /* Intel Revision 30101 SMM State-Save Area
  * The following processor architectures use this:
  * - Westmere
@@ -82,7 +81,6 @@ typedef struct {
 	u64	rbp;
 	u64	rsi;
 	u64	rdi;
-
 
 	u64	io_mem_addr;
 	u32	io_misc_info;

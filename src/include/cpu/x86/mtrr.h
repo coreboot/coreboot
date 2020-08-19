@@ -27,7 +27,6 @@
 #define MTRR_DEF_TYPE_EN		(1 << 11)
 #define MTRR_DEF_TYPE_FIX_EN		(1 << 10)
 
-
 #define IA32_SMRR_PHYS_BASE		0x1f2
 #define IA32_SMRR_PHYS_MASK		0x1f3
 #define SMRR_PHYS_MASK_LOCK		(1 << 10)

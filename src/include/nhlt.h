@@ -219,7 +219,6 @@ enum {
 	SPEAKER_TOP_BACK_RIGHT = 1 << 17,
 };
 
-
 /* Supporting structures. Only SoC/chipset and the library code directly should
  * be manipulating these structures. */
 struct sub_format {

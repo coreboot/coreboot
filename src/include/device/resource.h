@@ -109,7 +109,6 @@ static inline void *res2mmio(struct resource *res, unsigned long offset,
 const struct device *largest_resource(struct bus *bus, struct resource **result_res,
 				      unsigned long type_mask, unsigned long type);
 
-
 /* Compute and allocate resources. This is the main resource allocator entry point. */
 void allocate_resources(const struct device *root);
 

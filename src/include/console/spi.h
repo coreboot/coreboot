@@ -52,6 +52,4 @@ struct em100_msg {
 	char data[MAX_MSG_LENGTH];
 } __packed;
 
-
-
 #endif /* CONSOLE_SPI_H */

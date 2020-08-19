@@ -31,7 +31,6 @@ typedef struct { int counter; } atomic_t;
  */
 #define atomic_set(v, i)	(((v)->counter) = (i))
 
-
 /**
  * atomic_inc - increment atomic variable
  * @param v: pointer of type atomic_t
@@ -41,7 +40,6 @@ typedef struct { int counter; } atomic_t;
  */
 #define atomic_inc(v)	(((v)->counter)++)
 
-
 /**
  * atomic_dec - decrement atomic variable
  * @param v: pointer of type atomic_t
@@ -50,7 +48,6 @@ typedef struct { int counter; } atomic_t;
  * useful range of an atomic_t is only 24 bits.
  */
 #define atomic_dec(v)	(((v)->counter)--)
-
 
 #endif /* CONFIG_SMP */
 

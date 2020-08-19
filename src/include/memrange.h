@@ -82,7 +82,6 @@ static inline bool memranges_is_empty(const struct memranges *ranges)
 #define memranges_each_entry(r, ranges) \
 	for (r = (ranges)->entries; r != NULL; r = r->next)
 
-
 /* Initialize memranges structure providing an optional array of range_entry
  * to use as the free list. Additionally, it accepts an align parameter that
  * represents the required alignment(log 2) of addresses. */

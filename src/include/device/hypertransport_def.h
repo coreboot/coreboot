@@ -18,7 +18,6 @@
 #define HT_FREQ_2600Mhz 14
 #define HT_FREQ_VENDOR  15  /* AMD defines this to be 100Mhz */
 
-
 static inline bool offset_unit_id(bool is_sb_ht_chain)
 {
 	bool need_offset = (CONFIG_HT_CHAIN_UNITID_BASE != 1)

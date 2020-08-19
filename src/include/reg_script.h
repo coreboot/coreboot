@@ -355,7 +355,6 @@ struct reg_script_bus_entry {
 #define REG_RES_XOR32(bar_, reg_, value_) \
 	REG_RES_RXW32(bar_, reg_, 0xffffffff, value_)
 
-
 #if CONFIG(SOC_INTEL_BAYTRAIL)
 /*
  * IO Sideband Function

@@ -66,7 +66,6 @@ typedef struct {
 	u64	rsi;
 	u64	rdi;
 
-
 	u64	io_mem_addr;
 	u32	io_misc_info;
 

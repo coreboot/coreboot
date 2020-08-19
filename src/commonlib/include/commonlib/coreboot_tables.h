@@ -140,7 +140,6 @@ struct lb_record {
 	uint32_t size;		/* size of record (in bytes) */
 };
 
-
 struct lb_memory_range {
 	struct lb_uint64 start;
 	struct lb_uint64 size;
@@ -185,7 +184,6 @@ struct lb_timestamp {
 	uint32_t size;
 	uint32_t timestamp;
 };
-
 
 /* 0xe is taken by v3 */
 
@@ -306,7 +304,6 @@ struct lb_framebuffer {
 	uint8_t orientation;
 };
 
-
 struct lb_gpio {
 	uint32_t port;
 	uint32_t polarity;
@@ -348,7 +345,6 @@ struct lb_x86_rom_mtrr {
 	/* The variable range MTRR index covering the ROM. */
 	uint32_t index;
 };
-
 
 struct lb_strapping_id {
 	uint32_t tag;
@@ -447,7 +443,6 @@ struct cmos_entries {
 	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii,
 					       variable length int aligned */
 };
-
 
 /* CMOS enumerations record
  * This record is variable length.  The text field may be

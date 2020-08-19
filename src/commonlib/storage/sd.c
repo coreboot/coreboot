@@ -265,7 +265,6 @@ int sd_set_bus_width(struct storage_media *media)
 	return 0;
 }
 
-
 int sd_set_partition(struct storage_media *media,
 	unsigned int partition_number)
 {

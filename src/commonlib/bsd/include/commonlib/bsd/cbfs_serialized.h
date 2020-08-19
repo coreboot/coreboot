@@ -144,7 +144,6 @@ struct cbfs_file_attr_align {
 	uint32_t alignment;
 } __packed;
 
-
 /*** Component sub-headers ***/
 
 /* Following are component sub-headers for the "standard"

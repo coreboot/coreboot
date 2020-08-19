@@ -420,7 +420,6 @@ const struct region_device_ops xlate_rdev_rw_ops = {
 	.eraseat = xlate_eraseat,
 };
 
-
 static void *incoherent_mmap(const struct region_device *rd, size_t offset,
 				size_t size)
 {

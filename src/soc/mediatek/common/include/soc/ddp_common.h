@@ -6,7 +6,6 @@
 #include <soc/addressmap.h>
 #include <types.h>
 
-
 struct disp_ovl_regs {
 	u32 sta;
 	u32 inten;
@@ -112,7 +111,6 @@ check_member(disp_color_regs, start, 0xC00);
 check_member(disp_color_regs, width, 0xC50);
 check_member(disp_color_regs, height, 0xC54);
 static struct disp_color_regs *const disp_color0 = (void *)DISP_COLOR0_BASE;
-
 
 enum {
 	COLOR_BYPASS_ALL = BIT(7),

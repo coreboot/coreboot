@@ -699,7 +699,6 @@ enum {
 		I2S6_DI, I2S8_DI, RES6, RES7),
 };
 
-
 struct val_regs {
 	uint32_t val;
 	uint32_t set;

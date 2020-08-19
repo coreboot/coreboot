@@ -42,7 +42,6 @@ check_member(mmsys_cfg_regs, dpi0_sel_sout_sel_in, 0xF64);
 static struct mmsys_cfg_regs *const mmsys_cfg =
 	(void *)MMSYS_BASE;
 
-
 /* DISP_REG_CONFIG_MMSYS_CG_CON0
    Configures free-run clock gating 0
 	0: Enable clock

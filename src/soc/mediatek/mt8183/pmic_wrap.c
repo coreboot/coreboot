@@ -47,7 +47,6 @@ enum {
 	COUNTER16_PENDING_THRES = STARVE_ENABLE | PENDING_US(0x340),
 };
 
-
 static void pwrap_soft_reset(void)
 {
 	write32(&mt8183_infracfg->infra_globalcon_rst2_set, 0x1);

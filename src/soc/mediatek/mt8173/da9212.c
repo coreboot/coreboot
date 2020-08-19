@@ -56,7 +56,6 @@ void da9212_probe(uint8_t i2c_num)
 	unsigned char device_id = 0;
 	unsigned char variant_id = 0;
 
-
 	/* select to page 4, clear REVERT at first time */
 	ret |= i2c_write_field(i2c_num, DA9212_SLAVE_ADDR,
 			       DA9212_REG_PAGE_CON, DA9212_REG_PAGE4,

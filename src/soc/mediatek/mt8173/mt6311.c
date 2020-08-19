@@ -25,7 +25,6 @@ static void mt6311_hw_init(uint8_t i2c_num)
 	int ret = 0;
 	unsigned char var[3] = {0};
 
-
 	/*
 	 * Phase Shedding Trim Software Setting
 	 * The phase 2 of MT6311 will enter PWM mode if the threshold is

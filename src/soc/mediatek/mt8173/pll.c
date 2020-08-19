@@ -373,7 +373,6 @@ void mt_pll_enable_ssusb_clk(void)
 	setbits32(&mtk_apmixed->ap_pll_con2, (0x1 << 2) | (0x1 << 1));
 }
 
-
 /* after pmic_init */
 void mt_pll_post_init(void)
 {

@@ -9,7 +9,6 @@
 
 #define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
 
-
 /* initialize rtc related gpio */
 static int rtc_gpio_init(void)
 {

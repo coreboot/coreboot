@@ -5,8 +5,10 @@ if BOARD_TI_BEAGLEBONE
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_TI_AM335X
-	select BOARD_ROMSIZE_KB_4096
+	select BOARD_ROMSIZE_KB_32768
 	select MISSING_BOARD_RESET
+	select COMMONLIB_STORAGE
+	select COMMONLIB_STORAGE_SD
 
 config MAINBOARD_DIR
 	string
@@ -27,5 +29,9 @@ config DRAM_SIZE_MB
 config UART_FOR_CONSOLE
 	int
 	default 0
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 endif # BOARD_TI_BEAGLEBONE

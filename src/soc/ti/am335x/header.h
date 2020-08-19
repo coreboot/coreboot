@@ -47,4 +47,21 @@ struct gp_device_header {
 	uint32_t destination;
 } __packed;
 
+struct config_headers {
+	// The table of contents.
+	struct configuration_header_toc_item toc_chsettings;
+	struct configuration_header_toc_item toc_end;
+
+	// An inert instance of chsettings.
+	struct configuration_header_settings chsettings;
+} __packed;
+
+struct omap_image_headers {
+	union {
+		struct config_headers config_headers;
+		uint8_t bytes[512];
+	};
+	struct gp_device_header image_header;
+};
+
 #endif

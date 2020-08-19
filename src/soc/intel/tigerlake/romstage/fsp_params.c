@@ -158,6 +158,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	memcpy(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable,
 			sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 
+	/* IPU configuration */
+	dev = pcidev_path_on_root(SA_DEVFN_IPU);
+	m_cfg->SaIpuEnable = is_dev_enabled(dev);
+
 	/* Vt-D config */
 	cpu_id = cpu_get_cpuid();
 	if (cpu_id == CPUID_TIGERLAKE_A0) {
@@ -166,11 +170,18 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	} else {
 		/* Enable VT-d support for QS platform */
 		m_cfg->VtdDisable = 0;
-		m_cfg->VtdIgdEnable = 0x1;
-		m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
-		m_cfg->VtdIpuEnable = 0x1;
-		m_cfg->VtdBaseAddress[1] = IPUVT_BASE_ADDRESS;
 		m_cfg->VtdIopEnable = 0x1;
+
+		if (m_cfg->InternalGfx) {
+			m_cfg->VtdIgdEnable = 0x1;
+			m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+		}
+
+		if (m_cfg->SaIpuEnable) {
+			m_cfg->VtdIpuEnable = 0x1;
+			m_cfg->VtdBaseAddress[1] = IPUVT_BASE_ADDRESS;
+		}
+
 		m_cfg->VtdBaseAddress[2] = VTVC0_BASE_ADDRESS;
 
 		if (m_cfg->TcssDma0En || m_cfg->TcssDma1En)

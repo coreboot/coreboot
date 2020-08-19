@@ -823,7 +823,7 @@ build_targets()
 	printf "%s" "$configoptions" > "$TMPCFG"
 	$MAKE -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" allnoconfig
 	printf "%s" "$configoptions" >> "$TMPCFG"
-	yes "" 2>/dev/null | $MAKE -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" oldconfig 2>/dev/null |head > /dev/null
+	yes "" 2>/dev/null | $MAKE -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" oldconfig
 	BUILDPREFIX=
 	if [ "$scanbuild" = "true" ]; then
 		scanbuild_out=$TARGET/sharedutils-scanbuild

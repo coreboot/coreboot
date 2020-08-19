@@ -280,7 +280,6 @@ static int rk_edp_dpcd_write(struct rk_edp *edp, u32 addr,
 	return rk_edp_dpcd_transfer(edp, addr, values, size, DPCD_WRITE);
 }
 
-
 static int rk_edp_link_power_up(struct rk_edp *edp)
 {
 	u8 value;

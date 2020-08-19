@@ -434,7 +434,6 @@ static void phy_io_config(u32 channel,
 	/* PHY_939 PHY_PAD_CS_DRIVE */
 	clrsetbits32(&denali_phy[939], 0x7 << 14, mode_sel << 14);
 
-
 	/* speed setting */
 	if (sdram_params->ddr_freq < 400 * MHz)
 		speed = 0x0;

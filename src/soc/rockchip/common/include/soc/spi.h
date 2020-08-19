@@ -32,7 +32,6 @@ struct rockchip_spi {
 };
 check_member(rockchip_spi, rxdr, 0x800);
 
-
 #define SF_READ_DATA_CMD	0x3
 
 /* --------Bit fields in CTRLR0--------begin */

@@ -25,7 +25,6 @@ check_member(rk_pwm_regs, int_en, 0x44);
 #define RK_PWM_DISABLE                  (0 << 0)
 #define RK_PWM_ENABLE                   (1 << 0)
 
-
 #define PWM_ONE_SHOT                    (0 << 1)
 #define PWM_CONTINUOUS                  (1 << 1)
 #define RK_PWM_CAPTURE                  (1 << 2)

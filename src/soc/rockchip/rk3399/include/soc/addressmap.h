@@ -52,7 +52,6 @@
 #define VOP_BIG_BASE		0xff900000 /* corresponds to vop_id 0 */
 #define VOP_LIT_BASE		0xff8f0000 /* corresponds to vop_id 1 */
 
-
 #define DDRC0_BASE_ADDR		0xffa80000
 #define SERVER_MSCH0_BASE_ADDR	0xffa84000
 #define DDRC1_BASE_ADDR		0xffa88000

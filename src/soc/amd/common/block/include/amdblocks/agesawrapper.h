@@ -25,7 +25,6 @@ AGESA_STATUS amd_late_run_ap_task(AP_EXE_PARAMS *ApExeParams);
 
 void *agesawrapper_getlateinitptr(int pick);
 
-
 void OemCustomizeInitEarly(AMD_EARLY_PARAMS *InitEarly);
 void amd_initcpuio(void);
 const void *agesawrapper_locate_module(const char name[8]);

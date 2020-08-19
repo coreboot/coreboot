@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <cbmem.h>

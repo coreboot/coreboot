@@ -146,7 +146,6 @@ static void set_resources(struct device *dev)
 	struct bus *bus;
 	struct resource *res;
 
-
 	/* do we need this? */
 	create_vga_resource(dev);
 
@@ -231,7 +230,6 @@ static void patch_ssdt_processor_scope(acpi_header_t *ssdt)
 	ssdt->checksum = 0;
 	ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
 }
-
 
 static unsigned long agesa_write_acpi_tables(const struct device *device,
 					     unsigned long current,

@@ -166,7 +166,6 @@ static void configure_child_lpc_windows(struct device *dev, struct device *child
 	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
 	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 
-
 	/*
 	 * Be a bit relaxed, tolerate that LPC region might be bigger than
 	 * resource we try to fit, do it like this for all regions < 16 bytes.

@@ -52,5 +52,4 @@ static void configure_xhci_sci(void *unused)
 		gpe_configure_sci(xhci_sci_sources, ARRAY_SIZE(xhci_sci_sources));
 }
 
-
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, configure_xhci_sci, NULL);

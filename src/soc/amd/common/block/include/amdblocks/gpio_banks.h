@@ -136,7 +136,6 @@ enum {
 
 #define AMD_GPIO_MUX_MASK			0x03
 
-
 /*
  * Flags used for GPIO configuration. These provide additional information that does not go
  * directly into GPIO control register. These are stored in `flags` field in soc_amd_gpio.

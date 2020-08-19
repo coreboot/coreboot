@@ -31,7 +31,6 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-
 #ifndef OF_H
 #define OF_H
 #define p32 int
@@ -48,14 +47,12 @@ typedef struct
 	unsigned int args[16];
 } of_arg_t;
 
-
 phandle_t of_finddevice (const char *);
 phandle_t of_peer(phandle_t);
 phandle_t of_child(phandle_t);
 phandle_t of_parent(phandle_t);
 int of_getprop(phandle_t, const char *, void *, int);
 void *of_call_method_3(const char *, ihandle_t, int);
-
 
 ihandle_t of_open(const char *);
 void of_close(ihandle_t);

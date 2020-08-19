@@ -493,7 +493,6 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
 	return ret;
 }
 
-
 /**
  * Fill cbmem with information for SMBIOS type 17.
  *

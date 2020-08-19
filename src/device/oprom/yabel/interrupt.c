@@ -48,7 +48,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
-
 //setup to run the code at the address, that the Interrupt Vector points to...
 static void
 setupInt(int intNum)

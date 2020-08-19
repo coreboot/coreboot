@@ -32,7 +32,6 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-
 #include "device.h"
 #include "compat/rtas.h"
 #include <string.h>
@@ -149,7 +148,6 @@ biosemu_dev_get_addr_info(void)
 // use translate_address_dev and get_puid from net-snk's net_support.c
 void translate_address_dev(u64 *, phandle_t);
 u64 get_puid(phandle_t node);
-
 
 // scan all addresses assigned to the device ("assigned-addresses" and "reg")
 // store in translate_address_array for faster translation using dev_translate_address

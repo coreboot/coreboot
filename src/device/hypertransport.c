@@ -308,7 +308,6 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned int m
 			}
 		} while ((ctrl & (1 << 5)) == 0);
 
-
 		/* Get and setup the device_structure. */
 		dev = ht_scan_get_devs(&old_devices);
 

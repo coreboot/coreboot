@@ -40,7 +40,6 @@
 #include "compat/of.h"
 #include "debug.h"
 
-
 // a Expansion Header Struct as defined in Plug and Play BIOS Spec 1.0a Chapter 3.2
 typedef struct {
 	char signature[4];	// signature

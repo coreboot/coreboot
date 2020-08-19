@@ -25,7 +25,6 @@
 #include <timestamp.h>
 #include <types.h>
 
-
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
 	u8 value, ones, zeroes;

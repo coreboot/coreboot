@@ -1122,7 +1122,6 @@ unsigned int decode_rm10_address(
     return 0;                   /* SHOULD NOT HAPPEN */
 }
 
-
 /****************************************************************************
 PARAMETERS:
 mod - modifier

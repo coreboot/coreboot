@@ -31,7 +31,6 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-
 #ifndef RTAS_H
 #define RTAS_H
 

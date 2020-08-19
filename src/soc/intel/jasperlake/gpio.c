@@ -56,13 +56,11 @@ static const struct pad_group jsl_community2_groups[] = {
 	INTEL_GPP(GPD0, GPIO_RSVD_14, GPIO_RSVD_17),
 };
 
-
 static const struct pad_group jsl_community4_groups[] = {
 	INTEL_GPP(GPIO_RSVD_18, GPIO_RSVD_18, GPIO_RSVD_23),
 	INTEL_GPP_BASE(GPIO_RSVD_18, GPP_E0, GPP_E23, 288),		/* GPP_E */
 	INTEL_GPP(GPIO_RSVD_18, GPIO_RSVD_24, GPIO_RSVD_36),
 };
-
 
 static const struct pad_group jsl_community5_groups[] = {
 	INTEL_GPP_BASE(GPP_G0, GPP_G0, GPP_G7, 320),		/* GPP_G */

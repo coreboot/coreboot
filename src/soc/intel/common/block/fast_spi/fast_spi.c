@@ -101,7 +101,6 @@ void fast_spi_set_lock_enable(void)
 {
 	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_LOCK_ENABLE);
 
-
 	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
 }
 

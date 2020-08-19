@@ -44,7 +44,6 @@ static void xeon_configure_mca(void)
 	mca_configure();
 }
 
-
 void get_microcode_info(const void **microcode, int *parallel)
 {
 	*microcode = intel_mp_current_microcode();

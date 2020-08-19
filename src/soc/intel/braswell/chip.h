@@ -39,7 +39,6 @@ enum usb_comp_bg_value {
 	USB_COMP_BG_675_MV = 0,
 };
 
-
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;
 	uint8_t clkreq_enable;

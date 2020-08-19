@@ -507,7 +507,6 @@ static void southcluster_inject_dsdt(const struct device *device)
 	}
 }
 
-
 static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,

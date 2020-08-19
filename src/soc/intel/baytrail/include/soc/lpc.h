@@ -16,7 +16,6 @@
 #define UART_CONT	0x80
 #define RCBA		0xf0
 
-
 #define RID_A_STEPPING_START 1
 #define RID_B_STEPPING_START 5
 #define RID_C_STEPPING_START 0xe

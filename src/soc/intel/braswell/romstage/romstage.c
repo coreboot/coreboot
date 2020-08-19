@@ -11,7 +11,6 @@
 
 #include "../chip.h"
 
-
 static struct chipset_power_state power_state;
 
 static void migrate_power_state(int is_recovery)
@@ -82,7 +81,6 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 
 	return prev_sleep_state;
 }
-
 
 /* SOC initialization after RAM is enabled */
 void soc_after_ram_init(struct romstage_params *params)

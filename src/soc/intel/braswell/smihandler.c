@@ -100,7 +100,6 @@ static void tristate_gpios(uint32_t val)
 	write32((void *)COMMUNITY_GPSOUTHWEST_BASE + CFIO_140_MMIO_OFFSET, val);
 }
 
-
 static void southbridge_smi_sleep(void)
 {
 	uint32_t reg32;

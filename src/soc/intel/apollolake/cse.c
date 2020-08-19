@@ -15,7 +15,6 @@
 #include <device/pci_ops.h>
 #include <stdint.h>
 
-
 #define MKHI_GROUP_ID_MCA			0x0a
 #define READ_FILE				0x02
 #define   READ_FILE_FLAG_DEFAULT		(1 << 0)

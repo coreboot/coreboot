@@ -13,7 +13,6 @@
 		(__array__)[(__index__)] : \
 		(__default__))
 
-
 static inline void me_read_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(PCH_DEV_ME, offset);

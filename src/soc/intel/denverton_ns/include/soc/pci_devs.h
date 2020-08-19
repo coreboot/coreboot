@@ -5,7 +5,6 @@
 
 /* All these devices live on bus 0 with the associated device and function */
 
-
 #define _PCH_DEVFN(slot, func) PCI_DEVFN(PCH_DEV_SLOT_##slot, func)
 
 #if !defined(__SIMPLE_DEVICE__)

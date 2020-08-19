@@ -167,7 +167,6 @@
 
 #define NUM_GPIO_COM1_PADS	(GPP_F19 - GPP_H0 + 1)
 
-
 /* Group GPD  */
 #define GPD0		123
 #define GPD1		124
@@ -183,7 +182,6 @@
 #define GPD11		134
 
 #define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
-
 
 /* Group C */
 #define GPP_C0		135

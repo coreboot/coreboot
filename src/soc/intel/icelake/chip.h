@@ -82,7 +82,6 @@ struct soc_intel_icelake_config {
 		SaGv_Enabled,
 	} SaGv;
 
-
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;
 

@@ -27,7 +27,6 @@
 
 #define GPIO_MAX_NUM_PER_GROUP	32
 
-
 /* Host Software Pad Ownership Register.
  * The pins in the community are divided into 3 groups :
  * GPIO 0 ~ 31, GPIO 32 ~ 63, GPIO 64 ~ 95

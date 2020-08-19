@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #ifndef _DENVERTON_NS_HOB_MEM_H
 #define _DENVERTON_NS_HOB_MEM_H
 

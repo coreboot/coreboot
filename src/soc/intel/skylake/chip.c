@@ -295,7 +295,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Device4Enable = dev && dev->enabled;
 	params->EnableTcoTimer = !config->PmTimerDisabled;
 
-
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	tconfig->PowerLimit4 = config->PowerLimit4;

@@ -80,7 +80,6 @@ enum vr_domain {
 		[VR_GT_SLICED]    = VR_CFG_MOHMS(gt_sl),	\
 	}
 
-
 void fill_vr_domain_config(void *params,
 			int domain, const struct vr_config *cfg);
 #endif

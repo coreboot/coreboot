@@ -69,7 +69,6 @@
 #define GP_FAMILY_CONF_REG(community, family)		\
 (COMMUNITY_BASE(community) + 0x1094 + 0x80 * family)
 
-
 /* Value written into pad control reg 0 */
 #define PAD_CONTROL_REG0_TRISTATE      (PAD_CONFIG0_DEFAULT|PAD_GPIOFG_HI_Z)
 

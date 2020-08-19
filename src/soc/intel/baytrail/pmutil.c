@@ -230,7 +230,6 @@ void disable_all_gpe(void)
 	disable_gpe(~0);
 }
 
-
 static uint32_t reset_gpe_status(void)
 {
 	uint16_t pmbase = get_pmbase();

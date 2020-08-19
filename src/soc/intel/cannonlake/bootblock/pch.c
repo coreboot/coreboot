@@ -89,7 +89,6 @@ void bootblock_pch_early_init(void)
 	soc_config_pwrmbase();
 }
 
-
 static void soc_config_acpibase(void)
 {
 	uint32_t pmc_reg_value;

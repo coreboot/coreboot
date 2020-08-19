@@ -465,7 +465,6 @@ static void southbridge_smi_monitor(void)
 			mask |= (0xff << ((i - 16) << 2));
 	}
 
-
 	/* IOTRAP(3) SMI function call */
 	if (IOTRAP(3)) {
 		if (gnvs && gnvs->smif)

@@ -52,7 +52,6 @@ static void print_gpio_status(u32 status, int start)
 	}
 }
 
-
 /*
  * PM1_CNT
  */
@@ -72,7 +71,6 @@ void disable_pm1_control(u32 mask)
 	pm1_cnt &= ~mask;
 	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
 }
-
 
 /*
  * PM1
@@ -121,7 +119,6 @@ void enable_pm1(u16 events)
 {
 	outw(events, ACPI_BASE_ADDRESS + PM1_EN);
 }
-
 
 /*
  * SMI
@@ -193,7 +190,6 @@ void disable_smi(u32 mask)
 	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
 }
 
-
 /*
  * ALT_GP_SMI
  */
@@ -243,7 +239,6 @@ void enable_alt_smi(u32 mask)
 	alt_en |= mask;
 	outl(alt_en, GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
 }
-
 
 /*
  * TCO
@@ -311,7 +306,6 @@ void enable_tco_sci(void)
 	/* Enable TCO SCI events */
 	enable_gpe(TCOSCI_EN);
 }
-
 
 /*
  * GPE0

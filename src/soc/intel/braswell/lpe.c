@@ -102,7 +102,6 @@ static void setup_codec_clock(struct device *dev)
 	/* Default to always running. */
 	reg |= CLK_CTL_ON;
 
-
 	printk(BIOS_DEBUG, "LPE Audio codec clock set to %sMHz.\n", freq_str);
 
 	clk_reg = (u32 *)(PMC_BASE_ADDRESS + PLT_CLK_CTL_0);

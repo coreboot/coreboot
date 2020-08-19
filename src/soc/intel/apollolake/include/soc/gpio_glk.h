@@ -202,7 +202,6 @@
 #define GPIO_175			(AUDIO_OFFSET + 19)
 #define TOTAL_AUDIO_PADS		20
 
-
 /* SCC community pads */
 /* For SMBus, SD-Card, Clock, CNV/SDIO, eMMC */
 #define SCC_OFFSET			(AUDIO_OFFSET + 20)
@@ -297,10 +296,8 @@
 	(ALIGN_UP(NUM_SCC_PADS, GPIO_MAX_NUM_PER_GROUP) /	\
 		GPIO_MAX_NUM_PER_GROUP)
 
-
 #define NUM_GPI_STATUS_REGS		(NUM_N_GPI_REGS + NUM_NW_GPI_REGS \
 					+ NUM_AUDIO_GPI_REGS + NUM_SCC_GPI_REGS)
-
 
 /* Macros for translating a global pad offset to a local offset */
 #define PAD_NW(pad)			(pad - NW_OFFSET)

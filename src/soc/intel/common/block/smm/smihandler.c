@@ -169,7 +169,6 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
-
 void smihandler_southbridge_sleep(
 	const struct smm_save_state_ops *save_state_ops)
 {

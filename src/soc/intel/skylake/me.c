@@ -10,7 +10,6 @@
 #include <soc/me.h>
 #include <soc/pci_devs.h>
 
-
 /* HFSTS1[3:0] Current Working State Values */
 static const char *const me_cws_values[] = {
 	[ME_HFS_CWS_RESET]	= "Reset",

@@ -3,7 +3,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 #define SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 
-
 /*
  * The PCIe Root Ports usually come in groups of up to 8 PCI-device
  * functions.

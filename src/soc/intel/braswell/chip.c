@@ -22,7 +22,6 @@ static struct device_operations cpu_bus_ops = {
 	.init             = soc_init_cpus
 };
 
-
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */

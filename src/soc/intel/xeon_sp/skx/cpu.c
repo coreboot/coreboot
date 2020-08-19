@@ -221,7 +221,6 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-
 void xeon_sp_init_cpus(struct device *dev)
 {
 	FUNC_ENTER();

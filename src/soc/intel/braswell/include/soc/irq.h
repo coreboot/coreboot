@@ -126,7 +126,6 @@
 #define GPIO_S0_DED_IRQ(slot)		_GPIO_N_DED_IRQ(slot)
 #define GPIO_S5_DED_IRQ(slot)		_GPIO_E_DED_IRQ(slot)
 
-
 /* PIC IRQ settings. */
 #define PIRQ_PIC_IRQDISABLE		0x80
 #define PIRQ_PIC_IRQ3			0x3

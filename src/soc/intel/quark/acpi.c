@@ -10,7 +10,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	return current;

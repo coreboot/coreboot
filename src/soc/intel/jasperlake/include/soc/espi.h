@@ -3,7 +3,6 @@
 #ifndef _SOC_JASPERLAKE_ESPI_H_
 #define _SOC_JASPERLAKE_ESPI_H_
 
-
 /* PCI Configuration Space (D31:F0): ESPI */
 #define SCI_IRQ_SEL		(7 << 0)
 #define SCIS_IRQ9		0

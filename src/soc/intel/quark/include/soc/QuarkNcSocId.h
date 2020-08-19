@@ -66,7 +66,6 @@
 #define   QUARK2_MC_DEVICE_ID     0x12C0
 #define   QNC_MC_REV_ID_A0      0x00
 
-
 //
 // MCR - B0:D0:F0:RD0h (WO)- Message control register (Datasheet 12.5)
 // [31:24] Message opcode - D0 read; E0 write;
@@ -118,7 +117,6 @@
 //
 #define QUARK_OPCODE_IO_READ           0x02 // Message bus "IO read" opcode
 #define QUARK_OPCODE_IO_WRITE          0x03 // Message bus "IO write" opcode
-
 
 #define QUARK_DRAM_BASE_ADDR_READY     0x78 // Message bus "RMU Main binary
 					    // shadow" opcode
@@ -500,7 +498,6 @@
 #define   B_QNC_PM1BLK_PM1S_GLOB          (BIT5)
 #define   B_QNC_PM1BLK_PM1S_TO            (BIT0)
 #define    N_QNC_PM1BLK_PM1S_RTC           10
-
 
 #define R_QNC_PM1BLK_PM1E               0x02
 #define  S_QNC_PM1BLK_PM1E               2

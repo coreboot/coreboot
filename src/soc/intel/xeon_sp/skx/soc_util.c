@@ -415,7 +415,6 @@ void xeonsp_init_cpu_config(void)
 		}
 	}
 
-
 	/* update apic_id, node_id in sorted order */
 	num_apics = 0;
 	get_core_thread_bits(&core_bits, &thread_bits);

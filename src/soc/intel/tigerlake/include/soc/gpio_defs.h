@@ -109,7 +109,6 @@
 #define GPP_R6_IRQ				0x5E
 #define GPP_R7_IRQ				0x5F
 
-
 /* Group D */
 #define GPD0_IRQ				0x60
 #define GPD1_IRQ				0x61
@@ -182,7 +181,6 @@
 #define GPP_D18_IRQ				0x3E
 #define GPP_D19_IRQ				0x3F
 
-
 /* Group U */
 #define GPP_U0_IRQ				0x40
 #define GPP_U1IRQ				0x41
@@ -204,7 +202,6 @@
 #define GPP_U17_IRQ				0x51
 #define GPP_U18_IRQ				0x52
 #define GPP_U19_IRQ				0x53
-
 
 #define GPP_VGPIO4_IRQ				0x54
 
@@ -259,8 +256,6 @@
 #define GPP_C21_IRQ				0x23
 #define GPP_C22_IRQ				0x24
 #define GPP_C23_IRQ				0x25
-
-
 
 /* Group E */
 #define GPP_E0_IRQ				0x26

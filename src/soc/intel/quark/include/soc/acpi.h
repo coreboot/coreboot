@@ -6,5 +6,4 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 
-
 #endif /* _SOC_ACPI_H_ */

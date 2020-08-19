@@ -146,7 +146,6 @@ void sa_fill_gnvs(struct global_nvs *gnvs)
 	       gnvs->a4gb, gnvs->a4gs);
 }
 
-
 static void sa_get_mem_map(struct device *dev, uint64_t *values)
 {
 	int i;

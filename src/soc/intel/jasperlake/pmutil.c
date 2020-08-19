@@ -156,7 +156,6 @@ uintptr_t soc_read_pmc_base(void)
 	return (uintptr_t)pmc_mmio_regs();
 }
 
-
 uint32_t *soc_pmc_etr_addr(void)
 {
 	return (uint32_t *)(soc_read_pmc_base() + ETR);

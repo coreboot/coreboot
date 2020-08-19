@@ -236,7 +236,6 @@ void lpc_set_serirq_mode(enum serirq_mode mode)
 	pci_write_config8(dev, LPC_SERIRQ_CTL, scnt);
 }
 
-
 void lpc_io_setup_comm_a_b(void)
 {
 	/* ComA Range 3F8h-3FFh [2:0] */

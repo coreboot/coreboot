@@ -262,7 +262,6 @@ E(SEC,  0x88,     MASK_VAL(0,    0,    0x0)),    //vlv.sec.clk_gate_dis.sb_cg_di
 REG_SCRIPT_END,
 };
 
-
 static void perf_power(void *unused)
 {
 	printk(BIOS_DEBUG, "Applying perf/power settings.\n");

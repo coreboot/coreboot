@@ -65,7 +65,6 @@ const struct reg_script pch_finalize_script[] = {
 	/* PMSYNC */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + PMSYNC_CONFIG, (1 << 31)),
 
-
 	REG_SCRIPT_END
 };
 

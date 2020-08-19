@@ -3,7 +3,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H
 #define SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H
 
-
 /* SMBus IO Base Address */
 #define SMBUS_IO_BASE	0xefa0
 

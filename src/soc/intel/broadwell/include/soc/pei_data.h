@@ -63,7 +63,6 @@ struct usb3_port_setting {
 #define PEI_DIMM_INFO_PART_NUMBER_SIZE	19
 #define PEI_DIMM_INFO_TOTAL		8	/* Maximum num of dimm is 8 */
 
-
 /**
  * This table is filled by the MRC blob and used to populate the mem_info
  * struct, which is placed in CBMEM and then used to generate SMBIOS type

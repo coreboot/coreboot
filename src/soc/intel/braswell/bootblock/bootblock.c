@@ -105,7 +105,6 @@ static void setup_mmconfig(void)
 	pci_io_write_config32(IOSF_PCI_DEV, MCR_REG, reg);
 }
 
-
 void bootblock_soc_early_init(void)
 {
 	/* Allow memory-mapped PCI config access */

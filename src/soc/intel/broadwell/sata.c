@@ -200,7 +200,6 @@ static void sata_init(struct device *dev)
 				<< SATA_DTLE_EDGE_SHIFT);
 	}
 
-
 	/*
 	 * Additional Programming Requirements for Power Optimizer
 	 */

@@ -22,7 +22,6 @@ void storage_test_complete(struct device *dev, uint32_t previous_bar,
 	uint16_t previous_command);
 #endif
 
-
 /* Logging support */
 struct log_entry {
 	struct mono_time time;

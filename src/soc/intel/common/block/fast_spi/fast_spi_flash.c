@@ -154,7 +154,6 @@ static size_t get_xfer_len(const struct spi_flash *flash, uint32_t addr,
 	return xfer_len;
 }
 
-
 static int fast_spi_flash_erase(const struct spi_flash *flash,
 				uint32_t offset, size_t len)
 {

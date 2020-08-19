@@ -32,7 +32,6 @@ static void configure_isst(void)
 	config_t *conf = config_of_soc();
 	msr_t msr;
 
-
 	if (conf->speed_shift_enable) {
 		/*
 		* Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
@@ -57,7 +56,6 @@ static void configure_misc(void)
 {
 	config_t *conf = config_of_soc();
 	msr_t msr;
-
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */

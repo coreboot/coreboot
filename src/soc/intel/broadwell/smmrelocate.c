@@ -18,7 +18,6 @@
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 
-
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,
 				struct smm_relocation_params *relo_params)

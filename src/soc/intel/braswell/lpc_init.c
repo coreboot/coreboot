@@ -21,7 +21,6 @@
 #define LPC_AD3_MMIO_OFFSET	LPC_GPIO_OFFSET(50)
 #define LPC_AD1_MMIO_OFFSET	LPC_GPIO_OFFSET(52)
 
-
 /* Value written into pad control reg 0 in early init */
 #define PAD_CFG0_NATIVE(mode, term, inv_rx_tx) (PAD_GPIO_DISABLE \
 				| PAD_GPIOFG_HI_Z \

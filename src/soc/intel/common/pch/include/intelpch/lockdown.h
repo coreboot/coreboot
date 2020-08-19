@@ -3,7 +3,6 @@
 #ifndef SOC_INTEL_COMMON_PCH_LOCKDOWN_H
 #define SOC_INTEL_COMMON_PCH_LOCKDOWN_H
 
-
 /*
  * This function will get lockdown config specific to soc.
  *

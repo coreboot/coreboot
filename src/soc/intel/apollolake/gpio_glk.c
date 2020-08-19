@@ -5,7 +5,6 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
-
 static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },

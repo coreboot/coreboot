@@ -81,7 +81,6 @@ struct reset_mapping {
 	uint32_t chipset;
 };
 
-
 /* Structure describes the groups within each community */
 struct pad_group {
 	int		first_pad; /* offset of first pad of the group relative

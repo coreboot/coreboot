@@ -6,7 +6,6 @@
 #include <soc/gpio_defs.h>
 #include <intelblocks/gpio.h>
 
-
 #define CROS_GPIO_DEVICE_NAME	"INT34C5:00"
 
 #endif

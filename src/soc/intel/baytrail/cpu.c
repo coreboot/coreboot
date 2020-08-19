@@ -68,7 +68,6 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
-
 /*
  * MP and SMM loading initialization.
  */

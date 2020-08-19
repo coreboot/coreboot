@@ -41,7 +41,6 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return *memmap_addr;
 }
 
-
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thread_bits,
 	uint8_t *package, uint8_t *core, uint8_t *thread)
 {
@@ -134,7 +133,6 @@ void xeonsp_init_cpu_config(void)
 			apic_ids_by_thread[index++] = apic_id;
 		}
 	}
-
 
 	/* update apic_id, node_id in sorted order */
 	num_apics = 0;

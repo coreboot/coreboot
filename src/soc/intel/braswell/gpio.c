@@ -8,7 +8,6 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 
-
 #define GPIO_DEBUG
 
 /* gpio map to pad number LUTs */
@@ -28,7 +27,6 @@ static const u8 gpsecommunity_gpio_to_pad[GP_SOUTHEAST_COUNT] = {
 	49, 50, 51, 52, 60, 61, 62, 63, 64, 65,
 	66, 67, 68, 69, 75, 76, 77, 78, 79, 80,
 	81, 82, 83, 84, 85 };
-
 
 static const u8 gpswcommunity_gpio_to_pad[GP_SOUTHWEST_COUNT] = {
 	 0,  1,  2,  3,  4,  5,  6,  7, 15, 16,
@@ -156,7 +154,6 @@ static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
 	smm_southcluster_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
 }
 
-
 static void setup_gpios(const struct soc_gpio_map *gpios, const struct gpio_bank *community)
 {
 	const struct soc_gpio_map *config;
@@ -227,7 +224,6 @@ static void setup_gpios(const struct soc_gpio_map *gpios, const struct gpio_bank
 	/* Interrupt */
 	write32((void *)(community->pad_base + GPIO_INTERRUPT_MASK), gpio_int_mask);
 }
-
 
 void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 {

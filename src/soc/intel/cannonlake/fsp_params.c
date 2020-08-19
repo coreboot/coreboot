@@ -370,7 +370,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			params->PcieRpAspm[i] = config->PcieRpAspm[i] - 1;
 	};
 
-
 	/* eMMC and SD */
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
 	if (!dev)

@@ -450,7 +450,6 @@ static void xeonsp_pci_domain_read_resources(struct device *dev)
 		}
 	}
 
-
 	/* assign resources */
 	assign_stack_resources(&stack_info, dev, NULL);
 

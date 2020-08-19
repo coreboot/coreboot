@@ -46,7 +46,6 @@ struct pcr_sbi_msg {
 	uint16_t fid; /* 0x0B - Function ID */
 };
 
-
 /*
  * API to perform sideband communication
  *

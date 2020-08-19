@@ -8,6 +8,10 @@
 #include <ec/google/chromeec/ec.h>
 
 static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - Not connected */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - Not connected */
+	PAD_NC(GPIO_5),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
 	/* USB_OC4_L - USB_A1 */
@@ -29,6 +33,10 @@ static const struct soc_amd_gpio ezkinil_bid1_gpio_set_stage_ram[] = {
 };
 
 static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - Not connected */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - Not connected */
+	PAD_NC(GPIO_5),
 	/* FPMCU_RST_L Change NC */
 	PAD_NC(GPIO_11),
 	/* DMIC_SEL */
@@ -50,6 +58,10 @@ static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
 };
 
 static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - Not connected */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - Not connected */
+	PAD_NC(GPIO_5),
 	/* FPMCU_RST_L Change NC */
 	PAD_NC(GPIO_11),
 	/* FPMCU_BOOT0 Change NC */

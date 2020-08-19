@@ -307,7 +307,6 @@ static int google_chromeec_command_v1(struct chromeec_command *cec_command)
 	args.checksum = csum;
 	write_bytes(EC_LPC_ADDR_HOST_ARGS, sizeof(args), (u8*)&args, NULL);
 
-
 	/* Issue the command */
 	write_byte(cmd_code, EC_LPC_ADDR_HOST_CMD);
 

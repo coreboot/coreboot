@@ -414,7 +414,6 @@ extern "C" {
 /* Current version of ACPI memory address space */
 #define EC_ACPI_MEM_VERSION_CURRENT 2
 
-
 /*
  * This header file is used in coreboot both in C and ACPI code.  The ACPI code
  * is pre-processed to handle constants but the ASL compiler is unable to
@@ -1254,7 +1253,6 @@ struct ec_response_get_protocol_info {
 	uint32_t flags;
 } __ec_align4;
 
-
 /*****************************************************************************/
 /* Get/Set miscellaneous values */
 
@@ -1664,7 +1662,6 @@ struct ec_params_flash_erase_v1 {
 /* Rollback information flash region protected now */
 #define EC_FLASH_PROTECT_ROLLBACK_NOW       BIT(10)
 
-
 /**
  * struct ec_params_flash_protect - Parameters for the flash protect command.
  * @mask: Bits in flags to apply.
@@ -1761,7 +1758,6 @@ struct ec_response_vbnvcontext {
 	uint8_t block[EC_VBNV_BLOCK_SIZE];
 } __ec_align4;
 
-
 /* Get SPI flash information */
 #define EC_CMD_FLASH_SPI_INFO 0x0018
 
@@ -1779,7 +1775,6 @@ struct ec_response_flash_spi_info {
 	uint8_t sr1, sr2;
 } __ec_align1;
 
-
 /* Select flash during flash operations */
 #define EC_CMD_FLASH_SELECT 0x0019
 
@@ -1790,7 +1785,6 @@ struct ec_response_flash_spi_info {
 struct ec_params_flash_select {
 	uint8_t select;
 } __ec_align4;
-
 
 /**
  * Request random numbers to be generated and returned.
@@ -2201,7 +2195,6 @@ struct ec_response_lightbar {
 
 		struct lightbar_params_v0 get_params_v0;
 		struct lightbar_params_v1 get_params_v1;
-
 
 		struct lightbar_params_v2_timing get_params_v2_timing;
 		struct lightbar_params_v2_tap get_params_v2_tap;
@@ -2815,7 +2808,6 @@ struct ec_params_motion_sense {
 			uint16_t scale[3];
 		} sensor_scale;
 
-
 		/* Used for MOTIONSENSE_CMD_FIFO_INFO */
 		/* (no params) */
 
@@ -3272,7 +3264,6 @@ struct ec_response_thermal_get_threshold {
 	uint16_t value;
 } __ec_align2;
 
-
 /* The version 1 structs are visible. */
 enum ec_temp_thresholds {
 	EC_TEMP_THRESH_WARN = 0,
@@ -3387,7 +3378,6 @@ struct ec_params_tmp006_set_calibration_v1 {
 	uint8_t reserved;
 	float val[0];
 } __ec_align4;
-
 
 /* Read raw TMP006 data */
 #define EC_CMD_TMP006_GET_RAW 0x0055
@@ -3786,7 +3776,6 @@ struct ec_response_keyboard_factory_test {
 #define EC_MKBP_FP_ERR_MATCH_YES_UPDATED       3
 #define EC_MKBP_FP_ERR_MATCH_YES_UPDATE_FAILED 5
 
-
 #define EC_CMD_MKBP_WAKE_MASK 0x0069
 enum ec_mkbp_event_mask_action {
 	/* Retrieve the value of a wake mask. */
@@ -3863,7 +3852,6 @@ struct ec_response_temp_sensor_get_info {
 
 /*****************************************************************************/
 /* Host event commands */
-
 
 /* Obsolete. New implementation should use EC_CMD_HOST_EVENT instead */
 /*
@@ -4461,7 +4449,6 @@ struct ec_response_charge_state {
 	};
 } __ec_align4;
 
-
 /*
  * Set maximum battery charging current.
  */
@@ -4789,7 +4776,6 @@ struct ec_params_i2c_passthru_protect {
 struct ec_response_i2c_passthru_protect {
 	uint8_t status;		/* Status flags (0: unlocked, 1: locked) */
 } __ec_align1;
-
 
 /*****************************************************************************/
 /*
@@ -5400,7 +5386,6 @@ struct ec_response_usb_pd_power_info {
 	uint32_t max_power;
 } __ec_align4;
 
-
 /*
  * This command will return the number of USB PD charge port + the number
  * of dedicated port present.
@@ -5601,7 +5586,6 @@ struct ec_params_pd_write_log_entry {
 	uint8_t type; /* event type : see PD_EVENT_xx above */
 	uint8_t port; /* port#, or 0 for events unrelated to a given port */
 } __ec_align1;
-
 
 /* Control USB-PD chip */
 #define EC_CMD_PD_CONTROL 0x0119
@@ -5886,7 +5870,6 @@ struct ec_response_rollback_info {
 	int32_t rw_rollback_version;
 } __ec_align4;
 
-
 /* Issue AP reset */
 #define EC_CMD_AP_RESET 0x0125
 
@@ -5927,7 +5910,6 @@ struct ec_params_locate_chip {
 		uint16_t reserved;
 	};
 } __ec_align2;
-
 
 struct ec_response_locate_chip {
 	uint8_t bus_type;	/* enum ec_bus_type */

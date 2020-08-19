@@ -26,7 +26,6 @@ static int ec_input_buffer_empty(u8 status_port)
 	return !!timeout;
 }
 
-
 static int ec_output_buffer_full(u8 status_port)
 {
 	u32 timeout;
@@ -40,8 +39,6 @@ static int ec_output_buffer_full(u8 status_port)
 	}
 	return !!timeout;
 }
-
-
 
 /* The ENE 60/64 EC registers are the same command/status IB/OB KBC pair.
  * Check status from 64 port before each command.

@@ -26,7 +26,6 @@ static int input_buffer_empty(u16 status_reg)
 	return !!timeout;
 }
 
-
 static int output_buffer_full(u16 status_reg)
 {
 	u32 timeout;
@@ -41,8 +40,6 @@ static int output_buffer_full(u16 status_reg)
 	}
 	return !!timeout;
 }
-
-
 
 /* The IT8518 60/64 EC registers are the same command/status IB/OB KBC pair.
  * Check status from 64 port before each command.
@@ -72,7 +69,6 @@ void ec_kbc_write_ib(u8 data)
 	if (!input_buffer_empty(KBD_STATUS)) return;
 	outb(data, KBD_DATA);
 }
-
 
 /*
  * These functions are for accessing the IT8518 device RAM space via 0x66/0x68
@@ -109,7 +105,6 @@ void ec_write(u16 addr, u8 data)
 	ec_write_ib(addr);
 	ec_write_ib(data);
 }
-
 
 u8 ec_it8518_get_event(void)
 {

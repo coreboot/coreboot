@@ -58,7 +58,6 @@ void ec_kbc_write_ib(u8 data);
 #define EC_IF_MAJ_VER               0xEF
 #define EC_MBAT_STATUS              0x0138
 
-
 // EC 0.83b added status bits:
 //  BIT0=EC in RO mode
 //  BIT1=Recovery Key Sequence Detected

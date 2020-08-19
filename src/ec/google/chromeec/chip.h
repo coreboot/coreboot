@@ -3,7 +3,6 @@
 #ifndef EC_GOOGLE_CHROMEEC_CHIP_H
 #define EC_GOOGLE_CHROMEEC_CHIP_H
 
-
 struct ec_google_chromeec_config {
 };
 

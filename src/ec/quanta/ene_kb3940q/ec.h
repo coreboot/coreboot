@@ -12,8 +12,6 @@
 #define EC_IO_LOW  EC_IO + 2
 #define EC_IO_DATA EC_IO + 3
 
-
-
 // 60h/64h Command Interface
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64
@@ -191,6 +189,5 @@ void ec_mem_write(u8 addr, u8 data);
 #define EC_CMD_BURST_ENABLE			0x82
 #define EC_CMD_BURST_DISABLE		0x83
 #define EC_CMD_QUERY_EVENT			0x84
-
 
 #endif /* _EC_QUANTA_ENE_KB3940Q_EC_H */

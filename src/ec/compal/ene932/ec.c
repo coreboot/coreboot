@@ -25,7 +25,6 @@ static int kbc_input_buffer_empty(void)
 	return !!timeout;
 }
 
-
 static int kbc_output_buffer_full(void)
 {
 	u32 timeout;
@@ -58,7 +57,6 @@ int kbc_cleanup_buffers(void)
 	return !!timeout;
 }
 
-
 /* The ENE 60/64 EC registers are the same command/status IB/OB KBC pair.
  * Check status from 64 port before each command.
  *
@@ -87,7 +85,6 @@ void ec_kbc_write_ib(u8 data)
 	if (!kbc_input_buffer_empty()) return;
 	outb(data, KBD_DATA);
 }
-
 
 /*
  * These functions are for accessing the ENE932 device space, but are not

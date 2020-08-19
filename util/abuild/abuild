@@ -852,6 +852,7 @@ build_targets()
 		junit "</failure>"
 		junit "</testcase>"
 		echo "Shared Utilities - Log: $TARGET/sharedutils/make.log" >> "$FAILED_BOARDS"
+		rm "$TMPCFG"
 		return
 	fi
 

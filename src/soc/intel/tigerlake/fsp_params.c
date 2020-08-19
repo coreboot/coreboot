@@ -10,6 +10,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <security/vboot/vboot_common.h>
@@ -330,6 +331,22 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			config->ext_fivr_settings.v1p05_icc_max_ma;
 
 	}
+
+	/* Apply minimum assertion width settings if non-zero */
+	if (config->PchPmSlpS3MinAssert)
+		params->PchPmSlpS3MinAssert = config->PchPmSlpS3MinAssert;
+	if (config->PchPmSlpS4MinAssert)
+		params->PchPmSlpS4MinAssert = config->PchPmSlpS4MinAssert;
+	if (config->PchPmSlpSusMinAssert)
+		params->PchPmSlpSusMinAssert = config->PchPmSlpSusMinAssert;
+	if (config->PchPmSlpAMinAssert)
+		params->PchPmSlpAMinAssert = config->PchPmSlpAMinAssert;
+
+	/* Set Power Cycle Duration */
+	if (config->PchPmPwrCycDur)
+		params->PchPmPwrCycDur = get_pm_pwr_cyc_dur(config->PchPmSlpS4MinAssert,
+				config->PchPmSlpS3MinAssert, config->PchPmSlpAMinAssert,
+				config->PchPmPwrCycDur);
 
 	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
 	params->EnableMultiPhaseSiliconInit = 1;

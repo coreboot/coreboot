@@ -389,6 +389,59 @@ struct soc_intel_tigerlake_config {
 	 * Default 0. Setting this to 1 to check CPU replacement.
 	 */
 	uint8_t CpuReplacementCheck;
+
+	/*
+	 * SLP_S3 Minimum Assertion Width Policy
+	 *  1 = 60us
+	 *  2 = 1ms
+	 *  3 = 50ms (default)
+	 *  4 = 2s
+	 */
+	uint8_t PchPmSlpS3MinAssert;
+
+	/*
+	 * SLP_S4 Minimum Assertion Width Policy
+	 *  1 = 1s (default)
+	 *  2 = 2s
+	 *  3 = 3s
+	 *  4 = 4s
+	 */
+	uint8_t PchPmSlpS4MinAssert;
+
+	/*
+	 * SLP_SUS Minimum Assertion Width Policy
+	 *  1 = 0ms
+	 *  2 = 500ms
+	 *  3 = 1s
+	 *  4 = 4s (default)
+	 */
+	uint8_t PchPmSlpSusMinAssert;
+
+	/*
+	 * SLP_A Minimum Assertion Width Policy
+	 *  1 = 0ms
+	 *  2 = 4s
+	 *  3 = 98ms
+	 *  4 = 2s (default)
+	 */
+	uint8_t PchPmSlpAMinAssert;
+
+	/*
+	 * PCH PM Reset Power Cycle Duration
+	 *  0 = 4s (default)
+	 *  1 = 1s
+	 *  2 = 2s
+	 *  3 = 3s
+	 *  4 = 4s
+	 *
+	 * NOTE: Duration programmed in the PchPmPwrCycDur should never be smaller than the
+	 * stretch duration programmed in the following registers:
+	 *  - GEN_PMCON_A.SLP_S3_MIN_ASST_WDTH (PchPmSlpS3MinAssert)
+	 *  - GEN_PMCON_A.S4MAW (PchPmSlpS4MinAssert)
+	 *  - PM_CFG.SLP_A_MIN_ASST_WDTH (PchPmSlpAMinAssert)
+	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
+	 */
+	uint8_t PchPmPwrCycDur;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

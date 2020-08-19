@@ -36,4 +36,7 @@ int variant_memory_sku(void);
  */
 bool variant_mem_is_half_populated(void);
 
+/* Allow each variants to customize SMI sleep flow. */
+void variant_smi_sleep(u8 slp_typ);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

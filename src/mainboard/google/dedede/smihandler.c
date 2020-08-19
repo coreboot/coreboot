@@ -21,6 +21,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 	pads = variant_sleep_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 
+	variant_smi_sleep(slp_typ);
+
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 				MAINBOARD_EC_S5_WAKE_EVENTS);
 }
@@ -40,4 +42,8 @@ void elog_gsmi_cb_mainboard_log_wake_source(void)
 void mainboard_smi_espi_handler(void)
 {
 	chromeec_smi_process_events();
+}
+
+void __weak variant_smi_sleep(u8 slp_typ)
+{
 }

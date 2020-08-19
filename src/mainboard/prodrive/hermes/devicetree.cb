@@ -28,7 +28,7 @@ chip soc/intel/cannonlake
 			register "HeciEnabled" = "1"
 		end
 		device pci 16.1 on  end # Management Engine Interface 2
-		device pci 16.4 on  end # Management Engine Interface 3
+		device pci 16.4 off end # Management Engine Interface 3
 		device pci 17.0 on  end # SATA
 		device pci 1d.6 on	# PCIe root port 15
 			device pci 00.0 on      # Aspeed PCI Bridge

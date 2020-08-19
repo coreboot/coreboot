@@ -228,7 +228,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t PchIshEnable;
 
 	/* Heci related */
-	uint8_t Heci3Enabled;
 	uint8_t DisableHeciRetry;
 
 	/* Gfx related */

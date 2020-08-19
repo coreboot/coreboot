@@ -525,7 +525,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->ScsUfsEnabled = dev->enabled;
 
-	params->Heci3Enabled = config->Heci3Enabled;
+	dev = pcidev_path_on_root(PCH_DEVFN_CSE_3);
+	params->Heci3Enabled = is_dev_enabled(dev);
 #if !CONFIG(HECI_DISABLE_USING_SMM)
 	dev = pcidev_path_on_root(PCH_DEVFN_CSE);
 	params->Heci1Disabled = !is_dev_enabled(dev);

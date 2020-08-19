@@ -201,9 +201,7 @@ chip soc/intel/cannonlake
 		device pci 16.1 off end # Management Engine Interface 2
 		device pci 16.2 off end # Management Engine IDE-R
 		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off     # Management Engine Interface 3
-			register "Heci3Enabled" = "0"
-		end
+		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on  end # SATA
 		device pci 19.0 off end # I2C #4

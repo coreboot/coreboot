@@ -17,7 +17,6 @@ typedef struct {
 #define TLMM_GPIO_IN_OUT_OFF	0x4
 #define TLMM_GPIO_ID_STATUS_OFF	0x10
 
-
 /* GPIO INTR CFG MASK */
 #define GPIO_INTR_DECT_CTL_MASK		0x3
 #define GPIO_INTR_RAW_STATUS_EN_MASK	0x1

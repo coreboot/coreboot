@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-
 #ifndef _IPQ40XX_CDP_H_
 #define _IPQ40XX_CDP_H_
 

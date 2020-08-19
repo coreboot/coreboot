@@ -155,7 +155,6 @@ struct blsp_spi {
 	void *qup_deassert_wait;
 };
 
-
 #define SUCCESS		0
 
 #define DUMMY_DATA_VAL		0
@@ -168,7 +167,6 @@ struct blsp_spi {
 /* MX_INPUT_COUNT and MX_OUTPUT_COUNT are 16-bits. Zero has a special meaning
  * (count function disabled) and does not hold significance in the count. */
 #define MAX_PACKET_COUNT	((64 * KiB) - 1)
-
 
 struct qcs_spi_slave {
 	struct spi_slave slave;

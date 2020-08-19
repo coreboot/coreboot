@@ -89,7 +89,6 @@ static int valid_data = 0;
 /* Received data */
 static unsigned int word = 0;
 
-
 void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	int num_of_chars = 1;

@@ -32,7 +32,6 @@
 
 #define GSBI_IDX_TO_GSBI(idx)   (idx + 5)
 
-
 /* MX_INPUT_COUNT and MX_OUTPUT_COUNT are 16-bits. Zero has a special meaning
  * (count function disabled) and does not hold significance in the count. */
 #define MAX_PACKET_COUNT	((64 * KiB) - 1)
@@ -140,7 +139,6 @@ static unsigned int qup_apps_clk_state[NUM_PORTS] = {
 	GSBI6_QUP_APPS_CLK,
 	GSBI7_QUP_APPS_CLK
 };
-
 
 static int check_bit_state(uint32_t reg_addr, int bit_num, int val, int us_delay)
 {

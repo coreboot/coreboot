@@ -3,7 +3,6 @@
 #ifndef __QUP_H__
 #define __QUP_H__
 
-
 /* QUP block registers */
 #define QUP_CONFIG			0x000
 #define QUP_STATE			0x004

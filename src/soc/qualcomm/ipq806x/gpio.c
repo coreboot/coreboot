@@ -17,7 +17,6 @@ static inline int gpio_not_valid(gpio_t gpio)
 	return (gpio > GPIO_MAX_NUM);
 }
 
-
 /*******************************************************
 Function description: configure GPIO functinality
 Arguments :
@@ -29,7 +28,6 @@ unsigned enable - 0 Disable, 1 - Enable.
 
 Return : None
 *******************************************************/
-
 
 void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
 			  unsigned int pull, unsigned int drvstr,
@@ -59,7 +57,6 @@ unsigned *enable - 0 - Disable, 1- Enable.
 
 Return : None
 *******************************************************/
-
 
 void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
 			  unsigned int *pull, unsigned int *drvstr,
@@ -92,7 +89,6 @@ int gpio_get(gpio_t gpio)
 {
 	if (gpio_not_valid(gpio))
 		return -1;
-
 
 	return (read32(GPIO_IN_OUT_ADDR(gpio)) >> GPIO_IO_IN_SHIFT) &
 		GPIO_IO_IN_MASK;

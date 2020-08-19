@@ -290,8 +290,6 @@ static struct usb3_phy_qserdes_rx_reg_layout *const qserdes_rx_reg_layout =
 static struct usb3_phy_pcs_reg_layout *const pcs_reg_layout =
 	(void *)QMP_PHY_PCS_REG_BASE;
 
-
-
 struct usb_dwc3 {
 	u32 sbuscfg0;
 	u32 sbuscfg1;
@@ -436,8 +434,6 @@ static const struct qmp_phy_init_tbl qmp_v3_usb3_pcs_tbl[] = {
 	{&pcs_reg_layout->pcs_rxeqtraining_run_time, 0x13},
 };
 
-
-
 struct usb_dwc3_cfg {
 	struct usb_dwc3 *usb_host_dwc3;
 	struct usb_qusb_phy_pll *qusb_phy_pll;
@@ -481,7 +477,6 @@ static struct usb_dwc3_cfg usb_port0 = {
 	.efuse_offset =		25,
 };
 
-
 static struct qfprom_corr * const qfprom_corr_efuse = (void *)QFPROM_BASE;
 
 static void reset_usb(struct usb_dwc3_cfg *dwc3)
@@ -504,7 +499,6 @@ void reset_usb0(void)
 
 	reset_usb(&usb_port0);
 }
-
 
 /*
  * Update board specific PHY tuning override values that specified from

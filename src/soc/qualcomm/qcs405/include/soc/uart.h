@@ -10,7 +10,6 @@
 
 extern void __udelay(unsigned long usec);
 
-
 enum MSM_BOOT_UART_DM_PARITY_MODE {
 	MSM_BOOT_UART_DM_NO_PARITY,
 	MSM_BOOT_UART_DM_ODD_PARITY,

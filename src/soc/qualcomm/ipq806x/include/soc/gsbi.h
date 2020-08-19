@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: ISC */
 
-
 #ifndef __GSBI_H_
 #define __GSBI_H_
 

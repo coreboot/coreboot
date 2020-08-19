@@ -60,7 +60,6 @@ static void i2c_set_mstr_clk_ctl(unsigned int id, unsigned int hz)
 	qup_write32(QUP_ADDR(id, QUP_I2C_MASTER_CLK_CTL), mstr_clk_ctl);
 }
 
-
 static qup_return_t qup_i2c_master_status(blsp_qup_id_t id)
 {
 	uint32_t reg_val = read32(QUP_ADDR(id, QUP_I2C_MASTER_STATUS));

@@ -44,13 +44,11 @@
 #define DWC3_GSNPSID			0xc120
 #define DWC3_DCTL			0xc704
 
-
 /* Global USB2 PHY Configuration Register */
 #define DWC3_GUSB2PHYCFG_PHYSOFTRST	(1 << 31)
 #define DWC3_GUSB2PHYCFG_SUSPHY		(1 << 6)
 #define DWC3_GSNPSID_MASK		0xffff0000
 #define DWC3_GEVTEN			0xc114
-
 
 #define DWC3_GCTL_SCALEDOWN(n)		((n) << 4)
 #define DWC3_GCTL_SCALEDOWN_MASK	DWC3_GCTL_SCALEDOWN(3)

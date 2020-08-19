@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-
 #ifndef _QCS405_CDP_H_
 #define _QCS405_CDP_H_
 

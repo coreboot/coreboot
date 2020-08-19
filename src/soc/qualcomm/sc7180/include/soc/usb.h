@@ -79,5 +79,4 @@ void setup_usb_host0(struct usb_board_data *data);
 /* Call reset_ before setup_ */
 void reset_usb0(void);
 
-
 #endif /* _SC7180_USB_H_ */

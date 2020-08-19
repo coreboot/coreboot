@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-
 #ifndef __BLSP_H_
 #define __BLSP_H_
 

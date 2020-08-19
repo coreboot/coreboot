@@ -52,7 +52,6 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 	clrbits_le32(&regs->geni_cgc_ctrl, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK
 			| GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
 
-
 	/* HPG section 3.1.7.1 */
 	if (protocol != SE_PROTOCOL_UART) {
 		setbits_le32(&regs->geni_dfs_if_cfg,

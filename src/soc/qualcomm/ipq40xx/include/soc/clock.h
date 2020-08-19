@@ -175,7 +175,6 @@
 #define GMAC_COREn_CLCK_INV_DISABLE		(0 << 5)
 #define GMAC_COREn_CLCK_BRANCH_ENA		(1 << 4)
 
-
 /* Uart specific clock settings */
 
 void uart_pll_vote_clk_enable(unsigned int);
@@ -185,6 +184,5 @@ void nand_clock_config(void);
 void usb_clock_config(void);
 int audio_clock_config(unsigned int frequency);
 int blsp_i2c_clock_config(blsp_qup_id_t id);
-
 
 #endif  /*  __PLATFORM_IPQ40XX_CLOCK_H_ */

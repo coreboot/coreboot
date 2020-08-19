@@ -122,7 +122,6 @@
 #define GSBI_QUP_APPS_PRE_DIV_SFT	3
 #define GSBI_QUP_APPS_SRC_SEL_MSK	0x7
 
-
 #define GSBI_QUP_APSS_MD_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29c8) + \
 							(32*(gsbi_n-1)))
 #define GSBI_QUP_APSS_NS_REG(gsbi_n)	((MSM_CLK_CTL_BASE + 0x29cc) + \

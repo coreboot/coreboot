@@ -156,7 +156,6 @@
 #define GMAC_COREn_CLCK_INV_DISABLE		(0 << 5)
 #define GMAC_COREn_CLCK_BRANCH_ENA		(1 << 4)
 
-
 /* Uart specific clock settings */
 
 void uart_pll_vote_clk_enable(unsigned int);

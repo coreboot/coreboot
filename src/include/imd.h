@@ -40,11 +40,13 @@
 struct imd_entry;
 struct imd;
 
+static const size_t LIMIT_ALIGN = 4096;
+
 /*
  * Initialize handle to use for working with an imd. Upper limit is the
- * exclusive address to start allocating down from. This function needs
- * to be called at least once before any other imd related functions
- * can be used.
+ * exclusive address (aligned down to LIMIT_ALIGN) to start allocating down
+ * from. This function needs to be called at least once before any other imd
+ * related functions can be used.
  */
 void imd_handle_init(struct imd *imd, void *upper_limit);
 
@@ -60,7 +62,9 @@ void imd_handle_init_partial_recovery(struct imd *imd);
  * Create an empty imd with a specified root_size and each entry is aligned to
  * the provided entry_align. As noted above the root size encompasses the
  * root pointer and root block leading to the number of imd entries being a
- * function of the root_size parameter.
+ * function of the root_size parameter. Please note, that one entry is allocated
+ * for covering root region, thus caller should consider this calculating
+ * root_size.
  */
 int imd_create_empty(struct imd *imd, size_t root_size, size_t entry_align);
 
@@ -101,7 +105,7 @@ const struct imd_entry *imd_entry_find(const struct imd *imd, uint32_t id);
 const struct imd_entry *imd_entry_find_or_add(const struct imd *imd,
 						uint32_t id, size_t size);
 
-/* Returns size of entry or 0 on failure. */
+/* Returns size of entry. */
 size_t imd_entry_size(const struct imd_entry *entry);
 
 /* Returns pointer to region described by entry or NULL on failure. */

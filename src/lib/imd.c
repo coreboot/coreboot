@@ -13,7 +13,6 @@
 static const uint32_t IMD_ROOT_PTR_MAGIC = 0xc0389481;
 static const uint32_t IMD_ENTRY_MAGIC = ~0xc0389481;
 static const uint32_t SMALL_REGION_ID = CBMEM_ID_IMD_SMALL;
-static const size_t LIMIT_ALIGN = 4096;
 
 /* In-memory data structures. */
 struct imd_root_pointer {

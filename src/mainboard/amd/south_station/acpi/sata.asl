@@ -58,7 +58,6 @@ Device(PMRY)
 	}	/* end of PSLA */
 }   /* end of PMRY */
 
-
 Device(SEDY)
 {
 	Name(_ADR, 1)		/* IDE Scondary Channel */

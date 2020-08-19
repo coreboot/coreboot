@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #ifndef _PLATFORM_CFG_H_
 #define _PLATFORM_CFG_H_
 
@@ -108,7 +107,6 @@
  * @brief 1 ON, 0 0FF
  */
 #define SATA_PORT_MULT_CAP_RESERVED	1
-
 
 /**
  * @def   AZALIA_AUTO

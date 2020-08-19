@@ -41,7 +41,6 @@ Scope(\_SB) {
 
 		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
 
-
 		/* SB devices */
 		/* Bus 0, Dev 17 - SATA controller */
 		Package(){0x0011FFFF, 0, INTD, 0 },

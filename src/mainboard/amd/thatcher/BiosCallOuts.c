@@ -154,7 +154,6 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	}
 }
 
-
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
 	FchParams_reset->LegacyFree = CONFIG(HUDSON_LEGACY_FREE);

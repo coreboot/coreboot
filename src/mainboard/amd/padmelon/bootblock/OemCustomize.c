@@ -95,7 +95,6 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 
 };
 
-
 static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	/* DP0 */
 	{

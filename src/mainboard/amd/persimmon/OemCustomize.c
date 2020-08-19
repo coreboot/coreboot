@@ -1,10 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <AGESA.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>
-
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)

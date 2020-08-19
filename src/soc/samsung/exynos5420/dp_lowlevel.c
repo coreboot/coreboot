@@ -75,7 +75,6 @@ void exynos_dp_enable_video_mute(unsigned int enable)
 	return;
 }
 
-
 static void exynos_dp_init_analog_param(void)
 {
 	u32 reg;
@@ -998,7 +997,6 @@ int exynos_dp_init_video(void)
 	lwrite32(reg, &dp_regs->sys_ctl1);
 	return 0;
 }
-
 
 void exynos_dp_config_video_slave_mode(struct edp_video_info *video_info)
 {

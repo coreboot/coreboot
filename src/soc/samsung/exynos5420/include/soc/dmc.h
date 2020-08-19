@@ -300,7 +300,6 @@ enum {
 	MEM_TIMINGS_MSR_COUNT	= 5,
 };
 
-
 /* These are the memory timings for a particular memory type and speed */
 struct mem_timings {
 	enum mem_manuf mem_manuf;	/* Memory manufacturer */

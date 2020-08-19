@@ -1338,11 +1338,9 @@ enum {
 	VIDEO_TIMING_FROM_REGISTER
 };
 
-
 struct exynos_dp_platform_data {
 	struct edp_device_info *edp_dev_info;
 };
-
 
 int exynos_init_dp(struct edp_device_info *edp_info);
 

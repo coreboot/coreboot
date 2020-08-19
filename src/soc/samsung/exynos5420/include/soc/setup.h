@@ -642,7 +642,6 @@ struct exynos5_phy_control;
 #define CTRL_FORCE_MASK		(0x7F << 8)
 #define CTRL_LOCK_COARSE_MASK	(0x7F << 10)
 
-
 #define CTRL_OFFSETD_RESET_VAL	0x8
 #define CTRL_OFFSETD_VAL	0x7F
 
@@ -710,7 +709,6 @@ struct exynos5_phy_control;
 #define PHY_CON39_VAL_40_OHM	0x0B6D0B6D
 #define PHY_CON39_VAL_34_OHM	0x0DB60DB6
 #define PHY_CON39_VAL_30_OHM	0x0FFF0FFF
-
 
 #define CTRL_BSTLEN_OFFSET	8
 #define CTRL_RDLAT_OFFSET	0

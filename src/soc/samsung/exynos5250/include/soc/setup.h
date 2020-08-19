@@ -141,7 +141,6 @@ struct exynos5_phy_control;
 				| (CPUD_RATIO << 4)             \
 				| (ARM_RATIO))
 
-
 /* CLK_FSYS */
 #define CLK_SRC_FSYS0_VAL              0x66666
 #define CLK_DIV_FSYS0_VAL	       0x0BB00000

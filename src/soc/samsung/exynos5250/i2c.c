@@ -94,9 +94,6 @@ static struct s3c24x0_i2c_bus i2c_busses[] = {
 	},
 };
 
-
-
-
 static int i2c_int_pending(struct i2c_regs *regs)
 {
 	return read8(&regs->con) & I2cConIntPending;
@@ -145,9 +142,6 @@ static int i2c_wait_for_int(struct i2c_regs *regs)
 	printk(BIOS_ERR, "I2C timeout waiting for I2C interrupt.\n");
 	return 1;
 }
-
-
-
 
 static int i2c_send_stop(struct i2c_regs *regs)
 {

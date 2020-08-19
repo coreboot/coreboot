@@ -71,7 +71,6 @@ struct i2c_bus
 	unsigned int clk_div;
 };
 
-
 static struct i2c_bus i2c_busses[] = {
 	{
 		.bus_num = 0,
@@ -235,9 +234,6 @@ enum {
 	I2cStatMasterRecv = 0x2 << 6,
 	I2cStatMasterXmit = 0x3 << 6
 };
-
-
-
 
 static int hsi2c_get_clk_details(struct i2c_bus *i2c, int *div, int *cycle,
 				 unsigned int op_clk)
@@ -487,9 +483,6 @@ static int hsi2c_transfer(struct i2c_bus *i2c, struct i2c_msg *segments,
 	return 0;
 }
 
-
-
-
 static int i2c_int_pending(struct i2c_regs *regs)
 {
 	return read8(&regs->con) & I2cConIntPending;
@@ -538,9 +531,6 @@ static int i2c_wait_for_int(struct i2c_regs *regs)
 	printk(BIOS_ERR, "I2C timeout waiting for I2C interrupt.\n");
 	return 1;
 }
-
-
-
 
 static int i2c_send_stop(struct i2c_regs *regs)
 {

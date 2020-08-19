@@ -508,7 +508,6 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 		return ret;
 	}
 
-
 	base = dp->base;
 	/* Enable enhanced mode */
 	setbits32(&base->sys_ctl_4, ENHANCED);

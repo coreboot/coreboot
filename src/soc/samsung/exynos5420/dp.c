@@ -31,7 +31,6 @@
  * 11. Source sends video data.
  */
 
-
 static int exynos_dp_init_dp(void)
 {
 	int ret;
@@ -842,7 +841,6 @@ static unsigned int exynos_dp_config_video(struct edp_device_info *edp_info)
 int exynos_init_dp(struct edp_device_info *edp_info)
 {
 	unsigned int ret;
-
 
 	dp_phy_control(1);
 

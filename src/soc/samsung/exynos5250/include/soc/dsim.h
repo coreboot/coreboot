@@ -52,7 +52,6 @@ check_member(exynos5_dsim, phyacchr1, 0x54);
 #define VIDEO_MODE			(1 << 25)
 #define BURST_MODE			(1 << 26)
 
-
 #define DSIM_PHYACCHR_AFC_EN		(1 << 14)
 #define DSIM_PHYACCHR_AFC_CTL_OFFSET	5
 

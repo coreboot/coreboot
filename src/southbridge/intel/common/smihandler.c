@@ -95,7 +95,6 @@ __weak void southbridge_smm_xhci_sleep(u8 slp_type)
 {
 }
 
-
 static void southbridge_smi_sleep(void)
 {
 	u8 reg8;
@@ -387,8 +386,6 @@ static void southbridge_smi_mc(void)
 
 	printk(BIOS_DEBUG, "Microcontroller SMI.\n");
 }
-
-
 
 static void southbridge_smi_tco(void)
 {

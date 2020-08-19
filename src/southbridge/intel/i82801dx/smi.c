@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
@@ -12,7 +11,6 @@
 #include <cpu/x86/smi_deprecated.h>
 #include <string.h>
 #include "i82801dx.h"
-
 
 void northbridge_write_smram(u8 smram);
 
@@ -98,7 +96,6 @@ static void dump_smi_status(u32 smi_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
 /**
  * @brief read and clear GPE0_STS
  * @return GPE0_STS register
@@ -138,7 +135,6 @@ static void dump_gpe0_status(u32 gpe0_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
 /**
  * @brief read and clear ALT_GP_SMI_STS
  * @return ALT_GP_SMI_STS register
@@ -164,8 +160,6 @@ static void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
-
 /**
  * @brief read and clear TCOx_STS
  * @return TCOx_STS registers
@@ -183,7 +177,6 @@ static u32 reset_tco_status(void)
 
 	return reg32;
 }
-
 
 static void dump_tco_status(u32 tco_sts)
 {
@@ -203,8 +196,6 @@ static void dump_tco_status(u32 tco_sts)
 	if (tco_sts & (1 <<  0)) printk(BIOS_DEBUG, "NMI2SMI ");
 	printk(BIOS_DEBUG, "\n");
 }
-
-
 
 /**
  * @brief Set the EOS bit

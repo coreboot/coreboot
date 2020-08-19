@@ -411,7 +411,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 		 current, 0, 9, 9, MP_IRQ_POLARITY_HIGH | MP_IRQ_TRIGGER_LEVEL);
 
-
 	return current;
 }
 

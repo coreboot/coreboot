@@ -34,7 +34,6 @@
 #define MBAR		0x14
 #define   SEC_CODEC	0x40
 
-
 /* FIXME. This table is probably mainboard specific */
 static u16 ac97_function[16*2][4] = {
 	{ (1 << 5), (2 << 11), (1 << 10), (3 << 13) },

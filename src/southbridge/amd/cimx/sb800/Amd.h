@@ -83,7 +83,6 @@ typedef struct _AMD_CONFIG_PARAMS {
   IN OUT   unsigned int          Reserved[2];      ///< This space is reserved for future use.
 } AMD_CONFIG_PARAMS;
 
-
 /// AGESA Binary module header structure
 typedef struct _AMD_IMAGE_HEADER {
   IN       unsigned int  Signature;                          ///< Binary Signature

@@ -718,7 +718,6 @@ static int ich_hwseq_wait_for_cycle_complete(unsigned int timeout,
 	return 0;
 }
 
-
 static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 			size_t len)
 {

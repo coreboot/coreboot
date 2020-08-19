@@ -70,7 +70,6 @@ void init_sb800_MANUAL_fans(struct device *dev);
 #define FREQ_14HZ			0xFE
 #define FREQ_11HZ			0xFF
 
-
 /* IMC Fan Control Definitions */
 #define IMC_MODE1_FAN_ENABLED					( 1 << 0 )
 #define IMC_MODE1_FAN_IMC_CONTROLLED			( 1 << 2 )

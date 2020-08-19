@@ -94,7 +94,6 @@ void dump_smi_status(u32 smi_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
 /**
  * @brief read and clear GPE0_STS
  * @return GPE0_STS register
@@ -158,7 +157,6 @@ u32 reset_tco_status(void)
 	return reg32;
 }
 
-
 void dump_tco_status(u32 tco_sts)
 {
 	printk(BIOS_DEBUG, "TCO_STS: ");
@@ -189,7 +187,6 @@ void smi_set_eos(void)
 	reg8 |= EOS;
 	write_pmbase8(SMI_EN, reg8);
 }
-
 
 void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
 {

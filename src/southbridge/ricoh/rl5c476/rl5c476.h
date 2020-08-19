@@ -2,9 +2,7 @@
 
  /* rl5c476 routines and defines*/
 
-
 #include <stdint.h>
-
 
 /* the 16 bit control structure for ricoh cardbus bridge */
 typedef struct pc16reg  {

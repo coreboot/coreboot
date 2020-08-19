@@ -20,7 +20,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	u16 pmbase = pci_read_config16(pcidev_on_root(0x1f, 0), 0x40) & 0xfffe;
 
-
 	fadt->sci_int = 0x9;
 
 	if (permanent_smi_handler()) {

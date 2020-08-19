@@ -7,7 +7,6 @@
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <bootstate.h>
 
-
 /*
  * Update the PCI devices with a valid IRQ number
  * that is set in the mainboard PCI_IRQ structures.

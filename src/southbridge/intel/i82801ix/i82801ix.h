@@ -20,10 +20,7 @@
 #define DEFAULT_TCOBASE		(DEFAULT_PMBASE + 0x60)
 #define DEFAULT_GPIOBASE	0x00000580
 
-
 #define APM_CNT		0xb2
-
-
 
 #define GP_IO_USE_SEL	0x00
 #define GP_IO_SEL	0x04
@@ -73,22 +70,18 @@
 #define D31F0_CxSTATE_CNF	0xa9
 #define D31F0_C4TIMING_CNT	0xaa
 
-
 /* D31:F2 SATA */
 #define D31F2_IDE_TIM_PRI	0x40
 #define D31F2_IDE_TIM_SEC	0x42
 #define D31F2_SIDX		0xa0
 #define D31F2_SDAT		0xa4
 
-
 /* D30:F0 PCI-to-PCI bridge */
 #define D30F0_SMLT		0x1b
-
 
 /* D28:F0-5 PCIe root ports */
 #define D28Fx_XCAP		0x42
 #define D28Fx_SLCAP		0x54
-
 
 /* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20
@@ -153,7 +146,6 @@
 #define FD_HDAD		(1 <<  4) /* HD audio */
 #define FD_SD		(1 <<  3) /* SMBus */
 #define FD_SAD1		(1 <<  2) /* SATA #1 */
-
 
 #ifndef __ACPI__
 #ifndef __ASSEMBLER__

@@ -791,7 +791,6 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-
 /* IDs for LPC device of Intel 8 Series Chipset (Lynx Point) */
 static const unsigned short pci_device_ids[] = {
 	0x8c41, /* Mobile Full Featured Engineering Sample. */

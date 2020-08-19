@@ -66,7 +66,6 @@ static void usb_ehci_set_subsystem(struct device *dev, unsigned int vendor,
 	pci_write_config8(dev, 0x80, access_cntl);
 }
 
-
 static struct pci_operations lops_pci = {
 	.set_subsystem = &usb_ehci_set_subsystem,
 };

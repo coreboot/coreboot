@@ -74,7 +74,6 @@ static void early_lpc_init(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
-
 void bootblock_early_southbridge_init(void)
 {
 	enable_spi_prefetching_and_caching();

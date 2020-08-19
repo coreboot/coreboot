@@ -105,7 +105,6 @@ static void ImcSleep(void)
 	WaitForEcLDN9MailboxCmdAck();
 }
 
-
 static void ImcWakeup(void)
 {
 	u8	cmd_val = 0x96;		/* Kick off IMC Mailbox command 96 */

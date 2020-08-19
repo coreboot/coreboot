@@ -92,7 +92,6 @@ static void pwrmgt_read_resources(struct device *dev)
 	             IORESOURCE_RESERVE;
 }
 
-
 static const struct smbus_bus_operations lops_smbus_bus = {
 };
 

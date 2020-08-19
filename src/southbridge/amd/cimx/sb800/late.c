@@ -213,7 +213,6 @@ static const struct pci_driver usb_ohci4_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_ATI_SB800_USB_20_5, /* OHCI-USB4 */
 };
 
-
 static struct device_operations azalia_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
@@ -226,7 +225,6 @@ static const struct pci_driver azalia_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB800_HDA,
 };
-
 
 static struct device_operations gec_ops = {
 	.read_resources = pci_dev_read_resources,
@@ -357,7 +355,6 @@ static void sb800_enable(struct device *dev)
 			sb_config->AzaliaController = AZALIA_DISABLE;
 		}
 		break;
-
 
 	case PCI_DEVFN(0x14, 3): /* 0:14:3 LPC */
 		/* Initialize the fans */

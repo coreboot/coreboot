@@ -78,7 +78,6 @@ static void busmaster_disable_on_bus(int bus)
 	}
 }
 
-
 static void southbridge_smi_sleep(void)
 {
 	u8 reg8;
@@ -379,8 +378,6 @@ static void southbridge_smi_mc(void)
 	printk(BIOS_DEBUG, "Microcontroller SMI.\n");
 }
 
-
-
 static void southbridge_smi_tco(void)
 {
 	u32 tco_sts = clear_tco_status();
@@ -442,7 +439,6 @@ static void southbridge_smi_monitor(void)
 		if (trap_cycle & (1 << i))
 			mask |= (0xff << ((i - 16) << 2));
 	}
-
 
 	/* IOTRAP(3) SMI function call */
 	if (IOTRAP(3)) {

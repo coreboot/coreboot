@@ -55,5 +55,4 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val);
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
 void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val);
 
-
 #endif

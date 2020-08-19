@@ -48,7 +48,6 @@ typedef union _PCI_ADDR {
 #include <OEM.h>		/* platform default configuration */
 #include <AMD.h>
 
-
 //------------------------------------------------------------------------------------------------------------------------//
 /**
  * SB_CIMx_PARAMETER                0                1                   2            Default Value When CIMx Take over

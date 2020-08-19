@@ -19,7 +19,6 @@ static u16 get_gpio_base(void)
 #endif
 }
 
-
 /*
  * This function will return a number that indicates which PIRQ
  * this GPIO maps to.  If this is not a PIRQ capable GPIO then

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #ifndef _CIMX_H_
 #define _CIMX_H_
 

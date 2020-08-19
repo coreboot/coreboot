@@ -202,7 +202,6 @@ int intel_early_me_init_done(u8 status)
 		timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
 	}
 
-
 	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);
 	printk(BIOS_NOTICE, "ME:  Bist in progress: 0x%x\n", me_fws2 & 0x1);
@@ -219,7 +218,6 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current state   : 0x%x\n", (me_fws2 & 0xff0000) >> 16);
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
-
 
 	/* Return the requested BIOS action */
 	printk(BIOS_NOTICE, "ME: Requested BIOS Action: %s\n",

@@ -38,7 +38,6 @@ void i82801ix_dmi_setup(void)
 	RCBA8(RCBA_BCR)   = 0x45;
 	RCBA32(RCBA_CIR6) &= ~(1 << 7);
 
-
 	/* VC1 setup for isochronous transfers: */
 
 	/* Set VC1 virtual channel id to 1. */
@@ -59,7 +58,6 @@ void i82801ix_dmi_setup(void)
 
 	/* Enable VC1. */
 	RCBA32(RCBA_V1CTL) |= (1 << 31);
-
 
 	/* Setup RCRB: */
 

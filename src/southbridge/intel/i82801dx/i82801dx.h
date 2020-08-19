@@ -46,8 +46,6 @@ void aseg_smm_lock(void);
 /* IDE_TIM bits */
 #define IDE_DECODE_ENABLE	(1 << 15)
 
-
-
 #define PCI_DMA_CFG     0x90
 #define SERIRQ_CNTL     0x64
 #define GEN_CNTL        0xd0
@@ -92,7 +90,6 @@ void aseg_smm_lock(void);
 #define PCI_MAST_STS    0x82
 
 #define RTC_FAILED      (1 <<2)
-
 
 #define PM1_STS		0x00
 #define   WAK_STS	(1 << 15)

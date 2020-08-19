@@ -13,7 +13,6 @@
 #include "smbus.h"
 #include "smi.h"
 
-
 #define PM_REG_USB_ENABLE	0xef
 
 enum usb_enable {
@@ -105,7 +104,6 @@ void hudson_enable(struct device *dev)
 		break;
 	}
 }
-
 
 static void hudson_init_acpi_ports(void)
 {

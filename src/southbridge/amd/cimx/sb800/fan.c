@@ -39,12 +39,10 @@ void init_sb800_MANUAL_fans(struct device *dev)
 	if (sb_chip->fan4_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
 			pm2_write8(FAN_4_OFFSET + i, sb_chip->fan4_config_vals[i]);
-
 }
 
 void init_sb800_IMC_fans(struct device *dev)
 {
-
 	AMDSBCFG sb_config;
 	unsigned char *message_ptr;
 	int i;
@@ -62,7 +60,6 @@ void init_sb800_IMC_fans(struct device *dev)
 	 */
 
 	pci_write_config16(dev, 0xA4, sb_chip->imc_port_address | 0x01);
-
 
 	/*
 	 * Do an initial manual setup of the fans for things like polarity
@@ -107,7 +104,6 @@ if (sb_chip->imc_fan_zone0_enabled) {
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone0MSGREG2;
 	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++)
 		*(message_ptr + i) = sb_chip->imc_zone0_fanspeeds[i];
-
 }
 
 /*
@@ -138,9 +134,7 @@ if (sb_chip->imc_fan_zone1_enabled) {
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone1MSGREG2;
 	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++)
 		*(message_ptr + i) = sb_chip->imc_zone1_fanspeeds[i];
-
 }
-
 
 /*
  ********** Zone 2 **********
@@ -170,7 +164,6 @@ if (sb_chip->imc_fan_zone2_enabled) {
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone2MSGREG2;
 	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++)
 		*(message_ptr + i) = sb_chip->imc_zone2_fanspeeds[i];
-
 }
 
 /*
@@ -202,7 +195,6 @@ if (sb_chip->imc_fan_zone3_enabled) {
 	message_ptr = &sb_config.Pecstruct.MSGFun85zone3MSGREG2;
 	for (i = 0; i < IMC_FAN_SPEED_COUNT; i++)
 		*(message_ptr + i) = sb_chip->imc_zone3_fanspeeds[i];
-
 }
 
 	/*

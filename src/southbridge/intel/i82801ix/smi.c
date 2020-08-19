@@ -114,7 +114,6 @@ static void aseg_smm_install(void)
 		return;
 	smm_handler_copied = 1;
 
-
 	/* if we're resuming from S3, the SMM code is already in place,
 	 * so don't copy it again to keep the current SMM state */
 

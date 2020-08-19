@@ -27,7 +27,6 @@
 #define  GPI_IS_SCI		0x02
 #define  GPI_IS_NMI		0x03
 
-
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2

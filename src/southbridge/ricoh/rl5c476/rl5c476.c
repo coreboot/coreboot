@@ -107,10 +107,8 @@ static void rl5c476_init(struct device *dev)
 	pc16->moffl0 = 0;
 	pc16->moffh0 = 0x40;
 
-
 	/* set I/O width for Auto Data width */
 	pc16->ioctrl = 0x22;
-
 
 	/* enable I/O window 0 and 1 */
 	pc16->awinen = 0xc1;
@@ -124,7 +122,6 @@ static void rl5c476_init(struct device *dev)
 	udelay(100000);
 
 	pc16->igctrl = 0x69;
-
 
 	/* 16 bit CF always have first config byte at 0x200 into
 	 * Config structure, but CF+ may not according to spec -

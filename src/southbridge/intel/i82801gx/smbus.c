@@ -58,7 +58,6 @@ static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 	return do_smbus_block_read(res->base, device, cmd, bytes, buf);
 }
 
-
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
 	.write_byte	= lsmbus_write_byte,

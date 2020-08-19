@@ -734,7 +734,6 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-
 /* IDs for LPC device of Intel 6 Series Chipset, Intel 7 Series Chipset, and
  * Intel C200 Series Chipset
  */

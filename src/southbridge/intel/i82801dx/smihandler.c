@@ -96,7 +96,6 @@ static void dump_smi_status(u32 smi_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
 /**
  * @brief read and clear GPE0_STS
  * @return GPE0_STS register
@@ -136,7 +135,6 @@ static void dump_gpe0_status(u32 gpe0_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-
 /**
  * @brief read and clear TCOx_STS
  * @return TCOx_STS registers
@@ -154,7 +152,6 @@ static u32 reset_tco_status(void)
 
 	return reg32;
 }
-
 
 static void dump_tco_status(u32 tco_sts)
 {
@@ -221,7 +218,6 @@ static void busmaster_disable_on_bus(int bus)
 		}
 	}
 }
-
 
 static void southbridge_smi_sleep(void)
 {
@@ -388,8 +384,6 @@ static void southbridge_smi_mc(void)
 
 	printk(BIOS_DEBUG, "Microcontroller SMI.\n");
 }
-
-
 
 static void southbridge_smi_tco(void)
 {

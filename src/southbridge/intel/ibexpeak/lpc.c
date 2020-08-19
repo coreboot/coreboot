@@ -618,7 +618,6 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_IBEXPEAK_LPC_QM57,
 	PCI_DID_INTEL_IBEXPEAK_LPC_HM55,

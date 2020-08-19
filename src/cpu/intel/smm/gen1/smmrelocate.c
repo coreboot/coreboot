@@ -25,7 +25,6 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-
 /* On model_6fx, model_1067x and model_106cx SMRR functions slightly
    differently. The MSR are at different location from the rest
    and need to be explicitly enabled in IA32_FEATURE_CONTROL MSR. */

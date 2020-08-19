@@ -69,7 +69,6 @@ static void smi_set_eos(void)
 	southbridge_smi_set_eos();
 }
 
-
 static u32 pci_orig;
 
 /**
@@ -87,7 +86,6 @@ static void smi_restore_pci_address(void)
 {
 	outl(pci_orig, 0xcf8);
 }
-
 
 static const struct smm_runtime *smm_runtime;
 

@@ -189,7 +189,6 @@ int calculate_l2_latency(void)
 	return 0;
 }
 
-
 /* Setup address, data_high:data_low into the L2
  * control registers and then issue command with correct cache way
  */

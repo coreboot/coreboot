@@ -33,8 +33,6 @@
 #define SMRR_SUPPORTED (1 << 11)
 #define PRMRR_SUPPORTED (1 << 12)
 
-
-
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,
 				struct smm_relocation_params *relo_params)

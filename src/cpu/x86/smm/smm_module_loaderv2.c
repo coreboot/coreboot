@@ -590,7 +590,6 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		fxsave_area = NULL;
 	}
 
-
 	handler_size = rmodule_memory_size(&smm_mod);
 	base -= handler_size;
 	total_size += handler_size;

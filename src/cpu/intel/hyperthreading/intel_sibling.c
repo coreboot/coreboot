@@ -52,7 +52,6 @@ void intel_sibling_init(struct device *cpu)
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i;
 
-
 		/* Allocate new CPU device structure iff sibling CPU
 		 * was not in static device tree.
 		 */

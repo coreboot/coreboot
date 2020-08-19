@@ -104,7 +104,6 @@ void speedstep_gen_pstates(sst_table_t *const table)
 	/* Gather speedstep limits. */
 	speedstep_get_limits(&params);
 
-
 	/*\ First, find the number of normal states: \*/
 
 	/* Calculate with doubled values to work
@@ -129,7 +128,6 @@ void speedstep_gen_pstates(sst_table_t *const table)
 			SPEEDSTEP_MAX_NORMAL_STATES);
 	if (states < 2) /* Report at least two normal states. */
 		states = 2;
-
 
 	/*\ Now, fill the table: \*/
 

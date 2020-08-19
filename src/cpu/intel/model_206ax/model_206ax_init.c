@@ -534,7 +534,6 @@ static void post_mp_init(void)
 	smm_lock();
 }
 
-
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,

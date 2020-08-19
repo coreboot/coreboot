@@ -242,7 +242,6 @@ static void model_1067x_init(struct device *cpu)
 {
 	char processor_name[49];
 
-
 	/* Gather some information: */
 
 	const struct cpuid_result cpuid1 = cpuid(1);
@@ -264,7 +263,6 @@ static void model_1067x_init(struct device *cpu)
 			  !(rdmsr(IA32_PLATFORM_ID).lo & (1 << 17));
 	/* Test for TM2 only if EIST is available. */
 	const char tm2 = eist && (cpuid1.ecx & (1 << 8));
-
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();

@@ -106,7 +106,6 @@ struct saved_msr {
 	uint32_t hi;
 } __packed;
 
-
 /* The sipi vector rmodule is included in the ramstage using 'objdump -B'. */
 extern char _binary_sipi_vector_start[];
 

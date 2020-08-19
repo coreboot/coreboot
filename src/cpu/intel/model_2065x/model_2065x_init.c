@@ -110,7 +110,6 @@ int cpu_config_tdp_levels(void)
 	return (platform_info.hi >> 1) & 3;
 }
 
-
 static void configure_thermal_target(void)
 {
 	struct cpu_intel_model_2065x_config *conf;
@@ -157,7 +156,6 @@ static void enable_lapic_tpr(void)
 	msr.lo &= ~(1 << 10);	/* Enable APIC TPR updates */
 	wrmsr(MSR_PIC_MSG_CONTROL, msr);
 }
-
 
 static void set_max_ratio(void)
 {
@@ -281,7 +279,6 @@ static void post_mp_init(void)
 	/* Lock down the SMRAM space. */
 	smm_lock();
 }
-
 
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,

@@ -1509,9 +1509,12 @@ static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 {
 	unsigned int j;
 	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 64;
+	uintptr_t addr;
 
-	for (j = 0; j < 16; j++)
-		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
+	for (j = 0; j < 16; j++) {
+		addr = 0x04000000 + channel_offset + 4 * j;
+		write32((void *)addr, j & 2 ? b : a);
+	}
 
 	sfence();
 
@@ -1531,13 +1534,16 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 	unsigned int j;
 	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 64;
 	unsigned int channel_step = 64 * num_of_channels(ctrl);
+	uintptr_t addr;
 
-	for (j = 0; j < 16; j++)
-		write32((void *)(0x04000000 + channel_offset + j * 4), 0xffffffff);
-
-	for (j = 0; j < 16; j++)
-		write32((void *)(0x04000000 + channel_offset + channel_step + j * 4), 0);
-
+	for (j = 0; j < 16; j++) {
+		addr = 0x04000000 + channel_offset + j * 4;
+		write32((void *)addr, 0xffffffff);
+	}
+	for (j = 0; j < 16; j++) {
+		addr = 0x04000000 + channel_offset + channel_step + j * 4;
+		write32((void *)addr, 0);
+	}
 	sfence();
 
 	program_wdb_pattern_length(channel, 16);
@@ -1929,6 +1935,7 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 	unsigned int i, j;
 	unsigned int offset = get_precedening_channels(ctrl, channel) * 64;
 	unsigned int step = 64 * num_of_channels(ctrl);
+	uintptr_t addr;
 
 	if (patno) {
 		u8 base8 = 0x80 >> ((patno - 1) % 8);
@@ -1940,14 +1947,16 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 				if (invert[patno - 1][i] & (1 << (j / 2)))
 					val = ~val;
 
-				write32((void *)((1 << 26) + offset + i * step + j * 4), val);
+				addr = (1 << 26) + offset + i * step + j * 4;
+				write32((void *)addr, val);
 			}
 		}
 	} else {
 		for (i = 0; i < ARRAY_SIZE(pattern); i++) {
 			for (j = 0; j < 16; j++) {
 				const u32 val = pattern[i][j];
-				write32((void *)((1 << 26) + offset + i * step + j * 4), val);
+				addr = (1 << 26) + offset + i * step + j * 4;
+				write32((void *)addr, val);
 			}
 		}
 		sfence();

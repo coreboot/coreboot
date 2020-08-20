@@ -258,18 +258,18 @@ static void cpt_pm_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "CougarPoint PM init\n");
 	pci_write_config8(dev, 0xa9, 0x47);
-	RCBA32_AND_OR(CIR30, ~0UL, (1 << 6)|(1 << 0));
-	RCBA32_AND_OR(CIR5, ~0UL, (1 << 0));
-	RCBA16_AND_OR(CIR3, ~0UL, (1 << 13)|(1 << 14));
-	RCBA16_AND_OR(CIR2, ~0UL, (1 << 14));
+	RCBA32_AND_OR(CIR30, ~0U, (1 << 6)|(1 << 0));
+	RCBA32_AND_OR(CIR5, ~0U, (1 << 0));
+	RCBA16_AND_OR(CIR3, ~0U, (1 << 13)|(1 << 14));
+	RCBA16_AND_OR(CIR2, ~0U, (1 << 14));
 	RCBA32(DMC) = 0xc0388400;
-	RCBA32_AND_OR(CIR6, ~0UL, (1 << 5)|(1 << 18));
-	RCBA32_AND_OR(CIR9, ~0UL, (1 << 15)|(1 << 1));
+	RCBA32_AND_OR(CIR6, ~0U, (1 << 5)|(1 << 18));
+	RCBA32_AND_OR(CIR9, ~0U, (1 << 15)|(1 << 1));
 	RCBA32_AND_OR(CIR7, ~0x1f, 0xf);
 	RCBA32(PM_CFG) = 0x050f0000;
 	RCBA32(CIR8) = 0x04000000;
-	RCBA32_AND_OR(CIR10, ~0UL, 0xfffff);
-	RCBA32_AND_OR(CIR11, ~0UL, (1 << 1));
+	RCBA32_AND_OR(CIR10, ~0U, 0xfffff);
+	RCBA32_AND_OR(CIR11, ~0U, (1 << 1));
 	RCBA32(CIR12) = 0x0001c000;
 	RCBA32(CIR14) = 0x00061100;
 	RCBA32(CIR15) = 0x7f8fdfff;
@@ -371,10 +371,10 @@ static void enable_clock_gating(struct device *dev)
 	reg16 |= (1 << 11);
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	pch_iobp_update(0xEB007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEB004000, ~0UL, (1 << 7));
-	pch_iobp_update(0xEC007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEC004000, ~0UL, (1 << 7));
+	pch_iobp_update(0xEB007F07, ~0U, (1 << 31));
+	pch_iobp_update(0xEB004000, ~0U, (1 << 7));
+	pch_iobp_update(0xEC007F07, ~0U, (1 << 31));
+	pch_iobp_update(0xEC004000, ~0U, (1 << 7));
 
 	reg32 = RCBA32(CG);
 	reg32 |= (1 << 31);

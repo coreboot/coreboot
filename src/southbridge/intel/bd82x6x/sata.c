@@ -126,7 +126,7 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, 0x94, ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 
 		/* Initialize AHCI memory-mapped space */
-		abar = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+		abar = (u8 *)(uintptr_t)pci_read_config32(dev, PCI_BASE_ADDRESS_5);
 		printk(BIOS_DEBUG, "ABAR: %p\n", abar);
 		/* CAP (HBA Capabilities) : enable power management */
 		reg32 = read32(abar + 0x00);

@@ -29,6 +29,16 @@ static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 	subcode += PSP_VBOOT_ERROR_SUBCODE;
 	svc_write_postcode(subcode);
 
+	/*
+	 * If there's an error but the PSP_verstage is already booting to RO,
+	 * don't reset the system.  It may be that the error is fatal, but if
+	 * the system is stuck, don't intentionally force it into a reboot loop.
+	 */
+	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
+		printk(BIOS_ERR, "Already in recovery mode. Staying in RO.\n");
+		return;
+	}
+
 	vb2api_fail(ctx, VB2_RECOVERY_RO_UNSPECIFIED, (int)subcode);
 	vboot_save_data(ctx);
 
@@ -231,21 +241,20 @@ void Main(void)
 
 	verstage_main();
 
-	vb2api_relocate(_vboot2_work, _vboot2_work, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
-			&ctx);
+	ctx = vboot_get_context();
 	retval = check_cmos_recovery();
 	if (retval)
-		goto err;
+		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_SAVE_BUFFERS);
 	retval = save_buffers(&ctx);
 	if (retval)
-		goto err;
+		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_UPDATE_BOOT_REGION);
 	retval = update_boot_region(ctx);
 	if (retval)
-		goto err;
+		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_UNMAP_SPI_ROM);
 	if (boot_dev.base) {
@@ -260,9 +269,6 @@ void Main(void)
 
 	printk(BIOS_DEBUG, "Leaving verstage on PSP\n");
 	svc_exit(retval);
-
-err:
-	reboot_into_recovery(ctx, retval);
 }
 
 const struct region_device *boot_device_ro(void)

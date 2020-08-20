@@ -92,5 +92,16 @@ config CHROMEOS_DSM_CALIB
 	  to ACPI DSD table in device driver. These parameters will be applied by kernel driver
 	  through device property at boot.
 
+config CHROMEOS_CSE_BOARD_RESET_OVERRIDE
+	bool
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	  On some boards that run old firmware version in cr50, Embedded Controller (EC) needs
+	  to trigger the cold reset of Application Processor (AP) when CSE jumps from RO to RW
+	  so that cr50 resets the TPM state. This is required on boards where the cr50 firmware
+	  does not understand the new cr50 strap config (applicable only to boards using strap
+	  config 0xe). Enabling this config will help to override the default global reset.
+
 endif # CHROMEOS
 endmenu

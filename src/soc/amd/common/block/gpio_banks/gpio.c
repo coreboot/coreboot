@@ -214,10 +214,9 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		soc_gpio_hook(gpio, mux);
 
-		/* Clear interrupt and wake status (write 1-to-clear bits) */
-		control |= GPIO_INT_STATUS | GPIO_WAKE_STATUS;
 		__gpio_setbits32(gpio, PAD_CFG_MASK, control);
-
+		/* Clear interrupt and wake status (write 1-to-clear bits) */
+		__gpio_or32(gpio, GPIO_INT_STATUS | GPIO_WAKE_STATUS);
 		if (control_flags == 0)
 			continue;
 

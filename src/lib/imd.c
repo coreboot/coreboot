@@ -323,7 +323,7 @@ static struct imd_entry *imd_entry_add_to_root(struct imd_root *r, uint32_t id,
 	last_entry = root_last_entry(r);
 	e_offset = last_entry->start_offset;
 	e_offset -= (ssize_t)used_size;
-	if (e_offset > last_entry->start_offset)
+	if (e_offset >= last_entry->start_offset)
 		return NULL;
 
 	entry = root_last_entry(r) + 1;

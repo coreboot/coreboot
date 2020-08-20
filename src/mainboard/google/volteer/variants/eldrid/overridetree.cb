@@ -3,8 +3,136 @@ chip soc/intel/tigerlake
 	register "TcssAuxOri" = "1"
 	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
-
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | Touchscreen               |
+	#| I2C2              | WLAN, SAR0                |
+	#| I2C3              | Camera, SAR1              |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 163,
+				.scl_hcnt = 75,
+				.sda_hold = 36,
+			},
+		},
+	}"
 	device domain 0 on
+		device pci 04.0 off end
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F8)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end
+		device pci 15.1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 14 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN90FC""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end # I2C1				0xA0E9
+		device pci 19.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end # I2C5				0xA0C6
+		device pci 1f.3 on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end
+		device pci 1f.2 hidden
+			# The pmc_mux chip driver is a placeholder for the
+			# PMC.MUX device in the ACPI hierarchy.
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "9"
+						register "usb3_port_number" = "1"
+						# SBU & HSL follow CC
+						device generic 0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "4"
+						register "usb3_port_number" = "2"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 1 on end
+					end
+				end
+			end
+		end # PMC
 	end
-
 end

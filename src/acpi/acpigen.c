@@ -1353,6 +1353,13 @@ void acpigen_write_to_integer(uint8_t src, uint8_t dst)
 	acpigen_emit_byte(dst);
 }
 
+void acpigen_write_to_integer_from_namestring(const char *source, uint8_t dst_op)
+{
+	acpigen_emit_byte(TO_INTEGER_OP);
+	acpigen_emit_namestring(source);
+	acpigen_emit_byte(dst_op);
+}
+
 void acpigen_write_byte_buffer(uint8_t *arr, size_t size)
 {
 	size_t i;
@@ -1970,4 +1977,32 @@ void acpigen_notify(const char *namestr, int value)
 	acpigen_emit_byte(NOTIFY_OP);
 	acpigen_emit_namestring(namestr);
 	acpigen_write_integer(value);
+}
+
+static void _create_field(uint8_t aml_op, uint8_t srcop, size_t byte_offset, const char *name)
+{
+	acpigen_emit_byte(aml_op);
+	acpigen_emit_byte(srcop);
+	acpigen_write_integer(byte_offset);
+	acpigen_emit_namestring(name);
+}
+
+void acpigen_write_create_byte_field(uint8_t op, size_t byte_offset, const char *name)
+{
+	_create_field(CREATE_BYTE_OP, op, byte_offset, name);
+}
+
+void acpigen_write_create_word_field(uint8_t op, size_t byte_offset, const char *name)
+{
+	_create_field(CREATE_WORD_OP, op, byte_offset, name);
+}
+
+void acpigen_write_create_dword_field(uint8_t op, size_t byte_offset, const char *name)
+{
+	_create_field(CREATE_DWORD_OP, op, byte_offset, name);
+}
+
+void acpigen_write_create_qword_field(uint8_t op, size_t byte_offset, const char *name)
+{
+	_create_field(CREATE_QWORD_OP, op, byte_offset, name);
 }

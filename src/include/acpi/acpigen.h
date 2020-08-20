@@ -368,6 +368,7 @@ void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val);
 void acpigen_write_else(void);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);
 void acpigen_write_to_integer(uint8_t src, uint8_t dst);
+void acpigen_write_to_integer_from_namestring(const char *source, uint8_t dst_op);
 void acpigen_write_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_byte_buffer(uint8_t *arr, size_t size);
 void acpigen_write_return_singleton_buffer(uint8_t arg);
@@ -380,6 +381,10 @@ void acpigen_write_ADR_pci_devfn(pci_devfn_t devfn);
 void acpigen_write_ADR_pci_device(const struct device *dev);
 struct soundwire_address;
 void acpigen_write_ADR_soundwire_device(const struct soundwire_address *address);
+void acpigen_write_create_byte_field(uint8_t op, size_t byte_offset, const char *name);
+void acpigen_write_create_word_field(uint8_t op, size_t byte_offset, const char *name);
+void acpigen_write_create_dword_field(uint8_t op, size_t byte_offset, const char *name);
+void acpigen_write_create_qword_field(uint8_t op, size_t byte_offset, const char *name);
 /*
  * Generate ACPI AML code for _DSM method.
  * This function takes as input uuid for the device, set of callbacks and

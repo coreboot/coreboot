@@ -15,6 +15,7 @@ void ite_enable_serial(pnp_devfn_t dev, u16 iobase);
 /* Some boards need to init wdt+gpio's very early */
 void ite_reg_write(pnp_devfn_t dev, u8 reg, u8 value);
 void ite_enable_3vsbsw(pnp_devfn_t dev);
+void ite_delay_pwrgd3(pnp_devfn_t dev);
 void ite_kill_watchdog(pnp_devfn_t dev);
 
 void pnp_enter_conf_state(pnp_devfn_t dev);

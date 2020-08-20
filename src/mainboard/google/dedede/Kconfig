@@ -43,6 +43,14 @@ config CHROMEOS
 	select VBOOT_EARLY_EC_SYNC
 	select VBOOT_LID_SWITCH
 
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for Chrome OS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+	select WIFI_SAR_CBFS
+
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"

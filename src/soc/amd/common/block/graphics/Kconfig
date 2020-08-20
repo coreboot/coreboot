@@ -3,3 +3,11 @@ config SOC_AMD_COMMON_BLOCK_GRAPHICS
 	default n
 	help
 	  Select this option to use AMD common graphics driver support.
+
+config SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS
+	help
+	  Select this option to provide ATIF method with display brightness querying.
+	  Currently, the exported values only open up 0-255 as the brightness range for
+	  the display.

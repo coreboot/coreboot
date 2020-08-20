@@ -5,7 +5,7 @@ ifneq ($(SPD_SOURCES),)
 SPD_BIN = $(obj)/spd.bin
 
 ifeq ($(SPD_SOURCE_PATH),)
-SPD_SOURCE_PATH := src/soc/intel/tigerlake/spd/lp4x
+SPD_SOURCE_PATH := src/soc/intel/tigerlake/spd
 endif
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), $(SPD_SOURCE_PATH)/$(f))

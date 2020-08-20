@@ -25,7 +25,7 @@ import (
  * JSON file containing a list of memory parts with their attributes as per datasheet.
  */
 const (
-	SPDManifestFileName = "spd_manifest.generated.txt"
+	SPDManifestFileName = "lp4x_spd_manifest.generated.txt"
 
 	PlatformTGL = 0
 	PlatformJSL = 1
@@ -666,7 +666,7 @@ func dedupeMemoryPart(dedupedParts []*memPart, memPart *memPart) bool {
 
 func generateSPD(memPart *memPart, SPDId int, SPDDirName string) {
 	s := createSPD(&memPart.Attribs)
-	memPart.SPDFileName = fmt.Sprintf("spd-%d.hex", SPDId)
+	memPart.SPDFileName = fmt.Sprintf("lp4x-spd-%d.hex", SPDId)
 	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), []byte(s), 0644)
 }
 

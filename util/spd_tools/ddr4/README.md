@@ -175,7 +175,7 @@ memory parts in JSON format as described above:
     and placed in the directory provided as an input to the tool.
   * CSV file representing which of the deduplicated SPD files is used
     by which memory part. This file is named as
-    `spd_manifest.generated.txt` and placed in the directory provided
+    `ddr4_spd_manifest.generated.txt` and placed in the directory provided
     as an input to the tool along with the generated SPD
     files. Example CSV file:
     ```
@@ -190,7 +190,7 @@ memory parts in JSON format as described above:
 
 This program takes as input:
 * Pointer to directory where the SPD files and the manifest file
-  `spd_manifest.generated.txt` (in CSV format) are placed by
+  `ddr4_spd_manifest.generated.txt` (in CSV format) are placed by
   gen_spd.go
 * File containing list of memory parts used by the board. Each line of
   the file is supposed to contain one memory part `name` as present in

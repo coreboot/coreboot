@@ -25,7 +25,7 @@ import (
  *  is expected to have one memory part name.
  */
 const (
-	SPDManifestFileName = "spd_manifest.generated.txt"
+	SPDManifestFileName = "lp4x_spd_manifest.generated.txt"
 	MakefileName = "Makefile.inc"
 	DRAMIdFileName = "dram_id.generated.txt"
 )

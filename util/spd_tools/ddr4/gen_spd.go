@@ -26,7 +26,7 @@ import (
  * JSON file containing a list of memory parts with their attributes as per datasheet.
  */
 const (
-	SPDManifestFileName = "spd_manifest.generated.txt"
+	SPDManifestFileName = "ddr4_spd_manifest.generated.txt"
 
 	PlatformTGL = 0
 	PlatformPCO = 1

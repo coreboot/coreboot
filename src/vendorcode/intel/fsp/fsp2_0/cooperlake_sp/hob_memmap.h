@@ -102,11 +102,11 @@ typedef struct SystemMemoryMapHob {
   UINT8    numberEntries;                         // Number of Memory Map Elements
   SYSTEM_MEMORY_MAP_ELEMENT Element[(MAX_SOCKET * MAX_DRAM_CLUSTERS * MAX_SAD_RULES) + MAX_FPGA_REMOTE_SAD_RULES];
 
-  UINT8    reserved3[24518];
+  UINT8    reserved3[24551];
 
   UINT16  BiosFisVersion;                              // Firmware Interface Specification version currently supported by BIOS
 
-  UINT8    reserved4[8];
+  UINT8    reserved4[24];
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 

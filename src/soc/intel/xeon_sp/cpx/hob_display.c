@@ -133,22 +133,16 @@ static void soc_display_iio_universal_data_hob(const IIO_UDS *hob)
 			printk(BIOS_DEBUG, "\t\tPersonality: 0x%x\n", ri->Personality);
 			printk(BIOS_DEBUG, "\t\tBusBase: 0x%x\n", ri->BusBase);
 			printk(BIOS_DEBUG, "\t\tBusLimit: 0x%x\n", ri->BusLimit);
-			printk(BIOS_DEBUG, "\t\tIoBase: 0x%x\n", ri->IoBase);
-			printk(BIOS_DEBUG, "\t\tIoLimit: 0x%x\n", ri->IoLimit);
+			printk(BIOS_DEBUG, "\t\tPciResourceIoBase: 0x%x\n",
+				ri->PciResourceIoBase);
+			printk(BIOS_DEBUG, "\t\tPciResourceIoLimit: 0x%x\n",
+				ri->PciResourceIoLimit);
 			printk(BIOS_DEBUG, "\t\tIoApicBase: 0x%x\n", ri->IoApicBase);
 			printk(BIOS_DEBUG, "\t\tIoApicLimit: 0x%x\n", ri->IoApicLimit);
 			printk(BIOS_DEBUG, "\t\tMmio32Base: 0x%x\n", ri->Mmio32Base);
 			printk(BIOS_DEBUG, "\t\tMmio32Limit: 0x%x\n", ri->Mmio32Limit);
 			printk(BIOS_DEBUG, "\t\tMmio64Base: 0x%llx\n", ri->Mmio64Base);
 			printk(BIOS_DEBUG, "\t\tMmio64Limit: 0x%llx\n", ri->Mmio64Limit);
-			printk(BIOS_DEBUG, "\t\tPciResourceBusBase: 0x%x\n",
-				ri->PciResourceBusBase);
-			printk(BIOS_DEBUG, "\t\tPciResourceBusLimit: 0x%x\n",
-				ri->PciResourceBusLimit);
-			printk(BIOS_DEBUG, "\t\tPciResourceIoBase: 0x%x\n",
-				ri->PciResourceIoBase);
-			printk(BIOS_DEBUG, "\t\tPciResourceIoLimit: 0x%x\n",
-				ri->PciResourceIoLimit);
 			printk(BIOS_DEBUG, "\t\tPciResourceMem32Base: 0x%x\n",
 				ri->PciResourceMem32Base);
 			printk(BIOS_DEBUG, "\t\tPciResourceMem32Limit: 0x%x\n",

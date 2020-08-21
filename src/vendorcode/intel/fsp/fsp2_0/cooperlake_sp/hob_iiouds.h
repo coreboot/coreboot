@@ -188,18 +188,14 @@ typedef struct _STACK_RES {
   uint8_t                   Personality; // see STACK_TYPE for details
   uint8_t                   BusBase;
   uint8_t                   BusLimit;
-  uint16_t                  IoBase; // Base of IO configured for this stack
-  uint16_t                  IoLimit; // Limit of IO configured for this stack
+  uint16_t                  PciResourceIoBase;
+  uint16_t                  PciResourceIoLimit;
   uint32_t                  IoApicBase; // Base of IO configured for this stack
   uint32_t                  IoApicLimit; // Limit of IO configured for this stack
   uint32_t                  Mmio32Base;
   uint32_t                  Mmio32Limit;
   uint64_t                  Mmio64Base;
   uint64_t                  Mmio64Limit;
-  uint8_t                   PciResourceBusBase; // Base of Bus resource available for PCI devices
-  uint8_t                   PciResourceBusLimit; // Limit of Bus resource available for PCI devices
-  uint16_t                  PciResourceIoBase; // Base of IO resource available for PCI devices
-  uint16_t                  PciResourceIoLimit; // Limit of IO resource available for PCI devices
   uint32_t                  PciResourceMem32Base;
   uint32_t                  PciResourceMem32Limit;
   uint64_t                  PciResourceMem64Base;

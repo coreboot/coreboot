@@ -306,4 +306,53 @@ DEFINE_BITFIELD(CLK_MISC_CFG_0_METER_DIV, 31, 24)
 DEFINE_BITFIELD(CLK26CALI_0_TRIGGER, 4, 4)
 DEFINE_BITFIELD(CLK26CALI_1_LOAD_CNT, 25, 16)
 
+enum {
+	INFRACFG_AO_AXIMEM_BUS_DCM_REG0_MASK = (0x1f << 12) | (0x1 << 17) | (0x1 << 18),
+	INFRACFG_AO_AXIMEM_BUS_DCM_REG0_ON = (0x10 << 12) | (0x1 << 17) | (0x0 << 18),
+	INFRACFG_AO_INFRA_BUS_DCM_REG0_MASK = (0x1 << 0) |
+					      (0x1 << 1) |
+					      (0x1 << 3) |
+					      (0x1 << 4) |
+					      (0x1f << 5) |
+					      (0x1f << 10) |
+					      (0x1 << 20) |
+					      (0x1 << 23) |
+					      (0x1 << 30),
+	INFRACFG_AO_INFRA_BUS_DCM_REG0_ON = (0x1 << 0) |
+					    (0x1 << 1) |
+					    (0x0 << 3) |
+					    (0x0 << 4) |
+					    (0x10 << 5) |
+					    (0x1 << 10) |
+					    (0x1 << 20) |
+					    (0x1 << 23) |
+					    (0x1 << 30),
+	INFRACFG_AO_INFRA_CONN_BUS_DCM_REG0_MASK = (0x1 << 8),
+	INFRACFG_AO_INFRA_CONN_BUS_DCM_REG0_ON = (0x1 << 8),
+	INFRACFG_AO_INFRA_CONN_BUS_DCM_REG1_MASK = (0x1 << 8),
+	INFRACFG_AO_INFRA_CONN_BUS_DCM_REG1_ON = (0x0 << 8),
+	INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_MASK = (0xf << 0),
+	INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_ON = (0x0 << 0),
+	INFRACFG_AO_PERI_BUS_DCM_REG0_MASK = (0x1 << 0) |
+					     (0x1 << 1) |
+					     (0x1 << 3) |
+					     (0x1 << 4) |
+					     (0x1f << 5) |
+					     (0x1f << 10) |
+					     (0x1f << 15) |
+					     (0x1 << 20) |
+					     (0x1 << 21),
+	INFRACFG_AO_PERI_BUS_DCM_REG0_ON = (0x1 << 0) |
+					   (0x1 << 1) |
+					   (0x0 << 3) |
+					   (0x0 << 4) |
+					   (0x1f << 5) |
+					   (0x0 << 10) |
+					   (0x1f << 15) |
+					   (0x1 << 20) |
+					   (0x1 << 21),
+	INFRACFG_AO_PERI_MODULE_DCM_REG0_MASK = (0x1 << 29) | (0x1 << 31),
+	INFRACFG_AO_PERI_MODULE_DCM_REG0_ON = (0x1 << 29) | (0x1 << 31),
+};
+
 #endif /* SOC_MEDIATEK_MT8192_PLL_H */

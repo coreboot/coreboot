@@ -427,6 +427,34 @@ void mt_pll_init(void)
 	/* enable infrasys DCM */
 	setbits32(&mt8192_infracfg->infra_bus_dcm_ctrl, 0x3 << 21);
 
+	/* dcm_infracfg_ao_aximem_bus_dcm */
+	clrsetbits32(&mt8192_infracfg->infra_aximem_idle_bit_en_0,
+		     INFRACFG_AO_AXIMEM_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_AXIMEM_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_infra_bus_dcm */
+	clrsetbits32(&mt8192_infracfg->infra_bus_dcm_ctrl,
+		     INFRACFG_AO_INFRA_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_INFRA_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_infra_conn_bus_dcm */
+	clrsetbits32(&mt8192_infracfg->module_sw_cg_2_set,
+		     INFRACFG_AO_INFRA_CONN_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_INFRA_CONN_BUS_DCM_REG0_ON);
+	clrsetbits32(&mt8192_infracfg->module_sw_cg_2_clr,
+		     INFRACFG_AO_INFRA_CONN_BUS_DCM_REG1_MASK,
+		     INFRACFG_AO_INFRA_CONN_BUS_DCM_REG1_ON);
+	/* dcm_infracfg_ao_infra_rx_p2p_dcm */
+	clrsetbits32(&mt8192_infracfg->p2p_rx_clk_on,
+		     INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_MASK,
+		     INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_ON);
+	/* dcm_infracfg_ao_peri_bus_dcm */
+	clrsetbits32(&mt8192_infracfg->peri_bus_dcm_ctrl,
+		     INFRACFG_AO_PERI_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_PERI_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_peri_module_dcm */
+	clrsetbits32(&mt8192_infracfg->peri_bus_dcm_ctrl,
+		     INFRACFG_AO_PERI_MODULE_DCM_REG0_MASK,
+		     INFRACFG_AO_PERI_MODULE_DCM_REG0_ON);
+
 	/* initialize SPM request */
 	setbits32(&mtk_topckgen->clk_scp_cfg_0, 0x3ff);
 	clrsetbits32(&mtk_topckgen->clk_scp_cfg_1, 0x100c, 0x3);

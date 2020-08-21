@@ -99,7 +99,7 @@ void *smm_get_save_state(int cpu)
 
 	/* This function assumes all save states start at top of default
 	 * SMRAM size space and are staggered down by save state size. */
-	base = (void *)smm_runtime->smbase;
+	base = (void *)(uintptr_t)smm_runtime->smbase;
 	base += SMM_DEFAULT_SIZE;
 	base -= (cpu + 1) * smm_runtime->save_state_size;
 

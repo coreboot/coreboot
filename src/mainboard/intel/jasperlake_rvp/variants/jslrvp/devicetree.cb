@@ -94,7 +94,7 @@ chip soc/intel/jasperlake
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 
@@ -148,6 +148,9 @@ chip soc/intel/jasperlake
 				.scl_hcnt = 95,
 				.sda_hold = 36,
 			}
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,

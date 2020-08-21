@@ -58,7 +58,7 @@ typedef struct __packed {
 	/** Offset 0x00C8**/	uint32_t                    tseg_size;
 	/** Offset 0x00CC**/	uint8_t                     pspp_policy;
 	/** Offset 0x00CD**/	uint8_t                     audio_soundwire;
-	/** Offset 0x00CE**/	uint8_t                     unused8;
+	/** Offset 0x00CE**/	uint8_t                     hd_audio_enable;
 	/** Offset 0x00CF**/	uint8_t                     unused9;
 	/** Offset 0x00D0**/	uint32_t                    bert_size;
 	/** Offset 0x00D4**/	uint8_t                     UnusedUpdSpace0;

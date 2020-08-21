@@ -9,11 +9,13 @@
 #include <console/uart.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/acpi.h>
 #include <soc/memmap.h>
 #include <soc/mrc_cache.h>
+#include <soc/pci_devs.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
@@ -37,6 +39,30 @@ static void add_chipset_state_cbmem(int unused)
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(add_chipset_state_cbmem);
+
+static const struct device_path hda_path[] = {
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = PCIE_GPP_A_DEVFN
+	},
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = HD_AUDIO_DEVFN
+	},
+};
+
+static bool devtree_hda_dev_enabled(void)
+{
+	const struct device *hda_dev;
+
+	hda_dev = find_dev_nested_path(pci_root_bus(), hda_path, ARRAY_SIZE(hda_path));
+
+	if (!hda_dev)
+		return false;
+
+	return hda_dev->enabled;
+}
+
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
@@ -88,6 +114,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
 	mcfg->telemetry_vddcr_soc_slope = config->telemetry_vddcr_soc_slope;
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
+	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
 }
 
 asmlinkage void car_stage_entry(void)

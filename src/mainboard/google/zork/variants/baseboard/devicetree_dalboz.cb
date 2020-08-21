@@ -283,7 +283,7 @@ chip soc/amd/picasso
 					device generic 0.0 on end
 				end
 			end # Audio
-			device pci 0.6 on  end # HDA
+			device pci 0.6 off end # HDA
 			device pci 0.7 on  end # non-Sensor Fusion Hub device
 		end
 		device pci 8.2 on      # Internal GPP Bridge 0 to Bus B

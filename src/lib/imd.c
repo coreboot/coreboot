@@ -630,6 +630,10 @@ int imd_entry_remove(const struct imd *imd, const struct imd_entry *entry)
 	if (entry != root_last_entry(r))
 		return -1;
 
+	/* Don't remove entry covering root region */
+	if (r->num_entries == 1)
+		return -1;
+
 	r->num_entries--;
 
 	return 0;

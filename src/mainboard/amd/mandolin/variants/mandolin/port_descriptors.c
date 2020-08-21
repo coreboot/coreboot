@@ -193,8 +193,8 @@ static const fsp_ddi_descriptor dali_ddi_descriptors[] = {
 	},
 	{ /* DDI2 - DP */
 		.connector_type = DP,
-		.aux_index = AUX3,
-		.hdp_index = HDP3,
+		.aux_index = AUX4,
+		.hdp_index = HDP4,
 	}
 };
 

@@ -113,5 +113,5 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 __weak
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return NULL;
+	return WIFI_SAR_CBFS_FILENAME;
 }

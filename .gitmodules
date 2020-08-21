@@ -54,3 +54,7 @@
 [submodule "3rdparty/intel-sec-tools"]
 	path = 3rdparty/intel-sec-tools
 	url = ../9esec-security-tooling.git
+[submodule "3rdparty/stm"]
+	path = 3rdparty/stm
+	url = ../STM
+	branch = stmpe

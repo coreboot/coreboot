@@ -90,7 +90,7 @@ static void *default_memmove(void *dst, const void *src, size_t n)
 	ssize_t i;
 
 	if (src > dst)
-		return memcpy(dst, src, n);
+		return default_memcpy(dst, src, n);
 
 	if (!IS_ALIGNED((uintptr_t)dst, sizeof(unsigned long)) ||
 	    !IS_ALIGNED((uintptr_t)src, sizeof(unsigned long))) {

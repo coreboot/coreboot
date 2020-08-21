@@ -48,11 +48,6 @@ static struct spi_slave spi_slave;
 
 /* Cached TPM device identification. */
 static struct tpm2_info tpm_info;
-struct cr50_firmware_version {
-	int epoch;
-	int major;
-	int minor;
-};
 static struct cr50_firmware_version cr50_firmware_version;
 
 /*
@@ -848,4 +843,9 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	write_tpm_sts(TPM_STS_COMMAND_READY);
 
 	return payload_size;
+}
+
+void cr50_get_firmware_version(struct cr50_firmware_version *version)
+{
+	memcpy(version, &cr50_firmware_version, sizeof(*version));
 }

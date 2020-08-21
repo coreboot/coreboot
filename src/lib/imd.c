@@ -201,9 +201,8 @@ static int imdr_recover(struct imdr *imdr)
 
 	r = relative_pointer(rp, rp->root_offset);
 
-	/* Confirm the root and root pointer are just under the limit. */
-	if (ALIGN_UP((uintptr_t)&r->entries[r->max_entries], LIMIT_ALIGN) !=
-			imdr->limit)
+	/* Ensure that root is just under the root pointer */
+	if ((intptr_t)rp - (intptr_t)&r->entries[r->max_entries] > sizeof(struct imd_entry))
 		return -1;
 
 	if (r->num_entries > r->max_entries)

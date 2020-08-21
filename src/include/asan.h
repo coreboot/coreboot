@@ -3,6 +3,8 @@
 #ifndef __ASAN_H
 #define __ASAN_H
 
+#include <types.h>
+
 #define ASAN_SHADOW_SCALE_SHIFT 3
 
 #define ASAN_SHADOW_SCALE_SIZE	(1UL << ASAN_SHADOW_SCALE_SHIFT)

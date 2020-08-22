@@ -17,7 +17,6 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT4" "SlotDataBusWidth4X"
 		end
 		device pci 04.0 on  end # SA Thermal device
-		device pci 04.0 on  end # Intel Xeon E3
 		device pci 08.0 on  end # Gaussian Mixture
 		device pci 12.0 on  end # Thermal Subsystem
 		device pci 14.0 on  end # USB xHCI

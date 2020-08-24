@@ -21,6 +21,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select PCIEXP_HOTPLUG
 	select HAVE_SPD_IN_CBFS
 	select SOC_INTEL_CSE_LITE_SKU
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_HAS_SPI_TPM_CR50
+	select SPI_TPM
 
 config CHROMEOS
 	bool
@@ -102,9 +105,16 @@ endchoice
 
 config VBOOT
 	select VBOOT_LID_SWITCH
-	select VBOOT_MOCK_SECDATA
 
 config UART_FOR_CONSOLE
 	int
 	default 2
+
+config DRIVER_TPM_SPI_BUS
+	default 0x2
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 54  # GPE0_DW1_22 (GPP_C22)
+
 endif

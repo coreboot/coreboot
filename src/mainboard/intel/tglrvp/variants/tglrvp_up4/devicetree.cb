@@ -9,8 +9,8 @@ chip soc/intel/tigerlake
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
 	register "pmc_gpe0_dw0" = "GPP_B"
-	register "pmc_gpe0_dw1" = "GPP_D"
-	register "pmc_gpe0_dw2" = "GPP_E"
+	register "pmc_gpe0_dw1" = "GPP_C"
+	register "pmc_gpe0_dw2" = "GPP_D"
 
 	# Enable heci1 communication
 	register "HeciEnabled" = "1"
@@ -90,14 +90,14 @@ chip soc/intel/tigerlake
 
 	register "SerialIoGSpiMode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
-		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
 	register "SerialIoGSpiCsMode" = "{
 		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI1] = 1,
 		[PchSerialIoIndexGSPI2] = 0,
 		[PchSerialIoIndexGSPI3] = 0,
 	}"
@@ -156,6 +156,10 @@ chip soc/intel/tigerlake
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[1] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
@@ -298,8 +302,15 @@ chip soc/intel/tigerlake
 		device pci 1d.3 off end # RP12			0xA0B3
 		device pci 1e.0 off end # UART0			0xA0A8
 		device pci 1e.1 off end # UART1			0xA0A9
-		device pci 1e.2 off end # GSPI0			0xA0AA
-		device pci 1e.3 off end # GSPI1			0xA0AB
+		device pci 1e.2 on end # GSPI0			0xA0AA
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C22_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI1					0xA0AB
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

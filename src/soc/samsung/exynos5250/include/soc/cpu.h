@@ -3,6 +3,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_CPU_H
 #define CPU_SAMSUNG_EXYNOS5250_CPU_H
 
+#include <commonlib/bsd/helpers.h>
 #include <symbols.h>
 
 /* Base address registers */

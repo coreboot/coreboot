@@ -65,3 +65,33 @@ The reference implementation is
 * Test how well CAR works with x86_64 and paging
 * Improve mode switches
 * Test libgfxinit / VGA Option ROMs / FSP
+
+## Known bugs on real hardware
+
+According to Intel x86_64 mode hasn't been validated in CAR environments.
+Until now it could be verified on various Intel platforms and no issues have
+been found.
+
+## Known bugs on KVM enabled qemu
+
+The `x86_64` reference code runs fine in qemu soft-cpu, but has serious issues
+when using KVM mode on some machines. The workaround is to *not* place
+page-tables in ROM, as done in
+[CB:49228](https://review.coreboot.org/c/coreboot/+/49228).
+
+Here's a list of known issues:
+
+* After entering long mode, the FPU doesn't work anymore, including accessing
+  MMX registers. It works fine before entering long mode. It works fine when
+  switching back to protected mode. Other registers, like SSE registers, are
+  working fine.
+* Reading from virtual memory, when the page tables are stored in ROM, causes
+  the MMU to abort the "page table walking" mechanism when the lower address
+  bits of the virtual address to be translated have a specific pattern.
+  Instead of loading the correct physical page, the one containing the
+  page tables in ROM will be loaded and used, which breaks code and data as
+  the page table doesn't contain the expected data. This in turn leads to
+  undefined behaviour whenever the 'wrong' address is being read.
+* Disabling paging in compability mode crashes the CPU.
+* Returning from long mode to compability mode crashes the CPU.
+* Entering long mode crashes on AMD host platforms.

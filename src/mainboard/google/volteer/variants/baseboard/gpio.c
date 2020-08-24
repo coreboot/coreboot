@@ -260,6 +260,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F9, NONE),
 	/* F10 : GPPF10_STRAP */
 	PAD_NC(GPP_F10, DN_20K),
+	/* F11 : THC1_SPI2_CLK ==> EN_PP3300_WWAN */
+	PAD_CFG_GPO(GPP_F11, 1, DEEP),
 	/* F12 : GSXDOUT ==> NC */
 	PAD_NC(GPP_F12, NONE),
 	/* F13 : GSXDOUT ==> NC */

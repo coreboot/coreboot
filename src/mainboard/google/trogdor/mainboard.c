@@ -12,6 +12,9 @@ static struct usb_board_data usb0_board_data = {
 
 static void setup_usb(void)
 {
+	/* Assert EN_PP3300_HUB for those board variants that use it. */
+	gpio_output(GPIO(84), 1);
+
 	setup_usb_host0(&usb0_board_data);
 }
 

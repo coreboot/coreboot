@@ -192,24 +192,11 @@ load_msr:
 	mov	%eax, %cr4
 #endif
 
-#ifdef __x86_64__
-	/* entry64.inc preserves ebx. */
-#include <cpu/x86/64bit/entry64.inc>
-
-	mov	%rsi, %rdi	/* cpu_num */
-
-	movl	c_handler, %eax
-	call	*%rax
-#else
 	/* c_handler(cpu_num), preserve proper stack alignment */
 	sub	$12, %esp
 	push	%esi	/* cpu_num */
-
 	mov	c_handler, %eax
 	call	*%eax
-#endif
-
-
 halt_jump:
 	hlt
 	jmp	halt_jump

@@ -24,7 +24,6 @@ ifeq ($(CONFIG_PARALLEL_MP),y)
 $(TARGET_STAGE)-srcs += $(SIPI_BIN).manual
 endif
 rmodules_$(ARCH-$(TARGET_STAGE)-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
-rmodules_$(ARCH-$(TARGET_STAGE)-y)-generic-ccopts += $($(TARGET_STAGE)-generic-ccopts)
 
 $(SIPI_DOTO): $(call src-to-obj,rmodules_$(ARCH-$(TARGET_STAGE)-y),src/cpu/x86/sipi_vector.S)
 	$(LD_rmodules_$(ARCH-$(TARGET_STAGE)-y)) -nostdlib -r -o $@ $^

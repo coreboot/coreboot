@@ -404,7 +404,6 @@ M:	Julius Werner <jwerner@chromium.org>
 S:	Supported
 F:	src/arch/arm/
 F:	src/arch/arm64/
-F:	src/soc/mediatek/
 F:	src/soc/nvidia/
 F:	src/soc/rockchip/
 F:	util/nvidia/
@@ -546,6 +545,11 @@ S:	Supported
 F:	src/soc/intel/xeon_sp
 F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp
 F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp
+
+MEDIATEK SOCS
+M:	Hung-Te Lin <hungte@chromium.org>
+S:	Supported
+F:	src/soc/mediatek
 
 ORPHANED ARM SOCS
 S:	Orphaned

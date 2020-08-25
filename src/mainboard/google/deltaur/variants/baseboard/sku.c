@@ -6,12 +6,12 @@
 #include <smbios.h>
 #include <variant/variant.h>
 
-static const uint32_t get_sku_index(void)
+static uint32_t get_sku_index(void)
 {
 	return ((!has_360_sensor_board()) | (wilco_ec_signed_fw() << 1));
 }
 
-const uint32_t sku_id(void)
+uint32_t sku_id(void)
 {
 	return skus[get_sku_index()].id;
 }

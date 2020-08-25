@@ -46,9 +46,9 @@
 #if defined(__x86_64__)
 .bss
 ia32efer_backup_eax:
-.long
+.long 0
 ia32efer_backup_edx:
-.long
+.long 0
 #endif
 
 /* initially SMM is some sort of real mode. Let gcc know

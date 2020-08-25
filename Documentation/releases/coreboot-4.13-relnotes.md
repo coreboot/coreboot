@@ -49,4 +49,13 @@ the 64K segment to accomodate additional CPUs and in theory allows as many
 CPU threads as possible limited only by SMRAM space and not by 64K. By default
 this loader version is disabled. Please see cpu/x86/Kconfig for more info.
 
+### Initial support for x86_64
+
+The x86_64 code support has been revived and enabled for qemu. While it started
+as PoC and the only supported platform is an emulator, there's interest in
+enabling additional platforms. It would allow to access more than 4GiB of memory
+at runtime and possibly brings optimised code for faster execution times.
+It still needs changes in assembly, fixed integer to pointer conversions in C,
+wrappers for blobs, support for running Option ROMs, among other things.
+
 ### Add significant changes here

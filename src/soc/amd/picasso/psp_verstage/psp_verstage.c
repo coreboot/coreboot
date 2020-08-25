@@ -196,6 +196,8 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	buffer_info.workbuf_offset = (uint32_t)((uintptr_t)_fmap_cache -
 					(uintptr_t)_vboot2_work);
 
+	memcpy(_transfer_buffer, &buffer_info, sizeof(buffer_info));
+
 	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_transfer_buffer,
 				    buffer_size);
 	if (retval) {

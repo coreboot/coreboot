@@ -110,7 +110,7 @@ config VGA_BIOS_DGPU_FILE
 config EFS_SPI_READ_MODE
 	int
 	default 0 if EM100
-	default 5
+	default 3
 
 config EFS_SPI_SPEED
 	int

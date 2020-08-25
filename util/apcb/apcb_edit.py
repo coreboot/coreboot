@@ -40,19 +40,19 @@ def parseargs():
         help='APCB output file')
     parser.add_argument(
         '--spd_0_0',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('rb'),
         help='SPD input file for channel 0, dimm 0')
     parser.add_argument(
         '--spd_0_1',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('rb'),
         help='SPD input file for channel 0, dimm 1')
     parser.add_argument(
         '--spd_1_0',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('rb'),
         help='SPD input file for channel 1, dimm 0')
     parser.add_argument(
         '--spd_1_1',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('rb'),
         help='SPD input file for channel 1, dimm 1')
     parser.add_argument(
         '--hex',
@@ -150,11 +150,10 @@ def main():
 
         if spd:
             if args.hex:
+                spd = spd.decode()
                 spd = re.sub(r'#.*', '', spd)
                 spd = re.sub(r'\s+', '', spd)
                 spd = bytes.fromhex(spd)
-            else:
-                spd = spd.encode()
 
             assert len(spd) == 512, \
                             "Expected SPD to be 512 bytes, got %d" % len(spd)

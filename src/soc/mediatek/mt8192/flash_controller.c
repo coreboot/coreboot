@@ -8,6 +8,7 @@
 #include <spi-generic.h>
 #include <stdint.h>
 #include <string.h>
+#include <symbols.h>
 #include <timer.h>
 #include <types.h>
 
@@ -91,25 +92,62 @@ static int sector_erase(int offset)
 	return 0;
 }
 
-static int pio_read(u32 addr, u8 *buf, u32 len)
+static int dma_read(u32 addr, uintptr_t dma_buf, u32 len)
 {
-	set_sfpaddr(addr);
-	while (len) {
-		if (mt8192_nor_execute_cmd(SFLASH_RD_TRIGGER | SFLASH_AUTOINC))
-			return -1;
+	struct stopwatch sw;
 
-		*buf++ = read8(&mt8192_nor->rdata);
-		len--;
+	assert(IS_ALIGNED((uintptr_t)addr, SFLASH_DMA_ALIGN) &&
+	       IS_ALIGNED(len, SFLASH_DMA_ALIGN));
+
+	/* do dma reset */
+	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_SW_RESET);
+	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_WDLE_EN);
+	/* flash source address and dram dest address */
+	write32(&mt8192_nor->fdma_fadr, addr);
+	write32(&mt8192_nor->fdma_dadr, dma_buf);
+	write32(&mt8192_nor->fdma_end_dadr, (dma_buf + len));
+	/* start dma */
+	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_TRIGGER | SFLASH_DMA_WDLE_EN);
+
+	stopwatch_init_usecs_expire(&sw, SFLASH_POLLINGREG_US);
+	while ((read32(&mt8192_nor->fdma_ctl) & SFLASH_DMA_TRIGGER) != 0) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING, "dma read timeout!\n");
+			return -1;
+		}
 	}
+
 	return 0;
 }
 
 static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
 		    void *buf)
 {
-	if (pio_read(addr, buf, len))
-		return -1;
+	uintptr_t dma_buf = (uintptr_t)_dma_coherent;
+	size_t dma_buf_len = REGION_SIZE(dma_coherent);
+	u32 start = ALIGN_DOWN(addr, SFLASH_DMA_ALIGN);
+	u32 skip = addr - start;
+	u32 total = ALIGN_UP(skip + len, SFLASH_DMA_ALIGN);
+	u32 drop = total - skip - len;
+	u32 done, read_len, copy_len;
+	uint8_t *dest = (uint8_t *)buf;
 
+	/* DMA: start [ skip | len | drop ] = total end */
+	for (done = 0; done < total; dest += copy_len) {
+		read_len = MIN(dma_buf_len, total - done);
+		if (dma_read(start + done, dma_buf, read_len))
+			return -1;
+
+		done += read_len;
+		/* decide the range to copy into buffer */
+		if (done == total)
+			read_len -= drop;  /* Only drop in last iteration */
+
+		copy_len = read_len - skip;
+		memcpy(dest, (uint8_t *)dma_buf + skip, copy_len);
+		if (skip)
+			skip = 0;  /* Only apply skip in first iteration. */
+	}
 	return 0;
 }
 

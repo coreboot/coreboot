@@ -24,7 +24,7 @@ static int send_kbd_command(u8 command)
 {
 	int timeout;
 
-	timeout = 0x7ff;
+	timeout = 100000; /* 1 second */
 	while ((inb(ec_cmd_port) & KBD_IBF) && --timeout) {
 		udelay(10);
 		if ((timeout & 0xff) == 0)
@@ -44,7 +44,7 @@ static int send_kbd_data(u8 data)
 {
 	int timeout;
 
-	timeout = 0x7ff;
+	timeout = 100000; /* 1 second */
 	while ((inb(ec_cmd_port) & KBD_IBF) && --timeout) { /* wait for IBF = 0 */
 		udelay(10);
 		if ((timeout & 0xff) == 0)

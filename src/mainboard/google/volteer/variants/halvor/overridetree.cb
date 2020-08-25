@@ -19,6 +19,7 @@ chip soc/intel/tigerlake
 
 	device domain 0 on
 		device pci 07.2 on end # TBT_PCIe2
+		device pci 0d.3 on end # TBT DMA1			0x9A1D
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

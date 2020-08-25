@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <bootstate.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <fw_config.h>
+#include <lib.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -66,6 +68,40 @@ bool fw_config_probe(const struct fw_config *match)
 }
 
 #if ENV_RAMSTAGE
+
+/*
+ * The maximum number of fw_config fields is limited by the 32-bit mask that is used to
+ * represent them.
+ */
+#define MAX_CACHE_ELEMENTS	(8 * sizeof(uint32_t))
+
+static const struct fw_config *cached_configs[MAX_CACHE_ELEMENTS];
+
+static size_t probe_index(uint32_t mask)
+{
+	assert(mask);
+	return __ffs(mask);
+}
+
+const struct fw_config *fw_config_get_found(uint32_t field_mask)
+{
+	const struct fw_config *config;
+	config = cached_configs[probe_index(field_mask)];
+	if (config && config->mask == field_mask)
+		return config;
+
+	return NULL;
+}
+
+void fw_config_for_each_found(void (*cb)(const struct fw_config *config, void *arg), void *arg)
+{
+	size_t i;
+
+	for (i = 0; i < MAX_CACHE_ELEMENTS; ++i)
+		if (cached_configs[i])
+			cb(cached_configs[i], arg);
+}
+
 static void fw_config_init(void *unused)
 {
 	struct device *dev;
@@ -80,6 +116,7 @@ static void fw_config_init(void *unused)
 		for (probe = dev->probe_list; probe && probe->mask != 0; probe++) {
 			if (fw_config_probe(probe)) {
 				match = true;
+				cached_configs[probe_index(probe->mask)] = probe;
 				break;
 			}
 		}

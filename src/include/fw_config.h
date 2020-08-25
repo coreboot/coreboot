@@ -40,6 +40,21 @@ struct fw_config {
  */
 bool fw_config_probe(const struct fw_config *match);
 
+/**
+ * fw_config_for_each_found() - Call a callback for each fw_config field found
+ * @cb: The callback function
+ * @arg: A context argument that is passed to the callback
+ */
+void fw_config_for_each_found(void (*cb)(const struct fw_config *config, void *arg), void *arg);
+
+/**
+ * fw_config_get_found() - Return a pointer to the fw_config struct for a given field.
+ * @field_mask: A field mask from static.h, e.g., FW_CONFIG_FIELD_FEATURE_MASK
+ *
+ * Return pointer to cached `struct fw_config` if successfully probed, otherwise NULL.
+*/
+const struct fw_config *fw_config_get_found(uint32_t field_mask);
+
 #else
 
 static inline bool fw_config_probe(const struct fw_config *match)

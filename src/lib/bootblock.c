@@ -10,8 +10,6 @@
 #include <symbols.h>
 #include <timestamp.h>
 
-DECLARE_OPTIONAL_REGION(timestamp);
-
 __weak void bootblock_mainboard_early_init(void) { /* no-op */ }
 __weak void bootblock_soc_early_init(void) { /* do nothing */ }
 __weak void bootblock_soc_init(void) { /* do nothing */ }

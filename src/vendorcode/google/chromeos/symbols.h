@@ -5,6 +5,6 @@
 
 #include <symbols.h>
 
-DECLARE_REGION(watchdog_tombstone)
+DECLARE_OPTIONAL_REGION(watchdog_tombstone)
 
 #endif /* __CHROMEOS_SYMBOLS_H */

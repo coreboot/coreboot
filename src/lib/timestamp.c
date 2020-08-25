@@ -11,8 +11,6 @@
 
 #define MAX_TIMESTAMPS 192
 
-DECLARE_OPTIONAL_REGION(timestamp);
-
 /* This points to the active timestamp_table and can change within a stage
    as CBMEM comes available. */
 static struct timestamp_table *glob_ts_table;

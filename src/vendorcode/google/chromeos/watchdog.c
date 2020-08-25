@@ -14,8 +14,6 @@
 
 #define WATCHDOG_TOMBSTONE_MAGIC	0x9d2f41a7
 
-DECLARE_OPTIONAL_REGION(watchdog_tombstone);
-
 static void elog_handle_watchdog_tombstone(void *unused)
 {
 	bool flag = false;

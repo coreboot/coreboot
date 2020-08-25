@@ -11,8 +11,6 @@ void arch_write_tables(uintptr_t coreboot_table)
 
 void bootmem_arch_add_ranges(void)
 {
-	DECLARE_OPTIONAL_REGION(ttb_subtables);
-
 	bootmem_add_range((uintptr_t)_ttb, REGION_SIZE(ttb), BM_MEM_RAMSTAGE);
 	bootmem_add_range((uintptr_t)_ttb_subtables, REGION_SIZE(ttb_subtables),
 			  BM_MEM_RAMSTAGE);

@@ -87,9 +87,6 @@ typedef uint32_t pte_t;
 
 static pte_t *const ttb_buff = (void *)_ttb;
 
-/* Not all boards want to use subtables and declare them in memlayout.ld. */
-DECLARE_OPTIONAL_REGION(ttb_subtables);
-
 static struct {
 	pte_t value;
 	const char *name;

@@ -13,8 +13,20 @@ extern u8 _dram[];
 	extern u8 _##name[];	\
 	extern u8 _e##name[];
 
+/*
+ * Regions can be declared optional if not all configurations provide them in
+ * memlayout and you want code to be able to check for their existence at
+ * runtime. Not every region that is architecture or platform-specific should
+ * use this -- only declare regions optional if the code *accessing* them runs
+ * both on configurations that have the region and those that don't.  That code
+ * should then check (REGION_SIZE(name) != 0) before accessing it.
+ */
+#define DECLARE_OPTIONAL_REGION(name)	\
+	__weak extern u8 _##name[];	\
+	__weak extern u8 _e##name[];
+
 DECLARE_REGION(sram)
-DECLARE_REGION(timestamp)
+DECLARE_OPTIONAL_REGION(timestamp)
 DECLARE_REGION(preram_cbmem_console)
 DECLARE_REGION(cbmem_init_hooks)
 DECLARE_REGION(stack)
@@ -53,23 +65,14 @@ DECLARE_REGION(ramstage)
 
 DECLARE_REGION(pagetables)
 DECLARE_REGION(ttb)
-DECLARE_REGION(ttb_subtables)
+DECLARE_OPTIONAL_REGION(ttb_subtables)
 DECLARE_REGION(dma_coherent)
 DECLARE_REGION(soc_registers)
 DECLARE_REGION(framebuffer)
 DECLARE_REGION(pdpt)
-DECLARE_REGION(opensbi)
-DECLARE_REGION(bl31)
+DECLARE_OPTIONAL_REGION(opensbi)
+DECLARE_OPTIONAL_REGION(bl31)
 DECLARE_REGION(transfer_buffer)
-
-/*
- * Put this into a .c file accessing a linker script region to mark that region
- * as "optional". If it is defined in memlayout.ld (or anywhere else), the
- * values from that definition will be used. If not, start, end and size will
- * all evaluate to 0. (We can't explicitly assign the symbols to 0 in the
- * assembly due to https://sourceware.org/bugzilla/show_bug.cgi?id=1038.)
- */
-#define DECLARE_OPTIONAL_REGION(name) asm (".weak _" #name ", _e" #name)
 
 /* Returns true when pre-RAM symbols are known to the linker.
  * (Does not necessarily mean that the memory is accessible.) */

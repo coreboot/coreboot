@@ -8,8 +8,6 @@
 #include <timestamp.h>
 #include <soc/bootblock.h>
 
-DECLARE_OPTIONAL_REGION(timestamp);
-
 __attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
 __attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
 __attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }

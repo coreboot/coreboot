@@ -5,8 +5,6 @@
 #include <boot/coreboot_tables.h>
 #include <symbols.h>
 
-DECLARE_OPTIONAL_REGION(bl31);
-
 void arch_write_tables(uintptr_t coreboot_table)
 {
 }

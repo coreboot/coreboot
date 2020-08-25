@@ -9,14 +9,22 @@
 #include <halt.h>
 #include <intelblocks/cse.h>
 #include <security/tpm/tss.h>
+#include <vb2_api.h>
 
 void cse_board_reset(void)
 {
+	int ret;
 	struct cr50_firmware_version version;
 
 	/* Initialize TPM and get the cr50 firmware version. */
-	tlcl_lib_init();
+	ret = tlcl_lib_init();
+	if (ret != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
+		return;
+	}
+
 	cr50_get_firmware_version(&version);
+
 	/*
 	 * Cr50 firmware versions 0.[3|4].20 or newer support strap config 0xe where PLTRST from
 	 * AP is connected to cr50's PLTRST# signal. So return immediately and trigger a

@@ -28,6 +28,8 @@
 #define AOP_RESET_SHFT			0
 #define RCG_MODE_DUAL_EDGE		2
 
+#define WDOG_RESET_BIT_MASK		1
+
 #define SCALE_FREQ_SHFT			11
 
 struct sc7180_clock {
@@ -125,9 +127,13 @@ check_member(sc7180_gcc, usb3_phy_prim_bcr, 0x50000);
 check_member(sc7180_gcc, apcs_clk_br_en1, 0x52008);
 
 struct sc7180_aoss {
-	u8 _res[0x5002c];
+	u8 _res0[0x50020];
+	u32 aoss_cc_reset_status;
+	u8 _res1[0x5002C - 0x50024];
 	u32 aoss_cc_apcs_misc;
 };
+check_member(sc7180_aoss, aoss_cc_reset_status, 0x50020);
+check_member(sc7180_aoss, aoss_cc_apcs_misc, 0x5002C);
 
 struct sc7180_disp_cc {
 	u8 _res0[0x2004];

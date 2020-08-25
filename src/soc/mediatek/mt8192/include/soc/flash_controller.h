@@ -29,7 +29,10 @@ enum {
 	/* DMA commands */
 	SFLASH_DMA_TRIGGER	  = 1 << 0,
 	SFLASH_DMA_SW_RESET	  = 1 << 1,
-	SFLASH_DMA_WDLE_EN	  = 1 << 2
+	SFLASH_DMA_WDLE_EN	  = 1 << 2,
+	/* Dual mode */
+	SFLASH_READ_DUAL_EN	  = 0x1,
+	SFLASH_1_1_2_READ	  = 0x3b
 };
 
 /* register Offset */

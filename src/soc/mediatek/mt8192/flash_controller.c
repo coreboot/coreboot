@@ -132,6 +132,9 @@ static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
 	u32 done, read_len, copy_len;
 	uint8_t *dest = (uint8_t *)buf;
 
+	setbits8(&mt8192_nor->read_dual, SFLASH_READ_DUAL_EN);
+	write8(&mt8192_nor->prgdata[3], SFLASH_1_1_2_READ);
+
 	/* DMA: start [ skip | len | drop ] = total end */
 	for (done = 0; done < total; dest += copy_len) {
 		read_len = MIN(dma_buf_len, total - done);

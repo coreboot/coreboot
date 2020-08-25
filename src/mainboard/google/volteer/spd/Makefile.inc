@@ -2,23 +2,10 @@
 ##
 
 ifneq ($(SPD_SOURCES),)
-SPD_BIN = $(obj)/spd.bin
-
 ifeq ($(SPD_SOURCE_PATH),)
 SPD_SOURCE_PATH := src/soc/intel/tigerlake/spd
 endif
 
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), $(SPD_SOURCE_PATH)/$(f))
+LIB_SPD_DEPS := $(foreach f, $(SPD_SOURCES), $(SPD_SOURCE_PATH)/$(f))
 
-# Include spd ROM data
-$(SPD_BIN): $(SPD_DEPS)
-	for f in $+; \
-	  do for c in $$(cat $$f | grep -v ^#); \
-	    do printf $$(printf '\%o' 0x$$c); \
-	  done; \
-	done > $@
-
-cbfs-files-y += spd.bin
-spd.bin-file := $(SPD_BIN)
-spd.bin-type := spd
 endif

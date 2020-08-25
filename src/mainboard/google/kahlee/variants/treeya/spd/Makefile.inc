@@ -1,7 +1,5 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
-
 SPD_SOURCES =  hynix-H5AN8G6NAFR-UH		# 0b0000
 SPD_SOURCES += hynix-H5ANAG6NAMR-UH		# 0b0001
 SPD_SOURCES += micron-MT40A512M16JY-083E-B	# 0b0010

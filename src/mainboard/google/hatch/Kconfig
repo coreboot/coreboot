@@ -81,6 +81,7 @@ config DIMM_SPD_SIZE
 config ROMSTAGE_SPD_CBFS
 	bool
 	default y if !ROMSTAGE_SPD_SMBUS
+	select GENERIC_SPD_BIN
 
 config ROMSTAGE_SPD_SMBUS
 	bool

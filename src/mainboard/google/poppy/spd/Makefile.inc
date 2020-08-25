@@ -1,5 +1,4 @@
 
-SPD_BIN = $(obj)/spd.bin
 SEC_SPD_BIN = $(obj)/sec-spd.bin
 
 define gen_spd_bin
@@ -17,15 +16,7 @@ add_spd_to_cbfs= \
 
 ifeq ($(SPD_SOURCES),)
 	SPD_DEPS := $(error SPD_SOURCES is not set. Variant must provide this)
-else
-	SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
 endif
-
-# Include SPD ROM data
-$(SPD_BIN): $(SPD_DEPS)
-	$(call gen_spd_bin, $@, $+)
-
-$(call add_spd_to_cbfs, spd.bin, $(SPD_BIN))
 
 # Add optional secondary SPD ROM data if present
 ifneq ($(SEC_SPD_SOURCES),)

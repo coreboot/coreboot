@@ -2,8 +2,6 @@
 
 romstage-y += spd.c
 
-SPD_BIN = $(obj)/spd.bin
-
 # { GPIO47, GPIO9, GPIO13, GPIO8}
 SPD_SOURCES  = micron_2GiB_dimm_MT41K256M16HA-125	# 0b0000 2GB
 SPD_SOURCES += empty					# 0b0001
@@ -22,16 +20,4 @@ SPD_SOURCES += samsung_2GiB_dimm_K4B4G1646Q-HYK0	# 0b1101 4GB
 SPD_SOURCES += samsung_4GiB_dimm_K4B8G1646Q-MYK0	# 0b1110 8GB
 SPD_SOURCES += empty					# 0b1111
 
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/spd/$(f).spd.hex)
-
-# Include spd rom data
-$(SPD_BIN): $(SPD_DEPS)
-	for f in $+; \
-	  do for c in $$(cat $$f | grep -v ^#); \
-	    do printf $$(printf '\\%o' 0x$$c); \
-	  done; \
-	done > $@
-
-cbfs-files-y += spd.bin
-spd.bin-file := $(SPD_BIN)
-spd.bin-type := spd
+LIB_SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/spd/$(f).spd.hex)

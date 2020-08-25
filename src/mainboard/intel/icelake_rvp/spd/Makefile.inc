@@ -2,8 +2,6 @@
 
 romstage-y += spd_util.c
 
-SPD_BIN = $(obj)/spd.bin
-
 SPD_SOURCES = empty	# 0b000
 SPD_SOURCES += samsung_K4F6E304HBMGCJ	# 1b001
 SPD_SOURCES += empty	# 2b010

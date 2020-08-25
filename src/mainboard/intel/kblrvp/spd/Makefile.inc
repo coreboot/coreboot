@@ -2,8 +2,6 @@
 
 romstage-y += spd_util.c
 
-SPD_BIN = $(obj)/spd.bin
-
 SPD_SOURCES  = rvp3				# 0b000 Dual Channel 4GB
 SPD_SOURCES += empty				# 0b001
 SPD_SOURCES += empty				# 0b010

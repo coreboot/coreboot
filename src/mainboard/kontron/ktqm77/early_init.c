@@ -2,6 +2,7 @@
 
 #include <bootblock_common.h>
 #include <stdint.h>
+#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -35,7 +36,7 @@ void bootblock_mainboard_early_init(void)
 	const pnp_devfn_t dev = PNP_DEV(0x2e, 0x9);
 	pnp_enter_conf_state(dev);
 	pnp_write_config(dev, 0x29, 0x02); /* Pins 119, 120 are GPIO21, 20 */
-	pnp_write_config(dev, 0x30, 0x03); /* Enable GPIO2+3 */
+	pnp_write_config(dev, PNP_IDX_EN, 0x03); /* Enable GPIO2+3 */
 	pnp_write_config(dev, 0x2a, 0x01); /* Pins 62, 63, 65, 66 are
 					      GPIO27, 26, 25, 24 */
 	pnp_write_config(dev, 0x2c, 0xc3); /* Pin 90 is GPIO32,
@@ -46,7 +47,8 @@ void bootblock_mainboard_early_init(void)
 	/* Values can only be changed, when devices are enabled. */
 	pnp_write_config(dev, 0xe3, 0xdd); /* GPIO2 bits 1, 5 are output */
 	pnp_write_config(dev, 0xe4, (dis_bl_inv << 5) | (lvds_3v << 1)); /* GPIO2 bits 1, 5 */
-	pnp_write_config(dev, 0xf3, 0x40); /* Disable suspend LED during normal operation */
+	/* Disable suspend LED during normal operation */
+	pnp_write_config(dev, PNP_IDX_MSC3, 0x40);
 	pnp_exit_conf_state(dev);
 }
 

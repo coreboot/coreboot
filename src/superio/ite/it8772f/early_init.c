@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/io.h>
+#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 
 #include "it8772f.h"
@@ -27,7 +28,7 @@ void it8772f_ac_resume_southbridge(pnp_devfn_t dev)
 {
 	it8772f_enter_conf(dev);
 	pnp_write_config(dev, IT8772F_CONFIG_REG_LDN, IT8772F_EC);
-	pnp_write_config(dev, 0xf4, 0x60);
+	pnp_write_config(dev, PNP_IDX_MSC4, 0x60);
 	it8772f_exit_conf(dev);
 }
 

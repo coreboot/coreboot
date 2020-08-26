@@ -2,6 +2,7 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <superio/conf_mode.h>
 #include <stdint.h>
 #include <pc80/keyboard.h>
@@ -29,10 +30,10 @@ static void set_uart_clock_source(struct device *dev, u8 uart_clock)
 
 	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
-	value = pnp_read_config(dev, 0xf0);
+	value = pnp_read_config(dev, PNP_IDX_MSC0);
 	value &= ~0x03;
 	value |= (uart_clock & 0x03);
-	pnp_write_config(dev, 0xf0, value);
+	pnp_write_config(dev, PNP_IDX_MSC0, value);
 	pnp_exit_conf_mode(dev);
 }
 

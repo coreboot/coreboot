@@ -7,6 +7,7 @@
 #include <device/pnp_ops.h>
 #include <console/console.h>
 #include <device/pnp.h>
+#include <device/pnp_def.h>
 #include "pilot.h"
 
 /*
@@ -24,10 +25,10 @@ void pilot_early_init(pnp_devfn_t dev)
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(PNP_DEV(port, 0x3));
 	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, 0x60, 0x0b00);
-	pnp_set_iobase(dev, 0x62, 0x0b80);
-	pnp_set_iobase(dev, 0x64, 0x0b84);
-	pnp_set_iobase(dev, 0x66, 0x0b86);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0x0b00);
+	pnp_set_iobase(dev, PNP_IDX_IO1, 0x0b80);
+	pnp_set_iobase(dev, PNP_IDX_IO2, 0x0b84);
+	pnp_set_iobase(dev, PNP_IDX_IO3, 0x0b86);
 	pnp_set_enable(dev, 1);
 	pnp_exit_ext_func_mode(dev);
 

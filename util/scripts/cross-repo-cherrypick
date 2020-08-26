@@ -54,12 +54,15 @@ GUID="$(git config user.name) <$(git config user.email)>"
 			'"${SPLICE_CMD}"'
 		}
 		end=1
-	}; /^(BUG|BRANCH|TEST|CQ-DEPEND)=/ {
+	}; /^(BUG|BRANCH|TEST)=/ {
 		if (end==0) {
 			print "Original-Commit-Id: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
 			print "";
 		}
 		end=1
+	}; /^Cq-Depend:/ {
+		print $0;
+		next
 	}; {
 		if (end==0)
 			print "Original-" $0;

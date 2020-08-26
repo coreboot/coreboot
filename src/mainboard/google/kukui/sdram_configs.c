@@ -24,6 +24,7 @@ static const char *const sdram_configs[] = {
 	[0x0a] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
 
 	/* Table shared by Burnet and its variants, offset = 0x10 */
+	[0x10] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",
 	[0x11] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
 	[0x12] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
 	[0x13] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",

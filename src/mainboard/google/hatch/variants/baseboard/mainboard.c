@@ -35,10 +35,10 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
 }
 
 /*
- * For type-C chargers, set PL2 to 90% of max power to account for
+ * For type-C chargers, set PL2 to 97% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
  */
-#define SET_PSYSPL2(w)               (9 * (w) / 10)
+#define SET_PSYSPL2(w)               (97 * (w) / 100)
 #define PUFF_U22_PL2                 (35)
 #define PUFF_U62_U42_PL2             (51)
 #define PUFF_CELERON_PENTIUM_PSYSPL2 (65)
@@ -65,7 +65,7 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
  * +-------------+-----------------+---------+---------+-------+
  * | Max Power(W)|       PL2       | PsysPL2 | PsysPL3 |  PL4  |
  * +-------------+-----+-----------+---------+---------+-------+
- * | n           |  min(0.9n, PL2) |   0.9n  |  0.9n   | 0.9n  |
+ * | n           | min(0.97n, PL2) |  0.97n  |  0.97n  | 0.97n |
  * +-------------+-----+-----------+---------+---------+-------+
  */
 

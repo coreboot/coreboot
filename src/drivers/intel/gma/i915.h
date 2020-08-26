@@ -4,7 +4,6 @@
 #define INTEL_I915_H 1
 
 #include <drivers/intel/gma/i915_reg.h>
-#include <drivers/intel/gma/drm_dp_helper.h>
 #include <drivers/intel/gma/gma.h>
 #include <edid.h>
 

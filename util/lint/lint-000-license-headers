@@ -12,7 +12,6 @@ HEADER_EXCLUDED="\
 ^src/device/oprom/x86emu/|\
 ^src/device/oprom/include/x86emu/|\
 ^src/device/oprom/yabel/|\
-^src/drivers/intel/gma/drm_dp_helper.h\$|\
 ^src/drivers/net/ne2k.c\$|\
 ^src/drivers/xgi/common/initdef.h\$|\
 ^src/drivers/xgi/common/vstruct.h\$|\

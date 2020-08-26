@@ -81,6 +81,7 @@ typedef struct {
 	uint32_t flmap0;
 	uint32_t flmap1;
 	uint32_t flmap2;
+	uint32_t flmap3; // Exist for 500 series onwards
 } __attribute__((packed)) fdbar_t;
 
 // regions

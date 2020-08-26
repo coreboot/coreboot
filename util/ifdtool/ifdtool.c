@@ -811,6 +811,12 @@ static void dump_fd(char *image, int size)
 		printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
 	}
 
+	if (chipset == CHIPSET_500_SERIES_TIGER_POINT) {
+		printf("FLMAP3:    0x%08x\n", fdb->flmap3);
+		printf("  Minor Revision ID:     0x%04x\n", (fdb->flmap3 >> 14) & 0x7f);
+		printf("  Major Revision ID:     0x%04x\n", (fdb->flmap3 >> 21) & 0x7ff);
+	}
+
 	char *flumap = find_flumap(image, size);
 	uint32_t flumap1 = *(uint32_t *)flumap;
 	printf("FLUMAP1:   0x%08x\n", flumap1);

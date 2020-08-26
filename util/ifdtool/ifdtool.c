@@ -373,8 +373,14 @@ static void dump_region_layout(char *buf, size_t bufsize, unsigned int num,
 static void dump_frba(const frba_t *frba)
 {
 	unsigned int i;
+	region_t region;
 	printf("Found Region Section\n");
 	for (i = 0; i < max_regions; i++) {
+		region = get_region(frba, i);
+		/* Skip unused & reserved Flash Region */
+		if (region.size < 1 && !strcmp(region_name(i), "Reserved"))
+			continue;
+
 		printf("FLREG%u:    0x%08x\n", i, frba->flreg[i]);
 		dump_region(i, frba);
 	}

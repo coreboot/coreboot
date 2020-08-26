@@ -1,8 +1,5 @@
 DRAM Part Name                 ID to assign
-HMA851S6CJR6N-VK               0 (0000)
-H5ANAG6NCMR-VKC                1 (0001)
 K4A8G165WC-BCTD                2 (0010)
-K4AAG165WB-MCTD                3 (0011)
 K4A8G165WC-BCWE                4 (0100)
 H5AN8G6NDJR-XNC                5 (0101)
 H5ANAG6NCMR-XNC                6 (0110)

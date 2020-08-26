@@ -520,6 +520,17 @@ static int is_platform_with_pch(void)
 
 	return 0;
 }
+
+/* FLMAP0 register bit 24 onwards are reserved from SPT PCH */
+static int is_platform_with_100x_series_pch(void)
+{
+	if (chipset >= CHIPSET_100_200_SERIES_SUNRISE_POINT &&
+			chipset <= CHIPSET_500_SERIES_TIGER_POINT)
+		return 1;
+
+	return 0;
+}
+
 static void dump_fcba(const fcba_t *fcba)
 {
 	printf("\nFound Component Section\n");
@@ -562,9 +573,21 @@ static void dump_fcba(const fcba_t *fcba)
 		(fcba->flill >> 8) & 0xff);
 	printf("  Invalid Instruction 0: 0x%02x\n",
 		fcba->flill & 0xff);
-	printf("FLPB       0x%08x\n", fcba->flpb);
-	printf("  Flash Partition Boundary Address: 0x%06x\n\n",
-		(fcba->flpb & 0xfff) << 12);
+	if (is_platform_with_100x_series_pch()) {
+		printf("FLILL1     0x%08x\n", fcba->flpb);
+		printf("  Invalid Instruction 7: 0x%02x\n",
+			(fcba->flpb >> 24) & 0xff);
+		printf("  Invalid Instruction 6: 0x%02x\n",
+			(fcba->flpb >> 16) & 0xff);
+		printf("  Invalid Instruction 5: 0x%02x\n",
+			(fcba->flpb >> 8) & 0xff);
+		printf("  Invalid Instruction 4: 0x%02x\n",
+			fcba->flpb & 0xff);
+	} else {
+		printf("FLPB       0x%08x\n", fcba->flpb);
+		printf("  Flash Partition Boundary Address: 0x%06x\n\n",
+				(fcba->flpb & 0xfff) << 12);
+	}
 }
 
 static void dump_fpsba(const fdbar_t *fdb, const fpsba_t *fpsba)
@@ -769,20 +792,24 @@ static void dump_fd(char *image, int size)
 	printf("%s", is_platform_with_pch() ? "PCH" : "ICH");
 	printf(" Revision: %s\n", ich_chipset_names[chipset]);
 	printf("FLMAP0:    0x%08x\n", fdb->flmap0);
-	printf("  NR:      %d\n", (fdb->flmap0 >> 24) & 7);
+	if (!is_platform_with_100x_series_pch())
+		printf("  NR:      %d\n", (fdb->flmap0 >> 24) & 7);
 	printf("  FRBA:    0x%x\n", ((fdb->flmap0 >> 16) & 0xff) << 4);
 	printf("  NC:      %d\n", ((fdb->flmap0 >> 8) & 3) + 1);
 	printf("  FCBA:    0x%x\n", ((fdb->flmap0) & 0xff) << 4);
 
 	printf("FLMAP1:    0x%08x\n", fdb->flmap1);
-	printf("  ISL:     0x%02x\n", (fdb->flmap1 >> 24) & 0xff);
+	printf("  %s:     ", is_platform_with_100x_series_pch() ? "PSL" : "ISL");
+	printf("0x%02x\n", (fdb->flmap1 >> 24) & 0xff);
 	printf("  FPSBA:   0x%x\n", ((fdb->flmap1 >> 16) & 0xff) << 4);
 	printf("  NM:      %d\n", (fdb->flmap1 >> 8) & 3);
 	printf("  FMBA:    0x%x\n", ((fdb->flmap1) & 0xff) << 4);
 
-	printf("FLMAP2:    0x%08x\n", fdb->flmap2);
-	printf("  PSL:     0x%04x\n", (fdb->flmap2 >> 8) & 0xffff);
-	printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
+	if (!is_platform_with_100x_series_pch()) {
+		printf("FLMAP2:    0x%08x\n", fdb->flmap2);
+		printf("  PSL:     0x%04x\n", (fdb->flmap2 >> 8) & 0xffff);
+		printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
+	}
 
 	char *flumap = find_flumap(image, size);
 	uint32_t flumap1 = *(uint32_t *)flumap;

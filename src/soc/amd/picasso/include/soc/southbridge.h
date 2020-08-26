@@ -161,8 +161,6 @@
 #define   CG1PLL_SPREAD_SPECTRUM_ENABLE	BIT(0)
 #define MISC_CLK_CNTL1			0x40
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
-#define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
-#define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
 #define MISC_I2C0_PAD_CTRL		0xd8
 #define MISC_I2C1_PAD_CTRL		0xdc
 #define MISC_I2C2_PAD_CTRL		0xe0

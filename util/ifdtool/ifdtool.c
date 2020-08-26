@@ -513,6 +513,13 @@ static void decode_component_density(unsigned int density)
 	}
 }
 
+static int is_platform_with_pch(void)
+{
+	if (chipset >= CHIPSET_5_SERIES_IBEX_PEAK)
+		return 1;
+
+	return 0;
+}
 static void dump_fcba(const fcba_t *fcba)
 {
 	printf("\nFound Component Section\n");
@@ -759,7 +766,8 @@ static void dump_fd(char *image, int size)
 	if (!fdb)
 		exit(EXIT_FAILURE);
 
-	printf("ICH Revision: %s\n", ich_chipset_names[chipset]);
+	printf("%s", is_platform_with_pch() ? "PCH" : "ICH");
+	printf(" Revision: %s\n", ich_chipset_names[chipset]);
 	printf("FLMAP0:    0x%08x\n", fdb->flmap0);
 	printf("  NR:      %d\n", (fdb->flmap0 >> 24) & 7);
 	printf("  FRBA:    0x%x\n", ((fdb->flmap0 >> 16) & 0xff) << 4);

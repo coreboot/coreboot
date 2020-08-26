@@ -185,7 +185,7 @@ static const struct timestamp_id_to_name {
 	{ TS_START_VERIFY_SLOT,	"starting to verify keyblock/preamble (RSA)" },
 	{ TS_END_VERIFY_SLOT,	"finished verifying keyblock/preamble (RSA)" },
 	{ TS_START_HASH_BODY,	"starting to verify body (load+SHA2+RSA) " },
-	{ TS_DONE_LOADING,	"finished loading body (ignore for x86)" },
+	{ TS_DONE_LOADING,	"finished loading body" },
 	{ TS_DONE_HASHING,	"finished calculating body hash (SHA2)" },
 	{ TS_END_HASH_BODY,	"finished verifying body signature (RSA)" },
 	{ TS_START_TPMPCR,	"starting TPM PCR extend" },

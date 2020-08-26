@@ -59,6 +59,7 @@ static const char *const ich_chipset_names[] = {
 	"ICH8",
 	"ICH9",
 	"ICH10",
+	"Unknown PCH",
 	"5 series Ibex Peak",
 	"6 series Cougar Point",
 	"7 series Panther Point",
@@ -68,7 +69,10 @@ static const char *const ich_chipset_names[] = {
 	"8 series Wellsburg",
 	"9 series Wildcat Point",
 	"9 series Wildcat Point LP",
-	"100 series Sunrise Point",
+	"Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx",
+	"100/200 series Sunrise Point",
+	"300 series Cannon Point/ 400 series Ice Point",
+	"500 series Tiger Point",
 	"C620 series Lewisburg",
 	NULL
 };
@@ -161,14 +165,42 @@ static fmsba_t *find_fmsba(char *image, int size)
 	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
 }
 
+static enum ich_chipset guess_ifd_2_chipset(const fpsba_t *fpsba)
+{
+	uint32_t pchstrp_22 = fpsba->pchstrp[22];
+	uint32_t pchstrp_23 = fpsba->pchstrp[23];
+
+	/* Offset 0x5B is the last PCH descriptor record */
+	if (pchstrp_23 == 0xFFFFFFFF)
+		return CHIPSET_N_J_SERIES;
+
+	/* Offset 0x58 is PCH descriptor record is reserved */
+	if (pchstrp_22 == 0x0)
+		return CHIPSET_300_400_SERIES_CANNON_ICE_POINT;
+
+	/* Offset 0x58 bit [2:0] is reserved 0x4 and 0x5a bit [7:0] is reserved 0x58 */
+	if (((pchstrp_22 & 0x07) == 0x4) &&
+		((pchstrp_22 & 0xFF0000) >> 16 == 0x58))
+		return CHIPSET_500_SERIES_TIGER_POINT;
+
+	return CHIPSET_PCH_UNKNOWN;
+}
+
 /* port from flashrom */
-static enum ich_chipset guess_ich_chipset(const fdbar_t *fdb)
+static enum ich_chipset guess_ich_chipset(const fdbar_t *fdb, const fpsba_t *fpsba)
 {
 	uint32_t iccriba = (fdb->flmap2 >> 16) & 0xff;
 	uint32_t msl = (fdb->flmap2 >> 8) & 0xff;
 	uint32_t isl = (fdb->flmap1 >> 24);
 	uint32_t nm = (fdb->flmap1 >> 8) & 0x7;
+	int temp_chipset;
 
+	/* Check for IFD2 chipset type */
+	temp_chipset = guess_ifd_2_chipset(fpsba);
+	if (temp_chipset != CHIPSET_PCH_UNKNOWN)
+		return temp_chipset;
+
+	/* Rest for IFD1 chipset type */
 	if (iccriba == 0x00) {
 		if (msl == 0 && isl <= 2)
 			return CHIPSET_ICH8;
@@ -192,7 +224,7 @@ static enum ich_chipset guess_ich_chipset(const fdbar_t *fdb)
 	} else if (nm == 6) {
 		return CHIPSET_C620_SERIES_LEWISBURG;
 	} else {
-		return CHIPSET_100_SERIES_SUNRISE_POINT;
+		return CHIPSET_100_200_SERIES_SUNRISE_POINT;
 	}
 }
 
@@ -232,10 +264,11 @@ static int get_ifd_version_from_fcba(char *image, int size)
 	int read_freq;
 	const fcba_t *fcba = find_fcba(image, size);
 	const fdbar_t *fdb = find_fd(image, size);
+	const fpsba_t *fpsba = find_fpsba(image, size);
 	if (!fcba || !fdb)
 		exit(EXIT_FAILURE);
 
-	chipset = guess_ich_chipset(fdb);
+	chipset = guess_ich_chipset(fdb, fpsba);
 	/* TODO: port ifd_version and max_regions
 	 * against guess_ich_chipset()
 	 */

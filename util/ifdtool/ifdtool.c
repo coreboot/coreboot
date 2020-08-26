@@ -509,6 +509,63 @@ static void decode_spi_frequency(unsigned int freq)
 		_decode_spi_frequency(freq);
 }
 
+static void _decode_espi_frequency(unsigned int freq)
+{
+	switch (freq) {
+	case ESPI_FREQUENCY_20MHZ:
+		printf("20MHz");
+		break;
+	case ESPI_FREQUENCY_24MHZ:
+		printf("24MHz");
+		break;
+	case ESPI_FREQUENCY_30MHZ:
+		printf("30MHz");
+		break;
+	case ESPI_FREQUENCY_48MHZ:
+		printf("48MHz");
+		break;
+	case ESPI_FREQUENCY_60MHZ:
+		printf("60MHz");
+		break;
+	case ESPI_FREQUENCY_17MHZ:
+		printf("17MHz");
+		break;
+	default:
+		printf("unknown<%x>MHz", freq);
+	}
+}
+
+static void _decode_espi_frequency_500_series(unsigned int freq)
+{
+	switch (freq) {
+	case ESPI_FREQUENCY_500SERIES_20MHZ:
+		printf("20MHz");
+		break;
+	case ESPI_FREQUENCY_500SERIES_24MHZ:
+		printf("24MHz");
+		break;
+	case ESPI_FREQUENCY_500SERIES_25MHZ:
+		printf("25MHz");
+		break;
+	case ESPI_FREQUENCY_500SERIES_48MHZ:
+		printf("48MHz");
+		break;
+	case ESPI_FREQUENCY_500SERIES_60MHZ:
+		printf("60MHz");
+		break;
+	default:
+		printf("unknown<%x>MHz", freq);
+	}
+}
+
+static void decode_espi_frequency(unsigned int freq)
+{
+	if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+		_decode_espi_frequency_500_series(freq);
+	else
+		_decode_espi_frequency(freq);
+}
+
 static void decode_component_density(unsigned int density)
 {
 	switch (density) {
@@ -562,8 +619,10 @@ static int is_platform_with_100x_series_pch(void)
 	return 0;
 }
 
-static void dump_fcba(const fcba_t *fcba)
+static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
 {
+	unsigned int freq;
+
 	printf("\nFound Component Section\n");
 	printf("FLCOMP     0x%08x\n", fcba->flcomp);
 	printf("  Dual Output Fast Read Support:       %ssupported\n",
@@ -576,8 +635,18 @@ static void dump_fcba(const fcba_t *fcba)
 	decode_spi_frequency((fcba->flcomp >> 21) & 7);
 	printf("\n  Fast Read Support:                   %ssupported",
 		(fcba->flcomp & (1 << 20))?"":"not ");
-	printf("\n  Read Clock Frequency:                ");
-	decode_spi_frequency((fcba->flcomp >> 17) & 7);
+	if (is_platform_with_100x_series_pch() &&
+			chipset != CHIPSET_100_200_SERIES_SUNRISE_POINT) {
+		printf("\n  Read eSPI/EC Bus Frequency:          ");
+		if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+			freq = (fpsba->pchstrp[22] & 0x38) >> 3;
+		else
+			freq = (fcba->flcomp >> 17) & 7;
+		decode_espi_frequency(freq);
+	} else {
+		printf("\n  Read Clock Frequency:                ");
+		decode_spi_frequency((fcba->flcomp >> 17) & 7);
+	}
 
 	switch (ifd_version) {
 	case IFD_VERSION_1:
@@ -868,7 +937,7 @@ static void dump_fd(char *image, int size)
 
 	if (frba && fcba && fpsba && fmba && fmsba) {
 		dump_frba(frba);
-		dump_fcba(fcba);
+		dump_fcba(fcba, fpsba);
 		dump_fpsba(fdb, fpsba);
 		dump_fmba(fmba);
 		dump_fmsba(fmsba);

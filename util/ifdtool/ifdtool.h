@@ -63,6 +63,14 @@ enum spi_frequency {
 	SPI_FREQUENCY_17MHZ = 6,
 };
 
+enum spi_frequency_500_series {
+	SPI_FREQUENCY_100MHZ = 0,
+	SPI_FREQUENCY_50MHZ = 1,
+	SPI_FREQUENCY_500SERIES_33MHZ = 3,
+	SPI_FREQUENCY_25MHZ = 4,
+	SPI_FREQUENCY_14MHZ = 6,
+};
+
 enum component_density {
 	COMPONENT_DENSITY_512KB = 0,
 	COMPONENT_DENSITY_1MB   = 1,

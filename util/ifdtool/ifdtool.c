@@ -448,7 +448,7 @@ static void dump_frba_layout(const frba_t *frba, const char *layout_fname)
 	printf("Wrote layout to %s\n", layout_fname);
 }
 
-static void decode_spi_frequency(unsigned int freq)
+static void _decode_spi_frequency(unsigned int freq)
 {
 	switch (freq) {
 	case SPI_FREQUENCY_20MHZ:
@@ -476,6 +476,37 @@ static void decode_spi_frequency(unsigned int freq)
 	default:
 		printf("unknown<%x>MHz", freq);
 	}
+}
+
+static void _decode_spi_frequency_500_series(unsigned int freq)
+{
+	switch (freq) {
+	case SPI_FREQUENCY_100MHZ:
+		printf("100MHz");
+		break;
+	case SPI_FREQUENCY_50MHZ:
+		printf("50MHz");
+		break;
+	case SPI_FREQUENCY_500SERIES_33MHZ:
+		printf("33MHz");
+		break;
+	case SPI_FREQUENCY_25MHZ:
+		printf("25MHz");
+		break;
+	case SPI_FREQUENCY_14MHZ:
+		printf("14MHz");
+		break;
+	default:
+		printf("unknown<%x>MHz", freq);
+	}
+}
+
+static void decode_spi_frequency(unsigned int freq)
+{
+	if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+		_decode_spi_frequency_500_series(freq);
+	else
+		_decode_spi_frequency(freq);
 }
 
 static void decode_component_density(unsigned int density)

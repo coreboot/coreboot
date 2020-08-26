@@ -1,0 +1,213 @@
+config SOC_INTEL_ELKHARTLAKE
+	bool
+	help
+	  Intel Elkhartlake support
+
+if SOC_INTEL_ELKHARTLAKE
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_VERSTAGE_X86_32
+	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if BOOT_DEVICE_SPI_FLASH
+	select BOOT_DEVICE_SUPPORTS_WRITES
+	select CACHE_MRC_SETTINGS
+	select CPU_INTEL_COMMON
+	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select FSP_COMPRESS_FSP_S_LZ4
+	select FSP_M_XIP
+	select GENERIC_GPIO_LIB
+	select HAVE_FSP_GOP
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select HAVE_SMI_HANDLER
+	select IDT_IN_EVERY_STAGE
+	select INTEL_CAR_NEM #TODO - Enable INTEL_CAR_NEM_ENHANCED
+	select INTEL_GMA_ACPI
+	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
+	select IOAPIC
+	select MRC_SETTINGS_PROTECT
+	select PARALLEL_MP
+	select PARALLEL_MP_AP_WORK
+	select MICROCODE_BLOB_UNDISCLOSED
+	select PLATFORM_USES_FSP2_2
+	select FSP_PEIM_TO_PEIM_INTERFACE
+	select REG_SCRIPT
+	select PMC_GLOBAL_RESET_ENABLE_LOCK
+	select CPU_INTEL_COMMON_SMM
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
+	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
+	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_SCS
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
+	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	select SOC_INTEL_COMMON_PCH_BASE
+	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select SSE2
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	select TSC_MONOTONIC_TIMER
+	select UDELAY_TSC
+	select UDK_202005_BINDING
+	select DISPLAY_FSP_VERSION_INFO
+	select HECI_DISABLE_USING_SMM
+
+config DCACHE_RAM_BASE
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	default 0x80000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x30400
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages. In the case of FSP_USES_CB_STACK default value
+	  will be sum of FSP-M stack requirement(192 KiB) and CB romstage
+	  stack requirement(~1KiB).
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	default 0x20000
+	help
+	  The amount of anticipated heap usage in CAR by FSP.
+	  Refer to Platform FSP integration guide document to know
+	  the exact FSP requirement for Heap setup.
+
+config IFD_CHIPSET
+	string
+	default "ehl"
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config HEAP_SIZE
+	hex
+	default 0x8000
+
+config MAX_ROOT_PORTS
+	int
+	default 8
+
+config MAX_PCIE_CLOCKS
+	int
+	default 6
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xc0000000
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
+	int
+	default 120
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	default 133
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
+	int
+	default 3
+
+config SOC_INTEL_I2C_DEV_MAX
+	int
+	default 6
+
+config SOC_INTEL_UART_DEV_MAX
+	int
+	default 3
+
+config CONSOLE_UART_BASE_ADDRESS
+	hex
+	default 0xfe032000
+	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
+# Clock divider parameters for 115200 baud rate
+# Baudrate = (UART source clcok * M) /(N *16)
+# EHL UART source clock: 100MHz
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x30
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0xc35
+
+config CHROMEOS
+	select CHROMEOS_RAMOOPS_DYNAMIC
+
+config VBOOT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_MUST_REQUEST_DISPLAY
+	select VBOOT_STARTS_IN_BOOTBLOCK
+	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0xC000
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+config FSP_HEADER_PATH
+	default "src/vendorcode/intel/fsp/fsp2_0/elkhartlake/"
+
+config FSP_FD_PATH
+	default "3rdparty/fsp/ElkhartLakeFspBinPkg/Fsp.fd"
+
+config SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT
+	int "Debug Consent for EHL"
+	# USB DBC is more common for developers so make this default to 3 if
+	# SOC_INTEL_DEBUG_CONSENT=y
+	default 3 if SOC_INTEL_DEBUG_CONSENT
+	default 0
+	help
+	  This is to control debug interface on SOC.
+	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
+	  PlatformDebugConsent in FspmUpd.h has the details.
+
+	  Desired platform debug type are
+	  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB),
+	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
+	  6:Enable (2-wire DCI OOB), 7:Manual
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x1400
+endif

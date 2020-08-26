@@ -54,7 +54,7 @@ typedef struct __packed {
 	/** Offset 0x00C4**/	uint8_t                     aclk_dpm0_freq_400MHz;
 	/** Offset 0x00C5**/	uint8_t                     unused5;
 	/** Offset 0x00C6**/	uint8_t                     unused6;
-	/** Offset 0x00C7**/	uint8_t                     unused7;
+	/** Offset 0x00C7**/	uint8_t                     sata_enable;
 	/** Offset 0x00C8**/	uint32_t                    tseg_size;
 	/** Offset 0x00CC**/	uint8_t                     pspp_policy;
 	/** Offset 0x00CD**/	uint8_t                     audio_soundwire;

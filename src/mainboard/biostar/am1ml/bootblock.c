@@ -2,6 +2,7 @@
 
 #include <amdblocks/acpimmio.h>
 #include <bootblock_common.h>
+#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
@@ -14,13 +15,13 @@ static void ite_evc_conf(pnp_devfn_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
-	pnp_write_config(dev, 0xf1, 0x40);
-	pnp_write_config(dev, 0xf4, 0x80);
-	pnp_write_config(dev, 0xf5, 0x00);
-	pnp_write_config(dev, 0xf6, 0xf0);
-	pnp_write_config(dev, 0xf9, 0x48);
-	pnp_write_config(dev, 0xfa, 0x00);
-	pnp_write_config(dev, 0xfb, 0x00);
+	pnp_write_config(dev, PNP_IDX_MSC1, 0x40);
+	pnp_write_config(dev, PNP_IDX_MSC4, 0x80);
+	pnp_write_config(dev, PNP_IDX_MSC5, 0x00);
+	pnp_write_config(dev, PNP_IDX_MSC6, 0xf0);
+	pnp_write_config(dev, PNP_IDX_MSC9, 0x48);
+	pnp_write_config(dev, PNP_IDX_MSCA, 0x00);
+	pnp_write_config(dev, PNP_IDX_MSCB, 0x00);
 	pnp_exit_conf_state(dev);
 }
 
@@ -32,7 +33,7 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 	pnp_write_config(dev, 0x26, 0x07);
 	pnp_write_config(dev, 0x28, 0x81);
 	pnp_write_config(dev, 0x2c, 0x06);
-	pnp_write_config(dev, 0x72, 0x00);
+	pnp_write_config(dev, PNP_IDX_IRQ1, 0x00);
 	pnp_write_config(dev, 0x73, 0x00);
 	pnp_write_config(dev, 0xb3, 0x01);
 	pnp_write_config(dev, 0xb8, 0x00);
@@ -41,10 +42,10 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 	pnp_write_config(dev, 0xc8, 0x00);
 	pnp_write_config(dev, 0xc9, 0x07);
 	pnp_write_config(dev, 0xcb, 0x01);
-	pnp_write_config(dev, 0xf0, 0x10);
-	pnp_write_config(dev, 0xf4, 0x27);
-	pnp_write_config(dev, 0xf8, 0x20);
-	pnp_write_config(dev, 0xf9, 0x01);
+	pnp_write_config(dev, PNP_IDX_MSC0, 0x10);
+	pnp_write_config(dev, PNP_IDX_MSC4, 0x27);
+	pnp_write_config(dev, PNP_IDX_MSC8, 0x20);
+	pnp_write_config(dev, PNP_IDX_MSC9, 0x01);
 	pnp_exit_conf_state(dev);
 }
 

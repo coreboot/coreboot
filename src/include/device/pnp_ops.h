@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pnp.h>
+#include <device/pnp_def.h>
 #include <device/pnp_type.h>
 
 #if ENV_PNP_SIMPLE_DEVICE
@@ -32,13 +33,13 @@ void pnp_set_logical_device(pnp_devfn_t dev)
 static __always_inline
 void pnp_set_enable(pnp_devfn_t dev, int enable)
 {
-	pnp_write_config(dev, 0x30, enable?0x1:0x0);
+	pnp_write_config(dev, PNP_IDX_EN, enable?0x1:0x0);
 }
 
 static __always_inline
 int pnp_read_enable(pnp_devfn_t dev)
 {
-	return !!pnp_read_config(dev, 0x30);
+	return !!pnp_read_config(dev, PNP_IDX_EN);
 }
 
 static __always_inline

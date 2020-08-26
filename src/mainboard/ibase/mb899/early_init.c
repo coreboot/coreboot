@@ -41,7 +41,7 @@ void bootblock_mainboard_early_init(void)
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2f8);
 	pnp_set_irq(dev, PNP_IDX_IRQ0, 3);
-	// pnp_write_config(dev, 0xf1, 4); // IRMODE0
+	// pnp_write_config(dev, PNP_IDX_MSC1, 4); // IRMODE0
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x4e, W83627EHG_KBC); // Keyboard
@@ -49,7 +49,7 @@ void bootblock_mainboard_early_init(void)
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
 	pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
-	//pnp_write_config(dev, 0xf0, 0x82);
+	//pnp_write_config(dev, PNP_IDX_MSC0, 0x82);
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x4e, W83627EHG_GPIO2);
@@ -59,9 +59,10 @@ void bootblock_mainboard_early_init(void)
 	dev = PNP_DEV(0x4e, W83627EHG_GPIO3);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf0, 0xfb); // GPIO bit 2 is output
-	pnp_write_config(dev, 0xf1, 0x00); // GPIO bit 2 is 0
-	pnp_write_config(dev, 0x30, 0x03); // Enable GPIO3+4. pnp_set_enable is not sufficient
+	pnp_write_config(dev, PNP_IDX_MSC0, 0xfb); // GPIO bit 2 is output
+	pnp_write_config(dev, PNP_IDX_MSC1, 0x00); // GPIO bit 2 is 0
+	// Enable GPIO3+4. pnp_set_enable is not sufficient
+	pnp_write_config(dev, PNP_IDX_EN, 0x03);
 
 	dev = PNP_DEV(0x4e, W83627EHG_FDC);
 	pnp_set_logical_device(dev);

@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"regexp"
 )
 
 /*
@@ -997,6 +998,10 @@ func readMemoryParts(memParts *memParts, memPartsFileName string) error {
 	if err != nil {
 		return err
 	}
+
+	// Strip comments from json file
+	re := regexp.MustCompile(`(?m)^\s*//.*`)
+	databytes = re.ReplaceAll(databytes, []byte(""))
 
 	return json.Unmarshal(databytes, memParts)
 }

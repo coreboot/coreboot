@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
+#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <device/pnp_type.h>
 #include <stdint.h>
@@ -20,7 +21,7 @@ static void gpio_init(pnp_devfn_t dev)
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0x60, 0x0a); //Base addr high
+	pnp_write_config(dev, PNP_IDX_IO0, 0x0a); //Base addr high
 	pnp_write_config(dev, 0x61, 0x00); //Base addr low
 	pnp_write_config(dev, 0xe0, 0x04); //GPIO1 output enable
 	pnp_write_config(dev, 0xe1, 0xff); //GPIO1 output data

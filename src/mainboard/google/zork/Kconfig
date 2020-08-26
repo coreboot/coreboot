@@ -260,6 +260,7 @@ config EFS_SPI_MICRON_FLAG
 config CHROMEOS_WIFI_SAR
 	bool
 	default y if CHROMEOS
+	select DRIVERS_WIFI_GENERIC
 	select DSAR_ENABLE
 	select SAR_ENABLE
 	select USE_SAR

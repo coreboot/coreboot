@@ -63,7 +63,7 @@ void bootblock_mainboard_early_init(void)
 	dev = PNP_DEV(0x2e, W83627THG_GAME_MIDI_GPIO1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf5, 0xff); /* invert all GPIOs */
+	pnp_write_config(dev, PNP_IDX_MSC5, 0xff); /* invert all GPIOs */
 	pnp_set_enable(dev, 1);
 
 	dev = PNP_DEV(0x2e, W83627THG_GPIO2);
@@ -73,9 +73,10 @@ void bootblock_mainboard_early_init(void)
 	dev = PNP_DEV(0x2e, W83627THG_GPIO3);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf0, 0xfb); /* GPIO bit 2 is output */
-	pnp_write_config(dev, 0xf1, 0x00); /* GPIO bit 2 is 0 */
-	pnp_write_config(dev, 0x30, 0x03); /* Enable GPIO3+4. pnp_set_enable is not sufficient */
+	pnp_write_config(dev, PNP_IDX_MSC0, 0xfb); /* GPIO bit 2 is output */
+	pnp_write_config(dev, PNP_IDX_MSC1, 0x00); /* GPIO bit 2 is 0 */
+	/* Enable GPIO3+4. pnp_set_enable is not sufficient */
+	pnp_write_config(dev, PNP_IDX_EN, 0x03);
 
 	dev = PNP_DEV(0x2e, W83627THG_FDC);
 	pnp_set_logical_device(dev);

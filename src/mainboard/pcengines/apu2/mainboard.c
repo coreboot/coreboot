@@ -292,7 +292,7 @@ const char *smbios_mainboard_serial_number(void)
 		return serial;
 
 	/* Read in the last 3 bytes of NIC's MAC address. */
-	bar10 = pci_read_config32(dev, 0x10);
+	bar10 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	bar10 &= 0xFFFE0000;
 	bar10 += 0x5400;
 	for (i = 3; i < 6; i++) {

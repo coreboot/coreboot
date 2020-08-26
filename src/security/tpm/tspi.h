@@ -41,7 +41,6 @@ void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
  */
 void tcpa_log_dump(void *unused);
 
-
 /**
  * Ask vboot for a digest and extend a TPM PCR with it.
  * @param pcr sets the pcr index

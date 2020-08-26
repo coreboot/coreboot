@@ -87,5 +87,4 @@ static inline int vboot_logic_executed(void)
 	}
 }
 
-
 #endif /* __VBOOT_MISC_H__ */

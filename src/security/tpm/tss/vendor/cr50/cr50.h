@@ -40,7 +40,6 @@ enum cr50_tpm_mode {
 	TPM_MODE_INVALID,
 };
 
-
 /**
  * CR50 specific tpm command to enable nvmem commits before internal timeout
  * expires.
@@ -95,6 +94,5 @@ uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode);
  * Return value indicates success or failure of accessing the TPM.
  */
 uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms);
-
 
 #endif /* CR50_TSS_STRUCTURES_H_ */

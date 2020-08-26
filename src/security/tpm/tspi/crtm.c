@@ -165,7 +165,6 @@ int tspi_measure_cache_to_pcr(void)
 		hash_alg = VB2_HASH_SHA256;
 	}
 
-
 	printk(BIOS_DEBUG, "TPM: Write digests cached in TCPA log to PCR\n");
 	for (i = 0; i < tclt->num_entries; i++) {
 		struct tcpa_entry *tce = &tclt->entries[i];

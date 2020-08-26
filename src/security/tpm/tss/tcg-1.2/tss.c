@@ -99,7 +99,6 @@ static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
 return result;
 }
 
-
 /* Sends a TPM command and gets a response.  Returns 0 if success or the TPM
  * error code if error. Waits for the self test to complete if needed. */
 uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
@@ -245,7 +244,6 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 
 	return result;
 }
-
 
 uint32_t tlcl_assert_physical_presence(void)
 {

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <security/tpm/tspi.h>
 #include <vb2_api.h>
 #include <security/vboot/tpm_common.h>

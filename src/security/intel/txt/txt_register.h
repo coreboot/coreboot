@@ -267,7 +267,6 @@ struct __packed txt_biosdataregion {
 	u8 extended_data_elements[0];
 };
 
-
 void txt_dump_regions(void);
 void txt_dump_chipset_info(void);
 void txt_dump_acm_info(const struct acm_header_v0 *acm_header);

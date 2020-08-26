@@ -15,7 +15,6 @@
 #define kEncAuthLength 20
 #define kPcrDigestLength 20
 
-
 /*
  * Conversion functions.  to_tpm_TYPE puts a value of type TYPE into a TPM
  * command buffer. from_tpm_TYPE gets a value of type TYPE from a TPM command

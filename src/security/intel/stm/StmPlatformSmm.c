@@ -73,7 +73,6 @@ struct descriptor {
 	uintptr_t base;
 } __attribute__((packed));
 
-
 static void read_gdtr(struct descriptor *gdtr)
 {
 	__asm__ __volatile__("sgdt %0" : "=m"(*gdtr));
@@ -117,7 +116,6 @@ void setup_smm_descriptor(void *smbase, void *base_smbase, int32_t apic_id,
 	psd->smm_ss = ROM_DATA_SEG;
 	psd->smm_other_segment = ROM_DATA_SEG;
 	psd->smm_tr = SMM_TASK_STATE_SEG;
-
 
 	// At this point the coreboot smm_stub is relative to the default
 	// smbase and not the one for the smi handler in tseg.  So we have

@@ -207,7 +207,6 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {
 	return vboot_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||

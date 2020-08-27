@@ -145,18 +145,11 @@
 #define   GPP_CLK2_REQ_SHL		6
 #define   GPP_CLK3_REQ_SHL		8
 #define   GFX_CLK1_REQ_SHL		10
-#define   GPP_CLK_REQ_MAP_MASK0		(3 << GPP_CLK0_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_CLK0		(1 << GPP_CLK0_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_MASK1		(3 << GPP_CLK1_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_CLK1		(1 << GPP_CLK1_REQ_SHL)
-#define   GFX_CLK_REQ_MAP_MASK0		(3 << GFX_CLK0_REQ_SHL)
-#define   GFX_CLK_REQ_MAP_CLK0		(1 << GFX_CLK0_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_MASK2		(3 << GPP_CLK2_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_CLK2		(1 << GPP_CLK2_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_MASK3		(3 << GPP_CLK3_REQ_SHL)
-#define   GPP_CLK_REQ_MAP_CLK3		(1 << GPP_CLK3_REQ_SHL)
-#define   GFX_CLK_REQ_MAP_MASK1		(3 << GPP_CLK1_REQ_SHL)
-#define   GFX_CLK_REQ_MAP_CLK1		(1 << GPP_CLK1_REQ_SHL)
+#define   GPP_CLK_REQ_MASK(clk_shift)	(0x3 << (clk_shift))
+#define   GPP_CLK_REQ_ON(clk_shift)	(0x3 << (clk_shift))
+#define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))
+#define   GPP_CLK_REQ_OFF(clk_shift)	(0x0 << (clk_shift))
+
 #define MISC_CGPLL_CONFIG1		0x08
 #define   CG1PLL_SPREAD_SPECTRUM_ENABLE	BIT(0)
 #define MISC_CLK_CNTL1			0x40

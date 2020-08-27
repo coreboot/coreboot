@@ -6,4 +6,6 @@
 
 void intel_cpu_haswell_finalize_smm(void)
 {
+	/* Lock memory configuration to protect SMM */
+	msr_set_bit(MSR_LT_LOCK_MEMORY, 0);
 }

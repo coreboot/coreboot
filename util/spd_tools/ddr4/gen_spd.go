@@ -47,7 +47,7 @@ type memAttributes struct {
 	CL_nRCD_nRP int
 	CapacityPerDieGb int
 	DiesPerPackage int
-	DeviceBusWidth  int
+	PackageBusWidth  int
 	RanksPerPackage int
 
 	/*
@@ -79,6 +79,9 @@ type memAttributes struct {
 	CASSecondByte byte
 	CASThirdByte byte
 	CASFourthByte byte
+
+	/* The following is for internal-use only and is not overridable */
+	dieBusWidth int
 }
 
 /* This encodes the density in Gb to SPD low nibble value as per JESD 4.1.2.L-5 R29 */
@@ -179,7 +182,7 @@ var speedBinToSPDEncoding = map[int]speedBinAttributes {
 func getBankGroups(memAttribs *memAttributes) byte {
 	var bg byte
 
-	switch memAttribs.DeviceBusWidth {
+	switch memAttribs.PackageBusWidth {
 	case 8:
 		bg = 4
 	case 16:
@@ -296,7 +299,7 @@ func encodeRanks(ranks int) byte {
 func encodeModuleOrganization(memAttribs *memAttributes) byte {
 	var b byte
 
-	b = encodeDataWidth(memAttribs.DeviceBusWidth)
+	b = encodeDataWidth(memAttribs.dieBusWidth)
 	b |= encodeRanks(memAttribs.RanksPerPackage)
 
 	return b
@@ -390,20 +393,21 @@ func encodeTRCMinLsb(memAttribs *memAttributes) byte {
 	return byte(convPsToMtb(memAttribs.TRCMinPs) & 0xff)
 }
 
+/* This takes memAttribs.PackageBusWidth as an index */
 var pageSizefromBusWidthEncoding = map[int]int {
 	8: 1,
 	16: 2,
 }
 
 /*
- * Per Table 69 & Table 70 of Jedec JESD79-4C
+ * Per Table 169 & Table 170 of Jedec JESD79-4C
  * tFAW timing is based on :
  *  Speed bin and page size
  */
 func getTFAWMinPs(memAttribs *memAttributes) int {
 	var tFAWFixed int
 
-	if pageSizefromBusWidthEncoding[memAttribs.DeviceBusWidth] == 1 {
+	if pageSizefromBusWidthEncoding[memAttribs.PackageBusWidth] == 1 {
 		switch memAttribs.SpeedMTps {
 		case 1600:
 			tFAWFixed = 25000
@@ -412,7 +416,7 @@ func getTFAWMinPs(memAttribs *memAttributes) int {
 		default:
 			tFAWFixed = 21000
 		}
-	} else if pageSizefromBusWidthEncoding[memAttribs.DeviceBusWidth] == 2 {
+	} else if pageSizefromBusWidthEncoding[memAttribs.PackageBusWidth] == 2 {
 		switch memAttribs.SpeedMTps {
 		case 1600:
 			tFAWFixed = 35000
@@ -433,7 +437,7 @@ func updateTFAWMin(memAttribs *memAttributes) {
 		memAttribs.TFAWMinPs = getTFAWMinPs(memAttribs)
 	}
 
-	switch pageSizefromBusWidthEncoding[memAttribs.DeviceBusWidth] {
+	switch pageSizefromBusWidthEncoding[memAttribs.PackageBusWidth] {
 	case 1:
 		tFAWFromTck = 20 * memAttribs.TCKMinPs
 	case 2:
@@ -470,7 +474,7 @@ func getTRRDLMinPs(memAttribs *memAttributes) int {
 	 * Per JESD79-4C Tables 169 & 170, tRRD_L is based on :
 	 *  Speed bin and page size
 	 */
-	switch pageSizefromBusWidthEncoding[memAttribs.DeviceBusWidth] {
+	switch pageSizefromBusWidthEncoding[memAttribs.PackageBusWidth] {
 	case 1:
 		switch memAttribs.SpeedMTps {
 		case 1600:
@@ -527,7 +531,7 @@ var speedToTRRDSMinPsTwoKPageSize = map[int]int {
 func getTRRDSMinPs(memAttribs *memAttributes) int {
 	var tRRDFixed int
 
-	switch pageSizefromBusWidthEncoding[memAttribs.DeviceBusWidth] {
+	switch pageSizefromBusWidthEncoding[memAttribs.PackageBusWidth] {
 	case 1:
 		tRRDFixed = speedToTRRDSMinPsOneKPageSize[memAttribs.SpeedMTps]
 	case 2:
@@ -1041,7 +1045,7 @@ func validateDiesPerPackage(dieCount int) error {
 	return fmt.Errorf("Incorrect dies per package count: ", dieCount)
 }
 
-func validateDeviceBusWidth(width int) error {
+func validatePackageBusWidth(width int) error {
 	if width != 8 && width != 16 {
 		return fmt.Errorf("Incorrect device bus width: ", width)
 	}
@@ -1095,7 +1099,7 @@ func validateMemoryParts(memParts *memParts) error {
 		if err := validateDiesPerPackage(memParts.MemParts[i].Attribs.DiesPerPackage); err != nil {
 			return err
 		}
-		if err := validateDeviceBusWidth(memParts.MemParts[i].Attribs.DeviceBusWidth); err != nil {
+		if err := validatePackageBusWidth(memParts.MemParts[i].Attribs.PackageBusWidth); err != nil {
 			return err
 		}
 		if err := validateRanksPerPackage(memParts.MemParts[i].Attribs.RanksPerPackage); err != nil {
@@ -1254,6 +1258,19 @@ func getDefaultCASLatencies(memAttribs *memAttributes) string {
 	return str
 }
 
+func updateDieBusWidth(memAttribs *memAttributes) {
+	if memAttribs.PackageBusWidth == 16 && memAttribs.RanksPerPackage == 1 &&
+			memAttribs.DiesPerPackage == 2 {
+		/*
+		 * If a x16 part has 2 die with single rank, PackageBusWidth
+		 * needs to be converted to match die bus width.
+		 */
+		memAttribs.dieBusWidth = 8
+	} else {
+		memAttribs.dieBusWidth = memAttribs.PackageBusWidth
+	}
+}
+
 func updateCAS(memAttribs *memAttributes) error {
 	if len(memAttribs.CASLatencies) == 0 {
 		memAttribs.CASLatencies = getDefaultCASLatencies(memAttribs)
@@ -1335,6 +1352,7 @@ func  updateTWTRMin(memAttribs *memAttributes) {
 }
 
 func updateMemoryAttributes(memAttribs *memAttributes) {
+	updateDieBusWidth(memAttribs)
 	updateTCK(memAttribs)
 	updateTAAMin(memAttribs)
 	updateTRCDMin(memAttribs)

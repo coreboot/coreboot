@@ -59,7 +59,7 @@ Input JSON file requires the following two fields for every memory part:
 * `diesPerPackage`: Number of dies on the part.  Valid values:
   `1, 2` dies per package.
 
-* `deviceBusWidth`: Number of bits of the device's address bus.  Valid values:
+* `packageBusWidth`: Number of bits of the device's address bus.  Valid values:
   `8, 16` bit-wide bus. NOTE: Width of x4 is not supported by this tool.
 
 * `ranksPerPackage`: From Jedec doc 4_01_02_AnnexL-1R23:
@@ -145,7 +145,7 @@ string like "9 10 11 12 14".
                 "CL_nRCD_nRP": 22
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "deviceBusWidth": 16,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1,
             }
         },
@@ -156,7 +156,7 @@ string like "9 10 11 12 14".
                 "CL_nRCD_nRP": 22
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 1,
-                "deviceBusWidth": 16,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 2,
                 "casLatencies": "9 10 11 12 13 14 15 16 17 18 19 20",
                 "tCKMaxPs": "1250"

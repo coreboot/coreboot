@@ -10,7 +10,7 @@
                 "CL_nRCD_nRP": 22,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 1,
-                "deviceBusWidth": 16,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },
@@ -21,7 +21,7 @@
                 "CL_nRCD_nRP": 22,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 1,
-                "deviceBusWidth": 16,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         },
@@ -32,7 +32,7 @@
                 "CL_nRCD_nRP": 22,
                 "capacityPerDieGb": 8,
                 "diesPerPackage": 2,
-                "deviceBusWidth": 16,
+                "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
         }

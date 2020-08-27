@@ -21,10 +21,13 @@ chip soc/intel/tigerlake
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"		# M.2 Bluetooth, USB3/2 Type A port1
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"		# M.2 Bluetooth, USB3/2 Type A Port1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A Port 1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"		# Type-C Port3 / MECC
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Not used
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Not used
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Not used
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"		# CNVi/BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port1
@@ -65,9 +68,16 @@ chip soc/intel/tigerlake
 	# enabling EDP in PortA
 	register "DdiPortAConfig" = "1"
 
+	register "DdiPortAHpd" = "1"
+	register "DdiPortADdc" = "0"
 	register "DdiPortBHpd" = "1"
+	register "DdiPortBDdc" = "1"
+	register "DdiPortCHpd" = "0"
+	register "DdiPortCDdc" = "0"
 	register "DdiPort1Hpd" = "1"
-	register "DdiPort1Ddc" = "1"
+	register "DdiPort1Ddc" = "0"
+	register "DdiPort2Hpd" = "1"
+	register "DdiPort2Ddc" = "0"
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

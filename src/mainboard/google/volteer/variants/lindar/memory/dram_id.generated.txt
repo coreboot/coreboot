@@ -1,0 +1,2 @@
+DRAM Part Name                 ID to assign
+K4U6E3S4AA-MGCL                0 (0000)

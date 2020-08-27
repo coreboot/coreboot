@@ -1,9 +1,7 @@
 DRAM Part Name                 ID to assign
 K4A8G165WC-BCTD                0 (0000)
-K4A8G165WC-BCWE                1 (0001)
 MT40A512M16TB-062E:J           2 (0010)
 H5AN8G6NDJR-XNC                3 (0011)
-H5ANAG6NCMR-VKC                4 (0100)
 K4A8G165WC-BCWE                5 (0101)
 MT40A1G16KD-062E:E             6 (0110)
 H5ANAG6NCMR-XNC                7 (0111)

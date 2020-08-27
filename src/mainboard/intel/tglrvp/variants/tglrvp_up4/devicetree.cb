@@ -109,6 +109,9 @@ chip soc/intel/tigerlake
 	register "TcssXhciEn" = "1"
 	register "TcssAuxOri" = "0"
 
+	# Enable "Intel Speed Shift Technology"
+	register "speed_shift_enable" = "1"
+
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 

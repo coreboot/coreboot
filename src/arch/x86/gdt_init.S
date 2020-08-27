@@ -18,7 +18,7 @@ gdtptr:
 	.word	gdt_end - gdt -1 /* compute the table limit */
 	.long	gdt		 /* we know the offset */
 
-#ifdef __x86_64__
+#if ENV_X86_64
 .code64
 .section .init._gdt64_, "ax", @progbits
 	.globl gdt_init64

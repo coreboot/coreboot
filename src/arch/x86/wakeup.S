@@ -6,7 +6,7 @@
 /* CR0 bits */
 #define PE		(1 << 0)
 
-#ifdef __x86_64__
+#if ENV_X86_64
 	.code64
 #else
 	.code32
@@ -14,7 +14,7 @@
 
 	.globl __wakeup
 __wakeup:
-#ifdef __x86_64__
+#if ENV_X86_64
 	xor	%rax,%rax
 	mov	%ss, %ax
 	push	%rax

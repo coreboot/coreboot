@@ -83,7 +83,7 @@ pages_done:
 #include <cpu/x86/64bit/entry64.inc>
 
 	/* Restore the BIST result and timestamps. */
-#if defined(__x86_64__)
+#if ENV_X86_64
 	movd	%mm2, %rdi
 	shlq	$32, %rdi
 	movd	%mm1, %rsi

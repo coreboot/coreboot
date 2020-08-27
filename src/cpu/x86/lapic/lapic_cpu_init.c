@@ -38,7 +38,7 @@ static int  lowmem_backup_size;
 static inline void setup_secondary_gdt(void)
 {
 	u16 *gdt_limit;
-#ifdef __x86_64__
+#if ENV_X86_64
 	u64 *gdt_base;
 #else
 	u32 *gdt_base;

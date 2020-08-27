@@ -235,7 +235,7 @@ static inline struct cpu_info *cpu_info(void)
 {
 	struct cpu_info *ci;
 	__asm__(
-#ifdef __x86_64__
+#if ENV_X86_64
 		"and %%rsp,%0; "
 		"or  %2, %0 "
 #else

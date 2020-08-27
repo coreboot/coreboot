@@ -5,7 +5,7 @@
 #include <cpu/x86/cr.h>
 
 
-#ifdef __x86_64__
+#if ENV_X86_64
 
 	/*
 	 * Functions to handle mode switches from long mode to protected

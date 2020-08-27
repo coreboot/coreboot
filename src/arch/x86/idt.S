@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 	.section ".text._idt", "ax", @progbits
-#ifdef __x86_64__
+#if ENV_X86_64
 	.code64
 #else
 	.code32
@@ -109,7 +109,7 @@ vec19:
 
 .global int_hand
 int_hand:
-#ifdef __x86_64__
+#if ENV_X86_64
 	/* At this point, on x86-64, on the stack there is:
 	 *  0(%rsp) vector
 	 *  8(%rsp) error code

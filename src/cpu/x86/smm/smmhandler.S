@@ -43,7 +43,7 @@
 
 #define SMM_HANDLER_OFFSET 0x0000
 
-#if defined(__x86_64__)
+#if ENV_X86_64
 .bss
 ia32efer_backup_eax:
 .long 0
@@ -166,7 +166,7 @@ untampered_lapic:
 	addl	$SMM_STACK_SIZE, %ebx
 	movl	%ebx, %esp
 
-#if defined(__x86_64__)
+#if ENV_X86_64
 	/* Backup IA32_EFER. Preserves ebx. */
 	movl	$(IA32_EFER), %ecx
 	rdmsr
@@ -180,7 +180,7 @@ untampered_lapic:
 	/* Call C handler */
 	call	smi_handler
 
-#if defined(__x86_64__)
+#if ENV_X86_64
 	/*
 	 * The only reason to go back to protected mode is that RSM doesn't restore
 	 * MSR registers and MSR IA32_EFER was modified by entering long mode.

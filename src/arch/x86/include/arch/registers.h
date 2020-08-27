@@ -42,7 +42,7 @@
 		uint64_t r##A; \
 	} __packed
 
-#ifdef __ARCH_x86_64__
+#if ENV_X86_64
 struct eregs {
 	QUAD_DOWNTO8(a);
 	QUAD_DOWNTO8(c);

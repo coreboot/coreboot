@@ -15,7 +15,7 @@
 	#define _STACK_TOP _ecar_stack
 #endif
 
-#ifdef __x86_64__
+#if ENV_X86_64
 .code64
 #else
 .code32
@@ -26,7 +26,7 @@
 _start:
 
 	/* Migrate GDT to this text segment */
-#ifdef __x86_64__
+#if ENV_X86_64
 	call	gdt_init64
 #else
 	call	gdt_init

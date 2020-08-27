@@ -214,7 +214,7 @@ load_msr:
 	mov	%eax, %cr4
 #endif
 
-#ifdef __x86_64__
+#if ENV_X86_64
 	/* entry64.inc preserves ebx. */
 #include <cpu/x86/64bit/entry64.inc>
 

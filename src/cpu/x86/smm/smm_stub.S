@@ -185,7 +185,7 @@ apicid_end:
 	/* Align stack to 16 bytes. Another 32 bytes are pushed below. */
 	andl	$0xfffffff0, %esp
 
-#ifdef __x86_64__
+#if ENV_X86_64
 	mov	%ecx, %edi
 	/* Backup IA32_EFER. Preserves ebx. */
 	movl	$(IA32_EFER), %ecx
@@ -204,7 +204,7 @@ apicid_end:
 	 *   struct arg = { c_handler_params, cpu_num, smm_runtime, canary };
 	 *   c_handler(&arg)
 	 */
-#ifdef __x86_64__
+#if ENV_X86_64
 	push	%rbx /* uintptr_t *canary */
 	push	%rcx /* size_t cpu */
 

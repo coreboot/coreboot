@@ -24,7 +24,7 @@ thread_stacks:
 #endif
 
 	.section ".text._start", "ax", @progbits
-#ifdef __x86_64__
+#if ENV_X86_64
 	.code64
 #else
 	.code32
@@ -32,7 +32,7 @@ thread_stacks:
 	.globl _start
 _start:
 	cli
-#ifdef __x86_64__
+#if ENV_X86_64
 	movabs	$gdtaddr, %rax
 	lgdt	(%rax)
 #else
@@ -45,7 +45,7 @@ _start:
 	movl	%eax, %ss
 	movl	%eax, %fs
 	movl	%eax, %gs
-#ifdef __x86_64__
+#if ENV_X86_64
 	mov	$RAM_CODE_SEG64, %ecx
 	call	SetCodeSelector
 #endif
@@ -54,7 +54,7 @@ _start:
 
 	cld
 
-#ifdef	__x86_64__
+#if ENV_X86_64
 	mov	%rdi, %rax
 	movabs	%rax, _cbmem_top_ptr
 	movabs	$_stack, %rdi
@@ -117,7 +117,7 @@ _start:
 
 	.globl gdb_stub_breakpoint
 gdb_stub_breakpoint:
-#ifdef __x86_64__
+#if ENV_X86_64
 	pop	%rax	/* Return address */
 	pushfl
 	push	%cs
@@ -139,7 +139,7 @@ gdb_stub_breakpoint:
 
 gdtaddr:
 	.word	gdt_end - gdt - 1
-#ifdef __x86_64__
+#if ENV_X86_64
 	.quad	gdt
 #else
 	.long	gdt		/* we know the offset */
@@ -176,7 +176,7 @@ gdt:
 
 	/* selgdt 0x18, flat data segment */
 	.word	0xffff, 0x0000
-#ifdef __x86_64__
+#if ENV_X86_64
 	.byte	0x00, 0x92, 0xcf, 0x00
 #else
 	.byte	0x00, 0x93, 0xcf, 0x00
@@ -210,7 +210,7 @@ gdt:
 					* limit
 					*/
 
-#ifdef __x86_64__
+#if ENV_X86_64
 	/* selgdt 0x48, flat x64 code segment */
 	.word	0xffff, 0x0000
 	.byte	0x00, 0x9b, 0xaf, 0x00
@@ -218,7 +218,7 @@ gdt:
 gdt_end:
 
 	.section ".text._start", "ax", @progbits
-#ifdef __x86_64__
+#if ENV_X86_64
 SetCodeSelector:
 	# save rsp because iret will align it to a 16 byte boundary
 	mov	%rsp, %rdx

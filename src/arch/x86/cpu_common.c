@@ -2,7 +2,7 @@
 
 #include <cpu/cpu.h>
 
-#ifndef __x86_64__
+#if ENV_X86_32
 /* Standard macro to see if a specific flag is changeable */
 static inline int flag_is_changeable_p(uint32_t flag)
 {

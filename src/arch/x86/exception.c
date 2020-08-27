@@ -492,7 +492,7 @@ void x86_exception(struct eregs *info)
 	logical_processor = cpu_index();
 #endif
 	u8 *code;
-#ifdef __x86_64__
+#if ENV_X86_64
 #define MDUMP_SIZE 0x100
 	printk(BIOS_EMERG,
 		"CPU Index %d - APIC %d Unexpected Exception:\n"

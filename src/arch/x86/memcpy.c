@@ -15,7 +15,7 @@ void *memcpy(void *dest, const void *src, size_t n)
 #endif
 
 	asm volatile(
-#ifdef __x86_64__
+#if ENV_X86_64
 		"rep ; movsd\n\t"
 		"mov %4,%%rcx\n\t"
 #else

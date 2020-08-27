@@ -94,7 +94,7 @@ extern void _dead_code_assertion_failed(void) __attribute__((noreturn));
 	*(type *)(uintptr_t)0; \
 })
 
-#ifdef __x86_64__
+#if ENV_X86_64
 #define pointer_to_uint32_safe(x) ({ \
 	if ((uintptr_t)(x) > 0xffffffffUL) \
 		die("Cast from pointer to uint32_t overflows"); \

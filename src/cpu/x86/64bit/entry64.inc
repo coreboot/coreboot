@@ -9,7 +9,7 @@
  * Clobbers: eax, ecx, edx
  */
 
-#if defined(__x86_64__)
+#if ENV_X86_64
 	.code32
 #if (CONFIG_ARCH_X86_64_PGTBL_LOC & 0xfff) > 0
 #error pagetables must be 4KiB aligned!

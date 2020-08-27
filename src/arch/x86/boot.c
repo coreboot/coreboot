@@ -21,14 +21,14 @@ int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 
 void arch_prog_run(struct prog *prog)
 {
-#if ENV_RAMSTAGE && defined(__x86_64__)
+#if ENV_RAMSTAGE && ENV_X86_64
 	const uint32_t arg = pointer_to_uint32_safe(prog_entry_arg(prog));
 	const uint32_t entry = pointer_to_uint32_safe(prog_entry(prog));
 
 	/* On x86 coreboot payloads expect to be called in protected mode */
 	protected_mode_jump(entry, arg);
 #else
-#ifdef __x86_64__
+#if ENV_X86_64
 	void (*doit)(void *arg);
 #else
 	/* Ensure the argument is pushed on the stack. */

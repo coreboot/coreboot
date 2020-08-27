@@ -9,7 +9,7 @@
 
 #define COMPILER_BARRIER "memory"
 
-#ifdef __x86_64__
+#if ENV_X86_64
 #define CRx_TYPE uint64_t
 #define CRx_IN   "q"
 #define CRx_RET  "=q"

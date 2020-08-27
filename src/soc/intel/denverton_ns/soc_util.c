@@ -274,7 +274,7 @@ void *memcpy_s(void *dest, const void *src, size_t n)
 	unsigned long d0, d1, d2;
 
 	asm volatile(
-#ifdef __x86_64__
+#if ENV_X86_64
 		"rep ; movsd\n\t"
 		"mov %4,%%rcx\n\t"
 #else

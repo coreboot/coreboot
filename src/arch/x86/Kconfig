@@ -39,19 +39,24 @@ config ARCH_ALL_STAGES_X86_32
 
 config ARCH_BOOTBLOCK_X86_64
 	bool
+	select SSE2
 
 config ARCH_VERSTAGE_X86_64
 	bool
+	select SSE2
 
 config ARCH_ROMSTAGE_X86_64
 	bool
+	select SSE2
 
 config ARCH_POSTCAR_X86_64
 	bool
 	default ARCH_ROMSTAGE_X86_64 && POSTCAR_STAGE
+	select SSE2
 
 config ARCH_RAMSTAGE_X86_64
 	bool
+	select SSE2
 
 config ARCH_ALL_STAGES_X86_64
 	bool

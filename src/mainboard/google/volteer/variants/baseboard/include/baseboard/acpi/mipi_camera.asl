@@ -146,64 +146,69 @@ Scope (\_SB.PCI0.IPU0)
 
 Scope (\_SB.PCI0.I2C3)
 {
+	/* Reference counter to track power control by RCAM and VCM */
+	Name (REFC, 0)
 	PowerResource (RCPR, 0x00, 0x0000)
 	{
-		Name (STA, Zero)
+		Name (STA, 0)
 		Method (_ON, 0, Serialized)  /* Rear camera_ON_: Power On */
 		{
-			If ((STA == Zero))
-			{
-				/* Enable IMG_CLK */
-				MCON(3,1) /* Clock 3, 19.2MHz */
+			/* Enable IMG_CLK */
+			MCON(3,1) /* Clock 3, 19.2MHz */
 
-				/* Pull RST low */
+			/* Pull RST low */
 #if CONFIG(BOARD_GOOGLE_VOLTEER)
-				CTXS(GPP_F15)
+			CTXS(GPP_F15)
 #else
-				CTXS(GPP_D4)
+			CTXS(GPP_D4)
 #endif
 
-				/* Pull SNRPWR_EN high */
-				STXS(GPP_H14)
+			/* Pull SNRPWR_EN high */
+			STXS(GPP_H14)
 
+			If (REFC == 0)
+			{
 				/* Pull PWREN high */
 				STXS(GPP_H20)
-				Sleep(2) /* reset pulse width */
-
-				/* Pull RST high */
-#if CONFIG(BOARD_GOOGLE_VOLTEER)
-				STXS(GPP_F15)
-#else
-				STXS(GPP_D4)
-#endif
-				Sleep(1) /* t2 */
-
-				Store(1,STA)
 			}
+			Sleep(2) /* reset pulse width */
+
+			REFC++
+
+			/* Pull RST high */
+#if CONFIG(BOARD_GOOGLE_VOLTEER)
+			STXS(GPP_F15)
+#else
+			STXS(GPP_D4)
+#endif
+			Sleep(1) /* t2 */
+
+			STA = 1
 		}
 		Method (_OFF, 0, Serialized)  /* Rear camera _OFF: Power Off */
 		{
-			If ((STA == One))
-			{
-				/* Disable IMG_CLK */
-				Sleep(1) /* t0+t1 */
-				MCOF(3) /* Clock 3 */
+			/* Disable IMG_CLK */
+			Sleep(1) /* t0+t1 */
+			MCOF(3) /* Clock 3 */
 
-				/* Pull RST low */
+			/* Pull RST low */
 #if CONFIG(BOARD_GOOGLE_VOLTEER)
-				CTXS(GPP_F15)
+			CTXS(GPP_F15)
 #else
-				CTXS(GPP_D4)
+			CTXS(GPP_D4)
 #endif
 
+			If (REFC == 1)
+			{
 				/* Pull PWREN low */
 				CTXS(GPP_H20)
-
-				/* Pull SNRPWR_EN low */
-				CTXS(GPP_H14)
-
-				Store(0,STA)
 			}
+			REFC--
+
+			/* Pull SNRPWR_EN low */
+			CTXS(GPP_H14)
+
+			STA = 0
 		}
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
@@ -266,7 +271,7 @@ Scope (\_SB.PCI0.I2C3)
 				{
 					"i2c-allow-low-power-probe",
 					0x01
- 				}
+				}
 			}
 		})
 		Name (PRT0, Package (0x04)
@@ -339,6 +344,35 @@ Scope (\_SB.PCI0.I2C3)
 		})
 	}
 
+	PowerResource (VCPR, 0x00, 0x0000)
+	{
+		Name (STA, 0)
+		Method (_ON, 0, Serialized)  /* VCPR_ON_: VCM Power On */
+		{
+			If (REFC == 0)
+			{
+				/* Pull PWREN high */
+				STXS(GPP_H20)
+			}
+			REFC++
+			STA = 1
+		}
+		Method (_OFF, 0, Serialized)  /* VCPR_OFF: VCM Power Off */
+		{
+			If (REFC == 1)
+			{
+				/* Pull PWREN low */
+				CTXS(GPP_H20)
+			}
+			REFC--
+			STA = 0
+		}
+		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		{
+			Return (STA)
+		}
+	}
+
 	Device (VCM0)
 	{
 		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
@@ -361,11 +395,11 @@ Scope (\_SB.PCI0.I2C3)
 		})
 		Name (_PR0, Package (0x01)  /* _PR0: Power Resources for D0 */
 		{
-			RCPR
+			VCPR
 		})
 		Name (_PR3, Package (0x01)  /* _PR3: Power Resources for D3hot */
 		{
-			RCPR
+			VCPR
 		})
 		Name (_DSD, Package (0x02)  /* _DSD: Device-Specific Data */
 		{
@@ -381,7 +415,7 @@ Scope (\_SB.PCI0.I2C3)
 				{
 					"i2c-allow-low-power-probe",
 					0x01
- 				}
+				}
 			}
 		})
 	}
@@ -455,12 +489,12 @@ Scope (\_SB.PCI0.I2C3)
 
 Scope (\_SB.PCI0.I2C2)
 {
+	Name (STA, Zero)
 	PowerResource (FCPR, 0x00, 0x0000)
 	{
-		Name (STA, Zero)
 		Method (_ON, 0, Serialized)  /* Front camera_ON_: Power On */
 		{
-			If ((STA == Zero))
+			If (STA == 0)
 			{
 				/* Enable IMG_CLK */
 				MCON(2,1) /* Clock 2, 19.2MHz */
@@ -479,12 +513,12 @@ Scope (\_SB.PCI0.I2C2)
 				STXS(GPP_D4)
 				Sleep(1) /* t2 */
 
-				Store(1,STA)
+				STA = 1
 			}
 		}
 		Method (_OFF, 0, Serialized)  /* Front camera_OFF_: Power Off */
 		{
-			If ((STA == One))
+			If (STA == 1)
 			{
 				/* Disable IMG_CLK */
 				Sleep(1) /* t0+t1 */
@@ -499,7 +533,7 @@ Scope (\_SB.PCI0.I2C2)
 				/* Pull SNRPWR_EN low */
 				CTXS(GPP_D18)
 
-				Store(0,STA)
+				STA = 0
 			}
 		}
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -637,20 +638,14 @@ func getSPDByte(index int, memAttribs *memAttributes) byte {
 	return e.constVal
 }
 
-func createSPD(memAttribs *memAttributes) string {
-	var s string
+func createSPD(memAttribs *memAttributes) bytes.Buffer {
+	var spd bytes.Buffer
 
 	for i := 0; i < 512; i++ {
-		b := getSPDByte(i, memAttribs)
-
-		if (i + 1) % 16 == 0 {
-			s += fmt.Sprintf("%02X\n", b)
-		} else {
-			s += fmt.Sprintf("%02X ", b)
-		}
+		spd.WriteByte(getSPDByte(i, memAttribs))
 	}
 
-	return s
+	return spd
 }
 
 func dedupeMemoryPart(dedupedParts []*memPart, memPart *memPart) bool {
@@ -665,9 +660,9 @@ func dedupeMemoryPart(dedupedParts []*memPart, memPart *memPart) bool {
 }
 
 func generateSPD(memPart *memPart, SPDId int, SPDDirName string) {
-	s := createSPD(&memPart.Attribs)
-	memPart.SPDFileName = fmt.Sprintf("lp4x-spd-%d.hex", SPDId)
-	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), []byte(s), 0644)
+	spd := createSPD(&memPart.Attribs)
+	memPart.SPDFileName = fmt.Sprintf("lp4x-spd-%d.bin", SPDId)
+	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), spd.Bytes(), 0644)
 }
 
 func readMemoryParts(memParts *memParts, memPartsFileName string) error {

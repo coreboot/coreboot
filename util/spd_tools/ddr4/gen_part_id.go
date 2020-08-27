@@ -265,7 +265,7 @@ func genMakefile(partIdList []partIds, makefileDirName string) error {
 
 	for i := 0; i < len(partIdList); i++ {
 		if partIdList[i].SPDFileName == "" {
-			s += fmt.Sprintf("SPD_SOURCES += %s ", "ddr4-spd-empty.hex")
+			s += fmt.Sprintf("SPD_SOURCES += %s ", "ddr4-spd-empty.bin")
 			s += fmt.Sprintf("     # ID = %d(0b%04b)\n", i, int64(i))
 		} else {
 			s += fmt.Sprintf("SPD_SOURCES += %s ", partIdList[i].SPDFileName)

@@ -168,7 +168,7 @@ Input JSON file requires the following two fields for every memory part:
 This tool generates the following files using the global list of
 memory parts in JSON format as described above:
   * De-duplicated SPDs required for the different memory parts. These
-    SPD files are named (spd_1.hex, spd_2.hex, spd_3.hex and so on)
+    SPD files are named (spd_1.bin, spd_2.bin, spd_3.bin and so on)
     and placed in the directory provided as an input to the tool.
   * CSV file representing which of the deduplicated SPD files is used
     by which memory part. This file is named as
@@ -176,11 +176,11 @@ memory parts in JSON format as described above:
     as an input to the tool along with the generated SPD
     files. Example CSV file:
     ```
-    MEMORY_PART_A, spd_1.hex
-    MEMORY_PART_B, spd_2.hex
-    MEMORY_PART_C, spd_3.hex
-    MEMORY_PART_D, spd_2.hex
-    MEMORY_PART_E, spd_2.hex
+    MEMORY_PART_A, spd_1.bin
+    MEMORY_PART_B, spd_2.bin
+    MEMORY_PART_C, spd_3.bin
+    MEMORY_PART_D, spd_2.bin
+    MEMORY_PART_E, spd_2.bin
     ```
 
 ## Tool 2 - gen_part_id.go
@@ -222,9 +222,9 @@ Sample Makefile.inc:
 ## This is an auto-generated file. Do not edit!!
 
 SPD_SOURCES =
-SPD_SOURCES += spd_1.hex      # ID = 0(0b0000)  Parts = MEMORY_PART_A
-SPD_SOURCES += spd_2.hex      # ID = 1(0b0001)  Parts = MEMORY_PART_B, MEMORY_PART_D
-SPD_SOURCES += spd_3.hex      # ID = 2(0b0010)  Parts = MEMORY_PART_C
+SPD_SOURCES += spd_1.bin      # ID = 0(0b0000)  Parts = MEMORY_PART_A
+SPD_SOURCES += spd_2.bin      # ID = 1(0b0001)  Parts = MEMORY_PART_B, MEMORY_PART_D
+SPD_SOURCES += spd_3.bin      # ID = 2(0b0010)  Parts = MEMORY_PART_C
 ```
 
 ### Note of caution

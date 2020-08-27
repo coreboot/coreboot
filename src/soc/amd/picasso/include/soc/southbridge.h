@@ -139,12 +139,14 @@
 
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
-#define   GPP_CLK0_REQ_SHL		0
-#define   GPP_CLK1_REQ_SHL		2
-#define   GFX_CLK0_REQ_SHL		4
-#define   GPP_CLK2_REQ_SHL		6
-#define   GPP_CLK3_REQ_SHL		8
-#define   GFX_CLK1_REQ_SHL		10
+#define   GPP_CLK0_REQ_SHIFT		0
+#define   GPP_CLK1_REQ_SHIFT		2
+#define   GPP_CLK4_REQ_SHIFT		4
+#define   GPP_CLK2_REQ_SHIFT		6
+#define   GPP_CLK3_REQ_SHIFT		8
+#define   GPP_CLK5_REQ_SHIFT		10
+#define   GPP_CLK6_REQ_SHIFT		12
+#define     GPP_CLK_OUTPUT_COUNT	7
 #define   GPP_CLK_REQ_MASK(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_ON(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))

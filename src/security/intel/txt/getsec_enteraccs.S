@@ -108,10 +108,10 @@ cond_push_var_mtrrs:
 	orl	$(CR0_CD | CR0_NW), %eax
 	movl	%eax, %cr0
 
-	/* Disable fixed MTRRs */
+	/* Disable all MTRRs */
 	movl	$(MTRR_DEF_TYPE_MSR), %ecx
-	rdmsr
-	andl	$(~MTRR_DEF_TYPE_FIX_EN), %eax
+	xorl	%eax, %eax
+	xorl	%edx, %edx
 	wrmsr
 
 	/*
@@ -165,24 +165,93 @@ cond_clear_var_mtrrs:
 	 * Chapter A.1.1
 	 * Intel TXT Software Development Guide (Document: 315168-015)
 	 */
-	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	movl	12(%ebp), %eax			/* %eax = acmbase */
-	orl	$(6), %eax			/* MTRR_TYPE_WB */
-	movl	$0, %edx
-	wrmsr
 
-	/* Round acmsize to next power of two. Required for MTRR programming. */
+	/*
+	 * Important note: The MTRRs must cache less than a page (4 KiB)
+	 * of unused memory after the BIOS ACM. Failure to do so will
+	 * result in a TXT reset with Class Code 5, Major Error Code 2.
+	 *
+	 * The caller must have checked that there are enough variable
+	 * MTRRs to cache the ACM size prior to invoking this routine.
+	 */
+
+	/* Determine size of AC module */
+	movl	12(%ebp), %eax			/* %eax = acmbase */
 	movl	$1, %ebx
-	movl	16(%ebp), %ecx			/* %ebx = acmsize */
-	dec	%ecx
-	bsr	%ecx, %ecx			/* find MSB */
-	inc	%ecx
-	shl	%cl, %ebx
-	movl	$(MTRR_PHYS_MASK(0)), %ecx
-	xorl	%eax, %eax
-	subl	%ebx, %eax			/* %eax = 4GIB - log2_ceil(ACM SIZE) */
-	orl	$((1 << 11)), %eax		/* MTRR_PHYS_MASK_VALID */
+	movl	16(%ebp), %ebx			/* %ebx = acmsize */
+
+	/* Round up to page size */
+	addl	$(0xfff), %ebx
+	andl	$(~0xfff), %ebx			/* Aligned to a page (4 KiB) */
+
+	/*
+	 * Use XMM to store local variables. This code will need to be
+	 * used in romstage, and CAR will have been torn down by then.
+	 */
+	movd	%eax, %xmm0			/* XMM0: Base address of next MTRR */
+	movd	%ebx, %xmm1			/* XMM1: Remaining size to cache */
+
+	/* Get the number of variable MTRRs */
+	movl	$(MTRR_CAP_MSR), %ecx
+	rdmsr
+	andl	$(0xff), %eax
+
+	/* Initialize ECX */
+	movl	$(MTRR_PHYS_BASE(0)), %ecx
+
+	jmp	cond_allocate_var_mtrrs
+
+body_allocate_var_mtrrs:
+
+	/* Program MTRR base */
+	xorl	%edx, %edx
+	movd	%xmm0, %eax
+	orl	$(MTRR_TYPE_WRBACK), %eax
+	wrmsr
+	incl	%ecx				/* Move index to MTRR_PHYS_MASK */
+
+	/* Temporarily transfer MSR index to EDX so that CL can be used */
+	movl	%ecx, %edx
+
+	/* Determine next size to cache */
+	bsr	%ebx, %ecx
+	movl	$(1), %ebx
+	shl	%cl, %ebx			/* Can only use CL here */
+
+	/* Restore ECX */
+	movl	%edx, %ecx
+
+	/* Update saved base address */
+	addl	%ebx, %eax
+	movd	%eax, %xmm0
+
+	/* Update saved remaining size */
+	movd	%xmm1, %eax
+	subl	%ebx, %eax
+	movd	%eax, %xmm1
+
+	/* Program MTRR mask */
 	movl	MTRR_HIGH_MASK, %edx
+	xorl	%eax, %eax
+	subl	%ebx, %eax			/* %eax = 4GIB - size to cache */
+	orl	$(MTRR_PHYS_MASK_VALID), %eax
+	wrmsr
+	incl	%ecx				/* Move index to next MTRR_PHYS_BASE */
+
+cond_allocate_var_mtrrs:
+
+	/* Check if we still need to cache something */
+	movd	%xmm1, %ebx
+	andl	%ebx, %ebx
+
+	jnz	body_allocate_var_mtrrs
+
+	/*
+	 * Now that the variable MTRRs have been set up, enable them.
+	 */
+	movl	$(MTRR_DEF_TYPE_MSR), %ecx
+	rdmsr
+	orl	$(MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
 	/* Enable cache - GPF# if not done */

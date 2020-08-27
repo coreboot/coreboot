@@ -226,7 +226,15 @@ xhci_wait_for_event_type(xhci_t *const xhci,
 	return *timeout_us;
 }
 
-/* returns cc of command in question (pointed to by `address`) */
+/*
+ * Ref. xHCI Specification Revision 1.2, May 2019.
+ * Section 4.6.1.2.
+ *
+ * Process events from xHCI Abort command.
+ *
+ * Returns CC_COMMAND_RING_STOPPED on success and TIMEOUT on failure.
+ */
+
 int
 xhci_wait_for_command_aborted(xhci_t *const xhci, const trb_t *const address)
 {
@@ -239,12 +247,13 @@ xhci_wait_for_command_aborted(xhci_t *const xhci, const trb_t *const address)
 	int cc = TIMEOUT;
 	/*
 	 * Expects two command completion events:
-	 * The first with CC == COMMAND_ABORTED should point to address,
+	 * The first with CC == COMMAND_ABORTED should point to address
+	 * (not present if command was not running),
 	 * the second with CC == COMMAND_RING_STOPPED should point to new dq.
 	 */
 	while (xhci_wait_for_event_type(xhci, TRB_EV_CMD_CMPL, &timeout_us)) {
 		if ((xhci->er.cur->ptr_low == virt_to_phys(address)) &&
-				(xhci->er.cur->ptr_high == 0)) {
+		    (xhci->er.cur->ptr_high == 0)) {
 			cc = TRB_GET(CC, xhci->er.cur);
 			xhci_advance_event_ring(xhci);
 			break;
@@ -252,20 +261,31 @@ xhci_wait_for_command_aborted(xhci_t *const xhci, const trb_t *const address)
 
 		xhci_handle_command_completion_event(xhci);
 	}
-	if (!timeout_us)
-		xhci_debug("Warning: Timed out waiting for COMMAND_ABORTED.\n");
+	if (timeout_us == 0) {
+		xhci_debug("Warning: Timed out waiting for "
+			   "COMMAND_ABORTED or COMMAND_RING_STOPPED.\n");
+		goto update_and_return;
+	}
+	if (cc == CC_COMMAND_RING_STOPPED) {
+		/* There may not have been a command to abort. */
+		goto update_and_return;
+	}
+
+	timeout_us = USB_MAX_PROCESSING_TIME_US; /* 5s */
 	while (xhci_wait_for_event_type(xhci, TRB_EV_CMD_CMPL, &timeout_us)) {
 		if (TRB_GET(CC, xhci->er.cur) == CC_COMMAND_RING_STOPPED) {
-			xhci->cr.cur = phys_to_virt(xhci->er.cur->ptr_low);
+			cc = CC_COMMAND_RING_STOPPED;
 			xhci_advance_event_ring(xhci);
 			break;
 		}
 
 		xhci_handle_command_completion_event(xhci);
 	}
-	if (!timeout_us)
+	if (timeout_us == 0)
 		xhci_debug("Warning: Timed out "
 			   "waiting for COMMAND_RING_STOPPED.\n");
+
+update_and_return:
 	xhci_update_event_dq(xhci);
 	return cc;
 }

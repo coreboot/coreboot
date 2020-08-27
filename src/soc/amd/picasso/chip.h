@@ -154,6 +154,9 @@ struct soc_amd_picasso_config {
 		USB_OC_PIN_5	= 0x5,
 		USB_OC_NONE	= 0xf,
 	} usb_port_overcurrent_pin[USB_PORT_COUNT];
+
+	/* The array index is the general purpose PCIe clock output number. */
+	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 };
 
 typedef struct soc_amd_picasso_config config_t;

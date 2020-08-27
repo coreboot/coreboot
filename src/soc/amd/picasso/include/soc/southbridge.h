@@ -245,6 +245,13 @@
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			BIT(7) /* Write-once */
 
+/* this is for the devicetree setting and not the values written to the register */
+enum gpp_clk_req_setting {
+	GPP_CLK_ON,	/* GPP clock always on; default */
+	GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
+	GPP_CLK_OFF,	/* GPP clk off */
+};
+
 typedef struct aoac_devs {
 	unsigned int :7;
 	unsigned int ic2e:1; /* 7: I2C2 */

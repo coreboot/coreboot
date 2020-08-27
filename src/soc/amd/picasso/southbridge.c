@@ -307,6 +307,48 @@ static void al2ahb_clock_gate(void)
 	write8((void *)(al2ahb_base + AL2AHB_CONTROL_HCLK_OFFSET), al2ahb_val);
 }
 
+/* configure the genral purpose PCIe clock outputs according to the devicetree settings */
+static void gpp_clk_setup(void)
+{
+	const struct soc_amd_picasso_config *cfg = config_of_soc();
+
+	/* look-up table to be able to iterate over the PCIe clock output settings */
+	const uint8_t gpp_clk_shift_lut[GPP_CLK_OUTPUT_COUNT] = {
+		GPP_CLK0_REQ_SHIFT,
+		GPP_CLK1_REQ_SHIFT,
+		GPP_CLK2_REQ_SHIFT,
+		GPP_CLK3_REQ_SHIFT,
+		GPP_CLK4_REQ_SHIFT,
+		GPP_CLK5_REQ_SHIFT,
+		GPP_CLK6_REQ_SHIFT,
+	};
+
+	uint32_t gpp_clk_ctl = misc_read32(GPP_CLK_CNTRL);
+
+	for (int i = 0; i < GPP_CLK_OUTPUT_COUNT; i++) {
+		gpp_clk_ctl &= ~GPP_CLK_REQ_MASK(gpp_clk_shift_lut[i]);
+		/*
+		 * The remapping of values is done so that the default of the enum used for the
+		 * devicetree settings is the clock being enabled, so that a missing devicetree
+		 * configuration for this will result in an always active clock and not an
+		 * inactive PCIe clock output.
+		 */
+		switch (cfg->gpp_clk_config[i]) {
+		case GPP_CLK_REQ:
+			gpp_clk_ctl |= GPP_CLK_REQ_EXT(gpp_clk_shift_lut[i]);
+			break;
+		case GPP_CLK_OFF:
+			gpp_clk_ctl |= GPP_CLK_REQ_OFF(gpp_clk_shift_lut[i]);
+			break;
+		case GPP_CLK_ON:
+		default:
+			gpp_clk_ctl |= GPP_CLK_REQ_ON(gpp_clk_shift_lut[i]);
+		}
+	}
+
+	misc_write32(GPP_CLK_CNTRL, gpp_clk_ctl);
+}
+
 void southbridge_init(void *chip_info)
 {
 	struct chipset_state *state;
@@ -322,6 +364,8 @@ void southbridge_init(void *chip_info)
 	acpi_clear_pm_gpe_status();
 
 	al2ahb_clock_gate();
+
+	gpp_clk_setup();
 }
 
 void southbridge_final(void *chip_info)

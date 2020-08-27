@@ -27,7 +27,7 @@ static bool getsec_enabled(void)
 	 * Check if SMX, VMX and GetSec instructions haven't been disabled.
 	 */
 	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
-	if ((msr.lo & 0xff07) != 0xff07)
+	if ((msr.lo & 0xff06) != 0xff06)
 		return false;
 
 	/*

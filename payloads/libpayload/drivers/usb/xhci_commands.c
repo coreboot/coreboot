@@ -75,7 +75,13 @@ xhci_wait_for_command(xhci_t *const xhci,
 	/* Abort command on timeout */
 	xhci_debug("Aborting command (@%p), CRCR: 0x%"PRIx32"\n",
 		   cmd_trb, xhci->opreg->crcr_lo);
-	xhci->opreg->crcr_lo |= CRCR_CS | CRCR_CA;
+	/*
+	 * Ref. xHCI Specification Revision 1.2, May 2019.
+	 * Section 5.4.5, Table 5-24.
+	 *
+	 * Abort the command and stop the ring.
+	 */
+	xhci->opreg->crcr_lo |= CRCR_CA;
 	xhci->opreg->crcr_hi = 0;
 	cc = xhci_wait_for_command_aborted(xhci, cmd_trb);
 

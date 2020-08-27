@@ -215,6 +215,18 @@
                 "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
-	}
+        },
+        {
+            // Datasheet Revision: Rev. A 03/2021 EN
+            "name": "MT40A1G16RC-062E:B",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 16,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        }
     ]
 }

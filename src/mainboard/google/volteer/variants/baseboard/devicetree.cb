@@ -187,14 +187,6 @@ chip soc/intel/tigerlake
 	register "DdiPort3Ddc" = "0"
 	register "DdiPort4Ddc" = "0"
 
-	# Disable PM to allow for shorter irq pulses
-	register "gpio_override_pm" = "1"
-	register "gpio_pm[0]" = "0"
-	register "gpio_pm[1]" = "0"
-	register "gpio_pm[2]" = "0"
-	register "gpio_pm[3]" = "0"
-	register "gpio_pm[4]" = "0"
-
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
 

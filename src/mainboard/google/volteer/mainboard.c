@@ -4,9 +4,12 @@
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <drivers/spi/tpm/tpm.h>
 #include <ec/ec.h>
 #include <fw_config.h>
+#include <security/tpm/tss.h>
 #include <soc/gpio.h>
+#include <soc/ramstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
 
@@ -36,6 +39,23 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
+}
+
+void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
+{
+	tlcl_lib_init();
+	if (cr50_is_long_interrupt_pulse_enabled()) {
+		printk(BIOS_INFO, "Enabling S0i3.4\n");
+	} else {
+		/*
+		 * Disable S0i3.4, preventing the GPIO block from switching to
+		 * slow clock.
+		 */
+		printk(BIOS_INFO, "Not enabling S0i3.4\n");
+		cfg->LpmStateDisableMask |= LPM_S0i3_4;
+		cfg->gpio_override_pm = 1;
+		memset(cfg->gpio_pm, 0, sizeof(cfg->gpio_pm));
+	}
 }
 
 static void mainboard_chip_init(void *chip_info)

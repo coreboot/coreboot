@@ -828,8 +828,8 @@ typedef struct {
 **/
   UINT8                       AmtKvmEnabled;
 
-/** Offset 0x040E - KVM Switch
-  Enable/Disable. 0: Disable, 1: enable, KVM enable/disable state by Mebx.
+/** Offset 0x040E - Force MEBX execution
+  Enable/Disable. 0: Disable, 1: enable, Force MEBX execution.
   $EN_DIS
 **/
   UINT8                       ForcMebxSyncUp;

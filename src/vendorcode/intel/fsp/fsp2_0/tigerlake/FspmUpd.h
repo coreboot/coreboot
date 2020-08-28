@@ -2487,7 +2487,18 @@ typedef struct {
 
 /** Offset 0x089F - Reserved
 **/
-  UINT8                       Reserved44[129];
+  UINT8                       Reserved44[124];
+
+/** Offset 0x091B - GPIO Override
+  Gpio Override Level - FSP will not configure any GPIOs and rely on GPIO setings
+  before moved to FSP. Available configurations 0: Disable;1: Level 1 - skips GpioSetNativePadByFunction;Level
+  2 - skips GpioSetNativePadByFunction and GpioSetPadMode
+**/
+  UINT8                       GpioOverride;
+
+/** Offset 0x091C - Reserved
+**/
+  UINT8                       Reserved45[4];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -2508,7 +2519,7 @@ typedef struct {
 
 /** Offset 0x0920
 **/
-  UINT8                       UnusedUpdSpace26[6];
+  UINT8                       UnusedUpdSpace25[6];
 
 /** Offset 0x0926
 **/

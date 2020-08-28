@@ -115,6 +115,15 @@ chip soc/amd/picasso
 		.flash_ch_en = 0,
 	}"
 
+	# genral purpose PCIe clock output configuration
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[4]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[5]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[6]" = "GPP_CLK_REQ"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

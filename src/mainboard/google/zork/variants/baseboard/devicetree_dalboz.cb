@@ -180,6 +180,15 @@ chip soc/amd/picasso
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
+	# genral purpose PCIe clock output configuration
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # WLAN
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # SD Reader
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVME SSD
+	register "gpp_clk_config[3]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[4]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[5]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[6]" = "GPP_CLK_OFF"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

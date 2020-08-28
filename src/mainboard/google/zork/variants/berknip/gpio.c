@@ -8,6 +8,10 @@
 #include <ec/google/chromeec/ec.h>
 
 static const struct soc_amd_gpio berknip_bid1_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - no used */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - no used */
+	PAD_NC(GPIO_5),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
 	/* USB_OC4_L - USB_A1 */
@@ -29,12 +33,23 @@ static const struct soc_amd_gpio berknip_bid1_gpio_set_stage_ram[] = {
 };
 
 static const struct soc_amd_gpio berknip_bid2_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - no used */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - no used */
+	PAD_NC(GPIO_5),
 	/* EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
 	/* TP */
 	PAD_NC(GPIO_90),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
+};
+
+static const struct soc_amd_gpio berknip_gpio_set_stage_ram[] = {
+	/* PEN_DETECT_ODL - no used */
+	PAD_NC(GPIO_4),
+	/* PEN_POWER_EN - no used */
+	PAD_NC(GPIO_5),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -57,6 +72,6 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 		return berknip_bid2_gpio_set_stage_ram;
 	}
 
-	*size = 0;
-	return NULL;
+	*size = ARRAY_SIZE(berknip_gpio_set_stage_ram);
+	return berknip_gpio_set_stage_ram;
 }

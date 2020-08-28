@@ -205,6 +205,71 @@ chip soc/intel/cannonlake
 	register "sata_port[1].TxGen3DeEmph" = "0x20"
 
 	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				## Active Policy
+				register "policies.active[0]" = "{.target=DPTF_CPU,
+					.thresholds={TEMP_PCT(90, 85),
+						     TEMP_PCT(85, 75),
+						     TEMP_PCT(80, 65),
+						     TEMP_PCT(75, 55),
+						     TEMP_PCT(70, 45),}}"
+				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
+					.thresholds={TEMP_PCT(50, 85),
+						     TEMP_PCT(47, 75),
+						     TEMP_PCT(45, 65),
+						     TEMP_PCT(42, 55),
+						     TEMP_PCT(39, 45),}}"
+
+				## Passive Policy
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           93, 5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 65, 6000)"
+
+				## Critical Policy
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          100, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
+
+				## Power Limits Control
+				# PL1 is fixed at 15W, avg over 28-32s interval
+				# 25-64W PL2 in 1000mW increments, avg over 28-32s interval
+				register "controls.power_limits.pl1" = "{
+					.min_power = 15000,
+					.max_power = 15000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 200,}"
+				register "controls.power_limits.pl2" = "{
+					.min_power = 25000,
+					.max_power = 64000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 1000,}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf[0]" = "{ 255, 1700 }"
+				register "controls.charger_perf[1]" = "{  24, 1500 }"
+				register "controls.charger_perf[2]" = "{  16, 1000 }"
+				register "controls.charger_perf[3]" = "{   8,  500 }"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf[0]" = "{  90, 6700, 220, 2200, }"
+				register "controls.fan_perf[1]" = "{  80, 5800, 180, 1800, }"
+				register "controls.fan_perf[2]" = "{  70, 5000, 145, 1450, }"
+				register "controls.fan_perf[3]" = "{  60, 4900, 115, 1150, }"
+				register "controls.fan_perf[4]" = "{  50, 3838,  90,  900, }"
+				register "controls.fan_perf[5]" = "{  40, 2904,  55,  550, }"
+				register "controls.fan_perf[6]" = "{  30, 2337,  30,  300, }"
+				register "controls.fan_perf[7]" = "{  20, 1608,  15,  150, }"
+				register "controls.fan_perf[8]" = "{  10,  800,  10,  100, }"
+				register "controls.fan_perf[9]" = "{   0,    0,   0,   50, }"
+
+				# Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 on end
+			end
+		end # DPTF 0x1903
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on

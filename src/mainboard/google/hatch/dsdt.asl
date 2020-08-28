@@ -48,6 +48,7 @@ DefinitionBlock(
 		#include <ec/google/chromeec/acpi/ec.asl>
 	}
 
+#if CONFIG(BOARD_GOOGLE_BASEBOARD_HATCH)
 	/* Dynamic Platform Thermal Framework */
 	Scope (\_SB)
 	{
@@ -56,4 +57,5 @@ DefinitionBlock(
 		/* Include common dptf ASL files */
 		#include <soc/intel/common/acpi/dptf/dptf.asl>
 	}
+#endif
 }

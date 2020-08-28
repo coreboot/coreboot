@@ -82,6 +82,11 @@ static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_UART2
 };
 
+__weak void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *config)
+{
+	/* Override settings per board. */
+}
+
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
@@ -92,6 +97,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	struct device *dev;
 	struct soc_intel_tigerlake_config *config;
 	config = config_of_soc();
+	mainboard_update_soc_chip_config(config);
 
 	/* Parse device tree and enable/disable Serial I/O devices */
 	parse_devicetree(params);

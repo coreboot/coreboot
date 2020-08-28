@@ -87,6 +87,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	m_cfg->PchIshEnable = is_dev_enabled(dev);
 
+	/* Skip GPIO configuration from FSP */
+	m_cfg->GpioOverride = 0x1;
+
 	/* DP port config */
 	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
 	m_cfg->DdiPortBConfig = config->DdiPortBConfig;

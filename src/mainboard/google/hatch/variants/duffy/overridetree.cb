@@ -1,4 +1,5 @@
 chip soc/intel/cannonlake
+	register "tcc_offset" = "5"	# TCC of 95C
 
 	# Auto-switch between X4 NVMe and X2 NVMe.
 	register "TetonGlacierMode" = "1"

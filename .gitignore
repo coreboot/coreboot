@@ -97,7 +97,6 @@ util/cbfstool/ifwitool
 util/cbfstool/rmodtool
 util/cbmem/.dependencies
 util/cbmem/cbmem
-util/dumpmmcr/dumpmmcr
 util/ectool/ectool
 util/futility/futility
 util/genprof/genprof
@@ -107,15 +106,11 @@ util/intelmetool/intelmetool
 util/inteltool/.dependencies
 util/inteltool/inteltool
 util/intelvbttool/intelvbttool
-util/k8resdump/k8resdump
-util/lbtdump/lbtdump
-util/mptable/mptable
 util/msrtool/Makefile
 util/msrtool/Makefile.deps
 util/msrtool/msrtool
 util/nvramtool/.dependencies
 util/nvramtool/nvramtool
-util/optionlist/Options.wiki
 util/pmh7tool/pmh7tool
 util/runfw/googlesnow
 util/superiotool/superiotool

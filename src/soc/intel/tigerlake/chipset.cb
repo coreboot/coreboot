@@ -5,10 +5,30 @@ chip soc/intel/tigerlake
 		device pci 04.0 alias dptf off end
 		device pci 05.0 alias ipu off end
 		device pci 06.0 alias peg off end
-		device pci 07.0 alias tbt_pcie_rp0 off end
-		device pci 07.1 alias tbt_pcie_rp1 off end
-		device pci 07.2 alias tbt_pcie_rp2 off end
-		device pci 07.3 alias tbt_pcie_rp3 off end
+		device pci 07.0 alias tbt_pcie_rp0 off
+			chip soc/intel/common/block/usb4
+				use tbt_dma0 as usb4_port
+				device generic 0 on end
+			end
+		end
+		device pci 07.1 alias tbt_pcie_rp1 off
+			chip soc/intel/common/block/usb4
+				use tbt_dma0 as usb4_port
+				device generic 1 on end
+			end
+		end
+		device pci 07.2 alias tbt_pcie_rp2 off
+			chip soc/intel/common/block/usb4
+				use tbt_dma1 as usb4_port
+				device generic 0 on end
+			end
+		end
+		device pci 07.3 alias tbt_pcie_rp3 off
+			chip soc/intel/common/block/usb4
+				use tbt_dma1 as usb4_port
+				device generic 1 on end
+			end
+		end
 		device pci 08.0 alias gna off end
 		device pci 09.0 alias npk off end
 		device pci 0a.0 alias crashlog off end

@@ -104,6 +104,15 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
 	/* B22 : GSPI1_MOSI */
 	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF1),
+
+	/* WWAN */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP), /* WWAN_PWREN */
+	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1), /* CLK SRC 2 */
+	PAD_CFG_GPI_SCI(GPP_C9, NONE, DEEP, LEVEL, INVERT), /* WWAN_WAKE_N */
+	PAD_CFG_GPO(GPP_C11, 1, DEEP), /* FULL_CARD_POWER_OFF_N */
+	PAD_CFG_GPO(GPP_C10, 1, DEEP), /* WWAN_RST_N */
+	PAD_CFG_GPO(GPP_B17, 1, DEEP), /* WWAN_PERST_N */
+	PAD_CFG_GPO(GPP_D15, 1, DEEP), /* WWAN_DISABLE_N */
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

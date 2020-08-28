@@ -111,7 +111,7 @@ enum azalia_pin_location_2 {
 	 ((type) << 16) | \
 	 ((color) << 12) | \
 	 ((no_presence_detect) << 8) | \
-	 ((sequence) << 4) | \
+	 ((association) << 4) | \
 	 ((sequence) << 0))
 
 #define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size =	\

@@ -1,6 +1,8 @@
 ifeq ($(CONFIG_INTEL_TXT),y)
 
+romstage-y += romstage.c
 romstage-y += getsec_sclean.S
+romstage-y += getsec.c
 
 romstage-y += common.c
 romstage-$(CONFIG_INTEL_TXT_LOGGING) += logging.c

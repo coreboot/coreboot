@@ -99,6 +99,16 @@
 #define  TXT_E2STS_SECRET_STS (1ull << 1)
 
 /*
+ * TCG PC Client Platform TPM Profile (PTP) Specification
+ *
+ * Note: Only locality 0 registers are publicly accessible.
+ */
+
+#define TPM_BASE	0xfed40000UL
+
+#define TPM_ACCESS_REG	(TPM_BASE + 0x00)
+
+/*
  * TXT Memory regions
  * Chapter 5.3
  * Intel Trusted Execution Technology Lab Handout

@@ -290,6 +290,48 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	return acm_data;
 }
 
+#define MCU_BASE_ADDR	(TXT_BASE + 0x278)
+#define BIOACM_ADDR	(TXT_BASE + 0x27c)
+#define APINIT_ADDR	(TXT_BASE + 0x290)
+#define SEMAPHORE	(TXT_BASE + 0x294)
+
+/* Returns on failure, resets the computer on success */
+void intel_txt_run_sclean(void)
+{
+	struct region_device acm;
+	size_t acm_len;
+
+	void *acm_data = intel_txt_prepare_bios_acm(&acm, &acm_len);
+
+	if (!acm_data)
+		return;
+
+	/* FIXME: Do we need to program these two? */
+	//write32((void *)MCU_BASE_ADDR, 0xffe1a990);
+	//write32((void *)APINIT_ADDR, 0xfffffff0);
+
+	write32((void *)BIOACM_ADDR, (uintptr_t)acm_data);
+	write32((void *)SEMAPHORE, 0);
+
+	/*
+	 * The time SCLEAN will take depends on the installed RAM size.
+	 * On Haswell with 8 GiB of DDR3, it takes five or ten minutes. (rough estimate)
+	 */
+	printk(BIOS_ALERT, "TEE-TXT: Invoking SCLEAN. This can take several minutes.\n");
+
+	/*
+	 * Invoke the BIOS ACM. If successful, the system will reset with memory unlocked.
+	 */
+	getsec_sclean((uintptr_t)acm_data, acm_len);
+
+	/*
+	 * However, if this function returns, the BIOS ACM could not be invoked. This is bad.
+	 */
+	printk(BIOS_CRIT, "TEE-TXT: getsec_sclean could not launch the BIOS ACM.\n");
+
+	rdev_munmap(&acm, acm_data);
+}
+
 /*
  * Test all bits for TXT execution.
  *

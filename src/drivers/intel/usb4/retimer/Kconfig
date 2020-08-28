@@ -1,0 +1,8 @@
+config DRIVERS_INTEL_USB4_RETIMER
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	   A retimer is a device that retransmits a fresh copy of the signal it
+	   receives, by doing CDR and retransmitting the data (i.e., it is
+	   protocol-aware). If your mainboard has a USB4 retimer (usually
+	   located close to the USB4 ports), then select this driver.

@@ -59,7 +59,7 @@ _start:
 	movl	$1, %eax
 	cpuid
 	btl	$CPUID_FEATURE_CLFLUSH_BIT, %edx
-	jz	skip_clflush
+	jnc	skip_clflush
 	clflush	_cbmem_top_ptr
 
 skip_clflush:

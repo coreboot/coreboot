@@ -84,13 +84,24 @@ static void start_peg2_link_training(const pci_devfn_t dev)
 	printk(BIOS_DEBUG, "Started PEG1%d link training.\n", PCI_FUNC(PCI_DEV2DEVFN(dev)));
 
 	/*
-	 * Hide the PEG device while the MRC runs. This is because the MRC makes
-	 * configurations that are not ideal if it sees a VGA device in a PEG slot,
-	 * and it locks registers preventing changes to these configurations.
+	 * The MRC will perform PCI enumeration, and if it detects a VGA
+	 * device in a PEG slot, it will disable the IGD and not reserve
+	 * any memory for it. Since the memory map is locked by the time
+	 * MRC finishes, the IGD can't be enabled afterwards. Wonderful.
+	 *
+	 * If one really wants to enable the Intel iGPU as primary, hide
+	 * all PEG devices during MRC execution. This will trick the MRC
+	 * into thinking there aren't any, and will enable the IGD. Note
+	 * that PEG AFE settings will not be programmed, which may cause
+	 * stability problems at higher PCIe link speeds. The most ideal
+	 * way to fix this problem for good is to implement native init.
 	 */
-	pci_update_config32(HOST_BRIDGE, DEVEN, ~mask, 0);
-	peg_hidden[PCI_FUNC(PCI_DEV2DEVFN(dev))] = true;
-	printk(BIOS_DEBUG, "Temporarily hiding PEG1%d.\n", PCI_FUNC(PCI_DEV2DEVFN(dev)));
+	if (CONFIG(HASWELL_HIDE_PEG_FROM_MRC)) {
+		pci_update_config32(HOST_BRIDGE, DEVEN, ~mask, 0);
+		peg_hidden[PCI_FUNC(PCI_DEV2DEVFN(dev))] = true;
+		printk(BIOS_DEBUG, "Temporarily hiding PEG1%d.\n",
+		       PCI_FUNC(PCI_DEV2DEVFN(dev)));
+	}
 }
 
 void haswell_unhide_peg(void)

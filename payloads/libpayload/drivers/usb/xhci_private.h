@@ -204,7 +204,7 @@ typedef transfer_ring_t command_ring_t;
 #define SC_UADDR_LEN		8
 #define SC_STATE_FIELD		f4		/* STATE - Slot State */
 #define SC_STATE_START		27
-#define SC_STATE_LEN		8
+#define SC_STATE_LEN		5
 #define SC_MASK(tok)		MASK(SC_##tok##_START, SC_##tok##_LEN)
 #define SC_GET(tok, sc)		(((sc)->SC_##tok##_FIELD & SC_MASK(tok)) \
 				 >> SC_##tok##_START)

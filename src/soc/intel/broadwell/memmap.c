@@ -18,7 +18,7 @@ static uintptr_t dpr_region_start(void)
 	 * must be calculated from the size in MiB in bits 11:4.
 	 */
 	uintptr_t dpr = pci_read_config32(SA_DEV_ROOT, DPR);
-	uintptr_t tom = dpr & ~((1 << 20) - 1);
+	uintptr_t tom = ALIGN_DOWN(dpr, 1 * MiB);
 
 	/* Subtract DMA Protected Range size if enabled */
 	if (dpr & DPR_EPM)

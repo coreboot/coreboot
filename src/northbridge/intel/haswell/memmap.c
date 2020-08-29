@@ -18,7 +18,7 @@ static uintptr_t smm_region_start(void)
 	 * 1 MiB alignment.
 	 */
 	uintptr_t tom = pci_read_config32(HOST_BRIDGE, TSEG);
-	return tom & ~((1 << 20) - 1);
+	return ALIGN_DOWN(tom, 1 * MiB);
 }
 
 void *cbmem_top_chipset(void)

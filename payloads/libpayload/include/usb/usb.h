@@ -334,7 +334,7 @@ int usb_interface_check(u16 vendor, u16 device);
 #define USB_QUIRK_TEST				(1 << 31)
 #define USB_QUIRK_NONE				 0
 
-static inline void usb_debug(const char *fmt, ...)
+static inline void __attribute__((format(printf, 1, 2))) usb_debug(const char *fmt, ...)
 {
 #ifdef USB_DEBUG
 	va_list ap;

@@ -89,9 +89,9 @@ void i82371eb_early_init(void);
 #define PMBA		0x40	/* Power management base address */
 #define   DEFAULT_PMBASE	0xe400
 #define   PM_IO_BASE DEFAULT_PMBASE
-#define DEVRESA		0X5c	/* Device resource A */
-#define DEVRESB		0X60	/* Device resource B */
-#define DEVRESC		0X64	/* Device resource C */
+#define DEVRESA		0x5c	/* Device resource A */
+#define DEVRESB		0x60	/* Device resource B */
+#define DEVRESC		0x64	/* Device resource C */
 #define DEVRESD		0x52	/* Device resource D */
 #define DEVRESE		0x68	/* Device resource E */
 #define DEVRESF		0x6c	/* Device resource F */

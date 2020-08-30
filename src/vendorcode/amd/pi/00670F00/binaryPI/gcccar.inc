@@ -161,7 +161,7 @@ CR0_PG                  = 31          # Paging Enable
 
 CPUID_MODEL              =      1
 AMD_CPUID_FMF            =      0x80000001       /* Family Model Features information */
-AMD_CPUID_L2Cache        =      0X80000006       /* L2/L3 cache info */
+AMD_CPUID_L2Cache        =      0x80000006       /* L2/L3 cache info */
 AMD_CPUID_APIC           =      0x80000008       /* Long Mode and APIC info., core count */
     APIC_ID_CORE_ID_SIZE      = 12               /* ApicIdCoreIdSize bit position */
 

@@ -490,7 +490,7 @@ typedef struct {
 } PACKAGE_TYPE_FEATURES;
 
 // Initializer Values for Package Type
-#define PACKAGE_TYPE_ALL              0XFFFF       ///< Package Type apply all packages
+#define PACKAGE_TYPE_ALL              0xFFFF       ///< Package Type apply all packages
 
 // Initializer Values for Ht Host Pci Config Registers
 #define HT_HOST_FEAT_COHERENT          BIT0

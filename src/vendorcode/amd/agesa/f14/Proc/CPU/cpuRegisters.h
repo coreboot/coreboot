@@ -203,7 +203,7 @@ typedef struct {
 
 #define MSR_CPUID_NAME_STRING0      0xC0010030      // First CPUID namestring register
 #define MSR_CPUID_NAME_STRING1      0xC0010031
-#define MSR_CPUID_NAME_STRING2      0XC0010032
+#define MSR_CPUID_NAME_STRING2      0xC0010032
 #define MSR_CPUID_NAME_STRING3      0xC0010033
 #define MSR_CPUID_NAME_STRING4      0xC0010034
 #define MSR_CPUID_NAME_STRING5      0xC0010035      // Last CPUID namestring register

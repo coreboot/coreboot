@@ -9446,7 +9446,7 @@ union bdk_usbdrdx_uctl_ctl
                                                                  [REF_SSP_EN] is asserted. */
         uint64_t ref_clk_div2          : 1;  /**< [ 38: 38](R/W) Divides the reference clock by two before feeding it into the REF_CLK_FSEL divider.
 
-                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0X2 then the legal values are:
+                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0x2 then the legal values are:
                                                                       all DLMC_REF_CLK* frequencies: 0x0 is the only legal value.
 
                                                                  If [REF_CLK_SEL] = 0x4, 0x5 or 0x6 then the legal values are:
@@ -9814,7 +9814,7 @@ union bdk_usbdrdx_uctl_ctl
                                                                    0x07 is the only legal value. */
         uint64_t ref_clk_div2          : 1;  /**< [ 38: 38](R/W) Divides the reference clock by two before feeding it into the REF_CLK_FSEL divider.
 
-                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0X2 then the legal values are:
+                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0x2 then the legal values are:
                                                                       all DLMC_REF_CLK* frequencies: 0x0 is the only legal value.
 
                                                                  If [REF_CLK_SEL] = 0x4, 0x5 or 0x6 then the legal values are:
@@ -10106,7 +10106,7 @@ union bdk_usbdrdx_uctl_ctl
                                                                  [REF_SSP_EN] is asserted. */
         uint64_t ref_clk_div2          : 1;  /**< [ 38: 38](R/W) Divides the reference clock by two before feeding it into the REF_CLK_FSEL divider.
 
-                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0X2 then the legal values are:
+                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0x2 then the legal values are:
                                                                       all DLMC_REF_CLK* frequencies: 0x0 is the only legal value.
 
                                                                  If [REF_CLK_SEL] = 0x4, 0x5 or 0x6 then the legal values are:
@@ -10458,7 +10458,7 @@ union bdk_usbdrdx_uctl_ctl
                                                                    0x07 is the only legal value. */
         uint64_t ref_clk_div2          : 1;  /**< [ 38: 38](R/W) Divides the reference clock by two before feeding it into the REF_CLK_FSEL divider.
 
-                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0X2 then the legal values are:
+                                                                 If [REF_CLK_SEL] = 0x0, 0x1 or 0x2 then the legal values are:
                                                                       all DLMC_REF_CLK* frequencies: 0x0 is the only legal value.
 
                                                                  If [REF_CLK_SEL] = 0x4, 0x5 or 0x6 then the legal values are:

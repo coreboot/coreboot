@@ -17483,7 +17483,7 @@ union bdk_ap_id_aa64mmfr0_el1
         uint64_t tgran4                : 4;  /**< [ 31: 28](RO) Support for 4KB memory translation granule size.
                                                                  All other values are reserved.
                                                                  0x0 = 4KB granule supported.
-                                                                 0XF = 4KB granule not supported.
+                                                                 0xF = 4KB granule not supported.
 
                                                                  In CNXXXX, supported. */
         uint64_t tgran64               : 4;  /**< [ 27: 24](RO) Support for 64KB memory translation granule size.
@@ -17600,7 +17600,7 @@ union bdk_ap_id_aa64mmfr0_el1
         uint64_t tgran4                : 4;  /**< [ 31: 28](RO) Support for 4KB memory translation granule size.
                                                                  All other values are reserved.
                                                                  0x0 = 4KB granule supported.
-                                                                 0XF = 4KB granule not supported.
+                                                                 0xF = 4KB granule not supported.
 
                                                                  In CNXXXX, supported. */
         uint64_t reserved_32_63        : 32;
@@ -17614,7 +17614,7 @@ union bdk_ap_id_aa64mmfr0_el1
         uint64_t tgran4                : 4;  /**< [ 31: 28](RO) Support for 4KB memory translation granule size.
                                                                  All other values are reserved.
                                                                  0x0 = 4KB granule supported.
-                                                                 0XF = 4KB granule not supported.
+                                                                 0xF = 4KB granule not supported.
 
                                                                  In CNXXXX, supported. */
         uint64_t tgran64               : 4;  /**< [ 27: 24](RO) Support for 64KB memory translation granule size.
@@ -17735,7 +17735,7 @@ union bdk_ap_id_aa64mmfr0_el1
         uint64_t tgran4                : 4;  /**< [ 31: 28](RO) Support for 4KB memory translation granule size.
                                                                  All other values are reserved.
                                                                  0x0 = 4KB granule supported.
-                                                                 0XF = 4KB granule not supported.
+                                                                 0xF = 4KB granule not supported.
 
                                                                  In CNXXXX, supported. */
         uint64_t reserved_32_63        : 32;
@@ -23442,14 +23442,14 @@ union bdk_ap_pmceid1_el0
 
                                                                  \<pre\>
                                                                  Bit Event number    Event mnemonic
-                                                                   24  0X0038 = REMOTE_ACCESS_RD.
-                                                                   23  0X0037 = LL_CACHE_MISS_RD.
-                                                                   22  0X0036 = LL_CACHE_RD.
-                                                                   21  0X0035 = ITLB_WALK.
-                                                                   20  0X0034 = DTLB_WALK.
-                                                                   19  0X0033 = LL_CACHE MISS.
-                                                                   18  0X0032 = LL_CACHE.
-                                                                   17  0X0031 = REMOTE_ACCESS.
+                                                                   24  0x0038 = REMOTE_ACCESS_RD.
+                                                                   23  0x0037 = LL_CACHE_MISS_RD.
+                                                                   22  0x0036 = LL_CACHE_RD.
+                                                                   21  0x0035 = ITLB_WALK.
+                                                                   20  0x0034 = DTLB_WALK.
+                                                                   19  0x0033 = LL_CACHE MISS.
+                                                                   18  0x0032 = LL_CACHE.
+                                                                   17  0x0031 = REMOTE_ACCESS.
                                                                    16  RAZ
                                                                    15  0x002f = L2D_TLB.
                                                                    14  0x002e = L2I_TLB_REFILL.
@@ -23474,14 +23474,14 @@ union bdk_ap_pmceid1_el0
 
                                                                  \<pre\>
                                                                  Bit Event number    Event mnemonic
-                                                                   24  0X0038 = REMOTE_ACCESS_RD.
-                                                                   23  0X0037 = LL_CACHE_MISS_RD.
-                                                                   22  0X0036 = LL_CACHE_RD.
-                                                                   21  0X0035 = ITLB_WALK.
-                                                                   20  0X0034 = DTLB_WALK.
-                                                                   19  0X0033 = LL_CACHE MISS.
-                                                                   18  0X0032 = LL_CACHE.
-                                                                   17  0X0031 = REMOTE_ACCESS.
+                                                                   24  0x0038 = REMOTE_ACCESS_RD.
+                                                                   23  0x0037 = LL_CACHE_MISS_RD.
+                                                                   22  0x0036 = LL_CACHE_RD.
+                                                                   21  0x0035 = ITLB_WALK.
+                                                                   20  0x0034 = DTLB_WALK.
+                                                                   19  0x0033 = LL_CACHE MISS.
+                                                                   18  0x0032 = LL_CACHE.
+                                                                   17  0x0031 = REMOTE_ACCESS.
                                                                    16  RAZ
                                                                    15  0x002f = L2D_TLB.
                                                                    14  0x002e = L2I_TLB_REFILL.

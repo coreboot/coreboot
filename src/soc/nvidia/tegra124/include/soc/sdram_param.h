@@ -35,7 +35,7 @@ enum {
 	NvBootMemoryType_Num,
 
 	/* Specifies an entry in the ram_code table that's not in use */
-	NvBootMemoryType_Unused = 0X7FFFFFF,
+	NvBootMemoryType_Unused = 0x7FFFFFF,
 };
 
 enum {

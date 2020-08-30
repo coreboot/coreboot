@@ -166,7 +166,7 @@ int __bdk_qlm_errata_gser_26150(bdk_node_t node, int qlm, int baud_mhz)
            Enable Rx power state override */
         BDK_CSR_MODIFY(c, node, BDK_GSERX_LANEX_PCS_CTLIFC_2(qlm, i),
             c.s.cfg_tx_pstate_req_ovrrd_en = 0x1;
-            c.s.cfg_rx_pstate_req_ovrrd_en = 0X1);
+            c.s.cfg_rx_pstate_req_ovrrd_en = 0x1);
         /* Step 4: Set GSER()_LANE(lane_n)_PCS_CTLIFC_2[CTLIFC_OVRRD_REQ] = 1
            Start the CTLIFC override state machine */
         BDK_CSR_MODIFY(c, node, BDK_GSERX_LANEX_PCS_CTLIFC_2(qlm, i),
@@ -200,7 +200,7 @@ int __bdk_qlm_errata_gser_26150(bdk_node_t node, int qlm, int baud_mhz)
            Enable Rx power state override */
         BDK_CSR_MODIFY(c, node, BDK_GSERX_LANEX_PCS_CTLIFC_2(qlm, i),
             c.s.cfg_tx_pstate_req_ovrrd_en = 0x1;
-            c.s.cfg_rx_pstate_req_ovrrd_en = 0X1);
+            c.s.cfg_rx_pstate_req_ovrrd_en = 0x1);
         /* Step 10: Set GSER()_LANE(lane_n)_PCS_CTLIFC_2[CTLIFC_OVRRD_REQ] = 1
            Start the CTLIFC override state machine */
         BDK_CSR_MODIFY(c, node, BDK_GSERX_LANEX_PCS_CTLIFC_2(qlm, i),
@@ -219,7 +219,7 @@ int __bdk_qlm_errata_gser_26150(bdk_node_t node, int qlm, int baud_mhz)
            Disable Rx power state override */
         BDK_CSR_MODIFY(c, node, BDK_GSERX_LANEX_PCS_CTLIFC_2(qlm, i),
             c.s.cfg_tx_pstate_req_ovrrd_en = 0x0;
-            c.s.cfg_rx_pstate_req_ovrrd_en = 0X0);
+            c.s.cfg_rx_pstate_req_ovrrd_en = 0x0);
     }
     /* Step 13:  Poll GSER()_PLL_STAT.[PLL_LOCK] = 1
        Poll and check that PLL is locked */

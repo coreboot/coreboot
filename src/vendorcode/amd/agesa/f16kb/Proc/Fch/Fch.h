@@ -1580,12 +1580,12 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define FCH_SMB_POLL2BYTE             BIT7
 
 
-#define FCH_EC_ENTER_CONFIG           0X5A
-#define FCH_EC_EXIT_CONFIG            0XA5
-#define FCH_EC_REG07                  0X07
-#define FCH_EC_REG30                  0X30
-#define FCH_EC_REG60                  0X60
-#define FCH_EC_REG61                  0X61
+#define FCH_EC_ENTER_CONFIG           0x5A
+#define FCH_EC_EXIT_CONFIG            0xA5
+#define FCH_EC_REG07                  0x07
+#define FCH_EC_REG30                  0x30
+#define FCH_EC_REG60                  0x60
+#define FCH_EC_REG61                  0x61
 
 #define FCH_IMC_ROMSIG                0x55aa55aaul
 

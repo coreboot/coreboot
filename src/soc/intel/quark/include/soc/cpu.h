@@ -6,6 +6,6 @@
 #include <device/device.h>
 
 /* Supported CPUIDs */
-#define CPUID_QUARK_X1000	0X590
+#define CPUID_QUARK_X1000	0x590
 
 #endif /* _QUARK_CPU_H_ */

@@ -683,7 +683,7 @@ typedef struct {
 
 /** Offset 0x0124 - PCIe Disable Spread Spectrum Clocking
   PCIe Disable Spread Spectrum Clocking. Normal Operation(0x0)(Default) - SSC enabled,
-  Disable SSC(0X1) - Disable SSC per platform design or for compliance testing
+  Disable SSC(0x1) - Disable SSC per platform design or for compliance testing
   0:Normal Operation, 1:Disable SSC
 **/
   UINT8                       PegDisableSpreadSpectrumClocking;

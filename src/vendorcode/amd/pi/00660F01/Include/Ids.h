@@ -1081,7 +1081,7 @@ typedef enum {
   TpProcCpuEntryPstateGather,         ///< 54 .. Entry point PStateGatherData
   TpProcCpuEntryWhea,                 ///< 55 .. Entry point CreateAcpiWhea
   TpProcS3Init,                       ///< 56    Entry point S3Init
-  TpProcCpuProcessRegisterTables = 0X58,     ///< 58 .. Register table processing
+  TpProcCpuProcessRegisterTables = 0x58,     ///< 58 .. Register table processing
   TpProcCpuSetBrandID,                ///< 59 .. Set brand ID
   TpProcCpuLocalApicInit,             ///< 5A .. Initialize local APIC
   TpProcCpuLoadUcode,                 ///< 5B .. Load microcode patch

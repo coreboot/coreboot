@@ -486,7 +486,7 @@ typedef UINT16 TPM_EO;
 // Table 18 - TPM_ST Constants
 typedef UINT16 TPM_ST;
 #define TPM_ST_RSP_COMMAND          (TPM_ST)(0x00C4)
-#define TPM_ST_NULL                 (TPM_ST)(0X8000)
+#define TPM_ST_NULL                 (TPM_ST)(0x8000)
 #define TPM_ST_NO_SESSIONS          (TPM_ST)(0x8001)
 #define TPM_ST_SESSIONS             (TPM_ST)(0x8002)
 #define TPM_ST_ATTEST_NV            (TPM_ST)(0x8014)

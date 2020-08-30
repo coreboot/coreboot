@@ -273,8 +273,8 @@ chip soc/intel/apollolake
 	# RegOrValue (15:8): 0x2 and RegAndValue (7:0) 0xF8.
 	# The register is defined as: D[7:3] RSVD, D[2:0] PWROKDELAY.
 	# uint8 RegOrValue, RegAndValue, PmicReadReg
-	# RegOrValue = (UINT8)((PmicPmcIpcCtrl >> 8) & 0Xff);
-	# RegAndValue = (UINT8)(PmicPmcIpcCtrl & 0Xff);
+	# RegOrValue = (UINT8)((PmicPmcIpcCtrl >> 8) & 0xff);
+	# RegAndValue = (UINT8)(PmicPmcIpcCtrl & 0xff);
 	# PmicReadReg &= RegAndValue;
 	# PmicReadReg |= RegOrValue;
 	# PmicReadReg value will be programmed into PMIC D[2:0] PWROKDELAY field

@@ -10,7 +10,7 @@ enum {
 	SEL_OFFSET = 0x80,
 	EH_RSEL_OFFSET = 0xF0,
 	GPIO_DRV0_OFFSET = 0xA0,
-	GPIO_DRV1_OFFSET = 0XB0,
+	GPIO_DRV1_OFFSET = 0xB0,
 };
 
 static void gpio_set_pull_pupd(gpio_t gpio, enum pull_enable enable,

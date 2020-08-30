@@ -3148,7 +3148,7 @@ int init_octeon3_ddr3_interface(bdk_node_t node,
         bank_bits = (2 + ((spd_banks >> 4) & 0x3)) + ((spd_banks >> 6) & 0x3);
         bank_bits = min((int)bank_bits, 4); /* Controller can only address 4 bits. */
 
-        spd_package = 0XFF & read_spd(node, &dimm_config_table[0], DDR4_SPD_PACKAGE_TYPE);
+        spd_package = 0xFF & read_spd(node, &dimm_config_table[0], DDR4_SPD_PACKAGE_TYPE);
         if (spd_package & 0x80) { // non-monolithic device
             is_stacked_die = (!disable_stacked_die) ? ((spd_package & 0x73) == 0x11) : 0;
             ddr_print("DDR4: Package Type 0x%x (%s), %d die\n", spd_package,

@@ -154,8 +154,8 @@ REG8_MASK FchHudson2InitEnvHwAcpiPciTable[] =
   // SMBUS Device (Bus 0, Dev 20, Func 0)
   //
   {0x00, SMBUS_BUS_DEV_FUN, 0},
-  {FCH_CFG_REG10, 0X00, (FCH_VERSION & 0xFF)},                ///Program the version information
-  {FCH_CFG_REG11, 0X00, (FCH_VERSION >> 8)},
+  {FCH_CFG_REG10, 0x00, (FCH_VERSION & 0xFF)},                ///Program the version information
+  {FCH_CFG_REG11, 0x00, (FCH_VERSION >> 8)},
   {0xFF, 0xFF, 0xFF},
 };
 

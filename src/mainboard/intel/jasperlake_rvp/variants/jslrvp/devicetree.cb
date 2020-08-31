@@ -128,6 +128,15 @@ chip soc/intel/jasperlake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
+	# Enable Processor Thermal Control
+	register "Device4Enable" = "1"
+
+	# Add PL1 and PL2 values
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+	}"
+
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
@@ -174,7 +183,27 @@ chip soc/intel/jasperlake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 off end # SA Thermal device
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU, 95, 1000)"
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU, 119, SHUTDOWN)"
+
+				register "controls.power_limits.pl1" = "{
+					.min_power = 3000,
+					.max_power = 6000,
+					.time_window_min = 1 * MSECS_PER_SEC,
+					.time_window_max = 1 * MSECS_PER_SEC,
+					.granularity = 200,}"
+				register "controls.power_limits.pl2" = "{
+					.min_power = 6000,
+					.max_power = 20000,
+					.time_window_min = 1 * MSECS_PER_SEC,
+					.time_window_max = 1 * MSECS_PER_SEC,
+					.granularity = 1000,}"
+				device generic 0 on end
+			end
+		end # SA Thermal device
+
 		device pci 05.0 on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"

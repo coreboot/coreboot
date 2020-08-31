@@ -322,7 +322,7 @@ config FSP_HEADER_PATH
 
 config FSP_FD_PATH
 	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
-	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake1/FSP.fd" if SOC_INTEL_COMETLAKE_1
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake1/Fsp.fd" if SOC_INTEL_COMETLAKE_1
 
 config SOC_INTEL_CANNONLAKE_DEBUG_CONSENT
 	int "Debug Consent for CNL"

@@ -51,6 +51,18 @@ config SOC_INTEL_COMETLAKE_1
 	bool
 	select SOC_INTEL_COMETLAKE
 
+config SOC_INTEL_COMETLAKE_2
+	bool
+	select SOC_INTEL_COMETLAKE
+
+config SOC_INTEL_COMETLAKE_S
+	bool
+	select SOC_INTEL_COMETLAKE
+
+config SOC_INTEL_COMETLAKE_V
+	bool
+	select SOC_INTEL_COMETLAKE
+
 config SOC_INTEL_CANNONLAKE_PCH_H
 	bool
 	help
@@ -318,11 +330,17 @@ endchoice
 config FSP_HEADER_PATH
 	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Include/" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake1/Include/" if SOC_INTEL_COMETLAKE_1
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake2/Include/" if SOC_INTEL_COMETLAKE_2
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeS/Include/" if SOC_INTEL_COMETLAKE_S
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeV/Include/" if SOC_INTEL_COMETLAKE_V
 	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/" if SOC_INTEL_CANNONLAKE
 
 config FSP_FD_PATH
 	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake1/Fsp.fd" if SOC_INTEL_COMETLAKE_1
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake2/Fsp.fd" if SOC_INTEL_COMETLAKE_2
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeS/Fsp.fd" if SOC_INTEL_COMETLAKE_S
+	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeV/Fsp.fd" if SOC_INTEL_COMETLAKE_V
 
 config SOC_INTEL_CANNONLAKE_DEBUG_CONSENT
 	int "Debug Consent for CNL"

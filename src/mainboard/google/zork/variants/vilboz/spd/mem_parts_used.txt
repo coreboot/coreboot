@@ -1,3 +1,12 @@
+# This is a CSV file containing a list of memory parts used by this variant.
+# One part per line with an optional fixed ID in column 2.
+# Only include a fixed ID if it is required for legacy reasons!
+# Each part must also be listed in util/spd_tools/ddr4/global_ddr4_mem_parts.json.txt.
+# Generate an updated Makefile.inc and dram_id.generated.txt by running the
+# gen_part_id tool from util/spd_tools/ddr4.
+# See util/spd_tools/ddr4/README.md for more details and instructions.
+
+# Part Name, Fixed ID (optional)
 H5AN8G6NCJR-VKC, 0
 H5ANAG6NCMR-VKC, 1
 K4A8G165WC-BCWE, 2

@@ -68,6 +68,7 @@ func readParts(memPartsUsedFileName string) ([]usedPart, error) {
 	r := csv.NewReader(f)
 	r.FieldsPerRecord = -1 // Allow variable length records
 	r.TrimLeadingSpace = true
+	r.Comment = '#'
 
 	parts := []usedPart{}
 

@@ -118,6 +118,8 @@ util/vgabios/testbios
 util/autoport/autoport
 util/kbc1126/kbc1126_ec_dump
 util/kbc1126/kbc1126_ec_insert
+util/spd_tools/*/gen_spd
+util/spd_tools/*/gen_part_id
 
 Documentation/*.aux
 Documentation/*.idx

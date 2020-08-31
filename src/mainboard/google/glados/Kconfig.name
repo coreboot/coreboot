@@ -10,7 +10,6 @@ config BOARD_GOOGLE_ASUKA
 config BOARD_GOOGLE_CAROLINE
 	bool "->  Caroline (Samsung Chromebook Pro)"
 	select BOARD_GOOGLE_BASEBOARD_GLADOS
-	select DRIVERS_INTEL_WIFI
 	select DSAR_ENABLE
 	select NHLT_SSM4567 if INCLUDE_NHLT_BLOBS
 	select SAR_ENABLE

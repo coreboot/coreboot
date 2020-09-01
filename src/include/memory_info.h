@@ -28,6 +28,10 @@ struct dimm_info {
 	 * See the smbios.h smbios_memory_type enum.
 	 */
 	uint16_t ddr_type;
+	/*
+	 * ddr_frequency is deprecated.
+	 * Use max_speed_mts and configured_speed_mts instead.
+	 */
 	uint16_t ddr_frequency;
 	uint8_t rank_per_dimm;
 	uint8_t channel_num;
@@ -79,6 +83,16 @@ struct dimm_info {
 	 * Voltage Level
 	 */
 	uint16_t vdd_voltage;
+	/*
+	 * Max speed in MT/s
+	 * If the value is 0, ddr_frequency should be used instead.
+	 */
+	uint16_t max_speed_mts;
+	/*
+	 * Configured speed in MT/s
+	 * If the value is 0, ddr_frequency should be used instead.
+	 */
+	uint16_t configured_speed_mts;
 } __packed;
 
 struct memory_info {

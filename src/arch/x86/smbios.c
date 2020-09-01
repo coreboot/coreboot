@@ -281,8 +281,14 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 
 	memset(t, 0, sizeof(struct smbios_type17));
 	t->memory_type = dimm->ddr_type;
-	t->clock_speed = dimm->ddr_frequency;
-	t->speed = dimm->ddr_frequency;
+	if (dimm->configured_speed_mts != 0)
+		t->clock_speed = dimm->configured_speed_mts;
+	else
+		t->clock_speed = dimm->ddr_frequency;
+	if (dimm->max_speed_mts != 0)
+		t->speed = dimm->max_speed_mts;
+	else
+		t->speed = dimm->ddr_frequency;
 	t->type = SMBIOS_MEMORY_DEVICE;
 	if (dimm->dimm_size < 0x7fff) {
 		t->size = dimm->dimm_size;

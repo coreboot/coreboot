@@ -888,6 +888,8 @@ static void integrate_bios_firmwares(context *ctx,
 	unsigned int i, count;
 	int level;
 	int apob_idx;
+	uint32_t size;
+	uint64_t source;
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -996,10 +998,11 @@ static void integrate_bios_firmwares(context *ctx,
 			break;
 		case AMD_BIOS_BIN:
 			/* Don't make a 2nd copy, point to the same one */
-			if (level == BDT_LVL1 && locate_bdt2_bios(biosdir2,
-						&biosdir->entries[count].source,
-						&biosdir->entries[count].size))
+			if (level == BDT_LVL1 && locate_bdt2_bios(biosdir2, &source, &size)) {
+				biosdir->entries[count].source = source;
+				biosdir->entries[count].size = size;
 				break;
+			}
 
 			/* level 2, or level 1 and no copy found in level 2 */
 			biosdir->entries[count].source = fw_table[i].src;

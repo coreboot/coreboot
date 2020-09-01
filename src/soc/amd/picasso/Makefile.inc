@@ -335,7 +335,6 @@ OPT_APOB0_NV_BASE=$(OPT_APOB_NV_BASE)
 endif
 
 AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
-		$(OPT_PSPBTLDR_FILE) \
 		$(OPT_PSPSCUREOS_FILE) \
 		$(OPT_PSP_SEC_DBG_KEY_FILE) \
 		$(OPT_SMUFW1_SUB2_FILE) \
@@ -374,7 +373,6 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSP_S0I3_FILE) \
 		$(OPT_IKEK_FILE) \
 		$(OPT_SEC_DEBUG_FILE) \
-		$(OPT_VERSTAGE_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
 		--combo-capable \
@@ -448,9 +446,11 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
+		$(OPT_PSPBTLDR_FILE) \
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB0_NV_SIZE) \
 		$(OPT_APOB0_NV_BASE) \
+		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		--location $(shell printf "%#x" $(PICASSO_FWM_POSITION)) \
 		--output $@

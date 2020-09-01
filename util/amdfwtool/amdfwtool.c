@@ -308,6 +308,7 @@ typedef enum _amd_fw_type {
 	AMD_FW_PSP_WHITELIST = 0x3a,
 	AMD_FW_L2_PTR = 0x40,
 	AMD_FW_PSP_VERSTAGE = 0x52,
+	AMD_FW_VERSTAGE_SIG = 0x53,
 	AMD_FW_IMC,
 	AMD_FW_GEC,
 	AMD_FW_XHCI,
@@ -364,6 +365,7 @@ static amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1, .level = PSP_BOTH },
 	{ .type = AMD_FW_PSP_WHITELIST, .level = PSP_LVL2 },
 	{ .type = AMD_FW_PSP_VERSTAGE, .level = PSP_BOTH },
+	{ .type = AMD_FW_VERSTAGE_SIG, .level = PSP_BOTH },
 	{ .type = AMD_FW_INVALID },
 };
 
@@ -1085,8 +1087,8 @@ enum {
 	LONGOPT_SPI_MICRON_FLAG	= 258,
 };
 
-// Unused values: DE
-static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:qR:P:C:";
+// Unused values: D
+static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:qR:P:C:E:";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -1119,6 +1121,7 @@ static struct option long_options[] = {
 	{"token-unlock",           no_argument, 0, 'U' },
 	{"whitelist",        required_argument, 0, 'W' },
 	{"verstage",         required_argument, 0, 'Z' },
+	{"verstage_sig",     required_argument, 0, 'E' },
 	/* BIOS Directory Table items */
 	{"instance",         required_argument, 0, 'I' },
 	{"apcb",             required_argument, 0, 'a' },
@@ -1534,6 +1537,10 @@ int main(int argc, char **argv)
 			break;
 		case 'Z':
 			register_fw_filename(AMD_FW_PSP_VERSTAGE, sub, optarg);
+			sub = instance = 0;
+			break;
+		case 'E':
+			register_fw_filename(AMD_FW_VERSTAGE_SIG, sub, optarg);
 			sub = instance = 0;
 			break;
 		case 'C':

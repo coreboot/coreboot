@@ -76,10 +76,14 @@ Device (PXSX)
 
 Method (_DSW, 3)
 {
-	C2PM (Arg0, Arg1, Arg2, DCPM)
 	/* If entering Sx (Arg1 > 1), need to skip TCSS D3Cold & TBT RTD3/D3Cold. */
-	\_SB.PCI0.TDM0.SD3C = Arg1
-	\_SB.PCI0.TDM1.SD3C = Arg1
+	If ((TUID == 0) || (TUID == 1)) {
+		\_SB.PCI0.TDM0.SD3C = Arg1
+	} Else {
+		\_SB.PCI0.TDM1.SD3C = Arg1
+	}
+
+	C2PM (Arg0, Arg1, Arg2, DCPM)
 }
 
 Method (_PRW, 0)
@@ -302,20 +306,12 @@ Method (_S0W, 0x0, NotSerialized)
 
 Method (_PR0)
 {
-	If ((TUID == 0) || (TUID == 1)) {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-	} Else {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-	}
+	Return (Package() { \_SB.PCI0.D3C })
 }
 
 Method (_PR3)
 {
-	If ((TUID == 0) || (TUID == 1)) {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-	} Else {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-	}
+	Return (Package() { \_SB.PCI0.D3C })
 }
 
 /*

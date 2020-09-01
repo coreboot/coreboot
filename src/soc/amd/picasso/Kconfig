@@ -497,6 +497,13 @@ config PSP_VERSTAGE_FILE
 	help
 	  Add psp_verstage file to the build & PSP Directory Table
 
+config PSP_VERSTAGE_SIGNING_TOKEN
+	string "Specify the PSP_verstage Signature Token file path"
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default ""
+	help
+	  Add psp_verstage signature token to the build & PSP Directory Table
+
 endmenu
 
 

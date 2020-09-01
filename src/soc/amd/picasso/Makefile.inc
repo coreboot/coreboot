@@ -250,6 +250,7 @@ endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
 PSP_VERSTAGE_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_FILE))
+PSP_VERSTAGE_SIG_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_SIGNING_TOKEN))
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 APOB_NV_SIZE=$(shell printf "0x%x" $(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))
@@ -301,6 +302,7 @@ OPT_ABL6_FILE=$(call add_opt_prefix,  $(PSP_ABL6_FILE), --abl-image)
 OPT_ABL7_FILE=$(call add_opt_prefix,  $(PSP_ABL7_FILE), --abl-image)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_VERSTAGE_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_FILE), --verstage)
+OPT_VERSTAGE_SIG_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_SIG_FILE), --verstage_sig)
 
 OPT_PSP_APCB_FILES=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
 	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
@@ -439,6 +441,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call_strip_quotes, $(PSP_IKEK_FILE)) \
 			$(call_strip_quotes, $(PSP_SEC_DEBUG_FILE)) \
 			$(PSP_VERSTAGE_FILE) \
+			$(PSP_VERSTAGE_SIG_FILE) \
 			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap.fmd
@@ -448,6 +451,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB0_NV_SIZE) \
 		$(OPT_APOB0_NV_BASE) \
+		$(OPT_VERSTAGE_SIG_FILE) \
 		--location $(shell printf "%#x" $(PICASSO_FWM_POSITION)) \
 		--output $@
 

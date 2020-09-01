@@ -1,0 +1,482 @@
+chip soc/intel/cannonlake
+
+	# Auto-switch between X4 NVMe and X2 NVMe.
+	register "TetonGlacierMode" = "1"
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# USB configuration
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC2,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 2
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC1,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 1
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC3,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 3
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 4
+	register "usb2_ports[5]" = "{
+		.enable = 1,
+		.ocpin = OC0,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A port 0
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # BT
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"     # Type-A Port 2
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"     # Type-A Port 3
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port 4
+
+	# Bitmap for Wake Enable on USB attach/detach
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
+					      USB_PORT_WAKE_ENABLE(2) | \
+					      USB_PORT_WAKE_ENABLE(3) | \
+					      USB_PORT_WAKE_ENABLE(5) | \
+					      USB_PORT_WAKE_ENABLE(6)"
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
+					      USB_PORT_WAKE_ENABLE(2) | \
+					      USB_PORT_WAKE_ENABLE(3) | \
+					      USB_PORT_WAKE_ENABLE(5) | \
+					      USB_PORT_WAKE_ENABLE(6)"
+
+	# Enable eMMC HS400
+	register "ScsEmmcHs400Enabled" = "1"
+
+	# EMMC Tx CMD Delay
+	# Refer to EDS-Vol2-14.3.7.
+	# [14:8] steps of delay for DDR mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for SDR mode, each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_tx_cmd_cntl" = "0x505"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-14.3.8.
+	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x911"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-14.3.9.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 79.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
+	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C262828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-14.3.10.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 119.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
+	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C16583b"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-14.3.12.
+	# [17:16] stands for Rx Clock before Output Buffer,
+	#         00: Rx clock after output buffer,
+	#         01: Rx clock before output buffer,
+	#         10: Automatic selection based on working mode.
+	#         11: Reserved
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1001D"
+
+	# EMMC Rx Strobe Delay
+	# Refer to EDS-Vol2-14.3.11.
+	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
+	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1515"
+
+	# Intel HDA - disable I2S Audio SSP1 and DMIC0 as puff variant does not have them.
+	register "PchHdaAudioLinkSsp1" = "0"
+	register "PchHdaAudioLinkDmic0" = "0"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | RFU                       |
+	#| I2C2              | PS175                     |
+	#| I2C3              | MST                       |
+	#| I2C4              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 0,
+			.fall_time_ns = 0,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 60,
+			.fall_time_ns = 60,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 60,
+			.fall_time_ns = 60,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 60,
+			.fall_time_ns = 60,
+		},
+	}"
+
+	# PCIe port 7 for LAN
+	register "PcieRpEnable[6]" = "1"
+	register "PcieRpLtrEnable[6]" = "1"
+	# PCIe port 11 (x2) for NVMe hybrid storage devices
+	register "PcieRpEnable[10]" = "1"
+	register "PcieRpLtrEnable[10]" = "1"
+	# Uses CLK SRC 0
+	register "PcieClkSrcUsage[0]" = "6"
+	register "PcieClkSrcClkReq[0]" = "0"
+
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "vSD3_CD_B"
+
+	# SATA port 1 Gen3 Strength
+	# Port1 Tx De-Emphasis = 20*log(0x20/64) = -6dB
+	register "sata_port[1].TxGen3DeEmphEnable" = "1"
+	register "sata_port[1].TxGen3DeEmph" = "0x20"
+
+	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				## Active Policy
+				register "policies.active[0]" = "{.target=DPTF_CPU,
+					.thresholds={TEMP_PCT(90, 85),
+						     TEMP_PCT(85, 75),
+						     TEMP_PCT(80, 65),
+						     TEMP_PCT(75, 55),
+						     TEMP_PCT(70, 45),}}"
+				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
+					.thresholds={TEMP_PCT(50, 85),
+						     TEMP_PCT(47, 75),
+						     TEMP_PCT(45, 65),
+						     TEMP_PCT(42, 55),
+						     TEMP_PCT(39, 45),}}"
+
+				## Passive Policy
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           93, 5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 65, 6000)"
+
+				## Critical Policy
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          100, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
+
+				## Power Limits Control
+				# PL1 is fixed at 15W, avg over 28-32s interval
+				# 25-64W PL2 in 1000mW increments, avg over 28-32s interval
+				register "controls.power_limits.pl1" = "{
+					.min_power = 15000,
+					.max_power = 15000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 200,}"
+				register "controls.power_limits.pl2" = "{
+					.min_power = 25000,
+					.max_power = 64000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 1000,}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf[0]" = "{ 255, 1700 }"
+				register "controls.charger_perf[1]" = "{  24, 1500 }"
+				register "controls.charger_perf[2]" = "{  16, 1000 }"
+				register "controls.charger_perf[3]" = "{   8,  500 }"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf[0]" = "{  90, 6700, 220, 2200, }"
+				register "controls.fan_perf[1]" = "{  80, 5800, 180, 1800, }"
+				register "controls.fan_perf[2]" = "{  70, 5000, 145, 1450, }"
+				register "controls.fan_perf[3]" = "{  60, 4900, 115, 1150, }"
+				register "controls.fan_perf[4]" = "{  50, 3838,  90,  900, }"
+				register "controls.fan_perf[5]" = "{  40, 2904,  55,  550, }"
+				register "controls.fan_perf[6]" = "{  30, 2337,  30,  300, }"
+				register "controls.fan_perf[7]" = "{  20, 1608,  15,  150, }"
+				register "controls.fan_perf[8]" = "{  10,  800,  10,  100, }"
+				register "controls.fan_perf[9]" = "{   0,    0,   0,   50, }"
+
+				# Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 on end
+			end
+		end # DPTF 0x1903
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Front Left""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port Rear""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Front Right""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Right""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Middle""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Left""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 0)"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Front Left""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Front Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Rear""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						device usb 3.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Left""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 0)"
+						device usb 3.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Middle""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 3.5 on end
+					end
+				end
+			end
+		end # USB xHCI
+		device pci 15.0 off
+			# RFU - Reserved for Future Use.
+		end # I2C #0
+		device pci 15.1 off end # I2C #1
+		device pci 15.2 on
+			chip drivers/i2c/generic
+				register "hid" = ""1AF80175""
+				register "name" = ""PS17""
+				register "desc" = ""Parade PS175""
+				device i2c 4a on end
+			end
+		end # I2C #2, PCON PS175.
+		device pci 15.3 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC2142""
+				register "name" = ""RTD2""
+				register "desc" = ""Realtek RTD2142""
+				device i2c 4a on end
+			end
+		end # I2C #3, Realtek RTD2142.
+		device pci 16.0 on end # Management Engine Interface 1
+		device pci 19.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_H0)"
+				register "property_count" = "1"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end #I2C #4
+		device pci 1a.0 on  end # eMMC
+		device pci 1c.6 on
+			chip drivers/net
+				register "customized_leds" = "0x05af"
+				register "wake" = "GPE0_DW1_07" # GPP_C7
+				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A18)"
+				register "stop_delay_ms" = "12" # NIC needs time to quiesce
+				register "stop_off_delay_ms" = "1"
+				register "has_power_resource" = "1"
+				register "device_index" = "0"
+				device pci 00.0 on end
+			end
+			register "PcieRpSlotImplemented[6]" = "1"
+		end # RTL8111H Ethernet NIC
+		device pci 1d.2 on	# PCI Express Port 11 (X2 NVMe)
+			register "PcieRpSlotImplemented[10]" = "1"
+		end
+		device pci 1e.3 off end # GSPI #1
+	end
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#| AcLoadline     | 10.04 | 1.81  | 3.19  | 3.19  |
+	#| DcLoadline     | 10.04 | 1.81  | 3.19  | 3.19  |
+	#+----------------+-------+-------+-------+-------+
+	#Note: IccMax settings are moved to SoC code
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 1004,
+		.dc_loadline = 1004,
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 181,
+		.dc_loadline = 181,
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 319,
+		.dc_loadline = 319,
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 319,
+		.dc_loadline = 319,
+	}"
+
+end

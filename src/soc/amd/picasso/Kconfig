@@ -490,6 +490,13 @@ config PSP_UNLOCK_SECURE_DEBUG
 	help
 	  Select this item to enable secure debug options in PSP.
 
+config PSP_VERSTAGE_FILE
+	string "Specify the PSP_verstage file path"
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default "$(obj)/psp_verstage.bin"
+	help
+	  Add psp_verstage file to the build & PSP Directory Table
+
 endmenu
 
 

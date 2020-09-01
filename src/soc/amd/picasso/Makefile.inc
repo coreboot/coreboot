@@ -249,7 +249,7 @@ PSP_SHAREDMEM_BASE=$(shell printf "0x%s" $(_PSP_SHAREDMEM_BASE))
 endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
-PSP_VERSTAGE_FILE=$(obj)/psp_verstage.bin
+PSP_VERSTAGE_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_FILE))
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 APOB_NV_SIZE=$(shell printf "0x%x" $(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))

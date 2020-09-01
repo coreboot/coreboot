@@ -39,14 +39,14 @@
  *                     |          Unused hole           |
  *                     +--------------------------------+
  *                     |     FMAP cache (FMAP_SIZE)     |
- *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + PSP_SHAREDMEM_SIZE + PRERAM_CBMEM_CONSOLE_SIZE + 0x200
+ *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE + 0x200
  *                     |  Early Timestamp region (512B) |
- *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + PSP_SHAREDMEM_SIZE + PRERAM_CBMEM_CONSOLE_SIZE
+ *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE
  *                     |      Preram CBMEM console      |
  *                     |   (PRERAM_CBMEM_CONSOLE_SIZE)  |
- *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + PSP_SHAREDMEM_SIZE
+ *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE
  *                     |   PSP shared (vboot workbuf)   |
- *                     |      (PSP_SHAREDMEM_SIZE)      |
+ *                     |(VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE)      |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40
  *                     |     Transfer Info Structure    |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE
@@ -78,7 +78,6 @@ SECTIONS
 	_transfer_buffer = .;
 	REGION(transfer_info, ., TRANSFER_INFO_SIZE, 4)
 	VBOOT2_WORK(., VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE)
-	PSP_SHAREDMEM_DRAM_END(CONFIG_PSP_SHAREDMEM_BASE + CONFIG_PSP_SHAREDMEM_SIZE)
 #endif
 
 	PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
@@ -86,6 +85,7 @@ SECTIONS
 	FMAP_CACHE(., FMAP_SIZE)
 #if CONFIG(VBOOT)
 	_etransfer_buffer = .;
+	PSP_SHAREDMEM_DRAM_END(CONFIG_PSP_SHAREDMEM_BASE + CONFIG_PSP_SHAREDMEM_SIZE)
 #endif
 	_ = ASSERT((CONFIG_BOOTBLOCK_ADDR + CONFIG_C_ENV_BOOTBLOCK_SIZE - 0x10) == CONFIG_X86_RESET_VECTOR, "Reset vector should be -0x10 from end of bootblock");
 	_ = ASSERT(CONFIG_BOOTBLOCK_ADDR == ((CONFIG_BOOTBLOCK_ADDR + 0xFFFF) & 0xFFFF0000), "Bootblock must be 16 bit aligned");

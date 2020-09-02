@@ -6,16 +6,16 @@ config SOC_INTEL_COMMON_BLOCK_SGX
 	help
 	  Intel Processor common SGX support
 
+if SOC_INTEL_COMMON_BLOCK_SGX
+
 config SOC_INTEL_COMMON_BLOCK_SGX_LOCK_MEMORY
 	bool
-	depends on SOC_INTEL_COMMON_BLOCK_SGX
 	default n
 	help
 	 Lock memory before SGX activation. This is only needed if MCHECK does not do it.
 
 config SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
 	bool "Enable Software Guard Extensions (SGX) if available"
-	depends on SOC_INTEL_COMMON_BLOCK_SGX
 	default n
 	help
 	  Intel Software Guard Extensions (SGX) is a set of new CPU instructions that can be
@@ -70,3 +70,5 @@ config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_DISABLED
 	bool "Disabled"
 
 endchoice
+
+endif

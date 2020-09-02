@@ -4,42 +4,40 @@ config SOC_INTEL_COMMON_BLOCK_GPIO
 	help
 	  Intel Processor common GPIO support
 
+if SOC_INTEL_COMMON_BLOCK_GPIO
+
 # Use to program Interrupt Polarity Control (IPCx) register
 # Each bit represents IRQx Active High Polarity Disable configuration:
 # when set to 1, the interrupt polarity associated with IRQx is inverted
 # to appear as Active Low to IOAPIC and vice versa
 config SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
 
 # Used to configure Pad Tolerance as 1.8V or 3.3V
 config SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
 
 # Used to configure IOSSTATE and IOSTERM
 config SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
 
 # Used to provide support for legacy macros
 config SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
 
 # Indicate if multiple ACPI devices are used for each gpio community.
 config SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
 
 # Indicate if SoC supports dual-routing of GPIOs (to different paths like SCI,
 # NMI, SMI, IOAPIC). This is required to support IRQ and wake on the same pad.
 config SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
-	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	default n
+
+endif

@@ -4,9 +4,10 @@ config SOC_INTEL_COMMON_BLOCK_UART
 	help
 	  Intel Processor common UART support
 
+if SOC_INTEL_COMMON_BLOCK_UART
+
 config INTEL_LPSS_UART_FOR_CONSOLE
 	bool
-	depends on SOC_INTEL_COMMON_BLOCK_UART
 	select DRIVERS_UART_8250MEM_32
 	select FIXED_UART_FOR_CONSOLE
 	help
@@ -14,3 +15,5 @@ config INTEL_LPSS_UART_FOR_CONSOLE
 	  for the coreboot console.
 	  WARNING: UART_FOR_CONSOLE has to be set to a correct value,
 	           otherwise wrong pad configurations might be selected.
+
+endif

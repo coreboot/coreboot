@@ -68,6 +68,33 @@ enum lpm_state_mask {
 		     | LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4,
 };
 
+/*
+ * VR domains. The domains are IA,GT,SA,VLCC and FIVR.
+ */
+enum vr_domains {
+	VR_DOMAIN_IA,
+	VR_DOMAIN_GT,
+	VR_DOMAIN_SA,
+	VR_DOMAIN_VLCC,
+	VR_DOMAIN_FIVR,
+	VR_DOMAIN_MAX
+};
+
+/*
+ * Slew Rate configuration for Deep Package C States for VR domain.
+ * They are fast time divided by 2.
+ * 0 - Fast/2
+ * 1 - Fast/4
+ * 2 - Fast/8
+ * 3 - Fast/16
+ */
+enum slew_rate {
+	SLEW_FAST_2,
+	SLEW_FAST_4,
+	SLEW_FAST_8,
+	SLEW_FAST_16
+};
+
 struct soc_intel_tigerlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -142,6 +169,32 @@ struct soc_intel_tigerlake_config {
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
+
+	/*
+	 * Acoustic Noise Mitigation
+	 * 0 - Disable
+	 * 1 - Enable noise mitigation
+	 */
+	uint8_t AcousticNoiseMitigation;
+
+	/*
+	 * Offset 0x054B - Disable Fast Slew Rate for Deep Package
+	 * C States for VR domains. Disable Fast Slew Rate for Deep
+	 * Package C States based on Acoustic Noise Mitigation feature
+	 * enabled. The domains are IA,GT,SA,VLCC and FIVR.
+	 * 0 - False
+	 * 1 - True
+	 */
+	uint8_t FastPkgCRampDisable[VR_DOMAIN_MAX];
+
+	/*
+	 * Offset 0x0550 - Slew Rate configuration for Deep Package
+	 * C States for VR domains. Slew Rate configuration for Deep
+	 * Package C States for VR domains based on Acoustic Noise
+	 * Mitigation feature enabled. The domains are IA,GT,SA,VLCC and FIVR.
+	 * Slew rates are defined as enum slew_rate.
+	 */
+	uint8_t SlowSlewRate[VR_DOMAIN_MAX];
 
 	/* SATA related */
 	uint8_t SataEnable;

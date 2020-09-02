@@ -23,12 +23,6 @@ config ELOG_CBMEM
 	 but it means that events added at runtime via the SMI handler
 	 will not be reflected in the CBMEM copy of the log.
 
-config ELOG_PRERAM
-	bool
-	default n
-	help
-	  This option will enable event logging from the preram stage.
-
 config ELOG_GSMI
 	depends on HAVE_SMI_HANDLER
 	bool "SMI interface to write and clear event log"

@@ -1,7 +1,7 @@
-bootblock-$(CONFIG_ELOG_PRERAM) += elog.c
-verstage-$(CONFIG_ELOG_PRERAM) += elog.c
-romstage-$(CONFIG_ELOG_PRERAM) += elog.c
-postcar-$(CONFIG_ELOG_PRERAM) += elog.c
+bootblock-$(CONFIG_ELOG) += elog.c
+verstage-$(CONFIG_ELOG) += elog.c
+romstage-$(CONFIG_ELOG) += elog.c
+postcar-$(CONFIG_ELOG) += elog.c
 ramstage-$(CONFIG_ELOG) += elog.c
 
 smm-$(CONFIG_ELOG_GSMI) += elog.c gsmi.c

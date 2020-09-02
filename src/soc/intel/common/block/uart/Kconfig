@@ -4,18 +4,6 @@ config SOC_INTEL_COMMON_BLOCK_UART
 	help
 	  Intel Processor common UART support
 
-config SOC_INTEL_COMMON_BLOCK_UART_LPSS_CLK_M_VAL
-	depends on SOC_INTEL_COMMON_BLOCK_UART
-	hex
-	help
-	  Clock m-divisor value for m/n divider
-
-config SOC_INTEL_COMMON_BLOCK_UART_LPSS_CLK_N_VAL
-	depends on SOC_INTEL_COMMON_BLOCK_UART
-	hex
-	help
-	  Clock m-divisor value for m/n divider
-
 config INTEL_LPSS_UART_FOR_CONSOLE
 	bool
 	depends on SOC_INTEL_COMMON_BLOCK_UART

@@ -9,7 +9,7 @@ chip northbridge/intel/ironlake
 	register "gpu_dp_d_hotplug" = "0x06"
 
 	# Enable Panel as LVDS and configure power delays
-	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_port_select" = "PANEL_PORT_LVDS"
 	register "gpu_panel_power_cycle_delay" = "3"
 	register "gpu_panel_power_up_delay" = "250"
 	register "gpu_panel_power_down_delay" = "250"

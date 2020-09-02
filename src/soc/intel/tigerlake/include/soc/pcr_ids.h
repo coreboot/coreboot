@@ -11,8 +11,6 @@
 /*
  * Port ids
  */
-#define PID_SDX		0x53
-
 #define PID_GPIOCOM0	0x6e
 #define PID_GPIOCOM1	0x6d
 #define PID_GPIOCOM2	0x6c

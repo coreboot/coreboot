@@ -111,13 +111,20 @@ typedef enum {
 } PCIE_PORTS;
 
 /**
- IIO Stacks
- **/
+ * IIO Stacks
+ *
+ * Ports    Stack	Stack(HOB)	IioConfigIou
+ * =================================================
+ * 0        CSTACK	stack 0		IOU0
+ * 1A..1D   PSTACK0	stack 1		IOU1
+ * 2A..2D   PSTACK1	stack 2		IOU2
+ * 3A..3D   PSTACK2	stack 4		IOU3
+ */
 typedef enum {
 	CSTACK = 0,
 	PSTACK0,
 	PSTACK1,
-	PSTACK2,
+	PSTACK2 = 4,
 	MAX_STACKS
 } IIO_STACKS;
 

@@ -1,4 +1,7 @@
 chip soc/intel/tigerlake
+	register "DdiPort1Hpd" = "0"
+	register "DdiPort2Hpd" = "0"
+
 	device domain 0 on
 		device pci 15.0 on
 			chip drivers/i2c/generic

@@ -6,7 +6,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_b_hotplug" = "0x06"
 
 	# Enable Panel as LVDS and configure power delays
-	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_port_select" = "PANEL_PORT_LVDS"
 	register "gpu_panel_power_cycle_delay" = "5"		# 400ms
 	register "gpu_panel_power_up_delay" = "500"		# 50ms
 	register "gpu_panel_power_down_delay" = "150"		# 15ms

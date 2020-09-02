@@ -5,7 +5,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_d_hotplug" = "4"
 
 	# Enable Panel as eDP and configure power delays
-	register "gpu_panel_port_select" = "1"			# eDP
+	register "gpu_panel_port_select" = "PANEL_PORT_DP_A"
 	register "gpu_panel_power_up_delay" = "2000"		# 200ms
 	register "gpu_panel_power_down_delay" = "500"		# 50ms
 	register "gpu_panel_power_backlight_on_delay" = "1"	# 0.1ms

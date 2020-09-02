@@ -4,7 +4,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_b_hotplug" = "0"
 	register "gpu_dp_c_hotplug" = "0"
 	register "gpu_dp_d_hotplug" = "0"
-	register "gpu_panel_port_select" = "0"
+	register "gpu_panel_port_select" = "PANEL_PORT_LVDS"
 	register "gpu_panel_power_backlight_off_delay" = "0"
 	register "gpu_panel_power_backlight_on_delay" = "0"
 	register "gpu_panel_power_cycle_delay" = "0"

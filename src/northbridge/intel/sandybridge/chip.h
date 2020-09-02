@@ -19,7 +19,13 @@ struct northbridge_intel_sandybridge_config {
 	u8 gpu_dp_c_hotplug; /* Digital Port C Hotplug Config */
 	u8 gpu_dp_d_hotplug; /* Digital Port D Hotplug Config */
 
-	u8 gpu_panel_port_select; /* 0=LVDS 1=DP_B 2=DP_C 3=DP_D */
+	enum {
+		PANEL_PORT_LVDS = 0,
+		PANEL_PORT_DP_A = 1, /* Also known as eDP */
+		PANEL_PORT_DP_C = 2,
+		PANEL_PORT_DP_D = 3,
+	} gpu_panel_port_select;
+
 	u8 gpu_panel_power_cycle_delay;          /* T4 time sequence */
 	u16 gpu_panel_power_up_delay;            /* T1+T2 time sequence */
 	u16 gpu_panel_power_down_delay;          /* T3 time sequence */

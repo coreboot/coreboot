@@ -1,7 +1,0 @@
-config SOC_INTEL_COMMON_BLOCK_IMC
-	bool
-	depends on MMCONF_SUPPORT
-	default n
-	help
-	  Driver for communication with Integrated Memory Controller that is found on
-	  some Xeon server processors.

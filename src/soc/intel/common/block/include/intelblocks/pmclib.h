@@ -220,4 +220,13 @@ void pmc_soc_set_afterg3_en(bool on);
  */
 void pmc_set_power_failure_state(bool target_on);
 
+/*
+ * This function ensures that the duration programmed in the PchPmPwrCycDur will never be
+ * smaller than the SLP_Sx assertion widths.
+ * If the pm_pwr_cyc_dur is less than any of the SLP_Sx assertion widths then it returns the
+ * default value PCH_PM_PWR_CYC_DUR.
+ */
+uint8_t get_pm_pwr_cyc_dur(uint8_t slp_s4_min_assert, uint8_t slp_s3_min_assert,
+					uint8_t slp_a_min_assert, uint8_t pm_pwr_cyc_dur);
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

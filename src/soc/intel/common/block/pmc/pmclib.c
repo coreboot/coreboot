@@ -18,6 +18,38 @@
 
 static struct chipset_power_state power_state;
 
+/* List of Minimum Assertion durations in microseconds */
+enum min_assert_dur {
+	MinAssertDur0s		= 0,
+	MinAssertDur60us	= 60,
+	MinAssertDur1ms		= 1000,
+	MinAssertDur50ms	= 50000,
+	MinAssertDur98ms	= 98000,
+	MinAssertDur500ms	= 500000,
+	MinAssertDur1s		= 1000000,
+	MinAssertDur2s		= 2000000,
+	MinAssertDur3s		= 3000000,
+	MinAssertDur4s		= 4000000,
+};
+
+/* Signal Assertion duration values */
+struct cfg_assert_dur {
+	/* Minimum assertion duration of SLP_A signal */
+	enum min_assert_dur slp_a;
+
+	/* Minimum assertion duration of SLP_4 signal */
+	enum min_assert_dur slp_s4;
+
+	/* Minimum assertion duration of SLP_3 signal */
+	enum min_assert_dur slp_s3;
+
+	/* PCH PM Power Cycle duration */
+	enum min_assert_dur pm_pwr_cyc_dur;
+};
+
+/* Default value of PchPmPwrCycDur */
+#define PCH_PM_PWR_CYC_DUR	0
+
 struct chipset_power_state *pmc_get_power_state(void)
 {
 	struct chipset_power_state *ptr = NULL;
@@ -572,4 +604,99 @@ void pmc_set_power_failure_state(const bool target_on)
 	}
 
 	pmc_soc_set_afterg3_en(on);
+}
+
+/* This function returns the highest assertion duration of the SLP_Sx assertion widths */
+static enum min_assert_dur get_high_assert_width(const struct cfg_assert_dur *cfg_assert_dur)
+{
+	enum min_assert_dur max_assert_dur = cfg_assert_dur->slp_s4;
+
+	if (max_assert_dur < cfg_assert_dur->slp_s3)
+		max_assert_dur = cfg_assert_dur->slp_s3;
+
+	if (max_assert_dur < cfg_assert_dur->slp_a)
+		max_assert_dur = cfg_assert_dur->slp_a;
+
+	return max_assert_dur;
+}
+
+/* This function converts assertion durations from register-encoded to microseconds */
+static void get_min_assert_dur(uint8_t slp_s4_min_assert, uint8_t slp_s3_min_assert,
+		uint8_t slp_a_min_assert, uint8_t pm_pwr_cyc_dur,
+		struct cfg_assert_dur *cfg_assert_dur)
+{
+	/*
+	 * Ensure slp_x_dur_list[] elements in the devicetree config are in sync with
+	 * FSP encoded values.
+	 */
+
+	/* slp_s4_assert_dur_list : 1s, 1s(default), 2s, 3s, 4s */
+	const enum min_assert_dur slp_s4_assert_dur_list[] = {
+		MinAssertDur1s, MinAssertDur1s, MinAssertDur2s, MinAssertDur3s, MinAssertDur4s
+	};
+
+	/* slp_s3_assert_dur_list: 50ms, 60us, 1ms, 50ms (Default), 2s */
+	const enum min_assert_dur slp_s3_assert_dur_list[] = {
+		MinAssertDur50ms, MinAssertDur60us, MinAssertDur1ms, MinAssertDur50ms,
+										MinAssertDur2s
+	};
+
+	/* slp_a_assert_dur_list: 2s, 0s, 4s, 98ms, 2s(Default) */
+	const enum min_assert_dur slp_a_assert_dur_list[] = {
+		MinAssertDur2s, MinAssertDur0s, MinAssertDur4s, MinAssertDur98ms, MinAssertDur2s
+	};
+
+	/* pm_pwr_cyc_dur_list: 4s(Default), 1s, 2s, 3s, 4s */
+	const enum min_assert_dur pm_pwr_cyc_dur_list[] = {
+		MinAssertDur4s, MinAssertDur1s, MinAssertDur2s, MinAssertDur3s, MinAssertDur4s
+	};
+
+	/* Get signal assertion width */
+	if (slp_s4_min_assert < ARRAY_SIZE(slp_s4_assert_dur_list))
+		cfg_assert_dur->slp_s4 = slp_s4_assert_dur_list[slp_s4_min_assert];
+
+	if (slp_s3_min_assert < ARRAY_SIZE(slp_s3_assert_dur_list))
+		cfg_assert_dur->slp_s3 = slp_s3_assert_dur_list[slp_s3_min_assert];
+
+	if (slp_a_min_assert < ARRAY_SIZE(slp_a_assert_dur_list))
+		cfg_assert_dur->slp_a = slp_a_assert_dur_list[slp_a_min_assert];
+
+	if (pm_pwr_cyc_dur < ARRAY_SIZE(pm_pwr_cyc_dur_list))
+		cfg_assert_dur->pm_pwr_cyc_dur = pm_pwr_cyc_dur_list[pm_pwr_cyc_dur];
+}
+
+/*
+ * This function ensures that the duration programmed in the PchPmPwrCycDur will never be
+ * smaller than the SLP_Sx assertion widths.
+ * If the pm_pwr_cyc_dur is less than any of the SLP_Sx assertion widths then it returns the
+ * default value PCH_PM_PWR_CYC_DUR.
+ */
+uint8_t get_pm_pwr_cyc_dur(uint8_t slp_s4_min_assert, uint8_t slp_s3_min_assert,
+		uint8_t slp_a_min_assert, uint8_t pm_pwr_cyc_dur)
+{
+	/* Set default values for the minimum assertion duration */
+	struct cfg_assert_dur cfg_assert_dur = {
+		.slp_a		= MinAssertDur2s,
+		.slp_s4		= MinAssertDur1s,
+		.slp_s3		= MinAssertDur50ms,
+		.pm_pwr_cyc_dur	= MinAssertDur4s
+	};
+
+	enum min_assert_dur high_assert_width;
+
+	/* Convert assertion durations from register-encoded to microseconds */
+	get_min_assert_dur(slp_s4_min_assert, slp_s3_min_assert, slp_a_min_assert,
+		pm_pwr_cyc_dur,	&cfg_assert_dur);
+
+	/* Get the highest assertion duration among PCH EDS specified signals for pwr_cyc_dur */
+	high_assert_width = get_high_assert_width(&cfg_assert_dur);
+
+	if (cfg_assert_dur.pm_pwr_cyc_dur >= high_assert_width)
+		return pm_pwr_cyc_dur;
+
+	printk(BIOS_DEBUG,
+			"Set PmPwrCycDur to 4s as configured PmPwrCycDur (%d) violates PCH EDS "
+			"spec\n", pm_pwr_cyc_dur);
+
+	return PCH_PM_PWR_CYC_DUR;
 }

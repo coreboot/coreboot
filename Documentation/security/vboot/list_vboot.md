@@ -142,6 +142,7 @@
 - Trogdor
 - Lazor
 - Bubs
+- Coachz
 - Veyron_Jaq (Haier Chromebook 11)
 - Veyron_Jerry (Hisense Chromebook 11)
 - Veyron_Mighty (Haier Chromebook 11(edu))

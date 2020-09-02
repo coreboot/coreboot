@@ -194,7 +194,7 @@ xhci_init (unsigned long physical_bar)
 	xhci->hcrreg = phys_to_virt(physical_bar) + xhci->capreg->rtsoff;
 	xhci->dbreg = phys_to_virt(physical_bar) + xhci->capreg->dboff;
 
-	xhci_debug("regbase: 0x%"PRIx32"\n", physical_bar);
+	xhci_debug("regbase: 0x%"PRIxPTR"\n", physical_bar);
 	xhci_debug("caplen:  0x%"PRIx32"\n", CAP_GET(CAPLEN, xhci->capreg));
 	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg->rtsoff);
 	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg->dboff);
@@ -208,8 +208,8 @@ xhci_init (unsigned long physical_bar)
 	}
 
 	xhci_debug("context size: %dB\n", CTXSIZE(xhci));
-	xhci_debug("maxslots: 0x%02lx\n", CAP_GET(MAXSLOTS, xhci->capreg));
-	xhci_debug("maxports: 0x%02lx\n", CAP_GET(MAXPORTS, xhci->capreg));
+	xhci_debug("maxslots: 0x%02"PRIx32"\n", CAP_GET(MAXSLOTS, xhci->capreg));
+	xhci_debug("maxports: 0x%02"PRIx32"\n", CAP_GET(MAXPORTS, xhci->capreg));
 	const unsigned pagesize = xhci->opreg->pagesize << 12;
 	xhci_debug("pagesize: 0x%04x\n", pagesize);
 
@@ -374,7 +374,7 @@ xhci_reinit (hci_t *controller)
 
 	/* Initialize command ring */
 	xhci_init_cycle_ring(&xhci->cr, COMMAND_RING_SIZE);
-	xhci_debug("command ring @%p (0x%08x)\n",
+	xhci_debug("command ring @%p (0x%08"PRIxPTR")\n",
 		   xhci->cr.ring, virt_to_phys(xhci->cr.ring));
 	xhci->opreg->crcr_lo = virt_to_phys(xhci->cr.ring) | CRCR_RCS;
 	xhci->opreg->crcr_hi = 0;
@@ -384,9 +384,9 @@ xhci_reinit (hci_t *controller)
 
 	/* Initialize event ring */
 	xhci_reset_event_ring(&xhci->er);
-	xhci_debug("event ring @%p (0x%08x)\n",
+	xhci_debug("event ring @%p (0x%08"PRIxPTR")\n",
 		   xhci->er.ring, virt_to_phys(xhci->er.ring));
-	xhci_debug("ERST Max: 0x%lx ->  0x%lx entries\n",
+	xhci_debug("ERST Max: 0x%"PRIx32" ->  0x%x entries\n",
 		   CAP_GET(ERST_MAX, xhci->capreg),
 		   1 << CAP_GET(ERST_MAX, xhci->capreg));
 	memset((void*)xhci->ev_ring_table, 0x00, sizeof(erst_entry_t));

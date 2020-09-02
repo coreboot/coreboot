@@ -28,6 +28,7 @@
 
 //#define USB_DEBUG
 
+#include <inttypes.h>
 #include <libpayload.h>
 #include <arch/barrier.h>
 #include <arch/cache.h>
@@ -46,15 +47,15 @@ static void dump_td(u32 addr)
 		usb_debug("|..[OUT]............................................|\n");
 	else
 		usb_debug("|..[]...............................................|\n");
-	usb_debug("|:|============ EHCI TD at [0x%08lx] ==========|:|\n", addr);
-	usb_debug("|:| ERRORS = [%ld] | TOKEN = [0x%08lx] |         |:|\n",
+	usb_debug("|:|============ EHCI TD at [0x%08"PRIx32"] ==========|:|\n", addr);
+	usb_debug("|:| ERRORS = [%"PRId32"] | TOKEN = [0x%08"PRIx32"] |         |:|\n",
 		3 - ((td->token & QTD_CERR_MASK) >> QTD_CERR_SHIFT), td->token);
 	usb_debug("|:+-----------------------------------------------+:|\n");
-	usb_debug("|:| Next qTD        [0x%08lx]                  |:|\n", td->next_qtd);
+	usb_debug("|:| Next qTD        [0x%08"PRIx32"]                  |:|\n", td->next_qtd);
 	usb_debug("|:+-----------------------------------------------+:|\n");
-	usb_debug("|:| Alt. Next qTD   [0x%08lx]                  |:|\n", td->alt_next_qtd);
+	usb_debug("|:| Alt. Next qTD   [0x%08"PRIx32"]                  |:|\n", td->alt_next_qtd);
 	usb_debug("|:+-----------------------------------------------+:|\n");
-	usb_debug("|:|       | Bytes to Transfer            |[%05ld] |:|\n", (td->token & QTD_TOTAL_LEN_MASK) >> 16);
+	usb_debug("|:|       | Bytes to Transfer            |[%05"PRId32"] |:|\n", (td->token & QTD_TOTAL_LEN_MASK) >> 16);
 	usb_debug("|:|       | PID CODE:                    |    [%ld] |:|\n", (td->token & (3UL << 8)) >> 8);
 	usb_debug("|:|       | Interrupt On Complete (IOC)  |    [%ld] |:|\n", (td->token & (1UL << 15)) >> 15);
 	usb_debug("|:|       | Status Active                |    [%ld] |:|\n", (td->token & (1UL << 7)) >> 7);
@@ -277,9 +278,11 @@ static int wait_for_tds(qtd_t *head)
 		if (cur->next_qtd & 1) {
 			break;
 		}
-		if (0) dump_td(virt_to_phys(cur));
+		if (0)
+			dump_td(virt_to_phys(cur));
 		/* helps debugging the TD chain */
-		if (0) usb_debug("\nmoving from %x to %x\n", cur, phys_to_virt(cur->next_qtd));
+		if (0)
+			usb_debug("\nmoving from %p to %p\n", cur, phys_to_virt(cur->next_qtd));
 		cur = phys_to_virt(cur->next_qtd);
 	}
 	return result;

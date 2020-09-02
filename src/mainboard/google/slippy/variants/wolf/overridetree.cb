@@ -1,7 +1,6 @@
 chip northbridge/intel/haswell
 
-	# Enable Panel and configure power delays
-	register "gpu_panel_port_select" = "1"			# eDP
+	# Set panel power delays
 	register "gpu_panel_power_cycle_delay" = "6"		# 500ms (T11+T12)
 	register "gpu_panel_power_up_delay" = "2000"		# 200ms (T3)
 	register "gpu_panel_power_down_delay" = "500"		# 50ms (T10)

@@ -69,6 +69,11 @@
 
 #ifndef __ACPI__
 
+static inline int pch_is_lp(void)
+{
+	return CONFIG(INTEL_LYNXPOINT_LP);
+}
+
 /* PCH platform types, safe for MRC consumption */
 enum pch_platform_type {
 	PCH_TYPE_MOBILE	 = 0,
@@ -84,7 +89,6 @@ void usb_xhci_route_all(void);
 enum pch_platform_type get_pch_platform_type(void);
 int pch_silicon_revision(void);
 int pch_silicon_id(void);
-int pch_is_lp(void);
 u16 get_pmbase(void);
 u16 get_gpiobase(void);
 

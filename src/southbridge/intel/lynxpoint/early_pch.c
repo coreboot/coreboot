@@ -35,11 +35,6 @@ enum pch_platform_type get_pch_platform_type(void)
 	return PCH_TYPE_DESKTOP;
 }
 
-int pch_is_lp(void)
-{
-	return get_pch_platform_type() == PCH_TYPE_ULT;
-}
-
 static void pch_enable_bars(void)
 {
 	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);

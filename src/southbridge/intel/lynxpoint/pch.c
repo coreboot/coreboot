@@ -57,11 +57,6 @@ enum pch_platform_type get_pch_platform_type(void)
 	return PCH_TYPE_DESKTOP;
 }
 
-int pch_is_lp(void)
-{
-	return get_pch_platform_type() == PCH_TYPE_ULT;
-}
-
 u16 get_pmbase(void)
 {
 	static u16 pmbase;

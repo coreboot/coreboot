@@ -47,8 +47,6 @@ static uintptr_t add_agesa_acpi_table(guid_t guid, const char *name, acpi_rsdp_t
 
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 {
-	/* 8-byte IVHD structures must be aligned to the 8-byte boundary. */
-	current = ALIGN_UP(current, 8);
 	ivrs_ivhd_special_t *ivhd_ioapic = (ivrs_ivhd_special_t *)current;
 	memset(ivhd_ioapic, 0, sizeof(*ivhd_ioapic));
 
@@ -75,8 +73,6 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 
 static unsigned long ivhd_describe_hpet(unsigned long current)
 {
-	/* 8-byte IVHD structures must be aligned to the 8-byte boundary. */
-	current = ALIGN_UP(current, 8);
 	ivrs_ivhd_special_t *ivhd_hpet = (ivrs_ivhd_special_t *)current;
 
 	ivhd_hpet->type = IVHD_DEV_8_BYTE_EXT_SPECIAL_DEV;
@@ -93,8 +89,6 @@ static unsigned long ivhd_describe_hpet(unsigned long current)
 static unsigned long ivhd_describe_f0_device(unsigned long current,
 						uint16_t dev_id, uint8_t datasetting)
 {
-	/* 8-byte IVHD structures must be aligned to the 8-byte boundary. */
-	current = ALIGN_UP(current, 8);
 	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *) current;
 
 	ivhd_f0->type = IVHD_DEV_VARIABLE;
@@ -154,8 +148,6 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		ivhd_entry->dte_setting = data;
 		*current += sizeof(ivrs_ivhd_generic_t);
 	} else if (type == IVHD_DEV_8_BYTE_ALIAS_SELECT) {
-		/* 8-byte IVHD structures must be aligned to the 8-byte boundary. */
-		*current = ALIGN_UP(*current, 8);
 		ivrs_ivhd_alias_t *ivhd_entry = (ivrs_ivhd_alias_t *)*current;
 
 		ivhd_entry->type = type;

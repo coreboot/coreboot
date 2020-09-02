@@ -8,6 +8,7 @@ config BOARD_GOOGLE_DELBIN
 config BOARD_GOOGLE_ELDRID
 	bool "-> Eldrid"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
+	select SOC_INTEL_CSE_LITE_SKU
 
 config BOARD_GOOGLE_HALVOR
 	bool "-> Halvor"

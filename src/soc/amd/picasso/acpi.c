@@ -49,9 +49,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
-	/* Write IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
 			CONFIG_PICASSO_FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
+
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
+			CONFIG_PICASSO_GNB_IOAPIC_ID, GNB_IO_APIC_ADDR, IO_APIC_INTERRUPTS);
 
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */

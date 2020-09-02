@@ -7,11 +7,7 @@ Scope(\)
 	// Return TRUE if chipset is LynxPoint-LP
 	Method (ISLP, 0, NotSerialized)
 	{
-		If (LEqual (\_SB.PCI0.LPCB.DIDH, 0x9c)) {
-			Return (1)
-		} else {
-			Return (0)
-		}
+		Return (CONFIG(INTEL_LYNXPOINT_LP))
 	}
 
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.

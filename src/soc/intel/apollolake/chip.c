@@ -692,6 +692,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		dev->enabled = 0;
 	silconfig->UsbOtg = dev->enabled;
 
+	silconfig->VmxEnable = CONFIG(ENABLE_VMX);
+
 	/* Set VTD feature according to devicetree */
 	silconfig->VtdEnable = cfg->enable_vtd;
 

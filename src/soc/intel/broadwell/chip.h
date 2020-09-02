@@ -84,7 +84,6 @@ struct soc_intel_broadwell_config {
 	u8 gpu_dp_d_hotplug;
 
 	/* Panel power sequence timings */
-	u8 gpu_panel_port_select;
 	u8 gpu_panel_power_cycle_delay;
 	u16 gpu_panel_power_up_delay;
 	u16 gpu_panel_power_down_delay;

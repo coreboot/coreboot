@@ -9,8 +9,7 @@ chip soc/intel/broadwell
 	# Set backlight PWM value for eDP
 	register "gpu_pch_backlight_pwm_hz" = "200"
 
-	# Enable Panel and configure power delays
-	register "gpu_panel_port_select" = "1"			# eDP
+	# Set panel power delays
 	register "gpu_panel_power_cycle_delay" = "6"		# 500ms
 	register "gpu_panel_power_up_delay" = "2000"		# 200ms
 	register "gpu_panel_power_down_delay" = "500"		# 50ms

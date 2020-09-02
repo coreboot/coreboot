@@ -298,7 +298,6 @@ static void igd_setup_panel(struct device *dev)
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PCH_PP_ON_DELAYS);
 	if (!reg32) {
-		reg32 = (conf->gpu_panel_port_select & 0x3) << 30;
 		reg32 |= (conf->gpu_panel_power_up_delay & 0x1fff) << 16;
 		reg32 |= (conf->gpu_panel_power_backlight_on_delay & 0x1fff);
 		gtt_write(PCH_PP_ON_DELAYS, reg32);

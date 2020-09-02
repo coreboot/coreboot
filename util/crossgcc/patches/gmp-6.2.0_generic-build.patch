@@ -1,0 +1,20 @@
+Ensure that GMP is built for a generic CPU on x86
+
+While GMP supports fat builds on x86 that adapt to the CPU's
+capabilities, by default it builds for the CPU of the builder.
+Running that binary on an older CPU then can fail.
+--- gmp-6.2.0/config.guess~	2020-09-02 19:23:01.817510842 +0200
++++ gmp-6.2.0/config.guess	2020-09-02 19:24:55.742325907 +0200
+@@ -1029,6 +1029,12 @@
+        virtualisers allow guests to set a broken state.  */
+     suffix = "noavx";
+
++  if (cpuid_64bit) {
++    modelstr="x86_64";
++  } else {
++    modelstr="pentium";
++  }
++  suffix="";
+   printf ("%s%s", modelstr, suffix);
+   return 0;
+ }

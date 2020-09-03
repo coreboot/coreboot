@@ -120,13 +120,6 @@ config IQAT_ENABLE
 	bool "Enable IQAT"
 	default y
 
-config IQAT_MEMORY_REGION_SIZE
-	depends on IQAT_ENABLE
-	hex
-	default 0x100000
-	help
-	  Do not change this value
-
 config HSUART_DEV
 	hex
 	default 0x1a

@@ -15,7 +15,11 @@
 
 typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
-	/** Offset 0x0024**/	uint8_t                     unused0[12];
+	/** Offset 0x0024**/	uint16_t                    emmc0_init_khz_preset;
+	/** Offset 0x0026**/	uint8_t                     emmc0_sdr104_hs400_driver_strength;
+	/** Offset 0x0027**/	uint8_t                     emmc0_ddr50_driver_strength;
+	/** Offset 0x0028**/	uint8_t                     emmc0_sdr50_driver_strength;
+	/** Offset 0x0029**/	uint8_t                     unused0[7];
 	/** Offset 0x0030**/	uint8_t                     dxio_descriptor[FSPS_UPD_DXIO_DESCRIPTOR_COUNT][16];
 	/** Offset 0x00B0**/	uint8_t                     unused1[16];
 	/** Offset 0x00C0**/	uint32_t                    ddi_descriptor[FSPS_UPD_DDI_DESCRIPTOR_COUNT];
@@ -32,10 +36,10 @@ typedef struct __packed {
 	/** Offset 0x011E**/	uint32_t                    xhci_oc_pin_select;
 	/** Offset 0x0122**/	uint8_t                     xhci0_force_gen1;
 	/** Offset 0x0123**/	uint8_t                     xhci_sparse_mode_enable;
-	/** Offset 0x0124**/    uint32_t                    gnb_ioapic_base;
-	/** Offset 0x0128**/    uint8_t                     gnb_ioapic_id;
-	/** Offset 0x0129**/    uint8_t                     fch_ioapic_id;
-	/** Offset 0x0126**/	uint8_t                     UnusedUpdSpace0[38];
+	/** Offset 0x0124**/	uint32_t                    gnb_ioapic_base;
+	/** Offset 0x0128**/	uint8_t                     gnb_ioapic_id;
+	/** Offset 0x0129**/	uint8_t                     fch_ioapic_id;
+	/** Offset 0x012A**/	uint8_t                     UnusedUpdSpace0[38];
 	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

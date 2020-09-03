@@ -14,9 +14,56 @@
 #include <soc/pci_devs.h>
 #include <string.h>
 
-/*
- * TODO: Add EHL specific CPU/SA/PCH/IGD IDs here
- */
+static struct {
+	uint32_t cpuid;
+	const char *name;
+} cpu_table[] = {
+	{ CPUID_ELKHARTLAKE_A0, "Elkhartlake A0" },
+	{ CPUID_ELKHARTLAKE_B0, "Elkhartlake B0" },
+};
+
+static struct {
+	u16 mchid;
+	const char *name;
+} mch_table[] = {
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_1, "Elkhartlake SKU-0" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_2, "Elkhartlake SKU-1" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_3, "Elkhartlake SKU-2" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_4, "Elkhartlake SKU-3" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_5, "Elkhartlake SKU-4" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_6, "Elkhartlake SKU-5" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_7, "Elkhartlake SKU-6" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_8, "Elkhartlake SKU-7" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_9, "Elkhartlake SKU-8" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_10, "Elkhartlake SKU-9" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_11, "Elkhartlake SKU-10" },
+	{ PCI_DEVICE_ID_INTEL_JSL_EHL, "Elkhartlake SKU-11" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_12, "Elkhartlake SKU-12" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_13, "Elkhartlake SKU-13" },
+};
+
+static struct {
+	u16 espiid;
+	const char *name;
+} pch_table[] = {
+	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_0, "Elkhartlake-0" },
+	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_1, "Elkhartlake-1" },
+	{ PCI_DEVICE_ID_INTEL_MCC_BASE_ESPI, "Elkhartlake Base" },
+	{ PCI_DEVICE_ID_INTEL_MCC_PREMIUM_ESPI, "Elkhartlake Premium" },
+	{ PCI_DEVICE_ID_INTEL_MCC_SUPER_ESPI, "Elkhartlake Super" },
+};
+
+static struct {
+	u16 igdid;
+	const char *name;
+} igd_table[] = {
+	{ PCI_DEVICE_ID_INTEL_EHL_GT1_1, "Elkhartlake GT1-1" },
+	{ PCI_DEVICE_ID_INTEL_EHL_GT2_1, "Elkhartlake GT2-1" },
+	{ PCI_DEVICE_ID_INTEL_EHL_GT1_2, "Elkhartlake GT1-2" },
+	{ PCI_DEVICE_ID_INTEL_EHL_GT2_2, "Elkhartlake GT2-2" },
+	{ PCI_DEVICE_ID_INTEL_EHL_GT1_3, "Elkhartlake GT1-3" },
+	{ PCI_DEVICE_ID_INTEL_EHL_GT2_3, "Elkhartlake GT2-3" },
+};
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)
 {

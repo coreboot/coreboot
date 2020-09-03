@@ -21,7 +21,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
-#define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0xA00
+#define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x0C00
 
 #define PCR_PSFX_TO_SHDW_BAR0	0
 #define PCR_PSFX_TO_SHDW_BAR1	0x4

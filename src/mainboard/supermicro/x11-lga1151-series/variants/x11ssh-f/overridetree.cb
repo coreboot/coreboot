@@ -1,0 +1,129 @@
+chip soc/intel/skylake
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "gpe0_dw0" = "GPP_B"
+	register "gpe0_dw1" = "GPP_D"
+	register "gpe0_dw2" = "GPP_E"
+
+	register "gen1_dec" = "0x007c0a01"	# Super IO SWC
+	register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
+
+	# Additional FSP Configuration
+	# This board has an IGD with no output.
+	register "PrimaryDisplay" = "Display_Auto"
+
+	# USB configuration
+	# USB2/3
+	register "usb2_ports[0]"	= "USB2_PORT_MID(OC0)"
+	register "usb2_ports[1]"	= "USB2_PORT_MID(OC0)"
+
+	# ?
+	register "usb2_ports[14]"	= "USB2_PORT_MID(OC0)"
+	register "usb2_ports[15]"	= "USB2_PORT_MID(OC0)"
+
+	# USB4/5
+	register "usb2_ports[2]"	= "USB2_PORT_MID(OC1)"
+	register "usb2_ports[3]"	= "USB2_PORT_MID(OC1)"
+
+	# USB0/1
+	register "usb2_ports[4]"	= "USB2_PORT_MID(OC2)"
+	register "usb2_ports[5]"	= "USB2_PORT_MID(OC2)"
+
+	# USB9/10 (USB3.0)
+	register "usb2_ports[8]"	= "USB2_PORT_MID(OC3)"
+	register "usb2_ports[12]"	= "USB2_PORT_MID(OC3)"
+	register "usb3_ports[3]"	= "USB3_PORT_DEFAULT(OC3)"
+	register "usb3_ports[4]"	= "USB3_PORT_DEFAULT(OC3)"
+
+	# USB6/7 (USB3.0)
+	register "usb2_ports[10]"	= "USB2_PORT_MID(OC4)"
+	register "usb2_ports[11]"	= "USB2_PORT_MID(OC4)"
+	register "usb3_ports[1]"	= "USB3_PORT_DEFAULT(OC4)"
+	register "usb3_ports[2]"	= "USB3_PORT_DEFAULT(OC4)"
+
+	# USB8 (USB3.0)
+	register "usb2_ports[9]"	= "USB2_PORT_MID(OC5)"
+	register "usb3_ports[0]"	= "USB3_PORT_DEFAULT(OC5)"
+
+	# IPMI USB HUB
+	register "usb2_ports[13]"	= "USB2_PORT_MID(OC_SKIP)"
+
+	device domain 0 on
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthShort" "CPU SLOT6 PCI-E 3.0 X8(IN X16)" "SlotDataBusWidth8X"
+		end			# CPU PCIE Slot (JPCIE3)
+		device pci 01.1 on	# CPU PCIE Slot (JPCIE2)
+			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthShort" "CPU SLOT6 PCI-E 3.0 X8" "SlotDataBusWidth8X"
+		end
+		device pci 02.0 on end	# Integrated Graphics Device (No Output)
+		device pci 1c.0 on	# PCI Express Port 1
+			register "PcieRpEnable[0]" = "1"
+			device pci 00.0 on end	# GbE
+		end
+		device pci 1c.1 on	# PCI Express Port 2
+			register "PcieRpEnable[1]" = "1"
+			device pci 00.0 on end	# GbE
+		end
+		device pci 1c.4 on	# PCI Express Port 5
+			register "PcieRpEnable[4]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2 2280" "SlotDataBusWidth2X"
+		end
+		device pci 1c.6 on	# PCI Express Port 7
+			register "PcieRpEnable[6]" = "1"
+			device pci 00.0 on	# Aspeed PCI Bridge
+				device pci 00.0 on end	# Aspeed 2400 VGA
+			end
+		end
+		device pci 1d.0 on	# PCI Express Port 9 (Slot JPCIE1)
+			register "PcieRpEnable[8]" = "1"
+			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthLong" "PCH SLOT4 PCI-E 3.0 X4(IN X8)" "SlotDataBusWidth4X"
+		end
+		device pci 1f.0 on	# LPC Interface
+			chip drivers/ipmi
+				# On cold boot it takes a while for the BMC to start the IPMI service
+				register "wait_for_bmc" = "1"
+				register "bmc_boot_timeout" = "60"
+				device pnp ca2.0 on end	# IPMI KCS
+			end
+			chip superio/common
+				device pnp 2e.0 on
+					chip superio/aspeed/ast2400
+						device pnp 2e.2 on	# SUART1
+							io 0x60 = 0x3f8
+							irq 0x70 = 4
+							drq 0xf0 = 0x00
+						end
+						device pnp 2e.3 on	# SUART2
+							io 0x60 = 0x2f8
+							irq 0x70 = 3
+							drq 0xf0 = 0x00
+						end
+						device pnp 2e.4 on	# SWC
+							io 0x60 = 0xa00
+							io 0x62 = 0xa10
+							io 0x64 = 0xa20
+							io 0x66 = 0xa30
+							irq 0x70 = 0x00
+						end
+						device pnp 2e.5 off end	# KBC
+						device pnp 2e.7 on	# GPIO
+							irq 0x70 = 0x00
+						end
+						device pnp 2e.b off end	# SUART3
+						device pnp 2e.c off end	# SUART4
+						device pnp 2e.d on	# iLPC2AHB
+							irq 0x70 = 0x00
+						end
+						device pnp 2e.e on	# Mailbox
+							io 0x60 = 0xa40
+							irq 0x70 = 0x00
+						end
+					end
+				end
+			end
+		end
+	end
+end

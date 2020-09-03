@@ -40,7 +40,9 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
+	register "emmc_config" = "{
+		.timing = SD_EMMC_EMMC_HS400,
+	}"
 
 	register "xhci0_force_gen1" = "0"
 

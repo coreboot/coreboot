@@ -134,10 +134,10 @@ void variant_devtree_update(void)
 			 * So we keep the speed low here, with the intent that
 			 * other variants implement these corrections.
 			 */
-			cfg->sd_emmc_config = SD_EMMC_EMMC_HS200;
+			cfg->emmc_config.timing = SD_EMMC_EMMC_HS200;
 		}
 	} else {
-		cfg->sd_emmc_config = SD_EMMC_DISABLE;
+		cfg->emmc_config.timing = SD_EMMC_DISABLE;
 	}
 
 	update_audio_configuration();

@@ -15,5 +15,5 @@ void variant_devtree_update(void)
 	 * Enable eMMC if eMMC bit is set in FW_CONFIG or device is unprovisioned.
 	 */
 	if (!(variant_has_emmc() || boot_is_factory_unprovisioned()))
-		cfg->sd_emmc_config = SD_EMMC_DISABLE;
+		cfg->emmc_config.timing = SD_EMMC_DISABLE;
 }

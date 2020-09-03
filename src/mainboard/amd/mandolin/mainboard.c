@@ -112,7 +112,7 @@ static void mainboard_init(void *chip_info)
 	struct soc_amd_picasso_config *cfg = config_of_soc();
 
 	if (!CONFIG(PICASSO_LPC_IOMUX))
-		cfg->sd_emmc_config = SD_EMMC_EMMC_HS400;
+		cfg->emmc_config.timing = SD_EMMC_EMMC_HS400;
 
 	mainboard_program_gpios();
 

@@ -13,7 +13,7 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 {
 	int val = SD_DISABLE;
 
-	switch (cfg->sd_emmc_config) {
+	switch (cfg->emmc_config.timing) {
 	case SD_EMMC_DISABLE:
 		val = SD_DISABLE;
 		break;

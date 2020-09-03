@@ -42,6 +42,16 @@ chip soc/amd/picasso
 
 	register "emmc_config" = "{
 		.timing = SD_EMMC_EMMC_HS400,
+		.sdr104_hs400_driver_strength = SD_EMMC_DRIVE_STRENGTH_A,
+		/*
+		 * The reference design was missing a pull-up on the CMD line.
+		 * This means we can't run at the full 400 kHz. By setting this
+		 * to 1 we run at the slowest frequency possible by the
+		 * controller (~97 kHz).
+		 *
+		 * Boards that have the pull-up should correctly set this.
+		 */
+		.init_khz_preset = 1,
 	}"
 
 	register "xhci0_force_gen1" = "0"

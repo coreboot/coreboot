@@ -1,0 +1,7 @@
+config DRIVERS_GENESYSLOGIC_GL9755
+	bool "Genesys Logic GL9755"
+	help
+	  GL9755 is a PCI Express Rev. 2.1 compliant card reader controller
+	  which integrates PCI Express PHY, UHS-II PHY, memory card access
+	  interface, regulators (3.3V-to-1.8V and 3.3V-to-1.2V) and card
+	  power switch.

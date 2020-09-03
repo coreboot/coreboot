@@ -72,8 +72,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Elgon"
 
-config MAINBOARD_FIT_DTS
-	string
-	default "gbcv2.dts"
-
 endif

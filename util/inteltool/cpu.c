@@ -22,6 +22,10 @@
 #define MTRR_CAP_MSR		0xfe
 #define PRMRR_SUPPORTED		(1 << 12)
 #define SGX_SUPPORTED		(1 << 2)
+#define IA32_TME_ACTIVATE	0x982
+#define TME_SUPPORTED		(1 << 13)
+#define TME_LOCKED		(1)
+#define TME_ENABLED		(1 << 1)
 
 int fd_msr;
 
@@ -210,6 +214,55 @@ int print_sgx(void)
 	printf("====================================================\n");
 #endif
 	return error;
+}
+
+static int is_tme_supported()
+{
+	cpuid_result_t cpuid_regs;
+
+	/*
+	 * CPUID leaf 0x7 subleaf 0x0 to detect TME support
+	 * https://software.intel.com/sites/default/files/managed/a5/16/Multi-Key
+	 * -Total-Memory-Encryption-Spec.pdf
+	 */
+
+	cpuid_regs = cpuid_ext(0x7, 0x0);
+        return (cpuid_regs.ecx & TME_SUPPORTED);
+}
+
+static msr_t read_tme_activate_msr(){
+	return rdmsr_from_cpu(0, IA32_TME_ACTIVATE);
+}
+
+static int is_tme_locked()
+{
+	msr_t data = read_tme_activate_msr();
+	return (data.lo & TME_LOCKED);
+}
+
+static int is_tme_enabled()
+{
+	msr_t data = read_tme_activate_msr();
+	return (data.lo & TME_ENABLED);
+}
+
+void print_tme(void)
+{
+#ifndef __DARWIN__
+	int tme_supported = is_tme_supported();
+
+	printf("\n============= Dumping INTEL TME status =============\n");
+
+	printf("TME supported : %s\n", tme_supported ? "YES" : "NO");
+
+	if (tme_supported) {
+		printf("TME locked    : %s\n", is_tme_locked() ? "YES" : "NO");
+		printf("TME enabled   : %s\n", is_tme_enabled() ? "YES" : "NO");
+	}
+	printf("====================================================\n");
+#else
+	printf("Not Implemented\n");
+#endif
 }
 
 int print_intel_core_msrs(void)

@@ -62,6 +62,14 @@
 #define PCIE_10_IRQ 17
 #define PCIE_11_IRQ 18
 #define PCIE_12_IRQ 19
+#define PCIE_14_IRQ 16
+#define PCIE_15_IRQ 17
+#define PCIE_16_IRQ 18
+#define PCIE_17_IRQ 19
+#define PCIE_18_IRQ 16
+#define PCIE_19_IRQ 17
+#define PCIE_20_IRQ 18
+#define PCIE_21_IRQ 19
 
 #define SATA_IRQ 16
 

@@ -24,6 +24,13 @@ Name (PICP, Package () {
 	Package(){0x001CFFFF, 1, 0, PCIE_2_IRQ },
 	Package(){0x001CFFFF, 2, 0, PCIE_3_IRQ },
 	Package(){0x001CFFFF, 3, 0, PCIE_4_IRQ },
+#if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
+	/* PCI Express Port 17-24 */
+	Package(){0x001BFFFF, 0, 0, PCIE_17_IRQ },
+	Package(){0x001BFFFF, 1, 0, PCIE_18_IRQ },
+	Package(){0x001BFFFF, 2, 0, PCIE_19_IRQ },
+	Package(){0x001BFFFF, 3, 0, PCIE_20_IRQ },
+#endif
 	/* eMMC */
 	Package(){0x001AFFFF, 0, 0, eMMC_IRQ },
 	/* SerialIo */
@@ -88,6 +95,13 @@ Name (PICN, Package () {
 	Package () { 0x001CFFFF, 1, 0, 10 },
 	Package () { 0x001CFFFF, 2, 0, 11 },
 	Package () { 0x001CFFFF, 3, 0, 11 },
+#if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
+	/* D27: PCI Express Port 17-24 */
+	Package () { 0x001BFFFF, 0, 0, 11 },
+	Package () { 0x001BFFFF, 1, 0, 10 },
+	Package () { 0x001BFFFF, 2, 0, 11 },
+	Package () { 0x001BFFFF, 3, 0, 11 },
+#endif
 	/* D25: Can't use PIC*/
 	/* D23 */
 	Package () { 0x0017FFFF, 0, 0, 11 },

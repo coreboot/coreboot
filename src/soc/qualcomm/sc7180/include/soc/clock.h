@@ -20,7 +20,6 @@
 #define SRC_XO_HZ			(19200 * KHz)
 #define GPLL0_EVEN_HZ			(300 * MHz)
 #define GPLL0_MAIN_HZ			(600 * MHz)
-#define QUPV3_UART_SRC_HZ		7372800
 
 #define SRC_XO_19_2MHZ			0
 #define SRC_GPLL0_MAIN_600MHZ		1

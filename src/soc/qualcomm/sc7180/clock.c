@@ -12,14 +12,6 @@
 
 struct clock_config qup_cfg[] = {
 	{
-		.hz = QUPV3_UART_SRC_HZ,
-		.src = SRC_GPLL0_EVEN_300MHZ,
-		.div = DIV(1),
-		.m = 384,
-		.n = 15625,
-		.d_2 = 15625,
-	},
-	{
 		.hz = SRC_XO_HZ,	/* 19.2KHz */
 		.src = SRC_XO_19_2MHZ,
 		.div = DIV(1),

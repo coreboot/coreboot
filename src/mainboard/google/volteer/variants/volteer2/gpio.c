@@ -93,9 +93,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
 	PAD_NC(GPP_D16, UP_20K),
 	/* D17 : ISH_GP4 ==> EN_FCAM_PWR */
-	PAD_CFG_GPO(GPP_D17, 1, DEEP),
+	PAD_CFG_GPO(GPP_D17, 0, DEEP),
 	/* D18 : ISH_GP5 ==> FCAM_SNRPWR_EN */
-	PAD_CFG_GPO(GPP_D18, 1, DEEP),
+	PAD_CFG_GPO(GPP_D18, 0, DEEP),
 
 	/* E1  : SPI1_IO2 ==> PEN_DET_ODL */
 	PAD_CFG_GPI_SCI_LOW(GPP_E1, NONE, DEEP, EDGE_SINGLE),
@@ -154,7 +154,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H13 : M2_SKT2_CFG1 # ==> WWAN_CONFIG1 */
 	PAD_CFG_GPI(GPP_H13, NONE, DEEP),
 	/* H14 : M2_SKT2_CFG2 # ==> RCAM_SNRPWR_EN */
-	PAD_CFG_GPO(GPP_H14, 1, DEEP),
+	PAD_CFG_GPO(GPP_H14, 0, DEEP),
 	/* H15 : M2_SKT2_CFG3 # ==> WWAN_CONFIG3 */
 	PAD_CFG_GPI(GPP_H15, NONE, DEEP),
 	/* H16 : DDPB_CTRLCLK ==> DDPB_HDMI_CTRLCLK */
@@ -164,7 +164,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H19 : TIME_SYNC0 ==> USER_PRES_FP_ODL */
 	PAD_CFG_GPI(GPP_H19, NONE, DEEP),
 	/* H20 : IMGCLKOUT1 ==> EN_MIPI_RCAM_PWR */
-	PAD_CFG_GPO(GPP_H20, 1, DEEP),
+	PAD_CFG_GPO(GPP_H20, 0, DEEP),
 	/* H21 : IMGCLKOUT2 ==> CAM_MCLK1 */
 	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
 	/* H22 : IMGCLKOUT3 ==> CAM_MCLK0 */

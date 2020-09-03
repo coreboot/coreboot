@@ -241,6 +241,7 @@ struct drivers_intel_mipi_camera_config {
 	uint32_t nvm_pagesize;
 	uint32_t nvm_readonly;
 	uint32_t nvm_width;
+	const char *nvm_compat;
 
 	/* Settings specific to vcm */
 	const char *vcm_compat;

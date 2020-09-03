@@ -48,7 +48,7 @@ config VGA_BIOS_ID
 	string
 	default "1002,990e"
 
-config CONFIG_HUDSON_XHCI_ENABLE
+config HUDSON_XHCI_ENABLE
 	bool
 	default n
 

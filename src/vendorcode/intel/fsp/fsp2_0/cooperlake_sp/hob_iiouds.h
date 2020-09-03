@@ -45,6 +45,7 @@ are permitted provided that the following conditions are met:
 #define MAX_IMC                   2
 #define MAX_CH                    6
 #define MC_MAX_NODE               (MAX_SOCKET * MAX_IMC)
+#define MAX_CHA_MAP               4
 
 // Maximum KTI PORTS to be used in structure definition
 #if (MAX_SOCKET == 1)
@@ -154,7 +155,7 @@ typedef struct {
   uint16_t                    M2PciePresentBitmap;
   uint8_t                     TotM3Kti;
   uint8_t                     TotCha;
-  uint32_t                    ChaList;
+  uint32_t                    ChaList[MAX_CHA_MAP];
   uint32_t                    SocId;
   QPI_PEER_DATA               PeerInfo[MAX_FW_KTI_PORTS];    // QPI LEP info
 } QPI_CPU_DATA;

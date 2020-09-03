@@ -370,15 +370,17 @@ typedef struct {
 **/
   UINT32                      mmiohBase;
 
-/** Offset 0x0098 - High Gap
+/** Offset 0x0098 - CPU Physical Address Limit
+  CPU Physical Address Limit
+  0:Disable, 1:Enable
+**/
+  UINT8                       CpuPaLimit;
+
+/** Offset 0x0099 - High Gap
   Enable or Disable High Gap
   $EN_DIS
 **/
   UINT8                       highGap;
-
-/** Offset 0x0099
-**/
-  UINT8                       UnusedUpdSpace0;
 
 /** Offset 0x009A - MMIO High Size
   MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
@@ -400,7 +402,7 @@ typedef struct {
 
 /** Offset 0x009E
 **/
-  UINT8                       UnusedUpdSpace1[2];
+  UINT8                       UnusedUpdSpace0[2];
 
 /** Offset 0x00A0 - } TYPE:{Combo
   Enable or Disable
@@ -723,7 +725,7 @@ typedef struct {
 
 /** Offset 0x015C
 **/
-  UINT8                       UnusedUpdSpace2[2];
+  UINT8                       UnusedUpdSpace1[2];
 
 /** Offset 0x015E
 **/

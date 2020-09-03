@@ -38,6 +38,7 @@ romstage-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
 romstage-y += mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += dpm.c
 ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += flash_controller.c

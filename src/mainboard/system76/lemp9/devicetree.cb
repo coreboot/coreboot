@@ -95,7 +95,7 @@ chip soc/intel/cannonlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 2
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# NC
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"			# NC
 	register "usb3_ports[4]" = "USB3_PORT_EMPTY"			# NC
 	register "usb3_ports[5]" = "USB3_PORT_EMPTY"			# HSIO used by PCIe root port #6
 	register "usb3_ports[6]" = "USB3_PORT_EMPTY"			# NC

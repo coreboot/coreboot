@@ -210,7 +210,10 @@ void fsps_load(void)
 	if (resume_from_stage_cache()) {
 		printk(BIOS_DEBUG, "Loading FSPS from stage_cache\n");
 		stage_cache_load_stage(STAGE_REFCODE, fsps);
-		if (fsp_validate_component(&fsps_hdr, prog_rdev(fsps)) != CB_SUCCESS)
+
+		struct region_device prog_rdev;
+		prog_chain_rdev(fsps, &prog_rdev);
+		if (fsp_validate_component(&fsps_hdr, &prog_rdev) != CB_SUCCESS)
 			die("On resume fsps header is invalid\n");
 		load_done = 1;
 		return;

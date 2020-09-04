@@ -57,8 +57,9 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 		stage_cache_add(STAGE_REFCODE, &prog);
 	}
 
-	return rdev_chain(rdev, prog_rdev(&prog), 0,
-		region_device_sz(prog_rdev(&prog)));
+	prog_chain_rdev(&prog, rdev);
+
+	return 0;
 }
 
 static int agesa_locate_stage_file(const char *name, struct region_device *rdev)

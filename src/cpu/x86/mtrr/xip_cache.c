@@ -29,8 +29,8 @@ static uint32_t max_cache_used(void)
 
 void platform_prog_run(struct prog *prog)
 {
-	const uint32_t base = region_device_offset(&prog->rdev);
-	const uint32_t size = region_device_sz(&prog->rdev);
+	const uint32_t base = (uintptr_t)prog_start(prog);
+	const uint32_t size = prog_size(prog);
 	const uint32_t end = base + size;
 	const uint32_t cache_used = max_cache_used();
 	/* This will accumulate MTRR's as XIP stages are run.

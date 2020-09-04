@@ -180,7 +180,7 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 	uint32_t compression_algo;
 	size_t output_size;
 	void *dest;
-	struct region_device source_rdev;
+	struct region_device source_rdev, prog_rdev;
 	struct prog *fsp_prog = &fspld->fsp_prog;
 
 	if (fspld->get_destination == NULL)
@@ -201,7 +201,8 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 
 	prog_set_area(fsp_prog, dest, output_size);
 
-	if (fsp_validate_component(hdr, prog_rdev(fsp_prog)) != CB_SUCCESS) {
+	prog_chain_rdev(fsp_prog, &prog_rdev);
+	if (fsp_validate_component(hdr, &prog_rdev) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Invalid FSP header after load!\n");
 		return CB_ERR;
 	}

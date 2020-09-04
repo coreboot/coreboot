@@ -58,22 +58,6 @@ chip soc/intel/cannonlake
 	register "PchHdaAudioLinkSndw3" = "0"
 	register "PchHdaAudioLinkSndw4" = "0"
 
-	# USB
-	register "SsicPortEnable" = "0"
-
-	# USB2
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 3
-	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
-
-	# USB3
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
-
-
 	# PCI Express root port #6 x1, Clock 3 (card reader)
 	register "PcieRpEnable[5]" = "1"
 	register "PcieRpLtrEnable[5]" = "1"
@@ -148,7 +132,19 @@ chip soc/intel/cannonlake
 		device pci 12.5 off end # UFS SCS
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
-		device pci 14.0 on  end # USB xHCI
+		device pci 14.0 on	# USB xHCI
+			register "SsicPortEnable" = "0"
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
+			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 2
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 3
+			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 2
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
+		end
 		device pci 14.1 off end # USB xDCI (OTG)
 		chip drivers/intel/wifi # CNVi wifi
 			register "wake" = "GPE0_PME_B0"

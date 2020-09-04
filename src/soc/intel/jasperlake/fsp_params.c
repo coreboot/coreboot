@@ -253,19 +253,25 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* USB configuration */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
-
 		params->PortUsb20Enable[i] = config->usb2_ports[i].enable;
-		params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
 		params->Usb2PhyPetxiset[i] = config->usb2_ports[i].pre_emp_bias;
 		params->Usb2PhyTxiset[i] = config->usb2_ports[i].tx_bias;
 		params->Usb2PhyPredeemp[i] = config->usb2_ports[i].tx_emp_enable;
 		params->Usb2PhyPehalfbit[i] = config->usb2_ports[i].pre_emp_bit;
+
+		if (config->usb2_ports[i].enable)
+			params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
+		else
+			params->Usb2OverCurrentPin[i] = 0xff;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
-
 		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
-		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		if (config->usb3_ports[i].enable) {
+			params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		} else {
+			params->Usb3OverCurrentPin[i] = 0xff;
+		}
 		if (config->usb3_ports[i].tx_de_emp) {
 			params->Usb3HsioTxDeEmphEnable[i] = 1;
 			params->Usb3HsioTxDeEmph[i] = config->usb3_ports[i].tx_de_emp;

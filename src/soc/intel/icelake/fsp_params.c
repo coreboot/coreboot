@@ -64,13 +64,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Load VBT before devicetree-specific config. */
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
-	/* Set USB OC pin to 0 first */
-	for (i = 0; i < ARRAY_SIZE(params->Usb2OverCurrentPin); i++)
-		params->Usb2OverCurrentPin[i] = 0;
-
-	for (i = 0; i < ARRAY_SIZE(params->Usb3OverCurrentPin); i++)
-		params->Usb3OverCurrentPin[i] = 0;
-
 	/* Use coreboot MP PPI services if Kconfig is enabled */
 	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
 		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
@@ -135,8 +128,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		params->PortUsb20Enable[i] =
 			config->usb2_ports[i].enable;
-		params->Usb2OverCurrentPin[i] =
-			config->usb2_ports[i].ocpin;
 		params->Usb2PhyPetxiset[i] =
 			config->usb2_ports[i].pre_emp_bias;
 		params->Usb2PhyTxiset[i] =
@@ -145,11 +136,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			config->usb2_ports[i].tx_emp_enable;
 		params->Usb2PhyPehalfbit[i] =
 			config->usb2_ports[i].pre_emp_bit;
+
+		if (config->usb2_ports[i].enable)
+			params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
+		else
+			params->Usb2OverCurrentPin[i] = 0xff;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
 		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
-		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		if (config->usb3_ports[i].enable) {
+			params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
+		} else {
+			params->Usb3OverCurrentPin[i] = 0xff;
+		}
 		if (config->usb3_ports[i].tx_de_emp) {
 			params->Usb3HsioTxDeEmphEnable[i] = 1;
 			params->Usb3HsioTxDeEmph[i] =

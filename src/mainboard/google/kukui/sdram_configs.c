@@ -12,6 +12,7 @@
  */
 static const char *const sdram_configs[] = {
 	/* Standard table. */
+	[0x00] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",
 	[0x01] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
 	[0x02] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
 	[0x03] = "sdram-lpddr4x-KMDH6001DA-B422-4GB",

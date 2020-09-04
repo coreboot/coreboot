@@ -12,6 +12,7 @@
 #include <fsp/util.h>
 #include <stdint.h>
 #include <soc/memmap.h>
+#include <soc/iomap.h>
 
 /*
  *
@@ -72,6 +73,7 @@ static void read_resources(struct device *dev)
 	unsigned int idx = 0;
 	const struct hob_header *hob = fsp_get_hob_list();
 	const struct hob_resource *res;
+	struct resource *gnb_apic;
 
 	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
@@ -129,6 +131,12 @@ static void read_resources(struct device *dev)
 			printk(BIOS_ERR, "Error: failed to set resources for type %d\n",
 					res->type);
 	}
+
+	/* GNB IOAPIC resource */
+	gnb_apic = new_resource(dev, GNB_IO_APIC_ADDR);
+	gnb_apic->base = GNB_IO_APIC_ADDR;
+	gnb_apic->size = 0x00001000;
+	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 /* Used by \_SB.PCI0._CRS */

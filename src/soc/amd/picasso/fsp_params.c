@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <device/pci.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
 #include <fsp/api.h>
@@ -122,6 +123,20 @@ static void fsp_usb_oem_customization(FSP_S_CONFIG *scfg,
 	}
 }
 
+static void fsp_assign_ioapic_upds(FSP_S_CONFIG *scfg)
+{
+	_Static_assert(CONFIG_PICASSO_GNB_IOAPIC_ID >= CONFIG_MAX_CPUS,
+			"PICASSO_GNB_IOAPIC_ID should be >= CONFIG_MAX_CPUS!\n");
+	_Static_assert(CONFIG_PICASSO_FCH_IOAPIC_ID >= CONFIG_MAX_CPUS,
+			"PICASSO_FCH_IOAPIC_ID should be >= CONFIG_MAX_CPUS!\n");
+	_Static_assert(CONFIG_PICASSO_GNB_IOAPIC_ID != CONFIG_PICASSO_FCH_IOAPIC_ID,
+			"PICASSO_GNB_IOAPIC_ID should be != PICASSO_FCH_IOAPIC_ID!\n");
+
+	scfg->gnb_ioapic_base = GNB_IO_APIC_ADDR;
+	scfg->gnb_ioapic_id = CONFIG_PICASSO_GNB_IOAPIC_ID;
+	scfg->fch_ioapic_id = CONFIG_PICASSO_FCH_IOAPIC_ID;
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	const struct soc_amd_picasso_config *cfg;
@@ -130,5 +145,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	cfg = config_of_soc();
 	fsps_update_emmc_config(scfg, cfg);
 	fsp_fill_pcie_ddi_descriptors(scfg);
+	fsp_assign_ioapic_upds(scfg);
 	fsp_usb_oem_customization(scfg, cfg);
 }

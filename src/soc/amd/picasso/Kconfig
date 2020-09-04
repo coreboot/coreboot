@@ -243,6 +243,24 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
+config PICASSO_FCH_IOAPIC_ID
+	hex
+	default 0x8
+	help
+	  The Picasso APU has two IOAPICs, one in the FCH and one in the
+	  northbridge.  Set this value for the intended ID to assign to the
+	  FCH IOAPIC.  The value should be >= MAX_CPUS and different from
+	  the GNB's IOAPIC_ID.
+
+config PICASSO_GNB_IOAPIC_ID
+	hex
+	default 0x9
+	help
+	  The Picasso APU has two IOAPICs, one in the FCH and one in the
+	  northbridge.  Set this value for the intended ID to assign to the
+	  GNB IOAPIC.  The value should be >= MAX_CPUS and different from
+	  the FCH's IOAPIC_ID.
+
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

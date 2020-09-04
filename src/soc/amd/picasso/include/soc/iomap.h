@@ -5,6 +5,7 @@
 
 /* MMIO Ranges */
 /* IO_APIC_ADDR defined in arch/x86	0xfec00000 */
+#define GNB_IO_APIC_ADDR		0xfec01000
 #define SPI_BASE_ADDRESS		0xfec10000
 
 #if CONFIG(HPET_ADDRESS_OVERRIDE)

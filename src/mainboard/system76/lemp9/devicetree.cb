@@ -49,23 +49,8 @@ chip soc/intel/cannonlake
 	register "SataMode" = "Sata_AHCI"
 	register "SataSalpSupport" = "0"
 
-	register "SataPortsEnable[0]" = "0"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsEnable[2]" = "1"
-	register "SataPortsEnable[3]" = "0"
-	register "SataPortsEnable[4]" = "0"
-	register "SataPortsEnable[5]" = "0"
-	register "SataPortsEnable[6]" = "0"
-	register "SataPortsEnable[7]" = "0"
-
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[1]" = "0"
-	register "SataPortsDevSlp[2]" = "0"
-	register "SataPortsDevSlp[3]" = "0"
-	register "SataPortsDevSlp[4]" = "0"
-	register "SataPortsDevSlp[5]" = "0"
-	register "SataPortsDevSlp[6]" = "0"
-	register "SataPortsDevSlp[7]" = "0"
 
 	# Audio
 	register "PchHdaDspEnable" = "0"
@@ -87,31 +72,13 @@ chip soc/intel/cannonlake
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 3
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
-	register "usb2_ports[10]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[11]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[12]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[13]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[14]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[15]" = "USB2_PORT_EMPTY"			# NC
 
 	# USB3
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 2
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"			# NC
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"			# NC
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"			# HSIO used by PCIe root port #6
-	register "usb3_ports[6]" = "USB3_PORT_EMPTY"			# NC
-	register "usb3_ports[7]" = "USB3_PORT_EMPTY"			# NC
-	register "usb3_ports[8]" = "USB3_PORT_EMPTY"			# NC
-	register "usb3_ports[9]" = "USB3_PORT_EMPTY"			# NC
 
 
 	# PCI Express root port #6 x1, Clock 3 (card reader)

@@ -1,5 +1,67 @@
 chip soc/intel/tigerlake
+	register "tcc_offset" = "5"     # TCC of 95
+
+	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
+		.tdp_pl1_override = 18,
+		.tdp_pl2_override = 51,
+		.tdp_pl4 = 71,
+	}"
+	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
+		.tdp_pl1_override = 18,
+		.tdp_pl2_override = 51,
+		.tdp_pl4 = 105,
+	}"
+
 	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {.target = DPTF_CPU,
+					       .thresholds = {TEMP_PCT(94, 100),}},
+					[1] = {.target = DPTF_TEMP_SENSOR_2,
+					       .thresholds = {TEMP_PCT(64, 100),
+							      TEMP_PCT(60, 90),
+							      TEMP_PCT(56, 80),
+							      TEMP_PCT(52, 70),
+							      TEMP_PCT(48, 60),
+							      TEMP_PCT(44, 50),
+							      TEMP_PCT(40, 40),}}}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,	CPU,	       95, 5000),
+					[1] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_1, 65, 6000),
+					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 65, 6000),
+					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2, 54, 6000),
+					[4] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_3, 65, 6000)}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,	       100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,	75, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	75, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	75, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,	75, SHUTDOWN)}"
+
+				## Power Limits Control
+				# 12-18W PL1 in 200mW increments, avg over 28-32s interval
+				# PL2 is fixed at 51W, avg over 28-32s interval
+				register "controls.power_limits" = "{
+					.pl1 = {.min_power = 12000,
+						.max_power = 18000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 200,},
+					.pl2 = {.min_power = 15000,
+						.max_power = 51000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,}}"
+
+				device generic 0 on end
+			end
+		end # DPTF				0x9A03
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

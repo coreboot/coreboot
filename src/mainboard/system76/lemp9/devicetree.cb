@@ -45,13 +45,6 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexI2C0] = PchSerialIoPci, // Touchpad
 	}"
 
-	# SATA
-	register "SataMode" = "Sata_AHCI"
-	register "SataSalpSupport" = "0"
-
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsEnable[2]" = "1"
-
 	# Audio
 	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
@@ -181,7 +174,12 @@ chip soc/intel/cannonlake
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on  end # SATA
+		device pci 17.0 on	# SATA
+			register "SataMode" = "Sata_AHCI"
+			register "SataSalpSupport" = "0"
+			register "SataPortsEnable[1]" = "1"
+			register "SataPortsEnable[2]" = "1"
+		end
 		device pci 19.0 off end # I2C #4
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2

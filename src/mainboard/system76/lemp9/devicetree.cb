@@ -58,30 +58,6 @@ chip soc/intel/cannonlake
 	register "PchHdaAudioLinkSndw3" = "0"
 	register "PchHdaAudioLinkSndw4" = "0"
 
-	# PCI Express root port #6 x1, Clock 3 (card reader)
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpLtrEnable[5]" = "1"
-	register "PcieClkSrcUsage[3]" = "5"
-	register "PcieClkSrcClkReq[3]" = "3"
-
-	# PCI Express root port #8 x1, Clock 2 (WLAN)
-	register "PcieRpEnable[7]" = "1"
-	register "PcieRpLtrEnable[7]" = "1"
-	register "PcieClkSrcUsage[2]" = "7"
-	register "PcieClkSrcClkReq[2]" = "2"
-
-	# PCI Express root port #9 x4, Clock 4 (SSD2)
-	register "PcieRpEnable[8]" = "1"
-	register "PcieRpLtrEnable[8]" = "1"
-	register "PcieClkSrcUsage[4]" = "8"
-	register "PcieClkSrcClkReq[4]" = "4"
-
-	# PCI Express root port #13 x4, Clock 5 (SSD1)
-	register "PcieRpEnable[12]" = "1"
-	register "PcieRpLtrEnable[12]" = "1"
-	register "PcieClkSrcUsage[5]" = "12"
-	register "PcieClkSrcClkReq[5]" = "5"
-
 	# Misc
 	register "AcousticNoiseMitigation" = "1"
 	#register "dmipwroptimize" = "1"
@@ -190,22 +166,42 @@ chip soc/intel/cannonlake
 		device pci 1c.3 off end # PCI Express Port 4
 		device pci 1c.4 off end # PCI Express Port 5
 		device pci 1c.5 on	# PCI Express Port 6
+			device pci 00.0 on end # x1 Card reader
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieClkSrcUsage[3]" = "5"
+			register "PcieClkSrcClkReq[3]" = "3"
 			register "PcieRpSlotImplemented[5]" = "1"
 		end
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 on	# PCI Express Port 8
-			chip drivers/intel/wifi # PCIe wifi
+			device pci 00.0 on end # x1 M.2/E 2230 (WLAN)
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieClkSrcUsage[2]" = "7"
+			register "PcieClkSrcClkReq[2]" = "2"
+			register "PcieRpSlotImplemented[7]" = "1"
+			chip drivers/intel/wifi
 				device pci 00.0 on end
 			end
-			register "PcieRpSlotImplemented[7]" = "1"
 		end
 		device pci 1d.0 on	# PCI Express Port 9
+			device pci 00.0 on end # x4 M.2/M 2280 (Slot 2)
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[4]" = "8"
+			register "PcieClkSrcClkReq[4]" = "4"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on	# PCI Express Port 13
+			device pci 00.0 on end # x4 M.2/M 2280 (Slot 1)
+			register "PcieRpEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "1"
+			register "PcieClkSrcUsage[5]" = "12"
+			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[12]" = "1"
 		end
 		device pci 1d.5 off end # PCI Express Port 14

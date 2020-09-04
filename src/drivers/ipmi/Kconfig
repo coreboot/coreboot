@@ -33,3 +33,12 @@ config BMC_KCS_BASE
 	help
 	  The PNP base address of BMC KCS. It must be equal to the
 	  pnp port value defined in devicetree for chip drivers/ipmi.
+
+config IPMI_KCS_TIMEOUT_MS
+	int
+	default 5000
+	depends on IPMI_KCS
+	help
+	  The time unit is millisecond for each IPMI KCS transfer.
+	  IPMI spec v2.0 rev 1.1 Sec. 9.15, a five-second timeout or
+	  greater is recommended.

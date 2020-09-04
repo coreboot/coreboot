@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <timer.h>
 #include "ipmi_kcs.h"
 
 #define IPMI_KCS_STATE(_x)	((_x) >> 6)
@@ -35,27 +35,22 @@ static unsigned char ipmi_kcs_status(int port)
 
 static int wait_ibf_timeout(int port)
 {
-	int timeout = 1000;
-	do {
-		if (!(ipmi_kcs_status(port) & IPMI_KCS_IBF))
-			return 0;
-		udelay(100);
-	} while (timeout--);
-	printk(BIOS_ERR, "wait_ibf timeout!\n");
-	return timeout;
+	if (!wait_ms(CONFIG_IPMI_KCS_TIMEOUT_MS, !(ipmi_kcs_status(port) & IPMI_KCS_IBF))) {
+		printk(BIOS_ERR, "wait_ibf timeout!\n");
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 static int wait_obf_timeout(int port)
 {
-	int timeout = 1000;
-	do {
-		if ((ipmi_kcs_status(port) & IPMI_KCS_OBF))
-			return 0;
-		udelay(100);
-	} while (timeout--);
-
-	printk(BIOS_ERR, "wait_obf timeout!\n");
-	return timeout;
+	if (!wait_ms(CONFIG_IPMI_KCS_TIMEOUT_MS, (ipmi_kcs_status(port) & IPMI_KCS_OBF))) {
+		printk(BIOS_ERR, "wait_obf timeout!\n");
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 

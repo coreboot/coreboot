@@ -31,7 +31,11 @@ typedef struct __packed {
 	/** Offset 0x011D**/	uint8_t                     unused3;
 	/** Offset 0x011E**/	uint32_t                    xhci_oc_pin_select;
 	/** Offset 0x0122**/	uint8_t                     xhci0_force_gen1;
-	/** Offset 0x0123**/	uint8_t                     UnusedUpdSpace0[45];
+	/** Offset 0x0123**/	uint8_t                     xhci_sparse_mode_enable;
+        /** Offset 0x0124**/    uint32_t                    gnb_ioapic_base;
+        /** Offset 0x0128**/    uint8_t                     gnb_ioapic_id;
+        /** Offset 0x0129**/    uint8_t                     fch_ioapic_id;
+	/** Offset 0x0126**/	uint8_t                     UnusedUpdSpace0[38];
 	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

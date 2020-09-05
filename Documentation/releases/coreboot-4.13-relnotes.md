@@ -49,6 +49,15 @@ the 64K segment to accomodate additional CPUs and in theory allows as many
 CPU threads as possible limited only by SMRAM space and not by 64K. By default
 this loader version is disabled. Please see cpu/x86/Kconfig for more info.
 
+### Address Sanitizer
+
+coreboot now has an in-built Address Sanitizer, a runtime memory debugger
+designed to find out-of-bounds access and use-after-scope bugs. It is made
+available on all x86 platforms in ramstage and on QEMU i440fx, Intel Apollo
+Lake, and Haswell in romstage. Further, it can be enabled in romstage on other
+x86 platforms as well. Refer [ASan documentation](../technotes/asan.md) for
+more info.
+
 ### Initial support for x86_64
 
 The x86_64 code support has been revived and enabled for qemu. While it started

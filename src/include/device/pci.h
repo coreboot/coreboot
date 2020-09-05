@@ -133,7 +133,7 @@ static __always_inline
 #if ENV_PCI_SIMPLE_DEVICE
 void pci_dev_request_bus_master(pci_devfn_t dev)
 #else
-void pci_dev_request_bus_master(const struct device *dev)
+void pci_dev_request_bus_master(struct device *dev)
 #endif /* ENV_PCI_SIMPLE_DEVICE */
 {
 	if (CONFIG(PCI_ALLOW_BUS_MASTER))

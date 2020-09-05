@@ -49,15 +49,12 @@ chip soc/intel/skylake
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-A Rear
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI Audio
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# None
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# H1 (disconnected)
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# HDMI
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# None
 
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# TPU
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM

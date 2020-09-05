@@ -38,16 +38,13 @@ chip soc/intel/tigerlake
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C Port 2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"		# Ext USB Port 1 (Right)
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC1)"		# Ext USB Port 2 (Left)
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Camera
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 3042 (WWAN)
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# USH
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Ext USB Port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Ext USB Port 2
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 
 	# PCIe root port 7 (Card Reader), clock 4

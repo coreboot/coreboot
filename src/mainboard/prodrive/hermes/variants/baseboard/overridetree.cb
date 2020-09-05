@@ -118,8 +118,6 @@ chip soc/intel/cannonlake
 	# USB OC5-7: not connected
 	# BMC
 	register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)"
-	# unused
-	register "usb2_ports[11]" = "USB2_PORT_EMPTY"
 	# piggy-back
 	register "usb2_ports[12]" = "USB2_PORT_MID(OC_SKIP)"
 	# M2 key E

@@ -48,7 +48,6 @@ chip soc/intel/cannonlake
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Type-A Port 3
 	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "{
 		.enable = 1,
 		.ocpin = OC0,
@@ -57,9 +56,6 @@ chip soc/intel/cannonlake
 		.pre_emp_bias  = USB2_BIAS_28P15MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Type-A port 0
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "{
 		.enable = 1,
 		.ocpin = OC_SKIP,
@@ -74,7 +70,6 @@ chip soc/intel/cannonlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"            # Type-A Port 4
 
 	# Bitmap for Wake Enable on USB attach/detach
 	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \

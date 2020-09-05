@@ -192,21 +192,13 @@ chip soc/intel/skylake
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# USB3_TYPE-A Port 2
 	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB-C Port 1
 	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"	# M2 Port
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Disabled
 	register "usb2_ports[6]" = "USB2_PORT_SHORT(OC_SKIP)"	# Audio board
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Disabled
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Disabled
-	register "usb2_ports[9]" = "USB2_PORT_EMPTY"		# Disabled
-	register "usb2_ports[10]" = "USB2_PORT_EMPTY"		# Disabled
-	register "usb2_ports[11]" = "USB2_PORT_EMPTY"		# Disabled
 
 	# USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB-C Port 2
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3_TYPE-A Port 1
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3_TYPE-A Port 2
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB-C Port 1
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"		# Disabled
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"		# Disabled
 
 	register "SsicPortEnable" = "0"
 

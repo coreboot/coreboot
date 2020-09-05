@@ -1,10 +1,7 @@
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
-	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	    # Not Used
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	    # Not Used
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Camera
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	    # Not Used
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

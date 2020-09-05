@@ -13,14 +13,10 @@ chip soc/intel/skylake
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port (main)
 	register "usb2_ports[1]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-C Port (sub)
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"		# Empty
 	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Empty
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port (main)
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port (sub)
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Empty
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
 	# PL2 override 15W
 	register "power_limits_config" = "{

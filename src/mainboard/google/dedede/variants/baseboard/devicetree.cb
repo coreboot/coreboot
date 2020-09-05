@@ -32,16 +32,12 @@ chip soc/intel/jasperlake
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Discrete Bluetooth
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Not Used
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Not Used
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Integrated Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C1
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A0
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A1
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"		# Not Used
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"		# Not Used
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

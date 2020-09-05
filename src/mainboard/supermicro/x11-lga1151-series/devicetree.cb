@@ -39,36 +39,6 @@ chip soc/intel/skylake
 	# superspeed_inter-chip_supplement (SSIC) disabled
 	register "SsicPortEnable" = "0"
 
-	# USB
-	register "usb2_ports" = "{
-		[0]	= USB2_PORT_EMPTY,
-		[1]	= USB2_PORT_EMPTY,
-		[2]	= USB2_PORT_EMPTY,
-		[3]	= USB2_PORT_EMPTY,
-		[4]	= USB2_PORT_EMPTY,
-		[5]	= USB2_PORT_EMPTY,
-		[6]	= USB2_PORT_EMPTY,
-		[7]	= USB2_PORT_EMPTY,
-		[8]	= USB2_PORT_EMPTY,
-		[9]	= USB2_PORT_EMPTY,
-		[10]	= USB2_PORT_EMPTY,
-		[11]	= USB2_PORT_EMPTY,
-		[12]	= USB2_PORT_EMPTY,
-		[13]	= USB2_PORT_EMPTY,
-	}"
-	register "usb3_ports" = "{
-		[0]	= USB3_PORT_EMPTY,
-		[1]	= USB3_PORT_EMPTY,
-		[2]	= USB3_PORT_EMPTY,
-		[3]	= USB3_PORT_EMPTY,
-		[4]	= USB3_PORT_EMPTY,
-		[5]	= USB3_PORT_EMPTY,
-		[6]	= USB3_PORT_EMPTY,
-		[7]	= USB3_PORT_EMPTY,
-		[8]	= USB3_PORT_EMPTY,
-		[9]	= USB3_PORT_EMPTY,
-	}"
-
 	# LPC
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 

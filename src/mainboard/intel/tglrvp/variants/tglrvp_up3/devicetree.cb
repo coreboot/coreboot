@@ -29,8 +29,6 @@ chip soc/intel/tigerlake
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Not used
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# USB3/USB2 Flex Connector
 
 	# CPU replacement check
 	register "CpuReplacementCheck" = "1"

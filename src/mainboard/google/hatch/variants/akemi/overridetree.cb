@@ -22,20 +22,12 @@ chip soc/intel/cannonlake
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC3)"	# Type-A Port 0
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Unused
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# WWAN
 	register "usb2_ports[6]" = "USB2_PORT_LONG(OC_SKIP)"	# Camera
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 1
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port 0
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Unused
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"	# WWAN
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

@@ -248,7 +248,6 @@ chip soc/intel/skylake
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Rear
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"     # Type-A 2.0 / Debug
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# H1 (disconnected)
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear

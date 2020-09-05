@@ -22,14 +22,10 @@ chip soc/intel/tigerlake
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
-	register "usb3_ports[6]" = "USB3_PORT_EMPTY"		# Not used
-	register "usb3_ports[7]" = "USB3_PORT_EMPTY"		# Not used
-	register "usb3_ports[8]" = "USB3_PORT_EMPTY"		# Not used
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"		# CNVi/BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Not used
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/USB2 Flex Connector
 
 	# CPU replacement check

@@ -60,9 +60,6 @@ chip soc/intel/cannonlake
 		.pre_emp_bias  = USB2_BIAS_28P15MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Type-A port 0
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "{
 		.enable = 1,
 		.ocpin = OC_SKIP,

@@ -15,12 +15,10 @@ chip soc/intel/cannonlake
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)"
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC1)"
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC1)"
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"
 	register "usb2_ports[10]" = "USB2_PORT_MID(OC3)"
 	register "usb2_ports[11]" = "USB2_PORT_MID(OC6)"
 	register "usb2_ports[12]" = "USB2_PORT_MID(OC6)"
-	register "usb2_ports[13]" = "USB2_PORT_EMPTY"
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC4)"
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"

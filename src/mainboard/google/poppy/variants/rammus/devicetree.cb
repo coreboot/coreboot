@@ -153,7 +153,6 @@ chip soc/intel/skylake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-C Port 2
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Empty
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

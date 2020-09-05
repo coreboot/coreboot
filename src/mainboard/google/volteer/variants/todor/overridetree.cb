@@ -10,12 +10,9 @@ chip soc/intel/tigerlake
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Type-A / Type-C Not Used
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A / Type-C Port 0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A / Type-C Port 1
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Type-A / Type-C Not Used
 
 	register "SaGv" = "SaGv_Disabled"
 

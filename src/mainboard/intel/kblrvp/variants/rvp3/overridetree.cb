@@ -93,8 +93,6 @@ chip soc/intel/skylake
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# TYPE-A Port
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"	# Disabled
-	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# Disabled
 
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 

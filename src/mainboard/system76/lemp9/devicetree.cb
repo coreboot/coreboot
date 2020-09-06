@@ -212,8 +212,8 @@ chip soc/intel/cannonlake
 		device pci 1f.3 on	# Intel HDA
 			register "PchHdaDspEnable" = "0"
 			register "PchHdaAudioLinkHda" = "1"
-			register "PchHdaAudioLinkDmic0" = "1"
-			register "PchHdaAudioLinkDmic1" = "1"
+			register "PchHdaAudioLinkDmic0" = "0"
+			register "PchHdaAudioLinkDmic1" = "0"
 			register "PchHdaAudioLinkSsp0" = "0"
 			register "PchHdaAudioLinkSsp1" = "0"
 			register "PchHdaAudioLinkSsp2" = "0"

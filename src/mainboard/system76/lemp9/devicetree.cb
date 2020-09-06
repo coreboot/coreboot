@@ -45,19 +45,6 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexI2C0] = PchSerialIoPci, // Touchpad
 	}"
 
-	# Audio
-	register "PchHdaDspEnable" = "0"
-	register "PchHdaAudioLinkHda" = "1"
-	register "PchHdaAudioLinkDmic0" = "1"
-	register "PchHdaAudioLinkDmic1" = "1"
-	register "PchHdaAudioLinkSsp0" = "0"
-	register "PchHdaAudioLinkSsp1" = "0"
-	register "PchHdaAudioLinkSsp2" = "0"
-	register "PchHdaAudioLinkSndw1" = "0"
-	register "PchHdaAudioLinkSndw2" = "0"
-	register "PchHdaAudioLinkSndw3" = "0"
-	register "PchHdaAudioLinkSndw4" = "0"
-
 	# Misc
 	register "AcousticNoiseMitigation" = "1"
 	#register "dmipwroptimize" = "1"
@@ -221,7 +208,19 @@ chip soc/intel/cannonlake
 		end
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 off end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.3 on	# Intel HDA
+			register "PchHdaDspEnable" = "0"
+			register "PchHdaAudioLinkHda" = "1"
+			register "PchHdaAudioLinkDmic0" = "1"
+			register "PchHdaAudioLinkDmic1" = "1"
+			register "PchHdaAudioLinkSsp0" = "0"
+			register "PchHdaAudioLinkSsp1" = "0"
+			register "PchHdaAudioLinkSsp2" = "0"
+			register "PchHdaAudioLinkSndw1" = "0"
+			register "PchHdaAudioLinkSndw2" = "0"
+			register "PchHdaAudioLinkSndw3" = "0"
+			register "PchHdaAudioLinkSndw4" = "0"
+		end
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end	# PCH SPI
 		device pci 1f.6 off end # GbE

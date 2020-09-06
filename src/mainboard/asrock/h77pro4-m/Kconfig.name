@@ -1,0 +1,2 @@
+config BOARD_ASROCK_H77PRO4_M
+	bool "H77 Pro4-M"

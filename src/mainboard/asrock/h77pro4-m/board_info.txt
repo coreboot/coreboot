@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asrock.com/mb/Intel/H77%20Pro4-M/
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y
+Release year: 2012

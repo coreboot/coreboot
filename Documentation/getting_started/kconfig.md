@@ -398,6 +398,8 @@ default &lt;expr&gt; \[if &lt;expr&gt;\]
 - If there is no 'default' entry for a symbol, it gets set to 'n', 0, 0x0, or
   “” depending on the type, however the 'bool' type is the only type that
   should be left without a default value.
+- If possible, the declaration should happen before all default entries to make
+  it visible in Kconfig tools like menuconfig.
 
 --------------------------------------------------------------------------------
 

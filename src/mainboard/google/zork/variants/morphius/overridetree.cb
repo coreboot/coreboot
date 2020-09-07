@@ -20,6 +20,12 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_slope" = "29035" #mA
 	register "telemetry_vddcr_soc_offset" = "0"
 
+	# Set STAPM confiuration for tablet mode
+	register "dptc_enable" = "1"
+	register "slow_ppt_limit_tablet_mode" = "20000" #mw
+	register "fast_ppt_limit_tablet_mode" = "24000" #mw
+	register "sustained_power_limit_tablet_mode" = "6000" #mw
+
 	# End : OPN Performance Configuration
 
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz

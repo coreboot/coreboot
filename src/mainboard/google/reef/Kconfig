@@ -81,10 +81,6 @@ config MAINBOARD_FAMILY
 	default "Google_Coral" if BOARD_GOOGLE_CORAL
 	default "Google_Reef"
 
-config MAX_CPUS
-	int
-	default 4
-
 config UART_FOR_CONSOLE
 	int
 	default 2

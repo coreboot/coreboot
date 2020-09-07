@@ -60,10 +60,6 @@ config PXE_ROM_ID
 	string
 	default "10ec,8168"
 
-config MAX_CPUS
-	int
-	default 4
-
 config LINUX_COMMAND_LINE
 	string
 	default "console=ttyS4,115200 earlyprintk=ttyS4,115200,keep" if PAYLOAD_LINUXBOOT && UART_FOR_CONSOLE=0

@@ -110,7 +110,7 @@ config CPU_SPECIFIC_OPTIONS
 
 config MAX_CPUS
 	int
-	default 4 if SOC_INTEL_GEMINILAKE
+	default 4
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC

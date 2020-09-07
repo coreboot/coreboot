@@ -104,7 +104,6 @@ var IOAPICIRQs map[PCIAddr]IOAPICIRQ = map[PCIAddr]IOAPICIRQ{}
 var KconfigBool map[string]bool = map[string]bool{}
 var KconfigComment map[string]string = map[string]string{}
 var KconfigString map[string]string = map[string]string{}
-var KconfigStringUnquoted map[string]string = map[string]string{}
 var KconfigHex map[string]uint32 = map[string]uint32{}
 var KconfigInt map[string]int = map[string]int{}
 var ROMSizeKB = 0
@@ -571,21 +570,6 @@ config %s%s
 	}
 
 	keys = nil
-	for name, _ := range KconfigStringUnquoted {
-		keys = append(keys, name)
-	}
-
-	sort.Strings(keys)
-
-	for _, name := range keys {
-		fmt.Fprintf(kc, `
-config %s%s
-	string
-	default %s
-`, name, makeComment(name), KconfigStringUnquoted[name])
-	}
-
-	keys = nil
 	for name, _ := range KconfigString {
 		keys = append(keys, name)
 	}
@@ -730,7 +714,7 @@ func main() {
 	ctx.MoboID = ctx.SaneVendor + "/" + sanitize(ctx.Model)
 	ctx.KconfigName = "BOARD_" + strings.ToUpper(ctx.SaneVendor+"_"+sanitize(ctx.Model))
 	ctx.BaseDirectory = *FlagOutDir + MoboDir + ctx.MoboID
-	KconfigStringUnquoted["MAINBOARD_DIR"] = ctx.MoboID
+	KconfigString["MAINBOARD_DIR"] = ctx.MoboID
 	KconfigString["MAINBOARD_PART_NUMBER"] = ctx.Model
 
 	os.MkdirAll(ctx.BaseDirectory, 0700)

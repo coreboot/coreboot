@@ -34,8 +34,7 @@ config GENERIC_SPD_BIN
 	bool
 	help
 	  If enabled, add support for adding spd.hex files in cbfs as spd.bin
-	  and locating it runtime to load SPD. Additionally provide provision to
-	  fetch SPD over SMBus.
+	  and locating it runtime to load SPD.
 
 config DIMM_MAX
 	int

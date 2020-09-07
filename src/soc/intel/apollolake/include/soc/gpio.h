@@ -3,7 +3,7 @@
 #ifndef _SOC_APL_GPIO_H_
 #define _SOC_APL_GPIO_H_
 
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 #include <soc/gpio_glk.h>
 #else
 #include <soc/gpio_apl.h>

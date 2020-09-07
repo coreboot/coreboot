@@ -152,7 +152,7 @@ static const struct fsp_speed_profiles glk_profile = {
 
 static const struct fsp_speed_profiles *get_fsp_profile(void)
 {
-	if (CONFIG(SOC_INTEL_GLK))
+	if (CONFIG(SOC_INTEL_GEMINILAKE))
 		return &glk_profile;
 	else
 		return &apl_profile;

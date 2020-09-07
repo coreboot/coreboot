@@ -177,7 +177,7 @@
 #define  GPE0_DWX_MASK		0xf
 #define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 #define PMC_GPE_AUDIO_31_0	9
 #define PMC_GPE_N_95_64		8
 #define PMC_GPE_N_63_32		7

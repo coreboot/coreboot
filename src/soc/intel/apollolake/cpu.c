@@ -30,7 +30,7 @@
 #include <soc/pm.h>
 
 static const struct reg_script core_msr_script[] = {
-#if !CONFIG(SOC_INTEL_GLK)
+#if !CONFIG(SOC_INTEL_GEMINILAKE)
 	/* Enable C-state and IO/MWAIT redirect */
 	REG_MSR_WRITE(MSR_PKG_CST_CONFIG_CONTROL,
 		(PKG_C_STATE_LIMIT_C2_MASK | CORE_C_STATE_LIMIT_C10_MASK

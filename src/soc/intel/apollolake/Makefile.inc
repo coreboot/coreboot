@@ -30,7 +30,7 @@ romstage-y += heci.c
 romstage-y += i2c.c
 romstage-y += uart.c
 romstage-y += meminit.c
-ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
 romstage-y += meminit_util_glk.c
 else
 romstage-y += meminit_util_apl.c
@@ -90,7 +90,7 @@ verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-y += spi.c
 
-ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
 bootblock-y += gpio_glk.c
 romstage-y += gpio_glk.c
 smm-y += gpio_glk.c
@@ -149,7 +149,7 @@ files_added:: $(IFWITOOL)
 endif
 
 # DSP firmware settings files.
-ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/glk/nhlt-blobs
 else
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/apollolake/nhlt-blobs
@@ -185,7 +185,7 @@ cbfs-files-$(CONFIG_NHLT_RT5682) += $(RT5682_RENDER_CAPTURE)
 $(RT5682_RENDER_CAPTURE)-file := $(NHLT_BLOB_PATH)/$(RT5682_RENDER_CAPTURE)
 $(RT5682_RENDER_CAPTURE)-type := raw
 
-ifeq ($(CONFIG_SOC_INTEL_GLK),y)
+ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
 # Gemini Lake B0 (706a1) only atm.
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-7a-*)
 else

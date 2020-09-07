@@ -3,7 +3,7 @@ config SOC_INTEL_APOLLOLAKE
 	help
 	  Intel Apollolake support
 
-config SOC_INTEL_GLK
+config SOC_INTEL_GEMINILAKE
 	bool
 	default n
 	select SOC_INTEL_APOLLOLAKE
@@ -44,7 +44,7 @@ config CPU_SPECIFIC_OPTIONS
 	select GENERIC_GPIO_LIB
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select HAVE_SMI_HANDLER
-	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_GLK
+	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_GEMINILAKE
 	select MRC_SETTINGS_PROTECT
 	select MRC_SETTINGS_VARIABLE_DATA
 	select NO_XIP_EARLY_STAGES
@@ -96,8 +96,8 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select PLATFORM_USES_FSP2_0
-	select UDK_2015_BINDING if !SOC_INTEL_GLK
-	select UDK_2017_BINDING if SOC_INTEL_GLK
+	select UDK_2015_BINDING if !SOC_INTEL_GEMINILAKE
+	select UDK_2017_BINDING if SOC_INTEL_GEMINILAKE
 	select SOC_INTEL_COMMON_RESET
 	select HAVE_CF9_RESET_PREPARE
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
@@ -138,7 +138,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x100000 if SOC_INTEL_GLK
+	default 0x100000 if SOC_INTEL_GEMINILAKE
 	default 0xc0000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -183,7 +183,7 @@ config VERSTAGE_ADDR
 	  The base address (in CAR) where verstage should be linked
 
 config FSP_HEADER_PATH
-	default "src/vendorcode/intel/fsp/fsp2_0/glk" if SOC_INTEL_GLK
+	default "src/vendorcode/intel/fsp/fsp2_0/glk" if SOC_INTEL_GEMINILAKE
 	default "3rdparty/fsp/ApolloLakeFspBinPkg/Include/"
 
 config FSP_FD_PATH
@@ -293,7 +293,7 @@ config NHLT_RT5682
 
 choice
 	prompt "Cache-as-ram implementation"
-	default CAR_CQOS if !SOC_INTEL_GLK
+	default CAR_CQOS if !SOC_INTEL_GEMINILAKE
 	default CAR_NEM
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
@@ -335,7 +335,7 @@ config CACHE_QOS_SIZE_PER_BIT
 
 config L2_CACHE_SIZE
 	hex
-	default 0x400000 if SOC_INTEL_GLK
+	default 0x400000 if SOC_INTEL_GEMINILAKE
 	default 0x100000
 
 config SMM_RESERVED_SIZE
@@ -344,7 +344,7 @@ config SMM_RESERVED_SIZE
 
 config IFD_CHIPSET
 	string
-	default "glk" if SOC_INTEL_GLK
+	default "glk" if SOC_INTEL_GEMINILAKE
 	default "aplk"
 
 config CPU_BCLK_MHZ

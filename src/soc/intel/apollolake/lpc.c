@@ -28,7 +28,7 @@ const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
 }
 
 static const struct pad_config lpc_gpios[] = {
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 #if !CONFIG(SOC_ESPI)
 	PAD_CFG_NF(GPIO_147, UP_20K, DEEP, NF1), /* LPC_ILB_SERIRQ */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, NONE, DEEP, NF1, HIZCRx1,

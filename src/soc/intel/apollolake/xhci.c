@@ -3,7 +3,7 @@
 #include <intelblocks/xhci.h>
 
 #define XHCI_USB2_PORT_STATUS_REG	0x480
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 #define XHCI_USB3_PORT_STATUS_REG	0x510
 #define XHCI_USB2_PORT_NUM		9
 #else

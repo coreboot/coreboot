@@ -6,7 +6,7 @@
 /*
  * Port ids.
  */
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 #define PID_GPIO_AUDIO	0xC9
 #define PID_GPIO_SCC	0xC8
 #else

@@ -113,7 +113,7 @@ const char *soc_acpi_name(const struct device *dev)
 			case 6: return "HS07";
 			case 7: return "HS08";
 			case 8:
-				if (CONFIG(SOC_INTEL_GLK))
+				if (CONFIG(SOC_INTEL_GEMINILAKE))
 					return "HS09";
 			}
 			break;
@@ -445,7 +445,7 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 	case PCH_DEVFN_SMBUS:
 		silconfig->SmbusEnable = 0;
 		break;
-#if !CONFIG(SOC_INTEL_GLK)
+#if !CONFIG(SOC_INTEL_GEMINILAKE)
 	case SA_DEVFN_IPU:
 		silconfig->IpuEn = 0;
 		break;
@@ -479,7 +479,7 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
 	*cfg, FSP_S_CONFIG *silconfig)
 {
-#if !CONFIG(SOC_INTEL_GLK) /* GLK FSP does not have these fields in FspsUpd.h yet */
+#if !CONFIG(SOC_INTEL_GEMINILAKE) /* GLK FSP does not have these fields in FspsUpd.h yet */
 	uint8_t port;
 
 	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
@@ -535,7 +535,7 @@ static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
 static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
-#if CONFIG(SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GEMINILAKE)
 	uint8_t port;
 	struct device *dev;
 
@@ -665,7 +665,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Disable monitor mwait since it is broken due to a hardware bug
 	 * without a fix. Specific to Apollolake.
 	 */
-	if (!CONFIG(SOC_INTEL_GLK))
+	if (!CONFIG(SOC_INTEL_GEMINILAKE))
 		silconfig->MonitorMwaitEnable = 0;
 
 	silconfig->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
@@ -681,7 +681,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
 	/* BIOS config lockdown Audio clk and power gate */
 	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
-	if (CONFIG(SOC_INTEL_GLK))
+	if (CONFIG(SOC_INTEL_GEMINILAKE))
 		glk_fsp_silicon_init_params_cb(cfg, silconfig);
 	else
 		apl_fsp_silicon_init_params_cb(cfg, silconfig);
@@ -813,7 +813,7 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 		 * Override GLK xhci clock gating register(XHCLKGTEN) to
 		 * mitigate USB device suspend and resume failure.
 		 */
-		if (CONFIG(SOC_INTEL_GLK)) {
+		if (CONFIG(SOC_INTEL_GEMINILAKE)) {
 			uint32_t *cfg;
 			const struct resource *res;
 			uint32_t reg;

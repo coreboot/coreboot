@@ -1129,7 +1129,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	dev->class = class >> 8;
 
 	/* Architectural/System devices always need to be bus masters. */
-	if ((dev->class >> 16) == PCI_BASE_CLASS_SYSTEM)
+	if ((dev->class >> 16) == PCI_BASE_CLASS_SYSTEM &&
+	    CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE))
 		dev->command |= PCI_COMMAND_MASTER;
 
 	/*

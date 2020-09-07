@@ -14,6 +14,7 @@ config CPU_SPECIFIC_OPTIONS
 	select IDT_IN_EVERY_STAGE
 	select INTEL_CAR_NEM #TODO - Enable INTEL_CAR_NEM_ENHANCED
 	select MICROCODE_BLOB_UNDISCLOSED
+	select PLATFORM_USES_FSP2_2
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_CPU
@@ -26,6 +27,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
+	select UDK_202005_BINDING
 
 config DCACHE_RAM_BASE
 	default 0xfef00000
@@ -129,4 +131,12 @@ config CBFS_SIZE
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1400
+config FSP_HEADER_PATH
+	string "Location of FSP headers"
+	default "src/vendorcode/intel/fsp/fsp2_0/alderlake/"
+
+config FSP_FD_PATH
+	string
+	depends on FSP_USE_REPO
+	default "3rdparty/fsp/AlderLakeFspBinPkg/Fsp.fd"
 endif

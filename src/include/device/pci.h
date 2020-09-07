@@ -144,7 +144,7 @@ void pci_dev_request_bus_master(pci_devfn_t dev)
 void pci_dev_request_bus_master(struct device *dev)
 #endif /* ENV_PCI_SIMPLE_DEVICE */
 {
-	if (CONFIG(PCI_ALLOW_BUS_MASTER))
+	if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE))
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 }
 

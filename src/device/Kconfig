@@ -532,6 +532,17 @@ config PCI_ALLOW_BUS_MASTER
 	  instance, for libpayload based payloads as the drivers don't enable
 	  bus mastering for PCI bridges.
 
+if PCI_ALLOW_BUS_MASTER
+
+config PCI_ALLOW_BUS_MASTER_ANY_DEVICE
+	bool "Any devices"
+	default y
+	help
+	  Allow coreboot to enable PCI bus mastering for any device. The actual
+	  selection of devices depends on the various PCI drivers in coreboot.
+
+endif # PCI_ALLOW_BUS_MASTER
+
 endif # PCI
 
 if PCIEXP_PLUGIN_SUPPORT

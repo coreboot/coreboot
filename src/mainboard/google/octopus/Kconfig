@@ -97,10 +97,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Octopus"
 
-config MAX_CPUS
-	int
-	default 4
-
 config UART_FOR_CONSOLE
 	int
 	default 2

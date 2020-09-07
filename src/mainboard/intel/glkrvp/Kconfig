@@ -68,10 +68,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Intel_Glkrvp" if BOARD_INTEL_GLKRVP
 
-config MAX_CPUS
-	int
-	default 4
-
 config UART_FOR_CONSOLE
 	int
 	default 2

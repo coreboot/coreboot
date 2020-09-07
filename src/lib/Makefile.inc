@@ -367,7 +367,7 @@ $(LIB_SPD_BIN): $(LIB_SPD_DEPS)
 	 done; \
 	done > $@
 
-cbfs-files-$(CONFIG_HAVE_SPD_IN_CBFS) += spd.bin
+cbfs-files-y += spd.bin
 spd.bin-file := $(LIB_SPD_BIN)
 spd.bin-type := spd
 endif

@@ -19,7 +19,7 @@ config MAINBOARD_PART_NUMBER
 config ENABLE_FSP_MEMORY_DOWN
 	bool "Enable Memory Down"
 	default n
-	select GENERIC_SPD_BIN
+	select HAVE_SPD_IN_CBFS
 	help
 	  Select this option to enable Memory Down function.
 

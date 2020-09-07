@@ -14,7 +14,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_2048
 	select GFXUMA
-	select GENERIC_SPD_BIN
+	select HAVE_SPD_IN_CBFS
 
 config MAINBOARD_DIR
 	string

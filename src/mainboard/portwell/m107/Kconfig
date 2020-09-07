@@ -12,7 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_FSP_BIN
 	select CACHE_MRC_SETTINGS
 	select DISABLE_HPET
-	select GENERIC_SPD_BIN
+	select HAVE_SPD_IN_CBFS
 
 choice
 	prompt "Onboard memory manufacturer"

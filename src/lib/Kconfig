@@ -30,7 +30,7 @@ config FLATTENED_DEVICE_TREE
 	  Selected by features that require to parse and manipulate a flattened
 	  devicetree in ramstage.
 
-config GENERIC_SPD_BIN
+config HAVE_SPD_IN_CBFS
 	bool
 	help
 	  If enabled, add support for adding spd.hex files in cbfs as spd.bin

@@ -350,7 +350,7 @@ endif # CONFIG_RAMSTAGE_LIBHWBASE
 
 romstage-y += spd_bin.c
 
-ifeq ($(CONFIG_GENERIC_SPD_BIN),y)
+ifeq ($(CONFIG_HAVE_SPD_IN_CBFS),y)
 LIB_SPD_BIN = $(obj)/spd.bin
 
 LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
@@ -363,7 +363,7 @@ $(LIB_SPD_BIN): $(LIB_SPD_DEPS)
 	 done; \
 	done > $@
 
-cbfs-files-$(CONFIG_GENERIC_SPD_BIN) += spd.bin
+cbfs-files-$(CONFIG_HAVE_SPD_IN_CBFS) += spd.bin
 spd.bin-file := $(LIB_SPD_BIN)
 spd.bin-type := spd
 endif

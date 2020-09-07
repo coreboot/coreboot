@@ -42,6 +42,6 @@ config UART_FOR_CONSOLE
 
 config MAX_CPUS
 	int
-	default 8
+	default 4
 
 endif # BOARD_SIEMENS_BASEBOARD_MC_APL1

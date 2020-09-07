@@ -83,7 +83,7 @@ config MAINBOARD_FAMILY
 
 config MAX_CPUS
 	int
-	default 8
+	default 4
 
 config UART_FOR_CONSOLE
 	int

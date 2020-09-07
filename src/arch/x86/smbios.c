@@ -430,6 +430,8 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->system_bios_major_release = coreboot_major_revision;
 	t->system_bios_minor_release = coreboot_minor_revision;
 
+	smbios_ec_revision(&t->ec_major_release, &t->ec_minor_release);
+
 	t->bios_characteristics =
 		BIOS_CHARACTERISTICS_PCI_SUPPORTED |
 		BIOS_CHARACTERISTICS_SELECTABLE_BOOT |

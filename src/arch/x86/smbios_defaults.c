@@ -63,6 +63,12 @@ __weak smbios_board_type smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
+__weak void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)
+{
+	*ec_major_revision = 0x0;
+	*ec_minor_revision = 0x0;
+}
+
 /*
  * System Enclosure or Chassis Types as defined in SMBIOS specification.
  * The default value is SMBIOS_ENCLOSURE_DESKTOP (0x03) but laptop,

@@ -534,9 +534,20 @@ config PCI_ALLOW_BUS_MASTER
 
 if PCI_ALLOW_BUS_MASTER
 
+config PCI_SET_BUS_MASTER_PCI_BRIDGES
+	bool "PCI bridges"
+	default y
+	help
+	  Let coreboot configure bus mastering for PCI bridges. Enabling bus
+	  mastering for a PCI bridge also allows it to forward requests from
+	  downstream devices. Currently, payloads ignore this and only enable
+	  bus mastering for the downstream device. Hence, this option is needed
+	  for compatibility until payloads are fixed.
+
 config PCI_ALLOW_BUS_MASTER_ANY_DEVICE
 	bool "Any devices"
 	default y
+	select PCI_SET_BUS_MASTER_PCI_BRIDGES
 	help
 	  Allow coreboot to enable PCI bus mastering for any device. The actual
 	  selection of devices depends on the various PCI drivers in coreboot.

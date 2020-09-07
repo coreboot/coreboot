@@ -542,7 +542,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			dev->command |= PCI_COMMAND_MEMORY;
 		if (resource->flags & IORESOURCE_IO)
 			dev->command |= PCI_COMMAND_IO;
-		if (resource->flags & IORESOURCE_PCI_BRIDGE)
+		if (resource->flags & IORESOURCE_PCI_BRIDGE &&
+		    CONFIG(PCI_SET_BUS_MASTER_PCI_BRIDGES))
 			dev->command |= PCI_COMMAND_MASTER;
 	}
 

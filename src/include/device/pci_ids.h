@@ -3967,6 +3967,7 @@
 
 #define PCI_DEVICE_ID_INTEL_TGL_IPU		0x9a19
 #define PCI_DEVICE_ID_INTEL_JSL_IPU		0x4e19
+#define PCI_DEVICE_ID_INTEL_ADL_IPU		0x465d
 
 /* Intel Dynamic Tuning Technology Device */
 #define PCI_DEVICE_ID_INTEL_CML_DTT		0x1903

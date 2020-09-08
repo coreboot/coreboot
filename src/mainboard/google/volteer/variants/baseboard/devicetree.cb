@@ -282,84 +282,88 @@ chip soc/intel/tigerlake
 			# Default DPTF Policy for all Volteer boards if not overridden
 			chip drivers/intel/dptf
 				## Active Policy
-				register "policies.active[0]" = "{.target=DPTF_CPU,
-					.thresholds={TEMP_PCT(85, 90),
-						     TEMP_PCT(80, 69),
-						     TEMP_PCT(75, 56),
-						     TEMP_PCT(70, 46),
-						     TEMP_PCT(65, 36),}}"
-				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
-					.thresholds={TEMP_PCT(50, 90),
-						     TEMP_PCT(47, 69),
-						     TEMP_PCT(45, 56),
-						     TEMP_PCT(42, 46),
-						     TEMP_PCT(39, 36),}}"
-				register "policies.active[2]" = "{.target=DPTF_TEMP_SENSOR_1,
-					.thresholds={TEMP_PCT(50, 90),
-						     TEMP_PCT(47, 69),
-						     TEMP_PCT(45, 56),
-						     TEMP_PCT(42, 46),
-						     TEMP_PCT(39, 36),}}"
-				register "policies.active[3]" = "{.target=DPTF_TEMP_SENSOR_2,
-					.thresholds={TEMP_PCT(50, 90),
-						     TEMP_PCT(47, 69),
-						     TEMP_PCT(45, 56),
-						     TEMP_PCT(42, 46),
-						     TEMP_PCT(39, 36),}}"
-				register "policies.active[4]" = "{.target=DPTF_TEMP_SENSOR_3,
-					.thresholds={TEMP_PCT(50, 90),
-						     TEMP_PCT(47, 69),
-						     TEMP_PCT(45, 56),
-						     TEMP_PCT(42, 46),
-						     TEMP_PCT(39, 36),}}"
+				register "policies.active" = "{
+					[0] = {.target = DPTF_CPU,
+					       .thresholds = {TEMP_PCT(85, 90),
+							      TEMP_PCT(80, 69),
+							      TEMP_PCT(75, 56),
+							      TEMP_PCT(70, 46),
+							      TEMP_PCT(65, 36),}},
+					[1] = {.target = DPTF_TEMP_SENSOR_0,
+					       .thresholds = {TEMP_PCT(50, 90),
+							      TEMP_PCT(47, 69),
+							      TEMP_PCT(45, 56),
+							      TEMP_PCT(42, 46),
+							      TEMP_PCT(39, 36),}},
+					[2] = {.target = DPTF_TEMP_SENSOR_1,
+					       .thresholds = {TEMP_PCT(50, 90),
+							      TEMP_PCT(47, 69),
+							      TEMP_PCT(45, 56),
+							      TEMP_PCT(42, 46),
+							      TEMP_PCT(39, 36),}},
+					[3] = {.target = DPTF_TEMP_SENSOR_2,
+					       .thresholds = {TEMP_PCT(50, 90),
+							      TEMP_PCT(47, 69),
+							      TEMP_PCT(45, 56),
+							      TEMP_PCT(42, 46),
+							      TEMP_PCT(39, 36),}},
+					[4] = {.target = DPTF_TEMP_SENSOR_3,
+					       .thresholds = {TEMP_PCT(50, 90),
+							      TEMP_PCT(47, 69),
+							      TEMP_PCT(45, 56),
+							      TEMP_PCT(42, 46),
+							      TEMP_PCT(39, 36),}}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,     CPU,           95, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_1, 65, 6000)"
-				register "policies.passive[2]" = "DPTF_PASSIVE(CHARGER, TEMP_SENSOR_0, 65, 6000)"
-				register "policies.passive[3]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_2, 65, 6000)"
-				register "policies.passive[4]" = "DPTF_PASSIVE(CPU,     TEMP_SENSOR_3, 65, 6000)"
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,	CPU,	       95, 5000),
+					[1] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_1, 65, 6000),
+					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 65, 6000),
+					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2, 65, 6000),
+					[4] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_3, 65, 6000)}"
 
 				## Critical Policy
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          105, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
-				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 75, SHUTDOWN)"
-				register "policies.critical[3]" = "DPTF_CRITICAL(TEMP_SENSOR_2, 75, SHUTDOWN)"
-				register "policies.critical[4]" = "DPTF_CRITICAL(TEMP_SENSOR_3, 75, SHUTDOWN)"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,	       105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,	75, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	75, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	75, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,	75, SHUTDOWN)}"
 
 				## Power Limits Control
 				# 10-15W PL1 in 200mW increments, avg over 28-32s interval
 				# PL2 is fixed at 64W, avg over 28-32s interval
-				register "controls.power_limits.pl1" = "{
-					.min_power = 3000,
-					.max_power = 15000,
-					.time_window_min = 28 * MSECS_PER_SEC,
-					.time_window_max = 32 * MSECS_PER_SEC,
-					.granularity = 200,}"
-				register "controls.power_limits.pl2" = "{
-					.min_power = 15000,
-					.max_power = 60000,
-					.time_window_min = 28 * MSECS_PER_SEC,
-					.time_window_max = 32 * MSECS_PER_SEC,
-					.granularity = 1000,}"
+				register "controls.power_limits" = "{
+					.pl1 = {.min_power = 3000,
+						.max_power = 15000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 200,},
+					.pl2 = {.min_power = 15000,
+						.max_power = 60000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,}}"
 
 				## Charger Performance Control (Control, mA)
-				register "controls.charger_perf[0]" = "{ 255, 1700 }"
-				register "controls.charger_perf[1]" = "{  24, 1500 }"
-				register "controls.charger_perf[2]" = "{  16, 1000 }"
-				register "controls.charger_perf[3]" = "{   8,  500 }"
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }}"
 
 				## Fan Performance Control (Percent, Speed, Noise, Power)
-				register "controls.fan_perf[0]" = "{  90, 6700, 220, 2200, }"
-				register "controls.fan_perf[1]" = "{  80, 5800, 180, 1800, }"
-				register "controls.fan_perf[2]" = "{  70, 5000, 145, 1450, }"
-				register "controls.fan_perf[3]" = "{  60, 4900, 115, 1150, }"
-				register "controls.fan_perf[4]" = "{  50, 3838,  90,  900, }"
-				register "controls.fan_perf[5]" = "{  40, 2904,  55,  550, }"
-				register "controls.fan_perf[6]" = "{  30, 2337,  30,  300, }"
-				register "controls.fan_perf[7]" = "{  20, 1608,  15,  150, }"
-				register "controls.fan_perf[8]" = "{  10,  800,  10,  100, }"
-				register "controls.fan_perf[9]" = "{   0,    0,   0,   50, }"
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }}"
 
 				# Fan options
 				register "options.fan.fine_grained_control" = "1"

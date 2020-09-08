@@ -3,3 +3,7 @@ comment "Asurada"
 config BOARD_GOOGLE_ASURADA
 	bool "->  Asurada"
 	select BOARD_GOOGLE_ASURADA_COMMON
+
+config BOARD_GOOGLE_HAYATO
+	bool "->  Hayato"
+	select BOARD_GOOGLE_ASURADA_COMMON

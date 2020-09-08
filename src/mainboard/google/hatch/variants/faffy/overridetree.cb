@@ -281,11 +281,11 @@ chip soc/intel/cannonlake
 			chip drivers/intel/dptf
 				## Passive Policy
 				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU, 95, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 63, 5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 75, 5000)"
 
 				## Critical Policy
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU, 100, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 78, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN)"
 
 				## Power Limits Control
 				# 10-15W PL1 in 200mW increments, avg over 28-32s interval

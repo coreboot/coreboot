@@ -214,5 +214,5 @@ config SOC_INTEL_TIGERLAKE_DEBUG_CONSENT
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x1400
+	default 0x2000
 endif

@@ -12,6 +12,7 @@
 #include <soc/ramstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
+#include <vb2_api.h>
 
 static void mainboard_init(struct device *dev)
 {
@@ -43,7 +44,13 @@ static void mainboard_enable(struct device *dev)
 
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 {
-	tlcl_lib_init();
+	int ret;
+	ret = tlcl_lib_init();
+	if (ret != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
+		return;
+	}
+
 	if (cr50_is_long_interrupt_pulse_enabled()) {
 		printk(BIOS_INFO, "Enabling S0i3.4\n");
 	} else {

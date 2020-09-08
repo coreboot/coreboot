@@ -37,32 +37,6 @@ type PlatformSpecific struct {}
 // remmap is not required because it is the same as common.
 func (PlatformSpecific) RemmapRstSrc() {}
 
-// Adds the PADRSTCFG parameter from DW0 to the macro as a new argument
-// return: macro
-func (PlatformSpecific) Rstsrc() {
-	macro := common.GetMacro()
-	dw0 := macro.Register(PAD_CFG_DW0)
-	// See src/soc/intel/apollolake/gpio_apl.c:
-	// static const struct reset_mapping rst_map[] = {
-	// { .logical = PAD_CFG0_LOGICAL_RESET_PWROK,  .chipset = 0U << 30 },
-	// { .logical = PAD_CFG0_LOGICAL_RESET_DEEP,   .chipset = 1U << 30 },
-	// { .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
-	// };
-
-	var resetsrc = map[uint8]string{
-		0: "PWROK",
-		1: "DEEP",
-		2: "PLTRST",
-	}
-	str, valid := resetsrc[dw0.GetResetConfig()]
-	if !valid {
-			// 3h = Reserved (implement as setting 0h)
-			dw0.CntrMaskFieldsClear(common.PadRstCfgMask)
-			str = "PWROK"
-	}
-	macro.Separator().Add(str)
-}
-
 // Adds The Pad Termination (TERM) parameter from DW1 to the macro as a new argument
 // return: macro
 func (PlatformSpecific) Pull() {

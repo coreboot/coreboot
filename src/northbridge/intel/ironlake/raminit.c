@@ -1770,7 +1770,7 @@ recv_heci_message(struct raminfo *info, u32 *message, u32 *message_size)
 
 static void send_heci_uma_message(struct raminfo *info)
 {
-	struct uma_reply {
+	volatile struct uma_reply {
 		u8 group_id;
 		u8 command;
 		u8 reserved;

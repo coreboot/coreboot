@@ -22,6 +22,14 @@ fw_config
 		option LTE_ABSENT 0
 		option LTE_PRESENT 1
 	end
+	field KB_BL 14
+		option KB_BL_ABSENT 0
+		option KB_BL_PRESENT 1
+	end
+	field NUMPAD 15
+		option NUMPAD_ABSENT 0
+		option NUMPAD_PRESENT 1
+	end
 	field DB_SD 16 19
 		option SD_ABSENT 0
 		option SD_GL9755S 1

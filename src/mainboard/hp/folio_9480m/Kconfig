@@ -1,0 +1,50 @@
+if BOARD_HP_FOLIO_9480M
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	# The board has a 16MB flash, but the end of the flash needs
+	# to be reserved, so we use 12MB as default
+	select BOARD_ROMSIZE_KB_12288
+	select EC_HP_KBC1126
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LYNXPOINT_LP
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM1
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SYSTEM_TYPE_LAPTOP
+
+config MAINBOARD_DIR
+	string
+	default "hp/folio_9480m"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "HP EliteBook Folio 9480m"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0a16.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0a16"
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 1
+
+config EC_HP_KBC1126_ECFW_IN_CBFS
+	bool
+	default n
+
+config EC_HP_KBC1126_GPE
+	hex
+	default 0x6
+
+endif

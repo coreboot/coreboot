@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/hp-elitebook-folio-9480m-notebook-pc/7089926
+ROM protocol: SPI
+ROM package: SOIC-8
+ROM socketed: n
+Flashrom support: y
+Release year: 2014

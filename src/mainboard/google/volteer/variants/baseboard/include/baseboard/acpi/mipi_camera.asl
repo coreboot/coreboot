@@ -247,7 +247,7 @@ Scope (\_SB.PCI0.I2C3)
 				}
 			},
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package (0x02)
+			Package (0x03)
 			{
 				Package (0x02)
 				{
@@ -261,7 +261,12 @@ Scope (\_SB.PCI0.I2C3)
 					{
 						VCM0
 					}
-				}
+				},
+				Package (0x02)
+				{
+					"i2c-allow-low-power-probe",
+					0x01
+ 				}
 			}
 		})
 		Name (PRT0, Package (0x04)
@@ -365,13 +370,18 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_DSD, Package (0x02)  /* _DSD: Device-Specific Data */
 		{
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package (0x01)
+			Package (0x02)
 			{
 				Package (0x02)
 				{
 					"compatible",
 					"dongwoon,dw9768"
-				}
+				},
+				Package (0x02)
+				{
+					"i2c-allow-low-power-probe",
+					0x01
+ 				}
 			}
 		})
 	}
@@ -406,7 +416,7 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
 		{
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device Properties for _DSD */,
-			Package (0x05)
+			Package (0x06)
 			{
 				Package (0x02)
 				{
@@ -432,6 +442,11 @@ Scope (\_SB.PCI0.I2C3)
 				{
 					"compatible",
 					"atmel,24c1024"
+				},
+				Package (0x02)
+				{
+					"i2c-allow-low-power-probe",
+					0x01
 				}
 			}
 		})
@@ -529,13 +544,18 @@ Scope (\_SB.PCI0.I2C2)
 				}
 			},
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package (0x01)
+			Package (0x02)
 			{
 				Package (0x02)
 				{
 					"clock-frequency",
 					0x0124F800
-				}
+				},
+				Package (0x02)
+				{
+					"i2c-allow-low-power-probe",
+					0x01
+ 				}
 			}
 		})
 		Name (PRT0, Package (0x04)

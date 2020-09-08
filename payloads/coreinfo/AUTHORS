@@ -1,0 +1,14 @@
+# This is the list of coreinfo authors for copyright purposes.
+#
+# This does not necessarily list everyone who has contributed code, since in
+# some cases, their employer may be the copyright holder.  To see the full list
+# of contributors, and their email addresses, see the revision history in source
+# control.
+# Run the below commands in the coreinfo repo for additional information.
+# To see a list of contributors: git log --pretty=format:%an | sort | uniq
+# For patches adding or removing a name: git log -i -S "NAME" --source --all
+
+Advanced Micro Devices, Inc.
+Dave Jones
+Jordan Crouse
+Uwe Hermann

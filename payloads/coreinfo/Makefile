@@ -1,8 +1,3 @@
-##
-##
-## Copyright (C) 2008 Advanced Micro Devices, Inc.
-## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 src := $(CURDIR)

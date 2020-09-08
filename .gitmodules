@@ -51,3 +51,6 @@
 	url = ../qc_blobs.git
 	update = none
 	ignore = dirty
+[submodule "3rdparty/intel-sec-tools"]
+	path = 3rdparty/intel-sec-tools
+	url = ../9esec-security-tooling.git

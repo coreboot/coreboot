@@ -1,9 +1,8 @@
 package cnl
 
-import "strings"
+import "../common"
 
 type InheritanceTemplate interface {
-
 	KeywordCheck(line string) bool
 }
 
@@ -13,16 +12,8 @@ type InheritanceTemplate interface {
 //     bool   : true if the string contains a group identifier
 //     string : group identifier
 func (PlatformSpecific) GroupNameExtract(line string) (bool, string) {
-	for _, groupKeyword := range []string{
-		"GPP_A", "GPP_B", "GPP_G",
-		"GPP_D", "GPP_F", "GPP_H",
-		"GPD",   "GPP_C", "GPP_E",
-	} {
-		if strings.Contains(line, groupKeyword) {
-			return true, groupKeyword
-		}
-	}
-	return false, ""
+	return common.KeywordsCheck(line,
+		"GPP_A", "GPP_B", "GPP_G", "GPP_D", "GPP_F", "GPP_H", "GPD", "GPP_C", "GPP_E")
 }
 
 // KeywordCheck - This function is used to filter parsed lines of the configuration file and

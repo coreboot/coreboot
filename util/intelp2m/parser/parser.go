@@ -7,6 +7,7 @@ import (
 	"strconv"
 )
 
+import "../platforms/common"
 import "../platforms/snr"
 import "../platforms/lbg"
 import "../platforms/apl"
@@ -224,7 +225,8 @@ func (parser *ParserData) Parse() {
 	scanner := bufio.NewScanner(config.InputRegDumpFile)
 	for scanner.Scan() {
 		parser.line = scanner.Text()
-		if strings.Contains(parser.line, "GPIO Community") || strings.Contains(parser.line, "GPIO Group") {
+		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group");
+		if isIncluded {
 			parser.communityGroupExtract()
 		} else if !parser.padConfigurationExtract() && parser.platform.KeywordCheck(parser.line) {
 			if parser.padInfoExtract() != 0 {

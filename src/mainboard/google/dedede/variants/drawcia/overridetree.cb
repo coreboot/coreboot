@@ -59,7 +59,7 @@ chip soc/intel/jasperlake
 
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 6,
-		.tdp_pl2_override = 15,
+		.tdp_pl2_override = 20,
 	}"
 
 	register "tcc_offset" = "20"	# TCC of 85C
@@ -93,7 +93,7 @@ chip soc/intel/jasperlake
 					.granularity = 200,}"
 				register "controls.power_limits.pl2" = "{
 					.min_power = 6000,
-					.max_power = 15000,
+					.max_power = 20000,
 					.time_window_min = 1 * MSECS_PER_SEC,
 					.time_window_max = 1 * MSECS_PER_SEC,
 					.granularity = 1000,}"

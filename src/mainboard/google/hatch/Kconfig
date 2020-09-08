@@ -140,7 +140,6 @@ config MAINBOARD_PART_NUMBER
 	default "Nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
-	default "Sushi" if BOARD_GOOGLE_SUSHI
 	default "Wyvern" if BOARD_GOOGLE_WYVERN
 	default "Dooly" if BOARD_GOOGLE_DOOLY
 
@@ -174,7 +173,6 @@ config VARIANT_DIR
 	default "nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "puff" if BOARD_GOOGLE_PUFF
 	default "stryke" if BOARD_GOOGLE_STRYKE
-	default "sushi" if BOARD_GOOGLE_SUSHI
 	default "wyvern" if BOARD_GOOGLE_WYVERN
 	default "dooly" if BOARD_GOOGLE_DOOLY
 

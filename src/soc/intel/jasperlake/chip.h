@@ -60,16 +60,15 @@ struct soc_intel_jasperlake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
-	 * When enabled memory will be training at two different frequencies.
-	 * 0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2,
-	 * 4:FixedPoint3, 5:Enabled */
+	/* System Agent dynamic frequency support.
+	 * When enabled memory will be training at different frequencies.
+	 * 0:Disabled, 1:FixedPoint0(low), 2:FixedPoint1(mid), 3:FixedPoint2
+	 * (high), 4:Enabled */
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedPoint0,
 		SaGv_FixedPoint1,
 		SaGv_FixedPoint2,
-		SaGv_FixedPoint3,
 		SaGv_Enabled,
 	} SaGv;
 

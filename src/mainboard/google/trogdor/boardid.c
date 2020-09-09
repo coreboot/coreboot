@@ -16,11 +16,12 @@ uint32_t board_id(void)
 	return id;
 }
 
-/* Whether a revision was built before or after the great pin migration of August 2020. */
+/* Some boards/revisions use one GPIO mapping and others use another. There's no real rhyme or
+   reason to it. Don't try to think about it too much... */
 static bool use_old_pins(void)
 {
 	return ((CONFIG(BOARD_GOOGLE_TROGDOR) && board_id() < 2) ||
-		(CONFIG(BOARD_GOOGLE_LAZOR) && board_id() < 3) ||
+		CONFIG(BOARD_GOOGLE_LAZOR) ||
 		(CONFIG(BOARD_GOOGLE_POMPOM) && board_id() < 1));
 }
 

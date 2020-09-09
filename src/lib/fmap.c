@@ -46,6 +46,10 @@ static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 	if (CONFIG(NO_FMAP_CACHE))
 		return;
 
+	/* No need to use FMAP cache in SMM */
+	if (ENV_SMM)
+		return;
+
 	if (!ENV_ROMSTAGE_OR_BEFORE) {
 		/* We get here if ramstage makes an FMAP access before calling
 		   cbmem_initialize(). We should avoid letting it come to that,

@@ -75,13 +75,13 @@ Method (GADD, 1, NotSerialized)
 	/* GPIO Community 2 */
 	If (LAnd (LGreaterEqual (Arg0, GPD0), LLessEqual (Arg0, GPD11)))
 	{
-		Store (PID_GPIOCOM1, Local0)
+		Store (PID_GPIOCOM2, Local0)
 		Subtract (Arg0, GPD0, Local1)
 	}
 	/* GPIO Community 3 */
 	If (LAnd (LGreaterEqual (Arg0, HDA_BCLK), LLessEqual (Arg0, GPIO_RSVD_38)))
 	{
-		Store (PID_GPIOCOM1, Local0)
+		Store (PID_GPIOCOM3, Local0)
 		Subtract (Arg0, HDA_BCLK, Local1)
 	}
 	/* GPIO Community 04*/

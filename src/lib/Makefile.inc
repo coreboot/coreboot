@@ -362,7 +362,7 @@ LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(
 $(LIB_SPD_BIN): $(LIB_SPD_DEPS)
 	for f in $(LIB_SPD_DEPS); \
 	 do for c in $$(cat $$f | grep --binary-files=text -v ^#); \
-	  do printf $$(printf '\%o' 0x$$c); \
+	  do printf $$(printf '\\%o' 0x$$c); \
 	 done; \
 	done > $@
 

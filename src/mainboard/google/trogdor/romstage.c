@@ -3,6 +3,7 @@
 #include <arch/stages.h>
 #include <soc/usb.h>
 #include <soc/qclib_common.h>
+#include <soc/watchdog.h>
 
 static void prepare_usb(void)
 {
@@ -16,6 +17,8 @@ static void prepare_usb(void)
 void platform_romstage_main(void)
 {
 	prepare_usb();
+
+	check_wdog();
 
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();

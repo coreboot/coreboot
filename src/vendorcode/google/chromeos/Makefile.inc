@@ -14,4 +14,5 @@ ramstage-$(CONFIG_CHROMEOS_CSE_BOARD_RESET_OVERRIDE) += cse_board_reset.c
 
 bootblock-y += watchdog.c
 verstage-y += watchdog.c
+romstage-y += watchdog.c
 ramstage-y += watchdog.c

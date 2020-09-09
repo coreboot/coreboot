@@ -183,7 +183,7 @@
 #define GPP_H21			138
 #define GPP_H22			139
 #define GPP_H23			140
-/* Group VGPIO */
+/* Group VGPIO 0 */
 #define CNV_BTEN		141
 #define CNV_GNEN		142
 #define CNV_WFEN		143
@@ -216,6 +216,7 @@
 #define vISH_UART1_RTS_B	170
 #define vCNV_BT_I2S_BCLK	171
 #define vCNV_BT_I2S_WS_SYNC	172
+/* Group VGPIO 1 */
 #define vCNV_BT_I2S_SDO		173
 #define vCNV_BT_I2S_SDI		174
 #define vSSP2_SCLK		175
@@ -310,35 +311,38 @@
 #define GPD9			253
 #define GPD10			254
 #define GPD11			255
+#define SLP_LAN_B		256
+#define SLP_SUS_B		257
+#define WAKE_B			258
+#define DRAM_RESET_B		259
 
-#define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
-
+#define NUM_GPIO_COM2_PADS	(DRAM_RESET_B - GPD0 + 1)
 
 /* Group AZA */
-#define HDA_BCLK		256
-#define HDA_RST_B		257
-#define HDA_SYNC		258
-#define HDA_SDO			259
-#define HDA_SDI0		260
-#define HDA_SDI1		261
-#define I2S1_SFRM		262
-#define I2S1_TXD		263
+#define HDA_BCLK		260
+#define HDA_RST_B		261
+#define HDA_SYNC		262
+#define HDA_SDO			263
+#define HDA_SDI0		264
+#define HDA_SDI1		265
+#define I2S1_SFRM		266
+#define I2S1_TXD		267
 /* Group CPU */
-#define HDACPU_SDI		264
-#define HDACPU_SDO		265
-#define HDACPU_SCLK		266
-#define PM_SYNC			267
-#define PECI_IO			268
-#define CPUPWRGD		269
-#define THRMTRIP_B		270
-#define PLTRST_CPU_B		271
-#define PM_DOWN			272
-#define TRIGGER_IN		273
-#define TRIGGER_OUT		274
+#define HDACPU_SDI		268
+#define HDACPU_SDO		269
+#define HDACPU_SCLK		270
+#define PM_SYNC			271
+#define PECI_IO			272
+#define CPUPWRGD		273
+#define THRMTRIP_B		274
+#define PLTRST_CPU_B		275
+#define PM_DOWN			276
+#define TRIGGER_IN		277
+#define TRIGGER_OUT		278
 
 #define NUM_GPIO_COM3_PADS	(TRIGGER_OUT - HDA_BCLK + 1)
 
-#define TOTAL_PADS		275
+#define TOTAL_PADS		279
 
 #define SD_PWR_EN_PIN		GPP_A17
 

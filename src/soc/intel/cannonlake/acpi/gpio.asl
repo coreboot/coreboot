@@ -73,7 +73,7 @@ Method (GADD, 1, NotSerialized)
 		Subtract (Arg0, GPP_D0, Local1)
 	}
 	/* GPIO Community 2 */
-	If (LAnd (LGreaterEqual (Arg0, GPD0), LLessEqual (Arg0, GPD11)))
+	If (LAnd (LGreaterEqual (Arg0, GPD0), LLessEqual (Arg0, DRAM_RESET_B)))
 	{
 		Store (PID_GPIOCOM2, Local0)
 		Subtract (Arg0, GPD0, Local1)

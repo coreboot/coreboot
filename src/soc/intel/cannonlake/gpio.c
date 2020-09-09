@@ -47,7 +47,7 @@ static const struct pad_group cnl_community1_groups[] = {
 
 /* This community is not visible to the OS */
 static const struct pad_group cnl_community2_groups[] = {
-	INTEL_GPP(GPD0, GPD0, GPD11),				/* GPD */
+	INTEL_GPP(GPD0, GPD0, DRAM_RESET_B),			/* GPD */
 };
 
 /* This community is not visible to the OS */
@@ -108,7 +108,7 @@ static const struct pad_community cnl_communities[TOTAL_GPIO_COMM] = {
 	[COMM_2] = {
 		.port = PID_GPIOCOM2,
 		.first_pad = GPD0,
-		.last_pad = GPD11,
+		.last_pad = DRAM_RESET_B,
 		.num_gpi_regs = NUM_GPIO_COM2_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,

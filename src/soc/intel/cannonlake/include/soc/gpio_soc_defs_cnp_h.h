@@ -381,10 +381,14 @@
 #define GPD9			308
 #define GPD10			309
 #define GPD11			310
+#define SLP_LAN_B		311
+#define SLP_SUS_B		312
+#define WAKE_B			313
+#define DRAM_RESET_B		314
 
-#define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
+#define NUM_GPIO_COM2_PADS	(DRAM_RESET_B - GPD0 + 1)
 
-#define TOTAL_PADS		(GPD11 + 1)
+#define TOTAL_PADS		(DRAM_RESET_B + 1)
 
 #define COMM_0		0
 #define COMM_1		1

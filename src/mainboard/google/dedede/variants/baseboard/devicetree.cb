@@ -1,3 +1,10 @@
+fw_config
+        field TABLETMODE 10
+                option TABLETMODE_DISABLED 0
+                option TABLETMODE_ENABLED 1
+        end
+end
+
 chip soc/intel/jasperlake
 	device cpu_cluster 0 on
 		device lapic 0 on end

@@ -198,7 +198,7 @@ endif
 #
 
 # type = 0x60
-PSP_APCB_FILES=$(foreach f, $(basename $(SPD_SOURCES)), $(obj)/APCB_$(f).bin)
+PSP_APCB_FILES=$(APCB_SOURCES)
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DRAM_ADDRESS)
@@ -383,28 +383,6 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		--soc-name "Picasso" \
 		--flashsize $(CONFIG_ROM_SIZE)
 
-# Copy prebuild APCBs if they exist
-$(obj)/APCB_%.bin: $(MAINBOARD_BLOBS_DIR)/APCB_%.bin
-	cp $< $@
-
-# APCB binary with magic numbers to be replaced by apcb_edit tool
-APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATE)/APCB_magic.bin
-
-$(obj)/APCB_%.bin:	$$(SPD_SOURCES_DIR)/%.hex \
-			$(APCB_EDIT_TOOL) \
-			$(APCB_MAGIC_BLOB)
-	$(APCB_EDIT_TOOL) \
-	$(APCB_MAGIC_BLOB) \
-	$@ \
-	--hex \
-	--strip_manufacturer_information \
-	--spd_0_0 $< \
-	$(if $(APCB_POPULATE_2ND_CHANNEL), --spd_1_0 $<, ) \
-	--board_id_gpio0 $(APCB_BOARD_ID_GPIO0) \
-	--board_id_gpio1 $(APCB_BOARD_ID_GPIO1) \
-	--board_id_gpio2 $(APCB_BOARD_ID_GPIO2) \
-	--board_id_gpio3 $(APCB_BOARD_ID_GPIO3)
-
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
@@ -443,6 +421,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap.fmd
+	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \

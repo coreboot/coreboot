@@ -10,8 +10,7 @@ ifneq ($(CONFIG_PICASSO_LPC_IOMUX),y)
 ramstage-y += emmc_gpio.c
 endif
 
-# APCB_mandolin.bin
-APCB_SOURCES = mandolin
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_mandolin.bin
 
 PHONY+=add_mchp_fw
 INTERMEDIATE+=add_mchp_fw

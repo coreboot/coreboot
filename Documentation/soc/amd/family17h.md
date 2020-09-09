@@ -240,47 +240,12 @@ in an Integration Guide.
 ## APCB setup
 
 APCBs are used to provide the PSP with SPD information and optionally a set of
-GPIOs to use for selecting which SPD to load.
-
-### Prebuilt
-The picasso `Makefile` expects APCBs to be located in
-`3rdparty/blobs/mainboard/$(MAINBOARDDIR)`. If you have a pre-built binary just
-add the following to your mainboard's Makefile.
-
-```
-# i.e., 3rdparty/blobs/mainboard/amd/mandolin/APCB_mandolin.bin
-APCB_SOURCES = mandolin
-```
+GPIOs to use for selecting which SPD to load. A list of APCB files should be
+specified in `APCB_SOURCES`.
 
 ### Generating APCBs
 If you have a template APCB file, the `apcb_edit` tool can be used to inject the
-SPD and GPIOs used to select the correct slot.  Entries should match this
-pattern `{NAME}_x{1,2}`. There should be a matching SPD hex file in
-`SPD_SOURCES_DIR` matching the pattern `{NAME}.spd.hex`.
-The `_x{1,2}` suffix denotes single or dual channel. Up to 16 slots can be used.
-If a slot is empty, the special empty keyword can be used. This will generate
-an APCB with an empty SPD.
-
-```
-APCB_SOURCES =  hynix-HMA851S6CJR6N-VK_x1   # 0b0000
-APCB_SOURCES += hynix-HMAA1GS6CMR6N-VK_x2   # 0b0001
-APCB_SOURCES += empty                       # 0b0010
-APCB_SOURCES += samsung-K4A8G165WC-BCWE_x1  # 0b0011
-```
-
-#### APCB Board ID GPIO configuration.
-The GPIOs determine which memory SPD will be used during boot.
-```
-# APCB_BOARD_ID_GPIO[0-3] = GPIO_NUMBER GPIO_IO_MUX GPIO_BANK_CTL
-# GPIO_NUMBER: FCH GPIO number
-# GPIO_IO_MUX: Value write to IOMUX to configure this GPIO
-# GPIO_BANK_CTL: Value write to GPIOBankCtl[23:16] to configure this GPIO
-
-APCB_BOARD_ID_GPIO0 = 121 1 0
-APCB_BOARD_ID_GPIO1 = 120 1 0
-APCB_BOARD_ID_GPIO2 = 131 3 0
-APCB_BOARD_ID_GPIO3 = 116 1 0
-```
+SPD and GPIOs used to select the correct slot.
 
 ## Footnotes
 

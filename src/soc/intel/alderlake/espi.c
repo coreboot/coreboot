@@ -1,0 +1,51 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+/*
+ * This file is created based on Intel Alder Lake Processor PCH Datasheet
+ * Document number: 621483
+ * Chapter number: 2
+ */
+
+#include <device/pci.h>
+#include <pc80/isa-dma.h>
+#include <pc80/i8259.h>
+#include <intelblocks/lpc_lib.h>
+#include <intelblocks/pcr.h>
+#include <soc/espi.h>
+#include <soc/iomap.h>
+#include <soc/pcr_ids.h>
+#include <soc/soc_chip.h>
+
+/*
+* As per the BWG, Chapter 5.9.1. "PCH BIOS component will reserve
+* certain memory range as reserved range for BIOS usage.
+* For this SOC, the range will be from 0FC800000h till FE7FFFFFh"
+*/
+static const struct lpc_mmio_range lpc_fixed_mmio_ranges[] = {
+	{ PCH_PRESERVED_BASE_ADDRESS, PCH_PRESERVED_BASE_SIZE },
+	{ 0, 0 }
+};
+
+const struct lpc_mmio_range *soc_get_fixed_mmio_ranges()
+{
+	return lpc_fixed_mmio_ranges;
+}
+
+void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
+{
+	const config_t *config = config_of(dev);
+
+	gen_io_dec[0] = config->gen1_dec;
+	gen_io_dec[1] = config->gen2_dec;
+	gen_io_dec[2] = config->gen3_dec;
+	gen_io_dec[3] = config->gen4_dec;
+}
+
+void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
+{
+	/* Mirror these same settings in DMI PCR */
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
+	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
+}

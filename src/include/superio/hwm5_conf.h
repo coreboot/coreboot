@@ -12,14 +12,14 @@
  * of the corresponding IO address region, but at offset 5 and 6. */
 
 /*
- * u8 pnp_read_hwm5_index(u16 port, u8 reg)
+ * u8 pnp_read_hwm5_index(u16 base, u8 reg)
  * Description:
  *  This routine reads indexed I/O registers. The reg byte is written
- *  to the index register at I/O address = port + 5. The result is then
- *  read from the data register at I/O address = port + 6.
+ *  to the index register at I/O address = base + 5. The result is then
+ *  read from the data register at I/O address = base + 6.
  *
  * Parameters:
- *  @param[in]  u16 base   = The I/O address of the port index register.
+ *  @param[in]  u16 base   = The I/O address of the base index register.
  *  @param[in]  u8  reg    = The offset within the indexed space.
  *  @param[out] u8  result = The value read back from the data register.
  */
@@ -29,14 +29,14 @@ static inline u8 pnp_read_hwm5_index(u16 base, u8 reg)
 }
 
 /*
- * void pnp_write_hwm5_index(u16 port, u8 reg, u8 value)
+ * void pnp_write_hwm5_index(u16 base, u8 reg, u8 value)
  * Description:
  *  This routine writes indexed I/O registers. The reg byte is written
- *  to the index register at I/O address = port + 5. The value byte is then
- *  written to the data register at I/O address = port + 6.
+ *  to the index register at I/O address = base + 5. The value byte is then
+ *  written to the data register at I/O address = base + 6.
  *
  * Parameters:
- *  @param[in] u16 base   = The address of the port index register.
+ *  @param[in] u16 base   = The address of the base index register.
  *  @param[in] u8  reg    = The offset within the indexed space.
  *  @param[in] u8  value  = The value to be written to the data register.
  */

@@ -138,7 +138,7 @@ void pch_early_iorange_init(void)
 	pch_enable_lpc();
 }
 
-void pch_init(void)
+void bootblock_pch_init(void)
 {
 	/*
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,

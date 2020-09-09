@@ -264,6 +264,32 @@ static const char *const cannonlake_pch_h_group_h_names[] = {
 	"GPP_H23",	"TIME_SYNC0",
 };
 
+const char *const cannonlake_pch_h_group_cpu_names[] = {
+	"HDACPU_SDI",	"HDACPU_SDI",
+	"HDACPU_SDO",	"HDACPU_SDO",
+	"HDACPU_SCLK",	"HDACPU_SCLK",
+	"PM_SYNC",	"PM_SYNC",
+	"PECI",		"PECI",
+	"CPUPWRGD",	"CPUPWRG#",
+	"THRMTRIP_B",	"THRMTRIP#",
+	"PLTRST_CPU_B",	"PLTRST_CPU#",
+	"PM_DOWN",	"PM_DOWN",
+	"TRIGGER_IN",	"TRIGGER_IN",
+	"TRIGGER_OUT",	"TRIGGER_OUT",
+};
+
+const char *const cannonlake_pch_h_group_jtag_names[] = {
+	"PCH_TDO",	"PCH_TDO",
+	"PCH_JTAGX",	"PCH_JTAGX",
+	"PROC_PRDY_B",	"PROC_RDY#",
+	"PROC_PREQ_B",	"PROC_REQ#",
+	"CPU_TRST_B",	"CPU_TRST#",
+	"PCH_TDI", 	"PCH_TDI",
+	"PCH_TMS", 	"PCH_TMS",
+	"PCH_TCK", 	"PCH_TCK",
+	"ITP_PMODE",	"ITP_PMODE",
+};
+
 static const char *const cannonlake_pch_h_group_i_names[] = {
 	"GPP_I0",	"DDPB_HPD0",		"DISP_MISC0",
 	"GPP_I1",	"DDPB_HPD1",		"DISP_MISC1",
@@ -340,6 +366,10 @@ static const char *const cannonlake_pch_h_group_gpd_names[] = {
 	"GPD9",		"SLP_WLAN#",
 	"GPD10",	"SLP_S5#",
 	"GPD11",	"LANPHYPC",
+	"SLP_LAN_B",	"SLP_LAN#",
+	"SLP_SUS_B",	"SLP_SUS#",
+	"WAKE_B",	"WAKE#",
+	"DRAM_RESET_B",	"DRAM_RESET#",
 };
 
 static const struct gpio_group cannonlake_pch_h_group_a = {
@@ -426,6 +456,20 @@ static const struct gpio_group cannonlake_pch_h_group_h = {
 	.pad_names	= cannonlake_pch_h_group_h_names,
 };
 
+static const struct gpio_group cannonlake_pch_h_group_cpu = {
+	.display	= "------- GPIO Group CPU -------",
+	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_cpu_names) / 2,
+	.func_count	= 2,
+	.pad_names	= cannonlake_pch_h_group_cpu_names,
+};
+
+static const struct gpio_group cannonlake_pch_h_group_jtag = {
+	.display	= "------- GPIO Group JTAG -------",
+	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_jtag_names) / 2,
+	.func_count	= 2,
+	.pad_names	= cannonlake_pch_h_group_jtag_names,
+};
+
 static const struct gpio_group cannonlake_pch_h_group_i = {
 	.display	= "------- GPIO Group GPP_I -------",
 	.pad_count	= ARRAY_SIZE(cannonlake_pch_h_group_i_names) / 3,
@@ -505,6 +549,8 @@ static	const struct gpio_community cannonlake_pch_h_community_3 = {
 };
 
 static const struct gpio_group *const cannonlake_pch_h_community_4_groups[] = {
+	&cannonlake_pch_h_group_cpu,
+	&cannonlake_pch_h_group_jtag,
 	&cannonlake_pch_h_group_i,
 	&cannonlake_pch_h_group_j,
 };

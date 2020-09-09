@@ -80,36 +80,6 @@ typedef struct {
 
 #define SI_PCH_MAX_DEVICE_INTERRUPT_CONFIG  64       ///< Number of all PCH devices
 
-
-/** FSPS_ARCH_UPD
-**/
-typedef struct {
-
-/** Offset 0x0020 - Reserved
-**/
-  UINT8                       Revision;
-
-/** Offset 0x0021 - Reserved
-**/
-  UINT8                       Reserved[3];
-
-/** Offset 0x0024 - Reserved
-**/
-  UINT32                      Length;
-
-/** Offset 0x0028 - Reserved
-**/
-  UINT32                      FspEventHandler;
-
-/** Offset 0x002C - Reserved
-**/
-  UINT8                       EnableMultiPhaseSiliconInit;
-
-/** Offset 0x002D - Reserved
-**/
-  UINT8                       Reserved1[19];
-} FSPS_ARCH_UPD;
-
 /** Fsp S Configuration
 **/
 typedef struct {

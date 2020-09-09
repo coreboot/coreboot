@@ -1,21 +1,28 @@
 comment "Trogdor"
 
+if USE_QC_BLOBS
+
 config BOARD_GOOGLE_BUBS
-	bool "Bubs"
+	bool "->  Bubs"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_COACHZ
-	bool "Coachz"
+	bool "-> Coachz"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_LAZOR
-	bool "Lazor"
+	bool "->  Lazor"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_POMPOM
-	bool "Pompom"
+	bool "->  Pompom"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_TROGDOR
-	bool "Trogdor"
+	bool "->  Trogdor"
 	select BOARD_GOOGLE_TROGDOR_COMMON
+
+endif
+
+comment "(Trogdor requires 'Allow QC blobs repository')"
+	depends on !USE_QC_BLOBS

@@ -121,6 +121,24 @@ chip soc/intel/tigerlake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
+	# Enable DPTF
+	register "dptf_enable" = "1"
+
+	# Enable Processor Thermal Control
+	register "Device4Enable" = "1"
+
+	# Add PL1 and PL2 values
+	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 38,
+		.tdp_pl4 = 71,
+	}"
+	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 60,
+		.tdp_pl4 = 105,
+	}"
+
 	#HD Audio
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHdaEnable" = "0"
@@ -155,7 +173,29 @@ chip soc/intel/tigerlake
 		#From EDS(575683)
 		device pci 00.0 on  end # Host Bridge		0x9A14:U/0x9A12:Y
 		device pci 02.0 on  end # Graphics
-		device pci 04.0 on  end # DPTF			0x9A03
+		device pci 04.0 on
+			# Default DPTF Policy for all tglrvp_up3 boards if not overridden
+			chip drivers/intel/dptf
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU, 95, 1000)"
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU, 105, SHUTDOWN)"
+
+				# Power Limits Control
+				register "controls.power_limits.pl1" = "{
+					.min_power = 3000,
+					.max_power = 15000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 200,}"
+				register "controls.power_limits.pl2" = "{
+					.min_power = 15000,
+					.max_power = 60000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 1000,}"
+				device generic 0 on end
+			end
+		end # DPTF	0x9A04:U22/0x9A14:U42
+
 		device pci 05.0 on  end # IPU			0x9A19
 		device pci 06.0 on  end # PEG60			0x9A09
 		device pci 07.0 on  end # TBT_PCIe0		0x9A23

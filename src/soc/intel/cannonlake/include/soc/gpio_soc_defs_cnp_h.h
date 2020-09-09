@@ -53,7 +53,7 @@
 #define GPP_A21			21
 #define GPP_A22			22
 #define GPP_A23			23
-#define GPIO_RSVD_0		24
+#define ESPI_CLK_LOOPBK		24
 
 /* Group B */
 #define GPP_B0			25
@@ -80,10 +80,10 @@
 #define GPP_B21			46
 #define GPP_B22			47
 #define GPP_B23			48
-#define GPIO_RSVD_1		49
-#define GPIO_RSVD_2		50
+#define GSPI0_CLK_LOOPBK	49
+#define GSPI1_CLK_LOOPBK	50
 
-#define NUM_GPIO_COM0_PADS	(GPIO_RSVD_2 - GPP_A0 + 1)
+#define NUM_GPIO_COM0_PADS	(GSPI1_CLK_LOOPBK - GPP_A0 + 1)
 
 /* Group C */
 #define GPP_C0			51
@@ -148,22 +148,22 @@
 #define GPP_G7			106
 
 /* AZA */
-#define GPIO_RSVD_3		107
-#define GPIO_RSVD_4		108
-#define GPIO_RSVD_5		109
-#define GPIO_RSVD_6		110
-#define GPIO_RSVD_7		111
-#define GPIO_RSVD_8		112
-#define GPIO_RSVD_9		113
-#define GPIO_RSVD_10		114
+#define HDA_BCLK		107
+#define HDA_RST_B		108
+#define HDA_SYNC		109
+#define HDA_SDO			110
+#define HDA_SDI0		111
+#define HDA_SDI1		112
+#define I2S1_SFRM		113
+#define I2S1_TXD		114
 
 /* VGPIO_0 */
 #define CNV_BTEN		115
 #define CNV_GNEN		116
 #define CNV_WFEN		117
 #define CNV_WCEN		118
-#define CNV_BT_HOST_WAKEB	119
-#define vCNV_GNSS_HOST_WAKEB	120
+#define CNV_BT_HOST_WAKE_B	119
+#define vCNV_GNSS_HOST_WAKE_B	120
 #define vSD3_CD_B		121
 #define CNV_BT_IF_SELECT	122
 #define vCNV_BT_UART_TXD	123
@@ -181,11 +181,11 @@
 #define vUART0_TXD		135
 #define vUART0_RXD		136
 #define vUART0_CTS_B		137
-#define vUART0_RTSB		138
+#define vUART0_RTS_B		138
 #define vISH_UART0_TXD		139
 #define vISH_UART0_RXD		140
 #define vISH_UART0_CTS_B	141
-#define vISH_UART0_RTSB		142
+#define vISH_UART0_RTS_B	142
 #define vISH_UART1_TXD		143
 #define vISH_UART1_RXD		144
 #define vISH_UART1_CTS_B	145
@@ -296,41 +296,41 @@
 #define GPP_F23			239
 
 /* SPI */
-#define GPIO_RSVD_11		240
-#define GPIO_RSVD_12		241
-#define GPIO_RSVD_13		242
-#define GPIO_RSVD_14		243
-#define GPIO_RSVD_15		244
-#define GPIO_RSVD_16		245
-#define GPIO_RSVD_17		246
-#define GPIO_RSVD_18		247
-#define GPIO_RSVD_19		248
+#define SPI0_IO_2		240
+#define SPI0_IO_3		241
+#define SPI0_MOSI		242
+#define SPI0_MISO		243
+#define SPI0_CS2_B		244
+#define SPI0_CS0_B		245
+#define SPI0_CS1_B		246
+#define SPI0_CLK		247
+#define SPI0_CLK_LOOPBK		248
 
-#define NUM_GPIO_COM3_PADS	(GPIO_RSVD_19 - GPP_K0 + 1)
+#define NUM_GPIO_COM3_PADS	(SPI0_CLK_LOOPBK - GPP_K0 + 1)
 
 /* CPU */
-#define GPIO_RSVD_20		249
-#define GPIO_RSVD_21		250
-#define GPIO_RSVD_22		251
-#define GPIO_RSVD_23		252
-#define GPIO_RSVD_24		253
-#define GPIO_RSVD_25		254
-#define GPIO_RSVD_26		255
-#define GPIO_RSVD_27		256
-#define GPIO_RSVD_28		257
-#define GPIO_RSVD_29		258
-#define GPIO_RSVD_30		259
+#define HDACPU_SDI		249
+#define HDACPU_SDO		250
+#define HDACPU_SCLK		251
+#define PM_SYNC			252
+#define PECI_IO			253
+#define CPUPWRGD		254
+#define THRMTRIP_B		255
+#define PLTRST_CPU_B		256
+#define PM_DOWN			257
+#define TRIGGER_IN		258
+#define TRIGGER_OUT		259
 
 /* JTAG */
-#define GPIO_RSVD_31		260
-#define GPIO_RSVD_32		261
-#define GPIO_RSVD_33		262
-#define GPIO_RSVD_34		263
-#define GPIO_RSVD_35		264
-#define GPIO_RSVD_36		265
-#define GPIO_RSVD_37		266
-#define GPIO_RSVD_38		267
-#define GPIO_RSVD_39		268
+#define PCH_TDO			260
+#define PCH_JTAGX		261
+#define PROC_PRDY_B		262
+#define PROC_PREQ_B		263
+#define CPU_TRST_B		264
+#define PCH_TDI			265
+#define PCH_TMS			266
+#define PCH_TCK			267
+#define ITP_PMODE		268
 
 /* Group I */
 #define GPP_I0			269
@@ -348,9 +348,9 @@
 #define GPP_I12			281
 #define GPP_I13			282
 #define GPP_I14			283
-#define GPIO_RSVD_40		284
-#define GPIO_RSVD_41		285
-#define GPIO_RSVD_42		286
+#define SYS_PWROK		284
+#define SYS_RESET_B		285
+#define CL_RST_B		286
 
 /* Group J */
 #define GPP_J0			287
@@ -368,7 +368,7 @@
 
 #define NUM_GPIO_COM4_PADS	(GPP_J11 - GPP_I0 + 1)
 
-/* Group GPD  */
+/* Group GPD */
 #define GPD0			299
 #define GPD1			300
 #define GPD2			301

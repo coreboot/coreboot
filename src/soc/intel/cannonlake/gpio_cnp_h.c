@@ -32,15 +32,15 @@ static const struct reset_mapping rst_map_com0[] = {
  * linux/drivers/pinctrl/intel/pinctrl-cannonlake.c
  */
 static const struct pad_group cnl_community0_groups[] = {
-	INTEL_GPP_BASE(GPP_A0, GPP_A0, GPIO_RSVD_0, 0),		/* GPP_A */
-	INTEL_GPP_BASE(GPP_A0, GPP_B0, GPIO_RSVD_2, 32),	/* GPP_B */
+	INTEL_GPP_BASE(GPP_A0, GPP_A0, ESPI_CLK_LOOPBK, 0),	/* GPP_A */
+	INTEL_GPP_BASE(GPP_A0, GPP_B0, GSPI1_CLK_LOOPBK, 32),	/* GPP_B */
 };
 
 static const struct pad_group cnl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 64),		/* GPP_C */
 	INTEL_GPP_BASE(GPP_C0, GPP_D0, GPP_D23, 96),		/* GPP_D */
 	INTEL_GPP_BASE(GPP_C0, GPP_G0, GPP_G7, 128),		/* GPP_G */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_3, GPIO_RSVD_10),		/* AZA */
+	INTEL_GPP(GPP_C0, HDA_BCLK, I2S1_TXD),			/* AZA */
 	INTEL_GPP_BASE(GPP_C0, CNV_BTEN, vISH_UART1_RTS_B, 160),/* VGPIO_0 */
 	INTEL_GPP(GPP_C0, vCNV_BT_I2S_BCLK, vSSP2_RXD),		/* VGPIO_1 */
 };
@@ -55,14 +55,14 @@ static const struct pad_group cnl_community3_groups[] = {
 	INTEL_GPP_BASE(GPP_K0, GPP_H0, GPP_H23, 224),		/* GPP_H */
 	INTEL_GPP_BASE(GPP_K0, GPP_E0, GPP_E12, 256),		/* GPP_E */
 	INTEL_GPP_BASE(GPP_K0, GPP_F0, GPP_F23, 288),		/* GPP_F */
-	INTEL_GPP(GPP_K0, GPIO_RSVD_11, GPIO_RSVD_19),		/* SPI */
+	INTEL_GPP(GPP_K0, SPI0_IO_2, SPI0_CLK_LOOPBK),		/* SPI */
 };
 
 static const struct pad_group cnl_community4_groups[] = {
-	INTEL_GPP(GPIO_RSVD_20, GPIO_RSVD_20, GPIO_RSVD_30),	/* CPU */
-	INTEL_GPP(GPIO_RSVD_20, GPIO_RSVD_31, GPIO_RSVD_39),	/* JTAG */
-	INTEL_GPP_BASE(GPIO_RSVD_20, GPP_I0, GPP_I14, 320),	/* GPP_I */
-	INTEL_GPP_BASE(GPIO_RSVD_20, GPP_J0, GPP_J11, 352),	/* GPP_J */
+	INTEL_GPP(HDACPU_SDI, HDACPU_SDI, TRIGGER_OUT),		/* CPU */
+	INTEL_GPP(HDACPU_SDI, PCH_TDO, ITP_PMODE),		/* JTAG */
+	INTEL_GPP_BASE(HDACPU_SDI, GPP_I0, GPP_I14, 320),	/* GPP_I */
+	INTEL_GPP_BASE(HDACPU_SDI, GPP_J0, GPP_J11, 352),	/* GPP_J */
 };
 
 static const struct pad_community cnl_communities[] = {
@@ -70,7 +70,7 @@ static const struct pad_community cnl_communities[] = {
 	[COMM_0] = {
 		.port = PID_GPIOCOM0,
 		.first_pad = GPP_A0,
-		.last_pad = GPIO_RSVD_2,
+		.last_pad = GSPI1_CLK_LOOPBK,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -130,7 +130,7 @@ static const struct pad_community cnl_communities[] = {
 	[COMM_3] = {
 		.port = PID_GPIOCOM3,
 		.first_pad = GPP_K0,
-		.last_pad = GPIO_RSVD_19,
+		.last_pad = SPI0_CLK_LOOPBK,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -149,7 +149,7 @@ static const struct pad_community cnl_communities[] = {
 	/* GPP I, J */
 	[COMM_4] = {
 		.port = PID_GPIOCOM4,
-		.first_pad = GPIO_RSVD_20,
+		.first_pad = HDACPU_SDI,
 		.last_pad = GPP_J11,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,

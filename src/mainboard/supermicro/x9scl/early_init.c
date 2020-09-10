@@ -72,7 +72,6 @@ static const uint8_t superio_initvals[][2] = {
 	SUPERIO_INITVAL(0x30, 0x80),
 };
 
-
 static void superio_init(void)
 {
 	const pnp_devfn_t dev = PNP_DEV(X9SCL_NCT6776_PNP_BASE, 0);

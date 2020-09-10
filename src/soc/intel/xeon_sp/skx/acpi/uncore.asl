@@ -25,7 +25,7 @@ Scope(\)
 	}
 }
 
-Scope (_SB)
+Scope (\_SB)
 {
 	#include "pci_irq.asl"
 	#include "uncore_irq.asl"

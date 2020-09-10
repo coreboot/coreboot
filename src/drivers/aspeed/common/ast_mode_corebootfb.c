@@ -96,7 +96,11 @@ static int ast_select_mode(struct drm_connector *connector,
 		ast_software_i2c_read(ast, raw);
 
 	if (decode_edid(raw, sizeof(raw), edid) != EDID_CONFORMANT) {
-		dev_err(dev->pdev, "Failed to decode EDID\n");
+		/*
+		 * Servers often run headless, so a missing EDID is not an error.
+		 * We still need to initialize a framebuffer for KVM, though.
+		 */
+		dev_info(dev->pdev, "Failed to decode EDID\n");
 		printk(BIOS_DEBUG, "Assuming VGA for KVM\n");
 
 		memset(edid, 0, sizeof(*edid));

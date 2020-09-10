@@ -1,12 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-
 
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
@@ -29,7 +27,6 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-
 	struct irq_routing_table *pirq;
 	struct irq_info *pirq_info;
 	u32 slot_num;
@@ -66,18 +63,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-
 	/* pci bridge */
 	write_pirq_info(pirq_info, 0, PCI_DEVFN(0x14, 4),
 			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
 			0);
 	pirq_info++;
 
-
-
 	slot_num++;
-
-
 
 	pirq->size = 32 + 16 * slot_num;
 
@@ -93,5 +85,4 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "%s done.\n", __func__);
 
 	return (unsigned long)pirq_info;
-
 }

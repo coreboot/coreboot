@@ -3,7 +3,6 @@
 /* mainboard configuration */
 #include "../ec.h"
 
-
 #define SIO_EC_ENABLE_PS2K       // Enable PS/2 Keyboard
 
 /* ACPI code for EC SuperIO functions */

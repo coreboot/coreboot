@@ -160,7 +160,6 @@ static void kahlee_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
-
 static void mainboard_final(void *chip_info)
 {
 	struct global_nvs *gnvs;

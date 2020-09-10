@@ -15,7 +15,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-
 	// TODO: MLR
 	// The firmware read/write status is a "virtual" switch and
 	// will be handled elsewhere.  Until then hard-code to

@@ -231,7 +231,6 @@ static void parade_dp_bridge_setup(void)
 	udelay(10);
 	gpio_set_value(dp_rst_l, 1);
 
-
 	gpio_set_pull(dp_hpd, GPIO_PULL_NONE);
 	gpio_cfg_pin(dp_hpd, GPIO_INPUT);
 

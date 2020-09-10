@@ -197,7 +197,6 @@ static const u8 core_dedicated_irq[GPIO_MAX_DIRQS] = {
 	[I8042_IRQ_OFFSET] = I8042_IRQ_GPIO,
 };
 
-
 static const u8 sus_dedicated_irq[GPIO_MAX_DIRQS] = {
 	[CODEC_IRQ_OFFSET] = CODEC_IRQ_GPIO,
 };

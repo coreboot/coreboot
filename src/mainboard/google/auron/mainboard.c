@@ -5,7 +5,6 @@
 #include "ec.h"
 #include "variant.h"
 
-
 __weak void lan_init(void)
 {
 }

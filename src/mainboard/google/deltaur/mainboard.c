@@ -7,7 +7,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
 
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;

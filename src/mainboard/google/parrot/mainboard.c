@@ -18,7 +18,6 @@ void mainboard_suspend_resume(void)
 	apm_control(APM_CNT_ACPI_ENABLE);
 }
 
-
 static void mainboard_init(struct device *dev)
 {
 	/* Initialize the Embedded Controller */

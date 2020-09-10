@@ -22,7 +22,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-
 #if CONFIG(CHROMEOS)
 	gnvs->chromeos.vbt2 = parrot_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;

@@ -176,7 +176,6 @@ static void simple_spi_test(void)
 		return;
 	}
 
-
 	for (i = 0; i < amt; i += 4){
 		if (rdev_readat(boot_dev, &in, i, 4) < 4) {
 			printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);

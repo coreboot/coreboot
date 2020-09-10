@@ -388,7 +388,6 @@ static const struct pad_config ish_enabled_gpio_table[] = {
 	PAD_CFG_NF_1V8(GPP_D14, NONE, DEEP, NF1),
 };
 
-
 static const struct pad_config ish_disabled_gpio_table[] = {
 	/* A19 : GPP_A19 ==> TRACKPAD_INT_L
 	 * trackpad interrupt to PCH

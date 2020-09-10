@@ -47,7 +47,6 @@ void variant_smi_sleep(u8 slp_typ)
 	}
 }
 
-
 void variant_update_devtree(struct device *dev)
 {
 	struct soc_intel_apollolake_config *cfg = NULL;

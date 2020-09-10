@@ -17,8 +17,6 @@ void mainboard_suspend_resume(void)
 	ec_write_cmd(EC_CMD_NOTIFY_ACPI_ENTER);
 }
 
-
-
 static void mainboard_init(struct device *dev)
 {
 	struct device *ethernet_dev = NULL;

@@ -110,7 +110,6 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
 };
 
-
 const u32 pc_beep_verbs[] = {
 	0x00170500,			/* power up codec */
 	0x00270500,			/* power up DAC */

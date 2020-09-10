@@ -16,8 +16,6 @@ void mainboard_suspend_resume(void)
 	apm_control(APM_CNT_FINALIZE);
 }
 
-
-
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();

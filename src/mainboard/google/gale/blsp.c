@@ -29,7 +29,6 @@
 
 #endif
 
-
 #if IPQ40XX_I2C1_PINGROUP_1
 
 #define SCL_GPIO_I2C1                34

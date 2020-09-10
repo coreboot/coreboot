@@ -238,7 +238,6 @@ static const struct pad_config gpio_table[] = {
 	/* E23 : CNV_RGI_RSP */
 	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF1),
 
-
 	/* F4  : CNV_RF_RST_L */
 	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
 	/* F7  : EMMC_CMD */
@@ -341,7 +340,6 @@ static const struct pad_config gpio_table[] = {
 	/* R7  :  I2S_SPK_AUDIO */
 	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF1),
 
-
 	/* S0  : RAM_STRAP_4 */
 	PAD_CFG_GPI(GPP_S0, NONE, DEEP),
 	/* S1  : RSVD_STRAP */
@@ -358,7 +356,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
 	/* S7  : DMIC0_DATA */
 	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),
-
 
 	/* GPD0 : AP_BATLOW_L */
 	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),

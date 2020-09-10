@@ -88,7 +88,6 @@ Scope (\_SB.PCI0.I2C2)
 	}
 }
 
-
 Scope (\_SB.PCI0.LPEA)
 {
 	Name (GBUF, ResourceTemplate ()

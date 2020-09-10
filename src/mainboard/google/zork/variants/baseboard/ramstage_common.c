@@ -127,7 +127,6 @@ void variant_audio_update(void)
 	update_hp_int_odl();
 }
 
-
 /*
  * Removes reset_gpio from usb device in device tree.
  *

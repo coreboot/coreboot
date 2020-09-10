@@ -105,8 +105,6 @@ static int int15_handler(void)
 }
 #endif
 
-
-
 static void mainboard_init(struct device *dev)
 {
 	uint32_t board_version = 0;

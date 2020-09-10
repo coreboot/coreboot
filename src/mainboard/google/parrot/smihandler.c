@@ -54,12 +54,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 	printk(BIOS_DEBUG, "mainboard_smi_sleep: %x\n", slp_typ);
 	/* Disable SCI and SMI events */
 
-
 	/* Clear pending events that may trigger immediate wake */
 
-
 	/* Enable wake events */
-
 
 	/* Tell the EC to Disable USB power */
 	if (gnvs->s3u0 == 0 && gnvs->s3u1 == 0) {

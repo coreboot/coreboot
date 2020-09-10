@@ -11,7 +11,6 @@
 #define GPIO_RECOVERY_SERVO	GPIO(0, B, 1)
 #define GPIO_RECOVERY_PUSHKEY	GPIO(7, B, 1)
 
-
 void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_WP);

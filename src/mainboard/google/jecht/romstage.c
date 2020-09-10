@@ -11,7 +11,6 @@
 #include <mainboard/google/jecht/spd/spd.h>
 #include "onboard.h"
 
-
 void mainboard_pre_raminit(struct romstage_params *rp)
 {
 	/* Fill out PEI DATA */

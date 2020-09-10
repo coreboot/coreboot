@@ -104,7 +104,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	if (spd_file_len < SPD_LEN)
 		die("Missing SPD data.");
 
-
 	/* CH0 */
 	memcpy(pei_data->spd_data[0][0],
 		spd_file + (spd_index * SPD_LEN), SPD_LEN);

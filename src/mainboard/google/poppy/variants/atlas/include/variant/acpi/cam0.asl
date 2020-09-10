@@ -65,7 +65,6 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_PR0, Package (0x01) { FCPR })
 		Name (_PR3, Package (0x01) { FCPR })
 
-
 		/* Port0 of CAM0 is connected to port0 of CIO2 device */
 		Name (_DSD, Package () {
 			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),

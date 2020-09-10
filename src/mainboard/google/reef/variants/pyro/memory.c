@@ -5,7 +5,6 @@
 #include <soc/meminit.h>
 #include <variant/gpio.h>
 
-
 static const struct lpddr4_sku skus[] = {
 	/*
 	 * K4F6E304HB-MGCJ - both logical channels While the parts

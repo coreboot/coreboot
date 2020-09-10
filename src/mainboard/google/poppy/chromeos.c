@@ -9,7 +9,6 @@
 
 #include <variant/gpio.h>
 
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {

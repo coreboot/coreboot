@@ -37,7 +37,6 @@ DefinitionBlock(
 	#include <variant/acpi/camera.asl>
 #endif
 
-
 	/* Include Low power idle table for a short term workaround to enable
 	   S0ix. Once cr50 pulse width is fixed, this can be removed. */
 	#include <soc/intel/common/acpi/lpit.asl>

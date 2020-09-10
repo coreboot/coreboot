@@ -7,7 +7,6 @@
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 
-
 void parrot_ec_init(void)
 {
 	printk(BIOS_DEBUG, "Parrot EC Init\n");
@@ -52,7 +51,6 @@ void parrot_ec_init(void)
 	ec_kbc_write_cmd(0x45);
 	ec_kbc_write_ib(0xA2);
 }
-
 
 /* Parrot Hardware Revision */
 u8 parrot_rev(void)

@@ -23,7 +23,6 @@ const u32 cim_verb_data[] = {
 	0x10250742,	// Subsystem ID
 	0x0000000E,	// Number of jacks (NID entries)
 
-
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10250742 */
 	AZALIA_SUBVENDOR(0, 0x10250742),
 

@@ -4,7 +4,6 @@
 #include <gpio.h>
 #include <soc/verstage.h>
 
-
 #define TPM_RESET_GPIO		19
 
 static void ipq_setup_tpm(void)

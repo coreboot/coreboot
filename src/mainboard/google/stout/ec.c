@@ -55,13 +55,11 @@ void stout_ec_finalize_smm(void)
 		critical_shutdown = 1;
 	}
 
-
 	/* Thermal Device Error : Peripheral Status 3 (0x35) bit 8 */
 	if (ec_reg & 0x80) {
 		printk(BIOS_ERR, "  EC Thermal Device Error\n");
 		critical_shutdown = 1;
 	}
-
 
 	/* Critical Battery Error */
 	ec_reg = ec_read(EC_MBAT_STATUS);
@@ -74,7 +72,6 @@ void stout_ec_finalize_smm(void)
 	if ((ec_reg & 0x8F) == 0x8F) {
 		printk(BIOS_ERR, "  EC Read Battery Error\n");
 	}
-
 
 	if (critical_shutdown) {
 		printk(BIOS_ERR, "EC critical_shutdown");

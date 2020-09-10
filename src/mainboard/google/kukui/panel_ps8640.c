@@ -9,7 +9,6 @@
 
 #include "panel.h"
 
-
 static void power_on_ps8640(void)
 {
 	/* Disable backlight before turning on bridge */

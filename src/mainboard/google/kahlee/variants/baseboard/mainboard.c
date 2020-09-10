@@ -78,7 +78,6 @@ void board_bh720(struct device *dev)
 	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x80000000);
 }
 
-
 const char *smbios_mainboard_manufacturer(void)
 {
 	static char oem_bin_data[11];

@@ -13,7 +13,6 @@ Name (PR0, Package()
 	Package() { 0x0001FFFF, 2, INTE, 0 },
 	Package() { 0x0001FFFF, 3, INTF, 0 },
 
-
 	/* Bus 0, Dev 2 Func 0,1,2,3,4,5 - PCIe Bridges */
 	Package() { 0x0002FFFF, 0, INTH, 0 },
 	Package() { 0x0002FFFF, 1, INTA, 0 },
@@ -73,7 +72,6 @@ Name (APR0, Package()
 	/* Bus 0, Dev 17 - SATA controller */
 	Package() { 0x0011FFFF, 0, 0, 19 },
 })
-
 
 /* GPP 0 */
 Name (PS4, Package()

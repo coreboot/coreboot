@@ -39,7 +39,6 @@
 #define BOARD_TOUCHSCREEN_I2C_BUS       0
 #define BOARD_TOUCHSCREEN_I2C_ADDR      0x10
 
-
 /* SD CARD gpio */
 #define SDCARD_CD			81
 

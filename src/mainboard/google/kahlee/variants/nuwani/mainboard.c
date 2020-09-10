@@ -90,7 +90,6 @@ void board_bh720(struct device *dev)
 		BH720_PROTECT_ON | BH720_PROTECT_LOCK_ON);
 }
 
-
 const char *smbios_mainboard_manufacturer(void)
 {
 	static char oem_bin_data[11];

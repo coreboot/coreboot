@@ -2,7 +2,7 @@
 ## This is an auto-generated file. Do not edit!!
 
 SPD_SOURCES =
-SPD_SOURCES += ddr4-spd-empty.hex      # ID = 0(0b0000)
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 0(0b0000)  Parts = MT40A512M16TB-062E:J
 SPD_SOURCES += ddr4-spd-1.hex      # ID = 1(0b0001)  Parts = H5AN8G6NCJR-XNC
 SPD_SOURCES += ddr4-spd-empty.hex      # ID = 2(0b0010)
 SPD_SOURCES += ddr4-spd-empty.hex      # ID = 3(0b0011)

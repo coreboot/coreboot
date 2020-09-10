@@ -1,4 +1,5 @@
 DRAM Part Name                 ID to assign
+MT40A512M16TB-062E:J           0 (0000)
 H5AN8G6NCJR-XNC                1 (0001)
 MT40A512M16TB-062E:J           8 (1000)
 H5AN8G6NCJR-XNC                9 (1001)

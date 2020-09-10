@@ -16,9 +16,7 @@ static u16 hwm_base = 0xa00;
 #define FAN_CRUISE_CONTROL_DISABLED	0
 #define FAN_CRUISE_CONTROL_SPEED	1
 #define FAN_CRUISE_CONTROL_THERMAL	2
-
 #define FAN_SPEED_5625	0
-
 
 struct fan_speed {
 	u8 fan_in;

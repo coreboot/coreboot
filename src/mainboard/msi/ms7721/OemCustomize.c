@@ -6,7 +6,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>
 
-
 /*
  * Lane ID Mapping (from Fam15h BKDG: Table 45: Lane Id Mapping)
  *
@@ -169,7 +168,6 @@ static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
   */
   PSO_END
 };
-
 
 void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
 {

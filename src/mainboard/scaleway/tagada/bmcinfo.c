@@ -26,7 +26,6 @@ typedef struct {
 #define BIOSBMCINFO_MAGIC0 0x49434d42
 #define BIOSBMCINFO_MAGIC1 0x306f666e
 
-
 #define BMC_INFO ((biosBmcInfo_t *)CONFIG_BMC_INFO_LOC)
 
 enum biosBmcInfoValidFlag_e {
@@ -105,7 +104,6 @@ u8 *bmcinfo_uuid(void)
 		return BMC_INFO->uuid;
 	return NULL;
 }
-
 
 int bmcinfo_slot(void)
 {

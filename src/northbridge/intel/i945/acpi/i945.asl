@@ -8,13 +8,13 @@
 Method (_OSC, 4)
 {
 	/* Check for proper PCI/PCIe UUID */
-	If (LEqual(Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return(Arg3)
 	} Else {
 		CreateDWordField(Arg3, 0, CDW1)
-		Or(CDW1, 4, CDW1)	// Unrecognized UUID, so set bit 2 to 1
+		CDW1 = CDW1 | 4	// Unrecognized UUID, so set bit 2 to 1
 		Return(Arg3)
 	}
 }
@@ -52,22 +52,22 @@ Device (PDRC)
 	Method (_CRS, 0, Serialized)
 	{
 		//CreateDwordField(PDRS, ^RCRB._BAS, RBR0)
-		//ShiftLeft(\_SB.PCI0.LPCB.RCBA, 14, RBR0)
+		//RBR0 = \_SB.PCI0.LPCB.RCBA << 14
 
 		//CreateDwordField(PDRS, ^MCHB._BAS, MBR0)
-		//ShiftLeft(\_SB.PCI0.MCHC.MHBR, 14, MBR0)
+		//MBR0 = \_SB.PCI0.MCHC.MHBR << 14
 
 		//CreateDwordField(PDRS, ^DMIB._BAS, DBR0)
-		//ShiftLeft(\_SB.PCI0.MCHC.DMBR, 12, DBR0)
+		//DBR0 = \_SB.PCI0.MCHC.DMBR << 12
 
 		//CreateDwordField(PDRS, ^EGPB._BAS, EBR0)
-		//ShiftLeft(\_SB.PCI0.MCHC.EPBR, 12, EBR0)
+		//EBR0 = \_SB.PCI0.MCHC.EPBR << 12
 
 		//CreateDwordField(PDRS, ^PCIE._BAS, PBR0)
-		//ShiftLeft(\_SB.PCI0.MCHC.PXBR, 26, PBR0)
+		//PBR0 = \_SB.PCI0.MCHC.PXBR << 26
 
 		//CreateDwordField(PDRS, ^PCIE._LEN, PSZ0)
-		//ShiftLeft(0x10000000, \_SB.PCI0.MCHC.PXSZ, PSZ0)
+		//PSZ0 = 0x10000000 << \_SB.PCI0.MCHC.PXSZ
 
 		Return(PDRS)
 	}

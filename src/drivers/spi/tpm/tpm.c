@@ -348,7 +348,7 @@ static int read_tpm_sts(uint32_t *status)
 	return tpm2_read_reg(TPM_STS_REG, status, sizeof(*status));
 }
 
-static int write_tpm_sts(uint32_t status)
+static int __must_check write_tpm_sts(uint32_t status)
 {
 	return tpm2_write_reg(TPM_STS_REG, &status, sizeof(status));
 }
@@ -688,9 +688,9 @@ union fifo_transfer_buffer {
  * Transfer requested number of bytes to or from TPM FIFO, accounting for the
  * current burst count value.
  */
-static void fifo_transfer(size_t transfer_size,
-			  union fifo_transfer_buffer buffer,
-			  enum fifo_transfer_direction direction)
+static int __must_check fifo_transfer(size_t transfer_size,
+				      union fifo_transfer_buffer buffer,
+				      enum fifo_transfer_direction direction)
 {
 	size_t transaction_size;
 	size_t burst_count;
@@ -711,18 +711,23 @@ static void fifo_transfer(size_t transfer_size,
 		 */
 		transaction_size = MIN(transaction_size, 64);
 
-		if (direction == fifo_receive)
-			tpm2_read_reg(TPM_DATA_FIFO_REG,
-				      buffer.rx_buffer + handled_so_far,
-				      transaction_size);
-		else
-			tpm2_write_reg(TPM_DATA_FIFO_REG,
-				       buffer.tx_buffer + handled_so_far,
-				       transaction_size);
+		if (direction == fifo_receive) {
+			if (!tpm2_read_reg(TPM_DATA_FIFO_REG,
+					   buffer.rx_buffer + handled_so_far,
+					   transaction_size))
+				return 0;
+		} else {
+			if (!tpm2_write_reg(TPM_DATA_FIFO_REG,
+					    buffer.tx_buffer + handled_so_far,
+					    transaction_size))
+				return 0;
+		}
 
 		handled_so_far += transaction_size;
 
 	} while (handled_so_far != transfer_size);
+
+	return 1;
 }
 
 size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
@@ -755,7 +760,10 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	}
 
 	/* Let the TPM know that the command is coming. */
-	write_tpm_sts(TPM_STS_COMMAND_READY);
+	if (!write_tpm_sts(TPM_STS_COMMAND_READY)) {
+		printk(BIOS_ERR, "TPM_STS_COMMAND_READY failed\n");
+		return 0;
+	}
 
 	/*
 	 * TPM commands and responses written to and read from the FIFO
@@ -769,10 +777,17 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	 * burst count or the maximum PDU size, whatever is smaller.
 	 */
 	fifo_buffer.tx_buffer = cmd_body;
-	fifo_transfer(command_size, fifo_buffer, fifo_transmit);
+	if (!fifo_transfer(command_size, fifo_buffer, fifo_transmit)) {
+		printk(BIOS_ERR, "fifo_transfer %zd command bytes failed\n",
+		       command_size);
+		return 0;
+	}
 
 	/* Now tell the TPM it can start processing the command. */
-	write_tpm_sts(TPM_STS_GO);
+	if (!write_tpm_sts(TPM_STS_GO)) {
+		printk(BIOS_ERR, "TPM_STS_GO failed\n");
+		return 0;
+	}
 
 	/* Now wait for it to report that the response is ready. */
 	expected_status_bits = TPM_STS_VALID | TPM_STS_DATA_AVAIL;
@@ -815,7 +830,11 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	 */
 	bytes_to_go = payload_size - 1 - HEADER_SIZE;
 	fifo_buffer.rx_buffer = rsp_body + HEADER_SIZE;
-	fifo_transfer(bytes_to_go, fifo_buffer, fifo_receive);
+	if (!fifo_transfer(bytes_to_go, fifo_buffer, fifo_receive)) {
+		printk(BIOS_ERR, "fifo_transfer %zd receive bytes failed\n",
+		       bytes_to_go);
+		return 0;
+	}
 
 	/* Verify that there is still data to read. */
 	read_tpm_sts(&status);
@@ -840,7 +859,10 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	}
 
 	/* Move the TPM back to idle state. */
-	write_tpm_sts(TPM_STS_COMMAND_READY);
+	if (!write_tpm_sts(TPM_STS_COMMAND_READY)) {
+		printk(BIOS_ERR, "TPM_STS_COMMAND_READY failed\n");
+		return 0;
+	}
 
 	return payload_size;
 }

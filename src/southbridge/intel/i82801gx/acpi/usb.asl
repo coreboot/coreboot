@@ -21,9 +21,9 @@ Device (USB1)
 	{
 		// USB Controller can wake OS from Sleep State
 		If (Arg0) {
-			Store (3, U1WE)
+			U1WE = 3
 		} Else {
-			Store (0, U1WE)
+			U1WE = 0
 		}
 	}
 
@@ -39,7 +39,6 @@ Device (USB1)
 		Return (2)
 	}
 }
-
 
 // USB Controller 0:1d.1
 
@@ -60,9 +59,9 @@ Device (USB2)
 	{
 		// USB Controller can wake OS from Sleep State
 		If (Arg0) {
-			Store (3, U2WE)
+			U2WE = 3
 		} Else {
-			Store (0, U2WE)
+			U2WE = 0
 		}
 	}
 
@@ -79,7 +78,6 @@ Device (USB2)
 	}
 
 }
-
 
 // USB Controller 0:1d.2
 
@@ -100,9 +98,9 @@ Device (USB3)
 	{
 		// USB Controller can wake OS from Sleep State
 		If (Arg0) {
-			Store (3, U3WE)
+			U3WE = 3
 		} Else {
-			Store (0, U3WE)
+			U3WE = 0
 		}
 	}
 
@@ -119,7 +117,6 @@ Device (USB3)
 	}
 
 }
-
 
 // USB Controller 0:1d.3
 
@@ -140,9 +137,9 @@ Device (USB4)
 	{
 		// USB Controller can wake OS from Sleep State
 		If (Arg0) {
-			Store (3, U4WE)
+			U4WE = 3
 		} Else {
-			Store (0, U4WE)
+			U4WE = 0
 		}
 	}
 
@@ -159,7 +156,6 @@ Device (USB4)
 	}
 
 }
-
 
 // EHCI Controller 0:1d.7
 

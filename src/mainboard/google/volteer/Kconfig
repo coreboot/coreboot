@@ -45,6 +45,15 @@ config CHROMEOS
 	select VBOOT_LID_SWITCH
 	select VBOOT_EARLY_EC_SYNC
 
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for Chrome OS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select GEO_SAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+	select WIFI_SAR_CBFS
+
 config DIMM_SPD_SIZE
 	int
 	default 512

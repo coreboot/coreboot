@@ -8,9 +8,9 @@
 
 #define GEN_PCIE_LEGACY_IRQ()								\
 		Package () { 0x0000FFFF, 0x00, LNKA, 0x00 },	\
-		Package () { 0x0001FFFF, 0x00, LNKA, 0x00 },	\
-		Package () { 0x0002FFFF, 0x00, LNKA, 0x00 },	\
-		Package () { 0x0003FFFF, 0x00, LNKA, 0x00 }
+		Package () { 0x0001FFFF, 0x01, LNKB, 0x00 },	\
+		Package () { 0x0002FFFF, 0x02, LNKC, 0x00 },	\
+		Package () { 0x0003FFFF, 0x03, LNKD, 0x00 }
 
 #define GEN_UNCORE_LEGACY_IRQ(dev)							\
 		Package () { ##dev, 0x00, LNKA, 0x00 },			\
@@ -18,11 +18,11 @@
 		Package () { ##dev, 0x02, LNKC, 0x00 },			\
 		Package () { ##dev, 0x03, LNKD, 0x00 }
 
-#define GEN_PCIE_IOAPIC_IRQ(irq)							\
-		Package () { 0x0000FFFF, 0x00, 0x00, ##irq },	\
-		Package () { 0x0001FFFF, 0x00, 0x00, ##irq },	\
-		Package () { 0x0002FFFF, 0x00, 0x00, ##irq },	\
-		Package () { 0x0003FFFF, 0x00, 0x00, ##irq }
+#define GEN_PCIE_IOAPIC_IRQ(irq1, irq2, irq3, irq4)							\
+		Package () { 0x0000FFFF, 0x00, 0x00, ##irq1 },	\
+		Package () { 0x0001FFFF, 0x01, 0x00, ##irq2 },	\
+		Package () { 0x0002FFFF, 0x02, 0x00, ##irq3 },	\
+		Package () { 0x0003FFFF, 0x03, 0x00, ##irq4 }
 
 #define GEN_UNCORE_IOAPIC_IRQ(dev,irq1,irq2,irq3,irq4)		\
 		Package () { ##dev, 0x00, 0x00, ##irq1 },		\
@@ -265,8 +265,8 @@ Name (PR10, Package (0x40)
 // Socket 0, IIOStack 1 device IOAPIC interrupt routing
 Name (AR10, Package (0x40)
 {
-		// PCI Express Port 1A-1D
-		GEN_PCIE_IOAPIC_IRQ(0x27),
+		// PCI Express Port A-D
+		GEN_PCIE_IOAPIC_IRQ(0x27,0x21,0x22,0x23),
 
 		// Uncore CHAUTIL Devices
 		GEN_UNCORE_IOAPIC_IRQ(0x0008FFFF, 0x20, 0x24, 0x25, 0x26),
@@ -299,7 +299,7 @@ Name (AR10, Package (0x40)
 // Socket 0, IIOStack 2 device legacy interrupt routing
 Name (PR20, Package (0x24)
 {
-		// PCI Express Port 2 on PC02
+		// PCI Express Port A-D on PC02
 		GEN_PCIE_LEGACY_IRQ(),
 
 		// Uncore M2MEM Devices
@@ -328,8 +328,8 @@ Name (PR20, Package (0x24)
 // Socket 0, IIOStack 2 device IOAPIC interrupt routing
 Name (AR20, Package (0x24)
 {
-		// PCI Express Port 2 on PC02
-		GEN_PCIE_IOAPIC_IRQ(0x2F),
+		// PCI Express Port A-D on PC02
+		GEN_PCIE_IOAPIC_IRQ(0x2F,0x29,0x2A,0x2B),
 
 		// Uncore M2MEM Devices
 		GEN_UNCORE_IOAPIC_IRQ(0x0008FFFF, 0x28, 0x2C, 0x2D, 0x2E),
@@ -381,8 +381,8 @@ Name (PR28, Package (0x20)
 // Socket 0, IIOStack 3 device IOAPIC interrupt routing
 Name (AR28, Package (0x20)
 {
-		// PCI Express Port 3 on PC03
-		GEN_PCIE_IOAPIC_IRQ(0x37),
+		// PCI Express Port A-D on PC03
+		GEN_PCIE_IOAPIC_IRQ(0x37,0x31,0x32,0x33),
 
 		// KTI Devices
 		GEN_UNCORE_IOAPIC_IRQ(0x000EFFFF, 0x30, 0x34, 0x35, 0x36),
@@ -457,8 +457,8 @@ Name (PR50, Package (0x40)
 // Socket 1, IIOStack 1 device IOAPIC interrupt routing
 Name (AR50, Package (0x40)
 {
-		// PCI Express Port
-		GEN_PCIE_IOAPIC_IRQ(0x57),
+		// PCI Express Port A-D
+		GEN_PCIE_IOAPIC_IRQ(0x57,0x51,0x52,0x53),
 
 		// CHA Devices
 		GEN_UNCORE_IOAPIC_IRQ(0x0008FFFF, 0x50, 0x54, 0x55, 0x56),
@@ -502,8 +502,8 @@ Name (PR60, Package (0x24)
 // Socket 1, IIOStack 2 device IOAPIC interrupt routing
 Name (AR60, Package (0x24)
 {
-		// PCI Express Port
-		GEN_PCIE_IOAPIC_IRQ(0x5F),
+		// PCI Express Port A-D
+		GEN_PCIE_IOAPIC_IRQ(0x5F,0x59,0x5A,0x5B),
 
 		// Integrated Memory Controller
 		GEN_UNCORE_IOAPIC_IRQ(0x0008FFFF, 0x58, 0x5C, 0x5D, 0x5E),
@@ -537,8 +537,8 @@ Name (PR68, Package (0x20)
 // Socket 1, IIOStack 3 device legacy interrupt routing
 Name (AR68, Package (0x20)
 {
-		// PCI Express Port
-		GEN_PCIE_IOAPIC_IRQ(0x67),
+		// PCI Express Port A-D
+		GEN_PCIE_IOAPIC_IRQ(0x67,0x61,0x62,0x63),
 
 		// Uncore Devices
 		GEN_UNCORE_IOAPIC_IRQ(0x000EFFFF, 0x60, 0x64, 0x65, 0x66),

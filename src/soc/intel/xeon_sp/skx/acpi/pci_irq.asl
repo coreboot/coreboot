@@ -8,10 +8,8 @@
  * PIRQ routing control is in PCR ITSS region.
  */
 
-OperationRegion (ITSS, SystemMemory,
-	Add (PCR_ITSS_PIRQA_ROUT,
-		Add (CONFIG_PCR_BASE_ADDRESS,
-			ShiftLeft (PID_ITSS, PCR_PORTID_SHIFT))), 8)
+OperationRegion (ITSS, SystemMemory, PCR_ITSS_PIRQA_ROUT +
+	CONFIG_PCR_BASE_ADDRESS + (PID_ITSS << PCR_PORTID_SHIFT), 8)
 Field (ITSS, ByteAcc, NoLock, Preserve)
 {
 	PIRA, 8,  /* PIRQA Routing Control */

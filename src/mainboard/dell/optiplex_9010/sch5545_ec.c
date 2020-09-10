@@ -106,7 +106,6 @@ static const struct ec_val_reg ec_hwm_init_seq[] = {
 	{ 0x03, 0x0071 },
 };
 
-
 static const ec_chassis_tdp_t ec_hwm_chassis3[] = {
 	{ 0x33, 0x0005, TDP_COMMON },
 	{ 0x2f, 0x0018, TDP_COMMON },
@@ -335,8 +334,6 @@ static const ec_chassis_tdp_t ec_hwm_chassis6[] = {
 	{ 0x80, 0x028c, TDP_COMMON },
 	{ 0x03, 0x028d, TDP_COMMON },
 };
-
-
 
 static uint8_t send_mbox_msg_with_int(uint8_t mbox_message)
 {

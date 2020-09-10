@@ -3,7 +3,6 @@
 #ifndef _MAINBOARD_COMMON_BOARD_ID_H_
 #define _MAINBOARD_COMMON_BOARD_ID_H_
 
-
 /* Board/FAB ID Command */
 #define EC_FAB_ID_CMD	0x0D
 

@@ -8,8 +8,6 @@
 #define DPTF_CPU_ACTIVE_AC3     60
 #define DPTF_CPU_ACTIVE_AC4     50
 
-
-
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },

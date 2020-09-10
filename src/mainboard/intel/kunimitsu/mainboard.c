@@ -44,7 +44,6 @@ static unsigned long mainboard_write_acpi_tables(
 		if (nhlt_soc_add_dmic_array(nhlt, 2))
 			printk(BIOS_ERR, "Couldn't add 2CH DMIC array.\n");
 
-
 		/* 4 Channel DMIC array. */
 		if (nhlt_soc_add_dmic_array(nhlt, 4))
 			printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");

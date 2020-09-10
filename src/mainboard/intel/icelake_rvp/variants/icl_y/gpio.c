@@ -86,8 +86,6 @@ PAD_CFG_GPO(GPP_H0, 1, DEEP),
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-
-
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

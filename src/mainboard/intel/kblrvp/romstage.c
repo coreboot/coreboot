@@ -10,7 +10,6 @@
 #include <spd_bin.h>
 #include "board_id.h"
 
-
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg;

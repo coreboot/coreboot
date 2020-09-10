@@ -25,7 +25,6 @@ void acpi_create_gnvs(struct global_nvs *gnvs)
 	/* TPM Present */
 	gnvs->tpmp = 1;
 
-
 #if CONFIG(CHROMEOS)
 	/* Emerald Lake has no EC (?) */
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;

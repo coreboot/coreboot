@@ -20,7 +20,6 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
-
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };

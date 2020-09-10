@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-
 Device (SIO1)
 {
 	Name (_HID, EISAID("PNP0A05"))

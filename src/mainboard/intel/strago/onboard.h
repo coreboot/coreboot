@@ -25,7 +25,6 @@
 
 #define BOARD_TOUCH_IRQ			184
 
-
 /* Audio: Gpio index in SW bank */
 #define JACK_DETECT_GPIO_INDEX		95
 /* SCI: Gpio index in N bank */
@@ -42,8 +41,6 @@
 #define BOARD_TOUCHSCREEN_WAKE_GPIO     ACPI_ENABLE_WAKE_SUS_GPIO(2)
 #define BOARD_TOUCHSCREEN_I2C_BUS       0
 #define BOARD_TOUCHSCREEN_I2C_ADDR      0x4a    /* TODO(shawnn): Check this */
-
-
 
 /* SD CARD gpio */
 #define SDCARD_CD			81

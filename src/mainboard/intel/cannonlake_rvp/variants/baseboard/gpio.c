@@ -280,8 +280,6 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-
-
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

@@ -12,8 +12,6 @@
  * by pad number and which community it is in.
  */
 
-
-
 	/* family number in high byte and inner pad number in lowest byte */
 
 void bootblock_mainboard_early_init(void)

@@ -26,7 +26,6 @@ DefinitionBlock(
 
 		}
 
-
 		Device (UNC0)
 		{
 			Name (_HID, EisaId ("PNP0A03"))

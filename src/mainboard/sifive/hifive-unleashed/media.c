@@ -41,7 +41,6 @@ static const struct region_device_ops unleashed_sd_ops = {
 	.readat = unleashed_sd_readat,
 };
 
-
 static struct mmap_helper_region_device sd_mdev =
 	MMAP_HELPER_REGION_INIT(&unleashed_sd_ops, 0, CONFIG_ROM_SIZE);
 

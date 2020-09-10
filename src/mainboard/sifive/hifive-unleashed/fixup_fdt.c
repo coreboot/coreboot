@@ -47,7 +47,6 @@ static void do_fixup_memory(struct device_tree_node *node)
 	dt_add_reg_prop(node, addrs, sizes, 1, 2, 2);
 }
 
-
 static void fixup_memory(struct device_tree_node *parent)
 {
 	struct device_tree_property *prop;

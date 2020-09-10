@@ -147,7 +147,6 @@ static int dock_superio_init(void)
 	dock_gpio_set_mode(0x07, PC87384_GPIO_PIN_DEBOUNCE |
 			   PC87384_GPIO_PIN_PULLUP, 0x00);
 
-
 	/* no GPIO events enabled for PORT0 */
 	outb(0x00, 0x1622);
 	/* clear GPIO events on PORT0 */

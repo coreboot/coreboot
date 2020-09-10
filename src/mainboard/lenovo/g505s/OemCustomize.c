@@ -6,7 +6,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <PlatformMemoryConfiguration.h>
 
-
 /*
  * Lane ID Mapping (from Fam15h BKDG: Table 45: Lane Id Mapping)
  *

@@ -79,7 +79,6 @@ void mainboard_late_rcba_config(void)
 	RCBA64(IOTR3) = 0x000200f0000c0801ULL;
 }
 
-
 void mainboard_get_spd_map(u8 spd_map[4])
 {
 	spd_map[0] = 0x50;

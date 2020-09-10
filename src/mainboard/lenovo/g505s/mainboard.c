@@ -26,7 +26,6 @@ static void mainboard_enable(struct device *dev)
 
 	if (!acpi_is_wakeup_s3())
 		pavilion_cold_boot_init();
-
 }
 
 struct chip_operations mainboard_ops = {

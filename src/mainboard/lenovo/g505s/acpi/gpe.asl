@@ -30,7 +30,6 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		/* DBGO("\\_GPE\\_L10\n") */
 	}
 
-
 	/* ExtEvent1 SCI event */
 	Method(_L11) {
 		/* DBGO("\\_GPE\\_L11\n") */

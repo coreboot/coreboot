@@ -19,8 +19,6 @@ void mainboard_suspend_resume(void)
 	send_ec_command(EC_ACPI_ENABLE);
 }
 
-
-
 static void mainboard_init(struct device *dev)
 {
 	/* Initialize the Embedded Controller */

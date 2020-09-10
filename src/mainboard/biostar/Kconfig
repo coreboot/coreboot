@@ -11,7 +11,6 @@ endchoice
 
 source "src/mainboard/biostar/*/Kconfig"
 
-
 config MAINBOARD_VENDOR
 	default "Biostar"
 

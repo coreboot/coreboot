@@ -135,7 +135,6 @@ config LINUXBOOT_KERNEL_UIMAGE
 
 endchoice
 
-
 config LINUXBOOT_DTB_FILE
 	string "Compiled devicetree file"
 	depends on LINUXBOOT_ARM64 || LINUXBOOT_RISCV

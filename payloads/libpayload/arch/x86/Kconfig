@@ -52,5 +52,4 @@ config DIE_ON_UNKNOWN_INTERRUPT
 
 endchoice
 
-
 endif

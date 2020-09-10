@@ -1144,7 +1144,6 @@ config EM100
 
 endmenu
 
-
 ###############################################################################
 # Set variables with no prompt - these can be set anywhere, and putting at
 # the end of this file gives the most flexibility.

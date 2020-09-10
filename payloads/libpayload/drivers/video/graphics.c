@@ -858,24 +858,25 @@ static int draw_bitmap_v3(const struct vector *top_left,
 		}
 
 		/*
-		 * Initialize the sample array for this line. For pixels to the
-		 * left of S0 there are no corresponding input pixels so just
-		 * copy the S0 values over.
-		 *
-		 * Also initialize the equals counter, which counts how many of
-		 * the latest pixels were exactly equal. We know the columns
-		 * left of S0 must be equal to S0, so start with that number.
+		 * Initialize the sample array for this line, and also
+		 * the equals counter, which counts how many of the latest
+		 * pixels were exactly equal.
 		 */
-		int equals = S0 * SSZ;
+		int equals = 0;
 		uint8_t last_equal = ypix[0][0];
-		for (sy = 0; sy < SSZ; sy++) {
-			for (sx = S0; sx < SSZ; sx++) {
-				if (sx >= dim_org->width) {
+		for (sx = 0; sx < SSZ; sx++) {
+			for (sy = 0; sy < SSZ; sy++) {
+				if (sx - S0 >= dim_org->width) {
 					sample[sx][sy] = sample[sx - 1][sy];
 					equals++;
 					continue;
 				}
-				uint8_t i = ypix[sy][sx - S0];
+				/*
+				 * For pixels to the left of S0 there are no
+				 * corresponding input pixels so just use
+				 * ypix[sy][0].
+				 */
+				uint8_t i = ypix[sy][MAX(0, sx - S0)];
 				if (pal_to_rgb(i, pal, header->colors_used,
 					       &sample[sx][sy]))
 					goto bitmap_error;
@@ -886,8 +887,6 @@ static int draw_bitmap_v3(const struct vector *top_left,
 					equals = 1;
 				}
 			}
-			for (sx = S0 - 1; sx >= 0; sx--)
-				sample[sx][sy] = sample[S0][sy];
 		}
 
 		ix = 0;

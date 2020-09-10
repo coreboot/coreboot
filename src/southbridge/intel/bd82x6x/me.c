@@ -168,16 +168,16 @@ static void intel_me7_finalize_smm(void)
 
 void intel_me_finalize_smm(void)
 {
-	u32 did = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
+	u16 did = pci_read_config16(PCH_ME_DEV, PCI_DEVICE_ID);
 	switch (did) {
-	case 0x1c3a8086:
+	case 0x1c3a:
 		intel_me7_finalize_smm();
 		break;
-	case 0x1e3a8086:
+	case 0x1e3a:
 		intel_me8_finalize_smm();
 		break;
 	default:
-		printk(BIOS_ERR, "No finalize handler for ME %08x.\n", did);
+		printk(BIOS_ERR, "No finalize handler for ME %04x.\n", did);
 	}
 }
 

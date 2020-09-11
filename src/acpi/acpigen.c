@@ -850,8 +850,8 @@ void acpigen_write_CST_package_entry(acpi_cstate_t *cstate)
 {
 	acpigen_write_package(4);
 	acpigen_write_register_resource(&cstate->resource);
-	acpigen_write_dword(cstate->ctype);
-	acpigen_write_dword(cstate->latency);
+	acpigen_write_byte(cstate->ctype);
+	acpigen_write_word(cstate->latency);
 	acpigen_write_dword(cstate->power);
 	acpigen_pop_len();
 }
@@ -861,7 +861,7 @@ void acpigen_write_CST_package(acpi_cstate_t *cstate, int nentries)
 	int i;
 	acpigen_write_name("_CST");
 	acpigen_write_package(nentries+1);
-	acpigen_write_dword(nentries);
+	acpigen_write_integer(nentries);
 
 	for (i = 0; i < nentries; i++)
 		acpigen_write_CST_package_entry(cstate + i);
@@ -875,7 +875,7 @@ void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype,
 	acpigen_write_name("_CSD");
 	acpigen_write_package(1);
 	acpigen_write_package(6);
-	acpigen_write_byte(6);	// 6 values
+	acpigen_write_integer(6);	// 6 values
 	acpigen_write_byte(0);	// revision 0
 	acpigen_write_dword(domain);
 	acpigen_write_dword(coordtype);

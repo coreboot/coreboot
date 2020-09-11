@@ -83,7 +83,7 @@ FIRMWARE_TYPE=
 
 PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader.Bypass.sbin
 #PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecovery.sbin
-#PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs.sbin
+#PSPSECUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs.sbin
 #PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/trustlets.bin
 #TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/Trustlet.tkn.cert
 endif
@@ -94,7 +94,7 @@ FIRMWARE_TYPE=CZ
 
 PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_CZ.sbin
 PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_CZ.sbin
-PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_CZ.csbin
+PSPSECUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_CZ.csbin
 PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspTrustlets_prod_CZ.cbin
 TRUSTLETKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/TrustletKey_prod_CZ.sbin
 SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_CZ.sbin
@@ -120,7 +120,7 @@ OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
 OPT_SMUFWM_FILE=$(call add_opt_prefix, $(SMUFWM_FILE), --smufirmware)
 OPT_PSPRCVR_FILE=$(call add_opt_prefix, $(PSPRCVR_FILE), --recovery)
 OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey)
-OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
+OPT_PSPSECUREOS_FILE=$(call add_opt_prefix, $(PSPSECUREOS_FILE), --secureos)
 OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram)
 OPT_PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(PSPSECUREDEBUG_FILE), --securedebug)
 OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
@@ -135,7 +135,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPRCVR_FILE)) \
-			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
+			$(call strip_quotes, $(PSPSECUREOS_FILE)) \
 			$(call strip_quotes, $(PSPNVRAM_FILE)) \
 			$(call strip_quotes, $(SMUFWM_FILE)) \
 			$(call strip_quotes, $(SMUSCS_FILE)) \
@@ -149,7 +149,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(SMUFWM2_FILE)) \
 			$(call strip_quotes, $(SMUFWM2_FN_FILE)) \
 			$(call strip_quotes, $(PSPRCVR2_FILE)) \
-			$(call strip_quotes, $(PSPSCUREOS2_FILE)) \
+			$(call strip_quotes, $(PSPSECUREOS2_FILE)) \
 			$(call strip_quotes, $(PSPNVRAM2_FILE)) \
 			$(call strip_quotes, $(SMUSCS2_FILE)) \
 			$(call strip_quotes, $(PSPSECUREDEBUG2_FILE)) \
@@ -169,7 +169,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(OPT_SMUFWM_FILE) \
 		$(OPT_PSPRCVR_FILE) \
 		$(OPT_PUBSIGNEDKEY_FILE) \
-		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSPSECUREOS_FILE) \
 		$(OPT_PSPNVRAM_FILE) \
 		$(OPT_PSPSECUREDEBUG_FILE) \
 		$(OPT_PSPTRUSTLETS_FILE) \
@@ -182,7 +182,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(OPT_2SMUFWM_FN_FILE) \
 		$(OPT_2PSPRCVR_FILE) \
 		$(OPT_2PUBSIGNEDKEY_FILE) \
-		$(OPT_2PSPSCUREOS_FILE) \
+		$(OPT_2PSPSECUREOS_FILE) \
 		$(OPT_2PSPNVRAM_FILE) \
 		$(OPT_2PSPSECUREDEBUG_FILE) \
 		$(OPT_2PSPTRUSTLETS_FILE) \

@@ -148,9 +148,9 @@ PSP_SOFTFUSE_BITS += 0
 PSP_TOKEN_UNLOCK="--token-unlock"
 endif
 
-ifeq ($(CONFIG_USE_PSPSCUREOS),y)
+ifeq ($(CONFIG_USE_PSPSECUREOS),y)
 # types = 0x2
-PSPSCUREOS_FILE=$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
+PSPSECUREOS_FILE=$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
 endif
 
 # type = 0x21
@@ -283,7 +283,7 @@ OPT_SMUFW2_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB2_FILE), --subprogra
 OPT_PSP_SEC_DBG_KEY_FILE=$(call add_opt_prefix, $(PSP_SEC_DBG_KEY_FILE), --securedebug)
 OPT_TOKEN_UNLOCK=$(call add_opt_prefix, $(PSP_TOKEN_UNLOCK), "")
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
-OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
+OPT_PSPSECUREOS_FILE=$(call add_opt_prefix, $(PSPSECUREOS_FILE), --secureos)
 OPT_SEC_DEBUG_FILE=$(call add_opt_prefix, $(PSP_SEC_DEBUG_FILE), --secdebug)
 OPT_IKEK_FILE=$(call add_opt_prefix, $(PSP_IKEK_FILE), --ikek)
 OPT_SECG1_FILE=$(call add_opt_prefix, $(PSP_SECG1_FILE), --subprog 1 --sec-gasket)
@@ -335,7 +335,7 @@ OPT_APOB0_NV_BASE=$(OPT_APOB_NV_BASE)
 endif
 
 AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
-		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSPSECUREOS_FILE) \
 		$(OPT_PSP_SEC_DBG_KEY_FILE) \
 		$(OPT_SMUFW1_SUB2_FILE) \
 		$(OPT_SMUFW2_SUB2_FILE) \
@@ -385,7 +385,7 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
-			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
+			$(call strip_quotes, $(PSPSECUREOS_FILE)) \
 			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
 			$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(call strip_quotes, $(PSP_PMUI_FILE1)) \

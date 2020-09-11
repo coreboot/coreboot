@@ -148,7 +148,7 @@ PSPSECUREDEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureDebug$(FIRMWARE_TYPE).Key
 
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
 ###2
-PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
+PSPSECUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/PspSecureOs_prod_$(FIRMWARE_TYPE).csbin
 
 ###12
 PSPTRUSTLETS_FILE=$(wildcard $(top)/$(FIRMWARE_LOCATE)/PspTrustlets*_prod_$(FIRMWARE_TYPE).cbin)
@@ -184,7 +184,7 @@ OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey)
 OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram)
 OPT_PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(PSPSECUREDEBUG_FILE), --securedebug)
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
-OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
+OPT_PSPSECUREOS_FILE=$(call add_opt_prefix, $(PSPSECUREOS_FILE), --secureos)
 OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
 OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
 endif
@@ -204,7 +204,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPRCVR_FILE)) \
-			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
+			$(call strip_quotes, $(PSPSECUREOS_FILE)) \
 			$(call strip_quotes, $(PSPNVRAM_FILE)) \
 			$(call strip_quotes, $(SMUFWM_FILE)) \
 			$(call strip_quotes, $(SMUFWM_FN_FILE)) \
@@ -225,7 +225,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_SMUFWM_FILE) \
 		$(OPT_PSPRCVR_FILE) \
 		$(OPT_PUBSIGNEDKEY_FILE) \
-		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSPSECUREOS_FILE) \
 		$(OPT_PSPNVRAM_FILE) \
 		$(OPT_PSPSECUREDEBUG_FILE) \
 		$(OPT_PSPTRUSTLETS_FILE) \
@@ -238,7 +238,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_SMUFWM_FN_FILE) \
 		$(OPT_PSPRCVR_FILE) \
 		$(OPT_PUBSIGNEDKEY_FILE) \
-		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSPSECUREOS_FILE) \
 		$(OPT_PSPNVRAM_FILE) \
 		$(OPT_PSPSECUREDEBUG_FILE) \
 		$(OPT_PSPTRUSTLETS_FILE) \

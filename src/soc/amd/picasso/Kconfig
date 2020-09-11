@@ -443,7 +443,7 @@ config AMD_PUBKEY_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
 
-config USE_PSPSCUREOS
+config USE_PSPSECUREOS
 	bool
 	default y
 	help

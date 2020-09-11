@@ -23,7 +23,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
 	/* FPMCU_INT_L */
-	PAD_SCI(GPIO_6, PULL_NONE, EDGE_LOW),
+	PAD_SCI(GPIO_6, PULL_NONE, LEVEL_LOW),
 	/* I2S_SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S_LRCLK - Bit banged in depthcharge */

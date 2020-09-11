@@ -97,7 +97,7 @@ chip soc/amd/picasso
 			register "desc" = ""Fingerprint Reader""
 			register "hid" = "ACPI_DT_NAMESPACE_HID"
 			register "compat_string" = ""google,cros-ec-uart""
-			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPIO_6)"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_6)"
 			register "wake" = "GEVENT_10"
 			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
 			device generic 0 on end

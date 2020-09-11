@@ -123,7 +123,8 @@ int dma_coherent(void *ptr)
 	return !dma_initialized() || (dma->start <= ptr && dma->end > ptr);
 }
 
-static void *alloc(int len, struct memory_type *type)
+/* Find free block of size >= len */
+static hdrtype_t volatile *find_free_block(int len, struct memory_type *type)
 {
 	hdrtype_t header;
 	hdrtype_t volatile *ptr = (hdrtype_t volatile *)type->start;
@@ -156,37 +157,53 @@ static void *alloc(int len, struct memory_type *type)
 			halt();
 		}
 
-		if (header & FLAG_FREE) {
-			if (len <= size) {
-				hdrtype_t volatile *nptr = (hdrtype_t volatile *)((uintptr_t)ptr + HDRSIZE + len);
-				int nsize = size - (HDRSIZE + len);
-
-				/* If there is still room in this block,
-				 * then mark it as such otherwise account
-				 * the whole space for that block.
-				 */
-
-				if (nsize > 0) {
-					/* Mark the block as used. */
-					*ptr = USED_BLOCK(len);
-
-					/* Create a new free block. */
-					*nptr = FREE_BLOCK(nsize);
-				} else {
-					/* Mark the block as used. */
-					*ptr = USED_BLOCK(size);
-				}
-
-				return (void *)((uintptr_t)ptr + HDRSIZE);
-			}
-		}
+		if ((header & FLAG_FREE) && len <= size)
+			return ptr;
 
 		ptr = (hdrtype_t volatile *)((uintptr_t)ptr + HDRSIZE + size);
 
 	} while (ptr < (hdrtype_t *) type->end);
 
 	/* Nothing available. */
-	return (void *)NULL;
+	return NULL;
+}
+
+/* Mark the block with length 'len' as used */
+static void use_block(hdrtype_t volatile *ptr, int len)
+{
+	/* Align the size. */
+	len = ALIGN_UP(len, HDRSIZE);
+
+	hdrtype_t volatile *nptr = (hdrtype_t volatile *)
+		((uintptr_t)ptr + HDRSIZE + len);
+	int size = SIZE(*ptr);
+	int nsize = size - (HDRSIZE + len);
+
+	/*
+	 * If there is still room in this block, then mark it as such otherwise
+	 * account the whole space for that block.
+	 */
+	if (nsize > 0) {
+		/* Mark the block as used. */
+		*ptr = USED_BLOCK(len);
+
+		/* Create a new free block. */
+		*nptr = FREE_BLOCK(nsize);
+	} else {
+		/* Mark the block as used. */
+		*ptr = USED_BLOCK(size);
+	}
+}
+
+static void *alloc(int len, struct memory_type *type)
+{
+	hdrtype_t volatile *ptr = find_free_block(len, type);
+
+	if (ptr == NULL)
+		return NULL;
+
+	use_block(ptr, len);
+	return (void *)((uintptr_t)ptr + HDRSIZE);
 }
 
 static void _consolidate(struct memory_type *type)
@@ -277,6 +294,7 @@ void *calloc(size_t nmemb, size_t size)
 void *realloc(void *ptr, size_t size)
 {
 	void *ret, *pptr;
+	hdrtype_t volatile *block;
 	unsigned int osize;
 	struct memory_type *type = heap;
 
@@ -300,18 +318,23 @@ void *realloc(void *ptr, size_t size)
 	 * reallocated the new space.
 	 */
 	free(ptr);
-	ret = alloc(size, type);
+
+	block = find_free_block(size, type);
+	if (block == NULL)
+		return NULL;
+
+	ret = (void *)((uintptr_t)block + HDRSIZE);
 
 	/*
-	 * if ret == NULL, then doh - failure.
-	 * if ret == ptr then woo-hoo! no copy needed.
+	 * If ret == ptr, then no copy is needed. Otherwise, move the memory to
+	 * the new location, which might be before the old one and overlap since
+	 * the free() above includes a _consolidate().
 	 */
-	if (ret == NULL || ret == ptr)
-		return ret;
+	if (ret != ptr)
+		memmove(ret, ptr, osize > size ? size : osize);
 
-	/* Move the memory to the new location. Might be before the old location
-	   and overlap since the free() above includes a _consolidate(). */
-	memmove(ret, ptr, osize > size ? size : osize);
+	/* Mark the block as used. */
+	use_block(block, size);
 
 	return ret;
 }

@@ -32,9 +32,9 @@ static const struct _uart_info {
 	} },
 };
 
-uintptr_t get_uart_base(int idx)
+uintptr_t get_uart_base(unsigned int idx)
 {
-	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
+	if (idx >= ARRAY_SIZE(uart_info))
 		return 0;
 
 	return uart_info[idx].base;
@@ -45,12 +45,12 @@ void clear_uart_legacy_config(void)
 	write16((void *)FCH_UART_LEGACY_DECODE, 0);
 }
 
-void set_uart_config(int idx)
+void set_uart_config(unsigned int idx)
 {
 	uint32_t uart_ctrl;
 	uint16_t uart_leg;
 
-	if (idx < 0 || idx >= ARRAY_SIZE(uart_info))
+	if (idx >= ARRAY_SIZE(uart_info))
 		return;
 
 	program_gpios(uart_info[idx].mux, 2);

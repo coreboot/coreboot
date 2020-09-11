@@ -8,7 +8,7 @@ chip soc/amd/picasso
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 	register "acp_i2s_wake_enable" = "0"
-	register "acpi_pme_enable" = "0"
+	register "acp_pme_enable" = "0"
 
 	# Start : OPN Performance Configuration
 	# (Configuratin that is common for all variants)

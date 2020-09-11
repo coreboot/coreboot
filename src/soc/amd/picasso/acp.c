@@ -45,7 +45,7 @@ static void init(struct device *dev)
 
 	/* Enable ACP_PME_EN and ACP_I2S_WAKE_EN for I2S_WAKE event */
 	acp_update32(bar, ACP_I2S_WAKE_EN, WAKE_EN_MASK, !!cfg->acp_i2s_wake_enable);
-	acp_update32(bar, ACP_PME_EN, PME_EN_MASK, !!cfg->acpi_pme_enable);
+	acp_update32(bar, ACP_PME_EN, PME_EN_MASK, !!cfg->acp_pme_enable);
 
 	if (cfg->acp_pin_cfg == I2S_PINS_I2S_TDM)
 		sb_clk_output_48Mhz(); /* Internal connection to I2S */

@@ -29,7 +29,7 @@ const static int aoac_devs[] = {
 	FCH_AOAC_DEV_ESPI,
 };
 
-void power_on_aoac_device(int dev)
+void power_on_aoac_device(unsigned int dev)
 {
 	uint8_t byte;
 
@@ -41,7 +41,7 @@ void power_on_aoac_device(int dev)
 	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 
-void power_off_aoac_device(int dev)
+void power_off_aoac_device(unsigned int dev)
 {
 	uint8_t byte;
 
@@ -51,7 +51,7 @@ void power_off_aoac_device(int dev)
 	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 
-bool is_aoac_device_enabled(int dev)
+bool is_aoac_device_enabled(unsigned int dev)
 {
 	uint8_t byte;
 
@@ -63,7 +63,7 @@ bool is_aoac_device_enabled(int dev)
 		return false;
 }
 
-void wait_for_aoac_enabled(int dev)
+void wait_for_aoac_enabled(unsigned int dev)
 {
 	while (!is_aoac_device_enabled(dev))
 		udelay(100);
@@ -71,7 +71,7 @@ void wait_for_aoac_enabled(int dev)
 
 void enable_aoac_devices(void)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
 		power_on_aoac_device(aoac_devs[i]);

@@ -125,7 +125,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* F13 : GSXDOUT ==> WiFi_DISABLE_L */
 	PAD_CFG_GPO(GPP_F13, 1, DEEP),
 	/* F14 : GSXDIN ==> SAR0_INT_L */
-	PAD_CFG_GPI_SCI_LOW(GPP_F14, NONE, PLTRST, EDGE_SINGLE),
+	PAD_CFG_GPI_APIC(GPP_F14, NONE, PLTRST, LEVEL, NONE),
 	/* F15 : GSXSRESET# ==> RCAM_RST_L */
 	PAD_CFG_GPO(GPP_F15, 1, DEEP),
 	/* F16 : GSXCLK ==> WWAN_DPR_SAR_ODL */

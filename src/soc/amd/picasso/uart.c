@@ -97,7 +97,7 @@ static const char *uart_acpi_name(const struct device *dev)
 /* Even though this is called enable, it gets called for both enabled and disabled devices. */
 static void uart_enable(struct device *dev)
 {
-	int dev_id;
+	unsigned int dev_id;
 
 	switch (dev->path.mmio.addr) {
 	case APU_UART0_BASE:

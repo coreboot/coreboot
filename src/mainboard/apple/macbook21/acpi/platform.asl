@@ -10,12 +10,12 @@ Method(_WAK,1)
 	// was inserted while a sleep state was active.
 
 	// Are we going to S3?
-	If (LEqual(Arg0, 3)) {
+	If (Arg0 == 3) {
 		// ..
 	}
 
 	// Are we going to S4?
-	If (LEqual(Arg0, 4)) {
+	If (Arg0 == 4) {
 		// ..
 	}
 
@@ -46,7 +46,7 @@ Scope(\_SB)
 		 * running: Windows XP SP1 needs to have C-State coordination
 		 * enabled in SMM.
 		 */
-		If (LAnd(LEqual(OSYS, 2001), MPEN)) {
+		If ((OSYS == 2001) && MPEN) {
 			// TRAP(61) // TODO
 		}
 

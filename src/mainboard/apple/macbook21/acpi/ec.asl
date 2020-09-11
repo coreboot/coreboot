@@ -32,27 +32,27 @@ Device(EC)
 
 	Method(SBPC, 0, NotSerialized)
 	{
-		Store(1000, Local0)
+		Local0 = 1000
 		While(Local0)
 		{
-			If(LEqual(SPTR, 0x00))
+			If(SPTR == 0)
 			{
 				Return()
 			}
 
 			Sleep(1)
-			Decrement(Local0)
+			Local0--
 		}
 	}
 
 	Method(SBRW, 2, NotSerialized)
 	{
 		Acquire(ECLK, 0xFFFF)
-		Store(ShiftLeft(Arg0, 0x01), SADR)
-		Store(Arg1, SCMD)
-		Store(0x09, SPTR)
+		SADR = (Arg0 << 1)
+		SCMD = Arg1
+		SPTR = 0x09
 		SBPC()
-		Store(SBDW, Local0)
+		Local0 = SBDW
 		Release(ECLK)
 		Return(Local0)
 	}
@@ -60,11 +60,11 @@ Device(EC)
 	Method(SBRB, 2, NotSerialized)
 	{
 		Acquire(ECLK, 0xFFFF)
-		Store(ShiftLeft(Arg0, 0x01), SADR)
-		Store(Arg1, SCMD)
-		Store(0x0B, SPTR)
+		SADR = (Arg0 << 1)
+		SCMD = Arg1
+		SPTR = 0x0B
 		SBPC()
-		Store(SBFR, Local0)
+		Local0 = SBFR
 		Release(ECLK)
 		Return(Local0)
 	}
@@ -112,9 +112,9 @@ Device(EC)
 		Method(_PSW, 1, NotSerialized)
 		{
 			if (Arg0) {
-				Store(1, WKLD)
+				WKLD = 1
 			} else {
-				Store(0, WKLD)
+				WKLD = 0
 			}
 		}
 	}
@@ -172,19 +172,19 @@ Device(EC)
 
 		Method(_BIF, 0, NotSerialized)
 		{
-			Multiply(^^SBRW(0x0B, 0x18), 10, Index(BATS, 0x01))
-			Multiply(^^SBRW(0x0B, 0x10), 10, Index(BATS, 0x02))
-			Store(^^SBRW(0x0B, 0x19), Index(BATS, 0x04))
-			Store(^^SBRB(0x0B, 0x21), Index(BATS, 0x09))
-			Store(^^SBRB(0x0B, 0x22), Index(BATS, 0x0B))
-			Store(^^SBRB(0x0B, 0x20), Index(BATS, 0x0C))
+			BATS [0x01] = (SBRW (0x0B, 0x18) * 10)
+			BATS [0x02] = (SBRW (0x0B, 0x10) * 10)
+			BATS [0x04] = SBRW (0x0B, 0x19)
+			BATS [0x09] = SBRB (0x0B, 0x21)
+			BATS [0x0B] = SBRB (0x0B, 0x22)
+			BATS [0x0C] = SBRB (0x0B, 0x20)
 
 			Return(BATS)
 		}
 
 		Method(_STA, 0, NotSerialized)
 		{
-			If(And(^^SBRW(0x0A, 0x01), 0x01)) {
+			If (SBRW(0x0A, 1) & 1) {
 				Return(0x1f)
 			} else {
 				Return(0x0f)
@@ -194,7 +194,7 @@ Device(EC)
 		Method(_BST, 0, NotSerialized)
 		{
 			/* Check for battery presence.  */
-			If(LNot(And(^^SBRW(0x0A, 0x01), 0x01))) {
+			If (!(SBRW (0x0A, 1) & 1)) {
 				Return(Package(4) {
 				       0,
 				       0xFFFFFFFF,
@@ -202,30 +202,30 @@ Device(EC)
 				       0xFFFFFFFF
 				})
 			}
-			Store(^^SBRW(0x0B, 0x09), Local1)
-			Store(Local1, Index(BATI, 0x03))
-			Store(^^SBRW(0x0B, 0x0A), Local0)
+			Local1 = SBRW(0x0B, 0x09)
+			BATI [3] = Local1
+			Local0 = SBRW (0x0B, 0x0A)
 			/* Sign-extend Local0.  */
-			If(And(Local0, 0x8000))
+			If(Local0 & 0x8000)
 			{
-				Not(Local0, Local0)
-				And(Increment(Local0), 0xFFFF, Local0)
+				Local0 = ~Local0
+				Local0 = (Local0++ & 0xFFFF)
 			}
 
-			Multiply(Local0, Local1, Local0)
-			Divide(Local0, 1000, , Index(BATI, 1))
-			Multiply(^^SBRW(0x0B, 0x0F), 10, Index(BATI, 2))
+			Local0 *= Local1
+			BATI [1] = (Local0 / 1000)
+			BATI [2] = (SBRW (0x0B, 0x0F) * 10)
 			If(HPAC)
 			{
-				If(LNot(And(^^SBRW(0x0B, 0x16), 0x40))) {
-					Store(2, Index(BATI, 0))
+				If (!(SBRW (0x0B, 0x16) & 0x40)) {
+					BATI [0] = 2
 				} Else {
-					Store(0, Index(BATI, 0))
+					BATI [0] = 0
 				}
 			}
 			Else
 			{
-				Store(0x01, Index(BATI, 0))
+				BATI [0] = 1
 			}
 
 			Return(BATI)

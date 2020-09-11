@@ -2,7 +2,7 @@
 
 #include <commonlib/bsd/compression.h>
 #include <commonlib/bsd/helpers.h>
-#include <endian.h>
+#include <commonlib/bsd/sysincludes.h>
 #include <stdint.h>
 #include <string.h>
 

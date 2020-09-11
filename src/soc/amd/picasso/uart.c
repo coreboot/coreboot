@@ -9,6 +9,7 @@
 #include <soc/southbridge.h>
 #include <soc/gpio.h>
 #include <soc/uart.h>
+#include <types.h>
 
 static const struct _uart_info {
 	uintptr_t base;

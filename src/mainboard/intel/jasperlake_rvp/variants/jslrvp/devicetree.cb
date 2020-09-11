@@ -128,9 +128,6 @@ chip soc/intel/jasperlake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
-	# Enable Processor Thermal Control
-	register "Device4Enable" = "1"
-
 	# Add PL1 and PL2 values
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 6,

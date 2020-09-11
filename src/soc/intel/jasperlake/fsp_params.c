@@ -183,7 +183,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	if (params->ScsSdCardEnabled)
 		params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
 
-	params->Device4Enable = config->Device4Enable;
+	/* Enable Processor Thermal Control */
+	dev = pcidev_path_on_root(SA_DEVFN_DPTF);
+	params->Device4Enable = is_dev_enabled(dev);
 
 	/* Set TccActivationOffset */
 	params->TccActivationOffset = config->tcc_offset;

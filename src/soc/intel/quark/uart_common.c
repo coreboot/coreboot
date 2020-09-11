@@ -8,7 +8,7 @@ unsigned int uart_platform_refclk(void)
 	return 44236800;
 }
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	return UART_BASE_ADDRESS;
 }

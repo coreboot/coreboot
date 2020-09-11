@@ -135,7 +135,7 @@ unsigned int uart_platform_refclk(void)
 	return 48000000;
 }
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	const unsigned int bases[] = {
 		0x44e09000, 0x48022000, 0x48024000,
@@ -146,7 +146,7 @@ uintptr_t uart_platform_base(int idx)
 	return 0;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	uint16_t div = (uint16_t) uart_baudrate_divisor(
@@ -154,19 +154,19 @@ void uart_init(int idx)
 	am335x_uart_init(uart, div);
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	return am335x_uart_rx_byte(uart);
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	am335x_uart_tx_byte(uart, data);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 }
 

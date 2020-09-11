@@ -5,26 +5,26 @@
 #include <boot/coreboot_tables.h>
 
 static uint8_t *buf = (void *)0;
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	return (uintptr_t) buf;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	return 0;
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 }
 

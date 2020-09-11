@@ -37,7 +37,7 @@ static void uart_lpss_init(const struct device *dev, uintptr_t baseaddr)
 }
 
 #if CONFIG(INTEL_LPSS_UART_FOR_CONSOLE)
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	if (idx == CONFIG_UART_FOR_CONSOLE)
 		return CONFIG_CONSOLE_UART_BASE_ADDRESS;

@@ -5,11 +5,11 @@
 #include <console/uart.h>
 #include <drivers/uart/pl011.h>
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	struct pl011_uart *regs = uart_platform_baseptr(idx);
 
@@ -17,7 +17,7 @@ void uart_tx_byte(int idx, unsigned char data)
 	uart_tx_flush(idx);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	struct pl011_uart *regs = uart_platform_baseptr(idx);
 
@@ -26,7 +26,7 @@ void uart_tx_flush(int idx)
 		;
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	struct pl011_uart *regs = uart_platform_baseptr(idx);
 

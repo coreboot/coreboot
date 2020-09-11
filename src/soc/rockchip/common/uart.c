@@ -9,7 +9,7 @@ unsigned int uart_platform_refclk(void)
 	return OSC_HZ;
 }
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }

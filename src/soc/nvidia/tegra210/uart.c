@@ -82,22 +82,22 @@ static int tegra210_uart_tst_byte(void)
 	return (read8(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	tegra210_uart_init();
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	tegra210_uart_tx_byte(data);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	tegra210_uart_tx_flush();
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	return tegra210_uart_rx_byte();
 }

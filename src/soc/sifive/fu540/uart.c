@@ -6,7 +6,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	if (idx < 2)
 		return FU540_UART(idx);

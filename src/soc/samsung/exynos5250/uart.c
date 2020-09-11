@@ -100,7 +100,7 @@ static void exynos5_uart_tx_flush(struct s5p_uart *uart)
 	while (read32(&uart->ufstat) & 0x1ff0000);
 }
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	if (idx < 4)
 		return 0x12c00000 + idx * 0x10000;
@@ -108,25 +108,25 @@ uintptr_t uart_platform_base(int idx)
 		return 0;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_init_dev(uart);
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	return exynos5_uart_rx_byte(uart);
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_uart_tx_byte(uart, data);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_uart_tx_flush(uart);

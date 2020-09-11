@@ -139,22 +139,22 @@ static int mtk_uart_tst_byte(void)
 	return (read8(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	mtk_uart_init();
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	return mtk_uart_rx_byte();
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	mtk_uart_tx_byte(data);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	mtk_uart_tx_flush();
 }

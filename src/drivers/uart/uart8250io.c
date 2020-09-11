@@ -77,14 +77,14 @@ static void uart8250_init(unsigned int base_port, unsigned int divisor)
 
 static const unsigned int bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	if (idx < ARRAY_SIZE(bases))
 		return bases[idx];
 	return 0;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	if (!CONFIG(DRIVERS_UART_8250IO_SKIP_INIT)) {
 		unsigned int div;
@@ -94,17 +94,17 @@ void uart_init(int idx)
 	}
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	uart8250_tx_byte(uart_platform_base(idx), data);
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	return uart8250_rx_byte(uart_platform_base(idx));
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	uart8250_tx_flush(uart_platform_base(idx));
 }

@@ -3,7 +3,7 @@
 #include <console/uart.h>
 #include <soc/southbridge.h>
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	if (CONFIG_UART_FOR_CONSOLE < 0 || CONFIG_UART_FOR_CONSOLE > 1)
 		return 0;

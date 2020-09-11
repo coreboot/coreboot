@@ -160,7 +160,7 @@ msm_boot_uart_dm_read(unsigned int *data, int *count, int wait)
 }
 #endif
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	int num_of_chars = 1;
 	unsigned int tx_data = 0;
@@ -269,7 +269,7 @@ static unsigned int msm_boot_uart_dm_init(void  *uart_dm_base)
  *
  * Initializes clocks, GPIO and UART controller.
  */
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	/* Note int idx isn't used in this driver. */
 	void *dm_base;
@@ -316,7 +316,7 @@ uint32_t uartmem_getbaseaddr(void)
  * uart_tx_flush - transmits a string of data
  * @s: string to transmit
  */
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	void *base = uart_board_param.uart_dm_base;
 
@@ -351,7 +351,7 @@ int uart_can_rx_byte(void)
  *
  * Returns the character read from serial port.
  */
-uint8_t uart_rx_byte(int idx)
+uint8_t uart_rx_byte(unsigned int idx)
 {
 	uint8_t byte;
 

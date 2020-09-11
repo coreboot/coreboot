@@ -35,14 +35,14 @@ unsigned int uart_input_clock_divider(void);
 /* Bitbang out one byte on an 8n1 UART through the output function set_tx(). */
 void uart_bitbang_tx_byte(unsigned char data, void (*set_tx)(int line_state));
 
-void uart_init(int idx);
-void uart_tx_byte(int idx, unsigned char data);
-void uart_tx_flush(int idx);
-unsigned char uart_rx_byte(int idx);
+void uart_init(unsigned int idx);
+void uart_tx_byte(unsigned int idx, unsigned char data);
+void uart_tx_flush(unsigned int idx);
+unsigned char uart_rx_byte(unsigned int idx);
 
-uintptr_t uart_platform_base(int idx);
+uintptr_t uart_platform_base(unsigned int idx);
 
-static inline void *uart_platform_baseptr(int idx)
+static inline void *uart_platform_baseptr(unsigned int idx)
 {
 	return (void *)uart_platform_base(idx);
 }

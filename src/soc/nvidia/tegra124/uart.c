@@ -76,12 +76,12 @@ static int tegra124_uart_tst_byte(struct tegra124_uart *uart_ptr)
 	return (read8(&uart_ptr->lsr) & UART8250_LSR_DR) == UART8250_LSR_DR;
 }
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	//Default to UART A
 	unsigned int base = 0x70006000;
 	//UARTs A - E are mapped as index 0 - 4
-	if ((idx < 5) && (idx >= 0)) {
+	if ((idx < 5)) {
 		if (idx != 1) { //not UART B
 			base += idx * 0x100;
 		} else {
@@ -91,25 +91,25 @@ uintptr_t uart_platform_base(int idx)
 	return base;
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	struct tegra124_uart *uart_ptr = uart_platform_baseptr(idx);
 	tegra124_uart_init(uart_ptr);
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	struct tegra124_uart *uart_ptr = uart_platform_baseptr(idx);
 	return tegra124_uart_rx_byte(uart_ptr);
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	struct tegra124_uart *uart_ptr = uart_platform_baseptr(idx);
 	tegra124_uart_tx_byte(uart_ptr, data);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	struct tegra124_uart *uart_ptr = uart_platform_baseptr(idx);
 	tegra124_uart_tx_flush(uart_ptr);

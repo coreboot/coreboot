@@ -8,9 +8,9 @@
 #define MY_PCI_DEV(SEGBUS, DEV, FN) \
 	((((SEGBUS)&0xFFF) << 20) | (((DEV)&0x1F) << 15) | (((FN)&0x07) << 12))
 
-uintptr_t uart_platform_base(int idx);
+uintptr_t uart_platform_base(unsigned int idx);
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	return (uintptr_t)pci_io_read_config32(
 		       MY_PCI_DEV(0, CONFIG_HSUART_DEV, idx),

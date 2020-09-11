@@ -97,7 +97,7 @@ static void uart8250_mem_init(void *base, unsigned int divisor)
 	uart8250_write(base, UART8250_LCR, CONFIG_TTYS0_LCS);
 }
 
-void uart_init(int idx)
+void uart_init(unsigned int idx)
 {
 	void *base = uart_platform_baseptr(idx);
 	if (!base)
@@ -109,7 +109,7 @@ void uart_init(int idx)
 	uart8250_mem_init(base, div);
 }
 
-void uart_tx_byte(int idx, unsigned char data)
+void uart_tx_byte(unsigned int idx, unsigned char data)
 {
 	void *base = uart_platform_baseptr(idx);
 	if (!base)
@@ -117,7 +117,7 @@ void uart_tx_byte(int idx, unsigned char data)
 	uart8250_mem_tx_byte(base, data);
 }
 
-unsigned char uart_rx_byte(int idx)
+unsigned char uart_rx_byte(unsigned int idx)
 {
 	void *base = uart_platform_baseptr(idx);
 	if (!base)
@@ -125,7 +125,7 @@ unsigned char uart_rx_byte(int idx)
 	return uart8250_mem_rx_byte(base);
 }
 
-void uart_tx_flush(int idx)
+void uart_tx_flush(unsigned int idx)
 {
 	void *base = uart_platform_baseptr(idx);
 	if (!base)

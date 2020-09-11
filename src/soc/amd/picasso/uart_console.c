@@ -8,7 +8,7 @@
  * be provided exactly once and only by the UART that is used for console.
  */
 
-uintptr_t uart_platform_base(int idx)
+uintptr_t uart_platform_base(unsigned int idx)
 {
 	return get_uart_base(idx);
 }

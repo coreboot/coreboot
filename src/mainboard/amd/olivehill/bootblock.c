@@ -3,7 +3,6 @@
 #include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <bootblock_common.h>
-#include <device/pnp_ops.h>
 
 void bootblock_mainboard_early_init(void)
 {

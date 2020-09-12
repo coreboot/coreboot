@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <device/pnp_ops.h>
 #include <intelblocks/pcr.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>

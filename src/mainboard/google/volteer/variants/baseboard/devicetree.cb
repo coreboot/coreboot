@@ -142,8 +142,8 @@ chip soc/intel/tigerlake
 	}"
 
 	register "SerialIoGSpiCsState" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI0] = 1,
+		[PchSerialIoIndexGSPI1] = 1,
 		[PchSerialIoIndexGSPI2] = 0,
 		[PchSerialIoIndexGSPI3] = 0,
 	}"

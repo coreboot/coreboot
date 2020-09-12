@@ -1367,7 +1367,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (slic_file
 	    && (slic_file->length > slic_size
 		|| slic_file->length < sizeof(acpi_header_t)
-		|| memcmp(slic_file->signature, "SLIC", 4) != 0)) {
+		|| (memcmp(slic_file->signature, "SLIC", 4) != 0
+		    && memcmp(slic_file->signature, "MSDM", 4) != 0))) {
 		slic_file = 0;
 	}
 

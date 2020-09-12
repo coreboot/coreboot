@@ -3,7 +3,6 @@
 #include <arch/io.h>
 #include <device/pnp.h>
 #include <stdint.h>
-#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include "sch5545.h"
 

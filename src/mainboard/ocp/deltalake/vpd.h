@@ -32,4 +32,8 @@
 #define FSP_DCI "fsp_dci_enable" /* 1 or 0: enable or disable DCI */
 #define FSP_DCI_DEFAULT 0 /* Default value when the VPD variable is not found */
 
+/* coreboot log level */
+#define COREBOOT_LOG_LEVEL "coreboot_log_level"
+#define COREBOOT_LOG_LEVEL_DEFAULT 4
+
 #endif

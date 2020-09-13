@@ -95,6 +95,7 @@ static void mc_read_resources(struct device *dev)
 	uint32_t tseg_base;
 	uint64_t touud;
 	uint16_t reg16;
+	int index = 3;
 
 	pci_dev_read_resources(dev);
 
@@ -108,10 +109,10 @@ static void mc_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)touud);
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, 640);
-	ram_resource(dev, 4, 768, ((tseg_base >> 10) - 768));
+	ram_resource(dev, index++, 0, 640);
+	ram_resource(dev, index++, 768, ((tseg_base >> 10) - 768));
 
-	mmio_resource(dev, 5, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
+	mmio_resource(dev, index++, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
 
 	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	const int uma_sizes_gtt[16] =
@@ -130,17 +131,17 @@ static void mc_read_resources(struct device *dev)
 	    pci_read_config32(pcidev_on_root(0, 0), IGD_BASE);
 	gtt_base =
 	    pci_read_config32(pcidev_on_root(0, 0), GTT_BASE);
-	mmio_resource(dev, 6, gtt_base >> 10, uma_size_gtt << 10);
-	mmio_resource(dev, 7, igd_base >> 10, uma_size_igd << 10);
+	mmio_resource(dev, index++, gtt_base >> 10, uma_size_gtt << 10);
+	mmio_resource(dev, index++, igd_base >> 10, uma_size_igd << 10);
 
 	if (touud > 4096)
-		ram_resource(dev, 8, (4096 << 10), ((touud - 4096) << 10));
+		ram_resource(dev, index++, (4096 << 10), ((touud - 4096) << 10));
 
 	/* This memory is not DMA-capable. */
 	if (touud >= 8192 - 64)
-	    bad_ram_resource(dev, 9, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
+		bad_ram_resource(dev, index++, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
 
-	add_fixed_resources(dev, 10);
+	add_fixed_resources(dev, index);
 }
 
 static void northbridge_init(struct device *dev)

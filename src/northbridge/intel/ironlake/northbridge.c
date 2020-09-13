@@ -92,7 +92,7 @@ static struct device_operations pci_domain_ops = {
 
 static void mc_read_resources(struct device *dev)
 {
-	uint32_t tseg_base;
+	uint32_t tseg_base, tseg_end;
 	uint64_t touud;
 	uint16_t reg16;
 	int index = 3;
@@ -102,6 +102,7 @@ static void mc_read_resources(struct device *dev)
 	mmconf_resource(dev, 0x50);
 
 	tseg_base = pci_read_config32(pcidev_on_root(0, 0), TSEG);
+	tseg_end = tseg_base + CONFIG_SMM_TSEG_SIZE;
 	touud = pci_read_config16(pcidev_on_root(0, 0),
 				  TOUUD);
 
@@ -131,6 +132,11 @@ static void mc_read_resources(struct device *dev)
 	    pci_read_config32(pcidev_on_root(0, 0), IGD_BASE);
 	gtt_base =
 	    pci_read_config32(pcidev_on_root(0, 0), GTT_BASE);
+	if (gtt_base > tseg_end) {
+		/* Reserve the gap. MMIO doesn't work in this range. Keep
+		   it uncacheable, though, for easier MTRR allocation. */
+		mmio_resource(dev, index++, tseg_end >> 10, (gtt_base - tseg_end) >> 10);
+	}
 	mmio_resource(dev, index++, gtt_base >> 10, uma_size_gtt << 10);
 	mmio_resource(dev, index++, igd_base >> 10, uma_size_igd << 10);
 

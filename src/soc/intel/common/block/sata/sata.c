@@ -4,17 +4,11 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-static void sata_final(struct device *dev)
-{
-	/* Set Bus Master */
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
-}
-
 static struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.final			= sata_final,
+	.final			= pci_dev_request_bus_master,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

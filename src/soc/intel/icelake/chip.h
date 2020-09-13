@@ -9,7 +9,6 @@
 #include <intelblocks/gspi.h>
 #include <stdint.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/gpio_defs.h>
 #include <soc/pci_devs.h>

@@ -10,7 +10,6 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>
 #include <stdint.h>
-#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

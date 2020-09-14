@@ -43,7 +43,7 @@
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
-#include "hostbridge_regs.h"
+#include "registers/host_bridge.h"
 
 /*
  * Generic Non-Core Registers

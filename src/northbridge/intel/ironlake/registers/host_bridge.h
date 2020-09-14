@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __IRONLAKE_HOSTBRIDGE_REGS_H__
-#define __IRONLAKE_HOSTBRIDGE_REGS_H__
+#ifndef __IRONLAKE_REGISTERS_HOST_BRIDGE_H__
+#define __IRONLAKE_REGISTERS_HOST_BRIDGE_H__
 
 #define EPBAR		0x40
 #define MCHBAR		0x48
@@ -28,4 +28,4 @@
 
 #define CAPID0		0xe0
 
-#endif /* __IRONLAKE_HOSTBRIDGE_REGS_H__ */
+#endif /* __IRONLAKE_REGISTERS_HOST_BRIDGE_H__ */

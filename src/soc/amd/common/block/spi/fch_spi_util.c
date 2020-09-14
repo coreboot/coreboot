@@ -29,7 +29,7 @@ uint8_t spi_read8(uint8_t reg)
 
 uint16_t spi_read16(uint8_t reg)
 {
-	return read8((void *)(spi_get_bar() + reg));
+	return read16((void *)(spi_get_bar() + reg));
 }
 
 uint32_t spi_read32(uint8_t reg)

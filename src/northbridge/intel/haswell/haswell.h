@@ -57,9 +57,9 @@
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x)  *((volatile u8  *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x)  *((volatile u8  *)(DEFAULT_EPBAR + (x)))
+#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + (x)))
+#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + (x)))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
@@ -88,9 +88,9 @@
  * DMIBAR
  */
 
-#define DMIBAR8(x)  *((volatile u8  *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x)  *((volatile u8  *)(DEFAULT_DMIBAR + (x)))
+#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + (x)))
+#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + (x)))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */

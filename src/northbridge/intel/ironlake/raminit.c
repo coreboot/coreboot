@@ -1691,7 +1691,7 @@ send_heci_message(u8 *msg, int len, u8 hostaddress, u8 clientaddress)
 
 /* FIXME: Add timeout.  */
 static int
-recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 *packet,
+recv_heci_packet(struct mei_header *head, u32 *packet,
 		 u32 *packet_size)
 {
 	union {
@@ -1736,7 +1736,7 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 *packet,
 
 /* FIXME: Add timeout.  */
 static int
-recv_heci_message(struct raminfo *info, u32 *message, u32 *message_size)
+recv_heci_message(u32 *message, u32 *message_size)
 {
 	struct mei_header head;
 	int current_position;
@@ -1746,7 +1746,7 @@ recv_heci_message(struct raminfo *info, u32 *message, u32 *message_size)
 		u32 current_size;
 		current_size = *message_size - current_position;
 		if (recv_heci_packet
-		    (info, &head, message + (current_position >> 2),
+		    (&head, message + (current_position >> 2),
 		     &current_size) == -1)
 			break;
 		if (!current_size)
@@ -1796,7 +1796,7 @@ static void send_heci_uma_message(struct raminfo *info)
 	send_heci_message((u8 *) & msg, sizeof(msg), 0, 7);
 
 	reply_size = sizeof(reply);
-	if (recv_heci_message(info, (u32 *) & reply, &reply_size) == -1)
+	if (recv_heci_message((u32 *) & reply, &reply_size) == -1)
 		return;
 
 	if (reply.command != (MKHI_SET_UMA | (1 << 7)))

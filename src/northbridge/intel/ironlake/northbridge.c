@@ -155,20 +155,20 @@ static void northbridge_init(struct device *dev)
 	u32 reg32;
 
 	/* Clear error status bits */
-	DMIBAR32(0x1c4) = 0xffffffff;
-	DMIBAR32(0x1d0) = 0xffffffff;
+	DMIBAR32(DMIUESTS) = 0xffffffff;
+	DMIBAR32(DMICESTS) = 0xffffffff;
 
-	reg32 = DMIBAR32(0x238);
+	reg32 = DMIBAR32(DMILLTC);
 	reg32 |= (1 << 29);
-	DMIBAR32(0x238) = reg32;
+	DMIBAR32(DMILLTC) = reg32;
 
 	reg32 = DMIBAR32(0x1f8);
 	reg32 |= (1 << 16);
 	DMIBAR32(0x1f8) = reg32;
 
-	reg32 = DMIBAR32(0x88);
+	reg32 = DMIBAR32(DMILCTL);
 	reg32 |= (1 << 1) | (1 << 0);
-	DMIBAR32(0x88) = reg32;
+	DMIBAR32(DMILCTL) = reg32;
 }
 
 /* Disable unused PEG devices based on devicetree before PCI enumeration */

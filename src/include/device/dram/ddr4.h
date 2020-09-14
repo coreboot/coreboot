@@ -69,4 +69,9 @@ enum cb_err spd_add_smbios17_ddr4(const u8 channel, const u8 slot,
 				const u16 selected_freq,
 				const dimm_attr *info);
 
+/**
+ * Converts DDR4 clock speed in MHz to the standard reported speed in MT/s
+ */
+uint16_t ddr4_speed_mhz_to_reported_mts(uint16_t speed_mhz);
+
 #endif /* DEVICE_DRAM_DDR4L_H */

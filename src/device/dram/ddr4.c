@@ -9,6 +9,69 @@
 #include <smbios.h>
 #include <types.h>
 
+enum ddr4_speed_grade {
+	DDR4_1600,
+	DDR4_1866,
+	DDR4_2133,
+	DDR4_2400,
+	DDR4_2666,
+	DDR4_2933,
+	DDR4_3200
+};
+
+struct ddr4_speed_attr {
+	uint32_t min_clock_mhz; // inclusive
+	uint32_t max_clock_mhz; // inclusive
+	uint32_t reported_mts;
+};
+
+/**
+ * DDR4 speed attributes derived from JEDEC 79-4C tables 169 & 170
+ *
+ * min_clock_mhz = 1000/max_tCk_avg(ns) + 1
+ *                 Adding 1 to make minimum inclusive
+ * max_clock_mhz = 1000/min_tCk_avg(ns)
+ * reported_mts  = Standard reported DDR4 speed in MT/s
+ *                 May be 1 less than the actual max MT/s
+ */
+static const struct ddr4_speed_attr ddr4_speeds[] = {
+	[DDR4_1600] = {
+		.min_clock_mhz = 668,
+		.max_clock_mhz = 800,
+		.reported_mts = 1600
+	},
+	[DDR4_1866] = {
+		.min_clock_mhz = 801,
+		.max_clock_mhz = 934,
+		.reported_mts = 1866
+	},
+	[DDR4_2133] = {
+		.min_clock_mhz = 935,
+		.max_clock_mhz = 1067,
+		.reported_mts = 2133
+	},
+	[DDR4_2400] = {
+		.min_clock_mhz = 1068,
+		.max_clock_mhz = 1200,
+		.reported_mts = 2400
+	},
+	[DDR4_2666] = {
+		.min_clock_mhz = 1201,
+		.max_clock_mhz = 1333,
+		.reported_mts = 2666
+	},
+	[DDR4_2933] = {
+		.min_clock_mhz = 1334,
+		.max_clock_mhz = 1466,
+		.reported_mts = 2933
+	},
+	[DDR4_3200] = {
+		.min_clock_mhz = 1467,
+		.max_clock_mhz = 1600,
+		.reported_mts = 3200
+	}
+};
+
 typedef enum {
 	BLOCK_0, /* Base Configuration and DRAM Parameters */
 	BLOCK_1,
@@ -68,6 +131,21 @@ static bool block_exists(spd_block_type type, u8 dimm_type)
 	}
 }
 
+/**
+ * Converts DDR4 clock speed in MHz to the standard reported speed in MT/s
+ */
+uint16_t ddr4_speed_mhz_to_reported_mts(uint16_t speed_mhz)
+{
+	for (enum ddr4_speed_grade speed = 0; speed < ARRAY_SIZE(ddr4_speeds); speed++) {
+		const struct ddr4_speed_attr *speed_attr = &ddr4_speeds[speed];
+		if (speed_mhz >= speed_attr->min_clock_mhz &&
+		    speed_mhz <= speed_attr->max_clock_mhz) {
+			return speed_attr->reported_mts;
+		}
+	}
+	printk(BIOS_ERR, "ERROR: DDR4 speed of %d MHz is out of range", speed_mhz);
+	return 0;
+}
 
 /**
  * \brief Decode the raw SPD data

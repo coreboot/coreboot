@@ -43,9 +43,16 @@ void fsp_verify_memory_init_hobs(void)
 		die("Space between FSP reserved region and BIOS TOLUM!\n");
 	}
 
-	if (range_entry_end(&tolum) != (uintptr_t)cbmem_top()) {
+	if (!CONFIG(ACPI_BERT) && range_entry_end(&tolum) != (uintptr_t)cbmem_top()) {
 		printk(BIOS_CRIT, "TOLUM end: 0x%08llx != %p: cbmem_top\n",
 			range_entry_end(&tolum), cbmem_top());
 		die("Space between cbmem_top and BIOS TOLUM!\n");
+	}
+
+	if (CONFIG(ACPI_BERT) &&
+		range_entry_end(&tolum) != (uintptr_t)cbmem_top() + CONFIG_ACPI_BERT_SIZE) {
+		printk(BIOS_CRIT, "TOLUM end: 0x%08llx != %p: cbmem_top + 0x%x: BERT\n",
+			range_entry_end(&tolum), cbmem_top(), CONFIG_ACPI_BERT_SIZE);
+		die("Space between cbmem_top and APEI BERT!\n");
 	}
 }

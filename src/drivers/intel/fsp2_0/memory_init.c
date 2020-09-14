@@ -276,6 +276,21 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	/* Reserve enough memory under TOLUD to save CBMEM header */
 	arch_upd->BootLoaderTolumSize = cbmem_overhead_size();
 
+	/*
+	 * If ACPI APEI BERT region size is defined, reserve memory for it.
+	 * +------------------------+ range_entry_top(tolum)
+	 * | Other reserved regions |
+	 * | APEI BERT region       |
+	 * +------------------------+ cbmem_top()
+	 * | CBMEM IMD ROOT         |
+	 * | CBMEM IMD SMALL        |
+	 * +------------------------+ range_entry_base(tolum), TOLUM
+	 * | CBMEM FSP MEMORY       |
+	 * | Other CBMEM regions... |
+	 */
+	if (CONFIG(ACPI_BERT))
+		arch_upd->BootLoaderTolumSize += CONFIG_ACPI_BERT_SIZE;
+
 	/* Fill common settings on behalf of chipset. */
 	if (fsp_fill_common_arch_params(arch_upd, s3wake, fsp_version,
 					memmap) != CB_SUCCESS)

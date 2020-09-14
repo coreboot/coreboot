@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SANDYBRIDGE_MCHBAR_REGS_H__
-#define __SANDYBRIDGE_MCHBAR_REGS_H__
+#ifndef __SANDYBRIDGE_REGISTERS_MCHBAR_H__
+#define __SANDYBRIDGE_REGISTERS_MCHBAR_H__
 
 /*
  * ### IOSAV memory controller interface poking state machine notes ###
@@ -533,4 +533,4 @@
 #define CRDTCTL4		0x7410 /* Read Return Tracker credits */
 #define CRDTLCK			0x77fc
 
-#endif /* __SANDYBRIDGE_MCHBAR_REGS_H__ */
+#endif /* __SANDYBRIDGE_REGISTERS_MCHBAR_H__ */

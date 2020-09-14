@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SANDYBRIDGE_HOSTBRIDGE_REGS_H__
-#define __SANDYBRIDGE_HOSTBRIDGE_REGS_H__
+#ifndef __SANDYBRIDGE_REGISTERS_HOST_BRIDGE_H__
+#define __SANDYBRIDGE_REGISTERS_HOST_BRIDGE_H__
 
 #define EPBAR		0x40
 #define MCHBAR		0x48
@@ -60,4 +60,4 @@
 
 #define DIDOR		0xf3	/* Device ID override, for debug and samples only */
 
-#endif /* __SANDYBRIDGE_HOSTBRIDGE_REGS_H__ */
+#endif /* __SANDYBRIDGE_REGISTERS_HOST_BRIDGE_H__ */

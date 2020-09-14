@@ -36,7 +36,7 @@ enum platform_type {
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 #define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
-#include "hostbridge_regs.h"
+#include "registers/host_bridge.h"
 
 
 /* Devices 0:1.0, 0:1.1, 0:1.2, 0:6.0 PCI configuration space (PCI Express Graphics) */
@@ -66,7 +66,7 @@ enum platform_type {
 #define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
 /* As there are many registers, define them on a separate file */
-#include "mchbar_regs.h"
+#include "registers/mchbar.h"
 
 /*
  * EPBAR - Egress Port Root Complex Register Block

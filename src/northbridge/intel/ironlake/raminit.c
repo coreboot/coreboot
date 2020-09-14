@@ -1763,7 +1763,7 @@ recv_heci_message(u32 *message, u32 *message_size)
 	return -1;
 }
 
-static void send_heci_uma_message(struct raminfo *info, const u64 heci_uma_addr)
+static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int heci_uma_size)
 {
 	volatile struct uma_reply {
 		u8 group_id;
@@ -1789,7 +1789,7 @@ static void send_heci_uma_message(struct raminfo *info, const u64 heci_uma_addr)
 	} __packed msg = {
 	0, MKHI_SET_UMA, 0, 0,
 		    0x82,
-		    heci_uma_addr, info->memory_reserved_for_heci_mb, 0};
+		    heci_uma_addr, heci_uma_size, 0};
 	u32 reply_size;
 
 	send_heci_message((u8 *) & msg, sizeof(msg), 0, 7);
@@ -1840,7 +1840,7 @@ static void setup_heci_uma(struct raminfo *info)
 
 	MCHBAR32(0x24) = 0x10000 + info->memory_reserved_for_heci_mb;
 
-	send_heci_uma_message(info, heci_uma_addr);
+	send_heci_uma_message(heci_uma_addr, info->memory_reserved_for_heci_mb);
 
 	pci_write_config32(HECIDEV, 0x10, 0x0);
 	pci_write_config8(HECIDEV, 0x4, 0x0);

@@ -11,7 +11,7 @@
 void do_global_reset(void)
 {
 	/* Ask CSE to do the global reset */
-	if (cse_request_global_reset(GLOBAL_RESET))
+	if (cse_request_global_reset())
 		return;
 
 	/* global reset if CSE fail to reset */

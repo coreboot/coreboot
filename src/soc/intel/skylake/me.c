@@ -353,7 +353,7 @@ int send_global_reset(void)
 		goto ret;
 
 	/* ME should be in Normal Mode for this command */
-	status = cse_request_global_reset(GLOBAL_RESET);
+	status = cse_request_global_reset();
 ret:
 	return status;
 }

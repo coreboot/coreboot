@@ -616,9 +616,10 @@ static bool cse_is_global_reset_allowed(void)
 }
 
 /*
- * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/CSE_RESET_ONLY.
+ * Sends GLOBAL_RESET_REQ cmd to CSE with reset type GLOBAL_RESET.
+ * Returns 0 on failure and 1 on success.
  */
-int cse_request_global_reset(enum rst_req_type rst_type)
+static int cse_request_reset(enum rst_req_type rst_type)
 {
 	int status;
 	struct mkhi_hdr reply;
@@ -644,7 +645,7 @@ int cse_request_global_reset(enum rst_req_type rst_type)
 		return 0;
 	}
 
-	if (!cse_is_global_reset_allowed()) {
+	if (!cse_is_global_reset_allowed() || !is_cse_enabled()) {
 		printk(BIOS_ERR, "HECI: CSE does not meet required prerequisites\n");
 		return 0;
 	}
@@ -661,6 +662,11 @@ int cse_request_global_reset(enum rst_req_type rst_type)
 
 	printk(BIOS_DEBUG, "HECI: Global Reset %s!\n", status ? "success" : "failure");
 	return status;
+}
+
+int cse_request_global_reset(void)
+{
+	return cse_request_reset(GLOBAL_RESET);
 }
 
 static bool cse_is_hmrfpo_enable_allowed(void)

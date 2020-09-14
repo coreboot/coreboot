@@ -61,7 +61,7 @@ typedef struct {
 	u8 largest;
 } timing_bounds_t[2][2][2][9];
 
-#define MRC_CACHE_VERSION 2
+#define MRC_CACHE_VERSION 3
 
 struct ram_training {
 	/* [TM][CHANNEL][SLOT][RANK][LANE] */
@@ -192,7 +192,6 @@ struct raminfo {
 	unsigned int interleaved_part_mb;
 	unsigned int non_interleaved_part_mb;
 
-	u64 heci_uma_addr;
 	unsigned int memory_reserved_for_heci_mb;
 
 	struct ram_training training;
@@ -1764,7 +1763,7 @@ recv_heci_message(u32 *message, u32 *message_size)
 	return -1;
 }
 
-static void send_heci_uma_message(struct raminfo *info)
+static void send_heci_uma_message(struct raminfo *info, const u64 heci_uma_addr)
 {
 	volatile struct uma_reply {
 		u8 group_id;
@@ -1790,7 +1789,7 @@ static void send_heci_uma_message(struct raminfo *info)
 	} __packed msg = {
 	0, MKHI_SET_UMA, 0, 0,
 		    0x82,
-		    info->heci_uma_addr, info->memory_reserved_for_heci_mb, 0};
+		    heci_uma_addr, info->memory_reserved_for_heci_mb, 0};
 	u32 reply_size;
 
 	send_heci_message((u8 *) & msg, sizeof(msg), 0, 7);
@@ -1805,11 +1804,10 @@ static void send_heci_uma_message(struct raminfo *info)
 
 static void setup_heci_uma(struct raminfo *info)
 {
-	info->heci_uma_addr = 0;
 	if (!info->memory_reserved_for_heci_mb && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
 		return;
 
-	info->heci_uma_addr =
+	const u64 heci_uma_addr =
 	    ((u64)
 	     ((((u64) pci_read_config16(NORTHBRIDGE, TOM)) << 6) -
 	      info->memory_reserved_for_heci_mb)) << 20;
@@ -1842,7 +1840,7 @@ static void setup_heci_uma(struct raminfo *info)
 
 	MCHBAR32(0x24) = 0x10000 + info->memory_reserved_for_heci_mb;
 
-	send_heci_uma_message(info);
+	send_heci_uma_message(info, heci_uma_addr);
 
 	pci_write_config32(HECIDEV, 0x10, 0x0);
 	pci_write_config8(HECIDEV, 0x4, 0x0);

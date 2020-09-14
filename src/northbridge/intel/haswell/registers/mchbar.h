@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __HASWELL_MCHBAR_REGS_H__
-#define __HASWELL_MCHBAR_REGS_H__
+#ifndef __HASWELL_REGISTERS_MCHBAR_H__
+#define __HASWELL_REGISTERS_MCHBAR_H__
 
 /* Register definitions */
 #define MAD_CHNL		0x5000 /* Address Decoder Channel Configuration */
@@ -44,4 +44,4 @@
 #define DMIVCLIM		0x7000
 #define CRDTLCK			0x77fc
 
-#endif /* __HASWELL_MCHBAR_REGS_H__ */
+#endif /* __HASWELL_REGISTERS_MCHBAR_H__ */

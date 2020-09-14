@@ -18,7 +18,7 @@
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 #define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
-#include "hostbridge_regs.h"
+#include "registers/host_bridge.h"
 
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
@@ -43,7 +43,7 @@
 #define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
 /* As there are many registers, define them on a separate file */
-#include "mchbar_regs.h"
+#include "registers/mchbar.h"
 
 #define ARCHDIS		0xff0	/* DMA Remap Engine Policy Control */
 #define  DMAR_LCKDN	(1 << 31)

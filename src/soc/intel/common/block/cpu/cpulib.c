@@ -367,10 +367,11 @@ int get_prmrr_size(void)
 			valid_size = 0;
 	}
 
-	/* die if we could not find a valid size within the limit */
-	if (!valid_size)
-		die("Unsupported PRMRR size limit %i MiB, check your config!\n",
+	if (!valid_size) {
+		printk(BIOS_WARNING, "Unsupported PRMRR size of %i MiB, check your config!\n",
 			CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE);
+		return 0;
+	}
 
 	printk(BIOS_DEBUG, "PRMRR size set to %i MiB\n", valid_size);
 

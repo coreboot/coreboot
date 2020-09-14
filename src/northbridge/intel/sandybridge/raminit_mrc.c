@@ -253,7 +253,7 @@ static void southbridge_fill_pei_data(struct pei_data *pei_data)
 	pei_data->smbusbar   = CONFIG_FIXED_SMBUS_IO_BASE;
 	pei_data->wdbbar     = 0x04000000;
 	pei_data->wdbsize    = 0x1000;
-	pei_data->rcba       = (uintptr_t)DEFAULT_RCBABASE;
+	pei_data->rcba       = (uintptr_t)DEFAULT_RCBA;
 	pei_data->pmbase     = DEFAULT_PMBASE;
 	pei_data->gpiobase   = DEFAULT_GPIOBASE;
 	pei_data->gbe_enable = dev && dev->enabled;

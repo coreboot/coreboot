@@ -29,7 +29,6 @@
 #define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
 #endif
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
-#define DEFAULT_RCBABASE	((u8 *)0xfed1c000)
 
 #define GFXVT_BASE		0xfed90000ULL
 #define VTVC0_BASE		0xfed91000ULL

@@ -119,6 +119,7 @@ ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
 ramstage-y += clock.c
+ramstage-y += boot_linux.S
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 
 rmodules_arm-y += memset.S

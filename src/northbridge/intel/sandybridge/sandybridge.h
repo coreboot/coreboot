@@ -20,13 +20,7 @@
 #define IVB_STEP_K0	(BASE_REV_IVB + 5)
 #define IVB_STEP_D0	(BASE_REV_IVB + 6)
 
-/* Northbridge BARs */
-#define DEFAULT_MCHBAR		0xfed10000	/* 16 KB */
-#define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
-#define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
-
-#define GFXVT_BASE		0xfed90000ULL
-#define VTVC0_BASE		0xfed91000ULL
+#include "memmap.h"
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__

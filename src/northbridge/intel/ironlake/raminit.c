@@ -1810,20 +1810,20 @@ static void setup_heci_uma(struct raminfo *info)
 
 	pci_read_config32(NORTHBRIDGE, DMIBAR);
 	if (info->memory_reserved_for_heci_mb) {
-		write32(DEFAULT_DMIBAR + 0x14, read32(DEFAULT_DMIBAR + 0x14) & ~0x80);
+		DMIBAR32(0x14) &= ~0x80;
 		write32(DEFAULT_RCBA   + 0x14, read32(DEFAULT_RCBA   + 0x14) & ~0x80);
-		write32(DEFAULT_DMIBAR + 0x20, read32(DEFAULT_DMIBAR + 0x20) & ~0x80);
+		DMIBAR32(0x20) &= ~0x80;
 		write32(DEFAULT_RCBA   + 0x20, read32(DEFAULT_RCBA   + 0x20) & ~0x80);
-		write32(DEFAULT_DMIBAR + 0x2c, read32(DEFAULT_DMIBAR + 0x2c) & ~0x80);
+		DMIBAR32(0x2c) &= ~0x80;
 		write32(DEFAULT_RCBA   + 0x30, read32(DEFAULT_RCBA   + 0x30) & ~0x80);
-		write32(DEFAULT_DMIBAR + 0x38, read32(DEFAULT_DMIBAR + 0x38) & ~0x80);
+		DMIBAR32(0x38) &= ~0x80;
 		write32(DEFAULT_RCBA   + 0x40, read32(DEFAULT_RCBA   + 0x40) & ~0x80);
 
 		write32(DEFAULT_RCBA   + 0x40, 0x87000080);	// OK
-		write32(DEFAULT_DMIBAR + 0x38, 0x87000080);	// OK
+		DMIBAR32(0x38) = 0x87000080;	// OK
 
 		while ((read16(DEFAULT_RCBA + 0x46) & 2) &&
-			read16(DEFAULT_DMIBAR + 0x3e) & 2)
+			DMIBAR16(0x3e) & 2)
 			;
 	}
 
@@ -3604,12 +3604,12 @@ static void restore_274265(struct raminfo *info)
 
 static void dmi_setup(void)
 {
-	gav(read8(DEFAULT_DMIBAR + 0x254));
-	write8(DEFAULT_DMIBAR + 0x254, 0x1);
-	write16(DEFAULT_DMIBAR + 0x1b8, 0x18f2);
+	gav(DMIBAR8(0x254));
+	DMIBAR8(0x254) = 0x1;
+	DMIBAR16(0x1b8) = 0x18f2;
 	MCHBAR16_AND_OR(0x48, 0, 0x2);
 
-	write32(DEFAULT_DMIBAR + 0xd68, read32(DEFAULT_DMIBAR + 0xd68) | 0x08000000);
+	DMIBAR32(0xd68) |= 0x08000000;
 
 	outl((gav(inl(DEFAULT_GPIOBASE | 0x38)) & ~0x140000) | 0x400000,
 	     DEFAULT_GPIOBASE | 0x38);
@@ -4600,9 +4600,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 	u32 reg1c;
 	pci_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
-	reg1c = read32p(DEFAULT_EPBAR | 0x01c);	// = 0x8001 // OK
+	reg1c = EPBAR32(0x01c);	// = 0x8001 // OK
 	pci_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
-	write32p(DEFAULT_EPBAR | 0x01c, reg1c);	// OK
+	EPBAR32(0x01c) = reg1c;	// OK
 	MCHBAR8(0xe08);	// = 0x0
 	pci_read_config32(NORTHBRIDGE, 0xe4);	// = 0x316126
 	MCHBAR8_OR(0x1210, 2);

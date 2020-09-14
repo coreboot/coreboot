@@ -21,13 +21,8 @@
 #define IVB_STEP_D0	(BASE_REV_IVB + 6)
 
 /* Northbridge BARs */
-#ifndef __ACPI__
-#define DEFAULT_MCHBAR		((u8 *)0xfed10000)	/* 16 KB */
-#define DEFAULT_DMIBAR		((u8 *)0xfed18000)	/* 4 KB */
-#else
 #define DEFAULT_MCHBAR		0xfed10000	/* 16 KB */
 #define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
-#endif
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
 #define GFXVT_BASE		0xfed90000ULL
@@ -65,7 +60,7 @@ enum platform_type {
 
 #define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)((void *)DEFAULT_MCHBAR + (x))))
 #define MCHBAR8_AND(x,  and) (MCHBAR8(x)  = MCHBAR8(x)  & (and))
 #define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
 #define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))

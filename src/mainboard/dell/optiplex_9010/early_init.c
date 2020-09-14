@@ -32,8 +32,8 @@ void bootblock_mainboard_early_init(void)
 	 * FIXME: the board gets stuck in reset loop in
 	 * mainboard_romstage_entry. Avoid that by clearing SSKPD
 	 */
-	pci_write_config32(HOST_BRIDGE, MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
-	pci_write_config32(HOST_BRIDGE, MCHBAR + 4, (0LL + (uintptr_t)DEFAULT_MCHBAR) >> 32);
+	pci_write_config32(HOST_BRIDGE, MCHBAR, DEFAULT_MCHBAR | 1);
+	pci_write_config32(HOST_BRIDGE, MCHBAR + 4, (0LL + DEFAULT_MCHBAR) >> 32);
 	MCHBAR16(SSKPD_HI) = 0;
 
 	sch5545_early_init(0x2e);

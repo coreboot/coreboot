@@ -14,8 +14,8 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	struct pei_data pei_data_template = {
 		.pei_version = PEI_VERSION,
-		.mchbar = (uintptr_t)DEFAULT_MCHBAR,
-		.dmibar = (uintptr_t)DEFAULT_DMIBAR,
+		.mchbar = DEFAULT_MCHBAR,
+		.dmibar = DEFAULT_DMIBAR,
 		.epbar = DEFAULT_EPBAR,
 		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
 		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,

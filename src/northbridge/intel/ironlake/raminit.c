@@ -61,7 +61,7 @@ typedef struct {
 	u8 largest;
 } timing_bounds_t[2][2][2][9];
 
-#define MRC_CACHE_VERSION 1
+#define MRC_CACHE_VERSION 2
 
 struct ram_training {
 	/* [TM][CHANNEL][SLOT][RANK][LANE] */
@@ -192,7 +192,6 @@ struct raminfo {
 	unsigned int interleaved_part_mb;
 	unsigned int non_interleaved_part_mb;
 
-	u32 heci_bar;
 	u64 heci_uma_addr;
 	unsigned int memory_reserved_for_heci_mb;
 
@@ -1469,9 +1468,6 @@ static void collect_system_info(struct raminfo *info)
 	while (!(read8((u8 *)0xfed40000) & (1 << 7)))
 		;
 
-	if (!info->heci_bar)
-		gav(info->heci_bar =
-		    pci_read_config32(HECIDEV, HECIBAR) & 0xFFFFFFF8);
 	if (!info->memory_reserved_for_heci_mb) {
 		/* Wait for ME to be ready */
 		intel_early_me_init();
@@ -1817,7 +1813,6 @@ static void setup_heci_uma(struct raminfo *info)
 	if (!((reg44 & 0x10000) && !(pci_read_config32(HECIDEV, 0x40) & 0x20)))
 		return;
 
-	info->heci_bar = pci_read_config32(HECIDEV, 0x10) & 0xFFFFFFF0;
 	info->memory_reserved_for_heci_mb = reg44 & 0x3f;
 	info->heci_uma_addr =
 	    ((u64)
@@ -3727,7 +3722,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	info.training.reg_178 = 0;
 	info.training.reg_10b = 0;
 
-	info.heci_bar = 0;
 	info.memory_reserved_for_heci_mb = 0;
 
 	/* before SPD */

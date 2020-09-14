@@ -1805,15 +1805,10 @@ static void send_heci_uma_message(struct raminfo *info)
 
 static void setup_heci_uma(struct raminfo *info)
 {
-	u32 reg44;
-
-	reg44 = pci_read_config32(HECIDEV, 0x44);	// = 0x80010020
-	info->memory_reserved_for_heci_mb = 0;
 	info->heci_uma_addr = 0;
-	if (!((reg44 & 0x10000) && !(pci_read_config32(HECIDEV, 0x40) & 0x20)))
+	if (!info->memory_reserved_for_heci_mb && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
 		return;
 
-	info->memory_reserved_for_heci_mb = reg44 & 0x3f;
 	info->heci_uma_addr =
 	    ((u64)
 	     ((((u64) pci_read_config16(NORTHBRIDGE, TOM)) << 6) -

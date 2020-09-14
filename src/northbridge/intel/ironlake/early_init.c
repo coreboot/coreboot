@@ -19,9 +19,9 @@ static void ironlake_setup_bars(void)
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR + 4, 0);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, 0);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, 0);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */

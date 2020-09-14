@@ -22,7 +22,12 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	register "xhci0_force_gen1" = "1"
+	register "usb3_port_force_gen1" = "{
+		.ports.xhci0_port0 = 1,
+		.ports.xhci0_port1 = 1,
+		.ports.xhci0_port2 = 1,
+		.ports.xhci0_port3 = 1,
+	}"
 
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
 	register "i2c[2]" = "{

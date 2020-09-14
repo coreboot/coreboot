@@ -157,8 +157,8 @@ void early_init_dmi(void)
 		DMIBAR32(0x0914 + (i << 5)) = 0x98200280;
 	}
 
-	DMIBAR32(0x022c);	// !!! = 0x00c26460
-	DMIBAR32(0x022c) = 0x00c2403c;
+	DMIBAR32(DMIL0SLAT);	// !!! = 0x00c26460
+	DMIBAR32(DMIL0SLAT) = 0x00c2403c;
 
 	early_pch_init_native_dmi_pre();
 

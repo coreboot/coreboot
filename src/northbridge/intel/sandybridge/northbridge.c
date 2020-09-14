@@ -262,8 +262,8 @@ static void northbridge_dmi_init(struct device *dev)
 	u32 reg32;
 
 	/* Clear error status bits */
-	DMIBAR32(0x1c4) = 0xffffffff;
-	DMIBAR32(0x1d0) = 0xffffffff;
+	DMIBAR32(DMIUESTS) = 0xffffffff;
+	DMIBAR32(DMICESTS) = 0xffffffff;
 
 	/* Steps prior to DMI ASPM */
 	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
@@ -273,9 +273,9 @@ static void northbridge_dmi_init(struct device *dev)
 		DMIBAR32(0x250) = reg32;
 	}
 
-	reg32 = DMIBAR32(0x238);
+	reg32 = DMIBAR32(DMILLTC);
 	reg32 |= (1 << 29);
-	DMIBAR32(0x238) = reg32;
+	DMIBAR32(DMILLTC) = reg32;
 
 	if (bridge_silicon_revision() >= SNB_STEP_D0) {
 		reg32 = DMIBAR32(0x1f8);
@@ -300,9 +300,9 @@ static void northbridge_dmi_init(struct device *dev)
 		DMIBAR32(0xd04) = reg32;
 	}
 
-	reg32 = DMIBAR32(0x88);
+	reg32 = DMIBAR32(DMILCTL);
 	reg32 |= (1 << 1) | (1 << 0);
-	DMIBAR32(0x88) = reg32;
+	DMIBAR32(DMILCTL) = reg32;
 }
 
 /* Disable unused PEG devices based on devicetree */

@@ -45,6 +45,7 @@ romstage-y += qupv3_spi.c
 romstage-y += gpio.c
 romstage-y += qupv3_i2c.c
 romstage-y += clock.c
+romstage-y += carve_out.c
 romstage-$(CONFIG_SC7180_QSPI) += qspi.c
 romstage-y += qcom_qup_se.c
 romstage-y += qupv3_config.c
@@ -52,6 +53,7 @@ romstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
+ramstage-y += carve_out.c
 ramstage-y += timer.c
 ramstage-y += spi.c
 ramstage-y += qupv3_spi.c

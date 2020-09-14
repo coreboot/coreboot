@@ -75,13 +75,6 @@ Name(CRES, ResourceTemplate() {
 		0x0000,		/* translation */
 		0x0cf8		/* length */
 	)
-	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-		0x0000,		/* address granularity */
-		0x03b0,		/* range minimum */
-		0x03df,		/* range maximum */
-		0x0000,		/* translation */
-		0x0030		/* length */
-	)
 
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 		0x0000,		/* address granularity */

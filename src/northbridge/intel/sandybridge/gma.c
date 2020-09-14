@@ -16,7 +16,6 @@
 
 #include "chip.h"
 #include "sandybridge.h"
-#include "gma.h"
 
 struct gt_powermeter {
 	u16 reg;

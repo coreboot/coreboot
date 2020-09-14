@@ -8,19 +8,7 @@
 #define HASWELL_DESKTOP	1
 #define HASWELL_SERVER	2
 
-/* Intel Enhanced Debug region */
-#define IED_SIZE	CONFIG_IED_REGION_SIZE
-
-/* Northbridge BARs */
-#define DEFAULT_MCHBAR		0xfed10000		/* 16 KB */
-#define DEFAULT_DMIBAR		0xfed18000		/* 4 KB */
-#define DEFAULT_EPBAR		0xfed19000		/* 4 KB */
-
-#define GFXVT_BASE_ADDRESS	0xfed90000ULL
-#define GFXVT_BASE_SIZE		0x1000
-
-#define VTVC0_BASE_ADDRESS	0xfed91000ULL
-#define VTVC0_BASE_SIZE		0x1000
+#include "memmap.h"
 
 #include <southbridge/intel/lynxpoint/pch.h>
 

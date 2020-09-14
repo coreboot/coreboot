@@ -41,6 +41,19 @@ chip soc/intel/jasperlake
 	}"
 
 	device domain 0 on
+		device pci 05.0 on # IPU - MIPI Camera
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "1"
+				register "cio2_lanes_used" = "{2}"
+				register "cio2_lane_endpoint[0]" = ""^I2C3.CAM0""
+				register "cio2_prt[0]" = "2"
+				device generic 0 on end
+			end
+		end
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on
@@ -131,6 +144,78 @@ chip soc/intel/jasperlake
 				device i2c 39 on end
 			end
 		end # I2C 2
+		device pci 15.3 on # I2C 3
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI5675""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 5675 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
+				register "ssdb.vcm_type" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
+				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D13" #power_enable_2p8
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D14" #power_enable_1p2
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_D12" #reset
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "3"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW AF DAC""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C3.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9714""
+
+				device i2c 0C on end
+
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""GT24C08""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C3.CAM0.PRIC""
+
+				register "nvm_size" = "0x2000"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c08""
+
+				device i2c 50 on end
+			end
+		end
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

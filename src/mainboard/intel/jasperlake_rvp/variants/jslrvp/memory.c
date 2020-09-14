@@ -42,7 +42,7 @@ static const struct mb_cfg jslrvp_ddr4_memcfg_cfg = {
 	/* Baseboard Rcomp target values */
 	.rcomp_targets = {0, 0, 0, 0, 0},
 
-	/* Disable Early Command Training */
+	/* Enable Early Command Training */
 	.ect = 1,
 
 	/* Set Board Type */
@@ -87,7 +87,7 @@ static const struct mb_cfg jslrvp_lpddr4_memcfg_cfg = {
 	 */
 	.rcomp_targets = {80, 40, 40, 40, 30},
 
-	/* Disable Early Command Training */
+	/* Enable Early Command Training */
 	.ect = 1,
 
 	/* Set Board Type */

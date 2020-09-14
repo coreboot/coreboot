@@ -586,19 +586,60 @@ static unsigned long acpi_fill_slit(unsigned long current)
  * 2A..2D   PSTACK1	stack 2     IOU2
  * 3A..3D   PSTACK2	stack 4     IOU3
  */
-static int get_stack_for_port(int p)
+static int get_stack_for_port(int port)
 {
-	if (p == 0)
+	if (port == PORT_0)
 		return CSTACK;
-	else if (p >= PORT_1A && p <= PORT_1D)
+	else if (port >= PORT_1A && port <= PORT_1D)
 		return PSTACK0;
-	else if (p >= PORT_2A && p <= PORT_2D)
+	else if (port >= PORT_2A && port <= PORT_2D)
 		return PSTACK1;
-	else //if (p >= PORT_3A && p <= PORT_3D)
+	else if (port >= PORT_3A && port <= PORT_3D)
 		return PSTACK2;
+	else
+		return -1;
 }
 
-static unsigned long acpi_create_drhd(unsigned long current, int socket, int stack)
+/*
+ * This function adds PCIe bridge device entry in DMAR table. If it is called
+ * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
+ */
+static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
+	int port, int stack, IIO_RESOURCE_INSTANCE iio_resource, uint32_t pcie_seg,
+	bool is_atsr, bool *first)
+{
+
+	if (get_stack_for_port(port) != stack)
+		return 0;
+
+	const uint32_t bus = iio_resource.StackRes[stack].BusBase;
+	const uint32_t dev = iio_resource.PcieInfo.PortInfo[port].Device;
+	const uint32_t func = iio_resource.PcieInfo.PortInfo[port].Function;
+
+	const uint32_t id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
+		PCI_VENDOR_ID);
+	if (id == 0xffffffff)
+		return 0;
+
+	unsigned long atsr_size = 0;
+	unsigned long pci_br_size = 0;
+	if (is_atsr == true && first && *first == true) {
+		printk(BIOS_DEBUG, "[Root Port ATS Capability] Flags: 0x%x, "
+			"PCI Segment Number: 0x%x\n", 0, pcie_seg);
+		atsr_size = acpi_create_dmar_atsr(current, 0, pcie_seg);
+		*first = false;
+	}
+
+	printk(BIOS_DEBUG, "    [PCI Bridge Device] Enumeration ID: 0x%x, "
+		"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
+		0, bus, dev, func);
+	pci_br_size = acpi_create_dmar_ds_pci_br(current + atsr_size, bus, dev, func);
+
+	return (atsr_size + pci_br_size);
+}
+
+static unsigned long acpi_create_drhd(unsigned long current, int socket,
+	int stack, const IIO_UDS *hob)
 {
 	int IoApicID[] = {
 		// socket 0
@@ -611,12 +652,6 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket, int sta
 
 	uint32_t enum_id;
 	unsigned long tmp = current;
-
-	size_t hob_size;
-	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(
-		fsp_hob_iio_universal_data_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
 
 	uint32_t bus = hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
 	uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
@@ -670,24 +705,9 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket, int sta
 	if (socket != 0 || stack != CSTACK) {
 		IIO_RESOURCE_INSTANCE iio_resource =
 			hob->PlatformData.IIO_resource[socket];
-		for (int p = 0; p < NUMBER_PORTS_PER_SOCKET; ++p) {
-			if (get_stack_for_port(p) != stack)
-				continue;
-
-			uint32_t dev = iio_resource.PcieInfo.PortInfo[p].Device;
-			uint32_t func = iio_resource.PcieInfo.PortInfo[p].Function;
-
-			uint32_t id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
-				PCI_VENDOR_ID);
-			if (id == 0xffffffff)
-				continue;
-
-			printk(BIOS_DEBUG, "    [PCI Bridge Device] Enumeration ID: 0x%x, "
-				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-				0, bus, dev, func);
-			current += acpi_create_dmar_ds_pci_br(current,
-				bus, dev, func);
-		}
+		for (int p = PORT_0; p < MAX_PORTS; ++p)
+			current += acpi_create_dmar_ds_pci_br_for_port(current, p, stack,
+				iio_resource, pcie_seg, false, NULL);
 
 		// Add VMD
 		if (hob->PlatformData.VMDStackEnable[socket][stack] &&
@@ -722,13 +742,8 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket, int sta
 	return current;
 }
 
-static unsigned long acpi_create_atsr(unsigned long current)
+static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 {
-	size_t hob_size;
-	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
-
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
 		unsigned long tmp = current;
@@ -752,32 +767,11 @@ static unsigned long acpi_create_atsr(unsigned long current)
 			if ((vtd_mmio_cap & 0x4) == 0) // BIT 2
 				continue;
 
-			for (int p = 0; p < NUMBER_PORTS_PER_SOCKET; ++p) {
-				if (socket == 0 && p == 0)
+			for (int p = PORT_0; p < MAX_PORTS; ++p) {
+				if (socket == 0 && p == PORT_0)
 					continue;
-				if (get_stack_for_port(p) != stack)
-					continue;
-
-				uint32_t dev = iio_resource.PcieInfo.PortInfo[p].Device;
-				uint32_t func = iio_resource.PcieInfo.PortInfo[p].Function;
-
-				u32 id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
-					PCI_VENDOR_ID);
-				if (id == 0xffffffff)
-					continue;
-
-				if (first) {
-					printk(BIOS_DEBUG, "[Root Port ATS Capability] Flags: 0x%x, "
-						"PCI Segment Number: 0x%x\n",
-						0, pcie_seg);
-					current += acpi_create_dmar_atsr(current, 0, pcie_seg);
-					first = 0;
-				}
-
-				printk(BIOS_DEBUG, "    [PCI Bridge Device] Enumeration ID: 0x%x, "
-					"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-					0, bus, dev, func);
-				current += acpi_create_dmar_ds_pci_br(current, bus, dev, func);
+				current += acpi_create_dmar_ds_pci_br_for_port(current, p,
+					stack, iio_resource, pcie_seg, true, &first);
 			}
 		}
 		if (tmp != current)
@@ -858,19 +852,19 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 		if (socket == 0) {
 			for (int stack = 1; stack <= PSTACK2; ++stack)
-				current = acpi_create_drhd(current, socket, stack);
-			current = acpi_create_drhd(current, socket, CSTACK);
+				current = acpi_create_drhd(current, socket, stack, hob);
+			current = acpi_create_drhd(current, socket, CSTACK, hob);
 		} else {
 			for (int stack = 0; stack <= PSTACK2; ++stack)
-				current = acpi_create_drhd(current, socket, stack);
+				current = acpi_create_drhd(current, socket, stack, hob);
 		}
 	}
 
 	// RMRR
 	current = acpi_create_rmrr(current);
 
-	// ATSR - causes hang
-	current = acpi_create_atsr(current);
+	// Root Port ATS Capability
+	current = acpi_create_atsr(current, hob);
 
 	// RHSA
 	current = acpi_create_rhsa(current);

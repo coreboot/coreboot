@@ -1649,8 +1649,20 @@ static int recv_heci_packet(struct mei_header *head, u32 *packet, u32 *packet_si
 	return 0;
 }
 
+union uma_reply {
+	struct {
+		u8 group_id;
+		u8 command;
+		u8 reserved;
+		u8 result;
+		u8 field2;
+		u8 unk3[0x48 - 4 - 1];
+	};
+	u32 dwords[0x48 / sizeof(u32)];
+} __packed;
+
 /* FIXME: Add timeout.  */
-static int recv_heci_message(u32 *message, u32 *message_size)
+static int recv_heci_message(union uma_reply *message, u32 *message_size)
 {
 	struct mei_header head;
 	int current_position;
@@ -1660,7 +1672,7 @@ static int recv_heci_message(u32 *message, u32 *message_size)
 		u32 current_size;
 		current_size = *message_size - current_position;
 		if (recv_heci_packet
-		    (&head, message + (current_position >> 2),
+		    (&head, &message->dwords[current_position / sizeof(u32)],
 		     &current_size) == -1)
 			break;
 		if (!current_size)
@@ -1680,17 +1692,7 @@ static int recv_heci_message(u32 *message, u32 *message_size)
 
 static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int heci_uma_size)
 {
-	volatile struct uma_reply {
-		u8 group_id;
-		u8 command;
-		u8 reserved;
-		u8 result;
-		u8 field2;
-		u8 unk3[0x48 - 4 - 1];
-	} __packed reply;
-
-	/* FIXME: recv_heci_message() does not always initialize 'reply' */
-	reply.command = 0;
+	union uma_reply reply;
 
 	struct uma_message {
 		u8 group_id;
@@ -1716,7 +1718,7 @@ static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int he
 	send_heci_message((u8 *) &msg, sizeof(msg), 0, 7);
 
 	reply_size = sizeof(reply);
-	if (recv_heci_message((u32 *) &reply, &reply_size) == -1)
+	if (recv_heci_message(&reply, &reply_size) == -1)
 		return;
 
 	if (reply.command != (MKHI_SET_UMA | (1 << 7)))

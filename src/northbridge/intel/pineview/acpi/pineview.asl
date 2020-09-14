@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include "hostbridge.asl"
-#include "../iomap.h"
+#include "../memmap.h"
 #include <southbridge/intel/common/rcba.h>
 
 /* PCI Device Resource Consumption */

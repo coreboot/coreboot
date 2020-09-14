@@ -3,7 +3,7 @@
 #ifndef NORTHBRIDGE_INTEL_PINEVIEW_H
 #define NORTHBRIDGE_INTEL_PINEVIEW_H
 
-#include <northbridge/intel/pineview/iomap.h>
+#include <northbridge/intel/pineview/memmap.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
 #define BOOT_PATH_NORMAL	0

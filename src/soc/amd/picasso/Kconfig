@@ -354,6 +354,14 @@ config ACPI_BERT_SIZE
 	  Specify the amount of DRAM reserved for gathering the data used to
 	  generate the ACPI table.
 
+config ACPI_SSDT_PSD_INDEPENDENT
+	bool "Allow core p-state independent transitions"
+	default y
+	help
+	  AMD recommends the ACPI _PSD object to be configured to cause
+	  cores to transition between p-states independently. A vendor may
+	  choose to generate _PSD object to allow cores to transition together.
+
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
 	select ALWAYS_LOAD_OPROM

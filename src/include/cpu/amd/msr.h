@@ -12,13 +12,16 @@
 
 #define CPUID_EXT_PM			0x80000007
 #define CPUID_MODEL			1
+#define CPUID_EBX_CORE_ID		0x8000001E
+#define  CPUID_EBX_THREADS_SHIFT	8
+#define  CPUID_EBX_THREADS_MASK		(0xFF << CPUID_EBX_THREADS_SHIFT)
 #define MC4_MISC0			0x00000413
 #define MC4_MISC1			0xC0000408
 #define MC4_MISC2			0xC0000409
 #define FS_Base				0xC0000100
-#define HWCR_MSR                        0xC0010015
+#define HWCR_MSR			0xC0010015
 #define  SMM_LOCK			(1 << 0)
-#define NB_CFG_MSR                      0xC001001f
+#define NB_CFG_MSR			0xC001001f
 #define FidVidStatus			0xC0010042
 #define MC1_CTL_MASK			0xC0010045
 #define MC4_CTL_MASK			0xC0010048
@@ -30,6 +33,9 @@
 #define PS_LIM_REG			0xC0010061
 	 /* P-state Maximum Value shift position */
 #define  PS_MAX_VAL_SHFT		4
+#define  PS_LIM_MAX_VAL_MASK		(0x7 << PS_MAX_VAL_SHFT)
+#define  MAX_PSTATES			8
+
 	/* P-state Control Register */
 #define PS_CTL_REG			0xC0010062
 	 /* P-state Control Register CMD Mask OFF */
@@ -43,11 +49,15 @@
 #define PSTATE_2_MSR			0xC0010066
 #define PSTATE_3_MSR			0xC0010067
 #define PSTATE_4_MSR			0xC0010068
-
+/* Value defined in Serial VID Interface 2.0 spec (#48022, NDA only) */
+#define  SERIAL_VID_DECODE_MICROVOLTS	6250
+#define  SERIAL_VID_MAX_MICROVOLTS	1550000L
 #define MSR_PATCH_LOADER		0xC0010020
 
 #define MSR_COFVID_STS			0xC0010071
 #define MSR_CSTATE_ADDRESS		0xC0010073
+#define  MSR_CSTATE_ADDRESS_MASK	0xFFFF
+
 #define OSVW_ID_Length			0xC0010140
 #define OSVW_Status			0xC0010141
 

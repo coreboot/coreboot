@@ -12,6 +12,7 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <device/device.h>
@@ -21,6 +22,7 @@
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
+#include <soc/msr.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
 #include <soc/gpio.h>
@@ -166,20 +168,220 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.addrh = 0x0;
 }
 
+static uint32_t get_pstate_core_freq(msr_t pstate_def)
+{
+	uint32_t core_freq, core_freq_mul, core_freq_div;
+	bool valid_freq_divisor;
+
+	/* Core frequency multiplier */
+	core_freq_mul = pstate_def.lo & PSTATE_DEF_LO_FREQ_MUL_MASK;
+
+	/* Core frequency divisor ID */
+	core_freq_div =
+		(pstate_def.lo & PSTATE_DEF_LO_FREQ_DIV_MASK) >> PSTATE_DEF_LO_FREQ_DIV_SHIFT;
+
+	if (core_freq_div == 0) {
+		return 0;
+	} else if ((core_freq_div >= PSTATE_DEF_LO_FREQ_DIV_MIN)
+		   && (core_freq_div <= PSTATE_DEF_LO_EIGHTH_STEP_MAX)) {
+		/* Allow 1/8 integer steps for this range */
+		valid_freq_divisor = 1;
+	} else if ((core_freq_div > PSTATE_DEF_LO_EIGHTH_STEP_MAX)
+		   && (core_freq_div <= PSTATE_DEF_LO_FREQ_DIV_MAX) && !(core_freq_div & 0x1)) {
+		/* Only allow 1/4 integer steps for this range */
+		valid_freq_divisor = 1;
+	} else {
+		valid_freq_divisor = 0;
+	}
+
+	if (valid_freq_divisor) {
+		/* 25 * core_freq_mul / (core_freq_div / 8) */
+		core_freq =
+			((PSTATE_DEF_LO_CORE_FREQ_BASE * core_freq_mul * 8) / (core_freq_div));
+	} else {
+		printk(BIOS_WARNING, "Undefined core_freq_div %x used. Force to 1.\n",
+		       core_freq_div);
+		core_freq = (PSTATE_DEF_LO_CORE_FREQ_BASE * core_freq_mul);
+	}
+	return core_freq;
+}
+
+static uint32_t get_pstate_core_power(msr_t pstate_def)
+{
+	uint32_t voltage_in_uvolts, core_vid, current_value_amps, current_divisor, power_in_mw;
+
+	/* Core voltage ID */
+	core_vid =
+		(pstate_def.lo & PSTATE_DEF_LO_CORE_VID_MASK) >> PSTATE_DEF_LO_CORE_VID_SHIFT;
+
+	/* Current value in amps */
+	current_value_amps =
+		(pstate_def.lo & PSTATE_DEF_LO_CUR_VAL_MASK) >> PSTATE_DEF_LO_CUR_VAL_SHIFT;
+
+	/* Current divisor */
+	current_divisor =
+		(pstate_def.lo & PSTATE_DEF_LO_CUR_DIV_MASK) >> PSTATE_DEF_LO_CUR_DIV_SHIFT;
+
+	/* Voltage */
+	if ((core_vid >= 0xF8) && (core_vid <= 0xFF)) {
+		/* Voltage off for VID codes 0xF8 to 0xFF */
+		voltage_in_uvolts = 0;
+	} else {
+		voltage_in_uvolts =
+			SERIAL_VID_MAX_MICROVOLTS - (SERIAL_VID_DECODE_MICROVOLTS * core_vid);
+	}
+
+	/* Power in mW */
+	power_in_mw = (voltage_in_uvolts) / 1000 * current_value_amps;
+
+	switch (current_divisor) {
+	case 0:
+		break;
+	case 1:
+		power_in_mw = power_in_mw / 10L;
+		break;
+	case 2:
+		power_in_mw = power_in_mw / 100L;
+		break;
+	case 3:
+		/* current_divisor is set to an undefined value.*/
+		printk(BIOS_WARNING, "Undefined current_divisor set for enabled P-state .\n");
+		power_in_mw = 0;
+		break;
+	}
+
+	return power_in_mw;
+}
+
+/*
+ * Populate structure describing enabled p-states and return count of enabled p-states.
+ */
+static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
+			      struct acpi_xpss_sw_pstate *pstate_xpss_values)
+{
+	msr_t pstate_def;
+	size_t pstate_count, pstate;
+	uint32_t pstate_enable, max_pstate;
+
+	pstate_count = 0;
+	max_pstate = (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
+
+	for (pstate = 0; pstate <= max_pstate; pstate++) {
+		pstate_def = rdmsr(PSTATE_0_MSR + pstate);
+
+		pstate_enable = (pstate_def.hi & PSTATE_DEF_HI_ENABLE_MASK)
+				>> PSTATE_DEF_HI_ENABLE_SHIFT;
+		if (!pstate_enable)
+			continue;
+
+		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_def);
+		pstate_values[pstate_count].power = get_pstate_core_power(pstate_def);
+		pstate_values[pstate_count].transition_latency = 0;
+		pstate_values[pstate_count].bus_master_latency = 0;
+		pstate_values[pstate_count].control_value = pstate;
+		pstate_values[pstate_count].status_value = pstate;
+
+		pstate_xpss_values[pstate_count].core_freq =
+			(uint64_t)pstate_values[pstate_count].core_freq;
+		pstate_xpss_values[pstate_count].power =
+			(uint64_t)pstate_values[pstate_count].power;
+		pstate_xpss_values[pstate_count].transition_latency = 0;
+		pstate_xpss_values[pstate_count].bus_master_latency = 0;
+		pstate_xpss_values[pstate_count].control_value = (uint64_t)pstate;
+		pstate_xpss_values[pstate_count].status_value = (uint64_t)pstate;
+		pstate_count++;
+	}
+
+	return pstate_count;
+}
+
 void generate_cpu_entries(const struct device *device)
 {
-	int cores, cpu;
+	int logical_cores;
+	size_t pstate_count, cpu, proc_blk_len;
+	struct acpi_sw_pstate pstate_values[MAX_PSTATES] = { {0} };
+	struct acpi_xpss_sw_pstate pstate_xpss_values[MAX_PSTATES] = { {0} };
+	uint32_t threads_per_core, proc_blk_addr;
+	uint32_t cstate_base_address =
+		rdmsr(MSR_CSTATE_ADDRESS).lo & MSR_CSTATE_ADDRESS_MASK;
 
-	cores = get_cpu_count();
-	printk(BIOS_DEBUG, "ACPI \\_SB report %d core(s)\n", cores);
+	const acpi_addr_t perf_ctrl = {
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,
+		.bit_width = 64,
+		.addrl = PS_CTL_REG,
+	};
+	const acpi_addr_t perf_sts = {
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,
+		.bit_width = 64,
+		.addrl = PS_STS_REG,
+	};
 
-	/* Generate BSP \_SB.P000 */
-	acpigen_write_processor(0, ACPI_GPE0_BLK, 6);
-	acpigen_pop_len();
+	acpi_cstate_t cstate_info[] = {
+		[0] = {
+			.ctype = 1,
+			.latency = 1,
+			.power = 0,
+			.resource = {
+				.space_id = ACPI_ADDRESS_SPACE_FIXED,
+				.bit_width = 2,
+				.bit_offset = 2,
+				.addrl = 0,
+				.addrh = 0,
+			},
+		},
+		[1] = {
+			.ctype = 2,
+			.latency = 400,
+			.power = 0,
+			.resource = {
+				.space_id = ACPI_ADDRESS_SPACE_IO,
+				.bit_width = 8,
+				.bit_offset = 0,
+				.addrl = cstate_base_address + 1,
+				.addrh = 0,
+				.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
+			},
+		},
+	};
 
-	/* Generate AP \_SB.Pxxx */
-	for (cpu = 1; cpu < cores; cpu++) {
-		acpigen_write_processor(cpu, 0, 0);
+	threads_per_core = ((cpuid_ebx(CPUID_EBX_CORE_ID) & CPUID_EBX_THREADS_MASK)
+			    >> CPUID_EBX_THREADS_SHIFT)
+			   + 1;
+	pstate_count = get_pstate_info(pstate_values, pstate_xpss_values);
+	logical_cores = get_cpu_count();
+
+	for (cpu = 0; cpu < logical_cores; cpu++) {
+
+		if (cpu == 0) {
+			/* BSP values for \_SB.Pxxx */
+			proc_blk_len = 6;
+			proc_blk_addr = ACPI_GPE0_BLK;
+		} else {
+			/* AP values for \_SB.Pxxx */
+			proc_blk_addr = 0;
+			proc_blk_len = 0;
+		}
+
+		acpigen_write_processor(cpu, proc_blk_addr, proc_blk_len);
+
+		acpigen_write_pct_package(&perf_ctrl, &perf_sts);
+
+		acpigen_write_pss_object(pstate_values, pstate_count);
+
+		acpigen_write_xpss_object(pstate_xpss_values, pstate_count);
+
+		if (CONFIG(ACPI_SSDT_PSD_INDEPENDENT))
+			acpigen_write_PSD_package(cpu / threads_per_core, threads_per_core,
+						  HW_ALL);
+		else
+			acpigen_write_PSD_package(0, logical_cores, SW_ALL);
+
+		acpigen_write_PPC(0);
+
+		acpigen_write_CST_package(cstate_info, ARRAY_SIZE(cstate_info));
+
+		acpigen_write_CSD_package(cpu >> 1, threads_per_core, HW_ALL, 0);
+
 		acpigen_pop_len();
 	}
 }

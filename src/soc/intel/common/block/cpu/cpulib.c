@@ -346,10 +346,8 @@ int get_prmrr_size(void)
 	int i;
 	int valid_size;
 
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_DISABLED)) {
-		printk(BIOS_DEBUG, "PRMRR disabled by config.\n");
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		return 0;
-	}
 
 	msr = rdmsr(MSR_PRMRR_VALID_CONFIG);
 	if (!msr.lo) {

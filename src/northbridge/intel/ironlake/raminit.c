@@ -3654,8 +3654,8 @@ void chipset_init(const int s3resume)
 		MCHBAR16_OR(0x2c30, 0x200);
 		MCHBAR16(0x2c32) = 0x434;
 		MCHBAR32_AND_OR(0x2c44, 0, 0x1053687);
-		pci_read_config8(GMA, 0x62);	// = 0x2
-		pci_write_config8(GMA, 0x62, 0x2);
+		pci_read_config8(GMA, MSAC);	// = 0x2
+		pci_write_config8(GMA, MSAC, 0x2);
 		read8(DEFAULT_RCBA + 0x2318);
 		write8(DEFAULT_RCBA + 0x2318, 0x47);
 		read8(DEFAULT_RCBA + 0x2320);

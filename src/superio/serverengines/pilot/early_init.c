@@ -7,7 +7,7 @@
 #include <device/pnp_ops.h>
 #include <console/console.h>
 #include <device/pnp.h>
-#include <device/pnp_def.h>
+
 #include "pilot.h"
 
 /*

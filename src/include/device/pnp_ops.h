@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pnp.h>
-#include <device/pnp_def.h>
 #include <device/pnp_type.h>
 
 #if ENV_PNP_SIMPLE_DEVICE

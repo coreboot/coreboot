@@ -5,7 +5,6 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <device/pnp_def.h>
 
 /* PNP config mode wrappers */
 

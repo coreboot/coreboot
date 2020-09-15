@@ -6,7 +6,6 @@
 #include <device/pnp.h>
 #include <acpi/acpigen.h>
 #include <acpi/acpi.h>
-#include <device/pnp_def.h>
 #include <console/console.h>
 #include <types.h>
 #include <string.h>

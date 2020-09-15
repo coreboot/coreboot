@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <device/device.h>
+/* When <device/pnp.h> is needed, it supposed to provide <device/pnp_{def,type}.h> */
 #include <device/pnp_def.h>
 #include <device/pnp_type.h>
 #include <arch/io.h>

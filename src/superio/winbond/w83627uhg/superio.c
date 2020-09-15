@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <device/pnp_def.h>
 #include <superio/conf_mode.h>
 #include <stdint.h>
 #include <pc80/keyboard.h>

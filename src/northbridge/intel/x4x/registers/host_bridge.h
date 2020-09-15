@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __X4X_HOSTBRIDGE_REGS_H__
-#define __X4X_HOSTBRIDGE_REGS_H__
+#ifndef __X4X_REGISTERS_HOSTBRIDGE_H__
+#define __X4X_REGISTERS_HOSTBRIDGE_H__
 
 #define D0F0_EPBAR_LO	0x40
 #define D0F0_EPBAR_HI	0x44
@@ -37,4 +37,4 @@
 #define D0F0_SKPD	0xdc /* Scratchpad Data */
 #define D0F0_CAPID0	0xe0
 
-#endif /* __X4X_HOSTBRIDGE_REGS_H__ */
+#endif /* __X4X_REGISTERS_HOSTBRIDGE_H__ */

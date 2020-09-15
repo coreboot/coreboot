@@ -16,11 +16,11 @@
 /*
  * D1:F0 PEG
  */
-#define PEG_CAP 0xa2
-#define SLOTCAP 0xb4
-#define PEGLC 0xec
-#define D1F0_VCCAP 0x104
-#define D1F0_VC0RCTL 0x114
+#define PEG_CAP		0xa2
+#define SLOTCAP		0xb4
+#define PEGLC		0xec
+#define D1F0_VCCAP	0x104
+#define D1F0_VC0RCTL	0x114
 
 /*
  * Graphics frequencies
@@ -40,21 +40,18 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR8_AND(x, and) (MCHBAR8(x) = MCHBAR8(x) & (and))
-#define MCHBAR8_OR(x, or) (MCHBAR8(x) = MCHBAR8(x) | (or))
-#define MCHBAR8_AND_OR(x, and, or) \
-	(MCHBAR8(x) = (MCHBAR8(x) & (and)) | (or))
+#define MCHBAR8_AND(x,  and) (MCHBAR8(x)  = MCHBAR8(x)  & (and))
 #define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
-#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
-#define MCHBAR16_AND_OR(x, and, or) \
-	(MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
 #define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
+#define MCHBAR8_OR(x,  or) (MCHBAR8(x)  = MCHBAR8(x)  | (or))
+#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
 #define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
-#define MCHBAR32_AND_OR(x, and, or) \
-	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
+#define MCHBAR8_AND_OR(x,  and, or) (MCHBAR8(x)  = (MCHBAR8(x)  & (and)) | (or))
+#define MCHBAR16_AND_OR(x, and, or) (MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
+#define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
 #define CHDECMISC	0x111
 #define STACKED_MEM	(1 << 1)
@@ -92,49 +89,49 @@
  * DMIBAR
  */
 
-#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR8(x)  (*((volatile u8  *)(DEFAULT_DMIBAR + (x))))
 #define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
 #define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
-#define DMIVC0RCTL 0x14
-#define DMIVC1RCTL 0x20
-#define DMIVC1RSTS 0x26
-#define DMIESD  0x44
-#define DMILE1D 0x50
-#define DMILE1A 0x58
-#define DMILE2D 0x60
-#define DMILE2A 0x68
+#define DMIVC0RCTL	0x14
+#define DMIVC1RCTL	0x20
+#define DMIVC1RSTS	0x26
+#define DMIESD		0x44
+#define DMILE1D		0x50
+#define DMILE1A		0x58
+#define DMILE2D		0x60
+#define DMILE2A		0x68
 
 /*
  * EPBAR
  */
 
-#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR8(x)  (*((volatile u8  *)(DEFAULT_EPBAR + (x))))
 #define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
 #define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
-#define EPESD 0x44
-#define EPLE1D 0x50
-#define EPLE1A 0x58
-#define EPLE2D 0x60
+#define EPESD	0x44
+#define EPLE1D	0x50
+#define EPLE1A	0x58
+#define EPLE2D	0x60
 
-#define NOP_CMD 0x2
-#define PRECHARGE_CMD 0x4
-#define MRS_CMD 0x6
-#define EMRS_CMD 0x8
-#define EMRS1_CMD (EMRS_CMD | 0x10)
-#define EMRS2_CMD (EMRS_CMD | 0x20)
-#define EMRS3_CMD (EMRS_CMD | 0x30)
-#define ZQCAL_CMD 0xa
-#define CBR_CMD 0xc
-#define NORMALOP_CMD 0xe
+#define NOP_CMD		0x2
+#define PRECHARGE_CMD	0x4
+#define MRS_CMD		0x6
+#define EMRS_CMD	0x8
+#define EMRS1_CMD	(EMRS_CMD | 0x10)
+#define EMRS2_CMD	(EMRS_CMD | 0x20)
+#define EMRS3_CMD	(EMRS_CMD | 0x30)
+#define ZQCAL_CMD	0xa
+#define CBR_CMD		0xc
+#define NORMALOP_CMD	0xe
 
-#define TOTAL_CHANNELS 2
-#define TOTAL_DIMMS 4
-#define TOTAL_BYTELANES 8
-#define DIMMS_PER_CHANNEL (TOTAL_DIMMS / TOTAL_CHANNELS)
-#define RAW_CARD_UNPOPULATED 0xff
-#define RAW_CARD_POPULATED 0
+#define TOTAL_CHANNELS		2
+#define TOTAL_DIMMS		4
+#define TOTAL_BYTELANES		8
+#define DIMMS_PER_CHANNEL	(TOTAL_DIMMS / TOTAL_CHANNELS)
+#define RAW_CARD_UNPOPULATED	0xff
+#define RAW_CARD_POPULATED	0
 
 #define DIMM_IS_POPULATED(dimms, idx) (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
 #define IF_DIMM_POPULATED(dimms, idx) if (dimms[idx].card_type != RAW_CARD_UNPOPULATED)
@@ -194,9 +191,9 @@
 #define DDR3_MAX_CAS 18
 
 enum fsb_clock {
-	FSB_CLOCK_800MHz	= 0,
-	FSB_CLOCK_1066MHz	= 1,
-	FSB_CLOCK_1333MHz	= 2,
+	FSB_CLOCK_800MHz  = 0,
+	FSB_CLOCK_1066MHz = 1,
+	FSB_CLOCK_1333MHz = 2,
 };
 
 enum mem_clock {
@@ -204,8 +201,8 @@ enum mem_clock {
 	MEM_CLOCK_533MHz  = 1,
 	MEM_CLOCK_667MHz  = 2,
 	MEM_CLOCK_800MHz  = 3,
-	MEM_CLOCK_1066MHz  = 4,
-	MEM_CLOCK_1333MHz  = 5,
+	MEM_CLOCK_1066MHz = 4,
+	MEM_CLOCK_1333MHz = 5,
 };
 
 enum ddr {
@@ -256,7 +253,7 @@ enum n_banks {
 
 struct timings {
 	unsigned int	CAS;
-	unsigned int    tclk;
+	unsigned int	tclk;
 	enum fsb_clock	fsb_clk;
 	enum mem_clock	mem_clk;
 	unsigned int	tRAS;
@@ -270,15 +267,14 @@ struct timings {
 };
 
 struct dimminfo {
-	unsigned int	card_type; /* 0xff: unpopulated,
-				      0xa - 0xf: raw card type A - F */
+	unsigned int	card_type; /* 0xff: unpopulated, 0xa - 0xf: raw card type A - F */
 	enum chip_width	width;
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */
 	enum n_banks	n_banks;
 	unsigned int	ranks;
 	unsigned int	rows;
 	unsigned int	cols;
-	u16             spd_crc;
+	u16		spd_crc;
 	u8		mirrored;
 };
 
@@ -342,8 +338,7 @@ u32 ddr_to_mhz(u32 speed);
 u32 test_address(int channel, int rank);
 void dqsset(u8 ch, u8 lane, const struct dll_setting *setting);
 void dqset(u8 ch, u8 lane, const struct dll_setting *setting);
-void rt_set_dqs(u8 channel, u8 lane, u8 rank,
-		struct rt_dqs_setting *dqs_setting);
+void rt_set_dqs(u8 channel, u8 lane, u8 rank, struct rt_dqs_setting *dqs_setting);
 int do_write_training(struct sysinfo *s);
 int do_read_training(struct sysinfo *s);
 void search_write_leveling(struct sysinfo *s);

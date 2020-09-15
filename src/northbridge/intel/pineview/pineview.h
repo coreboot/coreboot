@@ -27,8 +27,6 @@
 #define GTTADR		0x1c
 #define BSM		0x5c
 
-#define GPIO32(x) *((volatile u32 *)(DEFAULT_GPIOBASE + x))
-
 /*
  * MCHBAR
  */

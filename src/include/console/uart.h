@@ -20,6 +20,18 @@ static inline unsigned int get_uart_baudrate(void)
 }
 #endif
 
+#if CONFIG(OVERRIDE_UART_FOR_CONSOLE)
+/* Return the index of uart port, define this in your platform
+ * when need to use variables to override the index.
+ */
+unsigned int get_uart_for_console(void);
+#else
+static inline unsigned int get_uart_for_console(void)
+{
+	return CONFIG_UART_FOR_CONSOLE;
+}
+#endif
+
 /* Returns the divisor value for a given baudrate.
  * The formula to satisfy is:
  *    refclk / divisor = baudrate * oversample
@@ -56,15 +68,15 @@ void oxford_remap(unsigned int new_base);
 #if __CONSOLE_SERIAL_ENABLE__
 static inline void __uart_init(void)
 {
-	uart_init(CONFIG_UART_FOR_CONSOLE);
+	uart_init(get_uart_for_console());
 }
 static inline void __uart_tx_byte(u8 data)
 {
-	uart_tx_byte(CONFIG_UART_FOR_CONSOLE, data);
+	uart_tx_byte(get_uart_for_console(), data);
 }
 static inline void __uart_tx_flush(void)
 {
-	uart_tx_flush(CONFIG_UART_FOR_CONSOLE);
+	uart_tx_flush(get_uart_for_console());
 }
 #else
 static inline void __uart_init(void)		{}

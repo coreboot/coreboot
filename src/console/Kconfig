@@ -58,6 +58,14 @@ if CONSOLE_SERIAL
 	comment "device-specific UART"
 	depends on HAVE_UART_SPECIAL
 
+config OVERRIDE_UART_FOR_CONSOLE
+	bool
+	help
+	  Set to "y" when the platform overrides the index of uart port by providing
+	  a get_uart_for_console routine.
+
+if !OVERRIDE_UART_FOR_CONSOLE
+
 config UART_FOR_CONSOLE
 	int
 	prompt "Index for UART port to use for console" if !FIXED_UART_FOR_CONSOLE
@@ -86,6 +94,8 @@ comment "Serial port base address = 0x3e8"
 depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 2
 comment "Serial port base address = 0x2e8"
 depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 3
+
+endif
 
 config UART_OVERRIDE_BAUDRATE
 	bool

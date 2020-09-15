@@ -346,7 +346,7 @@ int get_prmrr_size(void)
 	int i;
 	int valid_size;
 
-	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		return 0;
 
 	msr = rdmsr(MSR_PRMRR_VALID_CONFIG);

@@ -9,10 +9,10 @@ void gm45_early_init(void)
 	const pci_devfn_t d0f0 = PCI_DEV(0, 0, 0);
 
 	/* Setup MCHBAR. */
-	pci_write_config32(d0f0, D0F0_MCHBAR_LO, (uintptr_t)DEFAULT_MCHBAR | 1);
+	pci_write_config32(d0f0, D0F0_MCHBAR_LO, DEFAULT_MCHBAR | 1);
 
 	/* Setup DMIBAR. */
-	pci_write_config32(d0f0, D0F0_DMIBAR_LO, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(d0f0, D0F0_DMIBAR_LO, DEFAULT_DMIBAR | 1);
 
 	/* Setup EPBAR. */
 	pci_write_config32(d0f0, D0F0_EPBAR_LO, DEFAULT_EPBAR | 1);

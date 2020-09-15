@@ -250,7 +250,7 @@ static void setup_rcrb(const int peg_enabled)
 
 	/* Link1: component ID 1, link valid. */
 	EPBAR32(EPLE1D) = (EPBAR32(EPLE1D) & 0xff000000) | (1 << 16) | (1 << 0);
-	EPBAR32(EPLE1A) = (uintptr_t)DEFAULT_DMIBAR;
+	EPBAR32(EPLE1A) = DEFAULT_DMIBAR;
 
 	if (peg_enabled)
 		/* Link2: link_valid. */
@@ -268,7 +268,7 @@ static void setup_rcrb(const int peg_enabled)
 	/* Link2: component ID 1 (MCH), link valid */
 	DMIBAR32(DMILE2D) =
 		(DMIBAR32(DMILE2D) & 0xff000000) | (1 << 16) | (1 << 0);
-	DMIBAR32(DMILE2A) = (uintptr_t)DEFAULT_MCHBAR;
+	DMIBAR32(DMILE2A) = DEFAULT_MCHBAR;
 }
 
 void gm45_late_init(const stepping_t stepping)

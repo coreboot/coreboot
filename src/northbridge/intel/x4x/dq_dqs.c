@@ -5,6 +5,7 @@
 #include <delay.h>
 #include <string.h>
 #include <types.h>
+#include "raminit.h"
 #include "x4x.h"
 
 static void print_dll_setting(const struct dll_setting *dll_setting,

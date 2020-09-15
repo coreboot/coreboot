@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <stdint.h>
-#include "x4x.h"
+#include "raminit.h"
 
 const struct dll_setting default_ddr2_667_ctrl[7] = {
 	/* tap  pi db  delay coarse*/

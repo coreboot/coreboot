@@ -14,6 +14,7 @@
 #include <timestamp.h>
 #include <types.h>
 
+#include "raminit.h"
 #include "x4x.h"
 
 #define MRC_CACHE_VERSION 0

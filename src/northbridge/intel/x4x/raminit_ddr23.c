@@ -13,6 +13,7 @@
 #include <southbridge/intel/i82801jx/i82801jx.h>
 #endif
 #include <string.h>
+#include "raminit.h"
 #include "x4x.h"
 
 #define ME_UMA_SIZEMB 0

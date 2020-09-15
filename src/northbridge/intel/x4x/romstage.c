@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <southbridge/intel/common/pmclib.h>
-#include <northbridge/intel/x4x/x4x.h>
 #include <arch/romstage.h>
 
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)
@@ -10,6 +9,9 @@
 #elif CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #endif
+
+#include "raminit.h"
+#include "x4x.h"
 
 __weak void mb_pre_raminit_setup(int s3_resume)
 {

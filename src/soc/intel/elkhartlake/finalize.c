@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/io.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>

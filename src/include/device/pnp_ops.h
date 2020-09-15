@@ -4,7 +4,6 @@
 #define __DEVICE_PNP_OPS_H__
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/pnp.h>
 
 #if ENV_PNP_SIMPLE_DEVICE

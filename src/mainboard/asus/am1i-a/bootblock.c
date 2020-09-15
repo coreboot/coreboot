@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <arch/io.h>
 #include <bootblock_common.h>
 #include <device/pnp_ops.h>
 #include <superio/ite/common/ite.h>

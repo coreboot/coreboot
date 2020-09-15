@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
 #include <bootblock_common.h>
 #include <build.h>
 #include <console/console.h>

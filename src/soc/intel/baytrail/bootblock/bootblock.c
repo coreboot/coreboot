@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/bootblock.h>
+#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <soc/iosf.h>
 #include <soc/iomap.h>

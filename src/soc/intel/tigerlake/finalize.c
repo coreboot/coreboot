@@ -6,7 +6,6 @@
  * Chapter number: 4, 29
  */
 
-#include <arch/io.h>
 #include <device/mmio.h>
 #include <bootstate.h>
 #include <console/console.h>

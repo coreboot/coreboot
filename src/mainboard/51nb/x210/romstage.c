@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>
-#include <arch/io.h>
 #include <string.h>
 
 static void mainboard_fill_rcomp_res_data(void *rcomp_ptr)

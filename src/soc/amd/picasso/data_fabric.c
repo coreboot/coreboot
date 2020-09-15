@@ -12,7 +12,7 @@
 #include <soc/pci_devs.h>
 #include <types.h>
 
-static void disable_mmio_reg(int reg)
+static void disable_mmio_reg(unsigned int reg)
 {
 	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg),
 			   IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT);
@@ -20,7 +20,7 @@ static void disable_mmio_reg(int reg)
 	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(reg), 0);
 }
 
-static bool is_mmio_reg_disabled(int reg)
+static bool is_mmio_reg_disabled(unsigned int reg)
 {
 	uint32_t val = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg));
 	return !(val & ((MMIO_WE | MMIO_RE)));

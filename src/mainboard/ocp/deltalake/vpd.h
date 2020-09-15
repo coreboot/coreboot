@@ -37,4 +37,8 @@
 #define FSPM_MEMREFRESHWATERMARK "fspm_mem_refresh_watermark"
 #define FSPM_MEMREFRESHWATERMARK_DEFAULT 1
 
+/* coreboot uart io select: 0 = 0x3f8, 1 = 0x2f8, 2 = 0x3e8, 3 = 0x2e8 */
+#define COREBOOT_UART_IO "coreboot_uart_io"
+#define COREBOOT_UART_IO_DEFAULT 1
+
 #endif

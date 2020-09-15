@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <console/uart.h>
 #include <drivers/ipmi/ipmi_kcs.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <drivers/vpd/vpd.h>
@@ -29,7 +30,10 @@ static void mainboard_config_upd(FSPM_UPD *mupd)
 			"SerialIoUartDebugEnable to %d\n", FSP_LOG, FSP_LOG_DEFAULT);
 		mupd->FspmConfig.SerialIoUartDebugEnable = FSP_LOG_DEFAULT;
 	}
-	mupd->FspmConfig.SerialIoUartDebugIoBase = 0x2f8;
+
+	/* Select UART IO of FSP */
+	static const unsigned int bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
+	mupd->FspmConfig.SerialIoUartDebugIoBase = bases[get_uart_for_console()];
 
 	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
 		/* FSP debug log level */

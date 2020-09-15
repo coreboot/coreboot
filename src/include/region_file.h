@@ -31,9 +31,22 @@ int region_file_init(struct region_file *f, const struct region_device *p);
  */
 int region_file_data(const struct region_file *f, struct region_device *rdev);
 
+/*
+ * Create region file entry struct to insert multiple data buffers
+ * into the same region_file.
+ */
+struct update_region_file_entry {
+	/* size of this entry */
+	size_t size;
+	/* data pointer */
+	const void *data;
+};
+
 /* Update region file with latest data. Returns < 0 on error, 0 on success. */
-int region_file_update_data(struct region_file *f, const void *buf,
-				size_t size);
+int region_file_update_data_arr(struct region_file *f,
+				  const struct update_region_file_entry *entries,
+				  size_t num_entries);
+int region_file_update_data(struct region_file *f, const void *buf, size_t size);
 
 /* Declared here for easy object allocation. */
 struct region_file {

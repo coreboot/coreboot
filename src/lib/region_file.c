@@ -365,12 +365,16 @@ static int commit_data_allocation(struct region_file *f, size_t data_blks)
 	return 0;
 }
 
-static int commit_data(const struct region_file *f, const void *buf,
-			size_t size)
+static int commit_data(const struct region_file *f,
+		       const struct update_region_file_entry *entries,
+		       size_t num_entries)
 {
 	size_t offset = block_to_bytes(region_file_data_begin(f));
-	if (rdev_writeat(&f->rdev, buf, offset, size) < 0)
-		return -1;
+	for (int i = 0; i < num_entries; i++) {
+		if (rdev_writeat(&f->rdev, entries[i].data, offset, entries[i].size) < 0)
+			return -1;
+		offset += entries[i].size;
+	}
 	return 0;
 }
 
@@ -399,8 +403,9 @@ static int handle_need_to_empty(struct region_file *f)
 	return 0;
 }
 
-static int handle_update(struct region_file *f, size_t blocks, const void *buf,
-				size_t size)
+static int handle_update(struct region_file *f, size_t blocks,
+			 const struct update_region_file_entry *entries,
+			 size_t num_entries)
 {
 	if (!update_can_fit(f, blocks)) {
 		printk(BIOS_INFO, "REGF update can't fit. Will empty.\n");
@@ -413,7 +418,7 @@ static int handle_update(struct region_file *f, size_t blocks, const void *buf,
 		return -1;
 	}
 
-	if (commit_data(f, buf, size)) {
+	if (commit_data(f, entries, num_entries)) {
 		printk(BIOS_ERR, "REGF failed to commit data.\n");
 		return -1;
 	}
@@ -421,11 +426,16 @@ static int handle_update(struct region_file *f, size_t blocks, const void *buf,
 	return 0;
 }
 
-int region_file_update_data(struct region_file *f, const void *buf, size_t size)
+int region_file_update_data_arr(struct region_file *f,
+				const struct update_region_file_entry *entries,
+				size_t num_entries)
 {
 	int ret;
 	size_t blocks;
+	size_t size = 0;
 
+	for (int i = 0; i < num_entries; i++)
+		size += entries[i].size;
 	blocks = bytes_to_block(ALIGN_UP(size, REGF_BLOCK_GRANULARITY));
 
 	while (1) {
@@ -442,7 +452,7 @@ int region_file_update_data(struct region_file *f, const void *buf, size_t size)
 			ret = -1;
 			break;
 		default:
-			ret = handle_update(f, blocks, buf, size);
+			ret = handle_update(f, blocks, entries, num_entries);
 			break;
 		}
 
@@ -458,4 +468,13 @@ int region_file_update_data(struct region_file *f, const void *buf, size_t size)
 	}
 
 	return ret;
+}
+
+int region_file_update_data(struct region_file *f, const void *buf, size_t size)
+{
+	struct update_region_file_entry entry = {
+		.size = size,
+		.data = buf,
+	};
+	return region_file_update_data_arr(f, &entry, 1);
 }

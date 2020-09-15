@@ -10,7 +10,7 @@
 #include <soc/data_fabric.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <stdbool.h>
+#include <types.h>
 
 static void disable_mmio_reg(int reg)
 {

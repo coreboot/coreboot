@@ -93,14 +93,42 @@
 #define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
 #define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
-#define DMIVC0RCTL	0x14
-#define DMIVC1RCTL	0x20
-#define DMIVC1RSTS	0x26
-#define DMIESD		0x44
-#define DMILE1D		0x50
-#define DMILE1A		0x58
-#define DMILE2D		0x60
-#define DMILE2A		0x68
+#define DMIVCECH	0x000	/* 32bit */
+#define DMIPVCCAP1	0x004	/* 32bit */
+
+#define DMIVC0RCAP	0x010	/* 32bit */
+#define DMIVC0RCTL	0x014	/* 32bit */
+#define DMIVC0RSTS	0x01a	/* 16bit */
+#define  VC0NP		(1 << 1)
+
+#define DMIVC1RCAP	0x01c	/* 32bit */
+#define DMIVC1RCTL	0x020	/* 32bit */
+#define DMIVC1RSTS	0x026	/* 16bit */
+#define  VC1NP		(1 << 1)
+
+#define DMIVCPRCAP	0x028	/* 32bit */
+#define DMIVCPRCTL	0x02c	/* 32bit */
+#define DMIVCPRSTS	0x032	/* 16bit */
+#define  VCPNP		(1 << 1)
+
+#define DMIVCMRCAP	0x034	/* 32bit */
+#define DMIVCMRCTL	0x038	/* 32bit */
+#define DMIVCMRSTS	0x03e	/* 16bit */
+#define  VCMNP		(1 << 1)
+
+#define DMIESD		0x044	/* 32bit */
+
+#define DMILE1D		0x050	/* 32bit */
+#define DMILE1A		0x058	/* 64bit */
+#define DMILE2D		0x060	/* 32bit */
+#define DMILE2A		0x068	/* 64bit */
+
+#define DMILCAP		0x084	/* 32bit */
+#define DMILCTL		0x088	/* 16bit */
+#define DMILSTS		0x08a	/* 16bit */
+
+#define DMIUESTS	0x1c4	/* 32bit */
+#define DMICESTS	0x1d0	/* 32bit */
 
 /*
  * EPBAR
@@ -110,10 +138,30 @@
 #define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
 #define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
-#define EPESD	0x44
-#define EPLE1D	0x50
-#define EPLE1A	0x58
-#define EPLE2D	0x60
+#define EPPVCCAP1	0x004	/* 32bit */
+#define EPPVCCTL	0x00c	/* 32bit */
+
+#define EPVC0RCAP	0x010	/* 32bit */
+#define EPVC0RCTL	0x014	/* 32bit */
+#define EPVC0RSTS	0x01a	/* 16bit */
+
+#define EPVC1RCAP	0x01c	/* 32bit */
+#define EPVC1RCTL	0x020	/* 32bit */
+#define EPVC1RSTS	0x026	/* 16bit */
+
+#define EPVC1MTS	0x028	/* 32bit */
+#define EPVC1ITC	0x02c	/* 32bit */
+
+#define EPESD		0x044	/* 32bit */
+
+#define EPLE1D		0x050	/* 32bit */
+#define EPLE1A		0x058	/* 64bit */
+#define EPLE2D		0x060	/* 32bit */
+#define EPLE2A		0x068	/* 64bit */
+
+#define EP_PORTARB(x)	(0x100 + 4 * (x))	/* 256bit */
+
+
 
 #define NOP_CMD		0x2
 #define PRECHARGE_CMD	0x4

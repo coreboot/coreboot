@@ -60,59 +60,59 @@ static void init_egress(void)
 	u32 reg32;
 
 	/* VC0: TC0 only */
-	EPBAR8(0x14) = 1;
-	EPBAR8(0x4) = 1;
+	EPBAR8(EPVC0RCTL) = 1;
+	EPBAR8(EPPVCCAP1) = 1;
 
 	switch (MCHBAR32(0xc00) & 0x7) {
 	case 0x0:
 		/* FSB 1066 */
-		EPBAR32(0x2c) = 0x0001a6db;
+		EPBAR32(EPVC1ITC) = 0x0001a6db;
 		break;
 	case 0x2:
 		/* FSB 800 */
-		EPBAR32(0x2c) = 0x00014514;
+		EPBAR32(EPVC1ITC) = 0x00014514;
 		break;
 	default:
 	case 0x4:
 		/* FSB 1333 */
-		EPBAR32(0x2c) = 0x00022861;
+		EPBAR32(EPVC1ITC) = 0x00022861;
 		break;
 	}
-	EPBAR32(0x28) = 0x0a0a0a0a;
-	EPBAR8(0xc) = (EPBAR8(0xc) & ~0xe) | 2;
-	EPBAR32(0x1c) = (EPBAR32(0x1c) & ~0x7f0000) | 0x0a0000;
+	EPBAR32(EPVC1MTS) = 0x0a0a0a0a;
+	EPBAR8(EPPVCCTL) = (EPBAR8(EPPVCCTL) & ~0xe) | 2;
+	EPBAR32(EPVC1RCAP) = (EPBAR32(EPVC1RCAP) & ~0x7f0000) | 0x0a0000;
 	MCHBAR8(0x3c) = MCHBAR8(0x3c) | 0x7;
 
 	/* VC1: ID1, TC7 */
-	reg32 = (EPBAR32(0x20) & ~(7 << 24)) | (1 << 24);
+	reg32 = (EPBAR32(EPVC1RCTL) & ~(7 << 24)) | (1 << 24);
 	reg32 = (reg32 & ~0xfe) | (1 << 7);
-	EPBAR32(0x20) = reg32;
+	EPBAR32(EPVC1RCTL) = reg32;
 
 	/* Init VC1 port arbitration table */
-	EPBAR32(0x100) = 0x001000001;
-	EPBAR32(0x104) = 0x000040000;
-	EPBAR32(0x108) = 0x000001000;
-	EPBAR32(0x10c) = 0x000000040;
-	EPBAR32(0x110) = 0x001000001;
-	EPBAR32(0x114) = 0x000040000;
-	EPBAR32(0x118) = 0x000001000;
-	EPBAR32(0x11c) = 0x000000040;
+	EPBAR32(EP_PORTARB(0)) = 0x001000001;
+	EPBAR32(EP_PORTARB(1)) = 0x000040000;
+	EPBAR32(EP_PORTARB(2)) = 0x000001000;
+	EPBAR32(EP_PORTARB(3)) = 0x000000040;
+	EPBAR32(EP_PORTARB(4)) = 0x001000001;
+	EPBAR32(EP_PORTARB(5)) = 0x000040000;
+	EPBAR32(EP_PORTARB(6)) = 0x000001000;
+	EPBAR32(EP_PORTARB(7)) = 0x000000040;
 
 	/* Load table */
-	reg32 = EPBAR32(0x20) | (1 << 16);
-	EPBAR32(0x20) = reg32;
+	reg32 = EPBAR32(EPVC1RCTL) | (1 << 16);
+	EPBAR32(EPVC1RCTL) = reg32;
 	asm("nop");
-	EPBAR32(0x20) = reg32;
+	EPBAR32(EPVC1RCTL) = reg32;
 
 	/* Wait for table load */
-	while ((EPBAR8(0x26) & (1 << 0)) != 0)
+	while ((EPBAR8(EPVC1RSTS) & (1 << 0)) != 0)
 		;
 
 	/* VC1: enable */
-	EPBAR32(0x20) |= 1 << 31;
+	EPBAR32(EPVC1RCTL) |= 1 << 31;
 
 	/* Wait for VC1 */
-	while ((EPBAR8(0x26) & (1 << 1)) != 0)
+	while ((EPBAR8(EPVC1RSTS) & (1 << 1)) != 0)
 		;
 
 	printk(BIOS_DEBUG, "Done Egress Port\n");
@@ -125,12 +125,12 @@ static void init_dmi(void)
 	/* Assume IGD present */
 
 	/* Clear error status */
-	DMIBAR32(0x1c4) = 0xffffffff;
-	DMIBAR32(0x1d0) = 0xffffffff;
+	DMIBAR32(DMIUESTS) = 0xffffffff;
+	DMIBAR32(DMICESTS) = 0xffffffff;
 
 	/* VC0: TC0 only */
 	DMIBAR8(DMIVC0RCTL) = 1;
-	DMIBAR8(0x4) = 1;
+	DMIBAR8(DMIPVCCAP1) = 1;
 
 	/* VC1: ID1, TC7 */
 	reg32 = (DMIBAR32(DMIVC1RCTL) & ~(7 << 24)) | (1 << 24);
@@ -203,17 +203,17 @@ static void init_dmi(void)
 	/* Set up VC1 max time */
 	RCBA32(0x1c) = (RCBA32(0x1c) & ~0x7f0000) | 0x120000;
 
-	while ((DMIBAR32(0x26) & (1 << 1)) != 0)
+	while ((DMIBAR32(DMIVC1RSTS) & VC1NP) != 0)
 		;
 	printk(BIOS_DEBUG, "Done DMI setup\n");
 
 	/* ASPM on DMI */
 	DMIBAR32(0x200) &= ~(0x3 << 26);
 	DMIBAR16(0x210) = (DMIBAR16(0x210) & ~(0xff7)) | 0x101;
-	DMIBAR32(0x88) &= ~0x3;
-	DMIBAR32(0x88) |= 0x3;
-	/* FIXME: Do we need to read RCBA16(0x88)? */
-	DMIBAR16(0x88);
+	DMIBAR32(DMILCTL) &= ~0x3;
+	DMIBAR32(DMILCTL) |= 0x3;
+	/* FIXME: Do we need to read RCBA16(DMILCTL)? Probably not. */
+	DMIBAR16(DMILCTL);
 }
 
 static void x4x_prepare_resume(int s3resume)

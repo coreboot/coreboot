@@ -45,7 +45,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			mask |= (1 << i);
 	}
 	m_cfg->PcieRpEnableMask = mask;
-	m_cfg->PrmrrSize = get_prmrr_size();
+	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;

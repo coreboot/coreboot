@@ -153,7 +153,7 @@ void mca_configure(void);
 /* Lock chipset memory registers to protect SMM */
 void cpu_lt_lock_memory(void *unused);
 
-/* Get the a supported PRMRR size in bytes with respect users choice */
-int get_prmrr_size(void);
+/* Get a supported PRMRR size in bytes with respect to users choice */
+int get_valid_prmrr_size(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

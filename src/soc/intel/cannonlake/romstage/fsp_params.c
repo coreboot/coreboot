@@ -52,7 +52,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 			mask |= (1 << i);
 	}
 	m_cfg->PcieRpEnableMask = mask;
-	m_cfg->PrmrrSize = get_prmrr_size();
+	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 #if CONFIG(SOC_INTEL_COMETLAKE)
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;

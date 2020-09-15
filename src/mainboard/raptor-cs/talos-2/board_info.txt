@@ -1,0 +1,2 @@
+Board name: Raptor CS Talos II
+Category: desktop

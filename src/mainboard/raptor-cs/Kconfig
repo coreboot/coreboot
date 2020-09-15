@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_RAPTOR_CS
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/raptor-cs/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/raptor-cs/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Raptor Computing Systems"
+
+endif # VENDOR_RAPTOR_CS

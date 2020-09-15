@@ -1,0 +1,37 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_RAPTOR_CS_TALOS_2
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_POWER9
+	select SOC_IBM_POWER9
+	select BOARD_ROMSIZE_KB_512
+	select SUPERIO_ASPEED_AST2400
+	select BOOT_DEVICE_NOT_SPI_FLASH
+	select MISSING_BOARD_RESET
+	select HAVE_DEBUG_RAM_SETUP
+
+config MEMLAYOUT_LD_FILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
+
+config MAINBOARD_DIR
+	default "raptor-cs/talos-2"
+
+config MAINBOARD_PART_NUMBER
+	default "Talos II"
+
+config DIMM_MAX
+	default 8
+
+config DIMM_SPD_SIZE
+	default 512
+
+config MAX_CPUS
+	default 1
+
+config DRAM_SIZE_MB
+	int
+	default 32768
+
+endif #  BOARD_RAPTOR_CS_TALOS_2

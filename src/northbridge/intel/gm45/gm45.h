@@ -218,9 +218,9 @@ enum {
  * MCHBAR
  */
 
-#define MCHBAR8(x)  *((volatile u8  *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
+#define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 
 #define HPLLVCO_MCHBAR		0x0c0f
 
@@ -251,47 +251,47 @@ enum {
 #define DCC_SET_EREG		(4 << DCC_CMD_SHIFT)
 #define DCC_SET_EREG_SHIFT	21
 #define DCC_SET_EREG_MASK	(DCC_CMD_MASK | (3 << DCC_SET_EREG_SHIFT))
-#define DCC_SET_EREGx(x)	((DCC_SET_EREG |			   \
-					((x - 1) << DCC_SET_EREG_SHIFT)) & \
+#define DCC_SET_EREGx(x)	((DCC_SET_EREG |			     \
+					(((x) - 1) << DCC_SET_EREG_SHIFT)) & \
 				 DCC_SET_EREG_MASK)
 
 /* Per channel DRAM Row Attribute registers (32-bit) */
-#define CxDRA_MCHBAR(x)		(0x1208 + (x * 0x0100))
-#define CxDRA_PAGESIZE_SHIFT(r)	(r * 4)		/* Per rank r */
+#define CxDRA_MCHBAR(x)		(0x1208 + ((x) * 0x0100))
+#define CxDRA_PAGESIZE_SHIFT(r)	((r) * 4)	/* Per rank r */
 #define CxDRA_PAGESIZE_MASKr(r)	(0x7 << CxDRA_PAGESIZE_SHIFT(r))
 #define CxDRA_PAGESIZE_MASK	0x0000ffff
 #define CxDRA_PAGESIZE(r, p)	/* for log2(dimm page size in bytes) p */ \
-	(((p - 10) << CxDRA_PAGESIZE_SHIFT(r)) & CxDRA_PAGESIZE_MASKr(r))
-#define CxDRA_BANKS_SHIFT(r)	((r * 3) + 16)
+	((((p) - 10) << CxDRA_PAGESIZE_SHIFT(r)) & CxDRA_PAGESIZE_MASKr(r))
+#define CxDRA_BANKS_SHIFT(r)	(((r) * 3) + 16)
 #define CxDRA_BANKS_MASKr(r)	(0x3 << CxDRA_BANKS_SHIFT(r))
 #define CxDRA_BANKS_MASK	0x07ff0000
 #define CxDRA_BANKS(r, b)	/* for number of banks b */ \
-	((b << (CxDRA_BANKS_SHIFT(r) - 3)) & CxDRA_BANKS_MASKr(r))
+	(((b) << (CxDRA_BANKS_SHIFT(r) - 3)) & CxDRA_BANKS_MASKr(r))
 
 /*
  * Per channel DRAM Row Boundary registers (32-bit)
  * Every two ranks share one register and must be programmed at the same time.
  * All registers (4 ranks per channel) have to be set.
  */
-#define CxDRBy_MCHBAR(x, r)	(0x1200 + (x * 0x0100) + ((r / 2) * 4))
+#define CxDRBy_MCHBAR(x, r)	(0x1200 + ((x) * 0x0100) + (((r) / 2) * 4))
 #define CxDRBy_BOUND_SHIFT(r)	(((r) % 2) * 16)
 #define CxDRBy_BOUND_MASK(r)	(0x1fc << CxDRBy_BOUND_SHIFT(r))
 #define CxDRBy_BOUND_MB(r, b)	/* for boundary in MB b */ \
-	(((b >> 5) << CxDRBy_BOUND_SHIFT(r)) & CxDRBy_BOUND_MASK(r))
+	((((b) >> 5) << CxDRBy_BOUND_SHIFT(r)) & CxDRBy_BOUND_MASK(r))
 
-#define CxDRC0_MCHBAR(x)	(0x1230 + (x * 0x0100))
+#define CxDRC0_MCHBAR(x)	(0x1230 + ((x) * 0x0100))
 #define CxDRC0_RANKEN0		(1 << 24)	/* Rank Enable */
 #define CxDRC0_RANKEN1		(1 << 25)
 #define CxDRC0_RANKEN2		(1 << 26)
 #define CxDRC0_RANKEN3		(1 << 27)
-#define CxDRC0_RANKEN(r)	(1 << (24 + r))
+#define CxDRC0_RANKEN(r)	(1 << (24 + (r)))
 #define CxDRC0_RANKEN_MASK	(0xf << 24)
 #define CxDRC0_RMS_SHIFT	8		/* Refresh Mode Select */
 #define CxDRC0_RMS_MASK		(7 << CxDRC0_RMS_SHIFT)
 #define CxDRC0_RMS_78US		(2 << CxDRC0_RMS_SHIFT)
 #define CxDRC0_RMS_39US		(3 << CxDRC0_RMS_SHIFT)
 
-#define CxDRC1_MCHBAR(x)	(0x1234 + (x * 0x0100))
+#define CxDRC1_MCHBAR(x)	(0x1234 + ((x) * 0x0100))
 #define CxDRC1_SSDS_SHIFT	24
 #define CxDRC1_SSDS_MASK	(0xff << CxDRC1_SSDS_SHIFT)
 #define CxDRC1_DS		(0x91 << CxDRC1_SSDS_SHIFT)
@@ -300,51 +300,51 @@ enum {
 #define CxDRC1_NOTPOP_MASK	(0xf << 16)
 #define CxDRC1_MUSTWR		(3 << 11)
 
-#define CxDRC2_MCHBAR(x)	(0x1238 + (x * 0x0100))
-#define CxDRC2_NOTPOP(r)	(1 << (24 + r)) /* Write 1 for Not Populated */
+#define CxDRC2_MCHBAR(x)	(0x1238 + ((x) * 0x0100))
+#define CxDRC2_NOTPOP(r)	(1 << (24 + (r))) /* Write 1 for Not Populated */
 #define CxDRC2_NOTPOP_MASK	(0xf << 24)
 #define CxDRC2_MUSTWR		(1 << 12)
 #define CxDRC2_CLK1067MT	(1 << 0)
 
 /* DRAM Timing registers (32-bit each) */
-#define CxDRT0_MCHBAR(x)	(0x1210 + (x * 0x0100))
+#define CxDRT0_MCHBAR(x)	(0x1210 + ((x) * 0x0100))
 #define CxDRT0_BtB_WtP_SHIFT	26
 #define CxDRT0_BtB_WtP_MASK	(0x1f << CxDRT0_BtB_WtP_SHIFT)
 #define CxDRT0_BtB_WtR_SHIFT	20
 #define CxDRT0_BtB_WtR_MASK	(0x1f << CxDRT0_BtB_WtR_SHIFT)
-#define CxDRT1_MCHBAR(x)	(0x1214 + (x * 0x0100))
-#define CxDRT2_MCHBAR(x)	(0x1218 + (x * 0x0100))
-#define CxDRT3_MCHBAR(x)	(0x121c + (x * 0x0100))
-#define CxDRT4_MCHBAR(x)	(0x1220 + (x * 0x0100))
-#define CxDRT5_MCHBAR(x)	(0x1224 + (x * 0x0100))
-#define CxDRT6_MCHBAR(x)	(0x1228 + (x * 0x0100))
+#define CxDRT1_MCHBAR(x)	(0x1214 + ((x) * 0x0100))
+#define CxDRT2_MCHBAR(x)	(0x1218 + ((x) * 0x0100))
+#define CxDRT3_MCHBAR(x)	(0x121c + ((x) * 0x0100))
+#define CxDRT4_MCHBAR(x)	(0x1220 + ((x) * 0x0100))
+#define CxDRT5_MCHBAR(x)	(0x1224 + ((x) * 0x0100))
+#define CxDRT6_MCHBAR(x)	(0x1228 + ((x) * 0x0100))
 
 /* Clock disable registers (32-bit each) */
-#define CxDCLKDIS_MCHBAR(x)	(0x120c + (x * 0x0100))
+#define CxDCLKDIS_MCHBAR(x)	(0x120c + ((x) * 0x0100))
 #define CxDCLKDIS_MASK		3
 #define CxDCLKDIS_ENABLE	3 /* Always enable both clock pairs. */
 
 /* On-Die-Termination registers (2x 32-bit per channel) */
-#define CxODT_HIGH(x)		(0x124c + (x * 0x0100))
-#define CxODT_LOW(x)		(0x1248 + (x * 0x0100))
+#define CxODT_HIGH(x)		(0x124c + ((x) * 0x0100))
+#define CxODT_LOW(x)		(0x1248 + ((x) * 0x0100))
 
 /* Write Training registers. */
-#define CxWRTy_MCHBAR(ch, s)	(0x1470 + (ch * 0x0100) + ((3 - s) * 4))
+#define CxWRTy_MCHBAR(ch, s)	(0x1470 + ((ch) * 0x0100) + ((3 - (s)) * 4))
 
-#define CxGTEW(x)		(0x1270 + (x * 0x100))
-#define CxGTC(x)		(0x1274 + (x * 0x100))
-#define CxDTPEW(x)		(0x1278 + (x * 0x100))
-#define CxDTAEW(x)		(0x1280 + (x * 0x100))
-#define CxDTC(x)		(0x1288 + (x * 0x100))
+#define CxGTEW(x)		(0x1270 + ((x) * 0x100))
+#define CxGTC(x)		(0x1274 + ((x) * 0x100))
+#define CxDTPEW(x)		(0x1278 + ((x) * 0x100))
+#define CxDTAEW(x)		(0x1280 + ((x) * 0x100))
+#define CxDTC(x)		(0x1288 + ((x) * 0x100))
 
 
 /*
  * DMIBAR
  */
 
-#define DMIBAR8(x)  *((volatile u8  *)(DEFAULT_DMIBAR + x))
-#define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
-#define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x)  (*((volatile u8  *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
+#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */
@@ -374,9 +374,9 @@ enum {
  * EPBAR
  */
 
-#define EPBAR8(x)  *((volatile u8  *)(DEFAULT_EPBAR + x))
-#define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
-#define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x)  (*((volatile u8  *)(DEFAULT_EPBAR + (x))))
+#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
+#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCTL	0x00c	/* 32bit */

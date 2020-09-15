@@ -4,7 +4,7 @@
 #define __NORTHBRIDGE_INTEL_X4X_H__
 
 #include <stdint.h>
-#include "iomap.h"
+#include "memmap.h"
 
 /*
  * D0:F0

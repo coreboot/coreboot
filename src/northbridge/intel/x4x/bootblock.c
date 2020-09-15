@@ -5,7 +5,6 @@
 #include <device/pci_ops.h>
 
 #include "x4x.h"
-#include "iomap.h"
 
 void bootblock_early_northbridge_init(void)
 {

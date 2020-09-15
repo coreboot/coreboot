@@ -6,7 +6,6 @@
 #include <string.h>
 #include <types.h>
 #include "x4x.h"
-#include "iomap.h"
 
 static void print_dll_setting(const struct dll_setting *dll_setting,
 			u8 default_verbose)

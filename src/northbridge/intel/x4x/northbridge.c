@@ -8,7 +8,7 @@
 #include <device/device.h>
 #include <boot/tables.h>
 #include <acpi/acpi.h>
-#include <northbridge/intel/x4x/iomap.h>
+#include <northbridge/intel/x4x/memmap.h>
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/intel/smm_reloc.h>

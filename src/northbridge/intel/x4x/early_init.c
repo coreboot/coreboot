@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <device/pci_ops.h>
-#include "iomap.h"
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* DEFAULT_PMBASE */
 #else

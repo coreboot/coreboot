@@ -173,7 +173,6 @@ enum {
 #define DEFAULT_MCHBAR		0xfed14000
 #define DEFAULT_DMIBAR		0xfed18000
 #define DEFAULT_EPBAR		0xfed19000
-#define DEFAULT_HECIBAR		((u8 *)0xfed1a000)
 
 #define IOMMU_BASE1 0xfed90000
 #define IOMMU_BASE2 0xfed91000

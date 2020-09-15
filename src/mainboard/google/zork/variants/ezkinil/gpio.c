@@ -68,8 +68,6 @@ static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_69),
 	/* EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
-	/* TP */
-	PAD_NC(GPIO_90),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, HIGH),
 };

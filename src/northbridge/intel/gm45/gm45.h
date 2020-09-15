@@ -10,9 +10,9 @@
 #include <stdint.h>
 
 typedef enum {
-	FSB_CLOCK_1067MHz	= 0,
-	FSB_CLOCK_800MHz	= 1,
-	FSB_CLOCK_667MHz	= 2,
+	FSB_CLOCK_1067MHz = 0,
+	FSB_CLOCK_800MHz  = 1,
+	FSB_CLOCK_667MHz  = 2,
 } fsb_clock_t;
 
 typedef enum { /* Steppings below B1 were pre-production,
@@ -43,12 +43,12 @@ typedef enum {
 } gmch_gfx_t;
 
 typedef enum {
-	MEM_CLOCK_533MHz  = 0,
-	MEM_CLOCK_400MHz  = 1,
-	MEM_CLOCK_333MHz  = 2,
-	MEM_CLOCK_1067MT  = 0,
-	MEM_CLOCK_800MT   = 1,
-	MEM_CLOCK_667MT   = 2,
+	MEM_CLOCK_533MHz = 0,
+	MEM_CLOCK_400MHz = 1,
+	MEM_CLOCK_333MHz = 2,
+	MEM_CLOCK_1067MT = 0,
+	MEM_CLOCK_800MT  = 1,
+	MEM_CLOCK_667MT  = 2,
 } mem_clock_t;
 
 typedef enum {
@@ -132,6 +132,7 @@ typedef struct {
 	int		gs45_low_power_mode; /* low power mode of GMCH_GS45 */
 	int		sff; /* small form factor option (soldered down DIMM) */
 } sysinfo_t;
+
 #define TOTAL_CHANNELS 2
 #define CHANNEL_IS_POPULATED(dimms, idx) (dimms[idx].card_type != 0)
 #define CHANNEL_IS_CARDF(dimms, idx) (dimms[idx].card_type == 0xf)
@@ -167,51 +168,50 @@ enum {
 /* Offsets of read/write training results in CMOS.
    They will be restored upon S3 resumes. */
 #define CMOS_READ_TRAINING	0x80 /* 16 bytes */
-#define CMOS_WRITE_TRAINING	0x90 /* 16 bytes
-					(could be reduced to 10 bytes) */
+#define CMOS_WRITE_TRAINING	0x90 /* 16 bytes (could be reduced to 10 bytes) */
 
 #define DEFAULT_MCHBAR		0xfed14000
 #define DEFAULT_DMIBAR		0xfed18000
 #define DEFAULT_EPBAR		0xfed19000
 
-#define IOMMU_BASE1 0xfed90000
-#define IOMMU_BASE2 0xfed91000
-#define IOMMU_BASE3 0xfed92000
-#define IOMMU_BASE4 0xfed93000
+#define IOMMU_BASE1		0xfed90000
+#define IOMMU_BASE2		0xfed91000
+#define IOMMU_BASE3		0xfed92000
+#define IOMMU_BASE4		0xfed93000
 
 /*
  * D0:F0
  */
-#define D0F0_EPBAR_LO 0x40
-#define D0F0_EPBAR_HI 0x44
-#define D0F0_MCHBAR_LO 0x48
-#define D0F0_MCHBAR_HI 0x4c
-#define D0F0_GGC 0x52
-#define D0F0_DEVEN 0x54
-#define D0F0_PCIEXBAR_LO 0x60
-#define D0F0_PCIEXBAR_HI 0x64
-#define D0F0_DMIBAR_LO 0x68
-#define D0F0_DMIBAR_HI 0x6c
-#define D0F0_PMBASE 0x78
-#define D0F0_PAM(x) (0x90+(x)) /* 0-6*/
-#define D0F0_REMAPBASE 0x98
-#define D0F0_REMAPLIMIT 0x9a
-#define D0F0_SMRAM 0x9d
-#define D0F0_ESMRAMC 0x9e
-#define D0F0_TOM 0xa0
-#define D0F0_TOUUD 0xa2
-#define D0F0_TOLUD 0xb0
-#define D0F0_SKPD 0xdc /* Scratchpad Data */
-#define D0F0_CAPID0 0xe0
+#define D0F0_EPBAR_LO		0x40
+#define D0F0_EPBAR_HI		0x44
+#define D0F0_MCHBAR_LO		0x48
+#define D0F0_MCHBAR_HI		0x4c
+#define D0F0_GGC		0x52
+#define D0F0_DEVEN		0x54
+#define D0F0_PCIEXBAR_LO	0x60
+#define D0F0_PCIEXBAR_HI	0x64
+#define D0F0_DMIBAR_LO		0x68
+#define D0F0_DMIBAR_HI		0x6c
+#define D0F0_PMBASE		0x78
+#define D0F0_PAM(x)		(0x90 + (x)) /* 0-6 */
+#define D0F0_REMAPBASE		0x98
+#define D0F0_REMAPLIMIT		0x9a
+#define D0F0_SMRAM		0x9d
+#define D0F0_ESMRAMC		0x9e
+#define D0F0_TOM		0xa0
+#define D0F0_TOUUD		0xa2
+#define D0F0_TOLUD		0xb0
+#define D0F0_SKPD		0xdc /* Scratchpad Data */
+#define D0F0_CAPID0		0xe0
 
 /*
  * D1:F0 PEG
  */
-#define PEG_CAP 0xa2
-#define SLOTCAP 0xb4
-#define PEGLC 0xec
-#define D1F0_VCCAP 0x104
-#define D1F0_VC0RCTL 0x114
+#define PEG_CAP			0xa2
+#define SLOTCAP			0xb4
+#define PEGLC			0xec
+#define D1F0_VCCAP		0x104
+#define D1F0_VC0RCTL		0x114
 
 /*
  * Graphics frequencies
@@ -231,7 +231,7 @@ enum {
  * MCHBAR
  */
 
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
+#define MCHBAR8(x)  *((volatile u8  *)(DEFAULT_MCHBAR + x))
 #define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
 #define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
 
@@ -286,7 +286,7 @@ enum {
  * Every two ranks share one register and must be programmed at the same time.
  * All registers (4 ranks per channel) have to be set.
  */
-#define CxDRBy_MCHBAR(x, r)	(0x1200 + (x * 0x0100) + ((r/2) * 4))
+#define CxDRBy_MCHBAR(x, r)	(0x1200 + (x * 0x0100) + ((r / 2) * 4))
 #define CxDRBy_BOUND_SHIFT(r)	((r % 2) * 16)
 #define CxDRBy_BOUND_MASK(r)	(0x1fc << CxDRBy_BOUND_SHIFT(r))
 #define CxDRBy_BOUND_MB(r, b)	/* for boundary in MB b */ \
@@ -344,44 +344,45 @@ enum {
 /* Write Training registers. */
 #define CxWRTy_MCHBAR(ch, s)	(0x1470 + (ch * 0x0100) + ((3 - s) * 4))
 
-#define CxGTEW(x)		(0x1270+(x*0x100))
-#define CxGTC(x)		(0x1274+(x*0x100))
-#define CxDTPEW(x)		(0x1278+(x*0x100))
-#define CxDTAEW(x)		(0x1280+(x*0x100))
-#define CxDTC(x)		(0x1288+(x*0x100))
+#define CxGTEW(x)		(0x1270 + (x * 0x100))
+#define CxGTC(x)		(0x1274 + (x * 0x100))
+#define CxDTPEW(x)		(0x1278 + (x * 0x100))
+#define CxDTAEW(x)		(0x1280 + (x * 0x100))
+#define CxDTC(x)		(0x1288 + (x * 0x100))
 
 
 /*
  * DMIBAR
  */
 
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x)  *((volatile u8  *)(DEFAULT_DMIBAR + x))
 #define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
 #define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
 
-#define DMIVC0RCTL 0x14
-#define DMIVC1RCTL 0x20
-#define DMIVC1RSTS 0x26
-#define DMIESD  0x44
-#define DMILE1D 0x50
-#define DMILE1A 0x58
-#define DMILE2D 0x60
-#define DMILE2A 0x68
+#define DMIVC0RCTL	0x14
+#define DMIVC1RCTL	0x20
+#define DMIVC1RSTS	0x26
+#define DMIESD		0x44
+#define DMILE1D		0x50
+#define DMILE1A		0x58
+#define DMILE2D		0x60
+#define DMILE2A		0x68
 
 /*
  * EPBAR
  */
 
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x)  *((volatile u8  *)(DEFAULT_EPBAR + x))
 #define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
 #define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
 
-#define EPESD 0x44
-#define EPLE1D 0x50
-#define EPLE1A 0x58
-#define EPLE2D 0x60
+#define EPESD		0x44
+#define EPLE1D		0x50
+#define EPLE1A		0x58
+#define EPLE2D		0x60
 
 #ifndef __ACPI__
+
 void gm45_early_init(void);
 void gm45_early_reset(void);
 

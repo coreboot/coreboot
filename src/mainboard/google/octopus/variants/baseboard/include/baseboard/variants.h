@@ -50,4 +50,8 @@ bool no_touchscreen_sku(uint32_t sku_id);
 /* allow each variants to customize smi sleep flow. */
 void variant_smi_sleep(u8 slp_typ);
 
+/* LTE power off sequence:
+ * GPIO_161 -> 30ms -> GPIO_117 -> 100ms -> GPIO_67 */
+void power_off_lte_module(void);
+
 #endif /* BASEBOARD_VARIANTS_H */

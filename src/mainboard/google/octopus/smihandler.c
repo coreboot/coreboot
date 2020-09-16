@@ -3,14 +3,21 @@
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <cpu/x86/smm.h>
+#include <delay.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
+#include <gpio.h>
 #include <intelblocks/smihandler.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
+
+struct gpio_with_delay {
+	gpio_t gpio;
+	unsigned int delay_msecs;
+};
 
 void mainboard_smi_gpi_handler(const struct gpi_status *sts)
 {
@@ -53,4 +60,28 @@ void elog_gsmi_cb_mainboard_log_wake_source(void)
 void __weak variant_smi_sleep(u8 slp_typ)
 {
 	/* Leave for the variant to implement if necessary. */
+}
+
+void power_off_lte_module(void)
+{
+
+	const struct gpio_with_delay lte_power_off_gpios[] = {
+		{
+			GPIO_161, /* AVS_I2S1_MCLK -- PLT_RST_LTE_L */
+			30,
+		},
+		{
+			GPIO_117, /* PCIE_WAKE1_B -- FULL_CARD_POWER_OFF */
+			100
+		},
+		{
+			GPIO_67, /* UART2-CTS_B -- EN_PP3300_DX_LTE_SOC */
+			0
+		}
+	};
+
+	for (int i = 0; i < ARRAY_SIZE(lte_power_off_gpios); i++) {
+		gpio_output(lte_power_off_gpios[i].gpio, 0);
+		mdelay(lte_power_off_gpios[i].delay_msecs);
+	}
 }

@@ -552,6 +552,8 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
 	int len = sizeof(struct smbios_type4);
 	uint16_t characteristics = 0;
+	static unsigned int cnt = 0;
+	char buf[8];
 
 	/* Provide sane defaults even for CPU without CPUID */
 	res.eax = res.edx = 0;
@@ -564,6 +566,10 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->type = SMBIOS_PROCESSOR_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
+
+	snprintf(buf, sizeof(buf), "CPU%d", cnt++);
+	t->socket_designation = smbios_add_string(t->eos, buf);
+
 	t->processor_id[0] = res.eax;
 	t->processor_id[1] = res.edx;
 	t->processor_manufacturer = smbios_cpu_vendor(t->eos);

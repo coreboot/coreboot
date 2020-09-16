@@ -1,1 +1,1 @@
-Generate Rockchip idblock bootloader. `Python2`
+Generate Rockchip idblock bootloader. `Python3`

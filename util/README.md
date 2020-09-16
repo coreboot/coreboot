@@ -83,7 +83,7 @@ devices on the board such as dGPU. `C`
 can be passed to SPIKE, the RISC-V reference emulator.`Bash`
 	* _sifive-gpt.py_ - Wraps the bootblock in a GPT partition for
 SiFive's bootrom. `Python3`
-* __rockchip__ - Generate Rockchip idblock bootloader. `Python2`
+* __rockchip__ - Generate Rockchip idblock bootloader. `Python3`
 * __sconfig__ - coreboot device tree compiler `Lex` `Yacc`
 * __scripts__
 	* _config_ - Manipulate options in a .config file from the

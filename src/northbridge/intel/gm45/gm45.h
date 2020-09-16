@@ -170,14 +170,7 @@ enum {
 #define CMOS_READ_TRAINING	0x80 /* 16 bytes */
 #define CMOS_WRITE_TRAINING	0x90 /* 16 bytes (could be reduced to 10 bytes) */
 
-#define DEFAULT_MCHBAR		0xfed14000
-#define DEFAULT_DMIBAR		0xfed18000
-#define DEFAULT_EPBAR		0xfed19000
-
-#define IOMMU_BASE1		0xfed90000
-#define IOMMU_BASE2		0xfed91000
-#define IOMMU_BASE3		0xfed92000
-#define IOMMU_BASE4		0xfed93000
+#include "memmap.h"
 
 /*
  * D0:F0

@@ -61,6 +61,7 @@ The boards in this section are not real mainboards, but emulators.
 ### EliteBook series
 
 - [HP Laptops with KBC1126 EC](hp/hp_kbc1126_laptops.md)
+- [HP Sure Start](hp/hp_sure_start.md)
 - [EliteBook 2560p](hp/2560p.md)
 - [EliteBook 8760w](hp/8760w.md)
 

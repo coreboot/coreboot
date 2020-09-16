@@ -4,7 +4,7 @@ Device (EC0)
 {
 	Name (_HID, EISAID("PNP0C09"))
 	Name (_UID, 0)
-	Name (_GPE, 0x16)
+	Name (_GPE, CONFIG_EC_HP_KBC1126_GPE)
 
 	Name (_CRS, ResourceTemplate ()
 	{

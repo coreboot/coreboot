@@ -5,6 +5,11 @@ config EC_HP_KBC1126
 	help
 	  Interface to SMSC KBC1126 embedded controller in HP laptops.
 
+config EC_HP_KBC1126_GPE
+	hex
+	depends on EC_HP_KBC1126
+	default 0x16
+
 config EC_HP_KBC1126_ECFW_IN_CBFS
 	bool
 	depends on EC_HP_KBC1126

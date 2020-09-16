@@ -1128,7 +1128,7 @@ static void clock_crossing_setup(const fsb_clock_t fsb,
 	}
 }
 
-/* Program egress VC1 timings. */
+/* Program egress VC1 isoch timings. */
 static void vc1_program_timings(const fsb_clock_t fsb)
 {
 	const u32 timings_by_fsb[][2] = {
@@ -1136,9 +1136,9 @@ static void vc1_program_timings(const fsb_clock_t fsb)
 	/* FSB  800MHz */ { 0x14, 0x00f000f0 },
 	/* FSB  667MHz */ { 0x10, 0x00c000c0 },
 	};
-	EPBAR8(0x2c)  = timings_by_fsb[fsb][0];
-	EPBAR32(0x38) = timings_by_fsb[fsb][1];
-	EPBAR32(0x3c) = timings_by_fsb[fsb][1];
+	EPBAR8(EPVC1ITC)      = timings_by_fsb[fsb][0];
+	EPBAR32(EPVC1IST + 0) = timings_by_fsb[fsb][1];
+	EPBAR32(EPVC1IST + 4) = timings_by_fsb[fsb][1];
 }
 
 #define DEFAULT_PCI_MMIO_SIZE 2048

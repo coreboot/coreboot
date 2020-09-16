@@ -10,34 +10,34 @@
 static void init_egress(void)
 {
 	/* VC0: TC0 only */
-	EPBAR8(0x14) &= 1;
-	EPBAR8(0x4) = (EPBAR8(0x4) & ~7) | 1;
+	EPBAR8(EPVC0RCTL) &= 1;
+	EPBAR8(EPPVCCAP1) = (EPBAR8(EPPVCCAP1) & ~7) | 1;
 
 	/* VC1: isoch */
-	EPBAR32(0x28) = 0x0a0a0a0a;
-	EPBAR32(0x1c) = (EPBAR32(0x1c) & ~(127 << 16)) | (0x0a << 16);
+	EPBAR32(EPVC1MTS) = 0x0a0a0a0a;
+	EPBAR32(EPVC1RCAP) = (EPBAR32(EPVC1RCAP) & ~(127 << 16)) | (0x0a << 16);
 
 	/* VC1: ID1, TC7 */
-	EPBAR32(0x20) = (EPBAR32(0x20) & ~(7 << 24)) | (1 << 24);
-	EPBAR8(0x20) = (EPBAR8(0x20) & 1) | (1 << 7);
+	EPBAR32(EPVC1RCTL) = (EPBAR32(EPVC1RCTL) & ~(7 << 24)) | (1 << 24);
+	EPBAR8(EPVC1RCTL) = (EPBAR8(EPVC1RCTL) & 1) | (1 << 7);
 
 	/* VC1 ARB table: setup and enable */
-	EPBAR32(0x100) = 0x55555555;
-	EPBAR32(0x104) = 0x55555555;
-	EPBAR32(0x108) = 0x55555555;
-	EPBAR32(0x10c) = 0x55555555;
-	EPBAR32(0x110) = 0x55555555;
-	EPBAR32(0x114) = 0x55555555;
-	EPBAR32(0x118) = 0x55555555;
-	EPBAR32(0x11c) = 0x00005555;
-	EPBAR32(0x20) |= 1 << 16;
+	EPBAR32(EP_PORTARB(0)) = 0x55555555;
+	EPBAR32(EP_PORTARB(1)) = 0x55555555;
+	EPBAR32(EP_PORTARB(2)) = 0x55555555;
+	EPBAR32(EP_PORTARB(3)) = 0x55555555;
+	EPBAR32(EP_PORTARB(4)) = 0x55555555;
+	EPBAR32(EP_PORTARB(5)) = 0x55555555;
+	EPBAR32(EP_PORTARB(6)) = 0x55555555;
+	EPBAR32(EP_PORTARB(7)) = 0x00005555;
+	EPBAR32(EPVC1RCTL) |= 1 << 16;
 
-	while ((EPBAR8(0x26) & 1) != 0);
+	while ((EPBAR8(EPVC1RSTS) & 1) != 0);
 
 	/* VC1: enable */
-	EPBAR32(0x20) |= 1 << 31;
+	EPBAR32(EPVC1RCTL) |= 1 << 31;
 
-	while ((EPBAR8(0x26) & 2) != 0);
+	while ((EPBAR8(EPVC1RSTS) & 2) != 0);
 }
 
 /* MCH side */
@@ -46,16 +46,16 @@ static void init_dmi(int b2step)
 {
 	/* VC0: TC0 only */
 	DMIBAR8(DMIVC0RCTL) &= 1;
-	DMIBAR8(0x4) = (DMIBAR8(0x4) & ~7) | 1;
+	DMIBAR8(DMIPVCCAP1) = (DMIBAR8(DMIPVCCAP1) & ~7) | 1;
 
 	/* VC1: ID1, TC7 */
-	DMIBAR32(0x20) = (DMIBAR32(0x20) & ~(7 << 24)) | (1 << 24);
-	DMIBAR8(0x20) = (DMIBAR8(0x20) & 1) | (1 << 7);
+	DMIBAR32(DMIVC1RCTL) = (DMIBAR32(DMIVC1RCTL) & ~(7 << 24)) | (1 << 24);
+	DMIBAR8(DMIVC1RCTL) = (DMIBAR8(DMIVC1RCTL) & 1) | (1 << 7);
 
 	/* VC1: enable */
-	DMIBAR32(0x20) |= 1 << 31;
+	DMIBAR32(DMIVC1RCTL) |= 1 << 31;
 
-	while ((DMIBAR8(0x26) & 2) != 0);
+	while ((DMIBAR8(DMIVC1RSTS) & VC1NP) != 0);
 
 	/* additional configuration. */
 	DMIBAR32(0x200) |= 3 << 13;
@@ -223,11 +223,11 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 	   the endpoint (ICH), but ICH doesn't give any limits. */
 
 	if (LPC_IS_MOBILE(PCI_DEV(0, 0x1f, 0)))
-		DMIBAR8(0x88) |= (3 << 0); // enable ASPM L0s, L1 (write-once)
+		DMIBAR8(DMILCTL) |= (3 << 0); // enable ASPM L0s, L1 (write-once)
 	else
-		DMIBAR8(0x88) |= (1 << 0); // enable ASPM L0s (write-once)
+		DMIBAR8(DMILCTL) |= (1 << 0); // enable ASPM L0s (write-once)
 	/* timing */
-	DMIBAR32(0x84) = (DMIBAR32(0x84) & ~(63 << 12)) | (2 << 12) | (2 << 15);
+	DMIBAR32(DMILCAP) = (DMIBAR32(DMILCAP) & ~(63 << 12)) | (2 << 12) | (2 << 15);
 	DMIBAR8(0x208 + 3) = 0;
 	DMIBAR32(0x208) &= ~(3 << 20);
 

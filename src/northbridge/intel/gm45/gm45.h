@@ -3,10 +3,6 @@
 #ifndef __NORTHBRIDGE_INTEL_GM45_GM45_H__
 #define __NORTHBRIDGE_INTEL_GM45_GM45_H__
 
-#include <southbridge/intel/i82801ix/i82801ix.h>
-
-#ifndef __ACPI__
-
 #include <stdint.h>
 
 typedef enum {
@@ -162,8 +158,6 @@ enum {
 	VCO_4000 = 1,
 	VCO_5333 = 2,
 };
-
-#endif
 
 /* Offsets of read/write training results in CMOS.
    They will be restored upon S3 resumes. */
@@ -409,8 +403,6 @@ enum {
 
 #define EP_PORTARB(x)	(0x100 + 4 * (x))	/* 256bit */
 
-#ifndef __ACPI__
-
 void gm45_early_init(void);
 void gm45_early_reset(void);
 
@@ -460,5 +452,4 @@ struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long start,
 						struct acpi_rsdp *rsdp);
 
-#endif /* !__ACPI__ */
 #endif /* __NORTHBRIDGE_INTEL_GM45_GM45_H__ */

@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <device/pci_ops.h>
+#include <southbridge/intel/i82801ix/i82801ix.h>
 #include "gm45.h"
 
 void gm45_early_init(void)

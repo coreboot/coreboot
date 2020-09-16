@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
@@ -14,10 +14,10 @@ def write(path, data):
 	with open(path, 'wb') as f:
 		f.write(data)
 
-def padding(data, size, pattern='\0'):
+def padding(data, size, pattern=b'\0'):
 	return data + pattern * (size - len(data))
 
-def align(data, size, pattern='\0'):
+def align(data, size, pattern=b'\0'):
 	return padding(data, (len(data) + (size - 1)) & ~(size - 1), pattern)
 
 def gen_gfh_info(chip, data):
@@ -47,19 +47,19 @@ def gen_gfh_info(chip, data):
 	return gfh
 
 def gen_emmc_header(data):
-	header = (padding(struct.pack('<12sII', 'EMMC_BOOT', 1, 512), 512, '\xff') +
-		  padding(struct.pack('<8sIIIIIIII', 'BRLYT', 1, 2048, 2048 + len(data),
-			  0x42424242, 0x00010005, 2048, 2048 + len(data), 1) + '\0' * 140, 512,
-			  '\xff') +
-		  '\0' * 1024)
+	header = (padding(struct.pack('<12sII', b'EMMC_BOOT', 1, 512), 512, b'\xff') +
+		  padding(struct.pack('<8sIIIIIIII', b'BRLYT', 1, 2048, 2048 + len(data),
+			  0x42424242, 0x00010005, 2048, 2048 + len(data), 1) + b'\0' * 140, 512,
+			  b'\xff') +
+		  b'\0' * 1024)
 	return header
 
 def gen_sf_header(data):
-	header = (padding(struct.pack('<12sII', 'SF_BOOT', 1, 512), 512, '\xff') +
-		  padding(struct.pack('<8sIIIIIIII', 'BRLYT', 1, 2048, 2048 + len(data),
-			  0x42424242, 0x00010007, 2048, 2048 + len(data), 1) + '\0' * 140, 512,
-			  '\xff') +
-		  '\0' * 1024)
+	header = (padding(struct.pack('<12sII', b'SF_BOOT', 1, 512), 512, b'\xff') +
+		  padding(struct.pack('<8sIIIIIIII', b'BRLYT', 1, 2048, 2048 + len(data),
+			  0x42424242, 0x00010007, 2048, 2048 + len(data), 1) + b'\0' * 140, 512,
+			  b'\xff') +
+		  b'\0' * 1024)
 	return header
 
 gen_dev_header = {
@@ -71,15 +71,15 @@ def gen_preloader(chip_ver, flash_type, data):
 	gfh_info = gen_gfh_info(chip_ver, data)
 	gfh_hash = hashlib.sha256(gfh_info + data).digest()
 
-	data = align(gfh_info + data + gfh_hash, 512, '\xff')
+	data = align(gfh_info + data + gfh_hash, 512, b'\xff')
 	header = gen_dev_header[flash_type](data)
 	return header + data
 
 def main(argv):
 	if len(argv) != 5:
-		print 'Usage: %s <chip> <flash_type> <input_file> <output_file>' % argv[0]
-		print '\t flash_type: emmc|sf'
-		print '\t chip      : mt8173|mt8183'
+		print('Usage: %s <chip> <flash_type> <input_file> <output_file>' % argv[0])
+		print('\t flash_type: emmc|sf')
+		print('\t chip      : mt8173|mt8183')
 
 		exit(1)
 	write(argv[4], gen_preloader(argv[1], argv[2], read(argv[3])))

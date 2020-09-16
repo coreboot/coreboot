@@ -1,1 +1,1 @@
-Generate MediaTek bootload header. `Python2`
+Generate MediaTek bootload header. `Python3`

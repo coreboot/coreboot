@@ -65,7 +65,7 @@ embedded controller and insert them to the firmware image. `C`
 partial deblobbing of Intel ME/TXE firmware images `Python`
 * __mma__ - Memory Margin Analysis automation tests `Bash`
 * __msrtool__ - Dumps chipset-specific MSR registers. `C`
-* __mtkheader__ - Generate MediaTek bootload header. `Python2`
+* __mtkheader__ - Generate MediaTek bootload header. `Python3`
 * __nvidia__ - nvidia blob parsers
 * __nvramtool__ - Reads and writes coreboot parameters and displaying
 information from the coreboot table in CMOS/NVRAM. `C`

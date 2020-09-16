@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-ifeq ($(CONFIG_EC_HP_KBC1126),y)
+ifeq ($(CONFIG_EC_HP_KBC1126_ECFW_IN_CBFS),y)
 KBC1126_EC_INSERT:=$(top)/util/kbc1126/kbc1126_ec_insert
 INTERMEDIATE+=kbc1126_ec_insert
 
@@ -39,8 +39,8 @@ ifeq ($(CONFIG_KBC1126_FIRMWARE),)
 	printf "You can read util/kbc1126/README.md for details.\n\n"
 endif
 
-ramstage-y += ec.c
-bootblock-y += early_init.c
-romstage-y += early_init.c
-
 endif
+
+ramstage-$(CONFIG_EC_HP_KBC1126) += ec.c
+bootblock-$(CONFIG_EC_HP_KBC1126) += early_init.c
+romstage-$(CONFIG_EC_HP_KBC1126) += early_init.c

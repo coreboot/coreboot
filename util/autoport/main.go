@@ -747,6 +747,7 @@ func main() {
 	if MainboardInit != "" || MainboardEnable != "" || MainboardIncludes != nil {
 		mainboard := Create(ctx, "mainboard.c")
 		defer mainboard.Close()
+		Add_gpl(mainboard)
 		mainboard.WriteString("#include <device/device.h>\n")
 		for _, include := range MainboardIncludes {
 			mainboard.WriteString("#include <" + include + ">\n")
@@ -825,9 +826,9 @@ func main() {
 		dsdt.WriteString("#define " + define.Key + " " + define.Value + "\n")
 	}
 
+	Add_gpl(dsdt)
 	dsdt.WriteString(
 		`
-
 #include <acpi/acpi.h>
 
 DefinitionBlock(

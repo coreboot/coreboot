@@ -16,7 +16,7 @@ typedef enum {
 } fsb_clock_t;
 
 typedef enum { /* Steppings below B1 were pre-production,
-		  conversion stepping A1 is... ?
+		  conversion stepping A1 is a newer GL40 with support for 800 MT/s on FSB/DDR.
 		  We'll support B1, B2, B3, and conversion stepping A1. */
 	STEPPING_A0 = 0,
 	STEPPING_A1 = 1,

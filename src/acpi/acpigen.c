@@ -832,6 +832,23 @@ void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 	       coreFreq, power, control, status);
 }
 
+void acpigen_write_pss_object(const struct acpi_sw_pstate *pstate_values, size_t nentries)
+{
+	size_t pstate;
+
+	acpigen_write_name("_PSS");
+	acpigen_write_package(nentries);
+	for (pstate = 0; pstate < nentries; pstate++) {
+		acpigen_write_PSS_package(
+			pstate_values->core_freq, pstate_values->power,
+			pstate_values->transition_latency, pstate_values->bus_master_latency,
+			pstate_values->control_value, pstate_values->status_value);
+		pstate_values++;
+	}
+
+	acpigen_pop_len();
+}
+
 void acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
 {
 	acpigen_write_name("_PSD");
@@ -2001,4 +2018,44 @@ void acpigen_write_create_dword_field(uint8_t op, size_t byte_offset, const char
 void acpigen_write_create_qword_field(uint8_t op, size_t byte_offset, const char *name)
 {
 	_create_field(CREATE_QWORD_OP, op, byte_offset, name);
+}
+
+void acpigen_write_pct_package(const acpi_addr_t *perf_ctrl, const acpi_addr_t *perf_sts)
+{
+	acpigen_write_name("_PCT");
+	acpigen_write_package(0x02);
+	acpigen_write_register_resource(perf_ctrl);
+	acpigen_write_register_resource(perf_sts);
+
+	acpigen_pop_len();
+}
+
+void acpigen_write_xpss_package(const struct acpi_xpss_sw_pstate *pstate_value)
+{
+	acpigen_write_package(0x08);
+	acpigen_write_dword(pstate_value->core_freq);
+	acpigen_write_dword(pstate_value->power);
+	acpigen_write_dword(pstate_value->transition_latency);
+	acpigen_write_dword(pstate_value->bus_master_latency);
+
+	acpigen_write_byte_buffer((uint8_t *)&pstate_value->control_value, sizeof(uint64_t));
+	acpigen_write_byte_buffer((uint8_t *)&pstate_value->status_value, sizeof(uint64_t));
+	acpigen_write_byte_buffer((uint8_t *)&pstate_value->control_mask, sizeof(uint64_t));
+	acpigen_write_byte_buffer((uint8_t *)&pstate_value->status_mask, sizeof(uint64_t));
+
+	acpigen_pop_len();
+}
+
+void acpigen_write_xpss_object(const struct acpi_xpss_sw_pstate *pstate_values, size_t nentries)
+{
+	size_t pstate;
+
+	acpigen_write_name("XPSS");
+	acpigen_write_package(nentries);
+	for (pstate = 0; pstate < nentries; pstate++) {
+		acpigen_write_xpss_package(pstate_values);
+		pstate_values++;
+	}
+
+	acpigen_pop_len();
 }

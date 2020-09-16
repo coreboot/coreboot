@@ -800,6 +800,26 @@ typedef struct acpi_cstate {
 	acpi_addr_t resource;
 } __packed acpi_cstate_t;
 
+struct acpi_sw_pstate {
+	u32 core_freq;
+	u32 power;
+	u32 transition_latency;
+	u32 bus_master_latency;
+	u32 control_value;
+	u32 status_value;
+} __packed;
+
+struct acpi_xpss_sw_pstate {
+	u64 core_freq;
+	u64 power;
+	u64 transition_latency;
+	u64 bus_master_latency;
+	u64 control_value;
+	u64 status_value;
+	u64 control_mask;
+	u64 status_mask;
+} __packed;
+
 typedef struct acpi_tstate {
 	u32 percent;
 	u32 power;

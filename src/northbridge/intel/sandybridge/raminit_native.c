@@ -555,7 +555,7 @@ static void dram_freq(ramctr_timing *ctrl)
 	if (ctrl->tCK > TCK_400MHZ) {
 		printk(BIOS_ERR,
 			"DRAM frequency is under lowest supported frequency (400 MHz). "
-			"Increasing to 400 MHz as last resort");
+			"Increasing to 400 MHz as last resort.\n");
 		ctrl->tCK = TCK_400MHZ;
 	}
 
@@ -563,11 +563,11 @@ static void dram_freq(ramctr_timing *ctrl)
 		u8 val2;
 		u32 reg1 = 0;
 
-		/* Step 1 - Set target PCU frequency */
+		/* Step 1 - Determine target MPLL frequency */
 		find_cas_tck(ctrl);
 
 		/*
-		 * The PLL will never lock if the required frequency is already set.
+		 * The MPLL will never lock if the requested frequency is already set.
 		 * Exit early to prevent a system hang.
 		 */
 		reg1 = MCHBAR32(MC_BIOS_DATA);
@@ -575,15 +575,15 @@ static void dram_freq(ramctr_timing *ctrl)
 		if (val2)
 			return;
 
-		/* Step 2 - Select frequency in the MCU */
+		/* Step 2 - Request MPLL frequency through the PCU */
 		reg1 = ctrl->FRQ;
 		if (ctrl->base_freq == 100)
-			reg1 |= (1 << 8);	/* Enable 100Mhz REF clock */
+			reg1 |= (1 << 8);	/* Use 100MHz reference clock */
 
-		reg1 |= (1 << 31);	/* set running bit */
+		reg1 |= (1 << 31);	/* Set running bit */
 		MCHBAR32(MC_BIOS_REQ) = reg1;
 		int i = 0;
-		printk(BIOS_DEBUG, "PLL busy... ");
+		printk(BIOS_DEBUG, "MPLL busy... ");
 		while (reg1 & (1 << 31)) {
 			udelay(10);
 			i++;
@@ -595,11 +595,11 @@ static void dram_freq(ramctr_timing *ctrl)
 		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
 		if (val2 >= ctrl->FRQ) {
-			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
+			printk(BIOS_DEBUG, "MPLL frequency is set at : %d MHz\n",
 			       (1000 << 8) / ctrl->tCK);
 			return;
 		}
-		printk(BIOS_DEBUG, "PLL didn't lock. Retrying at lower frequency\n");
+		printk(BIOS_DEBUG, "MPLL didn't lock. Retrying at lower frequency\n");
 		ctrl->tCK++;
 	}
 }
@@ -661,7 +661,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		dram_dimm_mapping(ctrl);
 	}
 
-	/* Set MC frequency */
+	/* Set MPLL frequency */
 	dram_freq(ctrl);
 
 	if (!fast_boot) {

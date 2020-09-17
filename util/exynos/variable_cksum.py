@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -27,7 +27,7 @@ def main(argv):
     data = in_file.read()
     header = struct.pack(header_format,
                          struct.calcsize(header_format) + len(data),
-                         sum(map(ord, data)),
+                         sum(data),
                          0, 0)
     out_file.write(header + data)
 

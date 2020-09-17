@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -28,7 +28,7 @@ def main(argv):
     checksum_size = struct.calcsize(checksum_format)
     data_size = size - checksum_size
     assert len(data) <= data_size
-    checksum = struct.pack(checksum_format, sum(map(ord, data)))
+    checksum = struct.pack(checksum_format, sum(data))
     out_file.write(data + bytearray(data_size - len(data)) + checksum)
 
 

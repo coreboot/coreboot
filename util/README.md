@@ -32,7 +32,7 @@ _coreboot.org-status_ and _docs.coreboot.org_
 * __ectool__ - Dumps the RAM of a laptop's Embedded/Environmental
 Controller (EC). `C`
 * __exynos__ - Computes and fills Exynos ROM checksum (for BL1 or BL2).
-`Python2`
+`Python3`
 * __find_usbdebug__ - Help find USB debug ports
 * __futility__ - Firmware utility for signing ChromeOS images `Make`
 * __fuzz-tests__ - Create test cases that crash the jpeg code. `C`

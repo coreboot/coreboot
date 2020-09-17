@@ -453,7 +453,6 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 	/* Zone config */
 	dram_zones(&ctrl, 0);
 
-	intel_early_me_status();
 	intel_early_me_init_done(ME_INIT_STATUS_SUCCESS);
 	intel_early_me_status();
 

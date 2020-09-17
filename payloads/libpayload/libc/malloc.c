@@ -246,6 +246,10 @@ void free(void *ptr)
 	hdrtype_t hdr;
 	struct memory_type *type = heap;
 
+	/* No action occurs on NULL. */
+	if (ptr == NULL)
+		return;
+
 	/* Sanity check. */
 	if (ptr < type->start || ptr >= type->end) {
 		type = dma;

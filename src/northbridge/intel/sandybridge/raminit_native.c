@@ -218,7 +218,7 @@ static void normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
 {
 	if (ctrl->tCK <= TCK_1200MHZ) {
 		ctrl->tCK = TCK_1200MHZ;
-		ctrl->base_freq = 100;
+		ctrl->base_freq = 133;
 	} else if (ctrl->tCK <= TCK_1100MHZ) {
 		ctrl->tCK = TCK_1100MHZ;
 		ctrl->base_freq = 100;

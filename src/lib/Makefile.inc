@@ -68,10 +68,7 @@ verstage-y += libgcc.c
 verstage-y += memcmp.c
 verstage-y += string.c
 
-# TODO: Remove this when PSP bootblock timestamps are implemented.
-ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),)
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
-endif
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 

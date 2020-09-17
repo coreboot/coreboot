@@ -15,7 +15,6 @@ verstage-y += psp.c
 verstage-y += reset.c
 verstage-y += svc.c
 verstage-y += timer.c
-verstage-y += timestamp.c
 verstage-y += vboot_crypto.c
 
 verstage-y += $(top)/src/vendorcode/amd/fsp/picasso/bl_uapp/bl_uapp_startup.S

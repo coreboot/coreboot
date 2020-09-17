@@ -16,6 +16,7 @@
 #include <arch/stages.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <timestamp.h>
 
 extern char _bss_start, _bss_end;
 static struct mem_region_device boot_dev =
@@ -217,6 +218,7 @@ void Main(void)
 	 * Do not use printk() before console_init()
 	 * Do not use post_code() before verstage_mainboard_init()
 	 */
+	timestamp_init(timestamp_get());
 	svc_write_postcode(POSTCODE_ENTERED_PSP_VERSTAGE);
 	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);

@@ -126,7 +126,7 @@ chip soc/intel/cannonlake
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on	# SATA
 			register "SataMode" = "Sata_AHCI"
-			register "SataSalpSupport" = "0"
+			register "SataSalpSupport" = "1"
 			# Port 2 (J_SSD2)
 			register "SataPortsEnable[1]" = "1"
 			register "SataPortsDevSlp[1]" = "1"

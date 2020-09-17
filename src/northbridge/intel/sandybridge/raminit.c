@@ -167,10 +167,8 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 		/* Count dimms on channel */
 		for (slot = 0; slot < NUM_SLOTS; slot++) {
 			spd_slot = 2 * channel + slot;
-			printk(BIOS_DEBUG, "SPD probe channel%d, slot%d\n", channel, slot);
 
-			spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);
-			if (dimm->dimm[channel][slot].dram_type == SPD_MEMORY_TYPE_SDRAM_DDR3)
+			if (spd[spd_slot][SPD_MEMORY_TYPE] == SPD_MEMORY_TYPE_SDRAM_DDR3)
 				ch_dimms++;
 		}
 

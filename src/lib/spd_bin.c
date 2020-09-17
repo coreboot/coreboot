@@ -143,34 +143,41 @@ static int spd_get_busw(const uint8_t spd[], int dram_type)
 	return spd_busw[index];
 }
 
-static void spd_get_name(const uint8_t spd[], char spd_name[], int dram_type)
+static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, size_t *len)
 {
-	switch (dram_type) {
+	*spd_name = mainboard_get_dram_part_num();
+	if (*spd_name != NULL) {
+		*len = strlen(*spd_name);
+		return;
+	}
+
+	switch (type) {
 	case SPD_DRAM_DDR3:
-		memcpy(spd_name, &spd[DDR3_SPD_PART_OFF], DDR3_SPD_PART_LEN);
-		spd_name[DDR3_SPD_PART_LEN] = 0;
+		*spd_name = (const char *) &spd[DDR3_SPD_PART_OFF];
+		*len = DDR3_SPD_PART_LEN;
 		break;
 	case SPD_DRAM_LPDDR3_INTEL:
-		memcpy(spd_name, &spd[LPDDR3_SPD_PART_OFF],
-			LPDDR3_SPD_PART_LEN);
-		spd_name[LPDDR3_SPD_PART_LEN] = 0;
+		*spd_name = (const char *) &spd[LPDDR3_SPD_PART_OFF];
+		*len = LPDDR3_SPD_PART_LEN;
 		break;
-	/* LPDDR3, LPDDR4 and DDR4 have the same part number offset */
+	/* LPDDR3, LPDDR4 and DDR4 have same part number offset and length */
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
-		memcpy(spd_name, &spd[DDR4_SPD_PART_OFF], DDR4_SPD_PART_LEN);
-		spd_name[DDR4_SPD_PART_LEN] = 0;
+		*spd_name = (const char *) &spd[DDR4_SPD_PART_OFF];
+		*len = DDR4_SPD_PART_LEN;
 		break;
 	default:
+		*len = 0;
 		break;
 	}
 }
 
 void print_spd_info(uint8_t spd[])
 {
-	char spd_name[DDR4_SPD_PART_LEN + 1] = { 0 };
+	const char *nameptr = NULL;
+	size_t len;
 	int type  = spd[SPD_DRAM_TYPE];
 	int banks = spd_get_banks(spd, type);
 	int capmb = spd_get_capmb(spd);
@@ -184,9 +191,9 @@ void print_spd_info(uint8_t spd[])
 	printk(BIOS_INFO, "SPD: module type is %s\n",
 		spd_get_module_type_string(type));
 	/* Module Part Number */
-	spd_get_name(spd, spd_name, type);
-
-	printk(BIOS_INFO, "SPD: module part number is %s\n", spd_name);
+	spd_get_name(spd, type, &nameptr, &len);
+	if (nameptr)
+		printk(BIOS_INFO, "SPD: module part number is %.*s\n", (int) len, nameptr);
 
 	printk(BIOS_INFO,
 		"SPD: banks %d, ranks %d, rows %d, columns %d, density %d Mb\n",

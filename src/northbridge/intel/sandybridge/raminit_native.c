@@ -503,42 +503,15 @@ static void dram_timing(ramctr_timing *ctrl)
 	else
 		ctrl->CWL = get_CWL(ctrl->tCK);
 
-	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
-
-	/* Find tRCD */
 	ctrl->tRCD = DIV_ROUND_UP(ctrl->tRCD, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRCD          : %uT\n", ctrl->tRCD);
-
 	ctrl->tRP  = DIV_ROUND_UP(ctrl->tRP,  ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRP           : %uT\n", ctrl->tRP);
-
-	/* Find tRAS */
 	ctrl->tRAS = DIV_ROUND_UP(ctrl->tRAS, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRAS          : %uT\n", ctrl->tRAS);
-
-	/* Find tWR */
 	ctrl->tWR  = DIV_ROUND_UP(ctrl->tWR,  ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tWR           : %uT\n", ctrl->tWR);
-
-	/* Find tFAW */
 	ctrl->tFAW = DIV_ROUND_UP(ctrl->tFAW, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tFAW          : %uT\n", ctrl->tFAW);
-
-	/* Find tRRD */
 	ctrl->tRRD = DIV_ROUND_UP(ctrl->tRRD, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRRD          : %uT\n", ctrl->tRRD);
-
-	/* Find tRTP */
 	ctrl->tRTP = DIV_ROUND_UP(ctrl->tRTP, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRTP          : %uT\n", ctrl->tRTP);
-
-	/* Find tWTR */
 	ctrl->tWTR = DIV_ROUND_UP(ctrl->tWTR, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tWTR          : %uT\n", ctrl->tWTR);
-
-	/* Refresh-to-Active or Refresh-to-Refresh (tRFC) */
 	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
-	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
 	ctrl->tREFI     =     get_REFI(ctrl->FRQ, ctrl->base_freq);
 	ctrl->tMOD      =      get_MOD(ctrl->FRQ, ctrl->base_freq);
@@ -548,6 +521,17 @@ static void dram_timing(ramctr_timing *ctrl)
 	ctrl->tXPDLL    =    get_XPDLL(ctrl->FRQ, ctrl->base_freq);
 	ctrl->tXP       =       get_XP(ctrl->FRQ, ctrl->base_freq);
 	ctrl->tAONPD    =    get_AONPD(ctrl->FRQ, ctrl->base_freq);
+
+	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
+	printk(BIOS_DEBUG, "Selected tRCD          : %uT\n", ctrl->tRCD);
+	printk(BIOS_DEBUG, "Selected tRP           : %uT\n", ctrl->tRP);
+	printk(BIOS_DEBUG, "Selected tRAS          : %uT\n", ctrl->tRAS);
+	printk(BIOS_DEBUG, "Selected tWR           : %uT\n", ctrl->tWR);
+	printk(BIOS_DEBUG, "Selected tFAW          : %uT\n", ctrl->tFAW);
+	printk(BIOS_DEBUG, "Selected tRRD          : %uT\n", ctrl->tRRD);
+	printk(BIOS_DEBUG, "Selected tRTP          : %uT\n", ctrl->tRTP);
+	printk(BIOS_DEBUG, "Selected tWTR          : %uT\n", ctrl->tWTR);
+	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 }
 
 static void dram_freq(ramctr_timing *ctrl)

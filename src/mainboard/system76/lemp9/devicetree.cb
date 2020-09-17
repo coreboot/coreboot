@@ -50,17 +50,6 @@ chip soc/intel/cannonlake
 	# Thermal
 	register "tcc_offset" = "12"
 
-# LPC (soc/intel/cannonlake/lpc.c)
-	# LPC configuration from lspci -s 1f.0 -xxx
-	# Address 0x84: Decode 0x80 - 0x8F (Port 80)
-	register "gen1_dec" = "0x000c0081"
-	# Address 0x88: Decode 0x68 - 0x6F (PMC)
-	register "gen2_dec" = "0x00040069"
-	# Address 0x8C: Decode 0xE00 - 0xEFF (AP/EC command)
-	register "gen3_dec" = "0x00fc0E01"
-	# Address 0x90: Decode 0xF00 - 0xFFF (AP/EC debug)
-	register "gen4_dec" = "0x00fc0F01"
-
 # PM Util (soc/intel/cannonlake/pmutil.c)
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this
@@ -193,6 +182,15 @@ chip soc/intel/cannonlake
 		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 on	# LPC Interface
+			# LPC configuration from lspci -s 1f.0 -xxx
+			# Address 0x84: Decode 0x80 - 0x8F (Port 80)
+			register "gen1_dec" = "0x000c0081"
+			# Address 0x88: Decode 0x68 - 0x6F (PMC)
+			register "gen2_dec" = "0x00040069"
+			# Address 0x8C: Decode 0xE00 - 0xEFF (AP/EC command)
+			register "gen3_dec" = "0x00fc0E01"
+			# Address 0x90: Decode 0xF00 - 0xFFF (AP/EC debug)
+			register "gen4_dec" = "0x00fc0F01"
 			chip drivers/pc80/tpm	# TPM
 				device pnp 0c31.0 on  end
 			end

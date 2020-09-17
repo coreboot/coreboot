@@ -28,6 +28,7 @@ chip soc/intel/apollolake
 		device pci 0d.2 on  end	# - SPI
 		device pci 0d.3 off end	# - Shared SRAM
 		device pci 0e.0 on  end	# - Audio
+		device pci 0f.0 on  end	# - CSE
 		device pci 11.0 on  end	# - ISH
 		device pci 12.0 on  end	# - SATA
 		device pci 13.0 on  end	# - RP 2 - PCIe A 0

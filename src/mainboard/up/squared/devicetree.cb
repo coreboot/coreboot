@@ -34,7 +34,7 @@ chip soc/intel/apollolake
 		device pci 0d.2 off end	# - SPI
 		device pci 0d.3 off end	# - Shared SRAM
 		device pci 0e.0 on end	# - Audio
-		device pci 0f.0 on end  # - TXE
+		device pci 0f.0 on end	# - TXE
 		device pci 11.0 off end	# - ISH
 		device pci 12.0 on end	# - SATA
 		device pci 13.0 on end	# - PCIe-A 1 - PcieRootPort[2]

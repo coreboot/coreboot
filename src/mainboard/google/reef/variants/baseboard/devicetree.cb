@@ -139,6 +139,7 @@ chip soc/intel/apollolake
 				device generic 0 on end
 			end
 		end
+		device pci 0f.0 on  end	# - CSE
 		device pci 11.0 off end	# - ISH
 		device pci 12.0 off end	# - SATA
 		device pci 13.0 off end	# - Root Port 2 - PCIe-A 0

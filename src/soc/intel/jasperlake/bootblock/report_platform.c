@@ -29,6 +29,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_JSL_ID_2, "Jasperlake SKU4-2" },
 	{ PCI_DEVICE_ID_INTEL_JSL_ID_3, "Jasperlake SKU2-1" },
 	{ PCI_DEVICE_ID_INTEL_JSL_ID_4, "Jasperlake SKU2-2" },
+	{ PCI_DEVICE_ID_INTEL_JSL_ID_5, "Jasperlake SKU4-3" },
 };
 
 static struct {
@@ -45,6 +46,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_JSL_GT1, "Jasperlake GT1" },
 	{ PCI_DEVICE_ID_INTEL_JSL_GT2, "Jasperlake GT2" },
 	{ PCI_DEVICE_ID_INTEL_JSL_GT3, "Jasperlake GT3" },
+	{ PCI_DEVICE_ID_INTEL_JSL_GT4, "Jasperlake GT4" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

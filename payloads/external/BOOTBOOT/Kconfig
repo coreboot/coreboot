@@ -1,0 +1,6 @@
+if PAYLOAD_BOOTBOOT
+
+config PAYLOAD_FILE
+	default "payloads/external/BOOTBOOT/bootboot/dist/bootbootcb.elf"
+
+endif

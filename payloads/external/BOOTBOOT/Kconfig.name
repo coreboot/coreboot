@@ -1,0 +1,8 @@
+config PAYLOAD_BOOTBOOT
+	bool "BOOTBOOT"
+	depends on ARCH_X86 || ARCH_ARM64
+	help
+	  Select this option if you want to build a coreboot image
+	  with a BOOTBOOT Protocol payload.
+
+	  See https://gitlab.com/bztsrc/bootboot for more information.

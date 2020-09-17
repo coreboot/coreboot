@@ -303,3 +303,8 @@ payloads/external/Yabits/uefi/build/uefi.elf yabits:
 		CONFIG_YABITS_MASTER=$(CONFIG_YABITS_MASTER) \
 		CONFIG_YABITS_STABLE=$(CONFIG_YABITS_STABLE) \
 		MFLAGS= MAKEFLAGS=
+
+# BOOTBOOT
+
+payloads/external/BOOTBOOT/bootboot/dist/bootbootcb.elf:
+	$(MAKE) -C payloads/external/BOOTBOOT all

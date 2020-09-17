@@ -81,4 +81,9 @@ config VARIANT_DIR
 	string
 	default "l140cu" if BOARD_CLEVO_L140CU
 
+config SEABIOS_PS2_TIMEOUT
+	int
+	depends on PAYLOAD_SEABIOS
+	default 500
+
 endif

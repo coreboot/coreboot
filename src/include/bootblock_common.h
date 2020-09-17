@@ -29,6 +29,8 @@ asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
 asmlinkage void ap_bootblock_c_entry(void);
 
 void bootblock_main_with_basetime(uint64_t base_timestamp);
+void bootblock_main_with_timestamp(uint64_t base_timestamp,
+	struct timestamp_entry *timestamps, size_t num_timestamps);
 
 /* This is the argument structure passed from decompressor to bootblock. */
 struct bootblock_arg {

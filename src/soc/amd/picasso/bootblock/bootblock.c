@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <symbols.h>
 #include <amdblocks/reset.h>
+#include <timestamp.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
@@ -10,6 +11,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/x86/tsc.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/psp_transfer.h>
 #include <soc/southbridge.h>
@@ -108,12 +110,73 @@ static void write_resume_eip(void)
 		wrmsr(S3_RESUME_EIP_MSR, s3_resume_entry);
 }
 
+static int transfer_buffer_valid(const struct transfer_info_struct *ptr)
+{
+	if (ptr->magic_val == TRANSFER_MAGIC_VAL)
+		return 1;
+	else
+		return 0;
+}
+
+static void boot_with_psp_timestamp(uint64_t base_timestamp)
+{
+	const struct transfer_info_struct *info = (const struct transfer_info_struct *)
+		(void *)(uintptr_t)_transfer_buffer;
+
+	if (!transfer_buffer_valid(info) || info->timestamp == 0)
+		return;
+
+	/*
+	 * info->timestamp is PSP's timestamp (in microseconds)
+	 * when x86 processor is released.
+	 */
+	uint64_t psp_last_ts = info->timestamp;
+
+	int i;
+	struct timestamp_table *psp_ts_table =
+		(struct timestamp_table *)(void *)
+		((uintptr_t)_transfer_buffer + info->timestamp_offset);
+	/* new base_timestamp will be offset for all PSP timestamps. */
+	base_timestamp -= psp_last_ts;
+
+	for (i = 0; i < psp_ts_table->num_entries; i++) {
+		struct timestamp_entry *tse = &psp_ts_table->entries[i];
+		/*
+		 * We ignore the time between x86 processor release and bootblock.
+		 * Since timestamp_add subtracts base_time, we first add old base_time
+		 * to make it absolute then add base_timestamp again since
+		 * it'll be a new base_time.
+		 *
+		 * We don't need to convert unit since both PSP and coreboot
+		 * will use 1us granularity.
+		 *
+		 */
+		tse->entry_stamp += psp_ts_table->base_time + base_timestamp;
+	}
+
+	bootblock_main_with_timestamp(base_timestamp, psp_ts_table->entries,
+				      psp_ts_table->num_entries);
+}
+
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	set_caching();
 	write_resume_eip();
 	enable_pci_mmconf();
 
+	/*
+	 * base_timestamp is raw tsc value. We need to divide by tsc_freq_mhz
+	 * when we use micro-seconds granularity for Zork
+	 */
+	base_timestamp /= tsc_freq_mhz();
+
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		boot_with_psp_timestamp(base_timestamp);
+
+	/*
+	 * if VBOOT_STARTS_BEFORE_BOOTBLOCK is not selected or
+	 * previous step did nothing, proceed with normal bootblock main.
+	 */
 	bootblock_main_with_basetime(base_timestamp);
 }
 

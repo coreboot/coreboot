@@ -12,16 +12,6 @@ chip soc/intel/cannonlake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-# ACPI (soc/intel/cannonlake/acpi.c)
-	# Disable s0ix
-	register "s0ix_enable" = "0"
-
-	# PM Timer Enabled
-	register "PmTimerDisabled" = "0"
-
-	# Disable DPTF
-	register "dptf_enable" = "0"
-
 # CPU (soc/intel/cannonlake/cpu.c)
 	# Power limit
 	register "power_limits_config" = "{
@@ -98,7 +88,6 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on	# USB xHCI
-			register "SsicPortEnable" = "0"
 			# USB2
 			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
 			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 2
@@ -211,17 +200,7 @@ chip soc/intel/cannonlake
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 off end # Power Management Controller
 		device pci 1f.3 on	# Intel HDA
-			register "PchHdaDspEnable" = "0"
 			register "PchHdaAudioLinkHda" = "1"
-			register "PchHdaAudioLinkDmic0" = "0"
-			register "PchHdaAudioLinkDmic1" = "0"
-			register "PchHdaAudioLinkSsp0" = "0"
-			register "PchHdaAudioLinkSsp1" = "0"
-			register "PchHdaAudioLinkSsp2" = "0"
-			register "PchHdaAudioLinkSndw1" = "0"
-			register "PchHdaAudioLinkSndw2" = "0"
-			register "PchHdaAudioLinkSndw3" = "0"
-			register "PchHdaAudioLinkSndw4" = "0"
 		end
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end	# PCH SPI

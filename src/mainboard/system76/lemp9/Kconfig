@@ -39,7 +39,7 @@ config MAINBOARD_VERSION
 
 config CBFS_SIZE
 	hex
-	default 0xA00000
+	default 0xc00000
 
 config CONSOLE_POST
 	bool

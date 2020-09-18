@@ -751,7 +751,7 @@ void cse_fw_sync(void *unused)
 	}
 }
 
-#if CONFIG(SOC_INTEL_TIGERLAKE)
+#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_JASPERLAKE)
 /*
  * This needs to happen after the MRC cache write to avoid a 2nd
  * memory training sequence.

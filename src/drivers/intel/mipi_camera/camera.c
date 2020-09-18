@@ -452,10 +452,12 @@ static void camera_fill_sensor(const struct device *dev)
 static void camera_fill_nvm(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+	struct acpi_dp *dsd;
 
 	if (!config->nvm_compat)
 		return;
+
+	dsd = acpi_dp_new_table("_DSD");
 
 	/* It might be possible to default size or width based on type. */
 	if (!config->disable_nvm_defaults && !config->nvm_pagesize)

@@ -1,0 +1,18 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that no board's Kconfig sets SUBSYSTEM_(VENDOR|DEVICE)_ID
+
+LC_ALL=C export LC_ALL
+FAIL=0
+
+for i in src/mainboard/*/* src/mainboard/*/*/variants/*; do
+  if [ -r $i/Kconfig ]; then
+    if grep -Eq "^\s*config\s+SUBSYSTEM_(VENDOR|DEVICE)_ID\>" $i/Kconfig; then
+      echo "$i: Mainboard sets SUBSYSTEM_*_ID. Set 'subsystemid' in devicetree instead!"
+      FAIL=1
+    fi
+  fi
+done
+
+exit $FAIL

@@ -663,6 +663,9 @@ config SUBSYSTEM_VENDOR_ID
 	  This config option will override the devicetree settings for
 	  PCI Subsystem Vendor ID.
 
+	  Note: This option is not meant for a board's Kconfig; use the
+	  devicetree setting `subsystemid` instead.
+
 config SUBSYSTEM_DEVICE_ID
 	hex "Override PCI Subsystem Device ID"
 	depends on PCI
@@ -670,6 +673,9 @@ config SUBSYSTEM_DEVICE_ID
 	help
 	  This config option will override the devicetree settings for
 	  PCI Subsystem Device ID.
+
+	  Note: This option is not meant for a board's Kconfig; use the
+	  devicetree setting `subsystemid` instead.
 
 config VGA_BIOS
 	bool "Add a VGA BIOS image"

@@ -314,12 +314,16 @@ out:
 	rehide_me();
 }
 
+static void print_btg_bool_param(const char *name, u8 state)
+{
+	printf("%-20s : %s\n", name, state ? "ON" : "OFF");
+}
+
 static void dump_bootguard_info(void)
 {
 	struct pci_dev *dev;
 	char namebuf[1024];
 	const char *name = NULL;
-	uint64_t bootguard = 0;
 
 	if (pci_platform_scan())
 		return;
@@ -342,59 +346,74 @@ static void dump_bootguard_info(void)
 	if (ME_major_ver &&
 	    (ME_major_ver < 9 ||
 	     (ME_major_ver == 9 && ME_minor_ver < 5))) {
-		print_cap("BootGuard                                 ", 0);
-		printf(CGRN "\nYour system isn't bootguard ready. You can "
-		       "flash other firmware!\n" RESET);
+		printf(CGRN "Your system isn't BootGuard ready.\n"
+		       "You can flash other firmware!\n" RESET);
 		rehide_me();
 		return;
 	}
 
-	if (msr_bootguard(&bootguard, debug) < 0) {
-		printf("ME Capability: %-43s: " CCYN "%s\n" RESET,
-		       "BootGuard Mode", "Unknown");
-		rehide_me();
-		return;
-	}
-
-	if (debug) {
-		printf("BootGuard MSR Output: 0x%" PRIx64 "\n", bootguard);
-		bootguard &= ~0xff;
-	}
-
-	print_cap("BootGuard                                 ", 1);
 	if (pci_read_long(dev, 0x40) & 0x10)
-		printf(CYEL "Your southbridge configuration is insecure!! "
+		printf(CYEL "Your southbridge configuration is insecure!!\n"
 		       "BootGuard keys can be overwritten or wiped, or you are "
 		       "in developer mode.\n"
 		       RESET);
 	rehide_me();
 
-	switch (bootguard) {
-	case BOOTGUARD_DISABLED:
-		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
-		       "BootGuard Mode", "Disabled");
-		printf(CGRN "\nYour system is bootguard ready but your vendor "
-		       "disabled it. You can flash other firmware!\n" RESET);
-		break;
-	case BOOTGUARD_ENABLED_COMBI_MODE:
-		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
-		       "BootGuard Mode", "Verified & Measured Boot");
-		printf(CRED "\nVerified boot is enabled. You can't flash other "
-		       "firmware. !\n" RESET);
-		break;
-	case BOOTGUARD_ENABLED_MEASUREMENT_MODE:
-		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
-		       "BootGuard Mode", "Measured Boot");
-		printf(CGRN "\nYour system is bootguard ready but only running "
-		       "the measured boot mode. You can flash other firmware!\n"
-		       RESET);
-		break;
-	case BOOTGUARD_ENABLED_VERIFIED_MODE:
-		printf("ME Capability: %-43s: " CGRN "%s\n" RESET,
-		       "BootGuard Mode", "Verified Boot");
-		printf(CRED "\nVerified boot is enabled! You can't flash other "
-		       "firmware.\n" RESET);
-		break;
+	union {
+		struct {
+			u8  nem_enabled    :  1; /* [ 0.. 0] */
+			u8  tpm_type       :  2; /* [ 2.. 1] */
+			u8  tpm_success    :  1; /* [ 3.. 3] */
+			u8  facb_fpf       :  1; /* [ 4.. 4] */
+			u8  measured_boot  :  1; /* [ 5.. 5] */
+			u8  verified_boot  :  1; /* [ 6.. 6] */
+			u8  module_revoked :  1; /* [ 7.. 7] */
+			u32                : 24;
+			u8  btg_capability :  1; /* [32..32] */
+			u32                : 31;
+		};
+		u64 raw;
+	} btg;
+
+	if (msr_bootguard(&btg.raw) < 0) {
+		printf("Could not read the BOOTGUARD_SACM_INFO MSR.\n");
+		return;
+	}
+
+	printf("BootGuard MSR Output : 0x%" PRIx64 "\n", btg.raw);
+
+	if (!btg.btg_capability) {
+		printf(CGRN "Your system isn't BootGuard ready.\n"
+		       "You can flash other firmware!\n" RESET);
+		return;
+	}
+
+	print_btg_bool_param("Measured boot",  btg.measured_boot);
+	print_btg_bool_param("Verified boot",  btg.verified_boot);
+	print_btg_bool_param("FACB in FPFs",   btg.facb_fpf);
+	print_btg_bool_param("Module revoked", btg.module_revoked);
+	if (btg.measured_boot) {
+		const char *const tpm_type_strs[] = {
+			"None",
+			"TPM 1.2",
+			"TPM 2.0",
+			"PTT",
+		};
+		printf("%-20s : %s\n", "TPM type", tpm_type_strs[btg.tpm_type]);
+		print_btg_bool_param("TPM success", btg.tpm_success);
+	}
+	if (btg.verified_boot) {
+		print_btg_bool_param("NEM enabled", btg.nem_enabled);
+		if (btg.nem_enabled)
+			printf(CRED "Verified boot is enabled and ACM has enabled "
+			       "Cache-As-RAM.\nYou can't flash other firmware!\n" RESET);
+		else
+			printf(CYEL "Verified boot is enabled, but ACM did not enable "
+			       "Cache-As-RAM.\nIt might be possible to flash other firmware.\n"
+			       RESET);
+	} else {
+		printf(CGRN "Your system is BootGuard ready but verified boot is disabled.\n"
+		       "You can flash other firmware!\n" RESET);
 	}
 }
 

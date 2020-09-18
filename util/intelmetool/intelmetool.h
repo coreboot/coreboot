@@ -48,11 +48,6 @@
 #define ME_MESSAGE_LEN 256
 
 extern int debug;
-static inline void print_cap(const char *name, int state)
-{
-	printf("ME Capability: %-30s : %s\n",
-	       name, state ? CRED "ON" RESET : CGRN "OFF" RESET);
-}
 
 #define PCI_VENDOR_ID_INTEL 0x8086
 
@@ -495,13 +490,3 @@ static inline void print_cap(const char *name, int state)
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE3) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_CANNONLAKE) || \
 	0)
-
-#define BOOTGUARD_DISABLED 0x400000000
-#define BOOTGUARD_ENABLED_VERIFIED_MODE 0x100000000
-#define BOOTGUARD_ENABLED_MEASUREMENT_MODE 0x200000000
-#define BOOTGUARD_ENABLED_COMBI_MODE 0x300000000
-#define BOOTGUARD_CAPABILITY(x) ( \
-		((x) == BOOTGUARD_DISABLED) || \
-		((x) == BOOTGUARD_ENABLED_VERIFIED_MODE) || \
-		((x) == BOOTGUARD_ENABLED_MEASUREMENT_MODE) || \
-		((x) == BOOTGUARD_ENABLED_COMBI_MODE))

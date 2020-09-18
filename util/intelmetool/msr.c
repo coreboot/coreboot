@@ -39,7 +39,7 @@ static int rdmsr(int addr, uint64_t *msr)
 }
 #endif
 
-int msr_bootguard(uint64_t *msr, int debug)
+int msr_bootguard(uint64_t *msr)
 {
 
 #ifndef __DARWIN__
@@ -53,9 +53,6 @@ int msr_bootguard(uint64_t *msr, int debug)
 	if (rdmsr(MSR_BOOTGUARD, msr) < 0)
 		return -1;
 #endif
-
-	if (!debug)
-		*msr &= ~0xff;
 
 	return 0;
 }

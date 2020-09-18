@@ -413,6 +413,12 @@ int mkhi_get_fw_version(int *major, int *minor)
 	return 0;
 }
 
+static void print_cap(const char *name, int state)
+{
+	printf("ME Capability: %-30s : %s\n",
+	       name, state ? CRED "ON" RESET : CGRN "OFF" RESET);
+}
+
 /* Get ME Firmware Capabilities */
 int mkhi_get_fwcaps(void)
 {

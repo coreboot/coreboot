@@ -13,5 +13,5 @@ typedef struct {
 	unsigned int ecx;
 } regs_t;
 
-extern int msr_bootguard(uint64_t *msr, int debug);
+extern int msr_bootguard(uint64_t *msr);
 #endif

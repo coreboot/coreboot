@@ -17,10 +17,11 @@
 
 enum {
 	ALIB_DPTCI_FUNCTION_ID = 0xc,
+	THERMAL_CONTROL_LIMIT_ID = 0x3,
 	SUSTAINED_POWER_LIMIT_PARAM_ID = 0x5,
 	FAST_PPT_LIMIT_PARAM_ID = 0x6,
 	SLOW_PPT_LIMIT_PARAM_ID = 0x7,
-	DPTC_TOTAL_UPDATE_PARAMS = 3,
+	DPTC_TOTAL_UPDATE_PARAMS = 4,
 };
 
 struct dptc_param {
@@ -33,10 +34,14 @@ struct dptc_input {
 	struct dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
 } __packed;
 
-#define DPTC_INPUTS(_sustained, _fast, _slow)					\
+#define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow)			\
 		{								\
 			.size = sizeof(struct dptc_input),			\
 			.params = {						\
+				{						\
+					.id = THERMAL_CONTROL_LIMIT_ID,		\
+					.value = _thermctllmit,			\
+				},						\
 				{						\
 					.id = SUSTAINED_POWER_LIMIT_PARAM_ID,	\
 					.value = _sustained,			\
@@ -195,10 +200,12 @@ static void acipgen_dptci(void)
 	if (!config->dptc_enable)
 		return;
 
-	struct dptc_input default_input = DPTC_INPUTS(config->sustained_power_limit,
+	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit,
+							config->sustained_power_limit,
 							config->fast_ppt_limit,
 							config->slow_ppt_limit);
 	struct dptc_input tablet_mode_input = DPTC_INPUTS(
+					config->thermctl_limit_tablet_mode,
 					config->sustained_power_limit_tablet_mode,
 					config->fast_ppt_limit_tablet_mode,
 					config->slow_ppt_limit_tablet_mode);

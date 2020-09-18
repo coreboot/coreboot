@@ -111,6 +111,7 @@ struct soc_amd_picasso_config {
 
 	/* Lower die temperature limit */
 	uint32_t thermctl_limit;
+	uint32_t thermctl_limit_tablet_mode;
 
 	/* FP5 Processor Voltage Supply PSI Currents. 0 indicates use SOC default */
 	uint32_t psi0_current_limit;

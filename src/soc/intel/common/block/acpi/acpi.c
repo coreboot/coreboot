@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <arch/cpu.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <bootstate.h>
@@ -9,6 +10,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/msr.h>
@@ -19,6 +21,8 @@
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <string.h>
+
+#define  CPUID_6_EAX_ISST	(1 << 7)
 
 __attribute__((weak)) unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -391,6 +395,23 @@ void generate_t_state_entries(int core, int cores_per_package)
 	acpigen_write_TSS_package(entries, soc_tss_table);
 }
 
+static void generate_cppc_entries(int core_id)
+{
+	if (!(CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPPC) &&
+	      cpuid_eax(6) & CPUID_6_EAX_ISST))
+		return;
+
+	/* Generate GCPC package in first logical core */
+	if (core_id == 0) {
+		struct cppc_config cppc_config;
+		cpu_init_cppc_config(&cppc_config, CPPC_VERSION_2);
+		acpigen_write_CPPC_package(&cppc_config);
+	}
+
+	/* Write _CPC entry for each logical core */
+	acpigen_write_CPPC_method();
+}
+
 __weak void soc_power_states_generation(int core_id,
 						int cores_per_package)
 {
@@ -420,6 +441,8 @@ void generate_cpu_entries(const struct device *device)
 
 			/* Generate C-state tables */
 			generate_c_state_entries();
+
+			generate_cppc_entries(core_id);
 
 			/* Soc specific power states generation */
 			soc_power_states_generation(core_id, cores_per_package);

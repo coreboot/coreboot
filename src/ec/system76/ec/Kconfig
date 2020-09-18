@@ -3,6 +3,11 @@ config EC_SYSTEM76_EC
 	help
 	  System76 EC
 
+config EC_SYSTEM76_EC_BAT_THRESHOLDS
+	depends on EC_SYSTEM76_EC
+	bool
+	default n
+
 config EC_SYSTEM76_EC_COLOR_KEYBOARD
 	depends on EC_SYSTEM76_EC
 	bool

@@ -71,6 +71,29 @@ static void list_cbfs_section_names(FILE *out)
 	fputc('\n', out);
 }
 
+static void write_header_fmap_sections(FILE *header, const struct flashmap_descriptor *root,
+				       unsigned int offset)
+{
+	assert(root);
+	/*
+	 * The offset may only be unknown for the root node in a system where the flash isn't
+	 * memory-mapped.
+	 */
+	if (!root->offset_known && offset != 0)
+		return;
+
+	const unsigned int current_offset = offset + (root->offset_known ? root->offset : 0);
+	fprintf(header, "#define FMAP_SECTION_%s_START %#x\n", root->name, current_offset);
+
+	if (!root->size_known)
+		return;
+
+	fprintf(header, "#define FMAP_SECTION_%s_SIZE %#x\n", root->name, root->size);
+
+	fmd_foreach_child(child, root)
+		write_header_fmap_sections(header, child, current_offset);
+}
+
 static bool write_header(const char *out_fname,
 			 const struct flashmap_descriptor *root,
 			 const int fmap_size)
@@ -92,6 +115,9 @@ static bool write_header(const char *out_fname,
 	fputs("#define FMAPTOOL_GENERATED_HEADER_H_\n\n", header);
 	fprintf(header, "#define %s %#x\n", HEADER_FMAP_OFFSET, fmap_offset);
 	fprintf(header, "#define %s %#x\n\n", HEADER_FMAP_SIZE, fmap_size);
+
+	write_header_fmap_sections(header, root, 0);
+	fputs("\n", header);
 
 	fputs("#endif\n", header);
 

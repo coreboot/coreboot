@@ -1,11 +1,10 @@
 config SOC_INTEL_COMMON_BASECODE
 	bool
 	help
-	  Common coreboot stages for Intel platform
+	  Common coreboot stages and non-IP block for Intel platform
 
 if SOC_INTEL_COMMON_BASECODE
 
-comment "Intel platform Common coreboot stage files"
 source "src/soc/intel/common/basecode/*/Kconfig"
 source "src/soc/intel/common/basecode/*/*/Kconfig"
 

@@ -6,13 +6,13 @@ config SOC_INTEL_COMMON
 
 if SOC_INTEL_COMMON
 
-comment "Intel SoC Common Code"
+comment "Intel SoC Common Code for IP blocks"
 source "src/soc/intel/common/block/Kconfig"
 
 comment "Intel SoC Common PCH Code"
 source "src/soc/intel/common/pch/Kconfig"
 
-comment "Intel SoC Common coreboot stages"
+comment "Intel SoC Common coreboot stages and non-IP blocks"
 source "src/soc/intel/common/basecode/Kconfig"
 
 config SOC_INTEL_COMMON_RESET

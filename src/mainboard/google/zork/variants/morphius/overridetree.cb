@@ -14,6 +14,7 @@ chip soc/amd/picasso
 	register "slow_ppt_time_constant" = "5" #second
 	register "stapm_time_constant" = "200" #second
 	register "sustained_power_limit" = "12000" #mw
+	register "thermctl_limit" = "100" #degrees C
 
 	register "telemetry_vddcr_vdd_slope" = "78709" #mA
 	register "telemetry_vddcr_vdd_offset" = "0"
@@ -24,7 +25,8 @@ chip soc/amd/picasso
 	register "dptc_enable" = "1"
 	register "slow_ppt_limit_tablet_mode" = "20000" #mw
 	register "fast_ppt_limit_tablet_mode" = "24000" #mw
-	register "sustained_power_limit_tablet_mode" = "6000" #mw
+	register "sustained_power_limit_tablet_mode" = "12000" #mw
+	register "thermctl_limit_tablet_mode" = "70" #degrees C
 
 	# End : OPN Performance Configuration
 

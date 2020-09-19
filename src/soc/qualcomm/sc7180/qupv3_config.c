@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbfs.h>
+#include <console/console.h>
 #include <string.h>
 #include <soc/qupv3_config.h>
 

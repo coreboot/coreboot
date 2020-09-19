@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>

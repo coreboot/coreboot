@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <soc/qcom_qup_se.h>
 
 struct qup qup[12] = {

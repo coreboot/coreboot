@@ -2,6 +2,7 @@
 
 #define COREBOOT_AST_FAILOVER_TIMEOUT	10000000
 
+#include <console/console.h>
 #include <delay.h>
 
 #include "ast_drv.h"

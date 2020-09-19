@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <reset.h>
 #include <soc/pci_devs.h>
 #include <soc/reset.h>

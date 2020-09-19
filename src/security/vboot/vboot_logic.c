@@ -2,6 +2,7 @@
 
 #include <arch/exception.h>
 #include <assert.h>
+#include <console/console.h>
 #include <bootmode.h>
 #include <fmap.h>
 #include <security/tpm/tspi/crtm.h>

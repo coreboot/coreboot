@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <device/device.h>
 #include <drivers/gfx/generic/chip.h>

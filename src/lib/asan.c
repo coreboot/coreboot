@@ -8,6 +8,7 @@
  *
  */
 
+#include <console/console.h>
 #include <symbols.h>
 #include <assert.h>
 #include <arch/symbols.h>

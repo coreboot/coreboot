@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <console/console.h>
 #include <lib.h>
 #include <soc/clock.h>
 #include <soc/gpio.h>

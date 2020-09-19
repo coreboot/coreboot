@@ -3,6 +3,7 @@
 #ifndef _SOC_PCI_DEVS_H_
 #define _SOC_PCI_DEVS_H_
 
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <hob_iiouds.h>
 

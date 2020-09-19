@@ -2,6 +2,8 @@
 /*
  * Copied from Linux drivers/gpu/drm/ast/ast_mode.c
  */
+
+#include <console/console.h>
 #include <edid.h>
 #include <device/pci_def.h>
 

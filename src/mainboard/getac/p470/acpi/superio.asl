@@ -19,13 +19,13 @@ Device (SIO1)
 	Method (READ, 3)
 	{
 		Acquire (SIOM, 0xffff)
-		If (LEqual(Arg0, 0)) {
-			Store (0x55, INDX)
-			Store (Arg1, INDX)
-			Store (DATA, Local1)
-			Store (0xaa, INDX)
+		If (Arg0 == 0) {
+			INDX = 0x55
+			INDX = Arg1
+			Local1 = DATA
+			INDX = 0xaa
 		}
-		And (Local1, Arg2, Local1)
+		Local1 &= Arg2
 		Release(SIOM)
 		Return(Local1)
 	}
@@ -33,11 +33,11 @@ Device (SIO1)
 	Method (WRIT, 3)
 	{
 		Acquire (SIOM, 0xffff)
-		If (LEqual(Arg0, 0)) {
-			Store (0x55, INDX)
-			Store (Arg1, INDX)
-			Store (Arg2, DATA)
-			Store (0xaa, INDX)
+		If (Arg0 == 0) {
+			INDX = 0x55
+			INDX = Arg1
+			DATA = Arg2
+			INDX = 0xaa
 		}
 		Release(SIOM)
 	}
@@ -55,13 +55,13 @@ Device (SIO1)
 			Acquire (SIOM, 0xffff)
 
 			// Is the hardware enabled?
-			Store (READ(0, 0x24, 0xff), Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = READ (0, 0x24, 0xff)
+			If (Local0 == 0) {
 				Return (0xd)
 			} Else {
 				// Power Enabled?
-				Store (READ(0, 0x02, 0x08), Local0)
-				If (LEqual(Local0, 0)) {
+				Local0 = READ (0, 0x02, 0x08)
+				If (Local0 == 0) {
 					Return (0x0d)
 				} Else {
 					Return (0x0f)
@@ -74,12 +74,12 @@ Device (SIO1)
 		{
 			WRIT(0, 0x24, 0x00)
 
-			Store(READ(0, 0x28, 0x0f), Local0)
+			Local0 = READ (0, 0x28, 0x0f)
 			WRIT(0, 0x28, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x08, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x08
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 
@@ -104,8 +104,8 @@ Device (SIO1)
 				IRQNoFlags(_IRA) { 4 }
 			})
 
-			And (_STA(), 0x02, Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = (_STA () & 0x02)
+			If (Local0 == 0) {
 				Return(NONE)
 			}
 
@@ -117,15 +117,15 @@ Device (SIO1)
 				\_SB.PCI0.LPCB.SIO1.UAR1._CRS._IRA._INT, IRQ)
 
 			/* I/O Base */
-			Store (READ(0, 0x24, 0xfe), Local0)
-			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOMN)
-			Store(Local0, IOMX)
+			Local0 = READ (0, 0x24, 0xfe)
+			Local0 <<= 2
+			IOMN = Local0
+			IOMX = Local0
 
 			/* Interrupt */
-			Store(READ(0, 0x28, 0xf0), Local0)
-			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQ)
+			Local0 = READ (0, 0x28, 0xf0)
+			Local0 >>= 4
+			IRQ = 1 << Local0
 			Return(RSRC)
 		}
 
@@ -138,29 +138,29 @@ Device (SIO1)
 
 			WRIT(0, 0x24, 0)
 			FindSetRightBit(IRQL, Local0)
-			Decrement(Local0)
-			ShiftLeft(Local0, 4, Local0)
+			Local0--
+			Local0 <<= 4
 
-			Store(READ(0, 0x28, 0x0f), Local1)
-			Or(Local0, Local1, Local0)
+			Local1 = READ (0, 0x28, 0x0f)
+			Local0 |= Local1
 			WRIT(0, 0x28, Local0)
 
-			Store(IOLO, Local0)
-			ShiftRight(Local0, 2, Local0)
-			And(Local0, 0xfe, Local0)
+			Local0 = IOLO
+			Local0 >>= 2
+			Local0 &= 0xfe
 
-			Store(IOHI, Local1)
-			ShiftLeft(Local1, 6, Local1)
-			Or (Local0, Local1, Local0)
+			Local1 = IOHI
+			Local1 <<= 6
+			Local0 |= Local1
 			WRIT(0, 0x24, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x08, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x08
 			WRIT(0, 0x02, Local0)
 
-			Store(READ(0, 0x07, 0xff), Local0)
-			Not(0x40, Local1)
-			And (Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x40
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
@@ -168,22 +168,22 @@ Device (SIO1)
 		/* D0 state - Line drivers are on */
 		Method (_PS0, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x08, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x08
 			WRIT(0, 0x02, Local0)
 
-			Store (READ(0, 0x07, 0xff), Local0)
-			Not(0x40, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x40
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
 		/* D3 State - Line drivers are off */
 		Method(_PS3, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x08, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x08
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 	}
@@ -199,19 +199,19 @@ Device (SIO1)
 		Method (_STA, 0)
 		{
 			/* IRDA? */
-			Store(READ(0, 0x0c, 0x38), Local0)
-			If (LNotEqual(Local0, Zero)) {
+			Local0 = READ(0, 0x0c, 0x38)
+			If (Local0 != 0) {
 				Return (0)
 			}
 
 			// Is the hardware enabled?
-			Store (READ(0, 0x25, 0xff), Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = READ (0, 0x25, 0xff)
+			If (Local0 == 0) {
 				Return (0xd)
 			} Else {
 				// Power Enabled?
-				Store (READ(0, 0x02, 0x80), Local0)
-				If (LEqual(Local0, 0)) {
+				Local0 = READ (0, 0x02, 0x80)
+				If (Local0 == 0) {
 					Return (0x0d)
 				} Else {
 					Return (0x0f)
@@ -224,12 +224,12 @@ Device (SIO1)
 		{
 			WRIT(0, 0x25, 0x00)
 
-			Store(READ(0, 0x28, 0xf0), Local0)
+			Local0 = READ (0, 0x28, 0xf0)
 			WRIT(0, 0x28, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x80, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x80
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 
@@ -254,8 +254,8 @@ Device (SIO1)
 				IRQNoFlags(_IRB) { 3 }
 			})
 
-			And (_STA(), 0x02, Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = _STA () & 0x02
+			If (Local0 == 0) {
 				Return(NONE)
 			}
 
@@ -267,15 +267,15 @@ Device (SIO1)
 				\_SB.PCI0.LPCB.SIO1.UAR2._CRS._IRB._INT, IRQ)
 
 			/* I/O Base */
-			Store (READ(0, 0x25, 0xfe), Local0)
-			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOMN)
-			Store(Local0, IOMX)
+			Local0 = READ (0, 0x25, 0xfe)
+			Local0 <<= 2
+			IOMN = Local0
+			IOMX = Local0
 
 			/* Interrupt */
-			Store(READ(0, 0x28, 0x0f), Local0)
-			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQ)
+			Local0 = READ (0, 0x28, 0x0f)
+			Local0 >>= 4
+			IRQ = 1 << Local0
 			Return(RSRC)
 		}
 
@@ -288,55 +288,55 @@ Device (SIO1)
 
 			WRIT(0, 0x25, 0)
 			FindSetRightBit(IRQL, Local0)
-			Decrement(Local0)
+			Local0--
 
-			Store(READ(0, 0x28, 0xf0), Local1)
-			Or(Local0, Local1, Local0)
+			Local1 = READ (0x00, 0x28, 0xf0)
+			Local0 |= Local1
 			WRIT(0, 0x28, Local0)
 
-			Store(IOLO, Local0)
-			ShiftRight(Local0, 2, Local0)
-			And(Local0, 0xfe, Local0)
+			Local0 = IOLO
+			Local0 >>= 2
+			Local0 &= 0xfe
 
-			Store(IOHI, Local1)
-			ShiftLeft(Local1, 6, Local1)
-			Or (Local0, Local1, Local0)
+			Local1 = IOHI
+			Local1 <<= 6
+			Local0 |= Local1
 			WRIT(0, 0x25, Local0)
 
-			Store(READ(0, 0x0c, 0xff), Local0)
-			Not(0x38, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x0c, 0xff)
+			Local1 = ~0x38
+			Local0 &= Local1
 			WRIT(0, 0x0c, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x80, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x80
 			WRIT(0, 0x02, Local0)
 
-			Store(READ(0, 0x07, 0xff), Local0)
-			Not(0x20, Local1)
-			And (Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x20
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
 		/* D0 state - Line drivers are on */
 		Method (_PS0, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x80, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x80
 			WRIT(0, 0x02, Local0)
 
-			Store (READ(0, 0x07, 0xff), Local0)
-			Not(0x20, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x20
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
 		/* D3 State - Line drivers are off */
 		Method(_PS3, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x80, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x80
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 	}
@@ -354,13 +354,13 @@ Device (SIO1)
 			Acquire (SIOM, 0xffff)
 
 			// Is the hardware enabled?
-			Store (READ(0, 0x1b, 0xff), Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = READ (0, 0x1b, 0xff)
+			If (Local0 == 0) {
 				Return (0xd)
 			} Else {
 				// Power Enabled?
-				Store (READ(0, 0x02, 0x02), Local0)
-				If (LEqual(Local0, 0)) {
+				Local0 = READ (0, 0x02, 0x02)
+				If (Local0 == 0) {
 					Return (0x0d)
 				} Else {
 					Return (0x0f)
@@ -373,12 +373,12 @@ Device (SIO1)
 		{
 			WRIT(0, 0x1b, 0x00)
 
-			Store(READ(0, 0x1d, 0x0f), Local0)
+			Local0 = READ (0, 0x1d, 0x0f)
 			WRIT(0, 0x1d, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x02, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x02
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 
@@ -403,8 +403,8 @@ Device (SIO1)
 				IRQNoFlags(_IRA) { 5 }
 			})
 
-			And (_STA(), 0x02, Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = _STA () & 0x02
+			If (Local0 == 0) {
 				Return(NONE)
 			}
 
@@ -416,15 +416,15 @@ Device (SIO1)
 				\_SB.PCI0.LPCB.SIO1.UAR3._CRS._IRA._INT, IRQ)
 
 			/* I/O Base */
-			Store (READ(0, 0x1b, 0xfe), Local0)
-			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOMN)
-			Store(Local0, IOMX)
+			Local0 = READ (0x00, 0x1b, 0xfe)
+			Local0 <<= 2
+			IOMN = Local0
+			IOMX = Local0
 
 			/* Interrupt */
-			Store(READ(0, 0x1d, 0xf0), Local0)
-			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQ)
+			Local0 = READ (0, 0x1d, 0xf0)
+			Local0 >>= 4
+			IRQ = 1 << Local0
 			Return(RSRC)
 		}
 
@@ -437,29 +437,29 @@ Device (SIO1)
 
 			WRIT(0, 0x1b, 0)
 			FindSetRightBit(IRQL, Local0)
-			Decrement(Local0)
-			ShiftLeft(Local0, 4, Local0)
+			Local0--
+			Local0 <<= 4
 
-			Store(READ(0, 0x1d, 0x0f), Local1)
-			Or(Local0, Local1, Local0)
+			Local1 = READ (0, 0x1d, 0x0f)
+			Local0 |= Local1
 			WRIT(0, 0x1d, Local0)
 
-			Store(IOLO, Local0)
-			ShiftRight(Local0, 2, Local0)
-			And(Local0, 0xfe, Local0)
+			Local0 = IOLO
+			Local0 >>= 2
+			Local0 &= 0xfe
 
-			Store(IOHI, Local1)
-			ShiftLeft(Local1, 6, Local1)
-			Or (Local0, Local1, Local0)
+			Local1 = IOHI
+			Local1 <<= 6
+			Local0 |= Local1
 			WRIT(0, 0x1b, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x02, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x02
 			WRIT(0, 0x02, Local0)
 
-			Store(READ(0, 0x07, 0xff), Local0)
-			Not(0x04, Local1)
-			And (Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x04
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
@@ -467,22 +467,22 @@ Device (SIO1)
 		/* D0 state - Line drivers are on */
 		Method (_PS0, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x02, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x02
 			WRIT(0, 0x02, Local0)
 
-			Store (READ(0, 0x07, 0xff), Local0)
-			Not(0x04, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x04
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
 		/* D3 State - Line drivers are off */
 		Method(_PS3, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x02, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x02
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 	}
@@ -501,13 +501,13 @@ Device (SIO1)
 			Acquire (SIOM, 0xffff)
 
 			// Is the hardware enabled?
-			Store (READ(0, 0x1c, 0xff), Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = READ (0, 0x1c, 0xff)
+			If (Local0 == 0) {
 				Return (0xd)
 			} Else {
 				// Power Enabled?
-				Store (READ(0, 0x02, 0x04), Local0)
-				If (LEqual(Local0, 0)) {
+				Local0 = READ (0, 0x02, 0x04)
+				If (Local0 == 0) {
 					Return (0x0d)
 				} Else {
 					Return (0x0f)
@@ -520,12 +520,12 @@ Device (SIO1)
 		{
 			WRIT(0, 0x1c, 0x00)
 
-			Store(READ(0, 0x1d, 0x0f), Local0)
+			Local0 = READ (0, 0x1d, 0x0f)
 			WRIT(0, 0x1d, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x04, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x04
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 
@@ -550,8 +550,8 @@ Device (SIO1)
 				IRQNoFlags(_IRA) { 11 }
 			})
 
-			And (_STA(), 0x02, Local0)
-			If (LEqual(Local0, 0)) {
+			Local0 = _STA () & 0x02
+			If (Local0 == 0) {
 				Return(NONE)
 			}
 
@@ -563,15 +563,15 @@ Device (SIO1)
 				\_SB.PCI0.LPCB.SIO1.UAR4._CRS._IRA._INT, IRQ)
 
 			/* I/O Base */
-			Store (READ(0, 0x1c, 0xfe), Local0)
-			ShiftLeft(Local0, 0x02, Local0)
-			Store(Local0, IOMN)
-			Store(Local0, IOMX)
+			Local0 = READ (0, 0x1c, 0xfe)
+			Local0 <<= 2
+			IOMN = Local0
+			IOMX = Local0
 
 			/* Interrupt */
-			Store(READ(0, 0x1d, 0xf0), Local0)
-			ShiftRight(Local0, 4, Local0)
-			ShiftLeft(1, Local0, IRQ)
+			Local0 = READ (0, 0x1d, 0xf0)
+			Local0 >>= 4
+			IRQ = 1 << Local0
 			Return(RSRC)
 		}
 
@@ -584,29 +584,29 @@ Device (SIO1)
 
 			WRIT(0, 0x1c, 0)
 			FindSetRightBit(IRQL, Local0)
-			Decrement(Local0)
-			ShiftLeft(Local0, 4, Local0)
+			Local0--
+			Local0 <<= 4
 
-			Store(READ(0, 0x1d, 0x0f), Local1)
-			Or(Local0, Local1, Local0)
+			Local1 = READ (0x00, 0x1d, 0x0f)
+			Local0 |= Local1
 			WRIT(0, 0x1d, Local0)
 
-			Store(IOLO, Local0)
-			ShiftRight(Local0, 2, Local0)
-			And(Local0, 0xfe, Local0)
+			Local0 = IOLO
+			Local0 >>= 2
+			Local0 &= 0xfe
 
-			Store(IOHI, Local1)
-			ShiftLeft(Local1, 6, Local1)
-			Or (Local0, Local1, Local0)
+			Local1 = IOHI
+			Local1 <<= 6
+			Local0 |= Local1
 			WRIT(0, 0x1c, Local0)
 
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x04, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x04
 			WRIT(0, 0x02, Local0)
 
-			Store(READ(0, 0x07, 0xff), Local0)
-			Not(0x08, Local1)
-			And (Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x08
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
@@ -614,22 +614,22 @@ Device (SIO1)
 		/* D0 state - Line drivers are on */
 		Method (_PS0, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Or(Local0, 0x04, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local0 |= 0x04
 			WRIT(0, 0x02, Local0)
 
-			Store (READ(0, 0x07, 0xff), Local0)
-			Not(0x08, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x07, 0xff)
+			Local1 = ~0x08
+			Local0 &= Local1
 			WRIT(0, 0x07, Local0)
 		}
 
 		/* D3 State - Line drivers are off */
 		Method(_PS3, 0)
 		{
-			Store(READ(0, 0x02, 0xff), Local0)
-			Not(0x04, Local1)
-			And(Local0, Local1, Local0)
+			Local0 = READ (0, 0x02, 0xff)
+			Local1 = ~0x04
+			Local0 &= Local1
 			WRIT(0, 0x02, Local0)
 		}
 	}

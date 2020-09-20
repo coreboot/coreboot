@@ -17,11 +17,11 @@ Scope (\_TZ)
 		// Convert from °C to 1/10 Kelvin
 		Method(DEGR, 1, NotSerialized)
 		{
-			Store(Arg0, Local0)
+			Local0 = Arg0
 			// 10ths of degrees
-			Multiply(Local0, 10, Local0)
+			Local0 *= 10
 			// 0°C is 273.15 K, we need to round it.
-			Add(Local0, 2732, Local0)
+			Local0 += 2732
 			Return(Local0)
 		}
 
@@ -35,24 +35,24 @@ Scope (\_TZ)
 		// Critical shutdown temperature
 		Method (_CRT, 0, Serialized)
 		{
-			Store(\_SB.PCI0.LPCB.EC0.CRTT, Local0)
-			Store(DEGR(Local0), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CRTT
+			Local0 = DEGR (Local0)
 			Return(Local0)
 		}
 
 		// CPU throttling start temperature
 		Method (_PSV, 0, Serialized)
 		{
-			Store(\_SB.PCI0.LPCB.EC0.CTRO, Local0)
-			Store(DEGR(Local0), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CTRO
+			Local0 = DEGR (Local0)
 			Return(Local0)
 		}
 
 		// Get DTS Temperature
 		Method (_TMP, 0, Serialized)
 		{
-			Store(\_SB.PCI0.LPCB.EC0.CTMP, Local0)
-			Store(DEGR(Local0), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CTMP
+			Local0 = DEGR (Local0)
 			Return(Local0)
 		}
 

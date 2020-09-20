@@ -87,16 +87,16 @@ Device(EC0)
 	Method (_Q01, 0)
 	{
 		Notify (\_SB.CP00, 0x80)
-		If(ADP) {
-			Store(1, \_SB.AC.ACST)
-			TRAP(0xe3)
-			Store(1, PWRS)
-			TRAP(0x2b)
+		If (ADP) {
+			\_SB.AC.ACST = 1
+			TRAP (0xe3)
+			PWRS = 1
+			TRAP (0x2b)
 		} Else {
-			Store(0, \_SB.AC.ACST)
-			Notify(\_SB.AC, 0x80)
-			Notify(\_SB.BAT0, 0x80)
-			Store(0, PWRS)
+			\_SB.AC.ACST = 0
+			Notify (\_SB.AC, 0x80)
+			Notify (\_SB.BAT0, 0x80)
+			PWRS = 0
 			TRAP(0x2b)
 		}
 
@@ -107,7 +107,7 @@ Device(EC0)
 
 	Method (_Q02, 0)
 	{
-		If(BAT) {
+		If (BAT) {
 			Notify(\_SB.BAT0, 0x00)
 			Notify(\_SB.AC, 0x80)
 		} Else {
@@ -132,7 +132,7 @@ Device(EC0)
 	{
 		TRAP(0xe0)
 
-		If (LEqual(RTCF, 0x00)) {
+		If (RTCF == 0x00) {
 			Notify(LID0, 0x80)
 		} else {
 			TRAP(0xc1)
@@ -172,25 +172,25 @@ Device(EC0)
 
 	Method (_Q24, 0)
 	{
-		Store(0x3f, HOTK)
-		If(IGDS) {
+		HOTK = 0x3f
+		If (IGDS) {
 			Notify (\_SB.PCI0.GFX0, 0x82)
 		} Else {
-			TRAP(0xE1)
+			TRAP (0xE1)
 		}
 		Notify (\_SB.ECO, 0x85)
 	}
 
 	Method (_Q25, 0)
 	{
-		Store(0x40, HOTK)
+		HOTK = 0x40
 		TRAP(0xe1)
 		Notify(\_SB.ECO, 0x86)
 	}
 
 	Method (_Q26, 0)
 	{
-		Store(0x41, HOTK)
+		HOTK = 0x41
 		TRAP(0xe1)
 		Notify(\_SB.ECO, 0x87)
 	}
@@ -212,7 +212,7 @@ Device(EC0)
 
 	Method (_Q2A, 0)
 	{
-		Store(0x57, HOTK)
+		HOTK = 0x57
 		TRAP(0xe1)
 		Notify(\_SB.ECO, 0x8b)
 	}
@@ -225,7 +225,7 @@ Device(EC0)
 
 	Method (_Q2C, 0)
 	{
-		Store(0x59, HOTK)
+		HOTK = 0x59
 		TRAP(0xe1)
 	}
 
@@ -241,25 +241,25 @@ Device(EC0)
 
 	Method (_Q3A, 0)
 	{
-		Store(1, BRTL)
+		BRTL = 1
 		Notify(\_SB.ECO, 0x93)
 	}
 
 	Method (_Q3B, 0)
 	{
-		Store(0, BRTL)
+		BRTL = 0
 		Notify(\_SB.ECO, 0x93)
 	}
 
 	Method (_Q3C, 0)
 	{
-		Store(1, SUN)
+		SUN = 1
 		Notify(\_SB.ECO, 0x92)
 	}
 
 	Method (_Q3D, 0)
 	{
-		Store(0, SUN)
+		SUN = 0
 		Notify(\_SB.ECO, 0x92)
 	}
 
@@ -302,14 +302,14 @@ Device(EC0)
 	Method (_Q48, 0)
 	{
 		TRAP(0xd2) // Check AC Status
-		Store (1, ODDS)
+		ODDS = 1
 		Notify(\_SB.ECO, 0x90)
 	}
 
 	Method (_Q49, 0)
 	{
 		TRAP(0xd2) // Check AC Status
-		Store (0, ODDS)
+		ODDS = 0
 		Notify(\_SB.ECO, 0x90)
 	}
 
@@ -337,7 +337,7 @@ Device(EC0)
 
 	Method (_Q5C, 0)
 	{
-		// Store(2, IGPS)
+		// IGPS = 2
 		Notify(\_SB.ECO, 0x94)
 	}
 
@@ -364,26 +364,26 @@ Scope(\_SB)
 		Method (GDPD, 0, Serialized)
 		{
 			// Set flag byte to zero
-			Store (0, Local0)
+			Local0 = 0
 
-			If (And(BRTL, 0x01)) {
-				Or(Local0, 0x01, Local0)
+			If (BRTL & 0x01) {
+				Local0 |= 0x01
 			}
 
-			If (And(BRTL, 0x02)) {
-				Or(Local0, 0x04, Local0)
+			If (BRTL & 0x02) {
+				Local0 |= 0x04
 			}
 
-			If (And(BRTL, 0x04)) {
-				Or(Local0, 0x02, Local0)
+			If (BRTL & 0x04) {
+				Local0 |= 0x02
 			}
 
-			If (And(BRTL, 0x30)) {
-				Or(Local0, 0x10, Local0)
+			If (BRTL & 0x30) {
+				Local0 |= 0x10
 			}
 
-			If (And(BRTL, 0x40)) {
-				Or(Local0, 0x40, Local0)
+			If (BRTL & 0x40) {
+				Local0 |= 0x40
 			}
 
 			Return (Local0)
@@ -391,18 +391,18 @@ Scope(\_SB)
 
 		Method (GDPC, 0, Serialized)
 		{
-			Store (0, Local0)
+			Local0 = 0
 
-			If (And(BRTL, 0x10)) {
-				Or(Local0, 0x04, Local0)
+			If (BRTL & 0x10) {
+				Local0 |= 0x04
 			}
 
-			If (And( BRTL, 0x20)) {
-				Or(Local0, 0x01, Local0)
+			If (BRTL & 0x20) {
+				Local0 |= 0x01
 			}
 
-			If (And(BRTL, 0x40)) {
-				Or(Local0, 0x02, Local0)
+			If (BRTL & 0x40) {
+				Local0 |= 0x02
 			}
 
 			Return (Local0)
@@ -411,7 +411,7 @@ Scope(\_SB)
 		/* Set Brightness Level */
 		Method(SBLL, 1, Serialized)
 		{
-			Store (Arg0, BRTL)
+			BRTL = Arg0
 			TRAP(0xd5)	// See mainboard's smihandler.c
 			Return (0)
 		}
@@ -426,7 +426,7 @@ Scope(\_SB)
 		/* Get Brightness Level Medium? */
 		Method(GBLM, 0, Serialized)
 		{
-			Store(0x3f, BRTL)
+			BRTL = 0x3f
 			// XXX don't we have to set the brightness?
 			Return(BRTL)
 		}
@@ -434,7 +434,7 @@ Scope(\_SB)
 		/* ??? */
 		Method(SUTE, 1, Serialized)
 		{
-			If (And(Arg0, 0x01)) {
+			If (Arg0 & 0x01) {
 				TRAP(0xf5)
 			} Else {
 				TRAP(0xf6)
@@ -462,30 +462,30 @@ Scope(\_SB)
 			/* Let coreboot update the flags */
 			TRAP(0xe5)
 
-			Store (0, Local0)
-			If(And(RFDV, 0x01)) {
-				Or(Local0, 0x01, Local0)
+			Local0 = 0
+			If (RFDV & 0x01) {
+				Local0 |= 0x01
 			}
-			If(And(RFDV, 0x02)) {
-				Or(Local0, 0x02, Local0)
+			If (RFDV & 0x02) {
+				Local0 |= 0x02
 			}
-			If(And(RFDV, 0x04)) {
-				Or(Local0, 0x04, Local0)
+			If (RFDV & 0x04) {
+				Local0 |= 0x04
 			}
-			If(And(RFDV, 0x08)) {
-				Or(Local0, 0x08, Local0)
+			If (RFDV & 0x08) {
+				Local0 |= 0x08
 			}
-			If(And(GP15, 0x01)) {		// GDIS
-				Or(Local0, 0x10, Local0)
+			If (GP15 & 0x01) {		// GDIS
+				Local0 |= 0x10
 			}
-			If(And(GP12, 0x01)) {		// WIFI Led (WLED)
-				Or(Local0, 0x20, Local0)
+			If (GP12 & 0x01) {		// WIFI Led (WLED)
+				Local0 |= 0x20
 			}
-			If(And(BTEN, 0x01)) {		// BlueTooth Enable
-				Or(Local0, 0x40, Local0)
+			If (BTEN & 0x01) {		// BlueTooth Enable
+				Local0 |= 0x40
 			}
-			If(And(GP10, 0x01)) {		// GPS Enable
-				Or(Local0, 0x80, Local0)
+			If (GP10 & 0x01) {		// GPS Enable
+				Local0 |= 0x80
 			}
 
 			Return (Local0)
@@ -494,30 +494,30 @@ Scope(\_SB)
 		/* Set RFD */
 		Method(SRFD, 1, Serialized)
 		{
-			If (And(Arg0, 0x01)) {
-				Store (1, GP14)		// GLED
-				Store (1, GP15)		// GDIS
+			If (Arg0 & 0x01) {
+				GP14 = 1		// GLED
+				GP15 = 1		// GDIS
 			} Else {
-				Store (0, GP14)
-				Store (0, GP15)
+				GP14 = 0
+				GP15 = 0
 			}
 
 			/* WIFI */
-			If (And(Arg0, 0x02)) {
-				Store (1, GP12)		// WLED
-				Store (1, GP25)		// WLAN
+			If (Arg0 & 0x02) {
+				GP12 = 1		// WLED
+				GP25 = 1		// WLAN
 			} Else {
-				Store (0, GP12)
-				Store (0, GP25)
+				GP12 = 0
+				GP25 = 0
 			}
 
 			/* Bluetooth */
-			If (And(Arg0, 0x04)) {
-				Store (1, GP13)		// BLED
-				Store (1, BTEN)
+			If (Arg0 & 0x04) {
+				GP13 = 1		// BLED
+				BTEN = 1
 			} Else {
-				Store (0, GP13)		// BLED
-				Store (0, BTEN)
+				GP13 = 0		// BLED
+				BTEN = 0
 			}
 			Return (0)
 		}
@@ -539,7 +539,7 @@ Scope(\_SB)
 		/* Set IGD (Graphics) */
 		Method(SIGD, 1, Serialized)
 		{
-			If (And(Arg0, 0x01)) {
+			If (Arg0 & 0x01) {
 				TRAP(0xf7)
 			} Else {
 				TRAP(0xf8)
@@ -550,7 +550,7 @@ Scope(\_SB)
 		/* SMI-C? Set Mic? */
 		Method (SMIC, 1, Serialized)
 		{
-			If (And(Arg0, 0x01)) {
+			If (Arg0 & 0x01) {
 				TRAP(0xeb)
 			} Else {
 				TRAP(0xec)
@@ -567,7 +567,7 @@ Scope(\_SB)
 		/* Not even decent function names anymore? */
 		Method(S024, 1, Serialized)
 		{
-			If (And(Arg0, 0x01)) {
+			If (Arg0 & 0x01) {
 				TRAP(0xf1)
 			} Else {
 				TRAP(0xf2)
@@ -585,13 +585,13 @@ Scope(\_SB)
 		/* ??? Something with PATA */
 		Method(S025, 1, Serialized)
 		{
-			If(And(Arg0, 0x01)) {
+			If (Arg0 & 0x01) {
 				TRAP(0xfc)
 
-				Store (1, GP33)		// CREN
+				GP33 = 1		// CREN
 				Sleep(1500)
 
-				Store (1, GP34)		// CRRS
+				GP34 = 1		// CRRS
 				Sleep(500)
 
 				Notify(^^PCI0.PATA, 0)
@@ -599,7 +599,7 @@ Scope(\_SB)
 			} Else {
 				TRAP(0xfb)
 				Sleep(1500)
-				Store(0, GP33)		// CREN
+				GP33 = 0		// CREN
 				Sleep(1500)
 				Notify(^^PCI0.PATA, 0)
 				Notify(^^PCI0.PATA.PRID, 0)
@@ -613,16 +613,16 @@ Scope(\_SB)
 		Method(G021, 0, Serialized)
 		{
 			TRAP(0xfe)
-			If (LEqual(ACIN, 0)) {
+			If (ACIN == 0) {
 				TRAP(0xfa)
 				TRAP(0xfd)
-				If (LEqual(ODDS, 1)) {
+				If (ODDS == 1) {
 					TRAP(0xfb)
 					Notify(^^PCI0.PATA, 0)
 					Notify(^^PCI0.PATA.PRID.DSK1, 1)
 					Notify(^^PCI0.PATA.PRID.DSK0, 1)
 					Sleep (1500)
-					Store (0, GP33)		// CREN
+					GP33 = 0		// CREN
 					Sleep (1500)
 					Notify(^^PCI0.PATA, 0)
 					Notify(^^PCI0.PATA.PRID.DSK1, 1)
@@ -645,7 +645,7 @@ Scope(\_SB)
 		/* ??? */
 		Method(S00B, 1, Serialized)
 		{
-			If (And(Arg0, 1)) {
+			If (Arg0 & 1) {
 				TRAP(0xdc)
 			} Else {
 				TRAP(0xdd)

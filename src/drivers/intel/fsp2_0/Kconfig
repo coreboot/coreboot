@@ -213,6 +213,50 @@ config FSP_M_ADDR
 	help
 	  The address FSP-M will be relocated to during build time
 
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_3
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_4
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_5
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_6
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_7
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET_REQUIRED_8
+	bool
+	help
+	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
+
+config FSP_STATUS_GLOBAL_RESET
+	hex
+	default 0x40000003 if FSP_STATUS_GLOBAL_RESET_REQUIRED_3
+	default 0x40000004 if FSP_STATUS_GLOBAL_RESET_REQUIRED_4
+	default 0x40000005 if FSP_STATUS_GLOBAL_RESET_REQUIRED_5
+	default 0x40000006 if FSP_STATUS_GLOBAL_RESET_REQUIRED_6
+	default 0x40000007 if FSP_STATUS_GLOBAL_RESET_REQUIRED_7
+	default 0x40000008 if FSP_STATUS_GLOBAL_RESET_REQUIRED_8
+	default 0xffffffff
+	help
+	  If global reset is supported by SoC then select the correct status value for global
+	  reset type from SoC Kconfig based on available Kconfig options
+	  FSP_STATUS_GLOBAL_RESET_REQUIRED_X. Default is unsupported.
+
 if FSP_PEIM_TO_PEIM_INTERFACE
 source "src/drivers/intel/fsp2_0/ppi/Kconfig"
 endif

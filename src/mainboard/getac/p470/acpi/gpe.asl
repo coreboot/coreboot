@@ -15,7 +15,7 @@ Scope (_GPE)
 	// Software GPE
 	Method (_L02, 0)
 	{
-		Store (0, GPEC)
+		GPEC = 0
 	}
 
 	// USB1
@@ -42,7 +42,7 @@ Scope (_GPE)
 	// SMBus (Reserved!)
 	Method (_L07, 0)
 	{
-		// Store (0x20, \_SB.PCI0.SBUS.HSTS)
+		// \_SB.PCI0.SBUS.HSTS = 0x20
 	}
 
 	// COM1/COM2 (RI)

@@ -16,6 +16,11 @@ static const struct soc_amd_gpio bid_1_gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_140, HIGH),
 };
 
+static const struct soc_amd_gpio vilboz_gpio_set_stage_ram[] = {
+	/* P sensor INT */
+	PAD_INT(GPIO_40, PULL_NONE, LEVEL_LOW, STATUS_DELIVERY),
+};
+
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 {
 	uint32_t board_version;
@@ -33,6 +38,6 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 		return bid_1_gpio_set_stage_ram;
 	}
 
-	*size = 0;
-	return NULL;
+	*size = ARRAY_SIZE(vilboz_gpio_set_stage_ram);
+	return vilboz_gpio_set_stage_ram;
 }

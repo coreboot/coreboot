@@ -142,5 +142,12 @@ chip soc/amd/picasso
 			register "hid_desc_reg_offset" = "0x20"
 			device i2c 2c on end
 		end
+		chip drivers/i2c/generic
+			register "hid" = ""STH9324""
+			register "name" = ""SEMTECH SX9324""
+			register "desc" = ""SAR Proximity Sensor""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_40)"
+			device i2c 28 on end
+		end
 	end
 end	# chip soc/amd/picasso

@@ -270,6 +270,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI);
 	params->CnviMode = is_dev_enabled(dev);
 
+	/* CNVi BT Core */
+	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_BT);
+	params->CnviBtCore = is_dev_enabled(dev);
+
+	/* CNVi BT Audio Offload */
+	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
+
 	/* VMD */
 	dev = pcidev_path_on_root(SA_DEVFN_VMD);
 	params->VmdEnable = is_dev_enabled(dev);

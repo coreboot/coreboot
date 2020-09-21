@@ -159,6 +159,17 @@ Device (EC0)
 
 		// Initialize LID switch state
 		Store (LIDS, \LIDS)
+
+#ifdef EC_ENABLE_AMD_DPTC_SUPPORT
+		/*
+		 * Per the device mode (clamshell or tablet) to initialize
+		 * the thermal setting on OS startup.
+		 */
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC()
+		}
+#endif
+
 	}
 
 	/* Read requested temperature and check against EC error values */

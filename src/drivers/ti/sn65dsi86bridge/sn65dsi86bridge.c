@@ -431,35 +431,6 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 	printk(BIOS_ERR, "ERROR: Link training failed 10 times\n");
 }
 
-static enum cb_err sn65dsi86_bridge_get_plug_in_status(uint8_t bus, uint8_t chip)
-{
-	int val;
-	uint8_t buf;
-
-	val = i2c_readb(bus, chip, SN_HPD_DISABLE_REG, &buf);
-	if (val == 0 && (buf & HPD_DISABLE))
-		return CB_SUCCESS;
-
-	return CB_ERR;
-}
-
-/*
- * support bridge HPD function some hardware versions do not support bridge hdp,
- * we use 360ms to try to get the hpd single now, if we can not get bridge hpd single,
- * it will delay 360ms, also meet the bridge power timing request, to be compatible
- * all of the hardware versions
- */
-static void sn65dsi86_bridge_wait_hpd(uint8_t bus, uint8_t chip)
-{
-	if (wait_ms(400, sn65dsi86_bridge_get_plug_in_status(bus, chip)))
-		return;
-
-	printk(BIOS_WARNING, "HPD detection failed, force hpd\n");
-
-	/* Force HPD */
-	i2c_write_field(bus, chip, SN_HPD_DISABLE_REG, HPD_DISABLE, 1, 0);
-}
-
 static void sn65dsi86_bridge_assr_config(uint8_t bus, uint8_t chip, int enable)
 {
 	if (enable)
@@ -481,7 +452,8 @@ static int sn65dsi86_bridge_dp_lane_config(uint8_t bus, uint8_t chip)
 
 void sn65dsi86_bridge_init(uint8_t bus, uint8_t chip, enum dp_pll_clk_src ref_clk)
 {
-	sn65dsi86_bridge_wait_hpd(bus, chip);
+	/* disable HPD */
+	i2c_write_field(bus, chip, SN_HPD_DISABLE_REG, HPD_DISABLE, 1, 0);
 
 	/* set refclk to 19.2 MHZ */
 	i2c_write_field(bus, chip, SN_DPPLL_SRC_REG, ref_clk, 7, 1);

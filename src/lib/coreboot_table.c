@@ -11,6 +11,7 @@
 #include <version.h>
 #include <boardid.h>
 #include <device/device.h>
+#include <drivers/tpm/tpm_ppi.h>
 #include <fmap.h>
 #include <fw_config.h>
 #include <stdlib.h>
@@ -525,6 +526,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	/* Board configuration information (including straps) */
 	lb_board_config(head);
+
+	if (CONFIG(TPM_PPI))
+		lb_tpm_ppi(head);
 
 	/* Add architecture records. */
 	lb_arch_add_records(head);

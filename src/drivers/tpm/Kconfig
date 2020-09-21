@@ -5,3 +5,14 @@ config TPM_INIT
 	help
 	  This driver automatically initializes the TPM if vboot is not used.
 	  The TPM driver init is done during the ramstage chip init phase.
+
+config TPM_PPI
+	bool "Generate ACPI code to implement TPM physical presence interface"
+	depends on TPM1 || TPM2
+	depends on HAVE_ACPI_TABLES
+	depends on !CHROMEOS
+	default y if PAYLOAD_TIANOCORE
+	help
+	  This driver automatically generates ACPI tables for the Physical
+	  Presence Interface defined by the TCG. If not activated only a stub
+	  will be generated without any functionality.

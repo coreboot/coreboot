@@ -12,11 +12,18 @@ bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += espi.c
+bootblock-y += gpio.c
 bootblock-y += p2sb.c
 
 romstage-y += espi.c
+romstage-y += gpio.c
 romstage-y += meminit.c
 romstage-y += reset.c
+
+ramstage-y += gpio.c
+
+smm-y += gpio.c
+
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake/include
 endif

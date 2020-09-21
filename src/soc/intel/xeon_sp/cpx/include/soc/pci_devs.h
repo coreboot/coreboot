@@ -71,21 +71,26 @@
 #define VTD_CAP_HIGH			0x0C
 #define VTD_EXT_CAP_HIGH		0x14
 
+/* CPU Devices */
+#define CBDMA_DEV_NUM           0x04
+
+#define VMD_DEV_NUM             0x05
+#define VMD_FUNC_NUM            0x05
+
+#define MMAP_VTD_CFG_REG_DEVID		0x2024
+#define VTD_DEV				0x5
+#define VTD_FUNC			0x0
+
+#define APIC_DEV_NUM            0x05
+#define APIC_FUNC_NUM           0x04
+
+
 /* PCH Device info */
 
 #define  XHCI_BUS_NUMBER        0x0
 #define  PCH_DEV_SLOT_XHCI      0x14
-#define   PCH_DEVFN_THERMAL	_PCH_DEVFN(XHCI, 2)
-
 #define  XHCI_FUNC_NUM          0x0
-
-#define HPET_BUS_NUM            0x0
-#define HPET_DEV_NUM            PCH_DEV_SLOT_LPC
-#define HPET0_FUNC_NUM          0x00
-
-#define MMAP_VTD_CFG_REG_DEVID		0x2024
-#define VTD_DEV				5
-#define VTD_FUNC			0
+#define   PCH_DEVFN_THERMAL	_PCH_DEVFN(XHCI, 2)
 
 #define PCH_DEV_SLOT_LPC        0x1f
 #define  PCH_DEVFN_LPC          _PCH_DEVFN(LPC, 0)
@@ -97,14 +102,9 @@
 #define  PCH_DEV_PMC            _PCH_DEV(LPC, 2)
 #define  PCH_DEV_SPI            _PCH_DEV(LPC, 5)
 
-#define CBDMA_DEV_NUM           0x04
-#define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function
-
-#define VMD_DEV_NUM             0x05
-#define VMD_FUNC_NUM            0x05
-
-#define APIC_DEV_NUM            0x05
-#define APIC_FUNC_NUM           0x04
+#define HPET_BUS_NUM            0x0
+#define HPET_DEV_NUM            PCH_DEV_SLOT_LPC
+#define HPET0_FUNC_NUM          0x00
 
 #define PCH_IOAPIC_BUS_NUMBER   0x00
 #define PCH_IOAPIC_DEV_NUM      0x1F

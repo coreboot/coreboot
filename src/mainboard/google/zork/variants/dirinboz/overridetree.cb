@@ -15,8 +15,11 @@ chip soc/amd/picasso
 	register "stapm_time_constant" = "2500" #second
 	register "sustained_power_limit" = "4800" #mw
 
+	register "telemetry_vddcr_vdd_slope" = "42465" #mA
+	register "telemetry_vddcr_vdd_offset" = "69"
+	register "telemetry_vddcr_soc_slope" = "42667" #mA
+	register "telemetry_vddcr_soc_offset" = "167"
 	# End : OPN Performance Configuration
-
 
 	# I2C2 for touchscreen and trackpad
 	register "i2c[2]" = "{

@@ -287,6 +287,6 @@ chip soc/intel/apollolake
 	register "PmicPmcIpcCtrl" = "0x5e4302f8"
 
 	# FSP UPD to modify the Integrated Filter (IF) value
-	# 0x12(Default) for Windows, 0x16 for Chrome
-	register "ModPhyIfValue" = "0x16"
+	# Set it to default value: 0x12
+	register "ModPhyIfValue" = "0x12"
 end

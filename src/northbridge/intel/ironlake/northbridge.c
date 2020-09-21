@@ -202,10 +202,34 @@ static struct device_operations mc_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-static const struct pci_driver mc_driver_ard __pci_driver = {
-	.ops	= &mc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x0044,	/* Arrandale DRAM controller */
+/*
+ * The host bridge PCI device ID can be changed by the firmware. There
+ * is no documentation about it, though. There's 'official' IDs, which
+ * appear in spec updates and Windows drivers, and 'mysterious' IDs,
+ * which Intel doesn't want OSes to know about and thus are not listed.
+ *
+ * The current coreboot code seems to be able to change the device ID
+ * of the host bridge, but it seems to be missing a warm reset so that
+ * the device ID changes. Account for the 'mysterious' device IDs in
+ * the northbridge driver, so that booting an OS has a chance to work.
+ */
+static const unsigned short pci_device_ids[] = {
+	/* 'Official' DIDs */
+	0x0040, /* Clarkdale */
+	0x0044, /* Arrandale */
+	0x0048, /* Unknown, but it appears in OS drivers and raminit */
+
+	/* Mysterious DIDs, taken from Linux' intel-agp driver */
+	0x0062, /* Arrandale A-? */
+	0x0069, /* Clarkdale K-0 */
+	0x006a, /* Arrandale K-0 */
+	0
+};
+
+static const struct pci_driver mc_driver_ilk __pci_driver = {
+	.ops     = &mc_ops,
+	.vendor  = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
 };
 
 static struct device_operations cpu_bus_ops = {

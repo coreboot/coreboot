@@ -178,5 +178,6 @@ union me_hfsts6 {
 };
 
 void intel_me_status(void);
+int send_global_reset(void);
 
 #endif

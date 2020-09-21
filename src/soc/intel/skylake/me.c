@@ -338,6 +338,25 @@ void intel_me_status(void)
 	}
 }
 
+int send_global_reset(void)
+{
+	int status = -1;
+	union me_hfsts1 hfs1;
+
+	if (!is_cse_enabled())
+		goto ret;
+
+	/* Check ME operating mode */
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	if (hfs1.fields.operation_mode)
+		goto ret;
+
+	/* ME should be in Normal Mode for this command */
+	status = cse_request_global_reset();
+ret:
+	return status;
+}
+
 /*
  * This can't be put in intel_me_status because by the time control
  * reaches there, ME doesn't respond to GET_FW_VERSION command.

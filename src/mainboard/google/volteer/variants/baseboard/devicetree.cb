@@ -230,6 +230,8 @@ chip soc/intel/tigerlake
 
 	register "tcc_offset" = "10"     # TCC of 90
 
+	register "CnviBtAudioOffload" = "FORCE_ENABLE"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

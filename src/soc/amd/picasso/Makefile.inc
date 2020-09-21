@@ -213,17 +213,9 @@ PSP_BIOSBIN_SIZE=$(CONFIG_C_ENV_BOOTBLOCK_SIZE)
 PSP_BIOSBIN_DEST=$(shell printf "%x" $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) 0x10) $(PSP_BIOSBIN_SIZE)))
 
 # type = 0x63 - construct APOB NV base/size from flash map
-# TODO(b/157068645): Add ability to fmaptool to extract offsets and sizes
-# This code currently assumes the following FMAP structure. If
-# the UNIFIED_MRC_CACHE region is present, it must have a 0 offset.
-# FLASH@* {
-#     BIOS@* {
-#         RW_MRC_CACHE@* {
-_FLASH_BASE=$(call int-subtract, 0x100000000 $(CONFIG_ROM_SIZE))
-_GET_FLASH_BASE=grep "FLASH" | sed 's/.*FLASH@//' | sed 's/ .*//'
-_GET_BIOS_REG_BASE=grep "BIOS" | sed 's/.*BIOS@//' | sed 's/ .*//'
-_GET_APOBNV_BASE=grep "RW_MRC_CACHE" | sed 's/.*@//' | sed 's/ .*//'
-_GET_APOBNV_SIZE=grep "RW_MRC_CACHE" | sed 's/.*@//' | sed 's/.* //'
+# The flashmap section used for this is expected to be named RW_MRC_CACHE
+APOB_NV_SIZE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_SIZE" $(obj)/fmap_config.h | awk '{print $$(NF)}')
+APOB_NV_BASE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_START" $(obj)/fmap_config.h | awk '{print $$(NF)}')
 
 # type2 = 0x64, 0x65
 PSP_PMUI_FILE1=$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Imem.csbin
@@ -252,12 +244,6 @@ endif
 PSP_VERSTAGE_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_FILE))
 PSP_VERSTAGE_SIG_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_SIGNING_TOKEN))
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
-
-APOB_NV_SIZE=$(shell printf "0x%x" $(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE)))
-APOB_NV_BASE=$(shell printf "0x%x" $(call int-add, \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_BASE))))
 
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28
@@ -420,7 +406,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(PSP_VERSTAGE_SIG_FILE) \
 			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL) \
-			$(obj)/fmap.fmd
+			$(obj)/fmap_config.h
 	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"

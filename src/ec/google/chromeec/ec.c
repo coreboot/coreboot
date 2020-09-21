@@ -1616,3 +1616,50 @@ int google_chromeec_ap_reset(void)
 
 	return 0;
 }
+
+int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
+					  uint32_t max_mv)
+{
+	struct ec_params_regulator_set_voltage params = {
+		.index = index,
+		.min_mv = min_mv,
+		.max_mv = max_mv,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_REGULATOR_SET_VOLTAGE,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv)
+{
+	struct ec_params_regulator_get_voltage params = {
+		.index = index,
+	};
+	struct ec_response_regulator_get_voltage resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_REGULATOR_GET_VOLTAGE,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	*voltage_mv = resp.voltage_mv;
+	return 0;
+}

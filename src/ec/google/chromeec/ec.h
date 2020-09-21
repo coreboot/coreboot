@@ -353,6 +353,24 @@ int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd);
  */
 int google_chromeec_ap_reset(void);
 
+/**
+ * Set voltage for the voltage regulator within the range specified.
+ * @param index		Regulator ID
+ * @param min_mv	Minimum voltage
+ * @param max_mv	Maximum voltage
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
+					  uint32_t max_mv);
+
+/**
+ * Get the currently configured voltage for the voltage regulator.
+ * @param index		Regulator ID
+ * @param *voltage_mv	If successful, voltage_mv is filled with current voltage
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT

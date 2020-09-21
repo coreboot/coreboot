@@ -18,8 +18,8 @@ static void tpm_ppi_func0_cb(void *arg)
 static void tpm_ppi_func1_cb(void *arg)
 {
 	if (CONFIG(TPM2))
-		/* Interface version: 2.0 */
-		acpigen_write_return_string("2.0");
+		/* Interface version: 1.3 */
+		acpigen_write_return_string("1.3");
 	else
 		/* Interface version: 1.2 */
 		acpigen_write_return_string("1.2");

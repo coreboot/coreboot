@@ -1,10 +1,6 @@
 FLASH@0xFF000000 16M {
-	SI_BIOS@0x0 16M {
-		# Size is mentioned in decimal instead of 64K because of the
-		# rules in picasso/Makefile.inc to calculate size of APOB NV.
-		# Once fmaptool is updated to provide this information, this
-		# can be changed to be like other entries.
-		RW_MRC_CACHE@0 65536
+	SI_BIOS {
+		RW_MRC_CACHE 64K
 		RW_SECTION_A 3M {
 			VBLOCK_A 8K
 			FW_MAIN_A(CBFS)

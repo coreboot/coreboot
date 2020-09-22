@@ -1,0 +1,15 @@
+if VENDOR_CLEVO
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/clevo/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/clevo/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Clevo"
+
+endif

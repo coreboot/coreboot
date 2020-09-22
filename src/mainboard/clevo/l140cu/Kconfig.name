@@ -1,0 +1,2 @@
+config BOARD_CLEVO_L140CU
+	bool "L140CU"

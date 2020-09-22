@@ -20,4 +20,10 @@ DefinitionBlock(
 
 	// CPX-SP ACPI tables
 	#include <soc/intel/xeon_sp/cpx/acpi/uncore.asl>
+
+	// LPC related entries
+	Scope (\_SB.PC00)
+	{
+		#include <soc/intel/common/block/acpi/acpi/lpc.asl>
+	}
 }

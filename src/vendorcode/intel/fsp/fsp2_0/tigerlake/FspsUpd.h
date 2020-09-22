@@ -923,9 +923,15 @@ typedef struct {
 **/
   UINT8                       D3ColdEnable;
 
-/** Offset 0x04B9 - Reserved
+/** Offset 0x04B9 - Enable/Disable PCIe tunneling for USB4
+  Enable/Disable PCIe tunneling for USB4, default is enable
+  $EN_DIS
 **/
-  UINT8                       Reserved20[8];
+  UINT8                       ITbtPcieTunnelingForUsb4;
+
+/** Offset 0x04BA - Reserved
+**/
+  UINT8                       Reserved20[7];
 
 /** Offset 0x04C1 - Enable VMD controller
   Enable/disable to VMD controller.0: Disable(Default); 1: Enable
@@ -1186,9 +1192,19 @@ typedef struct {
 **/
   UINT8                       AcousticNoiseMitigation;
 
-/** Offset 0x054B - Reserved
+/** Offset 0x054B - Disable Fast Slew Rate for Deep Package C States for VR domains
+  Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
+  feature enabled. <b>0: False</b>; 1: True
+  $EN_DIS
 **/
-  UINT8                       Reserved28[10];
+  UINT8                       FastPkgCRampDisable[5];
+
+/** Offset 0x0550 - Slew Rate configuration for Deep Package C States for VR domains
+  Slew Rate configuration for Deep Package C States for VR domains based on Acoustic
+  Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
+  0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
+**/
+  UINT8                       SlowSlewRate[5];
 
 /** Offset 0x0555 - Enable multi phases silicon initialization
   A switch to determine MultiPhaseSiInit will be executed or not
@@ -1198,7 +1214,7 @@ typedef struct {
 
 /** Offset 0x0556 - Reserved
 **/
-  UINT8                      Reserved29[10];
+  UINT8                      Reserved28[10];
 
 /** Offset 0x0560 - AcLoadline
   PCODE MMIO Mailbox: AcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
@@ -1247,7 +1263,7 @@ typedef struct {
 
 /** Offset 0x05A7 - Reserved
 **/
-  UINT8                       Reserved30;
+  UINT8                       Reserved29;
 
 /** Offset 0x05A8 - Enable or Disable TXT
   Enable or Disable TXT; 0: Disable; <b>1: Enable</b>.
@@ -1278,7 +1294,7 @@ typedef struct {
 
 /** Offset 0x05AD - Reserved
 **/
-  UINT8                       Reserved31[3];
+  UINT8                       Reserved30[3];
 
 /** Offset 0x05B0 - CpuBistData
   Pointer CPU BIST Data
@@ -1299,7 +1315,7 @@ typedef struct {
 
 /** Offset 0x05BC - Reserved
 **/
-  UINT8                       Reserved32[16];
+  UINT8                       Reserved31[16];
 
 /** Offset 0x05CC - PpinSupport to view Protected Processor Inventory Number
   Enable or Disable or Auto (Based on End of Manufacturing flag. Disabled if this
@@ -1340,7 +1356,7 @@ typedef struct {
 
 /** Offset 0x05DE - Reserved
 **/
-  UINT8                      Reserved33[10];
+  UINT8                      Reserved32[10];
 
 /** Offset 0x05E8 - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -1360,7 +1376,7 @@ typedef struct {
 
 /** Offset 0x05F3 - Reserved
 **/
-  UINT8                       Reserved34;
+  UINT8                       Reserved33;
 
 /** Offset 0x05F4 - PCH Protect Range Limit
   Left shifted address by 12 bits with address bits 11:0 are assumed to be FFFh for
@@ -1387,7 +1403,7 @@ typedef struct {
 
 /** Offset 0x060A - Reserved
 **/
-  UINT8                       Reserved35[3];
+  UINT8                       Reserved34[3];
 
 /** Offset 0x060D - Enable PCH ISH SPI Cs0 pins assigned
   Set if ISH SPI Cs0 pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -1452,7 +1468,7 @@ typedef struct {
 
 /** Offset 0x0622 - Reserved
 **/
-  UINT8                       Reserved36;
+  UINT8                       Reserved35;
 
 /** Offset 0x0623 - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
@@ -1534,7 +1550,7 @@ typedef struct {
 
 /** Offset 0x075D - Reserved
 **/
-  UINT8                       Reserved37[7];
+  UINT8                       Reserved36[7];
 
 /** Offset 0x0764 - Touch Host Controller Port 1 Assignment
   Assign THC Port 1
@@ -1544,7 +1560,7 @@ typedef struct {
 
 /** Offset 0x0765 - Reserved
 **/
-  UINT8                       Reserved38[7];
+  UINT8                       Reserved37[7];
 
 /** Offset 0x076C - PCIE RP Pcie Speed
   Determines each PCIE Port speed capability. 0: Auto; 1: Gen1; 2: Gen2; 3: Gen3 (see:
@@ -1586,7 +1602,7 @@ typedef struct {
 
 /** Offset 0x0814 - Reserved
 **/
-  UINT8                       Reserved39[45];
+  UINT8                       Reserved38[45];
 
 /** Offset 0x0841 - PCIE Enable Peer Memory Write
   This member describes whether Peer Memory Writes are enabled on the platform.
@@ -1609,7 +1625,7 @@ typedef struct {
 
 /** Offset 0x0844 - Reserved
 **/
-  UINT8                       Reserved40[2];
+  UINT8                       Reserved39[2];
 
 /** Offset 0x0846 - PCH Pm PME_B0_S5_DIS
   When cleared (default), wake events from PME_B0_STS are allowed in S5 if PME_B0_EN = 1.
@@ -1805,7 +1821,7 @@ typedef struct {
 
 /** Offset 0x0899 - Reserved
 **/
-  UINT8                       Reserved41;
+  UINT8                       Reserved40;
 
 /** Offset 0x089A - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -1912,7 +1928,7 @@ typedef struct {
 
 /** Offset 0x08C9 - Reserved
 **/
-  UINT8                       Reserved42;
+  UINT8                       Reserved41;
 
 /** Offset 0x08CA - Thermal Throttling Custimized T0Level Value
   Custimized T0Level value.
@@ -2087,7 +2103,7 @@ typedef struct {
 
 /** Offset 0x08EF - Reserved
 **/
-  UINT8                       Reserved43;
+  UINT8                       Reserved42;
 
 /** Offset 0x08F0 - Thermal Device Temperature
   Decides the temperature.
@@ -2112,7 +2128,7 @@ typedef struct {
 
 /** Offset 0x090D - Reserved
 **/
-  UINT8                       Reserved44[3];
+  UINT8                       Reserved43[3];
 
 /** Offset 0x0910 - xHCI High Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI High Idle Time LTR setting
@@ -2174,7 +2190,7 @@ typedef struct {
 
 /** Offset 0x0922 - Reserved
 **/
-  UINT8                       Reserved45[6];
+  UINT8                       Reserved44[6];
 
 /** Offset 0x0928 - BgpdtHash[4]
   BgpdtHash values
@@ -2188,7 +2204,7 @@ typedef struct {
 
 /** Offset 0x094C - Reserved
 **/
-  UINT8                       Reserved46[4];
+  UINT8                       Reserved45[4];
 
 /** Offset 0x0950 - BiosGuardModulePtr
   BiosGuardModulePtr default values
@@ -2214,7 +2230,7 @@ typedef struct {
 
 /** Offset 0x0962 - Reserved
 **/
-  UINT8                       Reserved47[6];
+  UINT8                       Reserved46[6];
 
 /** Offset 0x0968 - SgxEpoch0
   SgxEpoch0 default values
@@ -2240,7 +2256,7 @@ typedef struct {
 
 /** Offset 0x097A - Reserved
 **/
-  UINT8                       Reserved48[6];
+  UINT8                       Reserved47[6];
 
 /** Offset 0x0980 - SVID SDID table Poniter.
   The address of the table of SVID SDID to customize each SVID SDID entry. This is
@@ -2308,7 +2324,7 @@ typedef struct {
 
 /** Offset 0x099D - Reserved
 **/
-  UINT8                       Reserved49[315];
+  UINT8                       Reserved48[315];
 
 /** Offset 0x0AD8 - RpPtmBytes
 **/
@@ -2316,7 +2332,7 @@ typedef struct {
 
 /** Offset 0x0ADC - Reserved
 **/
-  UINT8                      Reserved50[16];
+  UINT8                      Reserved49[16];
 
 /** Offset 0x0AEC - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 3
   Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 3, Each
@@ -2427,7 +2443,7 @@ typedef struct {
 
 /** Offset 0x0B44 - Reserved
 **/
-  UINT8                       Reserved51[16];
+  UINT8                       Reserved50[16];
 
 /** Offset 0x0B54 - 1-Core Ratio Limit
   1-Core Ratio Limit: For XE part: LFM to 255, For overclocking part: LFM to Fused
@@ -2709,7 +2725,7 @@ typedef struct {
 
 /** Offset 0x0B82 - Reserved
 **/
-  UINT8                       Reserved52;
+  UINT8                       Reserved51;
 
 /** Offset 0x0B83 - Enable or Disable Thermal Monitor
   Enable or Disable Thermal Monitor; 0: Disable; <b>1: Enable</b>
@@ -2847,7 +2863,7 @@ typedef struct {
 
 /** Offset 0x0BCF - Reserved
 **/
-  UINT8                       Reserved53;
+  UINT8                       Reserved52;
 
 /** Offset 0x0BD0 - Platform Power Pmax
   PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
@@ -3085,7 +3101,7 @@ typedef struct {
 
 /** Offset 0x0C22 - Reserved
 **/
-  UINT8                       Reserved54[17];
+  UINT8                       Reserved53[17];
 
 /** Offset 0x0C33 - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values
@@ -3094,7 +3110,7 @@ typedef struct {
 
 /** Offset 0x0C34 - Reserved
 **/
-  UINT8                       Reserved55[16];
+  UINT8                       Reserved54[16];
 
 /** Offset 0x0C44 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
@@ -3228,7 +3244,7 @@ typedef struct {
 
 /** Offset 0x0DB9 - Reserved
 **/
-  UINT8                       Reserved56[231];
+  UINT8                       Reserved55[239];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -3243,11 +3259,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0EA0
+/** Offset 0x0EA8
 **/
-  UINT8                       UnusedUpdSpace35[6];
+  UINT8                       UnusedUpdSpace34[6];
 
-/** Offset 0x0EA6
+/** Offset 0x0EAE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

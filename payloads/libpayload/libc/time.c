@@ -31,11 +31,14 @@
  * General time functions
  */
 
+#define __STDC_FORMAT_MACROS
+
 #include <libpayload-config.h>
 #include <libpayload.h>
 #if CONFIG(LP_ARCH_X86) && CONFIG(LP_NVRAM)
 #include <arch/rdtsc.h>
 #endif
+#include <inttypes.h>
 
 extern u32 cpu_khz;
 
@@ -173,7 +176,7 @@ u64 timer_us(u64 base)
 	if (hz == 0) {
 		hz = timer_hz();
 		if (hz < 1000000) {
-			printf("Timer frequency %lld is too low, "
+			printf("Timer frequency %" PRIu64 " is too low, "
 			       "must be at least 1MHz.\n", hz);
 			halt();
 		}

@@ -340,7 +340,7 @@ void intel_me_status(void)
 
 int send_global_reset(void)
 {
-	int status = -1;
+	int status = 0;
 	union me_hfsts1 hfs1;
 
 	if (!is_cse_enabled())

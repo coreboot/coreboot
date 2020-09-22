@@ -10,6 +10,7 @@ enum mtk_regulator {
 	MTK_REGULATOR_VDD2,
 	MTK_REGULATOR_VDDQ,
 	MTK_REGULATOR_VMDDR,
+	MTK_REGULATOR_VCORE,
 };
 
 void mainboard_set_regulator_vol(enum mtk_regulator regulator,

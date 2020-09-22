@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef __SOC_MEDIATEK_MT6360_H__
+#define __SOC_MEDIATEK_MT6360_H__
+
+enum mt6360_regulator_id {
+	MT6360_LDO3 = 0,
+	MT6360_LDO5,
+	MT6360_LDO6,
+	MT6360_LDO7,
+	MT6360_BUCK1,
+	MT6360_BUCK2,
+	MT6360_REGULATOR_COUNT,
+};
+
+#endif /* __SOC_MEDIATEK_MT6360_H__ */

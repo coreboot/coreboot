@@ -48,6 +48,15 @@ chip soc/intel/tigerlake
 			},
 		},
 	}"
+	#These settings improve the USB2 Port1 eye diagram
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.tx_bias = 7,
+		.tx_emp_enable = 7,
+		.pre_emp_bias = 3,
+		.pre_emp_bit = 0,
+	}"
+
 	device domain 0 on
 		device pci 04.0 off end
 		device pci 15.0 on

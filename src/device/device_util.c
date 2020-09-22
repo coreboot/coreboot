@@ -519,7 +519,7 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 	end = resource_end(resource);
 	buf[0] = '\0';
 
-	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+	if (dev->link_list && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		snprintf(buf, sizeof(buf),
 			 "bus %02x ", dev->link_list->secondary);
 	}

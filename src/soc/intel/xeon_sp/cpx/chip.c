@@ -492,11 +492,23 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* not implemented yet */
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PC00";
+	return NULL;
+}
+#endif
+
 static struct device_operations pci_domain_ops = {
 	.read_resources = &pci_domain_read_resources,
 	.set_resources = &xeonsp_cpx_pci_domain_set_resources,
 	.scan_bus = &xeonsp_cpx_pci_domain_scan_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables  = &northbridge_write_acpi_tables,
+	.acpi_name        = soc_acpi_name
+#endif
 };
 
 static struct device_operations cpu_bus_ops = {

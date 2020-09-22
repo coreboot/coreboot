@@ -331,12 +331,22 @@ static void write_26c(int channel, u16 si)
 	MCHBAR16(0x2b9 + (channel << 10)) = si;
 }
 
+static void toggle_1d0_142_5ff(void)
+{
+	u32 reg32 = gav(read_1d0(0x142, 3));
+	if (reg32 & (1 << 1))
+		write_1d0(0, 0x142, 3, 1);
+
+	MCHBAR8(0x5ff) = 0x0;
+	MCHBAR8(0x5ff) = 0x80;
+	if (reg32 & (1 << 1))
+		write_1d0(0x2, 0x142, 3, 1);
+}
+
 static u32 get_580(int channel, u8 addr)
 {
 	u32 ret;
-	gav(read_1d0(0x142, 3));
-	MCHBAR8(0x5ff) = 0x0;
-	MCHBAR8(0x5ff) = 0x80;
+	toggle_1d0_142_5ff();
 	MCHBAR32(0x580 + (channel << 10)) = 0x8493c012 | addr;
 	MCHBAR8_OR(0x580 + (channel << 10), 1);
 	while (!((ret = MCHBAR32(0x580 + (channel << 10))) & 0x10000))
@@ -386,10 +396,9 @@ static void seq9(struct raminfo *info, int channel, int slot, int rank)
 		gav(get_580(channel, ((i + 1) << 2) | (rank << 5)));
 	}
 
-	gav(read_1d0(0x142, 3));	// = 0x10408118
-	MCHBAR8(0x5ff) = 0x0;
-	MCHBAR8(0x5ff) = 0x80;
+	toggle_1d0_142_5ff();
 	write_1d0(0x2, 0x142, 3, 1);
+
 	for (lane = 0; lane < 8; lane++) {
 		//      printk (BIOS_ERR, "before: %x\n", info->training.lane_timings[2][channel][slot][rank][lane]);
 		info->training.lane_timings[2][channel][slot][rank][lane] =
@@ -4182,11 +4191,10 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		MCHBAR16(0x1220) = 0x1388;
 	}
 
-	MCHBAR32_AND_OR(0x2c80, 0, 0x1053688);	// !!!!
-	MCHBAR32(0x1c04);	// !!!!
-	MCHBAR32(0x1804) = 0x406080;
+	MCHBAR32_OR(0x2c80, (1 << 24));
+	MCHBAR32(0x1804) = MCHBAR32(0x1c04) & ~(1 << 27);
 
-	MCHBAR8(0x2ca8);
+	MCHBAR8(0x2ca8);	// !!!!
 
 	if (x2ca8 == 0) {
 		MCHBAR8_AND(0x2ca8, ~3);
@@ -4201,15 +4209,26 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		MCHBAR32_OR(0x1af0, 0x10);
 		halt();
 	}
+	MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8);	// !!!!
 
-	MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8);
-	MCHBAR32_AND_OR(0x2c80, 0, 0x53688);	// !!!!
+	MCHBAR32_AND(0x2c80, ~(1 << 24));
+
 	pci_write_config32(QPI_NON_CORE, MAX_RTIDS, 0x20220);
-	MCHBAR16(0x2c20);	// !!!!
-	MCHBAR16(0x2c10);	// !!!!
-	MCHBAR16(0x2c00);	// !!!!
-	MCHBAR16(0x2c00) = 0x8c0;
-	udelay(1000);
+
+	{
+		u8 x2c20 = (MCHBAR16(0x2c20) >> 8) & 3;
+		u16 x2c10 = MCHBAR16(0x2c10);
+		u16 value = MCHBAR16(0x2c00);
+		if (x2c20 == 0 && (x2c10 & 0x300) == 0)
+			value |= (1 << 7);
+		else
+			value &= ~(1 << 0);
+
+		MCHBAR16(0x2c00) = value;
+	}
+
+	udelay(1000);	// !!!!
+
 	write_1d0(0, 0x33d, 0, 0);
 	write_500(&info, 0, 0, 0xb61, 0, 0);
 	write_500(&info, 1, 0, 0xb61, 0, 0);
@@ -4312,8 +4331,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR32_AND_OR(0x1f4, 0, 0x20000);	// !!!!
 	MCHBAR32(0x1f0) = 0x1d000200;
-	MCHBAR8_AND_OR(0x1f0, 0, 0x1);	// !!!!
-	MCHBAR8(0x1f0);	// !!!!
+	MCHBAR8_OR(0x1f0, 0x1);
+	while (MCHBAR8(0x1f0) & 1)
+		;
 
 	program_board_delay(&info);
 
@@ -4324,24 +4344,19 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	MCHBAR32_AND(0x130, 0xfffffffd);	// | 2 when ?
 	while (MCHBAR32(0x130) & 1)
 		;
-	gav(read_1d0(0x14b, 7));	// = 0x81023100
-	write_1d0(0x30, 0x14b, 7, 1);
-	read_1d0(0xd6, 6);	// = 0xfa008080 // !!!!
-	write_1d0(7, 0xd6, 6, 1);
-	read_1d0(0x328, 6);	// = 0xfa018080 // !!!!
-	write_1d0(7, 0x328, 6, 1);
+
+	rmw_1d0(0x14b, 0x47, 0x30, 7);
+	rmw_1d0(0xd6,  0x38, 7, 6);
+	rmw_1d0(0x328, 0x38, 7, 6);
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel, 1, 0);
 
-	read_1d0(0x116, 4);	// = 0x4040432 // !!!!
-	write_1d0(2, 0x116, 4, 1);
-	read_1d0(0xae, 6);	// = 0xe8088080 // !!!!
-	write_1d0(0, 0xae, 6, 1);
-	read_1d0(0x300, 4);	// = 0x48088080 // !!!!
-	write_1d0(0, 0x300, 6, 1);
-	MCHBAR16_AND_OR(0x356, 0, 0x1040);	// !!!!
-	MCHBAR16_AND_OR(0x756, 0, 0x1040);	// !!!!
+	rmw_1d0(0x116, 0xe,  0, 4);
+	rmw_1d0(0xae,  0x3e, 0, 6);
+	rmw_1d0(0x300, 0x3e, 0, 6);
+	MCHBAR16_AND(0x356, 0x7fff);
+	MCHBAR16_AND(0x756, 0x7fff);
 	MCHBAR32_AND(0x140, ~0x07000000);
 	MCHBAR32_AND(0x138, ~0x07000000);
 	MCHBAR32(0x130) = 0x31111301;
@@ -4372,10 +4387,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(2, 0xae, 6, 1);
 	write_1d0(2, 0x300, 6, 1);
 	write_1d0(2, 0x121, 3, 1);
-	read_1d0(0xd6, 6);	// = 0xfa00c0c7 // !!!!
-	write_1d0(4, 0xd6, 6, 1);
-	read_1d0(0x328, 6);	// = 0xfa00c0c7 // !!!!
-	write_1d0(4, 0x328, 6, 1);
+	rmw_1d0(0xd6,  0x38, 4, 6);
+	rmw_1d0(0x328, 0x38, 4, 6);
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel, 2, 0);
@@ -4384,12 +4397,17 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		(info.populated_ranks[0][0][0] << 29);
 	while (MCHBAR8(0x130) & 1)
 		;
-	read_1d0(0xa1, 6);	// = 0x1cf4054 // !!!!
-	read_1d0(0x2f3, 6);	// = 0x10a4054 // !!!!
-	read_1d0(0x21c, 6);	// = 0xafa00c0 // !!!!
-	write_1d0(0, 0x21c, 6, 1);
-	read_1d0(0x14b, 7);	// = 0x810231b0 // !!!!
-	write_1d0(0x35, 0x14b, 7, 1);
+
+	{
+		u32 reg32 = read_1d0(0xa1, 6);
+		read_1d0(0x2f3, 6);		// = 0x10a4054 // !!!!
+		rmw_1d0(0x21c, 0x38, 0, 6);
+		u8 reg8 = 0;
+		reg8 |= (reg32 >> 4) & (1 << 0);
+		reg8 |= (reg32 >> 2) & (1 << 1);
+		reg8 |= (reg32 >> 0) & (1 << 2);
+		rmw_1d0(0x14b, 0x78, reg8, 7);
+	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel, 2, 1);
@@ -4443,8 +4461,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	MCHBAR8(0x12c) = 0x9f;
 
-	MCHBAR8_AND_OR(0x271, 0, 0xe);	// 2 // !!!!
-	MCHBAR8_AND_OR(0x671, 0, 0xe);	// !!!!
+	MCHBAR8_AND_OR(0x271, 0xcf, 0xe);
+	MCHBAR8_AND_OR(0x671, 0xcf, 0xe);
 
 	if (!s3resume) {
 		for (channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -4469,8 +4487,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_1d0(7, 0x1c0, 3, 1);
 		write_1d0(4, 0x1c6, 4, 1);
 		write_1d0(4, 0x1cc, 4, 1);
-		read_1d0(0x151, 4);	// = 0x408c6d74 // !!!!
-		write_1d0(4, 0x151, 4, 1);
+		rmw_1d0(0x151, 0xf, 0x4, 4);
 		MCHBAR32(0x584) = 0xfffff;
 		MCHBAR32(0x984) = 0xfffff;
 

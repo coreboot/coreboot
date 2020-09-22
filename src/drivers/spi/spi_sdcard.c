@@ -354,7 +354,9 @@ static int spi_sdcard_do_app_command(const struct spi_sdcard *card,
 		uint32_t *out_register)
 {
 	/* CMD55 */
-	spi_sdcard_do_command(card, APP_CMD, 0, NULL);
+	if (spi_sdcard_do_command(card, APP_CMD, 0, NULL))
+		return -1;
+
 	return spi_sdcard_do_command_help(card, 1, cmd, argument, out_register);
 }
 

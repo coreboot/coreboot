@@ -794,8 +794,6 @@ if [ "$cpus" != "1" ]; then
 	echo | xargs -P ${cpus:-0} -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
 fi
 
-git submodule update --checkout --init
-
 if [ "$USE_XARGS" = "0" ]; then
 test "$MAKEFLAGS" == "" && test "$cpus" != "" && export MAKEFLAGS="-j $cpus"
 export MAKEFLAGS="$MAKEFLAGS UPDATED_SUBMODULES=1" # no need to re-download

@@ -95,8 +95,6 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_GSPI3:   return "SPI3";
 	case PCH_DEVFN_EMMC:	return "EMMC";
 	case PCH_DEVFN_SDCARD:	return "SDXC";
-	/* Keeping ACPI device name coherent with ec.asl */
-	case PCH_DEVFN_ESPI:	return "LPCB";
 	case PCH_DEVFN_HDA:	return "HDAS";
 	case PCH_DEVFN_SMBUS:	return "SBUS";
 	case PCH_DEVFN_GBE:	return "GLAN";

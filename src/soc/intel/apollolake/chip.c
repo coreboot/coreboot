@@ -139,9 +139,6 @@ const char *soc_acpi_name(const struct device *dev)
 	/* DSDT: acpi/northbridge.asl */
 	case SA_DEVFN_ROOT:
 		return "MCHC";
-	/* DSDT: acpi/lpc.asl */
-	case PCH_DEVFN_LPC:
-		return "LPCB";
 	/* DSDT: acpi/xhci.asl */
 	case PCH_DEVFN_XHCI:
 		return "XHCI";

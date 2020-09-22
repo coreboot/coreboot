@@ -95,6 +95,13 @@ static void pch_lpc_set_resources(struct device *dev)
 	pch_lpc_set_child_resources(dev);
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+#endif
+
 static struct device_operations device_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pch_lpc_set_resources,
@@ -102,6 +109,7 @@ static struct device_operations device_ops = {
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables	= southbridge_write_acpi_tables,
 	.acpi_inject_dsdt	= southbridge_inject_dsdt,
+	.acpi_name		= lpc_acpi_name,
 #endif
 	.init			= lpc_soc_init,
 	.scan_bus		= scan_static_bus,

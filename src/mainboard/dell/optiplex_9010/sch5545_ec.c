@@ -421,7 +421,7 @@ static uint8_t ec_read_write_reg(uint8_t ldn, uint16_t reg, uint8_t *value, uint
 
 uint16_t sch5545_get_ec_fw_version(void)
 {
-	uint8_t val;
+	uint8_t val = 0;
 	uint16_t ec_fw_version;
 
 	/* Read the FW version currently loaded used by EC */
@@ -499,7 +499,7 @@ void sch5545_update_ec_firmware(uint16_t ec_version)
 
 void sch5545_ec_hwm_early_init(void)
 {
-	uint8_t val;
+	uint8_t val = 0;
 	int i;
 
 	printk(BIOS_DEBUG, "%s\n", __func__);
@@ -605,7 +605,7 @@ static void prepare_for_hwm_ec_sequence(uint8_t write_only, uint8_t *value)
 
 void sch5545_ec_hwm_init(void *unused)
 {
-	uint8_t val, val_2fc, chassis_type, fan_speed_full = 0;
+	uint8_t val = 0, val_2fc, chassis_type, fan_speed_full = 0;
 
 	printk(BIOS_DEBUG, "%s\n", __func__);
 	sch5545_emi_init(0x2e);

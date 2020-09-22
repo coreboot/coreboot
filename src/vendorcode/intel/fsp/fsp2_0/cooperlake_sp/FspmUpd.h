@@ -167,542 +167,552 @@ typedef struct {
 **/
   UINT8                       SnoopThrottleConfig;
 
-/** Offset 0x006A - Legacy VGA Soc
+/** Offset 0x006A - Snoop Throttle Config
+  Set the Snoop All Core Config
+  0:DIS, 1:EN, 2:Auto
+**/
+  UINT8                       SnoopAllCores;
+
+/** Offset 0x006B - Legacy VGA Soc
   Socket that claims the legacy VGA range
 **/
   UINT8                       LegacyVgaSoc;
 
-/** Offset 0x006B - Legacy VGA Stack
+/** Offset 0x006C - Legacy VGA Stack
   Stack that claims the legacy VGA range
 **/
   UINT8                       LegacyVgaStack;
 
-/** Offset 0x006C - Pcie P2P Performance Mode
+/** Offset 0x006D - Pcie P2P Performance Mode
   Determine if to enable PCIe P2P Performance Mode
   $EN_DIS
 **/
   UINT8                       P2pRelaxedOrdering;
 
-/** Offset 0x006D - Debug Print Level
+/** Offset 0x006E - Debug Print Level
   Set Debug Print Level
   1:Fatal, 2:Warning, 4:Summary, 8:Detail, 0x0F:All
 **/
   UINT8                       DebugPrintLevel;
 
-/** Offset 0x006E - SNC
+/** Offset 0x006F - SNC
   Enable or Disable SNC
   $EN_DIS
 **/
   UINT8                       SncEn;
 
-/** Offset 0x006F - UMA Clustering
+/** Offset 0x0070 - UMA Clustering
   Set UMA Clusters
   0:Disable, 2:Two Clusters, 4:Four Clusters
 **/
   UINT8                       UmaClustering;
 
-/** Offset 0x0070 - IODC Mode
+/** Offset 0x0071 - IODC Mode
   IODC Setup Option
   0:Disable, 1:Auto, 2:Push, 3:AllocFlow 4:NonAlloc, 5:WCILF
 **/
   UINT8                       IoDcMode;
 
-/** Offset 0x0071 - Degrade Precedence
+/** Offset 0x0072 - Degrade Precedence
   Setup Degrade Precedence
   0:Topology, 1:Feature
 **/
   UINT8                       DegradePrecedence;
 
-/** Offset 0x0072 - Degrade 4 Socket Preference
+/** Offset 0x0073 - Degrade 4 Socket Preference
   Setup Degrade 4 Socket Preference
   0:Fully Connect, 1:Dual Link Ring
 **/
   UINT8                       Degrade4SPreference;
 
-/** Offset 0x0073 - Directory Mode
+/** Offset 0x0074 - Directory Mode
   Enable or Disable Directory Mode
   $EN_DIS
 **/
   UINT8                       DirectoryModeEn;
 
-/** Offset 0x0074 - XPT Prefetch Enable
+/** Offset 0x0075 - XPT Prefetch Enable
   Enable or Disable XPT Prefetch
 **/
   UINT8                       XptPrefetchEn;
 
-/** Offset 0x0075 - KTI Prefetch Enable
+/** Offset 0x0076 - KTI Prefetch Enable
   Enable or Disable KTI Prefetch
   $EN_DIS
 **/
   UINT8                       KtiPrefetchEn;
 
-/** Offset 0x0076 - XPT Remote Prefetch Enable
+/** Offset 0x0077 - XPT Remote Prefetch Enable
   Enable or Disable XPT Remote Prefetch Enable
   $EN_DIS
 **/
   UINT8                       XptRemotePrefetchEn;
 
-/** Offset 0x0077 - KTI FPGA
+/** Offset 0x0078 - KTI FPGA
   Enable or Disable KTI FPGA
   $EN_DIS
 **/
   UINT8                       KtiFpgaEnable[8];
 
-/** Offset 0x007F - DDRT QoS Mode
+/** Offset 0x0080 - DDRT QoS Mode
   Setup DDRT QoS
 **/
   UINT8                       DdrtQosMode;
 
-/** Offset 0x0080 - KTI Link Speed Mode
+/** Offset 0x0081 - KTI Link Speed Mode
   Choose KTI Link Speed Mode
 **/
   UINT8                       KtiLinkSpeedMode;
 
-/** Offset 0x0081 - KTI Link Speed
+/** Offset 0x0082 - KTI Link Speed
   Setup KTI Link Speed
 **/
   UINT8                       KtiLinkSpeed;
 
-/** Offset 0x0082 - KTI Link L0p
+/** Offset 0x0083 - KTI Link L0p
   Enable or Disable KTI Link L0p
 **/
   UINT8                       KtiLinkL0pEn;
 
-/** Offset 0x0083 - KTI Link L1
+/** Offset 0x0084 - KTI Link L1
   Enable or Disable KTI Link L1
 **/
   UINT8                       KtiLinkL1En;
 
-/** Offset 0x0084 - KTI Failover
+/** Offset 0x0085 - KTI Failover
   Enable or Disable KTI Failover
 **/
   UINT8                       KtiFailoverEn;
 
-/** Offset 0x0085 - KTI LB Enable
+/** Offset 0x0086 - KTI LB Enable
   Enable or Disable KTI LB
   $EN_DIS
 **/
   UINT8                       KtiLbEn;
 
-/** Offset 0x0086 - KTI CRC Mode
+/** Offset 0x0087 - KTI CRC Mode
   Select KTI CRC Mode
   0:16bit, 1:32bit, 2:Auto
 **/
   UINT8                       KtiCrcMode;
 
-/** Offset 0x0087 - KTI CPU Socket Hotplug
+/** Offset 0x0088 - KTI CPU Socket Hotplug
   Enable or Disable KTI CPU Socket Hotplug
   $EN_DIS
 **/
   UINT8                       KtiCpuSktHotPlugEn;
 
-/** Offset 0x0088 - KTI CPU Socket HotPlug Topology
+/** Offset 0x0089 - KTI CPU Socket HotPlug Topology
   Select KTI CPU Socket HotPlug Topology
   0:4Socket, 1:8Socket
 **/
   UINT8                       KtiCpuSktHotPlugTopology;
 
-/** Offset 0x0089 - KTI SKU Mismatch Check
+/** Offset 0x008A - KTI SKU Mismatch Check
   Enable or Disable KTI SKU Mismatch Check
   $EN_DIS
 **/
   UINT8                       KtiSkuMismatchCheck;
 
-/** Offset 0x008A - IRQ Threshold
+/** Offset 0x008B - IRQ Threshold
   Select IRQ Threshold
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       IrqThreshold;
 
-/** Offset 0x008B - IRQ Threshold
+/** Offset 0x008C - IRQ Threshold
   Enable or Disable
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremNorm;
 
-/** Offset 0x008C - TOR threshold - Loctorem threshold empty
+/** Offset 0x008D - TOR threshold - Loctorem threshold empty
   Select TOR threshold - Loctorem threshold empty
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremEmpty;
 
-/** Offset 0x008D - MBA BW Calibration
+/** Offset 0x008E - MBA BW Calibration
   MBA BW Calibration setting
   0:Linear, 1:Biased, 2:Legacy, 3:Auto
 **/
   UINT8                       MbeBwCal;
 
-/** Offset 0x008E - TSC Sync in Sockets
+/** Offset 0x008F - TSC Sync in Sockets
   Enable or Disable TSC Sync in Sockets
 **/
   UINT8                       TscSyncEn;
 
-/** Offset 0x008F - HA A to S directory optimization
+/** Offset 0x0090 - HA A to S directory optimization
   Enable or Disable HA A to S directory optimization
 **/
   UINT8                       StaleAtoSOptEn;
 
-/** Offset 0x0090 - LLC Deadline Allocation
+/** Offset 0x0091 - LLC Deadline Allocation
   Enable or Disable LLC Deadline Allocation
   $EN_DIS
 **/
   UINT8                       LLCDeadLineAlloc;
 
-/** Offset 0x0091 - Split Lock
+/** Offset 0x0092 - Split Lock
   Enable or Disable Split Lock
 **/
   UINT8                       SplitLock;
 
-/** Offset 0x0092 - MMCFG Base Address
+/** Offset 0x0093 - MMCFG Base Address
   Setup MMCFG Base Address
   0:1G, 1:1.5G, 2:1.75G, 3:2G, 4:2.25G, 5:3G, 6:Auto
 **/
   UINT8                       mmCfgBase;
 
-/** Offset 0x0093 - MMCFG Size
+/** Offset 0x0094 - MMCFG Size
   Select MMCFG Size
   0:64M, 1:128M, 2:256M, 3:512M, 4:1G, 5:2G, 6: Auto
 **/
   UINT8                       mmCfgSize;
 
-/** Offset 0x0094 - MMIO High Base Address
+/** Offset 0x0095
+**/
+  UINT8                       UnusedUpdSpace0[3];
+
+/** Offset 0x0098 - MMIO High Base Address
   MMIO High Base Address, a hex number for Bit[51:32]
 **/
   UINT32                      mmiohBase;
 
-/** Offset 0x0098 - CPU Physical Address Limit
+/** Offset 0x009C - CPU Physical Address Limit
   CPU Physical Address Limit
   0:Disable, 1:Enable
 **/
   UINT8                       CpuPaLimit;
 
-/** Offset 0x0099 - High Gap
+/** Offset 0x009D - High Gap
   Enable or Disable High Gap
   $EN_DIS
 **/
   UINT8                       highGap;
 
-/** Offset 0x009A - MMIO High Size
+/** Offset 0x009E - MMIO High Size
   MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
   per CPU.  Range 1-1024
 **/
   UINT16                      mmiohSize;
 
-/** Offset 0x009C - } TYPE:{Combo
+/** Offset 0x00A0 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       isocEn;
 
-/** Offset 0x009D - DCA
+/** Offset 0x00A1 - DCA
   Enable or Disable DCA
   $EN_DIS
 **/
   UINT8                       dcaEn;
 
-/** Offset 0x009E
+/** Offset 0x00A2
 **/
-  UINT8                       UnusedUpdSpace0[2];
-
-/** Offset 0x00A0 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
-**/
-  UINT32                      BoardTypeBitmask;
+  UINT8                       UnusedUpdSpace1[2];
 
 /** Offset 0x00A4 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
-  UINT32                      AllLanesPtr;
+  UINT32                      BoardTypeBitmask;
 
 /** Offset 0x00A8 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
-  UINT32                      PerLanePtr;
+  UINT32                      AllLanesPtr;
 
 /** Offset 0x00AC - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
-  UINT32                      AllLanesSizeOfTable;
+  UINT32                      PerLanePtr;
 
 /** Offset 0x00B0 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
-  UINT32                      PerLaneSizeOfTable;
+  UINT32                      AllLanesSizeOfTable;
 
 /** Offset 0x00B4 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
-  UINT32                      WaitTimeForPSBP;
+  UINT32                      PerLaneSizeOfTable;
 
 /** Offset 0x00B8 - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
+  UINT32                      WaitTimeForPSBP;
+
+/** Offset 0x00BC - } TYPE:{Combo
+  Enable or Disable
+  $EN_DIS
+**/
   UINT8                       IsKtiNvramDataReady;
 
-/** Offset 0x00B9 - } TYPE:{Combo
+/** Offset 0x00BD - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       BoardId;
 
-/** Offset 0x00BA - } TYPE:{Combo
+/** Offset 0x00BE - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       WaSerializationEn;
 
-/** Offset 0x00BB - } TYPE:{Combo
+/** Offset 0x00BF - } TYPE:{Combo
   Enable or Disable
   $EN_DIS
 **/
   UINT8                       KtiInEnableMktme;
 
-/** Offset 0x00BC - Usage type for Processor VmxEnable Function
+/** Offset 0x00C0 - Usage type for Processor VmxEnable Function
   Processor VmxEnable Function, if enabled, the value is 0x01, if disabled, the value is 0x00
   $EN_DIS
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x00BD - Usage type for Processor X2apic Function
+/** Offset 0x00C1 - Usage type for Processor X2apic Function
   Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
 **/
   UINT8                       X2apic;
 
-/** Offset 0x00BE - Usage type for DDR frequency limit
+/** Offset 0x00C2 - Usage type for DDR frequency limit
   Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
 **/
   UINT8                       DdrFreqLimit;
 
-/** Offset 0x00BF - Usage type for Memory Serial Debug Message Level
+/** Offset 0x00C3 - Usage type for Memory Serial Debug Message Level
   Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
 **/
   UINT8                       serialDebugMsgLvl;
 
-/** Offset 0x00C0 - IIO ConfigIOU0
+/** Offset 0x00C4 - IIO ConfigIOU0
   ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU0[8];
 
-/** Offset 0x00C8 - IIO ConfigIOU1
+/** Offset 0x00CC - IIO ConfigIOU1
   ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU1[8];
 
-/** Offset 0x00D0 - IIO ConfigIOU2
+/** Offset 0x00D4 - IIO ConfigIOU2
   ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU2[8];
 
-/** Offset 0x00D8 - IIO ConfigIOU3
+/** Offset 0x00DC - IIO ConfigIOU3
   ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU3[8];
 
-/** Offset 0x00E0 - IIO ConfigIOU4
+/** Offset 0x00E4 - IIO ConfigIOU4
   ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
 **/
   UINT8                       IioConfigIOU4[8];
 
-/** Offset 0x00E8 - Usage type for IIO PCIE Config Table Ptr
+/** Offset 0x00EC - Usage type for IIO PCIE Config Table Ptr
   IIO PCIE Config Table Ptr
 **/
   UINT32                      IioPcieConfigTablePtr;
 
-/** Offset 0x00EC - Usage type for IIO PCIE Config Table Number
+/** Offset 0x00F0 - Usage type for IIO PCIE Config Table Number
   IIO PCIE Config Table Number
 **/
   UINT32                      IioPcieConfigTableNumber;
 
-/** Offset 0x00F0 - Usage type for IIO PCIE Root Port Enable or Disable
+/** Offset 0x00F4 - Usage type for IIO PCIE Root Port Enable or Disable
   IIO PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
   the value is 0x00
 **/
   UINT8                       IIOPcieRootPortEnable;
 
-/** Offset 0x00F1 - Usage type for IIO DeEmphasis
+/** Offset 0x00F5 - Usage type for IIO DeEmphasis
   IIO DeEmphasis
 **/
   UINT8                       DeEmphasis;
 
-/** Offset 0x00F2 - Usage type for IIO PCIE Root Port link speed
+/** Offset 0x00F6 - Usage type for IIO PCIE Root Port link speed
   IIO root port link speed
 **/
   UINT8                       IIOPciePortLinkSpeed;
 
-/** Offset 0x00F3 - Usage type for IIO PCIE Root Port Max Payload
+/** Offset 0x00F7 - Usage type for IIO PCIE Root Port Max Payload
   IIO Root Port Max Payload
 **/
   UINT8                       IIOPcieMaxPayload;
 
-/** Offset 0x00F4 - Usage type for IIO DfxDnTxPreset
+/** Offset 0x00F8 - Usage type for IIO DfxDnTxPreset
   IIO DfxDnTxPreset
 **/
   UINT8                       DfxDnTxPreset;
 
-/** Offset 0x00F5 - Usage type for IIO DfxRxPreset
+/** Offset 0x00F9 - Usage type for IIO DfxRxPreset
   IIO DfxRxPreset
 **/
   UINT8                       DfxRxPreset;
 
-/** Offset 0x00F6 - Usage type for IIO DfxUpTxPreset
+/** Offset 0x00FA - Usage type for IIO DfxUpTxPreset
   IIO DfxUpTxPreset
 **/
   UINT8                       DfxUpTxPreset;
 
-/** Offset 0x00F7 - Usage type for IIO PcieCommonClock
+/** Offset 0x00FB - Usage type for IIO PcieCommonClock
   IIO PcieCommonClock
 **/
   UINT8                       PcieCommonClock;
 
-/** Offset 0x00F8 - Usage type for IIO NtbPpd
+/** Offset 0x00FC - Usage type for IIO NtbPpd
   IIO NtbPpd
 **/
   UINT8                       NtbPpd;
 
-/** Offset 0x00F9 - Usage type for IIO NtbBarSizeOverride
+/** Offset 0x00FD - Usage type for IIO NtbBarSizeOverride
   IIO NtbBarSizeOverride
 **/
   UINT8                       NtbBarSizeOverride;
 
-/** Offset 0x00FA - Usage type for IIO NtbSplitBar
+/** Offset 0x00FE - Usage type for IIO NtbSplitBar
   IIO NtbSplitBar
 **/
   UINT8                       NtbSplitBar;
 
-/** Offset 0x00FB - Usage type for IIO NtbBarSizeImBar1
+/** Offset 0x00FF - Usage type for IIO NtbBarSizeImBar1
   IIO NtbBarSizeImBar1
 **/
   UINT8                       NtbBarSizeImBar1;
 
-/** Offset 0x00FC - Usage type for IIO NtbBarSizeImBar2
+/** Offset 0x0100 - Usage type for IIO NtbBarSizeImBar2
   IIO PNtbBarSizeImBar2
 **/
   UINT8                       NtbBarSizeImBar2;
 
-/** Offset 0x00FD - Usage type for IIO NtbBarSizeImBar2_0
+/** Offset 0x0101 - Usage type for IIO NtbBarSizeImBar2_0
   IIO PNtbBarSizeImBar2_0
 **/
   UINT8                       NtbBarSizeImBar2_0;
 
-/** Offset 0x00FE - Usage type for IIO NtbBarSizeImBar2_1
+/** Offset 0x0102 - Usage type for IIO NtbBarSizeImBar2_1
   IIO NtbBarSizeImBar2_1
 **/
   UINT8                       NtbBarSizeImBar2_1;
 
-/** Offset 0x00FF - Usage type for IIO NtbBarSizeEmBarSZ1
+/** Offset 0x0103 - Usage type for IIO NtbBarSizeEmBarSZ1
   IIO NtbBarSizeEmBarSZ1
 **/
   UINT8                       NtbBarSizeEmBarSZ1;
 
-/** Offset 0x0100 - Usage type for IIO NtbBarSizeEmBarSZ2
+/** Offset 0x0104 - Usage type for IIO NtbBarSizeEmBarSZ2
   IIO NtbBarSizeEmBarSZ2
 **/
   UINT8                       NtbBarSizeEmBarSZ2;
 
-/** Offset 0x0101 - Usage type for IIO NtbBarSizeEmBarSZ2_0
+/** Offset 0x0105 - Usage type for IIO NtbBarSizeEmBarSZ2_0
   IIO NtbBarSizeEmBarSZ2_0
 **/
   UINT8                       NtbBarSizeEmBarSZ2_0;
 
-/** Offset 0x0102 - Usage type for IIO NtbBarSizeEmBarSZ2_1
+/** Offset 0x0106 - Usage type for IIO NtbBarSizeEmBarSZ2_1
   IIO NtbBarSizeEmBarSZ2_1
 **/
   UINT8                       NtbBarSizeEmBarSZ2_1;
 
-/** Offset 0x0103 - Usage type for IIO NtbXlinkCtlOverride
+/** Offset 0x0107 - Usage type for IIO NtbXlinkCtlOverride
   IIO NtbXlinkCtlOverride
 **/
   UINT8                       NtbXlinkCtlOverride;
 
-/** Offset 0x0104 - Usage type for IIO VT-D Function
+/** Offset 0x0108 - Usage type for IIO VT-D Function
   IIO VT-D Function, if supported, the value is 0x01, if not supported, the value is 0x00
 **/
   UINT8                       VtdSupport;
 
-/** Offset 0x0105 - Usage type for IIO Pcie Port Hide
+/** Offset 0x0109 - Usage type for IIO Pcie Port Hide
   Hide or visible for IIO Pcie Port, 1 : Hide, 0 : Visible
 **/
   UINT8                       PEXPHIDE;
 
-/** Offset 0x0106 - Usage type for IIO Pcie Port Menu Hide
+/** Offset 0x010A - Usage type for IIO Pcie Port Menu Hide
   Hide or visible for IIO Pcie Port Menu, 1 : Hide, 0 : Visible
 **/
   UINT8                       HidePEXPMenu;
 
-/** Offset 0x0107 - PchSirqMode
+/** Offset 0x010B - PchSirqMode
   Enable or Disable PchSirqMode
 **/
   UINT8                       PchSirqMode;
 
-/** Offset 0x0108 - PchAdrEn
+/** Offset 0x010C - PchAdrEn
   Enable or Disable PchAdr
 **/
   UINT8                       PchAdrEn;
 
-/** Offset 0x0109 - ThermalDeviceEnable
+/** Offset 0x010D - ThermalDeviceEnable
   Enable or Disable ThermalDeviceEnable with PCI or ACPI mode
 **/
   UINT8                       ThermalDeviceEnable;
 
-/** Offset 0x010A - } TYPE:{Combo
+/** Offset 0x010E - } TYPE:{Combo
   Root port swapping based on device connection status : TRUE or FALSE
   TRUE : 0x01, FALSE : 0x00
 **/
   UINT8                       PchPcieRootPortFunctionSwap;
 
-/** Offset 0x010B - PCH PCIE PLL Ssc
+/** Offset 0x010F - PCH PCIE PLL Ssc
   Valid spread range : 0x00-0x14 (A value of 0 is SSC of 0.0%. A value of 20 is SSC
   of 2.0%), Auto : 0xFE(Set to hardware default), Disable : 0xFF
 **/
   UINT8                       PchPciePllSsc;
 
-/** Offset 0x010C - Usage type for PCH PCIE Root Port Index
+/** Offset 0x0110 - Usage type for PCH PCIE Root Port Index
   Index assigned to every PCH PCIE Root Port
 **/
   UINT8                       PchPciePortIndex[20];
 
-/** Offset 0x0120 - Usage type for PCH PCIE Root Port Enable or Disable
+/** Offset 0x0124 - Usage type for PCH PCIE Root Port Enable or Disable
   0-19: PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
   the value is 0x00
 **/
   UINT8                       PchPcieForceEnable[20];
 
-/** Offset 0x0134 - Usage type for PCH PCIE Root Port Link Speed
+/** Offset 0x0138 - Usage type for PCH PCIE Root Port Link Speed
   0-19: PCH rootport, 0x00 : Pcie Auto Speed, 0x01 : Pcie Gen1 Speed, 0x02 : Pcie
   Gen2 Speed, 0x03 : Pcie Gen3 Speed
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
-/** Offset 0x0148 - PchDciEn
+/** Offset 0x014C - PchDciEn
   Enable or Disable Pch DciEn
 **/
   UINT8                       PchDciEn;
 
-/** Offset 0x0149 - SerialIoUartDebugEnable
+/** Offset 0x014D - SerialIoUartDebugEnable
   Enable SerialIo Uart debug library in FSP.
   0:Disable, 1:Enable
 **/
   UINT8                       SerialIoUartDebugEnable;
 
-/** Offset 0x014A - ISA Serial Base selection
+/** Offset 0x014E - ISA Serial Base selection
   Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
   0x3F8, 0x2F8
 **/
   UINT16                      SerialIoUartDebugIoBase;
 
-/** Offset 0x014C
+/** Offset 0x0150
 **/
   UINT8                       ReservedMemoryInitUpd[16];
 } FSPM_CONFIG;
@@ -723,11 +733,11 @@ typedef struct {
 **/
   FSPM_CONFIG                 FspmConfig;
 
-/** Offset 0x015C
+/** Offset 0x0160
 **/
-  UINT8                       UnusedUpdSpace1[2];
+  UINT8                       UnusedUpdSpace2[6];
 
-/** Offset 0x015E
+/** Offset 0x0166
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

@@ -144,7 +144,7 @@ typedef struct SystemMemoryMapHob {
   UINT8    NumChPerMC;
   UINT8    numberEntries;                         // Number of Memory Map Elements
   SYSTEM_MEMORY_MAP_ELEMENT Element[(MAX_SOCKET * MAX_DRAM_CLUSTERS * MAX_SAD_RULES) + MAX_FPGA_REMOTE_SAD_RULES];
-  UINT8    reserved3[2212];
+  UINT8    reserved3[2213];
   MEMMAP_SOCKET Socket[MAX_SOCKET];
   UINT8    reserved4[1603];
 
@@ -154,7 +154,7 @@ typedef struct SystemMemoryMapHob {
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 
-  UINT8    reserved6[2];
+  UINT8    reserved6[4];
 
 } SYSTEM_MEMORY_MAP_HOB;
 

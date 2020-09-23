@@ -1,0 +1,2 @@
+DRAM Part Name                 ID to assign
+EMPTY                          0 (0000)

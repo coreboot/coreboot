@@ -136,6 +136,10 @@ struct soc_intel_jasperlake_config {
 	/* Heci related */
 	uint8_t Heci3Enabled;
 
+	/* VR Config Settings for IA Core */
+	uint16_t ImonSlope;
+	uint16_t ImonOffset;
+
 	/* Gfx related */
 	uint8_t IgdDvmt50PreAlloc;
 	uint8_t InternalGfx;

@@ -177,6 +177,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 				sizeof(params->SataPortsDevSlp));
 	}
 
+	/* VR Configuration */
+	params->ImonSlope[0] = config->ImonSlope;
+	params->ImonOffset[0] = config->ImonOffset;
+
 	/* SDCard related configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	params->ScsSdCardEnabled = is_dev_enabled(dev);

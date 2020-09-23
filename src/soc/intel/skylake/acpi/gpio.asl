@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-#include <intelblocks/gpio_defs.h>
+#include <soc/intel/common/block/acpi/acpi/gpio_op.asl>
 #include <soc/gpio.h>
 
 Device (GPIO)
@@ -104,64 +104,4 @@ Method (GADD, 1, NotSerialized)
 	Store (PCRB (Local0), Local2)
 	Add (Local2, PAD_CFG_BASE, Local2)
 	Return (Add (Local2, Multiply (Local1, 8)))
-}
-
-/*
- * Get GPIO Rx Value
- * Arg0 - GPIO Number
- */
-Method (GRXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	Local0 = (PAD_CFG0_RX_STATE & VAL0) >> PAD_CFG0_RX_STATE_BIT
-
-	Return (Local0)
-}
-
-/*
- * Get GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (GTXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	Local0 = PAD_CFG0_TX_STATE & VAL0
-
-	Return (Local0)
-}
-
-/*
- * Set GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (STXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	VAL0 |= PAD_CFG0_TX_STATE
-}
-
-/*
- * Clear GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (CTXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	VAL0 &= ~PAD_CFG0_TX_STATE
 }

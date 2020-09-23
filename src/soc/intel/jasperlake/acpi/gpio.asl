@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <intelblocks/gpio.h>
+#include <soc/intel/common/block/acpi/acpi/gpio_op.asl>
 #include <soc/gpio_defs.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
-#include "gpio_op.asl"
 
 #include <soc/intel/common/acpi/gpio.asl>
 

@@ -1,34 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/acpi_asl.h>
+
 /*
  * Uncore devices PCI interrupt routing packages.
  * See ACPI spec 6.2.13 _PRT (PCI routing table) for details.
  * The mapping fields ae Address, Pin, Source, Source Index.
  */
-
-#define GEN_PCIE_LEGACY_IRQ()					\
-	Package () { 0x0000FFFF, 0x00, LNKA, 0x00 },	\
-	Package () { 0x0001FFFF, 0x01, LNKB, 0x00 },	\
-	Package () { 0x0002FFFF, 0x02, LNKC, 0x00 },	\
-	Package () { 0x0003FFFF, 0x03, LNKD, 0x00 }
-
-#define GEN_UNCORE_LEGACY_IRQ(dev)				\
-	Package () { ##dev, 0x00, LNKA, 0x00 },		\
-	Package () { ##dev, 0x01, LNKB, 0x00 },		\
-	Package () { ##dev, 0x02, LNKC, 0x00 },		\
-	Package () { ##dev, 0x03, LNKD, 0x00 }
-
-#define GEN_PCIE_IOAPIC_IRQ(irq1, irq2, irq3, irq4)		\
-	Package () { 0x0000FFFF, 0x00, 0x00, ##irq1 },	\
-	Package () { 0x0001FFFF, 0x01, 0x00, ##irq2 },	\
-	Package () { 0x0002FFFF, 0x02, 0x00, ##irq3 },	\
-	Package () { 0x0003FFFF, 0x03, 0x00, ##irq4 }
-
-#define GEN_UNCORE_IOAPIC_IRQ(dev,irq1,irq2,irq3,irq4)		\
-	Package () { ##dev, 0x00, 0x00, ##irq1 },		\
-	Package () { ##dev, 0x01, 0x00, ##irq2 },		\
-	Package () { ##dev, 0x02, 0x00, ##irq3 },		\
-	Package () { ##dev, 0x03, 0x00, ##irq4 }
 
 // Socket 0, IIOStack 0 device legacy interrupt routing
 Name (PR00, Package ()

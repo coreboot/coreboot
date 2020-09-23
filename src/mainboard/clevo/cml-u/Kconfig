@@ -23,7 +23,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default "clevo/l140cu"
+	default "clevo/cml-u"
 
 config MAINBOARD_PART_NUMBER
 	string

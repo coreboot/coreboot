@@ -26,7 +26,7 @@ Scope(\)
 
 Scope (\_SB)
 {
-	#include "pci_irq.asl"
+	#include "pci_irqs.asl"
 	#include "uncore_irq.asl"
 	#include "iiostack.asl"
 }

@@ -55,6 +55,11 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 	}
 
 	scfg->emmc0_mode = val;
+	scfg->emmc0_sdr104_hs400_driver_strength =
+		cfg->emmc_config.sdr104_hs400_driver_strength;
+	scfg->emmc0_ddr50_driver_strength = cfg->emmc_config.ddr50_driver_strength;
+	scfg->emmc0_sdr50_driver_strength = cfg->emmc_config.sdr50_driver_strength;
+	scfg->emmc0_init_khz_preset = cfg->emmc_config.init_khz_preset;
 }
 
 static void fill_dxio_descriptors(FSP_S_CONFIG *scfg,

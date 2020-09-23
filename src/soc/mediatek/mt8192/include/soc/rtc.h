@@ -149,19 +149,6 @@ enum {
 	PMIC_RG_BANK_FQMTR_RST_SHIFT = 6,
 };
 
-/* PMIC DCXO Register Definition */
-enum {
-	PMIC_RG_DCXO_CW00 = 0x0788,
-	PMIC_RG_DCXO_CW00_SET = 0x078A,
-	PMIC_RG_DCXO_CW00_CLR = 0x078C,
-	PMIC_RG_DCXO_CW02 = 0x0790,
-	PMIC_RG_DCXO_CW08 = 0x079C,
-	PMIC_RG_DCXO_CW09 = 0x079E,
-	PMIC_RG_DCXO_CW09_SET = 0x07A0,
-	PMIC_RG_DCXO_CW09_CLR = 0x07A2,
-	PMIC_RG_DCXO_CW12 = 0x07A8,
-};
-
 /* PMIC Frequency Meter Definition */
 enum {
 	PMIC_RG_FQMTR_CKSEL	= 0x0118,
@@ -228,5 +215,4 @@ int rtc_init(int recover);
 bool rtc_gpio_init(void);
 void rtc_boot(void);
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
-void mt6359_dcxo_disable_unused(void);
 #endif /* SOC_MEDIATEK_MT8192_RTC_H */

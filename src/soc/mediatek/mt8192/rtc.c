@@ -2,6 +2,7 @@
 
 #include <delay.h>
 #include <halt.h>
+#include <soc/clkbuf.h>
 #include <soc/mt6359p.h>
 #include <soc/pmif.h>
 #include <soc/rtc.h>
@@ -312,43 +313,11 @@ void poweroff(void)
 	halt();
 }
 
-static void dcxo_init(void)
-{
-	u16 tmp;
-
-	rtc_read(PMIC_RG_DCXO_CW00, &tmp);
-	rtc_info("CW00,%#x:%#x\n", PMIC_RG_DCXO_CW00, tmp);
-	rtc_read(PMIC_RG_DCXO_CW09, &tmp);
-	rtc_info("CW09,%#x:%#x\n", PMIC_RG_DCXO_CW09, tmp);
-	rtc_read(PMIC_RG_DCXO_CW08, &tmp);
-	rtc_info("CW08,%#x:%#x\n", PMIC_RG_DCXO_CW08, tmp);
-	/* 26M enable control */
-	/* enable clock buffer XO_SOC */
-	rtc_write_field(PMIC_RG_DCXO_CW00, 0x4005, 0xFFFF, 0);
-	rtc_read(PMIC_RG_DCXO_CW00, &tmp);
-	rtc_info("CW0,%#x:%#x\n", PMIC_RG_DCXO_CW00, tmp);
-	rtc_write_field(PMIC_RG_DCXO_CW09_CLR, 0x3f, 0x3f, 9);
-	rtc_read(PMIC_RG_DCXO_CW09, &tmp);
-	rtc_info("PMIC_RG_DCXO_CW09,%#x:%#x\n", PMIC_RG_DCXO_CW09, tmp);
-	/* mode and buffer controlled by srclken0 */
-	rtc_write_field(PMIC_RG_DCXO_CW08, 0x1, 0x1, 2);
-	rtc_read(PMIC_RG_DCXO_CW08, &tmp);
-	rtc_info("PMIC_RG_DCXO_CW08,%#x:%#x\n", PMIC_RG_DCXO_CW08, tmp);
-}
-
-void mt6359_dcxo_disable_unused(void)
-{
-	/* disable HW BBLPM arbiter */
-	rtc_write_field(PMIC_RG_DCXO_CW12, 0x2, 0x3, 0);
-}
-
 /* the rtc boot flow entry */
 void rtc_boot(void)
 {
 	u16 tmp;
 
-	/* dcxo clock init settings */
-	dcxo_init();
 	/* dcxo 32k init settings */
 	rtc_write_field(PMIC_RG_DCXO_CW02, 0xF, 0xF, 0);
 	rtc_read(PMIC_RG_SCK_TOP_CON0, &tmp);

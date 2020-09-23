@@ -177,6 +177,120 @@ struct pmif *get_pmif_controller(int inf, int mstid)
 	return NULL;
 }
 
+static void pmif_select(enum pmic_interface mode)
+{
+	unsigned int spi_spm_sleep_req, spi_scp_sleep_req,
+		     spmi_spm_sleep_req, spmi_scp_sleep_req,
+		     spi_md_ctl_pmif_rdy, spi_md_ctl_srclk_en, spi_md_ctl_srvol_en,
+		     spmi_md_ctl_pmif_rdy, spmi_md_ctl_srclk_en, spmi_md_ctl_srvol_en,
+		     spi_inf_srclken_rc_en, spi_other_inf_dcxo0_en, spi_other_inf_dcxo1_en,
+		     spi_arb_srclken_rc_en, spi_arb_dcxo_conn_en, spi_arb_dcxo_nfc_en;
+
+	switch (mode) {
+	case PMIF_VLD_RDY:
+		/* spm and scp sleep request disable spi and spmi */
+		spi_spm_sleep_req = 1;
+		spi_scp_sleep_req = 1;
+		spmi_spm_sleep_req = 1;
+		spmi_scp_sleep_req = 1;
+
+		/*
+		 * pmic vld/rdy control spi mode enable
+		 * srclken control spi mode disable
+		 * vreq control spi mode disable
+		 */
+		spi_md_ctl_pmif_rdy = 1;
+		spi_md_ctl_srclk_en = 0;
+		spi_md_ctl_srvol_en = 0;
+		spmi_md_ctl_pmif_rdy = 1;
+		spmi_md_ctl_srclk_en = 0;
+		spmi_md_ctl_srvol_en = 0;
+
+		/* srclken rc interface enable */
+		spi_inf_srclken_rc_en = 1;
+
+		/* dcxo interface disable */
+		spi_other_inf_dcxo0_en = 0;
+		spi_other_inf_dcxo1_en = 0;
+
+		/* srclken enable, dcxo0,1 disable */
+		spi_arb_srclken_rc_en = 1;
+		spi_arb_dcxo_conn_en = 0;
+		spi_arb_dcxo_nfc_en = 0;
+		break;
+
+	case PMIF_SLP_REQ:
+		/* spm and scp sleep request enable spi and spmi */
+		spi_spm_sleep_req = 0;
+		spi_scp_sleep_req = 0;
+		spmi_spm_sleep_req = 0;
+		spmi_scp_sleep_req = 0;
+
+		/*
+		 * pmic vld/rdy control spi mode disable
+		 * srclken control spi mode enable
+		 * vreq control spi mode enable
+		 */
+		spi_md_ctl_pmif_rdy = 0;
+		spi_md_ctl_srclk_en = 1;
+		spi_md_ctl_srvol_en = 1;
+		spmi_md_ctl_pmif_rdy = 0;
+		spmi_md_ctl_srclk_en = 1;
+		spmi_md_ctl_srvol_en = 1;
+
+		/* srclken rc interface disable */
+		spi_inf_srclken_rc_en = 0;
+
+		/* dcxo interface enable */
+		spi_other_inf_dcxo0_en = 1;
+		spi_other_inf_dcxo1_en = 1;
+
+		/* srclken disable, dcxo0,1 enable */
+		spi_arb_srclken_rc_en = 0;
+		spi_arb_dcxo_conn_en = 1;
+		spi_arb_dcxo_nfc_en = 1;
+		break;
+
+	default:
+		die("Can't support pmif mode %d\n", mode);
+	}
+
+	SET32_BITFIELDS(&pmif_spi_arb[0].mtk_pmif->sleep_protection_ctrl,
+			PMIFSPI_SPM_SLEEP_REQ_SEL, spi_spm_sleep_req,
+			PMIFSPI_SCP_SLEEP_REQ_SEL, spi_scp_sleep_req);
+	SET32_BITFIELDS(&pmif_spmi_arb[0].mtk_pmif->sleep_protection_ctrl,
+			PMIFSPMI_SPM_SLEEP_REQ_SEL, spmi_spm_sleep_req,
+			PMIFSPMI_SCP_SLEEP_REQ_SEL, spmi_scp_sleep_req);
+	SET32_BITFIELDS(&pmif_spi_arb[0].mtk_pmif->spi_mode_ctrl,
+			PMIFSPI_MD_CTL_PMIF_RDY, spi_md_ctl_pmif_rdy,
+			PMIFSPI_MD_CTL_SRCLK_EN, spi_md_ctl_srclk_en,
+			PMIFSPI_MD_CTL_SRVOL_EN, spi_md_ctl_srvol_en);
+	SET32_BITFIELDS(&pmif_spmi_arb[0].mtk_pmif->spi_mode_ctrl,
+			PMIFSPMI_MD_CTL_PMIF_RDY, spmi_md_ctl_pmif_rdy,
+			PMIFSPMI_MD_CTL_SRCLK_EN, spmi_md_ctl_srclk_en,
+			PMIFSPMI_MD_CTL_SRVOL_EN, spmi_md_ctl_srvol_en);
+	SET32_BITFIELDS(&pmif_spi_arb[0].mtk_pmif->inf_en,
+			PMIFSPI_INF_EN_SRCLKEN_RC_HW, spi_inf_srclken_rc_en);
+	SET32_BITFIELDS(&pmif_spi_arb[0].mtk_pmif->other_inf_en,
+			PMIFSPI_OTHER_INF_DXCO0_EN, spi_other_inf_dcxo0_en,
+			PMIFSPI_OTHER_INF_DXCO1_EN, spi_other_inf_dcxo1_en);
+	SET32_BITFIELDS(&pmif_spi_arb[0].mtk_pmif->arb_en,
+			PMIFSPI_ARB_EN_SRCLKEN_RC_HW, spi_arb_srclken_rc_en,
+			PMIFSPI_ARB_EN_DCXO_CONN, spi_arb_dcxo_conn_en,
+			PMIFSPI_ARB_EN_DCXO_NFC, spi_arb_dcxo_nfc_en);
+}
+
+void pmwrap_interface_init(void)
+{
+	if (CONFIG(SRCLKEN_RC_SUPPORT)) {
+		printk(BIOS_INFO, "%s: Select PMIF_VLD_RDY\n", __func__);
+		pmif_select(PMIF_VLD_RDY);
+	} else {
+		printk(BIOS_INFO, "%s: Select PMIF_SLP_REQ\n", __func__);
+		pmif_select(PMIF_SLP_REQ);
+	}
+}
+
 int mtk_pmif_init(void)
 {
 	int ret;

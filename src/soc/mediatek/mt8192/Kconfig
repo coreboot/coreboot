@@ -82,4 +82,11 @@ config FLASH_DUAL_READ
 	  When this option is enabled, the flash controller provides the ability
 	  to dual read mode.
 
+config SRCLKEN_RC_SUPPORT
+	bool
+	default y
+	help
+	  This option enables clock buffer remote controller module
+	  to control PMIC 26MHz clock output.
+
 endif

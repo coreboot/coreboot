@@ -27,19 +27,23 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "L140CU"
+	default "L140CU" if BOARD_CLEVO_L140CU
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	string
-	default "L140CU"
+	default "L140CU" if BOARD_CLEVO_L140CU
 
 config MAINBOARD_VERSION
 	string
-	default "2.1A"
+	default "2.1A" if BOARD_CLEVO_L140CU
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config CBFS_SIZE
 	hex
-	default 0xc00000
+	default 0xc00000 if BOARD_CLEVO_L140CU
 
 config CONSOLE_POST
 	bool
@@ -51,11 +55,11 @@ config UART_FOR_CONSOLE
 
 config MAX_CPUS
 	int
-	default 8
+	default 8 if BOARD_CLEVO_L140CU
 
 config DIMM_MAX
 	int
-	default 2
+	default 2 if BOARD_CLEVO_L140CU
 
 config DIMM_SPD_SIZE
 	int
@@ -71,10 +75,14 @@ config VGA_BIOS_ID
 
 config TPM_PIRQ
 	hex
-	default 0x10 # GPP_A7/PIRQA#
+	default 0x10 if BOARD_CLEVO_L140CU # GPP_A7/PIRQA#
 
 config POST_DEVICE
 	bool
 	default n
+
+config VARIANT_DIR
+	string
+	default "l140cu" if BOARD_CLEVO_L140CU
 
 endif

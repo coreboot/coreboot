@@ -4,7 +4,7 @@
 #define SOC_INTEL_COMMON_BLOCK_PMCLIB_H
 
 #include <device/pci_type.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Forward declare the power state struct here */
 struct chipset_power_state;

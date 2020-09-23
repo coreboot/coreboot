@@ -611,6 +611,12 @@ SCONFIG_OPTIONS += --output_c=$(DEVICETREE_STATIC_C)
 DEVICETREE_STATIC_H := $(obj)/static.h
 SCONFIG_OPTIONS += --output_h=$(DEVICETREE_STATIC_H)
 
+DEVICETREE_DEVICENAMES_H := $(obj)/static_devices.h
+SCONFIG_OPTIONS += --output_d=$(DEVICETREE_DEVICENAMES_H)
+
+DEVICETREE_FWCONFIG_H := $(obj)/static_fw_config.h
+SCONFIG_OPTIONS += --output_f=$(DEVICETREE_FWCONFIG_H)
+
 $(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(CHIPSET_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(dir $(DEVICETREE_STATIC_C))

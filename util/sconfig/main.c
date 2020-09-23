@@ -1,9 +1,11 @@
 /* sconfig, coreboot device tree compiler */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <ctype.h>
 #include <getopt.h>
 /* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
+#include <libgen.h>
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
 #include <stdint.h>
@@ -527,9 +529,6 @@ static void emit_fw_config(FILE *fil)
 
 	if (!field)
 		return;
-
-	fprintf(fil, "\n/* firmware configuration */\n");
-	fprintf(fil, "#include <fw_config.h>\n");
 
 	while (field) {
 		struct fw_config_option *option = field->options;
@@ -1094,7 +1093,8 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 
 	/* Emit probe structures. */
 	if (ptr->probe && (emit_fw_config_probe(fil, ptr) < 0)) {
-		fclose(head);
+		if (head)
+			fclose(head);
 		fclose(fil);
 		exit(1);
 	}
@@ -1355,9 +1355,12 @@ static void usage(void)
 	printf("usage: sconfig <options>\n");
 	printf("  -c | --output_c          : Path to output static.c file (required)\n");
 	printf("  -r | --output_h          : Path to header static.h file (required)\n");
+	printf("  -d | --output_d          : Path to header static_devices.h file (required)\n");
+	printf("  -f | --output_f          : Path to header static_fw_config.h file (required)\n");
 	printf("  -m | --mainboard_devtree : Path to mainboard devicetree file (required)\n");
 	printf("  -o | --override_devtree  : Path to override devicetree file (optional)\n");
 	printf("  -p | --chipset_devtree   : Path to chipset/SOC devicetree file (optional)\n");
+
 	exit(1);
 }
 
@@ -1721,6 +1724,54 @@ static void parse_override_devicetree(const char *file, struct device *dev)
 	override_devicetree(&base_root_bus, dev->bus);
 }
 
+static void generate_outputh(FILE *f, const char *fw_conf_header, const char *device_header)
+{
+	fprintf(f, "#ifndef __STATIC_DEVICE_TREE_H\n");
+	fprintf(f, "#define __STATIC_DEVICE_TREE_H\n\n");
+
+	fprintf(f, "#include <%s>\n", fw_conf_header);
+	fprintf(f, "#include <%s>\n\n", device_header);
+
+	fprintf(f, "\n#endif /* __STATIC_DEVICE_TREE_H */\n");
+}
+
+static void generate_outputc(FILE *f, const char *static_header)
+{
+	fprintf(f, "#include <device/device.h>\n");
+	fprintf(f, "#include <device/pci.h>\n");
+	fprintf(f, "#include <fw_config.h>\n");
+	fprintf(f, "#include <%s>\n", static_header);
+	emit_chip_headers(f, chip_header.next);
+	fprintf(f, "\n#define STORAGE static __unused DEVTREE_CONST\n\n");
+
+	walk_device_tree(NULL, NULL, &base_root_dev, inherit_subsystem_ids);
+	fprintf(f, "\n/* pass 0 */\n");
+	walk_device_tree(f, NULL, &base_root_dev, pass0);
+	walk_device_tree(NULL, NULL, &base_root_dev, update_references);
+	fprintf(f, "\n/* chip configs */\n");
+	emit_chip_configs(f);
+	fprintf(f, "\n/* pass 1 */\n");
+	walk_device_tree(f, NULL, &base_root_dev, pass1);
+}
+
+static void generate_outputd(FILE *gen, FILE *dev)
+{
+	fprintf(dev, "#ifndef __STATIC_DEVICES_H\n");
+	fprintf(dev, "#define __STATIC_DEVICES_H\n\n");
+	fprintf(dev, "#include <device/device.h>\n\n");
+	fprintf(dev, "/* expose_device_names */\n");
+	walk_device_tree(gen, dev, &base_root_dev, expose_device_names);
+	fprintf(dev, "\n#endif /* __STATIC_DEVICE_NAMES_H */\n");
+}
+
+static void generate_outputf(FILE *f)
+{
+	fprintf(f, "#ifndef __STATIC_FW_CONFIG_H\n");
+	fprintf(f, "#define __STATIC_FW_CONFIG_H\n\n");
+	emit_fw_config(f);
+	fprintf(f, "\n#endif /* __STATIC_FW_CONFIG_H */\n");
+}
+
 int main(int argc, char **argv)
 {
 	static const struct option long_options[] = {
@@ -1729,6 +1780,8 @@ int main(int argc, char **argv)
 		{ "chipset_devtree", 1, NULL, 'p' },
 		{ "output_c", 1, NULL, 'c' },
 		{ "output_h", 1, NULL, 'r' },
+		{ "output_d", 1, NULL, 'd' },
+		{ "output_f", 1, NULL, 'f' },
 		{ "help", 1, NULL, 'h' },
 		{ }
 	};
@@ -1737,9 +1790,11 @@ int main(int argc, char **argv)
 	const char *chipset_devtree = NULL;
 	const char *outputc = NULL;
 	const char *outputh = NULL;
+	const char *outputd = NULL;
+	const char *outputf = NULL;
 	int opt, option_index;
 
-	while ((opt = getopt_long(argc, argv, "m:o:p:c:r:h", long_options,
+	while ((opt = getopt_long(argc, argv, "m:o:p:c:r:d:f:h", long_options,
 				  &option_index)) != EOF) {
 		switch (opt) {
 		case 'm':
@@ -1757,13 +1812,19 @@ int main(int argc, char **argv)
 		case 'r':
 			outputh = strdup(optarg);
 			break;
+		case 'd':
+			outputd = strdup(optarg);
+			break;
+		case 'f':
+			outputf = strdup(optarg);
+			break;
 		case 'h':
 		default:
 			usage();
 		}
 	}
 
-	if (!base_devtree || !outputc || !outputh)
+	if (!base_devtree || !outputc || !outputh || !outputd || !outputf)
 		usage();
 
 	if (chipset_devtree) {
@@ -1793,33 +1854,49 @@ int main(int argc, char **argv)
 		fclose(autogen);
 		exit(1);
 	}
-	fprintf(autohead, "#ifndef __STATIC_DEVICE_TREE_H\n");
-	fprintf(autohead, "#define __STATIC_DEVICE_TREE_H\n\n");
-	fprintf(autohead, "#include <device/device.h>\n\n");
-	emit_fw_config(autohead);
 
-	fprintf(autogen, "#include <device/device.h>\n");
-	fprintf(autogen, "#include <device/pci.h>\n\n");
-	fprintf(autogen, "#include <static.h>\n");
-	emit_chip_headers(autogen, chip_header.next);
-	fprintf(autogen, "\n#define STORAGE static __unused DEVTREE_CONST\n\n");
+	FILE *autodev = fopen(outputd, "w");
+	if (!autodev) {
+		fprintf(stderr, "Could not open file '%s' for writing: ", outputd);
+		perror(NULL);
+		fclose(autogen);
+		fclose(autohead);
+		exit(1);
+	}
 
-	walk_device_tree(autogen, autohead, &base_root_dev, inherit_subsystem_ids);
-	fprintf(autogen, "\n/* pass 0 */\n");
-	walk_device_tree(autogen, autohead, &base_root_dev, pass0);
-	walk_device_tree(autogen, autohead, &base_root_dev, update_references);
-	fprintf(autogen, "\n/* chip configs */\n");
-	emit_chip_configs(autogen);
-	fprintf(autogen, "\n/* pass 1 */\n");
-	walk_device_tree(autogen, autohead, &base_root_dev, pass1);
+	FILE *autofwconf = fopen(outputf, "w");
+	if (!autofwconf) {
+		fprintf(stderr, "Could not open file '%s' for writing: ", outputf);
+		perror(NULL);
+		fclose(autogen);
+		fclose(autohead);
+		fclose(autodev);
+		exit(1);
+	}
 
-	/* Expose static devicenames to global namespace. */
-	fprintf(autogen, "\n/* expose_device_names */\n");
-	walk_device_tree(autogen, autohead, &base_root_dev, expose_device_names);
+	char *f = strdup(outputf);
+	assert(f);
+	char *d = strdup(outputd);
+	assert(d);
+	char *h = strdup(outputh);
+	assert(h);
 
-	fprintf(autohead, "\n#endif /* __STATIC_DEVICE_TREE_H */\n");
+	const char *fw_conf_header = basename(f);
+	const char *device_header = basename(d);
+	const char *static_header = basename(h);
+
+	generate_outputh(autohead, fw_conf_header, device_header);
+	generate_outputc(autogen, static_header);
+	generate_outputd(autogen, autodev);
+	generate_outputf(autofwconf);
+
 	fclose(autohead);
 	fclose(autogen);
+	fclose(autodev);
+	fclose(autofwconf);
+	free(f);
+	free(d);
+	free(h);
 
 	return 0;
 }

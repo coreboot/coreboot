@@ -9,7 +9,8 @@ ppc64_asm_flags =
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_PPC64),y)
 
-bootblock-y = bootblock.S stages.c
+bootblock-y = bootblock_crt0.S
+bootblock-y += arch_timer.c
 bootblock-y += boot.c
 bootblock-y += rom_media.c
 bootblock-y += \

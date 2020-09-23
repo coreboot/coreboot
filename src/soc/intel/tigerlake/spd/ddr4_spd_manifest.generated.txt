@@ -12,3 +12,4 @@ MT40A1G16KD-062E:E,ddr4-spd-7.hex
 K4AAG165WA-BCWE,ddr4-spd-7.hex
 H5AN8G6NCJR-XNC,ddr4-spd-1.hex
 K4AAG165WA-BCTD,ddr4-spd-8.hex
+H5ANAG6NDMR-XNC,ddr4-spd-2.hex

@@ -179,6 +179,18 @@
                 "TRFC2MinPs": 260000,
                 "TRFC4MinPs": 160000
             }
+        },
+        {
+            // Datasheet Revision: Rev. 1.0, Feb. 2020
+            "name": "H5ANAG6NDMR-XNC",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 2,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
         }
     ]
 }

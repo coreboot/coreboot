@@ -103,5 +103,12 @@ config CHROMEOS_CSE_BOARD_RESET_OVERRIDE
 	  does not understand the new cr50 strap config (applicable only to boards using strap
 	  config 0xe). Enabling this config will help to override the default global reset.
 
+config CHROMEOS_DRAM_PART_NUMBER_IN_CBI
+	def_bool n
+	depends on EC_GOOGLE_CHROMEEC
+	help
+	  Some boards declare the DRAM part number in the CBI instead of the SPD.  This option
+	  allows those boards to declare that their DRAM part number is stored in the CBI.
+
 endif # CHROMEOS
 endmenu

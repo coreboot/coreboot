@@ -5,6 +5,8 @@ chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
 
+	register "HybridStorageMode" = "1"
+
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf

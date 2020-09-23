@@ -87,7 +87,7 @@ chip soc/intel/tigerlake
 	# Enable Optane PCIE 11 using clk 0
 	register "PcieRpEnable[10]" = "1"
 	register "PcieRpLtrEnable[10]" = "1"
-	register "HybridStorageMode" = "1"
+	register "HybridStorageMode" = "0"
 
 	# Enable SD Card PCIE 8 using clk 3
 	register "PcieRpEnable[7]" = "1"

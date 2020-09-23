@@ -47,6 +47,8 @@ chip soc/intel/tigerlake
 	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
 
+	register "HybridStorageMode" = "1"
+
 	device domain 0 on
 		device ref ipu on end
 		device ref i2c0 on

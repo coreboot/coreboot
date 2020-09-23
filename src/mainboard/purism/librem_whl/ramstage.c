@@ -10,7 +10,4 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	size_t num_gpios;
 	const struct pad_config *gpio_table = variant_gpio_table(&num_gpios);
 	cnl_configure_pads(gpio_table, num_gpios);
-
-	/* Limit SATA speed to 3Gbps until correct HSIO PHY settings determined */
-	params->SataSpeedLimit = 2;
 }

@@ -118,6 +118,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ## OCP
 
+- [Delta Lake](ocp/deltalake.md)
 - [Tioga Pass](ocp/tiogapass.md)
 
 ## Open Cellular

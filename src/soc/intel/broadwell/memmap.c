@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* Use simple device model for this file even in ramstage */
 #define __SIMPLE_DEVICE__
 
 #include <cbmem.h>

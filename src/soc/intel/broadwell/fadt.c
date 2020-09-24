@@ -38,10 +38,13 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
-	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
-			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
-			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE |
-			ACPI_FADT_PLATFORM_CLOCK;
+	fadt->flags |= ACPI_FADT_WBINVD |
+		       ACPI_FADT_C1_SUPPORTED |
+		       ACPI_FADT_C2_MP_SUPPORTED |
+		       ACPI_FADT_SLEEP_BUTTON |
+		       ACPI_FADT_SEALED_CASE |
+		       ACPI_FADT_S4_RTC_WAKE |
+		       ACPI_FADT_PLATFORM_CLOCK;
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
@@ -82,5 +85,5 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
-	fadt->x_gpe0_blk.addrh = 0;
+	fadt->x_gpe0_blk.addrh = 0x0;
 }

@@ -312,7 +312,7 @@ void enable_tco_sci(void)
  */
 
 /* Clear a GPE0 status and return events that are enabled and active */
-static u32 reset_gpe(u16 sts_reg, u16 en_reg)
+static u32 reset_gpe_status(u16 sts_reg, u16 en_reg)
 {
 	u32 gpe0_sts = inl(ACPI_BASE_ADDRESS + sts_reg);
 	u32 gpe0_en = inl(ACPI_BASE_ADDRESS + en_reg);
@@ -366,10 +366,10 @@ u32 clear_gpe_status(void)
 		[18] = "WADT"
 	};
 
-	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_31_0), GPE0_EN(GPE_31_0)), 0);
-	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_63_32), GPE0_EN(GPE_63_32)), 32);
-	print_gpe_gpio(reset_gpe(GPE0_STS(GPE_94_64), GPE0_EN(GPE_94_64)), 64);
-	return print_gpe_status(reset_gpe(GPE0_STS(GPE_STD), GPE0_EN(GPE_STD)),
+	print_gpe_gpio(reset_gpe_status(GPE0_STS(GPE_31_0), GPE0_EN(GPE_31_0)), 0);
+	print_gpe_gpio(reset_gpe_status(GPE0_STS(GPE_63_32), GPE0_EN(GPE_63_32)), 32);
+	print_gpe_gpio(reset_gpe_status(GPE0_STS(GPE_94_64), GPE0_EN(GPE_94_64)), 64);
+	return print_gpe_status(reset_gpe_status(GPE0_STS(GPE_STD), GPE0_EN(GPE_STD)),
 				gpe0_sts_3_bits);
 }
 

@@ -81,9 +81,7 @@ Device (LPCB)
 		Method (_CRS, 0, Serialized) // Current resources
 		{
 			If (HPTE) {
-				CreateDWordField (BUF0,
-					\_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
-
+				CreateDWordField (BUF0, \_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
 				If (Lequal(HPAS, 1)) {
 					Add(CONFIG_HPET_ADDRESS, 0x1000, HPT0)
 				}
@@ -153,8 +151,7 @@ Device (LPCB)
 			IO (Decode16, 0x80, 0x80, 0x1, 0x01) // Port 80 Post
 			IO (Decode16, 0x92, 0x92, 0x1, 0x01) // CPU Reserved
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02) // SWSMI
-			IO (Decode16, ACPI_BASE_ADDRESS, ACPI_BASE_ADDRESS,
-			    0x1, 0xff)
+			IO (Decode16, ACPI_BASE_ADDRESS, ACPI_BASE_ADDRESS, 0x1, 0xff)
 		})
 
 		Method (_CRS, 0, NotSerialized)
@@ -169,7 +166,6 @@ Device (LPCB)
 		Name (_CRS, ResourceTemplate()
 		{
 			IO (Decode16, 0x70, 0x70, 1, 8)
-			//IRQNoFlags() { 8 }
 		})
 	}
 

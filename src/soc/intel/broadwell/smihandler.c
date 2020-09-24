@@ -58,25 +58,22 @@ static void busmaster_disable_on_bus(int bus)
 
 	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
-			u16 reg16;
-
 			pci_devfn_t dev = PCI_DEV(bus, slot, func);
+
 			val = pci_read_config32(dev, PCI_VENDOR_ID);
 
 			if (val == 0xffffffff || val == 0x00000000 ||
-				val == 0x0000ffff || val == 0xffff0000)
+			    val == 0x0000ffff || val == 0xffff0000)
 				continue;
 
 			/* Disable Bus Mastering for this one device */
-			reg16 = pci_read_config16(dev, PCI_COMMAND);
-			reg16 &= ~PCI_COMMAND_MASTER;
-			pci_write_config16(dev, PCI_COMMAND, reg16);
+			pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER);
 
 			/* If this is a bridge, then follow it. */
 			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
 			hdr &= 0x7f;
 			if (hdr == PCI_HEADER_TYPE_BRIDGE ||
-				hdr == PCI_HEADER_TYPE_CARDBUS) {
+			    hdr == PCI_HEADER_TYPE_CARDBUS) {
 				unsigned int buses;
 				buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
 				busmaster_disable_on_bus((buses >> 8) & 0xff);
@@ -249,11 +246,11 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
 		state = smm_get_save_state(node);
 
-		/* Check for Synchronous IO (bit0==1) */
+		/* Check for Synchronous IO (bit0 == 1) */
 		if (!(state->io_misc_info & (1 << 0)))
 			continue;
 
-		/* Make sure it was a write (bit4==0) */
+		/* Make sure it was a write (bit4 == 0) */
 		if (state->io_misc_info & (1 << 4))
 			continue;
 
@@ -429,8 +426,7 @@ static void southbridge_smi_tco(void)
 			 * box.
 			 */
 			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pci_write_config32(PCH_DEV_LPC, BIOS_CNTL,
-					   (bios_cntl & ~1));
+			pci_write_config32(PCH_DEV_LPC, BIOS_CNTL,  (bios_cntl & ~1));
 		} /* No else for now? */
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */
@@ -453,7 +449,7 @@ static void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
 	u32 trap_sts, trap_cycle;
-	u32 data, mask = 0;
+	u32 mask = 0;
 	int i;
 
 	trap_sts = RCBA32(0x1e00); // TRSR - Trap Status Register
@@ -480,8 +476,9 @@ static void southbridge_smi_monitor(void)
 		// It's a write
 		if (!(trap_cycle & (1 << 24))) {
 			printk(BIOS_DEBUG, "SMI1 command\n");
-			data = RCBA32(0x1e18);
-			data &= mask;
+			(void)RCBA32(0x1e18);
+			// data = RCBA32(0x1e18);
+			// data &= mask;
 			// if (smi1)
 			//	southbridge_smi_command(data);
 			// return;
@@ -501,8 +498,7 @@ static void southbridge_smi_monitor(void)
 
 	if (!(trap_cycle & (1 << 24))) {
 		/* Write Cycle */
-		data = RCBA32(0x1e18);
-		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
+		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", RCBA32(0x1e18));
 	}
 #undef IOTRAP
 }
@@ -546,10 +542,7 @@ static smi_handler_t southbridge_smi[32] = {
 
 /**
  * @brief Interrupt handler for SMI#
- *
- * @param smm_revision revision of the smm state save map
  */
-
 void southbridge_smi_handler(void)
 {
 	int i;

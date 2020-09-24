@@ -18,7 +18,7 @@
 #include <delay.h>
 
 /* Low Power variant has 6 root ports. */
-#define NUM_ROOT_PORTS 6
+#define MAX_NUM_ROOT_PORTS 6
 
 struct root_port_config {
 	/* RPFN is a write-once register so keep a copy until it is written */
@@ -34,7 +34,7 @@ struct root_port_config {
 	int coalesce;
 	int gbe_port;
 	int num_ports;
-	struct device *ports[NUM_ROOT_PORTS];
+	struct device *ports[MAX_NUM_ROOT_PORTS];
 };
 
 static struct root_port_config rpc;
@@ -110,7 +110,7 @@ static void root_port_init_config(struct device *dev)
 	if (root_port_is_first(dev)) {
 		rpc.orig_rpfn = RCBA32(RPFN);
 		rpc.new_rpfn = rpc.orig_rpfn;
-		rpc.num_ports = NUM_ROOT_PORTS;
+		rpc.num_ports = MAX_NUM_ROOT_PORTS;
 		rpc.gbe_port = -1;
 		/* RP0 f5[3:0] = 0101b*/
 		pci_update_config8(dev, 0xf5, ~0xa, 0x5);
@@ -473,8 +473,7 @@ static void pch_pcie_early(struct device *dev)
 
 	if (do_aspm) {
 		/* Set ASPM bits in MPC2 register. */
-		pci_update_config32(dev, 0xd4, ~(0x3 << 2),
-			(1 << 4) | (0x2 << 2));
+		pci_update_config32(dev, 0xd4, ~(0x3 << 2), (1 << 4) | (0x2 << 2));
 
 		/* Set unique clock exit latency in MPC register. */
 		pci_update_config32(dev, 0xd8, ~(0x7 << 18), (0x7 << 18));
@@ -526,7 +525,7 @@ static void pch_pcie_early(struct device *dev)
 	else
 		pci_update_config32(dev, 0x4c, ~(0x7 << 15), (0x2 << 15));
 
-	pci_update_config32(dev, 0x314, 0x0, 0x743a361b);
+	pci_update_config32(dev, 0x314, 0, 0x743a361b);
 
 	/* Set Common Clock Exit Latency in MPC register. */
 	pci_update_config32(dev, 0xd8, ~(0x7 << 15), (0x3 << 15));
@@ -572,8 +571,6 @@ static void pch_pcie_early(struct device *dev)
 
 static void pch_pcie_init(struct device *dev)
 {
-	u16 reg16;
-
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
 	/* Enable SERR */
@@ -585,15 +582,11 @@ static void pch_pcie_init(struct device *dev)
 	/* Set Cache Line Size to 0x10 */
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
-	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
+	pci_and_config16(dev, PCI_BRIDGE_CONTROL, ~PCI_BRIDGE_CTL_PARITY);
 
 	/* Clear errors in status registers */
-	reg16 = pci_read_config16(dev, 0x06);
-	pci_write_config16(dev, 0x06, reg16);
-	reg16 = pci_read_config16(dev, 0x1e);
-	pci_write_config16(dev, 0x1e, reg16);
+	pci_update_config16(dev, 0x06, ~0, 0);
+	pci_update_config16(dev, 0x1e, ~0, 0);
 }
 
 static void pch_pcie_enable(struct device *dev)

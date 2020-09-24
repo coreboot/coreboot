@@ -12,30 +12,30 @@
 
 static const u32 minihd_verb_table[] = {
 	/* coreboot specific header */
-	0x80862808,	// Codec Vendor / Device ID: Intel Broadwell Mini-HD
-	0x80860101,	// Subsystem ID
-	0x00000004,	// Number of jacks
+	0x80862808,	/* Codec Vendor / Device ID: Intel Broadwell Mini-HD */
+	0x80860101,	/* Subsystem ID */
+	4,		/* Number of jacks */
 
 	/* Enable 3rd Pin and Converter Widget */
 	0x00878101,
 
 	/* Pin Widget 5 - PORT B */
-	0x00571C10,
-	0x00571D00,
-	0x00571E56,
-	0x00571F18,
+	0x00571c10,
+	0x00571d00,
+	0x00571e56,
+	0x00571f18,
 
 	/* Pin Widget 6 - PORT C */
-	0x00671C20,
-	0x00671D00,
-	0x00671E56,
-	0x00671F18,
+	0x00671c20,
+	0x00671d00,
+	0x00671e56,
+	0x00671f18,
 
 	/* Pin Widget 7 - PORT D */
-	0x00771C30,
-	0x00771D00,
-	0x00771E56,
-	0x00771F18,
+	0x00771c30,
+	0x00771d00,
+	0x00771e56,
+	0x00771f18,
 
 	/* Disable 3rd Pin and Converter Widget */
 	0x00878100,
@@ -48,8 +48,8 @@ static const u32 minihd_verb_table[] = {
 static void minihd_init(struct device *dev)
 {
 	struct resource *res;
-	u8 *base;
 	u32 reg32;
+	u8 *base;
 	int codec_mask, i;
 
 	/* Find base address */
@@ -80,8 +80,7 @@ static void minihd_init(struct device *dev)
 	if (codec_mask) {
 		for (i = 3; i >= 0; i--) {
 			if (codec_mask & (1 << i))
-				hda_codec_init(base, i,
-					       sizeof(minihd_verb_table),
+				hda_codec_init(base, i, sizeof(minihd_verb_table),
 					       minihd_verb_table);
 		}
 	}
@@ -92,10 +91,10 @@ static void minihd_init(struct device *dev)
 }
 
 static struct device_operations minihd_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &minihd_init,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= minihd_init,
 	.ops_pci		= &broadwell_pci_ops,
 };
 

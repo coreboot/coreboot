@@ -65,50 +65,6 @@ static void generate_cstate_entries(acpi_cstate_t *cstates,
 	acpigen_pop_len();
 }
 
-static void generate_C_state_entries(void)
-{
-	struct cpu_info *info;
-	struct cpu_driver *cpu;
-	struct device *lapic;
-	struct cpu_intel_haswell_config *conf = NULL;
-
-	/* Find the SpeedStep CPU in the device tree using magic APIC ID */
-	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	if (!lapic)
-		return;
-	conf = lapic->chip_info;
-	if (!conf)
-		return;
-
-	/* Find CPU map of supported C-states */
-	info = cpu_info();
-	if (!info)
-		return;
-	cpu = find_cpu_driver(info->cpu);
-	if (!cpu || !cpu->cstates)
-		return;
-
-	acpigen_emit_byte(0x14);		/* MethodOp */
-	acpigen_write_len_f();		/* PkgLength */
-	acpigen_emit_namestring("_CST");
-	acpigen_emit_byte(0x00);		/* No Arguments */
-
-	/* If running on AC power */
-	acpigen_emit_byte(0xa0);		/* IfOp */
-	acpigen_write_len_f();		/* PkgLength */
-	acpigen_emit_namestring("PWRS");
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->c1_acpower,
-					 conf->c2_acpower, conf->c3_acpower);
-	acpigen_pop_len();
-
-	/* Else on battery power */
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->c1_battery,
-					conf->c2_battery, conf->c3_battery);
-	acpigen_pop_len();
-}
-
 static acpi_tstate_t tss_table_fine[] = {
 	{ 100, 1000, 0, 0x00, 0 },
 	{ 94, 940, 0, 0x1f, 0 },
@@ -159,6 +115,50 @@ static void generate_T_state_entries(int core, int cores_per_package)
 	else
 		acpigen_write_TSS_package(
 			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
+}
+
+static void generate_C_state_entries(void)
+{
+	struct cpu_info *info;
+	struct cpu_driver *cpu;
+	struct device *lapic;
+	struct cpu_intel_haswell_config *conf = NULL;
+
+	/* Find the SpeedStep CPU in the device tree using magic APIC ID */
+	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+	if (!lapic)
+		return;
+	conf = lapic->chip_info;
+	if (!conf)
+		return;
+
+	/* Find CPU map of supported C-states */
+	info = cpu_info();
+	if (!info)
+		return;
+	cpu = find_cpu_driver(info->cpu);
+	if (!cpu || !cpu->cstates)
+		return;
+
+	acpigen_emit_byte(0x14);		/* MethodOp */
+	acpigen_write_len_f();		/* PkgLength */
+	acpigen_emit_namestring("_CST");
+	acpigen_emit_byte(0x00);		/* No Arguments */
+
+	/* If running on AC power */
+	acpigen_emit_byte(0xa0);		/* IfOp */
+	acpigen_write_len_f();		/* PkgLength */
+	acpigen_emit_namestring("PWRS");
+	acpigen_emit_byte(0xa4);	/* ReturnOp */
+	generate_cstate_entries(cpu->cstates, conf->c1_acpower,
+					 conf->c2_acpower, conf->c3_acpower);
+	acpigen_pop_len();
+
+	/* Else on battery power */
+	acpigen_emit_byte(0xa4);	/* ReturnOp */
+	generate_cstate_entries(cpu->cstates, conf->c1_battery,
+					conf->c2_battery, conf->c3_battery);
+	acpigen_pop_len();
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)
@@ -307,19 +307,19 @@ void generate_cpu_entries(const struct device *device)
 
 			/* Generate processor \_SB.CPUx */
 			acpigen_write_processor(
-				(cpuID-1)*cores_per_package+coreID-1,
+				(cpuID - 1) * cores_per_package+coreID - 1,
 				pcontrol_blk, plen);
 
 			/* Generate P-state tables */
 			generate_P_state_entries(
-				coreID-1, cores_per_package);
+				coreID - 1, cores_per_package);
 
 			/* Generate C-state tables */
 			generate_C_state_entries();
 
 			/* Generate T-state tables */
 			generate_T_state_entries(
-				cpuID-1, cores_per_package);
+				cpuID - 1, cores_per_package);
 
 			acpigen_pop_len();
 		}

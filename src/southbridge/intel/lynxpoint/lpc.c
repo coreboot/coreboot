@@ -115,7 +115,7 @@ static void pch_pirq_init(struct device *dev)
 	 */
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-		u8 int_pin=0, int_line=0;
+		u8 int_pin = 0, int_line = 0;
 
 		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
 			continue;
@@ -446,7 +446,7 @@ static void enable_lp_clock_gating(struct device *dev)
 		reg32 &= ~(1 << 29); // LPC Dynamic
 	else
 		reg32 |= (1 << 29); // LPC Dynamic
-	reg32 |= (1UL << 31); // LP LPC
+	reg32 |= (1 << 31); // LP LPC
 	reg32 |= (1 << 30); // LP BLA
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
@@ -565,7 +565,7 @@ static void pch_lpc_add_mmio_resources(struct device *dev)
 		res->base = (resource_t)(uintptr_t)DEFAULT_RCBA;
 		res->size = 16 * 1024;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-		             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+			     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 	}
 
 	/* Check LPC Memory Decode register. */
@@ -577,7 +577,7 @@ static void pch_lpc_add_mmio_resources(struct device *dev)
 			res->base = reg;
 			res->size = 16 * 1024;
 			res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-			             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+				     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 		}
 	}
 }
@@ -645,8 +645,7 @@ static void pch_lpc_add_io_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* GPIOBASE */
-	pch_lpc_add_io_resource(dev, get_gpiobase(), DEFAULT_GPIOSIZE,
-	                        GPIO_BASE);
+	pch_lpc_add_io_resource(dev, get_gpiobase(), DEFAULT_GPIOSIZE, GPIO_BASE);
 
 	/* PMBASE */
 	pch_lpc_add_io_resource(dev, get_pmbase(), 256, PMBASE);

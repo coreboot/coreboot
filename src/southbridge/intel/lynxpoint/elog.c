@@ -46,7 +46,7 @@ static void pch_log_gpe(void)
 	u16 pmbase = get_pmbase();
 	u32 gpe0_sts, gpe0_en;
 	int gpe0_high_gpios[] = {
-		[0] = 27,
+		[0]  = 27,
 		[24] = 17,
 		[25] = 19,
 		[26] = 21,

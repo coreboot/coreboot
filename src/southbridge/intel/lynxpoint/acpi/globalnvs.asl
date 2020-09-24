@@ -2,9 +2,10 @@
 
 /* Global Variables */
 
-Name(\PICM, 0)		// IOAPIC/8259
+Name (\PICM, 0)		// IOAPIC/8259
 
-/* Global ACPI memory region. This region is used for passing information
+/*
+ * Global ACPI memory region. This region is used for passing information
  * between coreboot (aka "the system bios"), ACPI, and the SMI handler.
  * Since we don't know where this will end up in memory at ACPI compile time,
  * we have to fix it up in coreboot's ACPI creation phase.
@@ -31,9 +32,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PWRS,	 8,	// 0x10 - Power State (AC = 1)
 	/* Thermal policy */
 	Offset (0x11),
-	TLVL,    8,	// 0x11 - Throttle Level Limit
+	TLVL,	 8,	// 0x11 - Throttle Level Limit
 	FLVL,	 8,	// 0x12 - Current FAN Level
-	TCRT,    8,	// 0x13 - Critical Threshold
+	TCRT,	 8,	// 0x13 - Critical Threshold
 	TPSV,	 8,	// 0x14 - Passive Threshold
 	TMAX,	 8,	// 0x15 - CPU Tj_max
 	F0OF,	 8,	// 0x16 - FAN 0 OFF Threshold
@@ -51,7 +52,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	F4OF,	 8,	// 0x22 - FAN 4 OFF Threshold
 	F4ON,	 8,	// 0x23 - FAN 4 ON Threshold
 	F4PW,	 8,	// 0x24 - FAN 4 PWM value
-	TMPS,    8,	// 0x25 - Temperature Sensor ID
+	TMPS,	 8,	// 0x25 - Temperature Sensor ID
 	/* Processor Identification */
 	Offset (0x28),
 	APIC,	 8,	// 0x28 - APIC Enabled by coreboot

@@ -502,14 +502,10 @@ static void pcie_add_0x0202000_iobp(u32 reg)
 
 static void pch_pcie_early(struct device *dev)
 {
-	int rp;
-	int do_aspm;
-	int is_lp;
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
-
-	rp = root_port_number(dev);
-	do_aspm = 0;
-	is_lp = pch_is_lp();
+	int do_aspm = 0;
+	int rp = root_port_number(dev);
+	int is_lp = pch_is_lp();
 
 	if (is_lp) {
 		switch (rp) {
@@ -517,18 +513,24 @@ static void pch_pcie_early(struct device *dev)
 		case 2:
 		case 3:
 		case 4:
-			/* Bits 31:28 of b0d28f0 0x32c register correspnd to
-			 * Root Ports 4:1. */
+			/*
+			 * Bits 31:28 of b0d28f0 0x32c register correspond to
+			 * Root Ports 4:1.
+			 */
 			do_aspm = !!(rpc.b0d28f0_32c & (1 << (28 + rp - 1)));
 			break;
 		case 5:
-			/* Bit 28 of b0d28f4 0x32c register correspnd to
-			 * Root Ports 4:1. */
+			/*
+			 * Bit 28 of b0d28f4 0x32c register correspond to
+			 * Root Ports 4:1.
+			 */
 			do_aspm = !!(rpc.b0d28f4_32c & (1 << 28));
 			break;
 		case 6:
-			/* Bit 28 of b0d28f5 0x32c register correspnd to
-			 * Root Ports 4:1. */
+			/*
+			 * Bit 28 of b0d28f5 0x32c register correspond to
+			 * Root Ports 4:1.
+			 */
 			do_aspm = !!(rpc.b0d28f5_32c & (1 << 28));
 			break;
 		}
@@ -538,16 +540,20 @@ static void pch_pcie_early(struct device *dev)
 		case 2:
 		case 3:
 		case 4:
-			/* Bits 31:28 of b0d28f0 0x32c register correspnd to
-			 * Root Ports 4:1. */
+			/*
+			 * Bits 31:28 of b0d28f0 0x32c register correspond to
+			 * Root Ports 4:1.
+			 */
 			do_aspm = !!(rpc.b0d28f0_32c & (1 << (28 + rp - 1)));
 			break;
 		case 5:
 		case 6:
 		case 7:
 		case 8:
-			/* Bit 31:28 of b0d28f4 0x32c register correspnd to
-			 * Root Ports 8:5. */
+			/*
+			 * Bits 31:28 of b0d28f4 0x32c register correspond to
+			 * Root Ports 8:5.
+			 */
 			do_aspm = !!(rpc.b0d28f4_32c & (1 << (28 + rp - 5)));
 			break;
 		}
@@ -644,7 +650,7 @@ static void pch_pcie_early(struct device *dev)
 	pci_or_config32(dev, 0x64, 1 << 11);
 	pci_update_config32(dev, 0x68, ~(1 << 10), (1 << 10));
 
-	pci_update_config32(dev, 0x318, ~(0xffffUL << 16), (0x1414UL << 16));
+	pci_update_config32(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
 
 	/* Set L1 exit latency in LCAP register. */
 	if (!do_aspm && (pci_read_config8(dev, 0xf5) & 0x1))
@@ -692,7 +698,7 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config32(dev, 0x90, ~0, 0);
 }
 
-static void pci_init(struct device *dev)
+static void pch_pcie_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
@@ -737,7 +743,7 @@ static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
-	.init			= pci_init,
+	.init			= pch_pcie_init,
 	.enable			= pch_pcie_enable,
 	.scan_bus		= pciexp_scan_bridge,
 	.ops_pci		= &pci_dev_ops_pci,

@@ -156,7 +156,6 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
 	uintptr_t tseg_base;
 	size_t tseg_size;
-
 	u32 prmrr_base;
 	u32 prmrr_size;
 	int phys_bits;
@@ -197,7 +196,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	params->uncore_prmrr_base.lo = prmrr_base;
 	params->uncore_prmrr_base.hi = 0;
 	params->uncore_prmrr_mask.lo = (~(prmrr_size - 1) & rmask) |
-				      MTRR_PHYS_MASK_VALID;
+					MTRR_PHYS_MASK_VALID;
 	params->uncore_prmrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
@@ -282,6 +281,5 @@ void smm_lock(void)
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
-			D_LCK | G_SMRAME | C_BASE_SEG);
+	pci_write_config8(pcidev_on_root(0, 0), SMRAM, D_LCK | G_SMRAME | C_BASE_SEG);
 }

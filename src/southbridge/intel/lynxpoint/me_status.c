@@ -11,7 +11,7 @@ static const char *me_cws_values[] = {
 	[ME_HFS_CWS_NORMAL]	= "Normal",
 	[ME_HFS_CWS_WAIT]	= "Platform Disable Wait",
 	[ME_HFS_CWS_TRANS]	= "OP State Transition",
-	[ME_HFS_CWS_INVALID]	= "Invalid CPU Plugged In"
+	[ME_HFS_CWS_INVALID]	= "Invalid CPU Plugged In",
 };
 
 /* HFS1[8:6] Current Operation State Values */

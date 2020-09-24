@@ -86,7 +86,7 @@ static void southbridge_smi_sleep(void)
 	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	u16 pmbase = get_pmbase();
 
-	// save and recover RTC port values
+	/* save and recover RTC port values */
 	u8 tmp70, tmp72;
 	tmp70 = inb(0x70);
 	tmp72 = inb(0x72);
@@ -145,11 +145,10 @@ static void southbridge_smi_sleep(void)
 		 * "KEEP", switch to "OFF" - KEEP is software emulated
 		 */
 		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
-		if (s5pwr == MAINBOARD_POWER_ON) {
+		if (s5pwr == MAINBOARD_POWER_ON)
 			reg8 &= ~1;
-		} else {
+		else
 			reg8 |= 1;
-		}
 		pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
 		/* also iterates over all bridges on bus 0 */
@@ -160,7 +159,8 @@ static void southbridge_smi_sleep(void)
 		break;
 	}
 
-	/* Write back to the SLP register to cause the originally intended
+	/*
+	 * Write back to the SLP register to cause the originally intended
 	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
@@ -170,7 +170,8 @@ static void southbridge_smi_sleep(void)
 	if (slp_typ >= ACPI_S3)
 		halt();
 
-	/* In most sleep states, the code flow of this function ends at
+	/*
+	 * In most sleep states, the code flow of this function ends at
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
@@ -228,11 +229,11 @@ static void southbridge_smi_gsmi(void)
 		return;
 
 	/* Command and return value in EAX */
-	ret = (u32*)&io_smi->rax;
+	ret = (u32 *)&io_smi->rax;
 	sub_command = (u8)(*ret >> 8);
 
 	/* Parameter buffer in EBX */
-	param = (u32*)&io_smi->rbx;
+	param = (u32 *)&io_smi->rbx;
 
 	/* drivers/elog/gsmi.c */
 	*ret = gsmi_exec(sub_command, param);
@@ -345,7 +346,7 @@ static void southbridge_smi_pm1(void)
 	 * on a power button event.
 	 */
 	if (pm1_sts & PWRBTN_STS) {
-		// power button pressed
+		/* power button pressed */
 		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
 		disable_pm1_control(-1UL);
 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
@@ -367,9 +368,7 @@ static void southbridge_smi_gpi(void)
 
 static void southbridge_smi_mc(void)
 {
-	u32 reg32;
-
-	reg32 = inl(get_pmbase() + SMI_EN);
+	u32 reg32 = inl(get_pmbase() + SMI_EN);
 
 	/* Are microcontroller SMIs enabled? */
 	if ((reg32 & MCSMI_EN) == 0)
@@ -386,17 +385,16 @@ static void southbridge_smi_tco(void)
 	if (!tco_sts)
 		return;
 
-	if (tco_sts & (1 << 8)) { // BIOSWR
-		u8 bios_cntl;
-
-		bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+	// BIOSWR
+	if (tco_sts & (1 << 8)) {
+		u8 bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
 
 		if (bios_cntl & 1) {
-			/* BWE is RW, so the SMI was caused by a
+			/*
+			 * BWE is RW, so the SMI was caused by a
 			 * write to BWE, not by a write to the BIOS
-			 */
-
-			/* This is the place where we notice someone
+			 *
+			 * This is the place where we notice someone
 			 * is trying to tinker with the BIOS. We are
 			 * trying to be nice and just ignore it. A more
 			 * resolute answer would be to power down the
@@ -413,9 +411,7 @@ static void southbridge_smi_tco(void)
 
 static void southbridge_smi_periodic(void)
 {
-	u32 reg32;
-
-	reg32 = inl(get_pmbase() + SMI_EN);
+	u32 reg32 = inl(get_pmbase() + SMI_EN);
 
 	/* Are periodic SMIs enabled? */
 	if ((reg32 & PERIODIC_EN) == 0)
@@ -435,7 +431,7 @@ static void southbridge_smi_monitor(void)
 	RCBA32(0x1e00) = trap_sts; // Clear trap(s) in TRSR
 
 	trap_cycle = RCBA32(0x1e10);
-	for (i=16; i<20; i++) {
+	for (i = 16; i < 20; i++) {
 		if (trap_cycle & (1 << i))
 			mask |= (0xff << ((i - 16) << 2));
 	}
@@ -452,7 +448,8 @@ static void southbridge_smi_monitor(void)
 
 	/* IOTRAP(0) SMIC */
 	if (IOTRAP(0)) {
-		if (!(trap_cycle & (1 << 24))) { // It's a write
+		// It's a write
+		if (!(trap_cycle & (1 << 24))) {
 			printk(BIOS_DEBUG, "SMI1 command\n");
 			(void)RCBA32(0x1e18);
 			// data = RCBA32(0x1e18);
@@ -466,8 +463,9 @@ static void southbridge_smi_monitor(void)
 
 	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n",
 	       trap_cycle & 0xfffc);
-	for (i=0; i < 4; i++)
-		if (IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
+	for (i = 0; i < 4; i++)
+		if (IOTRAP(i))
+			printk(BIOS_DEBUG, "  TRAP = %d\n", i);
 	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
 	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
 	printk(BIOS_DEBUG, "  read/write: %s\n",

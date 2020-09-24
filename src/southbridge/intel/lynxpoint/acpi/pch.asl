@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Intel Cougar Point PCH support */
+/* Intel Lynx Point PCH support */
 
-Scope(\)
+Scope (\)
 {
 	// Return TRUE if chipset is LynxPoint-LP
 	Method (ISLP, 0, NotSerialized)
@@ -11,17 +11,16 @@ Scope(\)
 	}
 
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
-
-	OperationRegion(IO_T, SystemIO, 0x800, 0x10)
-	Field(IO_T, ByteAcc, NoLock, Preserve)
+	OperationRegion (IO_T, SystemIO, 0x800, 0x10)
+	Field (IO_T, ByteAcc, NoLock, Preserve)
 	{
-		Offset(0x8),
+		Offset (0x8),
 		TRP0, 8		// IO-Trap at 0x808
 	}
 
-	// ICH7 Root Complex Register Block. Memory Mapped through RCBA)
-	OperationRegion(RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
-	Field(RCRB, DWordAcc, Lock, Preserve)
+	// Root Complex Register Block
+	OperationRegion (RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
+	Field (RCRB, DWordAcc, Lock, Preserve)
 	{
 		Offset(0x3404), // High Performance Timer Configuration
 		HPAS, 2,	// Address Select

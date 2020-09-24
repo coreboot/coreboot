@@ -31,7 +31,7 @@
 	Package () { ##dev, 0x03, 0x00, ##irq4 }
 
 // Socket 0, IIOStack 0 device legacy interrupt routing
-Name (PR00, Package (0x28)
+Name (PR00, Package ()
 {
 	// [DMI0]: Legacy PCI Express Port 0
 	Package () { 0x0000FFFF, 0x00, LNKA, 0x00 },
@@ -130,7 +130,7 @@ Name (PR00, Package (0x28)
 })
 
 // Socket 0, IIOStack 0 device IOAPIC interrupt routing
-Name (AR00, Package (0x28)
+Name (AR00, Package ()
 {
 	// [DMI0]: Legacy PCI Express Port 0
 	Package () { 0x0000FFFF, 0x00, 0x00, 0x1F },
@@ -229,7 +229,7 @@ Name (AR00, Package (0x28)
 })
 
 // Socket 0, IIOStack 1 device legacy interrupt routing
-Name (PR10, Package (0x40)
+Name (PR10, Package ()
 {
 	// PCI Express Port 1A-1D
 	GEN_PCIE_LEGACY_IRQ(),
@@ -263,7 +263,7 @@ Name (PR10, Package (0x40)
 })
 
 // Socket 0, IIOStack 1 device IOAPIC interrupt routing
-Name (AR10, Package (0x40)
+Name (AR10, Package ()
 {
 	// PCI Express Port A-D
 	GEN_PCIE_IOAPIC_IRQ(0x27,0x21,0x22,0x23),
@@ -297,7 +297,7 @@ Name (AR10, Package (0x40)
 })
 
 // Socket 0, IIOStack 2 device legacy interrupt routing
-Name (PR20, Package (0x24)
+Name (PR20, Package ()
 {
 	// PCI Express Port A-D on PC02
 	GEN_PCIE_LEGACY_IRQ(),
@@ -326,7 +326,7 @@ Name (PR20, Package (0x24)
 })
 
 // Socket 0, IIOStack 2 device IOAPIC interrupt routing
-Name (AR20, Package (0x24)
+Name (AR20, Package ()
 {
 	// PCI Express Port A-D on PC02
 	GEN_PCIE_IOAPIC_IRQ(0x2F,0x29,0x2A,0x2B),
@@ -355,7 +355,7 @@ Name (AR20, Package (0x24)
 })
 
 // Socket 0, IIOStack 3 device legacy interrupt routing
-Name (PR28, Package (0x20)
+Name (PR28, Package ()
 {
 	// PCI Express Port 3 on PC03
 	GEN_PCIE_LEGACY_IRQ(),
@@ -379,7 +379,7 @@ Name (PR28, Package (0x20)
 })
 
 // Socket 0, IIOStack 3 device IOAPIC interrupt routing
-Name (AR28, Package (0x20)
+Name (AR28, Package ()
 {
 	// PCI Express Port 3 A-D on PC03
 	GEN_PCIE_IOAPIC_IRQ(0x37,0x31,0x32,0x33),
@@ -403,7 +403,7 @@ Name (AR28, Package (0x20)
 })
 
 // Socket 1, IIOStack 0 device legacy interrupt routing
-Name (PR40, Package (0x09)
+Name (PR40, Package ()
 {
 	// DMI
 	Package () { 0x0000FFFF, 0x00, LNKA, 0x00 },
@@ -416,7 +416,7 @@ Name (PR40, Package (0x09)
 })
 
 // Socket 1, IIOStack 0 device IOAPIC interrupt routing
-Name (AR40, Package (0x09)
+Name (AR40, Package ()
 {
 	// DMI
 	Package () { 0x0000FFFF, 0x00, 0x00, 0x4F },
@@ -429,7 +429,7 @@ Name (AR40, Package (0x09)
 })
 
 // Socket 1, IIOStack 1 device legacy interrupt routing
-Name (PR50, Package (0x40)
+Name (PR50, Package ()
 {
 	// PCI Express Port
 	GEN_PCIE_LEGACY_IRQ(),
@@ -455,7 +455,7 @@ Name (PR50, Package (0x40)
 })
 
 // Socket 1, IIOStack 1 device IOAPIC interrupt routing
-Name (AR50, Package (0x40)
+Name (AR50, Package ()
 {
 	// PCI Express Port A-D
 	GEN_PCIE_IOAPIC_IRQ(0x57,0x51,0x52,0x53),
@@ -481,7 +481,7 @@ Name (AR50, Package (0x40)
 })
 
 // Socket 1, IIOStack 2 device legacy interrupt routing
-Name (PR60, Package (0x24)
+Name (PR60, Package ()
 {
 	// PCI Express Port
 	GEN_PCIE_LEGACY_IRQ(),
@@ -500,7 +500,7 @@ Name (PR60, Package (0x24)
 })
 
 // Socket 1, IIOStack 2 device IOAPIC interrupt routing
-Name (AR60, Package (0x24)
+Name (AR60, Package ()
 {
 	// PCI Express Port A-D
 	GEN_PCIE_IOAPIC_IRQ(0x5F,0x59,0x5A,0x5B),
@@ -519,7 +519,7 @@ Name (AR60, Package (0x24)
 })
 
 // Socket 1, IIOStack 3 device legacy interrupt routing
-Name (PR68, Package (0x20)
+Name (PR68, Package ()
 {
 	// PCI Express Port
 	GEN_PCIE_LEGACY_IRQ(),
@@ -535,7 +535,7 @@ Name (PR68, Package (0x20)
 })
 
 // Socket 1, IIOStack 3 device legacy interrupt routing
-Name (AR68, Package (0x20)
+Name (AR68, Package ()
 {
 	// PCI Express Port A-D
 	GEN_PCIE_IOAPIC_IRQ(0x67,0x61,0x62,0x63),

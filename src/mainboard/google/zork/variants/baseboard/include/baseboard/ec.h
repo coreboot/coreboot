@@ -46,6 +46,9 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_SHUTDOWN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
 
+/* EC device events to enable and log in S3 */
+#define MAINBOARD_EC_S3_DEVICE_EVENTS 0
+
 /* Enable LID switch */
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN EC_WAKE_GPI

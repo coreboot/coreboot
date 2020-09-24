@@ -11,6 +11,7 @@ void mainboard_ec_init(void)
 		.log_events = MAINBOARD_EC_LOG_EVENTS,
 		.sci_events = MAINBOARD_EC_SCI_EVENTS,
 		.s3_wake_events = MAINBOARD_EC_S3_WAKE_EVENTS,
+		.s3_device_events = MAINBOARD_EC_S3_DEVICE_EVENTS,
 		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
 	};
 

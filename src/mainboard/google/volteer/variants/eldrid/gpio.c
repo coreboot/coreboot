@@ -154,9 +154,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* S1 : SNDW0_DATA ==> SNDW0_HP_DATA_R */
 	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF1),
 	/* S4 : SNDW2_CLK ==> PCH_DMIC_CAM_SCL_R */
-	PAD_CFG_NF(GPP_S4, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_S4, NONE, DEEP, NF2),
 	/* S5 : SNDW2_DATA ==> PCH_DMIC_CAM_SDA_R */
-	PAD_CFG_NF(GPP_S5, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_S5, NONE, DEEP, NF2),
 
 	/* GPD9: SLP_WLAN# ==> SLP_WLAN_L */
 	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),

@@ -26,32 +26,32 @@ Device (GPIO)
 		/* GPIO Community 0 */
 		CreateDWordField (^RBUF, ^COM0._BAS, BAS0)
 		CreateDWordField (^RBUF, ^COM0._LEN, LEN0)
-		Store (^^PCRB (PID_GPIOCOM0), BAS0)
-		Store (GPIO_BASE_SIZE, LEN0)
+		BAS0 = ^^PCRB (PID_GPIOCOM0)
+		LEN0 = GPIO_BASE_SIZE
 
 		/* GPIO Community 1 */
 		CreateDWordField (^RBUF, ^COM1._BAS, BAS1)
 		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
-		Store (^^PCRB (PID_GPIOCOM1), BAS1)
-		Store (GPIO_BASE_SIZE, LEN1)
+		BAS1 = ^^PCRB (PID_GPIOCOM1)
+		LEN1 = GPIO_BASE_SIZE
 
 		/* GPIO Community 2 */
 		CreateDWordField (^RBUF, ^COM2._BAS, BAS2)
 		CreateDWordField (^RBUF, ^COM2._LEN, LEN2)
-		Store (^^PCRB (PID_GPIOCOM2), BAS2)
-		Store (GPIO_BASE_SIZE, LEN2)
+		BAS2 = ^^PCRB (PID_GPIOCOM2)
+		LEN2 = GPIO_BASE_SIZE
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)
 		CreateDWordField (^RBUF, ^COM4._LEN, LEN4)
-		Store (^^PCRB (PID_GPIOCOM4), BAS4)
-		Store (GPIO_BASE_SIZE, LEN4)
+		BAS4 = ^^PCRB (PID_GPIOCOM4)
+		LEN4 = GPIO_BASE_SIZE
 
 		/* GPIO Community 5 */
 		CreateDWordField (^RBUF, ^COM5._BAS, BAS5)
 		CreateDWordField (^RBUF, ^COM5._LEN, LEN5)
-		Store (^^PCRB (PID_GPIOCOM5), BAS5)
-		Store (GPIO_BASE_SIZE, LEN5)
+		BAS5 = ^^PCRB (PID_GPIOCOM5)
+		LEN5 = GPIO_BASE_SIZE
 
 		Return (RBUF)
 	}
@@ -69,36 +69,37 @@ Device (GPIO)
 Method (GADD, 1, NotSerialized)
 {
 	/* GPIO Community 0 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_G0), LLessEqual (Arg0, GPP_A23)))
+	If ((Arg0 >= GPP_G0) && (Arg0 <= GPP_A23))
 	{
-		Store (PID_GPIOCOM0, Local0)
-		Subtract (Arg0, GPP_A0, Local1)
+		Local0 = PID_GPIOCOM0
+		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_H0), LLessEqual (Arg0, GPP_F19)))
+	If ((Arg0 >= GPP_H0) && (Arg0 <= GPP_F19))
 	{
-		Store (PID_GPIOCOM1, Local0)
-		Subtract (Arg0, GPP_D0, Local1)
+		Local0 = PID_GPIOCOM1
+		Local1 = Arg0 - GPP_D0
 	}
 	/* GPIO Community 2 */
-	If (LAnd (LGreaterEqual (Arg0, GPD0), LLessEqual (Arg0, GPD11)))
+	If ((Arg0 >= GPD0) && (Arg0 <= GPD11))
 	{
-		Store (PID_GPIOCOM2, Local0)
-		Subtract (Arg0, GPD0, Local1)
+		Local0 = PID_GPIOCOM2
+		Local1 = Arg0 - GPD0
 	}
 	/* GPIO Community 4 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPP_E23)))
+	If ((Arg0 >= GPP_C0) && (Arg0 <= GPP_E23))
 	{
-		Store (PID_GPIOCOM4, Local0)
-		Subtract (Arg0, GPP_C0, Local1)
+		Local0 = PID_GPIOCOM4
+		Local1 = Arg0 - GPP_C0
 	}
-	/* GPIO Community 05*/
-	If (LAnd (LGreaterEqual (Arg0, GPP_R0), LLessEqual (Arg0, GPP_S7)))
+	/* GPIO Community 5 */
+	If ((Arg0 >= GPP_R0) && (Arg0 <= GPP_S7))
 	{
-		Store (PID_GPIOCOM5, Local0)
-		Subtract (Arg0, GPP_R0, Local1)
+		Local0 = PID_GPIOCOM5
+		Local1 = Arg0 - GPP_R0
 	}
-	Store (PCRB (Local0), Local2)
-	Add (Local2, PAD_CFG_BASE, Local2)
-	Return (Add (Local2, Multiply (Local1, 16)))
+
+	Local2 = PCRB (Local0)
+	Local2 += PAD_CFG_BASE
+	Return (Local2 + (Local1 * 16))
 }

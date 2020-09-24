@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include <intelblocks/gpio_defs.h>
 
 /*
  * Get GPIO Value
@@ -11,7 +12,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
+	Local0 = (PAD_CFG0_RX_STATE & VAL0) >> PAD_CFG0_RX_STATE_BIT
 
 	Return (Local0)
 }
@@ -27,7 +28,7 @@ Method (GTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = GPIOTXSTATE_MASK & VAL0
+	Local0 = PAD_CFG0_TX_STATE & VAL0
 
 	Return (Local0)
 }
@@ -43,7 +44,7 @@ Method (STXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	VAL0 |= GPIOTXSTATE_MASK
+	VAL0 |= PAD_CFG0_TX_STATE
 }
 
 /*
@@ -57,7 +58,7 @@ Method (CTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	VAL0 &= ~GPIOTXSTATE_MASK
+	VAL0 &= ~PAD_CFG0_TX_STATE
 }
 
 /*
@@ -76,8 +77,8 @@ Method (GPMO, 2, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = ~GPIOPADMODE_MASK & VAL0
-	Arg1 = (Arg1 << GPIOPADMODE_SHIFT) & GPIOPADMODE_MASK
+	Local0 = ~PAD_CFG0_MODE_MASK & VAL0
+	Arg1 = (Arg1 << PAD_CFG0_MODE_SHIFT) & PAD_CFG0_MODE_MASK
 	VAL0 = Local0 | Arg1
 }
 
@@ -97,9 +98,9 @@ Method (GTXE, 2, Serialized)
 	}
 
 	If (Arg1 == 1) {
-		VAL0 &= ~GPIOTXBUFDIS_MASK
+		VAL0 &= ~PAD_CFG0_TX_DISABLE
 	} ElseIf (Arg1 == 0){
-		VAL0 |= GPIOTXBUFDIS_MASK
+		VAL0 |= PAD_CFG0_TX_DISABLE
 	}
 }
 
@@ -119,8 +120,8 @@ Method (GRXE, 2, Serialized)
 	}
 
 	If (Arg1 == 1) {
-		VAL0 &= ~GPIORXBUFDIS_MASK
+		VAL0 &= ~PAD_CFG0_RX_DISABLE
 	} ElseIf (Arg1 == 0){
-		VAL0 |= GPIORXBUFDIS_MASK
+		VAL0 |= PAD_CFG0_RX_DISABLE
 	}
 }

@@ -2,10 +2,15 @@
 
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
-#include <delay.h>
 #include <ec/google/chromeec/ec.h>
-#include <gpio.h>
 #include <sar.h>
+
+#define LTE_SKU		4
+
+static bool is_lte_sku(void)
+{
+	return (google_chromeec_get_board_sku() == LTE_SKU);
+}
 
 void variant_smi_sleep(u8 slp_typ)
 {
@@ -13,16 +18,15 @@ void variant_smi_sleep(u8 slp_typ)
 	 * here for saving one transaction to the EC for getting SKU ID. */
 	if (slp_typ != ACPI_S5)
 		return;
-
-	power_off_lte_module();
+	if (is_lte_sku())
+		power_off_lte_module();
 }
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	const char *filename = NULL;
-	uint32_t sku_id = google_chromeec_get_board_sku();
 
-	if (sku_id != 4)
+	if (!is_lte_sku())
 		filename = "wifi_sar-fleex.hex";
 
 	return filename;

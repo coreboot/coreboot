@@ -14,91 +14,81 @@
 #include <soc/soc_util.h>
 #include <soc/pm.h>
 #include <string.h>
+
 #include "chip.h"
 
-static int acpi_sci_irq(void)
+static void uncore_inject_dsdt(void)
 {
-	int sci_irq = 9;
-	int32_t scis;
+	size_t hob_size;
+	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
+	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
+	assert(hob != NULL && hob_size != 0);
 
-	scis = soc_read_sci_irq_select();
-	scis &= SCI_IRQ_SEL;
-	scis >>= SCI_IRQ_ADJUST;
+	acpigen_write_scope("\\_SB");
+	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
+		IIO_RESOURCE_INSTANCE iio_resource =
+			hob->PlatformData.IIO_resource[socket];
+		for (int stack = 0; stack <= PSTACK2; ++stack) {
+			const STACK_RES *ri = &iio_resource.StackRes[stack];
+			char rtname[16];
+			snprintf(rtname, sizeof(rtname), "RT%02x",
+				(socket*MAX_IIO_STACK)+stack);
 
-	/* Determine how SCI is routed. */
-	switch (scis) {
-	case SCIS_IRQ9:
-	case SCIS_IRQ10:
-	case SCIS_IRQ11:
-		sci_irq = scis - SCIS_IRQ9 + 9;
-		break;
-	case SCIS_IRQ20:
-	case SCIS_IRQ21:
-	case SCIS_IRQ22:
-	case SCIS_IRQ23:
-		sci_irq = scis - SCIS_IRQ20 + 20;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
-		sci_irq = 9;
-		break;
+			acpigen_write_name(rtname);
+			printk(BIOS_DEBUG, "\tCreating ResourceTemplate %s for socket: %d, stack: %d\n",
+				rtname, socket, stack);
+
+			acpigen_write_resourcetemplate_header();
+
+			/* bus resource */
+			acpigen_resource_word(2, 0xc, 0, 0, ri->BusBase, ri->BusLimit,
+				0x0, (ri->BusLimit - ri->BusBase + 1));
+
+			// additional io resources on socket 0 bus 0
+			if (socket == 0 && stack == 0) {
+				/* ACPI 6.4.2.5 I/O Port Descriptor */
+				acpigen_write_io16(0xCF8, 0xCFF, 0x1, 0x8, 1);
+
+				/* IO decode  CF8-CFF */
+				acpigen_resource_word(1, 0xc, 0x3, 0, 0x0000, 0x03AF,
+					0, 0x03B0);
+				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03E0, 0x0CF7,
+					0, 0x0918);
+				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03B0, 0x03BB,
+					0, 0x000C);
+				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03C0, 0x03DF,
+					0, 0x0020);
+			}
+
+			/* IO resource */
+			acpigen_resource_word(1, 0xc, 0x3, 0, ri->PciResourceIoBase,
+				ri->PciResourceIoLimit, 0x0,
+				(ri->PciResourceIoLimit - ri->PciResourceIoBase + 1));
+
+			// additional mem32 resources on socket 0 bus 0
+			if (socket == 0 && stack == 0) {
+				acpigen_resource_dword(0, 0xc, 3, 0, VGA_BASE_ADDRESS,
+					(VGA_BASE_ADDRESS + VGA_BASE_SIZE - 1), 0x0,
+					VGA_BASE_SIZE);
+				acpigen_resource_dword(0, 0xc, 1, 0, SPI_BASE_ADDRESS,
+					(SPI_BASE_ADDRESS + SPI_BASE_SIZE - 1), 0x0,
+					SPI_BASE_SIZE);
+			}
+
+			/* Mem32 resource */
+			acpigen_resource_dword(0, 0xc, 1, 0, ri->PciResourceMem32Base,
+				ri->PciResourceMem32Limit, 0x0,
+				(ri->PciResourceMem32Limit - ri->PciResourceMem32Base + 1));
+
+			/* Mem64 resource */
+			acpigen_resource_qword(0, 0xc, 1, 0, ri->PciResourceMem64Base,
+				ri->PciResourceMem64Limit, 0x0,
+				(ri->PciResourceMem64Limit - ri->PciResourceMem64Base + 1));
+
+			acpigen_write_resourcetemplate_footer();
+		}
 	}
-
-	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
-	return sci_irq;
-}
-
-void acpi_init_gnvs(struct global_nvs *gnvs)
-{
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
-	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
-
-	/* Update the mem console pointer. */
-	if (CONFIG(CONSOLE_CBMEM))
-		gnvs->cbmc = (uint32_t)cbmem_find(CBMEM_ID_CONSOLE);
-}
-
-uint32_t soc_read_sci_irq_select(void)
-{
-	struct device *dev = PCH_DEV_PMC;
-
-	if (!dev)
-		return 0;
-
-	return pci_read_config32(dev, PMC_ACPI_CNT);
-}
-
-acpi_cstate_t *soc_get_cstate_map(size_t *entries)
-{
-	*entries = 0;
-	return NULL;
-}
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-		CONFIG_MMCONF_BASE_ADDRESS, 0, 0, 255);
-	return current;
-}
-
-static unsigned long acpi_madt_irq_overrides(unsigned long current)
-{
-	int sci = acpi_sci_irq();
-	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
-
-	flags |= soc_madt_sci_irq_polarity(sci);
-
-	/* SCI */
-	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
-
-	current +=
-		acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *) current, 0xff, 0x0d, 1);
-
-	return current;
+	acpigen_pop_len();
 }
 
 static unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
@@ -117,228 +107,6 @@ static unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 			num_cpus, cpu->path.apic.apic_id);
 	}
 
-	return current;
-}
-
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	size_t hob_size = 0;
-	const uint8_t fsp_hob_iio_universal_data_guid[16] =
-		FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob;
-	int cur_stack;
-
-	int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
-	int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
-
-	/* Local APICs */
-	current = xeonsp_acpi_create_madt_lapics(current);
-
-	hob = fsp_find_extension_hob_by_guid(fsp_hob_iio_universal_data_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
-
-	cur_stack = 0;
-	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
-		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
-			const STACK_RES *ri =
-				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			// TODO: do we have situation with only bus 0 and one stack?
-			if (ri->BusBase != ri->BusLimit) {
-				assert(cur_stack < ARRAY_SIZE(ioapic_ids));
-				assert(cur_stack < ARRAY_SIZE(gsi_bases));
-				int ioapic_id = ioapic_ids[cur_stack];
-				int gsi_base = gsi_bases[cur_stack];
-				printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
-					"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-					socket, stack,  ioapic_id, ri->IoApicBase, gsi_base);
-				current += acpi_create_madt_ioapic(
-					(acpi_madt_ioapic_t *)current,
-					ioapic_id, ri->IoApicBase, gsi_base);
-				++cur_stack;
-
-				if (socket == 0 && stack == 0) {
-					assert(cur_stack < ARRAY_SIZE(ioapic_ids));
-					assert(cur_stack < ARRAY_SIZE(gsi_bases));
-					ioapic_id = ioapic_ids[cur_stack];
-					gsi_base = gsi_bases[cur_stack];
-					printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
-						"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-						socket, stack,  ioapic_id,
-						ri->IoApicBase + 0x1000, gsi_base);
-					current += acpi_create_madt_ioapic(
-						(acpi_madt_ioapic_t *)current,
-						ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
-					++cur_stack;
-				}
-			}
-		}
-	}
-
-	return acpi_madt_irq_overrides(current);
-}
-
-void generate_t_state_entries(int core, int cores_per_package)
-{
-}
-
-void generate_p_state_entries(int core, int cores_per_package)
-{
-}
-
-void generate_cpu_entries(const struct device *device)
-{
-	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
-	int plen = 6;
-	int total_threads = dev_count_cpu();
-	int threads_per_package = get_threads_per_package();
-	int numcpus = total_threads / threads_per_package;
-
-	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each, totalcores: %d.\n",
-	       numcpus, threads_per_package, total_threads);
-
-	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
-		for (core_id = 0; core_id < threads_per_package; core_id++) {
-			if (core_id > 0) {
-				pcontrol_blk = 0;
-				plen = 0;
-			}
-
-			/* Generate processor \_PR.CPUx */
-			acpigen_write_processor((cpu_id) * threads_per_package +
-						core_id, pcontrol_blk, plen);
-
-			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
-
-			/* TODO: Soc specific power states generation */
-			acpigen_pop_len();
-		}
-	}
-	/* PPKG is usually used for thermal management
-	   of the first and only package. */
-	acpigen_write_processor_package("PPKG", 0, threads_per_package);
-
-	/* Add a method to notify processor nodes */
-	acpigen_write_processor_cnot(threads_per_package);
-}
-
-void acpi_fill_fadt(acpi_fadt_t *fadt)
-{
-	const uint16_t pmbase = ACPI_BASE_ADDRESS;
-
-	fadt->header.revision = get_acpi_table_revision(FADT);
-
-	fadt->sci_int = acpi_sci_irq();
-
-	/* TODO: enabled SMM mode switch when SMM handlers are set up. */
-	if (0 && permanent_smi_handler()) {
-		fadt->smi_cmd = APM_CNT;
-		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	}
-
-	/* Power Control */
-	fadt->pm1a_evt_blk = pmbase + PM1_STS;
-	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
-	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
-	fadt->pm_tmr_blk = pmbase + PM1_TMR;
-	fadt->gpe0_blk = pmbase + GPE0_STS(0);
-
-	/* Control Registers - Length */
-	fadt->pm1_evt_len = 4;
-	fadt->pm1_cnt_len = 2;
-	fadt->pm2_cnt_len = 1;
-	fadt->pm_tmr_len = 4;
-	/* There are 4 GPE0 STS/EN pairs each 32 bits wide. */
-	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
-	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
-	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
-	fadt->duty_offset = 1;
-	fadt->duty_width = 0;
-
-	/* RTC Registers */
-	fadt->day_alrm = 0x0d;
-	fadt->mon_alrm = 0x00;
-	fadt->century = 0x00;
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
-
-	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
-		       ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
-		       ACPI_FADT_SLEEP_TYPE | ACPI_FADT_S4_RTC_WAKE |
-		       ACPI_FADT_PLATFORM_CLOCK;
-
-	/* PM1 Status & PM1 Enable */
-	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_evt_blk.bit_width = 32;
-	fadt->x_pm1a_evt_blk.bit_offset = 0;
-	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_evt_blk.addrl = fadt->pm1a_evt_blk;
-	fadt->x_pm1a_evt_blk.addrh = 0x00;
-
-	/* PM1 Control Registers */
-	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_cnt_blk.bit_width = 16;
-	fadt->x_pm1a_cnt_blk.bit_offset = 0;
-	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_cnt_blk.addrl = fadt->pm1a_cnt_blk;
-	fadt->x_pm1a_cnt_blk.addrh = 0x00;
-
-	/* PM2 Control Registers */
-	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm2_cnt_blk.bit_width = 8;
-	fadt->x_pm2_cnt_blk.bit_offset = 0;
-	fadt->x_pm2_cnt_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_pm2_cnt_blk.addrl = fadt->pm2_cnt_blk;
-	fadt->x_pm2_cnt_blk.addrh = 0x00;
-
-	/* PM1 Timer Register */
-	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm_tmr_blk.bit_width = 32;
-	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
-	fadt->x_pm_tmr_blk.addrh = 0x00;
-
-	/*  General-Purpose Event Registers */
-	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe0_blk.bit_width = 64; /* EventStatus + EventEnable */
-	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
-	fadt->x_gpe0_blk.addrh = 0x00;
-}
-
-static acpi_tstate_t xeon_sp_tss_table[] = {
-	{ 100, 1000, 0, 0x00, 0 },
-	{ 88, 875, 0, 0x1e, 0 },
-	{ 75, 750, 0, 0x1c, 0 },
-	{ 63, 625, 0, 0x1a, 0 },
-	{ 50, 500, 0, 0x18, 0 },
-	{ 38, 375, 0, 0x16, 0 },
-	{ 25, 250, 0, 0x14, 0 },
-	{ 13, 125, 0, 0x12, 0 },
-};
-
-acpi_tstate_t *soc_get_tss_table(int *entries)
-{
-	*entries = ARRAY_SIZE(xeon_sp_tss_table);
-	return xeon_sp_tss_table;
-}
-
-int soc_madt_sci_irq_polarity(int sci)
-{
-	if (sci >= 20)
-		return MP_IRQ_POLARITY_LOW;
-	else
-		return MP_IRQ_POLARITY_HIGH;
-}
-
-unsigned long southbridge_write_acpi_tables(const struct device *device,
-					     unsigned long current,
-					     struct acpi_rsdp *rsdp)
-{
-	current = acpi_write_hpet(device, current, rsdp);
-	current = (ALIGN(current, 16));
-	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;
 }
 
@@ -747,78 +515,250 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	return current;
 }
 
-static void uncore_inject_dsdt(void)
+void acpi_init_gnvs(struct global_nvs *gnvs)
 {
-	size_t hob_size;
-	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
+
+	/* Update the mem console pointer. */
+	if (CONFIG(CONSOLE_CBMEM))
+		gnvs->cbmc = (uint32_t)cbmem_find(CBMEM_ID_CONSOLE);
+}
+
+uint32_t soc_read_sci_irq_select(void)
+{
+	struct device *dev = PCH_DEV_PMC;
+
+	if (!dev)
+		return 0;
+
+	return pci_read_config32(dev, PMC_ACPI_CNT);
+}
+
+int soc_madt_sci_irq_polarity(int sci)
+{
+	if (sci >= 20)
+		return MP_IRQ_POLARITY_LOW;
+	else
+		return MP_IRQ_POLARITY_HIGH;
+}
+
+acpi_cstate_t *soc_get_cstate_map(size_t *entries)
+{
+	*entries = 0;
+	return NULL;
+}
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+		CONFIG_MMCONF_BASE_ADDRESS, 0, 0, 255);
+	return current;
+}
+
+static int acpi_sci_irq(void)
+{
+	int sci_irq = 9;
+	int32_t scis;
+
+	scis = soc_read_sci_irq_select();
+	scis &= SCI_IRQ_SEL;
+	scis >>= SCI_IRQ_ADJUST;
+
+	/* Determine how SCI is routed. */
+	switch (scis) {
+	case SCIS_IRQ9:
+	case SCIS_IRQ10:
+	case SCIS_IRQ11:
+		sci_irq = scis - SCIS_IRQ9 + 9;
+		break;
+	case SCIS_IRQ20:
+	case SCIS_IRQ21:
+	case SCIS_IRQ22:
+	case SCIS_IRQ23:
+		sci_irq = scis - SCIS_IRQ20 + 20;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
+		sci_irq = 9;
+		break;
+	}
+
+	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
+	return sci_irq;
+}
+
+static unsigned long acpi_madt_irq_overrides(unsigned long current)
+{
+	int sci = acpi_sci_irq();
+	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
+
+	/* INT_SRC_OVR */
+	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
+
+	flags |= soc_madt_sci_irq_polarity(sci);
+
+	/* SCI */
+	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
+
+	current +=
+		acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *) current, 0xff, 0x0d, 1);
+
+	return current;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
+{
+	size_t hob_size = 0;
+	const uint8_t fsp_hob_iio_universal_data_guid[16] =
+		FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
+	const IIO_UDS *hob;
+	int cur_stack;
+
+	int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
+	int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
+
+	/* Local APICs */
+	current = xeonsp_acpi_create_madt_lapics(current);
+
+	hob = fsp_find_extension_hob_by_guid(fsp_hob_iio_universal_data_guid, &hob_size);
 	assert(hob != NULL && hob_size != 0);
 
-	acpigen_write_scope("\\_SB");
+	cur_stack = 0;
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
-		IIO_RESOURCE_INSTANCE iio_resource =
-			hob->PlatformData.IIO_resource[socket];
-		for (int stack = 0; stack <= PSTACK2; ++stack) {
-			const STACK_RES *ri = &iio_resource.StackRes[stack];
-			char rtname[16];
-			snprintf(rtname, sizeof(rtname), "RT%02x",
-				(socket*MAX_IIO_STACK)+stack);
+		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
+			const STACK_RES *ri =
+				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
+			// TODO: do we have situation with only bus 0 and one stack?
+			if (ri->BusBase != ri->BusLimit) {
+				assert(cur_stack < ARRAY_SIZE(ioapic_ids));
+				assert(cur_stack < ARRAY_SIZE(gsi_bases));
+				int ioapic_id = ioapic_ids[cur_stack];
+				int gsi_base = gsi_bases[cur_stack];
+				printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
+					"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+					socket, stack,  ioapic_id, ri->IoApicBase, gsi_base);
+				current += acpi_create_madt_ioapic(
+					(acpi_madt_ioapic_t *)current,
+					ioapic_id, ri->IoApicBase, gsi_base);
+				++cur_stack;
 
-			acpigen_write_name(rtname);
-			printk(BIOS_DEBUG, "\tCreating ResourceTemplate %s for socket: %d, stack: %d\n",
-				rtname, socket, stack);
-
-			acpigen_write_resourcetemplate_header();
-
-			/* bus resource */
-			acpigen_resource_word(2, 0xc, 0, 0, ri->BusBase, ri->BusLimit,
-				0x0, (ri->BusLimit - ri->BusBase + 1));
-
-			// additional io resources on socket 0 bus 0
-			if (socket == 0 && stack == 0) {
-				/* ACPI 6.4.2.5 I/O Port Descriptor */
-				acpigen_write_io16(0xCF8, 0xCFF, 0x1, 0x8, 1);
-
-				/* IO decode  CF8-CFF */
-				acpigen_resource_word(1, 0xc, 0x3, 0, 0x0000, 0x03AF,
-					0, 0x03B0);
-				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03E0, 0x0CF7,
-					0, 0x0918);
-				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03B0, 0x03BB,
-					0, 0x000C);
-				acpigen_resource_word(1, 0xc, 0x3, 0, 0x03C0, 0x03DF,
-					0, 0x0020);
+				if (socket == 0 && stack == 0) {
+					assert(cur_stack < ARRAY_SIZE(ioapic_ids));
+					assert(cur_stack < ARRAY_SIZE(gsi_bases));
+					ioapic_id = ioapic_ids[cur_stack];
+					gsi_base = gsi_bases[cur_stack];
+					printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
+						"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+						socket, stack,  ioapic_id,
+						ri->IoApicBase + 0x1000, gsi_base);
+					current += acpi_create_madt_ioapic(
+						(acpi_madt_ioapic_t *)current,
+						ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
+					++cur_stack;
+				}
 			}
-
-			/* IO resource */
-			acpigen_resource_word(1, 0xc, 0x3, 0, ri->PciResourceIoBase,
-				ri->PciResourceIoLimit, 0x0,
-				(ri->PciResourceIoLimit - ri->PciResourceIoBase + 1));
-
-			// additional mem32 resources on socket 0 bus 0
-			if (socket == 0 && stack == 0) {
-				acpigen_resource_dword(0, 0xc, 3, 0, VGA_BASE_ADDRESS,
-					(VGA_BASE_ADDRESS + VGA_BASE_SIZE - 1), 0x0,
-					VGA_BASE_SIZE);
-				acpigen_resource_dword(0, 0xc, 1, 0, SPI_BASE_ADDRESS,
-					(SPI_BASE_ADDRESS + SPI_BASE_SIZE - 1), 0x0,
-					SPI_BASE_SIZE);
-			}
-
-			/* Mem32 resource */
-			acpigen_resource_dword(0, 0xc, 1, 0, ri->PciResourceMem32Base,
-				ri->PciResourceMem32Limit, 0x0,
-				(ri->PciResourceMem32Limit - ri->PciResourceMem32Base + 1));
-
-			/* Mem64 resource */
-			acpigen_resource_qword(0, 0xc, 1, 0, ri->PciResourceMem64Base,
-				ri->PciResourceMem64Limit, 0x0,
-				(ri->PciResourceMem64Limit - ri->PciResourceMem64Base + 1));
-
-			acpigen_write_resourcetemplate_footer();
 		}
 	}
-	acpigen_pop_len();
+
+	return acpi_madt_irq_overrides(current);
+}
+
+void acpi_fill_fadt(acpi_fadt_t *fadt)
+{
+	const uint16_t pmbase = ACPI_BASE_ADDRESS;
+
+	fadt->header.revision = get_acpi_table_revision(FADT);
+
+	fadt->sci_int = acpi_sci_irq();
+
+	/* TODO: enabled SMM mode switch when SMM handlers are set up. */
+	if (0 && permanent_smi_handler()) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	}
+
+	/* Power Control */
+	fadt->pm1a_evt_blk = pmbase + PM1_STS;
+	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
+	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
+	fadt->pm_tmr_blk = pmbase + PM1_TMR;
+	fadt->gpe0_blk = pmbase + GPE0_STS(0);
+
+	/* Control Registers - Length */
+	fadt->pm1_evt_len = 4;
+	fadt->pm1_cnt_len = 2;
+	fadt->pm2_cnt_len = 1;
+	fadt->pm_tmr_len = 4;
+	/* There are 4 GPE0 STS/EN pairs each 32 bits wide. */
+	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
+	fadt->duty_offset = 1;
+	fadt->duty_width = 0;
+
+	/* RTC Registers */
+	fadt->day_alrm = 0x0d;
+	fadt->mon_alrm = 0x00;
+	fadt->century = 0x00;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
+
+	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
+		       ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
+		       ACPI_FADT_SLEEP_TYPE | ACPI_FADT_S4_RTC_WAKE |
+		       ACPI_FADT_PLATFORM_CLOCK;
+
+	/* PM1 Status & PM1 Enable */
+	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm1a_evt_blk.bit_width = 32;
+	fadt->x_pm1a_evt_blk.bit_offset = 0;
+	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
+	fadt->x_pm1a_evt_blk.addrl = fadt->pm1a_evt_blk;
+	fadt->x_pm1a_evt_blk.addrh = 0x00;
+
+	/* PM1 Control Registers */
+	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm1a_cnt_blk.bit_width = 16;
+	fadt->x_pm1a_cnt_blk.bit_offset = 0;
+	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
+	fadt->x_pm1a_cnt_blk.addrl = fadt->pm1a_cnt_blk;
+	fadt->x_pm1a_cnt_blk.addrh = 0x00;
+
+	/* PM2 Control Registers */
+	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm2_cnt_blk.bit_width = 8;
+	fadt->x_pm2_cnt_blk.bit_offset = 0;
+	fadt->x_pm2_cnt_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+	fadt->x_pm2_cnt_blk.addrl = fadt->pm2_cnt_blk;
+	fadt->x_pm2_cnt_blk.addrh = 0x00;
+
+	/* PM1 Timer Register */
+	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm_tmr_blk.bit_width = 32;
+	fadt->x_pm_tmr_blk.bit_offset = 0;
+	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
+	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
+	fadt->x_pm_tmr_blk.addrh = 0x00;
+
+	/*  General-Purpose Event Registers */
+	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_gpe0_blk.bit_width = 64; /* EventStatus + EventEnable */
+	fadt->x_gpe0_blk.bit_offset = 0;
+	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
+	fadt->x_gpe0_blk.addrh = 0x00;
+}
+
+unsigned long southbridge_write_acpi_tables(const struct device *device,
+					     unsigned long current,
+					     struct acpi_rsdp *rsdp)
+{
+	current = acpi_write_hpet(device, current, rsdp);
+	current = (ALIGN(current, 16));
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+	return current;
 }
 
 void southbridge_inject_dsdt(const struct device *device)
@@ -846,4 +786,65 @@ void southbridge_inject_dsdt(const struct device *device)
 
 	// Add IIOStack ACPI Resource Templates
 	uncore_inject_dsdt();
+}
+
+void generate_p_state_entries(int core, int cores_per_package)
+{
+}
+
+static acpi_tstate_t xeon_sp_tss_table[] = {
+	{ 100, 1000, 0, 0x00, 0 },
+	{ 88, 875, 0, 0x1e, 0 },
+	{ 75, 750, 0, 0x1c, 0 },
+	{ 63, 625, 0, 0x1a, 0 },
+	{ 50, 500, 0, 0x18, 0 },
+	{ 38, 375, 0, 0x16, 0 },
+	{ 25, 250, 0, 0x14, 0 },
+	{ 13, 125, 0, 0x12, 0 },
+};
+
+acpi_tstate_t *soc_get_tss_table(int *entries)
+{
+	*entries = ARRAY_SIZE(xeon_sp_tss_table);
+	return xeon_sp_tss_table;
+}
+
+void generate_t_state_entries(int core, int cores_per_package)
+{
+}
+
+void generate_cpu_entries(const struct device *device)
+{
+	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
+	int plen = 6;
+	int total_threads = dev_count_cpu();
+	int threads_per_package = get_threads_per_package();
+	int numcpus = total_threads / threads_per_package;
+
+	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each, totalcores: %d.\n",
+	       numcpus, threads_per_package, total_threads);
+
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (core_id = 0; core_id < threads_per_package; core_id++) {
+			if (core_id > 0) {
+				pcontrol_blk = 0;
+				plen = 0;
+			}
+
+			/* Generate processor \_PR.CPUx */
+			acpigen_write_processor((cpu_id) * threads_per_package +
+						core_id, pcontrol_blk, plen);
+
+			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
+
+			/* TODO: Soc specific power states generation */
+			acpigen_pop_len();
+		}
+	}
+	/* PPKG is usually used for thermal management
+	   of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, threads_per_package);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_processor_cnot(threads_per_package);
 }

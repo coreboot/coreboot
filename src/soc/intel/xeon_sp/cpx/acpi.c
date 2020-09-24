@@ -27,22 +27,6 @@
 
 #define SCI_INT_NUM		9
 
-unsigned long southbridge_write_acpi_tables(const struct device *device,
-	unsigned long current, struct acpi_rsdp *rsdp)
-{
-	current = acpi_write_hpet(device, current, rsdp);
-	current = (ALIGN(current, 16));
-	printk(BIOS_DEBUG, "current = %lx\n", current);
-	return current;
-}
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-		CONFIG_MMCONF_BASE_ADDRESS, 0, 0, 255);
-	return current;
-}
-
 static void uncore_inject_dsdt(void)
 {
 	struct iiostack_resource stack_info = {0};
@@ -109,59 +93,6 @@ static void uncore_inject_dsdt(void)
 	acpigen_pop_len();
 }
 
-void southbridge_inject_dsdt(const struct device *device)
-{
-	struct global_nvs *gnvs;
-
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (!gnvs) {
-		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, 0x2000);
-		if (gnvs)
-			memset(gnvs, 0, sizeof(*gnvs));
-	}
-
-	if (gnvs) {
-		acpi_create_gnvs(gnvs);
-		/* TODO: tell SMI about it, if HAVE_SMI_HANDLER */
-		// apm_control(APM_CNT_GNVS_UPDATE);
-
-		/* Add it to DSDT.  */
-		printk(BIOS_SPEW, "%s injecting NVSA with 0x%x\n", __FILE__, (uint32_t)gnvs);
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (uint32_t)gnvs);
-		acpigen_pop_len();
-	}
-
-	/* Add IIOStack ACPI Resource Templates */
-	uncore_inject_dsdt();
-}
-
-void acpi_create_gnvs(struct global_nvs *gnvs)
-{
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
-	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
-}
-
-static unsigned long acpi_madt_irq_overrides(unsigned long current)
-{
-	int sci = SCI_INT_NUM;
-	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
-
-	flags |= soc_madt_sci_irq_polarity(sci);
-
-	/* SCI */
-	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
-
-	current +=
-		acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *) current, 0xff, 0x0d, 1);
-
-	return current;
-}
-
 static unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
@@ -180,276 +111,6 @@ static unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 	}
 
 	return current;
-}
-
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	int cur_index;
-	struct iiostack_resource stack_info = {0};
-
-	int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
-	int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
-
-	/* Local APICs */
-	current = xeonsp_acpi_create_madt_lapics(current);
-
-	cur_index = 0;
-	get_iiostack_info(&stack_info);
-
-	for (int stack = 0; stack < stack_info.no_of_stacks; ++stack) {
-		const STACK_RES *ri = &stack_info.res[stack];
-		assert(cur_index < ARRAY_SIZE(ioapic_ids));
-		assert(cur_index < ARRAY_SIZE(gsi_bases));
-		int ioapic_id = ioapic_ids[cur_index];
-		int gsi_base = gsi_bases[cur_index];
-		printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
-			"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-			stack,  ioapic_id, ri->IoApicBase, gsi_base);
-		current += acpi_create_madt_ioapic(
-			(acpi_madt_ioapic_t *)current,
-			ioapic_id, ri->IoApicBase, gsi_base);
-		++cur_index;
-
-		/*
-		 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
-		 * Add entry for PCH IOAPIC.
-		 */
-		if (stack == 0) { /* PCH IOAPIC */
-			assert(cur_index < ARRAY_SIZE(ioapic_ids));
-			assert(cur_index < ARRAY_SIZE(gsi_bases));
-			ioapic_id = ioapic_ids[cur_index];
-			gsi_base = gsi_bases[cur_index];
-			printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
-				"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-				stack,  ioapic_id,
-				ri->IoApicBase + 0x1000, gsi_base);
-			current += acpi_create_madt_ioapic(
-				(acpi_madt_ioapic_t *)current,
-				ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
-			++cur_index;
-		}
-	}
-
-	return acpi_madt_irq_overrides(current);
-}
-
-static int calculate_power(int tdp, int p1_ratio, int ratio)
-{
-	u32 m;
-	u32 power;
-
-	/*
-	 * M = ((1.1 - ((p1_ratio - ratio) * 0.00625)) / 1.1) ^ 2
-	 *
-	 * Power = (ratio / p1_ratio) * m * tdp
-	 */
-
-	m = (110000 - ((p1_ratio - ratio) * 625)) / 11;
-	m = (m * m) / 1000;
-
-	power = ((ratio * 100000 / p1_ratio) / 100);
-	power *= (m / 100) * (tdp / 1000);
-	power /= 1000;
-
-	return (int)power;
-}
-
-static void cpx_generate_p_state_entries(int core, int cores_per_package)
-{
-	int ratio_min, ratio_max, ratio_turbo, ratio_step;
-	int coord_type, power_max, power_unit, num_entries;
-	int ratio, power, clock, clock_max;
-	msr_t msr;
-
-	/* Determine P-state coordination type from MISC_PWR_MGMT[0] */
-	msr = rdmsr(MSR_MISC_PWR_MGMT);
-	if (msr.lo & MISC_PWR_MGMT_EIST_HW_DIS)
-		coord_type = SW_ANY;
-	else
-		coord_type = HW_ALL;
-
-	/* Get bus ratio limits and calculate clock speeds */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	ratio_min = (msr.hi >> (40-32)) & 0xff; /* Max Efficiency Ratio */
-
-	/* Determine if this CPU has configurable TDP */
-	if (cpu_config_tdp_levels()) {
-		/* Set max ratio to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		ratio_max = msr.lo & 0xff;
-	} else {
-		/* Max Non-Turbo Ratio */
-		ratio_max = (msr.lo >> 8) & 0xff;
-	}
-	clock_max = ratio_max * CONFIG_CPU_BCLK_MHZ;
-
-	/* Calculate CPU TDP in mW */
-	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
-	power_unit = 2 << ((msr.lo & 0xf) - 1);
-	msr = rdmsr(MSR_PKG_POWER_SKU);
-	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
-
-	/* Write _PCT indicating use of FFixedHW */
-	acpigen_write_empty_PCT();
-
-	/* Write _PPC with no limit on supported P-state */
-	acpigen_write_PPC_NVS();
-
-	/* Write PSD indicating configured coordination type */
-	acpigen_write_PSD_package(core, 1, coord_type);
-
-	/* Add P-state entries in _PSS table */
-	acpigen_write_name("_PSS");
-
-	/* Determine ratio points */
-	ratio_step = PSS_RATIO_STEP;
-	num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
-	if (num_entries > PSS_MAX_ENTRIES) {
-		ratio_step += 1;
-		num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
-	}
-
-	/* P[T] is Turbo state if enabled */
-	if (get_turbo_state() == TURBO_ENABLED) {
-		/* _PSS package count including Turbo */
-		acpigen_write_package(num_entries + 2);
-
-		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
-		ratio_turbo = msr.lo & 0xff;
-
-		/* Add entry for Turbo ratio */
-		acpigen_write_PSS_package(
-			clock_max + 1,		/* MHz */
-			power_max,		/* mW */
-			PSS_LATENCY_TRANSITION,	/* lat1 */
-			PSS_LATENCY_BUSMASTER,	/* lat2 */
-			ratio_turbo << 8,	/* control */
-			ratio_turbo << 8);	/* status */
-	} else {
-		/* _PSS package count without Turbo */
-		acpigen_write_package(num_entries + 1);
-	}
-
-	/* First regular entry is max non-turbo ratio */
-	acpigen_write_PSS_package(
-		clock_max,		/* MHz */
-		power_max,		/* mW */
-		PSS_LATENCY_TRANSITION,	/* lat1 */
-		PSS_LATENCY_BUSMASTER,	/* lat2 */
-		ratio_max << 8,		/* control */
-		ratio_max << 8);	/* status */
-
-	/* Generate the remaining entries */
-	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
-	     ratio >= ratio_min; ratio -= ratio_step) {
-
-		/* Calculate power at this ratio */
-		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * CONFIG_CPU_BCLK_MHZ;
-		//clock = 1;
-		acpigen_write_PSS_package(
-			clock,			/* MHz */
-			power,			/* mW */
-			PSS_LATENCY_TRANSITION,	/* lat1 */
-			PSS_LATENCY_BUSMASTER,	/* lat2 */
-			ratio << 8,		/* control */
-			ratio << 8);		/* status */
-	}
-
-	/* Fix package length */
-	acpigen_pop_len();
-}
-
-void generate_cpu_entries(const struct device *device)
-{
-	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
-	int plen = 6;
-	int total_threads = dev_count_cpu();
-	int threads_per_package = get_threads_per_package();
-	int numcpus = total_threads / threads_per_package;
-
-	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each, totalcores: %d.\n",
-	       numcpus, threads_per_package, total_threads);
-
-	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
-		for (core_id = 0; core_id < threads_per_package; core_id++) {
-			if (core_id > 0) {
-				pcontrol_blk = 0;
-				plen = 0;
-			}
-
-			/* Generate processor \_PR.CPUx */
-			acpigen_write_processor((cpu_id) * threads_per_package +
-						core_id, pcontrol_blk, plen);
-
-			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
-
-			/* Generate P-state tables */
-			cpx_generate_p_state_entries(core_id, threads_per_package);
-			acpigen_pop_len();
-		}
-	}
-	/* PPKG is usually used for thermal management of the first and only package. */
-	acpigen_write_processor_package("PPKG", 0, threads_per_package);
-
-	/* Add a method to notify processor nodes */
-	acpigen_write_processor_cnot(threads_per_package);
-}
-
-int soc_madt_sci_irq_polarity(int sci)
-{
-	if (sci >= 20)
-		return MP_IRQ_POLARITY_LOW;
-	else
-		return MP_IRQ_POLARITY_HIGH;
-}
-
-void acpi_fill_fadt(acpi_fadt_t *fadt)
-{
-
-	const uint16_t pmbase = ACPI_BASE_ADDRESS;
-
-	fadt->header.revision = get_acpi_table_revision(FADT);
-	fadt->sci_int = SCI_INT_NUM;
-
-	fadt->pm1a_evt_blk = pmbase + PM1_STS;
-	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
-
-	fadt->gpe0_blk = pmbase + GPE0_STS(0);
-
-	fadt->pm1_evt_len = 4;
-	fadt->pm1_cnt_len = 2;
-
-	/* GPE0 STS/EN pairs each 32 bits wide. */
-	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
-
-	fadt->duty_offset = 1;
-	fadt->day_alrm = 0xd;
-
-	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED | ACPI_FADT_C2_MP_SUPPORTED |
-			ACPI_FADT_PLATFORM_CLOCK;
-
-	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
-	fadt->x_pm1a_evt_blk.addrl = pmbase + PM1_STS;
-
-	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
-	fadt->x_pm1a_cnt_blk.addrl = pmbase + PM1_CNT;
-
-	if (permanent_smi_handler()) {
-		fadt->smi_cmd = APM_CNT;
-		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	}
-
-	/*  General-Purpose Event Registers */
-	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe0_blk.bit_width = 64; /* EventStatus + EventEnable */
-	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
-	fadt->x_gpe0_blk.addrh = 0;
 }
 
 unsigned long acpi_create_srat_lapics(unsigned long current)
@@ -911,4 +572,343 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	}
 
 	return current;
+}
+
+int soc_madt_sci_irq_polarity(int sci)
+{
+	if (sci >= 20)
+		return MP_IRQ_POLARITY_LOW;
+	else
+		return MP_IRQ_POLARITY_HIGH;
+}
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+		CONFIG_MMCONF_BASE_ADDRESS, 0, 0, 255);
+	return current;
+}
+
+static unsigned long acpi_madt_irq_overrides(unsigned long current)
+{
+	int sci = SCI_INT_NUM;
+	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
+
+	/* INT_SRC_OVR */
+	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
+
+	flags |= soc_madt_sci_irq_polarity(sci);
+
+	/* SCI */
+	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
+
+	current +=
+		acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *) current, 0xff, 0x0d, 1);
+
+	return current;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
+{
+	int cur_index;
+	struct iiostack_resource stack_info = {0};
+
+	int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
+	int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
+
+	/* Local APICs */
+	current = xeonsp_acpi_create_madt_lapics(current);
+
+	cur_index = 0;
+	get_iiostack_info(&stack_info);
+
+	for (int stack = 0; stack < stack_info.no_of_stacks; ++stack) {
+		const STACK_RES *ri = &stack_info.res[stack];
+		assert(cur_index < ARRAY_SIZE(ioapic_ids));
+		assert(cur_index < ARRAY_SIZE(gsi_bases));
+		int ioapic_id = ioapic_ids[cur_index];
+		int gsi_base = gsi_bases[cur_index];
+		printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+			"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+			stack,  ioapic_id, ri->IoApicBase, gsi_base);
+		current += acpi_create_madt_ioapic(
+			(acpi_madt_ioapic_t *)current,
+			ioapic_id, ri->IoApicBase, gsi_base);
+		++cur_index;
+
+		/*
+		 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
+		 * Add entry for PCH IOAPIC.
+		 */
+		if (stack == 0) { /* PCH IOAPIC */
+			assert(cur_index < ARRAY_SIZE(ioapic_ids));
+			assert(cur_index < ARRAY_SIZE(gsi_bases));
+			ioapic_id = ioapic_ids[cur_index];
+			gsi_base = gsi_bases[cur_index];
+			printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+				"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+				stack,  ioapic_id,
+				ri->IoApicBase + 0x1000, gsi_base);
+			current += acpi_create_madt_ioapic(
+				(acpi_madt_ioapic_t *)current,
+				ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
+			++cur_index;
+		}
+	}
+
+	return acpi_madt_irq_overrides(current);
+}
+
+void acpi_fill_fadt(acpi_fadt_t *fadt)
+{
+
+	const uint16_t pmbase = ACPI_BASE_ADDRESS;
+
+	fadt->header.revision = get_acpi_table_revision(FADT);
+	fadt->sci_int = SCI_INT_NUM;
+
+	fadt->pm1a_evt_blk = pmbase + PM1_STS;
+	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;
+
+	fadt->gpe0_blk = pmbase + GPE0_STS(0);
+
+	fadt->pm1_evt_len = 4;
+	fadt->pm1_cnt_len = 2;
+
+	/* GPE0 STS/EN pairs each 32 bits wide. */
+	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
+
+	fadt->duty_offset = 1;
+	fadt->day_alrm = 0xd;
+
+	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED | ACPI_FADT_C2_MP_SUPPORTED |
+			ACPI_FADT_PLATFORM_CLOCK;
+
+	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
+	fadt->x_pm1a_evt_blk.addrl = pmbase + PM1_STS;
+
+	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
+	fadt->x_pm1a_cnt_blk.addrl = pmbase + PM1_CNT;
+
+	if (permanent_smi_handler()) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	}
+
+	/*  General-Purpose Event Registers */
+	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_gpe0_blk.bit_width = 64; /* EventStatus + EventEnable */
+	fadt->x_gpe0_blk.bit_offset = 0;
+	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
+	fadt->x_gpe0_blk.addrh = 0;
+}
+
+unsigned long southbridge_write_acpi_tables(const struct device *device,
+	unsigned long current, struct acpi_rsdp *rsdp)
+{
+	current = acpi_write_hpet(device, current, rsdp);
+	current = (ALIGN(current, 16));
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+	return current;
+}
+
+void acpi_create_gnvs(struct global_nvs *gnvs)
+{
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
+}
+
+void southbridge_inject_dsdt(const struct device *device)
+{
+	struct global_nvs *gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, 0x2000);
+		if (gnvs)
+			memset(gnvs, 0, sizeof(*gnvs));
+	}
+
+	if (gnvs) {
+		acpi_create_gnvs(gnvs);
+		/* TODO: tell SMI about it, if HAVE_SMI_HANDLER */
+		// apm_control(APM_CNT_GNVS_UPDATE);
+
+		/* Add it to DSDT.  */
+		printk(BIOS_SPEW, "%s injecting NVSA with 0x%x\n", __FILE__, (uint32_t)gnvs);
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSA", (uint32_t)gnvs);
+		acpigen_pop_len();
+	}
+
+	/* Add IIOStack ACPI Resource Templates */
+	uncore_inject_dsdt();
+}
+
+static int calculate_power(int tdp, int p1_ratio, int ratio)
+{
+	u32 m;
+	u32 power;
+
+	/*
+	 * M = ((1.1 - ((p1_ratio - ratio) * 0.00625)) / 1.1) ^ 2
+	 *
+	 * Power = (ratio / p1_ratio) * m * tdp
+	 */
+
+	m = (110000 - ((p1_ratio - ratio) * 625)) / 11;
+	m = (m * m) / 1000;
+
+	power = ((ratio * 100000 / p1_ratio) / 100);
+	power *= (m / 100) * (tdp / 1000);
+	power /= 1000;
+
+	return (int)power;
+}
+
+static void cpx_generate_p_state_entries(int core, int cores_per_package)
+{
+	int ratio_min, ratio_max, ratio_turbo, ratio_step;
+	int coord_type, power_max, power_unit, num_entries;
+	int ratio, power, clock, clock_max;
+	msr_t msr;
+
+	/* Determine P-state coordination type from MISC_PWR_MGMT[0] */
+	msr = rdmsr(MSR_MISC_PWR_MGMT);
+	if (msr.lo & MISC_PWR_MGMT_EIST_HW_DIS)
+		coord_type = SW_ANY;
+	else
+		coord_type = HW_ALL;
+
+	/* Get bus ratio limits and calculate clock speeds */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	ratio_min = (msr.hi >> (40-32)) & 0xff; /* Max Efficiency Ratio */
+
+	/* Determine if this CPU has configurable TDP */
+	if (cpu_config_tdp_levels()) {
+		/* Set max ratio to nominal TDP ratio */
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		ratio_max = msr.lo & 0xff;
+	} else {
+		/* Max Non-Turbo Ratio */
+		ratio_max = (msr.lo >> 8) & 0xff;
+	}
+	clock_max = ratio_max * CONFIG_CPU_BCLK_MHZ;
+
+	/* Calculate CPU TDP in mW */
+	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	power_unit = 2 << ((msr.lo & 0xf) - 1);
+	msr = rdmsr(MSR_PKG_POWER_SKU);
+	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
+
+	/* Write _PCT indicating use of FFixedHW */
+	acpigen_write_empty_PCT();
+
+	/* Write _PPC with no limit on supported P-state */
+	acpigen_write_PPC_NVS();
+
+	/* Write PSD indicating configured coordination type */
+	acpigen_write_PSD_package(core, 1, coord_type);
+
+	/* Add P-state entries in _PSS table */
+	acpigen_write_name("_PSS");
+
+	/* Determine ratio points */
+	ratio_step = PSS_RATIO_STEP;
+	num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
+	if (num_entries > PSS_MAX_ENTRIES) {
+		ratio_step += 1;
+		num_entries = ((ratio_max - ratio_min) / ratio_step) + 1;
+	}
+
+	/* P[T] is Turbo state if enabled */
+	if (get_turbo_state() == TURBO_ENABLED) {
+		/* _PSS package count including Turbo */
+		acpigen_write_package(num_entries + 2);
+
+		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
+		ratio_turbo = msr.lo & 0xff;
+
+		/* Add entry for Turbo ratio */
+		acpigen_write_PSS_package(
+			clock_max + 1,		/* MHz */
+			power_max,		/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio_turbo << 8,	/* control */
+			ratio_turbo << 8);	/* status */
+	} else {
+		/* _PSS package count without Turbo */
+		acpigen_write_package(num_entries + 1);
+	}
+
+	/* First regular entry is max non-turbo ratio */
+	acpigen_write_PSS_package(
+		clock_max,		/* MHz */
+		power_max,		/* mW */
+		PSS_LATENCY_TRANSITION,	/* lat1 */
+		PSS_LATENCY_BUSMASTER,	/* lat2 */
+		ratio_max << 8,		/* control */
+		ratio_max << 8);	/* status */
+
+	/* Generate the remaining entries */
+	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
+	     ratio >= ratio_min; ratio -= ratio_step) {
+
+		/* Calculate power at this ratio */
+		power = calculate_power(power_max, ratio_max, ratio);
+		clock = ratio * CONFIG_CPU_BCLK_MHZ;
+		//clock = 1;
+		acpigen_write_PSS_package(
+			clock,			/* MHz */
+			power,			/* mW */
+			PSS_LATENCY_TRANSITION,	/* lat1 */
+			PSS_LATENCY_BUSMASTER,	/* lat2 */
+			ratio << 8,		/* control */
+			ratio << 8);		/* status */
+	}
+
+	/* Fix package length */
+	acpigen_pop_len();
+}
+
+void generate_cpu_entries(const struct device *device)
+{
+	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
+	int plen = 6;
+	int total_threads = dev_count_cpu();
+	int threads_per_package = get_threads_per_package();
+	int numcpus = total_threads / threads_per_package;
+
+	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each, totalcores: %d.\n",
+	       numcpus, threads_per_package, total_threads);
+
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (core_id = 0; core_id < threads_per_package; core_id++) {
+			if (core_id > 0) {
+				pcontrol_blk = 0;
+				plen = 0;
+			}
+
+			/* Generate processor \_PR.CPUx */
+			acpigen_write_processor((cpu_id) * threads_per_package +
+						core_id, pcontrol_blk, plen);
+
+			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
+
+			/* Generate P-state tables */
+			cpx_generate_p_state_entries(core_id, threads_per_package);
+			acpigen_pop_len();
+		}
+	}
+	/* PPKG is usually used for thermal management of the first and only package. */
+	acpigen_write_processor_package("PPKG", 0, threads_per_package);
+
+	/* Add a method to notify processor nodes */
+	acpigen_write_processor_cnot(threads_per_package);
 }

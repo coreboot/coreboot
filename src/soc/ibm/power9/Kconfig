@@ -10,5 +10,14 @@ config SOC_IBM_POWER9
 	  This SoC is the minimal template working on POWER9 Talos II platform.
 
 if SOC_IBM_POWER9
-	# nothing here yet
+
+config SIGNING_KEYS_DIR
+	string "Directory with OpenPower signing keys"
+	default ""
+	help
+	  Specifies path to directory containing hw_key_{a,b,c}.key
+	  and sw_key_p.key files (all in PEM format).  Key name suffixes
+	  correspond to options of create-container from OpenPower
+	  Signing Utils.  By default, test keys are used.
+
 endif

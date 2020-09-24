@@ -65,3 +65,6 @@
 [submodule "src/vendorcode/amd/opensil/genoa_poc/opensil"]
 	path = src/vendorcode/amd/opensil/genoa_poc/opensil
 	url = https://review.coreboot.org/opensil_genoa_poc.git
+[submodule "3rdparty/open-power-signing-utils"]
+	path = 3rdparty/open-power-signing-utils
+	url = https://review.coreboot.org/open-power-signing-utils.git

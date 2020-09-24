@@ -679,6 +679,7 @@ AMDCOMPRESS:=$(objutil)/cbfstool/amdcompress
 CSE_FPT:=$(objutil)/cbfstool/cse_fpt
 CSE_SERGER:=$(objutil)/cbfstool/cse_serger
 ECCTOOL:=$(objutil)/ffs/ecc/ecc
+CREATE_CONTAINER:=$(objutil)/open-power-signing-utils/create-container
 
 $(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
@@ -725,6 +726,12 @@ $(ECCTOOL):
 	cp -r $(top)/3rdparty/ffs $(objutil)
 	cd $(objutil)/ffs && autoreconf -i && ./configure
 	$(MAKE) -C $(objutil)/ffs
+
+$(CREATE_CONTAINER):
+	@printf "    Compile Open-Power SecureBoot Signing Utils\n"
+	cp -r $(top)/3rdparty/open-power-signing-utils $(objutil)
+	cd $(objutil)/open-power-signing-utils && autoreconf -i -Wno-unsupported && ./configure
+	$(MAKE) -C $(objutil)/open-power-signing-utils
 
 APCB_EDIT_TOOL:=$(top)/util/apcb/apcb_edit.py
 
@@ -836,7 +843,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.mk
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL) $(objutil)/supermicro/smcbiosinfo $(CSE_FPT) $(CSE_SERGER) $(AMDFWREAD) $(ECCTOOL)
+tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL) $(objutil)/supermicro/smcbiosinfo $(CSE_FPT) $(CSE_SERGER) $(AMDFWREAD) $(ECCTOOL) $(CREATE_CONTAINER)
 
 ###########################################################################
 # Common recipes for all stages

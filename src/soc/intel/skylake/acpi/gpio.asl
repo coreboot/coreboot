@@ -22,29 +22,28 @@ Device (GPIO)
 		/* GPIO Community 0 */
 		CreateDWordField (^RBUF, ^COM0._BAS, BAS0)
 		CreateDWordField (^RBUF, ^COM0._LEN, LEN0)
-		Store (^^PCRB (PID_GPIOCOM0), BAS0)
-		Store (GPIO_BASE_SIZE, LEN0)
+		BAS0 = ^^PCRB (PID_GPIOCOM0)
+		LEN0 = GPIO_BASE_SIZE
 
 		/* GPIO Community 1 */
 		CreateDWordField (^RBUF, ^COM1._BAS, BAS1)
 		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
-		Store (^^PCRB (PID_GPIOCOM1), BAS1)
-		Store (GPIO_BASE_SIZE, LEN1)
+		BAS1 = ^^PCRB (PID_GPIOCOM1)
+		LEN1 = GPIO_BASE_SIZE
 
 		/* GPIO Community 3 */
 		CreateDWordField (^RBUF, ^COM3._BAS, BAS3)
 		CreateDWordField (^RBUF, ^COM3._LEN, LEN3)
-		Store (^^PCRB (PID_GPIOCOM3), BAS3)
-		Store (GPIO_BASE_SIZE, LEN3)
+		BAS3 = ^^PCRB (PID_GPIOCOM3)
+		LEN3 = GPIO_BASE_SIZE
 
 		CreateDWordField (^RBUF, ^GIRQ._INT, IRQN)
-		And (^^PCRR (PID_GPIOCOM0, GPIO_MISCCFG),
-			GPIO_DRIVER_IRQ_ROUTE_MASK, Local0)
+		Local0 = ^^PCRR (PID_GPIOCOM0, GPIO_MISCCFG) & GPIO_DRIVER_IRQ_ROUTE_MASK
 
-		If (LEqual (Local0, GPIO_DRIVER_IRQ_ROUTE_IRQ14)) {
-			Store (GPIO_IRQ14, IRQN)
+		If (Local0 == GPIO_DRIVER_IRQ_ROUTE_IRQ14) {
+			IRQN = GPIO_IRQ14
 		} Else {
-			Store (GPIO_IRQ15, IRQN)
+			IRQN = GPIO_IRQ15
 		}
 
 		Return (RBUF)
@@ -64,44 +63,45 @@ Method (GADD, 1, NotSerialized)
 {
 #if CONFIG(SKYLAKE_SOC_PCH_H)
 	/* GPIO Community 0 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
+	If ((Arg0 >= GPP_A0) && (Arg0 <= GPP_B23))
 	{
-		Store (PID_GPIOCOM0, Local0)
-		Subtract (Arg0, GPP_A0, Local1)
+		Local0 = PID_GPIOCOM0
+		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPP_H23)))
+	If ((Arg0 >= GPP_C0) && (Arg0 <= GPP_H23))
 	{
-		Store (PID_GPIOCOM1, Local0)
-		Subtract (Arg0, GPP_C0, Local1)
+		Local0 = PID_GPIOCOM1
+		Local1 = Arg0 - GPP_C0
 	}
-	/* GPIO Community 03 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_I0), LLessEqual (Arg0, GPP_I10)))
+	/* GPIO Community 3 */
+	If ((Arg0 >= GPP_I0) && (Arg0 <= GPP_I10))
 	{
-		Store (PID_GPIOCOM3, Local0)
-		Subtract (Arg0, GPP_I0, Local1)
+		Local0 = PID_GPIOCOM3
+		Local1 = Arg0 - GPP_I0
 	}
 #else
 	/* GPIO Community 0 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
+	If ((Arg0 >= GPP_A0) && (Arg0 <= GPP_B23))
 	{
-		Store (PID_GPIOCOM0, Local0)
-		Subtract (Arg0, GPP_A0, Local1)
+		Local0 = PID_GPIOCOM0
+		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPP_E23)))
+	If ((Arg0 >= GPP_C0) && (Arg0 <= GPP_E23))
 	{
-		Store (PID_GPIOCOM1, Local0)
-		Subtract (Arg0, GPP_C0, Local1)
+		Local0 = PID_GPIOCOM1
+		Local1 = Arg0 - GPP_C0
 	}
-	/* GPIO Community 03*/
-	If (LAnd (LGreaterEqual (Arg0, GPP_F0), LLessEqual (Arg0, GPP_G7)))
+	/* GPIO Community 3 */
+	If ((Arg0 >= GPP_F0) && (Arg0 <= GPP_G7))
 	{
-		Store (PID_GPIOCOM3, Local0)
-		Subtract (Arg0, GPP_F0, Local1)
+		Local0 = PID_GPIOCOM3
+		Local1 = Arg0 - GPP_F0
 	}
 #endif /* CONFIG_SKYLAKE_SOC_PCH_H */
-	Store (PCRB (Local0), Local2)
-	Add (Local2, PAD_CFG_BASE, Local2)
-	Return (Add (Local2, Multiply (Local1, 8)))
+
+	Local2 = PCRB (Local0)
+	Local2 += PAD_CFG_BASE
+	Return (Local2 + (Local1 * 8))
 }

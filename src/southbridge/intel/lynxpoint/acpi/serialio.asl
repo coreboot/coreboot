@@ -162,9 +162,8 @@ Device (I2C0)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x18, 4, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x19, 5, Width32Bit, DMA2) // Rx
+		FixedDMA (0x18, 4, Width32Bit, DMA1) // Tx
+		FixedDMA (0x19, 5, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -243,9 +242,8 @@ Device (I2C1)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x1A, 6, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x1B, 7, Width32Bit, DMA2) // Rx
+		FixedDMA (0x1A, 6, Width32Bit, DMA1) // Tx
+		FixedDMA (0x1B, 7, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -358,9 +356,8 @@ Device (SPI1)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x10, 0, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x11, 1, Width32Bit, DMA2) // Rx
+		FixedDMA (0x10, 0, Width32Bit, DMA1) // Tx
+		FixedDMA (0x11, 1, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -408,9 +405,8 @@ Device (UAR0)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x16, 2, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x17, 3, Width32Bit, DMA2) // Rx
+		FixedDMA (0x16, 2, Width32Bit, DMA1) // Tx
+		FixedDMA (0x17, 3, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)

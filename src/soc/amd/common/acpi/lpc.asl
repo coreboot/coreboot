@@ -41,10 +41,10 @@ Device(LPCB) {
 		{
 			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
 			CreateDwordField(^CRS,^BAR1._BAS,ESPB)	// Field to hold eSPI base address
-			And(BAR, 0xffffff00, Local0)
-			Store(Local0, SPIB)	// SPI base address mapped
-			Add(Local0, 0x10000, Local1)
-			Store(Local1, ESPB)	// eSPI base address mapped
+			Local0 = BAR & 0xffffff00
+			SPIB = Local0	// SPI base address mapped
+			Local1 = Local0 + 0x10000
+			ESPB = Local1	// eSPI base address mapped
 			Return(CRS)
 		}
 	}

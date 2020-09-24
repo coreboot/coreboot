@@ -6,14 +6,14 @@
 Method (GPAD, 0x1)
 {
 	/* Arg0 - GPIO pin number */
-	Return (Add(Multiply(Arg0, 4), ACPIMMIO_GPIO0_BASE))
+	Return ((Arg0 * 4) + ACPIMMIO_GPIO0_BASE)
 }
 
 /* Read pin control dword */
 Method (GPRD, 0x1, Serialized)
 {
 	/* Arg0 - GPIO pin control MMIO address */
-	Store (Arg0, Local0)
+	Local0 = Arg0
 	OperationRegion (GPDW, SystemMemory, Local0, 4)
 	Field (GPDW, AnyAcc, NoLock, Preserve) {
 		TEMP, 32
@@ -26,12 +26,12 @@ Method (GPWR, 0x2, Serialized)
 {
 	/* Arg0 - GPIO pin control MMIO address */
 	/* Arg1 - Value for control register */
-	Store (Arg0, Local0)
+	Local0 = Arg0
 	OperationRegion (GPDW, SystemMemory, Local0, 4)
 	Field (GPDW, AnyAcc, NoLock, Preserve) {
 		TEMP,32
 	}
-	Store (Arg1, TEMP)
+	TEMP = Arg1
 }
 
 Method (GPGB, 0x2)
@@ -41,8 +41,8 @@ Method (GPGB, 0x2)
 	 * Arg0 - GPIO pin control MMIO address
 	 * Arg1 - Desired byte (0 through 3)
 	 */
-	Store (Multiply(Arg1, 8), Local2)
-	Return (And(ShiftRight(GPRD(Arg0), Local2), 0x000000FF))
+	Local2 = Arg1 * 8
+	Return ((GPRD (Arg0) >> Local2) & 0x000000FF)
 }
 
 Method (GPSB, 0x3)
@@ -53,9 +53,9 @@ Method (GPSB, 0x3)
 	 * Arg1 - Desired byte (0 through 3)
 	 * Arg2 - Value
 	 */
-	Store (Multiply(Arg1, 8), Local2)
-	And(ShiftRight(GPRD(Arg0), Local2), 0xFFFFFF00, Local3)
-	ShiftLeft (Or(And(Arg2, 0x000000FF),Local3), Local2, Local4)
+	Local2 = Arg1 * 8
+	Local3 = (GPRD(Arg0) >> Local2) & 0xFFFFFF00
+	Local4 = ((Arg2 & 0x000000FF) | Local3) << Local2
 	GPWR (Arg0, Local4)
 }
 

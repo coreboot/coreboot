@@ -48,16 +48,16 @@ ThermalZone (TZ00) {
 	Name (_STR, Unicode ("AMD CPU Core Thermal Sensor"))
 
 	Method (_STA) {
-		If (LEqual (HTCE, One)) {
+		If (HTCE == 1) {
 			Return (0x0F)
 		}
-		Return (Zero)
+		Return (0)
 	}
 
 	Method (_TMP) {	/* Current temp in tenths degree Kelvin. */
-		Multiply (TNOW, 10, Local0)
-		ShiftRight (Local0, 3, Local0)
-		Return (Add (Local0, K10TEMP_KELVIN_OFFSET))
+		Local0 = TNOW * 10
+		Local0 >>= 3
+		Return (Local0 + K10TEMP_KELVIN_OFFSET)
 	}
 
 	/*
@@ -65,17 +65,17 @@ ThermalZone (TZ00) {
 	 * P-State and power consumption in order to cool down.
 	 */
 	Method (_PSV) {	/* Passive temp in tenths degree Kelvin. */
-		Multiply (TLMT, 10, Local0)
-		ShiftRight (Local0, 1, Local0)
-		Add (Local0, K10TEMP_TLIMIT_OFFSET, Local0)
-		Return (Add (Local0, K10TEMP_KELVIN_OFFSET))
+		Local0 = TLMT * 10
+		Local0 >>= 1
+		Local0 += K10TEMP_TLIMIT_OFFSET
+		Return (Local0 + K10TEMP_KELVIN_OFFSET)
 	}
 
 	Method (_HOT) {	/* Hot temp in tenths degree Kelvin. */
-		Return (Add (_PSV, K10TEMP_HOT_OFFSET))
+		Return (_PSV + K10TEMP_HOT_OFFSET)
 	}
 
 	Method (_CRT) {	/* Critical temp in tenths degree Kelvin. */
-		Return (Add (_HOT, K10TEMP_HOT_OFFSET))
+		Return (_HOT + K10TEMP_HOT_OFFSET)
 	}
 }

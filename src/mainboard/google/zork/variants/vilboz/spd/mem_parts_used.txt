@@ -7,8 +7,6 @@
 # See util/spd_tools/ddr4/README.md for more details and instructions.
 
 # Part Name, Fixed ID (optional)
-H5AN8G6NCJR-VKC, 0
-H5ANAG6NCMR-VKC, 1
 K4A8G165WC-BCWE, 2
 H5AN8G6NDJR-XNC, 3
 MT40A512M16TB-062E:J, 4

@@ -12,6 +12,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <boot/tables.h>
+#include <security/intel/txt/txt_register.h>
 
 #include "chip.h"
 #include "haswell.h"
@@ -162,7 +163,8 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 	}
 }
 
-/* Host Memory Map:
+/*
+ * Host Memory Map:
  *
  * +--------------------------+ TOUUD
  * |                          |
@@ -175,6 +177,8 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
  * +--------------------------+ BGSM
  * |     TSEG                 |
  * +--------------------------+ TSEGMB
+ * |     DPR                  |
+ * +--------------------------+ (DPR top - DPR size)
  * |     Usage DRAM           |
  * +--------------------------+ 0
  *
@@ -285,6 +289,12 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
 
+	/* The DPR register is special */
+	const union dpr_register dpr = {
+		.raw = pci_read_config32(dev, DPR),
+	};
+	printk(BIOS_DEBUG, "MC MAP: DPR: 0x%x\n", dpr.raw);
+
 	/*
 	 * These are the host memory ranges that should be added:
 	 * - 0 -> 0xa0000:    cacheable
@@ -318,10 +328,19 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	size_k = (0xa0000 >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> TSEG */
+	/* 0xc0000 -> DPR base */
 	base_k = 0xc0000 >> 10;
-	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
+	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - (base_k + dpr.size);
 	ram_resource(dev, index++, base_k, size_k);
+
+	/* DPR base -> TSEG */
+	if (dpr.size) {
+		resource = new_resource(dev, index++);
+		resource->base = (dpr.top - dpr.size) * MiB;
+		resource->size = dpr.size * MiB;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_STORED | IORESOURCE_CACHEABLE |
+				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
 
 	/* TSEG -> BGSM */
 	resource = new_resource(dev, index++);

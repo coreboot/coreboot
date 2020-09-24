@@ -9,27 +9,56 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <security/intel/txt/txt_register.h>
+
 #include "haswell.h"
 
-static uintptr_t smm_region_start(void)
+static uintptr_t northbridge_get_tseg_base(void)
+{
+	return ALIGN_DOWN(pci_read_config32(HOST_BRIDGE, TSEG), 1 * MiB);
+}
+
+static size_t northbridge_get_tseg_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
+}
+
+/*
+ * Return the topmost memory address below 4 GiB available for general
+ * use, from software's view of memory. Do not confuse this with TOLUD,
+ * which applies to the DRAM as viewed by the memory controller itself.
+ */
+static uintptr_t top_of_low_usable_memory(void)
 {
 	/*
-	 * Base of TSEG is top of usable DRAM below 4GiB. The register has
-	 * 1 MiB alignment.
+	 * Base of DPR is top of usable DRAM below 4 GiB. However, DPR
+	 * isn't always enabled. Unlike most memory map registers, the
+	 * DPR register stores top of DPR instead of its base address.
+	 * Unless binary-patched, Haswell MRC.bin does not enable DPR.
+	 * Top of DPR is R/O, and mirrored from TSEG base by hardware.
 	 */
-	uintptr_t tom = pci_read_config32(HOST_BRIDGE, TSEG);
-	return ALIGN_DOWN(tom, 1 * MiB);
+	uintptr_t tolum = northbridge_get_tseg_base();
+
+	const union dpr_register dpr = {
+		.raw = pci_read_config32(HOST_BRIDGE, DPR),
+	};
+
+	/* Subtract DMA Protected Range size if enabled */
+	if (dpr.epm)
+		tolum -= dpr.size * MiB;
+
+	return tolum;
 }
 
 void *cbmem_top_chipset(void)
 {
-	return (void *)smm_region_start();
+	return (void *)top_of_low_usable_memory();
 }
 
 void smm_region(uintptr_t *start, size_t *size)
 {
-	*start = smm_region_start();
-	*size = CONFIG_SMM_TSEG_SIZE;
+	*start = northbridge_get_tseg_base();
+	*size = northbridge_get_tseg_size();
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

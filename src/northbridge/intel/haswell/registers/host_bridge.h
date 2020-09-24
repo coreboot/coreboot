@@ -25,6 +25,9 @@
 
 #define PAVPC		0x58
 #define DPR		0x5c
+#define  DPR_EPM	(1 << 2)
+#define  DPR_PRS	(1 << 1)
+#define  DPR_SIZE_MASK	0xff0
 
 #define PCIEXBAR	0x60
 #define DMIBAR		0x68

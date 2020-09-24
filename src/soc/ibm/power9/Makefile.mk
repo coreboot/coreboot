@@ -14,4 +14,9 @@ ramstage-y += chip.c
 ramstage-y += rom_media.c
 ramstage-y += timer.c
 
+files_added:: $(obj)/coreboot.rom.ecc
+
+$(obj)/coreboot.rom.ecc: $(obj)/coreboot.rom | $(ECCTOOL)
+	$(ECCTOOL) --inject $< --output $@ --p8
+
 endif

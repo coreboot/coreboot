@@ -636,7 +636,7 @@ endif
 
 additional-dirs += $(objutil)/cbfstool $(objutil)/ifdtool \
 		   $(objutil)/options $(objutil)/amdfwtool \
-		   $(objutil)/cbootimage
+		   $(objutil)/cbootimage $(objutil)/ffs
 
 export $(COREBOOT_EXPORTS)
 
@@ -678,6 +678,7 @@ IFITTOOL:=$(objutil)/cbfstool/ifittool
 AMDCOMPRESS:=$(objutil)/cbfstool/amdcompress
 CSE_FPT:=$(objutil)/cbfstool/cse_fpt
 CSE_SERGER:=$(objutil)/cbfstool/cse_serger
+ECCTOOL:=$(objutil)/ffs/ecc/ecc
 
 $(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
@@ -718,6 +719,12 @@ IFDTOOL:=$(objutil)/ifdtool/ifdtool
 
 AMDFWTOOL:=$(objutil)/amdfwtool/amdfwtool
 AMDFWREAD:=$(objutil)/amdfwtool/amdfwread
+
+$(ECCTOOL):
+	@printf "    Compile ECCTOOL\n"
+	cp -r $(top)/3rdparty/ffs $(objutil)
+	cd $(objutil)/ffs && autoreconf -i && ./configure
+	$(MAKE) -C $(objutil)/ffs
 
 APCB_EDIT_TOOL:=$(top)/util/apcb/apcb_edit.py
 
@@ -829,7 +836,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.mk
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL) $(objutil)/supermicro/smcbiosinfo $(CSE_FPT) $(CSE_SERGER) $(AMDFWREAD)
+tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL) $(objutil)/supermicro/smcbiosinfo $(CSE_FPT) $(CSE_SERGER) $(AMDFWREAD) $(ECCTOOL)
 
 ###########################################################################
 # Common recipes for all stages

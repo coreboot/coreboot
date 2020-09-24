@@ -38,6 +38,7 @@ chip soc/intel/tigerlake
 				register "desc" = ""Right Speaker Amp""
 				register "name" = ""MAXR""
 				device i2c 31 on
+					probe AUDIO MAX98373_ALC5682I_I2S_UP4
 				end
 			end
 			chip drivers/i2c/max98373
@@ -47,6 +48,7 @@ chip soc/intel/tigerlake
 				register "desc" = ""Left Speaker Amp""
 				register "name" = ""MAXL""
 				device i2c 32 on
+					probe AUDIO MAX98373_ALC5682I_I2S_UP4
 				end
 			end
 		end # I2C #0			0xA0E8

@@ -129,7 +129,6 @@ static void usb_xhci_reset_usb3(pci_devfn_t dev, int all)
 /* Handler for XHCI controller on entry to S3/S4/S5 */
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 {
-	u16 reg16;
 	u32 reg32;
 	u8 *mem_base = usb_xhci_mem_base(dev);
 	u8 is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
@@ -138,18 +137,13 @@ void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 		return;
 
 	/* Set D0 state */
-	reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
-	reg16 &= ~XHCI_PWR_CTL_SET_MASK;
-	reg16 |= XHCI_PWR_CTL_SET_D0;
-	pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
+	pci_update_config16(dev, XHCI_PWR_CTL_STS, ~XHCI_PWR_CTL_SET_MASK, XHCI_PWR_CTL_SET_D0);
 
 	if (!is_broadwell) {
 		/* This WA is only for lpt */
 
 		/* Clear PCI 0xB0[14:13] */
-		reg32 = pci_read_config32(dev, 0xb0);
-		reg32 &= ~((1 << 14) | (1 << 13));
-		pci_write_config32(dev, 0xb0, reg32);
+		pci_and_config32(dev, 0xb0, ~((1 << 14) | (1 << 13)));
 
 		/* Clear MMIO 0x816c[14,2] */
 		reg32 = read32(mem_base + 0x816c);

@@ -240,7 +240,7 @@
 #define GPD11			182
 #define GPD_INPUT3VSEL		183
 #define GPD_SLP_LANB		184
-#define GPD__SLP_SUSB		185
+#define GPD_SLP_SUSB		185
 #define GPD_WAKEB		186
 #define GPD_DRAM_RESETB		187
 

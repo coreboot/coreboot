@@ -283,8 +283,7 @@ static void pcie_enable_clock_gating(void)
 		/* Update PECR1 register. */
 		pci_or_config8(dev, 0xe8, 1);
 
-		/* FIXME: Are we supposed to update this register with a constant boolean? */
-		pci_update_config8(dev, 0x324, ~(1 << 5), (1 < 5));
+		pci_or_config8(dev, 0x324, 1 << 5);
 
 		/* Per-Port CLKREQ# handling. */
 		if (is_lp && gpio_is_native(18 + rp - 1))

@@ -43,7 +43,7 @@ Method (STXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	VAL0 = PAD_CFG0_TX_STATE | VAL0
+	VAL0 |= PAD_CFG0_TX_STATE
 }
 
 /*
@@ -57,7 +57,7 @@ Method (CTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	VAL0 = ~PAD_CFG0_TX_STATE & VAL0
+	VAL0 &= ~PAD_CFG0_TX_STATE
 }
 
 /*
@@ -97,9 +97,9 @@ Method (GTXE, 2, Serialized)
 	}
 
 	If (Arg1 == 1) {
-		VAL0 = ~PAD_CFG0_TX_DISABLE & VAL0
+		VAL0 &= ~PAD_CFG0_TX_DISABLE
 	} ElseIf (Arg1 == 0){
-		VAL0 = PAD_CFG0_TX_DISABLE | VAL0
+		VAL0 &= PAD_CFG0_TX_DISABLE
 	}
 }
 
@@ -119,8 +119,8 @@ Method (GRXE, 2, Serialized)
 	}
 
 	If (Arg1 == 1) {
-		VAL0 = ~PAD_CFG0_RX_DISABLE & VAL0
+		VAL0 &= ~PAD_CFG0_RX_DISABLE
 	} ElseIf (Arg1 == 0){
-		VAL0 = PAD_CFG0_RX_DISABLE | VAL0
+		VAL0 |= PAD_CFG0_RX_DISABLE
 	}
 }

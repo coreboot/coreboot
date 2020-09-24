@@ -14,8 +14,9 @@ Delta Lake server is a single socket Cooper Lake Scalable Processor server.
 Yosemite-V3 has multiple configurations. Depending on configurations, it may
 host up to 4 Delta Lake servers in one sled.
 
-Yosemite-V3 and Delta Lake are currently in DVT phase. Facebook, Intel and partners
-jointly develop FSP/coreboot/LinuxBoot stack on Delta Lake as an alternative solution.
+The Yosemite-V3 program has reached DVT exit. Facebook, Intel and partners
+jointly develop FSP/coreboot/LinuxBoot stack on Delta Lake as an alternative
+solution. This development is moving toward EVT exit equivalent status.
 
 ## Required blobs
 
@@ -60,7 +61,6 @@ as initramfs.
     - Type 8 -- Port Connector Information
     - Type 9 -- PCI Slot Information
     - Type 11 -- OEM String
-    - Type 13 -- BIOS Language Information
     - Type 32 -- System Boot Information
     - Type 38 -- IPMI Device Information
     - Type 127 -- End-of-Table
@@ -87,12 +87,19 @@ as initramfs.
 - Power button
 - localboot
 - netboot from IPv6
+- TPM
 
 ## Stress/performance tests passed
-- OS warm reboot overnight (6 hours)
+- OS warm reboot (300 cycles)
+- DC reboot (300 cycles)
+- AC reboot (300 cycle)
 - Mprime test (6 hours)
+- StressAppTest (6 hours)
+- Ptugen (6 hours)
 - MLC (Intel Memory Latency Check)
 - Linkpack
+- Iperf(IPv6)
+- FIO
 
 ## Firmware configurations
 [ChromeOS VPD] is used to store most of the firmware configurations.
@@ -105,10 +112,9 @@ VPD variables supported are:
 - DeltaLake specific VPDs: check mb/ocp/deltalake/vpd.h.
 
 ## Known issues
-- ME based power capping. This is a bug in ME. An IPS ticket is filed
-  with Intel.
-- HECI is not set up correctly, so BMC is not able to get PCH and DIMM
-  temperature sensor readings. An IPS ticket is filed.
+- spsInfoLinux64 command fail to return ME version.
+- fwts test failures related to mtrr.
+- kernel error message related to SleepButton ACPI event.
 
 ## Feature gaps
 - SMBIOS:
@@ -116,8 +122,8 @@ VPD variables supported are:
     - Type 17 -- Memory Device
     - Type 19 -- Memory Array Mapped Address
     - Type 41 -- Onboard Devices Extended Information
-- Hardware error injection, detection, reporting
-- PFR/CBnT
+- Verified measurement through CBnT
+- Boot guard of CBnT
 - RO_VPD region as well as other RO regions are not write protected.
 
 ## Technology

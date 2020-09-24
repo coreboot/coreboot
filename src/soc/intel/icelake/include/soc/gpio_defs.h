@@ -257,6 +257,4 @@
 #define GPI_SMI_EN_0				0x1A0
 #define PAD_CFG_BASE				0x600
 
-#define GPIORXSTATE_MASK			0x1
-#define GPIORXSTATE_SHIFT			1
 #endif

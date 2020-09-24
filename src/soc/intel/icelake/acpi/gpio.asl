@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include <intelblocks/gpio_defs.h>
 #include <soc/gpio_defs.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
@@ -114,7 +115,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
+	Local0 = (PAD_CFG0_RX_STATE & VAL0) >> PAD_CFG0_RX_STATE_BIT
 
 	Return (Local0)
 }

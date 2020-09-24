@@ -96,7 +96,7 @@ void pch_iobp_write(u32 address, u32 data)
 		return;
 	}
 
-	printk(BIOS_INFO, "IOBP: set 0x%08x to 0x%08x\n", address, data);
+	printk(BIOS_SPEW, "IOBP: set 0x%08x to 0x%08x\n", address, data);
 }
 
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)

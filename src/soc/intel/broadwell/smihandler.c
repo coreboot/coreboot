@@ -133,6 +133,7 @@ static void southbridge_smi_sleep(void)
 	u32 reg32;
 	u8 slp_typ;
 	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
+	u16 pmbase = get_pmbase();
 
 	/* save and recover RTC port values */
 	u8 tmp70, tmp72;
@@ -146,7 +147,7 @@ static void southbridge_smi_sleep(void)
 	disable_smi(SLP_SMI_EN);
 
 	/* Figure out SLP_TYP */
-	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = acpi_sleep_from_pm1(reg32);
 
@@ -225,7 +226,7 @@ static void southbridge_smi_sleep(void)
 	 * the line above. However, if we entered sleep state S1 and wake
 	 * up again, we will continue to execute code in this function.
 	 */
-	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	reg32 = inl(pmbase + PM1_CNT);
 	if (reg32 & SCI_EN) {
 		/* The OS is not an ACPI OS, so we set the state to S0 */
 		disable_pm1_control(SLP_EN | SLP_TYP);
@@ -393,7 +394,7 @@ static void southbridge_smi_gpi(void)
 
 static void southbridge_smi_mc(void)
 {
-	u32 reg32 = inl(ACPI_BASE_ADDRESS + SMI_EN);
+	u32 reg32 = inl(get_pmbase() + SMI_EN);
 
 	/* Are microcontroller SMIs enabled? */
 	if ((reg32 & MCSMI_EN) == 0)
@@ -436,7 +437,7 @@ static void southbridge_smi_tco(void)
 
 static void southbridge_smi_periodic(void)
 {
-	u32 reg32 = inl(ACPI_BASE_ADDRESS + SMI_EN);
+	u32 reg32 = inl(get_pmbase() + SMI_EN);
 
 	/* Are periodic SMIs enabled? */
 	if ((reg32 & PERIODIC_EN) == 0)

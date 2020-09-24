@@ -19,6 +19,12 @@
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <security/vboot/vbnv.h>
+#include <stdint.h>
+
+static inline uint16_t get_gpiobase(void)
+{
+	return GPIO_BASE_ADDRESS;
+}
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -59,17 +65,17 @@ static void print_gpio_status(u32 status, int start)
 /* Enable events in PM1 control register */
 void enable_pm1_control(u32 mask)
 {
-	u32 pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	u32 pm1_cnt = inl(get_pmbase() + PM1_CNT);
 	pm1_cnt |= mask;
-	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
+	outl(pm1_cnt, get_pmbase() + PM1_CNT);
 }
 
 /* Disable events in PM1 control register */
 void disable_pm1_control(u32 mask)
 {
-	u32 pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	u32 pm1_cnt = inl(get_pmbase() + PM1_CNT);
 	pm1_cnt &= ~mask;
-	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
+	outl(pm1_cnt, get_pmbase() + PM1_CNT);
 }
 
 /*
@@ -79,8 +85,8 @@ void disable_pm1_control(u32 mask)
 /* Clear and return PM1 status register */
 static u16 reset_pm1_status(void)
 {
-	u16 pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
-	outw(pm1_sts, ACPI_BASE_ADDRESS + PM1_STS);
+	u16 pm1_sts = inw(get_pmbase() + PM1_STS);
+	outw(pm1_sts, get_pmbase() + PM1_STS);
 	return pm1_sts;
 }
 
@@ -117,7 +123,7 @@ u16 clear_pm1_status(void)
 /* Set the PM1 register to events */
 void enable_pm1(u16 events)
 {
-	outw(events, ACPI_BASE_ADDRESS + PM1_EN);
+	outw(events, get_pmbase() + PM1_EN);
 }
 
 /*
@@ -127,8 +133,8 @@ void enable_pm1(u16 events)
 /* Clear and return SMI status register */
 static u32 reset_smi_status(void)
 {
-	u32 smi_sts = inl(ACPI_BASE_ADDRESS + SMI_STS);
-	outl(smi_sts, ACPI_BASE_ADDRESS + SMI_STS);
+	u32 smi_sts = inl(get_pmbase() + SMI_STS);
+	outl(smi_sts, get_pmbase() + SMI_STS);
 	return smi_sts;
 }
 
@@ -177,17 +183,17 @@ u32 clear_smi_status(void)
 /* Enable SMI event */
 void enable_smi(u32 mask)
 {
-	u32 smi_en = inl(ACPI_BASE_ADDRESS + SMI_EN);
+	u32 smi_en = inl(get_pmbase() + SMI_EN);
 	smi_en |= mask;
-	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
+	outl(smi_en, get_pmbase() + SMI_EN);
 }
 
 /* Disable SMI event */
 void disable_smi(u32 mask)
 {
-	u32 smi_en = inl(ACPI_BASE_ADDRESS + SMI_EN);
+	u32 smi_en = inl(get_pmbase() + SMI_EN);
 	smi_en &= ~mask;
-	outl(smi_en, ACPI_BASE_ADDRESS + SMI_EN);
+	outl(smi_en, get_pmbase() + SMI_EN);
 }
 
 /*
@@ -200,9 +206,9 @@ static u32 reset_alt_smi_status(void)
 	u32 alt_sts, alt_en;
 
 	/* Low Power variant moves this to GPIO region as dword */
-	alt_sts = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_STS);
-	outl(alt_sts, GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_STS);
-	alt_en = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
+	alt_sts = inl(get_gpiobase() + GPIO_ALT_GPI_SMI_STS);
+	outl(alt_sts, get_gpiobase() + GPIO_ALT_GPI_SMI_STS);
+	alt_en = inl(get_gpiobase() + GPIO_ALT_GPI_SMI_EN);
 
 	/* Only report enabled events */
 	return alt_sts & alt_en;
@@ -235,9 +241,9 @@ void enable_alt_smi(u32 mask)
 {
 	u32 alt_en;
 
-	alt_en = inl(GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
+	alt_en = inl(get_gpiobase() + GPIO_ALT_GPI_SMI_EN);
 	alt_en |= mask;
-	outl(alt_en, GPIO_BASE_ADDRESS + GPIO_ALT_GPI_SMI_EN);
+	outl(alt_en, get_gpiobase() + GPIO_ALT_GPI_SMI_EN);
 }
 
 /*
@@ -247,9 +253,9 @@ void enable_alt_smi(u32 mask)
 /* Clear TCO status and return events that are enabled and active */
 static u32 reset_tco_status(void)
 {
-	u32 tcobase = ACPI_BASE_ADDRESS + 0x60;
+	u32 tcobase = get_pmbase() + 0x60;
 	u32 tco_sts = inl(tcobase + 0x04);
-	u32 tco_en = inl(ACPI_BASE_ADDRESS + 0x68);
+	u32 tco_en = inl(get_pmbase() + 0x68);
 
 	/* Don't clear BOOT_STS before SECOND_TO_STS */
 	outl(tco_sts & ~(1 << 18), tcobase + 0x04);
@@ -301,7 +307,7 @@ u32 clear_tco_status(void)
 void enable_tco_sci(void)
 {
 	/* Clear pending events */
-	outl(ACPI_BASE_ADDRESS + GPE0_STS(3), TCOSCI_STS);
+	outl(get_pmbase() + GPE0_STS(3), TCOSCI_STS);
 
 	/* Enable TCO SCI events */
 	enable_gpe(TCOSCI_EN);
@@ -314,10 +320,10 @@ void enable_tco_sci(void)
 /* Clear a GPE0 status and return events that are enabled and active */
 static u32 reset_gpe_status(u16 sts_reg, u16 en_reg)
 {
-	u32 gpe0_sts = inl(ACPI_BASE_ADDRESS + sts_reg);
-	u32 gpe0_en = inl(ACPI_BASE_ADDRESS + en_reg);
+	u32 gpe0_sts = inl(get_pmbase() + sts_reg);
+	u32 gpe0_en = inl(get_pmbase() + en_reg);
 
-	outl(gpe0_sts, ACPI_BASE_ADDRESS + sts_reg);
+	outl(gpe0_sts, get_pmbase() + sts_reg);
 
 	/* Only report enabled events */
 	return gpe0_sts & gpe0_en;
@@ -376,10 +382,12 @@ u32 clear_gpe_status(void)
 /* Enable all requested GPE */
 void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4)
 {
-	outl(set1, ACPI_BASE_ADDRESS + GPE0_EN(GPE_31_0));
-	outl(set2, ACPI_BASE_ADDRESS + GPE0_EN(GPE_63_32));
-	outl(set3, ACPI_BASE_ADDRESS + GPE0_EN(GPE_94_64));
-	outl(set4, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	u16 pmbase = get_pmbase();
+
+	outl(set1, pmbase + GPE0_EN(GPE_31_0));
+	outl(set2, pmbase + GPE0_EN(GPE_63_32));
+	outl(set3, pmbase + GPE0_EN(GPE_94_64));
+	outl(set4, pmbase + GPE0_EN(GPE_STD));
 }
 
 /* Disable all GPE */
@@ -391,17 +399,17 @@ void disable_all_gpe(void)
 /* Enable a standard GPE */
 void enable_gpe(u32 mask)
 {
-	u32 gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	u32 gpe0_en = inl(get_pmbase() + GPE0_EN(GPE_STD));
 	gpe0_en |= mask;
-	outl(gpe0_en, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	outl(gpe0_en, get_pmbase() + GPE0_EN(GPE_STD));
 }
 
 /* Disable a standard GPE */
 void disable_gpe(u32 mask)
 {
-	u32 gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	u32 gpe0_en = inl(get_pmbase() + GPE0_EN(GPE_STD));
 	gpe0_en &= ~mask;
-	outl(gpe0_en, ACPI_BASE_ADDRESS + GPE0_EN(GPE_STD));
+	outl(gpe0_en, get_pmbase() + GPE0_EN(GPE_STD));
 }
 
 int acpi_sci_irq(void)
@@ -434,10 +442,10 @@ int acpi_sci_irq(void)
 
 int platform_is_resuming(void)
 {
-	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
+	if (!(inw(get_pmbase() + PM1_STS) & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
+	return acpi_sleep_from_pm1(inl(get_pmbase() + PM1_CNT)) == ACPI_S3;
 }
 
 /* STM Support */

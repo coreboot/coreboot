@@ -41,20 +41,14 @@ static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
 	tsc->hi = ((a >> 16) * (b >> 16)) + (tsc->hi >> 16);
 }
 
-static inline unsigned long long rdtscll(void)
-{
-	unsigned long long val;
-	asm volatile (
-		TSC_SYNC
-		"rdtsc"
-		: "=A" (val)
-	);
-	return val;
-}
-
 static inline uint64_t tsc_to_uint64(tsc_t tstamp)
 {
 	return (((uint64_t)tstamp.hi) << 32) + tstamp.lo;
+}
+
+static inline unsigned long long rdtscll(void)
+{
+	return tsc_to_uint64(rdtsc());
 }
 
 /* Provided by CPU/chipset code for the TSC rate in MHz. */

@@ -3,7 +3,7 @@
 	Method(\_PIC, 0x01, NotSerialized)
 	{
 		printf("PIC MODE: %o", Arg0)
-		Store(Arg0, PMOD)
+		PMOD = Arg0
 	}
 
 	/* PIC Possible Resource Values */

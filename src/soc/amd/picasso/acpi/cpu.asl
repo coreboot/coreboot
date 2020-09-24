@@ -48,7 +48,7 @@ External (\_SB.C007, DeviceObj)
 /* Return a package containing enabled processor entries */
 Method (PPKG)
 {
-	If (LGreaterEqual (\PCNT, 8)) {
+	If (\PCNT >= 8) {
 		Return (Package ()
 		{
 			\_SB.C000,
@@ -60,7 +60,7 @@ Method (PPKG)
 			\_SB.C006,
 			\_SB.C007
 		})
-	} ElseIf (LGreaterEqual (\PCNT, 4)) {
+	} ElseIf (\PCNT >= 4) {
 		Return (Package ()
 		{
 			\_SB.C000,
@@ -68,7 +68,7 @@ Method (PPKG)
 			\_SB.C002,
 			\_SB.C003
 		})
-	} ElseIf (LGreaterEqual (\PCNT, 2)) {
+	} ElseIf (\PCNT >= 2) {
 		Return (Package ()
 		{
 			\_SB.C000,

@@ -182,7 +182,7 @@ static void pch_pcie_device_set_func(int index, int pci_func)
 	/* Determine the new devfn for this port */
 	new_devfn = PCI_DEVFN(PCH_DEV_SLOT_PCIE, pci_func);
 
-	if (dev->path.pci.devfn != new_devfn) {
+	if (dev && dev->path.pci.devfn != new_devfn) {
 		printk(BIOS_DEBUG,
 		       "PCH: PCIe map %02x.%1x -> %02x.%1x\n",
 		       PCI_SLOT(dev->path.pci.devfn),
@@ -204,6 +204,9 @@ static void pcie_enable_clock_gating(void)
 		int rp;
 
 		dev = rpc.ports[i];
+		if (!dev)
+			continue;
+
 		rp = root_port_number(dev);
 
 		if (!dev->enabled) {

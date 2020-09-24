@@ -21,7 +21,7 @@ External (\_SB.P007, DeviceObj)
 /* Return a package containing enabled processor entries */
 Method (PPKG)
 {
-	If (LGreaterEqual (\PCNT, 4)) {
+	If (\PCNT >= 4) {
 		Return (Package ()
 		{
 			\_SB.P000,
@@ -29,7 +29,7 @@ Method (PPKG)
 			\_SB.P002,
 			\_SB.P003
 		})
-	} ElseIf (LGreaterEqual (\PCNT, 2)) {
+	} ElseIf (\PCNT>= 2) {
 		Return (Package ()
 		{
 			\_SB.P000,

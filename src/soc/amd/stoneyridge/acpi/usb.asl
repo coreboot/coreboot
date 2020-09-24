@@ -67,10 +67,10 @@ Scope(\_SB)
 			Return(XHD0)
 		}
 		Method(_ON) {
-			Store(0x01, XHD0)
+			XHD0 = 0x01
 		}
 		Method(_OFF) {
-			Store(0x00, XHD0)
+			XHD0 = 0x00
 		}
 	}
 	PowerResource(P3U3, 0, 0) {
@@ -78,10 +78,10 @@ Scope(\_SB)
 			Return(XHD3)
 		}
 		Method(_ON) {
-			Store(0x01, XHD3)
+			XHD3 = 0x01
 		}
 		Method(_OFF) {
-			Store(0x00, XHD3)
+			XHD3 = 0x00
 		}
 	}
 
@@ -92,10 +92,10 @@ Scope(\_SB)
 			Return(EHD0)
 		}
 		Method(_ON) {
-			Store(0x01, EHD0)
+			EHD0 = 0x01
 		}
 		Method(_OFF) {
-			Store(0x00, EHD0)
+			EHD0 = 0x00
 		}
 	}
 	PowerResource(P3U2, 0, 0) {
@@ -103,10 +103,10 @@ Scope(\_SB)
 			Return(EHD3)
 		}
 		Method(_ON) {
-			Store(0x01, EHD3)
+			EHD3 = 0x01
 		}
 		Method(_OFF) {
-			Store(0x00, EHD3)
+			EHD3 = 0x00
 		}
 	}
 }
@@ -121,33 +121,33 @@ Field(EHMC, DwordAcc, NoLock, Preserve)
 
 Method(U2D3,0, Serialized)
 {
-	if (LNotEqual(EH10, Zero)) {
-		Store (EH10, EHBA)
-		Store (One, EHME)
-		Store (ESIM, SSIM)
+	if (EH10 != Zero) {
+		EHBA = EH10
+		EHME = One
+		SSIM = ESIM
 	}
 
-	if (LEqual(E_PS, 3)) {
-		Store (Zero, RQTY)
-		Store (One, RQ18)
+	if (E_PS == 3) {
+		RQTY = Zero
+		RQ18 = One
 
-		Store (U2SR, Local0)
+		Local0 = U2SR
 		while (Local0) {
-			Store (U2SR, Local0)
+			Local0 = U2SR
 		}
 
-		Store (Zero, U2PD)
+		U2PD = Zero
 
-		Store (U2DS, Local0)
-		while (LNotEqual(Local0, Zero)) {
-			Store (U2DS, Local0)
+		Local0 = U2DS
+		while (Local0 != Zero) {
+			Local0 = U2DS
 		}
 
-		Store (0x03,U2TD)
+		U2TD = 0x03
 
-		if (LEqual(U3TD, 0x03)) { /* Shutdown USB2 PLL */
+		if (U3TD == 0x03) { /* Shutdown USB2 PLL */
 		    PWGC (0x40, 0)
-		    Store (One, U2RP)
+		    U2RP = One
 		}
 	}
 }
@@ -155,115 +155,115 @@ Method(U2D3,0, Serialized)
 Method(U2D0,0, Serialized)
 {
 	PWGC (0x40, 1)
-	Store (Zero, U2RP)
-	Store (0x00,U2TD)
+	U2RP = Zero
+	U2TD =  0x00
 
-	Store (Zero, U2TD)
-	Store (One, U2PD)
+	U2TD = Zero
+	U2PD = One
 
-	Store (U2DS, Local0)
-	while (LNotEqual(Local0,0x7)) {
-		Store (U2DS, Local0)
+	Local0 = U2DS
+	while (Local0 != 0x7) {
+		Local0 = U2DS
 	}
 
-	Store (One, RQTY)
-	Store (One, RQ18)
-	Store (U2SR, Local0)
-	while (LNot(Local0)) {
-		Store (U2SR, Local0)
+	RQTY = One
+	RQ18 = One
+	Local0 = U2SR
+	while (!Local0) {
+		Local0 = U2SR
 	}
-	Store (EHID, EH2C)
+	EH2C = EHID
 
 
-	if (LNotEqual(EH10, Zero)) {
-		Store (EH10, EHBA)
-		Store (One, EHME)
-		Store (SSIM, ESIM)
+	if (EH10 != Zero) {
+		EHBA = EH10
+		EHME = One
+		ESIM = SSIM
 	}
 
-	Store (ES54, EH54)
-	Store (ES64, EH64)
+	EH54 = ES54
+	EH64 = ES64
 }
 
 Method(LXFW,3, Serialized)  //Load Xhci FirmWare
 {
-	Store (One, FWLM)  /* Firmware Load Mode */
-	Store (Arg0, ROAM) /* ROM/RAM */
-	Store (Arg1, UA04)
-	Store (Arg2, UA08)
-	Store (One, FPLS)    /* Firmware Preload Start */
-	Store (FPLC, Local0) /* Firmware Preload Complete */
-	while (LNot(Local0)) {
-		Store (FPLC, Local0)
+	FWLM = One  /* Firmware Load Mode */
+	ROAM = Arg0 /* ROM/RAM */
+	UA04 = Arg1
+	UA08 = Arg2
+	FPLS = One    /* Firmware Preload Start */
+	Local0 = FPLC /* Firmware Preload Complete */
+	while (!Local0) {
+		Local0 = FPLC
 	}
-	Store (Zero, FPLS)
+	FPLS = Zero
 }
 
 Method(U3D3,0, Serialized)
 {
-	if (LEqual(U_PS, 3)) {
+	if (U_PS == 3) {
 		X0_S ()
 
-		Or (PGA3, 0x20, PGA3) /* SwUsb3SlpShutdown */
-		And (PGA3, 0x20, Local0)
-		while (LNot(Local0)) { /* wait for it to complete */
-			And (PGA3, 0x20, Local0)
+		PGA3 |= 0x20 /* SwUsb3SlpShutdown */
+		Local0 = PGA3 & 0x20
+		while (!Local0) { /* wait for it to complete */
+			Local0 = PGA3 & 0x20
 		}
-		Store (One, UD3P) /* U3P_D3Cold_PWRDN */
+		UD3P = One /* U3P_D3Cold_PWRDN */
 
-		Store (Zero, U3PD) /* PwrOnDev */
-		Store (U3DS, Local0)
+		U3PD = Zero /* PwrOnDev */
+		Local0 = U3DS
 		while (Local0) { /* RstBState, RefClkOkState, PwrRstBState */
-			Store (U3DS, Local0)
+			Local0 = U3DS
 		}
 
-		Store (0x3, U3TD) /* TargetedDeviceState */
+		U3TD = 0x3 /* TargetedDeviceState */
 
-		Store (One, U3RP) /* USB3_RefClk_Pwdn */
+		U3RP = One /* USB3_RefClk_Pwdn */
 
-		if (Lequal(U2TD, 0x3)) { /* If EHCI targeted in D3cold */
-			And (PGA3, 0x9f, PGA3) /* SwUsb2S5RstB */
-			Store (One, U2RP)      /* USB2_RefClk_Pwdn */
+		if (U2TD == 0x3) { /* If EHCI targeted in D3cold */
+			PGA3 &= 0x9f /* SwUsb2S5RstB */
+			U2RP = One   /* USB2_RefClk_Pwdn */
 		}
-		Store (Zero, U3PG) /* XhcPwrGood  */
-		Store (One, U3PS)  /* Usb3PowerSel */
+		U3PG = Zero /* XhcPwrGood  */
+		U3PS = One  /* Usb3PowerSel */
 	}
 }
 
 Method(U3D0,0, Serialized)
 {
-	Store (Zero, U3PS) /* Usb3PowerSel */
-	Store (One, U3PG)  /* XhcPwrGood  */
+	U3PS = Zero /* Usb3PowerSel */
+	U3PG = One  /* XhcPwrGood  */
 
-	Store (Zero, U2RP)
-	Store (Zero, U3RP)
+	U2RP = Zero
+	U3RP = Zero
 
-	And (PGA3, 0xdf, Local0)
-	Or (Local0, 0x40, Local0)
-	Store (Local0, PGA3) /* SwUsb2S5RstB */
+	Local0 = PGA3 & 0xdf
+	Local0 |= 0x40
+	PGA3 = Local0 /* SwUsb2S5RstB */
 
-	Store (Zero, U3TD) /* TargetedDeviceState */
-	Store (One, U3PD)  /* PwrOnDev */
+	U3TD = Zero /* TargetedDeviceState */
+	U3PD = One  /* PwrOnDev */
 
-	Store (U3DS, Local0) /* wait for RstBState, RefClkOkState, PwrRstBState */
-	while (LNot(Lequal(Local0, 0x7))) {
-		Store (U3DS, Local0)
+	Local0 = U3DS /* wait for RstBState, RefClkOkState, PwrRstBState */
+	while (Local0 != 0x7) {
+		Local0 = U3DS
 	}
 
-	Store (U3PY, Local0) /* USB3 PHY Lock */
-	while (LNot(Local0)) {
-		Store (U3PY, Local0)
+	Local0 = U3PY /* USB3 PHY Lock */
+	while (!Local0) {
+		Local0 = U3PY
 	}
 
-	Store (Zero, U3PR) /* U3P_RESTORE_RESET */
+	U3PR = Zero /* U3P_RESTORE_RESET */
 
-	Store (AUSS, Local0) /* AutoSizeStart */
-	if (LNotEqual(Local0,1)) {
-		Store(One, AUSS)
+	Local0 = AUSS /* AutoSizeStart */
+	if (Local0 != 1) {
+		AUSS = One
 	}
-	Store (AUSS, Local0)
-	while (LNotEqual(Local0,1)) {
-		Store (AUSS, Local0)
+	Local0 = AUSS
+	while (Local0 != 1) {
+		Local0 = AUSS
 	}
 
 	LXFW (1, FW00, FW01)
@@ -271,9 +271,9 @@ Method(U3D0,0, Serialized)
 
 	X0_R ()
 
-	Store (One, U3PR)  /* U3P_RESTORE_RESET */
-	Store (Zero, UD3P) /* U3P_D3Cold_PWRDN */
-	Store (One, U3TD)  /* TargetedDeviceState */
+	U3PR = One  /* U3P_RESTORE_RESET */
+	UD3P = Zero /* U3P_D3Cold_PWRDN */
+	U3TD = One  /* TargetedDeviceState */
 }
 
 Name (SVBF, Buffer (0x1000) {0})    /* length from FchCarrizo.asl, new fields */
@@ -313,66 +313,122 @@ CreateDWordField(SVBF, 0x7B0, SSIM) /* EHCI SIM BIT */
 
 Method(X0_S,0)
 {
-	Store (XH2C, XHID)
-	Store (0x00000000, IDEX) Store (DATA, S000)
-	Store (0x00000004, IDEX) Store (DATA, S004)
-	Store (0x00000008, IDEX) Store (DATA, S008)
-	Store (0x0000000c, IDEX) Store (DATA, S00C)
-	Store (0x00000018, IDEX) Store (DATA, S018)
-	Store (0x0000001c, IDEX) Store (DATA, S01C)
-	Store (0x00000020, IDEX) Store (DATA, S020)
-	Store (0x00000030, IDEX) Store (DATA, S030)
-	Store (0x00000118, IDEX) Store (DATA, S118)
-	Store (0x00000158, IDEX) Store (DATA, S158)
-	Store (0x00000198, IDEX) Store (DATA, S198)
-	Store (0x000001d8, IDEX) Store (DATA, S1D8)
-	Store (0x00000300, IDEX) Store (DATA, S300)
-	Store (0x00000304, IDEX) Store (DATA, S304)
-	Store (0x00000308, IDEX) Store (DATA, S308)
-	Store (0x0000030c, IDEX) Store (DATA, S30C)
-	Store (0x00000310, IDEX) Store (DATA, S310)
-	Store (0x40000028, IDEX) Store (DATA, S428)
-	Store (0x40000038, IDEX) Store (DATA, S438)
-	Store (0x4000003c, IDEX) Store (DATA, S43C)
-	Store (0x40000058, IDEX) Store (DATA, S458)
-	Store (0x40000068, IDEX) Store (DATA, S468)
-	Store (0x4000006c, IDEX) Store (DATA, S46C)
-	Store (0x40000070, IDEX) Store (DATA, S470)
-	Store (0x40000080, IDEX) Store (DATA, S480)
-	Store (0x40000084, IDEX) Store (DATA, S484)
-	Store (0x40000088, IDEX) Store (DATA, S488)
-	Store (0x4000008c, IDEX) Store (DATA, S48C)
+	XHID = XH2C
+	IDEX = Zero
+	S000 = DATA
+	IDEX = 0x00000004
+	S004 = DATA
+	IDEX = 0x00000008
+	S008 = DATA
+	IDEX = 0x0000000C
+	S00C = DATA
+	IDEX = 0x00000018
+	S018 = DATA
+	IDEX = 0x0000001C
+	S01C = DATA
+	IDEX = 0x00000020
+	S020 = DATA
+	IDEX = 0x00000030
+	S030 = DATA
+	IDEX = 0x00000118
+	S118 = DATA
+	IDEX = 0x00000158
+	S158 = DATA
+	IDEX = 0x00000198
+	S198 = DATA
+	IDEX = 0x000001D8
+	S1D8 = DATA
+	IDEX = 0x00000300
+	S300 = DATA
+	IDEX = 0x00000304
+	S304 = DATA
+	IDEX = 0x00000308
+	S308 = DATA
+	IDEX = 0x0000030C
+	S30C = DATA
+	IDEX = 0x00000310
+	S310 = DATA
+	IDEX = 0x40000028
+	S428 = DATA
+	IDEX = 0x40000038
+	S438 = DATA
+	IDEX = 0x4000003C
+	S43C = DATA
+	IDEX = 0x40000058
+	S458 = DATA
+	IDEX = 0x40000068
+	S468 = DATA
+	IDEX = 0x4000006C
+	S46C = DATA
+	IDEX = 0x40000070
+	S470 = DATA
+	IDEX = 0x40000080
+	S480 = DATA
+	IDEX = 0x40000084
+	S484 = DATA
+	IDEX = 0x40000088
+	S488 = DATA
+	IDEX = 0x4000008C
+	S48C = DATA
 }
 
 Method(X0_R,0)
 {
-	Store (XHID, XH2C)
-	Store (0x00000000, IDEX) Store (S000, DATA)
-	Store (0x00000004, IDEX) Store (S004, DATA)
-	Store (0x00000008, IDEX) Store (S008, DATA)
-	Store (0x0000000c, IDEX) Store (S00C, DATA)
-	Store (0x00000018, IDEX) Store (S018, DATA)
-	Store (0x0000001c, IDEX) Store (S01C, DATA)
-	Store (0x00000020, IDEX) Store (S020, DATA)
-	Store (0x00000030, IDEX) Store (S030, DATA)
-	Store (0x00000118, IDEX) Store (S118, DATA)
-	Store (0x00000158, IDEX) Store (S158, DATA)
-	Store (0x00000198, IDEX) Store (S198, DATA)
-	Store (0x000001d8, IDEX) Store (S1D8, DATA)
-	Store (0x00000300, IDEX) Store (S300, DATA)
-	Store (0x00000304, IDEX) Store (S304, DATA)
-	Store (0x00000308, IDEX) Store (S308, DATA)
-	Store (0x0000030c, IDEX) Store (S30C, DATA)
-	Store (0x00000310, IDEX) Store (S310, DATA)
-	Store (0x40000028, IDEX) Store (S428, DATA)
-	Store (0x40000038, IDEX) Store (S438, DATA)
-	Store (0x4000003c, IDEX) Store (S43C, DATA)
-	Store (0x40000058, IDEX) Store (S458, DATA)
-	Store (0x40000068, IDEX) Store (S468, DATA)
-	Store (0x4000006c, IDEX) Store (S46C, DATA)
-	Store (0x40000070, IDEX) Store (S470, DATA)
-	Store (0x40000080, IDEX) Store (S480, DATA)
-	Store (0x40000084, IDEX) Store (S484, DATA)
-	Store (0x40000088, IDEX) Store (S488, DATA)
-	Store (0x4000008c, IDEX) Store (S48C, DATA)
+	XH2C = XHID
+	IDEX = Zero
+	DATA = S000
+	IDEX = 0x000000004
+	DATA = S004
+	IDEX = 0x000000008
+	DATA = S008
+	IDEX = 0x00000000C
+	DATA = S00C
+	IDEX = 0x000000018
+	DATA = S018
+	IDEX = 0x00000001C
+	DATA = S01C
+	IDEX = 0x000000020
+	DATA = S020
+	IDEX = 0x00000030
+	DATA = S030
+	IDEX = 0x00000118
+	DATA = S118
+	IDEX = 0x00000158
+	DATA = S158
+	IDEX = 0x00000198
+	DATA = S198
+	IDEX = 0x000001D8
+	DATA = S1D8
+	IDEX = 0x00000300
+	DATA = S300
+	IDEX = 0x00000304
+	DATA = S304
+	IDEX = 0x00000308
+	DATA = S308
+	IDEX = 0x0000030C
+	DATA = S30C
+	IDEX = 0x00000310
+	DATA = S310
+	IDEX = 0x40000028
+	DATA = S428
+	IDEX = 0x40000038
+	DATA = S438
+	IDEX = 0x4000003C
+	DATA = S43C
+	IDEX = 0x40000058
+	DATA = S458
+	IDEX = 0x40000068
+	DATA = S468
+	IDEX = 0x4000006C
+	DATA = S46C
+	IDEX = 0x40000070
+	DATA = S470
+	IDEX = 0x40000080
+	DATA = S480
+	IDEX = 0x40000084
+	DATA = S484
+	IDEX = 0x40000088
+	DATA = S488
+	IDEX = 0x4000008C
+	DATA = S48C
 }

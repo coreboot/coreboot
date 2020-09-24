@@ -9,14 +9,14 @@ External(\_SB.ALIB, MethodObj)
 Method(_OSC,4)
 {
 	/* Check for proper PCI/PCIe UUID */
-	If(LEqual(Arg0,ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)
 	} Else {
 		CreateDWordField(Arg3,0,CDW1)
-		Or(CDW1,4,CDW1)	// Unrecognized UUID
-		Return(Arg3)
+		CDW1 |= 4	// Unrecognized UUID
+		Return (Arg3)
 	}
 }
 
@@ -104,12 +104,12 @@ Method(_CRS, 0) {
 	 * 32bit (0x00000000 - TOM1) will wrap and give the same
 	 * result as 64bit (0x100000000 - TOM1).
 	 */
-	Store(TOM1, MM1B)
-	ShiftLeft(0x10000000, 4, Local0)
-	Subtract(Local0, TOM1, Local0)
-	Store(Local0, MM1L)
+	MM1B = TOM1
+	Local0 = 0x10000000 << 4
+	Local0 -= TOM1
+	MM1L = Local0
 
-	Return(CRES) /* note to change the Name buffer */
+	Return (CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
 /*
@@ -142,8 +142,8 @@ Method(_INI, 0, Serialized) {
 	CreateWordField(F1BF, 0, F1SZ)
 	CreateByteField(F1BF, 2, F1DA)
 
-	Store(3, F1SZ)
-	Store(\PWRS, F1DA)
+	F1SZ = 3
+	F1DA= \PWRS
 
 	\_SB.ALIB(1, F1BF)
 
@@ -151,23 +151,23 @@ Method(_INI, 0, Serialized) {
 
 Method(OSFL, 0){
 
-	if (LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
+	if (OSVR != Ones) {Return (OSVR)}	/* OS version was already detected */
 
 	if (CondRefOf(\_OSI))
 	{
-		Store(1, OSVR)					/* Assume some form of XP */
+		OSVR = 1				/* Assume some form of XP */
 		if (\_OSI("Windows 2006"))		/* Vista */
 		{
-			Store(2, OSVR)
+			OSVR = 2
 		}
 	} else {
-		If(WCMP(\_OS,"Linux")) {
-			Store(3, OSVR)				/* Linux */
+		If (WCMP(\_OS,"Linux")) {
+			OSVR = 3			/* Linux */
 		} Else {
-			Store(4, OSVR)				/* Gotta be WinCE */
+			OSVR = 4			/* Gotta be WinCE */
 		}
 	}
-	Return(OSVR)
+	Return (OSVR)
 }
 
 OperationRegion(SMIC, SystemMemory, 0xfed80000, 0x80000)
@@ -356,74 +356,75 @@ Method(FDDC, 2, Serialized)
 {
 	Acquire(FDAS, 0xffff)
 
-	if(LEqual(Arg1, 0)) {
+	if (Arg1 == 0) {
 		Switch(ToInteger(Arg0)) {
 			Case(Package() {5, 15, 24}) {
-				Store(One, PG1A)
+				PG1A = One
 			}
 			Case(Package() {6, 7, 8, 11, 12, 18}) {
-				Store(One, PG2_)
+				PG2_ = One
 			}
 		}
 		/* put device into D0 */
 		Switch(ToInteger(Arg0))
 		{
 			Case(5) {
-				Store(0x00, I0TD)
-				Store(One, I0PD)
-				Store(I0DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(I0DS, Local0)
+				I0TD = 0x00
+				I0PD = One
+				Local0 = I0DS
+				while(Local0 != 0x7) {
+					Local0 = I0DS
 				}
 			}
 			Case(6) {
-				Store(0x00, I1TD)
-				Store(One, I1PD)
-				Store(I1DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(I1DS, Local0)
+				I1TD = 0x00
+				I1PD = One
+				Local0 = I1DS
+				while(Local0 != 0x7) {
+					Local0 = I1DS
 				}
 			}
 			Case(7) {
-				Store(0x00, I2TD)
-				Store(One, I2PD)
-				Store(I2DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(I2DS, Local0)
+				I2TD = 0x00
+				I2PD = One
+				Local0 = I2DS
+				while(Local0 != 0x7) {
+					Local0 = I2DS
 				}
 			}
-			Case(8) {Store(0x00, I3TD)
-				Store(One, I3PD)
-				Store(I3DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(I3DS, Local0)
+			Case(8) {
+				I3TD = 0x00
+				I3PD = One
+				Local0 = I3DS
+				while(Local0 != 0x7) {
+					Local0 = I3DS
 				}
 			}
 			Case(11) {
-				Store(0x00, U0TD)
-				Store(One, U0PD)
-				Store(U0DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(U0DS, Local0)
+				U0TD = 0x00
+				U0PD = One
+				Local0 = U0DS
+				while(Local0 != 0x7) {
+					Local0 = U0DS
 				}
 			}
 			Case(12) {
-				Store(0x00, U1TD)
-				Store(One, U1PD)
-				Store(U1DS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(U1DS, Local0)
+				U1TD = 0x00
+				U1PD = One
+				Local0 = U1DS
+				while(Local0 != 0x7) {
+					Local0 = U1DS
 				}
 			}
 /* todo			Case(15) { STD0()} */ /* SATA */
 			Case(18) { U2D0()} /* EHCI */
 			Case(23) { U3D0()} /* XHCI */
 			Case(24) { /* SD */
-				Store(0x00, SDTD)
-				Store(One, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(SDDS, Local0)
+				SDTD = 0x00
+				SDPD = One
+				Local0 = SDDS
+				while(Local0 != 0x7) {
+					Local0 = SDDS
 				}
 			}
 		}
@@ -432,77 +433,78 @@ Method(FDDC, 2, Serialized)
 		Switch(ToInteger(Arg0))
 		{
 			Case(5) {
-				Store(Zero, I0PD)
-				Store(I0DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(I0DS, Local0)
+				I0PD = Zero
+				Local0 = I0DS
+				while(Local0 != 0x0) {
+					Local0 = I0DS
 				}
-				Store(0x03, I0TD)
+				I0TD = 0x03
 			}
 			Case(6) {
-				Store(Zero, I1PD)
-				Store(I1DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(I1DS, Local0)
+				I1PD = Zero
+				Local0 = I1DS
+				while(Local0 != 0x0) {
+					Local0 = I1DS
 				}
-				Store(0x03, I1TD)
+				I1TD = 0x03
 			}
-			Case(7)  {
-				Store(Zero, I2PD)
-				Store(I2DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(I2DS, Local0)
+			Case(7) {
+				I2PD = Zero
+				Local0 = I2DS
+				while(Local0 != 0x0) {
+					Local0 = I2DS
 				}
-				Store(0x03, I2TD)}
+				I2TD = 0x03
+			}
 			Case(8) {
-				Store(Zero, I3PD)
-				Store(I3DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(I3DS, Local0)
+				I3PD = Zero
+				Local0 = I3DS
+				while(Local0 != 0x0) {
+					Local0 = I3DS
 				}
-				Store(0x03, I3TD)
+				I3TD = 0x03
 			}
 			Case(11) {
-				Store(Zero, U0PD)
-				Store(U0DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(U0DS, Local0)
+				U0PD = Zero
+				Local0 = U0DS
+				while(Local0 != 0x0) {
+					Local0 = U0DS
 				}
-				Store(0x03, U0TD)
+				U0TD = 0x03
 			}
 			Case(12) {
-				Store(Zero, U1PD)
-				Store(U1DS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(U1DS, Local0)
+				U1PD = Zero
+				Local0 = U1DS
+				while(Local0 != 0x0) {
+					Local0 = U1DS
 				}
-				Store(0x03, U1TD)
+				U1TD = 0x03
 			}
 /* todo			Case(15) { STD3()} */ /* SATA */
 			Case(18) { U2D3()} /* EHCI */
 			Case(23) { U3D3()} /* XHCI */
 			Case(24) { /* SD */
-				Store(Zero, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(SDDS, Local0)
+				SDPD = Zero
+				Local0 = SDDS
+				while(Local0 != 0x0) {
+					Local0 = SDDS
 				}
-				Store(0x03, SDTD)
+				SDTD = 0x03
 			}
 		}
 		/* Turn off Power */
-		if(LEqual(I0TD, 3)) {
-			if(LEqual(SATD, 3)) {
-				if(LEqual(SDTD, 3)) { Store(Zero, PG1A) }
+		if (I0TD == 3) {
+			if (SATD == 3) {
+				if (SDTD == 3) { PG1A = Zero }
 			}
 		}
-		if(LEqual(I1TD, 3)) {
-			if(LEqual(I2TD, 3)) {
-				if(LEqual(I3TD, 3)) {
-					if(LEqual(U0TD, 3)) {
-						if(LEqual(U1TD, 3)) {
-							if(LEqual(U2TD, 3)) {
-								Store(Zero, PG2_)
+		if (I1TD == 3) {
+			if (I2TD == 3) {
+				if (I3TD == 3) {
+					if (U0TD == 3) {
+						if (U1TD == 3) {
+							if (U2TD == 3) {
+								PG2_ = Zero
 							}
 						}
 					}
@@ -515,53 +517,53 @@ Method(FDDC, 2, Serialized)
 
 Method(FPTS,0, Serialized)  /* FCH _PTS */
 {
-	if(LEqual(\XHCE, one)) {
-		if(LNotEqual(U3TD, 0x03)) {
+	if (\XHCE == one) {
+		if (U3TD != 0x03) {
 			FDDC(23, 3)
 		}
 	}
-	if(LNotEqual(U2TD, 0x03)) {
+	if (U2TD != 0x03) {
 		FDDC(18, 3)
 	}
 }
 
 Method(FWAK,0, Serialized)  /* FCH _WAK */
 {
-	if(LEqual(\XHCE, one)) {
-		if(LEqual(U3TD, 0x03)) {
+	if (\XHCE == one) {
+		if (U3TD == 0x03) {
 			FDDC(23, 0)
 		}
 	}
-	if(LEqual(U2TD, 0x03)) {
+	if (U2TD == 0x03) {
 		FDDC(18, 0)
 	}
-	if(LEqual(\UT0E, zero)) {
-		if(LNotEqual(U0TD, 0x03)) {
+	if (\UT0E == zero) {
+		if (U0TD != 0x03) {
 			FDDC(11, 3)
 		}
 	}
-	if(LEqual(\UT1E, zero)) {
-		if(LNotEqual(U1TD, 0x03)) {
+	if (\UT1E == zero) {
+		if (U1TD != 0x03) {
 			FDDC(12, 3)
 		}
 	}
-	if(LEqual(\IC0E, zero)) {
-		if(LNotEqual(I0TD, 0x03)) {
+	if (\IC0E == zero) {
+		if (I0TD != 0x03) {
 			FDDC(5, 3)
 		}
 	}
-	if(LEqual(\IC1E, zero)) {
-		if(LNotEqual(I1TD, 0x03)) {
+	if (\IC1E == zero) {
+		if (I1TD != 0x03) {
 			FDDC(6, 3)
 		}
 	}
-	if(LEqual(\IC2E, zero)) {
-		if(LNotEqual(I2TD, 0x03)) {
+	if (\IC2E == zero) {
+		if (I2TD != 0x03) {
 			FDDC(7, 3)
 		}
 	}
-	if(LEqual(\IC3E, zero)) {
-		if(LNotEqual(I3TD, 0x03)) {
+	if (\IC3E == zero) {
+		if (I3TD != 0x03) {
 			FDDC(8, 3)
 		}
 	}
@@ -574,20 +576,20 @@ Method(FWAK,0, Serialized)  /* FCH _WAK */
  */
 Method(PWGC,2, Serialized)
 {
-	And (PGA3, 0xdf, Local0)  /* do SwUsb3SlpShutdown below */
-	if(Arg1) {
-		Or(Arg0, Local0, Local0)
+	Local0 = PGA3 & 0xdf  /* do SwUsb3SlpShutdown below */
+	if (Arg1) {
+		Local0 |= Arg0
 	} else {
-		Not(Arg0, Local1)
-		And(Local1, Local0, Local0)
+		Local1 = ~Arg0
+		Local0 &= Local1
 	}
 	Store(Local0, PGA3)
-	if(LEqual(Arg0, 0x20)) { /* if SwUsb3SlpShutdown */
-		Store(PGA3, Local0)
-		And(Arg0, Local0, Local0)
-		while(LNot(Local0)) { /* wait SwUsb3SlpShutdown to complete */
-			Store(PGA3, Local0)
-			And(Arg0, Local0, Local0)
+	if (Arg0 == 0x20) { /* if SwUsb3SlpShutdown */
+		Local0 = PGA3
+		Local0 &= Arg0
+		while(!Local0) { /* wait SwUsb3SlpShutdown to complete */
+			Local0 = PGA3
+			Local0 &= Arg0
 		}
 	}
 }

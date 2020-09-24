@@ -8,35 +8,35 @@
 Method(BSTA, 4, NotSerialized)
 {
 	Acquire(ECLK, 0xffff)
-	Store(0, Local0)
+	Local0 = 0
 
-	Store(0, PAGE)
+	PAGE = 0
 
-	Store(BAPR, Local2)
+	Local2 = BAPR
 
 	if (Arg2) // charging
 	{
-		Or(2, Local0, Local0)
+		Local0 |= 2
 
-		If (LGreaterEqual (Local2, 0x8000)) {
-			Store(0, Local2)
+		If (Local2 == 0x8000) {
+			Local2 = 0
 		}
 	}
 
 	if (Arg3) // discharging
 	{
-		Or(1, Local0, Local0)
-		Subtract(0x10000, Local2, Local2)
+		Local0 |= 1
+		Local2 = 0x10000 - Local2
 	}
 
-	Store(Local0, Index(Arg1, 0x00))
+	Arg1[0] = Local0
 
-	Store(0, PAGE)
-	Store(BARC, Index(Arg1, 2))
-	Store(Local2, Index(Arg1, 1))
+	PAGE = 0
+	Arg1[2] = BARC
+	Arg1[1] = Local2
 
-	Store(0, PAGE)
-	Store(BAVO, Index(Arg1, 3))
+	PAGE = 0
+	Arg1[3] = BAVO
 	Release(ECLK)
 	Return (Arg1)
 }
@@ -44,37 +44,39 @@ Method(BSTA, 4, NotSerialized)
 Method(BINF, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
-	Store(0, PAGE)
-	Store(BAFC, Local2)
-	Store(1, PAGE)
-	Store(BADC, Local1)
+	PAGE = 0
+	Local2 = BAFC
+	PAGE = 1
+	Local1 = BADC
 
-	Store(Local1, Index(Arg0, 1))	// Design Capacity
-	Store(Local2, Index(Arg0, 2))	// Last full charge capacity
-	Store(1, PAGE)
-	Store(BADV, Index(Arg0, 4))	// Design Voltage
-	Divide (Local2, 20, , Index(Arg0, 5)) // Warning capacity
+	Arg0[1] = Local1	// Design Capacity
+	Arg0[2] = Local2	// Last full charge capacity
+	PAGE = 1
+	Arg0[4] = BADV		// Design Voltage
+	Arg0[5] = Local2 / 20	// Warning capacity
 
-	Store(1, PAGE)
-	Store (BASN, Local0)
+	PAGE = 1
+	Local0 = BASN
 	Name (SERN, Buffer (0x06) { "     " })
-	Store (4, Local1)
+	Local1 = 4
 	While (Local0)
 	{
-		Divide (Local0, 0x0A, Local2, Local0)
-		Add (Local2, 48, Index (SERN, Local1))
-		Decrement (Local1)
+		Local2 = Local0
+		Local0 /= 0x0A
+		Local2 -= (Local0 * 0x0A)
+		SERN[Local1] = Local2 + 48
+		Local1--
 	}
-	Store (SERN, Index (Arg0, 10)) // Serial Number
+	Arg0[10] = SERN // Serial Number
 
 	Name (TYPE, Buffer() { 0, 0, 0, 0, 0 })
-	Store(4, PAGE)
-	Store(BATY, TYPE)
-	Store(TYPE, Index (Arg0, 11)) // Battery type
-	Store(5, PAGE)
-	Store(BAOE, Index (Arg0, 12)) // OEM information
-	Store(2, PAGE)
-	Store(BANA, Index (Arg0, 9))  // Model number
+	PAGE = 4
+	TYPE = BATY
+	Arg0[11] = TYPE // Battery type
+	PAGE = 5
+	Arg0[12] = BAOE // OEM information
+	PAGE = 2
+	Arg0[9] = BANA  // Model number
 	Release(ECLK)
 	Return (Arg0)
 }

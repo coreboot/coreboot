@@ -1,0 +1,15 @@
+if VENDOR_EXAMPLE
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/example/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/example/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Example"
+
+endif # VENDOR_EXAMPLE

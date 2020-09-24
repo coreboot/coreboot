@@ -1,0 +1,2 @@
+config VENDOR_EXAMPLE
+	bool "Example boards"

@@ -1,0 +1,14 @@
+if BOARD_EXAMPLE_MIN86
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_EXAMPLE_MIN86
+	select MISSING_BOARD_RESET
+
+config MAINBOARD_DIR
+	default "example/min86"
+
+config MAINBOARD_PART_NUMBER
+	default "Min86"
+
+endif

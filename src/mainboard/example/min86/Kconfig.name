@@ -1,0 +1,11 @@
+config BOARD_EXAMPLE_MIN86
+	bool "Minimal x86 fake board"
+	help
+	  This example mainboard code along with the example/min86 SoC
+	  should serve as a minimal example how a buildable x86 SoC code
+	  base can look like.
+
+	  This can serve, for instance, as a basis to add new SoCs to
+	  coreboot. Starting with a buildable commit should help with
+	  the review of the actual code, and also avoid any regressions
+	  when common coreboot code changes.

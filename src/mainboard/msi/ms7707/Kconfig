@@ -33,12 +33,4 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
-config VGA_BIOS_FILE
-	string
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/vgabios.bin"
-
-config VGA_BIOS_ID
-	string
-	default "8086,0102"
-
 endif

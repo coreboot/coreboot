@@ -124,7 +124,7 @@ struct soc_intel_apollolake_config {
 	int dptf_enable;
 
 	/* TCC activation offset value in degrees Celsius */
-	int tcc_offset;
+	uint32_t tcc_offset;
 
 	/* Configure Audio clk gate and power gate
 	 * IOSF-SB port ID 92 offset 0x530 [5] and [3]

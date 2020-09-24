@@ -138,7 +138,7 @@ struct soc_intel_broadwell_config {
 	int deep_sx_enable_dc;
 
 	/* TCC activation offset */
-	int tcc_offset;
+	uint32_t tcc_offset;
 };
 
 typedef struct soc_intel_broadwell_config config_t;

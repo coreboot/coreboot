@@ -27,6 +27,7 @@ Scope(\)
 Scope (\_SB)
 {
 	#include "pci_irqs.asl"
+	#include "pch_irq.asl"		/* TODO:  Move to PCH asl. */
 	#include "uncore_irq.asl"
 	#include "iiostack.asl"
 }

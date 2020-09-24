@@ -23,9 +23,6 @@ Scope(\)
 	OperationRegion(RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
 	Field(RCRB, DWordAcc, Lock, Preserve)
 	{
-		Offset(0x0000), // Backbone
-		Offset(0x1000), // Chipset
-		Offset(0x3000), // Legacy Configuration Registers
 		Offset(0x3404), // High Performance Timer Configuration
 		HPAS, 2,	// Address Select
 		, 5,

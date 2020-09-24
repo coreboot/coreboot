@@ -119,7 +119,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, PAD_CFG0_RX_STATE_BIT), Local0)
+	Local0 = GPIORXSTATE_MASK & (VAL0 >> PAD_CFG0_RX_STATE_BIT)
 
 	Return (Local0)
 }
@@ -135,7 +135,7 @@ Method (GTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIOTXSTATE_MASK, ShiftRight (VAL0, PAD_CFG0_TX_STATE_BIT), Local0)
+	Local0 = GPIOTXSTATE_MASK & VAL0
 
 	Return (Local0)
 }
@@ -151,7 +151,7 @@ Method (STXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Or (GPIOTXSTATE_MASK, VAL0, VAL0)
+	VAL0 |= GPIOTXSTATE_MASK
 }
 
 /*
@@ -165,5 +165,5 @@ Method (CTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (Not (GPIOTXSTATE_MASK), VAL0, VAL0)
+	VAL0 &= ~GPIOTXSTATE_MASK
 }

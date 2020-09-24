@@ -11,7 +11,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
+	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
 
 	Return (Local0)
 }
@@ -27,7 +27,7 @@ Method (GTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIOTXSTATE_MASK, VAL0, Local0)
+	Local0 = GPIOTXSTATE_MASK & VAL0
 
 	Return (Local0)
 }
@@ -43,7 +43,7 @@ Method (STXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Or (GPIOTXSTATE_MASK, VAL0, VAL0)
+	VAL0 |= GPIOTXSTATE_MASK
 }
 
 /*
@@ -57,7 +57,7 @@ Method (CTXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (Not (GPIOTXSTATE_MASK), VAL0, VAL0)
+	VAL0 &= ~GPIOTXSTATE_MASK
 }
 
 /*
@@ -76,10 +76,9 @@ Method (GPMO, 2, Serialized)
 	{
 		VAL0, 32
 	}
-	Store (VAL0, Local0)
-	And (Not (GPIOPADMODE_MASK), Local0, Local0)
-	And (ShiftLeft (Arg1, GPIOPADMODE_SHIFT, Arg1), GPIOPADMODE_MASK, Arg1)
-	Or (Local0, Arg1, VAL0)
+	Local0 = ~GPIOPADMODE_MASK & VAL0
+	Arg1 = (Arg1 << GPIOPADMODE_SHIFT) & GPIOPADMODE_MASK
+	VAL0 = Local0 | Arg1
 }
 
 /*
@@ -97,10 +96,10 @@ Method (GTXE, 2, Serialized)
 		VAL0, 32
 	}
 
-	If (LEqual (Arg1, 1)) {
-		And (Not (GPIOTXBUFDIS_MASK), VAL0, VAL0)
-	} ElseIf (LEqual (Arg1, 0)){
-		Or (GPIOTXBUFDIS_MASK, VAL0, VAL0)
+	If (Arg1 == 1) {
+		VAL0 &= ~GPIOTXBUFDIS_MASK
+	} ElseIf (Arg1 == 0){
+		VAL0 |= GPIOTXBUFDIS_MASK
 	}
 }
 
@@ -119,9 +118,9 @@ Method (GRXE, 2, Serialized)
 		VAL0, 32
 	}
 
-	If (LEqual (Arg1, 1)) {
-		And (Not (GPIORXBUFDIS_MASK), VAL0, VAL0)
-	} ElseIf (LEqual (Arg1, 0)){
-		Or (GPIORXBUFDIS_MASK, VAL0, VAL0)
+	If (Arg1 == 1) {
+		VAL0 &= ~GPIORXBUFDIS_MASK
+	} ElseIf (Arg1 == 0){
+		VAL0 |= GPIORXBUFDIS_MASK
 	}
 }

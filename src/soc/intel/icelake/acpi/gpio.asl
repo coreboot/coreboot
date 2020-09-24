@@ -114,7 +114,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
+	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
 
 	Return (Local0)
 }

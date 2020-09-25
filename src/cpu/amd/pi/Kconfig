@@ -6,10 +6,7 @@ config CPU_AMD_PI
 	default y if CPU_AMD_PI_00730F01
 	default y if CPU_AMD_PI_00660F01
 	default n
-	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_VERSTAGE_X86_32
-	select ARCH_ROMSTAGE_X86_32
-	select ARCH_RAMSTAGE_X86_32
+	select ARCH_ALL_STAGES_X86_32
 	select DRIVERS_AMD_PI
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC

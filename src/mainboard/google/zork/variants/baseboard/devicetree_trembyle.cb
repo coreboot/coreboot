@@ -210,7 +210,12 @@ chip soc/amd/picasso
 		device pci 0.2 on  end # IOMMU
 		device pci 1.0 on  end # Dummy Host Bridge, must be enabled
 		device pci 1.1 off end # GPP Bridge 0
-		device pci 1.2 on  end # GPP Bridge 1 - Wifi
+		device pci 1.2 on      # GPP Bridge 1 - Wifi
+			chip drivers/wifi/generic
+				register "wake" = "GEVENT_8"
+				device pci 00.0 on  end
+			end
+		end
 		device pci 1.3 on  end # GPP Bridge 2 - SD
 		device pci 1.4 off end # GPP Bridge 3
 		device pci 1.5 off end # GPP Bridge 4

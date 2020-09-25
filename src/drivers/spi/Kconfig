@@ -42,8 +42,20 @@ config BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 	  Provide common implementation of the RW boot device that
 	  doesn't provide mmap() operations.
 
+config BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
+	bool
+	default n
+	depends on BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
+	help
+	  For platforms who do not allow writes to SPI flash in early
+	  stages like romstage.  Not selecting this config will result
+	  in the auto-selection of
+	  BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if
+	  BOOT_DEVICE_SPI_FLASH_RW_NOMMAP is selected by the platform.
+
 config BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY
 	bool
+	default y if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP && !BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
 	default n
 	depends on BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 	help

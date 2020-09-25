@@ -11,7 +11,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = PAD_CFG0_RX_STATE & (VAL0 >> PAD_CFG0_RX_STATE_BIT)
+	Local0 = (PAD_CFG0_RX_STATE & VAL0) >> PAD_CFG0_RX_STATE_BIT
 
 	Return (Local0)
 }

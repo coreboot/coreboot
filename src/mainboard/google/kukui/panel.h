@@ -21,6 +21,7 @@ struct panel_description {
 	const char *name;  /* Panel name for constructing CBFS file name */
 	struct panel_serializable_data *s;
 	void (*power_on)(void);  /* Callback to turn on panel */
+	void (*post_power_on)(void);  /* Callback to run after panel is turned on */
 };
 
 /* Returns the panel description from given ID. */

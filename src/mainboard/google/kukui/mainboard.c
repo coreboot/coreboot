@@ -168,6 +168,10 @@ static bool configure_display(void)
 		printk(BIOS_ERR, "%s: Failed in DSI init.\n", __func__);
 		return false;
 	}
+
+	if (panel->post_power_on)
+		panel->post_power_on();
+
 	mtk_ddp_mode_set(edid);
 	struct fb_info *info = fb_new_framebuffer_info_from_edid(edid, 0);
 	if (info)

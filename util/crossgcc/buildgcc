@@ -1217,7 +1217,7 @@ export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 # Download, unpack, patch and build all packages
 
-printf "Downloading and verifing tarballs ...\n"
+printf "Downloading and verifying tarballs ...\n"
 mkdir -p tarballs
 for P in $PACKAGES; do
 	download "$P" || exit "$?"

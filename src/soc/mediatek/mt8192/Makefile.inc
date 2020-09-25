@@ -55,6 +55,7 @@ ramstage-y += spm.c
 ramstage-y += sspm.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
+ramstage-y += ufs.c
 ramstage-y += ../common/usb.c usb.c
 
 MT8192_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8192

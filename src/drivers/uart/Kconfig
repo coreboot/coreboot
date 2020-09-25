@@ -5,7 +5,7 @@ config DRIVERS_UART_8250IO
 	# FIXME: Shouldn't have a prompt, should default to n, and
 	#        should be selected by boards that have it instead.
 	bool "Serial port on SuperIO"
-	depends on ARCH_X86
+	depends on ARCH_X86 || ARCH_PPC64
 	default n if DRIVERS_UART_8250MEM || HAVE_UART_SPECIAL
 	default n if NO_UART_ON_SUPERIO
 	default y

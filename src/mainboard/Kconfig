@@ -13,10 +13,6 @@ source "src/mainboard/*/Kconfig"
 config MAINBOARD_VENDOR
 	string "Mainboard vendor name"
 
-config BOARD_ROMSIZE_KB_64
-	bool
-config BOARD_ROMSIZE_KB_128
-	bool
 config BOARD_ROMSIZE_KB_256
 	bool
 config BOARD_ROMSIZE_KB_512
@@ -47,8 +43,6 @@ config BOARD_ROMSIZE_KB_65536
 # TODO: No help text possible for choice fields?
 choice
 	prompt "ROM chip size"
-	default COREBOOT_ROMSIZE_KB_64    if BOARD_ROMSIZE_KB_64
-	default COREBOOT_ROMSIZE_KB_128   if BOARD_ROMSIZE_KB_128
 	default COREBOOT_ROMSIZE_KB_256   if BOARD_ROMSIZE_KB_256
 	default COREBOOT_ROMSIZE_KB_512   if BOARD_ROMSIZE_KB_512
 	default COREBOOT_ROMSIZE_KB_1024  if BOARD_ROMSIZE_KB_1024
@@ -67,16 +61,6 @@ choice
 
 	  The build system will take care of creating a coreboot.rom file
 	  of the matching size.
-
-config COREBOOT_ROMSIZE_KB_64
-	bool "64 KB"
-	help
-	  Choose this option if you have a 64 KB ROM chip.
-
-config COREBOOT_ROMSIZE_KB_128
-	bool "128 KB"
-	help
-	  Choose this option if you have a 128 KB ROM chip.
 
 config COREBOOT_ROMSIZE_KB_256
 	bool "256 KB"
@@ -148,8 +132,6 @@ endchoice
 # Map the config names to an integer (KB).
 config COREBOOT_ROMSIZE_KB
 	int
-	default    64 if COREBOOT_ROMSIZE_KB_64
-	default   128 if COREBOOT_ROMSIZE_KB_128
 	default   256 if COREBOOT_ROMSIZE_KB_256
 	default   512 if COREBOOT_ROMSIZE_KB_512
 	default  1024 if COREBOOT_ROMSIZE_KB_1024
@@ -167,8 +149,6 @@ config COREBOOT_ROMSIZE_KB
 # Map the config names to a hex value (bytes).
 config ROM_SIZE
 	hex
-	default 0x00010000 if COREBOOT_ROMSIZE_KB_64
-	default 0x00020000 if COREBOOT_ROMSIZE_KB_128
 	default 0x00040000 if COREBOOT_ROMSIZE_KB_256
 	default 0x00080000 if COREBOOT_ROMSIZE_KB_512
 	default 0x00100000 if COREBOOT_ROMSIZE_KB_1024

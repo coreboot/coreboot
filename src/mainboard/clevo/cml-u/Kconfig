@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "L140CU" if BOARD_CLEVO_L140CU
 
-config MAINBOARD_SMBIOS_PRODUCT_NAME
-	string
-	default "L140CU" if BOARD_CLEVO_L140CU
-
 config MAINBOARD_VERSION
 	string
 	default "2.1A" if BOARD_CLEVO_L140CU

@@ -79,8 +79,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	 * access will be very slow.
 	 */
 	PAD_GPO(GPIO_67, LOW),  // Select Camera 1 Dmic
-	/* EMMC_RESET */
-	PAD_GPO(GPIO_68, LOW),
+	/* EMMC_RESET_L */
+	PAD_GPO(GPIO_68, HIGH),
 	/* RAM ID 3 */
 	PAD_GPI(GPIO_69, PULL_NONE),
 	/* EMMC_CLK */

@@ -72,13 +72,13 @@ Method (GADD, 1, NotSerialized)
 	If ((Arg0 >= GPP_G0) && (Arg0 <= GPP_A23))
 	{
 		Local0 = PID_GPIOCOM0
-		Local1 = Arg0 - GPP_A0
+		Local1 = Arg0 - GPP_G0
 	}
 	/* GPIO Community 1 */
 	If ((Arg0 >= GPP_H0) && (Arg0 <= GPP_F19))
 	{
 		Local0 = PID_GPIOCOM1
-		Local1 = Arg0 - GPP_D0
+		Local1 = Arg0 - GPP_H0
 	}
 	/* GPIO Community 2 */
 	If ((Arg0 >= GPD0) && (Arg0 <= GPD11))

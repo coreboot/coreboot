@@ -9,10 +9,14 @@
 #include <device/pci.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
+#include <arch/ioapic.h>
+#include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <soc/espi.h>
 #include <soc/iomap.h>
+#include <soc/irq.h>
+#include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/soc_chip.h>
 
@@ -49,3 +53,27 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
 }
+
+#if ENV_RAMSTAGE
+void lpc_soc_init(struct device *dev)
+{
+	/* Legacy initialization */
+	isa_dma_init();
+	lpc_pch_misc_init();
+
+	/* Enable CLKRUN_EN for power gating ESPI */
+	lpc_enable_pci_clk_cntl();
+
+	/* Set ESPI Serial IRQ mode */
+	if (CONFIG(SERIRQ_CONTINUOUS_MODE))
+		lpc_set_serirq_mode(SERIRQ_CONTINUOUS);
+	else
+		lpc_set_serirq_mode(SERIRQ_QUIET);
+
+	/* Interrupt configuration */
+	lpc_pch_enable_ioapic();
+	lpc_pch_pirq_init();
+	setup_i8259();
+	i8259_configure_irq_trigger(9, 1);
+}
+#endif

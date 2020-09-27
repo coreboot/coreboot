@@ -16,7 +16,7 @@
 #include <string.h>
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
-		const struct soc_intel_alderlake_dev_config *config)
+		const struct soc_intel_alderlake_config *config)
 {
 	unsigned int i;
 	uint32_t mask = 0;
@@ -159,7 +159,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct soc_intel_alderlake_dev_config *config;
+	const struct soc_intel_alderlake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
 	config = config_of_soc();

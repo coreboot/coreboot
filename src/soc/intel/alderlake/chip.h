@@ -11,6 +11,8 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
+#include <soc/serialio.h>
+#include <soc/usb.h>
 #include <stdint.h>
 
 #define MAX_HD_AUDIO_DMIC_LINKS 2
@@ -177,7 +179,6 @@ struct soc_intel_alderlake_config {
 	uint8_t SkipExtGfxScan;
 
 	uint32_t GraphicsConfigPtr;
-	uint8_t Device4Enable;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
@@ -239,15 +240,24 @@ struct soc_intel_alderlake_config {
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 
-	/* CNVi */
-	uint8_t CnviMode;
-	uint8_t CnviBtCore;
-
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
 		FORCE_DISABLE,
 		FORCE_ENABLE,
 	} CnviBtAudioOffload;
+
+	/*
+	 * IOM Port Config
+	 * If a port orientation needs to be controlled by the SOC this setting must be
+	 * updated to reflect the correct GPIOs being used for the SOC port flipping.
+	 * There are 4 ports each with a pair of GPIOs for Pull Up and Pull Down
+	 * 0,1 are pull up and pull down for port 0
+	 * 2,3 are pull up and pull down for port 1
+	 * 4,5 are pull up and pull down for port 2
+	 * 6,7 are pull up and pull down for port 3
+	 * values to be programmed correspond to the GPIO family and offsets
+	 */
+	uint32_t IomTypeCPortPadCfg[8];
 
 	/*
 	 * SOC Aux orientation override:

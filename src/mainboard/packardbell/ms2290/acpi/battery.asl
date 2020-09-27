@@ -53,7 +53,7 @@ Method(BINF, 2, Serialized)
 	Store(Local2, Index(Arg0, 2))	// Last full charge capacity
 	Store(1, PAGE)
 	Store(BADV, Index(Arg0, 4))	// Design Voltage
-	Divide (Local2, 20, Local0, Index(Arg0, 5)) // Warning capacity
+	Divide (Local2, 20, , Index(Arg0, 5)) // Warning capacity
 
 	Store(1, PAGE)
 	Store (BASN, Local0)

@@ -50,4 +50,13 @@ const void *vpd_find(const char *key, int *size, enum vpd_region region);
 bool vpd_get_bool(const char *key, enum vpd_region region,
 	uint8_t *val);
 
+/*
+ * Find value of integer type by vpd key.
+ *
+ * Expects to find a decimal string, trailing chars are ignored.
+ * Returns true if the key is found and the value is not too long and
+ * starts with a decimal digit.
+ */
+bool vpd_get_int(const char *key, enum vpd_region region, int *val);
+
 #endif  /* __VPD_H__ */

@@ -3,10 +3,12 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <ctype.h>
 #include <fmap.h>
 #include <program_loading.h>
 #include <string.h>
 #include <timestamp.h>
+#include <types.h>
 
 #include "vpd.h"
 #include "vpd_decode.h"
@@ -272,6 +274,27 @@ bool vpd_get_bool(const char *key, enum vpd_region region, uint8_t *val)
 		return true;
 	} else
 		return false;
+}
+
+/*
+ * Find value of integer type by vpd key.
+ *
+ * Expects to find a decimal string, trailing chars are ignored.
+ * Returns true if the key is found and the value is not too long and
+ * starts with a decimal digit. Leaves `val` untouched if unsuccessful.
+ */
+bool vpd_get_int(const char *const key, const enum vpd_region region, int *const val)
+{
+	char value[11];
+
+	if (!vpd_gets(key, value, sizeof(value), region))
+		return false;
+
+	if (!isdigit(*value))
+		return false;
+
+	*val = (int)atol(value);
+	return true;
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(cbmem_add_cros_vpd)

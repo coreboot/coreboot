@@ -4,7 +4,7 @@
 
 Device (HDAS)
 {
-	Name (_ADR, 0x001F0003)
+	Name (_ADR, 0x001f0003)
 	Name (_DDN, "Audio Controller")
 	Name (UUID, ToUUID ("A69F886E-6CEB-4594-A41F-7B5DCE24C553"))
 

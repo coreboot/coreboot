@@ -3,7 +3,7 @@
 #include <intelblocks/sd.h>
 #include "chip.h"
 
-int sd_fill_soc_gpio_info(struct acpi_gpio* gpio, const struct device *dev)
+int sd_fill_soc_gpio_info(struct acpi_gpio *gpio, const struct device *dev)
 {
 	config_t *config = config_of(dev);
 

@@ -12,7 +12,7 @@
 
 /* Host Firmware Status Register 2 */
 union me_hfsts2 {
-	uint32_t raw;
+	uint32_t data;
 	struct {
 		uint32_t nftp_load_failure	: 1;
 		uint32_t icc_prog_status	: 2;
@@ -36,7 +36,7 @@ union me_hfsts2 {
 
 /* Host Firmware Status Register 4 */
 union me_hfsts4 {
-	uint32_t raw;
+	uint32_t data;
 	struct {
 		uint32_t rsvd0			: 9;
 		uint32_t enforcement_flow	: 1;
@@ -52,7 +52,7 @@ union me_hfsts4 {
 
 /* Host Firmware Status Register 5 */
 union me_hfsts5 {
-	uint32_t raw;
+	uint32_t data;
 	struct {
 		uint32_t acm_active		: 1;
 		uint32_t valid			: 1;
@@ -71,7 +71,7 @@ union me_hfsts5 {
 
 /* Host Firmware Status Register 6 */
 union me_hfsts6 {
-	uint32_t raw;
+	uint32_t data;
 	struct {
 		uint32_t force_boot_guard_acm	: 1;
 		uint32_t cpu_debug_disable	: 1;
@@ -107,24 +107,18 @@ void dump_me_status(void *unused)
 		return;
 
 	hfsts1.data = me_read_config32(PCI_ME_HFSTS1);
-	hfsts2.raw = me_read_config32(PCI_ME_HFSTS2);
+	hfsts2.data = me_read_config32(PCI_ME_HFSTS2);
 	hfsts3.data = me_read_config32(PCI_ME_HFSTS3);
-	hfsts4.raw = me_read_config32(PCI_ME_HFSTS4);
-	hfsts5.raw = me_read_config32(PCI_ME_HFSTS5);
-	hfsts6.raw = me_read_config32(PCI_ME_HFSTS6);
+	hfsts4.data = me_read_config32(PCI_ME_HFSTS4);
+	hfsts5.data = me_read_config32(PCI_ME_HFSTS5);
+	hfsts6.data = me_read_config32(PCI_ME_HFSTS6);
 
-	printk(BIOS_DEBUG, "ME: HFSTS1                  : 0x%08X\n",
-		hfsts1.data);
-	printk(BIOS_DEBUG, "ME: HFSTS2                  : 0x%08X\n",
-		hfsts2.raw);
-	printk(BIOS_DEBUG, "ME: HFSTS3                  : 0x%08X\n",
-		hfsts3.data);
-	printk(BIOS_DEBUG, "ME: HFSTS4                  : 0x%08X\n",
-		hfsts4.raw);
-	printk(BIOS_DEBUG, "ME: HFSTS5                  : 0x%08X\n",
-		hfsts5.raw);
-	printk(BIOS_DEBUG, "ME: HFSTS6                  : 0x%08X\n",
-		hfsts6.raw);
+	printk(BIOS_DEBUG, "ME: HFSTS1                  : 0x%08X\n", hfsts1.data);
+	printk(BIOS_DEBUG, "ME: HFSTS2                  : 0x%08X\n", hfsts2.data);
+	printk(BIOS_DEBUG, "ME: HFSTS3                  : 0x%08X\n", hfsts3.data);
+	printk(BIOS_DEBUG, "ME: HFSTS4                  : 0x%08X\n", hfsts4.data);
+	printk(BIOS_DEBUG, "ME: HFSTS5                  : 0x%08X\n", hfsts5.data);
+	printk(BIOS_DEBUG, "ME: HFSTS6                  : 0x%08X\n", hfsts6.data);
 
 	printk(BIOS_DEBUG, "ME: Manufacturing Mode      : %s\n",
 		hfsts1.fields.mfg_mode ? "YES" : "NO");
@@ -159,5 +153,6 @@ void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: TXT Support             : %s\n",
 		hfsts6.fields.txt_support ? "YES" : "NO");
 }
+
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_fw_version, NULL);
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_EXIT, dump_me_status, NULL);

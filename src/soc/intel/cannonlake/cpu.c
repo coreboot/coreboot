@@ -54,8 +54,9 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	config_t *conf = config_of_soc();
 	msr_t msr;
+
+	config_t *conf = config_of_soc();
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */
@@ -103,6 +104,33 @@ static void configure_dca_cap(void)
 		msr.lo |= 1;
 		wrmsr(IA32_PLATFORM_DCA_CAP, msr);
 	}
+}
+
+/*
+ * The emulated ACPI timer allows replacing of the ACPI timer
+ * (PM1_TMR) to have no impart on the system.
+ */
+static void enable_pm_timer_emulation(void)
+{
+	const struct soc_intel_cannonlake_config *config;
+	msr_t msr;
+
+	config = config_of_soc();
+
+	/* Enable PM timer emulation only if ACPI PM timer is disabled */
+	if (!config->PmTimerDisabled)
+		return;
+	/*
+	 * The derived frequency is calculated as follows:
+	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer
+	 * frequency is used.
+	 */
+	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	/* Set PM1 timer IO port and enable */
+	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
+			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
+	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 static void set_energy_perf_bias(u8 policy)
@@ -153,33 +181,6 @@ static void configure_c_states(void)
 	msr.lo = IRTL_VALID | IRTL_32768_NS |
 		C_STATE_LATENCY_CONTROL_5_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
-}
-
-/*
- * The emulated ACPI timer allows replacing of the ACPI timer
- * (PM1_TMR) to have no impart on the system.
- */
-static void enable_pm_timer_emulation(void)
-{
-	const struct soc_intel_cannonlake_config *config;
-	msr_t msr;
-
-	config = config_of_soc();
-
-	/* Enable PM timer emulation only if ACPI PM timer is disabled */
-	if (!config->PmTimerDisabled)
-		return;
-	/*
-	 * The derived frequency is calculated as follows:
-	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer
-	 * frequency is used.
-	 */
-	msr.hi = (3579545ULL << 32) / CTC_FREQ;
-	/* Set PM1 timer IO port and enable */
-	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
-			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 /* All CPUs including BSP will run the following function. */

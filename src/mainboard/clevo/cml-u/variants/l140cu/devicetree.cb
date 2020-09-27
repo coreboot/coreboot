@@ -138,7 +138,6 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[5]" = "1"
 			register "PcieClkSrcUsage[3]" = "5"
 			register "PcieClkSrcClkReq[3]" = "3"
-			register "PcieRpSlotImplemented[5]" = "1"
 		end
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 on	# PCI Express Port 8

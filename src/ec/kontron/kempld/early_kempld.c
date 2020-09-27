@@ -43,13 +43,11 @@ void kempld_enable_uart_for_console(void)
 	switch (CONFIG_UART_FOR_CONSOLE) {
 	case 0:
 		kempld_write8(KEMPLD_UART_0,
-			      KEMPLD_UART_ENABLE |
-				KEMPLD_UART_3F8 << KEMPLD_UART_IO_SHIFT);
+			      KEMPLD_UART_ENABLE | KEMPLD_UART_3F8 << KEMPLD_UART_IO_SHIFT);
 		break;
 	case 1:
 		kempld_write8(KEMPLD_UART_1,
-			      KEMPLD_UART_ENABLE |
-				KEMPLD_UART_2F8 << KEMPLD_UART_IO_SHIFT);
+			      KEMPLD_UART_ENABLE | KEMPLD_UART_2F8 << KEMPLD_UART_IO_SHIFT);
 		break;
 	default:
 		break;

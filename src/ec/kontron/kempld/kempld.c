@@ -16,21 +16,20 @@ static void kempld_uart_read_resources(struct device *dev)
 	struct resource *const res_io = new_resource(dev, 0);
 	struct resource *const res_irq = new_resource(dev, 1);
 	const unsigned int uart = dev->path.generic.subid;
+
 	if (!config || !res_io || !res_irq || uart >= KEMPLD_NUM_UARTS)
 		return;
 
 	const enum kempld_uart_io io = config->uart[uart].io;
 	if (io >= ARRAY_SIZE(io_addr)) {
-		printk(BIOS_ERR, "KEMPLD: Bad io value '%d' for UART#%u\n.",
-		       io, uart);
+		printk(BIOS_ERR, "KEMPLD: Bad io value '%d' for UART#%u\n.", io, uart);
 		dev->enabled = false;
 		return;
 	}
 
 	const int irq = config->uart[uart].irq;
 	if (irq >= 16) {
-		printk(BIOS_ERR, "KEMPLD: Bad irq value '%d' for UART#%u\n.",
-		       irq, uart);
+		printk(BIOS_ERR, "KEMPLD: Bad irq value '%d' for UART#%u\n.", irq, uart);
 		dev->enabled = false;
 		return;
 	}
@@ -49,9 +48,10 @@ static void kempld_uart_read_resources(struct device *dev)
 
 	const uint8_t reg = uart ? KEMPLD_UART_1 : KEMPLD_UART_0;
 	const uint8_t val = kempld_read8(reg);
-	kempld_write8(reg, (val & ~(KEMPLD_UART_IO_MASK | KEMPLD_UART_IRQ_MASK))
-			   | io << KEMPLD_UART_IO_SHIFT
-			   | irq << KEMPLD_UART_IRQ_SHIFT);
+	kempld_write8(reg,
+			   (val & ~(KEMPLD_UART_IO_MASK | KEMPLD_UART_IRQ_MASK)) |
+			   io << KEMPLD_UART_IO_SHIFT |
+			   irq << KEMPLD_UART_IRQ_SHIFT);
 
 	kempld_release_mutex();
 }
@@ -90,9 +90,7 @@ static void kempld_enable_dev(struct device *const dev)
 			}
 			/* Fall through. */
 		default:
-			printk(BIOS_WARNING,
-			       "KEMPLD: Spurious device %s.\n",
-			       dev_path(dev));
+			printk(BIOS_WARNING, "KEMPLD: Spurious device %s.\n", dev_path(dev));
 			break;
 		}
 	}

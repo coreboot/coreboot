@@ -8,40 +8,25 @@
 #include <option.h>
 #include <version.h>
 
-/* Mutable console log level only allowed when RAM comes online. */
-#define CONSOLE_LEVEL_CONST !ENV_STAGE_HAS_DATA_SECTION
+#define FIRST_CONSOLE (ENV_BOOTBLOCK || (CONFIG(NO_BOOTBLOCK_CONSOLE) && ENV_ROMSTAGE))
 
 static int console_inited;
-static int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+static int console_loglevel;
 
 static inline int get_log_level(void)
 {
 	if (console_inited == 0)
 		return -1;
-	if (CONSOLE_LEVEL_CONST)
-		return get_console_loglevel();
 
 	return console_loglevel;
 }
 
-static inline void set_log_level(int new_level)
-{
-	if (CONSOLE_LEVEL_CONST)
-		return;
-
-	console_loglevel = new_level;
-}
-
 static void init_log_level(void)
 {
-	int debug_level = get_console_loglevel();
+	console_loglevel = get_console_loglevel();
 
-	if (CONSOLE_LEVEL_CONST)
-		return;
-
-	get_option(&debug_level, "debug_level");
-
-	set_log_level(debug_level);
+	if (!FIRST_CONSOLE)
+		get_option(&console_loglevel, "debug_level");
 }
 
 int console_log_level(int msg_level)

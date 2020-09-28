@@ -36,7 +36,7 @@ static void nct5572d_init(struct device *dev)
 		mouse_detected = pc_keyboard_init(PROBE_AUX_DEVICE);
 
 		if (!mouse_detected) {
-			printk(BIOS_INFO, "%s: Disable mouse controller.",
+			printk(BIOS_INFO, "%s: Disable mouse controller.\n",
 					__func__);
 			pnp_enter_conf_mode(dev);
 			byte = pnp_read_config(dev, 0x2a);

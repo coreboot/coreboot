@@ -89,7 +89,8 @@ typedef struct SystemMemoryMapElement {
 } SYSTEM_MEMORY_MAP_ELEMENT;
 
 typedef struct DimmDevice {
-	UINT8    reserved1[2];
+	UINT8    Present;
+	UINT8    reserved1[1];
 	UINT8    DcpmmPresent;
 	UINT8    reserved2[1];
 	UINT8    NumRanks;
@@ -139,22 +140,24 @@ typedef struct SystemMemoryMapHob {
   UINT32   memSize;                               // Total physical memory size
   UINT16   memFreq;                               // Mem Frequency
 
-  UINT8    reserved2[61];
+  UINT8    reserved2[22];
 
+  UINT8    DdrVoltage;
+  UINT8    reserved3[38];
   UINT8    NumChPerMC;
   UINT8    numberEntries;                         // Number of Memory Map Elements
   SYSTEM_MEMORY_MAP_ELEMENT Element[(MAX_SOCKET * MAX_DRAM_CLUSTERS * MAX_SAD_RULES) + MAX_FPGA_REMOTE_SAD_RULES];
-  UINT8    reserved3[2213];
+  UINT8    reserved4[2213];
   MEMMAP_SOCKET Socket[MAX_SOCKET];
-  UINT8    reserved4[1603];
+  UINT8    reserved5[1603];
 
   UINT16  BiosFisVersion;                              // Firmware Interface Specification version currently supported by BIOS
 
-  UINT8    reserved5[24];
+  UINT8    reserved6[24];
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 
-  UINT8    reserved6[5];
+  UINT8    reserved7[5];
 
 } SYSTEM_MEMORY_MAP_HOB;
 

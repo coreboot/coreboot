@@ -605,16 +605,16 @@ static int get_stack_for_port(int port)
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
  */
 static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
-	int port, int stack, const IIO_RESOURCE_INSTANCE *iio_resource, uint32_t pcie_seg,
+	int port, int stack, IIO_RESOURCE_INSTANCE iio_resource, uint32_t pcie_seg,
 	bool is_atsr, bool *first)
 {
 
 	if (get_stack_for_port(port) != stack)
 		return 0;
 
-	const uint32_t bus = iio_resource->StackRes[stack].BusBase;
-	const uint32_t dev = iio_resource->PcieInfo.PortInfo[port].Device;
-	const uint32_t func = iio_resource->PcieInfo.PortInfo[port].Function;
+	const uint32_t bus = iio_resource.StackRes[stack].BusBase;
+	const uint32_t dev = iio_resource.PcieInfo.PortInfo[port].Device;
+	const uint32_t func = iio_resource.PcieInfo.PortInfo[port].Function;
 
 	const uint32_t id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
 		PCI_VENDOR_ID);
@@ -703,8 +703,8 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 
 	// Add PCIe Ports
 	if (socket != 0 || stack != CSTACK) {
-		const IIO_RESOURCE_INSTANCE *iio_resource =
-			&hob->PlatformData.IIO_resource[socket];
+		IIO_RESOURCE_INSTANCE iio_resource =
+			hob->PlatformData.IIO_resource[socket];
 		for (int p = PORT_0; p < MAX_PORTS; ++p)
 			current += acpi_create_dmar_ds_pci_br_for_port(current, p, stack,
 				iio_resource, pcie_seg, false, NULL);
@@ -748,12 +748,12 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 		uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
 		unsigned long tmp = current;
 		bool first = true;
-		const IIO_RESOURCE_INSTANCE *iio_resource =
-			&hob->PlatformData.IIO_resource[socket];
+		IIO_RESOURCE_INSTANCE iio_resource =
+			hob->PlatformData.IIO_resource[socket];
 
 		for (int stack = 0; stack <= PSTACK2; ++stack) {
-			uint32_t bus = iio_resource->StackRes[stack].BusBase;
-			uint32_t vtd_base = iio_resource->StackRes[stack].VtdBarAddress;
+			uint32_t bus = iio_resource.StackRes[stack].BusBase;
+			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
 			if (!vtd_base)
 				continue;
 			uint64_t vtd_mmio_cap = read64((void *)(vtd_base + VTD_EXT_CAP_LOW));
@@ -821,10 +821,10 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 	assert(hob != NULL && hob_size != 0);
 
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
-		IIO_RESOURCE_INSTANCE *iio_resource =
-			&hob->PlatformData.IIO_resource[socket];
+		IIO_RESOURCE_INSTANCE iio_resource =
+			hob->PlatformData.IIO_resource[socket];
 		for (int stack = 0; stack <= PSTACK2; ++stack) {
-			uint32_t vtd_base = iio_resource->StackRes[stack].VtdBarAddress;
+			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
 			if (!vtd_base)
 				continue;
 

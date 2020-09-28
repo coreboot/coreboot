@@ -373,6 +373,17 @@ void get_iiostack_info(struct iiostack_resource *info)
 }
 
 #if ENV_RAMSTAGE
+const struct SystemMemoryMapHob *get_system_memory_map(void)
+{
+	size_t hob_size;
+	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
+	const struct SystemMemoryMapHob *memmap_addr;
+
+	memmap_addr = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
+	assert(memmap_addr != NULL && hob_size != 0);
+
+	return memmap_addr;
+}
 
 void xeonsp_init_cpu_config(void)
 {

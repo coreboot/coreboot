@@ -179,13 +179,11 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 {
 	const struct SystemMemoryMapHob *memory_map;
-	size_t hob_size;
-	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
 	unsigned int mmap_index;
 
-	memory_map = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
-	assert(memory_map != NULL && hob_size != 0);
-	printk(BIOS_DEBUG, "FSP_SYSTEM_MEMORYMAP_HOB_GUID hob_size: %ld\n", hob_size);
+	memory_map = get_system_memory_map();
+	assert(memory_map != NULL);
+	printk(BIOS_DEBUG, "memory_map: %p\n", memory_map);
 
 	mmap_index = 0;
 	for (int e = 0; e < memory_map->numberEntries; ++e) {

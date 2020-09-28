@@ -30,6 +30,7 @@ void get_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits);
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits,
 	uint32_t thread_bits, uint8_t *package, uint8_t *core, uint8_t *thread);
 
+const struct SystemMemoryMapHob *get_system_memory_map(void);
 void xeonsp_init_cpu_config(void);
 void set_bios_init_completion(void);
 void config_reset_cpl3_csrs(void);

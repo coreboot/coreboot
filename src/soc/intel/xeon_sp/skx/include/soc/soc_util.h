@@ -27,7 +27,6 @@ int get_threads_per_package(void);
 int get_platform_thread_count(void);
 void get_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits);
 
-unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem);
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits,
 	uint32_t thread_bits, uint8_t *package, uint8_t *core, uint8_t *thread);
 

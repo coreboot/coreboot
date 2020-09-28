@@ -176,6 +176,67 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	return current;
 }
 
+static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
+{
+	const struct SystemMemoryMapHob *memory_map;
+	size_t hob_size;
+	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
+	unsigned int mmap_index;
+
+	memory_map = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
+	assert(memory_map != NULL && hob_size != 0);
+	printk(BIOS_DEBUG, "FSP_SYSTEM_MEMORYMAP_HOB_GUID hob_size: %ld\n", hob_size);
+
+	mmap_index = 0;
+	for (int e = 0; e < memory_map->numberEntries; ++e) {
+		const struct SystemMemoryMapElement *mem_element = &memory_map->Element[e];
+		uint64_t addr =
+			(uint64_t) ((uint64_t)mem_element->BaseAddress <<
+				MEM_ADDR_64MB_SHIFT_BITS);
+		uint64_t size =
+			(uint64_t) ((uint64_t)mem_element->ElementSize <<
+				MEM_ADDR_64MB_SHIFT_BITS);
+
+		printk(BIOS_DEBUG, "memory_map %d addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
+			"ElementSize: 0x%x, reserved: %d\n",
+			e, addr, mem_element->BaseAddress, size,
+			mem_element->ElementSize, (mem_element->Type & MEM_TYPE_RESERVED));
+
+		assert(mmap_index < MAX_ACPI_MEMORY_AFFINITY_COUNT);
+
+		/* skip reserved memory region */
+		if (mem_element->Type & MEM_TYPE_RESERVED)
+			continue;
+
+		/* skip if this address is already added */
+		bool skip = false;
+		for (int idx = 0; idx < mmap_index; ++idx) {
+			uint64_t base_addr = ((uint64_t)srat_mem[idx].base_address_high << 32) +
+				srat_mem[idx].base_address_low;
+			if (addr == base_addr) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+		srat_mem[mmap_index].type = 1; /* Memory affinity structure */
+		srat_mem[mmap_index].length = sizeof(acpi_srat_mem_t);
+		srat_mem[mmap_index].base_address_low = (uint32_t) (addr & 0xffffffff);
+		srat_mem[mmap_index].base_address_high = (uint32_t) (addr >> 32);
+		srat_mem[mmap_index].length_low = (uint32_t) (size & 0xffffffff);
+		srat_mem[mmap_index].length_high = (uint32_t) (size >> 32);
+		srat_mem[mmap_index].proximity_domain = mem_element->SocketId;
+		srat_mem[mmap_index].flags = SRAT_ACPI_MEMORY_ENABLED;
+		if ((mem_element->Type & MEMTYPE_VOLATILE_MASK) == 0)
+			srat_mem[mmap_index].flags |= SRAT_ACPI_MEMORY_NONVOLATILE;
+		++mmap_index;
+	}
+
+	return mmap_index;
+}
+
 static unsigned long acpi_fill_srat(unsigned long current)
 {
 	acpi_srat_mem_t srat_mem[MAX_ACPI_MEMORY_AFFINITY_COUNT];

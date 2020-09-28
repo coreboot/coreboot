@@ -81,9 +81,9 @@ static void pch_finalize_script(struct device *dev)
 
 	/* Disable XTAL shutdown qualification for low power idle. */
 	if (config->s0ix_enable) {
-		reg32 = read32(pmcbase + CIR31C);
+		reg32 = read32(pmcbase + CPPMVRIC);
 		reg32 |= XTALSDQDIS;
-		write32(pmcbase + CIR31C, reg32);
+		write32(pmcbase + CPPMVRIC, reg32);
 	}
 
 	/* we should disable Heci1 based on the devicetree policy */

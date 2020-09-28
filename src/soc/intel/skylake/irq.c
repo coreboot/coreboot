@@ -264,16 +264,16 @@ void soc_pch_pirq_init(const struct device *dev)
 
 		switch (int_pin) {
 		case 1: /* INTA# */
-			int_line = pch_interrupt_routing[0];
+			int_line = PCH_IRQ11;
 			break;
 		case 2: /* INTB# */
-			int_line = pch_interrupt_routing[1];
+			int_line = PCH_IRQ10;
 			break;
 		case 3: /* INTC# */
-			int_line = pch_interrupt_routing[2];
+			int_line = PCH_IRQ11;
 			break;
 		case 4: /* INTD# */
-			int_line = pch_interrupt_routing[3];
+			int_line = PCH_IRQ11;
 			break;
 		}
 

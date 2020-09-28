@@ -11,6 +11,4 @@
 
 #define PCH_P2SB_EPMASK0		0xB0
 
-#define PCH_PWRM_ACPI_TMR_CTL		0xFC
-
 #endif /* _SOC_P2SB_H_ */

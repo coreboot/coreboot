@@ -77,6 +77,7 @@
 #define  DSX_EN_LAN_WAKE_PIN	(1 << 0)
 #define PMSYNC_TPR_CFG		0xc4
 #define  PMSYNC_LOCK		(1 << 31)
+#define PCH_PWRM_ACPI_TMR_CTL	0xfc
 #define GPIO_GPE_CFG		0x120
 #define  GPE0_DWX_MASK		0xf
 #define GPE0_DW_SHIFT(x)	(4*(x))

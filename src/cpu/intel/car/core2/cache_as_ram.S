@@ -7,6 +7,8 @@
 .section .init
 .global bootblock_pre_c_entry
 
+#include <cpu/intel/car/cache_as_ram_symbols.inc>
+
 .code32
 _cache_as_ram_setup:
 
@@ -92,7 +94,7 @@ addrsize_set_high:
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
-	movl	$_car_mtrr_mask, %eax
+	movl	car_mtrr_mask, %eax
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
@@ -119,8 +121,8 @@ addrsize_set_high:
 	/* Clear the cache memory region. This will also fill up the cache. */
 	cld
 	xorl	%eax, %eax
-	movl	$_car_mtrr_start, %edi
-	movl	$_car_mtrr_size, %ecx
+	movl	car_mtrr_start, %edi
+	movl	car_mtrr_size, %ecx
 	shr	$2, %ecx
 	rep	stosl
 
@@ -134,12 +136,12 @@ addrsize_set_high:
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
 	movl	$_program, %eax
-	andl	$_xip_mtrr_mask, %eax
+	andl	xip_mtrr_mask, %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$_xip_mtrr_mask, %eax
+	movl	xip_mtrr_mask, %eax
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
@@ -157,6 +159,16 @@ addrsize_set_high:
 	andl	$0xfffffff0, %esp
 	subl	$4, %esp
 
+#if ENV_X86_64
+
+	#include <cpu/x86/64bit/entry64.inc>
+
+	movd	%mm2, %rdi
+	shlq	$32, %rdi
+	movd	%mm1, %rsi
+	or	%rsi, %rdi
+	movd	%mm0, %rsi
+#else
 	/* push TSC and BIST to stack */
 	movd	%mm0, %eax
 	pushl	%eax	/* BIST */
@@ -164,6 +176,7 @@ addrsize_set_high:
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm1, %eax
 	pushl	%eax	/* tsc[31:0] */
+#endif
 
 before_c_entry:
 	post_code(0x29)

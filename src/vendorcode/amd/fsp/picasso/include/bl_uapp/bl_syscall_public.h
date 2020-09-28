@@ -54,6 +54,11 @@
 #define SVC_SHA				0x46
 #define SVC_RSAPKCS_VERIFY		0x47
 
+/* Bit definitions for the psp_info field in the PSP transfer_info_struct */
+#define PSP_INFO_PRODUCTION_MODE	0x00000001UL
+#define PSP_INFO_PRODUCTION_SILICON	0x00000002UL
+#define PSP_INFO_VALID			0x80000000UL
+
 typedef struct _RSAPSS_VERIFY_PARAMS_T
 {
 	char		*pHash;         // Message digest to verify the RSA signature

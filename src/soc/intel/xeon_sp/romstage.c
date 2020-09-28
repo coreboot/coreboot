@@ -41,7 +41,7 @@ asmlinkage void car_stage_entry(void)
 
 	/* Cache the memory-mapped boot media. */
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
-
+	save_dimm_info();
 	run_postcar_phase(&pcf);
 }
 
@@ -54,3 +54,4 @@ __weak void mainboard_rtc_failed(void)
 {
 
 }
+__weak void save_dimm_info(void) { }

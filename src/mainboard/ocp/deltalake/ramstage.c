@@ -128,7 +128,6 @@ static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 	}
 }
 
-#if CONFIG(GENERATE_SMBIOS_TABLES)
 static int create_smbios_type9(int *handle, unsigned long *current)
 {
 	int index;
@@ -234,7 +233,17 @@ static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long 
 
 	return len;
 }
-#endif
+
+void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17 *t)
+{
+	char buf[40];
+
+	snprintf(buf, sizeof(buf), "DIMM %c0", 'A' + dimm->channel_num);
+	t->device_locator = smbios_add_string(t->eos, buf);
+
+	snprintf(buf, sizeof(buf), "_Node0_Channel%d_Dimm0", dimm->channel_num);
+	t->bank_locator = smbios_add_string(t->eos, buf);
+}
 
 unsigned int smbios_processor_family(struct cpuid_result res)
 {
@@ -251,9 +260,7 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->get_smbios_strings = dl_oem_smbios_strings,
 	read_fru_areas(CONFIG_BMC_KCS_BASE, CONFIG_FRU_DEVICE_ID, 0, &fru_strings);
-#if (CONFIG(GENERATE_SMBIOS_TABLES))
 	dev->ops->get_smbios_data = mainboard_smbios_data;
-#endif
 }
 
 void mainboard_silicon_init_params(FSPS_UPD *params)

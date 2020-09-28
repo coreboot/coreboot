@@ -52,6 +52,13 @@ uint32_t soc_read_sci_irq_select(void)
 	return pci_read_config32(dev, PMC_ACPI_CNT);
 }
 
+void soc_fill_fadt(acpi_fadt_t *fadt)
+{
+	/* Clear flags set by common/block/acpi/acpi.c acpi_fill_fadt() */
+	fadt->flags &=  ~(ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_SEALED_CASE |
+				ACPI_FADT_S4_RTC_WAKE);
+}
+
 /*
  * Currently called in southbridge_inject_dsdt(). Change to soc_southbridge_inject_dsdt()
  * with a call from the common/function or find another way to call this at the correct place

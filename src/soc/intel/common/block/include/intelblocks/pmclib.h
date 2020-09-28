@@ -229,4 +229,10 @@ void pmc_set_power_failure_state(bool target_on);
 uint8_t get_pm_pwr_cyc_dur(uint8_t slp_s4_min_assert, uint8_t slp_s3_min_assert,
 					uint8_t slp_a_min_assert, uint8_t pm_pwr_cyc_dur);
 
+/* Disabling ACPI PM timer to ensure switches off TCO and necessary of XTAL OSC shutdown */
+void pmc_disable_acpi_timer(void);
+
+/* Disable XTAL shutdown qualification for low power idle. */
+void pmc_ignore_xtal_shutdown(void);
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

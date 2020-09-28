@@ -8,6 +8,8 @@
 #define LPSS_UART1_IRQ  5       /* Need to be shared by PMC and SCC only*/
 #define LPSS_UART2_IRQ  6       /* Need to be shared by PMC and SCC only*/
 #define LPSS_UART3_IRQ  7       /* Need to be shared by PMC and SCC only*/
+#define PCH_IRQ10       10
+#define PCH_IRQ11       11
 #define XDCI_INT        13      /* Need to be shared by PMC and SCC only*/
 #define GPIO_BANK_INT   14
 #define NPK_INT         16

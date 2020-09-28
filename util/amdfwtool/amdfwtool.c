@@ -57,10 +57,6 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#ifndef CONFIG_ROM_SIZE
-#define CONFIG_ROM_SIZE 0x400000
-#endif
-
 #define AMD_ROMSIG_OFFSET	0x20000
 #define MIN_ROM_KB		256
 
@@ -1330,9 +1326,7 @@ int main(int argc, char **argv)
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL;
-	context ctx = {
-		.rom_size = CONFIG_ROM_SIZE,
-	};
+	context ctx = { 0 };
 	/* Values cleared after each firmware or parameter, regardless if N/A */
 	uint8_t sub = 0, instance = 0;
 	int abl_image = 0;

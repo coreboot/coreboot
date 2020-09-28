@@ -25,11 +25,41 @@
 
 #include "chip.h"
 
-#define SCI_INT_NUM		9
+static int acpi_sci_irq(void)
+{
+	int sci_irq = 9;
+	uint32_t scis;
+
+	scis = soc_read_sci_irq_select();
+	scis &= SCI_IRQ_SEL;
+	scis >>= SCI_IRQ_ADJUST;
+
+	/* Determine how SCI is routed. */
+	switch (scis) {
+	case SCIS_IRQ9:
+	case SCIS_IRQ10:
+	case SCIS_IRQ11:
+		sci_irq = scis - SCIS_IRQ9 + 9;
+		break;
+	case SCIS_IRQ20:
+	case SCIS_IRQ21:
+	case SCIS_IRQ22:
+	case SCIS_IRQ23:
+		sci_irq = scis - SCIS_IRQ20 + 20;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
+		sci_irq = 9;
+		break;
+	}
+
+	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
+	return sci_irq;
+}
 
 static unsigned long acpi_madt_irq_overrides(unsigned long current)
 {
-	int sci = SCI_INT_NUM;
+	int sci = acpi_sci_irq();
 	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
 
 	/* INT_SRC_OVR */
@@ -103,7 +133,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
 	fadt->header.revision = get_acpi_table_revision(FADT);
-	fadt->sci_int = SCI_INT_NUM;
+
+	fadt->sci_int = acpi_sci_irq();
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
 	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;

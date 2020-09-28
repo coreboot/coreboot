@@ -76,4 +76,8 @@ struct soc_intel_xeon_sp_skx_config {
 
 typedef struct soc_intel_xeon_sp_skx_config config_t;
 
+/* soc acpi function prototypes. To be removed when acpi.c is replaced by common/acpi.c */
+void uncore_inject_dsdt(void);
+unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);
+
 #endif

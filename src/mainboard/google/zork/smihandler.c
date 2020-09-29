@@ -33,5 +33,11 @@ int mainboard_smi_apmc(u8 apmc)
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS,
 					MAINBOARD_EC_SMI_EVENTS);
+
+	/* Temporary fix - Needs to go into ACPI instead */
+	/* Turn on the backlight when we go to ACPI mode */
+	if (apmc == APM_CNT_ACPI_ENABLE)
+		gpio_set(GPIO_85, 0);
+
 	return 0;
 }

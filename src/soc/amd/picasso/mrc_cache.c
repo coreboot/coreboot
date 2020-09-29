@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <assert.h>
 #include <boot_device.h>
-#include <bootstate.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>

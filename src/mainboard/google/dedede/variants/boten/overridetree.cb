@@ -10,7 +10,7 @@ chip soc/intel/jasperlake
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
 	#| I2C1              | Digitizer                 |
-	#| I2C2              | Touchscreen               |
+	#| I2C2              | Touchscreen, Stylus       |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -107,6 +107,18 @@ chip soc/intel/jasperlake
 			end
 		end # I2C 0
 		device pci 15.2 on
+                        chip drivers/generic/gpio_keys
+                                register "name" = ""PENH""
+                                register "gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_C12)"
+                                register "key.wake_gpe" = "GPE0_DW1_12"
+                                register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
+                                register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+                                register "key.dev_name" = ""EJCT""
+                                register "key.linux_code" = "SW_PEN_INSERTED"
+                                register "key.linux_input_type" = "EV_SW"
+                                register "key.label" = ""pen_eject""
+                                device generic 0 on end
+                        end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""

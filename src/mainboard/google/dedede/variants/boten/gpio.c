@@ -7,6 +7,8 @@
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
+	/* C12 : AP_PEN_DET_ODL */
+	PAD_CFG_GPI_SCI(GPP_C12, NONE, DEEP, EDGE_SINGLE, NONE),
 	/* C18 : AP_I2C_EMR_SDA */
 	PAD_NC(GPP_C18, NONE),
 	/* C19 : AP_I2C_EMR_SCL */

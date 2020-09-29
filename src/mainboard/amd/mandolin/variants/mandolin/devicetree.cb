@@ -99,6 +99,15 @@ chip soc/amd/picasso
 	register "usb_port_overcurrent_pin[4]" = "USB_OC_PIN_0"
 	register "usb_port_overcurrent_pin[5]" = "USB_OC_PIN_0"
 
+	# SPI Configuration
+	register "common_config.spi_config" = "{
+		.normal_speed = SPI_SPEED_33M, /* MHz */
+		.fast_speed = SPI_SPEED_66M, /* MHz */
+		.altio_speed = SPI_SPEED_33M, /* MHz */
+		.tpm_speed = SPI_SPEED_33M, /* MHz */
+		.read_mode = SPI_READ_MODE_QUAD114,
+	}"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN,

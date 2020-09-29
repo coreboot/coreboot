@@ -38,7 +38,8 @@ enum ich_chipset {
 	CHIPSET_N_J_SERIES, /* Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx */
 	CHIPSET_100_200_SERIES_SUNRISE_POINT, /* 6th-7th gen Core i/o (LP) variants */
 	CHIPSET_300_400_SERIES_CANNON_ICE_POINT, /* 8th-10th gen Core i/o (LP) variants */
-	CHIPSET_500_SERIES_TIGER_POINT, /* 11th gen Core i/o (LP) variants onwards */
+	CHIPSET_500_600_SERIES_TIGER_ALDER_POINT, /* 11th-12th gen Core i/o (LP)
+						   * variants onwards */
 	CHIPSET_C620_SERIES_LEWISBURG,
 };
 

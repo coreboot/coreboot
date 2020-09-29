@@ -72,7 +72,7 @@ static const char *const ich_chipset_names[] = {
 	"Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx",
 	"100/200 series Sunrise Point",
 	"300 series Cannon Point/ 400 series Ice Point",
-	"500 series Tiger Point",
+	"500 series Tiger Point/ 600 series Alder Point",
 	"C620 series Lewisburg",
 	NULL
 };
@@ -181,7 +181,7 @@ static enum ich_chipset guess_ifd_2_chipset(const fpsba_t *fpsba)
 	/* Offset 0x58 bit [2:0] is reserved 0x4 and 0x5a bit [7:0] is reserved 0x58 */
 	if (((pchstrp_22 & 0x07) == 0x4) &&
 		((pchstrp_22 & 0xFF0000) >> 16 == 0x58))
-		return CHIPSET_500_SERIES_TIGER_POINT;
+		return CHIPSET_500_600_SERIES_TIGER_ALDER_POINT;
 
 	return CHIPSET_PCH_UNKNOWN;
 }
@@ -503,7 +503,7 @@ static void _decode_spi_frequency_500_series(unsigned int freq)
 
 static void decode_spi_frequency(unsigned int freq)
 {
-	if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+	if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
 		_decode_spi_frequency_500_series(freq);
 	else
 		_decode_spi_frequency(freq);
@@ -560,7 +560,7 @@ static void _decode_espi_frequency_500_series(unsigned int freq)
 
 static void decode_espi_frequency(unsigned int freq)
 {
-	if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+	if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
 		_decode_espi_frequency_500_series(freq);
 	else
 		_decode_espi_frequency(freq);
@@ -613,7 +613,7 @@ static int is_platform_with_pch(void)
 static int is_platform_with_100x_series_pch(void)
 {
 	if (chipset >= CHIPSET_100_200_SERIES_SUNRISE_POINT &&
-			chipset <= CHIPSET_500_SERIES_TIGER_POINT)
+			chipset <= CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
 		return 1;
 
 	return 0;
@@ -638,7 +638,7 @@ static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
 	if (is_platform_with_100x_series_pch() &&
 			chipset != CHIPSET_100_200_SERIES_SUNRISE_POINT) {
 		printf("\n  Read eSPI/EC Bus Frequency:          ");
-		if (chipset == CHIPSET_500_SERIES_TIGER_POINT)
+		if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
 			freq = (fpsba->pchstrp[22] & 0x38) >> 3;
 		else
 			freq = (fcba->flcomp >> 17) & 7;
@@ -911,7 +911,7 @@ static void dump_fd(char *image, int size)
 		printf("  FMSBA:   0x%x\n", ((fdb->flmap2) & 0xff) << 4);
 	}
 
-	if (chipset == CHIPSET_500_SERIES_TIGER_POINT) {
+	if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT) {
 		printf("FLMAP3:    0x%08x\n", fdb->flmap3);
 		printf("  Minor Revision ID:     0x%04x\n", (fdb->flmap3 >> 14) & 0x7f);
 		printf("  Major Revision ID:     0x%04x\n", (fdb->flmap3 >> 21) & 0x7ff);

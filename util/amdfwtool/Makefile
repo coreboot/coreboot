@@ -1,16 +1,18 @@
-#*****************************************************************************
-#
-# All rights reserved.
-#
 # SPDX-License-Identifier: BSD-3-Clause
 
-#*****************************************************************************
 HOSTCC ?= cc
 
-amdfwtool_exe : amdfwtool.c
-	$(HOSTCC) amdfwtool.c -o amdfwtool
+SRC = amdfwtool.c
+OBJ = $(SRC:%.c=%.o)
+TARGET = amdfwtool
+CFLAGS=-O2 -Wall -Wextra -Wshadow
 
-amdfwtool : amdfwtool_exe
+
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) $(LDFLAGS) -o $@
+
+%.o: %.c $(HEADER)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	@rm -f amdfwtool.o amdfwtool amdfwtool.exe
+	@rm -f $(TARGET) $(OBJ)

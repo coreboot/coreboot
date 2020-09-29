@@ -90,18 +90,6 @@ static void soc_mirror_dmi_pcr_io_dec(void)
 	soc_setup_dmi_pcr_io_dec(&io_dec_arr[0]);
 }
 
-static void pch_misc_init(void)
-{
-	uint8_t reg8;
-
-	/* Setup NMI on errors, disable SERR */
-	reg8 = (inb(0x61)) & 0xf0;
-	outb((reg8 | (1 << 2)), 0x61);
-
-	/* Disable NMI sources */
-	outb((1 << 7), 0x70);
-};
-
 void lpc_soc_init(struct device *dev)
 {
 	const config_t *config = dev->chip_info;

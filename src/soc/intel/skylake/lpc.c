@@ -49,10 +49,6 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 }
 
 static const struct reg_script pch_misc_init_script[] = {
-	/* Setup NMI on errors, disable SERR */
-	REG_IO_RMW8(0x61, ~0xf0, (1 << 2)),
-	/* Disable NMI sources */
-	REG_IO_OR8(0x70, (1 << 7)),
 	/* Enable BIOS updates outside of SMM */
 	REG_PCI_RMW8(0xdc, ~(1 << 5), 0),
 	REG_SCRIPT_END
@@ -64,6 +60,7 @@ void lpc_soc_init(struct device *dev)
 
 	/* Legacy initialization */
 	isa_dma_init();
+	pch_misc_init();
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_misc_init_script);
 
 	/* Enable CLKRUN_EN for power gating LPC */

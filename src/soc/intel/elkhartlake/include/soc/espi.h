@@ -22,8 +22,6 @@
 #define ESPI_GEN3_DEC		0x8c /* ESPI IF Generic Decode Range 3 */
 #define ESPI_GEN4_DEC		0x90 /* ESPI IF Generic Decode Range 4 */
 #define LGMR			0x98 /* ESPI Generic Memory Range */
-#define NMI_EN			0x70
-#define NMI_STS_CNT		0x61
 #define PCCTL			0xE0 /* PCI Clock Control */
 #define CLKRUN_EN		(1 << 0)
 

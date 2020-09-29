@@ -109,5 +109,11 @@ void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
 void pch_enable_ioapic(void);
 /* Retrieve and setup PCH LPC interrupt routing. */
 void pch_pirq_init(void);
+/*
+ * LPC MISC programming
+ * 1. Setup NMI on errors, disable SERR
+ * 2. Disable NMI sources
+ */
+void pch_misc_init(void);
 
 #endif /* _SOC_COMMON_BLOCK_LPC_LIB_H_ */

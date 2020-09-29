@@ -386,3 +386,21 @@ void pch_pirq_init(void)
 		pci_write_config8(PCI_BDF(irq_dev), PCI_INTERRUPT_LINE, int_line);
 	}
 }
+
+#define PPI_PORT_B 0x61
+#define  SERR_DIS  (1 << 2)
+#define CMOS_NMI   0x70
+#define  NMI_DIS   (1 << 7)
+
+/* LPC MISC programming */
+void pch_misc_init(void)
+{
+	uint8_t reg8;
+
+	/* Setup NMI on errors, disable SERR */
+	reg8 = (inb(PPI_PORT_B)) & 0xf0;
+	outb((reg8 | SERR_DIS), PPI_PORT_B);
+
+	/* Disable NMI sources */
+	outb(NMI_DIS, CMOS_NMI);
+}

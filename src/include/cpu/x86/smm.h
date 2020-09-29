@@ -197,5 +197,8 @@ void smm_list_regions(void);
 /* Return the SMM save state revision. The revision can be fetched from the smm savestate
    which is always at the same offset downward from the top of the save state. */
 uint32_t smm_revision(void);
+/* Returns the PM ACPI SMI port. On Intel systems this typically not configurable (APM_CNT, 0xb2).
+   On AMD systems it is sometimes configurable. */
+uint16_t pm_acpi_smi_cmd_port(void);
 
 #endif /* CPU_X86_SMM_H */

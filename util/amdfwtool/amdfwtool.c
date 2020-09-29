@@ -1753,7 +1753,12 @@ int main(int argc, char **argv)
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
-		write(targetfd, amd_romsig, ctx.current - romsig_offset);
+		ssize_t bytes;
+		bytes = write(targetfd, amd_romsig, ctx.current - romsig_offset);
+		if (bytes != ctx.current - romsig_offset) {
+			fprintf(stderr, "Error: Writing to file %s failed\n", output);
+			retval = 1;
+		}
 		close(targetfd);
 	} else {
 		printf("Error: could not open file: %s\n", output);

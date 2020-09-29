@@ -245,15 +245,7 @@ void __ubsan_handle_vla_bound_not_positive(void *data_raw, void *bound_raw)
 ABORT_VARIANT_VP_VP(vla_bound_not_positive);
 
 struct ubsan_float_cast_overflow_data {
-/*
-* TODO: Remove this GCC 5.x compatibility after switching to GCC 6.x. The
-* GCC developers accidentally forgot the source location. Their
-* libubsan probes to see if it looks like a path, but we don't need
-* to maintain compatibility with multiple gcc releases. See below.
-*/
-#if !(defined(__GNUC__) && __GNUC__ < 6)
 	struct ubsan_source_location location;
-#endif
 	struct ubsan_type_descriptor *from_type;
 	struct ubsan_type_descriptor *to_type;
 };
@@ -264,11 +256,7 @@ void __ubsan_handle_float_cast_overflow(void *data_raw, void *from_raw)
 		(struct ubsan_float_cast_overflow_data *)data_raw;
 	ubsan_value_handle_t from = (ubsan_value_handle_t)from_raw;
 	(void) from;
-#if !(defined(__GNUC__) && __GNUC__ < 6)
 	ubsan_abort(&data->location, "float cast overflow");
-#else
-	ubsan_abort(((void) data, &unknown_location), "float cast overflow");
-#endif
 }
 
 ABORT_VARIANT_VP_VP(float_cast_overflow);

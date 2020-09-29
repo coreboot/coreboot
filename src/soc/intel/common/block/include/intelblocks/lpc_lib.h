@@ -107,5 +107,7 @@ void soc_setup_dmi_pcr_io_dec(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
 /* Add resource into LPC PCI device space */
 void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
 	uintptr_t base, size_t size, unsigned long flags);
+/* Enable PCH IOAPIC */
+void pch_enable_ioapic(void);
 
 #endif /* _SOC_COMMON_BLOCK_LPC_LIB_H_ */

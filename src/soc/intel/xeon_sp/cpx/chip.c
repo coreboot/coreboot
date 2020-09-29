@@ -6,6 +6,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <post.h>
 #include <soc/acpi.h>
@@ -557,27 +558,6 @@ static void attach_iio_stacks(struct device *dev)
 	DEV_FUNC_EXIT(dev);
 }
 
-static void pch_enable_ioapic(const struct device *dev)
-{
-	uint32_t reg32;
-
-	set_ioapic_id((void *)IO_APIC_ADDR, 2);
-
-	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read((void *)IO_APIC_ADDR, 1);
-
-	reg32 &= ~0x00ff0000;
-	reg32 |= (C620_IOAPIC_REDIR_ENTRIES - 1) << 16;
-
-	io_apic_write((void *)IO_APIC_ADDR, 1, reg32);
-
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write((void *)IO_APIC_ADDR, 3, 1);
-}
-
 struct pci_operations soc_pci_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -604,7 +584,7 @@ static void chip_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init(false);
-	pch_enable_ioapic(NULL);
+	pch_enable_ioapic();
 	setup_lapic();
 	p2sb_unhide();
 }

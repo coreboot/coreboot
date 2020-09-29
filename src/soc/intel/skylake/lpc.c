@@ -29,29 +29,6 @@ const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
 	return skl_lpc_fixed_mmio_ranges;
 }
 
-static void pch_enable_ioapic(struct device *dev)
-{
-	u32 reg32;
-	/* PCH-LP has 120 redirection entries */
-	const int redir_entries = 120;
-
-	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
-
-	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read((void *)IO_APIC_ADDR, 0x01);
-
-	reg32 &= ~0x00ff0000;
-	reg32 |= (redir_entries - 1) << 16;
-
-	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
-
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
-}
-
 void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
 {
 	const config_t *config = config_of(dev);
@@ -96,7 +73,7 @@ void lpc_soc_init(struct device *dev)
 	lpc_set_serirq_mode(config->serirq_mode);
 
 	/* Interrupt configuration */
-	pch_enable_ioapic(dev);
+	pch_enable_ioapic();
 	soc_pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);

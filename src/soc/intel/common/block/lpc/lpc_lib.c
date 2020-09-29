@@ -2,6 +2,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
@@ -291,4 +292,28 @@ void lpc_disable_clkrun(void)
 {
 	const uint8_t pcctl = pci_read_config8(PCH_DEV_LPC, LPC_PCCTL);
 	pci_write_config8(PCH_DEV_LPC, LPC_PCCTL, pcctl & ~LPC_PCCTL_CLKRUN_EN);
+}
+
+/* Enable PCH IOAPIC */
+void pch_enable_ioapic(void)
+{
+	uint32_t reg32;
+	/* PCH-LP has 120 redirection entries */
+	const int redir_entries = 120;
+
+	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
+
+	/* affirm full set of redirection table entries ("write once") */
+	reg32 = io_apic_read((void *)IO_APIC_ADDR, 0x01);
+
+	reg32 &= ~0x00ff0000;
+	reg32 |= (redir_entries - 1) << 16;
+
+	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
+
+	/*
+	 * Select Boot Configuration register (0x03) and
+	 * use Processor System Bus (0x01) to deliver interrupts.
+	 */
+	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
 }

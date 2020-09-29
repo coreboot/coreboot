@@ -188,25 +188,12 @@ static void zork_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
-static const struct soc_amd_gpio gpio_set_bl[] = {
-	PAD_GPO(GPIO_85, LOW),
-};
-
-static void reset_backlight_gpio(void *unused)
-{
-	printk(BIOS_DEBUG, "Reset backlight GPIO\n");
-	/* Re-Enable backlight - GPIO 85 active low */
-	/* TODO: Remove this after AGESA stops enabling the fan - b/155667589 */
-	program_gpios(gpio_set_bl, ARRAY_SIZE(gpio_set_bl)); /*  APU_EDP_BL_DISABLE */
-}
-
 static void mainboard_final(void *chip_info)
 {
 	struct global_nvs *gnvs;
 
 	gnvs = acpi_get_gnvs();
 
-	reset_backlight_gpio(NULL);
 
 	if (gnvs) {
 		gnvs->tmps = CTL_TDP_SENSOR_ID;
@@ -231,5 +218,3 @@ __weak const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 	*size = 0;
 	return NULL;
 }
-
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, reset_backlight_gpio, NULL);

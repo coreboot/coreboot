@@ -2,6 +2,7 @@ ifeq ($(CONFIG_SOC_QUALCOMM_SC7280),y)
 
 all-y += ../common/timer.c
 all-y += spi.c
+all-y += ../common/gpio.c
 
 ################################################################################
 bootblock-y += bootblock.c

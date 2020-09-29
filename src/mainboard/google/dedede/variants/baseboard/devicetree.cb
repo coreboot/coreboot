@@ -163,6 +163,16 @@ chip soc/intel/jasperlake
 	# register "common_soc_config.<variable_name>" = "value"
 	register "common_soc_config.chipset_lockdown" = CHIPSET_LOCKDOWN_COREBOOT
 
+	# VR config settings
+	# Imon Slope correction specified in 1/100 increment values. Range is 0-200.
+	# Eg: 125 = 1.25
+	register "ImonSlope" = "100"
+
+	# Imon offset correction. Value is a 2's complement signed integer.
+	# Units 1/1000, Range 0-63999.
+	# For an offset = 12.580, use 12580
+	register "ImonOffset" = "0"
+
 	# Skip the CPU repalcement check
 	register "SkipCpuReplacementCheck" = "1"
 

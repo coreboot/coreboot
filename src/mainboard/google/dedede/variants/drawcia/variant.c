@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
 #include <drivers/intel/gma/opregion.h>
 #include <fw_config.h>
 #include <sar.h>

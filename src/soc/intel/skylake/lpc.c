@@ -74,7 +74,7 @@ void lpc_soc_init(struct device *dev)
 
 	/* Interrupt configuration */
 	pch_enable_ioapic();
-	soc_pch_pirq_init(dev);
+	pch_pirq_init();
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
 }

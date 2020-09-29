@@ -76,7 +76,7 @@ Name (PICP, Package () {
 
 Name (PICN, Package () {
 	/*
-	 * If the setting change in soc_pch_pirq_init(), then
+	 * If the setting change in pch_pirq_init(), then
 	 * please make the same static IRQ changes here as well.
 	 */
 	/* D31: cAVS, SMBus, GbE, Nothpeak */

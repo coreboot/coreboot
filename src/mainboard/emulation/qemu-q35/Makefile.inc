@@ -14,3 +14,5 @@ ramstage-y += ../qemu-i440fx/northbridge.c
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-$(CONFIG_CHROMEOS) += ../qemu-i440fx/fw_cfg.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smi.c

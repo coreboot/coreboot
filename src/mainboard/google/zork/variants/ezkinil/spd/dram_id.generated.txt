@@ -1,5 +1,5 @@
 DRAM Part Name                 ID to assign
 H5AN8G6NCJR-VKC                0 (0000)
 MT40A512M16TB-062E:J           2 (0010)
-MT40A1G16KNR-075:E             3 (0011)
+MT40A1G16KD-062E:E             3 (0011)
 K4A8G165WC-BCTD                4 (0100)

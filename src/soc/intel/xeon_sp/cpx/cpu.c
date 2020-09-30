@@ -16,6 +16,7 @@
 #include <soc/msr.h>
 #include <soc/soc_util.h>
 #include "chip.h"
+#include <cpu/intel/common/common.h>
 
 static const void *microcode_patch;
 
@@ -91,6 +92,9 @@ static void each_cpu_init(struct device *cpu)
 
 	/* Clear out pending MCEs */
 	xeon_configure_mca();
+
+	/* Enable Vmx */
+	set_vmx_and_lock();
 }
 
 static struct device_operations cpu_dev_ops = {

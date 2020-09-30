@@ -1,0 +1,6 @@
+config DRIVERS_I2C_GPIO_MUX
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	  When enabled, add identifiers in ACPI tables for GPIO based I2C multiplexer.

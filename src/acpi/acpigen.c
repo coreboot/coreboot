@@ -505,6 +505,12 @@ static void acpigen_write_field_name(const char *name, uint32_t size)
 	acpigen_write_field_length(size);
 }
 
+static void acpigen_write_field_reserved(uint32_t size)
+{
+	acpigen_emit_byte(0);
+	acpigen_write_field_length(size);
+}
+
 /*
  * Generate ACPI AML code for Field
  * Arg0: region name
@@ -515,6 +521,7 @@ static void acpigen_write_field_name(const char *name, uint32_t size)
  * struct fieldlist l[] = {
  *	FIELDLIST_OFFSET(0x84),
  *	FIELDLIST_NAMESTR("PMCS", 2),
+ *	FIELDLIST_RESERVED(6),
  *	};
  * acpigen_write_field("UART", l, ARRAY_SIZE(l), FIELD_ANYACC | FIELD_NOLOCK |
  *								FIELD_PRESERVE);
@@ -522,7 +529,8 @@ static void acpigen_write_field_name(const char *name, uint32_t size)
  * Field (UART, AnyAcc, NoLock, Preserve)
  *	{
  *		Offset (0x84),
- *		PMCS,   2
+ *		PMCS,   2,
+ *              , 6,
  *	}
  */
 void acpigen_write_field(const char *name, const struct fieldlist *l, size_t count,
@@ -544,6 +552,10 @@ void acpigen_write_field(const char *name, const struct fieldlist *l, size_t cou
 		switch (l[i].type) {
 		case NAME_STRING:
 			acpigen_write_field_name(l[i].name, l[i].bits);
+			current_bit_pos += l[i].bits;
+			break;
+		case RESERVED:
+			acpigen_write_field_reserved(l[i].bits);
 			current_bit_pos += l[i].bits;
 			break;
 		case OFFSET:

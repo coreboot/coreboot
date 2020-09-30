@@ -158,6 +158,10 @@ enum {
 					  .name = X, \
 					  .bits = Y, \
 					}
+#define FIELDLIST_RESERVED(X)		{ .type = RESERVED, \
+					  .name = "", \
+					  .bits = X, \
+					}
 
 #define FIELD_ANYACC			0
 #define FIELD_BYTEACC			1
@@ -174,6 +178,7 @@ enum {
 enum field_type {
 	OFFSET,
 	NAME_STRING,
+	RESERVED,
 	FIELD_TYPE_MAX,
 };
 

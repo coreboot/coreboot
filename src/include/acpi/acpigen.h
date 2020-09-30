@@ -361,6 +361,8 @@ void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
 			     const char * const dev_states[], size_t dev_states_count);
 void acpigen_write_sleep(uint64_t sleep_ms);
 void acpigen_write_store(void);
+void acpigen_write_store_int_to_namestr(uint64_t src, const char *dst);
+void acpigen_write_store_int_to_op(uint64_t src, uint8_t dst);
 void acpigen_write_store_ops(uint8_t src, uint8_t dst);
 void acpigen_write_store_op_to_namestr(uint8_t src, const char *dst);
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res);

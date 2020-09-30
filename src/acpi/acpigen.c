@@ -1243,6 +1243,22 @@ void acpigen_write_store_op_to_namestr(uint8_t src, const char *dst)
 	acpigen_emit_namestring(dst);
 }
 
+/* Store (src, "namestr") */
+void acpigen_write_store_int_to_namestr(uint64_t src, const char *dst)
+{
+	acpigen_write_store();
+	acpigen_write_integer(src);
+	acpigen_emit_namestring(dst);
+}
+
+/* Store (src, dst) */
+void acpigen_write_store_int_to_op(uint64_t src, uint8_t dst)
+{
+	acpigen_write_store();
+	acpigen_write_integer(src);
+	acpigen_emit_byte(dst);
+}
+
 /* Or (arg1, arg2, res) */
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res)
 {

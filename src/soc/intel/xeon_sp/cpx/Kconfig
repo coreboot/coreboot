@@ -15,6 +15,10 @@ config MAX_CPUS
 	int
 	default 255
 
+config CPU_ADDR_BITS
+	int
+	default 46
+
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000

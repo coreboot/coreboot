@@ -15,6 +15,10 @@ config MAX_SOCKET
 	int
 	default 2
 
+config CPU_ADDR_BITS
+	int
+	default 46
+
 # For 2S config, the number of cpus could be as high as
 # 2 threads * 20 cores * 2 sockets
 config MAX_CPUS

@@ -1,6 +1,10 @@
 
 ifeq ($(CONFIG_SOC_QUALCOMM_SC7180),y)
 
+decompressor-y += decompressor.c
+decompressor-y += mmu.c
+decompressor-y += timer.c
+
 ################################################################################
 bootblock-y += bootblock.c
 bootblock-y += mmu.c

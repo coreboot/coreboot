@@ -31,6 +31,7 @@ bootblock-y += id.S
 $(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
+decompressor-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-y += transition.c transition_asm.S
 

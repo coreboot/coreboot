@@ -159,6 +159,7 @@ static void spd_get_name(const uint8_t spd[], char spd_name[], int dram_type)
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_LPDDR4:
+	case SPD_DRAM_LPDDR4X:
 		memcpy(spd_name, &spd[DDR4_SPD_PART_OFF], DDR4_SPD_PART_LEN);
 		spd_name[DDR4_SPD_PART_LEN] = 0;
 		break;

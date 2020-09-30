@@ -93,7 +93,7 @@ chip soc/intel/tigerlake
 							      TEMP_PCT(42, 36),}}}"
 				device generic 0 on end
 			end
-		end # DPTF				0x9A03
+		end
 		device ref ipu on end # IPU                           0x9A19
 		device ref i2c0 on
 			chip drivers/i2c/generic
@@ -254,6 +254,13 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
+				device pnp 0c09.0 on end
+			end
+		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
@@ -263,27 +270,12 @@ chip soc/intel/tigerlake
 						register "usb2_port_number" = "9"
 						register "usb3_port_number" = "1"
 						# SBU & HSL follow CC
-						device generic 0 on end
+						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "4"
 						register "usb3_port_number" = "2"
-						# SBU is fixed, HSL follows CC
-						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
-						device generic 1 on
-							probe DB_USB USB4_GEN2
-							probe DB_USB USB3_ACTIVE
-							probe DB_USB USB4_GEN3
-							probe DB_USB USB3_NO_A
-						end
-					end
-					chip drivers/intel/pmc_mux/conn
-						register "usb2_port_number" = "4"
-						register "usb3_port_number" = "2"
-						# SBU & HSL follow CC
-						device generic 1 on
-							probe DB_USB USB3_PASSIVE
-						end
+						device generic 1 alias conn1 on end
 					end
 				end
 			end

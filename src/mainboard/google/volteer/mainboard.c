@@ -9,14 +9,65 @@
 #include <fw_config.h>
 #include <security/tpm/tss.h>
 #include <soc/gpio.h>
+#include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
 #include <vb2_api.h>
 
+#include "drivers/intel/pmc_mux/conn/chip.h"
+
+extern struct chip_operations drivers_intel_pmc_mux_conn_ops;
+
+static bool is_port1(struct device *dev)
+{
+	return dev->path.type == DEVICE_PATH_GENERIC &&	dev->path.generic.id == 1 &&
+		dev->chip_ops == &drivers_intel_pmc_mux_conn_ops;
+}
+
+static void typec_orientation_fixup(void)
+{
+	/*
+	 * TODO: This is an ugly hack, see if there's a better way to accomplish this same thing
+	 * via fw_config + devicetree, i.e., change a register's value depending on fw_config
+	 * probing.
+	 */
+	const struct device *pmc;
+	const struct device *mux;
+	const struct device *conn;
+
+	pmc = pcidev_path_on_root(PCH_DEVFN_PMC);
+	if (!pmc || !pmc->link_list->children) {
+		printk(BIOS_ERR, "%s: unable to find PMC device or its mux\n", __func__);
+		return;
+	}
+
+	/*
+	 * Find port 1 underneath PMC.MUX; some variants may not have this defined, so it's okay
+	 * to just silently return here.
+	 */
+	mux = pmc->link_list->children;
+	conn = dev_find_matching_device_on_bus(mux->link_list, is_port1);
+	if (!conn)
+		return;
+
+	if (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2)) ||
+	    fw_config_probe(FW_CONFIG(DB_USB, USB3_ACTIVE)) ||
+	    fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)) ||
+	    fw_config_probe(FW_CONFIG(DB_USB, USB3_NO_A))) {
+		struct drivers_intel_pmc_mux_conn_config *config = conn->chip_info;
+
+		if (config) {
+			printk(BIOS_INFO, "Configure Right Type-C port orientation for retimer\n");
+			config->sbu_orientation = TYPEC_ORIENTATION_NORMAL;
+		}
+	}
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
+	typec_orientation_fixup();
 }
 
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)

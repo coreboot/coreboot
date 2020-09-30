@@ -415,15 +415,20 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 	sn65dsi86_bridge_dpcd_request(bus, chip,
 				      DP_BRIDGE_CONFIGURATION_SET, 1, DPCD_WRITE, &buf);
 
-	/* semi auto link training mode */
-	i2c_writeb(bus, chip, SN_ML_TX_MODE_REG, 0xa);
+	int i;	/* Kernel driver suggests to retry this up to 10 times if it fails. */
+	for (i = 0; i < 10; i++) {
+		i2c_writeb(bus, chip, SN_ML_TX_MODE_REG, SEMI_AUTO_LINK_TRAINING);
 
-	if (!wait_ms(500,
-	    !(i2c_readb(bus, chip, SN_ML_TX_MODE_REG, &buf)) &&
-	    (buf & NORMAL_MODE))) {
-		printk(BIOS_ERR, "ERROR: Link training failed");
+		if (!wait_ms(500, !(i2c_readb(bus, chip, SN_ML_TX_MODE_REG, &buf)) &&
+				  (buf == NORMAL_MODE || buf == MAIN_LINK_OFF))) {
+			printk(BIOS_ERR, "ERROR: unexpected link training state: %#x\n", buf);
+			return;
+		}
+		if (buf == NORMAL_MODE)
+			return;
 	}
 
+	printk(BIOS_ERR, "ERROR: Link training failed 10 times\n");
 }
 
 static enum cb_err sn65dsi86_bridge_get_plug_in_status(uint8_t bus, uint8_t chip)

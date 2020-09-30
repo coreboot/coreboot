@@ -21,7 +21,7 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
-__weak const char *mainboard_get_dram_part_num(size_t *len)
+const char * __weak mainboard_get_dram_part_num(void)
 {
 	/* Default weak implementation, no need to override part number. */
 	return NULL;
@@ -41,7 +41,7 @@ static void save_dimm_info(void)
 	const uint8_t smbios_memory_info_guid[sizeof(EFI_GUID)] = FSP_SMBIOS_MEMORY_INFO_GUID;
 	const uint8_t *serial_num;
 	const char *dram_part_num = NULL;
-	size_t dram_part_num_len;
+	size_t dram_part_num_len = 0;
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	meminfo_hob = fsp_find_extension_hob_by_guid(
@@ -64,7 +64,9 @@ static void save_dimm_info(void)
 	memset(mem_info, 0, sizeof(*mem_info));
 
 	/* Allow mainboard to override DRAM part number. */
-	dram_part_num = mainboard_get_dram_part_num(&dram_part_num_len);
+	dram_part_num = mainboard_get_dram_part_num();
+	if (dram_part_num)
+		dram_part_num_len = strlen(dram_part_num);
 
 	/* Save available DIMM information */
 	index = 0;

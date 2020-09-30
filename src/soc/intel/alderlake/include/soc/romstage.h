@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 /* Provide a callback to allow mainboard to override the DRAM part number. */
-const char *mainboard_get_dram_part_num(size_t *len);
+const char *mainboard_get_dram_part_num(void);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
 void romstage_pch_init(void);

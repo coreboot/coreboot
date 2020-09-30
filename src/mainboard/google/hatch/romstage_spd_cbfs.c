@@ -57,7 +57,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }
 
-void mainboard_get_dram_part_num(const char **part_num, size_t *len)
+const char *mainboard_get_dram_part_num(void)
 {
 	static char part_num_store[DIMM_INFO_PART_NUMBER_SIZE];
 	static enum {
@@ -77,8 +77,7 @@ void mainboard_get_dram_part_num(const char **part_num, size_t *len)
 	}
 
 	if (part_num_state == PART_NUM_NOT_IN_CBI)
-		return;
+		return NULL;
 
-	*part_num = &part_num_store[0];
-	*len = strlen(part_num_store) + 1;
+	return part_num_store;
 }

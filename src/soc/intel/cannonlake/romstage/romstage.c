@@ -23,9 +23,10 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
-void __weak mainboard_get_dram_part_num(const char **part_num, size_t *len)
+const char * __weak mainboard_get_dram_part_num(void)
 {
 	/* Default weak implementation, no need to override part number. */
+	return NULL;
 }
 
 /* Save the DIMM information for SMBIOS table 17 */
@@ -42,7 +43,8 @@ static void save_dimm_info(void)
 	const uint8_t smbios_memory_info_guid[16] =
 			FSP_SMBIOS_MEMORY_INFO_GUID;
 	const char *dram_part_num;
-	size_t dram_part_num_len;
+	size_t dram_part_num_len = 0;
+	bool part_num_overridden = false;
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	memory_info_hob = fsp_find_extension_hob_by_guid(
@@ -64,6 +66,13 @@ static void save_dimm_info(void)
 	}
 	memset(mem_info, 0, sizeof(*mem_info));
 
+	/* Allow mainboard to override DRAM part number. */
+	dram_part_num = mainboard_get_dram_part_num();
+	if (dram_part_num) {
+		dram_part_num_len = strlen(dram_part_num);
+		part_num_overridden = true;
+	}
+
 	/* Describe the first N DIMMs in the system */
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
@@ -79,13 +88,12 @@ static void save_dimm_info(void)
 			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
 
-			dram_part_num_len = sizeof(src_dimm->ModulePartNum);
-			dram_part_num = (const char *)
+			if (!part_num_overridden) {
+				dram_part_num_len =
+						sizeof(src_dimm->ModulePartNum);
+				dram_part_num = (const char *)
 						&src_dimm->ModulePartNum[0];
-
-			/* Allow mainboard to override DRAM part number. */
-			mainboard_get_dram_part_num(&dram_part_num,
-							&dram_part_num_len);
+			}
 
 			u8 memProfNum = memory_info_hob->MemoryProfile;
 

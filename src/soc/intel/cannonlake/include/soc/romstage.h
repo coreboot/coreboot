@@ -8,7 +8,7 @@
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 
 /* Provide a callback to allow mainboard to override the DRAM part number. */
-void mainboard_get_dram_part_num(const char **part_num, size_t *len);
+const char *mainboard_get_dram_part_num(void);
 void systemagent_early_init(void);
 void romstage_pch_init(void);
 

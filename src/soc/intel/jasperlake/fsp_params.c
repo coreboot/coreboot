@@ -78,6 +78,11 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 		sizeof(config->SerialIoUartMode));
 }
 
+__weak void mainboard_update_soc_chip_config(struct soc_intel_jasperlake_config *config)
+{
+	/* Override settings per board. */
+}
+
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
@@ -85,6 +90,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	struct soc_intel_jasperlake_config *config = config_of_soc();
+
+	/* Allow mainboard to override any chip config */
+	mainboard_update_soc_chip_config(config);
 
 	/* Parse device tree and fill in FSP UPDs */
 	parse_devicetree(params);

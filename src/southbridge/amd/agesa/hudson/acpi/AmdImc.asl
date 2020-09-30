@@ -18,35 +18,35 @@ IndexField(IMCX, IMCA, ByteAcc, NoLock, Preserve) {
 
 Method(WACK, 0)
 {
-	Store(0, Local0)
-	Store(50, Local1)
-	While (LAnd (LNotEqual(Local0, 0xFA), LGreater(Local1,0))) {
-		Store(MRG0, Local0)
+	Local0 = 0
+	Local1 = 50
+	While ((Local0 != 0xFA) && (Local1 > 0)) {
+		Local0 = MRG0
 		Sleep(10)
-		Decrement(Local1)
+		Local1--
 	}
 }
 
 //Init
 Method (ITZE, 0)
 {
-	Store(0, MRG0)
-	Store(0xB5, MRG1)
-	Store(0, MRG2)
-	Store(0x96, MSTI)
+	MRG0 = 0
+	MRG1 = 0xb5
+	MRG2 = 0
+	MSTI = 0x96
 	WACK()
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(0, MRG2)
-	Store(0x80, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = 0
+	MSTI = 0x80
 	WACK()
 
-	Or(MRG2, 0x01, Local0)
+	Local0 = MRG2 | 0x01
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(Local0, MRG2)
-	Store(0x81, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = Local0
+	MSTI = 0x81
 	WACK()
 }

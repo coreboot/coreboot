@@ -7,14 +7,14 @@
 Method(_OSC,4)
 {
 	/* Check for proper PCI/PCIe UUID */
-	If(Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
+	If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)
 	} Else {
 		CreateDWordField(Arg3,0,CDW1)
 		CDW1 |= 4	// Unrecognized UUID
-		Return(Arg3)
+		Return (Arg3)
 	}
 }
 
@@ -129,7 +129,7 @@ Method(_CRS, 0) {
 	Local0 -= TOM1
 	MM1L = Local0
 
-	Return(CRES) /* note to change the Name buffer */
+	Return (CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
 #if CONFIG(HUDSON_IMC_FWM)
@@ -170,21 +170,21 @@ Method(_INI, 0) {
 
 Method(OSFL, 0){
 
-	if (OSVR != Ones) {Return(OSVR)}	/* OS version was already detected */
+	if (OSVR != Ones) {Return (OSVR)}	/* OS version was already detected */
 
 	if (CondRefOf(\_OSI))
 	{
-		OSVR = 1					/* Assume some form of XP */
+		OSVR = 1				/* Assume some form of XP */
 		if (\_OSI("Windows 2006"))		/* Vista */
 		{
 			OSVR = 2
 		}
 	} else {
-		If(WCMP(\_OS,"Linux")) {
-			OSVR = 3				/* Linux */
+		If (WCMP(\_OS,"Linux")) {
+			OSVR = 3			/* Linux */
 		} Else {
-			OSVR = 4				/* Gotta be WinCE */
+			OSVR = 4			/* Gotta be WinCE */
 		}
 	}
-	Return(OSVR)
+	Return (OSVR)
 }

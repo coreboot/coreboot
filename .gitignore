@@ -105,6 +105,8 @@ util/ifdtool/ifdtool
 util/intelmetool/intelmetool
 util/inteltool/.dependencies
 util/inteltool/inteltool
+util/intelp2m/intelp2m
+util/intelp2m/generate/gpio.h
 util/intelvbttool/intelvbttool
 util/msrtool/Makefile
 util/msrtool/Makefile.deps

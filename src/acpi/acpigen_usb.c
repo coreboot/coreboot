@@ -71,7 +71,7 @@ static void add_device_ref(struct acpi_dp *dsd,
 	const char *path;
 	char *fresh;
 
-	if (!dev)
+	if (!dev || !dev->enabled)
 		return;
 
 	/*

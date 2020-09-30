@@ -21,7 +21,7 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
-bool mainboard_get_dram_part_num(const char **part_num, size_t *len)
+bool __weak mainboard_get_dram_part_num(const char **part_num, size_t *len)
 {
 	/* Default implementation, no need to override part number. */
 	return false;

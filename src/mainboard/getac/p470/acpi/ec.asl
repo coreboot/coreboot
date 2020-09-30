@@ -469,9 +469,6 @@ Scope(\_SB)
 			If(And(RFDV, 0x02)) {
 				Or(Local0, 0x02, Local0)
 			}
-			If(And(RFDV, 0x02)) {
-				Or(Local0, 0x02, Local0)
-			}
 			If(And(RFDV, 0x04)) {
 				Or(Local0, 0x04, Local0)
 			}

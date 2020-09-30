@@ -129,14 +129,6 @@ chip soc/intel/jasperlake
 	# Select eDP for port A
 	register "DdiPortAConfig" = "1"
 
-	# Disable PM to allow for shorter irq pulses
-	register "gpio_override_pm" = "1"
-	register "gpio_pm[0]" = "0"
-	register "gpio_pm[1]" = "0"
-	register "gpio_pm[2]" = "0"
-	register "gpio_pm[3]" = "0"
-	register "gpio_pm[4]" = "0"
-
 	# Enable HPD for DDI ports B/C
 	register "DdiPortBHpd" = "1"
 	register "DdiPortCHpd" = "1"

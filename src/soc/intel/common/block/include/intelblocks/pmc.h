@@ -51,13 +51,4 @@ int pmc_soc_get_resources(struct pmc_resource_config *cfg);
 /* API to set ACPI mode */
 void pmc_set_acpi_mode(void);
 
-/*
- * Returns a reference to the PMC MUX device for the given port number.
- * Returns NULL if not found or SoC does not support PMC MUX.
- *
- * Input: Port number (0-based)
- * Output: Const pointer to PMC MUX device
- */
-const struct device *soc_get_pmc_mux_device(int port_number);
-
 #endif /* SOC_INTEL_COMMON_BLOCK_PMC_H */

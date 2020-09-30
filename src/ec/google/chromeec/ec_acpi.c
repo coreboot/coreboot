@@ -16,14 +16,6 @@
 #define GOOGLE_CHROMEEC_USBC_DEVICE_HID		"GOOG0014"
 #define GOOGLE_CHROMEEC_USBC_DEVICE_NAME	"USBC"
 
-/* Avoid adding a false dependency on an SoC or intel/common */
-extern const struct device *soc_get_pmc_mux_device(int port_number);
-
-__weak const struct device *soc_get_pmc_mux_device(int port_number)
-{
-	return NULL;
-}
-
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
 	/*
@@ -121,36 +113,18 @@ static const char *port_location_to_str(enum ec_pd_port_location port_location)
 static struct usb_pd_port_caps port_caps;
 static void add_port_location(struct acpi_dp *dsd, int port_number)
 {
-	acpi_dp_add_string(dsd, "port-location",
-			   port_location_to_str(port_caps.port_location));
-}
-
-static int conn_id_to_match;
-
-/* A callback to match a port's connector for dev_find_matching_device_on_bus */
-static bool match_connector(DEVTREE_CONST struct device *dev)
-{
-	if (CONFIG(DRIVERS_INTEL_PMC)) {
-		extern struct chip_operations drivers_intel_pmc_mux_conn_ops;
-
-		return (dev->chip_ops == &drivers_intel_pmc_mux_conn_ops &&
-			dev->path.type == DEVICE_PATH_GENERIC &&
-			dev->path.generic.id == conn_id_to_match);
-	}
-
-	return false;
+	acpi_dp_add_string(dsd, "port-location", port_location_to_str(port_caps.port_location));
 }
 
 static void fill_ssdt_typec_device(const struct device *dev)
 {
+	struct ec_google_chromeec_config *config = dev->chip_info;
 	int rv;
 	int i;
 	unsigned int num_ports;
 	struct device *usb2_port;
 	struct device *usb3_port;
 	struct device *usb4_port;
-	const struct device *mux;
-	const struct device *conn;
 
 	if (google_chromeec_get_num_pd_ports(&num_ports))
 		return;
@@ -166,32 +140,28 @@ static void fill_ssdt_typec_device(const struct device *dev)
 		if (rv)
 			continue;
 
-		/* Get the MUX device, and find the matching connector on its bus */
-		conn = NULL;
-		mux = soc_get_pmc_mux_device(i);
-		if (mux) {
-			conn_id_to_match = i;
-			conn = dev_find_matching_device_on_bus(mux->link_list, match_connector);
-		}
+		if (!config->mux_conn[i])
+			printk(BIOS_ERR, "ERROR: Mux connector info missing for Type-C port "
+			       "#%d\n", i);
 
 		usb2_port = NULL;
 		usb3_port = NULL;
 		usb4_port = NULL;
 		get_usb_port_references(i, &usb2_port, &usb3_port, &usb4_port);
 
-		struct typec_connector_class_config config = {
+		struct typec_connector_class_config typec_config = {
 			.power_role = port_caps.power_role_cap,
 			.try_power_role = port_caps.try_power_role_cap,
 			.data_role = port_caps.data_role_cap,
 			.usb2_port = usb2_port,
 			.usb3_port = usb3_port,
 			.usb4_port = usb4_port,
-			.orientation_switch = conn,
-			.usb_role_switch = conn,
-			.mode_switch = conn,
+			.orientation_switch = config->mux_conn[i],
+			.usb_role_switch = config->mux_conn[i],
+			.mode_switch = config->mux_conn[i],
 		};
 
-		acpigen_write_typec_connector(&config, i, add_port_location);
+		acpigen_write_typec_connector(&typec_config, i, add_port_location);
 	}
 
 	acpigen_pop_len(); /* Device GOOGLE_CHROMEEC_USBC_DEVICE_NAME */

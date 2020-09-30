@@ -1,5 +1,15 @@
 chip soc/intel/tigerlake
 
+	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 51,
+	}"
+	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 51,
+	}"
+
+	register "tcc_offset" = "5"     # TCC of 95
 	register "TcssAuxOri" = "1"
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
@@ -58,7 +68,39 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
-		device ref dptf off end
+		device ref dptf on
+			# DPTF Policy for Eldrid board
+			chip drivers/intel/dptf
+
+				## Disable Active Policy from baseboard
+				register "policies.active" = "{[0] = {.target=DPTF_NONE}}"
+
+				## Passive Policy
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,CPU,95,5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60,6000)"
+
+				## Critical Policy
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,100,SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_2,80,SHUTDOWN)"
+
+				## Power Limits Control
+				# 3-15W PL1 in 200mW increments, avg over 28-32s interval
+				# PL2 is fixed at 51W, avg over 28-32s interval
+				register "controls.power_limits" = "{
+					.pl1 = {.min_power = 3000,
+						.max_power = 15000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 200,},
+					.pl2 = {.min_power = 15000,
+						.max_power = 51000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,}}"
+
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

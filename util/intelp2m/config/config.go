@@ -82,11 +82,12 @@ func IsNonCheckingFlagUsed() bool {
 	return nonCheckingFlag
 }
 
-var infolevel uint8 = 0
-func InfoLevelSet(lvl uint8) {
+
+var infolevel int = 0
+func InfoLevelSet(lvl int) {
 	infolevel = lvl
 }
-func InfoLevelGet() uint8 {
+func InfoLevelGet() int {
 	return infolevel
 }
 

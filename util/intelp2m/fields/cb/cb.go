@@ -50,7 +50,9 @@ func (FieldMacros) DecodeDW0() {
 	generate(
 		&field {
 			prefix : "PAD_FUNC",
-			unhide : config.InfoLevelGet() <= 3 || dw0.GetPadMode() != 0,
+			// TODO: Find another way to hide PAD_FUNC(GPIO) in the comment with
+			// ignored fields
+			unhide : config.InfoLevelGet() < 3 || dw0.GetPadMode() != 0,
 			configurator : func() { macro.Padfn() },
 		},
 

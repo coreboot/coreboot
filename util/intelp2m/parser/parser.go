@@ -39,7 +39,7 @@ type padInfo struct {
 
 // generate - wrapper for Fprintf(). Writes text to the file specified
 // in config.OutputGenFile
-func (info *padInfo) generate(lvl uint8, line string, a ...interface{}) {
+func (info *padInfo) generate(lvl int, line string, a ...interface{}) {
 	if config.InfoLevelGet() >= lvl {
 		fmt.Fprintf(config.OutputGenFile, line, a...)
 	}
@@ -65,13 +65,15 @@ func (info *padInfo) reservedFprint() {
 // gpio  : gpio.c file descriptor
 // macro : string of the generated macro
 func (info *padInfo) padInfoMacroFprint(macro string) {
-	info.generate(2, "\n")
-	info.generate(1, "\t/* %s - %s ", info.id, info.function)
-	info.generate(2, "DW0: 0x%0.8x, DW1: 0x%0.8x ", info.dw0, info.dw1)
-	info.generate(1, "*/\n")
+	info.generate(2,
+		"\n\t/* %s - %s */\n\t/* DW0: 0x%0.8x, DW1: 0x%0.8x */\n",
+		info.id,
+		info.function,
+		info.dw0,
+		info.dw1)
 	info.generate(0, "\t%s", macro)
-	if config.InfoLevelGet() == 0 {
-		info.generate(0, "\t/* %s */", info.function)
+	if config.InfoLevelGet() == 1 {
+		info.generate(1, "\t/* %s */", info.function)
 	}
 	info.generate(0, "\n")
 }

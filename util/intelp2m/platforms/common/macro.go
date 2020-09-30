@@ -292,32 +292,27 @@ func (macro *Macro) Or() *Macro {
 		return macro
 }
 
-// AddToMacroIgnoredMask - Print info about ignored field mask
-// title - warning message
-func (macro *Macro) AddToMacroIgnoredMask() *Macro {
-	if config.InfoLevelGet() < 4 || config.IsFspStyleMacro() {
+// DecodeIgnored - Add info about ignored field mask
+// reg : PAD_CFG_DW0 or PAD_CFG_DW1 register
+func (macro *Macro) DecodeIgnored(reg uint8) *Macro {
+	var decode = map[uint8]func() {
+		PAD_CFG_DW0: macro.Fields.DecodeDW0,
+		PAD_CFG_DW1: macro.Fields.DecodeDW1,
+	}
+	decodefn, valid := decode[reg]
+	if !valid || config.IsFspStyleMacro() {
 		return macro
 	}
-	dw0 := macro.Register(PAD_CFG_DW0)
-	dw1 := macro.Register(PAD_CFG_DW1)
-	// Get mask of ignored bit fields.
-	dw0Ignored := dw0.IgnoredFieldsGet()
-	dw1Ignored := dw1.IgnoredFieldsGet()
-	if dw0Ignored != 0 {
-		dw0temp := dw0.ValueGet()
-		dw0.ValueSet(dw0Ignored)
-		macro.Add("\n\t/* DW0 : ")
-		macro.Fields.DecodeDW0()
-		macro.Add(" - IGNORED */")
-		dw0.ValueSet(dw0temp)
-	}
-	if dw1Ignored != 0 {
-		dw1temp	:= dw1.ValueGet()
-		dw1.ValueSet(dw1Ignored)
-		macro.Add("\n\t/* DW1 : ")
-		macro.Fields.DecodeDW1()
-		macro.Add(" - IGNORED */")
-		dw1.ValueSet(dw1temp)
+	dw := macro.Register(reg)
+	ignored := dw.IgnoredFieldsGet()
+	if ignored != 0 {
+		temp := dw.ValueGet()
+		dw.ValueSet(ignored)
+		regnum := strconv.Itoa(int(reg))
+		macro.Add("/* DW" + regnum + ": ")
+		decodefn()
+		macro.Add(" - IGNORED */\n\t")
+		dw.ValueSet(temp)
 	}
 	return macro
 }
@@ -331,15 +326,19 @@ func (macro *Macro) GenerateFields() *Macro {
 	dw0Ignored := dw0.IgnoredFieldsGet()
 	dw1Ignored := dw1.IgnoredFieldsGet()
 
-	if config.InfoLevelGet() <= 1 {
+	if config.InfoLevelGet() != 4 {
 		macro.Clear()
-	} else if config.InfoLevelGet() >= 3 {
+	}
+	if config.InfoLevelGet() >= 3 {
 		// Add string of reference macro as a comment
 		reference := macro.Get()
 		macro.Clear()
-		macro.Add("/* ").Add(reference).Add(" */")
-		macro.AddToMacroIgnoredMask()
-		macro.Add("\n\t")
+		/* DW0 : PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | 1 - IGNORED */
+		macro.DecodeIgnored(PAD_CFG_DW0).DecodeIgnored(PAD_CFG_DW1)
+		if config.InfoLevelGet() >= 4 {
+			/* PAD_CFG_NF(GPP_B23, 20K_PD, PLTRST, NF2), */
+			macro.Add("/* ").Add(reference).Add(" */\n\t")
+		}
 	}
 	if config.AreFieldsIgnored() {
 		// Consider bit fields that should be ignored when regenerating
@@ -409,8 +408,19 @@ func (macro *Macro) Generate() string {
 	}
 
 	if config.IsNonCheckingFlagUsed() {
-		macro.AddToMacroIgnoredMask()
-		return macro.Get()
+		body := macro.Get()
+		if config.InfoLevelGet() >= 3 {
+			macro.Clear().DecodeIgnored(PAD_CFG_DW0).DecodeIgnored(PAD_CFG_DW1)
+			comment := macro.Get()
+			if config.InfoLevelGet() >= 4 {
+				macro.Clear().Add("/* ")
+				macro.Fields.GenerateString()
+				macro.Add(" */\n\t")
+				comment += macro.Get()
+			}
+			return comment + body
+		}
+		return body
 	}
 
 	return macro.check().Get()

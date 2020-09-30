@@ -141,7 +141,7 @@ void txt_dump_acm_info(const struct acm_header_v0 *acm_header)
 	printk(BIOS_INFO, " Header:   v%u.%u\n", acm_header->header_version[0],
 	       acm_header->header_version[1]);
 
-	printk(BIOS_INFO, " Chipset:  %u\n", acm_header->chipset_id);
+	printk(BIOS_INFO, " Chipset:  %x\n", acm_header->chipset_id);
 	printk(BIOS_INFO, " Size:     %zu\n", acm_size);
 
 	switch (acm_header->flags) {

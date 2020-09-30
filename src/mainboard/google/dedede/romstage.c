@@ -21,16 +21,3 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated);
 }
-
-const char *mainboard_get_dram_part_num(void)
-{
-	static char part_num_store[DIMM_INFO_PART_NUMBER_SIZE];
-
-	if (google_chromeec_cbi_get_dram_part_num(&part_num_store[0],
-					sizeof(part_num_store)) < 0) {
-		printk(BIOS_ERR, "No DRAM part number in CBI!\n");
-		return NULL;
-	}
-
-	return part_num_store;
-}

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <symbols.h>
+#include <endian.h>
 
 #include "fmap_config.h"
 
@@ -49,7 +50,8 @@ static void report(const struct fmap *fmap)
 	print_once(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %#x.\n",
 	       fmap->name, fmap->ver_major, fmap->ver_minor, FMAP_OFFSET);
 	print_once(BIOS_DEBUG, "FMAP: base = %#llx size = %#x #areas = %d\n",
-	       (long long)fmap->base, fmap->size, fmap->nareas);
+	       (long long)le64toh(fmap->base), le32toh(fmap->size),
+	       le16toh(fmap->nareas));
 	fmap_print_once = 1;
 }
 
@@ -188,10 +190,10 @@ int fmap_locate_area(const char *name, struct region *ar)
 		}
 
 		printk(BIOS_DEBUG, "FMAP: area %s found @ %x (%d bytes)\n",
-		       name, area->offset, area->size);
+		       name, le32toh(area->offset), le32toh(area->size));
 
-		ar->offset = area->offset;
-		ar->size = area->size;
+		ar->offset = le32toh(area->offset);
+		ar->size = le32toh(area->size);
 
 		rdev_munmap(&fmrd, area);
 
@@ -226,8 +228,8 @@ int fmap_find_region_name(const struct region * const ar,
 		if (area == NULL)
 			return -1;
 
-		if ((ar->offset != area->offset) ||
-		    (ar->size != area->size)) {
+		if ((ar->offset != le32toh(area->offset)) ||
+		    (ar->size != le32toh(area->size))) {
 			rdev_munmap(&fmrd, area);
 			offset += sizeof(struct fmap_area);
 			continue;

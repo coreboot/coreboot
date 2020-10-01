@@ -38,4 +38,11 @@ config DISPLAY_FSP_VERSION_INFO
 	help
 	  Select this option to display Firmware version information.
 
+config DISPLAY_FSP_VERSION_INFO_2
+	bool
+	default n
+	help
+	  Select this option to display Firmware version information
+	  using new header 'FirmwareVersionInfo.h'.
+
 endif # PLATFORM_USES_FSP2_0

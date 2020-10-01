@@ -209,26 +209,49 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 
 static void display_fsp_version_info_hob(const void *hob)
 {
+#if CONFIG(DISPLAY_FSP_VERSION_INFO) || CONFIG(DISPLAY_FSP_VERSION_INFO_2)
+
+	int index, cnt, tcount;
+	char *str_ptr;
+	uint8_t vs;
 #if CONFIG(DISPLAY_FSP_VERSION_INFO)
 	const FIRMWARE_VERSION_INFO *fvi;
 	const FIRMWARE_VERSION_INFO_HOB *fvih =
 			(FIRMWARE_VERSION_INFO_HOB *)hob;
-	int index, cnt;
-	char *str_ptr;
 
 	fvi = (void *)&fvih[1];
 	str_ptr = (char *)((uintptr_t)fvi +
 			 (fvih->Count * sizeof(FIRMWARE_VERSION_INFO)));
+	tcount = fvih->Count;
+#elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)
 
-	for (index = 0; index < fvih->Count; index++) {
+	uint8_t *hobstart = (uint8_t *) hob;
+	hobstart += sizeof(EFI_HOB_GUID_TYPE);
+
+	const SMBIOS_TABLE_TYPE_OEM_INTEL_FVI *stfvi =
+			(SMBIOS_TABLE_TYPE_OEM_INTEL_FVI *)hobstart;
+	const INTEL_FIRMWARE_VERSION_INFO *fvi;
+
+	str_ptr = ((char *) &(stfvi->Fvi[0])) +
+			(stfvi->Count * sizeof(INTEL_FIRMWARE_VERSION_INFO));
+	tcount = stfvi->Count;
+	fvi = &stfvi->Fvi[0];
+#endif
+
+	for (index = 0; index < tcount; index++) {
 		cnt = strlen(str_ptr);
 
+#if CONFIG(DISPLAY_FSP_VERSION_INFO)
+			vs = fvi[index].VersionStringIndex;
+#elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)
+			vs = fvi[index].VersionString;
+#endif
 		/*  Don't show ingredient name and version if its all 0xFF */
 		if (fvi[index].Version.MajorVersion == 0xFF &&
 			fvi[index].Version.MinorVersion == 0xFF &&
 			fvi[index].Version.Revision == 0xFF &&
 			fvi[index].Version.BuildNumber == 0xFF &&
-			fvi[index].VersionStringIndex == 0) {
+			vs == 0) {
 			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
 					sizeof(uint8_t));
 			continue;
@@ -241,7 +264,7 @@ static void display_fsp_version_info_hob(const void *hob)
 		 */
 		printk(BIOS_DEBUG, "%s = ", str_ptr);
 
-		if (!fvi[index].VersionStringIndex)
+		if (!vs)
 			printk(BIOS_DEBUG, "%x.%x.%x.%x\n",
 					fvi[index].Version.MajorVersion,
 					fvi[index].Version.MinorVersion,

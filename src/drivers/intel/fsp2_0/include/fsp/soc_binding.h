@@ -29,6 +29,8 @@
 #include <FspsUpd.h>
 #if CONFIG(DISPLAY_FSP_VERSION_INFO)
 #include <FirmwareVersionInfoHob.h>
+#elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)
+#include <FirmwareVersionInfo.h>
 #endif
 
 #pragma pack(pop)

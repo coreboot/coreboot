@@ -27,20 +27,93 @@ menu "SMI Transfer Monitor (STM)"
 
 config MSEG_SIZE
 	hex "mseg size"
-	default 0x400000
+	default 0x100000
 	help
-		STM only - 0x100000
-		STM/PE   - 0x300000+ depending on the amount of memory needed
-		                     for the protected execution virtual
-		                     machine (VM/PE)
+	  The MSEG_SIZE of 0x100000 assumes that:
+	      IED_REGION_SIZE   = 0x400000
+	      SMM_RESERVED_SIZE = 0x200000
+	      SMM_TSEG_SIZE     = 0x800000
+
+	  To use STM/PE, a larger MSEG_SIZE is necessary.  This can be
+	  done by either increasing SMM_TSEG_SIZE or reducing the
+	  IED_REGION_SIZE and/or SMM_RESERVED_SIZE or some combination
+	  of the three.
+	  NOTE: The authors experience is that these configuration
+	  parameters have to be changed at the soc Konfig for them to
+	  be applied.
+	  Minimum sizes:
+	        STM only - 0x100000 - Supports up to 38 processor threads
+	                 - 0x200000 - Supports up to 102 processor threads
+	        STM/PE   - 0x300000+ depending on the amount of memory needed
+	                             for the protected execution virtual
+	                             machine (VM/PE)
+
+config STM_STMPE_ENABLED
+	bool "STM/PE Enabled"
+	default n
+	help
+	  STM/PE provides for additional virtual machines in SMRAM
+	  that provides a protected execution environment for
+	  applications such as introspection, which need to be
+	  protected from malicious code.  More information can be
+	  found on the stmpe branch of
+	  https://review.coreboot.org/STM
+
 
 config BIOS_RESOURCE_LIST_SIZE
-	hex "bios_resource_list_size"
+	hex "bios resource list size"
 	default 0x1000
+	help
+	  The BIOS resource list defines the resources that the
+	  SMI handler needs.  This list is created during the
+	  coreboot bootup.  Unless there has been a lot of elements
+	  added to this list, this value should not change.
 
 config STM_BINARY_FILE
 	string "STM binary file"
-	default "3rdparty/blobs/cpu/intel/stm/stm.bin"
+	default "3rdparty/stm/Stm/build/StmPkg/Core/stm.bin"
+	help
+	  Location of the STM binary file.  The default location is
+	  where the file will be located when coreboot builds
+	  the STM.
+
+config STM_HEAPSIZE
+	hex "stm heapsize"
+	default 0x46000
+	help
+	  The STM_HEAPSIZE defines the heap space that is available
+	  to the STM.  The default size assumes a MSEG_SIZE of 0x100000.
+	  For STM/PE this size should be a minimum of 0x246000.
+
+config STM_TTYS0_BASE
+	hex "stm uart"
+	default TTYS0_BASE if TTYS0_BASE
+	default 0x000
+	help
+	  Defines the serial port for STM console output.  0x000 indicates
+	  no serial port.
+
+config STM_CBMEM_CONSOLE
+	bool "STM cbmem console"
+	default n
+	depends on CONSOLE_CBMEM
+	help
+	  Places the STM console output into the cbmem.
+
+choice
+	prompt "Select STM console output"
+
+config STM_CONSOLE_DEBUG
+	bool "Debug output"
+	depends on STM_CBMEM_CONSOLE || STM_TTYS0_BASE
+	help
+	  "Produces all STM console output"
+
+config STM_CONSOLE_RELEASE
+	bool "Deactivate console output"
+	help
+	  "No console output is produced"
+endchoice
 
 endmenu #STM
 

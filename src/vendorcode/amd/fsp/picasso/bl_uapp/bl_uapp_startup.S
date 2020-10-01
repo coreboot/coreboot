@@ -72,7 +72,7 @@ ENTRY(_psp_vs_start)
 // to main BL using Svc_Exit().
 //
 ShouldNotBeReached:
-	mov	r0, #BL_UAPP_ERR_GENERIC  // Returned from Main
+	mov	r0, #BL_ERR_GENERIC     // Returned from Main
 	svc	#0x0                    // SVC_EXIT
 
 ENDPROC(_psp_vs_start)
@@ -95,7 +95,7 @@ ENTRY(AllocateStack)
 	bne	ret
 
 svcExit:
-	mov	r0, #BL_UAPP_ERR_GENERIC
+	mov	r0, #BL_ERR_GENERIC
 	svc	#0x0                    // SVC_EXIT
 
 ret:

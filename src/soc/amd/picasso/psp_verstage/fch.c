@@ -124,13 +124,13 @@ static uint32_t map_fch_devices(void)
 		bar_map[i].set_bar(bar);
 	}
 
-	return BL_UAPP_OK;
+	return BL_OK;
 }
 
 uint32_t unmap_fch_devices(void)
 {
 	void *bar;
-	uint32_t err, rtn = BL_UAPP_OK;
+	uint32_t err, rtn = BL_OK;
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(bar_map); ++i) {

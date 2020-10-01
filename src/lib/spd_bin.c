@@ -2,6 +2,7 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <memory_info.h>
 #include <spd_bin.h>
 #include <string.h>
 #include <device/dram/ddr3.h>
@@ -15,6 +16,12 @@ void dump_spd_info(struct spd_block *blk)
 			printk(BIOS_DEBUG, "SPD @ 0x%02X\n", blk->addr_map[i]);
 			print_spd_info(blk->spd_array[i]);
 		}
+}
+
+const char * __weak mainboard_get_dram_part_num(void)
+{
+	/* Default weak implementation, no need to override part number. */
+	return NULL;
 }
 
 static bool use_ddr4_params(int dram_type)

@@ -23,12 +23,6 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
-const char * __weak mainboard_get_dram_part_num(void)
-{
-	/* Default weak implementation, no need to override part number. */
-	return NULL;
-}
-
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {

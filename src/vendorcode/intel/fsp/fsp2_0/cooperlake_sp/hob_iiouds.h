@@ -209,6 +209,7 @@ typedef struct _STACK_RES {
   uint64_t                  PciResourceMem64Base;
   uint64_t                  PciResourceMem64Limit;
   uint32_t                  VtdBarAddress;
+  uint32_t                  Mmio32MinSize;         // Minimum required size of MMIO32 resource needed for this stack
 } STACK_RES;
 
 typedef struct {

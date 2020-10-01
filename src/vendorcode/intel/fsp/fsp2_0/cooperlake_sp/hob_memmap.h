@@ -124,7 +124,7 @@ struct ChannelDevice {
 };
 
 typedef struct socket {
-	UINT8    reserved1[1110];
+	UINT8    reserved1[1114];
 	struct   ChannelDevice ChannelInfo[MAX_CH];
 } MEMMAP_SOCKET;
 
@@ -154,7 +154,7 @@ typedef struct SystemMemoryMapHob {
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 
-  UINT8    reserved6[4];
+  UINT8    reserved6[5];
 
 } SYSTEM_MEMORY_MAP_HOB;
 

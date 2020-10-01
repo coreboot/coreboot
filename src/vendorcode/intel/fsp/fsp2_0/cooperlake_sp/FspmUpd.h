@@ -700,19 +700,32 @@ typedef struct {
 **/
   UINT8                       PchDciEn;
 
-/** Offset 0x014D - SerialIoUartDebugEnable
+/** Offset 0x014D - MeUmaEnable
+  Enable or disable ME UMA feature
+**/
+  UINT8                       MeUmaEnable;
+
+/** Offset 0x014E - SerialIoUartDebugEnable
   Enable SerialIo Uart debug library in FSP.
   0:Disable, 1:Enable
 **/
   UINT8                       SerialIoUartDebugEnable;
 
-/** Offset 0x014E - ISA Serial Base selection
+/** Offset 0x014F
+**/
+  UINT8                       UnusedUpdSpace2;
+
+/** Offset 0x0150 - ISA Serial Base selection
   Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
   0x3F8, 0x2F8
 **/
   UINT16                      SerialIoUartDebugIoBase;
 
-/** Offset 0x0150
+/** Offset 0x0152
+**/
+  UINT8                       UnusedUpdSpace3[2];
+
+/** Offset 0x0154
 **/
   UINT8                       ReservedMemoryInitUpd[16];
 } FSPM_CONFIG;
@@ -733,9 +746,9 @@ typedef struct {
 **/
   FSPM_CONFIG                 FspmConfig;
 
-/** Offset 0x0160
+/** Offset 0x0164
 **/
-  UINT8                       UnusedUpdSpace2[6];
+  UINT8                       UnusedUpdSpace4[2];
 
 /** Offset 0x0166
 **/

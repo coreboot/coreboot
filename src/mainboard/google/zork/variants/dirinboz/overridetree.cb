@@ -36,6 +36,12 @@ chip soc/amd/picasso
 		.early_init = true,
 	}"
 
+	register "emmc_config" = "{
+		.timing = SD_EMMC_EMMC_HS400,
+		.sdr104_hs400_driver_strength = SD_EMMC_DRIVE_STRENGTH_A,
+		.init_khz_preset = 400,
+	}"
+
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit

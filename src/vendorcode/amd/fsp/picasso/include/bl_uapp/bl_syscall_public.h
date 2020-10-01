@@ -35,6 +35,7 @@
 #define SVC_EXIT			0x00
 #define SVC_MAP_USER_STACK		0x01
 #define SVC_DEBUG_PRINT			0x06
+#define SVC_MODEXP			0x0C
 #define SVC_RSAPSS_VERIFY		0x0D
 #define SVC_DEBUG_PRINT_EX		0x1A
 #define SVC_WAIT_10NS_MULTIPLE		0x1B
@@ -58,6 +59,17 @@
 #define PSP_INFO_PRODUCTION_MODE	0x00000001UL
 #define PSP_INFO_PRODUCTION_SILICON	0x00000002UL
 #define PSP_INFO_VALID			0x80000000UL
+
+typedef struct MOD_EXP_PARAMS_T
+{
+	char		*pExponent;	// Exponent address
+	unsigned int	ExpSize;	// Exponent size in bytes
+	char		*pModulus;	// Modulus address
+	unsigned int	ModulusSize;	// Modulus size in bytes
+	char		*pMessage;	// Message address, same size as ModulusSize
+	char		*pOutput;	// Output address; Must be big enough to hold the
+					// data of ModulusSize
+} MOD_EXP_PARAMS;
 
 typedef struct _RSAPSS_VERIFY_PARAMS_T
 {
@@ -383,6 +395,15 @@ uint32_t svc_rsa_pss_verify(const RSAPSS_VERIFY_PARAMS *params);
  * Return value: BL_OK or error code
  */
 uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *params);
+
+/* Calculate ModEx
+ *
+ * Parameters:
+ *       mod_exp_param - ModExp parameters
+ *
+ *   Return value: BL_OK or error code
+ */
+uint32_t svc_modexp(MOD_EXP_PARAMS *mod_exp_param);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

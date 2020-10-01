@@ -13,25 +13,23 @@
 #include <stddef.h>
 #include <stdint.h>
 
-static uintptr_t smm_region_start(void)
-{
-	/* Base of TSEG is top of usable DRAM */
-	return pci_read_config32(HOST_BRIDGE, TSEGMB);
-}
-
-void *cbmem_top_chipset(void)
-{
-	return (void *)smm_region_start();
-}
-
 static uintptr_t northbridge_get_tseg_base(void)
 {
-	return ALIGN_DOWN(smm_region_start(), 1 * MiB);
+	/* TSEG has 1 MiB granularity, and bit 0 is a lock */
+	return ALIGN_DOWN(pci_read_config32(HOST_BRIDGE, TSEGMB), 1 * MiB);
 }
 
 static size_t northbridge_get_tseg_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;
+}
+
+void *cbmem_top_chipset(void)
+{
+	/* If DPR is disabled, base of TSEG is top of usable DRAM */
+	uintptr_t top_of_ram = northbridge_get_tseg_base();
+
+	return (void *)top_of_ram;
 }
 
 void smm_region(uintptr_t *start, size_t *size)

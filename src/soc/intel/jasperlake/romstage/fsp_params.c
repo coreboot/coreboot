@@ -116,6 +116,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Skip the CPU replacement check */
 	m_cfg->SkipCpuReplacementCheck = config->SkipCpuReplacementCheck;
+
+	/*
+	 * Set GpioOverride
+	 * When GpioOverride is set FSP will not configure any GPIOs
+	 * and rely on GPIO settings programmed before moved to FSP.
+	 */
+	m_cfg->GpioOverride = 1;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

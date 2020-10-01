@@ -529,19 +529,19 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 
 	fd = open(src_file, O_RDONLY);
 	if (fd < 0) {
-		printf("Error opening file: %s: %s\n",
+		fprintf(stderr, "Error opening file: %s: %s\n",
 		       src_file, strerror(errno));
 		return -1;
 	}
 
 	if (fstat(fd, &fd_stat)) {
-		printf("fstat error: %s\n", strerror(errno));
+		fprintf(stderr, "fstat error: %s\n", strerror(errno));
 		close(fd);
 		return -2;
 	}
 
 	if ((size_t)fd_stat.st_size > room) {
-		printf("Error: %s will not fit.  Exiting.\n", src_file);
+		fprintf(stderr, "Error: %s will not fit.  Exiting.\n", src_file);
 		close(fd);
 		return -3;
 	}
@@ -549,7 +549,7 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 	bytes = read(fd, dest, (size_t)fd_stat.st_size);
 	close(fd);
 	if (bytes != (ssize_t)fd_stat.st_size) {
-		printf("Error while reading %s\n", src_file);
+		fprintf(stderr, "Error while reading %s\n", src_file);
 		return -4;
 	}
 
@@ -755,7 +755,7 @@ static void integrate_psp_firmwares(context *ctx,
 	}
 
 	if (count > MAX_PSP_ENTRIES) {
-		printf("Error: PSP entries exceed max allowed items\n");
+		fprintf(stderr, "Error: PSP entries exceed max allowed items\n");
 		free(ctx->rom);
 		exit(1);
 	}
@@ -871,7 +871,7 @@ static void integrate_bios_firmwares(context *ctx,
 			if (!fw_table[i].size && !fw_table[i].src)
 				continue; /* APOB_NV not used */
 			if (fw_table[i].src && !fw_table[i].size) {
-				printf("Error: APOB NV address provided, but no size\n");
+				fprintf(stderr, "Error: APOB NV address provided, but no size\n");
 				free(ctx->rom);
 				exit(1);
 			}
@@ -883,7 +883,7 @@ static void integrate_bios_firmwares(context *ctx,
 
 		/* APOB_DATA needs destination */
 		if (fw_table[i].type == AMD_BIOS_APOB && !fw_table[i].dest) {
-			printf("Error: APOB destination not provided\n");
+			fprintf(stderr, "Error: APOB destination not provided\n");
 			free(ctx->rom);
 			exit(1);
 		}
@@ -893,12 +893,12 @@ static void integrate_bios_firmwares(context *ctx,
 		 */
 		if (fw_table[i].type == AMD_BIOS_BIN) {
 			if (!fw_table[i].dest || !fw_table[i].size) {
-				printf("Error: BIOS binary destination and uncompressed size are required\n");
+				fprintf(stderr, "Error: BIOS binary destination and uncompressed size are required\n");
 				free(ctx->rom);
 				exit(1);
 			}
 			if (!fw_table[i].filename && !fw_table[i].src) {
-				printf("Error: BIOS binary assumed outside amdfw.rom but no source address given\n");
+				fprintf(stderr, "Error: BIOS binary assumed outside amdfw.rom but no source address given\n");
 				free(ctx->rom);
 				exit(1);
 			}
@@ -1015,7 +1015,7 @@ static void integrate_bios_firmwares(context *ctx,
 	}
 
 	if (count > MAX_BIOS_ENTRIES) {
-		printf("Error: BIOS entries (%d) exceeds max allowed items "
+		fprintf(stderr, "Error: BIOS entries (%d) exceeds max allowed items "
 			"(%d)\n", count, MAX_BIOS_ENTRIES);
 		free(ctx->rom);
 		exit(1);
@@ -1177,7 +1177,7 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 			 uint8_t efs_spi_micron_flag)
 {
 	if ((efs_spi_readmode == 0xFF) || (efs_spi_speed == 0xFF)) {
-		printf("Error: EFS read mode and SPI speed must be set\n");
+		fprintf(stderr, "Error: EFS read mode and SPI speed must be set\n");
 		return 1;
 	}
 	switch (soc_id) {
@@ -1199,7 +1199,7 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 			amd_romsig->qpr_dummy_cycle_f17_mod_00_2f = 0xa;
 			break;
 		default:
-			printf("Error: EFS Micron flag must be correctly set.\n\n");
+			fprintf(stderr, "Error: EFS Micron flag must be correctly set.\n\n");
 			return 1;
 		}
 		break;
@@ -1219,13 +1219,13 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 			amd_romsig->micron_detect_f17_mod_30_3f = 0x55;
 			break;
 		default:
-			printf("Error: EFS Micron flag must be correctly set.\n\n");
+			fprintf(stderr, "Error: EFS Micron flag must be correctly set.\n\n");
 			return 1;
 		}
 		break;
 	case PLATFORM_UNKNOWN:
 	default:
-		printf("Error: Invalid SOC name.\n\n");
+		fprintf(stderr, "Error: Invalid SOC name.\n\n");
 		return 1;
 	}
 	return 0;
@@ -1398,7 +1398,7 @@ int main(int argc, char **argv)
 		case 'C':
 			soc_id = identify_platform(optarg);
 			if (soc_id == PLATFORM_UNKNOWN) {
-				printf("Error: Invalid SOC name specified\n\n");
+				fprintf(stderr, "Error: Invalid SOC name specified\n\n");
 				retval = 1;
 			}
 			sub = instance = 0;
@@ -1421,7 +1421,7 @@ int main(int argc, char **argv)
 		case 'f':
 			ctx.rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
-				printf("Error: ROM size specified"
+				fprintf(stderr, "Error: ROM size specified"
 					" incorrectly (%s)\n\n", optarg);
 				retval = 1;
 			}
@@ -1429,7 +1429,7 @@ int main(int argc, char **argv)
 		case 'l':
 			dir_location = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
-				printf("Error: Directory Location specified"
+				fprintf(stderr, "Error: Directory Location specified"
 					" incorrectly (%s)\n\n", optarg);
 				retval = 1;
 			}
@@ -1518,14 +1518,14 @@ int main(int argc, char **argv)
 
 	rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
 	if (dir_location && (dir_location < rom_base_address)) {
-		printf("Error: Directory location outside of ROM.\n\n");
+		fprintf(stderr, "Error: Directory location outside of ROM.\n\n");
 		return 1;
 	}
 
 	if (any_location) {
 		if (dir_location & 0x3f) {
-			printf("Error: Invalid Directory location.\n");
-			printf("  Valid locations are 64-byte aligned\n");
+			fprintf(stderr, "Error: Invalid Directory location.\n");
+			fprintf(stderr, "  Valid locations are 64-byte aligned\n");
 			return 1;
 		}
 	} else {
@@ -1539,16 +1539,16 @@ int main(int argc, char **argv)
 		case 0xFF020000: /* Fall through */
 			break;
 		default:
-			printf("Error: Invalid Directory location.\n");
-			printf("  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
-			printf("  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
+			fprintf(stderr, "Error: Invalid Directory location.\n");
+			fprintf(stderr, "  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
+			fprintf(stderr, "  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
 			return 1;
 		}
 	}
 
 	ctx.rom = malloc(ctx.rom_size);
 	if (!ctx.rom) {
-		printf("Error: Failed to allocate memory\n");
+		fprintf(stderr, "Error: Failed to allocate memory\n");
 		return 1;
 	}
 	memset(ctx.rom, 0xFF, ctx.rom_size);
@@ -1570,11 +1570,11 @@ int main(int argc, char **argv)
 		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,
 					efs_spi_speed, efs_spi_micron_flag);
 		if (retval) {
-			printf("ERROR: Failed to initialize EFS table!\n");
+			fprintf(stderr, "ERROR: Failed to initialize EFS table!\n");
 			return retval;
 		}
 	} else {
-		printf("WARNING: No SOC name specified.\n");
+		fprintf(stderr, "WARNING: No SOC name specified.\n");
 	}
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
@@ -1650,7 +1650,7 @@ int main(int argc, char **argv)
 		}
 		close(targetfd);
 	} else {
-		printf("Error: could not open file: %s\n", output);
+		fprintf(stderr, "Error: could not open file: %s\n", output);
 		retval = 1;
 	}
 

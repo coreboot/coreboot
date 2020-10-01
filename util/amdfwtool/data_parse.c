@@ -38,7 +38,7 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 	result = regcomp(reg, expr, cflags);
 	if (result != 0) {
 		regerror(result, reg, error_msg, ERROR_BUF_SIZE);
-		printf("%s\n", error_msg);
+		fprintf(stderr, "%s\n", error_msg);
 	}
 }
 
@@ -304,7 +304,7 @@ int get_input_file_line(FILE *f, char line[], int line_buf_size)
 	line[strlen(line) - 1] = '\0';
 
 	if (strlen(line) == ((size_t) (line_buf_size - 1))) {
-		printf("The line size in config file should be lower than %d bytes.\n",
+		fprintf(stderr, "The line size in config file should be lower than %d bytes.\n",
 			MAX_LINE_SIZE);
 		exit(1);
 	}

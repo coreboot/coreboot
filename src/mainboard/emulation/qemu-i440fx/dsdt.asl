@@ -3,8 +3,8 @@
 
 #include <acpi/acpi.h>
 DefinitionBlock (
-	"dsdt.aml",         // Output Filename
-	"DSDT",             // Signature
+	"dsdt.aml",
+	"DSDT",
 	ACPI_DSDT_REV_1,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,

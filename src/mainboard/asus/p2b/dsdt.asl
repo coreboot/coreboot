@@ -11,7 +11,7 @@
 #include <acpi/acpi.h>
 
 DefinitionBlock (
-	"DSDT.aml",
+	"dsdt.aml",
 	"DSDT",
 	ACPI_DSDT_REV_2,
 	OEM_ID,

@@ -3,7 +3,7 @@
 /* DefinitionBlock Statement */
 #include <acpi/acpi.h>
 DefinitionBlock (
-	"DSDT.AML",		/* Output filename */
+	"dsdt.aml",
 	"DSDT",			/* Signature */
 	ACPI_DSDT_REV_2,
 	OEM_ID,

@@ -454,6 +454,14 @@ static inline int clz(u32 x)
 static inline int log2(u32 x) { return (int)sizeof(x) * 8 - clz(x) - 1; }
 /* Find First Set: __ffs(0xf) == 0, __ffs(0) == -1, __ffs(1 << 31) == 31 */
 static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
+
+static inline int clz64(u64 x)
+{
+	return x ? __builtin_clzll(x) : sizeof(x) * 8;
+}
+
+static inline int log2_64(u64 x) { return sizeof(x) * 8 - clz64(x) - 1; }
+static inline int __ffs64(u64 x) { return log2_64(x & (u64)(-(s64)x)); }
 /** @} */
 
 /**

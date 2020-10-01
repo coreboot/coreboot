@@ -79,9 +79,9 @@ Scope(\_SB) {
 				Store(\_SB.PCI0.LPCB.EC0.BPV0, Index(PBST, 3))
 
 				Multiply(\_SB.PCI0.LPCB.EC0.BRC0, 100, Local3)
-				Divide(Local3, \_SB.PCI0.LPCB.EC0.BFC0, Local3, Local0)
+				Divide(Local3, \_SB.PCI0.LPCB.EC0.BFC0, , Local0)
 				Multiply(\_SB.PCI0.LPCB.EC0.BFC0, Local0, Local3)
-				Divide(Local3, 0x64, Local3, Local0)
+				Divide(Local3, 0x64, , Local0)
 				Increment(Local0)
 				Store(Local0, Index(PBST, 2))
 
@@ -184,9 +184,9 @@ Scope(\_SB) {
 				Store(\_SB.PCI0.LPCB.EC0.BPV2, Index(PBST, 3))
 
 				Multiply(\_SB.PCI0.LPCB.EC0.BRC2, 100, Local3)
-				Divide(Local3, \_SB.PCI0.LPCB.EC0.BFC2, Local3, Local0)
+				Divide(Local3, \_SB.PCI0.LPCB.EC0.BFC2, , Local0)
 				Multiply(\_SB.PCI0.LPCB.EC0.BFC2, Local0, Local3)
-				Divide(Local3, 0x64, Local3, Local0)
+				Divide(Local3, 0x64, , Local0)
 				Increment(Local0)
 				Store(Local0, Index(PBST, 2))
 

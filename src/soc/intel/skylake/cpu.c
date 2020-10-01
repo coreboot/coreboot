@@ -21,7 +21,6 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 
@@ -94,29 +93,6 @@ static void configure_c_states(void)
 	msr.lo = IRTL_VALID | IRTL_1024_NS |
 		C_STATE_LATENCY_CONTROL_5_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
-}
-
-/*
- * The emulated ACPI timer allows disabling of the ACPI timer
- * (PM1_TMR) to have no impart on the system.
- */
-static void enable_pm_timer_emulation(void)
-{
-	msr_t msr;
-
-	if (!CONFIG_CPU_XTAL_HZ)
-		return;
-
-	/*
-	 * The derived frequency is calculated as follows:
-	 * (clock * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer frequency is used.
-	 */
-	msr.hi = (3579545ULL << 32) / CONFIG_CPU_XTAL_HZ;
-	/* Set PM1 timer IO port and enable */
-	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
-			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 /* All CPUs including BSP will run the following function. */

@@ -178,24 +178,6 @@ int soc_prev_sleep_state(const struct chipset_power_state *ps,
 	return prev_sleep_state;
 }
 
-void enable_pm_timer_emulation(void)
-{
-	msr_t msr;
-
-	if (!CONFIG_CPU_XTAL_HZ)
-		return;
-
-	/*
-	 * The derived frequency is calculated as follows:
-	 * (clock * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer frequency is used.
-	 */
-	msr.hi = (3579545ULL << 32) / CONFIG_CPU_XTAL_HZ;
-	/* Set PM1 timer IO port and enable */
-	msr.lo = EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + R_ACPI_PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TIMER, msr);
-}
-
 static int rtc_failed(uint32_t gen_pmcon1)
 {
 	return !!(gen_pmcon1 & RPS);

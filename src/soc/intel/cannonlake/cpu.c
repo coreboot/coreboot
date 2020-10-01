@@ -14,7 +14,6 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/pm.h>
 #include <soc/systemagent.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
@@ -56,29 +55,6 @@ static void configure_misc(void)
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input*/
 	msr.lo |= (1 << 23);	/* Lock it */
 	wrmsr(MSR_POWER_CTL, msr);
-}
-
-/*
- * The emulated ACPI timer allows replacing of the ACPI timer
- * (PM1_TMR) to have no impart on the system.
- */
-static void enable_pm_timer_emulation(void)
-{
-	msr_t msr;
-
-	if (!CONFIG_CPU_XTAL_HZ)
-		return;
-
-	/*
-	 * The derived frequency is calculated as follows:
-	 * (clock * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer frequency is used.
-	 */
-	msr.hi = (3579545ULL << 32) / CONFIG_CPU_XTAL_HZ;
-	/* Set PM1 timer IO port and enable */
-	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
-			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
-	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
 static void configure_c_states(void)
@@ -135,7 +111,6 @@ void soc_core_init(struct device *cpu)
 
 	set_aesni_lock();
 
-	/* Enable ACPI Timer Emulation via MSR 0x121 */
 	enable_pm_timer_emulation();
 
 	/* Enable Direct Cache Access */

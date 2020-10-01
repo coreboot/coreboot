@@ -156,4 +156,10 @@ void cpu_lt_lock_memory(void *unused);
 /* Get a supported PRMRR size in bytes with respect to users choice */
 int get_valid_prmrr_size(void);
 
+/*
+ * Enable the emulated ACPI timer in case it's not available or to allow
+ * disabling the PM ACPI timer (PM1_TMR) for power saving.
+ */
+void enable_pm_timer_emulation(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

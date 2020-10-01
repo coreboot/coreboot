@@ -841,9 +841,16 @@ int google_chromeec_cbi_get_sku_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_SKU_ID);
 }
 
-int google_chromeec_cbi_get_fw_config(uint32_t *fw_config)
+int google_chromeec_cbi_get_fw_config(uint64_t *fw_config)
 {
-	return cbi_get_uint32(fw_config, CBI_TAG_FW_CONFIG);
+	uint32_t config;
+
+	if (cbi_get_uint32(&config, CBI_TAG_FW_CONFIG))
+		return -1;
+
+	/* FIXME: Yet to determine source of other 32 bits... */
+	*fw_config = (uint64_t)config;
+	return 0;
 }
 
 int google_chromeec_cbi_get_oem_id(uint32_t *id)

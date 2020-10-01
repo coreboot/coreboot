@@ -1,6 +1,7 @@
 /* sconfig, coreboot device tree compiler */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,7 @@ struct pci_irq_info {
 struct fw_config_option;
 struct fw_config_option {
 	const char *name;
-	unsigned int value;
+	uint64_t value;
 	struct fw_config_option *next;
 };
 struct fw_config_field;
@@ -213,6 +214,6 @@ struct fw_config_field *new_fw_config_field(const char *name,
 					    unsigned int start_bit, unsigned int end_bit);
 
 void add_fw_config_option(struct fw_config_field *field, const char *name,
-			  unsigned int value);
+			  uint64_t value);
 
 void add_fw_config_probe(struct bus *bus, const char *field, const char *option);

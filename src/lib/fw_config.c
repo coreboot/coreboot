@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <fw_config.h>
+#include <inttypes.h>
 #include <lib.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,11 +15,11 @@
 /**
  * fw_config_get() - Provide firmware configuration value.
  *
- * Return 32bit firmware configuration value determined for the system.
+ * Return 64bit firmware configuration value determined for the system.
  */
-static uint32_t fw_config_get(void)
+static uint64_t fw_config_get(void)
 {
-	static uint32_t fw_config_value;
+	static uint64_t fw_config_value;
 	static bool fw_config_value_initialized;
 
 	/* Nothing to prepare if setup is already done. */
@@ -35,7 +36,7 @@ static uint32_t fw_config_get(void)
 			       __func__);
 			fw_config_value = 0;
 		} else {
-			printk(BIOS_INFO, "FW_CONFIG value from CBFS is 0x%08x\n",
+			printk(BIOS_INFO, "FW_CONFIG value from CBFS is 0x%" PRIx64 "\n",
 			       fw_config_value);
 			return fw_config_value;
 		}
@@ -47,7 +48,7 @@ static uint32_t fw_config_get(void)
 			printk(BIOS_WARNING, "%s: Could not get fw_config from EC\n", __func__);
 	}
 
-	printk(BIOS_INFO, "FW_CONFIG value is 0x%08x\n", fw_config_value);
+	printk(BIOS_INFO, "FW_CONFIG value is 0x%" PRIx64 "\n", fw_config_value);
 	return fw_config_value;
 }
 
@@ -59,7 +60,8 @@ bool fw_config_probe(const struct fw_config *match)
 			printk(BIOS_INFO, "fw_config match found: %s=%s\n", match->field_name,
 			       match->option_name);
 		else
-			printk(BIOS_INFO, "fw_config match found: mask=0x%08x value=0x%08x\n",
+			printk(BIOS_INFO, "fw_config match found: mask=0x%" PRIx64 " value=0x%"
+			       PRIx64 "\n",
 			       match->mask, match->value);
 		return true;
 	}
@@ -70,20 +72,20 @@ bool fw_config_probe(const struct fw_config *match)
 #if ENV_RAMSTAGE
 
 /*
- * The maximum number of fw_config fields is limited by the 32-bit mask that is used to
+ * The maximum number of fw_config fields is limited by the 64-bit mask that is used to
  * represent them.
  */
-#define MAX_CACHE_ELEMENTS	(8 * sizeof(uint32_t))
+#define MAX_CACHE_ELEMENTS	(8 * sizeof(uint64_t))
 
 static const struct fw_config *cached_configs[MAX_CACHE_ELEMENTS];
 
-static size_t probe_index(uint32_t mask)
+static size_t probe_index(uint64_t mask)
 {
 	assert(mask);
-	return __ffs(mask);
+	return __ffs64(mask);
 }
 
-const struct fw_config *fw_config_get_found(uint32_t field_mask)
+const struct fw_config *fw_config_get_found(uint64_t field_mask)
 {
 	const struct fw_config *config;
 	config = cached_configs[probe_index(field_mask)];

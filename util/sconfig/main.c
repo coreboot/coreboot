@@ -4,8 +4,9 @@
 #include <assert.h>
 #include <ctype.h>
 #include <getopt.h>
-/* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
+#include <inttypes.h>
 #include <libgen.h>
+/* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
 #include <sys/stat.h>
 #include <commonlib/helpers.h>
 #include <stdint.h>
@@ -402,8 +403,8 @@ struct fw_config_field *new_fw_config_field(const char *name,
 {
 	struct fw_config_field *field = find_fw_config_field(name);
 
-	/* Check that field is within 32bits. */
-	if (start_bit > end_bit || end_bit > 31) {
+	/* Check that field is within 64 bits. */
+	if (start_bit > end_bit || end_bit > 63) {
 		printf("ERROR: fw_config field %s has invalid range %u-%u\n", name,
 		       start_bit, end_bit);
 		exit(1);
@@ -452,15 +453,16 @@ static void append_fw_config_option_to_field(struct fw_config_field *field,
 	}
 }
 
-void add_fw_config_option(struct fw_config_field *field, const char *name, unsigned int value)
+void add_fw_config_option(struct fw_config_field *field, const char *name, uint64_t value)
 {
 	struct fw_config_option *option;
-	uint32_t field_max_value;
+	uint64_t field_max_value;
 
 	/* Check that option value fits within field mask. */
-	field_max_value = (1 << (1 + field->end_bit - field->start_bit)) - 1;
+	field_max_value = (1ull << (1ull + field->end_bit - field->start_bit)) - 1ull;
 	if (value > field_max_value) {
-		printf("ERROR: fw_config option %s:%s value %u larger than field max %u\n",
+		printf("ERROR: fw_config option %s:%s value %" PRIx64 " larger than field max %"
+		       PRIx64 "\n",
 		       field->name, name, value, field_max_value);
 		exit(1);
 	}
@@ -475,7 +477,7 @@ void add_fw_config_option(struct fw_config_field *field, const char *name, unsig
 		}
 		/* Compare values. */
 		if (value == option->value) {
-			printf("ERROR: fw_config option %s:%s[%u] redefined as %s\n",
+			printf("ERROR: fw_config option %s:%s[%" PRIx64 "] redefined as %s\n",
 			       field->name, option->name, value, name);
 			exit(1);
 		}
@@ -532,23 +534,24 @@ static void emit_fw_config(FILE *fil)
 
 	while (field) {
 		struct fw_config_option *option = field->options;
-		uint32_t mask;
+		uint64_t mask;
 
 		fprintf(fil, "#define FW_CONFIG_FIELD_%s_NAME \"%s\"\n",
 			field->name, field->name);
 
 		/* Compute mask from start and end bit. */
-		mask = ((1 << (1 + field->end_bit - field->start_bit)) - 1);
+		mask = ((1ull << (1ull + field->end_bit - field->start_bit)) - 1ull);
 		mask <<= field->start_bit;
 
-		fprintf(fil, "#define FW_CONFIG_FIELD_%s_MASK 0x%08x\n",
+		fprintf(fil, "#define FW_CONFIG_FIELD_%s_MASK 0x%" PRIx64 "\n",
 			field->name, mask);
 
 		while (option) {
 			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_NAME \"%s\"\n",
 				field->name, option->name, option->name);
-			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_VALUE 0x%08x\n",
-				field->name, option->name, option->value << field->start_bit);
+			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_VALUE 0x%"
+				PRIx64 "\n", field->name, option->name,
+				option->value << field->start_bit);
 
 			option = option->next;
 		}
@@ -569,7 +572,7 @@ static int emit_fw_config_probe(FILE *fil, struct device *dev)
 		/* Find matching field. */
 		struct fw_config_field *field;
 		struct fw_config_option *option;
-		uint32_t mask, value;
+		uint64_t mask, value;
 
 		field = find_fw_config_field(probe->field);
 		if (!field) {

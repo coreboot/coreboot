@@ -48,9 +48,9 @@ enum {
 	FW_CONFIG_SHIFT_FAN = 27,
 };
 
-static int get_fw_config(uint32_t *val)
+static int get_fw_config(uint64_t *val)
 {
-	static uint32_t known_value;
+	static uint64_t known_value;
 
 	if (known_value) {
 		*val = known_value;
@@ -67,9 +67,9 @@ static int get_fw_config(uint32_t *val)
 	return 0;
 }
 
-static unsigned int extract_field(uint32_t mask, int shift)
+static unsigned int extract_field(uint64_t mask, int shift)
 {
-	uint32_t fw_config;
+	uint64_t fw_config;
 
 	/* On errors nothing is assumed to be set. */
 	if (get_fw_config(&fw_config))

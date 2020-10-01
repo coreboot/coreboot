@@ -83,7 +83,7 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
  */
 int google_chromeec_cbi_get_oem_id(uint32_t *id);
 int google_chromeec_cbi_get_sku_id(uint32_t *id);
-int google_chromeec_cbi_get_fw_config(uint32_t *fw_config);
+int google_chromeec_cbi_get_fw_config(uint64_t *fw_config);
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize);
 /* version may be stored in CBI as a smaller integer width, but the EC code

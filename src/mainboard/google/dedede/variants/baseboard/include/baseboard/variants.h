@@ -21,7 +21,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num);
  * @param fw_config	Address where the fw_config is stored.
  * @return 0 on success or negative integer for errors.
  */
-int board_info_get_fw_config(uint32_t *fw_config);
+int board_info_get_fw_config(uint64_t *fw_config);
 
 /* Return memory configuration structure. */
 const struct mb_cfg *variant_memcfg_config(void);

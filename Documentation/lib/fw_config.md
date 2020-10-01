@@ -73,18 +73,18 @@ return true.
 
 ## Firmware Configuration Value
 
-The 32bit value used as the firmware configuration bitmask is meant to be determined at runtime
+The 64-bit value used as the firmware configuration bitmask is meant to be determined at runtime
 but could also be defined at compile time if needed.
 
 There are two supported sources for providing this information to coreboot.
 
 ### CBFS
 
-The value can be provided with a 32bit raw value in CBFS that is read by coreboot.  The value
+The value can be provided with a 64-bit raw value in CBFS that is read by coreboot.  The value
 can be set at build time but also adjusted in an existing image with `cbfstool`.
 
 To enable this select the `CONFIG_FW_CONFIG_CBFS` option in the build configuration and add a
-raw 32bit value to CBFS with the name of the current prefix at `CONFIG_FW_PREFIX/fw_config`.
+raw 64-bit value to CBFS with the name of the current prefix at `CONFIG_FW_PREFIX/fw_config`.
 
 When `fw_config_probe_device()` or `fw_config_probe()` is called it will look for the specified
 file in CBFS use the value it contains when matching fields and options.
@@ -291,8 +291,8 @@ field and option to check.
 struct fw_config {
 	const char *field_name;
 	const char *option_name;
-	uint32_t mask;
-	uint32_t value;
+	uint64_t mask;
+	uint64_t value;
 };
 ```
 

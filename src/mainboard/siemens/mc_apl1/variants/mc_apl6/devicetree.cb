@@ -14,6 +14,9 @@ chip soc/intel/apollolake
 	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
+	# 0:HS400(Default), 1:HS200, 2:DDR50
+	register "emmc_host_max_speed" = "1"
+
 	# Enable Vtd feature
 	register "enable_vtd" = "1"
 
@@ -70,7 +73,7 @@ chip soc/intel/apollolake
 		device pci 19.2 off end	# - SPI 2
 		device pci 1a.0 off end	# - PWM
 		device pci 1b.0 on  end	# - SDCARD
-		device pci 1c.0 off end	# - eMMC
+		device pci 1c.0 on  end	# - eMMC
 		device pci 1d.0 off end	# - UFS
 		device pci 1e.0 off end	# - SDIO
 		device pci 1f.0 on	# - LPC

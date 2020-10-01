@@ -67,42 +67,54 @@ chip soc/intel/jasperlake
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf
-
+				# Default DPTF Policy for all drawcia boards if not overridden
 				register "options.tsr[0].desc" = ""Memory""
 				register "options.tsr[1].desc" = ""Ambient""
 				register "options.tsr[2].desc" = ""Charger""
 				register "options.tsr[3].desc" = ""5V regulator""
 
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           80, 1000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 70, 4000)"
-				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 51, 1000)"
-				register "policies.passive[3]" = "DPTF_PASSIVE(CHARGER, TEMP_SENSOR_2, 75, 5000)"
-				register "policies.passive[4]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_3, 60, 1000)"
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,		CPU,	       80, 1000),
+					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 70, 4000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 51, 1000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 75, 5000),
+					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 60, 1000)
+				}"
 
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           119, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 115, SHUTDOWN)"
-				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 115, SHUTDOWN)"
-				register "policies.critical[3]" = "DPTF_CRITICAL(TEMP_SENSOR_2, 115, SHUTDOWN)"
-				register "policies.critical[4]" = "DPTF_CRITICAL(TEMP_SENSOR_3, 115, SHUTDOWN)"
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           119, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 115, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 115, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 115, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 115, SHUTDOWN)
+				}"
 
-				register "controls.power_limits.pl1" = "{
-					.min_power = 4800,
-					.max_power = 6000,
-					.time_window_min = 1 * MSECS_PER_SEC,
-					.time_window_max = 1 * MSECS_PER_SEC,
-					.granularity = 200,}"
-				register "controls.power_limits.pl2" = "{
-					.min_power = 6000,
-					.max_power = 20000,
-					.time_window_min = 1 * MSECS_PER_SEC,
-					.time_window_max = 1 * MSECS_PER_SEC,
-					.granularity = 1000,}"
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 4800,
+						.max_power = 6000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 200,
+					},
+					.pl2 = {
+						.min_power = 6000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
 
 				## Charger Performance Control (Control, mA)
-				register "controls.charger_perf[0]" = "{ 255, 3000 }"
-				register "controls.charger_perf[1]" = "{  24, 1500 }"
-				register "controls.charger_perf[2]" = "{  16, 1000 }"
-				register "controls.charger_perf[3]" = "{   8,  500 }"
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
 
 				device generic 0 on end
 			end

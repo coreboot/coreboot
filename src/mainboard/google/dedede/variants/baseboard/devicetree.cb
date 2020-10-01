@@ -189,27 +189,39 @@ chip soc/intel/jasperlake
 		device pci 00.0 on end # Host Bridge
 		device pci 02.0 on end # Integrated Graphics Device
 		device pci 04.0 on
+			# Default DPTF Policy for all Dedede boards if not overridden
 			chip drivers/intel/dptf
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           90, 10000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000)"
-				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 55, 15000)"
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           90, 10000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 55, 15000)
+				}"
 
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           105, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN)"
-				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN)"
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN)
+				}"
 
-				register "controls.power_limits.pl1" = "{
-					.min_power = 3000,
-					.max_power = 6000,
-					.time_window_min = 1 * MSECS_PER_SEC,
-					.time_window_max = 1 * MSECS_PER_SEC,
-					.granularity = 200,}"
-				register "controls.power_limits.pl2" = "{
-					.min_power = 6000,
-					.max_power = 20000,
-					.time_window_min = 1 * MSECS_PER_SEC,
-					.time_window_max = 1 * MSECS_PER_SEC,
-					.granularity = 1000,}"
+				## Power Limits Control
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 3000,
+						.max_power = 6000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 200,
+					},
+					.pl2 = {
+						.min_power = 6000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
 
 				register "options.tsr[0].desc" = ""Memory""
 				register "options.tsr[1].desc" = ""Ambient""

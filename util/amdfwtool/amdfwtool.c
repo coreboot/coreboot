@@ -646,7 +646,7 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 		return -2;
 	}
 
-	if (fd_stat.st_size > room) {
+	if ((size_t)fd_stat.st_size > room) {
 		printf("Error: %s will not fit.  Exiting.\n", src_file);
 		close(fd);
 		return -3;
@@ -667,7 +667,7 @@ static void integrate_firmwares(context *ctx,
 				amd_fw_entry *fw_table)
 {
 	ssize_t bytes;
-	int i;
+	uint32_t i;
 
 	ctx->current += sizeof(embedded_firmware);
 	ctx->current = ALIGN(ctx->current, BLOB_ALIGNMENT);
@@ -841,7 +841,7 @@ static void *new_bios_dir(context *ctx, int multi)
 static int locate_bdt2_bios(bios_directory_table *level2,
 					uint64_t *source, uint32_t *size)
 {
-	int i;
+	uint32_t i;
 
 	*source = 0;
 	*size = 0;
@@ -1154,7 +1154,7 @@ static struct option long_options[] = {
 
 static void register_fw_fuse(char *str)
 {
-	int i;
+	uint32_t i;
 
 	for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
 		if (amd_psp_fw_table[i].type != AMD_PSP_FUSE_CHAIN)
@@ -1167,7 +1167,7 @@ static void register_fw_fuse(char *str)
 
 static void register_fw_token_unlock(void)
 {
-	int i;
+	uint32_t i;
 
 	for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
 		if (amd_psp_fw_table[i].type != AMD_TOKEN_UNLOCK)
@@ -1202,7 +1202,7 @@ static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
 
 static void register_bdt_data(amd_bios_type type, int sub, int ins, char name[])
 {
-	int i;
+	uint32_t i;
 
 	for (i = 0; i < sizeof(amd_bios_table) / sizeof(amd_bios_entry); i++) {
 		if (amd_bios_table[i].type == type
@@ -1217,7 +1217,7 @@ static void register_bdt_data(amd_bios_type type, int sub, int ins, char name[])
 static void register_fw_addr(amd_bios_type type, char *src_str,
 					char *dst_str, char *size_str)
 {
-	int i;
+	uint32_t i;
 	for (i = 0; i < sizeof(amd_bios_table) / sizeof(amd_bios_entry); i++) {
 		if (amd_bios_table[i].type != type)
 			continue;

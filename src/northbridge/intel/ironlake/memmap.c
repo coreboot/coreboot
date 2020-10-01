@@ -7,8 +7,8 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <program_loading.h>
-#include <cpu/intel/smm_reloc.h>
+#include <types.h>
+
 #include "ironlake.h"
 
 static uintptr_t smm_region_start(void)

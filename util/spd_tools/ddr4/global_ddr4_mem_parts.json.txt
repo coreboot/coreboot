@@ -191,6 +191,18 @@
                 "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
+        },
+        {
+            // Datasheet Revision: Rev. 1.4, May. 2020
+            "name": "H5ANAG6NCJR-XNC",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 16,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
         }
     ]
 }

@@ -8,6 +8,7 @@
 #include "psp_verstage.h"
 #include <stddef.h>
 #include <string.h>
+#include <swab.h>
 #include <vb2_api.h>
 
 static struct SHA_GENERIC_DATA_T sha_op;
@@ -103,48 +104,50 @@ vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size
 	return VB2_SUCCESS;
 }
 
-vb2_error_t vb2ex_hwcrypto_rsa_verify_digest(const struct vb2_public_key *key,
-					     const uint8_t *sig, const uint8_t *digest)
+vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
+				  uint8_t *inout,
+				  uint32_t *workbuf32, int exp)
 {
-	RSAPKCS_VERIFY_PARAMS RSAParams;
+	/* workbuf32 is guaranteed to be a length of
+	 * 3 * key->arrsize * sizeof(uint32_t).
+	 * Since PSP expects everything in LE and *inout is BE array,
+	 * we'll use workbuf for temporary buffer for endian conversion.
+	 */
+	MOD_EXP_PARAMS mod_exp_param;
+	unsigned int key_bytes = key->arrsize * sizeof(uint32_t);
+	uint32_t *sig_swapped = workbuf32;
+	uint32_t *output_buffer = &workbuf32[key->arrsize];
+	uint32_t *inout_32 = (uint32_t *)inout;
 	uint32_t retval;
-	uint32_t exp = 65537;
-	uint32_t sig_size;
-	size_t digest_size;
+	uint32_t i;
 
-	/* PSP only supports 2K and 4K RSA */
+	/* PSP only supports 2K and 4K moduli */
 	if (key->sig_alg != VB2_SIG_RSA2048 &&
 	    key->sig_alg != VB2_SIG_RSA2048_EXP3 &&
 	    key->sig_alg != VB2_SIG_RSA4096) {
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}
 
-	/* PSP only supports SHA256, SHA384 and SHA512*/
-	if (key->hash_alg != VB2_HASH_SHA256 &&
-	    key->hash_alg != VB2_HASH_SHA384 &&
-	    key->hash_alg != VB2_HASH_SHA512) {
-		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
-	}
+	for (i = 0; i < key->arrsize; i++)
+		sig_swapped[i] = swab32(inout_32[key->arrsize - i - 1]);
 
-	if (key->sig_alg == VB2_SIG_RSA2048_EXP3)
-		exp = 3;
-	sig_size = vb2_rsa_sig_size(key->sig_alg);
-	digest_size = vb2_digest_size(key->hash_alg);
+	mod_exp_param.pExponent = (char *)&exp;
+	mod_exp_param.ExpSize = sizeof(exp);
+	mod_exp_param.pModulus = (char *)key->n;
+	mod_exp_param.ModulusSize = key_bytes;
+	mod_exp_param.pMessage = (char *)sig_swapped;
+	mod_exp_param.pOutput = (char *)output_buffer;
 
-	RSAParams.pHash = (char *)digest;
-	RSAParams.HashLen = digest_size;
-	RSAParams.pModulus = (char *)key->n;
-	RSAParams.ModulusSize = sig_size;
-	RSAParams.pExponent = (char *)&exp;
-	RSAParams.ExpSize = sizeof(exp);
-	RSAParams.pSig = (char *)sig;
-
-	retval = svc_rsa_pkcs_verify(&RSAParams);
+	retval = svc_modexp(&mod_exp_param);
 	if (retval) {
 		printk(BIOS_ERR, "ERROR: HW crypto failed - errorcode: %#x\n",
 				retval);
-		return VB2_ERROR_RSA_VERIFY_DIGEST;
+		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}
+
+	/* vboot expects results in *inout with BE, so copy & convert. */
+	for (i = 0; i < key->arrsize; i++)
+		inout_32[i] = swab32(output_buffer[key->arrsize - i - 1]);
 
 	return VB2_SUCCESS;
 }

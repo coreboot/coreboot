@@ -1,27 +1,28 @@
-diff -Naur acpica-unix2-20200717_/source/compiler/asloptions.c acpica-unix2-20200717/source/compiler/asloptions.c > acpica-unix2-20200717_iasl.patch
---- acpica-unix2-20200717_/source/compiler/asloptions.c
-+++ acpica-unix2-20200717/source/compiler/asloptions.c
-@@ -126,6 +126,7 @@
-     if (Gbl_DoSignon)
+diff --git a/source/compiler/asloptions.c b/source/compiler/asloptions.c
+index 4bf9465ba..14c61a122 100644
+--- a/source/compiler/asloptions.c
++++ b/source/compiler/asloptions.c
+@@ -234,6 +234,7 @@ AslCommandLine (
+     if (AslGbl_DoSignon)
      {
          printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
 +        printf ("%s\n", COREBOOT_TOOLCHAIN_VERSION);
          if (AslGbl_IgnoreErrors)
          {
              printf ("Ignoring all errors, forcing AML file generation\n\n");
-@@ -753,6 +754,7 @@
+@@ -866,6 +867,7 @@ AslDoOptions (
          case '^':
-
+ 
              printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
 +            printf ("%s\n", COREBOOT_TOOLCHAIN_VERSION);
              exit (0);
-
+ 
          case 'a':
-@@ -766,6 +768,7 @@
-
+@@ -879,6 +881,7 @@ AslDoOptions (
+ 
              printf (ACPI_COMMON_SIGNON (ASL_COMPILER_NAME));
              printf (ACPI_COMMON_BUILD_TIME);
 +            printf ("%s\n", COREBOOT_TOOLCHAIN_VERSION);
              exit (0);
-
+ 
          case 'e':

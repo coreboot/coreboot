@@ -43,3 +43,25 @@ config PMC_LOW_POWER_MODE_PROGRAM
 	help
 	  Enable this for PMC devices to perform registers programming
 	  to ensure low power in active idle scenario.
+
+config PM_ACPI_TIMER_OPTIONAL
+	bool
+	default n
+	help
+	  This needs to be selected by SoCs, where the hardware PM Timer
+	  can be disabled, to show the ACPI PM Timer Kconfig in menuconfig.
+
+if PM_ACPI_TIMER_OPTIONAL
+
+config USE_PM_ACPI_TIMER
+	bool "Enable ACPI PM timer"
+	default y
+	help
+	  This should be disabled for devices running on battery since
+	  it can draw much power. Further, it must be disabled, if S0ix
+	  is enabled.
+
+	  Disabling this option also stops the hardware TCO timer and makes
+	  the TCO watchdog unavailable.
+
+endif # PM_ACPI_TIMER_OPTIONAL

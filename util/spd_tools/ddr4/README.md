@@ -171,7 +171,7 @@ string like "9 10 11 12 14".
 This tool generates the following files using the global list of
 memory parts in JSON format as described above:
   * De-duplicated SPDs required for the different memory parts. These
-    SPD files are named (ddr4-spd-1.bin, ddr4-spd-2.bin, and so on)
+    SPD files are named (ddr4-spd-1.hex, ddr4-spd-2.hex, and so on)
     and placed in the directory provided as an input to the tool.
   * CSV file representing which of the deduplicated SPD files is used
     by which memory part. This file is named as
@@ -179,11 +179,11 @@ memory parts in JSON format as described above:
     as an input to the tool along with the generated SPD
     files. Example CSV file:
     ```
-    MEMORY_PART_A, ddr4-spd-1.bin
-    MEMORY_PART_B, ddr4-spd-2.bin
-    MEMORY_PART_C, ddr4-spd-3.bin
-    MEMORY_PART_D, ddr4-spd-2.bin
-    MEMORY_PART_E, ddr4-spd-2.bin
+    MEMORY_PART_A, ddr4-spd-1.hex
+    MEMORY_PART_B, ddr4-spd-2.hex
+    MEMORY_PART_C, ddr4-spd-3.hex
+    MEMORY_PART_D, ddr4-spd-2.hex
+    MEMORY_PART_E, ddr4-spd-2.hex
     ```
 
 ## Tool 2 - gen_part_id.go
@@ -242,10 +242,10 @@ Sample Makefile.inc:
 ## This is an auto-generated file. Do not edit!!
 
 SPD_SOURCES =
-SPD_SOURCES += ddr4-spd-1.bin      # ID = 0(0b0000)  Parts = MEMORY_PART_A
-SPD_SOURCES += ddr4-spd-2.bin      # ID = 1(0b0001)  Parts = MEMORY_PART_B, MEMORY_PART_D
-SPD_SOURCES += ddr4-spd-empty.bin  # ID = 2(0b0010)
-SPD_SOURCES += ddr4-spd-3.bin      # ID = 2(0b0010)  Parts = MEMORY_PART_C
+SPD_SOURCES += ddr4-spd-1.hex      # ID = 0(0b0000)  Parts = MEMORY_PART_A
+SPD_SOURCES += ddr4-spd-2.hex      # ID = 1(0b0001)  Parts = MEMORY_PART_B, MEMORY_PART_D
+SPD_SOURCES += ddr4-spd-empty.hex  # ID = 2(0b0010)
+SPD_SOURCES += ddr4-spd-3.hex      # ID = 2(0b0010)  Parts = MEMORY_PART_C
 ```
 NOTE: Empty entries may be required if there is a gap created by a memory part
 with a fixed id.

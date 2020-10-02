@@ -3,7 +3,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -969,8 +968,8 @@ func getSPDByte(index int, memAttribs *memAttributes) byte {
 	return e.constVal
 }
 
-func createSPD(memAttribs *memAttributes) bytes.Buffer {
-	var spd bytes.Buffer
+func createSPD(memAttribs *memAttributes) string {
+	var s string
 
 	for i := 0; i < 512; i++ {
 		var b byte = 0
@@ -978,10 +977,14 @@ func createSPD(memAttribs *memAttributes) bytes.Buffer {
 			b = getSPDByte(i, memAttribs)
 		}
 
-		spd.WriteByte(b)
+		if (i + 1) % 16 == 0 {
+			s += fmt.Sprintf("%02X\n", b)
+		} else {
+			s += fmt.Sprintf("%02X ", b)
+		}
 	}
 
-	return spd
+	return s
 }
 
 func dedupeMemoryPart(dedupedParts []*memPart, memPart *memPart) bool {
@@ -996,16 +999,16 @@ func dedupeMemoryPart(dedupedParts []*memPart, memPart *memPart) bool {
 }
 
 func generateSPD(memPart *memPart, SPDId int, SPDDirName string) {
-	spd := createSPD(&memPart.Attribs)
-	memPart.SPDFileName = fmt.Sprintf("ddr4-spd-%d.bin", SPDId)
-	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), spd.Bytes(), 0644)
+	s := createSPD(&memPart.Attribs)
+	memPart.SPDFileName = fmt.Sprintf("ddr4-spd-%d.hex", SPDId)
+	ioutil.WriteFile(filepath.Join(SPDDirName, memPart.SPDFileName), []byte(s), 0644)
 }
 
 func generateEmptySPD(SPDDirName string) {
 
-	spd := createSPD(nil)
-	SPDFileName := "ddr4-spd-empty.bin"
-	ioutil.WriteFile(filepath.Join(SPDDirName, SPDFileName), spd.Bytes(), 0644)
+	s := createSPD(nil)
+	SPDFileName := "ddr4-spd-empty.hex"
+	ioutil.WriteFile(filepath.Join(SPDDirName, SPDFileName), []byte(s), 0644)
 }
 
 func readMemoryParts(memParts *memParts, memPartsFileName string) error {

@@ -248,6 +248,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
 	params->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
 
+	params->EnableTcoTimer = CONFIG(USE_PM_ACPI_TIMER);
+
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		params->PortUsb20Enable[i] = config->usb2_ports[i].enable;
@@ -431,9 +433,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->FastPkgCRampDisableGt = config->FastPkgCRampDisableGt;
 	params->FastPkgCRampDisableSa = config->FastPkgCRampDisableSa;
 	params->FastPkgCRampDisableFivr = config->FastPkgCRampDisableFivr;
-
-	/* Disable PCH ACPI timer */
-	params->EnableTcoTimer = !config->PmTimerDisabled;
 
 	/* Apply minimum assertion width settings if non-zero */
 	if (config->PchPmSlpS3MinAssert)

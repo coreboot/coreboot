@@ -47,7 +47,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert" = "1"        # 1s
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
-	register "PmTimerDisabled" = "1"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+

@@ -52,7 +52,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert" = "1"        # 1s
 	register "PmConfigSlpSusMinAssert" = "1"       # 500ms
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
-	register "PmTimerDisabled" = "1"
 
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 7,

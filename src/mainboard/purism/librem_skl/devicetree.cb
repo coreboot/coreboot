@@ -61,7 +61,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
-	register "PmTimerDisabled" = "0"
 
 	# EC/KBC requires continuous mode
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"

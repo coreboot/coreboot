@@ -60,4 +60,8 @@ config INCLUDE_NHLT_BLOBS
 config UART_FOR_CONSOLE
 	int
 	default 2
+
+config USE_PM_ACPI_TIMER
+	default n
+
 endif

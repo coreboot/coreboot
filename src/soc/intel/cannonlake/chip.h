@@ -273,8 +273,6 @@ struct soc_intel_cannonlake_config {
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;
 
-	uint8_t PmTimerDisabled;
-
 	/*
 	 * SLP_S3 Minimum Assertion Width Policy
 	 *  1 = 60us

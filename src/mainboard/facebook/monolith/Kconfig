@@ -92,4 +92,7 @@ config VBOOT_ALWAYS_ALLOW_UDC
 	def_bool y
 	depends on VBOOT && !CHROMEOS
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif

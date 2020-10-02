@@ -50,7 +50,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert" = "4"        # 4s
 	register "PmConfigSlpSusMinAssert" = "3"       # 4s
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
-	register "PmTimerDisabled" = "1"
 
 	# Enable Root port 1
 	register "PcieRpEnable[0]" = "1"

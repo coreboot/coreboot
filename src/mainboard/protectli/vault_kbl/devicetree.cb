@@ -40,7 +40,6 @@ chip soc/intel/skylake
 	register "ScsEmmcHs400Enabled" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "HeciEnabled" = "1"
-	register "PmTimerDisabled" = "1"
 	register "SaGv" = "SaGv_Enabled"
 	register "IslVrCmd" = "2"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms

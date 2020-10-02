@@ -8,7 +8,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "DspEnable" = "1"
-	register "PmTimerDisabled" = "1"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+

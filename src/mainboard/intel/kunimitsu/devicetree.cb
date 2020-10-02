@@ -27,7 +27,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "HeciEnabled" = "0"
 	register "SaGv" = "SaGv_Enabled"
-	register "PmTimerDisabled" = "1"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s

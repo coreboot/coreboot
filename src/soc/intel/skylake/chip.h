@@ -460,7 +460,6 @@ struct soc_intel_skylake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS
 	 */
 	u8 HeciEnabled;
-	u8 PmTimerDisabled;
 
 	/*
 	 * Enable VR specific mailbox command

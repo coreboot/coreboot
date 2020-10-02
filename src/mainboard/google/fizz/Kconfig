@@ -96,4 +96,8 @@ config INCLUDE_NHLT_BLOBS_KARMA
 config UART_FOR_CONSOLE
 	int
 	default 2
+
+config USE_PM_ACPI_TIMER
+	default n
+
 endif # BOARD_GOOGLE_BASEBOARD_FIZZ

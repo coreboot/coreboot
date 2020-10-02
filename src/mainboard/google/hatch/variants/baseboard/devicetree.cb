@@ -53,8 +53,6 @@ chip soc/intel/cannonlake
 	# putting it under register "common_soc_config" in overridetree.cb file.
 	register "common_soc_config.pch_thermal_trip" = "77"
 
-	register "PmTimerDisabled" = "1"
-
 	# Select CPU PL2/PL4 config
 	register "cpu_pl2_4_cfg" = "baseline"
 

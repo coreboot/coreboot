@@ -36,7 +36,6 @@ chip soc/intel/skylake
 	register "ScsEmmcHs400Enabled" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Enabled"
-	register "PmTimerDisabled" = "1"
 	register "HeciEnabled" = "0"
 
 	register "SataSalpSupport" = "1"

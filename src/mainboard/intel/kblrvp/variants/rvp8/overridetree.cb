@@ -6,7 +6,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "0"
-	register "PmTimerDisabled" = "0"
 
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 

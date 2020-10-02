@@ -51,4 +51,7 @@ config CBFS_SIZE
 	hex
 	default 0x600000
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif

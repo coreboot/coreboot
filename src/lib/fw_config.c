@@ -127,5 +127,5 @@ static void fw_config_init(void *unused)
 		}
 	}
 }
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_ENTRY, fw_config_init, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, fw_config_init, NULL);
 #endif

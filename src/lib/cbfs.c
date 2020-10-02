@@ -72,18 +72,16 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 
 void *cbfs_map(const char *name, size_t *size_out)
 {
-	struct cbfsf fh;
-	size_t fsize;
+	struct region_device rdev;
+	union cbfs_mdata mdata;
 
-	if (cbfs_boot_locate(&fh, name, NULL))
+	if (cbfs_boot_lookup(name, false, &mdata, &rdev))
 		return NULL;
 
-	fsize = region_device_sz(&fh.data);
-
 	if (size_out != NULL)
-		*size_out = fsize;
+		*size_out = region_device_sz(&rdev);
 
-	return rdev_mmap(&fh.data, 0, fsize);
+	return rdev_mmap_full(&rdev);
 }
 
 int cbfs_unmap(void *mapping)
@@ -285,21 +283,23 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
 
 size_t cbfs_load(const char *name, void *buf, size_t buf_size)
 {
-	struct cbfsf fh;
-	uint32_t compression_algo;
-	size_t decompressed_size;
+	struct region_device rdev;
+	union cbfs_mdata mdata;
 
-	if (cbfs_boot_locate(&fh, name, NULL) < 0)
+	if (cbfs_boot_lookup(name, false, &mdata, &rdev))
 		return 0;
 
-	if (cbfsf_decompression_info(&fh, &compression_algo,
-				     &decompressed_size)
-		    < 0
-	    || decompressed_size > buf_size)
-		return 0;
+	uint32_t compression = CBFS_COMPRESS_NONE;
+	const struct cbfs_file_attr_compression *attr = cbfs_find_attr(&mdata,
+				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*attr));
+	if (attr) {
+		compression = be32toh(attr->compression);
+		if (buf_size < be32toh(attr->decompressed_size))
+			return 0;
+	}
 
-	return cbfs_load_and_decompress(&fh.data, 0, region_device_sz(&fh.data),
-					buf, buf_size, compression_algo);
+	return cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
+					buf, buf_size, compression);
 }
 
 int cbfs_prog_stage_load(struct prog *pstage)

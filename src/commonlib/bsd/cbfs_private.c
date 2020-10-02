@@ -159,3 +159,35 @@ cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_o
 	};
 	return cbfs_walk(dev, lookup_walker, &args, metadata_hash, 0);
 }
+
+const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, size_t size_check)
+{
+	uint32_t offset = be32toh(mdata->h.attributes_offset);
+	uint32_t end = be32toh(mdata->h.offset);
+
+	if (!offset)
+		return NULL;
+
+	while (offset + sizeof(struct cbfs_file_attribute) <= end) {
+		const struct cbfs_file_attribute *attr = (const void *)mdata->raw + offset;
+		const uint32_t tag = be32toh(attr->tag);
+		const uint32_t len = be32toh(attr->len);
+
+		if (offset + len > end) {
+			ERROR("Attribute %s[%u] overflows end of metadata\n",
+			      mdata->filename, tag);
+			return NULL;
+		}
+		if (tag == attr_tag) {
+			if (size_check && len != size_check) {
+				ERROR("Attribute %s[%u] size mismatch: %u != %zu\n",
+				      mdata->filename, tag, len, size_check);
+				return NULL;
+			}
+			return attr;
+		}
+		offset += len;
+	}
+
+	return NULL;
+}

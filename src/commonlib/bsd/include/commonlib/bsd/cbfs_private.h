@@ -134,4 +134,9 @@ cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *
 /* Returns the amount of bytes actually used by the CBFS metadata cache in |mcache|. */
 size_t cbfs_mcache_real_size(const void *mcache, size_t mcache_size);
 
+/* Finds a CBFS attribute in a metadata block. Attribute returned as-is (still big-endian).
+   If |size| is not 0, will check that it matches the length of the attribute (if found)...
+   else caller is responsible for checking the |len| field to avoid reading out-of-bounds. */
+const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, size_t size_check);
+
 #endif	/* _COMMONLIB_BSD_CBFS_PRIVATE_H_ */

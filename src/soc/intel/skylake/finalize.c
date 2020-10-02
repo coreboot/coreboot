@@ -62,16 +62,6 @@ static void pch_finalize_script(struct device *dev)
 	 */
 	pch_thermal_configuration();
 
-	/*
-	 * Disable ACPI PM timer based on dt policy
-	 *
-	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
-	 * Disabling ACPI PM timer also switches off TCO
-	 */
-
-	if (config->PmTimerDisabled)
-		pmc_disable_acpi_timer();
-
 	/* we should disable Heci1 based on the devicetree policy */
 	if (config->HeciEnabled == 0)
 		pch_disable_heci();

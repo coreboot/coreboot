@@ -56,21 +56,8 @@ static void pch_finalize(void)
 	 */
 	pch_thermal_configuration();
 
-	/*
-	 * Disable ACPI PM timer based on dt policy
-	 *
-	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
-	 * Disabling ACPI PM timer also switches off TCO
-	 *
-	 * SA_DEV_ROOT device is used here instead of PCH_DEV_PMC since it is
-	 * just required to get to chip config. PCH_DEV_PMC is hidden by this
-	 * point and hence removed from the root bus. pcidev_path_on_root thus
-	 * returns NULL for PCH_DEV_PMC device.
-	 */
 	config = config_of_soc();
 	pmcbase = pmc_mmio_regs();
-	if (config->PmTimerDisabled)
-		pmc_disable_acpi_timer();
 
 	if (config->s0ix_enable && config->cppmvric2_adsposcdis) {
 		/* Enable Audio DSP OSC qualification for S0ix */

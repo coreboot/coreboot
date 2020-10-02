@@ -78,6 +78,21 @@ static void mainboard_chip_init(void *chip_info)
 		override_pads, override_num);
 }
 
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	bool has_usb4;
+
+	/* If device doesn't have USB4 hardware, disable tbt */
+	has_usb4 = (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2)) ||
+	    fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)));
+
+	if (!has_usb4)
+		memset(params->ITbtPcieRootPortEn,
+		       0,
+		       ARRAY_SIZE(params->ITbtPcieRootPortEn) *
+		       sizeof(*params->ITbtPcieRootPortEn));
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,

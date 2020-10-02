@@ -27,4 +27,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mem_cfg->PchHdaEnable = 0;
 
 	meminit_ddr(mem_cfg, board_cfg, &spd_info, half_populated);
+
+	/* Disable TBT if no USB4 hardware */
+	if (!(fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2)) ||
+		    fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)))) {
+		mem_cfg->TcssDma0En = 0;
+		mem_cfg->TcssItbtPcie0En = 0;
+		mem_cfg->TcssItbtPcie1En = 0;
+	}
 }

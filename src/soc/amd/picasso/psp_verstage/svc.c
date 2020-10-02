@@ -157,3 +157,10 @@ uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *rsa_params)
 	SVC_CALL1(SVC_RSAPKCS_VERIFY, rsa_params, retval);
 	return retval;
 }
+
+uint32_t svc_modexp(MOD_EXP_PARAMS *mod_exp_param)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_MODEXP, mod_exp_param, retval);
+	return retval;
+}

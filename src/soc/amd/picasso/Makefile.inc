@@ -22,6 +22,7 @@ bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
 bootblock-y += smi_util.c
 bootblock-y += config.c
+bootblock-y += pmutil.c
 bootblock-y += reset.c
 
 romstage-y += i2c.c

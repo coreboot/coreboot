@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_def.h>
 #include <sar.h>
 #include <string.h>
@@ -236,9 +237,11 @@ static void wifi_generic_fill_ssdt_generator(const struct device *dev)
 	wifi_generic_fill_ssdt(dev, dev->chip_info);
 }
 
-static struct device_operations wifi_generic_ops = {
-	.read_resources		= noop_read_resources,
-	.set_resources		= noop_set_resources,
+struct device_operations wifi_generic_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= wifi_generic_acpi_name,
 	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,
 };

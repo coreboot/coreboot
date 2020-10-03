@@ -52,11 +52,8 @@ void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase)
 
 	nuvoton_pnp_enter_conf_state(dev);
 
-	if (CONFIG(SUPERIO_NUVOTON_NCT5539D_COM_A))
-		/* Route COM A to GPIO8 pin group */
-		pnp_write_config(dev, 0x2a, 0x40);
-
-	if (CONFIG(SUPERIO_NUVOTON_NCT6776_COM_A))
+	if (CONFIG(SUPERIO_NUVOTON_NCT5539D_COM_A) ||
+	    CONFIG(SUPERIO_NUVOTON_NCT6776_COM_A))
 		/* Route COM A to GPIO8 pin group */
 		pnp_write_config(dev, 0x2a, 0x40);
 

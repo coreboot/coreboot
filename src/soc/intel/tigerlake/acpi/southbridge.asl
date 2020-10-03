@@ -43,3 +43,6 @@
 
 /* PMC Core*/
 #include <soc/intel/common/block/acpi/acpi/pmc.asl>
+
+/* GbE 0:1f.6 */
+#include <soc/intel/common/block/acpi/acpi/pch_glan.asl>

@@ -43,8 +43,8 @@
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
 
-/* GBe 0:1f.6 */
-#include "pch_glan.asl"
+/* GbE 0:1f.6 */
+#include <soc/intel/common/block/acpi/acpi/pch_glan.asl>
 
 /* PMC Core */
 #include <soc/intel/common/block/acpi/acpi/pmc.asl>

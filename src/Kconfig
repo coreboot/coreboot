@@ -889,7 +889,7 @@ config DEBUG_SMI
 	bool "Output verbose SMI debug messages"
 	default n
 	depends on HAVE_SMI_HANDLER
-	select SPI_FLASH_SMM if SPI_CONSOLE || CONSOLE_SPI_FLASH
+	select SPI_FLASH_SMM if EM100PRO_SPI_CONSOLE || CONSOLE_SPI_FLASH
 	help
 	  This option enables additional SMI related debug messages.
 

@@ -294,9 +294,9 @@ config CONSOLE_QEMU_DEBUGCON_PORT
 	depends on CONSOLE_QEMU_DEBUGCON
 	default 0x402
 
-config SPI_CONSOLE
-	bool "SPI debug console output"
-	depends on HAVE_SPI_CONSOLE_SUPPORT && !DEBUG_SPI_FLASH
+config EM100PRO_SPI_CONSOLE
+	bool "EM100Pro SPI debug console output"
+	depends on HAVE_EM100PRO_SPI_CONSOLE_SUPPORT && !DEBUG_SPI_FLASH
 	help
 	  Enable support for the debug console on the Dediprog EM100Pro.
 	  This is currently working only in ramstage due to how the spi

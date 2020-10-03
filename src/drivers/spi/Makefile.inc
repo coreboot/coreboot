@@ -2,7 +2,7 @@
 
 subdirs-y += tpm
 
-ifeq ($(CONFIG_SPI_CONSOLE),y)
+ifeq ($(CONFIG_EM100PRO_SPI_CONSOLE),y)
 ramstage-y += spiconsole.c
 smm-y += spiconsole.c
 endif

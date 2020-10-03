@@ -41,7 +41,7 @@ const struct reg_script system_agent_finalize_script[] = {
 };
 
 const struct reg_script pch_finalize_script[] = {
-#if !CONFIG(SPI_CONSOLE)
+#if !CONFIG(EM100PRO_SPI_CONSOLE)
 	/* Lock SPIBAR */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_HSFS,
 		      SPIBAR_HSFS_FLOCKDN),

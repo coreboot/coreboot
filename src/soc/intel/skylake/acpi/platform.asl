@@ -2,9 +2,8 @@
 
 /* Enable ACPI _SWS methods */
 #include <soc/intel/common/acpi/acpi_wake_source.asl>
-
-External (\_SB.MPTS, MethodObj)
-External (\_SB.MWAK, MethodObj)
+/* Generic indicator for sleep state */
+#include <soc/intel/common/acpi/platform.asl>
 
 /*
  * The _PIC method is called by the OS to choose between interrupt
@@ -18,29 +17,4 @@ Method (_PIC, 1)
 {
 	/* Remember the OS' IRQ routing choice. */
 	Store (Arg0, PICM)
-}
-
-/*
- * The _PTS method (Prepare To Sleep) is called before the OS is
- * entering a sleep state. The sleep state number is passed in Arg0
- */
-
-Method (_PTS, 1)
-{
-	If (CondRefOf (\_SB.MPTS))
-	{
-		\_SB.MPTS (Arg0)
-	}
-}
-
-/* The _WAK method is called on system wakeup */
-
-Method (_WAK, 1)
-{
-	If (CondRefOf (\_SB.MWAK))
-	{
-		\_SB.MWAK (Arg0)
-	}
-
-	Return (Package (){ 0, 0 })
 }

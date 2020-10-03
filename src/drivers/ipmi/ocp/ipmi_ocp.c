@@ -7,14 +7,15 @@
  * end
  */
 
+#include <arch/cpu.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <string.h>
+#include <drivers/ipmi/ipmi_kcs.h>
 #include <intelblocks/cpulib.h>
-#include <arch/cpu.h>
-#include "chip.h"
-#include "drivers/ipmi/ipmi_kcs.h"
+#include <string.h>
+#include <types.h>
+
 #include "ipmi_ocp.h"
 
 static int ipmi_set_processor_information_param1(struct device *dev)

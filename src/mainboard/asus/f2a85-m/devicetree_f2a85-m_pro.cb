@@ -37,7 +37,12 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							irq 0x70 = 4
 						end
 						device pnp 2e.3 off end # COM2/IR
-						device pnp 2e.5 off end # Keyboard
+						device pnp 2e.5 on      # Keyboard
+							io 0x60 = 0x0060        # KBC1 base
+							io 0x62 = 0x0064        # KBC2 base
+							irq 0x70 = 1
+							irq 0x72 = 12
+						end
 						device pnp 2e.6 off end # CIR
 						device pnp 2e.7 on	# GPIO6, GPIO7, GPIO8
 							io 0xe0 = 0x7f

@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <elog.h>
 #include <sar.h>
 #include <string.h>
 #include <wrdd.h>
@@ -237,10 +238,17 @@ static void wifi_generic_fill_ssdt_generator(const struct device *dev)
 	wifi_generic_fill_ssdt(dev, dev->chip_info);
 }
 
+static void wifi_pci_dev_init(struct device *dev)
+{
+	if (pci_dev_is_wake_source(dev))
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
+}
+
 struct device_operations wifi_generic_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.init			= wifi_pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= wifi_generic_acpi_name,
 	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,

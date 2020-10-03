@@ -10,9 +10,6 @@
 #include "chip.h"
 #include "drivers/wifi/generic/chip.h"
 
-#define PMCS_DR 0xcc
-#define PME_STS (1 << 15)
-
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 static int smbios_write_wifi(struct device *dev, int *handle,
 			     unsigned long *current)
@@ -63,12 +60,8 @@ static void intel_wifi_fill_ssdt(const struct device *dev)
 
 static void wifi_pci_dev_init(struct device *dev)
 {
-	if (CONFIG(ELOG)) {
-		uint32_t val;
-		val = pci_read_config16(dev, PMCS_DR);
-		if (val & PME_STS)
-			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
-	}
+	if (pci_dev_is_wake_source(dev))
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
 }
 
 struct device_operations device_ops = {

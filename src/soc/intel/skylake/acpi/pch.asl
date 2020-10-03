@@ -36,7 +36,7 @@
 #include "serialio.asl"
 
 /* SMBus 0:1f.3 */
-#include "smbus.asl"
+#include <soc/intel/common/block/acpi/acpi/smbus.asl>
 
 /* Storage Controllers */
 #include "scs.asl"

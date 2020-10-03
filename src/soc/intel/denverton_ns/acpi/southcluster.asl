@@ -117,7 +117,7 @@ Device (P2SB)
 #include "pmc.asl"
 
 // SMBus 0:1f.4
-#include "smbus.asl"
+#include <soc/intel/common/block/acpi/acpi/smbus.asl>
 
 // Northpeak 0:1f.7
 #include "npk.asl"

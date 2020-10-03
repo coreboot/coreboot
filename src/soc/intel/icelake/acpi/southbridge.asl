@@ -30,7 +30,7 @@
 #include "serialio.asl"
 
 /* SMBus 0:1f.4 */
-#include "smbus.asl"
+#include <soc/intel/common/block/acpi/acpi/smbus.asl>
 
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"

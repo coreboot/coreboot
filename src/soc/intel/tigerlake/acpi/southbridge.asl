@@ -30,7 +30,7 @@
 #include "serialio.asl"
 
 /* SMBus 0:1f.4 */
-#include "smbus.asl"
+#include <soc/intel/common/block/acpi/acpi/smbus.asl>
 
 /* ISH 0:12.0 */
 #include "ish.asl"

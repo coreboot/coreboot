@@ -63,8 +63,6 @@ static void intel_wifi_fill_ssdt(const struct device *dev)
 
 static void wifi_pci_dev_init(struct device *dev)
 {
-	pci_dev_init(dev);
-
 	if (CONFIG(ELOG)) {
 		uint32_t val;
 		val = pci_read_config16(dev, PMCS_DR);

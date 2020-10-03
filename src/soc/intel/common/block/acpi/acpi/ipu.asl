@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* IPU3 input system - Device 05, Function 0 */
-Device (IMGU)
+/* Imaging Unit - Device 05, Function 0 */
+Device (IPU0)
 {
 	Name (_ADR, 0x00050000)
 	Name (_DDN, "Imaging Unit")

@@ -10,7 +10,7 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
-	#include <soc/intel/cannonlake/acpi/platform.asl>
+	#include <soc/intel/common/block/acpi/acpi/platform.asl>
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 

@@ -11,7 +11,7 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 ){
 	//Platform
-	#include <soc/intel/skylake/acpi/platform.asl>
+	#include <soc/intel/common/block/acpi/acpi/platform.asl>
 
 	// global NVS and variables
 	#include <soc/intel/skylake/acpi/globalnvs.asl>

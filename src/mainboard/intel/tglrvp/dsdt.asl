@@ -27,6 +27,7 @@ DefinitionBlock(
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/tigerlake/acpi/southbridge.asl>
 			#include <soc/intel/tigerlake/acpi/tcss.asl>
+			#include <soc/intel/common/block/acpi/acpi/ipu.asl>
 		}
 	}
 
@@ -52,6 +53,5 @@ DefinitionBlock(
 	#include "acpi/mainboard.asl"
 
 	/* Camera */
-        #include <soc/intel/tigerlake/acpi/ipu.asl>
 	#include "acpi/mipi_camera.asl"
 }

@@ -27,6 +27,9 @@ DefinitionBlock(
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/tigerlake/acpi/southbridge.asl>
 			#include <soc/intel/tigerlake/acpi/tcss.asl>
+#if CONFIG(VARIANT_HAS_MIPI_CAMERA)
+			#include <soc/intel/common/block/acpi/acpi/ipu.asl>
+#endif
 		}
 		/* Mainboard hooks */
 		#include "mainboard.asl"
@@ -52,7 +55,6 @@ DefinitionBlock(
 
 #if CONFIG(VARIANT_HAS_MIPI_CAMERA)
 	/* Camera */
-	#include <soc/intel/tigerlake/acpi/ipu.asl>
 	#include <variant/acpi/mipi_camera.asl>
 #endif /* VARIANT_HAS_MIPI_CAMERA */
 }

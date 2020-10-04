@@ -5,8 +5,8 @@ Scope (\_GPE)
 	Method(_L18, 0, NotSerialized)
 	{
 		/* Read EC register to clear wake status */
-		Store(\_SB.PCI0.LPCB.EC.WAKE, Local0)
+		Local0 = \_SB.PCI0.LPCB.EC.WAKE
 		/* So that we don't get a warning that Local0 is unused. */
-		Increment (Local0)
+		Local0++
 	}
 }

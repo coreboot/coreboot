@@ -97,10 +97,10 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						end
 						device pnp 2e.d off end	# WDT1
 						device pnp 2e.e off end # CIR WAKE-UP
-						device pnp 2e.f off	# GPIO Push-pull/Open-drain selection
+						device pnp 2e.f on	# GPIO Push-pull/Open-drain selection
 							irq 0xe6 = 7f
 						end
-						device pnp 2e.14 off # PORT80 UART
+						device pnp 2e.14 on	# PORT80 UART
 							irq 0xe0 = 0x00
 						end
 						device pnp 2e.16 off end # Deep Sleep

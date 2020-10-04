@@ -29,7 +29,7 @@ Scope (\_TZ)
 		// Critical shutdown temperature
 		Method (_CRT, 0, Serialized)
 		{
-			Return (Add (0x0aac, 0x50)) // FIXME
+			Return (0x0aac + 0x50) // FIXME
 		}
 
 		// CPU throttling start temperature

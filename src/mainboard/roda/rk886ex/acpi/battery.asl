@@ -69,76 +69,76 @@ Device (BAT1)
 	/* Update Battery Info */
 	Method(UPBI, 0)
 	{
-		Store (0x78, Index(PBIF, 1))
-		Store (0x64, Index(PBIF, 2))
-		Store (0x2b5c, Index(PBIF, 4))
-		Store ("Bat1", Index(PBIF, 9))
-		Store ("001", Index(PBIF, 10))
-		Store ("LION", Index(PBIF, 11))
-		Store ("Panasonic", Index(PBIF, 12))
+		PBIF [1] = 0x78
+		PBIF [2] = 0x64
+		PBIF [4] = 0x2b5c
+		PBIF [9] = "Bat1"
+		PBIF [10] = "001"
+		PBIF [11] = "LION"
+		PBIF [12] = "Panasonic"
 	}
 
 	Method(UPBS, 0)
 	{
-		Store(\_SB.PCI0.LPCB.EC0.QEVT, Local0)
-		If (Not(Local0)) {
-			Store(0, GP38)
+		Local0 = \_SB.PCI0.LPCB.EC0.QEVT
+		If (~Local0) {
+			GP38 = 0
 			Sleep(0x64)
-			Store(GP38, Local0)
-			If (Not(Local0)) {
-				Store (RDW(0x0d), Local0)
-				If (LNotEqual(Local0, 0xeeee)) {
-					If (LLessEqual(Local0, 0x64)) {
-						Store(Local0, CBA1)
+			Local0 = GP38
+			If (~Local0) {
+				Local0 = RDW (0x0d)
+				If (Local0 != 0xeeee) {
+					If (Local0 <= 0x64) {
+						CBA1 = Local0
 					}
 				}
 			}
 		}
 
-		Store (CBA1, Local0)
-		Store (Local0, Index(PBST, 2))
-		Store (DerefOf(Index(PBIF, 4)), Index(PBST, 3))
-		Store (0, Local1)
+		Local0 = CBA1
+		PBST [2] = Local0
+		PBST [3] = DerefOf (PBIF [4])
+		Local1 = 0
 
 		If (PWRS) {
-			If (LLess(Local0, 0x64)) {
-				Store (2, Local1)
+			If (Local0 < 0x64) {
+				Local1 = 2
 			}
 		} Else {
-			If (LLessEqual(Local0, 0x5)) {
-				Store (4, Local1)
+			If (Local0 <= 0x5) {
+				Local1 = 4
 			} Else {
-				Store (1, Local1)
+				Local1 = 1
 			}
 		}
 
-		Store (Local1, Index(PBST, 0))
+		PBST [0] = Local1
 		If (\_SB.PCI0.LPCB.EC0.P63S) {
-			Store (0x16, Index(PBST, 1))
+			PBST [1] = 0x16
 		} Else  {
-			Store (0x0b, Index(PBST, 1))
+			PBST [1] = 0x0b
 		}
 	}
 
 	// Invalidate Battery Info
 	Method(IVBI, 0)
 	{
-		Store (0xffffffff, Index(PBIF, 1))
-		Store (0xffffffff, Index(PBIF, 2))
-		Store (0xffffffff, Index(PBIF, 4))
-		Store ("Bad", Index(PBIF, 9))
-		Store ("Bad", Index(PBIF, 10))
-		Store ("Bad", Index(PBIF, 11))
-		Store ("Bad", Index(PBIF, 12))
-		Store (1, Index(PBIF, 0))
+		PBIF [1] = 0xffffffff
+		PBIF [2] = 0xffffffff
+		PBIF [4] = 0xffffffff
+		PBIF [9] = "Bad"
+		PBIF [10] = "Bad"
+		PBIF [11] = "Bad"
+		PBIF [12] = "Bad"
+		PBIF [0] = 1
 	}
 
 	Method(IVBS, 0)
 	{
-		Store (0x0, Index(PBST, 0))
-		Store (0xffffffff, Index(PBST, 1))
-		Store (0xffffffff, Index(PBST, 2))
-		Store (0xffffffff, Index(PBST, 3))
+		PBST [0] = 0
+		PBST [1] = 0xffffffff
+		PBST [2] = 0xffffffff
+		PBST [3] = 0xffffffff
 	}
 }
 
@@ -209,85 +209,85 @@ Device (BAT2)
 	/* Update Battery Info */
 	Method(UPBI, 0)
 	{
-		Store (0x78, Index(PBIF, 1))
-		Store (0x64, Index(PBIF, 2))
-		Store (0x2b5c, Index(PBIF, 4))
-		Store ("Bat2", Index(PBIF, 9))
-		Store ("002", Index(PBIF, 10))
-		Store ("LION", Index(PBIF, 11))
-		Store ("Panasonic", Index(PBIF, 12))
+		PBIF [1] = 0x78
+		PBIF [2] = 0x64
+		PBIF [4] = 0x2b5c
+		PBIF [9] = "Bat2"
+		PBIF [10] = "002"
+		PBIF [11] = "LION"
+		PBIF [12] = "Panasonic"
 	}
 
 	Method(UPBS, 0)
 	{
-		Store(\_SB.PCI0.LPCB.EC0.QEVT, Local0)
-		If (Not(Local0)) {
-			Store(0, GP38)
+		Local0 = \_SB.PCI0.LPCB.EC0.QEVT
+		If (~Local0) {
+			GP38 = 0
 			Sleep(0x64)
-			Store(GP38, Local0)
-			If (Not(Local0)) {
-				Store (RDW(0x0d), Local0)
-				If (LNotEqual(Local0, 0xeeee)) {
-					If (LLessEqual(Local0, 0x64)) {
-						Store(Local0, CBA2)
+			Local0 = GP38
+			If (~Local0) {
+				Local0 = RDW (0x0d)
+				If (Local0 != 0xeeee) {
+					If (Local0 <= 0x64) {
+						CBA2 = Local0
 					}
 				}
 			}
 		}
 
-		Store (CBA2, Local0)
-		Store (Local0, Index(PBST, 2))
-		Store (DerefOf(Index(PBIF, 4)), Index(PBST, 3))
-		Store (0, Local1)
+		Local0 = CBA2
+		PBST [2] = Local0
+		PBST [3] = DerefOf (PBIF [4])
+		Local1 = 0
 
 		If (PWRS) {
-			If (LLess(Local0, 0x64)) {
-				Store (2, Local1)
+			If (Local0 < 0x64) {
+				Local1 = 2
 			}
 		} Else {
-			If (LLessEqual(Local0, 0x5)) {
-				Store (4, Local1)
+			If (Local0 <= 0x5) {
+				Local1 = 4
 			} Else {
-				Store (1, Local1)
+				Local1 = 1
 			}
 		}
 
-		Store (Local1, Index(PBST, 0))
+		PBST [0] = Local1
 		If (\_SB.PCI0.LPCB.EC0.P62S) {
-			Store (0x16, Index(PBST, 1))
+			PBST [1] = 0x16
 		} Else  {
-			Store (0x0b, Index(PBST, 1))
+			PBST [1] = 0x0b
 		}
 	}
 
 	// Invalidate Battery Info
 	Method(IVBI, 0)
 	{
-		Store (0xffffffff, Index(PBIF, 1))
-		Store (0xffffffff, Index(PBIF, 2))
-		Store (0xffffffff, Index(PBIF, 4))
-		Store ("Bad", Index(PBIF, 9))
-		Store ("Bad", Index(PBIF, 10))
-		Store ("Bad", Index(PBIF, 11))
-		Store ("Bad", Index(PBIF, 12))
-		Store (1, Index(PBIF, 0))
+		PBIF [1] = 0xffffffff
+		PBIF [2] = 0xffffffff
+		PBIF [4] = 0xffffffff
+		PBIF [9] = "Bad"
+		PBIF [10] = "Bad"
+		PBIF [11] = "Bad"
+		PBIF [12] = "Bad"
+		PBIF [0] = 1
 	}
 
 	Method(IVBS, 0)
 	{
-		Store (0x0, Index(PBST, 0))
-		Store (0xffffffff, Index(PBST, 1))
-		Store (0xffffffff, Index(PBST, 2))
-		Store (0xffffffff, Index(PBST, 3))
+		PBST [0] = 0
+		PBST [1] = 0xffffffff
+		PBST [2] = 0xffffffff
+		PBST [3] = 0xffffffff
 	}
 }
 
 Method (RDW, 1)
 {
-	Store (0x16, \_SB.PCI0.LPCB.EC0.SMAD)
-	Store (Arg0, \_SB.PCI0.LPCB.EC0.SMCM)
-	Store (0x09, \_SB.PCI0.LPCB.EC0.SMPR)
-	While (LNotEqual(\_SB.PCI0.LPCB.EC0.SMPR, 0x00)) {
+	\_SB.PCI0.LPCB.EC0.SMAD = 0x16
+	\_SB.PCI0.LPCB.EC0.SMCM = Arg0
+	\_SB.PCI0.LPCB.EC0.SMPR = 0x09
+	While (\_SB.PCI0.LPCB.EC0.SMPR != 0x00) {
 		Stall (1)
 	}
 
@@ -300,11 +300,11 @@ Device (ADP1)
 	Method (_PSR, 0)
 	{
 		If (\_SB.PCI0.LPCB.EC0.ECON) {
-			Store (\_SB.PCI0.LPCB.EC0.P60S, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.P60S
 			If (Local0) {
-				Store (0, PWRS)
+				PWRS = 0
 			} Else {
-				Store (1, PWRS)
+				PWRS = 1
 			}
 		}
 

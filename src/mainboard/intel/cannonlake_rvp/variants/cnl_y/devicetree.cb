@@ -75,7 +75,7 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
-		chip drivers/intel/wifi
+		chip drivers/wifi/generic
 			register "wake" = "PME_B0_EN_BIT"
 			device pci 14.3 on  end # CNVi wifi
 		end

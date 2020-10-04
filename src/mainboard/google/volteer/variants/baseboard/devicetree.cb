@@ -432,7 +432,7 @@ chip soc/intel/tigerlake
 		device ref cnvi_bt on end
 		device ref south_xhci on end
 		device ref shared_ram on end
-		chip drivers/intel/wifi
+		chip drivers/wifi/generic
 			register "wake" = "GPE0_PME_B0"
 			device ref cnvi_wifi on end
 		end

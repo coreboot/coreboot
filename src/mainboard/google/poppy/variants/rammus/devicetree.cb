@@ -354,7 +354,7 @@ chip soc/intel/skylake
 		end # I2C #5
 		device pci 19.2 off end # I2C #4
 		device pci 1c.0 on
-			chip drivers/intel/wifi
+			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW0_00" # GPP_B0
 				device pci 00.0 on end
 			end

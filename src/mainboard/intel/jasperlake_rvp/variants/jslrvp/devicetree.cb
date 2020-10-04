@@ -299,7 +299,7 @@ chip soc/intel/jasperlake
 		end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 off end # PMC SRAM
-		chip drivers/intel/wifi
+		chip drivers/wifi/generic
 			register "wake" = "GPE0_PME_B0"
 			device pci 14.3 on  end # CNVi wifi
 		end

@@ -92,7 +92,7 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[10]" = "10"
 
 	device domain 0 on
-		chip drivers/intel/wifi
+		chip drivers/wifi/generic
 			register "wake" = "PME_B0_EN_BIT"
 			device pci 14.3 on  end # CNVi wifi
 		end

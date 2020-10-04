@@ -400,7 +400,7 @@ chip soc/intel/skylake
 			end
 		end # PCI Express Port 3
 		device pci 1c.3 on
-			chip drivers/intel/wifi
+			chip drivers/wifi/generic
 				register "wake" = "GPE0_PCI_EXP"
 				device pci 00.0 on end
 			end

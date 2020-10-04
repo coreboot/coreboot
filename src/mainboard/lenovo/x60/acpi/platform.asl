@@ -24,12 +24,12 @@ Method(_WAK,1)
 	// was inserted while a sleep state was active.
 
 	// Are we going to S3?
-	If (LEqual(Arg0, 3)) {
+	If (Arg0 == 3) {
 		// ..
 	}
 
 	// Are we going to S4?
-	If (LEqual(Arg0, 4)) {
+	If (Arg0 == 4) {
 		// ..
 	}
 

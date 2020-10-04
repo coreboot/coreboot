@@ -27,7 +27,7 @@ Scope (\_SB)
 			   TRAP(SMI_DOCK_DISCONNECT)
 			}
 
-			Xor(Arg0, DSTA, Local0)
+			Local0 = Arg0 ^ DSTA
 			Return (Local0)
 		}
 

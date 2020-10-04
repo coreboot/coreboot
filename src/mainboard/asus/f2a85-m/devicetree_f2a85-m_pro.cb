@@ -46,36 +46,18 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						device pnp 2e.6 off end # CIR
 						device pnp 2e.7 on	# GPIO6, GPIO7, GPIO8
 							irq 0xf4 = 0xff # GPIO6 i/o
-							irq 0xf5 = 0xff # GPIO6 data
-							irq 0xf6 = 0x00 # GPIO6 inversion
-							irq 0xf7 = 0x00 # GPIO6 status
-							irq 0xf8 = 0x00 # GPIO6 multiplex
 
 							irq 0xe0 = 0x7f # GPIO7 i/o
-							irq 0xe1 = 0x10 # GPIO7 data
-							irq 0xe2 = 0x00 # GPIO7 inversion
-							irq 0xe3 = 0x00 # GPIO7 status
-							irq 0xec = 0x00 # GPIO7 multiplex
-
-							irq 0xe4 = 0xff # GPIO8 i/o
-							irq 0xe5 = 0xff # GPIO8 data
-							irq 0xe6 = 0xff # GPIO8 inversion
-							irq 0xe7 = 0xff # GPIO8 status
-							irq 0xed = 0xff # GPIO8 multiplex
+							irq 0xe1 = 0x00 # GPIO7 data
 						end
 						device pnp 2e.008 off	# WDT1
 						end
 						device pnp 2e.108 on	# GPIO0, GPIO1
 							irq 0xe0 = 0xff # GPIO0 i/o
-							irq 0xe1 = 0xff # GPIO0 data
 							irq 0xe2 = 0xff # GPIO0 inversion
-							irq 0xe3 = 0xff # GPIO0 status
 							irq 0xe4 = 0xff # GPIO0 multiplex
 
 							irq 0xf0 = 0xff # GPIO1 i/o
-							irq 0xf1 = 0x28 # GPIO1 data
-							irq 0xf2 = 0x00 # GPIO1 inversion
-							irq 0xf3 = 0x00 # GPIO1 status
 							irq 0xf4 = 0x08 # GPIO1 multiplex
 
 							irq 0xf5 = 0xff # WDT1 control mode
@@ -88,32 +70,16 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						end
 						device pnp 2e.209 on	# GPIO2
 							irq 0xe0 = 0xff # GPIO2 i/o
-							irq 0xe1 = 0x90 # GPIO2 data
-							irq 0xe2 = 0x00 # GPIO2 inversion
-							irq 0xe3 = 0x00 # GPIO2 status
-							irq 0xe9 = 0x00 # GPIO2 multiplex
 						end
 						device pnp 2e.309 on	# GPIO3
 							irq 0xe4 = 0x7f # GPIO3 i/o
-							irq 0xe5 = 0x76 # GPIO3 data
-							irq 0xe6 = 0x00 # GPIO3 inversion
-							irq 0xe7 = 0x00 # GPIO3 status
-							irq 0xea = 0x00 # GPIO3 multiplex
-							irq 0xfe = 0x00 # GPIO3/4 debounce
+							irq 0xe5 = 0x00 # GPIO3 data
 						end
 						device pnp 2e.409 on	# GPIO4
 							irq 0xf0 = 0xff # GPIO4 i/o
-							irq 0xf1 = 0x7b # GPIO4 data
-							irq 0xf2 = 0x00 # GPIO4 inversion
-							irq 0xe8 = 0x00 # GPIO4 status
-							irq 0xee = 0x00 # GPIO4 multiplex
 						end
 						device pnp 2e.509 on	# GPIO5
 							irq 0xf4 = 0xff # GPIO5 i/o
-							irq 0xf5 = 0xef # GPIO5 data
-							irq 0xf6 = 0x00 # GPIO5 inversion
-							irq 0xf7 = 0x00 # GPIO5 status
-							irq 0xeb = 0x00 # GPIO5 multiplex
 						end
 						device pnp 2e.609 on	# GPIO6
 						end

@@ -98,3 +98,11 @@ config INTEL_TME
 	 /16/Multi-Key-Total-Memory-Encryption-Spec.pdf". If CPU supports TME,
 	 it would get enabled. If CPU supports MKTME, this same config option
 	 enables MKTME.
+
+config CPU_SUPPORTS_PM_TIMER_EMULATION
+	bool
+	default n
+	help
+	  Select this if the SoC's ucode supports PM ACPI timer emulation (Common
+	  timer Copy), which is required to be able to disable the TCO PM ACPI
+	  timer for power saving.

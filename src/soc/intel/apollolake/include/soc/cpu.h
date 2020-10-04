@@ -6,9 +6,6 @@
 #include <cpu/x86/msr.h>
 #include <intelblocks/msr.h>
 
-/* Common Timer Copy (CTC) frequency - 19.2MHz. */
-#define CTC_FREQ		19200000
-
 struct device;
 void apollolake_init_cpus(struct device *dev);
 void mainboard_devtree_update(struct device *dev);

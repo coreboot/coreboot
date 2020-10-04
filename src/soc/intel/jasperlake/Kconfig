@@ -137,6 +137,9 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 133
 
+config CPU_XTAL_HZ
+	default 38400000
+
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
 	default 3

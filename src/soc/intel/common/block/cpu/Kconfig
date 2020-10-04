@@ -99,6 +99,11 @@ config INTEL_TME
 	 it would get enabled. If CPU supports MKTME, this same config option
 	 enables MKTME.
 
+config CPU_XTAL_HZ
+	int
+	help
+	  Base clock which virtually everything runs on.
+
 config CPU_SUPPORTS_PM_TIMER_EMULATION
 	bool
 	default n

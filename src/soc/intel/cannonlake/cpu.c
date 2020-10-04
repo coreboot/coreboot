@@ -114,18 +114,21 @@ static void enable_pm_timer_emulation(void)
 {
 	msr_t msr;
 
+	if (!CONFIG_CPU_XTAL_HZ)
+		return;
+
 	/*
 	 * The derived frequency is calculated as follows:
-	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.
-	 * Back solve the multiplier so the 3.579545MHz ACPI timer
-	 * frequency is used.
+	 * (clock * msr[63:32]) >> 32 = target frequency.
+	 * Back solve the multiplier so the 3.579545MHz ACPI timer frequency is used.
 	 */
-	msr.hi = (3579545ULL << 32) / CTC_FREQ;
+	msr.hi = (3579545ULL << 32) / CONFIG_CPU_XTAL_HZ;
 	/* Set PM1 timer IO port and enable */
 	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
 			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
 	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
+
 
 static void set_energy_perf_bias(u8 policy)
 {

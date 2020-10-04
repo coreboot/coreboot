@@ -39,33 +39,33 @@ Device (SIO) {
 
 	Method (ENTR, 0, NotSerialized)
 	{
-		Store (0x87, SI2E)
-		Store (0x01, SI2E)
-		Store (0x55, SI2E)
-		Store (0x55, SI2E)
+		SI2E = 0x87
+		SI2E = 0x01
+		SI2E = 0x55
+		SI2E = 0x55
 	}
 
 	Method (EXIT, 0, NotSerialized)
 	{
-		Store (0x02, SCNT)
+		SCNT = 0x02
 	}
 
 	/* Parse activate register for an LDN */
 	Method (ISEN, 1, NotSerialized)
 	{
 		ENTR ()
-		Store (Arg0, SLDN)
-		Store (SACT, Local0)
+		SLDN = Arg0
+		Local0 = SACT
 		EXIT ()
 
 		/* Check if it exists */
-		If (LEqual (Local0, 0xFF))
+		If (Local0 == 0xFF)
 		{
 			Return (0x00)
 		}
 
 		/* Check if activated */
-		If (LEqual (Local0, One))
+		If (Local0 == 1)
 		{
 			Return (0x0F)
 		}
@@ -79,8 +79,8 @@ Device (SIO) {
 	Method (SENA, 1, NotSerialized)
 	{
 		ENTR ()
-		Store (Arg0, SLDN)
-		Store (One, SACT)
+		SLDN = Arg0
+		SACT = 1
 		EXIT ()
 	}
 
@@ -88,8 +88,8 @@ Device (SIO) {
 	Method (SDIS, 1, NotSerialized)
 	{
 		ENTR ()
-		Store (Arg0, SLDN)
-		Store (Zero, SACT)
+		SLDN = Arg0
+		SACT = 0
 		EXIT ()
 	}
 

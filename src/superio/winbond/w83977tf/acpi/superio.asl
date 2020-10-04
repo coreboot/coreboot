@@ -80,7 +80,7 @@ IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 /* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 Method (_PSC) {
 	ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-	Store (IPD, Local0)
+	Local0 = IPD
 	EXIT_CONFIG_MODE ()
 	If (Local0) { Return (3) }
 	Else { Return (0) }
@@ -118,11 +118,11 @@ Device (FDC0)
 		PNP_READ_IO(PNP_IO0, BUF0, IO0)
 		/* Store xx7 range first so the value isn't overwritten
 		 * for below */
-		Add(IO0I, 7, IO1I)
-		Store(IO1I, IO1A)
+		IO1I += 7
+		IO1A = IO1I
 		/* Store xx2 range */
-		Add(IO0I, 2, IO0I)
-		Store(IO0I, IO0A)
+		IO0I += 2
+		IO0A = IO0I
 		/* End OEM BIOS deficiency */
 		PNP_READ_IRQ(PNP_IRQ0, BUF0, Y08)
 		PNP_READ_DMA(PNP_DMA0, BUF0, Y09)
@@ -147,11 +147,11 @@ Device (FDC0)
 		CreateByteField (Arg0, 0x15, DMAV)
 		ENTER_CONFIG_MODE(W83977TF_FDC)
 		/* FDC base port on 8-byte boundary. */
-		And (IOLO, 0xF8, PNP_IO0_LOW_BYTE)
-		Store (IOHI, PNP_IO0_HIGH_BYTE)
-		Subtract (FindSetLeftBit (IRQW), 1, PNP_IRQ0)
-		Subtract (FindSetLeftBit (DMAV), 1, PNP_DMA0)
-		Store (One, PNP_DEVICE_ACTIVE)
+		PNP_IO0_LOW_BYTE = IOLO & 0xF8
+		PNP_IO0_HIGH_BYTE = IOHI
+		PNP_IRQ0 = FindSetLeftBit (IRQW) - 1
+		PNP_DMA0 = FindSetLeftBit (DMAV) - 1
+		PNP_DEVICE_ACTIVE = 1
 		EXIT_CONFIG_MODE()
 	}
 }
@@ -165,11 +165,11 @@ Device (LPT)
 	Method (_STA, 0, NotSerialized)
 	{
 		ENTER_CONFIG_MODE(W83977TF_PP)
-		And (OPT1, 0x02, Local0)
-		If (LOr (IO0H, IO0L))
+		Local0 = OPT1 & 0x02
+		If (IO0H || IO0L)
 		{
 			/* Report device not present if ECP is enabled */
-			If (LEqual (Local0, 0x02))
+			If (Local0 == 0x02)
 			{
 				EXIT_CONFIG_MODE()
 				Return (0x00)
@@ -239,10 +239,10 @@ Device (LPT)
 		CreateByteField (Arg0, 0x03, IOHI)
 		CreateWordField (Arg0, 0x09, IRQW)
 		ENTER_CONFIG_MODE(W83977TF_PP)
-		Store (IOLO, PNP_IO0_LOW_BYTE)
-		Store (IOHI, PNP_IO0_HIGH_BYTE)
-		Subtract (FindSetLeftBit (IRQW), 1, PNP_IRQ0)
-		Store (One, PNP_DEVICE_ACTIVE)
+		PNP_IO0_LOW_BYTE = IOLO
+		PNP_IO0_HIGH_BYTE = IOHI
+		PNP_IRQ0 = FindSetLeftBit (IRQW) - 1
+		PNP_DEVICE_ACTIVE = 1
 		EXIT_CONFIG_MODE()
 	}
 }
@@ -254,10 +254,10 @@ Device (ECP)
 	Method (_STA, 0, NotSerialized)
 	{
 		ENTER_CONFIG_MODE(W83977TF_PP)
-		And (OPT1, 0x02, Local0)
-		If (LOr (IO0H, IO0L))
+		Local0 = OPT1 & 0x02
+		If (IO0H || IO0L)
 		{
-			If (LEqual (Local0, 0x02))
+			If (Local0 == 0x02)
 			{
 				If (PNP_DEVICE_ACTIVE)
 				{
@@ -339,11 +339,11 @@ Device (ECP)
 		CreateByteField (Arg0, 0x15, DMAC)
 
 		ENTER_CONFIG_MODE(W83977TF_PP)
-		Store (IOLO, PNP_IO0_LOW_BYTE)
-		Store (IOHI, PNP_IO0_HIGH_BYTE)
-		Subtract (FindSetLeftBit (IRQW), 1, PNP_IRQ0)
-		Subtract (FindSetLeftBit (DMAC), 1, PNP_DMA0)
-		Store (One, PNP_DEVICE_ACTIVE)
+		PNP_IO0_LOW_BYTE = IOLO
+		PNP_IO0_HIGH_BYTE = IOHI
+		PNP_IRQ0 = FindSetLeftBit (IRQW) - 1
+		PNP_DMA0 = FindSetLeftBit (DMAC) - 1
+		PNP_DEVICE_ACTIVE = 1
 		EXIT_CONFIG_MODE()
 	}
 }

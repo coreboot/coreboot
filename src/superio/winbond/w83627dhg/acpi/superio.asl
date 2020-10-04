@@ -111,7 +111,7 @@ Device(SUPERIO_DEV) {
 	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 	Method (_PSC) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-		  Store (IPD, Local0)
+		  Local0 = IPD
 		EXIT_CONFIG_MODE ()
 		If (Local0) { Return (3) }
 		Else { Return (0) }
@@ -120,14 +120,14 @@ Device(SUPERIO_DEV) {
 	/* PM: Switch to D0 by setting IPD low */
 	Method (_PS0) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-		  Store (Zero, IPD)
+		  IPD = 0
 		EXIT_CONFIG_MODE ()
 	}
 
 	/* PM: Switch to D3 by setting IPD high */
 	Method (_PS3) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-		  Store (One, IPD)
+		  IPD = 1
 		EXIT_CONFIG_MODE ()
 	}
 
@@ -145,10 +145,10 @@ Device(SUPERIO_DEV) {
 	#define SUPERIO_SUSL_LDN 9
 	Method (SUSL, 1, Serialized) {
 		ENTER_CONFIG_MODE (SUPERIO_SUSL_LDN)
-		  Store (SULM, Local0)
-		  And (Local0, 0x1f, Local0)
-		  Or (Local0, ShiftLeft (Arg0, 5), Local0)
-		  Store (Local0, SULM)
+		  Local0 = SULM
+		  Local0 &= 0x1f
+		  Local0 |= (Arg0 << 5)
+		  SULM = Local0
 		EXIT_CONFIG_MODE ()
 	}
 

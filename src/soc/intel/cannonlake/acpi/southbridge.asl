@@ -35,7 +35,7 @@
 #include <soc/intel/common/block/acpi/acpi/smbus.asl>
 
 /* ISH 0:13.0 */
-#include "ish.asl"
+#include <soc/intel/common/block/acpi/acpi/ish.asl>
 
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"

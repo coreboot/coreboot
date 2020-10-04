@@ -708,11 +708,4 @@ void pmc_disable_acpi_timer(void)
 
 	setbits8(pmcbase + PCH_PWRM_ACPI_TMR_CTL, ACPI_TIM_DIS);
 }
-
-void pmc_ignore_xtal_shutdown(void)
-{
-	uint8_t *pmcbase = pmc_mmio_regs();
-
-	setbits8(pmcbase + CPPMVRIC, XTALSDQDIS);
-}
 #endif /* PMC_LOW_POWER_MODE_PROGRAM */

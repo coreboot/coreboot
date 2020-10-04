@@ -73,16 +73,11 @@ static void pch_finalize(void)
 	if (config->PmTimerDisabled)
 		pmc_disable_acpi_timer();
 
-	if (config->s0ix_enable) {
-		/* Disable XTAL shutdown qualification for low power idle. */
-		pmc_ignore_xtal_shutdown();
-
-		if (config->cppmvric2_adsposcdis) {
-			/* Enable Audio DSP OSC qualification for S0ix */
-			reg32 = read32(pmcbase + CPPMVRIC2);
-			reg32 &= ~ADSPOSCDIS;
-			write32(pmcbase + CPPMVRIC2, reg32);
-		}
+	if (config->s0ix_enable && config->cppmvric2_adsposcdis) {
+		/* Enable Audio DSP OSC qualification for S0ix */
+		reg32 = read32(pmcbase + CPPMVRIC2);
+		reg32 &= ~ADSPOSCDIS;
+		write32(pmcbase + CPPMVRIC2, reg32);
 	}
 
 	pch_handle_sideband(config);

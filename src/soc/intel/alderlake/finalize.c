@@ -64,10 +64,6 @@ static void pch_finalize(void)
 	if (config->PmTimerDisabled)
 		pmc_disable_acpi_timer();
 
-	/* Disable XTAL shutdown qualification for low power idle. */
-	if (config->s0ix_enable)
-		pmc_ignore_xtal_shutdown();
-
 	pch_handle_sideband(config);
 
 	pmc_clear_pmcon_sts();

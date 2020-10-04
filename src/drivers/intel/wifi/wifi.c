@@ -49,11 +49,9 @@ static void intel_wifi_fill_ssdt(const struct device *dev)
 	struct drivers_intel_wifi_config *config = dev->chip_info;
 	struct drivers_wifi_generic_config generic_config;
 
-	if (config) {
+	if (config)
 		generic_config.wake = config->wake;
-		/* By default, all intel wifi chips wake from S3 */
-		generic_config.maxsleep = 3;
-	}
+
 	wifi_generic_fill_ssdt(dev, config ? &generic_config : NULL);
 }
 #endif

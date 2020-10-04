@@ -189,7 +189,7 @@ void wifi_generic_fill_ssdt(const struct device *dev,
 
 	/* Wake capabilities */
 	if (config)
-		acpigen_write_PRW(config->wake, config->maxsleep);
+		acpigen_write_PRW(config->wake, ACPI_S3);
 
 	/* Fill regulatory domain structure */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN)) {

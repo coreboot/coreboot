@@ -6,11 +6,9 @@
 /**
  * struct drivers_wifi_generic_config - Data structure to contain generic wifi config
  * @wake: Wake pin for ACPI _PRW
- * @maxsleep: Maximum sleep state to wake from
  */
 struct drivers_wifi_generic_config {
 	unsigned int wake;
-	unsigned int maxsleep;
 };
 
 /**

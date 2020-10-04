@@ -6,8 +6,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <elog.h>
 #include <sar.h>
+#include <smbios.h>
 #include <string.h>
 #include <wrdd.h>
 #include "chip.h"
@@ -244,6 +246,42 @@ static void wifi_pci_dev_init(struct device *dev)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
 }
 
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned long *current)
+{
+	struct smbios_type_intel_wifi {
+		u8 type;
+		u8 length;
+		u16 handle;
+		u8 str;
+		u8 eos[2];
+	} __packed;
+
+	struct smbios_type_intel_wifi *t = (struct smbios_type_intel_wifi *)*current;
+	int len = sizeof(struct smbios_type_intel_wifi);
+
+	memset(t, 0, sizeof(struct smbios_type_intel_wifi));
+	t->type = 0x85;
+	t->length = len - 2;
+	t->handle = *handle;
+	/* Intel wifi driver expects this string to be in the table 0x85. */
+	t->str = smbios_add_string(t->eos, "KHOIHGIUCCHHII");
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
+static int smbios_write_wifi(struct device *dev, int *handle, unsigned long *current)
+{
+	if (dev->vendor == PCI_VENDOR_ID_INTEL)
+		return smbios_write_intel_wifi(dev, handle, current);
+
+	return 0;
+}
+#endif
+
 struct device_operations wifi_generic_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -252,6 +290,9 @@ struct device_operations wifi_generic_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= wifi_generic_acpi_name,
 	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+	.get_smbios_data	= smbios_write_wifi,
+#endif
 };
 
 static void wifi_generic_enable(struct device *dev)

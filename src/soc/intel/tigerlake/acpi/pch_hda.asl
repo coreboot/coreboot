@@ -50,7 +50,7 @@ Device (HDAS)
 			 *
 			 * Returns a pointer to NHLT table in memory.
 			 */
-			If (LEqual (Arg2, One)) {
+			If (Arg2 == 1) {
 				CreateQWordField (NBUF, ^NHLT._MIN, NBAS)
 				CreateQWordField (NBUF, ^NHLT._MAX, NMAS)
 				CreateQWordField (NBUF, ^NHLT._LEN, NLEN)

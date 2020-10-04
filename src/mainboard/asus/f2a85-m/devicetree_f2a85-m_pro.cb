@@ -61,8 +61,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							irq 0xf7 = 0x00
 							irq 0xf8 = 0x00
 						end
-						device pnp 2e.8 on	# WDT1, GPIO0, GPIO1
-							irq 0x30 = 0x00
+						device pnp 2e.8 off	# WDT1, GPIO0, GPIO1
 							io  0x60 = 0x00
 							irq 0xe0 = 0xff
 							irq 0xe1 = 0xff
@@ -78,29 +77,42 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							irq 0xf6 = 0x00
 							irq 0xf7 = 0xff
 						end
-						device pnp 2e.9 on	# GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6, GPIO7, GPIO8
-							irq 0x30 = 0xfe
+						device pnp 2e.009 off	# GPIO8
+						end
+						device pnp 2e.109 on	# GPIO1
+						end
+						device pnp 2e.209 on	# GPIO2
 							irq 0xe0 = 0xff
 							irq 0xe1 = 0x90
 							irq 0xe2 = 0x00
 							irq 0xe3 = 0x00
+							irq 0xe9 = 0x00
+						end
+						device pnp 2e.309 on	# GPIO3
 							irq 0xe4 = 0x7f
 							irq 0xe5 = 0x76
 							irq 0xe6 = 0x00
 							irq 0xe7 = 0x00
-							irq 0xe8 = 0x00
-							irq 0xe9 = 0x00
 							irq 0xea = 0x00
-							irq 0xeb = 0x00
-							irq 0xee = 0x00
+							irq 0xfe = 0x00
+						end
+						device pnp 2e.409 on	# GPIO4
+							irq 0xe8 = 0x00
 							irq 0xf0 = 0xff
 							irq 0xf1 = 0x7b
 							irq 0xf2 = 0x00
+							irq 0xee = 0x00
+						end
+						device pnp 2e.509 on	# GPIO5
+							irq 0xeb = 0x00
 							irq 0xf4 = 0xff
 							irq 0xf5 = 0xef
 							irq 0xf6 = 0x00
 							irq 0xf7 = 0x00
-							irq 0xfe = 0x00
+						end
+						device pnp 2e.609 on	# GPIO6
+						end
+						device pnp 2e.709 on	# GPIO7
 						end
 						device pnp 2e.a on	# ACPI
 							irq 0xe6 = 0x4c
@@ -108,7 +120,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
 							irq 0xf2 = 0x5d
 						end
 						device pnp 2e.b on	# Hardware Monitor, Front Panel LED
-							irq 0x30 = 0x01
 							io  0x60 = 0x0290
 							irq 0xe2 = 0x7f
 							irq 0xe4 = 0xf1

@@ -681,7 +681,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	acpi_slit_t *slit;
 	acpi_dmar_t *dmar;
 
-	const struct soc_intel_xeon_sp_cpx_config *const config = config_of(device);
+	const config_t *const config = config_of(device);
 
 	/* SRAT */
 	current = ALIGN(current, 8);

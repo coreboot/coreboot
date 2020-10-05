@@ -201,8 +201,7 @@ struct soc_amd_picasso_config {
 		 */
 		uint16_t init_khz_preset;
 	} emmc_config;
-	/* set xhci0 from gen2 to gen1 */
-	uint8_t xhci0_force_gen1;
+
 	/* Force USB3 port to gen1, bit0 - controller0 Port0, bit1 - Port1 */
 	union usb3_force_gen1 usb3_port_force_gen1;
 

@@ -54,8 +54,6 @@ chip soc/amd/picasso
 		.init_khz_preset = 1,
 	}"
 
-	register "xhci0_force_gen1" = "0"
-
 	register "has_usb2_phy_tune_params" = "1"
 
 	# Controller0 Port0 Default

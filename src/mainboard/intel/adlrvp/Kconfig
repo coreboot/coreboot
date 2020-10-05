@@ -1,0 +1,86 @@
+if BOARD_INTEL_ADLRVP_P || BOARD_INTEL_ADLRVP_P_EXT_EC
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_CHROMEOS
+	select DRIVERS_I2C_HID
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_INTEL_SOUNDWIRE
+	select DRIVERS_USB_ACPI
+	select DRIVERS_SPI_ACPI
+	select SOC_INTEL_ALDERLAKE
+
+config CHROMEOS
+	bool
+	default y
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+	select GBB_FLAG_FORCE_DEV_BOOT_USB
+	select GBB_FLAG_FORCE_DEV_BOOT_LEGACY
+	select GBB_FLAG_FORCE_MANUAL_RECOVERY
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select HAS_RECOVERY_MRC_CACHE
+	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+
+config MAINBOARD_DIR
+	string
+	default "intel/adlrvp"
+
+config VARIANT_DIR
+	string
+	default "adlrvp_p"
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "ADLRVPP"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "adlrvp"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_adlrvp"
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+choice
+	prompt "ON BOARD EC"
+	default ADL_INTEL_EC if BOARD_INTEL_ADLRVP_P
+	default ADL_CHROME_EC if BOARD_INTEL_ADLRVP_P_EXT_EC
+	help
+	  This option allows you to select the on board EC to use.
+	  Select whether the board has Intel EC or Chrome EC
+
+config ADL_CHROME_EC
+	bool "Chrome EC"
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_ACPI
+
+config ADL_INTEL_EC
+	bool "Intel EC"
+	select EC_ACPI
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+endchoice
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA
+	select HAS_RECOVERY_MRC_CACHE
+	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+endif

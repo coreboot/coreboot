@@ -1,0 +1,8 @@
+config BOARD_INTEL_ADLRVP_P
+	bool "Alderlake-P RVP"
+	select DRIVERS_UART_8250IO
+	select MAINBOARD_USES_IFD_EC_REGION
+
+config BOARD_INTEL_ADLRVP_P_EXT_EC
+	bool "Alderlake-P RVP with Chrome EC"
+	select INTEL_LPSS_UART_FOR_CONSOLE

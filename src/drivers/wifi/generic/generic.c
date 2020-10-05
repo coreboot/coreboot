@@ -44,11 +44,15 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	return -1;
 }
 
-static void emit_sar_acpi_structures(void)
+static void emit_sar_acpi_structures(const struct device *dev)
 {
 	int i, j, package_size;
 	struct wifi_sar_limits sar_limits;
 	struct wifi_sar_delta_table *wgds;
+
+	/* CBFS SAR and SAR ACPI tables are currently used only by Intel WiFi devices. */
+	if (dev->vendor != PCI_VENDOR_ID_INTEL)
+		return;
 
 	/* Retrieve the sar limits data */
 	if (get_wifi_sar_limits(&sar_limits) < 0) {
@@ -217,7 +221,7 @@ static void wifi_generic_fill_ssdt(const struct device *dev)
 
 	/* Fill Wifi sar related ACPI structures */
 	if (CONFIG(USE_SAR))
-		emit_sar_acpi_structures();
+		emit_sar_acpi_structures(dev);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

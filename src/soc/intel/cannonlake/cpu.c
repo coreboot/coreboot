@@ -112,14 +112,8 @@ static void configure_dca_cap(void)
  */
 static void enable_pm_timer_emulation(void)
 {
-	const struct soc_intel_cannonlake_config *config;
 	msr_t msr;
 
-	config = config_of_soc();
-
-	/* Enable PM timer emulation only if ACPI PM timer is disabled */
-	if (!config->PmTimerDisabled)
-		return;
 	/*
 	 * The derived frequency is calculated as follows:
 	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.

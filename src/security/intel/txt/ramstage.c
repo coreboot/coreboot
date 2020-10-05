@@ -64,16 +64,14 @@ void bootmem_platform_add_ranges(void)
 			  TXT_PUBLIC_SPACE - TXT_PRIVATE_SPACE,
 			  BM_MEM_RESERVED);
 
-	const uint32_t txt_dev_memory = read32((void *)TXT_DPR) &
-			(TXT_DPR_TOP_ADDR_MASK << TXT_DPR_TOP_ADDR_SHIFT);
-	const uint32_t txt_dev_size =
-			(read32((void *)TXT_DPR) >> TXT_DPR_LOCK_SIZE_SHIFT) &
-			TXT_DPR_LOCK_SIZE_MASK;
+	const union dpr_register dpr = {
+		.raw = read32((void *)TXT_DPR),
+	};
+
+	const uint32_t dpr_base = dpr.top - dpr.size * MiB;
 
 	/* Chapter 5.5.6 Intel TXT Device Memory */
-	bootmem_add_range(txt_dev_memory - txt_dev_size * MiB,
-			  txt_dev_size * MiB,
-			  BM_MEM_RESERVED);
+	bootmem_add_range(dpr_base, dpr.size * MiB, BM_MEM_RESERVED);
 }
 
 static bool get_wake_error_status(void)
@@ -228,12 +226,15 @@ static void lockdown_intel_txt(void *unused)
 	const u8 dpr_capable = !!(read64((void *)TXT_CAPABILITIES) &
 				  TXT_CAPABILITIES_DPR);
 	printk(BIOS_INFO, "TEE-TXT: DPR capable %x\n", dpr_capable);
-	if (dpr_capable) {
 
+	if (dpr_capable) {
 		/* Protect 3 MiB below TSEG and lock register */
-		write64((void *)TXT_DPR, (TXT_DPR_TOP_ADDR(tseg) |
-			TXT_DPR_LOCK_SIZE(3) |
-			TXT_DPR_LOCK_MASK));
+		union dpr_register dpr = {
+			.lock = 1,
+			.size = 3,
+			.top  = tseg,
+		};
+		write64((void *)TXT_DPR, dpr.raw);
 
 		// DPR TODO: implement SA_ENABLE_DPR in the intelblocks
 

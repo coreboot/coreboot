@@ -91,15 +91,6 @@
 #define TXT_BIOSACM_ERRORCODE (TXT_BASE + 0x328)
 
 #define TXT_DPR (TXT_BASE + 0x330)
-#define  TXT_DPR_LOCK_SHIFT		0
-#define  TXT_DPR_LOCK_SIZE_SHIFT	4
-#define  TXT_DPR_LOCK_SIZE_MASK		0xff
-#define  TXT_DPR_TOP_ADDR_SHIFT		20
-#define  TXT_DPR_TOP_ADDR_MASK		0xfff
-
-#define  TXT_DPR_LOCK_MASK	(1 << TXT_DPR_LOCK_SHIFT)
-#define  TXT_DPR_LOCK_SIZE(x)	((x) << TXT_DPR_LOCK_SIZE_SHIFT)
-#define  TXT_DPR_TOP_ADDR(x)	((x) << TXT_DPR_TOP_ADDR_SHIFT)
 
 #define TXT_ACM_KEY_HASH (TXT_BASE + 0x400)
 #define  TXT_ACM_KEY_HASH_LEN 0x4
@@ -159,6 +150,20 @@
 
 /* MSRs */
 #define IA32_MCG_STATUS 0x17a
+
+/* DPR register layout, either in PCI config space or TXT MMIO space */
+union dpr_register {
+	struct {
+		uint32_t lock :  1; /* [ 0.. 0] */
+		uint32_t prs  :  1; /* [ 1.. 1] and only present on PCI config */
+		uint32_t epm  :  1; /* [ 2.. 2] and only present on PCI config */
+		uint32_t      :  1;
+		uint32_t size :  8; /* [11.. 4] */
+		uint32_t      :  8;
+		uint32_t top  : 12; /* [31..20] */
+	};
+	uint32_t raw;
+};
 
 typedef enum {
 	CHIPSET_ACM = 2,

@@ -2,6 +2,7 @@
 
 #include <arch/mmio.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <string.h>
 #include <types.h>
 
@@ -211,7 +212,12 @@ void txt_dump_chipset_info(void)
 void txt_dump_regions(void)
 {
 	struct txt_biosdataregion *bdr = NULL;
-	uintptr_t tseg = 0;
+
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
+	smm_region(&tseg_base, &tseg_size);
+
 	uint64_t reg64;
 
 	reg64 = read64((void *)TXT_HEAP_BASE);
@@ -219,7 +225,7 @@ void txt_dump_regions(void)
 	    (read64((void *)(uintptr_t)reg64) >= (sizeof(*bdr) + sizeof(uint64_t))))
 		bdr = (void *)((uintptr_t)reg64 + sizeof(uint64_t));
 
-	printk(BIOS_DEBUG, "TEE-TXT: TSEG 0x%lx\n", tseg * MiB);
+	printk(BIOS_DEBUG, "TEE-TXT: TSEG 0x%lx, size %zu MiB\n", tseg_base, tseg_size / MiB);
 	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.BASE  0x%llx\n", read64((void *)TXT_HEAP_BASE));
 	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.SIZE  0x%llx\n", read64((void *)TXT_HEAP_SIZE));
 	printk(BIOS_DEBUG, "TEE-TXT: TXT.SINIT.BASE 0x%llx\n", read64((void *)TXT_SINIT_BASE));

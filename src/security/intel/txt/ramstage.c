@@ -8,6 +8,7 @@
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <types.h>
 
@@ -204,7 +205,11 @@ static void push_sinit_heap(u8 **heap_ptr, void *data, size_t data_length)
 static void lockdown_intel_txt(void *unused)
 {
 	const uint64_t status = read64((void *)TXT_SPAD);
-	uintptr_t tseg = 0;
+
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
+	smm_region(&tseg_base, &tseg_size);
 
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
@@ -232,7 +237,7 @@ static void lockdown_intel_txt(void *unused)
 		union dpr_register dpr = {
 			.lock = 1,
 			.size = 3,
-			.top  = tseg,
+			.top  = tseg_base / MiB,
 		};
 		write64((void *)TXT_DPR, dpr.raw);
 
@@ -248,7 +253,7 @@ static void lockdown_intel_txt(void *unused)
 	 */
 	write64((void *)TXT_HEAP_SIZE, 0xE0000);
 	write64((void *)TXT_HEAP_BASE,
-		ALIGN_DOWN((tseg * MiB) - read64((void *)TXT_HEAP_SIZE), 4096));
+		ALIGN_DOWN(tseg_base - read64((void *)TXT_HEAP_SIZE), 4096));
 
 	/*
 	 * Document Number: 558294

@@ -4,7 +4,7 @@
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
-	0x02,		/* DSDT Revision: ACPI v3.0 */
+	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
 	0x20181031	/* OEM Revision */

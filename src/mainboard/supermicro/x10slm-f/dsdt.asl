@@ -2,7 +2,14 @@
 
 #include <acpi/acpi.h>
 
-DefinitionBlock("dsdt.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 0x20181220)
+DefinitionBlock(
+	"dsdt.aml",
+	"DSDT",
+	ACPI_DSDT_REV_2,
+	OEM_ID,
+	ACPI_TABLE_CREATOR,
+	0x20181220
+	)
 {
 	#include "acpi/platform.asl"
 	#include <southbridge/intel/common/acpi/platform.asl>

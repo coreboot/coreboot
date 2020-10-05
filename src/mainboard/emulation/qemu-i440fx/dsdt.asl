@@ -5,7 +5,7 @@
 DefinitionBlock (
 	"dsdt.aml",         // Output Filename
 	"DSDT",             // Signature
-	0x01,               // DSDT Compliance Revision
+	ACPI_DSDT_REV_1,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
 	0x1                 // OEM Revision

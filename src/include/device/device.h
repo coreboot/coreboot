@@ -339,6 +339,12 @@ DEVTREE_CONST struct device *pcidev_path_on_root_debug(pci_devfn_t devfn, const 
 void devtree_bug(const char *func, pci_devfn_t devfn);
 void __noreturn devtree_die(void);
 
+/*
+ * Dies if `dev` or `dev->chip_info` are NULL. Returns `dev->chip_info` otherwise.
+ *
+ * Only use if missing `chip_info` is fatal and we can't boot. If it's
+ * not fatal, please handle the NULL case gracefully.
+ */
 static inline DEVTREE_CONST void *config_of(const struct device *dev)
 {
 	if (dev && dev->chip_info)

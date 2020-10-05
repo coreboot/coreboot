@@ -80,6 +80,19 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end # Integrated Graphics Device
+                device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						# The Linux Kernel does not allow an inverted BOTH_EDGE irq
+						# So we need to use GpioIO() instead of GpioInt()
+						# https://www.kernel.org/doc/Documentation/acpi/gpio-properties.txt
+						register "privacy_gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_D4)"
+						device usb 2.6 on end
+					end
+				end
+			end
+                end # USB xHCI
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

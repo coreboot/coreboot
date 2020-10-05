@@ -1,16 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <acpi/acpi.h>
-#include <bootstate.h>
+#include <arch/mmio.h>
 #include <bootmem.h>
-#include <console/console.h>
-#include <stdint.h>
+#include <bootstate.h>
 #include <cbfs.h>
+#include <console/console.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
-
 #include <device/pci_ops.h>
+#include <types.h>
 
 #include "txt.h"
 #include "txt_register.h"

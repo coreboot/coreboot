@@ -3,7 +3,7 @@
 #ifndef SECURITY_INTEL_TXT_GETSEC_H_
 #define SECURITY_INTEL_TXT_GETSEC_H_
 
-#include <stdint.h>
+#include <types.h>
 
 bool getsec_parameter(uint32_t *version_mask,
 		      uint32_t *version_numbers_supported,

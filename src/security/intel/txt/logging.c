@@ -1,12 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
-#include <intelblocks/systemagent.h>
-#endif
-
 #include <arch/mmio.h>
+#include <console/console.h>
 #include <string.h>
+#include <types.h>
 
 #include "txt.h"
 #include "txt_register.h"

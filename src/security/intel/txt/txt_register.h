@@ -4,7 +4,6 @@
 #define SECURITY_INTEL_TXT_REGISTER_H_
 
 #include <types.h>
-#include <stddef.h>
 
 /*
  * Document: 315168-016

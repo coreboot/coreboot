@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>
+#include <types.h>
 
 #include "txt_register.h"
 #include "txt_getsec.h"

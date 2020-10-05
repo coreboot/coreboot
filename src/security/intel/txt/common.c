@@ -1,15 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/mmio.h>
-#include <string.h>
 #include <console/console.h>
-#include <types.h>
 #include <cbfs.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <lib.h>
 #include <smp/node.h>
+#include <string.h>
+#include <types.h>
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
 #include <soc/intel/common/reset.h>

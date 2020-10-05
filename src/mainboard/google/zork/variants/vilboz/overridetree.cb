@@ -13,7 +13,7 @@ chip soc/amd/picasso
 	register "slow_ppt_limit" = "6000" # mW
 	register "fast_ppt_limit" = "9000" # mW
 	register "slow_ppt_time_constant" = "5" # second
-	register "stapm_time_constant" = "2500" # second
+	register "stapm_time_constant" = "1400" # second
 	register "sustained_power_limit" = "4800" # mW
 
 	# End : OPN Performance Configuration

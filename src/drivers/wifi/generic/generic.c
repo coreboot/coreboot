@@ -163,11 +163,11 @@ static void emit_sar_acpi_structures(void)
 	acpigen_pop_len();
 }
 
-void wifi_generic_fill_ssdt(const struct device *dev,
-			    const struct drivers_wifi_generic_config *config)
+static void wifi_generic_fill_ssdt(const struct device *dev)
 {
 	const char *path;
 	u32 address;
+	const struct drivers_wifi_generic_config *config = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -226,7 +226,7 @@ void wifi_generic_fill_ssdt(const struct device *dev,
 	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
 }
 
-const char *wifi_generic_acpi_name(const struct device *dev)
+static const char *wifi_generic_acpi_name(const struct device *dev)
 {
 	static char wifi_acpi_name[WIFI_ACPI_NAME_MAX_LEN];
 
@@ -234,11 +234,6 @@ const char *wifi_generic_acpi_name(const struct device *dev)
 	snprintf(wifi_acpi_name, sizeof(wifi_acpi_name), "WF%02X",
 		 (dev_path_encode(dev) & 0xff));
 	return wifi_acpi_name;
-}
-
-static void wifi_generic_fill_ssdt_generator(const struct device *dev)
-{
-	wifi_generic_fill_ssdt(dev, dev->chip_info);
 }
 #endif
 
@@ -292,7 +287,7 @@ struct device_operations wifi_generic_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= wifi_generic_acpi_name,
-	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,
+	.acpi_fill_ssdt		= wifi_generic_fill_ssdt,
 #endif
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data	= smbios_write_wifi,

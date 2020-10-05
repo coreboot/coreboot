@@ -59,6 +59,13 @@ struct drivers_usb_acpi_config {
 	unsigned int enable_delay_ms;
 	/* Delay to be inserted after device is disabled. */
 	unsigned int enable_off_delay_ms;
+
+	/*
+	 * Define a GPIO that shows the privacy status of the USB device.
+	 * E.g. On a camera: if it is one, it is recording black frames.
+	 * E.g. On a mic: if it is one, it is recording white-noise.
+	 */
+	struct acpi_gpio privacy_gpio;
 };
 
 #endif /* __USB_ACPI_CHIP_H__ */

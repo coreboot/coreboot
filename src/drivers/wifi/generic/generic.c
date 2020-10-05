@@ -37,6 +37,7 @@
  */
 #define WIFI_ACPI_NAME_MAX_LEN 5
 
+#if CONFIG(HAVE_ACPI_TABLES)
 __weak
 int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 {
@@ -239,6 +240,7 @@ static void wifi_generic_fill_ssdt_generator(const struct device *dev)
 {
 	wifi_generic_fill_ssdt(dev, dev->chip_info);
 }
+#endif
 
 static void wifi_pci_dev_init(struct device *dev)
 {
@@ -288,8 +290,10 @@ struct device_operations wifi_generic_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= wifi_pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= wifi_generic_acpi_name,
 	.acpi_fill_ssdt		= wifi_generic_fill_ssdt_generator,
+#endif
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data	= smbios_write_wifi,
 #endif

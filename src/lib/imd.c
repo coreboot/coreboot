@@ -7,39 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>
+#include <imd_private.h>
+
 
 /* For more details on implementation and usage please see the imd.h header. */
-
-static const uint32_t IMD_ROOT_PTR_MAGIC = 0xc0389481;
-static const uint32_t IMD_ENTRY_MAGIC = ~0xc0389481;
-static const uint32_t SMALL_REGION_ID = CBMEM_ID_IMD_SMALL;
-
-/* In-memory data structures. */
-struct imd_root_pointer {
-	uint32_t magic;
-	/* Relative to upper limit/offset. */
-	int32_t root_offset;
-} __packed;
-
-struct imd_entry {
-	uint32_t magic;
-	/* start is located relative to imd_root */
-	int32_t start_offset;
-	uint32_t size;
-	uint32_t id;
-} __packed;
-
-struct imd_root {
-	uint32_t max_entries;
-	uint32_t num_entries;
-	uint32_t flags;
-	uint32_t entry_align;
-	/* Used for fixing the size of an imd. Relative to the root. */
-	int32_t max_offset;
-	struct imd_entry entries[0];
-} __packed;
-
-#define IMD_FLAG_LOCKED 1
 
 static void *relative_pointer(void *base, ssize_t offset)
 {

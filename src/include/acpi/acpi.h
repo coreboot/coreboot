@@ -41,6 +41,7 @@
 
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
 #define OEM_ID			"COREv4"    /* Must be exactly 6 bytes long! */
+#define ACPI_DSDT_REV_2		0x02        /* DSDT revision: ACPI v2.0 and greater */
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #include <commonlib/helpers.h>

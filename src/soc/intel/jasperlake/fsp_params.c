@@ -207,9 +207,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->XdciEnable = 0;
 	}
 
-	/* Disable Pavp */
-	params->PavpEnable = 0;
-
 	/* Provide correct UART number for FSP debug logs */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 

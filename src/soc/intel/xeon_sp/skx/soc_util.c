@@ -17,61 +17,6 @@
 #include <soc/util.h>
 #include <timer.h>
 
-/*
- * Get TOLM CSR B0:D5:F0:Offset_d0h
- */
-uintptr_t get_tolm(uint32_t bus)
-{
-	uint32_t w = pci_io_read_config32(PCI_DEV(bus, VTD_DEV, VTD_FUNC),
-		VTD_TOLM_CSR);
-	uintptr_t addr =  w & 0xfc000000;
-	printk(BIOS_DEBUG, "VTD_TOLM_CSR 0x%x, addr: 0x%lx\n", w, addr);
-	return addr;
-}
-
-void get_tseg_base_lim(uint32_t bus, uint32_t *base, uint32_t *limit)
-{
-	uint32_t w1 = pci_io_read_config32(PCI_DEV(bus, VTD_DEV, VTD_FUNC),
-		VTD_TSEG_BASE_CSR);
-	uint32_t wh = pci_io_read_config32(PCI_DEV(bus, VTD_DEV, VTD_FUNC),
-		VTD_TSEG_LIMIT_CSR);
-	*base = w1 & 0xfff00000;
-	*limit = wh & 0xfff00000;
-}
-
-/*
- * Get MMCFG CSR B1:D29:F1:Offset_C0h
- */
-uintptr_t get_cha_mmcfg_base(uint32_t bus)
-{
-	uint32_t wl = pci_io_read_config32(PCI_DEV(bus, CHA_UTIL_ALL_DEV,
-		CHA_UTIL_ALL_FUNC), CHA_UTIL_ALL_MMCFG_CSR);
-	uint32_t wh = pci_io_read_config32(PCI_DEV(bus, CHA_UTIL_ALL_DEV,
-		CHA_UTIL_ALL_FUNC), CHA_UTIL_ALL_MMCFG_CSR + 4);
-	uintptr_t addr = ((((wh & 0x3fff) << 6) | ((wl >> 26) & 0x3f)) << 26);
-	printk(BIOS_DEBUG, "CHA_UTIL_ALL_MMCFG_CSR wl: 0x%x, wh: 0x%x, addr: 0x%lx\n",
-		wl, wh, addr);
-	return addr;
-}
-
-uint32_t top_of_32bit_ram(void)
-{
-	uintptr_t mmcfg, tolm;
-	uint32_t bus0 = 0, bus1 = 0;
-	uint32_t base = 0, limit = 0;
-
-	get_cpubusnos(&bus0, &bus1, NULL, NULL);
-
-	mmcfg = get_cha_mmcfg_base(bus1);
-	tolm = get_tolm(bus0);
-	printk(BIOS_DEBUG, "bus0: 0x%x, bus1: 0x%x, mmcfg: 0x%lx, tolm: 0x%lx\n",
-		bus0, bus1, mmcfg, tolm);
-	get_tseg_base_lim(bus0, &base, &limit);
-	printk(BIOS_DEBUG, "tseg base: 0x%x, limit: 0x%x\n", base, limit);
-
-	/* We will use TSEG base as the top of DRAM */
-	return base;
-}
 
 /*
  *     +-------------------------+  TOLM
@@ -101,12 +46,7 @@ uint32_t top_of_32bit_ram(void)
  *     +-------------------------+
  */
 
-uint32_t pci_read_mmio_reg(int bus, uint32_t dev, uint32_t func, int offset)
-{
-	return pci_mmio_read_config32(PCI_DEV(bus, dev, func), offset);
-}
-
-uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
+static uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 {
 	size_t hob_size;
 	const IIO_UDS *hob;

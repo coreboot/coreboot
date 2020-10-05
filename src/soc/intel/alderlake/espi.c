@@ -59,7 +59,7 @@ void lpc_soc_init(struct device *dev)
 {
 	/* Legacy initialization */
 	isa_dma_init();
-	lpc_pch_misc_init();
+	pch_misc_init();
 
 	/* Enable CLKRUN_EN for power gating ESPI */
 	lpc_enable_pci_clk_cntl();
@@ -71,8 +71,8 @@ void lpc_soc_init(struct device *dev)
 		lpc_set_serirq_mode(SERIRQ_QUIET);
 
 	/* Interrupt configuration */
-	lpc_pch_enable_ioapic();
-	lpc_pch_pirq_init();
+	pch_enable_ioapic();
+	pch_pirq_init();
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
 }

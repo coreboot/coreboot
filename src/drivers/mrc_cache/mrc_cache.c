@@ -260,12 +260,12 @@ static int mrc_cache_find_current(int type, uint32_t version,
 	return rdev_chain(rdev, rdev, md_size, data_size);
 }
 
-int mrc_cache_load_current(int type, uint32_t version, void *buffer,
-			   size_t buffer_size)
+ssize_t mrc_cache_load_current(int type, uint32_t version, void *buffer,
+			      size_t buffer_size)
 {
 	struct region_device rdev;
 	struct mrc_metadata md;
-	size_t data_size;
+	ssize_t data_size;
 
 	if (mrc_cache_find_current(type, version, &rdev, &md) < 0)
 		return -1;
@@ -280,7 +280,7 @@ int mrc_cache_load_current(int type, uint32_t version, void *buffer,
 	if (mrc_data_valid(&md, buffer, data_size) < 0)
 		return -1;
 
-	return 0;
+	return data_size;
 }
 
 void *mrc_cache_current_mmap_leak(int type, uint32_t version,

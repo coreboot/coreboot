@@ -27,11 +27,11 @@ enum {
  * mrc_cache_load_current
  *
  * Fill in the buffer with the latest slot data.  This will be a
- * common entry point for ARM platforms.  Returns < 0 on error, 0 on
- * success.
+ * common entry point for ARM platforms.  Returns < 0 on error, size
+ * of the returned data on success.
  */
-int mrc_cache_load_current(int type, uint32_t version, void *buffer,
-			   size_t buffer_size);
+ssize_t mrc_cache_load_current(int type, uint32_t version, void *buffer,
+			       size_t buffer_size);
 /**
  * mrc_cache_mmap_leak
  *

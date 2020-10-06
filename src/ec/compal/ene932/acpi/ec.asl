@@ -252,12 +252,12 @@ Device (EC0)
 	Method (_REG, 2, NotSerialized)
 	{
 		// Initialize AC power state
-		Store (ADPT, \PWRS)
+		\PWRS = ADPT
 
 		// Force a read of CPU temperature
-		Store (CTML, Local0)
+		Local0 = CTML
 		/* So that we don't get a warning that Local0 is unused.  */
-		Increment (Local0)
+		Local0++
 	}
 
 
@@ -322,7 +322,7 @@ Device (EC0)
 	// AC Power Connected
 	Method (_Q37, 0, NotSerialized)
 	{
-		Store (One, \PWRS)
+		\PWRS = 1
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		// TODO ADD CPU power profile
@@ -332,7 +332,7 @@ Device (EC0)
 	// AC Power Removed
 	Method (_Q38, 0, NotSerialized)
 	{
-		Store (Zero, \PWRS)
+		\PWRS = 0
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		// TODO ADD CPU power profile
@@ -363,7 +363,7 @@ Device (EC0)
 	{
 		IF(WLEX) //if Wlan exist
 		{
-			//TODO Store(WLAT, LANE)
+			//TODO LANE = WLAT
 		}
 	}
 

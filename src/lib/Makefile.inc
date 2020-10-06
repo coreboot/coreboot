@@ -100,6 +100,7 @@ ramstage-y += romstage_handoff.c
 romstage-y += romstage_handoff.c
 romstage-y += selfboot.c
 romstage-y += stack.c
+romstage-y += rtc.c
 ramstage-y += rtc.c
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

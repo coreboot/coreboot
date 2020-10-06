@@ -11,7 +11,6 @@
 #define QCLIB_TE_NAME_LENGTH 24
 
 /* FMAP_REGION names */
-#define QCLIB_FR_DDR_TRAINING_DATA "RO_DDR_TRAINING"
 #define QCLIB_FR_LIMITS_CFG_DATA   "RO_LIMITS_CFG"
 
 /* TE_NAME (table entry name) */

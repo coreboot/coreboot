@@ -36,8 +36,8 @@ Device (EC0)
 	Method (TSRD, 1, Serialized)
 	{
 		/* Prevent iasl remarks about unused parameters */
-		Store(Arg0, Local0)
-		Store(Local0, Arg0)
+		Local0 = Arg0
+		Arg0 = Local0
 		Return (\_SB.DPTF.CTOK (CPUT))
 	}
 
@@ -45,27 +45,27 @@ Device (EC0)
 	Method (PAT0, 2, Serialized)
 	{
 		/* Prevent iasl remarks about unused parameters */
-		Store(Arg0, Local0)
-		Store(Local0, Arg0)
-		Store(Arg1, Local0)
-		Store(Local0, Arg1)
+		Local0 = Arg0
+		Arg0 = Local0
+		Local0 = Arg1
+		Arg1 = Local0
 	}
 
 	/* Set Aux Trip Point 1 */
 	Method (PAT1, 2, Serialized)
 	{
 		/* Prevent iasl remarks about unused parameters */
-		Store(Arg0, Local0)
-		Store(Local0, Arg0)
-		Store(Arg1, Local0)
-		Store(Local0, Arg1)
+		Local0 = Arg0
+		Arg0 = Local0
+		Local0 = Arg1
+		Arg1 = Local0
 	}
 
 	/* Disable Aux Trip Point */
 	Method (PATD, 1, Serialized)
 	{
 		/* Prevent iasl remarks about unused parameters */
-		Store(Arg0, Local0)
-		Store(Local0, Arg0)
+		Local0 = Arg0
+		Arg0 = Local0
 	}
 }

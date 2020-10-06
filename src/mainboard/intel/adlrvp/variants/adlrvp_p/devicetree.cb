@@ -11,6 +11,36 @@ chip soc/intel/alderlake
 	register "gen3_dec" = "0x00fc0901"
 	register "gen4_dec" = "0x000c0081"
 
+	register "PrmrrSize" = "0"
+
+	# Enable PCH PCIE RP 5 using CLK 2
+	register "PcieRpEnable[4]" = "1"
+	register "PcieClkSrcClkReq[4]" = "4"
+	register "PcieClkSrcUsage[2]" = "0x4"
+	register "PcieRpClkReqDetect[4]" = "1"
+
+	# Enable PCH PCIE RP 6 using CLK 5
+	register "PcieRpEnable[5]" = "1"
+	register "PcieClkSrcClkReq[5]" = "5"
+	register "PcieClkSrcUsage[5]" = "0x5"
+	register "PcieRpClkReqDetect[5]" = "1"
+
+	# Enable PCH PCIE RP 9 using CLK 1
+	register "PcieRpEnable[8]" = "1"
+	register "PcieClkSrcClkReq[8]" = "8"
+	register "PcieClkSrcUsage[1]" = "0x8"
+	register "PcieRpClkReqDetect[8]" = "1"
+
+	# Enable CPU PCIE RP 1 using PEG CLK 0
+	register "PcieClkSrcUsage[0]" = "0x40"
+
+	# Enable PCU PCIE PEG Slot 1 and 2
+	register "PcieClkSrcUsage[3]" = "0x41"
+	register "PcieClkSrcUsage[4]" = "0x42"
+
+	# Mark LAN CLK pins as unused as GbE 0:0x1f.6 is disabled below
+	register "PcieClkSrcUsage[6]" = "0xff"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Graphics
@@ -79,17 +109,17 @@ chip soc/intel/alderlake
 		device pci 19.1 on  end # I2C5
 		device pci 19.2 on  end # UART2
 		device pci 1c.0 on  end # RP1
-		device pci 1c.1 on  end # RP2
-		device pci 1c.2 on  end # RP3
-		device pci 1c.3 on  end # RP4
+		device pci 1c.1 off end # RP2
+		device pci 1c.2 off end # RP3
+		device pci 1c.3 off end # RP4
 		device pci 1c.4 on  end # RP5
 		device pci 1c.5 on  end # RP6
-		device pci 1c.6 on  end # RP7
-		device pci 1c.7 on  end # RP8
+		device pci 1c.6 off end # RP7
+		device pci 1c.7 off end # RP8
 		device pci 1d.0 on  end # RP9
-		device pci 1d.1 on  end # RP10
-		device pci 1d.2 on  end # RP11
-		device pci 1d.3 on  end # RP12
+		device pci 1d.1 off end # RP10
+		device pci 1d.2 off end # RP11
+		device pci 1d.3 off end # RP12
 		device pci 1e.0 off end # UART0
 		device pci 1e.1 off end # UART1
 		device pci 1e.2 off end # GSPI0

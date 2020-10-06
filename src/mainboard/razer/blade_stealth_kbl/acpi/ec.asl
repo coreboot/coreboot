@@ -56,24 +56,24 @@ Device (EC)
 	Method (_REG, 2, NotSerialized)
 	{
 		/* Initialize AC power state */
-		Store (PWRS - 0x82, ACEX)
+		ACEX = PWRS - 0x82
 
 		/* Initialize LID switch state */
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 	}
 
 
 	// Close ?
 	Method (_Q14, 0, NotSerialized)
 	{
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 		Notify (LID0, 0x80)
 	}
 
 	//Open
 	Method (_Q15, 0, NotSerialized)
 	{
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 		Notify (LID0, 0x80)
 	}
 
@@ -81,7 +81,7 @@ Device (EC)
 	// AC plugged
 	Method (_Q13, 0, NotSerialized)
 	{
-		Store (PWRS - 0x82, ACEX)
+		ACEX = PWRS - 0x82
 		Notify (BAT, 0x80) // Status Change
 		Notify (BAT, 0x81) // Information Change
 		Notify (AC, 0x80) // Status Change

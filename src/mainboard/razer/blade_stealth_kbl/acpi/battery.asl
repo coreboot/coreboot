@@ -40,21 +40,21 @@ Device (BAT)
 	Method (_BIF, 0, Serialized)
 	{
 		/* Last Full Charge Capacity */
-		Store (BFCP, Index (PBIF, 2))
+		PBIF [2] = BFCP
 
 		/* Design Voltage */
-		Store (BDVT, Index (PBIF, 4))
+		PBIF [4] = BDVT
 
 		/* Design Capacity */
-		Store (BDCP, Index (PBIF, 1))
+		PBIF [1] = BDCP
 
 		/* Design Capacity of Warning */
-		Store (BDCP / 0x32, Index (PBIF, 5))
+		PBIF [5] = BDCP / 50
 
 		/* Design Capacity of Low */
-		Store (BDCP / 0x64, Index (PBIF, 6))
+		PBIF [6] = BDCP / 100
 
-		Store (ToString (BSER, Ones), Index (PBIF, 0x0A))
+		PBIF [10] = ToString (BSER, Ones)
 
 		Return (PBIF)
 	}
@@ -72,34 +72,34 @@ Device (BAT)
 		/* Check if AC is present */
 		If (ACEX) {
 			/* Read battery status from EC */
-			Store (BCST, Local0)
+			Local0 = BCST
 		} Else {
 			/* Always discharging when on battery power */
-			Store (0x01, Local0)
+			Local0 = 0x01
 		}
 
-		Store (Local0, Index (PBST, 0))
+		PBST [0] = Local0
 
 		/* Notify if battery state has changed since last time */
-		If (LNotEqual (Local0, BSTP)) {
-			Store (Local0, BSTP)
+		If (Local0 != BSTP) {
+			BSTP = Local0
 			Notify (BAT, 0x80)
 		}
 
 		/*
 		 * 1: BATTERY PRESENT RATE
 		 */
-		Store (BCRT, Index (PBST, 1))
+		PBST [1] = BCRT
 
 		/*
 		 * 2: BATTERY REMAINING CAPACITY
 		 */
-		Store (BRCP, Index (PBST, 2))
+		PBST [2] = BRCP
 
 		/*
 		 * 3: BATTERY PRESENT VOLTAGE
 		 */
-		Store (BCVT, Index (PBST, 3))
+		PBST [3] = BCVT
 
 		Return (PBST)
 	}

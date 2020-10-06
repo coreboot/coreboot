@@ -154,7 +154,7 @@ Scope (\_SB.PCI0.I2C3)
 		Name (STA, Zero)
 		Method (_ON, 0, Serialized)  /* Rear camera_ON_: Power On */
 		{
-			If ((STA == Zero))
+			If (STA == 0)
 			{
 				/* Enable IMG_CLK */
 				MCON(0,1) /* Clock 0, 19.2MHz */
@@ -170,12 +170,12 @@ Scope (\_SB.PCI0.I2C3)
 				STXS(GPP_C15)
 				Sleep(1) /* t2 */
 
-				Store(1,STA)
+				STA = 1
 			}
 		}
 		Method (_OFF, 0, Serialized)  /* Rear camera _OFF: Power Off */
 		{
-			If ((STA == One))
+			If (STA == 1)
 			{
 				/* Disable IMG_CLK */
 				Sleep(1) /* t0+t1 */
@@ -187,7 +187,7 @@ Scope (\_SB.PCI0.I2C3)
 				/* Pull PWREN low */
 				CTXS(GPP_B23)
 
-				Store(0,STA)
+				STA = 0
 			}
 		}
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
@@ -369,7 +369,7 @@ Scope (\_SB.PCI0.I2C5)
 		Name (STA, Zero)
 		Method (_ON, 0, Serialized)  /* Front camera_ON_: Power On */
 		{
-			If ((STA == Zero))
+			If (STA == 0)
 			{
 				/* Enable IMG_CLK */
 				MCON(1,1) /* Clock 1, 19.2MHz */
@@ -389,12 +389,12 @@ Scope (\_SB.PCI0.I2C5)
 				STXS(GPP_H12)
 				Sleep(1) /* t2 */
 
-				Store(1,STA)
+				STA = 1
 			}
 		}
 		Method (_OFF, 0, Serialized)  /* Front camera_OFF_: Power Off */
 		{
-			If ((STA == One))
+			If (STA == 1)
 			{
 				/* Disable IMG_CLK */
 				Sleep(1) /* t0+t1 */
@@ -410,7 +410,7 @@ Scope (\_SB.PCI0.I2C5)
 				CTXS(GPP_R6)
 #endif
 
-				Store(0,STA)
+				STA = 0
 			}
 		}
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */

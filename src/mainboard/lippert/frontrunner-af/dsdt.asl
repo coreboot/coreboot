@@ -369,20 +369,20 @@ DefinitionBlock (
 
 		Method(OSFL, 0){
 
-			if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
+			if (OSVR != Ones) {Return(OSVR)}	/* OS version was already detected */
 
 			if(CondRefOf(\_OSI))
 			{
-				Store(1, OSVR)                /* Assume some form of XP */
+				OSVR = 1                /* Assume some form of XP */
 				if (\_OSI("Windows 2006"))      /* Vista */
 				{
-					Store(2, OSVR)
+					OSVR = 2
 				}
 			} else {
 				If(WCMP(\_OS,"Linux")) {
-					Store(3, OSVR)            /* Linux */
+					OSVR = 3            /* Linux */
 				} Else {
-					Store(4, OSVR)            /* Gotta be WinCE */
+					OSVR = 4            /* Gotta be WinCE */
 				}
 			}
 			Return(OSVR)
@@ -394,17 +394,17 @@ DefinitionBlock (
 			{
 				\_SB.CIRQ()
 			}
-			Store(Arg0, PMOD)
+			PMOD = Arg0
 		}
 		Method(CIRQ, 0x00, NotSerialized){
-			Store(0, PIRA)
-			Store(0, PIRB)
-			Store(0, PIRC)
-			Store(0, PIRD)
-			Store(0, PIRE)
-			Store(0, PIRF)
-			Store(0, PIRG)
-			Store(0, PIRH)
+			PIRA = 0
+			PIRB = 0
+			PIRC = 0
+			PIRD = 0
+			PIRE = 0
+			PIRF = 0
+			PIRG = 0
+			PIRH = 0
 		}
 
 		Name(IRQB, ResourceTemplate(){
@@ -432,7 +432,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTA._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRA)
+				PIRA = 0
 			} /* End Method(_SB.INTA._DIS) */
 
 			Method(_PRS ,0) {
@@ -441,7 +441,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRA, IRQN)
+				IRQN = 1 << PIRA
 				Return(IRQB)
 			} /* Method(_SB.INTA._CRS) */
 
@@ -451,9 +451,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRA)
+				PIRA = Local0
 			} /* End Method(_SB.INTA._SRS) */
 		} /* End Device(INTA) */
 
@@ -470,7 +470,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTB._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRB)
+				PIRB = 0
 			} /* End Method(_SB.INTB._DIS) */
 
 			Method(_PRS ,0) {
@@ -479,7 +479,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRB, IRQN)
+				IRQN = 1 << PIRB
 				Return(IRQB)
 			} /* Method(_SB.INTB._CRS) */
 
@@ -489,9 +489,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRB)
+				PIRB = Local0
 			} /* End Method(_SB.INTB._SRS) */
 		} /* End Device(INTB)  */
 
@@ -508,7 +508,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTC._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRC)
+				PIRC = 0
 			} /* End Method(_SB.INTC._DIS) */
 
 			Method(_PRS ,0) {
@@ -517,7 +517,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRC, IRQN)
+				IRQN = 1 << PIRC
 				Return(IRQB)
 			} /* Method(_SB.INTC._CRS) */
 
@@ -527,9 +527,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRC)
+				PIRC = Local0
 			} /* End Method(_SB.INTC._SRS) */
 		} /* End Device(INTC)  */
 
@@ -546,7 +546,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTD._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRD)
+				PIRD = 0
 			} /* End Method(_SB.INTD._DIS) */
 
 			Method(_PRS ,0) {
@@ -555,7 +555,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRD, IRQN)
+				IRQN = 1 << PIRD
 				Return(IRQB)
 			} /* Method(_SB.INTD._CRS) */
 
@@ -565,9 +565,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRD)
+				PIRD = Local0
 			} /* End Method(_SB.INTD._SRS) */
 		} /* End Device(INTD)  */
 
@@ -584,7 +584,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTE._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRE)
+				PIRE = 0
 			} /* End Method(_SB.INTE._DIS) */
 
 			Method(_PRS ,0) {
@@ -593,7 +593,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRE, IRQN)
+				IRQN = 1 << PIRE
 				Return(IRQB)
 			} /* Method(_SB.INTE._CRS) */
 
@@ -603,9 +603,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRE)
+				PIRE = Local0
 			} /* End Method(_SB.INTE._SRS) */
 		} /* End Device(INTE)  */
 
@@ -622,7 +622,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTF._STA) */
 
 			Method(_DIS ,0) {
-				Store(0, PIRF)
+				PIRF = 0
 			} /* End Method(_SB.INTF._DIS) */
 
 			Method(_PRS ,0) {
@@ -631,7 +631,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRF, IRQN)
+				IRQN = 1 << PIRF
 				Return(IRQB)
 			} /* Method(_SB.INTF._CRS) */
 
@@ -641,9 +641,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRF)
+				PIRF = Local0
 			} /*  End Method(_SB.INTF._SRS) */
 		} /* End Device(INTF)  */
 
@@ -660,7 +660,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTG._STA)  */
 
 			Method(_DIS ,0) {
-				Store(0, PIRG)
+				PIRG = 0
 			} /* End Method(_SB.INTG._DIS)  */
 
 			Method(_PRS ,0) {
@@ -669,7 +669,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRG, IRQN)
+				IRQN = 1 << PIRG
 				Return(IRQB)
 			} /* Method(_SB.INTG._CRS)  */
 
@@ -679,9 +679,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRG)
+				PIRG = Local0
 			} /* End Method(_SB.INTG._SRS)  */
 		} /* End Device(INTG)  */
 
@@ -698,7 +698,7 @@ DefinitionBlock (
 			} /* End Method(_SB.INTH._STA)  */
 
 			Method(_DIS ,0) {
-				Store(0, PIRH)
+				PIRH = 0
 			} /* End Method(_SB.INTH._DIS)  */
 
 			Method(_PRS ,0) {
@@ -707,7 +707,7 @@ DefinitionBlock (
 
 			Method(_CRS ,0) {
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRH, IRQN)
+				IRQN = 1 << PIRH
 				Return(IRQB)
 			} /* Method(_SB.INTH._CRS)  */
 
@@ -717,9 +717,9 @@ DefinitionBlock (
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRH)
+				PIRH = Local0
 			} /* End Method(_SB.INTH._SRS)  */
 		} /* End Device(INTH)   */
 
@@ -750,13 +750,13 @@ DefinitionBlock (
 	Method(\_PTS, 1) {
 
 		/* Don't allow PCIRST# to reset USB */
-		if (LEqual(Arg0,3)){
-			Store(0,URRE)
+		if (Arg0 == 3){
+			URRE = 0
 		}
 
 		/* Clear wake status structure. */
-		Store(0, Index(WKST,0))
-		Store(0, Index(WKST,1))
+		WKST [0] = 0
+		WKST [1] = 0
 	} /* End Method(\_PTS) */
 
 	/*
@@ -777,16 +777,16 @@ DefinitionBlock (
 	Method(\_WAK, 1) {
 
 		/* Re-enable HPET */
-		Store(1,HPDE)
+		HPDE = 1
 
 		/* Restore PCIRST# so it resets USB */
-		if (LEqual(Arg0,3)){
-			Store(1,URRE)
+		if (Arg0 == 3){
+			URRE = 1
 		}
 
 		/* Arbitrarily clear PciExpWakeStatus */
-		Store(PWST, Local1)
-		Store(Local1, PWST)
+		Local1 = PWST
+		PWST = Local1
 
 		Return(WKST)
 	} /* End Method(\_WAK) */
@@ -861,7 +861,7 @@ DefinitionBlock (
 			Method (_OSC, 4)
 			{
 				/* Check for PCI/PCI-X/PCIe GUID */
-				If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+				If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 				{
 					/* Let OS control everything */
 					Return (Arg3)
@@ -870,7 +870,7 @@ DefinitionBlock (
 				{
 					/* Unrecognized UUID, so set bit 2 of Arg3 to 1 */
 					CreateDWordField (Arg3, 0, CDW1)
-					Or (CDW1, 4, CDW1)
+					CDW1 |= 4
 					Return (Arg3)
 				}
 			} /* End _OSC */
@@ -1210,10 +1210,10 @@ DefinitionBlock (
 				 * 32bit (0x00000000 - TOM1) will wrap and give the same
 				 * result as 64bit (0x100000000 - TOM1).
 				 */
-				Store(TOM1, MM1B)
-				ShiftLeft(0x10000000, 4, Local0)
-				Subtract(Local0, TOM1, Local0)
-				Store(Local0, MM1L)
+				MM1B = TOM1
+				Local0 = 0x10000000 << 4
+				Local0 -= TOM1
+				MM1L = Local0
 
 				Return(CRES) /* note to change the Name buffer */
 			} /* end of Method(_SB.PCI0._CRS) */

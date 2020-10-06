@@ -130,7 +130,7 @@ PICASSO_FWM_POSITION=$(call int-add, \
 # Design Guide for AMD Family 17h Processors" (PID #55758, NDA only).
 #
 
-FIRMWARE_LOCATE=$(shell grep -e FIRMWARE_LOCATE $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
+FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 
 ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
 # Enable secure debug unlock
@@ -180,9 +180,9 @@ APOB_NV_SIZE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_SIZE" $(obj)/fmap_config.h 
 APOB_NV_BASE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_START" $(obj)/fmap_config.h | awk '{print $$(NF)}')
 
 # type = 0x66
-PSP_UCODE_FILE1=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
-PSP_UCODE_FILE2=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
-PSP_UCODE_FILE3=$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
+PSP_UCODE_FILE1=$(FIRMWARE_LOCATION)/UcodePatch_PCO_B1.bin
+PSP_UCODE_FILE2=$(FIRMWARE_LOCATION)/UcodePatch_PCO_B0.bin
+PSP_UCODE_FILE3=$(FIRMWARE_LOCATION)/UcodePatch_RV2_A0.bin
 
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 # type = 0x6B - PSP Shared memory location

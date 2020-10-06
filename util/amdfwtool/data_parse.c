@@ -359,13 +359,13 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 		entries_line_regex, &entries_line_expr);
 
 	/* Get a line */
-	/* Get FIRMWARE_LOCATE in the first loop */
+	/* Get FIRMWARE_LOCATION in the first loop */
 	while (get_input_file_line(config, oneline, MAX_LINE_SIZE) == OK) {
 		/* get a line */
 		if (skip_comment_blank_line(oneline))
 			continue;
 		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATE") == 0) {
+			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
 				strcpy(dir, &(oneline[match[2].rm_so]));
 				break;
 			}
@@ -384,7 +384,7 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 		if (skip_comment_blank_line(oneline))
 			continue;
 		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATE") == 0) {
+			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
 				continue;
 			} else {
 				path_filename = malloc(MAX_LINE_SIZE);

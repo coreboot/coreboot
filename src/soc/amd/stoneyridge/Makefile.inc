@@ -102,9 +102,9 @@ STONEYRIDGE_FWM_POSITION=$(call int-add, \
 
 ### 0
 
-FIRMWARE_LOCATE=$(shell grep -e FIRMWARE_LOCATE $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
+FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 
-ifneq ($(FIRMWARE_LOCATE),)
+ifneq ($(FIRMWARE_LOCATION),)
 
 ifeq ($(CONFIG_AMD_APU_STONEYRIDGE),y)
 FIRMWARE_TYPE=ST
@@ -126,11 +126,11 @@ add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)),
 OPT_STONEYRIDGE_XHCI_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE), --xhci)
 OPT_STONEYRIDGE_GEC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_GEC_FWM_FILE), --gec)
 
-SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/$(shell awk '($$1=="PSP_SMUFW1_SUB0_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
-SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/$(shell awk '($$1=="PSP_SMUFW1_SUB1_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
+SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATION)/$(shell awk '($$1=="PSP_SMUFW1_SUB0_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
+SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATION)/$(shell awk '($$1=="PSP_SMUFW1_SUB1_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
 
-SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/$(shell awk '($$1=="PSP_SMUFW2_SUB0_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
-SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/$(shell awk '($$1=="PSP_SMUFW2_SUB1_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
+SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATION)/$(shell awk '($$1=="PSP_SMUFW2_SUB0_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
+SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATION)/$(shell awk '($$1=="PSP_SMUFW2_SUB1_FILE") {print $$2}' $(CONFIG_AMDFW_CONFIG_FILE))
 
 ifeq ("$(wildcard $(SMUFWM_FN_FILE))","")
 SMUFWM_FN_FILE=
@@ -211,7 +211,7 @@ endif
 
 endif # ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
 
-else # ifneq ($(FIRMWARE_LOCATE),)
+else # ifneq ($(FIRMWARE_LOCATION),)
 
 warn_no_amdfw:
 	printf "\n\t** WARNING **\n"
@@ -222,6 +222,6 @@ PHONY+=warn_no_amdfw
 
 files_added:: warn_no_amdfw
 
-endif # ifneq ($(FIRMWARE_LOCATE),)
+endif # ifneq ($(FIRMWARE_LOCATION),)
 
 endif # ($(CONFIG_SOC_AMD_STONEYRIDGE),y)

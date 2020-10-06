@@ -30,13 +30,13 @@ Device (HIDD)
 
 		Notify (HIDD, 0xC0)
 		Local0 = Zero
-		While (((Local0 < 0xFA) && HBSY))
+		While ((Local0 < 0xFA) && HBSY)
 		{
 			Sleep (0x04)
 			Local0++
 		}
 
-		If ((HBSY == One))
+		If (HBSY == One)
 		{
 			HBSY = Zero
 			HIDX = Zero

@@ -6,6 +6,43 @@ chip soc/intel/tigerlake
 	register "DdiPort2Hpd" = "0"
 
 	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {.target = DPTF_CPU,
+					       .thresholds = {TEMP_PCT(85, 90),
+							      TEMP_PCT(80, 69),
+							      TEMP_PCT(75, 56),
+							      TEMP_PCT(70, 46),
+							      TEMP_PCT(65, 36),}},
+					[1] = {.target = DPTF_TEMP_SENSOR_0,
+					       .thresholds = {TEMP_PCT(53, 90),
+							      TEMP_PCT(50, 69),
+							      TEMP_PCT(48, 56),
+							      TEMP_PCT(45, 46),
+							      TEMP_PCT(42, 36),}},
+					[2] = {.target = DPTF_TEMP_SENSOR_1,
+					       .thresholds = {TEMP_PCT(50, 90),
+							      TEMP_PCT(47, 69),
+							      TEMP_PCT(45, 56),
+							      TEMP_PCT(42, 46),
+							      TEMP_PCT(39, 36),}},
+					[3] = {.target = DPTF_TEMP_SENSOR_2,
+					       .thresholds = {TEMP_PCT(53, 90),
+							      TEMP_PCT(50, 69),
+							      TEMP_PCT(48, 56),
+							      TEMP_PCT(45, 46),
+							      TEMP_PCT(42, 36),}},
+					[4] = {.target = DPTF_TEMP_SENSOR_3,
+					       .thresholds = {TEMP_PCT(53, 90),
+							      TEMP_PCT(50, 69),
+							      TEMP_PCT(48, 56),
+							      TEMP_PCT(45, 46),
+							      TEMP_PCT(42, 36),}}}"
+				device generic 0 on end
+			end
+		end # DPTF				0x9A03
 		device pci 05.0 on end # IPU                           0x9A19
 		device pci 15.0 on
 			chip drivers/i2c/generic

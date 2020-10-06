@@ -96,7 +96,7 @@ Method (PATX, 0, Serialized)
 
 	Printf ("Sensor trip mask: %o", Local0)
 
-	If (LNot (Acquire (^PATM, 1000))) {
+	If (!Acquire (^PATM, 1000)) {
 
 		/* Handle bits that are set */
 		While (FindSetRightBit (Local1, Local2))

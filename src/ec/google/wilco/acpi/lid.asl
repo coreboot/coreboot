@@ -8,7 +8,7 @@ Device (LID0)
 
 	Method (_LID, 0, NotSerialized)
 	{
-		Store (R (P1LC), \LIDS)
+		\LIDS = R (P1LC)
 		Return (\LIDS)
 	}
 }

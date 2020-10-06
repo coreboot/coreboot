@@ -50,7 +50,7 @@ Device (EC0)
 		^UCSI.INIT ()
 
 		// Initialize LID switch state
-		Store (R (P1LC), \LIDS)
+		\LIDS = R (P1LC)
 	}
 
 	/*

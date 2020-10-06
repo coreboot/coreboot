@@ -33,6 +33,8 @@ extern int ipmi_kcs_message(int port, int netfn, int lun, int cmd,
  * returns CB_SUCCESS on success and CB_ERR if an error occurred. */
 enum cb_err ipmi_kcs_premem_init(const u16 port, const u16 device);
 
+void ipmi_bmc_version(uint8_t *ipmi_bmc_major_revision, uint8_t *ipmi_bmc_minor_revision);
+
 struct ipmi_rsp {
 	uint8_t lun;
 	uint8_t cmd;

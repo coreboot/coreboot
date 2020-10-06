@@ -17,6 +17,9 @@
 
 #include "xhci.asl"
 
+/* GFX 00:02.0 */
+#include <soc/intel/common/block/acpi/acpi/gfx.asl>
+
 /* LPC */
 #include <soc/intel/common/block/acpi/acpi/lpc.asl>
 

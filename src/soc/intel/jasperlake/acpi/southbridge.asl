@@ -17,6 +17,9 @@
 /* GPIO controller */
 #include "gpio.asl"
 
+/* GFX 00:02.0 */
+#include <soc/intel/common/block/acpi/acpi/gfx.asl>
+
 /* ESPI 0:1f.0 */
 #include <soc/intel/common/block/acpi/acpi/lpc.asl>
 

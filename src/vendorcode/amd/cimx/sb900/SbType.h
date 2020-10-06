@@ -613,25 +613,25 @@ typedef struct _SATAST {
 
 /** _USBST Controller structure
  *
- * Usb Ohci1 Contoller is define at BIT0
+ * Usb Ohci1 Contoller is defined at BIT0
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 18 Func0) *
- * Usb Ehci1 Contoller is define at BIT1
+ * Usb Ehci1 Contoller is defined at BIT1
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 18 Func2) *
- * Usb Ohci2 Contoller is define at BIT2
+ * Usb Ohci2 Contoller is defined at BIT2
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 19 Func0) *
- * Usb Ehci2 Contoller is define at BIT3
+ * Usb Ehci2 Contoller is defined at BIT3
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 19 Func2) *
- * Usb Ohci3 Contoller is define at BIT4
+ * Usb Ohci3 Contoller is defined at BIT4
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 22 Func0) *
- * Usb Ehci3 Contoller is define at BIT5
+ * Usb Ehci3 Contoller is defined at BIT5
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 22 Func2) *
- * Usb Ohci4 Contoller is define at BIT6
+ * Usb Ohci4 Contoller is defined at BIT6
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 20 Func5) *
  */
@@ -684,25 +684,25 @@ typedef struct _AZALIAPIN {
   unsigned char   AzaliaSdinPin;             ///< @todo Style_Analyzer: Add Doxygen comments to struct entry
   unsigned char   AzaliaSdin0;               /**< AzaliaSdin0
                                         *   @par
-                                        * SDIN0 is define at BIT0 & BIT1
+                                        * SDIN0 is defined at BIT0 & BIT1
                                         *    @li <b>00</b> - GPIO PIN
                                         *    @li <b>10</b> - As a Azalia SDIN pin
                                         */
   unsigned char   AzaliaSdin1;               /**< AzaliaSdin1
                                         *   @par
-                                        * SDIN0 is define at BIT2 & BIT3
+                                        * SDIN0 is defined at BIT2 & BIT3
                                         *    @li <b>00</b> - GPIO PIN
                                         *    @li <b>10</b> - As a Azalia SDIN pin
                                         */
   unsigned char   AzaliaSdin2;               /**< AzaliaSdin2
                                         *   @par
-                                        * SDIN0 is define at BIT4 & BIT5
+                                        * SDIN0 is defined at BIT4 & BIT5
                                         *    @li <b>00</b> - GPIO PIN
                                         *    @li <b>10</b> - As a Azalia SDIN pin
                                         */
   unsigned char   AzaliaSdin3;               /**< AzaliaSdin3
                                         *   @par
-                                        * SDIN0 is define at BIT6 & BIT7
+                                        * SDIN0 is defined at BIT6 & BIT7
                                         *    @li <b>00</b> - GPIO PIN
                                         *    @li <b>10</b> - As a Azalia SDIN pin
                                         */
@@ -927,25 +927,25 @@ typedef struct _AMDSBCFG {
 
 /** USBDeviceConfig - USB Controller Configuration
  *
- * Usb Ohci1 Contoller is define at BIT0
+ * Usb Ohci1 Contoller is defined at BIT0
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 18 Func0) *
- * Usb Ehci1 Contoller is define at BIT1
+ * Usb Ehci1 Contoller is defined at BIT1
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 18 Func2) *
- * Usb Ohci2 Contoller is define at BIT2
+ * Usb Ohci2 Contoller is defined at BIT2
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 19 Func0) *
- * Usb Ehci2 Contoller is define at BIT3
+ * Usb Ehci2 Contoller is defined at BIT3
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 19 Func2) *
- * Usb Ohci3 Contoller is define at BIT4
+ * Usb Ohci3 Contoller is defined at BIT4
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 22 Func0) *
- * Usb Ehci3 Contoller is define at BIT5
+ * Usb Ehci3 Contoller is defined at BIT5
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 22 Func2) *
- * Usb Ohci4 Contoller is define at BIT6
+ * Usb Ohci4 Contoller is defined at BIT6
  *   - 0:disable 1:enable
  *                             (Bus 0 Dev 20 Func5) *
  */
@@ -1021,16 +1021,16 @@ typedef struct _AMDSBCFG {
   {
 /**< AzaliaSdinPin - Azalia Controller SDIN pin Configuration  00-51
  *
- * SDIN0 is define at BIT0 & BIT1
+ * SDIN0 is defined at BIT0 & BIT1
  *   - 00: GPIO PIN
  *   - 01: Reserved
  *   - 10: As a Azalia SDIN pin
  *
- * SDIN1 is define at BIT2 & BIT3
+ * SDIN1 is defined at BIT2 & BIT3
  *      * Config same as SDIN0
- * SDIN2 is define at BIT4 & BIT5
+ * SDIN2 is defined at BIT4 & BIT5
  *      * Config same as SDIN0
- * SDIN3 is define at BIT6 & BIT7
+ * SDIN3 is defined at BIT6 & BIT7
  *      * Config same as SDIN0
  */
     unsigned char   AzaliaSdinPin;

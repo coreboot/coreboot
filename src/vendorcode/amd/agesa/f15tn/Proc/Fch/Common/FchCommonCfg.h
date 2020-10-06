@@ -140,19 +140,19 @@ typedef struct _AZALIA_PIN {
 
   UINT8                 AzaliaSdin1;                    ///< AzaliaSdin1
                                                         ///   @par
-                                                        /// SDIN1 is define at BIT2 & BIT3
+                                                        /// SDIN1 is defined at BIT2 & BIT3
                                                         ///   @li <b>00</b> - GPIO PIN
                                                         ///   @li <b>10</b> - As a Azalia SDIN pin
 
   UINT8                 AzaliaSdin2;                    ///< AzaliaSdin2
                                                         ///   @par
-                                                        /// SDIN2 is define at BIT4 & BIT5
+                                                        /// SDIN2 is defined at BIT4 & BIT5
                                                         ///   @li <b>00</b> - GPIO PIN
                                                         ///   @li <b>10</b> - As a Azalia SDIN pin
 
   UINT8                 AzaliaSdin3;                    ///< AzaliaSdin3
                                                         ///   @par
-                                                        /// SDIN3 is define at BIT6 & BIT7
+                                                        /// SDIN3 is defined at BIT6 & BIT7
                                                         ///   @li <b>00</b> - GPIO PIN
                                                         ///   @li <b>10</b> - As a Azalia SDIN pin
 } AZALIA_PIN;

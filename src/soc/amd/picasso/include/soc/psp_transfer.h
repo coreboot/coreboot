@@ -41,6 +41,10 @@ struct transfer_info_struct {
 
 _Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE, \
 		"TRANSFER_INFO_SIZE is incorrect");
+
+/* Make sure the PSP transferred information over to x86 side. */
+void verify_psp_transfer_buf(void);
+
 #endif
 
 #endif	/* PSP_VERSTAGE_PSP_TRANSFER_H */

@@ -1,4 +1,6 @@
 chip soc/intel/tigerlake
+	register "DdiPort1Hpd" = "0"
+	register "DdiPort2Hpd" = "0"
 	register "tcc_offset" = "5"     # TCC of 95
 
 	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{

@@ -65,13 +65,13 @@ Device (BAT)
 	/* Method to enable full battery workaround */
 	Method (BFWE)
 	{
-		Store (One, BFWK)
+		BFWK = 1
 	}
 
 	/* Method to disable full battery workaround */
 	Method (BFWD)
 	{
-		Store (Zero, BFWK)
+		BFWK = 0
 	}
 
 	Method (_STA, 0, Serialized)
@@ -86,22 +86,22 @@ Device (BAT)
 	Method (_BIF, 0, Serialized)
 	{
 		/* Last Full Charge Capacity */
-		Store (BTDF, Index (PBIF, 2))
+		PBIF [2] = BTDF
 
 		/* Design Voltage */
-		Store (BTDV, Index (PBIF, 4))
+		PBIF [4] = BTDV
 
 		/* Design Capacity */
-		Store (BTDA, Local0)
-		Store (Local0, Index (PBIF, 1))
+		Local0 = BTDA
+		PBIF [1] = Local0
 
 		/* Design Capacity of Warning */
-		Divide (Multiply (Local0, DWRN), 100, , Local2)
-		Store (Local2, Index (PBIF, 5))
+		Local2 = (Local0 * DWRN) / 100
+		PBIF [5] = Local2
 
 		/* Design Capacity of Low */
-		Divide (Multiply (Local0, DLOW), 100, , Local2)
-		Store (Local2, Index (PBIF, 6))
+		Local2 = (Local0 * DLOW) / 100
+		PBIF [6] = Local2
 
 		Return (PBIF)
 	}
@@ -109,22 +109,22 @@ Device (BAT)
 	Method (_BIX, 0, Serialized)
 	{
 		/* Last Full Charge Capacity */
-		Store (BTDF, Index (PBIX, 3))
+		PBIX [3] = BTDF
 
 		/* Design Voltage */
-		Store (BTDV, Index (PBIX, 5))
+		PBIX [5] = BTDV
 
 		/* Design Capacity */
-		Store (BTDA, Local0)
-		Store (Local0, Index (PBIX, 2))
+		Local0 = BTDA
+		PBIX [2] = Local0
 
 		/* Design Capacity of Warning */
-		Divide (Multiply (Local0, DWRN), 100, , Local2)
-		Store (Local2, Index (PBIX, 6))
+		Local2 = (Local0 * DWRN) / 100
+		PBIX [6] = Local2
 
 		/* Design Capacity of Low */
-		Divide (Multiply (Local0, DLOW), 100, , Local2)
-		Store (Local2, Index (PBIX, 7))
+		Local2 = (Local0 * DLOW) / 100
+		PBIX [7] = Local2
 
 		Return (PBIX)
 	}
@@ -142,61 +142,60 @@ Device (BAT)
 		/* Check if AC is present */
 		If (ACEX) {
 			/* Read battery status from EC */
-			Store (BSTS, Local0)
+			Local0 = BSTS
 		} Else {
 			/* Always discharging when on battery power */
-			Store (0x01, Local0)
+			Local0 = 0x01
 		}
 
 		/* Check for critical battery level */
 		If (BFCR) {
-			Or (Local0, 0x04, Local0)
+			Local0 |= 0x04
 		}
-		Store (Local0, Index (PBST, 0))
+		PBST [0] = Local0
 
 		/* Notify if battery state has changed since last time */
-		If (LNotEqual (Local0, BSTP)) {
-			Store (Local0, BSTP)
+		If (Local0 != BSTP) {
+			BSTP = Local0
 			Notify (BAT, 0x80)
 		}
 
 		/*
 		 * 1: BATTERY PRESENT RATE
 		 */
-		Store (BTPR, Local1)
-		If (And (Local1, 0x8000)) {
-			And (Not (Local1), 0x7FFF, Local0)
-			Increment (Local0)
+		Local1 = BTPR
+		If (Local1 & 0x8000) {
+			Local0 = ~Local1 & 0x7FFF
+			Local0++
 		} Else {
-			And (Local1, 0x7FFF, Local0)
+			Local0 = Local1 & 0x7FFF
 		}
-		If(LLess(Local0, 0x0352))
+		If(Local0 < 0x0352)
 		{
-			Store(0x0352, Local0)
+			Local0 = 0x0352
 		}
-		Store (Local0, Index (PBST, 1))
+		PBST [1] = Local0
 
 		/*
 		 * 2: BATTERY REMAINING CAPACITY
 		 */
-		Store (BTRA, Local0)
-		If (LAnd (BFWK, LAnd (ACEX, LNot (BSTS)))) {
-			Store (BTDF, Local1)
+		Local0 = BTRA
+		If (BFWK && ACEX && !BSTS) {
+			Local1 = BTDF
 
 			/* See if within ~6% of full */
-			ShiftRight (Local1, 4, Local2)
-			If (LAnd (LGreater (Local0, Subtract (Local1, Local2)),
-			          LLess (Local0, Add (Local1, Local2))))
+			Local2 = Local1 >> 4
+			If ((Local0 > (Local1 - Local2)) && (Local0 < (Local1 + Local2)))
 			{
-				Store (Local1, Local0)
+				Local0 = Local1
 			}
 		}
-		Store (Local0, Index (PBST, 2))
+		PBST [2] = Local0
 
 		/*
 		 * 3: BATTERY PRESENT VOLTAGE
 		 */
-		Store (BTVO, Index (PBST, 3))
+		PBST [3] = BTVO
 
 		Return (PBST)
 	}

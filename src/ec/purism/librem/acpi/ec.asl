@@ -15,12 +15,12 @@ Device (TPSD)
 
 	Method (FNCX, 1, NotSerialized)
 	{
-		If (LEqual (Arg0, 0x86)) {
+		If (Arg0 == 0x86) {
 			/* Enable topstar-laptop kernel driver handling */
-			Store (One, ^^EC.TPSE)
-		} ElseIf (LEqual (Arg0, 0x87)) {
+			^^EC.TPSE = 1
+		} ElseIf (Arg0 == 0x87) {
 			/* Disable topstar-laptop kernel driver handling */
-			Store (Zero, ^^EC.TPSE)
+			^^EC.TPSE = 0
 		}
 	}
 }
@@ -80,10 +80,10 @@ Device (EC)
 	Method (_REG, 2, NotSerialized)
 	{
 		/* Initialize AC power state */
-		Store (ACEX, \PWRS)
+		\PWRS = ACEX
 
 		/* Initialize LID switch state */
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 	}
 
 	/* Notify topstar-laptop kernel driver */
@@ -115,7 +115,7 @@ Device (EC)
 	/* AC Status Changed */
 	Method (_Q20)
 	{
-		Store (ACEX, \PWRS)
+		\PWRS = ACEX
 		Notify (AC, 0x80)
 		Notify (BAT, 0x80)
 		PNOT ()
@@ -124,7 +124,7 @@ Device (EC)
 	/* Lid Event */
 	Method (_Q21)
 	{
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 		Notify (LID0, 0x80)
 	}
 
@@ -193,7 +193,7 @@ Device (EC)
 	/* KEY_BLUETOOTH */
 	Method (_Q37)
 	{
-		XOr (^BTLE, One, ^BTLE)
+		^BTLE ^= 1
 	}
 
 	/* Turbo Enable/Disable */
@@ -208,13 +208,13 @@ Device (EC)
 		 * when the system is charging.
 		 */
 		If (TURB) {
-			Store (PPCM_TURBO, PPCM)
+			PPCM = PPCM_TURBO
 			PPCN ()
-			Store (One, EDTB)
+			EDTB = 1
 		} Else {
-			Store (PPCM_NOTURBO, PPCM)
+			PPCM = PPCM_NOTURBO
 			PPCN ()
-			Store (Zero, EDTB)
+			EDTB = 0
 		}
 	}
 

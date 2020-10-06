@@ -1381,6 +1381,14 @@ void acpigen_write_else(void)
 	acpigen_write_len_f();
 }
 
+void acpigen_write_shiftleft_op_int(uint8_t src_result, uint64_t count)
+{
+	acpigen_emit_byte(SHIFT_LEFT_OP);
+	acpigen_emit_byte(src_result);
+	acpigen_write_integer(count);
+	acpigen_emit_byte(ZERO_OP);
+}
+
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst)
 {
 	acpigen_emit_byte(TO_BUFFER_OP);

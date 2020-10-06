@@ -378,6 +378,7 @@ void acpigen_write_if_lequal_op_op(uint8_t op, uint8_t val);
 void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val);
 void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val);
 void acpigen_write_else(void);
+void acpigen_write_shiftleft_op_int(uint8_t src_result, uint64_t count);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);
 void acpigen_write_to_integer(uint8_t src, uint8_t dst);
 void acpigen_write_to_integer_from_namestring(const char *source, uint8_t dst_op);

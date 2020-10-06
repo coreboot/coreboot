@@ -478,6 +478,51 @@ unsigned int __weak smbios_processor_family(struct cpuid_result res)
 	return (res.eax > 0) ? 0x0c : 0x6;
 }
 
+unsigned int __weak smbios_cache_error_correction_type(u8 level)
+{
+	return SMBIOS_CACHE_ERROR_CORRECTION_UNKNOWN;
+}
+
+unsigned int __weak smbios_cache_sram_type(void)
+{
+	return  SMBIOS_CACHE_SRAM_TYPE_UNKNOWN;
+}
+
+unsigned int __weak smbios_cache_conf_operation_mode(u8 level)
+{
+	return SMBIOS_CACHE_OP_MODE_UNKNOWN; /* Unknown */
+}
+
+static size_t get_number_of_caches(struct cpuid_result res_deterministic_cache)
+{
+	size_t max_logical_cpus_sharing_cache = 0;
+	size_t number_of_cpus_per_package = 0;
+	size_t max_logical_cpus_per_package = 0;
+	struct cpuid_result res;
+
+	if (!cpu_have_cpuid())
+		return 1;
+
+	res = cpuid(1);
+
+	max_logical_cpus_per_package = (res.ebx >> 16) & 0xff;
+
+	max_logical_cpus_sharing_cache  = ((res_deterministic_cache.eax >> 14) & 0xfff) + 1;
+
+	/* Check if it's last level cache */
+	if (max_logical_cpus_sharing_cache == max_logical_cpus_per_package)
+		return 1;
+
+	if (cpuid_get_max_func() >= 0xb) {
+		res = cpuid_ext(0xb, 1);
+		number_of_cpus_per_package = res.ebx & 0xff;
+	} else {
+		number_of_cpus_per_package = max_logical_cpus_per_package;
+	}
+
+	return number_of_cpus_per_package / max_logical_cpus_sharing_cache;
+}
+
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = (struct smbios_type1 *)*current;
@@ -662,7 +707,6 @@ static int smbios_write_type7(unsigned long *current,
 {
 	struct smbios_type7 *t = (struct smbios_type7 *)*current;
 	int len = sizeof(struct smbios_type7);
-	static unsigned int cnt = 0;
 	char buf[8];
 
 	memset(t, 0, sizeof(struct smbios_type7));
@@ -670,13 +714,13 @@ static int smbios_write_type7(unsigned long *current,
 	t->handle = handle;
 	t->length = len - 2;
 
-	snprintf(buf, sizeof(buf), "CACHE%x", cnt++);
+	snprintf(buf, sizeof(buf), "CACHE%x", level);
 	t->socket_designation = smbios_add_string(t->eos, buf);
 
 	t->cache_configuration = SMBIOS_CACHE_CONF_LEVEL(level) |
 		SMBIOS_CACHE_CONF_LOCATION(0) | /* Internal */
 		SMBIOS_CACHE_CONF_ENABLED(1) | /* Enabled */
-		SMBIOS_CACHE_CONF_OPERATION_MODE(3); /* Unknown */
+		SMBIOS_CACHE_CONF_OPERATION_MODE(smbios_cache_conf_operation_mode(level));
 
 	if (max_cache_size < (SMBIOS_CACHE_SIZE_MASK * KiB)) {
 		t->max_cache_size = max_cache_size / KiB;
@@ -716,7 +760,7 @@ static int smbios_write_type7(unsigned long *current,
 	t->supported_sram_type = sram_type;
 	t->current_sram_type = sram_type;
 	t->cache_speed = 0; /* Unknown */
-	t->error_correction_type = SMBIOS_CACHE_ERROR_CORRECTION_UNKNOWN;
+	t->error_correction_type = smbios_cache_error_correction_type(level);
 	t->system_cache_type = type;
 
 	len = t->length + smbios_string_table_len(t->eos);
@@ -811,7 +855,8 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 		const size_t partitions = CPUID_CACHE_PHYS_LINE(res) + 1;
 		const size_t cache_line_size = CPUID_CACHE_COHER_LINE(res) + 1;
 		const size_t number_of_sets = CPUID_CACHE_NO_OF_SETS(res) + 1;
-		const size_t cache_size = assoc * partitions * cache_line_size * number_of_sets;
+		const size_t cache_size = assoc * partitions * cache_line_size * number_of_sets
+							* get_number_of_caches(res);
 
 		if (!cache_type)
 			/* No more caches in the system */
@@ -840,7 +885,7 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 		const int h = (*handle)++;
 
 		update_max(len, *max_struct_size, smbios_write_type7(current, h,
-			   level, SMBIOS_CACHE_SRAM_TYPE_UNKNOWN, associativity,
+			   level, smbios_cache_sram_type(), associativity,
 			   type, cache_size, cache_size));
 
 		if (type4) {

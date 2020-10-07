@@ -18,7 +18,6 @@ ramstage-y += ec.c
 ramstage-y += mainboard.c
 ramstage-y += board_id.c
 
-subdirs-y += ../common
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 

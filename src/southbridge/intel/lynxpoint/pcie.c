@@ -670,8 +670,11 @@ static void pch_pcie_early(struct device *dev)
 	/* Set EOI forwarding disable. */
 	pci_or_config32(dev, 0xd4, 1 << 1);
 
-	/* Set something involving advanced error reporting. */
-	pci_update_config32(dev, 0x100, ~((1 << 20) - 1), 0x10001);
+	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
+	if (CONFIG(PCIEXP_AER))
+		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29) | 0x10001);
+	else
+		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29));
 
 	if (is_lp)
 		pci_or_config32(dev, 0x100, 1 << 29);

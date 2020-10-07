@@ -58,4 +58,8 @@ config FINALIZE_USB_ROUTE_XHCI
 	  If you set this option to y, the USB ports will be routed
 	  to the XHCI controller during the finalize SMM callback.
 
+config PCIEXP_AER
+	bool
+	default y
+
 endif

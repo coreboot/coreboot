@@ -78,7 +78,11 @@
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
+#if CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
+#define ENV_STRING "verstage-before-bootblock"
+#else
 #define ENV_STRING "verstage"
+#endif
 
 #elif defined(__RAMSTAGE__)
 #define ENV_DECOMPRESSOR 0

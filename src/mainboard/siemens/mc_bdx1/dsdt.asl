@@ -261,7 +261,6 @@ DefinitionBlock(
 				Return (0xff)
 			}
 
-			Name (_ADR, 0x00)
 			Method (_STA, 0, NotSerialized)
 			{
 				Return (0xf)

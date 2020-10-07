@@ -1,0 +1,6 @@
+config SOC_INTEL_COMMON_BLOCK_USB4
+	bool
+	default n
+	help
+	  Minimal PCI Driver for enabling SSDT generation for the DMA component
+	  of Intel Thunderbolt/USB4 ports.

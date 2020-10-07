@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_USB4) += usb4.c

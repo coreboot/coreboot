@@ -129,6 +129,7 @@ void bootblock_soc_init(void)
 
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
 		verify_psp_transfer_buf();
+		show_psp_transfer_info();
 	}
 
 	fch_early_init();

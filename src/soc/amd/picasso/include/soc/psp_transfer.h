@@ -44,6 +44,8 @@ _Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE, \
 
 /* Make sure the PSP transferred information over to x86 side. */
 void verify_psp_transfer_buf(void);
+/* Display the transfer block's PSP_info data */
+void show_psp_transfer_info(void);
 
 #endif
 

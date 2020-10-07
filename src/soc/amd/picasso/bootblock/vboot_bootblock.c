@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/reset.h>
+#include <bl_uapp/bl_syscall_public.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <security/vboot/vbnv.h>
@@ -29,4 +30,24 @@ void verify_psp_transfer_buf(void)
 	cmos_init(0);
 	cmos_write(CMOS_RECOVERY_MAGIC_VAL, CMOS_RECOVERY_BYTE);
 	warm_reset();
+}
+
+void show_psp_transfer_info(void)
+{
+	struct transfer_info_struct *info = (struct transfer_info_struct *)
+			(void *)(uintptr_t)_transfer_buffer;
+
+	if (info->magic_val == TRANSFER_MAGIC_VAL) {
+		if ((info->psp_info & PSP_INFO_VALID) == 0) {
+			printk(BIOS_INFO, "No PSP info found in transfer buffer.\n");
+			return;
+		}
+
+		printk(BIOS_INFO, "PSP boot mode: %s\n",
+				info->psp_info & PSP_INFO_PRODUCTION_MODE ?
+				"Production" : "Development");
+		printk(BIOS_INFO, "Silicon level: %s\n",
+				info->psp_info & PSP_INFO_PRODUCTION_SILICON ?
+				"Production" : "Pre-Production");
+	}
 }

@@ -56,4 +56,7 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"
 
+config PCIEXP_AER
+	def_bool n
+
 endif

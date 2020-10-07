@@ -26,15 +26,8 @@ chip soc/intel/cannonlake
 		.tx_emp_enable = USB2_PRE_EMP_ON,
 		.pre_emp_bias  = USB2_BIAS_11P25MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # Type-A Port 2
-	register "usb2_ports[1]" = "{
-		.enable = 1,
-		.ocpin = OC1,
-		.tx_bias = USB2_BIAS_0MV,
-		.tx_emp_enable = USB2_PRE_EMP_ON,
-		.pre_emp_bias  = USB2_BIAS_28P15MV,
-		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # Type-A Port 1
+	}" # Type-A Port 0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port 0
 	register "usb2_ports[2]" = "{
 		.enable = 1,
 		.ocpin = OC3,
@@ -42,54 +35,27 @@ chip soc/intel/cannonlake
 		.tx_emp_enable = USB2_PRE_EMP_ON,
 		.pre_emp_bias  = USB2_BIAS_28P15MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # Type-A Port 3
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port
-	register "usb2_ports[4]" = "{
-		.enable = 1,
-		.ocpin = OC_SKIP,
-		.tx_bias = USB2_BIAS_0MV,
-		.tx_emp_enable = USB2_PRE_EMP_ON,
-		.pre_emp_bias  = USB2_BIAS_28P15MV,
-		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # Type-A Port 4
-	register "usb2_ports[5]" = "{
-		.enable = 1,
-		.ocpin = OC0,
-		.tx_bias = USB2_BIAS_0MV,
-		.tx_emp_enable = USB2_PRE_EMP_ON,
-		.pre_emp_bias  = USB2_BIAS_28P15MV,
-		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # Type-A port 0
+	}" # Type-A Port 1
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port 1
+	register "usb2_ports[5]" = "USB2_PORT_LONG(OC_SKIP)" # USB cam
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[9]" = "{
-		.enable = 1,
-		.ocpin = OC_SKIP,
-		.tx_bias = USB2_BIAS_0MV,
-		.tx_emp_enable = USB2_PRE_EMP_ON,
-		.pre_emp_bias  = USB2_BIAS_28P15MV,
-		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}" # BT
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"     # BT
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"     # Type-A Port 2
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"     # Type-A Port 3
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port 4
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port 1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port 0
+	register "usb3_ports[4]" = "USB3_PORT_EMPTY"
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"
 
 	# Bitmap for Wake Enable on USB attach/detach
 	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
-					      USB_PORT_WAKE_ENABLE(5) | \
-					      USB_PORT_WAKE_ENABLE(6)"
+					      USB_PORT_WAKE_ENABLE(3)"
 	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
-					      USB_PORT_WAKE_ENABLE(5) | \
-					      USB_PORT_WAKE_ENABLE(6)"
+					      USB_PORT_WAKE_ENABLE(2)"
 
 	# Enable eMMC HS400
 	register "ScsEmmcHs400Enabled" = "1"
@@ -271,79 +237,69 @@ chip soc/intel/cannonlake
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Front Left""
+						register "desc" = ""USB2 Type-A Port 0""
 						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
 						device usb 2.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-C Port Rear""
+						register "desc" = ""USB2 Type-C Port 0""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
 						device usb 2.1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Front Right""
+						register "desc" = ""USB2 Type-A Port 1""
 						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device usb 2.2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Rear Right""
-						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device usb 2.3 on end
-					end
+                                                device usb 2.3 off end
+                                        end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Rear Middle""
-						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						register "desc" = ""USB2 Type-C Port 1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device usb 2.4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Rear Left""
-						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(1, 0)"
+                                                register "desc" = ""Camera""
+                                                register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.5 on end
 					end
 					chip drivers/usb/acpi
 						device usb 2.6 off end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Front Left""
+						register "desc" = ""USB3 Type-A Port 0""
 						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
 						device usb 3.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Front Right""
+						register "desc" = ""USB3 Type-A Port 1""
 						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device usb 3.1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Rear Right""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						register "desc" = ""USB3 Type-C Port 1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device usb 3.2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Rear""
+						register "desc" = ""USB3 Type-C Port 0""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
 						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Rear Left""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 0)"
-						device usb 3.4 on end
+						device usb 3.4 off end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Rear Middle""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 1)"
-						device usb 3.5 on end
+						device usb 3.5 off end
 					end
 				end
 			end

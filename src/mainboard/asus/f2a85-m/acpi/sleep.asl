@@ -26,20 +26,20 @@ Method(\_PTS, 1) {
 	/* DBGO("\n") */
 
 	/* Clear sleep SMI status flag and enable sleep SMI trap. */
-	/*Store(One, CSSM)
-	Store(One, SSEN)*/
+	/*CSSM = 1
+	SSEN = 1*/
 
 	/* On older chips, clear PciExpWakeDisEn */
-	/*if (LLessEqual(\_SB.SBRI, 0x13)) {
-	*	Store(0,\_SB.PWDE)
+	/*if (\_SB.SBRI <= 0x13) {
+	*	\_SB.PWDE = 0
 	*}
 	*/
 
 	/* Clear wake status structure. */
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
+	WKST [0] = 0
+	WKST [1] = 0
 
-	Store (0x07, UPWS)
+	UPWS = 0x07
 } /* End Method(\_PTS) */
 
 /*

@@ -16,8 +16,8 @@ Method(_PTS,1)
 Method(_WAK,1)
 {
 	/* ME may not be up yet. */
-	Store (0, \_TZ.MEB1)
-	Store (0, \_TZ.MEB2)
+	\_TZ.MEB1 = 0
+	\_TZ.MEB2 = 0
 
 	/* Wake the HKEY to init BT/WWAN */
 	\_SB.PCI0.LPCB.EC.HKEY.WAKE (Arg0)
@@ -56,47 +56,47 @@ Scope(\_SB)
 		 */
 
 		/* Let's assume we're running at least Windows 2000 */
-		Store (2000, OSYS)
+		OSYS =  2000
 
 		If (CondRefOf(_OSI)) {
 			If (_OSI("Windows 2001")) {
-				Store (2001, OSYS)
+				OSYS = 2001
 			}
 
 			If (_OSI("Windows 2001 SP1")) {
-				Store (2001, OSYS)
+				OSYS = 2001
 			}
 
 			If (_OSI("Windows 2001 SP2")) {
-				Store (2002, OSYS)
+				OSYS = 2002
 			}
 
 			If (_OSI("Windows 2001.1")) {
-				Store (2001, OSYS)
+				OSYS = 2001
 			}
 
 			If (_OSI("Windows 2001.1 SP1")) {
-				Store (2001, OSYS)
+				OSYS = 2001
 			}
 
 			If (_OSI("Windows 2006")) {
-				Store (2006, OSYS)
+				OSYS = 2006
 			}
 
 			If (_OSI("Windows 2006.1")) {
-				Store (2006, OSYS)
+				OSYS = 2006
 			}
 
 			If (_OSI("Windows 2006 SP1")) {
-				Store (2006, OSYS)
+				OSYS = 2006
 			}
 
 			If (_OSI("Windows 2009")) {
-				Store (2009, OSYS)
+				OSYS = 2009
 			}
 
 			If (_OSI("Windows 2012")) {
-				Store (2012, OSYS)
+				OSYS = 2012
 			}
 		}
 	}

@@ -18,20 +18,20 @@ Name(PMOD, One)	/* Assume APIC */
 Scope(\_SB) {
 	Method(OSFL, 0){
 
-		if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
+		if (OSVR != Ones) {Return (OSVR)}	/* OS version was already detected */
 
 		if(CondRefOf(\_OSI))
 		{
-			Store(1, OSVR)					/* Assume some form of XP */
+			OSVR = 1				/* Assume some form of XP */
 			if (\_OSI("Windows 2006"))		/* Vista */
 			{
-				Store(2, OSVR)
+				OSVR = 2
 			}
 		} else {
-			If(WCMP(\_OS,"Linux")) {
-				Store(3, OSVR)				/* Linux */
+			If (WCMP(\_OS,"Linux")) {
+				OSVR = 3			/* Linux */
 			} Else {
-				Store(4, OSVR)				/* Gotta be WinCE */
+				OSVR = 4			/* Gotta be WinCE */
 			}
 		}
 		Return(OSVR)

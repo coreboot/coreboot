@@ -20,10 +20,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -52,7 +52,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (\F0OF))
 			} Else {
 				Return (CTOK (\F0ON))
@@ -60,7 +60,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (\F1OF))
 			} Else {
 				Return (CTOK (\F1ON))
@@ -68,7 +68,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (\F2OF))
 			} Else {
 				Return (CTOK (\F2ON))
@@ -76,7 +76,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (\F3OF))
 			} Else {
 				Return (CTOK (\F3ON))
@@ -84,7 +84,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (\F4OF))
 			} Else {
 				Return (CTOK (\F4ON))
@@ -100,20 +100,20 @@ Scope (\_TZ)
 		PowerResource (FNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (0, \FLVL)
-				Store (\F0PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 0
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F0PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 1
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F1PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -121,20 +121,20 @@ Scope (\_TZ)
 		PowerResource (FNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 1
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F1PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 2
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F2PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -142,20 +142,20 @@ Scope (\_TZ)
 		PowerResource (FNP2, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 2)) {
+				If (\FLVL <= 2) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 2
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F2PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 3
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F3PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -163,20 +163,20 @@ Scope (\_TZ)
 		PowerResource (FNP3, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 3)) {
+				If (\FLVL <= 3) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 3
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F3PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 4
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F4PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -184,20 +184,20 @@ Scope (\_TZ)
 		PowerResource (FNP4, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 4)) {
+				If (\FLVL <= 4) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 4
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F4PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				\FLVL = 4
+				\_SB.PCI0.LPCB.SIO.ENVC.F3PS = \F4PW
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

@@ -19,9 +19,9 @@ IndexField(IMCX, IMCA, ByteAcc, NoLock, Preserve) {
 
 Method(WACK, 0)
 {
-	Store(0, Local0)
-	While (LNotEqual(Local0, 0xFA)) {
-		Store(MRG0, Local0)
+	Local0 = 0
+	While (Local0 != 0xfa) {
+		Local0 = MRG0
 		Sleep(10)
 	}
 }
@@ -29,69 +29,69 @@ Method(WACK, 0)
 //Init
 Method (ITZE, 0)
 {
-	Store(0, MRG0)
-	Store(0xB5, MRG1)
-	Store(0, MRG2)
-	Store(0x96, MSTI)
+	MRG0 = 0
+	MRG1 = 0xb5
+	MRG2 = 0
+	MSTI = 0x96
 	WACK()
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(0, MRG2)
-	Store(0x80, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = 0
+	MSTI = 0x80
 	WACK()
 
-	Or(MRG2, 0x01, Local0)
+	Local0 = MRG2 | 0x01
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(Local0, MRG2)
-	Store(0x81, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = Local0
+	MSTI = 0x81
 	WACK()
 }
 
 //Sleep
 Method (IMSP, 0)
 {
-	Store(0, MRG0)
-	Store(0xB5, MRG1)
-	Store(0, MRG2)
-	Store(0x96, MSTI)
+	MRG0 = 0
+	MRG1 = 0xb5
+	MRG2 = 0
+	MSTI = 0x96
 	WACK()
 
-	Store(0, MRG0)
-	Store(1, MRG1)
-	Store(0, MRG2)
-	Store(0x98, MSTI)
+	MRG0 = 0
+	MRG1 = 1
+	MRG2 = 0
+	MSTI = 0x98
 	WACK()
 
-	Store(0, MRG0)
-	Store(0xB4, MRG1)
-	Store(0, MRG2)
-	Store(0x96, MSTI)
+	MRG0 = 0
+	MRG1 = 0xb4
+	MRG2 = 0
+	MSTI = 0x96
 	WACK()
 }
 
 //Wake
 Method (IMWK, 0)
 {
-	Store(0, MRG0)
-	Store(0xB5, MRG1)
-	Store(0, MRG2)
-	Store(0x96, MSTI)
+	MRG0 = 0
+	MRG1 = 0xb5
+	MRG2 = 0
+	MSTI = 0x96
 	WACK()
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(0, MRG2)
-	Store(0x80, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = 0
+	MSTI = 0x80
 	WACK()
 
-	Or(MRG2, 0x01, Local0)
+	Local0 = MRG2 | 0x01
 
-	Store(0, MRG0)
-	Store(0, MRG1)
-	Store(Local0, MRG2)
-	Store(0x81, MSTI)
+	MRG0 = 0
+	MRG1 = 0
+	MRG2 = Local0
+	MSTI = 0x81
 	WACK()
 }

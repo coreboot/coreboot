@@ -30,9 +30,9 @@ Method(_PTS, 1) {
 	/* DBGO("\n") */
 
 	/* Clear wake status structure. */
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
-	Store(7, UPWS)
+	WKST [0] = 0
+	WKST [1] = 0
+	UPWS = 7
 	\_SB.APTS(Arg0)
 } /* End Method(\_PTS) */
 
@@ -56,7 +56,7 @@ Method(\_WAK, 1) {
 	/* DBGO("From S") */
 	/* DBGO(Arg0) */
 	/* DBGO(" to S0\n") */
-	Store(1,USBS)
+	USBS = 1
 
 	\_SB.AWAK(Arg0)
 

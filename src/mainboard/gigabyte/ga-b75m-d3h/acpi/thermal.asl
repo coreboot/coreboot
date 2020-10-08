@@ -21,10 +21,10 @@ Scope (\_TZ)
 		Method (CTOK, 1)
 		{
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}

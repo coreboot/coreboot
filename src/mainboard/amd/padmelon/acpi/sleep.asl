@@ -26,10 +26,10 @@ Method(_PTS, 1) {
 	/* DBGO("\n") */
 
 	/* Clear wake status structure. */
-	Store(0, PEWD)
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
-	Store(7, UPWS)
+	PEWD = 0
+	WKST [0] = 0
+	WKST [1] = 0
+	UPWS = 7
 } /* End Method(\_PTS) */
 
 /*

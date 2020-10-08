@@ -4,8 +4,8 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/bsd/compression.h>
+#include <commonlib/endian.h>
 #include <console/console.h>
-#include <endian.h>
 #include <fmap.h>
 #include <lib.h>
 #include <security/tpm/tspi/crtm.h>
@@ -296,10 +296,16 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	foffset = 0;
 	foffset += sizeof(stage);
 
+	/* cbfs_stage fields are written in little endian despite the other
+	   cbfs data types being encoded in big endian. */
+	stage.compression = read_le32(&stage.compression);
+	stage.entry = read_le64(&stage.entry);
+	stage.load = read_le64(&stage.load);
+	stage.len = read_le32(&stage.len);
+	stage.memlen = read_le32(&stage.memlen);
+
 	assert(fsize == stage.len);
 
-	/* Note: cbfs_stage fields are currently in the endianness of the
-	 * running processor. */
 	load = (void *)(uintptr_t)stage.load;
 	entry = (void *)(uintptr_t)stage.entry;
 

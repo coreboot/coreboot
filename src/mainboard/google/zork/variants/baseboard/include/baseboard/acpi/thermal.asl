@@ -21,10 +21,10 @@ Scope (\_TZ)
 		/* Convert from Degrees C to 1/10 Kelvin for ACPI */
 		Method (CTOK, 1) {
 			/* 10th of Degrees C */
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			/* Convert to Kelvin */
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -50,23 +50,23 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			/* Get temperature from EC in deci-kelvin */
-			Store (\_SB.PCI0.LPCB.EC0.TSRD (TMPS), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.TSRD (TMPS)
 
 			/* Critical temperature in deci-kelvin */
-			Store (CTOK (\TCRT), Local1)
+			Local1 = CTOK (\TCRT)
 
-			If (LGreaterEqual (Local0, Local1)) {
-				Store ("CRITICAL TEMPERATURE", Debug)
-				Store (Local0, Debug)
+			If (Local0 >= Local1) {
+				Debug = "CRITICAL TEMPERATURE"
+				Debug = Local0
 
 				/* Wait 1 second for EC to re-poll */
 				Sleep (1000)
 
 				/* Re-read temperature from EC */
-				Store (\_SB.PCI0.LPCB.EC0.TSRD (TMPS), Local0)
+				Local0 = \_SB.PCI0.LPCB.EC0.TSRD (TMPS)
 
-				Store ("RE-READ TEMPERATURE", Debug)
-				Store (Local0, Debug)
+				Debug = "RE-READ TEMPERATURE"
+				Debug = Local0
 			}
 
 			Return (Local0)

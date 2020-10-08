@@ -59,9 +59,9 @@ Device (BAT1)
 	Method(_BIF, 0)
 	{
 		If(\_SB.PCI0.LPCB.EC0.ECON) {
-			Store (\_SB.PCI0.LPCB.EC0.B1DW, Index(PBIF, 1))
-			Store (\_SB.PCI0.LPCB.EC0.B1FW, Index(PBIF, 2))
-			Store (\_SB.PCI0.LPCB.EC0.B1DV, Index(PBIF, 4))
+			PBIF [1] = \_SB.PCI0.LPCB.EC0.B1DW
+			PBIF [2] = \_SB.PCI0.LPCB.EC0.B1FW
+			PBIF [4] = \_SB.PCI0.LPCB.EC0.B1DV
 		}
 
 		Return(PBIF)
@@ -71,26 +71,26 @@ Device (BAT1)
 	Method(_BST, 0)
 	{
 		If(\_SB.PCI0.LPCB.EC0.ECON) {
-			Store (\_SB.PCI0.LPCB.EC0.B1PW, Local0)
-			If (LGreaterEqual (Local0, 0x8000)) {
-				Subtract (0x10000, Local0, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.B1PW
+			If (Local0 >= 0x8000) {
+				Local0 = 0x10000 - Local0
 			}
-			Store (Local0, Index(PBST, 1))
-			Store (\_SB.PCI0.LPCB.EC0.B1PV, Index(PBST, 3))
+			PBST [1] = Local0
+			PBST [3] = \_SB.PCI0.LPCB.EC0.B1PV
 
-			Store (\_SB.PCI0.LPCB.EC0.B1RW, Index(PBST, 2))
+			PBST [2] = \_SB.PCI0.LPCB.EC0.B1RW
 
 			If (\_SB.PCI0.LPCB.EC0.ACCH) {
 				If (\_SB.PCI0.LPCB.EC0.B1CH) {
 					If (\_SB.PCI0.LPCB.EC0.B1CG) {
-						Store (2, Index(PBST, 0))
+						PBST [0] = 2
 					}
 				}
 			} Else {
 				If (\_SB.PCI0.LPCB.EC0.B1LO) {
-					Store (5, Index(PBST, 0))
+					PBST [0] = 5
 				} Else {
-					Store (1, Index(PBST, 0))
+					PBST [0] = 1
 				}
 			}
 		}
@@ -153,9 +153,9 @@ Device (BAT2)
 	Method(_BIF, 0)
 	{
 		If(\_SB.PCI0.LPCB.EC0.ECON) {
-			Store (\_SB.PCI0.LPCB.EC0.B2DW, Index(PBIF, 1))
-			Store (\_SB.PCI0.LPCB.EC0.B2FW, Index(PBIF, 2))
-			Store (\_SB.PCI0.LPCB.EC0.B2DV, Index(PBIF, 4))
+			PBIF [1] = \_SB.PCI0.LPCB.EC0.B2DW
+			PBIF [2] = \_SB.PCI0.LPCB.EC0.B2FW
+			PBIF [4] = \_SB.PCI0.LPCB.EC0.B2DV
 		}
 
 		Return(PBIF)
@@ -165,26 +165,26 @@ Device (BAT2)
 	Method(_BST, 0)
 	{
 		If(\_SB.PCI0.LPCB.EC0.ECON) {
-			Store (\_SB.PCI0.LPCB.EC0.B2PW, Local0)
-			If (LGreaterEqual (Local0, 0x8000)) {
-				Subtract (0x10000, Local0, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.B2PW
+			If (Local0 >= 0x8000) {
+				Local0 = 0x10000 - Local0
 			}
-			Store (Local0, Index(PBST, 1))
-			Store (\_SB.PCI0.LPCB.EC0.B2PV, Index(PBST, 3))
+			PBST [1] = Local0
+			PBST [3] = \_SB.PCI0.LPCB.EC0.B2PV
 
-			Store (\_SB.PCI0.LPCB.EC0.B2RW, Index(PBST, 2))
+			PBST [2] = \_SB.PCI0.LPCB.EC0.B2RW
 
 			If (\_SB.PCI0.LPCB.EC0.ACCH) {
 				If (\_SB.PCI0.LPCB.EC0.B2CH) {
 					If (\_SB.PCI0.LPCB.EC0.B2CG) {
-						Store (2, Index(PBST, 0))
+						PBST [0] = 2
 					}
 				}
 			} Else {
 				If (\_SB.PCI0.LPCB.EC0.B2LO) {
-					Store (5, Index(PBST, 0))
+					PBST [0] = 5
 				} Else {
-					Store (1, Index(PBST, 0))
+					PBST [0] = 1
 				}
 			}
 		}
@@ -199,7 +199,7 @@ Device (ADP1)
 	Name (_HID, "ACPI0003")
 	Method (_PSR, 0)
 	{
-		Store (\_SB.PCI0.LPCB.EC0.ACCH, PWRS)
+		PWRS = \_SB.PCI0.LPCB.EC0.ACCH
 		Stall (0x02)
 		Return (PWRS)
 	}

@@ -70,8 +70,8 @@ Device(EC0)
 		// This method is needed by Windows XP/2000 for
 		// EC initialization before a driver is loaded
 
-		If (LEqual(Arg0, 0x03)) {
-			Store (Arg1, ECON)
+		If (Arg0 == 0x03) {
+			ECON = Arg1
 		}
 	}
 
@@ -79,98 +79,98 @@ Device(EC0)
 
 	Method (_Q11, 0)
 	{
-		Store("_Q11: Fn-F8 (Sleep Button) pressed", Debug)
+		Debug = "_Q11: Fn-F8 (Sleep Button) pressed"
 		Notify(SLPB, 0x80)
 	}
 
 	Method (_Q30, 0)
 	{
-		Store("_Q30: AC In", Debug)
+		Debug = "_Q30: AC In"
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
 	}
 
 	Method (_Q31, 0)
 	{
-		Store("_Q31: AC Out", Debug)
+		Debug = "_Q31: AC Out"
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
 	}
 
 	Method (_Q32, 0)
 	{
-		Store("_Q32: Bat1 In", Debug)
+		Debug = "_Q32: Bat1 In"
 		Notify(BAT1, 0x81)
 	}
 
 	Method (_Q33, 0)
 	{
-		Store("_Q33: Bat1 Out", Debug)
+		Debug = "_Q33: Bat1 Out"
 		Notify(BAT1, 0x81)
 	}
 
 	Method (_Q34, 0)
 	{
-		Store("_Q34: Bat2 In", Debug)
+		Debug = "_Q34: Bat2 In"
 		Notify(BAT2, 0x81)
 	}
 
 	Method (_Q35, 0)
 	{
-		Store("_Q35: Bat2 Out", Debug)
+		Debug = "_Q35: Bat2 Out"
 		Notify(BAT2, 0x81)
 	}
 
 	Method (_Q36, 0)
 	{
-		Store("_Q36: Bat1 Low Power", Debug)
+		Debug = "_Q36: Bat1 Low Power"
 		Notify(BAT1, 0x80)
 	}
 
 	Method (_Q37, 0)
 	{
-		Store("_Q37: Bat1 Full Charge", Debug)
+		Debug = "_Q37: Bat1 Full Charge"
 		Notify(BAT1, 0x80)
 	}
 
 	Method (_Q38, 0)
 	{
-		Store("_Q38: Bat2 Low Power", Debug)
+		Debug = "_Q38: Bat2 Low Power"
 		Notify(BAT2, 0x80)
 	}
 
 	Method (_Q39, 0)
 	{
-		Store("_Q39: Bat2 Full Charge", Debug)
+		Debug = "_Q39: Bat2 Full Charge"
 		Notify(BAT2, 0x80)
 	}
 
 	Method (_Q40, 0)
 	{
-		Store("_Q40: LID Open/Close", Debug)
+		Debug = "_Q40: LID Open/Close"
 		Notify(LID0, 0x80)
 	}
 
 	Method (_Q41, 0)
 	{
-		Store("_Q41: Floppy on Parallel Port: Call the Museum!", Debug)
+		Debug = "_Q41: Floppy on Parallel Port: Call the Museum!"
 	}
 
 	Method (_Q50, 0)
 	{
-		Store("_Q50: Processor is hot", Debug)
+		Debug = "_Q50: Processor is hot"
 		Notify(\_TZ.THRM, 0x80)
 	}
 
 	Method (_Q51, 0)
 	{
-		Store("_Q51: Processor is boiling", Debug)
+		Debug = "_Q51: Processor is boiling"
 		Notify(\_TZ.THRM, 0x80)
 	}
 
 	Method (_Q52, 0)
 	{
-		Store("_Q52: Processor is burning", Debug)
+		Debug = "_Q52: Processor is burning"
 		Notify(\_TZ.THRM, 0x80)
 	}
 

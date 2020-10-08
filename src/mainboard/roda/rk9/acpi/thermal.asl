@@ -43,18 +43,18 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			If (\_SB.PCI0.LPCB.EC0.ALRC) {
-				Store(0, \_SB.PCI0.LPCB.EC0.ALRC)
+				\_SB.PCI0.LPCB.EC0.ALRC = 0
 				Return(_AC0())
 			}
 
 			If (\_SB.PCI0.LPCB.EC0.ALRL) {
-				Store(0, THRO)
-				Store(0, \_SB.PCI0.LPCB.EC0.ALRL)
+				THRO = 0
+				\_SB.PCI0.LPCB.EC0.ALRL = 0
 			}
 
 			If (\_SB.PCI0.LPCB.EC0.ALRH) {
-				Store(1, THRO)
-				Store(0, \_SB.PCI0.LPCB.EC0.ALRH)
+				THRO = 1
+				\_SB.PCI0.LPCB.EC0.ALRH = 0
 			}
 
 			/* vendor BIOS reports 0K if TCPU >= 128 deg C ?!? */

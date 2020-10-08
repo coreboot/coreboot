@@ -23,10 +23,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -52,66 +52,66 @@ Scope (\_TZ)
 		// Start fan at state 4 = lowest temp state
 		Method (_INI)
 		{
-			Store (4, \FLVL)
-			Store (FAN4_PWM, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+			\FLVL = 4
+			\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 			Notify (\_TZ.THRM, 0x81)
 		}
 
 		Method (TCHK, 0, Serialized)
 		{
 			// Get CPU Temperature from PECI via SuperIO TMPIN3
-			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
+			Local0 = \_SB.PCI0.LPCB.SIO.ENVC.TIN3
 
 			// Check for "no reading available"
-			If (LEqual (Local0, 0x80)) {
+			If (Local0 == 0x80) {
 				Return (CTOK (FAN0_THRESHOLD_ON))
 			}
 
 			// Check for invalid readings
-			If (LOr (LEqual (Local0, 255), LEqual (Local0, 0))) {
+			If ((Local0 == 255) || (Local0 == 0)) {
 				Return (CTOK (FAN0_THRESHOLD_ON))
 			}
 
 			// PECI raw value is an offset from Tj_max
-			Subtract (255, Local0, Local1)
+			Local1 = 255 - Local0
 
 			// Handle values greater than Tj_max
-			If (LGreaterEqual (Local1, \TMAX)) {
+			If (Local1 >= \TMAX) {
 				Return (CTOK (\TMAX))
 			}
 
 			// Subtract from Tj_max to get temperature
-			Subtract (\TMAX, Local1, Local0)
+			Local0 = \TMAX - Local1
 			Return (CTOK (Local0))
 		}
 
 		Method (_TMP, 0, Serialized)
 		{
 			// Get temperature from SuperIO in deci-kelvin
-			Store (TCHK (), Local0)
+			Local0 = TCHK ()
 
 			// Critical temperature in deci-kelvin
-			Store (CTOK (\TMAX), Local1)
+			Local1 = CTOK (\TMAX)
 
-			If (LGreaterEqual (Local0, Local1)) {
-				Store ("CRITICAL TEMPERATURE", Debug)
-				Store (Local0, Debug)
+			If (Local0 >= Local1) {
+				Debug = "CRITICAL TEMPERATURE"
+				Debug = Local0
 
 				// Wait 1 second for SuperIO to re-poll
 				Sleep (1000)
 
 				// Re-read temperature from SuperIO
-				Store (TCHK (), Local0)
+				Local0 = TCHK ()
 
-				Store ("RE-READ TEMPERATURE", Debug)
-				Store (Local0, Debug)
+				Debug = "RE-READ TEMPERATURE"
+				Debug = Local0
 			}
 
 			Return (Local0)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (FAN0_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN0_THRESHOLD_ON))
@@ -119,7 +119,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (FAN1_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN1_THRESHOLD_ON))
@@ -127,7 +127,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (FAN2_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN2_THRESHOLD_ON))
@@ -135,7 +135,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (FAN3_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN3_THRESHOLD_ON))
@@ -143,7 +143,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (FAN4_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN4_THRESHOLD_ON))
@@ -159,25 +159,23 @@ Scope (\_TZ)
 		PowerResource (FNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
-					Store (0, \FLVL)
-					Store (FAN0_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+				If (!_STA ()) {
+					\FLVL = 0
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN0_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (1, \FLVL)
-					Store (FAN1_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN1_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -186,25 +184,23 @@ Scope (\_TZ)
 		PowerResource (FNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
-					Store (1, \FLVL)
-					Store (FAN1_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+				If (!_STA ()) {
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN1_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (2, \FLVL)
-					Store (FAN2_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN2_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -213,25 +209,23 @@ Scope (\_TZ)
 		PowerResource (FNP2, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 2)) {
+				If (\FLVL <= 2) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
-					Store (2, \FLVL)
-					Store (FAN2_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+				If (!_STA ()) {
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN2_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (3, \FLVL)
-					Store (FAN3_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN3_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -240,25 +234,23 @@ Scope (\_TZ)
 		PowerResource (FNP3, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 3)) {
+				If (\FLVL <= 3) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
-					Store (3, \FLVL)
-					Store (FAN3_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+				If (!_STA ()) {
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN3_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -267,25 +259,23 @@ Scope (\_TZ)
 		PowerResource (FNP4, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 4)) {
+				If (\FLVL <= 4) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+				If (!_STA ()) {
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}

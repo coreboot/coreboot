@@ -46,31 +46,31 @@ DefinitionBlock (
 				CreateDWordField(Arg3, 0, CDW1)
 
 				// Check for proper UUID
-				If (LEqual(Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))) {
+				If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")) {
 					// Create DWORD-addressable fields from the Capabilities Buffer
 					CreateDWordField(Arg3, 4, CDW2)
 					CreateDWordField(Arg3, 8, CDW3)
 
 					// Save Capabilities DWORD2 & 3
-					Store(CDW2, SUPP)
-					Store(CDW3, CTRL)
+					SUPP = CDW2
+					CTRL = CDW3
 
 					// Always allow native PME, AER (no dependencies)
 					// Never allow SHPC (no SHPC controller in this system)
-					And(CTRL, 0x1D, CTRL)
+					CTRL &= 0x1D
 
-					If (LNotEqual(Arg1, One)) {
+					If (Arg1 != 1) {
 						// Unknown revision
-						Or(CDW1, 0x08, CDW1)
+						CDW1 |= 0x08
 					}
-					If (LNotEqual(CDW3, CTRL)) {
+					If (CDW3 != CTRL) {
 						// Capabilities bits were masked
-						Or(CDW1, 0x10, CDW1)
+						CDW1 |= 0x10
 					}
 					// Update DWORD3 in the buffer
-					Store(CTRL, CDW3)
+					CDW3 = CTRL
 				} Else {
-					Or(CDW1, 4, CDW1) // Unrecognized UUID
+					CDW1 |= 4 // Unrecognized UUID
 				}
 				Return (Arg3)
 			}
@@ -145,7 +145,7 @@ DefinitionBlock (
 	/* Zero => PIC mode, One => APIC Mode */
 	Name(\PICF, Zero)
 	Method(\_PIC, 1, NotSerialized) {
-		Store(Arg0, \PICF)
+		\PICF = Arg0
 	}
 
 	Scope(\_SB) {
@@ -269,7 +269,7 @@ DefinitionBlock (
 				  section 6.2.8.1 */
 				/* Note: we provide the same info as the PCI routing
 				  table of the Bochs BIOS */
-				If (LEqual(\PICF, Zero)) {
+				If (\PICF ==  0) {
 					Return (PRTP)
 				} Else {
 					Return (PRTA)
@@ -292,7 +292,7 @@ DefinitionBlock (
 
 		Method(IQST, 1, NotSerialized) {
 			// _STA method - get status
-			If (And(0x80, Arg0)) {
+			If (0x80 & Arg0) {
 				Return (0x09)
 			}
 			Return (0x0B)
@@ -303,7 +303,7 @@ DefinitionBlock (
 				Interrupt(, Level, ActiveHigh, Shared) { 0 }
 			})
 			CreateDWordField(PRR0, 0x05, PRRI)
-			Store(And(Arg0, 0x0F), PRRI)
+			PRRI = Arg0 & 0x0F
 			Return (PRR0)
 		}
 
@@ -320,14 +320,14 @@ DefinitionBlock (
 				Return (IQST(reg))                              \
 			}                                                   \
 			Method(_DIS, 0, NotSerialized) {                    \
-				Or(reg, 0x80, reg)                              \
+				reg |= 0x80                              \
 			}                                                   \
 			Method(_CRS, 0, NotSerialized) {                    \
 				Return (IQCR(reg))                              \
 			}                                                   \
 			Method(_SRS, 1, NotSerialized) {                    \
 				CreateDWordField(Arg0, 0x05, PRRI)              \
-				Store(PRRI, reg)                                \
+				reg = PRRI                                \
 			}                                                   \
 		}
 

@@ -56,7 +56,7 @@
 	 */
 	Method (PNOT)
 	{
-		Store("Received PNOT call (probably from EC)", Debug)
+		Debug = "Received PNOT call (probably from EC)"
 		/* TODO: Implement this */
 	}
 
@@ -75,7 +75,7 @@ Scope (\_SB) {
 			/* Make sure lid trigger polarity is set so that we
 			 * trigger an SCI when lid status changes.
 			 */
-			Not(GE22, LPOL)
+			LPOL = ~GE22
 		}
 	}
 
@@ -95,7 +95,7 @@ Scope (\_SB) {
 		/* Toggle wireless */
 		Method (WLTG)
 		{
-			Store( Not(GP57), GP57 )
+			GP57 = ~GP57
 		}
 		/* Return lid state */
 		Method (LIDS)

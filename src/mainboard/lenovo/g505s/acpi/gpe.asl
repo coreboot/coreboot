@@ -15,7 +15,7 @@ Scope(\_GPE) {	/* Start Scope GPE */
 
 	/* USB controller PME# */
 	Method(_L0B) {
-		Store("USB PME", Debug)
+		Debug = "USB PME"
 		/* Notify devices of wake event */
 		Notify(\_SB.PCI0.UOH1, 0x02)
 		Notify(\_SB.PCI0.UOH2, 0x02)
@@ -37,16 +37,16 @@ Scope(\_GPE) {	/* Start Scope GPE */
 
 	/* Lid switch opened or closed */
 	Method(_L16) {
-		Store("Lid status changed", Debug)
+		Debug = "Lid status changed"
 		/* Flip trigger polarity */
-		Not(LPOL, LPOL)
+		LPOL = ~LPOL
 		/* Notify lid object of status change */
 		Notify(\_SB.LID, 0x80)
 	}
 
 	/* GPIO0 or GEvent8 event */
 	Method(_L18) {
-		Store("PCI bridge wake event", Debug)
+		Debug = "PCI bridge wake event"
 		/* Notify PCI bridges of wake event */
 		Notify(\_SB.PCI0.PBR4, 0x02)
 		Notify(\_SB.PCI0.PBR5, 0x02)

@@ -22,10 +22,10 @@ Name(WKST,Package(){Zero, Zero})
 Method(\_PTS, 1) {
 
 	/* Clear wake status structure. */
-	Store(0, Index(WKST,0))
-	Store(0, Index(WKST,1))
+	WKST [0] = 0
+	WKST [1] = 0
 
-	Store (0x07, UPWS)
+	UPWS = 0x07
 } /* End Method(\_PTS) */
 
 /*

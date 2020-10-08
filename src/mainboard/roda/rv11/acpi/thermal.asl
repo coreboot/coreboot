@@ -10,10 +10,10 @@ Scope (\_TZ)
 	// Convert from Degrees C to 1/10 Kelvin for ACPI
 	Method (CTOK, 1) {
 		// 10th of Degrees C
-		Multiply (Arg0, 10, Local0)
+		Local0 = Arg0 * 10
 
 		// Convert to Kelvin
-		Add (Local0, 2732, Local0)
+		Local0 += 2732
 
 		Return (Local0)
 	}
@@ -49,17 +49,17 @@ Scope (\_TZ)
 
 		Method (_TMP, 0, NotSerialized)  // _TMP: Temperature
 		{
-			Store (\_SB.PCI0.LPCB.EC0.CPUT, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CPUT
 
 			If (Local0 >= 0x80)
 			{
-				Store ("-----> CPU Temperature (INVALID): ", Debug)
-				Store (Local0, Debug)
+				Debug = "-----> CPU Temperature (INVALID): "
+				Debug = Local0
 				Return (CTOK (0))
 			}
 
-			Store ("-----> CPU Temperature: ", Debug)
-			Store (Local0, Debug)
+			Debug = "-----> CPU Temperature: "
+			Debug = Local0
 
 			Return (CTOK (Local0))
 		}
@@ -82,17 +82,17 @@ Scope (\_TZ)
 
 		Method (_TMP, 0, NotSerialized)  // _TMP: Temperature
 		{
-			Store (\_SB.PCI0.LPCB.EC0.LOCT, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.LOCT
 
 			If (Local0 >= 0x80)
 			{
-				Store ("-----> LOC Temperature (INVALID): ", Debug)
-				Store (Local0, Debug)
+				Debug = "-----> LOC Temperature (INVALID): "
+				Debug = Local0
 				Return (CTOK (0))
 			}
 
-			Store ("-----> LOC Temperature: ", Debug)
-			Store (Local0, Debug)
+			Debug = "-----> LOC Temperature: "
+			Debug = Local0
 
 			Return (CTOK (Local0))
 		}
@@ -114,17 +114,17 @@ Scope (\_TZ)
 
 		Method (_TMP, 0, NotSerialized)  // _TMP: Temperature
 		{
-			Store (\_SB.PCI0.LPCB.EC0.OEMT, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.OEMT
 
 			If (Local0 >= 0x80)
 			{
-				Store ("-----> OEM Temperature (INVALID): ", Debug)
-				Store (Local0, Debug)
+				Debug = "-----> OEM Temperature (INVALID): "
+				Debug = Local0
 				Return (CTOK (0))
 			}
 
-			Store ("-----> OEM Temperature: ", Debug)
-			Store (Local0, Debug)
+			Debug = "-----> OEM Temperature: "
+			Debug = Local0
 
 			Return (CTOK (Local0))
 		}

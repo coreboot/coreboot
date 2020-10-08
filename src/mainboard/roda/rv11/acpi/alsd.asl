@@ -10,12 +10,12 @@ Device (ALSD)
 
 	Method (_ALI, 0, NotSerialized)  // _ALI: Ambient Light Illuminance
 	{
-		Store (\_SB.PCI0.LPCB.EC0.LUXH, Local0)
-		Or (ShiftLeft (Local0, 8), \_SB.PCI0.LPCB.EC0.LUXL, Local0)
-		Store ("-----> _ALI: ", Debug)
-		Store (Local0, Debug)
-		Store (\_SB.PCI0.LPCB.EC0.LUXH, Debug)
-		Store (\_SB.PCI0.LPCB.EC0.LUXL, Debug)
+		Local0 = \_SB.PCI0.LPCB.EC0.LUXH
+		Local0 = (Local0 << 8) | \_SB.PCI0.LPCB.EC0.LUXL
+		Debug = "-----> _ALI: "
+		Debug = Local0
+		Debug = \_SB.PCI0.LPCB.EC0.LUXH
+		Debug = \_SB.PCI0.LPCB.EC0.LUXL
 		Return (Local0)
 	}
 

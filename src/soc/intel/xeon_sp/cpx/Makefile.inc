@@ -5,6 +5,7 @@ ifeq ($(CONFIG_SOC_INTEL_COOPERLAKE_SP),y)
 subdirs-y += ../../../../cpu/intel/turbo
 subdirs-y += ../../../../cpu/x86/lapic
 subdirs-y += ../../../../cpu/x86/mtrr
+subdirs-y += ../../../../cpu/x86/smm
 subdirs-y += ../../../../cpu/x86/tsc
 subdirs-y += ../../../../cpu/intel/microcode
 

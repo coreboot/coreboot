@@ -12,6 +12,8 @@ ramstage-y += uncore.c reset.c util.c lpc.c spi.c gpio.c nb_acpi.c ramstage.c ch
 ramstage-y += memmap.c pch.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_PMC) += pmc.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c pmc.c
 postcar-y += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/include

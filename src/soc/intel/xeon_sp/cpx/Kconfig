@@ -78,6 +78,10 @@ config FSP_TEMP_RAM_SIZE
 	  documentation says this needs to be at least 128KiB, but practice
 	  show this needs to be 256KiB or more.
 
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
 config SOC_INTEL_COMMON_BLOCK_P2SB
 	def_bool y
 

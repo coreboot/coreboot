@@ -10,9 +10,13 @@
 #include <soc/msr.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>
+#include <soc/smmrelocate.h>
 #include <soc/util.h>
 #include <assert.h>
 #include "chip.h"
+#include <cpu/intel/smm_reloc.h>
+#include <cpu/intel/em64t101_save_state.h>
+
 
 static const config_t *chip_config = NULL;
 
@@ -197,11 +201,8 @@ static void post_mp_init(void)
 	/* Set Max Ratio */
 	set_max_turbo_freq();
 
-	/*
-	 * TODO: Now that all APs have been relocated as well as the BSP let SMIs
-	 * start flowing.
-	 */
-	if (0) global_smi_enable();
+	if (CONFIG(HAVE_SMI_HANDLER))
+		global_smi_enable();
 }
 
 /*
@@ -214,12 +215,9 @@ static void post_mp_init(void)
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_platform_thread_count,
-	//.get_smm_info = get_smm_info, /* TODO */
-	.get_smm_info = NULL,
-	//.pre_mp_smm_init = southcluster_smm_clear_state, /* TODO */
-	.pre_mp_smm_init = NULL,
-	//.relocation_handler = relocation_handler, /* TODO */
-	.relocation_handler = NULL,
+	.get_smm_info = get_smm_info,
+	.pre_mp_smm_init = smm_initialize,
+	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,
 };
 

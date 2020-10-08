@@ -329,9 +329,9 @@ Field (PSYS, ByteAcc, NoLock, Preserve)
 /* SMI I/O Trap */
 Method (TRAP, 1, Serialized)
 {
-	Store (Arg0, SMIF)	// SMI Function
-	Store (0, TRP0)		// Generate trap
-	Return (SMIF)		// Return value of SMI handler
+	SMIF = Arg0	// SMI Function
+	TRP0 = 0	// Generate trap
+	Return (SMIF)	// Return value of SMI handler
 }
 
 /*
@@ -345,7 +345,7 @@ Method (TRAP, 1, Serialized)
 Method (_PIC, 1)
 {
 	/* Remember the OS' IRQ routing choice. */
-	Store (Arg0, PICM)
+	PICM = Arg0
 }
 
 /*

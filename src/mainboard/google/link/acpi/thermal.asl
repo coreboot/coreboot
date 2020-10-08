@@ -15,10 +15,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -32,33 +32,33 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get CPU Temperature from TIN9/PECI via EC
-			Store (\_SB.PCI0.LPCB.EC0.TIN9, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.TIN9
 
 			// Check for sensor not calibrated
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not present
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not powered
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor bad reading
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
 				Return (CTOK(0))
 			}
 
 			// Adjust by offset to get Kelvin
-			Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+			Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 			// Convert to 1/10 Kelvin
-			Multiply (Local0, 10, Local0)
+			Local0 *= 10
 			Return (Local0)
 		}
 	}
@@ -77,10 +77,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -106,34 +106,34 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get Temperature from TIN# set in NVS
-			Store (\_SB.PCI0.LPCB.EC0.TINS (TMPS), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.TINS (TMPS)
 
 			// Check for sensor not present
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not powered
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor bad reading
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
 				Return (CTOK(0))
 			}
 
 			// Adjust by offset to get Kelvin
-			Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+			Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 			// Convert to 1/10 Kelvin
-			Multiply (Local0, 10, Local0)
+			Local0 *= 10
 			Return (Local0)
 		}
 
 		/* CTDP Down */
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (\F0OF))
 			} Else {
 				Return (CTOK (\F0ON))
@@ -142,7 +142,7 @@ Scope (\_TZ)
 
 		/* CTDP Nominal */
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (\F1OF))
 			} Else {
 				Return (CTOK (\F1ON))
@@ -155,19 +155,19 @@ Scope (\_TZ)
 		PowerResource (TNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (0, \FLVL)
+				\FLVL = 0
 				\_SB.PCI0.MCHC.STND ()
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
+				\FLVL = 1
 				\_SB.PCI0.MCHC.STDN ()
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -176,18 +176,18 @@ Scope (\_TZ)
 		PowerResource (TNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

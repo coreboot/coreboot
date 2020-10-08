@@ -14,13 +14,13 @@ Scope(\_SB) {
             PRD, 32,
         }
         Method(_STA, 0, NotSerialized) {
-            Store(VEND, Local0)
-            Store(PRD, Local1)
-            ShiftRight(Local0, 16, Local0)
-            If (LOr(LEqual(Local0, 0), LEqual(Local0, 0xffff))) {
+            Local0 = VEND
+            Local1 = PRD
+            Local0 >>= 16
+            If ((Local0 == 0) || (Local0 == 0xffff)) {
                 Return (0x0)
             }
-            If (LOr(LEqual(Local1, 0), LGreater(Local1, 100000000))) {
+            If ((Local1 == 0) || (Local1 > 100000000)) {
                 Return (0x0)
             }
             Return (0x0F)

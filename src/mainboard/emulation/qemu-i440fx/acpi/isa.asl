@@ -37,8 +37,8 @@ Scope(\_SB.PCI0.ISA) {
     Device(FDC0) {
         Name(_HID, EisaId("PNP0700"))
         Method(_STA, 0, NotSerialized) {
-            Store(FDEN, Local0)
-            If (LEqual(Local0, 0)) {
+            Local0 = FDEN
+            If (Local0 == 0) {
                 Return (0x00)
             } Else {
                 Return (0x0F)
@@ -55,8 +55,8 @@ Scope(\_SB.PCI0.ISA) {
     Device(LPT) {
         Name(_HID, EisaId("PNP0400"))
         Method(_STA, 0, NotSerialized) {
-            Store(LPEN, Local0)
-            If (LEqual(Local0, 0)) {
+            Local0 = LPEN
+            If (Local0 == 0) {
                 Return (0x00)
             } Else {
                 Return (0x0F)
@@ -72,8 +72,8 @@ Scope(\_SB.PCI0.ISA) {
         Name(_HID, EisaId("PNP0501"))
         Name(_UID, 0x01)
         Method(_STA, 0, NotSerialized) {
-            Store(CAEN, Local0)
-            If (LEqual(Local0, 0)) {
+            Local0 = CAEN
+            If (Local0 == 0) {
                 Return (0x00)
             } Else {
                 Return (0x0F)
@@ -89,8 +89,8 @@ Scope(\_SB.PCI0.ISA) {
         Name(_HID, EisaId("PNP0501"))
         Name(_UID, 0x02)
         Method(_STA, 0, NotSerialized) {
-            Store(CBEN, Local0)
-            If (LEqual(Local0, 0)) {
+            Local0 = CBEN
+            If (Local0 == 0) {
                 Return (0x00)
             } Else {
                 Return (0x0F)

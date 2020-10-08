@@ -17,12 +17,12 @@ Scope(\) {
     Method(DBUG, 1) {
         ToHexString(Arg0, Local0)
         ToBuffer(Local0, Local0)
-        Subtract(SizeOf(Local0), 1, Local1)
-        Store(Zero, Local2)
-        While (LLess(Local2, Local1)) {
-            Store(DerefOf(Index(Local0, Local2)), DBGB)
-            Increment(Local2)
+        Local1 = SizeOf(Local0) - 1
+        Local2 = 0
+        While (Local2 < Local1) {
+            DBGB = DerefOf( Local0 [Local2])
+            Local2++
         }
-        Store(0x0A, DBGB)
+        DBGB = 0x0A
     }
 }

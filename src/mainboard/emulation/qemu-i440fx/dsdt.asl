@@ -49,7 +49,7 @@ DefinitionBlock (
 				Return (0x00)
 			}
 			Method(_S3D, 0, NotSerialized) {
-				If (LEqual(VEND, 0x1001b36)) {
+				If (VEND == 0x1001b36) {
 				Return (0x03)           // QXL
 				} Else {
 				Return (0x00)
@@ -121,7 +121,7 @@ DefinitionBlock (
 		/* Methods called by hotplug devices */
 		Method(PCEJ, 1, NotSerialized) {
 			// _EJ0 method - eject callback
-			Store(ShiftLeft(1, Arg0), B0EJ)
+			B0EJ = 1 << Arg0
 			Return (0x0)
 		}
 
@@ -131,13 +131,13 @@ DefinitionBlock (
 		/* PCI hotplug notify method */
 		Method(PCNF, 0) {
 			// Local0 = iterator
-			Store(Zero, Local0)
-			While (LLess(Local0, 31)) {
-				Increment(Local0)
-				If (And(PCIU, ShiftLeft(1, Local0))) {
+			Local0 = 0
+			While (Local0 < 31) {
+				Local0++
+				If (PCIU & (1 << Local0)) {
 				PCNT(Local0, 1)
 				}
-				If (And(PCID, ShiftLeft(1, Local0))) {
+				If (PCID & (1 << Local0)) {
 				PCNT(Local0, 3)
 				}
 			}
@@ -213,7 +213,7 @@ DefinitionBlock (
 
 		Method(IQST, 1, NotSerialized) {
 			// _STA method - get status
-			If (And(0x80, Arg0)) {
+			If (0x80 & Arg0) {
 				Return (0x09)
 			}
 			Return (0x0B)
@@ -224,8 +224,8 @@ DefinitionBlock (
 				Interrupt(, Level, ActiveHigh, Shared) { 0 }
 			})
 			CreateDWordField(PRR0, 0x05, PRRI)
-			If (LLess(Arg0, 0x80)) {
-				Store(Arg0, PRRI)
+			If (Arg0 < 0x80) {
+				PRRI = Arg0
 			}
 			Return (PRR0)
 		}
@@ -243,14 +243,14 @@ DefinitionBlock (
 				Return (IQST(reg))                              \
 			}                                                   \
 			Method(_DIS, 0, NotSerialized) {                    \
-				Or(reg, 0x80, reg)                              \
+				reg |= 0x80                              \
 			}                                                   \
 			Method(_CRS, 0, NotSerialized) {                    \
 				Return (IQCR(reg))                              \
 			}                                                   \
 			Method(_SRS, 1, NotSerialized) {                    \
 				CreateDWordField(Arg0, 0x05, PRRI)              \
-				Store(PRRI, reg)                                \
+				reg = PRRI                                \
 			}                                                   \
 		}
 

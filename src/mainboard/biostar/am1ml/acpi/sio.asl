@@ -26,17 +26,17 @@ IndexField (SIOI, SIOD, ByteAcc, NoLock, Preserve)
 /* Enter the 8728 Config */
 Method (EPNP)
 {
-	Store(0x87, SIOI)
-	Store(0x01, SIOI)
-	Store(0x55, SIOI)
-	Store(0x55, SIOI)
+	SIOI = 0x87
+	SIOI = 0x01
+	SIOI = 0x55
+	SIOI = 0x55
 }
 
 /* Exit the 8728 Config */
 Method (XPNP)
 {
-	Store (0x02, SIOI)
-	Store (0x02, SIOD)
+	SIOI = 0x02
+	SIOD = 0x02
 }
 
 /*
@@ -46,20 +46,20 @@ Method (XPNP)
 Method (SIOS, 1)
 {
 	/* We only enable KBD PME for S5. */
-	If (LLess (Arg0, 0x05))
+	If (Arg0 < 0x05)
 	{
 		EPNP()
 		/* DBGO("8728F\n") */
-		Store (0x4, LDN)
-		Store (One, ACTR)  /* Enable EC */
+		LDN = 0x4
+		ACTR = 1  /* Enable EC */
 		/*
-		Store (0x4, LDN)
-		Store (0x04, APC4)
+		LDN = 0x4
+		APC4 = 0x04
 		*/  /* falling edge. which mode? Not sure. */
-		Store (0x4, LDN)
-		Store (0x08, APC1) /* clear PME status, Use 0x18 for mouse & KBD */
-		Store (0x4, LDN)
-		Store (0x08, APC0) /* enable PME, Use 0x18 for mouse & KBD */
+		LDN = 0x4
+		APC1 = 0x08 /* clear PME status, Use 0x18 for mouse & KBD */
+		LDN = 0x4
+		APC0 = 0x08 /* enable PME, Use 0x18 for mouse & KBD */
 		XPNP()
 	}
 }

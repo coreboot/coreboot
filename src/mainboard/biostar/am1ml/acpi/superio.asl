@@ -12,8 +12,8 @@ Device (PS2M) {
 		IRQNoFlags () {12}
 	})
 	Method (_STA, 0, NotSerialized) {
-		And (FLG0, 0x04, Local0)
-		If (LEqual (Local0, 0x04)) {
+		Local0 = FLG0 & 0x04
+		If (Local0 == 0x04) {
 			Return (0x0F)
 		} Else {
 			Return (0x00)
@@ -24,8 +24,8 @@ Device (PS2M) {
 Device (PS2K) {
 	Name (_HID, EisaId ("PNP0303"))
 	Method (_STA, 0, NotSerialized) {
-		And (FLG0, 0x04, Local0)
-		If (LEqual (Local0, 0x04)) {
+		Local0 = FLG0 & 0x04
+		If (Local0 == 0x04) {
 			Return (0x0F)
 		} Else {
 			Return (0x00)
@@ -42,8 +42,8 @@ Device (COM1) {
 	Name (_HID, EISAID ("PNP0501"))
 	Name (_UID, 1)
 	Method (_STA, 0, NotSerialized) {
-		And (FLG0, 0x04, Local0)
-		If (LEqual (Local0, 0x04)) {
+		Local0 = FLG0 & 0x04
+		If (Local0 == 0x04) {
 			Return (0x0F)
 		} Else {
 			Return (0x00)
@@ -65,8 +65,8 @@ Device (LPT1) {
 	Name (_HID, EISAID ("PNP0400"))
 	Name (_UID, 1)
 	Method (_STA, 0, NotSerialized) {
-		And (FLG0, 0x04, Local0)
-		If (LEqual (Local0, 0x04)) {
+		Local0 = FLG0 & 0x04
+		If (Local0 == 0x04) {
 			Return (0x0F)
 		} Else {
 			Return (0x00)

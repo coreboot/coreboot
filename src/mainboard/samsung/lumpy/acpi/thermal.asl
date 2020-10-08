@@ -26,10 +26,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -55,27 +55,27 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get CPU Temperature from the Embedded Controller
-			Store (\_SB.PCI0.LPCB.EC0.CPUT, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CPUT
 
 			// Re-read from EC if the temperature is very high to
 			// avoid OS shutdown if we got a bad reading.
-			If (LGreaterEqual (Local0, \TCRT)) {
-				Store (\_SB.PCI0.LPCB.EC0.CPUT, Local0)
-				If (LGreaterEqual (Local0, \TCRT)) {
+			If (Local0 >= \TCRT) {
+				Local0 = \_SB.PCI0.LPCB.EC0.CPUT
+				If (Local0 >= \TCRT) {
 					// Check if this is an early read
-					If (LLess (CRDC, IRDC)) {
-						Store (0, Local0)
+					If (CRDC < IRDC) {
+						Local0 = 0
 					}
 				}
 			}
 
 			// Keep track of first few reads by the OS
-			If (LLess (CRDC, IRDC)) {
-				Increment (CRDC)
+			If (CRDC < IRDC) {
+				CRDC++
 			}
 
 			// Invalid reading, ensure fan is spinning
-			If (LGreaterEqual (Local0, 0x80)) {
+			If (Local0 >= 0x80) {
 				Return (CTOK (\F4ON))
 			}
 
@@ -83,7 +83,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (\F0OF))
 			} Else {
 				Return (CTOK (\F0ON))
@@ -91,7 +91,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (\F1OF))
 			} Else {
 				Return (CTOK (\F1ON))
@@ -99,7 +99,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (\F2OF))
 			} Else {
 				Return (CTOK (\F2ON))
@@ -107,7 +107,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (\F3OF))
 			} Else {
 				Return (CTOK (\F3ON))
@@ -115,7 +115,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (\F4OF))
 			} Else {
 				Return (CTOK (\F4ON))

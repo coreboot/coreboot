@@ -6,43 +6,43 @@
 
 Method(_PTS,1)
 {
-	Store (Zero, GP35)  // Disable WLAN
-	Store (Zero, GP38)  // Disable WWAN
+	GP35 = 0  // Disable WLAN
+	GP38 = 0  // Disable WWAN
 
 	If (S33G) {
-		Store (Zero, GP43)  // Enable HSPA
+		GP43 = 0  // Enable HSPA
 	} Else {
-		Store (One, GP43)   // Disable HSPA
+		GP43 = 1   // Disable HSPA
 	}
 
-	If (LEqual (Arg0, 3)) {
+	If (Arg0 == 3) {
 		// NVS has a flag to determine USB policy in S3
 		If (S3U0) {
-			Store (One, GP47)   // Enable USB0
+			GP47 = 1   // Enable USB0
 		} Else {
-			Store (Zero, GP47)  // Disable USB0
+			GP47 = 0  // Disable USB0
 		}
 
 		// NVS has a flag to determine USB policy in S3
 		If (S3U1) {
-			Store (One, GP56)   // Enable USB1
+			GP56 = 1   // Enable USB1
 		} Else {
-			Store (Zero, GP56)  // Disable USB1
+			GP56 = 0  // Disable USB1
 		}
 	}
-	If (LEqual (Arg0, 5)) {
+	If (Arg0 == 5) {
 		// NVS has a flag to determine USB policy in S5
 		If (S5U0) {
-			Store (One, GP47)   // Enable USB0
+			GP47 = 1   // Enable USB0
 		} Else {
-			Store (Zero, GP47)  // Disable USB0
+			GP47 = 0  // Disable USB0
 		}
 
 		// NVS has a flag to determine USB policy in S5
 		If (S5U1) {
-			Store (One, GP56)   // Enable USB1
+			GP56 = 1   // Enable USB1
 		} Else {
-			Store (Zero, GP56)  // Disable USB1
+			GP56 = 0  // Disable USB1
 		}
 	}
 }
@@ -52,10 +52,10 @@ Method(_PTS,1)
 Method(_WAK,1)
 {
 	/* Update in case state changed while asleep */
-	Store (\_SB.PCI0.LPCB.EC0.ACEX, \PWRS)
+	\PWRS = \_SB.PCI0.LPCB.EC0.ACEX
 
 	/* Enable OS control of fan */
-	Store (One, \_SB.PCI0.LPCB.EC0.FCOS)
+	\_SB.PCI0.LPCB.EC0.FCOS = 1
 
 	Return(Package(){0,0})
 }

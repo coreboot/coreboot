@@ -26,7 +26,7 @@ Scope (\_SB.PCI0.I2C0)
 
 		Method (_STA)
 		{
-			If (LEqual (\S1EN, 1)) {
+			If (\S1EN == 1) {
 				Return (0xF)
 			} Else {
 				Return (0x0)
@@ -37,8 +37,8 @@ Scope (\_SB.PCI0.I2C0)
 
 		Method (_DSW, 3, NotSerialized)
 		{
-			Store (BOARD_TRACKPAD_WAKE_GPIO, Local0)
-			If (LEqual (Arg0, 1)) {
+			Local0 = BOARD_TRACKPAD_WAKE_GPIO
+			If (Arg0 == 1) {
 				// Enable GPIO as wake source
 				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}

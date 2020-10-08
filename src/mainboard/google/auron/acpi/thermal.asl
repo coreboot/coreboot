@@ -24,10 +24,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -53,56 +53,56 @@ Scope (\_TZ)
 		Method (TCHK, 0, Serialized)
 		{
 			// Get Temperature from TIN# set in NVS
-			Store (\_SB.PCI0.LPCB.EC0.TINS (TMPS), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.TINS (TMPS)
 
 			// Check for sensor not calibrated
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not present
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not powered
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor bad reading
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
 				Return (CTOK(0))
 			}
 
 			// Adjust by offset to get Kelvin
-			Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+			Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 			// Convert to 1/10 Kelvin
-			Multiply (Local0, 10, Local0)
+			Local0 *= 10
 			Return (Local0)
 		}
 
 		Method (_TMP, 0, Serialized)
 		{
 			// Get temperature from EC in deci-kelvin
-			Store (TCHK (), Local0)
+			Local0 = TCHK ()
 
 			// Critical temperature in deci-kelvin
-			Store (CTOK (\TCRT), Local1)
+			Local1 = CTOK (\TCRT)
 
-			If (LGreaterEqual (Local0, Local1)) {
-				Store ("CRITICAL TEMPERATURE", Debug)
-				Store (Local0, Debug)
+			If (Local0 >= Local1) {
+				Debug = "CRITICAL TEMPERATURE"
+				Debug = Local0
 
 				// Wait 1 second for EC to re-poll
 				Sleep (1000)
 
 				// Re-read temperature from EC
-				Store (TCHK (), Local0)
+				Local0 = TCHK ()
 
-				Store ("RE-READ TEMPERATURE", Debug)
-				Store (Local0, Debug)
+				Debug = "RE-READ TEMPERATURE"
+				Debug = Local0
 			}
 
 			Return (Local0)
@@ -110,7 +110,7 @@ Scope (\_TZ)
 
 		/* CTDP Down */
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (CTL_TDP_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (CTL_TDP_THRESHOLD_ON))
@@ -119,7 +119,7 @@ Scope (\_TZ)
 
 		/* CTDP Nominal */
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (CTL_TDP_THRESHILD_NORMAL))
 			} Else {
 				Return (CTOK (CTL_TDP_THRESHILD_NORMAL))
@@ -132,14 +132,14 @@ Scope (\_TZ)
 		PowerResource (TNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (0, \FLVL)
+				\FLVL = 0
 
 				/* Enable Power Limit */
 				\_SB.PCI0.MCHC.CTLE (CTL_TDP_POWER_LIMIT)
@@ -147,7 +147,7 @@ Scope (\_TZ)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
+				\FLVL = 1
 
 				/* Disable Power Limit */
 				\_SB.PCI0.MCHC.CTLD ()
@@ -159,18 +159,18 @@ Scope (\_TZ)
 		PowerResource (TNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

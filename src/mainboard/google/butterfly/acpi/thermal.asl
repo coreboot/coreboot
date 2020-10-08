@@ -21,10 +21,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -50,13 +50,13 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get CPU Temperature from EC
-			Store (\_SB.PCI0.LPCB.EC0.CTMP, Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.CTMP
 
 			// Convert to 1/10 Kelvin
-			Multiply (Local0, 10, Local0)
+			Local0 *= 10
 
 			// Adjust by offset to get Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}

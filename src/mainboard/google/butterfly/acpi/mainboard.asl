@@ -8,7 +8,7 @@ Scope (\_SB) {
 		Name (_HID, EisaId("PNP0C0D"))
 		Method (_LID, 0)
 		{
-			Store (\_SB.PCI0.LPCB.EC0.LIDF, \LIDS)
+			\LIDS = \_SB.PCI0.LPCB.EC0.LIDF
 			Return (\LIDS)
 		}
 	}

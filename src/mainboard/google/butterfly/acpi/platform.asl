@@ -15,16 +15,16 @@ Method(_WAK,1)
 {
 	/* Update in case state changed while asleep */
 	/* Update AC status */
-	Store (\_SB.PCI0.LPCB.EC0.ADPT, Local0)
-	if (LNotEqual (Local0, \PWRS)) {
-		Store (Local0, \PWRS)
+	Local0 = \_SB.PCI0.LPCB.EC0.ADPT
+	if (Local0 != \PWRS) {
+		\PWRS = Local0
 		Notify (\_SB.PCI0.LPCB.EC0.AC, 0x80)
 	}
 
 	/* Update LID status */
-	Store (\_SB.PCI0.LPCB.EC0.LIDF, Local0)
-	if (LNotEqual (Local0, \LIDS)) {
-		Store (Local0, \LIDS)
+	Local0 = \_SB.PCI0.LPCB.EC0.LIDF
+	if (Local0 != \LIDS) {
+		\LIDS = Local0
 		Notify (\_SB.LID0, 0x80)
 	}
 

@@ -6,7 +6,7 @@ Scope (\_SB.PCI0.I2C3)
 	{
 		Name (STA, 0)
 		Method (_ON, 0, Serialized) {
-			If (LEqual(STA, 0)) {
+			If (STA == 0) {
 				CTXS (GPIO_FCAM_RST_L)
 				STXS (GPIO_FCAM_PWR_EN)
 				STXS (GPIO_PCH_FCAM_CLK_EN)
@@ -22,15 +22,15 @@ Scope (\_SB.PCI0.I2C3)
 				 * sequence completes
 				 */
 				Sleep (11)
-				Store (1, STA)
+				STA = 1
 			}
 		}
 		Method (_OFF, 0, Serialized) {
-			If (LEqual(STA, 1)) {
+			If (STA == 1) {
 				CTXS (GPIO_PCH_FCAM_CLK_EN)
 				CTXS (GPIO_FCAM_RST_L)
 				CTXS (GPIO_FCAM_PWR_EN)
-				Store (0, STA)
+				STA = 0
 			}
 		}
 		Method (_STA, 0, NotSerialized) {

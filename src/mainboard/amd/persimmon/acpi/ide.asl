@@ -50,11 +50,11 @@ OperationRegion(ICRG, PCI_Config, 0x40, 0x20) /* ide control registers */
 
 Method(GTTM, 1) /* get total time*/
 {
-	Store(And(Arg0, 0x0F), Local0)	/* Recovery Width */
-	Increment(Local0)
-	Store(ShiftRight(Arg0, 4), Local1)	/* Command Width */
-	Increment(Local1)
-	Return(Multiply(30, Add(Local0, Local1)))
+	Local0 = Arg0 & 0x0F	/* Recovery Width */
+	Local0++
+	Local1 = Arg0 >> 4	/* Command Width */
+	Local1++
+	Return(30 * (Local0 + Local1))
 }
 
 Device(PRID)
@@ -76,30 +76,30 @@ Device(PRID)
 		CreateDwordField(OTBF, 16, BFFG) /* buffer flags */
 
 		/* Just return if the channel is disabled */
-		If(And(PPCR, 0x01)) { /* primary PIO control */
+		If (PPCR & 0x01) { /* primary PIO control */
 			Return(OTBF)
 		}
 
 		/* Always tell them independent timing available and IOChannelReady used on both drives */
-		Or(BFFG, 0x1A, BFFG)
+		BFFG |= 0x1A
 
-		Store(GTTM(PPTM), PSD0) /* save total time of primary PIO master timming  to PIO spd0 */
-		Store(GTTM(PPTS), PSD1) /* save total time of primary PIO slave Timing  to PIO spd1 */
+		PSD0 = GTTM (PPTM) /* save total time of primary PIO master timing  to PIO spd0 */
+		PSD1 = GTTM (PPTS) /* save total time of primary PIO slave Timing  to PIO spd1 */
 
-		If(And(PDCR, 0x01)) {	/* It's under UDMA mode */
-			Or(BFFG, 0x01, BFFG)
-			Store(DerefOf(Index(UDTT, PDMM)), DSD0)
+		If (PDCR & 0x01) {	/* It's under UDMA mode */
+			BFFG |= 0x01
+			DSD0 = DerefOf(UDTT [PDMM])
 		}
 		Else {
-			Store(GTTM(PMTM), DSD0) /* Primary MWDMA Master Timing,  DmaSpd0 */
+			DSD0 = GTTM (PMTM) /* Primary MWDMA Master Timing,  DmaSpd0 */
 		}
 
-		If(And(PDCR, 0x02)) {	/* It's under UDMA mode */
-			Or(BFFG, 0x04, BFFG)
-			Store(DerefOf(Index(UDTT, PDSM)), DSD1)
+		If (PDCR & 0x02) {	/* It's under UDMA mode */
+			BFFG |= 0x04
+			DSD1 = DerefOf(UDTT [PDSM])
 		}
 		Else {
-			Store(GTTM(PMTS), DSD1) /* Primary MWDMA Slave Timing,  DmaSpd0 */
+			DSD1 = GTTM (PMTS) /* Primary MWDMA Slave Timing,  DmaSpd0 */
 		}
 
 		Return(OTBF) /* out buffer */
@@ -120,35 +120,35 @@ Device(PRID)
 		CreateDwordField(INBF, 12, DSD1) /* DMA spd1 */
 		CreateDwordField(INBF, 16, BFFG) /*buffer flag */
 
-		Store(Match(POTT, MLE, PSD0, MTR, 0, 0), Local0)
-		Divide(Local0, 5, PPMM,) /* Primary PIO master Mode */
-		Store(Match(POTT, MLE, PSD1, MTR, 0, 0), Local1)
-		Divide(Local1, 5, PPSM,) /* Primary PIO slave Mode */
+		Local0 = Match (POTT, MLE, PSD0, MTR, 0, 0)
+		PPMM = Local0 % 5 /* Primary PIO master Mode */
+		Local1 = Match (POTT, MLE, PSD1, MTR, 0, 0)
+		PPSM = Local1 % 5 /* Primary PIO slave Mode */
 
-		Store(DerefOf(Index(PORT, Local0)), PPTM) /* Primary PIO Master Timing */
-		Store(DerefOf(Index(PORT, Local1)), PPTS) /* Primary PIO Slave Timing */
+		PPTM = DerefOf(PORT [Local0]) /* Primary PIO Master Timing */
+		PPTS = DerefOf(PORT [Local1]) /* Primary PIO Slave Timing */
 
-		If(And(BFFG, 0x01)) {	/* Drive 0 is under UDMA mode */
-			Store(Match(UDTT, MLE, DSD0, MTR, 0, 0), Local0)
-			Divide(Local0, 7, PDMM,)
-			Or(PDCR, 0x01, PDCR)
+		If (BFFG & 0x01) {	/* Drive 0 is under UDMA mode */
+			Local0 = Match (UDTT, MLE, DSD0, MTR, 0, 0)
+			PDMM = Local0 % 7
+			PDCR |= 0x01
 		}
 		Else {
-			If(LNotEqual(DSD0, 0xFFFFFFFF)) {
-				Store(Match(MDTT, MLE, DSD0, MTR, 0, 0), Local0)
-				Store(DerefOf(Index(MDRT, Local0)), PMTM)
+			If (DSD0 != 0xFFFFFFFF) {
+				Local0 = Match (MDTT, MLE, DSD0, MTR, 0, 0)
+				PMTM = DerefOf(MDRT [Local0])
 			}
 		}
 
-		If(And(BFFG, 0x04)) {	/* Drive 1 is under UDMA mode */
-			Store(Match(UDTT, MLE, DSD1, MTR, 0, 0), Local0)
-			Divide(Local0, 7, PDSM,)
-			Or(PDCR, 0x02, PDCR)
+		If (BFFG & 0x04) {	/* Drive 1 is under UDMA mode */
+			Local0 = Match (UDTT, MLE, DSD1, MTR, 0, 0)
+			PDSM = Local0 % 7
+			PDCR |= 0x02
 		}
 		Else {
-			If(LNotEqual(DSD1, 0xFFFFFFFF)) {
-				Store(Match(MDTT, MLE, DSD1, MTR, 0, 0), Local0)
-				Store(DerefOf(Index(MDRT, Local0)), PMTS)
+			If (DSD1 != 0xFFFFFFFF) {
+				Local0 = Match (MDTT, MLE, DSD1, MTR, 0, 0)
+				PMTS = DerefOf(MDRT [Local0])
 			}
 		}
 		/* Return(INBF) */
@@ -168,21 +168,19 @@ Device(PRID)
 			CreateByteField(CMBF, 12, CMDB)
 			CreateByteField(CMBF, 19, CMDC)
 
-			Store(0xA0, CMDA)
-			Store(0xA0, CMDB)
-			Store(0xA0, CMDC)
+			CMDA = 0xA0
+			CMDB = 0xA0
+			CMDC = 0xA0
 
-			Or(PPMM, 0x08, POMD)
+			POMD = PPMM | 0x08
 
-			If(And(PDCR, 0x01)) {
-				Or(PDMM, 0x40, DMMD)
+			If (PDCR & 0x01) {
+				DMMD = PDMM | 0x40
 			}
 			Else {
-				Store(Match
-				      (MDTT, MLE, GTTM(PMTM),
-				       MTR, 0, 0), Local0)
-				If(LLess(Local0, 3)) {
-					Or(0x20, Local0, DMMD)
+				Local0 = Match (MDTT, MLE, GTTM(PMTM), MTR, 0, 0)
+				If (Local0 < 3) {
+					DMMD = Local0 | 0x20
 				}
 			}
 			Return(CMBF)
@@ -204,21 +202,19 @@ Device(PRID)
 			CreateByteField(CMBF, 12, CMDB)
 			CreateByteField(CMBF, 19, CMDC)
 
-			Store(0xB0, CMDA)
-			Store(0xB0, CMDB)
-			Store(0xB0, CMDC)
+			CMDA = 0xB0
+			CMDB = 0xB0
+			CMDC = 0xB0
 
-			Or(PPSM, 0x08, POMD)
+			POMD = PPSM | 0x08
 
-			If(And(PDCR, 0x02)) {
-				Or(PDSM, 0x40, DMMD)
+			If (PDCR & 0x02) {
+				DMMD = PDSM | 0x40
 			}
 			Else {
-				Store(Match
-				      (MDTT, MLE, GTTM(PMTS),
-				       MTR, 0, 0), Local0)
-				If(LLess(Local0, 3)) {
-					Or(0x20, Local0, DMMD)
+				Local0 = Match (MDTT, MLE, GTTM(PMTS), MTR, 0, 0)
+				If (Local0 < 3) {
+					DMMD = Local0 | 0x20
 				}
 			}
 			Return(CMBF)

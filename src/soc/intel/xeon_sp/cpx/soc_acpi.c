@@ -457,6 +457,10 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
 		__func__, socket, stack, bus, pcie_seg, reg_base);
 
+	/* Do not generate DRHD for non-PCIe stack */
+	if (!reg_base)
+		return current;
+
 	// Add DRHD Hardware Unit
 	if (socket == 0 && stack == CSTACK) {
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "

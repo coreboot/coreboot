@@ -9,14 +9,14 @@ Scope (\_SB)
 
 		Method (_LID, 0)
 		{
-			Store (\_SB.PCI0.LPCB.EC0.HPLD, \LIDS)
+			\LIDS = \_SB.PCI0.LPCB.EC0.HPLD
 			Return (\LIDS)
 		}
 
 		Method (_PSW, 1)
 		{
 			// Enable/Disable LID as a wake source
-			Store (Arg0, \_SB.PCI0.LPCB.EC0.HWLO)
+			\_SB.PCI0.LPCB.EC0.HWLO = Arg0
 		}
 	}
 }

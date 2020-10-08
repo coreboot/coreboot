@@ -22,7 +22,7 @@ Scope (\_SB) {
 		Name(_HID, EisaId("PNP0C0D"))
 		Method(_LID, 0)
 		{
-			Store (GP15, \LIDS)
+			\LIDS = GP15
 			Return (\LIDS)
 		}
 	}

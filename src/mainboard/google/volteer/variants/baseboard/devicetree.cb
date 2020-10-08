@@ -374,8 +374,8 @@ chip soc/intel/tigerlake
 					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,	75, SHUTDOWN)}"
 
 				## Power Limits Control
-				# 10-15W PL1 in 200mW increments, avg over 28-32s interval
-				# PL2 is fixed at 64W, avg over 28-32s interval
+				# 3-15W PL1 in 200mW increments, avg over 28-32s interval
+				# PL2 ranges from 15 to 60W, avg over 28-32s interval
 				register "controls.power_limits" = "{
 					.pl1 = {.min_power = 3000,
 						.max_power = 15000,

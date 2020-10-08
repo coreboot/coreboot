@@ -77,6 +77,7 @@ config FSP_LOC
 	default 0xfff9c000
 
 config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
+	depends on USE_VENDORCODE_ELTAN
 	hex
 	default 0xFFFE9000
 
@@ -97,14 +98,17 @@ config C_ENV_BOOTBLOCK_SIZE
 	default 0x4000
 
 config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
+	depends on USE_VENDORCODE_ELTAN
 	bool
 	default y
 
 config VENDORCODE_ELTAN_VBOOT_MANIFEST
+	depends on USE_VENDORCODE_ELTAN
 	string
 	default "mainboard/facebook/fbg1701/manifest.h"
 
 config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
+	depends on USE_VENDORCODE_ELTAN
 	hex
 	default 0xFFFF9C00
 

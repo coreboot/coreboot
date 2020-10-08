@@ -12,14 +12,14 @@ Scope (\_SB)
 		{
 			if (Arg0) {
 			   /* connect dock */
-			   Store (1, \GP28)
-			   Store (1, \_SB.PCI0.LPCB.EC.DKR1)
+			   \GP28 = 1
+			   \_SB.PCI0.LPCB.EC.DKR1 = 1
 			} else {
 			   /* disconnect dock */
-			   Store (0, \GP28)
-			   Store (0, \_SB.PCI0.LPCB.EC.DKR1)
+			   \GP28 = 0
+			   \_SB.PCI0.LPCB.EC.DKR1 = 0
 			}
-			Xor(Arg0, \_SB.PCI0.LPCB.EC.DKR1, Local0)
+			Local0 = Arg0 ^ \_SB.PCI0.LPCB.EC.DKR1
 			Return (Local0)
 		}
 

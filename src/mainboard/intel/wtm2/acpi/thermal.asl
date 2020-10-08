@@ -22,10 +22,10 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -54,7 +54,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (FAN0_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN0_THRESHOLD_ON))
@@ -62,7 +62,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (FAN1_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN1_THRESHOLD_ON))
@@ -70,7 +70,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (FAN2_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN2_THRESHOLD_ON))
@@ -78,7 +78,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (FAN3_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN3_THRESHOLD_ON))
@@ -86,7 +86,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (FAN4_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN4_THRESHOLD_ON))
@@ -102,18 +102,18 @@ Scope (\_TZ)
 		PowerResource (FNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (0, \FLVL)
+				\FLVL = 0
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -121,18 +121,18 @@ Scope (\_TZ)
 		PowerResource (FNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (1, \FLVL)
+				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (2, \FLVL)
+				\FLVL = 2
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -140,18 +140,18 @@ Scope (\_TZ)
 		PowerResource (FNP2, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 2)) {
+				If (\FLVL <= 2) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (2, \FLVL)
+				\FLVL = 2
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (3, \FLVL)
+				\FLVL = 3
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -159,18 +159,18 @@ Scope (\_TZ)
 		PowerResource (FNP3, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 3)) {
+				If (\FLVL <= 3) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (3, \FLVL)
+				\FLVL = 3
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
+				\FLVL = 4
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -178,18 +178,18 @@ Scope (\_TZ)
 		PowerResource (FNP4, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 4)) {
+				If (\FLVL <= 4) {
 					Return (One)
 				} Else {
 					Return (Zero)
 				}
 			}
 			Method (_ON)  {
-				Store (4, \FLVL)
+				\FLVL = 4
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
+				\FLVL = 4
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

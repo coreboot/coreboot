@@ -80,6 +80,7 @@ enum {
 	CB_TAG_TCPA_LOG			= 0x0036,
 	CB_TAG_FMAP			= 0x0037,
 	CB_TAG_SMMSTOREV2		= 0x0039,
+	CB_TAG_BOARD_CONFIG		= 0x0040,
 	CB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	CB_TAG_OPTION			= 0x00c9,
 	CB_TAG_OPTION_ENUM		= 0x00ca,
@@ -260,12 +261,6 @@ struct cb_x86_rom_mtrr {
 	uint32_t index;
 };
 
-struct cb_strapping_id {
-	uint32_t tag;
-	uint32_t size;
-	uint32_t id_code;
-};
-
 struct cb_spi_flash {
 	uint32_t tag;
 	uint32_t size;
@@ -315,6 +310,16 @@ struct cb_mmc_info {
 	 * passes 1 on success
 	 */
 	int32_t early_cmd1_status;
+};
+
+struct cb_board_config {
+	uint32_t tag;
+	uint32_t size;
+
+	struct cbuint64 fw_config;
+	uint32_t board_id;
+	uint32_t ram_code;
+	uint32_t sku_id;
 };
 
 #define CB_MAX_SERIALNO_LENGTH	32

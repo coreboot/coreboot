@@ -62,15 +62,15 @@ enum {
 	LB_TAG_DMA			= 0x0022,
 	LB_TAG_RAM_OOPS			= 0x0023,
 	LB_TAG_ACPI_GNVS		= 0x0024,
-	LB_TAG_BOARD_ID			= 0x0025,
+	LB_TAG_BOARD_ID			= 0x0025,  /* deprecated */
 	LB_TAG_VERSION_TIMESTAMP	= 0x0026,
 	LB_TAG_WIFI_CALIBRATION		= 0x0027,
-	LB_TAG_RAM_CODE			= 0x0028,
+	LB_TAG_RAM_CODE			= 0x0028,  /* deprecated */
 	LB_TAG_SPI_FLASH		= 0x0029,
 	LB_TAG_SERIALNO			= 0x002a,
 	LB_TAG_MTC			= 0x002b,
 	LB_TAG_VPD			= 0x002c,
-	LB_TAG_SKU_ID			= 0x002d,
+	LB_TAG_SKU_ID			= 0x002d,  /* deprecated */
 	LB_TAG_BOOT_MEDIA_PARAMS	= 0x0030,
 	LB_TAG_CBMEM_ENTRY		= 0x0031,
 	LB_TAG_TSC_INFO			= 0x0032,
@@ -81,6 +81,8 @@ enum {
 	LB_TAG_FMAP			= 0x0037,
 	LB_TAG_PLATFORM_BLOB_VERSION	= 0x0038,
 	LB_TAG_SMMSTOREV2		= 0x0039,
+	LB_TAG_BOARD_CONFIG		= 0x0040,
+	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
 	LB_TAG_OPTION_ENUM		= 0x00ca,
@@ -347,12 +349,6 @@ struct lb_x86_rom_mtrr {
 	uint32_t index;
 };
 
-struct lb_strapping_id {
-	uint32_t tag;
-	uint32_t size;
-	uint32_t id_code;
-};
-
 struct lb_spi_flash {
 	uint32_t tag;
 	uint32_t size;
@@ -414,6 +410,16 @@ struct lb_macs {
 	uint32_t size;
 	uint32_t count;
 	struct mac_address mac_addrs[0];
+};
+
+struct lb_board_config {
+	uint32_t tag;
+	uint32_t size;
+
+	struct lb_uint64 fw_config;
+	uint32_t board_id;
+	uint32_t ram_code;
+	uint32_t sku_id;
 };
 
 #define MAX_SERIALNO_LENGTH	32

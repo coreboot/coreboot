@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define UNDEFINED_FW_CONFIG	~((uint64_t)0)
+
 /**
  * struct fw_config - Firmware configuration field and option.
  * @field_name: Name of the field that this option belongs to.
@@ -30,14 +32,14 @@ struct fw_config {
 	.value = FW_CONFIG_FIELD_##__field##_OPTION_##__option##_VALUE		\
 })
 
-#if CONFIG(FW_CONFIG)
-
 /**
  * fw_config_get() - Provide firmware configuration value.
  *
  * Return 64bit firmware configuration value determined for the system.
  */
 uint64_t fw_config_get(void);
+
+#if CONFIG(FW_CONFIG)
 
 /**
  * fw_config_probe() - Check if field and option matches.

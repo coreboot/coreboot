@@ -107,10 +107,17 @@ struct sysinfo_t {
 	uintptr_t mrc_cache;
 	uintptr_t acpi_gnvs;
 
-#define UNDEFINED_STRAPPING_ID (~0)
+#define UNDEFINED_STRAPPING_ID	(~0)
+#define UNDEFINED_FW_CONFIG	~((uint64_t)0)
 	u32		board_id;
 	u32		ram_code;
 	u32		sku_id;
+
+	/*
+	 * A payload using this field is responsible for ensuring it checks its
+	 * value against UNDEFINED_FW_CONFIG before using it.
+	 */
+	u64		fw_config;
 
 	uintptr_t	wifi_calibration;
 	uint64_t	ramoops_buffer;

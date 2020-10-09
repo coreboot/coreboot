@@ -97,9 +97,9 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField(MCRS, ^PM01._LEN, PLEN)
 
 	// MMIO Low is saved in NVS
-	Store (\MMOB, PMIN)
-	Store (\MMOL, PMAX)
-	Add (Subtract (PMAX, PMIN), 1, PLEN)
+	PMIN = \MMOB
+	PMAX = \MMOL
+	PLEN = PMAX - PMIN + 1
 
 	// Find PCI resource area in MCRS
 	CreateQWordField(MCRS, ^PM02._MIN, P2MN)
@@ -107,9 +107,9 @@ Method (_CRS, 0, Serialized)
 	CreateQWordField(MCRS, ^PM02._LEN, P2LN)
 
 	// MMIO High is saved in NVS
-	Store(\MMHB, P2MN)
-	Store(\MMHL, P2MX)
-	Add(Subtract(P2MX,P2MN),1,P2LN)
+	P2MN = \MMHB
+	P2MX = \MMHL
+	P2LN = P2MX - P2MN +1
 
 	Return (MCRS)
 }	// End _CRS
@@ -132,9 +132,9 @@ Device (PDRC)
 	{
 		// Fix up 32-bit TSEG
 		CreateDWordField(PDRS, ^TSMB._BAS, TSMN)
-		Store(\TSGB, TSMN)
+		TSMN = \TSGB
 		CreateDWordField(PDRS, ^TSMB._LEN, TSLN)
-		Store(\TSSZ, TSLN)
+		TSLN = \TSSZ
 		Return(PDRS)
 	}
 }

@@ -112,9 +112,7 @@ chip soc/intel/tigerlake
 		end
 		device pci 14.1 alias south_xdci off end
 		device pci 14.2 alias shared_ram off end
-		chip drivers/wifi/generic
-			device pci 14.3 alias cnvi_wifi off end
-		end
+		device pci 14.3 alias cnvi_wifi off end
 		device pci 15.0 alias i2c0 off end
 		device pci 15.1 alias i2c1 off end
 		device pci 15.2 alias i2c2 off end

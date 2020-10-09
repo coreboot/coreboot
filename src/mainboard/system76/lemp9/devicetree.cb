@@ -86,10 +86,12 @@ chip soc/intel/cannonlake
 			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
 		end
 		device pci 14.1 off end # USB xDCI (OTG)
-		chip drivers/wifi/generic # CNVi wifi
-			register "wake" = "GPE0_PME_B0"
-			device pci 14.3 on end
-		end
+		device pci 14.3 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end # CNVi wifi
 		device pci 14.5 off end # SDCard
 		device pci 15.0 on
 			chip drivers/i2c/hid

@@ -80,10 +80,12 @@ chip soc/intel/cannonlake
 	register "sdcard_cd_gpio" = "GPP_G5"
 
 	device domain 0 on
-		chip drivers/wifi/generic
-			register "wake" = "PME_B0_EN_BIT"
-			device pci 14.3 on  end # CNVi wifi
-		end
+		device pci 14.3 on
+			chip drivers/wifi/generic
+				register "wake" = "PME_B0_EN_BIT"
+				device generic 0 on end
+			end
+		end # CNVi wifi
 		device pci 14.5 on  end # SDCard
 		device pci 15.0 on  end # I2C #0
 		device pci 15.1 on  end # I2C #1

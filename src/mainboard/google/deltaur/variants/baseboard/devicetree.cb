@@ -242,10 +242,12 @@ chip soc/intel/tigerlake
 		device pci 14.1 off end # USB 3.2 1x1 xDCI HC
 		device pci 14.2 on end # Shared SRAM
 
-		chip drivers/wifi/generic
-			register "wake" = "GPE0_PME_B0"
-			device pci 14.3 on  end # CNVi WiFi
-		end
+		device pci 14.3 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end # CNVi WiFi
 
 		device pci 15.0 on  end # I2C #0
 		device pci 15.1 on  end # I2C #1

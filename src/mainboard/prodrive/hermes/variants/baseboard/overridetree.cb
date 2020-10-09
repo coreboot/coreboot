@@ -164,10 +164,12 @@ chip soc/intel/cannonlake
 		device pci 02.0 on      # Integrated Graphics Device
 			register "InternalGfx" = "1"
 		end
-		chip drivers/wifi/generic
-			register "wake" = "PME_B0_EN_BIT"
-			device pci 14.3 on  end # CNVi wifi
-		end
+		device pci 14.3 on
+			chip drivers/wifi/generic
+				register "wake" = "PME_B0_EN_BIT"
+				device generic 0 on end
+			end
+		end  # CNVi wifi
 
 		# This device does not have any function on CNP-H, but it needs
 		# to be here so that the resource allocator is aware of UART 2.

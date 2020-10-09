@@ -23,10 +23,7 @@ cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += partitioned_file.o
 # COMMONLIB
-cbfsobj += cbfs.o
 cbfsobj += fsp_relocate.o
-cbfsobj += mem_pool.o
-cbfsobj += region.o
 # FMAP
 cbfsobj += fmap.o
 cbfsobj += kv_pair.o
@@ -72,10 +69,6 @@ ifitobj += partitioned_file.o
 ifitobj += cbfs-mkstage.o
 ifitobj += cbfs-mkpayload.o
 ifitobj += rmodule.o
-# COMMONLIB
-ifitobj += cbfs.o
-ifitobj += mem_pool.o
-ifitobj += region.o
 # FMAP
 ifitobj += fmap.o
 ifitobj += kv_pair.o
@@ -205,10 +198,6 @@ $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-redundant-decls
 $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
-# Tolerate commonlib warnings
-$(objutil)/cbfstool/region.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
-$(objutil)/cbfstool/cbfs.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
-$(objutil)/cbfstool/mem_pool.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 # Tolerate lz4 warnings
 $(objutil)/cbfstool/lz4.o: TOOLCFLAGS += -Wno-missing-prototypes
 $(objutil)/cbfstool/lz4_wrapper.o: TOOLCFLAGS += -Wno-attributes

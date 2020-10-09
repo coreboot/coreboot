@@ -12,12 +12,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/**
- * fw_config_get() - Provide firmware configuration value.
- *
- * Return 64bit firmware configuration value determined for the system.
- */
-static uint64_t fw_config_get(void)
+uint64_t fw_config_get(void)
 {
 	static uint64_t fw_config_value;
 	static bool fw_config_value_initialized;

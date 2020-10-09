@@ -33,6 +33,13 @@ struct fw_config {
 #if CONFIG(FW_CONFIG)
 
 /**
+ * fw_config_get() - Provide firmware configuration value.
+ *
+ * Return 64bit firmware configuration value determined for the system.
+ */
+uint64_t fw_config_get(void);
+
+/**
  * fw_config_probe() - Check if field and option matches.
  * @match: Structure containing field and option to probe.
  *

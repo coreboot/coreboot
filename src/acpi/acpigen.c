@@ -1865,7 +1865,7 @@ int __weak acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
  *
  * Returns 0 on success and -1 on error.
  */
-int acpigen_enable_tx_gpio(struct acpi_gpio *gpio)
+int acpigen_enable_tx_gpio(const struct acpi_gpio *gpio)
 {
 	if (gpio->active_low)
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
@@ -1873,7 +1873,7 @@ int acpigen_enable_tx_gpio(struct acpi_gpio *gpio)
 		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
 }
 
-int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
+int acpigen_disable_tx_gpio(const struct acpi_gpio *gpio)
 {
 	if (gpio->active_low)
 		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
@@ -1881,7 +1881,7 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
 }
 
-void acpigen_get_rx_gpio(struct acpi_gpio *gpio)
+void acpigen_get_rx_gpio(const struct acpi_gpio *gpio)
 {
 	acpigen_soc_read_rx_gpio(gpio->pins[0]);
 
@@ -1889,7 +1889,7 @@ void acpigen_get_rx_gpio(struct acpi_gpio *gpio)
 		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
 }
 
-void acpigen_get_tx_gpio(struct acpi_gpio *gpio)
+void acpigen_get_tx_gpio(const struct acpi_gpio *gpio)
 {
 	acpigen_soc_get_tx_gpio(gpio->pins[0]);
 

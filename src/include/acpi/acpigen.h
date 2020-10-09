@@ -499,8 +499,8 @@ int acpigen_soc_clear_tx_gpio(unsigned int gpio_num);
  *
  * Returns 0 on success and -1 on error.
  */
-int acpigen_enable_tx_gpio(struct acpi_gpio *gpio);
-int acpigen_disable_tx_gpio(struct acpi_gpio *gpio);
+int acpigen_enable_tx_gpio(const struct acpi_gpio *gpio);
+int acpigen_disable_tx_gpio(const struct acpi_gpio *gpio);
 
 /*
  *  Helper function for getting a RX GPIO value based on the GPIO polarity.
@@ -508,7 +508,7 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio);
  *  This function ends up calling acpigen_soc_get_rx_gpio to make callbacks
  *  into SoC acpigen code
  */
-void acpigen_get_rx_gpio(struct acpi_gpio *gpio);
+void acpigen_get_rx_gpio(const struct acpi_gpio *gpio);
 
 /*
  *  Helper function for getting a TX GPIO value based on the GPIO polarity.
@@ -516,7 +516,7 @@ void acpigen_get_rx_gpio(struct acpi_gpio *gpio);
  *  This function ends up calling acpigen_soc_get_tx_gpio to make callbacks
  *  into SoC acpigen code
  */
-void acpigen_get_tx_gpio(struct acpi_gpio *gpio);
+void acpigen_get_tx_gpio(const struct acpi_gpio *gpio);
 
 /* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */
 void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran,

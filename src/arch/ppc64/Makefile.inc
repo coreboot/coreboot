@@ -12,7 +12,6 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_PPC64),y)
 bootblock-y = bootblock_crt0.S
 bootblock-y += arch_timer.c
 bootblock-y += boot.c
-bootblock-y += rom_media.c
 bootblock-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -38,7 +37,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_PPC64),y)
 romstage-y += arch_timer.c
 romstage-y += boot.c
 romstage-y += stages.c
-romstage-y += rom_media.c
 romstage-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \
@@ -64,7 +62,6 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_RAMSTAGE_PPC64),y)
 
-ramstage-y += rom_media.c
 ramstage-y += stages.c
 ramstage-y += arch_timer.c
 ramstage-y += boot.c

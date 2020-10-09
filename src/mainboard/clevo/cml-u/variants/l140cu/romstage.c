@@ -4,17 +4,14 @@
 #include <soc/romstage.h>
 
 static const struct cnl_mb_cfg memcfg = {
-	/* Parameters required to access SPD for CH0D0/CH0D1/CH1D0/CH1D1. */
 	.spd[0] = {
 		.read_type = READ_SPD_CBFS,
 		.spd_spec = {.spd_index = 0},
 	},
-	.spd[1] = {.read_type = NOT_EXISTING},
 	.spd[2] = {
 		.read_type = READ_SMBUS,
 		.spd_spec = {.spd_smbus_address = 0xa4},
 	},
-	.spd[3] = {.read_type = NOT_EXISTING},
 
 	/*
 	 * For each channel, there are 3 sets of DQ byte mappings,

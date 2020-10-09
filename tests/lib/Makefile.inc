@@ -5,6 +5,7 @@ tests-y += b64_decode-test
 tests-y += hexstrtobin-test
 tests-y += imd-test
 tests-y += timestamp-test
+tests-y += edid-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -24,3 +25,8 @@ timestamp-test-srcs += tests/lib/timestamp-test.c
 timestamp-test-srcs += tests/stubs/timestamp.c
 timestamp-test-srcs += tests/stubs/console.c
 timestamp-test-stage := romstage
+
+edid-test-srcs += tests/lib/edid-test.c
+edid-test-srcs += src/lib/edid.c
+edid-test-srcs += tests/stubs/console.c
+

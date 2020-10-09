@@ -27,13 +27,13 @@ Device (EMMC)
 	 */
 	Method (_DSM, 4)
 	{
-		If (LEqual (Arg0, ^UUID)) {
+		If (Arg0 == ^UUID) {
 			/*
 			 * Function 9: Device Readiness Durations
 			 * Returns a package of five integers covering
 			 * various device related delay in PCIe Base Spec.
 			 */
-			If (LEqual (Arg2, 9)) {
+			If (Arg2 == 9) {
 				/*
 				 * Function 9 support for revision 3.
 				 * ECN link for function definitions
@@ -41,7 +41,7 @@ Device (EMMC)
 				 * specification_documents/
 				 * ECN_fw_latency_optimization_final.pdf]
 				 */
-				If (LEqual (Arg1, 3)) {
+				If (Arg1 == 3) {
 					/*
 					 * Integer 0: FW reset time.
 					 * Integer 1: FW data link up time.
@@ -64,7 +64,7 @@ Device (EMMC)
 	Method (_PS0, 0, Serialized)
 	{
 		/* Disable Power Gate */
-		Store (0, ^PGEN)
+		^PGEN = 0
 
 		/* Clear bits 31, 6, 2, 0 */
 		^^PCRA (PID_SCS, 0x600, 0x7FFFFFBA)
@@ -74,18 +74,18 @@ Device (EMMC)
 		^^PCRO (PID_SCS, 0x600, 0x80000045)
 
 		/* Set Power State to D0 */
-		And (PMCR, 0xFFFC, PMCR)
-		Store (PMCR, ^TEMP)
+		PMCR &= 0xFFFC
+		^TEMP = PMCR
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
 		/* Enable Power Gate */
-		Store (1, ^PGEN)
+		^PGEN = 1
 
 		/* Set Power State to D3 */
-		Or (PMCR, 0x0003, PMCR)
-		Store (PMCR, ^TEMP)
+		PMCR |= 0x0003
+		^TEMP = PMCR
 	}
 
 	Device (CARD)
@@ -126,7 +126,7 @@ Device (SDXC)
 		^^PCRA (PID_GPIOCOM3, 0x4f4, 0xFFFFEFFF)
 
 		/* Disable Power Gate */
-		Store (0, ^PGEN)
+		^PGEN = 0
 
 		/* Clear bits 8, 7, 2, 0 */
 		^^PCRA (PID_SCS, 0x600, 0xFFFFFE7A)
@@ -136,18 +136,18 @@ Device (SDXC)
 		^^PCRO (PID_SCS, 0x600, 0x00000185)
 
 		/* Set Power State to D0 */
-		And (PMCR, 0xFFFC, PMCR)
-		Store (PMCR, ^TEMP)
+		PMCR &= 0xFFFC
+		^TEMP = PMCR
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
 		/* Enable Power Gate */
-		Store (1, ^PGEN)
+		^PGEN = 1
 
 		/* Set Power State to D3 */
-		Or (PMCR, 0x0003, PMCR)
-		Store (PMCR, ^TEMP)
+		PMCR |= 0x0003
+		^TEMP = PMCR
 
 		/* Enable 20K pull-down on CLK, CMD and DAT lines */
 		^^PCRO (PID_GPIOCOM3, 0x4c4, 0x00001000)

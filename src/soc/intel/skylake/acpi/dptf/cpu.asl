@@ -17,7 +17,7 @@ Device (B0D4)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -35,7 +35,7 @@ Device (B0D4)
 
 	Method (SPPC, 1)
 	{
-		Store (Arg0, \PPCM)
+		\PPCM = Arg0
 
 		/* Notify OS to re-read _PPC limit on each CPU */
 		\PPCN ()
@@ -60,8 +60,8 @@ Device (B0D4)
 		If (CondRefOf (\_SB.MPDL)) {
 			Return (\_SB.MPDL)
 		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
-			Store (SizeOf (\_SB.CP00._PSS), Local0)
-			Decrement (Local0)
+			Local0 = SizeOf (\_SB.CP00._PSS)
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)

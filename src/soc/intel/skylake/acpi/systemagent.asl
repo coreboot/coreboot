@@ -203,7 +203,7 @@ Method (_CRS, 0, Serialized)
 		Local0 = \_SB.PCI0.MCHC.TOM & (0x7ffff << 20)
 	}
 
-	Store (Local0, PMIN)
+	PMIN = Local0
 	PLEN = (PMAX - PMIN) + 1
 
 	/* Patch PM02 range based on Memory Size */

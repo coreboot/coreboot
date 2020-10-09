@@ -58,17 +58,18 @@ Device (GPIO)
 	Method (GWAK, 1, Serialized)
 	{
 		// Local0 = GPIO Base Address
-		Store (GPBS & ~1, Local0)
+		Local0 = GPBS & ~1
 
 		// Local1 = BANK, Local2 = OFFSET
-		Divide (Arg0, 32, Local2, Local1)
+		Local2 = Arg0 % 32
+		Local1 = Arg0 / 32
 
 		//
 		// Set OWNER to ACPI
 		//
 
 		// Local3 = GPIOBASE + GPIO_OWN(BANK)
-		Store (Local0 + Local1 * 4, Local3)
+		Local3 = Local0 + (Local1 * 4)
 
 		// GPIO_OWN(BANK)
 		OperationRegion (IOWN, SystemIO, Local3, 4)
@@ -77,14 +78,14 @@ Device (GPIO)
 		}
 
 		// GPIO_OWN[GPIO] = 0 (ACPI)
-		Store (GOWN & ~(1 << Local2), GOWN)
+		GOWN = GOWN & ~(1 << Local2)
 
 		//
 		// Set ROUTE to SCI
 		//
 
 		// Local3 = GPIOBASE + GPIO_ROUTE(BANK)
-		Store (Local0 + 0x30 + Local1 * 4, Local3)
+		Local3 = Local0 + 0x30  + (Local1 * 4)
 
 		// GPIO_ROUTE(BANK)
 		OperationRegion (IROU, SystemIO, Local3, 4)
@@ -93,14 +94,14 @@ Device (GPIO)
 		}
 
 		// GPIO_ROUTE[GPIO] = 0 (SCI)
-		Store (GROU & ~(1 << Local2), GROU)
+		GROU = GROU & ~(1 << Local2)
 
 		//
 		// Set GPnCONFIG to GPIO|INPUT|INVERT
 		//
 
 		// Local3 = GPIOBASE + GPnCONFIG0(GPIO)
-		Store (Local0 + 0x100 + Arg0 * 8, Local3)
+		Local3 = Local0 + 0x100 + (Arg0 * 8)
 
 		// GPnCONFIG(GPIO)
 		OperationRegion (GPNC, SystemIO, Local3, 8)

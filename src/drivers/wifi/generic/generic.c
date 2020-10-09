@@ -170,7 +170,6 @@ static void emit_sar_acpi_structures(const struct device *dev)
 static void wifi_generic_fill_ssdt(const struct device *dev)
 {
 	const char *path;
-	u32 address;
 	const struct drivers_wifi_generic_config *config = dev->chip_info;
 
 	if (!dev->enabled)
@@ -189,10 +188,7 @@ static void wifi_generic_fill_ssdt(const struct device *dev)
 		acpigen_write_name_string("_DDN", dev->chip_ops->name);
 
 	/* Address */
-	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
-	address <<= 16;
-	address |= PCI_FUNC(dev->path.pci.devfn) & 0xffff;
-	acpigen_write_name_dword("_ADR", address);
+	acpigen_write_ADR_pci_device(dev);
 
 	/* Wake capabilities */
 	if (config)

@@ -429,7 +429,7 @@ void acpigen_write_rom(void *bios, const size_t length);
  * This function takes input region name, region space, region offset & region
  * length.
  */
-void acpigen_write_opregion(struct opregion *opreg);
+void acpigen_write_opregion(const struct opregion *opreg);
 /*
  * Generate ACPI AML code for Mutex
  * This function takes mutex name and initial value.

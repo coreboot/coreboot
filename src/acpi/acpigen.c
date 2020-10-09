@@ -408,7 +408,7 @@ void acpigen_write_processor_cnot(const unsigned int number_of_cores)
  * len is region length.
  * OperationRegion(regionname, regionspace, regionoffset, regionlength)
  */
-void acpigen_write_opregion(struct opregion *opreg)
+void acpigen_write_opregion(const struct opregion *opreg)
 {
 	/* OpregionOp */
 	acpigen_emit_ext_op(OPREGION_OP);

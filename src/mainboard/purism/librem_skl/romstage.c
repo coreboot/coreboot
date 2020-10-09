@@ -3,37 +3,30 @@
 #include <assert.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>
+#include <stdint.h>
 #include <string.h>
-
-static void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
-{
-	/* Rcomp resistor */
-	const u16 RcompResistor[3] = { 121, 81, 100 };
-	memcpy(rcomp_ptr, RcompResistor, sizeof(RcompResistor));
-}
-
-static void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
-{
-	/* Rcomp target */
-	const u16 RcompTarget[5] = { 100, 40, 20, 20, 26 };
-	memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
-}
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	FSP_M_CONFIG *mem_cfg;
+	const u16 rcomp_resistors[3] = { 121, 81, 100 };
+
+	const u16 rcomp_targets[5] = { 100, 40, 20, 20, 26 };
+
+	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
+
 	struct spd_block blk = {
 		.addr_map = { 0x50 },
 	};
 
-	mem_cfg = &mupd->FspmConfig;
+	assert(sizeof(mem_cfg->RcompResistor) == sizeof(rcomp_resistors));
+	assert(sizeof(mem_cfg->RcompTarget)   == sizeof(rcomp_targets));
 
 	get_spd_smbus(&blk);
 	dump_spd_info(&blk);
 	assert(blk.spd_array[0][0] != 0);
 
-	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
-	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
+	memcpy(mem_cfg->RcompResistor, rcomp_resistors, sizeof(mem_cfg->RcompResistor));
+	memcpy(mem_cfg->RcompTarget,   rcomp_targets,   sizeof(mem_cfg->RcompTarget));
 
 	mem_cfg->DqPinsInterleaved = TRUE;
 	mem_cfg->MemorySpdDataLen = blk.len;

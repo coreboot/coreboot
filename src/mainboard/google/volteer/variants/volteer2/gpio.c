@@ -29,6 +29,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* A23 : I2S1_SCLK ==> I2S1_SPKR_SCLK */
 	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
 
+	/* B2  : VRALERT# ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_B2, 1, DEEP),
 	/* B3  : CPU_GP2 ==> PEN_DET_ODL */
 	PAD_CFG_GPI(GPP_B3, NONE, DEEP),
 	/* B5  : ISH_I2C0_CVF_SDA */

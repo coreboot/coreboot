@@ -13,6 +13,7 @@
 #include <drivers/intel/pmc_mux/chip.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/pmc_ipc.h>
 #include <intelblocks/rtc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -118,6 +119,10 @@ static void soc_pmc_fill_ssdt(const struct device *dev)
 	acpigen_write_resourcetemplate_header();
 	acpigen_write_mem32fixed(1, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE);
 	acpigen_write_resourcetemplate_footer();
+
+	/* Define IPC Write Method */
+	if (CONFIG(PMC_IPC_ACPI_INTERFACE))
+		pmc_ipc_acpi_fill_ssdt();
 
 	acpigen_pop_len(); /* PMC Device */
 	acpigen_pop_len(); /* Scope */

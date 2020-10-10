@@ -4,6 +4,34 @@ chip soc/intel/alderlake
 		device lapic 0 on end
 	end
 
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	# FSP configuration
+	# Enable Speed Shift Technology/HWP support
+	register "speed_shift_enable" = "1"
+
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-C Port2
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port4
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# FPS connector
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port1
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port2
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port3
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WLAN
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port3
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
+
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
@@ -40,6 +68,101 @@ chip soc/intel/alderlake
 
 	# Mark LAN CLK pins as unused as GbE 0:0x1f.6 is disabled below
 	register "PcieClkSrcUsage[6]" = "0xff"
+
+	register "SataSalpSupport" = "1"
+
+	register "SataPortsEnable" = "{
+		[0]  = 1,
+		[1]  = 1,
+		[2]  = 1,
+		[3]  = 1,
+	}"
+
+	register "SataPortsDevSlp" = "{
+		[0]  = 1,
+		[1]  = 1,
+		[2]  = 1,
+		[3]  = 1,
+	}"
+
+	# Enable EDP in PortA
+	register "DdiPortAConfig" = "1"
+	register "DdiPortBConfig" = "1"
+
+	# TCSS USB3
+	register "TcssAuxOri" = "0"
+
+	register "s0ix_enable" = "1"
+
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+	}"
+
+	register "SerialIoGSpiMode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
+	}"
+
+	register "SerialIoGSpiCsMode" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+		[PchSerialIoIndexGSPI3] = 0,
+	}"
+
+	register "SerialIoGSpiCsState" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+		[PchSerialIoIndexGSPI3] = 0,
+	}"
+
+	register "SerialIoUartMode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# HD Audio
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaAudioLinkHdaEnable" = "0"
+	register "PchHdaAudioLinkDmicEnable[0]" = "1"
+	register "PchHdaAudioLinkDmicEnable[1]" = "1"
+	register "PchHdaAudioLinkSndwEnable[0]" = "1"
+	register "PchHdaAudioLinkSndwEnable[1]" = "1"
+	# iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T
+	register "PchHdaIDispLinkTmode" = "2"
+	# iDisp-Link Freq 4: 96MHz, 3: 48MHz.
+	register "PchHdaIDispLinkFrequency" = "4"
+	# Not disconnected/enumerable
+	register "PchHdaIDispCodecDisconnect" = "0"
+
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
 
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
@@ -107,7 +230,7 @@ chip soc/intel/alderlake
 		device pci 17.0 on  end # SATA
 		device pci 19.0 off end # I2C4
 		device pci 19.1 on  end # I2C5
-		device pci 19.2 on  end # UART2
+		device pci 19.2 off end # UART2
 		device pci 1c.0 on  end # RP1
 		device pci 1c.1 off end # RP2
 		device pci 1c.2 off end # RP3
@@ -120,9 +243,9 @@ chip soc/intel/alderlake
 		device pci 1d.1 off end # RP10
 		device pci 1d.2 off end # RP11
 		device pci 1d.3 off end # RP12
-		device pci 1e.0 off end # UART0
+		device pci 1e.0 on  end # UART0
 		device pci 1e.1 off end # UART1
-		device pci 1e.2 off end # GSPI0
+		device pci 1e.2 on  end # GSPI0
 		device pci 1e.3 off end # GSPI1
 		device pci 1f.0 on  end # eSPI
 		device pci 1f.1 on  end # P2SB

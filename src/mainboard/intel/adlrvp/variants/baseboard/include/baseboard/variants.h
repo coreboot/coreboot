@@ -20,7 +20,8 @@ enum adl_boardid {
 /* The next set of functions return the gpio table and fill in the number of
  * entries for each table. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);
-
+/* Functions to configure GPIO as per variant schematics */
+void variant_configure_gpio_pads(void);
 void variant_configure_early_gpio_pads(void);
 
 size_t variant_memory_sku(void);

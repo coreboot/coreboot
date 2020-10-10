@@ -3,6 +3,8 @@ chip soc/intel/cannonlake
 	# Auto-switch between X4 NVMe and X2 NVMe.
 	register "TetonGlacierMode" = "1"
 
+	register "SataPortsEnable[0]" = "1"
+
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,

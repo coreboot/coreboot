@@ -33,7 +33,4 @@ DefinitionBlock(
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
-	// Mainboard specific
-	#include "acpi/mainboard.asl"
 }

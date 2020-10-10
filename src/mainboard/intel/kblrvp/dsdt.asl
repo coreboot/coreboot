@@ -41,7 +41,4 @@ DefinitionBlock(
 #endif
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
-	// Mainboard specific
-	#include "acpi/mainboard.asl"
 }

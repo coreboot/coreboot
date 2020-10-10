@@ -49,9 +49,6 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	/* Mainboard specific */
-	#include "acpi/mainboard.asl"
-
 	/* Camera */
 	#include "acpi/mipi_camera.asl"
 }

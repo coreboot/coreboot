@@ -21,6 +21,14 @@
 
 #define PMC_IPC_CMD_NO_MSI		0
 
+/* IPC command to enable/disable PCIe SRCCLK */
+#define PMC_IPC_CMD_ID_SET_PCIE_CLOCK	0xAC
+
+/* IPC return values */
+#define PMC_IPC_SUCCESS			0
+#define PMC_IPC_ERROR			1
+#define PMC_IPC_TIMEOUT			2
+
 /*
  * Create the IPC CMD to send to PMC
  */
@@ -45,5 +53,30 @@ struct pmc_ipc_buffer {
  */
 enum cb_err pmc_send_ipc_cmd(uint32_t cmd, const struct pmc_ipc_buffer *wbuf,
 			     struct pmc_ipc_buffer *rbuf);
+
+/*
+ * Provides an ACPI method in the SSDT to read/write to the IPC mailbox which is
+ * defined in the PMC device MMIO address space.
+ *
+ * One possible use of this method is to to enable/disable the clock for a
+ * particular PCIe root port at runtime when the device is in D3 state.
+ *
+ * The ACPI method takes 7 arguments:
+ *  IPCW (COMMAND, SUB_ID, SIZE, DATA0, DATA1, DATA2, DATA3)
+ *
+ * And will return a package with 5 elements:
+ *  0    = Return code
+ *         PMC_IPC_SUCCESS
+ *         PMC_IPC_ERROR
+ *         PMC_IPC_TIMEOUT
+ *  1..4 = Data read from IPC if return code is PMC_IPC_SUCCESS
+ */
+void pmc_ipc_acpi_fill_ssdt(void);
+
+/*
+ * Call the ACPI method to write to the IPC mailbox and enable/disable the
+ * specified clock pin connected to the specified PCIe root port.
+ */
+void pmc_ipc_acpi_set_pci_clock(unsigned int pcie_rp, unsigned int clock_pin, bool enable);
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PMC_IPC_H */

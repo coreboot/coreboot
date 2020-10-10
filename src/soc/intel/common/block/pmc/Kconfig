@@ -22,6 +22,14 @@ config PMC_INVALID_READ_AFTER_WRITE
 	  Enable this for PMC devices where a read back of ACPI BAR and
 	  IO access bit does not return the previously written value.
 
+config PMC_IPC_ACPI_INTERFACE
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	  Enable this to have the PMC IPC mailbox ACPI interface added
+	  to the SSDT for use by other drivers.
+
 config PMC_GLOBAL_RESET_ENABLE_LOCK
 	bool
 	help

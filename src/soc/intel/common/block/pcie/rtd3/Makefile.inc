@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_PCIE_RTD3) += rtd3.c

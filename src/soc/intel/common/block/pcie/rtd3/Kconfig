@@ -1,0 +1,9 @@
+config SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	select PMC_IPC_ACPI_INTERFACE
+	help
+	   When enabled, this driver will add support for ACPI controlled
+	   Runtime D3 using GPIOs for power/reset control of the device
+	   attached to a PCIe root port.

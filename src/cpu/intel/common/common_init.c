@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/intel/msr.h>
 #include <cpu/x86/msr.h>
 #include "common.h"
 
@@ -262,5 +263,24 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 		msr.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
 		msr.addrl       = 1;
 		config->regs[CPPC_AUTO_SELECT] = msr;
+	}
+}
+
+/*
+ * Lock AES-NI feature (MSR_FEATURE_CONFIG) to prevent unintended disabling
+ * as suggested in Intel document 325384-070US.
+ */
+void set_aesni_lock(void)
+{
+	msr_t msr;
+
+	/* Only run once per core as specified in the MSR datasheet */
+	if (intel_ht_sibling())
+		return;
+
+	msr = rdmsr(MSR_FEATURE_CONFIG);
+	if ((msr.lo & 1) == 0) {
+		msr.lo |= 1;
+		wrmsr(MSR_FEATURE_CONFIG, msr);
 	}
 }

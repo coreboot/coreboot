@@ -405,44 +405,6 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 	}
 }
 
-static void xeonsp_constrain_pci_resources(struct device *dev, struct resource *res, void *data)
-{
-	STACK_RES *stack = (STACK_RES *) data;
-	if (!(res->flags & IORESOURCE_FIXED))
-		return;
-
-	uint64_t base, limit;
-	if (res->flags & IORESOURCE_IO) {
-		base = stack->PciResourceIoBase;
-		limit = stack->PciResourceIoLimit;
-	} else if ((res->flags & IORESOURCE_MEM) && (res->flags & IORESOURCE_PCI64)) {
-		base = stack->PciResourceMem64Base;
-		limit = stack->PciResourceMem64Limit;
-	} else {
-		base = stack->PciResourceMem32Base;
-		limit = stack->PciResourceMem32Limit;
-	}
-
-	if (((res->base + res->size - 1) < base) || (res->base > limit)) /* outside window */
-		return;
-
-	if (res->limit > limit) /* resource end is out of limit */
-		limit = res->base - 1;
-	else
-		base = res->base + res->size;
-
-	if (res->flags & IORESOURCE_IO) {
-		stack->PciResourceIoBase = base;
-		stack->PciResourceIoLimit = limit;
-	} else if ((res->flags & IORESOURCE_MEM) && (res->flags & IORESOURCE_PCI64)) {
-		stack->PciResourceMem64Base = base;
-		stack->PciResourceMem64Limit = limit;
-	} else {
-		stack->PciResourceMem32Base = base;
-		stack->PciResourceMem32Limit = limit;
-	}
-}
-
 static void xeonsp_pci_domain_read_resources(struct device *dev)
 {
 	struct bus *link;
@@ -464,18 +426,21 @@ static void xeonsp_pci_domain_read_resources(struct device *dev)
 	for (link = dev->link_list; link; link = link->next)
 		xeonsp_pci_dev_iterator(link, xeonsp_reset_pci_op, NULL, NULL);
 
-	/*
-	 * 1. group devices, resources for each stack
-	 * 2. order resources in descending order of requested resource allocation sizes
-	 */
 	struct iiostack_resource stack_info = {0};
-	get_iiostack_info(&stack_info);
-
-	/* constrain stack window */
-	for (link = dev->link_list; link; link = link->next) {
-		STACK_RES *stack = find_stack_for_bus(&stack_info, link->secondary);
-		assert(stack != 0);
-		xeonsp_pci_dev_iterator(link, NULL, xeonsp_constrain_pci_resources, stack);
+	uint8_t pci64bit_alloc_flag = get_iiostack_info(&stack_info);
+	if (!pci64bit_alloc_flag) {
+		/*
+		 * Split 32 bit address space between prefetchable and
+		 * non-prefetchable windows
+		 */
+		for (int s = 0; s < stack_info.no_of_stacks; ++s) {
+			STACK_RES *res = &stack_info.res[s];
+			uint64_t length = (res->PciResourceMem32Limit -
+				res->PciResourceMem32Base + 1)/2;
+			res->PciResourceMem64Limit = res->PciResourceMem32Limit;
+			res->PciResourceMem32Limit = (res->PciResourceMem32Base + length - 1);
+			res->PciResourceMem64Base = res->PciResourceMem32Limit + 1;
+		}
 	}
 
 	/* assign resources */

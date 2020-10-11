@@ -5,6 +5,15 @@ config DRIVERS_WIFI_GENERIC
 	  When enabled, add identifiers in ACPI tables that are common
 	  to WiFi chipsets from multiple vendors.
 
+config DRIVERS_INTEL_WIFI
+	bool "Support Intel PCI-e WiFi adapters"
+	depends on PCI
+	default y if PCIEXP_PLUGIN_SUPPORT
+	select DRIVERS_WIFI_GENERIC
+	help
+	   When enabled, add identifiers in ACPI and SMBIOS tables to
+	   make OS drivers work with certain Intel PCI-e WiFi chipsets.
+
 if DRIVERS_WIFI_GENERIC
 
 config USE_SAR

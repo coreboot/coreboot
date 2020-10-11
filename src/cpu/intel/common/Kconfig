@@ -19,6 +19,14 @@ config SET_IA32_FC_LOCK_BIT
 	  However, leaving the lock bit unset will break Windows' detection of
 	  VMX support and built-in virtualization features like Hyper-V.
 
+config SET_MSR_AESNI_LOCK_BIT
+	bool "Lock the AES-NI enablement state"
+	default y
+	help
+	  This config sets the AES-NI lock bit, if available, to prevent any
+	  further change of AES-NI enablement. This may be disabled for e.g.
+	  testing or debugging.
+
 config CPU_INTEL_COMMON_TIMEBASE
 	bool
 

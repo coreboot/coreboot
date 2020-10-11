@@ -270,6 +270,9 @@ void set_aesni_lock(void)
 {
 	msr_t msr;
 
+	if (!CONFIG(SET_MSR_AESNI_LOCK_BIT))
+		return;
+
 	if (cpu_get_feature_flags_ecx() & CPUID_AES)
 		return;
 

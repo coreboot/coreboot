@@ -9,4 +9,6 @@
 #define  AESNI_DISABLE		(1 << 1)
 #define  AESNI_LOCK		(1 << 0)
 
+#define MSR_PIC_MSG_CONTROL	0x2e
+
 #endif /* CPU_INTEL_MSR_H */

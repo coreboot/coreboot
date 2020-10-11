@@ -148,15 +148,6 @@ static void configure_misc(void)
 	wrmsr(IA32_THERM_INTERRUPT, msr);
 }
 
-static void enable_lapic_tpr(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(MSR_PIC_MSG_CONTROL);
-	msr.lo &= ~(1 << 10);	/* Enable APIC TPR updates */
-	wrmsr(MSR_PIC_MSG_CONTROL, msr);
-}
-
 static void set_max_ratio(void)
 {
 	msr_t msr, perf_ctl;

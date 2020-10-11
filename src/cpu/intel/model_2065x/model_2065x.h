@@ -15,7 +15,6 @@
 #define IA32_FERR_CAPABILITY		0x1f1
 #define   FERR_ENABLE			(1 << 0)
 
-#define MSR_PIC_MSG_CONTROL		0x2e
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
 

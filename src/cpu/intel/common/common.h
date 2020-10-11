@@ -33,4 +33,10 @@ bool intel_ht_sibling(void);
  */
 void set_aesni_lock(void);
 
+void enable_lapic_tpr(void);
+
+void configure_dca_cap(void);
+
+void set_energy_perf_bias(u8 policy);
+
 #endif

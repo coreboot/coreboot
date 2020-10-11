@@ -5,7 +5,6 @@
 
 #include <intelblocks/msr.h>
 
-#define MSR_PIC_MSG_CONTROL		0x2e
 #define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)

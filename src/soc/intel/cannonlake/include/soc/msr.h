@@ -5,7 +5,6 @@
 
 #include <intelblocks/msr.h>
 
-#define MSR_PIC_MSG_CONTROL		0x2e
 #define MSR_VR_CURRENT_CONFIG		0x601
 #define MSR_PL3_CONTROL			0x615
 #define MSR_VR_MISC_CONFIG2		0x636

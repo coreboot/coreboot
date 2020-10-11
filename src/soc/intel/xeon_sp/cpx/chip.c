@@ -488,9 +488,11 @@ static void xeonsp_cpx_pci_domain_set_resources(struct device *dev)
 	DEV_FUNC_EXIT(dev);
 }
 
+/* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
-	/* not implemented yet */
+
+	mainboard_silicon_init_params(silupd);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)

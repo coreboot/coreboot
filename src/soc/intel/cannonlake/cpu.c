@@ -199,6 +199,8 @@ void soc_core_init(struct device *cpu)
 	/* Configure Intel Speed Shift */
 	configure_isst();
 
+	set_aesni_lock();
+
 	/* Enable ACPI Timer Emulation via MSR 0x121 */
 	enable_pm_timer_emulation();
 

@@ -32,4 +32,36 @@
 #define cpuid(fn, eax, ebx, ecx, edx) \
 	asm("cpuid" : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx) : "0"(fn))
 
+#define _declare_cpuid(reg)					\
+	static inline unsigned int cpuid_##reg(unsigned int fn)	\
+	{							\
+		unsigned int eax, ebx, ecx, edx;		\
+		cpuid(fn, eax, ebx, ecx, edx);			\
+		return reg;					\
+	}
+
+_declare_cpuid(eax)
+_declare_cpuid(ebx)
+_declare_cpuid(ecx)
+_declare_cpuid(edx)
+
+#undef _declare_cpuid
+
+static inline unsigned int cpuid_max(void)
+{
+	return cpuid_eax(0);
+}
+
+static inline unsigned int cpuid_family(void)
+{
+	const unsigned int eax = cpuid_eax(1);
+	return (eax & 0xff00000) >> (20 - 4) | (eax & 0xf00) >> 8;
+}
+
+static inline unsigned int cpuid_model(void)
+{
+	const unsigned int eax = cpuid_eax(1);
+	return (eax & 0xf0000) >> (16 - 4) | (eax & 0xf0) >> 4;
+}
+
 #endif

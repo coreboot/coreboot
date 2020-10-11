@@ -270,6 +270,9 @@ void set_aesni_lock(void)
 {
 	msr_t msr;
 
+	if (cpu_get_feature_flags_ecx() & CPUID_AES)
+		return;
+
 	/* Only run once per core as specified in the MSR datasheet */
 	if (intel_ht_sibling())
 		return;

@@ -9,6 +9,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/common/common.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
@@ -59,12 +60,7 @@ static void denverton_core_init(struct device *cpu)
 	msr.lo |= FAST_STRINGS_ENABLE_BIT;
 	wrmsr(IA32_MISC_ENABLE, msr);
 
-	/* Lock AES-NI only if supported */
-	if (cpuid_ecx(1) & (1 << 25)) {
-		msr = rdmsr(MSR_FEATURE_CONFIG);
-		msr.lo |= FEATURE_CONFIG_LOCK;		/* Lock AES-NI */
-		wrmsr(MSR_FEATURE_CONFIG, msr);
-	}
+	set_aesni_lock();
 
 	/* Enable Turbo */
 	enable_turbo();

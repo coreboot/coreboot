@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
 #include <arch/cpu.h>
 #include <intelblocks/cpulib.h>

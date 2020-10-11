@@ -9,6 +9,7 @@
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
@@ -43,12 +44,6 @@ static const struct reg_script core_msr_script[] = {
 #endif
 	/* Disable C1E */
 	REG_MSR_RMW(MSR_POWER_CTL, ~POWER_CTL_C1E_MASK, 0),
-	/*
-	 * Enable and Lock the Advanced Encryption Standard (AES-NI)
-	 * feature register
-	 */
-	REG_MSR_RMW(MSR_FEATURE_CONFIG, ~FEATURE_CONFIG_RESERVED_MASK,
-		FEATURE_CONFIG_LOCK),
 	REG_SCRIPT_END
 };
 
@@ -62,6 +57,9 @@ void soc_core_init(struct device *cpu)
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
+
+	set_aesni_lock();
+
 	/*
 	 * Enable ACPI PM timer emulation, which also lets microcode know
 	 * location of ACPI_BASE_ADDRESS. This also enables other features

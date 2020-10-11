@@ -216,11 +216,7 @@ static void model_2065x_init(struct device *cpu)
 	/* Set virtualization based on Kconfig option */
 	set_vmx_and_lock();
 
-	if (!intel_ht_sibling()) {
-		/* Lock AES-NI only if supported */
-		if (cpuid_ecx(1) & (1 << 25))
-			msr_set(MSR_FEATURE_CONFIG, BIT(0));
-	}
+	set_aesni_lock();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

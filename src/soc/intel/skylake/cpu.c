@@ -186,25 +186,6 @@ static void enable_pm_timer_emulation(void)
 	wrmsr(MSR_EMULATE_PM_TIMER, msr);
 }
 
-/*
- * Lock AES-NI (MSR_FEATURE_CONFIG) to prevent unintended disabling
- * as suggested in Intel document 325384-070US.
- */
-static void cpu_lock_aesni(void)
-{
-	msr_t msr;
-
-	/* Only run once per core as specified in the MSR datasheet */
-	if (intel_ht_sibling())
-		return;
-
-	msr = rdmsr(MSR_FEATURE_CONFIG);
-	if ((msr.lo & 1) == 0) {
-		msr.lo |= 1;
-		wrmsr(MSR_FEATURE_CONFIG, msr);
-	}
-}
-
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
@@ -227,8 +208,7 @@ void soc_core_init(struct device *cpu)
 	/* Configure Intel Speed Shift */
 	configure_isst();
 
-	/* Lock AES-NI MSR */
-	cpu_lock_aesni();
+	set_aesni_lock();
 
 	/* Enable ACPI Timer Emulation via MSR 0x121 */
 	enable_pm_timer_emulation();

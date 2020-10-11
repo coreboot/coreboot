@@ -266,10 +266,6 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	}
 }
 
-/*
- * Lock AES-NI feature (MSR_FEATURE_CONFIG) to prevent unintended disabling
- * as suggested in Intel document 325384-070US.
- */
 void set_aesni_lock(void)
 {
 	msr_t msr;
@@ -279,8 +275,8 @@ void set_aesni_lock(void)
 		return;
 
 	msr = rdmsr(MSR_FEATURE_CONFIG);
-	if ((msr.lo & 1) == 0) {
-		msr.lo |= 1;
-		wrmsr(MSR_FEATURE_CONFIG, msr);
-	}
+	if (msr.lo & AESNI_LOCK)
+		return;
+
+	msr_set(MSR_FEATURE_CONFIG, AESNI_LOCK);
 }

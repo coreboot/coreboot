@@ -28,8 +28,8 @@ bool intel_ht_supported(void);
 bool intel_ht_sibling(void);
 
 /*
- * Lock AES-NI feature (MSR_FEATURE_CONFIG) to prevent unintended disabling
- * as suggested in Intel document 325384-070US.
+ * Lock AES-NI feature (MSR_FEATURE_CONFIG) to prevent unintended changes
+ * to the enablement state as suggested in Intel document 325384-070US.
  */
 void set_aesni_lock(void);
 

@@ -23,6 +23,66 @@ struct stack_dev_resource {
 	struct stack_dev_resource *next;
 };
 
+typedef enum {
+	RES_TYPE_IO = 0,
+	RES_TYPE_NONPREF_MEM,
+	RES_TYPE_PREF_MEM,
+	MAX_RES_TYPES
+} RES_TYPE;
+
+static RES_TYPE get_res_type(uint64_t flags)
+{
+	if (flags & IORESOURCE_IO)
+		return RES_TYPE_IO;
+	if (flags & IORESOURCE_MEM) {
+		if (flags & IORESOURCE_PREFETCH) {
+			printk(BIOS_DEBUG, "%s:%d flags: 0x%llx\n", __func__, __LINE__, flags);
+			return RES_TYPE_PREF_MEM;
+		}
+		/* both 64-bit and 32-bit use below 4GB address space */
+		return RES_TYPE_NONPREF_MEM;
+	}
+	printk(BIOS_ERR, "Invalid resource type 0x%llx\n", flags);
+	die("");
+}
+
+static bool need_assignment(uint64_t flags)
+{
+	if (flags & (IORESOURCE_STORED | IORESOURCE_RESERVE | IORESOURCE_FIXED |
+		IORESOURCE_ASSIGNED))
+		return false;
+	else
+		return true;
+}
+
+static uint64_t get_resource_base(STACK_RES *stack, RES_TYPE res_type)
+{
+	if (res_type == RES_TYPE_IO) {
+		assert(stack->PciResourceIoBase <= stack->PciResourceIoLimit);
+		return stack->PciResourceIoBase;
+	}
+	if (res_type == RES_TYPE_NONPREF_MEM) {
+		assert(stack->PciResourceMem32Base <= stack->PciResourceMem32Limit);
+		return stack->PciResourceMem32Base;
+	}
+	assert(stack->PciResourceMem64Base <= stack->PciResourceMem64Limit);
+	return stack->PciResourceMem64Base;
+}
+
+static void set_resource_base(STACK_RES *stack, RES_TYPE res_type, uint64_t base)
+{
+	if (res_type == RES_TYPE_IO) {
+		assert(base <= (stack->PciResourceIoLimit + 1));
+		stack->PciResourceIoBase = base;
+	} else if (res_type == RES_TYPE_NONPREF_MEM) {
+		assert(base <= (stack->PciResourceMem32Limit + 1));
+		stack->PciResourceMem32Base = base;
+	} else {
+		assert(base <= (stack->PciResourceMem64Limit + 1));
+		stack->PciResourceMem64Base = base;
+	}
+}
+
 static void assign_stack_resources(struct iiostack_resource *stack_list,
 	struct device *dev, struct resource *bridge);
 
@@ -167,19 +227,13 @@ static void add_res_to_stack(struct stack_dev_resource **root,
 	}
 }
 
-static void reserve_dev_resources(STACK_RES *stack, unsigned long res_type,
+static void reserve_dev_resources(STACK_RES *stack, RES_TYPE res_type,
 	struct stack_dev_resource *res_root, struct resource *bridge)
 {
 	uint8_t align;
 	uint64_t orig_base, base;
 
-	if (res_type & IORESOURCE_IO)
-		orig_base = stack->PciResourceIoBase;
-	else if ((res_type & IORESOURCE_MEM) && ((res_type & IORESOURCE_PCI64) ||
-		(!res_root && bridge && (bridge->flags & IORESOURCE_PREFETCH))))
-		orig_base = stack->PciResourceMem64Base;
-	else
-		orig_base = stack->PciResourceMem32Base;
+	orig_base = get_resource_base(stack, res_type);
 
 	align = 0;
 	base = orig_base;
@@ -227,14 +281,7 @@ static void reserve_dev_resources(STACK_RES *stack, unsigned long res_type,
 		base = bridge->limit + 1;
 	}
 
-	/* update new limits */
-	if (res_type & IORESOURCE_IO)
-		stack->PciResourceIoBase = base;
-	else if ((res_type & IORESOURCE_MEM) && ((res_type & IORESOURCE_PCI64) ||
-		(!res_root && bridge && (bridge->flags & IORESOURCE_PREFETCH))))
-		stack->PciResourceMem64Base = base;
-	else
-		stack->PciResourceMem32Base = base;
+	set_resource_base(stack, res_type, base);
 }
 
 static void reclaim_resource_mem(struct stack_dev_resource *res_root)
@@ -264,15 +311,14 @@ static void assign_bridge_resources(struct iiostack_resource *stack_list,
 
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_BRIDGE) ||
-			(bridge && ((bridge->flags & (IORESOURCE_IO | IORESOURCE_MEM |
-				IORESOURCE_PREFETCH | IORESOURCE_PCI64)) !=
-					(res->flags & (IORESOURCE_IO | IORESOURCE_MEM |
-						IORESOURCE_PREFETCH | IORESOURCE_PCI64)))))
+		    (bridge && (get_res_type(bridge->flags) != get_res_type(res->flags))))
 			continue;
 
 		assign_stack_resources(stack_list, dev, res);
+
 		if (!bridge)
 			continue;
+
 		/* for 1st time update, overlading IORESOURCE_ASSIGNED */
 		if (!(bridge->flags & IORESOURCE_ASSIGNED)) {
 			bridge->base = res->base;
@@ -308,36 +354,42 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 			assign_bridge_resources(stack_list, curdev, bridge);
 
 		/* Pick non-bridged resources for resource allocation for each resource type */
-		unsigned long flags[5] = {IORESOURCE_IO, IORESOURCE_MEM,
-			(IORESOURCE_PCI64|IORESOURCE_MEM), (IORESOURCE_MEM|IORESOURCE_PREFETCH),
-			(IORESOURCE_PCI64|IORESOURCE_MEM|IORESOURCE_PREFETCH)};
-		uint8_t no_res_types = 5;
+		RES_TYPE res_types[MAX_RES_TYPES] = {
+			RES_TYPE_IO,
+			RES_TYPE_NONPREF_MEM,
+			RES_TYPE_PREF_MEM
+		};
+
+		uint8_t no_res_types = MAX_RES_TYPES;
+
+		/* if it is a bridge, only process matching bridge resource type */
 		if (bridge) {
-			flags[0] = bridge->flags &
-				(IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH);
-			if ((bridge->flags & IORESOURCE_MEM) &&
-				(bridge->flags & IORESOURCE_PREFETCH))
-				flags[0] |= IORESOURCE_PCI64;
+			res_types[0] = get_res_type(bridge->flags);
 			no_res_types = 1;
 		}
+
+		printk(BIOS_DEBUG, "%s:%d no_res_types: %d\n", __func__, __LINE__,
+			no_res_types);
 
 		/* Process each resource type */
 		for (int rt = 0; rt < no_res_types; ++rt) {
 			struct stack_dev_resource *res_root = NULL;
-
+			printk(BIOS_DEBUG, "%s:%d rt: %d\n", __func__, __LINE__, rt);
 			for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 				struct resource *res;
+				printk(BIOS_DEBUG, "%s:%d dev: %s\n",
+					__func__, __LINE__, dev_path(curdev));
 				if (!curdev->enabled)
 					continue;
 
 				for (res = curdev->resource_list; res; res = res->next) {
-					if ((res->flags & IORESOURCE_BRIDGE) || (res->flags &
-						(IORESOURCE_STORED | IORESOURCE_RESERVE |
-							IORESOURCE_FIXED | IORESOURCE_ASSIGNED)
-						) || ((res->flags & (IORESOURCE_IO |
-							IORESOURCE_MEM | IORESOURCE_PCI64
-							| IORESOURCE_PREFETCH))
-							!= flags[rt]) || res->size == 0)
+					printk(BIOS_DEBUG, "%s:%d dev: %s, flags: 0x%lx\n",
+						__func__, __LINE__,
+						dev_path(curdev), res->flags);
+					if (res->size == 0                            ||
+					    get_res_type(res->flags) != res_types[rt] ||
+					    (res->flags & IORESOURCE_BRIDGE)          ||
+					    !need_assignment(res->flags))
 						continue;
 					else
 						add_res_to_stack(&res_root, curdev, res);
@@ -346,7 +398,7 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 
 			/* Allocate resources and update bridge range */
 			if (res_root || (bridge && !(bridge->flags & IORESOURCE_ASSIGNED))) {
-				reserve_dev_resources(stack, flags[rt], res_root, bridge);
+				reserve_dev_resources(stack, res_types[rt], res_root, bridge);
 				reclaim_resource_mem(res_root);
 			}
 		}

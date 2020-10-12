@@ -59,6 +59,7 @@ site-local
 *.debug
 !Kconfig.debug
 *.elf
+*.fd
 *.o
 *.o.d
 *.out

@@ -16,8 +16,8 @@ const char *mainboard_get_dram_part_num(void)
 	if (part_num_state == PART_NUM_NOT_READ) {
 		if (google_chromeec_cbi_get_dram_part_num(part_num_store,
 						  sizeof(part_num_store)) < 0) {
-			printk(BIOS_ERR,
-			  "ERROR: Couldn't obtain DRAM part number from CBI\n");
+			printk(BIOS_DEBUG,
+			  "Couldn't obtain DRAM part number from CBI\n");
 			part_num_state = PART_NUM_NOT_IN_CBI;
 		} else {
 			part_num_state = PART_NUM_AVAILABLE;

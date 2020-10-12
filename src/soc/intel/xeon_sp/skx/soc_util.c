@@ -288,7 +288,7 @@ int get_platform_thread_count(void)
 	return get_cpu_count() * get_threads_per_package();
 }
 
-void get_iiostack_info(struct iiostack_resource *info)
+uint8_t get_iiostack_info(struct iiostack_resource *info)
 {
 	size_t hob_size;
 	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
@@ -310,6 +310,8 @@ void get_iiostack_info(struct iiostack_resource *info)
 			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
 		}
 	}
+
+	return hob->PlatformData.Pci64BitResourceAllocation;
 }
 
 #if ENV_RAMSTAGE

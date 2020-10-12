@@ -11,7 +11,7 @@ struct iiostack_resource {
 	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
 };
 
-void get_iiostack_info(struct iiostack_resource *info);
+uint8_t get_iiostack_info(struct iiostack_resource *info);
 
 void xeonsp_init_cpu_config(void);
 

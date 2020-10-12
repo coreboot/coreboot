@@ -149,18 +149,12 @@ chip soc/intel/cannonlake
 		},
 	}"
 
-	# PCIe port 7 for LAN
-	register "PcieRpEnable[6]" = "1"
-	register "PcieRpLtrEnable[6]" = "1"
 	# PCIe port 11 (x2) for NVMe hybrid storage devices
 	register "PcieRpEnable[10]" = "1"
 	register "PcieRpLtrEnable[10]" = "1"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"
 	register "PcieClkSrcClkReq[0]" = "0"
-
-	# GPIO for SD card detect
-	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
 	# SATA port 1 Gen3 Strength
 	# Port1 Tx De-Emphasis = 20*log(0x20/64) = -6dB
@@ -304,6 +298,7 @@ chip soc/intel/cannonlake
 				end
 			end
 		end # USB xHCI
+		device pci 14.5 off end # SDCard
 		device pci 15.0 off
 			# RFU - Reserved for Future Use.
 		end # I2C #0
@@ -340,19 +335,6 @@ chip soc/intel/cannonlake
 			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.6 on
-			chip drivers/net
-				register "customized_leds" = "0x05af"
-				register "wake" = "GPE0_DW1_07" # GPP_C7
-				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A18)"
-				register "stop_delay_ms" = "12" # NIC needs time to quiesce
-				register "stop_off_delay_ms" = "1"
-				register "has_power_resource" = "1"
-				register "device_index" = "0"
-				device pci 00.0 on end
-			end
-			register "PcieRpSlotImplemented[6]" = "1"
-		end # RTL8111H Ethernet NIC
 		device pci 1d.2 on	# PCI Express Port 11 (X2 NVMe)
 			register "PcieRpSlotImplemented[10]" = "1"
 		end

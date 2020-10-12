@@ -282,6 +282,10 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
 	default 0xc35
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/skylake/chipset.cb"
+
 config IFD_CHIPSET
 	string
 	default "sklkbl"

@@ -3,24 +3,8 @@
 #ifndef _SOC_UTIL_H_
 #define _SOC_UTIL_H_
 
-#include <console/console.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
-#include <stdint.h>
-
-#define DEV_FUNC_ENTER(dev) \
-	printk(BIOS_SPEW, "%s:%s:%d: ENTER (dev: %s)\n", \
-		__FILE__, __func__, __LINE__, dev_path(dev))
-
-#define DEV_FUNC_EXIT(dev) \
-	printk(BIOS_SPEW, "%s:%s:%d: EXIT (dev: %s)\n", __FILE__, \
-		__func__, __LINE__, dev_path(dev))
-
-#define FUNC_ENTER() \
-	printk(BIOS_SPEW, "%s:%s:%d: ENTER\n", __FILE__, __func__, __LINE__)
-
-#define FUNC_EXIT() \
-	printk(BIOS_SPEW, "%s:%s:%d: EXIT\n", __FILE__, __func__, __LINE__)
 
 struct iiostack_resource {
 	uint8_t     no_of_stacks;

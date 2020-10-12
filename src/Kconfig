@@ -1123,6 +1123,16 @@ config TRACE
 	  of calling function. Please note some printk related functions
 	  are omitted from trace to have good looking console dumps.
 
+config DEBUG_FUNC
+	bool "Enable function entry and exit reporting macros" if DEFAULT_CONSOLE_LOGLEVEL_8
+	default n
+	help
+	  This option enables additional function entry and exit debug messages
+	  for select functions. If supported, this is less output than
+	  the TRACE option.
+	  Note: This option will increase the size of the coreboot image.
+	  If unsure, say N.
+
 config DEBUG_COVERAGE
 	bool "Debug code coverage"
 	default n

@@ -2,6 +2,8 @@
 
 #include <cbfs.h>
 #include <assert.h>
+#include <console/console.h>
+#include <console/debug.h>
 #include <post.h>
 #include <device/pci.h>
 #include <soc/acpi.h>

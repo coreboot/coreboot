@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <console/console.h>
+#include <console/debug.h>
 #include <intelblocks/cpulib.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>

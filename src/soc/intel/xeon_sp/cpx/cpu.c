@@ -4,6 +4,7 @@
 #include <acpi/acpi.h>
 #include <assert.h>
 #include <console/console.h>
+#include <console/debug.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>

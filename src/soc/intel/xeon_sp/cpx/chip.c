@@ -3,6 +3,7 @@
 #include <arch/ioapic.h>
 #include <assert.h>
 #include <console/console.h>
+#include <console/debug.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <fsp/api.h>

@@ -279,6 +279,20 @@ void show_all_devs_resources(int debug_level, const char *msg);
 #define LOG_IO_RESOURCE(type, dev, index, base, size)
 #endif /* DEBUG_RESOURCES*/
 
+#if CONFIG(DEBUG_FUNC)
+#include <console/console.h>
+#define DEV_FUNC_ENTER(dev) \
+	printk(BIOS_SPEW, "%s:%s:%d: ENTER (dev: %s)\n", \
+		__FILE__, __func__, __LINE__, dev_path(dev))
+
+#define DEV_FUNC_EXIT(dev) \
+	printk(BIOS_SPEW, "%s:%s:%d: EXIT (dev: %s)\n", __FILE__, \
+		__func__, __LINE__, dev_path(dev))
+#else /* DEBUG_FUNC */
+#define DEV_FUNC_ENTER(dev)
+#define DEV_FUNC_EXIT(dev)
+#endif /* DEBUG_FUNC */
+
 /* Rounding for boundaries.
  * Due to some chip bugs, go ahead and round IO to 16
  */

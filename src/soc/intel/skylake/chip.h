@@ -262,7 +262,7 @@ struct soc_intel_skylake_config {
 		AspmL1,
 		AspmL0sL1,
 		AspmAutoConfig,
-	} PcieRpAspm[CONFIG_MAX_ROOT_PORTS];
+	} pcie_rp_aspm[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe RP L1 substate */
 	enum {

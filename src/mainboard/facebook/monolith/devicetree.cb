@@ -151,7 +151,7 @@ chip soc/intel/skylake
 	# Enable Advanced Error Reporting
 	register "PcieRpAdvancedErrorReporting[2]" = "1"
 	# Disable Aspm
-	register "PcieRpAspm[2]" = "AspmDisabled"
+	register "pcie_rp_aspm[2]" = "AspmDisabled"
 
 	# PCIE Port 4 disabled
 	# PCIE Port 5 x1 -> MODULE i219
@@ -166,7 +166,7 @@ chip soc/intel/skylake
 	# Enable Advanced Error Reporting
 	register "PcieRpAdvancedErrorReporting[5]" = "1"
 	# Disable Aspm
-	register "PcieRpAspm[5]" = "AspmDisabled"
+	register "pcie_rp_aspm[5]" = "AspmDisabled"
 
 	# PCIE Port 7 Disabled
 	# PCIE Port 8 Disabled
@@ -184,7 +184,7 @@ chip soc/intel/skylake
 	# Enable Advanced Error Reporting
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	# Disable Aspm
-	register "PcieRpAspm[8]" = "AspmDisabled"
+	register "pcie_rp_aspm[8]" = "AspmDisabled"
 
 	# USB 2.0 Enable all ports
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB-C Port 2

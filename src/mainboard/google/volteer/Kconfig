@@ -92,6 +92,7 @@ config MAINBOARD_PART_NUMBER
 	default "Volteer2" if BOARD_GOOGLE_VOLTEER2
 	default "Voxel" if BOARD_GOOGLE_VOXEL
 	default "Boldar" if BOARD_GOOGLE_BOLDAR
+	default "Elemi" if BOARD_GOOGLE_ELEMI
 
 config MAX_CPUS
 	int
@@ -129,6 +130,7 @@ config VARIANT_DIR
 	default "volteer2" if BOARD_GOOGLE_VOLTEER2
 	default "voxel" if BOARD_GOOGLE_VOXEL
 	default "boldar" if BOARD_GOOGLE_BOLDAR
+	default "elemi" if BOARD_GOOGLE_ELEMI
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

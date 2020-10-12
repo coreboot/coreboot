@@ -8,7 +8,11 @@ config USE_LEGACY_8254_TIMER
 	default y if PAYLOAD_SEABIOS || VGA_ROM_RUN
 	default n
 	help
-	  This sets the FSP UPD to enable Legacy 8254 clock gating. As per
-	  the FSP Integration guide Legacy 8254 timer clock gating UPD needs
-	  to be disabled in order to boot SeaBIOS or run OpRom,
-	  but should otherwise be enabled.
+	  Setting this makes the Legacy 8254 Timer available by disabling
+	  clock gating. This needs to be enabled in order to boot a legacy
+	  BIOS or OS not supporting other timers like PM timer or TSC.
+
+	  While SeaBIOS does not require this timer anymore, it is needed
+	  when OpRoms are being used.
+
+	  Disable this setting to save power, when the timer is not needed.

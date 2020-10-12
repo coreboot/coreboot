@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
-# DESCR: check Kconfig files for warnings and errors
+# DESCR: Check Kconfig files for warnings and errors
 
 LC_ALL=C export LC_ALL
 

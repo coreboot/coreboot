@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
-# DESCR: verify that files don't have the old style header
+# DESCR: Verify that files don't have the old style header
 
 # regex list of files and directories to exclude from the search
 HEADER_EXCLUDED="\

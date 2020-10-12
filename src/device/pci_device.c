@@ -954,11 +954,14 @@ static void set_pci_ops(struct device *dev)
 		if ((driver->vendor == dev->vendor) &&
 		    device_id_match(driver, dev->device)) {
 			dev->ops = (struct device_operations *)driver->ops;
-			printk(BIOS_SPEW, "%s [%04x/%04x] %sops\n",
-			       dev_path(dev), driver->vendor, driver->device,
-			       (driver->ops->scan_bus ? "bus " : ""));
-			return;
+			break;
 		}
+	}
+
+	if (dev->ops) {
+		printk(BIOS_SPEW, "%s [%04x/%04x] %sops\n", dev_path(dev),
+		       driver->vendor, driver->device, (driver->ops->scan_bus ? "bus " : ""));
+		return;
 	}
 
 	/* If I don't have a specific driver use the default operations. */

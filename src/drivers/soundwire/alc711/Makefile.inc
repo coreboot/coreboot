@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_SOUNDWIRE_ALC711) += alc711.c

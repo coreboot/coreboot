@@ -915,6 +915,15 @@ config DEBUG_MALLOC
 
 	  If unsure, say N.
 
+# Only visible if DEBUG_SPEW (8) is set.
+config DEBUG_RESOURCES
+	bool "Output verbose PCI MEM and IO resource debug messages" if DEFAULT_CONSOLE_LOGLEVEL_8
+	default n
+	help
+	  This option enables additional PCI memory and IO debug messages.
+	  Note: This option will increase the size of the coreboot image.
+	  If unsure, say N.
+
 config DEBUG_CONSOLE_INIT
 	bool "Debug console initialisation code"
 	default n

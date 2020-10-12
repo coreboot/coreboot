@@ -259,11 +259,11 @@ static void sn65dsi86_bridge_valid_dp_rates(uint8_t bus, uint8_t chip, bool rate
 					DP_BRIDGE_DPCD_REV, 1, DPCD_READ, &dpcd_val);
 	if (dpcd_val >= DP_BRIDGE_14) {
 		/* eDP 1.4 devices must provide a custom table */
-		uint8_t sink_rates[DP_MAX_SUPPORTED_RATES * 2];
+		uint16_t sink_rates[DP_MAX_SUPPORTED_RATES] = {0};
 
 		sn65dsi86_bridge_dpcd_request(bus, chip, DP_SUPPORTED_LINK_RATES,
 					      sizeof(sink_rates),
-					      DPCD_READ, sink_rates);
+					      DPCD_READ, (void *)sink_rates);
 		for (i = 0; i < ARRAY_SIZE(sink_rates); i++) {
 			rate_per_200khz = le16_to_cpu(sink_rates[i]);
 
@@ -288,14 +288,12 @@ static void sn65dsi86_bridge_valid_dp_rates(uint8_t bus, uint8_t chip, bool rate
 	}
 
 	/* On older versions best we can do is use DP_MAX_LINK_RATE */
-	 sn65dsi86_bridge_dpcd_request(bus, chip,
-					DP_MAX_LINK_RATE, 1, DPCD_READ, &dpcd_val);
+	sn65dsi86_bridge_dpcd_request(bus, chip, DP_MAX_LINK_RATE, 1, DPCD_READ, &dpcd_val);
 
 	switch (dpcd_val) {
 	default:
-		printk(BIOS_ERR,
-			      "Unexpected max rate (%#x); assuming 5.4 GHz\n",
-			      (int)dpcd_val);
+		printk(BIOS_ERR, "Unexpected max rate (%#x); assuming 5.4 GHz\n",
+		       (int)dpcd_val);
 		/* fall through */
 	case DP_LINK_BW_5_4:
 		rate_valid[7] = 1;

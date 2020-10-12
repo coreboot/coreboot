@@ -208,6 +208,13 @@ F:	src/mainboard/asus/p8z77-v_lx2/
 
 
 
+CLEVO MAINBOARDS
+M:	Felix Singer <felixsinger@posteo.net>
+S:	Supported
+F:	src/mainboard/clevo
+
+
+
 FACEBOOK FBG1701 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
 M:	Wim Vervoorn <wvervoorn@eltan.com>

@@ -51,7 +51,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	       pei_data->mrc_input, mrc_size);
 }
 
-static const char *ecc_decoder[] = {
+static const char *const ecc_decoder[] = {
 	"inactive",
 	"active on IO",
 	"disabled on IO",

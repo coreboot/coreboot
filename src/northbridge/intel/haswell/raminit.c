@@ -65,8 +65,8 @@ static void report_memory_config(void)
 	int i;
 
 	addr_decoder_common = MCHBAR32(MAD_CHNL);
-	addr_decode_chan[0] = MCHBAR32(MAD_DIMM_CH0);
-	addr_decode_chan[1] = MCHBAR32(MAD_DIMM_CH1);
+	addr_decode_chan[0] = MCHBAR32(MAD_DIMM(0));
+	addr_decode_chan[1] = MCHBAR32(MAD_DIMM(1));
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
 	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
@@ -227,8 +227,8 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	addr_decode_ch[0] = MCHBAR32(MAD_DIMM_CH0);
-	addr_decode_ch[1] = MCHBAR32(MAD_DIMM_CH1);
+	addr_decode_ch[0] = MCHBAR32(MAD_DIMM(0));
+	addr_decode_ch[1] = MCHBAR32(MAD_DIMM(1));
 
 	ddr_frequency = (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
 

@@ -5,9 +5,7 @@
 
 /* Register definitions */
 #define MAD_CHNL		0x5000 /* Address Decoder Channel Configuration */
-#define MAD_DIMM_CH0		0x5004 /* Address Decode Channel 0 */
-#define MAD_DIMM_CH1		0x5008 /* Address Decode Channel 1 */
-#define MAD_DIMM_CH2		0x500c /* Address Decode Channel 2 (unused on HSW) */
+#define MAD_DIMM(ch)		(0x5004 + (ch) * 4)
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* MRC Revision */
 

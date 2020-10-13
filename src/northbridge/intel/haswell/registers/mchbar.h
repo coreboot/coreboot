@@ -3,6 +3,10 @@
 #ifndef __HASWELL_REGISTERS_MCHBAR_H__
 #define __HASWELL_REGISTERS_MCHBAR_H__
 
+/* Memory controller characteristics */
+#define NUM_CHANNELS	2
+#define NUM_SLOTS	2
+
 /* Register definitions */
 #define MAD_CHNL		0x5000 /* Address Decoder Channel Configuration */
 #define MAD_DIMM(ch)		(0x5004 + (ch) * 4)

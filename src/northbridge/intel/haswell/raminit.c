@@ -61,12 +61,9 @@ static const char *const ecc_decoder[] = {
 /* Print out the memory controller configuration, as per the values in its registers. */
 static void report_memory_config(void)
 {
-	u32 addr_decoder_common, addr_decode_chan[2];
 	int i;
 
-	addr_decoder_common = MCHBAR32(MAD_CHNL);
-	addr_decode_chan[0] = MCHBAR32(MAD_DIMM(0));
-	addr_decode_chan[1] = MCHBAR32(MAD_DIMM(1));
+	const u32 addr_decoder_common = MCHBAR32(MAD_CHNL);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
 	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
@@ -76,8 +73,8 @@ static void report_memory_config(void)
 	       (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
 
-	for (i = 0; i < ARRAY_SIZE(addr_decode_chan); i++) {
-		u32 ch_conf = addr_decode_chan[i];
+	for (i = 0; i < NUM_CHANNELS; i++) {
+		const u32 ch_conf = MCHBAR32(MAD_DIMM(i));
 
 		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
 		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
@@ -214,10 +211,9 @@ static uint32_t nb_max_chan_capacity_mib(const uint32_t capid0_a)
 
 void setup_sdram_meminfo(struct pei_data *pei_data)
 {
-	u32 addr_decode_ch[2];
 	struct memory_info *mem_info;
 	struct dimm_info *dimm;
-	int ddr_frequency, dimm_size, ch, d_num;
+	int ch, d_num;
 	int dimm_cnt = 0;
 
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
@@ -226,16 +222,13 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	addr_decode_ch[0] = MCHBAR32(MAD_DIMM(0));
-	addr_decode_ch[1] = MCHBAR32(MAD_DIMM(1));
+	const u32 ddr_frequency = (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
 
-	ddr_frequency = (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
-
-	for (ch = 0; ch < ARRAY_SIZE(addr_decode_ch); ch++) {
-		u32 ch_conf = addr_decode_ch[ch];
+	for (ch = 0; ch < NUM_CHANNELS; ch++) {
+		const u32 ch_conf = MCHBAR32(MAD_DIMM(ch));
 		/* DIMMs A/B */
-		for (d_num = 0; d_num < 2; d_num++) {
-			dimm_size = ((ch_conf >> (d_num * 8)) & 0xff) * 256;
+		for (d_num = 0; d_num < NUM_SLOTS; d_num++) {
+			const u32 dimm_size = ((ch_conf >> (d_num * 8)) & 0xff) * 256;
 			if (dimm_size) {
 				dimm = &mem_info->dimm[dimm_cnt];
 				dimm->dimm_size = dimm_size;

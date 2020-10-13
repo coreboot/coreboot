@@ -164,11 +164,11 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
-	/* For reference, print the System Agent version after executing the UEFI PEI stage */
+	/* Print the MRC version after executing the UEFI PEI stage */
 	u32 version = MCHBAR32(MRC_REVISION);
-	printk(BIOS_DEBUG, "System Agent Version %d.%d.%d Build %d\n",
-	       (version >> 24) & 0xff, (version >> 16) & 0xff,
-	       (version >>  8) & 0xff, (version >>  0) & 0xff);
+	printk(BIOS_DEBUG, "MRC Version %d.%d.%d Build %d\n",
+		(version >> 24) & 0xff, (version >> 16) & 0xff,
+		(version >>  8) & 0xff, (version >>  0) & 0xff);
 
 	report_memory_config();
 }

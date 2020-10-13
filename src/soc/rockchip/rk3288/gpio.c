@@ -1,21 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <gpio.h>
+#include <soc/addressmap.h>
 #include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/pmu.h>
 #include <soc/soc.h>
 
 struct rockchip_gpio_regs *gpio_port[] = {
-	(struct rockchip_gpio_regs *)0xff750000,
-	(struct rockchip_gpio_regs *)0xff780000,
-	(struct rockchip_gpio_regs *)0xff790000,
-	(struct rockchip_gpio_regs *)0xff7a0000,
-	(struct rockchip_gpio_regs *)0xff7b0000,
-	(struct rockchip_gpio_regs *)0xff7c0000,
-	(struct rockchip_gpio_regs *)0xff7d0000,
-	(struct rockchip_gpio_regs *)0xff7e0000,
-	(struct rockchip_gpio_regs *)0xff7f0000
+	(struct rockchip_gpio_regs *)GPIO0_BASE,
+	(struct rockchip_gpio_regs *)GPIO1_BASE,
+	(struct rockchip_gpio_regs *)GPIO2_BASE,
+	(struct rockchip_gpio_regs *)GPIO3_BASE,
+	(struct rockchip_gpio_regs *)GPIO4_BASE,
+	(struct rockchip_gpio_regs *)GPIO5_BASE,
+	(struct rockchip_gpio_regs *)GPIO6_BASE,
+	(struct rockchip_gpio_regs *)GPIO7_BASE,
+	(struct rockchip_gpio_regs *)GPIO8_BASE
 };
 
 #define PMU_GPIO_PORT 0

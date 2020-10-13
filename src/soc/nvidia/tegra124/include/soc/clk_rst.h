@@ -257,7 +257,7 @@ struct  __packed clk_rst_ctlr {
 	u32 spare_reg0;			/* _SPARE_REG0,             0x55c */
 	u32 _rsv32[4];                  /*                    0x560-0x56c */
 	u32 plld2_ss_cfg;               /* _PLLD2_SS_CFG            0x570 */
-	u32 _rsv32_1[7];			/*                      0x574-58c */
+	u32 _rsv32_1[7];		/*                      0x574-58c */
 	u32 plldp_base;			/* _PLLDP_BASE,             0x590 */
 	u32 plldp_misc;			/* _PLLDP_MISC,             0x594 */
 	u32 plldp_ss_cfg;		/* _PLLDP_SS_CFG,           0x598 */

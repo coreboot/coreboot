@@ -27,17 +27,17 @@ static void broadwell_systemagent_finalize(void)
 {
 	struct device *const host_bridge = pcidev_path_on_root(SA_DEVFN_ROOT);
 
-	pci_or_config16(host_bridge, 0x50, 1 << 0);	/* GGC */
-	pci_or_config32(host_bridge, 0x5c, 1 << 0);	/* DPR */
-	pci_or_config32(host_bridge, 0x78, 1 << 10);	/* ME */
-	pci_or_config32(host_bridge, 0x90, 1 << 0);	/* REMAPBASE */
-	pci_or_config32(host_bridge, 0x98, 1 << 0);	/* REMAPLIMIT */
-	pci_or_config32(host_bridge, 0xa0, 1 << 0);	/* TOM */
-	pci_or_config32(host_bridge, 0xa8, 1 << 0);	/* TOUUD */
-	pci_or_config32(host_bridge, 0xb0, 1 << 0);	/* BDSM */
-	pci_or_config32(host_bridge, 0xb4, 1 << 0);	/* BGSM */
-	pci_or_config32(host_bridge, 0xb8, 1 << 0);	/* TSEGMB */
-	pci_or_config32(host_bridge, 0xbc, 1 << 0);	/* TOLUD */
+	pci_or_config16(host_bridge, GGC,         1 << 0);
+	pci_or_config32(host_bridge, DPR,         1 << 0);
+	pci_or_config32(host_bridge, MESEG_LIMIT, 1 << 10);
+	pci_or_config32(host_bridge, REMAPBASE,   1 << 0);
+	pci_or_config32(host_bridge, REMAPLIMIT,  1 << 0);
+	pci_or_config32(host_bridge, TOM,         1 << 0);
+	pci_or_config32(host_bridge, TOUUD,       1 << 0);
+	pci_or_config32(host_bridge, BDSM,        1 << 0);
+	pci_or_config32(host_bridge, BGSM,        1 << 0);
+	pci_or_config32(host_bridge, TSEG,        1 << 0);
+	pci_or_config32(host_bridge, TOLUD,       1 << 0);
 
 	MCHBAR32(0x50fc) |= 0x8f;	/* MC */
 	MCHBAR32(0x5500) |= 1 << 0;	/* PAVP */

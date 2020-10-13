@@ -74,6 +74,7 @@ struct pci_dev {
 	u16 domain;
 	u8 bus, dev, func;
 	u16 vendor_id, device_id;
+	u16 device_class;
 	struct pci_dev *next;
 };
 

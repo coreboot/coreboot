@@ -3,40 +3,40 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 
-static const struct reg_script systemagent_early_init_script[] = {
-	REG_PCI_WRITE32(MCHBAR, MCH_BASE_ADDRESS | 1),
-	REG_PCI_WRITE32(DMIBAR, DMI_BASE_ADDRESS | 1),
-	REG_PCI_WRITE32(EPBAR, EP_BASE_ADDRESS | 1),
-	REG_MMIO_WRITE32(MCH_BASE_ADDRESS + EDRAMBAR, EDRAM_BASE_ADDRESS | 1),
-	REG_MMIO_WRITE32(MCH_BASE_ADDRESS + GDXCBAR, GDXC_BASE_ADDRESS | 1),
+static void broadwell_setup_bars(void)
+{
+	/* Set up all hardcoded northbridge BARs */
+	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDRESS | 1);
+	pci_write_config32(SA_DEV_ROOT, DMIBAR, DMI_BASE_ADDRESS | 1);
+	pci_write_config32(SA_DEV_ROOT, EPBAR,  EP_BASE_ADDRESS  | 1);
+
+	MCHBAR32(EDRAMBAR) = EDRAM_BASE_ADDRESS | 1;
+	MCHBAR32(GDXCBAR)  =  GDXC_BASE_ADDRESS | 1;
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	REG_PCI_WRITE8(PAM0, 0x30),
-	REG_PCI_WRITE8(PAM1, 0x33),
-	REG_PCI_WRITE8(PAM2, 0x33),
-	REG_PCI_WRITE8(PAM3, 0x33),
-	REG_PCI_WRITE8(PAM4, 0x33),
-	REG_PCI_WRITE8(PAM5, 0x33),
-	REG_PCI_WRITE8(PAM6, 0x33),
-
-	/* Device enable: IGD and Mini-HD */
-	REG_PCI_WRITE32(DEVEN, DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN),
-
-	REG_SCRIPT_END
-};
+	pci_write_config8(SA_DEV_ROOT, PAM0, 0x30);
+	pci_write_config8(SA_DEV_ROOT, PAM1, 0x33);
+	pci_write_config8(SA_DEV_ROOT, PAM2, 0x33);
+	pci_write_config8(SA_DEV_ROOT, PAM3, 0x33);
+	pci_write_config8(SA_DEV_ROOT, PAM4, 0x33);
+	pci_write_config8(SA_DEV_ROOT, PAM5, 0x33);
+	pci_write_config8(SA_DEV_ROOT, PAM6, 0x33);
+}
 
 void systemagent_early_init(void)
 {
 	const bool vtd_capable =
 		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
 
-	reg_script_run_on_dev(SA_DEV_ROOT, systemagent_early_init_script);
+	broadwell_setup_bars();
+
+	/* Device enable: IGD and Mini-HD */
+	pci_write_config32(SA_DEV_ROOT, DEVEN, DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN);
 
 	if (vtd_capable) {
 		/* setup BARs: zeroize top 32 bits; set enable bit */

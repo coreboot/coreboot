@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <types.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
@@ -13,12 +14,12 @@
 void intel_model_2065x_finalize_smm(void)
 {
 	/* Lock C-State MSR */
-	msr_set_bit(MSR_PKG_CST_CONFIG_CONTROL, 15);
+	msr_set(MSR_PKG_CST_CONFIG_CONTROL, BIT(15));
 
 	/* Lock AES-NI only if supported */
 	if (cpuid_ecx(1) & (1 << 25))
-		msr_set_bit(MSR_FEATURE_CONFIG, 0);
+		msr_set(MSR_FEATURE_CONFIG, BIT(0));
 
 	/* Lock TM interrupts - route thermal events to all processors */
-	msr_set_bit(MSR_MISC_PWR_MGMT, 22);
+	msr_set(MSR_MISC_PWR_MGMT, BIT(22));
 }

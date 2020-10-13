@@ -337,7 +337,7 @@ void mca_configure(void)
 
 void cpu_lt_lock_memory(void *unused)
 {
-	msr_set_bit(MSR_LT_CONTROL, LT_CONTROL_LOCK_BIT);
+	msr_set(MSR_LT_CONTROL, LT_CONTROL_LOCK);
 }
 
 int get_valid_prmrr_size(void)

@@ -29,6 +29,7 @@
 #ifndef _SYSINFO_H
 #define _SYSINFO_H
 
+#include <pci/pci.h>
 #include <stdint.h>
 
 /* Maximum number of memory range definitions. */
@@ -130,6 +131,10 @@ struct sysinfo_t {
 
 	/* Pointer to FMAP cache in CBMEM */
 	uintptr_t fmap_cache;
+
+#if CONFIG(LP_PCI)
+	struct pci_access pacc;
+#endif
 };
 
 extern struct sysinfo_t lib_sysinfo;

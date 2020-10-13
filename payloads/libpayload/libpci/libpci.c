@@ -72,8 +72,7 @@ int pci_write_long(struct pci_dev *dev, int pos, u32 data)
 
 struct pci_access *pci_alloc(void)
 {
-	struct pci_access *pacc = malloc(sizeof(*pacc));
-	return pacc;
+	return malloc(sizeof(struct pci_access));
 }
 
 void pci_init(struct pci_access *pacc)

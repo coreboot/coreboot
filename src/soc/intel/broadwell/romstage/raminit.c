@@ -21,6 +21,13 @@
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 
+static const char *const ecc_decoder[] = {
+	"inactive",
+	"active on IO",
+	"disabled on IO",
+	"active",
+};
+
 /*
  * Dump in the log memory controller configuration as read from the memory
  * controller registers.
@@ -43,7 +50,7 @@ static void report_memory_config(void)
 		const u32 ch_conf = MCHBAR32(MAD_DIMM(i));
 
 		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
-
+		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
 		printk(BIOS_DEBUG, "   enhanced interleave mode %s\n",
 		       ((ch_conf >> 22) & 1) ? "on" : "off");
 

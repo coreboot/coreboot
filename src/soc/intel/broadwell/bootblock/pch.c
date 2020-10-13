@@ -7,7 +7,6 @@
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/spi.h>
-#include <reg_script.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <southbridge/intel/common/early_spi.h>
@@ -46,49 +45,64 @@ static void set_spi_speed(void)
 	SPIBAR8(SPIBAR_SSFC + 2) = ssfc;
 }
 
-const struct reg_script pch_early_init_script[] = {
-	/* Setup southbridge BARs */
-	REG_PCI_WRITE32(RCBA, RCBA_BASE_ADDRESS | 1),
-	REG_PCI_WRITE32(PMBASE, ACPI_BASE_ADDRESS | 1),
-	REG_PCI_WRITE8(ACPI_CNTL, ACPI_EN),
-	REG_PCI_WRITE32(GPIO_BASE, GPIO_BASE_ADDRESS | 1),
-	REG_PCI_WRITE8(GPIO_CNTL, GPIO_EN),
+static void pch_enable_bars(void)
+{
+	/* Set up southbridge BARs */
+	pci_write_config32(PCH_DEV_LPC, RCBA, RCBA_BASE_ADDRESS | 1);
 
-	/* Set COM1/COM2 decode range */
-	REG_PCI_WRITE16(LPC_IO_DEC, 0x0010),
-	/* Enable legacy decode ranges */
-	REG_PCI_WRITE16(LPC_EN, CNF1_LPC_EN | CNF2_LPC_EN | GAMEL_LPC_EN |
-			COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN),
+	pci_write_config32(PCH_DEV_LPC, PMBASE, ACPI_BASE_ADDRESS | 1);
 
-	/* Enable IOAPIC */
-	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + OIC, 0x0100),
-	/* Read back for posted write */
-	REG_MMIO_READ16(RCBA_BASE_ADDRESS + OIC),
+	pci_write_config8(PCH_DEV_LPC, ACPI_CNTL, ACPI_EN);
 
-	/* Set HPET address and enable it */
-	REG_MMIO_RMW32(RCBA_BASE_ADDRESS + HPTC, ~3, (1 << 7)),
-	/* Read back for posted write */
-	REG_MMIO_READ32(RCBA_BASE_ADDRESS + HPTC),
-	/* Enable HPET to start counter */
-	REG_MMIO_OR32(HPET_BASE_ADDRESS + 0x10, (1 << 0)),
+	pci_write_config32(PCH_DEV_LPC, GPIO_BASE, GPIO_BASE_ADDRESS | 1);
 
-	/* Disable reset */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + GCS, (1 << 5)),
-	/* TCO timer halt */
-	REG_IO_OR16(ACPI_BASE_ADDRESS + TCO1_CNT, TCO_TMR_HLT),
-
-	/* Enable upper 128 bytes of CMOS */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + RC, (1 << 2)),
-
-	/* Disable unused device (always) */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + FD, PCH_DISABLE_ALWAYS),
-
-	REG_SCRIPT_END
-};
+	/* Enable GPIO functionality. */
+	pci_write_config8(PCH_DEV_LPC, GPIO_CNTL, GPIO_EN);
+}
 
 static void pch_early_lpc(void)
 {
-	reg_script_run_on_dev(PCH_DEV_LPC, pch_early_init_script);
+	pch_enable_bars();
+
+	/* Set COM1/COM2 decode range */
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_DEC, 0x0010);
+
+	/* Enable SuperIO + MC + COM1 + PS/2 Keyboard/Mouse */
+	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | GAMEL_LPC_EN |
+		COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
+	pci_write_config16(PCH_DEV_LPC, LPC_EN, lpc_config);
+
+	/* Enable IOAPIC */
+	RCBA16(OIC) = 0x0100;
+
+	/* Read back for posted write */
+	(void)RCBA16(OIC);
+
+	/* Set HPET address and enable it */
+	RCBA32_AND_OR(HPTC, ~3, 1 << 7);
+
+	/*
+	 * Reading the register back guarantees that the write is
+	 * done before we use the configured base address below.
+	 */
+	(void)RCBA32(HPTC);
+
+	/* Enable HPET to start counter */
+	setbits32((void *)HPET_BASE_ADDRESS + 0x10, 1 << 0);
+
+	/* Disable reset */
+	RCBA32_OR(GCS, 1 << 5);
+
+	/* TCO timer halt */
+	u16 reg16 = inb(ACPI_BASE_ADDRESS + TCO1_CNT);
+	reg16 |= TCO_TMR_HLT;
+	outb(reg16, ACPI_BASE_ADDRESS + TCO1_CNT);
+
+	/* Enable upper 128 bytes of CMOS */
+	RCBA32_OR(RC, 1 << 2);
+
+	/* Disable unused device (always) */
+	RCBA32_OR(FD, PCH_DISABLE_ALWAYS);
 }
 
 void bootblock_early_southbridge_init(void)

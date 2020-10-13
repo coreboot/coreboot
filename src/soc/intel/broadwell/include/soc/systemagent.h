@@ -80,9 +80,9 @@
 
 /* MCHBAR */
 
-#define MCHBAR8(x)	*((volatile u8 *)(MCH_BASE_ADDRESS + x))
-#define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + x))
-#define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + x))
+#define MCHBAR8(x)	*((volatile u8  *)(MCH_BASE_ADDRESS + (x)))
+#define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + (x)))
+#define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + (x)))
 
 #define MCHBAR_PEI_VERSION	0x5034
 #define BIOS_RESET_CPL		0x5da8

@@ -108,7 +108,8 @@ static void report_memory_config(void)
  */
 void sdram_initialize(struct pei_data *pei_data)
 {
-	unsigned long entry;
+	int (*entry)(struct pei_data *pei_data) __attribute__((regparm(1)));
+
 	uint32_t type = CBFS_TYPE_MRC;
 	struct cbfsf f;
 
@@ -137,11 +138,9 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("mrc.bin not found!");
 
 	/* We don't care about leaking the mapping */
-	entry = (unsigned long)rdev_mmap_full(&f.data);
+	entry = rdev_mmap_full(&f.data);
 	if (entry) {
-		int rv;
-		asm volatile ("call *%%ecx\n\t"
-			      :"=a" (rv) : "c" (entry), "a" (pei_data));
+		int rv = entry(pei_data);
 
 		/* The mrc.bin reconfigures USB, so usbdebug needs to be reinitialized */
 		if (CONFIG(USBDEBUG_IN_PRE_RAM))

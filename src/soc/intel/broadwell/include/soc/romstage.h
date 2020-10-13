@@ -19,7 +19,6 @@ void raminit(struct pei_data *pei_data);
 struct chipset_power_state;
 struct chipset_power_state *fill_power_state(void);
 void report_platform_info(void);
-void report_memory_config(void);
 
 void set_max_freq(void);
 

@@ -520,7 +520,7 @@ config PCIEXP_PLUGIN_SUPPORT
 	default y
 
 config PCI_ALLOW_BUS_MASTER
-	bool "Allow PCI bus master bit to be enabled by coreboot"
+	bool "Allow coreboot to set optional PCI bus master bits"
 	default y
 	help
 	  For security reasons, bus mastering should be enabled as late as

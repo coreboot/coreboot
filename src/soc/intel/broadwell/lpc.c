@@ -14,7 +14,6 @@
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
-#include <reg_script.h>
 #include <string.h>
 #include <soc/gpio.h>
 #include <soc/iobp.h>
@@ -172,33 +171,65 @@ static void pch_power_options(struct device *dev)
 	enable_alt_smi(config->alt_gp_smi_en);
 }
 
-static const struct reg_script pch_misc_init_script[] = {
-	/* Setup SLP signal assertion, SLP_S4=4s, SLP_S3=50ms */
-	REG_PCI_RMW16(GEN_PMCON_3, ~((3 << 4)|(1 << 10)),
-		      (1 << 3)|(1 << 11)|(1 << 12)),
+static void pch_misc_init(struct device *dev)
+{
+	u8 reg8;
+	u16 reg16;
+	u32 reg32;
+
+	reg16 = pci_read_config16(dev, GEN_PMCON_3);
+
+	reg16 &= ~(3 << 4);	/* SLP_S4# Assertion Stretch 4s */
+	reg16 |= (1 << 3);	/* SLP_S4# Assertion Stretch Enable */
+
+	reg16 &= ~(1 << 10);
+	reg16 |= (1 << 11);	/* SLP_S3# Min Assertion Width 50ms */
+
+	reg16 |= (1 << 12);	/* Disable SLP stretch after SUS well */
+
+	pci_write_config16(dev, GEN_PMCON_3, reg16);
+
 	/* Prepare sleep mode */
-	REG_IO_RMW32(ACPI_BASE_ADDRESS + PM1_CNT, ~SLP_TYP, SCI_EN),
-	/* Setup NMI on errors, disable SERR */
-	REG_IO_RMW8(0x61, ~0xf0, (1 << 2)),
+	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	reg32 &= ~SLP_TYP;
+	reg32 |= SCI_EN;
+	outl(reg32, ACPI_BASE_ADDRESS + PM1_CNT);
+
+	/* Set up NMI on errors */
+	reg8 = inb(0x61);
+	reg8 &= ~0xf0;		/* Higher nibble must be 0 */
+	reg8 |= (1 << 2);	/* PCI SERR# disable for now */
+	outb(reg8, 0x61);
+
 	/* Disable NMI sources */
-	REG_IO_OR8(0x70, (1 << 7)),
+	reg8 = inb(0x70);
+	reg8 |= (1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
+	outb(reg8, 0x70);
+
 	/* Indicate DRAM init done for MRC */
-	REG_PCI_OR8(GEN_PMCON_2, (1 << 7)),
+	pci_or_config8(dev, GEN_PMCON_2, 1 << 7);
+
 	/* Enable BIOS updates outside of SMM */
-	REG_PCI_RMW8(0xdc, ~(1 << 5), 0),
+	pci_and_config8(dev, BIOS_CNTL, ~(1 << 5));
+
 	/* Clear status bits to prevent unexpected wake */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x3310, 0x0000002f),
-	REG_MMIO_RMW32(RCBA_BASE_ADDRESS + 0x3f02, ~0x0000000f, 0),
+	RCBA32_OR(0x3310, 0x2f);
+
+	RCBA32_AND_OR(0x3f02, ~0xf, 0);
+
 	/* Enable PCIe Releaxed Order */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x2314, (1 << 31) | (1 << 7)),
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x1114, (1 << 15) | (1 << 14)),
+	RCBA32_OR(0x2314, (1 << 31) | (1 << 7)),
+	RCBA32_OR(0x1114, (1 << 15) | (1 << 14)),
+
 	/* Setup SERIRQ, enable continuous mode */
-	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
-#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
-	REG_PCI_RMW8(SERIRQ_CNTL, ~(1 << 6), 0),
-#endif
-	REG_SCRIPT_END
-};
+	reg8 = pci_read_config8(dev, SERIRQ_CNTL);
+	reg8 |= 1 << 7;
+
+	if (CONFIG(SERIRQ_CONTINUOUS_MODE))
+		reg8 |= 1 << 6;
+
+	pci_write_config8(dev, SERIRQ_CNTL, reg8);
+}
 
 /* Magic register settings for power management */
 static void pch_pm_init_magic(struct device *dev)
@@ -427,7 +458,7 @@ static void lpc_init(struct device *dev)
 	/* Legacy initialization */
 	isa_dma_init();
 	sb_rtc_init();
-	reg_script_run_on_dev(dev, pch_misc_init_script);
+	pch_misc_init(dev);
 
 	/* Interrupt configuration */
 	pch_enable_ioapic(dev);

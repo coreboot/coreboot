@@ -87,7 +87,10 @@
 #define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + (x)))
 #define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + (x)))
 
-#define MCHBAR_PEI_VERSION	0x5034
+#define MAD_CHNL		0x5000
+#define MAD_DIMM(ch)		(0x5004 + 4 * (ch))
+
+#define MRC_REVISION		0x5034
 
 #define GFXVTBAR		0x5400
 #define EDRAMBAR		0x5408
@@ -126,6 +129,8 @@
 #define  MAILBOX_BIOS_ERROR_VR_ERROR		7
 
 #define BIOS_RESET_CPL		0x5da8
+
+#define MC_BIOS_DATA		0x5e04
 
 /* System Agent identification */
 u8 systemagent_revision(void);

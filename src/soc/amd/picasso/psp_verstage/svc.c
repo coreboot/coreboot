@@ -53,14 +53,14 @@ void svc_delay_in_usec(uint32_t delay)
 	SVC_CALL1(SVC_DELAY_IN_MICRO_SECONDS, delay, unused);
 }
 
-uint32_t svc_get_spi_rom_info(SPIROM_INFO *spi_rom_info)
+uint32_t svc_get_spi_rom_info(struct spirom_info *spi_rom_info)
 {
 	uint32_t retval = 0;
 	SVC_CALL1(SVC_GET_SPI_INFO, (uint32_t)spi_rom_info, retval);
 	return retval;
 }
 
-uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
+uint32_t svc_map_fch_dev(enum fch_io_device io_device,
 		uint32_t arg1, uint32_t arg2, void **io_device_axi_addr)
 {
 	uint32_t retval = 0;
@@ -70,7 +70,7 @@ uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
 	return retval;
 }
 
-uint32_t svc_unmap_fch_dev(FCH_IO_DEVICE io_device, void *io_device_axi_addr)
+uint32_t svc_unmap_fch_dev(enum fch_io_device io_device, void *io_device_axi_addr)
 {
 	uint32_t retval = 0;
 	assert(io_device < FCH_IO_DEVICE_END);
@@ -96,7 +96,7 @@ uint32_t svc_unmap_spi_rom(void *spi_rom_addr)
 }
 
 uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
-		uint32_t *bios_dir_offset, DIR_OFFSET_OPERATION operation)
+		uint32_t *bios_dir_offset, enum dir_offset_operation operation)
 {
 	uint32_t retval = 0;
 	assert(operation < DIR_OFFSET_OPERATION_MAX);
@@ -105,7 +105,7 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 	return retval;
 }
 
-uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
+uint32_t svc_save_uapp_data(enum uapp_copybuf type, void *address,
 		uint32_t size)
 {
 	uint32_t retval = 0;
@@ -114,7 +114,7 @@ uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
 	return retval;
 }
 
-uint32_t svc_read_timer_val(PSP_TIMER_TYPE type, uint64_t *counter_value)
+uint32_t svc_read_timer_val(enum psp_timer_type type, uint64_t *counter_value)
 {
 	unsigned int retval = 0;
 	assert(type < PSP_TIMER_TYPE_MAX);
@@ -122,7 +122,7 @@ uint32_t svc_read_timer_val(PSP_TIMER_TYPE type, uint64_t *counter_value)
 	return retval;
 }
 
-uint32_t svc_reset_system(RESET_TYPE reset_type)
+uint32_t svc_reset_system(enum reset_type reset_type)
 {
 	unsigned int retval = 0;
 	assert(reset_type < RESET_TYPE_MAX);
@@ -144,21 +144,21 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size)
 	return retval;
 }
 
-uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode)
+uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode sha_mode)
 {
 	uint32_t retval = 0;
 	SVC_CALL2(SVC_SHA, sha_op, sha_mode, retval);
 	return retval;
 }
 
-uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *rsa_params)
+uint32_t svc_rsa_pkcs_verify(const struct rsapkcs_verify_params *rsa_params)
 {
 	uint32_t retval = 0;
 	SVC_CALL1(SVC_RSAPKCS_VERIFY, rsa_params, retval);
 	return retval;
 }
 
-uint32_t svc_modexp(MOD_EXP_PARAMS *mod_exp_param)
+uint32_t svc_modexp(struct mod_exp_params *mod_exp_param)
 {
 	uint32_t retval = 0;
 	SVC_CALL1(SVC_MODEXP, mod_exp_param, retval);

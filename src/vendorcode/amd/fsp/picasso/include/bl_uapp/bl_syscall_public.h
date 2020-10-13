@@ -60,8 +60,7 @@
 #define PSP_INFO_PRODUCTION_SILICON	0x00000002UL
 #define PSP_INFO_VALID			0x80000000UL
 
-typedef struct MOD_EXP_PARAMS_T
-{
+struct mod_exp_params {
 	char		*pExponent;	// Exponent address
 	unsigned int	ExpSize;	// Exponent size in bytes
 	char		*pModulus;	// Modulus address
@@ -69,10 +68,9 @@ typedef struct MOD_EXP_PARAMS_T
 	char		*pMessage;	// Message address, same size as ModulusSize
 	char		*pOutput;	// Output address; Must be big enough to hold the
 					// data of ModulusSize
-} MOD_EXP_PARAMS;
+};
 
-typedef struct _RSAPSS_VERIFY_PARAMS_T
-{
+struct rsapss_verify_params {
 	char		*pHash;         // Message digest to verify the RSA signature
 	unsigned int	HashLen;        // hash length in bytes
 	char		*pModulus;      // Modulus address
@@ -80,10 +78,9 @@ typedef struct _RSAPSS_VERIFY_PARAMS_T
 	char		*pExponent;     // Exponent address
 	unsigned int	ExpSize;        // Exponent length in bytes
 	char		*pSig;          // Signature to be verified, same size as ModulusSize
-} RSAPSS_VERIFY_PARAMS;
+};
 
-typedef struct RSAPKCS_VERIFY_PARAMS_T
-{
+struct rsapkcs_verify_params {
 	char		*pHash;         // Message digest to verify the RSA signature
 	unsigned int	HashLen;        // hash length in bytes
 	char		*pModulus;      // Modulus address
@@ -91,19 +88,18 @@ typedef struct RSAPKCS_VERIFY_PARAMS_T
 	char		*pExponent;     // Exponent address
 	unsigned int	ExpSize;        // Exponent length in bytes
 	char		*pSig;          // Signature to be verified, same size as ModulusSize
-} RSAPKCS_VERIFY_PARAMS;
+};
 
-typedef enum _PSP_BOOT_MODE
-{
+enum psp_boot_mode {
 	PSP_BOOT_MODE_S0 = 0x0,
 	PSP_BOOT_MODE_S0i3_RESUME = 0x1,
 	PSP_BOOT_MODE_S3_RESUME = 0x2,
 	PSP_BOOT_MODE_S4 = 0x3,
 	PSP_BOOT_MODE_S5_COLD = 0x4,
 	PSP_BOOT_MODE_S5_WARM = 0x5,
-} PSP_BOOT_MODE;
+};
 
-typedef enum FCH_IO_DEVICE {
+enum fch_io_device {
 	FCH_IO_DEVICE_SPI,
 	FCH_IO_DEVICE_I2C,
 	FCH_IO_DEVICE_GPIO,
@@ -114,68 +110,61 @@ typedef enum FCH_IO_DEVICE {
 	FCH_IO_DEVICE_IOPORT,
 
 	FCH_IO_DEVICE_END,
-} FCH_IO_DEVICE;
+};
 
 /* Svc_UpdatePspBiosDir can be used to GET or SET the PSP or BIOS directory
  * offsets. This enum is used to specify whether it is a GET or SET operation.
  */
-typedef enum DIR_OFFSET_OPERATION_E {
+enum dir_offset_operation {
 	DIR_OFFSET_GET = 0x0,
 	DIR_OFFSET_SET,
 	DIR_OFFSET_OPERATION_MAX
-} DIR_OFFSET_OPERATION;
+};
 
-typedef enum FCH_I2C_CONTROLLER_ID_E
-{
+enum fch_i2c_controller_id {
 	FCH_I2C_CONTROLLER_ID_2 = 2,
 	FCH_I2C_CONTROLLER_ID_3 = 3,
 	FCH_I2C_CONTROLLER_ID_4 = 4,
 	FCH_I2C_CONTROLLER_ID_MAX,
-} FCH_I2C_CONTROLLER_ID;
+};
 
-typedef enum UAPP_COPYBUF
-{
+enum uapp_copybuf {
 	UAPP_COPYBUF_CHROME_WORKBUF = 0x0,
 	UAPP_COPYBUF_MAX = 0x1,
-} UAPP_COPYBUF;
+};
 
-typedef struct SPIROM_INFO
-{
+struct spirom_info {
 	void *SpiBiosSysHubBase;
 	void *SpiBiosSmnBase;
 	uint32_t SpiBiosSize;
-} SPIROM_INFO;
+};
 
-typedef enum PSP_TIMER_TYPE {
+enum psp_timer_type {
 	PSP_TIMER_TYPE_CHRONO     = 0,
 	PSP_TIMER_TYPE_RTC        = 1,
 	PSP_TIMER_TYPE_MAX        = 2,
-} PSP_TIMER_TYPE;
+};
 
-typedef enum RESET_TYPE
-{
+enum reset_type {
 	RESET_TYPE_COLD    = 0,
 	RESET_TYPE_WARM    = 1,
 	RESET_TYPE_MAX     = 2,
-} RESET_TYPE;
+};
 
 /* SHA types same as ccp SHA type in crypto.h */
-typedef enum SHA_TYPE
-{
+enum sha_type {
 	SHA_TYPE_256,
 	SHA_TYPE_512
-} SHA_TYPE;
+};
 
 /* All SHA operation supported */
-typedef enum SHA_OPERATION_MODE
-{
+enum sha_operation_mode {
 	SHA_GENERIC
-} SHA_OPERATION_MODE;
+};
 
 /* SHA Supported Data Structures */
-typedef struct SHA_GENERIC_DATA_T
-{
-	SHA_TYPE	SHAType;
+struct sha_generic_data {
+	enum sha_type	SHAType;
 	uint8_t		*Data;
 	uint32_t	DataLen;
 	uint32_t	DataMemType;
@@ -185,7 +174,7 @@ typedef struct SHA_GENERIC_DATA_T
 	uint32_t	IntermediateMsgLen;
 	uint32_t	Init;
 	uint32_t	Eom;
-} SHA_GENERIC_DATA;
+};
 
 /*
  * Exit to the main Boot Loader. This does not return back to user application.
@@ -231,7 +220,7 @@ void svc_debug_print_ex(uint32_t dword0,
  */
 uint32_t svc_wait_10ns_multiple(uint32_t multiple);
 
-/* Description     - Returns the current boot mode from the type PSP_BOOT_MODE found in
+/* Description     - Returns the current boot mode from the enum psp_boot_mode found in
  *                   bl_public.h.
  *
  * Inputs          - boot_mode - Output parameter passed in R0
@@ -261,7 +250,7 @@ void svc_delay_in_usec(uint32_t delay);
  *
  * Return value: BL_OK or error code
  */
-uint32_t svc_get_spi_rom_info(SPIROM_INFO *spi_rom_info);
+uint32_t svc_get_spi_rom_info(struct spirom_info *spi_rom_info);
 
 /* Map the FCH IO device register space (SPI/I2C/GPIO/eSPI/etc...)
  *
@@ -273,7 +262,7 @@ uint32_t svc_get_spi_rom_info(SPIROM_INFO *spi_rom_info);
  *
  * Return value: BL_OK or error code
  */
-uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
+uint32_t svc_map_fch_dev(enum fch_io_device io_device,
 		uint32_t arg1, uint32_t arg2, void **io_device_axi_addr);
 
 /* Unmap the FCH IO device register space mapped earlier using Svc_MapFchIODevice()
@@ -284,7 +273,7 @@ uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
  *
  * Return value: BL_OK or error code
  */
-uint32_t svc_unmap_fch_dev(FCH_IO_DEVICE io_device,
+uint32_t svc_unmap_fch_dev(enum fch_io_device io_device,
 		void *io_device_axi_addr);
 
 /* Map the SPIROM FLASH device address space
@@ -324,7 +313,7 @@ uint32_t svc_unmap_spi_rom(void *spi_rom_addr);
  * Return value: BL_OK or error code
  */
 uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
-		uint32_t *bios_dir_offset, DIR_OFFSET_OPERATION operation);
+		uint32_t *bios_dir_offset, enum dir_offset_operation operation);
 
 /* Copies the data that is shared by verstage to the PSP BL owned memory
  *
@@ -333,7 +322,7 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
  *     address - Address in UAPP controlled/owned memory
  *     size    - Total size of memory to copy (max 16Kbytes)
  */
-uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
+uint32_t svc_save_uapp_data(enum uapp_copybuf type, void *address,
 		uint32_t size);
 
 /*
@@ -345,7 +334,7 @@ uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
  *		counter_value	- [out] return the raw counter value read from
  *				RTC or CHRONO_LO/HI counter register
  */
-uint32_t svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
+uint32_t svc_read_timer_val(enum psp_timer_type type, uint64_t *counter_value );
 
 /*
  *    Reset the system
@@ -353,7 +342,7 @@ uint32_t svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
  *   Parameters:
  *      reset_type -   Cold or Warm reset
  */
-uint32_t svc_reset_system(RESET_TYPE reset_type);
+uint32_t svc_reset_system(enum reset_type reset_type);
 
 /*
  *    Write postcode to Port-80
@@ -374,27 +363,27 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size);
 /*
  * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
  */
-uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
+uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode sha_mode);
 
 /*
  * RSA PSS Verification of signature and data
  *
  * Parameters:
- *     RSAPSS_VERIFY_PARAMS   -   Pointer to RSA PSS parameters
+ *     rsapss_verify_params   -   Pointer to RSA PSS parameters
  *
  * Return value: BL_OK or error code
  */
-uint32_t svc_rsa_pss_verify(const RSAPSS_VERIFY_PARAMS *params);
+uint32_t svc_rsa_pss_verify(const struct rsapss_verify_params *params);
 
 /*
  * RSA PKCS Verification of signature and data
  *
  * Parameters:
- *     RSAPKCS_VERIFY_PARAMS   -   Pointer to RSA PKCS parameters
+ *     struct rsapkcs_verify_params   -   Pointer to RSA PKCS parameters
  *
  * Return value: BL_OK or error code
  */
-uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *params);
+uint32_t svc_rsa_pkcs_verify(const struct rsapkcs_verify_params *params);
 
 /* Calculate ModEx
  *
@@ -403,7 +392,7 @@ uint32_t svc_rsa_pkcs_verify(const RSAPKCS_VERIFY_PARAMS *params);
  *
  *   Return value: BL_OK or error code
  */
-uint32_t svc_modexp(MOD_EXP_PARAMS *mod_exp_param);
+uint32_t svc_modexp(struct mod_exp_params *mod_exp_param);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

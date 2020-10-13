@@ -70,7 +70,7 @@ static void aoac_set_bar(void *bar)
 static struct {
 	const char *name;
 	struct {
-		FCH_IO_DEVICE device;
+		enum fch_io_device device;
 		uint32_t arg0;
 	} args;
 	void (*set_bar)(void *bar);
@@ -90,7 +90,7 @@ static struct {
 uintptr_t *map_spi_rom(void)
 {
 	uintptr_t *addr = NULL;
-	struct SPIROM_INFO spi = {0};
+	struct spirom_info spi = {0};
 
 	if (svc_get_spi_rom_info(&spi))
 		printk(BIOS_DEBUG, "Error getting SPI ROM info.\n");

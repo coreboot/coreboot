@@ -11,7 +11,7 @@
 #include <swab.h>
 #include <vb2_api.h>
 
-static struct SHA_GENERIC_DATA_T sha_op;
+static struct sha_generic_data sha_op;
 static uint32_t sha_op_size_remaining;
 static uint8_t __attribute__((aligned(32))) sha_hash[64];
 
@@ -113,7 +113,7 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 	 * Since PSP expects everything in LE and *inout is BE array,
 	 * we'll use workbuf for temporary buffer for endian conversion.
 	 */
-	MOD_EXP_PARAMS mod_exp_param;
+	struct mod_exp_params mod_exp_param;
 	unsigned int key_bytes = key->arrsize * sizeof(uint32_t);
 	uint32_t *sig_swapped = workbuf32;
 	uint32_t *output_buffer = &workbuf32[key->arrsize];

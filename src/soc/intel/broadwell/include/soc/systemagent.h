@@ -87,6 +87,9 @@
 #define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + (x)))
 #define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + (x)))
 
+/* Memory controller characteristics */
+#define NUM_CHANNELS	2
+
 #define MAD_CHNL		0x5000
 #define MAD_DIMM(ch)		(0x5004 + 4 * (ch))
 

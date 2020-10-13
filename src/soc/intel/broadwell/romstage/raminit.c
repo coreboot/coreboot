@@ -27,12 +27,9 @@
  */
 static void report_memory_config(void)
 {
-	u32 addr_decode_ch[2];
 	int i;
 
 	const u32 addr_decoder_common = MCHBAR32(MAD_CHNL);
-	addr_decode_ch[0] = MCHBAR32(MAD_DIMM(0));
-	addr_decode_ch[1] = MCHBAR32(MAD_DIMM(1));
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
 	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
@@ -42,8 +39,8 @@ static void report_memory_config(void)
 	       (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
 
-	for (i = 0; i < ARRAY_SIZE(addr_decode_ch); i++) {
-		u32 ch_conf = addr_decode_ch[i];
+	for (i = 0; i < NUM_CHANNELS; i++) {
+		const u32 ch_conf = MCHBAR32(MAD_DIMM(i));
 
 		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
 

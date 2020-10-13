@@ -3,6 +3,9 @@
 #ifndef __SOC_ROCKCHIP_RK3288_DISPLAY_H__
 #define __SOC_ROCKCHIP_RK3288_DISPLAY_H__
 
+#include <device/device.h>
+#include <stdint.h>
+
 /*
  * this bit select edp phy pll, this bit define different between
  * rk3288 and rk3399 in edp phy, so implement it in soc specific code

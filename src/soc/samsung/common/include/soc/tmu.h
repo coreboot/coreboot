@@ -2,8 +2,8 @@
 
 /* EXYNOS - Thermal Management Unit */
 
-#ifndef CPU_SAMSUNG_EXYNOS5250_TMU_H
-#define CPU_SAMSUNG_EXYNOS5250_TMU_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_TMU_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_TMU_H
 
 struct tmu_reg {
 	unsigned int triminfo;
@@ -115,4 +115,4 @@ enum tmu_status_t tmu_monitor(struct tmu_info *info, int *temp);
  */
 int tmu_init(struct tmu_info *info);
 
-#endif	/* CPU_SAMSUNG_EXYNOS5250_TMU_H */
+#endif	/* SOC_SAMSUNG_COMMON_INCLUDE_SOC_TMU_H */

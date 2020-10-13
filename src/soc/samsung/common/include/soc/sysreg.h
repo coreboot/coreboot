@@ -2,8 +2,8 @@
 
 /* Register map for Exynos5 sysreg */
 
-#ifndef CPU_SAMSUNG_EXYNOS5250_SYSREG_H
-#define CPU_SAMSUNG_EXYNOS5250_SYSREG_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_SYSREG_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_SYSREG_H
 
 #include <soc/cpu.h>
 
@@ -23,4 +23,4 @@ static struct exynos5_sysreg * const exynos_sysreg =
 #define FIMDBYPASS_DISP1	(1 << 15)
 #define USB20_PHY_CFG_EN	(1 << 0)
 
-#endif
+#endif /* SOC_SAMSUNG_COMMON_INCLUDE_SOC_SYSREG_H */

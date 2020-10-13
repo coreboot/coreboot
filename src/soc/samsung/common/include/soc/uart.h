@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef CPU_SAMSUNG_EXYNOS5250_UART_H
-#define CPU_SAMSUNG_EXYNOS5250_UART_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_UART_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_UART_H
 
 struct s5p_uart {
 	unsigned int	ulcon;
@@ -21,4 +21,4 @@ struct s5p_uart {
 };
 check_member(s5p_uart, ubrdiv, 0x28);
 
-#endif
+#endif /* SOC_SAMSUNG_COMMON_INCLUDE_SOC_UART_H */

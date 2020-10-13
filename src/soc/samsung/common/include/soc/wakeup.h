@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef CPU_SAMSUNG_EXYNOS5250_WAKEUP_H
-#define CPU_SAMSUNG_EXYNOS5250_WAKEUP_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_WAKEUP_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_WAKEUP_H
 
 /* Power Down Modes */
 #define S5P_CHECK_SLEEP	0x00000BAD
@@ -23,4 +23,4 @@ int get_wakeup_state(void);
 void wakeup(void);
 void wakeup_enable_uart(void);
 
-#endif	/* CPU_SAMSUNG_EXYNOS5250_WAKEUP_H */
+#endif	/* SOC_SAMSUNG_COMMON_INCLUDE_SOC_WAKEUP_H */

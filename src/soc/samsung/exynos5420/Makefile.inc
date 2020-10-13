@@ -43,6 +43,7 @@ ramstage-y += usb.c
 
 rmodules_$(ARCH-ROMSTAGE-y)-y += timer.c
 
+CPPFLAGS_common += -Isrc/soc/samsung/common/include/
 CPPFLAGS_common += -Isrc/soc/samsung/exynos5420/include/
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin

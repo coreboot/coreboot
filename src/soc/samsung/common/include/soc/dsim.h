@@ -2,8 +2,8 @@
 
 /* Register map for Exynos5 MIPI-DSIM */
 
-#ifndef CPU_SAMSUNG_EXYNOS5420_DSIM_H
-#define CPU_SAMSUNG_EXYNOS5420_DSIM_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_DSIM_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_DSIM_H
 
 /* DSIM register map */
 struct exynos5_dsim {
@@ -89,4 +89,4 @@ check_member(exynos5_dsim, phyacchr1, 0x54);
 #define DSIM_STOP_STATE_CLK     (1 << 8)
 #define DSIM_TX_READY_HS_CLK    (1 << 10)
 
-#endif
+#endif /* SOC_SAMSUNG_COMMON_INCLUDE_SOC_DSIM_H */

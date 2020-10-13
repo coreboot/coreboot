@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H
-#define CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H
+#ifndef SOC_SAMSUNG_COMMON_INCLUDE_SOC_TRUSTZONE_H
+#define SOC_SAMSUNG_COMMON_INCLUDE_SOC_TRUSTZONE_H
 
 #include <stdint.h>
 
@@ -62,4 +62,4 @@ check_member(exynos_tzpc, pcellid3, 0xffc);
 
 void trustzone_init(void);
 
-#endif	/* CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H */
+#endif	/* SOC_SAMSUNG_COMMON_INCLUDE_SOC_TRUSTZONE_H */

@@ -41,6 +41,7 @@ ramstage-y += dp-reg.c
 ramstage-y += fb.c
 ramstage-y += usb.c
 
+CPPFLAGS_common += -Isrc/soc/samsung/common/include/
 CPPFLAGS_common += -Isrc/soc/samsung/exynos5250/include/
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin

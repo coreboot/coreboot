@@ -95,8 +95,8 @@ static void broadwell_finalize(void *unused)
 	/* Lock */
 	RCBA32_OR(0x3a6c, 0x00000001);
 
-	/* Read+Write the following register */
-	RCBA32(0x21a4) = RCBA32(0x21a4);
+	/* Read+Write this R/WO register */
+	RCBA32(LCAP) = RCBA32(LCAP);
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

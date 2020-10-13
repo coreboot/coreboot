@@ -48,6 +48,8 @@
 #define PIRQG		6
 #define PIRQH		7
 
+#define LCAP		0x21a4
+
 /* IO Buffer Programming */
 #define IOBPIRI		0x2330
 #define IOBPD		0x2334

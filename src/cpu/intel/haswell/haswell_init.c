@@ -207,8 +207,8 @@ int haswell_is_ult(void)
 	return ult;
 }
 
-/* The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
- * the 100MHz BCLCK against the 24MHz BLCK to restore the clocks properly
+/* The core 100MHz BCLK is disabled in deeper c-states. One needs to calibrate
+ * the 100MHz BCLK against the 24MHz BCLK to restore the clocks properly
  * when a core is woken up. */
 static int pcode_ready(void)
 {
@@ -247,7 +247,7 @@ static void calibrate_24mhz_bclk(void)
 
 	err_code = MCHBAR32(BIOS_MAILBOX_INTERFACE) & 0xff;
 
-	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration response: %d\n",
+	printk(BIOS_DEBUG, "PCODE: 24MHz BCLK calibration response: %d\n",
 	       err_code);
 
 	/* Read the calibrated value. */
@@ -259,7 +259,7 @@ static void calibrate_24mhz_bclk(void)
 		return;
 	}
 
-	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration value: 0x%08x\n",
+	printk(BIOS_DEBUG, "PCODE: 24MHz BCLK calibration value: 0x%08x\n",
 	       MCHBAR32(BIOS_MAILBOX_DATA));
 }
 

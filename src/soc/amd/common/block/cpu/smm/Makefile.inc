@@ -1,7 +1,5 @@
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_SMM),y)
 
-subdirs-y += ../../../../../../cpu/x86/smm
-
 romstage-y += smm_helper.c
 postcar-y += smm_helper.c
 ramstage-y += finalize.c

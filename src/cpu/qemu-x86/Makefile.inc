@@ -9,5 +9,4 @@ ramstage-y += qemu.c
 
 subdirs-y += ../x86/mtrr
 subdirs-y += ../x86/lapic
-subdirs-y += ../x86/smm
 subdirs-y += ../x86/tsc

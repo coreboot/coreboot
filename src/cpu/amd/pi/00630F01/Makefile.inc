@@ -15,4 +15,3 @@ subdirs-y += ../../../x86/lapic
 subdirs-y += ../../../x86/cache
 subdirs-y += ../../../x86/mtrr
 subdirs-y += ../../../x86/pae
-subdirs-y += ../../../x86/smm

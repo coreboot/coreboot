@@ -19,7 +19,7 @@ const char *mainboard_vbt_filename(void)
 	return "vbt.bin";
 }
 
-static char vbt_data[8 * KiB];
+static char vbt_data[9 * KiB];
 static size_t vbt_data_sz;
 
 void *locate_vbt(size_t *vbt_size)

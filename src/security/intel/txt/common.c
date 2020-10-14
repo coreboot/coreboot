@@ -6,6 +6,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/mtrr.h>
 #include <lib.h>
 #include <smp/node.h>
 #include <string.h>
@@ -262,6 +263,17 @@ int intel_txt_run_bios_acm(const u8 input_params)
 	 */
 	if (!IS_ALIGNED((uintptr_t)acm_data, (1UL << log2_ceil(acm_len)))) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't aligned to its size.\n");
+		rdev_munmap(&acm, acm_data);
+		return -1;
+	}
+
+	/*
+	 * When setting up the MTRRs to cache the BIOS ACM, one must cache less than
+	 * a page (4 KiB) of unused memory after the BIOS ACM. On Haswell, failure
+	 * to do so will cause a TXT reset with Class Code 5, Major Error Code 2.
+	 */
+	if (popcnt(ALIGN_UP(acm_len, 4096)) > get_var_mtrr_count()) {
+		printk(BIOS_ERR, "TEE-TXT: Not enough MTRRs to cache this BIOS ACM's size.\n");
 		rdev_munmap(&acm, acm_data);
 		return -1;
 	}

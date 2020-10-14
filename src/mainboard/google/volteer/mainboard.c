@@ -51,7 +51,8 @@ void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 		return;
 	}
 
-	if (cr50_is_long_interrupt_pulse_enabled()) {
+	if (CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) &&
+	    cr50_is_long_interrupt_pulse_enabled()) {
 		printk(BIOS_INFO, "Enabling S0i3.4\n");
 	} else {
 		/*

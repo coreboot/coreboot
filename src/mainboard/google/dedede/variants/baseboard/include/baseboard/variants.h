@@ -36,7 +36,4 @@ int variant_memory_sku(void);
  */
 bool variant_mem_is_half_populated(void);
 
-/* Variant Intel Speed Shift Technology override */
-void variant_isst_override(void);
-
 #endif /*__BASEBOARD_VARIANTS_H__ */

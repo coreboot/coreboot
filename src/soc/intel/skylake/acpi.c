@@ -35,6 +35,8 @@
 
 #include "chip.h"
 
+#define  CPUID_6_EAX_ISST	(1 << 7)
+
 /*
  * List of suported C-states in this processor.
  */
@@ -379,7 +381,7 @@ void generate_cpu_entries(const struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	if (config->speed_shift_enable) {
+	if (cpuid_eax(6) & CPUID_6_EAX_ISST) {
 		struct cppc_config cppc_config;
 		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
 		acpigen_write_CPPC_package(&cppc_config);
@@ -405,7 +407,7 @@ void generate_cpu_entries(const struct device *device)
 						cores_per_package);
 			}
 
-			if (config->speed_shift_enable)
+			if (cpuid_eax(6) & CPUID_6_EAX_ISST)
 				acpigen_write_CPPC_method();
 
 			acpigen_pop_len();

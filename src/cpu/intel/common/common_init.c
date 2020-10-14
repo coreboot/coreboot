@@ -239,11 +239,23 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	if (version >= 2) {
 		/* Autonomous Selection Enable is populated below */
 
-		/* Autonomous Activity Window Register */
-		config->regs[CPPC_AUTO_ACTIVITY_WINDOW] = unsupported;
+		msr.addrl = IA32_HWP_REQUEST;
 
-		/* Energy Performance Preference Register */
-		config->regs[CPPC_PERF_PREF] = unsupported;
+		/*
+		 * Autonomous Activity Window Register
+		 * ResourceTemplate(){Register(FFixedHW, 0x0a, 0x20, 0x774, 0x04,)},
+		 */
+		msr.bit_width = 10;
+		msr.bit_offset = 32;
+		config->regs[CPPC_AUTO_ACTIVITY_WINDOW] = msr;
+
+		/*
+		 * Autonomous Energy Performance Preference Register
+		 * ResourceTemplate(){Register(FFixedHW, 0x08, 0x18, 0x774, 0x04,)},
+		 */
+		msr.bit_width = 8;
+		msr.bit_offset = 24;
+		config->regs[CPPC_PERF_PREF] = msr;
 
 		/* Reference Performance */
 		config->regs[CPPC_REF_PERF] = unsupported;

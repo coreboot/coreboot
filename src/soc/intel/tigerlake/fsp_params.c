@@ -365,6 +365,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
 	params->EnableMultiPhaseSiliconInit = 1;
+
+	/* Disable C1 C-state Demotion */
+	params->C1StateAutoDemotion = 0;
+
 	mainboard_silicon_init_params(params);
 }
 

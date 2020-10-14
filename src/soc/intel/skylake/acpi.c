@@ -369,6 +369,19 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
+static void generate_cppc_entries(int core_id)
+{
+	/* Generate GCPC table in first logical core */
+	if (core_id == 0) {
+		struct cppc_config cppc_config;
+		cpu_init_cppc_config(&cppc_config, CPPC_VERSION_2);
+		acpigen_write_CPPC_package(&cppc_config);
+	}
+
+	/* Write _CST entry for each logical core */
+	acpigen_write_CPPC_method();
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS, plen = 6;
@@ -377,15 +390,10 @@ void generate_cpu_entries(const struct device *device)
 	int numcpus = totalcores/cores_per_package;
 	config_t *config = config_of_soc();
 	int is_s0ix_enable = config->s0ix_enable;
+	const bool isst_supported = cpuid_eax(6) & CPUID_6_EAX_ISST;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
-
-	if (cpuid_eax(6) & CPUID_6_EAX_ISST) {
-		struct cppc_config cppc_config;
-		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
-		acpigen_write_CPPC_package(&cppc_config);
-	}
 
 	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
 		for (core_id = 0; core_id < cores_per_package; core_id++) {
@@ -407,8 +415,8 @@ void generate_cpu_entries(const struct device *device)
 						cores_per_package);
 			}
 
-			if (cpuid_eax(6) & CPUID_6_EAX_ISST)
-				acpigen_write_CPPC_method();
+			if (isst_supported)
+				generate_cppc_entries(core_id);
 
 			acpigen_pop_len();
 		}

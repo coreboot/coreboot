@@ -10,6 +10,8 @@
 
 #define ACPIGEN_MAXLEN 0xfffff
 
+#define CPPC_PACKAGE_NAME "GCPC"
+
 #include <lib.h>
 #include <string.h>
 #include <acpi/acpigen.h>
@@ -1578,8 +1580,6 @@ void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count)
 	acpigen_pop_len();	/* Method _DSM */
 }
 
-#define CPPC_PACKAGE_NAME "\\GCPC"
-
 void acpigen_write_CPPC_package(const struct cppc_config *config)
 {
 	u32 i;
@@ -1621,9 +1621,12 @@ void acpigen_write_CPPC_package(const struct cppc_config *config)
 
 void acpigen_write_CPPC_method(void)
 {
+	char pscope[16];
+	snprintf(pscope, sizeof(pscope), CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
+
 	acpigen_write_method("_CPC", 0);
 	acpigen_emit_byte(RETURN_OP);
-	acpigen_emit_namestring(CPPC_PACKAGE_NAME);
+	acpigen_emit_namestring(pscope);
 	acpigen_pop_len();
 }
 

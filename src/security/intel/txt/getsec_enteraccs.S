@@ -58,6 +58,7 @@ getsec_enteraccs:
 	/* Reserve space on stack for GDT */
 	subl	$8, %esp
 
+	PUSH_MSR MTRR_DEF_TYPE_MSR
 	PUSH_MSR IA32_MISC_ENABLE
 	PUSH_MSR MTRR_FIX_64K_00000
 	PUSH_MSR MTRR_FIX_16K_80000
@@ -290,12 +291,7 @@ cond_pop_var_mtrrs:
 	POP_MSR MTRR_FIX_16K_80000
 	POP_MSR MTRR_FIX_64K_00000
 	POP_MSR IA32_MISC_ENABLE
-
-	/* Enable fixed MTRRs */
-	movl	$(MTRR_DEF_TYPE_MSR), %ecx
-	rdmsr
-	orl	$(MTRR_DEF_TYPE_FIX_EN), %eax
-	wrmsr
+	POP_MSR MTRR_DEF_TYPE_MSR
 
 	/* Enable cache */
 	movl	%cr0, %eax

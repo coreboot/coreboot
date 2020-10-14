@@ -59,6 +59,9 @@ chip soc/intel/alderlake
 	register "PcieClkSrcUsage[1]" = "0x8"
 	register "PcieRpClkReqDetect[8]" = "1"
 
+	# Enable PCH PCIE RP 11 for optane
+	register "PcieRpEnable[10]" = "1"
+
 	# Enable CPU PCIE RP 1 using PEG CLK 0
 	register "PcieClkSrcUsage[0]" = "0x40"
 
@@ -241,7 +244,7 @@ chip soc/intel/alderlake
 		device pci 1c.7 off end # RP8
 		device pci 1d.0 on  end # RP9
 		device pci 1d.1 off end # RP10
-		device pci 1d.2 off end # RP11
+		device pci 1d.2 on  end # RP11
 		device pci 1d.3 off end # RP12
 		device pci 1e.0 on  end # UART0
 		device pci 1e.1 off end # UART1

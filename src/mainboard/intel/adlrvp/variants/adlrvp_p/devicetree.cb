@@ -43,7 +43,7 @@ chip soc/intel/alderlake
 
 	# Enable PCH PCIE RP 5 using CLK 2
 	register "PcieRpEnable[4]" = "1"
-	register "PcieClkSrcClkReq[4]" = "4"
+	register "PcieClkSrcClkReq[2]" = "2"
 	register "PcieClkSrcUsage[2]" = "0x4"
 	register "PcieRpClkReqDetect[4]" = "1"
 
@@ -55,7 +55,7 @@ chip soc/intel/alderlake
 
 	# Enable PCH PCIE RP 9 using CLK 1
 	register "PcieRpEnable[8]" = "1"
-	register "PcieClkSrcClkReq[8]" = "8"
+	register "PcieClkSrcClkReq[1]" = "1"
 	register "PcieClkSrcUsage[1]" = "0x8"
 	register "PcieRpClkReqDetect[8]" = "1"
 

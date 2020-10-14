@@ -58,6 +58,15 @@ config BOARD_GOOGLE_VOLTEER2
 	select USE_CAR_NEM_ENHANCED_V2
 	select DRIVERS_GENESYSLOGIC_GL9755
 
+# Reworked Volteer2 prototype, Haven chip replaced with Dauntless demo board
+config BOARD_GOOGLE_VOLTEER2_TI50
+	bool "-> Volteer2_Ti50"
+	select BOARD_GOOGLE_BASEBOARD_VOLTEER
+	select VARIANT_HAS_MIPI_CAMERA
+	select SOC_INTEL_CSE_LITE_SKU
+	select USE_CAR_NEM_ENHANCED_V2
+	select DRIVERS_GENESYSLOGIC_GL9755
+
 config BOARD_GOOGLE_VOXEL
 	bool "-> Voxel"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER

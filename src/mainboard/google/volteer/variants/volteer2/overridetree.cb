@@ -56,6 +56,32 @@ chip soc/intel/tigerlake
 	register "FastPkgCRampDisable[VR_DOMAIN_SA]" = "1"
 	register "FastPkgCRampDisable[VR_DOMAIN_VLCC]" = "1"
 
+	# Depending on whether we use I2C bus 1 or SPI bus 0 for TPM
+	# communication, that one needs early initialization.
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = CONFIG(MAINBOARD_HAS_SPI_TPM_CR50),
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.early_init = CONFIG(MAINBOARD_HAS_I2C_TPM_CR50),
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf

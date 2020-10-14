@@ -243,6 +243,11 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H11, 1, DEEP),
+
+	/* The two signals used for I2C communication with Ti50 on the
+	 * volteer2_ti50 variant. */
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1), /* PCH_I2C1_TOUCH_USI_SDA */
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1), /* PCH_I2C1_TOUCH_USI_SCL */
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

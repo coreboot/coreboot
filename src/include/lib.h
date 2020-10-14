@@ -46,6 +46,8 @@ void hexdump32(char LEVEL, const void *d, size_t len);
  */
 size_t hexstrtobin(const char *str, uint8_t *buf, size_t len);
 
+/* Population Count: number of bits that are one */
+static inline int popcnt(u32 x) { return __builtin_popcount(x); }
 /* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
 static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }
 /* Integer binary logarithm (rounding down): log2(0) == -1, log2(5) == 2 */
@@ -56,6 +58,7 @@ static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
 /* Integer binary logarithm (rounding up): log2_ceil(0) == -1, log2(5) == 3 */
 static inline int log2_ceil(u32 x) { return (x == 0) ? -1 : log2(x * 2 - 1); }
 
+static inline int popcnt64(u64 x) { return __builtin_popcountll(x); }
 static inline int clz64(u64 x) { return x ? __builtin_clzll(x) : sizeof(x) * 8; }
 static inline int log2_64(u64 x) { return sizeof(x) * 8 - clz64(x) - 1; }
 static inline int __ffs64(u64 x) { return log2_64(x & (u64)(-(s64)x)); }

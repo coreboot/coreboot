@@ -7,27 +7,26 @@
 
 #define ACPI_DSM_I2C_HID_UUID		"3CDFF6F7-4267-4555-AD05-B30A3D8938DE"
 
+/* I2C HID currently supports revision 1 only, for which, only 1 additional
+ * function is supported. Thus, the query function should return 0x3:
+ *	bit 0 = additional function supported
+ *	bit 1 = function with index 1 supported
+ * All other revisions do not support additional functions and hence return 0
+*/
+
 static void i2c_hid_func0_cb(void *arg)
 {
 	/* ToInteger (Arg1, Local2) */
 	acpigen_write_to_integer(ARG1_OP, LOCAL2_OP);
-	/* If (LEqual (Local2, 0x0)) */
-	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x0);
-	/*   Return (Buffer (One) { 0x1f }) */
-	acpigen_write_return_singleton_buffer(0x1f);
+	/* If (LEqual (Local2, 0x1)) */
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x1);
+	/*   Return (Buffer (One) { 0x3 }) */
+	acpigen_write_return_singleton_buffer(0x3);
 	acpigen_pop_len();	/* Pop : If */
 	/* Else */
 	acpigen_write_else();
-	/*   If (LEqual (Local2, 0x1)) */
-	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x1);
-	/*     Return (Buffer (One) { 0x3f }) */
-	acpigen_write_return_singleton_buffer(0x3f);
-	acpigen_pop_len();	/* Pop : If */
-	/*   Else */
-	acpigen_write_else();
 	/*     Return (Buffer (One) { 0x0 }) */
 	acpigen_write_return_singleton_buffer(0x0);
-	acpigen_pop_len();	/* Pop : Else */
 	acpigen_pop_len();	/* Pop : Else */
 }
 

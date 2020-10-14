@@ -29,8 +29,6 @@ chip soc/intel/cannonlake
 	register "satapwroptimize" = "1"
 	# Enable System Agent dynamic frequency
 	register "SaGv" = "SaGv_Enabled"
-	# Enable Speed Shift Technology support
-	register "speed_shift_enable" = "1"
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 	# Enable DPTF

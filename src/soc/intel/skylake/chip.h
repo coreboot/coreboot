@@ -461,8 +461,7 @@ struct soc_intel_skylake_config {
 	 */
 	u8 HeciEnabled;
 	u8 PmTimerDisabled;
-	/* Intel Speed Shift Technology */
-	u8 speed_shift_enable;
+
 	/*
 	 * Enable VR specific mailbox command
 	 * 000b - Don't Send any VR command

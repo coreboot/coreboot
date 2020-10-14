@@ -54,8 +54,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
 
-	# Set speed_shift_enable to 1 to enable P-States, and 0 to disable
-	register "speed_shift_enable" = "1"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 7,
 		.tdp_pl2_override = 18,

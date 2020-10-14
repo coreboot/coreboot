@@ -30,9 +30,6 @@ chip soc/intel/skylake
 	register "gen3_dec" = "0x00fc02e1" # COM2/4/5/6 ports 0x2e0 - 0x2ff
 	register "gen4_dec" = "0x000c0081" # 0x80 - 0x8f
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Disable DPTF
 	register "dptf_enable" = "0"
 

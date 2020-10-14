@@ -57,9 +57,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[4]" = "4"
 	register "PcieClkSrcClkReq[5]" = "5"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPP_G5"
 

@@ -271,9 +271,6 @@ struct soc_intel_tigerlake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
 
-	/* Intel Speed Shift Technology */
-	uint8_t speed_shift_enable;
-
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
 

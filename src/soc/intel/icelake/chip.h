@@ -169,8 +169,7 @@ struct soc_intel_icelake_config {
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
-	/* Intel Speed Shift Technology */
-	uint8_t speed_shift_enable;
+
 	/* Enable VR specific mailbox command
 	 * 00b - no VR specific cmd sent
 	 * 01b - VR mailbox cmd specifically for the MPS IMPV8 VR will be sent

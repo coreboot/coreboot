@@ -3,9 +3,6 @@ chip soc/intel/skylake
 	register "deep_s5_enable_ac" = "0"
 	register "deep_s5_enable_dc" = "0"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "0"
 	register "SkipExtGfxScan" = "1"

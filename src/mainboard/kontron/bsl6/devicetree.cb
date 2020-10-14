@@ -2,8 +2,6 @@
 
 chip soc/intel/skylake
 
-	register "speed_shift_enable" = "1"
-
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"

@@ -16,9 +16,6 @@ chip soc/intel/skylake
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Enable DPTF
 	register "dptf_enable" = "1"
 

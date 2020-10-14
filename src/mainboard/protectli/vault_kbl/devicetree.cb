@@ -17,8 +17,6 @@ chip soc/intel/skylake
 	register "gen3_dec" = "0x000c03e1"
 	register "gen4_dec" = "0x001c02e1"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
 	register "eist_enable" = "1"
 
 	# Disable DPTF

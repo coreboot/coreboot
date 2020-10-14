@@ -43,9 +43,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[4]" = "4"
 	register "PcieClkSrcClkReq[5]" = "5"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Disable S0ix
 	register "s0ix_enable" = "0"
 

@@ -230,9 +230,6 @@ chip soc/intel/tigerlake
 	register "DdiPort3Ddc" = "0"
 	register "DdiPort4Ddc" = "0"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 

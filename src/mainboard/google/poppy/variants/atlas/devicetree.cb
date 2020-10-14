@@ -59,7 +59,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
 
-	register "speed_shift_enable" = "1"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 7,
 		.tdp_pl2_override = 15,

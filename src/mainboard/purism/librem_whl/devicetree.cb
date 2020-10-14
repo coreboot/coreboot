@@ -24,9 +24,6 @@ chip soc/intel/cannonlake
 		.tdp_pl2_override = 28,
 	}"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Enable Enhanced Intel SpeedStep
 	register "eist_enable" = "1"
 

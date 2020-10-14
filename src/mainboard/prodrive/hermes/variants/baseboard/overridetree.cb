@@ -126,8 +126,6 @@ chip soc/intel/cannonlake
 	# Thermal
 	register "tcc_offset" = "6"     # TCC of 94C
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
 
 	# Disable S0ix
 	register "s0ix_enable" = "0"

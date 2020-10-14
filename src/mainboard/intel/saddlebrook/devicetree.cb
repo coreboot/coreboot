@@ -14,9 +14,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# FSP Configuration
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"

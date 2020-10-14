@@ -225,7 +225,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
-	register "speed_shift_enable" = "1"
 	# PL2 override 18W for AML-Y
 	register "power_limits_config" = "{
 		.tdp_pl2_override = 18,

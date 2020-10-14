@@ -30,9 +30,6 @@ chip soc/intel/skylake
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Enable DPTF
 	register "dptf_enable" = "1"
 

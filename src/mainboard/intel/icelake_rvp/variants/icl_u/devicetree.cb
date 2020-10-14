@@ -152,9 +152,6 @@ chip soc/intel/icelake
 		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
 	}"
 
-	# Enable "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# Enable DPTF
 	register "dptf_enable" = "1"
 

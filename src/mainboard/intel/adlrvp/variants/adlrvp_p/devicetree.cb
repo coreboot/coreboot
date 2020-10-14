@@ -13,8 +13,6 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPP_E"
 
 	# FSP configuration
-	# Enable Speed Shift Technology/HWP support
-	register "speed_shift_enable" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-C Port2

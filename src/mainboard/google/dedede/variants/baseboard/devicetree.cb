@@ -136,9 +136,6 @@ chip soc/intel/jasperlake
 	register "DdiPortBDdc" = "1"
 	register "DdiPortCDdc" = "1"
 
-	# Enable Speed Shift Technology support
-	register "speed_shift_enable" = "1"
-
 	# Enable DPTF
 	register "dptf_enable" = "1"
 

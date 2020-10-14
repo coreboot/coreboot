@@ -261,8 +261,6 @@ struct soc_intel_cannonlake_config {
 	/* Enables support for Teton Glacier hybrid storage device */
 	uint8_t TetonGlacierMode;
 
-	/* Intel Speed Shift Technology */
-	uint8_t speed_shift_enable;
 	/* Enable VR specific mailbox command
 	 * 00b - no VR specific cmd sent
 	 * 01b - VR mailbox cmd specifically for the MPS IMPV8 VR will be sent

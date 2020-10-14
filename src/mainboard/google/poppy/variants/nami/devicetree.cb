@@ -266,8 +266,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
-	register "speed_shift_enable" = "1"
-
 	register "tcc_offset" = "3"     # TCC of 97C
 	register "power_limits_config" = "{
 		.psys_pmax = 101,

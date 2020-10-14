@@ -29,9 +29,6 @@ chip soc/intel/skylake
 	# "Intel SpeedStep Technology"
 	register "eist_enable" = "1"
 
-	# "Intel Speed Shift Technology"
-	register "speed_shift_enable" = "1"
-
 	# DPTF
 	register "dptf_enable" = "1"
 

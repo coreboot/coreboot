@@ -4,7 +4,6 @@ chip soc/intel/cannonlake
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "RMT" = "0"
-	register "speed_shift_enable" = "1"
 
 	register "PchHdaDspEnable" = "0"
         register "PchHdaAudioLinkHda" = "1"

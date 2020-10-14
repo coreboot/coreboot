@@ -227,7 +227,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
-	register "speed_shift_enable" = "1"
 	register "dptf_enable" = "1"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 7,

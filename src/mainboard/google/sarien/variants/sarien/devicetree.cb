@@ -32,7 +32,6 @@ chip soc/intel/cannonlake
 	# USB2 PHY Power gating
 	register "PchUsb2PhySusPgDisable" = "1"
 
-	register "speed_shift_enable" = "1"
 	register "s0ix_enable" = "1"
 	register "dptf_enable" = "1"
 	register "satapwroptimize" = "1"

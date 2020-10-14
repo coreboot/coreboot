@@ -185,8 +185,6 @@ struct soc_intel_alderlake_config {
 	uint8_t HeciEnabled;
 	/* PL2 Override value in Watts */
 	uint32_t tdp_pl2_override;
-	/* Intel Speed Shift Technology */
-	uint8_t speed_shift_enable;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;

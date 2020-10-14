@@ -34,10 +34,10 @@ static void configure_isst(void)
 
 	if (conf->speed_shift_enable) {
 		/*
-		* Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
-		  is supported or not. coreboot needs to configure MSR 0x1AA
-		  which is then reflected in the CPUID register.
-		*/
+		 * Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
+		 * is supported or not. coreboot needs to configure MSR 0x1AA
+		 * which is then reflected in the CPUID register.
+		 */
 		msr = rdmsr(MSR_MISC_PWR_MGMT);
 		msr.lo |= MISC_PWR_MGMT_ISST_EN; /* Enable Speed Shift */
 		msr.lo |= MISC_PWR_MGMT_ISST_EN_INT; /* Enable Interrupt */

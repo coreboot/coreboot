@@ -104,9 +104,7 @@ static void enable_var_mtrr(unsigned char deftype)
 
 #define MTRR_VERBOSE_LEVEL BIOS_NEVER
 
-/* MTRRs are at a 4KiB granularity. Therefore all address calculations can
- * be done with 32-bit numbers. This allows for the MTRR code to handle
- * up to 2^44 bytes (16 TiB) of address space. */
+/* MTRRs are at a 4KiB granularity. */
 #define RANGE_SHIFT 12
 #define ADDR_SHIFT_TO_RANGE_SHIFT(x) \
 	(((x) > RANGE_SHIFT) ? ((x) - RANGE_SHIFT) : RANGE_SHIFT)
@@ -115,18 +113,18 @@ static void enable_var_mtrr(unsigned char deftype)
 #define NUM_FIXED_MTRRS (NUM_FIXED_RANGES / RANGES_PER_FIXED_MTRR)
 
 /* Helpful constants. */
-#define RANGE_1MB PHYS_TO_RANGE_ADDR(1 << 20)
-#define RANGE_4GB (1 << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
+#define RANGE_1MB PHYS_TO_RANGE_ADDR(1ULL << 20)
+#define RANGE_4GB (1ULL << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
 
 #define MTRR_ALGO_SHIFT (8)
 #define MTRR_TAG_MASK ((1 << MTRR_ALGO_SHIFT) - 1)
 
-static inline uint32_t range_entry_base_mtrr_addr(struct range_entry *r)
+static inline uint64_t range_entry_base_mtrr_addr(struct range_entry *r)
 {
 	return PHYS_TO_RANGE_ADDR(range_entry_base(r));
 }
 
-static inline uint32_t range_entry_end_mtrr_addr(struct range_entry *r)
+static inline uint64_t range_entry_end_mtrr_addr(struct range_entry *r)
 {
 	return PHYS_TO_RANGE_ADDR(range_entry_end(r));
 }
@@ -402,7 +400,7 @@ static void clear_var_mtrr(int index)
 }
 
 static void prep_var_mtrr(struct var_mtrr_state *var_state,
-			  uint32_t base, uint32_t size, int mtrr_type)
+			  uint64_t base, uint64_t size, int mtrr_type)
 {
 	struct var_mtrr_regs *regs;
 	resource_t rbase;
@@ -444,16 +442,43 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 	regs->mask.hi = rsize >> 32;
 }
 
+/*
+ * fls64: find least significant bit set in a 64-bit word
+ * As samples, fls64(0x0) = 64; fls64(0x4400) = 10;
+ * fls64(0x40400000000) = 34.
+ */
+static uint32_t fls64(uint64_t x)
+{
+	uint32_t lo = (uint32_t)x;
+	if (lo)
+		return fls(lo);
+	uint32_t hi = x >> 32;
+	return fls(hi) + 32;
+}
+
+/*
+ * fms64: find most significant bit set in a 64-bit word
+ * As samples, fms64(0x0) = 0; fms64(0x4400) = 14;
+ * fms64(0x40400000000) = 42.
+ */
+static uint32_t fms64(uint64_t x)
+{
+	uint32_t hi = (uint32_t)(x >> 32);
+	if (!hi)
+		return fms((uint32_t)x);
+	return fms(hi) + 32;
+}
+
 static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
-				uint32_t base, uint32_t size, int mtrr_type)
+				uint64_t base, uint64_t size, int mtrr_type)
 {
 	while (size != 0) {
 		uint32_t addr_lsb;
 		uint32_t size_msb;
-		uint32_t mtrr_size;
+		uint64_t mtrr_size;
 
-		addr_lsb = fls(base);
-		size_msb = fms(size);
+		addr_lsb = fls64(base);
+		size_msb = fms64(size);
 
 		/* All MTRR entries need to have their base aligned to the mask
 		 * size. The maximum size is calculated by a function of the
@@ -472,8 +497,8 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 	}
 }
 
-static uint32_t optimize_var_mtrr_hole(const uint32_t base,
-				       const uint32_t hole,
+static uint64_t optimize_var_mtrr_hole(const uint64_t base,
+				       const uint64_t hole,
 				       const uint64_t limit,
 				       const int carve_hole)
 {
@@ -531,7 +556,7 @@ static uint32_t optimize_var_mtrr_hole(const uint32_t base,
 static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 				     struct range_entry *r)
 {
-	uint32_t a1, a2, b1, b2;
+	uint64_t a1, a2, b1, b2;
 	int mtrr_type, carve_hole;
 
 	/*
@@ -671,6 +696,7 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 			wb_deftype_count += var_state.mtrr_index;
 		}
 	}
+
 	*num_def_wb_mtrrs = wb_deftype_count;
 	*num_def_uc_mtrrs = uc_deftype_count;
 }

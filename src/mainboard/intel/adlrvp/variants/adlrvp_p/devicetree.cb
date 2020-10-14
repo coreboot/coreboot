@@ -61,6 +61,8 @@ chip soc/intel/alderlake
 
 	# Enable PCH PCIE RP 11 for optane
 	register "PcieRpEnable[10]" = "1"
+	# Hybrid storage mode
+	register "HybridStorageMode" = "1"
 
 	# Enable CPU PCIE RP 1 using PEG CLK 0
 	register "PcieClkSrcUsage[0]" = "0x40"

@@ -227,7 +227,8 @@ static u32 working_controllers[] = {
 	0x8086 | 0x5ae3 << 16, /* Apollo Lake */
 };
 #endif
-static void ahci_init_pci(pcidev_t dev)
+
+void ahci_initialize(pcidev_t dev)
 {
 	int i;
 
@@ -280,21 +281,5 @@ static void ahci_init_pci(pcidev_t dev)
 	for (i = 0; i < 32; ++i) {
 		if (ctrl->ports_impl & (1 << i))
 			ahci_port_probe(ctrl, &ports[i], i + 1);
-	}
-}
-
-void ahci_initialize(void)
-{
-	int bus, dev, func;
-
-	for (bus = 0; bus < 256; ++bus) {
-		for (dev = 0; dev < 32; ++dev) {
-			const u16 class =
-				pci_read_config16(PCI_DEV(bus, dev, 0), 0xa);
-			if (class != 0xffff) {
-				for (func = 0; func < 8; ++func)
-					ahci_init_pci(PCI_DEV(bus, dev, func));
-			}
-		}
 	}
 }

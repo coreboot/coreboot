@@ -29,6 +29,6 @@
 #ifndef _STORAGE_AHCI_H
 #define _STORAGE_AHCI_H
 
-void ahci_initialize(void);
+void ahci_initialize(pcidev_t dev);
 
 #endif

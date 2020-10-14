@@ -228,34 +228,27 @@ static u32 working_controllers[] = {
 };
 #endif
 
-void ahci_initialize(pcidev_t dev)
+void ahci_initialize(struct pci_dev *dev)
 {
 	int i;
 
-	const u16 class = pci_read_config16(dev, 0xa);
-	if (class != 0x0106)
-		return;
-	const u16 vendor = pci_read_config16(dev, 0x00);
-	const u16 device = pci_read_config16(dev, 0x02);
-
 #if CONFIG(LP_STORAGE_AHCI_ONLY_TESTED)
-	const u32 vendor_device = pci_read_config32(dev, 0x0);
+	const u32 vendor_device = dev->vendor_id | dev->device_id << 16;
 	for (i = 0; i < ARRAY_SIZE(working_controllers); ++i)
 		if (vendor_device == working_controllers[i])
 			break;
 	if (i == ARRAY_SIZE(working_controllers)) {
 		printf("ahci: Not using untested SATA controller "
-			"%02x:%02x.%02x (%04x:%04x).\n", PCI_BUS(dev),
-			PCI_SLOT(dev), PCI_FUNC(dev), vendor, device);
+			"%02x:%02x.%02x (%04x:%04x).\n", dev->bus,
+			dev->dev, dev->func, dev->vendor_id, dev->device_id);
 		return;
 	}
 #endif
 
 	printf("ahci: Found SATA controller %02x:%02x.%02x (%04x:%04x).\n",
-		PCI_BUS(dev), PCI_SLOT(dev), PCI_FUNC(dev), vendor, device);
+		dev->bus, dev->dev, dev->func, dev->vendor_id, dev->device_id);
 
-	hba_ctrl_t *const ctrl = phys_to_virt(
-			pci_read_config32(dev, 0x24) & ~0x3ff);
+	hba_ctrl_t *const ctrl = phys_to_virt(pci_read_long(dev, 0x24) & ~0x3ff);
 	hba_port_t *const ports = ctrl->ports;
 
 	/* Reset host controller. */
@@ -274,8 +267,8 @@ void ahci_initialize(pcidev_t dev)
 	ctrl->global_ctrl |= HBA_CTRL_AHCI_EN;
 
 	/* Enable bus mastering. */
-	const u16 command = pci_read_config16(dev, PCI_COMMAND);
-	pci_write_config16(dev, PCI_COMMAND, command | PCI_COMMAND_MASTER);
+	const u16 command = pci_read_word(dev, PCI_COMMAND);
+	pci_write_word(dev, PCI_COMMAND, command | PCI_COMMAND_MASTER);
 
 	/* Probe for devices. */
 	for (i = 0; i < 32; ++i) {

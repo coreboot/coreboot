@@ -115,7 +115,7 @@ void storage_initialize(void)
 		switch (dev->device_class) {
 #if CONFIG(LP_STORAGE_AHCI)
 		case PCI_CLASS_STORAGE_AHCI:
-			ahci_initialize(PCI_DEV(dev->bus, dev->dev, dev->func));
+			ahci_initialize(dev);
 			break;
 #endif
 		default:

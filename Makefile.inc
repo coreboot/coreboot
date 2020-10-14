@@ -1134,22 +1134,6 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(RAMSTAGE) $(CBFSTOOL) $$(INTERMEDIATE
 # file (filled with \377 = 0xff) and copy the CBFS image over it.
 	dd if=/dev/zero bs=$(call _toint,$(CONFIG_ROM_SIZE)) count=1 2> /dev/null | tr '\000' '\377' > $@.tmp
 	dd if=$(obj)/coreboot.pre of=$@.tmp bs=8192 conv=notrunc 2> /dev/null
-ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
-ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
-ifneq ($(CONFIG_UPDATE_IMAGE),y)
-	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
-	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
-endif
-endif
-endif
-ifeq ($(CONFIG_SEABIOS_ADD_SERCON_PORT_FILE),y)
-	@printf "    SeaBIOS    Add sercon-port file\n"
-	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_SERCON_PORT_ADDR) -n etc/sercon-port
-endif
-ifeq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
-	@printf "    SeaBIOS    Thread optionroms\n"
-	$(CBFSTOOL) $@.tmp add-int -i 2 -n etc/threads
-endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)

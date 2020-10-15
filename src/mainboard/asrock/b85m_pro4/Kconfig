@@ -18,6 +18,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_LYNXPOINT
 	select SUPERIO_NUVOTON_NCT6776
 
+config CBFS_SIZE
+	hex
+	default 0x200000
+
 config MAINBOARD_DIR
 	string
 	default "asrock/b85m_pro4"

@@ -9,6 +9,7 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <security/intel/txt/txt_platform.h>
 #include <security/intel/txt/txt_register.h>
 
 #include "haswell.h"
@@ -21,6 +22,11 @@ static uintptr_t northbridge_get_tseg_base(void)
 static size_t northbridge_get_tseg_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;
+}
+
+union dpr_register txt_get_chipset_dpr(void)
+{
+	return (union dpr_register) { .raw = pci_read_config32(HOST_BRIDGE, DPR) };
 }
 
 /*
@@ -39,9 +45,7 @@ static uintptr_t top_of_low_usable_memory(void)
 	 */
 	uintptr_t tolum = northbridge_get_tseg_base();
 
-	const union dpr_register dpr = {
-		.raw = pci_read_config32(HOST_BRIDGE, DPR),
-	};
+	const union dpr_register dpr = txt_get_chipset_dpr();
 
 	/* Subtract DMA Protected Range size if enabled */
 	if (dpr.epm)

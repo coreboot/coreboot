@@ -7,6 +7,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/systemagent.h>
+#include <security/intel/txt/txt_platform.h>
+#include <security/intel/txt/txt_register.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
@@ -144,4 +146,9 @@ uintptr_t sa_get_tseg_base(void)
 size_t sa_get_tseg_size(void)
 {
 	return sa_get_gsm_base() - sa_get_tseg_base();
+}
+
+union dpr_register txt_get_chipset_dpr(void)
+{
+	return (union dpr_register) { .raw = pci_read_config32(SA_DEV_ROOT, DPR) };
 }

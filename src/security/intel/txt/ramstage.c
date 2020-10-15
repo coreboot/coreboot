@@ -13,6 +13,7 @@
 #include <types.h>
 
 #include "txt.h"
+#include "txt_platform.h"
 #include "txt_register.h"
 #include "txt_getsec.h"
 
@@ -233,15 +234,41 @@ static void lockdown_intel_txt(void *unused)
 	printk(BIOS_INFO, "TEE-TXT: DPR capable %x\n", dpr_capable);
 
 	if (dpr_capable) {
-		/* Protect 3 MiB below TSEG and lock register */
-		union dpr_register dpr = {
-			.lock = 1,
-			.size = 3,
-			.top  = tseg_base / MiB,
-		};
-		write64((void *)TXT_DPR, dpr.raw);
+		/* Verify the DPR settings on the MCH and mirror them to TXT public space */
+		union dpr_register dpr = txt_get_chipset_dpr();
+
+		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR 0x%08x\n", dpr.raw);
+
+		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR base @ 0x%08x size %u MiB\n",
+			(dpr.top - dpr.size) * MiB, dpr.size);
 
 		// DPR TODO: implement SA_ENABLE_DPR in the intelblocks
+
+		if (!dpr.lock) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR not locked.\n");
+			return;
+		}
+
+		if (!dpr.epm || !dpr.prs) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR protection not active.\n");
+			return;
+		}
+
+		if (dpr.size < 3) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR configured size is too small.\n");
+			return;
+		}
+
+		if (dpr.top * MiB != tseg_base) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR top does not equal TSEG base.\n");
+			return;
+		}
+
+		/* Clear reserved bits */
+		dpr.prs = 0;
+		dpr.epm = 0;
+
+		write64((void *)TXT_DPR, dpr.raw);
 
 		printk(BIOS_INFO, "TEE-TXT: TXT.DPR 0x%08x\n",
 		       read32((void *)TXT_DPR));

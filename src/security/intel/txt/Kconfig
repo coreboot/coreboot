@@ -31,6 +31,15 @@ config INTEL_TXT_SINITACM_FILE
 	  access to Intel resources. Or for some platforms found inside the
 	  blob repository.
 
+config INTEL_TXT_DPR_SIZE
+	int
+	range 0 255
+	default 3
+	help
+	  Specify the size the DPR region needs to have. On at least Haswell,
+	  the MRC does not have an input to specify the size of DPR, so this
+	  field is only used to check if the programmed size is large enough.
+
 config INTEL_TXT_LOGGING
 	bool "Enable verbose logging"
 	help

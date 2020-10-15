@@ -254,7 +254,7 @@ static void lockdown_intel_txt(void *unused)
 			return;
 		}
 
-		if (dpr.size < 3) {
+		if (dpr.size < CONFIG_INTEL_TXT_DPR_SIZE) {
 			printk(BIOS_ERR, "TEE-TXT: MCH DPR configured size is too small.\n");
 			return;
 		}

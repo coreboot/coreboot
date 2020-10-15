@@ -1,5 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/*
+ * The boardid.c should provide board_id, sku_id, and ram_code.
+ * board_id is provided by ec/google/chromeec/ec_boardid.c.
+ * sku_id and ram_code are defined in this file.
+ */
+
 #include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
@@ -169,7 +175,15 @@ static uint8_t wfc_id(void)
 	return 0;
 }
 
-/* board_id is provided by ec/google/chromeec/ec_boardid.c */
+/* Returns the ID for LCD module (type of panel). */
+static uint8_t lcm_id(void)
+{
+	/* LCM is unused on Jacuzzi followers. */
+	if (CONFIG(BOARD_GOOGLE_JACUZZI_COMMON))
+		return CONFIG_BOARD_OVERRIDE_LCM_ID;
+
+	return get_adc_index(LCM_ID_CHANNEL);
+}
 
 uint32_t sku_id(void)
 {
@@ -200,7 +214,7 @@ uint32_t sku_id(void)
 	 * ADC4[4bit/L] = SKU ID from board straps.
 	 */
 	cached_sku_id = (wfc_id() << 8 |
-			 get_adc_index(LCM_ID_CHANNEL) << 4 |
+			 lcm_id() << 4 |
 			 get_adc_index(SKU_ID_CHANNEL));
 
 	return cached_sku_id;

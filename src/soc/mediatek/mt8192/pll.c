@@ -10,6 +10,7 @@
 #include <soc/infracfg.h>
 #include <soc/mcucfg.h>
 #include <soc/pll.h>
+#include <soc/wdt.h>
 
 enum mux_id {
 	TOP_AXI_SEL,
@@ -467,6 +468,11 @@ void mt_pll_init(void)
 
 	/* enable [14] dramc_pll104m_ck */
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 14);
+
+	/* reset CONNSYS MCU */
+	SET32_BITFIELDS(&mtk_wdt->wdt_swsysrst,
+			WDT_SWSYSRST_KEY, 0x88,
+			WDT_SWSYSRST_CONN_MCU, 0x1);
 }
 
 void mt_pll_raise_little_cpu_freq(u32 freq)

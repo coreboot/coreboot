@@ -303,8 +303,6 @@ int intel_txt_run_bios_acm(const u8 input_params)
 		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
 		return -1;
 	}
-	if (intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE)) != 1)
-		return -1;
 
 	return 0;
 }

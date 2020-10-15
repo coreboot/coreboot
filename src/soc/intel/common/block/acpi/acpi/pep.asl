@@ -16,7 +16,7 @@ External(\_SB.PCI0.RGPM, MethodObj)
 
 Device(PEPD)
 {
-	Name(_ADR, 0x00000000)
+	Name(_HID, "INT33A1")	/* Intel Power Engine */
 	Name(_CID, EISAID("PNP0D80"))
 	Method(_DSM, 4)
 	{

@@ -732,6 +732,16 @@ TXTIBB :=
 
 endif
 
+ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
+
+CBNTIBB := --cbnt
+
+else
+
+CBNTIBB :=
+
+endif # CONFIG_INTEL_CBNT_SUPPORT
+
 ifeq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 
 $(objcbfs)/bootblock.lz4: $(objcbfs)/bootblock.elf $(objutil)/cbfstool/cbfs-compression-tool
@@ -1063,6 +1073,7 @@ $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
 endif
+
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $(IFITTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
@@ -1072,6 +1083,7 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-n bootblock \
 		-t bootblock \
 		$(TXTIBB) \
+		$(CBNTIBB) \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
 		$(TS_OPTIONS)
 else # ifeq ($(CONFIG_ARCH_X86),y)

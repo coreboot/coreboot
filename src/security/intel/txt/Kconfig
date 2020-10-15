@@ -52,6 +52,7 @@ config INTEL_TXT_LOGGING
 
 config INTEL_TXT_BIOSACM_ALIGNMENT
 	hex
+	default 0x40000 if INTEL_CBNT_SUPPORT
 	default 0x20000 # 128 KiB
 	help
 	  Exceptions are Ivy and Sandy Bridge with 64 KiB and Purley with 256 KiB

@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config INTEL_CBNT_SUPPORT
+	bool "Intel CBnT support"
+	default n
+	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	#depends on PLATFORM_HAS_DRAM_CLEAR
+	select INTEL_TXT
+	help
+	  Enables Intel Converged Bootguard and Trusted Execution Technology
+	  Support. This will enable one to add a Key Manifest (KM) and a Boot
+	  Policy Manifest (BPM) to the filesystem. It will also wrap a FIT around
+	  the firmware and update appropriate entries.
+
+if INTEL_CBNT_SUPPORT
+
+config INTEL_CBNT_KEY_MANIFEST_BINARY
+	string "KM (Key Manifest) binary location"
+	help
+	  Location of the Key Manifest (KM)
+
+config INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY
+	string "BPM (Boot Policy Manifest) binary location"
+	help
+	  Location of the Boot Policy Manifest (BPM)
+
+endif # INTEL_CBNT_SUPPORT

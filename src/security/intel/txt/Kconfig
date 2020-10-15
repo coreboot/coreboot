@@ -26,8 +26,6 @@ config INTEL_TXT
 
 if INTEL_TXT
 
-menu "Intel"
-
 config INTEL_TXT_BIOSACM_FILE
 	string "BIOS ACM file"
 	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/biosacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
@@ -70,7 +68,5 @@ config INTEL_TXT_CBFS_BIOS_ACM
 config INTEL_TXT_CBFS_SINIT_ACM
 	string
 	default "txt_sinit_acm.bin"
-
-endmenu # Intel
 
 endif

@@ -3,7 +3,7 @@
 #define CAM_EN GPP_B11 /* Active low */
 #define TS_PD GPP_E7
 
-/* Method called from LPIT prior to enter s0ix state */
+/* Method called from PEPD prior to enter s0ix state */
 Method (MS0X, 1)
 {
 	If (Arg0) {

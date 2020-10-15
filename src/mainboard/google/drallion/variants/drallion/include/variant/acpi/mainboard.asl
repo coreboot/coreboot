@@ -4,7 +4,7 @@
 #define TS_PD GPP_E7
 #define HDMI_PD GPP_E16
 
-/* Method called from LPIT prior to enter s0ix state */
+/* Method called from PEPD prior to enter s0ix state */
 Method (MS0X, 1)
 {
 	If (Arg0) {

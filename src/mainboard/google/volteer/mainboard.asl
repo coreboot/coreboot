@@ -30,7 +30,7 @@ Method (MWAK, 1, Serialized)
 
 /*
  * S0ix Entry/Exit Notifications
- * Called from \_SB.LPID._DSM
+ * Called from \_SB.PEPD._DSM
  */
 Method (MS0X, 1, Serialized)
 {

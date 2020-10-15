@@ -407,7 +407,9 @@ static void lockdown_intel_txt(void *unused)
 	write64((void *)TXT_MSEG_SIZE, 0);
 	write64((void *)TXT_MSEG_BASE, 0);
 
-	txt_initialize_heap();
+	/* Only initialize the heap on regular boots */
+	if (!acpi_is_wakeup_s3())
+		txt_initialize_heap();
 
 	if (CONFIG(INTEL_TXT_LOGGING))
 		txt_dump_regions();

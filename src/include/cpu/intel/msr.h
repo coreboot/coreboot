@@ -12,4 +12,6 @@
 #define MSR_PIC_MSG_CONTROL	0x2e
 #define  TPR_UPDATES_DISABLE	(1 << 10)
 
+#define MSR_PLATFORM_INFO	0xce
+
 #endif /* CPU_INTEL_MSR_H */

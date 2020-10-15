@@ -131,13 +131,6 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	config->regs[CPPC_HIGHEST_PERF] = msr;
 
 	/*
-	 * Nominal Performance -> Guaranteed Performance:
-	 * ResourceTemplate(){Register(FFixedHW, 0x08, 0x08, 0x771, 0x04,)},
-	 */
-	msr.bit_offset = 8;
-	config->regs[CPPC_NOMINAL_PERF] = msr;
-
-	/*
 	 * Lowest Nonlinear Performance -> Most Efficient Performance:
 	 * ResourceTemplate(){Register(FFixedHW, 0x08, 0x10, 0x771, 0x04,)},
 	 */
@@ -157,6 +150,15 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	 */
 	msr.bit_offset = 8;
 	config->regs[CPPC_GUARANTEED_PERF] = msr;
+
+	msr.addrl = MSR_PLATFORM_INFO;
+
+	/*
+	 * Nominal Performance -> Maximum Non-Turbo Ratio:
+	 * ResourceTemplate(){Register(FFixedHW, 0x08, 0x08, 0xce, 0x04,)},
+	 */
+	msr.bit_offset = 8;
+	config->regs[CPPC_NOMINAL_PERF] = msr;
 
 	msr.addrl = IA32_HWP_REQUEST;
 

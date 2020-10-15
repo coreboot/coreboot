@@ -194,103 +194,8 @@ static void push_sinit_heap(u8 **heap_ptr, void *data, size_t data_length)
 	}
 }
 
-/**
- * Finalize the TXT device.
- *
- * - Lock TXT register.
- * - Protect TSEG using DMA protected regions.
- * - Setup TXT regions.
- * - Place SINIT ACM in TXT_SINIT memory segment.
- * - Fill TXT BIOSDATA region.
- */
-static void lockdown_intel_txt(void *unused)
+static void txt_initialize_heap(void)
 {
-	const uint64_t status = read64((void *)TXT_SPAD);
-
-	uintptr_t tseg_base;
-	size_t tseg_size;
-
-	smm_region(&tseg_base, &tseg_size);
-
-	if (status & ACMSTS_TXT_DISABLED)
-		return;
-
-	printk(BIOS_INFO, "TEE-TXT: Locking TEE...\n");
-
-	/* Lock TXT config, unlocks TXT_HEAP_BASE */
-	if (intel_txt_run_bios_acm(ACMINPUT_LOCK_CONFIG) < 0) {
-		printk(BIOS_ERR, "TEE-TXT: Failed to lock registers.\n");
-		printk(BIOS_ERR, "TEE-TXT: SINIT won't be supported.\n");
-		return;
-	}
-
-	/*
-	 * Document Number: 558294
-	 * Chapter 5.5.6.1 DMA Protection Memory Region
-	 */
-
-	const u8 dpr_capable = !!(read64((void *)TXT_CAPABILITIES) &
-				  TXT_CAPABILITIES_DPR);
-	printk(BIOS_INFO, "TEE-TXT: DPR capable %x\n", dpr_capable);
-
-	if (dpr_capable) {
-		/* Verify the DPR settings on the MCH and mirror them to TXT public space */
-		union dpr_register dpr = txt_get_chipset_dpr();
-
-		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR 0x%08x\n", dpr.raw);
-
-		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR base @ 0x%08x size %u MiB\n",
-			(dpr.top - dpr.size) * MiB, dpr.size);
-
-		// DPR TODO: implement SA_ENABLE_DPR in the intelblocks
-
-		if (!dpr.lock) {
-			printk(BIOS_ERR, "TEE-TXT: MCH DPR not locked.\n");
-			return;
-		}
-
-		if (!dpr.epm || !dpr.prs) {
-			printk(BIOS_ERR, "TEE-TXT: MCH DPR protection not active.\n");
-			return;
-		}
-
-		if (dpr.size < CONFIG_INTEL_TXT_DPR_SIZE) {
-			printk(BIOS_ERR, "TEE-TXT: MCH DPR configured size is too small.\n");
-			return;
-		}
-
-		if (dpr.top * MiB != tseg_base) {
-			printk(BIOS_ERR, "TEE-TXT: MCH DPR top does not equal TSEG base.\n");
-			return;
-		}
-
-		/* Clear reserved bits */
-		dpr.prs = 0;
-		dpr.epm = 0;
-
-		write64((void *)TXT_DPR, dpr.raw);
-
-		printk(BIOS_INFO, "TEE-TXT: TXT.DPR 0x%08x\n",
-		       read32((void *)TXT_DPR));
-	}
-
-	/*
-	 * Document Number: 558294
-	 * Chapter 5.5.6.3 Intel TXT Heap Memory Region
-	 */
-	write64((void *)TXT_HEAP_SIZE, 0xE0000);
-	write64((void *)TXT_HEAP_BASE,
-		ALIGN_DOWN(tseg_base - read64((void *)TXT_HEAP_SIZE), 4096));
-
-	/*
-	 * Document Number: 558294
-	 * Chapter 5.5.6.2 SINIT Memory Region
-	 */
-	write64((void *)TXT_SINIT_SIZE, 0x20000);
-	write64((void *)TXT_SINIT_BASE,
-		ALIGN_DOWN(read64((void *)TXT_HEAP_BASE) -
-			   read64((void *)TXT_SINIT_SIZE), 4096));
-
 	/*
 	 * BIOS Data Format
 	 * Chapter C.2
@@ -392,6 +297,104 @@ static void lockdown_intel_txt(void *unused)
 	/* SinitMLEData */
 	/* FIXME: Does firmware need to write this? */
 	push_sinit_heap(&heap_struct, NULL, 0);
+}
+
+/**
+ * Finalize the TXT device.
+ *
+ * - Lock TXT register.
+ * - Protect TSEG using DMA protected regions.
+ * - Setup TXT regions.
+ * - Place SINIT ACM in TXT_SINIT memory segment.
+ * - Fill TXT BIOSDATA region.
+ */
+static void lockdown_intel_txt(void *unused)
+{
+	const uint64_t status = read64((void *)TXT_SPAD);
+
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
+	smm_region(&tseg_base, &tseg_size);
+
+	if (status & ACMSTS_TXT_DISABLED)
+		return;
+
+	printk(BIOS_INFO, "TEE-TXT: Locking TEE...\n");
+
+	/* Lock TXT config, unlocks TXT_HEAP_BASE */
+	if (intel_txt_run_bios_acm(ACMINPUT_LOCK_CONFIG) < 0) {
+		printk(BIOS_ERR, "TEE-TXT: Failed to lock registers.\n");
+		printk(BIOS_ERR, "TEE-TXT: SINIT won't be supported.\n");
+		return;
+	}
+
+	/*
+	 * Document Number: 558294
+	 * Chapter 5.5.6.1 DMA Protection Memory Region
+	 */
+
+	const u8 dpr_capable = !!(read64((void *)TXT_CAPABILITIES) &
+				  TXT_CAPABILITIES_DPR);
+	printk(BIOS_INFO, "TEE-TXT: DPR capable %x\n", dpr_capable);
+
+	if (dpr_capable) {
+		/* Verify the DPR settings on the MCH and mirror them to TXT public space */
+		union dpr_register dpr = txt_get_chipset_dpr();
+
+		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR 0x%08x\n", dpr.raw);
+
+		printk(BIOS_DEBUG, "TEE-TXT: MCH DPR base @ 0x%08x size %u MiB\n",
+			(dpr.top - dpr.size) * MiB, dpr.size);
+
+		// DPR TODO: implement SA_ENABLE_DPR in the intelblocks
+
+		if (!dpr.lock) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR not locked.\n");
+			return;
+		}
+
+		if (!dpr.epm || !dpr.prs) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR protection not active.\n");
+			return;
+		}
+
+		if (dpr.size < CONFIG_INTEL_TXT_DPR_SIZE) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR configured size is too small.\n");
+			return;
+		}
+
+		if (dpr.top * MiB != tseg_base) {
+			printk(BIOS_ERR, "TEE-TXT: MCH DPR top does not equal TSEG base.\n");
+			return;
+		}
+
+		/* Clear reserved bits */
+		dpr.prs = 0;
+		dpr.epm = 0;
+
+		write64((void *)TXT_DPR, dpr.raw);
+
+		printk(BIOS_INFO, "TEE-TXT: TXT.DPR 0x%08x\n",
+		       read32((void *)TXT_DPR));
+	}
+
+	/*
+	 * Document Number: 558294
+	 * Chapter 5.5.6.3 Intel TXT Heap Memory Region
+	 */
+	write64((void *)TXT_HEAP_SIZE, 0xE0000);
+	write64((void *)TXT_HEAP_BASE,
+		ALIGN_DOWN(tseg_base - read64((void *)TXT_HEAP_SIZE), 4096));
+
+	/*
+	 * Document Number: 558294
+	 * Chapter 5.5.6.2 SINIT Memory Region
+	 */
+	write64((void *)TXT_SINIT_SIZE, 0x20000);
+	write64((void *)TXT_SINIT_BASE,
+		ALIGN_DOWN(read64((void *)TXT_HEAP_BASE) -
+			   read64((void *)TXT_SINIT_SIZE), 4096));
 
 	/*
 	 * FIXME: Server-TXT capable platforms need to install an STM in SMM and set up MSEG.
@@ -403,6 +406,8 @@ static void lockdown_intel_txt(void *unused)
 	 */
 	write64((void *)TXT_MSEG_SIZE, 0);
 	write64((void *)TXT_MSEG_BASE, 0);
+
+	txt_initialize_heap();
 
 	if (CONFIG(INTEL_TXT_LOGGING))
 		txt_dump_regions();

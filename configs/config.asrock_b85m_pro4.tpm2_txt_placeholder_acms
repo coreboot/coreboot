@@ -1,0 +1,10 @@
+# Known-working configuration to boot with TXT enabled. Since BIOS
+# and SINIT ACM blobs are missing, use something else as placeholder.
+# Used ACMs were extracted from a Supermicro X10SLH firmware update.
+CONFIG_VENDOR_ASROCK=y
+CONFIG_BOARD_ASROCK_B85M_PRO4=y
+CONFIG_USER_TPM2=y
+CONFIG_INTEL_TXT=y
+CONFIG_INTEL_TXT_BIOSACM_FILE="3rdparty/blobs/cpu/intel/stm/stm.bin"
+CONFIG_INTEL_TXT_SINITACM_FILE="3rdparty/blobs/cpu/intel/stm/stm.bin"
+CONFIG_INTEL_TXT_LOGGING=y

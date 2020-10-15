@@ -18,10 +18,10 @@ Device(LPID)
 {
 	Name(_ADR, 0x00000000)
 	Name(_CID, EISAID("PNP0D80"))
-	Name(UUID, ToUUID("c4eb40a0-6cd2-11e2-bcfd-0800200c9a66"))
 	Method(_DSM, 4)
 	{
-		If(Arg0 == ^UUID) {
+		/* Low Power Idle S0 helper */
+		If(Arg0 == ToUUID("c4eb40a0-6cd2-11e2-bcfd-0800200c9a66")) {
 			/*
 			 * Enum functions
 			 */

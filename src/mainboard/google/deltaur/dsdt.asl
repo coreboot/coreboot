@@ -35,9 +35,6 @@ DefinitionBlock(
 	/* VPD support */
 	#include <vendorcode/google/chromeos/acpi/vpd.asl>
 
-	/* Low power idle table */
-	#include <soc/intel/common/acpi/lpit.asl>
-
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{

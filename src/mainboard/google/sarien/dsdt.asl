@@ -39,9 +39,6 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	/* Low power idle table */
-	#include <soc/intel/common/acpi/lpit.asl>
-
 #if CONFIG(EC_GOOGLE_WILCO)
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)

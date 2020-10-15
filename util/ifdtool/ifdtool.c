@@ -1266,6 +1266,25 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
+static void enable_cpu_read_me(const char *filename, char *image, int size)
+{
+	int rd_shift;
+	fmba_t *fmba = find_fmba(image, size);
+
+	if (!fmba)
+		exit(EXIT_FAILURE);
+
+	if (ifd_version >= IFD_VERSION_2)
+		rd_shift = FLMSTR_RD_SHIFT_V2;
+	else
+		rd_shift = FLMSTR_RD_SHIFT_V1;
+
+	/* CPU/BIOS can read ME. */
+	fmba->flmstr1 |= (1 << REGION_ME) << rd_shift;
+
+	write_image(filename, image, size);
+}
+
 static void unlock_descriptor(const char *filename, char *image, int size)
 {
 	fmba_t *fmba = find_fmba(image, size);
@@ -1626,6 +1645,7 @@ static void print_usage(const char *name)
 	       "   -e | --em100                          set SPI frequency to 20MHz and disable\n"
 	       "                                         Dual Output Fast Read Support\n"
 	       "   -l | --lock                           Lock firmware descriptor and ME region\n"
+	       "   -r | --read				 Enable CPU/BIOS read access for ME region\n"
 	       "   -u | --unlock                         Unlock firmware descriptor and ME region\n"
 	       "   -M | --altmedisable <0|1>             Set the MeDisable and AltMeDisable (or HAP for skylake or newer platform)\n"
 	       "                                         bits to disable ME\n"
@@ -1652,7 +1672,7 @@ int main(int argc, char *argv[])
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
-	int mode_altmedisable = 0, altmedisable = 0;
+	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	char *new_filename = NULL;
@@ -1675,6 +1695,7 @@ int main(int argc, char *argv[])
 		{"altmedisable", 1, NULL, 'M'},
 		{"em100", 0, NULL, 'e'},
 		{"lock", 0, NULL, 'l'},
+		{"read", 0, NULL, 'r'},
 		{"unlock", 0, NULL, 'u'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
@@ -1685,7 +1706,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "S:V:df:D:C:M:xi:n:O:s:p:eluvth?",
+	while ((opt = getopt_long(argc, argv, "S:V:df:D:C:M:xi:n:O:s:p:elruvth?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1859,6 +1880,9 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 			break;
+		case 'r':
+			mode_read = 1;
+			break;
 		case 'u':
 			mode_unlocked = 1;
 			if (mode_locked == 1) {
@@ -1999,6 +2023,9 @@ int main(int argc, char *argv[])
 
 	if (mode_locked)
 		lock_descriptor(new_filename, image, size);
+
+	if (mode_read)
+		enable_cpu_read_me(new_filename, image, size);
 
 	if (mode_unlocked)
 		unlock_descriptor(new_filename, image, size);

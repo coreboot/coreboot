@@ -16,6 +16,5 @@
 
 int get_cpu_count(void);
 void xeon_sp_init_cpus(struct device *dev);
-msr_t read_msr_ppin(void);
 
 #endif

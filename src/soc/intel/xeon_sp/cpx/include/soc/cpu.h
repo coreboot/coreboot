@@ -10,6 +10,5 @@
 #define CPUID_COOPERLAKE_SP_A1			0x05065b
 
 void cpx_init_cpus(struct device *dev);
-msr_t read_msr_ppin(void);
 
 #endif

@@ -298,6 +298,7 @@ static void lockdown_intel_txt(void *unused)
 	 */
 	struct {
 		struct txt_biosdataregion bdr;
+		struct txt_bios_spec_ver_element spec;
 		struct txt_heap_acm_element heap_acm;
 		struct txt_extended_data_element_header end;
 	} __packed data = {0};
@@ -349,6 +350,13 @@ static void lockdown_intel_txt(void *unused)
 
 	data.bdr.support_acpi_ppi = 0;
 	data.bdr.platform_type = 0;
+
+	/* Fill in the version of the used TXT BIOS Specification */
+	data.spec.header.type = HEAP_EXTDATA_TYPE_BIOS_SPEC_VER;
+	data.spec.header.size = sizeof(data.spec);
+	data.spec.ver_major = 2;
+	data.spec.ver_minor = 1;
+	data.spec.ver_revision = 0;
 
 	/* Extended elements - ACM addresses */
 	data.heap_acm.header.type = HEAP_EXTDATA_TYPE_ACM;

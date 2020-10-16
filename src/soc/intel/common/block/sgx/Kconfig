@@ -1,7 +1,6 @@
 config SOC_INTEL_COMMON_BLOCK_SGX
 	bool
 	select CPU_INTEL_COMMON
-	select CPU_INTEL_COMMON_HYPERTHREADING
 	default n
 	help
 	  Intel Processor common SGX support

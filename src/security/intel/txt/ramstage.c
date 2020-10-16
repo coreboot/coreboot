@@ -316,6 +316,7 @@ static void lockdown_intel_txt(void *unused)
 {
 	const uint64_t status = read64((void *)TXT_SPAD);
 
+	uint32_t txt_feature_flags = 0;
 	uintptr_t tseg_base;
 	size_t tseg_size;
 
@@ -324,13 +325,24 @@ static void lockdown_intel_txt(void *unused)
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
 
-	printk(BIOS_INFO, "TEE-TXT: Locking TEE...\n");
+	/*
+	 * Document Number: 558294
+	 * Chapter 5.4.3 Detection of Intel TXT Capability
+	 */
 
-	/* Lock TXT config, unlocks TXT_HEAP_BASE */
-	if (intel_txt_run_bios_acm(ACMINPUT_LOCK_CONFIG) < 0) {
-		printk(BIOS_ERR, "TEE-TXT: Failed to lock registers.\n");
-		printk(BIOS_ERR, "TEE-TXT: SINIT won't be supported.\n");
+	if (!getsec_parameter(NULL, NULL, NULL, NULL, NULL, &txt_feature_flags))
 		return;
+
+	/* LockConfig only exists on Intel TXT for Servers */
+	if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_CRTM_SUPPORT) {
+		printk(BIOS_INFO, "TEE-TXT: Locking TEE...\n");
+
+		/* Lock TXT config, unlocks TXT_HEAP_BASE */
+		if (intel_txt_run_bios_acm(ACMINPUT_LOCK_CONFIG) < 0) {
+			printk(BIOS_ERR, "TEE-TXT: Failed to lock registers.\n");
+			printk(BIOS_ERR, "TEE-TXT: SINIT won't be supported.\n");
+			return;
+		}
 	}
 
 	/*

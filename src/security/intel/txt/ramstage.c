@@ -168,15 +168,16 @@ static void init_intel_txt(void *unused)
 	}
 
 	if (status & (ACMSTS_BIOS_TRUSTED | ACMSTS_IBB_MEASURED)) {
+		printk(BIOS_INFO, "TEE-TXT: Logging IBB measurements...\n");
 		log_ibb_measurements();
+	}
 
-		int s3resume = acpi_is_wakeup_s3();
-		if (!s3resume) {
-			printk(BIOS_INFO, "TEE-TXT: Scheck...\n");
-			if (intel_txt_run_bios_acm(ACMINPUT_SCHECK) < 0) {
-				printk(BIOS_ERR, "TEE-TXT: Error calling BIOS ACM.\n");
-				return;
-			}
+	int s3resume = acpi_is_wakeup_s3();
+	if (!s3resume) {
+		printk(BIOS_INFO, "TEE-TXT: Scheck...\n");
+		if (intel_txt_run_bios_acm(ACMINPUT_SCHECK) < 0) {
+			printk(BIOS_ERR, "TEE-TXT: Error calling BIOS ACM.\n");
+			return;
 		}
 	}
 }

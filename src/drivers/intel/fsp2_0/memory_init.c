@@ -19,15 +19,15 @@
 #include <symbols.h>
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
-#include <security/tpm/tspi.h>
 #include <security/vboot/mrc_cache_hash_tpm.h>
+#include <security/tpm/tspi.h>
 #include <vb2_api.h>
 #include <types.h>
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
 /* TPM MRC hash functionality depends on vboot starting before memory init. */
-_Static_assert(!CONFIG(FSP2_0_USES_TPM_MRC_HASH) ||
+_Static_assert(!CONFIG(MRC_SAVE_HASH_IN_TPM) ||
 	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
 	       "for TPM MRC hash functionality, vboot must start in bootblock");
 
@@ -55,7 +55,7 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 				mrc_data_size) < 0)
 		printk(BIOS_ERR, "Failed to stash MRC data\n");
 
-	if (CONFIG(FSP2_0_USES_TPM_MRC_HASH))
+	if (CONFIG(MRC_SAVE_HASH_IN_TPM))
 		mrc_cache_update_hash(mrc_data, mrc_data_size);
 }
 
@@ -121,7 +121,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	if (data == NULL)
 		return;
 
-	if (CONFIG(FSP2_0_USES_TPM_MRC_HASH) &&
+	if (CONFIG(MRC_SAVE_HASH_IN_TPM) &&
 	    !mrc_cache_verify_hash(data, mrc_size))
 		return;
 

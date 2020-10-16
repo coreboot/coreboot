@@ -141,23 +141,6 @@ config FSP_TEMP_RAM_SIZE
 	  own stack that will be placed in DRAM and not in CAR, this is the
 	  amount of memory the FSP needs for its stack and heap.
 
-config FSP2_0_USES_TPM_MRC_HASH
-	bool
-	depends on TPM1 || TPM2
-	depends on VBOOT && VBOOT_STARTS_IN_BOOTBLOCK
-	default y if HAS_RECOVERY_MRC_CACHE
-	default n
-	select VBOOT_HAS_REC_HASH_SPACE
-	help
-	  Store hash of trained recovery MRC cache in NVRAM space in TPM.
-	  Use the hash to validate recovery MRC cache before using it.
-	  This hash needs to be updated every time recovery mode training
-	  is recomputed, or if the hash does not match recovery MRC cache.
-	  Selecting this option requires that TPM already be setup by this
-	  point in time.  Thus it is only compatible when the option
-	  VBOOT_STARTS_IN_BOOTBLOCK is selected, which causes verstage and
-	  TPM setup to occur prior to memory initialization.
-
 config FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	bool
 	help

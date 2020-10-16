@@ -49,4 +49,12 @@ config MRC_STASH_TO_CBMEM
 	  that need to write back the MRC data in late ramstage boot
 	  states (MRC_WRITE_NV_LATE).
 
+config MRC_SAVE_HASH_IN_TPM
+	bool "Save a hash of the MRC_CACHE data in TPM NVRAM"
+	depends on VBOOT_STARTS_IN_BOOTBLOCK && TPM2 && !TPM1
+	default y
+	help
+	  Store a hash of the MRC_CACHE training data in a TPM NVRAM
+	  space to ensure that it cannot be tampered with.
+
 endif # CACHE_MRC_SETTINGS

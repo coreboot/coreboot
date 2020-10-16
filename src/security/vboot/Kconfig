@@ -159,6 +159,7 @@ config VBOOT_ALWAYS_ALLOW_UDC
 
 config VBOOT_HAS_REC_HASH_SPACE
 	bool
+	default y if MRC_SAVE_HASH_IN_TPM && HAS_RECOVERY_MRC_CACHE
 	default n
 	help
 	  Set this option to indicate to vboot that recovery data hash space

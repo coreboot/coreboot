@@ -40,6 +40,12 @@ config INTEL_TXT_DPR_SIZE
 	  the MRC does not have an input to specify the size of DPR, so this
 	  field is only used to check if the programmed size is large enough.
 
+config INTEL_TXT_TEST_BIOS_ACM_CALLING_CODE
+	bool "Test BIOS ACM calling code with NOP function"
+	help
+	  Run a NOP function of the BIOS ACM to check that the ACM calling code
+	  is functioning properly. Use in pre-production environments only!
+
 config INTEL_TXT_LOGGING
 	bool "Enable verbose logging"
 	help

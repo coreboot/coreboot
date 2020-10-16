@@ -151,17 +151,20 @@ static void init_intel_txt(void *unused)
 		return;
 	}
 
-	printk(BIOS_INFO, "TEE-TXT: Testing BIOS ACM calling code...\n");
+	if (CONFIG(INTEL_TXT_TEST_BIOS_ACM_CALLING_CODE)) {
+		printk(BIOS_INFO, "TEE-TXT: Testing BIOS ACM calling code...\n");
 
-	/*
-	 * Test BIOS ACM code.
-	 * ACM should do nothing on reserved functions, and return an error code
-	 * in TXT_BIOSACM_ERRORCODE. Tests showed that this is not true.
-	 * Use special function "NOP" that does 'nothing'.
-	 */
-	if (intel_txt_run_bios_acm(ACMINPUT_NOP) < 0) {
-		printk(BIOS_ERR, "TEE-TXT: Error calling BIOS ACM with NOP function.\n");
-		return;
+		/*
+		 * Test BIOS ACM code.
+		 * ACM should do nothing on reserved functions, and return an error code
+		 * in TXT_BIOSACM_ERRORCODE. Tests showed that this is not true.
+		 * Use special function "NOP" that does 'nothing'.
+		 */
+		if (intel_txt_run_bios_acm(ACMINPUT_NOP) < 0) {
+			printk(BIOS_ERR,
+				"TEE-TXT: Error calling BIOS ACM with NOP function.\n");
+			return;
+		}
 	}
 
 	if (status & (ACMSTS_BIOS_TRUSTED | ACMSTS_IBB_MEASURED)) {

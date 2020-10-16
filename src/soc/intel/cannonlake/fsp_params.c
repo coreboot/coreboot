@@ -355,14 +355,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	memcpy(params->PcieRpAdvancedErrorReporting,
 		config->PcieRpAdvancedErrorReporting,
-		sizeof(params->PcieRpAdvancedErrorReporting));
+		sizeof(config->PcieRpAdvancedErrorReporting));
 
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(config->PcieRpLtrEnable));
 	memcpy(params->PcieRpSlotImplemented, config->PcieRpSlotImplemented,
 	       sizeof(config->PcieRpSlotImplemented));
 	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
-	       sizeof(params->PcieRpHotPlug));
+	       sizeof(config->PcieRpHotPlug));
 
 	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
 		params->PcieRpMaxPayload[i] = config->PcieRpMaxPayload[i];

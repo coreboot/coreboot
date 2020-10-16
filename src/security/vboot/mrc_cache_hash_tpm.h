@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef _FSP2_0_MEMORY_INIT_H_
-#define _FSP2_0_MEMORY_INIT_H_
+#ifndef _MRC_CACHE_HASH_TPM_H_
+#define _MRC_CACHE_HASH_TPM_H_
 
 #include <types.h>
 
@@ -16,4 +16,4 @@ void mrc_cache_update_hash(const uint8_t *data, size_t size);
  */
 int mrc_cache_verify_hash(const uint8_t *data, size_t size);
 
-#endif /* _FSP2_0_MEMORY_INIT_H_ */
+#endif /* _MRC_CACHE_HASH_TPM_H_ */

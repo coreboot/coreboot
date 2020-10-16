@@ -20,8 +20,8 @@
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
 #include <security/tpm/tspi.h>
+#include <security/vboot/mrc_cache_hash_tpm.h>
 #include <vb2_api.h>
-#include <fsp/memory_init.h>
 #include <types.h>
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));

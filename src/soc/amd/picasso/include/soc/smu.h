@@ -11,7 +11,7 @@
 
 #define REG_ADDR_MESG_ID	0x3b10528
 #define REG_ADDR_MESG_RESP	0x3b10564
-#define REG_ADDR_MESG_ARGS_BASE	0x0b10998
+#define REG_ADDR_MESG_ARGS_BASE	0x3b10998
 
 /* Argument 0-5 indexed locations are contiguous */
 #define SMU_NUM_ARGS		6

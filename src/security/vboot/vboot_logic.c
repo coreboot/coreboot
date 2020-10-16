@@ -404,7 +404,7 @@ void verstage_main(void)
 
 	/* Lock rec hash space if available. */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
-		rv = antirollback_lock_space_rec_hash();
+		rv = antirollback_lock_space_mrc_hash(MRC_REC_HASH_NV_INDEX);
 		if (rv) {
 			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n",
 			       rv);

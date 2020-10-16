@@ -10,6 +10,7 @@
 #include <fmap.h>
 #include <ip_checksum.h>
 #include <region_file.h>
+#include <security/vboot/antirollback.h>
 #include <security/vboot/mrc_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
@@ -179,6 +180,7 @@ static int mrc_data_valid(const struct mrc_metadata *md,
 			  void *data, size_t data_size)
 {
 	uint16_t checksum;
+	uint32_t hash_idx = MRC_REC_HASH_NV_INDEX;
 
 	if (md->data_size != data_size)
 		return -1;
@@ -191,7 +193,7 @@ static int mrc_data_valid(const struct mrc_metadata *md,
 		return -1;
 	}
 
-	if (CONFIG(MRC_SAVE_HASH_IN_TPM) && !mrc_cache_verify_hash(data, data_size))
+	if (CONFIG(MRC_SAVE_HASH_IN_TPM) && !mrc_cache_verify_hash(hash_idx, data, data_size))
 		return -1;
 
 	return 0;
@@ -393,6 +395,7 @@ static void update_mrc_cache_by_type(int type,
 	const struct region_device *backing_rdev;
 	struct region_device latest_rdev;
 	const bool fail_bad_data = false;
+	uint32_t hash_idx = MRC_REC_HASH_NV_INDEX;
 
 	cr = lookup_region(&region, type);
 
@@ -453,7 +456,7 @@ static void update_mrc_cache_by_type(int type,
 		printk(BIOS_DEBUG, "MRC: updated '%s'.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, UPDATE_SUCCESS);
 		if (CONFIG(MRC_SAVE_HASH_IN_TPM))
-			mrc_cache_update_hash(new_data, new_data_size);
+			mrc_cache_update_hash(hash_idx, new_data, new_data_size);
 	}
 }
 

@@ -22,8 +22,9 @@ enum vb2_pcr_digest;
  * want to use 0x1009 for something else. */
 #define BACKUP_NV_INDEX                 0x1009
 #define FWMP_NV_INDEX                   0x100a
-#define REC_HASH_NV_INDEX               0x100b
-#define REC_HASH_NV_SIZE                VB2_SHA256_DIGEST_SIZE
+/* 0x100b: Hash of MRC_CACHE training data for recovery boot */
+#define MRC_REC_HASH_NV_INDEX           0x100b
+#define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
 
 /* Structure definitions for TPM spaces */
 
@@ -55,11 +56,25 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx);
  */
 uint32_t antirollback_lock_space_firmware(void);
 
-/* Read recovery hash data from TPM. */
-uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size);
-/* Write new hash data to recovery space in TPM. */
-uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size);
-/* Lock down recovery hash space in TPM. */
-uint32_t antirollback_lock_space_rec_hash(void);
+/*
+ * Read recovery hash data from TPM.
+ * @param index index into TPM NVRAM where hash is stored
+ * @param data  pointer to buffer where hash from TPM read into
+ * @param size  size of buffer
+ */
+uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size);
+/*
+ * Write new hash data to recovery space in TPM.\
+ * @param index index into TPM NVRAM where hash is stored
+ * @param data  pointer to buffer of hash value to be written
+ * @param size  size of buffer
+*/
+uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
+					   uint32_t size);
+/*
+ * Lock down recovery hash space in TPM.
+ * @param index index into TPM NVRAM where hash is stored
+*/
+uint32_t antirollback_lock_space_mrc_hash(uint32_t index);
 
 #endif  /* ANTIROLLBACK_H_ */

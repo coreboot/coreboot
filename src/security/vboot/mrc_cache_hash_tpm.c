@@ -9,7 +9,7 @@
 #include <console/console.h>
 #include <string.h>
 
-void mrc_cache_update_hash(const uint8_t *data, size_t size)
+void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 {
 	uint8_t data_hash[VB2_SHA256_DIGEST_SIZE];
 	static const uint8_t dead_hash[VB2_SHA256_DIGEST_SIZE] = {
@@ -40,26 +40,26 @@ void mrc_cache_update_hash(const uint8_t *data, size_t size)
 		printk(BIOS_ERR, "MRC: SHA-256 calculation failed for data. "
 		       "Not updating TPM hash space.\n");
 		/*
-		 * Since data is being updated in recovery cache, the hash
-		 * currently stored in TPM recovery hash space is no longer
-		 * valid. If we are not able to calculate hash of the data being
-		 * updated, reset all the bits in TPM recovery hash space to
-		 * pre-defined hash pattern.
+		 * Since data is being updated in mrc cache, the hash
+		 * currently stored in TPM hash space is no longer
+		 * valid. If we are not able to calculate hash of the
+		 * data being updated, reset all the bits in TPM hash
+		 * space to pre-defined hash pattern.
 		 */
 		hash_ptr = dead_hash;
 	}
 
 	/* Write hash of data to TPM space. */
-	if (antirollback_write_space_rec_hash(hash_ptr, VB2_SHA256_DIGEST_SIZE)
+	if (antirollback_write_space_mrc_hash(index, hash_ptr, VB2_SHA256_DIGEST_SIZE)
 	    != TPM_SUCCESS) {
 		printk(BIOS_ERR, "MRC: Could not save hash to TPM.\n");
 		return;
 	}
 
-	printk(BIOS_INFO, "MRC: TPM MRC hash updated successfully.\n");
+	printk(BIOS_INFO, "MRC: TPM MRC hash idx 0x%x updated successfully.\n", index);
 }
 
-int mrc_cache_verify_hash(const uint8_t *data, size_t size)
+int mrc_cache_verify_hash(uint32_t index, const uint8_t *data, size_t size)
 {
 	uint8_t data_hash[VB2_SHA256_DIGEST_SIZE];
 	uint8_t tpm_hash[VB2_SHA256_DIGEST_SIZE];
@@ -68,7 +68,7 @@ int mrc_cache_verify_hash(const uint8_t *data, size_t size)
 	if (!vboot_recovery_mode_enabled())
 		return 1;
 
-	/* Calculate hash of data read from RECOVERY_MRC_CACHE. */
+	/* Calculate hash of data read from MRC_CACHE. */
 	if (vb2_digest_buffer(data, size, VB2_HASH_SHA256, data_hash,
 			      sizeof(data_hash))) {
 		printk(BIOS_ERR, "MRC: SHA-256 calculation failed for data.\n");
@@ -82,7 +82,7 @@ int mrc_cache_verify_hash(const uint8_t *data, size_t size)
 	}
 
 	/* Read hash of MRC data saved in TPM. */
-	if (antirollback_read_space_rec_hash(tpm_hash, sizeof(tpm_hash))
+	if (antirollback_read_space_mrc_hash(index, tpm_hash, sizeof(tpm_hash))
 	    != TPM_SUCCESS) {
 		printk(BIOS_ERR, "MRC: Could not read hash from TPM.\n");
 		return 0;
@@ -93,7 +93,7 @@ int mrc_cache_verify_hash(const uint8_t *data, size_t size)
 		return 0;
 	}
 
-	printk(BIOS_INFO, "MRC: Hash comparison successful. "
-	       "Using data from RECOVERY_MRC_CACHE\n");
+	printk(BIOS_INFO, "MRC: Hash idx 0x%x comparison successful.\n", index);
+
 	return 1;
 }

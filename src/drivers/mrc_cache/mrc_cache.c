@@ -10,6 +10,7 @@
 #include <fmap.h>
 #include <ip_checksum.h>
 #include <region_file.h>
+#include <security/vboot/mrc_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
 
@@ -81,6 +82,11 @@ static const struct cache_region *cache_regions[] = {
 	&normal_training,
 	&variable_data,
 };
+
+/* TPM MRC hash functionality depends on vboot starting before memory init. */
+_Static_assert(!CONFIG(MRC_SAVE_HASH_IN_TPM) ||
+	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
+	       "for TPM MRC hash functionality, vboot must start in bootblock");
 
 static int lookup_region_by_name(const char *name, struct region *r)
 {
@@ -184,6 +190,9 @@ static int mrc_data_valid(const struct mrc_metadata *md,
 			md->data_checksum, checksum);
 		return -1;
 	}
+
+	if (CONFIG(MRC_SAVE_HASH_IN_TPM) && !mrc_cache_verify_hash(data, data_size))
+		return -1;
 
 	return 0;
 }
@@ -443,6 +452,8 @@ static void update_mrc_cache_by_type(int type,
 	} else {
 		printk(BIOS_DEBUG, "MRC: updated '%s'.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, UPDATE_SUCCESS);
+		if (CONFIG(MRC_SAVE_HASH_IN_TPM))
+			mrc_cache_update_hash(new_data, new_data_size);
 	}
 }
 

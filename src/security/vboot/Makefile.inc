@@ -119,6 +119,7 @@ ramstage-y += common.c
 postcar-y += common.c
 
 romstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
+ramstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 

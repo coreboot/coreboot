@@ -24,6 +24,9 @@ enum vb2_pcr_digest;
 #define FWMP_NV_INDEX                   0x100a
 /* 0x100b: Hash of MRC_CACHE training data for recovery boot */
 #define MRC_REC_HASH_NV_INDEX           0x100b
+/* 0x100c: OOBE autoconfig public key hashes */
+/* 0x100d: Hash of MRC_CACHE training data for non-recovery boot */
+#define MRC_RW_HASH_NV_INDEX            0x100d
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
 
 /* Structure definitions for TPM spaces */
@@ -57,23 +60,32 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx);
 uint32_t antirollback_lock_space_firmware(void);
 
 /*
- * Read recovery hash data from TPM.
- * @param index index into TPM NVRAM where hash is stored
+ * Read MRC hash data from TPM.
+ * @param index index into TPM NVRAM where hash is stored The index
+ *              can be set to either MRC_REC_HASH_NV_INDEX or
+ *              MRC_RW_HASH_NV_INDEX depending upon whether we are
+ *              booting in recovery or normal mode.
  * @param data  pointer to buffer where hash from TPM read into
  * @param size  size of buffer
  */
 uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size);
 /*
- * Write new hash data to recovery space in TPM.\
- * @param index index into TPM NVRAM where hash is stored
+ * Write new hash data to MRC space in TPM.\
+ * @param index index into TPM NVRAM where hash is stored The index
+ *              can be set to either MRC_REC_HASH_NV_INDEX or
+ *              MRC_RW_HASH_NV_INDEX depending upon whether we are
+ *              booting in recovery or normal mode.
  * @param data  pointer to buffer of hash value to be written
  * @param size  size of buffer
 */
 uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
 					   uint32_t size);
 /*
- * Lock down recovery hash space in TPM.
- * @param index index into TPM NVRAM where hash is stored
+ * Lock down MRC hash space in TPM.
+ * @param index index into TPM NVRAM where hash is stored The index
+ *              can be set to either MRC_REC_HASH_NV_INDEX or
+ *              MRC_RW_HASH_NV_INDEX depending upon whether we are
+ *              booting in recovery or normal mode.
 */
 uint32_t antirollback_lock_space_mrc_hash(uint32_t index);
 

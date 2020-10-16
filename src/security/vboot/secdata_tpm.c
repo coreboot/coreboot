@@ -164,9 +164,14 @@ static uint32_t set_kernel_space(const void *kernel_blob)
 
 static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
 {
-	return set_space("MRC Hash", index, data, HASH_NV_SIZE,
-			 ro_space_attributes, pcr0_unchanged_policy,
-			 sizeof(pcr0_unchanged_policy));
+	if (index == MRC_REC_HASH_NV_INDEX) {
+		return set_space("RO MRC Hash", index, data, HASH_NV_SIZE,
+				 ro_space_attributes, pcr0_unchanged_policy,
+				 sizeof(pcr0_unchanged_policy));
+	} else {
+		return set_space("RW MRC Hash", index, data, HASH_NV_SIZE,
+				 rw_space_attributes, NULL, 0);
+	}
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
@@ -183,6 +188,13 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 */
 	RETURN_ON_FAILURE(set_kernel_space(ctx->secdata_kernel));
 
+	/*
+	 * Define and set rec hash space, if available.  No need to
+	 * create the RW hash space because we will definitely boot
+	 * once in normal mode before shipping, meaning that the space
+	 * will get created with correct permissions while still in in
+	 * our hands.
+	 */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_mrc_hash_space(MRC_REC_HASH_NV_INDEX, mrc_hash_data));
 
@@ -304,7 +316,13 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 				     ctx->secdata_firmware,
 					VB2_SECDATA_FIRMWARE_SIZE));
 
-	/* Define and set rec hash space, if available. */
+	/*
+	 * Define and set rec hash space, if available.  No need to
+	 * create the RW hash space because we will definitely boot
+	 * once in normal mode before shipping, meaning that the space
+	 * will get created with correct permissions while still in in
+	 * our hands.
+	 */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_mrc_hash_space(MRC_REC_HASH_NV_INDEX, mrc_hash_data));
 

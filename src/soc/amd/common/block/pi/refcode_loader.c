@@ -29,14 +29,8 @@ static int agesa_locate_raw_file(const char *name, struct region_device *rdev)
 static int agesa_locate_stage_file_early(const char *name,
 					struct region_device *rdev)
 {
-	const size_t metadata_sz = sizeof(struct cbfs_stage);
-
 	if (agesa_locate_file(name, rdev, CBFS_TYPE_STAGE))
 		return -1;
-
-	/* Peel off the cbfs stage metadata. */
-	return rdev_chain(rdev, rdev, metadata_sz,
-			region_device_sz(rdev) - metadata_sz);
 }
 
 static int agesa_locate_stage_file_ramstage(const char *name,

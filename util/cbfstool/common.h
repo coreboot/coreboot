@@ -174,10 +174,12 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 enum cbfs_compression algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       enum cbfs_compression algo, const char *ignore_section);
+		       const char *ignore_section,
+		       struct cbfs_file_attr_stageheader *stageheader);
 /* location is TOP aligned. */
 int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
-				uint32_t *location, const char *ignore_section);
+			   uint32_t *location, const char *ignore_section,
+			   struct cbfs_file_attr_stageheader *stageheader);
 
 void print_supported_architectures(void);
 void print_supported_filetypes(void);

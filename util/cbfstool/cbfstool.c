@@ -14,7 +14,9 @@
 #include "cbfs_sections.h"
 #include "elfparsing.h"
 #include "partitioned_file.h"
+#include "lz4/lib/xxhash.h"
 #include <commonlib/bsd/cbfs_private.h>
+#include <commonlib/bsd/compression.h>
 #include <commonlib/bsd/metadata_hash.h>
 #include <commonlib/fsp.h>
 #include <commonlib/endian.h>
@@ -911,16 +913,7 @@ static int cbfs_add_component(const char *filename,
 					sizeof(struct cbfs_file_attr_position));
 			if (attrs == NULL)
 				goto error;
-			/* If we add a stage or a payload, we need to take  */
-			/* care about the additional metadata that is added */
-			/* to the cbfs file and therefore set the position  */
-			/* the real beginning of the data. */
-			if (type == CBFS_TYPE_STAGE)
-				attrs->position = htonl(offset - sizeof(struct cbfs_stage));
-			else if (type == CBFS_TYPE_SELF)
-				attrs->position = htonl(offset - sizeof(struct cbfs_payload));
-			else
-				attrs->position = htonl(offset);
+			attrs->position = htonl(offset);
 		}
 		/* Add alignment attribute if used */
 		if (param.alignment) {
@@ -1118,10 +1111,17 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	 * stages that would actually fit once compressed.
 	 */
 	if ((param.alignment || param.stage_xip) &&
-	     do_cbfs_locate(offset, sizeof(struct cbfs_stage), data_size))  {
+	     do_cbfs_locate(offset, sizeof(struct cbfs_file_attr_stageheader),
+			    data_size))  {
 		ERROR("Could not find location for stage.\n");
 		return 1;
 	}
+
+	struct cbfs_file_attr_stageheader *stageheader = (void *)
+		cbfs_add_file_attr(header, CBFS_FILE_ATTR_TAG_STAGEHEADER,
+				   sizeof(struct cbfs_file_attr_stageheader));
+	if (!stageheader)
+		return -1;
 
 	if (param.stage_xip) {
 		/*
@@ -1132,19 +1132,57 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 		*offset = convert_addr_space(param.image_region, *offset);
 
 		ret = parse_elf_to_xip_stage(buffer, &output, offset,
-						param.ignore_section);
+					     param.ignore_section,
+					     stageheader);
 	} else {
-		ret = parse_elf_to_stage(buffer, &output, param.compression,
-					 param.ignore_section);
+		ret = parse_elf_to_stage(buffer, &output, param.ignore_section,
+					 stageheader);
 	}
-
 	if (ret != 0)
 		return -1;
+
+	/* Store a hash of original uncompressed stage to compare later. */
+	size_t decmp_size = buffer_size(&output);
+	uint32_t decmp_hash = XXH32(buffer_get(&output), decmp_size, 0);
+
+	/* Chain to base conversion routine to handle compression. */
+	ret = cbfstool_convert_raw(&output, offset, header);
+	if (ret != 0)
+		goto fail;
+
+	/* Special care must be taken for LZ4-compressed stages that the BSS is
+	   large enough to provide scratch space for in-place decompression. */
+	if (!param.precompression && param.compression == CBFS_COMPRESS_LZ4) {
+		size_t memlen = ntohl(stageheader->memlen);
+		size_t compressed_size = buffer_size(&output);
+		uint8_t *compare_buffer = malloc(memlen);
+		uint8_t *start = compare_buffer + memlen - compressed_size;
+		if (!compare_buffer) {
+			ERROR("Out of memory\n");
+			goto fail;
+		}
+		memcpy(start, buffer_get(&output), compressed_size);
+		ret = ulz4fn(start, compressed_size, compare_buffer, memlen);
+		if  (ret == 0) {
+			ERROR("Not enough scratch space to decompress LZ4 in-place -- increase BSS size or disable compression!\n");
+			free(compare_buffer);
+			goto fail;
+		} else if (ret != (int)decmp_size ||
+			   decmp_hash != XXH32(compare_buffer, decmp_size, 0)) {
+			ERROR("LZ4 compression BUG! Report to mailing list.\n");
+			free(compare_buffer);
+			goto fail;
+		}
+		free(compare_buffer);
+	}
+
 	buffer_delete(buffer);
-	// Direct assign, no dupe.
-	memcpy(buffer, &output, sizeof(*buffer));
-	header->len = htonl(output.size);
+	buffer_clone(buffer, &output);
 	return 0;
+
+fail:
+	buffer_delete(&output);
+	return -1;
 }
 
 static int cbfstool_convert_mkpayload(struct buffer *buffer,

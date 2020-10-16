@@ -498,8 +498,9 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 	/* Program contents. */
 	buffer_splice(&program, in, ctx->phdr->p_offset, ctx->phdr->p_filesz);
 
-	/* Create ELF writer with modified entry point. */
+	/* Create ELF writer. Set entry point to 0 to match section offsets. */
 	memcpy(&ehdr, &ctx->pelf.ehdr, sizeof(ehdr));
+	ehdr.e_entry = 0;
 	ew = elf_writer_init(&ehdr);
 
 	if (ew == NULL) {

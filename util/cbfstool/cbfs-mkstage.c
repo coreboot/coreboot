@@ -10,8 +10,6 @@
 #include "cbfs.h"
 #include "rmodule.h"
 
-#include <commonlib/bsd/compression.h>
-
 /* Checks if program segment contains the ignored section */
 static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)
 {
@@ -73,19 +71,20 @@ static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
 	return NULL;
 }
 
-static void fill_cbfs_stage(struct buffer *outheader, enum cbfs_compression algo,
-				uint64_t entry, uint64_t loadaddr,
-				uint32_t filesize, uint32_t memsize)
+static int fill_cbfs_stageheader(struct cbfs_file_attr_stageheader *stageheader,
+				 uint64_t entry, uint64_t loadaddr,
+				 uint32_t memsize)
 {
-	/* N.B. The original plan was that SELF data was B.E.
-	 * but: this is all L.E.
-	 * Maybe we should just change the spec.
-	 */
-	xdr_le.put32(outheader, algo);
-	xdr_le.put64(outheader, entry);
-	xdr_le.put64(outheader, loadaddr);
-	xdr_le.put32(outheader, filesize);
-	xdr_le.put32(outheader, memsize);
+	if (entry - loadaddr >= memsize) {
+		ERROR("stage entry point out of bounds!\n");
+		return -1;
+	}
+
+	stageheader->loadaddr = htonll(loadaddr);
+	stageheader->memlen = htonl(memsize);
+	stageheader->entry_offset = htonl(entry - loadaddr);
+
+	return  0;
 }
 
 /* returns size of result, or -1 if error.
@@ -93,24 +92,19 @@ static void fill_cbfs_stage(struct buffer *outheader, enum cbfs_compression algo
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       enum cbfs_compression algo, const char *ignore_section)
+		       const char *ignore_section,
+		       struct cbfs_file_attr_stageheader *stageheader)
 {
 	struct parsed_elf pelf;
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr *ehdr;
 	Elf64_Shdr *shdr_ignored;
 	Elf64_Addr virt_to_phys;
-	char *buffer;
-	struct buffer outheader;
 	int ret = -1;
 
 	int headers;
-	int i, outlen;
+	int i;
 	uint64_t data_start, data_end, mem_end;
-
-	comp_func_ptr compress = compression_function(algo);
-	if (!compress)
-		return -1;
 
 	int flags = ELF_PARSE_PHDR | ELF_PARSE_SHDR | ELF_PARSE_STRTAB;
 
@@ -178,15 +172,13 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 		exit(1);
 	}
 
-	/* allocate an intermediate buffer for the data */
-	buffer = calloc(data_end - data_start, 1);
-
-	if (buffer == NULL) {
+	if (buffer_create(output, data_end - data_start, input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
 		goto err;
 	}
+	memset(output->data, 0, output->size);
 
-	/* Copy the file data into the buffer */
+	/* Copy the file data into the output buffer */
 
 	for (i = 0; i < headers; i++) {
 		if (phdr[i].p_type != PT_LOAD)
@@ -207,90 +199,17 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			ERROR("Underflow copying out the segment."
 			      "File has %zu bytes left, segment end is %zu\n",
 			      input->size, (size_t)(phdr[i].p_offset + phdr[i].p_filesz));
-			free(buffer);
 			goto err;
 		}
-		memcpy(buffer + (phdr[i].p_paddr - data_start),
+		memcpy(&output->data[phdr[i].p_paddr - data_start],
 		       &input->data[phdr[i].p_offset],
 		       phdr[i].p_filesz);
 	}
 
-	/* Now make the output buffer */
-	if (buffer_create(output, sizeof(struct cbfs_stage) + data_end - data_start,
-			  input->name) != 0) {
-		ERROR("Unable to allocate memory: %m\n");
-		free(buffer);
-		goto err;
-	}
-	memset(output->data, 0, output->size);
-
-	/* Compress the data, at which point we'll know information
-	 * to fill out the header. This seems backward but it works because
-	 * - the output header is a known size (not always true in many xdr's)
-	 * - we do need to know the compressed output size first
-	 * If compression fails or makes the data bigger, we'll warn about it
-	 * and use the original data.
-	 */
-	if (compress(buffer, data_end - data_start,
-		     (output->data + sizeof(struct cbfs_stage)),
-		     &outlen) < 0 || (unsigned)outlen > data_end - data_start) {
-		WARN("Compression failed or would make the data bigger "
-		     "- disabled.\n");
-		memcpy(output->data + sizeof(struct cbfs_stage),
-		       buffer, data_end - data_start);
-		outlen = data_end - data_start;
-		algo = CBFS_COMPRESS_NONE;
-	}
-
-	/* Check for enough BSS scratch space to decompress LZ4 in-place. */
-	if (algo == CBFS_COMPRESS_LZ4) {
-		size_t result;
-		size_t memlen = mem_end - data_start;
-		size_t compressed_size = outlen;
-		char *compare_buffer = malloc(memlen);
-		char *start = compare_buffer + memlen - compressed_size;
-
-		if (compare_buffer == NULL) {
-			ERROR("Can't allocate memory!\n");
-			free(buffer);
-			goto err;
-		}
-
-		memcpy(start, output->data + sizeof(struct cbfs_stage),
-		       compressed_size);
-		result = ulz4fn(start, compressed_size, compare_buffer, memlen);
-
-		if (result == 0) {
-			ERROR("Not enough scratch space to decompress LZ4 in-place -- increase BSS size or disable compression!\n");
-			free(compare_buffer);
-			free(buffer);
-			goto err;
-		}
-		if (result != data_end - data_start ||
-		    memcmp(compare_buffer, buffer, data_end - data_start)) {
-			ERROR("LZ4 compression BUG! Report to mailing list.\n");
-			free(compare_buffer);
-			free(buffer);
-			goto err;
-		}
-		free(compare_buffer);
-	}
-
-	free(buffer);
-
-	/* Set up for output marshaling. */
-	outheader.data = output->data;
-	outheader.size = 0;
-
 	/* coreboot expects entry point to be physical address. Thus, adjust the
-	 * entry point accordingly.
-	 */
-	fill_cbfs_stage(&outheader, algo, ehdr->e_entry + virt_to_phys,
-			data_start, outlen, mem_end - data_start);
-
-	output->size = sizeof(struct cbfs_stage) + outlen;
-	ret = 0;
-
+	   entry point accordingly. */
+	ret = fill_cbfs_stageheader(stageheader, ehdr->e_entry + virt_to_phys,
+				    data_start, mem_end - data_start);
 err:
 	parsed_elf_destroy(&pelf);
 	return ret;
@@ -341,13 +260,13 @@ static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
 }
 
 int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
-				uint32_t *location, const char *ignore_section)
+			   uint32_t *location, const char *ignore_section,
+			   struct cbfs_file_attr_stageheader *stageheader)
 {
 	struct xip_context xipctx;
 	struct rmod_context *rmodctx;
 	struct reloc_filter filter;
 	struct parsed_elf *pelf;
-	size_t output_sz;
 	uint32_t adjustment;
 	struct buffer binput;
 	struct buffer boutput;
@@ -381,13 +300,12 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 	if (rmodule_collect_relocations(rmodctx, &filter))
 		goto out;
 
-	output_sz = sizeof(struct cbfs_stage) + pelf->phdr->p_filesz;
-	if (buffer_create(output, output_sz, input->name) != 0) {
+	if (buffer_create(output, pelf->phdr->p_filesz, input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
 		goto out;
 	}
 	buffer_clone(&boutput, output);
-	memset(buffer_get(&boutput), 0, output_sz);
+	memset(buffer_get(&boutput), 0, pelf->phdr->p_filesz);
 	buffer_set_size(&boutput, 0);
 
 	/* Single loadable segment. The entire segment moves to final
@@ -395,17 +313,16 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 	adjustment = *location - pelf->phdr->p_vaddr;
 	DEBUG("Relocation adjustment: %08x\n", adjustment);
 
-	fill_cbfs_stage(&boutput, CBFS_COMPRESS_NONE,
-			(uint32_t)pelf->ehdr.e_entry + adjustment,
-			(uint32_t)pelf->phdr->p_vaddr + adjustment,
-			pelf->phdr->p_filesz, pelf->phdr->p_memsz);
+	fill_cbfs_stageheader(stageheader,
+			      (uint32_t)pelf->ehdr.e_entry + adjustment,
+			      (uint32_t)pelf->phdr->p_vaddr + adjustment,
+			      pelf->phdr->p_memsz);
 	/* Need an adjustable buffer. */
 	buffer_clone(&binput, input);
 	buffer_seek(&binput, pelf->phdr->p_offset);
 	bputs(&boutput, buffer_get(&binput), pelf->phdr->p_filesz);
 
 	buffer_clone(&boutput, output);
-	buffer_seek(&boutput, sizeof(struct cbfs_stage));
 
 	/* Make adjustments to all the relocations within the program. */
 	for (i = 0; i < rmodctx->nrelocs; i++) {
@@ -431,8 +348,6 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 		xdr_le.put32(&out, val + adjustment);
 	}
 
-	/* Need to back up the location to include cbfs stage metadata. */
-	*location -= sizeof(struct cbfs_stage);
 	ret = 0;
 
 out:

@@ -35,21 +35,24 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 	RCBA32(0x3598) = 0;
 
 	reg32 = 0;
-	for (i = 0; i < TOTAL_USB_PORTS; i++)
+	for (i = 0; i < TOTAL_USB_PORTS; i++) {
 		if (!portmap[i].enabled)
 			reg32 |= (1 << i);
+	}
 	RCBA32(USBPDO) = reg32;
 	reg32 = 0;
 	/* The OC pins of the first 8 USB ports are mapped in USBOCM1 */
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++) {
 		if (portmap[i].enabled && portmap[i].oc_pin >= 0)
 			reg32 |= (1 << (i + 8 * portmap[i].oc_pin));
+	}
 	RCBA32(USBOCM1) = reg32;
 	reg32 = 0;
 	/* The OC pins of the remainder 6 USB ports are mapped in USBOCM2 */
-	for (i = 8; i < TOTAL_USB_PORTS; i++)
+	for (i = 8; i < TOTAL_USB_PORTS; i++) {
 		if (portmap[i].enabled && portmap[i].oc_pin >= 4)
 			reg32 |= (1 << (i - 8 + 8 * (portmap[i].oc_pin - 4)));
+	}
 	RCBA32(USBOCM2) = reg32;
 
 	/* Relock registers. */

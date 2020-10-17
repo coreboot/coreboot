@@ -89,12 +89,13 @@ static void pch_enable_serial_irqs(struct device *dev)
 static void pch_pirq_init(struct device *dev)
 {
 	struct device *irq_dev;
-	/* Interrupt 11 is not used by legacy devices and so can always be used for
-	   PCI interrupts. Full legacy IRQ routing is complicated and hard to
-	   get right. Fortunately all modern OS use MSI and so it's not that big of
-	   an issue anyway. Still we have to provide a reasonable default. Using
-	   interrupt 11 for it everywhere is a working default. ACPI-aware OS can
-	   move it to any interrupt and others will just leave them at default.
+	/*
+	 * Interrupt 11 is not used by legacy devices and so can always be used for
+	 * PCI interrupts. Full legacy IRQ routing is complicated and hard to
+	 * get right. Fortunately all modern OS use MSI and so it's not that big of
+	 * an issue anyway. Still we have to provide a reasonable default. Using
+	 * interrupt 11 for it everywhere is a working default. ACPI-aware OS can
+	 * move it to any interrupt and others will just leave them at default.
 	 */
 	const u8 pirq_routing = 11;
 
@@ -279,87 +280,81 @@ static void mobile5_pm_init(struct device *dev)
 	printk(BIOS_DEBUG, "Mobile 5 PM init\n");
 	pci_write_config8(dev, 0xa9, 0x47);
 
-	RCBA32 (0x1d44) = 0x00000000;
-	(void) RCBA32 (0x1d44);
-	RCBA32 (0x1d48) = 0x00030000;
-	(void) RCBA32 (0x1d48);
-	RCBA32 (0x1e80) = 0x000c0801;
-	(void) RCBA32 (0x1e80);
-	RCBA32 (0x1e84) = 0x000200f0;
-	(void) RCBA32 (0x1e84);
+	RCBA32(0x1d44) = 0x00000000;
+	(void)RCBA32(0x1d44);
+	RCBA32(0x1d48) = 0x00030000;
+	(void)RCBA32(0x1d48);
+	RCBA32(0x1e80) = 0x000c0801;
+	(void)RCBA32(0x1e80);
+	RCBA32(0x1e84) = 0x000200f0;
+	(void)RCBA32(0x1e84);
 
-	const u32 rcba2010[] =
-		{
-			/* 2010: */ 0x00188200, 0x14000016, 0xbc4abcb5, 0x00000000,
-			/* 2020: */ 0xf0c9605b, 0x13683040, 0x04c8f16e, 0x09e90170
-		};
-	for (i = 0; i < ARRAY_SIZE(rcba2010); i++)
-	{
-		RCBA32 (0x2010 + 4 * i) = rcba2010[i];
-		RCBA32 (0x2010 + 4 * i);
+	const u32 rcba2010[] = {
+		/* 2010: */ 0x00188200, 0x14000016, 0xbc4abcb5, 0x00000000,
+		/* 2020: */ 0xf0c9605b, 0x13683040, 0x04c8f16e, 0x09e90170
+	};
+	for (i = 0; i < ARRAY_SIZE(rcba2010); i++) {
+		RCBA32(0x2010 + 4 * i) = rcba2010[i];
+		RCBA32(0x2010 + 4 * i);
 	}
 
-	RCBA32 (0x2100) = 0x00000000;
-	(void) RCBA32 (0x2100);
-	RCBA32 (0x2104) = 0x00000757;
-	(void) RCBA32 (0x2104);
-	RCBA32 (0x2108) = 0x00170001;
-	(void) RCBA32 (0x2108);
+	RCBA32(0x2100) = 0x00000000;
+	(void)RCBA32(0x2100);
+	RCBA32(0x2104) = 0x00000757;
+	(void)RCBA32(0x2104);
+	RCBA32(0x2108) = 0x00170001;
+	(void)RCBA32(0x2108);
 
-	RCBA32 (0x211c) = 0x00000000;
-	(void) RCBA32 (0x211c);
-	RCBA32 (0x2120) = 0x00010000;
-	(void) RCBA32 (0x2120);
+	RCBA32(0x211c) = 0x00000000;
+	(void)RCBA32(0x211c);
+	RCBA32(0x2120) = 0x00010000;
+	(void)RCBA32(0x2120);
 
-	RCBA32 (0x21fc) = 0x00000000;
-	(void) RCBA32 (0x21fc);
-	RCBA32 (0x2200) = 0x20000044;
-	(void) RCBA32 (0x2200);
-	RCBA32 (0x2204) = 0x00000001;
-	(void) RCBA32 (0x2204);
-	RCBA32 (0x2208) = 0x00003457;
-	(void) RCBA32 (0x2208);
+	RCBA32(0x21fc) = 0x00000000;
+	(void)RCBA32(0x21fc);
+	RCBA32(0x2200) = 0x20000044;
+	(void)RCBA32(0x2200);
+	RCBA32(0x2204) = 0x00000001;
+	(void)RCBA32(0x2204);
+	RCBA32(0x2208) = 0x00003457;
+	(void)RCBA32(0x2208);
 
-	const u32 rcba2210[] =
-		{
-			/* 2210 */ 0x00000000, 0x00000001, 0xa0fff210, 0x0000df00,
-			/* 2220 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
-			/* 2230 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
-			/* 2240 */ 0x00002301, 0x36000000, 0x00010107, 0x00160000,
-			/* 2250 */ 0x00001b01, 0x36000000, 0x00010107, 0x00160000,
-			/* 2260 */ 0x00000601, 0x16000000, 0x00010107, 0x00160000,
-			/* 2270 */ 0x00001c01, 0x16000000, 0x00010107, 0x00160000
-		};
+	const u32 rcba2210[] = {
+		/* 2210 */ 0x00000000, 0x00000001, 0xa0fff210, 0x0000df00,
+		/* 2220 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
+		/* 2230 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
+		/* 2240 */ 0x00002301, 0x36000000, 0x00010107, 0x00160000,
+		/* 2250 */ 0x00001b01, 0x36000000, 0x00010107, 0x00160000,
+		/* 2260 */ 0x00000601, 0x16000000, 0x00010107, 0x00160000,
+		/* 2270 */ 0x00001c01, 0x16000000, 0x00010107, 0x00160000
+	};
 
-	for (i = 0; i < ARRAY_SIZE(rcba2210); i++)
-	{
-		RCBA32 (0x2210 + 4 * i) = rcba2210[i];
-		RCBA32 (0x2210 + 4 * i);
+	for (i = 0; i < ARRAY_SIZE(rcba2210); i++) {
+		RCBA32(0x2210 + 4 * i) = rcba2210[i];
+		RCBA32(0x2210 + 4 * i);
 	}
 
-	const u32 rcba2300[] =
-		{
-			/* 2300: */ 0x00000000, 0x40000000, 0x4646827b, 0x6e803131,
-			/* 2310: */ 0x32c77887, 0x00077733, 0x00007447, 0x00000040,
-			/* 2320: */ 0xcccc0cfc, 0x0fbb0fff
-		};
+	const u32 rcba2300[] = {
+		/* 2300: */ 0x00000000, 0x40000000, 0x4646827b, 0x6e803131,
+		/* 2310: */ 0x32c77887, 0x00077733, 0x00007447, 0x00000040,
+		/* 2320: */ 0xcccc0cfc, 0x0fbb0fff
+	};
 
-	for (i = 0; i < ARRAY_SIZE(rcba2300); i++)
-	{
-		RCBA32 (0x2300 + 4 * i) = rcba2300[i];
-		RCBA32 (0x2300 + 4 * i);
+	for (i = 0; i < ARRAY_SIZE(rcba2300); i++) {
+		RCBA32(0x2300 + 4 * i) = rcba2300[i];
+		RCBA32(0x2300 + 4 * i);
 	}
 
-	RCBA32 (0x37fc) = 0x00000000;
-	(void) RCBA32 (0x37fc);
-	RCBA32 (0x3dfc) = 0x00000000;
-	(void) RCBA32 (0x3dfc);
-	RCBA32 (0x3e7c) = 0xffffffff;
-	(void) RCBA32 (0x3e7c);
-	RCBA32 (0x3efc) = 0x00000000;
-	(void) RCBA32 (0x3efc);
-	RCBA32 (0x3f00) = 0x0000010b;
-	(void) RCBA32 (0x3f00);
+	RCBA32(0x37fc) = 0x00000000;
+	(void)RCBA32(0x37fc);
+	RCBA32(0x3dfc) = 0x00000000;
+	(void)RCBA32(0x3dfc);
+	RCBA32(0x3e7c) = 0xffffffff;
+	(void)RCBA32(0x3e7c);
+	RCBA32(0x3efc) = 0x00000000;
+	(void)RCBA32(0x3efc);
+	RCBA32(0x3f00) = 0x0000010b;
+	(void)RCBA32(0x3f00);
 }
 
 static void enable_hpet(void)
@@ -573,7 +568,7 @@ void southbridge_inject_dsdt(const struct device *dev)
 
 		/* Add it to SSDT.  */
 		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (uintptr_t) gnvs);
+		acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
 		acpigen_pop_len();
 	}
 }
@@ -610,7 +605,7 @@ static struct device_operations device_ops = {
 	.acpi_inject_dsdt	= southbridge_inject_dsdt,
 	.acpi_fill_ssdt		= southbridge_fill_ssdt,
 	.acpi_name		= lpc_acpi_name,
-	.write_acpi_tables      = acpi_write_hpet,
+	.write_acpi_tables	= acpi_write_hpet,
 	.init			= lpc_init,
 	.final			= lpc_final,
 	.enable			= pch_lpc_enable,

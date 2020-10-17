@@ -111,7 +111,9 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 14.7 off end # Not present with BIOS ([AMD] FCH SD Flash Controller [1022:7806])
 				device pci 15.0 on end # PCI bridge
 				device pci 15.1 on end # PCI bridge
-				device pci 15.2 on end # PCI bridge # Only present with the original boot firmware
+				# FIXME: serial console stops working when enabling resources
+				# for 15.2, and payloads hang
+				device pci 15.2 off end # PCI bridge
 			end	#chip southbridge/amd/hudson
 
 			device pci 18.0 on end

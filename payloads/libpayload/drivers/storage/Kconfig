@@ -12,7 +12,7 @@ config STORAGE
 config STORAGE_64BIT_LBA
 	bool "Use 64-bit integers to address sectors"
 	depends on STORAGE
-	default n
+	default y
 	help
 	  If this is selected, sectors will be addressed by an 64-bit integer.
 	  Select this to support LBA-48 for ATA drives.

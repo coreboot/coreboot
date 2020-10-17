@@ -20,7 +20,7 @@ config CPU_AMD_AGESA_BINARY_PI
 	  Use a binary PI package.  Generally, these will be stored in the
 	  "3rdparty/blobs" directory.  For some processors, these must be obtained
 	  directly from AMD Embedded Processors Group
-	  (http://www.amdcom/embedded).
+	  (http://www.amd.com/embedded).
 
 config CPU_AMD_AGESA_OPENSOURCE
 	bool "open-source AGESA"

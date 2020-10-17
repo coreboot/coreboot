@@ -13,6 +13,15 @@
 #include <soc/systemagent.h>
 #include <southbridge/intel/common/spi.h>
 
+/*
+ * 16.6 System Agent Configuration Locking
+ * "5th Generation Intel Core Processor Family BIOS Specification"
+ * Document Number 535094
+ * Revision 2.2.0, August 2014
+ *
+ * To ease reading, first lock PCI registers, then MCHBAR registers.
+ * Write the MC Lock register first, since more than one bit gets set.
+ */
 const struct reg_script system_agent_finalize_script[] = {
 	REG_PCI_OR16(0x50, 1 << 0),				/* GGC */
 	REG_PCI_OR32(0x5c, 1 << 0),				/* DPR */
@@ -25,17 +34,15 @@ const struct reg_script system_agent_finalize_script[] = {
 	REG_PCI_OR32(0xb4, 1 << 0),				/* BGSM */
 	REG_PCI_OR32(0xb8, 1 << 0),				/* TSEGMB */
 	REG_PCI_OR32(0xbc, 1 << 0),				/* TOLUD */
+	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x50fc, 0x8f),		/* MC */
 	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5500, 1 << 0),	/* PAVP */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5f00, 1 << 31),	/* SA PM */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6020, 1 << 0),	/* UMA GFX */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x63fc, 1 << 0),	/* VTDTRK */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6800, 1 << 31),
+	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5880, 1 << 5),	/* DDR PTM */
 	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7000, 1 << 31),
 	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x77fc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x50fc, 0x8f),
 	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7ffc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5880, 1 << 5),
-	REG_MMIO_WRITE8(MCH_BASE_ADDRESS + 0x50fc, 0x8f),	/* MC */
+	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6800, 1 << 31),
+	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6020, 1 << 0),	/* UMA GFX */
+	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x63fc, 1 << 0),	/* VTDTRK */
 
 	REG_SCRIPT_END
 };
@@ -76,16 +83,18 @@ static void broadwell_finalize(void *unused)
 
 	reg_script_run_on_dev(sa_dev, system_agent_finalize_script);
 
+	/* Read+Write the following registers */
+	MCHBAR32(0x6030) = MCHBAR32(0x6030);
+	MCHBAR32(0x6034) = MCHBAR32(0x6034);
+	MCHBAR32(0x6008) = MCHBAR32(0x6008);
+
 	spi_finalize_ops();
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);
 
 	/* Lock */
 	RCBA32_OR(0x3a6c, 0x00000001);
 
-	/* Read+Write the following registers */
-	MCHBAR32(0x6030) = MCHBAR32(0x6030);
-	MCHBAR32(0x6034) = MCHBAR32(0x6034);
-	MCHBAR32(0x6008) = MCHBAR32(0x6008);
+	/* Read+Write the following register */
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 
 	/* Indicate finalize step with post code */

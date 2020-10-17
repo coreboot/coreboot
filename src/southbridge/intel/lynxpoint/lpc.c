@@ -715,7 +715,7 @@ void southbridge_inject_dsdt(const struct device *dev)
 
 		/* Add it to DSDT.  */
 		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_write_name_dword("NVSA", (u32)gnvs);
 		acpigen_pop_len();
 	}
 }
@@ -748,7 +748,7 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 	 */
 	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
 
-	hpet = (acpi_hpet_t *) current;
+	hpet = (acpi_hpet_t *)current;
 	current += sizeof(acpi_hpet_t);
 	current = acpi_align_current(current);
 	acpi_create_intel_hpet(hpet);

@@ -14,7 +14,7 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
 
-	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
+	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
 
 	/* fill out header fields */
 	memcpy(header->signature, "HPET", 4);
@@ -37,7 +37,7 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	hpet->min_tick = 0x0080;
 
 	header->checksum =
-	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
+	    acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
 static void acpi_create_serialio_ssdt_entry(int id, struct global_nvs *gnvs)
@@ -66,7 +66,7 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 	memcpy(&ssdt->asl_compiler_id, ASLC, 4);
 	ssdt->asl_compiler_revision = asl_revision;
 	ssdt->length = sizeof(acpi_header_t);
-	acpigen_set_current((char *) current);
+	acpigen_set_current((char *)current);
 
 	/* Fill the SSDT with an entry for each SerialIO device */
 	for (id = 0; id < 8; id++)

@@ -108,7 +108,7 @@ int early_pch_init(void)
 	RCBA16(OIC) = 0x0100;
 
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	(void)RCBA16(OIC);
 
 	/* Mainboard RCBA settings */
 	mainboard_config_rcba();

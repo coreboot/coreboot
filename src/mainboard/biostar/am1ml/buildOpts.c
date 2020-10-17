@@ -11,7 +11,7 @@
 #define BLDOPT_REMOVE_ECC_SUPPORT		TRUE
 //#define BLDOPT_REMOVE_SRAT			FALSE
 #define BLDOPT_REMOVE_WHEA			FALSE
-#define	BLDOPT_REMOVE_CRAT			TRUE
+#define BLDOPT_REMOVE_CRAT			TRUE
 #define BLDOPT_REMOVE_CDIT			TRUE
 
 /* Build configuration values here. */

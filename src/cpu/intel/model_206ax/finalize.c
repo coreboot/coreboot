@@ -12,10 +12,6 @@
 
 void intel_model_206ax_finalize_smm(void)
 {
-	/* Lock AES-NI only if supported */
-	if (cpuid_ecx(1) & (1 << 25))
-		msr_set(MSR_FEATURE_CONFIG, BIT(0));
-
 	/* Lock TM interrupts - route thermal events to all processors */
 	msr_set(MSR_MISC_PWR_MGMT, BIT(22));
 

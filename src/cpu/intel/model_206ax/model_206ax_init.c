@@ -470,6 +470,12 @@ static void model_206ax_init(struct device *cpu)
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
 
+	if (!intel_ht_sibling()) {
+		/* Lock AES-NI only if supported */
+		if (cpuid_ecx(1) & (1 << 25))
+			msr_set(MSR_FEATURE_CONFIG, BIT(0));
+	}
+
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
 

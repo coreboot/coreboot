@@ -193,18 +193,19 @@ static int mrc_data_valid(int type, const struct mrc_metadata *md,
 	if (md->data_size != data_size)
 		return -1;
 
-	checksum = compute_ip_checksum(data, data_size);
-
-	if (md->data_checksum != checksum) {
-		printk(BIOS_ERR, "MRC: data checksum mismatch: %x vs %x\n",
-			md->data_checksum, checksum);
-		return -1;
-	}
-
 	hash_idx = cr->tpm_hash_index;
-	if (hash_idx && CONFIG(MRC_SAVE_HASH_IN_TPM) &&
-	    !mrc_cache_verify_hash(hash_idx, data, data_size))
-		return -1;
+	if (hash_idx && CONFIG(MRC_SAVE_HASH_IN_TPM)) {
+		if (!mrc_cache_verify_hash(hash_idx, data, data_size))
+			return -1;
+	} else {
+		checksum = compute_ip_checksum(data, data_size);
+
+		if (md->data_checksum != checksum) {
+			printk(BIOS_ERR, "MRC: data checksum mismatch: %x vs %x\n",
+			       md->data_checksum, checksum);
+			return -1;
+		}
+	}
 
 	return 0;
 }

@@ -3,6 +3,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <device/pci_ops.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/pci_devs.h>
@@ -22,30 +23,37 @@
  * To ease reading, first lock PCI registers, then MCHBAR registers.
  * Write the MC Lock register first, since more than one bit gets set.
  */
-const struct reg_script system_agent_finalize_script[] = {
-	REG_PCI_OR16(0x50, 1 << 0),				/* GGC */
-	REG_PCI_OR32(0x5c, 1 << 0),				/* DPR */
-	REG_PCI_OR32(0x78, 1 << 10),				/* ME */
-	REG_PCI_OR32(0x90, 1 << 0),				/* REMAPBASE */
-	REG_PCI_OR32(0x98, 1 << 0),				/* REMAPLIMIT */
-	REG_PCI_OR32(0xa0, 1 << 0),				/* TOM */
-	REG_PCI_OR32(0xa8, 1 << 0),				/* TOUUD */
-	REG_PCI_OR32(0xb0, 1 << 0),				/* BDSM */
-	REG_PCI_OR32(0xb4, 1 << 0),				/* BGSM */
-	REG_PCI_OR32(0xb8, 1 << 0),				/* TSEGMB */
-	REG_PCI_OR32(0xbc, 1 << 0),				/* TOLUD */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x50fc, 0x8f),		/* MC */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5500, 1 << 0),	/* PAVP */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x5880, 1 << 5),	/* DDR PTM */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7000, 1 << 31),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x77fc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x7ffc, 1 << 0),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6800, 1 << 31),
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x6020, 1 << 0),	/* UMA GFX */
-	REG_MMIO_OR32(MCH_BASE_ADDRESS + 0x63fc, 1 << 0),	/* VTDTRK */
+static void broadwell_systemagent_finalize(void)
+{
+	struct device *const host_bridge = pcidev_path_on_root(SA_DEVFN_ROOT);
 
-	REG_SCRIPT_END
-};
+	pci_or_config16(host_bridge, 0x50, 1 << 0);	/* GGC */
+	pci_or_config32(host_bridge, 0x5c, 1 << 0);	/* DPR */
+	pci_or_config32(host_bridge, 0x78, 1 << 10);	/* ME */
+	pci_or_config32(host_bridge, 0x90, 1 << 0);	/* REMAPBASE */
+	pci_or_config32(host_bridge, 0x98, 1 << 0);	/* REMAPLIMIT */
+	pci_or_config32(host_bridge, 0xa0, 1 << 0);	/* TOM */
+	pci_or_config32(host_bridge, 0xa8, 1 << 0);	/* TOUUD */
+	pci_or_config32(host_bridge, 0xb0, 1 << 0);	/* BDSM */
+	pci_or_config32(host_bridge, 0xb4, 1 << 0);	/* BGSM */
+	pci_or_config32(host_bridge, 0xb8, 1 << 0);	/* TSEGMB */
+	pci_or_config32(host_bridge, 0xbc, 1 << 0);	/* TOLUD */
+
+	MCHBAR32(0x50fc) |= 0x8f;	/* MC */
+	MCHBAR32(0x5500) |= 1 << 0;	/* PAVP */
+	MCHBAR32(0x5880) |= 1 << 5;	/* DDR PTM */
+	MCHBAR32(0x7000) |= 1 << 31;
+	MCHBAR32(0x77fc) |= 1 << 0;
+	MCHBAR32(0x7ffc) |= 1 << 0;
+	MCHBAR32(0x6800) |= 1 << 31;
+	MCHBAR32(0x6020) |= 1 << 0;	/* UMA GFX */
+	MCHBAR32(0x63fc) |= 1 << 0;	/* VTDTRK */
+
+	/* Read+write the following */
+	MCHBAR32(0x6030) = MCHBAR32(0x6030);
+	MCHBAR32(0x6034) = MCHBAR32(0x6034);
+	MCHBAR32(0x6008) = MCHBAR32(0x6008);
+}
 
 const struct reg_script pch_finalize_script[] = {
 #if !CONFIG(EM100PRO_SPI_CONSOLE)
@@ -77,16 +85,9 @@ const struct reg_script pch_finalize_script[] = {
 
 static void broadwell_finalize(void *unused)
 {
-	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
-	reg_script_run_on_dev(sa_dev, system_agent_finalize_script);
-
-	/* Read+Write the following registers */
-	MCHBAR32(0x6030) = MCHBAR32(0x6030);
-	MCHBAR32(0x6034) = MCHBAR32(0x6034);
-	MCHBAR32(0x6008) = MCHBAR32(0x6008);
+	broadwell_systemagent_finalize();
 
 	spi_finalize_ops();
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);

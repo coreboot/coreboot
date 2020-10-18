@@ -11,9 +11,6 @@
 #include <security/vboot/misc.h>
 #include <soc/intel/common/reset.h>
 
-/* CSE RW version size reserved in the CSE CBFS RW binary */
-#define CSE_RW_VERSION_SZ	16
-
 /* Converts bp index to boot partition string */
 #define GET_BP_STR(bp_index) (bp_index ? "RW" : "RO")
 
@@ -44,6 +41,10 @@ enum boot_partition_id {
 
 /* CSE recovery sub-error codes */
 enum csme_failure_reason {
+
+	/* No error */
+	CSE_LITE_SKU_NO_ERROR = 0,
+
 	/* Unspecified error */
 	CSE_LITE_SKU_UNSPECIFIED = 1,
 
@@ -63,7 +64,16 @@ enum csme_failure_reason {
 	CSE_LITE_SKU_COMMUNICATION_ERROR = 6,
 
 	/* Fails to wipe CSE runtime data */
-	CSE_LITE_SKU_DATA_WIPE_ERROR = 7
+	CSE_LITE_SKU_DATA_WIPE_ERROR = 7,
+
+	/* CSE RW is not found */
+	CSE_LITE_SKU_RW_BLOB_NOT_FOUND = 8,
+
+	/* CSE CBFS RW SHA-256 mismatch with the provided SHA */
+	CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH = 9,
+
+	/* CSE CBFS RW metadata is not found */
+	CSE_LITE_SKU_RW_METADATA_NOT_FOUND = 10,
 };
 
 /*
@@ -342,7 +352,7 @@ static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 	size_t data_clr_rsp_sz = sizeof(data_clr_rsp);
 
 	if (!heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
-		&data_clr_rsp_sz)) {
+				&data_clr_rsp_sz)) {
 		return false;
 	}
 
@@ -354,6 +364,7 @@ static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 
 	return true;
 }
+
 __weak void cse_board_reset(void)
 {
 	/* Default weak implementation, does nothing. */
@@ -417,7 +428,7 @@ static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
 
 #if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
 static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
-	const struct cse_bp_info *bp_info)
+		const struct cse_bp_info *bp_info)
 {
 	const struct cse_bp_entry *cse_bp;
 
@@ -431,7 +442,7 @@ static const struct fw_version *cse_get_rw_version(const struct cse_bp_info *cse
 }
 
 static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
-	enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
+		enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
 {
 	const struct cse_bp_entry *cse_bp;
 
@@ -471,21 +482,10 @@ static bool cse_get_rw_rdev(struct region_device *rdev)
 {
 	if (fmap_locate_area_as_rdev_rw(CONFIG_SOC_INTEL_CSE_FMAP_NAME, rdev) < 0) {
 		printk(BIOS_ERR, "cse_lite: Failed to locate %s in FMAP\n",
-			CONFIG_SOC_INTEL_CSE_FMAP_NAME);
+				CONFIG_SOC_INTEL_CSE_FMAP_NAME);
 		return false;
 	}
 
-	return true;
-}
-
-static bool cse_get_cbfs_rdev(struct region_device *source_rdev)
-{
-	struct cbfsf file_desc;
-
-	if (cbfs_boot_locate(&file_desc, CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, NULL) < 0)
-		return false;
-
-	cbfs_file_data(source_rdev, &file_desc);
 	return true;
 }
 
@@ -524,16 +524,35 @@ static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	return true;
 }
 
-
-static bool cse_get_cbfs_rw_version(const struct region_device *source_rdev,
-		void *cse_cbfs_rw_ver)
+static const char *cse_get_source_rdev_fmap(void)
 {
+	struct vb2_context *ctx = vboot_get_context();
+	if (ctx == NULL)
+		return NULL;
 
-	if (rdev_readat(source_rdev, (void *) cse_cbfs_rw_ver, 0, sizeof(struct fw_version))
-			!= sizeof(struct fw_version)) {
-		printk(BIOS_ERR, "cse_lite: Failed to read CSE CBFW RW version\n");
+	if (vboot_is_firmware_slot_a(ctx))
+		return CONFIG_SOC_INTEL_CSE_RW_A_FMAP_NAME;
+
+	return CONFIG_SOC_INTEL_CSE_RW_B_FMAP_NAME;
+}
+
+static bool cse_get_source_rdev(struct region_device *rdev)
+{
+	const char *reg_name;
+	uint32_t cbfs_type = CBFS_TYPE_RAW;
+	struct cbfsf fh;
+
+	reg_name = cse_get_source_rdev_fmap();
+
+	if (reg_name == NULL)
 		return false;
-	}
+
+	if (cbfs_locate_file_in_region(&fh, reg_name, CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME,
+				&cbfs_type) < 0)
+		return false;
+
+	cbfs_file_data(rdev, &fh);
+
 	return true;
 }
 
@@ -544,30 +563,49 @@ static bool cse_get_cbfs_rw_version(const struct region_device *source_rdev,
  * If ver_cmp_status > 0, coreboot upgrades CSE RW region
  */
 static int cse_check_version_mismatch(const struct cse_bp_info *cse_bp_info,
-	const struct region_device *source_rdev)
+	const struct cse_rw_metadata *source_metadata)
 {
-	struct fw_version cse_cbfs_rw_ver;
 	const struct fw_version *cse_rw_ver;
 
-	if (!cse_get_cbfs_rw_version(source_rdev, &cse_cbfs_rw_ver))
-		return false;
-
 	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
-			cse_cbfs_rw_ver.major,
-			cse_cbfs_rw_ver.minor,
-			cse_cbfs_rw_ver.hotfix,
-			cse_cbfs_rw_ver.build);
+			source_metadata->version.major,
+			source_metadata->version.minor,
+			source_metadata->version.hotfix,
+			source_metadata->version.build);
 
 	cse_rw_ver = cse_get_rw_version(cse_bp_info);
 
-	if (cse_cbfs_rw_ver.major != cse_rw_ver->major)
-		return cse_cbfs_rw_ver.major - cse_rw_ver->major;
-	else if (cse_cbfs_rw_ver.minor != cse_rw_ver->minor)
-		return cse_cbfs_rw_ver.minor - cse_rw_ver->minor;
-	else if (cse_cbfs_rw_ver.hotfix != cse_rw_ver->hotfix)
-		return cse_cbfs_rw_ver.hotfix - cse_rw_ver->hotfix;
+	if (source_metadata->version.major != cse_rw_ver->major)
+		return source_metadata->version.major - cse_rw_ver->major;
+	else if (source_metadata->version.minor != cse_rw_ver->minor)
+		return source_metadata->version.minor - cse_rw_ver->minor;
+	else if (source_metadata->version.hotfix != cse_rw_ver->hotfix)
+		return source_metadata->version.hotfix - cse_rw_ver->hotfix;
 	else
-		return cse_cbfs_rw_ver.build - cse_rw_ver->build;
+		return source_metadata->version.build - cse_rw_ver->build;
+}
+
+/* The function calculates SHA-256 of CSE RW blob and compares it with the provided SHA value */
+static bool cse_verify_cbfs_rw_sha256(const uint8_t *expected_rw_blob_sha,
+		const void *rw_blob, const size_t rw_blob_sz)
+
+{
+	uint8_t rw_comp_sha[VB2_SHA256_DIGEST_SIZE];
+
+	if (vb2_digest_buffer(rw_blob, rw_blob_sz, VB2_HASH_SHA256, rw_comp_sha,
+				VB2_SHA256_DIGEST_SIZE)) {
+		printk(BIOS_ERR, "cse_lite: CSE CBFS RW's SHA-256 calculation has failed\n");
+		return false;
+	}
+
+	if (memcmp(expected_rw_blob_sha, rw_comp_sha, VB2_SHA256_DIGEST_SIZE)) {
+		printk(BIOS_ERR, "cse_lite: Computed CBFS RW's SHA-256 does not match with"
+				"the provided SHA in the metadata\n");
+		return false;
+	}
+	printk(BIOS_SPEW, "cse_lite: Computed SHA of CSE CBFS RW Image matches the"
+			" provided hash in the metadata\n");
+	return true;
 }
 
 static bool cse_erase_rw_region(const struct region_device *target_rdev)
@@ -579,8 +617,8 @@ static bool cse_erase_rw_region(const struct region_device *target_rdev)
 	return true;
 }
 
-static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf, size_t offset,
-		size_t size)
+static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf,
+		size_t offset, size_t size)
 {
 	if (rdev_writeat(target_rdev, buf, offset, size) < 0) {
 		printk(BIOS_ERR, "cse_lite: Failed to update CSE firmware\n");
@@ -591,69 +629,63 @@ static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf
 }
 
 static bool cse_is_rw_version_latest(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev)
+		const struct cse_rw_metadata *source_metadata)
 {
-	return !cse_check_version_mismatch(cse_bp_info, source_rdev);
+	return !cse_check_version_mismatch(cse_bp_info, source_metadata);
 }
 
 static bool cse_is_downgrade_instance(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev)
+		const struct cse_rw_metadata *source_metadata)
 {
-	return cse_check_version_mismatch(cse_bp_info, source_rdev) < 0;
+	return cse_check_version_mismatch(cse_bp_info, source_metadata) < 0;
 }
 
 static bool cse_is_update_required(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev, struct region_device *target_rdev)
+		const struct cse_rw_metadata *source_metadata,
+		struct region_device *target_rdev)
 {
 	return (!cse_is_rw_bp_sign_valid(target_rdev) ||
-			!cse_is_rw_version_latest(cse_bp_info, source_rdev));
+			!cse_is_rw_version_latest(cse_bp_info, source_metadata));
 }
 
 static bool cse_write_rw_region(const struct region_device *target_rdev,
-		const struct region_device *source_rdev)
+		const void *cse_cbfs_rw, const size_t cse_cbfs_rw_sz)
 {
-	void *cse_cbfs_rw = rdev_mmap(source_rdev, CSE_RW_VERSION_SZ,
-			region_device_sz(source_rdev) - CSE_RW_VERSION_SZ);
-
 	/* Points to CSE CBFS RW image after boot partition signature */
 	uint8_t *cse_cbfs_rw_wo_sign = (uint8_t *)cse_cbfs_rw + CSE_RW_SIGN_SIZE;
 
 	/* Size of CSE CBFS RW image without boot partition signature */
-	uint32_t cse_cbfs_rw_wo_sign_sz = region_device_sz(source_rdev) -
-		(CSE_RW_VERSION_SZ + CSE_RW_SIGN_SIZE);
+	uint32_t cse_cbfs_rw_wo_sign_sz = cse_cbfs_rw_sz - CSE_RW_SIGN_SIZE;
 
 	/* Update except CSE RW signature */
 	if (!cse_copy_rw(target_rdev, cse_cbfs_rw_wo_sign, CSE_RW_SIGN_SIZE,
 				cse_cbfs_rw_wo_sign_sz))
-		goto exit_rw_update;
+		return false;
 
 	/* Update CSE RW signature to indicate update is complete */
 	if (!cse_copy_rw(target_rdev, (void *)cse_cbfs_rw, 0, CSE_RW_SIGN_SIZE))
-		goto exit_rw_update;
-
-	rdev_munmap(source_rdev, cse_cbfs_rw_wo_sign);
-	return true;
-
-exit_rw_update:
-	rdev_munmap(source_rdev, cse_cbfs_rw_wo_sign);
-	return false;
-}
-
-static bool cse_update_rw(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev, struct region_device *target_rdev)
-{
-	if (!cse_erase_rw_region(target_rdev))
-		return false;
-
-	if (!cse_write_rw_region(target_rdev, source_rdev))
 		return false;
 
 	printk(BIOS_INFO, "cse_lite: CSE RW Update Successful\n");
 	return true;
 }
 
+static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_info,
+		const void *cse_cbfs_rw, const size_t cse_blob_sz,
+		struct region_device *target_rdev)
+{
+
+	if (!cse_erase_rw_region(target_rdev))
+		return CSE_LITE_SKU_FW_UPDATE_ERROR;
+
+	if (!cse_write_rw_region(target_rdev, cse_cbfs_rw, cse_blob_sz))
+		return CSE_LITE_SKU_FW_UPDATE_ERROR;
+
+	return CSE_LITE_SKU_NO_ERROR;
+}
+
 static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev)
+		const struct cse_rw_metadata *source_metadata)
 {
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
@@ -663,7 +695,7 @@ static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	if (!cse_boot_to_ro(cse_bp_info))
 		return false;
 
-	if (cse_is_downgrade_instance(cse_bp_info, source_rdev) &&
+	if (cse_is_downgrade_instance(cse_bp_info, source_metadata) &&
 			!cse_data_clear_request(cse_bp_info)) {
 		printk(BIOS_ERR, "cse_lite: CSE FW downgrade is aborted\n");
 		return false;
@@ -672,31 +704,62 @@ static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	return cse_hmrfpo_enable();
 }
 
-static uint8_t cse_trigger_fw_update(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev, struct region_device *target_rdev)
+static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *cse_bp_info,
+		const struct cse_rw_metadata *source_metadata,
+		struct region_device *target_rdev)
 {
-	if (!cse_prep_for_rw_update(cse_bp_info, source_rdev))
-		return CSE_LITE_SKU_COMMUNICATION_ERROR;
+	struct region_device source_rdev;
+	enum csme_failure_reason rv;
 
-	if (!cse_update_rw(cse_bp_info, source_rdev, target_rdev))
-		return CSE_LITE_SKU_FW_UPDATE_ERROR;
+	if (!cse_get_source_rdev(&source_rdev))
+		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
 
-	return 0;
+	void *cse_cbfs_rw = rdev_mmap_full(&source_rdev);
+
+	if (!cse_cbfs_rw) {
+		printk(BIOS_ERR, "cse_lite: CSE CBFS RW blob could not be mapped\n");
+		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
+	}
+
+	if (!cse_verify_cbfs_rw_sha256(source_metadata->sha256, cse_cbfs_rw,
+				region_device_sz(&source_rdev))) {
+		rv = CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH;
+		goto error_exit;
+	}
+
+	if (!cse_prep_for_rw_update(cse_bp_info, source_metadata)) {
+		rv = CSE_LITE_SKU_COMMUNICATION_ERROR;
+		goto error_exit;
+	}
+
+	rv = cse_update_rw(cse_bp_info, cse_cbfs_rw, region_device_sz(&source_rdev),
+			target_rdev);
+
+error_exit:
+	rdev_munmap(&source_rdev, cse_cbfs_rw);
+	return rv;
 }
 
-static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info,
-		const struct region_device *source_rdev)
+static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 {
 	struct region_device target_rdev;
+	struct cse_rw_metadata source_metadata;
+
+	/* Read CSE CBFS RW metadata */
+	if (cbfs_boot_load_file(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
+			sizeof(source_metadata), CBFS_TYPE_RAW) != sizeof(source_metadata)) {
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE CBFS RW metadata\n");
+		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
+	}
 
 	if (!cse_get_target_rdev(cse_bp_info, &target_rdev)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE RW Partition\n");
 		return CSE_LITE_SKU_RW_ACCESS_ERROR;
 	}
 
-	if (cse_is_update_required(cse_bp_info, source_rdev, &target_rdev)) {
+	if (cse_is_update_required(cse_bp_info, &source_metadata, &target_rdev)) {
 		printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
-		return cse_trigger_fw_update(cse_bp_info, source_rdev, &target_rdev);
+		return cse_trigger_fw_update(cse_bp_info, &source_metadata, &target_rdev);
 	}
 
 	if (!cse_is_rw_bp_status_valid(cse_bp_info))
@@ -729,15 +792,15 @@ void cse_fw_sync(void *unused)
 	if (!cse_fix_data_failure_err(&cse_bp_info.bp_info))
 		cse_trigger_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
-	/* If RW blob is present in CBFS, then trigger CSE firmware update */
+	/*
+	 * If SOC_INTEL_CSE_RW_UPDATE is defined , then trigger CSE firmware update. The driver
+	 * triggers recovery if CSE CBFS RW metadata or CSE CBFS RW blob is not available.
+	 */
 #if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
 	uint8_t rv;
-	struct region_device source_rdev;
-	if (cse_get_cbfs_rdev(&source_rdev)) {
-		rv = cse_fw_update(&cse_bp_info.bp_info, &source_rdev);
-		if (rv)
-			cse_trigger_recovery(rv);
-	}
+	rv = cse_fw_update(&cse_bp_info.bp_info);
+	if (rv)
+		cse_trigger_recovery(rv);
 #endif
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {

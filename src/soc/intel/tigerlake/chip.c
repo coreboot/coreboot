@@ -68,8 +68,6 @@ const char *soc_acpi_name(const struct device *dev)
 	case SA_DEVFN_ROOT:		return "MCHC";
 	case SA_DEVFN_TCSS_XHCI:	return "TXHC";
 	case SA_DEVFN_TCSS_XDCI:	return "TXDC";
-	case SA_DEVFN_TCSS_DMA0:	return "TDM0";
-	case SA_DEVFN_TCSS_DMA1:	return "TDM1";
 	case SA_DEVFN_TBT0:		return "TRP0";
 	case SA_DEVFN_TBT1:		return "TRP1";
 	case SA_DEVFN_TBT2:		return "TRP2";

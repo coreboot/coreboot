@@ -15,9 +15,9 @@
 static const char *tbt_dma_acpi_name(const struct device *dev)
 {
 	switch (dev->path.pci.devfn) {
-	case SA_DEV_TCSS_DMA0:
+	case SA_DEVFN_TCSS_DMA0:
 		return "TDM0";
-	case SA_DEV_TCSS_DMA1:
+	case SA_DEVFN_TCSS_DMA1:
 		return "TDM1";
 	default:
 		return NULL;

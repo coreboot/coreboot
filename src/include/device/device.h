@@ -358,6 +358,7 @@ static inline DEVTREE_CONST void *config_of_soc(void)
 	return config_of(pcidev_on_root(0, 0));
 }
 
+void enable_static_device(struct device *dev);
 void enable_static_devices(struct device *bus);
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);

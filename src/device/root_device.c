@@ -7,6 +7,18 @@
 
 const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER;
 
+void enable_static_device(struct device *dev)
+{
+	if (dev->chip_ops && dev->chip_ops->enable_dev)
+		dev->chip_ops->enable_dev(dev);
+
+	if (dev->ops && dev->ops->enable)
+		dev->ops->enable(dev);
+
+	printk(BIOS_DEBUG, "%s %s\n", dev_path(dev),
+	       dev->enabled ? "enabled" : "disabled");
+}
+
 /**
  * Enable devices on static buses.
  *
@@ -32,15 +44,7 @@ void enable_static_devices(struct device *bus)
 
 	for (link = bus->link_list; link; link = link->next) {
 		for (child = link->children; child; child = child->sibling) {
-
-			if (child->chip_ops && child->chip_ops->enable_dev)
-				child->chip_ops->enable_dev(child);
-
-			if (child->ops && child->ops->enable)
-				child->ops->enable(child);
-
-			printk(BIOS_DEBUG, "%s %s\n", dev_path(child),
-			       child->enabled ? "enabled" : "disabled");
+			enable_static_device(child);
 		}
 	}
 }
@@ -58,18 +62,9 @@ void scan_generic_bus(struct device *bus)
 		link->secondary = ++bus_max;
 
 		for (child = link->children; child; child = child->sibling) {
-
-			if (child->chip_ops && child->chip_ops->enable_dev)
-				child->chip_ops->enable_dev(child);
-
-			if (child->ops && child->ops->enable)
-				child->ops->enable(child);
-
+			enable_static_device(child);
 			printk(BIOS_DEBUG, "bus: %s[%d]->", dev_path(child->bus->dev),
 			       child->bus->link_num);
-
-			printk(BIOS_DEBUG, "%s %s\n", dev_path(child),
-			       child->enabled ? "enabled" : "disabled");
 		}
 	}
 

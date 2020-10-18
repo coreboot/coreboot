@@ -180,6 +180,8 @@ static void pciexp_enable_ltr(struct device *dev)
 
 	for (bus = dev->link_list ; bus ; bus = bus->next) {
 		for (child = bus->children; child; child = child->sibling) {
+			if (child->path.type != DEVICE_PATH_PCI)
+				continue;
 			pciexp_configure_ltr(child);
 			if (child->ops && child->ops->scan_bus)
 				pciexp_enable_ltr(child);
@@ -478,6 +480,8 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 	pci_scan_bus(bus, min_devfn, max_devfn);
 
 	for (child = bus->children; child; child = child->sibling) {
+		if (child->path.type != DEVICE_PATH_PCI)
+			continue;
 		if ((child->path.pci.devfn < min_devfn) ||
 		    (child->path.pci.devfn > max_devfn)) {
 			continue;

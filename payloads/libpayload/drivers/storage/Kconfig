@@ -45,7 +45,7 @@ config STORAGE_AHCI
 config STORAGE_AHCI_ONLY_TESTED
 	bool "Only enable tested controllers"
 	depends on STORAGE_AHCI
-	default y
+	default n
 	help
-	  If this option is selected only AHCI controllers which are known
+	  If this option is selected, only AHCI controllers which are known
 	  to work will be used.

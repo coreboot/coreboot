@@ -302,40 +302,12 @@
 		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS)
-
-#define PAD_CFG_GPI_APIC(pad, pull, rst)					\
-	_PAD_CFG_STRUCT(pad,							\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
-		PAD_IRQ_CFG(IOAPIC, LEVEL, NONE), PAD_PULL(pull))
-
-#define PAD_CFG_GPI_APIC_INVERT(pad, pull, rst)					\
-	_PAD_CFG_STRUCT(pad,							\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
-		PAD_IRQ_CFG(IOAPIC, LEVEL, INVERT), PAD_PULL(pull))
-
-#define PAD_CFG_GPI_ACPI_SCI(pad, pull, rst, inv)	\
-	PAD_CFG_GPI_SCI(pad, pull, rst, EDGE_SINGLE, inv)
-
-#define PAD_CFG_GPI_ACPI_SMI(pad, pull, rst, inv)	\
-	PAD_CFG_GPI_SMI(pad, pull, rst, EDGE_SINGLE, inv)
-
-#define PAD_CFG_NC(pad)	PAD_NC(pad, NONE)
-
-#define PAD_CFG1_PULL_20K_PU	PAD_CFG1_PULL_UP_20K
-#define PAD_CFG1_PULL_5K_PU	PAD_CFG1_PULL_UP_5K
-#define PAD_CFG1_PULL_20K_PD	PAD_CFG1_PULL_DN_20K
-#define PAD_CFG0_TRIG_EDGE	PAD_CFG0_TRIG_EDGE_SINGLE
-#define PAD_CFG0_RX_POL_YES	PAD_CFG0_RX_POL_INVERT
-
-#else
 /* General purpose input, routed to APIC */
 #define PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv)				\
 	_PAD_CFG_STRUCT(pad,							\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
 		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) |		\
 		PAD_IOSSTATE(TxDRxE))
-#endif
 
 /* General purpose input, routed to APIC - with IOStandby Config*/
 #define PAD_CFG_GPI_APIC_IOS(pad, pull, rst, trig, inv, iosstate, iosterm)	\

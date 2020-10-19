@@ -24,11 +24,6 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
 	bool
 	default n
 
-# Used to provide support for legacy macros
-config SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
-	bool
-	default n
-
 # Indicate if multiple ACPI devices are used for each gpio community.
 config SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES
 	bool

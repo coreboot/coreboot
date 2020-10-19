@@ -61,7 +61,7 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 	 * and so apply overrides. If board version is provided by the EC, then apply overrides
 	 * if version < 2.
 	 */
-	if (google_chromeec_cbi_get_board_version(&board_version))
+	if (google_chromeec_cbi_get_board_version(&board_version) != 0)
 		board_version = 1;
 
 	if (board_version <= 1) {

@@ -57,7 +57,7 @@ static int get_fw_config(uint32_t *val)
 		return 0;
 	}
 
-	if (google_chromeec_cbi_get_fw_config(&known_value)) {
+	if (google_chromeec_cbi_get_fw_config(&known_value) != 0) {
 		printk(BIOS_ERR, "FW_CONFIG not set in CBI\n");
 		return -1;
 	}
@@ -95,7 +95,7 @@ bool variant_uses_v3_schematics(void)
 	if (!CONFIG(VARIANT_SUPPORTS_PRE_V3_SCHEMATICS))
 		return true;
 
-	if (google_chromeec_cbi_get_board_version(&board_version))
+	if (google_chromeec_cbi_get_board_version(&board_version) != 0)
 		return false;
 
 	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_V3_SCHEMATICS)
@@ -111,7 +111,7 @@ bool variant_uses_v3_6_schematics(void)
 	if (!CONFIG(VARIANT_SUPPORTS_PRE_V3_6_SCHEMATICS))
 		return true;
 
-	if (google_chromeec_cbi_get_board_version(&board_version))
+	if (google_chromeec_cbi_get_board_version(&board_version) != 0)
 		return false;
 
 	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_V3_6_SCHEMATICS)
@@ -136,7 +136,7 @@ bool variant_has_active_low_wifi_power(void)
 	if (!CONFIG(VARIANT_SUPPORTS_WIFI_POWER_ACTIVE_HIGH))
 		return true;
 
-	if (google_chromeec_cbi_get_board_version(&board_version))
+	if (google_chromeec_cbi_get_board_version(&board_version) != 0)
 		return false;
 
 	if ((int)board_version < CONFIG_VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW)

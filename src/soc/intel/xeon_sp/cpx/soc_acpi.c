@@ -57,11 +57,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 				ACPI_FADT_S4_RTC_WAKE);
 }
 
-/*
- * Currently called in southbridge_inject_dsdt(). Change to soc_southbridge_inject_dsdt()
- * with a call from the common/function or find another way to call this at the correct place
- */
-void uncore_inject_dsdt(void)
+void uncore_inject_dsdt(const struct device *device)
 {
 	struct iiostack_resource stack_info = {0};
 

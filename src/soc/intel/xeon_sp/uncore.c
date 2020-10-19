@@ -5,6 +5,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
@@ -274,6 +275,9 @@ static struct device_operations mmapvtd_ops = {
 	.enable_resources  = pci_dev_enable_resources,
 	.init              = mmapvtd_init,
 	.ops_pci           = &soc_pci_ops,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_inject_dsdt  = uncore_inject_dsdt,
+#endif
 };
 
 static const unsigned short mmapvtd_ids[] = {

@@ -247,9 +247,6 @@ void southbridge_inject_dsdt(const struct device *device)
 		acpigen_write_name_dword("NVSA", (uint32_t)gnvs);
 		acpigen_pop_len();
 	}
-
-	// Add IIOStack ACPI Resource Templates
-	uncore_inject_dsdt();
 }
 
 

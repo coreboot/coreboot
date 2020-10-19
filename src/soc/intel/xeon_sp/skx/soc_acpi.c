@@ -55,11 +55,7 @@ uint32_t soc_read_sci_irq_select(void)
 	return pci_read_config32(dev, PMC_ACPI_CNT);
 }
 
-/*
- * Currently called in southbridge_inject_dsdt(). Change to soc_southbridge_inject_dsdt()
- * with a call from the common/function or find another way to call this at the correct place
- */
-void uncore_inject_dsdt(void)
+void uncore_inject_dsdt(const struct device *device)
 {
 	size_t hob_size;
 	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;

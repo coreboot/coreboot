@@ -160,8 +160,8 @@ chip soc/amd/picasso
 			device pci 0.1 off end # integrated Ethernet MAC
 			device pci 0.2 off end # integrated Ethernet MAC
 		end
-		device pci 14.0 on  end # SM
-		device pci 14.3 on  # - D14F3 bridge
+		device pci 14.0 on  end # SMBus
+		device pci 14.3 on      # D14F3 bridge
 			chip superio/smsc/sio1036 # optional debug card
 			end
 		end

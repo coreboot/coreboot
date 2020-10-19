@@ -15,8 +15,6 @@
 #include <soc/pm.h>
 #include <string.h>
 
-#include "chip.h"
-
 acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 {
 	*entries = 0;

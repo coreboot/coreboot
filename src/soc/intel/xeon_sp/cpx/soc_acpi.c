@@ -17,8 +17,6 @@
 #include <soc/pm.h>
 #include <soc/soc_util.h>
 
-#include "chip.h"
-
 /* TODO: Check if the common/acpi weak function can be used */
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

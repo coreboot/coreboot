@@ -23,8 +23,6 @@
 #include <soc/pm.h>
 #include <soc/soc_util.h>
 
-#include "chip.h"
-
 static int acpi_sci_irq(void)
 {
 	int sci_irq = 9;

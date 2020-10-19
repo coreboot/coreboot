@@ -148,7 +148,7 @@ chip soc/amd/picasso
 		device pci 8.1 on      # Bridge to Bus A
 			device pci 0.0 on  end # Internal GPU
 			device pci 0.1 on  end # Display HDA
-			device pci 0.2 on  end # Crypto Coprocesor
+			device pci 0.2 on  end # Crypto Coprocessor
 			device pci 0.3 on  end # USB 3.1
 			device pci 0.4 on  end # USB 3.1
 			device pci 0.5 on  end # Audio

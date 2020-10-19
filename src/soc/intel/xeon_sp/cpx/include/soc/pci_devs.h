@@ -69,6 +69,7 @@
 #define VTD_CAP_LOW			0x08
 #define VTD_CAP_HIGH			0x0C
 #define VTD_EXT_CAP_HIGH		0x14
+#define VTD_LTDPR			0x290
 
 /* CPU Devices */
 #define CBDMA_DEV_NUM           0x04

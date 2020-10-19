@@ -93,6 +93,7 @@
 #define VTD_CAP_LOW			0x08
 #define VTD_CAP_HIGH			0x0C
 #define VTD_EXT_CAP_HIGH		0x14
+#define VTD_LTDPR			0x290
 
 #define PCU_CR1_C2C3TT_REG                                 0xdc
 #define PCU_CR1_PCIE_ILTR_OVRD                             0xfc

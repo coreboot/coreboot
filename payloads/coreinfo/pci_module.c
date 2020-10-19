@@ -151,7 +151,7 @@ static int pci_module_redraw(WINDOW *win)
 	return 0;
 }
 
-static void pci_scan_bus(int bus)
+static void ci_pci_scan_bus(int bus)
 {
 	int slot, func;
 	unsigned int val;
@@ -196,7 +196,7 @@ static void pci_scan_bus(int bus)
 
 				busses = pci_read_config32(dev, REG_PRIMARY_BUS);
 
-				pci_scan_bus((busses >> 8) & 0xff);
+				ci_pci_scan_bus((busses >> 8) & 0xff);
 
 			}
 		}
@@ -240,7 +240,7 @@ static int pci_module_handle(int key)
 
 static int pci_module_init(void)
 {
-	pci_scan_bus(0);
+	ci_pci_scan_bus(0);
 	return 0;
 }
 

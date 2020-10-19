@@ -261,8 +261,9 @@ void generate_cpu_entries(const struct device *device)
 
 			/* NOTE: Intel idle driver doesn't use ACPI C-state tables */
 
-			/* Generate P-state tables */
-			cpx_generate_p_state_entries(core_id, threads_per_package);
+			/* Soc specific power states generation */
+			soc_power_states_generation(core_id, threads_per_package);
+
 			acpigen_pop_len();
 		}
 	}

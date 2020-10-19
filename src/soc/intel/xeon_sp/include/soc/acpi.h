@@ -22,7 +22,6 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 
 void motherboard_fill_fadt(acpi_fadt_t *fadt);
 
-void cpx_generate_p_state_entries(int core, int cores_per_package);
 int calculate_power(int tdp, int p1_ratio, int ratio);
 void uncore_inject_dsdt(const struct device *device);
 unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);

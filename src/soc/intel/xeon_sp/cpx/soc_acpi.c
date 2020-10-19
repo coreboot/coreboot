@@ -123,8 +123,8 @@ void uncore_inject_dsdt(const struct device *device)
 	acpigen_pop_len();
 }
 
-/* To be renamed soc_power_states_generation() */
-void cpx_generate_p_state_entries(int core, int cores_per_package)
+/* TODO: See if we can use the common generate_p_state_entries */
+void soc_power_states_generation(int core, int cores_per_package)
 {
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
 	int coord_type, power_max, power_unit, num_entries;

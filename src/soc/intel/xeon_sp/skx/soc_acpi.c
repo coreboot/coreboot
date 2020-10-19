@@ -171,6 +171,10 @@ void uncore_inject_dsdt(const struct device *device)
 	acpigen_pop_len();
 }
 
+void soc_power_states_generation(int core, int cores_per_package)
+{
+}
+
 unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;

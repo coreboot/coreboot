@@ -9,6 +9,8 @@
 /* PCI Configuration Space : SMBus */
 #define HOSTC	0x40
 #define HST_EN	(1 << 0)
+#define I2C_EN  (1 << 2)
+
 /* SMBus I/O bits. */
 #define SMBHSTSTAT	0x0
 #define SMBHSTCTL	0x2

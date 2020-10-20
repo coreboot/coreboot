@@ -95,6 +95,7 @@ config MAINBOARD_PART_NUMBER
 	default "Waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "Wheelie" if BOARD_GOOGLE_WHEELIE
 	default "Magolor" if BOARD_GOOGLE_MAGOLOR
+	default "Metaknight" if BOARD_GOOGLE_METAKNIGHT
 
 config MAX_CPUS
 	int
@@ -124,5 +125,6 @@ config VARIANT_DIR
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "wheelie" if BOARD_GOOGLE_WHEELIE
 	default "magolor" if BOARD_GOOGLE_MAGOLOR
+	default "metaknight" if BOARD_GOOGLE_METAKNIGHT
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

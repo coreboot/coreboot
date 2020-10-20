@@ -10,5 +10,6 @@
 #define  AESNI_LOCK		(1 << 0)
 
 #define MSR_PIC_MSG_CONTROL	0x2e
+#define  TPR_UPDATES_DISABLE	(1 << 10)
 
 #endif /* CPU_INTEL_MSR_H */

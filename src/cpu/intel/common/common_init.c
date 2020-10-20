@@ -8,6 +8,8 @@
 #include <cpu/x86/msr.h>
 #include "common.h"
 
+#define  CPUID_6_ECX_EPB	(1 << 3)
+
 void set_vmx_and_lock(void)
 {
 	set_feature_ctrl_vmx();
@@ -290,42 +292,22 @@ void set_aesni_lock(void)
 
 void enable_lapic_tpr(void)
 {
-	msr_t msr;
-
-	msr = rdmsr(MSR_PIC_MSG_CONTROL);
-	msr.lo &= ~(1 << 10);	/* Enable APIC TPR updates */
-	wrmsr(MSR_PIC_MSG_CONTROL, msr);
+	msr_unset(MSR_PIC_MSG_CONTROL, TPR_UPDATES_DISABLE);
 }
 
 void configure_dca_cap(void)
 {
-	uint32_t feature_flag;
-	msr_t msr;
-
-	/* Check feature flag in CPUID.(EAX=1):ECX[18]==1 */
-	feature_flag = cpu_get_feature_flags_ecx();
-	if (feature_flag & CPUID_DCA) {
-		msr = rdmsr(IA32_PLATFORM_DCA_CAP);
-		msr.lo |= 1;
-		wrmsr(IA32_PLATFORM_DCA_CAP, msr);
-	}
+	if (cpu_get_feature_flags_ecx() & CPUID_DCA)
+		msr_set(IA32_PLATFORM_DCA_CAP, DCA_TYPE0_EN);
 }
 
 void set_energy_perf_bias(u8 policy)
 {
-	msr_t msr;
-	int ecx;
+	u8 epb = policy & ENERGY_POLICY_MASK;
 
-	/* Determine if energy efficient policy is supported. */
-	ecx = cpuid_ecx(0x6);
-	if (!(ecx & (1 << 3)))
+	if (!(cpuid_ecx(6) & CPUID_6_ECX_EPB))
 		return;
 
-	/* Energy Policy is bits 3:0 */
-	msr = rdmsr(IA32_ENERGY_PERF_BIAS);
-	msr.lo &= ~0xf;
-	msr.lo |= policy & 0xf;
-	wrmsr(IA32_ENERGY_PERF_BIAS, msr);
-
-	printk(BIOS_DEBUG, "cpu: energy policy set to %u\n", policy);
+	msr_unset_and_set(IA32_ENERGY_PERF_BIAS, ENERGY_POLICY_MASK, epb);
+	printk(BIOS_DEBUG, "cpu: energy policy set to %u\n", epb);
 }

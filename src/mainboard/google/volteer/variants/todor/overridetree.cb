@@ -16,6 +16,9 @@ chip soc/intel/tigerlake
 
 	register "SaGv" = "SaGv_Disabled"
 
+	# Disable SRCCLKREQ1#
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf

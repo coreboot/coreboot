@@ -210,29 +210,28 @@ static int validate_acm(const void *ptr)
 }
 
 /*
- * Test all bits for TXT execution.
- *
- * @return 0 on success
+ * Prepare to run the BIOS ACM: mmap it from the CBFS and verify that it
+ * can be launched. Returns pointer to ACM on success, NULL on failure.
  */
-int intel_txt_run_bios_acm(const u8 input_params)
+static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_len)
 {
 	struct cbfsf file;
-	void *acm_data;
-	struct region_device acm;
-	size_t acm_len;
-	int ret;
+	void *acm_data = NULL;
+
+	if (!acm || !acm_len)
+		return NULL;
 
 	if (cbfs_boot_locate(&file, CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL)) {
 		printk(BIOS_ERR, "TEE-TXT: Couldn't locate BIOS ACM in CBFS.\n");
-		return -1;
+		return NULL;
 	}
 
-	cbfs_file_data(&acm, &file);
-	acm_data = rdev_mmap_full(&acm);
-	acm_len = region_device_sz(&acm);
-	if (!acm_data || acm_len == 0) {
+	cbfs_file_data(acm, &file);
+	acm_data = rdev_mmap_full(acm);
+	*acm_len = region_device_sz(acm);
+	if (!acm_data || *acm_len == 0) {
 		printk(BIOS_ERR, "TEE-TXT: Couldn't map BIOS ACM from CBFS.\n");
-		return -1;
+		return NULL;
 	}
 
 	/*
@@ -242,8 +241,8 @@ int intel_txt_run_bios_acm(const u8 input_params)
 	 */
 	if (!IS_ALIGNED((uintptr_t)acm_data, 4096)) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't mapped at page boundary.\n");
-		rdev_munmap(&acm, acm_data);
-		return -1;
+		rdev_munmap(acm, acm_data);
+		return NULL;
 	}
 
 	/*
@@ -251,20 +250,20 @@ int intel_txt_run_bios_acm(const u8 input_params)
 	 * SAFER MODE EXTENSIONS REFERENCE.
 	 * Intel 64 and IA-32 Architectures Software Developer Manuals Vol 2D
 	 */
-	if (!IS_ALIGNED(acm_len, 64)) {
+	if (!IS_ALIGNED(*acm_len, 64)) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM size isn't multiple of 64.\n");
-		rdev_munmap(&acm, acm_data);
-		return -1;
+		rdev_munmap(acm, acm_data);
+		return NULL;
 	}
 
 	/*
 	 * The ACM should be aligned to it's size, but that's not possible, as
 	 * some ACMs are not power of two. Use the next power of two for verification.
 	 */
-	if (!IS_ALIGNED((uintptr_t)acm_data, (1UL << log2_ceil(acm_len)))) {
+	if (!IS_ALIGNED((uintptr_t)acm_data, (1UL << log2_ceil(*acm_len)))) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't aligned to its size.\n");
-		rdev_munmap(&acm, acm_data);
-		return -1;
+		rdev_munmap(acm, acm_data);
+		return NULL;
 	}
 
 	/*
@@ -272,21 +271,39 @@ int intel_txt_run_bios_acm(const u8 input_params)
 	 * a page (4 KiB) of unused memory after the BIOS ACM. On Haswell, failure
 	 * to do so will cause a TXT reset with Class Code 5, Major Error Code 2.
 	 */
-	if (popcnt(ALIGN_UP(acm_len, 4096)) > get_var_mtrr_count()) {
+	if (popcnt(ALIGN_UP(*acm_len, 4096)) > get_var_mtrr_count()) {
 		printk(BIOS_ERR, "TEE-TXT: Not enough MTRRs to cache this BIOS ACM's size.\n");
-		rdev_munmap(&acm, acm_data);
-		return -1;
+		rdev_munmap(acm, acm_data);
+		return NULL;
 	}
 
 	if (CONFIG(INTEL_TXT_LOGGING))
 		txt_dump_acm_info(acm_data);
 
-	ret = validate_acm(acm_data);
+	const int ret = validate_acm(acm_data);
 	if (ret < 0) {
 		printk(BIOS_ERR, "TEE-TXT: Validation of ACM failed with: %d\n", ret);
-		rdev_munmap(&acm, acm_data);
-		return ret;
+		rdev_munmap(acm, acm_data);
+		return NULL;
 	}
+
+	return acm_data;
+}
+
+/*
+ * Test all bits for TXT execution.
+ *
+ * @return 0 on success
+ */
+int intel_txt_run_bios_acm(const u8 input_params)
+{
+	struct region_device acm;
+	size_t acm_len;
+
+	void *acm_data = intel_txt_prepare_bios_acm(&acm, &acm_len);
+
+	if (!acm_data)
+		return -1;
 
 	/* Call into assembly which invokes the referenced ACM */
 	getsec_enteraccs(input_params, (uintptr_t)acm_data, acm_len);

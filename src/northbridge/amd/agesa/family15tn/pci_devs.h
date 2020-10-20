@@ -12,6 +12,10 @@
 #define GFX_FUNC 0
 #define GFX_DEVFN PCI_DEVFN(GFX_DEV,GFX_FUNC)
 
+/* Integrated GPU Internal HDMI Audio Controller */
+#define ACTL_FUNC	1
+#define ACTL_DEVFN	PCI_DEVFN(GFX_DEV,ACTL_FUNC)
+
 /* PCIe Ports */
 #define NB_PCIE_PORT1_DEV 0x2
 #define NB_PCIE_PORT2_DEV 0x3

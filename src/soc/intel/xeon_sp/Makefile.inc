@@ -9,6 +9,7 @@ bootblock-y += bootblock.c spi.c lpc.c gpio.c pch.c
 romstage-y += romstage.c reset.c util.c spi.c gpio.c pmutil.c
 ramstage-y += uncore.c reset.c util.c lpc.c spi.c gpio.c nb_acpi.c ramstage.c chip_common.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_PMC) += pmc.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 postcar-y += spi.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/include

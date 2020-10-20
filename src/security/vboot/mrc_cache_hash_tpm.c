@@ -24,10 +24,6 @@ void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 	};
 	const uint8_t *hash_ptr = data_hash;
 
-	/* We do not store normal mode data hash in TPM. */
-	if (!vboot_recovery_mode_enabled())
-		return;
-
 	/* Initialize TPM driver. */
 	if (tlcl_lib_init() != VB2_SUCCESS) {
 		printk(BIOS_ERR, "MRC: TPM driver initialization failed.\n");
@@ -63,10 +59,6 @@ int mrc_cache_verify_hash(uint32_t index, const uint8_t *data, size_t size)
 {
 	uint8_t data_hash[VB2_SHA256_DIGEST_SIZE];
 	uint8_t tpm_hash[VB2_SHA256_DIGEST_SIZE];
-
-	/* We do not store normal mode data hash in TPM. */
-	if (!vboot_recovery_mode_enabled())
-		return 1;
 
 	/* Calculate hash of data read from MRC_CACHE. */
 	if (vb2_digest_buffer(data, size, VB2_HASH_SHA256, data_hash,

@@ -5,6 +5,8 @@
 
 #include <types.h>
 
+void enable_getsec_or_reset(void);
+
 bool getsec_parameter(uint32_t *version_mask,
 		      uint32_t *version_numbers_supported,
 		      uint32_t *max_size_acm_area,

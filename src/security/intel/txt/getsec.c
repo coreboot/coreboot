@@ -1,9 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cf9_reset.h>
+#include <console/console.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>
+#include <cpu/x86/msr.h>
 #include <types.h>
 
 #include "txt_register.h"
@@ -38,6 +42,33 @@ static bool getsec_enabled(void)
 	write_cr4(read_cr4() | CR4_SMXE);
 
 	return true;
+}
+
+void enable_getsec_or_reset(void)
+{
+	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (!(msr.lo & FEATURE_CONTROL_LOCK_BIT)) {
+		/*
+		 * MSR not locked, enable necessary GETSEC and VMX settings.
+		 * We do not lock this MSR here, though.
+		 */
+		msr.lo |= 0xff06;
+		wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	} else if ((msr.lo & 0xff06) != 0xff06) {
+		/*
+		 * MSR is locked without necessary GETSEC and VMX settings.
+		 * This can happen after internally reflashing a coreboot
+		 * image with different settings, and then doing a warm
+		 * reboot. Perform a full reset in order to unlock the MSR.
+		 */
+		printk(BIOS_NOTICE,
+		       "IA32_FEATURE_CONTROL MSR locked with GETSEC and/or VMX disabled.\n"
+		       "Will perform a full reset to unlock this MSR.\n");
+
+		full_reset();
+	}
 }
 
 /**

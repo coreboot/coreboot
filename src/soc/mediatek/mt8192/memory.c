@@ -15,14 +15,14 @@ static int mt_mem_test(const struct dramc_data *dparam)
 		const struct ddr_base_info *ddr_info = &dparam->ddr_info;
 
 		for (u8 rank = RANK_0; rank < ddr_info->support_ranks; rank++) {
-			int i = complex_mem_test(addr, 0x2000);
+			int result = complex_mem_test(addr, 0x2000);
 
-			printk(BIOS_DEBUG, "[MEM] complex R/W mem test %s\n",
-			       (i == 0) ? "pass" : "fail");
-
-			if (i != 0) {
-				printk(BIOS_ERR, "DRAM memory test failed\n");
+			if (result != 0) {
+				printk(BIOS_ERR,
+				       "[MEM] complex R/W mem test failed: %d\n", result);
 				return -1;
+			} else {
+				printk(BIOS_DEBUG, "[MEM] complex R/W mem test passed\n");
 			}
 
 			addr += ddr_info->rank_size[rank];

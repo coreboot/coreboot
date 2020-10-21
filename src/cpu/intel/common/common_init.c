@@ -273,7 +273,7 @@ void set_aesni_lock(void)
 	if (!CONFIG(SET_MSR_AESNI_LOCK_BIT))
 		return;
 
-	if (cpu_get_feature_flags_ecx() & CPUID_AES)
+	if (!(cpu_get_feature_flags_ecx() & CPUID_AES))
 		return;
 
 	/* Only run once per core as specified in the MSR datasheet */

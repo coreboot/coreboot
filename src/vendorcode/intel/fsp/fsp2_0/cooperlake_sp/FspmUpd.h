@@ -151,223 +151,231 @@ typedef struct {
   UINT8                       CustomerRevision[32];
 
 /** Offset 0x0060 - Bus Ratio
-  Indicates the ratio of Bus/MMIOL/IO resource to be allocated for each CPU's IIO
+  Indicates the ratio of Bus/MMIOL/IO resource to be allocated for each CPU's IIO.
+  Default 0x1
 **/
   UINT8                       BusRatio[8];
 
 /** Offset 0x0068 - D2K Credit Config
-  Set the D2K Credit Config
+  Set the D2K Credit Config. 1: Min,<b>2: Med (Default), 3: Max.
   1:Min, 2:Med, 3:Max
 **/
   UINT8                       D2KCreditConfig;
 
 /** Offset 0x0069 - Snoop Throttle Config
-  Set the Snoop Throttle Config
-  0:DIS, 1:Min, 2:Med, 3:Max
+  Set the Snoop Throttle Config. <b>0: Disable(Default)</b>, 1: Min, 2: Med, 3: Max
+  0:Disable, 1:Min, 2:Med, 3:Max
 **/
   UINT8                       SnoopThrottleConfig;
 
 /** Offset 0x006A - Snoop Throttle Config
-  Set the Snoop All Core Config
-  0:DIS, 1:EN, 2:Auto
+  Set the Snoop All Core Config. <b>0: Disable(Default)</b>, 1: Enable, 2: Auto
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       SnoopAllCores;
 
-/** Offset 0x006B - Legacy VGA Soc
-  Socket that claims the legacy VGA range
+/** Offset 0x006B - Legacy VGA Socket
+  Socket that claims the legacy VGA range. Default: Socket 0
 **/
   UINT8                       LegacyVgaSoc;
 
 /** Offset 0x006C - Legacy VGA Stack
-  Stack that claims the legacy VGA range
+  Stack that claims the legacy VGA range. Default: Stack 0
 **/
   UINT8                       LegacyVgaStack;
 
 /** Offset 0x006D - Pcie P2P Performance Mode
-  Determine if to enable PCIe P2P Performance Mode
+  Enable: Enable PCIe P2P Performance Mode, <b>Disable(Default)</b>: Disable PCIe
+  P2P Performance Mode
   $EN_DIS
 **/
   UINT8                       P2pRelaxedOrdering;
 
 /** Offset 0x006E - Debug Print Level
-  Set Debug Print Level
+  Debug Print Level Bitmask. 0: Disable, 1: Fatal, 2: Warning, 4: Summary, 8: Detail,
+  <b>0xF: All(Default)</b>
   1:Fatal, 2:Warning, 4:Summary, 8:Detail, 0x0F:All
 **/
   UINT8                       DebugPrintLevel;
 
 /** Offset 0x006F - SNC
-  Enable or Disable SNC
+  <b>Enable(Default)</b> or Disable SNC
   $EN_DIS
 **/
   UINT8                       SncEn;
 
 /** Offset 0x0070 - UMA Clustering
-  Set UMA Clusters
+  Set number of enabled UMA Clusters. <b>0: Disable(Default)</b>, 2: Two Clusters,
+  4: Four Clusters
   0:Disable, 2:Two Clusters, 4:Four Clusters
 **/
   UINT8                       UmaClustering;
 
 /** Offset 0x0071 - IODC Mode
-  IODC Setup Option
+  IODC Mode. 0: Disable, <b>1: Auto(Default)</b>, 2: Push, 3: AllocFlow 4: NonAlloc, 5: WCILF
   0:Disable, 1:Auto, 2:Push, 3:AllocFlow 4:NonAlloc, 5:WCILF
 **/
   UINT8                       IoDcMode;
 
 /** Offset 0x0072 - Degrade Precedence
-  Setup Degrade Precedence
+  Degrade Precedence. <b>0: Topology(Default)</b>, 1: Feature
   0:Topology, 1:Feature
 **/
   UINT8                       DegradePrecedence;
 
 /** Offset 0x0073 - Degrade 4 Socket Preference
-  Setup Degrade 4 Socket Preference
+  Degrade 4 Socket Preference. <b>0: Fully Connect(Default)</b>, 1: Dual Link Ring
   0:Fully Connect, 1:Dual Link Ring
 **/
   UINT8                       Degrade4SPreference;
 
 /** Offset 0x0074 - Directory Mode
-  Enable or Disable Directory Mode
+  <b>Enable(Default)</b> or Disable Directory Mode
   $EN_DIS
 **/
   UINT8                       DirectoryModeEn;
 
 /** Offset 0x0075 - XPT Prefetch Enable
-  Enable or Disable XPT Prefetch
+  XPT Prefetch. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       XptPrefetchEn;
 
 /** Offset 0x0076 - KTI Prefetch Enable
-  Enable or Disable KTI Prefetch
+  <b>Enable(Default)</b> or Disable KTI Prefetch
   $EN_DIS
 **/
   UINT8                       KtiPrefetchEn;
 
 /** Offset 0x0077 - XPT Remote Prefetch Enable
-  Enable or Disable XPT Remote Prefetch Enable
+  Enable or <b>Disable(Default)</b> XPT Remote Prefetch
   $EN_DIS
 **/
   UINT8                       XptRemotePrefetchEn;
 
 /** Offset 0x0078 - KTI FPGA
-  Enable or Disable KTI FPGA
-  $EN_DIS
+  Enable or Disable KTI FPGA, Default: 0x1 (Enable)
 **/
   UINT8                       KtiFpgaEnable[8];
 
 /** Offset 0x0080 - DDRT QoS Mode
-  Setup DDRT QoS
+  DDRT QoS. <b>0: Mode 0(Default)</b>, 1: Mode 1, 2: Mode 2
 **/
   UINT8                       DdrtQosMode;
 
 /** Offset 0x0081 - KTI Link Speed Mode
-  Choose KTI Link Speed Mode
+  KTI Link Speed Mode. 0: Slow, <b>1: Full(Default)</b>
 **/
   UINT8                       KtiLinkSpeedMode;
 
 /** Offset 0x0082 - KTI Link Speed
-  Setup KTI Link Speed
+  KTI Link Speed. 0: 128GT, 1: 144GT, 2: 160GT, <b>3: Max KTI Link Speed(Default)</b>,
+  4: Frequency Per Link
 **/
   UINT8                       KtiLinkSpeed;
 
 /** Offset 0x0083 - KTI Link L0p
-  Enable or Disable KTI Link L0p
+  KTI Link L0p. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       KtiLinkL0pEn;
 
 /** Offset 0x0084 - KTI Link L1
-  Enable or Disable KTI Link L1
+  KTI Link L1. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       KtiLinkL1En;
 
 /** Offset 0x0085 - KTI Failover
-  Enable or Disable KTI Failover
+  KTI Failover. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       KtiFailoverEn;
 
 /** Offset 0x0086 - KTI LB Enable
-  Enable or Disable KTI LB
+  Enable or <b>Disable(Default)</b> KTI LB
   $EN_DIS
 **/
   UINT8                       KtiLbEn;
 
 /** Offset 0x0087 - KTI CRC Mode
-  Select KTI CRC Mode
+  KTI CRC Mode.  0: 16bit, 1: 32bit, <b>2: Auto(Default)</b>
   0:16bit, 1:32bit, 2:Auto
 **/
   UINT8                       KtiCrcMode;
 
 /** Offset 0x0088 - KTI CPU Socket Hotplug
-  Enable or Disable KTI CPU Socket Hotplug
+  Enable or <b>Disable(Default)</b> KTI CPU Socket Hotplug
   $EN_DIS
 **/
   UINT8                       KtiCpuSktHotPlugEn;
 
 /** Offset 0x0089 - KTI CPU Socket HotPlug Topology
-  Select KTI CPU Socket HotPlug Topology
+  KTI CPU Socket HotPlug Topology. <b>0: 4 Socket(Default)</b>, 1: 8 Socket
   0:4Socket, 1:8Socket
 **/
   UINT8                       KtiCpuSktHotPlugTopology;
 
 /** Offset 0x008A - KTI SKU Mismatch Check
-  Enable or Disable KTI SKU Mismatch Check
+  <b>Enable(Default)</b> or Disable KTI SKU Mismatch Check
   $EN_DIS
 **/
   UINT8                       KtiSkuMismatchCheck;
 
 /** Offset 0x008B - IRQ Threshold
-  Select IRQ Threshold
+  IRQ Threshold. 0: Disable, <b>1: Auto(Default)</b>, 2: Low, 3: Medium, 4: High
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       IrqThreshold;
 
-/** Offset 0x008C - IRQ Threshold
-  Enable or Disable
+/** Offset 0x008C - TOR threshold - Loctorem threshold normal
+  TOR threshold - Loctorem threshold normal. 0: Disable, <b>1: Auto(Default)</b>,
+  2: Low, 3: Medium, 4: High
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremNorm;
 
 /** Offset 0x008D - TOR threshold - Loctorem threshold empty
-  Select TOR threshold - Loctorem threshold empty
+  TOR threshold - Loctorem threshold empty.  0: Disable, <b>1: Auto(Default)</b>,
+  2: Low, 3: Medium, 4: High
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremEmpty;
 
 /** Offset 0x008E - MBA BW Calibration
-  MBA BW Calibration setting
+  MBA BW Calibration setting. 0: Linear, 1: Biased, 2: Legacy, <b>3: Auto(Default)</b>
   0:Linear, 1:Biased, 2:Legacy, 3:Auto
 **/
   UINT8                       MbeBwCal;
 
 /** Offset 0x008F - TSC Sync in Sockets
-  Enable or Disable TSC Sync in Sockets
+  TSC Sync in Sockets. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       TscSyncEn;
 
 /** Offset 0x0090 - HA A to S directory optimization
-  Enable or Disable HA A to S directory optimization
+  HA A to S directory optimization. 0: Disable, 1: Enable, <b>2: Auto(Default)</b>
 **/
   UINT8                       StaleAtoSOptEn;
 
 /** Offset 0x0091 - LLC Deadline Allocation
-  Enable or Disable LLC Deadline Allocation
+  <b>Enable(Default)</b> or Disable LLC Deadline Allocation
   $EN_DIS
 **/
   UINT8                       LLCDeadLineAlloc;
 
 /** Offset 0x0092 - Split Lock
-  Enable or Disable Split Lock
+  Split Lock. <b>0: Disable(Default)</b>, 1: Enable, 2: Auto
 **/
   UINT8                       SplitLock;
 
 /** Offset 0x0093 - MMCFG Base Address
-  Setup MMCFG Base Address
-  0:1G, 1:1.5G, 2:1.75G, 3:2G, 4:2.25G, 5:3G, 6:Auto
+  MMCFG Base Address. 0: 1GB, 1: 1.5GB, 2: 1.75GB, 3: 2GB, 4: 2.25GB, 5: 3GB, <b>6:
+  Auto(Default)</b>
+  0:1GB, 1:1.5GB, 2:1.75GB, 3:2GB, 4:2.25GB, 5:3GB, 6:Auto
 **/
   UINT8                       mmCfgBase;
 
 /** Offset 0x0094 - MMCFG Size
-  Select MMCFG Size
-  0:64M, 1:128M, 2:256M, 3:512M, 4:1G, 5:2G, 6: Auto
+  Select MMCFG Size. 0: 64MB, 1: 128MB, 2: 256MB, 3: 512MB, 4: 1GB, 5: 2GB, <b>6:
+  Auto(Default)</b>
+  0:64MB, 1:128MB, 2:256MB, 3:512MB, 4:1GB, 5:2GB, 6: Auto
 **/
   UINT8                       mmCfgSize;
 
@@ -375,37 +383,44 @@ typedef struct {
 **/
   UINT8                       UnusedUpdSpace0[3];
 
+/*
+ * UnusedUpdSpace0[0] is reserved for following UPD variable:
+ * Offset 0x0095 - Usage type for Memory Refresh Watermark
+ * Select Memory Refresh Watermark, 0: Auto, 1: High(default), 2: Low
+  UINT8                       MemRefreshWaterMark;
+ */
+
 /** Offset 0x0098 - MMIO High Base Address
-  MMIO High Base Address, a hex number for Bit[51:32]
+  MMIO High Base Address, a hex number for Bit[51:32]. Default: 0x6 (Gives 0x200)
 **/
   UINT32                      mmiohBase;
 
 /** Offset 0x009C - CPU Physical Address Limit
-  CPU Physical Address Limit
+  <b>Enable(Default)</b> or Disable CPU Physical Address Limit
   0:Disable, 1:Enable
 **/
   UINT8                       CpuPaLimit;
 
 /** Offset 0x009D - High Gap
-  Enable or Disable High Gap
+  Enable or <b>Disable(Default)</b> High Gap
   $EN_DIS
 **/
   UINT8                       highGap;
 
 /** Offset 0x009E - MMIO High Size
   MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
-  per CPU.  Range 1-1024
+  per CPU.  Range 1-1024, Default: 3
 **/
   UINT16                      mmiohSize;
 
-/** Offset 0x00A0 - } TYPE:{Combo
-  Enable or Disable
+/** Offset 0x00A0 - ISOC
+  <b>Enable(Default)</b> or Disable ISOC
   $EN_DIS
 **/
   UINT8                       isocEn;
 
 /** Offset 0x00A1 - DCA
-  Enable or Disable DCA
+  Enable or <b>Disable(Default)</b> DCA
   $EN_DIS
 **/
   UINT8                       dcaEn;
@@ -414,289 +429,287 @@ typedef struct {
 **/
   UINT8                       UnusedUpdSpace1[2];
 
-/** Offset 0x00A4 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00A4 - BoardTypeBitmask
+  Board Type Bitmask. Default: 0x1
 **/
   UINT32                      BoardTypeBitmask;
 
-/** Offset 0x00A8 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00A8 - AllLanesPtr
+  Pointer to array of ALL_LANES_EPARAM_LINK_INFO
 **/
   UINT32                      AllLanesPtr;
 
-/** Offset 0x00AC - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00AC - PerLanePtr
+  Pointer to array of PER_LANE_EPARAM_LINK_INFO
 **/
   UINT32                      PerLanePtr;
 
-/** Offset 0x00B0 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00B0 - AllLanesSizeOfTable
+  Number of elements in AllLanesPtr array.
 **/
   UINT32                      AllLanesSizeOfTable;
 
-/** Offset 0x00B4 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00B4 - PerLaneSizeOfTable
+  Number of elements in PerLanePtr array.
 **/
   UINT32                      PerLaneSizeOfTable;
 
-/** Offset 0x00B8 - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00B8 - WaitTimeForPSBP
+  Number of milliseconds to wait for remote CPUs to initialize. Default: 30 sec
 **/
   UINT32                      WaitTimeForPSBP;
 
-/** Offset 0x00BC - } TYPE:{Combo
-  Enable or Disable
+/** Offset 0x00BC - IsKtiNvramDataReady
+  IsKtiNvramDataReady. Default: Disable
   $EN_DIS
 **/
   UINT8                       IsKtiNvramDataReady;
 
-/** Offset 0x00BD - } TYPE:{Combo
-  Enable or Disable
-  $EN_DIS
+/** Offset 0x00BD - BoardId
+  Board ID
 **/
   UINT8                       BoardId;
 
-/** Offset 0x00BE - } TYPE:{Combo
-  Enable or Disable
+/** Offset 0x00BE - WaSerializationEn
+  <b>Enable(Default)</b> or Disable BIOS serialization WA
   $EN_DIS
 **/
   UINT8                       WaSerializationEn;
 
-/** Offset 0x00BF - } TYPE:{Combo
-  Enable or Disable
+/** Offset 0x00BF - KtiInEnableMktme
+  Enable(Default) or Disable MkTme status decides D2Kti feature state
   $EN_DIS
 **/
   UINT8                       KtiInEnableMktme;
 
-/** Offset 0x00C0 - Usage type for Processor VmxEnable Function
-  Processor VmxEnable Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+/** Offset 0x00C0 - Processor VmxEnable Function
+  Enable(Default) or Disable Processor VmxEnable Function
   $EN_DIS
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x00C1 - Usage type for Processor X2apic Function
-  Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+/** Offset 0x00C1 - Processor X2apic Function
+  Enable(Default) or Disable Processor X2apic Function
+  $EN_DIS
 **/
   UINT8                       X2apic;
 
-/** Offset 0x00C2 - Usage type for DDR frequency limit
-  Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+/** Offset 0x00C2 - DDR frequency limit
+  Enable(Default) or Disable Processor X2apic Function
 **/
   UINT8                       DdrFreqLimit;
 
-/** Offset 0x00C3 - Usage type for Memory Serial Debug Message Level
-  Processor X2apic Function, if enabled, the value is 0x01, if disabled, the value is 0x00
+/** Offset 0x00C3 - Memory Serial Debug Message Level
+  Enable(Default) or Disable Processor X2apic Function
 **/
   UINT8                       serialDebugMsgLvl;
 
 /** Offset 0x00C4 - IIO ConfigIOU0
   ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
-  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
   UINT8                       IioConfigIOU0[8];
 
 /** Offset 0x00CC - IIO ConfigIOU1
   ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
-  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
   UINT8                       IioConfigIOU1[8];
 
 /** Offset 0x00D4 - IIO ConfigIOU2
   ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
-  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
   UINT8                       IioConfigIOU2[8];
 
 /** Offset 0x00DC - IIO ConfigIOU3
   ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
-  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
   UINT8                       IioConfigIOU3[8];
 
 /** Offset 0x00E4 - IIO ConfigIOU4
   ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
-  0x03:xxx8xxx8, 0x04:xxxxxx16, 0xFF:AUTO
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
   UINT8                       IioConfigIOU4[8];
 
-/** Offset 0x00EC - Usage type for IIO PCIE Config Table Ptr
-  IIO PCIE Config Table Ptr
+/** Offset 0x00EC - IIO PCIE Config Table Ptr
+  Pointer to array of UPD_IIO_PCIE_PORT_CONFIG
 **/
   UINT32                      IioPcieConfigTablePtr;
 
-/** Offset 0x00F0 - Usage type for IIO PCIE Config Table Number
-  IIO PCIE Config Table Number
+/** Offset 0x00F0 - IIO PCIE Config Table Number
+  Number of elements in IioPcieConfigTablePtr array.
 **/
   UINT32                      IioPcieConfigTableNumber;
 
-/** Offset 0x00F4 - Usage type for IIO PCIE Root Port Enable or Disable
-  IIO PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
-  the value is 0x00
+/** Offset 0x00F4 - IIO PCIE Root Port Enable
+  <b>Enable(Default)</b> or Disable IIO PCH rootport
 **/
   UINT8                       IIOPcieRootPortEnable;
 
-/** Offset 0x00F5 - Usage type for IIO DeEmphasis
-  IIO DeEmphasis
+/** Offset 0x00F5 - IIO DeEmphasis
+  IIO DeEmphasis. Default: 0x1
 **/
   UINT8                       DeEmphasis;
 
-/** Offset 0x00F6 - Usage type for IIO PCIE Root Port link speed
-  IIO root port link speed
+/** Offset 0x00F6 - IIO PCIe Root Port Link Speed
+  IIO PCIe Root Port Link Speed. <b>0: Auto(Default)</b>, 1: Gen1, 2: Gen2, 3: Gen3, 4: Gen4
+  0:Auto, 1:Gen1, 2:Gen2, 3:Gen3, 4:Gen4
 **/
   UINT8                       IIOPciePortLinkSpeed;
 
-/** Offset 0x00F7 - Usage type for IIO PCIE Root Port Max Payload
-  IIO Root Port Max Payload
+/** Offset 0x00F7 - IIO PCIe Root Port Max Payload
+  IIO PCIe Root Port Max Payload. 0: 128B, 1: 256B, 2: 512B, <b>7: Auto(Default)</b>
+  0:128B, 1: 256B, 2:512B, 7:Auto
 **/
   UINT8                       IIOPcieMaxPayload;
 
-/** Offset 0x00F8 - Usage type for IIO DfxDnTxPreset
-  IIO DfxDnTxPreset
+/** Offset 0x00F8 - IIO DfxDnTxPreset
+  IIO Downstream Transmitter Preset. Default: Auto(0xFF), otherwise preset 0-10
 **/
   UINT8                       DfxDnTxPreset;
 
-/** Offset 0x00F9 - Usage type for IIO DfxRxPreset
-  IIO DfxRxPreset
+/** Offset 0x00F9 - IIO DfxRxPreset
+  IIO Downstream Reciever Preset. Default: Auto(0xFF), otherwise preset 0-10
 **/
   UINT8                       DfxRxPreset;
 
-/** Offset 0x00FA - Usage type for IIO DfxUpTxPreset
-  IIO DfxUpTxPreset
+/** Offset 0x00FA - IIO DfxUpTxPreset
+  IIO Upstream Transmitter Preset. Default: Auto(0xFF), otherwise preset 0-10
 **/
   UINT8                       DfxUpTxPreset;
 
-/** Offset 0x00FB - Usage type for IIO PcieCommonClock
-  IIO PcieCommonClock
+/** Offset 0x00FB - IIO PCIe Common Clock
+  IIO PCIe Common Clock. 0: Disable, <b>1: Enable(Default)</b>, 2: Auto
 **/
   UINT8                       PcieCommonClock;
 
-/** Offset 0x00FC - Usage type for IIO NtbPpd
-  IIO NtbPpd
+/** Offset 0x00FC - IIO Non-Transparent Port Definition
+  IIO Non-Transparent Port Definition. <b>0: Transparent(Default)</b>, 1: Non-Transparent
+  Bridge, 2: Non-Transparent Root Port
 **/
   UINT8                       NtbPpd;
 
-/** Offset 0x00FD - Usage type for IIO NtbBarSizeOverride
-  IIO NtbBarSizeOverride
+/** Offset 0x00FD - IIO Non-Transparent Bridge BAR Size Override
+  Enable or <b>Disable(Default)</b> IIO Non-Transparent Bridge BAR Size Override.
 **/
   UINT8                       NtbBarSizeOverride;
 
-/** Offset 0x00FE - Usage type for IIO NtbSplitBar
-  IIO NtbSplitBar
+/** Offset 0x00FE - IIO Non-Transparent Bridge Split BAR Mode
+  Enable or <b>Disable(Default)</b> IIO Non-Transparent Bridge Split BAR Mode
 **/
   UINT8                       NtbSplitBar;
 
-/** Offset 0x00FF - Usage type for IIO NtbBarSizeImBar1
-  IIO NtbBarSizeImBar1
+/** Offset 0x00FF - IIO NtbBarSizeImBar1
+  IIO NtbBarSizeImBar1. Default: 0x16
 **/
   UINT8                       NtbBarSizeImBar1;
 
-/** Offset 0x0100 - Usage type for IIO NtbBarSizeImBar2
-  IIO PNtbBarSizeImBar2
+/** Offset 0x0100 - IIO NtbBarSizeImBar2
+  IIO PNtbBarSizeImBar2. Default: 0x16
 **/
   UINT8                       NtbBarSizeImBar2;
 
-/** Offset 0x0101 - Usage type for IIO NtbBarSizeImBar2_0
-  IIO PNtbBarSizeImBar2_0
+/** Offset 0x0101 - IIO NtbBarSizeImBar2_0
+  IIO PNtbBarSizeImBar2_0. Default: 0x0C
 **/
   UINT8                       NtbBarSizeImBar2_0;
 
-/** Offset 0x0102 - Usage type for IIO NtbBarSizeImBar2_1
-  IIO NtbBarSizeImBar2_1
+/** Offset 0x0102 - IIO NtbBarSizeImBar2_1
+  IIO NtbBarSizeImBar2_1. Default: 0x0C
 **/
   UINT8                       NtbBarSizeImBar2_1;
 
-/** Offset 0x0103 - Usage type for IIO NtbBarSizeEmBarSZ1
-  IIO NtbBarSizeEmBarSZ1
+/** Offset 0x0103 - IIO NtbBarSizeEmBarSZ1
+  IIO NtbBarSizeEmBarSZ1. . Default: 0x16
 **/
   UINT8                       NtbBarSizeEmBarSZ1;
 
-/** Offset 0x0104 - Usage type for IIO NtbBarSizeEmBarSZ2
-  IIO NtbBarSizeEmBarSZ2
+/** Offset 0x0104 - IIO NtbBarSizeEmBarSZ2
+  IIO NtbBarSizeEmBarSZ2. . Default: 0x16
 **/
   UINT8                       NtbBarSizeEmBarSZ2;
 
-/** Offset 0x0105 - Usage type for IIO NtbBarSizeEmBarSZ2_0
-  IIO NtbBarSizeEmBarSZ2_0
+/** Offset 0x0105 - IIO NtbBarSizeEmBarSZ2_0
+  IIO NtbBarSizeEmBarSZ2_0. . Default: 0x0C
 **/
   UINT8                       NtbBarSizeEmBarSZ2_0;
 
-/** Offset 0x0106 - Usage type for IIO NtbBarSizeEmBarSZ2_1
-  IIO NtbBarSizeEmBarSZ2_1
+/** Offset 0x0106 - IIO NtbBarSizeEmBarSZ2_1
+  IIO NtbBarSizeEmBarSZ2_1. . Default: 0x0C
 **/
   UINT8                       NtbBarSizeEmBarSZ2_1;
 
-/** Offset 0x0107 - Usage type for IIO NtbXlinkCtlOverride
-  IIO NtbXlinkCtlOverride
+/** Offset 0x0107 - IIO Non-Transparent Cross Link Override
+  IIO Non-Transparent Cross Link Override. 1:Operate as RP, 2:Operate as NTB-NTB (NT
+  Port), <b>3:Operate as NTB-> DSP (NTB EP)(Default)</b>
 **/
   UINT8                       NtbXlinkCtlOverride;
 
-/** Offset 0x0108 - Usage type for IIO VT-D Function
-  IIO VT-D Function, if supported, the value is 0x01, if not supported, the value is 0x00
+/** Offset 0x0108 - VT-d Support
+  Enable or <b>Disable(Default)</b> VT-d Support
 **/
   UINT8                       VtdSupport;
 
-/** Offset 0x0109 - Usage type for IIO Pcie Port Hide
+/** Offset 0x0109 - IIO PCIe Port Hide
   Hide or visible for IIO Pcie Port, 1 : Hide, 0 : Visible
 **/
   UINT8                       PEXPHIDE;
 
-/** Offset 0x010A - Usage type for IIO Pcie Port Menu Hide
-  Hide or visible for IIO Pcie Port Menu, 1 : Hide, 0 : Visible
+/** Offset 0x010A - IIO Pcie Port Menu Hide
+  Hide or visible for IIO PCIe Port Menu, 1 : Hide, 0 : Visible
 **/
   UINT8                       HidePEXPMenu;
 
 /** Offset 0x010B - PchSirqMode
-  Enable or Disable PchSirqMode
+  PchSirqMode. <b>0: Quiet Mode(Default)</b> 1: Continuous Mode
 **/
   UINT8                       PchSirqMode;
 
 /** Offset 0x010C - PchAdrEn
-  Enable or Disable PchAdr
+  PchAdr 0:PLATFORM POR, <b>1:FORCE ENABLE(Default)</b>, 2:FORCE DISABLE
 **/
   UINT8                       PchAdrEn;
 
 /** Offset 0x010D - ThermalDeviceEnable
-  Enable or Disable ThermalDeviceEnable with PCI or ACPI mode
+  Thermal Device Mode. 0: Disable, 1: Enabled in PCI  mode, <b>2: Enabled in ACPI
+  mode(Default)</b>
 **/
   UINT8                       ThermalDeviceEnable;
 
-/** Offset 0x010E - } TYPE:{Combo
-  Root port swapping based on device connection status : TRUE or FALSE
+/** Offset 0x010E - PchPcieRootPortFunctionSwap
+  Root port swapping based on device connection status : <b>TRUE(Default)</b> or FALSE
   TRUE : 0x01, FALSE : 0x00
 **/
   UINT8                       PchPcieRootPortFunctionSwap;
 
 /** Offset 0x010F - PCH PCIE PLL Ssc
   Valid spread range : 0x00-0x14 (A value of 0 is SSC of 0.0%. A value of 20 is SSC
-  of 2.0%), Auto : 0xFE(Set to hardware default), Disable : 0xFF
+  of 2.0%), Auto : 0xFE(Set to hardware default), <b>Disable(Default)</b> : 0xFF
 **/
   UINT8                       PchPciePllSsc;
 
-/** Offset 0x0110 - Usage type for PCH PCIE Root Port Index
+/** Offset 0x0110 - PCH PCIE Root Port Index
   Index assigned to every PCH PCIE Root Port
 **/
   UINT8                       PchPciePortIndex[20];
 
-/** Offset 0x0124 - Usage type for PCH PCIE Root Port Enable or Disable
-  0-19: PCH rootport, if port is enabled, the value is 0x01, if the port is disabled,
-  the value is 0x00
+/** Offset 0x0124 - PCH PCIE Root Port Enable or Disable
+  0-19: PCH rootport, if port is enabled(Default), the value is 0x01, if the port
+  is disabled, the value is 0x00
 **/
   UINT8                       PchPcieForceEnable[20];
 
-/** Offset 0x0138 - Usage type for PCH PCIE Root Port Link Speed
-  0-19: PCH rootport, 0x00 : Pcie Auto Speed, 0x01 : Pcie Gen1 Speed, 0x02 : Pcie
-  Gen2 Speed, 0x03 : Pcie Gen3 Speed
+/** Offset 0x0138 - PCH PCIE Root Port Link Speed
+  0-19: PCH rootport, 0x00 : Pcie Auto Speed(Default), 0x01 : Pcie Gen1 Speed, 0x02
+  : Pcie Gen2 Speed, 0x03 : Pcie Gen3 Speed
 **/
   UINT8                       PchPciePortLinkSpeed[20];
 
 /** Offset 0x014C - PchDciEn
-  Enable or Disable Pch DciEn
+  Enable or <b>Disable(Default)</b> PCH DCI
 **/
   UINT8                       PchDciEn;
 
@@ -706,7 +719,7 @@ typedef struct {
   UINT8                       MeUmaEnable;
 
 /** Offset 0x014E - SerialIoUartDebugEnable
-  Enable SerialIo Uart debug library in FSP.
+  <b>Enable(Default)</b> or Disable SerialIo Uart debug library in FSP.
   0:Disable, 1:Enable
 **/
   UINT8                       SerialIoUartDebugEnable;

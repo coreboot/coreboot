@@ -14,6 +14,9 @@ chip soc/intel/tigerlake
 		.tdp_pl4 = 105,
 	}"
 
+	# Disable SRCCLKREQ1#
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf

@@ -103,10 +103,10 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# Mark SRCCLKREQ pins as unused that are routed for a Non-Clkreq functionality
-	register "PcieClkSrcUsage[2]" = "0xFF"
-	register "PcieClkSrcUsage[4]" = "0xFF"
-	register "PcieClkSrcUsage[5]" = "0xFF"
-	register "PcieClkSrcUsage[6]" = "0xFF"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[4]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[6]" = "PCIE_CLK_NOTUSED"
 
 	# Enable SATA
 	register "SataEnable" = "1"

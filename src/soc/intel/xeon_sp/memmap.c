@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/romstage.h>
+#include <cbmem.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/smm.h>
 #include <soc/pci_devs.h>
@@ -19,4 +22,22 @@ void smm_region(uintptr_t *start, size_t *size)
 
 	*start = tseg_base;
 	*size = tseg_limit - tseg_base;
+}
+
+void fill_postcar_frame(struct postcar_frame *pcf)
+{
+	/*
+	 * We need to make sure ramstage will be run cached. At this
+	 * point exact location of ramstage in cbmem is not known.
+	 * Instruct postcar to cache 16 megs under cbmem top which is
+	 * a safe bet to cover ramstage.
+	 */
+	uintptr_t top_of_ram = (uintptr_t)cbmem_top();
+
+	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
+	top_of_ram -= 16 * MiB;
+	postcar_frame_add_mtrr(pcf, top_of_ram, 16 * MiB, MTRR_TYPE_WRBACK);
+	/* Cache the TSEG region */
+	if (CONFIG(TSEG_STAGE_CACHE))
+		postcar_enable_tseg_cache(pcf);
 }

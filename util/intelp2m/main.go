@@ -67,9 +67,9 @@ func main() {
 		"\tsnr - Sunrise PCH or Skylake/Kaby Lake SoC\n"+
 		"\tlbg - Lewisburg PCH with Xeon SP\n"+
 		"\tapl - Apollo Lake SoC\n"+
-		"\tcnl - CannonLake-LP or Whiskeylake/Coffelake/Cometlake-U SoC\n")
+		"\tcnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC\n")
 
-	filedstyle :=  flag.String("fld", "none", "set fileds macros style:\n"+
+	fieldstyle :=  flag.String("fld", "none", "set fields macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+
 		"\tfsp - use fsp style\n"+
 		"\traw - do not convert, print as is\n")
@@ -106,8 +106,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if config.FldStyleSet(*filedstyle) != 0 {
-		fmt.Printf("Error! Unknown bit fields style option -%s!\n", *filedstyle)
+	if config.FldStyleSet(*fieldstyle) != 0 {
+		fmt.Printf("Error! Unknown bit fields style option -%s!\n", *fieldstyle)
 		os.Exit(1)
 	}
 

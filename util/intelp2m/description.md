@@ -23,9 +23,9 @@ the coreboot project.
 		0 - inteltool.log (default)
 		1 - gpio.h
 		2 - your template
-(shell)$ ./intelp2m -t 1 -file coreboot/src/mainboard/youboard/gpio.h
+(shell)$ ./intelp2m -t 1 -file coreboot/src/mainboard/yourboard/gpio.h
 ```
-You can also add add a template to 'parser/template.go' for your file type with
+You can also add a template to 'parser/template.go' for your file type with
 the configuration of the pads.
 
 platform type is set using the -p option (Sunrise by default):
@@ -35,7 +35,7 @@ platform type is set using the -p option (Sunrise by default):
 		snr - Sunrise PCH with Skylake/Kaby Lake CPU
 		lbg - Lewisburg PCH with Xeon SP CPU
 		apl - Apollo Lake SoC
-		cnl - CannonLake-LP or Whiskeylake/Coffelake/Cometlake-U SoC
+		cnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC
 	(default "snr")
 
 (shell)$ ./intelp2m -p <platform> -file path/to/inteltool.log

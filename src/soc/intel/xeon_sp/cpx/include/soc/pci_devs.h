@@ -77,8 +77,14 @@
 #define VMD_FUNC_NUM            0x05
 
 #define MMAP_VTD_CFG_REG_DEVID		0x2024
-#define VTD_DEV				0x5
-#define VTD_FUNC			0x0
+#define VTD_DEV_NUM			0x5
+#define VTD_FUNC_NUM			0x0
+
+#if !defined(__SIMPLE_DEVICE__)
+#define VTD_DEV(bus)		pcidev_path_on_bus((bus), PCI_DEVFN(VTD_DEV_NUM, VTD_FUNC_NUM))
+#else
+#define VTD_DEV(bus)		PCI_DEV((bus), VTD_DEV_NUM, VTD_FUNC_NUM)
+#endif
 
 #define APIC_DEV_NUM            0x05
 #define APIC_FUNC_NUM           0x04

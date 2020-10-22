@@ -128,6 +128,7 @@
 #define HPET0_FUNC_NUM          0x00
 
 #define MMAP_VTD_CFG_REG_DEVID		0x2024
+#define MMAP_VTD_STACK_CFG_REG_DEVID	0x2034
 #define VTD_DEV_NUM			0x5
 #define VTD_FUNC_NUM			0x0
 

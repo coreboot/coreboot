@@ -11,6 +11,8 @@
 #include <soc/ramstage.h>
 #include <soc/util.h>
 #include <fsp/util.h>
+#include <security/intel/txt/txt_platform.h>
+#include <soc/pci_devs.h>
 
 struct map_entry {
 	uint32_t    reg;
@@ -88,6 +90,20 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 	}
 }
 
+static void configure_dpr(struct device *dev)
+{
+	const uintptr_t cbmem_top_mb = ALIGN_UP((uintptr_t)cbmem_top(), MiB) / MiB;
+	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
+
+	/* The DPR lock bit has to be set sufficiently early. It looks like
+	 * it cannot be set anymore after FSP-S.
+	 */
+	dpr.lock = 1;
+	dpr.epm = 1;
+	dpr.size = dpr.top - cbmem_top_mb;
+	pci_write_config32(dev, VTD_LTDPR, dpr.raw);
+}
+
 /*
  * Host Memory Map:
  *
@@ -127,6 +143,8 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
  * |     MEseg (relocatable)  | 32, 64, 128 or 256 MB (0x78000000 - 0x7fffffff, 0x20000)
  * +--------------------------+
  * |     Tseg (relocatable)   | N x 8MB (0x70000000 - 0x77ffffff, 0x20000)
+ * +--------------------------+
+ * |     DPR                  |
  * +--------------------------+ cbmem_top
  * |     Reserved - CBMEM     | (0x6fffe000 - 0x6fffffff, 0x2000)
  * +--------------------------+
@@ -202,6 +220,16 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	size_kb = (mc_values[TSEG_LIMIT_REG] - mc_values[TSEG_BASE_REG] + 1) >> 10;
 	LOG_MEM_RESOURCE("mmio_tseg", dev, index, base_kb, size_kb);
 	reserved_ram_resource(dev, index++, base_kb, size_kb);
+
+	/* Reserve and set up DPR */
+	configure_dpr(dev);
+	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
+	if (dpr.size) {
+		uint32_t dpr_base_k = (dpr.top - dpr.size) << 10;
+		uint32_t dpr_size_k = dpr.size << 10;
+		reserved_ram_resource(dev, index++, dpr_base_k, dpr_size_k);
+		LOG_MEM_RESOURCE("dpr", dev, index, dpr_base_k, dpr_size_k);
+	}
 
 	/* Mark region between TSEG - TOLM (eg. MESEG) as reserved */
 	if (mc_values[TSEG_LIMIT_REG] < mc_values[TOLM_REG]) {
@@ -293,4 +321,25 @@ static const struct pci_driver mmapvtd_driver __pci_driver = {
 	.ops      = &mmapvtd_ops,
 	.vendor   = PCI_VENDOR_ID_INTEL,
 	.devices  = mmapvtd_ids
+};
+
+static void vtd_read_resources(struct device *dev)
+{
+	pci_dev_read_resources(dev);
+
+	configure_dpr(dev);
+}
+
+static struct device_operations vtd_ops = {
+	.read_resources    = vtd_read_resources,
+	.set_resources     = pci_dev_set_resources,
+	.enable_resources  = pci_dev_enable_resources,
+	.ops_pci           = &soc_pci_ops,
+};
+
+/* VTD devices on other stacks */
+static const struct pci_driver vtd_driver __pci_driver = {
+	.ops      = &vtd_ops,
+	.vendor   = PCI_VENDOR_ID_INTEL,
+	.device   = MMAP_VTD_STACK_CFG_REG_DEVID,
 };

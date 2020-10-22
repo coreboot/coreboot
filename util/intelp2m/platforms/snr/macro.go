@@ -59,13 +59,13 @@ func (PlatformSpecific) Pull() {
 	dw1 := macro.Register(PAD_CFG_DW1)
 	var pull = map[uint8]string{
 		0x0: "NONE",
-		0x2: "5K_PD",
-		0x4: "20K_PD",
-		0x9: "1K_PU",
-		0xa: "5K_PU",
-		0xb: "2K_PU",
-		0xc: "20K_PU",
-		0xd: "667_PU",
+		0x2: "DN_5K",
+		0x4: "DN_20K",
+		0x9: "UP_1K",
+		0xa: "UP_5K",
+		0xb: "UP_2K",
+		0xc: "UP_20K",
+		0xd: "UP_667",
 		0xf: "NATIVE",
 	}
 	str, valid := pull[dw1.GetTermination()]
@@ -91,7 +91,9 @@ func ioApicRoute() bool {
 	if dw0.GetRXLevelEdgeConfiguration() == common.TRIG_LEVEL {
 		if dw0.GetRxInvert() != 0 {
 			// PAD_CFG_GPI_APIC_INVERT(pad, pull, rst)
-			macro.Add("_INVERT")
+			macro.Add("_LOW")
+		} else {
+			macro.Add("_HIGH")
 		}
 		// PAD_CFG_GPI_APIC(pad, pull, rst)
 		macro.Add("(").Id().Pull().Rstsrc().Add("),")
@@ -121,16 +123,16 @@ func sciRoute() bool {
 	if dw0.GetGPIOInputRouteSCI() == 0 {
 		return false
 	}
+	macro.Add("_SCI").Add("(").Id().Pull().Rstsrc()
+	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) == 0 {
+		macro.Trig()
+	}
 	// e.g. PAD_CFG_GPI_SCI(GPP_B18, UP_20K, PLTRST, LEVEL, INVERT),
 	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SCI(GPP_G2, NONE, DEEP, YES),
 		// #define PAD_CFG_GPI_ACPI_SCI(pad, pull, rst, inv)	\
 		//             PAD_CFG_GPI_SCI(pad, pull, rst, EDGE_SINGLE, inv)
-		macro.Add("_ACPI")
-	}
-	macro.Add("_SCI").Add("(").Id().Pull().Rstsrc()
-	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) == 0 {
-		macro.Trig()
+		macro.Add(",").Add("EDGE_SINGLE")
 	}
 	macro.Invert().Add("),")
 	return true
@@ -143,11 +145,11 @@ func smiRoute() bool {
 	if dw0.GetGPIOInputRouteSMI() == 0 {
 		return false
 	}
+	macro.Add("_SMI").Add("(").Id().Pull().Rstsrc()
 	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SMI(GPP_I3, NONE, DEEP, YES),
-		macro.Add("_ACPI")
+		macro.Add(",").Add("EDGE_SINGLE")
 	}
-	macro.Add("_SMI").Add("(").Id().Pull().Rstsrc()
 	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) == 0 {
 		// e.g. PAD_CFG_GPI_SMI(GPP_E7, NONE, DEEP, LEVEL, NONE),
 		macro.Trig()

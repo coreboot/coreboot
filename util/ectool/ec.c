@@ -167,7 +167,10 @@ int get_ec_ports(void)
 		return -1;
 
 	while (!feof(fp) && (data == 0 || cmd == 0)) {
-		fgets(line, sizeof(line), fp);
+		if (fgets(line, sizeof(line), fp) == NULL) {
+			fprintf(stderr, "Can not read from /proc/ioports.\n");
+			break;
+		}
 		if (strstr(line, "EC data") != NULL)
 			data = strtol(line, NULL, 16);
 

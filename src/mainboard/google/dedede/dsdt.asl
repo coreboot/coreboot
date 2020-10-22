@@ -27,19 +27,12 @@ DefinitionBlock(
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/jasperlake/acpi/southbridge.asl>
 		}
-
-		/* Mainboard hooks */
-		#include "acpi/mainboard.asl"
 	}
 
 #if CONFIG(VARIANT_HAS_CAMERA_ACPI)
 	/* Camera */
 	#include <variant/acpi/camera.asl>
 #endif
-
-	/* Include Low power idle table for a short term workaround to enable
-	   S0ix. Once cr50 pulse width is fixed, this can be removed. */
-	#include <soc/intel/common/acpi/lpit.asl>
 
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

@@ -9,6 +9,7 @@
 #include <soc/msr.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 #include <assert.h>
 #include "chip.h"
 

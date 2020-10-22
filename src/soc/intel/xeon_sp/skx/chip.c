@@ -7,6 +7,7 @@
 #include <soc/acpi.h>
 #include <soc/ramstage.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 
 struct pci_resource {
 	struct device        *dev;

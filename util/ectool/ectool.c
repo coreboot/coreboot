@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
 	if (get_ports && get_ec_ports() != 0)
 		fprintf(stderr, "Cannot get EC ports from /proc/ioports, "
-				"fallback to default.");
+				"fallback to default.\n");
 
 	if (iopl(3)) {
 		printf("You need to be root.\n");

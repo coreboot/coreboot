@@ -9,7 +9,6 @@
 #include <soc/soc_chip.h>
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params);
-void mainboard_update_soc_chip_config(struct soc_intel_jasperlake_config *config);
 void soc_init_pre_device(void *chip_info);
 
 #endif

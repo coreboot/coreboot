@@ -61,7 +61,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		       ACPI_FADT_S4_RTC_WAKE |
 		       ACPI_FADT_PLATFORM_CLOCK;
 
-	if (cfg->docking_supported)
+	if (cfg && cfg->docking_supported)
 		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;

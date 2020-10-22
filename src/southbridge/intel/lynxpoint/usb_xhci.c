@@ -328,7 +328,7 @@ static void usb_xhci_init(struct device *dev)
 		/* Reset ports that are disabled or
 		 * polling before returning to the OS. */
 		usb_xhci_reset_usb3(dev, 0);
-	} else if (config->xhci_default) {
+	} else if (config && config->xhci_default) {
 		/* Route all ports to XHCI */
 		apm_control(APM_CNT_ROUTE_ALL_XHCI);
 	}

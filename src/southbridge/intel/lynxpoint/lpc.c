@@ -138,10 +138,8 @@ static void pch_pirq_init(struct device *dev)
 	}
 }
 
-static void pch_gpi_routing(struct device *dev)
+static void pch_gpi_routing(struct device *dev, config_t *config)
 {
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
 	u32 reg32 = 0;
 
 	/* An array would be much nicer here, or some
@@ -173,8 +171,6 @@ static void pch_power_options(struct device *dev)
 	u16 reg16;
 	u32 reg32;
 	const char *state;
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
 	u16 pmbase = get_pmbase();
 	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	int nmi_option;
@@ -243,19 +239,23 @@ static void pch_power_options(struct device *dev)
 	reg16 &= ~(1 << 10);	// Disable BIOS_PCI_EXP_EN for native PME
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	/*
-	 * Set the board's GPI routing on LynxPoint-H.
-	 * This is done as part of GPIO configuration on LynxPoint-LP.
-	 */
-	if (pch_is_lp())
-		pch_gpi_routing(dev);
+	if (dev->chip_info) {
+		config_t *config = dev->chip_info;
 
-	/* GPE setup based on device tree configuration */
-	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
-		       config->gpe0_en_3, config->gpe0_en_4);
+		/*
+		 * Set the board's GPI routing on LynxPoint-H.
+		 * This is done as part of GPIO configuration on LynxPoint-LP.
+		 */
+		if (pch_is_lp())
+			pch_gpi_routing(dev, config);
 
-	/* SMI setup based on device tree configuration */
-	enable_alt_smi(config->alt_gp_smi_en);
+		/* GPE setup based on device tree configuration */
+		enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
+			       config->gpe0_en_3, config->gpe0_en_4);
+
+		/* SMI setup based on device tree configuration */
+		enable_alt_smi(config->alt_gp_smi_en);
+	}
 
 	/* Set up power management block and determine sleep mode */
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
@@ -345,10 +345,10 @@ static void lpt_lp_pm_init(struct device *dev)
 	/* Set RCBA CIR28 0x3A84 based on SATA port enables */
 	data = 0x00001005;
 	/* Port 3 and 2 disabled */
-	if ((config->sata_port_map & ((1 << 3) | (1 << 2))) == 0)
+	if (config && (config->sata_port_map & ((1 << 3) | (1 << 2))) == 0)
 		data |= (1 << 24) | (1 << 26);
 	/* Port 1 and 0 disabled */
-	if ((config->sata_port_map & ((1 << 1) | (1 << 0))) == 0)
+	if (config && (config->sata_port_map & ((1 << 1) | (1 << 0))) == 0)
 		data |= (1 << 20) | (1 << 18);
 	RCBA32(0x3a84) = data;
 
@@ -636,7 +636,6 @@ static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
 static void pch_lpc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
-	config_t *config = dev->chip_info;
 
 	/* Add the default claimed IO range for the LPC device. */
 	res = new_resource(dev, 0);
@@ -651,10 +650,13 @@ static void pch_lpc_add_io_resources(struct device *dev)
 	pch_lpc_add_io_resource(dev, get_pmbase(), 256, PMBASE);
 
 	/* LPC Generic IO Decode range. */
-	pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
-	pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
-	pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);
-	pch_lpc_add_gen_io_resources(dev, config->gen4_dec, LPC_GEN4_DEC);
+	if (dev->chip_info) {
+		config_t *config = dev->chip_info;
+		pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
+		pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
+		pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);
+		pch_lpc_add_gen_io_resources(dev, config->gen4_dec, LPC_GEN4_DEC);
+	}
 }
 
 static void pch_lpc_read_resources(struct device *dev)

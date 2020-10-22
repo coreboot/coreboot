@@ -131,7 +131,7 @@ static void serialio_init_once(int acpi_mode)
 
 static void serialio_init(struct device *dev)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	struct southbridge_intel_lynxpoint_config *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
 

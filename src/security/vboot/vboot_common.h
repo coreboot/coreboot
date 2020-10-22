@@ -45,7 +45,7 @@ void verstage_mainboard_early_init(void);
 void verstage_mainboard_init(void);
 
 /* Check boot modes */
-#if CONFIG(VBOOT)
+#if CONFIG(VBOOT) && !ENV_SMM
 int vboot_developer_mode_enabled(void);
 int vboot_recovery_mode_enabled(void);
 int vboot_can_enable_udc(void);

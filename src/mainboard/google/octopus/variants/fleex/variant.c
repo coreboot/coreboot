@@ -5,11 +5,11 @@
 #include <ec/google/chromeec/ec.h>
 #include <sar.h>
 
-#define LTE_SKU		4
+#define MIN_LTE_SKU         4
 
 static bool is_lte_sku(void)
 {
-	return (google_chromeec_get_board_sku() == LTE_SKU);
+	return (google_chromeec_get_board_sku() >= MIN_LTE_SKU);
 }
 
 void variant_smi_sleep(u8 slp_typ)

@@ -74,14 +74,6 @@ static void write_table_entry(struct qclib_cb_if_table_entry *te)
 
 	} else if (!strncmp(QCLIB_TE_DDR_TRAINING_DATA, te->name,
 			sizeof(te->name))) {
-		/*
-		 * Don't store training data if we're in recovery mode
-		 * because we always want to retrain due to
-		 * possibility of RW training data possibly being
-		 * updated to a different format.
-		 */
-		if (vboot_recovery_mode_enabled())
-			return;
 		assert(!mrc_cache_stash_data(MRC_TRAINING_DATA, QCLIB_VERSION,
 					     (const void *)te->blob_address, te->size));
 
@@ -138,20 +130,12 @@ void qclib_load_and_run(void)
 	/* output area, QCLib fills in DDR details */
 	qclib_add_if_table_entry(QCLIB_TE_DDR_INFORMATION, NULL, 0, 0);
 
-	/*
-	 * We never want to use training data when booting into
-	 * recovery mode.
-	 */
-	if (vboot_recovery_mode_enabled()) {
+	/* Attempt to load DDR Training Blob */
+	data_size = mrc_cache_load_current(MRC_TRAINING_DATA, QCLIB_VERSION,
+					   _ddr_training, REGION_SIZE(ddr_training));
+	if (data_size < 0) {
+		printk(BIOS_ERR, "Unable to load previous training data.\n");
 		memset(_ddr_training, 0, REGION_SIZE(ddr_training));
-	} else {
-		/* Attempt to load DDR Training Blob */
-		data_size = mrc_cache_load_current(MRC_TRAINING_DATA, QCLIB_VERSION,
-						   _ddr_training, REGION_SIZE(ddr_training));
-		if (data_size < 0) {
-			printk(BIOS_ERR, "Unable to load previous training data.\n");
-			memset(_ddr_training, 0, REGION_SIZE(ddr_training));
-		}
 	}
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
 				 _ddr_training, REGION_SIZE(ddr_training), 0);

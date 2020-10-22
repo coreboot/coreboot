@@ -16,9 +16,9 @@ chip soc/amd/picasso
 	register "sustained_power_limit" = "12000" #mw
 	register "thermctl_limit" = "100" #degrees C
 
-	register "telemetry_vddcr_vdd_slope" = "62852" #mA
+	register "telemetry_vddcr_vdd_slope" = "62641" #mA
 	register "telemetry_vddcr_vdd_offset" = "0"
-	register "telemetry_vddcr_soc_slope" = "28022" #mA
+	register "telemetry_vddcr_soc_slope" = "28333" #mA
 	register "telemetry_vddcr_soc_offset" = "0"
 
 	# Set STAPM confiuration for tablet mode

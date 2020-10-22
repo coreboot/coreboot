@@ -112,10 +112,10 @@ uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name)
 	if (!tcpa_log_available()) {
 		if (tspi_init_crtm() != VB2_SUCCESS) {
 			printk(BIOS_WARNING,
-			       "Initializing CRTM failed!");
+			       "Initializing CRTM failed!\n");
 			return 0;
 		}
-		printk(BIOS_DEBUG, "CRTM initialized.");
+		printk(BIOS_DEBUG, "CRTM initialized.\n");
 	}
 
 	cbfsf_file_type(fh, &cbfs_type);

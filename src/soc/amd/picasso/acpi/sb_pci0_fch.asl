@@ -22,6 +22,7 @@ Method(_OSC,4)
 
 /* 0:14.3 - LPC */
 #include <soc/amd/common/acpi/lpc.asl>
+#include <soc/amd/common/acpi/platform.asl>
 
 Name(CRES, ResourceTemplate() {
 	/* Set the Bus number and Secondary Bus number for the PCI0 device

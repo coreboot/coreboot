@@ -225,7 +225,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_intel_ironlake_ops = {
-	CHIP_NAME("Intel i7 (Arrandale) integrated Northbridge")
+	CHIP_NAME("Intel Ironlake integrated Northbridge")
 	.enable_dev = enable_dev,
 	.init = ironlake_init,
 };

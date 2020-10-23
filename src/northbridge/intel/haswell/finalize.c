@@ -24,6 +24,7 @@ void intel_northbridge_haswell_finalize_smm(void)
 	MCHBAR32_OR(REQLIM, 1UL << 31);
 	MCHBAR32_OR(DMIVCLIM, 1UL << 31);
 	MCHBAR32_OR(CRDTLCK, 1 << 0);
+	MCHBAR32_OR(MCARBLCK, 1 << 0);
 
 	/* Memory Controller Lockdown */
 	MCHBAR8(MC_LOCK) = 0x8f;

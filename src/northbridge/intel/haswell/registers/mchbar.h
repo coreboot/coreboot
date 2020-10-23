@@ -47,5 +47,6 @@
 #define REQLIM			0x6800
 #define DMIVCLIM		0x7000
 #define CRDTLCK			0x77fc
+#define MCARBLCK		0x7ffc
 
 #endif /* __HASWELL_REGISTERS_MCHBAR_H__ */

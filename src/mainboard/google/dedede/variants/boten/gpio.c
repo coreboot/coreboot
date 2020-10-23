@@ -7,6 +7,9 @@
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
+	/* A10 : WWAN_EN => LTE_PWR_OFF_ODL */
+	PAD_CFG_GPO(GPP_A10, 0, PLTRST),
+
 	/* C12 : AP_PEN_DET_ODL */
 	PAD_CFG_GPI_SCI(GPP_C12, NONE, DEEP, EDGE_SINGLE, NONE),
 	/* C18 : AP_I2C_EMR_SDA */
@@ -38,6 +41,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : AP_I2C_CAM_SCL */
 	PAD_NC(GPP_H7, NONE),
+	/* H17 : WWAN_RST_L => LTE_RESET_R_ODL */
+	PAD_CFG_GPO(GPP_H17, 0, PLTRST),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

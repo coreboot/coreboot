@@ -146,16 +146,6 @@ static void haswell_setup_misc(void)
 	reg32 = MCHBAR32(SAPMCTL);
 	MCHBAR32(SAPMCTL) = reg32 | 1;
 
-	/* GPU RC6 workaround for sighting 366252 */
-	reg32 = MCHBAR32(SSKPD + 4);
-	reg32 |= (1UL << 31);
-	MCHBAR32(SSKPD + 4) = reg32;
-
-	/* VLW (Virtual Legacy Wire?) */
-	reg32 = MCHBAR32(0x6120);
-	reg32 &= ~(1 << 0);
-	MCHBAR32(0x6120) = reg32;
-
 	reg32 = MCHBAR32(INTRDIRCTL);
 	reg32 |= (1 << 4) | (1 << 5);
 	MCHBAR32(INTRDIRCTL) = reg32;

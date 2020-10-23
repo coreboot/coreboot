@@ -20,3 +20,4 @@ ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += reset.c
+ramstage-y += regulator.c

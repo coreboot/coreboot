@@ -15,6 +15,10 @@ static int get_mt6360_regulator_id(enum mtk_regulator regulator)
 		return MT6360_LDO7;
 	case MTK_REGULATOR_VMDDR:
 		return MT6360_LDO6;
+	case MTK_REGULATOR_VCC:
+		return MT6360_LDO5;
+	case MTK_REGULATOR_VCCQ:
+		return MT6360_LDO3;
 	default:
 		break;
 	}
@@ -89,4 +93,43 @@ uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
 	printk(BIOS_WARNING, "Invalid regulator ID: %d\n", regulator);
 
 	return 0;
+}
+
+int mainboard_enable_regulator(enum mtk_regulator regulator, uint8_t enable)
+{
+	/* Return 0 if the regulator is already enabled or disabled. */
+	if (mainboard_regulator_is_enabled(regulator) == enable)
+		return 0;
+
+	int id;
+
+	id = get_mt6360_regulator_id(regulator);
+	if (id < 0) {
+		printk(BIOS_WARNING, "Invalid regulator ID: %d\n", regulator);
+		return -1;
+	}
+
+	return google_chromeec_regulator_enable(id, enable);
+}
+
+uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
+{
+	int id;
+
+	id = get_mt6360_regulator_id(regulator);
+	if (id < 0) {
+		printk(BIOS_WARNING, "Invalid regulator ID: %d\n; assuming disabled",
+		       regulator);
+		return 0;
+	}
+
+	uint8_t enabled;
+	if (google_chromeec_regulator_is_enabled(id, &enabled) < 0) {
+		printk(BIOS_WARNING,
+		       "Failed to query regulator ID: %d\n; assuming disabled",
+		       regulator);
+		return 0;
+	}
+
+	return enabled;
 }

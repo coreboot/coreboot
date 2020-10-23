@@ -18,7 +18,6 @@ void intel_northbridge_haswell_finalize_smm(void)
 	pci_or_config32(HOST_BRIDGE, TOLUD,       1 << 0);
 
 	MCHBAR32_OR(MMIO_PAVP_MSG, 1 << 0);	/* PAVP */
-	MCHBAR32_OR(SAPMCTL, 1UL << 31);	/* SA PM */
 	MCHBAR32_OR(UMAGFXCTL, 1 << 0);		/* UMA GFX */
 	MCHBAR32_OR(VTDTRKLCK, 1 << 0);		/* VTDTRK */
 	MCHBAR32_OR(REQLIM, 1UL << 31);

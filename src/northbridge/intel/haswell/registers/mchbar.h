@@ -24,6 +24,8 @@
 /* PAVP message register. Bit 0 locks PAVP settings, and bits [31..20] are an offset. */
 #define MMIO_PAVP_MSG		0x5500
 
+#define PCU_DDR_PTM_CTL		0x5880
+
 /* Some power MSRs are also represented in MCHBAR */
 #define MCH_PKG_POWER_LIMIT_LO	0x59a0
 #define MCH_PKG_POWER_LIMIT_HI	0x59a4

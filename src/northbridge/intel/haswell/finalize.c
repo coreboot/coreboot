@@ -5,17 +5,17 @@
 
 void intel_northbridge_haswell_finalize_smm(void)
 {
-	pci_or_config16(HOST_BRIDGE, 0x50, 1 << 0);	/* GGC */
-	pci_or_config32(HOST_BRIDGE, 0x5c, 1 << 0);	/* DPR */
-	pci_or_config32(HOST_BRIDGE, 0x78, 1 << 10);	/* ME */
-	pci_or_config32(HOST_BRIDGE, 0x90, 1 << 0);	/* REMAPBASE */
-	pci_or_config32(HOST_BRIDGE, 0x98, 1 << 0);	/* REMAPLIMIT */
-	pci_or_config32(HOST_BRIDGE, 0xa0, 1 << 0);	/* TOM */
-	pci_or_config32(HOST_BRIDGE, 0xa8, 1 << 0);	/* TOUUD */
-	pci_or_config32(HOST_BRIDGE, 0xb0, 1 << 0);	/* BDSM */
-	pci_or_config32(HOST_BRIDGE, 0xb4, 1 << 0);	/* BGSM */
-	pci_or_config32(HOST_BRIDGE, 0xb8, 1 << 0);	/* TSEGMB */
-	pci_or_config32(HOST_BRIDGE, 0xbc, 1 << 0);	/* TOLUD */
+	pci_or_config16(HOST_BRIDGE, GGC,         1 << 0);
+	pci_or_config32(HOST_BRIDGE, DPR,         1 << 0);
+	pci_or_config32(HOST_BRIDGE, MESEG_LIMIT, 1 << 10);
+	pci_or_config32(HOST_BRIDGE, REMAPBASE,   1 << 0);
+	pci_or_config32(HOST_BRIDGE, REMAPLIMIT,  1 << 0);
+	pci_or_config32(HOST_BRIDGE, TOM,         1 << 0);
+	pci_or_config32(HOST_BRIDGE, TOUUD,       1 << 0);
+	pci_or_config32(HOST_BRIDGE, BDSM,        1 << 0);
+	pci_or_config32(HOST_BRIDGE, BGSM,        1 << 0);
+	pci_or_config32(HOST_BRIDGE, TSEG,        1 << 0);
+	pci_or_config32(HOST_BRIDGE, TOLUD,       1 << 0);
 
 	MCHBAR32_OR(MMIO_PAVP_MSG, 1 << 0);	/* PAVP */
 	MCHBAR32_OR(SAPMCTL, 1UL << 31);	/* SA PM */

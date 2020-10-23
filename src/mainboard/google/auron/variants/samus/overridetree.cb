@@ -10,30 +10,32 @@ chip soc/intel/broadwell
 	register "gpu_panel_power_backlight_on_delay" = "2000"	# 200ms
 	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
 
-	register "sata_port0_gen3_tx" = "0x72"
-
-	# Set I2C0 to 1.8V
-	register "sio_i2c0_voltage" = "1"
-
-	# Force enable ASPM for PCIe Port 3
-	register "pcie_port_force_aspm" = "0x04"
-	register "pcie_port_coalesce" = "1"
-
-	# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x013b0000"
+	register "vr_slow_ramp_rate_set" = "3"
+	register "vr_slow_ramp_rate_enable" = "1"
 
 	# Disable S0ix for now
 	register "s0ix_enable" = "0"
 
-	register "vr_slow_ramp_rate_set" = "3"
-	register "vr_slow_ramp_rate_enable" = "1"
-
 	device domain 0 on
-		device pci 13.0 on  end # Smart Sound Audio DSP
-		device pci 15.3 on  end # GSPI0
-		device pci 1b.0 off end # High Definition Audio
-		device pci 1c.0 off end # PCIe Port #1
-		device pci 1c.2 on  end # PCIe Port #3
-		device pci 1d.0 off end # USB2 EHCI
+#		chip soc/intel/broadwell/pch
+			register "sata_port0_gen3_tx" = "0x72"
+
+			# Set I2C0 to 1.8V
+			register "sio_i2c0_voltage" = "1"
+
+			# Force enable ASPM for PCIe Port 3
+			register "pcie_port_force_aspm" = "0x04"
+			register "pcie_port_coalesce" = "1"
+
+			# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x013b0000"
+
+			device pci 13.0 on  end # Smart Sound Audio DSP
+			device pci 15.3 on  end # GSPI0
+			device pci 1b.0 off end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.2 on  end # PCIe Port #3
+			device pci 1d.0 off end # USB2 EHCI
+#		end
 	end
 end

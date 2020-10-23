@@ -15,27 +15,6 @@ chip soc/intel/broadwell
 	# Set backlight PWM value for eDP
 	register "gpu_pch_backlight_pwm_hz" = "200"
 
-	# EC range is 0x800-0x9ff
-	register "gen1_dec" = "0x00fc0801"
-	register "gen2_dec" = "0x00fc0901"
-
-	# EC_SMI is GPIO34
-	register "alt_gp_smi_en" = "0x0004"
-	register "gpe0_en_1" = "0x00000000"
-	# EC_SCI is GPIO36
-	register "gpe0_en_2" = "0x00000010"
-	register "gpe0_en_3" = "0x00000000"
-	register "gpe0_en_4" = "0x00000000"
-
-	register "sata_port_map" = "0x1"
-	register "sio_acpi_mode" = "1"
-
-	# Force enable ASPM for PCIe Port1
-	register "pcie_port_force_aspm" = "0x01"
-
-	# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x013c0000"
-
 	register "s0ix_enable" = "1"
 
 	device cpu_cluster 0 on
@@ -46,40 +25,64 @@ chip soc/intel/broadwell
 		device pci 00.0 on  end # host bridge
 		device pci 02.0 on  end # vga controller
 		device pci 03.0 on  end # mini-hd audio
-		device pci 13.0 off end # Smart Sound Audio DSP
-		device pci 14.0 on  end # USB3 XHCI
-		device pci 15.0 on  end # Serial I/O DMA
-		device pci 15.1 on  end # I2C0
-		device pci 15.2 on  end # I2C1
-		device pci 15.3 off end # GSPI0
-		device pci 15.4 off end # GSPI1
-		device pci 15.5 off end # UART0
-		device pci 15.6 off end # UART1
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT
-		device pci 17.0 off end # SDIO
-		device pci 19.0 off end # GbE
-		device pci 1b.0 on  end # High Definition Audio
-		device pci 1c.0 on  end # PCIe Port #1
-		device pci 1c.1 off end # PCIe Port #2
-		device pci 1c.2 off end # PCIe Port #3
-		device pci 1c.3 off end # PCIe Port #4
-		device pci 1c.4 off end # PCIe Port #5
-		device pci 1c.5 off end # PCIe Port #6
-		device pci 1d.0 on  end # USB2 EHCI
-		device pci 1e.0 off end # PCI bridge
-		device pci 1f.0 on
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
-			end
-			chip ec/google/chromeec
-				device pnp 0c09.0 on end
-			end
-		end # LPC bridge
-		device pci 1f.2 on  end # SATA Controller
-		device pci 1f.3 off end # SMBus
-		device pci 1f.6 on  end # Thermal
+
+#		chip soc/intel/broadwell/pch
+			# EC range is 0x800-0x9ff
+			register "gen1_dec" = "0x00fc0801"
+			register "gen2_dec" = "0x00fc0901"
+
+			# EC_SMI is GPIO34
+			register "alt_gp_smi_en" = "0x0004"
+			register "gpe0_en_1" = "0x00000000"
+			# EC_SCI is GPIO36
+			register "gpe0_en_2" = "0x00000010"
+			register "gpe0_en_3" = "0x00000000"
+			register "gpe0_en_4" = "0x00000000"
+
+			register "sata_port_map" = "0x1"
+			register "sio_acpi_mode" = "1"
+
+			# Force enable ASPM for PCIe Port1
+			register "pcie_port_force_aspm" = "0x01"
+
+			# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x013c0000"
+
+			device pci 13.0 off end # Smart Sound Audio DSP
+			device pci 14.0 on  end # USB3 XHCI
+			device pci 15.0 on  end # Serial I/O DMA
+			device pci 15.1 on  end # I2C0
+			device pci 15.2 on  end # I2C1
+			device pci 15.3 off end # GSPI0
+			device pci 15.4 off end # GSPI1
+			device pci 15.5 off end # UART0
+			device pci 15.6 off end # UART1
+			device pci 16.0 on  end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 17.0 off end # SDIO
+			device pci 19.0 off end # GbE
+			device pci 1b.0 on  end # High Definition Audio
+			device pci 1c.0 on  end # PCIe Port #1
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on  end # USB2 EHCI
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+				chip ec/google/chromeec
+					device pnp 0c09.0 on end
+				end
+			end # LPC bridge
+			device pci 1f.2 on  end # SATA Controller
+			device pci 1f.3 off end # SMBus
+			device pci 1f.6 on  end # Thermal
+#		end
 	end
 end

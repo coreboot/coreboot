@@ -7,32 +7,34 @@ chip soc/intel/broadwell
 	register "gpu_panel_power_backlight_on_delay" = "70"	# 7ms
 	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms
 
-	register "sata_devslp_disable" = "0x1"
-
-	register "sio_i2c0_voltage" = "1" # 1.8V
-	register "sio_i2c1_voltage" = "0" # 3.3V
-
-	# DTLE DATA / EDGE values
-	register "sata_port0_gen3_dtle" = "0x5"
-	register "sata_port1_gen3_dtle" = "0x5"
-
-	# Force enable ASPM for PCIe Port 5
-	register "pcie_port_force_aspm" = "0x10"
-
-	# Enable port coalescing
-	register "pcie_port_coalesce" = "1"
-
-	# Disable PCIe CLKOUT 1,5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x01220000"
-
 	register "s0ix_enable" = "0"
 
 	device domain 0 on
-		device pci 13.0 on  end # Smart Sound Audio DSP
-		device pci 1b.0 off end # High Definition Audio
-		device pci 1c.0 off end # PCIe Port #1
-		device pci 1c.2 on  end # PCIe Port #3 - LAN (becomes RP1)
-		device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
-		device pci 1f.3 on  end # SMBus
+#		chip soc/intel/broadwell/pch
+			register "sata_devslp_disable" = "0x1"
+
+			register "sio_i2c0_voltage" = "1" # 1.8V
+			register "sio_i2c1_voltage" = "0" # 3.3V
+
+			# DTLE DATA / EDGE values
+			register "sata_port0_gen3_dtle" = "0x5"
+			register "sata_port1_gen3_dtle" = "0x5"
+
+			# Force enable ASPM for PCIe Port 5
+			register "pcie_port_force_aspm" = "0x10"
+
+			# Enable port coalescing
+			register "pcie_port_coalesce" = "1"
+
+			# Disable PCIe CLKOUT 1,5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x01220000"
+
+			device pci 13.0 on  end # Smart Sound Audio DSP
+			device pci 1b.0 off end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.2 on  end # PCIe Port #3 - LAN (becomes RP1)
+			device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
+			device pci 1f.3 on  end # SMBus
+#		end
 	end
 end

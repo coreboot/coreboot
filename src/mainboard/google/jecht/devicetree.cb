@@ -9,27 +9,6 @@ chip soc/intel/broadwell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	# SuperIO range is 0x700-0x73f
-	register "gen2_dec" = "0x003c0701"
-
-	register "alt_gp_smi_en" = "0x0000"
-	register "gpe0_en_1" = "0x00000000"
-	register "gpe0_en_2" = "0x00000000"
-	register "gpe0_en_3" = "0x00000000"
-	register "gpe0_en_4" = "0x00000000"
-
-	register "sata_port_map" = "0x1"
-	register "sata_devslp_disable" = "0x1"
-
-	# Force enable ASPM for PCIe Port 4
-	register "pcie_port_force_aspm" = "0x10"
-
-	# Enable port coalescing
-	register "pcie_port_coalesce" = "1"
-
-	# Disable PCIe CLKOUT 1,5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x01220000"
-
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
@@ -38,78 +17,102 @@ chip soc/intel/broadwell
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on end # vga controller
 		device pci 03.0 on end # mini-hd audio
-		device pci 13.0 off end # Smart Sound Audio DSP
-		device pci 14.0 on end # USB3 XHCI
-		device pci 15.0 off end # Serial I/O DMA
-		device pci 15.1 off end # I2C0
-		device pci 15.2 off end # I2C1
-		device pci 15.3 off end # GSPI0
-		device pci 15.4 off end # GSPI1
-		device pci 15.5 off end # UART0
-		device pci 15.6 off end # UART1
-		device pci 16.0 on end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT
-		device pci 17.0 off end # SDIO
-		device pci 19.0 off end # GbE
-		device pci 1b.0 on end # High Definition Audio
-		device pci 1c.0 off end # PCIe Port #1
-		device pci 1c.1 off end # PCIe Port #2
-		device pci 1c.2 on end # PCIe Port #3
-		device pci 1c.3 on end # PCIe Port #4
-		device pci 1c.4 on end # PCIe Port #5
-		device pci 1c.5 off end # PCIe Port #6
-		device pci 1d.0 on end # USB2 EHCI
-		device pci 1e.0 off end # PCI bridge
-		device pci 1f.0 on
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
-			end
-			chip superio/ite/it8772f
-				# Skip keyboard init
-				register "skip_keyboard" = "1"
-				# Enable PECI on TMPIN3
-				register "peci_tmpin" = "3"
-				# Disable use of TMPIN1
-				register "tmpin1_mode" = "0"
-				# Enable Thermal Diode on TMPIN2
-				register "tmpin2_mode" = "1"
-				# Enable FAN2
-				register "fan2_enable" = "1"
-				# Default FAN2 speed
-				register "fan2_speed" = "0x4d"
 
-				device pnp 2e.0 off end # FDC
-				device pnp 2e.1 on # Serial Port 1
-					io 0x60 = 0x3f8
-					irq 0x70 = 4
+#		chip soc/intel/broadwell/pch
+			# SuperIO range is 0x700-0x73f
+			register "gen2_dec" = "0x003c0701"
+
+			register "alt_gp_smi_en" = "0x0000"
+			register "gpe0_en_1" = "0x00000000"
+			register "gpe0_en_2" = "0x00000000"
+			register "gpe0_en_3" = "0x00000000"
+			register "gpe0_en_4" = "0x00000000"
+
+			register "sata_port_map" = "0x1"
+			register "sata_devslp_disable" = "0x1"
+
+			# Force enable ASPM for PCIe Port 4
+			register "pcie_port_force_aspm" = "0x10"
+
+			# Enable port coalescing
+			register "pcie_port_coalesce" = "1"
+
+			# Disable PCIe CLKOUT 1,5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x01220000"
+
+			device pci 13.0 off end # Smart Sound Audio DSP
+			device pci 14.0 on end # USB3 XHCI
+			device pci 15.0 off end # Serial I/O DMA
+			device pci 15.1 off end # I2C0
+			device pci 15.2 off end # I2C1
+			device pci 15.3 off end # GSPI0
+			device pci 15.4 off end # GSPI1
+			device pci 15.5 off end # UART0
+			device pci 15.6 off end # UART1
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 17.0 off end # SDIO
+			device pci 19.0 off end # GbE
+			device pci 1b.0 on end # High Definition Audio
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 on end # PCIe Port #3
+			device pci 1c.3 on end # PCIe Port #4
+			device pci 1c.4 on end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on end # USB2 EHCI
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
 				end
-				device pnp 2e.4 on # Environment Controller
-					io 0x60 = 0x700
-					io 0x62 = 0x710
-					irq 0x70 = 0x09
-					irq 0xf2 = 0x20
-					irq 0xf4 = 0x0
-					irq 0xfa = 0x12
+				chip superio/ite/it8772f
+					# Skip keyboard init
+					register "skip_keyboard" = "1"
+					# Enable PECI on TMPIN3
+					register "peci_tmpin" = "3"
+					# Disable use of TMPIN1
+					register "tmpin1_mode" = "0"
+					# Enable Thermal Diode on TMPIN2
+					register "tmpin2_mode" = "1"
+					# Enable FAN2
+					register "fan2_enable" = "1"
+					# Default FAN2 speed
+					register "fan2_speed" = "0x4d"
+
+					device pnp 2e.0 off end # FDC
+					device pnp 2e.1 on # Serial Port 1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.4 on # Environment Controller
+						io 0x60 = 0x700
+						io 0x62 = 0x710
+						irq 0x70 = 0x09
+						irq 0xf2 = 0x20
+						irq 0xf4 = 0x0
+						irq 0xfa = 0x12
+					end
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x720
+						io 0x62 = 0x730
+					end
+					device pnp 2e.5 off
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+					end # Keyboard
+					device pnp 2e.6 off
+						irq 0x70 = 12
+					end # Mouse
+					device pnp 2e.a off end # IR
 				end
-				device pnp 2e.7 on # GPIO
-					io 0x60 = 0x720
-					io 0x62 = 0x730
-				end
-				device pnp 2e.5 off
-					io 0x60 = 0x60
-					io 0x62 = 0x64
-					irq 0x70 = 1
-				end # Keyboard
-				device pnp 2e.6 off
-					irq 0x70 = 12
-				end # Mouse
-				device pnp 2e.a off end # IR
-			end
-		end # LPC bridge
-		device pci 1f.2 on end # SATA Controller
-		device pci 1f.3 on end # SMBus
-		device pci 1f.6 on end # Thermal
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller
+			device pci 1f.3 on end # SMBus
+			device pci 1f.6 on end # Thermal
+#		end
 	end
 end

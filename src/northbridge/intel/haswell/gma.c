@@ -21,10 +21,6 @@
 #include "chip.h"
 #include "haswell.h"
 
-#if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
-
 struct gt_reg {
 	u32 reg;
 	u32 andmask;

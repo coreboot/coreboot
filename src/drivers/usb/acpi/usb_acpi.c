@@ -11,9 +11,10 @@
 static bool usb_acpi_add_gpios_to_crs(struct drivers_usb_acpi_config *cfg)
 {
 	/*
-	 * Return false if reset GPIO is not provided.
+	 * Return false if reset GPIO is not provided or is provided as part of power
+	 * resource.
 	 */
-	if (cfg->reset_gpio.pin_count == 0)
+	if (cfg->has_power_resource || cfg->reset_gpio.pin_count == 0)
 		return false;
 
 	return true;
@@ -59,6 +60,21 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 		acpi_dp_add_gpio(dsd, "reset-gpio", path, 0, 0,
 				config->reset_gpio.active_low);
 		acpi_dp_write(dsd);
+	}
+
+	if (config->has_power_resource) {
+		const struct acpi_power_res_params power_res_params = {
+			&config->reset_gpio,
+			config->reset_delay_ms,
+			config->reset_off_delay_ms,
+			&config->enable_gpio,
+			config->enable_delay_ms,
+			config->enable_off_delay_ms,
+			NULL,
+			0,
+			0
+		};
+		acpi_device_add_power_res(&power_res_params);
 	}
 
 	acpigen_pop_len();

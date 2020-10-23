@@ -484,9 +484,9 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 		 * size. The maximum size is calculated by a function of the
 		 * min base bit set and maximum size bit set. */
 		if (addr_lsb > size_msb)
-			mtrr_size = 1 << size_msb;
+			mtrr_size = 1ULL << size_msb;
 		else
-			mtrr_size = 1 << addr_lsb;
+			mtrr_size = 1ULL << addr_lsb;
 
 		if (var_state->prepare_msrs)
 			prep_var_mtrr(var_state, base, mtrr_size, mtrr_type);

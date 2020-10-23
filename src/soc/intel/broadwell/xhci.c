@@ -201,7 +201,7 @@ static struct device_operations usb_xhci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 	.init			= xhci_init,
 };
 

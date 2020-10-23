@@ -79,7 +79,7 @@ static struct device_operations smbus_ops = {
 	.scan_bus		= scan_smbus,
 	.init			= pch_smbus_init,
 	.ops_smbus_bus		= &lops_smbus_bus,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

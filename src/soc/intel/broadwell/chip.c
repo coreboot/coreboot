@@ -43,7 +43,3 @@ struct chip_operations soc_intel_broadwell_ops = {
 	.enable_dev = &broadwell_enable,
 	.init       = &broadwell_init_pre_device,
 };
-
-struct pci_operations broadwell_pci_ops = {
-	.set_subsystem = &pci_dev_set_subsystem
-};

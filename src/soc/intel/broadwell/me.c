@@ -1041,7 +1041,7 @@ static struct device_operations device_ops = {
 	.enable			= &intel_me_enable,
 	.init			= &intel_me_init,
 	.final			= &intel_me_finalize,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

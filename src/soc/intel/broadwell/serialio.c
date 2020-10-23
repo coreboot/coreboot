@@ -273,7 +273,7 @@ static struct device_operations device_ops = {
 	.set_resources		= &serialio_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &serialio_init,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

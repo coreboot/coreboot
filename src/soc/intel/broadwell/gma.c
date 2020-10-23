@@ -590,7 +590,7 @@ static struct device_operations igd_ops = {
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &igd_init,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
 };
 

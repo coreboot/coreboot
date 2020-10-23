@@ -270,7 +270,7 @@ static struct device_operations sata_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sata_init,
 	.enable			= sata_enable,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

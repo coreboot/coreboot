@@ -652,7 +652,7 @@ static struct device_operations device_ops = {
 	.write_acpi_tables      = broadwell_write_acpi_tables,
 	.init			= &lpc_init,
 	.scan_bus		= &scan_static_bus,
-	.ops_pci		= &broadwell_pci_ops,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

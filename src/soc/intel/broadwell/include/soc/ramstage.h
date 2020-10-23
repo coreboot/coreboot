@@ -16,6 +16,4 @@ void broadwell_run_reference_code(void);
 static inline void broadwell_run_reference_code(void) { }
 #endif
 
-extern struct pci_operations broadwell_pci_ops;
-
 #endif

@@ -70,4 +70,20 @@ config INTEL_TXT_CBFS_SINIT_ACM
 	string
 	default "txt_sinit_acm.bin"
 
+config INTEL_TXT_SINIT_SIZE
+	hex
+	default 0x20000
+	help
+	  This is the size that will be programmed in TXT_SINIT_SIZE.
+	  This needs to be at least the size of the SINIT ACM.
+	  This is platform dependent. For instance on CPX this has
+	  to be the ACM size + 64K.
+
+config INTEL_TXT_HEAP_SIZE
+	hex
+	default 0xe0000
+	help
+	  This is the size that will be programmed in TXT_HEAP_SIZE.
+	  This is platform dependent.
+
 endif

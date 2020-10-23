@@ -372,6 +372,9 @@ static void lockdown_intel_txt(void *unused)
 			return;
 		}
 
+		_Static_assert(CONFIG_INTEL_TXT_HEAP_SIZE + CONFIG_INTEL_TXT_SINIT_SIZE
+			       < CONFIG_INTEL_TXT_DPR_SIZE * MiB, "TXT Heap and Sinit must fit DPR");
+
 		if (dpr.size < CONFIG_INTEL_TXT_DPR_SIZE) {
 			printk(BIOS_ERR, "TEE-TXT: MCH DPR configured size is too small.\n");
 			return;
@@ -396,7 +399,7 @@ static void lockdown_intel_txt(void *unused)
 	 * Document Number: 558294
 	 * Chapter 5.5.6.3 Intel TXT Heap Memory Region
 	 */
-	write64((void *)TXT_HEAP_SIZE, 0xE0000);
+	write64((void *)TXT_HEAP_SIZE, CONFIG_INTEL_TXT_HEAP_SIZE);
 	write64((void *)TXT_HEAP_BASE,
 		ALIGN_DOWN(tseg_base - read64((void *)TXT_HEAP_SIZE), 4096));
 
@@ -404,7 +407,7 @@ static void lockdown_intel_txt(void *unused)
 	 * Document Number: 558294
 	 * Chapter 5.5.6.2 SINIT Memory Region
 	 */
-	write64((void *)TXT_SINIT_SIZE, 0x20000);
+	write64((void *)TXT_SINIT_SIZE, CONFIG_INTEL_TXT_SINIT_SIZE);
 	write64((void *)TXT_SINIT_BASE,
 		ALIGN_DOWN(read64((void *)TXT_HEAP_BASE) -
 			   read64((void *)TXT_SINIT_SIZE), 4096));

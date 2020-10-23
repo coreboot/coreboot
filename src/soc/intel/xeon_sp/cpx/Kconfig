@@ -104,4 +104,21 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+if INTEL_TXT
+
+config INTEL_TXT_SINIT_SIZE
+	hex
+	default 0x50000
+	help
+	  According to document number 572782 this needs to be 256KiB
+	  for the SINIT module and 64KiB for SINIT data.
+
+config INTEL_TXT_HEAP_SIZE
+	hex
+	default 0xf0000
+	help
+	  This must be 960KiB according to 572782.
+
+endif # INTEL_TXT
+
 endif

@@ -3,7 +3,9 @@
 #ifndef _BROADWELL_CPU_H_
 #define _BROADWELL_CPU_H_
 
+#include <arch/cpu.h>
 #include <device/device.h>
+#include <stdint.h>
 
 /* CPU types */
 #define HASWELL_FAMILY_ULT	0x40650
@@ -42,8 +44,16 @@ void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 
 /* CPU identification */
-u32 cpu_family_model(void);
-u32 cpu_stepping(void);
+static inline u32 cpu_family_model(void)
+{
+	return cpuid_eax(1) & 0x0fff0ff0;
+}
+
+static inline u32 cpu_stepping(void)
+{
+	return cpuid_eax(1) & 0xf;
+}
+
 int cpu_is_ult(void);
 
 #endif

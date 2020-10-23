@@ -7,11 +7,6 @@
 #include <soc/msr.h>
 #include <soc/romstage.h>
 
-u32 cpu_family_model(void)
-{
-	return cpuid_eax(1) & 0x0fff0ff0;
-}
-
 void set_max_freq(void)
 {
 	msr_t msr, perf_ctl, platform_info;

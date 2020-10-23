@@ -287,7 +287,7 @@ static void init_display_planes(void)
 
 static void gma_setup_panel(struct device *dev)
 {
-	struct northbridge_intel_haswell_config *conf = dev->chip_info;
+	struct northbridge_intel_haswell_config *conf = config_of(dev);
 	u32 reg32;
 
 	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");

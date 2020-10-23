@@ -19,8 +19,6 @@ bootblock-y += ../../../cpu/x86/early_reset.S
 
 ramstage-y += acpi.c
 ramstage-y += cpu.c
-ramstage-y += cpu_info.c
-smm-y += cpu_info.c
 ramstage-y += finalize.c
 ramstage-y += gma.c
 ramstage-y += memmap.c

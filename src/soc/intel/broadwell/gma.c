@@ -364,6 +364,7 @@ static int igd_get_cdclk_haswell(u32 *const cdsel, int *const inform_pc,
 
 	/* Check for ULX GT1 or GT2 */
 	const int devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	const int cpu_is_ult = cpu_family_model() == HASWELL_FAMILY_ULT;
 	const int gpu_is_ulx = devid == IGD_HASWELL_ULX_GT1 ||
 				devid == IGD_HASWELL_ULX_GT2;
 
@@ -378,7 +379,7 @@ static int igd_get_cdclk_haswell(u32 *const cdsel, int *const inform_pc,
 	 */
 	if (gpu_is_ulx && cdclk <= GT_CDCLK_337)
 		cdclk = GT_CDCLK_337;
-	else if (gpu_is_ulx || cpu_is_ult() ||
+	else if (gpu_is_ulx || cpu_is_ult ||
 			cdclk == GT_CDCLK_337 || cdclk == GT_CDCLK_450)
 		cdclk = GT_CDCLK_450;
 	else
@@ -398,6 +399,7 @@ static int igd_get_cdclk_broadwell(u32 *const cdsel, int *const inform_pc,
 
 	/* Check for ULX */
 	const int devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	const int cpu_is_ult = cpu_family_model() == BROADWELL_FAMILY_ULT;
 	const int gpu_is_ulx = devid == IGD_BROADWELL_Y_GT2;
 
 	/* Inform power controller of upcoming frequency change */
@@ -428,7 +430,7 @@ static int igd_get_cdclk_broadwell(u32 *const cdsel, int *const inform_pc,
 			(gpu_is_ulx && cdclk == GT_CDCLK_DEFAULT))
 		cdclk = GT_CDCLK_450;
 	else if (cdclk == GT_CDCLK_540 || gpu_is_ulx ||
-			(cpu_is_ult() && cdclk == GT_CDCLK_DEFAULT))
+			(cpu_is_ult && cdclk == GT_CDCLK_DEFAULT))
 		cdclk = GT_CDCLK_540;
 	else
 		cdclk = GT_CDCLK_675;

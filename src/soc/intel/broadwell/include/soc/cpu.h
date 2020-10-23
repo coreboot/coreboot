@@ -54,6 +54,4 @@ static inline u32 cpu_stepping(void)
 	return cpuid_eax(1) & 0xf;
 }
 
-int cpu_is_ult(void);
-
 #endif

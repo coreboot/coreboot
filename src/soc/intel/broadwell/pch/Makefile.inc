@@ -3,6 +3,7 @@ bootblock-y += bootblock.c
 ramstage-y += adsp.c
 romstage-y += early_pch.c
 ramstage-$(CONFIG_ELOG) += elog.c
+ramstage-y += finalize.c
 ramstage-y += gpio.c
 romstage-y += gpio.c
 smm-y      += gpio.c

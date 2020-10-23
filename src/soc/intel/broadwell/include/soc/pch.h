@@ -30,4 +30,6 @@ int pch_is_wpt_ulx(void);
 u32 pch_read_soft_strap(int id);
 void pch_disable_devfn(struct device *dev);
 
+void broadwell_pch_finalize(void);
+
 #endif

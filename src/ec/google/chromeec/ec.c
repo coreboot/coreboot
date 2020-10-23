@@ -1624,6 +1624,53 @@ int google_chromeec_ap_reset(void)
 	return 0;
 }
 
+int google_chromeec_regulator_enable(uint32_t index, uint8_t enable)
+{
+	struct ec_params_regulator_enable params = {
+		.index = index,
+		.enable = enable,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_REGULATOR_ENABLE,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_regulator_is_enabled(uint32_t index, uint8_t *enabled)
+{
+
+	struct ec_params_regulator_is_enabled params = {
+		.index = index,
+	};
+	struct ec_response_regulator_is_enabled resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_REGULATOR_IS_ENABLED,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	*enabled = resp.enabled;
+
+	return 0;
+}
+
 int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
 					  uint32_t max_mv)
 {

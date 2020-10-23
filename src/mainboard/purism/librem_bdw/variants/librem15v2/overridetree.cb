@@ -1,14 +1,16 @@
 chip soc/intel/broadwell
 
-	# Port 0 is HDD
-	# Port 1 is M.2 NGFF
-	register "sata_port_map" = "0x3"
-
-	# Port tuning for link stability
-	register "sata_port0_gen3_dtle" = "7"
-	register "sata_port1_gen3_dtle" = "9"
-
 	device domain 0 on
-		device pci 1d.0 on  end # USB2 EHCI
+#		chip soc/intel/broadwell/pch
+			# Port 0 is HDD
+			# Port 1 is M.2 NGFF
+			register "sata_port_map" = "0x3"
+
+			# Port tuning for link stability
+			register "sata_port0_gen3_dtle" = "7"
+			register "sata_port1_gen3_dtle" = "9"
+
+			device pci 1d.0 on  end # USB2 EHCI
+#		end
 	end
 end

@@ -261,6 +261,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 			       extract_string(x + 5,
 					      &c->has_valid_string_termination,
 					      EDID_ASCII_STRING_LENGTH));
+			c->has_name_descriptor = 1;
 			return 1;
 		case 0xFD:
 		{

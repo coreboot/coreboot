@@ -8,12 +8,12 @@ chip soc/intel/broadwell
 	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms
 
 	device domain 0 on
-#		chip soc/intel/broadwell/pch
+		chip soc/intel/broadwell/pch
 			# DTLE DATA / EDGE values
 			register "sata_port0_gen3_dtle" = "0x5"
 			register "sata_port1_gen3_dtle" = "0x5"
 
 			device pci 1f.2 on  end # SATA Controller
-#		end
+		end
 	end
 end

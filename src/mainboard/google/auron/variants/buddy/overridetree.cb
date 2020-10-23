@@ -10,7 +10,7 @@ chip soc/intel/broadwell
 	register "s0ix_enable" = "0"
 
 	device domain 0 on
-#		chip soc/intel/broadwell/pch
+		chip soc/intel/broadwell/pch
 			register "sata_devslp_disable" = "0x1"
 
 			register "sio_i2c0_voltage" = "1" # 1.8V
@@ -36,6 +36,6 @@ chip soc/intel/broadwell
 			device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
 			device pci 1f.2 on  end # SATA Controller
 			device pci 1f.3 on  end # SMBus
-#		end
+		end
 	end
 end

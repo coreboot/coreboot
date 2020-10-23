@@ -166,9 +166,15 @@ void pch_disable_devfn(struct device *dev)
 	}
 }
 
-void broadwell_pch_enable_dev(struct device *dev)
+static void broadwell_pch_enable_dev(struct device *dev)
 {
 	u16 reg16;
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return;
+
+	if (dev->ops && dev->ops->enable)
+		return;
 
 	/* These devices need special enable/disable handling */
 	switch (PCI_SLOT(dev->path.pci.devfn)) {
@@ -194,5 +200,10 @@ void broadwell_pch_enable_dev(struct device *dev)
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 	}
 }
+
+struct chip_operations soc_intel_broadwell_pch_ops = {
+	CHIP_NAME("Intel Broadwell PCH")
+	.enable_dev = &broadwell_pch_enable_dev,
+};
 
 #endif

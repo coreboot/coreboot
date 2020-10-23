@@ -14,11 +14,11 @@
 #include <soc/pch.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 
 static void adsp_init(struct device *dev)
 {
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	u32 tmp32;
 

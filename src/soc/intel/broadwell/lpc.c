@@ -24,7 +24,7 @@
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 #include <acpi/acpigen.h>
 #include <southbridge/intel/common/rtc.h>
 
@@ -130,7 +130,7 @@ static void pch_power_options(struct device *dev)
 	u16 reg16;
 	const char *state;
 	/* Get the chip configuration */
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
 	/* Which state do we want to goto after g3 (power restored)?
@@ -336,7 +336,7 @@ static void pch_enable_mphy(void)
 
 static void pch_init_deep_sx(struct device *dev)
 {
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 
 	if (config->deep_sx_enable_ac) {
 		RCBA32_OR(DEEP_S3_POL, DEEP_S3_EN_AC);
@@ -567,7 +567,7 @@ static void pch_lpc_add_gen_io_resources(struct device *dev, int reg_value,
 static void pch_lpc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 
 	/* Add the default claimed IO range for the LPC device. */
 	res = new_resource(dev, 0);

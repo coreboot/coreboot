@@ -11,7 +11,7 @@
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/sata.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 
 static inline u32 sir_read(struct device *dev, int idx)
 {
@@ -27,7 +27,7 @@ static inline void sir_write(struct device *dev, int idx, u32 value)
 
 static void sata_init(struct device *dev)
 {
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	u32 reg32;
 	u8 *abar;
 	u16 reg16;
@@ -256,7 +256,7 @@ static void sata_init(struct device *dev)
 static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	u16 map = 0x0060;
 
 	map |= (config->sata_port_map ^ 0xf) << 8;

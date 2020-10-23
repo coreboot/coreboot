@@ -14,7 +14,7 @@
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/serialio.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 
 /* Set D3Hot Power State in ACPI mode */
 static void serialio_enable_d3hot(struct resource *res)
@@ -156,7 +156,7 @@ static void serialio_init_once(int acpi_mode)
 
 static void serialio_init(struct device *dev)
 {
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
 

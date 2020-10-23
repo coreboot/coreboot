@@ -472,12 +472,6 @@ static void broadwell_enable(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_PCI) {
-		/* Handle PCH device enable */
-		if (PCI_SLOT(dev->path.pci.devfn) > SA_DEV_SLOT_MINIHD &&
-		    (dev->ops == NULL || dev->ops->enable == NULL)) {
-			broadwell_pch_enable_dev(dev);
-		}
 	}
 }
 

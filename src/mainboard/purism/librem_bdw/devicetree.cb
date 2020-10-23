@@ -24,7 +24,7 @@ chip soc/intel/broadwell
 		device pci 02.0 on  end # vga controller
 		device pci 03.0 on  end # mini-hd audio
 
-#		chip soc/intel/broadwell/pch
+		chip soc/intel/broadwell/pch
 			# EC host command ranges are in 0x380-0x383 & 0x80-0x8f
 			register "gen1_dec" = "0x00000381"
 			register "gen2_dec" = "0x000c0081"
@@ -57,6 +57,6 @@ chip soc/intel/broadwell
 			device pci 1f.2 on  end # SATA Controller
 			device pci 1f.3 on  end # SMBus
 			device pci 1f.6 off end # Thermal
-#		end
+		end
 	end
 end

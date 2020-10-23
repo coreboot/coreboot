@@ -13,7 +13,7 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 #include <soc/cpu.h>
 #include <delay.h>
 
@@ -121,7 +121,7 @@ static void root_port_init_config(struct device *dev)
 		root_port_config_update_gbe_port();
 
 		pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-		config_t *config = config_of(dev);
+		const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 		rpc.coalesce = config->pcie_port_coalesce;
 	}
 
@@ -436,7 +436,7 @@ static void pcie_add_0x0202000_iobp(u32 reg)
 
 static void pch_pcie_early(struct device *dev)
 {
-	config_t *config = config_of(dev);
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 	int do_aspm = 0;
 	int rp = root_port_number(dev);
 

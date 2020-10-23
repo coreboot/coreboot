@@ -12,7 +12,7 @@
 #include <soc/rcba.h>
 #include <soc/romstage.h>
 #include <soc/smbus.h>
-#include <soc/intel/broadwell/chip.h>
+#include <soc/intel/broadwell/pch/chip.h>
 
 static void pch_route_interrupts(void)
 {
@@ -52,9 +52,9 @@ static void pch_route_interrupts(void)
 static void pch_enable_lpc(void)
 {
 	/* Lookup device tree in romstage */
-	const config_t *config;
+	const struct device *const dev = pcidev_on_root(0x1f, 0);
 
-	config = config_of_soc();
+	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN1_DEC, config->gen1_dec);
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN2_DEC, config->gen2_dec);

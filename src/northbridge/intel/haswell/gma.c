@@ -290,8 +290,6 @@ static void gma_setup_panel(struct device *dev)
 	struct northbridge_intel_haswell_config *conf = config_of(dev);
 	u32 reg32;
 
-	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
-
 	/* Setup Digital Port Hotplug */
 	reg32 = gtt_read(PCH_PORT_HOTPLUG);
 	if (!reg32) {
@@ -493,7 +491,8 @@ static void gma_func0_init(struct device *dev)
 		pci_dev_init(dev);
 	}
 
-	/* Post panel init */
+	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
+
 	gma_pm_init_post_vbios(dev);
 
 	gma_enable_swsci();

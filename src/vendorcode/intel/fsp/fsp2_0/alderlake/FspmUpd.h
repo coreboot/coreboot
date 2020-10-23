@@ -241,13 +241,12 @@ typedef struct {
   UINT8                       SpdAddressTable[16];
 
 /** Offset 0x0148 - Platform Debug Consent
-  To 'opt-in' for debug, please select 'Enabled' with the desired debug probe type.
-  Enabling this BIOS option may alter the default value of other debug-related BIOS
-  options.\Manual: Do not use Platform Debug Consent to override other debug-relevant
-  policies, but the user must set each debug option manually, aimed at advanced users.\n
-  Note: DCI OOB (aka BSSB) uses CCA probe;[DCI OOB+DbC] and [USB2 DbC] have the same setting.
-  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB), 3:Enabled (USB3 DbC),
-  4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC), 6:Enable (2-wire DCI OOB), 7:Manual
+  Enabled(All Probes+TraceHub) supports all probes with TraceHub enabled and blocks
+  s0ix\n
+  Enabled(Low Power) does not suppoert DCI OOB 4-wire with TraceHub disabled, s0ix
+  is viable\n
+  Manual:user needs to configure Advanced Debug Settings manually, aimed at advanced users
+  0:Disabled, 2:Enabled (All Probes+TraceHub), 6:Enable (Low Power), 7:Manual
 **/
   UINT8                       PlatformDebugConsent;
 
@@ -425,107 +424,107 @@ typedef struct {
 
 /** Offset 0x0230 - Reserved
 **/
-  UINT8                       Reserved13[2];
+  UINT8                       Reserved13;
 
-/** Offset 0x0232 - Program GPIOs for LFP on DDI port-A device
+/** Offset 0x0231 - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI
   0:Disabled, 1:eDP, 2:MIPI DSI
 **/
   UINT8                       DdiPortAConfig;
 
-/** Offset 0x0233 - Program GPIOs for LFP on DDI port-B device
+/** Offset 0x0232 - Program GPIOs for LFP on DDI port-B device
   0(Default)=Disabled,1=eDP, 2=MIPI DSI
   0:Disabled, 1:eDP, 2:MIPI DSI
 **/
   UINT8                       DdiPortBConfig;
 
-/** Offset 0x0234 - Enable or disable HPD of DDI port A
+/** Offset 0x0233 - Enable or disable HPD of DDI port A
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortAHpd;
 
-/** Offset 0x0235 - Enable or disable HPD of DDI port B
+/** Offset 0x0234 - Enable or disable HPD of DDI port B
   0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortBHpd;
 
-/** Offset 0x0236 - Enable or disable HPD of DDI port C
+/** Offset 0x0235 - Enable or disable HPD of DDI port C
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortCHpd;
 
-/** Offset 0x0237 - Enable or disable HPD of DDI port 1
+/** Offset 0x0236 - Enable or disable HPD of DDI port 1
   0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort1Hpd;
 
-/** Offset 0x0238 - Enable or disable HPD of DDI port 2
+/** Offset 0x0237 - Enable or disable HPD of DDI port 2
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort2Hpd;
 
-/** Offset 0x0239 - Enable or disable HPD of DDI port 3
+/** Offset 0x0238 - Enable or disable HPD of DDI port 3
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort3Hpd;
 
-/** Offset 0x023A - Enable or disable HPD of DDI port 4
+/** Offset 0x0239 - Enable or disable HPD of DDI port 4
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort4Hpd;
 
-/** Offset 0x023B - Enable or disable DDC of DDI port A
+/** Offset 0x023A - Enable or disable DDC of DDI port A
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortADdc;
 
-/** Offset 0x023C - Enable or disable DDC of DDI port B
+/** Offset 0x023B - Enable or disable DDC of DDI port B
   0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortBDdc;
 
-/** Offset 0x023D - Enable or disable DDC of DDI port C
+/** Offset 0x023C - Enable or disable DDC of DDI port C
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortCDdc;
 
-/** Offset 0x023E - Enable DDC setting of DDI Port 1
+/** Offset 0x023D - Enable DDC setting of DDI Port 1
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort1Ddc;
 
-/** Offset 0x023F - Enable DDC setting of DDI Port 2
+/** Offset 0x023E - Enable DDC setting of DDI Port 2
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort2Ddc;
 
-/** Offset 0x0240 - Enable DDC setting of DDI Port 3
+/** Offset 0x023F - Enable DDC setting of DDI Port 3
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort3Ddc;
 
-/** Offset 0x0241 - Enable DDC setting of DDI Port 4
+/** Offset 0x0240 - Enable DDC setting of DDI Port 4
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPort4Ddc;
 
-/** Offset 0x0242 - Reserved
+/** Offset 0x0241 - Reserved
 **/
-  UINT8                       Reserved14[142];
+  UINT8                       Reserved14[143];
 
 /** Offset 0x02D0 - DMI Gen3 Root port preset values per lane
   Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
@@ -666,192 +665,192 @@ typedef struct {
 
 /** Offset 0x065D - Reserved
 **/
-  UINT8                       Reserved27[19];
+  UINT8                       Reserved27[91];
 
-/** Offset 0x0670 - Enable PCIE RP Mask
+/** Offset 0x06B8 - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
   for port1, bit1 for port2, and so on.
 **/
   UINT32                      PcieRpEnableMask;
 
-/** Offset 0x0674 - Reserved
+/** Offset 0x06BC - Reserved
 **/
   UINT8                       Reserved28[2];
 
-/** Offset 0x0676 - Enable HD Audio Link
+/** Offset 0x06BE - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
   $EN_DIS
 **/
   UINT8                       PchHdaAudioLinkHdaEnable;
 
-/** Offset 0x0677 - Reserved
+/** Offset 0x06BF - Reserved
 **/
   UINT8                       Reserved29[3];
 
-/** Offset 0x067A - Enable HD Audio DMIC_N Link
+/** Offset 0x06C2 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
 **/
   UINT8                       PchHdaAudioLinkDmicEnable[2];
 
-/** Offset 0x067C - DMIC<N> ClkA Pin Muxing (N - DMIC number)
+/** Offset 0x06C4 - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
 **/
   UINT32                      PchHdaAudioLinkDmicClkAPinMux[2];
 
-/** Offset 0x0684 - DMIC<N> ClkB Pin Muxing
+/** Offset 0x06CC - DMIC<N> ClkB Pin Muxing
   Determines DMIC<N> ClkA Pin muxing. See GPIO_*_MUXING_DMIC<N>_CLKB_*
 **/
   UINT32                      PchHdaAudioLinkDmicClkBPinMux[2];
 
-/** Offset 0x068C - Enable HD Audio DSP
+/** Offset 0x06D4 - Enable HD Audio DSP
   Enable/disable HD Audio DSP feature.
   $EN_DIS
 **/
   UINT8                       PchHdaDspEnable;
 
-/** Offset 0x068D - Reserved
+/** Offset 0x06D5 - Reserved
 **/
   UINT8                       Reserved30[3];
 
-/** Offset 0x0690 - DMIC<N> Data Pin Muxing
+/** Offset 0x06D8 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
 **/
   UINT32                      PchHdaAudioLinkDmicDataPinMux[2];
 
-/** Offset 0x0698 - Enable HD Audio SSP0 Link
+/** Offset 0x06E0 - Enable HD Audio SSP0 Link
   Enable/disable HD Audio SSP_N/I2S link. Muxed with HDA. N-number 0-5
 **/
   UINT8                       PchHdaAudioLinkSspEnable[6];
 
-/** Offset 0x069E - Enable HD Audio SoundWire#N Link
+/** Offset 0x06E6 - Enable HD Audio SoundWire#N Link
   Enable/disable HD Audio SNDW#N link. Muxed with HDA.
 **/
   UINT8                       PchHdaAudioLinkSndwEnable[4];
 
-/** Offset 0x06A2 - iDisp-Link Frequency
+/** Offset 0x06EA - iDisp-Link Frequency
   iDisp-Link Freq (PCH_HDAUDIO_LINK_FREQUENCY enum): 4: 96MHz, 3: 48MHz.
   4: 96MHz, 3: 48MHz
 **/
   UINT8                       PchHdaIDispLinkFrequency;
 
-/** Offset 0x06A3 - iDisp-Link T-mode
+/** Offset 0x06EB - iDisp-Link T-mode
   iDisp-Link T-Mode (PCH_HDAUDIO_IDISP_TMODE enum): 0: 2T, 2: 4T, 3: 8T, 4: 16T
   0: 2T, 2: 4T, 3: 8T, 4: 16T
 **/
   UINT8                       PchHdaIDispLinkTmode;
 
-/** Offset 0x06A4 - iDisplay Audio Codec disconnection
+/** Offset 0x06EC - iDisplay Audio Codec disconnection
   0: Not disconnected, enumerable, 1: Disconnected SDI, not enumerable.
   $EN_DIS
 **/
   UINT8                       PchHdaIDispCodecDisconnect;
 
-/** Offset 0x06A5 - Debug Interfaces
+/** Offset 0x06ED - Debug Interfaces
   Debug Interfaces. BIT0-RAM, BIT1-UART, BIT3-USB3, BIT4-Serial IO, BIT5-TraceHub,
   BIT2 - Not used.
 **/
   UINT8                       PcdDebugInterfaceFlags;
 
-/** Offset 0x06A6 - Serial Io Uart Debug Controller Number
+/** Offset 0x06EE - Serial Io Uart Debug Controller Number
   Select SerialIo Uart Controller for debug. Note: If UART0 is selected as CNVi BT
   Core interface, it cannot be used for debug purpose.
   0:SerialIoUart0, 1:SerialIoUart1, 2:SerialIoUart2
 **/
   UINT8                       SerialIoUartDebugControllerNumber;
 
-/** Offset 0x06A7 - Reserved
+/** Offset 0x06EF - Reserved
 **/
   UINT8                       Reserved31[13];
 
-/** Offset 0x06B4 - ISA Serial Base selection
+/** Offset 0x06FC - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
   0:0x3F8, 1:0x2F8
 **/
   UINT8                       PcdIsaSerialUartBase;
 
-/** Offset 0x06B5 - Reserved
+/** Offset 0x06FD - Reserved
 **/
   UINT8                       Reserved32[4];
 
-/** Offset 0x06B9 - MRC Safe Config
+/** Offset 0x0701 - MRC Safe Config
   Enables/Disable MRC Safe Config
   $EN_DIS
 **/
   UINT8                       MrcSafeConfig;
 
-/** Offset 0x06BA - TCSS Thunderbolt PCIE Root Port 0 Enable
+/** Offset 0x0702 - TCSS Thunderbolt PCIE Root Port 0 Enable
   Set TCSS Thunderbolt PCIE Root Port 0. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssItbtPcie0En;
 
-/** Offset 0x06BB - TCSS Thunderbolt PCIE Root Port 1 Enable
+/** Offset 0x0703 - TCSS Thunderbolt PCIE Root Port 1 Enable
   Set TCSS Thunderbolt PCIE Root Port 1. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssItbtPcie1En;
 
-/** Offset 0x06BC - TCSS Thunderbolt PCIE Root Port 2 Enable
+/** Offset 0x0704 - TCSS Thunderbolt PCIE Root Port 2 Enable
   Set TCSS Thunderbolt PCIE Root Port 2. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssItbtPcie2En;
 
-/** Offset 0x06BD - TCSS Thunderbolt PCIE Root Port 3 Enable
+/** Offset 0x0705 - TCSS Thunderbolt PCIE Root Port 3 Enable
   Set TCSS Thunderbolt PCIE Root Port 3. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssItbtPcie3En;
 
-/** Offset 0x06BE - TCSS USB HOST (xHCI) Enable
+/** Offset 0x0706 - TCSS USB HOST (xHCI) Enable
   Set TCSS XHCI. 0:Disabled  1:Enabled - Must be enabled if xDCI is enabled below
   $EN_DIS
 **/
   UINT8                       TcssXhciEn;
 
-/** Offset 0x06BF - TCSS USB DEVICE (xDCI) Enable
+/** Offset 0x0707 - TCSS USB DEVICE (xDCI) Enable
   Set TCSS XDCI. 0:Disabled  1:Enabled - xHCI must be enabled if xDCI is enabled
   $EN_DIS
 **/
   UINT8                       TcssXdciEn;
 
-/** Offset 0x06C0 - TCSS DMA0 Enable
+/** Offset 0x0708 - TCSS DMA0 Enable
   Set TCSS DMA0. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssDma0En;
 
-/** Offset 0x06C1 - TCSS DMA1 Enable
+/** Offset 0x0709 - TCSS DMA1 Enable
   Set TCSS DMA1. 0:Disabled  1:Enabled
   $EN_DIS
 **/
   UINT8                       TcssDma1En;
 
-/** Offset 0x06C2 - Reserved
+/** Offset 0x070A - Reserved
 **/
   UINT8                       Reserved33[2];
 
-/** Offset 0x06C4 - Early Command Training
+/** Offset 0x070C - Early Command Training
   Enables/Disable Early Command Training
   $EN_DIS
 **/
   UINT8                       ECT;
 
-/** Offset 0x06C5 - Reserved
+/** Offset 0x070D - Reserved
 **/
   UINT8                       Reserved34[65];
 
-/** Offset 0x0706 - Ch Hash Mask
+/** Offset 0x074E - Ch Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
   BITS [19:6] Default is 0x30CC
 **/
   UINT16                      ChHashMask;
 
-/** Offset 0x0708 - Reserved
+/** Offset 0x0750 - Reserved
 **/
   UINT8                      Reserved35[64];
 
-/** Offset 0x0748 - PcdSerialDebugLevel
+/** Offset 0x0790 - PcdSerialDebugLevel
   Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
   Error, Warnings & Info, 4:Load, Error, Warnings, Info & Event, 5:Load, Error, Warnings,
   Info & Verbose.
@@ -860,70 +859,81 @@ typedef struct {
 **/
   UINT8                       PcdSerialDebugLevel;
 
-/** Offset 0x0749 - Reserved
+/** Offset 0x0791 - Reserved
 **/
   UINT8                       Reserved36[2];
 
-/** Offset 0x074B - Safe Mode Support
+/** Offset 0x0793 - Safe Mode Support
   This option configures the varous items in the IO and MC to be more conservative.(def=Disable)
   $EN_DIS
 **/
   UINT8                       SafeMode;
 
-/** Offset 0x074C - Reserved
+/** Offset 0x0794 - Reserved
 **/
   UINT8                       Reserved37[2];
 
-/** Offset 0x074E - TCSS USB Port Enable
+/** Offset 0x0796 - TCSS USB Port Enable
   Bitmap for per port enabling
 **/
   UINT8                       UsbTcPortEnPreMem;
 
-/** Offset 0x074F - Reserved
+/** Offset 0x0797 - Reserved
 **/
   UINT8                       Reserved38[50];
 
-/** Offset 0x0781 - Skip external display device scanning
+/** Offset 0x07C9 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
   display devices
   $EN_DIS
 **/
   UINT8                       SkipExtGfxScan;
 
-/** Offset 0x0782 - Reserved
+/** Offset 0x07CA - Reserved
 **/
   UINT8                       Reserved39;
 
-/** Offset 0x0783 - Lock PCU Thermal Management registers
+/** Offset 0x07CB - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
   $EN_DIS
 **/
   UINT8                       LockPTMregs;
 
-/** Offset 0x0784 - Reserved
+/** Offset 0x07CC - Reserved
 **/
   UINT8                       Reserved40[129];
 
-/** Offset 0x0805 - Skip CPU replacement check
+/** Offset 0x084D - Skip CPU replacement check
   Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
   $EN_DIS
 **/
   UINT8                       SkipCpuReplacementCheck;
 
-/** Offset 0x0806 - Reserved
+/** Offset 0x084E - Reserved
 **/
   UINT8                       Reserved41[292];
 
-/** Offset 0x092A - Serial Io Uart Debug Mode
+/** Offset 0x0972 - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
   0:SerialIoUartDisabled, 1:SerialIoUartPci, 2:SerialIoUartHidden, 3:SerialIoUartCom,
   4:SerialIoUartSkipInit
 **/
   UINT8                       SerialIoUartDebugMode;
 
-/** Offset 0x092B - Reserved
+/** Offset 0x0973 - Reserved
 **/
-  UINT8                       Reserved42[517];
+  UINT8                       Reserved42[183];
+
+/** Offset 0x0A2A - GPIO Override
+  Gpio Override Level - FSP will not configure any GPIOs and rely on GPIO setings
+  before moved to FSP. Available configurations 0: Disable; 1: Level 1 - Skips GPIO
+  configuration in PEI/FSPM/FSPT phase;2: Level 2 - Reserved for future use
+**/
+  UINT8                       GpioOverride;
+
+/** Offset 0x0A2B - Reserved
+**/
+  UINT8                       Reserved43[349];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -943,11 +953,11 @@ typedef struct {
   FSP_M_CONFIG                FspmConfig;
 
 
-/** Offset 0x0B30
+/** Offset 0x0B88
 **/
-  UINT8                       UnusedUpdSpace32[6];
+  UINT8                       UnusedUpdSpace33[6];
 
-/** Offset 0x0B36
+/** Offset 0x0B8E
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

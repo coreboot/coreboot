@@ -14,4 +14,18 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+/*
+ * Set symbol value and make it global.
+ */
+#define TEST_SYMBOL(symbol, address) asm(".set " #symbol ", " #address "\n\t.globl " #symbol)
+
+/*
+ * Define memory region for testing purpose.
+ *
+ * Create buffer with specified name and size.
+ * Create end symbol for it.
+ */
+#define TEST_REGION(region, size) uint8_t _##region[size]; \
+	TEST_SYMBOL(_e##region, _##region + size)
+
 #endif /* _TESTS_TEST_H */

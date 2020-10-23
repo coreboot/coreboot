@@ -157,6 +157,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->CpuPcieRpEnableMask = is_dev_enabled(dev);
 
 	m_cfg->TmeEnable = CONFIG(INTEL_TME);
+
+	/* Skip GPIO configuration from FSP */
+	m_cfg->GpioOverride = 0x1;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

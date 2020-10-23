@@ -8,6 +8,7 @@
 #include <delay.h>
 #include <gpio.h>
 #include <variant/sku.h>
+#include <soc/intel/apollolake/chip.h>
 
 const char *mainboard_vbt_filename(void)
 {
@@ -40,5 +41,23 @@ void variant_smi_sleep(u8 slp_typ)
 		return;
 	default:
 		return;
+	}
+}
+
+void variant_update_devtree(struct device *dev)
+{
+	struct soc_intel_apollolake_config *cfg = NULL;
+
+	cfg = (struct soc_intel_apollolake_config *)dev->chip_info;
+
+	if (cfg != NULL && (cfg->disable_xhci_lfps_pm != 1)) {
+		switch (google_chromeec_get_board_sku()) {
+		case SKU_17_LTE:
+		case SKU_18_LTE_TS:
+			cfg->disable_xhci_lfps_pm = 1;
+			return;
+		default:
+			return;
+		}
 	}
 }

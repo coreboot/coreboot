@@ -313,55 +313,22 @@ static struct console_input_driver cons = {
 	.input_type = CONSOLE_INPUT_TYPE_EC,
 };
 
-/* Enable keyboard translated */
-static bool enable_translated(void)
-{
-	if (!i8042_cmd(I8042_CMD_RD_CMD_BYTE)) {
-		int cmd = i8042_read_data_ps2();
-		cmd |= I8042_CMD_BYTE_XLATE;
-		if (!i8042_cmd(I8042_CMD_WR_CMD_BYTE)) {
-			i8042_write_data(cmd);
-		} else {
-			printf("ERROR: i8042_cmd WR_CMD failed!\n");
-			return false;
-		}
-	} else {
-		printf("ERROR: i8042_cmd RD_CMD failed!\n");
-		return false;
-	}
-	return true;
-}
-
-/* Set scancode set 1 */
-static bool set_scancode_set(void)
+static bool set_scancode_set(const unsigned char set)
 {
 	bool ret;
+
+	if (set < 1 || set > 3)
+		return false;
+
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
 	if (!ret) {
 		printf("ERROR: Keyboard set scancode failed!\n");
 		return ret;
 	}
 
-	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
+	ret = keyboard_cmd(set);
 	if (!ret) {
-		printf("ERROR: Keyboard scancode set#1 failed!\n");
-		return ret;
-	}
-
-	/*
-	 * Set default parameters.
-	 * Fix for broken QEMU PS/2 make scancodes.
-	 */
-	ret = keyboard_cmd(I8042_KBCMD_SET_DEFAULT);
-	if (!ret) {
-		printf("ERROR: Keyboard set default params failed!\n");
-		return ret;
-	}
-
-	/* Enable scanning */
-	ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret) {
-		printf("ERROR: Keyboard enable scanning failed!\n");
+		printf("ERROR: Keyboard scancode set#%u failed!\n", set);
 		return ret;
 	}
 
@@ -383,13 +350,17 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
-	if (CONFIG(LP_PC_KEYBOARD_AT_TRANSLATED)) {
-		if (!enable_translated())
-			return;
-	} else {
-		if (!set_scancode_set())
-			return;
-	}
+	i8042_set_kbd_translation(false);
+
+	if (set_scancode_set(2))
+		i8042_set_kbd_translation(true);
+	else if (!set_scancode_set(1))
+		return; /* give up, leave keyboard input disabled */
+
+	/* Enable scanning */
+	const bool ret = keyboard_cmd(I8042_KBCMD_EN);
+	if (!ret)
+		printf("ERROR: Keyboard enable scanning failed!\n");
 
 	console_add_input_driver(&cons);
 }

@@ -375,10 +375,6 @@ config PC_KEYBOARD
 	default y if ARCH_X86 # uses IO
 	default n
 
-config PC_KEYBOARD_AT_TRANSLATED
-	bool "AT Translation keyboard device"
-	default n
-
 config PC_KEYBOARD_LAYOUT_US
 	bool "English (US) keyboard layout"
 	depends on PC_KEYBOARD

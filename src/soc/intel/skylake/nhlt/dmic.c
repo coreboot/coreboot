@@ -33,7 +33,7 @@ static const struct nhlt_dmic_array_config dmic_2ch_mic_config = {
 static const struct nhlt_endp_descriptor dmic_2ch_descriptors[] = {
 	{
 		.link = NHLT_LINK_PDM,
-		.device = NHLT_PDM_DEV,
+		.device = NHLT_PDM_DEV_CAVS15,
 		.direction = NHLT_DIR_CAPTURE,
 		.vid = NHLT_VID,
 		.did = NHLT_DID_DMIC,
@@ -77,7 +77,7 @@ static const struct nhlt_dmic_array_config dmic_4ch_mic_config = {
 static const struct nhlt_endp_descriptor dmic_4ch_descriptors[] = {
 	{
 		.link = NHLT_LINK_PDM,
-		.device = NHLT_PDM_DEV,
+		.device = NHLT_PDM_DEV_CAVS15,
 		.direction = NHLT_DIR_CAPTURE,
 		.vid = NHLT_VID,
 		.did = NHLT_DID_DMIC,

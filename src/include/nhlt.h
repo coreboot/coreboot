@@ -187,6 +187,7 @@ enum {
 
 enum {
 	NHLT_PDM_DEV,
+	NHLT_PDM_DEV_CAVS15,	// NHLT_PDM_DEV on cAVS1.5 (KBL) based platforms
 };
 
 /* Endpoint direction. */

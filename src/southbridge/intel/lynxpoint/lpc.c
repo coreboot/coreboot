@@ -289,11 +289,14 @@ static void lpt_lp_pm_init(struct device *dev)
 
 	pci_write_config8(dev, 0xa9, 0x46);
 
-	RCBA32_AND_OR(0x232c, ~1, 0x00000000);
+	RCBA32_AND_OR(0x232c, ~1, 0);
+
 	RCBA32_AND_OR(0x1100, ~0xc000, 0xc000);
 	RCBA32_OR(0x1100, 0x00000100);
 	RCBA32_OR(0x1100, 0x0000003f);
+
 	RCBA32_AND_OR(0x2320, ~0x60, 0x10);
+
 	RCBA32(0x3314) = 0x00012fff;
 	RCBA32(0x3318) = 0x0dcf0400;
 	RCBA32(0x3324) = 0x04000000;
@@ -320,19 +323,24 @@ static void lpt_lp_pm_init(struct device *dev)
 	RCBA32(0x3a20) = 0x00000404;
 	RCBA32(0x3a24) = 0x01010101;
 	RCBA32(0x3a30) = 0x01010101;
+
 	RCBA32_OR(0x0410, 0x00000003);
 	RCBA32_OR(0x2618, 0x08000000);
 	RCBA32_OR(0x2300, 0x00000002);
 	RCBA32_OR(0x2600, 0x00000008);
+
 	RCBA32(0x33b4) = 0x00007001;
 	RCBA32(0x3350) = 0x022ddfff;
 	RCBA32(0x3354) = 0x00000001;
-	RCBA32_OR(0x33d4, 0x08000000); /* Power Optimizer */
-	RCBA32_OR(0x33c8, 0x00000080); /* Power Optimizer */
-	RCBA32(0x2b10) = 0x0000883c; /* Power Optimizer */
-	RCBA32(0x2b14) = 0x1e0a4616; /* Power Optimizer */
-	RCBA32(0x2b24) = 0x40000005; /* Power Optimizer */
-	RCBA32(0x2b20) = 0x0005db01; /* Power Optimizer */
+
+	/* Power Optimizer */
+	RCBA32_OR(0x33d4, 0x08000000);
+	RCBA32_OR(0x33c8, 0x00000080);
+
+	RCBA32(0x2b10) = 0x0000883c;
+	RCBA32(0x2b14) = 0x1e0a4616;
+	RCBA32(0x2b24) = 0x40000005;
+	RCBA32(0x2b20) = 0x0005db01;
 	RCBA32(0x3a80) = 0x05145005;
 
 	pci_or_config32(dev, 0xac, 1 << 21);
@@ -432,7 +440,7 @@ static void enable_lp_clock_gating(struct device *dev)
 	 * RCBA + 0x2614[30:28] = 0x0
 	 * RCBA + 0x2614[26] = 1 (IF 0:2.0@0x08 >= 0x0b)
 	 */
-	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
+	RCBA32_AND_OR(0x2614, ~0x74000000, 0x0a206500);
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
 	struct device *const gma = pcidev_on_root(2, 0);

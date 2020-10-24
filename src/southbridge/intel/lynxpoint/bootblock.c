@@ -7,9 +7,7 @@
 
 static void map_rcba(void)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
-
-	pci_write_config32(dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 }
 
 static void enable_port80_on_lpc(void)

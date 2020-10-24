@@ -144,12 +144,12 @@ static void southbridge_smi_sleep(void)
 		/* Always set the flag in case CMOS was changed on runtime. For
 		 * "KEEP", switch to "OFF" - KEEP is software emulated
 		 */
-		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+		reg8 = pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3);
 		if (s5pwr == MAINBOARD_POWER_ON)
 			reg8 &= ~1;
 		else
 			reg8 |= 1;
-		pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
+		pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3, reg8);
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
@@ -387,7 +387,7 @@ static void southbridge_smi_tco(void)
 
 	// BIOSWR
 	if (tco_sts & (1 << 8)) {
-		u8 bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+		u8 bios_cntl = pci_read_config16(PCH_LPC_DEV, BIOS_CNTL);
 
 		if (bios_cntl & 1) {
 			/*
@@ -401,7 +401,7 @@ static void southbridge_smi_tco(void)
 			 * box.
 			 */
 			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
+			pci_write_config32(PCH_LPC_DEV, BIOS_CNTL, (bios_cntl & ~1));
 		} /* No else for now? */
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */

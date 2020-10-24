@@ -196,7 +196,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write_regs(haswell_gt_setup);
 
 	/* Wait for Mailbox Ready */
-	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
+	gtt_poll(0x138124, (1 << 31), (0 << 31));
 
 	/* Mailbox Data - RC6 VIDS */
 	gtt_write(0x138128, 0x00000000);
@@ -205,7 +205,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0x138124, 0x80000004);
 
 	/* Wait for Mailbox Ready */
-	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
+	gtt_poll(0x138124, (1 << 31), (0 << 31));
 
 	/* Enable PM Interrupts */
 	gtt_write(GEN6_PMIER, GEN6_PM_MBOX_EVENT | GEN6_PM_THERMAL_EVENT |

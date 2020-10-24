@@ -31,18 +31,18 @@ static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base, u32 *
 
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: /* 256MB */
-		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		*base = pciexbar_reg & mask;
 		*len = 256 * 1024 * 1024;
 		return 1;
 	case 1: /* 128M */
-		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		mask |= (1 << 27);
 		*base = pciexbar_reg & mask;
 		*len = 128 * 1024 * 1024;
 		return 1;
 	case 2: /* 64M */
-		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
+		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		mask |= (1 << 27) | (1 << 26);
 		*base = pciexbar_reg & mask;
 		*len = 64 * 1024 * 1024;

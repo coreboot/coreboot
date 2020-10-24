@@ -84,7 +84,7 @@
 
 /* PCODE MMIO communications live in the MCHBAR. */
 #define BIOS_MAILBOX_INTERFACE			0x5da4
-#define  MAILBOX_RUN_BUSY			(1UL << 31)
+#define  MAILBOX_RUN_BUSY			(1 << 31)
 #define  MAILBOX_BIOS_CMD_READ_PCS		1
 #define  MAILBOX_BIOS_CMD_WRITE_PCS		2
 #define  MAILBOX_BIOS_CMD_READ_CALIBRATION	0x509

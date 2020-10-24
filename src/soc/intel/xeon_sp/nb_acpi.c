@@ -147,16 +147,16 @@ static unsigned long acpi_fill_slit(unsigned long current)
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
  */
 static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
-	int port, int stack, IIO_RESOURCE_INSTANCE iio_resource, uint32_t pcie_seg,
+	int port, int stack, const IIO_RESOURCE_INSTANCE *iio_resource, uint32_t pcie_seg,
 	bool is_atsr, bool *first)
 {
 
 	if (soc_get_stack_for_port(port) != stack)
 		return 0;
 
-	const uint32_t bus = iio_resource.StackRes[stack].BusBase;
-	const uint32_t dev = iio_resource.PcieInfo.PortInfo[port].Device;
-	const uint32_t func = iio_resource.PcieInfo.PortInfo[port].Function;
+	const uint32_t bus = iio_resource->StackRes[stack].BusBase;
+	const uint32_t dev = iio_resource->PcieInfo.PortInfo[port].Device;
+	const uint32_t func = iio_resource->PcieInfo.PortInfo[port].Function;
 
 	const uint32_t id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
 		PCI_VENDOR_ID);
@@ -253,7 +253,7 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 			hob->PlatformData.IIO_resource[socket];
 		for (int p = PORT_0; p < MAX_PORTS; ++p)
 			current += acpi_create_dmar_ds_pci_br_for_port(current, p, stack,
-				iio_resource, pcie_seg, false, NULL);
+				&iio_resource, pcie_seg, false, NULL);
 
 		// Add VMD
 		if (hob->PlatformData.VMDStackEnable[socket][stack] &&
@@ -317,7 +317,7 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 				if (socket == 0 && p == PORT_0)
 					continue;
 				current += acpi_create_dmar_ds_pci_br_for_port(current, p,
-					stack, iio_resource, pcie_seg, true, &first);
+					stack, &iio_resource, pcie_seg, true, &first);
 			}
 		}
 		if (tmp != current)

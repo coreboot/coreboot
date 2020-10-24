@@ -79,6 +79,7 @@ static void init(struct device *dev)
 	iomux_write8(190, 1);
 	iomux_write8(191, 1);
 	iomux_write8(192, 1);
+
 	/* just in case anyone cares */
 	if (!fch_gpio_state(197))
 		printk(BIOS_INFO, "BIOS_DEFAULTS jumper is present.\n");

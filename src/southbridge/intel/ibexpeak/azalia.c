@@ -42,7 +42,7 @@ static int codec_detect(u8 *base)
 	u8 reg8;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
+	if (set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) < 0)
 		goto no_codec;
 
 	/* Write back the value once reset bit is set. */

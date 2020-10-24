@@ -595,6 +595,9 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 			return -1;
 		memcpy(compressed, buffer->data + 8, compressed_size);
 	} else {
+		if (param.compression == CBFS_COMPRESS_NONE)
+			goto out;
+
 		compress = compression_function(param.compression);
 		if (!compress)
 			return -1;
@@ -606,7 +609,7 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 			     compressed, &compressed_size)) {
 			WARN("Compression failed - disabled\n");
 			free(compressed);
-			return 0;
+			goto out;
 		}
 	}
 
@@ -626,6 +629,7 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 	buffer->data = compressed;
 	buffer->size = compressed_size;
 
+out:
 	header->len = htonl(buffer->size);
 	return 0;
 }

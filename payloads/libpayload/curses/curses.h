@@ -87,7 +87,7 @@
  * User-definable tweak to disable the include of <stdbool.h>.
  */
 #ifndef NCURSES_ENABLE_STDBOOL_H
-#define NCURSES_ENABLE_STDBOOL_H 0	//// XXX
+#define NCURSES_ENABLE_STDBOOL_H 1
 #endif
 
 /*

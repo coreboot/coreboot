@@ -167,7 +167,7 @@ void mainboard_config_rcba(void);
 #define GEN_PMCON_2		0xa2
 #define GEN_PMCON_3		0xa4
 #define PMIR			0xac
-#define  PMIR_CF9LOCK		(1UL << 31)
+#define  PMIR_CF9LOCK		(1 << 31)
 #define  PMIR_CF9GR		(1 << 20)
 
 /* GEN_PMCON_3 bits */
@@ -315,7 +315,7 @@ void mainboard_config_rcba(void);
 #define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
 #define  XHCI_USB3_PORTSC_LWS	(1 << 16)	/* Link Write Strobe */
 #define  XHCI_USB3_PORTSC_PED	(1 << 1)	/* Port Enabled/Disabled */
-#define  XHCI_USB3_PORTSC_WPR	(1UL << 31)	/* Warm Port Reset */
+#define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
 #define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */
 #define   XHCI_PLSR_DISABLED	(4 << 5)	/* Port is disabled */
 #define   XHCI_PLSR_RXDETECT	(5 << 5)	/* Port is disconnected */
@@ -408,7 +408,7 @@ void mainboard_config_rcba(void);
 #define RPFN		0x0404	/* 32bit */
 
 /* Root Port configuratinon space hide */
-#define RPFN_HIDE(port)         (1UL << (((port) * 4) + 3))
+#define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
 #define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
 /* Set the function number for a Root Port */

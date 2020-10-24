@@ -348,7 +348,7 @@ static void southbridge_smi_pm1(void)
 	if (pm1_sts & PWRBTN_STS) {
 		/* power button pressed */
 		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
-		disable_pm1_control(-1UL);
+		disable_pm1_control(-1);
 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
 	}
 }

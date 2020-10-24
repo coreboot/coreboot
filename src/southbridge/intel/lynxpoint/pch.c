@@ -97,31 +97,31 @@ void pch_disable_devfn(struct device *dev)
 		break;
 	case PCI_DEVFN(21, 0): /* DMA */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS0, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS0, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 1): /* I2C0 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS1, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS1, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 2): /* I2C1 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS2, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS2, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 3): /* SPI0 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS3, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS3, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 4): /* SPI1 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS4, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS4, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 5): /* UART0 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS5, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS5, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 6): /* UART1 */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(22, 0): /* MEI #1 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
@@ -137,7 +137,7 @@ void pch_disable_devfn(struct device *dev)
 		break;
 	case PCI_DEVFN(23, 0): /* SDIO */
 		pch_enable_d3hot(dev);
-		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0UL, SIO_IOBP_FUNCDIS_DIS);
+		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(25, 0): /* Gigabit Ethernet */
 		RCBA32_OR(BUC, PCH_DISABLE_GBE);

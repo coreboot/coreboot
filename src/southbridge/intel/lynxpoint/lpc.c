@@ -338,9 +338,9 @@ static void lpt_lp_pm_init(struct device *dev)
 	pci_or_config32(dev, 0xac, 1 << 21);
 
 	pch_iobp_update(0xED00015C, ~(1 << 11), 0x00003700);
-	pch_iobp_update(0xED000118, ~0UL, 0x00c00000);
-	pch_iobp_update(0xED000120, ~0UL, 0x00240000);
-	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
+	pch_iobp_update(0xED000118, ~0, 0x00c00000);
+	pch_iobp_update(0xED000120, ~0, 0x00240000);
+	pch_iobp_update(0xCA000000, ~0, 0x00000009);
 
 	/* Set RCBA CIR28 0x3A84 based on SATA port enables */
 	data = 0x00001005;
@@ -392,7 +392,7 @@ static void enable_clock_gating(struct device *dev)
 	u16 reg16;
 
 	/* DMI */
-	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
+	RCBA32_AND_OR(0x2234, ~0, 0xf);
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
 	reg16 |= (1 << 11) | (1 << 12) | (1 << 14);
 	reg16 |= (1 << 2); // PCI CLKRUN# Enable
@@ -401,7 +401,7 @@ static void enable_clock_gating(struct device *dev)
 
 	reg32 = RCBA32(CG);
 	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1UL << 31); // LPC Dynamic
+	reg32 |= (1 << 31); // LPC Dynamic
 	reg32 |= (1 << 16); // PCIe Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
 	reg32 |= (1 << 28); // GPIO Dynamic
@@ -417,7 +417,7 @@ static void enable_lp_clock_gating(struct device *dev)
 	u16 reg16;
 
 	/* DMI */
-	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
+	RCBA32_AND_OR(0x2234, ~0, 0xf);
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
 	reg16 &= ~((1 << 11) | (1 << 14));
 	reg16 |= (1 << 5) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 13);
@@ -463,8 +463,8 @@ static void enable_lp_clock_gating(struct device *dev)
 
 	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
 
-	pch_iobp_update(0xCF000000, ~0UL, 0x00007001);
-	pch_iobp_update(0xCE00C000, ~1UL, 0x00000000); // bit0=0 in BWG 1.4.0
+	pch_iobp_update(0xCF000000, ~0, 0x00007001);
+	pch_iobp_update(0xCE00C000, ~1, 0x00000000); // bit0=0 in BWG 1.4.0
 }
 
 static void pch_set_acpi_mode(void)

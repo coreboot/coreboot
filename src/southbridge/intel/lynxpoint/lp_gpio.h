@@ -40,9 +40,9 @@
 #define GPI_LEVEL		(1 << 30)
 
 #define GPO_LEVEL_SHIFT		31
-#define GPO_LEVEL_MASK		(1UL << GPO_LEVEL_SHIFT)
-#define GPO_LEVEL_LOW		(0UL << GPO_LEVEL_SHIFT)
-#define GPO_LEVEL_HIGH		(1UL << GPO_LEVEL_SHIFT)
+#define GPO_LEVEL_MASK		(1 << GPO_LEVEL_SHIFT)
+#define GPO_LEVEL_LOW		(0 << GPO_LEVEL_SHIFT)
+#define GPO_LEVEL_HIGH		(1 << GPO_LEVEL_SHIFT)
 
 /* conf1 */
 

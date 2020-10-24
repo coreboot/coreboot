@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+#include <stdbool.h>
+
 #include <keycodes.h>
 #include <libpayload-config.h>
 #include <libpayload.h>
@@ -169,14 +171,14 @@ static struct layout_maps keyboard_layouts[] = {
 #endif
 };
 
-static unsigned char keyboard_cmd(unsigned char cmd)
+static bool keyboard_cmd(unsigned char cmd)
 {
 	i8042_write_data(cmd);
 
 	return i8042_wait_read_ps2() == 0xfa;
 }
 
-int keyboard_havechar(void)
+bool keyboard_havechar(void)
 {
 	return i8042_data_ready_ps2();
 }
@@ -306,13 +308,13 @@ int keyboard_set_layout(char *country)
 }
 
 static struct console_input_driver cons = {
-	.havekey = keyboard_havechar,
+	.havekey = (int (*)(void))keyboard_havechar,
 	.getchar = keyboard_getchar,
 	.input_type = CONSOLE_INPUT_TYPE_EC,
 };
 
 /* Enable keyboard translated */
-static int enable_translated(void)
+static bool enable_translated(void)
 {
 	if (!i8042_cmd(I8042_CMD_RD_CMD_BYTE)) {
 		int cmd = i8042_read_data_ps2();
@@ -321,19 +323,19 @@ static int enable_translated(void)
 			i8042_write_data(cmd);
 		} else {
 			printf("ERROR: i8042_cmd WR_CMD failed!\n");
-			return 0;
+			return false;
 		}
 	} else {
 		printf("ERROR: i8042_cmd RD_CMD failed!\n");
-		return 0;
+		return false;
 	}
-	return 1;
+	return true;
 }
 
 /* Set scancode set 1 */
-static int set_scancode_set(void)
+static bool set_scancode_set(void)
 {
-	unsigned int ret;
+	bool ret;
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
 	if (!ret) {
 		printf("ERROR: Keyboard set scancode failed!\n");

@@ -42,6 +42,7 @@
 #ifndef _LIBPAYLOAD_H
 #define _LIBPAYLOAD_H
 
+#include <stdbool.h>
 #include <libpayload-config.h>
 #include <compiler.h>
 #include <cbgfx.h>
@@ -186,7 +187,7 @@ int add_reset_handler(void (*new_handler)(void));
  */
 void keyboard_init(void);
 void keyboard_disconnect(void);
-int keyboard_havechar(void);
+bool keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
 int keyboard_set_layout(char *country);

@@ -43,11 +43,11 @@ static int codec_detect(u8 *base)
 	u32 reg32;
 
 	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, 0) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, 0) < 0)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) == -1)
+	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
@@ -140,7 +140,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
 
 	/* 1 */
-	if (wait_for_ready(base) == -1) {
+	if (wait_for_ready(base) < 0) {
 		printk(BIOS_DEBUG, "  codec not ready.\n");
 		return;
 	}
@@ -148,7 +148,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	reg32 = (addr << 28) | 0x000f0000;
 	write32(base + HDA_IC_REG, reg32);
 
-	if (wait_for_valid(base) == -1) {
+	if (wait_for_valid(base) < 0) {
 		printk(BIOS_DEBUG, "  codec not valid.\n");
 		return;
 	}
@@ -166,12 +166,12 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
-		if (wait_for_ready(base) == -1)
+		if (wait_for_ready(base) < 0)
 			return;
 
 		write32(base + HDA_IC_REG, verb[i]);
 
-		if (wait_for_valid(base) == -1)
+		if (wait_for_valid(base) < 0)
 			return;
 	}
 	printk(BIOS_DEBUG, "Azalia: verb loaded.\n");
@@ -187,12 +187,12 @@ static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 	}
 
 	for (i = 0; i < pc_beep_verbs_size; i++) {
-		if (wait_for_ready(base) == -1)
+		if (wait_for_ready(base) < 0)
 			return;
 
 		write32(base + HDA_IC_REG, pc_beep_verbs[i]);
 
-		if (wait_for_valid(base) == -1)
+		if (wait_for_valid(base) < 0)
 			return;
 	}
 }

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <northbridge/amd/agesa/state_machine.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)

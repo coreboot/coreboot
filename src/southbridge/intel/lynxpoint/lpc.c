@@ -265,7 +265,7 @@ static void pch_power_options(struct device *dev)
 
 	/* Clear magic status bits to prevent unexpected wake */
 	reg32 = RCBA32(0x3310);
-	reg32 |= (1 << 4)|(1 << 5)|(1 << 0);
+	reg32 |= (1 << 4) | (1 << 5) | (1 << 0);
 	RCBA32(0x3310) = reg32;
 
 	reg16 = RCBA16(0x3f02);
@@ -345,10 +345,10 @@ static void lpt_lp_pm_init(struct device *dev)
 	/* Set RCBA CIR28 0x3A84 based on SATA port enables */
 	data = 0x00001005;
 	/* Port 3 and 2 disabled */
-	if ((config->sata_port_map & ((1 << 3)|(1 << 2))) == 0)
+	if ((config->sata_port_map & ((1 << 3) | (1 << 2))) == 0)
 		data |= (1 << 24) | (1 << 26);
 	/* Port 1 and 0 disabled */
-	if ((config->sata_port_map & ((1 << 1)|(1 << 0))) == 0)
+	if ((config->sata_port_map & ((1 << 1) | (1 << 0))) == 0)
 		data |= (1 << 20) | (1 << 18);
 	RCBA32(0x3a84) = data;
 
@@ -489,7 +489,7 @@ static void pch_fixups(struct device *dev)
 	 * Enable DMI ASPM in the PCH
 	 */
 	RCBA32_AND_OR(0x2304, ~(1 << 10), 0);
-	RCBA32_OR(0x21a4, (1 << 11)|(1 << 10));
+	RCBA32_OR(0x21a4, (1 << 11) | (1 << 10));
 	RCBA32_OR(0x21a8, 0x3);
 }
 

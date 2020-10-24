@@ -235,7 +235,7 @@ static void usb_xhci_clock_gating(struct device *dev)
 	u32 reg32;
 
 	/* IOBP 0xE5004001[7:6] = 11b */
-	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
+	pch_iobp_update(0xe5004001, ~0, (1 << 7) | (1 << 6));
 
 	reg32 = pci_read_config32(dev, 0x40);
 	reg32 &= ~(1 << 23); /* unsupported request */
@@ -248,7 +248,7 @@ static void usb_xhci_clock_gating(struct device *dev)
 		reg32 |= (1 << 21) | (1 << 20);
 	} else {
 		/* D20:F0:40h[21,20,18,17,8] = 11111b */
-		reg32 |= (1 << 21)|(1 << 20)|(1 << 18)|(1 << 17)|(1 << 8);
+		reg32 |= (1 << 21) | (1 << 20) | (1 << 18) | (1 << 17) | (1 << 8);
 	}
 
 	/* Avoid writing upper byte as it is write-once */

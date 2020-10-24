@@ -119,7 +119,7 @@ void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 static void usb_ehci_clock_gating(struct device *dev)
 {
 	/* IOBP 0xE5004001[7:6] = 11b */
-	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
+	pch_iobp_update(0xe5004001, ~0, (1 << 7) | (1 << 6));
 
 	/* Dx:F0:DCh[5,2,1] = 111b
 	 * Dx:F0:DCh[0] = 1b when EHCI controller is disabled */

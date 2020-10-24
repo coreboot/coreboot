@@ -17,7 +17,7 @@ static void pch_smbus_init(struct device *dev)
 	/* Enable clock gating */
 	/* FIXME: Using 32-bit ops with a 16-bit variable is a bug! These should be 16-bit! */
 	reg16 = pci_read_config32(dev, 0x80);
-	reg16 &= ~((1 << 8)|(1 << 10)|(1 << 12)|(1 << 14));
+	reg16 &= ~((1 << 8) | (1 << 10) | (1 << 12) | (1 << 14));
 	pci_write_config32(dev, 0x80, reg16);
 
 	/* Set Receive Slave Address */

@@ -1,11 +1,14 @@
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-subdirs-y += romstage
-
 subdirs-y += cpu
 subdirs-y += pch
 
-bootblock-y += bootblock/systemagent.c
+bootblock-y += bootblock.c
+
+romstage-y += early_init.c
+romstage-y += raminit.c
+romstage-y += report_platform.c
+romstage-y += romstage.c
 
 ramstage-y += acpi.c
 ramstage-y += finalize.c

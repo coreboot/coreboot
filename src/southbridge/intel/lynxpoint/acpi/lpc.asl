@@ -29,11 +29,6 @@ Device (LPCB)
 		Offset (0x80),	// IO Decode Ranges
 		IOD0,	8,
 		IOD1,	8,
-
-		Offset (0xf0),	// RCBA
-		RCEN,	1,
-		,	13,
-		RCBA,	18,
 	}
 
 	#include <southbridge/intel/common/acpi/irqlinks.asl>

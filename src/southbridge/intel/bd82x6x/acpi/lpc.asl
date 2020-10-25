@@ -43,11 +43,6 @@ Device (LPCB)
 		GR13,	 2,
 		GR14,	 2,
 		GR15,	 2,
-
-		Offset (0xf0),	// RCBA
-		RCEN,	1,
-		,	13,
-		RCBA,	18,
 	}
 
 	#include <southbridge/intel/common/acpi/irqlinks.asl>

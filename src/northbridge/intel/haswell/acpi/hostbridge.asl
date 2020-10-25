@@ -200,5 +200,7 @@ Device (PDRC)
 /* Configurable TDP */
 #include "ctdp.asl"
 
+#if !CONFIG(INTEL_LYNXPOINT_LP)
 /* PCI Express Graphics */
 #include "peg.asl"
+#endif

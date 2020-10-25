@@ -45,7 +45,7 @@ Scope (\)
 #include "adsp.asl"
 
 // PCI Express Ports 0:1c.x
-#include "pcie.asl"
+#include <southbridge/intel/common/acpi/pcie.asl>
 
 // USB EHCI 0:1d.0
 #include "ehci.asl"

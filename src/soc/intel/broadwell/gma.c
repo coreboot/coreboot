@@ -588,12 +588,12 @@ static void gma_generate_ssdt(const struct device *dev)
 }
 
 static struct device_operations igd_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &pci_dev_set_resources,
-	.enable_resources	= &pci_dev_enable_resources,
-	.init			= &igd_init,
-	.ops_pci		= &pci_dev_ops_pci,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= igd_init,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

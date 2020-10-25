@@ -25,7 +25,7 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include <soc/intel/broadwell/acpi/systemagent.asl>
+			#include <soc/intel/broadwell/acpi/hostbridge.asl>
 			#include <soc/intel/broadwell/pch/acpi/pch.asl>
 		}
 	}

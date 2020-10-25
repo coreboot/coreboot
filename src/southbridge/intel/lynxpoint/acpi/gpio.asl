@@ -47,7 +47,7 @@ Device (GPIO)
 
 	// GWAK: Setup GPIO as ACPI GPE for Wake
 	// Arg0: GPIO Number
-	Method (GWAK, 1, NotSerialized)
+	Method (GWAK, 1, Serialized)
 	{
 		// Local0 = GPIO Base Address
 		Store (GPBS & ~1, Local0)

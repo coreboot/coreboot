@@ -1,12 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+Field (\_SB.PCI0.MCHC.MCHP, DWordAcc, NoLock, Preserve)
+{
+	Offset (0x54),
+	,	1,
+	P2EN,	1,
+	P1EN,	1,
+	P0EN,	1,
+}
+
 Device (PEGP)
 {
 	Name (_ADR, 0x00010000)
 
 	Method (_STA)
 	{
-		Return (((\_SB.PCI0.MCHC.DVEN >> 3) & 1) * 0xf)
+		Return (P0EN * 0xf)
 	}
 
 	Device (DEV0)
@@ -21,7 +30,7 @@ Device (PEG1)
 
 	Method (_STA)
 	{
-		Return (((\_SB.PCI0.MCHC.DVEN >> 2) & 1) * 0xf)
+		Return (P1EN * 0xf)
 	}
 
 	Device (DEV0)
@@ -36,7 +45,7 @@ Device (PEG2)
 
 	Method (_STA)
 	{
-		Return (((\_SB.PCI0.MCHC.DVEN >> 1) & 1) * 0xf)
+		Return (P2EN * 0xf)
 	}
 
 	Device (DEV0)

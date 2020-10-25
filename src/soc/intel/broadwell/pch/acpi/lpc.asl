@@ -180,7 +180,7 @@ Device (LPCB)
 	}
 
 	#include "gpio.asl"
-	#include "irqlinks.asl"
+	#include <southbridge/intel/common/acpi/irqlinks.asl>
 	#include "acpi/ec.asl"
 	#include "acpi/superio.asl"
 }

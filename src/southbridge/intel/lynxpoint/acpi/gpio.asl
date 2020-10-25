@@ -29,27 +29,21 @@ Device (GPIO)
 
 	Method (_CRS, 0, NotSerialized)
 	{
-		If (\ISLP ()) {
-			CreateDwordField (^RBUF, ^BAR0._MIN, BMIN)
-			CreateDwordField (^RBUF, ^BAR0._MAX, BMAX)
-			CreateDwordField (^RBUF, ^BAR0._LEN, BLEN)
+		CreateDwordField (^RBUF, ^BAR0._MIN, BMIN)
+		CreateDwordField (^RBUF, ^BAR0._MAX, BMAX)
+		CreateDwordField (^RBUF, ^BAR0._LEN, BLEN)
 
-			Store (DEFAULT_GPIOSIZE, BLEN)
-			Store (DEFAULT_GPIOBASE, BMIN)
-			Store (Subtract (Add (DEFAULT_GPIOBASE,
+		Store (DEFAULT_GPIOSIZE, BLEN)
+		Store (DEFAULT_GPIOBASE, BMIN)
+		Store (Subtract (Add (DEFAULT_GPIOBASE,
 					      DEFAULT_GPIOSIZE), 1), BMAX)
-		}
 
 		Return (RBUF)
 	}
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (\ISLP ()) {
-			Return (0xF)
-		} Else {
-			Return (0x0)
-		}
+		Return (0xF)
 	}
 
 	// GWAK: Setup GPIO as ACPI GPE for Wake

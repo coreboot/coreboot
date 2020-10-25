@@ -31,6 +31,10 @@ Device (LPCB)
 		IOD1,	8,
 	}
 
+	#include <southbridge/intel/common/acpi/irqlinks.asl>
+
+	#include "acpi/ec.asl"
+
 	Device (DMAC)	// DMA Controller
 	{
 		Name (_HID, EISAID("PNP0200"))
@@ -180,7 +184,5 @@ Device (LPCB)
 	}
 
 	#include "gpio.asl"
-	#include <southbridge/intel/common/acpi/irqlinks.asl>
-	#include "acpi/ec.asl"
 	#include "acpi/superio.asl"
 }

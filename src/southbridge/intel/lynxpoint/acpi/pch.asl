@@ -67,8 +67,11 @@ Scope (\)
 // PCI Express Ports 0:1c.x
 #include <southbridge/intel/common/acpi/pcie.asl>
 
-// USB 0:1d.0 and 0:1a.0
-#include "usb.asl"
+// USB EHCI 0:1d.0 and 0:1a.0
+#include "ehci.asl"
+
+// USB XHCI 0:14.0
+#include "xhci.asl"
 
 // LPC Bridge 0:1f.0
 #include "lpc.asl"

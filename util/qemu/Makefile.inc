@@ -27,7 +27,9 @@
 #   $ make qemu QEMU_CFG_ARGS=
 
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_I440FX)	?= qemu-system-x86_64 -M pc
+
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)	?= qemu-system-x86_64 -M q35
+QEMU_CFG-$(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)	?= util/qemu/q35-base.cfg
 
 ifneq ($(QEMU-y),)
 

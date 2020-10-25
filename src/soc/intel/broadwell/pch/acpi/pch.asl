@@ -39,7 +39,7 @@ Scope (\)
 }
 
 // High Definition Audio (Azalia) 0:1b.0
-#include "hda.asl"
+#include "audio.asl"
 
 // ADSP/SST 0:13.0
 #include "adsp.asl"

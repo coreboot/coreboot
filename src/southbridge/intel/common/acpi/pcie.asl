@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Intel 6/7 Series PCH PCIe support */
-
-// PCI Express Ports
+/* Intel southbridge PCIe support */
 
 Method (IRQM, 1, Serialized) {
 

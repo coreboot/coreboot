@@ -22,11 +22,11 @@ Scope (\)
 	OperationRegion (RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
 	Field (RCRB, DWordAcc, Lock, Preserve)
 	{
-		Offset(0x3404), // High Performance Timer Configuration
+		Offset (0x3404), // High Performance Timer Configuration
 		HPAS, 2,	// Address Select
 		, 5,
 		HPTE, 1,	// Address Enable
-		Offset(0x3418), // FD (Function Disable)
+		Offset (0x3418), // FD (Function Disable)
 		, 1,		// Reserved
 		PCID, 1,	// PCI bridge disable
 		SA1D, 1,	// SATA1 disable
@@ -46,7 +46,7 @@ Scope (\)
 		RP8D, 1,	// Root Port 8 disable
 		TTRD, 1,	// Thermal sensor registers disable
 		SA2D, 1,	// SATA2 disable
-		Offset(0x3428),	// FD2 (Function Disable 2)
+		Offset (0x3428), // FD2 (Function Disable 2)
 		BDFD, 1,	// Display BDF
 		ME1D, 1,	// ME Interface 1 disable
 		ME2D, 1,	// ME Interface 2 disable
@@ -81,7 +81,7 @@ Scope (\)
 Method (_OSC, 4)
 {
 	/* Check for proper GUID */
-	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID ("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)
@@ -90,7 +90,7 @@ Method (_OSC, 4)
 	{
 		/* Unrecognized UUID */
 		CreateDWordField (Arg3, 0, CDW1)
-		Or (CDW1, 4, CDW1)
+		CDW1 |= 4
 		Return (Arg3)
 	}
 }

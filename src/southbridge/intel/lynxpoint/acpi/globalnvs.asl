@@ -11,7 +11,7 @@ Name (\PICM, 0)		// IOAPIC/8259
  * we have to fix it up in coreboot's ACPI creation phase.
  */
 
-External(NVSA)
+External (NVSA)
 OperationRegion (GNVS, SystemMemory, NVSA, 0xf00)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
@@ -112,41 +112,41 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 /* Set flag to enable USB charging in S3 */
 Method (S3UE)
 {
-	Store (One, \S3U0)
-	Store (One, \S3U1)
+	\S3U0 = 1
+	\S3U1 = 1
 }
 
 /* Set flag to disable USB charging in S3 */
 Method (S3UD)
 {
-	Store (Zero, \S3U0)
-	Store (Zero, \S3U1)
+	\S3U0 = 0
+	\S3U1 = 0
 }
 
 /* Set flag to enable USB charging in S5 */
 Method (S5UE)
 {
-	Store (One, \S5U0)
-	Store (One, \S5U1)
+	\S5U0 = 1
+	\S5U1 = 1
 }
 
 /* Set flag to disable USB charging in S5 */
 Method (S5UD)
 {
-	Store (Zero, \S5U0)
-	Store (Zero, \S5U1)
+	\S5U0 = 0
+	\S5U1 = 0
 }
 
 /* Set flag to enable 3G module in S3 */
 Method (S3GE)
 {
-	Store (One, \S33G)
+	\S33G = 1
 }
 
 /* Set flag to disable 3G module in S3 */
 Method (S3GD)
 {
-	Store (Zero, \S33G)
+	\S33G = 0
 }
 
 External (\_TZ.SKIN)
@@ -169,46 +169,46 @@ Method (TZUP)
 /* Update Fan 0 thresholds */
 Method (F0UT, 2)
 {
-	Store (Arg0, \F0OF)
-	Store (Arg1, \F0ON)
+	\F0OF = Arg0
+	\F0ON = Arg1
 	TZUP ()
 }
 
 /* Update Fan 1 thresholds */
 Method (F1UT, 2)
 {
-	Store (Arg0, \F1OF)
-	Store (Arg1, \F1ON)
+	\F1OF = Arg0
+	\F1ON = Arg1
 	TZUP ()
 }
 
 /* Update Fan 2 thresholds */
 Method (F2UT, 2)
 {
-	Store (Arg0, \F2OF)
-	Store (Arg1, \F2ON)
+	\F2OF = Arg0
+	\F2ON = Arg1
 	TZUP ()
 }
 
 /* Update Fan 3 thresholds */
 Method (F3UT, 2)
 {
-	Store (Arg0, \F3OF)
-	Store (Arg1, \F3ON)
+	\F3OF = Arg0
+	\F3ON = Arg1
 	TZUP ()
 }
 
 /* Update Fan 4 thresholds */
 Method (F4UT, 2)
 {
-	Store (Arg0, \F4OF)
-	Store (Arg1, \F4ON)
+	\F4OF = Arg0
+	\F4ON = Arg1
 	TZUP ()
 }
 
 /* Update Temperature Sensor ID */
 Method (TMPU, 1)
 {
-	Store (Arg0, \TMPS)
+	\TMPS = Arg0
 	TZUP ()
 }

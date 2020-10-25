@@ -1,15 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Intel Cougar Point USB support */
-
 // EHCI Controller 0:1d.0
 
 Device (EHCI)
 {
-	Name(_ADR, 0x001d0000)
+	Name (_ADR, 0x001d0000)
 
-	Name (PRWH, Package(){ 0x0d, 3 }) // LPT-H
-	Name (PRWL, Package(){ 0x6d, 3 }) // LPT-LP
+	Name (PRWH, Package (){ 0x0d, 3 }) // LPT-H
+	Name (PRWL, Package (){ 0x6d, 3 }) // LPT-LP
 
 	Method (_PRW, 0) { // Power Resources for Wake
 		If (\ISLP ()) {
@@ -21,19 +19,19 @@ Device (EHCI)
 
 	// Leave USB ports on for to allow Wake from USB
 
-	Method(_S3D,0)	// Highest D State in S3 State
+	Method (_S3D, 0)	// Highest D State in S3 State
 	{
 		Return (2)
 	}
 
-	Method(_S4D,0)	// Highest D State in S4 State
+	Method (_S4D, 0)	// Highest D State in S4 State
 	{
 		Return (2)
 	}
 
 	Device (HUB7)
 	{
-		Name (_ADR, 0x00000000)
+		Name (_ADR, 0)
 
 		Device (PRT1) { Name (_ADR, 1) } // USB Port 0
 		Device (PRT2) { Name (_ADR, 2) } // USB Port 1
@@ -53,7 +51,7 @@ Device (XHCI)
 	Name (PLSD, 5) // Port Link State - RxDetect
 	Name (PLSP, 7) // Port Link State - Polling
 
-	OperationRegion (XPRT, PCI_Config, 0x00, 0x100)
+	OperationRegion (XPRT, PCI_Config, 0, 0x100)
 	Field (XPRT, AnyAcc, NoLock, Preserve)
 	{
 		Offset (0x0),
@@ -81,8 +79,7 @@ Device (XHCI)
 	// Clear status bits
 	Method (LPCL, 0, Serialized)
 	{
-		OperationRegion (XREG, SystemMemory,
-				 ShiftLeft (^XMEM, 16), 0x600)
+		OperationRegion (XREG, SystemMemory, ^XMEM << 16, 0x600)
 		Field (XREG, DWordAcc, Lock, Preserve)
 		{
 			Offset (0x510), // PORTSCNUSB3[0]
@@ -96,32 +93,31 @@ Device (XHCI)
 		}
 
 		// Port Enabled/Disabled (Bit 1)
-		Name (PEDB, ShiftLeft (1, 1))
+		Name (PEDB, 1 << 1)
 
 		// Change Status (Bits 23:17)
-		Name (CHST, ShiftLeft (0x7f, 17))
+		Name (CHST, 0x7f << 17)
 
 		// Port 0
-		And (PSC0, Not (PEDB), Local0)
-		Or (Local0, CHST, PSC0)
+		Local0 = PSC0 & ~PEDB
+		PSC0 = Local0 | CHST
 
 		// Port 1
-		And (PSC1, Not (PEDB), Local0)
-		Or (Local0, CHST, PSC1)
+		Local0 = PSC1 & ~PEDB
+		PSC1 = Local0 | CHST
 
 		// Port 2
-		And (PSC2, Not (PEDB), Local0)
-		Or (Local0, CHST, PSC2)
+		Local0 = PSC2 & ~PEDB
+		PSC2 = Local0 | CHST
 
 		// Port 3
-		And (PSC3, Not (PEDB), Local0)
-		Or (Local0, CHST, PSC3)
+		Local0 = PSC3 & ~PEDB
+		PSC3 = Local0 | CHST
 	}
 
 	Method (LPS0, 0, Serialized)
 	{
-		OperationRegion (XREG, SystemMemory,
-				 ShiftLeft (^XMEM, 16), 0x600)
+		OperationRegion (XREG, SystemMemory, ^XMEM << 16, 0x600)
 		Field (XREG, DWordAcc, Lock, Preserve)
 		{
 			Offset (0x510), // PORTSCNUSB3
@@ -167,16 +163,14 @@ Device (XHCI)
 		}
 
 		// Wait for all powered ports to finish polling
-		Store (10, Local0)
-		While (LOr (LOr (LAnd (LEqual (PPR1, 1), LEqual (PLS1, PLSP)),
-				 LAnd (LEqual (PPR2, 1), LEqual (PLS2, PLSP))),
-			    LOr (LAnd (LEqual (PPR3, 1), LEqual (PLS3, PLSP)),
-				 LAnd (LEqual (PPR4, 1), LEqual (PLS4, PLSP)))))
+		Local0 = 10
+		While ((PPR1 == 1 && PLS1 == PLSP || PPR2 == 1 && PLS2 == PLSP) ||
+		       (PPR3 == 1 && PLS3 == PLSP || PPR4 == 1 && PLS4 == PLSP))
 		{
-			If (LEqual (Local0, 0)) {
+			If (Local0 == 0) {
 				Break
 			}
-			Decrement (Local0)
+			Local0--
 			Stall (10)
 		}
 
@@ -187,43 +181,37 @@ Device (XHCI)
 		//     3) Write 1 to port status to clear
 
 		// Local# indicate if port is reset
-		Store (0, Local1)
-		Store (0, Local2)
-		Store (0, Local3)
-		Store (0, Local4)
+		Local1 = 0
+		Local2 = 0
+		Local3 = 0
+		Local4 = 0
 
-		If (LAnd (LEqual (PLS1, PLSD),
-		          LAnd (LEqual (CSC1, 0), LEqual (PPR1, 1)))) {
-			Store (1, WPR1)	      // Issue warm reset
-			Store (1, Local1)
+		If (PLS1 == PLSD && (CSC1 == 0 && PPR1 == 1)) {
+			WPR1 = 1	// Issue warm reset
+			Local1 = 1
 		}
-		If (LAnd (LEqual (PLS2, PLSD),
-		          LAnd (LEqual (CSC2, 0), LEqual (PPR2, 1)))) {
-			Store (1, WPR2)	      // Issue warm reset
-			Store (1, Local2)
+		If (PLS2 == PLSD && (CSC2 == 0 && PPR2 == 1)) {
+			WPR2 = 1	// Issue warm reset
+			Local2 = 1
 		}
-		If (LAnd (LEqual (PLS3, PLSD),
-		          LAnd (LEqual (CSC3, 0), LEqual (PPR3, 1)))) {
-			Store (1, WPR3)	      // Issue warm reset
-			Store (1, Local3)
+		If (PLS3 == PLSD && (CSC3 == 0 && PPR3 == 1)) {
+			WPR3 = 1	// Issue warm reset
+			Local3 = 1
 		}
-		If (LAnd (LEqual (PLS4, PLSD),
-		          LAnd (LEqual (CSC4, 0), LEqual (PPR4, 1)))) {
-			Store (1, WPR4)	      // Issue warm reset
-			Store (1, Local4)
+		If (PLS4 == PLSD && (CSC4 == 0 && PPR4 == 1)) {
+			WPR4 = 1	// Issue warm reset
+			Local4 = 1
 		}
 
 		// Poll for warm reset complete on all ports that were reset
-		Store (10, Local0)
-		While (LOr (LOr (LAnd (LEqual (Local1, 1), LEqual (WRC1, 0)),
-				 LAnd (LEqual (Local2, 1), LEqual (WRC2, 0))),
-			    LOr (LAnd (LEqual (Local3, 1), LEqual (WRC3, 0)),
-			         LAnd (LEqual (Local4, 1), LEqual (WRC4, 0)))))
+		Local0 = 10
+		While ((Local1 == 1 && WRC1 == 0 || Local2 == 1 && WRC2 == 0) ||
+		       (Local3 == 1 && WRC3 == 0 || Local4 == 1 && WRC4 == 0))
 		{
-			If (LEqual (Local0, 0)) {
+			If (Local0 == 0) {
 				Break
 			}
-			Decrement (Local0)
+			Local0--
 			Stall (10)
 		}
 
@@ -238,15 +226,14 @@ Device (XHCI)
 
 	Method (_PS0, 0, Serialized)
 	{
-		If (LEqual (^DVID, 0xFFFF)) {
+		If (^DVID == 0xFFFF) {
 			Return ()
 		}
-		If (LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
+		If (^XMEM == 0xFFFF || ^XMEM == 0) {
 			Return ()
 		}
 
-		OperationRegion (XREG, SystemMemory,
-				 Add (ShiftLeft (^XMEM, 16), 0x8000), 0x200)
+		OperationRegion (XREG, SystemMemory, (^XMEM << 16) + 0x8000, 0x200)
 		Field (XREG, DWordAcc, Lock, Preserve)
 		{
 			Offset (0x0e0), // AUX Reset Control 1
@@ -263,30 +250,30 @@ Device (XHCI)
 		}
 
 		// If device is in D3, set back to D0
-		Store (^D0D3, Local0)
-		if (LEqual (Local0, 3)) {
-			Store (0, ^D0D3)
+		Local0 = ^D0D3
+		if (Local0 == 3) {
+			^D0D3 = 0
 		}
 
 		If (\ISLP ()) {
 			// Clear PCI 0xB0[14:13]
-			Store (0, ^MB13)
-			Store (0, ^MB14)
+			^MB13 = 0
+			^MB14 = 0
 
 			// Clear MMIO 0x816C[14,2]
-			Store (0, CLK0)
-			Store (0, CLK1)
+			CLK0 = 0
+			CLK1 = 0
 		}
 
 		// Set MMIO 0x8154[31]
-		Store (1, CLK2)
+		CLK2 = 1
 
 		If (\ISLP ()) {
 			// Handle per-port reset if needed
 			LPS0 ()
 
 			// Set MMIO 0x80e0[15]
-			Store (1, AX15)
+			AX15 = 1
 		}
 
 		Return ()
@@ -294,15 +281,14 @@ Device (XHCI)
 
 	Method (_PS3, 0, Serialized)
 	{
-		If (LEqual (^DVID, 0xFFFF)) {
+		If (^DVID == 0xFFFF) {
 			Return ()
 		}
-		If (LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
+		If (^XMEM == 0xFFFF || ^XMEM == 0) {
 			Return ()
 		}
 
-		OperationRegion (XREG, SystemMemory,
-				 Add (ShiftLeft (^XMEM, 16), 0x8000), 0x200)
+		OperationRegion (XREG, SystemMemory, (^XMEM << 16) + 0x8000, 0x200)
 		Field (XREG, DWordAcc, Lock, Preserve)
 		{
 			Offset (0x0e0), // AUX Reset Control 1
@@ -318,41 +304,41 @@ Device (XHCI)
 			CLK1, 1, // USB3 Port Aux/Core Clock Gating Enable
 		}
 
-		Store (1, ^PMES) // Clear PME Status
-		Store (1, ^PMEE) // Enable PME
+		^PMES = 1 // Clear PME Status
+		^PMEE = 1 // Enable PME
 
 		// If device is in D3, set back to D0
-		Store (^D0D3, Local0)
-		if (LEqual (Local0, 3)) {
-			Store (0, ^D0D3)
+		Local0 = ^D0D3
+		if (Local0 == 3) {
+			^D0D3 = 0
 		}
 
 		If (\ISLP ()) {
 			// Set PCI 0xB0[14:13]
-			Store (1, ^MB13)
-			Store (1, ^MB14)
+			^MB13 = 1
+			^MB14 = 1
 
 			// Set MMIO 0x816C[14,2]
-			Store (1, CLK0)
-			Store (1, CLK1)
+			CLK0 = 1
+			CLK1 = 1
 		}
 
 		// Clear MMIO 0x8154[31]
-		Store (0, CLK2)
+		CLK2 = 0
 
 		If (\ISLP ()) {
 			// Clear MMIO 0x80e0[15]
-			Store (0, AX15)
+			AX15 = 0
 		}
 
 		// Put device in D3
-		Store (3, ^D0D3)
+		^D0D3 = 3
 
 		Return ()
 	}
 
-	Name (PRWH, Package(){ 0x0d, 3 }) // LPT-H
-	Name (PRWL, Package(){ 0x6d, 3 }) // LPT-LP
+	Name (PRWH, Package (){ 0x0d, 3 }) // LPT-H
+	Name (PRWL, Package (){ 0x6d, 3 }) // LPT-LP
 
 	Method (_PRW, 0) { // Power Resources for Wake
 		If (\ISLP ()) {
@@ -364,33 +350,33 @@ Device (XHCI)
 
 	// Leave USB ports on for to allow Wake from USB
 
-	Method(_S3D,0)	// Highest D State in S3 State
+	Method (_S3D, 0)	// Highest D State in S3 State
 	{
 		Return (3)
 	}
 
-	Method(_S4D,0)	// Highest D State in S4 State
+	Method (_S4D, 0)	// Highest D State in S4 State
 	{
 		Return (3)
 	}
 
 	Device (HUB7)
 	{
-		Name (_ADR, 0x00000000)
+		Name (_ADR, 0)
 
 		// GPLD: Generate Port Location Data (PLD)
 		Method (GPLD, 1, Serialized) {
-			Name (PCKG, Package (0x01) {
+			Name (PCKG, Package () {
 				Buffer (0x10) {}
 			})
 
-			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
-			Store (0x02, REV)
+			// REV: Revision 2 for ACPI 5.0
+			CreateField (DerefOf (PCKG [0]), 0, 7, REV)
+			REV = 2
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
-			Store (Arg0, VISI)
+			CreateField (DerefOf (PCKG [0]), 0x40, 1, VISI)
+			VISI = Arg0
 			Return (PCKG)
 		}
 

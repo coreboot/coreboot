@@ -7,7 +7,7 @@ Device (GPIO)
 	Name (_CID, "INT33C7")
 	Name (_UID, 1)
 
-	Name (RBUF, ResourceTemplate()
+	Name (RBUF, ResourceTemplate ()
 	{
 		DWordIo (ResourceProducer,
 			MinFixed,    // IsMinFixed
@@ -33,10 +33,9 @@ Device (GPIO)
 		CreateDwordField (^RBUF, ^BAR0._MAX, BMAX)
 		CreateDwordField (^RBUF, ^BAR0._LEN, BLEN)
 
-		Store (DEFAULT_GPIOSIZE, BLEN)
-		Store (DEFAULT_GPIOBASE, BMIN)
-		Store (Subtract (Add (DEFAULT_GPIOBASE,
-					      DEFAULT_GPIOSIZE), 1), BMAX)
+		BLEN = DEFAULT_GPIOSIZE
+		BMIN = DEFAULT_GPIOBASE
+		BMAX = DEFAULT_GPIOBASE + DEFAULT_GPIOSIZE - 1
 
 		Return (RBUF)
 	}
@@ -51,7 +50,7 @@ Device (GPIO)
 	Method (GWAK, 1, NotSerialized)
 	{
 		// Local0 = GPIO Base Address
-		Store (And (GPBS, Not(0x1)), Local0)
+		Store (GPBS & ~1, Local0)
 
 		// Local1 = BANK, Local2 = OFFSET
 		Divide (Arg0, 32, Local2, Local1)
@@ -61,7 +60,7 @@ Device (GPIO)
 		//
 
 		// Local3 = GPIOBASE + GPIO_OWN(BANK)
-		Store (Add (Local0, Multiply (Local1, 0x4)), Local3)
+		Store (Local0 + Local1 * 4, Local3)
 
 		// GPIO_OWN(BANK)
 		OperationRegion (IOWN, SystemIO, Local3, 4)
@@ -70,14 +69,14 @@ Device (GPIO)
 		}
 
 		// GPIO_OWN[GPIO] = 0 (ACPI)
-		Store (And (GOWN, Not (ShiftLeft (0x1, Local2))), GOWN)
+		Store (GOWN & ~(1 << Local2), GOWN)
 
 		//
 		// Set ROUTE to SCI
 		//
 
 		// Local3 = GPIOBASE + GPIO_ROUTE(BANK)
-		Store (Add (Add (Local0, 0x30), Multiply (Local1, 0x4)), Local3)
+		Store (Local0 + 0x30 + Local1 * 4, Local3)
 
 		// GPIO_ROUTE(BANK)
 		OperationRegion (IROU, SystemIO, Local3, 4)
@@ -86,14 +85,14 @@ Device (GPIO)
 		}
 
 		// GPIO_ROUTE[GPIO] = 0 (SCI)
-		Store (And (GROU, Not (ShiftLeft (0x1, Local2))), GROU)
+		Store (GROU & ~(1 << Local2), GROU)
 
 		//
 		// Set GPnCONFIG to GPIO|INPUT|INVERT
 		//
 
 		// Local3 = GPIOBASE + GPnCONFIG0(GPIO)
-		Store (Add (Add (Local0, 0x100), Multiply (Arg0, 0x8)), Local3)
+		Store (Local0 + 0x100 + Arg0 * 8, Local3)
 
 		// GPnCONFIG(GPIO)
 		OperationRegion (GPNC, SystemIO, Local3, 8)
@@ -110,8 +109,8 @@ Device (GPIO)
 			ISEN, 1,  // SENSE:  0=ENABLE 1=DISABLE
 		}
 
-		Store (0x1, GMOD) // GPIO
-		Store (0x1, GIOS) // INPUT
-		Store (0x1, GINV) // INVERT
+		GMOD = 1 // GPIO
+		GIOS = 1 // INPUT
+		GINV = 1 // INVERT
 	}
 }

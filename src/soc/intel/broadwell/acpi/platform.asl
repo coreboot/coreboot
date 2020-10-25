@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Enable ACPI _SWS methods */
-#include <soc/intel/common/acpi/acpi_wake_source.asl>
 #include <southbridge/intel/common/acpi/platform.asl>
 
 /*
@@ -18,4 +16,22 @@ Method (_PTS, 1)
 Method (_WAK, 1)
 {
 	Return (Package (){ 0, 0 })
+}
+
+Scope (\_SB)
+{
+	Method (_SWS)
+	{
+		/* Index into PM1 for device that caused wake */
+		Return (\PM1I)
+	}
+}
+
+Scope (\_GPE)
+{
+	Method (_SWS)
+	{
+		/* Index into GPE for device that caused wake */
+		Return (\GPEI)
+	}
 }

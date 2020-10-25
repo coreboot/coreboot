@@ -76,6 +76,26 @@
 #define MSR_CONFIG_TDP_CONTROL		0x64b
 #define MSR_TURBO_ACTIVATION_RATIO	0x64c
 
+#define SMM_MCA_CAP_MSR			0x17d
+#define   SMM_CPU_SVRSTR_BIT		57
+#define   SMM_CPU_SVRSTR_MASK		(1 << (SMM_CPU_SVRSTR_BIT - 32))
+
+#define MSR_PRMRR_PHYS_BASE		0x1f4
+#define MSR_PRMRR_PHYS_MASK		0x1f5
+#define MSR_UNCORE_PRMRR_PHYS_BASE	0x2f4
+#define MSR_UNCORE_PRMRR_PHYS_MASK	0x2f5
+
+#define SMM_FEATURE_CONTROL_MSR		0x4e0
+#define   SMM_CPU_SAVE_EN		(1 << 1)
+
+/* SMM save state MSRs */
+#define SMBASE_MSR			0xc20
+#define IEDBASE_MSR			0xc22
+
+/* MTRR_CAP_MSR bit definitions */
+#define SMRR_SUPPORTED			(1 << 11)
+#define PRMRR_SUPPORTED			(1 << 12)
+
 /* P-state configuration */
 #define PSS_MAX_ENTRIES			8
 #define PSS_RATIO_STEP			2

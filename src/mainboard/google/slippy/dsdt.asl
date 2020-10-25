@@ -24,7 +24,7 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include <northbridge/intel/haswell/acpi/haswell.asl>
+			#include <northbridge/intel/haswell/acpi/hostbridge.asl>
 			#include <southbridge/intel/lynxpoint/acpi/pch.asl>
 
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>

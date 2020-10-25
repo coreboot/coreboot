@@ -84,21 +84,17 @@ RUN \
 	&& ln -s /usr/bin/aclocal /usr/bin/aclocal-1.15
 
 RUN \
-	cd /root && \
+	cd /tmp && \
 	git clone https://review.coreboot.org/coreboot && \
 	cd coreboot && \
-	git checkout {{DOCKER_COMMIT}}
-
-RUN \
+	git checkout {{DOCKER_COMMIT}}; \
 	if echo {{CROSSGCC_PARAM}} | grep -q ^all; then \
-		make -C/root/coreboot/util/crossgcc/ build_clang \
+		make -C /tmp/coreboot/util/crossgcc/ build_clang \
 			BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc; \
-	fi
-
-RUN \
-	make -C/root/coreboot/util/crossgcc/ {{CROSSGCC_PARAM}} \
+	fi; \
+	make -C /tmp/coreboot/util/crossgcc/ {{CROSSGCC_PARAM}} \
 		BUILD_LANGUAGES=c,ada CPUS=$(nproc) DEST=/opt/xgcc && \
-	rm -rf /root/coreboot
+	rm -rf /tmp/coreboot
 
 RUN mkdir /home/coreboot/.ccache && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \

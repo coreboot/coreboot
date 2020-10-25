@@ -168,12 +168,6 @@ Method (_CRS, 0, Serialized)
 	Return (MCRS)
 }
 
-/* Configurable TDP */
-#include "ctdp.asl"
-
-/* PCI Express Graphics */
-#include "peg.asl"
-
 /* PCI Device Resource Consumption */
 Device (PDRC)
 {
@@ -202,3 +196,9 @@ Device (PDRC)
 		Return (PDRS)
 	}
 }
+
+/* Configurable TDP */
+#include "ctdp.asl"
+
+/* PCI Express Graphics */
+#include "peg.asl"

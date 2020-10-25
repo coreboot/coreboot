@@ -2,6 +2,12 @@
 
 /* Intel Lynx Point PCH support */
 
+#if CONFIG(INTEL_LYNXPOINT_LP)
+#define DEFAULT_PRW_VALUE	0x6d
+#else
+#define DEFAULT_PRW_VALUE	0x0d
+#endif
+
 Scope (\)
 {
 	// Return TRUE if chipset is LynxPoint-LP

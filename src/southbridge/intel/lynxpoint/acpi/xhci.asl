@@ -213,26 +213,27 @@ Device (XHCI)
 			^D0D3 = 0
 		}
 
-		If (\ISLP ()) {
-			// Clear PCI 0xB0[14:13]
-			^MB13 = 0
-			^MB14 = 0
+#if CONFIG(INTEL_LYNXPOINT_LP)
+		// Clear PCI 0xB0[14:13]
+		^MB13 = 0
+		^MB14 = 0
 
-			// Clear MMIO 0x816C[14,2]
-			CLK0 = 0
-			CLK1 = 0
-		}
+		// Clear MMIO 0x816C[14,2]
+		CLK0 = 0
+		CLK1 = 0
 
 		// Set MMIO 0x8154[31]
 		CLK2 = 1
 
-		If (\ISLP ()) {
-			// Handle per-port reset if needed
-			LPS0 ()
+		// Handle per-port reset if needed
+		LPS0 ()
 
-			// Set MMIO 0x80e0[15]
-			AX15 = 1
-		}
+		// Set MMIO 0x80e0[15]
+		AX15 = 1
+#else
+		// Set MMIO 0x8154[31]
+		CLK2 = 1
+#endif
 
 		Return ()
 	}
@@ -271,23 +272,24 @@ Device (XHCI)
 			^D0D3 = 0
 		}
 
-		If (\ISLP ()) {
-			// Set PCI 0xB0[14:13]
-			^MB13 = 1
-			^MB14 = 1
+#if CONFIG(INTEL_LYNXPOINT_LP)
+		// Set PCI 0xB0[14:13]
+		^MB13 = 1
+		^MB14 = 1
 
-			// Set MMIO 0x816C[14,2]
-			CLK0 = 1
-			CLK1 = 1
-		}
+		// Set MMIO 0x816C[14,2]
+		CLK0 = 1
+		CLK1 = 1
 
 		// Clear MMIO 0x8154[31]
 		CLK2 = 0
 
-		If (\ISLP ()) {
-			// Clear MMIO 0x80e0[15]
-			AX15 = 0
-		}
+		// Clear MMIO 0x80e0[15]
+		AX15 = 0
+#else
+		// Clear MMIO 0x8154[31]
+		CLK2 = 0
+#endif
 
 		// Put device in D3
 		^D0D3 = 3

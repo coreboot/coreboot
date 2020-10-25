@@ -10,12 +10,6 @@
 
 Scope (\)
 {
-	// Return TRUE if chipset is LynxPoint-LP
-	Method (ISLP, 0, NotSerialized)
-	{
-		Return (CONFIG(INTEL_LYNXPOINT_LP))
-	}
-
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
 	OperationRegion (IO_T, SystemIO, 0x800, 0x10)
 	Field (IO_T, ByteAcc, NoLock, Preserve)

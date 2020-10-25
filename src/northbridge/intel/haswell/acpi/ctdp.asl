@@ -79,13 +79,13 @@ Scope (\_SB.PCI0.MCHC)
 	/* Calculate PL2 based on chip type */
 	Method (CPL2, 1, NotSerialized)
 	{
-		If (\ISLP ()) {
-			/* Haswell ULT PL2 = 25W */
-			Return (25 * 8)
-		} Else {
-			/* Haswell Mobile PL2 = 1.25 * PL1 */
-			Return ((Arg0 * 125) / 100)
-		}
+#if CONFIG(INTEL_LYNXPOINT_LP)
+		/* Haswell ULT PL2 = 25W */
+		Return (25 * 8)
+#else
+		/* Haswell Mobile PL2 = 1.25 * PL1 */
+		Return ((Arg0 * 125) / 100)
+#endif
 	}
 
 	/* Set Config TDP Down */

@@ -13,7 +13,7 @@ DefinitionBlock(
 	#include <soc/intel/broadwell/acpi/platform.asl>
 
 	/* Global NVS and variables */
-	#include <soc/intel/broadwell/acpi/globalnvs.asl>
+	#include <soc/intel/broadwell/pch/acpi/globalnvs.asl>
 
 	/* CPU */
 	#include <cpu/intel/common/acpi/cpu.asl>
@@ -22,7 +22,7 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <soc/intel/broadwell/acpi/systemagent.asl>
-			#include <soc/intel/broadwell/acpi/pch.asl>
+			#include <soc/intel/broadwell/pch/acpi/pch.asl>
 		}
 	}
 

@@ -199,5 +199,8 @@ Device (LPCB)
 		})
 	}
 
+#if CONFIG(INTEL_LYNXPOINT_LP)
+	#include "gpio.asl"
+#endif
 	#include "acpi/superio.asl"
 }

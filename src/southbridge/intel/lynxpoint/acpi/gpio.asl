@@ -51,10 +51,7 @@ Device (GPIO)
 			Return (0x0)
 		}
 	}
-}
 
-Scope (\_SB.PCI0.LPCB)
-{
 	// GWAK: Setup GPIO as ACPI GPE for Wake
 	// Arg0: GPIO Number
 	Method (GWAK, 1, NotSerialized)

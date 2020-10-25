@@ -18,7 +18,7 @@ Scope (\_SB.PCI0.RP01)
 
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GWAK (Local0)
+				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}
 		}
 	}
@@ -40,7 +40,7 @@ Scope (\_SB.PCI0.RP02)
 
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GWAK (Local0)
+				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}
 		}
 	}

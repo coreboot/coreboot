@@ -40,7 +40,7 @@ Scope (\_SB.PCI0.I2C0)
 			Store (BOARD_TRACKPAD_WAKE_GPIO, Local0)
 			If (LEqual (Arg0, 1)) {
 				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GWAK (Local0)
+				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}
 		}
 

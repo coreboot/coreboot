@@ -76,7 +76,6 @@ Scope (\)
 // Serial IO
 #if CONFIG(INTEL_LYNXPOINT_LP)
 #include "serialio.asl"
-#include "gpio.asl"
 #endif
 
 Method (_OSC, 4)

@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <device/pci_ops.h>
@@ -496,11 +497,17 @@ unsigned long northbridge_write_acpi_tables(const struct device *const dev,
 	return current;
 }
 
-unsigned long acpi_madt_irq_overrides(unsigned long current)
+unsigned long acpi_fill_madt(unsigned long current)
 {
 	int sci = acpi_sci_irq();
 	acpi_madt_irqoverride_t *irqovr;
 	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
+
+	/* Local APICs */
+	current = acpi_create_madt_lapics(current);
+
+	/* IOAPIC */
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, 2, IO_APIC_ADDR, 0);
 
 	/* INT_SRC_OVR */
 	irqovr = (void *)current;

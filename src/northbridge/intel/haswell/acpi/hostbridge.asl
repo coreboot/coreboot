@@ -80,8 +80,6 @@ Device (MCHC)
 		Offset (0xbc),	// Top of Low Used Memory
 		TLUD,	 32,
 	}
-
-	#include "ctdp.asl"
 }
 
 // Current Resource Settings
@@ -227,3 +225,6 @@ Method (_CRS, 0, Serialized)
 
 	Return (MCRS)
 }
+
+/* Configurable TDP */
+#include "ctdp.asl"

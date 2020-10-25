@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-//Scope (\_SB.PCI0.MCHC)
-//{
+Scope (\_SB.PCI0.MCHC)
+{
 	Mutex (CTCM, 1)		/* CTDP Switch Mutex (sync level 1) */
 	Name (CTCC, 0)		/* CTDP Current Selection */
 	Name (CTCN, 0)		/* CTDP Nominal Select */
@@ -219,4 +219,4 @@
 		Release (CTCM)
 		Return (1)
 	}
-//}
+}

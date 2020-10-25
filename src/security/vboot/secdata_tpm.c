@@ -109,13 +109,41 @@ static const TPMA_NV rw_space_attributes = {
 };
 
 /*
- * This policy digest was obtained using TPM2_PolicyPCR
- * selecting only PCR_0 with a value of all zeros.
+ * This policy digest was obtained using TPM2_PolicyOR on 3 digests
+ * corresponding to a sequence of
+ *   -) TPM2_PolicyCommandCode(TPM_CC_NV_UndefineSpaceSpecial),
+ *   -) TPM2_PolicyPCR(PCR0, <extended_value>).
+ * where <extended value> is
+ *   1) all zeros = initial, unextended state:
+ *      - Value to extend to initial PCR0:
+ *        <none>
+ *      - Resulting PCR0:
+ *        0000000000000000000000000000000000000000000000000000000000000000
+ *      - Policy digest for PolicyCommandCode + PolicyPCR:
+ *        4B44FC4192DB5AD7167E0135708FD374890A06BFB56317DF01F24F2226542A3F
+ *   2) result of extending (SHA1(0x00|0x01|0x00) | 00s to SHA256 size)
+ *      - Value to extend to initial PCR0:
+ *        62571891215b4efc1ceab744ce59dd0b66ea6f73000000000000000000000000
+ *      - Resulting PCR0:
+ *        9F9EA866D3F34FE3A3112AE9CB1FBABC6FFE8CD261D42493BC6842A9E4F93B3D
+ *      - Policy digest for PolicyCommandCode + PolicyPCR:
+ *        CB5C8014E27A5F7586AAE42DB4F9776A977BCBC952CA61E33609DA2B2C329418
+ *   3) result of extending (SHA1(0x01|0x01|0x00) | 00s to SHA256 size)
+ *      - Value to extend to initial PCR0:
+ *        47ec8d98366433dc002e7721c9e37d5067547937000000000000000000000000
+ *      - Resulting PCR0:
+ *        2A7580E5DA289546F4D2E0509CC6DE155EA131818954D36D49E027FD42B8C8F8
+ *      - Policy digest for PolicyCommandCode + PolicyPCR:
+ *        E6EF4F0296AC3EF0F53906480985B1BE8058E0E517E5F74A5B8A415EFE339D87
+ * Values #2 and #3 correspond to two forms of recovery mode as extended by
+ * vb2api_get_pcr_digest().
+ * As a result, the digest allows deleting the space with UndefineSpaceSpecial
+ * at early RO stages (before extending PCR0) or from recovery mode.
  */
-static const uint8_t pcr0_unchanged_policy[] = {
-	0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11, 0x18, 0x81, 0x1D,
-	0xD4, 0x47, 0x78, 0x80, 0x08, 0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79,
-	0x94, 0x46, 0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1};
+static const uint8_t pcr0_allowed_policy[] = {
+	0x44, 0x44, 0x79, 0x00, 0xCB, 0xB8, 0x3F, 0x5B, 0x15, 0x76, 0x56,
+	0x50, 0xEF, 0x96, 0x98, 0x0A, 0x2B, 0x96, 0x6E, 0xA9, 0x09, 0x04,
+	0x4A, 0x01, 0xB8, 0x5F, 0xA5, 0x4A, 0x96, 0xFC, 0x59, 0x84};
 
 /* Nothing special in the TPM2 path yet. */
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
@@ -154,7 +182,7 @@ static uint32_t set_firmware_space(const void *firmware_blob)
 {
 	return set_space("firmware", FIRMWARE_NV_INDEX, firmware_blob,
 			 VB2_SECDATA_FIRMWARE_SIZE, ro_space_attributes,
-			 pcr0_unchanged_policy, sizeof(pcr0_unchanged_policy));
+			 pcr0_allowed_policy, sizeof(pcr0_allowed_policy));
 }
 
 static uint32_t set_kernel_space(const void *kernel_blob)
@@ -167,8 +195,8 @@ static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
 {
 	if (index == MRC_REC_HASH_NV_INDEX) {
 		return set_space("RO MRC Hash", index, data, HASH_NV_SIZE,
-				 ro_space_attributes, pcr0_unchanged_policy,
-				 sizeof(pcr0_unchanged_policy));
+				 ro_space_attributes, pcr0_allowed_policy,
+				 sizeof(pcr0_allowed_policy));
 	} else {
 		return set_space("RW MRC Hash", index, data, HASH_NV_SIZE,
 				 rw_space_attributes, NULL, 0);

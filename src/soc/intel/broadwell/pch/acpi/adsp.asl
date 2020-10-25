@@ -25,11 +25,11 @@ Device (ADSP)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR address and length if set in NVS
-		If (LNotEqual (\S8B0, Zero)) {
+		If (\S8B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B8A0)
 			CreateDwordField (^RBUF, ^BAR1._BAS, B8A1)
-			Store (\S8B0, B8A0)
-			Store (\S8B1, B8A1)
+			B8A0 = \S8B0
+			B8A1 = \S8B1
 		}
 
 		Return (RBUF)
@@ -37,7 +37,7 @@ Device (ADSP)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S8EN, 0)) {
+		If (\S8EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)

@@ -29,8 +29,8 @@ Scope (\)
 	 */
 	Method (ISWP)
 	{
-		And (\_SB.PCI0.LPCB.PDID, 0xfff0, Local0)
-		If (LEqual (Local0, 0x9cc0)) {
+		Local0 = \_SB.PCI0.LPCB.PDID & 0xfff0
+		If (Local0 == 0x9cc0) {
 			Return (1)
 		} Else {
 			Return (0)
@@ -68,7 +68,7 @@ Scope (\)
 Method (_OSC, 4)
 {
 	/* Check for proper GUID */
-	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID ("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)
@@ -77,7 +77,7 @@ Method (_OSC, 4)
 	{
 		/* Unrecognized UUID */
 		CreateDWordField (Arg3, 0, CDW1)
-		Or (CDW1, 4, CDW1)
+		CDW1 |= 4
 		Return (Arg3)
 	}
 }

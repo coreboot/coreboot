@@ -11,21 +11,21 @@
 Method (LPD0, 2, Serialized)
 {
 	// PCI mode devices will be handled by OS PCI bus driver
-	If (LEqual (Arg1, 0)) {
+	If (Arg1 == 0) {
 		Return
 	}
 
-	OperationRegion (SPRT, SystemMemory, Add (Arg0, 0x84), 4)
+	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
 	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
 		SPCS, 32
 	}
 
-	And (SPCS, 0xFFFFFFFC, SPCS)
-	Store (SPCS, Local0) // Read back after writing
+	SPCS &= 0xFFFFFFFC
+	Local0 = SPCS // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used
-	And(Local0, Ones, Local0)
+	Local0 &= Ones
 }
 
 // Put SerialIO device in D3 state
@@ -34,30 +34,30 @@ Method (LPD0, 2, Serialized)
 Method (LPD3, 2, Serialized)
 {
 	// PCI mode devices will be handled by OS PCI bus driver
-	If (LEqual (Arg1, 0)) {
+	If (Arg1 == 0) {
 		Return
 	}
 
-	OperationRegion (SPRT, SystemMemory, Add (Arg0, 0x84), 4)
+	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
 	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
 		SPCS, 32
 	}
 
-	Or (SPCS, 0x3, SPCS)
-	Store (SPCS, Local0) // Read back after writing
+	SPCS |= 0x3
+	Local0 = SPCS // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used
-	And(Local0, Ones, Local0)
+	Local0 &= Ones
 }
 
 // Serial IO Resource Consumption for BAR1
 Device (SIOR)
 {
-	Name (_HID, EISAID("PNP0C02"))
+	Name (_HID, EISAID ("PNP0C02"))
 	Name (_UID, 4)
 
-	Name (RBUF, ResourceTemplate()
+	Name (RBUF, ResourceTemplate ()
 	{
 		// Serial IO BAR1 (PCI config space) resources
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00000000, B1D0) // SDMA
@@ -74,67 +74,67 @@ Device (SIOR)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// SDMA
-		If (LNotEqual (\S0B1, Zero)) {
+		If (\S0B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^B1D0._LEN, B0LN)
-			Store (\S0B1, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S0B1
+			B0LN = SIO_BAR_LEN
 		}
 
 		// I2C0
-		If (LNotEqual (\S1B1, Zero)) {
+		If (\S1B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D1._BAS, B1AD)
 			CreateDwordField (^RBUF, ^B1D1._LEN, B1LN)
-			Store (\S1B1, B1AD)
-			Store (SIO_BAR_LEN, B1LN)
+			B1AD = \S1B1
+			B1LN = SIO_BAR_LEN
 		}
 
 		// I2C1
-		If (LNotEqual (\S2B1, Zero)) {
+		If (\S2B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D2._BAS, B2AD)
 			CreateDwordField (^RBUF, ^B1D2._LEN, B2LN)
-			Store (\S2B1, B2AD)
-			Store (SIO_BAR_LEN, B2LN)
+			B2AD = \S2B1
+			B2LN = SIO_BAR_LEN
 		}
 
 		// SPI0
-		If (LNotEqual (\S3B1, Zero)) {
+		If (\S3B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D3._BAS, B3AD)
 			CreateDwordField (^RBUF, ^B1D3._LEN, B3LN)
-			Store (\S3B1, B3AD)
-			Store (SIO_BAR_LEN, B3LN)
+			B3AD = \S3B1
+			B3LN = SIO_BAR_LEN
 		}
 
 		// SPI1
-		If (LNotEqual (\S4B1, Zero)) {
+		If (\S4B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D4._BAS, B4AD)
 			CreateDwordField (^RBUF, ^B1D4._LEN, B4LN)
-			Store (\S4B1, B4AD)
-			Store (SIO_BAR_LEN, B4LN)
+			B4AD = \S4B1
+			B4LN = SIO_BAR_LEN
 		}
 
 		// UART0
-		If (LNotEqual (\S5B1, Zero)) {
+		If (\S5B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D5._BAS, B5AD)
 			CreateDwordField (^RBUF, ^B1D5._LEN, B5LN)
-			Store (\S5B1, B5AD)
-			Store (SIO_BAR_LEN, B5LN)
+			B5AD = \S5B1
+			B5LN = SIO_BAR_LEN
 		}
 
 		// UART1
-		If (LNotEqual (\S6B1, Zero)) {
+		If (\S6B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D6._BAS, B6AD)
 			CreateDwordField (^RBUF, ^B1D6._LEN, B6LN)
-			Store (\S6B1, B6AD)
-			Store (SIO_BAR_LEN, B6LN)
+			B6AD = \S6B1
+			B6LN = SIO_BAR_LEN
 		}
 
 		// SDIO
-		If (LNotEqual (\S7B1, Zero)) {
+		If (\S7B1 != 0) {
 			CreateDwordField (^RBUF, ^B1D7._BAS, B7AD)
 			CreateDwordField (^RBUF, ^B1D7._LEN, B7LN)
-			Store (\S7B1, B7AD)
-			Store (SIO_BAR_LEN, B7LN)
+			B7AD = \S7B1
+			B7LN = SIO_BAR_LEN
 		}
 
 		Return (RBUF)
@@ -158,11 +158,11 @@ Device (SDMA)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S0B0, Zero)) {
+		If (\S0B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S0B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S0B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		Return (RBUF)
@@ -170,7 +170,7 @@ Device (SDMA)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S0EN, 0)) {
+		If (\S0EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -214,15 +214,15 @@ Device (I2C0)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S1B0, Zero)) {
+		If (\S1B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S1B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S1B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (LNotEqual (\_SB.PCI0.SDMA._STA, Zero)) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -231,7 +231,7 @@ Device (I2C0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S1EN, 0)) {
+		If (\S1EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -285,15 +285,15 @@ Device (I2C1)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S2B0, Zero)) {
+		If (\S2B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S2B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S2B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (LNotEqual (\_SB.PCI0.SDMA._STA, Zero)) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -302,7 +302,7 @@ Device (I2C1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S2EN, 0)) {
+		If (\S2EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -346,11 +346,11 @@ Device (SPI0)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S3B0, Zero)) {
+		If (\S3B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S3B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S3B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		Return (RBUF)
@@ -358,7 +358,7 @@ Device (SPI0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S3EN, 0)) {
+		If (\S3EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -409,15 +409,15 @@ Device (SPI1)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S4B0, Zero)) {
+		If (\S4B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S4B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S4B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (LNotEqual (\_SB.PCI0.SDMA._STA, Zero)) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -426,7 +426,7 @@ Device (SPI1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S4EN, 0)) {
+		If (\S4EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -477,15 +477,15 @@ Device (UAR0)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S5B0, Zero)) {
+		If (\S5B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S5B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S5B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (LNotEqual (\_SB.PCI0.SDMA._STA, Zero)) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -494,7 +494,7 @@ Device (UAR0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S5EN, 0)) {
+		If (\S5EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -538,11 +538,11 @@ Device (UAR1)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S6B0, Zero)) {
+		If (\S6B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S6B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S6B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		Return (RBUF)
@@ -550,7 +550,7 @@ Device (UAR1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S6EN, 0)) {
+		If (\S6EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -595,11 +595,11 @@ Device (SDIO)
 	Method (_CRS, 0, NotSerialized)
 	{
 		// Update BAR0 address and length if set in NVS
-		If (LNotEqual (\S7B0, Zero)) {
+		If (\S7B0 != 0) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B0AD)
 			CreateDwordField (^RBUF, ^BAR0._LEN, B0LN)
-			Store (\S7B0, B0AD)
-			Store (SIO_BAR_LEN, B0LN)
+			B0AD = \S7B0
+			B0LN = SIO_BAR_LEN
 		}
 
 		Return (RBUF)
@@ -607,7 +607,7 @@ Device (SDIO)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S7EN, 0)) {
+		If (\S7EN == 0) {
 			Return (0x0)
 		} Else {
 			Return (0xF)

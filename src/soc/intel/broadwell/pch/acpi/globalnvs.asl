@@ -11,7 +11,7 @@ Name (\PICM, 0)		// IOAPIC/8259
  * we have to fix it up in coreboot's ACPI creation phase.
  */
 
-External(NVSA)
+External (NVSA)
 OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
@@ -87,35 +87,35 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 /* Set flag to enable USB charging in S3 */
 Method (S3UE)
 {
-	Store (One, \S3U0)
+	\S3U0 = 1
 }
 
 /* Set flag to disable USB charging in S3 */
 Method (S3UD)
 {
-	Store (Zero, \S3U0)
+	\S3U0 = 0
 }
 
 /* Set flag to enable USB charging in S5 */
 Method (S5UE)
 {
-	Store (One, \S5U0)
+	\S5U0 = 1
 }
 
 /* Set flag to disable USB charging in S5 */
 Method (S5UD)
 {
-	Store (Zero, \S5U0)
+	\S5U0 = 0
 }
 
 /* Set flag to enable 3G module in S3 */
 Method (S3GE)
 {
-	Store (One, \S33G)
+	\S33G = 1
 }
 
 /* Set flag to disable 3G module in S3 */
 Method (S3GD)
 {
-	Store (Zero, \S33G)
+	\S33G = 0
 }

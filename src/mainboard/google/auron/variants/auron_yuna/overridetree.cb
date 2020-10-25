@@ -12,6 +12,8 @@ chip soc/intel/broadwell
 			# DTLE DATA / EDGE values
 			register "sata_port0_gen3_dtle" = "0x7"
 			register "sata_port1_gen3_dtle" = "0x5"
+
+			device pci 1f.2 on  end # SATA Controller
 #		end
 	end
 end

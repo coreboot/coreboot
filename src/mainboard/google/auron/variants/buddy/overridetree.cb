@@ -34,6 +34,7 @@ chip soc/intel/broadwell
 			device pci 1c.0 off end # PCIe Port #1
 			device pci 1c.2 on  end # PCIe Port #3 - LAN (becomes RP1)
 			device pci 1c.3 on  end # PCIe Port #4 - WLAN (becomes RP2)
+			device pci 1f.2 on  end # SATA Controller
 			device pci 1f.3 on  end # SMBus
 #		end
 	end

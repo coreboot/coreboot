@@ -36,6 +36,7 @@ chip soc/intel/broadwell
 			device pci 1c.0 off end # PCIe Port #1
 			device pci 1c.2 on  end # PCIe Port #3
 			device pci 1d.0 off end # USB2 EHCI
+			device pci 1f.2 on  end # SATA Controller
 #		end
 	end
 end

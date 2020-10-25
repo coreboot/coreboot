@@ -157,25 +157,16 @@ Device (LPCB)
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02) // SWSMI
 			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE, 0x1, 0xff)
 
-			// GPIO region may be 128 bytes or 4096 bytes
-			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR1)
+#if !CONFIG(INTEL_LYNXPOINT_LP)
+			// LynxPoint-LP GPIO resources are defined in the
+			// SerialIO GPIO device and LynxPoint-H GPIO resources
+			// are defined here.
+			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE, 0x1, 0x40)
+#endif
 		})
 
 		Method (_CRS, 0, NotSerialized)
 		{
-			// LynxPoint-LP GPIO resources are defined in the
-			// SerialIO GPIO device and LynxPoint-H GPIO resources
-			// are defined here.
-			If (!\ISLP ()) {
-				CreateByteField (^RBUF, ^GPR1._LEN, R1LN)
-				CreateWordField (^RBUF, ^GPR1._MIN, R1MN)
-				CreateWordField (^RBUF, ^GPR1._MAX, R1MX)
-
-				// Update GPIO region length
-				R1MN = DEFAULT_GPIOBASE
-				R1MX = DEFAULT_GPIOBASE
-				R1LN = DEFAULT_GPIOSIZE
-			}
 			Return (RBUF)
 		}
 	}

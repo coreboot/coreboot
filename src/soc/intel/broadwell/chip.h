@@ -4,7 +4,6 @@
 #define _SOC_INTEL_BROADWELL_CHIP_H_
 
 #include <drivers/intel/gma/i915.h>
-#include <intelblocks/cfg.h>
 #include <stdint.h>
 
 struct soc_intel_broadwell_config {

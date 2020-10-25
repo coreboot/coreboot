@@ -24,7 +24,6 @@
 #include <soc/pm.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
-#include <intelblocks/cpulib.h>
 
 /*
  * List of supported C-states in this processor. Only the ULT parts support C8,

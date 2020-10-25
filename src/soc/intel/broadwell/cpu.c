@@ -15,7 +15,6 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/name.h>
 #include <delay.h>
-#include <intelblocks/cpulib.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -24,6 +23,64 @@
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
 #include <cpu/intel/common/common.h>
+
+/* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
+static const u8 power_limit_time_sec_to_msr[] = {
+	[0]   = 0x00,
+	[1]   = 0x0a,
+	[2]   = 0x0b,
+	[3]   = 0x4b,
+	[4]   = 0x0c,
+	[5]   = 0x2c,
+	[6]   = 0x4c,
+	[7]   = 0x6c,
+	[8]   = 0x0d,
+	[10]  = 0x2d,
+	[12]  = 0x4d,
+	[14]  = 0x6d,
+	[16]  = 0x0e,
+	[20]  = 0x2e,
+	[24]  = 0x4e,
+	[28]  = 0x6e,
+	[32]  = 0x0f,
+	[40]  = 0x2f,
+	[48]  = 0x4f,
+	[56]  = 0x6f,
+	[64]  = 0x10,
+	[80]  = 0x30,
+	[96]  = 0x50,
+	[112] = 0x70,
+	[128] = 0x11,
+};
+
+/* Convert POWER_LIMIT_1_TIME MSR value to seconds */
+static const u8 power_limit_time_msr_to_sec[] = {
+	[0x00] = 0,
+	[0x0a] = 1,
+	[0x0b] = 2,
+	[0x4b] = 3,
+	[0x0c] = 4,
+	[0x2c] = 5,
+	[0x4c] = 6,
+	[0x6c] = 7,
+	[0x0d] = 8,
+	[0x2d] = 10,
+	[0x4d] = 12,
+	[0x6d] = 14,
+	[0x0e] = 16,
+	[0x2e] = 20,
+	[0x4e] = 24,
+	[0x6e] = 28,
+	[0x0f] = 32,
+	[0x2f] = 40,
+	[0x4f] = 48,
+	[0x6f] = 56,
+	[0x10] = 64,
+	[0x30] = 80,
+	[0x50] = 96,
+	[0x70] = 112,
+	[0x11] = 128,
+};
 
 /* The core 100MHz BCLK is disabled in deeper c-states. One needs to calibrate
  * the 100MHz BCLK against the 24MHz BCLK to restore the clocks properly
@@ -228,6 +285,90 @@ static void configure_pch_power_sharing(void)
 		pmsync2 |= (level & 0x1f) << (i * 8);
 	}
 	RCBA32(PMSYNC_CONFIG2) = pmsync2;
+}
+
+int cpu_config_tdp_levels(void)
+{
+	msr_t platform_info;
+
+	/* Bits 34:33 indicate how many levels supported */
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+	return (platform_info.hi >> 1) & 3;
+}
+
+/*
+ * Configure processor power limits if possible
+ * This must be done AFTER set of BIOS_RESET_CPL
+ */
+void set_power_limits(u8 power_limit_1_time)
+{
+	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
+	msr_t limit;
+	unsigned int power_unit;
+	unsigned int tdp, min_power, max_power, max_time;
+	u8 power_limit_1_val;
+
+	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
+		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
+
+	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
+		return;
+
+	/* Get units */
+	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	power_unit = 2 << ((msr.lo & 0xf) - 1);
+
+	/* Get power defaults for this SKU */
+	msr = rdmsr(MSR_PKG_POWER_SKU);
+	tdp = msr.lo & 0x7fff;
+	min_power = (msr.lo >> 16) & 0x7fff;
+	max_power = msr.hi & 0x7fff;
+	max_time = (msr.hi >> 16) & 0x7f;
+
+	printk(BIOS_DEBUG, "CPU TDP: %u Watts\n", tdp / power_unit);
+
+	if (power_limit_time_msr_to_sec[max_time] > power_limit_1_time)
+		power_limit_1_time = power_limit_time_msr_to_sec[max_time];
+
+	if (min_power > 0 && tdp < min_power)
+		tdp = min_power;
+
+	if (max_power > 0 && tdp > max_power)
+		tdp = max_power;
+
+	power_limit_1_val = power_limit_time_sec_to_msr[power_limit_1_time];
+
+	/* Set long term power limit to TDP */
+	limit.lo = 0;
+	limit.lo |= tdp & PKG_POWER_LIMIT_MASK;
+	limit.lo |= PKG_POWER_LIMIT_EN;
+	limit.lo |= (power_limit_1_val & PKG_POWER_LIMIT_TIME_MASK) <<
+		PKG_POWER_LIMIT_TIME_SHIFT;
+
+	/* Set short term power limit to 1.25 * TDP */
+	limit.hi = 0;
+	limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
+	limit.hi |= PKG_POWER_LIMIT_EN;
+	/* Power limit 2 time is only programmable on server SKU */
+
+	wrmsr(MSR_PKG_POWER_LIMIT, limit);
+
+	/* Set power limit values in MCHBAR as well */
+	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo;
+	MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = limit.hi;
+
+	/* Set DDR RAPL power limit by copying from MMIO to MSR */
+	msr.lo = MCHBAR32(MCH_DDR_POWER_LIMIT_LO);
+	msr.hi = MCHBAR32(MCH_DDR_POWER_LIMIT_HI);
+	wrmsr(MSR_DDR_RAPL_LIMIT, msr);
+
+	/* Use nominal TDP values for CPUs with configurable TDP */
+	if (cpu_config_tdp_levels()) {
+		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
+		limit.hi = 0;
+		limit.lo = msr.lo & 0xff;
+		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
+	}
 }
 
 static void configure_c_states(void)

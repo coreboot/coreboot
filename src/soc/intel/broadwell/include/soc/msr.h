@@ -3,8 +3,6 @@
 #ifndef _BROADWELL_MSR_H_
 #define _BROADWELL_MSR_H_
 
-#include <intelblocks/msr.h>
-
 #define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
@@ -45,6 +43,14 @@
 #define  IRTL_33554432_NS		(5 << 10)
 #define  IRTL_RESPONSE_MASK		(0x3ff)
 #define MSR_COUNTER_24_MHZ		0x637
+
+/* Long duration in low dword, short duration in high dword */
+#define MSR_PKG_POWER_LIMIT		0x610
+#define  PKG_POWER_LIMIT_MASK		0x7fff
+#define  PKG_POWER_LIMIT_EN		(1 << 15)
+#define  PKG_POWER_LIMIT_CLAMP		(1 << 16)
+#define  PKG_POWER_LIMIT_TIME_SHIFT	17
+#define  PKG_POWER_LIMIT_TIME_MASK	0x7f
 
 #define MSR_VR_CURRENT_CONFIG		0x601
 #define MSR_VR_MISC_CONFIG		0x603

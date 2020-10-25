@@ -9,8 +9,8 @@ Device (LPCB)
 	OperationRegion(LPC0, PCI_Config, 0x00, 0x100)
 	Field (LPC0, AnyAcc, NoLock, Preserve)
 	{
-		Offset (0x3),
-		DIDH,	8,	// Device ID High Byte
+		Offset (0x02),
+		PDID,	16,	// Device ID
 		Offset (0x40),
 		PMBS,	16,	// PMBASE
 		Offset (0x48),

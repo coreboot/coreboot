@@ -24,11 +24,13 @@ RUN \
 		bzip2 \
 		ccache \
 		cmake \
+		cscope \
 		curl \
 		device-tree-compiler \
 		dh-autoreconf \
 		diffutils \
 		doxygen \
+		exuberant-ctags \
 		flex \
 		g++ \
 		gawk \
@@ -62,6 +64,7 @@ RUN \
 		nasm \
 		openssl \
 		patch \
+		pbzip2 \
 		pkg-config \
 		python2 \
 		python3 \

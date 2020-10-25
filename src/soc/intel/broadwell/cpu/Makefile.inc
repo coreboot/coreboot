@@ -16,6 +16,7 @@ romstage-y += ../../../../cpu/intel/car/romstage.c
 
 postcar-y += ../../../../cpu/intel/car/non-evict/exit_car.S
 
+ramstage-y += acpi.c
 ramstage-y += cpu.c
 ramstage-y += smmrelocate.c
 

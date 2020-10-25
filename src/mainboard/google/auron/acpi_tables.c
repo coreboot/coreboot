@@ -8,8 +8,6 @@
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
-	acpi_init_gnvs(gnvs);
-
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;
 

@@ -7,5 +7,4 @@
 
 void acpi_create_gnvs(struct global_nvs *gnvs)
 {
-	acpi_init_gnvs(gnvs);
 }

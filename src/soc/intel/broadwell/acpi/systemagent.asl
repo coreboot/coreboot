@@ -141,9 +141,9 @@ Name (MCRS, ResourceTemplate()
 Method (_CRS, 0, Serialized)
 {
 	// Find PCI resource area in MCRS
-	CreateDwordField(MCRS, ^PM01._MIN, PMIN)
-	CreateDwordField(MCRS, ^PM01._MAX, PMAX)
-	CreateDwordField(MCRS, ^PM01._LEN, PLEN)
+	CreateDwordField (MCRS, ^PM01._MIN, PMIN)
+	CreateDwordField (MCRS, ^PM01._MAX, PMAX)
+	CreateDwordField (MCRS, ^PM01._LEN, PLEN)
 
 	// Fix up PCI memory region
 	// Start with Top of Lower Usable DRAM
@@ -170,7 +170,7 @@ Method (_CRS, 0, Serialized)
 /* PCI Device Resource Consumption */
 Device (PDRC)
 {
-	Name (_HID, EISAID("PNP0C02"))
+	Name (_HID, EISAID ("PNP0C02"))
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {

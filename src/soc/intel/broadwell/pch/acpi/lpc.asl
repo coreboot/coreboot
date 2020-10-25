@@ -181,6 +181,6 @@ Device (LPCB)
 
 	#include "gpio.asl"
 	#include "irqlinks.asl"
-	#include <acpi/ec.asl>
-	#include <acpi/superio.asl>
+	#include "acpi/ec.asl"
+	#include "acpi/superio.asl"
 }

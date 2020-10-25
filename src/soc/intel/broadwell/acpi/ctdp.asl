@@ -9,8 +9,7 @@ Scope (\_SB.PCI0.MCHC)
 	Name (CTCU, 2)		/* CTDP Up Select */
 	Name (SPL1, 0)		/* Saved PL1 value */
 
-	OperationRegion (MCHB, SystemMemory,
-			Add (MCH_BASE_ADDRESS, 0x5000), 0x1000)
+	OperationRegion (MCHB, SystemMemory, MCH_BASE_ADDRESS + 0x5000, 0x1000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x930), /* PACKAGE_POWER_SKU */
@@ -51,7 +50,7 @@ Scope (\_SB.PCI0.MCHC)
 	}
 
 	/*
-	 * Search CPU0 _PSS looking for control=arg0 and then
+	 * Search CPU0 _PSS looking for control = arg0 and then
 	 * return previous P-state entry number for new _PPC
 	 *
 	 * Format of _PSS:
@@ -62,17 +61,16 @@ Scope (\_SB.PCI0.MCHC)
 	External (\_SB.CP00._PSS)
 	Method (PSSS, 1, NotSerialized)
 	{
-		Store (One, Local0) /* Start at P1 */
-		Store (SizeOf (\_SB.CP00._PSS), Local1)
+		Local0 = 1 /* Start at P1 */
+		Local1 = SizeOf (\_SB.CP00._PSS)
 
-		While (LLess (Local0, Local1)) {
+		While (Local0 < Local1) {
 			/* Store _PSS entry Control value to Local2 */
-			ShiftRight (DeRefOf (Index (DeRefOf (Index
-			      (\_SB.CP00._PSS, Local0)), 4)), 8, Local2)
-			If (LEqual (Local2, Arg0)) {
-				Return (Subtract (Local0, 1))
+			Local2 = DeRefOf (Index (DeRefOf (Index (\_SB.CP00._PSS, Local0)), 4)) >> 8
+			If (Local2 == Arg0) {
+				Return (Local0 - 1)
 			}
-			Increment (Local0)
+			Local0++
 		}
 
 		Return (0)
@@ -83,7 +81,7 @@ Scope (\_SB.PCI0.MCHC)
 	{
 		/* Haswell ULT PL2 = 25W */
 		/* FIXME: update for broadwell */
-		Return (Multiply (25, 8))
+		Return (25 * 8)
 	}
 
 	/* Set Config TDP Down */
@@ -92,31 +90,31 @@ Scope (\_SB.PCI0.MCHC)
 		If (Acquire (CTCM, 100)) {
 			Return (0)
 		}
-		If (LEqual (CTCD, CTCC)) {
+		If (CTCD == CTCC) {
 			Release (CTCM)
 			Return (0)
 		}
 
-		Store ("Set TDP Down", Debug)
+		Debug = "Set TDP Down"
 
 		/* Set CTC */
-		Store (CTCD, CTCS)
+		CTCS = CTCD
 
 		/* Set TAR */
-		Store (TARD, TARS)
+		TARS = TARD
 
 		/* Set PPC limit and notify OS */
-		Store (PSSS (TARD), PPCM)
+		PPCM = PSSS (TARD)
 		PPCN ()
 
 		/* Set PL2 */
-		Store (CPL2 (CTDD), PL2V)
+		PL2V = CPL2 (CTDD)
 
 		/* Set PL1 */
-		Store (CTDD, PL1V)
+		PL1V = CTDD
 
 		/* Store the new TDP Down setting */
-		Store (CTCD, CTCC)
+		CTCC = CTCD
 
 		Release (CTCM)
 		Return (1)
@@ -128,31 +126,31 @@ Scope (\_SB.PCI0.MCHC)
 		If (Acquire (CTCM, 100)) {
 			Return (0)
 		}
-		If (LEqual (CTCN, CTCC)) {
+		If (CTCN == CTCC) {
 			Release (CTCM)
 			Return (0)
 		}
 
-		Store ("Set TDP Nominal", Debug)
+		Debug = "Set TDP Nominal"
 
 		/* Set PL1 */
-		Store (CTDN, PL1V)
+		PL1V = CTDN
 
 		/* Set PL2 */
-		Store (CPL2 (CTDN), PL2V)
+		PL2V = CPL2 (CTDN)
 
 		/* Set PPC limit and notify OS */
-		Store (PSSS (TARN), PPCM)
+		PPCM = PSSS (TARN)
 		PPCN ()
 
 		/* Set TAR */
-		Store (TARN, TARS)
+		TARS = TARN
 
 		/* Set CTC */
-		Store (CTCN, CTCS)
+		CTCS = CTCN
 
 		/* Store the new TDP Nominal setting */
-		Store (CTCN, CTCC)
+		CTCC = CTCN
 
 		Release (CTCM)
 		Return (1)
@@ -161,7 +159,7 @@ Scope (\_SB.PCI0.MCHC)
 	/* Calculate PL1 value based on requested TDP */
 	Method (TDPP, 1, NotSerialized)
 	{
-		Return (Multiply (ShiftLeft (Subtract (PUNI, 1), 2), Arg0))
+		Return (((PUNI - 1) << 2) * Arg0)
 	}
 
 	/* Enable Controllable TDP to limit PL1 to requested value */
@@ -171,22 +169,22 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Store ("Enable PL1 Limit", Debug)
+		Debug = "Enable PL1 Limit"
 
 		/* Set _PPC to LFM */
-		Store (PSSS (LFM_), Local0)
-		Add (Local0, 1, PPCM)
+		Local0 = PSSS (LFM_)
+		PPCM = Local0 + 1
 		\PPCN ()
 
 		/* Set TAR to LFM-1 */
-		Subtract (LFM_, 1, TARS)
+		TARS = LFM_ - 1
 
 		/* Set PL1 to desired value */
-		Store (PL1V, SPL1)
-		Store (TDPP (Arg0), PL1V)
+		SPL1 = PL1V
+		PL1V = TDPP (Arg0)
 
 		/* Set PL1 CLAMP bit */
-		Store (One, PL1C)
+		PL1C = 1
 
 		Release (CTCM)
 		Return (1)
@@ -199,19 +197,19 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Store ("Disable PL1 Limit", Debug)
+		Debug = "Disable PL1 Limit"
 
 		/* Clear PL1 CLAMP bit */
-		Store (Zero, PL1C)
+		PL1C = 0
 
 		/* Set PL1 to normal value */
-		Store (SPL1, PL1V)
+		PL1V = SPL1
 
 		/* Set TAR to 0 */
-		Store (Zero, TARS)
+		TARS = 0
 
 		/* Set _PPC to 0 */
-		Store (Zero, PPCM)
+		PPCM = 0
 		\PPCN ()
 
 		Release (CTCM)

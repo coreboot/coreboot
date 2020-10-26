@@ -337,10 +337,10 @@ static bool mrc_cache_needs_update(const struct region_device *rdev,
 				   const void *new_data, size_t new_data_size)
 {
 	void *mapping, *data_mapping;
-	size_t size = region_device_sz(rdev);
+	size_t old_data_size = region_device_sz(rdev) - sizeof(struct mrc_metadata);
 	bool need_update = false;
 
-	if (new_data_size != size)
+	if (new_data_size != old_data_size)
 		return true;
 
 	mapping = rdev_mmap_full(rdev);

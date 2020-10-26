@@ -440,10 +440,10 @@ doxygen_simple:
 doxyplatform doxygen_platform: $(obj)/project_filelist.txt
 	echo
 	echo "Building doxygen documentation for $(CONFIG_MAINBOARD_PART_NUMBER)"
-	export DOXYGEN_OUTPUT_DIR="$(DOXYGEN_OUTPUT_DIR)/$(CONFIG_MAINBOARD_VENDOR)/$(CONFIG_MAINBOARD_PART_NUMBER)"; \
+	export DOXYGEN_OUTPUT_DIR="$$( echo $(DOXYGEN_OUTPUT_DIR)/$(call strip_quotes, $(CONFIG_MAINBOARD_VENDOR))_$(call strip_quotes, $(CONFIG_MAINBOARD_PART_NUMBER)) | sed 's|[^A-Za-z0-9/]|_|g' )"; \
 	mkdir -p "$$DOXYGEN_OUTPUT_DIR"; \
 	export DOXYFILES="$$(cat $(obj)/project_filelist.txt | grep -v '\.ld$$' | sed 's/\.aml/\.dsl/' | tr '\n' ' ')"; \
-	export DOXYGEN_PLATFORM="$(CONFIG_MAINBOARD_DIR) ($(CONFIG_MAINBOARD_PART_NUMBER)) version $(KERNELVERSION)"; \
+	export DOXYGEN_PLATFORM="$(call strip_quotes, $(CONFIG_MAINBOARD_DIR)) \($(call strip_quotes, $(CONFIG_MAINBOARD_PART_NUMBER))\) version $(KERNELVERSION)"; \
 	$(DOXYGEN) Documentation/doxygen/Doxyfile.coreboot_platform
 
 doxyclean: doxygen-clean

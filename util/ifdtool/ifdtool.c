@@ -1642,7 +1642,7 @@ static void print_usage(const char *name)
 	       "   -V | --newvalue                       The new value to write into PCH strap specified by -S\n"
 	       "   -v | --version:                       print the version\n"
 	       "   -h | --help:                          print this help\n\n"
-	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform\n"
+	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform, res1, res2, res3\n"
 	       "\n");
 }
 
@@ -1732,6 +1732,12 @@ int main(int argc, char *argv[])
 				region_type = 3;
 			else if (!strcasecmp("Platform", region_type_string))
 				region_type = 4;
+			else if (!strcasecmp("res1", region_type_string))
+				region_type = 5;
+			else if (!strcasecmp("res2", region_type_string))
+				region_type = 6;
+			else if (!strcasecmp("res3", region_type_string))
+				region_type = 7;
 			else if (!strcasecmp("EC", region_type_string))
 				region_type = 8;
 			if (region_type == -1) {

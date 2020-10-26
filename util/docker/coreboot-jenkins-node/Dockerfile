@@ -35,13 +35,13 @@ RUN mkdir /var/run/sshd && \
 	chmod 0755 /var/run/sshd && \
 	/usr/bin/ssh-keygen -A
 
-# Create /cb-build as a tmpfs directory to build in
+# Create tmpfs directories to build in
 RUN mkdir /cb-build && \
 	chown coreboot:coreboot /cb-build && \
 	echo "tmpfs /cb-build tmpfs rw,mode=1777 0 0" > /etc/fstab && \
-	mkdir -p /home/coreboot/agent-root/workspace && \
-	chown -R coreboot:coreboot /home/coreboot/agent-root && \
-	echo "tmpfs /home/coreboot/agent-root/workspace tmpfs rw,mode=1777 0 0" >> /etc/fstab && \
+	mkdir -p /home/coreboot/node-root/workspace && \
+	chown -R coreboot:coreboot /home/coreboot/node-root && \
+	echo "tmpfs /home/coreboot/node-root/workspace tmpfs rw,mode=1777 0 0" >> /etc/fstab && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
 	echo "tmpfs /home/coreboot/.ccache tmpfs rw,mode=1777 0 0" >> /etc/fstab
 
@@ -53,8 +53,8 @@ RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 
 VOLUME /data/cache
 ENTRYPOINT mount /cb-build && \
-	mount /home/coreboot/agent-root/workspace && \
-	chown -R coreboot:coreboot /home/coreboot/agent-root && \
+	mount /home/coreboot/node-root/workspace && \
+	chown -R coreboot:coreboot /home/coreboot/node-root && \
 	mount /home/coreboot/.ccache && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
 	/usr/sbin/sshd -p 49151 -D

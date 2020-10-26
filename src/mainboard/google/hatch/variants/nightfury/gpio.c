@@ -37,6 +37,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* D16 : TOUCHSCREEN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
+	/* D19 : DMIC_CLK_0_SNDW4_CLK */
+	PAD_CFG_NF(GPP_D19, DN_20K, DEEP, NF1),
 
 	/* E4  : M2_SSD_PE_WAKE_ODL ==> NC */
 	PAD_NC(GPP_E4, NONE),

@@ -115,8 +115,6 @@ test-tools:
 	@echo "Build testing $(TOOLLIST)"
 	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
 	$(foreach tool, $(TOOLLIST), echo "Building $(tool)";export MFLAGS= ;export MAKEFLAGS= ;$(MAKE) -C util/$(tool) all V=$(V) Q=$(Q) || exit 1; )
-	echo "Testing broadcom/secimage"
-	$(MAKE) -C util/broadcom/secimage test
 	@echo "Running gitconfig tests"
 	@for test in $$(find util/gitconfig/test -maxdepth 1 \
 		-type f -executable); do \

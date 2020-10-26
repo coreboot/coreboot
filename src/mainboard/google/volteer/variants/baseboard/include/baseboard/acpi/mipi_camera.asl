@@ -157,11 +157,7 @@ Scope (\_SB.PCI0.I2C3)
 			MCON(3,1) /* Clock 3, 19.2MHz */
 
 			/* Pull RST low */
-#if CONFIG(BOARD_GOOGLE_VOLTEER)
 			CTXS(GPP_F15)
-#else
-			CTXS(GPP_D4)
-#endif
 
 			/* Pull SNRPWR_EN high */
 			STXS(GPP_H14)
@@ -176,11 +172,8 @@ Scope (\_SB.PCI0.I2C3)
 			REFC++
 
 			/* Pull RST high */
-#if CONFIG(BOARD_GOOGLE_VOLTEER)
 			STXS(GPP_F15)
-#else
-			STXS(GPP_D4)
-#endif
+
 			Sleep(1) /* t2 */
 
 			STA = 1
@@ -192,11 +185,7 @@ Scope (\_SB.PCI0.I2C3)
 			MCOF(3) /* Clock 3 */
 
 			/* Pull RST low */
-#if CONFIG(BOARD_GOOGLE_VOLTEER)
 			CTXS(GPP_F15)
-#else
-			CTXS(GPP_D4)
-#endif
 
 			If (REFC == 1)
 			{

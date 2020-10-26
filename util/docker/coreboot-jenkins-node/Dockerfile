@@ -38,10 +38,10 @@ RUN mkdir /var/run/sshd && \
 # Create tmpfs directories to build in
 RUN mkdir /cb-build && \
 	chown coreboot:coreboot /cb-build && \
-	echo "tmpfs /cb-build tmpfs rw,mode=1777 0 0" > /etc/fstab && \
+	echo "tmpfs /cb-build tmpfs rw,mode=1777,noatime 0 0" > /etc/fstab && \
 	mkdir -p /home/coreboot/node-root/workspace && \
 	chown -R coreboot:coreboot /home/coreboot/node-root && \
-	echo "tmpfs /home/coreboot/node-root/workspace tmpfs rw,mode=1777 0 0" >> /etc/fstab && \
+	echo "tmpfs /home/coreboot/node-root/workspace tmpfs rw,mode=1777,strictatime,atime 0 0" >> /etc/fstab && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
 	echo "tmpfs /home/coreboot/.ccache tmpfs rw,mode=1777 0 0" >> /etc/fstab
 

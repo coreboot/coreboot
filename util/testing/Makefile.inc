@@ -99,8 +99,8 @@ test-lint:
 
 test-abuild:
 	rm -rf coreboot-builds-chromeos coreboot-builds
-	export COREBOOT_BUILD_DIR=coreboot-builds-chromeos; util/abuild/abuild -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x
-	util/abuild/abuild -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD)
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD)
 
 test-payloads:
 	$(MAKE) -C payloads/libpayload test-configs -j $(CPUS) V=$(V) Q=$(Q) MFLAGS= MAKEFLAGS= $(if $(TEST_NOCCACHE),,CONFIG_LP_CCACHE=y)

@@ -200,15 +200,15 @@ static void acipgen_dptci(void)
 	if (!config->dptc_enable)
 		return;
 
-	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit,
-							config->sustained_power_limit,
-							config->fast_ppt_limit,
-							config->slow_ppt_limit);
+	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
+							config->sustained_power_limit_mW,
+							config->fast_ppt_limit_mW,
+							config->slow_ppt_limit_mW);
 	struct dptc_input tablet_mode_input = DPTC_INPUTS(
-					config->thermctl_limit_tablet_mode,
-					config->sustained_power_limit_tablet_mode,
-					config->fast_ppt_limit_tablet_mode,
-					config->slow_ppt_limit_tablet_mode);
+					config->thermctl_limit_tablet_mode_degreeC,
+					config->sustained_power_limit_tablet_mode_mW,
+					config->fast_ppt_limit_tablet_mode_mW,
+					config->slow_ppt_limit_tablet_mode_mW);
 	/* Scope (\_SB) */
 	acpigen_write_scope("\\_SB");
 

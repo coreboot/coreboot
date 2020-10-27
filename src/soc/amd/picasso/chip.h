@@ -102,22 +102,22 @@ struct soc_amd_picasso_config {
 	uint8_t system_config;
 
 	/* STAPM Configuration */
-	uint32_t fast_ppt_limit;
-	uint32_t slow_ppt_limit;
-	uint32_t slow_ppt_time_constant;
-	uint32_t stapm_time_constant;
-	uint32_t sustained_power_limit;
+	uint32_t fast_ppt_limit_mW;
+	uint32_t slow_ppt_limit_mW;
+	uint32_t slow_ppt_time_constant_s;
+	uint32_t stapm_time_constant_s;
+	uint32_t sustained_power_limit_mW;
 
 	/* Enable dptc for tablet mode (0 = disable, 1 = enable) */
 	uint8_t dptc_enable;
 
 	/* STAPM Configuration for tablet mode (need enable dptc_enable first) */
-	uint32_t fast_ppt_limit_tablet_mode;
-	uint32_t slow_ppt_limit_tablet_mode;
-	uint32_t sustained_power_limit_tablet_mode;
+	uint32_t fast_ppt_limit_tablet_mode_mW;
+	uint32_t slow_ppt_limit_tablet_mode_mW;
+	uint32_t sustained_power_limit_tablet_mode_mW;
 
 	/* PROCHOT_L de-assertion Ramp Time */
-	uint32_t prochot_l_deassertion_ramp_time;
+	uint32_t prochot_l_deassertion_ramp_time_ms;
 
 	enum {
 		DOWNCORE_AUTO = 0,
@@ -128,29 +128,29 @@ struct soc_amd_picasso_config {
 	uint8_t smt_disable; /* 1=disable SMT, 0=enable SMT */
 
 	/* Lower die temperature limit */
-	uint32_t thermctl_limit;
-	uint32_t thermctl_limit_tablet_mode;
+	uint32_t thermctl_limit_degreeC;
+	uint32_t thermctl_limit_tablet_mode_degreeC;
 
 	/* FP5 Processor Voltage Supply PSI Currents. 0 indicates use SOC default */
-	uint32_t psi0_current_limit;
-	uint32_t psi0_soc_current_limit;
-	uint32_t vddcr_soc_voltage_margin;
-	uint32_t vddcr_vdd_voltage_margin;
+	uint32_t psi0_current_limit_mA;
+	uint32_t psi0_soc_current_limit_mA;
+	uint32_t vddcr_soc_voltage_margin_mV;
+	uint32_t vddcr_vdd_voltage_margin_mV;
 
 	/* VRM Limits. 0 indicates use SOC default */
-	uint32_t vrm_maximum_current_limit;
-	uint32_t vrm_soc_maximum_current_limit;
-	uint32_t vrm_current_limit;
-	uint32_t vrm_soc_current_limit;
+	uint32_t vrm_maximum_current_limit_mA;
+	uint32_t vrm_soc_maximum_current_limit_mA;
+	uint32_t vrm_current_limit_mA;
+	uint32_t vrm_soc_current_limit_mA;
 
 	/* Misc SMU settings */
 	uint8_t sb_tsi_alert_comparator_mode_en;
 	uint8_t core_dldo_bypass;
 	uint8_t min_soc_vid_offset;
 	uint8_t aclk_dpm0_freq_400MHz;
-	uint32_t telemetry_vddcr_vdd_slope;
+	uint32_t telemetry_vddcr_vdd_slope_mA;
 	uint32_t telemetry_vddcr_vdd_offset;
-	uint32_t telemetry_vddcr_soc_slope;
+	uint32_t telemetry_vddcr_soc_slope_mA;
 	uint32_t telemetry_vddcr_soc_offset;
 
 	struct {

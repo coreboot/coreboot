@@ -15,22 +15,22 @@ chip soc/amd/picasso
 	# For the below fields, 0 indicates use SOC default
 
 	# PROCHOT_L de-assertion Ramp Time
-	register "prochot_l_deassertion_ramp_time" = "20" #mS
+	register "prochot_l_deassertion_ramp_time_ms" = "20"
 
 	# Lower die temperature limit
-	register "thermctl_limit" = "100" #degrees C
+	register "thermctl_limit_degreeC" = "100"
 
 	# FP5 Processor Voltage Supply PSI Currents
-	register "psi0_current_limit" = "18000" #mA
-	register "psi0_soc_current_limit" = "12000"  #mA
-	register "vddcr_soc_voltage_margin" = "0" #mV
-	register "vddcr_vdd_voltage_margin" = "0" #mV
+	register "psi0_current_limit_mA" = "18000"
+	register "psi0_soc_current_limit_mA" = "12000"
+	register "vddcr_soc_voltage_margin_mV" = "0"
+	register "vddcr_vdd_voltage_margin_mV" = "0"
 
 	# VRM Limits
-	register "vrm_maximum_current_limit" = "0"  #mA
-	register "vrm_soc_maximum_current_limit" = "0"  #mA
-	register "vrm_current_limit" = "0"  #mA
-	register "vrm_soc_current_limit" = "0" #mA
+	register "vrm_maximum_current_limit_mA" = "0"
+	register "vrm_soc_maximum_current_limit_mA" = "0"
+	register "vrm_current_limit_mA" = "0"
+	register "vrm_soc_current_limit_mA" = "0"
 
 	# Misc SMU settings
 	register "sb_tsi_alert_comparator_mode_en" = "0"

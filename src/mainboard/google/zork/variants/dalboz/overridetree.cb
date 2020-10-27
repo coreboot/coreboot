@@ -9,17 +9,17 @@ chip soc/amd/picasso
 	register "system_config" = "1"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
-	register "slow_ppt_limit" = "6000" #mw
-	register "fast_ppt_limit" = "9000" #mw
-	register "slow_ppt_time_constant" = "5" #second
-	register "stapm_time_constant" = "2500" #second
-	register "sustained_power_limit" = "4800" #mw
+	register "slow_ppt_limit_mW" = "6000"
+	register "fast_ppt_limit_mW" = "9000"
+	register "slow_ppt_time_constant_s" = "5"
+	register "stapm_time_constant_s" = "2500"
+	register "sustained_power_limit_mW" = "4800"
 
 	# End : OPN Performance Configuration
 
-	register "telemetry_vddcr_vdd_slope" = "30231" #mA
+	register "telemetry_vddcr_vdd_slope_mA" = "30231"
 	register "telemetry_vddcr_vdd_offset" = "0-1"
-	register "telemetry_vddcr_soc_slope" = "22644" #mA
+	register "telemetry_vddcr_soc_slope_mA" = "22644"
 	register "telemetry_vddcr_soc_offset" = "68"
 
 	# I2C2 for touchscreen and trackpad

@@ -105,37 +105,37 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	mcfg->system_config = config->system_config;
 
-	if ((config->slow_ppt_limit) &&
-		(config->fast_ppt_limit) &&
-		(config->slow_ppt_time_constant) &&
-		(config->stapm_time_constant)) {
-		mcfg->slow_ppt_limit = config->slow_ppt_limit;
-		mcfg->fast_ppt_limit = config->fast_ppt_limit;
-		mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant;
-		mcfg->stapm_time_constant = config->stapm_time_constant;
+	if ((config->slow_ppt_limit_mW) &&
+		(config->fast_ppt_limit_mW) &&
+		(config->slow_ppt_time_constant_s) &&
+		(config->stapm_time_constant_s)) {
+		mcfg->slow_ppt_limit_mW = config->slow_ppt_limit_mW;
+		mcfg->fast_ppt_limit_mW = config->fast_ppt_limit_mW;
+		mcfg->slow_ppt_time_constant_s = config->slow_ppt_time_constant_s;
+		mcfg->stapm_time_constant_s = config->stapm_time_constant_s;
 	}
 
 	mcfg->ccx_down_core_mode = config->downcore_mode;
 	mcfg->ccx_disable_smt = config->smt_disable;
 
-	mcfg->sustained_power_limit = config->sustained_power_limit;
-	mcfg->prochot_l_deassertion_ramp_time = config->prochot_l_deassertion_ramp_time;
-	mcfg->thermctl_limit = config->thermctl_limit;
-	mcfg->psi0_current_limit = config->psi0_current_limit;
-	mcfg->psi0_soc_current_limit = config->psi0_soc_current_limit;
-	mcfg->vddcr_soc_voltage_margin = config->vddcr_soc_voltage_margin;
-	mcfg->vddcr_vdd_voltage_margin = config->vddcr_vdd_voltage_margin;
-	mcfg->vrm_maximum_current_limit = config->vrm_maximum_current_limit;
-	mcfg->vrm_soc_maximum_current_limit = config->vrm_soc_maximum_current_limit;
-	mcfg->vrm_current_limit = config->vrm_current_limit;
-	mcfg->vrm_soc_current_limit = config->vrm_soc_current_limit;
+	mcfg->sustained_power_limit_mW = config->sustained_power_limit_mW;
+	mcfg->prochot_l_deassertion_ramp_time_ms = config->prochot_l_deassertion_ramp_time_ms;
+	mcfg->thermctl_limit_degreeC = config->thermctl_limit_degreeC;
+	mcfg->psi0_current_limit_mA = config->psi0_current_limit_mA;
+	mcfg->psi0_soc_current_limit_mA = config->psi0_soc_current_limit_mA;
+	mcfg->vddcr_soc_voltage_margin_mV = config->vddcr_soc_voltage_margin_mV;
+	mcfg->vddcr_vdd_voltage_margin_mV = config->vddcr_vdd_voltage_margin_mV;
+	mcfg->vrm_maximum_current_limit_mA = config->vrm_maximum_current_limit_mA;
+	mcfg->vrm_soc_maximum_current_limit_mA = config->vrm_soc_maximum_current_limit_mA;
+	mcfg->vrm_current_limit_mA = config->vrm_current_limit_mA;
+	mcfg->vrm_soc_current_limit_mA = config->vrm_soc_current_limit_mA;
 	mcfg->sb_tsi_alert_comparator_mode_en = config->sb_tsi_alert_comparator_mode_en;
 	mcfg->core_dldo_bypass = config->core_dldo_bypass;
 	mcfg->min_soc_vid_offset = config->min_soc_vid_offset;
 	mcfg->aclk_dpm0_freq_400MHz = config->aclk_dpm0_freq_400MHz;
-	mcfg->telemetry_vddcr_vdd_slope = config->telemetry_vddcr_vdd_slope;
+	mcfg->telemetry_vddcr_vdd_slope_mA = config->telemetry_vddcr_vdd_slope_mA;
 	mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
-	mcfg->telemetry_vddcr_soc_slope = config->telemetry_vddcr_soc_slope;
+	mcfg->telemetry_vddcr_soc_slope_mA = config->telemetry_vddcr_soc_slope_mA;
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
 	mcfg->sata_enable = devtree_sata_dev_enabled();

@@ -9,15 +9,15 @@ chip soc/amd/picasso
 	register "system_config" = "2"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
-	register "slow_ppt_limit" = "20000" #mw
-	register "fast_ppt_limit" = "24000" #mw
-	register "slow_ppt_time_constant" = "5" #second
-	register "stapm_time_constant" = "200" #second
-	register "sustained_power_limit" = "12000" #mw
+	register "slow_ppt_limit_mW" = "20000"
+	register "fast_ppt_limit_mW" = "24000"
+	register "slow_ppt_time_constant_s" = "5"
+	register "stapm_time_constant_s" = "200"
+	register "sustained_power_limit_mW" = "12000"
 
-	register "telemetry_vddcr_vdd_slope" = "62413" #mA
+	register "telemetry_vddcr_vdd_slope_mA" = "62413"
 	register "telemetry_vddcr_vdd_offset" = "0"
-	register "telemetry_vddcr_soc_slope" = "28977" #mA
+	register "telemetry_vddcr_soc_slope_mA" = "28977"
 	register "telemetry_vddcr_soc_offset" = "0"
 
 	# End : OPN Performance Configuration

@@ -14,8 +14,6 @@ chip soc/intel/tigerlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A / Type-C Port 0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A / Type-C Port 1
 
-	register "SaGv" = "SaGv_Disabled"
-
 	# Disable SRCCLKREQ1#
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
 

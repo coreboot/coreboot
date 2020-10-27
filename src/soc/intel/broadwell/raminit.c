@@ -85,29 +85,23 @@ void raminit(struct pei_data *pei_data)
 
 	broadwell_fill_pei_data(pei_data);
 
-	if (CONFIG(BROADWELL_VBOOT_IN_BOOTBLOCK) &&
-	    vboot_recovery_mode_enabled()) {
-		/* Recovery mode does not use MRC cache */
-		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
-	} else {
-		/* Assume boot device is memory mapped. */
-		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+	/* Assume boot device is memory mapped. */
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
-		pei_data->saved_data =
-			mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, 0,
-						    &mrc_size);
-		if (pei_data->saved_data) {
-			/* MRC cache found */
-			pei_data->saved_data_size = mrc_size;
-		} else if (pei_data->boot_mode == ACPI_S3) {
-			/* Waking from S3 and no cache. */
-			printk(BIOS_DEBUG,
-			       "No MRC cache found in S3 resume path.\n");
-			post_code(POST_RESUME_FAILURE);
-			system_reset();
-		} else {
-			printk(BIOS_DEBUG, "No MRC cache found.\n");
-		}
+	pei_data->saved_data =
+		mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, 0,
+					    &mrc_size);
+	if (pei_data->saved_data) {
+		/* MRC cache found */
+		pei_data->saved_data_size = mrc_size;
+	} else if (pei_data->boot_mode == ACPI_S3) {
+		/* Waking from S3 and no cache. */
+		printk(BIOS_DEBUG,
+		       "No MRC cache found in S3 resume path.\n");
+		post_code(POST_RESUME_FAILURE);
+		system_reset();
+	} else {
+		printk(BIOS_DEBUG, "No MRC cache found.\n");
 	}
 
 	/*

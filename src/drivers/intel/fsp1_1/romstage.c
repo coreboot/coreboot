@@ -41,35 +41,29 @@ static void raminit_common(struct romstage_params *params)
 	params->saved_data_size = 0;
 	params->saved_data = NULL;
 	if (!params->disable_saved_data) {
-		if (vboot_recovery_mode_enabled()) {
-			/* Recovery mode does not use MRC cache */
+		/* Assume boot device is memory mapped. */
+		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+
+		params->saved_data = NULL;
+		if (CONFIG(CACHE_MRC_SETTINGS))
+			params->saved_data =
+				mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+							    params->fsp_version,
+							    &mrc_size);
+		if (params->saved_data) {
+			/* MRC cache found */
+			params->saved_data_size = mrc_size;
+
+		} else if (s3wake) {
+			/* Waking from S3 and no cache. */
 			printk(BIOS_DEBUG,
-			       "Recovery mode: not using MRC cache.\n");
+			       "No MRC cache "
+			       "found in S3 resume path.\n");
+			post_code(POST_RESUME_FAILURE);
+			/* FIXME: A "system" reset is likely enough: */
+			full_reset();
 		} else {
-			/* Assume boot device is memory mapped. */
-			assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
-
-			params->saved_data = NULL;
-			if (CONFIG(CACHE_MRC_SETTINGS))
-				params->saved_data =
-					mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
-								    params->fsp_version,
-								    &mrc_size);
-			if (params->saved_data) {
-				/* MRC cache found */
-				params->saved_data_size = mrc_size;
-
-			} else if (s3wake) {
-				/* Waking from S3 and no cache. */
-				printk(BIOS_DEBUG,
-				       "No MRC cache "
-				       "found in S3 resume path.\n");
-				post_code(POST_RESUME_FAILURE);
-				/* FIXME: A "system" reset is likely enough: */
-				full_reset();
-			} else {
-				printk(BIOS_DEBUG, "No MRC cache found.\n");
-			}
+			printk(BIOS_DEBUG, "No MRC cache found.\n");
 		}
 	}
 

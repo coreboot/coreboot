@@ -69,7 +69,20 @@ static const struct cache_region normal_training = {
 	.type = MRC_TRAINING_DATA,
 	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_NORMAL,
 	.tpm_hash_index = MRC_RW_HASH_NV_INDEX,
+#if CONFIG(VBOOT_STARTS_IN_ROMSTAGE)
+	/*
+	 * If VBOOT_STARTS_IN_ROMSTAGE is selected, this means that
+	 * memory training happens before vboot (in RO) and the
+	 * mrc_cache data is always safe to use.
+	 */
 	.flags = NORMAL_FLAG | RECOVERY_FLAG,
+#else
+	/*
+	 * If !VBOOT_STARTS_IN_ROMSTAGE, this means that memory training happens after
+	 * vboot (in RW code) and is never safe to use in recovery.
+	 */
+	.flags = NORMAL_FLAG,
+#endif
 };
 
 static const struct cache_region variable_data = {
@@ -78,7 +91,20 @@ static const struct cache_region variable_data = {
 	.type = MRC_VARIABLE_DATA,
 	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_VARIABLE,
 	.tpm_hash_index = 0,
+#if CONFIG(VBOOT_STARTS_IN_ROMSTAGE)
+	/*
+	 * If VBOOT_STARTS_IN_ROMSTAGE is selected, this means that
+	 * memory training happens before vboot (in RO) and the
+	 * mrc_cache data is always safe to use.
+	 */
 	.flags = NORMAL_FLAG | RECOVERY_FLAG,
+#else
+	/*
+	 * If !VBOOT_STARTS_IN_ROMSTAGE, this means that memory training happens after
+	 * vboot (in RW code) and is never safe to use in recovery.
+	 */
+	.flags = NORMAL_FLAG,
+#endif
 };
 
 /* Order matters here for priority in matching. */
@@ -254,6 +280,13 @@ static int mrc_cache_find_current(int type, uint32_t version,
 	size_t data_size;
 	const size_t md_size = sizeof(*md);
 	const bool fail_bad_data = true;
+
+	/*
+	 * In recovery mode, force retraining if the memory retrain
+	 * switch is set.
+	 */
+	if (vboot_recovery_mode_enabled() && get_recovery_mode_retrain_switch())
+		return -1;
 
 	cr = lookup_region(&region, type);
 
@@ -566,10 +599,24 @@ static void invalidate_normal_cache(void)
 	const char *name = DEFAULT_MRC_CACHE;
 	const uint32_t invalid = ~MRC_DATA_SIGNATURE;
 
-	/* Invalidate only on recovery mode with retraining enabled. */
+	/*
+	 * If !HAS_RECOVERY_MRC_CACHE and VBOOT_STARTS_IN_ROMSTAGE is
+	 * selected, this means that memory training occurs before
+	 * verified boot (in RO), so normal mode cache does not need
+	 * to be invalidated.
+	 */
+	if (!CONFIG(HAS_RECOVERY_MRC_CACHE) && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
+		return;
+
+	/* We only invalidate the normal cache in recovery mode. */
 	if (!vboot_recovery_mode_enabled())
 		return;
-	if (!get_recovery_mode_retrain_switch())
+
+	/*
+	 * For platforms with a recovery mrc_cache, no need to
+	 * invalidate when retrain switch is not set.
+	 */
+	if (CONFIG(HAS_RECOVERY_MRC_CACHE) && !get_recovery_mode_retrain_switch())
 		return;
 
 	if (fmap_locate_area_as_rdev_rw(name, &rdev) < 0) {
@@ -599,7 +646,7 @@ static void update_mrc_cache_from_cbmem(int type)
 	cr = lookup_region(&region, type);
 
 	if (cr == NULL) {
-		printk(BIOS_ERR, "MRC: could not find cache_region type %d\n", type);
+		printk(BIOS_INFO, "MRC: could not find cache_region type %d\n", type);
 		return;
 	}
 
@@ -631,8 +678,7 @@ static void finalize_mrc_cache(void *unused)
 			update_mrc_cache_from_cbmem(MRC_VARIABLE_DATA);
 	}
 
-	if (CONFIG(MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN))
-		invalidate_normal_cache();
+	invalidate_normal_cache();
 
 	protect_mrc_region();
 }
@@ -641,13 +687,6 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 			 size_t size)
 {
 	const struct cache_region *cr;
-
-	cr = lookup_region_type(type);
-	if (cr == NULL) {
-		printk(BIOS_ERR, "MRC: failed to add to cbmem for type %d.\n",
-			type);
-		return -1;
-	}
 
 	struct mrc_metadata md = {
 		.signature = MRC_DATA_SIGNATURE,
@@ -663,6 +702,13 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 		struct mrc_metadata *cbmem_md;
 		size_t cbmem_size;
 		cbmem_size = sizeof(*cbmem_md) + size;
+
+		cr = lookup_region_type(type);
+		if (cr == NULL) {
+			printk(BIOS_INFO, "MRC: No region type found. Skip adding to cbmem for type %d.\n",
+				type);
+			return 0;
+		}
 
 		cbmem_md = cbmem_add(cr->cbmem_id, cbmem_size);
 

@@ -92,18 +92,6 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	if (!CONFIG(CACHE_MRC_SETTINGS))
 		return;
 
-	/*
-	 * In recovery mode, force retraining:
-	 * 1. Recovery cache is not supported, or
-	 * 2. Memory retrain switch is set.
-	 */
-	if (vboot_recovery_mode_enabled()) {
-		if (!CONFIG(HAS_RECOVERY_MRC_CACHE))
-			return;
-		if (get_recovery_mode_retrain_switch())
-			return;
-	}
-
 	/* Assume boot device is memory mapped. */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 

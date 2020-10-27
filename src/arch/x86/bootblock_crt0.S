@@ -10,7 +10,7 @@
 
 #include <cpu/x86/cr.h>
 
-.section .text
+.section .text._start
 
 /*
  * Include the old code for reset vector and protected mode entry. That code has

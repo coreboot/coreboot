@@ -5,9 +5,9 @@ choice
 	default FILO_STABLE
 
 config FILO_STABLE
-	bool "0.6.0"
+	bool "tested"
 	help
-	  Stable FILO version
+	  Tested FILO version
 
 config FILO_MASTER
 	bool "HEAD"

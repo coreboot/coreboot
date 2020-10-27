@@ -1,6 +1,6 @@
 TAG-$(CONFIG_FILO_MASTER)=origin/master
 NAME-$(CONFIG_FILO_MASTER)=MASTER
-TAG-$(CONFIG_FILO_STABLE)=22baa6bde9339029edfafa421b3d4a7be159edad
+TAG-$(CONFIG_FILO_STABLE)=c2fa1ea6125c63e84cdf7779c37d76da8c5bc412
 NAME-$(CONFIG_FILO_STABLE)=STABLE
 
 project_git_repo=https://review.coreboot.org/filo.git

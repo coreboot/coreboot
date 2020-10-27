@@ -11,3 +11,10 @@ config SOC_INTEL_COMMON_BLOCK_USB4_PCIE
 	help
 	  Chip driver for adding PCI ops and SSDT generation for common Intel
 	  USB4/Thunderbolt root ports.
+
+config SOC_INTEL_COMMON_BLOCK_USB4_XHCI
+	bool
+	default n
+	help
+	  Minimal PCI driver for adding PCI ops and SSDT generation for common
+	  Intel USB4/Thunderbolt North XHCI ports.

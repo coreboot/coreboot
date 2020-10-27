@@ -143,6 +143,7 @@ config MAINBOARD_PART_NUMBER
 	default "Stryke" if BOARD_GOOGLE_STRYKE
 	default "Wyvern" if BOARD_GOOGLE_WYVERN
 	default "Dooly" if BOARD_GOOGLE_DOOLY
+	default "Ambassador" if BOARD_GOOGLE_AMBASSADOR
 
 config OVERRIDE_DEVICETREE
 	string
@@ -176,6 +177,7 @@ config VARIANT_DIR
 	default "stryke" if BOARD_GOOGLE_STRYKE
 	default "wyvern" if BOARD_GOOGLE_WYVERN
 	default "dooly" if BOARD_GOOGLE_DOOLY
+	default "ambassador" if BOARD_GOOGLE_AMBASSADOR
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

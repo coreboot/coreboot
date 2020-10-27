@@ -97,3 +97,7 @@ config BOARD_GOOGLE_WYVERN
 config BOARD_GOOGLE_DOOLY
 	bool "-> Dooly"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
+
+config BOARD_GOOGLE_AMBASSADOR
+	bool "-> Ambassador"
+	select BOARD_GOOGLE_BASEBOARD_PUFF

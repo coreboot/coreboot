@@ -53,8 +53,7 @@ uint32_t soc_read_sci_irq_select(void)
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	/* Clear flags set by common/block/acpi/acpi.c acpi_fill_fadt() */
-	fadt->flags &=  ~(ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_SEALED_CASE |
-				ACPI_FADT_S4_RTC_WAKE);
+	fadt->flags &=  ~(ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE);
 }
 
 void uncore_inject_dsdt(const struct device *device)

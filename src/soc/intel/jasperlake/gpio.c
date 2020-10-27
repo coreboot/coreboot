@@ -33,36 +33,33 @@ static const struct reset_mapping rst_map_com0[] = {
  */
 static const struct pad_group jsl_community0_groups[] = {
 
-	INTEL_GPP_BASE(GPP_F0, GPP_F0, GPP_F19, 0),	/* GPP_F */
-	INTEL_GPP(GPP_F0, GPIO_SPI0_IO_2, GPIO_SPI0_CLK_LOOPBK),
-	INTEL_GPP_BASE(GPP_F0, GPP_B0, GPP_B23, 32),	/* GPP_B */
-	INTEL_GPP(GPP_F0, GPIO_GSPI0_CLK_LOOPBK, GPIO_GSPI1_CLK_LOOPBK),
-	INTEL_GPP_BASE(GPP_F0, GPP_A0, GPIO_ESPI_CLK_LOOPBK, 64),	/* GPP_A */
-	INTEL_GPP_BASE(GPP_F0, GPP_S0, GPP_S7, 96),	/* GPP_S */
-	INTEL_GPP_BASE(GPP_F0, GPP_R0, GPP_R7, 128),	/* GPP_R */
+	INTEL_GPP_BASE(GPP_F0, GPP_F0, GPP_F19, 320),		/* GPP_F */
+	INTEL_GPP(GPP_F0, GPIO_SPI0_IO_2, GPIO_SPI0_CLK_LOOPBK),/* SPI0 */
+	INTEL_GPP_BASE(GPP_F0, GPP_B0, GPIO_GSPI1_CLK_LOOPBK, 32),/* GPP_B */
+	INTEL_GPP_BASE(GPP_F0, GPP_A0, GPIO_ESPI_CLK_LOOPBK, 64),/* GPP_A */
+	INTEL_GPP_BASE(GPP_F0, GPP_S0, GPP_S7, 96),		/* GPP_S */
+	INTEL_GPP_BASE(GPP_F0, GPP_R0, GPP_R7, 128),		/* GPP_R */
 };
 
 static const struct pad_group jsl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_H0, GPP_H0, GPP_H23, 160),		/* GPP_H */
-	INTEL_GPP_BASE(GPP_H0, GPP_D0, GPP_D23, 192),	/* GPP_D */
-	INTEL_GPP(GPP_H0, GPIO_GSPI2_CLK_LOOPBK, GPIO_SPI1_CLK_LOOPBK),
+	INTEL_GPP_BASE(GPP_H0, GPP_D0, GPIO_SPI1_CLK_LOOPBK, 192),/* GPP_D */
 	INTEL_GPP_BASE(GPP_H0, VGPIO_0, VGPIO_39, 224),		/* VGPIO */
 	INTEL_GPP_BASE(GPP_H0, GPP_C0, GPP_C23, 256),		/* GPP_C */
 };
 
 /* This community is not visible to the OS */
 static const struct pad_group jsl_community2_groups[] = {
-	INTEL_GPP(GPD0, GPD0, GPD10),				/* GPD */
-	INTEL_GPP(GPD0, GPIO_INPUT3VSEL, GPIO_DRAM_RESETB),
+	INTEL_GPP(GPD0, GPD0, GPIO_DRAM_RESETB),		/* GPD */
 };
 
 static const struct pad_group jsl_community4_groups[] = {
-	INTEL_GPP(GPIO_L_BKLTEN, GPIO_L_BKLTEN, GPIO_MLK_RSTB),
-	INTEL_GPP_BASE(GPIO_L_BKLTEN, GPP_E0, GPP_E23, 288),		/* GPP_E */
+	INTEL_GPP(GPIO_L_BKLTEN, GPIO_L_BKLTEN, GPIO_MLK_RSTB),	/* Reserved */
+	INTEL_GPP_BASE(GPIO_L_BKLTEN, GPP_E0, GPP_E23, 288),	/* GPP_E */
 };
 
 static const struct pad_group jsl_community5_groups[] = {
-	INTEL_GPP_BASE(GPP_G0, GPP_G0, GPP_G7, 320),		/* GPP_G */
+	INTEL_GPP_BASE(GPP_G0, GPP_G0, GPP_G7, 0),		/* GPP_G */
 };
 
 static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {

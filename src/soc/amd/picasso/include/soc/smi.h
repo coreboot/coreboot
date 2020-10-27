@@ -160,6 +160,7 @@
 #define SMI_TIMER_EN				(1 << 15)
 
 #define SMI_REG_SMITRIG0		0x98
+# define SMITRIG0_PSP				(1 << 25)
 # define SMITRG0_EOS				(1 << 28)
 # define SMI_TIMER_SEL				(1 << 29)
 # define SMITRG0_SMIENB				(1 << 31)

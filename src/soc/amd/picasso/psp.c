@@ -27,11 +27,11 @@ void soc_fill_smm_trig_info(struct smm_trigger_info *trig)
 	if (!trig)
 		return;
 
-	trig->address = (uintptr_t)acpimmio_smi + SMI_REG_CONTROL2;
+	trig->address = (uintptr_t)acpimmio_smi + SMI_REG_SMITRIG0;
 	trig->address_type = SMM_TRIGGER_MEM;
 	trig->value_width = SMM_TRIGGER_DWORD;
-	trig->value_and_mask = 0xfdffffff;
-	trig->value_or_mask = 0x02000000;
+	trig->value_and_mask = ~SMITRIG0_PSP;
+	trig->value_or_mask = SMITRIG0_PSP;
 }
 
 void soc_fill_smm_reg_info(struct smm_register_info *reg)

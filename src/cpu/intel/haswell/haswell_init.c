@@ -689,13 +689,13 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x306c1 }, /* Intel Haswell 4+2 A0 */
-	{ X86_VENDOR_INTEL, 0x306c2 }, /* Intel Haswell 4+2 B0 */
-	{ X86_VENDOR_INTEL, 0x306c3 }, /* Intel Haswell C0 */
-	{ X86_VENDOR_INTEL, 0x40650 }, /* Intel Haswell ULT B0 */
-	{ X86_VENDOR_INTEL, 0x40651 }, /* Intel Haswell ULT B1 */
-	{ X86_VENDOR_INTEL, 0x40660 }, /* Intel Crystal Well C0 */
-	{ X86_VENDOR_INTEL, 0x40661 }, /* Intel Crystal Well C1 */
+	{ X86_VENDOR_INTEL, CPUID_HASWELL_A0 },
+	{ X86_VENDOR_INTEL, CPUID_HASWELL_B0 },
+	{ X86_VENDOR_INTEL, CPUID_HASWELL_C0 },
+	{ X86_VENDOR_INTEL, CPUID_HASWELL_ULT_B0 },
+	{ X86_VENDOR_INTEL, CPUID_HASWELL_ULT_C0 },
+	{ X86_VENDOR_INTEL, CPUID_CRYSTALWELL_B0 },
+	{ X86_VENDOR_INTEL, CPUID_CRYSTALWELL_C0 },
 	{ 0, 0 },
 };
 

@@ -31,7 +31,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	int board_id = get_board_id();
 	const bool half_populated = false;
 
-	const struct spd_info lpddr4_spd_info = {
+	const struct spd_info lp4_lp5_spd_info = {
 		.read_type = READ_SPD_CBFS,
 		.spd_spec.spd_index = get_spd_index(),
 	};
@@ -56,7 +56,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		break;
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:
-		memcfg_init(&mupd->FspmConfig, mem_config, &lpddr4_spd_info, half_populated);
+	case ADL_P_LP5:
+		memcfg_init(&mupd->FspmConfig, mem_config, &lp4_lp5_spd_info, half_populated);
 		break;
 	default:
 		die("Unknown board id = 0x%x\n", board_id);

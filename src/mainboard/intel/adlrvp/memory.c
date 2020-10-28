@@ -44,6 +44,34 @@ static const struct mb_cfg lpddr4_mem_config = {
 	.UserBd = BOARD_TYPE_MOBILE,
 };
 
+static const struct mb_cfg lp5_mem_config = {
+
+	/* DQ byte map */
+	.dq_map = {
+		{  3,  2,  1,  0,  5,  4,  6,  7, 15, 14, 12, 13,  8,  9, 10, 11 },
+		{  0,  2,  3,  1,  5,  7,  4,  6, 14, 13, 15, 12,  8,  9, 11, 10 },
+		{  1,  2,  0,  3,  4,  6,  5,  7, 15, 13, 12, 14,  9, 10,  8, 11 },
+		{  2,  1,  3,  0,  7,  4,  5,  6, 13, 12, 15, 14,  9, 11,  8, 10 },
+		{  1,  2,  3,  0,  6,  4,  5,  7, 15, 13, 14, 12, 10,  9,  8, 11 },
+		{  1,  0,  3,  2,  6,  7,  4,  5, 14, 12, 15, 13,  8,  9, 10, 11 },
+		{  0,  2,  1,  3,  4,  7,  5,  6, 12, 13, 15, 14,  9, 11, 10,  8 },
+		{  3,  2,  1,  0,  5,  4,  6,  7, 13, 15, 11, 12, 10,  9, 14,  8 },
+	},
+
+	/* DQS CPU<>DRAM map */
+	.dqs_map = {
+		{ 0, 1 }, { 0, 1 }, { 0, 1 }, { 0, 1 }, { 0, 1 }, { 0, 1 }, { 0, 1 }, { 0, 1 }
+	},
+
+	.dq_pins_interleaved = false,
+
+	.ect = false, /* Early Command Training */
+
+	.lp5_ccc_config = 0xff,
+
+	.UserBd = BOARD_TYPE_MOBILE,
+};
+
 static const struct mb_cfg ddr5_mem_config = {
 	/* Baseboard uses only 100ohm Rcomp resistors */
 	.rcomp_resistor = {100, 100, 100},
@@ -71,6 +99,8 @@ const struct mb_cfg *variant_memory_params(void)
 		return &ddr4_mem_config;
 	case ADL_P_DDR5:
 		return &ddr5_mem_config;
+	case ADL_P_LP5:
+		return &lp5_mem_config;
 	default:
 		die("unsupported board id : 0x%x\n", board_id);
 	}

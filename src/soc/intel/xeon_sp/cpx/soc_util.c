@@ -319,3 +319,25 @@ void set_bios_init_completion(void)
 	/* And finally, take care of the SBSP */
 	set_bios_init_completion_for_package(sbsp_socket_id);
 }
+/*
+ * EX: CPX-SP
+ * Ports    Stack   Stack(HOB)  IioConfigIou
+ * ==========================================
+ * 0        CSTACK      stack 0     IOU0
+ * 1A..1D   PSTACKZ     stack 1     IOU1
+ * 2A..2D   PSTACK1     stack 2     IOU2
+ * 3A..3D   PSTACK2     stack 4     IOU3
+ */
+int soc_get_stack_for_port(int port)
+{
+	if (port == PORT_0)
+		return CSTACK;
+	else if (port >= PORT_1A && port <= PORT_1D)
+		return PSTACK0;
+	else if (port >= PORT_2A && port <= PORT_2D)
+		return PSTACK1;
+	else if (port >= PORT_3A && port <= PORT_3D)
+		return PSTACK2;
+	else
+		return -1;
+}

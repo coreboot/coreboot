@@ -27,5 +27,6 @@ const struct SystemMemoryMapHob *get_system_memory_map(void);
 
 void set_bios_init_completion(void);
 unsigned int soc_get_num_cpus(void);
+int soc_get_stack_for_port(int port);
 
 #endif /* _SOC_UTIL_H_ */

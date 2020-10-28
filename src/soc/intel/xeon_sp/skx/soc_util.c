@@ -394,4 +394,32 @@ void xeonsp_init_cpu_config(void)
 	}
 }
 
+/*
+ * EX: SKX-SP
+ * Ports    Stack   Stack(HOB)  IioConfigIou
+ * ==========================================
+ * 0        CSTACK      stack 0     IOU0
+ * 1A..1D   PSTACKZ     stack 1     IOU1
+ * 2A..2D   PSTACK1     stack 2     IOU2
+ * 3A..3D   PSTACK2     stack 3     IOU3
+ * 5A..4D   PSTACK3     stack 4     IOU4
+ * 5A..5D   PSTACK4     stack 5     IOU5
+ */
+int soc_get_stack_for_port(int port)
+{
+	if (port == PORT_0)
+		return CSTACK;
+	else if (port >= PORT_1A && port <= PORT_1D)
+		return PSTACK0;
+	else if (port >= PORT_2A && port <= PORT_2D)
+		return PSTACK1;
+	else if (port >= PORT_3A && port <= PORT_3D)
+		return PSTACK2;
+	else if (port >= PORT_4A && port <= PORT_4D)
+		return PSTACK3; // MCP0
+	else if (port >= PORT_5A && port <= PORT_5D)
+		return PSTACK4; // MCP1
+	else
+		return -1;
+}
 #endif

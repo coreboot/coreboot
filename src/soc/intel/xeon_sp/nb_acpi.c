@@ -143,48 +143,6 @@ static unsigned long acpi_fill_slit(unsigned long current)
 }
 
 /*
- * EX: CPX-SP
- * Ports    Stack   Stack(HOB)  IioConfigIou
- * ==========================================
- * 0        CSTACK      stack 0     IOU0
- * 1A..1D   PSTACKZ     stack 1     IOU1
- * 2A..2D   PSTACK1     stack 2     IOU2
- * 3A..3D   PSTACK2     stack 4     IOU3
- */
-static int get_stack_for_port(int port)
-{
-#if (CONFIG(SOC_INTEL_COOPERLAKE_SP))
-	if (port == PORT_0)
-		return CSTACK;
-	else if (port >= PORT_1A && port <= PORT_1D)
-		return PSTACK0;
-	else if (port >= PORT_2A && port <= PORT_2D)
-		return PSTACK1;
-	else if (port >= PORT_3A && port <= PORT_3D)
-		return PSTACK2;
-	else
-		return -1;
-#endif /* SOC_INTEL_COOPERLAKE_SP */
-
-#if (CONFIG(SOC_INTEL_SKYLAKE_SP))
-	if (port == PORT_0)
-		return CSTACK;
-	else if (port >= PORT_1A && port <= PORT_1D)
-		return PSTACK0;
-	else if (port >= PORT_2A && port <= PORT_2D)
-		return PSTACK1;
-	else if (port >= PORT_3A && port <= PORT_3D)
-		return PSTACK2;
-	else if (port >= PORT_4A && port <= PORT_4D)
-		return PSTACK3; // MCP0
-	else if (port >= PORT_5A && port <= PORT_5D)
-		return PSTACK4; // MCP1
-	else
-		return -1;
-#endif /* SOC_INTEL_SKYLAKE_SP */
-}
-
-/*
  * This function adds PCIe bridge device entry in DMAR table. If it is called
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
  */
@@ -193,7 +151,7 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 	bool is_atsr, bool *first)
 {
 
-	if (get_stack_for_port(port) != stack)
+	if (soc_get_stack_for_port(port) != stack)
 		return 0;
 
 	const uint32_t bus = iio_resource.StackRes[stack].BusBase;

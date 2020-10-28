@@ -5,7 +5,21 @@
 #include <baseboard/variants.h>
 #include <soc/romstage.h>
 
-static const struct mb_cfg mem_config = {
+static const struct mb_cfg ddr4_mem_config = {
+	/* Baseboard uses only 100ohm Rcomp resistors */
+	.rcomp_resistor = {100, 100, 100},
+
+	/* Baseboard Rcomp target values */
+	.rcomp_targets = {40, 30, 33, 33, 30},
+
+	.dq_pins_interleaved = true,
+
+	.ect = true, /* Early Command Training */
+
+	.UserBd = BOARD_TYPE_MOBILE,
+};
+
+static const struct mb_cfg lpddr4_mem_config = {
 	/* DQ byte map */
 	.dq_map = {
 	{   0,  2,   3,  1,   6,   7,   5,   4,    /* Byte 0 */
@@ -33,13 +47,7 @@ static const struct mb_cfg mem_config = {
 	{ 0, 1 }, { 1, 0 }, { 1, 0 }, { 0, 1 }
 	},
 
-	/* Baseboard uses only 100ohm Rcomp resistors */
-	.rcomp_resistor = {100, 100, 100},
-
-	/*
-	 * Baseboard Rcomp target values.
-	 */
-	.rcomp_targets = {40, 30, 33, 33, 30},
+	.dq_pins_interleaved = false,
 
 	.ect = true, /* Early Command Training */
 
@@ -48,5 +56,12 @@ static const struct mb_cfg mem_config = {
 
 const struct mb_cfg *variant_memory_params(void)
 {
-	return &mem_config;
+	int board_id = get_board_id();
+
+	if (board_id == ADL_P_LP4_1 || board_id == ADL_P_LP4_2)
+		return &lpddr4_mem_config;
+	else if (board_id == ADL_P_DDR4_1 || board_id == ADL_P_DDR4_2)
+		return &ddr4_mem_config;
+
+	die("unsupported board id : 0x%x\n", board_id);
 }

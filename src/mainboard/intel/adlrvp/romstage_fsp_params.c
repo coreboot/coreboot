@@ -51,12 +51,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	switch (board_id) {
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
-		mupd->FspmConfig.DqPinsInterleaved = 1;
 		memcfg_init(&mupd->FspmConfig, mem_config, &ddr4_spd_info, half_populated);
 		break;
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:
-		mupd->FspmConfig.DqPinsInterleaved = 0;
 		memcfg_init(&mupd->FspmConfig, mem_config, &lpddr4_spd_info, half_populated);
 		break;
 	default:

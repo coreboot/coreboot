@@ -180,4 +180,5 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg,
 
 	mem_cfg->ECT = board_cfg->ect;
 	mem_cfg->UserBd = board_cfg->UserBd;
+	mem_cfg->DqPinsInterleaved = board_cfg->dq_pins_interleaved;
 }

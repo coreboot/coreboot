@@ -77,6 +77,12 @@ struct mb_cfg {
 	uint16_t rcomp_targets[5];
 
 	/*
+	 * Dqs Pins Interleaved Setting. Enable/Disable Control
+	 * TRUE = enable, FALSE = disable
+	 */
+	bool dq_pins_interleaved;
+
+	/*
 	 * Early Command Training Enable/Disable Control
 	 * TRUE = enable, FALSE = disable
 	 */

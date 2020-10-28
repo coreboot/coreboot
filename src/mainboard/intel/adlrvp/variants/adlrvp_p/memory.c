@@ -54,6 +54,20 @@ static const struct mb_cfg lpddr4_mem_config = {
 	.UserBd = BOARD_TYPE_MOBILE,
 };
 
+static const struct mb_cfg ddr5_mem_config = {
+	/* Baseboard uses only 100ohm Rcomp resistors */
+	.rcomp_resistor = {100, 100, 100},
+
+	/* Baseboard Rcomp target values */
+	.rcomp_targets = {50, 30, 30, 30, 27},
+
+	.dq_pins_interleaved = true,
+
+	.ect = true, /* Early Command Training */
+
+	.UserBd = BOARD_TYPE_MOBILE,
+};
+
 const struct mb_cfg *variant_memory_params(void)
 {
 	int board_id = get_board_id();
@@ -62,6 +76,8 @@ const struct mb_cfg *variant_memory_params(void)
 		return &lpddr4_mem_config;
 	else if (board_id == ADL_P_DDR4_1 || board_id == ADL_P_DDR4_2)
 		return &ddr4_mem_config;
+	else if (board_id == ADL_P_DDR5)
+		return &ddr5_mem_config;
 
 	die("unsupported board id : 0x%x\n", board_id);
 }

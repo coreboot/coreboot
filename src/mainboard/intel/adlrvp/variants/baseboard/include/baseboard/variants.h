@@ -12,6 +12,8 @@ enum adl_boardid {
 	/* ADL-P LPDDR4 RVPs */
 	ADL_P_LP4_1 = 0x10,
 	ADL_P_LP4_2 = 0x11,
+	/* ADL-P DDR5 RVPs */
+	ADL_P_DDR5 = 0x12,
 	/* ADL-P DDR4 RVPs */
 	ADL_P_DDR4_1 = 0x14,
 	ADL_P_DDR4_2 = 0x3F,

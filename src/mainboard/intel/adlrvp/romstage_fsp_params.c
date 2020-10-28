@@ -36,7 +36,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.spd_spec.spd_index = get_spd_index(),
 	};
 
-	const struct spd_info ddr4_spd_info = {
+	const struct spd_info ddr4_ddr5_spd_info = {
 		.read_type = READ_SMBUS,
 		.spd_spec = {
 			.spd_smbus_address = {
@@ -51,7 +51,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	switch (board_id) {
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
-		memcfg_init(&mupd->FspmConfig, mem_config, &ddr4_spd_info, half_populated);
+	case ADL_P_DDR5:
+		memcfg_init(&mupd->FspmConfig, mem_config, &ddr4_ddr5_spd_info, half_populated);
 		break;
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:

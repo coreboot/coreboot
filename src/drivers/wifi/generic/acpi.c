@@ -222,7 +222,7 @@ void wifi_pcie_fill_ssdt(const struct device *dev)
 {
 	const char *path;
 
-	if (!dev->enabled)
+	if (!is_dev_enabled(dev))
 		return;
 
 	path = acpi_device_path(dev);
@@ -247,7 +247,7 @@ void wifi_cnvi_fill_ssdt(const struct device *dev)
 {
 	const char *path;
 
-	if (!dev->enabled)
+	if (!is_dev_enabled(dev))
 		return;
 
 	path = acpi_device_path(dev->bus->dev);

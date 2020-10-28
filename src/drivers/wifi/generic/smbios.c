@@ -33,10 +33,15 @@ static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned lon
 	return len;
 }
 
-int smbios_write_wifi(struct device *dev, int *handle, unsigned long *current)
+int smbios_write_wifi_pcie(struct device *dev, int *handle, unsigned long *current)
 {
 	if (dev->vendor == PCI_VENDOR_ID_INTEL)
 		return smbios_write_intel_wifi(dev, handle, current);
 
 	return 0;
+}
+
+int smbios_write_wifi_cnvi(struct device *dev, int *handle, unsigned long *current)
+{
+	return smbios_write_wifi_pcie(dev->bus->dev, handle, current);
 }

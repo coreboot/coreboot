@@ -218,7 +218,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	       dev_path(dev));
 }
 
-void wifi_generic_fill_ssdt(const struct device *dev)
+void wifi_pcie_fill_ssdt(const struct device *dev)
 {
 	const char *path;
 
@@ -233,7 +233,7 @@ void wifi_generic_fill_ssdt(const struct device *dev)
 	wifi_ssdt_write_properties(dev, path);
 }
 
-const char *wifi_generic_acpi_name(const struct device *dev)
+const char *wifi_pcie_acpi_name(const struct device *dev)
 {
 	static char wifi_acpi_name[WIFI_ACPI_NAME_MAX_LEN];
 
@@ -241,4 +241,18 @@ const char *wifi_generic_acpi_name(const struct device *dev)
 	snprintf(wifi_acpi_name, sizeof(wifi_acpi_name), "WF%02X",
 		 (dev_path_encode(dev) & 0xff));
 	return wifi_acpi_name;
+}
+
+void wifi_cnvi_fill_ssdt(const struct device *dev)
+{
+	const char *path;
+
+	if (!dev->enabled)
+		return;
+
+	path = acpi_device_path(dev->bus->dev);
+	if (!path)
+		return;
+
+	wifi_ssdt_write_properties(dev, path);
 }

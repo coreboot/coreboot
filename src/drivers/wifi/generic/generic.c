@@ -15,18 +15,29 @@ static void wifi_pci_dev_init(struct device *dev)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
 }
 
-struct device_operations wifi_generic_ops = {
+struct device_operations wifi_pcie_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= wifi_pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name		= wifi_generic_acpi_name,
-	.acpi_fill_ssdt		= wifi_generic_fill_ssdt,
+	.acpi_name		= wifi_pcie_acpi_name,
+	.acpi_fill_ssdt		= wifi_pcie_fill_ssdt,
 #endif
 #if CONFIG(GENERATE_SMBIOS_TABLES)
-	.get_smbios_data	= smbios_write_wifi,
+	.get_smbios_data	= smbios_write_wifi_pcie,
+#endif
+};
+
+struct device_operations wifi_cnvi_ops = {
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt		= wifi_cnvi_fill_ssdt,
+#endif
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+	.get_smbios_data	= smbios_write_wifi_cnvi,
 #endif
 };
 
@@ -37,7 +48,10 @@ static void wifi_generic_enable(struct device *dev)
 	if (!config)
 		return;
 
-	dev->ops = &wifi_generic_ops;
+	if (dev->path.type == DEVICE_PATH_PCI)
+		dev->ops = &wifi_pcie_ops;
+	else
+		dev->ops = &wifi_cnvi_ops;
 }
 
 struct chip_operations drivers_wifi_generic_ops = {
@@ -104,7 +118,7 @@ static const unsigned short intel_pci_device_ids[] = {
  * `wifi_generic_ops`.
  */
 static const struct pci_driver intel_wifi_pci_driver __pci_driver = {
-	.ops		= &wifi_generic_ops,
+	.ops		= &wifi_pcie_ops,
 	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= intel_pci_device_ids,
 };

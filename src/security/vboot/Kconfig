@@ -369,6 +369,17 @@ config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
 	hex "Keyblock preamble flags"
 	default 0x0
 
+config VBOOT_HASH_BLOCK_SIZE
+	hex
+	default 0x400
+	help
+	  Set the default hash size.  Generally 1k is reasonable, but in some
+	  cases it may improve hashing speed to increase the size.
+
+	  Note that this buffer is allocated in the stack.  Although the
+	  build should fail if the stack size is exceeded, it's something to
+	  be aware of when changing the size.
+
 endmenu # Keys
 endif # VBOOT
 endmenu # Verified Boot (vboot)

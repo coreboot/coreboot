@@ -161,21 +161,10 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	acpigen_pop_len();
 }
 
-void wifi_generic_fill_ssdt(const struct device *dev)
+static void wifi_ssdt_write_device(const struct device *dev, const char *path)
 {
-	const char *path;
-	const struct drivers_wifi_generic_config *config = dev->chip_info;
-
-	if (!dev->enabled)
-		return;
-
-	path = acpi_device_path(dev->bus->dev);
-	if (!path)
-		return;
-
 	/* Device */
-	acpigen_write_scope(path);
-	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_device(path);
 	acpi_device_write_uid(dev);
 
 	if (dev->chip_ops)
@@ -183,6 +172,16 @@ void wifi_generic_fill_ssdt(const struct device *dev)
 
 	/* Address */
 	acpigen_write_ADR_pci_device(dev);
+
+	acpigen_pop_len(); /* Device */
+}
+
+static void wifi_ssdt_write_properties(const struct device *dev, const char *scope)
+{
+	const struct drivers_wifi_generic_config *config = dev->chip_info;
+
+	/* Scope */
+	acpigen_write_scope(scope);
 
 	/* Wake capabilities */
 	if (config)
@@ -213,11 +212,25 @@ void wifi_generic_fill_ssdt(const struct device *dev)
 	if (CONFIG(USE_SAR))
 		emit_sar_acpi_structures(dev);
 
-	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 
-	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
-	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
+	printk(BIOS_INFO, "%s: %s %s\n", scope, dev->chip_ops ? dev->chip_ops->name : "",
+	       dev_path(dev));
+}
+
+void wifi_generic_fill_ssdt(const struct device *dev)
+{
+	const char *path;
+
+	if (!dev->enabled)
+		return;
+
+	path = acpi_device_path(dev);
+	if (!path)
+		return;
+
+	wifi_ssdt_write_device(dev, path);
+	wifi_ssdt_write_properties(dev, path);
 }
 
 const char *wifi_generic_acpi_name(const struct device *dev)

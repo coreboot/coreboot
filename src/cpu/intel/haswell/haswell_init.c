@@ -249,7 +249,16 @@ static u32 pcode_mailbox_read(u32 command)
 
 static void initialize_vr_config(void)
 {
+	struct cpu_vr_config vr_config = { 0 };
 	msr_t msr;
+
+	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+
+	if (lapic && lapic->chip_info) {
+		const struct cpu_intel_haswell_config *conf = lapic->chip_info;
+
+		vr_config = conf->vr_config;
+	}
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
 
@@ -280,13 +289,23 @@ static void initialize_vr_config(void)
 	msr.hi &= ~(1 << (51 - 32));
 	/* Enable decay mode on C-state entry. */
 	msr.hi |= (1 << (52 - 32));
+	/* Set the slow ramp rate */
 	if (haswell_is_ult()) {
-		/* Set the slow ramp rate to be fast ramp rate / 4 */
 		msr.hi &= ~(0x3 << (53 - 32));
-		msr.hi |= (0x01 << (53 - 32));
+		/* Configure the C-state exit ramp rate. */
+		if (vr_config.slow_ramp_rate_enable) {
+			/* Configured slow ramp rate. */
+			msr.hi |= ((vr_config.slow_ramp_rate_set & 0x3) << (53 - 32));
+			/* Set exit ramp rate to slow. */
+			msr.hi &= ~(1 << (50 - 32));
+		} else {
+			/* Fast ramp rate / 4. */
+			msr.hi |= (1 << (53 - 32));
+		}
 	}
 	/* Set MIN_VID (31:24) to allow CPU to have full control. */
 	msr.lo &= ~0xff000000;
+	msr.lo |= (vr_config.cpu_min_vid & 0xff) << 24;
 	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */

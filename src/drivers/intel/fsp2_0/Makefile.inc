@@ -2,6 +2,8 @@
 
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 
+bootblock-$(CONFIG_FSP_CAR) += fspt_report.c
+
 romstage-y += debug.c
 romstage-y += hand_off_block.c
 romstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c

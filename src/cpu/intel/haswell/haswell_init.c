@@ -431,7 +431,9 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_c_states(void)
 {
-	msr_t msr;
+	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
+
+	const bool timed_mwait_capable = !!(msr.hi & TIMED_MWAIT_SUPPORTED);
 
 	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
@@ -441,6 +443,10 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
+
+	if (timed_mwait_capable)
+		msr.lo |= (1 << 31);	// Timed MWAIT Enable
+
 	/* The deepest package c-state defaults to factory-configured value. */
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 

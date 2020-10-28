@@ -414,7 +414,10 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end # DPTF				0x9A03
-		device ref tbt_pcie_rp0 on
+		# Volteer reference design does not have PCIe on Type-C port C0 so it should
+		# not have hotplug resources allocated.  Marking the device hidden will ensure
+		# it is still enabled so it can participate in power management.
+		device ref tbt_pcie_rp0 hidden
 			probe DB_USB USB4_GEN2
 			probe DB_USB USB4_GEN3
 		end

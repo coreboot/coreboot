@@ -187,6 +187,11 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
+		# This variant has USB4/PCIe on both ports so RP0 must be enabled
+		# in order for hotplug resources to be assigned to Type-C Port C0.
+		device ref tbt_pcie_rp0 on
+			probe DB_USB USB4_GEN3
+		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.

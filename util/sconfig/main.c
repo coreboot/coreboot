@@ -1559,6 +1559,12 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	base_dev->enabled = override_dev->enabled;
 
 	/*
+	 * Copy the hidden state of override device to base device. This allows
+	 * override tree to hide or unhide a particular device.
+	 */
+	base_dev->hidden = override_dev->hidden;
+
+	/*
 	 * Copy subsystem vendor and device ids from override device to base
 	 * device only if the ids are non-zero in override device. Else, honor
 	 * the values in base device.

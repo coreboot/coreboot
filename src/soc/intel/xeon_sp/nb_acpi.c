@@ -121,13 +121,7 @@ static unsigned long acpi_fill_srat(unsigned long current)
 
 static unsigned long acpi_fill_slit(unsigned long current)
 {
-#if (CONFIG(SOC_INTEL_COOPERLAKE_SP))
-	unsigned int nodes = xeon_sp_get_socket_count();
-#endif /* SOC_INTEL_COOPERLAKE_SP */
-
-#if (CONFIG(SOC_INTEL_SKYLAKE_SP))
-	int nodes = get_cpu_count();
-#endif /* SOC_INTEL_SKYLAKE_SP */
+	unsigned int nodes = soc_get_num_cpus();
 
 	uint8_t *p = (uint8_t *)current;
 	memset(p, 0, 8 + nodes * nodes);

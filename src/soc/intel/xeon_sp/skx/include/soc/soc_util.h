@@ -26,5 +26,6 @@ int get_threads_per_package(void);
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 
 void set_bios_init_completion(void);
+unsigned int soc_get_num_cpus(void);
 
 #endif /* _SOC_UTIL_H_ */

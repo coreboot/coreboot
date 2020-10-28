@@ -22,7 +22,7 @@ int get_threads_per_package(void)
 
 int get_platform_thread_count(void)
 {
-	return xeon_sp_get_socket_count() * get_threads_per_package();
+	return soc_get_num_cpus() * get_threads_per_package();
 }
 
 const struct SystemMemoryMapHob *get_system_memory_map(void)
@@ -86,7 +86,7 @@ const IIO_UDS *get_iio_uds(void)
 	return hob;
 }
 
-unsigned int xeon_sp_get_socket_count(void)
+unsigned int soc_get_num_cpus(void)
 {
 	/* The FSP IIO UDS HOB has field numCpus, it is actually socket count */
 	return get_iio_uds()->SystemStatus.numCpus;
@@ -119,7 +119,7 @@ void xeonsp_init_cpu_config(void)
 	if (num_apics > 1)
 		bubblesort(apic_ids, num_apics, NUM_ASCENDING);
 
-	num_sockets = xeon_sp_get_socket_count();
+	num_sockets = soc_get_num_cpus();
 	cpu_read_topology(&core_count, &thread_count);
 	assert(num_apics == (num_sockets * thread_count));
 
@@ -310,7 +310,7 @@ void set_bios_init_completion(void)
 	 * to receive the BIOS init completion message. So, we send it to all non-SBSP
 	 * sockets first.
 	 */
-	for (uint32_t socket = 0; socket < xeon_sp_get_socket_count(); ++socket) {
+	for (uint32_t socket = 0; socket < soc_get_num_cpus(); ++socket) {
 		if (socket == sbsp_socket_id)
 			continue;
 		set_bios_init_completion_for_package(socket);

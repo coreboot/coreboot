@@ -19,7 +19,7 @@ void get_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits);
 void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thread_bits,
 	uint8_t *package, uint8_t *core, uint8_t *thread);
 /* Return socket count, as obtained from FSP HOB */
-unsigned int xeon_sp_get_socket_count(void);
+unsigned int soc_get_num_cpus(void);
 
 int get_platform_thread_count(void);
 int get_threads_per_package(void);

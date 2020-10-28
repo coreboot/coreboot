@@ -264,7 +264,7 @@ void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thre
 		*thread = (uint32_t)(apicid & ~((~0) << thread_bits));
 }
 
-int get_cpu_count(void)
+unsigned int soc_get_num_cpus(void)
 {
 	size_t hob_size;
 	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
@@ -285,7 +285,7 @@ int get_threads_per_package(void)
 
 int get_platform_thread_count(void)
 {
-	return get_cpu_count() * get_threads_per_package();
+	return soc_get_num_cpus() * get_threads_per_package();
 }
 
 uint8_t get_iiostack_info(struct iiostack_resource *info)
@@ -353,7 +353,7 @@ void xeonsp_init_cpu_config(void)
 	if (num_apics > 1)
 		bubblesort(apic_ids, num_apics, NUM_ASCENDING);
 
-	num_cpus = get_cpu_count();
+	num_cpus = soc_get_num_cpus();
 	cpu_read_topology(&core_count, &thread_count);
 	assert(num_apics == (num_cpus * thread_count));
 

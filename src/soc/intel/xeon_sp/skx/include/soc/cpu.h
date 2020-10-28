@@ -14,7 +14,6 @@
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK 100
 
-int get_cpu_count(void);
 void xeon_sp_init_cpus(struct device *dev);
 
 #endif

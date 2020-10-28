@@ -18,7 +18,7 @@
 #define HASWELL_STEPPING_ULT_C0		1
 
 /* Haswell bus clock is fixed at 100MHz */
-#define HASWELL_BCLK			100
+#define CPU_BCLK			100
 
 #define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_FEATURE_CONFIG		0x13c

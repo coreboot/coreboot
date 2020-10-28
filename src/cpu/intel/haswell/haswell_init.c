@@ -596,7 +596,7 @@ static void set_max_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "CPU: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * HASWELL_BCLK);
+	       ((perf_ctl.lo >> 8) & 0xff) * CPU_BCLK);
 }
 
 static void configure_mca(void)

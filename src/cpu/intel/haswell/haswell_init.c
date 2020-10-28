@@ -20,20 +20,6 @@
 #include "haswell.h"
 #include "chip.h"
 
-/* Intel suggested latency times in units of 1024ns. */
-#define C_STATE_LATENCY_CONTROL_0_LIMIT 0x42
-#define C_STATE_LATENCY_CONTROL_1_LIMIT 0x73
-#define C_STATE_LATENCY_CONTROL_2_LIMIT 0x91
-#define C_STATE_LATENCY_CONTROL_3_LIMIT 0xe4
-#define C_STATE_LATENCY_CONTROL_4_LIMIT 0x145
-#define C_STATE_LATENCY_CONTROL_5_LIMIT 0x1ef
-
-#define C_STATE_LATENCY_MICRO_SECONDS(limit, base) \
-	(((1 << ((base)*5)) * (limit)) / 1000)
-#define C_STATE_LATENCY_FROM_LAT_REG(reg) \
-	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
-				      (IRTL_1024_NS >> 10))
-
 /*
  * List of supported C-states in this processor. Only the ULT parts support C8,
  * C9, and C10.

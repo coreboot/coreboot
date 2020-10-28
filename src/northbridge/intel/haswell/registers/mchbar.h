@@ -34,6 +34,28 @@
 #define MCH_DDR_POWER_LIMIT_HI	0x58e4
 
 #define SSKPD			0x5d10 /* 64-bit scratchpad register */
+
+/* PCODE MMIO communications live in the MCHBAR */
+#define BIOS_MAILBOX_DATA	0x5da0
+
+#define BIOS_MAILBOX_INTERFACE	0x5da4
+#define  MAILBOX_RUN_BUSY			(1 << 31)
+#define  MAILBOX_BIOS_CMD_READ_PCS		1
+#define  MAILBOX_BIOS_CMD_WRITE_PCS		2
+#define  MAILBOX_BIOS_CMD_READ_CALIBRATION	0x509
+#define  MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL	0x909
+#define  MAILBOX_BIOS_CMD_READ_PCH_POWER	0xa
+#define  MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT	0xb
+/* Errors are returned back in bits 7:0 */
+#define  MAILBOX_BIOS_ERROR_NONE		0
+#define  MAILBOX_BIOS_ERROR_INVALID_COMMAND	1
+#define  MAILBOX_BIOS_ERROR_TIMEOUT		2
+#define  MAILBOX_BIOS_ERROR_ILLEGAL_DATA	3
+#define  MAILBOX_BIOS_ERROR_RESERVED		4
+#define  MAILBOX_BIOS_ERROR_ILLEGAL_VR_ID	5
+#define  MAILBOX_BIOS_ERROR_VR_INTERFACE_LOCKED	6
+#define  MAILBOX_BIOS_ERROR_VR_ERROR		7
+
 #define BIOS_RESET_CPL		0x5da8 /* 8-bit */
 
 #define MC_BIOS_DATA		0x5e04 /* Miscellaneous information for BIOS */

@@ -84,6 +84,10 @@ chip soc/intel/apollolake
 		},
 	}"
 
+	# Disable compliance mode
+	register "DisableComplianceMode" = "1"
+	register "disable_xhci_lfps_pm" = "0"
+
 	device domain 0 on
 		device pci 16.0 on
 			chip drivers/i2c/hid
@@ -181,7 +185,4 @@ chip soc/intel/apollolake
 			end
 		end	# - I2C 7
 	end
-
-	# Disable compliance mode
-	register "DisableComplianceMode" = "1"
 end

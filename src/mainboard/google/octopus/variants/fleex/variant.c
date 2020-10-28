@@ -4,6 +4,7 @@
 #include <baseboard/variants.h>
 #include <ec/google/chromeec/ec.h>
 #include <sar.h>
+#include <soc/intel/apollolake/chip.h>
 
 #define MIN_LTE_SKU         4
 
@@ -30,4 +31,14 @@ const char *get_wifi_sar_cbfs_filename(void)
 		filename = "wifi_sar-fleex.hex";
 
 	return filename;
+}
+
+void variant_update_devtree(struct device *dev)
+{
+	struct soc_intel_apollolake_config *cfg = NULL;
+
+	cfg = (struct soc_intel_apollolake_config *)dev->chip_info;
+	// Force disable_xhci_lfps_pm to update if it is LTE sku
+	if (cfg != NULL && is_lte_sku())
+		cfg->disable_xhci_lfps_pm = 1;
 }

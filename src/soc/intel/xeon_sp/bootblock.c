@@ -10,6 +10,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <soc/pci_devs.h>
 #include <soc/bootblock.h>
+#include <fsp/util.h>
 
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {
@@ -54,5 +55,7 @@ void bootblock_soc_init(void)
 {
 	if (CONFIG(BOOTBLOCK_CONSOLE))
 		printk(BIOS_DEBUG, "FSP TempRamInit successful...\n");
+	if (CONFIG(FSP_CAR))
+		report_fspt_output();
 	bootblock_pch_init();
 }

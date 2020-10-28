@@ -125,6 +125,27 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
+/*
+ * List of supported C-states for Haswell and Broadwell.
+ * Only the ULT parts support C8, C9, and C10.
+ */
+enum {
+	C_STATE_C0		=  0,
+	C_STATE_C1		=  1,
+	C_STATE_C1E		=  2,
+	C_STATE_C3		=  3,
+	C_STATE_C6_SHORT_LAT	=  4,
+	C_STATE_C6_LONG_LAT	=  5,
+	C_STATE_C7_SHORT_LAT	=  6,
+	C_STATE_C7_LONG_LAT	=  7,
+	C_STATE_C7S_SHORT_LAT	=  8,
+	C_STATE_C7S_LONG_LAT	=  9,
+	C_STATE_C8		= 10,
+	C_STATE_C9		= 11,
+	C_STATE_C10		= 12,
+	NUM_C_STATES,
+};
+
 /* Lock MSRs */
 void intel_cpu_haswell_finalize_smm(void);
 

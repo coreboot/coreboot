@@ -15,15 +15,15 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 
 static int cstate_set_lp[3] = {
-	2,
-	3,
-	9,
+	C_STATE_C1E,
+	C_STATE_C3,
+	C_STATE_C7S_LONG_LAT,
 };
 
 static int cstate_set_trad[3] = {
-	1,
-	3,
-	5,
+	C_STATE_C1,
+	C_STATE_C3,
+	C_STATE_C6_LONG_LAT,
 };
 
 static int get_cores_per_package(void)

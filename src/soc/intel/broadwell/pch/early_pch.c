@@ -54,7 +54,10 @@ static void pch_enable_lpc(void)
 	/* Lookup device tree in romstage */
 	const struct device *const dev = pcidev_on_root(0x1f, 0);
 
-	const struct soc_intel_broadwell_pch_config *config = config_of(dev);
+	if (!dev || !dev->chip_info)
+		return;
+
+	const struct soc_intel_broadwell_pch_config *config = dev->chip_info;
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN1_DEC, config->gen1_dec);
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN2_DEC, config->gen2_dec);

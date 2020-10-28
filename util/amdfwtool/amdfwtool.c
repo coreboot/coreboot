@@ -216,6 +216,7 @@ static void usage(void)
 	printf("                               0x2 Micron parts optional, this option is only\n");
 	printf("                                   supported with RN/LCN SOC\n");
 	printf("-c | --config <config file>    Config file\n");
+	printf("-d | --debug                   Print debug message\n");
 	printf("-D | --depend                  List out the firmware files\n");
 }
 
@@ -593,6 +594,29 @@ static void integrate_firmwares(context *ctx,
 			ctx->current = ALIGN(ctx->current + bytes,
 							BLOB_ALIGNMENT);
 		}
+	}
+}
+
+/* For debugging */
+static void dump_psp_firmwares(amd_fw_entry *fw_table)
+{
+	amd_fw_entry *index;
+
+	printf("PSP firmware components:");
+	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+		if (index->filename)
+			printf("  filename=%s\n", index->filename);
+	}
+}
+
+static void dump_bdt_firmwares(amd_bios_entry *fw_table)
+{
+	amd_bios_entry *index;
+
+	printf("BIOS Directory Table (BDT) components:");
+	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
+		if (index->filename)
+			printf("  filename=%s\n", index->filename);
 	}
 }
 
@@ -1007,9 +1031,9 @@ enum {
 	LONGOPT_SPI_MICRON_FLAG	= 258,
 };
 
-/* Unused values: BGJKNXYbdkmprstuwyz*/
+/* Unused values: BGJKNXYbkmprstuwyz*/
 static const char *optstring  = "x:i:g:AMn:T:SPLUW:I:a:Q:V:e:v:j:O:F:"
-				"H:o:f:l:hZ:qR:C:c:E:D";
+				"H:o:f:l:hZ:qR:C:c:E:dD";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -1052,6 +1076,7 @@ static struct option long_options[] = {
 	{"soc-name",         required_argument, 0, 'C' },
 
 	{"config",           required_argument, 0, 'c' },
+	{"debug",            no_argument,       0, 'd' },
 	{"help",             no_argument,       0, 'h' },
 	{"depend",           no_argument,       0, 'D' },
 	{NULL,               0,                 0,  0  }
@@ -1250,6 +1275,7 @@ int main(int argc, char **argv)
 
 	int multi = 0;
 	amd_cb_config cb_config;
+	int debug = 0;
 	int list_deps = 0;
 
 	cb_config.have_whitelist = 0;
@@ -1425,6 +1451,9 @@ int main(int argc, char **argv)
 		case 'c':
 			config = optarg;
 			break;
+		case 'd':
+			debug = 1;
+			break;
 		case 'h':
 			usage();
 			return 0;
@@ -1450,6 +1479,12 @@ int main(int argc, char **argv)
 		}
 		fclose(config_handle);
 	}
+	/* For debug. */
+	if (debug) {
+		dump_psp_firmwares(amd_psp_fw_table);
+		dump_bdt_firmwares(amd_bios_table);
+	}
+
 	if (!fuse_defined)
 		register_fw_fuse(DEFAULT_SOFT_FUSE_CHAIN);
 

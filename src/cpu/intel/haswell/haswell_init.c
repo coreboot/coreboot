@@ -304,14 +304,15 @@ static void initialize_vr_config(void)
 	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */
-	if (haswell_is_ult()) {
-		msr = rdmsr(MSR_VR_MISC_CONFIG2);
-		msr.lo &= ~0xffff;
-		/* Allow CPU to control minimum voltage completely (15:8) and
-		 * set the fast ramp voltage to 1110mV (0x6f in 10mV steps). */
-		msr.lo |= 0x006f;
-		wrmsr(MSR_VR_MISC_CONFIG2, msr);
-	}
+	if (!haswell_is_ult())
+		return;
+
+	msr = rdmsr(MSR_VR_MISC_CONFIG2);
+	msr.lo &= ~0xffff;
+	/* Allow CPU to control minimum voltage completely (15:8) and
+	 * set the fast ramp voltage to 1110mV (0x6f in 10mV steps). */
+	msr.lo |= 0x006f;
+	wrmsr(MSR_VR_MISC_CONFIG2, msr);
 }
 
 static void configure_pch_power_sharing(void)
@@ -382,8 +383,7 @@ void set_power_limits(u8 power_limit_1_time)
 	u8 power_limit_1_val;
 
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
-		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr)
-		- 1;
+		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
 
 	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
 		return;
@@ -491,26 +491,24 @@ static void configure_c_states(void)
 	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
 
-	/* Haswell ULT only supoprts the 3-5 latency response registers.*/
-	if (haswell_is_ult()) {
-		/* C-state Interrupt Response Latency Control 3 - package C8 */
-		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS |
-			 C_STATE_LATENCY_CONTROL_3_LIMIT;
-		wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
+	/* Only Haswell ULT supports the 3-5 latency response registers */
+	if (!haswell_is_ult())
+		return;
 
-		/* C-state Interrupt Response Latency Control 4 - package C9 */
-		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS |
-			 C_STATE_LATENCY_CONTROL_4_LIMIT;
-		wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
+	/* C-state Interrupt Response Latency Control 3 - package C8 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_3_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
-		/* C-state Interrupt Response Latency Control 5 - package C10 */
-		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS |
-			 C_STATE_LATENCY_CONTROL_5_LIMIT;
-		wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
-	}
+	/* C-state Interrupt Response Latency Control 4 - package C9 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_4_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
+
+	/* C-state Interrupt Response Latency Control 5 - package C10 */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_5_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
 static void configure_thermal_target(void)
@@ -595,7 +593,7 @@ static void configure_mca(void)
 }
 
 /* All CPUs including BSP will run the following function. */
-static void haswell_init(struct device *cpu)
+static void cpu_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
 	configure_mca();
@@ -640,10 +638,11 @@ static void pre_mp_init(void)
 
 	initialize_vr_config();
 
-	if (haswell_is_ult()) {
-		calibrate_24mhz_bclk();
-		configure_pch_power_sharing();
-	}
+	if (!haswell_is_ult())
+		return;
+
+	calibrate_24mhz_bclk();
+	configure_pch_power_sharing();
 }
 
 static int get_cpu_count(void)
@@ -705,7 +704,7 @@ void mp_init_cpus(struct bus *cpu_bus)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = haswell_init,
+	.init = cpu_core_init,
 };
 
 static const struct cpu_device_id cpu_table[] = {

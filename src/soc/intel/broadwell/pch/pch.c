@@ -168,8 +168,6 @@ void pch_disable_devfn(struct device *dev)
 
 static void broadwell_pch_enable_dev(struct device *dev)
 {
-	u16 reg16;
-
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return;
 
@@ -188,10 +186,8 @@ static void broadwell_pch_enable_dev(struct device *dev)
 		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~(PCI_COMMAND_MASTER |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config16(dev, PCI_COMMAND, reg16);
+		pci_and_config16(dev, PCI_COMMAND,
+				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);

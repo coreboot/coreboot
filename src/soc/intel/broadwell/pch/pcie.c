@@ -120,7 +120,7 @@ static void root_port_init_config(struct device *dev)
 		rpc.pin_ownership = pci_read_config32(dev, 0x410);
 		root_port_config_update_gbe_port();
 
-		pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
+		pci_or_config8(dev, 0xe2, 3 << 4);
 		const struct soc_intel_broadwell_pch_config *config = config_of(dev);
 		rpc.coalesce = config->pcie_port_coalesce;
 	}
@@ -150,7 +150,7 @@ static void root_port_init_config(struct device *dev)
 		break;
 	}
 
-	pci_update_config32(dev, 0x418, 0, 0x02000430);
+	pci_write_config32(dev, 0x418, 0x02000430);
 
 	if (root_port_is_first(dev)) {
 		/*
@@ -212,23 +212,23 @@ static void pcie_enable_clock_gating(void)
 		if (!dev->enabled) {
 			/* Configure shared resource clock gating. */
 			if (rp == 1 || rp == 5 || rp == 6)
-				pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
+				pci_or_config8(dev, 0xe1, 0x3c);
 
-			pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-			pci_update_config32(dev, 0x420, ~(1 << 31), (1 << 31));
+			pci_or_config8(dev, 0xe2, 3 << 4);
+			pci_or_config32(dev, 0x420, 1 << 31);
 
 			/* Per-Port CLKREQ# handling. */
 			if (gpio_is_native(18 + rp - 1))
-				pci_update_config32(dev, 0x420, ~0, (3 << 29));
+				pci_or_config32(dev, 0x420, 3 << 29);
 
 			/* Enable static clock gating. */
 			if (rp == 1 && !rpc.ports[1]->enabled &&
 			    !rpc.ports[2]->enabled && !rpc.ports[3]->enabled) {
-				pci_update_config8(dev, 0xe2, ~1, 1);
-				pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+				pci_or_config8(dev, 0xe2, 1);
+				pci_or_config8(dev, 0xe1, 1 << 7);
 			} else if (rp == 5 || rp == 6) {
-				pci_update_config8(dev, 0xe2, ~1, 1);
-				pci_update_config8(dev, 0xe1, 0x7f, 0x80);
+				pci_or_config8(dev, 0xe2, 1);
+				pci_or_config8(dev, 0xe1, 1 << 7);
 			}
 			continue;
 		}
@@ -236,17 +236,17 @@ static void pcie_enable_clock_gating(void)
 		enabled_ports++;
 
 		/* Enable dynamic clock gating. */
-		pci_update_config8(dev, 0xe1, 0xfc, 0x03);
-		pci_update_config8(dev, 0xe2, ~(1 << 6), (1 << 6));
+		pci_or_config8(dev, 0xe1, 0x03);
+		pci_or_config8(dev, 0xe2, 1 << 6);
 		pci_update_config8(dev, 0xe8, ~(3 << 2), (2 << 2));
 
 		/* Update PECR1 register. */
-		pci_update_config8(dev, 0xe8, ~0, 3);
+		pci_or_config8(dev, 0xe8, 3);
+
 		if (is_broadwell) {
-			pci_update_config32(dev, 0x324, ~((1 << 5) | (1 << 14)),
-					((1 << 5) | (1 << 14)));
+			pci_or_config32(dev, 0x324, (1 << 5) | (1 << 14));
 		} else {
-			pci_update_config32(dev, 0x324, ~(1 << 5), (1 << 5));
+			pci_or_config32(dev, 0x324, 1 << 5);
 		}
 		/* Per-Port CLKREQ# handling. */
 		if (gpio_is_native(18 + rp - 1))
@@ -254,19 +254,18 @@ static void pcie_enable_clock_gating(void)
 			 * In addition to D28Fx PCICFG 420h[30:29] = 11b,
 			 * set 420h[17] = 0b and 420[0] = 1b for L1 SubState.
 			 */
-			pci_update_config32(dev, 0x420, ~0x20000,
-				(3 << 29) | 1);
+			pci_update_config32(dev, 0x420, ~(1 << 17), (3 << 29) | 1);
 
 		/* Configure shared resource clock gating. */
 		if (rp == 1 || rp == 5 || rp == 6)
-			pci_update_config8(dev, 0xe1, 0xc3, 0x3c);
+			pci_or_config8(dev, 0xe1, 0x3c);
 
 		/* CLKREQ# VR Idle Enable */
 		RCBA32_OR(0x2b1c, (1 << (16 + i)));
 	}
 
 	if (!enabled_ports)
-		pci_update_config8(rpc.ports[0], 0xe1, ~(1 << 6), (1 << 6));
+		pci_or_config8(rpc.ports[0], 0xe1, 1 << 6);
 }
 
 static void root_port_commit_config(void)
@@ -298,7 +297,7 @@ static void root_port_commit_config(void)
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* 8.2 Configuration of PCI Express Root Ports */
-		pci_update_config32(dev, 0x338, ~(1 << 26), 1 << 26);
+		pci_or_config32(dev, 0x338, 1 << 26);
 
 		do {
 			reg32 = pci_read_config32(dev, 0x328);
@@ -312,7 +311,7 @@ static void root_port_commit_config(void)
 			printk(BIOS_DEBUG, "%s: Timeout waiting for 328h\n",
 				dev_path(dev));
 
-		pci_update_config32(dev, 0x408, ~(1 << 27), 1 << 27);
+		pci_or_config32(dev, 0x408, 1 << 27);
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);
@@ -536,17 +535,15 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config32(dev, 0x33c, ~0x00ffffff, 0x854d74);
 
 	/* Set Invalid Receive Range Check Enable in MPC register. */
-	pci_update_config32(dev, 0xd8, ~0, (1 << 25));
+	pci_or_config32(dev, 0xd8, 1 << 25);
 
-	pci_update_config8(dev, 0xf5, 0x0f, 0);
+	pci_and_config8(dev, 0xf5, 0x0f);
 
 	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
 	if (CONFIG(PCIEXP_AER))
-		pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
-			(1 << 29) | 0x10001);
+		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29) | 0x10001);
 	else
-		pci_update_config32(dev, 0x100, ~(1 << 29) & ~0xfffff,
-			(1 << 29));
+		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29));
 
 	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
 	if (CONFIG(PCIEXP_L1_SUB_STATE))
@@ -554,10 +551,10 @@ static void pch_pcie_early(struct device *dev)
 	else
 		pci_update_config32(dev, 0x200, ~0xfffff, 0);
 
-	pci_update_config32(dev, 0x320, ~(3 << 20) & ~(7 << 6),
-		(1 << 20) | (3 << 6));
+	pci_update_config32(dev, 0x320, ~(3 << 20) & ~(7 << 6), (1 << 20) | (3 << 6));
+
 	/* Enable Relaxed Order from Root Port. */
-	pci_update_config32(dev, 0x320, ~(3 << 23), (3 << 23));
+	pci_or_config32(dev, 0x320, 3 << 23);
 
 	if (rp == 1 || rp == 5 || rp == 6)
 		pci_update_config8(dev, 0xf7, ~0xc, 0);

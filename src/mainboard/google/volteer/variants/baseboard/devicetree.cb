@@ -6,6 +6,7 @@ fw_config
 		option USB4_GEN3 3
 		option USB3_PASSIVE 4
 		option USB3_NO_A 5
+		option USB3_NO_C 6
 	end
 	field THERMAL 4 7 end
 	field AUDIO 8 10

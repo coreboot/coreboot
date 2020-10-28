@@ -260,7 +260,7 @@ static void initialize_vr_config(void)
 	msr.hi &= 0xc0000000;
 	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
 	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
-	msr.hi |= (0x0f << (32 - 32)); /* PSI1 threshold - 15A. */
+	msr.hi |= (0x14 << (32 - 32)); /* PSI1 threshold - 20A. */
 
 	if (haswell_is_ult())
 		msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */

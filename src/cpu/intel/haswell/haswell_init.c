@@ -186,27 +186,6 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
-int haswell_family_model(void)
-{
-	return cpuid_eax(1) & 0x0fff0ff0;
-}
-
-int haswell_stepping(void)
-{
-	return cpuid_eax(1) & 0xf;
-}
-
-/* Dynamically determine if the part is ULT. */
-int haswell_is_ult(void)
-{
-	static int ult = -1;
-
-	if (ult < 0)
-		ult = !!(haswell_family_model() == HASWELL_FAMILY_ULT);
-
-	return ult;
-}
-
 /* The core 100MHz BCLK is disabled in deeper c-states. One needs to calibrate
  * the 100MHz BCLK against the 24MHz BCLK to restore the clocks properly
  * when a core is woken up. */

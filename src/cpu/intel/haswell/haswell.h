@@ -145,8 +145,9 @@ void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 
 /* CPU identification */
-int haswell_family_model(void);
-int haswell_stepping(void);
-int haswell_is_ult(void);
+static inline int haswell_is_ult(void)
+{
+	return CONFIG(INTEL_LYNXPOINT_LP);
+}
 
 #endif

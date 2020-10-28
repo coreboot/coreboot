@@ -446,12 +446,6 @@ static void configure_c_states(void)
 	/* The deepest package c-state defaults to factory-configured value. */
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
-	msr = rdmsr(MSR_PMG_IO_CAPTURE_BASE);
-	msr.lo &= ~0xffff;
-	msr.lo |= (get_pmbase() + 0x14);	// LVL_2 base address
-	/* The deepest package c-state defaults to factory-configured value. */
-	wrmsr(MSR_PMG_IO_CAPTURE_BASE, msr);
-
 	msr = rdmsr(MSR_MISC_PWR_MGMT);
 	msr.lo &= ~(1 << 0);	// Enable P-state HW_ALL coordination
 	wrmsr(MSR_MISC_PWR_MGMT, msr);

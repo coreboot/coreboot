@@ -19,15 +19,15 @@
  * should be sufficient.  This is just for the function mapping the
  * actual stack.
  */
-#define PSP_VERSTAGE_TEMP_STACK_START	0x39000
+#define PSP_VERSTAGE_TEMP_STACK_START	0x32000
 #define PSP_VERSTAGE_TEMP_STACK_SIZE	4K
 
 /*
  * The top of the stack must be 4k aligned, so set the bottom as 4k aligned
  * and make the size a multiple of 4k
  */
-#define PSP_VERSTAGE_STACK_START	0x3B000
-#define PSP_VERSTAGE_STACK_SIZE		8K
+#define PSP_VERSTAGE_STACK_START	0x33000
+#define PSP_VERSTAGE_STACK_SIZE		40K
 
 ENTRY(_psp_vs_start)
 SECTIONS

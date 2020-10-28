@@ -434,7 +434,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
-			printk(BIOS_DEBUG, "timed out. Aborting.\n");
+			printk(BIOS_ERR, "timed out. Aborting.\n");
 			return -1;
 		}
 		printk(BIOS_DEBUG, "done.\n");
@@ -451,7 +451,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
-			printk(BIOS_DEBUG, "timed out. Aborting.\n");
+			printk(BIOS_ERR, "timed out. Aborting.\n");
 			return -1;
 		}
 		printk(BIOS_DEBUG, "done.\n");
@@ -462,7 +462,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 			   LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 1st SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
-		printk(BIOS_DEBUG, "timed out.\n");
+		printk(BIOS_ERR, "timed out.\n");
 		return -1;
 	}
 	printk(BIOS_DEBUG, "done.\n");
@@ -477,7 +477,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
-			printk(BIOS_DEBUG, "timed out. Aborting.\n");
+			printk(BIOS_ERR, "timed out. Aborting.\n");
 			return -1;
 		}
 		printk(BIOS_DEBUG, "done.\n");
@@ -488,14 +488,14 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 			   LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 2nd SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
-		printk(BIOS_DEBUG, "timed out.\n");
+		printk(BIOS_ERR, "timed out.\n");
 		return -1;
 	}
 	printk(BIOS_DEBUG, "done.\n");
 
 	/* Wait for CPUs to check in. */
-	if (wait_for_aps(num_aps, ap_count, 10000 /* 10 ms */, 50 /* us */)) {
-		printk(BIOS_DEBUG, "Not all APs checked in: %d/%d.\n",
+	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */)) {
+		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(num_aps), ap_count);
 		return -1;
 	}

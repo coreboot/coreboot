@@ -125,77 +125,35 @@ PICASSO_FWM_POSITION=$(call int-add, \
 # Design Guide for AMD Family 17h Processors" (PID #55758, NDA only).
 #
 
-# type = 0x0
-FIRMWARE_LOCATE=$(realpath $(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE))))
-
-# type = 0x1
-ifeq ($(CONFIG_PSP_BOOTLOADER_FILE),)
-$(error CONFIG_PSP_BOOTLOADER_FILE was not defined)
-endif
-PSPBTLDR_FILE=$(realpath $(call strip_quotes, $(CONFIG_PSP_BOOTLOADER_FILE)))
-$(info Adding PSP $(shell dd if=$(PSPBTLDR_FILE) | md5sum))
-
-# types = 0x8 and 0x12
-PSP_SMUFW1_SUB1_FILE=$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin
-PSP_SMUFW1_SUB2_FILE=$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
-PSP_SMUFW2_SUB1_FILE=$(FIRMWARE_LOCATE)/SmuFirmware2RV2.csbin
-PSP_SMUFW2_SUB2_FILE=$(FIRMWARE_LOCATE)/SmuFirmware2PCO.csbin
+FIRMWARE_LOCATE=$(shell grep -e FIRMWARE_LOCATE $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 
 ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
-# type = 0x9
-PSP_SEC_DBG_KEY_FILE=$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
-# type = 0x13
-PSP_SEC_DEBUG_FILE=$(FIRMWARE_LOCATE)/secure_unlock_prod_RV.sbin
 # Enable secure debug unlock
 PSP_SOFTFUSE_BITS += 0
-PSP_TOKEN_UNLOCK="--token-unlock"
+OPT_TOKEN_UNLOCK="--token-unlock"
 endif
 
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
 # types = 0x2
-PSPSECUREOS_FILE=$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
+OPT_PSP_USE_PSPSECUREOS="--use-pspsecureos"
 endif
 
-# type = 0x21
-PSP_IKEK_FILE=$(FIRMWARE_LOCATE)/PspIkekRV.bin
-
-# type = 0x24
-PSP_SECG1_FILE=$(FIRMWARE_LOCATE)/security_policy_RV2_FP5_AM4.sbin
-PSP_SECG2_FILE=$(FIRMWARE_LOCATE)/security_policy_PCO_FP5_AM4.sbin
 
 ifeq ($(CONFIG_PSP_LOAD_MP2_FW),y)
-# type = 0x25
-PSP_MP2FW1_FILE=$(FIRMWARE_LOCATE)/MP2I2CFWRV2.sbin
-PSP_MP2FW2_FILE=$(FIRMWARE_LOCATE)/MP2I2CFWPCO.sbin
-# BIOS type = 0x6a
-PSP_MP2CFG_FILE=$(FIRMWARE_LOCATE)/MP2FWConfig.sbin
+OPT_PSP_LOAD_MP2_FW="--load-mp2-fw"
 else
 # Disable MP2 firmware loading
 PSP_SOFTFUSE_BITS += 29
 endif
 
-# type = 0x28
-PSP_DRIVERS_FILE=$(FIRMWARE_LOCATE)/drv_sys_prod_RV.sbin
-
 ifeq ($(CONFIG_PSP_LOAD_S0I3_FW),y)
-PSP_S0I3_FILE=$(FIRMWARE_LOCATE)/dr_agesa_prod_RV.sbin
+OPT_PSP_LOAD_S0I3_FW="--load-s0i3"
 endif
-
-# types = 0x30 - 0x37
-PSP_ABL0_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader0_prod_RV.csbin
-PSP_ABL1_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader1_prod_RV.csbin
-PSP_ABL2_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader2_prod_RV.csbin
-PSP_ABL3_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader3_prod_RV.csbin
-PSP_ABL4_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader4_prod_RV.csbin
-PSP_ABL5_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader5_prod_RV.csbin
-PSP_ABL6_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader6_prod_RV.csbin
-PSP_ABL7_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader7_prod_RV.csbin
 
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
 PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
 endif
-
 #
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
@@ -215,16 +173,6 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 # The flashmap section used for this is expected to be named RW_MRC_CACHE
 APOB_NV_SIZE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_SIZE" $(obj)/fmap_config.h | awk '{print $$(NF)}')
 APOB_NV_BASE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_START" $(obj)/fmap_config.h | awk '{print $$(NF)}')
-
-# type2 = 0x64, 0x65
-PSP_PMUI_FILE1=$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Imem.csbin
-PSP_PMUI_FILE2=$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Imem.csbin
-PSP_PMUI_FILE3=$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Imem.csbin
-PSP_PMUI_FILE4=$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Imem.csbin
-PSP_PMUD_FILE1=$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Dmem.csbin
-PSP_PMUD_FILE2=$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Dmem.csbin
-PSP_PMUD_FILE3=$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Dmem.csbin
-PSP_PMUD_FILE4=$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Dmem.csbin
 
 # type = 0x66
 PSP_UCODE_FILE1=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
@@ -259,33 +207,6 @@ PSP_SOFTFUSE=$(shell A=$(call int-add, \
 
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
-OPT_AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey)
-OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
-OPT_SMUFW1_SUB1_FILE=$(call add_opt_prefix, $(PSP_SMUFW1_SUB1_FILE), --subprogram 1 --smufirmware)
-OPT_SMUFW1_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW1_SUB2_FILE), --subprogram 2 --smufirmware)
-OPT_SMUFW2_SUB1_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB1_FILE), --subprogram 1 --smufirmware2)
-OPT_SMUFW2_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB2_FILE), --subprogram 2 --smufirmware2)
-OPT_PSP_SEC_DBG_KEY_FILE=$(call add_opt_prefix, $(PSP_SEC_DBG_KEY_FILE), --securedebug)
-OPT_TOKEN_UNLOCK=$(call add_opt_prefix, $(PSP_TOKEN_UNLOCK), "")
-OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
-OPT_PSPSECUREOS_FILE=$(call add_opt_prefix, $(PSPSECUREOS_FILE), --secureos)
-OPT_SEC_DEBUG_FILE=$(call add_opt_prefix, $(PSP_SEC_DEBUG_FILE), --secdebug)
-OPT_IKEK_FILE=$(call add_opt_prefix, $(PSP_IKEK_FILE), --ikek)
-OPT_SECG1_FILE=$(call add_opt_prefix, $(PSP_SECG1_FILE), --subprog 1 --sec-gasket)
-OPT_SECG2_FILE=$(call add_opt_prefix, $(PSP_SECG2_FILE), --subprog 2 --sec-gasket)
-OPT_MP2FW1_FILE=$(call add_opt_prefix, $(PSP_MP2FW1_FILE), --subprog 1 --mp2-fw)
-OPT_MP2FW2_FILE=$(call add_opt_prefix, $(PSP_MP2FW2_FILE), --subprog 2 --mp2-fw)
-OPT_DRIVERS_FILE=$(call add_opt_prefix, $(PSP_DRIVERS_FILE), --drv-entry-pts)
-OPT_PSP_S0I3_FILE=$(call add_opt_prefix, $(PSP_S0I3_FILE), --s0i3drv)
-OPT_ABL0_FILE=$(call add_opt_prefix,  $(PSP_ABL0_FILE), --abl-image)
-OPT_ABL1_FILE=$(call add_opt_prefix,  $(PSP_ABL1_FILE), --abl-image)
-OPT_ABL2_FILE=$(call add_opt_prefix,  $(PSP_ABL2_FILE), --abl-image)
-OPT_ABL3_FILE=$(call add_opt_prefix,  $(PSP_ABL3_FILE), --abl-image)
-OPT_ABL4_FILE=$(call add_opt_prefix,  $(PSP_ABL4_FILE), --abl-image)
-OPT_ABL5_FILE=$(call add_opt_prefix,  $(PSP_ABL5_FILE), --abl-image)
-OPT_ABL6_FILE=$(call add_opt_prefix,  $(PSP_ABL6_FILE), --abl-image)
-OPT_ABL7_FILE=$(call add_opt_prefix,  $(PSP_ABL7_FILE), --abl-image)
-OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_VERSTAGE_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_FILE), --verstage)
 OPT_VERSTAGE_SIG_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_SIG_FILE), --verstage_sig)
 
@@ -297,15 +218,7 @@ OPT_APOB_ADDR=$(call add_opt_prefix, $(PSP_APOB_BASE), --apob-base)
 OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
 OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-size)
-OPT_PSP_PMUI_FILE1=$(call add_opt_prefix, $(PSP_PMUI_FILE1), --subprogram 0 --instance 1 --pmu-inst)
-OPT_PSP_PMUI_FILE2=$(call add_opt_prefix, $(PSP_PMUI_FILE2), --subprogram 0 --instance 4 --pmu-inst)
-OPT_PSP_PMUI_FILE3=$(call add_opt_prefix, $(PSP_PMUI_FILE3), --subprogram 1 --instance 1 --pmu-inst)
-OPT_PSP_PMUI_FILE4=$(call add_opt_prefix, $(PSP_PMUI_FILE4), --subprogram 1 --instance 4 --pmu-inst)
-OPT_PSP_PMUD_FILE1=$(call add_opt_prefix, $(PSP_PMUD_FILE1), --subprogram 0 --instance 1 --pmu-data)
-OPT_PSP_PMUD_FILE2=$(call add_opt_prefix, $(PSP_PMUD_FILE2), --subprogram 0 --instance 4 --pmu-data)
-OPT_PSP_PMUD_FILE3=$(call add_opt_prefix, $(PSP_PMUD_FILE3), --subprogram 1 --instance 1 --pmu-data)
-OPT_PSP_PMUD_FILE4=$(call add_opt_prefix, $(PSP_PMUD_FILE4), --subprogram 1 --instance 4 --pmu-data)
-OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
+
 OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
 OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
@@ -314,49 +227,28 @@ OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --spi-micron-flag)
 
+OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
+
 ifeq ($(CONFIG_VBOOT),)
 OPT_APOB0_NV_SIZE=$(OPT_APOB_NV_SIZE)
 OPT_APOB0_NV_BASE=$(OPT_APOB_NV_BASE)
 endif
 
-AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
-		$(OPT_PSPSECUREOS_FILE) \
-		$(OPT_PSP_SEC_DBG_KEY_FILE) \
-		$(OPT_SMUFW1_SUB2_FILE) \
-		$(OPT_SMUFW2_SUB2_FILE) \
-		$(OPT_SMUFW1_SUB1_FILE) \
-		$(OPT_SMUFW2_SUB1_FILE) \
-		$(OPT_PSP_APCB_FILES) \
+OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
+
+# Add all the files listed in the config file
+DEP_FILES=$(shell $(AMDFWTOOL) --config $(CONFIG_AMDFW_CONFIG_FILE) --depend)
+
+AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_PSP_BIOSBIN_FILE) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \
 		$(OPT_PSP_SOFTFUSE) \
-		$(OPT_PSP_PMUI_FILE1) \
-		$(OPT_PSP_PMUI_FILE2) \
-		$(OPT_PSP_PMUI_FILE3) \
-		$(OPT_PSP_PMUI_FILE4) \
-		$(OPT_PSP_PMUD_FILE1) \
-		$(OPT_PSP_PMUD_FILE2) \
-		$(OPT_PSP_PMUD_FILE3) \
-		$(OPT_PSP_PMUD_FILE4) \
-		$(OPT_MP2CFG_FILE) \
-		$(OPT_ABL0_FILE) \
-		$(OPT_ABL1_FILE) \
-		$(OPT_ABL2_FILE) \
-		$(OPT_ABL3_FILE) \
-		$(OPT_ABL4_FILE) \
-		$(OPT_ABL5_FILE) \
-		$(OPT_ABL6_FILE) \
-		$(OPT_ABL7_FILE) \
+		$(OPT_PSP_USE_PSPSECUREOS) \
+		$(OPT_PSP_LOAD_MP2_FW) \
+		$(OPT_PSP_LOAD_S0I3_FW) \
 		$(OPT_WHITELIST_FILE) \
-		$(OPT_SECG1_FILE) \
-		$(OPT_SECG2_FILE) \
-		$(OPT_MP2FW1_FILE) \
-		$(OPT_MP2FW2_FILE) \
-		$(OPT_DRIVERS_FILE) \
-		$(OPT_PSP_S0I3_FILE) \
-		$(OPT_IKEK_FILE) \
 		$(OPT_SEC_DEBUG_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
@@ -365,45 +257,15 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
+		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--soc-name "Picasso" \
 		--flashsize $(CONFIG_ROM_SIZE)
 
-$(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
-			$(call strip_quotes, $(PSPBTLDR_FILE)) \
-			$(call strip_quotes, $(PSPSECUREOS_FILE)) \
-			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
-			$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
-			$(call strip_quotes, $(PSP_PMUI_FILE1)) \
-			$(call strip_quotes, $(PSP_PMUI_FILE2)) \
-			$(call strip_quotes, $(PSP_PMUI_FILE3)) \
-			$(call strip_quotes, $(PSP_PMUI_FILE4)) \
-			$(call strip_quotes, $(PSP_PMUD_FILE1)) \
-			$(call strip_quotes, $(PSP_PMUD_FILE2)) \
-			$(call strip_quotes, $(PSP_PMUD_FILE3)) \
-			$(call strip_quotes, $(PSP_PMUD_FILE4)) \
-			$(call strip_quotes, $(PSP_MP2CFG_FILE)) \
-			$(call strip_quotes, $(PSP_SMUFW1_SUB1_FILE)) \
-			$(call strip_quotes, $(PSP_SMUFW1_SUB2_FILE)) \
-			$(call strip_quotes, $(PSP_SMUFW2_SUB1_FILE)) \
-			$(call strip_quotes, $(PSP_SMUFW2_SUB2_FILE)) \
-			$(call strip_quotes, $(PSP_ABL0_FILE)) \
-			$(call strip_quotes, $(PSP_ABL1_FILE)) \
-			$(call strip_quotes, $(PSP_ABL2_FILE)) \
-			$(call strip_quotes, $(PSP_ABL3_FILE)) \
-			$(call strip_quotes, $(PSP_ABL4_FILE)) \
-			$(call strip_quotes, $(PSP_ABL5_FILE)) \
-			$(call strip_quotes, $(PSP_ABL6_FILE)) \
-			$(call strip_quotes, $(PSP_ABL7_FILE)) \
-			$(call strip_quotes, $(PSP_WHITELIST_FILE)) \
-			$(call strip_quotes, $(PSP_SECG1_FILE)) \
-			$(call strip_quotes, $(PSP_SECG2_FILE)) \
-			$(call_strip_quotes, $(PSP_DRIVERS_FILE)) \
-			$(call_strip_quotes, $(PSP_S0I3_FILE)) \
-			$(call_strip_quotes, $(PSP_IKEK_FILE)) \
-			$(call_strip_quotes, $(PSP_SEC_DEBUG_FILE)) \
+$(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(PSP_VERSTAGE_FILE) \
 			$(PSP_VERSTAGE_SIG_FILE) \
 			$$(PSP_APCB_FILES) \
+			$(DEP_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap_config.h
 	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
-amdfwtoolobj = amdfwtool.o
+amdfwtoolobj = amdfwtool.o data_parse.o
 
 AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow
 

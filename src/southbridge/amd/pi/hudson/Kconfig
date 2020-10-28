@@ -63,6 +63,10 @@ config HUDSON_PSP
 	bool
 	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
 
+config AMDFW_CONFIG_FILE
+	string "AMD PSP Firmware config file"
+	default "src/southbridge/amd/pi/hudson/fw_avl.cfg" if CPU_AMD_PI_00730F01
+
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
 	default "3rdparty/blobs/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON

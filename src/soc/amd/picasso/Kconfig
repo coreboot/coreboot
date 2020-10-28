@@ -446,9 +446,9 @@ comment "AMD Firmware Directory Table set to location for 8MB ROM"
 comment "AMD Firmware Directory Table set to location for 16MB ROM"
 	depends on AMD_FWM_POSITION_INDEX = 5
 
-config AMD_PUBKEY_FILE
+config AMDFW_CONFIG_FILE
 	string
-	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
+	default "src/soc/amd/picasso/fw.cfg"
 
 config USE_PSPSECUREOS
 	bool
@@ -486,16 +486,6 @@ config PSP_WHITELIST_FILE
 	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/amd_blobs/picasso/PSP/wtl-rvn.sbin"
-
-config PSP_BOOTLOADER_FILE
-	string "Specify the PSP Bootloader file path"
-	default "3rdparty/amd_blobs/picasso/PSP/PspBootLoader_WL_RV.sbin" if HAVE_PSP_WHITELIST_FILE
-	default "3rdparty/amd_blobs/picasso/PSP/PspBootLoader_prod_RV.sbin"
-	help
-	  Supply the name of the PSP bootloader file.
-
-	  Note that this option may conflict with the whitelist file if a
-	  different PSP bootloader binary is specified.
 
 config PSP_SHAREDMEM_SIZE
 	hex "Maximum size of shared memory area"

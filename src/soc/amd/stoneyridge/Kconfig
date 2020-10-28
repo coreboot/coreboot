@@ -190,12 +190,13 @@ config STONEYRIDGE_GEC_FWM_FILE
 	string "GEC firmware path and filename"
 	depends on STONEYRIDGE_GEC_FWM
 
-config AMD_PUBKEY_FILE
-	string "AMD public Key"
+config AMDFW_CONFIG_FILE
+	string
+	string "AMD PSP Firmware config file"
 	default "" if !USE_AMD_BLOBS
-	default "3rdparty/amd_blobs/stoneyridge/PSP/CZ/AmdPubKeyCZ.bin" if AMD_APU_MERLINFALCON
-	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin" if AMD_APU_PRAIRIEFALCON
-	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin" if AMD_APU_STONEYRIDGE
+	default "src/soc/amd/stoneyridge/fw_cz.cfg" if AMD_APU_MERLINFALCON
+	default "src/soc/amd/stoneyridge/fw_st.cfg" if AMD_APU_PRAIRIEFALCON
+	default "src/soc/amd/stoneyridge/fw_st.cfg" if AMD_APU_STONEYRIDGE
 
 config STONEYRIDGE_SATA_MODE
 	int "SATA Mode"

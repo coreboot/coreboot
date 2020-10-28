@@ -56,6 +56,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <libgen.h>
+
+#include "amdfwtool.h"
 
 #define AMD_ROMSIG_OFFSET	0x20000
 #define MIN_ROM_KB		256
@@ -93,13 +96,6 @@
  * TODO: Future work may require fully implementing the PSP_COMBO feature.
  */
 #define PSP_COMBO 0
-
-#if defined(__GLIBC__)
-typedef unsigned long long int uint64_t;
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-#endif
 
 /*
  * Creates the OSI Fletcher checksum. See 8473-1, Appendix C, section C.3.
@@ -165,39 +161,22 @@ static void usage(void)
 	printf("-A | --combo-capable           Place PSP directory pointer at Embedded Firmware\n");
 	printf("                               offset able to support combo directory\n");
 	printf("-M | --multilevel              Generate primary and secondary tables\n");
-	printf("-p | --pubkey <FILE>           Add pubkey\n");
-	printf("-b | --bootloader <FILE>       Add bootloader\n");
-	printf("-S | --subprogram <number>     Sets subprogram field for the next firmware\n");
-	printf("-s | --smufirmware <FILE>      Add smufirmware\n");
-	printf("-r | --recovery <FILE>         Add recovery\n");
-	printf("-k | --rtmpubkey <FILE>        Add rtmpubkey\n");
-	printf("-c | --secureos <FILE>         Add secureos\n");
-	printf("-n | --nvram <FILE>            Add nvram\n");
-	printf("-d | --securedebug <FILE>      Add securedebug\n");
-	printf("-t | --trustlets <FILE>        Add trustlets\n");
-	printf("-u | --trustletkey <FILE>      Add trustletkey\n");
-	printf("-w | --smufirmware2 <FILE>     Add smufirmware2\n");
-	printf("-m | --smuscs <FILE>           Add smuscs\n");
-	printf("-T | --soft-fuse <HEX_VAL>     Override default soft fuse values\n");
-	printf("-z | --abl-image <FILE>        Add AGESA Binary\n");
-	printf("-J | --sec-gasket <FILE>       Add security gasket\n");
-	printf("-B | --mp2-fw <FILE>           Add MP2 firmware\n");
-	printf("-N | --secdebug <FILE>         Add secure unlock image\n");
-	printf("-U | --token-unlock            Reserve space for debug token\n");
-	printf("-K | --drv-entry-pts <FILE>    Add PSP driver entry points\n");
-	printf("-L | --ikek <FILE>             Add Wrapped iKEK\n");
-	printf("-Y | --s0i3drv <FILE>          Add s0i3 driver\n");
+	printf("-n | --nvram <FILE>            Add nvram binary\n");
+	printf("-T | --soft-fuse               Set soft fuse\n");
+	printf("-U | --token-unlock            Set token unlock\n");
+	printf("-W | --whitelist               Set if there is a whitelist\n");
+	printf("-S | --use-pspsecureos         Set if psp secure OS is needed\n");
+	printf("-p | --load-mp2-fw             Set if load MP2 firmware\n");
+	printf("-L | --load-s0i3               Set if load s0i3 firmware\n");
 	printf("-Z | --verstage <FILE>         Add verstage\n");
+	printf("-E | --verstage_sig            Add verstage signature");
 	printf("\nBIOS options:\n");
 	printf("-I | --instance <number>       Sets instance field for the next BIOS firmware\n");
 	printf("-a | --apcb <FILE>             Add AGESA PSP customization block\n");
 	printf("-Q | --apob-base <HEX_VAL>     Destination for AGESA PSP output block\n");
 	printf("-F | --apob-nv-base <HEX_VAL>  Location of S3 resume data\n");
 	printf("-H | --apob-nv-size <HEX_VAL>  Size of S3 resume data\n");
-	printf("-y | --pmu-inst <FILE>         Add PMU firmware instruction portion\n");
-	printf("-G | --pmu-data <FILE>         Add PMU firmware data portion\n");
 	printf("-O | --ucode <FILE>            Add microcode patch\n");
-	printf("-X | --mp2-config <FILE>       Add MP2 configuration\n");
 	printf("-V | --bios-bin <FILE>         Add compressed image; auto source address\n");
 	printf("-e | --bios-bin-src <HEX_VAL>  Address in flash of source if -V not used\n");
 	printf("-v | --bios-bin-dest <HEX_VAL> Destination for uncompressed BIOS\n");
@@ -236,93 +215,11 @@ static void usage(void)
 	printf("                               0x1 Micron parts are always used\n");
 	printf("                               0x2 Micron parts optional, this option is only\n");
 	printf("                                   supported with RN/LCN SOC\n");
+	printf("-c | --config <config file>    Config file\n");
+	printf("-D | --depend                  List out the firmware files\n");
 }
 
-typedef enum _amd_bios_type {
-	AMD_BIOS_APCB = 0x60,
-	AMD_BIOS_APOB = 0x61,
-	AMD_BIOS_BIN = 0x62,
-	AMD_BIOS_APOB_NV = 0x63,
-	AMD_BIOS_PMUI = 0x64,
-	AMD_BIOS_PMUD = 0x65,
-	AMD_BIOS_UCODE = 0x66,
-	AMD_BIOS_APCB_BK = 0x68,
-	AMD_BIOS_MP2_CFG = 0x6a,
-	AMD_BIOS_PSP_SHARED_MEM = 0x6b,
-	AMD_BIOS_L2_PTR =  0x70,
-	AMD_BIOS_INVALID,
-} amd_bios_type;
-
-#define BDT_LVL1 0x1
-#define BDT_LVL2 0x2
-#define BDT_BOTH (BDT_LVL1 | BDT_LVL2)
-typedef struct _amd_bios_entry {
-	amd_bios_type type;
-	int region_type;
-	int reset;
-	int copy;
-	int ro;
-	int zlib;
-	int inst;
-	int subpr;
-	uint64_t src;
-	uint64_t dest;
-	size_t size;
-	char *filename;
-	int level;
-} amd_bios_entry;
-
-typedef enum _amd_fw_type {
-	AMD_FW_PSP_PUBKEY = 0,
-	AMD_FW_PSP_BOOTLOADER = 1,
-	AMD_FW_PSP_SMU_FIRMWARE = 8,
-	AMD_FW_PSP_RECOVERY = 3,
-	AMD_FW_PSP_RTM_PUBKEY = 5,
-	AMD_FW_PSP_SECURED_OS = 2,
-	AMD_FW_PSP_NVRAM = 4,
-	AMD_FW_PSP_SECURED_DEBUG = 9,
-	AMD_FW_PSP_TRUSTLETS = 12,
-	AMD_FW_PSP_TRUSTLETKEY = 13,
-	AMD_FW_PSP_SMU_FIRMWARE2 = 18,
-	AMD_PSP_FUSE_CHAIN = 11,
-	AMD_FW_PSP_SMUSCS = 95,
-	AMD_DEBUG_UNLOCK = 0x13,
-	AMD_WRAPPED_IKEK = 0x21,
-	AMD_TOKEN_UNLOCK = 0x22,
-	AMD_SEC_GASKET = 0x24,
-	AMD_MP2_FW = 0x25,
-	AMD_DRIVER_ENTRIES = 0x28,
-	AMD_S0I3_DRIVER = 0x2d,
-	AMD_ABL0 = 0x30,
-	AMD_ABL1 = 0x31,
-	AMD_ABL2 = 0x32,
-	AMD_ABL3 = 0x33,
-	AMD_ABL4 = 0x34,
-	AMD_ABL5 = 0x35,
-	AMD_ABL6 = 0x36,
-	AMD_ABL7 = 0x37,
-	AMD_FW_PSP_WHITELIST = 0x3a,
-	AMD_FW_L2_PTR = 0x40,
-	AMD_FW_PSP_VERSTAGE = 0x52,
-	AMD_FW_VERSTAGE_SIG = 0x53,
-	AMD_FW_IMC,
-	AMD_FW_GEC,
-	AMD_FW_XHCI,
-	AMD_FW_INVALID,
-} amd_fw_type;
-
-#define PSP_LVL1 0x1
-#define PSP_LVL2 0x2
-#define PSP_BOTH (PSP_LVL1 | PSP_LVL2)
-typedef struct _amd_fw_entry {
-	amd_fw_type type;
-	uint8_t subprog;
-	char *filename;
-	int level;
-	uint64_t other;
-} amd_fw_entry;
-
-static amd_fw_entry amd_psp_fw_table[] = {
+amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH },
 	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH },
@@ -365,14 +262,14 @@ static amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_INVALID },
 };
 
-static amd_fw_entry amd_fw_table[] = {
+amd_fw_entry amd_fw_table[] = {
 	{ .type = AMD_FW_XHCI },
 	{ .type = AMD_FW_IMC },
 	{ .type = AMD_FW_GEC },
 	{ .type = AMD_FW_INVALID },
 };
 
-static amd_bios_entry amd_bios_table[] = {
+amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_APCB, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 1, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 2, .level = BDT_BOTH },
@@ -696,6 +593,33 @@ static void integrate_firmwares(context *ctx,
 			ctx->current = ALIGN(ctx->current + bytes,
 							BLOB_ALIGNMENT);
 		}
+	}
+}
+
+static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
+{
+	amd_fw_entry *index;
+
+	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+		if (index->filename &&
+				index->type != AMD_FW_VERSTAGE_SIG &&
+				index->type != AMD_FW_PSP_VERSTAGE &&
+				index->type != AMD_FW_PSP_WHITELIST) {
+			free(index->filename);
+		}
+	}
+}
+
+static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
+{
+	amd_bios_entry *index;
+
+	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
+		if (index->filename &&
+				index->type != AMD_BIOS_APCB &&
+				index->type != AMD_BIOS_BIN &&
+				index->type != AMD_BIOS_APCB_BK)
+			free(index->filename);
 	}
 }
 
@@ -1083,8 +1007,9 @@ enum {
 	LONGOPT_SPI_MICRON_FLAG	= 258,
 };
 
-// Unused values: D
-static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:qR:P:C:E:";
+/* Unused values: BGJKNXYbdkmprstuwyz*/
+static const char *optstring  = "x:i:g:AMn:T:SPLUW:I:a:Q:V:e:v:j:O:F:"
+				"H:o:f:l:hZ:qR:C:c:E:D";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -1093,29 +1018,13 @@ static struct option long_options[] = {
 	/* PSP Directory Table items */
 	{"combo-capable",          no_argument, 0, 'A' },
 	{"multilevel",             no_argument, 0, 'M' },
-	{"subprogram",       required_argument, 0, 'S' },
-	{"pubkey",           required_argument, 0, 'p' },
-	{"bootloader",       required_argument, 0, 'b' },
-	{"smufirmware",      required_argument, 0, 's' },
-	{"recovery",         required_argument, 0, 'r' },
-	{"rtmpubkey",        required_argument, 0, 'k' },
-	{"secureos",         required_argument, 0, 'c' },
 	{"nvram",            required_argument, 0, 'n' },
-	{"securedebug",      required_argument, 0, 'd' },
-	{"trustlets",        required_argument, 0, 't' },
-	{"trustletkey",      required_argument, 0, 'u' },
-	{"smufirmware2",     required_argument, 0, 'w' },
-	{"smuscs",           required_argument, 0, 'm' },
 	{"soft-fuse",        required_argument, 0, 'T' },
-	{"abl-image",        required_argument, 0, 'z' },
-	{"sec-gasket",       required_argument, 0, 'J' },
-	{"mp2-fw",           required_argument, 0, 'B' },
-	{"drv-entry-pts",    required_argument, 0, 'K' },
-	{"ikek",             required_argument, 0, 'L' },
-	{"s0i3drv",          required_argument, 0, 'Y' },
-	{"secdebug",         required_argument, 0, 'N' },
 	{"token-unlock",           no_argument, 0, 'U' },
 	{"whitelist",        required_argument, 0, 'W' },
+	{"use-pspsecureos",        no_argument, 0, 'S' },
+	{"load-mp2-fw",            no_argument, 0, 'p' },
+	{"load-s0i3",              no_argument, 0, 'L' },
 	{"verstage",         required_argument, 0, 'Z' },
 	{"verstage_sig",     required_argument, 0, 'E' },
 	/* BIOS Directory Table items */
@@ -1126,10 +1035,7 @@ static struct option long_options[] = {
 	{"bios-bin-src",     required_argument, 0, 'e' },
 	{"bios-bin-dest",    required_argument, 0, 'v' },
 	{"bios-uncomp-size", required_argument, 0, 'j' },
-	{"pmu-inst",         required_argument, 0, 'y' },
-	{"pmu-data",         required_argument, 0, 'G' },
 	{"ucode",            required_argument, 0, 'O' },
-	{"mp2-config",       required_argument, 0, 'X' },
 	{"apob-nv-base",     required_argument, 0, 'F' },
 	{"apob-nv-size",     required_argument, 0, 'H' },
 	/* Embedded Firmware Structure items*/
@@ -1144,11 +1050,14 @@ static struct option long_options[] = {
 	{"sharedmem",        required_argument, 0, 'R' },
 	{"sharedmem-size",   required_argument, 0, 'P' },
 	{"soc-name",         required_argument, 0, 'C' },
+
+	{"config",           required_argument, 0, 'c' },
 	{"help",             no_argument,       0, 'h' },
+	{"depend",           no_argument,       0, 'D' },
 	{NULL,               0,                 0,  0  }
 };
 
-static void register_fw_fuse(char *str)
+void register_fw_fuse(char *str)
 {
 	uint32_t i;
 
@@ -1325,11 +1234,11 @@ int main(int argc, char **argv)
 	int comboable = 0;
 	int fuse_defined = 0;
 	int targetfd;
-	char *output = NULL;
+	char *output = NULL, *config = NULL;
+	FILE *config_handle;
 	context ctx = { 0 };
 	/* Values cleared after each firmware or parameter, regardless if N/A */
 	uint8_t sub = 0, instance = 0;
-	int abl_image = 0;
 	uint32_t dir_location = 0;
 	bool any_location = 0;
 	uint32_t romsig_offset;
@@ -1340,6 +1249,14 @@ int main(int argc, char **argv)
 	uint8_t efs_spi_micron_flag = 0xff;
 
 	int multi = 0;
+	amd_cb_config cb_config;
+	int list_deps = 0;
+
+	cb_config.have_whitelist = 0;
+	cb_config.unlock_secure = 0;
+	cb_config.use_secureos = 0;
+	cb_config.load_mp2_fw = 0;
+	cb_config.s0i3 = 0;
 
 	while (1) {
 		int optindex = 0;
@@ -1370,67 +1287,20 @@ int main(int argc, char **argv)
 			break;
 		case 'U':
 			register_fw_token_unlock();
+			cb_config.unlock_secure = 1;
 			sub = instance = 0;
 			break;
 		case 'S':
-			sub = (uint8_t)strtoul(optarg, &tmp, 16);
+			cb_config.use_secureos = 1;
 			break;
 		case 'I':
 			instance = strtoul(optarg, &tmp, 16);
 			break;
 		case 'p':
-			register_fw_filename(AMD_FW_PSP_PUBKEY, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'b':
-			register_fw_filename(AMD_FW_PSP_BOOTLOADER,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 's':
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'r':
-			register_fw_filename(AMD_FW_PSP_RECOVERY, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'k':
-			register_fw_filename(AMD_FW_PSP_RTM_PUBKEY,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'c':
-			register_fw_filename(AMD_FW_PSP_SECURED_OS,
-								sub, optarg);
-			sub = instance = 0;
+			cb_config.load_mp2_fw = 1;
 			break;
 		case 'n':
 			register_fw_filename(AMD_FW_PSP_NVRAM, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'd':
-			register_fw_filename(AMD_FW_PSP_SECURED_DEBUG,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 't':
-			register_fw_filename(AMD_FW_PSP_TRUSTLETS, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'u':
-			register_fw_filename(AMD_FW_PSP_TRUSTLETKEY,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'w':
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'm':
-			register_fw_filename(AMD_FW_PSP_SMUSCS, sub, optarg);
 			sub = instance = 0;
 			break;
 		case 'T':
@@ -1478,56 +1348,18 @@ int main(int argc, char **argv)
 			register_fw_addr(AMD_BIOS_BIN, 0, 0, optarg);
 			sub = instance = 0;
 			break;
-		case 'y':
-			register_bdt_data(AMD_BIOS_PMUI, sub, instance, optarg);
-			sub = instance = 0;
-			break;
-		case 'G':
-			register_bdt_data(AMD_BIOS_PMUD, sub, instance, optarg);
-			sub = instance = 0;
-			break;
 		case 'O':
 			register_bdt_data(AMD_BIOS_UCODE, sub,
 							instance, optarg);
 			sub = instance = 0;
 			break;
-		case 'J':
-			register_fw_filename(AMD_SEC_GASKET, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'B':
-			register_fw_filename(AMD_MP2_FW, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'z':
-			register_fw_filename(AMD_ABL0 + abl_image++,
-								sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'X':
-			register_bdt_data(AMD_BIOS_MP2_CFG, sub,
-							instance, optarg);
-			sub = instance = 0;
-			break;
-		case 'K':
-			register_fw_filename(AMD_DRIVER_ENTRIES, sub, optarg);
-			sub = instance = 0;
-			break;
 		case 'L':
-			register_fw_filename(AMD_WRAPPED_IKEK, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'Y':
-			register_fw_filename(AMD_S0I3_DRIVER, sub, optarg);
-			sub = instance = 0;
-			break;
-		case 'N':
-			register_fw_filename(AMD_DEBUG_UNLOCK, sub, optarg);
-			sub = instance = 0;
+			cb_config.s0i3 = 1;
 			break;
 		case 'W':
 			register_fw_filename(AMD_FW_PSP_WHITELIST, sub, optarg);
 			sub = instance = 0;
+			cb_config.have_whitelist = 1;
 			break;
 		case 'Z':
 			register_fw_filename(AMD_FW_PSP_VERSTAGE, sub, optarg);
@@ -1590,36 +1422,60 @@ int main(int argc, char **argv)
 			sub = instance = 0;
 			break;
 
+		case 'c':
+			config = optarg;
+			break;
 		case 'h':
 			usage();
 			return 0;
+		case 'D':
+			list_deps = 1;
+			break;
 		default:
 			break;
 		}
 	}
 
+	if (config) {
+		config_handle = fopen(config, "r");
+		if (config_handle == NULL) {
+			fprintf(stderr, "Can not open file %s for reading: %s\n",
+				config, strerror(errno));
+			exit(1);
+		}
+		if (process_config(config_handle, &cb_config, list_deps) == 0) {
+			fprintf(stderr, "Configuration file %s parsing error\n", config);
+			fclose(config_handle);
+			exit(1);
+		}
+		fclose(config_handle);
+	}
 	if (!fuse_defined)
 		register_fw_fuse(DEFAULT_SOFT_FUSE_CHAIN);
 
-	if (!output) {
-		printf("Error: Output value is not specified.\n\n");
+	if (!output && !list_deps) {
+		fprintf(stderr, "Error: Output value is not specified.\n\n");
 		retval = 1;
 	}
 
-	if (ctx.rom_size % 1024 != 0) {
-		printf("Error: ROM Size (%d bytes) should be a multiple of"
+	if ((ctx.rom_size % 1024 != 0)  && !list_deps) {
+		fprintf(stderr, "Error: ROM Size (%d bytes) should be a multiple of"
 			" 1024 bytes.\n\n", ctx.rom_size);
 		retval = 1;
 	}
 
-	if (ctx.rom_size < MIN_ROM_KB * 1024) {
-		printf("Error: ROM Size (%dKB) must be at least %dKB.\n\n",
+	if ((ctx.rom_size < MIN_ROM_KB * 1024)  && !list_deps) {
+		fprintf(stderr, "Error: ROM Size (%dKB) must be at least %dKB.\n\n",
 			ctx.rom_size / 1024, MIN_ROM_KB);
 		retval = 1;
 	}
 
 	if (retval) {
 		usage();
+		return retval;
+	}
+
+	if (list_deps) {
 		return retval;
 	}
 
@@ -1744,6 +1600,10 @@ int main(int argc, char **argv)
 		}
 		amd_romsig->bios1_entry = BUFF_TO_RUN(ctx, biosdir);
 	}
+
+	/* Free the filename. */
+	free_psp_firmware_filenames(amd_psp_fw_table);
+	free_bdt_firmware_filenames(amd_bios_table);
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {

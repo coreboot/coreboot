@@ -22,6 +22,9 @@ chip soc/intel/tigerlake
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf
+				## Disable Active Policy
+				register "policies.active" = "{[0] = {.target=DPTF_NONE}}"
+
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,		CPU,	       85, 1000),

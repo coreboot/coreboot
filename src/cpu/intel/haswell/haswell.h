@@ -3,6 +3,7 @@
 #ifndef _CPU_INTEL_HASWELL_H
 #define _CPU_INTEL_HASWELL_H
 
+#include <arch/cpu.h>
 #include <stdint.h>
 
 /* CPU types without stepping */
@@ -168,6 +169,11 @@ void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 
 /* CPU identification */
+static inline u32 cpu_family_model(void)
+{
+	return cpuid_eax(1) & 0x0fff0ff0;
+}
+
 static inline int haswell_is_ult(void)
 {
 	return CONFIG(INTEL_LYNXPOINT_LP);

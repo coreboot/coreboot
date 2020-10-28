@@ -294,8 +294,11 @@ static void initialize_vr_config(void)
 	msr = rdmsr(MSR_VR_MISC_CONFIG2);
 	msr.lo &= ~0xffff;
 	/* Allow CPU to control minimum voltage completely (15:8) and
-	 * set the fast ramp voltage to 1110mV (0x6f in 10mV steps). */
-	msr.lo |= 0x006f;
+	   set the fast ramp voltage in 10mV steps. */
+	if (cpu_family_model() == BROADWELL_FAMILY_ULT)
+		msr.lo |= 0x006a; /* 1.56V */
+	else
+		msr.lo |= 0x006f; /* 1.60V */
 	wrmsr(MSR_VR_MISC_CONFIG2, msr);
 }
 

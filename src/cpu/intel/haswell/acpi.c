@@ -14,6 +14,12 @@
 
 #include <southbridge/intel/lynxpoint/pch.h>
 
+static int cstate_set_s0ix[3] = {
+	C_STATE_C1E,
+	C_STATE_C7S_LONG_LAT,
+	C_STATE_C10,
+};
+
 static int cstate_set_lp[3] = {
 	C_STATE_C1E,
 	C_STATE_C3,
@@ -94,6 +100,21 @@ static void generate_T_state_entries(int core, int cores_per_package)
 			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
 }
 
+static bool is_s0ix_enabled(void)
+{
+	if (!haswell_is_ult())
+		return false;
+
+	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
+
+	if (!lapic || !lapic->chip_info)
+		return false;
+
+	const struct cpu_intel_haswell_config *conf = lapic->chip_info;
+
+	return conf->s0ix_enable;
+}
+
 static void generate_C_state_entries(void)
 {
 	acpi_cstate_t map[3];
@@ -111,7 +132,9 @@ static void generate_C_state_entries(void)
 	if (!cpu || !cpu->cstates)
 		return;
 
-	if (haswell_is_ult())
+	if (is_s0ix_enabled())
+		set = cstate_set_s0ix;
+	else if (haswell_is_ult())
 		set = cstate_set_lp;
 	else
 		set = cstate_set_trad;

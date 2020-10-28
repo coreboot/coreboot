@@ -34,4 +34,7 @@ struct cpu_intel_haswell_config {
 	int tcc_offset;		/* TCC Activation Offset */
 
 	struct cpu_vr_config vr_config;
+
+	/* Enable S0iX support */
+	bool s0ix_enable;
 };

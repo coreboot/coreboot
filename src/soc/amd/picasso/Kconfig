@@ -535,6 +535,22 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	  Runs verstage on the PSP.  Only available on
 	  certain Chrome OS branded parts from AMD.
 
+config VBOOT_HASH_BLOCK_SIZE
+	hex
+	default 0x9000
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Because the bulk of the time in psp_verstage to hash the RO cbfs is
+	  spent in the overhead of doing svc calls, increasing the hash block
+	  size significantly cuts the verstage hashing time as seen below.
+
+	  4k takes 180ms
+	  16k takes 44ms
+	  32k takes 33.7ms
+	  36k takes 32.5ms
+	  There's actually still room for an even bigger stack, but we've
+	  reached a point of diminishing returns.
+
 config CMOS_RECOVERY_BYTE
 	hex
 	default 0x51

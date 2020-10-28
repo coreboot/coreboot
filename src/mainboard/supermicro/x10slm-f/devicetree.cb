@@ -4,13 +4,6 @@ chip northbridge/intel/haswell
 
 	device cpu_cluster 0 on
 		chip cpu/intel/haswell
-			register "c1_acpower" = "1"
-			register "c1_battery" = "1"
-			register "c2_acpower" = "3"
-			register "c2_battery" = "3"
-			register "c3_acpower" = "5"
-			register "c3_battery" = "5"
-
 			device lapic 0 on end
 			device lapic 0xacac off end
 		end

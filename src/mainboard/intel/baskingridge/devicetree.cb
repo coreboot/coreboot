@@ -16,14 +16,6 @@ chip northbridge/intel/haswell
 			device lapic 0 on end
 			# Magic APIC ID to locate this chip
 			device lapic 0xACAC off end
-
-			register "c1_battery" = "1"
-			register "c2_battery" = "3"
-			register "c3_battery" = "5"
-
-			register "c1_acpower" = "1"
-			register "c2_acpower" = "3"
-			register "c3_acpower" = "5"
 		end
 	end
 

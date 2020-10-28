@@ -31,14 +31,6 @@ struct cpu_vr_config {
 };
 
 struct cpu_intel_haswell_config {
-	int c1_battery;		/* ACPI C1 on Battery Power */
-	int c2_battery;		/* ACPI C2 on Battery Power */
-	int c3_battery;		/* ACPI C3 on Battery Power */
-
-	int c1_acpower;		/* ACPI C1 on AC Power */
-	int c2_acpower;		/* ACPI C2 on AC Power */
-	int c3_acpower;		/* ACPI C3 on AC Power */
-
 	int tcc_offset;		/* TCC Activation Offset */
 
 	struct cpu_vr_config vr_config;

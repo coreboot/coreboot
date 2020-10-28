@@ -22,18 +22,21 @@ config SOC_INTEL_CSE_LITE_SKU
 
 config SOC_INTEL_CSE_FMAP_NAME
 	string "Name of CSE Region in FMAP"
+	depends on SOC_INTEL_CSE_LITE_SKU
 	default "SI_ME"
 	help
 	 Name of CSE region in FMAP
 
 config SOC_INTEL_CSE_RW_CBFS_NAME
 	string "CBFS entry name for CSE RW blob"
+	depends on SOC_INTEL_CSE_LITE_SKU
 	default "me_rw"
 	help
 	 CBFS entry name for Intel CSE CBFS RW blob
 
 config SOC_INTEL_CSE_RW_FILE
 	string "Intel CSE CBFS RW path and filename"
+	depends on SOC_INTEL_CSE_LITE_SKU
 	default ""
 	help
 	 Intel CSE CBFS RW blob path and file name

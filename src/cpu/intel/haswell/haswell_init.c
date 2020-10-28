@@ -226,6 +226,26 @@ static u32 pcode_mailbox_read(u32 command)
 	return MCHBAR32(BIOS_MAILBOX_DATA);
 }
 
+static int pcode_mailbox_write(u32 command, u32 data)
+{
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
+		return -1;
+	}
+
+	MCHBAR32(BIOS_MAILBOX_DATA) = data;
+
+	/* Send command and start transaction */
+	MCHBAR32(BIOS_MAILBOX_INTERFACE) = command | MAILBOX_RUN_BUSY;
+
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
+		return -1;
+	}
+
+	return 0;
+}
+
 static void initialize_vr_config(void)
 {
 	struct cpu_vr_config vr_config = { 0 };
@@ -300,6 +320,9 @@ static void initialize_vr_config(void)
 	else
 		msr.lo |= 0x006f; /* 1.60V */
 	wrmsr(MSR_VR_MISC_CONFIG2, msr);
+
+	/* Set C9/C10 VCC Min */
+	pcode_mailbox_write(MAILBOX_BIOS_CMD_WRITE_C9C10_VOLTAGE, 0x1f1f);
 }
 
 static void configure_pch_power_sharing(void)

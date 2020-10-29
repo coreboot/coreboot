@@ -4,13 +4,13 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/romstage.h>
-#include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <security/intel/txt/txt_platform.h>
 #include <security/intel/txt/txt_register.h>
+#include <types.h>
 
 #include "haswell.h"
 
@@ -19,9 +19,9 @@ static uintptr_t northbridge_get_tseg_base(void)
 	return ALIGN_DOWN(pci_read_config32(HOST_BRIDGE, TSEG), 1 * MiB);
 }
 
-static size_t northbridge_get_tseg_size(void)
+static uintptr_t northbridge_get_tseg_limit(void)
 {
-	return CONFIG_SMM_TSEG_SIZE;
+	return ALIGN_DOWN(pci_read_config32(HOST_BRIDGE, BGSM), 1 * MiB);
 }
 
 union dpr_register txt_get_chipset_dpr(void)
@@ -62,7 +62,9 @@ void *cbmem_top_chipset(void)
 void smm_region(uintptr_t *start, size_t *size)
 {
 	*start = northbridge_get_tseg_base();
-	*size = northbridge_get_tseg_size();
+	*size = northbridge_get_tseg_limit();
+
+	*size -= *start;
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

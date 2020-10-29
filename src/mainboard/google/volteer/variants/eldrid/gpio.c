@@ -63,7 +63,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 
 	/* D4  : IMGCLKOUT0# ==> CAMMERA_SWITCH */
-	PAD_CFG_GPI(GPP_D4, NONE, DEEP),
+	PAD_CFG_GPI_INT(GPP_D4, NONE, PLTRST, EDGE_BOTH),
 	/* D6  : SRCCLKREQ1# ==> WLAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */

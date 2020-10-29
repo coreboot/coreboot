@@ -12,11 +12,20 @@ chip soc/intel/broadwell
 		.backlight_pwm_hz	= 200,
 	}"
 
-	register "vr_slow_ramp_rate_set" = "3"
-	register "vr_slow_ramp_rate_enable" = "1"
+	device cpu_cluster 0 on
+		chip cpu/intel/haswell
+			# Disable S0ix for now
+			register "s0ix_enable" = "0"
 
-	# Disable S0ix for now
-	register "s0ix_enable" = "0"
+			register "vr_config" = "{
+				.slow_ramp_rate_set    = 3,
+				.slow_ramp_rate_enable = true,
+			}"
+
+			device lapic 0 on end
+			device lapic 0xacac off end
+		end
+	end
 
 	device domain 0 on
 		chip soc/intel/broadwell/pch

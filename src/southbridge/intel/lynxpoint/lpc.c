@@ -737,7 +737,6 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 						   struct acpi_rsdp *rsdp)
 {
 	unsigned long current;
-	acpi_hpet_t *hpet;
 	acpi_header_t *ssdt;
 
 	current = start;
@@ -748,13 +747,7 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 	/*
 	 * We explicitly add these tables later on:
 	 */
-	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
-
-	hpet = (acpi_hpet_t *)current;
-	current += sizeof(acpi_hpet_t);
-	current = acpi_align_current(current);
-	acpi_create_intel_hpet(hpet);
-	acpi_add_table(rsdp, hpet);
+	current = acpi_write_hpet(device, current, rsdp);
 
 	current = acpi_align_current(current);
 

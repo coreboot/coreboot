@@ -120,7 +120,6 @@ void disable_gpe(u32 mask);
 void pch_enable(struct device *dev);
 void pch_disable_devfn(struct device *dev);
 void pch_log_state(void);
-void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 void enable_usb_bar(void);

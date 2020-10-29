@@ -4,6 +4,7 @@
 #include <arch/bootblock.h>
 #include <cpu/x86/msr.h>
 #include <arch/io.h>
+#include <delay.h>
 #include <halt.h>
 
 #include "haswell.h"
@@ -49,6 +50,10 @@ static void set_flex_ratio_to_tdp_nominal(void)
 
 	/* Set soft reset control to use register value */
 	RCBA32_OR(SOFT_RESET_CTRL, 1);
+
+	/* Delay before reset to avoid potential TPM lockout */
+	if (CONFIG(TPM1) || CONFIG(TPM2))
+		mdelay(30);
 
 	/* Issue warm reset, will be "CPU only" due to soft reset data */
 	outb(0x0, 0xcf9);

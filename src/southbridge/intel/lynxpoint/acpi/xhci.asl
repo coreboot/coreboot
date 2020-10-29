@@ -221,25 +221,39 @@ Device (XHCI)
 		}
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
-		// Clear PCI 0xB0[14:13]
-		^MB13 = 0
-		^MB14 = 0
+		If (!\ISWP()) {
+			// Clear PCI 0xB0[14:13]
+			^MB13 = 0
+			^MB14 = 0
 
-		// Clear MMIO 0x816C[14,2]
-		CLK0 = 0
-		CLK1 = 0
+			// Clear MMIO 0x816C[14,2]
+			CLK0 = 0
+			CLK1 = 0
 
-		// Set MMIO 0x8154[31]
-		CLK2 = 1
+			// Set MMIO 0x8154[31]
+			CLK2 = 1
 
-		// Handle per-port reset if needed
-		LPS0 ()
+			// Handle per-port reset if needed
+			LPS0 ()
 
-		// Set MMIO 0x80e0[15]
-		AX15 = 1
+			// Set MMIO 0x80e0[15]
+			AX15 = 1
+
+			// Clear PCI CFG offset 0x40[11]
+			^SWAI = 0
+
+			// Clear PCI CFG offset 0x44[13:12]
+			^SAIP = 0
+		}
 #else
 		// Set MMIO 0x8154[31]
 		CLK2 = 1
+
+		// Clear PCI CFG offset 0x40[11]
+		^SWAI = 0
+
+		// Clear PCI CFG offset 0x44[13:12]
+		^SAIP = 0
 #endif
 
 		// Clear PCI CFG offset 0x40[11]
@@ -286,22 +300,36 @@ Device (XHCI)
 		}
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
-		// Set PCI 0xB0[14:13]
-		^MB13 = 1
-		^MB14 = 1
+		If (!\ISWP()) {
+			// Set PCI 0xB0[14:13]
+			^MB13 = 1
+			^MB14 = 1
 
-		// Set MMIO 0x816C[14,2]
-		CLK0 = 1
-		CLK1 = 1
+			// Set MMIO 0x816C[14,2]
+			CLK0 = 1
+			CLK1 = 1
 
-		// Clear MMIO 0x8154[31]
-		CLK2 = 0
+			// Clear MMIO 0x8154[31]
+			CLK2 = 0
 
-		// Clear MMIO 0x80e0[15]
-		AX15 = 0
+			// Clear MMIO 0x80e0[15]
+			AX15 = 0
+
+			// Set PCI CFG offset 0x40[11]
+			^SWAI = 1
+
+			// Set PCI CFG offset 0x44[13:12]
+			^SAIP = 1
+		}
 #else
 		// Clear MMIO 0x8154[31]
 		CLK2 = 0
+
+		// Set PCI CFG offset 0x40[11]
+		^SWAI = 1
+
+		// Set PCI CFG offset 0x44[13:12]
+		^SAIP = 1
 #endif
 
 		// Set PCI CFG offset 0x40[11]

@@ -19,6 +19,25 @@ Scope (\)
 		, 5,
 		HPTE, 1,	// Address Enable
 	}
+
+	/*
+	 * Check PCH type
+	 * Return 1 if PCH is WildcatPoint
+	 * Return 0 if PCH is LynxPoint
+	 */
+#if CONFIG(INTEL_LYNXPOINT_LP)
+	Method (ISWP)
+	{
+		Local0 = \_SB.PCI0.LPCB.PDID & 0xfff0
+		If (Local0 == 0x9cc0) {
+			Return (1)
+		} Else {
+			Return (0)
+		}
+	}
+#else
+	Name (ISWP, 0)
+#endif
 }
 
 // High Definition Audio (Azalia) 0:1b.0

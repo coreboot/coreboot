@@ -28,6 +28,4 @@ struct pei_data {
 	int data_to_save_size;
 } __packed;
 
-typedef struct pei_data PEI_DATA;
-
 #endif /* _PEI_WRAPPER_H_ */

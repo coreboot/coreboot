@@ -246,6 +246,4 @@ struct pei_data {
 	struct pei_memory_info meminfo;
 } __packed;
 
-typedef struct pei_data PEI_DATA;
-
 #endif

@@ -4,7 +4,7 @@ This page describes how to run coreboot on the [Purism Librem Mini].
 
 ```eval_rst
 +------------------+--------------------------------------------------+
-| CPU              | Intel Core i7-8565U                              |
+| CPU              | Intel Core i7-8565U/8665U                        |
 +------------------+--------------------------------------------------+
 | PCH              | Whiskey Lake / Cannon Point LP                   |
 +------------------+--------------------------------------------------+
@@ -91,14 +91,15 @@ desoldering it from the mainboard.
 ## Known issues
 
  * SeaBIOS can be finicky with detecting USB devices
- * Booting can sometimes hang when a bootsplash image is used with SeaBIOS
-   and VGA option ROM display init, related to display mode changing
- * Issues with some SATA devices have been mitigated by limiting the SATA speed to 3Gbps
-   until the correct HSIO PHY settings can be determined.
+ * Mode switching with VGA option ROM display init can be slow and sometimes hangs
+ * Some SATA devices on the 2.5" interface can have issues operating at 6 Gbps,
+   despite the HSIO PHY settings being set optimally via experimentation. These devices
+   may show errors in dmesg and drop down to 3 Gbps, but should not fail to boot.
+   The same issue is present on the AMI vendor firmware.
 
 ## Working
 
- * External displays via HDMI/DislpayPort with VGA option ROM or FSP/GOP init
+ * External displays via HDMI/DisplayPort with VGA option ROM or FSP/GOP init
   (no libgfxinit support yet)
  * SeaBIOS (1.13.x), Tianocore (CorebootPayloadpkg), Heads (Purism downstream) payloads
  * Ethernet, m.2 2230 Wi-Fi

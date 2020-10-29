@@ -28,7 +28,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAX_CPUS
 	int
-	default 16
+	default 8
 
 config VGA_BIOS_FILE
 	string

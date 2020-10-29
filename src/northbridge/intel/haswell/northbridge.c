@@ -547,9 +547,6 @@ static void northbridge_init(struct device *dev)
 	/* Configure turbo power limits 1ms after reset complete bit. */
 	mdelay(1);
 	set_power_limits(28);
-
-	/* Set here before graphics PM init. */
-	MCHBAR32(MMIO_PAVP_MSG) = 0x00100001;
 }
 
 static struct device_operations mc_ops = {

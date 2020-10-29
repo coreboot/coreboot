@@ -6,34 +6,22 @@
 #define SIO_BAR_LEN 0x1000
 
 // Put SerialIO device in D0 state
-// Arg0 - BAR1 of device
+// Arg0 - Ref to offset 0x84 of device's PCI config space
 Method (LPD0, 1, Serialized)
 {
-	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
-	Field (SPRT, DWordAcc, NoLock, Preserve)
-	{
-		SPCS, 32
-	}
-
-	SPCS &= 0xFFFFFFFC
-	Local0 = SPCS // Read back after writing
+	DeRefOf (Arg0) &= 0xFFFFFFFC
+	Local0 = DeRefOf (Arg0) // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used
 	Local0 &= Ones
 }
 
 // Put SerialIO device in D3 state
-// Arg0 - BAR1 of device
+// Arg0 - Ref to offset 0x84 of device's PCI config space
 Method (LPD3, 1, Serialized)
 {
-	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
-	Field (SPRT, DWordAcc, NoLock, Preserve)
-	{
-		SPCS, 32
-	}
-
-	SPCS |= 0x3
-	Local0 = SPCS // Read back after writing
+	DeRefOf (Arg0) |= 0x3
+	Local0 = DeRefOf (Arg0) // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used
 	Local0 &= Ones
@@ -226,14 +214,20 @@ Device (I2C0)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S1B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S1B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S1B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -297,14 +291,20 @@ Device (I2C1)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S2B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S2B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S2B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -353,14 +353,20 @@ Device (SPI0)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S3B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S3B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S3B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -421,14 +427,20 @@ Device (SPI1)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S4B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S4B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S4B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -489,14 +501,20 @@ Device (UAR0)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S5B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S5B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S5B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -545,14 +563,20 @@ Device (UAR1)
 		}
 	}
 
+	OperationRegion (SPRT, SystemMemory, \S6B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S6B1)
+		^^LPD0 (RefOf (SPCS))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S6B1)
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 

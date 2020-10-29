@@ -280,7 +280,6 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 	unsigned long dpr_size = 0;
 	u32 dpr_reg;
-	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
@@ -292,7 +291,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 * the DPR register reports the TOP of the region, which is the same
 	 * as TSEG base.  The region size is reported in MiB in bits 11:4.
 	 */
-	dpr_reg = pci_read_config32(sa_dev, DPR);
+	dpr_reg = pci_read_config32(dev, DPR);
 	if (dpr_reg & DPR_EPM) {
 		dpr_size = (dpr_reg & DPR_SIZE_MASK) << 16;
 		printk(BIOS_INFO, "DPR SIZE: 0x%lx\n", dpr_size);

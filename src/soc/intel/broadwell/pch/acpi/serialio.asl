@@ -166,6 +166,7 @@ Device (I2C0)
 		// LynxPoint-LP
 		Return ("INT33C2")
 	}
+	Name (_CID, "INT33C2")
 	Name (_UID, 1)
 
 	Name (SSCN, Package () { 432, 507, 30 })
@@ -242,6 +243,7 @@ Device (I2C1)
 		// LynxPoint-LP
 		Return ("INT33C3")
 	}
+	Name (_CID, "INT33C3")
 	Name (_UID, 1)
 
 	Name (SSCN, Package () { 432, 507, 30 })
@@ -318,6 +320,7 @@ Device (SPI0)
 		// LynxPoint-LP
 		Return ("INT33C0")
 	}
+	Name (_CID, "INT33C0")
 	Name (_UID, 1)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
@@ -379,6 +382,7 @@ Device (SPI1)
 		// LynxPoint-LP
 		Return ("INT33C1")
 	}
+	Name (_CID, "INT33C1")
 	Name (_UID, 1)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
@@ -452,6 +456,7 @@ Device (UAR0)
 		// LynxPoint-LP
 		Return ("INT33C4")
 	}
+	Name (_CID, "INT33C4")
 	Name (_UID, 1)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
@@ -525,6 +530,7 @@ Device (UAR1)
 		// LynxPoint-LP
 		Return ("INT33C5")
 	}
+	Name (_CID, "INT33C5")
 	Name (_UID, 1)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS

@@ -251,7 +251,12 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
 
-	/* The DPR register is special */
+	/*
+	 * DMA Protected Range can be reserved below TSEG for PCODE patch
+	 * or TXT/BootGuard related data.  Rather than report a base address,
+	 * the DPR register reports the TOP of the region, which is the same
+	 * as TSEG base. The region size is reported in MiB in bits 11:4.
+	 */
 	const union dpr_register dpr = {
 		.raw = pci_read_config32(dev, DPR),
 	};
@@ -290,23 +295,15 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	size_k = (0xa0000 >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> DPR base */
+	/* 0xc0000 -> TSEG - DPR */
 	base_k = 0xc0000 >> 10;
-	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - (base_k + dpr.size);
+	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
+	size_k -= dpr.size >> 10;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* DPR base -> TSEG */
-	if (dpr.size) {
-		resource = new_resource(dev, index++);
-		resource->base = (dpr.top - dpr.size) * MiB;
-		resource->size = dpr.size * MiB;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_STORED | IORESOURCE_CACHEABLE |
-				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
-
-	/* TSEG -> BGSM */
+	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG];
+	resource->base = mc_values[TSEG_REG] - dpr.size;
 	resource->size = mc_values[BGSM_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 			  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;

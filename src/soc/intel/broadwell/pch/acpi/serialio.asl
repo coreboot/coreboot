@@ -7,14 +7,8 @@
 
 // Put SerialIO device in D0 state
 // Arg0 - BAR1 of device
-// Arg1 - Set if device is in ACPI mode
-Method (LPD0, 2, Serialized)
+Method (LPD0, 1, Serialized)
 {
-	// PCI mode devices will be handled by OS PCI bus driver
-	If (Arg1 == 0) {
-		Return
-	}
-
 	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
 	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
@@ -30,14 +24,8 @@ Method (LPD0, 2, Serialized)
 
 // Put SerialIO device in D3 state
 // Arg0 - BAR1 of device
-// Arg1 - Set if device is in ACPI mode
-Method (LPD3, 2, Serialized)
+Method (LPD3, 1, Serialized)
 {
-	// PCI mode devices will be handled by OS PCI bus driver
-	If (Arg1 == 0) {
-		Return
-	}
-
 	OperationRegion (SPRT, SystemMemory, Arg0 + 0x84, 4)
 	Field (SPRT, DWordAcc, NoLock, Preserve)
 	{
@@ -240,12 +228,12 @@ Device (I2C0)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S1B1, \S1EN)
+		^^LPD0 (\S1B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S1B1, \S1EN)
+		^^LPD3 (\S1B1)
 	}
 }
 
@@ -311,12 +299,12 @@ Device (I2C1)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S2B1, \S2EN)
+		^^LPD0 (\S2B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S2B1, \S2EN)
+		^^LPD3 (\S2B1)
 	}
 }
 
@@ -367,12 +355,12 @@ Device (SPI0)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S3B1, \S3EN)
+		^^LPD0 (\S3B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S3B1, \S3EN)
+		^^LPD3 (\S3B1)
 	}
 }
 
@@ -435,12 +423,12 @@ Device (SPI1)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S4B1, \S4EN)
+		^^LPD0 (\S4B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S4B1, \S4EN)
+		^^LPD3 (\S4B1)
 	}
 }
 
@@ -503,12 +491,12 @@ Device (UAR0)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S5B1, \S5EN)
+		^^LPD0 (\S5B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S5B1, \S5EN)
+		^^LPD3 (\S5B1)
 	}
 }
 
@@ -559,12 +547,12 @@ Device (UAR1)
 
 	Method (_PS0, 0, Serialized)
 	{
-		^^LPD0 (\S6B1, \S6EN)
+		^^LPD0 (\S6B1)
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		^^LPD3 (\S6B1, \S6EN)
+		^^LPD3 (\S6B1)
 	}
 }
 

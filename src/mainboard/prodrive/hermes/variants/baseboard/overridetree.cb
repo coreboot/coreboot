@@ -124,7 +124,7 @@ chip soc/intel/cannonlake
 	register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
 
 	# Thermal
-	register "tcc_offset" = "6"     # TCC of 94C
+	register "tcc_offset" = "1"     # TCC of 99C
 
 
 	# Disable S0ix

@@ -231,6 +231,10 @@ struct dsm_uuid {
 	void *arg;
 };
 
+#define CPPC_VERSION_1	1
+#define CPPC_VERSION_2	2
+#define CPPC_VERSION_3	3
+
 /*version 1 has 15 fields, version 2 has 19, and version 3 has 21 */
 enum cppc_fields {
 	CPPC_HIGHEST_PERF, /* can be DWORD */

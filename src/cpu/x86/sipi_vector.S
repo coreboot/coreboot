@@ -121,7 +121,7 @@ _start:
 
 	/* Protect microcode loading. */
 lock_microcode:
-	lock bts $0, microcode_lock
+	lock btsl $0, microcode_lock
 	jc	lock_microcode
 
 load_microcode:

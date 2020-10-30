@@ -252,11 +252,6 @@ static void enable_hpet(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	/* Set the value for PCI command register. */
-	pci_write_config16(dev, PCI_COMMAND,
-			   PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-
 	i82801dx_enable_acpi(dev);
 	/* IO APIC initialization. */
 	i82801dx_enable_ioapic(dev);

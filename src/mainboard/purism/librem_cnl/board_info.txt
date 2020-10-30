@@ -1,5 +1,5 @@
 Vendor name: Purism
-Board name: librem_whl
+Board name: librem_cnl
 Category: desktop
 Release year: 2020
 ROM package: SOIC-8

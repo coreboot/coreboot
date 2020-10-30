@@ -80,6 +80,7 @@ config BOARD_GOOGLE_BOLDAR
 config BOARD_GOOGLE_ELEMI
 	bool "-> Elemi"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
+	select USE_CAR_NEM_ENHANCED_V2
 
 config BOARD_GOOGLE_VOEMA
 	bool "-> Voema"

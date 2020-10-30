@@ -71,6 +71,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 		return hdmi_override_table;
 	case SKU_17_LTE:
 	case SKU_18_LTE_TS:
+	case SKU_39_1A2C_360_LTE_TS_NO_STYLUES:
 		*num = ARRAY_SIZE(lte_override_table);
 		return lte_override_table;
 	default:

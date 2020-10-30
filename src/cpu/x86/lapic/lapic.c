@@ -3,7 +3,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 
-void do_lapic_init(void)
+void lapic_virtual_wire_mode_init(void)
 {
 	/* this is so interrupts work. This is very limited scope --
 	 * linux will do better later, we hope ...

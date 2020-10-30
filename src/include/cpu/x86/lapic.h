@@ -73,7 +73,7 @@ static inline void lapic_write_atomic(unsigned long reg, uint32_t v)
 # define lapic_read_around(x) lapic_read(x)
 # define lapic_write_around(x, y) lapic_write_atomic((x), (y))
 
-void do_lapic_init(void);
+void lapic_virtual_wire_mode_init(void);
 
 /* See if I need to initialize the local APIC */
 static inline int need_lapic_init(void)
@@ -84,7 +84,7 @@ static inline int need_lapic_init(void)
 static inline void setup_lapic(void)
 {
 	if (need_lapic_init())
-		do_lapic_init();
+		lapic_virtual_wire_mode_init();
 	else
 		disable_lapic();
 }

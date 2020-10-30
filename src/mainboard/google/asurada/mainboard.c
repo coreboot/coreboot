@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <soc/gpio.h>
+#include <soc/regulator.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
@@ -14,7 +15,15 @@
 #define MSDC0_DRV_MASK	0x3fffffff
 #define MSDC1_DRV_MASK	0x3ffff000
 #define MSDC0_DRV_VALUE	0x24924924
-#define MSDC1_DRV_VALUE	0x24924000
+#define MSDC1_DRV_VALUE	0x1b6db000
+
+#define MSDC1_GPIO_MODE0_BASE	0x10005360
+#define MSDC1_GPIO_MODE0_MASK	0x77777000
+#define MSDC1_GPIO_MODE0_VALUE	0x11111000
+
+#define MSDC1_GPIO_MODE1_BASE	0x10005370
+#define MSDC1_GPIO_MODE1_MASK	0x7
+#define MSDC1_GPIO_MODE1_VALUE	0x1
 
 static void register_reset_to_bl31(void)
 {
@@ -57,6 +66,9 @@ static void configure_emmc(void)
 static void configure_sdcard(void)
 {
 	void *gpio_base = (void *)IOCFG_RM_BASE;
+	void *gpio_mode0_base = (void *)MSDC1_GPIO_MODE0_BASE;
+	void *gpio_mode1_base = (void *)MSDC1_GPIO_MODE1_BASE;
+	uint8_t enable = 1;
 	int i;
 
 	const gpio_t sdcard_pu_pin[] = {
@@ -75,8 +87,17 @@ static void configure_sdcard(void)
 	for (i = 0; i < ARRAY_SIZE(sdcard_pd_pin); i++)
 		gpio_set_pull(sdcard_pd_pin[i], GPIO_PULL_ENABLE, GPIO_PULL_DOWN);
 
-	/* set sdcard cmd/dat/clk pins driving to 10mA */
+	/* set sdcard cmd/dat/clk pins driving to 8mA */
 	clrsetbits32(gpio_base, MSDC1_DRV_MASK, MSDC1_DRV_VALUE);
+
+	/* set sdcard dat2/dat0/dat3/cmd/clk pins to msdc1 mode */
+	clrsetbits32(gpio_mode0_base, MSDC1_GPIO_MODE0_MASK, MSDC1_GPIO_MODE0_VALUE);
+
+	/* set sdcard dat1 pin to msdc1 mode */
+	clrsetbits32(gpio_mode1_base, MSDC1_GPIO_MODE1_MASK, MSDC1_GPIO_MODE1_VALUE);
+
+	mainboard_enable_regulator(MTK_REGULATOR_VCC, enable);
+	mainboard_enable_regulator(MTK_REGULATOR_VCCQ, enable);
 }
 
 static void mainboard_init(struct device *dev)

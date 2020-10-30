@@ -1,5 +1,3 @@
-.dependencies
-.test
 msrtool
 Makefile
 Makefile.deps

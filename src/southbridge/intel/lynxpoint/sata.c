@@ -41,9 +41,8 @@ static void sata_init(struct device *dev)
 
 	/* SATA configuration */
 
-	/* Enable BARs */
-	pci_write_config16(dev, PCI_COMMAND,
-			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	/* Enable memory space decoding for ABAR */
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	if (config->ide_legacy_combined) {
 		printk(BIOS_DEBUG, "SATA: Controller in combined mode.\n");

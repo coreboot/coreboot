@@ -11,6 +11,12 @@
 #include "iobp.h"
 #include "pch.h"
 
+#if CONFIG(INTEL_LYNXPOINT_LP)
+#define SATA_PORT_MASK	0x0f
+#else
+#define SATA_PORT_MASK	0x3f
+#endif
+
 typedef struct southbridge_intel_lynxpoint_config config_t;
 
 static inline u32 sir_read(struct device *dev, int idx)
@@ -64,7 +70,7 @@ static void sata_init(struct device *dev)
 	pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE);
 
 	/* for AHCI, Port Enable is managed in memory mapped space */
-	pci_update_config16(dev, 0x92, ~0x3f, 0x8000 | config->sata_port_map);
+	pci_update_config16(dev, 0x92, ~SATA_PORT_MASK, 0x8000 | config->sata_port_map);
 	udelay(2);
 
 	/* Setup register 98h */
@@ -90,7 +96,7 @@ static void sata_init(struct device *dev)
 
 	/* SATA Initialization register */
 	reg32 = 0x183;
-	reg32 |= (config->sata_port_map ^ 0x3f) << 24;
+	reg32 |= (config->sata_port_map ^ SATA_PORT_MASK) << 24;
 	reg32 |= (config->sata_devslp_mux & 1) << 15;
 	pci_write_config32(dev, 0x94, reg32);
 
@@ -201,7 +207,7 @@ static void sata_enable(struct device *dev)
 	 * Set SATA controller mode early so the resource allocator can
 	 * properly assign IO/Memory resources for the controller.
 	 */
-	pci_write_config16(dev, 0x90, 0x0060 | (config->sata_port_map ^ 0x3f) << 8);
+	pci_write_config16(dev, 0x90, 0x0060 | (config->sata_port_map ^ SATA_PORT_MASK) << 8);
 }
 
 static struct device_operations sata_ops = {

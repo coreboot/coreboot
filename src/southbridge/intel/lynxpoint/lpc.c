@@ -70,6 +70,25 @@ static void pch_enable_serial_irqs(struct device *dev)
 #endif
 }
 
+static void enable_hpet(struct device *const dev)
+{
+	u32 reg32;
+	size_t i;
+
+	/* Assign unique bus/dev/fn for each HPET */
+	for (i = 0; i < 8; ++i)
+		pci_write_config16(dev, LPC_HnBDF(i),
+			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
+
+	/* Move HPET to default address 0xfed00000 and enable it */
+	reg32 = RCBA32(HPTC);
+	reg32 |= (1 << 7); // HPET Address Enable
+	reg32 &= ~(3 << 0);
+	RCBA32(HPTC) = reg32;
+	/* Read it back to stick. It's affected by posted write syndrome. */
+	RCBA32(HPTC);
+}
+
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved
  * 0x01 - 0001 = Reserved
@@ -369,25 +388,6 @@ static void lpt_lp_pm_init(struct device *dev)
 
 	/* Set RCBA 0x33C8[15]=1 as last step */
 	RCBA32_OR(0x33c8, (1 << 15));
-}
-
-static void enable_hpet(struct device *const dev)
-{
-	u32 reg32;
-	size_t i;
-
-	/* Assign unique bus/dev/fn for each HPET */
-	for (i = 0; i < 8; ++i)
-		pci_write_config16(dev, LPC_HnBDF(i),
-			PCH_HPET_PCI_BUS << 8 | PCH_HPET_PCI_SLOT << 3 | i);
-
-	/* Move HPET to default address 0xfed00000 and enable it */
-	reg32 = RCBA32(HPTC);
-	reg32 |= (1 << 7); // HPET Address Enable
-	reg32 &= ~(3 << 0);
-	RCBA32(HPTC) = reg32;
-	/* Read it back to stick. It's affected by posted write syndrome. */
-	RCBA32(HPTC);
 }
 
 static void enable_clock_gating(struct device *dev)

@@ -37,7 +37,6 @@ chip northbridge/intel/haswell
 			register "gen4_dec" = "0x000c06a1"
 			register "gpi13_routing" = "2"
 			register "gpi1_routing" = "2"
-			register "sata_ahci" = "1"
 			# 0(HDD), 1(M.2), 5(ODD)
 			register "sata_port_map" = "0x23"
 			device pci 14.0 on end # xHCI Controller

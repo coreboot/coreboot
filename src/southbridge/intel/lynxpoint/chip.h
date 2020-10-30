@@ -38,9 +38,7 @@ struct southbridge_intel_lynxpoint_config {
 	uint32_t gpe0_en_4;
 	uint32_t alt_gp_smi_en;
 
-	/* IDE configuration */
-	uint32_t ide_legacy_combined;
-	uint32_t sata_ahci;
+	/* SATA configuration */
 	uint8_t sata_port_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;

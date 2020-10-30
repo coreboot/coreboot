@@ -41,8 +41,6 @@ chip northbridge/intel/haswell
 			register "alt_gp_smi_en" = "0x0000"
 			register "gpe0_en_1" = "0x4000"
 
-			register "ide_legacy_combined" = "0x0"
-			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x3f"
 
 			# SuperIO range is 0x700-0x73f

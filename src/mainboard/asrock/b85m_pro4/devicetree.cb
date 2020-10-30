@@ -27,7 +27,6 @@ chip northbridge/intel/haswell
 
 		chip southbridge/intel/lynxpoint
 			register "gen1_dec"      = "0x000c0291"	# Super I/O HWM
-			register "sata_ahci"     = "1"
 			register "sata_port_map" = "0x3f"
 
 			device pci 14.0 on  end		# xHCI controller

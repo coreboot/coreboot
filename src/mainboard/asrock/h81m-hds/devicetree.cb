@@ -35,7 +35,6 @@ chip northbridge/intel/haswell
 		end
 
 		chip southbridge/intel/lynxpoint
-			register "sata_ahci" = "1"
 			register "sata_port_map" = "0x33"
 
 			register "gen1_dec" = "0x00000295" # Super I/O HWM

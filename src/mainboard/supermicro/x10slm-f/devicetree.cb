@@ -26,7 +26,6 @@ chip northbridge/intel/haswell
 		device pci 03.0 off end # Mini-HD audio
 
 		chip southbridge/intel/lynxpoint
-			register "sata_ahci" = "1"
 			register "sata_port_map" = "0x3f"
 
 			register "gen1_dec" = "0x00000295" # Super I/O HWM

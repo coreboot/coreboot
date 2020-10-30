@@ -45,8 +45,6 @@ chip northbridge/intel/haswell
 			register "gpe0_en_3" = "0x00000000"
 			register "gpe0_en_4" = "0x00000000"
 
-			register "ide_legacy_combined" = "0x0"
-			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x1"
 			register "sata_devslp_disable" = "0x1"
 

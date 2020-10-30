@@ -35,7 +35,25 @@ chip soc/intel/tigerlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO RT1011_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/rt1011
+				register "desc" = ""Realtek SPK AMP L""
+				register "uid" = "0"
+				register "name" = ""RTL""
+				device i2c 38 on
+					probe AUDIO RT1011_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/rt1011
+				register "desc" = ""Realtek SPK AMP R""
+				register "uid" = "1"
+				register "name" = ""RTR""
+				device i2c 39 on
+					probe AUDIO RT1011_ALC5682I_I2S
+				end
 			end
 		end
 		device ref i2c1 on

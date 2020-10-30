@@ -350,8 +350,25 @@ static const struct soc_amd_gpio gpio_sleep_table[] = {
 	PAD_GPO(GPIO_76, LOW),
 };
 
+static const struct soc_amd_gpio gpio_fp_shutdown_table[] = {
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, LOW),
+	/* EN_PWR_CAMERA */
+	PAD_GPO(GPIO_76, LOW),
+
+	/* FPMCU_RST_L */
+	PAD_GPO(GPIO_11, LOW),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, LOW),
+};
+
 const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ)
 {
+	if (slp_typ == SLP_TYP_S5) {
+		*size = ARRAY_SIZE(gpio_fp_shutdown_table);
+		return gpio_fp_shutdown_table;
+	}
+
 	*size = ARRAY_SIZE(gpio_sleep_table);
 	return gpio_sleep_table;
 }

@@ -187,6 +187,7 @@ static void sata_init(struct device *dev)
 	if (pch_is_lp()) {
 		sir_write(dev, 0x54, 0xcf000f0f);
 		sir_write(dev, 0x58, 0x00190000);
+		RCBA32_AND_OR(0x333c, 0xffcfffff, 0x00c00000);
 	}
 
 	reg32 = pci_read_config32(dev, 0x300);

@@ -565,8 +565,6 @@ static void enable_lp_clock_gating(struct device *dev)
 
 	RCBA32_OR(0x3434, 0x7); // LP LPC
 
-	RCBA32_AND_OR(0x333c, 0xffcfffff, 0x00c00000); // SATA
-
 	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
 
 	pch_iobp_update(0xCF000000, ~0, 0x00007001);

@@ -156,6 +156,15 @@ static void pch_power_options(struct device *dev)
 	default:
 		state = "undefined";
 	}
+
+	reg16 &= ~(3 << 4);	/* SLP_S4# Assertion Stretch 4s */
+	reg16 |= (1 << 3);	/* SLP_S4# Assertion Stretch Enable */
+
+	reg16 &= ~(1 << 10);
+	reg16 |= (1 << 11);	/* SLP_S3# Min Assertion Width 50ms */
+
+	reg16 |= (1 << 12);	/* Disable SLP stretch after SUS well */
+
 	pci_write_config16(dev, GEN_PMCON_3, reg16);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
@@ -174,20 +183,7 @@ static void pch_power_options(struct device *dev)
 static void pch_misc_init(struct device *dev)
 {
 	u8 reg8;
-	u16 reg16;
 	u32 reg32;
-
-	reg16 = pci_read_config16(dev, GEN_PMCON_3);
-
-	reg16 &= ~(3 << 4);	/* SLP_S4# Assertion Stretch 4s */
-	reg16 |= (1 << 3);	/* SLP_S4# Assertion Stretch Enable */
-
-	reg16 &= ~(1 << 10);
-	reg16 |= (1 << 11);	/* SLP_S3# Min Assertion Width 50ms */
-
-	reg16 |= (1 << 12);	/* Disable SLP stretch after SUS well */
-
-	pci_write_config16(dev, GEN_PMCON_3, reg16);
 
 	/* Prepare sleep mode */
 	reg32 = inl(ACPI_BASE_ADDRESS + PM1_CNT);

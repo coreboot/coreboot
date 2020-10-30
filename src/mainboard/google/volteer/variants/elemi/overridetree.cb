@@ -6,6 +6,13 @@ chip soc/intel/tigerlake
 	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
 
+        # Enable EMMC PCIE 5 using clk 5
+        register "PcieRpEnable[4]" = "1"
+        register "PcieRpLtrEnable[4]" = "1"
+        register "PcieRpHotPlug[4]" = "1"
+        register "PcieClkSrcUsage[5]" = "4"
+        register "PcieClkSrcClkReq[5]" = "5"
+
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
@@ -184,6 +191,7 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp5 on end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.

@@ -54,6 +54,15 @@ static void sata_init(struct device *dev)
 
 	/* Setup register 98h */
 	reg32 = pci_read_config32(dev, 0x98);
+	reg32 |= 1 << 19;
+	reg32 |= 1 << 22;
+	reg32 &= ~(0x3f << 7);
+	reg32 |= 0x04 << 7;
+	reg32 |= 1 << 20;
+	reg32 &= ~(0x03 << 5);
+	reg32 |= 1 << 5;
+	reg32 |= 1 << 18;
+	reg32 |= 1 << 29; /* Enable clock gating */
 	reg32 &= ~((1 << 31) | (1 << 30));
 	reg32 |= 1 << 23;
 	reg32 |= 1 << 24; /* Enable MPHY Dynamic Power Gating */
@@ -236,10 +245,6 @@ static void sata_init(struct device *dev)
 	reg32 |= (1 << 17) | (1 << 16) | (1 << 19);
 	reg32 |= (1 << 31) | (1 << 30) | (1 << 29);
 	pci_write_config32(dev, 0x300, reg32);
-
-	reg32 = pci_read_config32(dev, 0x98);
-	reg32 |= 1 << 29;
-	pci_write_config32(dev, 0x98, reg32);
 
 	/* Register Lock */
 	reg32 = pci_read_config32(dev, 0x9c);

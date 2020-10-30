@@ -94,6 +94,7 @@ config MAINBOARD_PART_NUMBER
 	default "Voxel" if BOARD_GOOGLE_VOXEL
 	default "Boldar" if BOARD_GOOGLE_BOLDAR
 	default "Elemi" if BOARD_GOOGLE_ELEMI
+	default "Voema" if BOARD_GOOGLE_VOEMA
 
 config MAX_CPUS
 	int
@@ -132,6 +133,7 @@ config VARIANT_DIR
 	default "voxel" if BOARD_GOOGLE_VOXEL
 	default "boldar" if BOARD_GOOGLE_BOLDAR
 	default "elemi" if BOARD_GOOGLE_ELEMI
+	default "voema" if BOARD_GOOGLE_VOEMA
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

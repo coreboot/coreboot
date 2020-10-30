@@ -243,7 +243,7 @@ static void pch_power_options(struct device *dev)
 		 * Set the board's GPI routing on LynxPoint-H.
 		 * This is done as part of GPIO configuration on LynxPoint-LP.
 		 */
-		if (pch_is_lp())
+		if (!pch_is_lp())
 			pch_gpi_routing(dev, config);
 
 		/* GPE setup based on device tree configuration */

@@ -30,7 +30,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
 	PAD_SCI(GPIO_9, PULL_NONE, EDGE_LOW),
-	/* S0iX SLP - (unused - goes to EC & FPMCU */
+	/* S0iX SLP - (unused - goes to EC */
 	PAD_NC(GPIO_10),
 	/* EC_IN_RW_OD */
 	PAD_GPI(GPIO_11, PULL_NONE),
@@ -289,6 +289,16 @@ __weak void variant_pcie_gpio_configure(void)
 		wifi_power_reset_configure_v3();
 	else
 		wifi_power_reset_configure_pre_v3();
+}
+
+__weak void finalize_gpios(int slp_typ)
+{
+}
+
+const __weak struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int slp_typ)
+{
+	*size = 0;
+	return NULL;
 }
 
 static const struct soc_amd_gpio gpio_sleep_table[] = {

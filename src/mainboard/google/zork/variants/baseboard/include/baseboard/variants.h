@@ -24,12 +24,17 @@ const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
  */
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
 
+/* This function provides GPIO init in bootblock. */
+const struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int slp_typ);
+
 /*
  * This function provides GPIO table for the pads that need to be configured when entering
  * sleep.
  */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
 
+/* Program any required GPIOs at the finalize phase */
+void finalize_gpios(int slp_typ);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 /* Update audio configuration in devicetree during ramstage. */
@@ -69,9 +74,13 @@ bool variant_uses_v3_schematics(void);
 bool variant_uses_v3_6_schematics(void);
 /* Return true if variant uses CODEC_GPI pin for headphone jack interrupt. */
 bool variant_uses_codec_gpi(void);
-/* Return true if variant has active low power enable fow WiFi. */
+/* Return true if variant has active low power enable for WiFi. */
 bool variant_has_active_low_wifi_power(void);
 /* Return value of daughterboard ID */
 int variant_get_daughterboard_id(void);
+/* Return true if the board has a fingerprint sensor. */
+bool variant_has_fingerprint(void);
+/* Return true if the board needs an extra fpmcu delay. */
+bool fpmcu_needs_delay(void);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

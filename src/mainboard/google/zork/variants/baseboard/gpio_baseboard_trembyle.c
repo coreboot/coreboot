@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <delay.h>
+#include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
@@ -32,8 +34,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_9, PULL_NONE, EDGE_LOW),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_NC(GPIO_10),
-	/* FPMCU_RST_L */
-	PAD_GPO(GPIO_11, HIGH),
 	/* USI_INT_ODL */
 	PAD_GPI(GPIO_12, PULL_NONE),
 	/* EN_PWR_TOUCHPAD_PS2 */
@@ -71,8 +71,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_NONE),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, HIGH),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -87,7 +85,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_67, LOW), // Select Camera 1 Dmic
 	/* EMMC_RESET_L */
 	PAD_GPO(GPIO_68, HIGH),
-	/* FPMCU_BOOT0 - TODO: Check this */
+	/* FPMCU_BOOT0 */
 	PAD_GPO(GPIO_69, LOW),
 	/* EMMC_CLK */
 	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
@@ -298,6 +296,51 @@ __weak void variant_pcie_gpio_configure(void)
 		wifi_power_reset_configure_v3();
 	else
 		wifi_power_reset_configure_pre_v3();
+}
+
+__weak void finalize_gpios(int slp_typ)
+{
+	if (variant_has_fingerprint() && slp_typ != ACPI_S3) {
+
+		if (fpmcu_needs_delay())
+			mdelay(550);
+
+		/*
+		 * Enable the FPMCU by enabling EN_PWR_FP, then bringing it out
+		 * of reset by setting FPMCU_RST_L high 3ms later.
+		 */
+		gpio_set(GPIO_32, 1);
+		mdelay(3);
+		gpio_set(GPIO_11, 1);
+	}
+}
+
+static const struct soc_amd_gpio gpio_fingerprint_bootblock_table[] = {
+	/* FPMCU_RST_L */
+	PAD_GPO(GPIO_11, LOW),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, LOW),
+};
+
+static const struct soc_amd_gpio gpio_no_fingerprint_bootblock_table[] = {
+	/* FPMCU_RST_L */
+	PAD_NC(GPIO_11),
+	/* EN_PWR_FP */
+	PAD_NC(GPIO_32),
+};
+
+const __weak struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int slp_typ)
+{
+	if (variant_has_fingerprint()) {
+		if (slp_typ == ACPI_S3)
+			return NULL;
+
+		*size = ARRAY_SIZE(gpio_fingerprint_bootblock_table);
+		return gpio_fingerprint_bootblock_table;
+	}
+
+	*size = ARRAY_SIZE(gpio_no_fingerprint_bootblock_table);
+	return gpio_no_fingerprint_bootblock_table;
 }
 
 static const struct soc_amd_gpio gpio_sleep_table[] = {

@@ -225,6 +225,22 @@ config VARIANT_MIN_BOARD_ID_WIFI_POWER_ACTIVE_LOW
 	  Minimum board version where the variant starts supporting
 	  active low power enable for WiFi.
 
+config VARIANT_HAS_FPMCU
+	bool
+	default y if BOARD_GOOGLE_BERKNIP
+	default y if BOARD_GOOGLE_MORPHIUS
+	default n
+	help
+	  Select y if any SKU of the board has a fingerprint sensor
+
+config VARIANT_MAX_BOARD_ID_BROKEN_FMPCU_POWER
+	int
+	default 4 if BOARD_GOOGLE_MORPHIUS
+	default 3 if BOARD_GOOGLE_BERKNIP
+	default 0
+	help
+	  Last board version that needs the extra delay for FPMCU init.
+
 config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool "PSP verstage"
 	default y if VBOOT

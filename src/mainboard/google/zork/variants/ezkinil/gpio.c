@@ -37,8 +37,6 @@ static const struct soc_amd_gpio ezkinil_bid2_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_4),
 	/* PEN_POWER_EN - Not connected */
 	PAD_NC(GPIO_5),
-	/* FPMCU_RST_L Change NC */
-	PAD_NC(GPIO_11),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
 	/* EN_PWR_WIFI */
@@ -62,8 +60,6 @@ static const struct soc_amd_gpio ezkinil_bid3_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_4),
 	/* PEN_POWER_EN - Not connected */
 	PAD_NC(GPIO_5),
-	/* FPMCU_RST_L Change NC */
-	PAD_NC(GPIO_11),
 	/* FPMCU_BOOT0 Change NC */
 	PAD_NC(GPIO_69),
 	/* EN_DEV_BEEP_L */

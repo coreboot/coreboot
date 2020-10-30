@@ -10,10 +10,6 @@ static const struct soc_amd_gpio woomax_bid0_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_5),
 	/* GPIO_6 NC */
 	PAD_NC(GPIO_6),
-	/* GPIO_11 NC */
-	PAD_NC(GPIO_11),
-	/* GPIO_32 NC */
-	PAD_NC(GPIO_32),
 	/* GPIO_69 NC */
 	PAD_NC(GPIO_69),
 	/* RAM_ID_4  */
@@ -37,10 +33,6 @@ static const struct soc_amd_gpio woomax_gpio_set_stage_ram[] = {
 	PAD_NC(GPIO_5),
 	/* GPIO_6 NC */
 	PAD_NC(GPIO_6),
-	/* GPIO_11 NC */
-	PAD_NC(GPIO_11),
-	/* GPIO_32 NC */
-	PAD_NC(GPIO_32),
 	/* GPIO_69 NC */
 	PAD_NC(GPIO_69),
 	/* RAM_ID_4  */

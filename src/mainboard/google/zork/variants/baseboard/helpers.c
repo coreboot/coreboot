@@ -149,3 +149,31 @@ int variant_get_daughterboard_id(void)
 {
 	return extract_field(FW_CONFIG_MASK_DB_INDEX, FW_CONFIG_DB_INDEX_SHIFT);
 }
+
+bool variant_has_fingerprint(void)
+{
+	if (CONFIG(VARIANT_HAS_FPMCU))
+		return true;
+
+	return false;
+}
+
+bool fpmcu_needs_delay(void)
+{
+	/*
+	 *  Older board versions need an extra delay here to finish resetting
+	 *  the FPMCU.  The resistor value in the glitch prevention circuit was
+	 *  sized so that the FPMCU doesn't turn of for ~1 second.  On newer
+	 *  boards, that's been updated to ~30ms, which allows the FPMCU's
+	 *  reset to be completed in the time between bootblock and finalize.
+	 */
+	uint32_t board_version;
+
+	if (google_chromeec_cbi_get_board_version(&board_version))
+		board_version = 1;
+
+	if (board_version <= CONFIG_VARIANT_MAX_BOARD_ID_BROKEN_FMPCU_POWER)
+		return true;
+
+	return false;
+}

@@ -247,12 +247,13 @@ static void mainboard_final(void *chip_info)
 
 	gnvs = acpi_get_gnvs();
 
-
 	if (gnvs) {
 		gnvs->tmps = CTL_TDP_SENSOR_ID;
 		gnvs->tcrt = CRITICAL_TEMPERATURE;
 		gnvs->tpsv = PASSIVE_TEMPERATURE;
 	}
+
+	finalize_gpios(acpi_get_sleep_type());
 }
 
 struct chip_operations mainboard_ops = {

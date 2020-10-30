@@ -102,8 +102,7 @@ void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 		return;
 	}
 
-	if (CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) &&
-	    cr50_is_long_interrupt_pulse_enabled()) {
+	if (CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) && cr50_is_long_interrupt_pulse_enabled()) {
 		printk(BIOS_INFO, "Enabling S0i3.4\n");
 	} else {
 		/*
@@ -126,8 +125,7 @@ static void mainboard_chip_init(void *chip_info)
 	base_pads = variant_base_gpio_table(&base_num);
 	override_pads = variant_override_gpio_table(&override_num);
 
-	gpio_configure_pads_with_override(base_pads, base_num,
-		override_pads, override_num);
+	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
 }
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
@@ -135,14 +133,13 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	bool has_usb4;
 
 	/* If device doesn't have USB4 hardware, disable tbt */
-	has_usb4 = (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2)) ||
-	    fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)));
+	has_usb4 = (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2))
+		    || fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)));
 
 	if (!has_usb4)
-		memset(params->ITbtPcieRootPortEn,
-		       0,
-		       ARRAY_SIZE(params->ITbtPcieRootPortEn) *
-		       sizeof(*params->ITbtPcieRootPortEn));
+		memset(params->ITbtPcieRootPortEn, 0,
+		       ARRAY_SIZE(params->ITbtPcieRootPortEn)
+			       * sizeof(*params->ITbtPcieRootPortEn));
 }
 
 struct chip_operations mainboard_ops = {

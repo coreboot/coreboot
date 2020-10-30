@@ -9,7 +9,6 @@ config BOARD_PURISM_BASEBOARD_LIBREM_CNL
 	select NO_UART_ON_SUPERIO
 	select SOC_INTEL_COMMON_BLOCK_HDA
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
-	select SOC_INTEL_WHISKEYLAKE
 	select SPD_READ_BY_WORD
 	select USE_LEGACY_8254_TIMER
 
@@ -31,9 +30,13 @@ config VARIANT_DIR
 	string
 	default "librem_mini" if BOARD_PURISM_LIBREM_MINI
 
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
 config CBFS_SIZE
 	hex
-	default 0x800000
+	default 0x800000 if BOARD_PURISM_LIBREM_MINI
 
 config MAX_CPUS
 	int
@@ -49,7 +52,7 @@ config DIMM_SPD_SIZE
 
 config VGA_BIOS_ID
 	string
-	default "8086,3ea0"
+	default "8086,3ea0" if BOARD_PURISM_LIBREM_MINI
 
 config PXE_ROM_ID
 	string

@@ -1,6 +1,6 @@
 Vendor name: Purism
-Board name: Librem Cannonlake baseboard
-Category: misc
+Board name: Librem Mini
+Category: desktop
 Release year: 2020
 ROM package: SOIC-8
 ROM protocol: SPI

@@ -485,9 +485,6 @@ static void lpt_lp_pm_init(struct device *dev)
 	if (RCBA32(FD) & PCH_DISABLE_ADSPD)
 		RCBA32_OR(0x2b1c, (1 << 29));
 
-	/* Lock */
-	RCBA32_OR(0x3a6c, 0x00000001);
-
 	/* Set RCBA 0x33D4 after other setup */
 	RCBA32_OR(0x33d4, 0x2fff2fb1);
 
@@ -808,6 +805,9 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 static void lpc_final(struct device *dev)
 {
 	spi_finalize_ops();
+
+	/* Lock */
+	RCBA32_OR(0x3a6c, 0x00000001);
 
 	if (acpi_is_wakeup_s3() || CONFIG(INTEL_CHIPSET_LOCKDOWN))
 		apm_control(APM_CNT_FINALIZE);

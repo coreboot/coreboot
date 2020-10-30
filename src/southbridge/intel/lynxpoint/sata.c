@@ -25,10 +25,17 @@ static inline void sir_write(struct device *dev, int idx, u32 value)
 	pci_write_config32(dev, SATA_SIRD, value);
 }
 
+static inline void sir_unset_and_set_mask(struct device *dev, int idx, u32 unset, u32 set)
+{
+	pci_write_config32(dev, SATA_SIRI, idx);
+
+	const u32 value = pci_read_config32(dev, SATA_SIRD) & ~unset;
+	pci_write_config32(dev, SATA_SIRD, value | set);
+}
+
 static void sata_init(struct device *dev)
 {
 	u32 reg32;
-	u16 reg16;
 
 	u32 *abar;
 
@@ -69,10 +76,7 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, IDE_CONFIG, reg32);
 
 	/* for AHCI, Port Enable is managed in memory mapped space */
-	reg16 = pci_read_config16(dev, 0x92);
-	reg16 &= ~0x3f;
-	reg16 |= 0x8000 | config->sata_port_map;
-	pci_write_config16(dev, 0x92, reg16);
+	pci_update_config16(dev, 0x92, ~0x3f, 0x8000 | config->sata_port_map);
 	udelay(2);
 
 	/* Setup register 98h */
@@ -173,25 +177,16 @@ static void sata_init(struct device *dev)
 		sir_write(dev, 0x64, 0x883c9001);
 
 	/* Step 2: SIR 68h[15:0] = 880Ah */
-	reg32 = sir_read(dev, 0x68);
-	reg32 &= 0xffff0000;
-	reg32 |= 0x880a;
-	sir_write(dev, 0x68, reg32);
+	sir_unset_and_set_mask(dev, 0x68, 0xffff, 0x880a);
 
 	/* Step 3: SIR 60h[3] = 1 */
-	reg32 = sir_read(dev, 0x60);
-	reg32 |= (1 << 3);
-	sir_write(dev, 0x60, reg32);
+	sir_unset_and_set_mask(dev, 0x60, 0, 1 << 3);
 
 	/* Step 4: SIR 60h[0] = 1 */
-	reg32 = sir_read(dev, 0x60);
-	reg32 |= (1 << 0);
-	sir_write(dev, 0x60, reg32);
+	sir_unset_and_set_mask(dev, 0x60, 0, 1 << 0);
 
 	/* Step 5: SIR 60h[1] = 1 */
-	reg32 = sir_read(dev, 0x60);
-	reg32 |= (1 << 1);
-	sir_write(dev, 0x60, reg32);
+	sir_unset_and_set_mask(dev, 0x60, 0, 1 << 1);
 
 	/* Clock Gating */
 	sir_write(dev, 0x70, 0x3f00bf1f);

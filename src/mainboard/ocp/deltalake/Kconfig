@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MEMORY_MAPPED_TPM
 	select MAINBOARD_HAS_TPM2
 	select UART_OVERRIDE_BAUDRATE
+	select RUNTIME_CONFIGURABLE_SMM_LOGLEVEL
 
 config UART_FOR_CONSOLE
 	int
@@ -55,6 +56,9 @@ config DIMM_MAX
 
 config CONSOLE_POST
 	bool
+	default y
+
+config DEBUG_SMI
 	default y
 
 endif # BOARD_OCP_DELTALAKE

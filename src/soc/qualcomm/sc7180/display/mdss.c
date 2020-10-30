@@ -6,7 +6,7 @@
 #include <edid.h>
 #include <soc/display/mdssreg.h>
 
-#define MDSS_MDP_MAX_PREFILL_FETCH 25
+#define MDSS_MDP_MAX_PREFILL_FETCH 24
 
 static void mdss_source_pipe_config(struct edid *edid)
 {
@@ -91,9 +91,10 @@ static void mdss_intf_fetch_start_config(struct edid *edid)
 	/*
 	 * MDP programmable fetch is for MDP with rev >= 1.05.
 	 * Programmable fetch is not needed if vertical back porch
-	 * plus vertical puls width is >= 25.
+	 * plus vertical pulse width plus extra line for the extra h_total
+	 * added during fetch start is >= 24.
 	 */
-	if ((edid->mode.vbl - edid->mode.vso) >= MDSS_MDP_MAX_PREFILL_FETCH)
+	if ((edid->mode.vbl - edid->mode.vso + 1) >= MDSS_MDP_MAX_PREFILL_FETCH)
 		return;
 
 	/*

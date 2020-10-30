@@ -96,13 +96,23 @@ static void mainboard_enable(struct device *dev)
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 {
 	int ret;
+	if (!CONFIG(MAINBOARD_HAS_SPI_TPM_CR50)) {
+		/*
+		 * Negotiation of long interrupt pulses is only supported via SPI.  I2C is only
+		 * used on reworked prototypes on which the TPM is replaced with Dauntless under
+		 * development, it will use long pulses by default, or use the interrupt line in
+		 * a different way altogether.
+		 */
+		return;
+	}
+
 	ret = tlcl_lib_init();
 	if (ret != VB2_SUCCESS) {
 		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
 		return;
 	}
 
-	if (CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) && cr50_is_long_interrupt_pulse_enabled()) {
+	if (cr50_is_long_interrupt_pulse_enabled()) {
 		printk(BIOS_INFO, "Enabling S0i3.4\n");
 	} else {
 		/*

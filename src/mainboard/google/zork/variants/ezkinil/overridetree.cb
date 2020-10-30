@@ -29,6 +29,31 @@ chip soc/amd/picasso
 		.ports.xhci0_port3 = 1,
 	}"
 
+	#USB 2.0 strength
+	register "usb_2_port_tune_params[2]" = "{
+		.com_pds_tune = 0x05,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x9,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	register "usb_2_port_tune_params[3]" = "{
+		.com_pds_tune = 0x05,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.rx_vref_tune = 0x9,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,

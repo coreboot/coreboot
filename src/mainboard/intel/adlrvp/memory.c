@@ -72,12 +72,16 @@ const struct mb_cfg *variant_memory_params(void)
 {
 	int board_id = get_board_id();
 
-	if (board_id == ADL_P_LP4_1 || board_id == ADL_P_LP4_2)
+	switch (board_id) {
+	case ADL_P_LP4_1:
+	case ADL_P_LP4_2:
 		return &lpddr4_mem_config;
-	else if (board_id == ADL_P_DDR4_1 || board_id == ADL_P_DDR4_2)
+	case ADL_P_DDR4_1:
+	case ADL_P_DDR4_2:
 		return &ddr4_mem_config;
-	else if (board_id == ADL_P_DDR5)
+	case ADL_P_DDR5:
 		return &ddr5_mem_config;
-
-	die("unsupported board id : 0x%x\n", board_id);
+	default:
+		die("unsupported board id : 0x%x\n", board_id);
+	}
 }

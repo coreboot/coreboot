@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cf9_reset.h>
-#include <console/console.h>
-#include <fsp/util.h>
 #include <intelblocks/pmclib.h>
 #include <soc/intel/common/reset.h>
 #include <soc/me.h>
@@ -28,19 +26,5 @@ void do_global_reset(void)
 		/* If ME unable to reset platform then
 		 * force global reset using PMC CF9GR register*/
 		do_force_global_reset();
-	}
-}
-
-void chipset_handle_reset(uint32_t status)
-{
-	switch (status) {
-	case FSP_STATUS_RESET_REQUIRED_3: /* Global Reset */
-		printk(BIOS_DEBUG, "GLOBAL RESET!!\n");
-		global_reset();
-		break;
-	default:
-		printk(BIOS_ERR, "unhandled reset type %x\n", status);
-		die("unknown reset type");
-		break;
 	}
 }

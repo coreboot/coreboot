@@ -3,7 +3,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <delay.h>
-#include <fsp/util.h>
 #include <intelblocks/pmclib.h>
 #include <soc/heci.h>
 #include <soc/intel/common/reset.h>
@@ -46,17 +45,4 @@ void cf9_reset_prepare(void)
 		mdelay(1);
 	}
 	printk(BIOS_SPEW, "CSE took %lu ms\n", stopwatch_duration_msecs(&sw));
-}
-
-void chipset_handle_reset(uint32_t status)
-{
-	switch (status) {
-	case FSP_STATUS_RESET_REQUIRED_5: /* Global Reset */
-		global_reset();
-		break;
-	default:
-		printk(BIOS_ERR, "unhandled reset type %x\n", status);
-		die("unknown reset type");
-		break;
-	}
 }

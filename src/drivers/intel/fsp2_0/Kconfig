@@ -228,6 +228,7 @@ config FSP_STATUS_GLOBAL_RESET_REQUIRED_8
 
 config FSP_STATUS_GLOBAL_RESET
 	hex
+	depends on SOC_INTEL_COMMON_FSP_RESET
 	default 0x40000003 if FSP_STATUS_GLOBAL_RESET_REQUIRED_3
 	default 0x40000004 if FSP_STATUS_GLOBAL_RESET_REQUIRED_4
 	default 0x40000005 if FSP_STATUS_GLOBAL_RESET_REQUIRED_5
@@ -239,6 +240,13 @@ config FSP_STATUS_GLOBAL_RESET
 	  If global reset is supported by SoC then select the correct status value for global
 	  reset type from SoC Kconfig based on available Kconfig options
 	  FSP_STATUS_GLOBAL_RESET_REQUIRED_X. Default is unsupported.
+
+config SOC_INTEL_COMMON_FSP_RESET
+	bool
+	help
+	  Common code block to handle platform reset request raised by FSP. The FSP
+	  will use the FSP EAS v2.0 section 12.2.2 (OEM Status Code) to indicate that
+	  a reset is required.
 
 if FSP_PEIM_TO_PEIM_INTERFACE
 source "src/drivers/intel/fsp2_0/ppi/Kconfig"

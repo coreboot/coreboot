@@ -27,6 +27,9 @@ romstage-$(CONFIG_TPM_CR50) += tpm_tis.c
 ramstage-$(CONFIG_TPM_CR50) += tpm_tis.c
 postcar-$(CONFIG_TPM_CR50) += tpm_tis.c
 
+romstage-$(CONFIG_SOC_INTEL_COMMON_FSP_RESET) += fsp_reset.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_FSP_RESET) += fsp_reset.c
+
 ifeq ($(CONFIG_MMA),y)
 MMA_BLOBS_PATH = $(call strip_quotes,$(CONFIG_MMA_BLOBS_PATH))
 MMA_TEST_NAMES = $(notdir $(wildcard $(MMA_BLOBS_PATH)/tests/*))

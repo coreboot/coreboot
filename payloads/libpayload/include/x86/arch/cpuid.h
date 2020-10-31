@@ -64,4 +64,20 @@ static inline unsigned int cpuid_model(void)
 	return (eax & 0xf0000) >> (16 - 4) | (eax & 0xf0) >> 4;
 }
 
+enum intel_fam6_model {
+	NEHALEM		= 0x25,
+	SANDYBRIDGE	= 0x2a,
+	IVYBRIDGE	= 0x3a,
+	HASWELL		= 0x3c,
+	BROADWELL_U	= 0x3d,
+	HASWELL_U	= 0x45,
+	HASWELL_GT3E	= 0x46,
+	BROADWELL	= 0x47,
+	SKYLAKE_U_Y	= 0x4e,
+	APOLLOLAKE	= 0x5c,
+	SKYLAKE_S_H	= 0x5e,
+	KABYLAKE_U_Y	= 0x8e,
+	KABYLAKE_S_H	= 0x9e,
+};
+
 #endif

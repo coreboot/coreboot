@@ -60,6 +60,10 @@ void uncore_inject_dsdt(const struct device *device)
 {
 	struct iiostack_resource stack_info = {0};
 
+	/* Only add RTxx entries once. */
+	if (device->bus->secondary != 0)
+		return;
+
 	get_iiostack_info(&stack_info);
 
 	acpigen_write_scope("\\_SB");

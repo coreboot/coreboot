@@ -104,6 +104,10 @@ void uncore_inject_dsdt(const struct device *device)
 	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
 	assert(hob != NULL && hob_size != 0);
 
+	/* Only add RTxx entries once. */
+	if (device->bus->secondary != 0)
+		return;
+
 	acpigen_write_scope("\\_SB");
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		IIO_RESOURCE_INSTANCE iio_resource =

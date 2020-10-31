@@ -18,6 +18,7 @@
 #include "chip.h"
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
+#include <smbios.h>
 
 /*
  * List of supported C-states in this processor
@@ -358,6 +359,25 @@ static void set_max_ratio(void)
 
 	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
 	       ((perf_ctl.lo >> 8) & 0xff) * SANDYBRIDGE_BCLK);
+}
+
+unsigned int smbios_cpu_get_max_speed_mhz(void)
+{
+	msr_t msr;
+	msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
+	return (msr.lo & 0xff) * SANDYBRIDGE_BCLK;
+}
+
+unsigned int smbios_cpu_get_current_speed_mhz(void)
+{
+	msr_t msr;
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	return ((msr.lo >> 8) & 0xff) * SANDYBRIDGE_BCLK;
+}
+
+unsigned int smbios_processor_external_clock(void)
+{
+	return SANDYBRIDGE_BCLK;
 }
 
 static void configure_mca(void)

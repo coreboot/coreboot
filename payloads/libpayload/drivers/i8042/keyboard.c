@@ -374,10 +374,12 @@ void keyboard_init(void)
 	if (!i8042_probe() || !i8042_has_ps2())
 		return;
 
-	keyboard_drain_input();
-
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
+
+	/* Disable scanning */
+	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
+	keyboard_drain_input();
 
 	i8042_set_kbd_translation(false);
 
@@ -404,10 +406,9 @@ void keyboard_disconnect(void)
 	if (!i8042_has_ps2())
 		return;
 
-	keyboard_drain_input();
-
 	/* Disable scanning */
 	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
+	keyboard_drain_input();
 
 	/* Send keyboard disconnect command */
 	i8042_cmd(I8042_CMD_DIS_KB);

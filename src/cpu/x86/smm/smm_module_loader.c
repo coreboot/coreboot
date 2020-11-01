@@ -209,6 +209,12 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	smm_stub_size = rmodule_memory_size(&smm_stub);
 	stub_entry_offset = rmodule_entry_offset(&smm_stub);
 
+	if (smm_stub_size > params->per_cpu_save_state_size) {
+		printk(BIOS_ERR, "SMM Module: SMM stub size larger than save state size\n");
+		printk(BIOS_ERR, "SMM Module: Staggered entry points will overlap stub\n");
+		return -1;
+	}
+
 	/* Assume the stub is always small enough to live within upper half of
 	 * SMRAM region after the save state space has been allocated. */
 	smm_stub_loc = &base[SMM_ENTRY_OFFSET];

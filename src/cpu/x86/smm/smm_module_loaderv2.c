@@ -134,6 +134,12 @@ static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
 		return 0;
 	}
 
+	if (stub_size > ss_size) {
+		printk(BIOS_ERR, "%s: Save state larger than SMM stub size\n", __func__);
+		printk(BIOS_ERR, "    Decrease stub size or increase the size allocated for the save state\n");
+		return 0;
+	}
+
 	for (i = 0; i < num_cpus; i++) {
 		cpus[i].smbase = base;
 		cpus[i].entry = base + smm_entry_offset;

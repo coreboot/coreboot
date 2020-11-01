@@ -233,9 +233,12 @@ static bool set_scancode_set(const unsigned char set)
 
 static enum keyboard_state {
 	STATE_INIT = 0,
+	STATE_SIMPLIFIED_INIT,
 	STATE_DISABLE_SCAN,
 	STATE_DRAIN_INPUT,
 	STATE_DISABLE_TRANSLATION,
+	STATE_START_SELF_TEST,
+	STATE_SELF_TEST,
 	STATE_CONFIGURE,
 	STATE_CONFIGURE_SET1,
 	STATE_ENABLE_TRANSLATION,
@@ -258,6 +261,15 @@ static void keyboard_poll(void)
 		/* Wait until keyboard_init() has been called. */
 		break;
 
+	case STATE_SIMPLIFIED_INIT:
+		/* On the first try, start opportunistically, do
+		   the first steps at once and skip the self-test. */
+		(void)keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
+		keyboard_drain_input();
+		(void)i8042_set_kbd_translation(false);
+		next_state = STATE_CONFIGURE;
+		break;
+
 	case STATE_DISABLE_SCAN:
 		(void)keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
 		next_state = STATE_DRAIN_INPUT;
@@ -274,7 +286,40 @@ static void keyboard_poll(void)
 	case STATE_DISABLE_TRANSLATION:
 		/* Be opportunistic and assume it's disabled on failure. */
 		(void)i8042_set_kbd_translation(false);
-		next_state = STATE_CONFIGURE;
+		next_state = STATE_START_SELF_TEST;
+		break;
+
+	case STATE_START_SELF_TEST:
+		if (!keyboard_cmd(I8042_KBCMD_RESET))
+			printf("ERROR: Keyboard self-test couldn't be started.\n");
+		/* We ignore errors and always move to the self-test state
+		   which will simply try again if necessary. */
+		next_state = STATE_SELF_TEST;
+		break;
+
+	case STATE_SELF_TEST:
+		if (!i8042_data_ready_ps2()) {
+			if (timer_us(state_time) > 5*1000*1000)
+				next_state = STATE_DISABLE_SCAN;
+			break;
+		}
+
+		const uint8_t self_test_result = i8042_read_data_ps2();
+		switch (self_test_result) {
+		case 0xaa:
+			/* Success! */
+			next_state = STATE_CONFIGURE;
+			break;
+		case 0xfc:
+		case 0xfd:
+			/* Failure. Try again. */
+			next_state = STATE_START_SELF_TEST;
+			break;
+		default:
+			printf("WARNING: Keyboard self-test received spurious 0x%02x\n",
+			       self_test_result);
+			break;
+		}
 		break;
 
 	case STATE_CONFIGURE:
@@ -491,7 +536,7 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
-	keyboard_state = STATE_DISABLE_SCAN;
+	keyboard_state = STATE_SIMPLIFIED_INIT;
 	keyboard_time = state_time = timer_us(0);
 
 	console_add_input_driver(&cons);

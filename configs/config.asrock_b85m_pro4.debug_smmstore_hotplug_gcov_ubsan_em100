@@ -1,4 +1,7 @@
-# Not meant for actual use. Exercises, among other things:
+# Not meant for actual use, but rather to build-test individual options.
+# If keeping this combination of options buildable becomes too hard in
+# the future, then this config can be split into several smaller chunks.
+# Exercises, among other things:
 # + Code coverage
 # + UBSAN
 # + Debug options

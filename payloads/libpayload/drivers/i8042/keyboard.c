@@ -245,6 +245,7 @@ static enum keyboard_state {
 } keyboard_state;
 
 static uint64_t keyboard_time;
+static uint64_t state_time;
 
 static void keyboard_poll(void)
 {
@@ -334,8 +335,10 @@ static void keyboard_poll(void)
 		break;
 	}
 
-	if (keyboard_state != next_state)
+	if (keyboard_state != next_state) {
 		keyboard_state = next_state;
+		state_time = timer_us(0);
+	}
 }
 
 bool keyboard_havechar(void)
@@ -489,7 +492,7 @@ void keyboard_init(void)
 	i8042_cmd(I8042_CMD_EN_KB);
 
 	keyboard_state = STATE_DISABLE_SCAN;
-	keyboard_time = timer_us(0);
+	keyboard_time = state_time = timer_us(0);
 
 	console_add_input_driver(&cons);
 }

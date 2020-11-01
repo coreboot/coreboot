@@ -413,12 +413,14 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	 * for default handler, but for relocated handler it lives at the beginning
 	 * of SMRAM which is TSEG base
 	 */
-	size = params->num_concurrent_stacks * params->per_cpu_stack_size;
-	stacks_top = smm_stub_place_stacks((char *)params->smram_start, size, params);
+	const size_t total_stack_size = params->num_concurrent_stacks *
+		params->per_cpu_stack_size;
+	stacks_top = smm_stub_place_stacks((char *)params->smram_start, total_stack_size,
+					   params);
 	if (stacks_top == NULL) {
 		printk(BIOS_ERR, "%s: not enough space for stacks\n", __func__);
 		printk(BIOS_ERR, "%s: ....need -> %p : available -> %zx\n", __func__,
-			base, size);
+			base, total_stack_size);
 		return -1;
 	}
 	params->stack_top = stacks_top;

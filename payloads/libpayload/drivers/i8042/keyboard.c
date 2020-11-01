@@ -28,6 +28,7 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include <keycodes.h>
 #include <libpayload-config.h>
@@ -173,9 +174,33 @@ static struct layout_maps keyboard_layouts[] = {
 
 static bool keyboard_cmd(unsigned char cmd)
 {
+	const uint64_t timeout_us = cmd == I8042_KBCMD_RESET ? 1*1000*1000 : 200*1000;
+	const uint64_t start_time = timer_us(0);
+
 	i8042_write_data(cmd);
 
-	return i8042_wait_read_ps2() == 0xfa;
+	do {
+		if (!i8042_data_ready_ps2()) {
+			udelay(50);
+			continue;
+		}
+
+		const uint8_t data = i8042_read_data_ps2();
+		switch (data) {
+		case 0xfa:
+			return true;
+		case 0xfe:
+			return false;
+		default:
+			/* Warn only if we already disabled keyboard input. */
+			if (cmd != I8042_KBCMD_DEFAULT_DIS)
+				printf("WARNING: Keyboard sent spurious 0x%02x.\n", data);
+			break;
+		}
+	} while (timer_us(start_time) < timeout_us);
+
+	printf("ERROR: Keyboard command timed out.\n");
+	return false;
 }
 
 bool keyboard_havechar(void)

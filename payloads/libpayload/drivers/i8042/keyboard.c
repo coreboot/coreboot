@@ -172,6 +172,12 @@ static struct layout_maps keyboard_layouts[] = {
 #endif
 };
 
+static void keyboard_drain_input(void)
+{
+	while (i8042_data_ready_ps2())
+		(void)i8042_read_data_ps2();
+}
+
 static bool keyboard_cmd(unsigned char cmd)
 {
 	const uint64_t timeout_us = cmd == I8042_KBCMD_RESET ? 1*1000*1000 : 200*1000;
@@ -368,9 +374,7 @@ void keyboard_init(void)
 	if (!i8042_probe() || !i8042_has_ps2())
 		return;
 
-	/* Empty keyboard buffer */
-	while (keyboard_havechar())
-		keyboard_getchar();
+	keyboard_drain_input();
 
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
@@ -400,9 +404,7 @@ void keyboard_disconnect(void)
 	if (!i8042_has_ps2())
 		return;
 
-	/* Empty keyboard buffer */
-	while (keyboard_havechar())
-		keyboard_getchar();
+	keyboard_drain_input();
 
 	/* Disable scanning */
 	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
@@ -411,8 +413,7 @@ void keyboard_disconnect(void)
 	i8042_cmd(I8042_CMD_DIS_KB);
 
 	/* Hand off with empty buffer */
-	while (keyboard_havechar())
-		keyboard_getchar();
+	keyboard_drain_input();
 
 	/* Release keyboard controller driver */
 	i8042_close();

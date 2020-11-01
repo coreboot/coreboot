@@ -209,9 +209,139 @@ static bool keyboard_cmd(unsigned char cmd)
 	return false;
 }
 
+static bool set_scancode_set(const unsigned char set)
+{
+	bool ret;
+
+	if (set < 1 || set > 3)
+		return false;
+
+	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
+	if (!ret) {
+		printf("ERROR: Keyboard set scancode failed!\n");
+		return ret;
+	}
+
+	ret = keyboard_cmd(set);
+	if (!ret) {
+		printf("ERROR: Keyboard scancode set#%u failed!\n", set);
+		return ret;
+	}
+
+	return ret;
+}
+
+static enum keyboard_state {
+	STATE_INIT = 0,
+	STATE_DISABLE_SCAN,
+	STATE_DRAIN_INPUT,
+	STATE_DISABLE_TRANSLATION,
+	STATE_CONFIGURE,
+	STATE_CONFIGURE_SET1,
+	STATE_ENABLE_TRANSLATION,
+	STATE_ENABLE_SCAN,
+	STATE_RUNNING,
+	STATE_IGNORE,
+} keyboard_state;
+
+static uint64_t keyboard_time;
+
+static void keyboard_poll(void)
+{
+	enum keyboard_state next_state = keyboard_state;
+	unsigned int i;
+
+	switch (keyboard_state) {
+
+	case STATE_INIT:
+		/* Wait until keyboard_init() has been called. */
+		break;
+
+	case STATE_DISABLE_SCAN:
+		(void)keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
+		next_state = STATE_DRAIN_INPUT;
+		break;
+
+	case STATE_DRAIN_INPUT:
+		/* Limit number of bytes drained per poll. */
+		for (i = 0; i < 50 && i8042_data_ready_ps2(); ++i)
+			(void)i8042_read_data_ps2();
+		if (i == 0)
+			next_state = STATE_DISABLE_TRANSLATION;
+		break;
+
+	case STATE_DISABLE_TRANSLATION:
+		/* Be opportunistic and assume it's disabled on failure. */
+		(void)i8042_set_kbd_translation(false);
+		next_state = STATE_CONFIGURE;
+		break;
+
+	case STATE_CONFIGURE:
+		if (set_scancode_set(2))
+			next_state = STATE_ENABLE_TRANSLATION;
+		else
+			next_state = STATE_CONFIGURE_SET1;
+		break;
+
+	case STATE_CONFIGURE_SET1:
+		if (!set_scancode_set(1)) {
+			printf("ERROR: Keyboard failed to set any scancode set.\n");
+			next_state = STATE_DISABLE_SCAN;
+			break;
+		}
+
+		next_state = STATE_ENABLE_SCAN;
+		break;
+
+	case STATE_ENABLE_TRANSLATION:
+		if (i8042_set_kbd_translation(true) != 0) {
+			printf("ERROR: Keyboard controller set translation failed!\n");
+			next_state = STATE_DISABLE_SCAN;
+			break;
+		}
+
+		next_state = STATE_ENABLE_SCAN;
+		break;
+
+	case STATE_ENABLE_SCAN:
+		if (!keyboard_cmd(I8042_KBCMD_EN)) {
+			printf("ERROR: Keyboard enable scanning failed!\n");
+			next_state = STATE_DISABLE_SCAN;
+			break;
+		}
+
+		next_state = STATE_RUNNING;
+		break;
+
+	case STATE_RUNNING:
+		/* TODO: Use echo command to detect detach. */
+		break;
+
+	case STATE_IGNORE:
+		/* TODO: Try again after timeout if it ever seems useful. */
+		break;
+
+	}
+
+	switch (next_state) {
+	case STATE_INIT:
+	case STATE_RUNNING:
+	case STATE_IGNORE:
+		break;
+	default:
+		if (timer_us(keyboard_time) > 30*1000*1000)
+			next_state = STATE_IGNORE;
+		break;
+	}
+
+	if (keyboard_state != next_state)
+		keyboard_state = next_state;
+}
+
 bool keyboard_havechar(void)
 {
-	return i8042_data_ready_ps2();
+	keyboard_poll();
+	return keyboard_state == STATE_RUNNING && i8042_data_ready_ps2();
 }
 
 unsigned char keyboard_get_scancode(void)
@@ -344,30 +474,11 @@ static struct console_input_driver cons = {
 	.input_type = CONSOLE_INPUT_TYPE_EC,
 };
 
-static bool set_scancode_set(const unsigned char set)
-{
-	bool ret;
-
-	if (set < 1 || set > 3)
-		return false;
-
-	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
-	if (!ret) {
-		printf("ERROR: Keyboard set scancode failed!\n");
-		return ret;
-	}
-
-	ret = keyboard_cmd(set);
-	if (!ret) {
-		printf("ERROR: Keyboard scancode set#%u failed!\n", set);
-		return ret;
-	}
-
-	return ret;
-}
-
 void keyboard_init(void)
 {
+	if (keyboard_state != STATE_INIT)
+		return;
+
 	map = &keyboard_layouts[0];
 
 	/* Initialized keyboard controller. */
@@ -377,21 +488,8 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
-	/* Disable scanning */
-	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
-	keyboard_drain_input();
-
-	i8042_set_kbd_translation(false);
-
-	if (set_scancode_set(2))
-		i8042_set_kbd_translation(true);
-	else if (!set_scancode_set(1))
-		return; /* give up, leave keyboard input disabled */
-
-	/* Enable scanning */
-	const bool ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret)
-		printf("ERROR: Keyboard enable scanning failed!\n");
+	keyboard_state = STATE_DISABLE_SCAN;
+	keyboard_time = timer_us(0);
 
 	console_add_input_driver(&cons);
 }
@@ -418,4 +516,6 @@ void keyboard_disconnect(void)
 
 	/* Release keyboard controller driver */
 	i8042_close();
+
+	keyboard_state = STATE_INIT;
 }

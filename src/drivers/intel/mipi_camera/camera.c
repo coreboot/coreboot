@@ -909,9 +909,6 @@ static void camera_fill_ssdt(const struct device *dev)
 	const char *scope = NULL;
 	const struct device *pdev;
 
-	if (!dev->enabled)
-		return;
-
 	if (config->has_power_resource) {
 		pdev = dev->bus->dev;
 		if (!pdev || !pdev->enabled)

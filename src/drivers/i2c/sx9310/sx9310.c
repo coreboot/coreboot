@@ -28,7 +28,7 @@ static void i2c_sx9310_fill_ssdt(const struct device *dev)
 	};
 	struct acpi_dp *dsd;
 
-	if (!dev->enabled || !scope || !config)
+	if (!scope || !config)
 		return;
 
 	if (config->speed)

@@ -57,7 +57,7 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 	int reset_gpio_index = -1, enable_gpio_index = -1, irq_gpio_index = -1;
 	const char *path = acpi_device_path(dev);
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	if (!config->hid) {

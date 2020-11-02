@@ -32,9 +32,6 @@ static void conn_fill_ssdt(const struct device *dev)
 	const char *scope;
 	const char *name;
 
-	if (!dev->enabled)
-		return;
-
 	/* Reference the existing scope and write CONx device */
 	scope = acpi_device_scope(dev);
 	name = acpi_device_name(dev);

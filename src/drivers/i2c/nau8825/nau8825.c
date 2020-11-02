@@ -30,7 +30,7 @@ static void nau8825_fill_ssdt(const struct device *dev)
 	};
 	struct acpi_dp *dp = NULL;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 	if (config->sar_threshold_num > NAU8825_MAX_BUTTONS)
 		return;

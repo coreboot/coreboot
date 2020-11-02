@@ -57,7 +57,7 @@ static void gpio_keys_fill_ssdt_generator(const struct device *dev)
 	const char *drv_string = config->is_polled ? "gpio-keys-polled"
 				: "gpio-keys";
 
-	if (!dev->enabled || !scope || !path || !config->gpio.pin_count)
+	if (!scope || !path || !config->gpio.pin_count)
 		return;
 
 	/* Device */

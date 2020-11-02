@@ -26,7 +26,7 @@ static void usb4_pcie_acpi_fill_ssdt(const struct device *dev)
 		return;
 	}
 
-	if (!dev->enabled || !parent->enabled)
+	if (!parent->enabled)
 		return;
 
 	config = config_of(dev);

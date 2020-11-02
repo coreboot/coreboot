@@ -184,9 +184,6 @@ static void wilco_ec_fill_ssdt_generator(const struct device *dev)
 	void *region_ptr;
 	size_t ucsi_alloc_region_len;
 
-	if (!dev->enabled)
-		return;
-
 	ucsi_alloc_region_len = ucsi_region_len < UCSI_MIN_ALLOC_REGION_LEN ?
 		UCSI_MIN_ALLOC_REGION_LEN : ucsi_region_len;
 	region_ptr = cbmem_add(CBMEM_ID_ACPI_UCSI, ucsi_alloc_region_len);

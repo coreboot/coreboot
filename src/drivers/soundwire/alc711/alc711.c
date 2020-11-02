@@ -105,7 +105,7 @@ static void soundwire_alc711_fill_ssdt(const struct device *dev)
 	const char *scope = acpi_device_scope(dev);
 	struct acpi_dp *dsd;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	acpigen_write_scope(scope);

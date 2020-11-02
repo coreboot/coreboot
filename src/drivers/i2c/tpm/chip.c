@@ -20,7 +20,7 @@ static void i2c_tpm_fill_ssdt(const struct device *dev)
 		.resource = scope,
 	};
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	if (!config->hid) {

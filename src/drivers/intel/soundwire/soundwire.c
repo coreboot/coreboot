@@ -50,7 +50,7 @@ static void intel_soundwire_fill_ssdt(const struct device *dev)
 	struct intel_soundwire_controller *controller;
 	const char *scope = acpi_device_scope(dev);
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	if (soc_fill_soundwire_controller(&controller) < 0 || !controller)

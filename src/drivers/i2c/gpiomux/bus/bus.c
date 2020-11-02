@@ -22,7 +22,7 @@ static void i2c_gpiomux_bus_fill_ssdt(const struct device *dev)
 	const char *scope = acpi_device_scope(dev);
 	const char *path = acpi_device_path(dev);
 
-	if (!dev || !dev->enabled || !scope || !path)
+	if (!dev || !scope || !path)
 		return;
 
 	/* Device */

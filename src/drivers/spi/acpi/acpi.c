@@ -77,7 +77,7 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 	int reset_gpio_index = -1;
 	int enable_gpio_index = -1;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	if (spi_acpi_get_bus(dev) == -1) {

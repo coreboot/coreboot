@@ -27,7 +27,7 @@ static void i2c_gpiomux_mux_fill_ssdt(const struct device *dev)
 	struct acpi_gpio_res_params param[MAX_NUM_MUX_GPIOS];
 	int i;
 
-	if (!dev->enabled || !scope || !path)
+	if (!scope || !path)
 		return;
 
 	/* Device */

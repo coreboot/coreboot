@@ -17,7 +17,7 @@ static void crosec_i2c_tunnel_fill_ssdt(const struct device *dev)
 	struct ec_google_chromeec_i2c_tunnel_config *cfg = dev->chip_info;
 	struct acpi_dp *dsd;
 
-	if (!dev->enabled || !scope || !cfg)
+	if (!scope || !cfg)
 		return;
 
 	acpigen_write_scope(scope);

@@ -17,7 +17,7 @@ static void adau7002_fill_ssdt(const struct device *dev)
 	struct drivers_generic_adau7002_config *config;
 	struct acpi_dp *dp;
 
-	if (!dev || !dev->enabled)
+	if (!dev)
 		return;
 
 	const char *scope = acpi_device_scope(dev);

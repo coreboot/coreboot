@@ -27,7 +27,7 @@ static void da7219_fill_ssdt(const struct device *dev)
 	};
 	struct acpi_dp *dsd, *aad;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	/* Device */

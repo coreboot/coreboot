@@ -13,7 +13,7 @@ static void ish_fill_ssdt_generator(const struct device *dev)
 	struct device *root = dev->bus->dev;
 	struct acpi_dp *dsd;
 
-	if (!dev->enabled || !config || !config->firmware_name)
+	if (!config || !config->firmware_name)
 		return;
 
 	acpigen_write_scope(acpi_device_path(root));

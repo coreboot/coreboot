@@ -15,7 +15,7 @@ static void crosec_audio_codec_fill_ssdt(const struct device *dev)
 	const char *scope = acpi_device_scope(dev);
 	struct ec_google_chromeec_audio_codec_config *cfg = dev->chip_info;
 
-	if (!dev->enabled || !scope || !cfg)
+	if (!scope || !cfg)
 		return;
 
 	acpigen_write_scope(scope);

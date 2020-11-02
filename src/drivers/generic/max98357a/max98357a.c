@@ -18,7 +18,7 @@ static void max98357a_fill_ssdt(const struct device *dev)
 	const char *path;
 	struct acpi_dp *dp;
 
-	if (!dev->enabled || !config)
+	if (!config)
 		return;
 
 	const char *scope = acpi_device_scope(dev);

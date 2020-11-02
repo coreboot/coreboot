@@ -24,7 +24,7 @@ static void max98373_fill_ssdt(const struct device *dev)
 	};
 	struct acpi_dp *dp;
 
-	if (!dev->enabled || !scope) {
+	if (!scope) {
 		printk(BIOS_ERR, "%s: dev not enabled\n", __func__);
 		return;
 	}

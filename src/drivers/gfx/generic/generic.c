@@ -106,7 +106,7 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 
 	const char *scope = acpi_device_scope(dev);
 
-	if (!scope || !dev->enabled)
+	if (!scope)
 		return;
 
 	acpigen_write_scope(scope);

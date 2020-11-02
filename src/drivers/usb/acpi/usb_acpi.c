@@ -24,7 +24,7 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 	struct drivers_usb_acpi_config *config = dev->chip_info;
 	const char *path = acpi_device_path(dev);
 
-	if (!dev->enabled || !path || !config)
+	if (!path || !config)
 		return;
 
 	/* Don't generate output for hubs, only ports */

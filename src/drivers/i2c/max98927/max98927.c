@@ -24,7 +24,7 @@ static void max98927_fill_ssdt(const struct device *dev)
 	};
 	struct acpi_dp *dp;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	/* Device */

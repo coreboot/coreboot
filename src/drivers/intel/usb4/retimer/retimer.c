@@ -101,7 +101,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	const struct drivers_intel_usb4_retimer_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
 
-	if (!dev->enabled || !scope || !config)
+	if (!scope || !config)
 		return;
 
 	if (!config->power_gpio.pin_count) {

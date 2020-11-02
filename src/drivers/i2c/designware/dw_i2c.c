@@ -824,9 +824,6 @@ void dw_i2c_acpi_fill_ssdt(const struct device *dev)
 	const char *path;
 	unsigned int speed;
 
-	if (!dev->enabled)
-		return;
-
 	bus = dw_i2c_soc_dev_to_bus(dev);
 
 	if (bus < 0)

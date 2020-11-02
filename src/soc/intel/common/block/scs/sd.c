@@ -12,9 +12,6 @@ static void sd_fill_ssdt(const struct device *dev)
 	struct acpi_gpio default_gpio = { 0 };
 	struct acpi_dp *dp;
 
-	if (!dev->enabled)
-		return;
-
 	if (sd_fill_soc_gpio_info(&default_gpio, dev) != 0)
 		return;
 

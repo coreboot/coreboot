@@ -28,7 +28,7 @@ static void rt1011_fill_ssdt(const struct device *dev)
 	struct acpi_dp *dp;
 	uint64_t r0_value, temp_value;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	/* Device */

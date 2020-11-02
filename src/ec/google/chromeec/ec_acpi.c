@@ -223,9 +223,6 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev)
 	struct device_path path;
 	struct device *ec;
 
-	if (!dev->enabled)
-		return;
-
 	/* Set up a minimal EC0 device to pass to the DPTF helpers */
 	path.type = DEVICE_PATH_GENERIC;
 	path.generic.id = 0;

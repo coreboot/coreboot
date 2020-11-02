@@ -46,7 +46,7 @@ static void uart_acpi_fill_ssdt(const struct device *dev)
 	int reset_gpio_index = -1;
 	int enable_gpio_index = -1;
 
-	if (!dev->enabled || !scope)
+	if (!scope)
 		return;
 
 	if (!config->hid) {

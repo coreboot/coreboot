@@ -51,6 +51,7 @@ smm-y += pmc.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
+smm-y += elog.c
 
 verstage-y += gpio.c
 

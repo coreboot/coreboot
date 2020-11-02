@@ -40,28 +40,28 @@ static void sata_read_resources(struct device *dev)
 	if (sata_mode != 2)
 		return;
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res) {
 		res->base = 0x1f0;
 		res->size = 8;
 		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	}
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_1);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_1);
 	if (res) {
 		res->base = 0x3f4;
 		res->size = 4;
 		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	}
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_2);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_2);
 	if (res) {
 		res->base = 0x170;
 		res->size = 8;
 		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	}
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_3);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_3);
 	if (res) {
 		res->base = 0x374;
 		res->size = 4;
@@ -77,7 +77,7 @@ static void sata_set_resources(struct device *dev)
 	if (sata_mode == 2) {
 		unsigned int i;
 		for (i = PCI_BASE_ADDRESS_0; i <= PCI_BASE_ADDRESS_3; i += 4) {
-			struct resource *const res = find_resource(dev, i);
+			struct resource *const res = probe_resource(dev, i);
 			if (res)
 				res->flags &= ~IORESOURCE_FIXED;
 		}

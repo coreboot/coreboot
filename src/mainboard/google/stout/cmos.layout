@@ -4,49 +4,24 @@
 entries
 
 # -----------------------------------------------------------------
-# Status Register A
-# -----------------------------------------------------------------
-# Status Register B
-# -----------------------------------------------------------------
-# Status Register C
-#96           4       r       0        status_c_rsvd
-#100          1       r       0        uf_flag
-#101          1       r       0        af_flag
-#102          1       r       0        pf_flag
-#103          1       r       0        irqf_flag
-# -----------------------------------------------------------------
-# Status Register D
-#104          7       r       0        status_d_rsvd
-#111          1       r       0        valid_cmos_ram
-# -----------------------------------------------------------------
-# Diagnostic Status Register
-#112          8       r       0        diag_rsvd1
-
-# -----------------------------------------------------------------
 0          120       r       0        reserved_memory
-#120        264       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#390          2       r       0        unused?
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-#392          3       r       0        unused
 395          4       e       6        debug_level
-#399          1       r       0        unused
 
 # coreboot config options: cpu
 400          1       e       2        hyper_threading
-#401          7       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
 411          1       e       8        sata_mode
-#412          4       r       0        unused
 
 # coreboot config options: bootloader
 #Used by ChromeOS:
@@ -55,15 +30,12 @@ entries
 # coreboot config options: northbridge
 544         3        e      11        gfx_uma_size
 
-#547        437       r       0        unused
-
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
 928         32        r       0        mrc_scrambler_seed_s3
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
-#1000        24       r       0        amd_reserved
 
 # -----------------------------------------------------------------
 

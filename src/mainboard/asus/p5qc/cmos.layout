@@ -4,33 +4,12 @@
 entries
 
 # -----------------------------------------------------------------
-# Status Register A
-# -----------------------------------------------------------------
-# Status Register B
-# -----------------------------------------------------------------
-# Status Register C
-#96           4       r       0        status_c_rsvd
-#100          1       r       0        uf_flag
-#101          1       r       0        af_flag
-#102          1       r       0        pf_flag
-#103          1       r       0        irqf_flag
-# -----------------------------------------------------------------
-# Status Register D
-#104          7       r       0        status_d_rsvd
-#111          1       r       0        valid_cmos_ram
-# -----------------------------------------------------------------
-# Diagnostic Status Register
-#112          8       r       0        diag_rsvd1
-
-# -----------------------------------------------------------------
 0          120       r       0        reserved_memory
-#120        264       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#390          5       r       0        unused?
 
 # -----------------------------------------------------------------
 # coreboot config options: console
@@ -42,10 +21,8 @@ entries
 411          1       e       1        nmi
 
 # coreboot config options: cpu
-#424        8       r       0        unused
 
 # coreboot config options: northbridge
-#432        554       r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum

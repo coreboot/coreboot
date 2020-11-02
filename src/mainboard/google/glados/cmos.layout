@@ -4,75 +4,29 @@
 entries
 
 #start-bit length  config config-ID    name
-#0            8       r       0        seconds
-#8            8       r       0        alarm_seconds
-#16           8       r       0        minutes
-#24           8       r       0        alarm_minutes
-#32           8       r       0        hours
-#40           8       r       0        alarm_hours
-#48           8       r       0        day_of_week
-#56           8       r       0        day_of_month
-#64           8       r       0        month
-#72           8       r       0        year
-# -----------------------------------------------------------------
-# Status Register A
-#80           4       r       0        rate_select
-#84           3       r       0        REF_Clock
-#87           1       r       0        UIP
-# -----------------------------------------------------------------
-# Status Register B
-#88           1       r       0        auto_switch_DST
-#89           1       r       0        24_hour_mode
-#90           1       r       0        binary_values_enable
-#91           1       r       0        square-wave_out_enable
-#92           1       r       0        update_finished_enable
-#93           1       r       0        alarm_interrupt_enable
-#94           1       r       0        periodic_interrupt_enable
-#95           1       r       0        disable_clock_updates
-# -----------------------------------------------------------------
-# Status Register C
-#96           4       r       0        status_c_rsvd
-#100          1       r       0        uf_flag
-#101          1       r       0        af_flag
-#102          1       r       0        pf_flag
-#103          1       r       0        irqf_flag
-# -----------------------------------------------------------------
-# Status Register D
-#104          7       r       0        status_d_rsvd
-#111          1       r       0        valid_cmos_ram
-# -----------------------------------------------------------------
-# Diagnostic Status Register
-#112          8       r       0        diag_rsvd1
 
 # -----------------------------------------------------------------
 0          120       r       0        reserved_memory
-#120        264       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#390          2       r       0        unused?
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-#392          3       r       0        unused
 395          4       e       6        debug_level
-#399          1       r       0        unused
 
 # coreboot config options: cpu
 400          1       e       2        hyper_threading
-#401          7       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
-#411          5       r       0        unused
 
 # coreboot config options: bootloader
 #Used by ChromeOS:
 416        128       r        0        vbnv
-#544        440       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
@@ -80,7 +34,6 @@ entries
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
-#1000        24       r       0        amd_reserved
 
 # -----------------------------------------------------------------
 

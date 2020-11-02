@@ -9,7 +9,6 @@ entries
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 388          4       r       0        reboot_counter
-#392          3       r       0        unused
 #400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
 416          4       e       7        boot_first

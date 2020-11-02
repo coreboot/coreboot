@@ -4,39 +4,16 @@
 entries
 
 # -----------------------------------------------------------------
-# Status Register A
-# -----------------------------------------------------------------
-# Status Register B
-# -----------------------------------------------------------------
-# Status Register C
-#96           4       r       0        status_c_rsvd
-#100          1       r       0        uf_flag
-#101          1       r       0        af_flag
-#102          1       r       0        pf_flag
-#103          1       r       0        irqf_flag
-# -----------------------------------------------------------------
-# Status Register D
-#104          7       r       0        status_d_rsvd
-#111          1       r       0        valid_cmos_ram
-# -----------------------------------------------------------------
-# Diagnostic Status Register
-#112          8       r       0        diag_rsvd1
-
-# -----------------------------------------------------------------
 0          120       r       0        reserved_memory
-#120        264       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#390          2       r       0        unused?
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-#392          3       r       0        unused
 395          4       e       6        debug_level
-#399          1       r       0        unused
 
 #400         8       r       0        reserved for century byte
 
@@ -52,10 +29,8 @@ entries
 928          8       h       0        boot_default
 936          1       e       8        cmos_defaults_loaded
 937          1       e       1        lpt
-#938         7       r       0        unused
 
 # coreboot config options: cpu
-#945         3       r       0        unused
 
 # coreboot config options: ec
 948         1       e       1        touchpad
@@ -65,14 +40,12 @@ entries
 952         8       h       0        volume
 960         1       e       9        first_battery
 961         1       e       1        trackpoint
-#962         1       r       0        unused
 963         1       e       1        sticky_fn
 964         1       e       1        power_management_beeps
 965         1       e       1        low_battery_beep
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
-#1000        24       r       0        amd_reserved
 
 # RAM initialization internal data
 1024         8       r       0        C0WL0REOST

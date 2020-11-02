@@ -8,7 +8,6 @@ entries
 0          384       r       0        reserved_memory
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#392          3       r       0        unused
 395          1       e       1        hw_scrubber
 396          1       e       1        interleave_chip_selects
 397          2       e       8        max_mem_clock

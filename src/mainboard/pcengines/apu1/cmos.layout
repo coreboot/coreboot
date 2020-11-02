@@ -6,7 +6,6 @@ entries
 # leave 3 bits to make checksummed area start byte-aligned
 392           1            e        2           boot_option
 393           1            e        1           multi_core
-#394          6            unused
 400           4            e        4           debug_level
 # leave 7 bits to make checksummed area end byte-aligned
 408           16           h        0           check_sum

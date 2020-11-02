@@ -3,22 +3,17 @@
 # -----------------------------------------------------------------
 entries
 0          120       r       0        reserved_memory
-#120        264       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#390          2       r       0        unused
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-#392          3       r       0        unused
 395          4       e       6        debug_level
-#399          1       r       0        unused
 
 # coreboot config options: cpu
-#401          7       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
@@ -28,11 +23,9 @@ entries
 
 # coreboot config options: bootloader
 416        512       s       0        boot_devices
-#928         80       r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
-#1000        24       r       0        amd_reserved
 
 # RAM initialization internal data
 1024         8       r       0        C0WL0REOST

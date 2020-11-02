@@ -1,16 +1,19 @@
-# Purism Librem Mini
+# Purism Librem Mini (v1, v2)
 
 This page describes how to run coreboot on the [Purism Librem Mini].
 
 ```eval_rst
 +------------------+--------------------------------------------------+
-| CPU              | Intel Core i7-8565U/8665U                        |
+| CPU              | Intel Core i7-8565U/8665U (v1)                   |
+|                  | Intel Core i7-10510U      (v2)                   |
 +------------------+--------------------------------------------------+
-| PCH              | Whiskey Lake / Cannon Point LP                   |
+| PCH              | Whiskey Lake / Cannon Point LP       (v1)        |
+|                  | Comet Lake LP Premium (Comet Lake-U) (v2)        |
 +------------------+--------------------------------------------------+
 | Super I/O, EC    | ITE IT8528E                                      |
 +------------------+--------------------------------------------------+
-| Coprocessor      | Intel Management Engine (CSME 12.x)              |
+| Coprocessor      | Intel Management Engine (CSME 12.x) (v1)         |
+|                  | Intel Management Engine (CSME 14.x) (v2)         |
 +------------------+--------------------------------------------------+
 ```
 
@@ -34,9 +37,9 @@ only the BIOS region is being modified).
 +-----------------+---------------------------------+---------------------+
 ```
 
-FSP-M and FSP-S are obtained after splitting the Coffee Lake FSP binary (done
-automatically by the coreboot build system and included into the image) from
-the `3rdparty/fsp` submodule.
+FSP-M and FSP-S are obtained after splitting the FSP binary (done automatically
+by the coreboot build system and included into the image; Coffee Lake for v1,
+Comet Lake for v2) from the `3rdparty/fsp` submodule.
 
 Microcode updates are automatically included into the coreboot image by the build
 system from the `3rdparty/intel-microcode` submodule. Official Purism release
@@ -50,12 +53,14 @@ the [purism-blobs] repository.
 
 ## Intel Management Engine
 
-The Librem Mini uses version 12.x of the Intel Management Engine (ME) /
-Converged Security Engine (CSE). The ME/CSE is disabled using the High
-Assurance Platform (HAP) bit, which puts the ME into a disabled state
+The Librem Mini uses version 12.x (v1) or 14.x (v2) of the Intel Management
+Engine (ME) / Converged Security Engine (CSE). The ME/CSE is disabled using
+the High Assurance Platform (HAP) bit, which puts the ME into a disabled state
 after platform bring-up (BUP) and disables all PCI/HECI interfaces.
 This can be verified via the coreboot cbmem utility:
-`sudo ./cbmem -1 | grep 'ME:'`
+
+    `sudo ./cbmem -1 | grep 'ME:'`
+
 provided coreboot has been modified to output the ME status even when
 the PCI device is not visible/active (as it is in Purism's release builds).
 
@@ -64,8 +69,9 @@ the PCI device is not visible/active (as it is in Purism's release builds).
 ### Internal programming
 
 The main SPI flash can be accessed using [flashrom]. The first version
-supporting the chipset is flashrom v1.2. Firmware an be easily flashed
-with internal programmer (either BIOS region or full image).
+supporting the chipset is flashrom v1.2 (v1.2-107-gb1f858f or later needed
+for the Mini v2). Firmware an be easily flashed with internal programmer
+(either BIOS region or full image).
 
 ### External programming
 
@@ -100,17 +106,17 @@ desoldering it from the mainboard.
 ## Working
 
  * External displays via HDMI/DisplayPort with VGA option ROM or FSP/GOP init
-  (no libgfxinit support yet)
- * SeaBIOS (1.13.x), Tianocore (CorebootPayloadpkg), Heads (Purism downstream) payloads
+   (no libgfxinit support yet)
+ * SeaBIOS (1.14), Tianocore (CorebootPayloadPkg), Heads (Purism downstream) payloads
  * Ethernet, m.2 2230 Wi-Fi
  * System firmware updates via flashrom
  * PCIe NVMe
  * m.2 and SATA III
  * Audio via front 3.5mm jack, HDMI, and DisplayPort
  * SMBus (reading SPD from DIMMs)
- * Initialization with CFL FSP 2.0
+ * Initialization with FSP 2.0 (CFL for v1, CML for v2)
  * S3 Suspend/Resume
- * Booting PureOS 9.x, Debian 10.x, Qubes 4.0.3, Linux Mint 19.3, Windows 10 2004
+ * Booting PureOS 10.x, Debian 11.x, Qubes 4.1.0-alpha1, Linux Mint 20, Windows 10 2004
 
 ## Not working / untested
 

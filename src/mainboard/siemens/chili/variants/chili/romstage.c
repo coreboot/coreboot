@@ -7,9 +7,8 @@
 
 void variant_romstage_params(FSPM_UPD *const mupd)
 {
-	uint8_t eth_enable = 1;
+	const uint8_t eth_enable = get_int_option("ethernet1", 1);
 
-	get_option(&eth_enable, "ethernet1");
 	if (!eth_enable) {
 		printk(BIOS_DEBUG, "Disabling ethernet1.\n");
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 5);

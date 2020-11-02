@@ -30,9 +30,7 @@ static void hide_ast2400(void)
 
 static void mainboard_enable(struct device *dev)
 {
-	u8 hide = 0;
-
-	if (get_option(&hide, "hide_ast2400") == CB_SUCCESS && hide)
+	if (get_int_option("hide_ast2400", false))
 		hide_ast2400();
 }
 

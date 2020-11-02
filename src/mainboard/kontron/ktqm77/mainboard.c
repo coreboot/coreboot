@@ -149,17 +149,16 @@ static void mainboard_enable(struct device *dev)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
-
-	unsigned int disable = 0;
-	if ((get_option(&disable, "ethernet1") == CB_SUCCESS) && disable) {
+	unsigned int disable = get_int_option("ethernet1", 0);
+	if (disable) {
 		struct device *nic = pcidev_on_root(0x1c, 2);
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE FIRST NIC!\n");
 			nic->enabled = 0;
 		}
 	}
-	disable = 0;
-	if ((get_option(&disable, "ethernet2") == CB_SUCCESS) && disable) {
+	disable = get_int_option("ethernet2", 0);
+	if (disable) {
 		struct device *nic = pcidev_on_root(0x1c, 3);
 		if (nic) {
 			printk(BIOS_DEBUG, "DISABLE SECOND NIC!\n");

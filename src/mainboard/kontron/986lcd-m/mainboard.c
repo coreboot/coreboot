@@ -136,11 +136,10 @@ static void mainboard_init(void *chip_info)
 	struct device *dev;
 
 	for (i = 1; i <= 3; i++) {
-		int ethernet_disable = 0;
 		char cmos_option_name[] = "ethernetx";
 		snprintf(cmos_option_name, sizeof(cmos_option_name),
 			 "ethernet%01d", i);
-		get_option(&ethernet_disable, cmos_option_name);
+		int ethernet_disable = get_int_option(cmos_option_name, 0);
 		if (!ethernet_disable)
 			continue;
 		printk(BIOS_DEBUG, "Disabling Ethernet NIC #%d\n", i);

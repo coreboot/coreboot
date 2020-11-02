@@ -9,7 +9,6 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	uint8_t vtd = 1;
 	const struct cnl_mb_cfg cfg = {
 		.spd = {
 			[0] = { READ_SMBUS, { 0x50 << 1 } },
@@ -25,9 +24,10 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.EccSupport = 1;
 	memupd->FspmConfig.UserBd = BOARD_TYPE_MOBILE;
 
-	get_option(&vtd, "vtd");
+	const uint8_t vtd = get_int_option("vtd", 1);
 	memupd->FspmTestConfig.VtdDisable = !vtd;
-	get_option(&memupd->FspmConfig.HyperThreading, "hyper_threading");
+	const uint8_t ht = get_int_option("hyper_threading", memupd->FspmConfig.HyperThreading);
+	memupd->FspmConfig.HyperThreading = ht;
 
 	variant_romstage_params(memupd);
 

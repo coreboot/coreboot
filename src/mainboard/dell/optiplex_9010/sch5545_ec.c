@@ -603,7 +603,7 @@ static void prepare_for_hwm_ec_sequence(uint8_t write_only, uint8_t *value)
 
 void sch5545_ec_hwm_init(void *unused)
 {
-	uint8_t val = 0, val_2fc, chassis_type, fan_speed_full = 0;
+	uint8_t val = 0, val_2fc, chassis_type;
 
 	printk(BIOS_DEBUG, "%s\n", __func__);
 	sch5545_emi_init(0x2e);
@@ -656,9 +656,12 @@ void sch5545_ec_hwm_init(void *unused)
 
 	ec_read_write_reg(EC_HWM_LDN, 0x02fc, &val_2fc, WRITE_OP);
 
-	if (get_option(&fan_speed_full, "fan_full_speed") != CB_SUCCESS)
+	int fan_speed_full = get_int_option("fan_full_speed", -1);
+	if (fan_speed_full < 0) {
+		fan_speed_full = 0;
 		printk(BIOS_INFO, "fan_full_speed CMOS option not found. "
 				  "Fans will be set up for automatic control\n");
+	}
 
 	if (fan_speed_full) {
 		ec_read_write_reg(EC_HWM_LDN, 0x0080, &val, READ_OP);

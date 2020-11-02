@@ -33,9 +33,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 
 void mainboard_early_init(int s3resume)
 {
-	u8 enable_peg;
-	if (get_option(&enable_peg, "enable_dual_graphics") != CB_SUCCESS)
-		enable_peg = 0;
+	u8 enable_peg = get_int_option("enable_dual_graphics", 0);
 
 	bool power_en = pmh7_dgpu_power_state();
 

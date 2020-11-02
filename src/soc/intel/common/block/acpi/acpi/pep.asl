@@ -30,9 +30,27 @@ Device(PEPD)
 			}
 			/*
 			 * Function 1 - Get Device Constraints
+			 *
+			 * Device constraints for low power states (may be used for debugging).
+			 * For now there is only one disabled dummy device, because Windows
+			 * expects at least one device and crashes without it with a bluescreen
+			 * (`INTERNAL_POWER_ERROR`). Returning an empty package does not work.
 			 */
 			If(Arg2 == PEPD_DSM_LPI_GET_DEVICE_CONSTRAINTS) {
-				Return(Package(5) {0, Ones, Ones, Ones, Ones})
+				Return (Package() {
+						Package() {
+							"\\DUMY",		/* \DUMY - not existent */
+							0,			/* disabled, no constraints */
+							Package() {
+								0,		/* revision */
+								Package() {
+									0xff,	/* apply to all LPIT states */
+									0	/* minimum D-state */
+								}
+							}
+						}
+					}
+				)
 			}
 			/*
 			 * Function 2 - Get Crash Dump Device

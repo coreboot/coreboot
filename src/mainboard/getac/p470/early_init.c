@@ -34,9 +34,8 @@ void mainboard_pre_raminit_config(int s3_resume)
 void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
-	u8 val;
 
-	if (get_option(&val, "lpt") == CB_SUCCESS && val)
+	if (get_int_option("lpt", 0))
 		lpt_en = LPT_LPC_EN; /* enable LPT */
 
 	// decode range

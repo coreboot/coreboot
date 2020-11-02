@@ -14,9 +14,8 @@
 void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
-	u8 val;
 
-	if (get_option(&val, "lpt") == CB_SUCCESS && val)
+	if (get_int_option("lpt", 0))
 		lpt_en = LPT_LPC_EN; /* enable LPT */
 
 	pci_update_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, ~LPT_LPC_EN, lpt_en);

@@ -17,6 +17,7 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 
 #include "chip.h"
 

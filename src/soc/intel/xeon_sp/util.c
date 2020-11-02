@@ -1,7 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
+#include <commonlib/sort.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/cpulib.h>
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
 #include <soc/util.h>
@@ -85,3 +89,136 @@ msr_t read_msr_ppin(void)
 	wrmsr(MSR_PPIN_CTL, msr);
 	return ppin;
 }
+
+int get_threads_per_package(void)
+{
+	unsigned int core_count, thread_count;
+	cpu_read_topology(&core_count, &thread_count);
+	return thread_count;
+}
+
+int get_platform_thread_count(void)
+{
+	return soc_get_num_cpus() * get_threads_per_package();
+}
+
+const IIO_UDS *get_iio_uds(void)
+{
+	size_t hob_size;
+	const IIO_UDS *hob;
+	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
+
+	hob = fsp_find_extension_hob_by_guid(fsp_hob_iio_universal_data_guid, &hob_size);
+	assert(hob != NULL && hob_size != 0);
+	return hob;
+}
+
+unsigned int soc_get_num_cpus(void)
+{
+	/* The FSP IIO UDS HOB has field numCpus, it is actually socket count */
+	return get_iio_uds()->SystemStatus.numCpus;
+}
+
+#if ENV_RAMSTAGE /* Setting devtree variables is only allowed in ramstage. */
+static void get_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits)
+{
+	register int ecx;
+	struct cpuid_result cpuid_regs;
+
+	/* get max index of CPUID */
+	cpuid_regs = cpuid(0);
+	assert(cpuid_regs.eax >= 0xb); /* cpuid_regs.eax is max input value for cpuid */
+
+	*thread_bits = *core_bits = 0;
+	ecx = 0;
+	while (1) {
+		cpuid_regs = cpuid_ext(0xb, ecx);
+		if (ecx == 0) {
+			*thread_bits = (cpuid_regs.eax & 0x1f);
+		} else {
+			*core_bits = (cpuid_regs.eax & 0x1f) - *thread_bits;
+			break;
+		}
+		ecx++;
+	}
+}
+
+static void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits, uint32_t thread_bits,
+	uint8_t *package, uint8_t *core, uint8_t *thread)
+{
+	if (package != NULL)
+		*package = (apicid >> (thread_bits + core_bits));
+	if (core != NULL)
+		*core = (uint32_t)((apicid >> thread_bits) & ~((~0) << core_bits));
+	if (thread != NULL)
+		*thread = (uint32_t)(apicid & ~((~0) << thread_bits));
+}
+
+void xeonsp_init_cpu_config(void)
+{
+	struct device *dev;
+	int apic_ids[CONFIG_MAX_CPUS] = {0}, apic_ids_by_thread[CONFIG_MAX_CPUS] = {0};
+	int  num_apics = 0;
+	uint32_t core_bits, thread_bits;
+	unsigned int core_count, thread_count;
+	unsigned int num_sockets;
+
+	/*
+	 * sort APIC ids in asending order to identify apicid ranges for
+	 * each numa domain
+	 */
+	for (dev = all_devices; dev; dev = dev->next) {
+		if ((dev->path.type != DEVICE_PATH_APIC) ||
+			(dev->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
+			continue;
+		}
+		if (!dev->enabled)
+			continue;
+		if (num_apics >= ARRAY_SIZE(apic_ids))
+			break;
+	  apic_ids[num_apics++] = dev->path.apic.apic_id;
+	}
+	if (num_apics > 1)
+		bubblesort(apic_ids, num_apics, NUM_ASCENDING);
+
+	num_sockets = soc_get_num_cpus();
+	cpu_read_topology(&core_count, &thread_count);
+	assert(num_apics == (num_sockets * thread_count));
+
+	/* sort them by thread i.e., all cores with thread 0 and then thread 1 */
+	int index = 0;
+	for (int id = 0; id < num_apics; ++id) {
+		int apic_id = apic_ids[id];
+		if (apic_id & 0x1) { /* 2nd thread */
+			apic_ids_by_thread[index + (num_apics/2) - 1] = apic_id;
+		} else { /* 1st thread */
+			apic_ids_by_thread[index++] = apic_id;
+		}
+	}
+
+	/* update apic_id, node_id in sorted order */
+	num_apics = 0;
+	get_core_thread_bits(&core_bits, &thread_bits);
+	for (dev = all_devices; dev; dev = dev->next) {
+		uint8_t package;
+
+		if ((dev->path.type != DEVICE_PATH_APIC) ||
+			(dev->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
+			continue;
+		}
+		if (!dev->enabled)
+			continue;
+		if (num_apics >= ARRAY_SIZE(apic_ids))
+			break;
+		dev->path.apic.apic_id = apic_ids_by_thread[num_apics];
+		get_cpu_info_from_apicid(dev->path.apic.apic_id, core_bits, thread_bits,
+			&package, NULL, NULL);
+		dev->path.apic.node_id = package;
+		printk(BIOS_DEBUG, "CPU %d apic_id: 0x%x (%d), node_id: 0x%x\n",
+			num_apics, dev->path.apic.apic_id,
+			dev->path.apic.apic_id, dev->path.apic.node_id);
+
+		++num_apics;
+	}
+}
+#endif

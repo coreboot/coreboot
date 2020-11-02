@@ -10,5 +10,10 @@ void get_cpubusnos(uint32_t *bus0, uint32_t *bus1, uint32_t *bus2, uint32_t *bus
 void unlock_pam_regions(void);
 void get_stack_busnos(uint32_t *bus);
 msr_t read_msr_ppin(void);
+int get_threads_per_package(void);
+int get_platform_thread_count(void);
+const IIO_UDS *get_iio_uds(void);
+unsigned int soc_get_num_cpus(void);
+void xeonsp_init_cpu_config(void);
 
 #endif

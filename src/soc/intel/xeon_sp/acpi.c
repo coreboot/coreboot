@@ -11,8 +11,9 @@
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
-#include <soc/soc_util.h>
 #include <soc/pm.h>
+#include <soc/soc_util.h>
+#include <soc/util.h>
 #include <string.h>
 
 acpi_cstate_t *soc_get_cstate_map(size_t *entries)

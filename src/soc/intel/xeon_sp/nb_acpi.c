@@ -11,6 +11,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 
 #include "chip.h"
 

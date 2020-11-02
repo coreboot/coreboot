@@ -38,7 +38,6 @@ Device(PEPD)
 			 * Function 2 - Get Crash Dump Device
 			 */
 			If(Arg2 == PEPD_DSM_LPI_GET_CRASH_DUMP_DEV) {
-				Return(Buffer(One) {0x0})
 			}
 			/*
 			 * Function 3 - Display Off Notification

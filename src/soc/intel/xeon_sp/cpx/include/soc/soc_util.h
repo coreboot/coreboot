@@ -15,7 +15,8 @@ uint8_t get_iiostack_info(struct iiostack_resource *info);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 
-void set_bios_init_completion(void);
+uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack);
+
 int soc_get_stack_for_port(int port);
 
 #endif /* _SOC_UTIL_H_ */

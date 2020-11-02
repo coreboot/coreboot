@@ -12,6 +12,7 @@
 #include <soc/cpu.h>
 #include <soc/ramstage.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)

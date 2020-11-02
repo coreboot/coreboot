@@ -25,8 +25,7 @@ static void early_graphics_setup(void)
 	pci_write_config8(HOST_BRIDGE, DEVEN, BOARD_DEVEN);
 
 	/* Fetch VRAM size from CMOS option */
-	if (get_option(&reg8, "gfx_uma_size") != CB_SUCCESS)
-		reg8 = 0;	/* 0 for 8MB */
+	reg8 = get_int_option("gfx_uma_size", 0);	/* 0 for 8MB */
 
 	/* Ensure the setting is valid */
 	if (reg8 > 6)

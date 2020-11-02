@@ -74,7 +74,7 @@ static void sata_init(struct device *dev)
 	udelay(2);
 
 	/* Setup register 98h */
-	reg32 = pci_read_config16(dev, 0x98);
+	reg32 = pci_read_config32(dev, 0x98);
 	reg32 |= 1 << 19;    /* BWG step 6 */
 	reg32 |= 1 << 22;    /* BWG step 5 */
 	reg32 &= ~(0x3f << 7);

@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <console/debug.h>
 #include <cpu/cpu.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/lapic.h>
@@ -16,8 +17,8 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/soc_util.h>
+
 #include "chip.h"
-#include <cpu/intel/common/common.h>
 
 static const void *microcode_patch;
 

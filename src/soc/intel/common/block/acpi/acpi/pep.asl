@@ -26,7 +26,12 @@ Device(PEPD)
 			 * Enum functions
 			 */
 			If(Arg2 == PEPD_DSM_LPI_ENUM_FUNCTIONS) {
-				Return(Buffer(One) {0x60})
+				/*
+				 * Supported functions bitmask
+				 * bit 0:    other functions than 0 are supported
+				 * bits 1-6: function x supported
+				 */
+				Return(Buffer(1) {0x63})
 			}
 			/*
 			 * Function 1 - Get Device Constraints
@@ -56,16 +61,19 @@ Device(PEPD)
 			 * Function 2 - Get Crash Dump Device
 			 */
 			If(Arg2 == PEPD_DSM_LPI_GET_CRASH_DUMP_DEV) {
+				/* not yet used and not advertised by function 0 */
 			}
 			/*
 			 * Function 3 - Display Off Notification
 			 */
 			If(Arg2 == PEPD_DSM_LPI_DISPLAY_OFF_NOTIFY) {
+				/* not yet used and not advertised by function 0 */
 			}
 			/*
 			 * Function 4 - Display On Notification
 			 */
 			If(Arg2 == PEPD_DSM_LPI_DISPLAY_ON_NOTIFY) {
+				/* not yet used and not advertised by function 0 */
 			}
 			/*
 			 * Function 5 - Low Power S0 Entry Notification

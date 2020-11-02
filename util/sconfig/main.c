@@ -872,7 +872,7 @@ static void add_reg(struct reg **const head, char *const name, char *const val)
 	for (cur = *head; cur != NULL; prev = cur, cur = cur->next) {
 		const int sort = strcmp(r->key, cur->key);
 		if (sort == 0) {
-			printf("ERROR: duplicate 'register' key.\n");
+			printf("ERROR: duplicate 'register' key '%s'.\n", r->key);
 			exit(1);
 		}
 		if (sort < 0)

@@ -4,53 +4,53 @@
 entries
 
 # -----------------------------------------------------------------
-0            120     r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       3        boot_option
-388          4       h       0        reboot_counter
+384	1	e	3	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       4        debug_level
+395	4	e	4	debug_level
 
-#400         8       r       0        reserved for century byte
+#400	8	r	0	reserved for century byte
 
 # coreboot config options: southbridge
-408          1       e       1        nmi
-409          2       e       5        power_on_after_fail
+408	1	e	1	nmi
+409	2	e	5	power_on_after_fail
 
 # coreboot config options: check sums
-984          16      h       0        check_sum
+984	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
+#ID	value	text
+1	0	Disable
+1	1	Enable
 
-2     0     Enable
-2     1     Disable
+2	0	Enable
+2	1	Disable
 
-3     0     Fallback
-3     1     Normal
+3	0	Fallback
+3	1	Normal
 
-4     0     Emergency
-4     1     Alert
-4     2     Critical
-4     3     Error
-4     4     Warning
-4     5     Notice
-4     6     Info
-4     7     Debug
-4     8     Spew
+4	0	Emergency
+4	1	Alert
+4	2	Critical
+4	3	Error
+4	4	Warning
+4	5	Notice
+4	6	Info
+4	7	Debug
+4	8	Spew
 
-5     0     Disable
-5     1     Enable
-5     2     Keep
+5	0	Disable
+5	1	Enable
+5	2	Keep
 
 # -----------------------------------------------------------------
 checksums

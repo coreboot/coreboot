@@ -4,101 +4,101 @@
 entries
 
 # -----------------------------------------------------------------
-0          120       r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       4        boot_option
-388          4       h       0        reboot_counter
+384	1	e	4	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       6        debug_level
+395	4	e	6	debug_level
 
 # coreboot config options: cpu
-400          1       e       2        hyper_threading
-401         3        e      12        gfx_uma_size
+400	1	e	2	hyper_threading
+401	3	e	12	gfx_uma_size
 
 # coreboot config options: southbridge
-407          1       e       1        nmi
-408          2       e       7        power_on_after_fail
-410          2       e       11       sata_mode
+407	1	e	1	nmi
+408	2	e	7	power_on_after_fail
+410	2	e	11	sata_mode
 
 # coreboot config options: additional mainboard options
-412          4       e      10        systemp_type
-416          7       h       0        fan1_min
-424          7       h       0        fan1_max
-432          7       h       0        fan2_min
-440          7       h       0        fan2_max
+412	4	e	10	systemp_type
+416	7	h	0	fan1_min
+424	7	h	0	fan1_max
+432	7	h	0	fan2_min
+440	7	h	0	fan2_max
 
 # coreboot config options: bootloader
-448         64       r       0        write_protected_by_bios
-512        328       s       0        boot_devices
-840          8       h       0        boot_default
-848          1       e       9        cmos_defaults_loaded
-849          1       e       2        ethernet1
-850          1       e       2        ethernet2
+448	64	r	0	write_protected_by_bios
+512	328	s	0	boot_devices
+840	8	h	0	boot_default
+848	1	e	9	cmos_defaults_loaded
+849	1	e	2	ethernet1
+850	1	e	2	ethernet2
 
 # coreboot config options: mainboard specific options
-856          2       e       8        fan1_mode
-858          2       r       0        fan1_reserved
-860          2       e       8        fan2_mode
-862          2       r       0        fan2_reserved
-864         16       h       0        fan1_target
-880         16       h       0        fan2_target
+856	2	e	8	fan1_mode
+858	2	r	0	fan1_reserved
+860	2	e	8	fan2_mode
+862	2	r	0	fan2_reserved
+864	16	h	0	fan1_target
+880	16	h	0	fan2_target
 
 # SandyBridge MRC Scrambler Seed values
-896         32        r       0        mrc_scrambler_seed
-928         32        r       0        mrc_scrambler_seed_s3
-960         16        r       0        mrc_scrambler_seed_chk
+896	32	r	0	mrc_scrambler_seed
+928	32	r	0	mrc_scrambler_seed_s3
+960	16	r	0	mrc_scrambler_seed_chk
 
 # coreboot config options: check sums
-984         16       h       0        check_sum
+984	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-4     0     Fallback
-4     1     Normal
-6     0     Emergency
-6     1     Alert
-6     2     Critical
-6     3     Error
-6     4     Warning
-6     5     Notice
-6     6     Info
-6     7     Debug
-6     8     Spew
-7     0     Disable
-7     1     Enable
-7     2     Keep
-8     0     Auto
-8     1     PWM
-8     2     Speed
-8     3     Thermal
-9     0     No
-9     1     Yes
-10    0     None
-10    1     AMD
-10    2     LM75@90
-10    3     GPIO16
-10    4     LM75@9e
-11    0     AHCI
-11    1     Compatible
-11    2     Legacy
-12    0     32M
-12    1     64M
-12    2     96M
-12    3     128M
-12    4     160M
-12    5     192M
-12    6     224M
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
+8	0	Auto
+8	1	PWM
+8	2	Speed
+8	3	Thermal
+9	0	No
+9	1	Yes
+10	0	None
+10	1	AMD
+10	2	LM75@90
+10	3	GPIO16
+10	4	LM75@9e
+11	0	AHCI
+11	1	Compatible
+11	2	Legacy
+12	0	32M
+12	1	64M
+12	2	96M
+12	3	128M
+12	4	160M
+12	5	192M
+12	6	224M
 
 # -----------------------------------------------------------------
 checksums

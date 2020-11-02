@@ -4,27 +4,27 @@
 entries
 
 # -----------------------------------------------------------------
-0            120     r       0         reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       3         boot_option
-388          4       h       0         reboot_counter
+384	1	e	3	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       4        debug_level
-#400         8       r       0        reserved for century byte
+395	4	e	4	debug_level
+#400	8	r	0	reserved for century byte
 
 # -----------------------------------------------------------------
 # coreboot config options: southbridge
 
 # Non Maskable Interrupt(NMI) support, which is an interrupt that may
 # occur on a RAM or unrecoverable error.
-408          1       e       1        nmi
+408	1	e	1	nmi
 
-409          2       e       5        power_on_after_fail
-411          1       e       6        sata_mode
+409	2	e	5	power_on_after_fail
+411	1	e	6	sata_mode
 
 # -----------------------------------------------------------------
 # coreboot config options: northbridge
@@ -32,119 +32,119 @@ entries
 # gfx_uma_size
 # Quantity of shared video memory the IGP can use
 #
-416          5       e       7        gfx_uma_size
+416	5	e	7	gfx_uma_size
 
 # -----------------------------------------------------------------
 # coreboot config options: usb3
 
 # usb3_mode
 # Controls how the motherboard's USB3 ports act at boot time
-421          2       e       8        usb3_mode
+421	2	e	8	usb3_mode
 
 # usb3_drv
 # Load (or not) pre-OS xHCI USB3 BIOS driver
 #
-423          1       e       1        usb3_drv
+423	1	e	1	usb3_drv
 
 # usb3_streams
 # Streams can provide more speed (as they can use 64Kb packets),
 # but they might cause incompatibilities with some devices.
 #
-424          1       e       1        usb3_streams
+424	1	e	1	usb3_streams
 
 # -----------------------------------------------------------------
 # Sandy/Ivy Bridge MRC Scrambler Seed values
 # note: MUST NOT be covered by checksum!
-464          32      r       0        mrc_scrambler_seed
-496          32      r       0        mrc_scrambler_seed_s3
-528          16      r       0        mrc_scrambler_seed_chk
+464	32	r	0	mrc_scrambler_seed
+496	32	r	0	mrc_scrambler_seed_s3
+528	16	r	0	mrc_scrambler_seed_chk
 
 # -----------------------------------------------------------------
 # coreboot config options: check sums
-544          16      h       0        check_sum
+544	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
-#ID value   text
+#ID	value	text
 
 # Generic on/off enum
-1     0     Disable
-1     1     Enable
+1	0	Disable
+1	1	Enable
 
 # boot_option
-3     0     Fallback
-3     1     Normal
+3	0	Fallback
+3	1	Normal
 
 # debug_level
-4     0     Emergency
-4     1     Alert
-4     2     Critical
-4     3     Error
-4     4     Warning
-4     5     Notice
-4     6     Info
-4     7     Debug
-4     8     Spew
+4	0	Emergency
+4	1	Alert
+4	2	Critical
+4	3	Error
+4	4	Warning
+4	5	Notice
+4	6	Info
+4	7	Debug
+4	8	Spew
 
 # power_on_after_fail
-5     0     Disable
-5     1     Enable
-5     2     Keep
+5	0	Disable
+5	1	Enable
+5	2	Keep
 
 # sata_mode
-6     0     AHCI
-6     1     Compatible
+6	0	AHCI
+6	1	Compatible
 
 # gfx_uma_size (Intel IGP Video RAM size)
-7     0     32M
-7     1     64M
-7     2     96M
-7     3     128M
-7     4     160M
-7     5     192M
-7     6     224M
-7     7     256M
-7     8     288M
-7     9     320M
-7     10    352M
-7     11    384M
-7     12    416M
-7     13    448M
-7     14    480M
-7     15    512M
-7     16    544M
-7     17    576M
-7     18    608M
-7     19    640M
-7     20    672M
-7     21    704M
-7     22    736M
-7     23    768M
-7     24    800M
-7     25    832M
-7     26    864M
-7     27    896M
-7     28    928M
-7     29    960M
-7     30    992M
+7	0	32M
+7	1	64M
+7	2	96M
+7	3	128M
+7	4	160M
+7	5	192M
+7	6	224M
+7	7	256M
+7	8	288M
+7	9	320M
+7	10	352M
+7	11	384M
+7	12	416M
+7	13	448M
+7	14	480M
+7	15	512M
+7	16	544M
+7	17	576M
+7	18	608M
+7	19	640M
+7	20	672M
+7	21	704M
+7	22	736M
+7	23	768M
+7	24	800M
+7	25	832M
+7	26	864M
+7	27	896M
+7	28	928M
+7	29	960M
+7	30	992M
 
 # usb3_mode
 # Disable = Use the port always as USB 2.0 for compatibility
 # Enable = Use the port always as USB 3.0 for speed
 # Auto = Initialize the port as USB 2.0, until the OS loads
-#        xHCI USB 3.0 driver
+#	xHCI USB 3.0 driver
 # SmartAuto = Same as Auto but, if the OS loads the xHCI USB 3.0 driver
-#             and the computer is reset, keep the USB 3.0 mode.
+#	and the computer is reset, keep the USB 3.0 mode.
 #
-8     0     Disable
-8     1     Enable
-8     2     Auto
-8     3     SmartAuto
+8	0	Disable
+8	1	Enable
+8	2	Auto
+8	3	SmartAuto
 
 # -----------------------------------------------------------------
 # <startBit[must be byte-aligned]> <endBit[must be byte aligned]>
-#     <bit where to start storing checksum[must be 16bits-aligned]>
+#	<bit where to start storing checksum[must be 16bits-aligned]>
 checksums
 
 checksum 392 431 544

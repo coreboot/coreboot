@@ -4,120 +4,120 @@
 entries
 
 # -----------------------------------------------------------------
-0          120       r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       4        boot_option
-388          4       h       0        reboot_counter
+384	1	e	4	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       6        debug_level
+395	4	e	6	debug_level
 
 # coreboot config options: cpu
 
 # coreboot config options: southbridge
-408          1       e       1        nmi
-409          2       e       7        power_on_after_fail
+408	1	e	1	nmi
+409	2	e	7	power_on_after_fail
 
 # coreboot config options: northbridge
-411         3       e       11       gfx_uma_size
+411	3	e	11	gfx_uma_size
 
 # coreboot config options: bootloader
-416        512       s       0        boot_devices
+416	512	s	0	boot_devices
 
 # coreboot config options: mainboard specific options
-948          2       e       8        cpufan_cruise_control
-950          2       e       8        sysfan_cruise_control
-952          4       e       9        cpufan_speed
-#956          4       e       10       cpufan_temperature
-960          4       e       9        sysfan_speed
-#964          4       e       10       sysfan_temperature
+948	2	e	8	cpufan_cruise_control
+950	2	e	8	sysfan_cruise_control
+952	4	e	9	cpufan_speed
+#956	4	e	10	cpufan_temperature
+960	4	e	9	sysfan_speed
+#964	4	e	10	sysfan_temperature
 
-968          1       e       2        ethernet1
-969          1       e       2        ethernet2
-970          1       e       2        ethernet3
+968	1	e	2	ethernet1
+969	1	e	2	ethernet2
+970	1	e	2	ethernet3
 
 # coreboot config options: check sums
-984         16       h       0        check_sum
+984	16	h	0	check_sum
 
 # RAM initialization internal data
-1024         8       r       0        C0WL0REOST
-1032         8       r       0        C1WL0REOST
-1040         8       r       0        RCVENMT
-1048         4       r       0        C0DRT1
-1052         4       r       0        C1DRT1
+1024	8	r	0	C0WL0REOST
+1032	8	r	0	C1WL0REOST
+1040	8	r	0	RCVENMT
+1048	4	r	0	C0DRT1
+1052	4	r	0	C1DRT1
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-4     0     Fallback
-4     1     Normal
-6     0     Emergency
-6     1     Alert
-6     2     Critical
-6     3     Error
-6     4     Warning
-6     5     Notice
-6     6     Info
-6     7     Debug
-6     8     Spew
-7     0     Disable
-7     1     Enable
-7     2     Keep
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
 # Fan Cruise Control
-8     0     Disabled
-8     1     Speed
-#8     2     Thermal
+8	0	Disabled
+8	1	Speed
+#8	2	Thermal
 # Fan Speed (Rotations per Minute)
-9     0     5625
-9     1     5192
-9     2     4753
-9     3     4326
-9     4     3924
-9     5     3552
-9     6     3214
-9     7     2909
-9     8     2636
-9     9     2393
-9    10     2177
-9    11     1985
-9    12     1814
-9    13     1662
-9    14     1527
-9    15     1406
+9	0	5625
+9	1	5192
+9	2	4753
+9	3	4326
+9	4	3924
+9	5	3552
+9	6	3214
+9	7	2909
+9	8	2636
+9	9	2393
+9	10	2177
+9	11	1985
+9	12	1814
+9	13	1662
+9	14	1527
+9	15	1406
 #
 # Temperature (°C/°F)
-#10     0     30/86
-#10     1     33/91
-#10     2     36/96
-#10     3     39/102
-#10     4     42/107
-#10     5     45/113
-#10     6     48/118
-#10     7     51/123
-#10     8     54/129
-#10     9     57/134
-#10    10     60/140
-#10    11     63/145
-#10    12     66/150
-#10    13     69/156
-#10    14     72/161
-#10    15     75/167
-11    0     1M
-11    1     4M
-11    2     8M
-11    3     16M
-11    4     32M
-11    5     48M
-11    6     64M
+#10	0	30/86
+#10	1	33/91
+#10	2	36/96
+#10	3	39/102
+#10	4	42/107
+#10	5	45/113
+#10	6	48/118
+#10	7	51/123
+#10	8	54/129
+#10	9	57/134
+#10	10	60/140
+#10	11	63/145
+#10	12	66/150
+#10	13	69/156
+#10	14	72/161
+#10	15	75/167
+11	0	1M
+11	1	4M
+11	2	8M
+11	3	16M
+11	4	32M
+11	5	48M
+11	6	64M
 
 # -----------------------------------------------------------------
 checksums

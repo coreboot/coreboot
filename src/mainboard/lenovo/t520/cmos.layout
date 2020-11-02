@@ -4,98 +4,98 @@
 entries
 
 # -----------------------------------------------------------------
-0          120       r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       4        boot_option
-388          4       h       0        reboot_counter
+384	1	e	4	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       6        debug_level
+395	4	e	6	debug_level
 
-#400         8       r       0        reserved for century byte
+#400	8	r	0	reserved for century byte
 
 # coreboot config options: southbridge
-408          1       e       1        nmi
-409          2       e       7        power_on_after_fail
+408	1	e	1	nmi
+409	2	e	7	power_on_after_fail
 
 # coreboot config options: EC
-411         1       e       8        first_battery
-412         1       e       1        bluetooth
-413         1       e       1        wwan
-414         1       e       1        touchpad
-415         1       e       1        wlan
-416         1       e       1        trackpoint
-417         1       e       1        fn_ctrl_swap
-418         1       e       1        sticky_fn
-419         2       e       13       usb_always_on
-421         1       e       9        sata_mode
-422         2       e       10       backlight
+411	1	e	8	first_battery
+412	1	e	1	bluetooth
+413	1	e	1	wwan
+414	1	e	1	touchpad
+415	1	e	1	wlan
+416	1	e	1	trackpoint
+417	1	e	1	fn_ctrl_swap
+418	1	e	1	sticky_fn
+419	2	e	13	usb_always_on
+421	1	e	9	sata_mode
+422	2	e	10	backlight
 
 # coreboot config options: cpu
 
 # coreboot config options: northbridge
-432         3        e      11        gfx_uma_size
-435         2        e       12       hybrid_graphics_mode
-440         8        h       0        volume
+432	3	e	11	gfx_uma_size
+435	2	e	12	hybrid_graphics_mode
+440	8	h	0	volume
 
 # VBOOT
-448        128       r        0        vbnv
+448	128	r	0	vbnv
 
 # SandyBridge MRC Scrambler Seed values
-896         32        r       0        mrc_scrambler_seed
-928         32        r       0        mrc_scrambler_seed_s3
-960         16        r       0        mrc_scrambler_seed_chk
+896	32	r	0	mrc_scrambler_seed
+928	32	r	0	mrc_scrambler_seed_s3
+960	16	r	0	mrc_scrambler_seed_chk
 
 # coreboot config options: check sums
-984         16       h       0        check_sum
+984	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-4     0     Fallback
-4     1     Normal
-6     0     Emergency
-6     1     Alert
-6     2     Critical
-6     3     Error
-6     4     Warning
-6     5     Notice
-6     6     Info
-6     7     Debug
-6     8     Spew
-7     0     Disable
-7     1     Enable
-7     2     Keep
-8     0     Secondary
-8     1     Primary
-9     0     AHCI
-9     1     Compatible
-10    0     Both
-10    1     Keyboard only
-10    2     Thinklight only
-10    3     None
-11    0     32M
-11    1     64M
-11    2     96M
-11    3     128M
-11    4     160M
-11    5     192M
-11    6     224M
-12    0     Integrated Only
-12    1     Discrete Only
-12    2     Dual Graphics
-13    0     Disable
-13    1     AC and battery
-13    2     AC only
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
+8	0	Secondary
+8	1	Primary
+9	0	AHCI
+9	1	Compatible
+10	0	Both
+10	1	Keyboard only
+10	2	Thinklight only
+10	3	None
+11	0	32M
+11	1	64M
+11	2	96M
+11	3	128M
+11	4	160M
+11	5	192M
+11	6	224M
+12	0	Integrated Only
+12	1	Discrete Only
+12	2	Dual Graphics
+13	0	Disable
+13	1	AC and battery
+13	2	AC only
 
 # -----------------------------------------------------------------
 checksums

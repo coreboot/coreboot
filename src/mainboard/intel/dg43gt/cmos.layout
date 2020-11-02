@@ -4,67 +4,67 @@
 entries
 
 # -----------------------------------------------------------------
-0          120       r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       4        boot_option
-388          4       h       0        reboot_counter
+384	1	e	4	boot_option
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       6        debug_level
+395	4	e	6	debug_level
 
 # coreboot config options: southbridge
-408         1       e       10        sata_mode
-409          2       e       7        power_on_after_fail
-411          1       e       1        nmi
+408	1	e	10	sata_mode
+409	2	e	7	power_on_after_fail
+411	1	e	1	nmi
 
 # coreboot config options: cpu
 
 # coreboot config options: northbridge
-432         4        e      11        gfx_uma_size
+432	4	e	11	gfx_uma_size
 
 # coreboot config options: check sums
-984         16       h       0        check_sum
+984	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-4     0     Fallback
-4     1     Normal
-6     0     Emergency
-6     1     Alert
-6     2     Critical
-6     3     Error
-6     4     Warning
-6     5     Notice
-6     6     Info
-6     7     Debug
-6     8     Spew
-7     0     Disable
-7     1     Enable
-7     2     Keep
-10    0     AHCI
-10    1     Compatible
-11    1     4M
-11    2     8M
-11    3     16M
-11    4     32M
-11    5     48M
-11    6     64M
-11    7     128M
-11    8     256M
-11    9     96M
-11    10     160M
-11    11     224M
-11    12     352M
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
+10	0	AHCI
+10	1	Compatible
+11	1	4M
+11	2	8M
+11	3	16M
+11	4	32M
+11	5	48M
+11	6	64M
+11	7	128M
+11	8	256M
+11	9	96M
+11	10	160M
+11	11	224M
+11	12	352M
 
 # -----------------------------------------------------------------
 checksums

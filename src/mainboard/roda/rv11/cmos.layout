@@ -4,75 +4,75 @@
 entries
 
 # -----------------------------------------------------------------
-0          120       r       0        reserved_memory
+0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384          1       e       3        boot_option
-385          3       r       0        reserved
-388          4       h       0        reboot_counter
+384	1	e	3	boot_option
+385	3	r	0	reserved
+388	4	h	0	reboot_counter
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395          4       e       5        debug_level
+395	4	e	5	debug_level
 
 # coreboot config options: cpu
-400          1       e       2        hyper_threading
-401          3       e       9        gfx_uma_size
+400	1	e	2	hyper_threading
+401	3	e	9	gfx_uma_size
 
 # coreboot config options: southbridge
-408          1       e       1        nmi
-411          1       e       8        sata_mode
+408	1	e	1	nmi
+411	1	e	8	sata_mode
 
 # coreboot config options: bootloader
-416        424       s       0        boot_devices
-840          8       h       0        boot_default
-848          1       e       7        cmos_defaults_loaded
+416	424	s	0	boot_devices
+840	8	h	0	boot_default
+848	1	e	7	cmos_defaults_loaded
 
 # coreboot config options: mainboard specific options
 
 # SandyBridge MRC Scrambler Seed values
-896         32        r       0        mrc_scrambler_seed
-928         32        r       0        mrc_scrambler_seed_s3
-960         16        r       0        mrc_scrambler_seed_chk
+896	32	r	0	mrc_scrambler_seed
+928	32	r	0	mrc_scrambler_seed_s3
+960	16	r	0	mrc_scrambler_seed_chk
 
 # coreboot config options: check sums
-984         16       h       0        check_sum
+984	16	h	0	check_sum
 
 # -----------------------------------------------------------------
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-3     0     Fallback
-3     1     Normal
-5     0     Emergency
-5     1     Alert
-5     2     Critical
-5     3     Error
-5     4     Warning
-5     5     Notice
-5     6     Info
-5     7     Debug
-5     8     Spew
-6     0     Disable
-6     1     Enable
-6     2     Keep
-7     0     No
-7     1     Yes
-8     0     AHCI
-8     1     Compatible
-9     0     32M
-9     1     64M
-9     2     96M
-9     3     128M
-9     4     160M
-9     5     192M
-9     6     224M
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+3	0	Fallback
+3	1	Normal
+5	0	Emergency
+5	1	Alert
+5	2	Critical
+5	3	Error
+5	4	Warning
+5	5	Notice
+5	6	Info
+5	7	Debug
+5	8	Spew
+6	0	Disable
+6	1	Enable
+6	2	Keep
+7	0	No
+7	1	Yes
+8	0	AHCI
+8	1	Compatible
+9	0	32M
+9	1	64M
+9	2	96M
+9	3	128M
+9	4	160M
+9	5	192M
+9	6	224M
 
 # -----------------------------------------------------------------
 checksums

@@ -26,4 +26,15 @@ static inline enum cb_err get_option(void *dest, const char *name)
 	return CB_CMOS_OTABLE_DISABLED;
 }
 
+static inline enum cb_err set_int_option(const char *name, int value)
+{
+	return set_option(name, &value);
+}
+
+static inline int get_int_option(const char *name, const int fallback)
+{
+	int value = 0;
+	return get_option(&value, name) == CB_SUCCESS ? value : fallback;
+}
+
 #endif /* _OPTION_H_ */

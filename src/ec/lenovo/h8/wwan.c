@@ -46,10 +46,5 @@ bool h8_has_wwan(const struct device *dev)
  */
 bool h8_wwan_nv_enable(void)
 {
-	u8 val;
-
-	if (get_option(&val, "wwan") != CB_SUCCESS)
-		return true;
-
-	return val;
+	return get_int_option("wwan", true);
 }

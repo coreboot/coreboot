@@ -242,9 +242,8 @@ static void h8_enable(struct device *dev)
 
 	reg8 = conf->config1;
 	if (conf->has_keyboard_backlight) {
-		if (get_option(&val, "backlight") != CB_SUCCESS)
-			val = 0; /* Both backlights.  */
-		reg8 = (reg8 & 0xf3) | ((val & 0x3) << 2);
+		/* Default to both backlights */
+		reg8 = (reg8 & 0xf3) | ((get_int_option("backlight", 0) & 0x3) << 2);
 	}
 	ec_write(H8_CONFIG1, reg8);
 	ec_write(H8_CONFIG2, conf->config2);
@@ -253,17 +252,15 @@ static void h8_enable(struct device *dev)
 	beepmask0 = conf->beepmask0;
 	beepmask1 = conf->beepmask1;
 
-	if (conf->has_power_management_beeps
-	    && get_option(&val, "power_management_beeps") == CB_SUCCESS
-	    && val == 0) {
-		beepmask0 = 0x00;
-		beepmask1 = 0x00;
+	if (conf->has_power_management_beeps) {
+		if (get_int_option("power_management_beeps", 1) == 0) {
+			beepmask0 = 0x00;
+			beepmask1 = 0x00;
+		}
 	}
 
 	if (conf->has_power_management_beeps) {
-		if (get_option(&val, "low_battery_beep") != CB_SUCCESS)
-			val = 1;
-		if (val)
+		if (get_int_option("low_battery_beep", 1))
 			beepmask0 |= 2;
 		else
 			beepmask0 &= ~2;
@@ -295,19 +292,16 @@ static void h8_enable(struct device *dev)
 
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
 
-	if (get_option(&val, "usb_always_on") != CB_SUCCESS)
-		val = 0;
-	h8_usb_always_on_enable(val);
+	h8_usb_always_on_enable(get_int_option("usb_always_on", 0));
 
-	if (get_option(&val, "wlan") != CB_SUCCESS)
-		val = 1;
-	h8_wlan_enable(val);
+	h8_wlan_enable(get_int_option("wlan", 1));
 
 	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
 
-	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
-		ec_write(H8_VOLUME_CONTROL, val);
+	int volume = get_int_option("volume", -1);
+	if (volume >= 0 && !acpi_is_wakeup_s3())
+		ec_write(H8_VOLUME_CONTROL, volume);
 
 	val = (CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
 		h8_bluetooth_nv_enable();
@@ -316,30 +310,17 @@ static void h8_enable(struct device *dev)
 	val = h8_has_wwan(dev) && h8_wwan_nv_enable();
 	h8_wwan_enable(val);
 
-	if (conf->has_uwb) {
-		if (get_option(&val, "uwb") != CB_SUCCESS)
-			val = 1;
+	if (conf->has_uwb)
+		h8_uwb_enable(get_int_option("uwb", 1));
 
-		h8_uwb_enable(val);
-	}
+	h8_fn_ctrl_swap(get_int_option("fn_ctrl_swap", 0));
 
-	if (get_option(&val, "fn_ctrl_swap") != CB_SUCCESS)
-		val = 0;
-	h8_fn_ctrl_swap(val);
+	h8_sticky_fn(get_int_option("sticky_fn", 0));
 
-	if (get_option(&val, "sticky_fn") != CB_SUCCESS)
-		val = 0;
-	h8_sticky_fn(val);
+	if (CONFIG(H8_HAS_PRIMARY_FN_KEYS))
+		f1_to_f12_as_primary(get_int_option("f1_to_f12_as_primary", 1));
 
-	if (CONFIG(H8_HAS_PRIMARY_FN_KEYS)) {
-		if (get_option(&val, "f1_to_f12_as_primary") != CB_SUCCESS)
-			val = 1;
-		f1_to_f12_as_primary(val);
-	}
-
-	if (get_option(&val, "first_battery") != CB_SUCCESS)
-		val = PRIMARY_BATTERY;
-	h8_charge_priority(val);
+	h8_charge_priority(get_int_option("first_battery", PRIMARY_BATTERY));
 
 	h8_set_audio_mute(0);
 	h8_mb_init();

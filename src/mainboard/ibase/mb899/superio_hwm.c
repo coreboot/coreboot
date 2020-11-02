@@ -52,19 +52,13 @@ void hwm_setup(void)
 	int cpufan_speed = 0, sysfan_speed = 0;
 	int cpufan_temperature = 0, sysfan_temperature = 0;
 
-	cpufan_control = FAN_CRUISE_CONTROL_DISABLED;
-	get_option(&cpufan_control, "cpufan_cruise_control");
-	cpufan_speed = FAN_SPEED_5625;
-	get_option(&cpufan_speed, "cpufan_speed");
-	//cpufan_temperature = FAN_TEMPERATURE_30DEGC;
-	//get_option(&cpufan_temperature, "cpufan_temperature");
+	cpufan_control = get_int_option("cpufan_cruise_control", FAN_CRUISE_CONTROL_DISABLED);
+	cpufan_speed = get_int_option("cpufan_speed", FAN_SPEED_5625);
+	//cpufan_temperature = get_int_option("cpufan_temperature", FAN_TEMPERATURE_30DEGC);
 
-	sysfan_control = FAN_CRUISE_CONTROL_DISABLED;
-	get_option(&sysfan_control, "sysfan_cruise_control");
-	sysfan_speed = FAN_SPEED_5625;
-	get_option(&sysfan_speed, "sysfan_speed");
-	//sysfan_temperature = FAN_TEMPERATURE_30DEGC;
-	//get_option(&sysfan_temperature, "sysfan_temperature");
+	sysfan_control = get_int_option("sysfan_cruise_control", FAN_CRUISE_CONTROL_DISABLED);
+	sysfan_speed = get_int_option("sysfan_speed", FAN_SPEED_5625);
+	//sysfan_temperature = get_int_option("sysfan_temperature", FAN_TEMPERATURE_30DEGC);
 
 	// pnp_write_hwm5_index(HWM_BASE, 0x31, 0x20); // AVCC high limit
 	// pnp_write_hwm5_index(HWM_BASE, 0x34, 0x06); // VIN2 low limit

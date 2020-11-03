@@ -23,7 +23,6 @@ chip soc/intel/cannonlake
 	register "SataPortsDevSlp[0]" = "1"
 	register "SataPortsDevSlp[1]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
-	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "PchPmSlpS3MinAssert" = "3"  # 50ms
 	register "PchPmSlpS4MinAssert" = "4"  # 4s

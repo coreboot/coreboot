@@ -18,7 +18,6 @@ chip soc/intel/cannonlake
 	register "gen3_dec" = "0x00fc0901"
 
 	# FSP configuration
-	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "Sata_AHCI"

@@ -1068,7 +1068,7 @@ static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 	return totallen;
 }
 
-static int smbios_write_type19(unsigned long *current, int *handle)
+static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 {
 	struct smbios_type19 *t = (struct smbios_type19 *)*current;
 	int len = sizeof(struct smbios_type19);
@@ -1084,6 +1084,7 @@ static int smbios_write_type19(unsigned long *current, int *handle)
 	t->type = SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS;
 	t->length = len - 2;
 	t->handle = *handle;
+	t->memory_array_handle = type16;
 
 	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
 		if (meminfo->dimm[i].dimm_size > 0) {
@@ -1335,7 +1336,7 @@ unsigned long smbios_write_tables(unsigned long current)
 	const int type16 = handle;
 	update_max(len, max_struct_size, smbios_write_type16(&current, &handle));
 	update_max(len, max_struct_size, smbios_write_type17(&current, &handle, type16));
-	update_max(len, max_struct_size, smbios_write_type19(&current, &handle));
+	update_max(len, max_struct_size, smbios_write_type19(&current, &handle, type16));
 	update_max(len, max_struct_size, smbios_write_type32(&current, handle++));
 
 	update_max(len, max_struct_size, smbios_walk_device_tree(all_devices,

@@ -125,8 +125,8 @@ chip soc/intel/cannonlake
 		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 0,
-			.fall_time_ns = 0,
+			.rise_time_ns = 60,
+			.fall_time_ns = 60,
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,

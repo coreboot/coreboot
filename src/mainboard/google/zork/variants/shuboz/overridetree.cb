@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/amd/picasso
+
+	# Start : OPN Performance Configuration
+	# See devhub #56670 Chapter 5 for documentation
+	# For the below fields, 0 indicates use SOC default
+
+	# System config index
+	register "system_config" = "1"
+
+	# Set STAPM confiuration. All of these fields must be set >0 to take affect
+	register "slow_ppt_limit_mW" = "6000"
+	register "fast_ppt_limit_mW" = "9000"
+	register "slow_ppt_time_constant_s" = "5"
+	register "stapm_time_constant_s" = "2500"
+	register "sustained_power_limit_mW" = "4800"
+
+	# End : OPN Performance Configuration
+
+	# I2C2 for touchscreen and trackpad
+
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	# I2C3 for H1
+
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+
+	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
+	end # domain
+
+	device mmio 0xfedc4000 on # APU_I2C2_BASE
+	end # device
+
+end	# chip soc/amd/picasso

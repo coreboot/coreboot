@@ -71,6 +71,7 @@ config VARIANT_DIR
 	default "vilboz" if BOARD_GOOGLE_VILBOZ
 	default "woomax" if BOARD_GOOGLE_WOOMAX
 	default "dirinboz" if BOARD_GOOGLE_DIRINBOZ
+	default "shuboz" if BOARD_GOOGLE_SHUBOZ
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -82,6 +83,7 @@ config MAINBOARD_PART_NUMBER
 	default "Vilboz" if BOARD_GOOGLE_VILBOZ
 	default "Woomax" if BOARD_GOOGLE_WOOMAX
 	default "Dirinboz" if BOARD_GOOGLE_DIRINBOZ
+	default "Shuboz" if BOARD_GOOGLE_SHUBOZ
 
 config DEVICETREE
 	string

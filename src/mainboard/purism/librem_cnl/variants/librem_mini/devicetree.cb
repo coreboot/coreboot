@@ -8,7 +8,7 @@ chip soc/intel/cannonlake
 	# Power limit
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 25,
-		.tdp_pl2_override = 28,
+		.tdp_pl2_override = 51,
 	}"
 
 	# Enable Enhanced Intel SpeedStep

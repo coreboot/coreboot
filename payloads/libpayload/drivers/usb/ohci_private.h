@@ -36,7 +36,7 @@
 	// FIXME: fake
 	typedef enum { CMD} reg;
 
-	enum {
+	enum HcRhDescriptorAReg {
 		NumberDownstreamPorts = 1 << 0,
 		PowerSwitchingMode = 1 << 8,
 		NoPowerSwitching = 1 << 9,
@@ -44,19 +44,19 @@
 		OverCurrentProtectionMode = 1 << 11,
 		NoOverCurrentProtection = 1 << 12,
 		PowerOnToPowerGoodTime = 1 << 24
-	} HcRhDescriptorAReg;
+	};
 
-	enum {
+	enum HcRhDescriptorAMask {
 		NumberDownstreamPortsMask = MASK(0, 8),
 		PowerOnToPowerGoodTimeMask = MASK(24, 8)
-	} HcRhDescriptorAMask;
+	};
 
-	enum {
+	enum HcRhDescriptorBReg {
 		DeviceRemovable = 1 << 0,
 		PortPowerControlMask = 1 << 16
-	} HcRhDescriptorBReg;
+	};
 
-	enum {
+	enum HcRhPortStatusRead {
 		CurrentConnectStatus		= 1 << 0,
 		PortEnableStatus		= 1 << 1,
 		PortSuspendStatus		= 1 << 2,
@@ -69,8 +69,9 @@
 		PortSuspendStatusChange		= 1 << 18,
 		PortOverCurrentIndicatorChange	= 1 << 19,
 		PortResetStatusChange		= 1 << 20
-	} HcRhPortStatusRead;
-	enum {
+	};
+
+	enum HcRhPortStatusSet {
 		ClearPortEnable			= 1 << 0,
 		SetPortEnable			= 1 << 1,
 		SetPortSuspend			= 1 << 2,
@@ -78,29 +79,30 @@
 		SetPortReset			= 1 << 4,
 		SetPortPower			= 1 << 8,
 		ClearPortPower			= 1 << 9,
-	} HcRhPortStatusSet;
+	};
 
-	enum {
+	enum HcRhStatusReg {
 		LocalPowerStatus = 1 << 0,
 		OverCurrentIndicator = 1 << 1,
 		DeviceRemoteWakeupEnable = 1 << 15,
 		LocalPowerStatusChange = 1 << 16,
 		OverCurrentIndicatorChange = 1 << 17,
 		ClearRemoteWakeupEnable = 1 << 31
-	} HcRhStatusReg;
+	};
 
-	enum {
+	enum HcFmIntervalOffset {
 		FrameInterval = 1 << 0,
 		FSLargestDataPacket = 1 << 16,
 		FrameIntervalToggle = 1 << 31
-	} HcFmIntervalOffset;
-	enum {
+	};
+
+	enum HcFmIntervalMask {
 		FrameIntervalMask = MASK(0, 14),
 		FSLargestDataPacketMask = MASK(16, 15),
 		FrameIntervalToggleMask = MASK(31, 1)
-	} HcFmIntervalMask;
+	};
 
-	enum {
+	enum HcControlReg {
 		ControlBulkServiceRatio = 1 << 0,
 		PeriodicListEnable = 1 << 2,
 		IsochronousEnable = 1 << 3,
@@ -110,12 +112,12 @@
 		InterruptRouting = 1 << 8,
 		RemoteWakeupConnected = 1 << 9,
 		RemoteWakeupEnable = 1 << 10
-	} HcControlReg;
+	};
 
-	enum {
+	enum HcControlMask {
 		ControlBulkServiceRatioMask = MASK(0, 2),
 		HostControllerFunctionalStateMask = MASK(6, 2)
-	} HcControlMask;
+	};
 
 	enum {
 		USBReset = 0*HostControllerFunctionalState,
@@ -124,24 +126,24 @@
 		USBSuspend = 3*HostControllerFunctionalState
 	};
 
-	enum {
+	enum HcCommandStatusReg {
 		HostControllerReset = 1 << 0,
 		ControlListFilled = 1 << 1,
 		BulkListFilled = 1 << 2,
 		OwnershipChangeRequest = 1 << 3,
 		SchedulingOverrunCount = 1 << 16
-	} HcCommandStatusReg;
+	};
 
-	enum {
+	enum HcCommandStatusMask {
 		SchedulingOverrunCountMask = MASK(16, 2)
-	} HcCommandStatusMask;
+	};
 
-	enum {
+	enum HcFmRemainingReg {
 		FrameRemaining = 1 << 0,
 		FrameRemainingToggle = 1 << 31
-	} HcFmRemainingReg;
+	};
 
-	enum {
+	enum HcInterruptStatusReg {
 		SchedulingOverrung = 1 << 0,
 		WritebackDoneHead = 1 << 1,
 		StartofFrame = 1 << 2,
@@ -150,7 +152,7 @@
 		FrameNumberOverflow = 1 << 5,
 		RootHubStatusChange = 1 << 6,
 		OwnershipChange = 1 << 30
-	} HcInterruptStatusReg;
+	};
 
      typedef struct {
 	// Control and Status Partition

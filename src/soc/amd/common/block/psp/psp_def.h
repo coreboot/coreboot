@@ -18,9 +18,10 @@
 #define MBOX_BIOS_CMD_CLEAR_S3_STS		0x07
 #define MBOX_BIOS_CMD_S3_DATA_INFO		0x08
 #define MBOX_BIOS_CMD_NOP			0x09
+#define MBOX_BIOS_CMD_ABORT			0xfe
+/* x86 to PSP commands, v1 */
 #define MBOX_BIOS_CMD_SMU_FW			0x19
 #define MBOX_BIOS_CMD_SMU_FW2			0x1a
-#define MBOX_BIOS_CMD_ABORT			0xfe
 
 /* generic PSP interface status, v1 */
 #define PSPV1_STATUS_INITIALIZED	BIT(0)

@@ -100,9 +100,7 @@ chip soc/intel/cannonlake
 		device pci 15.1 off	end	# I2C #1
 		device pci 15.2 off	end	# I2C #2
 		device pci 15.3 off	end	# I2C #3
-		device pci 16.0 on		# Management Engine Interface 1
-			register "HeciEnabled" = "1"
-		end
+		device pci 16.0 on	end	# Management Engine Interface 1
 		device pci 16.1 off	end	# Management Engine Interface 2
 		device pci 16.2 off	end	# Management Engine IDE-R
 		device pci 16.3 off	end	# Management Engine KT Redirection

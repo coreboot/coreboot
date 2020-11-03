@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <device/pci_def.h>
+#include <device/device.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/smihandler.h>
 #include <soc/soc_chip.h>
@@ -17,11 +17,11 @@
  */
 void smihandler_soc_at_finalize(void)
 {
-	const struct soc_intel_cannonlake_config *config;
+	if (!CONFIG(HECI_DISABLE_USING_SMM))
+		return;
 
-	config = config_of_soc();
-
-	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_CSE);
+	if (!is_dev_enabled(dev))
 		heci_disable();
 }
 

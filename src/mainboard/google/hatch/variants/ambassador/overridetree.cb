@@ -1,7 +1,4 @@
 chip soc/intel/cannonlake
-	# Enable heci communication
-	register "HeciEnabled" = "1"
-
 	# Auto-switch between X4 NVMe and X2 NVMe.
 	register "TetonGlacierMode" = "1"
 
@@ -370,6 +367,7 @@ chip soc/intel/cannonlake
 				device i2c 4a on end
 			end
 		end # I2C #3, Realtek RTD2142.
+		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

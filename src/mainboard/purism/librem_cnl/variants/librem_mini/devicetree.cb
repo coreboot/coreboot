@@ -4,16 +4,6 @@ chip soc/intel/cannonlake
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"
 
-# ACPI (soc/intel/cannonlake/acpi.c)
-	# Disable s0ix
-	register "s0ix_enable" = "0"
-
-	# PM Timer Enabled
-	register "PmTimerDisabled" = "0"
-
-	# Disable DPTF
-	register "dptf_enable" = "0"
-
 # CPU (soc/intel/cannonlake/cpu.c)
 	# Power limit
 	register "power_limits_config" = "{
@@ -28,45 +18,13 @@ chip soc/intel/cannonlake
 	register "SaGv" = "SaGv_Enabled"
 
 # FSP Silicon (soc/intel/cannonlake/fsp_params.c)
-	# Serial I/O
-	register "SerialIoDevMode" = "{
-		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
-		[PchSerialIoIndexSPI0] = PchSerialIoDisabled,
-		[PchSerialIoIndexSPI1] = PchSerialIoDisabled,
-		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
-	}"
-
 	# SATA
 	register "SataMode" = "Sata_AHCI"
-	register "SataSalpSupport" = "0"
 	register "SataPortsEnable[0]" = "1" # 2.5"
 	register "SataPortsEnable[2]" = "1" # m.2
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[2]" = "0"
 
 	# Audio
-	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
-	register "PchHdaAudioLinkDmic0" = "0"
-	register "PchHdaAudioLinkDmic1" = "0"
-	register "PchHdaAudioLinkSsp0" = "0"
-	register "PchHdaAudioLinkSsp1" = "0"
-	register "PchHdaAudioLinkSsp2" = "0"
-	register "PchHdaAudioLinkSndw1" = "0"
-	register "PchHdaAudioLinkSndw2" = "0"
-	register "PchHdaAudioLinkSndw3" = "0"
-	register "PchHdaAudioLinkSndw4" = "0"
-
-	# USB
-	register "SsicPortEnable" = "0"
 
 	# USB2
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left upper
@@ -107,7 +65,6 @@ chip soc/intel/cannonlake
 
 	# PCI Express Root Port #10 x1, Clock 3 (LAN)
 	register "PcieRpEnable[9]" = "1"
-	register "PcieRpLtrEnable[9]" = "0"
 
 	# PCI Express Root port #13 x4, Clock 1 (NVMe)
 	register "PcieRpEnable[12]" = "1"
@@ -128,10 +85,6 @@ chip soc/intel/cannonlake
 
 	# Serial IRQ Mode
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
-# PMC (soc/intel/cannonlake/pmc.c)
-	# Disable deep Sx states
-	register "deep_sx_config" = "0"
 
 # PM Util (soc/intel/cannonlake/pmutil.c)
 	# GPE configuration

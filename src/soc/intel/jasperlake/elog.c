@@ -2,11 +2,13 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <stdint.h>
+#include <device/pci_ops.h>
 #include <elog.h>
 #include <intelblocks/pmclib.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <stdint.h>
+#include <types.h>
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {
@@ -20,6 +22,39 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 	}
 }
 
+static void pch_log_rp_wake_source(void)
+{
+	size_t i;
+	struct pme_map {
+		pci_devfn_t devfn;
+		unsigned int wake_source;
+	};
+
+	const struct pme_map pme_map[] = {
+		{ PCH_DEVFN_PCIE1, ELOG_WAKE_SOURCE_PME_PCIE1 },
+		{ PCH_DEVFN_PCIE2, ELOG_WAKE_SOURCE_PME_PCIE2 },
+		{ PCH_DEVFN_PCIE3, ELOG_WAKE_SOURCE_PME_PCIE3 },
+		{ PCH_DEVFN_PCIE4, ELOG_WAKE_SOURCE_PME_PCIE4 },
+		{ PCH_DEVFN_PCIE5, ELOG_WAKE_SOURCE_PME_PCIE5 },
+		{ PCH_DEVFN_PCIE6, ELOG_WAKE_SOURCE_PME_PCIE6 },
+		{ PCH_DEVFN_PCIE7, ELOG_WAKE_SOURCE_PME_PCIE7 },
+		{ PCH_DEVFN_PCIE8, ELOG_WAKE_SOURCE_PME_PCIE8 },
+		{ PCH_DEVFN_PCIE9, ELOG_WAKE_SOURCE_PME_PCIE9 },
+		{ PCH_DEVFN_PCIE10, ELOG_WAKE_SOURCE_PME_PCIE10 },
+		{ PCH_DEVFN_PCIE11, ELOG_WAKE_SOURCE_PME_PCIE11 },
+		{ PCH_DEVFN_PCIE12, ELOG_WAKE_SOURCE_PME_PCIE12 },
+	};
+
+	for (i = 0; i < MIN(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_map)); ++i) {
+		const struct device *dev = pcidev_path_on_root(pme_map[i].devfn);
+		if (!dev)
+			continue;
+
+		if (pci_dev_is_wake_source(dev))
+			elog_add_event_wake(pme_map[i].wake_source, 0);
+	}
+}
+
 static void pch_log_wake_source(struct chipset_power_state *ps)
 {
 	/* Power Button */
@@ -30,9 +65,9 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->pm1_sts & RTC_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_RTC, 0);
 
-	/* PCI Express (TODO: determine wake device) */
+	/* PCI Express */
 	if (ps->pm1_sts & PCIEXPWAK_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
+		pch_log_rp_wake_source();
 
 	/* PME (TODO: determine wake device) */
 	if (ps->gpe0_sts[GPE_STD] & PME_STS)

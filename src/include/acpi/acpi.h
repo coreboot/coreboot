@@ -73,7 +73,7 @@ enum acpi_tables {
 	BERT, DBG2, DMAR, DSDT, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
 	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT,
 	/* Additional proprietary tables used by coreboot */
-	VFCT, NHLT, SPMI
+	VFCT, NHLT, SPMI, CRAT
 };
 
 /* RSDP (Root System Description Pointer) */
@@ -306,6 +306,14 @@ typedef struct acpi_ivrs {
 	uint32_t reserved[2];
 	struct acpi_ivrs_ivhd ivhd;
 } __packed acpi_ivrs_t;
+
+/* CRAT (Component Resource Affinity Table Structure) */
+struct acpi_crat_header {
+	acpi_header_t header;
+	uint32_t total_entries;
+	uint16_t num_nodes;
+	uint8_t reserved[6];
+} __packed;
 
 /* IVHD Type 11h IOMMU Attributes */
 typedef struct ivhd11_iommu_attr {
@@ -962,6 +970,10 @@ void acpi_create_ipmi(const struct device *device,
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
+		      unsigned long current));
+
+void acpi_create_crat(struct acpi_crat_header *crat,
+		      unsigned long (*acpi_fill_crat)(struct acpi_crat_header *crat_struct,
 		      unsigned long current));
 
 void acpi_create_hpet(acpi_hpet_t *hpet);

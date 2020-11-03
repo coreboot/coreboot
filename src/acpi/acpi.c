@@ -878,6 +878,35 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
+void acpi_create_crat(struct acpi_crat_header *crat,
+		      unsigned long (*acpi_fill_crat)(struct acpi_crat_header *crat_struct,
+		      unsigned long current))
+{
+	acpi_header_t *header = &(crat->header);
+	unsigned long current = (unsigned long)crat + sizeof(struct acpi_crat_header);
+
+	memset((void *)crat, 0, sizeof(struct acpi_crat_header));
+
+	if (!header)
+		return;
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "CRAT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->length = sizeof(struct acpi_crat_header);
+	header->revision = get_acpi_table_revision(CRAT);
+
+	current = acpi_fill_crat(crat, current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)crat;
+	header->checksum = acpi_checksum((void *)crat, header->length);
+}
+
 unsigned long acpi_write_hpet(const struct device *device, unsigned long current,
 	acpi_rsdp_t *rsdp)
 {
@@ -1633,6 +1662,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case NHLT:
 		return 5;
 	case BERT:
+		return 1;
+	case CRAT:
 		return 1;
 	default:
 		return -1;

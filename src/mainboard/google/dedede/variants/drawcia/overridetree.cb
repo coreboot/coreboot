@@ -115,7 +115,7 @@ chip soc/intel/jasperlake
 						.granularity = 200,
 					},
 					.pl2 = {
-						.min_power = 6000,
+						.min_power = 20000,
 						.max_power = 20000,
 						.time_window_min = 1 * MSECS_PER_SEC,
 						.time_window_max = 1 * MSECS_PER_SEC,

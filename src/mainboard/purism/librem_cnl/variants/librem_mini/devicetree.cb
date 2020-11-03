@@ -18,30 +18,6 @@ chip soc/intel/cannonlake
 	register "SaGv" = "SaGv_Enabled"
 
 # FSP Silicon (soc/intel/cannonlake/fsp_params.c)
-	# SATA
-	register "SataMode" = "Sata_AHCI"
-	register "SataPortsEnable[0]" = "1" # 2.5"
-	register "SataPortsEnable[2]" = "1" # m.2
-
-	# Audio
-	register "PchHdaAudioLinkHda" = "1"
-
-	# USB2
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left upper
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left lower
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A rear upper
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right lower
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right upper
-	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC3)"	# Type-C rear
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# m.2-2230/Bluetooth
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC2)"		# Type-A rear lower
-
-	# USB3
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A front left upper
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A front left lower
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-C rear
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear lower
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear upper
 
 	# All SRCCLKREQ pins mapped directly
 	register "PcieClkSrcClkReq[0]" = "0"
@@ -59,20 +35,8 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcUsage[4]" = "0x80"
 	register "PcieClkSrcUsage[5]" = "0x80"
 
-	# PCI Express Root Port #8 x1, Clock 2 (WLAN)
-	register "PcieRpEnable[7]" = "1"
-	register "PcieRpLtrEnable[7]" = "1"
-
-	# PCI Express Root Port #10 x1, Clock 3 (LAN)
-	register "PcieRpEnable[9]" = "1"
-
-	# PCI Express Root port #13 x4, Clock 1 (NVMe)
-	register "PcieRpEnable[12]" = "1"
-	register "PcieRpLtrEnable[12]" = "1"
-
 	# Misc
 	register "AcousticNoiseMitigation" = "1"
-	register "satapwroptimize" = "1"
 
 	# Power
 	register "PchPmSlpS3MinAssert" = "3"	# 50ms
@@ -198,6 +162,19 @@ chip soc/intel/cannonlake
 					end
 				end
 			end
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left upper
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left lower
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A rear upper
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right lower
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right upper
+			register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC3)"	# Type-C rear
+			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# m.2-2230/Bluetooth
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC2)"		# Type-A rear lower
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A front left upper
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A front left lower
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-C rear
+			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear lower
+			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear upper
 		end
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 15.0 off end # I2C #0
@@ -210,7 +187,12 @@ chip soc/intel/cannonlake
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on  end # SATA
+		device pci 17.0 on	# SATA
+			register "SataMode" = "Sata_AHCI"
+			register "SataPortsEnable[0]" = "1" # 2.5"
+			register "SataPortsEnable[2]" = "1" # m.2
+			register "satapwroptimize" = "1"
+		end
 		device pci 19.0 off end # I2C #4
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 off end # UART #2
@@ -224,15 +206,20 @@ chip soc/intel/cannonlake
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 on	# PCI Express Port 8  (WLAN)
 			register "PcieRpSlotImplemented[7]" = "1"
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "1"
 		end
 		device pci 1d.0 off end # PCI Express Port 9
 		device pci 1d.1 on	# PCI Express Port 10 (LAN)
 			register "PcieRpSlotImplemented[9]" = "1"
+			register "PcieRpEnable[9]" = "1"
 		end
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on	# PCI Express Port 13 (NVMe)
 			register "PcieRpSlotImplemented[12]" = "1"
+			register "PcieRpEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "1"
 		end
 		device pci 1d.5 off end # PCI Express Port 14
 		device pci 1d.6 off end # PCI Express Port 15
@@ -244,7 +231,9 @@ chip soc/intel/cannonlake
 		device pci 1f.0 on  end # LPC Bridge
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 off end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.3 on	# Intel HDA
+			register "PchHdaAudioLinkHda" = "1"
+		end
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE

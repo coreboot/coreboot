@@ -155,6 +155,10 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	struct resource *resource;
 	int index = *res_count;
 
+	/* Only add dram resources once. */
+	if (dev->bus->secondary != 0)
+		return;
+
 	fsp_find_reserved_memory(&fsp_mem);
 
 	/* Read in the MAP registers and report their values. */

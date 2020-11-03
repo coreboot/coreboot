@@ -222,7 +222,7 @@ static void pch_enable_bars(void)
 
 	pci_write_config32(PCH_LPC_DEV, PMBASE, DEFAULT_PMBASE | 1);
 
-	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, 0x80);
+	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, ACPI_EN);
 
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 

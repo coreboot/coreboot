@@ -35,9 +35,6 @@
  */
 static void i82801gx_enable_ioapic(struct device *dev)
 {
-	/* Enable ACPI I/O range decode */
-	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
-
 	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
 	/*

@@ -39,9 +39,6 @@ static void pch_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
 
-	/* Enable ACPI I/O range decode */
-	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
-
 	set_ioapic_id(VIO_APIC_VADDR, 0x01);
 	/* affirm full set of redirection table entries ("write once") */
 	reg32 = io_apic_read(VIO_APIC_VADDR, 0x01);

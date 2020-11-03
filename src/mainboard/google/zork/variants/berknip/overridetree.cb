@@ -6,7 +6,7 @@ chip soc/amd/picasso
 	# For the below fields, 0 indicates use SOC default
 
 	# System config index
-	register "system_config" = "3"
+	register "system_config" = "2"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
 	register "slow_ppt_limit_mW" = "20000"
@@ -14,6 +14,7 @@ chip soc/amd/picasso
 	register "slow_ppt_time_constant_s" = "5"
 	register "stapm_time_constant_s" = "200"
 	register "sustained_power_limit_mW" = "12000"
+	register "thermctl_limit_degreeC" = "90"
 
 	register "telemetry_vddcr_vdd_slope_mA" = "65599"
 	register "telemetry_vddcr_vdd_offset" = "0"

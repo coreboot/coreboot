@@ -5,8 +5,6 @@
 /* Pad configuration was generated automatically using intelp2m utility */
 static const struct pad_config gpio_table[] = {
 
-	/* ------- GPIO Community 0 ------- */
-
 	/* ------- GPIO Group GPP_A ------- */
 
 	/* GPP_A0 - RCIN# */
@@ -236,8 +234,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_G7 - GPIO */
 	/* DW0: 0x44000300, DW1: 0x00001000 */
 	PAD_NC(GPP_G7, DN_20K),
-
-	/* ------- GPIO Community 1 ------- */
 
 	/* ------- GPIO Group GPP_D ------- */
 
@@ -533,8 +529,6 @@ static const struct pad_config gpio_table[] = {
 	/* DW0: 0x44000200, DW1: 0x00000000 */
 	PAD_CFG_GPO(GPP_H23, 0, DEEP),
 
-	/* ------- GPIO Community 2 ------- */
-
 	/* ------- GPIO Group GPD ------- */
 
 	/* GPD0 - BATLOW# */
@@ -584,8 +578,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPD11 - LANPHYPC */
 	/* DW0: 0x44000600, DW1: 0x00000000 */
 	PAD_CFG_NF(GPD11, NONE, DEEP, NF1),
-
-	/* ------- GPIO Community 4 ------- */
 
 	/* ------- GPIO Group GPP_C ------- */
 

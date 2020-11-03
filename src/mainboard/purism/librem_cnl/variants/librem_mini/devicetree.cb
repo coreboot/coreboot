@@ -4,9 +4,6 @@ chip soc/intel/cannonlake
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"
 
-	# Send an extra VR mailbox command for the PS4 exit issue
-	register "SendVrMbxCmd" = "2"
-
 # ACPI (soc/intel/cannonlake/acpi.c)
 	# Disable s0ix
 	register "s0ix_enable" = "0"

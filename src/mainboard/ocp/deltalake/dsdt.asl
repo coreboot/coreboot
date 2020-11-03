@@ -24,6 +24,6 @@ DefinitionBlock(
 	// LPC related entries
 	Scope (\_SB.PC00)
 	{
-		#include <soc/intel/common/block/acpi/acpi/lpc.asl>
+		#include <soc/intel/xeon_sp/acpi/pch.asl>
 	}
 }

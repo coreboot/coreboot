@@ -59,6 +59,10 @@ config INTEL_GMA_SWSMISCI
 config INTEL_GMA_LIBGFXINIT_EDID
 	bool
 
+config VBT_DATA_SIZE_KB
+	int
+	default 8
+
 config GFX_GMA_ANALOG_I2C_HDMI_B
 	bool
 

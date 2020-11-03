@@ -342,7 +342,7 @@ void acpigen_write_scope(const char *name)
 
 void acpigen_get_package_op_element(uint8_t package_op, unsigned int element, uint8_t dest_op)
 {
-	/* <dest_op> = DeRefOf (<package_op>[<element]) */
+	/* <dest_op> = DeRefOf (<package_op>[<element>]) */
 	acpigen_write_store();
 	acpigen_emit_byte(DEREF_OP);
 	acpigen_emit_byte(INDEX_OP);
@@ -350,6 +350,52 @@ void acpigen_get_package_op_element(uint8_t package_op, unsigned int element, ui
 	acpigen_write_integer(element);
 	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
 	acpigen_emit_byte(dest_op);
+}
+
+void acpigen_set_package_op_element_int(uint8_t package_op, unsigned int element, uint64_t src)
+{
+	/* DeRefOf (<package>[<element>]) = <src> */
+	acpigen_write_store();
+	acpigen_write_integer(src);
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_byte(package_op);
+	acpigen_write_integer(element);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+}
+
+void acpigen_get_package_element(const char *package, unsigned int element, uint8_t dest_op)
+{
+	/* <dest_op> = <package>[<element>] */
+	acpigen_write_store();
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring(package);
+	acpigen_write_integer(element);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+	acpigen_emit_byte(dest_op);
+}
+
+void acpigen_set_package_element_int(const char *package, unsigned int element, uint64_t src)
+{
+	/* <package>[<element>] = <src> */
+	acpigen_write_store();
+	acpigen_write_integer(src);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring(package);
+	acpigen_write_integer(element);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+}
+
+void acpigen_set_package_element_namestr(const char *package, unsigned int element,
+					 const char *src)
+{
+	/* <package>[<element>] = <src> */
+	acpigen_write_store();
+	acpigen_emit_namestring(src);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring(package);
+	acpigen_write_integer(element);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
 }
 
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
@@ -1320,6 +1366,14 @@ void acpigen_write_debug_op(uint8_t op)
 	acpigen_emit_ext_op(DEBUG_OP);
 }
 
+/* Store (str, DEBUG) */
+void acpigen_write_debug_namestr(const char *str)
+{
+	acpigen_write_store();
+	acpigen_emit_namestring(str);
+	acpigen_emit_ext_op(DEBUG_OP);
+}
+
 void acpigen_write_if(void)
 {
 	acpigen_emit_byte(IF_OP);
@@ -1453,6 +1507,12 @@ void acpigen_write_return_integer(uint64_t arg)
 {
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_integer(arg);
+}
+
+void acpigen_write_return_namestr(const char *arg)
+{
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring(arg);
 }
 
 void acpigen_write_return_string(const char *arg)
@@ -2097,4 +2157,36 @@ void acpigen_write_xpss_object(const struct acpi_xpss_sw_pstate *pstate_values, 
 	}
 
 	acpigen_pop_len();
+}
+
+/* Delay up to wait_ms until provided namestr matches expected value. */
+void acpigen_write_delay_until_namestr_int(uint32_t wait_ms, const char *name, uint64_t value)
+{
+	uint32_t wait_ms_segment = 1;
+	uint32_t segments = wait_ms;
+
+	/* Sleep in 16ms segments if delay is more than 32ms. */
+	if (wait_ms > 32) {
+		wait_ms_segment = 16;
+		segments = wait_ms / 16;
+	}
+
+	acpigen_write_store_int_to_op(segments, LOCAL7_OP);
+	acpigen_emit_byte(WHILE_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL7_OP);
+	acpigen_emit_byte(ZERO_OP);
+
+	/* If name is not provided then just delay in a loop. */
+	if (name) {
+		acpigen_write_if_lequal_namestr_int(name, value);
+		acpigen_emit_byte(BREAK_OP);
+		acpigen_pop_len(); /* If */
+	}
+
+	acpigen_write_sleep(wait_ms_segment);
+	acpigen_emit_byte(DECREMENT_OP);
+	acpigen_emit_byte(LOCAL7_OP);
+	acpigen_pop_len(); /* While */
 }

@@ -286,6 +286,7 @@ struct cppc_config {
 };
 
 void acpigen_write_return_integer(uint64_t arg);
+void acpigen_write_return_namestr(const char *arg);
 void acpigen_write_return_string(const char *arg);
 void acpigen_write_len_f(void);
 void acpigen_pop_len(void);
@@ -374,6 +375,7 @@ void acpigen_write_xor(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_not(uint8_t arg, uint8_t res);
 void acpigen_write_debug_string(const char *str);
+void acpigen_write_debug_namestr(const char *str);
 void acpigen_write_debug_integer(uint64_t val);
 void acpigen_write_debug_op(uint8_t op);
 void acpigen_write_if(void);
@@ -466,13 +468,32 @@ int get_cst_entries(acpi_cstate_t **);
 
 /*
  * Get element from package into specified destination op:
- *   <dest_op> = DeRefOf (<package_op>[<element])
+ *   <dest_op> = DeRefOf (<package_op>[<element>])
  *
  * Example:
  *  acpigen_get_package_op_element(ARG0_OP, 0, LOCAL0_OP)
  *  Local0 = DeRefOf (Arg0[0])
  */
 void acpigen_get_package_op_element(uint8_t package_op, unsigned int element, uint8_t dest_op);
+
+/* Set element of package op to specified op:  DeRefOf (<package>[<element>]) = <src> */
+void acpigen_set_package_op_element_int(uint8_t package_op, unsigned int element, uint64_t src);
+
+/* Get element from package to specified op:  <dest_op> = <package>[<element>] */
+void acpigen_get_package_element(const char *package, unsigned int element, uint8_t dest_op);
+
+/* Set element of package to specified op:  <package>[<element>] = <src> */
+void acpigen_set_package_element_int(const char *package, unsigned int element, uint64_t src);
+
+/* Set element of package to specified namestr:  <package>[<element>] = <src> */
+void acpigen_set_package_element_namestr(const char *package, unsigned int element,
+					 const char *src);
+
+/*
+ * Delay up to wait_ms milliseconds until the provided name matches the expected value.
+ * If wait_ms is >= 32ms then it will wait in 16ms chunks.  This function uses LOCAL7_OP.
+ */
+void acpigen_write_delay_until_namestr_int(uint32_t wait_ms, const char *name, uint64_t value);
 
 /*
  * Soc-implemented functions for generating ACPI AML code for GPIO handling. All

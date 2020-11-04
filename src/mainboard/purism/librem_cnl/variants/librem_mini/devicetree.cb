@@ -146,16 +146,16 @@ chip soc/intel/cannonlake
 					end
 				end
 			end
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left upper
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front left lower
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-A front left upper
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-A front left lower
 			register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A rear upper
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right lower
-			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A front right upper
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC1)"		# Type-A front right lower
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC1)"		# Type-A front right upper
 			register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC3)"	# Type-C rear
 			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# m.2-2230/Bluetooth
 			register "usb2_ports[9]" = "USB2_PORT_MID(OC2)"		# Type-A rear lower
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A front left upper
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A front left lower
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A front left upper
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A front left lower
 			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-C rear
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear lower
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear upper

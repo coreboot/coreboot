@@ -1,1 +1,3 @@
 DRAM Part Name                 ID to assign
+MT53E512M64D4NW-046 WT:E       0 (0000)
+MT53E1G64D8NW-046 WT:E         1 (0001)

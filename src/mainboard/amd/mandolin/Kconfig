@@ -52,10 +52,6 @@ config DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config MAX_CPUS
-	int
-	default 8
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

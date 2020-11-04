@@ -193,6 +193,10 @@ config VERSTAGE_ADDR
 	hex
 	default 0x4000000
 
+config MAX_CPUS
+	int
+	default 8
+
 config VGA_BIOS_ID
 	string
 	default "1002,15d8,c1"

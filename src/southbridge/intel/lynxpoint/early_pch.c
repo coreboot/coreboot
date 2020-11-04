@@ -113,6 +113,17 @@ int early_pch_init(void)
 
 	RCBA32_OR(FD, PCH_DISABLE_ALWAYS);
 
+	RCBA32(0x2088) = 0x00109000;
+
+	RCBA32_OR(0x20ac, 1 << 30);
+
+	if (!pch_is_lp()) {
+		RCBA32_AND_OR(0x2340, ~(0xff <<  0), 0x1b <<  0);
+		RCBA32_AND_OR(0x2340, ~(0xff << 16), 0x3a << 16);
+
+		RCBA32(0x2324) = 0x00854c74;
+	}
+
 	wake_from_s3 = southbridge_detect_s3_resume();
 
 	elog_boot_notify(wake_from_s3);

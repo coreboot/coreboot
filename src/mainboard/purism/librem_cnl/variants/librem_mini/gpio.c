@@ -99,14 +99,14 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B5 - NC */
 	PAD_NC(GPP_B5, NONE),
 
-	/* GPP_B6 - NC */
-	PAD_NC(GPP_B6, NONE),
+	/* GPP_B6 - SRCCLKREQ1# / SSD_CLK_REQ# */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
 
 	/* GPP_B7 - NC */
 	PAD_NC(GPP_B7, NONE),
 
-	/* GPP_B8 - NC */
-	PAD_NC(GPP_B8, NONE),
+	/* GPP_B8 - SRCCLKREQ3# / LAN2_CLK_REQ# */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
 
 	/* GPP_B9 - NC */
 	PAD_NC(GPP_B9, NONE),
@@ -123,8 +123,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B13 - PLTRST# */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 
-	/* GPP_B14 - GPIO */
-	PAD_CFG_GPO(GPP_B14, 1, PLTRST),
+	/* GPP_B14 - SPKR */
+	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 
 	/* GPP_B15 - NC */
 	PAD_NC(GPP_B15, NONE),
@@ -507,7 +507,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C21 - NC */
 	PAD_NC(GPP_C21, NONE),
 
-	/* GPP_C22 - GPIO */
+	/* GPP_C22 - USB3_P1_PWREN */
 	PAD_CFG_GPO(GPP_C22, 1, PLTRST),
 
 	/* GPP_C23 - NC */
@@ -527,8 +527,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E3 - NC */
 	PAD_NC(GPP_E3, UP_20K),
 
-	/* GPP_E4 - GPIO */
-	PAD_CFG_GPO(GPP_E4, 1, PLTRST),
+	/* GPP_E4 - SATA_DEVSLP0 */
+	PAD_CFG_NF(GPP_E4, NONE, PLTRST, NF1),
 
 	/* GPP_E5 - NC */
 	PAD_NC(GPP_E5, UP_20K),
@@ -542,11 +542,11 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E8 - SATALED# */
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),
 
-	/* GPP_E9 - RESERVED */
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF5),
+	/* GPP_E9 - USB2_OC0# */
+	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 
-	/* GPP_E10 - RESERVED */
-	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF5),
+	/* GPP_E10 - USB2_OC1# */
+	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
 
 	/* GPP_E11 - USB2_OC2# */
 	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),

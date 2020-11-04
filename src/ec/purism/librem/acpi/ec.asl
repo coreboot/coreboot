@@ -176,7 +176,7 @@ Device (EC)
 		Notify (\_SB.SLPB, 0x80)
 	}
 
-	/* KEY_F13 (Touchpad Enable/Disable)
+	/* KEY_F13 (Touchpad Enable/Disable) */
 	Method (_Q34)
 	{
 		TPSN (0x87)

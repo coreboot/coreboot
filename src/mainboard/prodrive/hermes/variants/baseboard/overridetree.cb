@@ -185,30 +185,21 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT3" "SlotDataBusWidth4X"
 			register "PcieRpSlotImplemented[0]" = "1"
 		end
-		device pci 1c.4 on	# PCIe root port 5 (PHY 3)
-			register "PcieRpSlotImplemented[4]" = "1"
-		end
-		device pci 1c.5 on	# PCIe root port 6 (PHY 4)
-			register "PcieRpSlotImplemented[5]" = "1"
-		end
-		device pci 1c.6 on	# PCIe root port 7 (PHY 2)
-			register "PcieRpSlotImplemented[6]" = "1"
-		end
-		device pci 1c.7 on	# PCIe root port 8 (PHY 1)
-			register "PcieRpSlotImplemented[7]" = "1"
-		end
+		device pci 1c.4 on end	# PCIe root port 5 (PHY 3)
+		device pci 1c.5 on end	# PCIe root port 6 (PHY 4)
+		device pci 1c.6 on end	# PCIe root port 7 (PHY 2)
+		device pci 1c.7 on end	# PCIe root port 8 (PHY 1)
 
 		device pci 1d.0 on	# PCIe root port 9 (M2 M)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "M2 M" "SlotDataBusWidth4X"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.5 on	# PCIe root port 14 (PHY 0)
-			register "PcieRpSlotImplemented[13]" = "1"
+		device pci 1d.5 on end	# PCIe root port 14 (PHY 0)
+		device pci 1d.6 on end	# PCIe root port 15 (BMC)
+		device pci 1d.7 on	# PCIe root port 16 (M.2 E/CNVi)
+			# Disabled when CNVi is present
+			register "PcieRpSlotImplemented[15]" = "1"
 		end
-		device pci 1d.6 on	# PCIe root port 15 (BMC)
-			register "PcieRpSlotImplemented[14]" = "1"
-		end
-
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 on  end # UART #1
 		device pci 1e.2 off end # GSPI #0

@@ -44,7 +44,6 @@
 
 #include <stdbool.h>
 #include <libpayload-config.h>
-#include <compiler.h>
 #include <cbgfx.h>
 #include <ctype.h>
 #include <die.h>

@@ -49,7 +49,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <compiler.h>
 
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and

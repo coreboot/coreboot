@@ -55,7 +55,8 @@ subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma
 subdirs-$(CONFIG_LP_LZ4) += liblz4
 
-INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -include include/kconfig.h
+INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
+INCLUDES += -include include/kconfig.h -include include/compiler.h
 
 CFLAGS +=  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer

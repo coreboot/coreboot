@@ -152,7 +152,8 @@ fi
 trygccoption -fno-stack-protector
 [ $? -eq 0 ] && _CFLAGS="$_CFLAGS -fno-stack-protector"
 
-_CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h -I`$DEFAULT_CC $_ARCHEXTRA -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
+_CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h -include $BASE/../include/compiler.h"
+_CFLAGS="$_CFLAGS -I`$DEFAULT_CC $_ARCHEXTRA -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
 _LDFLAGS="-L$BASE/../lib -L$_LIBDIR $_LDSCRIPT -static"
 

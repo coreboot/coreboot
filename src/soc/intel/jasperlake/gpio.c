@@ -34,10 +34,10 @@ static const struct reset_mapping rst_map_com0[] = {
 static const struct pad_group jsl_community0_groups[] = {
 
 	INTEL_GPP_BASE(GPP_F0, GPP_F0, GPP_F19, 0),	/* GPP_F */
-	INTEL_GPP(GPP_F0, GPIO_RSVD_0, GPIO_RSVD_8),
+	INTEL_GPP(GPP_F0, GPIO_SPI0_IO_2, GPIO_SPI0_CLK_LOOPBK),
 	INTEL_GPP_BASE(GPP_F0, GPP_B0, GPP_B23, 32),	/* GPP_B */
-	INTEL_GPP(GPP_F0, GPIO_RSVD_9, GPIO_RSVD_10),
-	INTEL_GPP_BASE(GPP_F0, GPP_A0, GPIO_RSVD_11, 64),	/* GPP_A */
+	INTEL_GPP(GPP_F0, GPIO_GSPI0_CLK_LOOPBK, GPIO_GSPI1_CLK_LOOPBK),
+	INTEL_GPP_BASE(GPP_F0, GPP_A0, GPIO_ESPI_CLK_LOOPBK, 64),	/* GPP_A */
 	INTEL_GPP_BASE(GPP_F0, GPP_S0, GPP_S7, 96),	/* GPP_S */
 	INTEL_GPP_BASE(GPP_F0, GPP_R0, GPP_R7, 128),	/* GPP_R */
 };
@@ -45,7 +45,7 @@ static const struct pad_group jsl_community0_groups[] = {
 static const struct pad_group jsl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_H0, GPP_H0, GPP_H23, 160),		/* GPP_H */
 	INTEL_GPP_BASE(GPP_H0, GPP_D0, GPP_D23, 192),	/* GPP_D */
-	INTEL_GPP(GPP_H0, GPIO_RSVD_12, GPIO_RSVD_13),
+	INTEL_GPP(GPP_H0, GPIO_GSPI2_CLK_LOOPBK, GPIO_SPI1_CLK_LOOPBK),
 	INTEL_GPP_BASE(GPP_H0, VGPIO_0, VGPIO_39, 224),		/* VGPIO */
 	INTEL_GPP_BASE(GPP_H0, GPP_C0, GPP_C23, 256),		/* GPP_C */
 };
@@ -53,13 +53,12 @@ static const struct pad_group jsl_community1_groups[] = {
 /* This community is not visible to the OS */
 static const struct pad_group jsl_community2_groups[] = {
 	INTEL_GPP(GPD0, GPD0, GPD10),				/* GPD */
-	INTEL_GPP(GPD0, GPIO_RSVD_14, GPIO_RSVD_17),
+	INTEL_GPP(GPD0, GPIO_INPUT3VSEL, GPIO_DRAM_RESETB),
 };
 
 static const struct pad_group jsl_community4_groups[] = {
-	INTEL_GPP(GPIO_RSVD_18, GPIO_RSVD_18, GPIO_RSVD_23),
-	INTEL_GPP_BASE(GPIO_RSVD_18, GPP_E0, GPP_E23, 288),		/* GPP_E */
-	INTEL_GPP(GPIO_RSVD_18, GPIO_RSVD_24, GPIO_RSVD_36),
+	INTEL_GPP(GPIO_L_BKLTEN, GPIO_L_BKLTEN, GPIO_MLK_RSTB),
+	INTEL_GPP_BASE(GPIO_L_BKLTEN, GPP_E0, GPP_E23, 288),		/* GPP_E */
 };
 
 static const struct pad_group jsl_community5_groups[] = {
@@ -70,8 +69,8 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 	/* GPP F, B, A, S, R */
 	[COMM_0] = {
 		.port = PID_GPIOCOM0,
-		.first_pad = GPP_F0,
-		.last_pad = GPP_R7,
+		.first_pad = GPIO_COM0_START,
+		.last_pad = GPIO_COM0_END,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -90,8 +89,8 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 	/* GPP H, D, VGPIO, C */
 	[COMM_1] = {
 		.port = PID_GPIOCOM1,
-		.first_pad = GPP_H0,
-		.last_pad = GPP_C23,
+		.first_pad = GPIO_COM1_START,
+		.last_pad = GPIO_COM1_END,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -110,8 +109,8 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 	/* GPD */
 	[COMM_2] = {
 		.port = PID_GPIOCOM2,
-		.first_pad = GPD0,
-		.last_pad = GPIO_RSVD_17,
+		.first_pad = GPIO_COM2_START,
+		.last_pad = GPIO_COM2_END,
 		.num_gpi_regs = NUM_GPIO_COM2_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -130,8 +129,8 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 	/* GPP E */
 	[COMM_4] = {
 		.port = PID_GPIOCOM4,
-		.first_pad = GPIO_RSVD_18,
-		.last_pad = GPIO_RSVD_36,
+		.first_pad = GPIO_COM4_START,
+		.last_pad = GPIO_COM4_END,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -150,8 +149,8 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 	/* GPP G */
 	[COMM_5] = {
 		.port = PID_GPIOCOM5,
-		.first_pad = GPP_G0,
-		.last_pad = GPP_G7,
+		.first_pad = GPIO_COM5_START,
+		.last_pad = GPIO_COM5_END,
 		.num_gpi_regs = NUM_GPIO_COM5_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,

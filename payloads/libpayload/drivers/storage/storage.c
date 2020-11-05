@@ -28,9 +28,7 @@
 
 #include <libpayload.h>
 #include <pci/pci.h>
-#if CONFIG(LP_STORAGE_AHCI)
-# include <storage/ahci.h>
-#endif
+#include <storage/ahci.h>
 #include <storage/storage.h>
 
 static storage_dev_t **devices = NULL;

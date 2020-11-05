@@ -187,6 +187,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	size_t gev_items;
 	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
 			ENV_SEPARATE_VERSTAGE);
+	if (!gpio_list_ptr || !size)
+		return;
 
 	/*
 	 * Disable blocking wake/interrupt status generation while updating

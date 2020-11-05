@@ -7,6 +7,8 @@
 #include <drivers/spi/tpm/tpm.h>
 #include <ec/ec.h>
 #include <fw_config.h>
+#include <gpio.h>
+#include <intelblocks/gpio.h>
 #include <security/tpm/tss.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
@@ -136,6 +138,25 @@ static void mainboard_chip_init(void *chip_info)
 	override_pads = variant_override_gpio_table(&override_num);
 
 	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
+
+	/*
+	 * Check SATAXPCIE1 (GPP_A12) RX status to determine if SSD is NVMe or SATA and set
+	 * the IOSSTATE RX field to drive 0 or 1 back to the internal controller to ensure
+	 * the attached device is not mis-detected on resume from S0ix.
+	 */
+	if (gpio_get(GPP_A12)) {
+		const struct pad_config gpio_pedet_nvme[] = {
+			PAD_CFG_NF_IOSSTATE(GPP_A12, NONE, DEEP, NF1, HIZCRx1),
+		};
+		gpio_configure_pads(gpio_pedet_nvme, ARRAY_SIZE(gpio_pedet_nvme));
+		printk(BIOS_INFO, "SATAXPCIE1 indicates PCIe NVMe is present\n");
+	} else {
+		const struct pad_config gpio_pedet_sata[] = {
+			PAD_CFG_NF_IOSSTATE(GPP_A12, NONE, DEEP, NF1, HIZCRx0),
+		};
+		gpio_configure_pads(gpio_pedet_sata, ARRAY_SIZE(gpio_pedet_sata));
+		printk(BIOS_INFO, "SATAXPCIE1 indicates SATA SSD is present\n");
+	}
 }
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)

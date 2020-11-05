@@ -1648,21 +1648,3 @@ void pci_dev_disable_bus_master(const struct device *dev)
 	pci_update_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER, 0x0);
 }
 #endif
-
-bool pci_dev_is_wake_source(const struct device *dev)
-{
-	unsigned int pm_cap;
-	uint16_t pmcs;
-
-	if (dev->path.type != DEVICE_PATH_PCI)
-		return false;
-
-	pm_cap = pci_find_capability(dev, PCI_CAP_ID_PM);
-	if (!pm_cap)
-		return false;
-
-	pmcs = pci_read_config16(dev, pm_cap + PCI_PM_CTRL);
-
-	/* PCI Device is a wake source if PME_ENABLE and PME_STATUS are set in PMCS register. */
-	return (pmcs & PCI_PM_CTRL_PME_ENABLE) && (pmcs & PCI_PM_CTRL_PME_STATUS);
-}

@@ -209,4 +209,12 @@ u16 pci_find_capability(const struct device *dev, u16 cap)
 	return pci_s_find_capability(PCI_BDF(dev), cap);
 }
 
+/*
+ * Determine if the given PCI device is the source of wake from sleep by checking PME_STATUS and
+ * PME_ENABLE bits in PM control and status register.
+ *
+ * Returns true if PCI device is wake source, false otherwise.
+ */
+bool pci_dev_is_wake_source(const struct device *dev);
+
 #endif /* PCI_OPS_H */

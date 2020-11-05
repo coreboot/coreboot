@@ -3,10 +3,6 @@
 #ifndef _I2C_RX6110SA_H_
 #define _I2C_RX6110SA_H_
 
-/* The address of this RTC is fixed. */
-#define RX6110SA_SLAVE_ADR		0x32
-#define RX6110SA_I2C_CONTROLLER		0
-
 #define RX6110SA_ACPI_NAME		"ERX6"
 #define RX6110SA_HID_NAME		"RX6110SA"
 #define RX6110SA_HID_DESC		"Real Time Clock"

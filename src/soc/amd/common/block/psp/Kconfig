@@ -11,14 +11,14 @@ config SOC_AMD_COMMON_BLOCK_PSP_GEN1
 	default n
 	select SOC_AMD_COMMON_BLOCK_PSP
 	help
-	  Used by the PSP in AMD systems before fam17h, e.g. stoneyridge.
+	  Used by the PSP in AMD systems before family 17h, e.g. stoneyridge.
 
 config SOC_AMD_COMMON_BLOCK_PSP_GEN2
 	bool
 	default n
 	select SOC_AMD_COMMON_BLOCK_PSP
 	help
-	  Used by the PSP in AMD fam17h CPUs and possibly newer ones.
+	  Used by the PSP in AMD family 17h, 19h and possibly newer CPUs.
 
 config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	bool

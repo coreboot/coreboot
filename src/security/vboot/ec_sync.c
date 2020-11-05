@@ -12,7 +12,6 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <vb2_api.h>
-#include <vboot_api.h>  /* for VbExDisplayScreen() and VbScreenData */
 
 #define _EC_FILENAME(select, suffix) \
 	(select == VB_SELECT_FIRMWARE_READONLY ? "ecro" suffix : "ecrw" suffix)
@@ -400,21 +399,6 @@ static vb2_error_t ec_get_expected_hash(enum vb2_firmware_selection select,
 /***********************************************************************
  * Vboot Callbacks
  ***********************************************************************/
-
-/*
- * Unsupported.
- *
- * coreboot does not support the graphics initialization needed to
- * display the vboot "wait" screens, etc., because the use case for
- * supporting software sync early in the boot flow is to be able to
- * quickly update the EC and/or sysjump to RW earlier so that USB-PD
- * power (> 15 W) can be negotiated for earlier.
- */
-vb2_error_t VbExDisplayScreen(uint32_t screen_type, uint32_t locale,
-			      const VbScreenData *data)
-{
-	return VB2_ERROR_UNKNOWN;
-}
 
 /*
  * Write opaque data into NV storage region.

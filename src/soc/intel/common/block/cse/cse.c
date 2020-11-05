@@ -555,6 +555,9 @@ int heci_reset(void)
 {
 	uint32_t csr;
 
+	/* Clear post code to prevent eventlog entry from unknown code. */
+	post_code(0);
+
 	/* Send reset request */
 	csr = read_host_csr();
 	csr |= (CSR_RESET | CSR_IG);

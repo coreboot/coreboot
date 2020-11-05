@@ -274,8 +274,6 @@ chip soc/intel/jasperlake
 				register "chip_name" = ""GT24C08""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C3.CAM1.PRIC""
-
 				register "nvm_size" = "0x0400"
 				register "nvm_pagesize" = "1"
 				register "nvm_readonly" = "1"

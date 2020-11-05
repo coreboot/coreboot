@@ -5,10 +5,16 @@
 #include <device/pci_ops.h>
 #include <elog.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdint.h>
 #include <types.h>
+
+struct pme_map {
+	pci_devfn_t devfn;
+	unsigned int wake_source;
+};
 
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {
@@ -25,10 +31,6 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 static void pch_log_rp_wake_source(void)
 {
 	size_t i;
-	struct pme_map {
-		pci_devfn_t devfn;
-		unsigned int wake_source;
-	};
 
 	const struct pme_map pme_map[] = {
 		{ PCH_DEVFN_PCIE1, ELOG_WAKE_SOURCE_PME_PCIE1 },
@@ -55,6 +57,59 @@ static void pch_log_rp_wake_source(void)
 	}
 }
 
+static void pch_log_add_elog_event(const struct pme_map *ipme_map)
+{
+	/*
+	 * If wake source is XHCI, check for detailed wake source events on
+	 * USB2/3 ports.
+	 */
+	if ((ipme_map->devfn == PCH_DEVFN_XHCI) &&
+			pch_xhci_update_wake_event(soc_get_xhci_usb_info()))
+		return;
+
+	elog_add_event_wake(ipme_map->wake_source, 0);
+}
+
+static void pch_log_pme_internal_wake_source(void)
+{
+	size_t i;
+	bool dev_found = false;
+
+	const struct pme_map ipme_map[] = {
+		{ PCH_DEVFN_HDA, ELOG_WAKE_SOURCE_PME_HDA },
+		{ PCH_DEVFN_GBE, ELOG_WAKE_SOURCE_PME_GBE },
+		{ PCH_DEVFN_SATA, ELOG_WAKE_SOURCE_PME_SATA },
+		{ PCH_DEVFN_CSE, ELOG_WAKE_SOURCE_PME_CSE },
+		{ PCH_DEVFN_XHCI, ELOG_WAKE_SOURCE_PME_XHCI },
+		{ PCH_DEVFN_USBOTG, ELOG_WAKE_SOURCE_PME_XDCI },
+		{ PCH_DEVFN_CNVI_WIFI, ELOG_WAKE_SOURCE_PME_WIFI },
+	};
+
+	for (i = 0; i < ARRAY_SIZE(ipme_map); i++) {
+		const struct device *dev = pcidev_path_on_root(ipme_map[i].devfn);
+		if (!dev)
+			continue;
+
+		if (pci_dev_is_wake_source(dev)) {
+			pch_log_add_elog_event(&ipme_map[i]);
+			dev_found = true;
+		}
+	}
+
+	/*
+	 * If device is still not found, but the wake source is internal PME,
+	 * try probing XHCI ports to see if any of the USB2/3 ports indicate
+	 * that it was the wake source. This path would be taken in case of GSMI
+	 * logging with S0ix where the pci_pm_resume_noirq runs and clears the
+	 * PME_STS_BIT in controller register.
+	 */
+	if (!dev_found)
+		dev_found = pch_xhci_update_wake_event(soc_get_xhci_usb_info());
+
+	if (!dev_found)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
+}
+
 static void pch_log_wake_source(struct chipset_power_state *ps)
 {
 	/* Power Button */
@@ -73,9 +128,9 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->gpe0_sts[GPE_STD] & PME_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME, 0);
 
-	/* Internal PME (TODO: determine wake device) */
+	/* Internal PME */
 	if (ps->gpe0_sts[GPE_STD] & PME_B0_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
+		pch_log_pme_internal_wake_source();
 
 	/* SMBUS Wake */
 	if (ps->gpe0_sts[GPE_STD] & SMB_WAK_STS)

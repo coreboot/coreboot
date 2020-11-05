@@ -44,6 +44,7 @@ ramstage-y += smmrelocate.c
 ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += me.c
+ramstage-y += xhci.c
 
 smm-y += gpio.c
 smm-y += p2sb.c
@@ -51,6 +52,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
 smm-y += elog.c
+smm-y += xhci.c
 
 verstage-y += gpio.c
 

@@ -128,6 +128,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_AMD, RAVEN1_B0_CPUID},
 	{ X86_VENDOR_AMD, PICASSO_B0_CPUID },
 	{ X86_VENDOR_AMD, PICASSO_B1_CPUID },
 	{ X86_VENDOR_AMD, RAVEN2_A0_CPUID },

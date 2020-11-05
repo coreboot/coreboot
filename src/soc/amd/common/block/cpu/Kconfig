@@ -8,3 +8,6 @@ config SOC_AMD_COMMON_BLOCK_CAR
 	  it may not be appropriate for a romstage implementation without
 	  additional consideration.  If this option is not used, the SOC must
 	  implement these functions separately.
+	  This is only used for AMD CPU before family 17h. From family 17h on
+	  the RAM is already initialized by the PSP before the x86 cores are
+	  released from reset.

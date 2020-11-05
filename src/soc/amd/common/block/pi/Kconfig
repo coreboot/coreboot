@@ -3,7 +3,8 @@ config SOC_AMD_COMMON_BLOCK_PI
 	select HAVE_DEBUG_RAM_SETUP
 	default n
 	help
-	  This option builds functions that interface AMD's AGESA.
+	  This option builds functions that interface AMD's AGESA reference
+	  code packaged in the binaryPI form.
 
 if SOC_AMD_COMMON_BLOCK_PI
 

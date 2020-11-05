@@ -4,6 +4,14 @@
 #define NORTHBRIDGE_INTEL_HASWELL_CHIP_H
 
 #include <drivers/intel/gma/gma.h>
+#include <types.h>
+
+struct peg_config {
+	bool is_onboard;
+	uint8_t power_limit_scale;
+	uint8_t power_limit_value;
+	uint16_t phys_slot_number;
+};
 
 /*
  * Digital Port Hotplug Enable:
@@ -19,6 +27,8 @@ struct northbridge_intel_haswell_config {
 
 	/* IGD panel configuration */
 	struct i915_gpu_panel_config panel_cfg;
+
+	struct peg_config peg_cfg[3];
 
 	bool gpu_ddi_e_connected;
 

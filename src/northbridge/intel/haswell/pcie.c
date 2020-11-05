@@ -5,7 +5,12 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <assert.h>
+#include <types.h>
+
+#include "chip.h"
+#include "haswell.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)
 static const char *pcie_acpi_name(const struct device *dev)
@@ -41,12 +46,101 @@ static const char *pcie_acpi_name(const struct device *dev)
 }
 #endif
 
+static void peg_enable(struct device *dev)
+{
+	const struct northbridge_intel_haswell_config *config = config_of(dev);
+
+	const uint8_t func = PCI_FUNC(PCI_BDF(dev));
+
+	assert(func < ARRAY_SIZE(config->peg_cfg));
+
+	const bool slot_implemented = !config->peg_cfg[func].is_onboard;
+
+	if (slot_implemented) {
+		/* Default is 1, but register is R/WO and needs to be written to once */
+		pci_or_config16(dev, PEG_CAP, 1 << 8);
+	} else {
+		pci_and_config16(dev, PEG_CAP, ~(1 << 8));
+	}
+
+	/* Note: this register is write-once */
+	uint32_t slotcap = pci_read_config32(dev, PEG_SLOTCAP);
+
+	/* Physical slot number (zero for ports connected to onboard devices) */
+	slotcap &= ~(0x1fff << 19);
+	if (slot_implemented) {
+		uint16_t slot_number = config->peg_cfg[func].phys_slot_number & 0x1fff;
+		if (slot_number == 0) {
+			/* Slot number must be non-zero and unique */
+			slot_number = func + 1;
+		}
+		slotcap |= slot_number << 19;
+	}
+
+	/* Default to 1.0 watt scale */
+	slotcap &= ~(3 << 15);
+	slotcap |= (config->peg_cfg[func].power_limit_scale & 3) << 15;
+
+	uint8_t power_limit_value = config->peg_cfg[func].power_limit_value;
+	if (power_limit_value == 0) {
+		/* Default to 75 watts */
+		power_limit_value = 75;
+	}
+	slotcap &= ~(0xff << 7);
+	slotcap |= power_limit_value << 7;
+
+	pci_write_config32(dev, PEG_SLOTCAP, slotcap);
+
+	/* Clear errors */
+	pci_write_config16(dev, PCI_STATUS, 0xffff);
+	pci_write_config16(dev, PCI_SEC_STATUS, 0xffff);
+	pci_write_config16(dev, PEG_DSTS, 0xffff);
+	pci_write_config32(dev, PEG_UESTS, 0xffffffff);
+	pci_write_config32(dev, PEG_CESTS, 0xffffffff);
+	pci_write_config32(dev, 0x1f0, 0xffffffff);
+
+	pci_or_config32(dev, PEG_VC0RCTL, 0x7f << 1);
+
+	/* Advertise OBFF support using WAKE# signaling only */
+	pci_or_config32(dev, PEG_DCAP2, 1 << 19);
+
+	pci_or_config32(dev, PEG_UESEV, 1 << 14);
+
+	/* Select -3.5 dB de-emphasis */
+	pci_or_config32(dev, PEG_LCTL2, 1 << 6);
+
+	pci_or_config32(dev, PEG_L0SLAT, 1 << 31);
+
+	pci_update_config32(dev, 0x250, ~(7 << 20), 2 << 20);
+
+	pci_or_config32(dev, 0x238, 1 << 29);
+
+	pci_or_config32(dev, 0x1f8, 1 << 16);
+
+	pci_update_config32(dev, PEG_AFE_PM_TMR, ~0x1f, 0x13);
+
+	/* Lock DCAP */
+	pci_update_config32(dev, PEG_DCAP,  ~0, 0);
+
+	if (func == 0)
+		pci_or_config32(dev, 0xcd0, 1 << 11);
+
+	/* Enable support for L0s and L1 */
+	pci_or_config32(dev, PEG_LCAP, 3 << 10);
+
+	pci_and_config32(dev, 0x200, ~(3 << 26));
+
+	/* Other fields in this register must not be changed while writing this */
+	pci_or_config16(dev, 0x258, 1 << 2);
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
 	.scan_bus		= pciexp_scan_bridge,
 	.reset_bus		= pci_bus_reset,
+	.enable			= peg_enable,
 	.init			= pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)

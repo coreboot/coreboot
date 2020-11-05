@@ -197,7 +197,7 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[7]" = "1"
 			# ClkSrcUsage must be set to free-run since SRCCLKREQ2 is NC
 			register "PcieClkSrcUsage[2]" = "0x80"
-			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
 		device pci 1d.0 off end # PCI Express Port 9
 		device pci 1d.1 on	# PCI Express Port 10

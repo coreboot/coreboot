@@ -37,8 +37,7 @@ static const struct soundwire_link link_xtal_24 = {
 static struct intel_soundwire_controller intel_controller = {
 	.acpi_address = 0x40000000,
 	.sdw = {
-	/* TODO: Verified Audio in nocodec mode, add codec support */
-		.master_list_count = 0
+		.master_list_count = 1
 	}
 };
 

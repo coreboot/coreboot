@@ -258,6 +258,11 @@ chip soc/intel/alderlake
 		device pci 1f.3 on
 			chip drivers/intel/soundwire
 				device generic 0 on
+					chip drivers/soundwire/alc711
+						# SoundWire Link 0 ID 1
+						register "desc" = ""Headset Codec""
+						device generic 0.1 on end
+					end
 				end
 			end
 		end # Intel Audio SNDW

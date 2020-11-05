@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/i2c_bus.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include <device/device.h>
+#include <device/i2c.h>
+#include <device/i2c_bus.h>
 #include <version.h>
 #include <console/console.h>
 #include <bcd.h>
@@ -163,11 +166,71 @@ static void rx6110sa_init(struct device *dev)
 	rx6110sa_write(dev, CTRL_REG, reg);
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static void rx6110sa_fill_ssdt(const struct device *dev)
+{
+	struct drivers_i2c_rx6110sa_config *config = dev->chip_info;
+	const char *scope = acpi_device_scope(dev);
+	enum i2c_speed bus_speed;
+
+	if (!scope)
+		return;
+
+	switch (config->bus_speed) {
+	case I2C_SPEED_STANDARD:
+	case I2C_SPEED_FAST:
+		bus_speed = config->bus_speed;
+		break;
+	default:
+		printk(BIOS_INFO, "%s: Bus speed unsupported, fall back to %d kHz!\n",
+			dev_path(dev), I2C_SPEED_STANDARD / 1000);
+		bus_speed = I2C_SPEED_STANDARD;
+		break;
+	}
+
+	struct acpi_i2c i2c = {
+		.address = dev->path.i2c.device,
+		.mode_10bit = dev->path.i2c.mode_10bit,
+		.speed = bus_speed,
+		.resource = scope,
+	};
+
+	/* Device */
+	acpigen_write_scope(scope);
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_string("_HID", RX6110SA_HID_NAME);
+	acpigen_write_name_string("_DDN", RX6110SA_HID_DESC);
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Resources */
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+	acpi_device_write_i2c(&i2c);
+
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev),
+			dev->chip_ops->name, dev_path(dev));
+}
+
+static const char *rx6110sa_acpi_name(const struct device *dev)
+{
+	return RX6110SA_ACPI_NAME;
+}
+#endif
+
 static struct device_operations rx6110sa_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
 	.init			= rx6110sa_init,
-	.final			= rx6110sa_final
+	.final			= rx6110sa_final,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name		= rx6110sa_acpi_name,
+	.acpi_fill_ssdt		= rx6110sa_fill_ssdt,
+#endif
 };
 
 static void rx6110sa_enable(struct device *dev)

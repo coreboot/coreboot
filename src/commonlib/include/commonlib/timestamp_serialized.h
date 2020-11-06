@@ -52,6 +52,8 @@ enum timestamp_id {
 	TS_SELFBOOT_JUMP = 99,
 	TS_START_POSTCAR = 100,
 	TS_END_POSTCAR = 101,
+	TS_DELAY_START = 110,
+	TS_DELAY_END = 111,
 
 	/* 500+ reserved for vendorcode extensions (500-600: google/chromeos) */
 	TS_START_COPYVER = 501,
@@ -177,6 +179,8 @@ static const struct timestamp_id_to_name {
 	{ TS_LOAD_PAYLOAD,	"load payload" },
 	{ TS_ACPI_WAKE_JUMP,	"ACPI wake jump" },
 	{ TS_SELFBOOT_JUMP,	"selfboot jump" },
+	{ TS_DELAY_START,	"Forced delay start" },
+	{ TS_DELAY_END,		"Forced delay end" },
 
 	{ TS_START_COPYVER,	"starting to load verstage" },
 	{ TS_END_COPYVER,	"finished loading verstage" },

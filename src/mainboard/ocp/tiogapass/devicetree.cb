@@ -74,7 +74,7 @@ chip soc/intel/xeon_sp/skx
 			chip drivers/ipmi # BMC KCS
 				device pnp ca2.0 on end
 				register "bmc_i2c_address" = "0x20"
-				register "bmc_boot_timeout" = "60"
+				register "bmc_boot_timeout" = "90"
 			end
 		end # Intel Corporation C621 Series Chipset LPC/eSPI Controller
 		device pci 1f.2 on end # Intel Corporation C620 Series Chipset Family Power Management Controller

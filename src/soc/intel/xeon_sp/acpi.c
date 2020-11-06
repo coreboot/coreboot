@@ -73,12 +73,12 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-static unsigned long add_madt_ioapic(unsigned long current, int stack, int ioapic_id,
-				     uint32_t ioapic_base, int gsi_base)
+static unsigned long add_madt_ioapic(unsigned long current, int socket, int stack,
+				     int ioapic_id, uint32_t ioapic_base, int gsi_base)
 {
-	printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+	printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
 	       "ioapic_base: 0x%x, gsi_base: 0x%x\n",
-	       stack,  ioapic_id, ioapic_base, gsi_base);
+	       socket, stack,  ioapic_id, ioapic_base, gsi_base);
 	return acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, ioapic_id,
 				       ioapic_base, gsi_base);
 }
@@ -86,7 +86,7 @@ static unsigned long add_madt_ioapic(unsigned long current, int stack, int ioapi
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	int cur_index;
-	struct iiostack_resource stack_info = {0};
+	const IIO_UDS *hob = get_iio_uds();
 
 	/* With XEON-SP FSP, PCH IOAPIC is allocated with first 120 GSIs. */
 #if (CONFIG(SOC_INTEL_COOPERLAKE_SP))
@@ -102,30 +102,34 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = xeonsp_acpi_create_madt_lapics(current);
 
 	cur_index = 0;
-	get_iiostack_info(&stack_info);
 
-	for (int stack = 0; stack < stack_info.no_of_stacks; ++stack) {
-		const STACK_RES *ri = &stack_info.res[stack];
-		assert(cur_index < ARRAY_SIZE(ioapic_ids));
-		assert(cur_index < ARRAY_SIZE(gsi_bases));
-		int ioapic_id = ioapic_ids[cur_index];
-		int gsi_base = gsi_bases[cur_index];
-		current += add_madt_ioapic(current, stack, ioapic_id, ri->IoApicBase,
-					   gsi_base);
-		++cur_index;
-
-		/*
-		 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
-		 * Add entry for PCH IOAPIC.
-		 */
-		if (stack == 0) { /* PCH IOAPIC */
+	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
+		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
+			const STACK_RES *ri =
+				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
+			if (!is_iio_stack_res(ri))
+				continue;
 			assert(cur_index < ARRAY_SIZE(ioapic_ids));
 			assert(cur_index < ARRAY_SIZE(gsi_bases));
-			ioapic_id = ioapic_ids[cur_index];
-			gsi_base = gsi_bases[cur_index];
-			current += add_madt_ioapic(current, stack, ioapic_id,
-						   ri->IoApicBase + 0x1000, gsi_base);
+			int ioapic_id = ioapic_ids[cur_index];
+			int gsi_base = gsi_bases[cur_index];
+			current += add_madt_ioapic(current, socket, stack, ioapic_id,
+						   ri->IoApicBase, gsi_base);
 			++cur_index;
+
+			/*
+			 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
+			 * Add entry for PCH IOAPIC.
+			 */
+			if (stack == 0 && socket == 0) { /* PCH IOAPIC */
+				assert(cur_index < ARRAY_SIZE(ioapic_ids));
+				assert(cur_index < ARRAY_SIZE(gsi_bases));
+				ioapic_id = ioapic_ids[cur_index];
+				gsi_base = gsi_bases[cur_index];
+				current += add_madt_ioapic(current, socket, stack, ioapic_id,
+							   ri->IoApicBase + 0x1000, gsi_base);
+				++cur_index;
+			}
 		}
 	}
 

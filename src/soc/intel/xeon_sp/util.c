@@ -105,8 +105,11 @@ int get_platform_thread_count(void)
 const IIO_UDS *get_iio_uds(void)
 {
 	size_t hob_size;
-	const IIO_UDS *hob;
+	static const IIO_UDS *hob;
 	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
+
+	if (hob != NULL)
+		return hob;
 
 	hob = fsp_find_extension_hob_by_guid(fsp_hob_iio_universal_data_guid, &hob_size);
 	assert(hob != NULL && hob_size != 0);

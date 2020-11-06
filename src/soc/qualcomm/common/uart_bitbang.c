@@ -3,8 +3,7 @@
 #include <console/uart.h>
 #include <gpio.h>
 #include <boot/coreboot_tables.h>
-
-#define UART_TX_PIN GPIO(44)
+#include <soc/uart.h>
 
 void uart_fill_lb(void *data)
 {

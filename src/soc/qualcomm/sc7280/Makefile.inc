@@ -7,6 +7,7 @@ all-y += ../common/gpio.c
 ################################################################################
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
+bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
 
 ################################################################################
 romstage-y += cbmem.c

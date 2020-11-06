@@ -17,7 +17,7 @@ all-y += qupv3_config.c
 ################################################################################
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
-bootblock-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
+bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
 
 ################################################################################
 verstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c

@@ -173,17 +173,17 @@ chip soc/intel/alderlake
 		device pci 04.0 on  end # DPTF
 		device pci 05.0 on  end # IPU
 		device pci 06.0 on  end # PEG60
-		device pci 07.0 off end # TBT_PCIe0
-		device pci 07.1 off end # TBT_PCIe1
-		device pci 07.2 off end # TBT_PCIe2
-		device pci 07.3 off end # TBT_PCIe3
+		device pci 07.0 on  end # TBT_PCIe0
+		device pci 07.1 on  end # TBT_PCIe1
+		device pci 07.2 on  end # TBT_PCIe2
+		device pci 07.3 on  end # TBT_PCIe3
 		device pci 08.0 off end # GNA
 		device pci 09.0 off end # NPK
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
-		device pci 0d.1 off end # USB xDCI (OTG)
-		device pci 0d.2 off end # TBT DMA0
-		device pci 0d.3 off end # TBT DMA1
+		device pci 0d.1 on  end # USB xDCI (OTG)
+		device pci 0d.2 on  end # TBT DMA0
+		device pci 0d.3 on  end # TBT DMA1
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
 		device pci 10.1 off end

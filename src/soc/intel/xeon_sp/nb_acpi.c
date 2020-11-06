@@ -362,10 +362,7 @@ static unsigned long acpi_create_rmrr(unsigned long current)
 
 static unsigned long acpi_create_rhsa(unsigned long current)
 {
-	size_t hob_size;
-	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
+	const IIO_UDS *hob = get_iio_uds();
 
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		IIO_RESOURCE_INSTANCE iio_resource =
@@ -386,10 +383,7 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	size_t hob_size;
-	const uint8_t uds_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(uds_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
+	const IIO_UDS *hob = get_iio_uds();
 
 	// DRHD
 	for (int iio = 1; iio <= hob->PlatformData.numofIIO; ++iio) {

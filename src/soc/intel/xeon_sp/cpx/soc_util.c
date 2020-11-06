@@ -29,13 +29,7 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 
 uint8_t get_iiostack_info(struct iiostack_resource *info)
 {
-	size_t hob_size;
-	const uint8_t fsp_hob_iio_universal_data_guid[16] = FSP_HOB_IIO_UNIVERSAL_DATA_GUID;
-	const IIO_UDS *hob;
-
-	hob = fsp_find_extension_hob_by_guid(
-		fsp_hob_iio_universal_data_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
+	const IIO_UDS *hob = get_iio_uds();
 
 	// copy IIO Stack info from FSP HOB
 	info->no_of_stacks = 0;

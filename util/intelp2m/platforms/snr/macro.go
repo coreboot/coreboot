@@ -90,12 +90,12 @@ func ioApicRoute() bool {
 	macro.Add("_APIC")
 	if dw0.GetRXLevelEdgeConfiguration() == common.TRIG_LEVEL {
 		if dw0.GetRxInvert() != 0 {
-			// PAD_CFG_GPI_APIC_INVERT(pad, pull, rst)
+			// PAD_CFG_GPI_APIC_LOW(pad, pull, rst)
 			macro.Add("_LOW")
 		} else {
+			// PAD_CFG_GPI_APIC_HIGH(pad, pull, rst)
 			macro.Add("_HIGH")
 		}
-		// PAD_CFG_GPI_APIC(pad, pull, rst)
 		macro.Add("(").Id().Pull().Rstsrc().Add("),")
 		return true
 	}
@@ -123,18 +123,8 @@ func sciRoute() bool {
 	if dw0.GetGPIOInputRouteSCI() == 0 {
 		return false
 	}
-	macro.Add("_SCI").Add("(").Id().Pull().Rstsrc()
-	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) == 0 {
-		macro.Trig()
-	}
-	// e.g. PAD_CFG_GPI_SCI(GPP_B18, UP_20K, PLTRST, LEVEL, INVERT),
-	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) != 0 {
-		// e.g. PAD_CFG_GPI_ACPI_SCI(GPP_G2, NONE, DEEP, YES),
-		// #define PAD_CFG_GPI_ACPI_SCI(pad, pull, rst, inv)	\
-		//             PAD_CFG_GPI_SCI(pad, pull, rst, EDGE_SINGLE, inv)
-		macro.Add(",").Add("EDGE_SINGLE")
-	}
-	macro.Invert().Add("),")
+	// PAD_CFG_GPI_SCI(GPP_B18, UP_20K, PLTRST, LEVEL, INVERT),
+	macro.Add("_SCI").Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
 	return true
 }
 
@@ -145,16 +135,8 @@ func smiRoute() bool {
 	if dw0.GetGPIOInputRouteSMI() == 0 {
 		return false
 	}
-	macro.Add("_SMI").Add("(").Id().Pull().Rstsrc()
-	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) != 0 {
-		// e.g. PAD_CFG_GPI_ACPI_SMI(GPP_I3, NONE, DEEP, YES),
-		macro.Add(",").Add("EDGE_SINGLE")
-	}
-	if (dw0.GetRXLevelEdgeConfiguration() & common.TRIG_EDGE_SINGLE) == 0 {
-		// e.g. PAD_CFG_GPI_SMI(GPP_E7, NONE, DEEP, LEVEL, NONE),
-		macro.Trig()
-	}
-	macro.Invert().Add("),")
+	// PAD_CFG_GPI_SMI(GPP_E7, NONE, DEEP, LEVEL, NONE),
+	macro.Add("_SMI").Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
 	return true
 }
 

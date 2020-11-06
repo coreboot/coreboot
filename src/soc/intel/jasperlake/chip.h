@@ -341,6 +341,24 @@ struct soc_intel_jasperlake_config {
 	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	 */
 	uint8_t PchPmPwrCycDur;
+
+	/*
+	 * FIVR RFI Frequency
+	 * PCODE MMIO Mailbox: Set the desired RFI frequency, in increments of 100KHz.
+	 * 0: Auto.
+	 * Range varies based on XTAL clock:
+	 *    0-1918 (Up to 191.8HMz) for 24MHz clock;
+	 *    0-1535 (Up to 153.5MHz) for 19MHz clock.
+	 */
+	uint16_t FivrRfiFrequency;
+
+	/*
+	 * FIVR RFI Spread Spectrum
+	 * Set the Spread Spectrum Range. <b>0: 0%</b>;
+	 * FIVR RFI Spread Spectrum, in 0.1% increments.
+	 * Range: 0.0% to 10.0% (0-100)
+	 */
+	uint8_t FivrSpreadSpectrum;
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

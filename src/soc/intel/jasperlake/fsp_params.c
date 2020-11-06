@@ -216,6 +216,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Provide correct UART number for FSP debug logs */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 
+	/* Configure FIVR RFI related settings */
+	params->FivrRfiFrequency = config->FivrRfiFrequency;
+	params->FivrSpreadSpectrum = config->FivrSpreadSpectrum;
+
 	/* Apply minimum assertion width settings if non-zero */
 	if (config->PchPmSlpS3MinAssert)
 		params->PchPmSlpS3MinAssert = config->PchPmSlpS3MinAssert;

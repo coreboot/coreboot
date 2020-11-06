@@ -277,6 +277,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF2),
 	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF2),
 
+	/* HPD_1 (A19) and HPD_2 (A20) pins */
+	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
+
 	/* IMGCLKOUT */
 	PAD_CFG_NF(GPP_D4, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),

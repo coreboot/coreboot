@@ -86,6 +86,8 @@ static unsigned long add_madt_ioapic(unsigned long current, int socket, int stac
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	int cur_index;
+	int ioapic_id;
+	int gsi_base;
 	const IIO_UDS *hob = get_iio_uds();
 
 	/* With XEON-SP FSP, PCH IOAPIC is allocated with first 120 GSIs. */
@@ -102,6 +104,12 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = xeonsp_acpi_create_madt_lapics(current);
 
 	cur_index = 0;
+	ioapic_id = ioapic_ids[cur_index];
+	gsi_base = gsi_bases[cur_index];
+	current += add_madt_ioapic(current, 0, 0, ioapic_id,
+				   hob->PlatformData.IIO_resource[0].StackRes[0].IoApicBase,
+				   gsi_base);
+		++cur_index;
 
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
@@ -111,25 +119,20 @@ unsigned long acpi_fill_madt(unsigned long current)
 				continue;
 			assert(cur_index < ARRAY_SIZE(ioapic_ids));
 			assert(cur_index < ARRAY_SIZE(gsi_bases));
-			int ioapic_id = ioapic_ids[cur_index];
-			int gsi_base = gsi_bases[cur_index];
-			current += add_madt_ioapic(current, socket, stack, ioapic_id,
-						   ri->IoApicBase, gsi_base);
-			++cur_index;
+			ioapic_id = ioapic_ids[cur_index];
+			gsi_base = gsi_bases[cur_index];
+			uint32_t ioapic_base = ri->IoApicBase;
 
 			/*
 			 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
-			 * Add entry for PCH IOAPIC.
+			 * The IIO IOAPIC is placed at 0x1000 from the reported base.
 			 */
-			if (stack == 0 && socket == 0) { /* PCH IOAPIC */
-				assert(cur_index < ARRAY_SIZE(ioapic_ids));
-				assert(cur_index < ARRAY_SIZE(gsi_bases));
-				ioapic_id = ioapic_ids[cur_index];
-				gsi_base = gsi_bases[cur_index];
-				current += add_madt_ioapic(current, socket, stack, ioapic_id,
-							   ri->IoApicBase + 0x1000, gsi_base);
-				++cur_index;
-			}
+			if (stack == 0 && socket == 0)
+				ioapic_base += 0x1000;
+
+			current += add_madt_ioapic(current, socket, stack, ioapic_id,
+						   ioapic_base, gsi_base);
+			++cur_index;
 		}
 	}
 

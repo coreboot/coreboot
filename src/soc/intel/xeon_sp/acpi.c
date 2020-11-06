@@ -73,6 +73,16 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
+static unsigned long add_madt_ioapic(unsigned long current, int stack, int ioapic_id,
+				     uint32_t ioapic_base, int gsi_base)
+{
+	printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+	       "ioapic_base: 0x%x, gsi_base: 0x%x\n",
+	       stack,  ioapic_id, ioapic_base, gsi_base);
+	return acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, ioapic_id,
+				       ioapic_base, gsi_base);
+}
+
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	int cur_index;
@@ -100,12 +110,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 		assert(cur_index < ARRAY_SIZE(gsi_bases));
 		int ioapic_id = ioapic_ids[cur_index];
 		int gsi_base = gsi_bases[cur_index];
-		printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
-			"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-			stack,  ioapic_id, ri->IoApicBase, gsi_base);
-		current += acpi_create_madt_ioapic(
-			(acpi_madt_ioapic_t *)current,
-			ioapic_id, ri->IoApicBase, gsi_base);
+		current += add_madt_ioapic(current, stack, ioapic_id, ri->IoApicBase,
+					   gsi_base);
 		++cur_index;
 
 		/*
@@ -117,13 +123,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 			assert(cur_index < ARRAY_SIZE(gsi_bases));
 			ioapic_id = ioapic_ids[cur_index];
 			gsi_base = gsi_bases[cur_index];
-			printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
-				"ioapic_base: 0x%x, gsi_base: 0x%x\n",
-				stack,  ioapic_id,
-				ri->IoApicBase + 0x1000, gsi_base);
-			current += acpi_create_madt_ioapic(
-				(acpi_madt_ioapic_t *)current,
-				ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
+			current += add_madt_ioapic(current, stack, ioapic_id,
+						   ri->IoApicBase + 0x1000, gsi_base);
 			++cur_index;
 		}
 	}

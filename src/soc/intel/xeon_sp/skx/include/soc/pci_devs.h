@@ -161,17 +161,5 @@
 
 // ========== IOAPIC Definitions for DMAR/ACPI ========
 #define PCH_IOAPIC_ID                   0x08
-#define PC00_IOAPIC_ID                  0x09
-#define PC01_IOAPIC_ID                  0x0A
-#define PC02_IOAPIC_ID                  0x0B
-#define PC03_IOAPIC_ID                  0x0C
-#define PC04_IOAPIC_ID                  0x0D
-#define PC05_IOAPIC_ID                  0x0E
-#define PC06_IOAPIC_ID                  0x0F
-#define PC07_IOAPIC_ID                  0x10
-#define PC08_IOAPIC_ID                  0x11
-#define PC09_IOAPIC_ID                  0x12
-#define PC10_IOAPIC_ID                  0x13
-#define PC11_IOAPIC_ID                  0x14
 
 #endif /* _SOC_PCI_DEVS_H_ */

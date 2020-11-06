@@ -93,20 +93,17 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* With XEON-SP FSP, PCH IOAPIC is allocated with first 120 GSIs. */
 #if (CONFIG(SOC_INTEL_COOPERLAKE_SP))
 	const int gsi_bases[] = { 0, 0x78, 0x80, 0x88, 0x90, 0x98, 0xA0, 0xA8, 0xB0 };
-	const int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
 #endif
 
 #if (CONFIG(SOC_INTEL_SKYLAKE_SP))
 	const int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
-	const int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
 #endif
 	/* Local APICs */
 	current = xeonsp_acpi_create_madt_lapics(current);
 
 	cur_index = 0;
-	ioapic_id = ioapic_ids[cur_index];
 	gsi_base = gsi_bases[cur_index];
-	current += add_madt_ioapic(current, 0, 0, ioapic_id,
+	current += add_madt_ioapic(current, 0, 0, PCH_IOAPIC_ID,
 				   hob->PlatformData.IIO_resource[0].StackRes[0].IoApicBase,
 				   gsi_base);
 		++cur_index;
@@ -117,9 +114,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
 			if (!is_iio_stack_res(ri))
 				continue;
-			assert(cur_index < ARRAY_SIZE(ioapic_ids));
 			assert(cur_index < ARRAY_SIZE(gsi_bases));
-			ioapic_id = ioapic_ids[cur_index];
+			ioapic_id = soc_get_iio_ioapicid(socket, stack);
 			gsi_base = gsi_bases[cur_index];
 			uint32_t ioapic_base = ri->IoApicBase;
 

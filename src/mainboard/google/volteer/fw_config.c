@@ -81,7 +81,8 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(i2s_disable_pads, ARRAY_SIZE(i2s_disable_pads));
 	}
 	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98357_ALC5682I_I2S)) ||
-	    fw_config_probe(FW_CONFIG(AUDIO, MAX98373_ALC5682I_I2S))) {
+	    fw_config_probe(FW_CONFIG(AUDIO, MAX98373_ALC5682I_I2S)) ||
+	    fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S))) {
 		printk(BIOS_INFO, "Configure GPIOs for I2S audio on UP3.\n");
 		gpio_configure_pads(i2s_up3_enable_pads, ARRAY_SIZE(i2s_up3_enable_pads));
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));

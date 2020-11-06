@@ -11,7 +11,7 @@ struct iiostack_resource {
 	STACK_RES   res[MAX_SOCKET * MAX_LOGIC_IIO_STACK];
 };
 
-uint8_t get_iiostack_info(struct iiostack_resource *info);
+void get_iiostack_info(struct iiostack_resource *info);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 

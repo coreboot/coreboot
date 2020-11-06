@@ -403,6 +403,13 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 	}
 }
 
+static uint8_t is_pci64bit_alloc(void)
+{
+	const IIO_UDS *hob = get_iio_uds();
+
+	return hob->PlatformData.Pci64BitResourceAllocation;
+}
+
 static void xeonsp_pci_domain_read_resources(struct device *dev)
 {
 	struct bus *link;
@@ -425,8 +432,8 @@ static void xeonsp_pci_domain_read_resources(struct device *dev)
 		xeonsp_pci_dev_iterator(link, xeonsp_reset_pci_op, NULL, NULL);
 
 	struct iiostack_resource stack_info = {0};
-	uint8_t pci64bit_alloc_flag = get_iiostack_info(&stack_info);
-	if (!pci64bit_alloc_flag) {
+	get_iiostack_info(&stack_info);
+	if (!is_pci64bit_alloc()) {
 		/*
 		 * Split 32 bit address space between prefetchable and
 		 * non-prefetchable windows

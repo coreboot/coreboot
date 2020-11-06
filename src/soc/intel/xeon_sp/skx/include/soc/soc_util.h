@@ -11,7 +11,7 @@ struct iiostack_resource {
 	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
 };
 
-uint8_t get_iiostack_info(struct iiostack_resource *info);
+void get_iiostack_info(struct iiostack_resource *info);
 
 void config_reset_cpl3_csrs(void);
 

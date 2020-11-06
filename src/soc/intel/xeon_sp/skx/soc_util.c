@@ -55,7 +55,7 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return memmap_addr;
 }
 
-uint8_t get_iiostack_info(struct iiostack_resource *info)
+void get_iiostack_info(struct iiostack_resource *info)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
@@ -71,8 +71,6 @@ uint8_t get_iiostack_info(struct iiostack_resource *info)
 			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
 		}
 	}
-
-	return hob->PlatformData.Pci64BitResourceAllocation;
 }
 
 uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)

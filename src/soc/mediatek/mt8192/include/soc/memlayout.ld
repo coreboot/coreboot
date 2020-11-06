@@ -14,6 +14,11 @@
 #define DRAM_INIT_CODE(addr, size) \
 	REGION(dram_init_code, addr, size, 4)
 
+#define DRAM_DMA(addr, size) \
+	REGION(dram_dma, addr, size, 4K) \
+	_ = ASSERT(size % 4K == 0, \
+		"DRAM DMA buffer should be multiple of smallest page size (4K)!");
+
 SECTIONS
 {
 	SRAM_START(0x00100000)
@@ -41,8 +46,9 @@ SECTIONS
 	SRAM_L2C_END(0x00280000)
 
 	DRAM_START(0x40000000)
-	POSTRAM_CBFS_CACHE(0x40000000, 2M)
-	RAMSTAGE(0x40200000, 256K)
+	DRAM_DMA(0x40000000, 1M)
+	POSTRAM_CBFS_CACHE(0x40100000, 2M)
+	RAMSTAGE(0x40300000, 256K)
 
 	BL31(0x54600000, 0x60000)
 }

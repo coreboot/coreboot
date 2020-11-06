@@ -3,6 +3,7 @@
 #include <device/mmio.h>
 #include <soc/mcucfg.h>
 #include <soc/mmu_operations.h>
+#include <soc/symbols.h>
 
 DEFINE_BIT(MP0_CLUSTER_CFG0_L3_SHARE_EN, 9)
 DEFINE_BIT(MP0_CLUSTER_CFG0_L3_SHARE_PRE_EN, 8)
@@ -27,4 +28,11 @@ void mtk_soc_disable_l2c_sram(void)
 	SET32_BITFIELDS(&mt8192_mcucfg->mp0_cluster_cfg0,
 			MP0_CLUSTER_CFG0_L3_SHARE_PRE_EN, 0);
 	dsb();
+}
+
+/* mtk_soc_after_dram is called in romstage */
+void mtk_soc_after_dram(void)
+{
+	mmu_config_range(_dram_dma, REGION_SIZE(dram_dma),
+			 NONSECURE_UNCACHED_MEM);
 }

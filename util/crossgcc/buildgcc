@@ -1057,7 +1057,7 @@ if searchtool wget "GNU" nofail > /dev/null; then
 	download_showing_percentage() {
 		url=$1
 		printf "... ${red}  0%%"
-		wget "$url" 2>&1 | while read -r line; do
+		wget --tries=3 "$url" 2>&1 | while read -r line; do
 			echo "$line" | grep -o "[0-9]\+%" | awk '{printf("\b\b\b\b%4s", $1)}'
 		done
 		printf "${NC}... "
@@ -1066,7 +1066,7 @@ elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {
 		url=$1
 		echo
-		curl -#OL "$url"
+		curl --progress-bar --location --retry 3 "$url"
 	}
 fi
 

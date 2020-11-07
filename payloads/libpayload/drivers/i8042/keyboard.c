@@ -253,6 +253,31 @@ static enum keyboard_state {
 	STATE_IGNORE,
 } keyboard_state;
 
+#define STATE_NAMES_ENTRY(name) [STATE_##name] = #name
+static const char *const state_names[] = {
+	STATE_NAMES_ENTRY(INIT),
+	STATE_NAMES_ENTRY(SIMPLIFIED_INIT),
+	STATE_NAMES_ENTRY(DISABLE_SCAN),
+	STATE_NAMES_ENTRY(DRAIN_INPUT),
+	STATE_NAMES_ENTRY(DISABLE_TRANSLATION),
+	STATE_NAMES_ENTRY(START_SELF_TEST),
+	STATE_NAMES_ENTRY(SELF_TEST),
+	STATE_NAMES_ENTRY(CONFIGURE),
+	STATE_NAMES_ENTRY(CONFIGURE_SET1),
+	STATE_NAMES_ENTRY(ENABLE_TRANSLATION),
+	STATE_NAMES_ENTRY(ENABLE_SCAN),
+	STATE_NAMES_ENTRY(RUNNING),
+	STATE_NAMES_ENTRY(IGNORE),
+};
+
+__attribute__((unused))
+static const char *state_name(enum keyboard_state state)
+{
+	if (state >= ARRAY_SIZE(state_names) || !state_names[state])
+		return "<unknown>";
+	return state_names[state];
+}
+
 static uint64_t keyboard_time;
 static uint64_t state_time;
 
@@ -305,20 +330,23 @@ static void keyboard_poll(void)
 
 	case STATE_SELF_TEST:
 		if (!i8042_data_ready_ps2()) {
-			if (timer_us(state_time) > 5*1000*1000)
+			if (timer_us(state_time) > 5*1000*1000) {
+				debug("WARNING: Keyboard self-test timed out.\n");
 				next_state = STATE_DISABLE_SCAN;
+			}
 			break;
 		}
 
 		const uint8_t self_test_result = i8042_read_data_ps2();
 		switch (self_test_result) {
 		case 0xaa:
-			/* Success! */
+			debug("INFO: Keyboard self-test succeeded.\n");
 			next_state = STATE_CONFIGURE;
 			break;
 		case 0xfc:
 		case 0xfd:
 			/* Failure. Try again. */
+			debug("WARNING: Keyboard self-test failed.\n");
 			next_state = STATE_START_SELF_TEST;
 			break;
 		default:
@@ -387,6 +415,7 @@ static void keyboard_poll(void)
 	}
 
 	if (keyboard_state != next_state) {
+		debug("INFO: Keyboard advancing state to '%s'.\n", state_name(next_state));
 		keyboard_state = next_state;
 		state_time = timer_us(0);
 	}

@@ -101,3 +101,7 @@ config BOARD_GOOGLE_DOOLY
 config BOARD_GOOGLE_AMBASSADOR
 	bool "-> Ambassador"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
+
+config BOARD_GOOGLE_GENESIS
+	bool "-> Genesis"
+	select BOARD_GOOGLE_BASEBOARD_PUFF

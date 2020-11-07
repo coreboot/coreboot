@@ -31,8 +31,8 @@ GID ?= $(shell id -g)
 
 test-docker:
 	$(if $(DOCKER),,\
-		$(warning Docker command not found.  Please install docker) \
-		$(warning https://docs.docker.com/engine/installation ) \
+		$(warning Error: Docker command not found.  Please install docker) \
+		$(warning Instructions: https://docs.docker.com/engine/install/ ) \
 		$(error halting))
 
 test-docker-login: test-docker
@@ -82,14 +82,19 @@ clean-coreboot-images: docker-killall
 docker-clean: clean-coreboot-containers
 	@$(MAKE) clean-coreboot-images
 
-docker-cleanall:
+docker-cleanall: test-docker
+ifeq($(Y),1)
 	@if [ -n "$$($(DOCKER) ps -a | grep -v "CONTAINER")" ]; then \
-		$(DOCKER) kill $$($(DOCKER) ps -a | grep -v "CONTAINER" | sed 's|\s.*$$||'); \
+		$(DOCKER) kill $$($(DOCKER) ps | grep -v "CONTAINER" | sed 's|\s.*$$||') ; \
 		$(DOCKER) rm $$($(DOCKER) ps -a | grep -v "CONTAINER" | sed 's|\s.*$$||'); \
 	fi
 	@if [ -n "$$($(DOCKER) images | grep -v "REPOSITORY")" ]; then \
 		$(DOCKER) rmi $$($(DOCKER) images | grep -v "REPOSITORY" | tr -s ' ' | cut -f3 -d ' '); \
 	fi
+else
+	echo "This will remove *ALL* docker containers from your machine."
+	echo "If this is what you want, run 'make docker-cleanall Y=1'"
+endif
 
 $(DOCKER_CCACHE):
 	@mkdir -p $@
@@ -153,8 +158,8 @@ docker-shell: test-docker
 		/bin/bash -l
 
 docker-jenkins-attach: USER=root
-docker-jenkins-attach:
-	docker exec --user $(USER) \
+docker-jenkins-attach: test-docker
+	$(DOCKER)  exec --user $(USER) \
 		-e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) -e TERM=$(TERM) \
 		-it "$$(docker ps | grep coreboot-jenkins-node | cut -f1 -d' ')" \
 		/bin/bash -l
@@ -162,16 +167,16 @@ docker-jenkins-attach:
 docker-build-docs: test-docker
 docker-build-docs:
 	$(DOCKER) run -it --rm \
-           --user $(UID):$(GID) \
-           -v "$(top)/:/data-in/:ro" \
-           -v "$(top)/Documentation/_build/:/data-out/" \
-           doc.coreboot.org
+		--user $(UID):$(GID) \
+		-v "$(top)/:/data-in/:ro" \
+		-v "$(top)/Documentation/_build/:/data-out/" \
+		doc.coreboot.org
 
 docker-livehtml-docs: test-docker
 docker-livehtml-docs:
 	$(DOCKER) run -it --rm \
-           --net=host -v "$(top)/:/data-in/:ro" \
-           doc.coreboot.org livehtml
+		--net=host -v "$(top)/:/data-in/:ro" \
+		doc.coreboot.org livehtml
 
 help:
 	@echo "Commands for working with docker images:"

@@ -36,6 +36,12 @@
 
 #include "i8042.h"
 
+#ifdef DEBUG
+#define debug(x...) printf(x)
+#else
+#define debug(x...) do {} while (0)
+#endif
+
 #define POWER_BUTTON         0x90
 #define MEDIA_KEY_PREFIX     0xE0
 
@@ -200,12 +206,12 @@ static bool keyboard_cmd(unsigned char cmd)
 		default:
 			/* Warn only if we already disabled keyboard input. */
 			if (cmd != I8042_KBCMD_DEFAULT_DIS)
-				printf("WARNING: Keyboard sent spurious 0x%02x.\n", data);
+				debug("WARNING: Keyboard sent spurious 0x%02x.\n", data);
 			break;
 		}
 	} while (timer_us(start_time) < timeout_us);
 
-	printf("ERROR: Keyboard command timed out.\n");
+	debug("ERROR: Keyboard command timed out.\n");
 	return false;
 }
 
@@ -218,13 +224,13 @@ static bool set_scancode_set(const unsigned char set)
 
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
 	if (!ret) {
-		printf("ERROR: Keyboard set scancode failed!\n");
+		debug("ERROR: Keyboard set scancode failed!\n");
 		return ret;
 	}
 
 	ret = keyboard_cmd(set);
 	if (!ret) {
-		printf("ERROR: Keyboard scancode set#%u failed!\n", set);
+		debug("ERROR: Keyboard scancode set#%u failed!\n", set);
 		return ret;
 	}
 
@@ -291,7 +297,7 @@ static void keyboard_poll(void)
 
 	case STATE_START_SELF_TEST:
 		if (!keyboard_cmd(I8042_KBCMD_RESET))
-			printf("ERROR: Keyboard self-test couldn't be started.\n");
+			debug("ERROR: Keyboard self-test couldn't be started.\n");
 		/* We ignore errors and always move to the self-test state
 		   which will simply try again if necessary. */
 		next_state = STATE_SELF_TEST;
@@ -316,7 +322,7 @@ static void keyboard_poll(void)
 			next_state = STATE_START_SELF_TEST;
 			break;
 		default:
-			printf("WARNING: Keyboard self-test received spurious 0x%02x\n",
+			debug("WARNING: Keyboard self-test received spurious 0x%02x\n",
 			       self_test_result);
 			break;
 		}
@@ -331,7 +337,7 @@ static void keyboard_poll(void)
 
 	case STATE_CONFIGURE_SET1:
 		if (!set_scancode_set(1)) {
-			printf("ERROR: Keyboard failed to set any scancode set.\n");
+			debug("ERROR: Keyboard failed to set any scancode set.\n");
 			next_state = STATE_DISABLE_SCAN;
 			break;
 		}
@@ -341,7 +347,7 @@ static void keyboard_poll(void)
 
 	case STATE_ENABLE_TRANSLATION:
 		if (i8042_set_kbd_translation(true) != 0) {
-			printf("ERROR: Keyboard controller set translation failed!\n");
+			debug("ERROR: Keyboard controller set translation failed!\n");
 			next_state = STATE_DISABLE_SCAN;
 			break;
 		}
@@ -351,7 +357,7 @@ static void keyboard_poll(void)
 
 	case STATE_ENABLE_SCAN:
 		if (!keyboard_cmd(I8042_KBCMD_EN)) {
-			printf("ERROR: Keyboard enable scanning failed!\n");
+			debug("ERROR: Keyboard enable scanning failed!\n");
 			next_state = STATE_DISABLE_SCAN;
 			break;
 		}

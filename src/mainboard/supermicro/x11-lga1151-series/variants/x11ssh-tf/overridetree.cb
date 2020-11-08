@@ -76,6 +76,8 @@ chip soc/intel/skylake
 		end
 		device pci 1f.0 on	# LPC Interface
 			chip drivers/ipmi
+				use pch_gpio as gpio_dev
+				register "post_complete_gpio" = "GPP_B20"
 				# On cold boot it takes a while for the BMC to start the IPMI service
 				register "wait_for_bmc" = "1"
 				register "bmc_boot_timeout" = "60"

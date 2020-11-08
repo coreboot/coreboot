@@ -91,6 +91,7 @@ chip soc/intel/skylake
 			chip drivers/ipmi
 				use pch_gpio as gpio_dev
 				register "bmc_jumper_gpio" = "GPP_D22" # JPB1
+				register "post_complete_gpio" = "GPP_B20"
 				# On cold boot it takes a while for the BMC to start the IPMI service
 				register "wait_for_bmc" = "1"
 				register "bmc_boot_timeout" = "60"

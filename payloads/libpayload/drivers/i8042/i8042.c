@@ -28,6 +28,7 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "i8042.h"
@@ -319,6 +320,24 @@ void i8042_write_data(u8 data)
 }
 
 /**
+ * Send command & data to keyboard controller.
+ *
+ * @param cmd: The command to be sent.
+ * @param data: The data to be sent.
+ * Returns 0 on success, -1 on failure.
+ */
+static int i8042_cmd_with_data(const u8 cmd, const u8 data)
+{
+	const int ret = i8042_cmd(cmd);
+	if (ret != 0)
+		return ret;
+
+	i8042_write_data(data);
+
+	return ret;
+}
+
+/**
  * Probe for keyboard controller data and queue it.
  */
 static void i8042_data_poll(void)
@@ -407,4 +426,37 @@ int i8042_wait_read_aux(void)
 		udelay(50);
 
 	return (retries <= 0) ? -1 : i8042_read_data_aux();
+}
+
+/**
+ * Get the keyboard scancode translation state.
+ *
+ * Returns: -1 on timeout, 1 if the controller translates
+ *          scancode set #2 to #1, and 0 if not.
+ */
+int i8042_get_kbd_translation(void)
+{
+	const int cfg = i8042_cmd_with_response(I8042_CMD_RD_CMD_BYTE);
+	if (cfg < 0)
+		return cfg;
+
+	return !!(cfg & I8042_CMD_BYTE_XLATE);
+}
+
+/**
+ * Sets the keyboard scancode translation state.
+ *
+ * Returns: -1 on timeout, 0 otherwise.
+ */
+int i8042_set_kbd_translation(const bool xlate)
+{
+	int cfg = i8042_cmd_with_response(I8042_CMD_RD_CMD_BYTE);
+	if (cfg < 0)
+		return cfg;
+
+	if (xlate)
+		cfg |= I8042_CMD_BYTE_XLATE;
+	else
+		cfg &= ~I8042_CMD_BYTE_XLATE;
+	return i8042_cmd_with_data(I8042_CMD_WR_CMD_BYTE, cfg);
 }

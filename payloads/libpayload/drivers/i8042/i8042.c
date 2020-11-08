@@ -159,7 +159,7 @@ static u8 i8042_wait_cmd_rdy(void)
  */
 static u8 i8042_wait_data_rdy(void)
 {
-	int retries = 10000;
+	int retries = 30000;
 	while (retries-- && !(read_status() & OBF))
 		udelay(50);
 

@@ -112,6 +112,19 @@ static u8 fifo_pop(struct fifo *fifo)
 	return ret;
 }
 
+/** Peek on the head of fifo queue.
+ * Returns the oldest object on the queue if any.
+ * In case the queue is empty 0 is returned.
+ * @fifo: Fifo to use
+ */
+static u8 fifo_peek(struct fifo *fifo)
+{
+	if (fifo_is_empty(fifo))
+		return 0;
+
+	return fifo->buf[fifo->rx];
+}
+
 /** Destroys a fifo queue.
  * @fifo: Fifo to use
  */
@@ -388,6 +401,14 @@ u8 i8042_read_data_ps2(void)
 {
 	i8042_data_poll();
 	return fifo_pop(ps2_fifo);
+}
+
+/**
+ * Returns available keyboard data without advancing the queue.
+ */
+u8 i8042_peek_data_ps2(void)
+{
+	return fifo_peek(ps2_fifo);
 }
 
 /**

@@ -4,7 +4,7 @@ ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
 
 verstage-y += car.c
 verstage-y += fsp_util.c
-verstage-$(CONFIG_SEPARATE_VERSTAGE) += verstage.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 
 bootblock-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += cache_as_ram.S
 bootblock-y += fsp_util.c

@@ -66,6 +66,10 @@ static const struct pad_config i2s_disable_pads[] = {
 	PAD_NC(GPP_R7, NONE),
 };
 
+static const struct pad_config sd_gl9755s_pads[] = {
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
+};
+
 static void fw_config_handle(void *unused)
 {
 	if (fw_config_probe(FW_CONFIG(AUDIO, NONE))) {
@@ -93,6 +97,10 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(i2s_up4_enable_pads, ARRAY_SIZE(i2s_up4_enable_pads));
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
 		gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
+	}
+	if (fw_config_probe(FW_CONFIG(DB_SD, SD_GL9755S))) {
+		printk(BIOS_INFO, "Configure GPIOs for SD GL9755S.\n");
+		gpio_configure_pads(sd_gl9755s_pads, ARRAY_SIZE(sd_gl9755s_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

@@ -445,7 +445,26 @@ chip soc/intel/tigerlake
 		device ref sata on end
 		device ref pcie_rp1 on end
 		device ref pcie_rp7 on end
-		device ref pcie_rp8 on end
+		device ref pcie_rp8 on
+			probe DB_SD SD_GL9755S
+			probe DB_SD SD_RTS5261
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H3)"
+				register "srcclk_pin" = "3"
+				device generic 0 on
+					probe DB_SD SD_GL9755S
+				end
+			end
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H3)"
+				register "srcclk_pin" = "3"
+				register "is_external" = "1"
+				device generic 1 on
+					probe DB_SD SD_RTS5261
+				end
+			end
+		end
 		device ref pcie_rp9 on end
 		device ref pcie_rp11 on end
 		device ref uart0 on end

@@ -84,7 +84,7 @@ config VGA_BIOS_ID
 
 config HUDSON_LEGACY_FREE
 	bool
-	default y
+	default n
 
 config POST_IO
 	bool

@@ -138,6 +138,13 @@ static const struct lpddr4_sku skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.part_num = "K4F8E3S4HD-MGCL",
 	},
+	/* NT6AN256T32AV-J2 - both logical channels */
+	[9] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.part_num = "NT6AN256T32AV-J2",
+	},
 };
 
 static const struct lpddr4_cfg lp4cfg = {

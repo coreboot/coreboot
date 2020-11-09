@@ -8,7 +8,7 @@
 
 struct romstage_handoff {
 	/* Indicate if the current boot is an S3 resume. If
-	 * CONFIG_RELOCTABLE_RAMSTAGE is enabled the chipset code is
+	 * CONFIG_RELOCATABLE_RAMSTAGE is enabled the chipset code is
 	 * responsible for initializing this variable. Otherwise, ramstage
 	 * will be re-loaded from cbfs (which can be slower since it lives
 	 * in flash). */

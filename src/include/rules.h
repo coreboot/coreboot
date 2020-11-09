@@ -63,10 +63,11 @@
 
 /*
  * NOTE: "verstage" code may either run as a separate stage or linked into the
- * bootblock/romstage, depending on the setting of CONFIG_SEPARATE_VERSTAGE. The
- * ENV_SEPARATE_VERSTAGE macro will only return true for "verstage" code when
- * CONFIG_SEPARATE_VERSTAGE=y, otherwise that code will have ENV_BOOTBLOCK or
- * ENV_ROMSTAGE set (depending on the CONFIG_VBOOT_STARTS_IN_... options).
+ * bootblock/romstage, depending on the setting of the VBOOT_SEPARATE_VERSTAGE
+ * kconfig option. The ENV_SEPARATE_VERSTAGE macro will only return true for
+ * "verstage" code when CONFIG(VBOOT_SEPARATE_VERSTAGE) is true, otherwise that
+ * code will have ENV_BOOTBLOCK or ENV_ROMSTAGE set (depending on the
+ * "VBOOT_STARTS_IN_"... kconfig options).
  */
 #elif defined(__VERSTAGE__)
 #define ENV_DECOMPRESSOR 0

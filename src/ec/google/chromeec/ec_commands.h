@@ -1388,7 +1388,7 @@ enum ec_feature_code {
 	 */
 	EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS = 37,
 	/*
-	 * Early Firmware Selection ver.2. Enabled by CONFIG_VBOOT_EFS2.
+	 * Early Firmware Selection ver.2. Enabled by VBOOT_EFS2 config option.
 	 * Note this is a RO feature. So, a query (EC_CMD_GET_FEATURES) should
 	 * be sent to RO to be precise.
 	 */

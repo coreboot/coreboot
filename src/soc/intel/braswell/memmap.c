@@ -27,11 +27,11 @@ void *cbmem_top_chipset(void)
 	/*
 	 *     +-------------------------+  Top of RAM (aligned)
 	 *     | System Management Mode  |
-	 *     |      code and data      |  Length: CONFIG_TSEG_SIZE
+	 *     |      code and data      |  Length: CONFIG_SMM_TSEG_SIZE
 	 *     |         (TSEG)          |
 	 *     +-------------------------+  SMM base (aligned)
 	 *     |                         |
-	 *     | Chipset Reserved Memory |  Length: Multiple of CONFIG_TSEG_SIZE
+	 *     | Chipset Reserved Memory |  Length: Multiple of CONFIG_SMM_TSEG_SIZE
 	 *     |                         |
 	 *     +-------------------------+  top_of_ram (aligned)
 	 *     |                         |

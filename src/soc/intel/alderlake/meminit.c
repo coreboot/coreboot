@@ -178,6 +178,7 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg,
 		meminit_channels(mem_cfg, board_cfg, spd_data_ptr, half_populated);
 	}
 
+	mem_cfg->Lp5CccConfig = board_cfg->lp5_ccc_config;
 	mem_cfg->ECT = board_cfg->ect;
 	mem_cfg->UserBd = board_cfg->UserBd;
 	mem_cfg->DqPinsInterleaved = board_cfg->dq_pins_interleaved;

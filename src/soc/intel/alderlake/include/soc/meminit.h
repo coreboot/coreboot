@@ -90,6 +90,14 @@ struct mb_cfg {
 
 	/* Board type */
 	uint8_t UserBd;
+
+	/*
+	 * Command pins mapping for Controller Channel (ccc)
+	 * lp5_ccc_config: Bitmask where bits [3:0] are Controller 0 Channel [3:0] and
+	 * bits [7:4] are Controller 1 Channel [3:0]
+	 * Bit value: 0 = ccc pin mapping is ascending, 1 = ccc pin mapping is descending.
+	 */
+	uint8_t lp5_ccc_config;
 };
 
 /*

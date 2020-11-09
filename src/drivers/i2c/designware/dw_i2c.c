@@ -419,6 +419,15 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 	/* Read to clear INTR_STAT_STOP_DET */
 	read32(&regs->clear_stop_det_intr);
 
+	/* Check TX abort */
+	if (read32(&regs->raw_intr_stat) & INTR_STAT_TX_ABORT) {
+		printk(BIOS_ERR, "I2C TX abort detected (%08x)\n",
+		       read32(&regs->tx_abort_source));
+		/* clear INTR_STAT_TX_ABORT */
+		read32(&regs->clear_tx_abrt_intr);
+		goto out;
+	}
+
 	/* Wait for the bus to go idle */
 	if (dw_i2c_wait_for_bus_idle(regs)) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
@@ -747,8 +756,8 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 	write32(&regs->rx_thresh, 0);
 	write32(&regs->tx_thresh, 0);
 
-	/* Enable stop detection interrupt */
-	write32(&regs->intr_mask, INTR_STAT_STOP_DET);
+	/* Enable stop detection and TX abort interrupt */
+	write32(&regs->intr_mask, INTR_STAT_STOP_DET | INTR_STAT_TX_ABORT);
 
 	printk(BIOS_INFO, "DW I2C bus %u at %p (%u KHz)\n",
 	       bus, regs, speed / KHz);

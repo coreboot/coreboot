@@ -253,17 +253,17 @@ Device (PDRC)
 			/* MCH BAR _BAS will be updated in _CRS below according to
 			 * B0:D0:F0:Reg.48h
 			 */
-			Memory32Fixed (ReadWrite, 0, 0x08000, MCHB)
+			Memory32Fixed (ReadWrite, 0, MCH_BASE_SIZE, MCHB)
 
 			/* DMI BAR _BAS will be updated in _CRS below according to
 			 * B0:D0:F0:Reg.68h
 			 */
-			Memory32Fixed (ReadWrite, 0, 0x01000, DMIB)
+			Memory32Fixed (ReadWrite, 0, DMI_BASE_SIZE, DMIB)
 
 			/* EP BAR _BAS will be updated in _CRS below according to
 			 * B0:D0:F0:Reg.40h
 			 */
-			Memory32Fixed (ReadWrite, 0, 0x01000, EGPB)
+			Memory32Fixed (ReadWrite, 0, EP_BASE_SIZE, EGPB)
 
 			/* PCI Express BAR _BAS and _LEN will be updated in
 			 * _CRS below according to B0:D0:F0:Reg.60h

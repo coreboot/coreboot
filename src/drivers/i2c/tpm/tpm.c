@@ -424,11 +424,6 @@ static int tpm_tis_i2c_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 		if (burstcnt > (len-1-count))
 			burstcnt = len-1-count;
 
-#ifdef CONFIG_TPM_I2C_BURST_LIMITATION
-		if (burstcnt > CONFIG_TPM_I2C_BURST_LIMITATION)
-			burstcnt = CONFIG_TPM_I2C_BURST_LIMITATION;
-#endif /* CONFIG_TPM_I2C_BURST_LIMITATION */
-
 		if (iic_tpm_write(TPM_DATA_FIFO(chip->vendor.locality),
 						&(buf[count]), burstcnt) == 0)
 			count += burstcnt;

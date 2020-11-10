@@ -11,7 +11,7 @@ chip soc/intel/jasperlake
 	#| I2C0              | Trackpad                  |
 	#| I2C1              | Digitizer                 |
 	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
+	#| I2C3              | TBD                       |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -28,15 +28,22 @@ chip soc/intel/jasperlake
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
 		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
-		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
 		},
 	}"
 
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+	}"
+
 	device domain 0 on
 		device pci 15.0 on end
+		device pci 15.3 off  end # I2C 3
 	end
 end

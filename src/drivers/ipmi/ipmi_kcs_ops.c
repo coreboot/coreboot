@@ -76,8 +76,8 @@ static void ipmi_kcs_init(struct device *dev)
 {
 	struct ipmi_devid_rsp rsp;
 	uint32_t man_id = 0, prod_id = 0;
-	struct drivers_ipmi_config *conf = NULL;
-	struct ipmi_selftest_rsp selftestrsp;
+	struct drivers_ipmi_config *conf = dev->chip_info;
+	struct ipmi_selftest_rsp selftestrsp = {0};
 	uint8_t retry_count;
 
 	if (!dev->enabled)
@@ -85,11 +85,13 @@ static void ipmi_kcs_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "IPMI: PNP KCS 0x%x\n", dev->path.pnp.port);
 
-	if (dev->chip_info)
-		conf = dev->chip_info;
+	if (!conf) {
+		printk(BIOS_WARNING, "IPMI: chip_info is missing! Skip init.\n");
+		return;
+	}
 
 	/* Get IPMI version for ACPI and SMBIOS */
-	if (conf && conf->wait_for_bmc && conf->bmc_boot_timeout) {
+	if (conf->wait_for_bmc && conf->bmc_boot_timeout) {
 		struct stopwatch sw;
 		stopwatch_init_msecs_expire(&sw, conf->bmc_boot_timeout * 1000);
 		printk(BIOS_INFO, "IPMI: Waiting for BMC...\n");
@@ -174,7 +176,7 @@ static unsigned long
 ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 		       struct acpi_rsdp *rsdp)
 {
-	struct drivers_ipmi_config *conf = NULL;
+	struct drivers_ipmi_config *conf = dev->chip_info;
 	struct acpi_spmi *spmi;
 	s8 gpe_interrupt = -1;
 	u32 apic_interrupt = 0;
@@ -204,25 +206,24 @@ ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 	printk(BIOS_DEBUG, "ACPI:    * SPMI at %lx\n", current);
 	spmi = (struct acpi_spmi *)current;
 
-	if (dev->chip_info)
-		conf = dev->chip_info;
-
 	if (conf) {
 		if (conf->have_gpe)
 			gpe_interrupt = conf->gpe_interrupt;
 		if (conf->have_apic)
 			apic_interrupt = conf->apic_interrupt;
+
+		/* Use command to get UID from ipmi_ssdt */
+		acpi_create_ipmi(dev, spmi, (ipmi_revision_major << 8) |
+				 (ipmi_revision_minor << 4), &addr,
+				 IPMI_INTERFACE_KCS, gpe_interrupt, apic_interrupt,
+				 conf->uid);
+
+		acpi_add_table(rsdp, spmi);
+
+		current += spmi->header.length;
+	} else {
+		printk(BIOS_WARNING, "IPMI: chip_info is missing!\n");
 	}
-
-	/* Use command to get UID from ipmi_ssdt */
-	acpi_create_ipmi(dev, spmi, (ipmi_revision_major << 8) |
-			 (ipmi_revision_minor << 4), &addr,
-			 IPMI_INTERFACE_KCS, gpe_interrupt, apic_interrupt,
-			 conf->uid);
-
-	acpi_add_table(rsdp, spmi);
-
-	current += spmi->header.length;
 
 	return current;
 }
@@ -230,7 +231,7 @@ ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 static void ipmi_ssdt(const struct device *dev)
 {
 	const char *scope = acpi_device_scope(dev);
-	struct drivers_ipmi_config *conf = NULL;
+	struct drivers_ipmi_config *conf = dev->chip_info;
 
 	if (!scope) {
 		printk(BIOS_ERR, "IPMI: Missing ACPI scope for %s\n",
@@ -238,8 +239,10 @@ static void ipmi_ssdt(const struct device *dev)
 		return;
 	}
 
-	if (dev->chip_info)
-		conf = dev->chip_info;
+	if (!conf) {
+		printk(BIOS_WARNING, "IPMI: chip_info is missing!\n");
+		return;
+	}
 
 	/* Use command to pass UID to ipmi_write_acpi_tables */
 	conf->uid = uid_cnt++;
@@ -257,11 +260,9 @@ static void ipmi_ssdt(const struct device *dev)
 	acpigen_write_io16(dev->path.pnp.port + CONFIG_IPMI_KCS_REGISTER_SPACING,
 			   dev->path.pnp.port + CONFIG_IPMI_KCS_REGISTER_SPACING, 1, 1, 1);
 
-	if (conf) {
-		// FIXME: is that correct?
-		if (conf->have_apic)
-			acpigen_write_irq(1 << conf->apic_interrupt);
-	}
+	// FIXME: is that correct?
+	if (conf->have_apic)
+		acpigen_write_irq(1 << conf->apic_interrupt);
 
 	acpigen_write_resourcetemplate_footer();
 
@@ -295,15 +296,12 @@ void ipmi_bmc_version(uint8_t *ipmi_bmc_major_revision, uint8_t *ipmi_bmc_minor_
 static int ipmi_smbios_data(struct device *dev, int *handle,
 			    unsigned long *current)
 {
-	struct drivers_ipmi_config *conf = NULL;
+	struct drivers_ipmi_config *conf = dev->chip_info;
 	u8 nv_storage = 0xff;
 	u8 i2c_address = 0;
 	u8 register_spacing;
 
 	int len = 0;
-
-	if (dev->chip_info)
-		conf = dev->chip_info;
 
 	if (conf) {
 		if (conf->have_nv_storage)

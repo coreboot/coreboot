@@ -57,7 +57,7 @@ void usb_xhci_disable_unused(bool (*ext_usb_xhci_en_cb)(unsigned int port_type,
 							unsigned int port_id))
 {
 	struct device *xhci, *hub = NULL, *port = NULL;
-	const struct xhci_usb_info *info = soc_get_xhci_usb_info();
+	const struct xhci_usb_info *info = soc_get_xhci_usb_info(PCH_DEVFN_XHCI);
 	struct drivers_usb_acpi_config *config;
 	bool enable;
 

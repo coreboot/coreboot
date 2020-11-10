@@ -22,19 +22,6 @@ struct pme_status_info {
 
 #define PME_STS_BIT		(1 << 15)
 
-static void pch_log_add_elog_event(const struct pme_status_info *info)
-{
-	/*
-	 * If wake source is XHCI, check for detailed wake source events on
-	 * USB2/3 ports.
-	 */
-	if ((info->dev == PCH_DEV_XHCI) &&
-			pch_xhci_update_wake_event(soc_get_xhci_usb_info()))
-		return;
-
-	elog_add_event_wake(info->elog_event, 0);
-}
-
 static void pch_log_pme_internal_wake_source(void)
 {
 	size_t i;
@@ -46,12 +33,11 @@ static void pch_log_pme_internal_wake_source(void)
 	uint16_t val;
 	bool dev_found = false;
 
-	struct pme_status_info pme_status_info[] = {
+	const struct pme_status_info pme_status_info[] = {
 		{ PCH_DEV_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
 		{ PCH_DEV_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
 		{ PCH_DEV_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
 		{ PCH_DEV_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
-		{ PCH_DEV_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
 		{ PCH_DEV_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
 		/*
 		 * The power management control/status register is not
@@ -59,6 +45,9 @@ static void pch_log_pme_internal_wake_source(void)
 		 * that the PMCS register is at offset 0xCC.
 		 */
 		{ PCH_DEV_CNViWIFI, 0xcc, ELOG_WAKE_SOURCE_PME_WIFI },
+	};
+	const struct xhci_wake_info xhci_wake_info[] = {
+		{ PCH_DEVFN_XHCI, ELOG_WAKE_SOURCE_PME_XHCI },
 	};
 
 	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
@@ -71,19 +60,20 @@ static void pch_log_pme_internal_wake_source(void)
 		if ((val == 0xFFFF) || !(val & PME_STS_BIT))
 			continue;
 
-		pch_log_add_elog_event(&pme_status_info[i]);
+		elog_add_event_wake(pme_status_info[i].elog_event, 0);
 		dev_found = true;
 	}
 
 	/*
-	 * If device is still not found, but the wake source is internal PME,
-	 * try probing XHCI ports to see if any of the USB2/3 ports indicate
-	 * that it was the wake source. This path would be taken in case of GSMI
-	 * logging with S0ix where the pci_pm_resume_noirq runs and clears the
-	 * PME_STS_BIT in controller register.
+	 * Check the XHCI controllers' USB2 & USB3 ports for wake events. There
+	 * are cases (GSMI logging for S0ix clears PME_STS_BIT) where the XHCI
+	 * controller's PME_STS_BIT may have already been cleared, so the host
+	 * controller wake wouldn't get logged here; therefore, the host
+	 * controller wake event is logged before its corresponding port wake
+	 * event is logged.
 	 */
-	if (!dev_found)
-		dev_found = pch_xhci_update_wake_event(soc_get_xhci_usb_info());
+	dev_found |= xhci_update_wake_event(xhci_wake_info,
+					    ARRAY_SIZE(xhci_wake_info));
 
 	if (!dev_found)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);

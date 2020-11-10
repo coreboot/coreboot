@@ -57,54 +57,45 @@ static void pch_log_rp_wake_source(void)
 	}
 }
 
-static void pch_log_add_elog_event(const struct pme_map *ipme_map)
-{
-	/*
-	 * If wake source is XHCI, check for detailed wake source events on
-	 * USB2/3 ports.
-	 */
-	if ((ipme_map->devfn == PCH_DEVFN_XHCI) &&
-			pch_xhci_update_wake_event(soc_get_xhci_usb_info()))
-		return;
-
-	elog_add_event_wake(ipme_map->wake_source, 0);
-}
-
 static void pch_log_pme_internal_wake_source(void)
 {
-	size_t i;
-	bool dev_found = false;
-
 	const struct pme_map ipme_map[] = {
 		{ PCH_DEVFN_HDA, ELOG_WAKE_SOURCE_PME_HDA },
 		{ PCH_DEVFN_GBE, ELOG_WAKE_SOURCE_PME_GBE },
 		{ PCH_DEVFN_SATA, ELOG_WAKE_SOURCE_PME_SATA },
 		{ PCH_DEVFN_CSE, ELOG_WAKE_SOURCE_PME_CSE },
-		{ PCH_DEVFN_XHCI, ELOG_WAKE_SOURCE_PME_XHCI },
 		{ PCH_DEVFN_USBOTG, ELOG_WAKE_SOURCE_PME_XDCI },
 		{ PCH_DEVFN_CNVI_WIFI, ELOG_WAKE_SOURCE_PME_WIFI },
 	};
+	const struct xhci_wake_info xhci_wake_info[] = {
+		{ PCH_DEVFN_XHCI,	ELOG_WAKE_SOURCE_PME_XHCI },
+		{ SA_DEVFN_TCSS_XHCI,	ELOG_WAKE_SOURCE_PME_TCSS_XHCI },
+	};
+	bool dev_found = false;
+	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(ipme_map); i++) {
-		const struct device *dev = pcidev_path_on_root(ipme_map[i].devfn);
+		const struct device *dev =
+			pcidev_path_on_root(ipme_map[i].devfn);
 		if (!dev)
 			continue;
 
 		if (pci_dev_is_wake_source(dev)) {
-			pch_log_add_elog_event(&ipme_map[i]);
+			elog_add_event_wake(ipme_map[i].wake_source, 0);
 			dev_found = true;
 		}
 	}
 
 	/*
-	 * If device is still not found, but the wake source is internal PME,
-	 * try probing XHCI ports to see if any of the USB2/3 ports indicate
-	 * that it was the wake source. This path would be taken in case of GSMI
-	 * logging with S0ix where the pci_pm_resume_noirq runs and clears the
-	 * PME_STS_BIT in controller register.
+	 * Check the XHCI controllers' USB2 & USB3 ports for wake events. There
+	 * are cases (GSMI logging for S0ix clears PME_STS_BIT) where the XHCI
+	 * controller's PME_STS_BIT may have already been cleared, so the host
+	 * controller wake wouldn't get logged here; therefore, the host
+	 * controller wake event is logged before its corresponding port wake
+	 * event is logged.
 	 */
-	if (!dev_found)
-		dev_found = pch_xhci_update_wake_event(soc_get_xhci_usb_info());
+	dev_found |= xhci_update_wake_event(xhci_wake_info,
+					    ARRAY_SIZE(xhci_wake_info));
 
 	if (!dev_found)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);

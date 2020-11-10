@@ -4,6 +4,8 @@
 #define SOC_INTEL_COMMON_BLOCK_XHCI_H
 
 #include <device/device.h>
+#include <elog.h>
+#include <stdint.h>
 
 /*
  * struct xhci_usb_info - Data containing number of USB ports & offset.
@@ -20,7 +22,19 @@ struct xhci_usb_info {
 };
 
 /*
- * pch_xhci_update_wake_event() - Identify and log XHCI wake events.
+ * struct xhci_wake_info - Relates an XHCI device to registers and wake types
+ * @xhci_dev: devfn of the XHCI device
+ * @elog_wake_type_host: the wake type for the controller device
+ */
+struct xhci_wake_info {
+	pci_devfn_t xhci_dev;
+	uint8_t elog_wake_type_host;
+};
+
+/*
+ * xhci_update_wake_event() - Identify and log XHCI wake events.
+ * @wake_info: A mapping of XHCI devfn to elog wake types
+ * @wake_info_count: Count of items in wake_info
  * @info: Information about number of USB ports and their status reg offset.
  *
  * This function goes through individual USB port status registers within the
@@ -29,7 +43,8 @@ struct xhci_usb_info {
  *
  * Return: True if any port is identified as a wake source, false if none.
  */
-bool pch_xhci_update_wake_event(const struct xhci_usb_info *info);
+bool xhci_update_wake_event(const struct xhci_wake_info *wake_info,
+			    size_t wake_info_count);
 
 void soc_xhci_init(struct device *dev);
 
@@ -41,7 +56,7 @@ void soc_xhci_init(struct device *dev);
  *
  * Return: USB ports and status register offset info for the SoC.
  */
-const struct xhci_usb_info *soc_get_xhci_usb_info(void);
+const struct xhci_usb_info *soc_get_xhci_usb_info(pci_devfn_t xhci_dev);
 
 /*
  * usb_xhci_disable_unused() - Disable unused USB devices

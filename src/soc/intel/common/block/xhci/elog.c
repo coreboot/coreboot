@@ -20,23 +20,23 @@
 #define XHCI_STATUS_PLS_MASK		(0xF << XHCI_STATUS_PLS_SHIFT)
 #define XHCI_STATUS_PLS_RESUME		(15 << XHCI_STATUS_PLS_SHIFT)
 
-static bool pch_xhci_csc_set(uint32_t port_status)
+static bool xhci_csc_set(uint32_t port_status)
 {
 	return !!(port_status & XHCI_STATUS_CSC);
 }
 
-static bool pch_xhci_wake_capable(uint32_t port_status)
+static bool xhci_wake_capable(uint32_t port_status)
 {
 	return !!((port_status & XHCI_STATUS_WCE) |
 		  (port_status & XHCI_STATUS_WDE));
 }
 
-static bool pch_xhci_plc_set(uint32_t port_status)
+static bool xhci_plc_set(uint32_t port_status)
 {
 	return !!(port_status & XHCI_STATUS_PLC);
 }
 
-static bool pch_xhci_resume(uint32_t port_status)
+static bool xhci_resume(uint32_t port_status)
 {
 	return (port_status & XHCI_STATUS_PLS_MASK) == XHCI_STATUS_PLS_RESUME;
 }
@@ -55,7 +55,7 @@ static bool pch_xhci_resume(uint32_t port_status)
  * true  : Wake source was found.
  * false : Wake source was not found.
  */
-static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t event)
+static bool xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t host_event, uint8_t event)
 {
 	uint32_t i, port_status;
 	bool found = false;
@@ -73,8 +73,9 @@ static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t event)
 		 * connect/disconnect to identify if the port caused wake
 		 * event for USB attach/detach.
 		 */
-		if (pch_xhci_csc_set(port_status) &&
-		    pch_xhci_wake_capable(port_status)) {
+		if (xhci_csc_set(port_status) &&
+		    xhci_wake_capable(port_status)) {
+			elog_add_event_wake(host_event, 0);
 			elog_add_event_wake(event, i + 1);
 			found = true;
 			continue;
@@ -84,8 +85,9 @@ static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t event)
 		 * Check if PLC is set and PLS indicates resume to identify if
 		 * the port caused wake event for USB activity.
 		 */
-		if (pch_xhci_plc_set(port_status) &&
-		    pch_xhci_resume(port_status)) {
+		if (xhci_plc_set(port_status) &&
+		    xhci_resume(port_status)) {
+			elog_add_event_wake(host_event, 0);
 			elog_add_event_wake(event, i + 1);
 			found = true;
 		}
@@ -93,50 +95,35 @@ static bool pch_xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t event)
 	return found;
 }
 
-/*
- * Update elog event and instance depending upon the USB2 port that caused
- * the wake event.
- *
- * Return value:
- * true = Indicates that USB2 wake event was found.
- * false = Indicates that USB2 wake event was not found.
- */
-static inline bool pch_xhci_usb2_update_wake_event(uintptr_t mmio_base,
-					const struct xhci_usb_info *info)
+bool xhci_update_wake_event(const struct xhci_wake_info *wake_info,
+			    size_t wake_info_count)
 {
-	return pch_xhci_port_wake_check(mmio_base + info->usb2_port_status_reg,
-					info->num_usb2_ports,
-					ELOG_WAKE_SOURCE_PME_XHCI_USB_2);
-}
-
-/*
- * Update elog event and instance depending upon the USB3 port that caused
- * the wake event.
- *
- * Return value:
- * true = Indicates that USB3 wake event was found.
- * false = Indicates that USB3 wake event was not found.
- */
-static inline bool pch_xhci_usb3_update_wake_event(uintptr_t mmio_base,
-					const struct xhci_usb_info *info)
-{
-	return pch_xhci_port_wake_check(mmio_base + info->usb3_port_status_reg,
-					info->num_usb3_ports,
-					ELOG_WAKE_SOURCE_PME_XHCI_USB_3);
-}
-
-bool pch_xhci_update_wake_event(const struct xhci_usb_info *info)
-{
+	const struct xhci_usb_info *usb_info;
 	uintptr_t mmio_base;
 	bool event_found = false;
-	mmio_base = ALIGN_DOWN(pci_read_config32(PCH_DEV_XHCI,
-					PCI_BASE_ADDRESS_0), 16);
+	size_t i;
 
-	if (pch_xhci_usb2_update_wake_event(mmio_base, info))
-		event_found = true;
+	for (i = 0; i < wake_info_count; ++i) {
+		/* Assumes BAR0 is MBAR */
+		mmio_base = pci_s_read_config32(wake_info[i].xhci_dev,
+						PCI_BASE_ADDRESS_0);
+		mmio_base &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+		usb_info = soc_get_xhci_usb_info(wake_info[i].xhci_dev);
 
-	if (pch_xhci_usb3_update_wake_event(mmio_base, info))
-		event_found = true;
+		/* Check USB2 port status & control registers */
+		if (xhci_port_wake_check(mmio_base + usb_info->usb2_port_status_reg,
+					 usb_info->num_usb2_ports,
+					 wake_info[i].elog_wake_type_host,
+					 ELOG_WAKE_SOURCE_PME_XHCI_USB_2))
+			event_found = true;
+
+		/* Check USB3 port status & control registers */
+		if (xhci_port_wake_check(mmio_base + usb_info->usb3_port_status_reg,
+					 usb_info->num_usb3_ports,
+					 wake_info[i].elog_wake_type_host,
+					 ELOG_WAKE_SOURCE_PME_XHCI_USB_3))
+			event_found = true;
+	}
 
 	return event_found;
 }

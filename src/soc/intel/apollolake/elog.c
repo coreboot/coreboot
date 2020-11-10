@@ -2,6 +2,7 @@
 
 #include <cbmem.h>
 #include <console/console.h>
+#include <device/pci_type.h>
 #include <elog.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/xhci.h>
@@ -24,6 +25,10 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 
 static void pch_log_wake_source(struct chipset_power_state *ps)
 {
+	const struct xhci_wake_info xhci_wake_info[] = {
+		{ PCH_DEVFN_XHCI, ELOG_WAKE_SOURCE_PME_XHCI },
+	};
+
 	/* Power Button */
 	if (ps->pm1_sts & PWRBTN_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);
@@ -42,7 +47,8 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 	/* XHCI */
 	if (ps->gpe0_sts[GPE0_A] & XHCI_PME_STS)
-		pch_xhci_update_wake_event(soc_get_xhci_usb_info());
+		xhci_update_wake_event(xhci_wake_info,
+				       ARRAY_SIZE(xhci_wake_info));
 
 	/* SMBUS Wake */
 	if (ps->gpe0_sts[GPE0_A] & SMB_WAK_STS)

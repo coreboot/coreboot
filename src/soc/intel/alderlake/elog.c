@@ -5,6 +5,7 @@
 #include <device/pci_ops.h>
 #include <elog.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdint.h>
@@ -56,6 +57,70 @@ static void pch_log_rp_wake_source(void)
 	}
 }
 
+static void pch_log_pme_internal_wake_source(void)
+{
+	const struct pme_map ipme_map[] = {
+		{ PCH_DEVFN_HDA,	ELOG_WAKE_SOURCE_PME_HDA },
+		{ PCH_DEVFN_GBE,	ELOG_WAKE_SOURCE_PME_GBE },
+		{ PCH_DEVFN_SATA,	ELOG_WAKE_SOURCE_PME_SATA },
+		{ PCH_DEVFN_CSE,	ELOG_WAKE_SOURCE_PME_CSE },
+		{ PCH_DEVFN_XHCI,	ELOG_WAKE_SOURCE_PME_XHCI },
+		{ PCH_DEVFN_USBOTG,	ELOG_WAKE_SOURCE_PME_XDCI },
+		{ PCH_DEVFN_CNVI_WIFI,	ELOG_WAKE_SOURCE_PME_WIFI },
+		{ SA_DEVFN_TCSS_XDCI,	ELOG_WAKE_SOURCE_PME_TCSS_XDCI },
+	};
+	const struct xhci_wake_info xhci_wake_info[] = {
+		{ PCH_DEVFN_XHCI,	ELOG_WAKE_SOURCE_PME_XHCI },
+		{ SA_DEVFN_TCSS_XHCI,	ELOG_WAKE_SOURCE_PME_TCSS_XHCI },
+	};
+	bool dev_found = false;
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(ipme_map); i++) {
+		const struct device *dev = pcidev_path_on_root(ipme_map[i].devfn);
+		if (!dev)
+			continue;
+
+		if (pci_dev_is_wake_source(dev)) {
+			elog_add_event_wake(ipme_map[i].wake_source, 0);
+			dev_found = true;
+		}
+	}
+
+	/* Check Thunderbolt ports */
+	for (i = 0; i < NUM_TBT_FUNCTIONS; i++) {
+		const struct device *dev = pcidev_path_on_root(SA_DEVFN_TBT(i));
+		if (!dev)
+			continue;
+
+		if (pci_dev_is_wake_source(dev)) {
+			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_TBT, i);
+			dev_found = true;
+		}
+	}
+
+	/* Check DMA devices */
+	for (i = 0; i < NUM_TCSS_DMA_FUNCTIONS; i++) {
+		const struct device *dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA(i));
+		if (!dev)
+			continue;
+
+		if (pci_dev_is_wake_source(dev)) {
+			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_TCSS_DMA, i);
+			dev_found = true;
+		}
+	}
+
+	/*
+	 * Probe the XHCI controllers and their USB2 and USB3 ports to determine
+	 * if any of them were wake sources.
+	 */
+	dev_found |= xhci_update_wake_event(xhci_wake_info, ARRAY_SIZE(xhci_wake_info));
+
+	if (!dev_found)
+		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
+}
+
 static void pch_log_wake_source(struct chipset_power_state *ps)
 {
 	/* Power Button */
@@ -74,9 +139,9 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	if (ps->gpe0_sts[GPE_STD] & PME_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME, 0);
 
-	/* Internal PME (TODO: determine wake device) */
+	/* Internal PME */
 	if (ps->gpe0_sts[GPE_STD] & PME_B0_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
+		pch_log_pme_internal_wake_source();
 
 	/* SMBUS Wake */
 	if (ps->gpe0_sts[GPE_STD] & SMB_WAK_STS)

@@ -206,17 +206,17 @@ static void init(struct device *dev)
 	return;
 }
 
-static void set_resources(struct device *dev)
+static void enable_bus_master(struct device *dev)
 {
-	pci_dev_set_resources(dev);
-	dev->command |= PCI_COMMAND_MASTER;
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 }
 
 static struct device_operations i210_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = set_resources,
+	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = init,
+	.final            = enable_bus_master,
 };
 
 static const unsigned short i210_device_ids[] = { 0x1537, 0x1538, 0x1533, 0 };

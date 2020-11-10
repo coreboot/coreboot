@@ -33,9 +33,9 @@
  * @param  mac  Buffer to the MAC address to check
  * @return 0    if address is not valid, otherwise 1
  */
-static uint8_t is_mac_adr_valid(uint8_t mac[6])
+static uint8_t is_mac_adr_valid(uint8_t mac[MAC_ADDR_LEN])
 {
-	uint8_t buf[6];
+	uint8_t buf[MAC_ADDR_LEN];
 
 	memset(buf, 0, sizeof(buf));
 	if (!memcmp(buf, mac, sizeof(buf)))
@@ -52,7 +52,7 @@ static uint8_t is_mac_adr_valid(uint8_t mac[6])
  * @param  mac     buffer where to store the MAC address
  * @return cb_err  CB_ERR or CB_SUCCESS
  */
-enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
+enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_LEN])
 {
 	struct bus *parent = dev->bus;
 	uint8_t buf[16], mapping[16], i = 0, chain_len = 0;
@@ -92,7 +92,7 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 		if (memcmp(buf, mapping, chain_len + 4))
 			continue;
 		/* There is a matching mapping available, get MAC address. */
-		if (hwilib_get_field(XMac1 + i, mac, 6) == 6) {
+		if (hwilib_get_field(XMac1 + i, mac, MAC_ADDR_LEN) == MAC_ADDR_LEN) {
 			if (is_mac_adr_valid(mac))
 				return CB_SUCCESS;
 		}

@@ -491,18 +491,6 @@ config MMCONF_SUPPORT
 	bool
 	default !NO_MMCONF_SUPPORT
 
-config HYPERTRANSPORT_PLUGIN_SUPPORT
-	bool
-	default n
-
-config HT_CHAIN_UNITID_BASE
-	int
-	default 0
-
-config HT_CHAIN_END_UNITID_BASE
-	int
-	default 0
-
 config PCIX_PLUGIN_SUPPORT
 	bool
 	default y

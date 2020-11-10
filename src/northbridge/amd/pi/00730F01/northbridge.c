@@ -10,7 +10,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/hypertransport.h>
 #include <string.h>
 #include <stdlib.h>
 #include <lib.h>

@@ -3,6 +3,9 @@
 #ifndef __AMD_NB_COMMON_H__
 #define __AMD_NB_COMMON_H__
 
+#define HT_IO_HOST_ALIGN 4096
+#define HT_MEM_HOST_ALIGN (1024 * 1024)
+
 #define DEV_CDB	0x18
 
 #endif

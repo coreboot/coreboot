@@ -19,7 +19,6 @@
 #include <device/pci_ids.h>
 #include <device/pcix.h>
 #include <device/pciexp.h>
-#include <device/hypertransport.h>
 #include <pc80/i8259.h>
 #include <security/vboot/vbnv.h>
 #include <timestamp.h>
@@ -860,19 +859,6 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 	if (pcixpos) {
 		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n", dev_path(dev));
 		return &default_pcix_ops_bus;
-	}
-#endif
-#if CONFIG(HYPERTRANSPORT_PLUGIN_SUPPORT)
-	unsigned int htpos = 0;
-	while ((htpos = pci_find_next_capability(dev, PCI_CAP_ID_HT, htpos))) {
-		u16 flags;
-		flags = pci_read_config16(dev, htpos + PCI_CAP_FLAGS);
-		if ((flags >> 13) == 1) {
-			/* Host or Secondary Interface */
-			printk(BIOS_DEBUG, "%s subordinate bus HT\n",
-			       dev_path(dev));
-			return &default_ht_ops_bus;
-		}
 	}
 #endif
 #if CONFIG(PCIEXP_PLUGIN_SUPPORT)

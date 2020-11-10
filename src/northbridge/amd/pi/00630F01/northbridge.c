@@ -7,7 +7,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/hypertransport.h>
 #include <string.h>
 #include <lib.h>
 #include <cpu/cpu.h>

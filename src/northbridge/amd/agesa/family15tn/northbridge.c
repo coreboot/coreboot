@@ -18,7 +18,7 @@
 #include <Porting.h>
 #include <Options.h>
 #include <Topology.h>
-#include <northbridge/amd/agesa/nb_common.h>
+#include <northbridge/amd/nb_common.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 

@@ -35,15 +35,13 @@
  */
 static uint8_t is_mac_adr_valid(uint8_t mac[MAC_ADDR_LEN])
 {
-	uint8_t buf[MAC_ADDR_LEN];
-
-	memset(buf, 0, sizeof(buf));
-	if (!memcmp(buf, mac, sizeof(buf)))
-		return 0;
-	memset(buf, 0xff, sizeof(buf));
-	if (!memcmp(buf, mac, sizeof(buf)))
-		return 0;
-	return 1;
+	for (size_t i = 0; i < MAC_ADDR_LEN; i++) {
+		if (mac[i] != 0x00 && mac[i] != 0xff)
+			return 1;
+		if (mac[i] != mac[0])
+			return 1;
+	}
+	return 0;
 }
 
 /** \brief This function will search for a MAC address which can be assigned

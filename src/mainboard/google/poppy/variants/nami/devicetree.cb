@@ -320,7 +320,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""SYTS7817""
 				register "generic.desc" = ""Synaptics Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
 				register "generic.enable_delay_ms" = "45"
@@ -332,7 +332,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7503""
 				register "generic.desc" = ""G2TOUCH Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
 				register "generic.reset_delay_ms" = "50"
@@ -355,7 +355,7 @@ chip soc/intel/skylake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""PNP0C50""
 				register "generic.desc" = ""Synaptics Touchpad""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E3_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"
 				register "generic.wake" = "GPE0_DW2_16"
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x20"

@@ -16,14 +16,11 @@
 void variant_mainboard_final(void)
 {
 	struct device *dev;
-	uint16_t cmd = 0;
 
 	/* Set Master Enable for on-board PCI device. */
 	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
 	if (dev) {
-		cmd = pci_read_config16(dev, PCI_COMMAND);
-		cmd |= PCI_COMMAND_MASTER;
-		pci_write_config16(dev, PCI_COMMAND, cmd);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 	}
 }
 

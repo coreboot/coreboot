@@ -187,7 +187,6 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_final(void *chip_info)
 {
-	uint16_t cmd = 0;
 	struct device *dev = NULL;
 
 	/* Do board specific things */
@@ -196,9 +195,7 @@ static void mainboard_final(void *chip_info)
 	/* Set Master Enable for on-board PCI device. */
 	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
 	if (dev) {
-		cmd = pci_read_config16(dev, PCI_COMMAND);
-		cmd |= PCI_COMMAND_MASTER;
-		pci_write_config16(dev, PCI_COMMAND, cmd);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 	}
 	/* Set up SPI OPCODE menu before the controller is locked. */
 	fast_spi_set_opcode_menu();

@@ -22,7 +22,6 @@
 void variant_mainboard_final(void)
 {
 	struct device *dev = NULL;
-	uint16_t cmd = 0;
 
 	/* PIR6 register mapping for PCIe root ports
 	 * INTA#->PIRQD#, INTB#->PIRQA#, INTC#->PIRQB#, INTD#-> PIRQC#
@@ -43,9 +42,7 @@ void variant_mainboard_final(void)
 	/* Set Master Enable for on-board PCI device. */
 	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
 	if (dev) {
-		cmd = pci_read_config16(dev, PCI_COMMAND);
-		cmd |= PCI_COMMAND_MASTER;
-		pci_write_config16(dev, PCI_COMMAND, cmd);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 		/* Disable clock outputs 0-3 (CLKOUT) for upstream
 		 * XIO2001 PCIe to PCI Bridge.

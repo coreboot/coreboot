@@ -1,6 +1,0 @@
-Vendor name: Google
-Board name: Cheza Qualcomm SDM845 reference board
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

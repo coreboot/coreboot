@@ -20,7 +20,6 @@
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
 - Butterfly (HP Pavilion Chromebook 14)
-- Cheza
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))

@@ -1,4 +1,0 @@
-
-config BOARD_GOOGLE_CHEZA
-	bool "Cheza"
-	select BOARD_GOOGLE_CHEZA_COMMON

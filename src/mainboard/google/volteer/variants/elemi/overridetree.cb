@@ -138,7 +138,7 @@ chip soc/intel/tigerlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7503""
 				register "generic.desc" = ""G2TOUCH Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"

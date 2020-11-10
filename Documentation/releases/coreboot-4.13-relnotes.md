@@ -88,4 +88,35 @@ at runtime and possibly brings optimised code for faster execution times.
 It still needs changes in assembly, fixed integer to pointer conversions in C,
 wrappers for blobs, support for running Option ROMs, among other things.
 
+### Preparations to minimize enabling PCI bus mastering
+
+For security reasons, bus mastering should be enabled as late as possible. In
+coreboot, it's usually not necessary and payloads should only enable it for
+devices they use. Since not all payloads enable bus mastering properly yet,
+some Kconfig options were added as an intermediate step to give some sort of
+"backwards compatibility", which allow enabling or disabling bus mastering by
+groups.
+
+Currently available groups are:
+
+* PCI bridges
+* Any devices
+
+For now, "Any devices" is enabled by default to keep the traditional behaviour,
+which also includes all other options. This is currently necessary, for instance,
+for libpayload-based payloads as the drivers don't enable bus mastering for PCI
+bridges.
+
+Exceptional cases, that may still need early bus master enabling in the future,
+should get their own per-reason Kconfig option. Ideally before the next release.
+
 ### Add significant changes here
+
+Deprecations
+------------
+
+### PCI bus master configuration options
+
+In order to minimize the usage of PCI bus mastering, the options we introduced in
+this release will be dropped in a future release again. For more details, please
+see [Preparations to minimize enabling PCI bus mastering](#preparations-to-minimize-enabling-pci-bus-mastering-in-coreboot).

@@ -63,6 +63,9 @@ chip soc/intel/xeon_sp/cpx
 		device pci 05.0 on end # Intel SkyLake-E MM/Vt-d Configuration Registers
 		device pci 05.2 on end # Intel SkyLake-E RAS
 		device pci 05.4 on end # Intel SkyLake-E IOAPIC
+		device pci 07.0 on end
+		device pci 07.4 on end
+		device pci 07.7 on end
 		device pci 08.0 on end # System peripheral: Intel SkyLake-E Ubox Registers
 		device pci 08.1 on end # Performance counters: Intel SkyLake-E Ubox Registers
 		device pci 08.2 on end # System peripheral: Intel SkyLake-E Ubox Registers

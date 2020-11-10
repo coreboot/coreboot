@@ -172,4 +172,8 @@
 #define DMIRCBAR		0x50
 #define ERRINJCON		0x1d8
 
+// IIO DFX Global D7F7 registers
+#define IIO_DFX_TSWCTL0		0x30c
+#define IIO_DFX_LCK_CTL		0x504
+
 #endif /* _SOC_PCI_DEVS_H_ */

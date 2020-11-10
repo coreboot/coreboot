@@ -59,6 +59,9 @@ package Interfaces.C is
 
    type size_t is mod 2 ** System.Parameters.ptr_bits;
 
+   --  For convenience, also provide an uintptr_t type
+   type uintptr_t is mod 2 ** System.Parameters.ptr_bits;
+
    ----------------------------
    -- Characters and Strings --
    ----------------------------

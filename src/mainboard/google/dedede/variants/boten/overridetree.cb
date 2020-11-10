@@ -108,7 +108,7 @@ chip soc/intel/jasperlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""PNP0C50""
 				register "generic.desc" = ""Synaptics Touchpad""
-				register "generic.irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
 				register "generic.wake" = "GPE0_DW0_03"
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x20"
@@ -131,7 +131,7 @@ chip soc/intel/jasperlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_D4_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"

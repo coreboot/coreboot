@@ -1,5 +1,9 @@
 chip soc/intel/jasperlake
 
+	# USB Port Configuration
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # User Facing Camera
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # World Facing Camera
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -43,6 +47,22 @@ chip soc/intel/jasperlake
 	}"
 
 	device domain 0 on
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""User Facing Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""World Facing Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 15.0 on end
 		device pci 15.3 off  end # I2C 3
 	end

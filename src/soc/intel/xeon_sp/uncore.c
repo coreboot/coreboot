@@ -348,3 +348,29 @@ static const struct pci_driver vtd_driver __pci_driver = {
 	.vendor   = PCI_VENDOR_ID_INTEL,
 	.device   = MMAP_VTD_STACK_CFG_REG_DEVID,
 };
+
+static void dmi3_init(struct device *dev)
+{
+	/* Disable error injection */
+	pci_or_config16(dev, ERRINJCON, 1 << 0);
+
+	/*
+	 * DMIRCBAR registers are not TXT lockable, but the BAR enable
+	 * bit is. TXT requires that DMIRCBAR be disabled for security.
+	 */
+	pci_and_config32(dev, DMIRCBAR, ~(1 << 0));
+}
+
+static struct device_operations dmi3_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= dmi3_init,
+	.ops_pci		= &soc_pci_ops,
+};
+
+static const struct pci_driver dmi3_driver __pci_driver = {
+	.ops		= &dmi3_ops,
+	.vendor		= PCI_VENDOR_ID_INTEL,
+	.device		= DMI3_DEVID,
+};

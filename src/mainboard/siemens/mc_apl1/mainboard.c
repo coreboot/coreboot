@@ -85,19 +85,18 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
 	/* Open main hwinfo block */
 	if (hwilib_find_blocks("hwinfo.hex") != CB_SUCCESS)
 		return CB_ERR;
-	/* Now try to find a valid MAC address in hwinfo for this mapping.*/
+	/* Now try to find a valid MAC address in hwinfo for this mapping. */
 	for (i = 0; i < MAX_NUM_MAPPINGS; i++) {
-		if ((hwilib_get_field(XMac1Mapping + i, buf, 16) == 16) &&
-			!(memcmp(buf, mapping, chain_len + 4))) {
-		/* There is a matching mapping available, get MAC address. */
-			if ((hwilib_get_field(XMac1 + i, mac, 6) == 6) &&
-			    (is_mac_adr_valid(mac))) {
-				return CB_SUCCESS;
-			} else {
-				return CB_ERR;
-			}
-		} else
+		if (hwilib_get_field(XMac1Mapping + i, buf, 16) != 16)
 			continue;
+		if (memcmp(buf, mapping, chain_len + 4))
+			continue;
+		/* There is a matching mapping available, get MAC address. */
+		if (hwilib_get_field(XMac1 + i, mac, 6) == 6) {
+			if (is_mac_adr_valid(mac))
+				return CB_SUCCESS;
+		}
+		return CB_ERR;
 	}
 	/* No MAC address found for */
 	return CB_ERR;

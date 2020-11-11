@@ -2321,17 +2321,17 @@ static int get_timB_high_adjust(u64 val)
 {
 	int i;
 
-	/* good */
+	/* DQS is good enough */
 	if (val == 0xffffffffffffffffLL)
 		return 0;
 
 	if (val >= 0xf000000000000000LL) {
-		/* needs negative adjustment */
+		/* DQS is late, needs negative adjustment */
 		for (i = 0; i < 8; i++)
 			if (val << (8 * (7 - i) + 4))
 				return -i;
 	} else {
-		/* needs positive adjustment */
+		/* DQS is early, needs positive adjustment */
 		for (i = 0; i < 8; i++)
 			if (val >> (8 * (7 - i) + 4))
 				return i;
@@ -2339,7 +2339,7 @@ static int get_timB_high_adjust(u64 val)
 	return 8;
 }
 
-static void adjust_high_timB(ramctr_timing *ctrl)
+static void train_write_flyby(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane, old;
 	MCHBAR32(GDCRTRAININGMOD) = 0x200;
@@ -2715,7 +2715,7 @@ int write_training(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 
 	/* measure and adjust timB timings */
-	adjust_high_timB(ctrl);
+	train_write_flyby(ctrl);
 
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
@@ -2726,7 +2726,7 @@ int write_training(ramctr_timing *ctrl)
 	return 0;
 }
 
-static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
+static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	struct ram_rank_timings saved_rt = ctrl->timings[channel][slotrank];
 	int timC_delta;
@@ -3006,14 +3006,18 @@ static void reprogram_320c(ramctr_timing *ctrl)
 	toggle_io_reset();
 }
 
+#define CT_MIN_PI	-127
+#define CT_MAX_PI	128
+#define CT_PI_LENGTH	(CT_MAX_PI - CT_MIN_PI + 1)
+
 #define MIN_C320C_LEN 13
 
 static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 {
 	struct ram_rank_timings saved_timings[NUM_CHANNELS][NUM_SLOTRANKS];
 	int slotrank;
-	int c320c;
-	int stat[NUM_SLOTRANKS][256];
+	int command_pi;
+	int stat[NUM_SLOTRANKS][CT_PI_LENGTH];
 	int delta = 0;
 
 	printram("Trying cmd_stretch %d on channel %d\n", cmd_stretch, channel);
@@ -3042,20 +3046,21 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		ctrl->timings[channel][slotrank].roundtrip_latency -= delta;
 	}
 
-	for (c320c = -127; c320c <= 127; c320c++) {
+	for (command_pi = CT_MIN_PI; command_pi < CT_MAX_PI; command_pi++) {
 		FOR_ALL_POPULATED_RANKS {
-			ctrl->timings[channel][slotrank].pi_coding = c320c;
+			ctrl->timings[channel][slotrank].pi_coding = command_pi;
 		}
 		program_timings(ctrl, channel);
 		reprogram_320c(ctrl);
 		FOR_ALL_POPULATED_RANKS {
-			stat[slotrank][c320c + 127] = test_320c(ctrl, channel, slotrank);
+			stat[slotrank][command_pi - CT_MIN_PI] =
+				test_command_training(ctrl, channel, slotrank);
 		}
 	}
 	FOR_ALL_POPULATED_RANKS {
-		struct run rn = get_longest_zero_run(stat[slotrank], 255);
+		struct run rn = get_longest_zero_run(stat[slotrank], CT_PI_LENGTH - 1);
 
-		ctrl->timings[channel][slotrank].pi_coding = rn.middle - 127;
+		ctrl->timings[channel][slotrank].pi_coding = rn.middle + CT_MIN_PI;
 		printram("cmd_stretch: %d, %d: 0x%02x-0x%02x-0x%02x\n",
 				 channel, slotrank, rn.start, rn.middle, rn.end);
 

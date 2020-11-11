@@ -91,7 +91,7 @@ static void power_on_panel(struct panel_description *panel)
 	gpio_output(GPIO_PPVARN_LCD_EN, 1);
 	gpio_output(GPIO_PP1800_LCM_EN, 1);
 	gpio_output(GPIO_PP3300_LCM_EN, 1);
-	mdelay(6);
+	mdelay(15);
 	gpio_output(GPIO_LCM_RST_1V8, 1);
 	mdelay(6);
 }

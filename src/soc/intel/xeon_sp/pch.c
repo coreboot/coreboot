@@ -39,6 +39,9 @@ static void soc_config_acpibase(void)
 	reg32 = (0x3f << 18) | ACPI_BASE_ADDRESS | 1;
 	pcr_write32(PID_DMI, PCR_DMI_ACPIBA, reg32);
 	pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23a8);
+
+	reg32 = pcr_read32(PID_DMI, PCR_DMI_DMICTL);
+	pcr_write32(PID_DMI, PCR_DMI_DMICTL, reg32 | PCR_DMI_DMICTL_SRLOCK);
 }
 
 void bootblock_pch_init(void)

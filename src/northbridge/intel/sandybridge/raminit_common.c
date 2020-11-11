@@ -142,7 +142,7 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 
 void dram_timing_regs(ramctr_timing *ctrl)
 {
-	u32 reg, addr, val32;
+	u32 reg, val32;
 	int channel;
 
 	FOR_ALL_CHANNELS {
@@ -169,14 +169,13 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		MCHBAR32(TC_RAP_ch(channel)) = reg;
 
 		/* Other parameters */
-		addr = TC_OTHP_ch(channel);
 		reg = 0;
 		reg |= (ctrl->tXPDLL << 0);
 		reg |= (ctrl->tXP    << 5);
 		reg |= (ctrl->tAONPD << 8);
 		reg |= 0xa0000;
-		printram("OTHP [%x] = %x\n", addr, reg);
-		MCHBAR32(addr) = reg;
+		printram("OTHP [%x] = %x\n", TC_OTHP_ch(channel), reg);
+		MCHBAR32(TC_OTHP_ch(channel)) = reg;
 
 		/* Debug parameters - only applies to Ivy Bridge */
 		if (IS_IVY_CPU(ctrl->cpu)) {
@@ -194,8 +193,6 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 			MCHBAR32(TC_DTP_ch(channel)) = reg;
 		}
-
-		MCHBAR32_OR(addr, 0x00020000);
 
 		dram_odt_stretch(ctrl, channel);
 

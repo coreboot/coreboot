@@ -4,7 +4,7 @@ VBOOT_FUTILITY = $(VBOOT_HOST_BUILD)/futility/futility
 
 HOSTPKGCONFIG ?= pkg-config
 
-$(VBOOT_FUTILITY): check-openssl-presence
+$(VBOOT_FUTILITY): | check-openssl-presence
 	@printf "    MAKE       $(subst $(objutil)/,,$(@))\n"
 	unset CFLAGS LDFLAGS; $(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$(VBOOT_HOST_BUILD) \

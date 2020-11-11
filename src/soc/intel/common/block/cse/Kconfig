@@ -40,3 +40,12 @@ config SOC_INTEL_CSE_RW_FILE
 	default ""
 	help
 	 Intel CSE CBFS RW blob path and file name
+
+config SOC_INTEL_CSE_RW_VERSION
+	string "Intel CSE RW firmware version"
+	depends on SOC_INTEL_CSE_LITE_SKU
+	default ""
+	help
+	 This config contains the Intel CSE RW version of the blob that is provided by
+	 SOC_INTEL_CSE_RW_FILE config and the version must be set in the format
+	 major.minor.hotfix.build (ex: 14.0.40.1209).

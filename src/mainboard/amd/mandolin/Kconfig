@@ -72,6 +72,9 @@ config MANDOLIN_MCHP_FW_FILE
 	depends on MANDOLIN_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/mandolin/EC_mandolin.bin" if BOARD_AMD_MANDOLIN
 	default "3rdparty/blobs/mainboard/amd/mandolin/EC_cereme.bin" if BOARD_AMD_CEREME
+	help
+	  The EC firmware blob is usually the first 128kByte of the stock
+	  firmware image.
 
 if !AMD_LPC_DEBUG_CARD
 choice

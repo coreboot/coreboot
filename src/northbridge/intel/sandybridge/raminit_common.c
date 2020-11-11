@@ -1953,6 +1953,12 @@ static int get_precedening_channels(ramctr_timing *ctrl, int target_channel)
 	return ret;
 }
 
+/* Each cacheline is 64 bits long */
+static void program_wdb_pattern_length(int channel, const unsigned int num_cachelines)
+{
+	MCHBAR8(IOSAV_DATA_CTL_ch(channel)) = num_cachelines / 8 - 1;
+}
+
 static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 {
 	unsigned int j;
@@ -1962,6 +1968,8 @@ static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
 
 	sfence();
+
+	program_wdb_pattern_length(channel, 8);
 }
 
 static int num_of_channels(const ramctr_timing *ctrl)
@@ -1985,6 +1993,8 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 		write32((void *)(0x04000000 + channel_offset + channel_step + j * 4), 0);
 
 	sfence();
+
+	program_wdb_pattern_length(channel, 16);
 }
 
 static void precharge(ramctr_timing *ctrl)
@@ -2370,10 +2380,10 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 	MCHBAR32(GDCRTRAININGMOD) = 0x200;
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 1;
 	}
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
 
+		/* Reset read and write WDB pointers */
 		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x10001;
 
 		wait_for_iosav(channel);
@@ -2728,7 +2738,6 @@ int write_training(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0xaaaaaaaa, 0x55555555);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2770,6 +2779,7 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 			MCHBAR32(IOSAV_By_ERROR_COUNT(lane)) = 0;
 		}
 
+		/* Reset read WDB pointer */
 		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 
 		wait_for_iosav(channel);
@@ -2937,6 +2947,8 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 		}
 		sfence();
 	}
+
+	program_wdb_pattern_length(channel, 256);
 }
 
 static void reprogram_320c(ramctr_timing *ctrl)
@@ -3104,7 +3116,6 @@ int command_training(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern5(ctrl, channel, 0);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -3312,7 +3323,6 @@ int discover_edges(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0, 0);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 		FOR_ALL_LANES {
 			MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 		}
@@ -3563,7 +3573,6 @@ int discover_edges(ramctr_timing *ctrl)
 		}
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	/*
@@ -3631,7 +3640,6 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 
 		for (pat = 0; pat < NUM_PATTERNS; pat++) {
 			fill_pattern5(ctrl, channel, pat);
-			MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 			printram("using pattern %d\n", pat);
 
 			for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
@@ -4000,7 +4008,6 @@ int discover_timC_write(ramctr_timing *ctrl)
 					stats[MAX_TIMC] = 1;
 
 					fill_pattern5(ctrl, channel, pat);
-					MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 
 					for (timC = 0; timC < MAX_TIMC; timC++) {
 						FOR_ALL_LANES {
@@ -4130,8 +4137,6 @@ int channel_test(ramctr_timing *ctrl)
 		}
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0x12345678, 0x98765432);
-
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	for (slotrank = 0; slotrank < 4; slotrank++)
@@ -4272,7 +4277,6 @@ void channel_scrub(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_for_iosav(channel);
 		fill_pattern0(ctrl, channel, 0, 0);
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	/*

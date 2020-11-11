@@ -13,6 +13,27 @@ Update this document with changes that should be in the release notes.
 Significant changes
 -------------------
 
+### Native refcode implementation for Bay Trail
+
+Bay Trail no longer needs a refcode binary to function properly. The refcode
+was reimplemented as coreboot code, which should be functionally equivalent.
+Thus, coreboot only needs to run the MRC.bin to successfully boot Bay Trail.
+
+### Unusual config files to build test more code
+
+There's some new highly-unusual config files, whose only purpose is to coerce
+Jenkins into build-testing several disabled-by-default coreboot config options.
+This prevents them from silently decaying over time because of build failures.
+
+### Initial support for Intel Trusted eXecution Technology
+
+coreboot now supports enabling Intel TXT. Though it's not feature-complete yet,
+the code allows successfully launching tboot, a Measured Launch Environment. It
+was tested on Haswell using an Asrock B85M Pro4 mainboard with TPM 2.0 on LPC.
+Though support for other platforms is still not ready, it is being worked on.
+The Haswell MRC.bin needs to be patched so as to enable DPR. Given that the MRC
+binary cannot be redistributed, the best long-term solution is to replace it.
+
 ### Hidden PCI devices
 
 This new functionality takes advantage of the existing 'hidden' keyword in the

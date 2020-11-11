@@ -9,7 +9,6 @@
 #include <intelblocks/cse.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
-#include <vb2_api.h>
 #include <soc/intel/common/reset.h>
 
 /* CSE RW version size reserved in the CSE CBFS RW binary */
@@ -109,14 +108,6 @@ enum bp_info_flags {
 	 */
 	BP_INFO_READ_ONLY_CFG = 1 << 2,
 };
-
-/* Boot Partition FW Version */
-struct fw_version {
-	uint16_t major;
-	uint16_t minor;
-	uint16_t hotfix;
-	uint16_t build;
-} __packed;
 
 /* CSE boot partition entry info */
 struct cse_bp_entry {

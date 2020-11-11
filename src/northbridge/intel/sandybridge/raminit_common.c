@@ -4433,7 +4433,7 @@ static int encode_wm(int ns)
 /* FIXME: values in this function should be hardware revision-dependent */
 void final_registers(ramctr_timing *ctrl)
 {
-	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
+	const bool is_mobile = get_platform_type() == PLATFORM_MOBILE;
 
 	int channel;
 	int t1_cycles = 0, t1_ns = 0, t2_ns;

@@ -29,6 +29,24 @@ config AMD_LPC_DEBUG_CARD
 	  PICASSO_CONSOLE_UART which selects the SoC's integrated memory-mapped
 	  UART for coreboot console output.
 
+choice
+	prompt "SMSC/Microchip 1036 SuperIO config address"
+	depends on SUPERIO_SMSC_SIO1036
+	default SMSC_SIO1036_BASE_164E
+
+config SMSC_SIO1036_BASE_4E
+	bool "0x4e/0x4d base address"
+
+config SMSC_SIO1036_BASE_164E
+	bool "0x164e/0x164d base address"
+
+endchoice
+
+config SUPERIO_ADDR_BASE
+	hex
+	default 0x4e 	if SMSC_SIO1036_BASE_4E
+	default 0x164e 	if SMSC_SIO1036_BASE_164E
+
 config CBFS_SIZE
 	hex
 	default 0x7cf000 if BOARD_AMD_MANDOLIN # Maximum size for the Mandolin FMAP

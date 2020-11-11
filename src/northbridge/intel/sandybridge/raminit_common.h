@@ -244,7 +244,6 @@ int discover_edges(ramctr_timing *ctrl);
 int discover_edges_write(ramctr_timing *ctrl);
 int discover_timC_write(ramctr_timing *ctrl);
 void normalize_training(ramctr_timing *ctrl);
-void write_controller_mr(ramctr_timing *ctrl);
 int channel_test(ramctr_timing *ctrl);
 void set_scrambling_seed(ramctr_timing *ctrl);
 void set_wmm_behavior(const u32 cpu);

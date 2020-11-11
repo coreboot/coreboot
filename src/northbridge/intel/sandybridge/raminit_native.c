@@ -715,8 +715,6 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 
 	set_read_write_timings(ctrl);
 
-	write_controller_mr(ctrl);
-
 	if (!s3resume) {
 		err = channel_test(ctrl);
 		if (err)

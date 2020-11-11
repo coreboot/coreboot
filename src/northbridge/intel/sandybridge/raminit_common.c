@@ -4078,18 +4078,6 @@ void normalize_training(ramctr_timing *ctrl)
 	}
 }
 
-void write_controller_mr(ramctr_timing *ctrl)
-{
-	int channel, slotrank;
-
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		MCHBAR32(lane_base[slotrank] + GDCRTRAININGRESULT1(channel)) =
-			make_mr0(ctrl, slotrank);
-		MCHBAR32(lane_base[slotrank] + GDCRTRAININGRESULT2(channel)) =
-			make_mr1(ctrl, slotrank, channel);
-	}
-}
-
 int channel_test(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;

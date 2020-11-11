@@ -53,7 +53,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 
 	/* Retrieve the sar limits data */
 	if (get_wifi_sar_limits(&sar_limits) < 0) {
-		printk(BIOS_ERR, "Error: failed from getting SAR limits!\n");
+		printk(BIOS_DEBUG, "failed from getting SAR limits!\n");
 		return;
 	}
 

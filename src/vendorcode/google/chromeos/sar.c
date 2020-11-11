@@ -71,7 +71,7 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	/* Try to read the SAR limit entry from VPD */
 	if (!vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
 							 buffer_size, VPD_RO_THEN_RW)) {
-		printk(BIOS_ERR, "Error: Could not locate '%s' in VPD.\n",
+		printk(BIOS_DEBUG, "Could not locate '%s' in VPD.\n",
 				wifi_sar_limit_key);
 
 		if (!CONFIG(WIFI_SAR_CBFS))

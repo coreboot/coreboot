@@ -16,10 +16,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A16 : USB_OC3# ==> USB_C0_OC_ODL */
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
-	/* A19 : DDSP_HPD1 ==> USB_C0_DP_HPD */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
-	/* A20 : DDSP_HPD2 ==> USB_C1_DP_HPD */
-	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
 	/* A22 : DDPC_CTRLDATA ==> EN_PP3300_SSD */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 	/* A23 : I2S1_SCLK ==> I2S1_SPKR_SCLK */

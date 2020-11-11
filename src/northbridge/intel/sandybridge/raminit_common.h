@@ -98,6 +98,11 @@ struct iosav_ssq {
 	} addr_update;
 };
 
+void iosav_write_ssq(const int ch, const struct iosav_ssq *ssq);
+void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer);
+void iosav_run_once(const int ch);
+void wait_for_iosav(int channel);
+
 /* FIXME: Vendor BIOS uses 64 but our algorithms are less
    performant and even 1 seems to be enough in practice.  */
 #define NUM_PATTERNS	4

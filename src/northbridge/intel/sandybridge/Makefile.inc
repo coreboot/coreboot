@@ -22,6 +22,7 @@ ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
 romstage-y += early_dmi.c
 romstage-y += raminit.c
 romstage-y += raminit_common.c
+romstage-y += raminit_iosav.c
 romstage-y += raminit_native.c
 romstage-y += raminit_tables.c
 romstage-y += ../../../device/dram/ddr3.c

@@ -51,12 +51,16 @@ junit.xml:
 	echo
 
 TOOLLIST= \
+amdfwtool \
 cbmem \
 ectool \
 futility \
+genprof \
+intelmetool \
 inteltool \
 intelvbttool \
 nvramtool \
+post \
 superiotool
 
 TEST_PAYLOADLIST_INTERNAL= \

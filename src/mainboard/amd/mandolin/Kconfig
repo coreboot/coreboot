@@ -24,10 +24,10 @@ config AMD_LPC_DEBUG_CARD
 	select PICASSO_LPC_IOMUX
 	select SUPERIO_SMSC_SIO1036
 	help
-	  AMD's debug card contains an SMSC SIO1036 device which provides
-	  an I/O-based UART in the system.  This feature is not compatible with
-	  CONFIG_HUDSON_UART enabling the memory-mapped UART in the chipset.
-	  Note that Kconfig does not currently enforce this restriction.
+	  AMD's debug card contains an SMSC SIO1036 device which provides an
+	  I/O-mapped UART in the system. This is mutually exclusive with
+	  PICASSO_CONSOLE_UART which selects the SoC's integrated memory-mapped
+	  UART for coreboot console output.
 
 config CBFS_SIZE
 	hex

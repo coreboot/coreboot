@@ -98,7 +98,7 @@ struct iosav_ssq {
 	} addr_update;
 };
 
-void iosav_write_ssq(const int ch, const struct iosav_ssq *ssq);
+void iosav_write_sequence(const int ch, const struct iosav_ssq *seq, const unsigned int length);
 void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer);
 void iosav_run_once(const int ch);
 void wait_for_iosav(int channel);

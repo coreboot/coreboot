@@ -47,35 +47,35 @@ union dimm_flags_ddr2_st {
 	 * We do not care how these bits are ordered */
 	struct {
 		/* Module can work at 5.00V */
-		unsigned operable_5_00V:1;
+		unsigned int operable_5_00V:1;
 		/* Module can work at 3.33V */
-		unsigned operable_3_33V:1;
+		unsigned int operable_3_33V:1;
 		/* Module can work at 2.50V */
-		unsigned operable_2_50V:1;
+		unsigned int operable_2_50V:1;
 		/* Module can work at 1.80V - All DIMMS must be 1.8V operable */
-		unsigned operable_1_80V:1;
+		unsigned int operable_1_80V:1;
 		/* Module can work at 1.50V */
-		unsigned operable_1_50V:1;
+		unsigned int operable_1_50V:1;
 		/* Module can work at 1.35V */
-		unsigned operable_1_35V:1;
+		unsigned int operable_1_35V:1;
 		/* Module can work at 1.20V */
-		unsigned operable_1_25V:1;
+		unsigned int operable_1_25V:1;
 		/* Has an 8-bit bus extension, meaning the DIMM supports ECC */
-		unsigned is_ecc:1;
+		unsigned int is_ecc:1;
 		/* Supports weak driver */
-		unsigned weak_driver:1;
+		unsigned int weak_driver:1;
 		/* Supports terminating at 50 Ohm */
-		unsigned terminate_50ohms:1;
+		unsigned int terminate_50ohms:1;
 		/* Partial Array Self Refresh */
-		unsigned pasr:1;
+		unsigned int pasr:1;
 		/* Supports burst length 8 */
-		unsigned bl8:1;
+		unsigned int bl8:1;
 		/* Supports burst length 4 */
-		unsigned bl4:1;
+		unsigned int bl4:1;
 		/* DIMM Package is stack */
-		unsigned stacked:1;
+		unsigned int stacked:1;
 		/* the assembly supports self refresh */
-		unsigned self_refresh:1;
+		unsigned int self_refresh:1;
 	};
 	unsigned int raw;
 };

@@ -42,6 +42,41 @@ static u32 get_FRQ(const ramctr_timing *ctrl)
 	die("Unsupported CPU or base frequency.");
 }
 
+/* CAS write latency. To be programmed in MR2. See DDR3 SPEC for MR2 documentation. */
+static u8 get_CWL(u32 tCK)
+{
+	/* Get CWL based on tCK using the following rule */
+	switch (tCK) {
+	case TCK_1333MHZ:
+		return 12;
+
+	case TCK_1200MHZ:
+	case TCK_1100MHZ:
+		return 11;
+
+	case TCK_1066MHZ:
+	case TCK_1000MHZ:
+		return 10;
+
+	case TCK_933MHZ:
+	case TCK_900MHZ:
+		return 9;
+
+	case TCK_800MHZ:
+	case TCK_700MHZ:
+		return 8;
+
+	case TCK_666MHZ:
+		return 7;
+
+	case TCK_533MHZ:
+		return 6;
+
+	default:
+		return 5;
+	}
+}
+
 /* Get REFI based on frequency index, tREFI = 7.8usec */
 static u32 get_REFI(u32 FRQ, u8 base_freq)
 {

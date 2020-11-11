@@ -227,7 +227,6 @@ typedef struct ramctr_timing_st {
 #define MAKE_ERR		((channel << 16) | (slotrank << 8) | 1)
 #define GET_ERR_CHANNEL(x)	(x >> 16)
 
-u8 get_CWL(u32 tCK);
 void dram_mrscommands(ramctr_timing *ctrl);
 void program_timings(ramctr_timing *ctrl, int channel);
 void dram_find_common_params(ramctr_timing *ctrl);

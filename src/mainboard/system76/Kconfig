@@ -12,4 +12,4 @@ source "src/mainboard/system76/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "System76"
 
-endif
+endif # VENDOR_SYSTEM76

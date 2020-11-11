@@ -12,4 +12,4 @@ source "src/mainboard/clevo/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "Clevo"
 
-endif
+endif # VENDOR_CLEVO

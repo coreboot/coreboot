@@ -12,4 +12,4 @@ source "src/mainboard/up/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "UP"
 
-endif
+endif # VENDOR_UP

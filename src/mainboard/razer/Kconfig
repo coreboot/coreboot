@@ -12,4 +12,4 @@ source "src/mainboard/razer/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "RAZER"
 
-endif
+endif # VENDOR_RAZER

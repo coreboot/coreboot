@@ -38,6 +38,10 @@ fw_config
 		option SD_GL9755S 1
 		option SD_RTS5261 2
 	end
+	field KB_LAYOUT 20 21
+		option KB_LAYOUT_DEFAULT 0
+		option KB_LAYOUT_1 1
+	end
 end
 
 chip soc/intel/tigerlake

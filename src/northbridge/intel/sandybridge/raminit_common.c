@@ -4238,7 +4238,7 @@ void channel_scrub(ramctr_timing *ctrl)
 	 * The following loops writes to every DRAM address, setting the ECC bits to the
 	 * correct value. A read from this location will no longer return a CRC error,
 	 * except when a bit has toggled due to external events.
-	 * The same could be accieved by writing to the physical memory map, but it's
+	 * The same could be achieved by writing to the physical memory map, but it's
 	 * much more difficult due to SMM remapping, ME stolen memory, GFX stolen memory,
 	 * and firmware running in x86_32.
 	 */

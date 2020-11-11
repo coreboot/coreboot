@@ -47,25 +47,32 @@ config USE_NATIVE_RAMINIT
 	  System Agent/MRC.bin. You should answer Y.
 
 config NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES
-	bool "Ignore vendor programmed fuses that limit max. DRAM frequency"
+	bool "[OVERCLOCK] Ignore CAPID fuses that limit max DRAM frequency"
 	default n
 	depends on USE_NATIVE_RAMINIT
 	help
-	  Ignore the mainboard's vendor programmed fuses that might limit the
-	  maximum DRAM frequency. By selecting this option the fuses will be
-	  ignored and the only limits on DRAM frequency are set by RAM's SPD and
-	  hard fuses in southbridge's clockgen.
-	  Disabled by default as it might causes system instability.
-	  Handle with care!
+	  Ignore the CAPID fuses that might limit the maximum DRAM frequency
+	  on overclocking-capable parts. By selecting this option, the fuse
+	  values will be ignored and the only limits on DRAM frequency are
+	  determined by SPD values, per-board devicetree settings and hard
+	  limits in the northbridge's MPLL. Disabled by default as it can
+	  cause instability.
+	  Consider this to be an overclocking option. Handle with care!
 
 config NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS
-	bool "Ignore XMP profile max DIMMs per channel"
+	bool "[OVERCLOCK] Ignore XMP max DIMMs per channel"
 	default n
 	depends on USE_NATIVE_RAMINIT
 	help
-	  Ignore the max DIMMs per channel restriciton defined in XMP profiles.
-	  Disabled by default as it might cause system instability.
-	  Handle with care!
+	  The more DIMMs are in a channel, the more signal integrity worsens.
+	  Because of this, some DIMMs only support running at XMP timings if
+	  the number of DIMMs in the channel is below a limit. This limit is
+	  usually 1, i.e. there must be no other DIMMs in the channel to use
+	  XMP timings. Otherwise, non-XMP timings are used.
+	  When this option is enabled, the max DIMMs per channel restriction
+	  in XMP is ignored. Depending on available margins, this could work
+	  but it can also result in system instability.
+	  Consider this to be an overclocking option. Handle with care!
 
 config NATIVE_RAMINIT_IGNORE_XMP_REQUESTED_VOLTAGE
 	bool "Ignore XMP profile requested voltage"

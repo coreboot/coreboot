@@ -53,9 +53,9 @@ static const struct pad_config gpio_table[] = {
 	/* WWAN_DISABLE_N */
 	PAD_CFG_GPO(GPP_D15, 1, PLTRST),
 	/* WWAN_RST# */
-	PAD_CFG_GPO(GPP_E10, 1, PLTRST),
+	PAD_CFG_GPO(GPP_F14, 1, PLTRST),
 	/* WWAN_PWR_EN */
-	PAD_CFG_GPO(GPP_E13, 1, DEEP),
+	PAD_CFG_GPO(GPP_F21, 1, DEEP),
 	/* WWAN_PERST# */
 	PAD_CFG_GPO(GPP_C5, 1, PLTRST),
 	/* PEG_SLOT_WAKE_N */

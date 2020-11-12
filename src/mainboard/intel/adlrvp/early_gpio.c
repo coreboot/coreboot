@@ -8,9 +8,9 @@
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 	/* WWAN_RST# */
-	PAD_CFG_GPO(GPP_E10, 0, PLTRST),
+	PAD_CFG_GPO(GPP_F14, 0, PLTRST),
 	/* WWAN_PWR_EN */
-	PAD_CFG_GPO(GPP_E13, 1, DEEP),
+	PAD_CFG_GPO(GPP_F21, 1, DEEP),
 };
 
 void variant_configure_early_gpio_pads(void)

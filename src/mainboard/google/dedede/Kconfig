@@ -95,6 +95,7 @@ config MAINBOARD_PART_NUMBER
 	default "Wheelie" if BOARD_GOOGLE_WHEELIE
 	default "Magolor" if BOARD_GOOGLE_MAGOLOR
 	default "Metaknight" if BOARD_GOOGLE_METAKNIGHT
+	default "Lantis" if BOARD_GOOGLE_LANTIS
 
 config MAX_CPUS
 	int
@@ -125,5 +126,6 @@ config VARIANT_DIR
 	default "wheelie" if BOARD_GOOGLE_WHEELIE
 	default "magolor" if BOARD_GOOGLE_MAGOLOR
 	default "metaknight" if BOARD_GOOGLE_METAKNIGHT
+	default "lantis" if BOARD_GOOGLE_LANTIS
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

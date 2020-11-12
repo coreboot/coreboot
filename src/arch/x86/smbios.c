@@ -463,6 +463,12 @@ static int get_socket_type(void)
 	return 0x02; /* Unknown */
 }
 
+unsigned int __weak smbios_memory_error_correction_type(struct memory_info *meminfo)
+{
+	return meminfo->ecc_capable ?
+		MEMORY_ARRAY_ECC_SINGLE_BIT : MEMORY_ARRAY_ECC_NONE;
+}
+
 unsigned int __weak smbios_processor_external_clock(void)
 {
 	return 0; /* Unknown */
@@ -1035,8 +1041,7 @@ static int smbios_write_type16(unsigned long *current, int *handle)
 
 	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
 	t->use = MEMORY_ARRAY_USE_SYSTEM;
-	t->memory_error_correction = meminfo->ecc_capable ?
-				MEMORY_ARRAY_ECC_SINGLE_BIT : MEMORY_ARRAY_ECC_NONE;
+	t->memory_error_correction = smbios_memory_error_correction_type(meminfo);
 
 	/* no error information handle available */
 	t->memory_error_information_handle = 0xFFFE;

@@ -149,69 +149,82 @@ void dram_timing_regs(ramctr_timing *ctrl)
 {
 	int channel;
 
+	/* BIN parameters */
+	const union tc_dbp_reg tc_dbp = {
+		.tRCD = ctrl->tRCD,
+		.tRP  = ctrl->tRP,
+		.tAA  = ctrl->CAS,
+		.tCWL = ctrl->CWL,
+		.tRAS = ctrl->tRAS,
+	};
+
+	/* Regular access parameters */
+	const union tc_rap_reg tc_rap = {
+		.tRRD = ctrl->tRRD,
+		.tRTP = ctrl->tRTP,
+		.tCKE = ctrl->tCKE,
+		.tWTR = ctrl->tWTR,
+		.tFAW = ctrl->tFAW,
+		.tWR  = ctrl->tWR,
+		.tCMD = 3,
+	};
+
+	/* Other parameters */
+	const union tc_othp_reg tc_othp = {
+		.tXPDLL  = ctrl->tXPDLL,
+		.tXP     = ctrl->tXP,
+		.tAONPD  = ctrl->tAONPD,
+		.tCPDED  = 2,
+		.tPRPDEN = 2,
+	};
+
+	/*
+	 * If tXP and tXPDLL are very high, we need to increase them by one.
+	 * This can only happen on Ivy Bridge, and when overclocking the RAM.
+	 */
+	const union tc_dtp_reg tc_dtp = {
+		.overclock_tXP    = ctrl->tXP >= 8,
+		.overclock_tXPDLL = ctrl->tXPDLL >= 32,
+	};
+
+	/*
+	 * TC-Refresh timing parameters:
+	 *   The tREFIx9 field should be programmed to minimum of 8.9 * tREFI (to allow
+	 *   for possible delays from ZQ or isoc) and tRASmax (70us) divided by 1024.
+	 */
+	const u32 val32 = MIN((ctrl->tREFI * 89) / 10, (70000 << 8) / ctrl->tCK);
+
+	const union tc_rftp_reg tc_rftp = {
+		.tREFI   = ctrl->tREFI,
+		.tRFC    = ctrl->tRFC,
+		.tREFIx9 = val32 / 1024,
+	};
+
+	/* Self-refresh timing parameters */
+	const union tc_srftp_reg tc_srftp = {
+		.tXSDLL     = tDLLK,
+		.tXS_offset = ctrl->tXSOffset,
+		.tZQOPER    = tDLLK - ctrl->tXSOffset,
+		.tMOD       = ctrl->tMOD - 8,
+	};
+
 	FOR_ALL_CHANNELS {
-		/* BIN parameters */
-		const union tc_dbp_reg tc_dbp = {
-			.tRCD = ctrl->tRCD,
-			.tRP  = ctrl->tRP,
-			.tAA  = ctrl->CAS,
-			.tCWL = ctrl->CWL,
-			.tRAS = ctrl->tRAS,
-		};
 		printram("DBP [%x] = %x\n", TC_DBP_ch(channel), tc_dbp.raw);
 		MCHBAR32(TC_DBP_ch(channel)) = tc_dbp.raw;
 
-		/* Regular access parameters */
-		const union tc_rap_reg tc_rap = {
-			.tRRD = ctrl->tRRD,
-			.tRTP = ctrl->tRTP,
-			.tCKE = ctrl->tCKE,
-			.tWTR = ctrl->tWTR,
-			.tFAW = ctrl->tFAW,
-			.tWR  = ctrl->tWR,
-			.tCMD = 3,
-		};
 		printram("RAP [%x] = %x\n", TC_RAP_ch(channel), tc_rap.raw);
 		MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
 
-		/* Other parameters */
-		const union tc_othp_reg tc_othp = {
-			.tXPDLL  = ctrl->tXPDLL,
-			.tXP     = ctrl->tXP,
-			.tAONPD  = ctrl->tAONPD,
-			.tCPDED  = 2,
-			.tPRPDEN = 2,
-		};
 		printram("OTHP [%x] = %x\n", TC_OTHP_ch(channel), tc_othp.raw);
 		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
 
-		/* Debug parameters - only applies to Ivy Bridge */
 		if (IS_IVY_CPU(ctrl->cpu)) {
-			/*
-			 * If tXP and tXPDLL are very high, we need to increase them by one.
-			 * This can only happen on Ivy Bridge, and when overclocking the RAM.
-			 */
-			const union tc_dtp_reg tc_dtp = {
-				.overclock_tXP    = ctrl->tXP >= 8,
-				.overclock_tXPDLL = ctrl->tXPDLL >= 32,
-			};
+			/* Debug parameters - only applies to Ivy Bridge */
 			MCHBAR32(TC_DTP_ch(channel)) = tc_dtp.raw;
 		}
 
 		dram_odt_stretch(ctrl, channel);
 
-		/*
-		 * TC-Refresh timing parameters:
-		 *   The tREFIx9 field should be programmed to minimum of 8.9 * tREFI (to allow
-		 *   for possible delays from ZQ or isoc) and tRASmax (70us) divided by 1024.
-		 */
-		const u32 val32 = MIN((ctrl->tREFI * 89) / 10, (70000 << 8) / ctrl->tCK);
-
-		const union tc_rftp_reg tc_rftp = {
-			.tREFI   = ctrl->tREFI,
-			.tRFC    = ctrl->tRFC,
-			.tREFIx9 = val32 / 1024,
-		};
 		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), tc_rftp.raw);
 		MCHBAR32(TC_RFTP_ch(channel)) = tc_rftp.raw;
 
@@ -221,13 +234,6 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		tc_rfp.oref_ri = 0xff;
 		MCHBAR32(TC_RFP_ch(channel)) = tc_rfp.raw;
 
-		/* Self-refresh timing parameters */
-		const union tc_srftp_reg tc_srftp = {
-			.tXSDLL     = tDLLK,
-			.tXS_offset = ctrl->tXSOffset,
-			.tZQOPER    = tDLLK - ctrl->tXSOffset,
-			.tMOD       = ctrl->tMOD - 8,
-		};
 		printram("SRFTP [%x] = %x\n", TC_SRFTP_ch(channel), tc_srftp.raw);
 		MCHBAR32(TC_SRFTP_ch(channel)) = tc_srftp.raw;
 	}

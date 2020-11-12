@@ -135,63 +135,67 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr, MCHBAR32(addr));
 	} else {
 		addr = TC_OTHP_ch(channel);
-		MCHBAR32_AND_OR(addr, ~(0xf << 16), (stretch << 16) | (stretch << 18));
+		union tc_othp_reg tc_othp = {
+			.raw = MCHBAR32(addr),
+		};
+		tc_othp.odt_delay_d0 = stretch;
+		tc_othp.odt_delay_d1 = stretch;
+		MCHBAR32(addr) = tc_othp.raw;
 		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, MCHBAR32(addr));
 	}
 }
 
 void dram_timing_regs(ramctr_timing *ctrl)
 {
-	u32 reg, val32;
 	int channel;
 
 	FOR_ALL_CHANNELS {
 		/* BIN parameters */
-		reg = 0;
-		reg |= (ctrl->tRCD <<  0);
-		reg |= (ctrl->tRP  <<  4);
-		reg |= (ctrl->CAS  <<  8);
-		reg |= (ctrl->CWL  << 12);
-		reg |= (ctrl->tRAS << 16);
-		printram("DBP [%x] = %x\n", TC_DBP_ch(channel), reg);
-		MCHBAR32(TC_DBP_ch(channel)) = reg;
+		const union tc_dbp_reg tc_dbp = {
+			.tRCD = ctrl->tRCD,
+			.tRP  = ctrl->tRP,
+			.tAA  = ctrl->CAS,
+			.tCWL = ctrl->CWL,
+			.tRAS = ctrl->tRAS,
+		};
+		printram("DBP [%x] = %x\n", TC_DBP_ch(channel), tc_dbp.raw);
+		MCHBAR32(TC_DBP_ch(channel)) = tc_dbp.raw;
 
 		/* Regular access parameters */
-		reg = 0;
-		reg |= (ctrl->tRRD <<  0);
-		reg |= (ctrl->tRTP <<  4);
-		reg |= (ctrl->tCKE <<  8);
-		reg |= (ctrl->tWTR << 12);
-		reg |= (ctrl->tFAW << 16);
-		reg |= (ctrl->tWR  << 24);
-		reg |= (3 << 30);
-		printram("RAP [%x] = %x\n", TC_RAP_ch(channel), reg);
-		MCHBAR32(TC_RAP_ch(channel)) = reg;
+		const union tc_rap_reg tc_rap = {
+			.tRRD = ctrl->tRRD,
+			.tRTP = ctrl->tRTP,
+			.tCKE = ctrl->tCKE,
+			.tWTR = ctrl->tWTR,
+			.tFAW = ctrl->tFAW,
+			.tWR  = ctrl->tWR,
+			.tCMD = 3,
+		};
+		printram("RAP [%x] = %x\n", TC_RAP_ch(channel), tc_rap.raw);
+		MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
 
 		/* Other parameters */
-		reg = 0;
-		reg |= (ctrl->tXPDLL << 0);
-		reg |= (ctrl->tXP    << 5);
-		reg |= (ctrl->tAONPD << 8);
-		reg |= 0xa0000;
-		printram("OTHP [%x] = %x\n", TC_OTHP_ch(channel), reg);
-		MCHBAR32(TC_OTHP_ch(channel)) = reg;
+		const union tc_othp_reg tc_othp = {
+			.tXPDLL  = ctrl->tXPDLL,
+			.tXP     = ctrl->tXP,
+			.tAONPD  = ctrl->tAONPD,
+			.tCPDED  = 2,
+			.tPRPDEN = 2,
+		};
+		printram("OTHP [%x] = %x\n", TC_OTHP_ch(channel), tc_othp.raw);
+		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
 
 		/* Debug parameters - only applies to Ivy Bridge */
 		if (IS_IVY_CPU(ctrl->cpu)) {
-			reg = 0;
-
 			/*
 			 * If tXP and tXPDLL are very high, we need to increase them by one.
 			 * This can only happen on Ivy Bridge, and when overclocking the RAM.
 			 */
-			if (ctrl->tXP >= 8)
-				reg |= (1 << 12);
-
-			if (ctrl->tXPDLL >= 32)
-				reg |= (1 << 13);
-
-			MCHBAR32(TC_DTP_ch(channel)) = reg;
+			const union tc_dtp_reg tc_dtp = {
+				.overclock_tXP    = ctrl->tXP >= 8,
+				.overclock_tXPDLL = ctrl->tXPDLL >= 32,
+			};
+			MCHBAR32(TC_DTP_ch(channel)) = tc_dtp.raw;
 		}
 
 		dram_odt_stretch(ctrl, channel);
@@ -201,28 +205,31 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		 *   The tREFIx9 field should be programmed to minimum of 8.9 * tREFI (to allow
 		 *   for possible delays from ZQ or isoc) and tRASmax (70us) divided by 1024.
 		 */
-		val32 = MIN((ctrl->tREFI * 89) / 10, (70000 << 8) / ctrl->tCK);
+		const u32 val32 = MIN((ctrl->tREFI * 89) / 10, (70000 << 8) / ctrl->tCK);
 
-		reg = ((ctrl->tREFI & 0xffff) <<  0) |
-		      ((ctrl->tRFC  & 0x01ff) << 16) | (((val32 / 1024) & 0x7f) << 25);
+		const union tc_rftp_reg tc_rftp = {
+			.tREFI   = ctrl->tREFI,
+			.tRFC    = ctrl->tRFC,
+			.tREFIx9 = val32 / 1024,
+		};
+		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), tc_rftp.raw);
+		MCHBAR32(TC_RFTP_ch(channel)) = tc_rftp.raw;
 
-		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), reg);
-		MCHBAR32(TC_RFTP_ch(channel)) = reg;
-
-		MCHBAR32_OR(TC_RFP_ch(channel), 0xff);
+		union tc_rfp_reg tc_rfp = {
+			.raw = MCHBAR32(TC_RFP_ch(channel)),
+		};
+		tc_rfp.oref_ri = 0xff;
+		MCHBAR32(TC_RFP_ch(channel)) = tc_rfp.raw;
 
 		/* Self-refresh timing parameters */
-		reg = 0;
-		val32 = tDLLK;
-		reg   = (reg & ~0x00000fff) | (val32 <<  0);
-		val32 = ctrl->tXSOffset;
-		reg   = (reg & ~0x0000f000) | (val32 << 12);
-		val32 = tDLLK - ctrl->tXSOffset;
-		reg   = (reg & ~0x03ff0000) | (val32 << 16);
-		val32 = ctrl->tMOD - 8;
-		reg   = (reg & ~0xf0000000) | (val32 << 28);
-		printram("SRFTP [%x] = %x\n", TC_SRFTP_ch(channel), reg);
-		MCHBAR32(TC_SRFTP_ch(channel)) = reg;
+		const union tc_srftp_reg tc_srftp = {
+			.tXSDLL     = tDLLK,
+			.tXS_offset = ctrl->tXSOffset,
+			.tZQOPER    = tDLLK - ctrl->tXSOffset,
+			.tMOD       = ctrl->tMOD - 8,
+		};
+		printram("SRFTP [%x] = %x\n", TC_SRFTP_ch(channel), tc_srftp.raw);
+		MCHBAR32(TC_SRFTP_ch(channel)) = tc_srftp.raw;
 	}
 }
 
@@ -2215,14 +2222,16 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 
 	ctrl->cmd_stretch[channel] = cmd_stretch;
 
-	MCHBAR32(TC_RAP_ch(channel)) =
-		  (ctrl->tRRD <<  0)
-		| (ctrl->tRTP <<  4)
-		| (ctrl->tCKE <<  8)
-		| (ctrl->tWTR << 12)
-		| (ctrl->tFAW << 16)
-		| (ctrl->tWR  << 24)
-		| (ctrl->cmd_stretch[channel] << 30);
+	const union tc_rap_reg tc_rap = {
+		.tRRD    = ctrl->tRRD,
+		.tRTP    = ctrl->tRTP,
+		.tCKE    = ctrl->tCKE,
+		.tWTR    = ctrl->tWTR,
+		.tFAW    = ctrl->tFAW,
+		.tWR     = ctrl->tWR,
+		.tCMD    = ctrl->cmd_stretch[channel],
+	};
+	MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
 
 	if (ctrl->cmd_stretch[channel] == 2)
 		delta = 2;
@@ -2980,7 +2989,6 @@ void set_read_write_timings(ramctr_timing *ctrl)
 	int channel, slotrank;
 
 	FOR_ALL_POPULATED_CHANNELS {
-		u32 b20, b4_8_12;
 		int min_pi = 10000;
 		int max_pi = -10000;
 
@@ -2989,14 +2997,23 @@ void set_read_write_timings(ramctr_timing *ctrl)
 			min_pi = MIN(ctrl->timings[channel][slotrank].pi_coding, min_pi);
 		}
 
-		b20 = (max_pi - min_pi > 51) ? 0 : ctrl->ref_card_offset[channel];
+		const u32 tWRDRDD = (max_pi - min_pi > 51) ? 0 : ctrl->ref_card_offset[channel];
 
-		b4_8_12 = (ctrl->pi_coding_threshold < max_pi - min_pi) ? 0x3330 : 0x2220;
+		const u32 val = (ctrl->pi_coding_threshold < max_pi - min_pi) ? 3 : 2;
 
 		dram_odt_stretch(ctrl, channel);
 
-		MCHBAR32(TC_RWP_ch(channel)) = (1 << 27) | (2 << 24) | (b20 << 20) |
-			((ctrl->ref_card_offset[channel] + 2) << 16) | b4_8_12;
+		const union tc_rwp_reg tc_rwp = {
+			.tRRDR   = 0,
+			.tRRDD   = val,
+			.tWWDR   = val,
+			.tWWDD   = val,
+			.tRWDRDD = ctrl->ref_card_offset[channel] + 2,
+			.tWRDRDD = tWRDRDD,
+			.tRWSR   = 2,
+			.dec_wrd = 1,
+		};
+		MCHBAR32(TC_RWP_ch(channel)) = tc_rwp.raw;
 	}
 }
 
@@ -3028,8 +3045,13 @@ void final_registers(ramctr_timing *ctrl)
 	/* FIXME: This register only exists on Ivy Bridge */
 	MCHBAR32(WMM_READ_CONFIG) = 0x46;
 
-	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(TC_OTHP_ch(channel), ~(3 << 12), 1 << 12);
+	FOR_ALL_CHANNELS {
+		union tc_othp_reg tc_othp = {
+			.raw = MCHBAR32(TC_OTHP_ch(channel)),
+		};
+		tc_othp.tCPDED = 1;
+		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
+	}
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
@@ -3067,8 +3089,13 @@ void final_registers(ramctr_timing *ctrl)
 	MCHBAR32_AND_OR(MEM_TRML_THRESHOLDS_CONFIG, ~0x00ffffff, 0x00e4d5d0);
 	MCHBAR32_AND(MEM_TRML_INTERRUPT, ~0x1f);
 
-	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(TC_RFP_ch(channel), ~(3 << 16), 1 << 16);
+	FOR_ALL_CHANNELS {
+		union tc_rfp_reg tc_rfp = {
+			.raw = MCHBAR32(TC_RFP_ch(channel)),
+		};
+		tc_rfp.refresh_2x_control = 1;
+		MCHBAR32(TC_RFP_ch(channel)) = tc_rfp.raw;
+	}
 
 	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 0);
 	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 7);
@@ -3107,14 +3134,16 @@ void restore_timings(ramctr_timing *ctrl)
 	int channel, lane;
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(TC_RAP_ch(channel)) =
-			  (ctrl->tRRD <<  0)
-			| (ctrl->tRTP <<  4)
-			| (ctrl->tCKE <<  8)
-			| (ctrl->tWTR << 12)
-			| (ctrl->tFAW << 16)
-			| (ctrl->tWR  << 24)
-			| (ctrl->cmd_stretch[channel] << 30);
+		const union tc_rap_reg tc_rap = {
+			.tRRD    = ctrl->tRRD,
+			.tRTP    = ctrl->tRTP,
+			.tCKE    = ctrl->tCKE,
+			.tWTR    = ctrl->tWTR,
+			.tFAW    = ctrl->tFAW,
+			.tWR     = ctrl->tWR,
+			.tCMD    = ctrl->cmd_stretch[channel],
+		};
+		MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
 	}
 
 	udelay(1);

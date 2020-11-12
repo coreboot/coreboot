@@ -98,6 +98,108 @@ struct iosav_ssq {
 	} addr_update;
 };
 
+union tc_dbp_reg {
+	struct {
+		u32 tRCD : 4; /* [ 3.. 0] */
+		u32 tRP  : 4; /* [ 7.. 4] */
+		u32 tAA  : 4; /* [11.. 8] */
+		u32 tCWL : 4; /* [15..12] */
+		u32 tRAS : 8; /* [23..16] */
+		u32      : 8;
+	};
+	u32 raw;
+};
+
+union tc_rap_reg {
+	struct {
+		u32 tRRD    : 4; /* [ 3.. 0] */
+		u32 tRTP    : 4; /* [ 7.. 4] */
+		u32 tCKE    : 4; /* [11.. 8] */
+		u32 tWTR    : 4; /* [15..12] */
+		u32 tFAW    : 8; /* [23..16] */
+		u32 tWR     : 5; /* [28..24] */
+		u32 dis_3st : 1; /* [29..29] */
+		u32 tCMD    : 2; /* [31..30] */
+	};
+	u32 raw;
+};
+
+union tc_rwp_reg {
+	struct {
+		u32 tRRDR   : 3; /* [ 2.. 0] */
+		u32         : 1;
+		u32 tRRDD   : 3; /* [ 6.. 4] */
+		u32         : 1;
+		u32 tWWDR   : 3; /* [10.. 8] */
+		u32         : 1;
+		u32 tWWDD   : 3; /* [14..12] */
+		u32         : 1;
+		u32 tRWDRDD : 3; /* [18..16] */
+		u32         : 1;
+		u32 tWRDRDD : 3; /* [22..20] */
+		u32         : 1;
+		u32 tRWSR   : 3; /* [26..24] */
+		u32 dec_wrd : 1; /* [27..27] */
+		u32         : 4;
+	};
+	u32 raw;
+};
+
+union tc_othp_reg {
+	struct {
+		u32 tXPDLL       :  5; /* [ 4.. 0] */
+		u32 tXP          :  3; /* [ 7.. 5] */
+		u32 tAONPD       :  4; /* [11.. 8] */
+		u32 tCPDED       :  2; /* [13..12] */
+		u32 tPRPDEN      :  2; /* [15..14] */
+		u32 odt_delay_d0 :  2; /* [17..16] */
+		u32 odt_delay_d1 :  2; /* [19..18] */
+		u32              : 12;
+	};
+	u32 raw;
+};
+
+union tc_dtp_reg {
+	struct {
+		u32                  : 12;
+		u32 overclock_tXP    :  1; /* [12..12] */
+		u32 overclock_tXPDLL :  1; /* [13..13] */
+		u32                  : 18;
+	};
+	u32 raw;
+};
+
+union tc_rfp_reg {
+	struct {
+		u32 oref_ri            :  8; /* [ 7.. 0] */
+		u32 refresh_high_wm    :  4; /* [11.. 8] */
+		u32 refresh_panic_wm   :  4; /* [15..12] */
+		u32 refresh_2x_control :  2; /* [17..16] */
+		u32                    : 14;
+	};
+	u32 raw;
+};
+
+union tc_rftp_reg {
+	struct {
+		u32 tREFI   : 16; /* [15.. 0] */
+		u32 tRFC    :  9; /* [24..16] */
+		u32 tREFIx9 :  7; /* [31..25] */
+	};
+	u32 raw;
+};
+
+union tc_srftp_reg {
+	struct {
+		u32 tXSDLL     : 12; /* [11.. 0] */
+		u32 tXS_offset :  4; /* [15..12] */
+		u32 tZQOPER    : 10; /* [25..16] */
+		u32            :  2;
+		u32 tMOD       :  4; /* [31..28] */
+	};
+	u32 raw;
+};
+
 typedef struct ramctr_timing_st ramctr_timing;
 
 void iosav_write_sequence(const int ch, const struct iosav_ssq *seq, const unsigned int length);

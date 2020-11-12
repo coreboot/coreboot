@@ -723,9 +723,9 @@ typedef struct {
 
 /** Offset 0x0A70 - Reserved
 **/
-  UINT8                      Reserved41[113];
+  UINT8                      Reserved41[89];
 
-/** Offset 0x0AE1 - Enable PS_ON.
+/** Offset 0x0AC9 - Enable PS_ON.
   PS_ON is a new C10 state from the CPU on desktop SKUs that enables a lower power
   target that will be required by the California Energy Commission (CEC). When FALSE,
   PS_ON is to be disabled.
@@ -733,29 +733,29 @@ typedef struct {
 **/
   UINT8                       PsOnEnable;
 
-/** Offset 0x0AE2 - Reserved
+/** Offset 0x0ACA - Reserved
 **/
   UINT8                       Reserved42[310];
 
-/** Offset 0x0C18 - RpPtmBytes
+/** Offset 0x0C00 - RpPtmBytes
 **/
   UINT8                       RpPtmBytes[4];
 
-/** Offset 0x0C1C - Reserved
+/** Offset 0x0C04 - Reserved
 **/
   UINT8                      Reserved43[99];
 
-/** Offset 0x0C7F - Enable/Disable IGFX PmSupport
+/** Offset 0x0C67 - Enable/Disable IGFX PmSupport
   Enable(Default): Enable IGFX PmSupport, Disable: Disable IGFX PmSupport
   $EN_DIS
 **/
   UINT8                       PmSupport;
 
-/** Offset 0x0C80 - Reserved
+/** Offset 0x0C68 - Reserved
 **/
   UINT8                       Reserved44;
 
-/** Offset 0x0C81 - GT Frequency Limit
+/** Offset 0x0C69 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
   7: 350 Mhz, 8: 400 Mhz, 9: 450 Mhz, 0xA: 500 Mhz, 0xB: 550 Mhz, 0xC: 600 Mhz, 0xD:
   650 Mhz, 0xE: 700 Mhz, 0xF: 750 Mhz, 0x10: 800 Mhz, 0x11: 850 Mhz, 0x12:900 Mhz,
@@ -769,22 +769,22 @@ typedef struct {
 **/
   UINT8                       GtFreqMax;
 
-/** Offset 0x0C82 - Reserved
+/** Offset 0x0C6A - Reserved
 **/
   UINT8                       Reserved45[24];
 
-/** Offset 0x0C9A - Enable or Disable HWP
+/** Offset 0x0C82 - Enable or Disable HWP
   Enable or Disable HWP(Hardware P states) Support. 0: Disable; <b>1: Enable;</b>
   2-3:Reserved
   $EN_DIS
 **/
   UINT8                       Hwp;
 
-/** Offset 0x0C9B - Reserved
+/** Offset 0x0C83 - Reserved
 **/
   UINT8                       Reserved46[8];
 
-/** Offset 0x0CA3 - TCC Activation Offset
+/** Offset 0x0C8B - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
   Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
@@ -792,63 +792,63 @@ typedef struct {
 **/
   UINT8                       TccActivationOffset;
 
-/** Offset 0x0CA4 - Reserved
+/** Offset 0x0C8C - Reserved
 **/
   UINT8                       Reserved47[34];
 
-/** Offset 0x0CC6 - Enable or Disable CPU power states (C-states)
+/** Offset 0x0CAE - Enable or Disable CPU power states (C-states)
   Enable or Disable CPU power states (C-states). 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       Cx;
 
-/** Offset 0x0CC7 - Reserved
+/** Offset 0x0CAF - Reserved
 **/
-  UINT8                       Reserved48[197];
+  UINT8                       Reserved48[196];
 
-/** Offset 0x0D8C - Enable LOCKDOWN SMI
+/** Offset 0x0D73 - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
   $EN_DIS
 **/
   UINT8                       PchLockDownGlobalSmi;
 
-/** Offset 0x0D8D - Enable LOCKDOWN BIOS Interface
+/** Offset 0x0D74 - Enable LOCKDOWN BIOS Interface
   Enable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register.
   $EN_DIS
 **/
   UINT8                       PchLockDownBiosInterface;
 
-/** Offset 0x0D8E - Unlock all GPIO pads
+/** Offset 0x0D75 - Unlock all GPIO pads
   Force all GPIO pads to be unlocked for debug purpose.
   $EN_DIS
 **/
   UINT8                       PchUnlockGpioPads;
 
-/** Offset 0x0D8F - Reserved
+/** Offset 0x0D76 - Reserved
 **/
-  UINT8                       Reserved49;
+  UINT8                       Reserved49[2];
 
-/** Offset 0x0D90 - PCIE RP Ltr Max Snoop Latency
+/** Offset 0x0D78 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
 **/
   UINT16                      PcieRpLtrMaxSnoopLatency[28];
 
-/** Offset 0x0DC8 - PCIE RP Ltr Max No Snoop Latency
+/** Offset 0x0DB0 - PCIE RP Ltr Max No Snoop Latency
   Latency Tolerance Reporting, Max Non-Snoop Latency.
 **/
   UINT16                      PcieRpLtrMaxNoSnoopLatency[28];
 
-/** Offset 0x0E00 - Reserved
+/** Offset 0x0DE8 - Reserved
 **/
   UINT8                       Reserved50[313];
 
-/** Offset 0x0F39 - LpmStateEnableMask
+/** Offset 0x0F21 - LpmStateEnableMask
 **/
   UINT8                       LpmStateEnableMask;
 
-/** Offset 0x0F3A - Reserved
+/** Offset 0x0F22 - Reserved
 **/
-  UINT8                      Reserved51[766];
+  UINT8                      Reserved51[702];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -867,11 +867,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x1238
+/** Offset 0x11E0
 **/
-  UINT8                       UnusedUpdSpace48[6];
+  UINT8                       UnusedUpdSpace45[6];
 
-/** Offset 0x123E
+/** Offset 0x11E6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -880,7 +880,17 @@ typedef struct {
 
 /** Offset 0x0797 - Reserved
 **/
-  UINT8                       Reserved38[50];
+  UINT8                       Reserved38[35];
+
+/** Offset 0x07BA - Command Pins Mapping
+  BitMask where bits [3:0] are Controller 0 Channel [3:0] and bits [7:4] are Controller
+  1 Channel [3:0]. 0 = CCC pin mapping is Ascending, 1 = CCC pin mapping is Descending.
+**/
+  UINT8                       Lp5CccConfig;
+
+/** Offset 0x07BB - Reserved
+**/
+  UINT8                       Reserved39[14];
 
 /** Offset 0x07C9 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -891,7 +901,7 @@ typedef struct {
 
 /** Offset 0x07CA - Reserved
 **/
-  UINT8                       Reserved39;
+  UINT8                       Reserved40;
 
 /** Offset 0x07CB - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
@@ -901,7 +911,7 @@ typedef struct {
 
 /** Offset 0x07CC - Reserved
 **/
-  UINT8                       Reserved40[129];
+  UINT8                       Reserved41[129];
 
 /** Offset 0x084D - Skip CPU replacement check
   Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
@@ -911,7 +921,7 @@ typedef struct {
 
 /** Offset 0x084E - Reserved
 **/
-  UINT8                       Reserved41[292];
+  UINT8                       Reserved42[292];
 
 /** Offset 0x0972 - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
@@ -922,7 +932,7 @@ typedef struct {
 
 /** Offset 0x0973 - Reserved
 **/
-  UINT8                       Reserved42[183];
+  UINT8                       Reserved43[183];
 
 /** Offset 0x0A2A - GPIO Override
   Gpio Override Level - FSP will not configure any GPIOs and rely on GPIO setings
@@ -933,7 +943,7 @@ typedef struct {
 
 /** Offset 0x0A2B - Reserved
 **/
-  UINT8                       Reserved43[349];
+  UINT8                       Reserved44[349];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

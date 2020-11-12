@@ -185,22 +185,14 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	/* DEFVTBAR has to be set and enabled. */
 	if (defvtbar && defvten) {
 		tmp = current;
-		/*
-		 * P2SB may already be hidden. There's no clear rule, when.
-		 * It is needed to get bus, device and function for IOAPIC and
-		 * HPET device which is stored in P2SB device. So unhide it to
-		 * get the info and hide it again when done.
-		 */
-		p2sb_unhide();
-		struct device *p2sb_dev = pcidev_path_on_root(PCH_DEVFN_P2SB);
-		uint16_t ibdf = pci_read_config16(p2sb_dev, PCH_P2SB_IBDF);
+		union p2sb_bdf ibdf = p2sb_get_ioapic_bdf();
 		union p2sb_bdf hbdf = p2sb_get_hpet_bdf();
 		p2sb_hide();
 
 		current += acpi_create_dmar_drhd(current,
 				DRHD_INCLUDE_PCI_ALL, 0, defvtbar);
 		current += acpi_create_dmar_ds_ioapic(current,
-				2, ibdf >> 8, PCI_SLOT(ibdf), PCI_FUNC(ibdf));
+				2, ibdf.bus, ibdf.dev, ibdf.fn);
 		current += acpi_create_dmar_ds_msi_hpet(current,
 				0, hbdf.bus, hbdf.dev, hbdf.fn);
 		acpi_dmar_drhd_fixup(tmp, current);

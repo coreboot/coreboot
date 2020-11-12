@@ -597,18 +597,6 @@ void dram_jedecreset(ramctr_timing *ctrl)
 	}
 }
 
-static odtmap get_ODT(ramctr_timing *ctrl, u8 rank, int channel)
-{
-	/* Get ODT based on rankmap */
-	int dimms_per_ch = (ctrl->rankmap[channel] & 1) + ((ctrl->rankmap[channel] >> 2) & 1);
-
-	if (dimms_per_ch == 1) {
-		return (const odtmap){60,  60};
-	} else {
-		return (const odtmap){120, 30};
-	}
-}
-
 static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg, u32 val)
 {
 	wait_for_iosav(channel);
@@ -716,6 +704,18 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 static void dram_mr0(ramctr_timing *ctrl, u8 rank, int channel)
 {
 	write_mrreg(ctrl, channel, rank, 0, make_mr0(ctrl, rank));
+}
+
+static odtmap get_ODT(ramctr_timing *ctrl, u8 rank, int channel)
+{
+	/* Get ODT based on rankmap */
+	int dimms_per_ch = (ctrl->rankmap[channel] & 1) + ((ctrl->rankmap[channel] >> 2) & 1);
+
+	if (dimms_per_ch == 1) {
+		return (const odtmap){60,  60};
+	} else {
+		return (const odtmap){120, 30};
+	}
 }
 
 static u32 encode_odt(u32 odt)

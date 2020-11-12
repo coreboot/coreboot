@@ -690,9 +690,6 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
 	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
 
-	/* DLL Reset - self clearing - set after CLK frequency has been changed */
-	mr0reg = 1 << 8;
-
 	/* Convert CAS to MCH register friendly */
 	if (ctrl->CAS < 12) {
 		mch_cas = (u16) ((ctrl->CAS - 4) << 1);
@@ -704,12 +701,15 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 	/* Convert tWR to MCH register friendly */
 	mch_wr = mch_wr_t[ctrl->tWR - 5];
 
-	mr0reg = (mr0reg & ~0x0004) | ((mch_cas & 0x1) << 2);
-	mr0reg = (mr0reg & ~0x0070) | ((mch_cas & 0xe) << 3);
-	mr0reg = (mr0reg & ~0x0e00) |  (mch_wr << 9);
+	/* DLL Reset - self clearing - set after CLK frequency has been changed */
+	mr0reg = 1 << 8;
+
+	mr0reg |= (mch_cas & 0x1) << 2;
+	mr0reg |= (mch_cas & 0xe) << 3;
+	mr0reg |= mch_wr << 9;
 
 	/* Precharge PD - Fast (desktop) 1 or slow (mobile) 0 - mostly power-saving feature */
-	mr0reg = (mr0reg & ~(1 << 12)) | (!is_mobile << 12);
+	mr0reg |= !is_mobile << 12;
 	return mr0reg;
 }
 

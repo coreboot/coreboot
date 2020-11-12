@@ -706,7 +706,7 @@ static void dram_mr0(ramctr_timing *ctrl, u8 rank, int channel)
 	write_mrreg(ctrl, channel, rank, 0, make_mr0(ctrl, rank));
 }
 
-static odtmap get_ODT(ramctr_timing *ctrl, u8 rank, int channel)
+static odtmap get_ODT(ramctr_timing *ctrl, int channel)
 {
 	/* Get ODT based on rankmap */
 	int dimms_per_ch = (ctrl->rankmap[channel] & 1) + ((ctrl->rankmap[channel] >> 2) & 1);
@@ -738,7 +738,7 @@ static u32 make_mr1(ramctr_timing *ctrl, u8 rank, int channel)
 	odtmap odt;
 	u32 mr1reg;
 
-	odt = get_ODT(ctrl, rank, channel);
+	odt = get_ODT(ctrl, channel);
 	mr1reg = 2;
 
 	mr1reg |= encode_odt(odt.rttnom);
@@ -763,7 +763,7 @@ static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 
 	pasr = 0;
 	cwl = ctrl->CWL - 5;
-	odt = get_ODT(ctrl, rank, channel);
+	odt = get_ODT(ctrl, channel);
 
 	srt = ctrl->extended_temperature_range && !ctrl->auto_self_refresh;
 

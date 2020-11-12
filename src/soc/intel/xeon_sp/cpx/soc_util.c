@@ -27,21 +27,9 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return *memmap_addr;
 }
 
-void get_iiostack_info(struct iiostack_resource *info)
+bool is_iio_stack_res(const STACK_RES *res)
 {
-	const IIO_UDS *hob = get_iio_uds();
-
-	// copy IIO Stack info from FSP HOB
-	info->no_of_stacks = 0;
-	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
-		for (int x = 0; x < MAX_IIO_STACK; ++x) {
-			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
-			if (ri->Personality == TYPE_UBOX_IIO) {
-				assert(info->no_of_stacks < ARRAY_SIZE(info->res));
-				memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
-			}
-		}
-	}
+	return res->Personality == TYPE_UBOX_IIO;
 }
 
 uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)

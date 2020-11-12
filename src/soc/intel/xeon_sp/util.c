@@ -119,6 +119,23 @@ const IIO_UDS *get_iio_uds(void)
 	return hob;
 }
 
+void get_iiostack_info(struct iiostack_resource *info)
+{
+	const IIO_UDS *hob = get_iio_uds();
+
+	// copy IIO Stack info from FSP HOB
+	info->no_of_stacks = 0;
+	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
+		for (int x = 0; x < MAX_IIO_STACK; ++x) {
+			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
+			if (!is_iio_stack_res(ri))
+				continue;
+			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
+			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
+		}
+	}
+}
+
 unsigned int soc_get_num_cpus(void)
 {
 	/* The FSP IIO UDS HOB has field numCpus, it is actually socket count */

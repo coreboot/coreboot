@@ -6,13 +6,6 @@
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
 
-struct iiostack_resource {
-	uint8_t     no_of_stacks;
-	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
-};
-
-void get_iiostack_info(struct iiostack_resource *info);
-
 void config_reset_cpl3_csrs(void);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);

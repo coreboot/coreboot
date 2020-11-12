@@ -17,4 +17,12 @@ unsigned int soc_get_num_cpus(void);
 void xeonsp_init_cpu_config(void);
 void set_bios_init_completion(void);
 
+struct iiostack_resource {
+	uint8_t     no_of_stacks;
+	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
+};
+
+void get_iiostack_info(struct iiostack_resource *info);
+bool is_iio_stack_res(const STACK_RES *res);
+
 #endif

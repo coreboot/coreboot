@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AGESAWRAPPER_H__
-#define __AGESAWRAPPER_H__
+#ifndef __AMD_BLOCK_AGESAWRAPPER_H__
+#define __AMD_BLOCK_AGESAWRAPPER_H__
 
 #include <agesa_headers.h>
 
@@ -39,4 +39,4 @@ void SetNbMidParams(GNB_MID_CONFIGURATION *params);
 void set_board_env_params(GNB_ENV_CONFIGURATION *params);
 void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly);
 
-#endif /* __AGESAWRAPPER_H__ */
+#endif /* __AMD_BLOCK_AGESAWRAPPER_H__ */

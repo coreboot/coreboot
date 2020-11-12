@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __DIMMSPD_H__
-#define __DIMMSPD_H__
+#ifndef __AMD_BLOCK_DIMM_SPD_H__
+#define __AMD_BLOCK_DIMM_SPD_H__
 
 #include <amdblocks/agesawrapper.h>
 #include <stddef.h>
@@ -15,4 +15,4 @@
 int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len);
 int sb_read_spd(uint8_t spdAddress, char *buf, size_t len);
 
-#endif
+#endif /* __AMD_BLOCK_DIMM_SPD_H__ */

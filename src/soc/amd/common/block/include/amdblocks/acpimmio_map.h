@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __AMDBLOCKS_ACPIMMIO_MAP_H__
-#define __AMDBLOCKS_ACPIMMIO_MAP_H__
+#ifndef __AMD_BLOCK_ACPIMMIO_MAP_H__
+#define __AMD_BLOCK_ACPIMMIO_MAP_H__
 
 /*
  * The following AcpiMmio register block mapping represents definitions
@@ -132,4 +132,4 @@
 
 #endif
 
-#endif /* __AMDBLOCKS_ACPIMMIO_MAP_H__ */
+#endif /* __AMD_BLOCK_ACPIMMIO_MAP_H__ */

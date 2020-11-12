@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMDBLOCKS_ALINK_H__
-#define __AMDBLOCKS_ALINK_H__
+#ifndef __AMD_BLOCK_ALINK_H__
+#define __AMD_BLOCK_ALINK_H__
 
 #include <stdint.h>
 
@@ -32,4 +32,4 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val);
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
 void alink_ax_indx(u32 space /* c or p? */, u32 axindc, u32 mask, u32 val);
 
-#endif /* __AMDBLOCKS_ALINK_H__ */
+#endif /* __AMD_BLOCK_ALINK_H__ */

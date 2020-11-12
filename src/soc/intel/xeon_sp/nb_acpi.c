@@ -12,6 +12,7 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
+#include <intelblocks/p2sb.h>
 
 #include "chip.h"
 
@@ -267,11 +268,12 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 		//BIT 15
 		if (num_hpets && (num_hpets != 0x1f) &&
 			(read32((void *)(HPET_BASE_ADDRESS + 0x100)) & (0x00008000))) {
+			union p2sb_bdf hpet_bdf = p2sb_get_hpet_bdf();
 			printk(BIOS_DEBUG, "    [Message-capable HPET Device] Enumeration ID: 0x%x, "
 				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-				0, HPET_BUS_NUM, HPET_DEV_NUM, HPET0_FUNC_NUM);
-			current += acpi_create_dmar_ds_msi_hpet(current, 0, HPET_BUS_NUM,
-				HPET_DEV_NUM, HPET0_FUNC_NUM);
+				0, hpet_bdf.bus, hpet_bdf.dev, hpet_bdf.fn);
+			current += acpi_create_dmar_ds_msi_hpet(current, 0, hpet_bdf.bus,
+				hpet_bdf.dev, hpet_bdf.fn);
 		}
 	}
 

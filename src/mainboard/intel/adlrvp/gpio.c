@@ -26,8 +26,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* M.2 SSD_2 Reset */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
-	/* CAM1-IRQ */
-	PAD_CFG_GPO(GPP_B23, 1, PLTRST),
 	/* CAM_STROBE */
 	PAD_CFG_GPO(GPP_B18, 0, PLTRST),
 	/* Audio Codec INT N */
@@ -77,6 +75,14 @@ static const struct pad_config gpio_table[] = {
 	/* SRCCLK_OEB6 */
 	PAD_CFG_GPO(GPP_E5, 0, PLTRST),
 
+	/* CAM1_RST */
+	PAD_CFG_GPO(GPP_R5, 1, PLTRST),
+	/* CAM2_RST */
+	PAD_CFG_GPO(GPP_E15, 1, PLTRST),
+	/* CAM1_PWR_EN */
+	PAD_CFG_GPO(GPP_B23, 1, PLTRST),
+	/* CAM2_PWR_EN */
+	PAD_CFG_GPO(GPP_E16, 1, PLTRST),
 	/* M.2_SSD_PDET_R */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* THC0 SPI1 CLK */
@@ -185,15 +191,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_R2, NONE, DEEP, NF2),
 	/* I2S0_RXD */
 	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),
-
-	/* I2S1_SCLK */
-	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
-	/* I2S1_SFRM */
-	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF2),
-	/* I2S1_TXD */
-	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),
-	/* I2S1_RXD */
-	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),
 
 	/* I2S2_SCLK */
 	PAD_CFG_NF(GPP_A7, NONE, DEEP, NF1),

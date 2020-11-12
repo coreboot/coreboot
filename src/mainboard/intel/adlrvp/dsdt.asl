@@ -27,6 +27,9 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/ipu.asl>
 	}
 
+	/* Camera */
+	#include <acpi/mipi_camera.asl>
+
 #if CONFIG(CHROMEOS)
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>

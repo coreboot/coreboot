@@ -12,10 +12,5 @@ void bootblock_mainboard_early_init(void)
 	gpios = variant_bootblock_gpio_table(&num_gpios, acpi_get_sleep_type());
 	program_gpios(gpios, num_gpios);
 
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
-		gpios = variant_early_gpio_table(&num_gpios);
-		program_gpios(gpios, num_gpios);
-	}
-
 	variant_pcie_gpio_configure();
 }

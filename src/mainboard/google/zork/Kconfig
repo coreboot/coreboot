@@ -105,6 +105,7 @@ config ONBOARD_VGA_IS_PRIMARY
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
+	select VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config VBOOT_VBNV_OFFSET
 	hex
@@ -129,7 +130,7 @@ config DRIVER_TPM_I2C_ADDR
 config PICASSO_FW_A_POSITION
 	hex
 	default 0xFF012040
-	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+	depends on VBOOT_SLOTS_RW_AB
 	help
 	  Location of the AMD firmware in the RW_A region. This is the
 	  start of the RW-A region + 64 bytes for the cbfs header.
@@ -137,7 +138,7 @@ config PICASSO_FW_A_POSITION
 config PICASSO_FW_B_POSITION
 	hex
 	default 0xFF312040
-	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+	depends on VBOOT_SLOTS_RW_AB
 	help
 	  Location of the AMD firmware in the RW_B region. This is the
 	  start of the RW-A region + 64 bytes for the cbfs header.
@@ -240,22 +241,6 @@ config VARIANT_MAX_BOARD_ID_BROKEN_FMPCU_POWER
 	default 0
 	help
 	  Last board version that needs the extra delay for FPMCU init.
-
-config VBOOT_STARTS_BEFORE_BOOTBLOCK
-	bool "PSP verstage"
-	default y if VBOOT
-	help
-	  Firmware verification happens before the main processor is brought
-	  online.
-
-config VBOOT_STARTS_IN_BOOTBLOCK
-	bool "X86 verstage (in bootblock)"
-	depends on  VBOOT && ! VBOOT_STARTS_BEFORE_BOOTBLOCK
-	select VBOOT_SEPARATE_VERSTAGE
-	help
-	  Firmware verification happens during the end of or right after the
-	  bootblock. This implies that a static VBOOT2_WORK() buffer must be
-	  allocated in memlayout.
 
 config EFS_SPI_READ_MODE
 	int

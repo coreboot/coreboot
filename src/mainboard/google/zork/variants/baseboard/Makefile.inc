@@ -7,10 +7,8 @@ bootblock-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 
 verstage-y += gpio_baseboard_common.c
 verstage-y += helpers.c
-ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
 verstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
-endif
 verstage-y += tpm_tis.c
 
 romstage-y += gpio_baseboard_common.c

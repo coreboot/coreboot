@@ -112,7 +112,7 @@
 #define HPET_DEV_NUM            PCH_DEV_SLOT_LPC
 #define HPET0_FUNC_NUM          0x00
 
-#define PCH_IOAPIC_BUS_NUMBER   0x00
+#define PCH_IOAPIC_BUS_NUMBER   0xF0
 #define PCH_IOAPIC_DEV_NUM      0x1F
 #define PCH_IOAPIC_FUNC_NUM     0x00
 

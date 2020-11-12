@@ -2,6 +2,34 @@
 
 #include <soc/ramstage.h>
 
+__packed union eeprom_dimm_layout {
+	struct {
+		char name[50];
+		char manufacturer[50];
+		uint8_t ranks;
+		uint8_t controller_id;
+		uint8_t data_width_bits;
+		uint8_t bus_width_bits;
+		uint32_t capacity_mib;
+		uint32_t max_tdp_milliwatts;
+	};
+	uint8_t raw[0x80];
+};
+
+__packed struct eeprom_board_layout {
+	uint32_t signature;
+	union {
+		struct {
+			char cpu_name[50];
+			uint8_t cpu_count;
+			uint32_t cpu_max_non_turbo_frequency;
+			char pch_name[50];
+			union eeprom_dimm_layout dimm[4];
+		};
+		uint8_t raw_layout[617];
+	};
+};
+
 __packed struct eeprom_board_settings {
 	uint32_t signature;
 	union {
@@ -30,7 +58,10 @@ __packed struct eeprom_layout {
 		uint8_t RawFSPSUPD[0xC00];
 		FSPS_UPD supd;
 	};
-	uint8_t BoardLayout[0x400];
+	union {
+		uint8_t RawBoardLayout[0x400];
+		struct eeprom_board_layout BoardLayout;
+	};
 	uint8_t BootOrder[0x900];
 	union {
 		uint8_t RawBoardSetting[0x100];
@@ -46,6 +77,7 @@ bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size
 int check_signature(const size_t offset, const uint64_t signature);
 struct eeprom_board_settings *get_board_settings(void);
 void report_eeprom_error(const size_t off);
+bool write_board_settings(const struct eeprom_board_layout *new_layout);
 
 #define READ_EEPROM(section_type, section_name, dest, opt_name)				\
 	do {										\

@@ -1,9 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <acpi/acpigen.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <crc_byte.h>
 #include <device/device.h>
+#include <device/dram/spd.h>
 #include <intelblocks/pmclib.h>
 #include <types.h>
+#include <smbios.h>
 #include "variants/baseboard/include/eeprom.h"
 #include "gpio.h"
 
@@ -54,6 +60,75 @@ static void mb_usb2_fp2_pwr_enable(bool enable)
 	gpio_output(GPP_G4, enable);
 }
 
+static void copy_meminfo(const struct dimm_info *dimm, union eeprom_dimm_layout *l)
+{
+	memset(l, 0, sizeof(*l));
+	if (dimm->dimm_size == 0)
+		return;
+
+	strncpy(l->name, (char *)dimm->module_part_number, sizeof(l->name) - 1);
+	l->capacity_mib = dimm->dimm_size;
+	l->data_width_bits = 8 * (1 << (dimm->bus_width & 0x7));
+	l->bus_width_bits = l->data_width_bits + 8 * ((dimm->bus_width >> 3) & 0x3);
+	l->ranks = dimm->rank_per_dimm;
+	l->controller_id = 0;
+	strncpy(l->manufacturer, spd_manufacturer_name(dimm->mod_id),
+		sizeof(l->manufacturer) - 1);
+}
+
+/*
+ * Collect board specific settings and update the CFG EEPROM if necessary.
+ * This allows the BMC webui to display the current hardware configuration.
+ */
+static void update_board_layout(void)
+{
+	struct eeprom_board_layout layout = {0};
+
+	printk(BIOS_INFO, "MB: Collecting Board Layout information\n");
+
+	/* Update CPU fields */
+	for (struct device *cpu = all_devices; cpu; cpu = cpu->next) {
+		if (cpu->path.type != DEVICE_PATH_APIC)
+			continue;
+		if (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)
+			continue;
+		if (!cpu->enabled)
+			continue;
+		layout.cpu_count++;
+		if (!layout.cpu_name[0])
+			strcpy(layout.cpu_name, cpu->name);
+	}
+
+	if (cpuid_get_max_func() >= 0x16)
+		layout.cpu_max_non_turbo_frequency = cpuid_eax(0x16);
+
+	/* PCH */
+	strcpy(layout.pch_name, "Cannonlake-H C246");
+
+	/* DRAM */
+	struct memory_info *meminfo = cbmem_find(CBMEM_ID_MEMINFO);
+	if (meminfo) {
+		const size_t meminfo_max = MIN(meminfo->dimm_cnt, ARRAY_SIZE(meminfo->dimm));
+		for (size_t i = 0; i < MIN(meminfo_max, ARRAY_SIZE(layout.dimm)); i++)
+			copy_meminfo(&meminfo->dimm[i], &layout.dimm[i]);
+	}
+
+	/* Update CRC */
+	layout.signature = CRC(layout.raw_layout, sizeof(layout.raw_layout), crc32_byte);
+
+	printk(BIOS_DEBUG, "BOARD LAYOUT:\n");
+	printk(BIOS_DEBUG, " Signature : 0x%x\n", layout.signature);
+	printk(BIOS_DEBUG, " CPU name  : %s\n", layout.cpu_name);
+	printk(BIOS_DEBUG, " CPU count : %u\n", layout.cpu_count);
+	printk(BIOS_DEBUG, " CPU freq  : %u\n", layout.cpu_max_non_turbo_frequency);
+	printk(BIOS_DEBUG, " PCH name  : %s\n", layout.pch_name);
+	for (size_t i = 0; i < ARRAY_SIZE(layout.dimm); i++)
+		printk(BIOS_DEBUG, " DRAM SIZE : %u\n", layout.dimm[i].capacity_mib);
+
+	if (write_board_settings(&layout))
+		printk(BIOS_ERR, "MB: Failed to update Board Layout\n");
+}
+
 static void mainboard_init(void *chip_info)
 {
 	const struct eeprom_board_settings *const board_cfg = get_board_settings();
@@ -75,6 +150,8 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_final(struct device *dev)
 {
+	update_board_layout();
+
 	const struct eeprom_board_settings *const board_cfg = get_board_settings();
 
 	if (!board_cfg)

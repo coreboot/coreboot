@@ -533,26 +533,7 @@ static void write_reset(ramctr_timing *ctrl)
 	/* Choose a populated rank */
 	slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
-	const struct iosav_ssq sequence[] = {
-		/* DRAM command ZQCS */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command = IOSAV_ZQCS,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = 8,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-	};
+	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 3, 8, 0);
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 	/*
@@ -889,29 +870,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 		/* Drain */
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq zqcs_sequence[] = {
-			/* DRAM command ZQCS */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_ZQCS,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 101,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap  = 31,
-				},
-			},
-		};
+		const struct iosav_ssq zqcs_sequence[] = ZQCS_SEQUENCE(slotrank, 4, 101, 31);
 		iosav_write_sequence(channel, zqcs_sequence, ARRAY_SIZE(zqcs_sequence));
 
 		/* Execute command queue */
@@ -1072,93 +1031,8 @@ static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = {
-		/*
-		 * DRAM command MRS
-		 *
-		 * Write MR3 MPR enable. In this mode only RD and RDA
-		 * are allowed, and all reads return a predefined pattern.
-		 */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_MRS,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->tMOD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 4,
-				.rowbits = 6,
-				.bank    = 3,
-				.rank    = slotrank,
-			},
-		},
-		/* DRAM command RD */
-		[1] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_RD,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = 4,
-				.data_direction = SSQ_RD,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-		/* DRAM command RD */
-		[2] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_RD,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 15,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = ctrl->CAS + 36,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-		/*
-		 * DRAM command MRS
-		 *
-		 * Write MR3 MPR disable.
-		 */
-		[3] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_MRS,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->tMOD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 3,
-				.rank    = slotrank,
-			},
-		},
-	};
+	const struct iosav_ssq sequence[] =
+		READ_MPR_SEQUENCE(ctrl->tMOD, 1, 3, 15, ctrl->CAS + 36);
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 	/* Execute command queue */
@@ -1420,27 +1294,7 @@ int read_training(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command PREA */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_PRE,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = ctrl->tRP,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 1024,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = PREA_SEQUENCE(ctrl->tRP, 0);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */
@@ -1537,98 +1391,8 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq wr_sequence[] = {
-		/* DRAM command ACT */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_ACT,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 4,
-				.cmd_delay_gap  = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1),
-				.post_ssq_wait  = ctrl->tRCD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.inc_bank  = 1,
-				.addr_wrap = 18,
-			},
-		},
-		/* DRAM command NOP */
-		[1] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_NOP,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = 4,
-				.data_direction = SSQ_WR,
-			},
-			.sp_cmd_addr = {
-				.address = 8,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.addr_wrap = 31,
-			},
-		},
-		/* DRAM command WR */
-		[2] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_WR,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 500,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = 4,
-				.data_direction = SSQ_WR,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.inc_addr_8 = 1,
-				.addr_wrap  = 18,
-			},
-		},
-		/* DRAM command NOP */
-		[3] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_NOP,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 5,
-				.data_direction = SSQ_WR,
-			},
-			.sp_cmd_addr = {
-				.address = 8,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.addr_wrap = 31,
-			},
-		},
-	};
+	const struct iosav_ssq wr_sequence[] =
+		MISC_WRITE_SEQUENCE(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), 4, 4, 500, 18);
 	iosav_write_sequence(channel, wr_sequence, ARRAY_SIZE(wr_sequence));
 
 	/* Execute command queue */
@@ -1763,30 +1527,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = {
-		/* DRAM command PREA */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_PRE,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->tRP,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 1024,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.addr_wrap  = 18,
-			},
-		},
-	};
+	const struct iosav_ssq sequence[] = PREA_SEQUENCE(ctrl->tRP, 18);
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 	/* Execute command queue */
@@ -1896,94 +1637,8 @@ static void precharge(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] = {
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR enable.
-				 * In this mode only RD and RDA are allowed,
-				 * and all reads return a predefined pattern.
-				 */
-				[0] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 4,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[1] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 3,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = 4,
-						.data_direction = SSQ_RD,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 0,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[2] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = ctrl->CAS + 8,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR disable.
-				 */
-				[3] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-			};
+			const struct iosav_ssq sequence[] =
+				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 			/* Execute command queue */
@@ -2002,94 +1657,8 @@ static void precharge(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] = {
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR enable.
-				 * In this mode only RD and RDA are allowed,
-				 * and all reads return a predefined pattern.
-				 */
-				[0] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 4,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[1] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 3,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = 4,
-						.data_direction = SSQ_RD,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 0,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[2] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = ctrl->CAS + 8,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR disable.
-				 */
-				[3] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-			};
+			const struct iosav_ssq sequence[] =
+				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 			/* Execute command queue */
@@ -2245,94 +1814,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq wr_sequence[] = {
-			/* DRAM command ACT */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_ACT,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = ctrl->tRCD,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-			},
-			/* DRAM command NOP */
-			[1] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_NOP,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = 4,
-					.data_direction = SSQ_WR,
-				},
-				.sp_cmd_addr = {
-					.address = 8,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap = 31,
-				},
-			},
-			/* DRAM command WR */
-			[2] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_WR,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 3,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 4,
-					.data_direction = SSQ_WR,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_addr_8 = 1,
-					.addr_wrap  = 31,
-				},
-			},
-			/* DRAM command NOP */
-			[3] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_NOP,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 5,
-					.data_direction = SSQ_WR,
-				},
-				.sp_cmd_addr = {
-					.address = 8,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap = 31,
-				},
-			},
-		};
+		const struct iosav_ssq wr_sequence[] = MISC_WRITE_SEQUENCE(3, 1, 3, 3, 31);
 		iosav_write_sequence(channel, wr_sequence, ARRAY_SIZE(wr_sequence));
 
 		/* Execute command queue */
@@ -2435,29 +1917,7 @@ static void write_op(ramctr_timing *ctrl, int channel)
 	/* choose an existing rank.  */
 	slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-	const struct iosav_ssq sequence[] = {
-		/* DRAM command ZQCS */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command = IOSAV_ZQCS,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = 4,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.addr_wrap = 31,
-			},
-		},
-	};
+	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 	/* Execute command queue */
@@ -2532,29 +1992,7 @@ int write_training(ramctr_timing *ctrl)
 		MCHBAR32(IOSAV_STATUS_ch(channel));
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command ZQCS */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command = IOSAV_ZQCS,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 101,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = 0,
-				},
-				.addr_update = {
-					.addr_wrap = 31,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(0, 4, 101, 31);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */
@@ -2621,103 +2059,7 @@ static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command ACT */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_ACT,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 8,
-					.cmd_delay_gap = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1),
-					.post_ssq_wait  = ctrl->tRCD,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = ctr,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_bank  = 1,
-					.addr_wrap = 18,
-				},
-			},
-			/* DRAM command WR */
-			[1] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_WR,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 32,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 8,
-					.data_direction = SSQ_WR,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_addr_8 = 1,
-					.addr_wrap  = 18,
-					.lfsr_upd   = 3,
-					.lfsr_xors  = 2,
-				},
-			},
-			/* DRAM command RD */
-			[2] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_RD,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 32,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = MAX(ctrl->tRTP, 8),
-					.data_direction = SSQ_RD,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_addr_8 = 1,
-					.addr_wrap  = 18,
-					.lfsr_upd   = 3,
-					.lfsr_xors  = 2,
-				},
-			},
-			/* DRAM command PRE */
-			[3] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_PRE,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 15,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 1024,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap  = 18,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = COMMAND_TRAINING_SEQUENCE(ctr);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Program LFSR for the RD/WR subsequences */
@@ -2786,29 +2128,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 		/* Choose an existing rank */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command ZQCS */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command = IOSAV_ZQCS,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 4,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap  = 31,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */
@@ -2826,29 +2146,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command ZQCS */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command = IOSAV_ZQCS,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 4,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap  = 31,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */
@@ -3010,94 +2308,8 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = {
-			/*
-			 * DRAM command MRS
-			 *
-			 * Write MR3 MPR enable.
-			 * In this mode only RD and RDA are allowed,
-			 * and all reads return a predefined pattern.
-			 */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_MRS,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = ctrl->tMOD,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 4,
-					.rowbits = 6,
-					.bank    = 3,
-					.rank    = slotrank,
-				},
-			},
-			/* DRAM command RD */
-			[1] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_RD,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 500,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 4,
-					.data_direction = SSQ_RD,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-			},
-			/* DRAM command RD */
-			[2] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_RD,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = ctrl->CAS + 8,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-			},
-			/*
-			 * DRAM command MRS
-			 *
-			 * Write MR3 MPR disable.
-			 */
-			[3] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_MRS,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = ctrl->tMOD,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 3,
-					.rank    = slotrank,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] =
+			READ_MPR_SEQUENCE(ctrl->tMOD, 500, 4, 1, ctrl->CAS + 8);
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */
@@ -3155,94 +2367,8 @@ int discover_edges(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] = {
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR enable.
-				 * In this mode only RD and RDA are allowed,
-				 * and all reads return a predefined pattern.
-				 */
-				[0] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 4,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[1] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 3,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = 4,
-						.data_direction = SSQ_RD,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 0,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[2] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = ctrl->CAS + 8,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR disable.
-				 */
-				[3] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-			};
+			const struct iosav_ssq sequence[] =
+				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 			/* Execute command queue */
@@ -3263,94 +2389,8 @@ int discover_edges(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] = {
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR enable.
-				 * In this mode only RD and RDA are allowed,
-				 * and all reads return a predefined pattern.
-				 */
-				[0] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 4,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[1] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 3,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = 4,
-						.data_direction = SSQ_RD,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 0,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/* DRAM command RD */
-				[2] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_RD,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = ctrl->CAS + 8,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-				},
-				/*
-				 * DRAM command MRS
-				 *
-				 * Write MR3 MPR disable.
-				 */
-				[3] = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_MRS,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = ctrl->tMOD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 0,
-						.rowbits = 6,
-						.bank    = 3,
-						.rank    = slotrank,
-					},
-				},
-			};
+			const struct iosav_ssq sequence[] =
+				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 			/* Execute command queue */
@@ -3451,97 +2491,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 				}
 				wait_for_iosav(channel);
 
-				const struct iosav_ssq sequence[] = {
-					/* DRAM command ACT */
-					[0] = {
-						.sp_cmd_ctrl = {
-							.command    = IOSAV_ACT,
-							.ranksel_ap = 1,
-						},
-						.subseq_ctrl = {
-							.cmd_executions = 4,
-							.cmd_delay_gap  = MAX(ctrl->tRRD,
-									(ctrl->tFAW >> 2) + 1),
-							.post_ssq_wait  = ctrl->tRCD,
-							.data_direction = SSQ_NA,
-						},
-						.sp_cmd_addr = {
-							.address = 0,
-							.rowbits = 6,
-							.bank    = 0,
-							.rank    = slotrank,
-						},
-						.addr_update = {
-							.addr_wrap = 18,
-						},
-					},
-					/* DRAM command WR */
-					[1] = {
-						.sp_cmd_ctrl = {
-							.command    = IOSAV_WR,
-							.ranksel_ap = 1,
-						},
-						.subseq_ctrl = {
-							.cmd_executions = 32,
-							.cmd_delay_gap  = 20,
-							.post_ssq_wait  = ctrl->tWTR +
-										ctrl->CWL + 8,
-							.data_direction = SSQ_WR,
-						},
-						.sp_cmd_addr = {
-							.address = 0,
-							.rowbits = 0,
-							.bank    = 0,
-							.rank    = slotrank,
-						},
-						.addr_update = {
-							.inc_addr_8 = 1,
-							.addr_wrap  = 18,
-						},
-					},
-					/* DRAM command RD */
-					[2] = {
-						.sp_cmd_ctrl = {
-							.command    = IOSAV_RD,
-							.ranksel_ap = 1,
-						},
-						.subseq_ctrl = {
-							.cmd_executions = 32,
-							.cmd_delay_gap  = 20,
-							.post_ssq_wait  = MAX(ctrl->tRTP, 8),
-							.data_direction = SSQ_RD,
-						},
-						.sp_cmd_addr = {
-							.address = 0,
-							.rowbits = 0,
-							.bank    = 0,
-							.rank    = slotrank,
-						},
-						.addr_update = {
-							.inc_addr_8 = 1,
-							.addr_wrap  = 18,
-						},
-					},
-					/* DRAM command PRE */
-					[3] = {
-						.sp_cmd_ctrl = {
-							.command    = IOSAV_PRE,
-							.ranksel_ap = 1,
-						},
-						.subseq_ctrl = {
-							.cmd_executions = 1,
-							.cmd_delay_gap  = 3,
-							.post_ssq_wait  = ctrl->tRP,
-							.data_direction = SSQ_NA,
-						},
-						.sp_cmd_addr = {
-							.address = 1024,
-							.rowbits = 6,
-							.bank    = 0,
-							.rank    = slotrank,
-						},
-					},
-				};
+				const struct iosav_ssq sequence[] = WRITE_DATA_SEQUENCE;
 				iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 				/* Execute command queue */
@@ -3640,96 +2590,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = {
-		/* DRAM command ACT */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_ACT,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 4,
-				.cmd_delay_gap  = MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD),
-				.post_ssq_wait  = ctrl->tRCD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.inc_bank  = 1,
-				.addr_wrap = 18,
-			},
-		},
-		/* DRAM command WR */
-		[1] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_WR,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 480,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = ctrl->tWTR + ctrl->CWL + 8,
-				.data_direction = SSQ_WR,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.inc_addr_8 = 1,
-				.addr_wrap  = 18,
-			},
-		},
-		/* DRAM command RD */
-		[2] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_RD,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 480,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = MAX(ctrl->tRTP, 8),
-				.data_direction = SSQ_RD,
-			},
-			.sp_cmd_addr = {
-				.address = 0,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-			.addr_update = {
-				.inc_addr_8 = 1,
-				.addr_wrap  = 18,
-			},
-		},
-		/* DRAM command PRE */
-		[3] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_PRE,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 4,
-				.post_ssq_wait  = ctrl->tRP,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = 1024,
-				.rowbits = 6,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-	};
+	const struct iosav_ssq sequence[] = AGGRESSIVE_WRITE_READ_SEQUENCE;
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 	/* Execute command queue */
@@ -3906,99 +2767,7 @@ int channel_test(ramctr_timing *ctrl)
 		}
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = {
-			/* DRAM command ACT */
-			[0] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_ACT,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 4,
-					.cmd_delay_gap  = 8,
-					.post_ssq_wait  = 40,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_bank  = 1,
-					.addr_wrap = 18,
-				},
-			},
-			/* DRAM command WR */
-			[1] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_WR,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 100,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 40,
-					.data_direction = SSQ_WR,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_addr_8 = 1,
-					.addr_wrap  = 18,
-				},
-			},
-			/* DRAM command RD */
-			[2] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_RD,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 100,
-					.cmd_delay_gap  = 4,
-					.post_ssq_wait  = 40,
-					.data_direction = SSQ_RD,
-				},
-				.sp_cmd_addr = {
-					.address = 0,
-					.rowbits = 0,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.inc_addr_8 = 1,
-					.addr_wrap  = 18,
-				},
-			},
-			/* DRAM command PRE */
-			[3] = {
-				.sp_cmd_ctrl = {
-					.command    = IOSAV_PRE,
-					.ranksel_ap = 1,
-				},
-				.subseq_ctrl = {
-					.cmd_executions = 1,
-					.cmd_delay_gap  = 3,
-					.post_ssq_wait  = 40,
-					.data_direction = SSQ_NA,
-				},
-				.sp_cmd_addr = {
-					.address = 1024,
-					.rowbits = 6,
-					.bank    = 0,
-					.rank    = slotrank,
-				},
-				.addr_update = {
-					.addr_wrap  = 18,
-				},
-			},
-		};
+		const struct iosav_ssq sequence[] = MEMORY_TEST_SEQUENCE;
 		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
 		/* Execute command queue */

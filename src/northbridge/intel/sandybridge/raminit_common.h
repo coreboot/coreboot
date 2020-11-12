@@ -98,6 +98,618 @@ struct iosav_ssq {
 	} addr_update;
 };
 
+#define ZQCS_SEQUENCE(slotrank, gap, post, wrap)					\
+	{										\
+		/* DRAM command ZQCS */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command = IOSAV_ZQCS,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = gap,					\
+				.post_ssq_wait  = post,					\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap = wrap,					\
+			},								\
+		},									\
+	}
+
+#define PREA_SEQUENCE(t_rp, wrap)							\
+	{										\
+		/* DRAM command PREA */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command = IOSAV_PRE,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = t_rp,					\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 1024,					\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap = wrap,					\
+			},								\
+		},									\
+	}
+
+#define READ_MPR_SEQUENCE(t_mod, loops, gap, loops2, post2)				\
+	{										\
+		/*									\
+		 * DRAM command MRS							\
+		 *									\
+		 * Write MR3 MPR enable. In this mode only RD and RDA			\
+		 * are allowed, and all reads return a predefined pattern.		\
+		 */									\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_MRS,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = t_mod,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 4,						\
+				.rowbits = 6,						\
+				.bank    = 3,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = loops,				\
+				.cmd_delay_gap  = gap,					\
+				.post_ssq_wait  = 4,					\
+				.data_direction = SSQ_RD,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = loops2,				\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = post2,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+		/*									\
+		 * DRAM command MRS							\
+		 *									\
+		 * Write MR3 MPR disable.						\
+		 */									\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_MRS,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = t_mod,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 3,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+	}
+
+#define MISC_WRITE_SEQUENCE(gap0, loops0, gap1, loops2, wrap2)				\
+	{										\
+		/* DRAM command ACT */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_ACT,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = loops0,				\
+				.cmd_delay_gap  = gap0,					\
+				.post_ssq_wait  = ctrl->tRCD,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_bank  = loops0 == 1 ? 0 : 1,			\
+				.addr_wrap = loops0 == 1 ? 0 : 18,			\
+			},								\
+		},									\
+		/* DRAM command NOP */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_NOP,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = gap1,					\
+				.post_ssq_wait  = 4,					\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 8,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap = 31,					\
+			},								\
+		},									\
+		/* DRAM command WR */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_WR,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = loops2,				\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = 4,					\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = wrap2,					\
+			},								\
+		},									\
+		/* DRAM command NOP */							\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_NOP,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 5,		\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 8,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap = 31,					\
+			},								\
+		},									\
+	}
+
+#define COMMAND_TRAINING_SEQUENCE(ctr)							\
+	{										\
+		/* DRAM command ACT */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_ACT,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 8,					\
+				.cmd_delay_gap  = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), \
+				.post_ssq_wait  = ctrl->tRCD,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = ctr,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_bank  = 1,						\
+				.addr_wrap = 18,					\
+			},								\
+		},									\
+		/* DRAM command WR */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_WR,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 32,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 8,		\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+				.lfsr_upd   = 3,					\
+				.lfsr_xors  = 2,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 32,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),			\
+				.data_direction = SSQ_RD,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+				.lfsr_upd   = 3,					\
+				.lfsr_xors  = 2,					\
+			},								\
+		},									\
+		/* DRAM command PRE */							\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_PRE,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = 15,					\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 1024,					\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+	}
+
+#define WRITE_DATA_SEQUENCE								\
+	{										\
+		/* DRAM command ACT */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_ACT,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 4,					\
+				.cmd_delay_gap = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), \
+				.post_ssq_wait  = ctrl->tRCD,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_bank  = 0,						\
+				.addr_wrap = 18,					\
+			},								\
+		},									\
+		/* DRAM command WR */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_WR,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 32,					\
+				.cmd_delay_gap  = 20,					\
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 8,		\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 32,					\
+				.cmd_delay_gap  = 20,					\
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),			\
+				.data_direction = SSQ_RD,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command PRE */							\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_PRE,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = ctrl->tRP,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 1024,					\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+	}
+
+#define AGGRESSIVE_WRITE_READ_SEQUENCE							\
+	{										\
+		/* DRAM command ACT */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_ACT,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 4,					\
+				.cmd_delay_gap = MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD), \
+				.post_ssq_wait  = ctrl->tRCD,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_bank  = 1,						\
+				.addr_wrap = 18,					\
+			},								\
+		},									\
+		/* DRAM command WR */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_WR,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 480,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = ctrl->tWTR + ctrl->CWL + 8,		\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 480,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),			\
+				.data_direction = SSQ_RD,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command PRE */							\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_PRE,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = ctrl->tRP,				\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 1024,					\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+		},									\
+	}
+
+#define MEMORY_TEST_SEQUENCE								\
+	{										\
+		/* DRAM command ACT */							\
+		[0] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_ACT,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 4,					\
+				.cmd_delay_gap  = 8,					\
+				.post_ssq_wait  = 40,					\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_bank  = 1,						\
+				.addr_wrap = 18,					\
+			},								\
+		},									\
+		/* DRAM command WR */							\
+		[1] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_WR,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 100,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = 40,					\
+				.data_direction = SSQ_WR,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command RD */							\
+		[2] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_RD,					\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 100,					\
+				.cmd_delay_gap  = 4,					\
+				.post_ssq_wait  = 40,					\
+				.data_direction = SSQ_RD,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 0,						\
+				.rowbits = 0,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.inc_addr_8 = 1,					\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+		/* DRAM command PRE */							\
+		[3] = {									\
+			.sp_cmd_ctrl = {						\
+				.command    = IOSAV_PRE,				\
+				.ranksel_ap = 1,					\
+			},								\
+			.subseq_ctrl = {						\
+				.cmd_executions = 1,					\
+				.cmd_delay_gap  = 3,					\
+				.post_ssq_wait  = 40,					\
+				.data_direction = SSQ_NA,				\
+			},								\
+			.sp_cmd_addr = {						\
+				.address = 1024,					\
+				.rowbits = 6,						\
+				.bank    = 0,						\
+				.rank    = slotrank,					\
+			},								\
+			.addr_update = {						\
+				.addr_wrap  = 18,					\
+			},								\
+		},									\
+	}
+
 void iosav_write_sequence(const int ch, const struct iosav_ssq *seq, const unsigned int length);
 void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer);
 void iosav_run_once(const int ch);

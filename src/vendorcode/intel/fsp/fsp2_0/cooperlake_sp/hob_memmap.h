@@ -36,6 +36,16 @@ are permitted provided that the following conditions are met:
 	0xbd, 0x56, 0xda, 0x91, 0xc0, 0x7f \
 	}
 
+/* Bit definitions for RasModes */
+#define CH_INDEPENDENT		0
+#define FULL_MIRROR_1LM		BIT0
+#define FULL_MIRROR_2LM		BIT1
+#define CH_LOCKSTEP		BIT2
+#define RK_SPARE		BIT3
+#define PARTIAL_MIRROR_1LM	BIT5
+#define PARTIAL_MIRROR_2LM	BIT6
+#define STAT_VIRT_LOCKSTEP	BIT7
+
 #define MEMTYPE_1LM_MASK       (1 << 0)
 #define MEMTYPE_2LM_MASK       (1 << 1)
 #define MEMTYPE_VOLATILE_MASK  (MEMTYPE_1LM_MASK | MEMTYPE_2LM_MASK)
@@ -143,21 +153,23 @@ typedef struct SystemMemoryMapHob {
   UINT8    reserved2[22];
 
   UINT8    DdrVoltage;
-  UINT8    reserved3[38];
+  UINT8    reserved3[33];
+  UINT8    RasModesEnabled;                       // RAS modes that are enabled
+  UINT8    reserved4[4];
   UINT8    NumChPerMC;
   UINT8    numberEntries;                         // Number of Memory Map Elements
   SYSTEM_MEMORY_MAP_ELEMENT Element[(MAX_SOCKET * MAX_DRAM_CLUSTERS * MAX_SAD_RULES) + MAX_FPGA_REMOTE_SAD_RULES];
-  UINT8    reserved4[2216];
+  UINT8    reserved5[2216];
   MEMMAP_SOCKET Socket[MAX_SOCKET];
-  UINT8    reserved5[1603];
+  UINT8    reserved6[1603];
 
   UINT16  BiosFisVersion;                              // Firmware Interface Specification version currently supported by BIOS
 
-  UINT8    reserved6[24];
+  UINT8    reserved7[24];
 
   UINT32   MmiohBase;                                   // MMIOH base in 64MB granularity
 
-  UINT8    reserved7[5];
+  UINT8    reserved8[5];
 
 } SYSTEM_MEMORY_MAP_HOB;
 

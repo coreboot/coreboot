@@ -710,10 +710,24 @@ struct iosav_ssq {
 		},									\
 	}
 
+typedef struct ramctr_timing_st ramctr_timing;
+
 void iosav_write_sequence(const int ch, const struct iosav_ssq *seq, const unsigned int length);
 void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer);
 void iosav_run_once(const int ch);
 void wait_for_iosav(int channel);
+
+void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32 wrap);
+void iosav_write_prea_sequence(int channel, int slotrank, u32 post, u32 wrap);
+void iosav_write_read_mpr_sequence(
+	int channel, int slotrank, u32 tMOD, u32 loops, u32 gap, u32 loops2, u32 post2);
+void iosav_write_misc_write_sequence(ramctr_timing *ctrl, int channel, int slotrank,
+				     u32 gap0, u32 loops0, u32 gap1, u32 loops2, u32 wrap2);
+void iosav_write_command_training_sequence(
+	ramctr_timing *ctrl, int channel, int slotrank, unsigned int address);
+void iosav_write_data_write_sequence(ramctr_timing *ctrl, int channel, int slotrank);
+void iosav_write_aggressive_write_read_sequence(ramctr_timing *ctrl, int channel, int slotrank);
+void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slotrank);
 
 /* FIXME: Vendor BIOS uses 64 but our algorithms are less
    performant and even 1 seems to be enough in practice.  */

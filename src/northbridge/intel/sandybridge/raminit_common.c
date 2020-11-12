@@ -533,8 +533,7 @@ static void write_reset(ramctr_timing *ctrl)
 	/* Choose a populated rank */
 	slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
-	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 3, 8, 0);
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_zqcs_sequence(channel, slotrank, 3, 8, 0);
 
 	/*
 	 * Execute command queue - why is bit 22 set here?!
@@ -870,8 +869,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 		/* Drain */
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq zqcs_sequence[] = ZQCS_SEQUENCE(slotrank, 4, 101, 31);
-		iosav_write_sequence(channel, zqcs_sequence, ARRAY_SIZE(zqcs_sequence));
+		iosav_write_zqcs_sequence(channel, slotrank, 4, 101, 31);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -1031,9 +1029,7 @@ static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] =
-		READ_MPR_SEQUENCE(ctrl->tMOD, 1, 3, 15, ctrl->CAS + 36);
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_read_mpr_sequence(channel, slotrank, ctrl->tMOD, 1, 3, 15, ctrl->CAS + 36);
 
 	/* Execute command queue */
 	iosav_run_once(channel);
@@ -1294,8 +1290,7 @@ int read_training(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = PREA_SEQUENCE(ctrl->tRP, 0);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_prea_sequence(channel, slotrank, ctrl->tRP, 0);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -1391,9 +1386,8 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq wr_sequence[] =
-		MISC_WRITE_SEQUENCE(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), 4, 4, 500, 18);
-	iosav_write_sequence(channel, wr_sequence, ARRAY_SIZE(wr_sequence));
+	iosav_write_misc_write_sequence(ctrl, channel, slotrank,
+		MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), 4, 4, 500, 18);
 
 	/* Execute command queue */
 	iosav_run_once(channel);
@@ -1527,8 +1521,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = PREA_SEQUENCE(ctrl->tRP, 18);
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_prea_sequence(channel, slotrank, ctrl->tRP, 18);
 
 	/* Execute command queue */
 	iosav_run_once(channel);
@@ -1637,9 +1630,8 @@ static void precharge(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] =
-				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+			iosav_write_read_mpr_sequence(
+				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
 			/* Execute command queue */
 			iosav_run_once(channel);
@@ -1657,9 +1649,8 @@ static void precharge(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] =
-				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+			iosav_write_read_mpr_sequence(
+				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
 			/* Execute command queue */
 			iosav_run_once(channel);
@@ -1814,8 +1805,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq wr_sequence[] = MISC_WRITE_SEQUENCE(3, 1, 3, 3, 31);
-		iosav_write_sequence(channel, wr_sequence, ARRAY_SIZE(wr_sequence));
+		iosav_write_misc_write_sequence(ctrl, channel, slotrank, 3, 1, 3, 3, 31);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -1917,8 +1907,7 @@ static void write_op(ramctr_timing *ctrl, int channel)
 	/* choose an existing rank.  */
 	slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
 
 	/* Execute command queue */
 	iosav_run_once(channel);
@@ -1992,8 +1981,7 @@ int write_training(ramctr_timing *ctrl)
 		MCHBAR32(IOSAV_STATUS_ch(channel));
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(0, 4, 101, 31);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_zqcs_sequence(channel, 0, 4, 101, 31);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -2059,8 +2047,7 @@ static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = COMMAND_TRAINING_SEQUENCE(ctr);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_command_training_sequence(ctrl, channel, slotrank, ctr);
 
 		/* Program LFSR for the RD/WR subsequences */
 		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
@@ -2128,8 +2115,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 		/* Choose an existing rank */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -2146,8 +2132,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-		const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, 4, 4, 31);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -2308,9 +2293,8 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] =
-			READ_MPR_SEQUENCE(ctrl->tMOD, 500, 4, 1, ctrl->CAS + 8);
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_read_mpr_sequence(
+			channel, slotrank, ctrl->tMOD, 500, 4, 1, ctrl->CAS + 8);
 
 		/* Execute command queue */
 		iosav_run_once(channel);
@@ -2367,9 +2351,8 @@ int discover_edges(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] =
-				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+			iosav_write_read_mpr_sequence(
+				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
 			/* Execute command queue */
 			iosav_run_once(channel);
@@ -2389,9 +2372,8 @@ int discover_edges(ramctr_timing *ctrl)
 		FOR_ALL_POPULATED_RANKS {
 			wait_for_iosav(channel);
 
-			const struct iosav_ssq sequence[] =
-				READ_MPR_SEQUENCE(ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-			iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+			iosav_write_read_mpr_sequence(
+				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
 			/* Execute command queue */
 			iosav_run_once(channel);
@@ -2491,8 +2473,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 				}
 				wait_for_iosav(channel);
 
-				const struct iosav_ssq sequence[] = WRITE_DATA_SEQUENCE;
-				iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+				iosav_write_data_write_sequence(ctrl, channel, slotrank);
 
 				/* Execute command queue */
 				iosav_run_once(channel);
@@ -2590,8 +2571,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = AGGRESSIVE_WRITE_READ_SEQUENCE;
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_aggressive_write_read_sequence(ctrl, channel, slotrank);
 
 	/* Execute command queue */
 	iosav_run_once(channel);
@@ -2767,8 +2747,7 @@ int channel_test(ramctr_timing *ctrl)
 		}
 		wait_for_iosav(channel);
 
-		const struct iosav_ssq sequence[] = MEMORY_TEST_SEQUENCE;
-		iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+		iosav_write_memory_test_sequence(ctrl, channel, slotrank);
 
 		/* Execute command queue */
 		iosav_run_once(channel);

@@ -48,3 +48,55 @@ void wait_for_iosav(int channel)
 			return;
 	}
 }
+
+void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32 wrap)
+{
+	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, gap, post, wrap);
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_prea_sequence(int channel, int slotrank, u32 post, u32 wrap)
+{
+	const struct iosav_ssq sequence[] = PREA_SEQUENCE(post, wrap);
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_read_mpr_sequence(
+	int channel, int slotrank, u32 tMOD, u32 loops, u32 gap, u32 loops2, u32 post2)
+{
+	const struct iosav_ssq sequence[] = READ_MPR_SEQUENCE(tMOD, loops, gap, loops2, post2);
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_misc_write_sequence(ramctr_timing *ctrl, int channel, int slotrank,
+				     u32 gap0, u32 loops0, u32 gap1, u32 loops2, u32 wrap2)
+{
+	const struct iosav_ssq sequence[] =
+		MISC_WRITE_SEQUENCE(gap0, loops0, gap1, loops2, wrap2);
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_command_training_sequence(
+	ramctr_timing *ctrl, int channel, int slotrank, unsigned int address)
+{
+	const struct iosav_ssq sequence[] = COMMAND_TRAINING_SEQUENCE(address);
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_data_write_sequence(ramctr_timing *ctrl, int channel, int slotrank)
+{
+	const struct iosav_ssq sequence[] = WRITE_DATA_SEQUENCE;
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_aggressive_write_read_sequence(ramctr_timing *ctrl, int channel, int slotrank)
+{
+	const struct iosav_ssq sequence[] = AGGRESSIVE_WRITE_READ_SEQUENCE;
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}
+
+void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slotrank)
+{
+	const struct iosav_ssq sequence[] = MEMORY_TEST_SEQUENCE;
+	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+}

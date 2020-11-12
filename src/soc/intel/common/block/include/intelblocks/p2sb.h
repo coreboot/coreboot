@@ -29,6 +29,18 @@ void p2sb_disable_sideband_access(void);
 void p2sb_enable_bar(void);
 void p2sb_configure_hpet(void);
 
+union p2sb_bdf {
+	struct {
+		uint16_t fn  : 3;
+		uint16_t dev : 5;
+		uint16_t bus : 8;
+	};
+	uint16_t raw;
+};
+
+union p2sb_bdf p2sb_get_hpet_bdf(void);
+void p2sb_set_hpet_bdf(union p2sb_bdf bdf);
+
 /* SOC overrides */
 /*
  * Each SoC should implement EP Mask register to disable SB access

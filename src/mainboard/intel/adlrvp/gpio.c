@@ -138,22 +138,16 @@ static const struct pad_config gpio_table[] = {
 	/* SPI_MOSI(2) */
 	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF2),
 
-	/* SPI_MIS0(0) */
-	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* SPI_MIS0(1) */
 	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
 	/* SPI_MIS0(2) */
 	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF2),
 
-	/* SPI_CLK(0) */
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
 	/* SPI_CLK(1) */
 	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
 	/* SPI_CLK(2) */
 	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF2),
 
-	/*  SPI_CS(0, 0) */
-	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
 	/* SPI_CS(0, 1) */
 	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 	/* SPI_CS(1, 0) */
@@ -162,34 +156,26 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D9, NONE, DEEP, NF2),
 
 	/* I2C_SCL(0) */
-	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-	/* I2C_SCL(1) */
-	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
-	/* I2C_SCL(2) */
 	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
-	/* I2C_SCL(3) */
+	/* I2C_SCL(1) */
 	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* I2C_SCL(2) */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
+	/* I2C_SCL(3) */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 	/* I2C_SCL(5) */
-	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
-	/* I2C_SCL(6) */
-	PAD_CFG_NF(GPP_T1, NONE, DEEP, NF1),
-	/* I2C_SCL(7) */
-	PAD_CFG_NF(GPP_T3, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF2),
 
 	/* I2C_SDA(0) */
-	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
-	/* I2C_SDA(1) */
-	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
-	/* I2C_SDA(2) */
 	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
-	/* I2C_SDA(3) */
+	/* I2C_SDA(1) */
 	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* I2C_SDA(2) */
+	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
+	/* I2C_SDA(3) */
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* I2C_SDA(5) */
-	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
-	/* I2C_SDA(6) */
-	PAD_CFG_NF(GPP_T0, NONE, DEEP, NF1),
-	/* I2C_SDA(7) */
-	PAD_CFG_NF(GPP_T2, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 
 	/* I2S0_SCLK */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),
@@ -255,10 +241,6 @@ static const struct pad_config gpio_table[] = {
 
 	/* USB2 OC0 pins */
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
-	/* USB2 OC1 pins */
-	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
-	/* USB2 OC2 pins */
-	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
 	/* USB2 OC3 pins */
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 
@@ -267,8 +249,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
-	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF1),
-	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
 

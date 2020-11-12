@@ -8,6 +8,7 @@ tests-y += timestamp-test
 tests-y += edid-test
 tests-y += cbmem_console-romstage-test
 tests-y += cbmem_console-ramstage-test
+tests-y += list-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -39,3 +40,7 @@ cbmem_console-romstage-test-srcs += tests/stubs/console.c
 cbmem_console-ramstage-test-stage := ramstage
 cbmem_console-ramstage-test-srcs += tests/lib/cbmem_console-test.c
 cbmem_console-ramstage-test-srcs += tests/stubs/console.c
+
+list-test-srcs += tests/lib/list-test.c
+list-test-srcs += src/lib/list.c
+

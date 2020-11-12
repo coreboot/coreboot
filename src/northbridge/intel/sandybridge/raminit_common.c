@@ -27,9 +27,9 @@ static void sfence(void)
 static void toggle_io_reset(void)
 {
 	u32 r32 = MCHBAR32(MC_INIT_STATE_G);
-	MCHBAR32(MC_INIT_STATE_G) = r32 |  0x20;
+	MCHBAR32(MC_INIT_STATE_G) = r32 |  (1 << 5);
 	udelay(1);
-	MCHBAR32(MC_INIT_STATE_G) = r32 & ~0x20;
+	MCHBAR32(MC_INIT_STATE_G) = r32 & ~(1 << 5);
 	udelay(1);
 }
 
@@ -130,11 +130,11 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 			stretch = 3;
 
 		addr = SCHED_SECOND_CBIT_ch(channel);
-		MCHBAR32_AND_OR(addr, 0xffffc3ff, (stretch << 12) | (stretch << 10));
+		MCHBAR32_AND_OR(addr, ~(0xf << 10), (stretch << 12) | (stretch << 10));
 		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr, MCHBAR32(addr));
 	} else {
 		addr = TC_OTHP_ch(channel);
-		MCHBAR32_AND_OR(addr, 0xfff0ffff, (stretch << 16) | (stretch << 18));
+		MCHBAR32_AND_OR(addr, ~(0xf << 16), (stretch << 16) | (stretch << 18));
 		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, MCHBAR32(addr));
 	}
 }
@@ -211,7 +211,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), reg);
 		MCHBAR32(TC_RFTP_ch(channel)) = reg;
 
-		MCHBAR32_OR(TC_RFP_ch(channel),  0xff);
+		MCHBAR32_OR(TC_RFP_ch(channel), 0xff);
 
 		/* Self-refresh timing parameters */
 		reg = 0;
@@ -564,19 +564,19 @@ void dram_jedecreset(ramctr_timing *ctrl)
 	MCHBAR32(MC_INIT_STATE_G) = reg;
 
 	/* Assert DIMM reset signal */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~2);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 1));
 
 	/* Wait 200us */
 	udelay(200);
 
 	/* Deassert DIMM reset signal */
-	MCHBAR32_OR(MC_INIT_STATE_G, 2);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 1);
 
 	/* Wait 500us */
 	udelay(500);
 
 	/* Enable DCLK */
-	MCHBAR32_OR(MC_INIT_STATE_G, 4);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 2);
 
 	/* XXX Wait 20ns */
 	udelay(1);
@@ -691,7 +691,7 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
 
 	/* DLL Reset - self clearing - set after CLK frequency has been changed */
-	mr0reg = 0x100;
+	mr0reg = 1 << 8;
 
 	/* Convert CAS to MCH register friendly */
 	if (ctrl->CAS < 12) {
@@ -857,10 +857,10 @@ void dram_mrscommands(ramctr_timing *ctrl)
 	}
 
 	/* Refresh enable */
-	MCHBAR32_OR(MC_INIT_STATE_G, 8);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 3);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~0x200000);
+		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~(1 << 21));
 
 		wait_for_iosav(channel);
 
@@ -949,7 +949,7 @@ void program_timings(ramctr_timing *ctrl, int channel)
 	MCHBAR32(GDCRCKLOGICDELAY_ch(channel)) = reg_logic_delay;
 
 	reg_io_latency = MCHBAR32(SC_IO_LATENCY_ch(channel));
-	reg_io_latency &= 0xffff0000;
+	reg_io_latency &= ~0xffff;
 
 	reg_roundtrip_latency = 0;
 
@@ -1663,7 +1663,7 @@ static void precharge(ramctr_timing *ctrl)
 static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	/* enable DQs on this slotrank */
-	write_mrreg(ctrl, channel, slotrank, 1, 0x80 | make_mr1(ctrl, slotrank, channel));
+	write_mrreg(ctrl, channel, slotrank, 1, make_mr1(ctrl, slotrank, channel) | 1 << 7);
 
 	wait_for_iosav(channel);
 
@@ -1715,7 +1715,8 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	wait_for_iosav(channel);
 
 	/* disable DQs on this slotrank */
-	write_mrreg(ctrl, channel, slotrank, 1, 0x1080 | make_mr1(ctrl, slotrank, channel));
+	write_mrreg(ctrl, channel, slotrank, 1,
+		make_mr1(ctrl, slotrank, channel) | 1 << 12 | 1 << 7);
 }
 
 static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
@@ -1933,15 +1934,15 @@ int write_training(ramctr_timing *ctrl)
 	int err;
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(TC_RWP_ch(channel), 0x8000000);
+		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
 	}
 
 	/* Refresh disable */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~8);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
 	}
@@ -1951,7 +1952,7 @@ int write_training(ramctr_timing *ctrl)
 	   Only NOP is allowed in this mode */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel, slotrank, 1,
-				make_mr1(ctrl, slotrank, channel) | 0x1080);
+				make_mr1(ctrl, slotrank, channel) | 1 << 12 | 1 << 7);
 
 	MCHBAR32(GDCRTRAININGMOD) = 0x108052;
 
@@ -1974,10 +1975,10 @@ int write_training(ramctr_timing *ctrl)
 		wait_for_iosav(channel);
 
 	/* Refresh enable */
-	MCHBAR32_OR(MC_INIT_STATE_G, 8);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 3);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~0x00200000);
+		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~(1 << 21));
 		MCHBAR32(IOSAV_STATUS_ch(channel));
 		wait_for_iosav(channel);
 
@@ -2121,11 +2122,11 @@ static void reprogram_320c(ramctr_timing *ctrl)
 		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
 	}
 
 	/* refresh disable */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~8);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_for_iosav(channel);
 
@@ -2891,7 +2892,7 @@ void set_scrambling_seed(ramctr_timing *ctrl)
 		{0x00028bfa, 0x53fe4b49, 0x19ed5483}
 	};
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(SCHED_CBIT_ch(channel)) &= ~0x10000000;
+		MCHBAR32(SCHED_CBIT_ch(channel)) &= ~(1 << 28);
 		MCHBAR32(SCRAMBLING_SEED_1_ch(channel))    = seeds[channel][0];
 		MCHBAR32(SCRAMBLING_SEED_2_HI_ch(channel)) = seeds[channel][1];
 		MCHBAR32(SCRAMBLING_SEED_2_LO_ch(channel)) = seeds[channel][2];
@@ -2913,7 +2914,7 @@ void prepare_training(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		/* Always drive command bus */
-		MCHBAR32_OR(TC_RAP_ch(channel), 0x20000000);
+		MCHBAR32_OR(TC_RAP_ch(channel), 1 << 29);
 	}
 
 	udelay(1);
@@ -2943,7 +2944,7 @@ void set_read_write_timings(ramctr_timing *ctrl)
 
 		dram_odt_stretch(ctrl, channel);
 
-		MCHBAR32(TC_RWP_ch(channel)) = 0x0a000000 | (b20 << 20) |
+		MCHBAR32(TC_RWP_ch(channel)) = (1 << 27) | (2 << 24) | (b20 << 20) |
 			((ctrl->ref_card_offset[channel] + 2) << 16) | b4_8_12;
 	}
 }
@@ -2952,8 +2953,8 @@ void set_normal_operation(ramctr_timing *ctrl)
 {
 	int channel;
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(MC_INIT_STATE_ch(channel)) = 0x00001000 | ctrl->rankmap[channel];
-		MCHBAR32_AND(TC_RAP_ch(channel), ~0x20000000);
+		MCHBAR32(MC_INIT_STATE_ch(channel)) = (1 << 12) | ctrl->rankmap[channel];
+		MCHBAR32_AND(TC_RAP_ch(channel), ~(1 << 29));
 	}
 }
 
@@ -2977,7 +2978,7 @@ void final_registers(ramctr_timing *ctrl)
 	MCHBAR32(WMM_READ_CONFIG) = 0x46;
 
 	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(TC_OTHP_ch(channel), 0xffffcfff, 0x1000);
+		MCHBAR32_AND_OR(TC_OTHP_ch(channel), ~(3 << 12), 1 << 12);
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
@@ -3018,8 +3019,8 @@ void final_registers(ramctr_timing *ctrl)
 	FOR_ALL_CHANNELS
 		MCHBAR32_AND_OR(TC_RFP_ch(channel), ~(3 << 16), 1 << 16);
 
-	MCHBAR32_OR(MC_INIT_STATE_G, 1);
-	MCHBAR32_OR(MC_INIT_STATE_G, 0x80);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 0);
+	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 7);
 	MCHBAR32(BANDTIMERS_SNB) = 0xfa;
 
 	/* Find a populated channel */
@@ -3045,7 +3046,7 @@ void final_registers(ramctr_timing *ctrl)
 
 	/* The graphics driver will use these watermark values */
 	printk(BIOS_DEBUG, "t123: %d, %d, %d\n", t1_ns, t2_ns, t3_ns);
-	MCHBAR32_AND_OR(SSKPD, 0xC0C0C0C0,
+	MCHBAR32_AND_OR(SSKPD, ~0x3f3f3f3f,
 		((encode_wm(t1_ns) + encode_wm(t2_ns)) << 16) | (encode_wm(t1_ns) << 8) |
 		((encode_wm(t3_ns) + encode_wm(t2_ns) + encode_wm(t1_ns)) << 24) | 0x0c);
 }
@@ -3076,11 +3077,11 @@ void restore_timings(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(TC_RWP_ch(channel), 0x08000000);
+		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		udelay(1);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x00200000);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
 	}
 
 	printram("CPE\n");

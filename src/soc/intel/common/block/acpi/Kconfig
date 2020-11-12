@@ -4,3 +4,12 @@ config SOC_INTEL_COMMON_BLOCK_ACPI
 	bool
 	help
 	  Intel Processor common code for ACPI
+
+if SOC_INTEL_COMMON_BLOCK_ACPI
+
+config SOC_INTEL_COMMON_BLOCK_ACPI_CPPC
+	bool
+	help
+	  Generate CPPC entries for Intel SpeedShift
+
+endif

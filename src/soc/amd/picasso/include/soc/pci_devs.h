@@ -4,13 +4,7 @@
 #define __PI_PICASSO_PCI_DEVS_H__
 
 #include <device/pci_def.h>
-
-#if !defined(__SIMPLE_DEVICE__)
-#include <device/device.h>
-#define _SOC_DEV(slot, func)	pcidev_on_root(slot, func)
-#else
-#define _SOC_DEV(slot, func)	PCI_DEV(0, slot, func)
-#endif
+#include <amdblocks/pci_devs.h>
 
 /* GNB Root Complex */
 #define GNB_DEV			0x0

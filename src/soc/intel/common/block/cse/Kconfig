@@ -20,32 +20,38 @@ config SOC_INTEL_CSE_LITE_SKU
 	help
 	 Enables CSE Lite SKU
 
+config SOC_INTEL_CSE_RW_UPDATE
+	bool "Enable the CSE RW Update Feature"
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	 This config will enable CSE RW firmware update feature and also will be used ensure
+	 all the required configs are provided by mainboard.
+
+if SOC_INTEL_CSE_RW_UPDATE
 config SOC_INTEL_CSE_FMAP_NAME
 	string "Name of CSE Region in FMAP"
-	depends on SOC_INTEL_CSE_LITE_SKU
 	default "SI_ME"
 	help
 	 Name of CSE region in FMAP
 
 config SOC_INTEL_CSE_RW_CBFS_NAME
 	string "CBFS entry name for CSE RW blob"
-	depends on SOC_INTEL_CSE_LITE_SKU
 	default "me_rw"
 	help
 	 CBFS entry name for Intel CSE CBFS RW blob
 
 config SOC_INTEL_CSE_RW_FILE
 	string "Intel CSE CBFS RW path and filename"
-	depends on SOC_INTEL_CSE_LITE_SKU
 	default ""
 	help
 	 Intel CSE CBFS RW blob path and file name
 
 config SOC_INTEL_CSE_RW_VERSION
 	string "Intel CSE RW firmware version"
-	depends on SOC_INTEL_CSE_LITE_SKU
 	default ""
 	help
 	 This config contains the Intel CSE RW version of the blob that is provided by
 	 SOC_INTEL_CSE_RW_FILE config and the version must be set in the format
 	 major.minor.hotfix.build (ex: 14.0.40.1209).
+endif

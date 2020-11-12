@@ -191,49 +191,6 @@ static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp,
 	return &cse_bp_info->bp_entries[bp];
 }
 
-static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
-	enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
-{
-	const struct cse_bp_entry *cse_bp;
-
-	cse_bp = cse_get_bp_entry(bp, cse_bp_info);
-
-	if (start_offset)
-		*start_offset = cse_bp->start_offset;
-
-	if (end_offset)
-		*end_offset = cse_bp->end_offset;
-
-}
-
-static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
-	const struct cse_bp_info *bp_info)
-{
-	const struct cse_bp_entry *cse_bp;
-
-	cse_bp = cse_get_bp_entry(bp, bp_info);
-	return &cse_bp->fw_ver;
-}
-
-static const struct fw_version *cse_get_rw_version(const struct cse_bp_info *cse_bp_info)
-{
-	return cse_get_bp_entry_version(RW, cse_bp_info);
-}
-
-static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
-{
-	const struct cse_bp_entry *rw_bp;
-
-	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
-
-	if (rw_bp->status == BP_STATUS_PARTITION_NOT_PRESENT ||
-			rw_bp->status == BP_STATUS_GENERAL_FAILURE) {
-		printk(BIOS_ERR, "cse_lite: RW BP (status:%u) is not valid\n", rw_bp->status);
-		return false;
-	}
-	return true;
-}
-
 static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
 {
 	const struct cse_bp_entry *cse_bp;
@@ -369,6 +326,43 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 	return true;
 }
 
+static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
+{
+	struct data_clr_request {
+		struct mkhi_hdr hdr;
+		uint8_t reserved[4];
+	} __packed;
+
+	struct data_clr_request data_clr_rq = {
+		.hdr.group_id = MKHI_GROUP_ID_BUP_COMMON,
+		.hdr.command = MKHI_BUP_COMMON_DATA_CLEAR,
+		.reserved = {0},
+	};
+
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_soft_temp_disable() ||
+			cse_get_current_bp(cse_bp_info) != RO) {
+		printk(BIOS_ERR, "cse_lite: CSE doesn't meet DATA CLEAR cmd prerequisites\n");
+		return false;
+	}
+
+	printk(BIOS_DEBUG, "cse_lite: Sending DATA CLEAR HECI command\n");
+
+	struct mkhi_hdr data_clr_rsp;
+	size_t data_clr_rsp_sz = sizeof(data_clr_rsp);
+
+	if (!heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
+		&data_clr_rsp_sz)) {
+		return false;
+	}
+
+	if (data_clr_rsp.result) {
+		printk(BIOS_ERR, "cse_lite: CSE DATA CLEAR command response failed: %d\n",
+				data_clr_rsp.result);
+		return false;
+	}
+
+	return true;
+}
 __weak void cse_board_reset(void)
 {
 	/* Default weak implementation, does nothing. */
@@ -398,6 +392,80 @@ static bool cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
 		return true;
 
 	return cse_set_and_boot_from_next_bp(RW);
+}
+
+/* Check if CSE RW data partition is valid or not */
+static bool cse_is_rw_dp_valid(const struct cse_bp_info *cse_bp_info)
+{
+	const struct cse_bp_entry *rw_bp;
+
+	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+	return rw_bp->status != BP_STATUS_DATA_FAILURE;
+}
+
+/*
+ * It returns true if RW partition doesn't indicate BP_STATUS_DATA_FAILURE
+ * otherwise false if any operation fails.
+ */
+static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
+{
+	/*
+	 * If RW partition status indicates BP_STATUS_DATA_FAILURE,
+	 *  - Send DATA CLEAR HECI command to CSE
+	 *  - Send SET BOOT PARTITION INFO(RW) command to set CSE's next partition
+	 *  - Issue GLOBAL RESET HECI command.
+	 */
+	if (cse_is_rw_dp_valid(cse_bp_info))
+		return true;
+
+	if (!cse_data_clear_request(cse_bp_info))
+		return false;
+
+	return cse_boot_to_rw(cse_bp_info);
+}
+
+#if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
+static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
+	const struct cse_bp_info *bp_info)
+{
+	const struct cse_bp_entry *cse_bp;
+
+	cse_bp = cse_get_bp_entry(bp, bp_info);
+	return &cse_bp->fw_ver;
+}
+
+static const struct fw_version *cse_get_rw_version(const struct cse_bp_info *cse_bp_info)
+{
+	return cse_get_bp_entry_version(RW, cse_bp_info);
+}
+
+static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
+	enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
+{
+	const struct cse_bp_entry *cse_bp;
+
+	cse_bp = cse_get_bp_entry(bp, cse_bp_info);
+
+	if (start_offset)
+		*start_offset = cse_bp->start_offset;
+
+	if (end_offset)
+		*end_offset = cse_bp->end_offset;
+
+}
+
+static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
+{
+	const struct cse_bp_entry *rw_bp;
+
+	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+
+	if (rw_bp->status == BP_STATUS_PARTITION_NOT_PRESENT ||
+			rw_bp->status == BP_STATUS_GENERAL_FAILURE) {
+		printk(BIOS_ERR, "cse_lite: RW BP (status:%u) is not valid\n", rw_bp->status);
+		return false;
+	}
+	return true;
 }
 
 static bool cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
@@ -465,43 +533,6 @@ static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	return true;
 }
 
-static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
-{
-	struct data_clr_request {
-		struct mkhi_hdr hdr;
-		uint8_t reserved[4];
-	} __packed;
-
-	struct data_clr_request data_clr_rq = {
-		.hdr.group_id = MKHI_GROUP_ID_BUP_COMMON,
-		.hdr.command = MKHI_BUP_COMMON_DATA_CLEAR,
-		.reserved = {0},
-	};
-
-	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_soft_temp_disable() ||
-			cse_get_current_bp(cse_bp_info) != RO) {
-		printk(BIOS_ERR, "cse_lite: CSE doesn't meet DATA CLEAR cmd prerequisites\n");
-		return false;
-	}
-
-	printk(BIOS_DEBUG, "cse_lite: Sending DATA CLEAR HECI command\n");
-
-	struct mkhi_hdr data_clr_rsp;
-	size_t data_clr_rsp_sz = sizeof(data_clr_rsp);
-
-	if (!heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
-		&data_clr_rsp_sz)) {
-		return false;
-	}
-
-	if (data_clr_rsp.result) {
-		printk(BIOS_ERR, "cse_lite: CSE DATA CLEAR command response failed: %d\n",
-				data_clr_rsp.result);
-		return false;
-	}
-
-	return true;
-}
 
 static bool cse_get_cbfs_rw_version(const struct region_device *source_rdev,
 		void *cse_cbfs_rw_ver)
@@ -546,36 +577,6 @@ static int cse_check_version_mismatch(const struct cse_bp_info *cse_bp_info,
 		return cse_cbfs_rw_ver.hotfix - cse_rw_ver->hotfix;
 	else
 		return cse_cbfs_rw_ver.build - cse_rw_ver->build;
-}
-
-/* Check if CSE RW data partition is valid or not */
-static bool cse_is_rw_dp_valid(const struct cse_bp_info *cse_bp_info)
-{
-	const struct cse_bp_entry *rw_bp;
-
-	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
-	return rw_bp->status != BP_STATUS_DATA_FAILURE;
-}
-
-/*
- * It returns true if RW partition doesn't indicate BP_STATUS_DATA_FAILURE
- * otherwise false if any operation fails.
- */
-static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
-{
-	/*
-	 * If RW partition status indicates BP_STATUS_DATA_FAILURE,
-	 *  - Send DATA CLEAR HECI command to CSE
-	 *  - Send SET BOOT PARTITION INFO(RW) command to set CSE's next partition
-	 *  - Issue GLOBAL RESET HECI command.
-	 */
-	if (cse_is_rw_dp_valid(cse_bp_info))
-		return true;
-
-	if (!cse_data_clear_request(cse_bp_info))
-		return false;
-
-	return cse_boot_to_rw(cse_bp_info);
 }
 
 static bool cse_erase_rw_region(const struct region_device *target_rdev)
@@ -712,6 +713,7 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info,
 
 	return 0;
 }
+#endif
 
 void cse_fw_sync(void *unused)
 {
@@ -737,6 +739,7 @@ void cse_fw_sync(void *unused)
 		cse_trigger_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/* If RW blob is present in CBFS, then trigger CSE firmware update */
+#if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
 	uint8_t rv;
 	struct region_device source_rdev;
 	if (cse_get_cbfs_rdev(&source_rdev)) {
@@ -744,6 +747,7 @@ void cse_fw_sync(void *unused)
 		if (rv)
 			cse_trigger_recovery(rv);
 	}
+#endif
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");

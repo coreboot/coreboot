@@ -73,6 +73,25 @@ void p2sb_set_hpet_bdf(union p2sb_bdf bdf)
 	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_HBDF, bdf.raw);
 }
 
+union p2sb_bdf p2sb_get_ioapic_bdf(void)
+{
+	const bool was_hidden = p2sb_is_hidden();
+	if (was_hidden)
+		p2sb_unhide();
+
+	union p2sb_bdf bdf = { .raw = pci_read_config16(PCH_DEV_P2SB, PCH_P2SB_IBDF) };
+
+	if (was_hidden)
+		p2sb_hide();
+
+	return bdf;
+}
+
+void p2sb_set_ioapic_bdf(union p2sb_bdf bdf)
+{
+	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_IBDF, bdf.raw);
+}
+
 static void p2sb_set_hide_bit(int hide)
 {
 	const uint16_t reg = PCH_P2SB_E0 + 1;

@@ -5,6 +5,7 @@
 #include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
+#include <soc/pch.h>
 #include <soc/ramstage.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
@@ -43,6 +44,7 @@ static void soc_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init(false);
+	override_hpet_ioapic_bdf();
 }
 
 static void soc_final(void *data)

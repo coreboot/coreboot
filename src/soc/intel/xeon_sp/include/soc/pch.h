@@ -9,4 +9,6 @@
 void pch_disable_devfn(struct device *dev);
 #endif
 
+void override_hpet_ioapic_bdf(void);
+
 #endif /* _SOC_PCH_H_ */

@@ -10,6 +10,7 @@
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/cpu.h>
+#include <soc/pch.h>
 #include <soc/ramstage.h>
 #include <soc/p2sb.h>
 #include <soc/soc_util.h>
@@ -76,6 +77,7 @@ static void chip_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init(false);
+	override_hpet_ioapic_bdf();
 	pch_enable_ioapic();
 	setup_lapic();
 	p2sb_unhide();

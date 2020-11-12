@@ -214,12 +214,12 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 
 	// Add PCH IOAPIC
 	if (socket == 0 && stack == CSTACK) {
+		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
 			"PCI Path: 0x%x, 0x%x\n",
-			PCH_IOAPIC_ID, PCH_IOAPIC_BUS_NUMBER,
-			PCH_IOAPIC_DEV_NUM, PCH_IOAPIC_FUNC_NUM);
+		       PCH_IOAPIC_ID, ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
 		current += acpi_create_dmar_ds_ioapic(current, PCH_IOAPIC_ID,
-			PCH_IOAPIC_BUS_NUMBER, PCH_IOAPIC_DEV_NUM, PCH_IOAPIC_FUNC_NUM);
+						      ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
 	}
 
 	// Add IOAPIC entry

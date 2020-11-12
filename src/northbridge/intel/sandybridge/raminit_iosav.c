@@ -51,52 +51,639 @@ void wait_for_iosav(int channel)
 
 void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32 wrap)
 {
-	const struct iosav_ssq sequence[] = ZQCS_SEQUENCE(slotrank, gap, post, wrap);
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ZQCS */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command = IOSAV_ZQCS,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = gap,
+				.post_ssq_wait  = post,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = wrap,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_prea_sequence(int channel, int slotrank, u32 post, u32 wrap)
 {
-	const struct iosav_ssq sequence[] = PREA_SEQUENCE(post, wrap);
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command PREA */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command = IOSAV_PRE,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = post,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 1024,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = wrap,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_read_mpr_sequence(
 	int channel, int slotrank, u32 tMOD, u32 loops, u32 gap, u32 loops2, u32 post2)
 {
-	const struct iosav_ssq sequence[] = READ_MPR_SEQUENCE(tMOD, loops, gap, loops2, post2);
+	const struct iosav_ssq sequence[] = {
+		/*
+		 * DRAM command MRS
+		 *
+		 * Write MR3 MPR enable. In this mode only RD and RDA
+		 * are allowed, and all reads return a predefined pattern.
+		 */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_MRS,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = tMOD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 4,
+				.rowbits = 6,
+				.bank    = 3,
+				.rank    = slotrank,
+			},
+		},
+		/* DRAM command RD */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = loops,
+				.cmd_delay_gap  = gap,
+				.post_ssq_wait  = 4,
+				.data_direction = SSQ_RD,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+		},
+		/* DRAM command RD */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = loops2,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = post2,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+		},
+		/*
+		 * DRAM command MRS
+		 *
+		 * Write MR3 MPR disable.
+		 */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_MRS,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = tMOD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 3,
+				.rank    = slotrank,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_misc_write_sequence(ramctr_timing *ctrl, int channel, int slotrank,
 				     u32 gap0, u32 loops0, u32 gap1, u32 loops2, u32 wrap2)
 {
-	const struct iosav_ssq sequence[] =
-		MISC_WRITE_SEQUENCE(gap0, loops0, gap1, loops2, wrap2);
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ACT */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_ACT,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = loops0,
+				.cmd_delay_gap  = gap0,
+				.post_ssq_wait  = ctrl->tRCD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_bank  = loops0 == 1 ? 0 : 1,
+				.addr_wrap = loops0 == 1 ? 0 : 18,
+			},
+		},
+		/* DRAM command NOP */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_NOP,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = gap1,
+				.post_ssq_wait  = 4,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 8,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = 31,
+			},
+		},
+		/* DRAM command WR */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_WR,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = loops2,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = 4,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = wrap2,
+			},
+		},
+		/* DRAM command NOP */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_NOP,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 5,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 8,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = 31,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_command_training_sequence(
 	ramctr_timing *ctrl, int channel, int slotrank, unsigned int address)
 {
-	const struct iosav_ssq sequence[] = COMMAND_TRAINING_SEQUENCE(address);
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ACT */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_ACT,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 8,
+				.cmd_delay_gap  = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1),
+				.post_ssq_wait  = ctrl->tRCD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = address,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_bank  = 1,
+				.addr_wrap = 18,
+			},
+		},
+		/* DRAM command WR */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_WR,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 32,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 8,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+				.lfsr_upd   = 3,
+				.lfsr_xors  = 2,
+			},
+		},
+		/* DRAM command RD */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 32,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),
+				.data_direction = SSQ_RD,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+				.lfsr_upd   = 3,
+				.lfsr_xors  = 2,
+			},
+		},
+		/* DRAM command PRE */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_PRE,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = 15,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 1024,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = 18,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_data_write_sequence(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	const struct iosav_ssq sequence[] = WRITE_DATA_SEQUENCE;
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ACT */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_ACT,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 4,
+				.cmd_delay_gap = MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1),
+				.post_ssq_wait  = ctrl->tRCD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_bank  = 0,
+				.addr_wrap = 18,
+			},
+		},
+		/* DRAM command WR */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_WR,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 32,
+				.cmd_delay_gap  = 20,
+				.post_ssq_wait  = ctrl->CWL + ctrl->tWTR + 8,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command RD */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 32,
+				.cmd_delay_gap  = 20,
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),
+				.data_direction = SSQ_RD,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command PRE */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_PRE,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = ctrl->tRP,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 1024,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_aggressive_write_read_sequence(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	const struct iosav_ssq sequence[] = AGGRESSIVE_WRITE_READ_SEQUENCE;
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ACT */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_ACT,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 4,
+				.cmd_delay_gap  = MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD),
+				.post_ssq_wait  = ctrl->tRCD,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_bank  = 1,
+				.addr_wrap = 18,
+			},
+		},
+		/* DRAM command WR */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_WR,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 480,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = ctrl->tWTR + ctrl->CWL + 8,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command RD */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 480,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = MAX(ctrl->tRTP, 8),
+				.data_direction = SSQ_RD,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command PRE */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_PRE,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = ctrl->tRP,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 1024,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }
 
 void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	const struct iosav_ssq sequence[] = MEMORY_TEST_SEQUENCE;
+	const struct iosav_ssq sequence[] = {
+		/* DRAM command ACT */
+		[0] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_ACT,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 4,
+				.cmd_delay_gap  = 8,
+				.post_ssq_wait  = 40,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_bank  = 1,
+				.addr_wrap = 18,
+			},
+		},
+		/* DRAM command WR */
+		[1] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_WR,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 100,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = 40,
+				.data_direction = SSQ_WR,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command RD */
+		[2] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_RD,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 100,
+				.cmd_delay_gap  = 4,
+				.post_ssq_wait  = 40,
+				.data_direction = SSQ_RD,
+			},
+			.sp_cmd_addr = {
+				.address = 0,
+				.rowbits = 0,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.inc_addr_8 = 1,
+				.addr_wrap  = 18,
+			},
+		},
+		/* DRAM command PRE */
+		[3] = {
+			.sp_cmd_ctrl = {
+				.command    = IOSAV_PRE,
+				.ranksel_ap = 1,
+			},
+			.subseq_ctrl = {
+				.cmd_executions = 1,
+				.cmd_delay_gap  = 3,
+				.post_ssq_wait  = 40,
+				.data_direction = SSQ_NA,
+			},
+			.sp_cmd_addr = {
+				.address = 1024,
+				.rowbits = 6,
+				.bank    = 0,
+				.rank    = slotrank,
+			},
+			.addr_update = {
+				.addr_wrap = 18,
+			},
+		},
+	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 }

@@ -188,33 +188,37 @@ void region_device_init(struct region_device *rdev,
 
 static void xlate_region_device_init(struct xlate_region_device *xdev,
 			const struct region_device_ops *ops,
-			const struct region_device *access_dev,
-			size_t sub_offset, size_t sub_size,
+			size_t window_count, const struct xlate_window *window_arr,
 			size_t parent_size)
 {
 	memset(xdev, 0, sizeof(*xdev));
-	xdev->access_dev = access_dev;
-	xdev->sub_region.offset = sub_offset;
-	xdev->sub_region.size = sub_size;
+	xdev->window_count = window_count;
+	xdev->window_arr = window_arr;
 	region_device_init(&xdev->rdev, ops, 0, parent_size);
 }
 
 void xlate_region_device_ro_init(struct xlate_region_device *xdev,
-			      const struct region_device *access_dev,
-			      size_t sub_offset, size_t sub_size,
+			      size_t window_count, const struct xlate_window *window_arr,
 			      size_t parent_size)
 {
-	xlate_region_device_init(xdev, &xlate_rdev_ro_ops, access_dev,
-			sub_offset, sub_size, parent_size);
+	xlate_region_device_init(xdev, &xlate_rdev_ro_ops, window_count, window_arr,
+			parent_size);
 }
 
 void xlate_region_device_rw_init(struct xlate_region_device *xdev,
-			      const struct region_device *access_dev,
-			      size_t sub_offset, size_t sub_size,
+			      size_t window_count, const struct xlate_window *window_arr,
 			      size_t parent_size)
 {
-	xlate_region_device_init(xdev, &xlate_rdev_rw_ops, access_dev,
-			sub_offset, sub_size, parent_size);
+	xlate_region_device_init(xdev, &xlate_rdev_rw_ops, window_count, window_arr,
+			parent_size);
+}
+
+void xlate_window_init(struct xlate_window *window, const struct region_device *access_dev,
+			      size_t sub_region_offset, size_t sub_region_size)
+{
+	window->access_dev = access_dev;
+	window->sub_region.offset = sub_region_offset;
+	window->sub_region.size = sub_region_size;
 }
 
 static void *mdev_mmap(const struct region_device *rd, size_t offset,
@@ -321,6 +325,21 @@ int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
 	return 0;
 }
 
+static const struct xlate_window *xlate_find_window(const struct xlate_region_device *xldev,
+						    const struct region *req)
+{
+	size_t i;
+	const struct xlate_window *xlwindow;
+
+	for (i = 0; i < xldev->window_count; i++) {
+		xlwindow = &xldev->window_arr[i];
+		if (region_is_subregion(&xlwindow->sub_region, req))
+			return xlwindow;
+	}
+
+	return NULL;
+}
+
 static void *xlate_mmap(const struct region_device *rd, size_t offset,
 			size_t size)
 {
@@ -329,24 +348,29 @@ static void *xlate_mmap(const struct region_device *rd, size_t offset,
 		.offset = offset,
 		.size = size,
 	};
+	const struct xlate_window *xlwindow;
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!region_is_subregion(&xldev->sub_region, &req))
+	xlwindow = xlate_find_window(xldev, &req);
+	if (!xlwindow)
 		return NULL;
 
-	offset -= region_offset(&xldev->sub_region);
+	offset -= region_offset(&xlwindow->sub_region);
 
-	return rdev_mmap(xldev->access_dev, offset, size);
+	return rdev_mmap(xlwindow->access_dev, offset, size);
 }
 
-static int xlate_munmap(const struct region_device *rd, void *mapping)
+static int xlate_munmap(const struct region_device *rd __unused, void *mapping __unused)
 {
-	const struct xlate_region_device *xldev;
-
-	xldev = container_of(rd, __typeof__(*xldev), rdev);
-
-	return rdev_munmap(xldev->access_dev, mapping);
+	/*
+	 * xlate_region_device does not keep track of the access device that was used to service
+	 * a mmap request. So, munmap does not do anything. If munmap functionality is required,
+	 * then xlate_region_device will have to be updated to accept some pre-allocated space
+	 * from caller to keep track of the mapping requests. Since xlate_region_device is only
+	 * used for memory mapped boot media on the backend right now, skipping munmap is fine.
+	 */
+	return 0;
 }
 
 static ssize_t xlate_readat(const struct region_device *rd, void *b,
@@ -356,16 +380,18 @@ static ssize_t xlate_readat(const struct region_device *rd, void *b,
 		.offset = offset,
 		.size = size,
 	};
+	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!region_is_subregion(&xldev->sub_region, &req))
+	xlwindow = xlate_find_window(xldev, &req);
+	if (!xlwindow)
 		return -1;
 
-	offset -= region_offset(&xldev->sub_region);
+	offset -= region_offset(&xlwindow->sub_region);
 
-	return rdev_readat(xldev->access_dev, b, offset, size);
+	return rdev_readat(xlwindow->access_dev, b, offset, size);
 }
 
 static ssize_t xlate_writeat(const struct region_device *rd, const void *b,
@@ -375,16 +401,18 @@ static ssize_t xlate_writeat(const struct region_device *rd, const void *b,
 		.offset = offset,
 		.size = size,
 	};
+	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!region_is_subregion(&xldev->sub_region, &req))
+	xlwindow = xlate_find_window(xldev, &req);
+	if (!xlwindow)
 		return -1;
 
-	offset -= region_offset(&xldev->sub_region);
+	offset -= region_offset(&xlwindow->sub_region);
 
-	return rdev_writeat(xldev->access_dev, b, offset, size);
+	return rdev_writeat(xlwindow->access_dev, b, offset, size);
 }
 
 static ssize_t xlate_eraseat(const struct region_device *rd,
@@ -394,16 +422,18 @@ static ssize_t xlate_eraseat(const struct region_device *rd,
 		.offset = offset,
 		.size = size,
 	};
+	const struct xlate_window *xlwindow;
 	const struct xlate_region_device *xldev;
 
 	xldev = container_of(rd, __typeof__(*xldev), rdev);
 
-	if (!region_is_subregion(&xldev->sub_region, &req))
+	xlwindow = xlate_find_window(xldev, &req);
+	if (!xlwindow)
 		return -1;
 
-	offset -= region_offset(&xldev->sub_region);
+	offset -= region_offset(&xlwindow->sub_region);
 
-	return rdev_eraseat(xldev->access_dev, offset, size);
+	return rdev_eraseat(xlwindow->access_dev, offset, size);
 }
 
 const struct region_device_ops xlate_rdev_ro_ops = {

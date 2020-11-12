@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <commonlib/bsd/helpers.h>
 #include <commonlib/mem_pool.h>
 
 /*
@@ -210,14 +211,33 @@ void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
 void *mmap_helper_rdev_mmap(const struct region_device *, size_t, size_t);
 int mmap_helper_rdev_munmap(const struct region_device *, void *);
 
-/* A translated region device provides the ability to publish a region device
- * in one address space and use an access mechanism within another address
- * space. The sub region is the window within the 1st address space and
- * the request is modified prior to accessing the second address space
- * provided by access_dev. */
-struct xlate_region_device {
+/*
+ * A translated region device provides the ability to publish a region device in one address
+ * space and use an access mechanism within another address space. The sub region is the window
+ * within the 1st address space and the request is modified prior to accessing the second
+ * address space provided by access_dev.
+ *
+ * Each xlate_region_device can support multiple translation windows described using
+ * xlate_window structure. The windows need not be contiguous in either address space. However,
+ * this poses restrictions on the operations being performed i.e. callers cannot perform
+ * operations across multiple windows of a translated region device. It is possible to support
+ * readat/writeat/eraseat by translating them into multiple calls one to access device in each
+ * window. However, mmap support is tricky because the caller expects that the memory mapped
+ * region is contiguous in both address spaces. Thus, to keep the semantics consistent for all
+ * region ops, xlate_region_device does not support any operations across the window
+ * boundary.
+ *
+ * Note: The platform is expected to ensure that the fmap description does not place any
+ * section (that will be operated using the translated region device) across multiple windows.
+ */
+struct xlate_window {
 	const struct region_device *access_dev;
 	struct region sub_region;
+};
+
+struct xlate_region_device {
+	size_t window_count;
+	const struct xlate_window *window_arr;
 	struct region_device rdev;
 };
 
@@ -225,37 +245,30 @@ extern const struct region_device_ops xlate_rdev_ro_ops;
 
 extern const struct region_device_ops xlate_rdev_rw_ops;
 
-#define XLATE_REGION_DEV_INIT(access_dev_, sub_offset_, sub_size_,	\
-		parent_sz_, ops_)					\
+#define XLATE_REGION_DEV_INIT(window_arr_, parent_sz_, ops_)		\
 	{								\
-		.access_dev = access_dev_,				\
-		.sub_region = {						\
-			.offset = (sub_offset_),			\
-			.size = (sub_size_),				\
-		},							\
+		.window_count = ARRAY_SIZE(window_arr_),		\
+		.window_arr = window_arr_,				\
 		.rdev = REGION_DEV_INIT((ops_), 0,  (parent_sz_)),	\
 	}
 
-#define XLATE_REGION_DEV_RO_INIT(access_dev_, sub_offset_, sub_size_,	\
-		parent_sz_)						\
-		XLATE_REGION_DEV_INIT(access_dev_, sub_offset_,		\
-			sub_size_, parent_sz_, &xlate_rdev_ro_ops),	\
+#define XLATE_REGION_DEV_RO_INIT(window_arr_, parent_sz_)		\
+		XLATE_REGION_DEV_INIT(window_arr_, parent_sz_, &xlate_rdev_ro_ops)
 
-#define XLATE_REGION_DEV_RW_INIT(access_dev_, sub_offset_, sub_size_,	\
-		parent_sz_)						\
-		XLATE_REGION_DEV_INIT(access_dev_, sub_offset_,		\
-			sub_size_, parent_sz_, &xlate_rdev_rw_ops),	\
+#define XLATE_REGION_DEV_RW_INIT(window_count_, window_arr_, parent_sz_) \
+		XLATE_REGION_DEV_INIT(window_arr_, parent_sz_, &xlate_rdev_rw_ops)
 
 /* Helper to dynamically initialize xlate region device. */
 void xlate_region_device_ro_init(struct xlate_region_device *xdev,
-			      const struct region_device *access_dev,
-			      size_t sub_offset, size_t sub_size,
+			      size_t window_count, const struct xlate_window *window_arr,
 			      size_t parent_size);
 
 void xlate_region_device_rw_init(struct xlate_region_device *xdev,
-			      const struct region_device *access_dev,
-			      size_t sub_offset, size_t sub_size,
+			      size_t window_count, const struct xlate_window *window_arr,
 			      size_t parent_size);
+
+void xlate_window_init(struct xlate_window *window, const struct region_device *access_dev,
+			      size_t sub_region_offset, size_t sub_region_size);
 
 /* This type can be used for incoherent access where the read and write
  * operations are backed by separate drivers. An example is x86 systems

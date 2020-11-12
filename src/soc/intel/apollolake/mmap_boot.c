@@ -43,6 +43,7 @@ static size_t bios_size;
 
 static struct mem_region_device shadow_dev;
 static struct xlate_region_device real_dev;
+static struct xlate_window real_dev_window;
 
 static void bios_mmap_init(void)
 {
@@ -68,9 +69,8 @@ static void bios_mmap_init(void)
 	mem_region_device_ro_init(&shadow_dev, (void *)base,
 			       bios_mapped_size);
 
-	xlate_region_device_ro_init(&real_dev, &shadow_dev.rdev,
-				 start, bios_mapped_size,
-				 CONFIG_ROM_SIZE);
+	xlate_window_init(&real_dev_window, &shadow_dev.rdev, start, bios_mapped_size);
+	xlate_region_device_ro_init(&real_dev, 1, &real_dev_window, CONFIG_ROM_SIZE);
 
 	bios_size = size;
 
@@ -78,7 +78,7 @@ static void bios_mmap_init(void)
 	   easy to forget the SRAM mapping when crafting an FMAP file. */
 	struct region cbfs_region;
 	if (!fmap_locate_area("COREBOOT", &cbfs_region) &&
-	    !region_is_subregion(&real_dev.sub_region, &cbfs_region))
+	    !region_is_subregion(&real_dev_window.sub_region, &cbfs_region))
 		printk(BIOS_CRIT,
 		       "ERROR: CBFS @ %zx size %zx exceeds mem-mapped area @ %zx size %zx\n",
 		       region_offset(&cbfs_region), region_sz(&cbfs_region),

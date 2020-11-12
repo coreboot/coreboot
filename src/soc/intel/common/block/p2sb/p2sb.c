@@ -15,6 +15,18 @@
 
 #define HIDE_BIT (1 << 0)
 
+static bool p2sb_is_hidden(void)
+{
+	const uint16_t pci_vid = pci_read_config16(PCH_DEV_P2SB, PCI_VENDOR_ID);
+
+	if (pci_vid == 0xffff)
+		return true;
+	if (pci_vid == PCI_VENDOR_ID_INTEL)
+		return false;
+	printk(BIOS_ERR, "P2SB PCI_VENDOR_ID is invalid, unknown if hidden\n");
+	return true;
+}
+
 void p2sb_enable_bar(void)
 {
 	/* Enable PCR Base address in PCH */
@@ -59,8 +71,7 @@ void p2sb_unhide(void)
 {
 	p2sb_set_hide_bit(0);
 
-	if (pci_read_config16(PCH_DEV_P2SB, PCI_VENDOR_ID) !=
-			PCI_VENDOR_ID_INTEL)
+	if (p2sb_is_hidden())
 		die_with_post_code(POST_HW_INIT_FAILURE,
 				   "Unable to unhide PCH_DEV_P2SB device !\n");
 }
@@ -69,8 +80,7 @@ void p2sb_hide(void)
 {
 	p2sb_set_hide_bit(1);
 
-	if (pci_read_config16(PCH_DEV_P2SB, PCI_VENDOR_ID) !=
-			0xFFFF)
+	if (!p2sb_is_hidden())
 		die_with_post_code(POST_HW_INIT_FAILURE,
 				   "Unable to hide PCH_DEV_P2SB device !\n");
 }

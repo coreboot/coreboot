@@ -194,7 +194,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		p2sb_unhide();
 		struct device *p2sb_dev = pcidev_path_on_root(PCH_DEVFN_P2SB);
 		uint16_t ibdf = pci_read_config16(p2sb_dev, PCH_P2SB_IBDF);
-		uint16_t hbdf = pci_read_config16(p2sb_dev, PCH_P2SB_HBDF);
+		union p2sb_bdf hbdf = p2sb_get_hpet_bdf();
 		p2sb_hide();
 
 		current += acpi_create_dmar_drhd(current,
@@ -202,7 +202,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		current += acpi_create_dmar_ds_ioapic(current,
 				2, ibdf >> 8, PCI_SLOT(ibdf), PCI_FUNC(ibdf));
 		current += acpi_create_dmar_ds_msi_hpet(current,
-				0, hbdf >> 8, PCI_SLOT(hbdf), PCI_FUNC(hbdf));
+				0, hbdf.bus, hbdf.dev, hbdf.fn);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 

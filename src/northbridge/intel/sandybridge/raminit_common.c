@@ -1101,7 +1101,7 @@ static struct run get_longest_zero_run(int *seq, int sz)
 	return ret;
 }
 
-static void discover_timA_coarse(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
+static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int timA;
 	int statistics[NUM_LANES][128];
@@ -1131,7 +1131,7 @@ static void discover_timA_coarse(ramctr_timing *ctrl, int channel, int slotrank,
 	}
 }
 
-static void discover_timA_fine(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
+static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int timA_delta;
 	int statistics[NUM_LANES][51];
@@ -1177,7 +1177,7 @@ static void discover_timA_fine(ramctr_timing *ctrl, int channel, int slotrank, i
 	}
 }
 
-static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
+static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int works[NUM_LANES];
 	int lane;
@@ -1337,7 +1337,7 @@ int read_training(ramctr_timing *ctrl)
 		ctrl->timings[channel][slotrank].roundtrip_latency = 55;
 		program_timings(ctrl, channel);
 
-		discover_timA_coarse(ctrl, channel, slotrank, upperA);
+		find_rcven_pi_coarse(ctrl, channel, slotrank, upperA);
 
 		all_high = 1;
 		some_high = 0;
@@ -1367,13 +1367,13 @@ int read_training(ramctr_timing *ctrl)
 
 		prev = get_logic_delay_delta(ctrl, channel, slotrank);
 
-		err = discover_402x(ctrl, channel, slotrank, upperA);
+		err = find_roundtrip_latency(ctrl, channel, slotrank, upperA);
 		if (err)
 			return err;
 
 		prev = align_rt_io_latency(ctrl, channel, slotrank, prev);
 
-		discover_timA_fine(ctrl, channel, slotrank, upperA);
+		fine_tune_rcven_pi(ctrl, channel, slotrank, upperA);
 
 		prev = align_rt_io_latency(ctrl, channel, slotrank, prev);
 

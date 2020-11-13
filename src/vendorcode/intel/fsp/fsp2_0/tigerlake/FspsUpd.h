@@ -1058,10 +1058,10 @@ typedef struct {
   UINT16                      ITbtDmaLtr[2];
 
 /** Offset 0x04E2 - Enable/Disable CrashLog
-  Enable(Default): Enable CPU CrashLog, Disable: Disable CPU CrashLog
+  Deprecated. Move to PreMem
   $EN_DIS
 **/
-  UINT8                       CpuCrashLogEnable;
+  UINT8                       DeprecatedCpuCrashLogEnable;
 
 /** Offset 0x04E3 - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
@@ -2838,7 +2838,7 @@ typedef struct {
 /** Offset 0x0B95 - Configuration for boot TDP selection
   Deprecated. Move to premem.
 **/
-  UINT8                       ConfigTdpLevel;
+  UINT8                       DeprecatedConfigTdpLevel;
 
 /** Offset 0x0B96 - Max P-State Ratio
   Max P-State Ratio, Valid Range 0 to 0x7F

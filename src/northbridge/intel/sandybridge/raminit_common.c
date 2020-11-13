@@ -1351,7 +1351,12 @@ int read_training(ramctr_timing *ctrl)
 		/* Execute command queue */
 		iosav_run_once(channel);
 
-		MCHBAR32(GDCRTRAININGMOD) = (slotrank << 2) | 0x8001;
+		const union gdcr_training_mod_reg training_mod = {
+			.receive_enable_mode = 1,
+			.training_rank_sel   = slotrank,
+			.odt_always_on       = 1,
+		};
+		MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
 
 		ctrl->timings[channel][slotrank].io_latency = 4;
 		ctrl->timings[channel][slotrank].roundtrip_latency = 55;
@@ -1814,7 +1819,14 @@ static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	int statistics[NUM_LANES][128];
 	int lane;
 
-	MCHBAR32(GDCRTRAININGMOD) = 0x108052 | (slotrank << 2);
+	const union gdcr_training_mod_reg training_mod = {
+		.write_leveling_mode = 1,
+		.training_rank_sel   = slotrank,
+		.enable_dqs_wl       = 5,
+		.odt_always_on       = 1,
+		.force_drive_enable  = 1,
+	};
+	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
 
 	for (timB = 0; timB < 128; timB++) {
 		FOR_ALL_LANES {
@@ -1884,7 +1896,12 @@ static int get_timB_high_adjust(u64 val)
 static void train_write_flyby(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane, old;
-	MCHBAR32(GDCRTRAININGMOD) = 0x200;
+
+	const union gdcr_training_mod_reg training_mod = {
+		.dq_dqs_training_res = 1,
+	};
+	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
+
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
 	}
@@ -2046,7 +2063,13 @@ int write_training(ramctr_timing *ctrl)
 		write_mrreg(ctrl, channel, slotrank, 1,
 				make_mr1(ctrl, slotrank, channel) | 1 << 12 | 1 << 7);
 
-	MCHBAR32(GDCRTRAININGMOD) = 0x108052;
+	const union gdcr_training_mod_reg training_mod = {
+		.write_leveling_mode = 1,
+		.enable_dqs_wl       = 5,
+		.odt_always_on       = 1,
+		.force_drive_enable  = 1,
+	};
+	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
 
 	toggle_io_reset();
 
@@ -2522,8 +2545,11 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 	}
 
 	for (i = 0; i < 3; i++) {
-		MCHBAR32(GDCRTRAININGMOD_ch(channel)) = reg3000b24[i] << 24;
-		printram("[%x] = 0x%08x\n", GDCRTRAININGMOD_ch(channel), reg3000b24[i] << 24);
+		const union gdcr_training_mod_reg training_mod = {
+			.vref_gen_ctl = reg3000b24[i],
+		};
+		MCHBAR32(GDCRTRAININGMOD_ch(channel)) = training_mod.raw;
+		printram("[%x] = 0x%08x\n", GDCRTRAININGMOD_ch(channel), training_mod.raw);
 
 		for (pat = 0; pat < NUM_PATTERNS; pat++) {
 			fill_pattern5(ctrl, channel, pat);

@@ -117,6 +117,29 @@ union gdcr_cmd_pi_coding_reg {
 	u32 raw;
 };
 
+union gdcr_training_mod_reg {
+	struct {
+		u32 receive_enable_mode : 1; /* [ 0.. 0] */
+		u32 write_leveling_mode : 1; /* [ 1.. 1] */
+		u32 training_rank_sel   : 2; /* [ 3.. 2] */
+		u32 enable_dqs_wl       : 4; /* [ 7.. 4] */
+		u32 dqs_logic_delay_wl  : 1; /* [ 8.. 8] */
+		u32 dq_dqs_training_res : 1; /* [ 9.. 9] */
+		u32                     : 4;
+		u32 delay_dq            : 1; /* [14..14] */
+		u32 odt_always_on       : 1; /* [15..15] */
+		u32                     : 4;
+		u32 force_drive_enable  : 1; /* [20..20] */
+		u32 dft_tx_pi_clk_view  : 1; /* [21..21] */
+		u32 dft_tx_pi_clk_swap  : 1; /* [22..22] */
+		u32 early_odt_en        : 1; /* [23..23] */
+		u32 vref_gen_ctl        : 6; /* [29..24] */
+		u32 ext_vref_sel        : 1; /* [30..30] */
+		u32 tx_fifo_always_on   : 1; /* [31..31] */
+	};
+	u32 raw;
+};
+
 union tc_dbp_reg {
 	struct {
 		u32 tRCD : 4; /* [ 3.. 0] */

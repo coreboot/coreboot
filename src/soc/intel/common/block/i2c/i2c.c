@@ -175,6 +175,12 @@ static struct device_operations i2c_dev_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_MTL_I2C0,
+	PCI_DID_INTEL_MTL_I2C1,
+	PCI_DID_INTEL_MTL_I2C2,
+	PCI_DID_INTEL_MTL_I2C3,
+	PCI_DID_INTEL_MTL_I2C4,
+	PCI_DID_INTEL_MTL_I2C5,
 	PCI_DID_INTEL_SPT_I2C0,
 	PCI_DID_INTEL_SPT_I2C1,
 	PCI_DID_INTEL_SPT_I2C2,

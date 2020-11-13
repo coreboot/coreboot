@@ -28,6 +28,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_INTEL, CPUID_METEORLAKE_A0_1},
+	{ X86_VENDOR_INTEL, CPUID_METEORLAKE_A0_2},
 	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_C0 },
 	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_D0 },
 	{ X86_VENDOR_INTEL, CPUID_SKYLAKE_HQ0 },

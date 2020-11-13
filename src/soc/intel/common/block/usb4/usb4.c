@@ -53,6 +53,9 @@ static void tbt_dma_fill_ssdt(const struct device *dev)
 #endif
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_MTL_M_TBT_DMA0,
+	PCI_DID_INTEL_MTL_P_TBT_DMA0,
+	PCI_DID_INTEL_MTL_P_TBT_DMA1,
 	PCI_DID_INTEL_TGL_TBT_DMA0,
 	PCI_DID_INTEL_TGL_TBT_DMA1,
 	PCI_DID_INTEL_TGL_H_TBT_DMA0,

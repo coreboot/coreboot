@@ -33,6 +33,10 @@ static const struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_MTL_SOC_SRAM,
+	PCI_DID_INTEL_MTL_IOE_M_SRAM,
+	PCI_DID_INTEL_MTL_IOE_P_SRAM,
+	PCI_DID_INTEL_MTL_CRASHLOG_SRAM,
 	PCI_DID_INTEL_APL_SRAM,
 	PCI_DID_INTEL_GLK_SRAM,
 	PCI_DID_INTEL_ICL_SRAM,

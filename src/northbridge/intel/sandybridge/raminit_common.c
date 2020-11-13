@@ -775,6 +775,22 @@ static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 	mr2reg |= (odt.rttwr / 60) << 9;
 
 	write_mrreg(ctrl, channel, rank, 2, mr2reg);
+
+	/* Program MR2 shadow */
+	u32 reg32 = MCHBAR32(TC_MR2_SHADOW_ch(channel));
+
+	reg32 &= 3 << 14 | 3 << 6;
+
+	reg32 |= mr2reg & ~(3 << 6);
+
+	if (rank & 1) {
+		if (srt)
+			reg32 |= 1 << (rank / 2 + 6);
+	} else {
+		if (ctrl->rank_mirror[channel][rank])
+			reg32 |= 1 << (rank / 2 + 14);
+	}
+	MCHBAR32(TC_MR2_SHADOW_ch(channel)) = reg32;
 }
 
 static void dram_mr3(ramctr_timing *ctrl, u8 rank, int channel)

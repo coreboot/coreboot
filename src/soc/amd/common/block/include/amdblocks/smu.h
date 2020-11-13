@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_SMU_H__
-#define __AMD_BLOCK_SMU_H__
+#ifndef AMD_BLOCK_SMU_H
+#define AMD_BLOCK_SMU_H
 
 #include <types.h>
 #include <soc/smu.h> /* SoC-dependent definitions for SMU access */
@@ -23,4 +23,4 @@ struct smu_payload {
  */
 enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload *arg);
 
-#endif /* __AMD_BLOCK_SMU_H__ */
+#endif /* AMD_BLOCK_SMU_H */

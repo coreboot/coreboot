@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_BIOSRAM_H__
-#define __AMD_BLOCK_BIOSRAM_H__
+#ifndef AMD_BLOCK_BIOSRAM_H
+#define AMD_BLOCK_BIOSRAM_H
 
 #include <stdint.h>
 
@@ -26,4 +26,4 @@ uint32_t get_uma_size(void);
 /* Returns the saved UMA base */
 uint64_t get_uma_base(void);
 
-#endif /* __AMD_BLOCK_BIOSRAM_H__ */
+#endif /* AMD_BLOCK_BIOSRAM_H */

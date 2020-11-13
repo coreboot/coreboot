@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_AGESAWRAPPER_CALL_H__
-#define __AMD_BLOCK_AGESAWRAPPER_CALL_H__
+#ifndef AMD_BLOCK_AGESAWRAPPER_CALL_H
+#define AMD_BLOCK_AGESAWRAPPER_CALL_H
 
 #include <amdblocks/agesawrapper.h>
 #include <stdint.h>
@@ -41,4 +41,4 @@ static inline u32 do_agesawrapper(AGESA_STRUCT_NAME func, const char *name)
 	return (u32)ret;
 }
 
-#endif /* __AMD_BLOCK_AGESAWRAPPER_CALL_H__ */
+#endif /* AMD_BLOCK_AGESAWRAPPER_CALL_H */

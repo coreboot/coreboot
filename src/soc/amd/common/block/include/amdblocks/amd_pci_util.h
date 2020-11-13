@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_PCI_UTIL_H__
-#define __AMD_BLOCK_PCI_UTIL_H__
+#ifndef AMD_BLOCK_PCI_UTIL_H
+#define AMD_BLOCK_PCI_UTIL_H
 
 #include <stdint.h>
 #include <soc/amd_pci_int_defs.h>
@@ -31,4 +31,4 @@ void write_pci_cfg_irqs(void);
 void write_pci_int_table(void);
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size);
 
-#endif /* __AMD_BLOCK_PCI_UTIL_H__ */
+#endif /* AMD_BLOCK_PCI_UTIL_H */

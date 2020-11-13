@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_LPC_H__
-#define __AMD_BLOCK_LPC_H__
+#ifndef AMD_BLOCK_LPC_H
+#define AMD_BLOCK_LPC_H
 
 #include <types.h>
 
@@ -198,4 +198,4 @@ void lpc_set_spibase(uint32_t base);
 /* Enable SPI ROM (SPI_ROM_ENABLE, SPI_ROM_ALT_ENABLE) */
 void lpc_enable_spi_rom(uint32_t enable);
 
-#endif /* __AMD_BLOCK_LPC_H__ */
+#endif /* AMD_BLOCK_LPC_H */

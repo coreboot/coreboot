@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_CHIP_H__
-#define __AMD_BLOCK_CHIP_H__
+#ifndef AMD_BLOCK_CHIP_H
+#define AMD_BLOCK_CHIP_H
 
 #include <amdblocks/espi.h>
 #include <amdblocks/spi.h>
@@ -28,4 +28,4 @@ struct soc_amd_common_config {
  */
 const struct soc_amd_common_config *soc_get_common_config(void);
 
-#endif /* __AMD_BLOCK_CHIP_H__ */
+#endif /* AMD_BLOCK_CHIP_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_PSP_H__
-#define __AMD_BLOCK_PSP_H__
+#ifndef AMD_BLOCK_PSP_H
+#define AMD_BLOCK_PSP_H
 
 /* Get the mailbox base address - specific to family of device. */
 void *soc_get_mbox_address(void);
@@ -74,4 +74,4 @@ void psp_notify_sx_info(u8 sleep_type);
 
 int psp_load_named_blob(enum psp_blob_type type, const char *name);
 
-#endif /* __AMD_BLOCK_PSP_H__ */
+#endif /* AMD_BLOCK_PSP_H */

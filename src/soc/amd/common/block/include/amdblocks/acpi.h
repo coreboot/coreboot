@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_ACPI_H__
-#define __AMD_BLOCK_ACPI_H__
+#ifndef AMD_BLOCK_ACPI_H
+#define AMD_BLOCK_ACPI_H
 
 #include <types.h>
 #include <soc/nvs.h>
@@ -44,4 +44,4 @@ void set_pm1cnt_s5(void);
 void acpi_enable_sci(void);
 void acpi_disable_sci(void);
 
-#endif /* __AMD_BLOCK_ACPI_H__ */
+#endif /* AMD_BLOCK_ACPI_H */

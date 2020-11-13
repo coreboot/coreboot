@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_GPIO_BANKS_H__
-#define __AMD_BLOCK_GPIO_BANKS_H__
+#ifndef AMD_BLOCK_GPIO_BANKS_H
+#define AMD_BLOCK_GPIO_BANKS_H
 
 #include <types.h>
 
@@ -361,4 +361,4 @@ void soc_get_gpio_event_table(const struct soc_amd_event **table, size_t *items)
 /* May be implemented by soc to handle special cases */
 void soc_gpio_hook(uint8_t gpio, uint8_t mux);
 
-#endif /* __AMD_BLOCK_GPIO_BANKS_H__ */
+#endif /* AMD_BLOCK_GPIO_BANKS_H */

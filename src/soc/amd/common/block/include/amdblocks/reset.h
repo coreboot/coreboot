@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_RESET_H__
-#define __AMD_BLOCK_RESET_H__
+#ifndef AMD_BLOCK_RESET_H
+#define AMD_BLOCK_RESET_H
 
 #include <console/console.h>
 #include <arch/cache.h>
@@ -26,4 +26,4 @@ static inline __noreturn void cold_reset(void)
 	halt();
 }
 
-#endif /* __AMD_BLOCK_RESET_H__ */
+#endif /* AMD_BLOCK_RESET_H */

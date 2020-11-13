@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_SPI_H__
-#define __AMD_BLOCK_SPI_H__
+#ifndef AMD_BLOCK_SPI_H
+#define AMD_BLOCK_SPI_H
 
 #include <types.h>
 
@@ -108,4 +108,4 @@ void spi_write8(uint8_t reg, uint8_t val);
 void spi_write16(uint8_t reg, uint16_t val);
 void spi_write32(uint8_t reg, uint32_t val);
 
-#endif /* __AMD_BLOCK_SPI_H__ */
+#endif /* AMD_BLOCK_SPI_H */

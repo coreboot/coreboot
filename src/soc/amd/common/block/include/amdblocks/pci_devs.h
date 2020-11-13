@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_PCI_DEVS_H__
-#define __AMD_BLOCK_PCI_DEVS_H__
+#ifndef AMD_BLOCK_PCI_DEVS_H
+#define AMD_BLOCK_PCI_DEVS_H
 
 #include <device/pci_def.h>
 
@@ -12,4 +12,4 @@
 #define _SOC_DEV(slot, func)	PCI_DEV(0, slot, func)
 #endif
 
-#endif /* __AMD_BLOCK_PCI_DEVS_H__ */
+#endif /* AMD_BLOCK_PCI_DEVS_H */

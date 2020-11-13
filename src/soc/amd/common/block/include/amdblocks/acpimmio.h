@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __AMD_BLOCK_ACPIMMIO_H__
-#define __AMD_BLOCK_ACPIMMIO_H__
+#ifndef AMD_BLOCK_ACPIMMIO_H
+#define AMD_BLOCK_ACPIMMIO_H
 
 #include <device/mmio.h>
 #include <types.h>
@@ -508,4 +508,4 @@ static inline void aoac_write8(uint8_t reg, uint8_t value)
 	write8(acpimmio_aoac + reg, value);
 }
 
-#endif /* __AMD_BLOCK_ACPIMMIO_H__ */
+#endif /* AMD_BLOCK_ACPIMMIO_H */

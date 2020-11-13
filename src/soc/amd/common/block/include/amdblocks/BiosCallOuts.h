@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_BLOCK_CALLOUTS_AGESA_H__
-#define __AMD_BLOCK_CALLOUTS_AGESA_H__
+#ifndef AMD_BLOCK_CALLOUTS_AGESA_H
+#define AMD_BLOCK_CALLOUTS_AGESA_H
 
 #include <amdblocks/agesawrapper.h>
 #include <stdint.h>
@@ -69,4 +69,4 @@ typedef struct {
 extern const BIOS_CALLOUT_STRUCT BiosCallouts[];
 extern const int BiosCalloutsLen;
 
-#endif /* __AMD_BLOCK_CALLOUTS_AGESA_H__ */
+#endif /* AMD_BLOCK_CALLOUTS_AGESA_H */

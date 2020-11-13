@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __STONEYRIDGE_H__
-#define __STONEYRIDGE_H__
+#ifndef AMD_STONEYRIDGE_SOUTHBRIDGE_H
+#define AMD_STONEYRIDGE_SOUTHBRIDGE_H
 
 #include <types.h>
 #include <device/device.h>
@@ -349,4 +349,4 @@ void i2c_soc_early_init(void);
 /* Initialize all the i2c buses that are not marked with early init. */
 void i2c_soc_init(void);
 
-#endif /* __STONEYRIDGE_H__ */
+#endif /* AMD_STONEYRIDGE_SOUTHBRIDGE_H */

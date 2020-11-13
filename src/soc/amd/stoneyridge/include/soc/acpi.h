@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __SOC_STONEYRIDGE_ACPI_H__
-#define __SOC_STONEYRIDGE_ACPI_H__
+#ifndef AMD_STONEYRIDGE_ACPI_H
+#define AMD_STONEYRIDGE_ACPI_H
 
 #include <acpi/acpi.h>
 
@@ -16,4 +16,4 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 const char *soc_acpi_name(const struct device *dev);
 
-#endif /* __SOC_STONEYRIDGE_ACPI_H__ */
+#endif /* AMD_STONEYRIDGE_ACPI_H */

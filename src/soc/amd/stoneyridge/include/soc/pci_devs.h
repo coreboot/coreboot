@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PI_STONEYRIDGE_PCI_DEVS_H__
-#define __PI_STONEYRIDGE_PCI_DEVS_H__
+#ifndef AMD_STONEYRIDGE_PCI_DEVS_H
+#define AMD_STONEYRIDGE_PCI_DEVS_H
 
 #include <device/pci_def.h>
 #include <amdblocks/pci_devs.h>
@@ -201,4 +201,4 @@
 #define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
 #define SOC_SD_DEV		_SOC_DEV(SD_DEV, SD_FUNC)
 
-#endif /* __PI_STONEYRIDGE_PCI_DEVS_H__ */
+#endif /* AMD_STONEYRIDGE_PCI_DEVS_H */

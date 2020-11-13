@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __STONEYRIDGE_I2C_H__
-#define __STONEYRIDGE_I2C_H__
+#ifndef AMD_STONEYRIDGE_I2C_H
+#define AMD_STONEYRIDGE_I2C_H
 
 #include <types.h>
 #include <soc/gpio.h>
@@ -29,4 +29,4 @@ struct soc_amd_i2c_save {
 
 void sb_reset_i2c_slaves(void);
 
-#endif /* __STONEYRIDGE_I2C_H__ */
+#endif /* AMD_STONEYRIDGE_I2C_H */

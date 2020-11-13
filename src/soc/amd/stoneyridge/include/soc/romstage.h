@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __STONEYRIDGE_ROMSTAGE_H__
-#define __STONEYRIDGE_ROMSTAGE_H__
+#ifndef AMD_STONEYRIDGE_ROMSTAGE_H
+#define AMD_STONEYRIDGE_ROMSTAGE_H
 
 void mainboard_romstage_entry_s3(int s3_resume);
 
-#endif /* __STONEYRIDGE_ROMSTAGE_H__ */
+#endif /* AMD_STONEYRIDGE_ROMSTAGE_H */

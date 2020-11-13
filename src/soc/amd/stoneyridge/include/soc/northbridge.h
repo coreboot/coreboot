@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PI_STONEYRIDGE_NORTHBRIDGE_H__
-#define __PI_STONEYRIDGE_NORTHBRIDGE_H__
+#ifndef AMD_STONEYRIDGE_NORTHBRIDGE_H
+#define AMD_STONEYRIDGE_NORTHBRIDGE_H
 
 #include <device/device.h>
 #include <types.h>
@@ -89,4 +89,4 @@ void fam15_finalize(void *chip_info);
 void set_warm_reset_flag(void);
 int is_warm_reset(void);
 
-#endif /* __PI_STONEYRIDGE_NORTHBRIDGE_H__ */
+#endif /* AMD_STONEYRIDGE_NORTHBRIDGE_H */

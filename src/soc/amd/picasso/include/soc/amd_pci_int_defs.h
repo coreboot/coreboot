@@ -7,10 +7,7 @@
  * PIRQ and device routing - these define the index into the
  * FCH PCI_INTR 0xC00/0xC01 interrupt routing table.
  */
-/*
- * PIRQ and device routing - these define the index into the
- * FCH PCI_INTR 0xC00/0xC01 interrupt routing table.
- */
+
 #define PIRQ_NC		0x1f	/* Not Used */
 #define PIRQ_A		0x00	/* INT A */
 #define PIRQ_B		0x01	/* INT B */

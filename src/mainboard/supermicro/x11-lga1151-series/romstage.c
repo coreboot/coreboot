@@ -6,8 +6,7 @@
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	FSP_M_CONFIG *mem_cfg;
-	mem_cfg = &mupd->FspmConfig;
+	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 
 	struct spd_block blk = {
 		.addr_map = { 0x50, 0x51, 0x52, 0x53, },

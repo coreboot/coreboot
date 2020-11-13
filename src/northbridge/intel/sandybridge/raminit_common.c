@@ -2350,6 +2350,63 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 	return 0;
 }
 
+static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
+{
+	int slotrank, lane;
+
+	fill_pattern0(ctrl, channel, 0, 0);
+	FOR_ALL_LANES {
+		MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+	}
+
+	FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+		ctrl->timings[channel][slotrank].lanes[lane].falling = 16;
+		ctrl->timings[channel][slotrank].lanes[lane].rising  = 16;
+	}
+
+	program_timings(ctrl, channel);
+
+	FOR_ALL_POPULATED_RANKS {
+		wait_for_iosav(channel);
+
+		iosav_write_read_mpr_sequence(
+			channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
+
+		/* Execute command queue */
+		iosav_run_once(channel);
+
+		wait_for_iosav(channel);
+	}
+
+	/* XXX: check any measured value ? */
+
+	FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+		ctrl->timings[channel][slotrank].lanes[lane].falling = 48;
+		ctrl->timings[channel][slotrank].lanes[lane].rising  = 48;
+	}
+
+	program_timings(ctrl, channel);
+
+	FOR_ALL_POPULATED_RANKS {
+		wait_for_iosav(channel);
+
+		iosav_write_read_mpr_sequence(
+			channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
+
+		/* Execute command queue */
+		iosav_run_once(channel);
+
+		wait_for_iosav(channel);
+	}
+
+	/* XXX: check any measured value ? */
+
+	FOR_ALL_LANES {
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) =
+			~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane)) & 0xff;
+	}
+}
+
 int discover_edges(ramctr_timing *ctrl)
 {
 	int falling_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -2361,62 +2418,12 @@ int discover_edges(ramctr_timing *ctrl)
 
 	toggle_io_reset();
 
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-	}
-
 	FOR_ALL_POPULATED_CHANNELS {
-		fill_pattern0(ctrl, channel, 0, 0);
 		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+			MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 		}
 
-		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling = 16;
-			ctrl->timings[channel][slotrank].lanes[lane].rising = 16;
-		}
-
-		program_timings(ctrl, channel);
-
-		FOR_ALL_POPULATED_RANKS {
-			wait_for_iosav(channel);
-
-			iosav_write_read_mpr_sequence(
-				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-
-			/* Execute command queue */
-			iosav_run_once(channel);
-
-			wait_for_iosav(channel);
-		}
-
-		/* XXX: check any measured value ? */
-
-		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling = 48;
-			ctrl->timings[channel][slotrank].lanes[lane].rising  = 48;
-		}
-
-		program_timings(ctrl, channel);
-
-		FOR_ALL_POPULATED_RANKS {
-			wait_for_iosav(channel);
-
-			iosav_write_read_mpr_sequence(
-				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-
-			/* Execute command queue */
-			iosav_run_once(channel);
-
-			wait_for_iosav(channel);
-		}
-
-		/* XXX: check any measured value ? */
-
-		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) =
-				~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane)) & 0xff;
-		}
+		find_predefined_pattern(ctrl, channel);
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
 	}

@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PI_PICASSO_RESET_H__
-#define __PI_PICASSO_RESET_H__
+#ifndef AMD_PICASSO_RESET_H
+#define AMD_PICASSO_RESET_H
 
 void set_warm_reset_flag(void);
 int is_warm_reset(void);
 
-#endif /* __PI_PICASSO_RESET_H__ */
+#endif /* AMD_PICASSO_RESET_H */

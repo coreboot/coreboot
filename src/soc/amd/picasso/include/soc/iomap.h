@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_PICASSO_IOMAP_H__
-#define __SOC_PICASSO_IOMAP_H__
+#ifndef AMD_PICASSO_IOMAP_H
+#define AMD_PICASSO_IOMAP_H
 
 /* MMIO Ranges */
 /* IO_APIC_ADDR defined in arch/x86	0xfec00000 */
@@ -90,4 +90,4 @@
 #define BIOSRAM_UMA_SIZE		0xf4 /* 4 bytes */
 #define BIOSRAM_UMA_BASE		0xf8 /* 8 bytes */
 
-#endif /* __SOC_PICASSO_IOMAP_H__ */
+#endif /* AMD_PICASSO_IOMAP_H */

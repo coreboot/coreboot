@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PICASSO_GPIO_H__
-#define __PICASSO_GPIO_H__
+#ifndef AMD_PICASSO_GPIO_H
+#define AMD_PICASSO_GPIO_H
 
 #define GPIO_DEVICE_NAME	"AMD0030"
 #define GPIO_DEVICE_DESC	"GPIO Controller"
@@ -297,4 +297,4 @@
 #define GPIO_2_EVENT GEVENT_8
 
 #endif /* __ACPI__ */
-#endif /* __PICASSO_GPIO_H__ */
+#endif /* AMD_PICASSO_GPIO_H */

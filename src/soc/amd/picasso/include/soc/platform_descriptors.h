@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PICASSO_PLATFORM_DESCRIPTORS_H__
-#define __PICASSO_PLATFORM_DESCRIPTORS_H__
+#ifndef AMD_PICASSO_PLATFORM_DESCRIPTORS_H
+#define AMD_PICASSO_PLATFORM_DESCRIPTORS_H
 
 #include <types.h>
 #include <platform_descriptors.h>
@@ -27,4 +27,4 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num);
 
-#endif /* __PICASSO_PLATFORM_DESCRIPTORS_H__ */
+#endif /* AMD_PICASSO_PLATFORM_DESCRIPTORS_H */

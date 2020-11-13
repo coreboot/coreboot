@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __SOC_PICASSO_ACPI_H__
-#define __SOC_PICASSO_ACPI_H__
+#ifndef AMD_PICASSO_ACPI_H
+#define AMD_PICASSO_ACPI_H
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
@@ -21,4 +21,4 @@ struct chipset_state {
 	struct gpio_wake_state gpio_state;
 };
 
-#endif /* __SOC_PICASSO_ACPI_H__ */
+#endif /* AMD_PICASSO_ACPI_H */

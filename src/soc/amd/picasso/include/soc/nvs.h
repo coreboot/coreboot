@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef __SOC_PICASSO_NVS_H__
-#define __SOC_PICASSO_NVS_H__
+#ifndef AMD_PICASSO_NVS_H
+#define AMD_PICASSO_NVS_H
 
 #include <commonlib/helpers.h>
 #include <stdint.h>
@@ -33,4 +33,4 @@ struct __packed global_nvs {
 
 check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
-#endif /* __SOC_PICASSO_NVS_H__ */
+#endif /* AMD_PICASSO_NVS_H */

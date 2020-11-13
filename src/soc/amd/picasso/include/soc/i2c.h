@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PICASSO_I2C_H__
-#define __PICASSO_I2C_H__
+#ifndef AMD_PICASSO_I2C_H
+#define AMD_PICASSO_I2C_H
 
 #include <types.h>
 #include <soc/gpio.h>
@@ -26,4 +26,4 @@ void sb_reset_i2c_slaves(void);
 /* Sets the base address for the specific I2C bus. */
 void i2c_set_bar(unsigned int bus, uintptr_t bar);
 
-#endif /* __PICASSO_I2C_H__ */
+#endif /* AMD_PICASSO_I2C_H */

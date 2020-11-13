@@ -4,8 +4,8 @@
  * The definitions come from the device's PPR.
  */
 
-#ifndef SOC_AMD_PICASSO_MSR_H
-#define SOC_AMD_PICASSO_MSR_H
+#ifndef AMD_PICASSO_MSR_H
+#define AMD_PICASSO_MSR_H
 
 /* MSRC001_00[6B:64] P-state [7:0] bit definitions */
 #define PSTATE_DEF_HI_ENABLE_SHIFT	31
@@ -25,4 +25,4 @@
 #define PSTATE_DEF_LO_FREQ_MUL_MASK	(0xFF << PSTATE_DEF_LO_FREQ_MUL_SHIFT)
 #define PSTATE_DEF_LO_CORE_FREQ_BASE	25
 
-#endif /* SOC_AMD_PICASSO_MSR_H */
+#endif /* AMD_PICASSO_MSR_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
-#define __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
+#ifndef AMD_PICASSO_SMI_H
+#define AMD_PICASSO_SMI_H
 
 #include <types.h>
 
@@ -221,4 +221,4 @@ void disable_gevent_smi(uint8_t gevent);
 void gpe_configure_sci(const struct sci_source *scis, size_t num_gpes);
 void soc_route_sci(uint8_t event);
 
-#endif /* __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__ */
+#endif /* AMD_PICASSO_SMI_H */

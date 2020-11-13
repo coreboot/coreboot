@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_PICASSO_DATAFABRIC_H__
-#define __SOC_PICASSO_DATAFABRIC_H__
+#ifndef AMD_PICASSO_DATA_FABRIC_H
+#define AMD_PICASSO_DATA_FABRIC_H
 
 #include <types.h>
 
@@ -26,4 +26,4 @@
 
 void data_fabric_set_mmio_np(void);
 
-#endif /* __SOC_PICASSO_DATAFABRIC_H__ */
+#endif /* AMD_PICASSO_DATA_FABRIC_H */

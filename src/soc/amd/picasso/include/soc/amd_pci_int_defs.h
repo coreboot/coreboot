@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __AMD_PCI_INT_DEFS_H__
-#define __AMD_PCI_INT_DEFS_H__
+#ifndef AMD_PICASSO_AMD_PCI_INT_DEFS_H
+#define AMD_PICASSO_AMD_PCI_INT_DEFS_H
 
 /*
  * PIRQ and device routing - these define the index into the
@@ -61,4 +61,4 @@
 #define PIRQ_UART3	0x79	/* UART3 */
 /* 0x7a-0x7f reserved */
 
-#endif /* __AMD_PCI_INT_DEFS_H__ */
+#endif /* AMD_PICASSO_AMD_PCI_INT_DEFS_H */

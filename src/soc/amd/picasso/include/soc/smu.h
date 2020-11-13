@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PICASSO_SMU_H__
-#define __PICASSO_SMU_H__
+#ifndef AMD_PICASSO_SMU_H
+#define AMD_PICASSO_SMU_H
 
 /*
  * SMU mailbox register offsets in indirect address space accessed by an index/data pair in
@@ -23,4 +23,4 @@ enum smu_message_id {
  */
 void smu_sx_entry(void);
 
-#endif /* __PICASSO_SMU_H__ */
+#endif /* AMD_PICASSO_SMU_H */

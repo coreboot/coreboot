@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef PSP_VERSTAGE_PSP_TRANSFER_H
-#define PSP_VERSTAGE_PSP_TRANSFER_H
+#ifndef AMD_PICASSO_PSP_TRANSFER_H
+#define AMD_PICASSO_PSP_TRANSFER_H
 
 # if (CONFIG_CMOS_RECOVERY_BYTE != 0)
 #  define CMOS_RECOVERY_BYTE CONFIG_CMOS_RECOVERY_BYTE
@@ -49,4 +49,4 @@ void show_psp_transfer_info(void);
 
 #endif
 
-#endif	/* PSP_VERSTAGE_PSP_TRANSFER_H */
+#endif	/* AMD_PICASSO_PSP_TRANSFER_H */

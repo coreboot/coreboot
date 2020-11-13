@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PICASSO_SB_H__
-#define __PICASSO_SB_H__
+#ifndef AMD_PICASSO_SOUTHBRIDGE_H
+#define AMD_PICASSO_SOUTHBRIDGE_H
 
 #include <types.h>
 #include <device/device.h>
@@ -294,4 +294,4 @@ void i2c_soc_init(void);
 /* Allow the board to change the default I2C pad configuration */
 void mainboard_i2c_override(int bus, uint32_t *pad_settings);
 
-#endif /* __PICASSO_SB_H__ */
+#endif /* AMD_PICASSO_SOUTHBRIDGE_H */

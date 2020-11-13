@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PI_PICASSO_PCI_DEVS_H__
-#define __PI_PICASSO_PCI_DEVS_H__
+#ifndef AMD_PICASSO_PCI_DEVS_H
+#define AMD_PICASSO_PCI_DEVS_H
 
 #include <device/pci_def.h>
 #include <amdblocks/pci_devs.h>
@@ -118,4 +118,4 @@
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
 
-#endif /* __PI_PICASSO_PCI_DEVS_H__ */
+#endif /* AMD_PICASSO_PCI_DEVS_H */

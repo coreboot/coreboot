@@ -59,6 +59,18 @@ const char *smbios_mainboard_location_in_chassis(void)
 	return slot_id_str;
 }
 
+/*
+ * Override SMBIOS type 4 cpu voltage.
+ * BIT7 will set to 1 after value return. If BIT7 is set to 1, the remaining seven
+ * bits of this field are set to contain the processor's current voltage times 10.
+ */
+unsigned int smbios_cpu_get_voltage(void)
+{
+	/* This will return 1.6V which is expected value for Delta Lake
+	   10h = (1.6 * 10) = 16 */
+	return 0x10;
+}
+
 /* System Slot Socket, Stack, Type and Data bus width Information */
 typedef struct {
 	u8 stack;

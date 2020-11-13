@@ -85,6 +85,9 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 		return CB_ERR;
 	}
 
+	if (ENV_ROMSTAGE)
+		soc_validate_fsp_version(hdr);
+
 	return CB_SUCCESS;
 }
 
@@ -213,15 +216,7 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 void fsp_get_version(char *buf)
 {
 	struct fsp_header *hdr = &fsps_hdr;
-	union {
-		uint32_t val;
-		struct {
-			uint8_t bld_num;
-			uint8_t revision;
-			uint8_t minor;
-			uint8_t major;
-		} rev;
-	} revision;
+	union fsp_revision revision;
 
 	revision.val = hdr->fsp_revision;
 	snprintf(buf, FSP_VER_LEN, "%u.%u-%u.%u.%u.%u", (hdr->spec_version >> 4),
@@ -242,4 +237,9 @@ void lb_string_platform_blob_version(struct lb_header *header)
 	len = strlen(fsp_version);
 	rec->size = ALIGN_UP(sizeof(*rec) + len + 1, 8);
 	memcpy(rec->string, fsp_version, len+1);
+}
+
+__weak void soc_validate_fsp_version(const struct fsp_header *hdr)
+{
+	printk(BIOS_DEBUG, "%s not implemented.\n", __func__);
 }

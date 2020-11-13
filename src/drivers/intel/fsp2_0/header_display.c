@@ -5,15 +5,7 @@
 
 void fsp_print_header_info(const struct fsp_header *hdr)
 {
-	union {
-		uint32_t val;
-		struct {
-			uint8_t bld_num;
-			uint8_t revision;
-			uint8_t minor;
-			uint8_t major;
-		} rev;
-	} revision;
+	union fsp_revision revision;
 
 	revision.val = hdr->fsp_revision;
 

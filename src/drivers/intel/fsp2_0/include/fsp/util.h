@@ -42,6 +42,16 @@ struct hob_resource {
 	uint64_t length;
 } __packed;
 
+union fsp_revision {
+	uint32_t val;
+	struct {
+		uint8_t bld_num;
+		uint8_t revision;
+		uint8_t minor;
+		uint8_t major;
+	} rev;
+};
+
 #if CONFIG_UDK_VERSION < CONFIG_UDK_2017_VERSION
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,
@@ -90,6 +100,7 @@ void fsp_find_bootloader_tolum(struct range_entry *re);
 void fsp_get_version(char *buf);
 void lb_string_platform_blob_version(struct lb_header *header);
 void report_fspt_output(void);
+void soc_validate_fsp_version(const struct fsp_header *hdr);
 
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,

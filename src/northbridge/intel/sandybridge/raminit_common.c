@@ -2310,14 +2310,14 @@ int command_training(ramctr_timing *ctrl)
 
 static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
 {
-	int edge;
+	int dqs_pi;
 	int stats[NUM_LANES][MAX_EDGE_TIMING + 1];
 	int lane;
 
-	for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
+	for (dqs_pi = 0; dqs_pi <= MAX_EDGE_TIMING; dqs_pi++) {
 		FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].rising  = edge;
-			ctrl->timings[channel][slotrank].lanes[lane].falling = edge;
+			ctrl->timings[channel][slotrank].lanes[lane].rising  = dqs_pi;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = dqs_pi;
 		}
 		program_timings(ctrl, channel);
 
@@ -2337,7 +2337,7 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		wait_for_iosav(channel);
 
 		FOR_ALL_LANES {
-			stats[lane][edge] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			stats[lane][dqs_pi] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 

@@ -680,7 +680,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		/* Prepare for memory training */
 		prepare_training(ctrl);
 
-		err = read_training(ctrl);
+		err = receive_enable_calibration(ctrl);
 		if (err)
 			return err;
 

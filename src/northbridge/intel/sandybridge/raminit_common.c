@@ -1316,25 +1316,7 @@ static void compute_final_logic_delay(ramctr_timing *ctrl, int channel, int slot
 	printram("4028 -= %d;\n", logic_delay_min);
 }
 
-/*
- * Compensate the skew between DQS and DQs.
- *
- * To ease PCB design, a small skew between Data Strobe signals and Data Signals is allowed.
- * The controller has to measure and compensate this skew for every byte-lane. By delaying
- * either all DQ signals or DQS signal, a full phase shift can be introduced. It is assumed
- * that one byte-lane's DQs signals have the same routing delay.
- *
- * To measure the actual skew, the DRAM is placed in "read leveling" mode. In read leveling
- * mode the DRAM-chip outputs an alternating periodic pattern. The memory controller iterates
- * over all possible values to do a full phase shift and issues read commands. With DQS and
- * DQ in phase the data being read is expected to alternate on every byte:
- *
- *   0xFF 0x00 0xFF ...
- *
- * Once the controller has detected this pattern a bit in the result register is set for the
- * current phase shift.
- */
-int read_training(ramctr_timing *ctrl)
+int receive_enable_calibration(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 	int err;

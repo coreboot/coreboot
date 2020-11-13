@@ -400,7 +400,7 @@ void dram_dimm_set_mapping(ramctr_timing *ctrl, int training);
 void dram_zones(ramctr_timing *ctrl, int training);
 void dram_memorymap(ramctr_timing *ctrl, int me_uma_size);
 void dram_jedecreset(ramctr_timing *ctrl);
-int read_training(ramctr_timing *ctrl);
+int receive_enable_calibration(ramctr_timing *ctrl);
 int write_training(ramctr_timing *ctrl);
 int command_training(ramctr_timing *ctrl);
 int read_mpr_training(ramctr_timing *ctrl);

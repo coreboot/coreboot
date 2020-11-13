@@ -212,7 +212,7 @@ CLEVO MAINBOARDS
 M:	Felix Singer <felixsinger@posteo.net>
 M:	Michael Niewöhner <foss@mniewoehner.de>
 S:	Supported
-F:	src/mainboard/clevo
+F:	src/mainboard/clevo/
 
 
 
@@ -401,7 +401,7 @@ F:	src/mainboard/supermicro/x10slm-f/
 SUPERMICRO X11-LGA1151-SERIES
 M:	Michael Niewöhner <foss@mniewoehner.de>
 S:	Maintained
-F:	src/mainboard/supermicro/x11-lga1151-series
+F:	src/mainboard/supermicro/x11-lga1151-series/
 
 ################################################################################
 # Architectures

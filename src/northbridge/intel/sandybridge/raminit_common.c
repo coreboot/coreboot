@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <string.h>
@@ -1225,53 +1226,74 @@ static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank, int *up
 	return 0;
 }
 
-struct timA_minmax {
-	int timA_min_high, timA_max_high;
-};
-
-static void pre_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
-			    struct timA_minmax *mnmx)
+static int get_logic_delay_delta(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int lane;
-	mnmx->timA_min_high = 7;
-	mnmx->timA_max_high = 0;
+	u16 logic_delay_min = 7;
+	u16 logic_delay_max = 0;
 
 	FOR_ALL_LANES {
-		if (mnmx->timA_min_high >
-		    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6))
-			mnmx->timA_min_high =
-			    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6);
-		if (mnmx->timA_max_high <
-		    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6))
-			mnmx->timA_max_high =
-			    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6);
+		const u16 logic_delay = ctrl->timings[channel][slotrank].lanes[lane].timA >> 6;
+
+		logic_delay_min = MIN(logic_delay_min, logic_delay);
+		logic_delay_max = MAX(logic_delay_max, logic_delay);
 	}
+
+	if (logic_delay_max < logic_delay_min) {
+		printk(BIOS_EMERG, "Logic delay max < min (%u < %u): %d, %d\n",
+		       logic_delay_max, logic_delay_min, channel, slotrank);
+	}
+
+	assert(logic_delay_max >= logic_delay_min);
+
+	return logic_delay_max - logic_delay_min;
 }
 
-static void post_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
-			     struct timA_minmax *mnmx)
+static int align_rt_io_latency(ramctr_timing *ctrl, int channel, int slotrank, int prev)
 {
-	struct timA_minmax post;
-	int shift_402x = 0;
+	int latency_offset = 0;
 
 	/* Get changed maxima */
-	pre_timA_change(ctrl, channel, slotrank, &post);
+	const int post = get_logic_delay_delta(ctrl, channel, slotrank);
 
-	if (mnmx->timA_max_high - mnmx->timA_min_high <
-	    post.timA_max_high - post.timA_min_high)
-		shift_402x = +1;
+	if (prev < post)
+		latency_offset = +1;
 
-	else if (mnmx->timA_max_high - mnmx->timA_min_high >
-		 post.timA_max_high - post.timA_min_high)
-		shift_402x = -1;
+	else if (prev > post)
+		latency_offset = -1;
 
 	else
-		shift_402x = 0;
+		latency_offset = 0;
 
-	ctrl->timings[channel][slotrank].io_latency += shift_402x;
-	ctrl->timings[channel][slotrank].roundtrip_latency += shift_402x;
-	printram("4024 += %d;\n", shift_402x);
-	printram("4028 += %d;\n", shift_402x);
+	ctrl->timings[channel][slotrank].io_latency += latency_offset;
+	ctrl->timings[channel][slotrank].roundtrip_latency += latency_offset;
+	printram("4024 += %d;\n", latency_offset);
+	printram("4028 += %d;\n", latency_offset);
+
+	return post;
+}
+
+static void compute_final_logic_delay(ramctr_timing *ctrl, int channel, int slotrank)
+{
+	u16 logic_delay_min = 7;
+	int lane;
+
+	FOR_ALL_LANES {
+		const u16 logic_delay = ctrl->timings[channel][slotrank].lanes[lane].timA >> 6;
+
+		logic_delay_min = MIN(logic_delay_min, logic_delay);
+	}
+
+	if (logic_delay_min >= 2) {
+		printk(BIOS_WARNING, "Logic delay %u greater than 1: %d %d\n",
+			logic_delay_min, channel, slotrank);
+	}
+
+	FOR_ALL_LANES {
+		ctrl->timings[channel][slotrank].lanes[lane].timA -= logic_delay_min << 6;
+	}
+	ctrl->timings[channel][slotrank].io_latency -= logic_delay_min;
+	printram("4028 -= %d;\n", logic_delay_min);
 }
 
 /*
@@ -1300,7 +1322,7 @@ int read_training(ramctr_timing *ctrl)
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		int all_high, some_high;
 		int upperA[NUM_LANES];
-		struct timA_minmax mnmx;
+		int prev;
 
 		wait_for_iosav(channel);
 
@@ -1343,28 +1365,21 @@ int read_training(ramctr_timing *ctrl)
 
 		program_timings(ctrl, channel);
 
-		pre_timA_change(ctrl, channel, slotrank, &mnmx);
+		prev = get_logic_delay_delta(ctrl, channel, slotrank);
 
 		err = discover_402x(ctrl, channel, slotrank, upperA);
 		if (err)
 			return err;
 
-		post_timA_change(ctrl, channel, slotrank, &mnmx);
-		pre_timA_change(ctrl, channel, slotrank, &mnmx);
+		prev = align_rt_io_latency(ctrl, channel, slotrank, prev);
 
 		discover_timA_fine(ctrl, channel, slotrank, upperA);
 
-		post_timA_change(ctrl, channel, slotrank, &mnmx);
-		pre_timA_change(ctrl, channel, slotrank, &mnmx);
+		prev = align_rt_io_latency(ctrl, channel, slotrank, prev);
 
-		FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].timA -=
-					mnmx.timA_min_high * 0x40;
-		}
-		ctrl->timings[channel][slotrank].io_latency -= mnmx.timA_min_high;
-		printram("4028 -= %d;\n", mnmx.timA_min_high);
+		compute_final_logic_delay(ctrl, channel, slotrank);
 
-		post_timA_change(ctrl, channel, slotrank, &mnmx);
+		align_rt_io_latency(ctrl, channel, slotrank, prev);
 
 		printram("4/8: %d, %d, %x, %x\n", channel, slotrank,
 		       ctrl->timings[channel][slotrank].roundtrip_latency,

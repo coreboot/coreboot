@@ -29,9 +29,9 @@ static const char *optstring  = "i:o:cm:uh";
 static struct option long_options[] = {
 	{"infile",           required_argument, 0, 'i' },
 	{"outfile",          required_argument, 0, 'o' },
-	{"compress",         required_argument, 0, 'c' },
+	{"compress",         no_argument,       0, 'c' },
 	{"maxsize",          required_argument, 0, 'm' },
-	{"uncompress",       required_argument, 0, 'u' },
+	{"uncompress",       no_argument,       0, 'u' },
 	{"help",             no_argument,       0, 'h' },
 };
 

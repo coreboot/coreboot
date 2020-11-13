@@ -98,6 +98,25 @@ struct iosav_ssq {
 	} addr_update;
 };
 
+union gdcr_cmd_pi_coding_reg {
+	struct {
+		u32 cmd_pi_code         : 6; /* [ 5.. 0] */
+		u32 ctl_pi_code_d0      : 6; /* [11.. 6] */
+		u32 cmd_logic_delay     : 1; /* [12..12] */
+		u32 cmd_phase_delay     : 1; /* [13..13] */
+		u32 cmd_xover_enable    : 1; /* [14..14] */
+		u32 ctl_logic_delay_d0  : 1; /* [15..15] */
+		u32 ctl_phase_delay_d0  : 1; /* [16..16] */
+		u32 ctl_xover_enable_d0 : 1; /* [17..17] */
+		u32 ctl_pi_code_d1      : 6; /* [23..18] */
+		u32 ctl_logic_delay_d1  : 1; /* [24..24] */
+		u32 ctl_phase_delay_d1  : 1; /* [25..25] */
+		u32 ctl_xover_enable_d1 : 1; /* [26..26] */
+		u32                     : 5;
+	};
+	u32 raw;
+};
+
 union tc_dbp_reg {
 	struct {
 		u32 tRCD : 4; /* [ 3.. 0] */

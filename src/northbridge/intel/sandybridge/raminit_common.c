@@ -917,7 +917,7 @@ static const u32 lane_base[] = {
 
 void program_timings(ramctr_timing *ctrl, int channel)
 {
-	u32 reg32, reg_roundtrip_latency, reg_pi_code, reg_logic_delay, reg_io_latency;
+	u32 reg_roundtrip_latency, reg_pi_code, reg_logic_delay, reg_io_latency;
 	int lane;
 	int slotrank, slot;
 	int full_shift = 0;
@@ -950,13 +950,18 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		}
 
 	/* Enable CMD XOVER */
-	reg32 = get_XOVER_CMD(ctrl->rankmap[channel]);
-	reg32 |= (pi_coding_ctrl[0] & 0x3f) <<  6;
-	reg32 |= (pi_coding_ctrl[0] & 0x40) <<  9;
-	reg32 |= (pi_coding_ctrl[1] & 0x7f) << 18;
-	reg32 |= (full_shift & 0x3f) | ((full_shift & 0x40) << 6);
+	union gdcr_cmd_pi_coding_reg cmd_pi_coding = {
+		.raw = get_XOVER_CMD(ctrl->rankmap[channel]),
+	};
+	cmd_pi_coding.cmd_pi_code = full_shift & 0x3f;
+	cmd_pi_coding.cmd_logic_delay = !!(full_shift & 0x40);
 
-	MCHBAR32(GDCRCMDPICODING_ch(channel)) = reg32;
+	cmd_pi_coding.ctl_pi_code_d0 = pi_coding_ctrl[0] & 0x3f;
+	cmd_pi_coding.ctl_pi_code_d1 = pi_coding_ctrl[1] & 0x3f;
+	cmd_pi_coding.ctl_logic_delay_d0 = !!(pi_coding_ctrl[0] & 0x40);
+	cmd_pi_coding.ctl_logic_delay_d1 = !!(pi_coding_ctrl[1] & 0x40);
+
+	MCHBAR32(GDCRCMDPICODING_ch(channel)) = cmd_pi_coding.raw;
 
 	/* Enable CLK XOVER */
 	reg_pi_code = get_XOVER_CLK(ctrl->rankmap[channel]);

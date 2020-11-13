@@ -650,7 +650,7 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 		/* DRAM command MRS */
 		[2] = {
 			.sp_cmd_ctrl = {
-				.command    = IOSAV_MRS,
+				.command = IOSAV_MRS,
 			},
 			.subseq_ctrl = {
 				.cmd_executions = 1,
@@ -821,7 +821,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 		/* DRAM command NOP (without ODT nor chip selects) */
 		[0] = {
 			.sp_cmd_ctrl = {
-				.command    = IOSAV_NOP & ~(0xff << 8),
+				.command = IOSAV_NOP & ~(0xff << 8),
 			},
 			.subseq_ctrl = {
 				.cmd_executions = 1,
@@ -855,8 +855,8 @@ void dram_mrscommands(ramctr_timing *ctrl)
 				.rank    = 0,
 			},
 			.addr_update = {
-				.inc_rank   = 1,
-				.addr_wrap  = 20,
+				.inc_rank  = 1,
+				.addr_wrap = 20,
 			},
 		},
 	};
@@ -1496,7 +1496,7 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 				.rank    = slotrank,
 			},
 			.addr_update = {
-				.addr_wrap  = 18,
+				.addr_wrap = 18,
 			},
 		},
 	};
@@ -2282,7 +2282,7 @@ int command_training(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
-	program_timings(ctrl, channel);
+		program_timings(ctrl, channel);
 
 	reprogram_320c(ctrl);
 	return 0;
@@ -2881,7 +2881,7 @@ void channel_scrub(ramctr_timing *ctrl)
 							.rank    = slotrank,
 						},
 						.addr_update = {
-							.addr_wrap  = 18,
+							.addr_wrap = 18,
 						},
 					},
 				};

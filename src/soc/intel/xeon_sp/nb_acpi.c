@@ -434,9 +434,15 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	if (config->vtd_support) {
 		current = ALIGN(current, 8);
 		dmar = (acpi_dmar_t *)current;
+		enum dmar_flags flags = DMAR_INTR_REMAP;
+
+		/* SKX FSP doesn't support X2APIC, but CPX FSP does */
+		if (CONFIG(SOC_INTEL_SKYLAKE_SP))
+			flags |= DMAR_X2APIC_OPT_OUT;
+
 		printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
-		printk(BIOS_DEBUG, "[DMA Remapping table] Flags: 0x%x\n", DMAR_INTR_REMAP);
-		acpi_create_dmar(dmar, DMAR_INTR_REMAP, acpi_fill_dmar);
+		printk(BIOS_DEBUG, "[DMA Remapping table] Flags: 0x%x\n", flags);
+		acpi_create_dmar(dmar, flags, acpi_fill_dmar);
 		current += dmar->header.length;
 		current = acpi_align_current(current);
 		acpi_add_table(rsdp, dmar);

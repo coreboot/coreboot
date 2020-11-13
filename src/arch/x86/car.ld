@@ -11,18 +11,17 @@
 	/* Page table pre-allocation. CONFIG_DCACHE_RAM_BASE should be 4KiB
 	 * aligned when using this option. */
 	_pagetables = . ;
-	.  += 4096 * CONFIG_NUM_CAR_PAGE_TABLE_PAGES;
+	. += 4096 * CONFIG_NUM_CAR_PAGE_TABLE_PAGES;
 	_epagetables = . ;
 #endif
+#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
 	/* Vboot work buffer only needs to be available when verified boot
 	 * starts in bootblock. */
-#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
 	VBOOT2_WORK(., 12K)
 #endif
-	/* Vboot measured boot TCPA log measurements.
-	 * Needs to be transferred until CBMEM is available
-	 */
 #if CONFIG(TPM_MEASURED_BOOT)
+	/* Vboot measured boot TCPA log measurements.
+	 * Needs to be transferred until CBMEM is available */
 	TPM_TCPA_LOG(., 2K)
 #endif
 	/* Stack for CAR stages. Since it persists across all stages that
@@ -33,8 +32,8 @@
 	_ecar_stack = .;
 	/* The pre-ram cbmem console as well as the timestamp region are fixed
 	 * in size. Therefore place them above the car global section so that
-         * multiple stages (romstage and verstage) have a consistent
-         * link address of these shared objects. */
+	 * multiple stages (romstage and verstage) have a consistent
+	 * link address of these shared objects. */
 	PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
 #if CONFIG(PAGING_IN_CACHE_AS_RAM)
 	. = ALIGN(32);
@@ -55,8 +54,8 @@
 
 	_car_ehci_dbg_info = .;
 	/* Reserve sizeof(struct ehci_dbg_info). */
-        . += 80;
-        _ecar_ehci_dbg_info = .;
+	. += 80;
+	_ecar_ehci_dbg_info = .;
 
 	/* _bss and _ebss provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
@@ -110,7 +109,7 @@ _rom_mtrr_base = _rom_mtrr_mask;
 . = 0xffffff00;
 .illegal_globals . : {
 	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
-		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
+	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
 }
 
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

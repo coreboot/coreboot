@@ -757,22 +757,19 @@ static void dram_mr1(ramctr_timing *ctrl, u8 rank, int channel)
 
 static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 {
-	u16 pasr, cwl, mr2reg;
-	odtmap odt;
+	const u16 pasr = 0;
+	const u16 cwl = ctrl->CWL - 5;
+	const odtmap odt = get_ODT(ctrl, channel);
+
 	int srt = 0;
-
-	pasr = 0;
-	cwl = ctrl->CWL - 5;
-	odt = get_ODT(ctrl, channel);
-
 	if (IS_IVY_CPU(ctrl->cpu) && ctrl->tCK >= TCK_1066MHZ)
 		srt = ctrl->extended_temperature_range && !ctrl->auto_self_refresh;
 
-	mr2reg = 0;
-	mr2reg = (mr2reg & ~0x07) | pasr;
-	mr2reg = (mr2reg & ~0x38) | (cwl << 3);
-	mr2reg = (mr2reg & ~0x40) | (ctrl->auto_self_refresh << 6);
-	mr2reg = (mr2reg & ~0x80) | (srt << 7);
+	u16 mr2reg = 0;
+	mr2reg |= pasr;
+	mr2reg |= cwl << 3;
+	mr2reg |= ctrl->auto_self_refresh << 6;
+	mr2reg |= srt << 7;
 	mr2reg |= (odt.rttwr / 60) << 9;
 
 	write_mrreg(ctrl, channel, rank, 2, mr2reg);

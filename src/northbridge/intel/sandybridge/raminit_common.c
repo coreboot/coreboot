@@ -1403,7 +1403,7 @@ int read_training(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS {
 		program_timings(ctrl, channel);
 	}
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
@@ -2030,7 +2030,7 @@ int write_training(ramctr_timing *ctrl)
 	precharge(ctrl);
 	printram("CPF\n");
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 
@@ -2053,7 +2053,7 @@ int write_training(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
@@ -2470,7 +2470,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 	}
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
@@ -2604,7 +2604,7 @@ int discover_edges_write(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
@@ -3095,7 +3095,7 @@ void final_registers(ramctr_timing *ctrl)
 
 void restore_timings(ramctr_timing *ctrl)
 {
-	int channel, slotrank, lane;
+	int channel, lane;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		MCHBAR32(TC_RAP_ch(channel)) =
@@ -3114,7 +3114,7 @@ void restore_timings(ramctr_timing *ctrl)
 		wait_for_iosav(channel);
 	}
 
-	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
+	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
 		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 

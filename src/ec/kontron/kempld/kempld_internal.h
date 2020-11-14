@@ -28,6 +28,11 @@
 
 #define KEMPLD_CLK 33333333 /* 33MHz */
 
+#define KEMPLD_GPIO_MASK(pin_num)	(1 << ((pin_num) % 8))
+#define KEMPLD_GPIO_DIR(pin_num)	(0x40 + (pin_num) / 8)
+#define KEMPLD_GPIO_LVL(pin_num)	(0x42 + (pin_num) / 8)
+
 void kempld_i2c_device_init(struct device *const dev);
+int kempld_gpio_pads_config(struct device *dev);
 
 #endif /* EC_KONTRON_KEMPLD_INTERNAL_H */

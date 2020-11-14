@@ -3,7 +3,15 @@
 #ifndef EC_KONTRON_KEMPLD_CHIP_H
 #define EC_KONTRON_KEMPLD_CHIP_H
 
-#define KEMPLD_NUM_UARTS 2
+#define KEMPLD_NUM_UARTS	2
+#define KEMPLD_NUM_GPIOS	16
+
+enum kempld_gpio_mode {
+	KEMPLD_GPIO_DEFAULT = 0,
+	KEMPLD_GPIO_INPUT,
+	KEMPLD_GPIO_OUTPUT_LOW,
+	KEMPLD_GPIO_OUTPUT_HIGH,
+};
 
 enum kempld_uart_io {
 	KEMPLD_UART_3F8 = 0,
@@ -26,6 +34,7 @@ struct kempld_uart {
 
 struct ec_kontron_kempld_config {
 	struct kempld_uart uart[KEMPLD_NUM_UARTS];
+	enum kempld_gpio_mode gpio[KEMPLD_NUM_GPIOS];
 	unsigned short i2c_frequency;
 };
 

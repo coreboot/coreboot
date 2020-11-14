@@ -93,6 +93,14 @@ static void kempld_enable_dev(struct device *const dev)
 			printk(BIOS_WARNING, "KEMPLD: Spurious device %s.\n", dev_path(dev));
 			break;
 		}
+	} else if (dev->path.type == DEVICE_PATH_GPIO) {
+		if (dev->path.gpio.id == 0) {
+			if (kempld_gpio_pads_config(dev) < 0)
+				printk(BIOS_ERR, "KEMPLD: GPIO configuration failed!\n");
+		} else {
+			printk(BIOS_WARNING, "KEMPLD: Spurious GPIO device %s.\n",
+			       dev_path(dev));
+		}
 	}
 }
 

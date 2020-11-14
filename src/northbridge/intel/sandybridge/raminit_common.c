@@ -1696,24 +1696,6 @@ static void precharge(ramctr_timing *ctrl)
 	}
 }
 
-static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
-{
-	u32 mr1reg = make_mr1(ctrl, slotrank, channel) | 1 << 7;
-	int bank = 1;
-
-	if (ctrl->rank_mirror[channel][slotrank])
-		ddr3_mirror_mrreg(&bank, &mr1reg);
-
-	wait_for_iosav(channel);
-
-	iosav_write_jedec_write_leveling_sequence(ctrl, channel, slotrank, bank, mr1reg);
-
-	/* Execute command queue */
-	iosav_run_once(channel);
-
-	wait_for_iosav(channel);
-}
-
 static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int timB;
@@ -1729,13 +1711,26 @@ static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	};
 	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
 
+	u32 mr1reg = make_mr1(ctrl, slotrank, channel) | 1 << 7;
+	int bank = 1;
+
+	if (ctrl->rank_mirror[channel][slotrank])
+		ddr3_mirror_mrreg(&bank, &mr1reg);
+
+	wait_for_iosav(channel);
+
+	iosav_write_jedec_write_leveling_sequence(ctrl, channel, slotrank, bank, mr1reg);
+
 	for (timB = 0; timB < 128; timB++) {
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].timB = timB;
 		}
 		program_timings(ctrl, channel);
 
-		test_timB(ctrl, channel, slotrank);
+		/* Execute command queue */
+		iosav_run_once(channel);
+
+		wait_for_iosav(channel);
 
 		FOR_ALL_LANES {
 			statistics[lane][timB] =  !((MCHBAR32(lane_base[lane] +

@@ -655,6 +655,11 @@ void keyboard_disconnect(void)
 	keyboard_cmd(I8042_KBCMD_DEFAULT_DIS);
 	keyboard_drain_input();
 
+	/* Nobody but us seems to still use scancode set #1.
+	   So try to hand over with more modern settings. */
+	set_scancode_set(2);
+	i8042_set_kbd_translation(false);
+
 	/* Send keyboard disconnect command */
 	i8042_cmd(I8042_CMD_DIS_KB);
 

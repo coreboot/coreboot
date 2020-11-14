@@ -69,7 +69,10 @@ ifeq ($(CONFIG_LP_LTO),y)
 CFLAGS += -flto
 endif
 
-$(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER)
+$(obj)/libpayload.config: $(DOTCONFIG)
+	cp $< $@
+
+$(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER) $(obj)/libpayload.config
 	cmp $@ $< 2>/dev/null || cp $< $@
 
 library-targets = $(addsuffix .a,$(addprefix $(obj)/,$(libraries))) $(obj)/libpayload.a

@@ -137,7 +137,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$BASE/../build -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
+_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$_OBJ -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
 if [ "$CONFIG_LP_PDCURSES" = y ]; then
   _CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses"
@@ -167,8 +167,8 @@ else
     _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
     if [ -f $_ARCHLIBDIR/head.o ]; then
 	    HEAD_O=$_ARCHLIBDIR/head.o
-    elif [ -f $BASE/../build/head.o ]; then
-	    HEAD_O=$BASE/../build/head.o
+    elif [ -f $_OBJ/head.o ]; then
+	    HEAD_O=$_OBJ/head.o
     else
 	    echo "Could not find head.o"
 	    exit 1

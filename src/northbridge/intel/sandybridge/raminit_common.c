@@ -598,17 +598,22 @@ void dram_jedecreset(ramctr_timing *ctrl)
 	}
 }
 
+/*
+ * DDR3 Rank1 Address mirror swap the following pins:
+ * A3<->A4, A5<->A6, A7<->A8, BA0<->BA1
+ */
+static void ddr3_mirror_mrreg(int *bank, u32 *addr)
+{
+	*bank = ((*bank >> 1) & 1) | ((*bank << 1) & 2);
+	*addr = (*addr & ~0x1f8) | ((*addr >> 1) & 0xa8) | ((*addr & 0xa8) << 1);
+}
+
 static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg, u32 val)
 {
 	wait_for_iosav(channel);
 
-	if (ctrl->rank_mirror[channel][slotrank]) {
-		/* DDR3 Rank1 Address mirror
-		   swap the following pins:
-		   A3<->A4, A5<->A6, A7<->A8, BA0<->BA1 */
-		reg = ((reg >> 1) & 1) | ((reg << 1) & 2);
-		val = (val & ~0x1f8) | ((val >> 1) & 0xa8) | ((val & 0xa8) << 1);
-	}
+	if (ctrl->rank_mirror[channel][slotrank])
+		ddr3_mirror_mrreg(&reg, &val);
 
 	const struct iosav_ssq sequence[] = {
 		/* DRAM command MRS */

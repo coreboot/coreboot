@@ -253,6 +253,8 @@ void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32
 void iosav_write_prea_sequence(int channel, int slotrank, u32 post, u32 wrap);
 void iosav_write_read_mpr_sequence(
 	int channel, int slotrank, u32 tMOD, u32 loops, u32 gap, u32 loops2, u32 post2);
+void iosav_write_jedec_write_leveling_sequence(
+	ramctr_timing *ctrl, int channel, int slotrank, int bank, u32 mr1reg);
 void iosav_write_misc_write_sequence(ramctr_timing *ctrl, int channel, int slotrank,
 				     u32 gap0, u32 loops0, u32 gap1, u32 loops2, u32 wrap2);
 void iosav_write_command_training_sequence(

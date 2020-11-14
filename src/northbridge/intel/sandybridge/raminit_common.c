@@ -1698,9 +1698,6 @@ static void precharge(ramctr_timing *ctrl)
 
 static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	/* First DQS/DQS# rising edge after write leveling mode is programmed */
-	const u32 tWLMRD = 40;
-
 	u32 mr1reg = make_mr1(ctrl, slotrank, channel) | 1 << 7;
 	int bank = 1;
 
@@ -1709,85 +1706,7 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 
 	wait_for_iosav(channel);
 
-	const struct iosav_ssq sequence[] = {
-		/* DRAM command MRS: enable DQs on this slotrank */
-		[0] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_MRS,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = tWLMRD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = mr1reg,
-				.rowbits = 6,
-				.bank    = bank,
-				.rank    = slotrank,
-			},
-		},
-		/* DRAM command NOP */
-		[1] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_NOP,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->CWL + ctrl->tWLO,
-				.data_direction = SSQ_WR,
-			},
-			.sp_cmd_addr = {
-				.address = 8,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-		/* DRAM command NOP */
-		[2] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_NOP_ALT,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->CAS + 38,
-				.data_direction = SSQ_RD,
-			},
-			.sp_cmd_addr = {
-				.address = 4,
-				.rowbits = 0,
-				.bank    = 0,
-				.rank    = slotrank,
-			},
-		},
-		/* DRAM command MRS: disable DQs on this slotrank */
-		[3] = {
-			.sp_cmd_ctrl = {
-				.command    = IOSAV_MRS,
-				.ranksel_ap = 1,
-			},
-			.subseq_ctrl = {
-				.cmd_executions = 1,
-				.cmd_delay_gap  = 3,
-				.post_ssq_wait  = ctrl->tMOD,
-				.data_direction = SSQ_NA,
-			},
-			.sp_cmd_addr = {
-				.address = mr1reg | 1 << 12,
-				.rowbits = 6,
-				.bank    = bank,
-				.rank    = slotrank,
-			},
-		},
-	};
-	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
+	iosav_write_jedec_write_leveling_sequence(ctrl, channel, slotrank, bank, mr1reg);
 
 	/* Execute command queue */
 	iosav_run_once(channel);

@@ -57,11 +57,17 @@ BASE=`dirname $0`
 # This will set the _LIBDIR and _INCDIR variables used below
 . $BASE/lp.functions
 
+if [ $_LIBDIR != $_OBJ ]; then
+	_DOTCONFIG=$BASE/../libpayload.config
+	_XCOMPILE=$BASE/../libpayload.xcompile
+else
+	_DOTCONFIG=$_OBJ/libpayload.config
+	_XCOMPILE=$_OBJ/xcompile
+fi
+
 # include libpayload config
-if [ -f $BASE/../libpayload.config ]; then
-	. $BASE/../libpayload.config
-elif [ -f $BASE/../.config ]; then
-	. $BASE/../.config
+if [ -f $_DOTCONFIG ]; then
+	. $_DOTCONFIG
 else
 	echo "Can't find config"
 	exit 1
@@ -174,8 +180,8 @@ else
 	    exit 1
     fi
 
-    if grep -q ARM64_A53_ERRATUM_843419=y $BASE/../libpayload.config &&
-       grep -q fix-cortex-a53-843419 $BASE/../libpayload.xcompile; then
+    if [ "$CONFIG_LP_ARM64_A53_ERRATUM_843419" = y ] &&
+       grep -q fix-cortex-a53-843419 $_XCOMPILE; then
             _LDFLAGS="$_LDFLAGS -Wl,--fix-cortex-a53-843419"
     fi
 

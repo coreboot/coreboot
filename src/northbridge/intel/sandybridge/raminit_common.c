@@ -2026,7 +2026,7 @@ int write_training(ramctr_timing *ctrl)
 	printram("CPF\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32_AND(IOSAV_By_BW_MASK_ch(channel, lane), 0);
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2049,7 +2049,7 @@ int write_training(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32_AND(IOSAV_By_BW_MASK_ch(channel, lane), 0);
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
 }

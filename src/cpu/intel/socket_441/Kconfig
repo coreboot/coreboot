@@ -12,7 +12,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
-	default 0x4000
+	default 0x8000
 
 config DCACHE_RAM_BASE
 	hex

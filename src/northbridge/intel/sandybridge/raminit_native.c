@@ -690,7 +690,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 
 		printram("CP5a\n");
 
-		err = discover_edges(ctrl);
+		err = read_mpr_training(ctrl);
 		if (err)
 			return err;
 

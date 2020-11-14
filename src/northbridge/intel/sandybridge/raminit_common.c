@@ -2308,7 +2308,7 @@ int command_training(ramctr_timing *ctrl)
 	return 0;
 }
 
-static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
+static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
 {
 	int edge;
 	int stats[NUM_LANES][MAX_EDGE_TIMING + 1];
@@ -2412,7 +2412,7 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 	}
 }
 
-int discover_edges(ramctr_timing *ctrl)
+int read_mpr_training(ramctr_timing *ctrl)
 {
 	int falling_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int rising_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -2441,7 +2441,7 @@ int discover_edges(ramctr_timing *ctrl)
 	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_edges_real(ctrl, channel, slotrank,
+		err = find_read_mpr_margin(ctrl, channel, slotrank,
 			falling_edges[channel][slotrank]);
 		if (err)
 			return err;
@@ -2451,7 +2451,7 @@ int discover_edges(ramctr_timing *ctrl)
 	printram("discover rising edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_edges_real(ctrl, channel, slotrank,
+		err = find_read_mpr_margin(ctrl, channel, slotrank,
 				    rising_edges[channel][slotrank]);
 		if (err)
 			return err;

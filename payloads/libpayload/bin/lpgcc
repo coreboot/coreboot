@@ -143,14 +143,19 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$_OBJ -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
+_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
-if [ "$CONFIG_LP_PDCURSES" = y ]; then
-  _CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses"
-fi
+if [ $_LIBDIR = $_OBJ ]; then
+    _CFLAGS="$_CFLAGS -I$_OBJ"
 
-if [ "$CONFIG_LP_TINYCURSES" = y ]; then
-  _CFLAGS="$_CFLAGS -I$BASE/../curses"
+    if [ "$CONFIG_LP_PDCURSES" = y ]; then
+	_CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses -I$BASE/../curses/pdcurses-backend"
+	_CFLAGS="$_CFLAGS -I$BASE/../curses/form -I$BASE/../curses/menu"
+    fi
+
+    if [ "$CONFIG_LP_TINYCURSES" = y ]; then
+	_CFLAGS="$_CFLAGS -I$BASE/../curses"
+    fi
 fi
 
 # Check for the -fno-stack-protector silliness

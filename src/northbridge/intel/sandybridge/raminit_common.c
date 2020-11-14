@@ -1696,7 +1696,7 @@ static void precharge(ramctr_timing *ctrl)
 	}
 }
 
-static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
+static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int timB;
 	int statistics[NUM_LANES][128];
@@ -1767,14 +1767,12 @@ static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	return 0;
 }
 
-static int get_timB_high_adjust(u64 val)
+static int get_dqs_flyby_adjust(u64 val)
 {
 	int i;
-
 	/* DQS is good enough */
 	if (val == 0xffffffffffffffffLL)
 		return 0;
-
 	if (val >= 0xf000000000000000LL) {
 		/* DQS is late, needs negative adjustment */
 		for (i = 0; i < 8; i++)
@@ -1889,9 +1887,10 @@ static void train_write_flyby(ramctr_timing *ctrl)
 			u64 res = MCHBAR32(lane_base[lane] + GDCRTRAININGRESULT1(channel));
 			res |= ((u64) MCHBAR32(lane_base[lane] +
 				GDCRTRAININGRESULT2(channel))) << 32;
+
 			old = ctrl->timings[channel][slotrank].lanes[lane].timB;
 			ctrl->timings[channel][slotrank].lanes[lane].timB +=
-				get_timB_high_adjust(res) * 64;
+				get_dqs_flyby_adjust(res) * 64;
 
 			printram("High adjust %d:%016llx\n", lane, res);
 			printram("Bval+: %d, %d, %d, %x -> %x\n", channel, slotrank, lane,
@@ -1942,13 +1941,9 @@ static void disable_refresh_machine(ramctr_timing *ctrl)
  * the DRAM-chip samples the CLK on every DQS edge and feeds back the sampled value on the data
  * lanes (DQ).
  */
-int write_training(ramctr_timing *ctrl)
+static int jedec_write_leveling(ramctr_timing *ctrl)
 {
-	int channel, slotrank, lane;
-	int err;
-
-	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
+	int channel, slotrank;
 
 	disable_refresh_machine(ctrl);
 
@@ -1971,7 +1966,7 @@ int write_training(ramctr_timing *ctrl)
 
 	/* Set any valid value for timB, it gets corrected later */
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_timB(ctrl, channel, slotrank);
+		const int err = write_level_rank(ctrl, channel, slotrank);
 		if (err)
 			return err;
 	}
@@ -2002,6 +1997,21 @@ int write_training(ramctr_timing *ctrl)
 	}
 
 	toggle_io_reset();
+
+	return 0;
+}
+
+int write_training(ramctr_timing *ctrl)
+{
+	int channel, slotrank, lane;
+	int err;
+
+	FOR_ALL_POPULATED_CHANNELS
+		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
+
+	err = jedec_write_leveling(ctrl);
+	if (err)
+		return err;
 
 	printram("CPE\n");
 	precharge(ctrl);

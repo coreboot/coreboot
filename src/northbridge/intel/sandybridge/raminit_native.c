@@ -684,15 +684,15 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		if (err)
 			return err;
 
+		err = read_mpr_training(ctrl);
+		if (err)
+			return err;
+
 		err = write_training(ctrl);
 		if (err)
 			return err;
 
 		printram("CP5a\n");
-
-		err = read_mpr_training(ctrl);
-		if (err)
-			return err;
 
 		printram("CP5b\n");
 

@@ -187,13 +187,6 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
-	} else if (strcmp(fw_name, "PSP_MP2CFG_FILE") == 0) {
-		if (cb_config->load_mp2_fw == 1) {
-			fw_type = AMD_BIOS_MP2_CFG;
-			subprog = 0;
-		} else {
-			fw_type = AMD_FW_SKIP;
-		}
 	} else if (strcmp(fw_name, "PSP_DRIVERS_FILE") == 0) {
 		fw_type = AMD_DRIVER_ENTRIES;
 		subprog = 0;
@@ -267,6 +260,13 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		fw_type = AMD_BIOS_PMUD;
 		subprog = 1;
 		instance = 4;
+	} else if (strcmp(fw_name, "PSP_MP2CFG_FILE") == 0) {
+		if (cb_config->load_mp2_fw == 1) {
+			fw_type = AMD_BIOS_MP2_CFG;
+			subprog = 0;
+		} else {
+			fw_type = AMD_FW_SKIP;
+		}
 	} else {
 		fw_type = AMD_BIOS_INVALID;
 	}

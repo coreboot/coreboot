@@ -1933,21 +1933,33 @@ static void train_write_flyby(ramctr_timing *ctrl)
 	MCHBAR32(GDCRTRAININGMOD) = 0;
 }
 
-static void write_op(ramctr_timing *ctrl, int channel)
+static void disable_refresh_machine(ramctr_timing *ctrl)
 {
-	int slotrank;
+	int channel;
 
-	wait_for_iosav(channel);
+	FOR_ALL_POPULATED_CHANNELS {
+		/* choose an existing rank */
+		const int slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
-	/* choose an existing rank.  */
-	slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
+		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
 
-	iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
+		/* Execute command queue */
+		iosav_run_once(channel);
 
-	/* Execute command queue */
-	iosav_run_once(channel);
+		wait_for_iosav(channel);
 
-	wait_for_iosav(channel);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
+	}
+
+	/* Refresh disable */
+	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
+
+	FOR_ALL_POPULATED_CHANNELS {
+		/* Execute the same command queue */
+		iosav_run_once(channel);
+
+		wait_for_iosav(channel);
+	}
 }
 
 /*
@@ -1970,16 +1982,7 @@ int write_training(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
 
-	FOR_ALL_POPULATED_CHANNELS {
-		write_op(ctrl, channel);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
-	}
-
-	/* Refresh disable */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
-	FOR_ALL_POPULATED_CHANNELS {
-		write_op(ctrl, channel);
-	}
+	disable_refresh_machine(ctrl);
 
 	/* Enable write leveling on all ranks
 	   Disable all DQ outputs
@@ -2142,38 +2145,7 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 
 static void reprogram_320c(ramctr_timing *ctrl)
 {
-	int channel, slotrank;
-
-	FOR_ALL_POPULATED_CHANNELS {
-		wait_for_iosav(channel);
-
-		/* Choose an existing rank */
-		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
-
-		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
-
-		/* Execute command queue */
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
-	}
-
-	/* refresh disable */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
-	FOR_ALL_POPULATED_CHANNELS {
-		wait_for_iosav(channel);
-
-		/* choose an existing rank.  */
-		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
-
-		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
-
-		/* Execute command queue */
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
-	}
+	disable_refresh_machine(ctrl);
 
 	/* JEDEC reset */
 	dram_jedecreset(ctrl);

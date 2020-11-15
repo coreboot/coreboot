@@ -1409,7 +1409,7 @@ int read_training(ramctr_timing *ctrl)
 	return 0;
 }
 
-static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
+static void test_tx_dq(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int lane;
 
@@ -1528,7 +1528,7 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	wait_for_iosav(channel);
 }
 
-static void timC_threshold_process(int *data, const int count)
+static void tx_dq_threshold_process(int *data, const int count)
 {
 	int min = data[0];
 	int max = min;
@@ -1547,9 +1547,9 @@ static void timC_threshold_process(int *data, const int count)
 	printram("threshold=%d min=%d max=%d\n", threshold, min, max);
 }
 
-static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
+static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	int timC;
+	int tx_dq;
 	int stats[NUM_LANES][MAX_TIMC + 1];
 	int lane;
 
@@ -1560,14 +1560,14 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	/* Execute command queue */
 	iosav_run_once(channel);
 
-	for (timC = 0; timC <= MAX_TIMC; timC++) {
-		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].timC = timC;
+	for (tx_dq = 0; tx_dq <= MAX_TIMC; tx_dq++) {
+		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].timC = tx_dq;
 		program_timings(ctrl, channel);
 
-		test_timC(ctrl, channel, slotrank);
+		test_tx_dq(ctrl, channel, slotrank);
 
 		FOR_ALL_LANES {
-			stats[lane][timC] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			stats[lane][tx_dq] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 	FOR_ALL_LANES {
@@ -1580,7 +1580,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 			 * With command training not being done yet, the lane can be erroneous.
 			 * Take the average as reference and try again to find a run.
 			 */
-			timC_threshold_process(stats[lane], ARRAY_SIZE(stats[lane]));
+			tx_dq_threshold_process(stats[lane], ARRAY_SIZE(stats[lane]));
 			rn = get_longest_zero_run(stats[lane], ARRAY_SIZE(stats[lane]));
 
 			if (rn.all || rn.length < 8) {
@@ -2039,7 +2039,7 @@ int write_training(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_timC(ctrl, channel, slotrank);
+		err = tx_dq_write_leveling(ctrl, channel, slotrank);
 		if (err)
 			return err;
 	}

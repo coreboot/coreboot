@@ -37,7 +37,7 @@ static int max(int x, int y)
 	return y;
 }
 
-void render_form(FORM *form)
+static void render_form(FORM *form)
 {
 	int y, x, line;
 	WINDOW *w = form_win(form);

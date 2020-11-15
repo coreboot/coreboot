@@ -1405,9 +1405,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS {
 		program_timings(ctrl, channel);
 	}
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-	}
+
 	return 0;
 }
 
@@ -1959,7 +1957,7 @@ static int jedec_write_leveling(ramctr_timing *ctrl)
 
 int write_training(ramctr_timing *ctrl)
 {
-	int channel, slotrank, lane;
+	int channel, slotrank;
 	int err;
 
 	FOR_ALL_POPULATED_CHANNELS
@@ -1972,10 +1970,6 @@ int write_training(ramctr_timing *ctrl)
 		return err;
 
 	printram("CPF\n");
-
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-	}
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0xaaaaaaaa, 0x55555555);
@@ -1996,9 +1990,6 @@ int write_training(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
 
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-	}
 	return 0;
 }
 
@@ -2275,6 +2266,7 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 
 	fill_pattern0(ctrl, channel, 0, 0);
 	FOR_ALL_LANES {
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 		MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 	}
 
@@ -2338,10 +2330,6 @@ int read_mpr_training(ramctr_timing *ctrl)
 	toggle_io_reset();
 
 	FOR_ALL_POPULATED_CHANNELS {
-		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-		}
-
 		find_predefined_pattern(ctrl, channel);
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
@@ -2521,9 +2509,6 @@ int discover_edges_write(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		program_timings(ctrl, channel);
 
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-	}
 	return 0;
 }
 
@@ -3030,7 +3015,7 @@ void final_registers(ramctr_timing *ctrl)
 
 void restore_timings(ramctr_timing *ctrl)
 {
-	int channel, lane;
+	int channel;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		const union tc_rap_reg tc_rap = {
@@ -3049,10 +3034,6 @@ void restore_timings(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		wait_for_iosav(channel);
-	}
-
-	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS

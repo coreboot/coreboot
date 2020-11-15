@@ -1,2 +1,2 @@
-lpbuild/
-lp.config*
+libpayload/
+.lp.config*

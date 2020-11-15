@@ -1,0 +1,157 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+#
+# This file is meant to be included by in-tree payloads
+# to provide default targets for incremental builds.
+#
+# Variables with file names and directory overrides have
+# to be defined in advance for proper dependency tracking.
+# Then, include this file. e.g
+#
+#     obj := output
+#     OBJS := $(obj)/payload.o
+#     TARGET := $(obj)/payload.elf
+#     include ../path/to/libpayload/Makefile.payload
+#
+
+# Find relative path to libpayload (where this Makefile resides).
+LIBPAYLOAD_SRC := $(dir $(lastword $(MAKEFILE_LIST)))
+LIBPAYLOAD_SRC := $(patsubst %/,%,$(LIBPAYLOAD_SRC))
+
+# Build dir and config for libpayload. Need absolute
+# paths to pass to libpayload's sub-make.
+LIBPAYLOAD_OBJ	?= $(CURDIR)/libpayload
+LIBPAYLOAD	:= $(LIBPAYLOAD_OBJ)/libpayload.a
+LIBPAYLOAD_CONFIG_H := $(LIBPAYLOAD_OBJ)/libpayload-config.h
+LIBPAYLOAD_DOTCONFIG ?= $(CURDIR)/.lp.config
+LIBPAYLOAD_DEFCONFIG ?= $(CURDIR)/$(LIBPAYLOAD_SRC)/configs/defconfig
+
+# Some default dependencies for all targets:
+DEFAULT_DEPS := Makefile $(lastword $(MAKEFILE_LIST))
+DEFAULT_DEPS += $(PAYLOAD_DEPS)
+
+obj ?= build
+
+ARCH ?=
+OBJS ?=
+CCACHE ?=
+
+CFLAGS  = $(GCC_CFLAGS_$(ARCH))
+CFLAGS += -Os -ffreestanding
+CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wvla -Werror
+
+STRIP ?= debug
+
+$(TARGET):
+
+# Make is silent per default, but `make V=1` will show all calls.
+Q:=@
+ifneq ($(V),1)
+ifneq ($(Q),)
+.SILENT:
+MAKEFLAGS += -s
+endif
+endif
+export V
+
+ifeq ($(filter %clean,$(MAKECMDGOALS)),)
+
+xcompile	:= $(obj)/xcompile
+xcompile_script	:= $(LIBPAYLOAD_SRC)/../../util/xcompile/xcompile
+
+# In addition to the dependency below, create the file if it doesn't exist
+# to silence warnings about a file that would be generated anyway.
+$(if $(wildcard $(xcompile)),,$(shell	\
+	mkdir -p $(dir $(xcompile)) &&	\
+	$(xcompile_script) $(XGCCPATH) > $(xcompile) ||	rm -f $(xcompile)))
+
+$(xcompile): $(xcompile_script)
+	$< $(XGCCPATH) > $@
+
+include $(xcompile)
+
+ifneq ($(XCOMPILE_COMPLETE),1)
+$(shell rm -f $(XCOMPILE_COMPLETE))
+$(error $(xcompile) deleted because it's invalid. \
+        Restarting the build should fix that, or explain the problem.)
+endif
+
+# `lpgcc` in in-tree mode:
+LPGCC  = CC="$(CCACHE) $(GCC_CC_$(ARCH))"
+LPGCC += _OBJ="$(LIBPAYLOAD_OBJ)"
+LPGCC += $(LIBPAYLOAD_SRC)/bin/lpgcc
+
+LPAS  = AS="$(AS_$(ARCH))"
+LPAS += $(LIBPAYLOAD_SRC)/bin/lpas
+
+OBJCOPY = $(OBJCOPY_$(ARCH))
+
+$(obj)/%.bin: $(OBJS) $(LIBPAYLOAD) $(DEFAULT_DEPS)
+	@printf "    LPGCC      $(subst $(obj)/,,$@)\n"
+	$(LPGCC) $(CFLAGS) -o $@ $(OBJS)
+
+$(obj)/%.map: $(obj)/%.bin
+	@printf "    SYMS       $(subst $(obj)/,,$@)\n"
+	$(NM_$(ARCH)) -n $< > $@
+
+$(obj)/%.debug: $(obj)/%.bin
+	@printf "    DEBUG      $(subst $(obj)/,,$@)\n"
+	$(OBJCOPY) --only-keep-debug $< $@
+
+.PRECIOUS: $(obj)/%.debug
+
+$(obj)/%.elf: $(obj)/%.bin $(obj)/%.debug
+	@printf "    STRIP      $(subst $(obj)/,,$@)\n"
+	$(OBJCOPY) --strip-$(STRIP) $< $@
+	$(OBJCOPY) --add-gnu-debuglink=$(obj)/$*.debug $@
+
+$(obj)/%.o: %.c $(LIBPAYLOAD_CONFIG_H) $(DEFAULT_DEPS)
+	@printf "    LPGCC      $(subst $(obj)/,,$@)\n"
+	$(LPGCC) -MMD $(CFLAGS) -c $< -o $@
+
+$(obj)/%.S.o: %.S $(LIBPAYLOAD_CONFIG_H) $(DEFAULT_DEPS)
+	@printf "    LPAS       $(subst $(obj)/,,$@)\n"
+	$(LPAS) $< -o $@
+
+-include $(OBJS:.o=.d)
+
+.PRECIOUS: $(OBJS)
+
+LIBPAYLOAD_OPTS := obj="$(LIBPAYLOAD_OBJ)"
+LIBPAYLOAD_OPTS += DOTCONFIG="$(LIBPAYLOAD_DOTCONFIG)"
+LIBPAYLOAD_OPTS += $(if $(CCACHE),CONFIG_LP_CCACHE=y)
+
+defconfig: lp-defconfig
+lp-defconfig: $(LIBPAYLOAD_DOTCONFIG)
+$(LIBPAYLOAD_DOTCONFIG): $(LIBPAYLOAD_DEFCONFIG) | $(PAYLOAD_DEPS)
+	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) \
+		KBUILD_DEFCONFIG=$(LIBPAYLOAD_DEFCONFIG) defconfig
+
+$(LIBPAYLOAD_CONFIG_H): $(LIBPAYLOAD_DOTCONFIG)
+	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) $(LIBPAYLOAD_CONFIG_H)
+
+oldconfig: lp-oldconfig
+lp-oldconfig:
+	[ ! -f $(LIBPAYLOAD_DOTCONFIG) ] || \
+	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) oldconfig
+
+$(LIBPAYLOAD): lp-defconfig | $(LIBPAYLOAD_CONFIG_H)
+	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS)
+
+$(shell mkdir -p $(sort $(dir $(OBJS))))
+
+.PHONY: oldconfig lp-oldconfig defconfig lp-defconfig
+
+else # %clean,$(MAKECMDGOALS)
+
+default-payload-clean:
+	rm -rf $(obj) $(LIBPAYLOAD_OBJ)
+clean: default-payload-clean
+
+default-payload-distclean: clean
+	rm -f $(LIBPAYLOAD_DOTCONFIG) $(LIBPAYLOAD_DOTCONFIG).old
+distclean: default-payload-distclean
+
+.PHONY: default-payload-clean clean default-payload-distclean distclean
+
+endif

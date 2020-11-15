@@ -530,6 +530,12 @@ $(build_h): $$(shell $$(build_h_check))
 build-dirs $(objcbfs) $(objgenerated):
 	mkdir -p $(objcbfs) $(objgenerated)
 
+$(obj)/build_info:
+	@echo 'COREBOOT_VERSION: $(call strip_quotes,$(KERNELVERSION))' > $@.tmp
+	@echo 'MAINBOARD_VENDOR: $(call strip_quotes,$(CONFIG_MAINBOARD_VENDOR))' >> $@.tmp
+	@echo 'MAINBOARD_PART_NUMBER: $(call strip_quotes,$(CONFIG_MAINBOARD_PART_NUMBER))' >> $@.tmp
+	mv $@.tmp $@
+
 #######################################################################
 # Build the tools
 CBFSTOOL:=$(objutil)/cbfstool/cbfstool
@@ -1207,6 +1213,10 @@ config-type := raw
 cbfs-files-$(CONFIG_INCLUDE_CONFIG_FILE) += revision
 revision-file := $(obj)/build.h
 revision-type := raw
+
+cbfs-files-y += build_info
+build_info-file := $(obj)/build_info
+build_info-type := raw
 
 BOOTSPLASH_SUFFIX=$(suffix $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE)))
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash$(BOOTSPLASH_SUFFIX)

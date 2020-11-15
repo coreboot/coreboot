@@ -26,10 +26,6 @@ decompressor-y += div0.c
 bootblock-y += div0.c
 decompressor-y += eabi_compat.c
 bootblock-y += eabi_compat.c
-decompressor-y += id.S
-bootblock-y += id.S
-$(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
-$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
 decompressor-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c

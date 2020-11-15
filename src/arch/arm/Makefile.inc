@@ -27,11 +27,6 @@ endif # CONFIG_ARCH_ARM
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM),y)
 
-decompressor-y += id.S
-bootblock-y += id.S
-$(call src-to-obj,decompressor,$(dir)/id.S): $(obj)/build.h
-$(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
-
 decompressor-y += boot.c
 bootblock-y += boot.c
 decompressor-y += div0.c

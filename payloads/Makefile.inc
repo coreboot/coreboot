@@ -29,9 +29,11 @@ payloads/external/GRUB2 \
 payloads/external/LinuxBoot \
 payloads/external/Yabits \
 
+payloads/coreinfo/build/coreinfo.elf coreinfo: export CCACHE := $(CCACHE)
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild
 
+payloads/nvramcui/build/nvramcui.elf nvramcui: export CCACHE := $(CCACHE)
 payloads/nvramcui/build/nvramcui.elf nvramcui:
 	$(MAKE) -C payloads/nvramcui
 

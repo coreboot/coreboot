@@ -1651,51 +1651,6 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 	program_wdb_pattern_length(channel, 16);
 }
 
-static void precharge(ramctr_timing *ctrl)
-{
-	int channel, slotrank, lane;
-
-	FOR_ALL_POPULATED_CHANNELS {
-		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling = 16;
-			ctrl->timings[channel][slotrank].lanes[lane].rising = 16;
-		}
-
-		program_timings(ctrl, channel);
-
-		FOR_ALL_POPULATED_RANKS {
-			wait_for_iosav(channel);
-
-			iosav_write_read_mpr_sequence(
-				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-
-			/* Execute command queue */
-			iosav_run_once(channel);
-
-			wait_for_iosav(channel);
-		}
-
-		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling = 48;
-			ctrl->timings[channel][slotrank].lanes[lane].rising = 48;
-		}
-
-		program_timings(ctrl, channel);
-
-		FOR_ALL_POPULATED_RANKS {
-			wait_for_iosav(channel);
-
-			iosav_write_read_mpr_sequence(
-				channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
-
-			/* Execute command queue */
-			iosav_run_once(channel);
-
-			wait_for_iosav(channel);
-		}
-	}
-}
-
 static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int timB;
@@ -2010,12 +1965,12 @@ int write_training(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS
 		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
 
+	printram("CPE\n");
+
 	err = jedec_write_leveling(ctrl);
 	if (err)
 		return err;
 
-	printram("CPE\n");
-	precharge(ctrl);
 	printram("CPF\n");
 
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {

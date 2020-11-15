@@ -10,7 +10,7 @@ img/coreinfo-type := payload
 img/coreinfo-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 cbfs-files-$(CONFIG_NVRAMCUI_SECONDARY_PAYLOAD) += img/nvramcui
-img/nvramcui-file := payloads/nvramcui/nvramcui.elf
+img/nvramcui-file := payloads/nvramcui/build/nvramcui.elf
 img/nvramcui-type := payload
 img/nvramcui-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
@@ -32,7 +32,7 @@ payloads/external/Yabits \
 payloads/coreinfo/build/coreinfo.elf coreinfo:
 	$(MAKE) -C payloads/coreinfo defaultbuild
 
-payloads/nvramcui/nvramcui.elf nvramcui:
+payloads/nvramcui/build/nvramcui.elf nvramcui:
 	$(MAKE) -C payloads/nvramcui
 
 clean-payloads:

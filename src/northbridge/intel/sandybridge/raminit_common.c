@@ -1954,6 +1954,7 @@ static int jedec_write_leveling(ramctr_timing *ctrl)
 		write_mrreg(ctrl, channel, slotrank, 1,
 				make_mr1(ctrl, slotrank, channel) | 1 << 12 | 1 << 7);
 
+	/* Needs to be programmed before I/O reset below */
 	const union gdcr_training_mod_reg training_mod = {
 		.write_leveling_mode = 1,
 		.enable_dqs_wl       = 5,

@@ -6,6 +6,8 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/gpio_banks.h>
+#include <device/device.h>
+#include <stdint.h>
 
 unsigned long southbridge_write_acpi_tables(const struct device *device,
 		unsigned long current, struct acpi_rsdp *rsdp);

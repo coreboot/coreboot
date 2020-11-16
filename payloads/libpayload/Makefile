@@ -118,6 +118,11 @@ NOCOMPILE:=1
 endif
 endif
 
+xcompile ?= $(obj)/xcompile
+$(xcompile): $(top)/../../util/xcompile/xcompile
+	$< $(XGCCPATH) > $@.tmp
+	\mv -f $@.tmp $@ 2> /dev/null
+
 ifeq ($(NOCOMPILE),1)
 include $(TOPLEVEL)/Makefile.inc
 real-all: config
@@ -126,13 +131,17 @@ else
 
 # in addition to the dependency below, create the file if it doesn't exist
 # to silence stupid warnings about a file that would be generated anyway.
-$(if $(wildcard .xcompile)$(NOCOMPILE),,$(eval $(shell $(top)/../../util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+$(if $(wildcard $(xcompile)),,$(shell	\
+	mkdir -p $(dir $(xcompile)) &&	\
+	$(top)/../../util/xcompile/xcompile $(XGCCPATH) > $(xcompile) || rm -f $(xcompile)))
 
-.xcompile: $(top)/../../util/xcompile/xcompile
-	$< $(XGCCPATH) > $@.tmp
-	\mv -f $@.tmp $@ 2> /dev/null
+include $(xcompile)
 
--include .xcompile
+ifneq ($(XCOMPILE_COMPLETE),1)
+$(shell rm -f $(xcompile))
+$(error $(xcompile) deleted because it's invalid. \
+	Restarting the build should fix that, or explain the problem)
+endif
 
 CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
@@ -294,7 +303,7 @@ doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 clean-for-update: doxygen-clean clean-for-update-target
-	rm -f $(allobjs) .xcompile
+	rm -f $(allobjs) $(xcompile)
 	rm -f $(DEPENDENCIES)
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
 

@@ -28,7 +28,7 @@
 
 # Sample libpayload Makefile.
 include ../.config
-include ../.xcompile
+include ../build/xcompile
 
 ARCH-$(CONFIG_LP_ARCH_ARM)   := arm
 ARCH-$(CONFIG_LP_ARCH_X86)   := x86_32

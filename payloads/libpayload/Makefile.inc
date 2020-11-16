@@ -121,7 +121,7 @@ install: real-target
 	install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
 	install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
 	install -m 644 $(DOTCONFIG) $(DESTDIR)/libpayload/libpayload.config
-	install -m 755 .xcompile $(DESTDIR)/libpayload/libpayload.xcompile
+	install -m 755 $(xcompile) $(DESTDIR)/libpayload/libpayload.xcompile
 
 clean-for-update-target:
 	rm -f $(addsuffix .a,$(addprefix $(obj)/,$(libraries))) $(obj)/libpayload.a

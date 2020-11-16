@@ -6,6 +6,8 @@ tests-y += hexstrtobin-test
 tests-y += imd-test
 tests-y += timestamp-test
 tests-y += edid-test
+tests-y += cbmem_console-romstage-test
+tests-y += cbmem_console-ramstage-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -30,3 +32,10 @@ edid-test-srcs += tests/lib/edid-test.c
 edid-test-srcs += src/lib/edid.c
 edid-test-srcs += tests/stubs/console.c
 
+cbmem_console-romstage-test-stage := romstage
+cbmem_console-romstage-test-srcs += tests/lib/cbmem_console-test.c
+cbmem_console-romstage-test-srcs += tests/stubs/console.c
+
+cbmem_console-ramstage-test-stage := ramstage
+cbmem_console-ramstage-test-srcs += tests/lib/cbmem_console-test.c
+cbmem_console-ramstage-test-srcs += tests/stubs/console.c

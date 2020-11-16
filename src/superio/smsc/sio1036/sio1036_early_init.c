@@ -10,13 +10,13 @@
 
 static inline void sio1036_enter_conf_state(pnp_devfn_t dev)
 {
-	u8 port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
 static inline void sio1036_exit_conf_state(pnp_devfn_t dev)
 {
-	u8 port = dev >> 8;
+	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 

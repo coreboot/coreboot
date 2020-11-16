@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_I2C_SX9324) += sx9324.c

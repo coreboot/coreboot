@@ -2,6 +2,7 @@
 
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
+#include "variant.h"
 
 static const struct cnl_mb_cfg memcfg = {
 
@@ -50,10 +51,5 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 	cannonlake_memcfg_init(mem_cfg, &memcfg);
-
-	/* Enable and set SATA HSIO adjustments for ports 0 and 2 */
-	mem_cfg->PchSataHsioRxGen3EqBoostMagEnable[0] = 1;
-	mem_cfg->PchSataHsioRxGen3EqBoostMagEnable[2] = 1;
-	mem_cfg->PchSataHsioRxGen3EqBoostMag[0] = 2;
-	mem_cfg->PchSataHsioRxGen3EqBoostMag[2] = 1;
+	variant_memory_init_params(mem_cfg);
 }

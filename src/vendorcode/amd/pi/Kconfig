@@ -26,7 +26,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-if CPU_AMD_PI_00630F01 || CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01 || SOC_AMD_STONEYRIDGE
+if CPU_AMD_PI_00630F01 || CPU_AMD_PI_00730F01 || SOC_AMD_STONEYRIDGE
 
 config AGESA_BINARY_PI_VENDORCODE_PATH
 	string "AGESA PI directory path"
@@ -34,7 +34,6 @@ config AGESA_BINARY_PI_VENDORCODE_PATH
 	default "src/vendorcode/amd/pi/00730F01" if CPU_AMD_PI_00730F01
 	default "src/vendorcode/amd/pi/00670F00" if AMD_APU_MERLINFALCON
 	default "src/vendorcode/amd/pi/00670F00" if AMD_APU_STONEYRIDGE || AMD_APU_PRAIRIEFALCON
-	default "src/vendorcode/amd/pi/00660F01" if CPU_AMD_PI_00660F01
 	help
 	  Specify where to find the AGESA header files
 	  for AMD platform initialization.
@@ -46,7 +45,6 @@ config AGESA_BINARY_PI_FILE
 	default "3rdparty/amd_blobs/stoneyridge/pi/CZ/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_MERLINFALCON && USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_PRAIRIEFALCON && USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_STONEYRIDGE && USE_AMD_BLOBS
-	default "3rdparty/blobs/pi/amd/00660F01/FP4/AGESA.bin" if CPU_AMD_PI_00660F01
 	help
 	  Specify the binary file to use for AMD platform initialization.
 

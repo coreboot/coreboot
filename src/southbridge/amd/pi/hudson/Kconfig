@@ -60,7 +60,7 @@ config HUDSON_GEC_FWM
 
 config HUDSON_PSP
 	bool
-	default y if CPU_AMD_PI_00730F01 || CPU_AMD_PI_00660F01
+	default y if CPU_AMD_PI_00730F01
 
 config AMDFW_CONFIG_FILE
 	string "AMD PSP Firmware config file"
@@ -88,7 +88,6 @@ config AMD_PUBKEY_FILE
 	depends on HUDSON_PSP
 	string "AMD public Key"
 	default "3rdparty/blobs/southbridge/amd/avalon/PSP/AmdPubKey.bin" if CPU_AMD_PI_00730F01
-	default "3rdparty/blobs/southbridge/amd/kern/PSP/AmdPubKeyCZ.bin" if CPU_AMD_PI_00660F01
 
 config HUDSON_SATA_MODE
 	int "SATA Mode"

@@ -4,7 +4,6 @@ config CPU_AMD_PI
 	bool
 	default y if CPU_AMD_PI_00630F01
 	default y if CPU_AMD_PI_00730F01
-	default y if CPU_AMD_PI_00660F01
 	default n
 	select ARCH_ALL_STAGES_X86_32
 	select DRIVERS_AMD_PI
@@ -46,4 +45,3 @@ endif # CPU_AMD_PI
 
 source "src/cpu/amd/pi/00630F01/Kconfig"
 source "src/cpu/amd/pi/00730F01/Kconfig"
-source "src/cpu/amd/pi/00660F01/Kconfig"

@@ -83,9 +83,6 @@ void platform_AfterInitResume(struct sysinfo *cb, AMD_RESUME_PARAMS *Resume);
 void platform_BeforeS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late);
 void platform_AfterS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late);
 
-#if CONFIG(CPU_AMD_PI_00660F01)
-typedef void AMD_S3SAVE_PARAMS;
-#endif
 void platform_AfterS3Save(struct sysinfo *cb, AMD_S3SAVE_PARAMS *S3Save);
 
 /* FCH callouts, not used with CIMx. */

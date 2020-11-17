@@ -97,8 +97,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_84, PULL_NONE),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
-	/* RAM ID 2 */
-	PAD_GPI(GPIO_86, PULL_NONE),
+	/* RAM ID 2 - Keep High */
+	PAD_GPO(GPIO_86, HIGH),
 	/* EMMC_DATA7 */
 	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
 	/* EMMC_DATA5 */

@@ -1,6 +1,163 @@
 chip soc/intel/tigerlake
+	# BitMask where bits [3:0] are Controller 0 Channel [3:0] and
+	# bits [7:4] are Controller 1 Channel [3:0].
+	# Enable Command Mirroring for controller 0 channel 0 and 1,
+	# and controller 1 channel 0 and 1.
+	register "CmdMirror" = "0x00000033"
+
+	# Disable SRCCLKREQ1# and SRCCLKREQ3#
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
 
 	device domain 0 on
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_R5)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+					probe AUDIO MAX98373_ALC5682I_I2S_UP4
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+					probe AUDIO MAX98373_ALC5682I_I2S_UP4
+				end
+			end
+		end
+		device ref i2c1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9004""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F16)"
+				register "generic.enable_delay_ms" = "10"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
+				register "generic.stop_delay_ms" = "300"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end
+		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			# The pmc_mux chip driver is a placeholder for the
+			# PMC.MUX device in the ACPI hierarchy.
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "5"
+						register "usb3_port_number" = "1"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "3"
+						register "usb3_port_number" = "2"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 1 alias conn1 on end
+					end
+				end
+			end
+		end
+		device ref north_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 2)"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device ref tcss_usb3_port2 on
+							probe DB_USB USB3_ACTIVE
+						end
+					end
+				end
+			end
+		end
+		device ref south_xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1 (DB)""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port2 on
+							probe DB_USB USB3_ACTIVE
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port3 on
+							probe DB_USB USB3_ACTIVE
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1 (DB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb3_port2 on
+							probe DB_USB USB3_ACTIVE
+						end
+					end
+				end
+			end
+		end
 	end
-
 end

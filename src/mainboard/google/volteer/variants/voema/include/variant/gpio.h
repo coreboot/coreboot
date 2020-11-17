@@ -5,11 +5,8 @@
 
 #include <baseboard/gpio.h>
 
-/* Memory configuration board straps */
-/* Copied from baseboard and may need to change for the new variant. */
-#define GPIO_MEM_CONFIG_0	GPP_C12
-#define GPIO_MEM_CONFIG_1	GPP_C15
-#define GPIO_MEM_CONFIG_2	GPP_C14
-#define GPIO_MEM_CONFIG_3	GPP_D15
+#undef GPIO_EC_IN_RW
+/* EC in RW */
+#define GPIO_EC_IN_RW		GPP_F17
 
 #endif

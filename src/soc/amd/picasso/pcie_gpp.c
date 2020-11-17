@@ -48,8 +48,8 @@ static struct device_operations internal_pcie_gpp_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_FAM17H_PCIE_GPP_BUSA,
-	PCI_DEVICE_ID_AMD_FAM17H_PCIE_GPP_BUSB,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_PCIE_GPP_BUSA,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_PCIE_GPP_BUSB,
 	0
 };
 
@@ -72,5 +72,5 @@ static struct device_operations external_pcie_gpp_ops = {
 static const struct pci_driver external_pcie_gpp_driver __pci_driver = {
 	.ops			= &external_pcie_gpp_ops,
 	.vendor			= PCI_VENDOR_ID_AMD,
-	.device			= PCI_DEVICE_ID_AMD_FAM17H_PCIE_GPP,
+	.device			= PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_PCIE_GPP,
 };

@@ -10,15 +10,24 @@
 #include <device/pci_ids.h>
 #include "gl9755.h"
 
-static void gl9755_init(struct device *dev)
+static void gl9755_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "GL9755: init\n");
-	pci_dev_init(dev);
+	uint32_t reg;
+
+	printk(BIOS_INFO, "GL9755: configure ASPM and LTR\n");
 
 	/* Set Vendor Config to be configurable */
 	pci_or_config32(dev, CFG, CFG_EN);
+
 	/* Set LTR value */
 	pci_write_config32(dev, LTR, NO_SNOOP_SCALE|NO_SNOOP_VALUE|SNOOP_SCALE|SNOOP_VALUE);
+
+	/* Adjust L1 exit latency to enable ASPM */
+	reg = pci_read_config32(dev, CFG2);
+	reg &= ~CFG2_LAT_L1_MASK;
+	reg |= CFG2_LAT_L1_64US;
+	pci_write_config32(dev, CFG2, reg);
+
 	/* Set Vendor Config to be non-configurable */
 	pci_and_config32(dev, CFG, ~CFG_EN);
 }
@@ -28,7 +37,7 @@ static struct device_operations gl9755_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
-	.init			= gl9755_init,
+	.enable			= gl9755_enable
 };
 
 static const unsigned short pci_device_ids[] = {

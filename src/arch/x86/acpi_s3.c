@@ -12,7 +12,7 @@
 
 #if ENV_RAMSTAGE || ENV_POSTCAR
 
-/* This is filled with acpi_is_wakeup() call early in ramstage. */
+/* This is filled with acpi_is_wakeup_s3() call early in ramstage. */
 static int acpi_slp_type = -1;
 
 static void acpi_handoff_wakeup(void)
@@ -26,13 +26,6 @@ static void acpi_handoff_wakeup(void)
 			acpi_slp_type = ACPI_S0;
 		}
 	}
-}
-
-int acpi_is_wakeup(void)
-{
-	acpi_handoff_wakeup();
-	/* Both resume from S2 and resume from S3 restart at CPU reset */
-	return (acpi_slp_type == ACPI_S3 || acpi_slp_type == ACPI_S2);
 }
 
 int acpi_is_wakeup_s3(void)

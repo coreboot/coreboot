@@ -444,7 +444,7 @@ void main(void)
 	post_code(POST_ENTRY_RAMSTAGE);
 
 	/* Handoff sleep type from romstage. */
-	acpi_is_wakeup();
+	acpi_is_wakeup_s3();
 	threads_initialize();
 
 	/* Schedule the static boot state entries. */

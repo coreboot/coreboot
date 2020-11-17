@@ -19,7 +19,7 @@ static void elog_add_boot_reason(void *unused)
 	}
 
 	/* Skip logging developer mode in ACPI resume path */
-	if (dev && !acpi_is_wakeup()) {
+	if (dev && !acpi_is_wakeup_s3()) {
 
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);

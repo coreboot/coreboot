@@ -49,7 +49,7 @@ static void model_16_init(struct device *dev)
 	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-	if (acpi_is_wakeup())
+	if (acpi_is_wakeup_s3())
 		restore_mtrr();
 
 	x86_mtrr_check();

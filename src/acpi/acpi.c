@@ -1541,7 +1541,7 @@ void *acpi_find_wakeup_vector(void)
 	void *wake_vec;
 	int i;
 
-	if (!acpi_is_wakeup())
+	if (!acpi_is_wakeup_s3())
 		return NULL;
 
 	printk(BIOS_DEBUG, "Trying to find the wakeup vector...\n");

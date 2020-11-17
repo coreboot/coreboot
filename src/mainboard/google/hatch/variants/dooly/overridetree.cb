@@ -27,7 +27,14 @@ chip soc/intel/cannonlake
 		.pre_emp_bias  = USB2_BIAS_11P25MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Type-A Port 0
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port 0
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port 0
 	register "usb2_ports[2]" = "{
 		.enable = 1,
 		.ocpin = OC3,
@@ -37,7 +44,14 @@ chip soc/intel/cannonlake
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Type-A Port 1
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port 1
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port 1
 	register "usb2_ports[5]" = "USB2_PORT_LONG(OC_SKIP)" # USB cam
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"

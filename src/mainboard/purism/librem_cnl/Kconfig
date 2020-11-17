@@ -21,15 +21,18 @@ config MAINBOARD_DIR
 config MAINBOARD_FAMILY
 	string
 	default "Librem Mini" if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2
+	default "Librem 14" if BOARD_PURISM_LIBREM_14
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Librem Mini" if BOARD_PURISM_LIBREM_MINI
 	default "Librem Mini v2" if BOARD_PURISM_LIBREM_MINI_V2
+	default "Librem 14" if BOARD_PURISM_LIBREM_14
 
 config VARIANT_DIR
 	string
 	default "librem_mini" if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2
+	default "librem_14" if BOARD_PURISM_LIBREM_14
 
 config DEVICETREE
 	string
@@ -39,6 +42,7 @@ config CBFS_SIZE
 	hex
 	default 0x800000 if BOARD_PURISM_LIBREM_MINI
 	default 0xA00000 if BOARD_PURISM_LIBREM_MINI_V2
+	default 0x900000 if BOARD_PURISM_LIBREM_14
 
 config DIMM_MAX
 	int
@@ -51,7 +55,7 @@ config DIMM_SPD_SIZE
 config VGA_BIOS_ID
 	string
 	default "8086,3ea0" if BOARD_PURISM_LIBREM_MINI
-	default "8086,9b41" if BOARD_PURISM_LIBREM_MINI_V2
+	default "8086,9b41" if BOARD_PURISM_LIBREM_MINI_V2 || BOARD_PURISM_LIBREM_14
 
 config PXE_ROM_ID
 	string

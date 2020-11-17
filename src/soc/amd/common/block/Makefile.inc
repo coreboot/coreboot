@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK),y)
+ifeq ($(CONFIG_SOC_AMD_COMMON),y)
 
 subdirs-y += ./*
 

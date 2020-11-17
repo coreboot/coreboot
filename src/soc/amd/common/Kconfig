@@ -1,7 +1,7 @@
 config SOC_AMD_COMMON
 	bool
 	help
-	  common code for AMD SOCs
+	  common code blocks for AMD SOCs
 
 if SOC_AMD_COMMON
 
@@ -9,6 +9,6 @@ config SOC_AMD_PI
 	bool
 	default n
 
-source "src/soc/amd/common/block/Kconfig"
+source "src/soc/amd/common/block/*/Kconfig"
 
 endif # SOC_AMD_COMMON

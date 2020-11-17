@@ -407,7 +407,7 @@ int receive_enable_calibration(ramctr_timing *ctrl);
 int write_training(ramctr_timing *ctrl);
 int command_training(ramctr_timing *ctrl);
 int read_mpr_training(ramctr_timing *ctrl);
-int discover_edges_write(ramctr_timing *ctrl);
+int aggressive_read_training(ramctr_timing *ctrl);
 int discover_timC_write(ramctr_timing *ctrl);
 void normalize_training(ramctr_timing *ctrl);
 int channel_test(ramctr_timing *ctrl);

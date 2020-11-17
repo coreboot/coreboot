@@ -702,7 +702,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 
 		printram("CP5c\n");
 
-		err = discover_edges_write(ctrl);
+		err = aggressive_read_training(ctrl);
 		if (err)
 			return err;
 

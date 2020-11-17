@@ -2286,25 +2286,23 @@ int read_mpr_training(ramctr_timing *ctrl)
 	return 0;
 }
 
-static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
+static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
 {
-	int edge;
+	const int rd_vref_offsets[] = { 0, 0xc, 0x2c };
+
 	u32 raw_stats[MAX_EDGE_TIMING + 1];
-	int stats[MAX_EDGE_TIMING + 1];
-	const int reg3000b24[] = { 0, 0xc, 0x2c };
-	int lane, i;
 	int lower[NUM_LANES];
 	int upper[NUM_LANES];
-	int pat;
+	int lane, i, read_pi, pat;
 
 	FOR_ALL_LANES {
 		lower[lane] = 0;
 		upper[lane] = MAX_EDGE_TIMING;
 	}
 
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < ARRAY_SIZE(rd_vref_offsets); i++) {
 		const union gdcr_training_mod_reg training_mod = {
-			.vref_gen_ctl = reg3000b24[i],
+			.vref_gen_ctl = rd_vref_offsets[i],
 		};
 		MCHBAR32(GDCRTRAININGMOD_ch(channel)) = training_mod.raw;
 		printram("[%x] = 0x%08x\n", GDCRTRAININGMOD_ch(channel), training_mod.raw);
@@ -2313,12 +2311,12 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 			fill_pattern5(ctrl, channel, pat);
 			printram("using pattern %d\n", pat);
 
-			for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
+			for (read_pi = 0; read_pi <= MAX_EDGE_TIMING; read_pi++) {
 				FOR_ALL_LANES {
 					ctrl->timings[channel][slotrank].lanes[lane].
-						rising = edge;
+						rising = read_pi;
 					ctrl->timings[channel][slotrank].lanes[lane].
-						falling = edge;
+						falling = read_pi;
 				}
 				program_timings(ctrl, channel);
 
@@ -2339,13 +2337,15 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 				}
 
 				/* FIXME: This register only exists on Ivy Bridge */
-				raw_stats[edge] = MCHBAR32(IOSAV_BYTE_SERROR_C_ch(channel));
+				raw_stats[read_pi] = MCHBAR32(IOSAV_BYTE_SERROR_C_ch(channel));
 			}
 
 			FOR_ALL_LANES {
+				int stats[MAX_EDGE_TIMING + 1];
 				struct run rn;
-				for (edge = 0; edge <= MAX_EDGE_TIMING; edge++)
-					stats[edge] = !!(raw_stats[edge] & (1 << lane));
+
+				for (read_pi = 0; read_pi <= MAX_EDGE_TIMING; read_pi++)
+					stats[read_pi] = !!(raw_stats[read_pi] & (1 << lane));
 
 				rn = get_longest_zero_run(stats, MAX_EDGE_TIMING + 1);
 
@@ -2374,7 +2374,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 	return 0;
 }
 
-int discover_edges_write(ramctr_timing *ctrl)
+int aggressive_read_training(ramctr_timing *ctrl)
 {
 	int falling_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int  rising_edges[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -2385,20 +2385,20 @@ int discover_edges_write(ramctr_timing *ctrl)
 	 *        also use a single loop. It would seem that it is a debugging configuration.
 	 */
 	MCHBAR32(IOSAV_DC_MASK) = 0x300;
-	printram("discover falling edges write:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
+	printram("discover falling edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_edges_write_real(ctrl, channel, slotrank,
+		err = find_agrsv_read_margin(ctrl, channel, slotrank,
 					falling_edges[channel][slotrank]);
 		if (err)
 			return err;
 	}
 
 	MCHBAR32(IOSAV_DC_MASK) = 0x200;
-	printram("discover rising edges write:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
+	printram("discover rising edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		err = discover_edges_write_real(ctrl, channel, slotrank,
+		err = find_agrsv_read_margin(ctrl, channel, slotrank,
 					 rising_edges[channel][slotrank]);
 		if (err)
 			return err;

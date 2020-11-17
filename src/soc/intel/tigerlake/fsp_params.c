@@ -462,9 +462,8 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 		/* TCSS specific initialization here */
 		printk(BIOS_DEBUG, "FSP MultiPhaseSiInit %s/%s called\n",
 			__FILE__, __func__);
-		if (CONFIG(EARLY_TCSS_DISPLAY) && (vboot_recovery_mode_enabled() ||
-			vboot_developer_mode_enabled()))
-			mainboard_early_tcss_enable();
+		if (CONFIG(EARLY_TCSS_DISPLAY))
+			tcss_early_configure();
 		break;
 	default:
 		break;

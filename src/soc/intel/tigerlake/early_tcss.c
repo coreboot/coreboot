@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/pmc_ipc.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/early_tcss.h>
 #include <soc/pci_devs.h>
 #include <stdlib.h>
@@ -237,7 +239,7 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
 	return 0;
 }
 
-void update_tcss_mux(int port, struct tcss_mux mux_data)
+static void update_tcss_mux(int port, struct tcss_mux mux_data)
 {
 	int ret = 0;
 
@@ -261,7 +263,18 @@ void update_tcss_mux(int port, struct tcss_mux mux_data)
 		printk(BIOS_ERR, "Port C%d mux set failed with error %d\n", port, ret);
 }
 
-__weak void mainboard_early_tcss_enable(void)
+void tcss_early_configure(void)
 {
-	/* to be overwritten by each mainboard that needs early tcss */
+	const struct tcss_mux *mux_info;
+	size_t num_ports;
+	int i;
+
+	if (!display_init_required())
+		return;
+
+	mux_info = mainboard_tcss_fill_mux_info(&num_ports);
+
+	for (i = 0; i < num_ports; i++)
+		update_tcss_mux(i, mux_info[i]);
+
 }

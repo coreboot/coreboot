@@ -126,14 +126,14 @@ struct tcss_mux {
 	uint8_t usb2_port; /* USB3 Port Number */
 };
 
-void update_tcss_mux(int port, struct tcss_mux mux_data);
+void tcss_early_configure(void);
 
 /*
- * Weak mainboard method to setup any mux configuration needed for early TCSS operations.
- * This function will need to obtain any mux data needed to forward to IOM/PMC and call
- * the update_tcss_mux method which will call any PMC commands needed to connect the
- * ports. Since the mux data may be stored differently by different mainboards this
- * must be overridden by the mainboard with its specific mux data stored in a struct tcss_mux
- * struct as defined above.
+ * Mainboard method to setup any mux configuration needed for early TCSS operations.
+ * This function will need to obtain any mux data needed to forward to IOM/PMC.
+ * Since the mux data may be stored differently by different mainboards this
+ * must be defined by the mainboard with its specific mux data stored in a struct tcss_mux
+ * as defined above.
+ * Returns completed tcss_mux structure
  */
-void mainboard_early_tcss_enable(void);
+const struct tcss_mux *mainboard_tcss_fill_mux_info(size_t *num_ports);

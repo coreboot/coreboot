@@ -110,6 +110,18 @@ bridges.
 Exceptional cases, that may still need early bus master enabling in the future,
 should get their own per-reason Kconfig option. Ideally before the next release.
 
+### Early runtime configurability of the console log level
+
+Traditionally, we didn't allow the log level of the `romstage` console
+to be changed at runtime (e.g. via `get_option()`). It turned out that
+the technical constraints for this (no global variables in `romstage`)
+vanished long ago, though. The new behaviour is to query `get_option()`
+now from the second stage that uses the console on. In other words, if
+the `bootblock` already enables the console, the `romstage` log level
+can be changed via `get_option()`. Keeping the log level of the first
+console static ensures that we can see console output even if there's
+a bug in the more involved code to query options.
+
 ### Add significant changes here
 
 Deprecations

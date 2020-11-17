@@ -62,11 +62,11 @@ the platforms. More details about the tools are added in
 
 ### New version of SMM loader
 
-A new version of the SMM loader which accomodates platforms with over 32 CPU
+A new version of the SMM loader which accommodates platforms with over 32 CPU
 CPU threads.  The existing version of SMM loader uses a 64K code/data
 segment and only a limited number of CPU threads can fit into one segment
 (because of save state, STM, other features, etc). This loader extends beyond
-the 64K segment to accomodate additional CPUs and in theory allows as many
+the 64K segment to accommodate additional CPUs and in theory allows as many
 CPU threads as possible limited only by SMRAM space and not by 64K. By default
 this loader version is disabled. Please see cpu/x86/Kconfig for more info.
 
@@ -81,7 +81,7 @@ more info.
 
 ### Initial support for x86_64
 
-The x86_64 code support has been revived and enabled for qemu. While it started
+The x86_64 code support has been revived and enabled for QEMU. While it started
 as PoC and the only supported platform is an emulator, there's interest in
 enabling additional platforms. It would allow to access more than 4GiB of memory
 at runtime and possibly brings optimised code for faster execution times.

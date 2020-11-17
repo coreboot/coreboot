@@ -1,4 +1,11 @@
 chip soc/intel/cannonlake
+	register "tcc_offset" = "5"	# TCC of 95C
+
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 51,
+	}"
+
 	# Auto-switch between X4 NVMe and X2 NVMe.
 	register "TetonGlacierMode" = "1"
 
@@ -205,29 +212,30 @@ chip soc/intel/cannonlake
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active[0]" = "{.target=DPTF_CPU,
-					.thresholds={TEMP_PCT(90, 85),
-						     TEMP_PCT(85, 75),
-						     TEMP_PCT(80, 65),
-						     TEMP_PCT(75, 55),
-						     TEMP_PCT(70, 45),}}"
-				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
-					.thresholds={TEMP_PCT(50, 85),
-						     TEMP_PCT(47, 75),
-						     TEMP_PCT(45, 65),
-						     TEMP_PCT(42, 55),
-						     TEMP_PCT(39, 45),}}"
+					.thresholds={TEMP_PCT(94, 0),}}"
+				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_1,
+					.thresholds={TEMP_PCT(70, 100),
+						     TEMP_PCT(66, 90),
+						     TEMP_PCT(62, 80),
+						     TEMP_PCT(58, 70),
+						     TEMP_PCT(53, 60),
+						     TEMP_PCT(48, 50),
+						     TEMP_PCT(43, 40),
+						     TEMP_PCT(38, 30),}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           93, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 65, 6000)"
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           95, 5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 75, 5000)"
+				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 75, 5000)"
 
 				## Critical Policy
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          100, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN)"
+				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 85, SHUTDOWN)"
 
 				## Power Limits Control
 				# PL1 is fixed at 15W, avg over 28-32s interval
-				# 25-64W PL2 in 1000mW increments, avg over 28-32s interval
+				# 15-51W PL2 in 1000mW increments, avg over 28-32s interval
 				register "controls.power_limits.pl1" = "{
 					.min_power = 15000,
 					.max_power = 15000,
@@ -236,7 +244,7 @@ chip soc/intel/cannonlake
 					.granularity = 200,}"
 				register "controls.power_limits.pl2" = "{
 					.min_power = 25000,
-					.max_power = 64000,
+					.max_power = 51000,
 					.time_window_min = 28 * MSECS_PER_SEC,
 					.time_window_max = 32 * MSECS_PER_SEC,
 					.granularity = 1000,}"

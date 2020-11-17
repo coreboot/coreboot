@@ -122,6 +122,16 @@ can be changed via `get_option()`. Keeping the log level of the first
 console static ensures that we can see console output even if there's
 a bug in the more involved code to query options.
 
+### Resource allocator v4
+
+A new revision of resource allocator v4 is now added to coreboot that supports
+mutiple ranges for allocating resources. Unlike the previous allocator (v3), it does
+not use the topmost available window for allocation. Instead, it uses the first
+window within the address space that is available and satisfies the resource request.
+This allows utilization of the entire available address space and also allows
+allocation above the 4G boundary. The old resource allocator v3 is still retained for
+some AMD platforms that do not conform to the requirements of the allocator.
+
 ### Add significant changes here
 
 Deprecations
@@ -132,3 +142,22 @@ Deprecations
 In order to minimize the usage of PCI bus mastering, the options we introduced in
 this release will be dropped in a future release again. For more details, please
 see [Preparations to minimize enabling PCI bus mastering](#preparations-to-minimize-enabling-pci-bus-mastering-in-coreboot).
+
+### Resource allocator v3
+
+Resource allocator v3 is retained in coreboot tree because the following platforms
+do not conform to the requirements of the resource allocation i.e. not all the fixed
+resources of the platform are provided during the `read_resources()` operation:
+
+* northbridge/amd/pi/00630F01
+* northbridge/amd/pi/00730F01
+* northbridge/amd/pi/00660F01
+* northbridge/amd/agesa/family14
+* northbridge/amd/agesa/family15tn
+* northbridge/amd/agesa/family16kb
+
+In order to have a single unified allocator in coreboot, this notice is being added
+to ensure that the platforms listed above are fixed before the next release. If there
+is interest in maintaining support for these platforms beyond the next release,
+please ensure that the platforms are fixed to conform to the expectations of resource
+allocation.

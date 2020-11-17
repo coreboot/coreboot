@@ -2555,7 +2555,8 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 		}
 	}
 
-	MCHBAR32(GDCRTRAININGMOD_ch(0)) = 0;
+	/* Restore nominal Vref after training */
+	MCHBAR32(GDCRTRAININGMOD_ch(channel)) = 0;
 	printram("CPA\n");
 	return 0;
 }

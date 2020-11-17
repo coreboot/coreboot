@@ -41,9 +41,4 @@ config DIMM_SPD_SIZE
 	int
 	default 512 #DDR4
 
-# This is overridden if CMOS is used for configuration values.
-config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-	bool
-	default n
-
 endif

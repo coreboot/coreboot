@@ -55,12 +55,23 @@ int romstage_handoff_init(int is_s3_resume)
 
 int romstage_handoff_is_resume(void)
 {
+	static int once, s3_resume;
 	struct romstage_handoff *handoff;
 
-	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+	if (once)
+		return s3_resume;
 
+	/* Only try evaluate handoff once for s3 resume state. */
+	once = 1;
+	handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
 	if (handoff == NULL)
 		return 0;
 
-	return handoff->s3_resume;
+	s3_resume = handoff->s3_resume;
+	if (s3_resume)
+		printk(BIOS_DEBUG, "S3 Resume\n");
+	else
+		printk(BIOS_DEBUG, "Normal boot\n");
+
+	return s3_resume;
 }

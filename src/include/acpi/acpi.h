@@ -49,6 +49,7 @@
 #include <device/device.h>
 #include <uuid.h>
 #include <cper.h>
+#include <romstage_handoff.h>
 #include <types.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
@@ -1078,7 +1079,6 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 void __noreturn acpi_resume(void *wake_vec);
 void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
-int acpi_handoff_wakeup_s3(void);
 
 /* ACPI_Sn assignments are defined to always equal the sleep state numbers */
 enum {
@@ -1134,7 +1134,7 @@ static inline int acpi_is_wakeup_s3(void)
 	if (ENV_ROMSTAGE_OR_BEFORE)
 		return (acpi_get_sleep_type() == ACPI_S3);
 
-	return acpi_handoff_wakeup_s3();
+	return romstage_handoff_is_resume();
 }
 
 static inline uintptr_t acpi_align_current(uintptr_t current)

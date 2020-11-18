@@ -1,4 +1,4 @@
 comment "Comet Lake U"
 
 config BOARD_CLEVO_L140CU
-	bool "L140CU"
+	bool "L140CU / L141CU"

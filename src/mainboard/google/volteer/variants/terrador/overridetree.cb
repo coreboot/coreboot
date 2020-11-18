@@ -101,21 +101,6 @@ chip soc/intel/tigerlake
 		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""GDIX0000""
-				register "generic.desc" = ""Goodix Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "generic.probed" = "1"
-				register "generic.reset_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
-				register "generic.reset_delay_ms" = "120"
-				register "generic.reset_off_delay_ms" = "3"
-				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
-				register "generic.enable_delay_ms" = "12"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 14 on end
-			end
-			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN90FC""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
@@ -127,38 +112,6 @@ chip soc/intel/tigerlake
 				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
-			end
-		end
-		device ref i2c2 on
-			chip drivers/i2c/sx9310
-				register "desc" = ""SAR0 Proximity Sensor""
-				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
-				register "speed" = "I2C_SPEED_FAST"
-				register "uid" = "0"
-				register "reg_prox_ctrl0" = "0x10"
-				register "reg_prox_ctrl1" = "0x00"
-				register "reg_prox_ctrl2" = "0x84"
-				register "reg_prox_ctrl3" = "0x0e"
-				register "reg_prox_ctrl4" = "0x07"
-				register "reg_prox_ctrl5" = "0xc6"
-				register "reg_prox_ctrl6" = "0x20"
-				register "reg_prox_ctrl7" = "0x0d"
-				register "reg_prox_ctrl8" = "0x8d"
-				register "reg_prox_ctrl9" = "0x43"
-				register "reg_prox_ctrl10" = "0x1f"
-				register "reg_prox_ctrl11" = "0x00"
-				register "reg_prox_ctrl12" = "0x00"
-				register "reg_prox_ctrl13" = "0x00"
-				register "reg_prox_ctrl14" = "0x00"
-				register "reg_prox_ctrl15" = "0x00"
-				register "reg_prox_ctrl16" = "0x00"
-				register "reg_prox_ctrl17" = "0x00"
-				register "reg_prox_ctrl18" = "0x00"
-				register "reg_prox_ctrl19" = "0x00"
-				register "reg_sar_ctrl0" = "0x50"
-				register "reg_sar_ctrl1" = "0x8a"
-				register "reg_sar_ctrl2" = "0x3c"
-				device i2c 28 on end
 			end
 		end
 		device ref i2c5 on

@@ -199,8 +199,8 @@ static void wifi_power_reset_configure_active_low_power(void)
 	 * Configure WiFi GPIOs such that:
 	 * - WIFI_AUX_RESET_L is configured first to assert PERST# to WiFi device.
 	 * - Enable power to WiFi using EN_PWR_WIFI_L.
-	 * - Wait for 50ms after power to WiFi is enabled.
-	 * - Deassert WIFI_AUX_RESET_L.
+	 * - Wait for >50ms after power to WiFi is enabled. (Time between bootblock & ramstage)
+	 * - WIFI_AUX_RESET_L gets deasserted later in mainboard_configure_gpios in ramstage
 	 */
 	static const struct soc_amd_gpio v3_wifi_table[] = {
 		/* WIFI_AUX_RESET_L */
@@ -210,8 +210,6 @@ static void wifi_power_reset_configure_active_low_power(void)
 	};
 	program_gpios(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
 
-	mdelay(50);
-	gpio_set(GPIO_86, 1);
 }
 
 static void wifi_power_reset_configure_active_high_power(void)

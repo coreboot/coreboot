@@ -84,10 +84,9 @@ _start:
 	mov	idt_ptr, %ebx
 	lidt	(%ebx)
 
-	/* Obtain CPU number. */
-	movl	ap_count, %eax
 1:
-	movl	%eax, %ecx
+	/* Obtain CPU number. */
+	movl	ap_count, %ecx
 	inc	%ecx
 	lock cmpxchg %ecx, ap_count
 	jnz	1b

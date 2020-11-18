@@ -33,11 +33,20 @@ const FSPT_UPD temp_ram_init_params = {
 	.UpdTerminator = 0x55AA,
 };
 
+static uint64_t assembly_timestamp;
+static uint64_t bootblock_timestamp;
+
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
+	/*
+	 * FSP-T does not respect its own API and trashes registers
+	 * coreboot uses to store its initial timestamp.
+	 */
+	assembly_timestamp = base_timestamp;
+	bootblock_timestamp = timestamp_get();
 	fast_spi_cache_bios_region();
 
-	bootblock_main_with_basetime(base_timestamp);
+	bootblock_main_with_basetime(MIN(assembly_timestamp, bootblock_timestamp));
 }
 
 void bootblock_soc_early_init(void)
@@ -55,6 +64,10 @@ void bootblock_soc_init(void)
 {
 	if (CONFIG(BOOTBLOCK_CONSOLE))
 		printk(BIOS_DEBUG, "FSP TempRamInit successful...\n");
+
+	if (assembly_timestamp > bootblock_timestamp)
+		printk(BIOS_WARNING, "Invalid initial timestamp detected\n");
+
 	if (CONFIG(FSP_CAR))
 		report_fspt_output();
 	bootblock_pch_init();

@@ -965,7 +965,7 @@ typedef struct {
 
 /** Offset 0x0B88
 **/
-  UINT8                       UnusedUpdSpace33[6];
+  UINT8                       UnusedUpdSpace32[6];
 
 /** Offset 0x0B8E
 **/

@@ -650,51 +650,47 @@ typedef struct {
 
 /** Offset 0x0951 - Reserved
 **/
-  UINT8                       Reserved35[105];
+  UINT8                       Reserved35[132];
 
-/** Offset 0x09BA - PCH Sata Pwr Opt Enable
+/** Offset 0x09D5 - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
   $EN_DIS
 **/
   UINT8                       SataPwrOptEnable;
 
-/** Offset 0x09BB - Reserved
+/** Offset 0x09D6 - Reserved
 **/
   UINT8                       Reserved36[50];
 
-/** Offset 0x09ED - Enable SATA Port DmVal
+/** Offset 0x0A08 - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
 **/
   UINT8                       SataPortsDmVal[8];
 
-/** Offset 0x09F5 - Reserved
-**/
-  UINT8                       Reserved37;
-
-/** Offset 0x09F6 - Enable SATA Port DmVal
+/** Offset 0x0A10 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
 **/
   UINT16                      SataPortsDitoVal[8];
 
-/** Offset 0x0A06 - Reserved
+/** Offset 0x0A20 - Reserved
 **/
-  UINT8                       Reserved38[62];
+  UINT8                       Reserved37[62];
 
-/** Offset 0x0A44 - USB2 Port Over Current Pin
+/** Offset 0x0A5E - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
 **/
   UINT8                       Usb2OverCurrentPin[16];
 
-/** Offset 0x0A54 - USB3 Port Over Current Pin
+/** Offset 0x0A6E - USB3 Port Over Current Pin
   Describe the specific over current pin number of USB 3.0 Port N.
 **/
   UINT8                       Usb3OverCurrentPin[10];
 
-/** Offset 0x0A5E - Reserved
+/** Offset 0x0A78 - Reserved
 **/
-  UINT8                       Reserved39[14];
+  UINT8                       Reserved38[16];
 
-/** Offset 0x0A6C - Enable 8254 Static Clock Gating
+/** Offset 0x0A88 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
   might fail to boot legacy OS using 8254 timer. Make sure it is disabled to support
   legacy OS using 8254 timer. Also enable this while S0ix is enabled.
@@ -702,7 +698,7 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGating;
 
-/** Offset 0x0A6D - Enable 8254 Static Clock Gating On S3
+/** Offset 0x0A89 - Enable 8254 Static Clock Gating On S3
   This is only applicable when Enable8254ClockGating is disabled. FSP will do the
   8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
   avoids the SMI requirement for the programming.
@@ -710,22 +706,22 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGatingOnS3;
 
-/** Offset 0x0A6E - Reserved
+/** Offset 0x0A8A - Reserved
 **/
-  UINT8                       Reserved40;
+  UINT8                       Reserved39;
 
-/** Offset 0x0A6F - Hybrid Storage Detection and Configuration Mode
+/** Offset 0x0A8B - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
   Default is 0: Disabled
   0: Disabled, 1: Dynamic Configuration
 **/
   UINT8                       HybridStorageMode;
 
-/** Offset 0x0A70 - Reserved
+/** Offset 0x0A8C - Reserved
 **/
-  UINT8                      Reserved41[89];
+  UINT8                       Reserved40[93];
 
-/** Offset 0x0AC9 - Enable PS_ON.
+/** Offset 0x0AE9 - Enable PS_ON.
   PS_ON is a new C10 state from the CPU on desktop SKUs that enables a lower power
   target that will be required by the California Energy Commission (CEC). When FALSE,
   PS_ON is to be disabled.
@@ -733,29 +729,29 @@ typedef struct {
 **/
   UINT8                       PsOnEnable;
 
-/** Offset 0x0ACA - Reserved
+/** Offset 0x0AEA - Reserved
 **/
-  UINT8                       Reserved42[310];
+  UINT8                       Reserved41[318];
 
-/** Offset 0x0C00 - RpPtmBytes
+/** Offset 0x0C28 - RpPtmBytes
 **/
   UINT8                       RpPtmBytes[4];
 
-/** Offset 0x0C04 - Reserved
+/** Offset 0x0C2C - Reserved
 **/
-  UINT8                      Reserved43[99];
+  UINT8                      Reserved42[95];
 
-/** Offset 0x0C67 - Enable/Disable IGFX PmSupport
+/** Offset 0x0C8B - Enable/Disable IGFX PmSupport
   Enable(Default): Enable IGFX PmSupport, Disable: Disable IGFX PmSupport
   $EN_DIS
 **/
   UINT8                       PmSupport;
 
-/** Offset 0x0C68 - Reserved
+/** Offset 0x0C8C - Reserved
 **/
-  UINT8                       Reserved44;
+  UINT8                       Reserved43;
 
-/** Offset 0x0C69 - GT Frequency Limit
+/** Offset 0x0C8D - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
   7: 350 Mhz, 8: 400 Mhz, 9: 450 Mhz, 0xA: 500 Mhz, 0xB: 550 Mhz, 0xC: 600 Mhz, 0xD:
   650 Mhz, 0xE: 700 Mhz, 0xF: 750 Mhz, 0x10: 800 Mhz, 0x11: 850 Mhz, 0x12:900 Mhz,
@@ -769,22 +765,22 @@ typedef struct {
 **/
   UINT8                       GtFreqMax;
 
-/** Offset 0x0C6A - Reserved
+/** Offset 0x0C8E - Reserved
 **/
-  UINT8                       Reserved45[24];
+  UINT8                       Reserved44[24];
 
-/** Offset 0x0C82 - Enable or Disable HWP
+/** Offset 0x0CA6 - Enable or Disable HWP
   Enable or Disable HWP(Hardware P states) Support. 0: Disable; <b>1: Enable;</b>
   2-3:Reserved
   $EN_DIS
 **/
   UINT8                       Hwp;
 
-/** Offset 0x0C83 - Reserved
+/** Offset 0x0CA7 - Reserved
 **/
-  UINT8                       Reserved46[8];
+  UINT8                       Reserved45[8];
 
-/** Offset 0x0C8B - TCC Activation Offset
+/** Offset 0x0CAF - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
   Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
@@ -792,63 +788,63 @@ typedef struct {
 **/
   UINT8                       TccActivationOffset;
 
-/** Offset 0x0C8C - Reserved
+/** Offset 0x0CB0 - Reserved
 **/
-  UINT8                       Reserved47[34];
+  UINT8                       Reserved46[34];
 
-/** Offset 0x0CAE - Enable or Disable CPU power states (C-states)
+/** Offset 0x0CD2 - Enable or Disable CPU power states (C-states)
   Enable or Disable CPU power states (C-states). 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       Cx;
 
-/** Offset 0x0CAF - Reserved
+/** Offset 0x0CD3 - Reserved
 **/
-  UINT8                       Reserved48[196];
+  UINT8                       Reserved47[196];
 
-/** Offset 0x0D73 - Enable LOCKDOWN SMI
+/** Offset 0x0D97 - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
   $EN_DIS
 **/
   UINT8                       PchLockDownGlobalSmi;
 
-/** Offset 0x0D74 - Enable LOCKDOWN BIOS Interface
+/** Offset 0x0D98 - Enable LOCKDOWN BIOS Interface
   Enable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register.
   $EN_DIS
 **/
   UINT8                       PchLockDownBiosInterface;
 
-/** Offset 0x0D75 - Unlock all GPIO pads
+/** Offset 0x0D99 - Unlock all GPIO pads
   Force all GPIO pads to be unlocked for debug purpose.
   $EN_DIS
 **/
   UINT8                       PchUnlockGpioPads;
 
-/** Offset 0x0D76 - Reserved
+/** Offset 0x0D9A - Reserved
 **/
-  UINT8                       Reserved49[2];
+  UINT8                       Reserved48[2];
 
-/** Offset 0x0D78 - PCIE RP Ltr Max Snoop Latency
+/** Offset 0x0D9C - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
 **/
   UINT16                      PcieRpLtrMaxSnoopLatency[28];
 
-/** Offset 0x0DB0 - PCIE RP Ltr Max No Snoop Latency
+/** Offset 0x0DD4 - PCIE RP Ltr Max No Snoop Latency
   Latency Tolerance Reporting, Max Non-Snoop Latency.
 **/
   UINT16                      PcieRpLtrMaxNoSnoopLatency[28];
 
-/** Offset 0x0DE8 - Reserved
+/** Offset 0x0E0C - Reserved
 **/
-  UINT8                       Reserved50[313];
+  UINT8                       Reserved49[313];
 
-/** Offset 0x0F21 - LpmStateEnableMask
+/** Offset 0x0F45 - LpmStateEnableMask
 **/
   UINT8                       LpmStateEnableMask;
 
-/** Offset 0x0F22 - Reserved
+/** Offset 0x0F46 - Reserved
 **/
-  UINT8                      Reserved51[702];
+  UINT8                      Reserved50[698];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -867,11 +863,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x11E0
+/** Offset 0x1200
 **/
-  UINT8                       UnusedUpdSpace45[6];
+  UINT8                       UnusedUpdSpace46[6];
 
-/** Offset 0x11E6
+/** Offset 0x1206
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -1,5 +1,6 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8192),y)
 
+bootblock-y += ../common/auxadc.c
 bootblock-y += bootblock.c
 bootblock-y += flash_controller.c
 bootblock-y += ../common/gpio.c gpio.c
@@ -13,12 +14,14 @@ bootblock-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
 bootblock-y += mt6315.c
 bootblock-y += mt6359p.c
 
+verstage-y += ../common/auxadc.c
 verstage-y += flash_controller.c
 verstage-y += ../common/gpio.c gpio.c
 verstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 verstage-y += ../common/timer.c
 verstage-y += ../common/uart.c
 
+romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c
 romstage-y += flash_controller.c
@@ -31,6 +34,7 @@ romstage-y += ../common/uart.c
 romstage-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
 romstage-y += mt6359p.c
 
+ramstage-y += ../common/auxadc.c
 ramstage-y += flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += emi.c

@@ -26,7 +26,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_NF(GPP_B2, NONE, DEEP, NF1),
+	PAD_CFG_GPO(GPP_B2, 1, DEEP),
 	/* B3  : CPU_GP2 ==> PEN_DET_ODL */
 	PAD_CFG_GPI(GPP_B3, NONE, DEEP),
 	/* B4  : CPU_GP3==> EN_PP3300_EMMC */
@@ -48,8 +48,6 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* C0  : SMBCLK ==> EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
-	/* C1  : SMBCLK ==> EMMC_CLKREQ_ODL*/
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* C2  : SMBALERT# ==> GPP_C2_STRAP */
 	PAD_NC(GPP_C2, DN_20K),
 	/* C3  : EMMC_PE_WAKE_ODL*/
@@ -78,7 +76,6 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* D6  : SRCCLKREQ1# ==> WLAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
-	/* D7  : SRCCLKREQ2# ==> WWAN_CLKREQ_ODL */
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	/* D12 : ISH_SPI_MOSI ==> PCH_GSPI2_CVF_MOSI_STRAP */
@@ -139,10 +136,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H2, DN_20K),
 	/* H3  : SX_EXIT_HOLDOFF# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H3, 1, DEEP),
-	/* H10 : SRCCLKREQ4# */
-	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF1),
-	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
-	PAD_CFG_GPO(GPP_H11, 1, DEEP),
+	/* H10 : SRCCLKREQ4#  ==> WLAN_PERST_L*/
+	PAD_CFG_GPO(GPP_H10, 1, DEEP),
+	/* H11 : SRCCLKREQ5# ==> EMMC_CLKREQ_ODL*/
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF1),
 	/* H16 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
 	/* H17 : DDPB_CTRLDATA ==> DDPB_HDMI_CTRLDATA */
@@ -185,6 +182,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A17 : DDSP_HPDC ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
+	/* B2  : VRALERT# ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	/* B4  : CPU_GP3==> EN_PP3300_EMMC */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+
 
 	/* B11 : PMCALERT# ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B11, NONE, DEEP),
@@ -207,8 +209,8 @@ static const struct pad_config early_gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 
-	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
-	PAD_CFG_GPO(GPP_H11, 1, DEEP),
+	/* H10 : SRCCLKREQ5# ==> WLAN_PERST_L */
+	PAD_CFG_GPO(GPP_H10, 1, DEEP),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

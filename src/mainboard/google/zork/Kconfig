@@ -72,6 +72,7 @@ config VARIANT_DIR
 	default "woomax" if BOARD_GOOGLE_WOOMAX
 	default "dirinboz" if BOARD_GOOGLE_DIRINBOZ
 	default "shuboz" if BOARD_GOOGLE_SHUBOZ
+	default "gumboz" if BOARD_GOOGLE_GUMBOZ
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -84,6 +85,7 @@ config MAINBOARD_PART_NUMBER
 	default "Woomax" if BOARD_GOOGLE_WOOMAX
 	default "Dirinboz" if BOARD_GOOGLE_DIRINBOZ
 	default "Shuboz" if BOARD_GOOGLE_SHUBOZ
+	default "Gumboz" if BOARD_GOOGLE_GUMBOZ
 
 config DEVICETREE
 	string

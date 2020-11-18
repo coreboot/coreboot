@@ -1,0 +1,2 @@
+config BOARD_INTEL_ELKHARTLAKE_CRB
+	bool "Elkhartlake LPDDR4x CRB"

@@ -111,7 +111,6 @@ config CPU_MICROCODE_CBFS_DEFAULT_BINS
 config CPU_MICROCODE_CBFS_EXTERNAL_BINS
 	bool "Include external microcode binary"
 	select USE_CPU_MICROCODE_CBFS_BINS
-	depends on !CPU_MICROCODE_MULTIPLE_FILES
 	help
 	  Select this option if you want to include external binary files
 	  in the CPUs native format. They will be included as a separate
@@ -128,7 +127,6 @@ config CPU_MICROCODE_CBFS_EXTERNAL_BINS
 
 config CPU_MICROCODE_CBFS_EXTERNAL_HEADER
 	bool "Include external microcode header files"
-	depends on !CPU_MICROCODE_MULTIPLE_FILES
 	help
 	  Select this option if you want to include external c header files
 	  containing the CPU microcode. This will be included as a separate
@@ -178,12 +176,6 @@ config CPU_MICROCODE_CBFS_NONE
 	  selecting this option.
 
 endchoice
-
-config CPU_MICROCODE_MULTIPLE_FILES
-	bool
-	help
-	  Select this option to install separate microcode container files into
-	  CBFS instead of using the traditional monolithic microcode file format.
 
 config CPU_MICROCODE_HEADER_FILES
 	string "List of space separated microcode header files with the path"

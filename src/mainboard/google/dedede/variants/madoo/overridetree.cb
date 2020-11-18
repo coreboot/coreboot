@@ -59,7 +59,7 @@ chip soc/intel/jasperlake
 			.tdp_pl2_override = 20,
 	}"
 
-	register "tcc_offset" = "5"    # TCC of 95C
+	register "tcc_offset" = "10"    # TCC of 95C
 
 	device domain 0 on
 		device pci 04.0 on

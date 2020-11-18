@@ -21,8 +21,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
-	if (sku_id == 33 || sku_id == 34 || sku_id == 35 || sku_id == 36 || sku_id == 41 ||
-		sku_id == 42 || sku_id == 43 || sku_id == 44)
+	if (sku_id >= 33 && sku_id <= 44)
 		filename = "wifi_sar-droid.hex";
 
 	return filename;

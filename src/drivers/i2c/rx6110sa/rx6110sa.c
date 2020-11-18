@@ -198,7 +198,6 @@ static void rx6110sa_fill_ssdt(const struct device *dev)
 	/* Device */
 	acpigen_write_scope(scope);
 	acpigen_write_device(acpi_device_name(dev));
-	acpigen_write_name_string("_HID", RX6110SA_HID_NAME);
 	acpigen_write_name_string("_DDN", RX6110SA_HID_DESC);
 	acpigen_write_STA(acpi_device_status(dev));
 

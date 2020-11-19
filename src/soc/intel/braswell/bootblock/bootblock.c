@@ -5,6 +5,7 @@
 #include <build.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <fsp/util.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -117,6 +118,8 @@ void bootblock_soc_early_init(void)
 }
 void bootblock_soc_init(void)
 {
+	report_fsp_output();
+
 	/* Continue chipset initialization */
 	soc_rtc_init();
 	set_max_freq();

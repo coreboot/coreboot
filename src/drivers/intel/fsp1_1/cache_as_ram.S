@@ -145,14 +145,13 @@ CAR_init_done:
 	 * mm1:  high 32-bits of TSC value
 	 */
 
-	/* coreboot assumes stack/heap region will be zero */
+	/* clear .bss section */
 	cld
-	movl	%ecx, %edi
-	neg	%ecx
-	/* Clear up to Temp Ram top. */
-	add	%edx, %ecx
+	xor	%eax, %eax
+	movl	$(_ebss), %ecx
+	movl	$(_bss), %edi
+	sub	%edi, %ecx
 	shrl	$2, %ecx
-	xorl	%eax, %eax
 	rep	stosl
 
 	/* Need to align stack to 16 bytes at call instruction. Account for

@@ -91,23 +91,6 @@ const u8 frq_aonpd_map[2][8] = {
 	},
 };
 
-const u32 frq_comp2_map[2][8] = {
-	{	/* 133 MHz */
-		/* FRQ:          7,          8,          9,         10, */
-			0x0CA8C264, 0x0C6671E4, 0x0C6671E4, 0x0C446964,
-
-		/* FRQ:         11,         12,        N/A,        N/A, */
-			0x0C235924, 0x0C235924,          0,          0,
-	},
-	{	/* 100 MHz */
-		/* FRQ:          3,          4,          5,          6, */
-			0x0D6FF5E4, 0x0CEBDB64, 0x0CA8C264, 0x0C6671E4,
-
-		/* FRQ:          7,          8,          9,         10, */
-			0x0C446964, 0x0C235924, 0x0C235924, 0x0C235924,
-	},
-};
-
 const u32 pattern[32][16] = {
 	{0x00000000, 0x00000000, 0xffffffff, 0xffffffff,
 	 0x00000000, 0x00000000, 0xffffffff, 0xffffffff,

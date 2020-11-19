@@ -21,8 +21,6 @@ extern const u8 frq_xp_map[2][8];
 
 extern const u8 frq_aonpd_map[2][8];
 
-extern const u32 frq_comp2_map[2][8];
-
 extern const u32 pattern[32][16];
 
 extern const u8 use_base[63][32];

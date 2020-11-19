@@ -157,14 +157,23 @@ static u8 get_AONPD(u32 FRQ, u8 base_freq)
 		return frq_aonpd_map[0][FRQ - 3];
 }
 
-/* Get COMP2 based on frequency index */
-static u32 get_COMP2(u32 FRQ, u8 base_freq)
+/* Get COMP2 based on CPU generation and clock speed */
+static u32 get_COMP2(const ramctr_timing *ctrl)
 {
-	if (base_freq == 100)
-		return frq_comp2_map[1][FRQ - 7];
+	const bool is_ivybridge = IS_IVY_CPU(ctrl->cpu);
 
+	if (ctrl->tCK <= TCK_1066MHZ)
+		return is_ivybridge ? 0x0C235924 : 0x0C21410C;
+	else if (ctrl->tCK <= TCK_933MHZ)
+		return is_ivybridge ? 0x0C446964 : 0x0C42514C;
+	else if (ctrl->tCK <= TCK_800MHZ)
+		return is_ivybridge ? 0x0C6671E4 : 0x0C6369CC;
+	else if (ctrl->tCK <= TCK_666MHZ)
+		return is_ivybridge ? 0x0CA8C264 : 0x0CA57A4C;
+	else if (ctrl->tCK <= TCK_533MHZ)
+		return is_ivybridge ? 0x0CEBDB64 : 0x0CE7C34C;
 	else
-		return frq_comp2_map[0][FRQ - 3];
+		return is_ivybridge ? 0x0D6FF5E4 : 0x0D6BEDCC;
 }
 
 static void normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
@@ -586,7 +595,7 @@ static void dram_ioregs(ramctr_timing *ctrl)
 	printram("done\n");
 
 	/* Set COMP2 */
-	MCHBAR32(CRCOMPOFST2) = get_COMP2(ctrl->FRQ, ctrl->base_freq);
+	MCHBAR32(CRCOMPOFST2) = get_COMP2(ctrl);
 	printram("COMP2 done\n");
 
 	/* Set COMP1 */

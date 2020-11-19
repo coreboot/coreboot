@@ -505,7 +505,7 @@ static int convert_region_offset(unsigned int offset, uint32_t *region_offset)
 	return 0;
 }
 
-static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
+static int do_cbfs_locate(uint32_t *cbfs_addr, size_t metadata_size,
 			size_t data_size)
 {
 	if (!param.filename) {
@@ -559,6 +559,8 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
 		if (param.baseaddress_assigned || param.stage_xip)
 			metadata_size += sizeof(struct cbfs_file_attr_position);
 	}
+	if (param.precompression || param.compression != CBFS_COMPRESS_NONE)
+		metadata_size += sizeof(struct cbfs_file_attr_compression);
 
 	/* Take care of the hash attribute if it is used */
 	if (param.hash != VB2_HASH_INVALID)
@@ -567,7 +569,7 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
 	int32_t address = cbfs_locate_entry(&image, data_size, param.pagesize,
 						param.alignment, metadata_size);
 
-	if (address == -1) {
+	if (address < 0) {
 		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
 		      param.name, param.pagesize, param.alignment);
 		return 1;
@@ -813,11 +815,16 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 static int cbfs_add_component(const char *filename,
 			      const char *name,
 			      uint32_t type,
-			      uint32_t offset,
 			      uint32_t headeroffset,
 			      convert_buffer_t convert)
 {
 	size_t len_align = 0;
+	uint32_t offset = param.baseaddress_assigned ? param.baseaddress : 0;
+
+	if (param.alignment && param.baseaddress_assigned) {
+		ERROR("Cannot specify both alignment and base address\n");
+		return 1;
+	}
 
 	if (!filename) {
 		ERROR("You need to specify -f/--filename.\n");
@@ -849,21 +856,8 @@ static int cbfs_add_component(const char *filename,
 		return 1;
 	}
 
-	/*
-	 * Check if Intel CPU topswap is specified this will require a
-	 * second bootblock to be added.
-	 */
-	if (type == CBFS_TYPE_BOOTBLOCK && param.topswap_size)
-		if (add_topswap_bootblock(&buffer, &offset))
-			return 1;
-
 	struct cbfs_file *header =
 		cbfs_create_file_header(type, buffer.size, name);
-
-	if (convert && convert(&buffer, &offset, header) != 0) {
-		ERROR("Failed to parse file '%s'.\n", filename);
-		goto error;
-	}
 
 	/* Bootblock and CBFS header should never have file hashes. When adding
 	   the bootblock it is important that we *don't* look up the metadata
@@ -880,12 +874,31 @@ static int cbfs_add_component(const char *filename,
 				goto error;
 			}
 		}
+	}
 
-		if (param.hash != VB2_HASH_INVALID &&
-		    cbfs_add_file_hash(header, &buffer, param.hash) == -1) {
-			ERROR("couldn't add hash for '%s'\n", name);
+	/* This needs to run after potentially updating param.hash above. */
+	if (param.alignment)
+		if (do_cbfs_locate(&offset, 0, 0))
 			goto error;
-		}
+
+	/*
+	 * Check if Intel CPU topswap is specified this will require a
+	 * second bootblock to be added.
+	 */
+	if (type == CBFS_TYPE_BOOTBLOCK && param.topswap_size)
+		if (add_topswap_bootblock(&buffer, &offset))
+			goto error;
+
+	if (convert && convert(&buffer, &offset, header) != 0) {
+		ERROR("Failed to parse file '%s'.\n", filename);
+		goto error;
+	}
+
+	/* This needs to run after convert(). */
+	if (param.hash != VB2_HASH_INVALID &&
+	    cbfs_add_file_hash(header, &buffer, param.hash) == -1) {
+		ERROR("couldn't add hash for '%s'\n", name);
+		goto error;
 	}
 
 	if (param.autogen_attr) {
@@ -897,7 +910,7 @@ static int cbfs_add_component(const char *filename,
 					CBFS_FILE_ATTR_TAG_POSITION,
 					sizeof(struct cbfs_file_attr_position));
 			if (attrs == NULL)
-				return -1;
+				goto error;
 			/* If we add a stage or a payload, we need to take  */
 			/* care about the additional metadata that is added */
 			/* to the cbfs file and therefore set the position  */
@@ -917,7 +930,7 @@ static int cbfs_add_component(const char *filename,
 					CBFS_FILE_ATTR_TAG_ALIGNMENT,
 					sizeof(struct cbfs_file_attr_align));
 			if (attrs == NULL)
-				return -1;
+				goto error;
 			attrs->alignment = htonl(param.alignment);
 		}
 	}
@@ -928,7 +941,7 @@ static int cbfs_add_component(const char *filename,
 				CBFS_FILE_ATTR_TAG_IBB,
 				sizeof(struct cbfs_file_attribute));
 		if (attrs == NULL)
-			return -1;
+			goto error;
 		/* For Intel TXT minimum align is 16 */
 		len_align = 16;
 	}
@@ -943,7 +956,7 @@ static int cbfs_add_component(const char *filename,
 					header, CBFS_FILE_ATTR_TAG_PADDING,
 					size);
 		if (attr == NULL)
-			return -1;
+			goto error;
 	}
 
 	if (IS_HOST_SPACE_ADDRESS(offset))
@@ -1089,29 +1102,34 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	struct cbfs_file *header)
 {
 	struct buffer output;
+	size_t data_size;
 	int ret;
 
+	if (elf_program_file_size(buffer, &data_size) < 0) {
+		ERROR("Could not obtain ELF size\n");
+		return 1;
+	}
+
+	/*
+	 * If we already did a locate for alignment we need to locate again to
+	 * take the stage header into account. XIP stage parsing also needs the
+	 * location. But don't locate in other cases, because it will ignore
+	 * compression (not applied yet) and thus may cause us to refuse adding
+	 * stages that would actually fit once compressed.
+	 */
+	if ((param.alignment || param.stage_xip) &&
+	     do_cbfs_locate(offset, sizeof(struct cbfs_stage), data_size))  {
+		ERROR("Could not find location for stage.\n");
+		return 1;
+	}
+
 	if (param.stage_xip) {
-		int32_t address;
-		size_t data_size;
-
-		if (elf_program_file_size(buffer, &data_size) < 0) {
-			ERROR("Could not obtain ELF size\n");
-			return 1;
-		}
-
-		if (do_cbfs_locate(&address, sizeof(struct cbfs_stage),
-			data_size))  {
-			ERROR("Could not find location for XIP stage.\n");
-			return 1;
-		}
-
 		/*
 		 * Ensure the address is a memory mapped one. This assumes
 		 * x86 semantics about the boot media being directly mapped
 		 * below 4GiB in the CPU address space.
 		 **/
-		*offset = convert_addr_space(param.image_region, address);
+		*offset = convert_addr_space(param.image_region, *offset);
 
 		ret = parse_elf_to_xip_stage(buffer, &output, offset,
 						param.ignore_section);
@@ -1186,16 +1204,7 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 
 static int cbfs_add(void)
 {
-	int32_t address;
-	convert_buffer_t convert;
-	uint32_t local_baseaddress = param.baseaddress;
-
-	if (param.alignment && param.baseaddress) {
-		ERROR("Cannot specify both alignment and base address\n");
-		return 1;
-	}
-
-	convert = cbfstool_convert_raw;
+	convert_buffer_t convert = cbfstool_convert_raw;
 
 	/* Set the alignment to 4KiB minimum for FSP blobs when no base address
 	 * is provided so that relocation can occur. */
@@ -1208,18 +1217,9 @@ static int cbfs_add(void)
 		return 1;
 	}
 
-	if (param.alignment) {
-		/* CBFS compression file attribute is unconditionally added. */
-		size_t metadata_sz = sizeof(struct cbfs_file_attr_compression);
-		if (do_cbfs_locate(&address, metadata_sz, 0))
-			return 1;
-		local_baseaddress = address;
-	}
-
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  param.type,
-				  local_baseaddress,
 				  param.headeroffset,
 				  convert);
 }
@@ -1241,7 +1241,6 @@ static int cbfs_add_stage(void)
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_TYPE_STAGE,
-				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkstage);
 }
@@ -1251,7 +1250,6 @@ static int cbfs_add_payload(void)
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_TYPE_SELF,
-				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
 }
@@ -1271,7 +1269,6 @@ static int cbfs_add_flat_binary(void)
 	return cbfs_add_component(param.filename,
 				  param.name,
 				  CBFS_TYPE_SELF,
-				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);
 }

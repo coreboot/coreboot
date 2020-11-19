@@ -62,7 +62,7 @@ the platforms. More details about the tools are added in
 
 ### New version of SMM loader
 
-A new version of the SMM loader which accommodates platforms with over 32 CPU
+A new version of the SMM loader which accommodates platforms with over 32
 CPU threads.  The existing version of SMM loader uses a 64K code/data
 segment and only a limited number of CPU threads can fit into one segment
 (because of save state, STM, other features, etc). This loader extends beyond

@@ -8,22 +8,6 @@
 #include <intelblocks/pmc.h>
 #include <soc/pci_devs.h>
 
-/* SoC overrides */
-
-/* Fill up PMC resource structure inside SoC directory */
-__weak int pmc_soc_get_resources(
-		struct pmc_resource_config *cfg)
-{
-	/* no-op */
-	return -1;
-}
-
-/* SoC override PMC initialization */
-__weak void pmc_soc_init(struct device *dev)
-{
-	/* no-op */
-}
-
 static void pch_pmc_add_new_resource(struct device *dev,
 		uint8_t offset, uintptr_t base, size_t size,
 		unsigned long flags)

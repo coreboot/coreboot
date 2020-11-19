@@ -658,15 +658,28 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	len = content_offset - addr - header_size;
 	memcpy(entry, header, header_size);
 	if (len != 0) {
-		/* the header moved backwards a bit to accommodate cbfs_file
+		/*
+		 * The header moved backwards a bit to accommodate cbfs_file
 		 * alignment requirements, so patch up ->offset to still point
-		 * to file data.
+		 * to file data. Move attributes forward so the end of the
+		 * attribute list still matches the end of the metadata.
 		 */
+		uint32_t offset = ntohl(entry->offset);
+		uint32_t attrs = ntohl(entry->attributes_offset);
 		DEBUG("|..|header|content|... <use offset to create entry>\n");
-		DEBUG("before: offset=0x%x\n", ntohl(entry->offset));
-		// TODO reset expanded name buffer to 0xFF.
-		entry->offset = htonl(ntohl(entry->offset) + len);
-		DEBUG("after: offset=0x%x\n", ntohl(entry->len));
+		DEBUG("before: attr_offset=0x%x, offset=0x%x\n", attrs, offset);
+		if (attrs == 0) {
+			memset((uint8_t *)entry + offset, 0, len);
+		} else {
+			uint8_t *p = (uint8_t *)entry + attrs;
+			memmove(p + len, p, offset - attrs);
+			memset(p, 0, len);
+			attrs += len;
+			entry->attributes_offset = htonl(attrs);
+		}
+		offset += len;
+		entry->offset = htonl(offset);
+		DEBUG("after: attr_offset=0x%x, offset=0x%x\n", attrs, offset);
 	}
 
 	// Ready to fill data into entry.

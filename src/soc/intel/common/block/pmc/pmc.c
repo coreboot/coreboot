@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/pmc.h>
@@ -88,13 +87,6 @@ static void pch_pmc_read_resources(struct device *dev)
 
 	/* Add IO resources. */
 	pch_pmc_add_io_resources(dev, config);
-}
-
-void pmc_set_acpi_mode(void)
-{
-	if (!acpi_is_wakeup_s3()) {
-		apm_control(APM_CNT_ACPI_DISABLE);
-	}
 }
 
 static struct device_operations device_ops = {

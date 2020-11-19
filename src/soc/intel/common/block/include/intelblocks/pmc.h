@@ -48,7 +48,4 @@ void pmc_soc_init(struct device *dev);
  */
 int pmc_soc_get_resources(struct pmc_resource_config *cfg);
 
-/* API to set ACPI mode */
-void pmc_set_acpi_mode(void);
-
 #endif /* SOC_INTEL_COMMON_BLOCK_PMC_H */

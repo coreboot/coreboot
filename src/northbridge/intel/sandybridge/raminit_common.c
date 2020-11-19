@@ -2459,6 +2459,13 @@ int discover_timC_write(ramctr_timing *ctrl)
 	int upper[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int channel, slotrank, lane;
 
+	/* Changing the write Vref is only supported on some Ivy Bridge SKUs */
+	if (!IS_IVY_CPU(ctrl->cpu))
+		return 0;
+
+	if (!(pci_read_config32(HOST_BRIDGE, CAPID0_A) & CAPID_WRTVREF))
+		return 0;
+
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		lower[channel][slotrank][lane] = 0;
 		upper[channel][slotrank][lane] = MAX_TIMC;

@@ -10,8 +10,11 @@ config VENDORCODE_ELTAN_MBOOT
 	  Enabling MBOOT will use mboot to measure the components of the firmware
 	  (stages, payload, etc).
 
+if VENDORCODE_ELTAN_MBOOT
+
 config VENDORCODE_ELTAN_CRTM_VERSION_STRING
 	string "default CRTM version"
 	default "default CRTM version"
 
+endif # VENDORCODE_ELTAN_MBOOT
 endmenu # Measured Boot (mboot)

@@ -8,6 +8,8 @@ config VENDORCODE_ELTAN_VBOOT
 	default n
 	select VBOOT_LIB
 
+if VENDORCODE_ELTAN_VBOOT
+
 config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
 	bool "Enable Signed Manifest"
 	depends on VENDORCODE_ELTAN_VBOOT
@@ -52,4 +54,5 @@ config VENDORCODE_ELTAN_VBOOT_KEY_SIZE
 	int
 	default 552
 
+endif # VENDORCODE_ELTAN_VBOOT
 endmenu # Verified Boot (verified_boot)

@@ -99,6 +99,15 @@ config DCACHE_RAM_MRC_VAR_SIZE
 	hex
 	default 0x0
 
+config RAMINIT_ALWAYS_ALLOW_DLL_OFF
+	bool "Also enable memory DLL-off mode on desktops and servers"
+	default n
+	help
+	  If enabled, allow enabling DLL-off mode for platforms other than
+	  mobile. Saves power at the expense of higher exit latencies. Has
+	  no effect on mobile platforms, where DLL-off is always allowed.
+	  Power down is disabled for stability when running at high clocks.
+
 config RAMINIT_ENABLE_ECC
 	bool "Enable ECC if supported"
 	default y

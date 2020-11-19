@@ -273,6 +273,15 @@ void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slot
  */
 #define MRC_CACHE_VERSION 5
 
+enum pdwm_mode {
+	PDM_NONE        = 0,
+	PDM_APD         = 1,
+	PDM_PPD         = 2,
+	PDM_APD_PPD     = 3,
+	PDM_DLL_OFF     = 6,
+	PDM_APD_DLL_OFF = 7,
+};
+
 typedef struct odtmap_st {
 	u16 rttwr;
 	u16 rttnom;

@@ -688,11 +688,29 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 	iosav_run_once(channel);
 }
 
+/* Obtain optimal power down mode for current configuration */
+static enum pdwm_mode get_power_down_mode(ramctr_timing *ctrl)
+{
+	if (ctrl->tXP > 8)
+		return PDM_NONE;
+
+	if (ctrl->tXPDLL > 32)
+		return PDM_PPD;
+
+	if (CONFIG(RAMINIT_ALWAYS_ALLOW_DLL_OFF) || get_platform_type() == PLATFORM_MOBILE)
+		return PDM_DLL_OFF;
+
+	return PDM_APD_PPD;
+}
+
 static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 {
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
-	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
+
+	const enum pdwm_mode power_down = get_power_down_mode(ctrl);
+
+	const bool slow_exit = power_down == PDM_DLL_OFF || power_down == PDM_APD_DLL_OFF;
 
 	/* Convert CAS to MCH register friendly */
 	if (ctrl->CAS < 12) {
@@ -712,8 +730,8 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 	mr0reg |= (mch_cas & 0xe) << 3;
 	mr0reg |= mch_wr << 9;
 
-	/* Precharge PD - Fast (desktop) 1 or slow (mobile) 0 - mostly power-saving feature */
-	mr0reg |= !is_mobile << 12;
+	/* Precharge PD - Use slow exit when DLL-off is used - mostly power-saving feature */
+	mr0reg |= !slow_exit << 12;
 	return mr0reg;
 }
 
@@ -2830,8 +2848,6 @@ static int encode_wm(int ns)
 /* FIXME: values in this function should be hardware revision-dependent */
 void final_registers(ramctr_timing *ctrl)
 {
-	const bool is_mobile = get_platform_type() == PLATFORM_MOBILE;
-
 	int channel;
 	int t1_cycles = 0, t1_ns = 0, t2_ns;
 	int t3_ns;
@@ -2848,12 +2864,8 @@ void final_registers(ramctr_timing *ctrl)
 		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
 	}
 
-	if (is_mobile)
-		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
-		MCHBAR32(PM_PDWN_CONFIG) = 0x00000740;
-	else
-		/* APD - PPD,     64 DCLKs until idle, decision per rank */
-		MCHBAR32(PM_PDWN_CONFIG) = 0x00000340;
+	/* 64 DCLKs until idle, decision per rank */
+	MCHBAR32(PM_PDWN_CONFIG) = get_power_down_mode(ctrl) << 8 | 64;
 
 	FOR_ALL_CHANNELS
 		MCHBAR32(PM_TRML_M_CONFIG_ch(channel)) = 0x00000aaa;

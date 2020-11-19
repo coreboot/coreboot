@@ -713,7 +713,7 @@ void pmc_disable_acpi_timer(void)
 
 void pmc_set_acpi_mode(void)
 {
-	if (!acpi_is_wakeup_s3()) {
+	if (!CONFIG(NO_SMM) && !acpi_is_wakeup_s3()) {
 		apm_control(APM_CNT_ACPI_DISABLE);
 	}
 }

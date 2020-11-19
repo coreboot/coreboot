@@ -1023,71 +1023,29 @@ void program_timings(ramctr_timing *ctrl, int channel)
 	reg_roundtrip_latency = 0;
 
 	FOR_ALL_POPULATED_RANKS {
-		int post_timA_min_high = 7, pre_timA_min_high = 7;
-		int post_timA_max_high = 0, pre_timA_max_high = 0;
-		int shift_402x = 0;
-		int shift = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
-
-		if (shift < 0)
-			shift = 0;
-
-		FOR_ALL_LANES {
-			post_timA_min_high = MIN(post_timA_min_high,
-				(ctrl->timings[channel][slotrank].lanes[lane].
-					timA + shift) >> 6);
-			pre_timA_min_high = MIN(pre_timA_min_high,
-				ctrl->timings[channel][slotrank].lanes[lane].
-						timA >> 6);
-			post_timA_max_high = MAX(post_timA_max_high,
-				(ctrl->timings[channel][slotrank].lanes[lane].
-					timA + shift) >> 6);
-			pre_timA_max_high = MAX(pre_timA_max_high,
-				ctrl->timings[channel][slotrank].lanes[lane].
-						timA >> 6);
-		}
-
-		if (pre_timA_max_high - pre_timA_min_high <
-		    post_timA_max_high - post_timA_min_high)
-			shift_402x = +1;
-
-		else if (pre_timA_max_high - pre_timA_min_high >
-			 post_timA_max_high - post_timA_min_high)
-			shift_402x = -1;
-
-		reg_io_latency |=
-		    (ctrl->timings[channel][slotrank].io_latency + shift_402x -
-		     post_timA_min_high) << (4 * slotrank);
+		reg_io_latency |= ctrl->timings[channel][slotrank].io_latency << (4 * slotrank);
 
 		reg_roundtrip_latency |=
-		    (ctrl->timings[channel][slotrank].roundtrip_latency +
-		     shift_402x) << (8 * slotrank);
+		    ctrl->timings[channel][slotrank].roundtrip_latency << (8 * slotrank);
 
 		FOR_ALL_LANES {
 			MCHBAR32(lane_base[lane] + GDCRRX(channel, slotrank)) =
-			    (((ctrl->timings[channel][slotrank].lanes[lane].
-			       timA + shift) & 0x3f)
+			    ((ctrl->timings[channel][slotrank].lanes[lane].timA & 0x3f)
 			     |
-			     ((ctrl->timings[channel][slotrank].lanes[lane].
-			       rising + shift) << 8)
+			     (ctrl->timings[channel][slotrank].lanes[lane].rising << 8)
 			     |
-			     (((ctrl->timings[channel][slotrank].lanes[lane].
-				timA + shift -
-				(post_timA_min_high << 6)) & 0x1c0) << 10)
-			     | ((ctrl->timings[channel][slotrank].lanes[lane].
-				falling + shift) << 20));
+			     ((ctrl->timings[channel][slotrank].lanes[lane].timA & 0x1c0) << 10)
+			     |
+			     (ctrl->timings[channel][slotrank].lanes[lane].falling << 20));
 
 			MCHBAR32(lane_base[lane] + GDCRTX(channel, slotrank)) =
-			    (((ctrl->timings[channel][slotrank].lanes[lane].
-			       timC + shift) & 0x3f)
+			    ((ctrl->timings[channel][slotrank].lanes[lane].timC & 0x3f)
 			     |
-			     (((ctrl->timings[channel][slotrank].lanes[lane].
-				timB + shift) & 0x3f) << 8)
+			     ((ctrl->timings[channel][slotrank].lanes[lane].timB & 0x3f) << 8)
 			     |
-			     (((ctrl->timings[channel][slotrank].lanes[lane].
-				timB + shift) & 0x1c0) << 9)
+			     ((ctrl->timings[channel][slotrank].lanes[lane].timB & 0x1c0) << 9)
 			     |
-			     (((ctrl->timings[channel][slotrank].lanes[lane].
-				timC + shift) & 0x40) << 13));
+			    ((ctrl->timings[channel][slotrank].lanes[lane].timC & 0x40) << 13));
 		}
 	}
 	MCHBAR32(SC_ROUNDT_LAT_ch(channel)) = reg_roundtrip_latency;

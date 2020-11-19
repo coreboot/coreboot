@@ -175,7 +175,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		.tXP     = ctrl->tXP,
 		.tAONPD  = ctrl->tAONPD,
 		.tCPDED  = 2,
-		.tPRPDEN = 2,
+		.tPRPDEN = 1,
 	};
 
 	/*

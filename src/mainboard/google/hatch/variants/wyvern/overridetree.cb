@@ -20,6 +20,10 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	# No need for dynamic config (and the additional RAM training time)
+	# on a Chromebox; always use high power/high performance mode
+	register "SaGv" = "SaGv_FixedHigh"
+
 	# USB configuration
 	register "usb2_ports[0]" = "{
 		.enable = 1,

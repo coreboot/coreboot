@@ -193,3 +193,25 @@ const char *const *soc_smi_sts_array(size_t *smi_arr)
 	*smi_arr = ARRAY_SIZE(smi_sts_bits);
 	return smi_sts_bits;
 }
+
+const char *const *soc_tco_sts_array(size_t *tco_arr)
+{
+	static const char *const tco_sts_bits[] = {
+		[0] = "NMI2SMI",
+		[1] = "OS_TCO",
+		[2] = "TCO_INT",
+		[3] = "TIMEOUT",
+		[7] = "NEWCENTURY",
+		[8] = "BIOSWR",
+		[9] = "CPUSCI",
+		[10] = "CPUSMI",
+		[12] = "CPUSERR",
+		[13] = "SLVSEL",
+		[16] = "INTRD_DET",
+		[17] = "SECOND_TO",
+		[20] = "SMLINK_SLV"
+	};
+
+	*tco_arr = ARRAY_SIZE(tco_sts_bits);
+	return tco_sts_bits;
+}

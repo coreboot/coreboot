@@ -62,9 +62,6 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
-	if (CONFIG(BOOTBLOCK_CONSOLE))
-		printk(BIOS_DEBUG, "FSP TempRamInit successful...\n");
-
 	if (assembly_timestamp > bootblock_timestamp)
 		printk(BIOS_WARNING, "Invalid initial timestamp detected\n");
 

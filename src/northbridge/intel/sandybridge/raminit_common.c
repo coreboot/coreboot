@@ -2778,6 +2778,9 @@ void prepare_training(ramctr_timing *ctrl)
 
 void set_read_write_timings(ramctr_timing *ctrl)
 {
+	/* Use a larger delay when running fast to improve stability */
+	const u32 tRWDRDD_inc = ctrl->tCK <= TCK_1066MHZ ? 4 : 2;
+
 	int channel, slotrank;
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2800,7 +2803,7 @@ void set_read_write_timings(ramctr_timing *ctrl)
 			.tRRDD   = val,
 			.tWWDR   = val,
 			.tWWDD   = val,
-			.tRWDRDD = ctrl->ref_card_offset[channel] + 2,
+			.tRWDRDD = ctrl->ref_card_offset[channel] + tRWDRDD_inc,
 			.tWRDRDD = tWRDRDD,
 			.tRWSR   = 2,
 			.dec_wrd = 1,

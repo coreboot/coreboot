@@ -6,7 +6,6 @@
 fit_pointer:
 .long fit_table
 .long 0
-.previous
 
 .section .text
 .align 16
@@ -29,4 +28,3 @@ fit_table:
 .byte 0x7d
 .fill CONFIG_CPU_INTEL_NUM_FIT_ENTRIES*16
 fit_table_end:
-.previous

@@ -235,10 +235,4 @@ setCodeSelectorLongJump:
 	# restore rsp, it might not have been 16-byte aligned on entry
 	mov	%rdx, %rsp
 	ret
-
-	.previous
-.code64
-#else
-	.previous
-.code32
 #endif

@@ -19,4 +19,3 @@ part:
 	.globl __id_end
 
 __id_end:
-.previous

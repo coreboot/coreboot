@@ -323,6 +323,13 @@ amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_INVALID },
 };
 
+struct second_gen_efs { /* todo: expand for Server products */
+	int gen:1; /* Client products only use bit 0 */
+	int reserved:31;
+} __attribute__((packed));
+
+#define EFS_SECOND_GEN 0
+
 typedef struct _embedded_firmware {
 	uint32_t signature; /* 0x55aa55aa */
 	uint32_t imc_entry;
@@ -333,7 +340,7 @@ typedef struct _embedded_firmware {
 	uint32_t bios0_entry; /* todo: add way to select correct entry */
 	uint32_t bios1_entry;
 	uint32_t bios2_entry;
-	uint32_t second_gen_efs;
+	struct second_gen_efs efs_gen;
 	uint32_t bios3_entry;
 	uint32_t reserved_2Ch;
 	uint32_t promontory_fw_ptr;
@@ -1182,13 +1189,13 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	}
 	switch (soc_id) {
 	case PLATFORM_STONEYRIDGE:
-		amd_romsig->second_gen_efs = 0;
 		amd_romsig->spi_readmode_f15_mod_60_6f = efs_spi_readmode;
 		amd_romsig->fast_speed_new_f15_mod_60_6f = efs_spi_speed;
 		break;
 	case PLATFORM_RAVEN:
 	case PLATFORM_PICASSO:
-		amd_romsig->second_gen_efs = 0;
+		/* amd_romsig->efs_gen introduced after RAVEN/PICASSO.
+		 * Leave as 0xffffffff for first gen */
 		amd_romsig->spi_readmode_f17_mod_00_2f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_00_2f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1205,7 +1212,7 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 		break;
 	case PLATFORM_RENOIR:
 	case PLATFORM_LUCIENNE:
-		amd_romsig->second_gen_efs = 1;
+		amd_romsig->efs_gen.gen = EFS_SECOND_GEN;
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {

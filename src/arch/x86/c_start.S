@@ -142,10 +142,10 @@ gdtaddr:
 
 	/* This is the gdt for GCC part of coreboot.
 	 * It is different from the gdt in ASM part of coreboot
-	 * which is defined in entry32.inc
+	 * which is defined in gdt_init.S
 	 *
 	 * When the machine is initially started, we use a very simple
-	 * gdt from ROM (that in entry32.inc) which only contains those
+	 * gdt from ROM (that in gdt_init.S) which only contains those
 	 * entries we need for protected mode.
 	 *
 	 * When we're executing code from RAM, we want to do more complex

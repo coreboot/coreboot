@@ -124,7 +124,7 @@ _start16bit:
 	ljmpl	$ROM_CODE_SEG, $__protected_start
 
 	/**
-	 * The gdt is defined in entry32.inc, it has a 4 Gb code segment
+	 * The gdt is defined in gdt_init.S, it has a 4 Gb code segment
 	 * at 0x08, and a 4 GB data segment at 0x10;
 	 */
 __gdtptr:

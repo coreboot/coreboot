@@ -98,6 +98,7 @@ bootblock-y += memmove.c
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 bootblock-$(CONFIG_BOOTBLOCK_NORMAL) += bootblock_normal.c
+bootblock-y += gdt_init.S
 bootblock-y += id.S
 bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
@@ -160,8 +161,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-y += boot.c
 romstage-y += post.c
-# gdt_init.S is included by entry32.inc when romstage is the first C
-# environment.
 romstage-y += gdt_init.S
 romstage-y += cpu_common.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c

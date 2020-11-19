@@ -30,7 +30,7 @@ struct __packed usb2_phy_tune {
 	/* HS Transmitter Rise/Fall Time Adjustment. Range: 0 - 0x3 */
 	uint8_t	tx_rise_tune;
 	/* HS DC Voltage Level Adjustment. Range 0 - 0xF */
-	uint8_t	rx_vref_tune;
+	uint8_t	tx_vref_tune;
 	/* Transmitter High-Speed Crossover Adjustment. Range 0 - 0x3 */
 	uint8_t	tx_hsxv_tune;
 	/* USB Source Impedance Adjustment. Range 0 - 0x3. */

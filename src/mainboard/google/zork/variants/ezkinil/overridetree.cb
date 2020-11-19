@@ -37,7 +37,7 @@ chip soc/amd/picasso
 		.tx_pre_emp_amp_tune = 0x03,
 		.tx_pre_emp_pulse_tune = 0x0,
 		.tx_rise_tune = 0x1,
-		.rx_vref_tune = 0x9,
+		.tx_vref_tune = 0x9,
 		.tx_hsxv_tune = 0x3,
 		.tx_res_tune = 0x01,
 	}"
@@ -49,7 +49,7 @@ chip soc/amd/picasso
 		.tx_pre_emp_amp_tune = 0x03,
 		.tx_pre_emp_pulse_tune = 0x0,
 		.tx_rise_tune = 0x1,
-		.rx_vref_tune = 0x9,
+		.tx_vref_tune = 0x9,
 		.tx_hsxv_tune = 0x3,
 		.tx_res_tune = 0x01,
 	}"

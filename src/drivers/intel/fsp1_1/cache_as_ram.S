@@ -133,7 +133,7 @@ CAR_init_done:
 	jne	halt2
 
 	/* Setup bootloader stack */
-	movl	%edx, %esp
+	movl	$_ecar_stack, %esp
 
 	/*
 	 * ebp:  FSP_INFO_HEADER address

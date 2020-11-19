@@ -395,99 +395,99 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->edge_offset[0] = 18; //XXX: guessed
 		ctrl->edge_offset[1] = 8;
 		ctrl->edge_offset[2] = 8;
-		ctrl->timC_offset[0] = 20; //XXX: guessed
-		ctrl->timC_offset[1] = 8;
-		ctrl->timC_offset[2] = 8;
+		ctrl->tx_dq_offset[0] = 20; //XXX: guessed
+		ctrl->tx_dq_offset[1] = 8;
+		ctrl->tx_dq_offset[2] = 8;
 		ctrl->pi_coding_threshold = 10;
 
 	} else if (ctrl->tCK == TCK_1100MHZ) {
 		ctrl->edge_offset[0] = 17; //XXX: guessed
 		ctrl->edge_offset[1] = 7;
 		ctrl->edge_offset[2] = 7;
-		ctrl->timC_offset[0] = 19; //XXX: guessed
-		ctrl->timC_offset[1] = 7;
-		ctrl->timC_offset[2] = 7;
+		ctrl->tx_dq_offset[0] = 19; //XXX: guessed
+		ctrl->tx_dq_offset[1] = 7;
+		ctrl->tx_dq_offset[2] = 7;
 		ctrl->pi_coding_threshold = 13;
 
 	} else if (ctrl->tCK == TCK_1066MHZ) {
 		ctrl->edge_offset[0] = 16;
 		ctrl->edge_offset[1] = 7;
 		ctrl->edge_offset[2] = 7;
-		ctrl->timC_offset[0] = 18;
-		ctrl->timC_offset[1] = 7;
-		ctrl->timC_offset[2] = 7;
+		ctrl->tx_dq_offset[0] = 18;
+		ctrl->tx_dq_offset[1] = 7;
+		ctrl->tx_dq_offset[2] = 7;
 		ctrl->pi_coding_threshold = 13;
 
 	} else if (ctrl->tCK == TCK_1000MHZ) {
 		ctrl->edge_offset[0] = 15; //XXX: guessed
 		ctrl->edge_offset[1] = 6;
 		ctrl->edge_offset[2] = 6;
-		ctrl->timC_offset[0] = 17; //XXX: guessed
-		ctrl->timC_offset[1] = 6;
-		ctrl->timC_offset[2] = 6;
+		ctrl->tx_dq_offset[0] = 17; //XXX: guessed
+		ctrl->tx_dq_offset[1] = 6;
+		ctrl->tx_dq_offset[2] = 6;
 		ctrl->pi_coding_threshold = 13;
 
 	} else if (ctrl->tCK == TCK_933MHZ) {
 		ctrl->edge_offset[0] = 14;
 		ctrl->edge_offset[1] = 6;
 		ctrl->edge_offset[2] = 6;
-		ctrl->timC_offset[0] = 15;
-		ctrl->timC_offset[1] = 6;
-		ctrl->timC_offset[2] = 6;
+		ctrl->tx_dq_offset[0] = 15;
+		ctrl->tx_dq_offset[1] = 6;
+		ctrl->tx_dq_offset[2] = 6;
 		ctrl->pi_coding_threshold = 15;
 
 	} else if (ctrl->tCK == TCK_900MHZ) {
 		ctrl->edge_offset[0] = 14; //XXX: guessed
 		ctrl->edge_offset[1] = 6;
 		ctrl->edge_offset[2] = 6;
-		ctrl->timC_offset[0] = 15; //XXX: guessed
-		ctrl->timC_offset[1] = 6;
-		ctrl->timC_offset[2] = 6;
+		ctrl->tx_dq_offset[0] = 15; //XXX: guessed
+		ctrl->tx_dq_offset[1] = 6;
+		ctrl->tx_dq_offset[2] = 6;
 		ctrl->pi_coding_threshold = 12;
 
 	} else if (ctrl->tCK == TCK_800MHZ) {
 		ctrl->edge_offset[0] = 13;
 		ctrl->edge_offset[1] = 5;
 		ctrl->edge_offset[2] = 5;
-		ctrl->timC_offset[0] = 14;
-		ctrl->timC_offset[1] = 5;
-		ctrl->timC_offset[2] = 5;
+		ctrl->tx_dq_offset[0] = 14;
+		ctrl->tx_dq_offset[1] = 5;
+		ctrl->tx_dq_offset[2] = 5;
 		ctrl->pi_coding_threshold = 15;
 
 	} else if (ctrl->tCK == TCK_700MHZ) {
 		ctrl->edge_offset[0] = 13; //XXX: guessed
 		ctrl->edge_offset[1] = 5;
 		ctrl->edge_offset[2] = 5;
-		ctrl->timC_offset[0] = 14; //XXX: guessed
-		ctrl->timC_offset[1] = 5;
-		ctrl->timC_offset[2] = 5;
+		ctrl->tx_dq_offset[0] = 14; //XXX: guessed
+		ctrl->tx_dq_offset[1] = 5;
+		ctrl->tx_dq_offset[2] = 5;
 		ctrl->pi_coding_threshold = 16;
 
 	} else if (ctrl->tCK == TCK_666MHZ) {
 		ctrl->edge_offset[0] = 10;
 		ctrl->edge_offset[1] = 4;
 		ctrl->edge_offset[2] = 4;
-		ctrl->timC_offset[0] = 11;
-		ctrl->timC_offset[1] = 4;
-		ctrl->timC_offset[2] = 4;
+		ctrl->tx_dq_offset[0] = 11;
+		ctrl->tx_dq_offset[1] = 4;
+		ctrl->tx_dq_offset[2] = 4;
 		ctrl->pi_coding_threshold = 16;
 
 	} else if (ctrl->tCK == TCK_533MHZ) {
 		ctrl->edge_offset[0] = 8;
 		ctrl->edge_offset[1] = 3;
 		ctrl->edge_offset[2] = 3;
-		ctrl->timC_offset[0] = 9;
-		ctrl->timC_offset[1] = 3;
-		ctrl->timC_offset[2] = 3;
+		ctrl->tx_dq_offset[0] = 9;
+		ctrl->tx_dq_offset[1] = 3;
+		ctrl->tx_dq_offset[2] = 3;
 		ctrl->pi_coding_threshold = 17;
 
 	} else  { /* TCK_400MHZ */
 		ctrl->edge_offset[0] = 6;
 		ctrl->edge_offset[1] = 2;
 		ctrl->edge_offset[2] = 2;
-		ctrl->timC_offset[0] = 6;
-		ctrl->timC_offset[1] = 2;
-		ctrl->timC_offset[2] = 2;
+		ctrl->tx_dq_offset[0] = 6;
+		ctrl->tx_dq_offset[1] = 2;
+		ctrl->tx_dq_offset[2] = 2;
 		ctrl->pi_coding_threshold = 17;
 	}
 

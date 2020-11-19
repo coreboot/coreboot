@@ -349,14 +349,14 @@ struct ram_rank_timings {
 	int pi_coding;
 
 	struct ram_lane_timings {
-		/* Lane register offset 0x10 */
-		u16 timA;	/* bits  0 -  5, bits 16 - 18 */
-		u8 rising;	/* bits  8 - 14 */
-		u8 falling;	/* bits 20 - 26 */
+		/* GDCR RX timings */
+		u16 rcven;
+		u8 rx_dqs_p;
+		u8 rx_dqs_n;
 
-		/* Lane register offset 0x20 */
-		int timC;	/* bits 0 -  5, 19 */
-		u16 timB;	/* bits 8 - 13, 15 - 17 */
+		/* GDCR TX timings */
+		int tx_dq;
+		u16 tx_dqs;
 	} lanes[NUM_LANES];
 };
 
@@ -419,7 +419,7 @@ typedef struct ramctr_timing_st {
 	bool ecc_enabled;
 	int lanes;	/* active lanes: 8 or 9 */
 	int edge_offset[3];
-	int timC_offset[3];
+	int tx_dq_offset[3];
 
 	int extended_temperature_range;
 	int auto_self_refresh;
@@ -438,9 +438,9 @@ typedef struct ramctr_timing_st {
 #define FOR_ALL_POPULATED_RANKS for (slotrank = 0; slotrank < NUM_SLOTRANKS; slotrank++) if (ctrl->rankmap[channel] & (1 << slotrank))
 #define FOR_ALL_POPULATED_CHANNELS for (channel = 0; channel < NUM_CHANNELS; channel++) if (ctrl->rankmap[channel])
 #define MAX_EDGE_TIMING 71
-#define MAX_TIMC 127
-#define MAX_TIMB 511
-#define MAX_TIMA 127
+#define MAX_TX_DQ 127
+#define MAX_TX_DQS 511
+#define MAX_RCVEN 127
 #define MAX_CAS 18
 #define MIN_CAS 4
 

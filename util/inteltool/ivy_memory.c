@@ -60,7 +60,7 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 	u32 mr0[2];
 	u32 mr1[2];
 	u32 reg;
-	unsigned int CAS = 0;
+	unsigned int CAS[2] = { 0 };
 	int tWR = 0, tRFC = 0;
 	int tFAW[2], tWTR[2], tCKE[2], tRTP[2], tRRD[2];
 	int channel, slot;
@@ -108,14 +108,16 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 
 	tCK = (64 * 10 * 3) / reg;
 
-	if (mr0[0] & 1) {
-		CAS = ((mr0[0] >> 4) & 0x7) + 12;
-	} else {
-		CAS = ((mr0[0] >> 4) & 0x7) + 4;
-	}
-
 	for (channel = 0; channel < 2; channel++) {
 		mad_dimm[channel] = read_mchbar32(0x5004 + 4 * channel);
+
+		if (mr0[channel]) {
+			if (mr0[channel] & 1) {
+				CAS[channel] = ((mr0[channel] >> 4) & 0x7) + 12;
+			} else {
+				CAS[channel] = ((mr0[channel] >> 4) & 0x7) + 4;
+			}
+		}
 	}
 
 	printf(".rankmap = { 0x%x, 0x%x },\n", rankmap[0], rankmap[1]);
@@ -135,7 +137,7 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 				       ctWR);
 			if (!tWR)
 				tWR = ctWR;
-			if (((mr0[channel] >> 9) & 7) != mr0_wr_t[tWR - 5])
+			if (mr0[channel] && ((mr0[channel] >> 9) & 7) != mr0_wr_t[tWR - 5])
 				printf("/* encoded tWR mismatch: %d, %d */\n",
 				       ((mr0[channel] >> 9) & 7),
 				       mr0_wr_t[tWR - 5]);
@@ -149,9 +151,13 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 			reg = read_mchbar32(0x4000 + 0x400 * channel);
 			tRAS[channel] = reg >> 16;
 			tCWL[channel] = (reg >> 12) & 0xf;
-			if (CAS != ((reg >> 8) & 0xf))
-				printf("/* CAS mismatch: %d, %d. */\n", CAS,
-				       (reg >> 8) & 0xf);
+			if (CAS[channel]) {
+				if (CAS[channel] != ((reg >> 8) & 0xf))
+					printf("/* CAS mismatch: %d, %d. */\n", CAS[channel],
+					       (reg >> 8) & 0xf);
+			} else {
+				CAS[channel] = (reg >> 8) & 0xf;
+			}
 			tRP[channel] = (reg >> 4) & 0xf;
 			tRCD[channel] = reg & 0xf;
 
@@ -161,7 +167,10 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 			tAONPD[channel] = (reg >> 8) & 0xf;
 		}
 	printf(".mobile = %d,\n", (mr0[0] >> 12) & 1);
-	print_time("CAS", CAS, tCK);
+
+	if (two_channels && CAS[0] != CAS[1])
+		printf("/* CAS mismatch: %d, %d */\n", CAS[0], CAS[1]);
+	print_time("CAS", CAS[0], tCK);
 	print_time("tWR", tWR, tCK);
 
 	printf(".reg_4004_b30 = { %d, %d },\n", reg_4004_b30[0],
@@ -315,10 +324,10 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 				spd[channel][slot][12] = make_spd_time(1, tCK);
 				spd[channel][slot][13] = 0;
 				spd[channel][slot][14] =
-				    (1 << (CAS - 4)) & 0xff;
-				spd[channel][slot][15] = (1 << (CAS - 4)) >> 8;
+				    (1 << (CAS[channel] - 4)) & 0xff;
+				spd[channel][slot][15] = (1 << (CAS[channel] - 4)) >> 8;
 				spd[channel][slot][16] =
-				    make_spd_time(CAS, tCK);
+				    make_spd_time(CAS[channel], tCK);
 				spd[channel][slot][17] =
 				    make_spd_time(tWR, tCK);
 				spd[channel][slot][18] =

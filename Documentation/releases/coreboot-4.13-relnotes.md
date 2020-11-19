@@ -234,3 +234,27 @@ to ensure that the platforms listed above are fixed before the next release. If 
 is interest in maintaining support for these platforms beyond the next release,
 please ensure that the platforms are fixed to conform to the expectations of resource
 allocation.
+
+Notes
+-----
+
+### Intel microcode updates
+
+Intel microcode updates tagged *microcode-20200616* are still included in our
+builds. Note, [Intel released new microcode updates]
+(https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files/blob/main/releasenote.md)
+tagged
+
+1.  *microcode-20201110*
+2.  *microcode-20201112*
+3.  *microcode-20201118*
+
+with security updates for [INTEL-SA-00381]
+(https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00381.html)
+and [INTEL-SA-00389]
+(https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00389.html).
+
+Due to too short time for rigorous testing and bad experience with botched
+microcode updates in the past, these new updates are not included. Users wanting
+to use those, can apply them in the operating system, or update the submodule
+pointer themselves.

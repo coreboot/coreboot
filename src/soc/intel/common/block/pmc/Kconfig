@@ -13,6 +13,12 @@ if SOC_INTEL_COMMON_BLOCK_PMC
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default y
 
+config SOC_INTEL_COMMON_BLOCK_PMC_DISCOVERABLE
+	bool
+	help
+	  Select this on platforms where the PMC device is discoverable
+	  when scanning busses.
+
 endif # SOC_INTEL_COMMON_BLOCK_PMC
 
 config PMC_INVALID_READ_AFTER_WRITE

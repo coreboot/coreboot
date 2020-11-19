@@ -176,6 +176,43 @@ static u32 get_COMP2(const ramctr_timing *ctrl)
 		return is_ivybridge ? 0x0D6FF5E4 : 0x0D6BEDCC;
 }
 
+/* Get updated COMP1 based on CPU generation and stepping */
+static u32 get_COMP1(ramctr_timing *ctrl, const int channel)
+{
+	const union comp_ofst_1_reg orig_comp = {
+		.raw = MCHBAR32(CRCOMPOFST1_ch(channel)),
+	};
+
+	if (IS_SANDY_CPU(ctrl->cpu) && !IS_SANDY_CPU_D2(ctrl->cpu)) {
+		union comp_ofst_1_reg comp_ofst_1 = orig_comp;
+
+		comp_ofst_1.clk_odt_up = 1;
+		comp_ofst_1.clk_drv_up = 1;
+		comp_ofst_1.ctl_drv_up = 1;
+
+		return comp_ofst_1.raw;
+	}
+
+	/* Fix PCODE COMP offset bug: revert to default values */
+	union comp_ofst_1_reg comp_ofst_1 = {
+		.dq_odt_down  = 4,
+		.dq_odt_up    = 4,
+		.clk_odt_down = 4,
+		.clk_odt_up   = orig_comp.clk_odt_up,
+		.dq_drv_down  = 4,
+		.dq_drv_up    = orig_comp.dq_drv_up,
+		.clk_drv_down = 4,
+		.clk_drv_up   = orig_comp.clk_drv_up,
+		.ctl_drv_down = 4,
+		.ctl_drv_up   = orig_comp.ctl_drv_up,
+	};
+
+	if (IS_IVY_CPU(ctrl->cpu))
+		comp_ofst_1.dq_drv_up = 2;	/* 28p6 ohms */
+
+	return comp_ofst_1.raw;
+}
+
 static void normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
 {
 	if (ctrl->tCK <= TCK_1200MHZ) {
@@ -568,8 +605,6 @@ static void dram_freq(ramctr_timing *ctrl)
 
 static void dram_ioregs(ramctr_timing *ctrl)
 {
-	u32 reg;
-
 	int channel;
 
 	/* IO clock */
@@ -600,11 +635,7 @@ static void dram_ioregs(ramctr_timing *ctrl)
 
 	/* Set COMP1 */
 	FOR_ALL_POPULATED_CHANNELS {
-		reg = MCHBAR32(CRCOMPOFST1_ch(channel));
-		reg = (reg & ~0x00000e00) | (1 <<  9);	/* ODT */
-		reg = (reg & ~0x00e00000) | (1 << 21);	/* clk drive up */
-		reg = (reg & ~0x38000000) | (1 << 27);	/* ctl drive up */
-		MCHBAR32(CRCOMPOFST1_ch(channel)) = reg;
+		MCHBAR32(CRCOMPOFST1_ch(channel)) = get_COMP1(ctrl, channel);
 	}
 	printram("COMP1 done\n");
 

@@ -140,6 +140,23 @@ union gdcr_training_mod_reg {
 	u32 raw;
 };
 
+union comp_ofst_1_reg {
+	struct {
+		u32 dq_odt_down  : 3; /* [ 2.. 0] */
+		u32 dq_odt_up    : 3; /* [ 5.. 3] */
+		u32 clk_odt_down : 3; /* [ 8.. 6] */
+		u32 clk_odt_up   : 3; /* [11.. 9] */
+		u32 dq_drv_down  : 3; /* [14..12] */
+		u32 dq_drv_up    : 3; /* [17..15] */
+		u32 clk_drv_down : 3; /* [20..18] */
+		u32 clk_drv_up   : 3; /* [23..21] */
+		u32 ctl_drv_down : 3; /* [26..24] */
+		u32 ctl_drv_up   : 3; /* [29..27] */
+		u32              : 2;
+	};
+	u32 raw;
+};
+
 union tc_dbp_reg {
 	struct {
 		u32 tRCD : 4; /* [ 3.. 0] */

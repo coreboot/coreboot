@@ -506,9 +506,11 @@ F:	src/drivers/intel/
 F:	src/include/cpu/intel/
 
 INTEL FSP DENVERTON-NS SOC & HARCUVAR CRB
+M:	Suresh Bellampalli <suresh.bellampalli@intel.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
-M:	David Guckian <david.guckian@intel.com>
-S:	Odd Fixes
+M:	Michal Motyl <michalx.motyl@intel.com>
+M:	Mariusz Szafranski <mariuszx.szafranski@intel.com>
+S:	Maintained
 F:	src/mainboard/intel/harcuvar/
 F:	src/soc/intel/denverton_ns/
 

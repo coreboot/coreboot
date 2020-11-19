@@ -934,71 +934,88 @@ static const u32 lane_base[] = {
 
 void program_timings(ramctr_timing *ctrl, int channel)
 {
-	u32 reg_roundtrip_latency, reg_pi_code, reg_logic_delay, reg_io_latency;
+	u32 reg_roundtrip_latency, reg_io_latency;
 	int lane;
 	int slotrank, slot;
-	int full_shift = 0;
-	u16 pi_coding_ctrl[NUM_SLOTS];
 
+	u32 ctl_delay[NUM_SLOTS] = { 0 };
+	int cmd_delay = 0;
+
+	/* Enable CLK XOVER */
+	u32 clk_pi_coding = get_XOVER_CLK(ctrl->rankmap[channel]);
+	u32 clk_logic_dly = 0;
+
+	/*
+	 * Apply command delay if desired setting is negative. Find the
+	 * most negative value: 'cmd_delay' will be the absolute value.
+	 */
 	FOR_ALL_POPULATED_RANKS {
-		if (full_shift < -ctrl->timings[channel][slotrank].pi_coding)
-			full_shift = -ctrl->timings[channel][slotrank].pi_coding;
+		if (cmd_delay < -ctrl->timings[channel][slotrank].pi_coding)
+			cmd_delay = -ctrl->timings[channel][slotrank].pi_coding;
+	}
+	if (cmd_delay < 0) {
+		printk(BIOS_ERR, "C%d command delay underflow: %d\n", channel, cmd_delay);
+		cmd_delay = 0;
+	}
+	if (cmd_delay >= 128) {
+		printk(BIOS_ERR, "C%d command delay overflow: %d\n", channel, cmd_delay);
+		cmd_delay = 127;
 	}
 
-	for (slot = 0; slot < NUM_SLOTS; slot++)
-		switch ((ctrl->rankmap[channel] >> (2 * slot)) & 3) {
-		case 0:
-		default:
-			pi_coding_ctrl[slot] = 0x7f;
-			break;
-		case 1:
-			pi_coding_ctrl[slot] =
-			    ctrl->timings[channel][2 * slot + 0].pi_coding + full_shift;
-			break;
-		case 2:
-			pi_coding_ctrl[slot] =
-			    ctrl->timings[channel][2 * slot + 1].pi_coding + full_shift;
-			break;
-		case 3:
-			pi_coding_ctrl[slot] =
-			    (ctrl->timings[channel][2 * slot].pi_coding +
-			    ctrl->timings[channel][2 * slot + 1].pi_coding) / 2 + full_shift;
-			break;
+	/* Apply control and clock delay if desired setting is positive */
+	if (cmd_delay == 0) {
+		for (slot = 0; slot < NUM_SLOTS; slot++) {
+			const int pi_coding_0 = ctrl->timings[channel][2 * slot + 0].pi_coding;
+			const int pi_coding_1 = ctrl->timings[channel][2 * slot + 1].pi_coding;
+
+			const u8 slot_map = (ctrl->rankmap[channel] >> (2 * slot)) & 3;
+
+			if (slot_map & 1)
+				ctl_delay[slot] += pi_coding_0 + cmd_delay;
+
+			if (slot_map & 2)
+				ctl_delay[slot] += pi_coding_1 + cmd_delay;
+
+			/* If both ranks in a slot are populated, use the average */
+			if (slot_map == 3)
+				ctl_delay[slot] /= 2;
+
+			if (ctl_delay[slot] >= 128) {
+				printk(BIOS_ERR, "C%dS%d control delay overflow: %d\n",
+					channel, slot, ctl_delay[slot]);
+				ctl_delay[slot] = 127;
+			}
 		}
+		FOR_ALL_POPULATED_RANKS {
+			u32 clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
+
+			if (clk_delay >= 128) {
+				printk(BIOS_ERR, "C%dR%d clock delay overflow: %d\n",
+					channel, slotrank, clk_delay);
+				clk_delay = 127;
+			}
+
+			clk_pi_coding |= (clk_delay % 64) << (6 * slotrank);
+			clk_logic_dly |= (clk_delay / 64) << slotrank;
+		}
+	}
 
 	/* Enable CMD XOVER */
 	union gdcr_cmd_pi_coding_reg cmd_pi_coding = {
 		.raw = get_XOVER_CMD(ctrl->rankmap[channel]),
 	};
-	cmd_pi_coding.cmd_pi_code = full_shift & 0x3f;
-	cmd_pi_coding.cmd_logic_delay = !!(full_shift & 0x40);
+	cmd_pi_coding.cmd_pi_code = cmd_delay % 64;
+	cmd_pi_coding.cmd_logic_delay = cmd_delay / 64;
 
-	cmd_pi_coding.ctl_pi_code_d0 = pi_coding_ctrl[0] & 0x3f;
-	cmd_pi_coding.ctl_pi_code_d1 = pi_coding_ctrl[1] & 0x3f;
-	cmd_pi_coding.ctl_logic_delay_d0 = !!(pi_coding_ctrl[0] & 0x40);
-	cmd_pi_coding.ctl_logic_delay_d1 = !!(pi_coding_ctrl[1] & 0x40);
+	cmd_pi_coding.ctl_pi_code_d0 = ctl_delay[0] % 64;
+	cmd_pi_coding.ctl_pi_code_d1 = ctl_delay[1] % 64;
+	cmd_pi_coding.ctl_logic_delay_d0 = ctl_delay[0] / 64;
+	cmd_pi_coding.ctl_logic_delay_d1 = ctl_delay[1] / 64;
 
 	MCHBAR32(GDCRCMDPICODING_ch(channel)) = cmd_pi_coding.raw;
 
-	/* Enable CLK XOVER */
-	reg_pi_code = get_XOVER_CLK(ctrl->rankmap[channel]);
-	reg_logic_delay = 0;
-
-	FOR_ALL_POPULATED_RANKS {
-		int shift = ctrl->timings[channel][slotrank].pi_coding + full_shift;
-		int offset_pi_code;
-		if (shift < 0)
-			shift = 0;
-
-		offset_pi_code = ctrl->pi_code_offset + shift;
-
-		/* Set CLK phase shift */
-		reg_pi_code |= (offset_pi_code & 0x3f) << (6 * slotrank);
-		reg_logic_delay |= ((offset_pi_code >> 6) & 1) << slotrank;
-	}
-
-	MCHBAR32(GDCRCKPICODE_ch(channel)) = reg_pi_code;
-	MCHBAR32(GDCRCKLOGICDELAY_ch(channel)) = reg_logic_delay;
+	MCHBAR32(GDCRCKPICODE_ch(channel)) = clk_pi_coding;
+	MCHBAR32(GDCRCKLOGICDELAY_ch(channel)) = clk_logic_dly;
 
 	reg_io_latency = MCHBAR32(SC_IO_LATENCY_ch(channel));
 	reg_io_latency &= ~0xffff;
@@ -1009,7 +1026,7 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		int post_timA_min_high = 7, pre_timA_min_high = 7;
 		int post_timA_max_high = 0, pre_timA_max_high = 0;
 		int shift_402x = 0;
-		int shift = ctrl->timings[channel][slotrank].pi_coding + full_shift;
+		int shift = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
 
 		if (shift < 0)
 			shift = 0;

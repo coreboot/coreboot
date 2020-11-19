@@ -98,6 +98,34 @@ struct iosav_ssq {
 	} addr_update;
 };
 
+union gdcr_rx_reg {
+	struct {
+		u32 rcven_pi_code     : 6; /* [ 5.. 0] */
+		u32                   : 2;
+		u32 rx_dqs_p_pi_code  : 7; /* [14.. 8] */
+		u32                   : 1;
+		u32 rcven_logic_delay : 3; /* [18..16] */
+		u32                   : 1;
+		u32 rx_dqs_n_pi_code  : 7; /* [26..20] */
+		u32                   : 5;
+	};
+	u32 raw;
+};
+
+union gdcr_tx_reg {
+	struct {
+		u32 tx_dq_pi_code      :  6; /* [ 5.. 0] */
+		u32                    :  2;
+		u32 tx_dqs_pi_code     :  6; /* [13.. 8] */
+		u32                    :  1;
+		u32 tx_dqs_logic_delay :  3; /* [17..15] */
+		u32                    :  1;
+		u32 tx_dq_logic_delay  :  1; /* [19..19] */
+		u32                    : 12;
+	};
+	u32 raw;
+};
+
 union gdcr_cmd_pi_coding_reg {
 	struct {
 		u32 cmd_pi_code         : 6; /* [ 5.. 0] */

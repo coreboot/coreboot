@@ -1029,23 +1029,26 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		    ctrl->timings[channel][slotrank].roundtrip_latency << (8 * slotrank);
 
 		FOR_ALL_LANES {
-			MCHBAR32(lane_base[lane] + GDCRRX(channel, slotrank)) =
-			    ((ctrl->timings[channel][slotrank].lanes[lane].timA & 0x3f)
-			     |
-			     (ctrl->timings[channel][slotrank].lanes[lane].rising << 8)
-			     |
-			     ((ctrl->timings[channel][slotrank].lanes[lane].timA & 0x1c0) << 10)
-			     |
-			     (ctrl->timings[channel][slotrank].lanes[lane].falling << 20));
+			const u16 timA = ctrl->timings[channel][slotrank].lanes[lane].timA;
+			const u8 dqs_p = ctrl->timings[channel][slotrank].lanes[lane].rising;
+			const u8 dqs_n = ctrl->timings[channel][slotrank].lanes[lane].falling;
+			const union gdcr_rx_reg gdcr_rx = {
+				.rcven_pi_code     = timA % 64,
+				.rx_dqs_p_pi_code  = dqs_p,
+				.rcven_logic_delay = timA / 64,
+				.rx_dqs_n_pi_code  = dqs_n,
+			};
+			MCHBAR32(lane_base[lane] + GDCRRX(channel, slotrank)) = gdcr_rx.raw;
 
-			MCHBAR32(lane_base[lane] + GDCRTX(channel, slotrank)) =
-			    ((ctrl->timings[channel][slotrank].lanes[lane].timC & 0x3f)
-			     |
-			     ((ctrl->timings[channel][slotrank].lanes[lane].timB & 0x3f) << 8)
-			     |
-			     ((ctrl->timings[channel][slotrank].lanes[lane].timB & 0x1c0) << 9)
-			     |
-			    ((ctrl->timings[channel][slotrank].lanes[lane].timC & 0x40) << 13));
+			const u16 timB = ctrl->timings[channel][slotrank].lanes[lane].timB;
+			const int timC = ctrl->timings[channel][slotrank].lanes[lane].timC;
+			const union gdcr_tx_reg gdcr_tx = {
+				.tx_dq_pi_code      = timC % 64,
+				.tx_dqs_pi_code     = timB % 64,
+				.tx_dqs_logic_delay = timB / 64,
+				.tx_dq_logic_delay  = timC / 64,
+			};
+			MCHBAR32(lane_base[lane] + GDCRTX(channel, slotrank)) = gdcr_tx.raw;
 		}
 	}
 	MCHBAR32(SC_ROUNDT_LAT_ch(channel)) = reg_roundtrip_latency;

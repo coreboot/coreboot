@@ -158,7 +158,7 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 			reg = read_mchbar32(0x400c + channel * 0x400);
 			tXPDLL[channel] = reg & 0x1f;
 			tXP[channel] = (reg >> 5) & 7;
-			tAONPD[channel] = (reg >> 8) & 0xff;
+			tAONPD[channel] = (reg >> 8) & 0xf;
 		}
 	printf(".mobile = %d,\n", (mr0[0] >> 12) & 1);
 	print_time("CAS", CAS, tCK);

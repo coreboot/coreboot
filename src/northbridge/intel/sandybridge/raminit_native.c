@@ -706,7 +706,7 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		if (err)
 			return err;
 
-		err = discover_timC_write(ctrl);
+		err = aggressive_write_training(ctrl);
 		if (err)
 			return err;
 

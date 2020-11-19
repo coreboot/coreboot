@@ -2438,7 +2438,7 @@ int aggressive_read_training(ramctr_timing *ctrl)
 	return 0;
 }
 
-static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
+static void test_aggressive_write(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
@@ -2450,9 +2450,15 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	wait_for_iosav(channel);
 }
 
-int discover_timC_write(ramctr_timing *ctrl)
+static void set_write_vref(const int channel, const u8 wr_vref)
 {
-	const u8 rege3c_b24[3] = { 0, 0x0f, 0x2f };
+	MCHBAR32_AND_OR(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~(0x3f << 24), wr_vref << 24);
+	udelay(2);
+}
+
+int aggressive_write_training(ramctr_timing *ctrl)
+{
+	const u8 wr_vref_offsets[3] = { 0, 0x0f, 0x2f };
 	int i, pat;
 
 	int lower[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
@@ -2471,21 +2477,17 @@ int discover_timC_write(ramctr_timing *ctrl)
 		upper[channel][slotrank][lane] = MAX_TIMC;
 	}
 
-	/*
-	 * Enable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
-	 * FIXME: This must only be done on Ivy Bridge.
-	 */
-	MCHBAR32(MCMNTS_SPARE) = 1;
+	/* Only enable IOSAV_n_SPECIAL_COMMAND_ADDR optimization on later steppings */
+	const bool enable_iosav_opt = IS_IVY_CPU_D(ctrl->cpu) || IS_IVY_CPU_E(ctrl->cpu);
+
+	if (enable_iosav_opt)
+		MCHBAR32(MCMNTS_SPARE) = 1;
+
 	printram("discover timC write:\n");
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < ARRAY_SIZE(wr_vref_offsets); i++) {
 		FOR_ALL_POPULATED_CHANNELS {
-
-			/* FIXME: Setting the Write VREF must only be done on Ivy Bridge */
-			MCHBAR32_AND_OR(GDCRCMDDEBUGMUXCFG_Cz_S(channel),
-					~0x3f000000, rege3c_b24[i] << 24);
-
-			udelay(2);
+			set_write_vref(channel, wr_vref_offsets[i]);
 
 			for (pat = 0; pat < NUM_PATTERNS; pat++) {
 				FOR_ALL_POPULATED_RANKS {
@@ -2505,9 +2507,8 @@ int discover_timC_write(ramctr_timing *ctrl)
 						}
 						program_timings(ctrl, channel);
 
-						test_timC_write (ctrl, channel, slotrank);
+						test_aggressive_write(ctrl, channel, slotrank);
 
-						/* FIXME: Another IVB-only register! */
 						raw_stats[timC] = MCHBAR32(
 							IOSAV_BYTE_SERROR_C_ch(channel));
 					}
@@ -2546,18 +2547,16 @@ int discover_timC_write(ramctr_timing *ctrl)
 				}
 			}
 		}
-
-	FOR_ALL_CHANNELS {
-		/* FIXME: Setting the Write VREF must only be done on Ivy Bridge */
-		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000);
-		udelay(2);
 	}
 
-	/*
-	 * Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
-	 * FIXME: This must only be done on Ivy Bridge.
-	 */
-	MCHBAR32(MCMNTS_SPARE) = 0;
+	FOR_ALL_CHANNELS {
+		/* Restore nominal write Vref after training */
+		set_write_vref(channel, 0);
+	}
+
+	/* Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization */
+	if (enable_iosav_opt)
+		MCHBAR32(MCMNTS_SPARE) = 0;
 
 	printram("CPB\n");
 

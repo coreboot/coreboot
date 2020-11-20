@@ -8,6 +8,8 @@
 - Facebook Monolith
 
 ## Google
+- Asurada
+- Hayato
 - Auron_Paine (Acer C740 Chromebook)
 - Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))
 - Buddy (Acer Chromebase 24)
@@ -34,7 +36,6 @@
 - Daisy (Samsung Chromebook (2012))
 - Deltan
 - Deltaur
-- DragonEgg
 - Drallion
 - Eve (Google Pixelbook)
 - Fizz
@@ -57,9 +58,12 @@
 - Rainier
 - Akemi
 - Dratini
+- Duffy Legacy (32MB)
 - Duffy
+- Faffy
 - Hatch
 - Jinlon
+- Kaisa Legacy (32MB)
 - Kaisa
 - Kohaku
 - Kindred
@@ -67,10 +71,14 @@
 - Mushu
 - Palkia
 - Nightfury
+- Noibat
 - Puff
 - Helios_Diskswap
 - Stryke
-- Sushi
+- Wyvern
+- Dooly
+- Ambassador
+- Genesis
 - Guado (ASUS Chromebox CN62)
 - Jecht
 - Rikku (Acer Chromebox CXI2)
@@ -90,6 +98,12 @@
 - Juniper
 - Kappa
 - Damu
+- Cerise
+- Stern
+- Willow
+- Esche
+- Burnet
+- Fennel
 - Link (Google Chromebook Pixel (2013))
 - Mistral
 - Nyan
@@ -100,13 +114,13 @@
 - Hana (Lenovo N23 Yoga Chromebook)
 - Parrot (Acer C7/C710 Chromebook)
 - Peach Pit (Samsung Chromebook 2 11\")
-- Atlas
+- Atlas (Google Pixelbook Go)
 - Poppy
 - Nami
-- Nautilus
-- Nocturne
-- Rammus
-- Soraka
+- Nautilus (Samsung Chromebook Plus (V2 / LTE))
+- Nocturne (Google Pixel Slate)
+- Rammus (Asus Chromebook C425, Flip C433, Flip C434)
+- Soraka (HP Chromebook x2)
 - Banjo (Acer Chromebook 15 (CB3-531))
 - Candy (Dell Chromebook 11 3120)
 - Clapper (Lenovo N20 Chromebook)
@@ -138,10 +152,11 @@
 - Smaug (Google Pixel C)
 - Storm (OnHub Router TGR1900)
 - Stout (Lenovo Thinkpad X131e Chromebook)
-- Trogdor
-- Lazor
 - Bubs
 - Coachz
+- Lazor
+- Pompom
+- Trogdor
 - Veyron_Jaq (Haier Chromebook 11)
 - Veyron_Jerry (Hisense Chromebook 11)
 - Veyron_Mighty (Haier Chromebook 11(edu))
@@ -149,11 +164,22 @@
 - Veyron_Speedy (ASUS C201 Chromebook)
 - Veyron_Mickey (Asus Chromebit CS10)
 - Veyron_Rialto
+- Dalboz
+- Vilboz
+- Ezkinil
+- Morphius
+- Trembyle
+- Berknip
+- Woomax
+- Dirinboz
+- Shuboz
 
 ## HP
 - Z220 SFF Workstation
 
 ## Intel
+- Alderlake-P RVP
+- Alderlake-P RVP with Chrome EC
 - Basking Ridge CRB
 - Cannonlake U LPDDR4 RVP
 - Cannonlake Y LPDDR4 RVP
@@ -206,6 +232,7 @@
 - ThinkPad X1
 - ThinkPad X230
 - ThinkPad X230t
+- ThinkPad X230s
 - ThinkPad X60 / X60s / X60t
 
 ## OpenCellular
@@ -226,6 +253,7 @@
 ## Supermicro
 - X11SSH-TF
 - X11SSM-F
+- X11SSH-F
 
 ## UP
 - Squared

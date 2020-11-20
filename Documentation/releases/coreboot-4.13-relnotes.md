@@ -1,14 +1,89 @@
-Upcoming release - coreboot 4.13
+coreboot 4.13
 ================================
 
-The 4.13 release is planned for November 2020.
+coreboot 4.13 was released on November 20th, 2020.
 
-Update this document with changes that should be in the release notes.
+Since 4.12 there were 4200 new commits by over 234 developers.
+Of these, about 72 contributed to coreboot for the first time.
 
-* Please use Markdown.
-* See the past few release notes for the general format.
-* The chip and board additions and removals will be updated right
-  before the release, so those do not need to be added.
+Thank you to all developers who again helped made coreboot better
+than ever, and a big welcome to our new contributors!
+
+New mainboards
+--------------
+
+- Acer G43T-AM3
+- AMD Cereme
+- Asus A88XM-E FM2+
+- Biostar TH61-ITX
+- BostenTech GBYT4
+- Clevo L140CU/L141CU
+- Dell OptiPlex 9010
+- Example Min86 (fake board)
+- Google Ambassador
+- Google Asurada
+- Google Berknip
+- Google Boldar
+- Google Boten
+- Google Burnet
+- Google Cerise
+- Google Coachz
+- Google Dalboz
+- Google Dauntless
+- Google Delbin
+- Google Dirinboz
+- Google Dooly
+- Google Drawcia
+- Google Eldrid
+- Google Elemi
+- Google Esche
+- Google Ezkinil
+- Google Faffy
+- Google Fennel
+- Google Genesis
+- Google Hayato
+- Google Lantis
+- Google Lindar
+- Google Madoo
+- Google Magolor
+- Google Metaknight
+- Google Morphius
+- Google Noibat
+- Google Pompom
+- Google Shuboz
+- Google Stern
+- Google Terrador
+- Google Todor
+- Google Trembyle
+- Google Vilboz
+- Google Voema
+- Google Volteer2
+- Google Voxel
+- Google Willow
+- Google Woomax
+- Google Wyvern
+- HP EliteBook 2560p
+- HP EliteBook Folio 9480m
+- HP ProBook 6360b
+- Intel Alderlake-P RVP
+- Kontron COMe-bSL6
+- Lenovo ThinkPad X230s
+- Open Compute Project DeltaLake
+- Prodrive Hermes
+- Purism Librem Mini
+- Purism Librem Mini v2
+- Siemens Chili
+- Supermicro X11SSH-F
+- System76 lemp9
+
+Removed mainboards
+------------------
+
+- Google Cheza
+- Google DragonEgg
+- Google Ripto
+- Google Sushi
+- Open Compute Project SonoraPass
 
 Significant changes
 -------------------
@@ -131,8 +206,6 @@ window within the address space that is available and satisfies the resource req
 This allows utilization of the entire available address space and also allows
 allocation above the 4G boundary. The old resource allocator v3 is still retained for
 some AMD platforms that do not conform to the requirements of the allocator.
-
-### Add significant changes here
 
 Deprecations
 ------------

@@ -1,6 +1,9 @@
 chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
+	register "TcssAuxOri" = "1"
+	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
+	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
 	# USB Port Config
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C C1
@@ -162,8 +165,7 @@ chip soc/intel/tigerlake
 					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "9"
 						register "usb3_port_number" = "1"
-						# SBU is fixed, HSL follows CC
-						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						# SBU & HSL follows CC
 						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn

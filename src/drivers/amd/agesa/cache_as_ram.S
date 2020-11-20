@@ -10,15 +10,18 @@
  ******************************************************************************
  */
 
-#include "gcccar.inc"
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
 
+.section .init
+
 .code32
-.globl _cache_as_ram_setup, _cache_as_ram_setup_end
+
 .global bootblock_pre_c_entry
 
 _cache_as_ram_setup:
+
+#include "gcccar.inc"
 
 /*
  * on entry:

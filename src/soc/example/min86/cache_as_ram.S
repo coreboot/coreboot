@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+.section .init, "ax", @progbits
+
 .global bootblock_pre_c_entry
 
 .code32

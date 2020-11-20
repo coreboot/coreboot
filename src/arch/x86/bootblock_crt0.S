@@ -10,7 +10,7 @@
 
 #include <cpu/x86/cr.h>
 
-.section .text._start
+.section .init._start, "ax", @progbits
 
 /*
  * Include the old code for reset vector and protected mode entry. That code has

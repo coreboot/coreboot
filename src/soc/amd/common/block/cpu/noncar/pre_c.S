@@ -2,6 +2,8 @@
 
 #include <cpu/x86/post_code.h>
 
+.section .init, "ax", @progbits
+
 .global bootblock_resume_entry
 bootblock_resume_entry:
 	post_code(0xb0)

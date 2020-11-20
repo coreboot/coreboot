@@ -71,6 +71,8 @@
 .equ  CFGNONSTICKY_W1_OFFSET, (0x52)
 .equ    FORCE_WARM_RESET, (0x00000001)
 
+.section .init, "ax", @progbits
+
 	.global bootblock_pre_c_entry
 
 bootblock_pre_c_entry:

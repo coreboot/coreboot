@@ -13,6 +13,9 @@
 .text . : {
 	_program = .;
 	_text = .;
+	*(.init._start);
+	*(.init);
+	*(.init.*);
 	*(.text._start);
 	*(.text.stage_entry);
 	KEEP(*(.metadata_hash_anchor));

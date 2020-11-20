@@ -4,6 +4,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
+.section .init
 .global bootblock_pre_c_entry
 
 .code32

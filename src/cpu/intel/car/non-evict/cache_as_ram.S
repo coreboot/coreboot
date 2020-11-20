@@ -7,6 +7,7 @@
 #define NoEvictMod_MSR 0x2e0
 #define BBL_CR_CTL3_MSR 0x11e
 
+.section .init
 .global bootblock_pre_c_entry
 
 #include <cpu/intel/car/cache_as_ram_symbols.inc>

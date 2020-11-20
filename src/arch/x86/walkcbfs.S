@@ -21,7 +21,7 @@
 #define CBFS_FILE_STRUCTSIZE (CBFS_FILE_OFFSET + 4)
 
 .code32
-.section .text
+.section .init
 .global walkcbfs_asm
 
 /*

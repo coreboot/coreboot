@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 .code32
-.section ".text._gdt_", "ax", @progbits
+
+.section .init, "ax", @progbits
+
+.section .init._gdt_, "ax", @progbits
 
 	.globl gdt_init
 gdt_init:
@@ -17,7 +20,7 @@ gdtptr:
 
 #ifdef __x86_64__
 .code64
-.section ".text._gdt64_", "ax", @progbits
+.section .init._gdt64_, "ax", @progbits
 	.globl gdt_init64
 gdt_init64:
 	/* Workaround a bug in the assembler.

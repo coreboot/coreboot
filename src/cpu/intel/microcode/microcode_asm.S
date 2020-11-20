@@ -44,7 +44,7 @@
  */
 
 .code32
-.section .text
+.section .init
 .global update_bsp_microcode
 
 update_bsp_microcode:

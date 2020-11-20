@@ -2,6 +2,8 @@
 
 #include <cpu/x86/post_code.h>
 
+.section .init, "ax", @progbits
+
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 

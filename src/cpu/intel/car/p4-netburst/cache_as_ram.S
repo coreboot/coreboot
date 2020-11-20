@@ -8,6 +8,7 @@
 /* Macro to access Local APIC registers at default base. */
 #define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
 
+.section .init
 .global bootblock_pre_c_entry
 
 .code32

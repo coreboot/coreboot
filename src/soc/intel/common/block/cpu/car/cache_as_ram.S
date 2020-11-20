@@ -9,6 +9,8 @@
 #include <rules.h>
 #include <intelblocks/msr.h>
 
+.section .init, "ax", @progbits
+
 .code32
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:

@@ -10,6 +10,8 @@
 #define CBFS_FILE_CHECKSUM (CBFS_FILE_TYPE + 4)
 #define CBFS_FILE_OFFSET (CBFS_FILE_CHECKSUM + 4)
 
+.section .init, "ax", @progbits
+
 .extern	temp_ram_init_params
 
 .global	bootblock_pre_c_entry

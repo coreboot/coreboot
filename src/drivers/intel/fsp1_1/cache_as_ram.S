@@ -14,6 +14,8 @@
 
 #define LHLT_DELAY	0x50000	/* I/O delay between post codes on failure */
 
+.section .init, "ax", @progbits
+
 .global	bootblock_pre_c_entry
 bootblock_pre_c_entry:
 	/*

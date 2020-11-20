@@ -8,8 +8,15 @@
  ******************************************************************************
  */
 
-#include "gcccar.inc"
 #include <cpu/x86/post_code.h>
+
+.section .init
+
+.code32
+
+_cache_as_ram_setup:
+
+#include "gcccar.inc"
 
 /*
  * on entry:
@@ -43,3 +50,5 @@ before_carstage:
 	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.halt_forever
+
+_cache_as_ram_setup_end:

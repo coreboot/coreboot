@@ -1,7 +1,3 @@
-##
-##
-## Copyright (C) 2017 Google Inc.
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # force the shell to bash - the edksetup.sh script doesn't work with dash

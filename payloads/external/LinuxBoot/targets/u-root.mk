@@ -1,7 +1,3 @@
-##
-## Copyright (C) 2017 Facebook Inc.
-## Copyright (C) 2018 9elements Cyber Security
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 project_dir=$(shell pwd)/linuxboot

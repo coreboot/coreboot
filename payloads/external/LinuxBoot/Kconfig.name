@@ -1,6 +1,3 @@
-##
-## Copyright (C) 2017 Facebook Inc.
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config PAYLOAD_LINUXBOOT

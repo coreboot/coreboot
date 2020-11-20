@@ -1,10 +1,3 @@
-################################################################################
-##
-##
-## Copyright (C) 2009-2010 coresystems GmbH
-## Copyright (C) 2015 Google Inc.
-## Copyright (C) 2017 Facebook Inc.
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # set up payload config and version files for later inclusion

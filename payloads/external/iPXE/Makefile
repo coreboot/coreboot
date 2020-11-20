@@ -1,7 +1,3 @@
-##
-##
-## Copyright (C) 2016 Google Inc.
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # 2019.3 - Last commit of March 2019

@@ -20,7 +20,35 @@ config BOARD_SPECIFIC_OPTIONS
 	select DISABLE_HPET
 	select INTEL_GMA_HAVE_VBT
 	select HAVE_SPD_IN_CBFS
-	select USE_VENDORCODE_ELTAN
+
+config USE_VENDORCODE_ELTAN
+	depends on !VBOOT
+	default y
+
+if VBOOT
+
+config VBOOT_VBNV_CMOS
+	default y
+
+config VBOOT_SLOTS_RW_A
+	default y
+
+config VBOOT_NO_BOARD_SUPPORT
+	default y
+
+config VBOOT_ENABLE_CBFS_FALLBACK
+	default y
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rw.fmd"
+
+config RW_REGION_ONLY
+	default "%/payload logo.bmp %/ramstage vbt.bin %/dsdt.aml config %/postcar"
+
+config RO_REGION_ONLY
+	default "spd.bin fsp.bin cpu_microcode_blob.bin"
+
+endif # VBOOT
 
 config ONBOARD_SAMSUNG_MEM
 	bool "Onboard memory manufacturer Samsung"

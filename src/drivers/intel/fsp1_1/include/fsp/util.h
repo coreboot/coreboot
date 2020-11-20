@@ -31,6 +31,7 @@ void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_resource_hob(const EFI_GUID *guid);
 void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 	uint64_t new);
+void report_fsp_output(void);
 
 /* Return version of FSP associated with fih. */
 static inline uint32_t fsp_version(FSP_INFO_HEADER *fih)

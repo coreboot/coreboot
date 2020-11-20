@@ -28,6 +28,10 @@ static void i2c_hid_fill_ssdt_generator(const struct device *dev)
 static const char *i2c_hid_acpi_name(const struct device *dev)
 {
 	static char name[5];
+	struct drivers_i2c_hid_config *config = dev->chip_info;
+	if (config->generic.name)
+		return config->generic.name;
+
 	snprintf(name, sizeof(name), "H%03.3X", dev->path.i2c.device);
 	name[4] = '\0';
 	return name;

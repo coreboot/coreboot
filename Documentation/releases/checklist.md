@@ -75,7 +75,8 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Test the release from the actual release tarballs.
 - [ ] Push signed Tag to repo.
 - [ ] Announce that the release tag is done on IRC.
-- [ ] Upload release files to web server
+- [ ] Upload release files to web server.
+- [ ] Also extract the release notes and place them on the web server.
 - [ ] Upload crossgcc sources to web server.
 - [ ] Update download page to point to files, push to repo.
 - [ ] Write and publish blog post with release notes.

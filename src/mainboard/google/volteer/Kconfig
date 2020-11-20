@@ -106,6 +106,7 @@ config MAINBOARD_PART_NUMBER
 	default "Boldar" if BOARD_GOOGLE_BOLDAR
 	default "Elemi" if BOARD_GOOGLE_ELEMI
 	default "Voema" if BOARD_GOOGLE_VOEMA
+	default "Drobit" if BOARD_GOOGLE_DROBIT
 
 config MAX_CPUS
 	int
@@ -146,6 +147,7 @@ config VARIANT_DIR
 	default "boldar" if BOARD_GOOGLE_BOLDAR
 	default "elemi" if BOARD_GOOGLE_ELEMI
 	default "voema" if BOARD_GOOGLE_VOEMA
+	default "drobit" if BOARD_GOOGLE_DROBIT
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

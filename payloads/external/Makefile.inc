@@ -121,14 +121,14 @@ ifeq ($(CONFIG_SEABIOS_ADD_SERCON_PORT_FILE),y)
 INTERMEDIATE+=seabios_sercon
 seabios_sercon: $(obj)/coreboot.pre $(CBFSTOOL)
 	@printf "    SeaBIOS    Add sercon-port file\n"
-#	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_SERCON_PORT_ADDR) -n etc/sercon-port
+	$(CBFSTOOL) $< add-int -i $(CONFIG_SEABIOS_SERCON_PORT_ADDR) -n etc/sercon-port
 endif
 
 ifeq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
 INTERMEDIATE+=seabios_thread_optionroms
 seabios_thread_optionroms: $(obj)/coreboot.pre $(CBFSTOOL)
 	@printf "    SeaBIOS    Thread optionroms\n"
-	$(CBFSTOOL) $@.tmp add-int -i 2 -n etc/threads
+	$(CBFSTOOL) $< add-int -i 2 -n etc/threads
 endif
 
 # Depthcharge

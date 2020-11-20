@@ -224,7 +224,8 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 {
 	amd_bios_type fw_type = AMD_BIOS_INVALID;
 	amd_bios_entry *bhd_tableptr;
-	uint8_t subprog, instance = 0;
+	uint8_t subprog = 0;
+	uint8_t instance = 0;
 
 	(void) (cb_config);	/* Remove warning and reserved for future. */
 

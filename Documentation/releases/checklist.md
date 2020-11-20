@@ -177,8 +177,9 @@ commit db508565d2483394b709654c57533e55eebace51 (HEAD, tag: 4.6, origin/master, 
 ...
 ````
 
-When you used the script to generate the release, a tag was generated in the tree that was downloaded.
-From the coreboot-X.Y tree, just run: `git push -f origin <TAG (X.Y)>`
+When you used the script to generate the release, a signed tag was generated in the
+tree that was downloaded. From the coreboot-X.Y tree, just run: `git push origin X.Y`.
+In case you pushed the wrong tag already, you have to force push the new one.
 
 You will need write access for tags to the coreboot git repo to do this.
 

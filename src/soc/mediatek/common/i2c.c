@@ -10,14 +10,34 @@
 #include <soc/i2c.h>
 #include <device/i2c_simple.h>
 
-static inline void i2c_dma_reset(struct mt_i2c_dma_regs *dma_regs)
+static inline void i2c_hw_reset(uint8_t bus)
 {
-	write32(&dma_regs->dma_rst, 0x1);
-	udelay(50);
-	write32(&dma_regs->dma_rst, 0x2);
-	udelay(50);
-	write32(&dma_regs->dma_rst, 0x0);
-	udelay(50);
+	struct mt_i2c_regs *regs;
+	struct mt_i2c_dma_regs *dma_regs;
+
+	regs = mtk_i2c_bus_controller[bus].i2c_regs;
+	dma_regs = mtk_i2c_bus_controller[bus].i2c_dma_regs;
+
+	if (mtk_i2c_bus_controller[bus].mt_i2c_flag == I2C_APDMA_ASYNC) {
+		write32(&dma_regs->dma_rst, I2C_DMA_WARM_RST);
+		udelay(10);
+		write32(&dma_regs->dma_rst, I2C_DMA_CLR_FLAG);
+		udelay(10);
+		write32(&dma_regs->dma_rst,
+			I2C_DMA_HARD_RST | I2C_DMA_HANDSHAKE_RST);
+		write32(&regs->softreset, I2C_SOFT_RST | I2C_HANDSHAKE_RST);
+		udelay(10);
+		write32(&dma_regs->dma_rst, I2C_DMA_CLR_FLAG);
+		write32(&regs->softreset, I2C_CLR_FLAG);
+	} else {
+		write32(&regs->softreset, I2C_SOFT_RST);
+		write32(&dma_regs->dma_rst, I2C_DMA_WARM_RST);
+		udelay(50);
+		write32(&dma_regs->dma_rst, I2C_DMA_HARD_RST);
+		udelay(50);
+		write32(&dma_regs->dma_rst, I2C_DMA_CLR_FLAG);
+		udelay(50);
+	}
 }
 
 static inline void mtk_i2c_dump_info(struct mt_i2c_regs *regs)
@@ -47,6 +67,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 {
 	uint32_t ret_code = I2C_OK;
 	uint16_t status;
+	uint16_t dma_sync = 0;
 	uint32_t time_out_val = 0;
 	uint8_t  addr;
 	uint32_t write_len = 0;
@@ -61,6 +82,12 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 	dma_regs = mtk_i2c_bus_controller[bus].i2c_dma_regs;
 
 	addr = seg[0].slave;
+
+	if (mtk_i2c_bus_controller[bus].mt_i2c_flag == I2C_APDMA_ASYNC) {
+		dma_sync = I2C_DMA_SKIP_CONFIG | I2C_DMA_ASYNC_MODE;
+		if (mode == I2C_WRITE_READ_MODE)
+			dma_sync |= I2C_DMA_DIR_CHANGE;
+	}
 
 	switch (mode) {
 	case I2C_WRITE_MODE:
@@ -113,7 +140,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 		write32(&regs->slave_addr, addr << 1);
 
 		/* Prepare buffer data to start transfer */
-		write32(&dma_regs->dma_con, I2C_DMA_CON_TX);
+		write32(&dma_regs->dma_con, I2C_DMA_CON_TX | dma_sync);
 		write32(&dma_regs->dma_tx_mem_addr, (uintptr_t)_dma_coherent);
 		write32(&dma_regs->dma_tx_len, write_len);
 		break;
@@ -132,7 +159,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 		write32(&regs->slave_addr, (addr << 1 | 0x1));
 
 		/* Prepare buffer data to start transfer */
-		write32(&dma_regs->dma_con, I2C_DMA_CON_RX);
+		write32(&dma_regs->dma_con, I2C_DMA_CON_RX | dma_sync);
 		write32(&dma_regs->dma_rx_mem_addr, (uintptr_t)_dma_coherent);
 		write32(&dma_regs->dma_rx_len, read_len);
 		break;
@@ -154,7 +181,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 		write32(&regs->slave_addr, addr << 1);
 
 		/* Prepare buffer data to start transfer */
-		write32(&dma_regs->dma_con, I2C_DMA_CLR_FLAG);
+		write32(&dma_regs->dma_con, I2C_DMA_CLR_FLAG | dma_sync);
 		write32(&dma_regs->dma_tx_mem_addr, (uintptr_t)_dma_coherent);
 		write32(&dma_regs->dma_tx_len, write_len);
 		write32(&dma_regs->dma_rx_mem_addr, (uintptr_t)_dma_coherent);
@@ -206,9 +233,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 		I2C_TRANSAC_COMP);
 
 	/* reset the i2c controller for next i2c transfer. */
-	write32(&regs->softreset, 0x1);
-
-	i2c_dma_reset(dma_regs);
+	i2c_hw_reset(bus);
 
 	return ret_code;
 }

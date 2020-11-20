@@ -38,6 +38,12 @@ enum {
 	I2C_DMA_INT_FLAG_NONE   = 0x0,
 	I2C_DMA_CLR_FLAG        = 0x0,
 	I2C_DMA_FLUSH_FLAG      = 0x1,
+	I2C_DMA_ASYNC_MODE      = 0x0004,
+	I2C_DMA_SKIP_CONFIG     = 0x0010,
+	I2C_DMA_DIR_CHANGE      = 0x0200,
+	I2C_DMA_WARM_RST        = 0x1,
+	I2C_DMA_HARD_RST        = 0x2,
+	I2C_DMA_HANDSHAKE_RST   = 0x4,
 };
 
 enum {
@@ -46,11 +52,23 @@ enum {
 	I2C_CONTROL_MASK = (0x3f << 1)
 };
 
+enum {
+	I2C_APDMA_NOASYNC       = 0,
+	I2C_APDMA_ASYNC         = 1,
+};
+
 /* Register mask */
 enum {
 	I2C_HS_NACKERR = (1 << 2),
 	I2C_ACKERR = (1 << 1),
 	I2C_TRANSAC_COMP = (1 << 0),
+};
+
+/* reset bits */
+enum {
+	I2C_CLR_FLAG            = 0x0,
+	I2C_SOFT_RST            = 0x1,
+	I2C_HANDSHAKE_RST       = 0x20,
 };
 
 /* i2c control bits */
@@ -80,6 +98,7 @@ enum {
 struct mtk_i2c {
 	struct mt_i2c_regs *i2c_regs;
 	struct mt_i2c_dma_regs *i2c_dma_regs;
+	uint32_t mt_i2c_flag;
 };
 
 extern struct mtk_i2c mtk_i2c_bus_controller[];

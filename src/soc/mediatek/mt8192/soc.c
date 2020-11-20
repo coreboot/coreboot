@@ -4,6 +4,7 @@
 #include <soc/emi.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
+#include <soc/sspm.h>
 #include <symbols.h>
 
 static void soc_read_resources(struct device *dev)
@@ -15,6 +16,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	mcupm_init();
+	sspm_init();
 }
 
 static struct device_operations soc_ops = {

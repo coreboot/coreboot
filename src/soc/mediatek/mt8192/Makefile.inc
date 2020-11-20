@@ -46,6 +46,7 @@ ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += soc.c
 ramstage-y += spm.c
+ramstage-y += sspm.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c usb.c
@@ -56,6 +57,7 @@ mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
+	$(CONFIG_SSPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \

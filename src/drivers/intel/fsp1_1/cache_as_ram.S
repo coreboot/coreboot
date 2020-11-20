@@ -132,7 +132,7 @@ CAR_init_done:
 	cmp	$0, %eax
 	jne	halt2
 
-	/* Setup bootloader stack */
+	/* Setup bootblock stack */
 	movl	$_ecar_stack, %esp
 
 	/*

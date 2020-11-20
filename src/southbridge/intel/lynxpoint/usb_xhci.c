@@ -342,9 +342,11 @@ static struct device_operations usb_xhci_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
-static const unsigned short pci_device_ids[] = { 0x8c31, /* LynxPoint-H */
-						 0x9c31, /* LynxPoint-LP */
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_LPT_H_XHCI,
+	PCI_DEVICE_ID_INTEL_LPT_LP_XHCI,
+	0
+};
 
 static const struct pci_driver pch_usb_xhci __pci_driver = {
 	.ops	 = &usb_xhci_ops,

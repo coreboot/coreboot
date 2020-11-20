@@ -80,7 +80,8 @@ static struct device_operations smbus_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x8c22, 0x9c22,
+	PCI_DEVICE_ID_INTEL_LPT_H_SMBUS,
+	PCI_DEVICE_ID_INTEL_LPT_LP_SMBUS,
 	0
 };
 

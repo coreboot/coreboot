@@ -228,14 +228,14 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x9c60, /* 0:15.0 - SDMA */
-	0x9c61, /* 0:15.1 - I2C0 */
-	0x9c62, /* 0:15.2 - I2C1 */
-	0x9c65, /* 0:15.3 - SPI0 */
-	0x9c66, /* 0:15.4 - SPI1 */
-	0x9c63, /* 0:15.5 - UART0 */
-	0x9c64, /* 0:15.6 - UART1 */
-	0x9c35, /* 0:17.0 - SDIO */
+	PCI_DEVICE_ID_INTEL_LPT_LP_SDMA,
+	PCI_DEVICE_ID_INTEL_LPT_LP_I2C0,
+	PCI_DEVICE_ID_INTEL_LPT_LP_I2C1,
+	PCI_DEVICE_ID_INTEL_LPT_LP_GSPI0,
+	PCI_DEVICE_ID_INTEL_LPT_LP_GSPI1,
+	PCI_DEVICE_ID_INTEL_LPT_LP_UART0,
+	PCI_DEVICE_ID_INTEL_LPT_LP_UART1,
+	PCI_DEVICE_ID_INTEL_LPT_LP_SD,
 	0
 };
 

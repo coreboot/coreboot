@@ -787,26 +787,27 @@ static struct device_operations device_ops = {
 
 /* IDs for LPC device of Intel 8 Series Chipset (Lynx Point) */
 static const unsigned short pci_device_ids[] = {
-	0x8c41, /* Mobile Full Featured Engineering Sample. */
-	0x8c42, /* Desktop Full Featured Engineering Sample. */
-	0x8c44, /* Z87 SKU */
-	0x8c46, /* Z85 SKU */
-	0x8c49, /* HM86 SKU */
-	0x8c4a, /* H87 SKU */
-	0x8c4b, /* HM87 SKU */
-	0x8c4c, /* Q85 SKU */
-	0x8c4e, /* Q87 SKU */
-	0x8c4f, /* QM87 SKU */
-	0x8c50, /* B85 SKU */
-	0x8c52, /* C222 SKU */
-	0x8c54, /* C224 SKU */
-	0x8c56, /* C226 SKU */
-	0x8c5c, /* H81 SKU */
-	0x9c41, /* LP Full Featured Engineering Sample */
-	0x9c43, /* LP Premium SKU */
-	0x9c45, /* LP Mainstream SKU */
-	0x9c47, /* LP Value SKU */
-	0 };
+	PCI_DEVICE_ID_INTEL_LPT_MOBILE_SAMPLE,
+	PCI_DEVICE_ID_INTEL_LPT_DESKTOP_SAMPLE,
+	PCI_DEVICE_ID_INTEL_LPT_Z87,
+	PCI_DEVICE_ID_INTEL_LPT_Z85,
+	PCI_DEVICE_ID_INTEL_LPT_HM86,
+	PCI_DEVICE_ID_INTEL_LPT_H87,
+	PCI_DEVICE_ID_INTEL_LPT_HM87,
+	PCI_DEVICE_ID_INTEL_LPT_Q85,
+	PCI_DEVICE_ID_INTEL_LPT_Q87,
+	PCI_DEVICE_ID_INTEL_LPT_QM87,
+	PCI_DEVICE_ID_INTEL_LPT_B85,
+	PCI_DEVICE_ID_INTEL_LPT_C222,
+	PCI_DEVICE_ID_INTEL_LPT_C224,
+	PCI_DEVICE_ID_INTEL_LPT_C226,
+	PCI_DEVICE_ID_INTEL_LPT_H81,
+	PCI_DEVICE_ID_INTEL_LPT_LP_SAMPLE,
+	PCI_DEVICE_ID_INTEL_LPT_LP_PREMIUM,
+	PCI_DEVICE_ID_INTEL_LPT_LP_MAINSTREAM,
+	PCI_DEVICE_ID_INTEL_LPT_LP_VALUE,
+	0
+};
 
 static const struct pci_driver pch_lpc __pci_driver = {
 	.ops	 = &device_ops,

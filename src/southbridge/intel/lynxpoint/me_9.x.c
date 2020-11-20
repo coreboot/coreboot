@@ -836,8 +836,8 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x8c3a, /* Mobile */
-	0x9c3a, /* Low Power */
+	PCI_DEVICE_ID_INTEL_LPT_H_MEI,
+	PCI_DEVICE_ID_INTEL_LPT_LP_MEI,
 	0
 };
 

@@ -1,0 +1,29 @@
+config BOARD_GOOGLE_BASEBOARD_BRYA
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_ALDERLAKE
+
+if BOARD_GOOGLE_BASEBOARD_BRYA
+
+config BASEBOARD_BRYA_LAPTOP
+	def_bool n
+	select SYSTEM_TYPE_LAPTOP
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_DIR
+	string
+	default "google/brya"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Brya0" if BOARD_GOOGLE_BRYA0
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "brya" if BOARD_GOOGLE_BRYA0
+
+endif # BOARD_GOOGLE_BASEBOARD_BRYA

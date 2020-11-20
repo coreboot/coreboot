@@ -3,8 +3,8 @@
 #ifndef _SOC_ELKHARTLAKE_GPIO_H_
 #define _SOC_ELKHARTLAKE_GPIO_H_
 
-#include <intelblocks/gpio.h>
 #include <soc/gpio_defs.h>
+#include <intelblocks/gpio.h>
 
 #define CROS_GPIO_NAME		"INT34C8"
 #define CROS_GPIO_COMM0_NAME    "INT34C8:00"

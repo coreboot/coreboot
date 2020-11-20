@@ -44,17 +44,13 @@ static const pci_devfn_t serial_io_dev[] = {
 
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
-	const struct soc_intel_elkhartlake_config *config = config_of_soc();
 	/* TODO: Update with UPD override as FSP matures */
 }
 
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
-	unsigned int i;
-	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
-	struct soc_intel_elkhartlake_config *config = config_of_soc();
 
 	/* Parse device tree and fill in FSP UPDs */
 	parse_devicetree(params);

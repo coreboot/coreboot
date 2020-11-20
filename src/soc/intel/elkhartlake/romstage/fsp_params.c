@@ -25,7 +25,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mainboard_memory_init_params(mupd);
 }
 
-void mainboard_memory_init_params(FSPM_UPD *mupd)
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* TODO: Update later together with UPD updates */
 }

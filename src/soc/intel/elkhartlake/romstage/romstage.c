@@ -62,7 +62,7 @@ static void save_dimm_info(void)
 	/* Allow mainboard to override DRAM part number. */
 	dram_part_num = mainboard_get_dram_part_num();
 	if (dram_part_num) {
-		dram_part_num = strlen(dram_part_num);
+		dram_part_num_len = strlen(dram_part_num);
 		is_dram_part_overridden = true;
 	}
 

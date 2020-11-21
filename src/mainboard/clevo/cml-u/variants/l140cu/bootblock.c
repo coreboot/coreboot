@@ -2,7 +2,7 @@
 
 #include <bootblock_common.h>
 #include <gpio.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 
 void bootblock_mainboard_init(void)
 {

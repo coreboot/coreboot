@@ -85,8 +85,6 @@ bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-bootblock-y += bootblock_crt0.S
-
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
 $(eval $(call early_x86_stage,bootblock,elf32-i386))
 else

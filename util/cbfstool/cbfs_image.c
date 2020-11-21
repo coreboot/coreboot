@@ -267,14 +267,6 @@ int cbfs_legacy_image_create(struct cbfs_image *image,
 	      bootblock_offset, bootblock->size, header_offset,
 	      sizeof(image->header), entries_offset);
 
-	// Adjust legacy top-aligned address to ROM offset.
-	if (IS_TOP_ALIGNED_ADDRESS(entries_offset))
-		entries_offset = size + (int32_t)entries_offset;
-	if (IS_TOP_ALIGNED_ADDRESS(bootblock_offset))
-		bootblock_offset = size + (int32_t)bootblock_offset;
-	if (IS_TOP_ALIGNED_ADDRESS(header_offset))
-		header_offset = size + (int32_t)header_offset;
-
 	DEBUG("cbfs_create_image: (real offset) bootblock=0x%x, "
 	      "header=0x%x, entries_offset=0x%x\n",
 	      bootblock_offset, header_offset, entries_offset);

@@ -48,15 +48,30 @@ static struct param {
 	uint64_t u64val;
 	uint32_t type;
 	uint32_t baseaddress;
+	/*
+	 * Input can be negative. It will be transformed to offset from start of region (if
+	 * negative) and stored in baseaddress.
+	 */
+	long long int baseaddress_input;
 	uint32_t baseaddress_assigned;
 	uint32_t loadaddress;
 	uint32_t headeroffset;
+	/*
+	 * Input can be negative. It will be transformed to offset from start of region (if
+	 * negative) and stored in baseaddress.
+	 */
+	long long int headeroffset_input;
 	uint32_t headeroffset_assigned;
 	uint32_t entrypoint;
 	uint32_t size;
 	uint32_t alignment;
 	uint32_t pagesize;
 	uint32_t cbfsoffset;
+	/*
+	 * Input can be negative. It will be transformed to corresponding region offset (if
+	 * negative) and stored in baseaddress.
+	 */
+	long long int cbfsoffset_input;
 	uint32_t cbfsoffset_assigned;
 	uint32_t arch;
 	uint32_t padding;
@@ -103,8 +118,7 @@ static bool region_is_modern_cbfs(const char *region)
 
 /*
  * Converts between offsets from the start of the specified image region and
- * "top-aligned" offsets from the top of the entire boot media. See comment
- * below for convert_to_from_top_aligned() about forming addresses.
+ * "top-aligned" offsets from the top of the entire boot media.
  */
 static unsigned convert_to_from_absolute_top_aligned(
 		const struct buffer *region, unsigned offset)
@@ -117,25 +131,27 @@ static unsigned convert_to_from_absolute_top_aligned(
 }
 
 /*
- * Converts between offsets from the start of the specified image region and
- * "top-aligned" offsets from the top of the image region. Works in either
- * direction: pass in one type of offset and receive the other type.
- * N.B. A top-aligned offset is always a positive number, and should not be
- * confused with a top-aligned *address*, which is its arithmetic inverse. */
-static unsigned convert_to_from_top_aligned(const struct buffer *region,
-								unsigned offset)
+ * This function takes offset value which represents the offset from one end of the region and
+ * converts it to offset from the other end of the region. offset is expected to be positive.
+ */
+static int convert_region_offset(unsigned int offset, uint32_t *region_offset)
 {
-	assert(region);
+	size_t size;
 
-	/* Cover the situation where a negative base address is given by the
-	 * user. Callers of this function negate it, so it'll be a positive
-	 * number smaller than the region.
-	 */
-	if ((offset > 0) && (offset < region->size)) {
-		return region->size - offset;
+	if (param.size) {
+		size = param.size;
+	} else {
+		assert(param.image_region);
+		size = param.image_region->size;
 	}
 
-	return convert_to_from_absolute_top_aligned(region, offset);
+	if (size < offset) {
+		ERROR("Cannot convert region offset (size=0x%zx, offset=0x%x)\n", size, offset);
+		return 1;
+	}
+
+	*region_offset = size - offset;
+	return 0;
 }
 
 static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
@@ -242,10 +258,6 @@ static int cbfs_add_integer_component(const char *name,
 		ERROR("'%s' already in ROM image.\n", name);
 		goto done;
 	}
-
-	if (IS_TOP_ALIGNED_ADDRESS(offset))
-		offset = convert_to_from_top_aligned(param.image_region,
-								-offset);
 
 	header = cbfs_create_file_header(CBFS_TYPE_RAW,
 		buffer.size, name);
@@ -435,10 +447,7 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 	buffer_clone(buffer, &new_bootblock);
 
 	 /* Update the location (offset) of bootblock in the region */
-	*offset = convert_to_from_top_aligned(param.image_region,
-							buffer_size(buffer));
-
-	return 0;
+	return convert_region_offset(buffer_size(buffer), offset);
 }
 
 static int cbfs_add_component(const char *filename,
@@ -520,11 +529,9 @@ static int cbfs_add_component(const char *filename,
 			/* to the cbfs file and therefore set the position  */
 			/* the real beginning of the data. */
 			if (type == CBFS_TYPE_STAGE)
-				attrs->position = htonl(offset +
-					sizeof(struct cbfs_stage));
+				attrs->position = htonl(offset - sizeof(struct cbfs_stage));
 			else if (type == CBFS_TYPE_SELF)
-				attrs->position = htonl(offset +
-					sizeof(struct cbfs_payload));
+				attrs->position = htonl(offset - sizeof(struct cbfs_payload));
 			else
 				attrs->position = htonl(offset);
 		}
@@ -565,8 +572,7 @@ static int cbfs_add_component(const char *filename,
 	}
 
 	if (IS_TOP_ALIGNED_ADDRESS(offset))
-		offset = convert_to_from_top_aligned(param.image_region,
-								-offset);
+		offset = convert_to_from_absolute_top_aligned(param.image_region, -offset);
 	if (cbfs_add_entry(&image, &buffer, offset, header, len_align) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		free(header);
@@ -1345,6 +1351,32 @@ static struct option long_options[] = {
 	{NULL,            0,                 0,  0  }
 };
 
+static int get_region_offset(long long int offset, uint32_t *region_offset)
+{
+	/* If offset is not negative, no transformation required. */
+	if (offset >= 0) {
+		*region_offset = offset;
+		return 0;
+	}
+
+	/* Calculate offset from start of region. */
+	return convert_region_offset(-offset, region_offset);
+}
+
+static int calculate_region_offsets(void)
+{
+	int ret = 0;
+
+	if (param.baseaddress_assigned)
+		ret |= get_region_offset(param.baseaddress_input, &param.baseaddress);
+	if (param.headeroffset_assigned)
+		ret |= get_region_offset(param.headeroffset_input, &param.headeroffset);
+	if (param.cbfsoffset_assigned)
+		ret |= get_region_offset(param.cbfsoffset_input, &param.cbfsoffset);
+
+	return ret;
+}
+
 static int dispatch_command(struct command command)
 {
 	if (command.accesses_region) {
@@ -1382,6 +1414,13 @@ static int dispatch_command(struct command command)
 				return 1;
 			}
 		}
+
+		/*
+		 * Once image region is read, input offsets can be adjusted accordingly if the
+		 * inputs are provided as negative integers i.e. offsets from end of region.
+		 */
+		if (calculate_region_offsets())
+			return 1;
 	}
 
 	if (command.function()) {
@@ -1598,7 +1637,7 @@ int main(int argc, char **argv)
 				param.source_region = optarg;
 				break;
 			case 'b':
-				param.baseaddress = strtoul(optarg, &suffix, 0);
+				param.baseaddress_input = strtoll(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid base address '%s'.\n",
 						optarg);
@@ -1649,8 +1688,7 @@ int main(int argc, char **argv)
 				param.bootblock = optarg;
 				break;
 			case 'H':
-				param.headeroffset = strtoul(
-						optarg, &suffix, 0);
+				param.headeroffset_input = strtoll(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid header offset '%s'.\n",
 						optarg);
@@ -1686,7 +1724,7 @@ int main(int argc, char **argv)
 				param.force_pow2_pagesize = 1;
 				break;
 			case 'o':
-				param.cbfsoffset = strtoul(optarg, &suffix, 0);
+				param.cbfsoffset_input = strtoll(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid cbfs offset '%s'.\n",
 						optarg);

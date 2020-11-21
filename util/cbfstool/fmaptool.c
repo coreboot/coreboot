@@ -14,6 +14,12 @@
 #define HEADER_FMAP_OFFSET "FMAP_OFFSET"
 #define HEADER_FMAP_SIZE "FMAP_SIZE"
 
+/*
+ * Macro name used in the generated C header file to provide list of section names that do not
+ * have any sub-sections.
+ */
+#define HEADER_FMAP_TERMINAL_SECTIONS "FMAP_TERMINAL_SECTIONS"
+
 enum fmaptool_return {
 	FMAPTOOL_EXIT_SUCCESS = 0,
 	FMAPTOOL_EXIT_BAD_ARGS,
@@ -71,6 +77,20 @@ static void list_cbfs_section_names(FILE *out)
 	fputc('\n', out);
 }
 
+static void write_header_fmap_terminal_section_names(FILE *header,
+						     const struct flashmap_descriptor *root)
+{
+	assert(root);
+
+	if (root->list_len == 0) {
+		fprintf(header, "%s ", root->name);
+		return;
+	}
+
+	fmd_foreach_child(child, root)
+		write_header_fmap_terminal_section_names(header, child);
+}
+
 static void write_header_fmap_sections(FILE *header, const struct flashmap_descriptor *root,
 				       unsigned int offset)
 {
@@ -115,6 +135,10 @@ static bool write_header(const char *out_fname,
 	fputs("#define FMAPTOOL_GENERATED_HEADER_H_\n\n", header);
 	fprintf(header, "#define %s %#x\n", HEADER_FMAP_OFFSET, fmap_offset);
 	fprintf(header, "#define %s %#x\n\n", HEADER_FMAP_SIZE, fmap_size);
+
+	fprintf(header, "#define %s \"", HEADER_FMAP_TERMINAL_SECTIONS);
+	write_header_fmap_terminal_section_names(header, root);
+	fprintf(header, "\"\n\n");
 
 	write_header_fmap_sections(header, root, 0);
 	fputs("\n", header);

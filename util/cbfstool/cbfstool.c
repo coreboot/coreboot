@@ -571,7 +571,7 @@ static int cbfs_add_component(const char *filename,
 			return -1;
 	}
 
-	if (IS_TOP_ALIGNED_ADDRESS(offset))
+	if (IS_HOST_SPACE_ADDRESS(offset))
 		offset = convert_to_from_absolute_top_aligned(param.image_region, -offset);
 	if (cbfs_add_entry(&image, &buffer, offset, header, len_align) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
@@ -657,7 +657,7 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	 * passed in by the caller.
 	 */
 	if (param.stage_xip) {
-		if (!IS_TOP_ALIGNED_ADDRESS(address))
+		if (!IS_HOST_SPACE_ADDRESS(address))
 			address = -convert_to_from_absolute_top_aligned(
 					param.image_region, address);
 	} else {

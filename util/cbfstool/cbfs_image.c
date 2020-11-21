@@ -721,7 +721,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 	assert(image);
 	assert(buffer);
 	assert(buffer->data);
-	assert(!IS_TOP_ALIGNED_ADDRESS(content_offset));
+	assert(!IS_HOST_SPACE_ADDRESS(content_offset));
 
 	const char *name = header->filename;
 

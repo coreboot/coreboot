@@ -751,7 +751,8 @@ static int cbfs_add_component(const char *filename,
 
 	if (param.padding) {
 		const uint32_t hs = sizeof(struct cbfs_file_attribute);
-		uint32_t size = MAX(hs, param.padding);
+		uint32_t size = ALIGN_UP(MAX(hs, param.padding),
+					 CBFS_ATTRIBUTE_ALIGN);
 		INFO("Padding %d bytes\n", size);
 		struct cbfs_file_attribute *attr =
 			(struct cbfs_file_attribute *)cbfs_add_file_attr(

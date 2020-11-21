@@ -34,10 +34,6 @@
  * removing said guarantees.
  */
 
-/* The file name align is not defined in CBFS spec -- only a preference by
- * (old) cbfstool. */
-#define CBFS_FILENAME_ALIGN	(16)
-
 static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,
 				const char *default_value)
 {
@@ -70,7 +66,7 @@ int cbfs_parse_comp_algo(const char *name)
 size_t cbfs_calculate_file_header_size(const char *name)
 {
 	return (sizeof(struct cbfs_file) +
-		align_up(strlen(name) + 1, CBFS_FILENAME_ALIGN));
+		align_up(strlen(name) + 1, CBFS_ATTRIBUTE_ALIGN));
 }
 
 /* Only call on legacy CBFSes possessing a master header. */
@@ -1870,6 +1866,7 @@ struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
 					       uint32_t tag,
 					       uint32_t size)
 {
+	assert(IS_ALIGNED(size, CBFS_ATTRIBUTE_ALIGN));
 	struct cbfs_file_attribute *attr, *next;
 	next = cbfs_file_first_attr(header);
 	do {

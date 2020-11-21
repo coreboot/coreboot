@@ -114,6 +114,9 @@ struct cbfs_file_attribute {
 	uint8_t data[0];
 } __packed;
 
+/* All attribute sizes must be divisible by this! */
+#define CBFS_ATTRIBUTE_ALIGN 4
+
 /* Depending on how the header was initialized, it may be backed with 0x00 or
  * 0xff. Support both. */
 enum cbfs_file_attr_tag {

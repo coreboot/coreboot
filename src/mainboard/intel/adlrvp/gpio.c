@@ -287,6 +287,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_H23, NONE, DEEP, NF1),
+
+	/* A21 : HDMI CRLS CTRLCLK */
+	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
+	/* A22 : HDMI CRLS CTRLDATA */
+	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF1),
 };
 
 void variant_configure_gpio_pads(void)

@@ -90,7 +90,9 @@ chip soc/intel/alderlake
 
 	# Enable EDP in PortA
 	register "DdiPortAConfig" = "1"
-	register "DdiPortBConfig" = "1"
+	# Enable HDMI in Port B
+	register "DdiPortBDdc" = "1"
+	register "DdiPortBHpd" = "1"
 
 	# TCSS USB3
 	register "TcssAuxOri" = "0"

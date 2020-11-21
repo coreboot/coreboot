@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 /*
  * This software and ancillary information (herein called SOFTWARE)
  * called LinuxBIOS is made available under the terms described here.
@@ -28,8 +30,10 @@
 #include <arch/rom_segs.h>
 #include <cpu/x86/post_code.h>
 
-/* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
- * Startup IPI message without RAM.
+.section .init._start, "ax", @progbits
+
+/* Symbol _start16bit must reachable from the reset vector, and be aligned to
+ * 4kB to start AP CPUs with Startup IPI message without RAM.
  */
 .align 4096
 .code16

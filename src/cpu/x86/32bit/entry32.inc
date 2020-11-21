@@ -13,6 +13,7 @@
  */
 	.align	4
 
+.globl __protected_start
 __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp

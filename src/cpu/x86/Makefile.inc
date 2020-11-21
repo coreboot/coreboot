@@ -8,6 +8,8 @@ ramstage-y += backup_default_smm.c
 
 subdirs-$(CONFIG_CPU_INTEL_COMMON_SMM) += ../intel/smm
 
+bootblock-y += entry16.S
+
 additional-dirs += $(obj)/cpu/x86
 
 SIPI_ELF=$(obj)/cpu/x86/sipi_vector.elf

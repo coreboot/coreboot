@@ -10,13 +10,12 @@
 
 #include <cpu/x86/cr.h>
 
-.section .init._start, "ax", @progbits
+.section .init, "ax", @progbits
 
 /*
  * Include the old code for reset vector and protected mode entry. That code has
  * withstood the test of time.
  */
-#include <cpu/x86/16bit/entry16.inc>
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 

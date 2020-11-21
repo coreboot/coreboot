@@ -17,6 +17,7 @@
 #include <commonlib/fsp.h>
 #include <commonlib/endian.h>
 #include <commonlib/helpers.h>
+#include <commonlib/region.h>
 #include <vboot_host.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
@@ -116,18 +117,145 @@ static bool region_is_modern_cbfs(const char *region)
 				CBFS_FILE_MAGIC, strlen(CBFS_FILE_MAGIC));
 }
 
-/*
- * Converts between offsets from the start of the specified image region and
- * "top-aligned" offsets from the top of the entire boot media.
- */
-static unsigned convert_to_from_absolute_top_aligned(
-		const struct buffer *region, unsigned offset)
+/* This describes a window from the SPI flash address space into the host address space. */
+struct mmap_window {
+	struct region flash_space;
+	struct region host_space;
+};
+
+enum mmap_window_type {
+	X86_DEFAULT_DECODE_WINDOW, /* Decode window just below 4G boundary */
+	MMAP_MAX_WINDOWS,
+};
+
+/* Table of all the decode windows supported by the platform. */
+static struct mmap_window mmap_window_table[MMAP_MAX_WINDOWS];
+
+static void add_mmap_window(enum mmap_window_type idx, size_t flash_offset, size_t host_offset,
+			    size_t window_size)
+{
+	if (idx >= MMAP_MAX_WINDOWS) {
+		ERROR("Incorrect mmap window index(%d)\n", idx);
+		return;
+	}
+
+	mmap_window_table[idx].flash_space.offset = flash_offset;
+	mmap_window_table[idx].host_space.offset = host_offset;
+	mmap_window_table[idx].flash_space.size = window_size;
+	mmap_window_table[idx].host_space.size = window_size;
+}
+
+static void create_mmap_windows(void)
+{
+	static bool done;
+
+	if (done)
+		return;
+
+	const size_t image_size = partitioned_file_total_size(param.image_file);
+	const size_t window_size = MIN(16 * MiB, image_size);
+
+	/*
+	 * Default decode window lives just below 4G boundary in host space and maps up to a
+	 * maximum of 16MiB. If the window is smaller than 16MiB, the SPI flash window is mapped
+	 * at the top of the host window just below 4G.
+	 */
+	add_mmap_window(X86_DEFAULT_DECODE_WINDOW, image_size - window_size,
+			4ULL * GiB - window_size, window_size);
+
+	done = true;
+}
+
+static unsigned int convert_address(const struct region *to, const struct region *from,
+				    unsigned int addr)
+{
+	/*
+	 * Calculate the offset in the "from" region and use that offset to calculate
+	 * corresponding address in the "to" region.
+	 */
+	size_t offset = addr - region_offset(from);
+	return region_offset(to) + offset;
+}
+
+enum mmap_addr_type {
+	HOST_SPACE_ADDR,
+	FLASH_SPACE_ADDR,
+};
+
+static int find_mmap_window(enum mmap_addr_type addr_type, unsigned int addr)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(mmap_window_table); i++) {
+		const struct region *reg;
+
+		if (addr_type == HOST_SPACE_ADDR)
+			reg = &mmap_window_table[i].host_space;
+		else
+			reg = &mmap_window_table[i].flash_space;
+
+		if (region_offset(reg) <= addr && region_end(reg) >= addr)
+			return i;
+	}
+
+	return -1;
+}
+
+static unsigned int convert_host_to_flash(const struct buffer *region, unsigned int addr)
+{
+	int idx;
+	const struct region *to, *from;
+
+	idx = find_mmap_window(HOST_SPACE_ADDR, addr);
+	if (idx == -1) {
+		ERROR("Host address(%x) not in any mmap window!\n", addr);
+		return 0;
+	}
+
+	to = &mmap_window_table[idx].flash_space;
+	from = &mmap_window_table[idx].host_space;
+
+	/* region->offset is subtracted because caller expects offset in the given region. */
+	return convert_address(to, from, addr) - region->offset;
+}
+
+static unsigned int convert_flash_to_host(const struct buffer *region, unsigned int addr)
+{
+	int idx;
+	const struct region *to, *from;
+
+	/*
+	 * region->offset is added because caller provides offset in the given region. This is
+	 * converted to an absolute address in the SPI flash space. This is done before the
+	 * conversion as opposed to after in convert_host_to_flash() above because the address
+	 * is actually an offset within the region. So, it needs to be converted into an
+	 * absolute address in the SPI flash space before converting into an address in host
+	 * space.
+	 */
+	addr += region->offset;
+	idx = find_mmap_window(FLASH_SPACE_ADDR, addr);
+
+	if (idx == -1) {
+		ERROR("SPI flash address(%x) not in any mmap window!\n", addr);
+		return 0;
+	}
+
+	to = &mmap_window_table[idx].host_space;
+	from = &mmap_window_table[idx].flash_space;
+
+	return convert_address(to, from, addr);
+}
+
+static unsigned int convert_addr_space(const struct buffer *region, unsigned int addr)
 {
 	assert(region);
 
-	size_t image_size = partitioned_file_total_size(param.image_file);
+	create_mmap_windows();
 
-	return image_size - region->offset - offset;
+	if (IS_HOST_SPACE_ADDRESS(addr))
+		return convert_host_to_flash(region, addr);
+	else
+		return convert_flash_to_host(region, addr);
 }
 
 /*
@@ -572,7 +700,8 @@ static int cbfs_add_component(const char *filename,
 	}
 
 	if (IS_HOST_SPACE_ADDRESS(offset))
-		offset = convert_to_from_absolute_top_aligned(param.image_region, -offset);
+		offset = convert_addr_space(param.image_region, offset);
+
 	if (cbfs_add_entry(&image, &buffer, offset, header, len_align) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
 		free(header);
@@ -658,8 +787,7 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	 */
 	if (param.stage_xip) {
 		if (!IS_HOST_SPACE_ADDRESS(address))
-			address = -convert_to_from_absolute_top_aligned(
-					param.image_region, address);
+			address = convert_addr_space(param.image_region, address);
 	} else {
 		if (param.baseaddress_assigned == 0) {
 			INFO("Honoring pre-linked FSP module.\n");
@@ -732,9 +860,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 		 * x86 semantics about the boot media being directly mapped
 		 * below 4GiB in the CPU address space.
 		 **/
-		address = -convert_to_from_absolute_top_aligned(
-				param.image_region, address);
-		*offset = address;
+		*offset = convert_addr_space(param.image_region, address);
 
 		ret = parse_elf_to_xip_stage(buffer, &output, offset,
 						param.ignore_section);

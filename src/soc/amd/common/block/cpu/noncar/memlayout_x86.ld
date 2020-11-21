@@ -102,7 +102,7 @@ SECTIONS
 
 #if ENV_BOOTBLOCK
 
-gdtptr16_offset = gdtptr16 & 0xffff;
+gdtptr_offset = gdtptr & 0xffff;
 nullidt_offset = nullidt & 0xffff;
 
 SECTIONS {

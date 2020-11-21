@@ -108,7 +108,7 @@ _start16bit:
 	movw	$nullidt_offset, %bx
 	subw	%ax, %bx
 	lidt	%cs:(%bx)
-	movw	$gdtptr16_offset, %bx
+	movw	$gdtptr_offset, %bx
 	subw	%ax, %bx
 	lgdtl	%cs:(%bx)
 
@@ -127,11 +127,8 @@ _start16bit:
 	 * The gdt is defined in entry32.inc, it has a 4 Gb code segment
 	 * at 0x08, and a 4 GB data segment at 0x10;
 	 */
-.align	4
-.globl gdtptr16
-gdtptr16:
-	.word	gdt_end - gdt -1 /* compute the table limit */
-	.long	gdt		 /* we know the offset */
+__gdtptr:
+	.long	gdtptr
 
 .align	4
 .globl nullidt
@@ -139,7 +136,3 @@ nullidt:
 	.word	0	/* limit */
 	.long	0
 	.word	0
-
-.globl _estart16bit
-_estart16bit:
-	.code32

@@ -12,4 +12,3 @@ _start:
 	 * instead of the weird 16 bit relocations that binutils does not
 	 * handle consistently between versions because they are used so rarely.
 	 */
-	.previous

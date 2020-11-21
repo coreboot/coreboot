@@ -16,7 +16,6 @@
  * Include the old code for reset vector and protected mode entry. That code has
  * withstood the test of time.
  */
-#include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
 #if CONFIG(BOOTBLOCK_DEBUG_SPINLOOP)

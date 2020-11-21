@@ -2,9 +2,9 @@
 
 #include <bootblock_common.h>
 #include <gpio.h>
-#include <variant/gpio.h>
+#include <mainboard/gpio.h>
 
 void bootblock_mainboard_init(void)
 {
-	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
+	mainboard_configure_early_gpios();
 }

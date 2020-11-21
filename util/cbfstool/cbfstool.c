@@ -94,6 +94,18 @@ static struct param {
 	char *initrd;
 	char *cmdline;
 	int force;
+	/*
+	 * Base and size of extended window for decoding SPI flash greater than 16MiB in host
+	 * address space on x86 platforms. The assumptions here are:
+	 * 1. Top 16MiB is still decoded in the fixed decode window just below 4G boundary.
+	 * 2. Rest of the SPI flash below the top 16MiB is mapped at the top of extended
+	 * window. Even though the platform might support a larger extended window, the SPI
+	 * flash part used by the mainboard might not be large enough to be mapped in the entire
+	 * window. In such cases, the mapping is assumed to be in the top part of the extended
+	 * window with the bottom part remaining unused.
+	 */
+	uint32_t ext_win_base;
+	uint32_t ext_win_size;
 } param = {
 	/* All variables not listed are initialized as zero. */
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
@@ -125,6 +137,8 @@ struct mmap_window {
 
 enum mmap_window_type {
 	X86_DEFAULT_DECODE_WINDOW, /* Decode window just below 4G boundary */
+	X86_EXTENDED_DECODE_WINDOW, /* Extended decode window for mapping greater than 16MiB
+				       flash */
 	MMAP_MAX_WINDOWS,
 };
 
@@ -145,25 +159,72 @@ static void add_mmap_window(enum mmap_window_type idx, size_t flash_offset, size
 	mmap_window_table[idx].host_space.size = window_size;
 }
 
-static void create_mmap_windows(void)
+#define DEFAULT_DECODE_WINDOW_TOP	(4ULL * GiB)
+#define DEFAULT_DECODE_WINDOW_MAX_SIZE	(16 * MiB)
+
+static bool create_mmap_windows(void)
 {
 	static bool done;
 
 	if (done)
-		return;
+		return done;
 
 	const size_t image_size = partitioned_file_total_size(param.image_file);
-	const size_t window_size = MIN(16 * MiB, image_size);
+	const size_t std_window_size = MIN(DEFAULT_DECODE_WINDOW_MAX_SIZE, image_size);
+	const size_t std_window_flash_offset = image_size - std_window_size;
 
 	/*
 	 * Default decode window lives just below 4G boundary in host space and maps up to a
 	 * maximum of 16MiB. If the window is smaller than 16MiB, the SPI flash window is mapped
 	 * at the top of the host window just below 4G.
 	 */
-	add_mmap_window(X86_DEFAULT_DECODE_WINDOW, image_size - window_size,
-			4ULL * GiB - window_size, window_size);
+	add_mmap_window(X86_DEFAULT_DECODE_WINDOW, std_window_flash_offset,
+			DEFAULT_DECODE_WINDOW_TOP - std_window_size, std_window_size);
+
+	if (param.ext_win_size && (image_size > DEFAULT_DECODE_WINDOW_MAX_SIZE)) {
+		/*
+		 * If the platform supports extended window and the SPI flash size is greater
+		 * than 16MiB, then create a mapping for the extended window as well.
+		 * The assumptions here are:
+		 * 1. Top 16MiB is still decoded in the fixed decode window just below 4G
+		 * boundary.
+		 * 2. Rest of the SPI flash below the top 16MiB is mapped at the top of extended
+		 * window. Even though the platform might support a larger extended window, the
+		 * SPI flash part used by the mainboard might not be large enough to be mapped
+		 * in the entire window. In such cases, the mapping is assumed to be in the top
+		 * part of the extended window with the bottom part remaining unused.
+		 *
+		 * Example:
+		 * ext_win_base = 0xF8000000
+		 * ext_win_size = 32 * MiB
+		 * ext_win_limit = ext_win_base + ext_win_size - 1 = 0xF9FFFFFF
+		 *
+		 * If SPI flash is 32MiB, then top 16MiB is mapped from 0xFF000000 - 0xFFFFFFFF
+		 * whereas the bottom 16MiB is mapped from 0xF9000000 - 0xF9FFFFFF. The extended
+		 * window 0xF8000000 - 0xF8FFFFFF remains unused.
+		 */
+		const size_t ext_window_mapped_size = MIN(param.ext_win_size,
+							  image_size - std_window_size);
+		const size_t ext_window_top = param.ext_win_base + param.ext_win_size;
+		add_mmap_window(X86_EXTENDED_DECODE_WINDOW,
+				std_window_flash_offset - ext_window_mapped_size,
+				ext_window_top - ext_window_mapped_size,
+				ext_window_mapped_size);
+
+		if (region_overlap(&mmap_window_table[X86_EXTENDED_DECODE_WINDOW].host_space,
+				   &mmap_window_table[X86_DEFAULT_DECODE_WINDOW].host_space)) {
+			const struct region *ext_region;
+
+			ext_region = &mmap_window_table[X86_EXTENDED_DECODE_WINDOW].host_space;
+			ERROR("Extended window(base=0x%zx, limit=0x%zx) overlaps with default window!\n",
+			      region_offset(ext_region), region_end(ext_region));
+
+			return false;
+		}
+	}
 
 	done = true;
+	return done;
 }
 
 static unsigned int convert_address(const struct region *to, const struct region *from,
@@ -250,7 +311,7 @@ static unsigned int convert_addr_space(const struct buffer *region, unsigned int
 {
 	assert(region);
 
-	create_mmap_windows();
+	assert(create_mmap_windows());
 
 	if (IS_HOST_SPACE_ADDRESS(addr))
 		return convert_host_to_flash(region, addr);
@@ -1431,6 +1492,8 @@ enum {
 	/* begin after ASCII characters */
 	LONGOPT_START = 256,
 	LONGOPT_IBB = LONGOPT_START,
+	LONGOPT_EXT_WIN_BASE,
+	LONGOPT_EXT_WIN_SIZE,
 	LONGOPT_END,
 };
 
@@ -1474,6 +1537,8 @@ static struct option long_options[] = {
 	{"mach-parseable",no_argument,       0, 'k' },
 	{"unprocessed",   no_argument,       0, 'U' },
 	{"ibb",           no_argument,       0, LONGOPT_IBB },
+	{"ext-win-base",  required_argument, 0, LONGOPT_EXT_WIN_BASE },
+	{"ext-win-size",  required_argument, 0, LONGOPT_EXT_WIN_SIZE },
 	{NULL,            0,                 0,  0  }
 };
 
@@ -1576,11 +1641,16 @@ static void usage(char *name)
 	     "  -U               Unprocessed; don't decompress or make ELF\n"
 	     "  -v               Provide verbose output\n"
 	     "  -h               Display this help message\n\n"
+	     "  --ext-win-base   Base of extended decode window in host address\n"
+	     "                   space(x86 only)\n"
+	     "  --ext-win-size   Size of extended decode window in host address\n"
+	     "                   space(x86 only)\n"
 	     "COMMANDs:\n"
 	     " add [-r image,regions] -f FILE -n NAME -t TYPE [-A hash] \\\n"
 	     "        [-c compression] [-b base-address | -a alignment] \\\n"
 	     "        [-p padding size] [-y|--xip if TYPE is FSP]       \\\n"
-	     "        [-j topswap-size] (Intel CPUs only) [--ibb]           "
+	     "        [-j topswap-size] (Intel CPUs only) [--ibb]       \\\n"
+	     "        [--ext-win-base win-base --ext-win-size win-size]     "
 			"Add a component\n"
 	     "                                                         "
 	     "    -j valid size: 0x10000 0x20000 0x40000 0x80000 0x100000 \n"
@@ -1591,7 +1661,8 @@ static void usage(char *name)
 	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore] \\\n"
 	     "        [-a alignment] [-P page-size] [-Q|--pow2page] \\\n"
-	     "        [-y|--xip] [--ibb]                                   "
+	     "        [-y|--xip] [--ibb]                                \\\n"
+	     "        [--ext-win-base win-base --ext-win-size win-size]     "
 			"Add a stage to the ROM\n"
 	     " add-flat-binary [-r image,regions] -f FILE -n NAME \\\n"
 	     "        [-A hash] -l load-address -e entry-point \\\n"
@@ -1919,6 +1990,20 @@ int main(int argc, char **argv)
 				break;
 			case LONGOPT_IBB:
 				param.ibb = true;
+				break;
+			case LONGOPT_EXT_WIN_BASE:
+				param.ext_win_base = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid ext window base '%s'.\n", optarg);
+					return 1;
+				}
+				break;
+			case LONGOPT_EXT_WIN_SIZE:
+				param.ext_win_size = strtoul(optarg, &suffix, 0);
+				if (!*optarg || (suffix && *suffix)) {
+					ERROR("Invalid ext window size '%s'.\n", optarg);
+					return 1;
+				}
 				break;
 			case 'h':
 			case '?':

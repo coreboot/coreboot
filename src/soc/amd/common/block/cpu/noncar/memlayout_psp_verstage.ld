@@ -4,6 +4,8 @@
 #include <soc/psp_transfer.h>
 #include <fmap_config.h>
 
+/* TODO: Move defines to SoC-specific header file to allow SoC specific values if needed. */
+
 /*
  * Start of available space is 0x15000 and this is where the
  * header for the user app (verstage) must be mapped.

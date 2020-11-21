@@ -11,3 +11,19 @@ config SOC_AMD_COMMON_BLOCK_CAR
 	  This is only used for AMD CPU before family 17h. From family 17h on
 	  the RAM is already initialized by the PSP before the x86 cores are
 	  released from reset.
+
+config SOC_AMD_COMMON_BLOCK_NONCAR
+	bool
+	default n
+	help
+	  From family 17h on AMD CPUs/APUs don't use cache as RAM (CAR) any
+	  more, since the RAM initialization is already done by the PSP when
+	  the x86 cores are released from reset.
+
+if SOC_AMD_COMMON_BLOCK_NONCAR
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/amd/common/block/cpu/noncar/memlayout.ld"
+
+endif # SOC_AMD_COMMON_BLOCK_NONCAR

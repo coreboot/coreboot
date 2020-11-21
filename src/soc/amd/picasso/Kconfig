@@ -29,6 +29,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_LFENCE
 	select UDELAY_TSC
 	select SOC_AMD_COMMON
+	select SOC_AMD_COMMON_BLOCK_NONCAR
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI
 	select SOC_AMD_COMMON_BLOCK_IOMMU
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
@@ -56,10 +57,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_CF9_RESET
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select ACPI_NO_SMI_GNVS
-
-config MEMLAYOUT_LD_FILE
-	string
-	default "src/soc/amd/picasso/memlayout.ld"
 
 config EARLY_RESERVED_DRAM_BASE
 	hex

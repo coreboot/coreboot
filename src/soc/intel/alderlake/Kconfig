@@ -70,18 +70,18 @@ config DCACHE_RAM_BASE
 	default 0xfef00000
 
 config DCACHE_RAM_SIZE
-	default 0x80000
+	default 0xc0000
 	help
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage.
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x40400
+	default 0x80400
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages. In the case of FSP_USES_CB_STACK default value will be
-	  sum of FSP-M stack requirement(256KiB) and CB romstage stack requirement
+	  sum of FSP-M stack requirement(512KiB) and CB romstage stack requirement
 	  (~1KiB).
 
 config FSP_TEMP_RAM_SIZE

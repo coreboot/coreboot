@@ -11,3 +11,48 @@ config FAST_SPI_DISABLE_WRITE_STATUS
 	default y
 	help
 	  Disable the write status SPI opcode in Intel Fast SPI block.
+
+config FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	help
+	  Fast SPI controller on the platform supports additional
+	  window for memory mapping BIOS region (region 1) on the SPI
+	  flash beyond the standard limit of 16MiB. Depending upon the
+	  size of the SPI flash part used by the mainboard, two decode
+	  windows will be enabled:
+	    1. Fixed decode window up to a maximum size of 16MiB under
+	       4G boundary.
+	    2. Extended decode window up to a maximum size provided by
+	       the platform to map the rest of the BIOS region.
+	  SoC selecting this config is expected to provide the base and
+	  maximum size of the extended window in the host address space
+	  using configs EXT_BIOS_WIN_BASE and EXT_BIOS_WIN_SIZE.
+
+config EXT_BIOS_WIN_BASE
+	hex
+	help
+	  If an additional window for mapping BIOS region greater than
+	  16MiB is supported, then this config is used to provide the
+	  base address reserved for the mapping. Since the mapping is
+	  done at the top of the window, depending upon the size of the
+	  BIOS region, the actual base address configured in the fast
+	  SPI controller can be higher at runtime.
+
+config EXT_BIOS_WIN_SIZE
+	hex
+	help
+	  Maximum size of the extended window reserved for mapping BIOS
+	  region greater than 16MiB. The actual mapped window might be
+	  smaller depending upon the size of the BIOS region.
+
+if FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
+
+# Disable X86_TOP4G_BOOTMEDIA_MAP because the fast SPI controller
+# driver provides a custom boot media device when multiple decode
+# windows are used for the BIOS region.
+
+config X86_TOP4G_BOOTMEDIA_MAP
+	default n
+
+endif

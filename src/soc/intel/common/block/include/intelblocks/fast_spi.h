@@ -74,4 +74,11 @@ bool fast_spi_wpd_status(void);
  */
 void fast_spi_enable_wp(void);
 
+/*
+ * Get base and size of extended BIOS decode window used at runtime in host address space. If
+ * the BIOS region is not greater than 16MiB, then this function returns 0 for both base and
+ * size.
+ */
+void fast_spi_get_ext_bios_window(uintptr_t *base, size_t *size);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_FAST_SPI_H */

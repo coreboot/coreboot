@@ -8,8 +8,7 @@
 #include <soc/romstage.h>
 #include <fsp/soc_binding.h>
 #include <pc80/mc146818rtc.h>
-
-#include "variant.h"
+#include <variant.h>
 
 /* Rcomp resistor */
 static const u16 rcomp_resistors[3] = { 121, 75, 100 };

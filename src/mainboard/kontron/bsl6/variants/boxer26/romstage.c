@@ -5,8 +5,7 @@
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <fsp/soc_binding.h>
-
-#include "../../variant.h"
+#include <variant.h>
 
 void variant_memory_init_params(FSPM_UPD *const mupd)
 {

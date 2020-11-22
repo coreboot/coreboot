@@ -21,8 +21,8 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	{
 		.console_index = 0,
 		.gpios = {
-			PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1), /* UART0 RX */
-			PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1), /* UART0 TX */
+			PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2), /* UART0 RX */
+			PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2), /* UART0 TX */
 		},
 	},
 	{

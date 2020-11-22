@@ -5,5 +5,5 @@
 
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	mainboard_configure_gpios();
 }

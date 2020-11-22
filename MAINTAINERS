@@ -282,6 +282,14 @@ F:	/src/mainboard/intel/strago/
 
 
 
+KONTRON BSL6 MAINBOARD
+M:	Felix Singer <felixsinger@posteo.net>
+M:	Nico Huber <nico.h@gmx.de>
+S:	Supported
+F:	src/mainboard/kontron/bsl6/
+
+
+
 LENOVO MAINBOARDS
 M:	Alexander Couzens <lynxis@fe80.eu>
 M:	Patrick Rudolph <siro@das-labor.org>
@@ -378,6 +386,12 @@ F:	src/mainboard/samsung/lumpy/
 F:	src/mainboard/samsung/stumpy/
 
 
+
+SIEMENS CHILI MAINBAORD
+M:	Felix Singer <felixsinger@posteo.net>
+M:	Nico Huber <nico.h@gmx.de>
+S:	Supported
+F:	src/mainboard/siemens/chili/
 
 SIEMENS MC_xxxx MAINBOARDS
 M:	Werner Zeh <werner.zeh@siemens.com>

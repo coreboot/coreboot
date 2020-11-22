@@ -15,6 +15,7 @@ config CPU_SPECIFIC_OPTIONS
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select CPU_SUPPORTS_PM_TIMER_EMULATION
 	select DRIVERS_USB_ACPI
+	select FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
 	select FSP_COMPRESS_FSP_S_LZ4
 	select FSP_M_XIP
 	select FSP_STATUS_GLOBAL_RESET_REQUIRED_3
@@ -100,6 +101,12 @@ config FSP_TEMP_RAM_SIZE
 config CHIPSET_DEVICETREE
 	string
 	default "soc/intel/tigerlake/chipset.cb"
+
+config EXT_BIOS_WIN_BASE
+	default 0xf8000000
+
+config EXT_BIOS_WIN_SIZE
+	default 0x2000000
 
 config IFD_CHIPSET
 	string

@@ -833,6 +833,10 @@ endif
 
 # cbfs-add-cmd-for-region
 # $(call cbfs-add-cmd-for-region,file in extract_nth format,region name)
+#
+# CBFSTOOL_ADD_CMD_OPTIONS can be used by arch/SoC/mainboard to supply
+# add commands with any additional arguments for cbfstool.
+# Example: --ext-win-base <base> --ext-win-size <size>
 define cbfs-add-cmd-for-region
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if \
@@ -847,8 +851,8 @@ define cbfs-add-cmd-for-region
 	-r $(2) \
 	$(if $(call extract_nth,6,$(1)),-a $(call extract_nth,6,$(file)), \
 		$(if $(call extract_nth,5,$(file)),-b $(call extract_nth,5,$(file)))) \
-		$(call extract_nth,7,$(1))
-
+		$(call extract_nth,7,$(1)) \
+	$(CBFSTOOL_ADD_CMD_OPTIONS)
 
 endef
 # Empty line before endef is necessary so cbfs-add-cmd-for-region ends in a
@@ -1083,7 +1087,8 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		$(TXTIBB) \
 		$(CBNTIBB) \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
-		$(TS_OPTIONS)
+		$(TS_OPTIONS) \
+		$(CBFSTOOL_ADD_CMD_OPTIONS)
 else # ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp write -u \
 		-r BOOTBLOCK \
@@ -1095,10 +1100,11 @@ else # ifeq ($(CONFIG_ARCH_X86),y)
 		-f $@.tmp.2 \
 		-n "header pointer" \
 		-t "cbfs header" \
-		-b -4
+		-b -4 \
+		$(CBFSTOOL_ADD_CMD_OPTIONS)
 	rm -f $@.tmp.2
 endif # ifeq ($(CONFIG_ARCH_X86),y)
-	$(CBFSTOOL) $@.tmp add-master-header $(TS_OPTIONS)
+	$(CBFSTOOL) $@.tmp add-master-header $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)

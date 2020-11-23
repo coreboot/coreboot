@@ -58,12 +58,22 @@ chip soc/intel/tigerlake
 			},
 		},
 	}"
-	#These settings improve the USB2 Port1 eye diagram
+
+	#Disable Type-A Port A1
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
+
+	#Disable M.2 WWAN
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
+
+	#improve the USB2 Port1 eye diagram
+	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"
+
+	#lower camera driving
 	register "usb2_ports[4]" = "{
 		.enable = 1,
-		.tx_bias = 7,
-		.tx_emp_enable = 7,
-		.pre_emp_bias = 3,
+		.tx_bias = 0,
+		.tx_emp_enable = 0,
+		.pre_emp_bias = 0,
 		.pre_emp_bit = 0,
 	}"
 

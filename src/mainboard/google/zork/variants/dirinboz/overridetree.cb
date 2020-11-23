@@ -21,6 +21,45 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_offset" = "167"
 	# End : OPN Performance Configuration
 
+	# USB 2.0 strength
+	register "usb_2_port_tune_params[0]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0xe,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# USB 2.0 strength
+	register "usb_2_port_tune_params[2]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0xe,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# USB 2.0 strength
+	register "usb_2_port_tune_params[3]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0xe,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
 	# I2C2 for touchscreen and trackpad
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,

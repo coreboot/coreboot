@@ -21,7 +21,7 @@ config FMDFILE
 config AMD_LPC_DEBUG_CARD
 	bool "Enable LPC-Serial debug card on the debug header"
 	default n
-	select PICASSO_LPC_IOMUX
+	select MANDOLIN_LPC
 	select SUPERIO_SMSC_SIO1036
 	help
 	  AMD's debug card contains an SMSC SIO1036 device which provides an
@@ -111,7 +111,7 @@ config MANDOLIN_IOMUX_USE_EMMC
 endchoice
 endif # !AMD_LPC_DEBUG_CARD
 
-config PICASSO_LPC_IOMUX
+config MANDOLIN_LPC
 	bool
 	default y if MANDOLIN_IOMUX_USE_LPC
 	help

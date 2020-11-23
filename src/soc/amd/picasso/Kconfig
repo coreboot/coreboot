@@ -376,12 +376,6 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 150
 
-config PICASSO_LPC_IOMUX
-	bool
-	help
-	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
-	  Select this option if LPC signals are required.
-
 config DISABLE_SPI_FLASH_ROM_SHARING
 	def_bool n
 	help

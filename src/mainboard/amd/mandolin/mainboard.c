@@ -111,13 +111,13 @@ static void mainboard_init(void *chip_info)
 {
 	struct soc_amd_picasso_config *cfg = config_of_soc();
 
-	if (!CONFIG(PICASSO_LPC_IOMUX))
+	if (!CONFIG(MANDOLIN_LPC))
 		cfg->emmc_config.timing = SD_EMMC_EMMC_HS400;
 
 	mainboard_program_gpios();
 
 	/* Re-muxing LPCCLK0 can hang the system if LPC is in use. */
-	if (CONFIG(PICASSO_LPC_IOMUX))
+	if (CONFIG(MANDOLIN_LPC))
 		printk(BIOS_INFO, "eMMC not available due to LPC requirement\n");
 	else
 		mainboard_program_emmc_gpios();

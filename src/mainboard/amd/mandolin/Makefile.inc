@@ -6,7 +6,7 @@ bootblock-y += variants/$(VARIANT_DIR)/early_gpio.c
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-y += variants/$(VARIANT_DIR)/port_descriptors.c
 
-ifneq ($(CONFIG_PICASSO_LPC_IOMUX),y)
+ifneq ($(CONFIG_MANDOLIN_LPC),y)
 ramstage-y += emmc_gpio.c
 endif
 

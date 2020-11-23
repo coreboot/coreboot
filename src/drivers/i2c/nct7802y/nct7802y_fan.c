@@ -78,13 +78,6 @@ void nct7802y_init_fan(struct device *const dev)
 			init_fan(dev, &config->fan[i], i);
 	}
 
-	value = 0;
-	for (i = 0; i < NCT7802Y_RTD_CNT; ++i)
-		value |= MODE_SELECTION_RTDx(i, config->sensors.rtd[i]);
-	if (config->sensors.local_enable)
-		value |= MODE_SELECTION_LTD_EN;
-	nct7802y_write(dev, MODE_SELECTION, value);
-
 	switch (config->on_pecierror) {
 	case PECI_ERROR_KEEP:
 		value = CLOSE_LOOP_FAN_PECI_ERR_CURR;

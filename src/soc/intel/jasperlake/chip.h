@@ -359,6 +359,51 @@ struct soc_intel_jasperlake_config {
 	 * Range: 0.0% to 10.0% (0-100)
 	 */
 	uint8_t FivrSpreadSpectrum;
+
+	/*
+	 * Disable Fast Slew Rate for Deep Package C States for VR domains
+	 * Disable Fast Slew Rate for Deep Package C States based on
+	 * Acoustic Noise Mitigation feature enabled.
+	 */
+	uint8_t FastPkgCRampDisable;
+
+	/*
+	 * Slew Rate configuration for Deep Package C States for VR domains
+	 * based on Acoustic Noise Mitigation feature enabled.
+	 * 0: Fast/2 ; 1: Fast/4; 2: Fast/8; 3: Fast/16
+	 */
+	uint8_t SlowSlewRate;
+
+	/*
+	 * Enable or Disable Acoustic Noise Mitigation feature.
+	 * 0: Disabled ; 1: Enabled
+	 */
+	uint8_t AcousticNoiseMitigation;
+
+	/*
+	 * Acoustic Noise Mitigation Range.Defines the maximum Pre-Wake
+	 * randomization time in micro ticks.This can be programmed only
+	 * if AcousticNoiseMitigation is enabled.
+	 * Range 0-255
+	 */
+	uint8_t PreWake;
+
+	/*
+	 * Acoustic Noise Mitigation Range.Defines the maximum Ramp Up
+	 * randomization time in micro ticks.This can be programmed only
+	 * if AcousticNoiseMitigation is enabled.
+	 * Range 0-255
+	 */
+	uint8_t RampUp;
+
+	/*
+	 * Acoustic Noise Mitigation Range.Defines the maximum Ramp Down
+	 * randomization time in micro ticks.This can be programmed only
+	 * if AcousticNoiseMitigation is enabled.
+	 * Range 0-255
+	 */
+	uint8_t RampDown;
+
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

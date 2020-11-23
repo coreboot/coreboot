@@ -67,10 +67,15 @@ static void soc_config_pwrmbase(void)
 
 void bootblock_pch_early_init(void)
 {
-	fast_spi_early_init(SPI_BASE_ADDRESS);
-	gspi_early_bar_init();
+	/*
+	 * Perform P2SB configuration before any another controller initialization as the
+	 * controller might want to perform PCR settings.
+	 */
 	p2sb_enable_bar();
 	p2sb_configure_hpet();
+
+	fast_spi_early_init(SPI_BASE_ADDRESS);
+	gspi_early_bar_init();
 
 	/*
 	 * Enabling PWRM Base for accessing

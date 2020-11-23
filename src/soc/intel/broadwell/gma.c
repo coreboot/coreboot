@@ -6,6 +6,7 @@
 #include <bootmode.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -16,7 +17,6 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
-#include <soc/cpu.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
@@ -527,7 +527,7 @@ static void igd_init(struct device *dev)
 		reg_script_run_on_dev(dev, broadwell_early_init_script);
 
 		/* Set GFXPAUSE based on stepping */
-		if (cpu_stepping() <= (CPUID_BROADWELL_E0 & 0xf) &&
+		if (cpu_stepping() <= (CPUID_BROADWELL_ULT_E0 & 0xf) &&
 		    systemagent_revision() <= 9) {
 			gtt_write(0xa000, 0x300ff);
 		} else {

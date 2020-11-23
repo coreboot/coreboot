@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/haswell/haswell.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -9,7 +10,6 @@
 #include <device/pci_ops.h>
 #include <soc/ramstage.h>
 #include <soc/xhci.h>
-#include <soc/cpu.h>
 
 #ifdef __SIMPLE_DEVICE__
 static u8 *usb_xhci_mem_base(pci_devfn_t dev)

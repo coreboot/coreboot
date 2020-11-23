@@ -6,6 +6,7 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
@@ -15,10 +16,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
 #include <soc/acpi.h>
-#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
-#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>

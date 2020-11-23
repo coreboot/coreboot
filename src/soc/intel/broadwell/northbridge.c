@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
@@ -10,7 +11,6 @@
 #include <device/pci_ids.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/acpi.h>
-#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>

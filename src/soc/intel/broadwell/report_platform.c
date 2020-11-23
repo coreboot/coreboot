@@ -5,27 +5,28 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <string.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
-#include <soc/cpu.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 
+/* FIXME: Needs an update */
 static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_HASWELL_A0,     "Haswell A0" },
-	{ CPUID_HASWELL_B0,     "Haswell B0" },
-	{ CPUID_HASWELL_C0,     "Haswell C0" },
-	{ CPUID_HASWELL_ULT_B0, "Haswell ULT B0" },
-	{ CPUID_HASWELL_ULT,    "Haswell ULT C0 or D0" },
-	{ CPUID_HASWELL_HALO,   "Haswell Perf Halo" },
-	{ CPUID_BROADWELL_C0,   "Broadwell C0" },
-	{ CPUID_BROADWELL_D0,   "Broadwell D0" },
-	{ CPUID_BROADWELL_E0,   "Broadwell E0 or F0" },
+	{ CPUID_HASWELL_A0,       "Haswell A0" },
+	{ CPUID_HASWELL_B0,       "Haswell B0" },
+	{ CPUID_HASWELL_C0,       "Haswell C0" },
+	{ CPUID_HASWELL_ULT_B0,   "Haswell ULT B0" },
+	{ CPUID_HASWELL_ULT_C0,   "Haswell ULT C0 or D0" },
+	{ CPUID_CRYSTALWELL_C0,   "Haswell Perf Halo" },
+	{ CPUID_BROADWELL_ULT_C0, "Broadwell C0" },
+	{ CPUID_BROADWELL_ULT_D0, "Broadwell D0" },
+	{ CPUID_BROADWELL_ULT_E0, "Broadwell E0 or F0" },
 };
 
 static struct {

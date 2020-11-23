@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <arch/romstage.h>
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <elog.h>
 #include <romstage_handoff.h>
 #include <soc/gpio.h>

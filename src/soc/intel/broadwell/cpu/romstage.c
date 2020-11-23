@@ -2,10 +2,8 @@
 
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/msr.h>
-#include <soc/cpu.h>
-#include <soc/msr.h>
-#include <soc/romstage.h>
 
 void set_max_freq(void)
 {

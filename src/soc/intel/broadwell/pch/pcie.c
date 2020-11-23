@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
@@ -14,7 +15,6 @@
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>
-#include <soc/cpu.h>
 #include <delay.h>
 
 /* Low Power variant has 6 root ports. */

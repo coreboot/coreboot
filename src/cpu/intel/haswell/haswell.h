@@ -168,10 +168,17 @@ void intel_cpu_haswell_finalize_smm(void);
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 
+void set_max_freq(void);
+
 /* CPU identification */
 static inline u32 cpu_family_model(void)
 {
 	return cpuid_eax(1) & 0x0fff0ff0;
+}
+
+static inline u32 cpu_stepping(void)
+{
+	return cpuid_eax(1) & 0xf;
 }
 
 static inline int haswell_is_ult(void)

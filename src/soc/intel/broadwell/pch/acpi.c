@@ -15,10 +15,8 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
 #include <soc/acpi.h>
-#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
-#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>

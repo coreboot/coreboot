@@ -79,6 +79,9 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	current +=
 	    acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
 
+	/* NMI */
+	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0xff, 5, 1);
+
 	return current;
 }
 

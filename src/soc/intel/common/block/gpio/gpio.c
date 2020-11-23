@@ -48,6 +48,10 @@
 				((group) * sizeof(uint32_t)))
 #define GPI_SMI_EN_OFFSET(comm, group) ((comm)->gpi_smi_en_reg_0 +	\
 				((group) * sizeof(uint32_t)))
+#define GPI_NMI_STS_OFFSET(comm, group) ((comm)->gpi_nmi_sts_reg_0 +	\
+				((group) * sizeof(uint32_t)))
+#define GPI_NMI_EN_OFFSET(comm, group) ((comm)->gpi_nmi_en_reg_0 +	\
+				((group) * sizeof(uint32_t)))
 #define GPI_IS_OFFSET(comm, group) ((comm)->gpi_int_sts_reg_0 +	\
 				((group) * sizeof(uint32_t)))
 #define GPI_IE_OFFSET(comm, group) ((comm)->gpi_int_en_reg_0 +	\
@@ -176,6 +180,35 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 	pcr_or32(comm->port, en_reg, en_value);
 }
 
+static void gpi_enable_nmi(const struct pad_config *cfg,
+				const struct pad_community *comm)
+{
+	uint16_t sts_reg;
+	uint16_t en_reg;
+	uint32_t en_value;
+	int group;
+	int pin;
+
+	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_NMI) != PAD_CFG0_ROUTE_NMI)
+		return;
+
+	/* Do not configure NMI if the platform doesn't support it */
+	if (!comm->gpi_nmi_sts_reg_0 || !comm->gpi_nmi_en_reg_0)
+		return;
+
+	pin = relative_pad_in_comm(comm, cfg->pad);
+	group = gpio_group_index(comm, pin);
+	sts_reg = GPI_NMI_STS_OFFSET(comm, group);
+	en_reg = GPI_NMI_EN_OFFSET(comm, group);
+	en_value = gpio_bitmask_within_group(comm, pin);
+
+	/* Write back 1 to reset the sts bit */
+	pcr_rmw32(comm->port, sts_reg, en_value, 0);
+
+	/* Set enable bits */
+	pcr_or32(comm->port, en_reg, en_value);
+}
+
 static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 	uint16_t  pad_cfg_offset)
 {
@@ -283,6 +316,7 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	gpio_configure_itss(cfg, comm->port, config_offset);
 	gpio_configure_owner(cfg, comm);
 	gpi_enable_smi(cfg, comm);
+	gpi_enable_nmi(cfg, comm);
 }
 
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)

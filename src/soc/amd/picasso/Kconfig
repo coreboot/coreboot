@@ -406,14 +406,6 @@ config FSP_TEMP_RAM_SIZE
 
 menu "PSP Configuration Options"
 
-config AMDFW_OUTSIDE_CBFS
-	bool
-	default n
-	help
-	  The AMDFW (PSP) is typically locatable in cbfs.  Select this
-	  option to manually attach the generated amdfw.rom outside of
-	  cbfs.  The location is selected by the FWM position.
-
 config AMD_FWM_POSITION_INDEX
 	int "Firmware Directory Table location (0 to 5)"
 	range 0 5

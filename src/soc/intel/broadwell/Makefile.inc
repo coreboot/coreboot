@@ -1,7 +1,5 @@
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-romstage-y += cpu/romstage.c
-
 subdirs-y += pch
 
 bootblock-y += bootblock.c

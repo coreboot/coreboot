@@ -1,4 +1,6 @@
 ramstage-y += haswell_init.c
+
+romstage-y += romstage.c
 romstage-y += ../car/romstage.c
 
 ramstage-y += acpi.c

@@ -1,10 +1,6 @@
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 
-ifeq ($(CONFIG_CPU_INTEL_HASWELL),y)
 romstage-y += cpu/romstage.c
-else
-subdirs-y += cpu
-endif
 
 subdirs-y += pch
 

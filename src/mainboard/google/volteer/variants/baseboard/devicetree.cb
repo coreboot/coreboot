@@ -37,6 +37,9 @@ fw_config
 		option SD_ABSENT 0
 		option SD_GL9755S 1
 		option SD_RTS5261 2
+		option SD_RTS5227S 3
+		option SD_L9750 4
+		option SD_OZ711LV2LN 5
 	end
 	field KB_LAYOUT 20 21
 		option KB_LAYOUT_DEFAULT 0

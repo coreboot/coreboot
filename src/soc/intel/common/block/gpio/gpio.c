@@ -154,9 +154,9 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 static void gpi_enable_smi(const struct pad_config *cfg,
 				const struct pad_community *comm)
 {
-	uint32_t value;
 	uint16_t sts_reg;
 	uint16_t en_reg;
+	uint32_t en_value;
 	int group;
 	int pin;
 
@@ -165,15 +165,15 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 
 	pin = relative_pad_in_comm(comm, cfg->pad);
 	group = gpio_group_index(comm, pin);
-
 	sts_reg = GPI_SMI_STS_OFFSET(comm, group);
-	value = pcr_read32(comm->port, sts_reg);
-	/* Write back 1 to reset the sts bits */
-	pcr_write32(comm->port, sts_reg, value);
+	en_reg = GPI_SMI_EN_OFFSET(comm, group);
+	en_value = gpio_bitmask_within_group(comm, pin);
+
+	/* Write back 1 to reset the sts bit */
+	pcr_rmw32(comm->port, sts_reg, en_value, 0);
 
 	/* Set enable bits */
-	en_reg = GPI_SMI_EN_OFFSET(comm, group);
-	pcr_or32(comm->port, en_reg, gpio_bitmask_within_group(comm, pin));
+	pcr_or32(comm->port, en_reg, en_value);
 }
 
 static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,

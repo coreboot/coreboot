@@ -10,7 +10,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	fadt->sci_int = acpi_sci_irq();
+	fadt->sci_int = 9;
 
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;

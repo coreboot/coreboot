@@ -139,9 +139,6 @@ void disable_all_gpe(void);
 void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 
-/* Return the selected ACPI SCI IRQ */
-int acpi_sci_irq(void);
-
 /* STM Support */
 uint16_t get_pmbase(void);
 

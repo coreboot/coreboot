@@ -21,7 +21,7 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	int sci = acpi_sci_irq();
+	int sci = 9;
 	acpi_madt_irqoverride_t *irqovr;
 	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
 

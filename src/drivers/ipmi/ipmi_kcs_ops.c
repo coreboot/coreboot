@@ -11,6 +11,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/gpio.h>
 #include <device/pnp.h>
 #if CONFIG(HAVE_ACPI_TABLES)
 #include <acpi/acpi.h>
@@ -78,18 +79,31 @@ static void ipmi_kcs_init(struct device *dev)
 	struct ipmi_devid_rsp rsp;
 	uint32_t man_id = 0, prod_id = 0;
 	struct drivers_ipmi_config *conf = dev->chip_info;
+	const struct gpio_operations *gpio_ops;
 	struct ipmi_selftest_rsp selftestrsp = {0};
 	uint8_t retry_count;
-
-	if (!dev->enabled)
-		return;
-
-	printk(BIOS_DEBUG, "IPMI: PNP KCS 0x%x\n", dev->path.pnp.port);
 
 	if (!conf) {
 		printk(BIOS_WARNING, "IPMI: chip_info is missing! Skip init.\n");
 		return;
 	}
+
+	if (conf->bmc_jumper_gpio) {
+		gpio_ops = dev_get_gpio_ops(conf->gpio_dev);
+		if (!gpio_ops) {
+			printk(BIOS_WARNING, "IPMI: gpio device is missing gpio ops!\n");
+		} else {
+			/* Get jumper value and set device state accordingly */
+			dev->enabled = gpio_ops->get(conf->bmc_jumper_gpio);
+			if (!dev->enabled)
+				printk(BIOS_INFO, "IPMI: Disabled by jumper\n");
+		}
+	}
+
+	if (!dev->enabled)
+		return;
+
+	printk(BIOS_DEBUG, "IPMI: PNP KCS 0x%x\n", dev->path.pnp.port);
 
 	/* Get IPMI version for ACPI and SMBIOS */
 	if (conf->wait_for_bmc && conf->bmc_boot_timeout) {

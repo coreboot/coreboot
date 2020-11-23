@@ -1,7 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/device.h>
+
 #ifndef _IMPI_CHIP_H_
 #define _IPMI_CHIP_H_
+
+#include <stdint.h>
 
 struct drivers_ipmi_config {
 	u8 bmc_i2c_address;
@@ -11,6 +15,13 @@ struct drivers_ipmi_config {
 	u8 gpe_interrupt;
 	u8 have_apic;
 	u32 apic_interrupt;
+	/* Device to use for GPIO operations */
+	DEVTREE_CONST struct device *gpio_dev;
+	/*
+	 * Jumper GPIO for enabling / disabling BMC/IPMI
+	 * If present, the jumper overrides the devicetree.
+	 */
+	u32 bmc_jumper_gpio;
 	/*
 	 * Wait for BMC to boot.
 	 * This can be used if the BMC takes a long time to boot after PoR:

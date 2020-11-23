@@ -23,22 +23,22 @@ chip soc/intel/tigerlake
 				## Active Policy
 				register "policies.active" = "{
 					[0] = {.target = DPTF_CPU,
-					       .thresholds = {TEMP_PCT(94, 100),}},
+					       .thresholds = {TEMP_PCT(98, 100),}},
 					[1] = {.target = DPTF_TEMP_SENSOR_2,
 					       .thresholds = {TEMP_PCT(64, 100),
 							      TEMP_PCT(60, 90),
 							      TEMP_PCT(56, 80),
 							      TEMP_PCT(52, 70),
-							      TEMP_PCT(48, 60),
-							      TEMP_PCT(44, 50),
-							      TEMP_PCT(40, 40),}}}"
+							      TEMP_PCT(47, 60),
+							      TEMP_PCT(42, 50),
+							      TEMP_PCT(35, 40),}}}"
 
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,	CPU,	       95, 5000),
 					[1] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_1, 65, 6000),
 					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 65, 6000),
-					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2, 54, 6000),
+					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2, 52, 6000),
 					[4] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_3, 65, 6000)}"
 
 				## Critical Policy
@@ -58,7 +58,7 @@ chip soc/intel/tigerlake
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,
 						.granularity = 200,},
-					.pl2 = {.min_power = 15000,
+					.pl2 = {.min_power = 51000,
 						.max_power = 51000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,

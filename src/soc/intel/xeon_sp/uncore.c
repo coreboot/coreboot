@@ -200,6 +200,11 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	LOG_MEM_RESOURCE("low_ram", dev, index, base_kb, size_kb);
 	ram_resource(dev, index++, base_kb, size_kb);
 
+	/* fsp_mem_base -> cbmem_top */
+	base_kb = top_of_ram / KiB;
+	size_kb = ((uintptr_t)cbmem_top() - top_of_ram) / KiB;
+	reserved_ram_resource(dev, index++, base_kb, size_kb);
+
 	/*
 	 * FSP meomoy, CBMem regions are already added as reserved
 	 * Add TSEG and MESEG Regions as reserved memory

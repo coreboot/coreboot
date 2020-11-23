@@ -981,9 +981,23 @@ typedef struct {
 **/
   UINT8                       AcousticNoiseMitigation;
 
-/** Offset 0x048D - Reserved
+/** Offset 0x048D - Disable Fast Slew Rate for Deep Package C States for VR domains
+  Disable Fast Slew Rate for Deep Package C States based on Acoustic Noise Mitigation
+  feature enabled. <b>0: False</b>; 1: True
+  $EN_DIS
 **/
-  UINT8                       Reserved21[21];
+  UINT8                       FastPkgCRampDisable[5];
+
+/** Offset 0x0492 - Slew Rate configuration for Deep Package C States for VR domains
+  Slew Rate configuration for Deep Package C States for VR domains based on Acoustic
+  Noise Mitigation feature enabled. <b>0: Fast/2</b>; 1: Fast/4; 2: Fast/8; 3: Fast/16
+  0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16
+**/
+  UINT8                       SlowSlewRate[5];
+
+/** Offset 0x0497 - Reserved
+**/
+  UINT8                       Reserved21[11];
 
 /** Offset 0x04A2 - AcLoadline
   PCODE MMIO Mailbox: AcLoadline in 1/100 mOhms (ie. 1250 = 12.50 mOhm); Range is
@@ -1079,9 +1093,30 @@ typedef struct {
 **/
   UINT32                      CpuMpHob;
 
-/** Offset 0x04F4 - Reserved
+/** Offset 0x04F4 - Pre Wake Randomization time
+  PCODE MMIO Mailbox: Acoustic Noise Mitigation Range.Defines the maximum pre-wake
+  randomization time in micro ticks.This can be programmed only if AcousticNoiseMitigation
+  is enabled. Range 0-255 <b>0</b>.
 **/
-  UINT8                       Reserved24[16];
+  UINT8                       PreWake;
+
+/** Offset 0x04F5 - Ramp Up Randomization time
+  PCODE MMIO Mailbox: Acoustic Noise Mitigation Range.Defines the maximum Ramp Up
+  randomization time in micro ticks.This can be programmed only if AcousticNoiseMitigation
+  is enabled.Range 0-255 <b>0</b>.
+**/
+  UINT8                       RampUp;
+
+/** Offset 0x04F6 - Ramp Down Randomization time
+  PCODE MMIO Mailbox: Acoustic Noise Mitigation Range.Defines the maximum Ramp Down
+  randomization time in micro ticks.This can be programmed only if AcousticNoiseMitigation
+  is enabled.Range 0-255 <b>0</b>.
+**/
+  UINT8                       RampDown;
+
+/** Offset 0x04F7 - Reserved
+**/
+  UINT8                       Reserved24[13];
 
 /** Offset 0x0504 - PpinSupport to view Protected Processor Inventory Number
   Enable or Disable or Auto (Based on End of Manufacturing flag. Disabled if this

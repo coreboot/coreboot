@@ -616,10 +616,8 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void broadwell_init_cpus(struct device *dev)
+void mp_init_cpus(struct bus *cpu_bus)
 {
-	struct bus *cpu_bus = dev->link_list;
-
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }

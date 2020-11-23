@@ -288,6 +288,13 @@ M:	Nico Huber <nico.h@gmx.de>
 S:	Supported
 F:	src/mainboard/kontron/bsl6/
 
+KONTRON MAL10 MAINBOARD
+M:	Maxim Polyakov <max.senia.poliak@gmail.com>
+M:	Nico Huber <nico.h@gmx.de>
+M:	Felix Singer <felixsinger@posteo.net>
+S:	Supported
+F:	src/mainboard/kontron/mal10/
+
 
 
 LENOVO MAINBOARDS

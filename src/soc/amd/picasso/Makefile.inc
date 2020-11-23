@@ -11,7 +11,6 @@ subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
-bootblock-y += bootblock/pre_c.S
 bootblock-y += bootblock/bootblock.c
 bootblock-y += aoac.c
 bootblock-y += southbridge.c

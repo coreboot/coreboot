@@ -5,6 +5,6 @@
 
 #include <device/device.h>
 
-void variant_mainboard_init(struct device *dev);
+void variant_mainboard_init(void *chip_info);
 
 #endif /* _BASEBOARD_X11_LGA1151_SERIES_H */

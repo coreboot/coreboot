@@ -1,13 +1,21 @@
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc.c
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC),y)
 
-bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
-verstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
-romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
-postcar-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
-smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC) += lpc_util.c
+ramstage-y += lpc.c
 
-bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI) += espi_util.c
-romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI) += espi_util.c
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI) += espi_util.c
-verstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI) += espi_util.c
+bootblock-y += lpc_util.c
+verstage-y += lpc_util.c
+romstage-y += lpc_util.c
+postcar-y += lpc_util.c
+ramstage-y += lpc_util.c
+smm-y += lpc_util.c
+
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_LPC
+
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI),y)
+
+bootblock-y += espi_util.c
+romstage-y += espi_util.c
+ramstage-y += espi_util.c
+verstage-y += espi_util.c
+
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_USE_ESPI

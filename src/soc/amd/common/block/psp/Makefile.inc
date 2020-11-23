@@ -1,16 +1,27 @@
-bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP) += psp.c
-bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1) += psp_gen1.c
-bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2) += psp_gen2.c
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP),y)
 
-romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP) += psp.c
-romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1) += psp_gen1.c
-romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2) += psp_gen2.c
+bootblock-y += psp.c
+romstage-y += psp.c
+ramstage-y += psp.c
+smm-y += psp.c
+smm-y += psp_smm.c
 
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP) += psp.c
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1) += psp_gen1.c
-ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2) += psp_gen2.c
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP
 
-smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP) += psp.c
-smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP) += psp_smm.c
-smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1) += psp_gen1.c
-smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2) += psp_gen2.c
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1),y)
+
+bootblock-y += psp_gen1.c
+romstage-y += psp_gen1.c
+ramstage-y += psp_gen1.c
+smm-y += psp_gen1.c
+
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1
+
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2),y)
+
+bootblock-y += psp_gen2.c
+romstage-y += psp_gen2.c
+ramstage-y += psp_gen2.c
+smm-y += psp_gen2.c
+
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2

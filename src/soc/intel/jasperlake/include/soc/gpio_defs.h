@@ -254,6 +254,8 @@
 #define GPI_INT_EN_0				0x120
 #define GPI_SMI_STS_0				0x180
 #define GPI_SMI_EN_0				0x1a0
+#define GPI_NMI_STS_0				0x1c0
+#define GPI_NMI_EN_0				0x1e0
 #define PAD_CFG_BASE				0x600
 #define PAD_CFG_LOCK				0x80
 

@@ -662,5 +662,7 @@
 #define GPI_INT_EN_0		0x120
 #define GPI_SMI_STS_0		0x180
 #define GPI_SMI_EN_0		0x1a0
+#define GPI_NMI_STS_0		0x160
+#define GPI_NMI_EN_0		0x170
 
 #endif /* LEWISBURG_GPIO_DEFS_H */

@@ -4,4 +4,4 @@ romstage-y += smbus.c
 ramstage-y += smbus.c
 ramstage-y += sm.c
 
-endif
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_SMBUS

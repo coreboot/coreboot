@@ -14,4 +14,4 @@ ramstage-y += heapmanager.c
 ramstage-y += image.c
 ramstage-y += refcode_loader.c
 
-endif
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_PI

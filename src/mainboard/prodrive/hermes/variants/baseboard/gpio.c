@@ -2,6 +2,8 @@
 
 #include "include/variant/gpio.h"
 #include <commonlib/helpers.h>
+#include <soc/gpio.h>
+#include <intelblocks/gpio_defs.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
@@ -389,14 +391,12 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H5, 0, DEEP),			/* PCH_HBLED_n */
 };
 
-const struct pad_config *get_gpio_table(size_t *num)
+void program_gpio_pads(void)
 {
-	*num = ARRAY_SIZE(gpio_table);
-	return gpio_table;
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }
 
-const struct pad_config *get_early_gpio_table(size_t *num)
+void program_early_gpio_pads(void)
 {
-	*num = ARRAY_SIZE(early_gpio_table);
-	return early_gpio_table;
+	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }

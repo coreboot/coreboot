@@ -89,23 +89,21 @@ static void check_secrets_txt(void *unused)
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
 
-	/* Check for fatal ACM error and TXT reset */
-	if (get_wake_error_status()) {
-		/*
-		 * Check if secrets bit needs to be reset. Only platforms that support
-		 * CONFIG(PLATFORM_HAS_DRAM_CLEAR) will be able to run this code.
-		 * Assume all memory really was cleared.
-		 *
-		 * TXT will issue a platform reset to come up sober.
-		 */
-		if (intel_txt_memory_has_secrets()) {
-			printk(BIOS_INFO, "TEE-TXT: Wiping TEE...\n");
-			intel_txt_run_bios_acm(ACMINPUT_CLEAR_SECRETS);
+	/*
+	 * Check if secrets bit needs to be reset. Only platforms that support
+	 * CONFIG(PLATFORM_HAS_DRAM_CLEAR) will be able to run this code.
+	 * On some platforms FSP-M takes care of the DRAM clearing.
+	 * Assume all memory really was cleared.
+	 *
+	 * TXT will issue a platform reset to come up sober.
+	 */
+	if (intel_txt_memory_has_secrets()) {
+		printk(BIOS_INFO, "TEE-TXT: Wiping TEE...\n");
+		intel_txt_run_bios_acm(ACMINPUT_CLEAR_SECRETS);
 
-			/* Should never reach this point ... */
-			intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
-			die("Waiting for platform reset...\n");
-		}
+		/* Should never reach this point ... */
+		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
+		die("Waiting for platform reset...\n");
 	}
 }
 

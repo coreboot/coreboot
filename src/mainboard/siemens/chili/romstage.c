@@ -4,8 +4,7 @@
 #include <soc/cnl_memcfg_init.h>
 #include <soc/gpio.h>
 #include <soc/romstage.h>
-
-#include "variant.h"
+#include <variant.h>
 
 static void mainboard_init(void)
 {

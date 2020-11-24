@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-
-#include "ec.h"
+#include <mainboard/ec.h>
 
 static void mainboard_dev_init(struct device *dev)
 {

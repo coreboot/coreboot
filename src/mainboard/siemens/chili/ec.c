@@ -4,9 +4,8 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <ec/acpi/ec.h>
+#include <mainboard/ec.h>
 #include <timer.h>
-
-#include "ec.h"
 
 #define EC_STATUS			0x50
 #define   EC_RUNNING			(1 << 1)

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/gpio.h>
-#include "variant.h"
+#include <variant.h>
 
 static const struct pad_config gpio_table[] = {
 /* GPP_A14   GPIO                 0x0000002644000300 */ PAD_NC(GPP_A14, NONE),

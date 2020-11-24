@@ -3,8 +3,7 @@
 #include <option.h>
 #include <console/console.h>
 #include <fsp/soc_binding.h>
-
-#include "../../variant.h"
+#include <variant.h>
 
 void variant_romstage_params(FSPM_UPD *const mupd)
 {

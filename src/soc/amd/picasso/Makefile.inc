@@ -23,7 +23,6 @@ bootblock-y += gpio.c
 bootblock-y += smi_util.c
 bootblock-y += config.c
 bootblock-y += reset.c
-bootblock-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += bootblock/vboot_bootblock.c
 
 romstage-y += i2c.c
 romstage-y += romstage.c

@@ -51,6 +51,26 @@ CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 SC7280_BLOB := $(top)/3rdparty/qc_blobs/sc7280
 
 ################################################################################
+BL31_MAKEARGS += PLAT=sc7280
+
+ifeq ($(CONFIG_QC_SDI_ENABLE),y)
+BL31_MAKEARGS += QTI_SDI_BUILD=1
+BL31_MAKEARGS += QTISECLIB_PATH=$(SC7280_BLOB)/qtiseclib/libqtisec_dbg.a
+else
+BL31_MAKEARGS += QTISECLIB_PATH=$(SC7280_BLOB)/qtiseclib/libqtisec.a
+endif # CONFIG_QC_SDI_ENABLE
+
+################################################################################
+ifeq ($(CONFIG_QC_SDI_ENABLE),y)
+QCSDI_FILE := $(SC7280_BLOB)/boot/QcSdi.elf
+QCSDI_CBFS := $(CONFIG_CBFS_PREFIX)/qcsdi
+$(QCSDI_CBFS)-file := $(QCSDI_FILE)
+$(QCSDI_CBFS)-type := stage
+$(QCSDI_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(QCSDI_CBFS)
+endif
+
+################################################################################
 QC_SEC_FILE := $(SC7280_BLOB)/qc_sec/qc_sec.mbn
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
 	@util/qualcomm/createxbl.py --mbn_version 6 -f $(objcbfs)/bootblock.raw.elf \

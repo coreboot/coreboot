@@ -1,19 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <mainboard/gpio.h>
 #include <option.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/gpio.h>
 #include <soc/romstage.h>
 #include <variant.h>
-
-static void mainboard_init(void)
-{
-	const struct pad_config *pads;
-	size_t num;
-
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-}
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
@@ -39,7 +31,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	variant_romstage_params(memupd);
 
-	mainboard_init();
+	mainboard_configure_gpios();
 }
 
 __weak void variant_romstage_params(FSPM_UPD *const mupd)

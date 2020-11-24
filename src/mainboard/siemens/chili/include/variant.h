@@ -7,6 +7,4 @@
 
 void variant_romstage_params(FSPM_UPD *);
 
-const struct pad_config *variant_gpio_table(size_t *num);
-
 #endif /* _VARIANT_H_ */

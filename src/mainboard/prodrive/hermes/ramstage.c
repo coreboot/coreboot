@@ -5,7 +5,7 @@
 #include "variants/baseboard/include/eeprom.h"
 
 static fsp_params parmas_list[] = {
-	// FIXME: Fill with additional options
+	/* FIXME: Fill with additional options */
 };
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
@@ -19,7 +19,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	params->SataLedEnable = 1;
 
-	// Overwrite params
+	/* Overwrite params */
 	if (!check_signature(I2C_ADDR_EEPROM))
 		return;
 

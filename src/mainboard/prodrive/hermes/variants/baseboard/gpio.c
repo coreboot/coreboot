@@ -194,7 +194,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_K20 - CPU_CATERR_PCH_n */
 	PAD_CFG_GPI(GPP_K20, NONE, DEEP),
 	/* GPP_K21 - TPM_INT_n */
-	PAD_CFG_GPI_INT(GPP_K21, NONE, DEEP, OFF), // Trigger?
+	PAD_CFG_GPI_INT(GPP_K21, NONE, DEEP, OFF), /* Trigger? */
 	/* GPP_K22 - NC */
 	PAD_NC(GPP_K22, NONE),
 	/* GPP_K23 - NC */

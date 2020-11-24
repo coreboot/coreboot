@@ -18,7 +18,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.IedSize = 0x400000;
 	cannonlake_memcfg_init(&memupd->FspmConfig, variant_memcfg_config());
 
-	// Overwrite memupd
+	/* Overwrite memupd */
 	if (!check_signature(I2C_ADDR_EEPROM))
 		return;
 

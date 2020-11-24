@@ -21,7 +21,7 @@
 #define EEPROM_OFFSET_FSP_CONFIG (EEPROM_OFFSET_FSP_SIGNATURE + sizeof(FSP_UPD_HEADER))
 #define GET_VALUE(x) {.offset = offsetof(FSP_S_CONFIG, x), \
 					.size = member_size(FSP_S_CONFIG, x)}
-#endif // ENV_ROMSTAGE
+#endif /* ENV_ROMSTAGE */
 
 typedef struct {
 	size_t offset;

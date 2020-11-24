@@ -1066,7 +1066,7 @@ elif searchtool curl "^curl " > /dev/null; then
 	download_showing_percentage() {
 		url=$1
 		echo
-		curl --progress-bar --location --retry 3 "$url"
+		curl -O --progress-bar --location --retry 3 "$url"
 	}
 fi
 

@@ -57,6 +57,12 @@ bool fw_config_probe(const struct fw_config *match);
 void fw_config_for_each_found(void (*cb)(const struct fw_config *config, void *arg), void *arg);
 
 /**
+ * fw_config_is_provisioned() - Determine if FW_CONFIG has been provisioned.
+ * Return %true if FW_CONFIG has been provisioned, %false otherwise.
+ */
+bool fw_config_is_provisioned(void);
+
+/**
  * fw_config_get_found() - Return a pointer to the fw_config struct for a given field.
  * @field_mask: A field mask from static.h, e.g., FW_CONFIG_FIELD_FEATURE_MASK
  *

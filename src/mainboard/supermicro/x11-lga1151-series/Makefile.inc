@@ -2,7 +2,7 @@
 
 bootblock-y += bootblock.c
 
-ramstage-y += ramstage.c
+ramstage-y += mainboard.c
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
 

@@ -2,6 +2,8 @@
 
 #include <mainboard.h>
 #include <device/device.h>
+#include <soc/ramstage.h>
+#include <variant/gpio.h>
 
 __weak void variant_mainboard_init(struct device *dev)
 {
@@ -10,7 +12,7 @@ __weak void variant_mainboard_init(struct device *dev)
 static void mainboard_init(struct device *dev)
 {
 	/* do common init */
-	// placeholder for common mainboard initialization
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 
 	/* do variant init */
 	variant_mainboard_init(dev);

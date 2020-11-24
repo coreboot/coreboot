@@ -62,7 +62,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B2, UP_20K),				/* CNVI_WAKE#
 							   (UART_WAKE# in M.2 spec; unused)
 							 */
-	PAD_CFG_GPI_APIC_EDGE_LOW(GPP_B3, NONE, PLTRST),/* GPP_B3 (touchpad interrupt) */
+	PAD_CFG_GPI_APIC_LOW(GPP_B3, NONE, PLTRST),	/* GPP_B3 (touchpad interrupt) */
 	PAD_NC(GPP_B4, UP_20K),
 	PAD_NC(GPP_B5, UP_20K),
 	PAD_NC(GPP_B6, UP_20K),

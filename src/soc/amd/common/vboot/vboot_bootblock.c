@@ -47,7 +47,7 @@ void show_psp_transfer_info(void)
 	struct transfer_info_struct *info = (struct transfer_info_struct *)
 			(void *)(uintptr_t)_transfer_buffer;
 
-	if (info->magic_val == TRANSFER_MAGIC_VAL) {
+	if (transfer_buffer_valid(info)) {
 		if ((info->psp_info & PSP_INFO_VALID) == 0) {
 			printk(BIOS_INFO, "No PSP info found in transfer buffer.\n");
 			return;

@@ -12,7 +12,7 @@ subdirs-y += ../../../cpu/x86/smm
 
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
 bootblock-y += BiosCallOuts.c
-bootblock-y += bootblock/bootblock.c
+bootblock-y += bootblock.c
 bootblock-y += gpio.c
 bootblock-y += i2c.c
 bootblock-y += enable_usbdebug.c

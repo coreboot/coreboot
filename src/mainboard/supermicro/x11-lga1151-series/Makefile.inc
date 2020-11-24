@@ -8,5 +8,3 @@ bootblock-y += variants/$(VARIANT_DIR)/gpio_early.c
 ramstage-y += mainboard.c
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
-
-subdirs-y += variants/$(VARIANT_DIR)

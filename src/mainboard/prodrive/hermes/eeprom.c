@@ -31,14 +31,8 @@ bool read_write_config(u8 addr, void *blob, size_t read_offset, size_t write_off
 {
 	int ret = 0;
 
-#if ENV_ROMSTAGE
-	pci_devfn_t dev = PCI_DEV(0, PCH_DEV_SLOT_LPC, 4);
-#else
-	const struct device *dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 4);
-#endif
-
-	u32 smb_ctrl_reg = pci_read_config32(dev, HOSTC);
-	pci_write_config32(dev, HOSTC, smb_ctrl_reg | HOSTC_I2C_EN);
+	u32 smb_ctrl_reg = pci_read_config32(PCH_DEV_SMBUS, HOSTC);
+	pci_write_config32(PCH_DEV_SMBUS, HOSTC, smb_ctrl_reg | HOSTC_I2C_EN);
 
 	printk(BIOS_SPEW, "%s\tOffset: %04zx\tSize: %02zx\n", __func__,
 		read_offset, size);
@@ -61,7 +55,7 @@ bool read_write_config(u8 addr, void *blob, size_t read_offset, size_t write_off
 	}
 
 	/* Restore I2C_EN bit */
-	pci_write_config32(dev, HOSTC, smb_ctrl_reg);
+	pci_write_config32(PCH_DEV_SMBUS, HOSTC, smb_ctrl_reg);
 
 	return ret;
 }

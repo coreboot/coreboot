@@ -22,6 +22,9 @@ struct drivers_ipmi_config {
 	 * If present, the jumper overrides the devicetree.
 	 */
 	u32 bmc_jumper_gpio;
+	/* "POST complete" GPIO and polarity */
+	u32 post_complete_gpio;
+	bool post_complete_invert;
 	/*
 	 * Wait for BMC to boot.
 	 * This can be used if the BMC takes a long time to boot after PoR:

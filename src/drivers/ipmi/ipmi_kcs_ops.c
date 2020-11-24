@@ -9,6 +9,7 @@
  */
 
 #include <arch/io.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/gpio.h>
@@ -33,6 +34,8 @@ static u8 ipmi_revision_minor = 0x0;
 
 static u8 bmc_revision_major = 0x0;
 static u8 bmc_revision_minor = 0x0;
+
+static struct boot_state_callback bscb_post_complete;
 
 static int ipmi_get_device_id(struct device *dev, struct ipmi_devid_rsp *rsp)
 {
@@ -74,6 +77,26 @@ static int ipmi_get_bmc_self_test_result(struct device *dev, struct ipmi_selftes
 	return 0;
 }
 
+static void bmc_set_post_complete_gpio_callback(void *arg)
+{
+	struct drivers_ipmi_config *conf = arg;
+	const struct gpio_operations *gpio_ops;
+
+	if (!conf || !conf->post_complete_gpio)
+		return;
+
+	gpio_ops = dev_get_gpio_ops(conf->gpio_dev);
+	if (!gpio_ops) {
+		printk(BIOS_WARNING, "IPMI: specified gpio device is missing gpio ops!\n");
+		return;
+	}
+
+	/* Set POST Complete pin. The `invert` field controls the polarity. */
+	gpio_ops->output(conf->post_complete_gpio, conf->post_complete_invert ^ 1);
+
+	printk(BIOS_DEBUG, "BMC: POST complete gpio set\n");
+}
+
 static void ipmi_kcs_init(struct device *dev)
 {
 	struct ipmi_devid_rsp rsp;
@@ -104,6 +127,13 @@ static void ipmi_kcs_init(struct device *dev)
 		return;
 
 	printk(BIOS_DEBUG, "IPMI: PNP KCS 0x%x\n", dev->path.pnp.port);
+
+	/* Set up boot state callback for POST_COMPLETE# */
+	if (conf->post_complete_gpio) {
+		bscb_post_complete.callback = bmc_set_post_complete_gpio_callback;
+		bscb_post_complete.arg = conf;
+		boot_state_sched_on_entry(&bscb_post_complete, BS_PAYLOAD_BOOT);
+	}
 
 	/* Get IPMI version for ACPI and SMBIOS */
 	if (conf->wait_for_bmc && conf->bmc_boot_timeout) {

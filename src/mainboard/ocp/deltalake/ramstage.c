@@ -180,6 +180,30 @@ static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 	}
 }
 
+static const struct port_information smbios_type8_info[] = {
+	{
+		.internal_reference_designator = "JCN18 - CPU MIPI60",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JCN32 - TPM_CONN",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JCN7 - USB type C",
+		.internal_connector_type       = CONN_USB_TYPE_C,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+};
+
 static int create_smbios_type9(int *handle, unsigned long *current)
 {
 	int index;
@@ -280,6 +304,13 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long *current)
 {
 	int len = 0;
+
+	// add port information
+	len += smbios_write_type8(
+		current, handle,
+		smbios_type8_info,
+		ARRAY_SIZE(smbios_type8_info)
+		);
 
 	len += create_smbios_type9(handle, current);
 

@@ -217,6 +217,18 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 4267
             }
+        },
+        {
+            "name": "MT53D512M64D4NW-046 WT:F",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
         }
     ]
 }

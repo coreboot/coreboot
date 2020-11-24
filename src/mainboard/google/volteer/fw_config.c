@@ -72,6 +72,13 @@ static const struct pad_config sd_power_enable_pads[] = {
 
 static void fw_config_handle(void *unused)
 {
+	if (!fw_config_is_provisioned()) {
+		gpio_configure_pads(i2s_disable_pads, ARRAY_SIZE(i2s_disable_pads));
+		gpio_configure_pads(dmic_disable_pads, ARRAY_SIZE(dmic_disable_pads));
+		gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
+		return;
+	}
+
 	if (fw_config_probe(FW_CONFIG(AUDIO, NONE))) {
 		printk(BIOS_INFO, "Configure GPIOs for no audio.\n");
 		gpio_configure_pads(i2s_disable_pads, ARRAY_SIZE(i2s_disable_pads));

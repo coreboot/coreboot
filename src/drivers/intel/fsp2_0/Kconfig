@@ -41,6 +41,7 @@ config HAVE_INTEL_FSP_REPO
 config FSP_USE_REPO
 	bool "Use binaries of the Intel FSP repository on GitHub"
 	depends on HAVE_INTEL_FSP_REPO
+	select FSP_FULL_FD
 	default y
 	help
 	  Select this option to use the default FSP headers and binaries
@@ -56,11 +57,10 @@ config FSP_HEADER_PATH
 	  Include directory with the FSP ABI header files.
 
 config FSP_FD_PATH
-	string
-	depends on FSP_USE_REPO
+	string "Location of FSP FD file" if FSP_FULL_FD && !FSP_USE_REPO
 	help
 	  Path to the FSP FD file that contains the individual FSP-T, FSP-M
-	  and FSP-S binaries.
+	  and FSP-S binaries. The file gets split at build-time.
 
 config ADD_FSP_BINARIES
 	bool "Add Intel FSP 2.0 binaries to CBFS" if !FSP_USE_REPO
@@ -81,25 +81,32 @@ config FSP_M_CBFS
 	string "Name of FSP-M in CBFS"
 	default "fspm.bin"
 
+config FSP_FULL_FD
+	bool "Use a combined FSP FD file" if !FSP_USE_REPO
+	depends on ADD_FSP_BINARIES
+	help
+	  Use a combined FSP FD file instead of specifying individual, already split
+	  binaries and split the file at build-time.
+
 config FSP_T_FILE
-	string "Intel FSP-T (temp RAM init) binary path and filename" if !FSP_USE_REPO
+	string "Intel FSP-T (temp RAM init) binary path and filename" if !FSP_FULL_FD
 	depends on ADD_FSP_BINARIES
 	depends on FSP_CAR
-	default "\$(obj)/Fsp_T.fd" if FSP_USE_REPO
+	default "\$(obj)/Fsp_T.fd" if FSP_FULL_FD
 	help
 	  The path and filename of the Intel FSP-T binary for this platform.
 
 config FSP_M_FILE
-	string "Intel FSP-M (memory init) binary path and filename" if !FSP_USE_REPO
+	string "Intel FSP-M (memory init) binary path and filename" if !FSP_FULL_FD
 	depends on ADD_FSP_BINARIES
-	default "\$(obj)/Fsp_M.fd" if FSP_USE_REPO
+	default "\$(obj)/Fsp_M.fd" if FSP_FULL_FD
 	help
 	  The path and filename of the Intel FSP-M binary for this platform.
 
 config FSP_S_FILE
-	string "Intel FSP-S (silicon init) binary path and filename" if !FSP_USE_REPO
+	string "Intel FSP-S (silicon init) binary path and filename" if !FSP_FULL_FD
 	depends on ADD_FSP_BINARIES
-	default "\$(obj)/Fsp_S.fd" if FSP_USE_REPO
+	default "\$(obj)/Fsp_S.fd" if FSP_FULL_FD
 	help
 	  The path and filename of the Intel FSP-S binary for this platform.
 

@@ -72,7 +72,7 @@ ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZ4),y)
 $(FSP_S_CBFS)-compression := LZ4
 endif
 
-ifeq ($(CONFIG_FSP_USE_REPO),y)
+ifeq ($(CONFIG_FSP_FULL_FD),y)
 $(obj)/Fsp_M.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH))
 	python2 3rdparty/fsp/Tools/SplitFspBin.py split -f $(CONFIG_FSP_FD_PATH) -o "$(obj)" -n "Fsp.fd"
 

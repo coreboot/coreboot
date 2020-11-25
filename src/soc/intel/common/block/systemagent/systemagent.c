@@ -287,6 +287,11 @@ static void systemagent_read_resources(struct device *dev)
 	if (CONFIG(SA_ENABLE_IMR))
 		/* Add the isolated memory ranges (IMRs). */
 		sa_add_imr_resources(dev, &index);
+
+	/* Reserve the window used for extended BIOS decoding. */
+	if (CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
+		mmio_resource(dev, index++, CONFIG_EXT_BIOS_WIN_BASE / KiB,
+			      CONFIG_EXT_BIOS_WIN_SIZE / KiB);
 }
 
 void enable_power_aware_intr(void)

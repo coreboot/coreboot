@@ -276,6 +276,11 @@ Device (PDRC)
 			/* FLASH range */
 			Memory32Fixed (ReadOnly, 0, CONFIG_ROM_SIZE, FIOH)
 
+#if CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW)
+			/* Extended BIOS window */
+			Memory32Fixed (ReadOnly, CONFIG_EXT_BIOS_WIN_BASE, CONFIG_EXT_BIOS_WIN_SIZE)
+#endif
+
 			/* Local APIC range(0xFEE0_0000 to 0xFEEF_FFFF) */
 			Memory32Fixed (ReadOnly, 0xFEE00000, 0x100000)
 

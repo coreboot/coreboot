@@ -63,7 +63,25 @@ chip soc/intel/jasperlake
 				end
 			end
 		end # USB xHCI
-		device pci 15.0 on end
+		device pci 15.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x2c on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
+				register "wake" = "GPE0_DW0_03"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end # I2C 0
 		device pci 15.2 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""

@@ -83,7 +83,7 @@ docker-clean: clean-coreboot-containers
 	@$(MAKE) clean-coreboot-images
 
 docker-cleanall: test-docker
-ifeq($(Y),1)
+ifeq ($(Y),1)
 	@if [ -n "$$($(DOCKER) ps -a | grep -v "CONTAINER")" ]; then \
 		$(DOCKER) kill $$($(DOCKER) ps | grep -v "CONTAINER" | sed 's|\s.*$$||') ; \
 		$(DOCKER) rm $$($(DOCKER) ps -a | grep -v "CONTAINER" | sed 's|\s.*$$||'); \

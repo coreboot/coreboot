@@ -1,0 +1,5 @@
+config SOC_INTEL_COMMON_BLOCK_DMI
+	bool
+	select SOC_INTEL_COMMON_BLOCK_PCR
+	help
+	  Intel Processor common DMI support

@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/systemagent.h>
 #include <types.h>
 
@@ -71,4 +72,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 
 	/* Cache the TSEG region */
 	postcar_enable_tseg_cache(pcf);
+
+	/* Cache the extended BIOS region if it is supported */
+	fast_spi_cache_ext_bios_postcar(pcf);
 }

@@ -83,5 +83,10 @@ void fast_spi_get_ext_bios_window(uintptr_t *base, size_t *size);
  * SOC function to get SPI-DMI Destination Id
  */
 uint32_t soc_get_spi_dmi_destination_id(void);
+/*
+ * Add MTRR for extended BIOS region(when supported) to postcar frame
+ */
+struct postcar_frame;
+void fast_spi_cache_ext_bios_postcar(struct postcar_frame *pcf);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_FAST_SPI_H */

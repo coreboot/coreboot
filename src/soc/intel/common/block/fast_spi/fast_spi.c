@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/romstage.h>
 #include <device/mmio.h>
 #include <assert.h>
 #include <device/pci_def.h>
@@ -212,6 +213,53 @@ size_t fast_spi_get_bios_region(size_t *bios_size)
 	return bios_start;
 }
 
+static bool fast_spi_ext_bios_cache_range(uintptr_t *base, size_t *size)
+{
+	uint32_t alignment;
+	if (!CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
+		return false;
+
+	fast_spi_get_ext_bios_window(base, size);
+
+	/* Enable extended bios only if Size of Bios region is greater than 16MiB */
+	if (*size == 0 || *base == 0)
+		return false;
+
+	/* Round to power of two */
+	alignment = 1UL << (log2_ceil(*size));
+	*size = ALIGN_UP(*size, alignment);
+	*base = ALIGN_DOWN(*base, *size);
+
+	return true;
+}
+
+static void fast_spi_cache_ext_bios_window(void)
+{
+	size_t ext_bios_size;
+	uintptr_t ext_bios_base;
+	const int type = MTRR_TYPE_WRPROT;
+
+	if (!fast_spi_ext_bios_cache_range(&ext_bios_base, &ext_bios_size))
+		return;
+
+	int mtrr = get_free_var_mtrr();
+	if (mtrr == -1)
+		return;
+	set_var_mtrr(mtrr, ext_bios_base, ext_bios_size, type);
+}
+
+void fast_spi_cache_ext_bios_postcar(struct postcar_frame *pcf)
+{
+	size_t ext_bios_size;
+	uintptr_t ext_bios_base;
+	const int type = MTRR_TYPE_WRPROT;
+
+	if (!fast_spi_ext_bios_cache_range(&ext_bios_base, &ext_bios_size))
+		return;
+
+	postcar_frame_add_mtrr(pcf, ext_bios_base, ext_bios_size, type);
+}
+
 void fast_spi_cache_bios_region(void)
 {
 	size_t bios_size;
@@ -245,6 +293,9 @@ void fast_spi_cache_bios_region(void)
 
 		set_var_mtrr(mtrr, base, bios_size, type);
 	}
+
+	/* Check if caching is needed for extended bios region if supported */
+	fast_spi_cache_ext_bios_window();
 }
 
 /*

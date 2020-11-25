@@ -8,6 +8,9 @@
 #define SPIDVID_OFFSET			0x0
 #define SPIBAR_BIOS_CONTROL		0xdc
 
+/* Extended Bios Support Registers */
+#define SPI_CFG_BAR1			0xe0	/* SPI BAR1 MMIO */
+
 /* Bit definitions for BIOS_CONTROL */
 #define SPIBAR_BIOS_CONTROL_WPD		(1 << 0)
 #define SPIBAR_BIOS_CONTROL_LOCK_ENABLE	(1 << 1)
@@ -15,6 +18,8 @@
 #define SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE	(1 << 3)
 #define SPIBAR_BIOS_CONTROL_EISS	(1 << 5)
 #define SPIBAR_BIOS_CONTROL_BILD	(1 << 7)
+#define SPIBAR_BIOS_CONTROL_EXT_BIOS_ENABLE	(1 << 27)
+#define SPIBAR_BIOS_CONTROL_EXT_BIOS_LIMIT(x)	((x) & ~(0xfff))
 
 /* Register offsets from the MMIO region base (PCI_BASE_ADDRESS_0) */
 

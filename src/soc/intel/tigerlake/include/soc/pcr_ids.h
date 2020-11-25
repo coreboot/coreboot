@@ -31,4 +31,9 @@
 #define PID_ESPI	0xc7
 #define PID_SERIALIO	0xcb
 
+/*
+ * SPI - DMI Destination ID
+ */
+#define SPI_DMI_DESTINATION_ID	0x23a8
+
 #endif

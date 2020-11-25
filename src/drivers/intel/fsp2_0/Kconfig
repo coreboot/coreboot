@@ -56,12 +56,6 @@ config FSP_HEADER_PATH
 	help
 	  Include directory with the FSP ABI header files.
 
-config FSP_FD_PATH
-	string "Location of FSP FD file" if FSP_FULL_FD && !FSP_USE_REPO
-	help
-	  Path to the FSP FD file that contains the individual FSP-T, FSP-M
-	  and FSP-S binaries. The file gets split at build-time.
-
 config ADD_FSP_BINARIES
 	bool "Add Intel FSP 2.0 binaries to CBFS" if !FSP_USE_REPO
 	default y if FSP_USE_REPO
@@ -87,6 +81,12 @@ config FSP_FULL_FD
 	help
 	  Use a combined FSP FD file instead of specifying individual, already split
 	  binaries and split the file at build-time.
+
+config FSP_FD_PATH
+	string "Location of FSP FD file" if FSP_FULL_FD && !FSP_USE_REPO
+	help
+	  Path to the FSP FD file that contains the individual FSP-T, FSP-M
+	  and FSP-S binaries. The file gets split at build-time.
 
 config FSP_T_FILE
 	string "Intel FSP-T (temp RAM init) binary path and filename" if !FSP_FULL_FD

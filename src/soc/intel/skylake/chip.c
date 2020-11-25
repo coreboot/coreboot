@@ -26,6 +26,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
+#include <soc/usb.h>
 #include <string.h>
 
 #include "chip.h"
@@ -151,16 +152,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		if (config->usb2_ports[i].enable)
 			params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
 		else
-			params->Usb2OverCurrentPin[i] = 0xff;
+			params->Usb2OverCurrentPin[i] = OC_SKIP;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
 		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
-		if (config->usb3_ports[i].enable) {
+		if (config->usb3_ports[i].enable)
 			params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;
-		} else {
-			params->Usb3OverCurrentPin[i] = 0xff;
-		}
+		else
+			params->Usb3OverCurrentPin[i] = OC_SKIP;
+
 		if (config->usb3_ports[i].tx_de_emp) {
 			params->Usb3HsioTxDeEmphEnable[i] = 1;
 			params->Usb3HsioTxDeEmph[i] =

@@ -14,6 +14,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/pagetables: $(PGTBLGEN) $(obj)/config.h
 
 $(PGTBLGEN): util/pgtblgen/pgtblgen.c
 	printf "    MAKE       Creating PGTBLGEN tool\n"
-	$(HOSTCC) $< -I$(obj) -o $@
+	$(HOSTCC) -std=c99 $< -I$(obj) -o $@
 
 endif

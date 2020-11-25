@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <getopt.h>
 
 static void usage(char *argv[])
 {

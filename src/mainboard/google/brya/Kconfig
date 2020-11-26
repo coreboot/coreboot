@@ -26,4 +26,8 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "brya" if BOARD_GOOGLE_BRYA0
 
+config VARIANT_DIR
+	string
+	default "brya0" if BOARD_GOOGLE_BRYA0
+
 endif # BOARD_GOOGLE_BASEBOARD_BRYA

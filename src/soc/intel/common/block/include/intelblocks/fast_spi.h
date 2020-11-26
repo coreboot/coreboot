@@ -23,6 +23,10 @@ void fast_spi_set_bios_interface_lock_down(void);
  */
 void fast_spi_set_lock_enable(void);
 /*
+ * Set FAST_SPIBAR BIOS Control Ext Bios LE bit.
+ */
+void fast_spi_set_ext_bios_lock_enable(void);
+/*
  * Set FAST_SPIBAR BIOS Control EISS bit.
  */
 void fast_spi_set_eiss(void);

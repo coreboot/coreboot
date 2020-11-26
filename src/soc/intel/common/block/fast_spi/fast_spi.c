@@ -63,19 +63,19 @@ void fast_spi_init(void)
 /*
  * Set FAST_SPIBAR BIOS Control register based on input bit field.
  */
-static void fast_spi_set_bios_control_reg(uint8_t bios_cntl_bit)
+static void fast_spi_set_bios_control_reg(uint32_t bios_cntl_bit)
 {
 #if defined(__SIMPLE_DEVICE__)
 	pci_devfn_t dev = PCH_DEV_SPI;
 #else
 	struct device *dev = PCH_DEV_SPI;
 #endif
-	uint8_t bc_cntl;
+	uint32_t bc_cntl;
 
 	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
-	bc_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
+	bc_cntl = pci_read_config32(dev, SPIBAR_BIOS_CONTROL);
 	bc_cntl |= bios_cntl_bit;
-	pci_write_config8(dev, SPIBAR_BIOS_CONTROL, bc_cntl);
+	pci_write_config32(dev, SPIBAR_BIOS_CONTROL, bc_cntl);
 }
 
 /*
@@ -102,6 +102,19 @@ void fast_spi_set_bios_interface_lock_down(void)
 void fast_spi_set_lock_enable(void)
 {
 	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_LOCK_ENABLE);
+
+	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
+}
+
+/*
+ * Set FAST_SPIBAR BIOS Control EXT BIOS LE bit.
+ */
+void fast_spi_set_ext_bios_lock_enable(void)
+{
+	if (!CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
+		return;
+
+	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_EXT_BIOS_LOCK_ENABLE);
 
 	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
 }

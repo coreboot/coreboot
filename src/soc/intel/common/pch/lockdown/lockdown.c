@@ -63,6 +63,9 @@ static void fast_spi_lockdown_cfg(int chipset_lockdown)
 
 		/* BIOS Lock */
 		fast_spi_set_lock_enable();
+
+		/* EXT BIOS Lock */
+		fast_spi_set_ext_bios_lock_enable();
 	}
 }
 

@@ -226,7 +226,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_I10, NONE, DEEP, NF1),
 };
 
-/*** XXX TODO XXX */
 static const struct pad_config early_gpio_table[] = {
 	/* Early LPC configuration in romstage */
 	PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),

@@ -33,10 +33,6 @@ in a 32 MiB SOIC-16 chip in the corner of the mainboard near the [AST2400]. This
 
 See general issue section.
 
-## ToDo
-
-- Fix TODOs mentioned in code
-
 ## Technology
 
 ```eval_rst

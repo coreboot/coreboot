@@ -7,6 +7,7 @@ Controller etc.
 ## Supported boards
 
 - [X11SSH-TF](x11ssh-tf/x11ssh-tf.md)
+- [X11SSH-F](x11ssh-f/x11ssh-f.md)
 - [X11SSM-F](x11ssm-f/x11ssm-f.md)
 
 ## Required proprietary blobs
@@ -30,14 +31,12 @@ Look at the [flashing tutorial] and the board-specific section.
 
 These issues apply to all boards. Have a look at the board-specific issues, too.
 
-- TianoCore doesn't work with Aspeed NGI, as it's text mode only (Fix is WIP CB:35726)
 - MRC caching does not work on cold boot with Intel SPS (see [Intel FSP2.0])
 
 ## ToDo
 
 - Fix issues above
 - Fix issues in board specific sections
-- Fix TODOs mentioned in code
 - Add more boards! :-)
 
 ## Technology

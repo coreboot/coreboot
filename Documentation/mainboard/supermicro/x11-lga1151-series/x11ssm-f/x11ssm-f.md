@@ -4,17 +4,21 @@ This section details how to run coreboot on the [Supermicro X11SSM-F].
 
 ## Flashing coreboot
 
-The board can be flashed externally. FTDI FT2232H and FT232H based programmers worked.
+The board can be flashed externally. FTDI FT2232H and FT232H based programmers worked. For this,
+one needs to add a diode between VCC and the flash chip. The flash IC [MX25L12873F] can be found
+near PCH PCIe Slot 4.
 
-The flash IC [MX25L12873F] can be found near PCH PCIe Slot 4. It is socketed on retail boards.
-
-For doing ISP (In-System-Programming) one needs to add a diode between VCC and the flash chip.
+Flashing is also possible through the BMC web interface, when a valid license was entered.
 
 ## BMC (IPMI)
 
 This board has an ASPEED [AST2400], which has BMC/[IPMI] functionality. The BMC firmware resides in a
 32 MiB SOIC-16 chip in the corner of the mainboard near the PCH PCIe Slot 4. This chip is a
 [MX25L25635F].
+
+## Disabling LAN firmware
+
+To disable the proprietary LAN firmware, the undocumented jumper J6 can be set to 2-3.
 
 ## Tested and working
 
@@ -32,13 +36,8 @@ This board has an ASPEED [AST2400], which has BMC/[IPMI] functionality. The BMC 
 ## Known issues
 
 - See general issue section
-- "only partially covers this bridge" info from Linux kernel (what does that mean?)
 - LNXTHERM missing
 - S3 resume not working
-
-## ToDo
-
-- Fix TODOs mentioned in code
 
 ## Technology
 

@@ -12,7 +12,7 @@ static const struct mb_cfg ddr4_mem_config = {
 	/* Baseboard Rcomp target values */
 	.rcomp_targets = {40, 30, 33, 33, 30},
 
-	.dq_pins_interleaved = true,
+	.dq_pins_interleaved = false,
 
 	.ect = true, /* Early Command Training */
 
@@ -61,7 +61,7 @@ static const struct mb_cfg ddr5_mem_config = {
 	/* Baseboard Rcomp target values */
 	.rcomp_targets = {50, 30, 30, 30, 27},
 
-	.dq_pins_interleaved = true,
+	.dq_pins_interleaved = false,
 
 	.ect = true, /* Early Command Training */
 

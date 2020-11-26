@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <intelblocks/fast_spi.h>
+#include <spi_flash.h>
 
 /*
  * BIOS region on the flash is mapped right below 4GiB in the address
@@ -90,4 +91,15 @@ const struct region_device *boot_device_ro(void)
 	bios_mmap_init();
 
 	return &real_dev.rdev;
+}
+
+uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
+{
+	bios_mmap_init();
+
+	table->flash_base = region_offset(&real_dev_window.sub_region);
+	table->host_base = (uintptr_t)rdev_mmap_full(&shadow_dev.rdev);
+	table->size = region_sz(&real_dev_window.sub_region);
+
+	return 1;
 }

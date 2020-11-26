@@ -261,12 +261,25 @@ struct cb_x86_rom_mtrr {
 	uint32_t index;
 };
 
+/* Memory map windows to translate addresses between SPI flash space and host address space. */
+struct flash_mmap_window {
+	uint32_t flash_base;
+	uint32_t host_base;
+	uint32_t size;
+};
+
 struct cb_spi_flash {
 	uint32_t tag;
 	uint32_t size;
 	uint32_t flash_size;
 	uint32_t sector_size;
 	uint32_t erase_cmd;
+	/*
+	 * Number of mmap windows used by the platform to decode addresses between SPI flash
+	 * space and host address space. This determines the number of entries in mmap_table.
+	 */
+	uint32_t mmap_count;
+	struct flash_mmap_window mmap_table[0];
 };
 
 struct cb_boot_media_params {

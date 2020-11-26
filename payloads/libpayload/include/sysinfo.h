@@ -40,6 +40,9 @@
 /* Up to 10 MAC addresses */
 #define SYSINFO_MAX_MACS 10
 
+/* Maximum of 2 MMAP windows for decoding SPI flash. */
+#define SYSINFO_MAX_MMAP_WINDOWS 2
+
 #include <coreboot_tables.h>
 
 /*
@@ -126,6 +129,8 @@ struct sysinfo_t {
 		uint32_t size;
 		uint32_t sector_size;
 		uint32_t erase_cmd;
+		uint32_t mmap_window_count;
+		struct flash_mmap_window mmap_table[SYSINFO_MAX_MMAP_WINDOWS];
 	} spi_flash;
 	uint64_t fmap_offset;
 	uint64_t cbfs_offset;

@@ -11,6 +11,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <intelblocks/fast_spi.h>
+#include <spi_flash.h>
 
 enum window_type {
 	/* Fixed decode window of max 16MiB size just below 4G boundary */
@@ -159,4 +160,27 @@ void fast_spi_get_ext_bios_window(uintptr_t *base, size_t *size)
 		 */
 		*base = (uintptr_t)rdev_mmap_full(rd);
 	}
+}
+
+uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
+{
+	int i;
+	uint32_t count = 0;
+
+	bios_mmap_init();
+
+	for (i = 0; i < TOTAL_DECODE_WINDOWS; i++) {
+
+		if (region_sz(&real_dev_windows[i].sub_region) == 0)
+			continue;
+
+		count++;
+		table->flash_base = region_offset(&real_dev_windows[i].sub_region);
+		table->host_base = (uintptr_t)rdev_mmap_full(&shadow_devs[i].rdev);
+		table->size = region_sz(&real_dev_windows[i].sub_region);
+
+		table++;
+	}
+
+	return count;
 }

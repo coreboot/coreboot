@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(void *chip_info)
 {
@@ -13,7 +15,7 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO: Enable mainboard */
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

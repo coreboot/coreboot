@@ -2,12 +2,8 @@
 
 #include <baseboard/variants.h>
 #include <device/device.h>
-#include <intelblocks/pcr.h>
 #include <soc/gpio.h>
-#include <soc/pcr_ids.h>
 #include <smbios.h>
-
-#define SERIAL_IO_PCR_GPPRVRW4	0x60C
 
 static void mainboard_init(void *chip_info)
 {
@@ -16,9 +12,6 @@ static void mainboard_init(void *chip_info)
 
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
-
-	if (CONFIG(DRIVERS_INTEL_MIPI_CAMERA))
-		pcr_write32(PID_SERIALIO, SERIAL_IO_PCR_GPPRVRW4, BIT8);
 }
 
 const char *smbios_system_sku(void)

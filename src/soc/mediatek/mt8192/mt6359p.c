@@ -417,7 +417,7 @@ u32 mt6359p_get_vm18_voltage(void)
 
 	reg_vol = 100 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, VM18_VOL_REG_SHIFT);
 	reg_cali = 10 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, 0);
-	return 600 + reg_vol + reg_cali;
+	return 1000 * (VM18_VOL_OFFSET + reg_vol + reg_cali);
 }
 
 static void init_pmif_arb(void)

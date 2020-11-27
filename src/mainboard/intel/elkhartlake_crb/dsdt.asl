@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <baseboard/ec.h>
-#include <baseboard/gpio.h>
 
 DefinitionBlock(
 	"dsdt.aml",

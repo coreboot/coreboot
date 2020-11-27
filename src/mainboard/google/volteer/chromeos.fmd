@@ -1,48 +1,48 @@
-FLASH@0xfe000000 0x2000000 {
-	SI_ALL@0x0 0x500000 {
-		SI_DESC@0x0 0x1000
-		SI_ME@0x1000 0x4ff000
+FLASH 32M {
+	SI_ALL 5M {
+		SI_DESC 4K
+		SI_ME
 	}
-	SI_BIOS@0x500000 0x1b00000 {
-		# Place RW_LEGACY at the start of BIOS region such that the rest
-		# of BIOS regions start at 16MiB boundary. Since this is a 32MiB
-		# SPI flash only the top 16MiB actually gets memory mapped.
-		RW_LEGACY(CBFS)@0x0 0xb00000
-		RW_SECTION_A@0xb00000 0x5e0000 {
-			VBLOCK_A@0x0 0x10000
-			FW_MAIN_A(CBFS)@0x10000 0x32ffc0
-			RW_FWID_A@0x33ffc0 0x40
-			ME_RW_A(CBFS)@0x340000 0x2a0000
+	SI_BIOS 27M {
+		RW_SECTION_A 8M {
+			VBLOCK_A 64K
+			FW_MAIN_A(CBFS)
+			RW_FWID_A 64
+			ME_RW_A(CBFS) 3M
 		}
-		RW_SECTION_B@0x10e0000 0x5e0000 {
-			VBLOCK_B@0x0 0x10000
-			FW_MAIN_B(CBFS)@0x10000 0x32ffc0
-			RW_FWID_B@0x33ffc0 0x40
-			ME_RW_B(CBFS)@0x340000 0x2a0000
+		RW_LEGACY(CBFS) 2M
+		RW_MISC 1M {
+			UNIFIED_MRC_CACHE(PRESERVE) 192K {
+				RECOVERY_MRC_CACHE 64K
+				RW_MRC_CACHE 128K
+			}
+			RW_ELOG(PRESERVE) 4K
+			RW_SHARED 16K {
+				SHARED_DATA 8K
+				VBLOCK_DEV 8K
+			}
+			RW_VPD(PRESERVE) 8K
+			RW_NVRAM(PRESERVE) 24K
 		}
-		RW_MISC@0x16c0000 0x40000 {
-			UNIFIED_MRC_CACHE(PRESERVE)@0x0 0x30000 {
-				RECOVERY_MRC_CACHE@0x0 0x10000
-				RW_MRC_CACHE@0x10000 0x20000
-			}
-			RW_ELOG(PRESERVE)@0x30000 0x4000
-			RW_SHARED@0x34000 0x4000 {
-				SHARED_DATA@0x0 0x2000
-				VBLOCK_DEV@0x2000 0x2000
-			}
-			RW_VPD(PRESERVE)@0x38000 0x2000
-			RW_NVRAM(PRESERVE)@0x3a000 0x6000
+		# Starts at 16M boundary in the SPI flash.
+		# No region can be placed across the 16M boundary
+		# because the SPI flash is mapped into separate
+		# non-contiguous mmap windows
+		RW_SECTION_B 8M {
+			VBLOCK_B 64K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 64
+			ME_RW_B(CBFS) 3M
 		}
 		# Make WP_RO region align with SPI vendor
 		# memory protected range specification.
-		WP_RO@0x1700000 0x400000 {
-			RO_VPD(PRESERVE)@0x0 0x4000
-			RO_SECTION@0x4000 0x3fc000 {
-				FMAP@0x0 0x800
-				RO_FRID@0x800 0x40
-				RO_FRID_PAD@0x840 0x7c0
-				GBB@0x1000 0x3000
-				COREBOOT(CBFS)@0x4000 0x3f8000
+		WP_RO 8M {
+			RO_VPD(PRESERVE) 16K
+			RO_SECTION {
+				FMAP 2K
+				RO_FRID 64
+				GBB@4K 448K
+				COREBOOT(CBFS)
 			}
 		}
 	}

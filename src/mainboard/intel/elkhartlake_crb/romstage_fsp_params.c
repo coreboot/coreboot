@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include "board_id.h"
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {

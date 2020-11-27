@@ -13,6 +13,6 @@ const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
 /* This function returns SPD related FSP-M mainboard configs */
-const struct mb_cfg *variant_memcfg_config(uint8_t board_id);
+const struct mb_cfg *variant_memcfg_config(void);
 
 #endif /*__BASEBOARD_VARIANTS_H__ */

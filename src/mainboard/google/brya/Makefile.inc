@@ -7,6 +7,7 @@ romstage-y += romstage.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
+ramstage-y += ec.c
 
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 

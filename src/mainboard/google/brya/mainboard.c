@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <ec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(void *chip_info)
@@ -13,8 +14,14 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
+static void mainboard_dev_init(struct device *dev)
+{
+	mainboard_ec_init();
+}
+
 static void mainboard_enable(struct device *dev)
 {
+	dev->ops->init = mainboard_dev_init;
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 

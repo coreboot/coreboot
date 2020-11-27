@@ -10,7 +10,6 @@ romstage-y += board_id.c
 ramstage-y += mainboard.c
 ramstage-y += board_id.c
 
-smm-y += smihandler.c
 
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

@@ -88,9 +88,24 @@ struct mb_cfg {
 
 	/*
 	 * Rcomp target values.  These will typically be the following
-	 * values for Elkhart Lake : { 80, 40, 40, 40, 30 }
+	 * values for Elkhart Lake : { 60, 40, 30, 20, 30 }
 	 */
 	uint16_t rcomp_targets[5];
+
+	/*
+	 * Indicates whether memory is interleaved.
+	 * Set to 1 for an interleaved design,
+	 * set to 0 for non-interleaved design.
+	 */
+	uint8_t dq_pins_interleaved;
+
+	/*
+	 * VREF_CA configuration.
+	 * Set to 0 VREF_CA goes to both CH_A and CH_B,
+	 * set to 1 VREF_CA goes to CH_A and VREF_DQ_A goes to CH_B,
+	 * set to 2 VREF_CA goes to CH_A and VREF_DQ_B goes to CH_B.
+	 */
+	uint8_t vref_ca_config;
 
 	/*
 	 * Early Command Training Enable/Disable Control

@@ -109,6 +109,7 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_cfg,
 
 	/* Early Command Training Enabled */
 	mem_cfg->ECT = board_cfg->ect;
-
+	mem_cfg->DqPinsInterleaved = board_cfg->dq_pins_interleaved;
+	mem_cfg->CaVrefConfig = board_cfg->vref_ca_config;
 	mem_cfg->UserBd = board_cfg->UserBd;
 }

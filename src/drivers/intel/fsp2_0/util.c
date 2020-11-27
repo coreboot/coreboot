@@ -241,5 +241,4 @@ void lb_string_platform_blob_version(struct lb_header *header)
 
 __weak void soc_validate_fsp_version(const struct fsp_header *hdr)
 {
-	printk(BIOS_DEBUG, "%s not implemented.\n", __func__);
 }

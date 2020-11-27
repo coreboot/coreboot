@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
+#include <console/console.h>
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>

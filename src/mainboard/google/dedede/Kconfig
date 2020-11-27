@@ -97,6 +97,7 @@ config MAINBOARD_PART_NUMBER
 	default "Metaknight" if BOARD_GOOGLE_METAKNIGHT
 	default "Lantis" if BOARD_GOOGLE_LANTIS
 	default "Galtic" if BOARD_GOOGLE_GALTIC
+	default "Sasuke" if BOARD_GOOGLE_SASUKE
 
 config MAX_CPUS
 	int
@@ -129,5 +130,6 @@ config VARIANT_DIR
 	default "metaknight" if BOARD_GOOGLE_METAKNIGHT
 	default "lantis" if BOARD_GOOGLE_LANTIS
 	default "galtic" if BOARD_GOOGLE_GALTIC
+	default "sasuke" if BOARD_GOOGLE_SASUKE
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

@@ -32,3 +32,6 @@ Device (PDRC)
 
 // PCIe graphics port 0:1.0
 #include "peg.asl"
+
+// Integrated graphics 0:2.0
+#include <drivers/intel/gma/acpi/gfx.asl>

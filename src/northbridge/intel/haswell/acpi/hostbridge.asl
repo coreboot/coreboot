@@ -204,3 +204,6 @@ Device (PDRC)
 /* PCI Express Graphics */
 #include "peg.asl"
 #endif
+
+/* Integrated graphics 0:2.0 */
+#include <drivers/intel/gma/acpi/gfx.asl>

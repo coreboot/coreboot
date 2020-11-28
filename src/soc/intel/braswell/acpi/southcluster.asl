@@ -272,3 +272,6 @@ Scope (\_SB.PCI0)
 	/* SCC Devices */
 	#include "scc.asl"
 }
+
+/* Integrated graphics 0:2.0 */
+#include <drivers/intel/gma/acpi/gfx.asl>

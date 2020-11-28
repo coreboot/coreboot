@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-Device (GFX0)
+Scope (GFX0)
 {
-	Name (_ADR, 0x00020000)
 	Method (_DOS, 1, NotSerialized)
 	{
 		/* We never do anything in firmware, so _DOS is a noop */

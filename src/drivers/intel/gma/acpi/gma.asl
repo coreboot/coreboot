@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Device (GFX0)
+Scope (GFX0)
 {
-	Name (_ADR, 0x00020000)
-
 	OperationRegion (GFXC, PCI_Config, 0x00, 0x0100)
 	Field (GFXC, DWordAcc, NoLock, Preserve)
 	{

@@ -809,12 +809,4 @@ void cse_fw_sync(void *unused)
 	}
 }
 
-#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_JASPERLAKE)
-/*
- * This needs to happen after the MRC cache write to avoid a 2nd
- * memory training sequence.
- */
-BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_ENTRY, cse_fw_sync, NULL);
-#else
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, cse_fw_sync, NULL);
-#endif

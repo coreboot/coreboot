@@ -107,6 +107,7 @@ config MAINBOARD_PART_NUMBER
 	default "Elemi" if BOARD_GOOGLE_ELEMI
 	default "Voema" if BOARD_GOOGLE_VOEMA
 	default "Drobit" if BOARD_GOOGLE_DROBIT
+	default "Copano" if BOARD_GOOGLE_COPANO
 
 config MAX_CPUS
 	int
@@ -148,6 +149,7 @@ config VARIANT_DIR
 	default "elemi" if BOARD_GOOGLE_ELEMI
 	default "voema" if BOARD_GOOGLE_VOEMA
 	default "drobit" if BOARD_GOOGLE_DROBIT
+	default "copano" if BOARD_GOOGLE_COPANO
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

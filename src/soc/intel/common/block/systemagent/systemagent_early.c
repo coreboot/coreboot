@@ -95,8 +95,8 @@ void sa_set_mch_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 		base = fixed_set_resources[i].base;
 		index = fixed_set_resources[i].index;
 		if (base >> 32)
-			write32((void *)(MCH_BASE_ADDRESS + index + 4), base >> 32);
-		write32((void *)(MCH_BASE_ADDRESS + index), (base & 0xffffffff) | 1);
+			write32((void *)(uintptr_t)(MCH_BASE_ADDRESS + index + 4), base >> 32);
+		write32((void *)(uintptr_t)(MCH_BASE_ADDRESS + index), (base & 0xffffffff) | 1);
 	}
 }
 

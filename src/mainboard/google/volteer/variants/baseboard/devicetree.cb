@@ -46,6 +46,18 @@ fw_config
 		option KB_LAYOUT_DEFAULT 0
 		option KB_LAYOUT_1 1
 	end
+	field BOOT_DEVICE_EMMC 22
+		option BOOT_EMMC_DISABLED 0
+		option BOOT_EMMC_ENABLED 1
+	end
+	field BOOT_DEVICE_NVME 23
+		option BOOT_NVME_DISABLED 0
+		option BOOT_NVME_ENABLED 1
+	end
+	field BOOT_DEVICE_SATA 24
+		option BOOT_SATA_DISABLED 0
+		option BOOT_SATA_ENABLED 1
+	end
 end
 
 chip soc/intel/tigerlake

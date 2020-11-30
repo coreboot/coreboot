@@ -2,4 +2,41 @@ chip soc/intel/alderlake
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tcss_xhci on end
+		device ref tcss_dma0 on end
+		device ref tcss_dma1 on end
+		device ref cnvi_bt on end
+		device ref xhci on end
+		device ref shared_sram on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref heci1 on end
+		device ref sata on end
+		device ref pcie_rp1 on end	#USB3-1 Type A
+		device ref pcie_rp4 on end	#USB3-4 WWAN
+		device ref pcie_rp5 on end	#PCIE5 WLAN
+		device ref pcie_rp6 on end	#PCIE6 WWAN
+		device ref pcie_rp8 on end	#PCIE8 SD card
+		device ref pcie_rp9 on end	#PCIE9-12 SSD
+		device ref uart0 on end
+		device ref gspi0 on end
+		device ref gspi1 on end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref hda on end
+	end
 end

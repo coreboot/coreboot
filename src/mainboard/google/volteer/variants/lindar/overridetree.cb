@@ -9,6 +9,41 @@ chip soc/intel/tigerlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
 
 	register "SaGv" = "SaGv_Disabled"
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | Touchscreen               |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 163,
+				.scl_hcnt = 75,
+				.sda_hold = 36,
+			},
+		},
+	}"
 	# I2C Port Config
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -69,8 +104,8 @@ chip soc/intel/tigerlake
 				# Parameter T2 >= 1ms
 				register "generic.reset_off_delay_ms" = "3"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
-				# Parameter T1 >= 10ms
-				register "generic.enable_delay_ms" = "12"
+				# Parameter T1 >= 20ms
+				register "generic.enable_delay_ms" = "20"
 				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
 				# Parameter T4 >= 1ms
 				register "generic.stop_off_delay_ms" = "1"

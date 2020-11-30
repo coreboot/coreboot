@@ -37,10 +37,12 @@ ifneq ($(CONFIG_TIANOCORE_USE_8254_TIMER), y)
 TIMER=-DUSE_HPET_TIMER
 endif
 
+TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
+
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-	BUILD_STR=-q -a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
+	BUILD_STR=-q -a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
 else
-	BUILD_STR=-q -a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
+	BUILD_STR=-q -a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
 endif
 
 all: clean build

@@ -100,4 +100,12 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
+config TIANOCORE_BOOT_TIMEOUT
+	int
+	default 2
+	help
+	  The length of time in seconds for which the boot splash/menu prompt will be displayed.
+	  For boards with an internal display, the default value of 2s is generally sufficient.
+	  For boards without an internal display, a value of 5s is generally sufficient.
+
 endif

@@ -4,7 +4,6 @@
 #define CARRIER_GPIO_H
 
 #include <gpio.h>
-#include <stddef.h>
 
 /*
  * Bidirectional GPIO port when both RX and TX buffer is enabled

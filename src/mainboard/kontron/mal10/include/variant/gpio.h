@@ -4,7 +4,6 @@
 #define VARIANT_GPIO_H
 
 #include <gpio.h>
-#include <stddef.h>
 
 void variant_early_gpio_configure(void);
 

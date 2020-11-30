@@ -2,7 +2,6 @@
 
 #include <soc/ramstage.h>
 #include <carrier/gpio.h>
-#include <stddef.h>
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
 {

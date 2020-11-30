@@ -28,7 +28,11 @@ chipset_teardown_car:
 	 * Retrieve return address from stack as it will get trashed below if
 	 * execution is utilizing the cache-as-ram stack.
 	 */
+#if ENV_X86_64
+	pop	%rbx
+#else
 	pop	%ebx
+#endif
 
 	/* Disable MTRRs. */
 	mov	$(MTRR_DEF_TYPE_MSR), %ecx
@@ -95,4 +99,8 @@ car_nem_enhanced_teardown:
 #endif
 
 	/* Return to caller. */
+#if ENV_X86_64
+	jmp	*%rbx
+#else
 	jmp	*%ebx
+#endif

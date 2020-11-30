@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "include/variant/gpio.h"
+#include <variant/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	/* SPI */

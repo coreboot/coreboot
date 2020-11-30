@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "include/carrier/gpio.h"
+#include <carrier/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_0, DN_20K, DEEP, IGNORE, SAME),

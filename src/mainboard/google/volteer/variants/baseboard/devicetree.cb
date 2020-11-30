@@ -39,7 +39,7 @@ fw_config
 		option SD_GL9755S 1
 		option SD_RTS5261 2
 		option SD_RTS5227S 3
-		option SD_L9750 4
+		option SD_GL9750 4
 		option SD_OZ711LV2LN 5
 	end
 	field KB_LAYOUT 20 21
@@ -459,12 +459,18 @@ chip soc/intel/tigerlake
 		device ref pcie_rp8 on
 			probe DB_SD SD_GL9755S
 			probe DB_SD SD_RTS5261
+			probe DB_SD SD_RTS5227S
+			probe DB_SD SD_GL9750
+			probe DB_SD SD_OZ711LV2LN
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H3)"
 				register "srcclk_pin" = "3"
 				device generic 0 on
 					probe DB_SD SD_GL9755S
+					probe DB_SD SD_RTS5227S
+					probe DB_SD SD_GL9750
+					probe DB_SD SD_OZ711LV2LN
 				end
 			end
 			chip soc/intel/common/block/pcie/rtd3

@@ -31,14 +31,13 @@
  * waiting for each device to become available, a single delay will be
  * executed.
  */
-static const struct stoneyridge_aoac aoac_devs[] = {
-	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
-		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
-	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
-	{ FCH_AOAC_D3_CONTROL_I2C0, FCH_AOAC_D3_STATE_I2C0 },
-	{ FCH_AOAC_D3_CONTROL_I2C1, FCH_AOAC_D3_STATE_I2C1 },
-	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
-	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 }
+static const unsigned int aoac_devs[] = {
+	FCH_AOAC_DEV_UART0 + CONFIG_UART_FOR_CONSOLE * 2,
+	FCH_AOAC_DEV_AMBA,
+	FCH_AOAC_DEV_I2C0,
+	FCH_AOAC_DEV_I2C1,
+	FCH_AOAC_DEV_I2C2,
+	FCH_AOAC_DEV_I2C3,
 };
 
 static int is_sata_config(void)
@@ -146,21 +145,21 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-static void power_on_aoac_device(int aoac_device_control_register)
+static void power_on_aoac_device(unsigned int dev)
 {
 	uint8_t byte;
 
 	/* Power on the UART and AMBA devices */
-	byte = aoac_read8(aoac_device_control_register);
+	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
 	byte |= FCH_AOAC_PWR_ON_DEV;
-	aoac_write8(aoac_device_control_register, byte);
+	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 
-static bool is_aoac_device_enabled(int aoac_device_status_register)
+static bool is_aoac_device_enabled(unsigned int dev)
 {
 	uint8_t byte;
 
-	byte = aoac_read8(aoac_device_status_register);
+	byte = aoac_read8(AOAC_DEV_D3_STATE(dev));
 	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
 	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
 		return true;
@@ -174,14 +173,14 @@ void enable_aoac_devices(void)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
-		power_on_aoac_device(aoac_devs[i].enable);
+		power_on_aoac_device(aoac_devs[i]);
 
 	/* Wait for AOAC devices to indicate power and clock OK */
 	do {
 		udelay(100);
 		status = true;
 		for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
-			status &= is_aoac_device_enabled(aoac_devs[i].status);
+			status &= is_aoac_device_enabled(aoac_devs[i]);
 	} while (!status);
 }
 
@@ -545,14 +544,14 @@ static void set_sb_final_nvs(void)
 	if (gnvs == NULL)
 		return;
 
-	gnvs->aoac.ic0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C0);
-	gnvs->aoac.ic1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C1);
-	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
-	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
-	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
-	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
-	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB2);
-	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
+	gnvs->aoac.ic0e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C0);
+	gnvs->aoac.ic1e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C1);
+	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
+	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C3);
+	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
+	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
+	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_DEV_USB2);
+	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_DEV_USB3);
 	/* Rely on these being in sync with devicetree */
 	sd = pcidev_path_on_root(SD_DEVFN);
 	gnvs->aoac.sd_e = sd && sd->enabled ? 1 : 0;

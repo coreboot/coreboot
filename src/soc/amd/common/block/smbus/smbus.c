@@ -5,7 +5,7 @@
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpimmio_map.h>
-#include <soc/southbridge.h>
+#include <amdblocks/smbus.h>
 
 /*
  * Between 1-10 seconds, We should never timeout normally

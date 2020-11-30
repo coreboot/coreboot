@@ -17,6 +17,7 @@
 #include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/smbus.h>
 #include <amdblocks/spi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>

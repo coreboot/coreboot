@@ -17,6 +17,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/smbus.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>

@@ -7,6 +7,7 @@
 
 #include <cpu/x86/mtrr.h>
 
+.code32
 .section .text
 .global check_mtrr
 

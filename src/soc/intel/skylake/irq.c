@@ -175,7 +175,7 @@ void soc_irq_settings(FSP_SIL_UPD *params)
 	intdeventry = ARRAY_SIZE(devintconfig);
 	/* update irq table */
 	memcpy((SI_PCH_DEVICE_INTERRUPT_CONFIG *)
-		(params->DevIntConfigPtr), devintconfig, intdeventry *
+		(uintptr_t)(params->DevIntConfigPtr), devintconfig, intdeventry *
 		sizeof(SI_PCH_DEVICE_INTERRUPT_CONFIG));
 
 	params->NumOfDevIntConfig = intdeventry;

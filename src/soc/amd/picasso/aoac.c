@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/aoac.h>
 #include <soc/southbridge.h>
 #include <delay.h>
 

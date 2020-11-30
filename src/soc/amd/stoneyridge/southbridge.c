@@ -12,6 +12,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/agesawrapper.h>
+#include <amdblocks/aoac.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>

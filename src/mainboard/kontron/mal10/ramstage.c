@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/device.h>
 #include <soc/ramstage.h>
 #include <carrier/gpio.h>
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
+static void init_mainboard(void *chip_info)
 {
 	carrier_gpio_configure();
+}
 
+void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
+{
 	/*
 	 * CPU Power Management Configuration correspond to the BIOS Setup menu settings
 	 * in the AMI UEFI v112.
@@ -44,3 +48,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
 	silconfig->IoApicDeviceNumber = 0x1F;
 	silconfig->IoApicFunctionNumber = 0;
 }
+
+struct chip_operations mainboard_ops = {
+	.init = init_mainboard,
+};

@@ -23,9 +23,10 @@
 #endif
 
 drop_longmode:
+#if !ENV_CACHE_AS_RAM
 	/* Ensure cache is clean. */
 	wbinvd
-
+#endif
 	/* Set  32-bit code segment and ss */
 	mov	$CODE_SEG, %rcx
 	/* SetCodeSelector32 will drop us to protected mode on return */

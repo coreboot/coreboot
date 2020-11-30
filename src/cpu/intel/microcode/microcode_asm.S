@@ -43,6 +43,7 @@
  * if the revision of the update is newer than what is installed
  */
 
+.code32
 .section .text
 .global update_bsp_microcode
 

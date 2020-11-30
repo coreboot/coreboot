@@ -57,7 +57,7 @@ static void fsp_notify(enum fsp_notify_phase phase)
 
 static void fsp_notify_dummy(void *arg)
 {
-	enum fsp_notify_phase phase = (uint32_t)arg;
+	enum fsp_notify_phase phase = (uint32_t)(uintptr_t)arg;
 
 	display_mtrrs();
 

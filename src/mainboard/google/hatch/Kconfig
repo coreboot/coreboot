@@ -86,6 +86,7 @@ config ROMSTAGE_SPD_CBFS
 config ROMSTAGE_SPD_SMBUS
 	bool
 	default n
+	select SPD_CACHE_IN_FMAP
 
 config DRIVER_TPM_SPI_BUS
 	default 0x1

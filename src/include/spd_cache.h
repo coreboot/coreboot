@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define SPD_CACHE_FMAP_NAME	"RW_SPD_CACHE"
+#define SPD_CACHE_FMAP_NAME	(CONFIG_SPD_CACHE_FMAP_NAME)
 #define SC_SPD_NUMS		(CONFIG_DIMM_MAX)
 #define SC_SPD_OFFSET(n)	(CONFIG_DIMM_SPD_SIZE * n)
 #define SC_CRC_OFFSET		(CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE)

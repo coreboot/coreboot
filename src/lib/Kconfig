@@ -46,6 +46,23 @@ config DIMM_SPD_SIZE
 config SPD_READ_BY_WORD
 	bool
 
+config SPD_CACHE_IN_FMAP
+	bool
+	default n
+	help
+	  Enables capability to cache DIMM SPDs in a dedicated FMAP region
+	  to speed loading of SPD data. Currently requires board-level
+	  romstage implementation to read/write/utilize cached SPD data.
+	  When the default FMAP is used, will create a region named RW_SPD_CACHE
+	  to store the cached SPD data.
+
+config SPD_CACHE_FMAP_NAME
+	string
+	depends on SPD_CACHE_IN_FMAP
+	default "RW_SPD_CACHE"
+	help
+	  Name of the FMAP region created in the default FMAP to cache SPD data.
+
 if RAMSTAGE_LIBHWBASE
 
 config HWBASE_DYNAMIC_MMIO

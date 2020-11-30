@@ -372,4 +372,4 @@ endif
 
 ramstage-y += uuid.c
 
-romstage-$(CONFIG_ROMSTAGE_SPD_SMBUS) += spd_cache.c
+romstage-$(CONFIG_SPD_CACHE_IN_FMAP) += spd_cache.c

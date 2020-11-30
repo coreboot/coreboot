@@ -233,19 +233,19 @@ F:	src/mainboard/facebook/monolith/
 GETAC P470 MAINBOARD
 M:	Patrick Georgi <patrick@georgi.software>
 S:	Maintained
-F:	src/mainboard/getac/p470
+F:	src/mainboard/getac/p470/
 
 
 
 GIGABYTE GA-G41M-ES2L MAINBOARD
 M:	Damien Zammit <damien@zamaudio.com>
 S:	Odd Fixes
-F:	src/mainboard/gigabyte/ga-g41m-es2l
+F:	src/mainboard/gigabyte/ga-g41m-es2l/
 
 GIGABYTE GA-H61M SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
-F:	src/mainboard/gigabyte/ga-h61m-series
+F:	src/mainboard/gigabyte/ga-h61m-series/
 
 
 
@@ -273,7 +273,7 @@ F:	src/mainboard/google/stout/
 INTEL D510MO MAINBOARD
 M:	Damien Zammit <damien@zamaudio.com>
 S:	Odd Fixes
-F:	src/mainboard/intel/d510mo
+F:	src/mainboard/intel/d510mo/
 
 INTEL STRAGO MAINBOARD
 M:	Hannah Williams <hannah.williams@intel.com>
@@ -314,7 +314,7 @@ LIBRETREND LT1000 MAINBOARD
 M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Maintained
-F:	src/mainboard/libretrend/lt1000
+F:	src/mainboard/libretrend/lt1000/
 
 
 OCP DELTALAKE MAINBOARD
@@ -325,7 +325,7 @@ M:	Morgan Jang <Morgan_Jang@wiwynn.com>
 M:	Ryback Hung <<Ryback.Hung@quantatw.com>
 M:	Bryant Ou <Bryant.Ou@quantatw.com>
 S:	Supported
-F:	src/mainboard/ocp/deltalake
+F:	src/mainboard/ocp/deltalake/
 
 OCP TIOGAPASS MAINBOARD
 M:	Jonathan Zhang <jonzhang@fb.com>
@@ -335,7 +335,7 @@ M:	Morgan Jang <Morgan_Jang@wiwynn.com>
 M:	Ryback Hung <<Ryback.Hung@quantatw.com>
 M:	Bryant Ou <Bryant.Ou@quantatw.com>
 S:	Maintained
-F:	src/mainboard/ocp/tiogapass
+F:	src/mainboard/ocp/tiogapass/
 
 
 
@@ -375,14 +375,14 @@ PRODRIVE HERMES MAINBOARD
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 S:	Maintained
-F:	src/mainboard/prodrive/hermes
+F:	src/mainboard/prodrive/hermes/
 
 
 
 PURISM MAINBOARDS
 M:	Matt DeVillier <matt.devillier@puri.sm>
 S:	Supported
-F:	src/mainboard/purism
+F:	src/mainboard/purism/
 
 
 
@@ -556,8 +556,8 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 S:	Maintained
-F:	src/soc/amd/picasso
-F:	src/vendorcode/amd/fsp/picasso
+F:	src/soc/amd/picasso/
+F:	src/vendorcode/amd/fsp/picasso/
 
 INTEL APOLLOLAKE_SOC
 M:	Andrey Petrov <andrey.petrov@gmail.com>
@@ -569,8 +569,8 @@ M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 M:	Frans Hendriks <fhendriks@eltan.com>
 S:	Maintained
-F:	/src/soc/intel/braswell
-F:	/src/vendorcode/intel/fsp/fsp1_1/braswell
+F:	/src/soc/intel/braswell/
+F:	/src/vendorcode/intel/fsp/fsp1_1/braswell/
 
 INTEL Xeon Sacalable Processor Family
 M:	Jonathan Zhang <jonzhang@fb.com>
@@ -581,13 +581,13 @@ M:	Ryback Hung <<Ryback.Hung@quantatw.com>
 M:	Bryant Ou <Bryant.Ou@quantatw.com>
 S:	Supported
 F:	src/soc/intel/xeon_sp
-F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp
-F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp
+F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp/
+F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp/
 
 MEDIATEK SOCS
 M:	Hung-Te Lin <hungte@chromium.org>
 S:	Supported
-F:	src/soc/mediatek
+F:	src/soc/mediatek/
 
 ORPHANED ARM SOCS
 S:	Orphaned
@@ -615,13 +615,13 @@ F:	payloads/coreinfo/
 EXTERNAL PAYLOADS INTEGRATION
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Martin Roth <gaumless@gmail.com>
-F:	payloads/external
+F:	payloads/external/
 
 LINUXBOOT PAYLOAD INTEGRATION
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Marcello Sylvester Bauer <info@marcellobauer.com>
 S:	Supported
-F:	payloads/external/LinuxBoot
+F:	payloads/external/LinuxBoot/
 
 ################################################################################
 # Utilities
@@ -751,7 +751,7 @@ TPM SUPPORT
 M:	Christian Walter <christian.walter@9elements.com>
 S:	Supported
 F:	src/drivers/*/tpm/
-F:	src/security/tpm
+F:	src/security/tpm/
 
 SUPERIOS & SUPERIOTOOL
 M:	Felix Held <felix-coreboot@felixheld.de>
@@ -769,7 +769,7 @@ ELTAN VENDORCODE
 M:	Frans Hendriks <fhendriks@eltan.com>
 M:	Wim Vervoorn <wvervoorn@eltan.com>
 S:	Maintained
-F:	src/vendorcode/eltan
+F:	src/vendorcode/eltan/
 
 MISSING: TIMERS / DELAYS
 

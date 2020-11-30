@@ -45,7 +45,7 @@ void power_off_aoac_device(unsigned int dev)
 {
 	uint8_t byte;
 
-	/* Power on the UART and AMBA devices */
+	/* Power off the UART and AMBA devices */
 	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
 	byte &= ~FCH_AOAC_PWR_ON_DEV;
 	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);

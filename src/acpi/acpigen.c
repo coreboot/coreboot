@@ -291,6 +291,10 @@ void acpigen_emit_namestring(const char *namepath)
 	int dotcount = 0, i;
 	int dotpos = 0;
 
+	/* Check for NULL pointer */
+	if (!namepath)
+		return;
+
 	/* We can start with a '\'. */
 	if (namepath[0] == '\\') {
 		acpigen_emit_byte('\\');

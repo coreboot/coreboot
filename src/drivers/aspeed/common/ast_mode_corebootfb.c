@@ -32,7 +32,7 @@ int ast_crtc_do_set_base(struct drm_crtc *crtc)
 		return -ENOMEM;
 	}
 
-	fb->mmio_addr = (u32)res2mmio(res, 4095, 4095);
+	fb->mmio_addr = (uintptr_t)res2mmio(res, 4095, 4095);
 
 	ast_set_offset_reg(crtc);
 	ast_set_start_address_crt1(ast, fb->mmio_addr);
@@ -230,7 +230,7 @@ int ast_driver_framebuffer_init(struct drm_device *dev, int flags)
 	set_vbe_mode_info_valid(&edid, fb.mmio_addr);
 
 	/* Clear display */
-	memset((void *)fb.mmio_addr, 0, edid.bytes_per_line * edid.y_resolution);
+	memset((void *)(uintptr_t)fb.mmio_addr, 0, edid.bytes_per_line * edid.y_resolution);
 
 	return 0;
 }

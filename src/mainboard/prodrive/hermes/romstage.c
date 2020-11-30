@@ -19,7 +19,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	cannonlake_memcfg_init(&memupd->FspmConfig, variant_memcfg_config());
 
 	/* Overwrite memupd */
-	if (!check_signature(I2C_ADDR_EEPROM))
+	if (!check_signature(I2C_ADDR_EEPROM, EEPROM_OFFSET_FSP_SIGNATURE, FSP_UPD_SIGNATURE))
 		return;
 
 	for (size_t i = 0; i < ARRAY_SIZE(parmas_list); i++) {

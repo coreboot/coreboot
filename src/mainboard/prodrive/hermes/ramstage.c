@@ -17,7 +17,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->SataLedEnable = 1;
 
 	/* Overwrite params */
-	if (!check_signature(I2C_ADDR_EEPROM))
+	if (!check_signature(I2C_ADDR_EEPROM, EEPROM_OFFSET_FSP_SIGNATURE, FSP_UPD_SIGNATURE))
 		return;
 
 	for (u8 i = 0; i <= ARRAY_SIZE(parmas_list); i++) {

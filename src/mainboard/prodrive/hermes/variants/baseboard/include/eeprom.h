@@ -30,4 +30,4 @@ typedef struct {
 
 bool read_write_config(u8 addr, void *blob, size_t read_offset, size_t write_offset,
 		size_t size);
-int check_signature(u8 addr);
+int check_signature(u8 addr, const size_t offset, const uint64_t signature);

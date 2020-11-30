@@ -9,13 +9,13 @@
  * Check Signature in EEPROM (M24C32-FMN6TP)
  * If signature is there we assume that that the content is valid
  */
-int check_signature(u8 addr)
+int check_signature(u8 addr, const size_t offset, const uint64_t signature)
 {
 	u8 blob[8] = {0};
 
-	if (!read_write_config(addr, blob, EEPROM_OFFSET_FSP_SIGNATURE, 0, ARRAY_SIZE(blob))) {
+	if (!read_write_config(addr, blob, offset, 0, ARRAY_SIZE(blob))) {
 		/* Check signature */
-		if (*(uint64_t *)blob == FSP_UPD_SIGNATURE) {
+		if (*(uint64_t *)blob == signature) {
 			printk(BIOS_DEBUG, "CFG EEPROM: Signature valid.\n");
 			return 1;
 		}

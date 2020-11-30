@@ -605,7 +605,7 @@ M:	Morgan Jang <Morgan_Jang@wiwynn.com>
 M:	Ryback Hung <<Ryback.Hung@quantatw.com>
 M:	Bryant Ou <Bryant.Ou@quantatw.com>
 S:	Supported
-F:	src/soc/intel/xeon_sp
+F:	src/soc/intel/xeon_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp/
 

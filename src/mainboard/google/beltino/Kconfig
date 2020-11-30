@@ -62,4 +62,8 @@ config ENABLE_DDR_2X_REFRESH
 config PCIEXP_AER
 	def_bool n
 
+config TIANOCORE_BOOT_TIMEOUT
+	int
+	default 5
+
 endif # BOARD_GOOGLE_BASEBOARD_BELTINO

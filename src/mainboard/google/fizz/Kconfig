@@ -99,4 +99,8 @@ config UART_FOR_CONSOLE
 config USE_PM_ACPI_TIMER
 	default n
 
+config TIANOCORE_BOOT_TIMEOUT
+	int
+	default 5
+
 endif # BOARD_GOOGLE_BASEBOARD_FIZZ

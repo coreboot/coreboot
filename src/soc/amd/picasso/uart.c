@@ -6,6 +6,7 @@
 #include <device/mmio.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/aoac.h>
 #include <soc/southbridge.h>
 #include <soc/gpio.h>
 #include <soc/uart.h>

@@ -146,28 +146,6 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-static void power_on_aoac_device(unsigned int dev)
-{
-	uint8_t byte;
-
-	/* Power on the UART and AMBA devices */
-	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
-	byte |= FCH_AOAC_PWR_ON_DEV;
-	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
-}
-
-static bool is_aoac_device_enabled(unsigned int dev)
-{
-	uint8_t byte;
-
-	byte = aoac_read8(AOAC_DEV_D3_STATE(dev));
-	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
-	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
-		return true;
-	else
-		return false;
-}
-
 void enable_aoac_devices(void)
 {
 	bool status;

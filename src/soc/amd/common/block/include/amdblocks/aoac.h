@@ -32,4 +32,8 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
+bool is_aoac_device_enabled(unsigned int dev);
+void power_on_aoac_device(unsigned int dev);
+void power_off_aoac_device(unsigned int dev);
+
 #endif /* AMD_BLOCK_AOAC_H */

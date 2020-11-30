@@ -82,7 +82,7 @@ Device (EC0)
 		Offset (0x12),
 		BTID, 8,	// Battery index that host wants to read
 		USPP, 8,	// USB Port Power
-}
+	}
 
 #if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	OperationRegion (EMEM, EmbeddedControl,

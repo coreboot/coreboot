@@ -9,6 +9,7 @@
 #include <rules.h>
 #include <intelblocks/msr.h>
 
+.code32
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
@@ -161,6 +162,15 @@ car_init_done:
 	/* Need to align stack to 16 bytes at call instruction. Account for
 	   the two pushes below. */
 	andl	$0xfffffff0, %esp
+
+#if ENV_X86_64
+	#include <cpu/x86/64bit/entry64.inc>
+	movd	%mm2, %rdi
+	shlq	$32, %rdi
+	movd	%mm1, %rsi
+	or	%rsi, %rdi
+	movd	%mm0, %rsi
+#else
 	sub	$8, %esp
 
 	/* push TSC value to stack */
@@ -168,6 +178,7 @@ car_init_done:
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm1, %eax
 	pushl	%eax	/* tsc[31:0] */
+#endif
 
 before_carstage:
 	post_code(0x2A)

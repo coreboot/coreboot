@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef T10_TNI_CFG_GPIO_H
-#define T10_TNI_CFG_GPIO_H
+#ifndef CARRIER_GPIO_H
+#define CARRIER_GPIO_H
 
 #include <gpio.h>
 #include <stddef.h>
@@ -29,4 +29,4 @@
 
 void carrier_gpio_configure(void);
 
-#endif /* T10_TNI_CFG_GPIO_H */
+#endif /* CARRIER_GPIO_H */

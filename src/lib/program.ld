@@ -116,7 +116,7 @@
 }
 #endif
 
-#if !ENV_CACHE_AS_RAM
+#if !ENV_SEPARATE_BSS
 .bss . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;

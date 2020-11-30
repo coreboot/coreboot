@@ -59,6 +59,7 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram. */
 
+#if ENV_SEPARATE_BSS
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
 	/* Allow global uninitialized variables for stages without CAR teardown. */
@@ -69,6 +70,7 @@
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
 	RECORD_SIZE(bss)
+#endif
 
 #if ENV_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)
 	_shadow_size = (_ebss - _car_region_start) >> 3;

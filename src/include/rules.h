@@ -275,6 +275,9 @@
 #define ENV_CACHE_AS_RAM		0
 #endif
 
+/* Indicates if the stage uses the _bss region defined in arch/x86/car.ld */
+#define ENV_SEPARATE_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))
+
 /* Currently rmodules, ramstage and smm have heap. */
 #define ENV_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)
 

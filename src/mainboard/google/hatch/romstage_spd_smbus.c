@@ -28,10 +28,10 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 			printk(BIOS_WARNING, "Invalid SPD cache\n");
 		} else {
 			dimm_changed = check_if_dimm_changed(spd_cache, &blk);
-			if (dimm_changed && memupd->FspmArchUpd.NvsBufferPtr != NULL) {
+			if (dimm_changed && memupd->FspmArchUpd.NvsBufferPtr != 0) {
 				/* Set mrc_cache as invalid */
 				printk(BIOS_INFO, "Set mrc_cache as invalid\n");
-				memupd->FspmArchUpd.NvsBufferPtr = NULL;
+				memupd->FspmArchUpd.NvsBufferPtr = 0;
 			}
 		}
 		need_update_cache = true;

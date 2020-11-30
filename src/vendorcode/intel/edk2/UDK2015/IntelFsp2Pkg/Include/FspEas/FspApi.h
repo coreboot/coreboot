@@ -50,6 +50,7 @@ typedef struct {
   UINT8                       Reserved[23];
 } FSP_UPD_HEADER;
 
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 ///
 /// FSPM_ARCH_UPD Configuration.
 ///
@@ -63,12 +64,16 @@ typedef struct {
   /// Pointer to the non-volatile storage (NVS) data buffer.
   /// If it is NULL it indicates the NVS data is not available.
   ///
-  VOID                        *NvsBufferPtr;
+  /// Note: This ought to be VOID*, but that won't allow calling this binary on x86_64.
+  ///
+  UINT32                      NvsBufferPtr;
   ///
   /// Pointer to the temporary stack base address to be
   /// consumed inside FspMemoryInit() API.
   ///
-  VOID                        *StackBase;
+  /// Note: This ought to be VOID*, but that won't allow calling this binary on x86_64.
+  ///
+  UINT32                      StackBase;
   ///
   /// Temporary stack size to be consumed inside
   /// FspMemoryInit() API.
@@ -85,6 +90,9 @@ typedef struct {
   UINT32                      BootMode;
   UINT8                       Reserved1[8];
 } FSPM_ARCH_UPD;
+#else
+#error You need to implement this struct for x86_64 FSP
+#endif
 
 ///
 /// FSPT_UPD_COMMON Configuration.

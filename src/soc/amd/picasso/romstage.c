@@ -92,7 +92,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
 	const struct soc_amd_picasso_config *config = config_of_soc();
 
-	mupd->FspmArchUpd.NvsBufferPtr = soc_fill_mrc_cache();
+	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_mrc_cache();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 	mcfg->tseg_size = CONFIG_SMM_TSEG_SIZE;

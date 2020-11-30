@@ -19,24 +19,24 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 	printk(BIOS_SPEW, "Type: %s/%s\n",
 			(hdr->component_attribute & 1) ? "release" : "debug",
 			(hdr->component_attribute & 2) ? "official" : "test");
-	printk(BIOS_SPEW, "image ID: %s, base 0x%lx + 0x%zx\n",
-		hdr->image_id, hdr->image_base, hdr->image_size);
+	printk(BIOS_SPEW, "image ID: %s, base 0x%zx + 0x%zx\n",
+		hdr->image_id, (size_t)hdr->image_base, (size_t)hdr->image_size);
 	printk(BIOS_SPEW, "\tConfig region        0x%zx + 0x%zx\n",
-		hdr->cfg_region_offset, hdr->cfg_region_size);
+		(size_t)hdr->cfg_region_offset, (size_t)hdr->cfg_region_size);
 
 	if ((hdr->component_attribute >> 12) == FSP_HDR_ATTRIB_FSPM) {
 		printk(BIOS_SPEW, "\tMemory init offset   0x%zx\n",
-						hdr->memory_init_entry_offset);
+		       (size_t)hdr->memory_init_entry_offset);
 	}
 
 	if ((hdr->component_attribute >> 12) == FSP_HDR_ATTRIB_FSPS) {
 		printk(BIOS_SPEW, "\tSilicon init offset  0x%zx\n",
-						hdr->silicon_init_entry_offset);
+		       (size_t)hdr->silicon_init_entry_offset);
 		if (CONFIG(PLATFORM_USES_FSP2_2))
 			printk(BIOS_SPEW, "\tMultiPhaseSiInit offset  0x%zx\n",
-						hdr->multi_phase_si_init_entry_offset);
+			       (size_t)hdr->multi_phase_si_init_entry_offset);
 		printk(BIOS_SPEW, "\tNotify phase offset  0x%zx\n",
-						hdr->notify_phase_entry_offset);
+		       (size_t)hdr->notify_phase_entry_offset);
 	}
 
 }

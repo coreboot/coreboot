@@ -86,7 +86,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
 
-	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
+	supd = (FSPS_UPD *) (uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 
 	fsp_verify_upd_header_signature(supd->FspUpdHeader.Signature, FSPS_UPD_SIGNATURE);
 
@@ -110,14 +110,14 @@ static void do_silicon_init(struct fsp_header *hdr)
 		logo_entry = soc_load_logo(upd);
 
 	/* Call SiliconInit */
-	silicon_init = (void *) (hdr->image_base +
+	silicon_init = (void *) (uintptr_t)(hdr->image_base +
 				 hdr->silicon_init_entry_offset);
 	fsp_debug_before_silicon_init(silicon_init, supd, upd);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	post_code(POST_FSP_SILICON_INIT);
 
-	if (ENV_X86_64)
+	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		status = protected_mode_call_1arg(silicon_init, (uintptr_t)upd);
 	else
 		status = silicon_init(upd);
@@ -145,7 +145,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 		return;
 
 	/* Call MultiPhaseSiInit */
-	multi_phase_si_init = (void *) (hdr->image_base +
+	multi_phase_si_init = (void *) (uintptr_t)(hdr->image_base +
 			 hdr->multi_phase_si_init_entry_offset);
 
 	/* Implementing multi_phase_si_init() is optional as per FSP 2.2 spec */

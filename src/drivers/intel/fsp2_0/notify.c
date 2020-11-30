@@ -16,7 +16,7 @@ static void fsp_notify(enum fsp_notify_phase phase)
 	if (!fsps_hdr.notify_phase_entry_offset)
 		die("Notify_phase_entry_offset is zero!\n");
 
-	fspnotify = (void *) (fsps_hdr.image_base +
+	fspnotify = (void *) (uintptr_t)(fsps_hdr.image_base +
 			    fsps_hdr.notify_phase_entry_offset);
 	fsp_before_debug_notify(fspnotify, &notify_params);
 
@@ -31,7 +31,7 @@ static void fsp_notify(enum fsp_notify_phase phase)
 		post_code(POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE);
 	}
 
-	if (ENV_X86_64)
+	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		ret = protected_mode_call_1arg(fspnotify, (uintptr_t)&notify_params);
 	else
 		ret = fspnotify(&notify_params);

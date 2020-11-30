@@ -21,6 +21,7 @@ struct FSP_UPD_HEADER {
 	uint8_t                       Reserved[23];
 } __packed;
 
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 struct FSPM_ARCH_UPD {
 	///
 	/// Revision of the structure. For FSP v2.0 value is 1.
@@ -31,12 +32,12 @@ struct FSPM_ARCH_UPD {
 	/// Pointer to the non-volatile storage (NVS) data buffer.
 	/// If it is NULL it indicates the NVS data is not available.
 	///
-	void                        *NvsBufferPtr;
+	uint32_t                      NvsBufferPtr;
 	///
 	/// Pointer to the temporary stack base address to be
 	/// consumed inside FspMemoryInit() API.
 	///
-	void                        *StackBase;
+	uint32_t                      StackBase;
 	///
 	/// Temporary stack size to be consumed inside
 	/// FspMemoryInit() API.
@@ -53,7 +54,11 @@ struct FSPM_ARCH_UPD {
 	uint32_t                      BootMode;
 	uint8_t                       Reserved1[8];
 } __packed;
+#else
+#error You need to implement this struct for x86_64 FSP
+#endif
 
+#endif
 struct FSPS_ARCH_UPD {
 	///
 	/// Revision of the structure. For FSP v2.2 value is 1.

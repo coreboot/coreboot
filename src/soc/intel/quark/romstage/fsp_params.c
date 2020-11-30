@@ -84,7 +84,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 	/* Update the architectural UPD values. */
 	aupd = &fspm_upd->FspmArchUpd;
 	aupd->BootLoaderTolumSize = cbmem_overhead_size();
-	aupd->StackBase = (void *)(CONFIG_FSP_ESRAM_LOC - aupd->StackSize);
+	aupd->StackBase = (uintptr_t)(CONFIG_FSP_ESRAM_LOC - aupd->StackSize);
 	aupd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
 	/* Display the ESRAM layout */
@@ -97,8 +97,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 			"+-------------------+ 0x%08x (CONFIG_FSP_ESRAM_LOC)\n",
 			CONFIG_FSP_ESRAM_LOC);
 		printk(BIOS_SPEW, "| FSP stack         |\n");
-		printk(BIOS_SPEW, "+-------------------+ %p\n",
-			aupd->StackBase);
+		printk(BIOS_SPEW, "+-------------------+ 0x%zx\n",
+			(size_t)aupd->StackBase);
 		printk(BIOS_SPEW, "|                   |\n");
 		printk(BIOS_SPEW, "+-------------------+ %p\n",
 			_car_unallocated_start);

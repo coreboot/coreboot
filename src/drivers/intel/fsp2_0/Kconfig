@@ -31,6 +31,13 @@ config PLATFORM_USES_FSP2_2
 
 if PLATFORM_USES_FSP2_0
 
+config PLATFORM_USES_FSP2_X86_32
+	bool
+	default y
+	help
+	  The FSP 2.0 runs in x86_32 protected mode.
+	  Once there's a x86_64 FSP this needs to default to n.
+
 config HAVE_INTEL_FSP_REPO
 	bool
 	help

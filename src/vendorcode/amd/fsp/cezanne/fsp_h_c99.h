@@ -35,11 +35,15 @@ typedef struct __packed {
 
 _Static_assert(sizeof(FSP_UPD_HEADER) == 32, "FSP_UPD_HEADER not packed");
 
+
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 typedef struct __packed {
 	uint8_t		Revision;
 	uint8_t		Reserved[3];
-	void		*NvsBufferPtr;
-	void		*StackBase;
+	/* Note: This ought to be void*, but that won't allow calling this binary on x86_64. */
+	uint32_t	NvsBufferPtr;
+	/* Note: This ought to be void*, but that won't allow calling this binary on x86_64. */
+	uint32_t	StackBase;
 	uint32_t	StackSize;
 	uint32_t	BootLoaderTolumSize;
 	uint32_t	BootMode;
@@ -47,5 +51,8 @@ typedef struct __packed {
 } FSPM_ARCH_UPD;
 
 _Static_assert(sizeof(FSPM_ARCH_UPD) == 32, "FSPM_ARCH_UPD not packed");
+#else
+#error You need to implement this struct for x86_64 FSP
+#endif
 
 #endif /* FSP_H_C99_H */

@@ -87,7 +87,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	void *data;
 	size_t mrc_size;
 
-	arch_upd->NvsBufferPtr = NULL;
+	arch_upd->NvsBufferPtr = 0;
 
 	if (!CONFIG(CACHE_MRC_SETTINGS))
 		return;
@@ -101,7 +101,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 		return;
 
 	/* MRC cache found */
-	arch_upd->NvsBufferPtr = data;
+	arch_upd->NvsBufferPtr = (uintptr_t)data;
 
 	printk(BIOS_SPEW, "MRC cache found, size %zx\n", mrc_size);
 }
@@ -142,7 +142,7 @@ static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
 				stack_end) != CB_SUCCESS)
 		return CB_ERR;
 
-	arch_upd->StackBase = (void *)stack_begin;
+	arch_upd->StackBase = stack_begin;
 	return CB_SUCCESS;
 }
 
@@ -159,7 +159,7 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 	 * Non-CAR FSP 2.0 platforms pass a DRAM location for the FSP stack.
 	 */
 	if (CONFIG(FSP_USES_CB_STACK) || !ENV_CACHE_AS_RAM) {
-		arch_upd->StackBase = temp_ram;
+		arch_upd->StackBase = (uintptr_t)temp_ram;
 		arch_upd->StackSize = sizeof(temp_ram);
 	} else if (setup_fsp_stack_frame(arch_upd, memmap)) {
 		return CB_ERR;
@@ -237,7 +237,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	fsp_version = fsp_memory_settings_version(hdr);
 
-	upd = (FSPM_UPD *)(hdr->cfg_region_offset + hdr->image_base);
+	upd = (FSPM_UPD *)(uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 
 	fsp_verify_upd_header_signature(upd->FspUpdHeader.Signature, FSPM_UPD_SIGNATURE);
 
@@ -289,12 +289,12 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	post_code(POST_MEM_PREINIT_PREP_END);
 
 	/* Call FspMemoryInit */
-	fsp_raminit = (void *)(hdr->image_base + hdr->memory_init_entry_offset);
+	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->memory_init_entry_offset);
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
-	if (ENV_X86_64)
+	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		status = protected_mode_call_2arg(fsp_raminit,
 						  (uintptr_t)&fspm_upd,
 						  (uintptr_t)fsp_get_hob_list_ptr());

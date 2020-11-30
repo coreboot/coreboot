@@ -4,6 +4,7 @@
 #define _FSP2_0_INFO_HEADER_H_
 
 #include <types.h>
+#include <commonlib/bsd/compiler.h>
 
 #define FSP_HDR_OFFSET			0x94
 #if CONFIG(PLATFORM_USES_FSP2_2)
@@ -16,24 +17,29 @@
 #define FSP_HDR_ATTRIB_FSPM		2
 #define FSP_HDR_ATTRIB_FSPS		3
 
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 struct fsp_header {
 	uint32_t fsp_revision;
-	size_t image_size;
-	uintptr_t image_base;
+	uint32_t image_size;
+	uint32_t image_base;
 	uint16_t image_attribute;
 	uint8_t spec_version;
 	uint16_t component_attribute;
-	size_t cfg_region_offset;
-	size_t cfg_region_size;
-	size_t temp_ram_init_entry;
-	size_t temp_ram_exit_entry;
-	size_t notify_phase_entry_offset;
-	size_t memory_init_entry_offset;
-	size_t silicon_init_entry_offset;
-	size_t multi_phase_si_init_entry_offset;
+	uint32_t cfg_region_offset;
+	uint32_t cfg_region_size;
+	uint32_t temp_ram_init_entry;
+	uint32_t temp_ram_exit_entry;
+	uint32_t notify_phase_entry_offset;
+	uint32_t memory_init_entry_offset;
+	uint32_t silicon_init_entry_offset;
+	uint32_t multi_phase_si_init_entry_offset;
 	char image_id[sizeof(uint64_t) + 1];
 	uint8_t revision;
-};
+} __packed;
+#else
+#error You need to implement this struct for x86_64 FSP
+#endif
+
 
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);
 

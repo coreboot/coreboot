@@ -43,7 +43,8 @@ struct edid_raw {
 	uint8_t checksum;
 } __packed;
 
-_Static_assert(sizeof(struct edid_raw) == 128);
+_Static_assert(sizeof(struct edid_raw) == 128,
+	       "assert failed: edid_raw size mismatch");
 
 #define EDID_HEADER_RAW		{ 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 }
 #define EDID_HEADER_INVALID_RAW	{ 0, 0, 0, 0, 0, 0, 0, 0 }

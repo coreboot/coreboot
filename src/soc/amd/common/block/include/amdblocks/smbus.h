@@ -47,4 +47,6 @@
 #define SMBSLVDAT			0xc
 #define SMBTIMING			0xe
 
+void fch_smbus_init(void);
+
 #endif /* AMD_BLOCK_SMBUS_H */

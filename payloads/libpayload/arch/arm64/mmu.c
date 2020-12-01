@@ -705,3 +705,8 @@ void mmu_presysinfo_enable(void)
 	mmu_init(&usedmem_ranges);
 	mmu_enable();
 }
+
+const struct mmu_ranges *mmu_get_used_ranges(void)
+{
+	return &usedmem_ranges;
+}

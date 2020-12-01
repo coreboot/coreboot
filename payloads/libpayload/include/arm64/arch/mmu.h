@@ -194,4 +194,12 @@ struct mmu_memrange* mmu_init_ranges_from_sysinfo(struct memrange *cb_ranges,
  */
 void mmu_presysinfo_memory_used(uint64_t base, uint64_t size);
 void mmu_presysinfo_enable(void);
+
+/*
+ * Functions for exposing the used memory ranges to payloads. The ranges contain
+ * all used memory ranges that are actually used by payload. i.e. _start -> _end
+ * in linker script, the coreboot tables and framebuffer/DMA allocated in MMU
+ * initialization.
+ */
+const struct mmu_ranges *mmu_get_used_ranges(void);
 #endif // __ARCH_ARM64_MMU_H__

@@ -1,4 +1,11 @@
 fw_config
+	field DB_PORTS 0 3
+		option DB_PORTS_NONE 0
+		option DB_PORTS_2C_2A 1
+		option DB_PORTS_1C_LTE 2
+		option DB_PORTS_1A_HDMI 3
+		option DB_PORTS_1C_1A 4
+	end
         field TABLETMODE 10
                 option TABLETMODE_DISABLED 0
                 option TABLETMODE_ENABLED 1

@@ -33,7 +33,11 @@ _secondary_start:
 _secondary_gdt_addr:
 gdtaddr:
 	.word   0	/* the table limit */
+#if ENV_X86_64
+	.quad   0
+#else
 	.long   0	/* we know the offset */
+#endif
 
 _secondary_start_end:
 
@@ -54,14 +58,23 @@ __ap_protected_start:
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
 
+#if ENV_X86_64
+	/* entry64.inc preserves ebx. */
+	#include <cpu/x86/64bit/entry64.inc>
+	mov	secondary_stack, %rsp
+	andl	$0xfffffff0, %esp
+	mov	secondary_cpu_index, %rdi
+#else
 	/* Set the stack pointer, and flag that we are done */
 	xorl	%eax, %eax
 	movl	secondary_stack, %esp
+
 	andl	$0xfffffff0, %esp
 	sub	$12, %esp /* maintain 16-byte alignment for the call below */
 	movl	secondary_cpu_index, %edi
 	pushl	%edi
 	movl	%eax, secondary_stack
+#endif
 
 	call	secondary_cpu_init
 1:	hlt

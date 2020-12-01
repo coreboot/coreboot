@@ -5,6 +5,7 @@
 #include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
 #include <timestamp.h>
+#include <mode_switch.h>
 
 static void fsp_notify(enum fsp_notify_phase phase)
 {
@@ -30,7 +31,10 @@ static void fsp_notify(enum fsp_notify_phase phase)
 		post_code(POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE);
 	}
 
-	ret = fspnotify(&notify_params);
+	if (ENV_X86_64)
+		ret = protected_mode_call_1arg(fspnotify, (uintptr_t)&notify_params);
+	else
+		ret = fspnotify(&notify_params);
 
 	if (phase == AFTER_PCI_ENUM) {
 		timestamp_add_now(TS_FSP_AFTER_ENUMERATE);

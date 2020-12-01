@@ -13,6 +13,7 @@
 #include <string.h>
 #include <timestamp.h>
 #include <types.h>
+#include <mode_switch.h>
 
 struct fsp_header fsps_hdr;
 
@@ -117,7 +118,14 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	post_code(POST_FSP_SILICON_INIT);
-	status = silicon_init(upd);
+
+	if (ENV_X86_64)
+		status = protected_mode_call_1arg(silicon_init, (uintptr_t)upd);
+	else
+		status = silicon_init(upd);
+
+	printk(BIOS_ERR, "FSPS returned %x\n", status);
+
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
 

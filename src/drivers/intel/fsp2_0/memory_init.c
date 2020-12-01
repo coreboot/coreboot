@@ -22,6 +22,7 @@
 #include <security/tpm/tspi.h>
 #include <vb2_api.h>
 #include <types.h>
+#include <mode_switch.h>
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
@@ -296,7 +297,13 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
-	status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
+	if (ENV_X86_64)
+		status = protected_mode_call_2arg(fsp_raminit,
+						  (uintptr_t)&fspm_upd,
+						  (uintptr_t)fsp_get_hob_list_ptr());
+	else
+		status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
+
 	post_code(POST_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 

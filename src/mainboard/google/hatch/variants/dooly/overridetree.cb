@@ -1,5 +1,10 @@
 chip soc/intel/cannonlake
 
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 25,
+		.tdp_pl2_override = 49,
+	}"
+
 	# Auto-switch between X4 NVMe and X2 NVMe.
 	register "TetonGlacierMode" = "1"
 
@@ -176,47 +181,36 @@ chip soc/intel/cannonlake
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active[0]" = "{.target=DPTF_CPU,
-					.thresholds={TEMP_PCT(90, 85),
-						     TEMP_PCT(85, 75),
-						     TEMP_PCT(80, 65),
-						     TEMP_PCT(75, 55),
-						     TEMP_PCT(70, 45),}}"
+					.thresholds={TEMP_PCT(90, 0),}}"
 				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
-					.thresholds={TEMP_PCT(50, 85),
-						     TEMP_PCT(47, 75),
-						     TEMP_PCT(45, 65),
-						     TEMP_PCT(42, 55),
-						     TEMP_PCT(39, 45),}}"
+					.thresholds={TEMP_PCT(75, 60),
+						     TEMP_PCT(65, 50),
+						     TEMP_PCT(45, 40),
+						     TEMP_PCT(30, 30),}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           93, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 65, 6000)"
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           70, 60000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 76, 60000)"
 
 				## Critical Policy
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          100, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 75, SHUTDOWN)"
+				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          105, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 78, SHUTDOWN)"
 
 				## Power Limits Control
-				# PL1 is fixed at 15W, avg over 28-32s interval
-				# 25-64W PL2 in 1000mW increments, avg over 28-32s interval
+				# 15-25W PL1 in 1000mW increments, avg over 28-32s interval
+				# 40-49W PL2 in 1000mW increments, avg over 28-32s interval
 				register "controls.power_limits.pl1" = "{
 					.min_power = 15000,
-					.max_power = 15000,
-					.time_window_min = 28 * MSECS_PER_SEC,
-					.time_window_max = 32 * MSECS_PER_SEC,
-					.granularity = 200,}"
-				register "controls.power_limits.pl2" = "{
-					.min_power = 25000,
-					.max_power = 64000,
+					.max_power = 25000,
 					.time_window_min = 28 * MSECS_PER_SEC,
 					.time_window_max = 32 * MSECS_PER_SEC,
 					.granularity = 1000,}"
-
-				## Charger Performance Control (Control, mA)
-				register "controls.charger_perf[0]" = "{ 255, 1700 }"
-				register "controls.charger_perf[1]" = "{  24, 1500 }"
-				register "controls.charger_perf[2]" = "{  16, 1000 }"
-				register "controls.charger_perf[3]" = "{   8,  500 }"
+				register "controls.power_limits.pl2" = "{
+					.min_power = 40000,
+					.max_power = 49000,
+					.time_window_min = 28 * MSECS_PER_SEC,
+					.time_window_max = 32 * MSECS_PER_SEC,
+					.granularity = 1000,}"
 
 				## Fan Performance Control (Percent, Speed, Noise, Power)
 				register "controls.fan_perf[0]" = "{  90, 6700, 220, 2200, }"

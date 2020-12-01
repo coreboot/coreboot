@@ -5,9 +5,28 @@ config CPU_QEMU_X86
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
-	select SMM_ASEG
 
 if CPU_QEMU_X86
+
+# coreboot i440fx does not support SMM
+choice
+	prompt "SMM support"
+	default CPU_QEMU_X86_ASEG_SMM
+	depends on BOARD_EMULATION_QEMU_X86_Q35
+
+config CPU_QEMU_X86_NO_SMM
+	bool "No SMM"
+	select NO_SMM
+
+config CPU_QEMU_X86_ASEG_SMM
+	bool "SMM in ASEG"
+	select SMM_ASEG
+
+#config CPU_QEMU_X86_TSEG_SMM
+#	bool "SMM in TSEG"
+#	select SMM_TSEG
+
+endchoice
 
 config CPU_QEMU_X86_64
 	bool "Experimental 64bit support"

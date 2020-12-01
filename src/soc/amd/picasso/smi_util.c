@@ -9,6 +9,7 @@
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/smi.h>
 
 void configure_smi(uint8_t smi_num, uint8_t mode)
 {

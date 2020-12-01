@@ -19,6 +19,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/smbus.h>
 #include <amdblocks/spi.h>
+#include <amdblocks/smi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/i2c.h>

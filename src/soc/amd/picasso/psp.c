@@ -5,6 +5,7 @@
 #include <soc/smi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/psp.h>
+#include <amdblocks/smi.h>
 
 #define PSP_MAILBOX_OFFSET		0x10570
 #define MSR_CU_CBBCFG			0xc00110a2

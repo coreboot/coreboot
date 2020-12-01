@@ -7,6 +7,7 @@
 #include <gpio.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio_banks.h>
+#include <amdblocks/smi.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
 #include <assert.h>

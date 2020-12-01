@@ -14,6 +14,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/psp.h>
+#include <amdblocks/smi.h>
 #include <elog.h>
 #include <soc/smu.h>
 

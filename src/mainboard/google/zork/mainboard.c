@@ -10,6 +10,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio_banks.h>
+#include <amdblocks/smi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <gpio.h>

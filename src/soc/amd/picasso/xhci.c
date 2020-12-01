@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/gpio_banks.h>
+#include <amdblocks/smi.h>
 #include <bootstate.h>
 #include <device/device.h>
 #include <drivers/usb/pci_xhci/pci_xhci.h>

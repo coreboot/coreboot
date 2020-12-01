@@ -201,6 +201,11 @@ chip soc/intel/tigerlake
 				register "key.label" = ""pen_eject""
 				device generic 0 on end
 			end
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
+				device i2c 50 off end
+			end
 		end
 		device ref i2c2 on
 			chip drivers/i2c/sx9310

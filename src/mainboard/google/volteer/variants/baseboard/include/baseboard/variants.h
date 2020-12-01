@@ -21,4 +21,7 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 const struct ddr_memory_cfg *variant_memory_params(void);
 int variant_memory_sku(void);
 
+/* Modify devictree settings during ramstage. */
+void variant_devtree_update(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

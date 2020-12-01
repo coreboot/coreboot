@@ -23,8 +23,8 @@ extern struct chip_operations drivers_intel_pmc_mux_conn_ops;
 
 static bool is_port1(struct device *dev)
 {
-	return dev->path.type == DEVICE_PATH_GENERIC &&	dev->path.generic.id == 1 &&
-		dev->chip_ops == &drivers_intel_pmc_mux_conn_ops;
+	return dev->path.type == DEVICE_PATH_GENERIC && dev->path.generic.id == 1
+	       && dev->chip_ops == &drivers_intel_pmc_mux_conn_ops;
 }
 
 static void typec_orientation_fixup(void)
@@ -53,14 +53,15 @@ static void typec_orientation_fixup(void)
 	if (!conn)
 		return;
 
-	if (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2)) ||
-	    fw_config_probe(FW_CONFIG(DB_USB, USB3_ACTIVE)) ||
-	    fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3)) ||
-	    fw_config_probe(FW_CONFIG(DB_USB, USB3_NO_A))) {
+	if (fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN2))
+	    || fw_config_probe(FW_CONFIG(DB_USB, USB3_ACTIVE))
+	    || fw_config_probe(FW_CONFIG(DB_USB, USB4_GEN3))
+	    || fw_config_probe(FW_CONFIG(DB_USB, USB3_NO_A))) {
 		struct drivers_intel_pmc_mux_conn_config *config = conn->chip_info;
 
 		if (config) {
-			printk(BIOS_INFO, "Configure Right Type-C port orientation for retimer\n");
+			printk(BIOS_INFO,
+			       "Configure Right Type-C port orientation for retimer\n");
 			config->sbu_orientation = TYPEC_ORIENTATION_NORMAL;
 		}
 	}
@@ -70,6 +71,11 @@ static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
 	typec_orientation_fixup();
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
 }
 
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)

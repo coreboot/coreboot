@@ -61,6 +61,7 @@ config BOARD_GOOGLE_VOLTEER2
 	select VARIANT_HAS_MIPI_CAMERA
 	select SOC_INTEL_CSE_LITE_SKU
 	select DRIVERS_GENESYSLOGIC_GL9755
+	select DRIVER_I2C_TPM_ACPI
 
 # Reworked Volteer2 prototype, Haven chip replaced with Dauntless demo board
 config BOARD_GOOGLE_VOLTEER2_TI50
@@ -69,6 +70,7 @@ config BOARD_GOOGLE_VOLTEER2_TI50
 	select VARIANT_HAS_MIPI_CAMERA
 	select SOC_INTEL_CSE_LITE_SKU
 	select DRIVERS_GENESYSLOGIC_GL9755
+	select DRIVER_I2C_TPM_ACPI
 
 config BOARD_GOOGLE_VOXEL
 	bool "-> Voxel"

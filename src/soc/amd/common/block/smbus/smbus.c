@@ -69,7 +69,8 @@ static int smbus_wait_until_done(uintptr_t mmio)
 		val &= SMBHST_STAT_VAL_BITS;	/* mask off reserved bits */
 		if (val & SMBHST_STAT_ERROR_BITS)
 			return -5;	/* error */
-		if (val == SMBHST_STAT_NOERROR) {
+		/* check IRQ status bit to see if the last host command is completed */
+		if (val == SMBHST_STAT_INTERRUPT) {
 			controller_write8(mmio, SMBHSTSTAT, val); /* clr sts */
 			return 0;
 		}

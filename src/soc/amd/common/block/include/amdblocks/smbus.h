@@ -11,7 +11,6 @@
 #define   SMBHST_STAT_INTERRUPT		(1 << 1)
 #define   SMBHST_STAT_BUSY		(1 << 0)
 #define   SMBHST_STAT_CLEAR		0xff
-#define   SMBHST_STAT_NOERROR		(1 << 1) /* TODO: this one looks odd */
 #define   SMBHST_STAT_VAL_BITS		0x1f
 #define   SMBHST_STAT_ERROR_BITS	0x1c
 

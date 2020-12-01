@@ -14,6 +14,7 @@ ramstage-y += ../qemu-i440fx/fw_cfg.c
 ramstage-y += ../qemu-i440fx/memmap.c
 ramstage-y += ../qemu-i440fx/northbridge.c
 ramstage-y += memmap.c
+ramstage-y += cpu.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-$(CONFIG_CHROMEOS) += ../qemu-i440fx/fw_cfg.c

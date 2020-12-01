@@ -36,9 +36,10 @@ config CPU_QEMU_X86_ASEG_SMM
 	depends on !PARALLEL_MP
 	select SMM_ASEG
 
-#config CPU_QEMU_X86_TSEG_SMM
-#	bool "SMM in TSEG"
-#	select SMM_TSEG
+config CPU_QEMU_X86_TSEG_SMM
+	bool "SMM in TSEG"
+	select SMM_TSEG
+	depends on PARALLEL_MP
 
 endchoice
 

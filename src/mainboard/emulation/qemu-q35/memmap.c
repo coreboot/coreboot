@@ -8,6 +8,7 @@
 #include <device/pci_ops.h>
 #include <mainboard/emulation/qemu-i440fx/memory.h>
 #include <mainboard/emulation/qemu-i440fx/fw_cfg.h>
+#include <cpu/intel/smm_reloc.h>
 
 #include "q35.h"
 
@@ -35,6 +36,16 @@ void mainboard_machine_check(void)
 
 /* QEMU-specific register */
 #define EXT_TSEG_MBYTES	0x50
+#define SMRAMC	0x9d
+#define C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define G_SMRAME	(1 << 3)
+#define D_LCK		(1 << 4)
+#define D_CLS		(1 << 5)
+#define D_OPEN		(1 << 6)
+#define ESMRAMC	0x9e
+#define T_EN		(1 << 0)
+#define TSEG_SZ_MASK	(3 << 1)
+#define H_SMRAME	(1 << 7)
 
 void smm_region(uintptr_t *start, size_t *size)
 {
@@ -56,4 +67,17 @@ void smm_region(uintptr_t *start, size_t *size)
 
 	*start = qemu_get_memory_size() * KiB - *size;
 	printk(BIOS_SPEW, "SMM_BASE: 0x%08lx, SMM_SIZE: %zu MiB\n", *start, *size / MiB);
+}
+
+void smm_lock(void)
+{
+	/*
+	 * LOCK the SMM memory window and enable normal SMM.
+	 * After running this function, only a full reset can
+	 * make the SMM registers writable again.
+	 */
+	printk(BIOS_DEBUG, "Locking SMM.\n");
+
+	pci_or_config8(PCI_DEV(0, 0, 0), ESMRAMC, T_EN);
+	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, D_LCK | G_SMRAME | C_BASE_SEG);
 }

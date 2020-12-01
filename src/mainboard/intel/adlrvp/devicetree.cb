@@ -230,7 +230,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end # CNVi: WiFi
-		device pci 15.0 on  end	# I2C0
+		device pci 15.0 on  end # I2C0
 		device pci 15.1 on  end # I2C1
 		device pci 15.2 on  end # I2C2
 		device pci 15.3 on  end # I2C3

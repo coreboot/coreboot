@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/*
- * SMM utilities used in both SMM and normal mode
- */
+/* SMI utilities used in both SMM and normal mode */
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>

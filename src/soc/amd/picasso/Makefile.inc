@@ -20,7 +20,6 @@ bootblock-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
 bootblock-y += monotonic_timer.c
 bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
-bootblock-y += smi_util.c
 bootblock-y += config.c
 bootblock-y += reset.c
 
@@ -35,7 +34,6 @@ romstage-y += monotonic_timer.c
 romstage-y += tsc_freq.c
 romstage-y += aoac.c
 romstage-y += southbridge.c
-romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += config.c
 romstage-y += mrc_cache.c
@@ -66,7 +64,6 @@ ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += memmap.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-y += uart.c
 ramstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
 ramstage-y += monotonic_timer.c
@@ -83,7 +80,6 @@ ramstage-y += xhci.c
 ramstage-y += dmi.c
 
 smm-y += smihandler.c
-smm-y += smi_util.c
 smm-y += monotonic_timer.c
 smm-y += tsc_freq.c
 ifeq ($(CONFIG_DEBUG_SMI),y)

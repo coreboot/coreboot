@@ -19,7 +19,6 @@ bootblock-y += enable_usbdebug.c
 bootblock-y += monotonic_timer.c
 bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
-bootblock-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 romstage-y += BiosCallOuts.c
 romstage-y += i2c.c
@@ -32,7 +31,6 @@ romstage-y += memmap.c
 romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
-romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 
 verstage-y += gpio.c
@@ -61,7 +59,6 @@ ramstage-y += northbridge.c
 ramstage-y += sata.c
 ramstage-y += memmap.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
@@ -72,7 +69,6 @@ all-y += reset.c
 
 smm-y += monotonic_timer.c
 smm-y += smihandler.c
-smm-y += smi_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-y += gpio.c

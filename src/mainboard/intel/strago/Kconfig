@@ -47,10 +47,6 @@ config VGA_BIOS_ID
 	  The VGA_BIOS_ID for the C0 version of the video BIOS is hardcoded
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "strago"
-
 config CBFS_SIZE
 	hex
 	default 0x200000

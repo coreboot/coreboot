@@ -41,8 +41,7 @@ config DRIVER_TPM_I2C_ADDR
 	depends on I2C_TPM
 
 config DRIVER_I2C_TPM_ACPI
-	depends on I2C_TPM
-	bool "Generate I2C TPM ACPI device"
+	bool "Generate I2C TPM ACPI device" if I2C_TPM
 	default y if ARCH_X86 && I2C_TPM
 	default n
 

@@ -69,6 +69,16 @@ chip soc/intel/jasperlake
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
+						register "desc" = ""LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "has_power_resource" = "1"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
+						register "reset_off_delay_ms" = "10"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
+						register "enable_delay_ms" = "20"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
 						register "desc" = ""User Facing Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.5 on end
@@ -77,6 +87,11 @@ chip soc/intel/jasperlake
 						register "desc" = ""World Facing Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.3 on end
 					end
 				end
 			end

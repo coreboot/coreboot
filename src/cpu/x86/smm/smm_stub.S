@@ -144,6 +144,9 @@ smm_trampoline32:
 	movl	stack_size, %eax
 	subl	%eax, %ebx /* %ebx(stack_top) - size = %ebx(stack_bottom) */
 	movl	%ebx, (%ebx)
+#if ENV_X86_64
+	movl	$0, 4(%ebx)
+#endif
 
 	/* Create stack frame by pushing a NULL stack base pointer */
 	pushl	$0x0

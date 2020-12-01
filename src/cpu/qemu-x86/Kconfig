@@ -28,6 +28,11 @@ config CPU_QEMU_X86_ASEG_SMM
 
 endchoice
 
+config MAX_CPUS
+	int
+	default 4 if SMM_ASEG
+	default 32
+
 config CPU_QEMU_X86_64
 	bool "Experimental 64bit support"
 	select ARCH_ALL_STAGES_X86_64

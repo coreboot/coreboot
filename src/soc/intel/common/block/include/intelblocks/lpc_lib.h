@@ -115,5 +115,12 @@ void pch_pirq_init(void);
  * 2. Disable NMI sources
  */
 void pch_misc_init(void);
+/*
+ * Calls acpi_write_hpet which creates and fills HPET table and
+ * adds it to the RSDT (and XSDT) structure.
+ */
+unsigned long southbridge_write_acpi_tables(const struct device *device,
+					    unsigned long current,
+					    struct acpi_rsdp *rsdp);
 
 #endif /* _SOC_COMMON_BLOCK_LPC_LIB_H_ */

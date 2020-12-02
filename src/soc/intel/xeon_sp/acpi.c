@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/intel/common/acpi.h>

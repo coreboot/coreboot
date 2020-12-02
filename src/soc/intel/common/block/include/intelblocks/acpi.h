@@ -24,14 +24,6 @@ uint32_t soc_read_sci_irq_select(void);
 void soc_write_sci_irq_select(uint32_t scis);
 
 /*
- * Calls acpi_write_hpet which creates and fills HPET table and
- * adds it to the RSDT (and XSDT) structure.
- */
-unsigned long southbridge_write_acpi_tables(const struct device *device,
-					    unsigned long current,
-					    struct acpi_rsdp *rsdp);
-
-/*
  * get_cstate_map returns a table of processor specific acpi_cstate_t entries
  * and number of entries in the table
  */

@@ -13,6 +13,7 @@
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/uart.h>

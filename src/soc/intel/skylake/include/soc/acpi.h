@@ -13,8 +13,6 @@
 #define PSS_LATENCY_BUSMASTER		10
 
 unsigned long acpi_madt_irq_overrides(unsigned long current);
-unsigned long southbridge_write_acpi_tables(const struct device *device,
-	unsigned long current, struct acpi_rsdp *rsdp);
 unsigned long northbridge_write_acpi_tables(const struct device *,
 	unsigned long current, struct acpi_rsdp *);
 

@@ -21,7 +21,6 @@ INTERMEDIATE+=add_mchp_fw
 
 ifeq ($(CONFIG_MANDOLIN_HAVE_MCHP_FW),y)
 
-MANDOLIN_MICROCHIP_FW_OFFSET=0
 add_mchp_fw: $(obj)/coreboot.pre
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_MANDOLIN_MCHP_FW_FILE) --fill-upward
 

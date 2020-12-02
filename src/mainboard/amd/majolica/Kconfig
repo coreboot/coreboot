@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_AMD_MAJOLICA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_CEZANNE
+	select MISSING_BOARD_RESET
+
+config MAINBOARD_DIR
+	default "amd/majolica"
+
+config MAINBOARD_PART_NUMBER
+	default "MAJOLICA"
+
+endif # BOARD_AMD_MAJOLICA

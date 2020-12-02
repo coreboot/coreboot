@@ -4,12 +4,12 @@
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
-#include <intelblocks/acpi.h>
 #include <device/pci.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
+#include <soc/intel/common/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_util.h>

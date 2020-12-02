@@ -19,8 +19,13 @@ typedef struct {
 
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
-
-
+unsigned long southbridge_write_acpi_tables(const struct device *device,
+	unsigned long current, struct acpi_rsdp *rsdp);
+uint32_t soc_read_sci_irq_select(void);
+int soc_madt_sci_irq_polarity(int sci);
+void soc_power_states_generation(int core, int cores_per_package);
+acpi_tstate_t *soc_get_tss_table(int *entries);
+acpi_cstate_t *soc_get_cstate_map(size_t *entries);
 int calculate_power(int tdp, int p1_ratio, int ratio);
 void uncore_inject_dsdt(const struct device *device);
 unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);

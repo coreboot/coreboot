@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <device/mmio.h>
 #include <device/pci.h>
-#include <intelblocks/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>

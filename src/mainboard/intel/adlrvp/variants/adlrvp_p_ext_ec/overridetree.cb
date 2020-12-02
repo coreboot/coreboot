@@ -3,9 +3,10 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device pci 1f.0 on
 			chip ec/google/chromeec
-				device pnp 0c09.0 on end
 				use conn0 as mux_conn[0]
 				use conn1 as mux_conn[1]
+				use conn2 as mux_conn[2]
+				device pnp 0c09.0 on end
 			end
 		end # eSPI
 		device pci 1f.2 hidden
@@ -26,6 +27,13 @@ chip soc/intel/alderlake
 						# SBU is fixed, HSL follows CC
 						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
 						device generic 1 alias conn1 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "3"
+						register "usb3_port_number" = "3"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 2 alias conn2 on end
 					end
 				end
 			end

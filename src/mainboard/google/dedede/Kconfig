@@ -98,6 +98,7 @@ config MAINBOARD_PART_NUMBER
 	default "Lantis" if BOARD_GOOGLE_LANTIS
 	default "Galtic" if BOARD_GOOGLE_GALTIC
 	default "Sasuke" if BOARD_GOOGLE_SASUKE
+	default "Storo" if BOARD_GOOGLE_STORO
 
 config MAX_CPUS
 	int
@@ -131,5 +132,6 @@ config VARIANT_DIR
 	default "lantis" if BOARD_GOOGLE_LANTIS
 	default "galtic" if BOARD_GOOGLE_GALTIC
 	default "sasuke" if BOARD_GOOGLE_SASUKE
+	default "storo" if BOARD_GOOGLE_STORO
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

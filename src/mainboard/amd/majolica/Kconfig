@@ -7,10 +7,26 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_CEZANNE
 	select MISSING_BOARD_RESET
 
+config FMDFILE
+	string
+	default "src/mainboard/amd/majolica/board.fmd"
+
 config MAINBOARD_DIR
 	default "amd/majolica"
 
 config MAINBOARD_PART_NUMBER
 	default "MAJOLICA"
+
+config MAJOLICA_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config MAJOLICA_MCHP_FW_FILE
+	string
+	depends on MAJOLICA_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/majolica/EC_majolica.bin"
+	help
+	  The EC firmware blob is usually the first 128kByte of the stock
+	  firmware image.
 
 endif # BOARD_AMD_MAJOLICA

@@ -58,8 +58,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C5, 1, PLTRST),
 	/* PEG_SLOT_WAKE_N */
 	PAD_CFG_GPI(GPP_A20, NONE, PLTRST),
-	/* UART_BT_WAKE_N */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_E0, NONE, DEEP, LEVEL, INVERT),
 	/* CAM CONN1 CLKEN */
 	PAD_CFG_GPO(GPP_H15, 1, PLTRST),
 	/* CPU SSD2 PWREN */

@@ -70,6 +70,12 @@
 #define ENABLE_SMI_PARAMS \
 	(APMC_EN | GBL_SMI_EN | EOS)
 
+/* P-state configuration */
+#define PSS_MAX_ENTRIES			16
+#define PSS_RATIO_STEP			1
+#define PSS_LATENCY_TRANSITION		10
+#define PSS_LATENCY_BUSMASTER		10
+
 /* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
 #define ETR		0xac
 #define  CF9_LOCK	(1 << 31)

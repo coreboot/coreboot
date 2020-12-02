@@ -8,6 +8,7 @@
 #include <cpu/intel/turbo.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
@@ -218,7 +219,7 @@ void soc_power_states_generation(int core, int cores_per_package)
 	     ratio >= ratio_min; ratio -= ratio_step) {
 
 		/* Calculate power at this ratio */
-		power = calculate_power(power_max, ratio_max, ratio);
+		power = common_calculate_power_ratio(power_max, ratio_max, ratio);
 		clock = ratio * CONFIG_CPU_BCLK_MHZ;
 		//clock = 1;
 		acpigen_write_PSS_package(

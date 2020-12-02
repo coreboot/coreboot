@@ -30,8 +30,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
 	PAD_SCI(GPIO_9, PULL_NONE, EDGE_LOW),
-	/* S0iX SLP - (unused - goes to EC */
-	PAD_NC(GPIO_10),
+	/* S0iX SLP - goes to EC */
+	PAD_GPO(GPIO_10, HIGH),
 	/* EC_IN_RW_OD */
 	PAD_GPI(GPIO_11, PULL_NONE),
 	/* USI_INT_ODL */
@@ -302,6 +302,8 @@ const __weak struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int
 }
 
 static const struct soc_amd_gpio gpio_sleep_table[] = {
+	/* S0iX SLP */
+	PAD_GPO(GPIO_10, LOW),
 	/* PCIE_RST1_L */
 	PAD_GPO(GPIO_27, LOW),
 	/*

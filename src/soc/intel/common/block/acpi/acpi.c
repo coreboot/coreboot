@@ -158,9 +158,12 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {
-	current = acpi_write_dbg2_pci_uart(rsdp, current,
-					   uart_get_device(),
-					   ACPI_ACCESS_SIZE_DWORD_ACCESS);
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_UART)) {
+		current = acpi_write_dbg2_pci_uart(rsdp, current,
+						uart_get_device(),
+						ACPI_ACCESS_SIZE_DWORD_ACCESS);
+	}
+
 	return acpi_write_hpet(device, current, rsdp);
 }
 

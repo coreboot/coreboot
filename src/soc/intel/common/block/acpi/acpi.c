@@ -86,13 +86,34 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
+__weak const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
+{
+	*entries = 0;
+	return NULL;
+}
+
 unsigned long acpi_fill_madt(unsigned long current)
 {
+	const struct madt_ioapic_info *ioapic_table;
+	size_t ioapic_entries;
+
 	/* Local APICs */
 	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((void *)current, 2, IO_APIC_ADDR, 0);
+	ioapic_table = soc_get_ioapic_info(&ioapic_entries);
+	if (ioapic_entries) {
+		for (int i = 0; i < ioapic_entries; i++) {
+			current += acpi_create_madt_ioapic(
+					(void *)current,
+					ioapic_table[i].id,
+					ioapic_table[i].addr,
+					ioapic_table[i].gsi_base);
+		}
+	} else {
+		/* Default SOC IOAPIC entry */
+		current += acpi_create_madt_ioapic((void *)current, 2, IO_APIC_ADDR, 0);
+	}
 
 	return acpi_madt_irq_overrides(current);
 }

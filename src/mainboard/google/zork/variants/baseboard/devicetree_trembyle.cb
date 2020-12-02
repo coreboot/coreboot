@@ -371,7 +371,15 @@ chip soc/amd/picasso
 						register "name" = ""MSTH""
 						register "uid" = "1"
 						register "remote_bus" = "9"
-						device generic 1.0 on end
+						device generic 1.0 on
+							chip drivers/i2c/generic
+								register "hid" = ""10EC2141""
+								register "name" = ""MSTH""
+								register "uid" = "1"
+								register "desc" = ""Realtek RTD2141B""
+								device i2c 4a on end
+							end
+						end
 					end
 					chip ec/google/chromeec/audio_codec
 						register "uid" = "1"

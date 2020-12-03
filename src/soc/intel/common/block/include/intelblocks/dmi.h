@@ -8,6 +8,9 @@
 #define PCR_DMI_DMICTL		0x2234
 #define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)
 
+#define PCR_DMI_GCS		0x274C
+#define  PCR_DMI_GCS_BILD	(1 << 0)
+
 /*
  * Takes base, size and destination ID and configures the GPMR
  * for accessing the region.

@@ -236,7 +236,7 @@ uint8_t cse_wait_com_soft_temp_disable(void);
  * In software triggered recovery mode, the function allows CSE to boot from whatever is
  * currently selected partition.
  */
-void cse_fw_sync(void *unused);
+void cse_fw_sync(void);
 
 /* Perform a board-specific reset sequence for CSE RO<->RW jump */
 void cse_board_reset(void);

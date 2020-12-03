@@ -775,7 +775,7 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 	return 0;
 }
 
-void cse_fw_sync(void *unused)
+void cse_fw_sync(void)
 {
 	static struct get_bp_info_rsp cse_bp_info;
 
@@ -814,5 +814,3 @@ void cse_fw_sync(void *unused)
 		cse_trigger_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}
 }
-
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, cse_fw_sync, NULL);

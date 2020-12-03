@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -181,6 +182,11 @@ static void read_resources(struct device *dev)
 	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
+static void root_complex_init(struct device *dev)
+{
+	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, CONFIG_PICASSO_GNB_IOAPIC_ID);
+}
+
 static void dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size)
 {
 	/* Name (buf_name, Buffer(size) {...} */
@@ -266,6 +272,7 @@ static struct device_operations root_complex_operations = {
 	.read_resources		= read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.init			= root_complex_init,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };
 

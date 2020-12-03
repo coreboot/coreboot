@@ -51,6 +51,14 @@ config INTEL_CAR_NEM_ENHANCED
 	  ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
+config CAR_HAS_SF_MASKS
+	bool
+	depends on INTEL_CAR_NEM_ENHANCED
+	help
+	  In the case of non-inclusive cache architecture Snoop Filter MSR
+	  IA32_L3_SF_MASK_x programming is required along with the data ways.
+	  This is applicable for TGL and beyond.
+
 config COS_MAPPED_TO_MSB
 	bool
 	depends on INTEL_CAR_NEM_ENHANCED

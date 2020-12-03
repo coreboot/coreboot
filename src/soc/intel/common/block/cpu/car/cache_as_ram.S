@@ -412,8 +412,27 @@ find_llc_subleaf:
 	subl	$0x01, %eax
 
 set_eviction_mask:
-	mov	%ebx, %ecx /* back up the number of ways */
-	mov	%eax, %ebx /* back up the non-eviction mask */
+	mov	%ebx, %ecx /* back up number of ways */
+	mov	%eax, %ebx /* back up the non-eviction mask*/
+#if CONFIG(CAR_HAS_SF_MASKS)
+	mov	%ecx, %edi /* use number of ways to prepare SF mask */
+	/*
+	 * SF mask is programmed with the double number of bits than
+	 * the number of ways
+	 */
+	mov	$0x01, %eax
+	shl	%cl, %eax
+	shl	%cl, %eax
+	subl	$0x01, %eax /* contains SF mask */
+	/*
+	 * Program MSR 0x1891 IA32_CR_SF_QOS_MASK_1 with
+	 * total number of LLC ways
+	 */
+	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
+	xorl	%edx, %edx
+	wrmsr
+	mov	%edi, %ecx /* restore number of ways */
+#endif
 	/*
 	 * Program MSR 0xC91 IA32_L3_MASK_1
 	 * This MSR contain one bit per each way of LLC
@@ -431,7 +450,6 @@ set_eviction_mask:
 	movl	$IA32_L3_MASK_1, %ecx
 	xorl	%edx, %edx
 	wrmsr
-
 	/*
 	 * Program MSR 0xC92 IA32_L3_MASK_2
 	 * This MSR contain one bit per each way of LLC
@@ -460,7 +478,6 @@ set_eviction_mask:
 	movl	$0x02, %eax
 #endif
 	wrmsr
-
 	movl	$CONFIG_DCACHE_RAM_BASE, %edi
 	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
 	shr	$0x02, %ecx

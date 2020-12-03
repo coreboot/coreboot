@@ -95,7 +95,7 @@ cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *
 	const void *end = mcache + mcache_size;
 	const void *current = mcache;
 
-	while (current + sizeof(uint32_t) < end) {
+	while (current + sizeof(uint32_t) <= end) {
 		const union mcache_entry *entry = current;
 
 		if (entry->magic == MCACHE_MAGIC_END)

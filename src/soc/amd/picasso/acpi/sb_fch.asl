@@ -34,7 +34,7 @@ Device (GPIO)
 				ActiveLow,
 				Exclusive, , , IRQR)
 			{ 0 }
-			Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
+			Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
 		If (PMOD) {
@@ -44,7 +44,7 @@ Device (GPIO)
 		}
 		If (IRQN == 0x1f) {
 			Return (ResourceTemplate() {
-				Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
+				Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
 			})
 		} Else {
 			Return (Local0)

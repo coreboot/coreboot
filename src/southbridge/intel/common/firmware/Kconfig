@@ -55,6 +55,14 @@ config CHECK_ME
 	  proceeding with the build, in order to prevent an accidental loading
 	  of a corrupted ME/TXE image.
 
+config ME_REGION_ALLOW_CPU_READ_ACCESS
+	bool "Allows HOST/CPU read access to ME region"
+	default n
+	help
+	 The config ensures Host has read access to the ME region if it is locked
+	 through LOCK_MANAGEMENT_ENGINE config. This config is enabled when the CSE
+	 Lite SKU is integrated.
+
 config USE_ME_CLEANER
 	bool "Strip down the Intel ME/TXE firmware"
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_IRONLAKE || \
@@ -145,12 +153,12 @@ config DO_NOT_TOUCH_DESCRIPTOR_REGION
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock ME/TXE section"
 	help
-	  The Intel Firmware Descriptor supports preventing write accesses
-	  from the host to the ME or TXE section in the firmware
-	  descriptor. If the section is locked, it can only be overwritten
-	  with an external SPI flash programmer. You will want this if you
-	  want to increase security of your ROM image once you are sure
-	  that the ME/TXE firmware is no longer going to change.
+	  The Intel Firmware Descriptor supports preventing write and read
+	  accesses from the host to the ME or TXE section. If the section
+	  is locked, it can only be overwritten with an external SPI flash
+	  programmer or HECI HMRFPO_ENABLE command needs to be sent to CSE
+	  before writing to the ME Section. If CSE Lite SKU is integrated,
+	  the Kconfig prevents only writing to the ME section.
 
 	  If unsure, select "Unlock flash regions".
 

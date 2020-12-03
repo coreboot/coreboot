@@ -17,6 +17,12 @@ ifneq ($(call strip_quotes,$(CONFIG_IFD_CHIPSET)),)
 IFDTOOL_USE_CHIPSET := -p $(CONFIG_IFD_CHIPSET)
 endif
 
+ifeq ($(CONFIG_ME_REGION_ALLOW_CPU_READ_ACCESS),y)
+IFDTOOL_LOCK_ME_MODE := -lr
+else
+IFDTOOL_LOCK_ME_MODE := -l
+endif
+
 add_intel_firmware: $(call strip_quotes,$(CONFIG_IFD_BIN_PATH))
 ifeq ($(CONFIG_HAVE_ME_BIN),y)
 add_intel_firmware: $(call strip_quotes,$(CONFIG_ME_BIN_PATH))
@@ -73,7 +79,7 @@ endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \
-		$(IFDTOOL_USE_CHIPSET) -l \
+		$(IFDTOOL_USE_CHIPSET) $(IFDTOOL_LOCK_ME_MODE) \
 		-O $(obj)/coreboot.pre \
 		$(obj)/coreboot.pre
 endif

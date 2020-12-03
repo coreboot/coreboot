@@ -17,6 +17,7 @@ config SOC_INTEL_CSE_LITE_SKU
 	bool
 	default n
 	depends on CHROMEOS
+	select ME_REGION_ALLOW_CPU_READ_ACCESS
 	help
 	 Enables CSE Lite SKU
 

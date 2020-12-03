@@ -90,6 +90,9 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_SMUFW1_SUB0_FILE") == 0) {
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_HW_IPCFG_FILE") == 0) {
+		fw_type = AMD_HW_IPCFG;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_SMUFW1_SUB1_FILE") == 0) {
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE;
 		subprog = 1;
@@ -167,12 +170,22 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_IKEK_FILE") == 0) {
 		fw_type = AMD_WRAPPED_IKEK;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_SECG0_FILE") == 0) {
+		fw_type = AMD_SEC_GASKET;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_SECG1_FILE") == 0) {
 		fw_type = AMD_SEC_GASKET;
 		subprog = 1;
 	} else if (strcmp(fw_name, "PSP_SECG2_FILE") == 0) {
 		fw_type = AMD_SEC_GASKET;
 		subprog = 2;
+	} else if (strcmp(fw_name, "PSP_MP2FW0_FILE") == 0) {
+		if (cb_config->load_mp2_fw == 1) {
+			fw_type = AMD_MP2_FW;
+			subprog = 0;
+		} else {
+			fw_type = AMD_FW_SKIP;
+		}
 	} else if (strcmp(fw_name, "PSP_MP2FW1_FILE") == 0) {
 		if (cb_config->load_mp2_fw == 1) {
 			fw_type = AMD_MP2_FW;
@@ -197,10 +210,44 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
+	} else if (strcmp(fw_name, "AMD_DRIVER_ENTRIES") == 0) {
+		fw_type = AMD_DRIVER_ENTRIES;
+		subprog = 0;
+	} else if (strcmp(fw_name, "VBIOS_BTLOADER_FILE") == 0) {
+		fw_type = AMD_VBIOS_BTLOADER;
+		subprog = 0;
+	} else if (strcmp(fw_name, "SECURE_POLICY_L1_FILE") == 0) {
+		fw_type = AMD_FW_TOS_SEC_POLICY;
+		subprog = 0;
+	} else if (strcmp(fw_name, "UNIFIEDUSB_FILE") == 0) {
+		fw_type = AMD_FW_USB_PHY;
+		subprog = 0;
+	} else if (strcmp(fw_name, "DRTMTA_FILE") == 0) {
+		fw_type = AMD_FW_DRTM_TA;
+		subprog = 0;
+	} else if (strcmp(fw_name, "KEYDBBL_FILE") == 0) {
+		fw_type = AMD_FW_KEYDB_BL;
+		subprog = 0;
+	} else if (strcmp(fw_name, "KEYDB_TOS_FILE") == 0) {
+		fw_type = AMD_FW_KEYDB_TOS;
+		subprog = 0;
+	} else if (strcmp(fw_name, "DMCUERAMDCN21_FILE") == 0) {
+		fw_type = AMD_FW_DMCU_ERAM;
+		subprog = 0;
+	} else if (strcmp(fw_name, "DMCUINTVECTORSDCN21_FILE") == 0) {
+		fw_type = AMD_FW_DMCU_ISR;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_KVM_ENGINE_DUMMY_FILE") == 0) {
+		fw_type = AMD_FW_KVM_IMAGE;
+		subprog = 0;
+	} else if (strcmp(fw_name, "RPMC_FILE") == 0) {
+		fw_type = AMD_RPMC_NVRAM;
+		subprog = 0;
 	} else {
 		fw_type = AMD_FW_INVALID;
 		/* TODO: Add more */
 	}
+
 	/* Search and fill the filename */
 	psp_tableptr = &amd_psp_fw_table[0];
 	if (fw_type != AMD_FW_SKIP && fw_type != AMD_FW_INVALID) {
@@ -261,6 +308,10 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		fw_type = AMD_BIOS_PMUD;
 		subprog = 1;
 		instance = 4;
+	} else if (strcmp(fw_name, "RTM_PUBKEY_FILE") == 0) {
+		fw_type = AMD_BIOS_RTM_PUBKEY;
+		subprog = 0;
+		instance = 0;
 	} else if (strcmp(fw_name, "PSP_MP2CFG_FILE") == 0) {
 		if (cb_config->load_mp2_fw == 1) {
 			fw_type = AMD_BIOS_MP2_CFG;

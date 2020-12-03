@@ -5,6 +5,9 @@
 
 #include <types.h>
 
+#define PCR_DMI_DMICTL		0x2234
+#define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)
+
 /*
  * Takes base, size and destination ID and configures the GPMR
  * for accessing the region.

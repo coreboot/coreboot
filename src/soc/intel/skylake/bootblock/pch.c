@@ -3,6 +3,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
@@ -20,8 +21,6 @@
 #include <soc/pmc.h>
 #include "../chip.h"
 
-#define PCR_DMI_DMICTL		0x2234
-#define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)
 #define PCR_DMI_ACPIBA		0x27B4
 #define PCR_DMI_ACPIBDID	0x27B8
 #define PCR_DMI_PMBASEA		0x27AC

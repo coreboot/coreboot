@@ -170,7 +170,7 @@ choice
 config USE_DENVERTON_NS_CAR_NEM_ENHANCED
 	bool "Enhanced Non-evict mode"
 	select SOC_INTEL_COMMON_BLOCK_CAR
-	select USE_CAR_NEM_ENHANCED_V1
+	select INTEL_CAR_NEM_ENHANCED
 	help
 	  A current limitation of NEM (Non-Evict mode) is that code and data sizes
 	  are derived from the requirement to not write out any modified cache line.

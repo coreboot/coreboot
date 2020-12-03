@@ -415,7 +415,7 @@ set_eviction_mask:
 	mov	%ebx, %ecx /* back up the number of ways */
 	mov	%eax, %ebx /* back up the non-eviction mask */
 	/*
-	 * Set MSR 0xC91 IA32_L3_MASK_1 or MSR 0x1891 IA32_CR_SF_QOS_MASK_1
+	 * Program MSR 0xC91 IA32_L3_MASK_1
 	 * This MSR contain one bit per each way of LLC
 	 * - If this bit is '0' - the way is protected from eviction
 	 * - If this bit is '1' - the way is not protected from eviction
@@ -428,26 +428,18 @@ set_eviction_mask:
 
 	xor	$~0, %eax	/* invert 32 bits */
 	and	%ecx, %eax
-#if CONFIG(USE_CAR_NEM_ENHANCED_V1)
 	movl	$IA32_L3_MASK_1, %ecx
-#elif CONFIG(USE_CAR_NEM_ENHANCED_V2)
-	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
-#endif
 	xorl	%edx, %edx
 	wrmsr
 
 	/*
-	 * Set MSR 0xC92 IA32_L3_MASK_1 or MSR 0x1892 IA32_CR_SF_QOS_MASK_2
+	 * Program MSR 0xC92 IA32_L3_MASK_2
 	 * This MSR contain one bit per each way of LLC
 	 * - If this bit is '0' - the way is protected from eviction
 	 * - If this bit is '1' - the way is not protected from eviction
 	 */
 	mov	%ebx, %eax
-#if CONFIG(USE_CAR_NEM_ENHANCED_V1)
 	movl	$IA32_L3_MASK_2, %ecx
-#elif CONFIG(USE_CAR_NEM_ENHANCED_V2)
-	movl	$IA32_CR_SF_QOS_MASK_2, %ecx
-#endif
 	xorl	%edx, %edx
 	wrmsr
 	/*

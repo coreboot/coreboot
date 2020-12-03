@@ -51,21 +51,6 @@ config INTEL_CAR_NEM_ENHANCED
 	  ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
-config USE_CAR_NEM_ENHANCED_V1
-	bool
-	select INTEL_CAR_NEM_ENHANCED
-	help
-	  This config supports INTEL_CAR_NEM_ENHANCED mode on
-	  SKL, KBL, CNL, WHL, CML and ICL and JSL platforms.
-
-config USE_CAR_NEM_ENHANCED_V2
-	bool
-	select INTEL_CAR_NEM_ENHANCED
-	select COS_MAPPED_TO_MSB
-	help
-	  This config supports INTEL_CAR_NEM_ENHANCED mode on
-	  TGL platform.
-
 config COS_MAPPED_TO_MSB
 	bool
 	depends on INTEL_CAR_NEM_ENHANCED

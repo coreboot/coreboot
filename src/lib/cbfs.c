@@ -52,8 +52,17 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 		       name);
 		return cbfs_boot_lookup(name, true, mdata, rdev);
 	}
-	if (err)
+	if (err) {
+		if (err == CB_CBFS_NOT_FOUND)
+			printk(BIOS_WARNING, "CBFS: '%s' not found.\n", name);
+		else if (err == CB_CBFS_HASH_MISMATCH)
+			printk(BIOS_ERR, "CBFS ERROR: metadata hash mismatch!\n");
+		else
+			printk(BIOS_ERR,
+			       "CBFS ERROR: error %d when looking up '%s'\n",
+			       err, name);
 		return err;
+	}
 
 	if (rdev_chain(rdev, &cbd->rdev, data_offset, be32toh(mdata->h.len)))
 		return CB_ERR;

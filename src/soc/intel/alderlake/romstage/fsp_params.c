@@ -100,6 +100,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ALDERLAKE_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
+	m_cfg->PchHdaEnable = is_dev_enabled(dev);
+
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
 	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,

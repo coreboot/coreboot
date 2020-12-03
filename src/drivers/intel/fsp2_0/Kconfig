@@ -113,6 +113,7 @@ config FSP_S_FILE
 config FSP_CAR
 	bool
 	default n
+	select NO_CBFS_MCACHE
 	help
 	  Use FSP APIs to initialize & Tear Down the Cache-As-Ram
 

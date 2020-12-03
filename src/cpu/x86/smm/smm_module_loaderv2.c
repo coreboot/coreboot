@@ -221,7 +221,7 @@ u32 smm_get_cpu_smbase(unsigned int cpu_num)
  */
 
 static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
-				unsigned int stack_top, const struct smm_loader_params *params)
+				uintptr_t stack_top, const struct smm_loader_params *params)
 {
 	unsigned int i;
 	unsigned int size;
@@ -235,7 +235,7 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 			if (cpus[num_cpus - 1].smbase +
 				params->smm_main_entry_offset < stack_top) {
 				printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
-				printk(BIOS_ERR, "%s: smbase %zx, stack_top %x\n",
+				printk(BIOS_ERR, "%s: smbase %zx, stack_top %lx\n",
 					__func__, cpus[num_cpus].smbase, stack_top);
 				return 0;
 			}
@@ -245,7 +245,7 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 		return 0;
 	}
 
-	printk(BIOS_INFO, "%s: smbase %zx, stack_top %x\n",
+	printk(BIOS_INFO, "%s: smbase %zx, stack_top %lx\n",
 		__func__, cpus[num_cpus-1].smbase, stack_top);
 
 	/* start at 1, the first CPU stub code is already there */
@@ -311,9 +311,9 @@ static int smm_stub_place_staggered_entry_points(char *base,
 	 * sets up the stack, and then jumps to common SMI handler
 	 */
 	if (params->num_concurrent_save_states > 1 || stub_entry_offset != 0) {
-		rc = smm_place_entry_code((unsigned int)base,
-			params->num_concurrent_save_states,
-			(unsigned int)params->stack_top, params);
+		rc = smm_place_entry_code((uintptr_t)base,
+					  params->num_concurrent_save_states,
+					  (uintptr_t)params->stack_top, params);
 	}
 	return rc;
 }
@@ -384,7 +384,7 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	/* The save state size encroached over the first SMM entry point. */
 	if (size <= params->smm_main_entry_offset) {
 		printk(BIOS_ERR, "%s: encroachment over SMM entry point\n", __func__);
-		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %x\n",
+		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %lx\n",
 			__func__, size, params->smm_main_entry_offset);
 		return -1;
 	}

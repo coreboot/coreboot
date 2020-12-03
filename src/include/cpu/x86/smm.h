@@ -150,10 +150,10 @@ struct smm_loader_params {
 
 	/* The following are only used by X86_SMM_LOADER_VERSION2 */
 #if CONFIG(X86_SMM_LOADER_VERSION2)
-	unsigned int smm_entry;
-	unsigned int smm_main_entry_offset;
-	unsigned int smram_start;
-	unsigned int smram_end;
+	uintptr_t smm_entry;
+	uintptr_t smm_main_entry_offset;
+	uintptr_t smram_start;
+	uintptr_t smram_end;
 #endif
 };
 

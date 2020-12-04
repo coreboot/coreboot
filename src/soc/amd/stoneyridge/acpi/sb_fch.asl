@@ -30,7 +30,7 @@ Device (GPIO)
 	{
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , )
 			{ 7 }
-		Memory32Fixed (ReadWrite, 0xFED81500, 0x300)
+		Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x300)
 	})
 
 	Method (_STA, 0x0, NotSerialized)
@@ -46,7 +46,7 @@ Device (FUR0)
 	Name (_CRS, ResourceTemplate()
 	{
 		IRQ (Edge, ActiveHigh, Exclusive) { 10 }
-		Memory32Fixed (ReadWrite, 0xFEDC6000, 0x2000)
+		Memory32Fixed (ReadWrite, APU_UART0_BASE, 0x2000)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{
@@ -60,7 +60,7 @@ Device (FUR1) {
 	Name (_CRS, ResourceTemplate()
 	{
 			IRQ (Edge, ActiveHigh, Exclusive) { 11 }
-			Memory32Fixed (ReadWrite, 0xFEDC8000, 0x2000)
+			Memory32Fixed (ReadWrite, APU_UART1_BASE, 0x2000)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{

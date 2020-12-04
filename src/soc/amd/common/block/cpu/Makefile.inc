@@ -1,2 +1,1 @@
-subdirs-$(CONFIG_SOC_AMD_COMMON_BLOCK_CAR) += car
-subdirs-$(CONFIG_SOC_AMD_COMMON_BLOCK_NONCAR) += noncar
+subdirs-y += ./*

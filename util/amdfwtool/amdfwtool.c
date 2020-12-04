@@ -1342,9 +1342,11 @@ int main(int argc, char **argv)
 			sub = 0;
 			break;
 		case 'a':
-			register_bdt_data(AMD_BIOS_APCB, sub, instance, optarg);
-			register_bdt_data(AMD_BIOS_APCB_BK, sub,
-							instance, optarg);
+			if ((instance & 0xF0) == 0)
+				register_bdt_data(AMD_BIOS_APCB, sub, instance & 0xF, optarg);
+			else
+				register_bdt_data(AMD_BIOS_APCB_BK, sub,
+							instance & 0xF, optarg);
 			sub = instance = 0;
 			break;
 		case 'Q':

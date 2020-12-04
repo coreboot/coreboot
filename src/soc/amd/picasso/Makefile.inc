@@ -184,7 +184,10 @@ OPT_VERSTAGE_SIG_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_SIG_FILE), --verstag
 
 OPT_PSP_APCB_FILES=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
 	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
-	--instance $(shell printf "%x" $$(($(i)-1))) --apcb ))
+	--instance $(shell printf "%x" $$(($(i)-1))) --apcb  )   )
+OPT_PSP_APCB_FILES_BK=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
+	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
+	--instance $(shell printf "1%x" $$(($(i)-1))) --apcb  )   )
 
 OPT_APOB_ADDR=$(call add_opt_prefix, $(PSP_APOB_BASE), --apob-base)
 OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
@@ -213,6 +216,7 @@ POUND_SIGN=$(call strip_quotes, "\#")
 DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d -e /^FIRMWARE_LOCATION/d $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}' ))
 
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
+		$(OPT_PSP_APCB_FILES_BK) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_PSP_BIOSBIN_FILE) \
 		$(OPT_PSP_BIOSBIN_DEST) \

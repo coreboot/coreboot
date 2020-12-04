@@ -11,7 +11,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A10, 0, PLTRST),
 
 	/* C12 : AP_PEN_DET_ODL */
-	PAD_CFG_GPI_SCI(GPP_C12, NONE, DEEP, EDGE_SINGLE, NONE),
+	PAD_CFG_GPI_SCI(GPP_C12, UP_20K, DEEP, EDGE_SINGLE, NONE),
 	/* C18 : AP_I2C_EMR_SDA */
 	PAD_NC(GPP_C18, NONE),
 	/* C19 : AP_I2C_EMR_SCL */

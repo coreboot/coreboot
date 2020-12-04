@@ -75,10 +75,10 @@ struct dptc_input {
  *                     |            FSP-M               |
  *                     |         (FSP_M_SIZE)           |
  *                     +--------------------------------+ FSP_M_ADDR
- *                     |                                |X86_RESET_VECTOR = ROMSTAGE_ADDR + ROMSTAGE_SIZE - 0x10
  *                     |           romstage             |
  *                     |        (ROMSTAGE_SIZE)         |
  *                     +--------------------------------+ ROMSTAGE_ADDR
+ *                     |                                | X86_RESET_VECTOR = BOOTBLOCK_ADDR + C_ENV_BOOTBLOCK_SIZE - 0x10
  *                     |           bootblock            |
  *                     |     (C_ENV_BOOTBLOCK_SIZE)     |
  *                     +--------------------------------+ BOOTBLOCK_ADDR

@@ -61,15 +61,6 @@ config C_ENV_BOOTBLOCK_SIZE
 	  This variable controls the DRAM allocation size in linker script
 	  for bootblock stage.
 
-config X86_RESET_VECTOR
-	hex
-	depends on ARCH_X86
-	default 0x203fff0
-	help
-	  Sets the reset vector within bootblock where x86 starts execution.
-	  Reset vector is supposed to live at offset -0x10 from end of
-	  bootblock i.e. BOOTBLOCK_ADDR + C_ENV_BOOTBLOCK_SIZE - 0x10.
-
 config ROMSTAGE_ADDR
 	hex
 	default 0x2040000

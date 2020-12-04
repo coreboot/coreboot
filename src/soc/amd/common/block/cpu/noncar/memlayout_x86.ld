@@ -84,7 +84,6 @@ SECTIONS
 #if CONFIG(VBOOT)
 	PSP_SHAREDMEM_DRAM_END(CONFIG_PSP_SHAREDMEM_BASE + CONFIG_PSP_SHAREDMEM_SIZE)
 #endif
-	_ = ASSERT((CONFIG_BOOTBLOCK_ADDR + CONFIG_C_ENV_BOOTBLOCK_SIZE - 0x10) == CONFIG_X86_RESET_VECTOR, "Reset vector should be -0x10 from end of bootblock");
 	_ = ASSERT(CONFIG_BOOTBLOCK_ADDR == ((CONFIG_BOOTBLOCK_ADDR + 0xFFFF) & 0xFFFF0000), "Bootblock must be 16 bit aligned");
 	BOOTBLOCK(CONFIG_BOOTBLOCK_ADDR, CONFIG_C_ENV_BOOTBLOCK_SIZE)
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, CONFIG_ROMSTAGE_SIZE)
@@ -105,10 +104,11 @@ nullidt_offset = nullidt & 0xffff;
 
 SECTIONS {
 	/* Trigger an error if I have an unusable start address */
-	_TOO_LOW = CONFIG_X86_RESET_VECTOR - 0xfff0;
+	_TOO_LOW = _X86_RESET_VECTOR - 0xfff0;
 	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
 
-	. = CONFIG_X86_RESET_VECTOR;
+	. = CONFIG_BOOTBLOCK_ADDR + CONFIG_C_ENV_BOOTBLOCK_SIZE - 0x10;
+	_X86_RESET_VECTOR = .;
 	.reset . : {
 		*(.reset);
 		. = 15;

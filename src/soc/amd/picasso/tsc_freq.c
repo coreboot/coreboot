@@ -33,7 +33,7 @@ unsigned long tsc_freq_mhz(void)
 	if (!cpudid) {
 		mhz = TSC_DEFAULT_FREQ_MHZ;
 		printk(BIOS_ERR, "Invalid divisor, set TSC frequency to %ldMHz\n", mhz);
-	} else if ((cpudid >= 8) && (cpudid < 0x3c)) {
+	} else if ((cpudid >= 8) && (cpudid <= 0x30)) {
 		mhz = (200 * cpufid) / cpudid;
 	} else {
 		mhz = 25 * cpufid;

@@ -77,11 +77,11 @@ struct dptc_input {
  *                     +--------------------------------+ FSP_M_ADDR
  *                     |           romstage             |
  *                     |        (ROMSTAGE_SIZE)         |
- *                     +--------------------------------+ ROMSTAGE_ADDR
- *                     |                                | X86_RESET_VECTOR = BOOTBLOCK_ADDR + C_ENV_BOOTBLOCK_SIZE - 0x10
+ *                     +--------------------------------+ ROMSTAGE_ADDR = BOOTBLOCK_END
+ *                     |                                | X86_RESET_VECTOR = BOOTBLOCK_END  - 0x10
  *                     |           bootblock            |
  *                     |     (C_ENV_BOOTBLOCK_SIZE)     |
- *                     +--------------------------------+ BOOTBLOCK_ADDR
+ *                     +--------------------------------+ BOOTBLOCK_ADDR = BOOTBLOCK_END - C_ENV_BOOTBLOCK_SIZE
  *                     |          Unused hole           |
  *                     |            (86KiB)             |
  *                     +--------------------------------+

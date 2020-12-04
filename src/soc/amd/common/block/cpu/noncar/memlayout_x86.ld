@@ -10,6 +10,9 @@
 #define PSP_SHAREDMEM_DRAM_START(addr)		SYMBOL(psp_sharedmem_dram, addr)
 #define PSP_SHAREDMEM_DRAM_END(addr)		SYMBOL(epsp_sharedmem_dram, addr)
 
+BOOTBLOCK_END = CONFIG_ROMSTAGE_ADDR;
+BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+
 /*
  *
  *                     +--------------------------------+
@@ -31,11 +34,11 @@
  *                     +--------------------------------+ FSP_M_ADDR
  *                     |           romstage             |
  *                     |        (ROMSTAGE_SIZE)         |
- *                     +--------------------------------+ ROMSTAGE_ADDR
- *                     |                                | X86_RESET_VECTOR = BOOTBLOCK_ADDR + C_ENV_BOOTBLOCK_SIZE - 0x10
+ *                     +--------------------------------+ ROMSTAGE_ADDR = BOOTBLOCK_END
+ *                     |                                | X86_RESET_VECTOR = BOOTBLOCK_END - 0x10
  *                     |           bootblock            |
  *                     |     (C_ENV_BOOTBLOCK_SIZE)     |
- *                     +--------------------------------+ BOOTBLOCK_ADDR
+ *                     +--------------------------------+ BOOTBLOCK_ADDR = BOOTBLOCK_END - C_ENV_BOOTBLOCK_SIZE
  *                     |          Unused hole           |
  *                     +--------------------------------+
  *                     |     FMAP cache (FMAP_SIZE)     |
@@ -84,8 +87,8 @@ SECTIONS
 #if CONFIG(VBOOT)
 	PSP_SHAREDMEM_DRAM_END(CONFIG_PSP_SHAREDMEM_BASE + CONFIG_PSP_SHAREDMEM_SIZE)
 #endif
-	_ = ASSERT(CONFIG_BOOTBLOCK_ADDR == ((CONFIG_BOOTBLOCK_ADDR + 0xFFFF) & 0xFFFF0000), "Bootblock must be 16 bit aligned");
-	BOOTBLOCK(CONFIG_BOOTBLOCK_ADDR, CONFIG_C_ENV_BOOTBLOCK_SIZE)
+	_ = ASSERT(BOOTBLOCK_END == ((BOOTBLOCK_END + 0xFFFF) & 0xFFFF0000), "Bootblock end must be 16 bit aligned");
+	BOOTBLOCK(BOOTBLOCK_ADDR, CONFIG_C_ENV_BOOTBLOCK_SIZE)
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, CONFIG_ROMSTAGE_SIZE)
 	REGION(fspm, CONFIG_FSP_M_ADDR, CONFIG_FSP_M_SIZE, 1)
 #if CONFIG(VBOOT_SEPARATE_VERSTAGE)
@@ -107,7 +110,7 @@ SECTIONS {
 	_TOO_LOW = _X86_RESET_VECTOR - 0xfff0;
 	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
 
-	. = CONFIG_BOOTBLOCK_ADDR + CONFIG_C_ENV_BOOTBLOCK_SIZE - 0x10;
+	. = BOOTBLOCK_END - 0x10;
 	_X86_RESET_VECTOR = .;
 	.reset . : {
 		*(.reset);

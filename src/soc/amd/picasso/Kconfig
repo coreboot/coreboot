@@ -120,12 +120,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	help
 	  Increase this value if preram cbmem console is getting truncated
 
-config BOOTBLOCK_ADDR
-	hex
-	default 0x2030000
-	help
-	  Sets the address in DRAM where bootblock should be loaded.
-
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x10000

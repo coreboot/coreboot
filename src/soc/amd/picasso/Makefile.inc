@@ -3,7 +3,6 @@
 ifeq ($(CONFIG_SOC_AMD_PICASSO),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
-subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/x86/mtrr
@@ -17,8 +16,6 @@ bootblock-y += southbridge.c
 bootblock-y += i2c.c
 bootblock-y += uart.c
 bootblock-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-bootblock-y += monotonic_timer.c
-bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
 bootblock-y += config.c
 bootblock-y += reset.c
@@ -30,8 +27,6 @@ romstage-y += reset.c
 romstage-y += memmap.c
 romstage-y += uart.c
 romstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-romstage-y += monotonic_timer.c
-romstage-y += tsc_freq.c
 romstage-y += aoac.c
 romstage-y += southbridge.c
 romstage-y += psp.c
@@ -44,8 +39,6 @@ verstage-y += aoac.c
 verstage_x86-y += gpio.c
 verstage_x86-y += uart.c
 verstage_x86-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-verstage_x86-y += monotonic_timer.c
-verstage_x86-y += tsc_freq.c
 verstage_x86-y += reset.c
 
 ramstage-y += i2c.c
@@ -66,8 +59,6 @@ ramstage-y += memmap.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-y += uart.c
 ramstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-ramstage-y += monotonic_timer.c
-ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += psp.c
@@ -80,8 +71,6 @@ ramstage-y += xhci.c
 ramstage-y += dmi.c
 
 smm-y += smihandler.c
-smm-y += monotonic_timer.c
-smm-y += tsc_freq.c
 ifeq ($(CONFIG_DEBUG_SMI),y)
 smm-y += uart.c
 smm-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c

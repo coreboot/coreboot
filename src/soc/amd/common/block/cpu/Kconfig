@@ -27,3 +27,14 @@ config MEMLAYOUT_LD_FILE
 	default "src/soc/amd/common/block/cpu/noncar/memlayout.ld"
 
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
+
+config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
+	bool
+	select COLLECT_TIMESTAMPS_NO_TSC # selected use SoC-specific timestamp function
+	select TSC_SYNC_LFENCE
+	select UDELAY_TSC
+	default n
+	help
+	  Select this option to add the common functions for getting the TSC
+	  frequency of AMD family 17h and 19h CPUs/APUs and to provide TSC-
+	  based monotonic timer functionality to the build.

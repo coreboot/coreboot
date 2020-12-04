@@ -18,10 +18,10 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	register "telemetry_vddcr_vdd_slope_mA" = "32643"
-	register "telemetry_vddcr_vdd_offset" = "208"
-	register "telemetry_vddcr_soc_slope_mA" = "22742"
-	register "telemetry_vddcr_soc_offset" = "-83"
+	register "telemetry_vddcr_vdd_slope_mA" = "26939"
+	register "telemetry_vddcr_vdd_offset" = "125"
+	register "telemetry_vddcr_soc_slope_mA" = "20001"
+	register "telemetry_vddcr_soc_offset" = "168"
 
 	# USB OC pin mapping
 	register "usb_port_overcurrent_pin[1]" = "USB_OC_NONE"	# LTE instead of USB C1

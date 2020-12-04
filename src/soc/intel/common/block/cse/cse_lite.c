@@ -746,8 +746,8 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 	struct cse_rw_metadata source_metadata;
 
 	/* Read CSE CBFS RW metadata */
-	if (cbfs_boot_load_file(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
-			sizeof(source_metadata), CBFS_TYPE_RAW) != sizeof(source_metadata)) {
+	if (cbfs_load(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
+			sizeof(source_metadata)) != sizeof(source_metadata)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE CBFS RW metadata\n");
 		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
 	}

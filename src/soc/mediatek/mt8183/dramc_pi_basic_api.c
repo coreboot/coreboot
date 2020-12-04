@@ -347,9 +347,9 @@ static void dramc_phy_low_power_enable(u8 chn)
 		(chn == CHANNEL_A) ? 0xba000 : 0x3a000);
 }
 
-static void dramc_dummy_read_for_tracking_enable(u8 chn)
+static void dramc_dummy_read_for_tracking_enable(u8 chn, u32 rk_num)
 {
-	setbits32(&ch[chn].ao.dummy_rd, 0x3 << 16);
+	setbits32(&ch[chn].ao.dummy_rd, rk_num << 16);
 
 	for (size_t r = 0; r < 2; r++)
 		for (size_t i = 0; i < 4; i++)
@@ -403,7 +403,7 @@ static void dramc_enable_dramc_dcm(void)
 	}
 }
 
-void dramc_runtime_config(void)
+void dramc_runtime_config(u32 rk_num)
 {
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
 		clrbits32(&ch[chn].ao.refctrl0, 0x1 << 29);
@@ -412,7 +412,7 @@ void dramc_runtime_config(void)
 	setbits32(&mtk_spm->spm_power_on_val0, 0x1 << 25);
 
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
-		dramc_hw_dqsosc(chn);
+		dramc_hw_dqsosc(chn, rk_num);
 
 		/* RX_TRACKING: ON */
 		dramc_rx_input_delay_tracking(chn);
@@ -426,7 +426,7 @@ void dramc_runtime_config(void)
 			  (0x3 << 4) | (0x3 << 8) | (0x1 << 28));
 
 		/* DUMMY_READ_FOR_TRACKING: ON */
-		dramc_dummy_read_for_tracking_enable(chn);
+		dramc_dummy_read_for_tracking_enable(chn, rk_num);
 
 		/* ZQCS_ENABLE_LP4: ON */
 		clrbits32(&ch[chn].ao.spcmdctrl, 0x1 << 30);

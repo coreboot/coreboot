@@ -97,7 +97,7 @@ enum {
 };
 
 void dramc_get_rank_size(u64 *dram_rank_size);
-void dramc_runtime_config(void);
+void dramc_runtime_config(u32 rk_num);
 void dramc_set_broadcast(u32 onoff);
 u32 dramc_get_broadcast(void);
 u8 get_freq_fsq(u8 freq_group);
@@ -107,18 +107,19 @@ void dramc_sw_impedance_save_reg(u8 freq_group,
 				 const struct dram_impedance *impedance);
 void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term_option,
 			    struct dram_impedance *impedance);
-void dramc_apply_config_before_calibration(u8 freq_group);
-void dramc_apply_config_after_calibration(const struct mr_value *mr);
+void dramc_apply_config_before_calibration(u8 freq_group, u32 cbt_mode);
+void dramc_apply_config_after_calibration(const struct mr_value *mr, u32 rk_num);
 int dramc_calibrate_all_channels(const struct sdram_params *pams,
-				 u8 freq_group, struct mr_value *mr);
+				 u8 freq_group, struct mr_value *mr, bool run_dvfs);
 void dramc_hw_gating_onoff(u8 chn, bool onoff);
 void dramc_enable_phy_dcm(u8 chn, bool bEn);
 void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value);
 u32 get_shu_freq(u8 shu);
-void dramc_hw_dqsosc(u8 chn);
+void dramc_hw_dqsosc(u8 chn, u32 rk_num);
 void dramc_dqs_precalculation_preset(void);
-void get_dram_info_after_cal(u8 *density);
+void get_dram_info_after_cal(u8 *density, u32 rk_num);
 void set_mrr_pinmux_mapping(void);
 void dramc_cke_fix_onoff(enum cke_type option, u8 chn);
+void cbt_mrr_pinmux_mapping(void);
 
 #endif /* _DRAMC_PI_API_MT8183_H */

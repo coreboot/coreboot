@@ -157,6 +157,19 @@ static void set_rank_info_to_conf(const struct sdram_params *params)
 			(is_dual_rank ? 0 : 1) << 12);
 }
 
+void cbt_mrr_pinmux_mapping(void)
+{
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
+		const u8 *map = phy_mapping[chn];
+		write32(&ch[chn].ao.mrr_bit_mux1,
+			(map[8] << 0) | (map[9] << 8) |
+			(map[10] << 16) | (map[11] << 24));
+
+		write32(&ch[chn].ao.mrr_bit_mux2,
+			(map[12] << 0) | (map[13] << 8));
+	}
+}
+
 void set_mrr_pinmux_mapping(void)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
@@ -432,7 +445,7 @@ static void dfs_init_for_calibration(const struct sdram_params *params,
 				     struct dram_shared_data *shared)
 {
 	dramc_init(params, freq_group, shared);
-	dramc_apply_config_before_calibration(freq_group);
+	dramc_apply_config_before_calibration(freq_group, params->cbt_mode_extern);
 }
 
 static void init_dram(const struct sdram_params *params, u8 freq_group,
@@ -449,7 +462,7 @@ static void init_dram(const struct sdram_params *params, u8 freq_group,
 	dramc_sw_impedance_cal(params, ODT_ON, &shared->impedance);
 
 	dramc_init(params, freq_group, shared);
-	dramc_apply_config_before_calibration(freq_group);
+	dramc_apply_config_before_calibration(freq_group, params->cbt_mode_extern);
 	emi_init2(params);
 }
 
@@ -589,9 +602,10 @@ static int run_calib(const struct dramc_param *dparam,
 	*first_run = false;
 
 	dramc_dbg("Start K (current clock: %u\n", params->frequency);
-	if (dramc_calibrate_all_channels(params, freq_group, &shared->mr) != 0)
+	if (dramc_calibrate_all_channels(params, freq_group, &shared->mr,
+					 !!(dparam->header.config & DRAMC_CONFIG_DVFS)) != 0)
 		return -1;
-	get_dram_info_after_cal(&density);
+	get_dram_info_after_cal(&density, params->rank_num);
 	dramc_ac_timing_optimize(freq_group, density);
 	dramc_dbg("K finished (current clock: %u\n", params->frequency);
 
@@ -599,10 +613,10 @@ static int run_calib(const struct dramc_param *dparam,
 	return 0;
 }
 
-static void after_calib(const struct mr_value *mr)
+static void after_calib(const struct mr_value *mr, u32 rk_num)
 {
-	dramc_apply_config_after_calibration(mr);
-	dramc_runtime_config();
+	dramc_apply_config_after_calibration(mr, rk_num);
+	dramc_runtime_config(rk_num);
 }
 
 int mt_set_emi(const struct dramc_param *dparam)
@@ -623,6 +637,6 @@ int mt_set_emi(const struct dramc_param *dparam)
 	if (run_calib(dparam, &shared, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
 		return -1;
 
-	after_calib(&shared.mr);
+	after_calib(&shared.mr, dparam->freq_params[DRAM_DFS_SHUFFLE_1].rank_num);
 	return 0;
 }

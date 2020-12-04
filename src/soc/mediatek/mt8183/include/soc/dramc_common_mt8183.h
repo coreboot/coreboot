@@ -48,6 +48,13 @@ enum {
 };
 
 enum {
+	CBT_R0_R1_NORMAL = 0,	/* Normal mode */
+	CBT_R0_R1_BYTE,		/* Byte mode */
+	CBT_R0_NORMAL_R1_BYTE,	/* Mixed mode R0: Normal R1: Byte */
+	CBT_R0_BYTE_R1_NORMAL	/* Mixed mode R0: Byte R1: Normal */
+};
+
+enum {
 	FSP_0 = 0,
 	FSP_1,
 	FSP_MAX

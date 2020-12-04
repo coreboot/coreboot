@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/gpio.h>
-#include <mainboard/gpio.h>
+#include <variant/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 /* GPP_A14  GPIO                  */ PAD_NC(GPP_A14, NONE),
@@ -122,7 +122,7 @@ static const struct pad_config gpio_table[] = {
 /* GPP_J11  A4WP_PRESENT          */ PAD_CFG_NF(GPP_J11, NONE, DEEP, NF1),
 };
 
-void mainboard_configure_gpios(void)
+void variant_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

@@ -48,7 +48,7 @@ chip soc/intel/tigerlake
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,
 						.granularity = 200,},
-					.pl2 = {.min_power = 9000,
+					.pl2 = {.min_power = 40000,
 						.max_power = 40000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,

@@ -38,8 +38,8 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 	case SD_EMMC_EMMC_SDR_52:
 		val = EMMC_SDR_52;
 		break;
-	case SD_EMMC_EMMC_DDR_52:
-		val = EMMC_DDR_52;
+	case SD_EMMC_EMMC_DDR_104:
+		val = EMMC_DDR_104;
 		break;
 	case SD_EMMC_EMMC_HS200:
 		val = EMMC_HS200;

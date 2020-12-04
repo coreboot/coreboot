@@ -17,7 +17,7 @@
 #define SD_UHS_I_SDR_104	5
 #define EMMC_SDR_26		6
 #define EMMC_SDR_52		7
-#define EMMC_DDR_52		8
+#define EMMC_DDR_104		8
 #define EMMC_HS200		9
 #define EMMC_HS400		10
 #define EMMC_HS300		11

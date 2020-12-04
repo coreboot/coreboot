@@ -2,9 +2,9 @@
 
 #include <bootblock_common.h>
 #include <gpio.h>
-#include <mainboard/gpio.h>
+#include <variant/gpio.h>
 
 void bootblock_mainboard_init(void)
 {
-	mainboard_configure_early_gpios();
+	variant_configure_early_gpios();
 }

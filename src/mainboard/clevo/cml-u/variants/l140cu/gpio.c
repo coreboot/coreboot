@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <mainboard/gpio.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
+#include <variant/gpio.h>
 
 /* Name format: <pad name> / <net/pin name in schematics> */
 static const struct pad_config gpio_table[] = {
@@ -237,7 +237,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H23, UP_20K),
 };
 
-void mainboard_configure_gpios(void)
+void variant_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

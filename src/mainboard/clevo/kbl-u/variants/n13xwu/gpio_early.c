@@ -11,7 +11,7 @@ static const struct pad_config early_gpio_table[] = {
 	_PAD_CFG_STRUCT(GPP_C21,	0x44000700,	0x0)
 };
 
-void variant_configure_gpios(void)
+void variant_configure_early_gpios(void)
 {
 	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }

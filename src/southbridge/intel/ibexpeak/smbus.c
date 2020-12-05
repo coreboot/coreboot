@@ -39,7 +39,7 @@ static int lsmbus_read_byte(struct device *dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
+static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 {
 	u16 device;
 	struct resource *res;
@@ -49,7 +49,7 @@ static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 
-	return do_smbus_write_byte(res->base, device, address, val);
+	return do_smbus_write_byte(res->base, device, address, data);
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {

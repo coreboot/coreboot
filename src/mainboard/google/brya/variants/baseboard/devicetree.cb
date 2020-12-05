@@ -14,42 +14,13 @@ chip soc/intel/alderlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
 
-	# Enable WLAN PCIE 5 using clk 2
-	register "PchPcieRpEnable[5]" = "1"
-	register "PcieRpLtrEnable[5]" = "1"
-	register "PcieClkSrcUsage[2]" = "5"
-	register "PcieClkSrcClkReq[2]" = "2"
-	register "PcieRpAdvancedErrorReporting[5]" = "1"
-
-	# Enable WWAN PCIE 6 using clk 5
-	register "PchPcieRpEnable[6]" = "1"
-	register "PcieRpLtrEnable[6]" = "1"
-	register "PcieClkSrcUsage[5]" = "6"
-	register "PcieClkSrcClkReq[5]" = "5"
-	register "PcieRpAdvancedErrorReporting[6]" = "1"
-
-	# Enable SD Card PCIE 8 using clk 3
-	register "PchPcieRpEnable[7]" = "1"
-	register "PcieRpLtrEnable[7]" = "1"
-	register "PcieRpHotPlug[7]" = "1"
-	register "PcieClkSrcUsage[3]" = "7"
-	register "PcieClkSrcClkReq[3]" = "3"
-	register "PcieRpAdvancedErrorReporting[7]" = "1"
-
-	# Enable NVMe PCIE 9 using clk 1
-	register "PchPcieRpEnable[8]" = "1"
-	register "PcieRpLtrEnable[8]" = "1"
-	register "PcieClkSrcUsage[1]" = "8"
-	register "PcieClkSrcClkReq[1]" = "1"
-	register "PcieRpAdvancedErrorReporting[8]" = "1"
-
 	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
 	register "SerialIoGSpiMode" = "{
@@ -121,10 +92,38 @@ chip soc/intel/alderlake
 		end
 		device ref heci1 on end
 		device ref sata on end
-		device ref pcie_rp5 on end	#PCIE5 WLAN
-		device ref pcie_rp6 on end	#PCIE6 WWAN
-		device ref pcie_rp8 on end	#PCIE8 SD card
-		device ref pcie_rp9 on end	#PCIE9-12 SSD
+		device ref pcie_rp5 on
+			# Enable WLAN PCIE 5 using clk 2
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE5 WLAN
+		device ref pcie_rp6 on
+			# Enable WWAN PCIE 6 using clk 5
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE6 WWAN
+		device ref pcie_rp8 on
+			# Enable SD Card PCIE 8 using clk 3
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE8 SD card
+		device ref pcie_rp9 on
+			# Enable NVMe PCIE 9 using clk 1
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE9-12 SSD
 		device ref uart0 on end
 		device ref gspi1 on end
 		device ref pch_espi on

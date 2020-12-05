@@ -7,20 +7,58 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/pcie_rp.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
 
+#define FSP_CLK_NOTUSED			0xFF
+#define FSP_CLK_LAN			0x70
+#define FSP_CLK_FREE_RUNNING		0x80
+
+#define CPU_PCIE_BASE			0x40
+
+enum pcie_rp_type {
+	PCH_PCIE_RP,
+	CPU_PCIE_RP,
+};
+
+static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
+{
+	assert(type == PCH_PCIE_RP || type == CPU_PCIE_RP);
+
+	if (type == PCH_PCIE_RP)
+		return rp_number;
+	else // type == CPU_PCIE_RP
+		return CPU_PCIE_BASE + rp_number;
+}
+
+static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_type type,
+			const struct pcie_rp_config *cfg, size_t cfg_count)
+{
+	size_t i;
+
+	for (i = 0; i < cfg_count; i++) {
+		if (!(en_mask & BIT(i)))
+			continue;
+		if (cfg[i].flags & PCIE_RP_CLK_SRC_UNUSED)
+			continue;
+		if (!(cfg[i].flags & PCIE_RP_CLK_REQ_UNUSED))
+			m_cfg->PcieClkSrcClkReq[cfg[i].clk_src] = cfg[i].clk_req;
+		m_cfg->PcieClkSrcUsage[cfg[i].clk_src] = clk_src_to_fsp(type, i);
+	}
+}
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	unsigned int i;
-	uint32_t mask = 0;
 	const struct device *dev;
+	unsigned int i;
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	if (!CONFIG(SOC_INTEL_DISABLE_IGD) && is_dev_enabled(dev))
@@ -41,18 +79,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	else
 		/* Set CpuRatio to match existing MSR value */
 		m_cfg->CpuRatio = (rdmsr(MSR_FLEX_RATIO).lo >> 8) & 0xff;
-
-	for (i = 0; i < ARRAY_SIZE(config->PchPcieRpEnable); i++) {
-		if (config->PchPcieRpEnable[i])
-			mask |= (1 << i);
-	}
-	m_cfg->PcieRpEnableMask = mask;
-
-	memcpy(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage,
-		sizeof(config->PcieClkSrcUsage));
-
-	memcpy(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
-		sizeof(config->PcieClkSrcClkReq));
 
 	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
@@ -116,6 +142,27 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
 	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
 
+	/* Disable all PCIe clock sources by default. And set RP irrelevant clock. */
+	for (i = 0; i < CONFIG_MAX_PCIE_CLOCK_SRC; i++) {
+		if (config->pcie_clk_config_flag[i] & PCIE_CLK_FREE_RUNNING)
+			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
+		else if (config->pcie_clk_config_flag[i] & PCIE_CLK_LAN)
+			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_LAN;
+		else
+			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_NOTUSED;
+		m_cfg->PcieClkSrcClkReq[i] = FSP_CLK_NOTUSED;
+	}
+
+	/* PCIE ports */
+	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
+	pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, PCH_PCIE_RP, config->pch_pcie_rp,
+			CONFIG_MAX_PCH_ROOT_PORTS);
+
+	/* CPU PCIE ports */
+	m_cfg->CpuPcieRpEnableMask = pcie_rp_enable_mask(get_cpu_pcie_rp_table());
+	pcie_rp_init(m_cfg, m_cfg->CpuPcieRpEnableMask, CPU_PCIE_RP, config->cpu_pcie_rp,
+			CONFIG_MAX_CPU_ROOT_PORTS);
+
 	/* ISH */
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	m_cfg->PchIshEnable = is_dev_enabled(dev);
@@ -155,13 +202,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 	/* Skip CPU replacement check */
 	m_cfg->SkipCpuReplacementCheck = !config->CpuReplacementCheck;
-
-	mask = 0;
-	for (i = 0; i < ARRAY_SIZE(config->CpuPcieRpEnable); i++) {
-		if (config->CpuPcieRpEnable[i])
-			mask |= (1 << i);
-	}
-	m_cfg->CpuPcieRpEnableMask = mask;
 
 	m_cfg->TmeEnable = CONFIG(INTEL_TME);
 

@@ -40,49 +40,58 @@ chip soc/intel/alderlake
 	register "PrmrrSize" = "0"
 
 	# Enable PCH PCIE RP 5 using CLK 2
-	register "PchPcieRpEnable[4]" = "1"
-	register "PcieClkSrcClkReq[2]" = "2"
-	register "PcieClkSrcUsage[2]" = "0x4"
-	register "PcieRpClkReqDetect[4]" = "1"
+	register "pch_pcie_rp[PCH_RP(5)]" = "{
+		.clk_src = 2,
+		.clk_req = 2,
+		.flags = PCIE_RP_CLK_REQ_DETECT,
+	}"
 
 	# Enable PCH PCIE RP 6 using CLK 5
-	register "PchPcieRpEnable[5]" = "1"
-	register "PcieClkSrcClkReq[5]" = "5"
-	register "PcieClkSrcUsage[5]" = "0x5"
-	register "PcieRpClkReqDetect[5]" = "1"
+	register "pch_pcie_rp[PCH_RP(6)]" = "{
+		.clk_src = 5,
+		.clk_req = 5,
+		.flags = PCIE_RP_CLK_REQ_DETECT,
+	}"
 
-	# Enable PCH PCIE RP 8 using CLK 6
-	register "PchPcieRpEnable[7]" = "1"
-	register "PcieClkSrcUsage[6]" = "PCIE_CLK_FREE" # CLK 6 is using free running CLK
+	# Enable PCH PCIE RP 8 using free running CLK (0x80)
+	# Clock source is shared with LAN and hence marked as free running.
+	register "pch_pcie_rp[PCH_RP(8)]" = "{
+		.flags = PCIE_RP_CLK_SRC_UNUSED,
+	}"
+	register "pcie_clk_config_flag[6]" = "PCIE_CLK_FREE_RUNNING"
 
 	# Enable PCH PCIE RP 9 using CLK 1
-	register "PchPcieRpEnable[8]" = "1"
-	register "PcieClkSrcClkReq[1]" = "1"
-	register "PcieClkSrcUsage[1]" = "0x8"
-	register "PcieRpClkReqDetect[8]" = "1"
+	register "pch_pcie_rp[PCH_RP(9)]" = "{
+		.clk_src = 1,
+		.clk_req = 1,
+		.flags = PCIE_RP_CLK_REQ_DETECT,
+	}"
 
 	# Enable PCH PCIE RP 11 for optane
-	register "PchPcieRpEnable[10]" = "1"
+	register "pch_pcie_rp[PCH_RP(11)]" = "{
+		.flags = PCIE_RP_CLK_SRC_UNUSED,
+	}"
+
 	# Hybrid storage mode
 	register "HybridStorageMode" = "1"
 
 	# Enable CPU PCIE RP 1 using CLK 0
-	register "CpuPcieRpEnable[0]" = "1"
-	register "PcieClkSrcUsage[0]" = "0x40"
+	register "cpu_pcie_rp[CPU_RP(1)]" = "{
+		.clk_req = 0,
+		.clk_src = 0,
+	}"
 
 	# Enable CPU PCIE RP 2 using CLK 3
-	register "CpuPcieRpEnable[1]" = "1"
-	register "PcieClkSrcUsage[3]" = "0x41"
+	register "cpu_pcie_rp[CPU_RP(2)]" = "{
+		.clk_req = 3,
+		.clk_src = 3,
+        }"
 
 	# Enable CPU PCIE RP 3 using CLK 4
-	register "CpuPcieRpEnable[2]" = "1"
-	register "PcieClkSrcUsage[4]" = "0x42"
-
-	# W/A to FSP issue where FSP is using PCH PCIE port
-	# enable UPD to download FW on CPU PCIE
-	register "PchPcieRpEnable[0]" = "1"
-	register "PchPcieRpEnable[2]" = "1"
-	register "PchPcieRpEnable[3]" = "1"
+	register "cpu_pcie_rp[CPU_RP(3)]" = "{
+		.clk_req = 4,
+		.clk_src = 4,
+	}"
 
 	register "SataSalpSupport" = "1"
 

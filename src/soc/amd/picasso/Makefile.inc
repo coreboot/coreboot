@@ -10,6 +10,8 @@ subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
+all-y += config.c
+
 bootblock-y += bootblock.c
 bootblock-y += aoac.c
 bootblock-y += southbridge.c
@@ -17,7 +19,6 @@ bootblock-y += i2c.c
 bootblock-y += uart.c
 bootblock-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
 bootblock-y += gpio.c
-bootblock-y += config.c
 bootblock-y += reset.c
 
 romstage-y += i2c.c
@@ -30,11 +31,9 @@ romstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
 romstage-y += aoac.c
 romstage-y += southbridge.c
 romstage-y += psp.c
-romstage-y += config.c
 romstage-y += mrc_cache.c
 
 verstage-y += i2c.c
-verstage-y += config.c
 verstage-y += aoac.c
 verstage_x86-y += gpio.c
 verstage_x86-y += uart.c
@@ -63,7 +62,6 @@ ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += psp.c
 ramstage-y += fsp_params.c
-ramstage-y += config.c
 ramstage-y += update_microcode.c
 ramstage-y += graphics.c
 ramstage-y += pcie_gpp.c
@@ -78,7 +76,6 @@ endif
 smm-y += gpio.c
 smm-y += psp.c
 smm-y += smu.c
-smm-y += config.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/picasso
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/include

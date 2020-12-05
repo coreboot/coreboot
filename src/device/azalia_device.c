@@ -34,6 +34,18 @@ int azalia_set_bits(void *port, u32 mask, u32 val)
 	return 0;
 }
 
+int azalia_enter_reset(u8 *base)
+{
+	/* Set bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
+	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
+}
+
+int azalia_exit_reset(u8 *base)
+{
+	/* Set bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
+	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST);
+}
+
 static int codec_detect(u8 *base)
 {
 	u32 reg32;

@@ -25,8 +25,9 @@
  */
 	.align	4
 
-.globl __protected_start
-__protected_start:
+.globl bootblock_protected_mode_entry
+bootblock_protected_mode_entry:
+
 	/* Save the BIST value */
 	movl	%eax, %ebp
 
@@ -54,13 +55,13 @@ debug_spinloop:
 	jz	debug_spinloop
 #endif
 
-bootblock_protected_mode_entry:
-
 #if !CONFIG(USE_MARCH_586)
 	/* MMX registers required here */
 
 	/* BIST result in eax */
 	movd	%eax, %mm0
+
+__timestamp:
 
 	/* Get an early timestamp */
 	rdtsc

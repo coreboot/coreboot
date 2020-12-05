@@ -125,7 +125,7 @@ _start16bit:
 	movl	%ebp, %eax
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	ljmpl	$ROM_CODE_SEG, $__protected_start
+	ljmpl	$ROM_CODE_SEG, $bootblock_protected_mode_entry
 
 	/**
 	 * The gdt is defined in gdt_init.S, it has a 4 Gb code segment

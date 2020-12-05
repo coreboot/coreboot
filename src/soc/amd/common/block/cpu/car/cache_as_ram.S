@@ -21,7 +21,7 @@ _cache_as_ram_setup:
 /*
  * on entry:
  *   mm0: BIST (ignored)
- *   mm2_mm1: timestamp at bootblock_protected_mode_entry
+ *   mm2_mm1: timestamp
  */
 
 .global bootblock_pre_c_entry

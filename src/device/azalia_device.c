@@ -85,7 +85,7 @@ no_codec:
 	return 0;
 }
 
-static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
+u32 azalia_find_verb(struct device *dev, u32 viddid, const u32 **verb)
 {
 	int idx = 0;
 
@@ -179,7 +179,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	/* 2 */
 	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "azalia_audio: codec viddid: %08x\n", reg32);
-	verb_size = find_verb(dev, reg32, &verb);
+	verb_size = azalia_find_verb(dev, reg32, &verb);
 
 	if (!verb_size) {
 		printk(BIOS_DEBUG, "azalia_audio: No verb!\n");

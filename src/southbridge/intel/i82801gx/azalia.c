@@ -39,24 +39,6 @@ no_codec:
 	return 0;
 }
 
-static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
-{
-	int idx = 0;
-
-	while (idx < (cim_verb_data_size / sizeof(u32))) {
-		u32 verb_size = 4 * cim_verb_data[idx + 2];	// in u32
-		if (cim_verb_data[idx] != viddid) {
-			idx += verb_size + 3;	// skip verb + header
-			continue;
-		}
-		*verb = &cim_verb_data[idx + 3];
-		return verb_size;
-	}
-
-	/* Not all codecs need to load another verb */
-	return 0;
-}
-
 /*
  * Wait 50usec for the codec to indicate it is ready.
  * No response would imply that the codec is non-operative.
@@ -129,7 +111,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	/* 2 */
 	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "Azalia: codec viddid: %08x\n", reg32);
-	verb_size = find_verb(dev, reg32, &verb);
+	verb_size = azalia_find_verb(dev, reg32, &verb);
 
 	if (!verb_size) {
 		printk(BIOS_DEBUG, "Azalia: No verb!\n");

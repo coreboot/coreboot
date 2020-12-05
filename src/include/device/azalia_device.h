@@ -19,6 +19,7 @@
 #define   HDA_ICII_VALID	(1 << 1)
 
 int azalia_set_bits(void *port, u32 mask, u32 val);
+u32 azalia_find_verb(struct device *dev, u32 viddid, const u32 **verb);
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 

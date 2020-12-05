@@ -109,7 +109,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	/* 2 */
 	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "Azalia: codec viddid: %08x\n", reg32);
-	verb_size = azalia_find_verb(dev, reg32, &verb);
+	verb_size = azalia_find_verb(reg32, &verb);
 
 	if (!verb_size) {
 		printk(BIOS_DEBUG, "Azalia: No verb!\n");

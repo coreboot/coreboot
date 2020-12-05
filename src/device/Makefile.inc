@@ -8,7 +8,7 @@ ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
 ramstage-y += smbus_ops.c
 
 ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
+ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/hda_verb.c)
 endif
 
 bootblock-y += device_const.c

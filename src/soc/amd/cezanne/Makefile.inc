@@ -2,6 +2,8 @@
 
 ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 
+all-y += config.c
+
 bootblock-y	+= bootblock.c
 
 romstage-y	+= romstage.c

@@ -385,6 +385,7 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
 	devtree_die();
 }
 
+/* config_of_soc() either returns a non-NULL pointer or dies in the config_of() call. */
 static inline DEVTREE_CONST void *config_of_soc(void)
 {
 	return config_of(pcidev_on_root(0, 0));

@@ -15,8 +15,7 @@ static int codec_detect(u8 *base)
 {
 	u32 reg32;
 
-	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0) < 0)
+	if (azalia_enter_reset(base) < 0)
 		goto no_codec;
 
 	if (azalia_exit_reset(base) < 0)
@@ -31,9 +30,8 @@ static int codec_detect(u8 *base)
 	return reg32;
 
 no_codec:
-	/* Codec Not found */
-	/* Put HDA back in reset (BAR + 0x8) [0] */
-	azalia_set_bits(base + HDA_GCTL_REG, 1, 0);
+	/* Codec not found, put HDA back in reset */
+	azalia_enter_reset(base);
 	printk(BIOS_DEBUG, "Azalia: No codec!\n");
 	return 0;
 }

@@ -28,9 +28,8 @@ int hda_codec_detect(u8 *base)
 	return reg8;
 
 no_codec:
-	/* Codec Not found */
-	/* Put HDA back in reset (BAR + 0x8) [0] */
-	azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
+	/* Codec not found, put HDA back in reset */
+	azalia_enter_reset(base);
 	printk(BIOS_DEBUG, "HDA: No codec!\n");
 	return 0;
 }

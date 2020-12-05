@@ -72,8 +72,7 @@ static int codec_detect(u8 *base)
 	if (!count)
 		goto no_codec;
 
-	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (azalia_set_bits(base + HDA_GCTL_REG, 1, 0) < 0)
+	if (azalia_enter_reset(base) < 0)
 		goto no_codec;
 
 	if (azalia_exit_reset(base) < 0)

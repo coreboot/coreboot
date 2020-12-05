@@ -24,7 +24,7 @@ int hda_codec_detect(u8 *base)
 	write8(base + HDA_STATESTS_REG, 0xf);
 
 	/* Turn off the link and poll RESET# bit until it reads back as 0 */
-	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0) < 0)
+	if (azalia_enter_reset(base) < 0)
 		goto no_codec;
 
 	/* Turn on the link and poll RESET# bit until it reads back as 1 */
@@ -40,9 +40,8 @@ int hda_codec_detect(u8 *base)
 	return reg8;
 
 no_codec:
-	/* Codec Not found */
-	/* Put HDA back in reset (BAR + 0x8) [0] */
-	azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
+	/* Codec not found, put HDA back in reset */
+	azalia_enter_reset(base);
 	printk(BIOS_DEBUG, "HDA: No codec!\n");
 	return 0;
 }

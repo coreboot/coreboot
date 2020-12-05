@@ -6,6 +6,7 @@
 
 const struct soc_amd_common_config *soc_get_common_config()
 {
+	/* config_of_soc calls die() internally if cfg was NULL, so no need to re-check */
 	const struct soc_amd_picasso_config *cfg = config_of_soc();
 	return &cfg->common_config;
 }

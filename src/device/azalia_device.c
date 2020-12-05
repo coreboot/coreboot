@@ -85,6 +85,31 @@ no_codec:
 	return 0;
 }
 
+/*
+ * Find a specific entry within a verb table
+ *
+ * @param verb_table:		verb table data
+ * @param verb_table_bytes:	verb table size in bytes
+ * @param viddid:		vendor/device to search for
+ * @param verb:			pointer to entry within table
+ *
+ * Returns size of the entry within the verb table,
+ * Returns 0 if the entry is not found
+ *
+ * The HDA verb table is composed of dwords. A set of 4 dwords is
+ * grouped together to form a "jack" descriptor.
+ *   Bits 31:28 - Codec Address
+ *   Bits 27:20 - NID
+ *   Bits 19:8  - Verb ID
+ *   Bits  7:0  - Payload
+ *
+ * coreboot groups different codec verb tables into a single table
+ * and prefixes each with a specific header consisting of 3
+ * dword entries:
+ *   1 - Codec Vendor/Device ID
+ *   2 - Subsystem ID
+ *   3 - Number of jacks (groups of 4 dwords) for this codec
+ */
 u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, const u32 **verb)
 {
 	int idx = 0;

@@ -91,51 +91,6 @@ static int hda_wait_for_valid(u8 *base)
 	return -1;
 }
 
-/*
- * Find a specific entry within a verb table
- *
- * @param verb_table_bytes:	verb table size in bytes
- * @param verb_table_data:	verb table data
- * @param viddid:		vendor/device to search for
- * @param verb:			pointer to entry within table
- *
- * Returns size of the entry within the verb table,
- * Returns 0 if the entry is not found
- *
- * The HDA verb table is composed of dwords. A set of 4 dwords is
- * grouped together to form a "jack" descriptor.
- *   Bits 31:28 - Codec Address
- *   Bits 27:20 - NID
- *   Bits 19:8  - Verb ID
- *   Bits 7:0   - Payload
- *
- * coreboot groups different codec verb tables into a single table
- * and prefixes each with a specific header consisting of 3
- * dword entries:
- *   1 - Codec Vendor/Device ID
- *   2 - Subsystem ID
- *   3 - Number of jacks (groups of 4 dwords) for this codec
- */
-static u32 hda_find_verb(u32 verb_table_bytes,
-			 const u32 *verb_table_data,
-			 u32 viddid, const u32 **verb)
-{
-	int idx = 0;
-
-	while (idx < (verb_table_bytes / sizeof(u32))) {
-		u32 verb_size = 4 * verb_table_data[idx+2]; // in u32
-		if (verb_table_data[idx] != viddid) {
-			idx += verb_size + 3; // skip verb + header
-			continue;
-		}
-		*verb = &verb_table_data[idx+3];
-		return verb_size;
-	}
-
-	/* Not all codecs need to load another verb */
-	return 0;
-}
-
 int hda_codec_write(u8 *base, u32 size, const u32 *data)
 {
 	int i;
@@ -184,7 +139,7 @@ int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)
 	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "HDA: codec viddid: %08x\n", reg32);
 
-	size = hda_find_verb(verb_size, verb_data, reg32, &verb);
+	size = azalia_find_verb(verb_data, verb_size, reg32, &verb);
 	if (!size) {
 		printk(BIOS_DEBUG, "HDA: No verb table entry found\n");
 		return -1;

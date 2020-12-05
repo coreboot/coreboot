@@ -24,7 +24,7 @@ int hda_codec_detect(u8 *base)
 	write8(base + HDA_STATESTS_REG, 0xf);
 
 	/* Turn off the link and poll RESET# bit until it reads back as 0 */
-	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, ~HDA_GCTL_CRST) < 0)
+	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0) < 0)
 		goto no_codec;
 
 	/* Turn on the link and poll RESET# bit until it reads back as 1 */

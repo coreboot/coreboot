@@ -87,9 +87,6 @@ no_codec:
 
 static u32 find_verb(struct device *dev, u32 viddid, const u32 **verb)
 {
-	printk(BIOS_DEBUG, "azalia_audio: dev=%s\n", dev_path(dev));
-	printk(BIOS_DEBUG, "azalia_audio: Reading viddid=%x\n", viddid);
-
 	int idx = 0;
 
 	while (idx < (cim_verb_data_size / sizeof(u32))) {

@@ -115,7 +115,8 @@ u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, co
 	int idx = 0;
 
 	while (idx < (verb_table_bytes / sizeof(u32))) {
-		u32 verb_size = 4 * verb_table[idx + 2];	// in u32
+		/* Header contains the number of jacks, aka groups of 4 dwords */
+		u32 verb_size = 4 * verb_table[idx + 2];
 		if (verb_table[idx] != viddid) {
 			idx += verb_size + 3;	// skip verb + header
 			continue;

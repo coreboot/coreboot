@@ -273,7 +273,8 @@
 
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst)					\
 	_PAD_CFG_STRUCT(pad,							\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE),		\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
+		PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE),				\
 		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(DRIVER) | PAD_IOSSTATE(TxDRxE))
 
 #define PAD_CFG_GPIO_DRIVER_HI_Z(pad, pull, rst, iosstate, iosterm)		\

@@ -44,6 +44,7 @@ chip soc/intel/skylake
 	register "usb2_ports[8]"	= "USB2_PORT_MID(OC_SKIP)"
 
 	device domain 0 on
+		subsystemid 0x15d9 0x0896 inherit
 		device pci 01.0 on	# CPU PCIe Port (x16) / PCIe Slot 6 (JPCIE6)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong" "CPU SLOT6 PCI-E 3.0 X8(IN X16)" "SlotDataBusWidth8X"
 		end
@@ -63,12 +64,16 @@ chip soc/intel/skylake
 		device pci 1d.0 on	# PCH PCIe Port 9
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
-			device pci 00.0 on end	# GbE 1
+			device pci 00.0 on	# GbE 1
+				subsystemid 0x15d9 0x1533
+			end
 		end
 		device pci 1d.1 on	# PCH PCIe Port 10
 			register "PcieRpEnable[9]" = "1"
 			register "PcieRpLtrEnable[9]" = "1"
-			device pci 00.1 on end	# GbE 2
+			device pci 00.0 on	# GbE 2
+				subsystemid 0x15d9 0x1533
+			end
 		end
 		device pci 1d.2 on	# PCH PCIe Port 11
 			register "PcieRpEnable[10]" = "1"

@@ -223,6 +223,4 @@ struct soc_amd_picasso_config {
 
 typedef struct soc_amd_picasso_config config_t;
 
-extern struct device_operations pci_domain_ops;
-
 #endif /* __PICASSO_CHIP_H__ */

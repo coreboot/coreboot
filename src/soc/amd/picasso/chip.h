@@ -221,6 +221,4 @@ struct soc_amd_picasso_config {
 	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 };
 
-typedef struct soc_amd_picasso_config config_t;
-
 #endif /* __PICASSO_CHIP_H__ */

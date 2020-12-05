@@ -90,7 +90,7 @@ static bool devtree_sata_dev_enabled(void)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
-	const config_t *config = config_of_soc();
+	const struct soc_amd_picasso_config *config = config_of_soc();
 
 	mupd->FspmArchUpd.NvsBufferPtr = soc_fill_mrc_cache();
 

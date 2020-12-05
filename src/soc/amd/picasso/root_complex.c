@@ -195,7 +195,7 @@ static void dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size)
 
 static void acipgen_dptci(void)
 {
-	const config_t *config = config_of_soc();
+	const struct soc_amd_picasso_config *config = config_of_soc();
 
 	if (!config->dptc_enable)
 		return;

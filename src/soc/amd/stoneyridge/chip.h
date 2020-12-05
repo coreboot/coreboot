@@ -66,6 +66,4 @@ struct soc_amd_stoneyridge_config {
 	u8 lvds_poseq_blon_to_varybl;
 };
 
-typedef struct soc_amd_stoneyridge_config config_t;
-
 #endif /* __STONEYRIDGE_CHIP_H__ */

@@ -68,6 +68,4 @@ struct soc_amd_stoneyridge_config {
 
 typedef struct soc_amd_stoneyridge_config config_t;
 
-extern struct device_operations pci_domain_ops;
-
 #endif /* __STONEYRIDGE_CHIP_H__ */

@@ -95,7 +95,7 @@ const char *soc_acpi_name(const struct device *dev)
 	}
 };
 
-struct device_operations pci_domain_ops = {
+static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.enable_resources = domain_enable_resources,

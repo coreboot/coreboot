@@ -7,7 +7,7 @@
 #include <device/mmio.h>
 #include <delay.h>
 
-static int set_bits(void *port, u32 mask, u32 val)
+int azalia_set_bits(void *port, u32 mask, u32 val)
 {
 	u32 reg32;
 	int count;
@@ -40,7 +40,7 @@ static int codec_detect(u8 *base)
 	int count;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
+	if (azalia_set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
 		goto no_codec;
 
 	/* clear STATESTS bits (BAR + 0xe)[2:0] */
@@ -62,11 +62,11 @@ static int codec_detect(u8 *base)
 		goto no_codec;
 
 	/* Set Bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, 0) < 0)
+	if (azalia_set_bits(base + HDA_GCTL_REG, 1, 0) < 0)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
+	if (azalia_set_bits(base + HDA_GCTL_REG, 1, HDA_GCTL_CRST) < 0)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
@@ -80,7 +80,7 @@ static int codec_detect(u8 *base)
 no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
-	set_bits(base + HDA_GCTL_REG, 1, 0);
+	azalia_set_bits(base + HDA_GCTL_REG, 1, 0);
 	printk(BIOS_DEBUG, "azalia_audio: No codec!\n");
 	return 0;
 }

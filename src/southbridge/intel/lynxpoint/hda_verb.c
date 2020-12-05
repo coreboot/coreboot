@@ -8,39 +8,12 @@
 #include "pch.h"
 #include "hda_verb.h"
 
-static int set_bits(void *port, u32 mask, u32 val)
-{
-	u32 reg32;
-	int count;
-
-	/* Write (val & mask) to port */
-	val &= mask;
-	reg32 = read32(port);
-	reg32 &= ~mask;
-	reg32 |= val;
-	write32(port, reg32);
-
-	/* Wait for readback of register to match what was just written to it */
-	count = 50;
-	do {
-		/* Wait 1ms based on BKDG wait time */
-		mdelay(1);
-		reg32 = read32(port);
-		reg32 &= mask;
-	} while ((reg32 != val) && --count);
-
-	/* Timeout occurred */
-	if (!count)
-		return -1;
-	return 0;
-}
-
 int hda_codec_detect(u8 *base)
 {
 	u8 reg8;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) < 0)
+	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) < 0)
 		goto no_codec;
 
 	/* Write back the value once reset bit is set. */
@@ -57,7 +30,7 @@ int hda_codec_detect(u8 *base)
 no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
-	set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
+	azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
 	printk(BIOS_DEBUG, "HDA: No codec!\n");
 	return 0;
 }

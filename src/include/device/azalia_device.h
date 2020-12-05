@@ -18,6 +18,7 @@
 #define   HDA_ICII_BUSY		(1 << 0)
 #define   HDA_ICII_VALID	(1 << 1)
 
+int azalia_set_bits(void *port, u32 mask, u32 val);
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 

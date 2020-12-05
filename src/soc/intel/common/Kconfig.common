@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON
 	bool
+	select AZALIA_PLUGIN_SUPPORT
 	select HAVE_DISPLAY_MTRRS
 	help
 	  common code for Intel SOCs

@@ -64,7 +64,7 @@ config USE_CAR_NEM_ENHANCED_V2
 	select COS_MAPPED_TO_MSB
 	help
 	  This config supports INTEL_CAR_NEM_ENHANCED mode on
-	  TGL  platform.
+	  TGL platform.
 
 config COS_MAPPED_TO_MSB
 	bool

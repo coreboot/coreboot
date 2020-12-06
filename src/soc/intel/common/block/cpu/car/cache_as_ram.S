@@ -413,7 +413,7 @@ find_llc_subleaf:
 
 set_eviction_mask:
 	mov	%ebx, %ecx /* back up the number of ways */
-	mov	%eax, %ebx /* back up the non-eviction mask*/
+	mov	%eax, %ebx /* back up the non-eviction mask */
 	/*
 	 * Set MSR 0xC91 IA32_L3_MASK_1 or MSR 0x1891 IA32_CR_SF_QOS_MASK_1
 	 * This MSR contain one bit per each way of LLC

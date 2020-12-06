@@ -5,7 +5,7 @@ chip soc/intel/skylake
 	register "SaGv" = "SaGv_Disabled"
 
 	# SATA configuration
-	register "SataMode" = "KBLFSP_SATA_MODE_AHCI"
+	register "SataMode" = "SATA_AHCI"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \
 		[0]	= 1, \

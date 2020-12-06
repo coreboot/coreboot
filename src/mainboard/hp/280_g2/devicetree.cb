@@ -1,0 +1,144 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,	/* Routed to debug header */
+	}"
+
+	register "eist_enable" = "1"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		subsystemid 0x103c 0x2b5e inherit
+		device pci 00.0 on  end		# Host bridge
+		device pci 01.0 on  end		# PCIe graphics
+		device pci 02.0 on  end		# iGPU
+		device pci 04.0 on  end		# CPU Thermal
+		device pci 08.0 on  end		# GMM
+		device pci 14.0 on		# xHCI
+			register "usb2_ports[0]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[1]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[2]"  = "USB2_PORT_MID(OC4)"
+			register "usb2_ports[3]"  = "USB2_PORT_MID(OC4)"
+			register "usb2_ports[4]"  = "USB2_PORT_MID(OC2)"
+			register "usb2_ports[5]"  = "USB2_PORT_MID(OC2)"
+			register "usb2_ports[6]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[7]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[8]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[9]"  = "USB2_PORT_MID(OC0)"
+			register "usb2_ports[10]" = "USB2_PORT_MID(OC1)"
+			register "usb2_ports[11]" = "USB2_PORT_MID(OC1)"
+			register "usb2_ports[12]" = "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"
+			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC1)"
+			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"
+			register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+		end
+		device pci 14.1 off end		# USB OTG
+		device pci 14.2 on  end		# PCH Thermal
+		device pci 15.0 off end		# I2C #0
+		device pci 15.1 off end		# I2C #1
+		device pci 15.2 off end		# I2C #2
+		device pci 15.3 off end		# I2C #3
+		device pci 16.0 on  end		# MEI #1
+		device pci 16.1 off end		# MEI #2
+		device pci 16.2 off end		# ME IDE-R
+		device pci 16.3 off end		# ME KT
+		device pci 16.4 off end		# MEI #3
+		device pci 17.0 on		# SATA
+			register "SataMode"		= "SATA_AHCI"
+			register "SataSalpSupport"	= "1"
+			register "SataPortsEnable"	= "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+			}"
+			register "SataPortsHotPlug"	= "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+			}"
+			# DevSlp not supported
+
+			# Enable test mode for SATA margining
+			register "SataTestMode" = "1"
+		end
+		device pci 19.0 on  end		# UART #2
+		device pci 1c.0 off end		# RP #1
+		device pci 1c.1 off end		# RP #2
+		device pci 1c.2 off end		# RP #3
+		device pci 1c.3 off end		# RP #4
+		device pci 1c.4 on		# RP #5: IT8893E PCI Bridge
+			register "PcieRpEnable[4]"			= "1"
+			register "PcieRpLtrEnable[4]"			= "1"
+			register "PcieRpAdvancedErrorReporting[4]"	= "1"
+			register "PcieRpClkSrcNumber[4]"		= "11"
+		end
+		device pci 1c.5 on		# RP #6: PCIe x1 slot
+			register "PcieRpEnable[5]"			= "1"
+			register "PcieRpHotPlug[5]"			= "1"
+			register "PcieRpLtrEnable[5]"			= "1"
+			register "PcieRpAdvancedErrorReporting[5]"	= "1"
+			register "PcieRpClkSrcNumber[5]"		= "6"
+		end
+		device pci 1c.6 on		# RP #7: RTL8111 GbE NIC
+			register "PcieRpEnable[6]"			= "1"
+			register "PcieRpLtrEnable[6]"			= "1"
+			register "PcieRpAdvancedErrorReporting[6]"	= "1"
+			register "PcieRpClkSrcNumber[6]"		= "10"
+		end
+		device pci 1c.7 on		# RP #8: M.2 2230 slot
+			register "PcieRpEnable[7]"			= "1"
+			register "PcieRpHotPlug[7]"			= "1"
+			register "PcieRpLtrEnable[7]"			= "1"
+			register "PcieRpAdvancedErrorReporting[7]"	= "1"
+			register "PcieRpClkSrcNumber[7]"		= "12"
+		end
+		device pci 1d.0 off end		# RP #9
+		device pci 1d.1 off end		# RP #10
+		device pci 1d.2 off end		# RP #11
+		device pci 1d.3 off end		# RP #12
+		device pci 1e.0 off end		# UART #0
+		device pci 1e.1 off end		# UART #1
+		device pci 1e.2 off end		# GSPI #0
+		device pci 1e.3 off end		# GSPI #1
+		device pci 1f.0 on		# LPC bridge
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			# FIXME: Missing Super I/O HWM config
+			register "gen1_dec" = "0x000c0291"
+		end
+		device pci 1f.1 on  end		# P2SB
+		device pci 1f.2 on		# PMC
+			register "PmConfigSlpS3MinAssert"	= "SLP_S3_MIN_ASSERT_50MS"
+			register "PmConfigSlpS4MinAssert"	= "SLP_S4_MIN_ASSERT_4S"
+			register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"
+			register "PmConfigSlpAMinAssert"	= "SLP_A_MIN_ASSERT_2S"
+			register "PmConfigPwrCycDur"		= "RESET_POWER_CYCLE_4S"
+		end
+		device pci 1f.3 on  end		# Intel HDA
+		device pci 1f.4 on  end		# SMBus
+		device pci 1f.5 on  end		# SPI
+		device pci 1f.6 off end		# Intel GbE
+		device pci 1f.7 on		# Trace Hub
+			register "TraceHubMemReg0Size" = "2"
+			register "TraceHubMemReg1Size" = "2"
+		end
+	end
+end

@@ -1,0 +1,2 @@
+config BOARD_HP_280_G2
+	bool "280 G2"

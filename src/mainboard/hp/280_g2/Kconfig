@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_HP_280_G2
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_LIBGFXINIT
+	select SKYLAKE_SOC_PCH_H
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_KABYLAKE
+	select SPD_READ_BY_WORD
+	select SUPERIO_ITE_COMMON_PRE_RAM
+
+config MAINBOARD_DIR
+	string
+	default "hp/280_g2"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "280 G2"
+
+config DIMM_MAX
+	int
+	default 2
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config UART_FOR_CONSOLE
+	int
+	default 2
+
+config USE_LEGACY_8254_TIMER
+	default y
+
+endif

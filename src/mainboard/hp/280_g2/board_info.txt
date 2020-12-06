@@ -1,0 +1,8 @@
+Vendor name: HP
+Board name: 280 G2
+Category: desktop
+Board URL: https://support.hp.com/us-en/document/c04955444
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

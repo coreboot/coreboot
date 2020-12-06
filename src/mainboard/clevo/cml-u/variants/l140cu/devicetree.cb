@@ -192,8 +192,8 @@ chip soc/intel/cannonlake
 				device pnp 0c31.0 on  end
 			end
 		end
-		device pci 1f.1 off end # P2SB
-		device pci 1f.2 off end # Power Management Controller
+		device pci 1f.1 hidden end # P2SB
+		device pci 1f.2 hidden end # Power Management Controller
 		device pci 1f.3 on	# Intel HDA
 			register "PchHdaAudioLinkHda" = "1"
 		end

@@ -137,6 +137,14 @@ Maintainers List (try to look for most precise areas first)
 # Mainboards
 ################################################################################
 
+AMD family 17h and 19h reference boards
+M:	Marshall Dawson <marshalldawson3rd@gmail.com>
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Jason Glenesk <jason.glenesk@gmail.com>
+S:	Maintained
+F:	src/mainboard/amd/majolica/
+F:	src/mainboard/amd/mandolin/
+
 APPLE MAINBOARDS
 M:	Evgeny Zinoviev <me@ch1p.io>
 S:	Maintained

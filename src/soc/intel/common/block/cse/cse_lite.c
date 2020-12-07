@@ -74,6 +74,9 @@ enum csme_failure_reason {
 
 	/* CSE CBFS RW metadata is not found */
 	CSE_LITE_SKU_RW_METADATA_NOT_FOUND = 10,
+
+	/* CSE CBFS RW blob layout is not correct */
+	CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR = 11,
 };
 
 /*
@@ -674,6 +677,11 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 		const void *cse_cbfs_rw, const size_t cse_blob_sz,
 		struct region_device *target_rdev)
 {
+	if (region_device_sz(target_rdev) < cse_blob_sz) {
+		printk(BIOS_ERR, "RW update does not fit. CSE RW flash region size: %zx, Update blob size:%zx\n",
+				region_device_sz(target_rdev), cse_blob_sz);
+		return CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR;
+	}
 
 	if (!cse_erase_rw_region(target_rdev))
 		return CSE_LITE_SKU_FW_UPDATE_ERROR;

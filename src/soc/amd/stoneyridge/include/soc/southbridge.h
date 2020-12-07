@@ -15,14 +15,9 @@
  */
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
-#define PM_DECODE_EN			0x00
-#define   CF9_IO_EN			BIT(1)
-#define   LEGACY_IO_EN			BIT(0)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)
-
-#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN */
 
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)

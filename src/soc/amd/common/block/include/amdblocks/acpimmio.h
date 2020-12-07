@@ -11,6 +11,17 @@
 #define PM_DATA				0xcd7
 
 /*
+ * Power management registers: 0xfed80300 or index/data at IO 0xcd6/cd7. Valid for Mullins and
+ * newer SoCs, but not for the generations with separate FCH or Kabini.
+ */
+#define PM_DECODE_EN			0x00
+#define   SMBUS_ASF_IO_EN		(1 << 4)
+#define   CF9_IO_EN			(1 << 1)
+#define   LEGACY_IO_EN			(1 << 0)
+
+#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN */
+
+/*
  * Earlier devices enable the ACPIMMIO bank decodes in PMx24. All discrete FCHs
  * and the Kabini SoC fall into this category. Kabini's successor, Mullins, uses
  * this newer method of enable in PMx04.

@@ -20,7 +20,7 @@ chip soc/intel/cannonlake
 	# FSP configuration
 	register "SkipExtGfxScan" = "1"
 	register "SataSalpSupport" = "1"
-	register "SataMode" = "Sata_AHCI"
+	register "SataMode" = "SATA_AHCI"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsDevSlp[1]" = "1"
 	# Configure devslp pad reset to PLT_RST

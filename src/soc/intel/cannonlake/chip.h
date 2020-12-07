@@ -129,8 +129,8 @@ struct soc_intel_cannonlake_config {
 
 	/* SATA related */
 	enum {
-		Sata_AHCI,
-		Sata_RAID,
+		SATA_AHCI,
+		SATA_RAID,
 	} SataMode;
 
 	/* SATA devslp pad reset configuration */

@@ -1059,6 +1059,7 @@ static void test_rcven(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	wait_for_iosav(channel);
 
+	/* Send a burst of 16 back-to-back read commands (4 DCLK apart) */
 	iosav_write_read_mpr_sequence(channel, slotrank, ctrl->tMOD, 1, 3, 15, ctrl->CAS + 36);
 
 	/* Execute command queue */
@@ -1193,6 +1194,12 @@ static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, i
 	}
 }
 
+/*
+ * Once the DQS high phase has been found (for each DRAM) the next stage
+ * is to find out the round trip latency, by locating the preamble cycle.
+ * This is achieved by trying smaller and smaller roundtrip values until
+ * the strobe sampling is done on the preamble cycle.
+ */
 static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int works[NUM_LANES];
@@ -1212,10 +1219,17 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 			else
 				all_works = 0;
 		}
+
+		/* If every lane is working, exit */
 		if (all_works)
 			return 0;
 
+		/*
+		 * If all bits are one (everyone is failing), decrement
+		 * the roundtrip value by two, and do another iteration.
+		 */
 		if (!some_works) {
+			/* Guard against roundtrip latency underflow */
 			if (ctrl->timings[channel][slotrank].roundtrip_latency < 2) {
 				printk(BIOS_EMERG, "402x discovery failed (1): %d, %d\n",
 				       channel, slotrank);
@@ -1225,9 +1239,16 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 			printram("4024 -= 2;\n");
 			continue;
 		}
+
+		/*
+		 * Else (if some lanes are failing), increase the rank's
+		 * I/O latency by 2, and increase rcven logic delay by 2
+		 * on the working lanes, then perform another iteration.
+		 */
 		ctrl->timings[channel][slotrank].io_latency += 2;
 		printram("4028 += 2;\n");
 
+		/* Guard against I/O latency overflow */
 		if (ctrl->timings[channel][slotrank].io_latency >= 0x10) {
 			printk(BIOS_EMERG, "402x discovery failed (2): %d, %d\n",
 			       channel, slotrank);

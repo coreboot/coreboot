@@ -680,7 +680,7 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 	};
 	iosav_write_sequence(channel, sequence, ARRAY_SIZE(sequence));
 
-	iosav_run_once(channel);
+	iosav_run_once_and_wait(channel);
 }
 
 /* Obtain optimal power down mode for current configuration */
@@ -1332,7 +1332,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 
 		iosav_write_prea_sequence(channel, slotrank, ctrl->tRP, 0);
 
-		iosav_run_once(channel);
+		iosav_run_once_and_wait(channel);
 
 		const union gdcr_training_mod_reg training_mod = {
 			.receive_enable_mode = 1,
@@ -1460,7 +1460,7 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 
 	iosav_write_prea_sequence(channel, slotrank, ctrl->tRP, 18);
 
-	iosav_run_once(channel);
+	iosav_run_once_and_wait(channel);
 
 	for (tx_dq = 0; tx_dq <= MAX_TX_DQ; tx_dq++) {
 		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].tx_dq = tx_dq;

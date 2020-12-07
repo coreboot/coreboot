@@ -36,11 +36,6 @@ void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer)
 	MCHBAR32(IOSAV_SEQ_CTL_ch(ch)) = loops | ((ssq_count - 1) << 18) | (as_timer << 22);
 }
 
-void iosav_run_once(const int ch)
-{
-	iosav_run_queue(ch, 1, 0);
-}
-
 void wait_for_iosav(int channel)
 {
 	while (1) {
@@ -51,7 +46,7 @@ void wait_for_iosav(int channel)
 
 void iosav_run_once_and_wait(const int ch)
 {
-	iosav_run_once(ch);
+	iosav_run_queue(ch, 1, 0);
 	wait_for_iosav(ch);
 }
 

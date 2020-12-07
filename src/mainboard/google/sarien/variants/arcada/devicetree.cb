@@ -16,7 +16,6 @@ chip soc/intel/cannonlake
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "SataSalpSupport" = "1"
-	register "SataMode" = "SATA_AHCI"
 	register "SataPortsEnable[2]" = "1"
 	register "SataPortsDevSlp[2]" = "1"
 	register "SkipExtGfxScan" = "1"

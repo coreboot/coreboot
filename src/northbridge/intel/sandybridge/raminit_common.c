@@ -1143,7 +1143,7 @@ static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank,
 		if (upperA[lane] < rn.middle)
 			upperA[lane] += 128;
 
-		printram("rcven: %d, %d, %d: 0x%02x-0x%02x-0x%02x\n",
+		printram("rcven: %d, %d, %d: % 4d-% 4d-% 4d\n",
 			 channel, slotrank, lane, rn.start, rn.middle, rn.end);
 	}
 }
@@ -1189,7 +1189,7 @@ static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, i
 		ctrl->timings[channel][slotrank].lanes[lane].rcven =
 			(last_zero + first_all) / 2 + upperA[lane];
 
-		printram("Aval: %d, %d, %d: %x\n", channel, slotrank,
+		printram("Aval: %d, %d, %d: % 4d\n", channel, slotrank,
 			lane, ctrl->timings[channel][slotrank].lanes[lane].rcven);
 	}
 }
@@ -1405,13 +1405,13 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 
 		align_rt_io_latency(ctrl, channel, slotrank, prev);
 
-		printram("4/8: %d, %d, %x, %x\n", channel, slotrank,
+		printram("4/8: %d, %d, % 4d, % 4d\n", channel, slotrank,
 		       ctrl->timings[channel][slotrank].roundtrip_latency,
 		       ctrl->timings[channel][slotrank].io_latency);
 
 		printram("final results:\n");
 		FOR_ALL_LANES
-			printram("Aval: %d, %d, %d: %x\n", channel, slotrank, lane,
+			printram("Aval: %d, %d, %d: % 4d\n", channel, slotrank, lane,
 			    ctrl->timings[channel][slotrank].lanes[lane].rcven);
 
 		MCHBAR32(GDCRTRAININGMOD) = 0;
@@ -1514,7 +1514,7 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 			}
 		}
 		ctrl->timings[channel][slotrank].lanes[lane].tx_dq = rn.middle;
-		printram("tx_dq: %d, %d, %d: 0x%02x-0x%02x-0x%02x\n",
+		printram("tx_dq: %d, %d, %d: % 4d-% 4d-% 4d\n",
 			channel, slotrank, lane, rn.start, rn.middle, rn.end);
 	}
 	return 0;
@@ -1639,7 +1639,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 
 			return MAKE_ERR;
 		}
-		printram("tx_dqs: %d, %d, %d: 0x%02x-0x%02x-0x%02x\n",
+		printram("tx_dqs: %d, %d, %d: % 4d-% 4d-% 4d\n",
 				 channel, slotrank, lane, rn.start, rn.middle, rn.end);
 	}
 	return 0;
@@ -1771,7 +1771,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 				get_dqs_flyby_adjust(res) * 64;
 
 			printram("High adjust %d:%016llx\n", lane, res);
-			printram("Bval+: %d, %d, %d, %x -> %x\n", channel, slotrank, lane,
+			printram("Bval+: %d, %d, %d, % 4d -> % 4d\n", channel, slotrank, lane,
 				old, ctrl->timings[channel][slotrank].lanes[lane].tx_dqs);
 		}
 	}
@@ -2073,7 +2073,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		struct run rn = get_longest_zero_run(stat[slotrank], CT_PI_LENGTH - 1);
 
 		ctrl->timings[channel][slotrank].pi_coding = rn.middle + CT_MIN_PI;
-		printram("cmd_stretch: %d, %d: 0x%02x-0x%02x-0x%02x\n",
+		printram("cmd_stretch: %d, %d: % 4d-% 4d-% 4d\n",
 				 channel, slotrank, rn.start, rn.middle, rn.end);
 
 		if (rn.all || rn.length < MIN_C320C_LEN) {
@@ -2184,7 +2184,7 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 			       slotrank, lane);
 			return MAKE_ERR;
 		}
-		printram("eval %d, %d, %d: %02x\n", channel, slotrank, lane, edges[lane]);
+		printram("eval %d, %d, %d: % 4d\n", channel, slotrank, lane, edges[lane]);
 	}
 	return 0;
 }
@@ -2370,8 +2370,8 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 
 				rn = get_longest_zero_run(stats, MAX_EDGE_TIMING + 1);
 
-				printram("edges: %d, %d, %d: 0x%02x-0x%02x-0x%02x, "
-					 "0x%02x-0x%02x\n", channel, slotrank, i, rn.start,
+				printram("edges: %d, %d, %d: % 4d-% 4d-% 4d, "
+					 "% 4d-% 4d\n", channel, slotrank, i, rn.start,
 					 rn.middle, rn.end, rn.start + ctrl->edge_offset[i],
 					 rn.end - ctrl->edge_offset[i]);
 
@@ -2532,8 +2532,8 @@ int aggressive_write_training(ramctr_timing *ctrl)
 							return MAKE_ERR;
 						}
 						printram("tx_dq: %d, %d, %d: "
-							 "0x%02x-0x%02x-0x%02x, "
-							 "0x%02x-0x%02x\n", channel, slotrank,
+							 "% 4d-% 4d-% 4d, "
+							 "% 4d-% 4d\n", channel, slotrank,
 							 i, rn.start, rn.middle, rn.end,
 							 rn.start + ctrl->tx_dq_offset[i],
 							 rn.end   - ctrl->tx_dq_offset[i]);
@@ -2564,7 +2564,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 	printram("CPB\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		printram("tx_dq %d, %d, %d: %x\n", channel, slotrank, lane,
+		printram("tx_dq %d, %d, %d: % 4d\n", channel, slotrank, lane,
 		       (lower[channel][slotrank][lane] +
 			upper[channel][slotrank][lane]) / 2);
 

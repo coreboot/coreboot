@@ -102,11 +102,6 @@ uintptr_t *map_spi_rom(void)
 	return addr;
 }
 
-void sb_enable_legacy_io(void)
-{
-	pm_io_write32(PM_DECODE_EN, pm_io_read32(PM_DECODE_EN) | LEGACY_IO_EN);
-}
-
 static uint32_t map_fch_devices(void)
 {
 	void *bar;

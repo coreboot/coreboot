@@ -200,20 +200,6 @@ static void sb_lpc_decode(void)
 	lpc_enable_decode(tmp);
 }
 
-static void sb_enable_cf9_io(void)
-{
-	uint32_t reg = pm_read32(PM_DECODE_EN);
-
-	pm_write32(PM_DECODE_EN, reg | CF9_IO_EN);
-}
-
-static void sb_enable_legacy_io(void)
-{
-	uint32_t reg = pm_read32(PM_DECODE_EN);
-
-	pm_write32(PM_DECODE_EN, reg | LEGACY_IO_EN);
-}
-
 void sb_clk_output_48Mhz(u32 osc)
 {
 	u32 ctrl;
@@ -347,14 +333,14 @@ void bootblock_fch_early_init(void)
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
-	sb_enable_cf9_io();
+	fch_enable_cf9_io();
 	setup_spread_spectrum(&reboot);
 	setup_misc(&reboot);
 
 	if (reboot)
 		warm_reset();
 
-	sb_enable_legacy_io();
+	fch_enable_legacy_io();
 	enable_aoac_devices();
 }
 

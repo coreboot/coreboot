@@ -2,6 +2,7 @@
 
 #include "psp_verstage.h"
 
+#include <amdblocks/acpimmio.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <boot_device.h>
 #include <cbfs.h>
@@ -237,7 +238,7 @@ void Main(void)
 	verstage_mainboard_early_init();
 
 	svc_write_postcode(POSTCODE_LATE_INIT);
-	sb_enable_legacy_io();
+	fch_io_enable_legacy_io();
 	verstage_soc_init();
 	verstage_mainboard_init();
 

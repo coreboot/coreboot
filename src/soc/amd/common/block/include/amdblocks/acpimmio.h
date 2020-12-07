@@ -73,6 +73,9 @@ void enable_acpimmio_decode_pm24(void);
 
 /* For newer integrated FCHs */
 void enable_acpimmio_decode_pm04(void);
+void fch_enable_cf9_io(void);
+void fch_enable_legacy_io(void);
+void fch_io_enable_legacy_io(void);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

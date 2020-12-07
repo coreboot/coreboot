@@ -55,6 +55,5 @@ uint32_t unmap_fch_devices(void);
 uint32_t verstage_soc_early_init(void);
 void verstage_soc_init(void);
 uintptr_t *map_spi_rom(void);
-void sb_enable_legacy_io(void);
 
 #endif /* PSP_VERSTAGE_H */

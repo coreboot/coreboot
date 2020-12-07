@@ -58,6 +58,21 @@ void enable_acpimmio_decode_pm04(void)
 	pm_io_write32(ACPIMMIO_DECODE_REGISTER_04, dw);
 }
 
+void fch_enable_cf9_io(void)
+{
+	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) | CF9_IO_EN);
+}
+
+void fch_enable_legacy_io(void)
+{
+	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) | LEGACY_IO_EN);
+}
+
+void fch_io_enable_legacy_io(void)
+{
+	pm_io_write32(PM_DECODE_EN, pm_io_read32(PM_DECODE_EN) | LEGACY_IO_EN);
+}
+
 /* PM registers are accessed a byte at a time via CD6/CD7 */
 uint8_t pm_io_read8(uint8_t reg)
 {

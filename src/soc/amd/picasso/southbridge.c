@@ -91,20 +91,6 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-static void sb_enable_cf9_io(void)
-{
-	uint32_t reg = pm_read32(PM_DECODE_EN);
-
-	pm_write32(PM_DECODE_EN, reg | CF9_IO_EN);
-}
-
-static void sb_enable_legacy_io(void)
-{
-	uint32_t reg = pm_read32(PM_DECODE_EN);
-
-	pm_write32(PM_DECODE_EN, reg | LEGACY_IO_EN);
-}
-
 void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
@@ -131,8 +117,8 @@ void fch_pre_init(void)
 	fch_spi_early_init();
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
-	sb_enable_cf9_io();
-	sb_enable_legacy_io();
+	fch_enable_cf9_io();
+	fch_enable_legacy_io();
 	enable_aoac_devices();
 	sb_reset_i2c_slaves();
 

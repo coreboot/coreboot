@@ -1,26 +1,25 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/barrier.h>
-#include <cbfs.h>
-#include <console/console.h>
 #include <device/mmio.h>
+#include <soc/mcu_common.h>
 #include <soc/sspm.h>
-#include <string.h>
+#include <soc/symbols.h>
 
-#define BUF_SIZE (64 * KiB)
-static uint8_t sspm_bin[BUF_SIZE] __aligned(8);
+static void reset_sspm(struct mtk_mcu *mcu)
+{
+	write32(&mt8183_sspm->sw_rstn, 0x1);
+}
+
+static struct mtk_mcu sspm = {
+	.firmware_name = CONFIG_SSPM_FIRMWARE,
+	.run_address = (void *)SSPM_SRAM_BASE,
+	.reset = reset_sspm,
+};
 
 void sspm_init(void)
 {
-	const char *file_name = "sspm.bin";
-	size_t fw_size = cbfs_load(file_name, sspm_bin, sizeof(sspm_bin));
+	sspm.load_buffer = _dram_dma;
+	sspm.buffer_size = REGION_SIZE(dram_dma);
 
-	if (fw_size == 0)
-		die("SSPM file :sspm.bin not found.");
-
-	memcpy((void *)SSPM_SRAM_BASE, sspm_bin, fw_size);
-	/* Memory barrier to ensure that all fw code is loaded
-	   before we release the reset pin. */
-	mb();
-	write32(&mt8183_sspm->sw_rstn, 0x1);
+	mtk_init_mcu(&sspm);
 }

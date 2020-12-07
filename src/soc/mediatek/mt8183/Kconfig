@@ -45,4 +45,11 @@ config MEMORY_TEST
 	bool
 	default y
 
+config SSPM_FIRMWARE
+	string
+	default "sspm.bin"
+	help
+	  The file name of the MediaTek SSPM firmware.
+
+
 endif

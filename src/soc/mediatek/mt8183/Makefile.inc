@@ -50,6 +50,7 @@ ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/dsi.c dsi.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/i2c.c i2c.c
+ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/pmic_wrap.c

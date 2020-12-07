@@ -15,11 +15,11 @@
  * newer SoCs, but not for the generations with separate FCH or Kabini.
  */
 #define PM_DECODE_EN			0x00
+#define   SMBUS_ASF_IO_BASE_SHIFT	8
+#define   SMBUS_ASF_IO_BASE_MASK	(0xff << SMBUS_ASF_IO_BASE_SHIFT)
 #define   SMBUS_ASF_IO_EN		(1 << 4)
 #define   CF9_IO_EN			(1 << 1)
 #define   LEGACY_IO_EN			(1 << 0)
-
-#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN */
 
 /*
  * Earlier devices enable the ACPIMMIO bank decodes in PMx24. All discrete FCHs

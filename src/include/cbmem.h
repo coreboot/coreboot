@@ -163,10 +163,7 @@ static inline int cbmem_online(void)
 	if (!cbmem_possibly_online())
 		return 0;
 
-	if (ENV_ROMSTAGE)
-		return cbmem_initialized;
-
-	return 1;
+	return cbmem_initialized;
 }
 
 #endif /* _CBMEM_H_ */

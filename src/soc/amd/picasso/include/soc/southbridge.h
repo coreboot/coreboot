@@ -27,8 +27,6 @@
 #define   CF9_IO_EN			BIT(1)
 #define   LEGACY_IO_EN			BIT(0)
 #define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN in PPR */
-#define PM_ISA_CONTROL			0x04
-#define   MMIO_EN			BIT(1)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 

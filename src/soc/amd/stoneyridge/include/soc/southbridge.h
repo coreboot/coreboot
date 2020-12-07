@@ -18,8 +18,6 @@
 #define PM_DECODE_EN			0x00
 #define   CF9_IO_EN			BIT(1)
 #define   LEGACY_IO_EN			BIT(0)
-#define PM_ISA_CONTROL			0x04
-#define   MMIO_EN			BIT(1)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define   FORCE_STPCLK_RETRY		BIT(24)

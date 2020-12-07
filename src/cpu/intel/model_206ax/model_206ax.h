@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 /* SandyBridge CPU stepping */
+#define SNB_STEP_B2	2
+#define SNB_STEP_C0	3
 #define SNB_STEP_D0	5 /* Also J0 */
 #define SNB_STEP_D1	6
 #define SNB_STEP_D2	7 /* Also J1/Q0 */
@@ -17,6 +19,8 @@
 #define IVB_STEP_C0	4
 #define IVB_STEP_K0	5
 #define IVB_STEP_D0	6
+#define IVB_STEP_E0	8
+#define IVB_STEP_E1	9
 
 #define IS_SANDY_CPU(x)    ((x & 0xffff0) == 0x206a0)
 #define IS_SANDY_CPU_C(x)  ((x & 0xf) == 4)

@@ -3,6 +3,7 @@
 #include <commonlib/clamp.h>
 #include <console/console.h>
 #include <console/usb.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci_def.h>

@@ -8,18 +8,6 @@
 #define BASEFREQ	133
 #define tDLLK		512
 
-#define IS_SANDY_CPU(x)    ((x & 0xffff0) == 0x206a0)
-#define IS_SANDY_CPU_C(x)  ((x & 0xf) == 4)
-#define IS_SANDY_CPU_D0(x) ((x & 0xf) == 5)
-#define IS_SANDY_CPU_D1(x) ((x & 0xf) == 6)
-#define IS_SANDY_CPU_D2(x) ((x & 0xf) == 7)
-
-#define IS_IVY_CPU(x)   ((x & 0xffff0) == 0x306a0)
-#define IS_IVY_CPU_C(x) ((x & 0xf) == 4)
-#define IS_IVY_CPU_K(x) ((x & 0xf) == 5)
-#define IS_IVY_CPU_D(x) ((x & 0xf) == 6)
-#define IS_IVY_CPU_E(x) ((x & 0xf) >= 8)
-
 #define NUM_CHANNELS	2
 #define NUM_SLOTRANKS	4
 #define NUM_SLOTS	2

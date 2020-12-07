@@ -6,6 +6,30 @@
 #include <arch/cpu.h>
 #include <stdint.h>
 
+/* SandyBridge CPU stepping */
+#define SNB_STEP_D0	5 /* Also J0 */
+#define SNB_STEP_D1	6
+#define SNB_STEP_D2	7 /* Also J1/Q0 */
+
+/* IvyBridge CPU stepping */
+#define IVB_STEP_A0	0
+#define IVB_STEP_B0	2
+#define IVB_STEP_C0	4
+#define IVB_STEP_K0	5
+#define IVB_STEP_D0	6
+
+#define IS_SANDY_CPU(x)    ((x & 0xffff0) == 0x206a0)
+#define IS_SANDY_CPU_C(x)  ((x & 0xf) == 4)
+#define IS_SANDY_CPU_D0(x) ((x & 0xf) == 5)
+#define IS_SANDY_CPU_D1(x) ((x & 0xf) == 6)
+#define IS_SANDY_CPU_D2(x) ((x & 0xf) == 7)
+
+#define IS_IVY_CPU(x)   ((x & 0xffff0) == 0x306a0)
+#define IS_IVY_CPU_C(x) ((x & 0xf) == 4)
+#define IS_IVY_CPU_K(x) ((x & 0xf) == 5)
+#define IS_IVY_CPU_D(x) ((x & 0xf) == 6)
+#define IS_IVY_CPU_E(x) ((x & 0xf) >= 8)
+
 /* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
 #define SANDYBRIDGE_BCLK		100
 

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
 #include <string.h>
 #include <arch/cpu.h>
 #include <device/mmio.h>

@@ -8,18 +8,6 @@
 #define BASE_REV_IVB	0x50
 #define BASE_REV_MASK	0x50
 
-/* SandyBridge CPU stepping */
-#define SNB_STEP_D0	5 /* Also J0 */
-#define SNB_STEP_D1	6
-#define SNB_STEP_D2	7 /* Also J1/Q0 */
-
-/* IvyBridge CPU stepping */
-#define IVB_STEP_A0	0
-#define IVB_STEP_B0	2
-#define IVB_STEP_C0	4
-#define IVB_STEP_K0	5
-#define IVB_STEP_D0	6
-
 #include "memmap.h"
 
 /* Everything below this line is ignored in the DSDT */

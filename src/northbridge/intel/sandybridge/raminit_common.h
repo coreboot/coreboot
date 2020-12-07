@@ -293,6 +293,7 @@ void iosav_write_sequence(const int ch, const struct iosav_ssq *seq, const unsig
 void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer);
 void iosav_run_once(const int ch);
 void wait_for_iosav(int channel);
+void iosav_run_once_and_wait(const int ch);
 
 void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32 wrap);
 void iosav_write_prea_sequence(int channel, int slotrank, u32 post, u32 wrap);

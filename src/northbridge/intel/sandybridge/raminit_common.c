@@ -910,9 +910,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 
 		iosav_write_zqcs_sequence(channel, slotrank, 4, 101, 31);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 	}
 }
 
@@ -1052,9 +1050,7 @@ static void test_rcven(ramctr_timing *ctrl, int channel, int slotrank)
 	/* Send a burst of 16 back-to-back read commands (4 DCLK apart) */
 	iosav_write_read_mpr_sequence(channel, slotrank, ctrl->tMOD, 1, 3, 15, ctrl->CAS + 36);
 
-	iosav_run_once(channel);
-
-	wait_for_iosav(channel);
+	iosav_run_once_and_wait(channel);
 }
 
 static int does_lane_work(ramctr_timing *ctrl, int channel, int slotrank, int lane)
@@ -1428,15 +1424,11 @@ static void test_tx_dq(ramctr_timing *ctrl, int channel, int slotrank)
 	iosav_write_misc_write_sequence(ctrl, channel, slotrank,
 		MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), 4, 4, 500, 18);
 
-	iosav_run_once(channel);
-
-	wait_for_iosav(channel);
+	iosav_run_once_and_wait(channel);
 
 	iosav_write_prea_act_read_sequence(ctrl, channel, slotrank);
 
-	iosav_run_once(channel);
-
-	wait_for_iosav(channel);
+	iosav_run_once_and_wait(channel);
 }
 
 static void tx_dq_threshold_process(int *data, const int count)
@@ -1590,9 +1582,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 		}
 		program_timings(ctrl, channel);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
 			statistics[lane][tx_dqs] =  !((MCHBAR32(lane_base[lane] +
@@ -1670,9 +1660,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 
 		iosav_write_misc_write_sequence(ctrl, channel, slotrank, 3, 1, 3, 3, 31);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 
 		const struct iosav_ssq rd_sequence[] = {
 			/* DRAM command PREA */
@@ -1740,9 +1728,8 @@ static void train_write_flyby(ramctr_timing *ctrl)
 		};
 		iosav_write_sequence(channel, rd_sequence, ARRAY_SIZE(rd_sequence));
 
-		iosav_run_once(channel);
+		iosav_run_once_and_wait(channel);
 
-		wait_for_iosav(channel);
 		FOR_ALL_LANES {
 			u64 res = MCHBAR32(lane_base[lane] + GDCRTRAININGRESULT1(channel));
 			res |= ((u64) MCHBAR32(lane_base[lane] +
@@ -1770,9 +1757,7 @@ static void disable_refresh_machine(ramctr_timing *ctrl)
 
 		iosav_write_zqcs_sequence(channel, slotrank, 4, 4, 31);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 
 		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
 	}
@@ -1782,9 +1767,7 @@ static void disable_refresh_machine(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		/* Execute the same command queue */
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 	}
 }
 
@@ -1850,9 +1833,7 @@ static int jedec_write_leveling(ramctr_timing *ctrl)
 
 		iosav_write_zqcs_sequence(channel, 0, 4, 101, 31);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 	}
 
 	toggle_io_reset();
@@ -1931,9 +1912,8 @@ static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
 		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2)) = 0x389abcd;
 
-		iosav_run_once(channel);
+		iosav_run_once_and_wait(channel);
 
-		wait_for_iosav(channel);
 		FOR_ALL_LANES {
 			u32 r32 = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 
@@ -2144,9 +2124,7 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		iosav_write_read_mpr_sequence(
 			channel, slotrank, ctrl->tMOD, 500, 4, 1, ctrl->CAS + 8);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
 			stats[lane][dqs_pi] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
@@ -2190,9 +2168,7 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 		iosav_write_read_mpr_sequence(
 			channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 	}
 
 	/* XXX: check any measured value ? */
@@ -2210,9 +2186,7 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 		iosav_write_read_mpr_sequence(
 			channel, slotrank, ctrl->tMOD, 3, 4, 1, ctrl->CAS + 8);
 
-		iosav_run_once(channel);
-
-		wait_for_iosav(channel);
+		iosav_run_once_and_wait(channel);
 	}
 
 	/* XXX: check any measured value ? */
@@ -2325,9 +2299,8 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 
 				iosav_write_data_write_sequence(ctrl, channel, slotrank);
 
-				iosav_run_once(channel);
+				iosav_run_once_and_wait(channel);
 
-				wait_for_iosav(channel);
 				FOR_ALL_LANES {
 					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 				}
@@ -2422,9 +2395,7 @@ static void test_aggressive_write(ramctr_timing *ctrl, int channel, int slotrank
 
 	iosav_write_aggressive_write_read_sequence(ctrl, channel, slotrank);
 
-	iosav_run_once(channel);
-
-	wait_for_iosav(channel);
+	iosav_run_once_and_wait(channel);
 }
 
 static void set_write_vref(const int channel, const u8 wr_vref)
@@ -2603,9 +2574,8 @@ int channel_test(ramctr_timing *ctrl)
 
 		iosav_write_memory_test_sequence(ctrl, channel, slotrank);
 
-		iosav_run_once(channel);
+		iosav_run_once_and_wait(channel);
 
-		wait_for_iosav(channel);
 		FOR_ALL_LANES
 			if (MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane))) {
 				printk(BIOS_EMERG, "Mini channel test failed (2): %d, %d, %d\n",

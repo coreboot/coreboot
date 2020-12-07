@@ -49,6 +49,12 @@ void wait_for_iosav(int channel)
 	}
 }
 
+void iosav_run_once_and_wait(const int ch)
+{
+	iosav_run_once(ch);
+	wait_for_iosav(ch);
+}
+
 void iosav_write_zqcs_sequence(int channel, int slotrank, u32 gap, u32 post, u32 wrap)
 {
 	const struct iosav_ssq sequence[] = {

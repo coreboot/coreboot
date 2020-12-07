@@ -86,8 +86,9 @@ chip soc/intel/cannonlake
 			register "PcieRpSlotImplemented[5]" = "0"
 		end
 		device pci 1c.6 on		# PCI Express Port 7
-			register "PcieRpEnable[6]" = "1" # x1 M.2 (WLAN / BT)
+			register "PcieRpEnable[6]" = "1"
 			register "PcieRpSlotImplemented[6]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
 		device pci 1c.7 off	end	# PCI Express Port 8
 		device pci 1d.0 off	end	# PCI Express Port 9
@@ -99,10 +100,11 @@ chip soc/intel/cannonlake
 		device pci 1d.6 off	end	# PCI Express Port 15
 		device pci 1d.7 off	end	# PCI Express Port 16
 		device pci 1b.0 on		# PCI Express Port 17
-			register "PcieRpEnable[16]" = "1" # x4 M.2/M
+			register "PcieRpEnable[16]" = "1"
 			register "PcieClkSrcUsage[7]" = "16"
 			register "PcieClkSrcClkReq[7]" = "7"
 			register "PcieRpSlotImplemented[16]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
 		device pci 1b.1 off	end	# PCI Express Port 18
 		device pci 1b.2 off	end	# PCI Express Port 19

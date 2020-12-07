@@ -9,22 +9,22 @@
 #define BASE_REV_MASK	0x50
 
 /* SandyBridge CPU stepping */
-#define SNB_STEP_D0	(BASE_REV_SNB + 5) /* Also J0 */
-#define SNB_STEP_D1	(BASE_REV_SNB + 6)
-#define SNB_STEP_D2	(BASE_REV_SNB + 7) /* Also J1/Q0 */
+#define SNB_STEP_D0	5 /* Also J0 */
+#define SNB_STEP_D1	6
+#define SNB_STEP_D2	7 /* Also J1/Q0 */
 
 /* IvyBridge CPU stepping */
-#define IVB_STEP_A0	(BASE_REV_IVB + 0)
-#define IVB_STEP_B0	(BASE_REV_IVB + 2)
-#define IVB_STEP_C0	(BASE_REV_IVB + 4)
-#define IVB_STEP_K0	(BASE_REV_IVB + 5)
-#define IVB_STEP_D0	(BASE_REV_IVB + 6)
+#define IVB_STEP_A0	0
+#define IVB_STEP_B0	2
+#define IVB_STEP_C0	4
+#define IVB_STEP_K0	5
+#define IVB_STEP_D0	6
 
 #include "memmap.h"
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
-#include <stdint.h>
+#include <types.h>
 
 /* Chipset types */
 enum platform_type {
@@ -87,8 +87,9 @@ enum platform_type {
 
 #ifndef __ASSEMBLER__
 
+bool is_sandybridge(void);
+
 void intel_sandybridge_finalize_smm(void);
-int bridge_silicon_revision(void);
 void systemagent_early_init(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);

@@ -3,6 +3,7 @@
 #ifndef _CPU_INTEL_MODEL_206AX_H
 #define _CPU_INTEL_MODEL_206AX_H
 
+#include <arch/cpu.h>
 #include <stdint.h>
 
 /* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
@@ -87,5 +88,10 @@ void intel_model_206ax_finalize_smm(void);
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
 int get_platform_id(void);
+
+static inline u8 cpu_stepping(void)
+{
+	return cpuid_eax(1) & 0xf;
+}
 
 #endif

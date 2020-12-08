@@ -95,11 +95,6 @@ void sb_clk_output_48Mhz(void)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
-void sb_enable(struct device *dev)
-{
-	printk(BIOS_DEBUG, "%s\n", __func__);
-}
-
 static void sb_init_acpi_ports(void)
 {
 	u32 reg;

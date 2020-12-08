@@ -197,7 +197,6 @@ typedef struct aoac_devs {
 void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
 void sb_clk_output_48Mhz(void);
-void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void fch_pre_init(void);

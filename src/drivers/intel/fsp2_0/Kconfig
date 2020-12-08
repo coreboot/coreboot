@@ -126,6 +126,13 @@ config FSP_T_RESERVED_SIZE
 	  defined in the FSP specification but in the SOC integration
 	  guides.
 
+config NO_FSP_TEMP_RAM_EXIT
+	bool
+	depends on FSP_CAR
+	help
+	  Select this on a platform where you want to use FSP-T but use
+	  coreboot code to tear down CAR.
+
 config FSP_M_XIP
 	bool
 	default n

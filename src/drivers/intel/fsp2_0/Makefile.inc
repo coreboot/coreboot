@@ -29,7 +29,9 @@ ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
+ifneq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c
+endif
 postcar-$(CONFIG_FSP_CAR) += util.c
 postcar-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 postcar-y += hand_off_block.c

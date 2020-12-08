@@ -1,10 +1,6 @@
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO),y)
 
-bootblock-y += mmio_util.c
-verstage-y += mmio_util.c
-romstage-y += mmio_util.c
-postcar-y += mmio_util.c
-ramstage-y += mmio_util.c
+all-y += mmio_util.c
 smm-y += mmio_util.c
 
 bootblock-y += biosram.c

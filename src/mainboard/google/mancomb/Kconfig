@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_GOOGLE_BASEBOARD_MANCOMB
+	def_bool n
+
+if BOARD_GOOGLE_BASEBOARD_MANCOMB
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select SOC_AMD_CEZANNE
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+
+config MAINBOARD_DIR
+	string
+	default "google/mancomb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Mancomb" if BOARD_GOOGLE_MANCOMB
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 3
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Mancomb"
+
+endif # BOARD_GOOGLE_BASEBOARD_MANCOMB

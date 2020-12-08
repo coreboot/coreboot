@@ -20,6 +20,7 @@
 #define   SMBUS_ASF_IO_EN		(1 << 4)
 #define   CF9_IO_EN			(1 << 1)
 #define   LEGACY_IO_EN			(1 << 0)
+#define PM_RST_STATUS			0xc0
 
 /*
  * Earlier devices enable the ACPIMMIO bank decodes in PMx24. All discrete FCHs
@@ -84,6 +85,9 @@ uint32_t pm_io_read32(uint8_t reg);
 void pm_io_write8(uint8_t reg, uint8_t value);
 void pm_io_write16(uint8_t reg, uint16_t value);
 void pm_io_write32(uint8_t reg, uint32_t value);
+
+/* Print source of last reset */
+void fch_print_pmxc0_status(void);
 
 static inline uint8_t sm_pci_read8(uint8_t reg)
 {

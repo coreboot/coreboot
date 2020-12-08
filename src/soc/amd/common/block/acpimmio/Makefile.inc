@@ -10,4 +10,6 @@ postcar-y += biosram.c
 ramstage-y += biosram.c
 smm-y += biosram.c
 
+bootblock-y += print_reset_status.c
+
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO

@@ -19,14 +19,19 @@ SECTIONS {
 	.id (.): {
 		KEEP(*(.id));
 	}
-	_ID_SECTION = 0xffffff80 - SIZEOF(.id);
 
-	. = 0xffffffc0;
+	/* Flashrom and FILO have two alternatives for the location of .id section. */
+	_ID_SECTION_END = SIZEOF(.fit_pointer) && SIZEOF(.id) > 0x28 ? 0xffffff80 : _X86_RESET_VECTOR;
+	_ID_SECTION = _ID_SECTION_END - SIZEOF(.id);
+
+	. = _FIT_POINTER;
 	.fit_pointer (.): {
 		KEEP(*(.fit_pointer));
 	}
+	_FIT_POINTER = SIZEOF(.fit_pointer) ? 0xffffffc0 : _X86_RESET_VECTOR;
 
 	. = 0xfffffff0;
+	_X86_RESET_VECTOR = .;
 	.reset . : {
 		*(.reset);
 		. = 15;

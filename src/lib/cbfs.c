@@ -27,7 +27,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 
 	size_t data_offset;
 	cb_err_t err = CB_CBFS_CACHE_FULL;
-	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM)
+	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM && cbd->mcache_size)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
 					  name, mdata, &data_offset);
 	if (err == CB_CBFS_CACHE_FULL) {
@@ -35,6 +35,8 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 		if (CONFIG(TOCTOU_SAFETY)) {
 			if (ENV_SMM)  /* Cannot provide TOCTOU safety for SMM */
 				dead_code();
+			if (!cbd->mcache_size)
+				die("Cannot access CBFS TOCTOU-safely in " ENV_STRING " before CBMEM init!\n");
 			/* We can only reach this for the RW CBFS -- an mcache
 			   overflow in the RO CBFS would have been caught when
 			   building the mcache in cbfs_get_boot_device().
@@ -408,6 +410,9 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 	if (CONFIG(NO_CBFS_MCACHE) || ENV_SMM)
 		return;
 
+	if (cbd->mcache_size)
+		return;
+
 	const struct cbmem_entry *entry;
 	if (cbmem_possibly_online() &&
 	    (entry = cbmem_entry_find(id))) {
@@ -465,13 +470,16 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 			return rw;
 	}
 
+	/* In rare cases post-RAM stages may run this before cbmem_initialize(),
+	   so we can't lock in the result of find_mcache() on the first try and
+	   should keep trying every time until an mcache is found. */
+	cbfs_boot_device_find_mcache(&ro, CBMEM_ID_CBFS_RO_MCACHE);
+
 	if (region_device_sz(&ro.rdev))
 		return &ro;
 
 	if (fmap_locate_area_as_rdev("COREBOOT", &ro.rdev))
 		die("Cannot locate primary CBFS");
-
-	cbfs_boot_device_find_mcache(&ro, CBMEM_ID_CBFS_RO_MCACHE);
 
 	if (ENV_INITIAL_STAGE) {
 		cb_err_t err = cbfs_init_boot_device(&ro, metadata_hash_get());

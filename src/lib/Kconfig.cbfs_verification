@@ -19,6 +19,7 @@ config TOCTOU_SAFETY
 	depends on CBFS_VERIFICATION
 	depends on !NO_FMAP_CACHE
 	depends on !NO_CBFS_MCACHE
+	depends on !USE_OPTION_TABLE && !FSP_CAR  # Known to access CBFS before CBMEM init
 	help
 	  Work in progress. Not actually TOCTOU safe yet. Do not use.
 

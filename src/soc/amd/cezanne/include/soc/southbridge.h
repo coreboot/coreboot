@@ -5,4 +5,7 @@
 
 #include <soc/iomap.h>
 
+void fch_pre_init(void);
+void fch_early_init(void);
+
 #endif /* AMD_CEZANNE_SOUTHBRIDGE_H */

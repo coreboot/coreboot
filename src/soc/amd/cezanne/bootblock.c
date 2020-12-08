@@ -3,6 +3,7 @@
 #include <amdblocks/amd_pci_mmconf.h>
 #include <bootblock_common.h>
 #include <cpu/x86/tsc.h>
+#include <soc/southbridge.h>
 #include <stdint.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
@@ -20,8 +21,10 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
+	fch_pre_init();
 }
 
 void bootblock_soc_init(void)
 {
+	fch_early_init();
 }

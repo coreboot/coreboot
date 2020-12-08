@@ -27,8 +27,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 
 	size_t data_offset;
 	cb_err_t err = CB_CBFS_CACHE_FULL;
-	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM &&
-	    (ENV_ROMSTAGE_OR_BEFORE || cbmem_online()))
+	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
 					  name, mdata, &data_offset);
 	if (err == CB_CBFS_CACHE_FULL) {

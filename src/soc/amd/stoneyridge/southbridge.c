@@ -255,7 +255,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
 }
 
-void sb_disable_4dw_burst(void)
+static void sb_disable_4dw_burst(void)
 {
 	spi_write16(SPI100_HOST_PREF_CONFIG,
 			spi_read16(SPI100_HOST_PREF_CONFIG) & ~SPI_RD4DW_EN_HOST);

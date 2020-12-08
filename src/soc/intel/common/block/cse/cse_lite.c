@@ -429,7 +429,6 @@ static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
 	return cse_boot_to_rw(cse_bp_info);
 }
 
-#if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
 static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
 		const struct cse_bp_info *bp_info)
 {
@@ -775,7 +774,6 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 
 	return 0;
 }
-#endif
 
 void cse_fw_sync(void *unused)
 {
@@ -804,12 +802,12 @@ void cse_fw_sync(void *unused)
 	 * If SOC_INTEL_CSE_RW_UPDATE is defined , then trigger CSE firmware update. The driver
 	 * triggers recovery if CSE CBFS RW metadata or CSE CBFS RW blob is not available.
 	 */
-#if CONFIG(SOC_INTEL_CSE_RW_UPDATE)
-	uint8_t rv;
-	rv = cse_fw_update(&cse_bp_info.bp_info);
-	if (rv)
-		cse_trigger_recovery(rv);
-#endif
+	if (CONFIG(SOC_INTEL_CSE_RW_UPDATE)) {
+		uint8_t rv;
+		rv = cse_fw_update(&cse_bp_info.bp_info);
+		if (rv)
+			cse_trigger_recovery(rv);
+	}
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");

@@ -414,7 +414,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 #if CONFIG(CHROMEOS) && CONFIG(HAVE_ACPI_TABLES)
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
 	/* SMBIOS offsets start at 1 rather than 0 */
-	chromeos_get_chromeos_acpi()->vbt10 = (u32)t->eos + (version_offset - 1);
+	chromeos_get_chromeos_acpi()->vbt10 = (uintptr_t)t->eos + (version_offset - 1);
 #endif
 	t->bios_version = smbios_add_string(t->eos, get_bios_version());
 	uint32_t rom_size = CONFIG_ROM_SIZE;

@@ -14,6 +14,16 @@ static const struct pad_config gpio_table[] = {
 
 	/* B5 : LAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
+	/* B6 : M2_SSD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
+	/* B7 : M2_TPU0_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
+	/* B8 : CLK_PCIE_REQ3 (not connected) */
+	PAD_NC(GPP_B8, NONE),
+	/* B9 : M2_TPU1_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
+	/* B10 : M2_WLAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
 
 	/* C0 : SMBCLK */
 	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),

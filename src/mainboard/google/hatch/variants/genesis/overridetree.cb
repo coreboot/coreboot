@@ -185,12 +185,50 @@ chip soc/intel/cannonlake
 	# PCIe port 7 for LAN
 	register "PcieRpEnable[6]" = "1"
 	register "PcieRpLtrEnable[6]" = "1"
-	# PCIe port 11 (x2) for NVMe hybrid storage devices
-	register "PcieRpEnable[10]" = "1"
-	register "PcieRpLtrEnable[10]" = "1"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"
 	register "PcieClkSrcClkReq[0]" = "0"
+
+	# PCIe port 8 for WLAN
+	register "PcieRpEnable[7]" = "1"
+	register "PcieRpLtrEnable[7]" = "1"
+	# Uses CLK SRC 5
+	register "PcieClkSrcUsage[5]" = "7"
+	register "PcieClkSrcClkReq[5]" = "5"
+
+	# PCIe port 9 for TPU #0
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpLtrEnable[8]" = "1"
+	# RP 9 uses CLK SRC 2
+	register "PcieClkSrcUsage[2]" = "8"
+	register "PcieClkSrcClkReq[2]" = "2"
+
+	# PCIe port 10 for TPU #1
+	register "PcieRpEnable[9]" = "1"
+	register "PcieRpLtrEnable[9]" = "1"
+	# RP 10 uses CLK SRC 4
+	register "PcieClkSrcUsage[4]" = "9"
+	register "PcieClkSrcClkReq[4]" = "4"
+
+	# PCIe port 11 (x2) for NVMe hybrid storage devices
+	register "PcieRpEnable[10]" = "1"
+	register "PcieRpLtrEnable[10]" = "1"
+	# RP 11 uses CLK SRC 1
+	register "PcieClkSrcUsage[1]" = "10"
+	register "PcieClkSrcClkReq[1]" = "1"
+	# Disable the remaining port 12
+	register "PcieRpEnable[11]" = "0"
+
+	# PCIe port 13 for i350 NIC (x4)
+	register "PcieRpEnable[12]" = "1"
+	register "PcieRpLtrEnable[12]" = "1"
+	# RP 13 uses CLK SRC 3
+	register "PcieClkSrcUsage[3]" = "12"
+	# RP 13 does not use a source clock request line
+	# Disable the remaining ports 14-16
+	register "PcieRpEnable[13]" = "0"
+	register "PcieRpEnable[14]" = "0"
+	register "PcieRpEnable[15]" = "0"
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "vSD3_CD_B"
@@ -333,15 +371,13 @@ chip soc/intel/cannonlake
 						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Rear Left""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 0)"
-						device usb 3.4 on end
+						# USB3 Port 5 is not populated
+						device usb 3.4 off end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Rear Middle""
+						register "desc" = ""USB3 M.2 HDMI-to-USB""
 						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						register "group" = "ACPI_PLD_GROUP(2, 0)"
 						device usb 3.5 on end
 					end
 				end
@@ -383,8 +419,8 @@ chip soc/intel/cannonlake
 			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.6 on
-			chip drivers/net
+		device pci 1c.6 on # PCI Express Port 7 (LAN)
+			chip drivers/net # RTL8111H Ethernet NIC
 				register "customized_leds" = "0x05af"
 				register "wake" = "GPE0_DW1_07" # GPP_C7
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A18)"
@@ -394,8 +430,24 @@ chip soc/intel/cannonlake
 				register "device_index" = "0"
 				device pci 00.0 on end
 			end
-		end # RTL8111H Ethernet NIC
+		end
+		device pci 1c.7 on # PCI Express Port 8 (WLAN)
+			register "PcieRpSlotImplemented[7]" = "1" # M.2 Slot
+		end
+		device pci 1d.0 on # PCI Express Port 9 (TPU)
+			register "PcieRpSlotImplemented[8]" = "1" # M.2 Slot
+		end
+		device pci 1d.1 on # PCI Express Port 10 (TPU)
+			register "PcieRpSlotImplemented[9]" = "1" # M.2 Slot
+		end
 		device pci 1d.2 on end # PCI Express Port 11 (X2 NVMe)
+		device pci 1d.3 off end # PCI Express Port 12 (non-root)
+		device pci 1d.4 on # PCI Express Port 13 (X4 i350 NIC)
+			register "PcieRpSlotImplemented[12]" = "0" # Built-in
+		end
+		device pci 1d.5 off end # PCI Express Port 14 (non-root)
+		device pci 1d.6 off end # PCI Express Port 15 (non-root)
+		device pci 1d.7 off end # PCI Express Port 16 (non-root)
 		device pci 1e.3 off end # GSPI #1
 	end
 

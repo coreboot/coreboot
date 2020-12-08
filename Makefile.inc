@@ -730,16 +730,6 @@ TXTIBB :=
 
 endif
 
-ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
-
-CBNTIBB := --cbnt
-
-else
-
-CBNTIBB :=
-
-endif # CONFIG_INTEL_CBNT_SUPPORT
-
 ifeq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 
 $(objcbfs)/bootblock.lz4: $(objcbfs)/bootblock.elf $(objutil)/cbfstool/cbfs-compression-tool
@@ -1085,7 +1075,6 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-n bootblock \
 		-t bootblock \
 		$(TXTIBB) \
-		$(CBNTIBB) \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
 		$(TS_OPTIONS) \
 		$(CBFSTOOL_ADD_CMD_OPTIONS)

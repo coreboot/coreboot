@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_GOOGLE_BASEBOARD_GUYBRUSH
+	def_bool n
+
+if BOARD_GOOGLE_BASEBOARD_GUYBRUSH
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_CEZANNE
+
+config MAINBOARD_DIR
+	string
+	default "google/guybrush"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Guybrush" if BOARD_GOOGLE_GUYBRUSH
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Guybrush"
+
+endif # BOARD_GOOGLE_BASEBOARD_GUYBRUSH

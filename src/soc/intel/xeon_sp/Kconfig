@@ -67,6 +67,8 @@ config	CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select X86_SMM_LOADER_VERSION2
 	select REG_SCRIPT
+	select NO_FSP_TEMP_RAM_EXIT
+	select INTEL_CAR_NEM # For postcar only now
 
 config MAINBOARD_USES_FSP2_0
 	  bool

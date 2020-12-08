@@ -43,10 +43,11 @@ static void crb_readControlArea(void)
 	control_area.cancel = read32(CRB_REG(cur_loc, CRB_REG_CANCEL));
 	control_area.interrupt_control = read64(CRB_REG(cur_loc, CRB_REG_INT_CTRL));
 	control_area.command_size = read32(CRB_REG(cur_loc, CRB_REG_CMD_SIZE));
-	control_area.command_bfr = (void *)(uint32_t)read64(CRB_REG(cur_loc, CRB_REG_CMD_ADDR));
+	control_area.command_bfr =
+		(void *)(uintptr_t)read64(CRB_REG(cur_loc, CRB_REG_CMD_ADDR));
 	control_area.response_size = read32(CRB_REG(cur_loc, CRB_REG_RESP_SIZE));
 	control_area.response_bfr =
-		(void *)(uint32_t)read64(CRB_REG(cur_loc, CRB_REG_RESP_ADDR));
+		(void *)(uintptr_t)read64(CRB_REG(cur_loc, CRB_REG_RESP_ADDR));
 }
 
 /* Wait for Reg to be expected Value  */

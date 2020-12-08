@@ -6,7 +6,7 @@
 #define TPM_CRB_BASE_ADDRESS        CONFIG_CRB_TPM_BASE_ADDRESS
 
 #define CRB_REG(LOCTY, REG)                                 \
-	(void *)(CONFIG_CRB_TPM_BASE_ADDRESS + (LOCTY << 12) + REG)
+	(void *)(uintptr_t)(CONFIG_CRB_TPM_BASE_ADDRESS + (LOCTY << 12) + REG)
 
 /* hardware registers */
 #define CRB_REG_LOC_STATE		0x00

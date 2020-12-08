@@ -13,7 +13,7 @@ all-y += config.c
 
 bootblock-y += bootblock.c
 bootblock-y += aoac.c
-bootblock-y += southbridge.c
+bootblock-y += early_fch.c
 bootblock-y += i2c.c
 bootblock-y += uart.c
 bootblock-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
@@ -28,7 +28,6 @@ romstage-y += memmap.c
 romstage-y += uart.c
 romstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
 romstage-y += aoac.c
-romstage-y += southbridge.c
 romstage-y += psp.c
 romstage-y += mrc_cache.c
 
@@ -49,7 +48,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += agesa_acpi.c
 ramstage-y += gpio.c
 ramstage-y += aoac.c
-ramstage-y += southbridge.c
+ramstage-y += fch.c
 ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c

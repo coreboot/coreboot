@@ -13,6 +13,7 @@ void fch_pre_init(void)
 	fch_smbus_init();
 	fch_enable_cf9_io();
 	fch_enable_legacy_io();
+	enable_aoac_devices();
 
 	/*
 	 * On reset Range_0 defaults to enabled. We want to start with a clean

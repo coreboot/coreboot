@@ -2,6 +2,7 @@
 
 #include <amdblocks/amd_pci_mmconf.h>
 #include <bootblock_common.h>
+#include <console/console.h>
 #include <cpu/x86/tsc.h>
 #include <soc/southbridge.h>
 #include <stdint.h>
@@ -26,5 +27,7 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
+	u32 val = cpuid_eax(1);
+	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 	fch_early_init();
 }

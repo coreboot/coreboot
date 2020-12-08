@@ -64,7 +64,9 @@
 		   | (1 << SMITYPE_G_FANIN0)		\
 		   | (1 << SMITYPE_G_SYSRESET_L)	\
 		   | (1 << SMITYPE_G_AGPIO40)		\
-		   | (1 << SMITYPE_G_PWR_BTN_L))
+		   | (1 << SMITYPE_G_PWR_BTN_L)		\
+		   | (1 << SMITYPE_G_AGPIO9)		\
+		   | (1 << SMITYPE_G_AGPIO8))
 #define SMITYPE_MP2_WAKE		24
 #define SMITYPE_MP2_GPIO0		25
 #define SMITYPE_ESPI_SYS		26

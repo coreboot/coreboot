@@ -83,6 +83,5 @@
 #define BIOSRAM_DATA			0xcd5
 #define AB_INDX				0xcd8
 #define AB_DATA				(AB_INDX+4)
-#define SYS_RESET			0xcf9
 
 #endif /* AMD_PICASSO_IOMAP_H */

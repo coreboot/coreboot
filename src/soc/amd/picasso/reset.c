@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <cf9_reset.h>
 #include <reset.h>
 #include <soc/reset.h>
 #include <soc/southbridge.h>
@@ -27,7 +28,7 @@ void do_cold_reset(void)
 	/* De-assert and then assert all PwrGood signals on CF9 reset. */
 	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) |
 		TOGGLE_ALL_PWR_GOOD);
-	outb(RST_CMD | SYS_RST, SYS_RESET);
+	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
 void do_warm_reset(void)
@@ -35,7 +36,7 @@ void do_warm_reset(void)
 	set_warm_reset_flag();
 
 	/* Assert reset signals only. */
-	outb(RST_CMD | SYS_RST, SYS_RESET);
+	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
 void do_board_reset(void)

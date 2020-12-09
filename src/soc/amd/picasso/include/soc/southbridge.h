@@ -163,11 +163,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-/* IO 0xcf9 - Reset control port*/
-#define   FULL_RST			BIT(3)
-#define   RST_CMD			BIT(2)
-#define   SYS_RST			BIT(1)
-
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			BIT(7) /* Write-once */
 

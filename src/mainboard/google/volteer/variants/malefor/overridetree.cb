@@ -63,7 +63,7 @@ chip soc/intel/tigerlake
 				device i2c 5d on end
 			end
 		end
-		device ref i2c3 on
+		device ref i2c2 on
 			chip drivers/i2c/sx9310
 				register "desc" = ""SAR0 Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"

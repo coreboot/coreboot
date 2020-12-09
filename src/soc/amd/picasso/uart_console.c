@@ -15,5 +15,5 @@ uintptr_t uart_platform_base(unsigned int idx)
 
 unsigned int uart_platform_refclk(void)
 {
-	return CONFIG(PICASSO_UART_48MZ) ? 48000000 : 115200 * 16;
+	return CONFIG(AMD_SOC_UART_48MZ) ? 48000000 : 115200 * 16;
 }

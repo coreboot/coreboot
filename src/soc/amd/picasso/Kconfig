@@ -273,7 +273,7 @@ config PICASSO_ACPI_IO_BASE
 	help
 	  Base address for the ACPI registers.
 
-config PICASSO_CONSOLE_UART
+config AMD_SOC_CONSOLE_UART
 	bool "Use Picasso UART controller for console"
 	default n
 	select DRIVERS_UART_8250MEM
@@ -289,15 +289,15 @@ config PICASSO_CONSOLE_UART
 
 choice
 	prompt "UART Frequency"
-	depends on PICASSO_CONSOLE_UART
-	default PICASSO_UART_48MZ
+	depends on AMD_SOC_CONSOLE_UART
+	default AMD_SOC_UART_48MZ
 
-config PICASSO_UART_48MZ
+config AMD_SOC_UART_48MZ
 	bool "48 MHz clock"
 	help
 	  Select this option for the most compatibility.
 
-config PICASSO_UART_1_8MZ
+config AMD_SOC_UART_1_8MZ
 	bool "1.8432 MHz clock"
 	help
 	  Select this option if an old payload or Linux ttyS0 arguments
@@ -305,7 +305,7 @@ config PICASSO_UART_1_8MZ
 
 endchoice
 
-config PICASSO_UART_LEGACY
+config AMD_SOC_UART_LEGACY
 	bool "Decode legacy I/O range"
 	help
 	  Assign I/O 3F8, 2F8, etc. to a Picasso UART. A UART accessed with I/O
@@ -313,7 +313,7 @@ config PICASSO_UART_LEGACY
 	  present when this option is used.
 
 config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL && PICASSO_CONSOLE_UART
+	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1

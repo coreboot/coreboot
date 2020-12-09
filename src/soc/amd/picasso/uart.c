@@ -101,7 +101,7 @@ void set_uart_config(unsigned int idx)
 
 	program_gpios(uart_info[idx].mux, 2);
 
-	if (CONFIG(PICASSO_UART_1_8MZ)) {
+	if (CONFIG(AMD_SOC_UART_1_8MZ)) {
 		uart_ctrl = sm_pci_read32(SMB_UART_CONFIG);
 		uart_ctrl |= 1 << (SMB_UART_1_8M_SHIFT + idx);
 		sm_pci_write32(SMB_UART_CONFIG, uart_ctrl);
@@ -151,7 +151,7 @@ static void uart_enable(struct device *dev)
 	if (dev->enabled) {
 		power_on_aoac_device(dev_id);
 		wait_for_aoac_enabled(dev_id);
-		if (CONFIG(PICASSO_UART_LEGACY))
+		if (CONFIG(AMD_SOC_UART_LEGACY))
 			enable_uart_legacy_decode(dev->path.mmio.addr);
 	} else {
 		power_off_aoac_device(dev_id);

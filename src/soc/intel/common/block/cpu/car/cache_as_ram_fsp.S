@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <device/pci_def.h>
+#include <cpu/x86/64bit/entry64.inc>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
+#include <device/pci_def.h>
 #include <intelblocks/post_codes.h>
 
 #define CBFS_FILE_MAGIC 0
@@ -14,6 +15,8 @@
 .section .init, "ax", @progbits
 
 .extern	temp_ram_init_params
+
+.code32
 
 .global	bootblock_pre_c_entry
 bootblock_pre_c_entry:
@@ -88,10 +91,19 @@ CAR_init_done:
 	pop	%ecx
 	movl	%ecx, temp_memory_start
 
+#if ENV_X86_64
+	setup_longmode $PM4LE
+	movl	%ebp, %edi
+	shlq	$32, %rdi
+	movd	%mm1, %rsi
+	or	%rsi, %rdi
+	andl	$0xfffffff0, %esp
+#else
 	/* Restore the timestamp from bootblock_crt0.S (ebp:mm1) */
 	push	%ebp
 	movd	%mm1, %eax
 	push	%eax
+#endif
 
 	/* Copy .data section content to Cache-As-Ram */
 #include <cpu/x86/copy_data_section.inc>

@@ -10,9 +10,9 @@ subdirs-y += ../../../cpu/x86/smm
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
 all-y += config.c
+all-y += aoac.c
 
 bootblock-y += bootblock.c
-bootblock-y += aoac.c
 bootblock-y += early_fch.c
 bootblock-y += i2c.c
 bootblock-y += uart.c
@@ -27,12 +27,10 @@ romstage-y += reset.c
 romstage-y += memmap.c
 romstage-y += uart.c
 romstage-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
-romstage-y += aoac.c
 romstage-y += psp.c
 romstage-y += mrc_cache.c
 
 verstage-y += i2c.c
-verstage-y += aoac.c
 verstage_x86-y += gpio.c
 verstage_x86-y += uart.c
 verstage_x86-$(CONFIG_PICASSO_CONSOLE_UART) += uart_console.c
@@ -47,7 +45,6 @@ ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += agesa_acpi.c
 ramstage-y += gpio.c
-ramstage-y += aoac.c
 ramstage-y += fch.c
 ramstage-y += reset.c
 ramstage-y += acp.c

@@ -523,6 +523,12 @@ chip soc/intel/tigerlake
 				device pnp 0c09.0 on end
 			end
 		end
-		device ref hda on end
+		device ref hda on
+			probe AUDIO MAX98357_ALC5682I_I2S
+			probe AUDIO MAX98373_ALC5682I_I2S
+			probe AUDIO MAX98373_ALC5682_SNDW
+			probe AUDIO MAX98373_ALC5682I_I2S_UP4
+			probe AUDIO MAX98360_ALC5682I_I2S
+		end
 	end
 end

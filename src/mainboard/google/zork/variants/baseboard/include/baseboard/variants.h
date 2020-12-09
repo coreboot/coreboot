@@ -9,7 +9,6 @@
 #include <soc/platform_descriptors.h>
 #include "chip.h"
 
-const struct sci_source *variant_gpe_table(size_t *num);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 /*
  * This function provides base GPIO configuration table. It is typically provided by

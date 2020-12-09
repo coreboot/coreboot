@@ -181,18 +181,6 @@ struct soc_amd_gpio *variant_base_gpio_table(size_t *size)
 	return gpio_set_stage_ram;
 }
 
-/*
- * This function is still needed for boards that sets gevents above 23
- * that will generate SCI or SMI. Normally this function
- * points to a table of gevents and what needs to be set. The code that
- * calls it was modified so that when this function returns NULL then the
- * caller does nothing.
- */
-const __weak struct sci_source *variant_gpe_table(size_t *num)
-{
-	return NULL;
-}
-
 static void wifi_power_reset_configure_active_low_power(void)
 {
 	/*

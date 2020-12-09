@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <reset.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -40,7 +41,7 @@ void do_cold_reset(void)
 	/* De-assert and then assert all PwrGood signals on CF9 reset. */
 	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) |
 		TOGGLE_ALL_PWR_GOOD);
-	outb(RST_CMD | SYS_RST, SYS_RESET);
+	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
 void do_warm_reset(void)
@@ -49,7 +50,7 @@ void do_warm_reset(void)
 	clear_bios_reset();
 
 	/* Assert reset signals only. */
-	outb(RST_CMD | SYS_RST, SYS_RESET);
+	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
 void do_board_reset(void)

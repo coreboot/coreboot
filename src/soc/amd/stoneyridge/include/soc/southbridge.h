@@ -207,11 +207,6 @@ void soc_enable_psp_early(void);
 #define MSR_CU_CBBCFG			0xc00110a2 /* PSP Pvt Blk Base Addr */
 #define   BAR3HIDE			BIT(12) /* Bit to hide BAR3 addr */
 
-/* IO 0xcf9 - Reset control port*/
-#define   FULL_RST			BIT(3)
-#define   RST_CMD			BIT(2)
-#define   SYS_RST			BIT(1)
-
 typedef struct aoac_devs {
 	unsigned int :5;
 	unsigned int ic0e:1; /* 5: I2C0 */

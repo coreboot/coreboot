@@ -3,9 +3,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <reset.h>
-#include <soc/pci_devs.h>
 #include <soc/reset.h>
-#include <device/pci_ops.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/reset.h>

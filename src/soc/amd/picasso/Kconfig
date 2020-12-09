@@ -42,6 +42,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SMI
 	select SOC_AMD_COMMON_BLOCK_SMU
 	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
+	select SOC_AMD_COMMON_BLOCK_UART
 	select SOC_AMD_COMMON_BLOCK_PSP_GEN2
 	select PROVIDES_ROM_SHARING
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
@@ -272,53 +273,6 @@ config PICASSO_ACPI_IO_BASE
 	default 0x400
 	help
 	  Base address for the ACPI registers.
-
-config AMD_SOC_CONSOLE_UART
-	bool "Use Picasso UART controller for console"
-	default n
-	select DRIVERS_UART_8250MEM
-	select DRIVERS_UART_8250MEM_32
-	select NO_UART_ON_SUPERIO
-	select UART_OVERRIDE_REFCLK
-	help
-	  There are four memory-mapped UARTs controllers in Picasso at:
-	  0: 0xfedc9000
-	  1: 0xfedca000
-	  2: 0xfedc3000
-	  3: 0xfedcf000
-
-choice
-	prompt "UART Frequency"
-	depends on AMD_SOC_CONSOLE_UART
-	default AMD_SOC_UART_48MZ
-
-config AMD_SOC_UART_48MZ
-	bool "48 MHz clock"
-	help
-	  Select this option for the most compatibility.
-
-config AMD_SOC_UART_1_8MZ
-	bool "1.8432 MHz clock"
-	help
-	  Select this option if an old payload or Linux ttyS0 arguments
-	  require it.
-
-endchoice
-
-config AMD_SOC_UART_LEGACY
-	bool "Decode legacy I/O range"
-	help
-	  Assign I/O 3F8, 2F8, etc. to a Picasso UART. A UART accessed with I/O
-	  does not allow all the features of MMIO. The MMIO decode is still
-	  present when this option is used.
-
-config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
-	hex
-	default 0xfedc9000 if UART_FOR_CONSOLE = 0
-	default 0xfedca000 if UART_FOR_CONSOLE = 1
-	default 0xfedc3000 if UART_FOR_CONSOLE = 2
-	default 0xfedcf000 if UART_FOR_CONSOLE = 3
 
 config SMM_TSEG_SIZE
 	hex

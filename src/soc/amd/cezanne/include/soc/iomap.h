@@ -4,6 +4,7 @@
 #define AMD_CEZANNE_IOMAP_H
 
 /* I/O Ranges */
-#define SMB_BASE_ADDR			0xb00
+#define NCP_ERR				0x00f0
+#define SMB_BASE_ADDR			0x0b00
 
 #endif /* AMD_CEZANNE_IOMAP_H */

@@ -5,7 +5,6 @@ if BOARD_AMD_MAJOLICA
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_AMD_CEZANNE
-	select MISSING_BOARD_RESET
 
 config FMDFILE
 	string

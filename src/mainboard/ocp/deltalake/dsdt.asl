@@ -14,7 +14,7 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 
 	// global NVS and variables
-	#include <soc/intel/xeon_sp/acpi/globalnvs.asl>
+	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 
 	#include <cpu/intel/common/acpi/cpu.asl>
 

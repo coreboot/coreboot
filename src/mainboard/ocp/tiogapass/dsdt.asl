@@ -12,7 +12,7 @@ DefinitionBlock(
 )
 {
 	#include "acpi/platform.asl"
-	#include <soc/intel/xeon_sp/acpi/globalnvs.asl>
+	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <soc/intel/xeon_sp/acpi/uncore.asl>
 	Scope (\_SB.PC00)

@@ -17,7 +17,6 @@ bootblock-y += bootblock.c
 bootblock-y += early_fch.c
 bootblock-y += i2c.c
 bootblock-y += uart.c
-bootblock-$(CONFIG_AMD_SOC_CONSOLE_UART) += uart_console.c
 bootblock-y += gpio.c
 bootblock-y += reset.c
 
@@ -27,14 +26,12 @@ romstage-y += gpio.c
 romstage-y += reset.c
 romstage-y += memmap.c
 romstage-y += uart.c
-romstage-$(CONFIG_AMD_SOC_CONSOLE_UART) += uart_console.c
 romstage-y += psp.c
 romstage-y += mrc_cache.c
 
 verstage-y += i2c.c
 verstage_x86-y += gpio.c
 verstage_x86-y += uart.c
-verstage_x86-$(CONFIG_AMD_SOC_CONSOLE_UART) += uart_console.c
 verstage_x86-y += reset.c
 
 ramstage-y += i2c.c
@@ -53,7 +50,6 @@ ramstage-y += sata.c
 ramstage-y += memmap.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-y += uart.c
-ramstage-$(CONFIG_AMD_SOC_CONSOLE_UART) += uart_console.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += psp.c
@@ -67,7 +63,6 @@ ramstage-y += dmi.c
 smm-y += smihandler.c
 ifeq ($(CONFIG_DEBUG_SMI),y)
 smm-y += uart.c
-smm-$(CONFIG_AMD_SOC_CONSOLE_UART) += uart_console.c
 endif
 smm-y += gpio.c
 smm-y += psp.c

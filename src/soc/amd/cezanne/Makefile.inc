@@ -2,6 +2,7 @@
 
 ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 
+# Beware that all-y also adds the compilation unit to verstage on PSP
 all-y += config.c
 
 bootblock-y	+= bootblock.c

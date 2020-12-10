@@ -9,6 +9,7 @@ subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
+# Beware that all-y also adds the compilation unit to verstage on PSP
 all-y += config.c
 all-y += aoac.c
 

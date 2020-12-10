@@ -815,13 +815,12 @@ static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 
 	reg32 |= mr2reg & ~(3 << 6);
 
-	if (rank & 1) {
-		if (srt)
-			reg32 |= 1 << (rank / 2 + 6);
-	} else {
-		if (ctrl->rank_mirror[channel][rank])
-			reg32 |= 1 << (rank / 2 + 14);
-	}
+	if (srt)
+		reg32 |= 1 << (rank / 2 + 6);
+
+	if (ctrl->rank_mirror[channel][rank])
+		reg32 |= 1 << (rank / 2 + 14);
+
 	MCHBAR32(TC_MR2_SHADOW_ch(channel)) = reg32;
 }
 

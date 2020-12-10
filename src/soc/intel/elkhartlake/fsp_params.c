@@ -34,6 +34,8 @@ static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_I2C3,
 	PCH_DEVFN_I2C4,
 	PCH_DEVFN_I2C5,
+	PCH_DEVFN_I2C6,
+	PCH_DEVFN_I2C7,
 	PCH_DEVFN_GSPI0,
 	PCH_DEVFN_GSPI1,
 	PCH_DEVFN_GSPI2,

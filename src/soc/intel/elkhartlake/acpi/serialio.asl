@@ -38,6 +38,18 @@ Device (I2C5)
 	Name (_DDN, "Serial IO I2C Controller 5")
 }
 
+Device (I2C6)
+{
+	Name (_ADR, 0x00100000)
+	Name (_DDN, "Serial IO I2C Controller 6")
+}
+
+Device (I2C7)
+{
+	Name (_ADR, 0x00100001)
+	Name (_DDN, "Serial IO I2C Controller 7")
+}
+
 Device (SPI0)
 {
 	Name (_ADR, 0x001e0002)
@@ -52,14 +64,8 @@ Device (SPI1)
 
 Device (SPI2)
 {
-	Name (_ADR, 0x00120006)
+	Name (_ADR, 0x00120000)
 	Name (_DDN, "Serial IO SPI Controller 2")
-}
-
-Device (SPI3)
-{
-	Name (_ADR, 0x00130000)
-	Name (_DDN, "Serial IO SPI Controller 3")
 }
 
 Device (UAR0)

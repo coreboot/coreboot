@@ -19,6 +19,10 @@ int dw_i2c_soc_devfn_to_bus(unsigned int devfn)
 		return 4;
 	case PCH_DEVFN_I2C5:
 		return 5;
+	case PCH_DEVFN_I2C6:
+		return 6;
+	case PCH_DEVFN_I2C7:
+		return 7;
 	}
 	return -1;
 }
@@ -38,6 +42,10 @@ int dw_i2c_soc_bus_to_devfn(unsigned int bus)
 		return PCH_DEVFN_I2C4;
 	case 5:
 		return PCH_DEVFN_I2C5;
+	case 6:
+		return PCH_DEVFN_I2C6;
+	case 7:
+		return PCH_DEVFN_I2C7;
 	}
 	return -1;
 }

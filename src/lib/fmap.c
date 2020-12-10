@@ -164,6 +164,9 @@ int fmap_locate_area(const char *name, struct region *ar)
 	struct region_device fmrd;
 	size_t offset;
 
+	if (name == NULL || ar == NULL)
+		return -1;
+
 	if (find_fmap_directory(&fmrd))
 		return -1;
 
@@ -205,6 +208,9 @@ int fmap_find_region_name(const struct region * const ar,
 {
 	struct region_device fmrd;
 	size_t offset;
+
+	if (name == NULL || ar == NULL)
+		return -1;
 
 	if (find_fmap_directory(&fmrd))
 		return -1;

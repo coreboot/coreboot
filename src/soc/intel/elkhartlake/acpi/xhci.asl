@@ -38,13 +38,15 @@ Device (XHCI)
 		Device (HS06) { Name (_ADR, 6) }
 		Device (HS07) { Name (_ADR, 7) }
 		Device (HS08) { Name (_ADR, 8) }
+		Device (HS09) { Name (_ADR, 9) }
+		Device (HS10) { Name (_ADR, 10) }
+		Device (HS11) { Name (_ADR, 11) }
+		Device (HS12) { Name (_ADR, 12) }
 
 		/* USB3 */
-		Device (SS01) { Name (_ADR, 9) }
-		Device (SS02) { Name (_ADR, 10) }
-		Device (SS03) { Name (_ADR, 11) }
-		Device (SS04) { Name (_ADR, 12) }
-		Device (SS05) { Name (_ADR, 13) }
-		Device (SS06) { Name (_ADR, 14) }
+		Device (SS01) { Name (_ADR, 13) }
+		Device (SS02) { Name (_ADR, 14) }
+		Device (SS03) { Name (_ADR, 15) }
+		Device (SS04) { Name (_ADR, 16) }
 	}
 }

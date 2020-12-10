@@ -83,4 +83,18 @@ config BOARD_OVERRIDE_LCM_ID
 	default 0x1 if BOARD_GOOGLE_BURNET || BOARD_GOOGLE_ESCHE
 	default 0x0
 
+config SPEAKER_GPIO_NAME
+	string
+	# MAX98357A, should include KENZO in future.
+	default "speaker enable" if BOARD_GOOGLE_JACUZZI || BOARD_GOOGLE_JUNIPER
+	default "speaker enable" if BOARD_GOOGLE_WILLOW || BOARD_GOOGLE_DAMU
+	# MAX98360
+	default "speaker enable" if BOARD_GOOGLE_BURNET || BOARD_GOOGLE_ESCHE
+	default "speaker enable" if BOARD_GOOGLE_KAPPA
+	# ALC1015Q (default for Jacuzzi followers)
+	default "rt1015p sdb" if BOARD_GOOGLE_KAKADU
+	default "rt1015p sdb" if BOARD_GOOGLE_JACUZZI_COMMON
+	# MAX98357A (default for Kukui followers)
+	default "speaker enable"
+
 endif

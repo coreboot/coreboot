@@ -23,7 +23,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{EC_IN_RW.id, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
 		{CR50_IRQ.id, ACTIVE_HIGH, -1, "TPM interrupt"},
-		{GPIO_EN_SPK_AMP.id, ACTIVE_HIGH, -1, "speaker enable"},
+		{GPIO_EN_SPK_AMP.id, ACTIVE_HIGH, -1, CONFIG_SPEAKER_GPIO_NAME},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }

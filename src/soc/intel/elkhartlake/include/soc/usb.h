@@ -79,9 +79,9 @@ enum {
 	.enable        = 1, \
 	.ocpin         = (pin), \
 	.tx_bias       = USB2_BIAS_0MV, \
-	.tx_emp_enable = USB2_PRE_EMP_ON, \
-	.pre_emp_bias  = USB2_BIAS_56P3MV, \
-	.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP, \
+	.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON, \
+	.pre_emp_bias  = USB2_BIAS_45MV, \
+	.pre_emp_bit   = USB2_FULL_BIT_PRE_EMP, \
 }
 
 /* Length = 3"-5.99" */

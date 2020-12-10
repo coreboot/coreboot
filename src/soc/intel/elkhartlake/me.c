@@ -31,8 +31,8 @@ static void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: HFSTS5                  : 0x%08X\n", hfsts5.data);
 	printk(BIOS_DEBUG, "ME: HFSTS6                  : 0x%08X\n", hfsts6.data);
 
-	printk(BIOS_DEBUG, "ME: Manufacturing Mode      : %s\n",
-		hfsts1.fields.mfg_mode ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: SPI Protection Mode      : %s\n",
+		hfsts1.fields.spi_protection_mode ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
 		hfsts1.fields.fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure  : %s\n",
@@ -61,6 +61,8 @@ static void dump_me_status(void *unused)
 		hfsts1.fields.error_code);
 	printk(BIOS_DEBUG, "ME: CPU Debug Disabled      : %s\n",
 		hfsts6.fields.cpu_debug_disable ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Manufacturing Mode      : %s\n",
+		hfsts6.fields.fpf_soc_lock ? "NO" : "YES");
 	printk(BIOS_DEBUG, "ME: TXT Support             : %s\n",
 		hfsts6.fields.txt_support ? "YES" : "NO");
 }

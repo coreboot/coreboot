@@ -8,7 +8,7 @@ union me_hfsts1 {
 	uint32_t data;
 	struct {
 		uint32_t working_state: 4;
-		uint32_t mfg_mode: 1;
+		uint32_t spi_protection_mode: 1;
 		uint32_t fpt_bad: 1;
 		uint32_t operation_state: 3;
 		uint32_t fw_init_complete: 1;

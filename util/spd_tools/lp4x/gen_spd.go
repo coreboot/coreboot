@@ -27,13 +27,14 @@ import (
 const (
 	SPDManifestFileName = "lp4x_spd_manifest.generated.txt"
 
-	PlatformTGL = 0
+	PlatformTGLADL = 0
 	PlatformJSL = 1
 )
 
 var platformMap = map[string]int {
-	"TGL": PlatformTGL,
+	"TGL": PlatformTGLADL,
 	"JSL": PlatformJSL,
+	"ADL": PlatformTGLADL,
 }
 
 var currPlatform int
@@ -210,7 +211,7 @@ const (
 
 /* Returns density to encode as per Intel MRC expectations. */
 func getMRCDensity(memAttribs *memAttributes) int {
-	if currPlatform == PlatformTGL {
+	if currPlatform == PlatformTGLADL {
 		/*
 		 * Intel MRC on TGL expects density per logical channel to be encoded in
 		 * SPDIndexDensityBanks. Logical channel on TGL is an x16 channel.
@@ -270,7 +271,7 @@ func encodePackage(dies int) byte {
 
 func encodeDiesPerPackage(memAttribs *memAttributes) byte {
 	var dies int = 0
-	if currPlatform == PlatformTGL {
+	if currPlatform == PlatformTGLADL {
 		/* Intel MRC expects logical dies to be encoded for TGL. */
 		dies = memAttribs.ChannelsPerDie * memAttribs.RanksPerChannel * memAttribs.BitWidthPerChannel / 16
 	} else if currPlatform == PlatformJSL {
@@ -330,7 +331,7 @@ const (
 )
 
 func encodeBusWidth(memAttribs *memAttributes) byte {
-	if currPlatform == PlatformTGL {
+	if currPlatform == PlatformTGLADL {
 		return SPDValueBusWidthTGL
 	} else if currPlatform == PlatformJSL {
 		return SPDValueBusWidthJSL
@@ -895,7 +896,7 @@ func updateTRPPB(memAttribs *memAttributes) {
 }
 
 func normalizeMemoryAttributes(memAttribs *memAttributes) {
-	if currPlatform == PlatformTGL {
+	if currPlatform == PlatformTGLADL {
 		/*
 		 * TGL does not really use physical organization of dies per package when
 		 * generating the SPD. So, set it to 0 here so that deduplication ignores

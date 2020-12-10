@@ -12,6 +12,7 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
+#include <cpu/amd/cpuid.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>

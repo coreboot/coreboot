@@ -256,17 +256,15 @@ static void northbridge_dmi_init(struct device *dev)
 {
 	const bool is_sandy = is_sandybridge();
 
-	u32 reg32;
+	const u8 stepping = cpu_stepping();
 
-	/* Clear error status bits */
-	DMIBAR32(DMIUESTS) = 0xffffffff;
-	DMIBAR32(DMICESTS) = 0xffffffff;
+	u32 reg32;
 
 	/* Steps prior to DMI ASPM */
 	if (is_sandy) {
 		reg32 = DMIBAR32(0x250);
-		reg32 &= ~((1 << 22) | (1 << 20));
-		reg32 |= (1 << 21);
+		reg32 &= ~(7 << 20);
+		reg32 |= (2 << 20);
 		DMIBAR32(0x250) = reg32;
 	}
 
@@ -274,12 +272,14 @@ static void northbridge_dmi_init(struct device *dev)
 	reg32 |= (1 << 29);
 	DMIBAR32(DMILLTC) = reg32;
 
-	if (!is_sandy || cpu_stepping() >= SNB_STEP_D0) {
-		reg32 = DMIBAR32(0x1f8);
-		reg32 |= (1 << 16);
-		DMIBAR32(0x1f8) = reg32;
+	if (is_sandy && stepping == SNB_STEP_C0) {
+		reg32 = DMIBAR32(0xbc8);
+		reg32 &= ~(0xfff << 7);
+		reg32 |= (0x7d3 << 7);
+		DMIBAR32(0xbc8) = reg32;
+	}
 
-	} else if (!is_sandy || cpu_stepping() >= SNB_STEP_D1) {
+	if (!is_sandy || stepping >= SNB_STEP_D1) {
 		reg32 = DMIBAR32(0x1f8);
 		reg32 &= ~(1 << 26);
 		reg32 |= (1 << 16);
@@ -288,7 +288,19 @@ static void northbridge_dmi_init(struct device *dev)
 		reg32 = DMIBAR32(0x1fc);
 		reg32 |= (1 << 12) | (1 << 23);
 		DMIBAR32(0x1fc) = reg32;
+
+	} else if (stepping >= SNB_STEP_D0) {
+		reg32 = DMIBAR32(0x1f8);
+		reg32 |= (1 << 16);
+		DMIBAR32(0x1f8) = reg32;
 	}
+
+	/* Clear error status bits */
+	DMIBAR32(DMIUESTS) = 0xffffffff;
+	DMIBAR32(DMICESTS) = 0xffffffff;
+
+	if (!is_sandy)
+		DMIBAR32(0xc34) = 0xffffffff;
 
 	/* Enable ASPM on SNB link, should happen before PCH link */
 	if (is_sandy) {

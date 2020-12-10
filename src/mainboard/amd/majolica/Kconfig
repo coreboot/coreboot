@@ -18,6 +18,12 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "MAJOLICA"
 
+config AMD_FWM_POSITION_INDEX
+	int
+	default 4
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
 config MAJOLICA_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
 	default n

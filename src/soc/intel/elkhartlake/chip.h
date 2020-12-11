@@ -132,17 +132,9 @@ struct soc_intel_elkhartlake_config {
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;
 
-	/* Integrated Sensor */
-	uint8_t PchIshEnable;
-
-	/* Heci related */
-	uint8_t Heci3Enabled;
-
 	/* Gfx related */
-	uint8_t IgdDvmt50PreAlloc;
 	uint8_t SkipExtGfxScan;
 
-	uint32_t GraphicsConfigPtr;
 	uint8_t Device4Enable;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot

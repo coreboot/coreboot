@@ -863,6 +863,11 @@ int google_chromeec_cbi_get_board_version(uint32_t *version)
 	return cbi_get_uint32(version, CBI_TAG_BOARD_VERSION);
 }
 
+int google_chromeec_cbi_get_ssfc(uint32_t *ssfc)
+{
+	return cbi_get_uint32(ssfc, CBI_TAG_SSFC);
+}
+
 static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
 	struct ec_params_get_cbi params = {

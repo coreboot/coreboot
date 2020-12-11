@@ -9,6 +9,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/gpio.h>
 #include <soc/iomap.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -39,6 +40,8 @@ static void soc_enable_dev(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
+	else if (dev->path.type == DEVICE_PATH_GPIO)
+		block_gpio_enable(dev);
 }
 
 static void soc_init(void *data)

@@ -2,6 +2,7 @@
 
 #include <cbmem.h>
 #include <stdint.h>
+#include <commonlib/helpers.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <console/console.h>
@@ -113,7 +114,7 @@ void soc_memory_init_params(struct romstage_params *params, MEMORY_INIT_UPD *upd
 	config = config_of(dev);
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
 
-	upd->PcdMrcInitTsegSize   = CONFIG(HAVE_SMI_HANDLER) ? 8 : 0;
+	upd->PcdMrcInitTsegSize   = CONFIG_SMM_TSEG_SIZE / MiB;
 	upd->PcdMrcInitMmioSize   = 0x800;
 	upd->PcdMrcInitSpdAddr1   = config->PcdMrcInitSpdAddr1;
 	upd->PcdMrcInitSpdAddr2   = config->PcdMrcInitSpdAddr2;

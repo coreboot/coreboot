@@ -263,10 +263,8 @@ struct soc_intel_tigerlake_config {
 	uint8_t SmbusEnable;
 
 	/* Gfx related */
-	uint8_t IgdDvmt50PreAlloc;
 	uint8_t SkipExtGfxScan;
 
-	uint32_t GraphicsConfigPtr;
 	uint8_t Device4Enable;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot

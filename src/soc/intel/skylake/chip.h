@@ -94,17 +94,6 @@ struct soc_intel_skylake_config {
 	int ignore_vtd;
 
 	/*
-	 * The following fields come from FspUpdVpd.h.
-	 * These are configuration values that are passed to FSP during
-	 * MemoryInit.
-	 */
-	u64 PlatformMemorySize;
-	u8 SmramMask;
-	u8 MrcFastBoot;
-	u32 TsegSize;
-	u16 MmioSize;
-
-	/*
 	 * DDR Frequency Limit
 	 * 0(Auto), 1067, 1333, 1600, 1867, 2133, 2400
 	 */
@@ -311,11 +300,7 @@ struct soc_intel_skylake_config {
 	u8 ScsEmmcHs400TxDataDll;
 
 	u8 PttSwitch;
-	u8 HeciTimeouts;
-	u8 HsioMessaging;
 
-	/* Gfx related */
-	u8 IgdDvmt50PreAlloc;
 	enum {
 		Display_iGFX,
 		Display_PEG,
@@ -323,7 +308,6 @@ struct soc_intel_skylake_config {
 		Display_Auto,
 		Display_Switchable,
 	} PrimaryDisplay;
-	u8 ApertureSize;
 	u8 SkipExtGfxScan;
 	u8 ScanExtGfxForLegacyOpRom;
 
@@ -334,8 +318,7 @@ struct soc_intel_skylake_config {
 	 */
 	u32 LogoPtr;
 	u32 LogoSize;
-	u32 GraphicsConfigPtr;
-	u8 RtcLock;
+
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
 	u8 GpioIrqSelect;
 	/* SCI IRQ Select  The valid values is 9, 10, 11 and 20 21, 22, 23*/
@@ -506,9 +489,6 @@ struct soc_intel_skylake_config {
 	 * 0b - Enabled
 	 * 1b - Disabled
 	 */
-	/* FSP 1.1 */
-	u8 FastPkgCRampDisable;
-	/* FSP 2.0 */
 	u8 FastPkgCRampDisableIa;
 	u8 FastPkgCRampDisableGt;
 	u8 FastPkgCRampDisableSa;

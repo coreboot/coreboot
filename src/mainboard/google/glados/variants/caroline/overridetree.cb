@@ -8,7 +8,6 @@ chip soc/intel/skylake
 	register "SlowSlewRateForIa" = "3"	# Fast/16
 	register "SlowSlewRateForGt" = "3"	# Fast/16
 	register "SlowSlewRateForSa" = "0"	# Fast/2
-	register "FastPkgCRampDisable" = "0"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port (main)
 	register "usb2_ports[1]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-C Port (sub)

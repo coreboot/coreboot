@@ -46,6 +46,9 @@ enum {
 	/* Fan information */
 	FW_CONFIG_MASK_FAN = 0x3,
 	FW_CONFIG_SHIFT_FAN = 27,
+	/* WWAN presence */
+	FW_CONFIG_MASK_WWAN = 0x1,
+	FW_CONFIG_SHIFT_WWAN = 28,
 };
 
 static int get_fw_config(uint64_t *val)
@@ -86,6 +89,11 @@ int variant_has_emmc(void)
 int variant_has_nvme(void)
 {
 	return !!extract_field(FW_CONFIG_MASK_NVME, FW_CONFIG_SHIFT_NVME);
+}
+
+int variant_has_wwan(void)
+{
+	return !!extract_field(FW_CONFIG_MASK_WWAN, FW_CONFIG_SHIFT_WWAN);
 }
 
 bool variant_uses_v3_schematics(void)

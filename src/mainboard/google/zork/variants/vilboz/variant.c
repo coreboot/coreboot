@@ -31,3 +31,13 @@ void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
 	*ddi_descs = &hdmi_ddi_descriptors[0];
 	*ddi_num = ARRAY_SIZE(hdmi_ddi_descriptors);
 }
+
+void variant_devtree_update(void)
+{
+	struct soc_amd_picasso_config *soc_cfg;
+	soc_cfg = config_of_soc();
+
+	/* b:/174121847 Use external OSC to mitigate noise for WWAN sku. */
+	if (variant_has_wwan())
+		soc_cfg->acp_i2s_use_external_48mhz_osc = 1;
+}

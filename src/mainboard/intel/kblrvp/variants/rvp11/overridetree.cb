@@ -105,9 +105,6 @@ chip soc/intel/skylake
 		.tdp_pl2_override = 60,
 	}"
 
-	# Power Limit Related
-	register "PowerLimit4" = "0"
-
 	# Lock Down
 	register "common_soc_config" = "{
 	.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,

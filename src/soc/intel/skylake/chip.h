@@ -87,9 +87,6 @@ struct soc_intel_skylake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	/* Package PL4 power limit in Watts */
-	u32 PowerLimit4;
-
 	/* Whether to ignore VT-d support of the SKU */
 	int ignore_vtd;
 

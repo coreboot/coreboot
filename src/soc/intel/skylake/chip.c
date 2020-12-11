@@ -303,7 +303,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
-	tconfig->PowerLimit4 = config->PowerLimit4;
+	tconfig->PowerLimit4 = 0;
 	/*
 	 * To disable HECI, the Psf needs to be left unlocked
 	 * by FSP till end of post sequence. Based on the devicetree

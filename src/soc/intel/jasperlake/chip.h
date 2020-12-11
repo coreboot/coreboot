@@ -129,21 +129,12 @@ struct soc_intel_jasperlake_config {
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;
 
-	/* Integrated Sensor */
-	uint8_t PchIshEnable;
-
-	/* Heci related */
-	uint8_t Heci3Enabled;
-
 	/* VR Config Settings for IA Core */
 	uint16_t ImonSlope;
 	uint16_t ImonOffset;
 
 	/* Gfx related */
-	uint8_t IgdDvmt50PreAlloc;
 	uint8_t SkipExtGfxScan;
-
-	uint32_t GraphicsConfigPtr;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */

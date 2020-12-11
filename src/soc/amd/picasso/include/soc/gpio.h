@@ -14,7 +14,7 @@
 
 #define SOC_GPIO_TOTAL_PINS		145
 
-/* Bank 0: GPIO_0 - GPIO_62 */
+/* Bank 0: GPIO_0 - GPIO_63 */
 #define GPIO_0				0
 #define GPIO_1				1
 #define GPIO_2				2
@@ -79,7 +79,7 @@
 #define GPIO_120			120
 #define GPIO_121			121
 
-/* Bank 2: GPIO_128 - GPIO_183 */
+/* Bank 2: GPIO_128 - GPIO_191 */
 #define GPIO_129			129
 #define GPIO_130			130
 #define GPIO_131			131

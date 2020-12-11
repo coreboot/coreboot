@@ -63,3 +63,5 @@ ramstage-$(CONFIG_RESOURCE_ALLOCATOR_V3) += resource_allocator_v3.c
 ramstage-$(CONFIG_RESOURCE_ALLOCATOR_V4) += resource_allocator_v4.c
 
 ramstage-$(CONFIG_XHCI_UTILS) += xhci.c
+
+ramstage-y += gpio.c

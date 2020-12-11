@@ -162,6 +162,9 @@ static int path_eq(const struct device_path *path1,
 	case DEVICE_PATH_LPC:
 		equal = (path1->lpc.addr == path2->lpc.addr);
 		break;
+	case DEVICE_PATH_GPIO:
+		equal = (path1->gpio.id == path2->gpio.id);
+		break;
 	default:
 		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
 		break;

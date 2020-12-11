@@ -40,6 +40,7 @@ spi			{yylval.number=SPI; return(BUS);}
 usb			{yylval.number=USB; return(BUS);}
 lpc			{yylval.number=LPC; return(BUS);}
 espi			{yylval.number=ESPI; return(BUS);}
+gpio			{yylval.number=GPIO; return(BUS);}
 irq			{yylval.number=IRQ; return(RESOURCE);}
 drq			{yylval.number=DRQ; return(RESOURCE);}
 io			{yylval.number=IO; return(RESOURCE);}

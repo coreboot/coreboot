@@ -16,6 +16,7 @@ struct smbus_bus_operations;
 struct pnp_mode_ops;
 struct spi_bus_operations;
 struct usb_bus_operations;
+struct gpio_operations;
 
 /* Chip operations */
 struct chip_operations {
@@ -62,6 +63,7 @@ struct device_operations {
 	const struct spi_bus_operations *ops_spi_bus;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pnp_mode_ops *ops_pnp_mode;
+	const struct gpio_operations *ops_gpio;
 };
 
 /**

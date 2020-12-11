@@ -29,4 +29,6 @@ ramstage-y += hob_display.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/skx/include -I$(src)/soc/intel/xeon_sp/skx
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-55-04
+
 endif ## CONFIG_SOC_INTEL_SKYLAKE_SP

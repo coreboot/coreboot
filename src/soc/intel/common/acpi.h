@@ -16,4 +16,4 @@
  */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0);
 
-#endif /* CONFIG_SOC_INTEL_COMMON_ACPI */
+#endif /* _INTEL_COMMON_ACPI_H_ */

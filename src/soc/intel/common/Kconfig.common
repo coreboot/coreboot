@@ -58,10 +58,6 @@ config MMA_BLOBS_PATH
 	default "3rdparty/blobs/soc/intel/kabylake/mma-blobs" if SOC_INTEL_KABYLAKE
 	default "3rdparty/blobs/soc/intel/skylake/mma-blobs" if SOC_INTEL_SKYLAKE
 
-config SOC_INTEL_COMMON_ACPI
-	bool
-	default n
-
 config SOC_INTEL_COMMON_NHLT
 	bool
 	default n

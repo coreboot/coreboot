@@ -78,24 +78,6 @@ struct soc_intel_cannonlake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	uint64_t PlatformMemorySize;
-	uint8_t SmramMask;
-	uint8_t MrcFastBoot;
-	uint32_t TsegSize;
-	uint16_t MmioSize;
-
-	/* DDR Frequency Limit. Maximum Memory Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t DdrFreqLimit;
-
-	/* SAGV Low Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t FreqSaGvLow;
-
-	/* SAGV Mid Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t FreqSaGvMid;
-
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * For CNL, options are as following
 	 * When enabled, memory will be training at three different frequencies.
@@ -119,7 +101,6 @@ struct soc_intel_cannonlake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	uint8_t SsicPortEnable;
 	/* Wake Enable Bitmap for USB2 ports */
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
@@ -222,26 +203,13 @@ struct soc_intel_cannonlake_config {
 	/* Enable/disable SD card write protect pin configuration on CML */
 	uint8_t ScsSdCardWpPinEnabled;
 
-	/* Integrated Sensor */
-	uint8_t PchIshEnable;
-
 	/* Heci related */
 	uint8_t DisableHeciRetry;
 
 	/* Gfx related */
-	uint8_t IgdDvmt50PreAlloc;
 	uint8_t SkipExtGfxScan;
 
-	uint32_t GraphicsConfigPtr;
 	uint8_t Device4Enable;
-
-	/* GPIO IRQ Select. The valid value is 14 or 15 */
-	uint8_t GpioIrqRoute;
-	/* SCI IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23 */
-	uint8_t SciIrqSelect;
-	/* TCO IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23 */
-	uint8_t TcoIrqSelect;
-	uint8_t TcoIrqEnable;
 
 	/* CPU PL2/4 Config
 	 * Performance: Maximum PLs for maximum performance.

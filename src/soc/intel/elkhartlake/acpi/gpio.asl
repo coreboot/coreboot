@@ -18,6 +18,7 @@ Device (GPIO)
 		Memory32Fixed (ReadWrite, 0, 0, COM0)
 		Memory32Fixed (ReadWrite, 0, 0, COM1)
 		Memory32Fixed (ReadWrite, 0, 0, COM2)
+		Memory32Fixed (ReadWrite, 0, 0, COM3)
 		Memory32Fixed (ReadWrite, 0, 0, COM4)
 		Memory32Fixed (ReadWrite, 0, 0, COM5)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,, GIRQ)
@@ -43,6 +44,12 @@ Device (GPIO)
 		CreateDWordField (^RBUF, ^COM2._LEN, LEN2)
 		BAS2 = ^^PCRB (PID_GPIOCOM2)
 		LEN2 = GPIO_BASE_SIZE
+
+		/* GPIO Community 3 */
+		CreateDWordField (^RBUF, ^COM3._BAS, BAS3)
+		CreateDWordField (^RBUF, ^COM3._LEN, LEN3)
+		BAS3 = ^^PCRB (PID_GPIOCOM3)
+		LEN3 = GPIO_BASE_SIZE
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)
@@ -88,13 +95,19 @@ Method (GADD, 1, NotSerialized)
 		Local0 = PID_GPIOCOM2
 		Local1 = Arg0 - GPIO_COM2_START
 	}
+	/* GPIO Community 3 */
+	If (Arg0 >= GPIO_COM3_START && Arg0 <= GPIO_COM3_END)
+	{
+		Local0 = PID_GPIOCOM3
+		Local1 = Arg0 - GPIO_COM3_START
+	}
 	/* GPIO Community 4 */
 	If (Arg0 >= GPIO_COM4_START && Arg0 <= GPIO_COM4_END)
 	{
 		Local0 = PID_GPIOCOM4
 		Local1 = Arg0 - GPIO_COM4_START
 	}
-	/* GPIO Community 05*/
+	/* GPIO Community 5 */
 	If (Arg0 >= GPIO_COM5_START && Arg0 <= GPIO_COM5_END)
 	{
 		Local0 = PID_GPIOCOM5
@@ -122,6 +135,9 @@ Method (GPID, 1, Serialized)
 		}
 		Case (COMM_2) {
 			Local0 = PID_GPIOCOM2
+		}
+		Case (COMM_3) {
+			Local0 = PID_GPIOCOM3
 		}
 		Case (COMM_4) {
 			Local0 = PID_GPIOCOM4

@@ -6,11 +6,8 @@
 #include <soc/gpio_defs.h>
 #include <intelblocks/gpio.h>
 
-#define CROS_GPIO_NAME		"INT34C8"
-#define CROS_GPIO_COMM0_NAME    "INT34C8:00"
-#define CROS_GPIO_COMM1_NAME    "INT34C8:01"
-#define CROS_GPIO_COMM4_NAME    "INT34C8:02"
-#define CROS_GPIO_COMM5_NAME    "INT34C8:03"
+#define CROS_GPIO_NAME		"INTC1020"
+#define CROS_GPIO_DEVICE_NAME	"INTC1020:00"
 
 /* Enable GPIO community power management configuration */
 #define MISCCFG_GPIO_PM_CONFIG_BITS (MISCCFG_GPVNNREQEN | \

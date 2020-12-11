@@ -6,6 +6,7 @@
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
@@ -144,6 +145,8 @@ static void soc_enable(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
+	else if (dev->path.type == DEVICE_PATH_GPIO)
+		block_gpio_enable(dev);
 }
 
 struct chip_operations soc_intel_icelake_ops = {

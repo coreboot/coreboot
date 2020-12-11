@@ -3,6 +3,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <intelblocks/gpio.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/pch.h>
@@ -37,6 +38,8 @@ static void soc_enable_dev(struct device *dev)
 		attach_iio_stacks(dev);
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
+	} else if (dev->path.type == DEVICE_PATH_GPIO) {
+		block_gpio_enable(dev);
 	}
 }
 

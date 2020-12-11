@@ -1,5 +1,6 @@
 chip soc/intel/skylake
 	device domain 0 on
+		device gpio 0 alias pch_gpio       on  end # GPIO
 		device pci 00.0 alias system_agent on  end # Host Bridge
 		device pci 01.0 alias peg0         off end # PEG0
 		device pci 01.1 alias peg1         off end # PEG1

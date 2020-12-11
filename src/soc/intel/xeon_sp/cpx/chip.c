@@ -5,6 +5,7 @@
 #include <console/debug.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
+#include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <soc/acpi.h>
@@ -61,6 +62,8 @@ static void chip_enable_dev(struct device *dev)
 		attach_iio_stacks(dev);
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
+	} else if (dev->path.type == DEVICE_PATH_GPIO) {
+		block_gpio_enable(dev);
 	}
 }
 

@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <intelblocks/cfg.h>
+#include <soc/gpio.h>
 #include <soc/irq.h>
 
 struct soc_intel_xeon_sp_skx_config {

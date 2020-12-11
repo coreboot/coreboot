@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
@@ -103,6 +104,8 @@ static void soc_enable(struct device *dev)
 		dev->ops = &pci_domain_ops;
 	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
+	else if (dev->path.type == DEVICE_PATH_GPIO)
+		block_gpio_enable(dev);
 }
 
 struct chip_operations soc_intel_skylake_ops = {

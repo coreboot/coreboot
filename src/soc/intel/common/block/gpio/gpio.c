@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <intelblocks/gpio.h>
 #include <gpio.h>
 #include <intelblocks/itss.h>

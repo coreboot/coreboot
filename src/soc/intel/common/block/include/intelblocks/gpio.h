@@ -25,6 +25,7 @@
 
 #ifndef __ACPI__
 #include <types.h>
+#include <device/device.h>
 
 /*
  * GPIO numbers may not be contiguous and instead will have a different
@@ -221,6 +222,12 @@ void gpi_clear_int_cfg(void);
 
 /* The function performs GPIO Power Management programming. */
 void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num);
+
+/*
+ * Set gpio ops of the device to gpio block ops.
+ * Shall be called by all SoCs that use intelblocks/gpio.
+ */
+void block_gpio_enable(struct device *dev);
 
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

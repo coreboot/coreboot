@@ -9,6 +9,7 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/power_limit.h>
 #include <soc/gpe.h>
+#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>

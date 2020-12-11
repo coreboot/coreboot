@@ -330,8 +330,6 @@ static u32 get_580(int channel, u8 addr)
 	return ret;
 }
 
-const int cached_config = 0;
-
 #define NUM_CHANNELS 2
 #define NUM_SLOTS 2
 #define NUM_RANKS 2

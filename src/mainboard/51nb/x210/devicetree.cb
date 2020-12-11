@@ -32,7 +32,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "0"
 
 	# FSP Configuration
-	register "ProbelessTrace" = "0"
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "0"
 

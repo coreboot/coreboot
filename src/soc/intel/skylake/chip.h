@@ -90,9 +90,6 @@ struct soc_intel_skylake_config {
 	/* Whether to ignore VT-d support of the SKU */
 	int ignore_vtd;
 
-	/* Probeless Trace function */
-	u8 ProbelessTrace;
-
 	/*
 	 * System Agent dynamic frequency configuration
 	 * When enabled memory will be trained at two different frequencies.

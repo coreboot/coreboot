@@ -31,7 +31,6 @@ chip soc/intel/skylake
 	register "s0ix_enable" = "1"
 
 	# FSP Configuration
-	register "ProbelessTrace" = "0"
 	register "SataSalpSupport" = "0"
 	register "SataMode" = "0"
 	register "SataPortsEnable[0]" = "0"

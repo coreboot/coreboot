@@ -216,7 +216,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->MmioSize = 0x800; /* 2GB in MB */
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
-	m_cfg->ProbelessTrace = config->ProbelessTrace;
+	m_cfg->ProbelessTrace = 0;
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->Rmt;

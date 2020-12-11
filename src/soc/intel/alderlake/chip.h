@@ -146,12 +146,6 @@ struct soc_intel_alderlake_config {
 	/* PCIE RP Advanced Error Report: Enable (1) / Disable (0) */
 	uint8_t PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
 
-	/* Integrated Sensor */
-	uint8_t PchIshEnable;
-
-	/* Heci related */
-	uint8_t Heci3Enabled;
-
 	/* Gfx related */
 	enum {
 		IGD_SM_0MB = 0x00,
@@ -177,8 +171,6 @@ struct soc_intel_alderlake_config {
 	} IgdDvmt50PreAlloc;
 	uint8_t InternalGfx;
 	uint8_t SkipExtGfxScan;
-
-	uint32_t GraphicsConfigPtr;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */

@@ -43,7 +43,6 @@ chip soc/intel/skylake
 	register "IoBufferOwnership" = "3"
 	register "SsicPortEnable" = "0"
 	register "ScsEmmcHs400Enabled" = "1"
-	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "HeciEnabled" = "0"
 	register "SaGv" = "3"

@@ -299,8 +299,6 @@ struct soc_intel_skylake_config {
 	u8 ScsEmmcHs400RxStrobeDll1;
 	u8 ScsEmmcHs400TxDataDll;
 
-	u8 PttSwitch;
-
 	enum {
 		Display_iGFX,
 		Display_PEG,

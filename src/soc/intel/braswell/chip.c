@@ -81,9 +81,9 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->ChvSvidConfig			= config->ChvSvidConfig;
 	params->DptfDisable			= config->DptfDisable;
 	params->PcdEmmcMode			= config->PcdEmmcMode;
-	params->PcdUsb3ClkSsc			= config->PcdUsb3ClkSsc;
-	params->PcdDispClkSsc			= config->PcdDispClkSsc;
-	params->PcdSataClkSsc			= config->PcdSataClkSsc;
+	params->PcdUsb3ClkSsc			= 1;
+	params->PcdDispClkSsc			= 1;
+	params->PcdSataClkSsc			= 1;
 
 	params->Usb2Port0PerPortPeTxiSet	= config->Usb2Port0PerPortPeTxiSet;
 	params->Usb2Port0PerPortTxiSet		= config->Usb2Port0PerPortTxiSet;
@@ -115,14 +115,14 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->Usb3Lane2Ow2tapgen2deemph3p5	= config->Usb3Lane2Ow2tapgen2deemph3p5;
 	params->Usb3Lane3Ow2tapgen2deemph3p5	= config->Usb3Lane3Ow2tapgen2deemph3p5;
 
-	params->PcdSataInterfaceSpeed		= config->PcdSataInterfaceSpeed;
+	params->PcdSataInterfaceSpeed		= 3;
 	params->PcdPchUsbSsicPort		= config->PcdPchUsbSsicPort;
 	params->PcdPchUsbHsicPort		= config->PcdPchUsbHsicPort;
-	params->PcdPcieRootPortSpeed		= config->PcdPcieRootPortSpeed;
+	params->PcdPcieRootPortSpeed		= 0;
 	params->PcdPchSsicEnable		= config->PcdPchSsicEnable;
 	params->PcdLogoPtr			= config->PcdLogoPtr;
 	params->PcdLogoSize			= config->PcdLogoSize;
-	params->PcdRtcLock			= config->PcdRtcLock;
+	params->PcdRtcLock			= 0;
 	params->PMIC_I2CBus			= config->PMIC_I2CBus;
 	params->ISPEnable			= config->ISPEnable;
 	params->ISPPciDevConfig			= config->ISPPciDevConfig;

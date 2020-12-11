@@ -41,7 +41,6 @@ enum usb_comp_bg_value {
 
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;
-	uint8_t clkreq_enable;
 
 	enum serirq_mode serirq_mode;
 
@@ -75,14 +74,9 @@ struct soc_intel_braswell_config {
 	 * The following fields come from fsp_vpd.h .aka. VpdHeader.h.
 	 * These are configuration values that are passed to FSP during MemoryInit.
 	 */
-	uint16_t PcdMrcInitTsegSize;
-	uint16_t PcdMrcInitMmioSize;
 	uint8_t  PcdMrcInitSpdAddr1;
 	uint8_t  PcdMrcInitSpdAddr2;
 	uint8_t  PcdIgdDvmt50PreAlloc;
-	uint8_t  PcdApertureSize;
-	uint8_t  PcdGttSize;
-	uint8_t  PcdLegacySegDecode;
 	uint8_t  PcdDvfsEnable;
 	uint8_t  PcdCaMirrorEn; /* Command Address Mirroring Enabled */
 
@@ -110,9 +104,6 @@ struct soc_intel_braswell_config {
 	uint8_t  ChvSvidConfig;
 	uint8_t  DptfDisable;
 	uint8_t  PcdEmmcMode;
-	uint8_t  PcdUsb3ClkSsc;
-	uint8_t  PcdDispClkSsc;
-	uint8_t  PcdSataClkSsc;
 	uint8_t  Usb2Port0PerPortPeTxiSet;
 	uint8_t  Usb2Port0PerPortTxiSet;
 	uint8_t  Usb2Port0IUsbTxEmphasisEn;
@@ -137,14 +128,11 @@ struct soc_intel_braswell_config {
 	uint8_t  Usb3Lane1Ow2tapgen2deemph3p5;
 	uint8_t  Usb3Lane2Ow2tapgen2deemph3p5;
 	uint8_t  Usb3Lane3Ow2tapgen2deemph3p5;
-	uint8_t  PcdSataInterfaceSpeed;
 	uint8_t  PcdPchUsbSsicPort;
 	uint8_t  PcdPchUsbHsicPort;
-	uint8_t  PcdPcieRootPortSpeed;
 	uint8_t  PcdPchSsicEnable;
 	uint32_t PcdLogoPtr;
 	uint32_t PcdLogoSize;
-	uint8_t  PcdRtcLock;
 	uint8_t  PMIC_I2CBus;
 	uint8_t  ISPEnable;
 	uint8_t  ISPPciDevConfig;

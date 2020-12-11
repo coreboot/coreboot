@@ -113,14 +113,14 @@ void soc_memory_init_params(struct romstage_params *params, MEMORY_INIT_UPD *upd
 	config = config_of(dev);
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
 
-	upd->PcdMrcInitTsegSize   = CONFIG(HAVE_SMI_HANDLER) ? config->PcdMrcInitTsegSize : 0;
-	upd->PcdMrcInitMmioSize   = config->PcdMrcInitMmioSize;
+	upd->PcdMrcInitTsegSize   = CONFIG(HAVE_SMI_HANDLER) ? 8 : 0;
+	upd->PcdMrcInitMmioSize   = 0x800;
 	upd->PcdMrcInitSpdAddr1   = config->PcdMrcInitSpdAddr1;
 	upd->PcdMrcInitSpdAddr2   = config->PcdMrcInitSpdAddr2;
 	upd->PcdIgdDvmt50PreAlloc = config->PcdIgdDvmt50PreAlloc;
-	upd->PcdApertureSize      = config->PcdApertureSize;
-	upd->PcdGttSize           = config->PcdGttSize;
-	upd->PcdLegacySegDecode   = config->PcdLegacySegDecode;
+	upd->PcdApertureSize      = 2;
+	upd->PcdGttSize           = 1;
+	upd->PcdLegacySegDecode   = 0;
 	upd->PcdDvfsEnable        = config->PcdDvfsEnable;
 	upd->PcdCaMirrorEn        = config->PcdCaMirrorEn;
 }

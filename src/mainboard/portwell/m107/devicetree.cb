@@ -4,14 +4,9 @@ chip soc/intel/braswell
 	# Set the parameters for MemoryInit
 	############################################################
 
-	register "PcdMrcInitTsegSize" = "8"	# SMM Region size in MiB
-
-	register "PcdMrcInitMmioSize" = "0x0800"
 	register "PcdMrcInitSpdAddr1" = "0xa0"
 	register "PcdMrcInitSpdAddr2" = "0xa2"
 	register "PcdIgdDvmt50PreAlloc" = "IGD_MEMSIZE_32MB"
-	register "PcdApertureSize" = "2"
-	register "PcdGttSize" = "1"
 	register "PcdDvfsEnable" = "0"
 	register "PcdCaMirrorEn" = "1"
 
@@ -37,9 +32,6 @@ chip soc/intel/braswell
 	register "PunitPwrConfigDisable" = "0"	# Enable SVID
 	register "ChvSvidConfig" = "1"
 	register "PcdEmmcMode" = "PCH_PCI_MODE"
-	register "PcdUsb3ClkSsc" = "1"
-	register "PcdDispClkSsc" = "1"
-	register "PcdSataClkSsc" = "1"
 	register "PcdEnableSata" = "1"
 	register "Usb2Port0PerPortPeTxiSet" = "7"
 	register "Usb2Port0PerPortTxiSet" = "5"
@@ -65,9 +57,7 @@ chip soc/intel/braswell
 	register "Usb3Lane1Ow2tapgen2deemph3p5" = "0x64"
 	register "Usb3Lane2Ow2tapgen2deemph3p5" = "0x64"
 	register "Usb3Lane3Ow2tapgen2deemph3p5" = "0x3a"
-	register "PcdSataInterfaceSpeed" = "3"
 	register "PcdPchSsicEnable" = "1"
-	register "PcdRtcLock" = "0"	# Disable RTC access locking to NVRAM
 	register "PMIC_I2CBus" = "0"
 	register "ISPEnable" = "0"	# Disable IUNIT
 	register "ISPPciDevConfig" = "3"

@@ -64,6 +64,19 @@ config NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS
 	  Disabled by default as it might cause system instability.
 	  Handle with care!
 
+config NATIVE_RAMINIT_IGNORE_XMP_REQUESTED_VOLTAGE
+	bool "Ignore XMP profile requested voltage"
+	default n
+	depends on USE_NATIVE_RAMINIT
+	help
+	  Native raminit only supports 1.5V operation, but there are DIMMs
+	  which request 1.65V operation in XMP profiles. This option allows
+	  raminit to use these XMP profiles anyway, instead of falling back
+	  to non-XMP settings.
+	  Disabled by default because it allows forcing memory to run out of
+	  specification. Consider this to be an overclocking option.
+	  Handle with care!
+
 config CBFS_SIZE
 	hex
 	default 0x100000

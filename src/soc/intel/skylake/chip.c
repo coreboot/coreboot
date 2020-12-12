@@ -338,7 +338,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmSlpS4MinAssert = config->PmConfigSlpS4MinAssert;
 	params->PchPmSlpSusMinAssert = config->PmConfigSlpSusMinAssert;
 	params->PchPmSlpAMinAssert = config->PmConfigSlpAMinAssert;
-	params->PchPmLpcClockRun = config->PmConfigPciClockRun;
 	params->PchPmSlpStrchSusUp = config->PmConfigSlpStrchSusUp;
 	params->PchPmPwrBtnOverridePeriod =
 				config->PmConfigPwrBtnOverridePeriod;

@@ -56,8 +56,6 @@ chip soc/intel/skylake
 
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-	register "PmConfigPciClockRun" = "1"
-
 	# Enable Root Ports 3, 4 and 9
 	register "PcieRpEnable[2]" = "1" # Ethernet controller
 	register "PcieRpClkReqSupport[2]" = "1"

@@ -377,11 +377,6 @@ struct soc_intel_skylake_config {
 	} PmConfigSlpAMinAssert;
 
 	/*
-	 * This member describes whether or not the PCI ClockRun feature of PCH
-	 * should be enabled. Values 0: Disabled, 1: Enabled
-	 */
-	u8 PmConfigPciClockRun;
-	/*
 	 * SLP_X Stretching After SUS Well Power Up. Values 0: Disabled,
 	 * 1: Enabled
 	 */

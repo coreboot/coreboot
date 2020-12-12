@@ -10,7 +10,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert"	= "SLP_S4_MIN_ASSERT_4S"
 	register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"
 	register "PmConfigSlpAMinAssert"	= "SLP_A_MIN_ASSERT_2S"
-	register "PmConfigPciClockRun"		= "1"
 	register "PmConfigPwrCycDur"		= "RESET_POWER_CYCLE_4S"
 
 	# VR Settings Configuration for 2 Domains

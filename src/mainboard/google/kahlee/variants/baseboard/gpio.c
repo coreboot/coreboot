@@ -15,8 +15,8 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_4 - EN_PP3300_WLAN */
 	PAD_GPO(GPIO_4, HIGH),
 
-	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI */
-	PAD_SMI(GPIO_6, PULL_UP, LEVEL_LOW),
+	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI gets configured in ramstage */
+	PAD_GPI(GPIO_6, PULL_UP),
 
 	/* GPIO_9 - H1_PCH_INT_ODL */
 	PAD_INT(GPIO_9, PULL_UP, EDGE_LOW, STATUS),
@@ -24,11 +24,11 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_15 - EC_IN_RW_OD */
 	PAD_GPI(GPIO_15, PULL_UP),
 
-	/* GPIO_22 - EC_SCI_ODL, SCI */
-	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
+	/* GPIO_22 - EC_SCI_ODL, SCI gets configured in ramstage */
+	PAD_GPI(GPIO_22, PULL_UP),
 
-	/* GPIO_24 - EC_PCH_WAKE_L, SCI */
-	PAD_SCI(GPIO_24, PULL_UP, EDGE_LOW),
+	/* GPIO_24 - EC_PCH_WAKE_L, SCI gets configured in ramstage */
+	PAD_GPI(GPIO_24, PULL_UP),
 
 	/* GPIO_26 - APU_PCIE_RST_L */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
@@ -90,6 +90,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* GPIO_5 - PCH_TRACKPAD_INT_3V3_ODL, SCI */
 	PAD_SCI(GPIO_5, PULL_UP, EDGE_LOW),
 
+	/* GPIO_6 - APU_RST_L / EC_SMI_ODL, SMI */
+	PAD_SMI(GPIO_6, PULL_UP, LEVEL_LOW),
+
 	/* GPIO_7 - APU_PWROK_OD (currently not used) */
 	PAD_GPI(GPIO_7, PULL_UP),
 
@@ -128,6 +131,12 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 
 	/* GPIO_21 - APU_PEN_INT_ODL, SCI */
 	PAD_SCI(GPIO_21, PULL_UP, EDGE_LOW),
+
+	/* GPIO_22 - EC_SCI_ODL, SCI */
+	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
+
+	/* GPIO_24 - EC_PCH_WAKE_L, SCI */
+	PAD_SCI(GPIO_24, PULL_UP, EDGE_LOW),
 
 	/* GPIO_25 - SD_CD */
 	PAD_NF(GPIO_25, SD0_CD, PULL_UP),

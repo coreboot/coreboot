@@ -1231,7 +1231,7 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 		if (!some_works) {
 			/* Guard against roundtrip latency underflow */
 			if (ctrl->timings[channel][slotrank].roundtrip_latency < 2) {
-				printk(BIOS_EMERG, "402x discovery failed (1): %d, %d\n",
+				printk(BIOS_EMERG, "Roundtrip latency underflow: %d, %d\n",
 				       channel, slotrank);
 				return MAKE_ERR;
 			}
@@ -1250,7 +1250,7 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 
 		/* Guard against I/O latency overflow */
 		if (ctrl->timings[channel][slotrank].io_latency >= 0x10) {
-			printk(BIOS_EMERG, "402x discovery failed (2): %d, %d\n",
+			printk(BIOS_EMERG, "I/O latency overflow: %d, %d\n",
 			       channel, slotrank);
 			return MAKE_ERR;
 		}
@@ -1499,7 +1499,7 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 		struct run rn = get_longest_zero_run(stats[lane], ARRAY_SIZE(stats[lane]));
 
 		if (rn.all || rn.length < 8) {
-			printk(BIOS_EMERG, "tx_dq discovery failed: %d, %d, %d\n",
+			printk(BIOS_EMERG, "tx_dq write leveling failed: %d, %d, %d\n",
 			       channel, slotrank, lane);
 			/*
 			 * With command training not being done yet, the lane can be erroneous.
@@ -1634,7 +1634,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 
 		ctrl->timings[channel][slotrank].lanes[lane].tx_dqs = rn.start;
 		if (rn.all) {
-			printk(BIOS_EMERG, "tx_dqs discovery failed: %d, %d, %d\n",
+			printk(BIOS_EMERG, "JEDEC write leveling failed: %d, %d, %d\n",
 			       channel, slotrank, lane);
 
 			return MAKE_ERR;
@@ -2102,7 +2102,7 @@ int command_training(ramctr_timing *ctrl)
 		/*
 		 * Dual DIMM per channel:
 		 * Issue:
-		 * While c320c discovery seems to succeed raminit will fail in write training.
+		 * While command training seems to succeed, raminit will fail in write training.
 		 *
 		 * Workaround:
 		 * Skip 1T in dual DIMM mode, that's only supported by a few DIMMs.
@@ -2124,7 +2124,7 @@ int command_training(ramctr_timing *ctrl)
 		}
 
 		if (err) {
-			printk(BIOS_EMERG, "c320c discovery failed\n");
+			printk(BIOS_EMERG, "Command training failed: %d\n", channel);
 			return err;
 		}
 
@@ -2176,7 +2176,7 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		edges[lane] = rn.middle;
 
 		if (rn.all) {
-			printk(BIOS_EMERG, "edge discovery failed: %d, %d, %d\n", channel,
+			printk(BIOS_EMERG, "Read MPR training failed: %d, %d, %d\n", channel,
 			       slotrank, lane);
 			return MAKE_ERR;
 		}
@@ -2376,7 +2376,7 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 
 				edges[lane] = (lower[lane] + upper[lane]) / 2;
 				if (rn.all || (lower[lane] > upper[lane])) {
-					printk(BIOS_EMERG, "edge write discovery failed: "
+					printk(BIOS_EMERG, "Aggressive read training failed: "
 						"%d, %d, %d\n", channel, slotrank, lane);
 
 					return MAKE_ERR;
@@ -2482,7 +2482,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 	if (enable_iosav_opt)
 		MCHBAR32(MCMNTS_SPARE) = 1;
 
-	printram("discover tx_dq write:\n");
+	printram("Aggresive write training:\n");
 
 	for (i = 0; i < ARRAY_SIZE(wr_vref_offsets); i++) {
 		FOR_ALL_POPULATED_CHANNELS {
@@ -2520,8 +2520,8 @@ int aggressive_write_training(ramctr_timing *ctrl)
 
 						rn = get_longest_zero_run(stats, MAX_TX_DQ + 1);
 						if (rn.all) {
-							printk(BIOS_EMERG,
-								"tx_dq write discovery failed: "
+							printk(BIOS_EMERG, "Aggressive "
+								"write training failed: "
 								"%d, %d, %d\n", channel,
 								slotrank, lane);
 

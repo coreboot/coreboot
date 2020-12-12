@@ -1885,6 +1885,10 @@ int write_training(ramctr_timing *ctrl)
 	int channel, slotrank;
 	int err;
 
+	/*
+	 * Set the DEC_WRD bit, required for the write flyby algorithm.
+	 * Needs to be done before starting the write training procedure.
+	 */
 	FOR_ALL_POPULATED_CHANNELS
 		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
 

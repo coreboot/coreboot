@@ -89,14 +89,14 @@ The boards in this section are not real mainboards, but emulators.
 - [X2xx common](lenovo/x2xx_series.md)
 - [vboot](lenovo/vboot.md)
 
-### Arrandale series
-
-- [T410](lenovo/t410.md)
-
 ### GM45 series
 
 - [X200 / T400 / T500 / X301 common](lenovo/montevina_series.md)
 - [X301](lenovo/x301.md)
+
+### Arrandale series
+
+- [T410](lenovo/t410.md)
 
 ### Sandy Bridge series
 

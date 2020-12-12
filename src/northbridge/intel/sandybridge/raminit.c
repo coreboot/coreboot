@@ -233,10 +233,11 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 			printk(BIOS_DEBUG, "channel[%d] rankmap = 0x%x\n", channel,
 				ctrl->rankmap[channel]);
 		}
-		if ((ctrl->rankmap[channel] & 0x03) && (ctrl->rankmap[channel] & 0x0c)
-				&& ctrl->info.dimm[channel][0].reference_card <= 5
-				&& ctrl->info.dimm[channel][1].reference_card <= 5) {
 
+		const u8 rc_0 = ctrl->info.dimm[channel][0].reference_card;
+		const u8 rc_1 = ctrl->info.dimm[channel][1].reference_card;
+
+		if (ch_dimms == NUM_SLOTS && rc_0 < 6 && rc_1 < 6) {
 			const int ref_card_offset_table[6][6] = {
 				{ 0, 0, 0, 0, 2, 2 },
 				{ 0, 0, 0, 0, 2, 2 },
@@ -245,9 +246,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 				{ 2, 2, 2, 1, 0, 0 },
 				{ 2, 2, 2, 1, 0, 0 },
 			};
-			ctrl->ref_card_offset[channel] = ref_card_offset_table
-					[ctrl->info.dimm[channel][0].reference_card]
-					[ctrl->info.dimm[channel][1].reference_card];
+			ctrl->ref_card_offset[channel] = ref_card_offset_table[rc_0][rc_1];
 		} else {
 			ctrl->ref_card_offset[channel] = 0;
 		}

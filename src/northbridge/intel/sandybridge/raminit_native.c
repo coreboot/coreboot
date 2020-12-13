@@ -577,13 +577,13 @@ static void dram_freq(ramctr_timing *ctrl)
 		/* Step 2 - Select frequency in the MCU */
 		reg1 = ctrl->FRQ;
 		if (ctrl->base_freq == 100)
-			reg1 |= 0x100;	/* Enable 100Mhz REF clock */
+			reg1 |= (1 << 8);	/* Enable 100Mhz REF clock */
 
-		reg1 |= 0x80000000;	/* set running bit */
+		reg1 |= (1 << 31);	/* set running bit */
 		MCHBAR32(MC_BIOS_REQ) = reg1;
 		int i = 0;
 		printk(BIOS_DEBUG, "PLL busy... ");
-		while (reg1 & 0x80000000) {
+		while (reg1 & (1 << 31)) {
 			udelay(10);
 			i++;
 			reg1 = MCHBAR32(MC_BIOS_REQ);

@@ -44,7 +44,7 @@ static u32 get_XOVER_CMD(u8 rankmap)
 	u32 reg;
 
 	/* Enable xover cmd */
-	reg = 0x4000;
+	reg = 1 << 14;
 
 	/* Enable xover ctl */
 	if (rankmap & 0x03)
@@ -877,7 +877,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 				.data_direction = SSQ_NA,
 			},
 			.sp_cmd_addr = {
-				.address = 1024,
+				.address = 1 << 10,
 				.rowbits = 6,
 				.bank    = 0,
 				.rank    = 0,
@@ -1145,7 +1145,7 @@ static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, i
 
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].rcven
-				= upperA[lane] + rcven_delta + 0x40;
+				= upperA[lane] + rcven_delta + 64;
 		}
 		program_timings(ctrl, channel);
 
@@ -1234,7 +1234,7 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 		printram("4028 += 2;\n");
 
 		/* Guard against I/O latency overflow */
-		if (ctrl->timings[channel][slotrank].io_latency >= 0x10) {
+		if (ctrl->timings[channel][slotrank].io_latency >= 16) {
 			printk(BIOS_EMERG, "I/O latency overflow: %d, %d\n",
 			       channel, slotrank);
 			return MAKE_ERR;
@@ -1350,7 +1350,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 		all_high = 1;
 		some_high = 0;
 		FOR_ALL_LANES {
-			if (ctrl->timings[channel][slotrank].lanes[lane].rcven >= 0x40)
+			if (ctrl->timings[channel][slotrank].lanes[lane].rcven >= 64)
 				some_high = 1;
 			else
 				all_high = 0;
@@ -1360,8 +1360,8 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 			ctrl->timings[channel][slotrank].io_latency--;
 			printram("4028--;\n");
 			FOR_ALL_LANES {
-				ctrl->timings[channel][slotrank].lanes[lane].rcven -= 0x40;
-				upperA[lane] -= 0x40;
+				ctrl->timings[channel][slotrank].lanes[lane].rcven -= 64;
+				upperA[lane] -= 64;
 
 			}
 		} else if (some_high) {
@@ -1516,7 +1516,7 @@ static void program_wdb_pattern_length(int channel, const unsigned int num_cache
 static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 {
 	unsigned int j;
-	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 0x40;
+	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 64;
 
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
@@ -1537,8 +1537,8 @@ static int num_of_channels(const ramctr_timing *ctrl)
 static void fill_pattern1(ramctr_timing *ctrl, int channel)
 {
 	unsigned int j;
-	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 0x40;
-	unsigned int channel_step = 0x40 * num_of_channels(ctrl);
+	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 64;
+	unsigned int channel_step = 64 * num_of_channels(ctrl);
 
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + j * 4), 0xffffffff);
@@ -1676,7 +1676,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 					.data_direction = SSQ_NA,
 				},
 				.sp_cmd_addr = {
-					.address = 1024,
+					.address = 1 << 10,
 					.rowbits = 6,
 					.bank    = 0,
 					.rank    = slotrank,
@@ -1933,8 +1933,8 @@ static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 {
 	unsigned int i, j;
-	unsigned int offset = get_precedening_channels(ctrl, channel) * 0x40;
-	unsigned int step = 0x40 * num_of_channels(ctrl);
+	unsigned int offset = get_precedening_channels(ctrl, channel) * 64;
+	unsigned int step = 64 * num_of_channels(ctrl);
 
 	if (patno) {
 		u8 base8 = 0x80 >> ((patno - 1) % 8);
@@ -2218,8 +2218,8 @@ int read_mpr_training(ramctr_timing *ctrl)
 	 * FIXME: Under some conditions, vendor BIOS sets both edges to the same value. It will
 	 *        also use a single loop. It would seem that it is a debugging configuration.
 	 */
-	MCHBAR32(IOSAV_DC_MASK) = 0x300;
-	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
+	MCHBAR32(IOSAV_DC_MASK) = 3 << 8;
+	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 3 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = find_read_mpr_margin(ctrl, channel, slotrank,
@@ -2228,8 +2228,8 @@ int read_mpr_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 0x200;
-	printram("discover rising edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
+	MCHBAR32(IOSAV_DC_MASK) = 2 << 8;
+	printram("discover rising edges:\n[%x] = %x\n", IOSAV_DC_MASK, 2 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = find_read_mpr_margin(ctrl, channel, slotrank,
@@ -2353,8 +2353,8 @@ int aggressive_read_training(ramctr_timing *ctrl)
 	 * FIXME: Under some conditions, vendor BIOS sets both edges to the same value. It will
 	 *        also use a single loop. It would seem that it is a debugging configuration.
 	 */
-	MCHBAR32(IOSAV_DC_MASK) = 0x300;
-	printram("discover falling edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
+	MCHBAR32(IOSAV_DC_MASK) = 3 << 8;
+	printram("discover falling edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 3 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = find_agrsv_read_margin(ctrl, channel, slotrank,
@@ -2363,8 +2363,8 @@ int aggressive_read_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 0x200;
-	printram("discover rising edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
+	MCHBAR32(IOSAV_DC_MASK) = 2 << 8;
+	printram("discover rising edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 2 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = find_agrsv_read_margin(ctrl, channel, slotrank,
@@ -2971,7 +2971,7 @@ void restore_timings(ramctr_timing *ctrl)
 	MCHBAR32(GDCRTRAININGMOD_ch(0)) = 0;
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000);
+		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~(0x3f << 24));
 		udelay(2);
 	}
 }

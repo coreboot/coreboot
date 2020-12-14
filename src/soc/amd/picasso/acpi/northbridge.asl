@@ -26,18 +26,6 @@ Name(PR0, Package(){
 	Package() { 0x0000FFFF, 0, INTC, 0 },
 	Package() { 0x0000FFFF, 0, INTD, 0 },
 
-	/* Bus 0, Dev 0x01 - F[1-7]: GPP PCI Bridges */
-	Package() { 0x0001FFFF, 0, INTA, 0 },
-	Package() { 0x0001FFFF, 1, INTB, 0 },
-	Package() { 0x0001FFFF, 2, INTC, 0 },
-	Package() { 0x0001FFFF, 3, INTD, 0 },
-
-	/* Bus 0, Dev 0x08 - F[1:PCI Bridge to Bus A, 2: PCI Bridge to Bus B] */
-	Package() { 0x0008FFFF, 0, INTA, 0 },
-	Package() { 0x0008FFFF, 1, INTB, 0 },
-	Package() { 0x0008FFFF, 2, INTC, 0 },
-	Package() { 0x0008FFFF, 3, INTD, 0 },
-
 	/* Bus 0, Dev 0x14 - F[0:SMBus 3:LPC] */
 	Package() { 0x0014FFFF, 0, INTA, 0 },
 	Package() { 0x0014FFFF, 1, INTB, 0 },

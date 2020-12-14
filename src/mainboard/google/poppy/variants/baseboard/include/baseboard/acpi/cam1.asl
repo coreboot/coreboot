@@ -23,8 +23,8 @@ Scope (\_SB.PCI0.I2C4)
 			)
 		})
 
-		Name (_PR0, Package () { ^^I2C2.PMIC.OVFI })
-		Name (_PR3, Package () { ^^I2C2.PMIC.OVFI })
+		Name (_PR0, Package () {^^I2C2.PMIC.OVCM, ^^I2C2.PMIC.OVFI})
+		Name (_PR3, Package () {^^I2C2.PMIC.OVCM, ^^I2C2.PMIC.OVFI})
 
 		/* Port0 of CAM1 is connected to port1 of CIO2 device */
 		Name (_DSD, Package () {

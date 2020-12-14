@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config CPU_POWER9
+	bool
+	select ARCH_BOOTBLOCK_PPC64
+	select ARCH_VERSTAGE_PPC64
+	select ARCH_ROMSTAGE_PPC64
+	select ARCH_RAMSTAGE_PPC64

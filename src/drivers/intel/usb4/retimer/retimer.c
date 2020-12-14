@@ -8,6 +8,7 @@
 #include <gpio.h>
 #include <string.h>
 #include "chip.h"
+#include "retimer.h"
 
 /* Unique ID for the retimer _DSM. */
 #define INTEL_USB4_RETIMER_DSM_UUID	"61788900-C470-42BB-80F0-23A313864593"
@@ -19,6 +20,8 @@
  *       0: Query command implemented
  *       1: Query force power enable state
  *       2: Set force power state
+ *       3: Get Retimer FW Update EC Ram value
+ *       4: Set Retimer FW Update EC Ram value
  * Arg3: A package containing parameters for the function specified
  *       by the UUID, revision ID and function index.
  */
@@ -28,15 +31,15 @@ static void usb4_retimer_cb_standard_query(void *arg)
 	/*
 	 * ToInteger (Arg1, Local2)
 	 * If (Local2 == 1) {
-	 *     Return(Buffer() {0x07})
+	 *     Return(Buffer() {0x1f})
 	 * }
 	 * Return (Buffer() {0x01})
 	 */
 	acpigen_write_to_integer(ARG1_OP, LOCAL2_OP);
 
-	/* Revision 1 supports 2 Functions beyond the standard query */
+	/* Revision 1 supports 4 Functions beyond the standard query */
 	acpigen_write_if_lequal_op_int(LOCAL2_OP, 1);
-	acpigen_write_return_singleton_buffer(0x07);
+	acpigen_write_return_singleton_buffer(0x1f);
 	acpigen_pop_len(); /* If */
 
 	/* Other revisions support no additional functions */
@@ -48,7 +51,7 @@ static void usb4_retimer_cb_get_power_state(void *arg)
 	struct acpi_gpio *power_gpio = arg;
 
 	/*
-	 * // Read power gpio into Local0
+	 * Read power gpio into Local0
 	 * Store (\_SB.PCI0.GTXS (power_gpio), Local0)
 	 * Return (Local0)
 	 */
@@ -61,7 +64,7 @@ static void usb4_retimer_cb_set_power_state(void *arg)
 	struct acpi_gpio *power_gpio = arg;
 
 	/*
-	 * // Get argument for on/off from Arg3[0]
+	 * Get information to set to retimer info from Arg3[0]
 	 * Local0 = DeRefOf (Arg3[0])
 	 */
 	acpigen_get_package_op_element(ARG3_OP, 0, LOCAL0_OP);
@@ -90,10 +93,32 @@ static void usb4_retimer_cb_set_power_state(void *arg)
 	acpigen_write_return_integer(0);
 }
 
-static void (*usb4_retimer_callbacks[3])(void *) = {
+static void usb4_retimer_cb_get_retimer_info(void *arg)
+{
+	const char *RFWU = ec_retimer_fw_update_path();
+
+	/*
+	 * Read Mux Retimer info from EC RAM
+	 * Return RFWU if RFWU is not NULL. Otherwise return -1 to
+	 * inform kernel about error.
+	 */
+	if (!RFWU)
+		acpigen_write_return_byte(-1);
+	else
+		acpigen_write_return_namestr(RFWU);
+}
+
+static void usb4_retimer_cb_set_retimer_info(void *arg)
+{
+	ec_retimer_fw_update(arg);
+}
+
+static void (*usb4_retimer_callbacks[5])(void *) = {
 	usb4_retimer_cb_standard_query,		/* Function 0 */
 	usb4_retimer_cb_get_power_state,	/* Function 1 */
 	usb4_retimer_cb_set_power_state,	/* Function 2 */
+	usb4_retimer_cb_get_retimer_info,	/* Function 3 */
+	usb4_retimer_cb_set_retimer_info,	/* Function 4 */
 };
 
 static void usb4_retimer_fill_ssdt(const struct device *dev)
@@ -134,3 +159,12 @@ struct chip_operations drivers_intel_usb4_retimer_ops = {
 	CHIP_NAME("Intel USB4 Retimer")
 	.enable_dev = usb4_retimer_enable
 };
+
+__weak const char *ec_retimer_fw_update_path(void)
+{
+	return NULL;
+}
+
+__weak void ec_retimer_fw_update(void *arg)
+{
+}

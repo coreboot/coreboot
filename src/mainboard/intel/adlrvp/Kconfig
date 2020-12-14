@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_ALDERLAKE
 	select HAVE_SPD_IN_CBFS
 	select DRIVERS_SOUNDWIRE_ALC711
+	select PCIEXP_HOTPLUG
 
 config CHROMEOS
 	bool
@@ -76,6 +77,18 @@ config ADL_INTEL_EC
 	select EC_ACPI
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 endchoice
+
+config PCIEXP_HOTPLUG_BUSES
+	int
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	hex
+	default 0xc200000  # 194 MiB
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	hex
+	default 0x1c000000 # 448 MiB
 
 config VBOOT
 	select VBOOT_LID_SWITCH

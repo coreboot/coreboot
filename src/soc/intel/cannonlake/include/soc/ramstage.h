@@ -9,7 +9,7 @@
 
 #include "../../chip.h"
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *params);
+void mainboard_silicon_init_params(FSPS_UPD *supd);
 void soc_init_pre_device(void *chip_info);
 
 #endif

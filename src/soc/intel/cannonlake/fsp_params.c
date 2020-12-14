@@ -143,7 +143,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Load VBT before devicetree-specific config. */
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
-	mainboard_silicon_init_params(params);
+	mainboard_silicon_init_params(supd);
 
 	const struct soc_power_limits_config *soc_config;
 	soc_config = &config->power_limits_config;
@@ -527,7 +527,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 }
 
 /* Mainboard GPIO Configuration */
-__weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+__weak void mainboard_silicon_init_params(FSPS_UPD *supd)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

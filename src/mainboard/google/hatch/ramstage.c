@@ -8,7 +8,7 @@
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+void mainboard_silicon_init_params(FSPS_UPD *supd)
 {
 	variant_devtree_update();
 }

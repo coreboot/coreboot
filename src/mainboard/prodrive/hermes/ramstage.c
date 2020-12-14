@@ -8,8 +8,10 @@ static fsp_params parmas_list[] = {
 	/* FIXME: Fill with additional options */
 };
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+void mainboard_silicon_init_params(FSPS_UPD *supd)
 {
+	FSP_S_CONFIG *params = &supd->FspsConfig;
+
 	/* Configure pads prior to SiliconInit() in case there's any
 	   dependencies during hardware initialization. */
 	program_gpio_pads();

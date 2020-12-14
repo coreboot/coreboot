@@ -8,7 +8,7 @@
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
 	/* A10 : WWAN_EN => LTE_PWR_OFF_ODL */
-	PAD_CFG_GPO(GPP_A10, 0, PLTRST),
+	PAD_CFG_GPO(GPP_A10, 1, PWROK),
 
 	/* C12 : AP_PEN_DET_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, UP_20K, DEEP),

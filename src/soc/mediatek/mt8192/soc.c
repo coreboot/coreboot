@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/apusys.h>
 #include <soc/devapc.h>
 #include <soc/emi.h>
 #include <soc/mcupm.h>
@@ -17,6 +18,7 @@ static void soc_read_resources(struct device *dev)
 static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
+	apusys_init();
 	dapc_init();
 	mcupm_init();
 	sspm_init();

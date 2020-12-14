@@ -1,0 +1,14 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_IBM_POWER9
+	bool
+	select ARCH_BOOTBLOCK_PPC64
+	select ARCH_VERSTAGE_PPC64
+	select ARCH_ROMSTAGE_PPC64
+	select ARCH_RAMSTAGE_PPC64
+	help
+	  This SoC is the minimal template working on POWER9 Talos II platform.
+
+if SOC_IBM_POWER9
+	# nothing here yet
+endif

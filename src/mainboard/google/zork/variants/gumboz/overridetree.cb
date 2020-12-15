@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-
 chip soc/amd/picasso
 
 	# Start : OPN Performance Configuration
@@ -16,19 +15,31 @@ chip soc/amd/picasso
 	register "stapm_time_constant_s" = "2500"
 	register "sustained_power_limit_mW" = "4800"
 
+	register "telemetry_vddcr_vdd_slope_mA" = "42465"
+	register "telemetry_vddcr_vdd_offset" = "69"
+	register "telemetry_vddcr_soc_slope_mA" = "42667"
+	register "telemetry_vddcr_soc_offset" = "167"
 	# End : OPN Performance Configuration
 
 	# I2C2 for touchscreen and trackpad
-
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 18,  /* 0 to 2.31 (3.3 * .7) */
+		.fall_time_ns = 57,  /* 2.31 to 0 */
 	}"
 
 	# I2C3 for H1
-
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 184, /* 0 to 1.26v (1.8 * .7) */
+		.fall_time_ns = 42,  /* 1.26v to 0 */
 		.early_init = true,
+	}"
+
+	register "emmc_config" = "{
+		.timing = SD_EMMC_EMMC_HS400,
+		.sdr104_hs400_driver_strength = SD_EMMC_DRIVE_STRENGTH_A,
+		.init_khz_preset = 400,
 	}"
 
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
@@ -37,6 +48,41 @@ chip soc/amd/picasso
 	end # domain
 
 	device mmio 0xfedc4000 on # APU_I2C2_BASE
-	end # device
-
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
+			register "wake" = "GEVENT_22"
+			register "probed" = "1"
+			device i2c 15 on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0001""
+			register "desc" = ""ELAN Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_32)"
+			register "enable_delay_ms" = "1"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
+			register "reset_delay_ms" = "20"
+			register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_144)"
+			register "stop_off_delay_ms" = "1"
+			register "has_power_resource" = "1"
+			register "disable_gpio_export_in_crs" = "1"
+			device i2c 10 on end
+		end
+		chip drivers/i2c/hid
+			register "generic.hid" = ""GTCH7503""
+			register "generic.desc" = ""G2TOUCH Touchscreen""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
+			register "generic.probed" = "1"
+			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_32)"
+			register "generic.enable_delay_ms" = "1"
+			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
+			register "generic.reset_delay_ms" = "50"
+			register "generic.has_power_resource" = "1"
+			register "hid_desc_reg_offset" = "0x01"
+			device i2c 40 on end
+		end
+	end
 end	# chip soc/amd/picasso

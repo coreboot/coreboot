@@ -7,3 +7,13 @@
 # See util/spd_tools/ddr4/README.md for more details and instructions.
 
 # Part Name, Fixed ID (optional)
+# Gumboz shares the same DRAM IDs as Dirinboz since two variants use the same PCB.
+K4A8G165WC-BCTD, 2
+K4A8G165WC-BCWE, 4
+H5AN8G6NDJR-XNC, 5
+H5ANAG6NCMR-XNC, 6
+MT40A512M16TB-062E:J, 7
+MT40A1G16KD-062E:E, 8
+K4AAG165WA-BCTD, 9
+K4AAG165WA-BCWE, 10
+H5ANAG6NCJR-XNC

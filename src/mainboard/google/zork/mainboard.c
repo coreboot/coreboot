@@ -66,14 +66,14 @@ static const struct fch_irq_routing {
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
 } fch_pirq[] = {
-	{ PIRQ_A,	6,		16 },
-	{ PIRQ_B,	13,		17 },
-	{ PIRQ_C,	14,		18 },
-	{ PIRQ_D,	15,		19 },
-	{ PIRQ_E,	15,		20 },
-	{ PIRQ_F,	14,		21 },
-	{ PIRQ_G,	13,		22 },
-	{ PIRQ_H,	6,		23 },
+	{ PIRQ_A,	6,		PIRQ_NC },
+	{ PIRQ_B,	13,		PIRQ_NC },
+	{ PIRQ_C,	14,		PIRQ_NC },
+	{ PIRQ_D,	15,		PIRQ_NC },
+	{ PIRQ_E,	15,		PIRQ_NC },
+	{ PIRQ_F,	14,		PIRQ_NC },
+	{ PIRQ_G,	13,		PIRQ_NC },
+	{ PIRQ_H,	6,		PIRQ_NC },
 
 	{ PIRQ_SCI,	9,		9 },
 	{ PIRQ_EMMC,	5,		5 },

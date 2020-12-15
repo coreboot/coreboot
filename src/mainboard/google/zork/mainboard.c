@@ -76,7 +76,14 @@ static const struct pirq_struct mainboard_pirq_data[] = {
 
 /*
  * This controls the device -> IRQ routing.
- * The PIC values are limited to 0,1, 3 - 12, 14, 15.
+ *
+ * Hardcoded IRQs:
+ *  0: timer < soc/amd/common/acpi/lpc.asl
+ *  1: i8042 <- ec/google/chromeec/acpi/superio.asl
+ *  2: cascade
+ *  8: rtc0 <- soc/amd/common/acpi/lpc.asl
+ *  9: acpi <- soc/amd/common/acpi/lpc.asl
+ * 12: i8042 <- ec/google/chromeec/acpi/superio.asl
  */
 static const struct fch_irq_routing {
 	uint8_t intr_index;
@@ -84,9 +91,14 @@ static const struct fch_irq_routing {
 	uint8_t apic_irq_num;
 } fch_pirq[] = {
 	{ PIRQ_A,	6,		16 },
-	{ PIRQ_B,	6,		17 },
+	{ PIRQ_B,	13,		17 },
 	{ PIRQ_C,	14,		18 },
 	{ PIRQ_D,	15,		19 },
+	{ PIRQ_E,	15,		20 },
+	{ PIRQ_F,	14,		21 },
+	{ PIRQ_G,	13,		22 },
+	{ PIRQ_H,	6,		23 },
+
 	{ PIRQ_SCI,	9,		9 },
 	{ PIRQ_EMMC,	5,		5 },
 	{ PIRQ_GPIO,	7,		7 },

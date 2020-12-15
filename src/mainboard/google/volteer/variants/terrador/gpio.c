@@ -139,7 +139,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H3  : SX_EXIT_HOLDOFF# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H3, 1, DEEP),
 	/* H10 : SRCCLKREQ4# ==> USB_C_MIX_RT_FORCE_PWR */
-	PAD_CFG_GPO(GPP_H10, 1, DEEP),
+	PAD_CFG_GPO(GPP_H10, 0, DEEP),
 	/* H13 : M2_SKT2_CFG1 # ==> SPKR_INT_L */
 	PAD_CFG_GPI(GPP_H13, NONE, DEEP),
 	/* H16 : DDPB_CTRLCLK ==> DDPB_HDMI_CTRLCLK */

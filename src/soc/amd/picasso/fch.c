@@ -89,9 +89,15 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
+	const struct soc_amd_picasso_config *cfg;
+	cfg = config_of_soc();
 
 	ctrl = misc_read32(MISC_CLK_CNTL1);
-	ctrl |= BP_X48M0_OUTPUT_EN;
+	/* If used external clock source for I2S, disable the internal clock output */
+	if (cfg->acp_i2s_use_external_48mhz_osc && cfg->acp_pin_cfg == I2S_PINS_I2S_TDM)
+		ctrl &= ~BP_X48M0_OUTPUT_EN;
+	else
+		ctrl |= BP_X48M0_OUTPUT_EN;
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 

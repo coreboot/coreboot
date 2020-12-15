@@ -219,6 +219,8 @@ struct soc_amd_picasso_config {
 
 	/* The array index is the general purpose PCIe clock output number. */
 	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
+	bool acp_i2s_use_external_48mhz_osc;
 };
 
 #endif /* __PICASSO_CHIP_H__ */

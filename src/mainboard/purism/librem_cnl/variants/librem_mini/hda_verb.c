@@ -5,7 +5,7 @@
 const u32 cim_verb_data[] = {
 	0x10ec0269,	/* Codec Vendor/Device ID: Realtek ALC293 */
 	0x10ec0000,	/* Subsystem ID */
-	11,		/* Number of entries */
+	10,		/* Number of entries */
 
 	AZALIA_SUBVENDOR(0, 0x10ec0000),
 	AZALIA_PIN_CFG(0, 0x12, 0x40000000),

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <amdblocks/amd_pci_util.h>
 #include <device/device.h>
@@ -139,9 +140,36 @@ static void acpigen_write_PRT(const struct device *dev)
 	}
 
 	acpigen_write_method("_PRT", 0);
+
+	/* If (PMOD) */
+	acpigen_write_if();
+	acpigen_emit_namestring("PMOD");
+
+	/* Return (Package{...}) */
 	acpigen_emit_byte(RETURN_OP);
 
-	acpigen_write_package(4);
+	acpigen_write_package(4); /* Package - APIC Routing */
+	for (unsigned int i = 0; i < 4; ++i) {
+		irq_index = calculate_irq(pci_routing, i);
+
+		acpigen_write_package(4);
+		acpigen_write_dword(0x0000FFFF);
+		acpigen_write_byte(i);
+		acpigen_write_byte(0); /* Source: GSI  */
+		/* GNB IO-APIC is located after the FCH IO-APIC */
+		acpigen_write_dword(IO_APIC_INTERRUPTS + irq_index);
+		acpigen_pop_len();
+	}
+	acpigen_pop_len(); /* Package - APIC Routing */
+	acpigen_pop_len(); /* End If */
+
+	/* Else */
+	acpigen_write_else();
+
+	/* Return (Package{...}) */
+	acpigen_emit_byte(RETURN_OP);
+
+	acpigen_write_package(4); /* Package - PIC Routing */
 	for (unsigned int i = 0; i < 4; ++i) {
 		irq_index = calculate_irq(pci_routing, i);
 
@@ -154,7 +182,9 @@ static void acpigen_write_PRT(const struct device *dev)
 		acpigen_write_dword(0);
 		acpigen_pop_len();
 	}
-	acpigen_pop_len(); /* Package */
+	acpigen_pop_len(); /* Package - PIC Routing */
+
+	acpigen_pop_len(); /* End Else */
 
 	acpigen_pop_len(); /* Method */
 }
@@ -174,40 +204,80 @@ static void acpigen_write_PRT(const struct device *dev)
  *
  *         Method (_PRT, 0, NotSerialized)  // _PRT: PCI Routing Table
  *         {
- *             Return (Package (0x04)
+ *             If (PMOD)
  *             {
- *                 Package (0x04)
+ *                 Return (Package (0x04)
  *                 {
- *                     0x0000FFFF,
- *                     0x00,
- *                     \_SB.INTE,
- *                     0x00000000
- *                 },
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x00,
+ *                         0x00,
+ *                         0x00000034
+ *                     },
  *
- *                 Package (0x04)
- *                 {
- *                     0x0000FFFF,
- *                     0x01,
- *                     \_SB.INTF,
- *                     0x00000000
- *                 },
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x01,
+ *                         0x00,
+ *                         0x00000035
+ *                     },
  *
- *                 Package (0x04)
- *                 {
- *                     0x0000FFFF,
- *                     0x02,
- *                     \_SB.INTG,
- *                     0x00000000
- *                 },
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x02,
+ *                         0x00,
+ *                         0x00000036
+ *                     },
  *
- *                 Package (0x04)
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x03,
+ *                         0x00,
+ *                         0x00000037
+ *                     }
+ *                 })
+ *             }
+ *             Else
+ *             {
+ *                 Return (Package (0x04)
  *                 {
- *                     0x0000FFFF,
- *                     0x03,
- *                     \_SB.INTH,
- *                     0x00000000
- *                 }
- *             })
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x00,
+ *                         \_SB.INTE,
+ *                         0x00000000
+ *                     },
+ *
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x01,
+ *                         \_SB.INTF,
+ *                         0x00000000
+ *                     },
+ *
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x02,
+ *                         \_SB.INTG,
+ *                         0x00000000
+ *                     },
+ *
+ *                     Package (0x04)
+ *                     {
+ *                         0x0000FFFF,
+ *                         0x03,
+ *                         \_SB.INTH,
+ *                         0x00000000
+ *                     }
+ *                 })
+ *             }
  *         }
  *     }
  * }

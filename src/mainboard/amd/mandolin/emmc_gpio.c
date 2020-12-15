@@ -6,7 +6,7 @@
 /* eMMC controller driving either an SD card or eMMC device. */
 static const struct soc_amd_gpio emmc_gpios[] = {
 	PAD_NF(GPIO_21,  EMMC_CMD,	PULL_UP),
-	PAD_NF(GPIO_22,  EMMC_PRW_CTRL,	PULL_UP),
+	PAD_NF(GPIO_22,  EMMC_PWR_CTRL,	PULL_UP),
 	PAD_NF(GPIO_68,  EMMC_CD,	PULL_UP),
 	PAD_NF(GPIO_70,  EMMC_CLK,	PULL_NONE),
 	PAD_NF(GPIO_104, EMMC_DATA0,	PULL_UP),

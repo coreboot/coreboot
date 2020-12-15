@@ -17,7 +17,7 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* not USB_OC2_L */
 	PAD_GPI(GPIO_18, PULL_UP),
 	/* SDIO eMMC power control */
-	PAD_NF(GPIO_22, EMMC_PRW_CTRL, PULL_NONE),
+	PAD_NF(GPIO_22, EMMC_PWR_CTRL, PULL_NONE),
 	/* PCIe SSD power enable */
 	PAD_GPO(GPIO_23, HIGH),
 	/* PCIe Reset to DP0, DP1, J2105, TP, FP */

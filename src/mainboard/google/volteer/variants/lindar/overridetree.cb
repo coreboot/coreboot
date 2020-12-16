@@ -157,6 +157,14 @@ chip soc/intel/tigerlake
 				device pnp 0c09.0 on end
 			end
 		end
+		device ref pcie_rp9 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A22)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "srcclk_pin" = "0"
+				device generic 0 on end
+			end
+		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.

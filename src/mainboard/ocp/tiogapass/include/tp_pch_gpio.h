@@ -99,7 +99,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B19 - GPIO */
 	PAD_CFG_GPO(GPP_B19, 1, DEEP),
 	/* GPP_B20 - GPIO */
-	PAD_CFG_GPO(GPP_B20, 0, DEEP),
+	PAD_CFG_GPO(GPP_B20, 1, DEEP),
 	/* GPP_B21 - GPIO */
 	PAD_CFG_GPI_TRIG_OWN(GPP_B21, NONE, DEEP, OFF, DRIVER),
 	/* GPP_B22 - GPIO */

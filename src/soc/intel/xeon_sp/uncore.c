@@ -230,8 +230,8 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	configure_dpr(dev);
 	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 	if (dpr.size) {
-		uint32_t dpr_base_k = (dpr.top - dpr.size) << 10;
-		uint32_t dpr_size_k = dpr.size << 10;
+		uint64_t dpr_base_k = (dpr.top - dpr.size) << 10;
+		uint64_t dpr_size_k = dpr.size << 10;
 		reserved_ram_resource(dev, index++, dpr_base_k, dpr_size_k);
 		LOG_MEM_RESOURCE("dpr", dev, index, dpr_base_k, dpr_size_k);
 	}

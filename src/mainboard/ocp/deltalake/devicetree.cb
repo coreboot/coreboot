@@ -51,6 +51,7 @@ chip soc/intel/xeon_sp/cpx
 	end
 
 	device domain 0 on
+		device gpio 0 alias pch_gpio on end
 		device pci 00.0 on end # Host bridge
 		device pci 04.0 on end # Intel SkyLake-E CBDMA Registers
 		device pci 04.1 on end # Intel SkyLake-E CBDMA Registers
@@ -86,8 +87,11 @@ chip soc/intel/xeon_sp/cpx
 		device pci 1f.0 on
 			chip drivers/ipmi # BMC KCS
 				device pnp ca2.0 on end
+				use pch_gpio as gpio_dev
 				register "bmc_i2c_address" = "0x20"
 				register "bmc_boot_timeout" = "60"
+				register "post_complete_gpio" = "GPP_B20"
+				register "post_complete_invert" = "1"
 			end
 			chip drivers/ipmi/ocp # OCP specific IPMI porting
 				device pnp ca2.1 on end

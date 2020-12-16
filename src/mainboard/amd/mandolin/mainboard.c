@@ -29,30 +29,6 @@ static uint8_t fch_apic_routing[0x80];
 _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
 	"PIC and APIC FCH interrupt tables must be the same size");
 
-/*
- * This table doesn't actually perform any routing. It only populates the
- * PCI_INTERRUPT_LINE register on the PCI device with the PIC value specified
- * in fch_apic_routing. The linux kernel only looks at this field as a backup
- * if ACPI routing fails to describe the PCI routing correctly. The linux kernel
- * also uses the APIC by default, so the value coded into the registers will be
- * wrong.
- *
- * This table is also confusing because PCI Interrupt routing happens at the
- * device/slot level, not the function level.
- */
-static const struct pirq_struct mainboard_pirq_data[] = {
-	{ PCIE_GPP_0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_1_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_3_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_5_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_A_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE_GPP_B_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ SMBUS_DEVFN,	{ PIRQ_SMBUS, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
-};
-
 static const struct fch_irq_routing {
 	uint8_t intr_index;
 	uint8_t pic_irq_num;
@@ -100,9 +76,6 @@ static void init_tables(void)
 static void pirq_setup(void)
 {
 	init_tables();
-
-	pirq_data_ptr = mainboard_pirq_data;
-	pirq_data_size = ARRAY_SIZE(mainboard_pirq_data);
 	intr_data_ptr = fch_apic_routing;
 	picr_data_ptr = fch_pic_routing;
 }

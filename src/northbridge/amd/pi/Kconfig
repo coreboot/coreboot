@@ -29,7 +29,6 @@ config S3_VGA_ROM_RUN
 
 source "src/northbridge/amd/pi/00630F01/Kconfig"
 source "src/northbridge/amd/pi/00730F01/Kconfig"
-source "src/northbridge/amd/pi/00660F01/Kconfig"
 
 config HW_MEM_HOLE_SIZEK
 	hex

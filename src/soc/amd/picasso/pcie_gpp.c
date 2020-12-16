@@ -2,10 +2,12 @@
 
 #include <acpi/acpigen.h>
 #include <assert.h>
+#include <amdblocks/amd_pci_util.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <soc/pci.h>
 #include <soc/pci_devs.h>
 #include <stdio.h>
 
@@ -34,6 +36,26 @@ static const struct pci_routing pci_routing_table[] = {
 	{PCIE_GPP_B_DEVFN, 7, "CDAB"},
 };
 
+/*
+ * This data structure is populated from the raw data above. It is used
+ * by amd/common/block/pci/amd_pci_util to write the PCI_INT_LINE register
+ * to each PCI device.
+ */
+static struct pirq_struct pirq_data[] = {
+	{ PCIE_GPP_0_DEVFN },
+	{ PCIE_GPP_1_DEVFN },
+	{ PCIE_GPP_2_DEVFN },
+	{ PCIE_GPP_3_DEVFN },
+	{ PCIE_GPP_4_DEVFN },
+	{ PCIE_GPP_5_DEVFN },
+	{ PCIE_GPP_6_DEVFN },
+	{ PCIE_GPP_A_DEVFN },
+	{ PCIE_GPP_B_DEVFN },
+};
+
+_Static_assert(ARRAY_SIZE(pci_routing_table) == ARRAY_SIZE(pirq_data),
+	"PCI and PIRQ tables must be the same size");
+
 static const struct pci_routing *get_pci_routing(unsigned int devfn)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(pci_routing_table); ++i) {
@@ -51,6 +73,29 @@ static unsigned int calculate_irq(const struct pci_routing *pci_routing, unsigne
 	irq_index += pci_routing->intx[i] - 'A';
 
 	return irq_index;
+}
+
+void populate_pirq_data(void)
+{
+	const struct pci_routing *pci_routing;
+	struct pirq_struct *pirq;
+	unsigned int irq_index;
+
+	for (size_t i = 0; i < ARRAY_SIZE(pirq_data); ++i) {
+		pirq = &pirq_data[i];
+		pci_routing = get_pci_routing(pirq->devfn);
+		if (!pci_routing)
+			die("%s: devfn %u not found\n", __func__, pirq->devfn);
+
+		for (size_t j = 0; j < 4; ++j) {
+			irq_index = calculate_irq(pci_routing, j);
+
+			pirq->PIN[j] = irq_index % 8;
+		}
+	}
+
+	pirq_data_ptr = pirq_data;
+	pirq_data_size = ARRAY_SIZE(pirq_data);
 }
 
 static const char *pcie_gpp_acpi_name(const struct device *dev)

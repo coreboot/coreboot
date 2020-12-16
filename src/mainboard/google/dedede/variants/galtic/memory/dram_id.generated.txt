@@ -1,1 +1,5 @@
 DRAM Part Name                 ID to assign
+H9HCNNNBKMMLXR-NEE             0 (0000)
+MT53E512M32D2NP-046 WT:E       0 (0000)
+MT53E1G32D2NP-046 WT:A         1 (0001)
+H9HCNNNCPMMLXR-NEE             2 (0010)

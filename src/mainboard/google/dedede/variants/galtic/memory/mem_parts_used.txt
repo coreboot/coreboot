@@ -4,3 +4,7 @@
 # See util/spd_tools/lp4x/README.md for more details and instructions.
 
 # Part Name
+H9HCNNNBKMMLXR-NEE, 0
+MT53E512M32D2NP-046 WT:E, 0
+MT53E1G32D2NP-046 WT:A, 1
+H9HCNNNCPMMLXR-NEE, 2

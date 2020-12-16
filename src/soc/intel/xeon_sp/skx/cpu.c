@@ -193,7 +193,8 @@ static void pre_mp_init(void)
 {
 	printk(BIOS_DEBUG, "%s: entry\n", __func__);
 
-	x86_setup_fixed_mtrrs();
+	x86_setup_mtrrs_with_detect();
+	x86_mtrr_check();
 }
 
 static void post_mp_init(void)

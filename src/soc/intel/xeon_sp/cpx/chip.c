@@ -79,6 +79,7 @@ static void chip_init(void *data)
 	fsp_silicon_init(false);
 	override_hpet_ioapic_bdf();
 	pch_enable_ioapic();
+	pch_lock_dmictl();
 	setup_lapic();
 	p2sb_unhide();
 }

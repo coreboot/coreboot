@@ -45,6 +45,7 @@ static void soc_init(void *data)
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init(false);
 	override_hpet_ioapic_bdf();
+	pch_lock_dmictl();
 }
 
 static void soc_final(void *data)

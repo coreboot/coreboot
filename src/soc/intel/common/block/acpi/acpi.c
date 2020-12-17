@@ -14,7 +14,6 @@
 #include <cpu/x86/smm.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/lpc_lib.h>
-#include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/uart.h>
 #include <soc/gpio.h>
@@ -284,22 +283,6 @@ int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio)
 	return power;
 }
 
-static int get_cores_per_package(void)
-{
-	struct cpuinfo_x86 c;
-	struct cpuid_result result;
-	int cores = 1;
-
-	get_fms(&c, cpuid_eax(1));
-	if (c.x86 != 6)
-		return 1;
-
-	result = cpuid_ext(0xb, 1);
-	cores = result.ebx & 0xff;
-
-	return cores;
-}
-
 static void generate_c_state_entries(void)
 {
 	acpi_cstate_t *c_state_map;
@@ -450,21 +433,25 @@ void generate_cpu_entries(const struct device *device)
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
 	int plen = 6;
 	int totalcores = dev_count_cpu();
-	int cores_per_package = get_cores_per_package();
-	int numcpus = totalcores / cores_per_package;
+	unsigned int num_virt;
+	unsigned int num_phys;
 
-	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
-	       numcpus, cores_per_package);
+	cpu_read_topology(&num_phys, &num_virt);
+
+	int numcpus = totalcores / num_virt;
+
+	printk(BIOS_DEBUG, "Found %d CPU(s) with %d/%d physical/logical core(s) each.\n",
+	       numcpus, num_phys, num_virt);
 
 	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
-		for (core_id = 0; core_id < cores_per_package; core_id++) {
+		for (core_id = 0; core_id < num_virt; core_id++) {
 			if (core_id > 0) {
 				pcontrol_blk = 0;
 				plen = 0;
 			}
 
 			/* Generate processor \_SB.CPUx */
-			acpigen_write_processor((cpu_id) * cores_per_package +
+			acpigen_write_processor((cpu_id) * num_virt +
 						core_id, pcontrol_blk, plen);
 
 			/* Generate C-state tables */
@@ -473,17 +460,17 @@ void generate_cpu_entries(const struct device *device)
 			generate_cppc_entries(core_id);
 
 			/* Soc specific power states generation */
-			soc_power_states_generation(core_id, cores_per_package);
+			soc_power_states_generation(core_id, num_virt);
 
 			acpigen_pop_len();
 		}
 	}
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */
-	acpigen_write_processor_package("PPKG", 0, cores_per_package);
+	acpigen_write_processor_package("PPKG", 0, num_virt);
 
 	/* Add a method to notify processor nodes */
-	acpigen_write_processor_cnot(cores_per_package);
+	acpigen_write_processor_cnot(num_virt);
 }
 
 #if CONFIG(SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)

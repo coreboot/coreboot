@@ -24,7 +24,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_NF(GPP_B2, NONE, DEEP, NF1),
+	PAD_CFG_GPO(GPP_B2, 1, DEEP),
 	/* B7  : ISH_12C1_SDA ==> ISH_I2C0_SENSOR_SDA */
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
 	/* B8  : ISH_I2C1_SCL ==> ISH_I2C0_SENSOR_SCL */

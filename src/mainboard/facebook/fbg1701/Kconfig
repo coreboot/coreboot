@@ -22,7 +22,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_SPD_IN_CBFS
 
 config USE_VENDORCODE_ELTAN
-	depends on !VBOOT
 	default y
 
 if VBOOT

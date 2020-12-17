@@ -1,0 +1,25 @@
+if BOARD_INTEL_SHADOWMOUNTAIN
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_ALDERLAKE
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_DIR
+	string
+	default "intel/shadowmountain"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_shadowmountain"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "shadowmountain"
+
+endif # BOARD_INTEL_SHADOWMOUNTAIN

@@ -1,0 +1,2 @@
+config BOARD_INTEL_SHADOWMOUNTAIN
+	bool "shadowmountain"

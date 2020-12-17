@@ -2,9 +2,6 @@
 
 #include <soc/ramstage.h>
 
-#define HOSTC 0x40
-#define SMBUS_IO_BASE	0xefa0
-#define HOSTC_I2C_EN (1 << 2)
 #define I2C_ADDR_EEPROM 0x57
 
 #if ENV_ROMSTAGE

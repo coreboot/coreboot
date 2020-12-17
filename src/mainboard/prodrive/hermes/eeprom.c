@@ -3,6 +3,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/smbus_host.h>
+#include <soc/intel/common/block/smbus/smbuslib.h>
 #include "variants/baseboard/include/eeprom.h"
 
 /*
@@ -32,7 +33,7 @@ bool read_write_config(u8 addr, void *blob, size_t read_offset, size_t write_off
 	int ret = 0;
 
 	u32 smb_ctrl_reg = pci_read_config32(PCH_DEV_SMBUS, HOSTC);
-	pci_write_config32(PCH_DEV_SMBUS, HOSTC, smb_ctrl_reg | HOSTC_I2C_EN);
+	pci_write_config32(PCH_DEV_SMBUS, HOSTC, smb_ctrl_reg | I2C_EN);
 
 	printk(BIOS_SPEW, "%s\tOffset: %04zx\tSize: %02zx\n", __func__,
 		read_offset, size);

@@ -55,24 +55,24 @@ static const struct soc_mem_cfg soc_mem_cfg[] = {
 static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data)
 {
 	uint32_t *spd_upds[MRC_CHANNELS][CONFIG_DIMMS_PER_CHANNEL] = {
-		[0] = { &mem_cfg->MemorySpdPtr00, &mem_cfg->MemorySpdPtr01, },
-		[1] = { &mem_cfg->MemorySpdPtr02, &mem_cfg->MemorySpdPtr03, },
-		[2] = { &mem_cfg->MemorySpdPtr04, &mem_cfg->MemorySpdPtr05, },
-		[3] = { &mem_cfg->MemorySpdPtr06, &mem_cfg->MemorySpdPtr07, },
-		[4] = { &mem_cfg->MemorySpdPtr08, &mem_cfg->MemorySpdPtr09, },
-		[5] = { &mem_cfg->MemorySpdPtr10, &mem_cfg->MemorySpdPtr11, },
-		[6] = { &mem_cfg->MemorySpdPtr12, &mem_cfg->MemorySpdPtr13, },
-		[7] = { &mem_cfg->MemorySpdPtr14, &mem_cfg->MemorySpdPtr15, },
+		[0] = { &mem_cfg->MemorySpdPtr000, &mem_cfg->MemorySpdPtr001, },
+		[1] = { &mem_cfg->MemorySpdPtr010, &mem_cfg->MemorySpdPtr011, },
+		[2] = { &mem_cfg->MemorySpdPtr020, &mem_cfg->MemorySpdPtr021, },
+		[3] = { &mem_cfg->MemorySpdPtr030, &mem_cfg->MemorySpdPtr031, },
+		[4] = { &mem_cfg->MemorySpdPtr100, &mem_cfg->MemorySpdPtr101, },
+		[5] = { &mem_cfg->MemorySpdPtr110, &mem_cfg->MemorySpdPtr111, },
+		[6] = { &mem_cfg->MemorySpdPtr120, &mem_cfg->MemorySpdPtr121, },
+		[7] = { &mem_cfg->MemorySpdPtr130, &mem_cfg->MemorySpdPtr131, },
 	};
 	uint8_t *disable_dimm_upds[MRC_CHANNELS] = {
-		&mem_cfg->DisableDimmCh0,
-		&mem_cfg->DisableDimmCh1,
-		&mem_cfg->DisableDimmCh2,
-		&mem_cfg->DisableDimmCh3,
-		&mem_cfg->DisableDimmCh4,
-		&mem_cfg->DisableDimmCh5,
-		&mem_cfg->DisableDimmCh6,
-		&mem_cfg->DisableDimmCh7,
+		&mem_cfg->DisableDimmMc0Ch0,
+		&mem_cfg->DisableDimmMc0Ch1,
+		&mem_cfg->DisableDimmMc0Ch2,
+		&mem_cfg->DisableDimmMc0Ch3,
+		&mem_cfg->DisableDimmMc1Ch0,
+		&mem_cfg->DisableDimmMc1Ch1,
+		&mem_cfg->DisableDimmMc1Ch2,
+		&mem_cfg->DisableDimmMc1Ch3,
 	};
 	int ch, dimm;
 
@@ -109,17 +109,17 @@ static void mem_init_dq_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_dat
 				const struct mb_cfg *mb_cfg)
 {
 	void *dq_upds[MRC_CHANNELS] = {
-		&mem_cfg->DqMapCpu2DramCh0,
-		&mem_cfg->DqMapCpu2DramCh1,
-		&mem_cfg->DqMapCpu2DramCh2,
-		&mem_cfg->DqMapCpu2DramCh3,
-		&mem_cfg->DqMapCpu2DramCh4,
-		&mem_cfg->DqMapCpu2DramCh5,
-		&mem_cfg->DqMapCpu2DramCh6,
-		&mem_cfg->DqMapCpu2DramCh7,
+		&mem_cfg->DqMapCpu2DramMc0Ch0,
+		&mem_cfg->DqMapCpu2DramMc0Ch1,
+		&mem_cfg->DqMapCpu2DramMc0Ch2,
+		&mem_cfg->DqMapCpu2DramMc0Ch3,
+		&mem_cfg->DqMapCpu2DramMc1Ch0,
+		&mem_cfg->DqMapCpu2DramMc1Ch1,
+		&mem_cfg->DqMapCpu2DramMc1Ch2,
+		&mem_cfg->DqMapCpu2DramMc1Ch3,
 	};
 
-	const size_t upd_size = sizeof(mem_cfg->DqMapCpu2DramCh0);
+	const size_t upd_size = sizeof(mem_cfg->DqMapCpu2DramMc0Ch0);
 
 	_Static_assert(upd_size == CONFIG_MRC_CHANNEL_WIDTH, "Incorrect DQ UPD size!");
 
@@ -130,17 +130,17 @@ static void mem_init_dqs_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 				const struct mb_cfg *mb_cfg)
 {
 	void *dqs_upds[MRC_CHANNELS] = {
-		&mem_cfg->DqsMapCpu2DramCh0,
-		&mem_cfg->DqsMapCpu2DramCh1,
-		&mem_cfg->DqsMapCpu2DramCh2,
-		&mem_cfg->DqsMapCpu2DramCh3,
-		&mem_cfg->DqsMapCpu2DramCh4,
-		&mem_cfg->DqsMapCpu2DramCh5,
-		&mem_cfg->DqsMapCpu2DramCh6,
-		&mem_cfg->DqsMapCpu2DramCh7,
+		&mem_cfg->DqsMapCpu2DramMc0Ch0,
+		&mem_cfg->DqsMapCpu2DramMc0Ch1,
+		&mem_cfg->DqsMapCpu2DramMc0Ch2,
+		&mem_cfg->DqsMapCpu2DramMc0Ch3,
+		&mem_cfg->DqsMapCpu2DramMc1Ch0,
+		&mem_cfg->DqsMapCpu2DramMc1Ch1,
+		&mem_cfg->DqsMapCpu2DramMc1Ch2,
+		&mem_cfg->DqsMapCpu2DramMc1Ch3,
 	};
 
-	const size_t upd_size = sizeof(mem_cfg->DqsMapCpu2DramCh0);
+	const size_t upd_size = sizeof(mem_cfg->DqsMapCpu2DramMc0Ch0);
 
 	_Static_assert(upd_size == CONFIG_MRC_CHANNEL_WIDTH / 8, "Incorrect DQS UPD size!");
 

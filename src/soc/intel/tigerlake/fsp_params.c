@@ -292,7 +292,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * LPM0-s0i2.0, LPM1-s0i2.1, LPM2-s0i2.2, LPM3-s0i3.0,
 	 * LPM4-s0i3.1, LPM5-s0i3.2, LPM6-s0i3.3, LPM7-s0i3.4
 	 */
-	params->LpmStateEnableMask = LPM_S0iX_ALL & ~get_disable_mask(config);
+	params->PmcLpmS0ixSubStateEnableMask = LPM_S0iX_ALL & ~get_disable_mask(config);
 
 	/*
 	 * Power Optimizer for DMI and SATA.

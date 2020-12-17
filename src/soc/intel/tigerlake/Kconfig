@@ -21,6 +21,7 @@ config CPU_SPECIFIC_OPTIONS
 	select FSP_STATUS_GLOBAL_RESET_REQUIRED_3
 	select GENERIC_GPIO_LIB
 	select HAVE_FSP_GOP
+	select HAVE_INTEL_FSP_REPO
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
@@ -212,11 +213,25 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config FSP_TYPE_IOT
+	bool
+	default n
+	help
+	  This option allows to select FSP IOT type from 3rdparty/fsp repo
+
+config FSP_TYPE_CLIENT
+	bool
+	default !FSP_TYPE_IOT
+	help
+	  This option allows to select FSP CLIENT type from 3rdparty/fsp repo
+
 config FSP_HEADER_PATH
-	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/"
+	default "3rdparty/fsp/TigerLakeFspBinPkg/TGL_IOT/Include/" if FSP_TYPE_IOT
+	default "3rdparty/fsp/TigerLakeFspBinPkg/Client/Include/" if FSP_TYPE_CLIENT
 
 config FSP_FD_PATH
-	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd"
+	default "3rdparty/fsp/TigerLakeFspBinPkg/TGL_IOT/Fsp.fd" if FSP_TYPE_IOT
+	default "3rdparty/fsp/TigerLakeFspBinPkg/Client/Fsp.fd" if FSP_TYPE_CLIENT
 
 config SOC_INTEL_TIGERLAKE_DEBUG_CONSENT
 	int "Debug Consent for TGL"

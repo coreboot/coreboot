@@ -394,9 +394,9 @@ typedef struct {
 
 /** Offset 0x0448 - Reserved
 **/
-  UINT8                       Reserved15[174];
+  UINT8                       Reserved15[172];
 
-/** Offset 0x04F6 - CdClock Frequency selection
+/** Offset 0x04F4 - CdClock Frequency selection
   0 (Default) Auto (Max based on reference clock frequency),  0: 192, 1: 307.2, 2:
   312 Mhz, 3: 324Mhz, 4: 326.4 Mhz, 5: 552 Mhz, 6: 556.8 Mhz, 7: 648 Mhz, 8: 652.8 Mhz
   0xFF: Auto (Max based on reference clock frequency), 0: 192, 1: 307.2, 2: 312 Mhz,
@@ -404,119 +404,119 @@ typedef struct {
 **/
   UINT8                       CdClock;
 
-/** Offset 0x04F7 - Enable/Disable PeiGraphicsPeimInit
+/** Offset 0x04F5 - Enable/Disable PeiGraphicsPeimInit
   <b>Enable(Default):</b> FSP will initialize the framebuffer and provide it via EFI_PEI_GRAPHICS_INFO_HOB.
   Disable: FSP will NOT initialize the framebuffer.
   $EN_DIS
 **/
   UINT8                       PeiGraphicsPeimInit;
 
-/** Offset 0x04F8 - Enable D3 Hot in TCSS
+/** Offset 0x04F6 - Enable D3 Hot in TCSS
   This policy will enable/disable D3 hot support in IOM
   $EN_DIS
 **/
   UINT8                       D3HotEnable;
 
-/** Offset 0x04F9 - Reserved
+/** Offset 0x04F7 - Reserved
 **/
-  UINT8                       Reserved16[3];
+  UINT8                       Reserved16;
 
-/** Offset 0x04FC - TypeC port GPIO setting
+/** Offset 0x04F8 - TypeC port GPIO setting
   GPIO Ping number for Type C Aux Oritation setting, use the GpioPad that is defined
   in GpioPinsXXXH.h and GpioPinsXXXLp.h as argument.(XXX is platform name, Ex: Adl
   = AlderLake)
 **/
   UINT32                      IomTypeCPortPadCfg[8];
 
-/** Offset 0x051C - Reserved
+/** Offset 0x0518 - Reserved
 **/
   UINT8                       Reserved17[8];
 
-/** Offset 0x0524 - Enable D3 Cold in TCSS
+/** Offset 0x0520 - Enable D3 Cold in TCSS
   This policy will enable/disable D3 cold support in IOM
   $EN_DIS
 **/
   UINT8                       D3ColdEnable;
 
-/** Offset 0x0525 - Reserved
+/** Offset 0x0521 - Reserved
 **/
   UINT8                       Reserved18[8];
 
-/** Offset 0x052D - Enable VMD controller
+/** Offset 0x0529 - Enable VMD controller
   Enable/disable to VMD controller.0: Disable(Default); 1: Enable
   $EN_DIS
 **/
   UINT8                       VmdEnable;
 
-/** Offset 0x052E - Reserved
+/** Offset 0x052A - Reserved
 **/
   UINT8                       Reserved19[120];
 
-/** Offset 0x05A6 - TCSS Aux Orientation Override Enable
+/** Offset 0x05A2 - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
 **/
   UINT16                      TcssAuxOri;
 
-/** Offset 0x05A8 - TCSS HSL Orientation Override Enable
+/** Offset 0x05A4 - TCSS HSL Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
 **/
   UINT16                      TcssHslOri;
 
-/** Offset 0x05AA - Reserved
+/** Offset 0x05A6 - Reserved
 **/
-  UINT8                       Reserved20[2];
+  UINT8                       Reserved20;
 
-/** Offset 0x05AC - ITBT Root Port Enable
+/** Offset 0x05A7 - ITBT Root Port Enable
   ITBT Root Port Enable, 0:Disable, 1:Enable
   0:Disable, 1:Enable
 **/
   UINT8                       ITbtPcieRootPortEn[4];
 
-/** Offset 0x05B0 - Reserved
+/** Offset 0x05AB - Reserved
 **/
-  UINT8                      Reserved21[2];
+  UINT8                       Reserved21[3];
 
-/** Offset 0x05B2 - ITbtConnectTopology Timeout value
+/** Offset 0x05AE - ITbtConnectTopology Timeout value
   ITbtConnectTopologyTimeout value. Specified increment values in miliseconds. Range
   is 0-10000. 100 = 100 ms.
 **/
   UINT16                      ITbtConnectTopologyTimeoutInMs;
 
-/** Offset 0x05B4 - Reserved
+/** Offset 0x05B0 - Reserved
 **/
   UINT8                       Reserved22[7];
 
-/** Offset 0x05BB - Enable/Disable PTM
+/** Offset 0x05B7 - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
   $EN_DIS
 **/
   UINT8                       PtmEnabled[4];
 
-/** Offset 0x05BF - Reserved
+/** Offset 0x05BB - Reserved
 **/
   UINT8                       Reserved23[200];
 
-/** Offset 0x0687 - Skip Multi-Processor Initialization
+/** Offset 0x0683 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
   API. </b>0: Initialize; <b>1: Skip
   $EN_DIS
 **/
   UINT8                       SkipMpInit;
 
-/** Offset 0x0688 - Reserved
+/** Offset 0x0684 - Reserved
 **/
   UINT8                      Reserved24[8];
 
-/** Offset 0x0690 - CpuMpPpi
+/** Offset 0x068C - CpuMpPpi
   <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
   If not NULL, FSP will use the boot loader's implementation of multiprocessing.
   See section 5.1.4 of the FSP Integration Guide for more details.
 **/
   UINT32                      CpuMpPpi;
 
-/** Offset 0x0694 - Reserved
+/** Offset 0x0690 - Reserved
 **/
-  UINT8                       Reserved25[70];
+  UINT8                       Reserved25[74];
 
 /** Offset 0x06DA - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -865,7 +865,7 @@ typedef struct {
 
 /** Offset 0x1200
 **/
-  UINT8                       UnusedUpdSpace44[6];
+  UINT8                       UnusedUpdSpace45[6];
 
 /** Offset 0x1206
 **/

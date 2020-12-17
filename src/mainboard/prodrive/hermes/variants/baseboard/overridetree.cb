@@ -85,43 +85,47 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[4]" = "4"	# M2_M_CLK_REQ_n
 	register "PcieClkSrcClkReq[5]" = "5"	# M2_E_CLK_REQ_n
 
+	# USB OC5-7: not connected
+	register "usb2_ports" = "{
+
+#define HERMES_USB2_CONFIG(pin) { \
+	.enable        = 1, \
+	.ocpin         = (pin), \
+	.tx_bias       = USB2_BIAS_0MV, \
+	.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON, \
+	.pre_emp_bias  = USB2_BIAS_28P15MV, \
+	.pre_emp_bit   = USB2_FULL_BIT_PRE_EMP, \
+}
+		[0] = HERMES_USB2_CONFIG(OC0),		/* USB3 rear panel 1 */
+		[1] = HERMES_USB2_CONFIG(OC0),
+		[2] = HERMES_USB2_CONFIG(OC1),		/* USB3 rear panel 2 */
+		[3] = HERMES_USB2_CONFIG(OC1),
+		[4] = HERMES_USB2_CONFIG(OC2),		/* USB3 internal header CN_USB3_HDR */
+		[5] = HERMES_USB2_CONFIG(OC2),
+		[6] = HERMES_USB2_CONFIG(OC3),		/* USB2 internal header USB2_HDR1 */
+		[7] = HERMES_USB2_CONFIG(OC3),
+		[8] = HERMES_USB2_CONFIG(OC4),		/* USB2 internal header USB2_HDR1 */
+		[9] = HERMES_USB2_CONFIG(OC4),
+		[10] = HERMES_USB2_CONFIG(OC_SKIP),	/* BMC */
+		[11] = USB2_PORT_EMPTY,
+		[12] = HERMES_USB2_CONFIG(OC_SKIP),	/* piggy-back */
+		[13] = HERMES_USB2_CONFIG(OC_SKIP),	/* M.2 key E */
+	}"
+
 	# USB Config 2.0/3.0
 	# Enumeration starts at 0
 	# USB 3.0
 	# USB OC0: RP1
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"
 
 	# USB OC1: RP2
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"
-	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC1)"
 
 	# USB OC2:  Internal Header CN_USB3_HDR
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC2)"
-	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC2)"
-
-	# USB 2.0
-	# USB OC3: Internal Header USB2_HDR1
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC3)"
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC3)"
-
-	# USB OC4: Internal Header USB2_HDR2
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC4)"
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC4)"
-
-	# USB OC5-7: not connected
-	# BMC
-	register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)"
-	# piggy-back
-	register "usb2_ports[12]" = "USB2_PORT_MID(OC_SKIP)"
-	# M2 key E
-	register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
 
 	# Thermal
 	register "tcc_offset" = "1"     # TCC of 99C

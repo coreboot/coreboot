@@ -63,8 +63,6 @@ chip soc/intel/jasperlake
 	}"
 
 	register "tcc_offset" = "20"	# TCC of 85C
-	register "ImonOffset" = "1400"  # Imon Offset = 1.4
-	register "ImonSlope" = "100"    # Imon Slope = 1.0
 
 	# Enable Acoustic noise mitigation and set slew rate to 1/4
         # Rest of the parameters are 0 by default.

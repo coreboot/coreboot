@@ -142,6 +142,18 @@ static void fsp_assign_ioapic_upds(FSP_S_CONFIG *scfg)
 	scfg->fch_ioapic_id = CONFIG_PICASSO_FCH_IOAPIC_ID;
 }
 
+static void fsp_edp_tuning_upds(FSP_S_CONFIG *scfg,
+			const struct soc_amd_picasso_config *cfg)
+{
+	if (cfg->dp_phy_override & ENABLE_EDP_TUNINGSET) {
+		scfg->DpPhyOverride = cfg->dp_phy_override;
+		scfg->DpVsPemphLevel = cfg->edp_tuningset.dp_vs_pemph_level;
+		scfg->MarginDeemPh = cfg->edp_tuningset.margin_deemph;
+		scfg->Deemph6db4 = cfg->edp_tuningset.deemph_6db4;
+		scfg->BoostAdj = cfg->edp_tuningset.boostadj;
+	}
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	const struct soc_amd_picasso_config *cfg;
@@ -152,4 +164,5 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	fsp_fill_pcie_ddi_descriptors(scfg);
 	fsp_assign_ioapic_upds(scfg);
 	fsp_usb_oem_customization(scfg, cfg);
+	fsp_edp_tuning_upds(scfg, cfg);
 }

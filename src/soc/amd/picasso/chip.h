@@ -57,6 +57,18 @@ enum sd_emmc_driver_strength {
 	SD_EMMC_DRIVE_STRENGTH_D,
 };
 
+/* dpphy_override */
+enum sysinfo_dpphy_override {
+	ENABLE_DVI_TUNINGSET = 0x01,
+	ENABLE_HDMI_TUNINGSET = 0x02,
+	ENABLE_HDMI6G_TUNINGSET = 0x04,
+	ENABLE_DP_TUNINGSET = 0x08,
+	ENABLE_DP_HBR3_TUNINGSET = 0x10,
+	ENABLE_DP_HBR_TUNINGSET = 0x20,
+	ENABLE_DP_HBR2_TUNINGSET = 0x40,
+	ENABLE_EDP_TUNINGSET = 0x80,
+};
+
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
 	/*
@@ -221,6 +233,16 @@ struct soc_amd_picasso_config {
 	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
 	bool acp_i2s_use_external_48mhz_osc;
+
+	/* eDP phy tuning settings */
+	uint8_t dp_phy_override;
+
+	struct {
+		uint8_t dp_vs_pemph_level;
+		uint8_t deemph_6db4;
+		uint8_t boostadj;
+		uint16_t margin_deemph;
+	} edp_tuningset;
 };
 
 #endif /* __PICASSO_CHIP_H__ */

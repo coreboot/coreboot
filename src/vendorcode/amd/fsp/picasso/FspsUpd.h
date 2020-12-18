@@ -39,7 +39,17 @@ typedef struct __packed {
 	/** Offset 0x0124**/	uint32_t                    gnb_ioapic_base;
 	/** Offset 0x0128**/	uint8_t                     gnb_ioapic_id;
 	/** Offset 0x0129**/	uint8_t                     fch_ioapic_id;
-	/** Offset 0x012A**/	uint8_t                     UnusedUpdSpace0[38];
+	/** Offset 0x012A**/	uint8_t                     UnusedUpdSpace0[6];
+	/** Offset 0x0130**/	uint8_t                     unused4[16];
+	/** Offset 0x0140**/	uint8_t                     DpPhyOverride;
+	/** Offset 0x0141**/	uint16_t                    EDpPhySel;
+	/** Offset 0x0143**/	uint8_t                     EDpVersion;
+	/** Offset 0x0144**/	uint8_t                     EDpTableSize;
+	/** Offset 0x0145**/	uint8_t                     DpVsPemphLevel;
+	/** Offset 0x0146**/	uint16_t                    MarginDeemPh;
+	/** Offset 0x0148**/	uint8_t                     Deemph6db4;
+	/** Offset 0x0149**/	uint8_t                     BoostAdj;
+	/** Offset 0x014A**/	uint8_t                     UnusedUpdSpace1[6];
 	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

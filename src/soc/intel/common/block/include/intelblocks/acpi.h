@@ -63,4 +63,9 @@ void generate_t_state_entries(int core, int cores_per_package);
  */
 void soc_power_states_generation(int core_id, int cores_per_package);
 
+/*
+ * Common function to calculate the power ratio for power state generation
+ */
+int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio);
+
 #endif				/* _SOC_INTEL_COMMON_BLOCK_ACPI_H_ */

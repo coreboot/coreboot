@@ -242,7 +242,7 @@ void southbridge_inject_dsdt(const struct device *device)
 	}
 }
 
-static int calculate_power(int tdp, int p1_ratio, int ratio)
+int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio)
 {
 	u32 m;
 	u32 power;
@@ -360,7 +360,7 @@ void generate_p_state_entries(int core, int cores_per_package)
 	     ratio >= ratio_min; ratio -= ratio_step) {
 
 		/* Calculate power at this ratio */
-		power = calculate_power(power_max, ratio_max, ratio);
+		power = common_calculate_power_ratio(power_max, ratio_max, ratio);
 		clock = (ratio * cpu_get_bus_clock()) / KHz;
 
 		acpigen_write_PSS_package(clock,		/* MHz */

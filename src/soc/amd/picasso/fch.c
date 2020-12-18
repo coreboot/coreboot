@@ -237,6 +237,8 @@ void southbridge_init(void *chip_info)
 	al2ahb_clock_gate();
 
 	gpp_clk_setup();
+
+	sb_clk_output_48Mhz();
 }
 
 void southbridge_final(void *chip_info)

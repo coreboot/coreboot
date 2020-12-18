@@ -184,7 +184,8 @@ uint32_t tlcl_lock_nv_write(uint32_t index);
 /**
  * Perform a TPM_Extend.
  */
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
+uint32_t tlcl_extend(int pcr_num,  uint16_t algorithm,
+		     const uint8_t *in_digest, size_t in_digest_len,
 		     uint8_t *out_digest);
 
 /**

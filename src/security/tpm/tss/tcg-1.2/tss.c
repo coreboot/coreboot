@@ -341,7 +341,8 @@ uint32_t tlcl_set_global_lock(void)
 	return tlcl_write(TPM_NV_INDEX0, (uint8_t *) &x, 0);
 }
 
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
+uint32_t tlcl_extend(int pcr_num,  uint16_t algorithm,
+		     const uint8_t *in_digest, size_t in_digest_len,
 		     uint8_t *out_digest)
 {
 	struct s_tpm_extend_cmd cmd;
@@ -350,8 +351,11 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 
 	memcpy(&cmd, &tpm_extend_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_extend_cmd.pcrNum, pcr_num);
-	memcpy(cmd.buffer + cmd.inDigest, in_digest, kPcrDigestLength);
 
+	if (in_digest_len != kPcrDigestLength)
+		return TPM_E_HASH_ERROR;
+
+	memcpy(cmd.buffer + cmd.inDigest, in_digest, kPcrDigestLength);
 	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
 	if (result != TPM_SUCCESS)
 		return result;

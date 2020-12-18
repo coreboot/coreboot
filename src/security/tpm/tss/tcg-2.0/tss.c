@@ -127,21 +127,47 @@ uint32_t tlcl_assert_physical_presence(void)
 }
 
 /*
- * The caller will provide the digest in a 32 byte buffer, let's consider it a
- * sha256 digest.
+ * The caller will provide the pcr index, digest algorithm and
+ * a byte buffer to extend into the TPM.
  */
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
+uint32_t tlcl_extend(int pcr_num, uint16_t algorithm,
+		     const uint8_t *in_digest, size_t in_digest_len,
 		     uint8_t *out_digest)
 {
 	struct tpm2_pcr_extend_cmd pcr_ext_cmd;
 	struct tpm2_response *response;
+	uint16_t algorithm_size;
 
 	pcr_ext_cmd.pcrHandle = HR_PCR + pcr_num;
 	pcr_ext_cmd.digests.count = 1;
-	pcr_ext_cmd.digests.digests[0].hashAlg = TPM_ALG_SHA256;
-	memcpy(pcr_ext_cmd.digests.digests[0].digest.sha256, in_digest,
-	       sizeof(pcr_ext_cmd.digests.digests[0].digest.sha256));
+	pcr_ext_cmd.digests.digests[0].hashAlg = algorithm;
+	algorithm_size = tlcl_get_hash_size_from_algo(algorithm);
 
+	if (algorithm_size == 0)
+		return TPM_E_HASH_ERROR;
+
+	if (in_digest_len != algorithm_size)
+		return TPM_E_HASH_ERROR;
+
+	switch (algorithm) {
+	case TPM_ALG_SHA1:
+		memcpy(pcr_ext_cmd.digests.digests[0].digest.sha1, in_digest, in_digest_len);
+		break;
+	case TPM_ALG_SHA256:
+		memcpy(pcr_ext_cmd.digests.digests[0].digest.sha256, in_digest, in_digest_len);
+		break;
+	case TPM_ALG_SHA384:
+		memcpy(pcr_ext_cmd.digests.digests[0].digest.sha384, in_digest, in_digest_len);
+		break;
+	case TPM_ALG_SHA512:
+		memcpy(pcr_ext_cmd.digests.digests[0].digest.sha512, in_digest, in_digest_len);
+		break;
+	case TPM_ALG_SM3_256:
+		memcpy(pcr_ext_cmd.digests.digests[0].digest.sm3_256, in_digest, in_digest_len);
+		break;
+	default:
+		return TPM_E_HASH_ERROR;
+	}
 	response = tpm_process_command(TPM2_PCR_Extend, &pcr_ext_cmd);
 
 	printk(BIOS_INFO, "%s: response is %x\n",

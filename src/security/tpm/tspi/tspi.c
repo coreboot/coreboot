@@ -210,11 +210,28 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 			uint8_t *digest, size_t digest_len, const char *name)
 {
 	uint32_t result;
+	uint16_t algorithm = 0;
 
 	if (!digest)
 		return TPM_E_IOERROR;
 
-	result = tlcl_extend(pcr, digest, NULL);
+#if CONFIG(TPM2)
+	switch (digest_algo) {
+	case VB2_HASH_SHA1:
+		algorithm = TPM_ALG_SHA1;
+		break;
+	case VB2_HASH_SHA256:
+		algorithm = TPM_ALG_SHA256;
+		break;
+	case VB2_HASH_SHA512:
+		algorithm = TPM_ALG_SHA512;
+		break;
+	default:
+		return TPM_E_HASH_ERROR;
+	}
+#endif
+
+	result = tlcl_extend(pcr, algorithm, digest, digest_len, NULL);
 	if (result != TPM_SUCCESS)
 		return result;
 

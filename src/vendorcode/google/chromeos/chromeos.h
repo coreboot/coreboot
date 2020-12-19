@@ -45,6 +45,7 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
 void cbmem_add_vpd_calibration_data(void);
+void chromeos_set_me_hash(u32*, int);
 
 /**
  * get_dsm_calibration_from_key - Gets value related to DSM calibration from VPD

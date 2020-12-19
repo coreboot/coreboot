@@ -30,10 +30,9 @@ static void mainboard_init(struct device *dev)
 	setup_mmu(DRAM_INITIALIZED);
 	setup_usb();
 
-	if (CONFIG(CHROMEOS)) {
-		/* Copy WIFI calibration data into CBMEM. */
+	/* Copy WIFI calibration data into CBMEM. */
+	if (CONFIG(CHROMEOS))
 		cbmem_add_vpd_calibration_data();
-	}
 
 	/*
 	 * Make sure bootloader can issue sounds The frequency is calculated

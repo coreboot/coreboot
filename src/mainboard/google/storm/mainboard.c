@@ -76,10 +76,9 @@ static void mainboard_init(struct device *dev)
 	 /* Functionally a 0-cost no-op if NAND is not present */
 	 board_nand_init();
 
-#if CONFIG(CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */
-	cbmem_add_vpd_calibration_data();
-#endif
+	if (CONFIG(CHROMEOS))
+		cbmem_add_vpd_calibration_data();
 
 	/*
 	 * Make sure bootloader can issue sounds The frequency is calculated

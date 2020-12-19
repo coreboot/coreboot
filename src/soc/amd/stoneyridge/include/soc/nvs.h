@@ -9,9 +9,7 @@
 #ifndef __SOC_STONEYRIDGE_NVS_H__
 #define __SOC_STONEYRIDGE_NVS_H__
 
-#include <commonlib/helpers.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/southbridge.h>
 
 struct __packed global_nvs {
@@ -32,12 +30,6 @@ struct __packed global_nvs {
 	uint32_t	fw01; /* 0x28 - XhciFwRamAddr_Rom, Boot RAM sz/base */
 	uint32_t	fw03; /* 0x2c - XhciFwRomAddr_Ram, Instr RAM sz/base */
 	uint32_t	eh10; /* 0x30 - EHCI BAR */
-	uint8_t		unused[204];
-
-	/* ChromeOS specific (0x100 - 0xfff) */
-	chromeos_acpi_t chromeos;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif /* __SOC_STONEYRIDGE_NVS_H__ */

@@ -8,14 +8,13 @@
 void *acpi_get_gnvs(void);
 void *gnvs_get_or_create(void);
 
-void gnvs_assign_chromeos(void);
+void gnvs_assign_chromeos(void *gnvs_section);
 void gnvs_set_ecfw_rw(void);
 
 /* Platform code must implement these. */
 struct global_nvs;
 size_t gnvs_size_of_array(void);
 uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs);
-void *gnvs_chromeos_ptr(struct global_nvs *gnvs);
 
 /*
  * These functions populate the gnvs structure in acpi table.

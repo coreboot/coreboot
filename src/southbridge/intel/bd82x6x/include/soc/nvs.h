@@ -3,9 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_BD82X6X_NVS_H
 #define SOUTHBRIDGE_INTEL_BD82X6X_NVS_H
 
-#include <commonlib/helpers.h>
 #include <stdint.h>
-#include "vendorcode/google/chromeos/gnvs.h"
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -103,12 +101,6 @@ struct __packed global_nvs {
 
 	u8	tpiq; /* 0xf5 - trackpad IRQ value */
 	u32     cbmc;
-	u8	rsvd13[6]; /* 0xfa - rsvd */
-
-	/* ChromeOS specific (starts at 0x100)*/
-	chromeos_acpi_t chromeos;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif /* SOUTHBRIDGE_INTEL_BD82X6X_NVS_H */

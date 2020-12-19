@@ -4,8 +4,6 @@
 #define _BAYTRAIL_NVS_H_
 
 #include <stdint.h>
-#include <commonlib/helpers.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>
 
 struct __packed global_nvs {
@@ -50,12 +48,10 @@ struct __packed global_nvs {
 	u8	unused[76];
 
 	/* ChromeOS specific (0x100-0xfff) */
-	chromeos_acpi_t chromeos;
+	u8	chromeos_reserve[0xf00];
 
 	/* Baytrail LPSS (0x1000) */
 	device_nvs_t dev;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif /* _BAYTRAIL_NVS_H_ */

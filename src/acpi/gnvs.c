@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <types.h>
+#include <vendorcode/google/chromeos/gnvs.h>
 
 static void *gnvs;
 
@@ -53,6 +54,14 @@ void *gnvs_get_or_create(void)
 	if (!gnvs_size)
 		return NULL;
 
+	/* Match with OpRegion declared in global_nvs.asl. */
+	if (gnvs_size < 0x100)
+		gnvs_size = 0x100;
+	if (gnvs_size > 0x1000)
+		gnvs_size = 0x2000;
+	else if (CONFIG(MAINBOARD_HAS_CHROMEOS))
+		gnvs_size = 0x1000;
+
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size);
 	if (!gnvs)
 		return NULL;
@@ -63,7 +72,7 @@ void *gnvs_get_or_create(void)
 		gnvs_assign_cbmc();
 
 	if (CONFIG(CHROMEOS))
-		gnvs_assign_chromeos();
+		gnvs_assign_chromeos((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
 
 	return gnvs;
 }

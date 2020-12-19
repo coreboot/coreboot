@@ -100,7 +100,6 @@ struct __packed global_nvs {
 	u8	xhci;
 
 	u32     cbmc;
-	u8	rsvd13[72]; /* rsvd */
 };
 
 #endif /* SOUTHBRIDGE_INTEL_IBEXPEAK_NVS_H */

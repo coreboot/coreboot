@@ -3,9 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_LYNXPOINT_NVS_H
 #define SOUTHBRIDGE_INTEL_LYNXPOINT_NVS_H
 
-#include <commonlib/helpers.h>
 #include <stdint.h>
-#include "vendorcode/google/chromeos/gnvs.h"
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -75,12 +73,6 @@ struct __packed global_nvs {
 	u32	s0b[8]; /* 0x60 - 0x7f - BAR0 */
 	u32	s1b[8]; /* 0x80 - 0x9f - BAR1 */
 	u32	cbmc;   /* 0xa0 - 0xa3 - coreboot memconsole */
-	u8	rsvd6[92];
-
-	/* ChromeOS specific (starts at 0x100)*/
-	chromeos_acpi_t chromeos;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif /* SOUTHBRIDGE_INTEL_LYNXPOINT_NVS_H */

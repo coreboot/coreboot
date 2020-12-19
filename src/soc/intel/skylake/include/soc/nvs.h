@@ -4,8 +4,6 @@
 #define _SOC_NVS_H_
 
 #include <stdint.h>
-#include <commonlib/helpers.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -48,12 +46,6 @@ struct __packed global_nvs {
 	u64	elng; /* 0x4C - 0x53 EPC Length */
 	u64	a4gb; /* 0x54 - 0x5B Base of above 4GB MMIO Resource */
 	u64	a4gs; /* 0x5C - 0x63 Length of above 4GB MMIO Resource */
-	u8	rsvd[156];
-
-	/* ChromeOS specific (0x100 - 0xfff) */
-	chromeos_acpi_t chromeos;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif

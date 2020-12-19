@@ -4,8 +4,6 @@
 #define SOC_INTEL_COMMON_BLOCK_NVS_H
 
 #include <stdint.h>
-#include <commonlib/helpers.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -28,12 +26,6 @@ struct __packed global_nvs {
 	u8	uior; /* 0x2f - UART debug controller init on S3 resume */
 	u64	a4gb; /* 0x30 - 0x37 Base of above 4GB MMIO Resource */
 	u64	a4gs; /* 0x38 - 0x3f Length of above 4GB MMIO Resource */
-	u8	unused[192];
-
-	/* ChromeOS specific (0x100 - 0xfff) */
-	chromeos_acpi_t	chromeos;
 };
-
-check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 #endif

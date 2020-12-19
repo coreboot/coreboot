@@ -98,7 +98,6 @@ struct __packed global_nvs {
 	u8	bten;
 
 	u32     cbmc;
-	u8	rsvd13[10];
 };
 
 #endif /* SOUTHBRIDGE_INTEL_I82801IX_NVS_H */

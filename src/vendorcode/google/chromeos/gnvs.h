@@ -10,10 +10,7 @@
 
 /*
  * chromeos_acpi_t portion of ACPI GNVS is assumed to live at
- * 0x100 - 0x1000.  When defining global_nvs, use check_member
- * to ensure that it is properly aligned:
- *
- *   check_member(global_nvs, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
+ * 0x100 - 0x1000.
  */
 #define GNVS_CHROMEOS_ACPI_OFFSET 0x100
 

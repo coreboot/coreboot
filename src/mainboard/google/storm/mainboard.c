@@ -110,8 +110,7 @@ void lb_board(struct lb_header *header)
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = REGION_SIZE(dma_coherent);
 
-#if CONFIG(CHROMEOS)
 	/* Retrieve the switch interface MAC addresses. */
-	lb_table_add_macs_from_vpd(header);
-#endif
+	if (CONFIG(CHROMEOS))
+		lb_table_add_macs_from_vpd(header);
 }

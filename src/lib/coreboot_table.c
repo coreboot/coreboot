@@ -152,7 +152,6 @@ void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
 	gpios->size += table_size;
 }
 
-#if CONFIG(CHROMEOS)
 static void lb_gpios(struct lb_header *header)
 {
 	struct lb_gpios *gpios;
@@ -191,6 +190,7 @@ static void lb_gpios(struct lb_header *header)
 	}
 }
 
+#if CONFIG(CHROMEOS)
 static void lb_vbnv(struct lb_header *header)
 {
 #if CONFIG(PC80_SYSTEM)
@@ -487,10 +487,11 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Record our framebuffer */
 	lb_framebuffer(head);
 
-#if CONFIG(CHROMEOS)
 	/* Record our GPIO settings (ChromeOS specific) */
-	lb_gpios(head);
+	if (CONFIG(CHROMEOS))
+		lb_gpios(head);
 
+#if CONFIG(CHROMEOS)
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
 #endif
@@ -511,9 +512,8 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Add board-specific table entries, if any. */
 	lb_board(head);
 
-#if CONFIG(CHROMEOS_RAMOOPS)
-	lb_ramoops(head);
-#endif
+	if (CONFIG(CHROMEOS_RAMOOPS))
+		lb_ramoops(head);
 
 	lb_boot_media_params(head);
 

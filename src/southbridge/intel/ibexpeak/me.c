@@ -23,10 +23,6 @@
 #include "me.h"
 #include "pch.h"
 
-#if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/gnvs.h>
-#endif
-
 /* Path that the BIOS should take based on ME state */
 static const char *me_bios_path_values[] __unused = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
@@ -537,11 +533,6 @@ static int intel_me_extend_valid(struct device *dev)
 		printk(BIOS_DEBUG, "%08x", extend[i]);
 	}
 	printk(BIOS_DEBUG, "\n");
-
-#if CONFIG(CHROMEOS)
-	/* Save hash in NVS for the OS to verify */
-	chromeos_set_me_hash(extend, count);
-#endif
 
 	return 0;
 }

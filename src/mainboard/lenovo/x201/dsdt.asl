@@ -20,7 +20,7 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 
 	/* global NVS and variables */
-	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
+	#include <southbridge/intel/ibexpeak/acpi/globalnvs.asl>
 
 	/* General Purpose Events */
 	#include "acpi/gpe.asl"

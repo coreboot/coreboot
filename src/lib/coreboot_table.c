@@ -27,13 +27,6 @@
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
-#if CONFIG(CHROMEOS)
-#if CONFIG(HAVE_ACPI_TABLES)
-#include <acpi/acpi.h>
-#endif
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <vendorcode/google/chromeos/gnvs.h>
-#endif
 #if CONFIG(PLATFORM_USES_FSP2_0)
 #include <fsp/util.h>
 #else

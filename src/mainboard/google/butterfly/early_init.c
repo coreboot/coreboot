@@ -7,9 +7,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
 
 void mainboard_late_rcba_config(void)
 {

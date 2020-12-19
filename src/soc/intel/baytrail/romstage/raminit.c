@@ -17,8 +17,6 @@
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
 #include <security/vboot/vboot_common.h>
 
 uintptr_t smbus_base(void)

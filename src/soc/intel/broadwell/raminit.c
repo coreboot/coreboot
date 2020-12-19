@@ -9,11 +9,6 @@
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <string.h>
-#if CONFIG(EC_GOOGLE_CHROMEEC)
-#include <ec/google/chromeec/ec.h>
-#include <ec/google/chromeec/ec_commands.h>
-#endif
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/iomap.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>

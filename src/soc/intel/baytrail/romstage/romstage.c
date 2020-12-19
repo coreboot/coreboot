@@ -6,9 +6,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cbmem.h>
-#if CONFIG(EC_GOOGLE_CHROMEEC)
-#include <ec/google/chromeec/ec.h>
-#endif
 #include <elog.h>
 #include <romstage_handoff.h>
 #include <string.h>

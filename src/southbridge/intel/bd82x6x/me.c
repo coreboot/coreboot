@@ -23,10 +23,6 @@
 #include "me.h"
 #include "pch.h"
 
-#if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/gnvs.h>
-#endif
-
 /* Send END OF POST message to the ME */
 static int __unused mkhi_end_of_post(void)
 {

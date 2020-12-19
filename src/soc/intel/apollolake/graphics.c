@@ -17,7 +17,8 @@ static void graphics_configure_panelpower(
 	const unsigned int offset = panel_idx * 0x100;
 	uint32_t reg32;
 
-	reg32 = ((DIV_ROUND_UP(pp->cycle_delay_ms, 100) + 1) & 0x1f) | PANEL_POWER_RESET;
+	reg32 = (DIV_ROUND_UP(pp->cycle_delay_ms, 100) + 1) << 4 & 0x1f0;
+	reg32 |= PANEL_POWER_RESET;
 	write32(mmio + PCH_PP_CONTROL + offset, reg32);
 
 	reg32 = pp->up_delay_ms * 10 << 16;

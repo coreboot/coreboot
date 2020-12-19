@@ -515,12 +515,8 @@ static void igd_init(struct device *dev)
 
 	/* Wait for any configured pre-graphics delay */
 	if (!acpi_is_wakeup_s3()) {
-#if CONFIG(CHROMEOS)
-		if (display_init_required())
+		if (!CONFIG(CHROMEOS) || display_init_required())
 			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
-#else
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
-#endif
 	}
 
 	/* Early init steps */

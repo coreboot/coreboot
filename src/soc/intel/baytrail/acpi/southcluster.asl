@@ -136,11 +136,17 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 			0x00010000,,, FSEG)
 
-	// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
+	// LPEA Memory Region (0x20000000-0x201FFFFF)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
-			0x00000000,,, PMEM)
+			0x00000000,,, LMEM)
+
+	// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
+	DwordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadWrite,
+			0x00000000, 0x00000000, 0x00000000, 0x00000000,
+                        0x00000000,,, PMEM)
 
 	// TPM Area (0xfed40000-0xfed44fff)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
@@ -152,10 +158,27 @@ Name (MCRS, ResourceTemplate()
 Method (_CRS, 0, Serialized)
 {
 
+	/* Update LPEA resource area */
+	CreateDWordField (MCRS, ^LMEM._MIN, LMIN)
+	CreateDWordField (MCRS, ^LMEM._MAX, LMAX)
+	CreateDWordField (MCRS, ^LMEM._LEN, LLEN)
+	If (LAnd (LNotEqual (LPFW, Zero), LEqual (LPEN, One)))
+	{
+		Store (LPFW, LMIN)
+		Store (0x00100000, LLEN)
+		Subtract (Add (LMIN, LLEN), One, LMAX)
+	}
+	Else
+	{
+		Store (Zero, LMIN)
+		Store (Zero, LMAX)
+		Store (Zero, LLEN)
+	}
+
 	/* Update PCI resource area */
-	CreateDwordField(MCRS, ^PMEM._MIN, PMIN)
-	CreateDwordField(MCRS, ^PMEM._MAX, PMAX)
-	CreateDwordField(MCRS, ^PMEM._LEN, PLEN)
+	CreateDWordField (MCRS, ^PMEM._MIN, PMIN)
+	CreateDWordField (MCRS, ^PMEM._MAX, PMAX)
+	CreateDWordField (MCRS, ^PMEM._LEN, PLEN)
 
 	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
 	Store (\TOLM, PMIN)

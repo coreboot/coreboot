@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <boardid.h>
 #include <string.h>
+#include <ec/google/chromeec/ec.h>
 #include <fsp/soc_binding.h>
 #include <soc/romstage.h>
 #include <console/console.h>
 #include "spd/spd.h"
+#include "ec.h"
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
@@ -41,4 +44,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		printk(BIOS_WARNING, "Limiting memory to 1600MHz\n");
 		mem_cfg->DdrFreqLimit = 1600;
 	}
+
+	/* Turn on keyboard backlight to indicate we are booting */
+	if (!acpi_is_wakeup_s3())
+		google_chromeec_kbbacklight(50);
 }

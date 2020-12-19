@@ -15,6 +15,8 @@
 #include "me.h"
 #include "pch.h"
 
+#include <vendorcode/google/chromeos/chromeos.h>
+
 /* Path that the BIOS should take based on ME state */
 static const char *const me_bios_path_values[] = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
@@ -362,10 +364,6 @@ int intel_mei_setup(struct device *dev)
 	return 0;
 }
 
-#if CONFIG(CHROMEOS)
-#include <vendorcode/google/chromeos/chromeos.h>
-#endif
-
 /* Read the Extend register hash of ME firmware */
 int intel_me_extend_valid(struct device *dev)
 {
@@ -405,10 +403,9 @@ int intel_me_extend_valid(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-#if CONFIG(CHROMEOS)
 	/* Save hash in NVS for the OS to verify */
-	chromeos_set_me_hash(extend, count);
-#endif
+	if (CONFIG(CHROMEOS))
+		chromeos_set_me_hash(extend, count);
 
 	return 0;
 }

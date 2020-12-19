@@ -549,7 +549,6 @@
 #define   I915_BSD_USER_INTERRUPT                      (1<<25)
 #define EIR		0x020b0
 #define EMR		0x020b4
-#define ESR		0x020b8
 #define   GM45_ERROR_PAGE_TABLE				(1<<5)
 #define   GM45_ERROR_MEM_PRIV				(1<<4)
 #define   I915_ERROR_PAGE_TABLE				(1<<4)

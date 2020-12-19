@@ -117,6 +117,16 @@ config NO_GFX_INIT
 
 endchoice
 
+config PRE_GRAPHICS_DELAY
+	int "Graphics initialization delay in ms"
+	default 0
+	depends on VGA_ROM_RUN
+	help
+	  On some systems, coreboot boots so fast that connected monitors
+	  (mostly TVs) won't be able to wake up fast enough to talk to the
+	  VBIOS. On those systems we need to wait for a bit before executing
+	  the VBIOS.
+
 config ONBOARD_VGA_IS_PRIMARY
 	bool "Use onboard VGA as primary video device"
 	default n

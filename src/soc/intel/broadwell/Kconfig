@@ -141,15 +141,6 @@ config RO_REGION_ONLY
 
 endif # HAVE_MRC
 
-config PRE_GRAPHICS_DELAY
-	int "Graphics initialization delay in ms"
-	default 0
-	help
-	  On some systems, coreboot boots so fast that connected monitors
-	  (mostly TVs) won't be able to wake up fast enough to talk to the
-	  VBIOS. On those systems we need to wait for a bit before executing
-	  the VBIOS.
-
 config INTEL_PCH_UART_CONSOLE
 	bool "Use Serial IO UART for console"
 	default n

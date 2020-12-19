@@ -90,15 +90,6 @@ config HASWELL_HIDE_PEG_FROM_MRC
 	  However, it prevents MRC from programming PEG AFE registers,
 	  which can make PEG devices unstable. When unsure, choose N.
 
-config PRE_GRAPHICS_DELAY
-	int "Graphics initialization delay in ms"
-	default 0
-	help
-	  On some systems, coreboot boots so fast that connected monitors
-	  (mostly TVs) won't be able to wake up fast enough to talk to the
-	  VBIOS. On those systems we need to wait for a bit before executing
-	  the VBIOS.
-
 # The UEFI System Agent binary needs to be at a fixed offset in the flash
 # and can therefore only reside in the COREBOOT fmap region
 config RO_REGION_ONLY

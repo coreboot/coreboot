@@ -513,12 +513,6 @@ static void igd_init(struct device *dev)
 	if (!CONFIG(NO_GFX_INIT))
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
-	/* Wait for any configured pre-graphics delay */
-	if (!acpi_is_wakeup_s3()) {
-		if (!CONFIG(CHROMEOS) || display_init_required())
-			mdelay(CONFIG_PRE_GRAPHICS_DELAY);
-	}
-
 	/* Early init steps */
 	if (is_broadwell) {
 		reg_script_run_on_dev(dev, broadwell_early_init_script);

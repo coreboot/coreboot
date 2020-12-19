@@ -11,7 +11,7 @@
 #define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
 #define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
 #else
-#if defined(__GLIBC__) && (defined(__i386__) || defined(__x86_64__))
+#if defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))

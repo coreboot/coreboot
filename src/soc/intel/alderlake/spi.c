@@ -6,8 +6,10 @@
  * Chapter number: 7
  */
 
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/spi.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
 
 int spi_soc_devfn_to_bus(unsigned int devfn)
 {
@@ -24,4 +26,9 @@ int spi_soc_devfn_to_bus(unsigned int devfn)
 		return 4;
 	}
 	return -1;
+}
+
+uint32_t soc_get_spi_dmi_destination_id(void)
+{
+	return SPI_DMI_DESTINATION_ID;
 }

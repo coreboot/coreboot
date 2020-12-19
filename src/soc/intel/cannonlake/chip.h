@@ -5,6 +5,7 @@
 
 #include <intelblocks/cfg.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <drivers/intel/gma/gma.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
@@ -437,6 +438,10 @@ struct soc_intel_cannonlake_config {
 	 * Only override CPU flex ratio if don't want to boot with non-turbo max.
 	 */
 	uint8_t cpu_ratio_override;
+
+	struct i915_gpu_panel_config panel_cfg;
+
+	struct i915_gpu_controller_info gfx;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

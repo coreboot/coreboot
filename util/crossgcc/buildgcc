@@ -777,6 +777,7 @@ build_cross_GCC() {
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION $CROSSGCC_DATE" \
 		&& \
 	mkdir -p gcc/$TARGETARCH && \
+	rm -f "gcc/$TARGETARCH/$GCC_VERSION" && \
 	ln -s "$DESTDIR$TARGETDIR/$TARGETARCH/bin" "gcc/$TARGETARCH/$GCC_VERSION" && \
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-gcc && \
 	$MAKE install-gcc DESTDIR="$DESTDIR" || touch .failed

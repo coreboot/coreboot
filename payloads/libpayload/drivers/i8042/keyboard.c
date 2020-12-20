@@ -259,7 +259,7 @@ static enum keyboard_state {
 	STATE_ENABLE_SCAN,
 	STATE_RUNNING,
 	STATE_RUNNING_ECHO,
-	STATE_IGNORE,
+	STATE_DETENTION,
 } keyboard_state;
 
 #define STATE_NAMES_ENTRY(name) [STATE_##name] = #name
@@ -279,7 +279,7 @@ static const char *const state_names[] = {
 	STATE_NAMES_ENTRY(ENABLE_SCAN),
 	STATE_NAMES_ENTRY(RUNNING),
 	STATE_NAMES_ENTRY(RUNNING_ECHO),
-	STATE_NAMES_ENTRY(IGNORE),
+	STATE_NAMES_ENTRY(DETENTION),
 };
 
 __attribute__((unused))
@@ -455,8 +455,9 @@ static void keyboard_poll(void)
 		state_time = timer_us(0);
 		break;
 
-	case STATE_IGNORE:
-		/* TODO: Try again after timeout if it ever seems useful. */
+	case STATE_DETENTION:
+		if (timer_us(state_time) > 5*1000*1000)
+			next_state = STATE_HOTPLUG;
 		break;
 
 	}
@@ -467,11 +468,11 @@ static void keyboard_poll(void)
 	case STATE_HOTPLUG_ECHO:
 	case STATE_RUNNING:
 	case STATE_RUNNING_ECHO:
-	case STATE_IGNORE:
+	case STATE_DETENTION:
 		break;
 	default:
 		if (timer_us(keyboard_time) > 30*1000*1000)
-			next_state = STATE_IGNORE;
+			next_state = STATE_DETENTION;
 		break;
 	}
 

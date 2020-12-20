@@ -55,6 +55,9 @@ const char *smbios_chassis_version(void);
 const char *smbios_chassis_serial_number(void);
 const char *smbios_processor_serial_number(void);
 
+/* This string could be filled late in payload. */
+void smbios_type0_bios_version(uintptr_t address);
+
 void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision);
 
 unsigned int smbios_memory_error_correction_type(struct memory_info *meminfo);

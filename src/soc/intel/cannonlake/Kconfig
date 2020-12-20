@@ -1,25 +1,6 @@
 config SOC_INTEL_CANNONLAKE_BASE
 	bool
 
-config SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS
-	bool
-	default y if SOC_INTEL_CANNONLAKE_BASE && !SOC_INTEL_CANNONLAKE
-	help
-	  Single Kconfig option to select common base Cannonlake support.
-	  This Kconfig will help to select majority of CNL SoC features.
-	  Major difference that exist today between
-	  SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS and SOC_INTEL_CANNONLAKE Kconfig
-	  are in FSP Header Files. Hence this Kconfig might help to select
-	  required SoC support FSP headers. Any future Intel SoC would
-	  like to make use of CNL support might just select this Kconfig.
-
-config SOC_INTEL_CANNONLAKE
-	bool
-	select SOC_INTEL_CANNONLAKE_BASE
-	select MICROCODE_BLOB_NOT_IN_BLOB_REPO
-	help
-	  Intel Cannonlake support
-
 config SOC_INTEL_COFFEELAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
@@ -89,7 +70,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_FSP_GOP
 	select HAVE_FSP_LOGO_SUPPORT
 	select HAVE_SMI_HANDLER
-	select HECI_DISABLE_USING_SMM if !SOC_INTEL_COFFEELAKE && !SOC_INTEL_WHISKEYLAKE && !SOC_INTEL_COMETLAKE
 	select IDT_IN_EVERY_STAGE
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select INTEL_GMA_ACPI
@@ -338,7 +318,6 @@ config FSP_HEADER_PATH
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake2/Include/" if SOC_INTEL_COMETLAKE_2
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeS/Include/" if SOC_INTEL_COMETLAKE_S
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLakeV/Include/" if SOC_INTEL_COMETLAKE_V
-	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/" if SOC_INTEL_CANNONLAKE
 
 config FSP_FD_PATH
 	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE

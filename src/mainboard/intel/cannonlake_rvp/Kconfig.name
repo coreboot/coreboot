@@ -1,4 +1,0 @@
-config BOARD_INTEL_CANNONLAKE_RVPU
-	bool "Cannonlake U LPDDR4 RVP"
-config BOARD_INTEL_CANNONLAKE_RVPY
-	bool "Cannonlake Y LPDDR4 RVP"

@@ -279,6 +279,9 @@ const struct pad_config *gpio_table(size_t *num)
 
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table_config[] = {
+	PAD_CFG_NF(GPIO_46, UP_20K, DEEP, NF1), /* LPSS_UART2_RXD */
+	PAD_CFG_NF(GPIO_47, UP_20K, DEEP, NF1), /* LPSS_UART2_TXD */
+
 	PAD_CFG_NF(GPIO_134, UP_20K, DEEP, NF2), /* ISH_I2C0_SDA/IO-OD */
 	PAD_CFG_NF(GPIO_135, UP_20K, DEEP, NF2), /* ISH_I2C0_SCL/IO-OD */
 	PAD_CFG_NF(GPIO_136, UP_20K, DEEP, NF2), /* ISH_I2C1_SDA/IO-OD */

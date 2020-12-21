@@ -123,6 +123,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->D3ColdEnable = !config->TcssD3ColdDisable;
 
+	params->UsbTcPortEn = config->UsbTcPortEn;
 	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)
 		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];

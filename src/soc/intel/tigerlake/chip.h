@@ -328,6 +328,13 @@ struct soc_intel_tigerlake_config {
 	uint8_t TcssXdciEn;
 
 	/*
+	 * Specifies which Type-C Ports are enabled on the system
+	 * each bit represents a port starting at 0
+	 * Example: set value to 0x3 for ports 0 and 1 to be enabled
+	 */
+	uint8_t UsbTcPortEn;
+
+	/*
 	 * IOM Port Config
 	 * If a port orientation needs to be controlled by the SOC this setting must be
 	 * updated to reflect the correct GPIOs being used for the SOC port flipping.

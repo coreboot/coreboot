@@ -292,6 +292,16 @@ const struct pad_config *__weak variant_early_override_gpio_table(size_t *num)
 	return NULL;
 }
 
+static const struct pad_config early_bootblock_gpio_table[] = {
+	PAD_NC(GPIO_154, NONE), /* LPC_CLKRUNB -- NC for eSPI */
+};
+
+const struct pad_config *mainboard_early_bootblock_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_bootblock_gpio_table);
+	return early_bootblock_gpio_table;
+}
+
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPIO_190, NONE, DEEP), /* PCH_WP_OD */

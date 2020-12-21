@@ -6,8 +6,8 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
+#include <soc/device_nvs.h>
 #include <soc/iosf.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include "chip.h"

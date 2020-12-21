@@ -5,12 +5,6 @@
 #include <variant/variants.h>
 #include "variants/baseboard/include/eeprom.h"
 
-static fsp_params parmas_list[] = {
-	GET_VALUE(RMT),
-	GET_VALUE(HyperThreading),
-	GET_VALUE(BootFrequency)
-};
-
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	memupd->FspmConfig.UserBd = 7;
@@ -19,13 +13,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	cannonlake_memcfg_init(&memupd->FspmConfig, variant_memcfg_config());
 
 	/* Overwrite memupd */
-	if (!check_signature(EEPROM_OFFSET_FSP_SIGNATURE, FSP_UPD_SIGNATURE))
+	if (!check_signature(offsetof(struct eeprom_layout, mupd), FSPM_UPD_SIGNATURE))
 		return;
 
-	for (size_t i = 0; i < ARRAY_SIZE(parmas_list); i++) {
-		read_write_config(memupd, EEPROM_OFFSET_FSP_CONFIG +
-			parmas_list[i].offset,
-			EEPROM_OFFSET_FSP_CONFIG + parmas_list[i].offset,
-			parmas_list[i].size);
-	}
+	READ_EEPROM_FSP_M(memupd, FspmConfig.RMT);
+	READ_EEPROM_FSP_M(memupd, FspmConfig.HyperThreading);
+	READ_EEPROM_FSP_M(memupd, FspmConfig.BootFrequency);
+	READ_EEPROM_FSP_M(memupd, FspmTestConfig.VtdDisable);
 }

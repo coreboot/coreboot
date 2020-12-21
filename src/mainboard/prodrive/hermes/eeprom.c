@@ -11,8 +11,6 @@
 
 #define I2C_ADDR_EEPROM 0x57
 
-#define EEPROM_OFFSET_BOARD_SETTINGS 0x1f00
-
 /*
  * Check Signature in EEPROM (M24C32-FMN6TP)
  * If signature is there we assume that that the content is valid
@@ -39,7 +37,9 @@ int check_signature(const size_t offset, const uint64_t signature)
  */
 static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_cfg)
 {
-	if (read_write_config(board_cfg, EEPROM_OFFSET_BOARD_SETTINGS, 0, sizeof(*board_cfg))) {
+	const size_t board_settings_offset = offsetof(struct eeprom_layout, BoardSettings);
+
+	if (read_write_config(board_cfg, board_settings_offset, 0, sizeof(*board_cfg))) {
 		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
 		return false;
 	}
@@ -100,4 +100,9 @@ bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size
 	pci_write_config32(PCH_DEV_SMBUS, HOSTC, smb_ctrl_reg);
 
 	return ret;
+}
+
+void report_eeprom_error(const size_t off)
+{
+	printk(BIOS_ERR, "MB: Failed to read from EEPROM at addr. 0x%zx\n", off);
 }

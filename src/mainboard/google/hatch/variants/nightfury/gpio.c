@@ -110,6 +110,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* C8  : UART_PCH_RX_DEBUG_TX */
+	PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
+	/* C9  : UART_PCH_TX_DEBUG_RX */
+	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
 	/* C14 : BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_C14, 0, DEEP),
 	/* PCH_WP_OD */

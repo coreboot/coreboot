@@ -63,6 +63,10 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* UART */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* UART2 RX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* UART2 TX */
+
 	/* Audio */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),   /* I2S0_HP_SCLK */
 	PAD_CFG_NF(GPP_R1, NONE, DEEP, NF2),   /* I2S0_HP_SFRM */

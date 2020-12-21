@@ -11,7 +11,7 @@ static void early_config_gpio(void)
 	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }
 
-void bootblock_mainboard_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	early_config_gpio();
 }

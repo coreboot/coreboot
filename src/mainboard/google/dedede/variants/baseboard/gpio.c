@@ -407,6 +407,11 @@ static const struct pad_config early_gpio_table[] = {
 	/* C5  : RAM_STRAP_3 */
 	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
 
+	/* C20 : UART2 RX */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+	/* C21 : UART2 TX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+
 	/* D1  : WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_D1, 1, DEEP),
 

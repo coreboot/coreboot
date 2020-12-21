@@ -165,6 +165,19 @@ chip soc/intel/apollolake
 				register "mic_amp_in_sel" = ""diff""
 				device i2c 1a on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
+				register "probed" = "1"
+				register "property_count" = "1"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
 		end	# - I2C 5
 		device pci 17.2 on
 			chip drivers/i2c/generic

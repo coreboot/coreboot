@@ -310,6 +310,13 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+#if CONFIG(BOARD_INTEL_JASPERLAKE_RVP_EXT_EC)
+	/* UART2 RX */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+
+	/* UART2 TX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+#endif
 
 	/* GSPI1_CS# */
 	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),

@@ -356,6 +356,9 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
+	/* UART */
+	PAD_CFG_NF(GPIO_46, NATIVE, DEEP, NF1),				/* LPSS_UART2_RXD */
+	PAD_CFG_NF_IOSSTATE(GPIO_47, NATIVE, DEEP, NF1, Tx1RxDCRx0),	/* LPSS_UART2_TXD */
 
 	/* Debug tracing. */
 	PAD_CFG_GPI(GPIO_0, DN_20K, DEEP),	/* TRACE_0_CLK_VNN */

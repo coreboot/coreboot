@@ -16,7 +16,8 @@ typedef u32 pci_devfn_t;
 	(((DEV) & 0x1F) << 15) | \
 	(((FN)  & 0x07) << 12))
 
-#define PCI_DEV_INVALID (0xffffffffU)
+#define PCI_DEV_INVALID   (0xffffffffU)
+#define PCI_DEVFN_INVALID (0xffffffffU)
 
 #if 1
 /* FIXME: For most of the time in ramstage, we get valid device pointer

@@ -5,24 +5,13 @@
 
 #include <console/uart.h>
 #include <device/device.h>
-#include <intelblocks/gpio.h>
 #include <stdint.h>
-
-#define MAX_GPIO_PAD_PER_UART		2
-
-struct uart_controller_config {
-	int console_index;
-	/* devfn in PCI_DEVFN() format */
-	unsigned int devfn;
-	struct pad_config gpios[MAX_GPIO_PAD_PER_UART];
-};
 
 /*
  * While using this common UART block for any SOC following is expected from soc
  * 1. SOC will define proper UART_BASE which is base address for UART console.
  * 2. SOC will return correct device pointer based on console index
- * 3. SOC will provide appropriate GPIO pad configuration for UART console
- * 4. SOC will allow common code to set UART into legacy mode if supported.
+ * 3. SOC will allow common code to set UART into legacy mode if supported.
  */
 
 /*

@@ -18,10 +18,9 @@
 #include "chip.h"
 
 #define UART_PCI_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER)
-#define UART_CONSOLE_INVALID_INDEX	0xFF
 
-extern const struct uart_controller_config uart_ctrlr_config[];
-extern const int uart_ctrlr_config_size;
+extern const unsigned int uart_devices[];
+extern const int uart_devices_size;
 
 static void uart_lpss_init(pci_devfn_t dev, uintptr_t baseaddr)
 {
@@ -45,23 +44,9 @@ uintptr_t uart_platform_base(unsigned int idx)
 }
 #endif
 
-static int uart_get_valid_index(void)
-{
-	int index;
-
-	for (index = 0; index < uart_ctrlr_config_size; index++) {
-		if (uart_ctrlr_config[index].console_index ==
-				CONFIG_UART_FOR_CONSOLE)
-			return index;
-	}
-	/* For valid index, code should not reach here */
-	return UART_CONSOLE_INVALID_INDEX;
-}
-
 static pci_devfn_t uart_console_get_pci_bdf(void)
 {
 	int devfn;
-	int index;
 
 	/*
 	 * This function will get called even if INTEL_LPSS_UART_FOR_CONSOLE
@@ -71,11 +56,13 @@ static pci_devfn_t uart_console_get_pci_bdf(void)
 	if (!CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
 		return PCI_DEV_INVALID;
 
-	index = uart_get_valid_index();
-	if (index == UART_CONSOLE_INVALID_INDEX)
+	if (CONFIG_UART_FOR_CONSOLE > uart_devices_size)
 		return PCI_DEV_INVALID;
 
-	devfn = uart_ctrlr_config[index].devfn;
+	devfn = uart_devices[CONFIG_UART_FOR_CONSOLE];
+	if (devfn == PCI_DEVFN_INVALID)
+		return PCI_DEV_INVALID;
+
 	return PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
 }
 
@@ -107,15 +94,6 @@ bool uart_is_controller_initialized(void)
 	return !lpss_is_controller_in_reset(base);
 }
 
-static void uart_configure_gpio_pads(void)
-{
-	int index = uart_get_valid_index();
-
-	if (index != UART_CONSOLE_INVALID_INDEX)
-		gpio_configure_pads(uart_ctrlr_config[index].gpios,
-				MAX_GPIO_PAD_PER_UART);
-}
-
 void uart_bootblock_init(void)
 {
 	const uint32_t baseaddr = CONFIG_CONSOLE_UART_BASE_ADDRESS;
@@ -131,9 +109,6 @@ void uart_bootblock_init(void)
 	pci_s_write_config16(dev, PCI_COMMAND, UART_PCI_ENABLE);
 
 	uart_lpss_init(dev, baseaddr);
-
-	/* Configure the 2 pads per UART. */
-	uart_configure_gpio_pads();
 }
 
 #if ENV_RAMSTAGE

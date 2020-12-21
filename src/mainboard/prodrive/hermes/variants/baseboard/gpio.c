@@ -389,6 +389,18 @@ const struct pad_config early_gpio_table[] = {
 
 	/* LED */
 	PAD_CFG_GPO(GPP_H5, 0, DEEP),			/* PCH_HBLED_n */
+
+	/* UART0 */
+	PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),		/* UART0_RXD */
+	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),		/* UART0_TXD */
+
+	/* UART1 */
+	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),		/* UART1_RXD */
+	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),		/* UART1_TXD */
+
+	/* UART2 */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),		/* UART2_RXD */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),		/* UART2_TXD */
 };
 
 void program_gpio_pads(void)

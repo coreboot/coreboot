@@ -1,0 +1,295 @@
+chip soc/intel/alderlake
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_E"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
+	register "SaGv" = "SaGv_Disabled"
+
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_SA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_VLCC]" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_SA]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_VLCC]" = "1"
+
+	device domain 0 on
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end
+		device ref i2c1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x5d on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SIS9815""
+				register "generic.desc" = ""SIS Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_delay_ms" = "100"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "7"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x00"
+				device i2c 5c on end
+			end
+		end
+		device ref i2c2 on
+			chip drivers/i2c/sx9324
+				register "desc" = ""SAR1 Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_H19_IRQ)"
+				register "speed" = "I2C_SPEED_FAST"
+				register "uid" = "2"
+				register "reg_gnrl_ctrl0" = "0x16"
+				register "reg_gnrl_ctrl1" = "0x21"
+				register "reg_afe_ctrl0" = "0x00"
+				register "reg_afe_ctrl1" = "0x10"
+				register "reg_afe_ctrl2" = "0x00"
+				register "reg_afe_ctrl3" = "0x00"
+				register "reg_afe_ctrl4" = "0x07"
+				register "reg_afe_ctrl5" = "0x00"
+				register "reg_afe_ctrl6" = "0x00"
+				register "reg_afe_ctrl7" = "0x07"
+				register "reg_afe_ctrl8" = "0x12"
+				register "reg_afe_ctrl9" = "0x0f"
+				register "reg_prox_ctrl0" = "0x12"
+				register "reg_prox_ctrl1" = "0x12"
+				register "reg_prox_ctrl2" = "0x90"
+				register "reg_prox_ctrl3" = "0x60"
+				register "reg_prox_ctrl4" = "0x0c"
+				register "reg_prox_ctrl5" = "0x12"
+				register "reg_prox_ctrl6" = "0x3c"
+				register "reg_prox_ctrl7" = "0x58"
+				register "reg_adv_ctrl0" = "0x00"
+				register "reg_adv_ctrl1" = "0x00"
+				register "reg_adv_ctrl2" = "0x00"
+				register "reg_adv_ctrl3" = "0x00"
+				register "reg_adv_ctrl4" = "0x00"
+				register "reg_adv_ctrl5" = "0x05"
+				register "reg_adv_ctrl6" = "0x00"
+				register "reg_adv_ctrl7" = "0x00"
+				register "reg_adv_ctrl8" = "0x00"
+				register "reg_adv_ctrl9" = "0x00"
+				register "reg_adv_ctrl10" = "0x5c"
+				register "reg_adv_ctrl11" = "0x52"
+				register "reg_adv_ctrl12" = "0xb5"
+				register "reg_adv_ctrl13" = "0x00"
+				register "reg_adv_ctrl14" = "0x80"
+				register "reg_adv_ctrl15" = "0x0c"
+				register "reg_adv_ctrl16" = "0x38"
+				register "reg_adv_ctrl17" = "0x56"
+				register "reg_adv_ctrl18" = "0x33"
+				register "reg_adv_ctrl19" = "0xf0"
+				register "reg_adv_ctrl20" = "0xf0"
+				device i2c 28 on end
+			end
+			chip drivers/i2c/sx9324
+				register "desc" = ""SAR2 Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "speed" = "I2C_SPEED_FAST"
+				register "uid" = "2"
+				register "reg_gnrl_ctrl0" = "0x16"
+				register "reg_gnrl_ctrl1" = "0x21"
+				register "reg_afe_ctrl0" = "0x00"
+				register "reg_afe_ctrl1" = "0x10"
+				register "reg_afe_ctrl2" = "0x00"
+				register "reg_afe_ctrl3" = "0x00"
+				register "reg_afe_ctrl4" = "0x07"
+				register "reg_afe_ctrl5" = "0x00"
+				register "reg_afe_ctrl6" = "0x00"
+				register "reg_afe_ctrl7" = "0x07"
+				register "reg_afe_ctrl8" = "0x12"
+				register "reg_afe_ctrl9" = "0x0f"
+				register "reg_prox_ctrl0" = "0x12"
+				register "reg_prox_ctrl1" = "0x12"
+				register "reg_prox_ctrl2" = "0x90"
+				register "reg_prox_ctrl3" = "0x60"
+				register "reg_prox_ctrl4" = "0x0c"
+				register "reg_prox_ctrl5" = "0x12"
+				register "reg_prox_ctrl6" = "0x3c"
+				register "reg_prox_ctrl7" = "0x58"
+				register "reg_adv_ctrl0" = "0x00"
+				register "reg_adv_ctrl1" = "0x00"
+				register "reg_adv_ctrl2" = "0x00"
+				register "reg_adv_ctrl3" = "0x00"
+				register "reg_adv_ctrl4" = "0x00"
+				register "reg_adv_ctrl5" = "0x05"
+				register "reg_adv_ctrl6" = "0x00"
+				register "reg_adv_ctrl7" = "0x00"
+				register "reg_adv_ctrl8" = "0x00"
+				register "reg_adv_ctrl9" = "0x00"
+				register "reg_adv_ctrl10" = "0x5c"
+				register "reg_adv_ctrl11" = "0x52"
+				register "reg_adv_ctrl12" = "0xb5"
+				register "reg_adv_ctrl13" = "0x00"
+				register "reg_adv_ctrl14" = "0x80"
+				register "reg_adv_ctrl15" = "0x0c"
+				register "reg_adv_ctrl16" = "0x38"
+				register "reg_adv_ctrl17" = "0x56"
+				register "reg_adv_ctrl18" = "0x33"
+				register "reg_adv_ctrl19" = "0xf0"
+				register "reg_adv_ctrl20" = "0xf0"
+				device i2c 2C on end
+			end
+		end
+		device ref i2c3 on end
+		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "wake" = "GPE0_DW2_14"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "sdmode_delay" = "5"
+			end
+		end
+		device ref gspi1 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_F15)"
+				register "wake" = "GPE0_DW2_15"
+				device spi 1 on end
+			end # FPMCU
+		end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 2)"
+						device ref tcss_usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C2 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(4, 2)"
+						device ref tcss_usb3_port3 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C2 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F4)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port3 on end
+					end
+				end
+			end
+		end
+	end
+end

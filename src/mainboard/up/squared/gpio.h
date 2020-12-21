@@ -725,6 +725,11 @@ static const struct pad_config gpio_table[] = {
 	/* SMB_DATA - SMB_DATA */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(SMB_DATA, UP_20K, DEEP, NF1),
 
+	/*
+	 * LPC
+	 * Note: It's unconfirmed if this redundancy to the bootblock table is necessary.
+	 */
+
 	/* LPC_ILB_SERIRQ - LPC_ILB_SERIRQ */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
 

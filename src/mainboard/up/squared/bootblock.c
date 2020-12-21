@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <intelblocks/lpc_lib.h>
+#include <intelblocks/gpio.h>
+
+#include "gpio_early.h"
 
 void bootblock_mainboard_init(void)
 {
-	lpc_configure_pads();
+	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }

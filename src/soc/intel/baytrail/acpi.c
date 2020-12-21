@@ -17,6 +17,7 @@
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/msr.h>
+#include <soc/nvs.h>
 #include <soc/pattrs.h>
 #include <soc/pm.h>
 

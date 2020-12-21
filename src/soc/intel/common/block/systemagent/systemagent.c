@@ -11,6 +11,7 @@
 #include <intelblocks/systemagent.h>
 #include <smbios.h>
 #include <soc/iomap.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 #include <types.h>

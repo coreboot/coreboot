@@ -4,7 +4,6 @@
 #define _SOC_ACPI_H_
 
 #include <acpi/acpi.h>
-#include <soc/nvs.h>
 
 /* P-state configuration */
 #define PSS_MAX_ENTRIES			8

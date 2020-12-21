@@ -13,6 +13,7 @@
 #include <intelblocks/acpi.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
+#include <soc/nvs.h>
 #include <soc/soc_util.h>
 #include <soc/pmc.h>
 #include <soc/systemagent.h>

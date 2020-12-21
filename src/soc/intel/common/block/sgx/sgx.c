@@ -11,6 +11,7 @@
 #include <intelblocks/sgx.h>
 #include <intelblocks/systemagent.h>
 #include <soc/cpu.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 
 static inline uint64_t sgx_resource(uint32_t low, uint32_t high)

@@ -4,7 +4,6 @@
 #define _SOC_ACPI_H_
 
 #include <acpi/acpi.h>
-#include <soc/nvs.h>
 
 #define MEM_BLK_COUNT      0x140
 typedef struct {

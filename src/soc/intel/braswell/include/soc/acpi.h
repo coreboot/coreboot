@@ -4,7 +4,6 @@
 #define _SOC_ACPI_H_
 
 #include <acpi/acpi.h>
-#include <soc/nvs.h>
 
 int acpi_sci_irq(void);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);

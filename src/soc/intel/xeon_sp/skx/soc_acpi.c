@@ -14,6 +14,7 @@
 #include <soc/iomap.h>
 #include <device/mmio.h>
 #include <soc/msr.h>
+#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_util.h>

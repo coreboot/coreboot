@@ -221,16 +221,9 @@ chip soc/intel/tigerlake
 	register "PchHdaAudioLinkSndwEnable[1]" = "0"
 
 	# TCSS USB3
+	register "UsbTcPortEn" = "0x3"
 	register "TcssXhciEn" = "1"
 	register "TcssAuxOri" = "0"
-	register "IomTypeCPortPadCfg[0]" = "0x09000000"
-	register "IomTypeCPortPadCfg[1]" = "0x09000000"
-	register "IomTypeCPortPadCfg[2]" = "0x09000000"
-	register "IomTypeCPortPadCfg[3]" = "0x09000000"
-	register "IomTypeCPortPadCfg[4]" = "0x09000000"
-	register "IomTypeCPortPadCfg[5]" = "0x09000000"
-	register "IomTypeCPortPadCfg[6]" = "0x09000000"
-	register "IomTypeCPortPadCfg[7]" = "0x09000000"
 
 	# DP port
 	register "DdiPortAConfig" = "1"	# eDP

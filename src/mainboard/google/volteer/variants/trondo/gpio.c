@@ -17,7 +17,10 @@ const struct pad_config *variant_base_gpio_table(size_t *num)
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-
+	/* C8 : UART0 RX */
+	PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
+	/* C9 : UART0 TX */
+	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

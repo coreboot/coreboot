@@ -2,11 +2,16 @@
 
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <crc_byte.h>
 #include <device/smbus_host.h>
 #include <soc/intel/common/block/smbus/smbuslib.h>
+#include <types.h>
+
 #include "variants/baseboard/include/eeprom.h"
 
 #define I2C_ADDR_EEPROM 0x57
+
+#define EEPROM_OFFSET_BOARD_SETTINGS 0x1f00
 
 /*
  * Check Signature in EEPROM (M24C32-FMN6TP)
@@ -26,6 +31,41 @@ int check_signature(const size_t offset, const uint64_t signature)
 		return 0;
 	}
 	return 0;
+}
+
+/*
+ * Read board settings from the EEPROM and verify their checksum.
+ * If checksum is valid, we assume the settings are sane as well.
+ */
+static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_cfg)
+{
+	if (read_write_config(board_cfg, EEPROM_OFFSET_BOARD_SETTINGS, 0, sizeof(*board_cfg))) {
+		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
+		return false;
+	}
+
+	const uint32_t crc =
+		CRC(&board_cfg->raw_settings, sizeof(board_cfg->raw_settings), crc32_byte);
+
+	if (crc != board_cfg->signature) {
+		printk(BIOS_ERR, "CFG EEPROM: Board settings have invalid checksum\n");
+		return false;
+	}
+	return true;
+}
+
+struct eeprom_board_settings *get_board_settings(void)
+{
+	static struct eeprom_board_settings board_cfg = {0};
+
+	/* Tri-state: -1: settings are invalid, 0: uninitialized, 1: settings are valid */
+	static int checked_valid = 0;
+
+	if (checked_valid == 0) {
+		const bool success = get_board_settings_from_eeprom(&board_cfg);
+		checked_valid = success ? 1 : -1;
+	}
+	return checked_valid > 0 ? &board_cfg : NULL;
 }
 
 /* Read data from offset and write it to offset in UPD */

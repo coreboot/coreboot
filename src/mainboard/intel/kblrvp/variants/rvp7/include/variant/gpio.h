@@ -197,6 +197,8 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 /* UART0_RXD */		PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
 /* UART0_TXD */		PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
+/* GD_UART2_RXD */	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+/* GD_UART2_TXD */	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 };
 
 #endif

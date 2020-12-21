@@ -86,6 +86,10 @@ PAD_CFG_GPO(GPP_H0, 1, DEEP),
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* UART2 RX */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+	/* UART2 TX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

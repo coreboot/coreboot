@@ -5,13 +5,19 @@
 #include <ec/ec.h>
 #include <soc/gpio.h>
 
+void bootblock_mainboard_early_init(void)
+{
+	const struct pad_config *pads;
+	size_t num;
+
+	pads = mainboard_early_bootblock_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+};
+
 void bootblock_mainboard_init(void)
 {
 	const struct pad_config *pads, *override_pads;
 	size_t num, override_num;
-
-	pads = mainboard_early_bootblock_gpio_table(&num);
-	gpio_configure_pads(pads, num);
 
 	/*
 	 * Perform EC init before configuring GPIOs. This is because variant

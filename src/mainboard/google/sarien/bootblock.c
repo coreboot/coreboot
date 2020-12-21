@@ -5,7 +5,7 @@
 #include <soc/gpio.h>
 #include <variant/gpio.h>
 
-static void early_config_gpio(void)
+void bootblock_mainboard_early_init(void)
 {
 	const struct pad_config *early_gpio_table;
 	size_t num_gpios = 0;
@@ -16,6 +16,5 @@ static void early_config_gpio(void)
 
 void bootblock_mainboard_init(void)
 {
-	early_config_gpio();
 	wilco_ec_early_init();
 }

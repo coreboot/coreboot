@@ -11,15 +11,9 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	const struct pad_config *pads;
 	const struct lpddr4_swizzle_cfg *cfg;
 	const struct lpddr4_chan_swizzle_cfg *chan;
 	uint8_t spd[0x80];
-	size_t num;
-
-	/* setup early gpio before memory */
-	pads = variant_early_gpio_table(&num);
-	gpio_configure_pads(pads, num);
 
 	/*
 	 * Get DRAM configuration data from hwinfo block.

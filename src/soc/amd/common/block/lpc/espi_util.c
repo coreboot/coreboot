@@ -916,7 +916,8 @@ int espi_setup(void)
 	}
 
 	/* Enable subtractive decode if configured */
-	espi_setup_subtractive_decode(cfg);
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI_SUB_DECODE))
+		espi_setup_subtractive_decode(cfg);
 
 	return 0;
 }

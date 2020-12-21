@@ -107,8 +107,14 @@ static const struct pad_config gpio_table[] = {
 	/* C17 : I2C0_SCL */
 	/* C18 : I2C1_SDA */
 	/* C19 : I2C1_SCL */
+
+	/*
+	 * Note: It's unconfirmed if this redundancy to the bootblock table is necessary.
+	 */
 	/* C20 : UART2_RXD */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* C21 : UART2_TXD */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 	/* C22 : UART2_RTSB */
 	/* C23 : UART2_CTSB */
 
@@ -579,6 +585,10 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* C20 : UART2_RXD */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+	/* C21 : UART2_TXD */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

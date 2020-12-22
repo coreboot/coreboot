@@ -417,32 +417,33 @@ void southbridge_init(void *chip_info)
 	acpi_clear_pm_gpe_status();
 }
 
-static void set_sb_final_nvs(void)
+static void set_sb_aoac(struct aoac_devs *aoac)
+{
+	const struct device *sd, *sata;
+
+	aoac->ic0e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C0);
+	aoac->ic1e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C1);
+	aoac->ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
+	aoac->ic3e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C3);
+	aoac->ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
+	aoac->ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
+	aoac->ehce = is_aoac_device_enabled(FCH_AOAC_DEV_USB2);
+	aoac->xhce = is_aoac_device_enabled(FCH_AOAC_DEV_USB3);
+
+	/* Rely on these being in sync with devicetree */
+	sd = pcidev_path_on_root(SD_DEVFN);
+	aoac->sd_e = sd && sd->enabled ? 1 : 0;
+	sata = pcidev_path_on_root(SATA_DEVFN);
+	aoac->st_e = sata && sata->enabled ? 1 : 0;
+	aoac->espi = 1;
+}
+
+static void set_sb_gnvs(struct global_nvs *gnvs)
 {
 	uintptr_t amdfw_rom;
 	uintptr_t xhci_fw;
 	uintptr_t fwaddr;
 	size_t fwsize;
-	const struct device *sd, *sata;
-
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (gnvs == NULL)
-		return;
-
-	gnvs->aoac.ic0e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C0);
-	gnvs->aoac.ic1e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C1);
-	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
-	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C3);
-	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
-	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
-	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_DEV_USB2);
-	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_DEV_USB3);
-	/* Rely on these being in sync with devicetree */
-	sd = pcidev_path_on_root(SD_DEVFN);
-	gnvs->aoac.sd_e = sd && sd->enabled ? 1 : 0;
-	sata = pcidev_path_on_root(SATA_DEVFN);
-	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;
-	gnvs->aoac.espi = 1;
 
 	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);
 	xhci_fw = read32((void *)(amdfw_rom + XHCI_FW_SIG_OFFSET));
@@ -468,7 +469,11 @@ void southbridge_final(void *chip_info)
 		restored_power = PM_RESTORE_S0_IF_PREV_S0;
 	pm_write8(PM_RTC_SHADOW, restored_power);
 
-	set_sb_final_nvs();
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (gnvs) {
+		set_sb_aoac(&gnvs->aoac);
+		set_sb_gnvs(gnvs);
+	}
 }
 
 /*

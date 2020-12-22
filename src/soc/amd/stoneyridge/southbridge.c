@@ -25,6 +25,7 @@
 #include <delay.h>
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
+#include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <types.h>
 
@@ -403,27 +404,27 @@ static void sb_init_acpi_ports(void)
 
 static void set_nvs_sws(void *unused)
 {
-	struct acpi_pm_gpe_state *state;
+	struct chipset_state *state;
 
 	state = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (state == NULL)
 		return;
 
-	pm_fill_gnvs(state);
+	pm_fill_gnvs(&state->gpe_state);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
 
 void southbridge_init(void *chip_info)
 {
-	struct acpi_pm_gpe_state *state;
+	struct chipset_state *state;
 
 	sb_init_acpi_ports();
 
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 	if (state) {
-		acpi_fill_pm_gpe_state(state);
-		acpi_pm_gpe_add_events_print_events(state);
+		acpi_fill_pm_gpe_state(&state->gpe_state);
+		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
 	}
 
 	acpi_clear_pm_gpe_status();

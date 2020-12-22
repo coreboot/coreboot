@@ -4,6 +4,7 @@
 #define AMD_STONEYRIDGE_ACPI_H
 
 #include <acpi/acpi.h>
+#include <amdblocks/acpi.h>
 
 #if CONFIG(STONEYRIDGE_LEGACY_FREE)
 	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
@@ -15,5 +16,9 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 		unsigned long current, struct acpi_rsdp *rsdp);
 
 const char *soc_acpi_name(const struct device *dev);
+
+struct chipset_state {
+	struct acpi_pm_gpe_state gpe_state;
+};
 
 #endif /* AMD_STONEYRIDGE_ACPI_H */

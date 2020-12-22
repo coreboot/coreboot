@@ -26,6 +26,18 @@ chip soc/amd/picasso
 	# eDP phy tuning settings
 	register  "dp_phy_override" = "ENABLE_EDP_TUNINGSET"
 
+	# eDP power sequence. all pwr sequence numbers below are in uint of 4ms,
+	# and "0" as default value
+	register "edp_pwr_adjust_enable" = "1"
+	register "pwron_digon_to_de" = "0"
+	register "pwron_de_to_varybl" = "0"
+	register "pwrdown_varybloff_to_de" = "0"
+	register "pwrdown_de_to_digoff" = "0"
+	register "pwroff_delay" = "0"
+	register "pwron_varybl_to_blon" = "5"
+	register "pwrdown_bloff_to_varybloff" = "5"
+	register "min_allowed_bl_level" = "0"
+
 	register "edp_tuningset" = "{
 		.dp_vs_pemph_level = 0x0,
 		.deemph_6db4 = 0x004b,

@@ -5,8 +5,15 @@ chip soc/intel/tigerlake
 	# and controller 1 channel 0 and 1.
 	register "CmdMirror" = "0x00000033"
 
-	# Disable SRCCLKREQ1# and SRCCLKREQ3#
+	# Disable WLAN PCIE 7
+	register "PcieRpEnable[6]" = "0"
+	register "PcieRpLtrEnable[6]" = "0"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+
+	# Disable SD Card PCIE 8
+	register "PcieRpEnable[7]" = "0"
+	register "PcieRpLtrEnable[7]" = "0"
+	register "PcieRpHotPlug[7]" = "0"
 	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
 
 	device domain 0 on

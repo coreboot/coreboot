@@ -173,13 +173,13 @@ const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, siz
 		const uint32_t len = be32toh(attr->len);
 
 		if (offset + len > end) {
-			ERROR("Attribute %s[%u] overflows end of metadata\n",
+			ERROR("Attribute %s[%x] overflows end of metadata\n",
 			      mdata->h.filename, tag);
 			return NULL;
 		}
 		if (tag == attr_tag) {
 			if (size_check && len != size_check) {
-				ERROR("Attribute %s[%u] size mismatch: %u != %zu\n",
+				ERROR("Attribute %s[%x] size mismatch: %u != %zu\n",
 				      mdata->h.filename, tag, len, size_check);
 				return NULL;
 			}

@@ -402,19 +402,6 @@ static void sb_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
-static void set_nvs_sws(void *unused)
-{
-	struct chipset_state *state;
-
-	state = cbmem_find(CBMEM_ID_POWER_STATE);
-	if (state == NULL)
-		return;
-
-	pm_fill_gnvs(&state->gpe_state);
-}
-
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
-
 void southbridge_init(void *chip_info)
 {
 	struct chipset_state *state;

@@ -7,4 +7,6 @@ ramstage-y += acpi.c
 postcar-y += acpi.c
 smm-y += acpi.c
 
+ramstage-y += pm_state.c
+
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_ACPI

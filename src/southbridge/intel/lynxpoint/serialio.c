@@ -129,6 +129,17 @@ static void serialio_init_once(int acpi_mode)
 	pch_iobp_update(0xcb000180, ~0x0000003f, 0x0000003f);
 }
 
+static void update_bars(int sio_index, u32 bar0, u32 bar1)
+{
+	/* Find ACPI NVS to update BARs */
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
+
+	gnvs->s0b[sio_index] = bar0;
+	gnvs->s1b[sio_index] = bar1;
+}
+
 static void serialio_init(struct device *dev)
 {
 	struct southbridge_intel_lynxpoint_config *config = config_of(dev);
@@ -205,18 +216,9 @@ static void serialio_init(struct device *dev)
 		return;
 	}
 
-	if (config->sio_acpi_mode) {
-		struct global_nvs *gnvs;
-
-		/* Find ACPI NVS to update BARs */
-		gnvs = acpi_get_gnvs();
-		if (!gnvs)
-			return;
-
-		/* Save BAR0 and BAR1 to ACPI NVS */
-		gnvs->s0b[sio_index] = (u32)bar0->base;
-		gnvs->s1b[sio_index] = (u32)bar1->base;
-	}
+	/* Save BAR0 and BAR1 to ACPI NVS */
+	if (config->sio_acpi_mode)
+		update_bars(sio_index, (u32)bar0->base, (u32)bar1->base);
 }
 
 static struct device_operations device_ops = {

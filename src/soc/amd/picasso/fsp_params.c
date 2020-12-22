@@ -152,6 +152,17 @@ static void fsp_edp_tuning_upds(FSP_S_CONFIG *scfg,
 		scfg->Deemph6db4 = cfg->edp_tuningset.deemph_6db4;
 		scfg->BoostAdj = cfg->edp_tuningset.boostadj;
 	}
+	if (cfg->edp_pwr_adjust_enable) {
+		scfg->pwron_digon_to_de = cfg->pwron_digon_to_de;
+		scfg->pwron_de_to_varybl = cfg->pwron_de_to_varybl;
+		scfg->pwrdown_varybloff_to_de = cfg->pwrdown_varybloff_to_de;
+		scfg->pwrdown_de_to_digoff = cfg->pwrdown_de_to_digoff;
+		scfg->pwroff_delay = cfg->pwroff_delay;
+		scfg->pwron_varybl_to_blon = cfg->pwron_varybl_to_blon;
+		scfg->pwrdown_bloff_to_varybloff = cfg->pwrdown_bloff_to_varybloff;
+		scfg->min_allowed_bl_level = cfg->min_allowed_bl_level;
+	}
+
 }
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)

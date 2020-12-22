@@ -243,6 +243,20 @@ struct soc_amd_picasso_config {
 		uint8_t boostadj;
 		uint16_t margin_deemph;
 	} edp_tuningset;
+
+	/*
+	 * eDP panel power sequence control
+	 * all pwr sequence numbers below are in uint of 4ms and "0" as default value
+	 */
+	uint8_t edp_pwr_adjust_enable;
+	uint8_t pwron_digon_to_de;
+	uint8_t pwron_de_to_varybl;
+	uint8_t pwrdown_varybloff_to_de;
+	uint8_t pwrdown_de_to_digoff;
+	uint8_t pwroff_delay;
+	uint8_t pwron_varybl_to_blon;
+	uint8_t pwrdown_bloff_to_varybloff;
+	uint8_t min_allowed_bl_level;
 };
 
 #endif /* __PICASSO_CHIP_H__ */

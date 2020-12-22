@@ -345,12 +345,17 @@ int verified_boot_should_run_oprom(struct rom_header *rom_header)
 
 int prog_locate_hook(struct prog *prog)
 {
+	static int initialized;
+
 	if (ENV_BOOTBLOCK)
 		verified_boot_bootblock_check();
 
 	if (ENV_ROMSTAGE) {
-		if (prog->type == PROG_REFCODE)
+		if (!initialized && ((prog->type == PROG_REFCODE) ||
+		    (prog->type == PROG_POSTCAR))) {
 			verified_boot_early_check();
+			initialized = 1;
+		}
 
 		if (CONFIG(POSTCAR_STAGE) && prog->type == PROG_POSTCAR)
 			process_verify_list(postcar_verify_list);

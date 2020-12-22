@@ -148,16 +148,12 @@ static void sb_init_acpi_ports(void)
 static void set_nvs_sws(void *unused)
 {
 	struct chipset_state *state;
-	struct global_nvs *gnvs;
 
 	state = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (state == NULL)
 		return;
-	gnvs = acpi_get_gnvs();
-	if (gnvs == NULL)
-		return;
 
-	acpi_fill_gnvs(gnvs, &state->gpe_state);
+	pm_fill_gnvs(&state->gpe_state);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);

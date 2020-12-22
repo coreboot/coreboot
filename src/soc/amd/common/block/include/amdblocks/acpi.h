@@ -4,7 +4,6 @@
 #define AMD_BLOCK_ACPI_H
 
 #include <types.h>
-#include <soc/nvs.h>
 
 /* ACPI MMIO registers 0xfed80800 */
 #define MMIO_ACPI_PM1_STS		0x00
@@ -34,7 +33,7 @@ void acpi_pm_gpe_add_events_print_events(const struct acpi_pm_gpe_state *state);
 /* Clear PM and GPE status registers. */
 void acpi_clear_pm_gpe_status(void);
 /* Fill GNVS object from PM GPE object. */
-void acpi_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *state);
+void pm_fill_gnvs(const struct acpi_pm_gpe_state *state);
 
 /*
  * If a system reset is about to be requested, modify the PM1 register so it

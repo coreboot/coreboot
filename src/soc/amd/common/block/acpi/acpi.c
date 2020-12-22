@@ -3,12 +3,14 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <elog.h>
 #include <halt.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/southbridge.h>
+#include <soc/nvs.h>
 
 void poweroff(void)
 {
@@ -138,9 +140,12 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 	return i;
 }
 
-void acpi_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *state)
+void pm_fill_gnvs(const struct acpi_pm_gpe_state *state)
 {
 	int index;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (gnvs == NULL)
+		return;
 
 	index = get_index_bit(state->pm1_sts & state->pm1_en, PM1_LIMIT);
 	if (index < 0)

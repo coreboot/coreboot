@@ -56,6 +56,12 @@ const char *smbios_mainboard_location_in_chassis(void)
 	return slot_id_str;
 }
 
+/* Override SMBIOS type 2 Feature Flags */
+u8 smbios_mainboard_feature_flags(void)
+{
+	return SMBIOS_FEATURE_FLAGS_HOSTING_BOARD | SMBIOS_FEATURE_FLAGS_REPLACEABLE;
+}
+
 /*
  * Override SMBIOS type 4 cpu voltage.
  * BIT7 will set to 1 after value return. If BIT7 is set to 1, the remaining seven

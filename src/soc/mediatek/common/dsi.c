@@ -154,8 +154,11 @@ static void mtk_dsi_rxtx_control(u32 mode_flags, u32 lanes)
 		break;
 	}
 
-	tmp_reg |= (mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS) << 6;
-	tmp_reg |= (mode_flags & MIPI_DSI_MODE_EOT_PACKET) >> 3;
+	if (mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS)
+		tmp_reg |= NON_CONTINUOUS_CLK;
+
+	if (!(mode_flags & MIPI_DSI_MODE_EOT_PACKET))
+		tmp_reg |= EOTP_DISABLE;
 
 	write32(&dsi0->dsi_txrx_ctrl, tmp_reg);
 }
@@ -202,6 +205,10 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 			  phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
 
 	u32 delta = 12;
+
+	if (mode_flags & MIPI_DSI_MODE_EOT_PACKET)
+		delta += 2;
+
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
 		delta += 6;
 

@@ -118,6 +118,12 @@ enum {
 	MIX_MODE = BIT(17)
 };
 
+/* DSI_TXRX_CTRL */
+enum {
+	EOTP_DISABLE = BIT(6),
+	NON_CONTINUOUS_CLK = BIT(16),
+};
+
 /* DSI_PSCTRL */
 enum {
 	DSI_PS_WC = 0x3fff,

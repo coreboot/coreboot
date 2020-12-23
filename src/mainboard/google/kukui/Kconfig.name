@@ -20,6 +20,10 @@ config BOARD_GOOGLE_FLAPJACK
 	bool "->  Flapjack"
 	select BOARD_GOOGLE_KUKUI_COMMON
 
+config BOARD_GOOGLE_KATSU
+	bool "->  Katsu"
+	select BOARD_GOOGLE_KUKUI_COMMON
+
 comment "Jacuzzi"
 
 config BOARD_GOOGLE_JACUZZI

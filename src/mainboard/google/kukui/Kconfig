@@ -59,6 +59,7 @@ config MAINBOARD_PART_NUMBER
 	default "Esche" if BOARD_GOOGLE_ESCHE
 	default "Burnet" if BOARD_GOOGLE_BURNET
 	default "Fennel" if BOARD_GOOGLE_FENNEL
+	default "Katsu" if BOARD_GOOGLE_KATSU
 
 config DRIVER_TPM_SPI_BUS
 	hex

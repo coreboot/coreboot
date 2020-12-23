@@ -12,13 +12,14 @@
 #include <soc/intel/broadwell/chip.h>
 
 /* Save bit index for PM1_STS and GPE_STS for ACPI _SWS */
-static void save_acpi_wake_source(struct global_nvs *gnvs)
+static void save_acpi_wake_source(void)
 {
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
 	int gpe_reg;
 
-	if (!ps)
+	if (!ps || !gnvs)
 		return;
 
 	pm1 = ps->pm1_sts & ps->pm1_en;
@@ -62,16 +63,10 @@ static void save_acpi_wake_source(struct global_nvs *gnvs)
 	       gnvs->pm1i, gnvs->gpei);
 }
 
-static void s3_resume_prepare(void)
-{
-	struct global_nvs *gnvs = acpi_get_gnvs();
-
-	if (gnvs && acpi_is_wakeup_s3())
-		save_acpi_wake_source(gnvs);
-}
-
 void broadwell_init_pre_device(void *chip_info)
 {
-	s3_resume_prepare();
+	if (acpi_is_wakeup_s3())
+		save_acpi_wake_source();
+
 	broadwell_run_reference_code();
 }

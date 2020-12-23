@@ -117,12 +117,13 @@ static void fill_in_pattrs(void)
 }
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
-static void s3_save_acpi_wake_source(struct global_nvs *gnvs)
+static void save_acpi_wake_source(void)
 {
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
 
-	if (!ps)
+	if (!ps || !gnvs)
 		return;
 
 	pm1 = ps->pm1_sts & ps->pm1_en;
@@ -140,14 +141,6 @@ static void s3_save_acpi_wake_source(struct global_nvs *gnvs)
 
 	printk(BIOS_DEBUG, "ACPI System Wake Source is PM1 Index %d\n",
 	       gnvs->pm1i);
-}
-
-static void s3_resume_prepare(void)
-{
-	struct global_nvs *gnvs = acpi_get_gnvs();
-
-	if (gnvs && acpi_is_wakeup_s3())
-		s3_save_acpi_wake_source(gnvs);
 }
 
 static void baytrail_enable_2x_refresh_rate(void)
@@ -172,7 +165,8 @@ void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
 
 	/* Indicate S3 resume to rest of ramstage. */
-	s3_resume_prepare();
+	if (acpi_is_wakeup_s3())
+		save_acpi_wake_source();
 
 	/* Run reference code. */
 	baytrail_run_reference_code();

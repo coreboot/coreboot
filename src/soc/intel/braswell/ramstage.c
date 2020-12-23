@@ -2,7 +2,6 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
@@ -15,13 +14,11 @@
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
-#include <soc/nvs.h>
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/intel/common/acpi.h>
-#include <boardid.h>
 #include <string.h>
 
 #define SHOW_PATTRS 1
@@ -136,14 +133,6 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	return 1;
 }
 
-static void set_board_id(void)
-{
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
-	gnvs->bdid = board_id();
-}
-
 void soc_init_pre_device(struct soc_intel_braswell_config *config)
 {
 	struct soc_gpio_config *gpio_config;
@@ -157,7 +146,6 @@ void soc_init_pre_device(struct soc_intel_braswell_config *config)
 	intel_silicon_init();
 	set_max_freq();
 
-	set_board_id();
 	/* Get GPIO initial states from mainboard */
 	gpio_config = mainboard_get_gpios();
 	setup_soc_gpios(gpio_config, config->enable_xdp_tap);

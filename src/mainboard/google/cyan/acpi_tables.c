@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <arch/ioapic.h>
+#include <boardid.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 
@@ -22,6 +23,8 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	/* Disable PMIC I2C port for ACPI for all boards except cyan */
 	if (!CONFIG(BOARD_GOOGLE_CYAN))
 		gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
+
+	gnvs->bdid = board_id();
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

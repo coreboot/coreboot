@@ -98,8 +98,7 @@ void lpc_io_setup_comm_a_b(void);
 /* Enable PCH LPC by setting up generic decode range registers. */
 void pch_enable_lpc(void);
 /* Get SoC's generic IO decoder range register settings. */
-void soc_get_gen_io_dec_range(const struct device *dev,
-			uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
+void soc_get_gen_io_dec_range(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
 /* Mirror generic IO decoder range register settings into DMI PCR. */
 void soc_setup_dmi_pcr_io_dec(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
 /* Add resource into LPC PCI device space */

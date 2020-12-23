@@ -270,15 +270,9 @@ static void lpc_set_gen_decode_range(
 
 void pch_enable_lpc(void)
 {
-	/* Lookup device tree in romstage */
-	const struct device *dev;
 	uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES];
 
-	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	if (!dev)
-		return;
-
-	soc_get_gen_io_dec_range(dev, gen_io_dec);
+	soc_get_gen_io_dec_range(gen_io_dec);
 	lpc_set_gen_decode_range(gen_io_dec);
 	soc_setup_dmi_pcr_io_dec(gen_io_dec);
 	if (ENV_PAYLOAD_LOADER)

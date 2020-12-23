@@ -12,7 +12,7 @@
 #include <soc/systemagent.h>
 #include <types.h>
 
-void graphics_soc_init(struct device *dev)
+void graphics_soc_panel_init(struct device *dev)
 {
 	struct soc_intel_skylake_config *conf = config_of(dev);
 	struct resource *mmio_res;

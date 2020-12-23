@@ -12,11 +12,11 @@
  */
 
 /*
- * Perform Graphics Initialization in ramstage
+ * Perform Graphics/Panel Initialization in ramstage
  * Input:
  * struct device *dev: device structure
  */
-void graphics_soc_init(struct device *dev);
+void graphics_soc_panel_init(struct device *dev);
 
 /* i915 controller info for ACPI backlight controls */
 const struct i915_gpu_controller_info *

@@ -51,7 +51,7 @@ static void graphics_configure_backlight(
 	}
 }
 
-void graphics_soc_init(struct device *const dev)
+void graphics_soc_panel_init(struct device *const dev)
 {
 	const struct soc_intel_apollolake_config *const conf = dev->chip_info;
 	const struct resource *mmio_res;

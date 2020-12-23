@@ -16,7 +16,7 @@
 #include <types.h>
 
 /* SoC Overrides */
-__weak void graphics_soc_init(struct device *dev)
+__weak void graphics_soc_panel_init(struct device *dev)
 {
 	/*
 	 * User needs to implement SoC override in case wishes
@@ -34,8 +34,12 @@ static void gma_init(struct device *const dev)
 {
 	intel_gma_init_igd_opregion();
 
-	/* SoC specific configuration. */
-	graphics_soc_init(dev);
+	/* SoC specific panel init/configuration.
+	   If FSP has already run/configured the IGD, we can assume the
+	   panel/backlight control have already been set up sufficiently
+	   and that we shouldn't attempt to reconfigure things. */
+	if (!CONFIG(RUN_FSP_GOP))
+		graphics_soc_panel_init(dev);
 
 	if (CONFIG(SOC_INTEL_CONFIGURE_DDI_A_4_LANES) && !acpi_is_wakeup_s3()) {
 		const u32 ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);

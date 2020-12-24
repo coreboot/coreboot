@@ -45,25 +45,6 @@ pci$(stripped_vgabios_dgpu_id).rom-type := optionrom
 # common support for early assembly includes
 ###############################################################################
 
-# Chipset specific assembly stubs in the romstage program flow. Certain
-# boards have more than one assembly stub so collect those and put them
-# into a single generated file.
-crt0s = $(cpu_incs-y)
-
-$(objgenerated)/assembly.inc: build-dirs $$(crt0s)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	printf '$(foreach crt0,$(crt0s),#include "$(crt0)"\n)' > $@
-
-
-define early_x86_assembly_entry_rule
-# $1 stage name
-# Add the assembly file that pulls in the rest of the dependencies in
-# the right order. Make sure the auto generated assembly.inc is a proper
-# dependency.
-$(1)-y += assembly_entry.S
-$(call src-to-obj,$(1),$(dir)/assembly_entry.S): $(objgenerated)/assembly.inc
-endef
-
 define early_x86_stage
 # $1 stage name
 # $2 oformat
@@ -122,6 +103,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
+verstage-y += assembly_entry.S
 verstage-y += boot.c
 verstage-y += post.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
@@ -143,8 +125,6 @@ verstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
 verstage-libs ?=
 
-$(eval $(call early_x86_assembly_entry_rule,verstage))
-
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32),y)
 $(eval $(call early_x86_stage,verstage,elf32-i386))
 else
@@ -159,6 +139,7 @@ endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
+romstage-y += assembly_entry.S
 romstage-y += boot.c
 romstage-y += post.c
 romstage-y += gdt_init.S
@@ -175,8 +156,6 @@ romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
-
-$(eval $(call early_x86_assembly_entry_rule,romstage))
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call early_x86_stage,romstage,elf32-i386))

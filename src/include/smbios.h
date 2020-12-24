@@ -958,6 +958,8 @@ struct smbios_type127 {
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t);
+void smbios_fill_dimm_asset_tag(const struct dimm_info *dimm,
+	struct smbios_type17 *t);
 void smbios_fill_dimm_locator(const struct dimm_info *dimm,
 	struct smbios_type17 *t);
 

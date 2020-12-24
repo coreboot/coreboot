@@ -283,6 +283,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
 	smbios_fill_dimm_serial_number(dimm, t);
+	smbios_fill_dimm_asset_tag(dimm, t);
 	smbios_fill_dimm_locator(dimm, t);
 
 	/* put '\0' in the end of data */

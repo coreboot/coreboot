@@ -18,6 +18,15 @@ __weak void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios
 	t->bank_locator = smbios_add_string(t->eos, locator);
 }
 
+__weak void smbios_fill_dimm_asset_tag(const struct dimm_info *dimm, struct smbios_type17 *t)
+{
+	char buf[40];
+
+	snprintf(buf, sizeof(buf), "Channel-%d-DIMM-%d-AssetTag",
+		dimm->channel_num, dimm->dimm_num);
+	t->asset_tag = smbios_add_string(t->eos, buf);
+}
+
 __weak const char *smbios_mainboard_bios_version(void)
 {
 	return NULL;

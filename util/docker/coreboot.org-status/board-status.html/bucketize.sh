@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # usage: $0 [weekly|monthly|quarterly] < filenames
 #   sorts files of the form VENDOR/BOARD/COMMIT/DATE/revision.txt
 #   into buckets of the given granularity

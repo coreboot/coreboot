@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # SPDX-License-Identifier: ISC
 
 filelist=$(git ls-files $* | \

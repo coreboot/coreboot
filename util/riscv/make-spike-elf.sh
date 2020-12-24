@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # This script is based on:
 # https://docs.google.com/document/d/1Pvf9Yxorcd3sbgs8WcomcTl3J4bmX6e1UE0ROCefR88

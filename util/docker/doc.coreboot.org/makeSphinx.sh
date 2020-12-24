@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "$1" == "livehtml" ]; then
   echo "Starting live documentation build"

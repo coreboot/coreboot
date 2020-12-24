@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 export COREBOOT_DIR="../coreboot.git"
 export GIT_DIR="$COREBOOT_DIR/.git"
 CODE_GITWEB="https://review.coreboot.org/gitweb/cgit/coreboot.git/commit/?id="

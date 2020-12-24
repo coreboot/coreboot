@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
 # DESCR: Verify that site-local is not in the coreboot repository

@@ -219,23 +219,37 @@ ifneq ($(MAKECMDGOALS),)
 ifneq ($(filter test-toolchain,$(MAKECMDGOALS)),)
 $(foreach arch, $(ARCH_SUPPORTED), \
 	$(if $(shell if [ -n "$(GCC_CC_$(arch))" ]; then \
-		$(GCC_CC_$(arch)) -v 2>&1 | \
-		grep -q "$(shell util/crossgcc/buildgcc -s gcc)" || \
+		$(GCC_CC_$(arch)) --version 2>&1 | head -n1 | rev | \
+		cut -d ' ' -f 1 | rev | \
+		grep -q "$$(util/crossgcc/buildgcc -s gcc)" || \
 		echo not-current; fi), \
 		$(eval COMPILER_OUT_OF_DATE:=1) \
 		$(warning The coreboot toolchain version of gcc for '$(arch)' \
-			architecture is not the current version.)) \
+			architecture is not the current version.) \
+		$(warning $(arch) gcc version from buildgcc: \
+			$(shell util/crossgcc/buildgcc -s gcc)) \
+		$(warning $(arch) version of gcc executable: \
+			$(shell $(GCC_CC_$(arch)) --version | head -n1 | \
+			rev | cut -d ' ' -f 1 | rev))) \
 	$(if $(shell if [ -n "$(CLANG_CC_$(arch))" ]; then \
-		$(CLANG_CC_$(arch)) -v 2>&1 | \
+		$(CLANG_CC_$(arch)) --version  2>&1 | \
+			sed 's/.*clang version/clang version/' | \
+			head -n1 | cut -d ' ' -f 3 | \
 		grep -q "$(shell util/crossgcc/buildgcc -s clang)" || \
 		echo not-current; fi), \
-		$(eval COMPILER_OUT_OF_DATE:=1)\
+		$(eval COMPILER_OUT_OF_DATE:=1) \
 		$(warning The coreboot toolchain version of clang for \
-			'$(arch)' architecture is not the current version.)) \
+			'$(arch)' architecture is not the current version.) \
+		$(warning $(arch) clang version from buildgcc: \
+			$(shell util/crossgcc/buildgcc -s clang)) \
+		$(warning $(arch) version of clang executable: \
+			$(shell $(CLANG_CC_$(arch)) --version 2>&1 | \
+			sed 's/.*clang version/clang version/' | \
+			head -n1 | cut -d ' ' -f 3))) \
 	$(if $(shell if [ "$(OBJDUMP_$(arch))" != "invalidobjdump" ]; then \
-	$(OBJDUMP_$(arch)) -v 2>&1 | \
-	grep -q "$(shell util/crossgcc/buildgcc -s binutils)" || \
-	echo not-current; fi), \
+		$(OBJDUMP_$(arch)) -v 2>&1 | \
+		grep -q "$(shell util/crossgcc/buildgcc -s binutils)" || \
+		echo not-current; fi), \
 		$(eval COMPILER_OUT_OF_DATE:=1)\
 		$(warning The coreboot toolchain version of binutils for \
 			'$(arch)' architecture is not the current version.)) \
@@ -245,6 +259,12 @@ $(if $(shell if [ -n "$(IASL)" ]; then $(IASL) -v 2>&1 | \
 	echo not-coreboot; fi), \
 	$(eval COMPILER_OUT_OF_DATE:=1)\
 	$(warning The coreboot toolchain version of iasl \
-		is not the current version))
+		is not the current version) \
+		$(warning $(arch) iasl version from buildgcc: \
+			$(shell util/crossgcc/buildgcc -s iasl)) \
+		$(warning $(arch) version of iasl executable: \
+			$(shell $(IASL) -v 2>&1 | \
+			grep ASL+ | rev | cut -f 1 -d ' ' | rev)))
+$(eval UPDATED_SUBMODULES:=1)
 endif #($(filter crossgcc_check%,$(MAKECMDGOALS)),)
 endif #($(MAKECMDGOALS),)

@@ -77,10 +77,10 @@ PHONY+= clean-abuild coreboot check-style build-dirs build_complete
 
 #######################################################################
 # root source directories of coreboot
-subdirs-y := src/lib src/commonlib/ src/console src/device src/acpi
+subdirs-y := src/lib src/commonlib/ src/console src/device src/acpi src/superio/common
 subdirs-y += src/ec/acpi $(wildcard src/ec/*/*) $(wildcard src/southbridge/*/*)
 subdirs-y += $(wildcard src/soc/*/*) $(wildcard src/northbridge/*/*)
-subdirs-y += src/superio
+subdirs-y += $(wildcard src/superio/*) $(wildcard src/superio/*/*)
 subdirs-y += $(wildcard src/drivers/*) $(wildcard src/drivers/*/*) $(wildcard src/drivers/*/*/*)
 subdirs-y += src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/pgtblgen util/amdfwtool

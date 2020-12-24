@@ -102,6 +102,7 @@ endif
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
+PHONY+=seabios_ps2_timeout
 INTERMEDIATE+=seabios_ps2_timeout
 seabios_ps2_timeout: $(obj)/coreboot.pre $(CBFSTOOL)
 	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
@@ -111,6 +112,7 @@ endif
 endif
 
 ifeq ($(CONFIG_SEABIOS_ADD_SERCON_PORT_FILE),y)
+PHONY+=seabios_sercon
 INTERMEDIATE+=seabios_sercon
 seabios_sercon: $(obj)/coreboot.pre $(CBFSTOOL)
 	@printf "    SeaBIOS    Add sercon-port file\n"
@@ -118,6 +120,7 @@ seabios_sercon: $(obj)/coreboot.pre $(CBFSTOOL)
 endif
 
 ifeq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
+PHONY+=seabios_thread_optionroms
 INTERMEDIATE+=seabios_thread_optionroms
 seabios_thread_optionroms: $(obj)/coreboot.pre $(CBFSTOOL)
 	@printf "    SeaBIOS    Thread optionroms\n"

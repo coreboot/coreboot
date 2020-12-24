@@ -46,6 +46,7 @@ check-fmap-16mib-crossing: $(obj)/fmap_config.h
 		done; \
 		if [ $$fail -eq 1 ]; then false; fi
 
+PHONY+=check-fmap-16mib-crossing
 INTERMEDIATE+=check-fmap-16mib-crossing
 
 CBFSTOOL_ADD_CMD_OPTIONS += --ext-win-base $(CONFIG_EXT_BIOS_WIN_BASE) --ext-win-size $(CONFIG_EXT_BIOS_WIN_SIZE)

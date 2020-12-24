@@ -6,6 +6,7 @@ ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE),y)
 
+PHONY+=add_mcu_fit
 INTERMEDIATE+=add_mcu_fit
 add_mcu_fit: $(obj)/coreboot.pre $(IFITTOOL)
 	@printf "    UPDATE-FIT Microcode\n"
@@ -14,6 +15,7 @@ add_mcu_fit: $(obj)/coreboot.pre $(IFITTOOL)
 # Second FIT in TOP_SWAP bootblock
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 
+PHONY+=add_ts_mcu_fit
 INTERMEDIATE+=add_ts_mcu_fit
 add_ts_mcu_fit: $(obj)/coreboot.pre $(IFITTOOL)
 	@printf "    UPDATE-FIT Top Swap: Microcode\n"

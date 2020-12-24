@@ -7,6 +7,7 @@ ifeq ($(CONFIG_HAVE_INTEL_FIRMWARE),y)
 # image outside of CBFS
 
 ifeq ($(CONFIG_HAVE_IFD_BIN),y)
+PHONY+=add_intel_firmware
 INTERMEDIATE+=add_intel_firmware
 else ifeq ($(CONFIG_INTEL_DESCRIPTOR_MODE_REQUIRED),y)
 files_added:: warn_intel_firmware

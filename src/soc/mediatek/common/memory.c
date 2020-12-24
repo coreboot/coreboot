@@ -132,11 +132,6 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 
 	initialize_dramc_param(dparam);
 
-	if (prog_locate(&dram)) {
-		printk(BIOS_ERR, "DRAM-K: Locate program failed\n");
-		return -1;
-	}
-
 	if (cbfs_prog_stage_load(&dram)) {
 		printk(BIOS_ERR, "DRAM-K: CBFS load program failed\n");
 		return -2;

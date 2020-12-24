@@ -105,9 +105,6 @@ static int dram_run_full_calibration(struct dramc_param *dparam,
 	/* Load and run the provided blob for full-calibration if available */
 	struct prog dram = PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/dram");
 
-	if (prog_locate(&dram))
-		return -1;
-
 	if (cbfs_prog_stage_load(&dram))
 		return -2;
 

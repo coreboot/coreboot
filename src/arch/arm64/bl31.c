@@ -87,9 +87,6 @@ void run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 		struct prog bl32 = PROG_INIT(PROG_BL32,
 					     CONFIG_CBFS_PREFIX"/secure_os");
 
-		if (prog_locate(&bl32))
-			die("BL32 not found");
-
 		if (cbfs_prog_stage_load(&bl32))
 			die("BL32 load failed");
 

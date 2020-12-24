@@ -135,9 +135,6 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 
 	vboot_run_logic();
 
-	if (prog_locate(prog))
-		die_with_post_code(POST_INVALID_ROM,
-				   "Failed to locate after CAR program.\n");
 	if (rmodule_stage_load(&rsl))
 		die_with_post_code(POST_INVALID_ROM,
 				   "Failed to load after CAR program.\n");

@@ -45,18 +45,15 @@ void run_romstage(void)
 
 	vboot_run_logic();
 
-	if (ENV_X86 && CONFIG(BOOTBLOCK_NORMAL)) {
-		if (legacy_romstage_selector(&romstage))
-			goto fail;
-	} else {
-		if (prog_locate(&romstage))
-			goto fail;
-	}
-
 	timestamp_add_now(TS_START_COPYROM);
 
-	if (cbfs_prog_stage_load(&romstage))
-		goto fail;
+	if (ENV_X86 && CONFIG(BOOTBLOCK_NORMAL)) {
+		if (legacy_romstage_select_and_load(&romstage))
+			goto fail;
+	} else {
+		if (cbfs_prog_stage_load(&romstage))
+			goto fail;
+	}
 
 	timestamp_add_now(TS_END_COPYROM);
 
@@ -78,6 +75,7 @@ static void run_ramstage_from_resume(struct prog *ramstage)
 	/* Load the cached ramstage to runtime location. */
 	stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
 
+	ramstage->cbfs_type = CBFS_TYPE_STAGE;
 	prog_set_arg(ramstage, cbmem_top());
 
 	if (prog_entry(ramstage) != NULL) {
@@ -119,9 +117,6 @@ void run_ramstage(void)
 		run_ramstage_from_resume(&ramstage);
 
 	vboot_run_logic();
-
-	if (prog_locate(&ramstage))
-		goto fail;
 
 	timestamp_add_now(TS_START_COPYRAM);
 

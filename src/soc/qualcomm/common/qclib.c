@@ -157,9 +157,6 @@ void qclib_load_and_run(void)
 				CONFIG_CBFS_PREFIX "/qcsdi");
 
 		/* Attempt to load QCSDI elf */
-		if (prog_locate(&qcsdi))
-			goto fail;
-
 		if (cbfs_prog_stage_load(&qcsdi))
 			goto fail;
 
@@ -173,9 +170,6 @@ void qclib_load_and_run(void)
 	/* Attempt to load QCLib elf */
 	struct prog qclib =
 		PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/qclib");
-
-	if (prog_locate(&qclib))
-		goto fail;
 
 	if (cbfs_prog_stage_load(&qclib))
 		goto fail;

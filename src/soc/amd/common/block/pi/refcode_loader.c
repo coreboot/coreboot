@@ -51,9 +51,6 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 	if (resume_from_stage_cache()) {
 		stage_cache_load_stage(STAGE_REFCODE, &prog);
 	} else {
-		if (prog_locate(&prog))
-			return -1;
-
 		if (rmodule_stage_load(&rmod_agesa) < 0)
 			return -1;
 

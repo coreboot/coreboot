@@ -382,19 +382,29 @@ void *_cbfs_cbmem_allocator(void *arg, size_t size, union cbfs_mdata *unused)
 	return cbmem_add((uintptr_t)arg, size);
 }
 
-int cbfs_prog_stage_load(struct prog *pstage)
+cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 {
+	union cbfs_mdata mdata;
+	struct region_device rdev;
 	struct cbfs_stage stage;
 	uint8_t *load;
 	void *entry;
 	size_t fsize;
 	size_t foffset;
-	const struct region_device *fh = prog_rdev(pstage);
+	cb_err_t err;
 
-	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
-		return -1;
+	prog_locate_hook(pstage);
 
-	fsize = region_device_sz(fh);
+	if ((err = cbfs_boot_lookup(prog_name(pstage), false, &mdata, &rdev)))
+		return err;
+
+	assert(be32toh(mdata.h.type) == CBFS_TYPE_STAGE);
+	pstage->cbfs_type = CBFS_TYPE_STAGE;
+
+	if (rdev_readat(&rdev, &stage, 0, sizeof(stage)) != sizeof(stage))
+		return CB_CBFS_IO;
+
+	fsize = region_device_sz(&rdev);
 	fsize -= sizeof(stage);
 	foffset = 0;
 	foffset += sizeof(stage);
@@ -416,16 +426,16 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	 * that would hit this path initialize themselves. */
 	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
 	    !CONFIG(NO_XIP_EARLY_STAGES) && CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
-		void *mapping = rdev_mmap(fh, foffset, fsize);
-		rdev_munmap(fh, mapping);
+		void *mapping = rdev_mmap(&rdev, foffset, fsize);
+		rdev_munmap(&rdev, mapping);
 		if (mapping == load)
 			goto out;
 	}
 
-	fsize = cbfs_stage_load_and_decompress(fh, foffset, fsize, load,
-					stage.memlen, stage.compression);
+	fsize = cbfs_stage_load_and_decompress(&rdev, foffset, fsize, load,
+					       stage.memlen, stage.compression);
 	if (!fsize)
-		return -1;
+		return CB_ERR;
 
 	/* Clear area not covered by file. */
 	memset(&load[fsize], 0, stage.memlen - fsize);
@@ -436,7 +446,7 @@ out:
 	prog_set_area(pstage, load, stage.memlen);
 	prog_set_entry(pstage, entry, NULL);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)

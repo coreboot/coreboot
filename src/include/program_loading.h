@@ -165,7 +165,7 @@ struct prog_loader_ops {
 void run_romstage(void);
 
 /* Runtime selector for CBFS_PREFIX of romstage. */
-int legacy_romstage_selector(struct prog *romstage);
+int legacy_romstage_select_and_load(struct prog *romstage);
 
 /************************
  *   RAMSTAGE LOADING   *

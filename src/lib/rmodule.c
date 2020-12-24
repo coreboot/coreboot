@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <cbfs.h>
+#include <cbfs_private.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -244,14 +245,22 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	int load_offset;
 	struct cbfs_stage stage;
 	void *rmod_loc;
-	struct region_device *fh;
+	struct region_device rdev;
+	union cbfs_mdata mdata;
 
 	if (rsl->prog == NULL || prog_name(rsl->prog) == NULL)
 		return -1;
 
-	fh = prog_rdev(rsl->prog);
+	if (prog_locate_hook(rsl->prog))
+		return -1;
 
-	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
+	if (cbfs_boot_lookup(prog_name(rsl->prog), false, &mdata, &rdev) != CB_SUCCESS)
+		return -1;
+
+	assert(be32toh(mdata.h.type) == CBFS_TYPE_STAGE);
+	rsl->prog->cbfs_type = CBFS_TYPE_STAGE;
+
+	if (rdev_readat(&rdev, &stage, 0, sizeof(stage)) != sizeof(stage))
 		return -1;
 
 	rmodule_offset =
@@ -268,7 +277,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	printk(BIOS_INFO, "Decompressing stage %s @ %p (%d bytes)\n",
 	       prog_name(rsl->prog), rmod_loc, stage.memlen);
 
-	if (!cbfs_load_and_decompress(fh, sizeof(stage), stage.len, rmod_loc,
+	if (!cbfs_load_and_decompress(&rdev, sizeof(stage), stage.len, rmod_loc,
 				      stage.memlen, stage.compression))
 		return -1;
 

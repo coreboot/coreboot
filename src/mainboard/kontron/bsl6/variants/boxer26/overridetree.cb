@@ -5,11 +5,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 
 	device domain 0 on
-		device pci 1c.0 off end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1f.0 on
 			chip ec/kontron/kempld
 				device generic 1.0 on # I2C

@@ -19,7 +19,7 @@
 static void mainboard_config_upd(FSPM_UPD *mupd)
 {
 	uint8_t val;
-	char val_str[VPD_LEN];
+	int val_int;
 
 	/* Send FSP log message to SOL */
 	if (vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
@@ -33,15 +33,14 @@ static void mainboard_config_upd(FSPM_UPD *mupd)
 
 	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
 		/* FSP debug log level */
-		if (vpd_gets(FSP_LOG_LEVEL, val_str, VPD_LEN, VPD_RW_THEN_RO)) {
-			val = (uint8_t)atol(val_str);
-			if (val > 0x0f) {
+		if (vpd_get_int(FSP_LOG_LEVEL, VPD_RW_THEN_RO, &val_int)) {
+			if (val_int < 0 || val_int > 0x0f) {
 				printk(BIOS_DEBUG, "Invalid DebugPrintLevel value from VPD: "
-					"%d\n", val);
-				val = FSP_LOG_LEVEL_DEFAULT;
+					"%d\n", val_int);
+				val_int = FSP_LOG_LEVEL_DEFAULT;
 			}
-			printk(BIOS_DEBUG, "Setting DebugPrintLevel %d from VPD\n", val);
-			mupd->FspmConfig.DebugPrintLevel = val;
+			printk(BIOS_DEBUG, "Setting DebugPrintLevel %d from VPD\n", val_int);
+			mupd->FspmConfig.DebugPrintLevel = (uint8_t)val_int;
 		} else {
 			printk(BIOS_INFO, "Not able to get VPD %s, default set "
 				"DebugPrintLevel to %d\n", FSP_LOG_LEVEL,
@@ -65,15 +64,14 @@ static void mainboard_config_upd(FSPM_UPD *mupd)
 	 * Following code is effective when MemRefreshWaterMark patch is added to FSP
 	 * and when corresponding VPD variable is set.
 	 */
-	if (vpd_gets(FSPM_MEMREFRESHWATERMARK, val_str, VPD_LEN, VPD_RW_THEN_RO)) {
-		val = (uint8_t)atol(val_str);
-		if (val > 2) {
+	if (vpd_get_int(FSPM_MEMREFRESHWATERMARK, VPD_RW_THEN_RO, &val_int)) {
+		if (val_int < 0 || val_int > 2) {
 			printk(BIOS_DEBUG, "Invalid MemRefreshWatermark value from VPD: "
-				"%d\n", val);
-			val = FSPM_MEMREFRESHWATERMARK_DEFAULT;
+				"%d\n", val_int);
+			val_int = FSPM_MEMREFRESHWATERMARK_DEFAULT;
 		}
-		printk(BIOS_DEBUG, "Setting MemRefreshWatermark %d from VPD\n", val);
-		mupd->FspmConfig.UnusedUpdSpace0[0] = val;
+		printk(BIOS_DEBUG, "Setting MemRefreshWatermark %d from VPD\n", val_int);
+		mupd->FspmConfig.UnusedUpdSpace0[0] = (uint8_t)val_int;
 	}
 }
 

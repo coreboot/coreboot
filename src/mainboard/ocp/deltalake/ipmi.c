@@ -100,9 +100,8 @@ enum cb_err ipmi_set_post_start(const int port)
 
 void init_frb2_wdt(void)
 {
-	char val[VPD_LEN];
-	uint8_t enable, action;
-	uint16_t countdown;
+	uint8_t enable;
+	int action, countdown;
 
 	if (vpd_get_bool(FRB2_TIMER, VPD_RW_THEN_RO, &enable)) {
 		printk(BIOS_DEBUG, "Got VPD %s value: %d\n", FRB2_TIMER, enable);
@@ -113,8 +112,7 @@ void init_frb2_wdt(void)
 	}
 
 	if (enable) {
-		if (vpd_gets(FRB2_COUNTDOWN, val, VPD_LEN, VPD_RW_THEN_RO)) {
-			countdown = (uint16_t)atol(val);
+		if (vpd_get_int(FRB2_COUNTDOWN, VPD_RW_THEN_RO, &countdown)) {
 			printk(BIOS_DEBUG, "FRB2 timer countdown set to: %d ms\n",
 				countdown * 100);
 		} else {
@@ -123,15 +121,15 @@ void init_frb2_wdt(void)
 			countdown = FRB2_COUNTDOWN_DEFAULT;
 		}
 
-		if (vpd_gets(FRB2_ACTION, val, VPD_LEN, VPD_RW_THEN_RO)) {
-			action = (uint8_t)atol(val);
+		if (vpd_get_int(FRB2_ACTION, VPD_RW_THEN_RO, &action)) {
 			printk(BIOS_DEBUG, "FRB2 timer action set to: %d\n", action);
 		} else {
 			printk(BIOS_DEBUG, "FRB2 timer action use default value: %d\n",
 				FRB2_ACTION_DEFAULT);
 			action = FRB2_ACTION_DEFAULT;
 		}
-		ipmi_init_and_start_bmc_wdt(CONFIG_BMC_KCS_BASE, countdown, action);
+		ipmi_init_and_start_bmc_wdt(CONFIG_BMC_KCS_BASE, (uint16_t)countdown,
+			(uint8_t)action);
 	} else {
 		printk(BIOS_DEBUG, "Disable FRB2 timer\n");
 		ipmi_stop_bmc_wdt(CONFIG_BMC_KCS_BASE);

@@ -9,10 +9,8 @@
 int get_console_loglevel(void)
 {
 	int log_level = COREBOOT_LOG_LEVEL_DEFAULT;
-	char val_str[VPD_LEN];
 
-	if (vpd_gets(COREBOOT_LOG_LEVEL, val_str, VPD_LEN, VPD_RW_THEN_RO)) {
-		log_level = (int)atol(val_str);
+	if (vpd_get_int(COREBOOT_LOG_LEVEL, VPD_RW_THEN_RO, &log_level)) {
 		if (log_level < 0 || log_level >= BIOS_NEVER)
 			log_level = COREBOOT_LOG_LEVEL_DEFAULT;
 	}

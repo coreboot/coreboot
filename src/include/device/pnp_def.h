@@ -6,6 +6,7 @@
 #define PNP_IDX_IO1  0x62
 #define PNP_IDX_IO2  0x64
 #define PNP_IDX_IO3  0x66
+#define PNP_IDX_IO4  0x68
 #define PNP_IDX_IRQ0 0x70
 #define PNP_IDX_IRQ1 0x72
 #define PNP_IDX_DRQ0 0x74

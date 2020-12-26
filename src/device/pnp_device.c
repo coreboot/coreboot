@@ -249,6 +249,8 @@ static void get_resources(struct device *dev, struct pnp_info *info)
 		pnp_get_ioresource(dev, PNP_IDX_IO2, info->io2);
 	if (info->flags & PNP_IO3)
 		pnp_get_ioresource(dev, PNP_IDX_IO3, info->io3);
+	if (info->flags & PNP_IO4)
+		pnp_get_ioresource(dev, PNP_IDX_IO4, info->io4);
 
 	if (info->flags & PNP_IRQ0) {
 		resource = new_resource(dev, PNP_IDX_IRQ0);

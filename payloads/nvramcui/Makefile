@@ -1,3 +1,5 @@
+unexport $(COREBOOT_EXPORTS)
+
 LIBPAYLOAD_DIR=$(CURDIR)/libpayload
 XCOMPILE=$(LIBPAYLOAD_DIR)/libpayload.xcompile
 # build libpayload and put .config file in $(CURDIR) instead of ../libpayload

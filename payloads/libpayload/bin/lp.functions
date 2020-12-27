@@ -52,7 +52,7 @@ fi
 
 if [ -f $BASE/../lib/libpayload.a ]; then
 	_LIBDIR=$BASE/../lib
-elif [ -f $_OBJ/libpayload.a ]; then
+elif [ -f $_OBJ/libpayload.config ]; then
 	_LIBDIR=$_OBJ
 else
 	_LIBDIR=$LIBPAYLOAD_PREFIX/lib

@@ -3,7 +3,7 @@
 #ifndef _SOC_INTEL_BROADWELL_CHIP_H_
 #define _SOC_INTEL_BROADWELL_CHIP_H_
 
-#include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/gma.h>
 #include <stdint.h>
 
 struct soc_intel_broadwell_config {
@@ -18,19 +18,8 @@ struct soc_intel_broadwell_config {
 	u8 gpu_dp_c_hotplug;
 	u8 gpu_dp_d_hotplug;
 
-	/* Panel power sequence timings */
-	u16 gpu_panel_power_cycle_delay_ms;
-	u16 gpu_panel_power_up_delay_ms;
-	u16 gpu_panel_power_down_delay_ms;
-	u16 gpu_panel_power_backlight_on_delay_ms;
-	u16 gpu_panel_power_backlight_off_delay_ms;
-
-	/* Panel backlight settings */
-	unsigned int gpu_pch_backlight_pwm_hz;
-	enum {
-		GPU_BACKLIGHT_POLARITY_HIGH = 0,
-		GPU_BACKLIGHT_POLARITY_LOW,
-	} gpu_pch_backlight_polarity;
+	/* IGD panel configuration */
+	struct i915_gpu_panel_config panel_cfg;
 
 	/*
 	 * Graphics CD Clock Frequency

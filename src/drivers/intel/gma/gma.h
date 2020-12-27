@@ -11,6 +11,20 @@ struct i915_gpu_controller_info {
 	u32 did[5];
 };
 
+/* Devicetree panel configuration */
+struct i915_gpu_panel_config {
+	unsigned int up_delay_ms;
+	unsigned int down_delay_ms;
+	unsigned int cycle_delay_ms;
+	unsigned int backlight_on_delay_ms;
+	unsigned int backlight_off_delay_ms;
+	unsigned int backlight_pwm_hz;
+	enum {
+		GPU_BACKLIGHT_POLARITY_HIGH = 0,
+		GPU_BACKLIGHT_POLARITY_LOW,
+	} backlight_polarity;
+};
+
 #define GMA_STATIC_DISPLAYS(ssc) {			\
 	.use_spread_spectrum_clock = (ssc),		\
 	.ndid = 3, .did = { 0x0100, 0x0240, 0x0410, }	\

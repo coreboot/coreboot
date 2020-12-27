@@ -6,7 +6,7 @@
 #include <acpi/acpi_device.h>
 #include <device/i2c_simple.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/gma.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
@@ -37,16 +37,7 @@ struct soc_intel_skylake_config {
 	struct soc_power_limits_config power_limits_config;
 
 	/* IGD panel configuration */
-	unsigned int gpu_pp_up_delay_ms;
-	unsigned int gpu_pp_down_delay_ms;
-	unsigned int gpu_pp_cycle_delay_ms;
-	unsigned int gpu_pp_backlight_on_delay_ms;
-	unsigned int gpu_pp_backlight_off_delay_ms;
-	unsigned int gpu_pch_backlight_pwm_hz;
-	enum {
-		GPU_BACKLIGHT_POLARITY_HIGH = 0,
-		GPU_BACKLIGHT_POLARITY_LOW,
-	} gpu_pch_backlight_polarity;
+	struct i915_gpu_panel_config panel_cfg;
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form GPP_[A:G] or GPD. */

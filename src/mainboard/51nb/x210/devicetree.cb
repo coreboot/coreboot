@@ -1,11 +1,13 @@
 chip soc/intel/skylake
 
 	# Enable Panel as eDP and configure power delays
-	register "gpu_pp_up_delay_ms"		  = "210"	# T3
-	register "gpu_pp_down_delay_ms"		  = "500"	# T10
-	register "gpu_pp_cycle_delay_ms"	  = "5000"	# T12
-	register "gpu_pp_backlight_on_delay_ms"	  = "1"		# T7
-	register "gpu_pp_backlight_off_delay_ms"  = "200"	# T9
+	register "panel_cfg" = "{
+		.up_delay_ms		=  210,	// T3
+		.down_delay_ms		=  500,	// T10
+		.cycle_delay_ms		= 5000,	// T12
+		.backlight_on_delay_ms	=    1,	// T7
+		.backlight_off_delay_ms	=  200,	// T9
+	}"
 
 	# Enable deep Sx states
 	register "deep_s3_enable_ac" = "1"

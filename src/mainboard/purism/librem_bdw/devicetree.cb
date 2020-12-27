@@ -6,15 +6,14 @@ chip soc/intel/broadwell
 	# Enable DDI1 Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	# Set backlight PWM value for eDP
-	register "gpu_pch_backlight_pwm_hz" = "200"
-
-	# Set panel power delays
-	register "gpu_panel_power_cycle_delay_ms" = "500"
-	register "gpu_panel_power_up_delay_ms" = "200"
-	register "gpu_panel_power_down_delay_ms" = "50"
-	register "gpu_panel_power_backlight_on_delay_ms" = "200"
-	register "gpu_panel_power_backlight_off_delay_ms" = "200"
+	register "panel_cfg" = "{
+		.up_delay_ms		= 200,
+		.down_delay_ms		=  50,
+		.cycle_delay_ms		= 500,
+		.backlight_on_delay_ms	= 200,
+		.backlight_off_delay_ms	= 200,
+		.backlight_pwm_hz	= 200,
+	}"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

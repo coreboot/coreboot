@@ -12,9 +12,6 @@ chip soc/intel/broadwell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	# Set backlight PWM value for eDP
-	register "gpu_pch_backlight_pwm_hz" = "200"
-
 	register "s0ix_enable" = "1"
 
 	device cpu_cluster 0 on

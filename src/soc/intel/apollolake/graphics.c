@@ -11,37 +11,37 @@
 #include "chip.h"
 
 static void graphics_configure_panelpower(
-		const struct soc_intel_apl_pp *const pp,
+		const struct i915_gpu_panel_config *const panel_cfg,
 		uint8_t *const mmio, const unsigned int panel_idx)
 {
 	const unsigned int offset = panel_idx * 0x100;
 	uint32_t reg32;
 
-	reg32 = (DIV_ROUND_UP(pp->cycle_delay_ms, 100) + 1) << 4 & 0x1f0;
+	reg32 = ((DIV_ROUND_UP(panel_cfg->cycle_delay_ms, 100) + 1) & 0x1f) << 4;
 	reg32 |= PANEL_POWER_RESET;
 	write32(mmio + PCH_PP_CONTROL + offset, reg32);
 
-	reg32 = pp->up_delay_ms * 10 << 16;
-	reg32 |= pp->backlight_on_delay_ms * 10;
+	reg32 = ((panel_cfg->up_delay_ms * 10) & 0x1fff) << 16;
+	reg32 |= (panel_cfg->backlight_on_delay_ms * 10) & 0x1fff;
 	write32(mmio + PCH_PP_ON_DELAYS + offset, reg32);
 
-	reg32 = pp->down_delay_ms * 10 << 16;
-	reg32 |= pp->backlight_off_delay_ms * 10;
+	reg32 = ((panel_cfg->down_delay_ms * 10) & 0x1fff) << 16;
+	reg32 |= (panel_cfg->backlight_off_delay_ms * 10) & 0x1fff;
 	write32(mmio + PCH_PP_OFF_DELAYS + offset, reg32);
 }
 
 static void graphics_configure_backlight(
-		const struct soc_intel_apl_blc *const blc,
+		const struct i915_gpu_panel_config *const panel_cfg,
 		uint8_t *const mmio, const unsigned int panel_idx)
 {
-	if (!blc->pwm_hz)
+	if (!panel_cfg->backlight_pwm_hz)
 		return;
 
-	const unsigned int pwm_period = 19200 * 1000 / blc->pwm_hz;
+	const unsigned int pwm_period = 19200 * 1000 / panel_cfg->backlight_pwm_hz;
 	write32(mmio + BXT_BLC_PWM_FREQ(panel_idx), pwm_period);
 	write32(mmio + BXT_BLC_PWM_DUTY(panel_idx), pwm_period / 2);
 	write32(mmio + BXT_BLC_PWM_CTL(panel_idx),
-		(blc->polarity ? BXT_BLC_PWM_POLARITY : 0));
+		panel_cfg->backlight_polarity ? BXT_BLC_PWM_POLARITY : 0);
 
 	/* Second backlight control uses display utility pin. */
 	if (panel_idx == 1) {
@@ -68,9 +68,9 @@ void graphics_soc_panel_init(struct device *const dev)
 		return;
 	mmio = (void *)(uintptr_t)mmio_res->base;
 
-	for (i = 0; i < ARRAY_SIZE(conf->gpu_pp); ++i)
-		graphics_configure_panelpower(&conf->gpu_pp[i], mmio, i);
+	for (i = 0; i < ARRAY_SIZE(conf->panel_cfg); ++i)
+		graphics_configure_panelpower(&conf->panel_cfg[i], mmio, i);
 
-	for (i = 0; i < ARRAY_SIZE(conf->gpu_blc); ++i)
-		graphics_configure_backlight(&conf->gpu_blc[i], mmio, i);
+	for (i = 0; i < ARRAY_SIZE(conf->panel_cfg); ++i)
+		graphics_configure_backlight(&conf->panel_cfg[i], mmio, i);
 }

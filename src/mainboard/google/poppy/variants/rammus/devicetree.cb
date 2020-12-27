@@ -3,12 +3,14 @@ chip soc/intel/skylake
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
-	register "gpu_pp_up_delay_ms"		  = "200"
-	register "gpu_pp_down_delay_ms"		  = "500"
-	register "gpu_pp_cycle_delay_ms"	  = "600"
-	register "gpu_pp_backlight_on_delay_ms"	  = "  1"
-	register "gpu_pp_backlight_off_delay_ms"  = "200"
-	register "gpu_pch_backlight_pwm_hz"	  = "1000"
+	register "panel_cfg" = "{
+		.up_delay_ms		=  200,
+		.down_delay_ms		=  500,
+		.cycle_delay_ms		=  600,
+		.backlight_on_delay_ms	=    1,
+		.backlight_off_delay_ms	=  200,
+		.backlight_pwm_hz	= 1000,
+	}"
 
 	# Deep Sx states
 	register "deep_s3_enable_ac" = "0"

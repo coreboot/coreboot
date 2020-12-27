@@ -4,12 +4,14 @@ chip northbridge/intel/haswell
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"
-	register "gpu_panel_power_backlight_off_delay_ms" = "1"
-	register "gpu_panel_power_backlight_on_delay_ms" = "1"
-	register "gpu_panel_power_cycle_delay_ms" = "500"
-	register "gpu_panel_power_down_delay_ms" = "50"
-	register "gpu_panel_power_up_delay_ms" = "200"
-	register "gpu_pch_backlight_pwm_hz" = "220"
+	register "panel_cfg" = "{
+		.up_delay_ms		= 200,
+		.down_delay_ms		=  50,
+		.cycle_delay_ms		= 500,
+		.backlight_on_delay_ms	=   1,
+		.backlight_off_delay_ms	=   1,
+		.backlight_pwm_hz	= 220,
+	}"
 	register "ec_present" = "true"
 	device cpu_cluster 0x0 on
 		chip cpu/intel/haswell

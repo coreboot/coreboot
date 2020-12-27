@@ -285,6 +285,7 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 static void gma_setup_panel(struct device *dev)
 {
 	config_t *conf = config_of(dev);
+	const struct i915_gpu_panel_config *panel_cfg = &conf->panel_cfg;
 	u32 reg32;
 
 	/* Setup Digital Port Hotplug */
@@ -299,30 +300,30 @@ static void gma_setup_panel(struct device *dev)
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PCH_PP_ON_DELAYS);
 	if (!reg32) {
-		reg32 |= ((conf->gpu_panel_power_up_delay_ms * 10) & 0x1fff) << 16;
-		reg32 |= (conf->gpu_panel_power_backlight_on_delay_ms * 10) & 0x1fff;
+		reg32 |= ((panel_cfg->up_delay_ms * 10) & 0x1fff) << 16;
+		reg32 |= (panel_cfg->backlight_on_delay_ms * 10) & 0x1fff;
 		gtt_write(PCH_PP_ON_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Off Delays */
 	reg32 = gtt_read(PCH_PP_OFF_DELAYS);
 	if (!reg32) {
-		reg32 = ((conf->gpu_panel_power_down_delay_ms * 10) & 0x1fff) << 16;
-		reg32 |= (conf->gpu_panel_power_backlight_off_delay_ms * 10) & 0x1fff;
+		reg32 = ((panel_cfg->down_delay_ms * 10) & 0x1fff) << 16;
+		reg32 |= (panel_cfg->backlight_off_delay_ms * 10) & 0x1fff;
 		gtt_write(PCH_PP_OFF_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Cycle Delay */
-	if (conf->gpu_panel_power_cycle_delay_ms) {
+	if (panel_cfg->cycle_delay_ms) {
 		reg32 = gtt_read(PCH_PP_DIVISOR);
 		reg32 &= ~0x1f;
-		reg32 |= (DIV_ROUND_UP(conf->gpu_panel_power_cycle_delay_ms, 100) + 1) & 0x1f;
+		reg32 |= (DIV_ROUND_UP(panel_cfg->cycle_delay_ms, 100) + 1) & 0x1f;
 		gtt_write(PCH_PP_DIVISOR, reg32);
 	}
 
 	/* So far all devices seem to use the PCH PWM function.
 	   The CPU PWM registers are all zero after reset.      */
-	if (conf->gpu_pch_backlight_pwm_hz) {
+	if (panel_cfg->backlight_pwm_hz) {
 		/* For Lynx Point-LP:
 		   Reference clock is 24MHz. We can choose either a 16
 		   or a 128 step increment. Use 16 if we would have less
@@ -333,7 +334,7 @@ static void gma_setup_panel(struct device *dev)
 		u32 south_chicken2;
 
 		south_chicken2 = gtt_read(SOUTH_CHICKEN2);
-		if (conf->gpu_pch_backlight_pwm_hz > hz_limit) {
+		if (panel_cfg->backlight_pwm_hz > hz_limit) {
 			pwm_increment = 16;
 			south_chicken2 |= 1 << 5;
 		} else {
@@ -342,7 +343,7 @@ static void gma_setup_panel(struct device *dev)
 		}
 		gtt_write(SOUTH_CHICKEN2, south_chicken2);
 
-		pwm_period = refclock / pwm_increment / conf->gpu_pch_backlight_pwm_hz;
+		pwm_period = refclock / pwm_increment / panel_cfg->backlight_pwm_hz;
 		printk(BIOS_INFO,
 			"GMA: Setting backlight PWM frequency to %uMHz / %u / %u = %uHz\n",
 			refclock / MHz, pwm_increment, pwm_period,
@@ -352,7 +353,7 @@ static void gma_setup_panel(struct device *dev)
 		gtt_write(BLC_PWM_PCH_CTL2, pwm_period << 16 | pwm_period / 2);
 
 		gtt_write(BLC_PWM_PCH_CTL1,
-			(conf->gpu_pch_backlight_polarity == GPU_BACKLIGHT_POLARITY_LOW) << 29 |
+			(panel_cfg->backlight_polarity == GPU_BACKLIGHT_POLARITY_LOW) << 29 |
 			BLM_PCH_OVERRIDE_ENABLE | BLM_PCH_PWM_ENABLE);
 	}
 }

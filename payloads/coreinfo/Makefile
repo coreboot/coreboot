@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+unexport $(COREBOOT_EXPORTS)
+
 src := $(CURDIR)
 srctree := $(src)
 srck := $(src)/../../util/kconfig

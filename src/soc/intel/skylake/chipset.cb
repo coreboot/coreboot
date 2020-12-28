@@ -31,6 +31,10 @@ chip soc/intel/skylake
 		device pci 1b.1 alias pcie_rp18    off end # PCI Express Port 18
 		device pci 1b.2 alias pcie_rp19    off end # PCI Express Port 19
 		device pci 1b.3 alias pcie_rp20    off end # PCI Express Port 20
+		device pci 1b.4 alias pcie_rp21    off end # PCI Express Port 21
+		device pci 1b.5 alias pcie_rp22    off end # PCI Express Port 22
+		device pci 1b.6 alias pcie_rp23    off end # PCI Express Port 23
+		device pci 1b.7 alias pcie_rp24    off end # PCI Express Port 24
 		device pci 1c.0 alias pcie_rp1     off end # PCI Express Port 1
 		device pci 1c.1 alias pcie_rp2     off end # PCI Express Port 2
 		device pci 1c.2 alias pcie_rp3     off end # PCI Express Port 3

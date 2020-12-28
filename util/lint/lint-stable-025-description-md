@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that every utility has a description
+
+LC_ALL=C export LC_ALL
+FAIL=0
+
+for i in util/*/; do
+    if [ ! -r "$i/description.md" ]; then
+      echo "  Failure: util directory $i missing description.md file."
+      FAIL=1
+    fi
+done
+
+exit $FAIL

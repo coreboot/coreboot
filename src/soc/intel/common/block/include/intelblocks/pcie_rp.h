@@ -3,6 +3,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 #define SOC_INTEL_COMMON_BLOCK_PCIE_RP_H
 
+#include <stdint.h>
+
 /*
  * The PCIe Root Ports usually come in groups of up to 8 PCI-device
  * functions.
@@ -33,5 +35,18 @@ struct pcie_rp_group {
  * `groups` points to a list of groups terminated by an entry with `count == 0`.
  */
 void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
+
+/*
+ * Return mask of PCIe root ports that are enabled by mainboard. Mask is set in the same order
+ * as the root ports in pcie_rp_group groups table.
+ *
+ * Thus, the status of first root port in the groups table is indicated by bit 0 in the returned
+ * mask, second root port by bit 1 and so on.
+
+ * 1 in the bit position indicates root port is enabled, whereas 0 indicates root port is
+ * disabled. This function assumes that the maximum count of root ports in the groups table is
+ * <= 32.
+ */
+uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PCIE_RP_H */

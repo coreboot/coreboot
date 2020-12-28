@@ -475,45 +475,6 @@ static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 	return 0;
 }
 
-static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
-{
-	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
-		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
-					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
-		return -1;
-	}
-	uintptr_t addr = gpio_get_address(gpio_num);
-
-	/* Store (0x40, Local0) */
-	acpigen_write_store();
-	acpigen_write_integer(GPIO_PIN_OUT);
-	acpigen_emit_byte(LOCAL0_OP);
-
-	acpigen_soc_get_gpio_in_local5(addr);
-
-	if (val) {
-		/* Or (Local5, GPIO_PIN_OUT, Local5) */
-		acpigen_write_or(LOCAL5_OP, LOCAL0_OP, LOCAL5_OP);
-	} else {
-		/* Not (GPIO_PIN_OUT, Local6) */
-		acpigen_write_not(LOCAL0_OP, LOCAL6_OP);
-
-		/* And (Local5, Local6, Local5) */
-		acpigen_write_and(LOCAL5_OP, LOCAL6_OP, LOCAL5_OP);
-	}
-
-	/*
-	 *   SB.GPW2 (addr, Local5)
-	 * \_SB.GPW2 is used to write control byte in control register
-	 * / byte 2. It is defined in gpio_lib.asl.
-	 */
-	acpigen_emit_namestring("\\_SB.GPW2");
-	acpigen_write_integer(addr);
-	acpigen_emit_byte(LOCAL5_OP);
-
-	return 0;
-}
-
 int acpigen_soc_read_rx_gpio(unsigned int gpio_num)
 {
 	return acpigen_soc_get_gpio_val(gpio_num, GPIO_PIN_IN);
@@ -524,12 +485,25 @@ int acpigen_soc_get_tx_gpio(unsigned int gpio_num)
 	return acpigen_soc_get_gpio_val(gpio_num, GPIO_PIN_OUT);
 }
 
+static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
+{
+	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
+		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
+					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
+		return -1;
+	}
+	/* op (gpio_num) */
+	acpigen_emit_namestring(op);
+	acpigen_write_integer(gpio_num);
+	return 0;
+}
+
 int acpigen_soc_set_tx_gpio(unsigned int gpio_num)
 {
-	return acpigen_soc_set_gpio_val(gpio_num, 1);
+	return acpigen_soc_gpio_op("\\_SB.STXS", gpio_num);
 }
 
 int acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 {
-	return acpigen_soc_set_gpio_val(gpio_num, 0);
+	return acpigen_soc_gpio_op("\\_SB.CTXS", gpio_num);
 }

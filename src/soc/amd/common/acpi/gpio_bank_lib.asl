@@ -2,6 +2,9 @@
 
 #include <soc/iomap.h>
 
+#define GPIO_OUTPUT_SHIFT	22
+#define GPIO_OUTPUT_VALUE	(1 << GPIO_OUTPUT_SHIFT)
+
 /* Get pin control MMIO address */
 Method (GPAD, 0x1)
 {
@@ -116,4 +119,32 @@ Method (GPW3, 0x2)
 	/* Arg0 - GPIO pin control MMIO address */
 	/* Arg1 - Value for control register */
 	GPSB (Arg0, 3, Arg1)
+}
+
+/*
+ * Set GPIO Output Value
+ * Arg0 - GPIO Number
+ */
+Method (STXS, 1, Serialized)
+{
+	OperationRegion (GPDW, SystemMemory, GPAD (Arg0), 4)
+	Field (GPDW, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	VAL0 |= GPIO_OUTPUT_VALUE
+}
+
+/*
+ * Clear GPIO Output Value
+ * Arg0 - GPIO Number
+ */
+Method (CTXS, 1, Serialized)
+{
+	OperationRegion (GPDW, SystemMemory, GPAD (Arg0), 4)
+	Field (GPDW, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	VAL0 &= ~GPIO_OUTPUT_VALUE
 }

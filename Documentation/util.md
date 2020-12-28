@@ -2,13 +2,16 @@
 
 ## List of utils
 
-_Scripts and programs found in the `./util` directory_
+_Scripts and programs found in the coreboot `./util` directory_
 * __abuild__ - coreboot autobuild script builds coreboot images for all
 available targets. `bash`
 * __acpi__ - Walk through all ACPI tables with their addresses. `bash`
 * __amdfwtool__ - Create AMD Firmware combination `C`
 * __amdtools__ - A set of tools to compare extended) K8 memory
 settings. `Perl`
+* __apcb__ - AMD PSP Control Block tools
+	* _apcb_edit.py_ - This tool allows patching an existing APCB
+binary with specific SPDs and GPIO selection pins. `Python3`
 * __archive__ - Concatenate files and create an archive `C`
 * __autoport__ - Automated porting coreboot to Sandy Bridge/Ivy Bridge
 platforms `Go`
@@ -20,7 +23,8 @@ status repository `Bash` `Go`
 * __cavium__ - Devicetree_convert Tool to convert a DTB to a static C
 file `Python`
 * __cbfstool__
-	* [_cbfstool_](cbfstool/index.md) - For manipulating CBFS file `C`
+	* [_cbfstool_](cbfstool/index.md) - For manipulating CBFS file
+`C`
 	* _fmaptool_ - Converts plaintext fmd files into fmap blobs `C`
 	* _rmodtool_ - Creates rmodules `C`
 	* _ifwitool_ - For manipulating IFWI `C`
@@ -37,18 +41,18 @@ _coreboot.org-status_ and _docs.coreboot.org_
 * __ectool__ - Dumps the RAM of a laptop's Embedded/Environmental
 Controller (EC). `C`
 * __exynos__ - Computes and fills Exynos ROM checksum (for BL1 or BL2).
-`Python2`
+`Python3`
 * __find_usbdebug__ - Help find USB debug ports
 * __futility__ - Firmware utility for signing ChromeOS images `Make`
 * __fuzz-tests__ - Create test cases that crash the jpeg code. `C`
 * __genbuild_h__ - Generate build system definitions `Shell`
-* __genprof__ - Format function tracing logs `Bash` `C`
 * __gitconfig__ - Initialize git repository submodules install git
 hooks `Bash`
-* [__ifdtool__](ifdtool/index.md) - Extract and dump Intel Firmware Descriptor information
-`C`
+* [__ifdtool__](ifdtool/index.md) - Extract and dump Intel Firmware
+Descriptor information `C`
 * __intelmetool__ - Dump interesting things about Management Engine
 even if hidden `C`
+* __intelp2m__ - Intel Pad to Macro (intelp2m) converter 'Go'
 * __inteltool__ - Provides information about the Intel CPU/chipset
 hardware configuration (register contents, MSRs, etc). `C`
 * __intelvbttool__ - Parse VBT from VGA BIOS `C`
@@ -65,12 +69,14 @@ firmware of many HP laptops with 8051-based SMSC KBC1098/KBC1126
 embedded controller and insert them to the firmware image. `C`
 * __kconfig__ - Build system `Make`
 * __lint__ - Source linter and linting rules `Shell`
+* __mainboard__ - mainboard specific scripts
+	* _google_ - Directory for google mainboard specific scripts
 * __marvell__ - Add U-Boot boot loader for Marvell ARMADA38X `C`
 * __[me_cleaner](https://github.com/corna/me_cleaner)__ - Tool for
 partial deblobbing of Intel ME/TXE firmware images `Python`
 * __mma__ - Memory Margin Analysis automation tests `Bash`
 * __msrtool__ - Dumps chipset-specific MSR registers. `C`
-* __mtkheader__ - Generate MediaTek bootload header. `Python2`
+* __mtkheader__ - Generate MediaTek bootload header. `Python3`
 * __nvidia__ - nvidia blob parsers
 * __nvramtool__ - Reads and writes coreboot parameters and displaying
 information from the coreboot table in CMOS/NVRAM. `C`
@@ -80,6 +86,8 @@ information from the coreboot table in CMOS/NVRAM. `C`
 ThinkPads. PMH7 is used for switching on and off the power of some
 devices on the board such as dGPU. `C`
 * __post__ - Userspace utility that can be used to test POST cards. `C`
+* __qemu__ - Makefile & comprehensive default config for QEMU Q35
+emulation
 * __qualcomm__ - CMM script to debug Qualcomm coreboot environments.
 `CMM`
 * __release__ - Generate coreboot release `Bash`
@@ -88,7 +96,7 @@ devices on the board such as dGPU. `C`
 can be passed to SPIKE, the RISC-V reference emulator.`Bash`
 	* _sifive-gpt.py_ - Wraps the bootblock in a GPT partition for
 SiFive's bootrom. `Python3`
-* __rockchip__ - Generate Rockchip idblock bootloader. `Python2`
+* __rockchip__ - Generate Rockchip idblock bootloader. `Python3`
 * __sconfig__ - coreboot device tree compiler `Lex` `Yacc`
 * __scripts__
 	* _config_ - Manipulate options in a .config file from the
@@ -117,11 +125,19 @@ file `Perl`
 * __spdtool__ - Dumps SPD ROMs from a given blob to separate files
 using known patterns and reserved bits. Useful for analysing firmware
 that holds SPDs on boards that have soldered down DRAM. `python`
+* __spd_tools__ - Tools for generating SPD files for DDR4 memory used
+in platforms with memory down configuration.
+	* _gen_spd.go_ - Generates de-duplicated SPD files using a
+global memory part list provided by the mainboard in JSON format. `Go`
+	* _gen_part_id.go_ - Allocates DRAM strap IDs for different
+DDR4 memory parts used by the board. `Go`
 * __spkmodem_recv__ - Decode spkmodem signals `C`
 * __superiotool__ - A user-space utility to detect Super I/O of a
 mainboard and provide detailed information about the register contents
 of the Super I/O. `C`
-* __smcbiosinfo__ - Generates SMC biosinfo for BMC BIOS updates `C`
+* __supermicro__ - Tools for supermicro platforms
+	* _smcbiosinfo_ - Generates SMC biosinfo for BMC BIOS updates
+`C`
 * __testing__ - coreboot test targets `Make`
 * __uio_usbdebug__ - Debug coreboot's usbdebug driver inside a running
 operating system (only Linux at this time). `C`
@@ -135,6 +151,17 @@ the documentation `Bash`
 * __xcompile__ - Cross compile setup `Bash`
 
 
-## In depth documentation
+ ## In depth documentation
 
 * [ifdtool](ifdtool/index.md)
+
+## Generated documentation
+
+**Please do not edit the markdown file in the documentation directory
+*directly.**
+
+This file was generated by running util_readme.sh. Please make sure it
+is rerun when new tools are added or when documentation is updated.
+
+To update, edit the markdown files in the util directory, then
+re-generate this file by running `util/util_readme/util_readme.sh`

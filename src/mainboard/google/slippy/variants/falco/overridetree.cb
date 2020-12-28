@@ -1,11 +1,11 @@
 chip northbridge/intel/haswell
 
 	# Set panel power delays
-	register "gpu_panel_power_cycle_delay" = "5"		# 400ms (T4)
-	register "gpu_panel_power_up_delay" = "600"		# 60ms  (T1+T2)
-	register "gpu_panel_power_down_delay" = "600"		# 60ms  (T3+T7)
-	register "gpu_panel_power_backlight_on_delay" = "2100"	# 210ms (T5)
-	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms (T6)
+	register "gpu_panel_power_cycle_delay_ms" = "400"
+	register "gpu_panel_power_up_delay_ms" = "60"
+	register "gpu_panel_power_down_delay_ms" = "60"
+	register "gpu_panel_power_backlight_on_delay_ms" = "210"
+	register "gpu_panel_power_backlight_off_delay_ms" = "210"
 
 	device domain 0 on
 

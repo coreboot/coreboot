@@ -17,11 +17,11 @@ struct northbridge_intel_haswell_config {
 	u8 gpu_dp_c_hotplug; /* Digital Port C Hotplug Config */
 	u8 gpu_dp_d_hotplug; /* Digital Port D Hotplug Config */
 
-	u8 gpu_panel_power_cycle_delay;          /* T4 time sequence */
-	u16 gpu_panel_power_up_delay;            /* T1+T2 time sequence */
-	u16 gpu_panel_power_down_delay;          /* T3 time sequence */
-	u16 gpu_panel_power_backlight_on_delay;  /* T5 time sequence */
-	u16 gpu_panel_power_backlight_off_delay; /* Tx time sequence */
+	u16 gpu_panel_power_cycle_delay_ms;          /* T4 time sequence */
+	u16 gpu_panel_power_up_delay_ms;            /* T1+T2 time sequence */
+	u16 gpu_panel_power_down_delay_ms;          /* T3 time sequence */
+	u16 gpu_panel_power_backlight_on_delay_ms;  /* T5 time sequence */
+	u16 gpu_panel_power_backlight_off_delay_ms; /* Tx time sequence */
 
 	unsigned int gpu_pch_backlight_pwm_hz;
 	enum {

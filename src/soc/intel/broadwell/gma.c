@@ -4,6 +4,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -298,24 +299,24 @@ static void gma_setup_panel(struct device *dev)
 	/* Setup Panel Power On Delays */
 	reg32 = gtt_read(PCH_PP_ON_DELAYS);
 	if (!reg32) {
-		reg32 |= (conf->gpu_panel_power_up_delay & 0x1fff) << 16;
-		reg32 |= (conf->gpu_panel_power_backlight_on_delay & 0x1fff);
+		reg32 |= ((conf->gpu_panel_power_up_delay_ms * 10) & 0x1fff) << 16;
+		reg32 |= (conf->gpu_panel_power_backlight_on_delay_ms * 10) & 0x1fff;
 		gtt_write(PCH_PP_ON_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Off Delays */
 	reg32 = gtt_read(PCH_PP_OFF_DELAYS);
 	if (!reg32) {
-		reg32 = (conf->gpu_panel_power_down_delay & 0x1fff) << 16;
-		reg32 |= (conf->gpu_panel_power_backlight_off_delay & 0x1fff);
+		reg32 = ((conf->gpu_panel_power_down_delay_ms * 10) & 0x1fff) << 16;
+		reg32 |= (conf->gpu_panel_power_backlight_off_delay_ms * 10) & 0x1fff;
 		gtt_write(PCH_PP_OFF_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Cycle Delay */
-	if (conf->gpu_panel_power_cycle_delay) {
+	if (conf->gpu_panel_power_cycle_delay_ms) {
 		reg32 = gtt_read(PCH_PP_DIVISOR);
 		reg32 &= ~0x1f;
-		reg32 |= conf->gpu_panel_power_cycle_delay & 0x1f;
+		reg32 |= (DIV_ROUND_UP(conf->gpu_panel_power_cycle_delay_ms, 100) + 1) & 0x1f;
 		gtt_write(PCH_PP_DIVISOR, reg32);
 	}
 

@@ -19,11 +19,11 @@ struct soc_intel_broadwell_config {
 	u8 gpu_dp_d_hotplug;
 
 	/* Panel power sequence timings */
-	u8 gpu_panel_power_cycle_delay;
-	u16 gpu_panel_power_up_delay;
-	u16 gpu_panel_power_down_delay;
-	u16 gpu_panel_power_backlight_on_delay;
-	u16 gpu_panel_power_backlight_off_delay;
+	u16 gpu_panel_power_cycle_delay_ms;
+	u16 gpu_panel_power_up_delay_ms;
+	u16 gpu_panel_power_down_delay_ms;
+	u16 gpu_panel_power_backlight_on_delay_ms;
+	u16 gpu_panel_power_backlight_off_delay_ms;
 
 	/* Panel backlight settings */
 	unsigned int gpu_pch_backlight_pwm_hz;

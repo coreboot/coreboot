@@ -4,11 +4,11 @@ chip soc/intel/broadwell
 	register "gpu_dp_c_hotplug" = "0x06"
 
 	# Set panel power delays
-	register "gpu_panel_power_cycle_delay" = "6"		# 500ms
-	register "gpu_panel_power_up_delay" = "2000"		# 200ms
-	register "gpu_panel_power_down_delay" = "500"		# 50ms
-	register "gpu_panel_power_backlight_on_delay" = "2000"	# 200ms
-	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms
+	register "gpu_panel_power_cycle_delay_ms" = "500"
+	register "gpu_panel_power_up_delay_ms" = "200"
+	register "gpu_panel_power_down_delay_ms" = "50"
+	register "gpu_panel_power_backlight_on_delay_ms" = "200"
+	register "gpu_panel_power_backlight_off_delay_ms" = "200"
 
 	register "vr_slow_ramp_rate_set" = "3"
 	register "vr_slow_ramp_rate_enable" = "1"

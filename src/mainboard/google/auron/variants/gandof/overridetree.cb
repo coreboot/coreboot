@@ -1,11 +1,11 @@
 chip soc/intel/broadwell
 
 	# Set panel power delays
-	register "gpu_panel_power_cycle_delay" = "5"		# 400ms
-	register "gpu_panel_power_up_delay" = "400"		# 40ms
-	register "gpu_panel_power_down_delay" = "150"		# 15ms
-	register "gpu_panel_power_backlight_on_delay" = "500"	# 50ms
-	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms
+	register "gpu_panel_power_cycle_delay_ms" = "400"
+	register "gpu_panel_power_up_delay_ms" = "40"
+	register "gpu_panel_power_down_delay_ms" = "15"
+	register "gpu_panel_power_backlight_on_delay_ms" = "50"
+	register "gpu_panel_power_backlight_off_delay_ms" = "210"
 
 	device domain 0 on
 		chip soc/intel/broadwell/pch

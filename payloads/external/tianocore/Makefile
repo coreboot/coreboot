@@ -40,10 +40,12 @@ endif
 TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
 
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-	BUILD_STR=-q -a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
+ARCH=-a IA32 -p $(bootloader)/$(bootloader)Ia32.dsc
 else
-	BUILD_STR=-q -a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
+ARCH=-a IA32 -a X64 -p $(bootloader)/$(bootloader)Ia32X64.dsc
 endif
+
+BUILD_STR=-q $(ARCH) -t COREBOOT -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
 
 all: clean build
 

@@ -6,6 +6,17 @@
 #include <soc/pmif.h>
 #include <soc/mt6359p.h>
 
+static const struct pmic_setting key_protect_setting[] = {
+	{0x3A8, 0x9CA6, 0xFFFF, 0},
+	{0x44A, 0xBADE, 0xFFFF, 0},
+	{0xA3A, 0x4729, 0xFFFF, 0},
+	{0xC58, 0x1605, 0xFFFF, 0},
+	{0xC5A, 0x1706, 0xFFFF, 0},
+	{0xC5C, 0x1807, 0xFFFF, 0},
+	{0xFB4, 0x6359, 0xFFFF, 0},
+	{0x1432, 0x5543, 0xFFFF, 0},
+};
+
 static const struct pmic_setting init_setting[] = {
 	{0x20, 0xA, 0xA, 0},
 	{0x24, 0x1F00, 0x1F00, 0},
@@ -318,6 +329,13 @@ static void pmic_wdt_set(void)
 	mt6359p_write_field(PMIC_TOP_RST_MISC_SET, 0x01, 0xFFFF, 0);
 }
 
+static void pmic_protect_key_setting(bool lock)
+{
+	for (int i = 0; i < ARRAY_SIZE(key_protect_setting); i++)
+		mt6359p_write(key_protect_setting[i].addr,
+			      lock ? 0 : key_protect_setting[i].val);
+}
+
 static void pmic_init_setting(void)
 {
 	for (int i = 0; i < ARRAY_SIZE(init_setting); i++)
@@ -449,8 +467,10 @@ void mt6359p_init(void)
 	init_pmif_arb();
 	pmic_set_power_hold();
 	pmic_wdt_set();
+	pmic_protect_key_setting(false);
 	pmic_init_setting();
 	pmic_lp_setting();
+	pmic_protect_key_setting(true);
 	pmic_wk_vs2_voter_setting();
 }
 

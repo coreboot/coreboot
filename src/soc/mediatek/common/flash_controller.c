@@ -3,7 +3,8 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <soc/flash_controller.h>
+#include <soc/flash_controller_common.h>
+#include <soc/symbols.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
@@ -11,6 +12,8 @@
 #include <symbols.h>
 #include <timer.h>
 #include <types.h>
+
+static struct mtk_nor_regs *const mtk_nor = (void *)SFLASH_REG_BASE;
 
 #define GET_NTH_BYTE(d, n)	((d >> (8 * n)) & 0xff)
 
@@ -20,7 +23,7 @@ static int polling_cmd(u32 val)
 
 	stopwatch_init_usecs_expire(&sw, SFLASH_POLLINGREG_US);
 
-	while ((read32(&mt8192_nor->cmd) & val) != 0) {
+	while ((read32(&mtk_nor->cmd) & val) != 0) {
 		if (stopwatch_expired(&sw))
 			return -1;
 	}
@@ -28,20 +31,20 @@ static int polling_cmd(u32 val)
 	return 0;
 }
 
-static int mt8192_nor_execute_cmd(u8 cmdval)
+static int mtk_nor_execute_cmd(u8 cmdval)
 {
 	u8 val = cmdval & ~SFLASH_AUTOINC;
 
-	write8(&mt8192_nor->cmd, cmdval);
+	write8(&mtk_nor->cmd, cmdval);
 	return polling_cmd(val);
 }
 
 static int sflashhw_read_flash_status(u8 *value)
 {
-	if (mt8192_nor_execute_cmd(SFLASH_READSTATUS))
+	if (mtk_nor_execute_cmd(SFLASH_READSTATUS))
 		return -1;
 
-	*value = read8(&mt8192_nor->rdsr);
+	*value = read8(&mtk_nor->rdsr);
 	return 0;
 }
 
@@ -65,9 +68,9 @@ static int wait_for_write_done(void)
 /* set serial flash program address */
 static void set_sfpaddr(u32 addr)
 {
-	write8(&mt8192_nor->radr[2], GET_NTH_BYTE(addr, 2));
-	write8(&mt8192_nor->radr[1], GET_NTH_BYTE(addr, 1));
-	write8(&mt8192_nor->radr[0], GET_NTH_BYTE(addr, 0));
+	write8(&mtk_nor->radr[2], GET_NTH_BYTE(addr, 2));
+	write8(&mtk_nor->radr[1], GET_NTH_BYTE(addr, 1));
+	write8(&mtk_nor->radr[0], GET_NTH_BYTE(addr, 0));
 }
 
 static int sector_erase(int offset)
@@ -75,16 +78,16 @@ static int sector_erase(int offset)
 	if (wait_for_write_done())
 		return -1;
 
-	write8(&mt8192_nor->prgdata[5], SFLASH_OP_WREN);
-	write8(&mt8192_nor->cnt, 8);
-	mt8192_nor_execute_cmd(SFLASH_PRG_CMD);
+	write8(&mtk_nor->prgdata[5], SFLASH_OP_WREN);
+	write8(&mtk_nor->cnt, 8);
+	mtk_nor_execute_cmd(SFLASH_PRG_CMD);
 
-	write8(&mt8192_nor->prgdata[5], SECTOR_ERASE_CMD);
-	write8(&mt8192_nor->prgdata[4], GET_NTH_BYTE(offset, 2));
-	write8(&mt8192_nor->prgdata[3], GET_NTH_BYTE(offset, 1));
-	write8(&mt8192_nor->prgdata[2], GET_NTH_BYTE(offset, 0));
-	write8(&mt8192_nor->cnt, 32);
-	mt8192_nor_execute_cmd(SFLASH_PRG_CMD);
+	write8(&mtk_nor->prgdata[5], SECTOR_ERASE_CMD);
+	write8(&mtk_nor->prgdata[4], GET_NTH_BYTE(offset, 2));
+	write8(&mtk_nor->prgdata[3], GET_NTH_BYTE(offset, 1));
+	write8(&mtk_nor->prgdata[2], GET_NTH_BYTE(offset, 0));
+	write8(&mtk_nor->cnt, 32);
+	mtk_nor_execute_cmd(SFLASH_PRG_CMD);
 
 	if (wait_for_write_done())
 		return -1;
@@ -100,17 +103,17 @@ static int dma_read(u32 addr, uintptr_t dma_buf, u32 len)
 	       IS_ALIGNED(len, SFLASH_DMA_ALIGN));
 
 	/* do dma reset */
-	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_SW_RESET);
-	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_WDLE_EN);
+	write32(&mtk_nor->fdma_ctl, SFLASH_DMA_SW_RESET);
+	write32(&mtk_nor->fdma_ctl, SFLASH_DMA_WDLE_EN);
 	/* flash source address and dram dest address */
-	write32(&mt8192_nor->fdma_fadr, addr);
-	write32(&mt8192_nor->fdma_dadr, dma_buf);
-	write32(&mt8192_nor->fdma_end_dadr, (dma_buf + len));
+	write32(&mtk_nor->fdma_fadr, addr);
+	write32(&mtk_nor->fdma_dadr, dma_buf);
+	write32(&mtk_nor->fdma_end_dadr, (dma_buf + len));
 	/* start dma */
-	write32(&mt8192_nor->fdma_ctl, SFLASH_DMA_TRIGGER | SFLASH_DMA_WDLE_EN);
+	write32(&mtk_nor->fdma_ctl, SFLASH_DMA_TRIGGER | SFLASH_DMA_WDLE_EN);
 
 	stopwatch_init_usecs_expire(&sw, SFLASH_POLLINGREG_US);
-	while ((read32(&mt8192_nor->fdma_ctl) & SFLASH_DMA_TRIGGER) != 0) {
+	while ((read32(&mtk_nor->fdma_ctl) & SFLASH_DMA_TRIGGER) != 0) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING, "dma read timeout!\n");
 			return -1;
@@ -132,8 +135,18 @@ static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
 	u32 done, read_len, copy_len;
 	uint8_t *dest = (uint8_t *)buf;
 
-	setbits8(&mt8192_nor->read_dual, SFLASH_READ_DUAL_EN);
-	write8(&mt8192_nor->prgdata[3], SFLASH_1_1_2_READ);
+	/* Refer to CB:13989 for the hardware limitation on mt8173. */
+	if (CONFIG(SOC_MEDIATEK_MT8173)) {
+		if (!ENV_BOOTBLOCK && !ENV_SEPARATE_VERSTAGE) {
+			dma_buf = (uintptr_t)_dram_dma;
+			dma_buf_len = REGION_SIZE(dram_dma);
+		}
+	}
+
+	if (CONFIG(FLASH_DUAL_READ)) {
+		setbits8(&mtk_nor->read_dual, SFLASH_READ_DUAL_EN);
+		write8(&mtk_nor->prgdata[3], SFLASH_1_1_2_READ);
+	}
 
 	/* DMA: start [ skip | len | drop ] = total end */
 	for (done = 0; done < total; dest += copy_len) {
@@ -161,8 +174,8 @@ static int nor_write(const struct spi_flash *flash, u32 addr, size_t len,
 
 	set_sfpaddr(addr);
 	while (len) {
-		write8(&mt8192_nor->wdata, *buffer);
-		if (mt8192_nor_execute_cmd(SFLASH_WR_TRIGGER | SFLASH_AUTOINC))
+		write8(&mtk_nor->wdata, *buffer);
+		if (mtk_nor_execute_cmd(SFLASH_WR_TRIGGER | SFLASH_AUTOINC))
 			return -1;
 
 		if (wait_for_write_done())
@@ -200,7 +213,7 @@ const struct spi_flash_ops spi_flash_ops = {
 int mtk_spi_flash_probe(const struct spi_slave *spi,
 			struct spi_flash *flash)
 {
-	write32(&mt8192_nor->wrprot, SFLASH_COMMAND_ENABLE);
+	write32(&mtk_nor->wrprot, SFLASH_COMMAND_ENABLE);
 	memcpy(&flash->spi, spi, sizeof(*spi));
 
 	flash->sector_size = 0x1000;

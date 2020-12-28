@@ -3,7 +3,7 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <soc/addressmap.h>
-#include <soc/flash_controller.h>
+#include <soc/flash_controller_common.h>
 #include <soc/gpio.h>
 #include <soc/spi.h>
 

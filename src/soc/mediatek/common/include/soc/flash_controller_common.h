@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_MT8192_FLASH_CONTROLLER_H__
-#define __SOC_MEDIATEK_MT8192_FLASH_CONTROLLER_H__
+#ifndef __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__
+#define __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__
 
 #include <spi-generic.h>
 #include <stdint.h>
@@ -36,7 +36,7 @@ enum {
 };
 
 /* register Offset */
-struct mt8192_nor_regs {
+struct mtk_nor_regs {
 	u32 cmd;
 	u32 cnt;
 	u32 rdsr;
@@ -73,9 +73,8 @@ struct mt8192_nor_regs {
 	u32 fdma_dadr;
 	u32 fdma_end_dadr;
 };
-check_member(mt8192_nor_regs, fdma_end_dadr, 0x724);
-static struct mt8192_nor_regs *const mt8192_nor = (void *)SFLASH_REG_BASE;
+check_member(mtk_nor_regs, fdma_end_dadr, 0x724);
 
 int mtk_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *flash);
 
-#endif /* __SOC_MEDIATEK_MT8192_FLASH_CONTROLLER_H__ */
+#endif /* __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__ */

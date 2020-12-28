@@ -3,7 +3,7 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8173),y)
 
 bootblock-y += bootblock.c
-bootblock-$(CONFIG_SPI_FLASH) += flash_controller.c
+bootblock-$(CONFIG_SPI_FLASH) += ../common/flash_controller.c
 bootblock-y += ../common/i2c.c i2c.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/spi.c spi.c
@@ -27,12 +27,12 @@ verstage-y += ../common/uart.c
 verstage-y += ../common/timer.c
 verstage-y += timer.c
 verstage-y += ../common/wdt.c ../common/reset.c
-verstage-$(CONFIG_SPI_FLASH) += flash_controller.c
+verstage-$(CONFIG_SPI_FLASH) += ../common/flash_controller.c
 verstage-y += ../common/gpio.c gpio.c
 
 ################################################################################
 
-romstage-$(CONFIG_SPI_FLASH) += flash_controller.c
+romstage-$(CONFIG_SPI_FLASH) += ../common/flash_controller.c
 romstage-y += ../common/pll.c pll.c
 romstage-y += ../common/timer.c
 romstage-y += timer.c
@@ -53,7 +53,7 @@ romstage-y += ../common/rtc.c rtc.c
 
 ramstage-y += emi.c
 ramstage-y += ../common/spi.c spi.c
-ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
+ramstage-$(CONFIG_SPI_FLASH) += ../common/flash_controller.c
 ramstage-y += soc.c ../common/mtcmos.c
 ramstage-y += ../common/timer.c
 ramstage-y += timer.c

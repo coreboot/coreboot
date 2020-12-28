@@ -314,8 +314,8 @@ static void gma_setup_panel(struct device *dev)
 	/* Setup Panel Power Cycle Delay */
 	if (conf->gpu_panel_power_cycle_delay) {
 		reg32 = gtt_read(PCH_PP_DIVISOR);
-		reg32 &= ~0xff;
-		reg32 |= conf->gpu_panel_power_cycle_delay & 0xff;
+		reg32 &= ~0x1f;
+		reg32 |= conf->gpu_panel_power_cycle_delay & 0x1f;
 		gtt_write(PCH_PP_DIVISOR, reg32);
 	}
 

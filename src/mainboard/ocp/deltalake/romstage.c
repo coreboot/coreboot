@@ -13,6 +13,35 @@
 #include "ipmi.h"
 #include "vpd.h"
 
+/* Convert the vpd integer to the DDR frenquency limit enum */
+static enum ddr_freq_limit ddr_freq_limit(int num)
+{
+	switch (num) {
+	case 0:
+		return DDR_AUTO;
+	case 1:
+		return DDR_1333;
+	case 2:
+		return DDR_1600;
+	case 3:
+		return DDR_1866;
+	case 4:
+		return DDR_2133;
+	case 5:
+		return DDR_2400;
+	case 6:
+		return DDR_2666;
+	case 7:
+		return DDR_2933;
+	case 8:
+		return DDR_3200;
+	default:
+		printk(BIOS_WARNING, "Invalid DdrFreqLimit value from VPD: "
+			"%d\n", num);
+		return DDR_AUTO;
+	};
+}
+
 /*
  * Search from VPD_RW first then VPD_RO for UPD config variables,
  * overwrites them from VPD if it's found.
@@ -76,6 +105,17 @@ static void mainboard_config_upd(FSPM_UPD *mupd)
 		}
 		printk(BIOS_DEBUG, "Setting MemRefreshWatermark %d from VPD\n", val_int);
 		mupd->FspmConfig.UnusedUpdSpace0[0] = (uint8_t)val_int;
+	}
+
+	/* Select DDR Frequency Limit */
+	if (vpd_get_int(FSP_DIMM_FREQ, VPD_RW_THEN_RO, (int *const) &val_int)) {
+		printk(BIOS_INFO, "Setting DdrFreqLimit %d from VPD\n", val_int);
+		mupd->FspmConfig.DdrFreqLimit = ddr_freq_limit(val_int);
+	} else {
+		printk(BIOS_WARNING, "Not able to get VPD %s, default set "
+			"DdrFreqLimit to %d\n", FSP_DIMM_FREQ,
+			FSP_DIMM_FREQ_DEFAULT);
+		mupd->FspmConfig.DdrFreqLimit = ddr_freq_limit(FSP_DIMM_FREQ_DEFAULT);
 	}
 }
 

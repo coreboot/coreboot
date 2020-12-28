@@ -31,6 +31,21 @@ typedef enum {
 	PcieGen3
 } pcie_link_speed;
 
+/**
+ enum for DDR Frequency Limit
+ **/
+enum ddr_freq_limit {
+	DDR_AUTO = 0x0,
+	DDR_1333 = 0x5,
+	DDR_1600 = 0x7,
+	DDR_1866 = 0x9,
+	DDR_2133 = 0xb,
+	DDR_2400 = 0xd,
+	DDR_2666 = 0xf,
+	DDR_2933 = 0x11,
+	DDR_3200 = 0x13
+};
+
 struct soc_intel_xeon_sp_cpx_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;

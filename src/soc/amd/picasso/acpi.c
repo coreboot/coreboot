@@ -432,59 +432,6 @@ void southbridge_inject_dsdt(const struct device *device)
 	}
 }
 
-static void acpigen_soc_get_gpio_in_local5(uintptr_t addr)
-{
-	/*
-	 *   Store (\_SB.GPR2 (addr), Local5)
-	 * \_SB.GPR2 is used to read control byte 2 from control register.
-	 * / It is defined in gpio_lib.asl.
-	 */
-	acpigen_write_store();
-	acpigen_emit_namestring("\\_SB.GPR2");
-	acpigen_write_integer(addr);
-	acpigen_emit_byte(LOCAL5_OP);
-}
-
-static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
-{
-	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
-		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
-					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
-		return -1;
-	}
-	uintptr_t addr = gpio_get_address(gpio_num);
-
-	acpigen_soc_get_gpio_in_local5(addr);
-
-	/* If (And (Local5, mask)) */
-	acpigen_write_if_and(LOCAL5_OP, mask);
-
-	/* Store (One, Local0) */
-	acpigen_write_store_ops(ONE_OP, LOCAL0_OP);
-
-	acpigen_pop_len();	/* If */
-
-	/* Else */
-	acpigen_write_else();
-
-	/* Store (Zero, Local0) */
-	acpigen_write_store_ops(ZERO_OP, LOCAL0_OP);
-
-	acpigen_pop_len();	/* Else */
-
-	return 0;
-}
-
-int acpigen_soc_read_rx_gpio(unsigned int gpio_num)
-{
-	return acpigen_soc_get_gpio_val(gpio_num, GPIO_PIN_IN);
-}
-
-int acpigen_soc_get_tx_gpio(unsigned int gpio_num)
-{
-	return acpigen_soc_get_gpio_val(gpio_num, GPIO_PIN_OUT);
-}
-
 static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
 {
 	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
@@ -496,6 +443,30 @@ static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
 	acpigen_emit_namestring(op);
 	acpigen_write_integer(gpio_num);
 	return 0;
+}
+
+static int acpigen_soc_get_gpio_state(const char *op, unsigned int gpio_num)
+{
+	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
+		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
+					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
+		return -1;
+	}
+	/* Store (op (gpio_num), Local0) */
+	acpigen_write_store();
+	acpigen_soc_gpio_op(op, gpio_num);
+	acpigen_emit_byte(LOCAL0_OP);
+	return 0;
+}
+
+int acpigen_soc_read_rx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_get_gpio_state("\\_SB.GRXS", gpio_num);
+}
+
+int acpigen_soc_get_tx_gpio(unsigned int gpio_num)
+{
+	return acpigen_soc_get_gpio_state("\\_SB.GTXS", gpio_num);
 }
 
 int acpigen_soc_set_tx_gpio(unsigned int gpio_num)

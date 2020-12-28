@@ -2,6 +2,8 @@
 
 #include <soc/iomap.h>
 
+#define GPIO_INPUT_SHIFT	16
+#define GPIO_INPUT_VALUE	(1 << GPIO_INPUT_SHIFT)
 #define GPIO_OUTPUT_SHIFT	22
 #define GPIO_OUTPUT_VALUE	(1 << GPIO_OUTPUT_SHIFT)
 
@@ -147,4 +149,36 @@ Method (CTXS, 1, Serialized)
 		VAL0, 32
 	}
 	VAL0 &= ~GPIO_OUTPUT_VALUE
+}
+
+/*
+ * Get GPIO Input Value
+ * Arg0 - GPIO Number
+ */
+Method (GRXS, 1, Serialized)
+{
+	OperationRegion (GPDW, SystemMemory, GPAD (Arg0), 4)
+	Field (GPDW, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	Local0 = (GPIO_INPUT_VALUE & VAL0) >> GPIO_INPUT_SHIFT
+
+	Return (Local0)
+}
+
+/*
+ * Get GPIO Output Value
+ * Arg0 - GPIO Number
+ */
+Method (GTXS, 1, Serialized)
+{
+	OperationRegion (GPDW, SystemMemory, GPAD (Arg0), 4)
+	Field (GPDW, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	Local0 = (GPIO_OUTPUT_VALUE & VAL0) >> GPIO_OUTPUT_SHIFT
+
+	Return (Local0)
 }

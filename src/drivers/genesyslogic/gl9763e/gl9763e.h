@@ -21,3 +21,11 @@
 #define PLL_CTL_2			0x93C
 #define   PLL_CTL_2_MAX_SSC_MASK	(0xFFFF << 16)
 #define   MAX_SSC_30000PPM		(0xF5C3 << 16)
+
+#define HW_VER_2	0x8F8
+#define   HW_VER_MASK	0xFFFF
+#define   REVISION_03	0x0011
+
+#define SD_CLKRX_DLY			0x934
+#define   CLK_SRC_MASK			(0x3 << 24)
+#define   AFTER_OUTPUT_BUFF		(0x0 << 24)

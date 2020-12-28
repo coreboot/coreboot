@@ -12,6 +12,8 @@
 
 static void gl9763e_init(struct device *dev)
 {
+	uint32_t ver;
+
 	printk(BIOS_INFO, "GL9763E: init\n");
 	pci_dev_init(dev);
 
@@ -25,6 +27,12 @@ static void gl9763e_init(struct device *dev)
 	pci_update_config32(dev, PLL_CTL_2, ~PLL_CTL_2_MAX_SSC_MASK, MAX_SSC_30000PPM);
 	/* Enable SSC */
 	pci_or_config32(dev, PLL_CTL, PLL_CTL_SSC);
+	/* Check chip version */
+	ver = pci_read_config32(dev, HW_VER_2);
+	if ((ver & HW_VER_MASK) == REVISION_03) {
+		/* Set clock source for RX path */
+		pci_update_config32(dev, SD_CLKRX_DLY, ~CLK_SRC_MASK, AFTER_OUTPUT_BUFF);
+	}
 	/* Set VHS to read-only */
 	pci_update_config32(dev, VHS, ~VHS_REV_MASK, VHS_REV_R);
 }

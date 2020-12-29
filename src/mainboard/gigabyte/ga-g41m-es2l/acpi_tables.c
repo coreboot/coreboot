@@ -6,7 +6,5 @@
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->pwrs = 1;    /* Power state (AC = 1) */
-	gnvs->lptp = 0;    /* LPT port */
-	gnvs->fdcp = 0;    /* Floppy Disk Controller */
 	gnvs->osys = 2002; /* At least WINXP SP2 (HPET fix) */
 }

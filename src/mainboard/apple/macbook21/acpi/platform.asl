@@ -42,14 +42,6 @@ Scope(\_SB)
 
 		\GOS()
 
-		/* And the OS workarounds start right after we know what we're
-		 * running: Windows XP SP1 needs to have C-State coordination
-		 * enabled in SMM.
-		 */
-		If ((OSYS == 2001) && MPEN) {
-			// TRAP(61) // TODO
-		}
-
 		/* SMM power state and C4-on-C3 settings need to be updated */
 		// TRAP(43) // TODO
 	}

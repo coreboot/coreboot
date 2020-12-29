@@ -349,6 +349,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {
 		if (config->PcieClkSrcUsage[i] == 0)
 			config->PcieClkSrcUsage[i] = PCIE_CLK_NOTUSED;
+		else if (config->PcieClkSrcUsage[i] == PCIE_CLK_RP0)
+			config->PcieClkSrcUsage[i] = 0;
 	}
 	memcpy(params->PcieClkSrcUsage, config->PcieClkSrcUsage,
 	       sizeof(config->PcieClkSrcUsage));

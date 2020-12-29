@@ -10,5 +10,7 @@
 #define PCIE_CLK_NOTUSED		0xFF
 #define PCIE_CLK_LAN			0x70
 #define PCIE_CLK_FREE			0x80
+/* Converted to 0, allows 0 to be notused */
+#define PCIE_CLK_RP0			0xFE
 
 #endif

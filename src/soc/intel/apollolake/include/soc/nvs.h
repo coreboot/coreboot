@@ -9,6 +9,7 @@
 #ifndef _SOC_APOLLOLAKE_NVS_H_
 #define _SOC_APOLLOLAKE_NVS_H_
 
+#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 

@@ -3,6 +3,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_NVS_H
 #define SOC_INTEL_COMMON_BLOCK_NVS_H
 
+#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 

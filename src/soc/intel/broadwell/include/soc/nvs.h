@@ -3,6 +3,7 @@
 #ifndef _BROADWELL_NVS_H_
 #define _BROADWELL_NVS_H_
 
+#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <soc/device_nvs.h>
 #include <vendorcode/google/chromeos/gnvs.h>

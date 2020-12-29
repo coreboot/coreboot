@@ -3,6 +3,7 @@
 #ifndef _BAYTRAIL_NVS_H_
 #define _BAYTRAIL_NVS_H_
 
+#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <soc/device_nvs.h>

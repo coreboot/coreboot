@@ -717,6 +717,8 @@ F:	src/drivers/aspeed/common/
 F:	src/drivers/aspeed/ast2050/
 
 ACPI
+M:	Lance Zhao <lance.zhao@gmail.com>
+S:	Supported
 F:	src/acpi/
 F:	src/arch/x86/acpi/
 F:	util/acpi/

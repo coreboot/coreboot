@@ -6,8 +6,6 @@
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	gnvs->pwrs = 1; /* Power state (AC = 1) */
-	gnvs->cmap = 1; /* COM 1 port */
-	gnvs->cmap = 1; /* COM 2 port */
 	gnvs->lptp = 0; /* LPT port */
 	gnvs->fdcp = 0; /* Floppy Disk Controller */
 }

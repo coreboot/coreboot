@@ -3,18 +3,9 @@
 #include <string.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <soc/nvs.h>
 
 #include "mainboard.h"
-
-void mainboard_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* Enable COM port(s) */
-	gnvs->cmap = 0x01;
-	gnvs->cmbp = 0x00;
-}
 
 static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 {

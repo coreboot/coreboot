@@ -2,7 +2,6 @@
 
 #include <types.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
@@ -11,15 +10,6 @@
 
 #include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"
-#include <soc/nvs.h>
-
-void mainboard_fill_gnvs(struct global_nvs *gnvs)
-{
-
-	/* Enable both COM ports */
-	gnvs->cmap = 0x01;
-	gnvs->cmbp = 0x01;
-}
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {

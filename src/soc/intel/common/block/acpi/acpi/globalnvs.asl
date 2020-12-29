@@ -19,7 +19,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* Miscellaneous */
 	OSYS,	16,	// 0x00 - Operating System
 	SMIF,	8,	// 0x02 - SMI function
-	PCNT,	8,	// 0x03 - Processor Count
+	,	8,	// 0x03 - Processor Count
 	PPCM,	8,	// 0x04 - Max PPC State
 	TLVL,	8,	// 0x05 - Throttle Level Limit
 	LIDS,	8,	// 0x06 - LID State

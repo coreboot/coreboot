@@ -62,9 +62,6 @@ static acpi_cstate_t cstate_map[] = {
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
-
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = (uintptr_t)cbmem_top();
 

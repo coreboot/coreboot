@@ -27,7 +27,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	LCKF,	8,	// 0x08 - Global Lock function for EC
 	PRM4,	8,	// 0x09 - Lock function parameter
 	PRM5,	8,	// 0x0a - Lock function parameter
-	PCNT,	8,	// 0x0b - Processor Count
+	,	8,	// 0x0b - Processor Count
 	PPCM,	8,	// 0x0c - Max PPC State
 	TMPS,	8,	// 0x0d - Temperature Sensor ID
 	TLVL,	8,	// 0x0e - Throttle Level Limit

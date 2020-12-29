@@ -21,7 +21,7 @@ struct __packed global_nvs {
 	u32	p80d; /* 0x0b - Debug port (IO 0x80) value */
 	u8	lids; /* 0x0f - LID state (open = 1) */
 	u8	pwrs; /* 0x10 - Power state (AC = 1) */
-	u8      pcnt; /* 0x11 - Processor Count */
+	u8      unused_was_pcnt; /* 0x11 - Processor Count */
 	u8	tpmp; /* 0x12 - TPM Present and Enabled */
 	u8	tlvl; /* 0x13 - Throttle Level */
 	u8	ppcm; /* 0x14 - Maximum P-state usable by OS */

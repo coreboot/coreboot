@@ -50,7 +50,7 @@ struct __packed global_nvs {
 	u8	pcp0; /* 0x2a - PDC CPU/CORE 0 */
 	u8	pcp1; /* 0x2b - PDC CPU/CORE 1 */
 	u8	ppcm; /* 0x2c - Max. PPC state */
-	u8      pcnt; /* 0x2d - Processor Count */
+	u8      unused_was_pcnt; /* 0x2d - Processor Count */
 	u8	rsvd4[4];
 	/* Super I/O & CMOS config */
 	u8	natp; /* 0x32 - SIO type */

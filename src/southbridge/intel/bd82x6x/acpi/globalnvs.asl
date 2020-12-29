@@ -58,7 +58,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PCP0,	 8,	// 0x2a - PDC CPU/CORE 0
 	PCP1,	 8,	// 0x2b - PDC CPU/CORE 1
 	PPCM,	 8,	// 0x2c - Max. PPC state
-	PCNT,	 8,	// 0x2d - Processor count
+	,	 8,	// 0x2d - Processor count
 	/* Super I/O & CMOS config */
 	Offset (0x32),
 	NATP,	 8,	// 0x32 -

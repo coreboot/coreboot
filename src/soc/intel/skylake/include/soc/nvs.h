@@ -17,7 +17,7 @@ struct __packed global_nvs {
 	u8	lckf; /* 0x08 - Global Lock function for EC */
 	u8	prm4; /* 0x09 - Lock function parameter */
 	u8	prm5; /* 0x0a - Lock function parameter */
-	u8      pcnt; /* 0x0b - Processor Count */
+	u8      unused_was_pcnt; /* 0x0b - Processor Count */
 	u8	ppcm; /* 0x0c - Max PPC State */
 	u8	tmps; /* 0x0d - Temperature Sensor ID */
 	u8	tlvl; /* 0x0e - Throttle Level Limit */

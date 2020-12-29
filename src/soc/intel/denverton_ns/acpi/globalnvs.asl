@@ -29,7 +29,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	P80D,	32,	// 0x0b - Debug port (IO 0x80) value
 	LIDS,	 8,	// 0x0f - LID state (open = 1)
 	PWRS,	 8,	// 0x10 - Power State (AC = 1)
-	PCNT,	 8,	// 0x11 - Processor count
+	,	 8,	// 0x11 - Processor count
 	TPMP,	 8,	// 0x12 - TPM Present and Enabled
 	TLVL,	 8,	// 0x13 - Throttle Level
 	PPCM,	 8,	// 0x14 - Maximum P-state usable by OS

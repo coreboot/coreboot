@@ -13,7 +13,7 @@
 
 struct __packed global_nvs {
 	/* Miscellaneous */
-	uint8_t		pcnt; /* 0x00 - Processor Count */
+	uint8_t		unused_was_pcnt; /* 0x00 - Processor Count */
 	uint8_t		ppcm; /* 0x01 - Max PPC State */
 	uint8_t		lids; /* 0x02 - LID State */
 	uint8_t		pwrs; /* 0x03 - AC Power State */

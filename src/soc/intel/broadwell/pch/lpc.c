@@ -604,9 +604,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
-
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
 }
 
 static unsigned long broadwell_write_acpi_tables(const struct device *device,

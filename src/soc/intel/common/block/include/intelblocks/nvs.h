@@ -9,7 +9,7 @@ struct __packed global_nvs {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - 0x01 Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
-	u8	pcnt; /* 0x03 - Processor Count */
+	u8	unused_was_pcnt; /* 0x03 - Processor Count */
 	u8	ppcm; /* 0x04 - Max PPC State */
 	u8	tlvl; /* 0x05 - Throttle Level Limit */
 	u8	lids; /* 0x06 - LID State */

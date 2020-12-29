@@ -184,9 +184,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
 
-	/* CPU core count */
-	gnvs->pcnt = dev_count_cpu();
-
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = config->dptf_enable;
 

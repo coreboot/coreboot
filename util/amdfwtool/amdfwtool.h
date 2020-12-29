@@ -3,14 +3,6 @@
 #ifndef _AMD_FW_TOOL_H_
 #define _AMD_FW_TOOL_H_
 
-#if defined(__GLIBC__)
-typedef unsigned long long int uint64_t;
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-#endif
-
-
 typedef enum _amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0,
 	AMD_FW_PSP_BOOTLOADER = 1,

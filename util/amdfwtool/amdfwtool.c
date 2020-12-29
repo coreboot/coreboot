@@ -57,6 +57,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <libgen.h>
+#include <stdint.h>
 
 #include "amdfwtool.h"
 

@@ -3,113 +3,6 @@ chip soc/intel/alderlake
 		device lapic 0 on end
 	end
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# USB2_C0
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# USB2_C1
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# USB2_C2
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
-
-	# Enable WLAN PCIE 5 using clk 2
-	register "pch_pcie_rp[PCH_RP(5)]" = "{
-		.clk_src  = 2,
-		.clk_req  = 2,
-		.flags = PCIE_RP_ENABLED,
-        }"
-
-	# Enable WWAN PCIE 6 using clk 5
-	register "pch_pcie_rp[PCH_RP(6)]" = "{
-		.clk_src  = 5,
-		.clk_req  = 5,
-		.flags = PCIE_RP_ENABLED,
-        }"
-
-	# Enable SD Card PCIE 8 using clk 3
-	register "pch_pcie_rp[PCH_RP(8)]" = "{
-		.clk_src  = 3,
-		.clk_req  = 3,
-		.flags = PCIE_RP_ENABLED | PCIE_RP_HOTPLUG_ENABLED | PCIE_RP_LTR_ENABLED,
-        }"
-
-	# Enable NVMe PCIE 9 using clk 1
-	register "pch_pcie_rp[PCH_RP(9)]" = "{
-		.clk_src  = 1,
-		.clk_req  = 1,
-		.flags = PCIE_RP_ENABLED | PCIE_RP_LTR_ENABLED,
-        }"
-
-	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
-	}"
-
-	register "SerialIoGSpiMode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
-		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
-	}"
-
-	register "SerialIoGSpiCsMode" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 1,
-	}"
-
-	register "SerialIoGSpiCsState" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 1,
-	}"
-
-	register "SerialIoUartMode" = "{
-		[PchSerialIoIndexUART0] = PchSerialIoPci,
-		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
-	}"
-
-	# Intel Common SoC Config
-	#+-------------------+---------------------------+
-	#| Field             |  Value                    |
-	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
-	#| GSPI1             | Fingerprint MCU           |
-	#| I2C0              | Audio                     |
-	#| I2C1              | Touchscreen               |
-	#| I2C2              | SAR0                      |
-	#| I2C3              | cr50 TPM. Early init is   |
-	#|                   | required to set up a BAR  |
-	#|                   | for TPM communication     |
-	#| I2C4              | CAM                       |
-	#| I2C5              | Trackpad                  |
-	#+-------------------+---------------------------+
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
-			.early_init = 1,
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[4] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[5] = {
-			.speed = I2C_SPEED_FAST,
-		},
-	}"
-
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end
@@ -137,6 +30,7 @@ chip soc/intel/alderlake
 		device ref pcie_rp8 on end	#PCIE8 SD card
 		device ref pcie_rp9 on end	#PCIE9-12 SSD
 		device ref uart0 on end
+		device ref gspi0 on end
 		device ref gspi1 on end
 		device ref pch_espi on
 			chip ec/google/chromeec

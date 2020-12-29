@@ -9,8 +9,6 @@
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
 
 	/* Enable both COM ports */
 	gnvs->cmap = 0x01;

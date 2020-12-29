@@ -466,8 +466,8 @@ static void lpc_final(struct device *dev)
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
+	/* MPEN, Enable Multi Processing. */
+	gnvs->mpen = dev_count_cpu() > 1 ? 1 : 0;
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

@@ -13,7 +13,6 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <elog.h>
 #include <acpi/acpigen.h>
 #include <string.h>
@@ -23,7 +22,6 @@
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/spi.h>
-#include <soc/nvs.h>
 
 #define NMI_OFF	0
 
@@ -539,12 +537,6 @@ static void pch_lpc_enable(struct device *dev)
 	RCBA32_OR(FD2, PCH_ENABLE_DBDF);
 
 	pch_enable(dev);
-}
-
-void soc_fill_gnvs(struct global_nvs *gnvs)
-{
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

@@ -7,7 +7,7 @@ Name (\PICM, 0)		// IOAPIC/8259
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	OSYS,	16,	// 0x00 - Operating System
+	,	16,	// 0x00 - Operating System
 	SMIF,	8,	// 0x02 - SMI function
 	,	8,	// 0x03 - Processor Count
 	PPCM,	8,	// 0x04 - Max PPC State

@@ -8,5 +8,8 @@
 #include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
 
+/* Operating system enumeration. */
+Name (OSYS, 0)
+
 /* Power state (AC = 1) */
 Name (PWRS, One)

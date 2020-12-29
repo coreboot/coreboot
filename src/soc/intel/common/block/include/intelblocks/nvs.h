@@ -7,7 +7,7 @@
 
 struct __packed global_nvs {
 	/* Miscellaneous */
-	u16	osys; /* 0x00 - 0x01 Operating System */
+	u16	unused_was_osys; /* 0x00 - 0x01 Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
 	u8	unused_was_pcnt; /* 0x03 - Processor Count */
 	u8	ppcm; /* 0x04 - Max PPC State */

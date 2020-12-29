@@ -4,10 +4,9 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801jx.h"
-
-#include "nvs.h"
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value

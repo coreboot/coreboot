@@ -25,4 +25,6 @@ smm-y += smihandler.c
 romstage-y += early_init.c
 romstage-y += early_cir.c
 
+CPPFLAGS_common += -I$(src)/southbridge/intel/i82801gx/include
+
 endif

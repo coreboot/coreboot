@@ -29,4 +29,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 endif
 
+CPPFLAGS_common += -I$(src)/southbridge/intel/i82801ix/include
+
 endif

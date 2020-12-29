@@ -8,12 +8,11 @@
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/finalize.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/ibexpeak/me.h>
 #include "pch.h"
-
-#include "nvs.h"
 
 /* We are using PCIe accesses for now
  *  1. the chipset can do it

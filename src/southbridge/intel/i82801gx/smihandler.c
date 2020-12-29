@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801gx.h"
 
@@ -14,8 +15,6 @@
 #define   D_LCK		(1 << 4)
 #define   G_SMRANE	(1 << 3)
 #define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
-
-#include "nvs.h"
 
 /* While we read PMBASE dynamically in case it changed, let's initialize it with a sane value */
 u16 pmbase = DEFAULT_PMBASE;

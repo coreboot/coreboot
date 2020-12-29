@@ -2,7 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpi_gnvs.h>
-#include <southbridge/intel/i82801jx/nvs.h>
+#include <soc/nvs.h>
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {

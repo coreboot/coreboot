@@ -15,9 +15,13 @@ uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs)
 }
 
 /* Some <soc/nvs.h> have no chromeos entry. */
-#if CONFIG(MAINBOARD_HAS_CHROMEOS)
 void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
 {
+#if CONFIG(BOARD_EMULATION_QEMU_X86_Q35)
+	return NULL;
+#elif CONFIG(MAINBOARD_HAS_CHROMEOS)
 	return &gnvs->chromeos;
-}
+#else
+	return NULL;
 #endif
+}

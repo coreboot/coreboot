@@ -46,4 +46,6 @@ endif
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += pmutil.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += lp_gpio.c
 
+CPPFLAGS_common += -I$(src)/southbridge/intel/lynxpoint/include
+
 endif

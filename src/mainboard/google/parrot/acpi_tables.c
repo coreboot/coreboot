@@ -7,7 +7,7 @@
 #include "ec.h"
 
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/bd82x6x/nvs.h>
+#include <soc/nvs.h>
 #include "thermal.h"
 #include "onboard.h"
 

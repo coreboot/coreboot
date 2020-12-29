@@ -11,7 +11,7 @@
 
 #include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"
-#include <southbridge/intel/i82801ix/nvs.h>
+#include <soc/nvs.h>
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {

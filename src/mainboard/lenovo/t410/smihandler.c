@@ -3,7 +3,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/ibexpeak/nvs.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <northbridge/intel/ironlake/ironlake.h>
 #include <ec/acpi/ec.h>

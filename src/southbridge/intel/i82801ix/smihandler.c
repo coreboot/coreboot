@@ -7,7 +7,7 @@
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801ix.h"
 
-#include "nvs.h"
+#include <soc/nvs.h>
 
 #if !CONFIG(SMM_TSEG)
 /* For qemu/x86-q35 to build properly. */

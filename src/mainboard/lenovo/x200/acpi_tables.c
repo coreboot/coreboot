@@ -5,7 +5,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <southbridge/intel/i82801ix/nvs.h>
+#include <soc/nvs.h>
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {

@@ -36,4 +36,6 @@ romstage-y += ../bd82x6x/early_rcba.c
 romstage-y += early_cir.c
 romstage-y += early_usb.c
 
+CPPFLAGS_common += -I$(src)/southbridge/intel/ibexpeak/include
+
 endif

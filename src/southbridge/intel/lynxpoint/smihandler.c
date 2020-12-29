@@ -14,10 +14,10 @@
 #include <southbridge/intel/common/finalize.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <soc/nvs.h>
 #include <smmstore.h>
 #include "me.h"
 #include "pch.h"
-#include "nvs.h"
 
 int southbridge_io_trap_handler(int smif)
 {

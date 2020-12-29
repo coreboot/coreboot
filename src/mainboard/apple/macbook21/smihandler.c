@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/i82801gx/nvs.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 
 #define GPE_EC_SCI	12

@@ -9,6 +9,7 @@
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/gpio.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
@@ -16,7 +17,6 @@
 #include <southbridge/intel/common/finalize.h>
 
 #include "pch.h"
-#include "nvs.h"
 
 int southbridge_io_trap_handler(int smif)
 {

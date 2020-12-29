@@ -4,7 +4,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/lynxpoint/me.h>

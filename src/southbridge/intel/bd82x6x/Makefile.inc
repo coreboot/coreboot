@@ -38,4 +38,6 @@ else
 romstage-y += early_me_mrc.c early_usb_mrc.c
 endif
 
+CPPFLAGS_common += -I$(src)/southbridge/intel/bd82x6x/include
+
 endif

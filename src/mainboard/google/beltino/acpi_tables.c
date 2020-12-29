@@ -3,7 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <variant/thermal.h>
 

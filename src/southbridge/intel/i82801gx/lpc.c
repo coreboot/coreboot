@@ -21,10 +21,10 @@
 #include <southbridge/intel/common/hpet.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/spi.h>
+#include <soc/nvs.h>
 
 #include "chip.h"
 #include "i82801gx.h"
-#include "nvs.h"
 
 #define NMI_OFF	0
 
@@ -462,11 +462,6 @@ static void lpc_final(struct device *dev)
 
 	/* Indicate finalize step with post code */
 	outb(POST_OS_BOOT, 0x80);
-}
-
-size_t gnvs_size_of_array(void)
-{
-	return sizeof(struct global_nvs);
 }
 
 void soc_fill_gnvs(struct global_nvs *gnvs)

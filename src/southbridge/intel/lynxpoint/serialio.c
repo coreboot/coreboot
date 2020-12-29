@@ -7,10 +7,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <soc/nvs.h>
 #include "chip.h"
 #include "iobp.h"
 #include "pch.h"
-#include "nvs.h"
 
 /* Enable clock in PCI mode */
 static void serialio_enable_clock(struct resource *bar0)

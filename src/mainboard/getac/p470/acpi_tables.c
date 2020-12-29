@@ -5,7 +5,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <southbridge/intel/i82801gx/nvs.h>
+#include <soc/nvs.h>
 
 #include "mainboard.h"
 

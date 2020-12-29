@@ -5,9 +5,9 @@
 #include <acpi/acpigen.h>
 #include <string.h>
 #include <version.h>
+#include <soc/nvs.h>
 
 #include "pch.h"
-#include "nvs.h"
 
 static void acpi_create_serialio_ssdt_entry(int id, struct global_nvs *gnvs)
 {

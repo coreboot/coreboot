@@ -4,7 +4,7 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/i82801gx/nvs.h>
+#include <soc/nvs.h>
 #include <southbridge/intel/common/gpio.h>
 #include <ec/acpi/ec.h>
 #include "ec_oem.c"

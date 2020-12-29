@@ -16,12 +16,12 @@
 #include <string.h>
 #include "chip.h"
 #include "iobp.h"
-#include "nvs.h"
 #include "pch.h"
 #include <acpi/acpigen.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/common/spi.h>
+#include <soc/nvs.h>
 
 #define NMI_OFF	0
 
@@ -677,21 +677,6 @@ static void pch_lpc_enable(struct device *dev)
 	RCBA32_OR(FD2, PCH_ENABLE_DBDF);
 
 	pch_enable(dev);
-}
-
-size_t gnvs_size_of_array(void)
-{
-	return sizeof(struct global_nvs);
-}
-
-uint32_t *gnvs_cbmc_ptr(struct global_nvs *gnvs)
-{
-	return &gnvs->cbmc;
-}
-
-void *gnvs_chromeos_ptr(struct global_nvs *gnvs)
-{
-	return &gnvs->chromeos;
 }
 
 void soc_fill_gnvs(struct global_nvs *gnvs)

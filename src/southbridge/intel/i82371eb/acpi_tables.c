@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include "i82371eb.h"
@@ -44,9 +43,4 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 {
 	/* chipset doesn't have mmconfig */
 	return current;
-}
-
-size_t gnvs_size_of_array(void)
-{
-	return 0;
 }

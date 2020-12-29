@@ -4,7 +4,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
 #include <ec/acpi/ec.h>
-#include <southbridge/intel/bd82x6x/nvs.h>
+#include <soc/nvs.h>
 
 #include "thermal.h"
 

@@ -29,7 +29,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 	cb_err_t err = CB_CBFS_CACHE_FULL;
 	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM && cbd->mcache_size)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
-					  name, mdata, &data_offset);
+					 name, mdata, &data_offset);
 	if (err == CB_CBFS_CACHE_FULL) {
 		struct vb2_hash *metadata_hash = NULL;
 		if (CONFIG(TOCTOU_SAFETY)) {
@@ -37,21 +37,17 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 				dead_code();
 			if (!cbd->mcache_size)
 				die("Cannot access CBFS TOCTOU-safely in " ENV_STRING " before CBMEM init!\n");
-			/* We can only reach this for the RW CBFS -- an mcache
-			   overflow in the RO CBFS would have been caught when
-			   building the mcache in cbfs_get_boot_device().
-			   (Note that TOCTOU_SAFETY implies !NO_CBFS_MCACHE.) */
+			/* We can only reach this for the RW CBFS -- an mcache overflow in the
+			   RO CBFS would have been caught when building the mcache in cbfs_get
+			   boot_device(). (Note that TOCTOU_SAFETY implies !NO_CBFS_MCACHE.) */
 			assert(cbd == vboot_get_cbfs_boot_device());
 			/* TODO: set metadata_hash to RW metadata hash here. */
 		}
-		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset,
-				  metadata_hash);
+		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset, metadata_hash);
 	}
 
-	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && !force_ro &&
-	    err == CB_CBFS_NOT_FOUND) {
-		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n",
-		       name);
+	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && !force_ro && err == CB_CBFS_NOT_FOUND) {
+		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n", name);
 		return cbfs_boot_lookup(name, true, mdata, rdev);
 	}
 	if (err) {
@@ -60,8 +56,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 		else if (err == CB_CBFS_HASH_MISMATCH)
 			printk(BIOS_ERR, "CBFS ERROR: metadata hash mismatch!\n");
 		else
-			printk(BIOS_ERR,
-			       "CBFS ERROR: error %d when looking up '%s'\n",
+			printk(BIOS_ERR, "CBFS ERROR: error %d when looking up '%s'\n",
 			       err, name);
 		return err;
 	}
@@ -82,8 +77,7 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 		return -1;
 
 	size_t msize = be32toh(fh->mdata.h.offset);
-	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev,
-		       (uintptr_t)&fh->mdata, msize))
+	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev, (uintptr_t)&fh->mdata, msize))
 		return -1;
 
 	if (type) {
@@ -122,8 +116,8 @@ void *cbfs_ro_map(const char *name, size_t *size_out)
 
 int cbfs_unmap(void *mapping)
 {
-	/* This works because munmap() only works on the root rdev and never
-	   cares about which chained subregion something was mapped from. */
+	/* This works because munmap() only works on the root rdev and never cares about which
+	   chained subregion something was mapped from. */
 	return rdev_munmap(boot_device_ro(), mapping);
 }
 
@@ -133,8 +127,7 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 	struct region_device rdev;
 	int ret = 0;
 	if (fmap_locate_area_as_rdev(region_name, &rdev)) {
-		LOG("%s region not found while looking for %s\n",
-		    region_name, name);
+		LOG("%s region not found while looking for %s\n", region_name, name);
 		return -1;
 	}
 
@@ -189,14 +182,13 @@ static inline bool cbfs_lzma_enabled(void)
 		return false;
 	if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
 		return false;
-	if ((ENV_ROMSTAGE || ENV_POSTCAR)
-	    && !CONFIG(COMPRESS_RAMSTAGE))
+	if ((ENV_ROMSTAGE || ENV_POSTCAR) && !CONFIG(COMPRESS_RAMSTAGE))
 		return false;
 	return true;
 }
 
-size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
-	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
+size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset, size_t in_size,
+				void *buffer, size_t buffer_size, uint32_t compression)
 {
 	size_t out_size;
 	void *map;
@@ -213,8 +205,8 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		if (!cbfs_lz4_enabled())
 			return 0;
 
-		/* cbfs_stage_load_and_decompress() takes care of in-place
-		   lz4 decompression by setting up the rdev to be in memory. */
+		/* cbfs_stage_load_and_decompress() takes care of in-place LZ4 decompression by
+		   setting up the rdev to be in memory. */
 		map = rdev_mmap(rdev, offset, in_size);
 		if (map == NULL)
 			return 0;
@@ -248,33 +240,31 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	}
 }
 
-static size_t cbfs_stage_load_and_decompress(const struct region_device *rdev,
-		size_t offset, size_t in_size, void *buffer, size_t buffer_size,
-		uint32_t compression)
+static size_t cbfs_stage_load_and_decompress(const struct region_device *rdev, size_t offset,
+	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
 {
 	struct region_device rdev_src;
 
 	if (compression == CBFS_COMPRESS_LZ4) {
 		if (!cbfs_lz4_enabled())
 			return 0;
-		/* Load the compressed image to the end of the available memory
-		 * area for in-place decompression. It is the responsibility of
-		 * the caller to ensure that buffer_size is large enough
-		 * (see compression.h, guaranteed by cbfstool for stages). */
+		/* Load the compressed image to the end of the available memory area for
+		   in-place decompression. It is the responsibility of the caller to ensure that
+		   buffer_size is large enough (see compression.h, guaranteed by cbfstool for
+		   stages). */
 		void *compr_start = buffer + buffer_size - in_size;
 		if (rdev_readat(rdev, compr_start, offset, in_size) != in_size)
 			return 0;
 		/* Create a region device backed by memory. */
-		rdev_chain(&rdev_src, &addrspace_32bit.rdev,
-				(uintptr_t)compr_start, in_size);
+		rdev_chain(&rdev_src, &addrspace_32bit.rdev, (uintptr_t)compr_start, in_size);
 
-		return cbfs_load_and_decompress(&rdev_src, 0, in_size, buffer,
-					buffer_size, compression);
+		return cbfs_load_and_decompress(&rdev_src, 0, in_size, buffer, buffer_size,
+						compression);
 	}
 
 	/* All other algorithms can use the generic implementation. */
-	return cbfs_load_and_decompress(rdev, offset, in_size, buffer,
-					buffer_size, compression);
+	return cbfs_load_and_decompress(rdev, offset, in_size, buffer, buffer_size,
+					compression);
 }
 
 static inline int tohex4(unsigned int c)
@@ -317,8 +307,7 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
 	return cbfs_map(name, NULL);
 }
 
-static size_t _cbfs_load(const char *name, void *buf, size_t buf_size,
-			 bool force_ro)
+static size_t _cbfs_load(const char *name, void *buf, size_t buf_size, bool force_ro)
 {
 	struct region_device rdev;
 	union cbfs_mdata mdata;
@@ -390,7 +379,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 	}
 
 	fsize = cbfs_stage_load_and_decompress(fh, foffset, fsize, load,
-					 stage.memlen, stage.compression);
+					stage.memlen, stage.compression);
 	if (!fsize)
 		return -1;
 
@@ -422,8 +411,7 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 	} else if (ENV_ROMSTAGE_OR_BEFORE) {
 		u8 *boundary = _ecbfs_mcache - REGION_SIZE(cbfs_mcache) *
 			CONFIG_CBFS_MCACHE_RW_PERCENTAGE / 100;
-		boundary = (u8 *)ALIGN_DOWN((uintptr_t)boundary,
-					    CBFS_MCACHE_ALIGNMENT);
+		boundary = (u8 *)ALIGN_DOWN((uintptr_t)boundary, CBFS_MCACHE_ALIGNMENT);
 		if (id == CBMEM_ID_CBFS_RO_MCACHE) {
 			cbd->mcache = _cbfs_mcache;
 			cbd->mcache_size = boundary - _cbfs_mcache;
@@ -435,20 +423,19 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 }
 
 cb_err_t cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
-			       struct vb2_hash *metadata_hash)
+			       struct vb2_hash *mdata_hash)
 {
 	/* If we have an mcache, mcache_build() will also check mdata hash. */
 	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM && cbd->mcache_size > 0)
-		return cbfs_mcache_build(&cbd->rdev, cbd->mcache,
-					 cbd->mcache_size, metadata_hash);
+		return cbfs_mcache_build(&cbd->rdev, cbd->mcache, cbd->mcache_size, mdata_hash);
 
 	/* No mcache and no verification means we have nothing special to do. */
-	if (!CONFIG(CBFS_VERIFICATION) || !metadata_hash)
+	if (!CONFIG(CBFS_VERIFICATION) || !mdata_hash)
 		return CB_SUCCESS;
 
-	/* Verification only: use cbfs_walk() without a walker() function to
-	   just run through the CBFS once, will return NOT_FOUND by default. */
-	cb_err_t err = cbfs_walk(&cbd->rdev, NULL, NULL, metadata_hash, 0);
+	/* Verification only: use cbfs_walk() without a walker() function to just run through
+	   the CBFS once, will return NOT_FOUND by default. */
+	cb_err_t err = cbfs_walk(&cbd->rdev, NULL, NULL, mdata_hash, 0);
 	if (err == CB_CBFS_NOT_FOUND)
 		err = CB_SUCCESS;
 	return err;
@@ -458,22 +445,22 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 {
 	static struct cbfs_boot_device ro;
 
-	/* Ensure we always init RO mcache, even if first file is from RW.
+	/* Ensure we always init RO mcache, even if the first file is from the RW CBFS.
 	   Otherwise it may not be available when needed in later stages. */
 	if (ENV_INITIAL_STAGE && !force_ro && !region_device_sz(&ro.rdev))
 		cbfs_get_boot_device(true);
 
 	if (!force_ro) {
 		const struct cbfs_boot_device *rw = vboot_get_cbfs_boot_device();
-		/* This will return NULL if vboot isn't enabled, didn't run yet
-		   or decided to boot into recovery mode. */
+		/* This will return NULL if vboot isn't enabled, didn't run yet or decided to
+		   boot into recovery mode. */
 		if (rw)
 			return rw;
 	}
 
-	/* In rare cases post-RAM stages may run this before cbmem_initialize(),
-	   so we can't lock in the result of find_mcache() on the first try and
-	   should keep trying every time until an mcache is found. */
+	/* In rare cases post-RAM stages may run this before cbmem_initialize(), so we can't
+	   lock in the result of find_mcache() on the first try and should keep trying every
+	   time until an mcache is found. */
 	cbfs_boot_device_find_mcache(&ro, CBMEM_ID_CBFS_RO_MCACHE);
 
 	if (region_device_sz(&ro.rdev))

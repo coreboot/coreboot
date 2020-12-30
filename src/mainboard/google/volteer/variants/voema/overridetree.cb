@@ -17,6 +17,7 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
 
 	device domain 0 on
+		device ref ipu on end # IPU
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

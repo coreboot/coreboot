@@ -5,8 +5,8 @@
 
 #include <arch/header.ld>
 
-#define L2LIM_START(addr) SYMBOL(l2lim, addr)
-#define L2LIM_END(addr) SYMBOL(el2lim, addr)
+#define L2LIM_START(addr) REGION_START(l2lim, addr)
+#define L2LIM_END(addr) REGION_END(l2lim, addr)
 
 SECTIONS
 {

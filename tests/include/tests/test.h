@@ -26,6 +26,7 @@
  * Create end symbol for it.
  */
 #define TEST_REGION(region, size) uint8_t _##region[size]; \
-	TEST_SYMBOL(_e##region, _##region + size)
+	TEST_SYMBOL(_e##region, _##region + size); \
+	TEST_SYMBOL(_##region##_size, size)
 
 #endif /* _TESTS_TEST_H */

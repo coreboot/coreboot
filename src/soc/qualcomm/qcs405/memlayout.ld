@@ -4,12 +4,12 @@
 #include <arch/header.ld>
 
 /* SYSTEM_IMEM : 0x8600000 - 0x8607FFF */
-#define SSRAM_START(addr) SYMBOL(ssram, addr)
-#define SSRAM_END(addr) SYMBOL(essram, addr)
+#define SSRAM_START(addr) REGION_START(ssram, addr)
+#define SSRAM_END(addr) REGION_END(ssram, addr)
 
 /* BOOT_IMEM   : 0x8C00000 - 0x8D80000 */
-#define BSRAM_START(addr) SYMBOL(bsram, addr)
-#define BSRAM_END(addr) SYMBOL(ebsram, addr)
+#define BSRAM_START(addr) REGION_START(bsram, addr)
+#define BSRAM_END(addr) REGION_END(bsram, addr)
 
 SECTIONS
 {

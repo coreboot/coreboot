@@ -9,8 +9,8 @@
  * It will be returned before starting the ramstage.
  * SRAM_L2C and SRAM can be cached, but only SRAM is DMA-able.
  */
-#define SRAM_L2C_START(addr) SYMBOL(sram_l2c, addr)
-#define SRAM_L2C_END(addr) SYMBOL(esram_l2c, addr)
+#define SRAM_L2C_START(addr) REGION_START(sram_l2c, addr)
+#define SRAM_L2C_END(addr) REGION_END(sram_l2c, addr)
 #define DRAM_INIT_CODE(addr, size) \
 	REGION(dram_init_code, addr, size, 4)
 

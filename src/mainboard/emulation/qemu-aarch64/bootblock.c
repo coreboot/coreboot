@@ -4,8 +4,6 @@
 #include <bootblock_common.h>
 #include <symbols.h>
 
-extern u8 _secram[], _esecram[];
-
 void bootblock_mainboard_init(void)
 {
 	mmu_init();
@@ -20,7 +18,7 @@ void bootblock_mainboard_init(void)
 	mmu_config_range(_romstage, REGION_SIZE(romstage), MA_MEM | MA_S | MA_RW);
 	mmu_config_range(_ramstage, REGION_SIZE(ramstage), MA_MEM | MA_S | MA_RW);
 
-	mmu_config_range(_secram, REGION_SIZE(secram), MA_MEM | MA_S | MA_RW);
+	mmu_config_range(_bl31, REGION_SIZE(bl31), MA_MEM | MA_S | MA_RW);
 
 	mmu_enable();
 }

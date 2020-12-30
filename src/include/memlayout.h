@@ -33,22 +33,33 @@
 	SET_COUNTER(name, addr) \
 	_##name = ABSOLUTE(.);
 
+#define RECORD_SIZE(name) \
+	_##name##_size = ABSOLUTE(_e##name - _##name);
+
 #define REGION(name, addr, size, expected_align) \
 	SYMBOL(name, addr) \
 	_ = ASSERT(. == ALIGN(expected_align), \
 		STR(name must be aligned to expected_align!)); \
-	SYMBOL(e##name, addr + size)
+	SYMBOL(e##name, addr + size) \
+	RECORD_SIZE(name)
 
 #define ALIAS_REGION(name, alias) \
 	_##alias = ABSOLUTE(_##name); \
 	_e##alias = ABSOLUTE(_e##name); \
+	RECORD_SIZE(alias)
+
+#define REGION_START(name, addr) SYMBOL(name, addr)
+
+#define REGION_END(name, addr) \
+	SYMBOL(e##name, addr) \
+	RECORD_SIZE(name)
 
 /* Declare according to SRAM/DRAM ranges in SoC hardware-defined address map. */
-#define SRAM_START(addr) SYMBOL(sram, addr)
+#define SRAM_START(addr) REGION_START(sram, addr)
 
-#define SRAM_END(addr) SYMBOL(esram, addr)
+#define SRAM_END(addr) REGION_END(sram, addr)
 
-#define DRAM_START(addr) SYMBOL(dram, addr)
+#define DRAM_START(addr) REGION_START(dram, addr)
 
 #define TIMESTAMP(addr, size) \
 	REGION(timestamp, addr, size, 8) \
@@ -93,6 +104,7 @@
 	#define DECOMPRESSOR(addr, sz) \
 		SYMBOL(decompressor, addr) \
 		_edecompressor = ABSOLUTE(_decompressor + sz); \
+		RECORD_SIZE(decompressor) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(decompressor exceeded its allotted size! (sz))); \
 		INCLUDE "decompressor/lib/program.ld"
@@ -113,6 +125,7 @@
 	#define BOOTBLOCK(addr, sz) \
 		SYMBOL(bootblock, addr) \
 		_ebootblock = ABSOLUTE(_bootblock + sz); \
+		RECORD_SIZE(bootblock) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Bootblock exceeded its allotted size! (sz))); \
 		INCLUDE "bootblock/lib/program.ld"
@@ -125,6 +138,7 @@
 	#define ROMSTAGE(addr, sz) \
 		SYMBOL(romstage, addr) \
 		_eromstage = ABSOLUTE(_romstage + sz); \
+		RECORD_SIZE(romstage) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Romstage exceeded its allotted size! (sz))); \
 		INCLUDE "romstage/lib/program.ld"
@@ -137,6 +151,7 @@
 	#define RAMSTAGE(addr, sz) \
 		SYMBOL(ramstage, addr) \
 		_eramstage = ABSOLUTE(_ramstage + sz); \
+		RECORD_SIZE(ramstage) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Ramstage exceeded its allotted size! (sz))); \
 		INCLUDE "ramstage/lib/program.ld"
@@ -161,6 +176,7 @@
 	#define VERSTAGE(addr, sz) \
 		SYMBOL(verstage, addr) \
 		_everstage = ABSOLUTE(_verstage + sz); \
+		RECORD_SIZE(verstage) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Verstage exceeded its allotted size! (sz))); \
 		INCLUDE "verstage/lib/program.ld"
@@ -180,6 +196,7 @@
 	#define POSTCAR(addr, sz) \
 		SYMBOL(postcar, addr) \
 		_epostcar = ABSOLUTE(_postcar + sz); \
+		RECORD_SIZE(postcar) \
 		_ = ASSERT(_eprogram - _program <= sz, \
 			STR(Aftercar exceeded its allotted size! (sz))); \
 		INCLUDE "postcar/lib/program.ld"

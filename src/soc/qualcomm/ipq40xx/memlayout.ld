@@ -4,9 +4,6 @@
 
 #include <arch/header.ld>
 
-#define REGION_START(name, addr)	SYMBOL(name, addr)
-#define REGION_END(name, addr)		SYMBOL(e##name, addr)
-
 SECTIONS
 {
 	REGION(oc_imem, 0x08600000, 32K, 0)

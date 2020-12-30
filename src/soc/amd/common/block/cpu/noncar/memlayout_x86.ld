@@ -4,11 +4,11 @@
 #include <arch/header.ld>
 #include <soc/psp_transfer.h>
 
-#define EARLY_RESERVED_DRAM_START(addr)		SYMBOL(early_reserved_dram, addr)
-#define EARLY_RESERVED_DRAM_END(addr)		SYMBOL(eearly_reserved_dram, addr)
+#define EARLY_RESERVED_DRAM_START(addr)		REGION_START(early_reserved_dram, addr)
+#define EARLY_RESERVED_DRAM_END(addr)		REGION_END(early_reserved_dram, addr)
 
-#define PSP_SHAREDMEM_DRAM_START(addr)		SYMBOL(psp_sharedmem_dram, addr)
-#define PSP_SHAREDMEM_DRAM_END(addr)		SYMBOL(epsp_sharedmem_dram, addr)
+#define PSP_SHAREDMEM_DRAM_START(addr)		REGION_START(psp_sharedmem_dram, addr)
+#define PSP_SHAREDMEM_DRAM_END(addr)		REGION_END(psp_sharedmem_dram, addr)
 
 BOOTBLOCK_END = CONFIG_ROMSTAGE_ADDR;
 BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;

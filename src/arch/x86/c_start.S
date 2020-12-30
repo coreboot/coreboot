@@ -8,6 +8,7 @@
 	.section .bss, "aw", @nobits
 .global _stack
 .global _estack
+.global _stack_size
 
 /* Stack alignment is not enforced with rmodule loader, reserve one
  * extra CPU such that alignment can be enforced on entry. */
@@ -15,6 +16,7 @@
 _stack:
 .space (CONFIG_MAX_CPUS+1)*CONFIG_STACK_SIZE
 _estack:
+.set _stack_size, _estack - _stack
 #if CONFIG(COOP_MULTITASKING)
 .global thread_stacks
 thread_stacks:

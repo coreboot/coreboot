@@ -40,6 +40,8 @@ static void pch_handle_sideband(config_t *config)
 
 static void pch_finalize(void)
 {
+	uint32_t reg32;
+	uint8_t *pmcbase;
 	config_t *config;
 
 	/* TCO Lock down */
@@ -61,6 +63,17 @@ static void pch_finalize(void)
 	config = config_of_soc();
 	if (config->PmTimerDisabled)
 		pmc_disable_acpi_timer();
+
+	pmcbase = pmc_mmio_regs();
+	if (config->s0ix_enable) {
+		/*
+		 * Enable USBSUSPGQDIS qualification to ensure USB2 PHY SUS is power gated
+		 * before entering s0ix.
+		 */
+		reg32 = read32(pmcbase + CPPMVRIC3);
+		reg32 &= ~USBSUSPGQDIS;
+		write32(pmcbase + CPPMVRIC3, reg32);
+	}
 
 	pch_handle_sideband(config);
 

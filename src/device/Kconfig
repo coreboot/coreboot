@@ -46,6 +46,12 @@ config MAINBOARD_FORCE_NATIVE_VGA_INIT
 	  Selected by mainboards / chipsets whose graphics driver can't or
 	  shouldn't be disabled.
 
+config VGA_ROM_RUN_DEFAULT
+	def_bool n
+	help
+	  Selected by mainboards whose graphics initialization depends on VGA OpROM.
+	  coreboot needs to load/execute legacy VGA OpROM in order to initialize GFX.
+
 config MAINBOARD_HAS_LIBGFXINIT
 	def_bool n
 	help
@@ -54,8 +60,8 @@ config MAINBOARD_HAS_LIBGFXINIT
 
 choice
 	prompt "Graphics initialization"
-	default NO_GFX_INIT if VGA_BIOS && PAYLOAD_SEABIOS
-	default VGA_ROM_RUN if VGA_BIOS
+	default NO_GFX_INIT if VGA_ROM_RUN_DEFAULT && PAYLOAD_SEABIOS
+	default VGA_ROM_RUN if VGA_ROM_RUN_DEFAULT
 	default MAINBOARD_DO_NATIVE_VGA_INIT
 	default MAINBOARD_USE_LIBGFXINIT
 	default RUN_FSP_GOP if INTEL_GMA_HAVE_VBT
@@ -690,6 +696,7 @@ config SUBSYSTEM_DEVICE_ID
 config VGA_BIOS
 	bool "Add a VGA BIOS image"
 	depends on ARCH_X86
+	select VGA_ROM_RUN_DEFAULT
 	help
 	  Select this option if you have a VGA BIOS image that you would
 	  like to add to your ROM.

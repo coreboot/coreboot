@@ -7,6 +7,7 @@
  */
 
 #include <boot_device.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <symbols.h>
@@ -77,21 +78,7 @@ static const struct region_device_ops spi_ops = {
 };
 
 static struct mmap_helper_region_device mdev =
-	MMAP_HELPER_REGION_INIT(&spi_ops, 0, CONFIG_ROM_SIZE);
-
-static void switch_to_postram_cache(int unused)
-{
-	/*
-	 * Call boot_device_init() to ensure spi_flash is initialized before
-	 * backing mdev with postram cache. This prevents the mdev backing from
-	 * being overwritten if spi_flash was not accessed before dram was up.
-	 */
-	boot_device_init();
-	if (_preram_cbfs_cache != _postram_cbfs_cache)
-		mmap_helper_device_init(&mdev, _postram_cbfs_cache,
-					REGION_SIZE(postram_cbfs_cache));
-}
-ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
+	MMAP_HELPER_DEV_INIT(&spi_ops, 0, CONFIG_ROM_SIZE, &cbfs_cache);
 
 void boot_device_init(void)
 {
@@ -105,8 +92,6 @@ void boot_device_init(void)
 		return;
 
 	spi_flash_init_done = true;
-
-	mmap_helper_device_init(&mdev, _cbfs_cache, REGION_SIZE(cbfs_cache));
 }
 
 /* Return the CBFS boot device. */

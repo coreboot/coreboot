@@ -18,6 +18,18 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+#if CBFS_CACHE_AVAILABLE
+struct mem_pool cbfs_cache = MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache));
+
+static void switch_to_postram_cache(int unused)
+{
+	if (_preram_cbfs_cache != _postram_cbfs_cache)
+		mem_pool_init(&cbfs_cache, _postram_cbfs_cache,
+			      REGION_SIZE(postram_cbfs_cache));
+}
+ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
+#endif
+
 cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 			  union cbfs_mdata *mdata, struct region_device *rdev)
 {
@@ -101,14 +113,48 @@ void *_cbfs_map(const char *name, size_t *size_out, bool force_ro)
 	if (size_out != NULL)
 		*size_out = region_device_sz(&rdev);
 
-	return rdev_mmap_full(&rdev);
+	uint32_t compression = CBFS_COMPRESS_NONE;
+	const struct cbfs_file_attr_compression *attr = cbfs_find_attr(&mdata,
+				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*attr));
+	if (attr)
+		compression = be32toh(attr->compression);
+
+	if (compression == CBFS_COMPRESS_NONE)
+		return rdev_mmap_full(&rdev);
+
+	if (!CBFS_CACHE_AVAILABLE) {
+		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);
+		return NULL;
+	}
+
+	size_t size = be32toh(attr->decompressed_size);
+	void *buf = mem_pool_alloc(&cbfs_cache, size);
+	if (!buf) {
+		ERROR("CBFS cache out of memory when mapping %s\n", mdata.h.filename);
+		return NULL;
+	}
+
+	size = cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev), buf, size,
+					compression);
+	if (!size)
+		return NULL;
+
+	if (size_out != NULL)
+		*size_out = size;
+	return buf;
 }
 
-int cbfs_unmap(void *mapping)
+void cbfs_unmap(void *mapping)
 {
-	/* This works because munmap() only works on the root rdev and never cares about which
-	   chained subregion something was mapped from. */
-	return rdev_munmap(boot_device_ro(), mapping);
+	/*
+	 * This is save to call with mappings that weren't allocated in the cache (e.g. x86
+	 * direct mappings) -- mem_pool_free() just does nothing for addresses it doesn't
+	 * recognize. This hardcodes the assumption that if platforms implement an rdev_mmap()
+	 * that requires a free() for the boot_device, they need to implement it via the
+	 * cbfs_cache mem_pool.
+	 */
+	if (CBFS_CACHE_AVAILABLE)
+		mem_pool_free(&cbfs_cache, mapping);
 }
 
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
@@ -158,6 +204,9 @@ static inline bool cbfs_lz4_enabled(void)
 	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) && !CONFIG(COMPRESS_PRERAM_STAGES))
 		return false;
 
+	if (ENV_SMM)
+		return false;
+
 	return true;
 }
 
@@ -173,6 +222,8 @@ static inline bool cbfs_lzma_enabled(void)
 	if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
 		return false;
 	if ((ENV_ROMSTAGE || ENV_POSTCAR) && !CONFIG(COMPRESS_RAMSTAGE))
+		return false;
+	if (ENV_SMM)
 		return false;
 	return true;
 }

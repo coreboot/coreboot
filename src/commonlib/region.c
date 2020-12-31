@@ -287,12 +287,6 @@ const struct region_device_ops mem_rdev_rw_ops = {
 	.eraseat = mdev_eraseat,
 };
 
-void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
-				void *cache, size_t cache_size)
-{
-	mem_pool_init(&mdev->pool, cache, cache_size);
-}
-
 void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
 				size_t size)
 {
@@ -301,13 +295,13 @@ void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
 
 	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
 
-	mapping = mem_pool_alloc(&mdev->pool, size);
+	mapping = mem_pool_alloc(mdev->pool, size);
 
 	if (mapping == NULL)
 		return NULL;
 
 	if (rd->ops->readat(rd, mapping, offset, size) != size) {
-		mem_pool_free(&mdev->pool, mapping);
+		mem_pool_free(mdev->pool, mapping);
 		return NULL;
 	}
 
@@ -320,7 +314,7 @@ int mmap_helper_rdev_munmap(const struct region_device *rd, void *mapping)
 
 	mdev = container_of((void *)rd, __typeof__(*mdev), rdev);
 
-	mem_pool_free(&mdev->pool, mapping);
+	mem_pool_free(mdev->pool, mapping);
 
 	return 0;
 }

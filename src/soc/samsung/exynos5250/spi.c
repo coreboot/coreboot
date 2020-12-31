@@ -2,6 +2,8 @@
 
 #include <device/mmio.h>
 #include <assert.h>
+#include <boot_device.h>
+#include <cbfs.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <soc/clk.h>
@@ -160,13 +162,11 @@ static const struct region_device_ops exynos_spi_ops = {
 };
 
 static struct mmap_helper_region_device mdev =
-	MMAP_HELPER_REGION_INIT(&exynos_spi_ops, 0, CONFIG_ROM_SIZE);
+	MMAP_HELPER_DEV_INIT(&exynos_spi_ops, 0, CONFIG_ROM_SIZE, &cbfs_cache);
 
 void exynos_init_spi_boot_device(void)
 {
 	boot_slave_regs = (void *)EXYNOS5_SPI1_BASE;
-
-	mmap_helper_device_init(&mdev, _cbfs_cache, REGION_SIZE(cbfs_cache));
 }
 
 const struct region_device *exynos_spi_boot_device(void)

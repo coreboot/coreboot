@@ -5,6 +5,7 @@
 
 #include <cbmem.h>
 #include <commonlib/cbfs.h>
+#include <commonlib/mem_pool.h>
 #include <program_loading.h>
 #include <types.h>
 #include <vb2_sha.h>
@@ -26,7 +27,7 @@ static inline void *cbfs_ro_map(const char *name, size_t *size_out);
 
 /* Removes a previously allocated CBFS mapping. Should try to unmap mappings in strict LIFO
    order where possible, since mapping backends often don't support more complicated cases. */
-int cbfs_unmap(void *mapping);
+void cbfs_unmap(void *mapping);
 
 /* Load a file from CBFS into a buffer. Returns amount of loaded bytes on success or 0 on error.
    File will get decompressed as necessary. */
@@ -38,9 +39,20 @@ static inline size_t cbfs_ro_load(const char *name, void *buf, size_t buf_size);
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
 int cbfs_prog_stage_load(struct prog *prog);
 
+
 /**********************************************************************************************
  *                                BOOT DEVICE HELPER APIs                                     *
  **********************************************************************************************/
+
+/*
+ * The shared memory pool for backing mapped CBFS files, and other CBFS allocation needs.
+ * On x86 platforms, this would only be needed to transparently map compressed files, but it
+ * would require a permanent CBMEM carveout to be safe to use during S3 resume. Since it's not
+ * clear whether this feature is necessary or worth the wasted memory, it is currently disabled
+ * but could be added behind a Kconfig later if desired.
+ */
+#define CBFS_CACHE_AVAILABLE (!CONFIG(ARCH_X86))
+extern struct mem_pool cbfs_cache;
 
 /*
  * Data structure that represents "a" CBFS boot device, with optional metadata cache. Generally
@@ -94,6 +106,7 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
    decompressed in-place with the buffer size requirements outlined in compression.h. */
 size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression);
+
 
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *

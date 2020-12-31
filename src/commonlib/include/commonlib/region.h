@@ -196,17 +196,15 @@ extern const struct region_device_ops mem_rdev_rw_ops;
 		MEM_REGION_DEV_INIT(base_, size_, &mem_rdev_rw_ops)	\
 
 struct mmap_helper_region_device {
-	struct mem_pool pool;
+	struct mem_pool *pool;
 	struct region_device rdev;
 };
 
-#define MMAP_HELPER_REGION_INIT(ops_, offset_, size_)			\
+#define MMAP_HELPER_DEV_INIT(ops_, offset_, size_, mpool_)		\
 	{								\
 		.rdev = REGION_DEV_INIT((ops_), (offset_), (size_)),	\
+		.pool = (mpool_),					\
 	}
-
-void mmap_helper_device_init(struct mmap_helper_region_device *mdev,
-				void *cache, size_t cache_size);
 
 void *mmap_helper_rdev_mmap(const struct region_device *, size_t, size_t);
 int mmap_helper_rdev_munmap(const struct region_device *, void *);

@@ -5,6 +5,7 @@ verstage-y += mem_pool.c
 romstage-y += mem_pool.c
 ramstage-y += mem_pool.c
 postcar-y += mem_pool.c
+smm-y += mem_pool.c
 
 bootblock-y += iobuf.c
 verstage-y += iobuf.c

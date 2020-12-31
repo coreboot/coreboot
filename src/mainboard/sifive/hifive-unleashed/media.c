@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot_device.h>
+#include <cbfs.h>
 #include <symbols.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
@@ -42,7 +43,7 @@ static const struct region_device_ops unleashed_sd_ops = {
 };
 
 static struct mmap_helper_region_device sd_mdev =
-	MMAP_HELPER_REGION_INIT(&unleashed_sd_ops, 0, CONFIG_ROM_SIZE);
+	MMAP_HELPER_DEV_INIT(&unleashed_sd_ops, 0, CONFIG_ROM_SIZE, &cbfs_cache);
 
 const struct region_device *boot_device_ro(void)
 {
@@ -79,8 +80,6 @@ void boot_device_init(void)
 	}
 	if (MSEL_SPI2SD(m)) {
 		spi_sdcard_init(&card, 2, 0);
-		mmap_helper_device_init(&sd_mdev,
-			_cbfs_cache, REGION_SIZE(cbfs_cache));
 		return;
 	}
 	die("Wrong configuration of MSEL\n");

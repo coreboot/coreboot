@@ -206,15 +206,4 @@ config SOC_INTEL_ICELAKE_DEBUG_CONSENT
 	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
 	  6:Enable (2-wire DCI OOB), 7:Manual
 
-config ENABLE_DISPLAY_OVER_EXT_PCIE_GFX
-	bool "Enable display over external PCIE GFX card"
-	select ALWAYS_LOAD_OPROM
-	help
-	  It's possible to bring display through external graphics card over PCIE
-	  in coreboot. This option enables graphics initialization with external
-	  graphics card.
-
-	  Selected by mainboard that runs OpRom to perform display
-	  initialization over attached PCIe GFX card.
-
 endif

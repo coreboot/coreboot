@@ -4,16 +4,11 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 
-/*This mb_ddr4_cfg structure is intentionally left empty so that fields are left nil. */
-static const struct mb_ddr4_cfg elemi_memcfg = {
+static const struct mb_cfg baseboard_memcfg = {
+	.type = MEM_TYPE_DDR4,
 };
 
-static const struct ddr_memory_cfg baseboard_memcfg = {
-	.mem_type = MEMTYPE_DDR4,
-	.ddr4_cfg = &elemi_memcfg
-};
-
-const struct ddr_memory_cfg *variant_memory_params(void)
+const struct mb_cfg *variant_memory_params(void)
 {
 	return &baseboard_memcfg;
 }

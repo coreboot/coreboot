@@ -54,6 +54,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
 	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_MEMINIT
 	select SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_BLOCK_SMM
@@ -249,5 +250,17 @@ config EARLY_TCSS_DISPLAY
 	depends on RUN_FSP_GOP
 	help
 	  Enable displays to be detected over Type-C ports during boot.
+
+config DATA_BUS_WIDTH
+	int
+	default 128
+
+config DIMMS_PER_CHANNEL
+	int
+	default 2
+
+config MRC_CHANNEL_WIDTH
+	int
+	default 16
 
 endif

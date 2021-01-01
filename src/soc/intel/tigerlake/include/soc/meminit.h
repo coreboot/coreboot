@@ -5,151 +5,115 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 #include <fsp/soc_binding.h>
+#include <intelblocks/meminit.h>
 
-#define BITS_PER_BYTE			8
-
-#define LPDDR4X_CHANNELS		8
-#define LPDDR4X_BYTES_PER_CHANNEL	2
-
-#define DDR4_CHANNELS			2
-#define DDR4_BYTES_PER_CHANNEL		8
-
-enum mem_topology {
-	MEMORY_DOWN,	/* Supports reading SPD from CBFS or in-memory pointer. */
-	SODIMM,		/* Supports reading SPD using SMBus (only for DDR4). */
-	MIXED,		/* CH0 = MD, CH1 = SODIMM (only for DDR4). */
+enum mem_type {
+	MEM_TYPE_DDR4,
+	MEM_TYPE_LP4X,
 };
 
-enum ddr_memtype {
-	MEMTYPE_DDR4,		/* Uses DDR4 memory */
-	MEMTYPE_LPDDR4X,	/* Uses LPDDR4x memory */
+struct ddr4_dq {
+	uint8_t dq0[BITS_PER_BYTE];
+	uint8_t dq1[BITS_PER_BYTE];
+	uint8_t dq2[BITS_PER_BYTE];
+	uint8_t dq3[BITS_PER_BYTE];
+	uint8_t dq4[BITS_PER_BYTE];
+	uint8_t dq5[BITS_PER_BYTE];
+	uint8_t dq6[BITS_PER_BYTE];
+	uint8_t dq7[BITS_PER_BYTE];
 };
 
-enum md_spd_loc {
-	/* Read SPD from pointer provided to memory location. */
-	SPD_MEMPTR,
-	/* Read SPD using index into spd.bin in CBFS.  */
-	SPD_CBFS,
+struct ddr4_dqs {
+	uint8_t dqs0;
+	uint8_t dqs1;
+	uint8_t dqs2;
+	uint8_t dqs3;
+	uint8_t dqs4;
+	uint8_t dqs5;
+	uint8_t dqs6;
+	uint8_t dqs7;
 };
 
-struct spd_info {
-	enum mem_topology topology;
+struct ddr4_dq_map {
+	struct ddr4_dq ddr0;
+	struct ddr4_dq ddr1;
+};
 
-	/* SPD info for Memory down topology */
-	enum md_spd_loc md_spd_loc;
+struct ddr4_dqs_map {
+	struct ddr4_dqs ddr0;
+	struct ddr4_dqs ddr1;
+};
+
+struct lp4x_dq {
+	uint8_t dq0[BITS_PER_BYTE];
+	uint8_t dq1[BITS_PER_BYTE];
+};
+
+struct lp4x_dqs {
+	uint8_t dqs0;
+	uint8_t dqs1;
+};
+
+struct lp4x_dq_map {
+	struct lp4x_dq ddr0;
+	struct lp4x_dq ddr1;
+	struct lp4x_dq ddr2;
+	struct lp4x_dq ddr3;
+	struct lp4x_dq ddr4;
+	struct lp4x_dq ddr5;
+	struct lp4x_dq ddr6;
+	struct lp4x_dq ddr7;
+};
+
+struct lp4x_dqs_map {
+	struct lp4x_dqs ddr0;
+	struct lp4x_dqs ddr1;
+	struct lp4x_dqs ddr2;
+	struct lp4x_dqs ddr3;
+	struct lp4x_dqs ddr4;
+	struct lp4x_dqs ddr5;
+	struct lp4x_dqs ddr6;
+	struct lp4x_dqs ddr7;
+};
+
+struct mem_ddr4_config {
+	bool dq_pins_interleaved;
+};
+
+struct mb_cfg {
+	enum mem_type type;
+
 	union {
-		/* Used for SPD_CBFS */
-		uint8_t cbfs_index;
-
-		struct {
-			/* Used for SPD_MEMPTR */
-			uintptr_t data_ptr;
-			size_t data_len;
-		};
+		/*
+		 * DQ CPU<>DRAM map:
+		 * Index of the array represents DQ# on the CPU and the value represents DQ# on
+		 * the DRAM part.
+		 */
+		uint8_t dq_map[CONFIG_DATA_BUS_WIDTH];
+		struct lp4x_dq_map lp4x_dq_map;
+		struct ddr4_dq_map ddr4_dq_map;
 	};
 
-	/*
-	 * SPD info for SODIMM topology.
-	 * Leave addr_dimmN as 0 for any DIMMs that are not populated.
-	 */
-	struct {
-		/* SMBus address for DIMM0 within the channel. */
-		uint8_t addr_dimm0;
-		/* SMBus address for DIMM1 within the channel. */
-		uint8_t addr_dimm1;
-	} smbus_info[DDR4_CHANNELS];
-};
-
-/* Board-specific memory configuration information */
-struct lpddr4x_cfg {
-	/*
-	 * DQ CPU<>DRAM map:
-	 * LPDDR4x memory interface has 2 DQs per channel. Each DQ consists of 8 bits(1
-	 * byte). Thus, dq_map is represented as DDR[7-0]_DQ[1-0][7:0], where
-	 * DDR[7-0] : LPDDR4x channel #
-	 * DQ[1-0]  : DQ # within the channel
-	 * [7:0]    : Bits within the DQ
-	 *
-	 * Index of the array represents DQ pin# on the CPU, whereas value in
-	 * the array represents DQ pin# on the memory part.
-	 */
-	uint8_t dq_map[LPDDR4X_CHANNELS][LPDDR4X_BYTES_PER_CHANNEL][BITS_PER_BYTE];
-
-	/*
-	 * DQS CPU<>DRAM map:
-	 * LPDDR4x memory interface has 2 DQS pairs(P/N) per channel. Thus, dqs_map is
-	 * represented as DDR[7-0]_DQS[1:0], where
-	 * DDR[7-0]  : LPDDR4x channel #
-	 * DQS[1-0]  : DQS # within the channel
-	 *
-	 * Index of the array represents DQS pin# on the CPU, whereas value in
-	 * the array represents DQ pin# on the memory part.
-	 */
-	uint8_t dqs_map[LPDDR4X_CHANNELS][LPDDR4X_BYTES_PER_CHANNEL];
-	/*
-	 * Early Command Training Enable/Disable Control
-	 * 1 = enable, 0 = disable
-	 */
-	uint8_t ect;
-};
-
-/* Board-specific memory configuration information for DDR4 memory variant */
-struct mb_ddr4_cfg {
-	/*
-	 * DQ CPU<>DRAM map:
-	 * DDR4 memory interface has 8 DQs per channel. Each DQ consists of 8 bits(1
-	 * byte). Thus, dq_map is represented as DDR[1-0]_DQ[7-0][7:0], where
-	 * DDR[1-0] : DDR4 channel #
-	 * DQ[7-0]  : DQ # within the channel
-	 * [7:0]    : Bits within the DQ
-	 *
-	 * Index of the array represents DQ pin# on the CPU, whereas value in
-	 * the array represents DQ pin# on the memory part.
-	 */
-	uint8_t dq_map[DDR4_CHANNELS][DDR4_BYTES_PER_CHANNEL][BITS_PER_BYTE];
-	/*
-	 * DQS CPU<>DRAM map:
-	 * DDR4 memory interface has 8 DQS pairs per channel. Thus, dqs_map is represented as
-	 * DDR[1-0]_DQS[7-0], where
-	 * DDR[1-0]  : DDR4 channel #
-	 * DQS[7-0]  : DQS # within the channel
-	 *
-	 * Index of the array represents DQS pin# on the CPU, whereas value in
-	 * the array represents DQS pin# on the memory part.
-	 */
-	uint8_t dqs_map[DDR4_CHANNELS][DDR4_BYTES_PER_CHANNEL];
-	/*
-	 * Indicates whether memory is interleaved.
-	 * Set to 1 for an interleaved design,
-	 * set to 0 for non-interleaved design.
-	 */
-	uint8_t dq_pins_interleaved;
-	/*
-	 * Early Command Training Enable/Disable Control
-	 * 1 = enable, 0 = disable
-	 */
-	uint8_t ect;
-};
-
-/* DDR Memory Information - Supports DDR4 and LPDDR4x */
-struct ddr_memory_cfg {
-	enum ddr_memtype mem_type;
 	union {
-		const struct mb_ddr4_cfg *ddr4_cfg;
-		const struct lpddr4x_cfg *lpddr4_cfg;
+		/*
+		 * DQS CPU<>DRAM map:
+		 * Index of the array represents DQS# on the CPU and the value represents DQS#
+		 * on the DRAM part.
+		 */
+		uint8_t dqs_map[CONFIG_DATA_BUS_WIDTH/BITS_PER_BYTE];
+		struct lp4x_dqs_map lp4x_dqs_map;
+		struct ddr4_dqs_map ddr4_dqs_map;
 	};
+
+	/* Early Command Training Enable/Disable Control */
+	bool ect;
+
+	struct mem_ddr4_config ddr4_config;
 };
 
-/* Initialize LPDDR4x memory configurations */
-void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
-			const struct spd_info *spd, bool half_populated);
+void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
+		 const struct mem_spd *spd_info, bool half_populated);
 
-/* Initialize DDR4 memory configurations */
-void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
-			const struct spd_info *spd, const bool half_populated);
-
-/* Determine which DDR memory is used and call appropriate init routine */
-void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct ddr_memory_cfg *board_cfg,
-			const struct spd_info *info, bool half_populated);
 #endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

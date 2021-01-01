@@ -5,106 +5,102 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 #include <fsp/soc_binding.h>
+#include <intelblocks/meminit.h>
 
-#define BYTES_PER_CHANNEL	2
-#define BITS_PER_BYTE		8
-#define DQS_PER_CHANNEL		2
-
-/* 64-bit Channel identification */
-enum {
-	DDR_CH0,
-	DDR_CH1,
-	DDR_CH2,
-	DDR_CH3,
-	DDR_CH4,
-	DDR_CH5,
-	DDR_CH6,
-	DDR_CH7,
-	DDR_NUM_CHANNELS
-};
-/* Number of memory DIMM slots available on Alderlake board */
-#define NUM_DIMM_SLOT		16
-
-struct spd_by_pointer {
-	size_t spd_data_len;
-	uintptr_t spd_data_ptr;
+enum mem_type {
+	MEM_TYPE_DDR4,
+	MEM_TYPE_DDR5,
+	MEM_TYPE_LP4X,
+	MEM_TYPE_LP5X,
 };
 
-enum mem_info_read_type {
-	NOT_EXISTING,	/* No memory in this slot */
-	READ_SMBUS,	/* Read on-module spd by SMBUS. */
-	READ_SPD_CBFS,	/* Find SPD file in CBFS. */
-	READ_SPD_MEMPTR	/* Find SPD data from pointer. */
-};
-
-struct spd_info {
-	enum mem_info_read_type read_type;
-	union spd_data_by {
-		/* To read on-module SPD when read_type is READ_SMBUS. */
-		uint8_t spd_smbus_address[NUM_DIMM_SLOT];
-
-		/* To identify SPD file when read_type is READ_SPD_CBFS. */
-		int spd_index;
-
-		/* To find SPD data when read_type is READ_SPD_MEMPTR. */
-		struct spd_by_pointer spd_data_ptr_info;
-	} spd_spec;
-};
-
-/* Board-specific memory configuration information */
-struct mb_cfg {
-	/* DQ mapping */
-	uint8_t dq_map[DDR_NUM_CHANNELS][BYTES_PER_CHANNEL * BITS_PER_BYTE];
-
-	/*
-	 * DQS CPU<>DRAM map.  Each array entry represents a
-	 * mapping of a dq bit on the CPU to the bit it's connected to on
-	 * the memory part.  The array index represents the dqs bit number
-	 * on the memory part, and the values in the array represent which
-	 * pin on the CPU that DRAM pin connects to.
-	 */
-	uint8_t dqs_map[DDR_NUM_CHANNELS][DQS_PER_CHANNEL];
-
+struct mem_ddr_config {
+	/* Dqs Pins Interleaved Setting. Enable/Disable Control */
+	bool dq_pins_interleaved;
 	/*
 	 * Rcomp resistor values.  These values represent the resistance in
 	 * ohms of the three rcomp resistors attached to the DDR_COMP_0,
 	 * DDR_COMP_1, and DDR_COMP_2 pins on the DRAM.
 	 */
 	uint16_t rcomp_resistor[3];
-
 	/* Rcomp target values. */
 	uint16_t rcomp_targets[5];
+};
 
-	/*
-	 * Dqs Pins Interleaved Setting. Enable/Disable Control
-	 * TRUE = enable, FALSE = disable
-	 */
-	bool dq_pins_interleaved;
+struct lpx_dq {
+	uint8_t dq0[BITS_PER_BYTE];
+	uint8_t dq1[BITS_PER_BYTE];
+};
 
-	/*
-	 * Early Command Training Enable/Disable Control
-	 * TRUE = enable, FALSE = disable
-	 */
+struct lpx_dqs {
+	uint8_t dqs0;
+	uint8_t dqs1;
+};
+
+struct lpx_dq_map {
+	struct lpx_dq ddr0;
+	struct lpx_dq ddr1;
+	struct lpx_dq ddr2;
+	struct lpx_dq ddr3;
+	struct lpx_dq ddr4;
+	struct lpx_dq ddr5;
+	struct lpx_dq ddr6;
+	struct lpx_dq ddr7;
+};
+
+struct lpx_dqs_map {
+	struct lpx_dqs ddr0;
+	struct lpx_dqs ddr1;
+	struct lpx_dqs ddr2;
+	struct lpx_dqs ddr3;
+	struct lpx_dqs ddr4;
+	struct lpx_dqs ddr5;
+	struct lpx_dqs ddr6;
+	struct lpx_dqs ddr7;
+};
+
+struct mem_lp5x_config {
+	uint8_t ccc_config;
+};
+
+struct mb_cfg {
+	enum mem_type type;
+
+	union {
+		/*
+		 * DQ CPU<>DRAM map:
+		 * Index of the array represents DQ# on the CPU and the value represents DQ# on
+		 * the DRAM part.
+		 */
+		uint8_t dq_map[CONFIG_DATA_BUS_WIDTH];
+		struct lpx_dq_map lpx_dq_map;
+	};
+
+	union {
+		/*
+		 * DQS CPU<>DRAM map:
+		 * Index of the array represents DQS# on the CPU and the value represents DQS#
+		 * on the DRAM part.
+		 */
+		uint8_t dqs_map[CONFIG_DATA_BUS_WIDTH/BITS_PER_BYTE];
+		struct lpx_dqs_map lpx_dqs_map;
+	};
+
+	union {
+		struct mem_lp5x_config lp5x_config;
+		struct mem_ddr_config ddr_config;
+	};
+
+	/* Early Command Training Enable/Disable Control */
 	bool ect;
 
 	/* Board type */
 	uint8_t UserBd;
-
-	/*
-	 * Command pins mapping for Controller Channel (ccc)
-	 * lp5_ccc_config: Bitmask where bits [3:0] are Controller 0 Channel [3:0] and
-	 * bits [7:4] are Controller 1 Channel [3:0]
-	 * Bit value: 0 = ccc pin mapping is ascending, 1 = ccc pin mapping is descending.
-	 */
-	uint8_t lp5_ccc_config;
 };
 
-/*
- * Initialize default memory configurations for Alder Lake.
- */
-
-void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_cfg,
-			const struct spd_info *spd_info, bool half_populated);
+void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
+		 const struct mem_spd *spd_info, bool half_populated);
 
 #endif /* _SOC_ALDERLAKE_MEMINIT_H_ */

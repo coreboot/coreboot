@@ -31,19 +31,21 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	int board_id = get_board_id();
 	const bool half_populated = false;
 
-	const struct spd_info lp4_lp5_spd_info = {
-		.read_type = READ_SPD_CBFS,
-		.spd_spec.spd_index = get_spd_index(),
+	const struct mem_spd lp4_lp5_spd_info = {
+		.topo = MEM_TOPO_MEMORY_DOWN,
+		.cbfs_index = get_spd_index(),
 	};
 
-	const struct spd_info ddr4_ddr5_spd_info = {
-		.read_type = READ_SMBUS,
-		.spd_spec = {
-			.spd_smbus_address = {
-				[0] = 0xa0,
-				[1] = 0xa2,
-				[8] = 0xa4,
-				[9] = 0xa6,
+	const struct mem_spd ddr4_ddr5_spd_info = {
+		.topo = MEM_TOPO_DIMM_MODULE,
+		.smbus = {
+			[0] = {
+				.addr_dimm[0] = 0xa0,
+				.addr_dimm[1] = 0xa2,
+			},
+			[1] = {
+				.addr_dimm[0] = 0xa4,
+				.addr_dimm[1] = 0xa6,
 			},
 		},
 	};

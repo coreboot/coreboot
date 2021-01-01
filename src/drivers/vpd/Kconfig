@@ -5,3 +5,17 @@ config VPD
 	default n
 	help
 	  Enable support for flash based vital product data.
+
+config VPD_FMAP_NAME
+	string
+	depends on VPD
+	default "RO_VPD"
+	help
+	  Name of the FMAP region created in the default FMAP to store VPD tables.
+
+config VPD_FMAP_SIZE
+	hex
+	depends on VPD
+	default 0x4000
+	help
+	  Size in bytes of the FMAP region created to store VPD tables.

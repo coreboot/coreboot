@@ -159,6 +159,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			params->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
 		else
 			params->Usb2OverCurrentPin[i] = 0xff;
+
+		if (config->usb2_ports[i].type_c)
+			params->PortResetMessageEnable[i] = 1;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {

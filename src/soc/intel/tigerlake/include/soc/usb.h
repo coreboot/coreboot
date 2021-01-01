@@ -31,6 +31,7 @@ struct usb2_port_config {
 	uint8_t tx_emp_enable;
 	uint8_t pre_emp_bias;
 	uint8_t pre_emp_bit;
+	uint8_t type_c;
 };
 
 /* USB Overcurrent pins definition */
@@ -112,6 +113,7 @@ enum {
 	.tx_emp_enable = USB2_PRE_EMP_ON, \
 	.pre_emp_bias  = USB2_BIAS_56P3MV, \
 	.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP, \
+	.type_c	       = 1, \
 }
 
 struct usb3_port_config {

@@ -103,6 +103,8 @@
 #define  GPE0_DWX_MASK			0xf
 #define  GPE0_DW_SHIFT(x)		(4*(x))
 
+#define SLP_S0_RES			0x193c
+
 #if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 /*
  * The values for GPIO_CFG in Intel Document #572235 are incorrect.

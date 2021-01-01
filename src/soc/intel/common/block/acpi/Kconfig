@@ -5,6 +5,13 @@ config SOC_INTEL_COMMON_BLOCK_ACPI
 	help
 	  Intel Processor common code for ACPI
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_LPIT
+	bool
+	depends on HAVE_ACPI_TABLES
+	select ACPI_LPIT
+	help
+	  Generate LPIT table with LPI state entries.
+
 if SOC_INTEL_COMMON_BLOCK_ACPI
 
 config SOC_INTEL_COMMON_BLOCK_ACPI_CPPC

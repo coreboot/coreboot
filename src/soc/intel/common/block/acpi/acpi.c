@@ -10,6 +10,7 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/msr.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/acpi.h>

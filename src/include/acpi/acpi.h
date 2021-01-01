@@ -71,7 +71,7 @@ enum coreboot_acpi_ids {
 enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
 	BERT, DBG2, DMAR, DSDT, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
-	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT,
+	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
 };
@@ -256,6 +256,48 @@ typedef struct acpi_madt {
 	u32 lapic_addr;			/* Local APIC address */
 	u32 flags;			/* Multiple APIC flags */
 } __packed acpi_madt_t;
+
+/*
+ * LPIT (Low Power Idle Table)
+ * Conforms to "Intel Low Power S0 Idle" specification, rev 002 from July 2017.
+ */
+typedef struct acpi_lpit {
+	acpi_header_t header;
+} __packed acpi_lpit_t;
+
+/* LPIT: LPI descriptor flags */
+typedef struct acpi_lpi_flags {
+	uint32_t disabled		:  1;
+	uint32_t counter_not_available	:  1;
+	uint32_t reserved		: 30;
+} __packed acpi_lpi_desc_flags_t;
+
+/* LPIT: LPI descriptor types */
+enum acpi_lpi_desc_type {
+	ACPI_LPI_DESC_TYPE_NATIVE_CSTATE = 0x00,
+	/* type >= 1 reserved */
+};
+
+/* LPIT: LPI descriptor header */
+typedef struct acpi_lpi_desc_hdr {
+	uint32_t type;
+	uint32_t length;
+	uint16_t uid;
+	uint16_t reserved;
+} __packed acpi_lpi_desc_hdr_t;
+
+#define ACPI_LPIT_CTR_FREQ_TSC 0
+
+/* LPIT: Native C-state instruction based LPI structure */
+typedef struct acpi_lpi_desc_ncst {
+	acpi_lpi_desc_hdr_t header;
+	acpi_lpi_desc_flags_t flags;
+	acpi_addr_t entry_trigger;	/* Entry trigger C-state */
+	uint32_t min_residency;		/* Minimum residency or "break-even" in microseconds */
+	uint32_t max_latency;		/* Worst case exit latency in microseconds */
+	acpi_addr_t residency_counter;
+	uint64_t counter_frequency;	/* Frequency in cycles per second - 0 means TSC freq */
+} __packed acpi_lpi_desc_ncst_t;
 
 /* VFCT image header */
 typedef struct acpi_vfct_image_hdr {
@@ -922,6 +964,8 @@ void mainboard_fill_fadt(acpi_fadt_t *fadt);
 void update_ssdt(void *ssdt);
 void update_ssdtx(void *ssdtx, int i);
 
+unsigned long acpi_fill_lpit(unsigned long current);
+
 /* These can be used by the target port. */
 u8 acpi_checksum(u8 *table, u32 length);
 
@@ -1024,6 +1068,9 @@ void acpi_write_hest(acpi_hest_t *hest,
 
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
+
+void acpi_create_lpit(acpi_lpit_t *lpit);
+unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 
 /* For ACPI S3 support. */
 void __noreturn acpi_resume(void *wake_vec);

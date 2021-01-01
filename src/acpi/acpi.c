@@ -1293,6 +1293,44 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	    acpi_checksum((void *) fadt, header->length);
 }
 
+void acpi_create_lpit(acpi_lpit_t *lpit)
+{
+	acpi_header_t *header = &(lpit->header);
+	unsigned long current = (unsigned long)lpit + sizeof(acpi_lpit_t);
+
+	memset((void *)lpit, 0, sizeof(acpi_lpit_t));
+
+	if (!header)
+		return;
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "LPIT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->revision = get_acpi_table_revision(LPIT);
+	header->oem_revision = 42;
+	header->length = sizeof(acpi_lpit_t);
+
+	current = acpi_fill_lpit(current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)lpit;
+	header->checksum = acpi_checksum((void *)lpit, header->length);
+}
+
+unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid)
+{
+	memset(lpi_desc, 0, sizeof(acpi_lpi_desc_ncst_t));
+	lpi_desc->header.length = sizeof(acpi_lpi_desc_ncst_t);
+	lpi_desc->header.type = ACPI_LPI_DESC_TYPE_NATIVE_CSTATE;
+	lpi_desc->header.uid = uid;
+
+	return lpi_desc->header.length;
+}
+
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
@@ -1313,6 +1351,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_tcpa_t *tcpa;
 	acpi_tpm2_t *tpm2;
 	acpi_madt_t *madt;
+	acpi_lpit_t *lpit;
 	struct device *dev;
 	unsigned long fw;
 	size_t slic_size, dsdt_size;
@@ -1507,6 +1546,18 @@ unsigned long write_acpi_tables(unsigned long start)
 		}
 	}
 
+	if (CONFIG(ACPI_LPIT)) {
+		printk(BIOS_DEBUG, "ACPI:     * LPIT\n");
+
+		lpit = (acpi_lpit_t *)current;
+		acpi_create_lpit(lpit);
+		if (lpit->header.length >= sizeof(acpi_lpit_t)) {
+			current += lpit->header.length;
+			current = acpi_align_current(current);
+			acpi_add_table(rsdp, lpit);
+		}
+	}
+
 	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 
 	madt = (acpi_madt_t *) current;
@@ -1515,6 +1566,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		current += madt->header.length;
 		acpi_add_table(rsdp, madt);
 	}
+
 	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
@@ -1665,6 +1717,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 1;
 	case CRAT:
 		return 1;
+	case LPIT: /* ACPI 5.1 up to 6.3: 0 */
+		return 0;
 	default:
 		return -1;
 	}

@@ -40,3 +40,9 @@ config HAVE_ACPI_TABLES
 	help
 	  This variable specifies whether a given board has ACPI table support.
 	  It is usually set in mainboard/*/Kconfig.
+
+config ACPI_LPIT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that support and fill Intel Low Power Idle Table.

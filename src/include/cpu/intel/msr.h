@@ -14,4 +14,6 @@
 
 #define MSR_PLATFORM_INFO	0xce
 
+#define MSR_PKG_C10_RESIDENCY	0x632
+
 #endif /* CPU_INTEL_MSR_H */

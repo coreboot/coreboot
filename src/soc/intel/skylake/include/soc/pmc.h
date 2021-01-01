@@ -84,6 +84,7 @@
 #define GPE0_DW_SHIFT(x)	(4*(x))
 #define GBLRST_CAUSE0		0x124
 #define GBLRST_CAUSE1		0x128
+#define SLP_S0_RES		0x13c
 #define CPPMVRIC		0x31c
 #define  XTALSDQDIS		(1 << 22)
 #endif

@@ -13,6 +13,9 @@ chip soc/intel/tigerlake
 		.tdp_pl4 = 105,
 	}"
 
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"     # Type-A / Type-C Cl
+	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"     # Type-A / Type-C C0
+
 	# Disable SRCCLKREQ1#
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
 

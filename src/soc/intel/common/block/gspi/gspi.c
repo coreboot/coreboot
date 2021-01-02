@@ -448,7 +448,6 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	int devfn;
 	uint32_t cs_ctrl, sscr0, sscr1, clocks, sitf, sirf, pol;
 	struct gspi_ctrlr_params params, *p = &params;
-	const struct device *device;
 
 	/* Only chip select 0 is supported. */
 	if (dev->cs != 0) {
@@ -468,14 +467,9 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	}
 
 	devfn = gspi_soc_bus_to_devfn(p->gspi_bus);
-	/*
-	 * devfn is already validated as part of gspi_ctrlr_params_init.
-	 * No need to revalidate it again.
-	 */
-	device = pcidev_path_on_root(devfn);
 
 	/* Ensure controller is in D0 state */
-	lpss_set_power_state(device, STATE_D0);
+	lpss_set_power_state(PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn)), STATE_D0);
 
 	/* Take controller out of reset, keeping DMA in reset. */
 	gspi_write_mmio_reg(p, RESETS, CTRLR_ACTIVE | DMA_RESET);

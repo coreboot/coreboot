@@ -65,16 +65,12 @@ void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val)
 }
 
 /* Set controller power state to D0 or D3 */
-void lpss_set_power_state(const struct device *dev, enum lpss_pwr_state state)
+void lpss_set_power_state(pci_devfn_t devfn, enum lpss_pwr_state state)
 {
-#if defined(__SIMPLE_DEVICE__)
-	unsigned int devfn = dev->path.pci.devfn;
-	pci_devfn_t lpss_dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
-#else
-	const struct device *lpss_dev = dev;
-#endif
-
-	pci_update_config8(lpss_dev, PME_CTRL_STATUS, ~POWER_STATE_MASK, state);
+	uint8_t reg8 = pci_s_read_config8(devfn, PME_CTRL_STATUS);
+	reg8 &= ~POWER_STATE_MASK;
+	reg8 |= state;
+	pci_s_write_config8(devfn, PME_CTRL_STATUS, reg8);
 }
 
 bool is_dev_lpss(const struct device *dev)

@@ -38,7 +38,6 @@ uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)
 static int lpss_i2c_early_init_bus(unsigned int bus)
 {
 	const struct dw_i2c_bus_config *config;
-	const struct device *tree_dev;
 	pci_devfn_t dev;
 	int devfn;
 	uintptr_t base;
@@ -52,11 +51,6 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 
 	/* Look up the controller device in the devicetree */
 	dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
-	tree_dev = pcidev_path_on_root(devfn);
-	if (!tree_dev || !tree_dev->enabled) {
-		printk(BIOS_ERR, "I2C%u device not enabled\n", bus);
-		return -1;
-	}
 
 	/* Skip if not enabled for early init */
 	config = dw_i2c_get_soc_cfg(bus);
@@ -75,7 +69,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	lpss_reset_release(base);
 
 	/* Ensure controller is in D0 state */
-	lpss_set_power_state(tree_dev, STATE_D0);
+	lpss_set_power_state(dev, STATE_D0);
 
 	/* Initialize the controller */
 	if (dw_i2c_init(bus, config) < 0) {
@@ -153,7 +147,7 @@ static void dw_i2c_device_init(struct device *dev)
 		return;
 
 	/* Ensure controller is in D0 state */
-	lpss_set_power_state(dev, STATE_D0);
+	lpss_set_power_state(PCI_BDF(dev), STATE_D0);
 
 	/* Take device out of reset if its not done before */
 	if (lpss_is_controller_in_reset(base_address))

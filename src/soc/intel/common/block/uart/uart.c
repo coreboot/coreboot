@@ -26,7 +26,7 @@ extern const int uart_max_index;
 static void uart_lpss_init(const struct device *dev, uintptr_t baseaddr)
 {
 	/* Ensure controller is in D0 state */
-	lpss_set_power_state(dev, STATE_D0);
+	lpss_set_power_state(PCI_BDF(dev), STATE_D0);
 
 	/* Take UART out of reset */
 	lpss_reset_release(baseaddr);

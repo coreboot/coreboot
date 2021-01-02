@@ -25,7 +25,7 @@ void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val);
 bool lpss_is_controller_in_reset(uintptr_t base);
 
 /* Set controller power state to D0 or D3*/
-void lpss_set_power_state(const struct device *dev, enum lpss_pwr_state state);
+void lpss_set_power_state(pci_devfn_t devfn, enum lpss_pwr_state state);
 
 /*
  * Handler to get list of LPSS controllers. The SOC is expected to send out a

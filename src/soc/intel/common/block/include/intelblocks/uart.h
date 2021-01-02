@@ -24,12 +24,6 @@ struct uart_gpio_pad_config {
  */
 
 /*
- * Common routine to initialize UART controller PCI config space, take it out of
- * reset and configure M/N dividers.
- */
-void uart_common_init(const struct device *dev, uintptr_t baseaddr);
-
-/*
  * Check if UART debug controller is initialized
  * Returns:
  * true = If debug controller PCI config space is initialized and device is

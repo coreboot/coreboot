@@ -58,7 +58,7 @@ static int uart_get_valid_index(void)
 	return UART_CONSOLE_INVALID_INDEX;
 }
 
-void uart_common_init(const struct device *device, uintptr_t baseaddr)
+static void uart_common_init(const struct device *device, uintptr_t baseaddr)
 {
 #if defined(__SIMPLE_DEVICE__)
 	pci_devfn_t dev = PCI_BDF(device);

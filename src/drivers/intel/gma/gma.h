@@ -30,6 +30,12 @@ struct i915_gpu_panel_config {
 	.ndid = 3, .did = { 0x0100, 0x0240, 0x0410, }	\
 }
 
+/* Shortcut for one internal panel at port A */
+#define GMA_DEFAULT_PANEL(ssc) {		\
+	.use_spread_spectrum_clock = (ssc),	\
+	.ndid = 1, .did = { 0x0400 }		\
+}
+
 void drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *conf);
 
 #endif

@@ -921,6 +921,9 @@ static const u32 lane_base[] = {
 	LANEBASE_ECC
 };
 
+/* Maximum delay for command, control, clock */
+#define CCC_MAX_PI	(2 * QCLK_PI - 1)
+
 void program_timings(ramctr_timing *ctrl, int channel)
 {
 	u32 reg_roundtrip_latency, reg_io_latency;
@@ -946,9 +949,9 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		printk(BIOS_ERR, "C%d command delay underflow: %d\n", channel, cmd_delay);
 		cmd_delay = 0;
 	}
-	if (cmd_delay >= 128) {
+	if (cmd_delay > CCC_MAX_PI) {
 		printk(BIOS_ERR, "C%d command delay overflow: %d\n", channel, cmd_delay);
-		cmd_delay = 127;
+		cmd_delay = CCC_MAX_PI;
 	}
 
 	/* Apply control and clock delay if desired setting is positive */
@@ -969,23 +972,23 @@ void program_timings(ramctr_timing *ctrl, int channel)
 			if (slot_map == 3)
 				ctl_delay[slot] /= 2;
 
-			if (ctl_delay[slot] >= 128) {
+			if (ctl_delay[slot] > CCC_MAX_PI) {
 				printk(BIOS_ERR, "C%dS%d control delay overflow: %d\n",
 					channel, slot, ctl_delay[slot]);
-				ctl_delay[slot] = 127;
+				ctl_delay[slot] = CCC_MAX_PI;
 			}
 		}
 		FOR_ALL_POPULATED_RANKS {
 			u32 clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
 
-			if (clk_delay >= 128) {
+			if (clk_delay > CCC_MAX_PI) {
 				printk(BIOS_ERR, "C%dR%d clock delay overflow: %d\n",
 					channel, slotrank, clk_delay);
-				clk_delay = 127;
+				clk_delay = CCC_MAX_PI;
 			}
 
-			clk_pi_coding |= (clk_delay % 64) << (6 * slotrank);
-			clk_logic_dly |= (clk_delay / 64) << slotrank;
+			clk_pi_coding |= (clk_delay % QCLK_PI) << (6 * slotrank);
+			clk_logic_dly |= (clk_delay / QCLK_PI) << slotrank;
 		}
 	}
 
@@ -993,13 +996,13 @@ void program_timings(ramctr_timing *ctrl, int channel)
 	union gdcr_cmd_pi_coding_reg cmd_pi_coding = {
 		.raw = get_XOVER_CMD(ctrl->rankmap[channel]),
 	};
-	cmd_pi_coding.cmd_pi_code = cmd_delay % 64;
-	cmd_pi_coding.cmd_logic_delay = cmd_delay / 64;
+	cmd_pi_coding.cmd_pi_code = cmd_delay % QCLK_PI;
+	cmd_pi_coding.cmd_logic_delay = cmd_delay / QCLK_PI;
 
-	cmd_pi_coding.ctl_pi_code_d0 = ctl_delay[0] % 64;
-	cmd_pi_coding.ctl_pi_code_d1 = ctl_delay[1] % 64;
-	cmd_pi_coding.ctl_logic_delay_d0 = ctl_delay[0] / 64;
-	cmd_pi_coding.ctl_logic_delay_d1 = ctl_delay[1] / 64;
+	cmd_pi_coding.ctl_pi_code_d0 = ctl_delay[0] % QCLK_PI;
+	cmd_pi_coding.ctl_pi_code_d1 = ctl_delay[1] % QCLK_PI;
+	cmd_pi_coding.ctl_logic_delay_d0 = ctl_delay[0] / QCLK_PI;
+	cmd_pi_coding.ctl_logic_delay_d1 = ctl_delay[1] / QCLK_PI;
 
 	MCHBAR32(GDCRCMDPICODING_ch(channel)) = cmd_pi_coding.raw;
 
@@ -1022,9 +1025,9 @@ void program_timings(ramctr_timing *ctrl, int channel)
 			const u8 dqs_p = ctrl->timings[channel][slotrank].lanes[lane].rx_dqs_p;
 			const u8 dqs_n = ctrl->timings[channel][slotrank].lanes[lane].rx_dqs_n;
 			const union gdcr_rx_reg gdcr_rx = {
-				.rcven_pi_code     = rcven % 64,
+				.rcven_pi_code     = rcven % QCLK_PI,
 				.rx_dqs_p_pi_code  = dqs_p,
-				.rcven_logic_delay = rcven / 64,
+				.rcven_logic_delay = rcven / QCLK_PI,
 				.rx_dqs_n_pi_code  = dqs_n,
 			};
 			MCHBAR32(lane_base[lane] + GDCRRX(channel, slotrank)) = gdcr_rx.raw;
@@ -1032,10 +1035,10 @@ void program_timings(ramctr_timing *ctrl, int channel)
 			const u16 tx_dqs = ctrl->timings[channel][slotrank].lanes[lane].tx_dqs;
 			const int tx_dq = ctrl->timings[channel][slotrank].lanes[lane].tx_dq;
 			const union gdcr_tx_reg gdcr_tx = {
-				.tx_dq_pi_code      = tx_dq % 64,
-				.tx_dqs_pi_code     = tx_dqs % 64,
-				.tx_dqs_logic_delay = tx_dqs / 64,
-				.tx_dq_logic_delay  = tx_dq / 64,
+				.tx_dq_pi_code      = tx_dq % QCLK_PI,
+				.tx_dqs_pi_code     = tx_dqs % QCLK_PI,
+				.tx_dqs_logic_delay = tx_dqs / QCLK_PI,
+				.tx_dq_logic_delay  = tx_dq / QCLK_PI,
 			};
 			MCHBAR32(lane_base[lane] + GDCRTX(channel, slotrank)) = gdcr_tx.raw;
 		}
@@ -1103,13 +1106,15 @@ static struct run get_longest_zero_run(int *seq, int sz)
 	return ret;
 }
 
+#define RCVEN_COARSE_PI_LENGTH	(2 * QCLK_PI)
+
 static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int rcven;
-	int statistics[NUM_LANES][128];
+	int statistics[NUM_LANES][RCVEN_COARSE_PI_LENGTH];
 	int lane;
 
-	for (rcven = 0; rcven < 128; rcven++) {
+	for (rcven = 0; rcven < RCVEN_COARSE_PI_LENGTH; rcven++) {
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].rcven = rcven;
 		}
@@ -1123,11 +1128,11 @@ static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank,
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(statistics[lane], 128);
+		struct run rn = get_longest_zero_run(statistics[lane], RCVEN_COARSE_PI_LENGTH);
 		ctrl->timings[channel][slotrank].lanes[lane].rcven = rn.middle;
 		upperA[lane] = rn.end;
 		if (upperA[lane] < rn.middle)
-			upperA[lane] += 128;
+			upperA[lane] += 2 * QCLK_PI;
 
 		printram("rcven: %d, %d, %d: % 4d-% 4d-% 4d\n",
 			 channel, slotrank, lane, rn.start, rn.middle, rn.end);
@@ -1144,7 +1149,7 @@ static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, i
 
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].rcven
-				= upperA[lane] + rcven_delta + 64;
+				= upperA[lane] + rcven_delta + QCLK_PI;
 		}
 		program_timings(ctrl, channel);
 
@@ -1239,8 +1244,8 @@ static int find_roundtrip_latency(ramctr_timing *ctrl, int channel, int slotrank
 			return MAKE_ERR;
 		}
 		FOR_ALL_LANES if (works[lane]) {
-			ctrl->timings[channel][slotrank].lanes[lane].rcven += 128;
-			upperA[lane] += 128;
+			ctrl->timings[channel][slotrank].lanes[lane].rcven += 2 * QCLK_PI;
+			upperA[lane] += 2 * QCLK_PI;
 			printram("increment %d, %d, %d\n", channel, slotrank, lane);
 		}
 	}
@@ -1349,7 +1354,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 		all_high = 1;
 		some_high = 0;
 		FOR_ALL_LANES {
-			if (ctrl->timings[channel][slotrank].lanes[lane].rcven >= 64)
+			if (ctrl->timings[channel][slotrank].lanes[lane].rcven >= QCLK_PI)
 				some_high = 1;
 			else
 				all_high = 0;
@@ -1359,8 +1364,8 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 			ctrl->timings[channel][slotrank].io_latency--;
 			printram("4028--;\n");
 			FOR_ALL_LANES {
-				ctrl->timings[channel][slotrank].lanes[lane].rcven -= 64;
-				upperA[lane] -= 64;
+				ctrl->timings[channel][slotrank].lanes[lane].rcven -= QCLK_PI;
+				upperA[lane] -= QCLK_PI;
 
 			}
 		} else if (some_high) {
@@ -1550,10 +1555,12 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 	program_wdb_pattern_length(channel, 16);
 }
 
+#define TX_DQS_PI_LENGTH	(2 * QCLK_PI)
+
 static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int tx_dqs;
-	int statistics[NUM_LANES][128];
+	int statistics[NUM_LANES][TX_DQS_PI_LENGTH];
 	int lane;
 
 	const union gdcr_training_mod_reg training_mod = {
@@ -1575,7 +1582,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 
 	iosav_write_jedec_write_leveling_sequence(ctrl, channel, slotrank, bank, mr1reg);
 
-	for (tx_dqs = 0; tx_dqs < 128; tx_dqs++) {
+	for (tx_dqs = 0; tx_dqs < TX_DQS_PI_LENGTH; tx_dqs++) {
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].tx_dqs = tx_dqs;
 		}
@@ -1590,7 +1597,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn = get_longest_zero_run(statistics[lane], 128);
+		struct run rn = get_longest_zero_run(statistics[lane], TX_DQS_PI_LENGTH);
 		/*
 		 * tx_dq is a direct function of tx_dqs's 6 LSBs. Some tests increment the value
 		 * of tx_dqs by a small value, which might cause the 6-bit value to overflow if
@@ -1736,7 +1743,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 
 			old = ctrl->timings[channel][slotrank].lanes[lane].tx_dqs;
 			ctrl->timings[channel][slotrank].lanes[lane].tx_dqs +=
-				get_dqs_flyby_adjust(res) * 64;
+				get_dqs_flyby_adjust(res) * QCLK_PI;
 
 			printram("High adjust %d:%016llx\n", lane, res);
 			printram("Bval+: %d, %d, %d, % 4d -> % 4d\n", channel, slotrank, lane,
@@ -1974,8 +1981,8 @@ static void reprogram_320c(ramctr_timing *ctrl)
 	toggle_io_reset();
 }
 
-#define CT_MIN_PI	-127
-#define CT_MAX_PI	128
+#define CT_MIN_PI	(-CCC_MAX_PI)
+#define CT_MAX_PI	(+CCC_MAX_PI + 1)
 #define CT_PI_LENGTH	(CT_MAX_PI - CT_MIN_PI + 1)
 
 #define MIN_C320C_LEN 13

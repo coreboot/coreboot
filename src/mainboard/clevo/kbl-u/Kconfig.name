@@ -4,3 +4,4 @@ comment "Kaby Lake U"
 
 config BOARD_CLEVO_N130WU
 	bool "N130WU / N131WU"
+	select BOARD_CLEVO_N130WU_OPTIONS

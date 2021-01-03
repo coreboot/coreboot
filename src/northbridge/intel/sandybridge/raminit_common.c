@@ -430,7 +430,7 @@ void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 		remaplimit = remapbase + MIN(4096, tom - me_uma_size) - toludbase - 1;
 		touudbase  = remaplimit + 1;
 	} else {
-		// Reclaim not possible
+		/* Reclaim not possible */
 		reclaim   = 0;
 		touudbase = tom - me_uma_size;
 	}
@@ -752,11 +752,11 @@ static u32 encode_odt(u32 odt)
 {
 	switch (odt) {
 	case 30:
-		return (1 << 9) | (1 << 2);	// RZQ/8, RZQ/4
+		return (1 << 9) | (1 << 2);	/* RZQ/8, RZQ/4 */
 	case 60:
-		return (1 << 2);	// RZQ/4
+		return (1 << 2);	/* RZQ/4 */
 	case 120:
-		return (1 << 6);	// RZQ/2
+		return (1 << 6);	/* RZQ/2 */
 	default:
 	case 0:
 		return 0;
@@ -2827,8 +2827,8 @@ void final_registers(ramctr_timing *ctrl)
 	FOR_ALL_CHANNELS
 		MCHBAR32(PM_TRML_M_CONFIG_ch(channel)) = 0x00000aaa;
 
-	MCHBAR32(PM_BW_LIMIT_CONFIG) = 0x5f7003ff;	// OK
-	MCHBAR32(PM_DLL_CONFIG) = 0x00073000 | ctrl->mdll_wake_delay; // OK
+	MCHBAR32(PM_BW_LIMIT_CONFIG) = 0x5f7003ff;
+	MCHBAR32(PM_DLL_CONFIG) = 0x00073000 | ctrl->mdll_wake_delay;
 
 	FOR_ALL_CHANNELS {
 		switch (ctrl->rankmap[channel]) {

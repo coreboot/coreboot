@@ -1137,10 +1137,8 @@ static void find_rcven_pi_coarse(ramctr_timing *ctrl, int channel, int slotrank,
 static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int rcven_delta;
-	int statistics[NUM_LANES][51];
+	int statistics[NUM_LANES][51] = {0};
 	int lane, i;
-
-	memset(statistics, 0, sizeof(statistics));
 
 	for (rcven_delta = -25; rcven_delta <= 25; rcven_delta++) {
 

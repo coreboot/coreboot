@@ -90,8 +90,8 @@ static void generate_C_state_entries(void)
 
 	/* Else on battery power */
 	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->c1_battery,
-				conf->c2_battery, conf->c3_battery);
+	generate_cstate_entries(cpu->cstates, conf->c1_acpower,
+				conf->c2_acpower, conf->c3_acpower);
 	acpigen_pop_len();
 }
 

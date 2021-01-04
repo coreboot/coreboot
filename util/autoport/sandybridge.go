@@ -47,9 +47,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 							"c1_acpower": "1",
 							"c2_acpower": "3",
 							"c3_acpower": "5",
-							"c1_battery": "1",
-							"c2_battery": "3",
-							"c3_battery": "5",
 						},
 						Children: []DevTreeNode{
 							{

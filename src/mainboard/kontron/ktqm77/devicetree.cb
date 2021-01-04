@@ -11,10 +11,6 @@ chip northbridge/intel/sandybridge
 			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
 			register "c2_acpower" = "4"	# ACPI(C2) = MWAIT(C3)
 			register "c3_acpower" = "0"	# ACPI(C3) = MWAIT(C7)
-
-			register "c1_battery" = "1"	# ACPI(C1) = MWAIT(C1)
-			register "c2_battery" = "4"	# ACPI(C2) = MWAIT(C3)
-			register "c3_battery" = "0"	# ACPI(C3) = MWAIT(C7)
 		end
 	end
 

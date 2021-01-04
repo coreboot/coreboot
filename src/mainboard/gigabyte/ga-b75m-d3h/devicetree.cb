@@ -5,9 +5,6 @@ chip northbridge/intel/sandybridge
 			register "c1_acpower" = "1"
 			register "c2_acpower" = "3"
 			register "c3_acpower" = "5"
-			register "c1_battery" = "1"
-			register "c2_battery" = "3"
-			register "c3_battery" = "5"
 			# Magic APIC ID to locate this chip
 			device lapic 0x0 on end
 			device lapic 0xacac off end

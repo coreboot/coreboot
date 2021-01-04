@@ -75,7 +75,7 @@ config ADL_CHROME_EC
 config ADL_INTEL_EC
 	bool "Intel EC"
 	select EC_ACPI
-	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC if VBOOT
 endchoice
 
 config PCIEXP_HOTPLUG_BUSES

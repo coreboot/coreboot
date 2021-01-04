@@ -3,9 +3,11 @@
 #include <arch/stages.h>
 #include <soc/qclib_common.h>
 #include "board.h"
+#include <soc/shrm.h>
 
 void platform_romstage_main(void)
 {
+	shrm_fw_load_reset();
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/cnl_memcfg_init.h>
-#include <soc/romstage.h>
+#include <variant/romstage.h>
 
 static const struct cnl_mb_cfg memcfg = {
 	.spd[0] = {
@@ -29,7 +29,7 @@ static const struct cnl_mb_cfg memcfg = {
 	.vref_ca_config = 2,
 };
 
-void mainboard_memory_init_params(FSPM_UPD *memupd)
+void variant_configure_fspm(FSPM_UPD *memupd)
 {
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }

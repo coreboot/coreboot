@@ -80,11 +80,17 @@
 	REGION(asan_shadow, ., _shadow_size, ARCH_POINTER_ALIGN_SIZE)
 #endif
 	_car_unallocated_start = .;
-	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
+	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start)
+			  - CONFIG_FSP_T_RESERVED_SIZE;
 }
 . = _car_region_end;
 .car.mrc_var . (NOLOAD) : {
 	. += CONFIG_DCACHE_RAM_MRC_VAR_SIZE;
+}
+
+. = _car_region_end;
+.car.fspt_reserved . (NOLOAD) : {
+	. +=  CONFIG_FSP_T_RESERVED_SIZE;
 }
 
 #if ENV_BOOTBLOCK

@@ -117,6 +117,15 @@ config FSP_CAR
 	help
 	  Use FSP APIs to initialize & Tear Down the Cache-As-Ram
 
+config FSP_T_RESERVED_SIZE
+	hex
+	default 0x100 if FSP_CAR
+	default 0x0
+	help
+	  This is the size of the area reserved by FSP-T. This is not
+	  defined in the FSP specification but in the SOC integration
+	  guides.
+
 config FSP_M_XIP
 	bool
 	default n

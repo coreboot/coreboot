@@ -264,6 +264,7 @@ static void root_complex_fill_ssdt(const struct device *device)
 
 static struct device_operations root_complex_operations = {
 	.read_resources		= read_resources,
+	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };

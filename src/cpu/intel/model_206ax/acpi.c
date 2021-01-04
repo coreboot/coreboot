@@ -31,8 +31,6 @@ static void generate_cstate_entries(acpi_cstate_t *cstates,
 		++cstate_count;
 	if (c3 > 0)
 		++cstate_count;
-	if (!cstate_count)
-		return;
 
 	acpigen_write_package(cstate_count + 1);
 	acpigen_write_byte(cstate_count);

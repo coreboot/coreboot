@@ -19,39 +19,6 @@ static int get_logical_cores_per_package(void)
 	return msr.lo & 0xffff;
 }
 
-static void generate_cstate_entries(acpi_cstate_t *cstates,
-				    int c1, int c2, int c3)
-{
-	int cstate_count = 0;
-
-	/* Count number of active C-states */
-	if (c1 > 0)
-		++cstate_count;
-	if (c2 > 0)
-		++cstate_count;
-	if (c3 > 0)
-		++cstate_count;
-
-	acpigen_write_package(cstate_count + 1);
-	acpigen_write_byte(cstate_count);
-
-	/* Add an entry if the level is enabled */
-	if (c1 > 0) {
-		cstates[c1].ctype = 1;
-		acpigen_write_CST_package_entry(&cstates[c1]);
-	}
-	if (c2 > 0) {
-		cstates[c2].ctype = 2;
-		acpigen_write_CST_package_entry(&cstates[c2]);
-	}
-	if (c3 > 0) {
-		cstates[c3].ctype = 3;
-		acpigen_write_CST_package_entry(&cstates[c3]);
-	}
-
-	acpigen_pop_len();
-}
-
 static void generate_C_state_entries(void)
 {
 	struct cpu_info *info;
@@ -75,10 +42,21 @@ static void generate_C_state_entries(void)
 	if (!cpu || !cpu->cstates)
 		return;
 
-	acpigen_write_method("_CST", 0);
-	acpigen_emit_byte(RETURN_OP);
-	generate_cstate_entries(cpu->cstates, conf->acpi_c1, conf->acpi_c2, conf->acpi_c3);
-	acpigen_pop_len();
+	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
+
+	acpi_cstate_t acpi_cstate_map[ARRAY_SIZE(acpi_cstates)] = { 0 };
+
+	/* Count number of active C-states */
+	int count = 0;
+
+	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
+		if (acpi_cstates[i] > 0) {
+			acpi_cstate_map[count] = cpu->cstates[acpi_cstates[i]];
+			acpi_cstate_map[count].ctype = i + 1;
+			count++;
+		}
+	}
+	acpigen_write_CST_package(acpi_cstate_map, count);
 }
 
 static acpi_tstate_t tss_table_fine[] = {

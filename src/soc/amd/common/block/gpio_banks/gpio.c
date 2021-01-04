@@ -162,8 +162,9 @@ void gpio_input(gpio_t gpio_num)
 
 void gpio_output(gpio_t gpio_num, int value)
 {
-	gpio_or32(gpio_num, GPIO_OUTPUT_ENABLE);
+	/* set GPIO output value before setting the direction to output to avoid glitches */
 	gpio_set(gpio_num, value);
+	gpio_or32(gpio_num, GPIO_OUTPUT_ENABLE);
 }
 
 const char *gpio_acpi_path(gpio_t gpio)

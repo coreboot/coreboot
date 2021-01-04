@@ -18,6 +18,9 @@
 #define PLL_CTL		0x938
 #define   PLL_CTL_SSC	BIT(19)
 
+#define EMMC_CTL	0x960
+#define   SLOW_MODE	BIT(3)
+
 #define PLL_CTL_2			0x93C
 #define   PLL_CTL_2_MAX_SSC_MASK	(0xFFFF << 16)
 #define   MAX_SSC_30000PPM		(0xF5C3 << 16)
@@ -29,3 +32,5 @@
 #define SD_CLKRX_DLY			0x934
 #define   CLK_SRC_MASK			(0x3 << 24)
 #define   AFTER_OUTPUT_BUFF		(0x0 << 24)
+#define   HS400_RX_DELAY_MASK		(0xF << 28)
+#define   HS400_RX_DELAY		(0x5 << 28)

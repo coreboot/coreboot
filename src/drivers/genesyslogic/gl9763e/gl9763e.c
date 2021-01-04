@@ -33,6 +33,10 @@ static void gl9763e_init(struct device *dev)
 		/* Set clock source for RX path */
 		pci_update_config32(dev, SD_CLKRX_DLY, ~CLK_SRC_MASK, AFTER_OUTPUT_BUFF);
 	}
+	/* Modify DS delay */
+	pci_update_config32(dev, SD_CLKRX_DLY, ~HS400_RX_DELAY_MASK, HS400_RX_DELAY);
+	/* Disable Slow mode */
+	pci_and_config32(dev, EMMC_CTL, ~SLOW_MODE);
 	/* Set VHS to read-only */
 	pci_update_config32(dev, VHS, ~VHS_REV_MASK, VHS_REV_R);
 }

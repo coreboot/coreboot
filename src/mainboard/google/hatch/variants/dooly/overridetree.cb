@@ -9,7 +9,7 @@ chip soc/intel/cannonlake
 	register "TetonGlacierMode" = "1"
 
 	register "SerialIoDevMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,

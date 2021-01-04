@@ -21,15 +21,13 @@ static void sm_init(struct device *dev)
 
 static u32 get_sm_mmio(struct device *dev)
 {
-	struct resource *res;
-	struct bus *pbus;
-
-	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x90);
-	if (res->base == SMB_BASE_ADDR)
-		return (uintptr_t)acpimmio_smbus;
-
-	return (uintptr_t)acpimmio_asf;
+	/*
+	 * Since SMBus and ASF controller are behind the same PCIe device, we don't know behind
+	 * which controller a device is. We assume here that the devices are behind the SMBus
+	 * controller. The proper solution would be to handle those as MMIO devices instead of
+	 * PCI ones.
+	 */
+	return (uintptr_t)acpimmio_smbus;
 }
 
 static int lsmbus_recv_byte(struct device *dev)

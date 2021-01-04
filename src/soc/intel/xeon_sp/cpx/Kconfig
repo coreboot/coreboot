@@ -43,13 +43,22 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x140000
+	default 0x40000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages. It needs to include FSP-M stack requirement and
 	  CB romstage stack requirement. The integration documentation
-	  says this needs to be 256KiB, but practice show this needs to
-	  be a lot more.
+	  says this needs to be 256KiB.
+
+config FSP_M_RC_HEAP_SIZE
+	hex
+	default 0x130000
+	help
+	  On xeon_sp/cpx FSP-M has two separate heap managers, one regular
+	  whose size and base are controllable via the StackBase and
+	  StackSize UPDs and a 'rc' heap manager that is statically
+	  allocated at 0xfe800000 (the CAR base) and consumes about 0x130000
+	  bytes of memory.
 
 config CPU_MICROCODE_CBFS_LOC
 	hex

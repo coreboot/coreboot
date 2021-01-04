@@ -157,7 +157,7 @@ void gpio_input_pullup(gpio_t gpio_num)
 
 void gpio_input(gpio_t gpio_num)
 {
-	gpio_and32(gpio_num, ~GPIO_OUTPUT_ENABLE);
+	gpio_and32(gpio_num, ~(GPIO_PULL_MASK | GPIO_OUTPUT_ENABLE));
 }
 
 void gpio_output(gpio_t gpio_num, int value)

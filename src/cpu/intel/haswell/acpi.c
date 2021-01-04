@@ -32,20 +32,10 @@ static int cstate_set_trad[3] = {
 	C_STATE_C6_LONG_LAT,
 };
 
-static int get_cores_per_package(void)
+static int get_logical_cores_per_package(void)
 {
-	struct cpuinfo_x86 c;
-	struct cpuid_result result;
-	int cores = 1;
-
-	get_fms(&c, cpuid_eax(1));
-	if (c.x86 != 6)
-		return 1;
-
-	result = cpuid_ext(0xb, 1);
-	cores = result.ebx & 0xff;
-
-	return cores;
+	msr_t msr = rdmsr(MSR_CORE_THREAD_COUNT);
+	return msr.lo & 0xffff;
 }
 
 static acpi_tstate_t tss_table_fine[] = {
@@ -279,7 +269,7 @@ void generate_cpu_entries(const struct device *device)
 {
 	int coreID, cpuID, pcontrol_blk = get_pmbase(), plen = 6;
 	int totalcores = dev_count_cpu();
-	int cores_per_package = get_cores_per_package();
+	int cores_per_package = get_logical_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",

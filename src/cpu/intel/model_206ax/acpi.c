@@ -78,20 +78,8 @@ static void generate_C_state_entries(void)
 		return;
 
 	acpigen_write_method("_CST", 0);
-
-	/* If running on AC power */
-	acpigen_emit_byte(0xa0);		/* IfOp */
-	acpigen_write_len_f();		/* PkgLength */
-	acpigen_emit_namestring("PWRS");
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->acpi_c1,
-				conf->acpi_c2, conf->acpi_c3);
-	acpigen_pop_len();
-
-	/* Else on battery power */
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->acpi_c1,
-				conf->acpi_c2, conf->acpi_c3);
+	acpigen_emit_byte(RETURN_OP);
+	generate_cstate_entries(cpu->cstates, conf->acpi_c1, conf->acpi_c2, conf->acpi_c3);
 	acpigen_pop_len();
 }
 

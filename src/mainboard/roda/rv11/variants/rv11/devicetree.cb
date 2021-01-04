@@ -23,9 +23,9 @@ chip northbridge/intel/sandybridge
 			device lapic 0x0 on end
 			device lapic 0xacac off end
 
-			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
-			register "c2_acpower" = "4"	# ACPI(C2) = MWAIT(C6)
-			register "c3_acpower" = "0"
+			register "acpi_c1" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "acpi_c2" = "4"	# ACPI(C2) = MWAIT(C6)
+			register "acpi_c3" = "0"
 		end
 	end
 

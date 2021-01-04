@@ -44,9 +44,9 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 						Comment: "FIXME: check all registers",
 						Registers: map[string]string{
 							/* FIXME:XX hardcoded.  */
-							"c1_acpower": "1",
-							"c2_acpower": "3",
-							"c3_acpower": "5",
+							"acpi_c1": "1",
+							"acpi_c2": "3",
+							"acpi_c3": "5",
 						},
 						Children: []DevTreeNode{
 							{

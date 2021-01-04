@@ -8,9 +8,9 @@ chip northbridge/intel/sandybridge
 
 	device cpu_cluster 0x0 on
 		chip cpu/intel/model_206ax
-			register "c1_acpower" = "1"
-			register "c2_acpower" = "3"
-			register "c3_acpower" = "5"
+			register "acpi_c1" = "1"
+			register "acpi_c2" = "3"
+			register "acpi_c3" = "5"
 			device lapic 0x0 on end
 			device lapic 0xacac off end
 		end

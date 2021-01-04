@@ -75,10 +75,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config MAX_CPUS
-	int
-	default 8
-
 config CONSOLE_POST
 	bool
 	default y

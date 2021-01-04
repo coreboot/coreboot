@@ -47,10 +47,6 @@ config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config MAX_CPUS
-	int
-	default 8
-
 config VGA_BIOS_ID
 	string
 	default "8086,1916" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM15_V3

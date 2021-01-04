@@ -43,10 +43,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Intel_Kblrvp"
 
-config MAX_CPUS
-	int
-	default 8
-
 config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ

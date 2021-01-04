@@ -80,6 +80,10 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UDK_2015_BINDING
 
+config MAX_CPUS
+	int
+	default 8
+
 config FSP_HYPERTHREADING
 	bool "Enable Hyper-Threading"
 	default y

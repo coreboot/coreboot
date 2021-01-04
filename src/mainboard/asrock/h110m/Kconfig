@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "H110M"
 
-config MAX_CPUS
-	int
-	default 8
-
 config DEVICETREE
 	string
 	default "devicetree.cb"

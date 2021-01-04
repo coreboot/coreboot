@@ -108,10 +108,6 @@ config MAINBOARD_PART_NUMBER
 	default "Rammus" if BOARD_GOOGLE_RAMMUS
 	default "Soraka" if BOARD_GOOGLE_SORAKA
 
-config MAX_CPUS
-	int
-	default 8
-
 config OEM_BIN_FILE
 	string "OEM ID table"
 	default ""

@@ -65,10 +65,6 @@ config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config MAX_CPUS
-	int
-	default 8
-
 config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ

@@ -60,10 +60,6 @@ config MAINBOARD_FAMILY
 	default "Google_Kalista" if BOARD_GOOGLE_KARMA
 	default "Google_Endeavour" if BOARD_GOOGLE_ENDEAVOUR
 
-config MAX_CPUS
-	int
-	default 8
-
 config DIMM_MAX
 	int
 	default 2

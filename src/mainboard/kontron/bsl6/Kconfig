@@ -54,10 +54,6 @@ config CBFS_SIZE
 	hex
 	default 0x600000 if BOARD_SIEMENS_BOXER26
 
-config MAX_CPUS
-	int
-	default 8
-
 config DIMM_MAX
 	int
 	default 2

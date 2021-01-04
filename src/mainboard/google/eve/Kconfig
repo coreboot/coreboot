@@ -62,10 +62,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Eve"
 
-config MAX_CPUS
-	int
-	default 8
-
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_RT5514

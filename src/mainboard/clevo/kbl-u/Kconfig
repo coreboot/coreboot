@@ -59,10 +59,6 @@ config FMDFILE
 #	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/fmds/vboot-roa.fmd"	if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB
 #	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/fmds/vboot-roab.fmd"	if VBOOT_SLOTS_RW_AB
 
-config MAX_CPUS
-	int
-	default 8
-
 config DIMM_MAX
 	int
 	default 2

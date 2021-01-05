@@ -39,10 +39,6 @@ config MAINBOARD_PART_NUMBER
 	default "Rikku" if BOARD_GOOGLE_RIKKU
 	default "Tidus" if BOARD_GOOGLE_TIDUS
 
-config MAX_CPUS
-	int
-	default 8
-
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0406.rom"

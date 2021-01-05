@@ -39,6 +39,10 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_POWER_STATE_AFTER_FAILURE
 	select HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
 
+config MAX_CPUS
+	int
+	default 8
+
 config PCIEXP_ASPM
 	bool
 	default y

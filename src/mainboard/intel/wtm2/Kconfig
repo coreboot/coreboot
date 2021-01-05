@@ -25,11 +25,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "WHITETIP MOUNTAIN 2"
 
-
-config MAX_CPUS
-	int
-	default 8
-
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0166.rom"

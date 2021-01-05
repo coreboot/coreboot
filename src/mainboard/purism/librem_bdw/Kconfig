@@ -52,10 +52,6 @@ config MAINBOARD_VERSION
 	default "1.0" if BOARD_PURISM_LIBREM13_V1
 	default "2.0" if BOARD_PURISM_LIBREM15_V2
 
-config MAX_CPUS
-	int
-	default 8
-
 config PRE_GRAPHICS_DELAY
 	int
 	default 50

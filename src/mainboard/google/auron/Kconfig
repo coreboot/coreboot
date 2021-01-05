@@ -58,10 +58,6 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	default "samus" if BOARD_GOOGLE_SAMUS
 	default ""
 
-config MAX_CPUS
-	int
-	default 8
-
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0406.rom"

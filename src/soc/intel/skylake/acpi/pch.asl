@@ -68,3 +68,6 @@ Method (_OSC, 4)
 
 /* Integrated graphics 0:2.0 */
 #include <drivers/intel/gma/acpi/gfx.asl>
+
+/* Intel Power Engine Plug-in */
+#include <soc/intel/common/block/acpi/acpi/pep.asl>

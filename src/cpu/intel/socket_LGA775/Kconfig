@@ -17,7 +17,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x4000 # 16 kB
+	default 0x8000 # 32 kB
 
 config DCACHE_BSP_STACK_SIZE
 	hex

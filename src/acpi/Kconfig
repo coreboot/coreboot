@@ -24,9 +24,6 @@ config ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	  Provide common definitions for Intel hardware PM1_CNT register sleep
 	  values.
 
-config ACPI_NO_SMI_GNVS
-	bool
-
 config ACPI_NO_PCAT_8259
 	bool
 	help

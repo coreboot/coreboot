@@ -13,7 +13,6 @@ config CPU_AMD_PI
 	select SPI_FLASH if HAVE_ACPI_RESUME
 	select SMM_ASEG
 	select SSE2
-	select ACPI_NO_SMI_GNVS
 
 if CPU_AMD_PI
 

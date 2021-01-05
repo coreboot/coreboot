@@ -57,7 +57,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_2017_BINDING
 	select HAVE_CF9_RESET
 	select SUPPORT_CPU_UCODE_IN_CBFS
-	select ACPI_NO_SMI_GNVS
 
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"

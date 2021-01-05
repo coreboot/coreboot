@@ -1,6 +1,7 @@
 acpica-unix-*/
 binutils-*/
 build-*BINUTILS/
+build-*CMAKE/
 build-*EXPAT/
 build-*GCC/
 build-*GDB/
@@ -11,6 +12,7 @@ build-*MPFR/
 build-*PYTHON/
 build-*LVM/
 build-*IASL/
+cmake-*/
 expat-*/
 gcc-*/
 gdb-*/

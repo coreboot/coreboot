@@ -36,9 +36,21 @@ chip soc/intel/tigerlake
 		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 160,
+				.scl_hcnt = 75,
+				.sda_hold = 36,
+			},
 		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
+                        .speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 75,
+				.sda_hold = 36,
+                        },
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
@@ -48,6 +60,13 @@ chip soc/intel/tigerlake
 		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 75,
+				.sda_hold = 36,
+                        },
+
 		},
 	}"
 

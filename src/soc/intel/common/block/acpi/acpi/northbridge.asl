@@ -309,3 +309,6 @@ Device (PDRC)
 		Return (BUF0)
 	}
 }
+
+/* GFX 00:02.0 */
+#include <drivers/intel/gma/acpi/gfx.asl>

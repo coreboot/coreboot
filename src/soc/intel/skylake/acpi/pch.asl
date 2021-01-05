@@ -66,8 +66,5 @@ Method (_OSC, 4)
 #include <soc/intel/common/acpi/sgx.asl>
 #endif
 
-/* Integrated graphics 0:2.0 */
-#include <drivers/intel/gma/acpi/gfx.asl>
-
 /* Intel Power Engine Plug-in */
 #include <soc/intel/common/block/acpi/acpi/pep.asl>

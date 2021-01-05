@@ -16,9 +16,6 @@
 #include "gpio.asl"
 #endif
 
-/* GFX 00:02.0 */
-#include <drivers/intel/gma/acpi/gfx.asl>
-
 /* LPC 0:1f.0 */
 #include <soc/intel/common/block/acpi/acpi/lpc.asl>
 

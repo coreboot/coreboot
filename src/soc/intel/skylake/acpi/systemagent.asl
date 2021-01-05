@@ -322,3 +322,6 @@ Device (PDRC)
 		Return (BUF0)
 	}
 }
+
+/* Integrated graphics 0:2.0 */
+#include <drivers/intel/gma/acpi/gfx.asl>

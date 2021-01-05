@@ -86,46 +86,6 @@ void southbridge_gate_memory_reset(void)
 						   gpiobase + GP_LVL);
 }
 
-static void xhci_sleep(u8 slp_typ)
-{
-	u32 xhci_bar;
-	u16 reg16;
-
-	switch (slp_typ) {
-	case ACPI_S3:
-	case ACPI_S4:
-		/* FIXME: Unbalanced width in read/write ops (16-bit read then 32-bit write) */
-		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
-		reg16 &= ~0x03UL;
-		pci_write_config32(PCH_XHCI_DEV, 0x74, reg16);
-
-		pci_or_config16(PCH_XHCI_DEV, PCI_COMMAND,
-				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-
-		xhci_bar = pci_read_config32(PCH_XHCI_DEV, PCI_BASE_ADDRESS_0) & ~0xFUL;
-
-		/* FIXME: This looks broken (conditions are always false) */
-		if ((xhci_bar + 0x4C0) & 1)
-			pch_iobp_update(0xEC000082, ~0UL, (3 << 2));
-		if ((xhci_bar + 0x4D0) & 1)
-			pch_iobp_update(0xEC000182, ~0UL, (3 << 2));
-		if ((xhci_bar + 0x4E0) & 1)
-			pch_iobp_update(0xEC000282, ~0UL, (3 << 2));
-		if ((xhci_bar + 0x4F0) & 1)
-			pch_iobp_update(0xEC000382, ~0UL, (3 << 2));
-
-		pci_and_config16(PCH_XHCI_DEV, PCI_COMMAND,
-				 ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
-
-		pci_or_config16(PCH_XHCI_DEV, 0x74, 0x03);
-		break;
-
-	case ACPI_S5:
-		pci_or_config16(PCH_XHCI_DEV, 0x74, (1 << 8) | 0x03);
-		break;
-	}
-}
-
 void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
@@ -179,10 +139,77 @@ void southbridge_smi_monitor(void)
 #undef IOTRAP
 }
 
+/*
+ * PCH BIOS Spec Rev 0.7.0, Section 13.5
+ * Additional xHCI Controller Configurations Prior to Entering S3/S4
+ */
+static void xhci_a0_suspend_smm_workaround(void)
+{
+	/* Workaround only applies to Panther Point stepping A0 */
+	if (pch_silicon_revision() != PCH_STEP_A0)
+		return;
+
+	/* The BAR is 64-bit, account for it being above 4 GiB */
+	if (pci_read_config32(PCH_XHCI_DEV, PCI_BASE_ADDRESS_0 + 4))
+		return;
+
+	/* PCH datasheet indicates that only the upper 16 bits are valid */
+	uintptr_t xhci_bar = pci_read_config32(PCH_XHCI_DEV, PCI_BASE_ADDRESS_0) &
+			~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+
+	if (smm_points_to_smram((void *)xhci_bar, 64 * KiB))
+		return;
+
+	/* Step 1: Set power state to D0 */
+	pci_and_config16(PCH_XHCI_DEV, XHCI_PWR_CNTL_STS, ~(3 << 0));
+
+	/* Step 2 */
+	pci_or_config16(PCH_XHCI_DEV, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+
+	/* Steps 3 to 6: If USB3 PORTSC current connect status (bit 0) is set, do IOBP magic */
+	for (unsigned int port = 0; port < 4; port++) {
+		if (read32((void *)(xhci_bar + XHCI_PORTSC_x_USB3(port))) & (1 << 0))
+			pch_iobp_update(0xec000082 + 0x100 * port, ~0, 3 << 2);
+	}
+
+	/* Step 7 */
+	pci_and_config16(PCH_XHCI_DEV, PCI_COMMAND, ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
+
+	/* Step 8: Set power state to D3 */
+	pci_or_config16(PCH_XHCI_DEV, XHCI_PWR_CNTL_STS, 3 << 0);
+}
+
 void southbridge_smm_xhci_sleep(u8 slp_type)
 {
-	if (gnvs->xhci)
-		xhci_sleep(slp_type);
+	/* Only Panther Point has xHCI */
+	if (pch_silicon_type() != PCH_TYPE_PPT)
+		return;
+
+	/* Verify that RCBA is still valid */
+	if (pci_read_config32(PCH_LPC_DEV, RCBA) != ((u32)DEFAULT_RCBA | RCBA_ENABLE))
+		return;
+
+	if (RCBA32(FD) & PCH_DISABLE_XHCI)
+		return;
+
+	switch (slp_type) {
+	case ACPI_S3:
+	case ACPI_S4:
+		xhci_a0_suspend_smm_workaround();
+		break;
+
+	case ACPI_S5:
+		/*
+		 * PCH BIOS Spec Rev 0.7.0, Section 13.5
+		 * Additional xHCI Controller Configurations Prior to Entering S5
+		 *
+		 * For all steppings:
+		 *   Step 1: Set power state to D3 (bits 1:0)
+		 *   Step 2: Set PME# enable bit (bit 8)
+		 */
+		pci_or_config16(PCH_XHCI_DEV, XHCI_PWR_CNTL_STS, 1 << 8 | 3 << 0);
+		break;
+	}
 }
 
 void southbridge_finalize_all(void)

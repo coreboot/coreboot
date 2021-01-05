@@ -6,6 +6,7 @@ struct sdram_params params = {
 	.source = DRAMC_PARAM_SOURCE_SDRAM_CONFIG,
 	.ddr_geometry = DDR_TYPE_2CH_2RK_4GB_2_2,
 	.frequency = 1600,
+	.rank_num = 2,
 	.wr_level = {
 		[CHANNEL_A] = { {0x22, 0x1b}, {0x22, 0x19} },
 		[CHANNEL_B] = { {0x24, 0x20}, {0x25, 0x20} }

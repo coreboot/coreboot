@@ -193,10 +193,23 @@ static void configure_sdcard(void)
 	mainboard_enable_regulator(MTK_REGULATOR_VCCQ, enable);
 }
 
+static void configure_audio(void)
+{
+	/* Audio PWR */
+	mtcmos_audio_power_on();
+
+	/* SoC I2S */
+	gpio_set_mode(GPIO(I2S3_MCK), PAD_I2S3_MCK_FUNC_I2S3_MCK);
+	gpio_set_mode(GPIO(I2S3_BCK), PAD_I2S3_BCK_FUNC_I2S3_BCK);
+	gpio_set_mode(GPIO(I2S3_LRCK), PAD_I2S3_LRCK_FUNC_I2S3_LRCK);
+	gpio_set_mode(GPIO(I2S3_DO), PAD_I2S3_DO_FUNC_I2S3_DO);
+}
+
 static void mainboard_init(struct device *dev)
 {
 	configure_emmc();
 	configure_sdcard();
+	configure_audio();
 	setup_usb_host();
 
 	register_reset_to_bl31();

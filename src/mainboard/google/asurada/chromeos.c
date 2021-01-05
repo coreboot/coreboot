@@ -15,6 +15,7 @@ void setup_chromeos_gpios(void)
 	gpio_input_pullup(GPIO_H1_AP_INT);
 	gpio_input_pullup(GPIO_SD_CD);
 	gpio_output(GPIO_RESET, 0);
+	gpio_output(GPIO_EN_SPK_AMP, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -24,6 +25,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EC_AP_INT.id, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_H1_AP_INT.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 		{GPIO_SD_CD.id, ACTIVE_HIGH, -1, "SD card detect"},
+		{GPIO_EN_SPK_AMP.id, ACTIVE_HIGH, -1, "speaker enable"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }

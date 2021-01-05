@@ -14,6 +14,8 @@
 #define GPIO_SD_CD	GPIO(EINT17)
 /* AP_EC_WARM_RST_REQ */
 #define GPIO_RESET	GPIO(CAM_PDN2)
+/* EN_SPK */
+#define GPIO_EN_SPK_AMP	GPIO(CAM_PDN1)
 
 void setup_chromeos_gpios(void);
 

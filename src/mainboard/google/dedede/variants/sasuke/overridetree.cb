@@ -48,7 +48,20 @@ chip soc/intel/jasperlake
 		},
 	}"
 	device domain 0 on
-		device pci 14.0 on end
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""UFCamera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "has_power_resource" = "1"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+						register "enable_delay_ms" = "20"
+						device usb 2.5 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

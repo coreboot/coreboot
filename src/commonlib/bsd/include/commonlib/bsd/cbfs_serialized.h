@@ -13,6 +13,9 @@ enum cbfs_compression {
 };
 
 enum cbfs_type {
+	/* QUERY is an alias for DELETED that can be passed to CBFS APIs to
+	   inquire about the type of a file, rather than constrain it. */
+	CBFS_TYPE_QUERY		= 0,
 	CBFS_TYPE_DELETED	= 0x00000000,
 	CBFS_TYPE_NULL		= 0xffffffff,
 	CBFS_TYPE_BOOTBLOCK	= 0x01,

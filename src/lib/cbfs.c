@@ -102,48 +102,6 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	return 0;
 }
 
-void *_cbfs_map(const char *name, size_t *size_out, bool force_ro)
-{
-	struct region_device rdev;
-	union cbfs_mdata mdata;
-
-	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
-		return NULL;
-
-	if (size_out != NULL)
-		*size_out = region_device_sz(&rdev);
-
-	uint32_t compression = CBFS_COMPRESS_NONE;
-	const struct cbfs_file_attr_compression *attr = cbfs_find_attr(&mdata,
-				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*attr));
-	if (attr)
-		compression = be32toh(attr->compression);
-
-	if (compression == CBFS_COMPRESS_NONE)
-		return rdev_mmap_full(&rdev);
-
-	if (!CBFS_CACHE_AVAILABLE) {
-		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);
-		return NULL;
-	}
-
-	size_t size = be32toh(attr->decompressed_size);
-	void *buf = mem_pool_alloc(&cbfs_cache, size);
-	if (!buf) {
-		ERROR("CBFS cache out of memory when mapping %s\n", mdata.h.filename);
-		return NULL;
-	}
-
-	size = cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev), buf, size,
-					compression);
-	if (!size)
-		return NULL;
-
-	if (size_out != NULL)
-		*size_out = size;
-	return buf;
-}
-
 void cbfs_unmap(void *mapping)
 {
 	/*
@@ -233,6 +191,8 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 {
 	size_t out_size;
 	void *map;
+
+	DEBUG("Decompressing %zu bytes to %p with algo %d\n", buffer_size, buffer, compression);
 
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
@@ -348,25 +308,78 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
 	return cbfs_map(name, NULL);
 }
 
-size_t _cbfs_load(const char *name, void *buf, size_t buf_size, bool force_ro)
+void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
+		  size_t *size_out, bool force_ro, enum cbfs_type *type)
 {
 	struct region_device rdev;
 	union cbfs_mdata mdata;
+	void *loc;
+
+	DEBUG("%s(name='%s', alloc=%p(%p), force_ro=%s, type=%d)\n", __func__, name, allocator,
+	      arg, force_ro ? "true" : "false", type ? *type : -1);
 
 	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
-		return 0;
+		return NULL;
 
-	uint32_t compression = CBFS_COMPRESS_NONE;
-	const struct cbfs_file_attr_compression *attr = cbfs_find_attr(&mdata,
-				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*attr));
-	if (attr) {
-		compression = be32toh(attr->compression);
-		if (buf_size < be32toh(attr->decompressed_size))
-			return 0;
+	if (type) {
+		const enum cbfs_type real_type = be32toh(mdata.h.type);
+		if (*type == CBFS_TYPE_QUERY)
+			*type = real_type;
+		else if (*type != real_type) {
+			ERROR("'%s' type mismatch (is %u, expected %u)\n",
+			      mdata.h.filename, real_type, *type);
+			return NULL;
+		}
 	}
 
-	return cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
-					buf, buf_size, compression);
+	size_t size = region_device_sz(&rdev);
+	uint32_t compression = CBFS_COMPRESS_NONE;
+	const struct cbfs_file_attr_compression *cattr = cbfs_find_attr(&mdata,
+				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*cattr));
+	if (cattr) {
+		compression = be32toh(cattr->compression);
+		size = be32toh(cattr->decompressed_size);
+	}
+
+	if (size_out)
+		*size_out = size;
+
+	/* allocator == NULL means do a cbfs_map() */
+	if (allocator) {
+		loc = allocator(arg, size, &mdata);
+	} else if (compression == CBFS_COMPRESS_NONE) {
+		return rdev_mmap_full(&rdev);
+	} else if (!CBFS_CACHE_AVAILABLE) {
+		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);
+		return NULL;
+	} else {
+		loc = mem_pool_alloc(&cbfs_cache, size);
+	}
+
+	if (!loc) {
+		ERROR("'%s' allocation failure\n", mdata.h.filename);
+		return NULL;
+	}
+
+	size = cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
+					loc, size, compression);
+	if (!size)
+		return NULL;
+
+	return loc;
+}
+
+void *_cbfs_default_allocator(void *arg, size_t size, union cbfs_mdata *unused)
+{
+	struct _cbfs_default_allocator_arg *darg = arg;
+	if (size > darg->buf_size)
+		return NULL;
+	return darg->buf;
+}
+
+void *_cbfs_cbmem_allocator(void *arg, size_t size, union cbfs_mdata *unused)
+{
+	return cbmem_add((uintptr_t)arg, size);
 }
 
 int cbfs_prog_stage_load(struct prog *pstage)

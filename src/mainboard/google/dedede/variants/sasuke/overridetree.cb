@@ -49,7 +49,16 @@ chip soc/intel/jasperlake
 	}"
 	device domain 0 on
 		device pci 14.0 on end
-		device pci 15.0 on end
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
+				register "wake" = "GPE0_DW0_03"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+		end # I2C 0
 		device pci 15.2 on end
 		device pci 1c.7 on end
 		device pci 19.0 on

@@ -6,6 +6,7 @@
 #include <bcd.h>
 #include <console/console.h>
 #include <rtc.h>
+#include <stdbool.h>
 
 #define RTCTAG			"[RTC]"
 #define rtc_info(fmt, arg ...)	printk(BIOS_INFO, RTCTAG "%s,%d: " fmt, \
@@ -94,14 +95,13 @@ enum {
 };
 
 /* external API */
-int rtc_busy_wait(void);
-int rtc_write_trigger(void);
-int rtc_writeif_unlock(void);
-int rtc_xosc_write(u16 val);
-int rtc_lpen(u16 con);
-int rtc_reg_init(void);
+bool rtc_write_trigger(void);
+bool rtc_writeif_unlock(void);
+bool rtc_xosc_write(u16 val);
+bool rtc_lpen(u16 con);
+bool rtc_reg_init(void);
 void rtc_osc_init(void);
-int rtc_powerkey_init(void);
+bool rtc_powerkey_init(void);
 void rtc_boot_common(void);
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

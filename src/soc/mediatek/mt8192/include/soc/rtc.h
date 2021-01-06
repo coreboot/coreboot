@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8192_RTC_H
 
 #include <soc/pmif.h>
+#include <stdbool.h>
 
 /* RTC registers */
 enum {
@@ -224,7 +225,7 @@ void rtc_read(u16 addr, u16 *rdata);
 void rtc_write(u16 addr, u16 wdata);
 void rtc_bbpu_power_on(void);
 int rtc_init(int recover);
-int rtc_gpio_init(void);
+bool rtc_gpio_init(void);
 void rtc_boot(void);
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
 void mt6359_dcxo_disable_unused(void);

@@ -5,6 +5,7 @@
 
 #include <soc/pmic_wrap_common.h>
 #include <soc/rtc_common.h>
+#include <stdbool.h>
 
 /* RTC registers */
 enum {
@@ -205,7 +206,7 @@ enum {
 /* external API */
 void rtc_bbpu_power_on(void);
 int rtc_init(int recover);
-int rtc_gpio_init(void);
+bool rtc_gpio_init(void);
 void rtc_boot(void);
 u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
 void mt6358_dcxo_disable_unused(void);

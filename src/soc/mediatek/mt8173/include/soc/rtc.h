@@ -5,6 +5,7 @@
 
 #include <soc/pmic_wrap_common.h>
 #include <soc/rtc_common.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include "mt6391.h"
 

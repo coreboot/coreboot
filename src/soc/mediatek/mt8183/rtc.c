@@ -11,7 +11,7 @@
 #define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
 
 /* initialize rtc setting of using dcxo clock */
-static int rtc_enable_dcxo(void)
+static bool rtc_enable_dcxo(void)
 {
 	u16 bbpu, con, osc32con, sec;
 
@@ -22,7 +22,7 @@ static int rtc_enable_dcxo(void)
 	mdelay(1);
 	if (!rtc_writeif_unlock()) {
 		rtc_info("rtc_writeif_unlock() failed\n");
-		return 0;
+		return false;
 	}
 
 	rtc_read(RTC_OSC32CON, &osc32con);
@@ -32,7 +32,7 @@ static int rtc_enable_dcxo(void)
 		    | RTC_EMB_K_EOSC32_MODE | RTC_EMBCK_SEL_OPTION;
 	if (!rtc_xosc_write(osc32con)) {
 		rtc_info("rtc_xosc_write() failed\n");
-		return 0;
+		return false;
 	}
 
 	rtc_read(RTC_CON, &con);
@@ -40,11 +40,11 @@ static int rtc_enable_dcxo(void)
 	rtc_read(RTC_AL_SEC, &sec);
 	rtc_info("con=0x%x, osc32con=0x%x, sec=0x%x\n", con, osc32con, sec);
 
-	return 1;
+	return true;
 }
 
 /* initialize rtc related gpio */
-int rtc_gpio_init(void)
+bool rtc_gpio_init(void)
 {
 	u16 con;
 
@@ -115,7 +115,7 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 		rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy);
 		if (stopwatch_expired(&sw)) {
 			rtc_info("get frequency time out !!\n");
-			return 0;
+			return false;
 		}
 	} while (fqmtr_busy & PMIC_FQMTR_CON0_BUSY);
 
@@ -143,7 +143,7 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 }
 
 /* low power detect setting */
-static int rtc_lpd_init(void)
+static bool rtc_lpd_init(void)
 {
 	u16 con, sec;
 
@@ -152,19 +152,19 @@ static int rtc_lpd_init(void)
 	sec |= RTC_LPD_OPT_F32K_CK_ALIVE;
 	rtc_write(RTC_AL_SEC, sec);
 	if (!rtc_write_trigger())
-		return 0;
+		return false;
 
 	/* init XOSC32 to detect 32k clock stop */
 	rtc_read(RTC_CON, &con);
 	con |= RTC_CON_XOSC32_LPEN;
 	if (!rtc_lpen(con))
-		return 0;
+		return false;
 
 	/* init EOSC32 to detect rtc low power */
 	rtc_read(RTC_CON, &con);
 	con |= RTC_CON_EOSC32_LPEN;
 	if (!rtc_lpen(con))
-		return 0;
+		return false;
 
 	rtc_read(RTC_CON, &con);
 	con &= ~RTC_CON_XOSC32_LPEN;
@@ -176,9 +176,9 @@ static int rtc_lpd_init(void)
 	sec |= RTC_LPD_OPT_EOSC_LPD;
 	rtc_write(RTC_AL_SEC, sec);
 	if (!rtc_write_trigger())
-		return 0;
+		return false;
 
-	return 1;
+	return true;
 }
 
 static bool rtc_hw_init(void)

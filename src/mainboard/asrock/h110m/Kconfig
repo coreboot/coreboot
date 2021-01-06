@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "H110M"
 
-config DEVICETREE
-	string
-	default "devicetree.cb"
-
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xd00

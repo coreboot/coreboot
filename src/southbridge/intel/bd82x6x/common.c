@@ -14,9 +14,9 @@
 
 int pch_silicon_revision(void)
 {
-	static int pch_revision_id = -1;
+	static int pch_revision_id = 0;
 
-	if (pch_revision_id < 0)
+	if (!pch_revision_id)
 		pch_revision_id = pci_read_config8(PCH_LPC_DEV, PCI_REVISION_ID);
 
 	return pch_revision_id;
@@ -24,9 +24,9 @@ int pch_silicon_revision(void)
 
 int pch_silicon_type(void)
 {
-	static int pch_type = -1;
+	static int pch_type = 0;
 
-	if (pch_type < 0)
+	if (!pch_type)
 		pch_type = pci_read_config8(PCH_LPC_DEV, PCI_DEVICE_ID + 1);
 
 	return pch_type;

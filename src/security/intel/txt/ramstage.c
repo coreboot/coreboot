@@ -171,7 +171,7 @@ static void init_intel_txt(void *unused)
 	}
 
 	int s3resume = acpi_is_wakeup_s3();
-	if (!s3resume) {
+	if (!s3resume && !CONFIG(INTEL_CBNT_SUPPORT)) {
 		printk(BIOS_INFO, "TEE-TXT: Scheck...\n");
 		if (intel_txt_run_bios_acm(ACMINPUT_SCHECK) < 0) {
 			printk(BIOS_ERR, "TEE-TXT: Error calling BIOS ACM.\n");

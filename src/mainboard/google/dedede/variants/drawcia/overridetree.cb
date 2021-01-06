@@ -67,7 +67,8 @@ chip soc/intel/jasperlake
 	# Enable Acoustic noise mitigation and set slew rate to 1/4
         # Rest of the parameters are 0 by default.
 	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRate" = "1"
+	register "SlowSlewRate" = "SlewRateFastBy4"
+	register "FastPkgCRampDisable" = "1"
 
 	device domain 0 on
 		device pci 05.0 on # IPU - MIPI Camera

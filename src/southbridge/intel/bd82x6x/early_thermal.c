@@ -16,7 +16,7 @@ static void write16p(uintptr_t addr, uint32_t val)
 	write16((u16 *)addr, val);
 }
 
-static uint16_t read16p (uintptr_t addr)
+static uint16_t read16p(uintptr_t addr)
 {
 	return read16((u16 *)addr);
 }

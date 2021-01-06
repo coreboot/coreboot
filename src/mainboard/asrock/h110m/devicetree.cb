@@ -2,10 +2,6 @@
 
 chip soc/intel/skylake
 
-	register "deep_s3_enable_ac" = "0"
-	register "deep_s3_enable_dc" = "0"
-	register "deep_s5_enable_ac" = "0"
-	register "deep_s5_enable_dc" = "0"
 	register "deep_sx_config" = "DSX_EN_WAKE_PIN"
 
 	register "eist_enable" = "1"
@@ -105,21 +101,6 @@ chip soc/intel/skylake
 		.voltage_limit = 1520 \
 	}"
 
-	# PCH UART, SPI, I2C
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoDisabled, \
-	}"
-
 	# PL2 override 91W
 	register "power_limits_config" = "{
 		.tdp_pl2_override = 91,
@@ -138,7 +119,6 @@ chip soc/intel/skylake
 		device pci 01.0 on # PEG
 			subsystemid 0x1849 0x1901
 			register "Peg0MaxLinkWidth" = "Peg0_x16"
-			register "SkipExtGfxScan" = "0"
 
 			# Configure PCIe clockgen in PCH
 			register "PcieRpClkReqSupport[0]"	= "1"
@@ -210,10 +190,6 @@ chip soc/intel/skylake
 				[1]     = 1, \
 				[2]     = 1, \
 				[3]     = 1, \
-				[4]     = 0, \
-				[5]     = 0, \
-				[6]     = 0, \
-				[7]     = 0, \
 			}"
 		end
 		device pci 19.0 off end # UART #2
@@ -380,7 +356,6 @@ chip soc/intel/skylake
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 on      # Intel HDA
 			register "PchHdaVcType" = "Vc1"
-			register "DspEnable" = "0"
 		end
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI

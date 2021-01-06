@@ -67,13 +67,17 @@ void early_pch_init_native_dmi_pre(void)
 
 void early_pch_init_native_dmi_post(void)
 {
-	RCBA32(CIR0);	// !!! = 0x01200654
-	RCBA32(CIR0) = 0x01200654;
-	RCBA32(CIR0);	// !!! = 0x01200654
-	RCBA32(CIR0) = 0x012a0654;
-	RCBA32(CIR0);	// !!! = 0x012a0654
-	RCBA8(UPDCR);	// !!! = 0x00
-	RCBA8(UPDCR) = 0x05;
+	u32 reg32;
+
+	reg32 = RCBA32(CIR0);
+	reg32 &= ~(0xff << 16 | 0xfff);
+	reg32 |= 0x654;		/* Set the recommended TC encoding */
+	reg32 |= 0x20 << 16;
+	reg32 |= 0x0a << 16;	/* VCp enabled */
+	RCBA32(CIR0) = reg32;
+	RCBA32(CIR0);		/* Read back for posted write to take effect */
+
+	RCBA8(UPDCR) = RCBA8(UPDCR) | 1 << 2 | 1 << 0;
 
 	/*
 	 * Virtual Channel resources must match settings in DMIBAR!
@@ -138,27 +142,24 @@ void early_pch_init_native(void)
 	const u16 dev_id = pci_read_config16(PCH_LPC_DEV, PCI_DEVICE_ID);
 	u8 pcie_ports = (dev_id == PCI_DEVICE_ID_INTEL_UM77) ? 4 : 8;
 
-	pci_write_config8(SOUTHBRIDGE, 0xa6, pci_read_config8(SOUTHBRIDGE, 0xa6) | 2);
-
 	/* Clear this bit early for PCIe device detection */
 	for (uint8_t i = 0; i < pcie_ports; i++)
 		pci_update_config32(PCH_PCIE_DEV(i), 0x338, ~(1 << 26), 0);
 
-	RCBA32(CIR1) = 0x00109000;
-	RCBA32(REC); // !!! = 0x00000000
-	RCBA32(REC) = 0x40000000;
+	/* Lock down PMBASE */
+	pci_or_config8(PCH_LPC_DEV, GEN_PMCON_LOCK, 1 << 1);
+
+	RCBA32(CIR1) = 0x00109000;	/* Mask some errors */
+	RCBA32_OR(REC, 1 << 30);
 	RCBA32(0x100c) = 0x01110000;
-	RCBA8(0x2340) = 0x1b;
-	RCBA32(CIR6); // !!! = 0x0a080000
-	RCBA32(CIR6) = 0x0a280000;
-	RCBA32(0x2310); // !!! = 0xc809605b
-	RCBA32(0x2310) = 0xa809605b;
+	RCBA8(0x2340) = 0x1b;		/* Set Gen 1 Common Clock N_FTS */
+	RCBA32_OR(CIR6, 1 << 21);
+	RCBA32_AND_OR(0x2310, ~(3 << 29), 1 << 29);
 	RCBA32(DMC2) = 0x00854c74;
-	RCBA8(RPC);  // !!! = 0x00
-	RCBA32(0x2310); // !!! = 0xa809605b
-	RCBA32(0x2310) = 0xa809605b;
-	RCBA32(0x2310); // !!! = 0xa809605b
-	RCBA32(0x2310) = 0xa809605b;
+
+	/* TODO: Handle non-zero cases */
+	RCBA32_AND_OR(0x2310, ~(3 << 22), 0);
+	RCBA32_AND_OR(0x2310, ~(3 << 20), 0);
 
 	write_iobp(0xea007f62, 0x00590133);
 	write_iobp(0xec007f62, 0x00590133);

@@ -70,7 +70,7 @@ void southbridge_gate_memory_reset(void)
 {
 	u16 gpiobase;
 
-	gpiobase = pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
+	gpiobase = pci_read_config16(PCH_LPC_DEV, GPIOBASE) & 0xfffc;
 	if (!gpiobase)
 		return;
 

@@ -172,7 +172,7 @@ STONEYRIDGE_FWM_ROM_POSITION=$(call int-add, \
 add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
 	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
 		"$(STONEYRIDGE_FWM_ROM_POSITION)"
-	dd if=$(obj)/amdfw.rom \
+	flock $< dd if=$(obj)/amdfw.rom \
 		of=$(obj)/coreboot.pre conv=notrunc bs=1 \
 		seek=$(STONEYRIDGE_FWM_ROM_POSITION) >/dev/null 2>&1
 

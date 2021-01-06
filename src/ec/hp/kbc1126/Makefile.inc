@@ -22,7 +22,7 @@ ifeq ($(CONFIG_KBC1126_FIRMWARE),y)
 	printf "    Building kbc1126_ec_insert.\n"
 	$(MAKE) -C util/kbc1126
 	printf "    KBC1126    Inserting KBC1126 firmware blobs.\n"
-	$(KBC1126_EC_INSERT) $(obj)/coreboot.pre \
+	flock $< $(KBC1126_EC_INSERT) $(obj)/coreboot.pre \
 		$(CONFIG_KBC1126_FW1_OFFSET) $(CONFIG_KBC1126_FW2_OFFSET)
 endif
 

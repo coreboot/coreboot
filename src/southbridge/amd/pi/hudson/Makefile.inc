@@ -162,7 +162,7 @@ INTERMEDIATE+=add_amdfw
 
 add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
 	printf "    DD         Adding AMD Firmware\n"
-	dd if=$(obj)/amdfw.rom \
+	flock $< dd if=$(obj)/amdfw.rom \
 		of=$(obj)/coreboot.pre conv=notrunc bs=1 seek=131072 >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

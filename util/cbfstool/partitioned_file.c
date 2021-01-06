@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 
 struct partitioned_file {
 	struct fmap *fmap;
@@ -57,7 +58,7 @@ static partitioned_file_t *reopen_flat_file(const char *filename,
 	access_mode = write_access ?  "rb+" : "rb";
 	file->stream = fopen(filename, access_mode);
 
-	if (!file->stream) {
+	if (!file->stream || flock(fileno(file->stream), LOCK_EX)) {
 		perror(filename);
 		partitioned_file_close(file);
 		return NULL;
@@ -78,7 +79,7 @@ partitioned_file_t *partitioned_file_create_flat(const char *filename,
 	}
 
 	file->stream = fopen(filename, "wb");
-	if (!file->stream) {
+	if (!file->stream || flock(fileno(file->stream), LOCK_EX)) {
 		perror(filename);
 		free(file);
 		return NULL;
@@ -268,6 +269,7 @@ void partitioned_file_close(partitioned_file_t *file)
 	file->fmap = NULL;
 	buffer_delete(&file->buffer);
 	if (file->stream) {
+		flock(fileno(file->stream), LOCK_UN);
 		fclose(file->stream);
 		file->stream = NULL;
 	}

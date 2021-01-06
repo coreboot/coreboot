@@ -29,7 +29,10 @@ extern "C" {
 #include "compile_time_macros.h"
 
 #else
+/* If BUILD_ASSERT isn't already defined, make it a no-op */
+#ifndef BUILD_ASSERT
 #define BUILD_ASSERT(_cond)
+#endif /* !BUILD_ASSERT */
 #endif  /* CHROMIUM_EC */
 
 #ifdef __KERNEL__
@@ -48,6 +51,21 @@ extern "C" {
 
 #ifndef BIT_ULL
 #define BIT_ULL(nr)     (1ULL << (nr))
+#endif
+
+/*
+ * When building Zephyr, this file ends up being included before Zephyr's
+ * include/sys/util.h so causes a warning there. We don't want to add an #ifdef
+ * in that file since it won't be accepted upstream. So work around it here.
+ */
+#ifndef CONFIG_ZEPHYR
+#ifndef GENMASK
+#define GENMASK(h, l) (((BIT(h) << 1) - 1) ^ (BIT(l) - 1))
+#endif
+
+#ifndef GENMASK_ULL
+#define GENMASK_ULL(h, l) (((BIT_ULL(h) << 1) - 1) ^ (BIT_ULL(l) - 1))
+#endif
 #endif
 
 #endif  /* __KERNEL__ */
@@ -1388,7 +1406,7 @@ enum ec_feature_code {
 	 */
 	EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS = 37,
 	/*
-	 * Early Firmware Selection ver.2. Enabled by VBOOT_EFS2 config option.
+	 * Early Firmware Selection ver.2. Enabled by CONFIG_VBOOT_EFS2.
 	 * Note this is a RO feature. So, a query (EC_CMD_GET_FEATURES) should
 	 * be sent to RO to be precise.
 	 */
@@ -1397,6 +1415,18 @@ enum ec_feature_code {
 	EC_FEATURE_SCP = 39,
 	/* The MCU is an Integrated Sensor Hub */
 	EC_FEATURE_ISH = 40,
+	/* New TCPMv2 TYPEC_ prefaced commands supported */
+	EC_FEATURE_TYPEC_CMD = 41,
+	/*
+	 * The EC will wait for direction from the AP to enter Type-C alternate
+	 * modes or USB4.
+	 */
+	EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY = 42,
+	/*
+	 * The EC will wait for an acknowledge from the AP after setting the
+	 * mux.
+	 */
+	EC_FEATURE_TYPEC_MUX_REQUIRE_AP_ACK = 43,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -2599,6 +2629,11 @@ enum motionsensor_orientation {
 	MOTIONSENSE_ORIENTATION_UNKNOWN = 4,
 };
 
+struct ec_response_activity_data {
+	uint8_t activity; /* motionsensor_activity */
+	uint8_t state;
+} __ec_todo_packed;
+
 struct ec_response_motion_sensor_data {
 	/* Flags for each sensor. */
 	uint8_t flags;
@@ -2606,17 +2641,16 @@ struct ec_response_motion_sensor_data {
 	uint8_t sensor_num;
 	/* Each sensor is up to 3-axis. */
 	union {
-		int16_t             data[3];
+		int16_t                                  data[3];
 		/* for sensors using unsigned data */
-		uint16_t            udata[3];
+		uint16_t                                 udata[3];
 		struct __ec_todo_packed {
-			uint16_t    reserved;
-			uint32_t    timestamp;
+			uint16_t                         reserved;
+			uint32_t                         timestamp;
 		};
 		struct __ec_todo_unpacked {
-			uint8_t     activity; /* motionsensor_activity */
-			uint8_t     state;
-			int16_t     add_info[2];
+			struct ec_response_activity_data activity_data;
+			int16_t                          add_info[2];
 		};
 	};
 } __ec_todo_packed;
@@ -2864,8 +2898,19 @@ struct ec_params_motion_sense {
 			/* Ignored, used for alignment. */
 			uint8_t reserved;
 
-			/* Individual component values to spoof. */
-			int16_t components[3];
+			union {
+				/* Individual component values to spoof. */
+				int16_t components[3];
+
+				/* Used when spoofing an activity */
+				struct {
+					/* enum motionsensor_activity */
+					uint8_t activity_num;
+
+					/* spoof activity state */
+					uint8_t activity_state;
+				};
+			};
 		} spoof;
 
 		/* Used for MOTIONSENSE_CMD_TABLET_MODE_LID_ANGLE. */
@@ -3768,6 +3813,7 @@ struct ec_response_get_next_event_v1 {
 #define EC_MKBP_LID_OPEN	0
 #define EC_MKBP_TABLET_MODE	1
 #define EC_MKBP_BASE_ATTACHED	2
+#define EC_MKBP_FRONT_PROXIMITY	3
 
 /* Run keyboard factory test scanning */
 #define EC_CMD_KEYBOARD_FACTORY_TEST 0x0068
@@ -4637,6 +4683,7 @@ enum ec_device_event {
 	EC_DEVICE_EVENT_TRACKPAD,
 	EC_DEVICE_EVENT_DSP,
 	EC_DEVICE_EVENT_WIFI,
+	EC_DEVICE_EVENT_WLC,
 };
 
 enum ec_device_event_param {
@@ -5183,6 +5230,7 @@ enum ec_reboot_cmd {
 	EC_REBOOT_DISABLE_JUMP = 5,  /* Disable jump until next reboot */
 	EC_REBOOT_HIBERNATE = 6,     /* Hibernate EC */
 	EC_REBOOT_HIBERNATE_CLEAR_AP_OFF = 7, /* and clears AP_IDLE flag */
+	EC_REBOOT_COLD_AP_OFF = 8,   /* Cold-reboot and don't boot AP */
 };
 
 /* Flags for ec_params_reboot_ec.reboot_flags */
@@ -5395,10 +5443,6 @@ enum pd_cc_states {
 /* Active Link Uni-Direction */
 #define USB_PD_CTRL_ACTIVE_LINK_UNIDIR  BIT(3)
 
-/*
- * Underdevelopement :
- * Please remove this tag if using _v2 outside platform/ec
- */
 struct ec_response_usb_pd_control_v2 {
 	uint8_t enabled;
 	uint8_t role;
@@ -5408,8 +5452,7 @@ struct ec_response_usb_pd_control_v2 {
 	uint8_t dp_mode;	/* Current DP pin mode (MODE_DP_PIN_[A-E]) */
 	uint8_t reserved;	/* Reserved for future use */
 	uint8_t control_flags;	/* USB_PD_CTRL_*flags */
-	/* TODO: b:158234949 Add definitions for cable speed */
-	uint8_t cable_speed;	/* USB_R30_SS/TBT_SS_* cable speed */
+	uint8_t cable_speed;	/* TBT_SS_* cable speed */
 	uint8_t cable_gen;	/* TBT_GEN3_* cable rounded support */
 } __ec_align1;
 
@@ -5833,7 +5876,7 @@ struct ec_params_set_cbi {
  */
 #define EC_CMD_GET_UPTIME_INFO 0x0121
 
-/* Reset causes */
+/* EC reset causes */
 #define EC_RESET_FLAG_OTHER       BIT(0)   /* Other known reason */
 #define EC_RESET_FLAG_RESET_PIN   BIT(1)   /* Reset pin asserted */
 #define EC_RESET_FLAG_BROWNOUT    BIT(2)   /* Brownout */
@@ -5862,6 +5905,72 @@ struct ec_params_set_cbi {
 #define EC_RESET_FLAG_AP_IDLE     BIT(21)  /* Leave alone AP */
 #define EC_RESET_FLAG_INITIAL_PWR BIT(22)  /* EC had power, then was reset */
 
+/*
+ * Reason codes used by the AP after a shutdown to figure out why it was reset
+ * by the EC.  These are sent in EC commands.  Therefore, to maintain protocol
+ * compatibility:
+ * - New entries must be inserted prior to the _COUNT field
+ * - If an existing entry is no longer in service, it must be replaced with a
+ *   RESERVED entry instead.
+ * - The semantic meaning of an entry should not change.
+ * - Do not exceed 2^15 - 1 for reset reasons or 2^16 - 1 for shutdown reasons.
+ */
+enum chipset_reset_reason {
+	CHIPSET_RESET_BEGIN = 0,
+	CHIPSET_RESET_UNKNOWN = CHIPSET_RESET_BEGIN,
+	/* Custom reason defined by a board.c or baseboard.c file */
+	CHIPSET_RESET_BOARD_CUSTOM,
+	/* Believe that the AP has hung */
+	CHIPSET_RESET_HANG_REBOOT,
+	/* Reset by EC console command */
+	CHIPSET_RESET_CONSOLE_CMD,
+	/* Reset by EC host command */
+	CHIPSET_RESET_HOST_CMD,
+	/* Keyboard module reset key combination */
+	CHIPSET_RESET_KB_SYSRESET,
+	/* Keyboard module warm reboot */
+	CHIPSET_RESET_KB_WARM_REBOOT,
+	/* Debug module warm reboot */
+	CHIPSET_RESET_DBG_WARM_REBOOT,
+	/* I cannot self-terminate.  You must lower me into the steel. */
+	CHIPSET_RESET_AP_REQ,
+	/* Reset as side-effect of startup sequence */
+	CHIPSET_RESET_INIT,
+	/* EC detected an AP watchdog event. */
+	CHIPSET_RESET_AP_WATCHDOG,
+
+	CHIPSET_RESET_COUNT,
+};
+
+/*
+ * AP hard shutdowns are logged on the same path as resets.
+ */
+enum chipset_shutdown_reason {
+	CHIPSET_SHUTDOWN_BEGIN = BIT(15),
+	CHIPSET_SHUTDOWN_POWERFAIL = CHIPSET_SHUTDOWN_BEGIN,
+	/* Forcing a shutdown as part of EC initialization */
+	CHIPSET_SHUTDOWN_INIT,
+	/* Custom reason on a per-board basis. */
+	CHIPSET_SHUTDOWN_BOARD_CUSTOM,
+	/* This is a reason to inhibit startup, not cause shut down. */
+	CHIPSET_SHUTDOWN_BATTERY_INHIBIT,
+	/* A power_wait_signal is being asserted */
+	CHIPSET_SHUTDOWN_WAIT,
+	/* Critical battery level. */
+	CHIPSET_SHUTDOWN_BATTERY_CRIT,
+	/* Because you told me to. */
+	CHIPSET_SHUTDOWN_CONSOLE_CMD,
+	/* Forcing a shutdown to effect entry to G3. */
+	CHIPSET_SHUTDOWN_G3,
+	/* Force shutdown due to over-temperature. */
+	CHIPSET_SHUTDOWN_THERMAL,
+	/* Force a chipset shutdown from the power button through EC */
+	CHIPSET_SHUTDOWN_BUTTON,
+
+	CHIPSET_SHUTDOWN_COUNT,
+};
+
+
 struct ec_response_uptime_info {
 	/*
 	 * Number of milliseconds since the last EC boot. Sysjump resets
@@ -5889,10 +5998,7 @@ struct ec_response_uptime_info {
 
 	/* Empty log entries have both the cause and timestamp set to zero. */
 	struct ap_reset_log_entry {
-		/*
-		 * See include/chipset.h: enum chipset_{reset,shutdown}_reason
-		 * for details.
-		 */
+		/* See enum chipset_{reset,shutdown}_reason for details. */
 		uint16_t reset_cause;
 
 		/* Reserved for protocol growth. */
@@ -6012,12 +6118,20 @@ struct ec_response_locate_chip {
  *
  * This command is used for validation purpose, where the AP needs to be
  * returned back to S0 state from G3 state without using the servo to trigger
- * wake events.For this,there is no request or response struct.
- *
- * Order of command usage:
- * ectool reboot_ap_on_g3 && shutdown -h now
+ * wake events.
+ * - With command version 0:
+ * AP reboots immediately from G3
+ * command usage: ectool reboot_ap_on_g3 && shutdown -h now
+ * - With command version 1:
+ * AP reboots after the user specified delay
+ * command usage: ectool reboot_ap_on_g3 [<delay>] && shutdown -h now
  */
 #define EC_CMD_REBOOT_AP_ON_G3 0x0127
+
+struct ec_params_reboot_ap_on_g3_v1 {
+	/* configurable delay in seconds in G3 state */
+	uint32_t reboot_ap_at_g3_delay;
+} __ec_align4;
 
 /*****************************************************************************/
 /* Get PD port capabilities
@@ -6366,6 +6480,14 @@ struct ec_response_typec_discovery {
 enum typec_control_command {
 	TYPEC_CONTROL_COMMAND_EXIT_MODES,
 	TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
+	TYPEC_CONTROL_COMMAND_ENTER_MODE,
+};
+
+/* Modes (USB or alternate) that a type-C port may enter. */
+enum typec_mode {
+	TYPEC_MODE_DP,
+	TYPEC_MODE_TBT,
+	TYPEC_MODE_USB4,
 };
 
 struct ec_params_typec_control {
@@ -6380,6 +6502,7 @@ struct ec_params_typec_control {
 	 */
 	union {
 		uint32_t clear_events_mask;
+		uint8_t mode_to_enter;      /* enum typec_mode */
 		uint8_t placeholder[128];
 	};
 } __ec_align1;
@@ -6393,9 +6516,6 @@ struct ec_params_typec_control {
  * EC_CMD_USB_PD_CONTROL command.
  *
  * This also combines in the EC_CMD_USB_PD_MUX_INFO flags.
- *
- * Version 0 of command is under development
- * TODO(b/167700356): Remove this statement when version 0 is finalized
  */
 #define EC_CMD_TYPEC_STATUS 0x0133
 
@@ -6469,32 +6589,182 @@ enum tcpc_cc_polarity {
 #define PD_STATUS_EVENT_SOP_DISC_DONE		BIT(0)
 #define PD_STATUS_EVENT_SOP_PRIME_DISC_DONE	BIT(1)
 
+/*
+ * Encode and decode for BCD revision response
+ *
+ * Note: the major revision set is written assuming that the value given is the
+ * Specification Revision from the PD header, which currently only maps to PD
+ * 1.0-3.0 with the major revision being one greater than the binary value.
+ */
+#define PD_STATUS_REV_SET_MAJOR(r)	((r + 1) << 12)
+#define PD_STATUS_REV_GET_MAJOR(r)	((r >> 12) & 0xF)
+#define PD_STATUS_REV_GET_MINOR(r)	((r >> 8)  & 0xF)
+
+/*
+ * Decode helpers for Source and Sink Capability PDOs
+ *
+ * Note: The Power Delivery Specification should be considered the ultimate
+ * source of truth on the decoding of these PDOs
+ */
+#define PDO_TYPE_FIXED     (0 << 30)
+#define PDO_TYPE_BATTERY   (1 << 30)
+#define PDO_TYPE_VARIABLE  (2 << 30)
+#define PDO_TYPE_AUGMENTED (3 << 30)
+#define PDO_TYPE_MASK      (3 << 30)
+
+/*
+ * From Table 6-9 and Table 6-14 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Fixed Supply
+ * <29>    : Dual-Role Power
+ * <28>    : SNK/SRC dependent
+ * <27>    : Unconstrained Power
+ * <26>    : USB Communications Capable
+ * <25>    : Dual-Role Data
+ * <24:20> : SNK/SRC dependent
+ * <19:10> : Voltage in 50mV Units
+ * <9:0>   : Maximum Current in 10mA units
+ */
+#define PDO_FIXED_DUAL_ROLE	BIT(29)
+#define PDO_FIXED_UNCONSTRAINED	BIT(27)
+#define PDO_FIXED_COMM_CAP	BIT(26)
+#define PDO_FIXED_DATA_SWAP	BIT(25)
+#define PDO_FIXED_FRS_CURR_MASK GENMASK(24, 23) /* Sink Cap only */
+#define PDO_FIXED_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_FIXED_CURRENT(p)	((p & 0x3FF) * 10)
+
+/*
+ * From Table 6-12 and Table 6-16 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Battery
+ * <29:20> : Maximum Voltage in 50mV units
+ * <19:10> : Minimum Voltage in 50mV units
+ * <9:0>   : Maximum Allowable Power in 250mW units
+ */
+#define PDO_BATT_MAX_VOLTAGE(p)	((p >> 20 & 0x3FF) * 50)
+#define PDO_BATT_MIN_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_BATT_MAX_POWER(p)	((p & 0x3FF) * 250)
+
+/*
+ * From Table 6-11 and Table 6-15 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Variable Supply (non-Battery)
+ * <29:20> : Maximum Voltage in 50mV units
+ * <19:10> : Minimum Voltage in 50mV units
+ * <9:0>   : Operational Current in 10mA units
+ */
+#define PDO_VAR_MAX_VOLTAGE(p)	((p >> 20 & 0x3FF) * 50)
+#define PDO_VAR_MIN_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_VAR_MAX_CURRENT(p)	((p & 0x3FF) * 10)
+
+/*
+ * From Table 6-13 and Table 6-17 PD Rev 3.0 Ver 2.0
+ *
+ * Note this type is reserved in PD 2.0, and only one type of APDO is
+ * supported as of the cited version.
+ *
+ * <31:30> : Augmented Power Data Object
+ * <29:28> : Programmable Power Supply
+ * <27>    : PPS Power Limited
+ * <26:25> : Reserved
+ * <24:17> : Maximum Voltage in 100mV increments
+ * <16>    : Reserved
+ * <15:8>  : Minimum Voltage in 100mV increments
+ * <7>     : Reserved
+ * <6:0>   : Maximum Current in 50mA increments
+ */
+#define PDO_AUG_MAX_VOLTAGE(p)	((p >> 17 & 0xFF) * 100)
+#define PDO_AUG_MIN_VOLTAGE(p)	((p >> 8 & 0xFF) * 100)
+#define PDO_AUG_MAX_CURRENT(p)	((p & 0x7F) * 50)
+
 struct ec_params_typec_status {
 	uint8_t port;
 } __ec_align1;
 
 struct ec_response_typec_status {
-	uint8_t pd_enabled;	/* PD communication enabled - bool */
-	uint8_t dev_connected;	/* Device connected - bool */
-	uint8_t sop_connected;	/* Device is SOP PD capable - bool */
-	uint8_t reserved1;	/* Reserved for future use */
+	uint8_t pd_enabled;		/* PD communication enabled - bool */
+	uint8_t dev_connected;		/* Device connected - bool */
+	uint8_t sop_connected;		/* Device is SOP PD capable - bool */
+	uint8_t source_cap_count;	/* Number of Source Cap PDOs */
 
-	uint8_t power_role;	/* enum pd_power_role */
-	uint8_t data_role;	/* enum pd_data_role */
-	uint8_t vconn_role;	/* enum pd_vconn_role */
-	uint8_t reserved2;	/* Reserved for future use */
+	uint8_t power_role;		/* enum pd_power_role */
+	uint8_t data_role;		/* enum pd_data_role */
+	uint8_t vconn_role;		/* enum pd_vconn_role */
+	uint8_t sink_cap_count;		/* Number of Sink Cap PDOs */
 
-	uint8_t polarity;	/* enum tcpc_cc_polarity */
-	uint8_t cc_state;	/* enum pd_cc_states */
-	uint8_t dp_pin;		/* DP pin mode (MODE_DP_IN_[A-E]) */
-	uint8_t mux_state;	/* USB_PD_MUX* - encoded USB mux state */
+	uint8_t polarity;		/* enum tcpc_cc_polarity */
+	uint8_t cc_state;		/* enum pd_cc_states */
+	uint8_t dp_pin;			/* DP pin mode (MODE_DP_IN_[A-E]) */
+	uint8_t mux_state;		/* USB_PD_MUX* - encoded mux state */
 
-	char tc_state[32];	/* TC state name */
+	char tc_state[32];		/* TC state name */
 
-	uint32_t events;	/* PD_STATUS_EVENT bitmask */
+	uint32_t events;		/* PD_STATUS_EVENT bitmask */
 
-	/* TODO(b/167700356): Add revisions and source cap PDOs */
+	/*
+	 * BCD PD revisions for partners
+	 *
+	 * The format has the PD major reversion in the upper nibble, and PD
+	 * minor version in the next nibble.  Following two nibbles are
+	 * currently 0.
+	 * ex. PD 3.2 would map to 0x3200
+	 *
+	 * PD major/minor will be 0 if no PD device is connected.
+	 */
+	uint16_t sop_revision;
+	uint16_t sop_prime_revision;
+
+	uint32_t source_cap_pdos[7];	/* Max 7 PDOs can be present */
+
+	uint32_t sink_cap_pdos[7];	/* Max 7 PDOs can be present */
 } __ec_align1;
+
+/**
+ * Get the number of peripheral charge ports
+ */
+#define EC_CMD_PCHG_COUNT 0x0134
+
+#define EC_PCHG_MAX_PORTS 8
+
+struct ec_response_pchg_count {
+	uint8_t port_count;
+} __ec_align1;
+
+/**
+ * Get the status of a peripheral charge port
+ */
+#define EC_CMD_PCHG 0x0135
+
+struct ec_params_pchg {
+	uint8_t port;
+} __ec_align1;
+
+struct ec_response_pchg {
+	uint32_t error;			/* enum pchg_error */
+	uint8_t state;			/* enum pchg_state state */
+	uint8_t battery_percentage;
+} __ec_align2;
+
+enum pchg_state {
+	/* Charger is reset and not initialized. */
+	PCHG_STATE_RESET = 0,
+	/* Charger is initialized or disabled. */
+	PCHG_STATE_INITIALIZED,
+	/* Charger is enabled and ready to detect a device. */
+	PCHG_STATE_ENABLED,
+	/* Device is detected in proximity. */
+	PCHG_STATE_DETECTED,
+	/* Device is being charged. */
+	PCHG_STATE_CHARGING,
+};
+
+#define EC_PCHG_STATE_TEXT { \
+	[PCHG_STATE_RESET] = "RESET", \
+	[PCHG_STATE_INITIALIZED] = "INITIALIZED", \
+	[PCHG_STATE_ENABLED] = "ENABLED", \
+	[PCHG_STATE_DETECTED] = "DETECTED", \
+	[PCHG_STATE_CHARGING] = "CHARGING", \
+	}
 
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
@@ -6841,6 +7111,28 @@ struct ec_response_battery_static_info {
 	uint32_t cycle_count;
 } __ec_align4;
 
+/**
+ * struct ec_response_battery_static_info_v1 - hostcmd v1 battery static info
+ * Equivalent to struct ec_response_battery_static_info, but with longer
+ * strings.
+ * @design_capacity: battery design capacity (in mAh)
+ * @design_voltage: battery design voltage (in mV)
+ * @cycle_count: battery cycle count
+ * @manufacturer_ext: battery manufacturer string
+ * @model_ext: battery model string
+ * @serial_ext: battery serial number string
+ * @type_ext: battery type string
+ */
+struct ec_response_battery_static_info_v1 {
+	uint16_t design_capacity;
+	uint16_t design_voltage;
+	uint32_t cycle_count;
+	char manufacturer_ext[12];
+	char model_ext[12];
+	char serial_ext[12];
+	char type_ext[12];
+} __ec_align4;
+
 /*
  * Get battery dynamic information, i.e. information that is likely to change
  * every time it is read.
@@ -6895,6 +7187,13 @@ struct ec_params_charger_control {
 	uint16_t otg_voltage;
 	uint8_t allow_charging;
 } __ec_align_size1;
+
+/* Get ACK from the USB-C SS muxes */
+#define EC_CMD_USB_PD_MUX_ACK 0x0603
+
+struct ec_params_usb_pd_mux_ack {
+	uint8_t port; /* USB-C port number */
+} __ec_align1;
 
 /*****************************************************************************/
 /*

@@ -18,12 +18,11 @@ static void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	FSP_M_CONFIG *mem_cfg;
+	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
+
 	struct spd_block blk = {
 		.addr_map = {0x50, 0x52},
 	};
-
-	mem_cfg = &mupd->FspmConfig;
 
 	get_spd_smbus(&blk);
 	dump_spd_info(&blk);

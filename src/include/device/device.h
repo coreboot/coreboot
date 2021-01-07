@@ -6,6 +6,7 @@
 #include <device/path.h>
 #include <device/pci_type.h>
 #include <smbios.h>
+#include <static.h>
 #include <types.h>
 
 struct fw_config;
@@ -387,11 +388,11 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
 	devtree_die();
 }
 
-/* config_of_soc() either returns a non-NULL pointer or dies in the config_of() call. */
-static inline DEVTREE_CONST void *config_of_soc(void)
-{
-	return config_of(pcidev_on_root(0, 0));
-}
+/*
+ * Returns pointer to config structure of root device (B:D:F = 0:00:0) defined by
+ * sconfig in static.{h/c}.
+ */
+#define config_of_soc()		__pci_0_00_0_config
 
 void enable_static_device(struct device *dev);
 void enable_static_devices(struct device *bus);

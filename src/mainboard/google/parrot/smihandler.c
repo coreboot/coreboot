@@ -39,7 +39,7 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	printk(BIOS_DEBUG, "%s: %x\n", __func__, gpi_sts);
 	if (gpi_sts & (1 << EC_SMI_GPI)) {
 		/* Process all pending events from EC */
-		while (mainboard_smi_ec() != EC_NO_EVENT);
+		do {} while (mainboard_smi_ec() != EC_NO_EVENT);
 	} else if (gpi_sts & (1 << EC_LID_GPI)) {
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 

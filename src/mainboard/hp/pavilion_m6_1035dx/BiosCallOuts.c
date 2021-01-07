@@ -41,8 +41,8 @@ static const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
 };
 
 static const CODEC_TBL_LIST CodecTableList[] = {
-	{0x10ec0272, (CODEC_ENTRY*)&Parmer_Alc272_VerbTbl[0]},
-	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
+	{0x10ec0272, (CODEC_ENTRY *)&Parmer_Alc272_VerbTbl[0]},
+	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY *)0x0FFFFFFFFUL}
 };
 
 #define FAN_INPUT_INTERNAL_DIODE	0

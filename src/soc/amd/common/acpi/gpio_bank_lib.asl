@@ -1,11 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/iomap.h>
-
-#define GPIO_INPUT_SHIFT	16
-#define GPIO_INPUT_VALUE	(1 << GPIO_INPUT_SHIFT)
-#define GPIO_OUTPUT_SHIFT	22
-#define GPIO_OUTPUT_VALUE	(1 << GPIO_OUTPUT_SHIFT)
+#include <amdblocks/gpio_defs.h>
 
 /* Get pin control MMIO address */
 Method (GPAD, 0x1)

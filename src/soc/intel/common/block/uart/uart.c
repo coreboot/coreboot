@@ -20,7 +20,7 @@
 #define UART_PCI_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER)
 #define UART_CONSOLE_INVALID_INDEX	0xFF
 
-extern const struct uart_gpio_pad_config uart_gpio_pads[];
+extern const struct uart_controller_config uart_ctrlr_config[];
 extern const int uart_max_index;
 
 static void uart_lpss_init(const struct device *dev, uintptr_t baseaddr)
@@ -50,7 +50,7 @@ static int uart_get_valid_index(void)
 	int index;
 
 	for (index = 0; index < uart_max_index; index++) {
-		if (uart_gpio_pads[index].console_index ==
+		if (uart_ctrlr_config[index].console_index ==
 				CONFIG_UART_FOR_CONSOLE)
 			return index;
 	}
@@ -88,7 +88,7 @@ const struct device *uart_get_device(void)
 	int console_index = uart_get_valid_index();
 
 	if (console_index != UART_CONSOLE_INVALID_INDEX)
-		return soc_uart_console_to_device(CONFIG_UART_FOR_CONSOLE);
+		return pcidev_path_on_root(uart_ctrlr_config[console_index].devfn);
 	else
 		return NULL;
 }
@@ -123,7 +123,7 @@ static void uart_configure_gpio_pads(void)
 	int index = uart_get_valid_index();
 
 	if (index != UART_CONSOLE_INVALID_INDEX)
-		gpio_configure_pads(uart_gpio_pads[index].gpios,
+		gpio_configure_pads(uart_ctrlr_config[index].gpios,
 				MAX_GPIO_PAD_PER_UART);
 }
 

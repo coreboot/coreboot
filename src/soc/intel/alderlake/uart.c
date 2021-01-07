@@ -17,9 +17,10 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
-const struct uart_gpio_pad_config uart_gpio_pads[] = {
+const struct uart_controller_config uart_ctrlr_config[] = {
 	{
 		.console_index = 0,
+		.devfn = PCH_DEVFN_UART0,
 		.gpios = {
 			PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2), /* UART0 RX */
 			PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2), /* UART0 TX */
@@ -27,6 +28,7 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	},
 	{
 		.console_index = 1,
+		.devfn = PCH_DEVFN_UART1,
 		.gpios = {
 			PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1), /* UART1 RX */
 			PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1), /* UART1 TX */
@@ -34,6 +36,7 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	},
 	{
 		.console_index = 2,
+		.devfn = PCH_DEVFN_UART2,
 		.gpios = {
 			PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* UART2 RX */
 			PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* UART2 TX */
@@ -41,23 +44,4 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	}
 };
 
-const int uart_max_index = ARRAY_SIZE(uart_gpio_pads);
-
-DEVTREE_CONST struct device *soc_uart_console_to_device(int uart_console)
-{
-	/*
-	 * if index is valid, this function will return corresponding structure
-	 * for uart console else will return NULL.
-	 */
-	switch (uart_console) {
-	case 0:
-		return pcidev_path_on_root(PCH_DEVFN_UART0);
-	case 1:
-		return pcidev_path_on_root(PCH_DEVFN_UART1);
-	case 2:
-		return pcidev_path_on_root(PCH_DEVFN_UART2);
-	default:
-		printk(BIOS_ERR, "Invalid UART console index\n");
-		return NULL;
-	}
-}
+const int uart_max_index = ARRAY_SIZE(uart_ctrlr_config);

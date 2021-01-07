@@ -28,8 +28,19 @@ static void qemu_nb_init(struct device *dev)
 		pci_assign_irqs(pcidev_on_root(i, 0), qemu_i440fx_irqs + (i % 4));
 }
 
+static void qemu_nb_read_resources(struct device *dev)
+{
+	pci_dev_read_resources(dev);
+
+	if (CONFIG(ARCH_RAMSTAGE_X86_64)) {
+		/* Reserve page tables in DRAM. FIXME: Remove once x86_64 page tables reside in CBMEM */
+		reserved_ram_resource(dev, 0, CONFIG_ARCH_X86_64_PGTBL_LOC / KiB,
+			(6 * 0x1000) / KiB);
+	}
+}
+
 static struct device_operations nb_operations = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = qemu_nb_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = qemu_nb_init,

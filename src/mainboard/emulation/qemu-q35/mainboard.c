@@ -44,6 +44,12 @@ static void qemu_nb_read_resources(struct device *dev)
 	/* reserve mmconfig */
 	fixed_mem_resource(dev, 2, CONFIG_MMCONF_BASE_ADDRESS >> 10, 0x10000000 >> 10,
 			   IORESOURCE_RESERVE);
+
+	if (CONFIG(ARCH_RAMSTAGE_X86_64)) {
+		/* Reserve page tables in DRAM. FIXME: Remove once x86_64 page tables reside in CBMEM */
+		reserved_ram_resource(dev, 0, CONFIG_ARCH_X86_64_PGTBL_LOC / KiB,
+			(6 * 0x1000) / KiB);
+	}
 }
 
 

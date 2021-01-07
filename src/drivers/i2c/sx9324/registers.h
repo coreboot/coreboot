@@ -47,6 +47,7 @@ REGISTER(reg_gnrl_ctrl1);
 
 REGISTER(reg_irq_msk);
 REGISTER(reg_irq_cfg0);
+REGISTER(reg_irq_cfg1);
 REGISTER(reg_irq_cfg2);
 
 REGISTER(reg_prox_ctrl0);

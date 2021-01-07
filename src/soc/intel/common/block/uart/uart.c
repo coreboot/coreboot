@@ -23,10 +23,10 @@
 extern const struct uart_controller_config uart_ctrlr_config[];
 extern const int uart_max_index;
 
-static void uart_lpss_init(const struct device *dev, uintptr_t baseaddr)
+static void uart_lpss_init(pci_devfn_t dev, uintptr_t baseaddr)
 {
 	/* Ensure controller is in D0 state */
-	lpss_set_power_state(PCI_BDF(dev), STATE_D0);
+	lpss_set_power_state(dev, STATE_D0);
 
 	/* Take UART out of reset */
 	lpss_reset_release(baseaddr);
@@ -58,60 +58,49 @@ static int uart_get_valid_index(void)
 	return UART_CONSOLE_INVALID_INDEX;
 }
 
-static void uart_common_init(const struct device *device, uintptr_t baseaddr)
+static pci_devfn_t uart_console_get_pci_bdf(void)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCI_BDF(device);
-#else
-	const struct device *dev = device;
-#endif
+	int devfn;
+	int index;
 
-	/* Set UART base address */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, baseaddr);
-
-	/* Enable memory access and bus master */
-	pci_write_config16(dev, PCI_COMMAND, UART_PCI_ENABLE);
-
-	uart_lpss_init(device, baseaddr);
-}
-
-const struct device *uart_get_device(void)
-{
 	/*
 	 * This function will get called even if INTEL_LPSS_UART_FOR_CONSOLE
 	 * config option is not selected.
 	 * By default return NULL in this case to avoid compilation errors.
 	 */
 	if (!CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
+		return PCI_DEV_INVALID;
+
+	index = uart_get_valid_index();
+	if (index == UART_CONSOLE_INVALID_INDEX)
+		return PCI_DEV_INVALID;
+
+	devfn = uart_ctrlr_config[index].devfn;
+	return PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
+}
+
+const struct device *uart_get_device(void)
+{
+	pci_devfn_t dev = uart_console_get_pci_bdf();
+	if (dev == PCI_DEV_INVALID)
 		return NULL;
 
-	int console_index = uart_get_valid_index();
-
-	if (console_index != UART_CONSOLE_INVALID_INDEX)
-		return pcidev_path_on_root(uart_ctrlr_config[console_index].devfn);
-	else
-		return NULL;
+	return pcidev_path_on_root(PCI_DEV2DEVFN(dev));
 }
 
 bool uart_is_controller_initialized(void)
 {
 	uintptr_t base;
-	const struct device *dev_uart = uart_get_device();
+	pci_devfn_t dev = uart_console_get_pci_bdf();
 
-	if (!dev_uart)
+	if (dev == PCI_DEV_INVALID)
 		return false;
 
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCI_BDF(dev_uart);
-#else
-	const struct device *dev = dev_uart;
-#endif
-
-	base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
+	base = pci_s_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
 	if (!base)
 		return false;
 
-	if ((pci_read_config16(dev, PCI_COMMAND) & UART_PCI_ENABLE)
+	if ((pci_s_read_config16(dev, PCI_COMMAND) & UART_PCI_ENABLE)
 	    != UART_PCI_ENABLE)
 		return false;
 
@@ -129,15 +118,19 @@ static void uart_configure_gpio_pads(void)
 
 void uart_bootblock_init(void)
 {
-	const struct device *dev_uart;
+	const uint32_t baseaddr = CONFIG_CONSOLE_UART_BASE_ADDRESS;
+	pci_devfn_t dev = uart_console_get_pci_bdf();
 
-	dev_uart = uart_get_device();
-
-	if (!dev_uart)
+	if (dev == PCI_DEV_INVALID)
 		return;
 
-	/* Program UART BAR0, command, reset and clock register */
-	uart_common_init(dev_uart, CONFIG_CONSOLE_UART_BASE_ADDRESS);
+	/* Set UART base address */
+	pci_s_write_config32(dev, PCI_BASE_ADDRESS_0, baseaddr);
+
+	/* Enable memory access and bus master */
+	pci_s_write_config16(dev, PCI_COMMAND, UART_PCI_ENABLE);
+
+	uart_lpss_init(dev, baseaddr);
 
 	/* Configure the 2 pads per UART. */
 	uart_configure_gpio_pads();
@@ -224,7 +217,7 @@ static void uart_common_enable_resources(struct device *dev)
 
 		base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
 		if (base)
-			uart_lpss_init(dev, base);
+			uart_lpss_init(PCI_BDF(dev), base);
 	}
 }
 

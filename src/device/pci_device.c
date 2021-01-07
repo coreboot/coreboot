@@ -967,7 +967,7 @@ static void set_pci_ops(struct device *dev)
 		dev->ops = &default_cardbus_ops_bus;
 		break;
 #endif
-default:
+	default:
 bad:
 		if (dev->enabled) {
 			printk(BIOS_ERR, "%s [%04x/%04x/%06x] has unknown "

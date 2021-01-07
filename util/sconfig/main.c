@@ -1085,18 +1085,24 @@ static void emit_dev_links(FILE *fil, struct device *ptr)
 	fprintf(fil, "\t};\n");
 }
 
-static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next)
+static struct chip_instance *get_chip_instance(const struct device *dev)
 {
-	int pin;
-	struct chip_instance *chip_ins = ptr->chip_instance;
-	int has_children = dev_has_children(ptr);
-
+	struct chip_instance *chip_ins = dev->chip_instance;
 	/*
 	 * If the chip instance of device has base_chip_instance pointer set, then follow that
 	 * to update the chip instance for current device.
 	 */
 	if (chip_ins->base_chip_instance)
 		chip_ins = chip_ins->base_chip_instance;
+
+	return chip_ins;
+}
+
+static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next)
+{
+	int pin;
+	struct chip_instance *chip_ins = get_chip_instance(ptr);
+	int has_children = dev_has_children(ptr);
 
 	/* Emit probe structures. */
 	if (ptr->probe && (emit_fw_config_probe(fil, ptr) < 0)) {
@@ -1209,12 +1215,21 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 
 static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struct device *next)
 {
+	struct chip_instance *chip_ins = get_chip_instance(ptr);
+
 	/* Only devices on root bus here. */
 	if (ptr->bustype == PCI && ptr->parent->dev->bustype == DOMAIN) {
 		fprintf(head, "extern DEVTREE_CONST struct device *const __pci_0_%02x_%d;\n",
 			ptr->path_a, ptr->path_b);
 		fprintf(fil, "DEVTREE_CONST struct device *const __pci_0_%02x_%d = &%s;\n",
 			ptr->path_a, ptr->path_b, ptr->name);
+
+		if (chip_ins->chip->chiph_exists) {
+			fprintf(head, "extern DEVTREE_CONST void *const __pci_0_%02x_%d_config;\n",
+				ptr->path_a, ptr->path_b);
+			fprintf(fil, "DEVTREE_CONST void *const __pci_0_%02x_%d_config = &%s_info_%d;\n",
+				ptr->path_a, ptr->path_b, chip_ins->chip->name_underscore, chip_ins->id);
+		}
 	}
 
 	if (ptr->bustype == PNP) {

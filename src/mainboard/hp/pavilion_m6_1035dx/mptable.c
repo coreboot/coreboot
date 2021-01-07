@@ -96,7 +96,7 @@ static void *smp_write_config_table(void *v)
 
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\
-	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
+	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin))
 	mptable_add_isa_interrupts(mc, bus_isa, ioapic_id, 0);
 
 	/* PCI interrupts are level triggered, and are

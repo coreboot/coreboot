@@ -68,7 +68,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.thermalbase = 0xfed08000,
 		.system_type = 0, // 0 Mobile, 1 Desktop/Server
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xA0, 0x00,0xA4,0x00 },
+		.spd_addresses = { 0xA0, 0x00, 0xA4, 0x00 },
 		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
 		.ec_present = 1,
 		// 0 = leave channel enabled

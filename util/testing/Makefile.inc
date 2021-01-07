@@ -55,7 +55,6 @@ amdfwtool \
 cbmem \
 ectool \
 futility \
-genprof \
 intelmetool \
 inteltool \
 intelvbttool \

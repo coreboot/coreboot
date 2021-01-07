@@ -67,7 +67,7 @@ Device (XHCI)
 {
 	Name (_ADR, 0x00140000)
 
-	Name (_PRW, Package () { GPE0_PME_B0, 3 })
+	Name (_PRW, Package () { GPE0_PME_B0, 4 })
 
 	Method (_DSW, 3)
 	{
@@ -78,6 +78,9 @@ Device (XHCI)
 	Name (_S3D, 3)	/* D3 supported in S3 */
 	Name (_S0W, 3)	/* D3 can wake device in S0 */
 	Name (_S3W, 3)	/* D3 can wake system from S3 */
+
+	Name (_S4D, 3)	/* D3 supported in S4 */
+	Name (_S4W, 3)	/* D3 can wake system from S4 */
 
 	OperationRegion (XPRT, PCI_Config, 0x00, 0x100)
 	Field (XPRT, AnyAcc, NoLock, Preserve)

@@ -3,6 +3,7 @@
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <drivers/ipmi/ipmi_kcs.h>
+#include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <soc/romstage.h>
 #include <string.h>
 #include <gpio.h>
@@ -53,8 +54,10 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* It's better to run get BMC selftest result first */
-	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS)
+	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
+		ipmi_set_post_start(CONFIG_BMC_KCS_BASE);
 		init_frb2_wdt();
+	}
 	mainboard_config_iio(mupd);
 
 	/* do not configure GPIO controller inside FSP-M */

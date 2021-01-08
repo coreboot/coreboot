@@ -12,6 +12,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <drivers/ipmi/ipmi_kcs.h>
+#include <drivers/ocp/dmi/ocp_dmi.h>
 #include <intelblocks/cpulib.h>
 #include <string.h>
 #include <types.h>
@@ -115,6 +116,30 @@ static void ipmi_set_processor_information(struct device *dev)
 		printk(BIOS_ERR, "IPMI BMC set param 2 processor info failed\n");
 }
 
+static enum cb_err ipmi_set_ppin(struct device *dev)
+{
+	int ret;
+	struct ipmi_rsp rsp;
+	struct ppin_req req = {0};
+
+	req.cpu0_lo = xeon_sp_ppin[0].lo;
+	req.cpu0_hi = xeon_sp_ppin[0].hi;
+	if (CONFIG_MAX_SOCKET > 1) {
+		req.cpu1_lo = xeon_sp_ppin[1].lo;
+		req.cpu1_hi = xeon_sp_ppin[1].hi;
+	}
+	ret = ipmi_kcs_message(dev->path.pnp.port, IPMI_NETFN_OEM, 0x0, IPMI_OEM_SET_PPIN,
+		(const unsigned char *) &req, sizeof(req), (unsigned char *) &rsp, sizeof(rsp));
+
+	if (ret < sizeof(struct ipmi_rsp) || rsp.completion_code) {
+		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",
+			__func__, ret, rsp.completion_code);
+			return CB_ERR;
+	}
+	printk(BIOS_DEBUG, "IPMI: %s command success\n", __func__);
+	return CB_SUCCESS;
+}
+
 static void ipmi_ocp_init(struct device *dev)
 {
 	/* Add OCP specific IPMI command */
@@ -126,6 +151,8 @@ static void ipmi_ocp_final(struct device *dev)
 
 	/* Send processor information */
 	ipmi_set_processor_information(dev);
+	if (CONFIG(OCP_DMI))
+		ipmi_set_ppin(dev);
 }
 
 static void ipmi_set_resources(struct device *dev)

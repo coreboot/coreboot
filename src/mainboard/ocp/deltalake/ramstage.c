@@ -353,13 +353,6 @@ void mainboard_silicon_init_params(FSPS_UPD *params)
 
 static void mainboard_final(void *chip_info)
 {
-	struct ppin_req req = {0};
-
-	req.cpu0_lo = xeon_sp_ppin[0].lo;
-	req.cpu0_hi = xeon_sp_ppin[0].hi;
-	/* Set PPIN to BMC */
-	if (ipmi_set_ppin(&req) != CB_SUCCESS)
-		printk(BIOS_ERR, "ipmi_set_ppin failed\n");
 }
 
 struct chip_operations mainboard_ops = {

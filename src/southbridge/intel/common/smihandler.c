@@ -113,8 +113,9 @@ static void southbridge_smi_sleep(void)
 
 	/* Figure out SLP_TYP */
 	reg32 = read_pmbase32(PM1_CNT);
-	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = acpi_sleep_from_pm1(reg32);
+
+	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x, TYPE = 0x%02x\n", reg32, slp_typ);
 
 	southbridge_smm_xhci_sleep(slp_typ);
 

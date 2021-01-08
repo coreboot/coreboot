@@ -6,11 +6,6 @@
 #include <cpu/x86/smm.h>
 #include <superio/smsc/sch5545/sch5545.h>
 
-void mainboard_smi_gpi(u32 gpi_sts)
-{
-	printk(BIOS_SPEW, "%s: gpi_sts: %08x\n", __func__, gpi_sts);
-}
-
 int mainboard_smi_apmc(u8 data)
 {
 	u8 val;
@@ -37,9 +32,4 @@ int mainboard_smi_apmc(u8 data)
 		break;
 	}
 	return 0;
-}
-
-void mainboard_smi_sleep(u8 slp_typ)
-{
-	printk(BIOS_SPEW, "%s: SMI sleep: %02x\n", __func__, slp_typ);
 }

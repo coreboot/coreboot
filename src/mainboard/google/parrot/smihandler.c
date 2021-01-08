@@ -36,7 +36,6 @@ static u8 mainboard_smi_ec(void)
 
 void mainboard_smi_gpi(u32 gpi_sts)
 {
-	printk(BIOS_DEBUG, "%s: %x\n", __func__, gpi_sts);
 	if (gpi_sts & (1 << EC_SMI_GPI)) {
 		/* Process all pending events from EC */
 		do {} while (mainboard_smi_ec() != EC_NO_EVENT);
@@ -50,7 +49,6 @@ void mainboard_smi_gpi(u32 gpi_sts)
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
-	printk(BIOS_DEBUG, "%s: %x\n", __func__, slp_typ);
 	/* Disable SCI and SMI events */
 
 	/* Clear pending events that may trigger immediate wake */

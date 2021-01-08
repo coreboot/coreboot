@@ -13,15 +13,8 @@
 #include <ec/quanta/ene_kb3940q/ec.h>
 #include "ec.h"
 
-void mainboard_smi_gpi(u32 gpi_sts)
-{
-	printk(BIOS_DEBUG, "warn: unknown mainboard_smi_gpi: %x\n", gpi_sts);
-}
-
 void mainboard_smi_sleep(u8 slp_typ)
 {
-	printk(BIOS_DEBUG, "mainboard_smi_sleep: %x\n", slp_typ);
-
 	/* Tell the EC to Enable USB power for S3 if requested */
 	if (gnvs->s3u0 != 0 || gnvs->s3u1 != 0)
 		ec_mem_write(EC_EC_PSW, ec_mem_read(EC_EC_PSW) | EC_PSW_USB);

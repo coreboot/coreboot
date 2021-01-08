@@ -335,7 +335,7 @@ this value is correct. This can also be determined from the board's schematics.
 
 ## GNVS
 
-`acpi_create_gnvs` sets values in GNVS, which then ACPI makes use of for
+`mainboard_fill_gnvs` sets values in GNVS, which then ACPI makes use of for
 various power-related functions. Normally, there is no need to modify it
 on laptops (desktops have no "lid"!) but it makes sense to proofread it.
 

@@ -359,10 +359,11 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	defer gnvs.Close()
 
 	Add_gpl(gnvs)
-	gnvs.WriteString(`#include <southbridge/intel/bd82x6x/nvs.h>
+	gnvs.WriteString(`#include <acpi/acpi_gnvs.h>
+#include <southbridge/intel/bd82x6x/nvs.h>
 
 /* FIXME: check this function.  */
-void acpi_create_gnvs(struct global_nvs *gnvs)
+void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* The lid is open by default. */
 	gnvs->lids = 1;

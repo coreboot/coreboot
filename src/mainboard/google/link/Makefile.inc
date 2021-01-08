@@ -6,8 +6,6 @@ romstage-y += chromeos.c
 ramstage-y += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
-smm-y += mainboard_smi.c
-
 # Order of names in SPD_SOURCES is important!
 SPD_SOURCES = elpida_4Gb_1600_x16
 SPD_SOURCES += samsung_4Gb_1600_1.35v_x16

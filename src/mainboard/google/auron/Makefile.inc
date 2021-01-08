@@ -6,8 +6,6 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
-smm-y += smihandler.c
-
 romstage-$(CONFIG_HAVE_SPD_IN_CBFS) += spd.c
 
 romstage-y += variants/$(VARIANT_DIR)/pei_data.c

@@ -11,8 +11,6 @@ ramstage-y += ec.c
 ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
 ramstage-y += mainboard.c
 
-smm-y += smihandler.c
-
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 subdirs-y += variants/baseboard

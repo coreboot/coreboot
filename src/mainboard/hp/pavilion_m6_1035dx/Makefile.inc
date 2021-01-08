@@ -8,5 +8,3 @@ ramstage-y += buildOpts.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += OemCustomize.c
 ramstage-y += ec.c
-
-smm-y += mainboard_smi.c

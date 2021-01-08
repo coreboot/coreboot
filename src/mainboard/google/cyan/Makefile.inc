@@ -10,8 +10,6 @@ ramstage-y += ec.c
 ramstage-y += irqroute.c
 ramstage-y += w25q64.c
 
-smm-y += smihandler.c
-
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

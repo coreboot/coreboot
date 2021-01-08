@@ -1,7 +1,6 @@
 bootblock-y += gpio.c
 romstage-y += gpio.c
 ramstage-y += ec.c
-smm-y += smihandler.c
 
 # FIXME: SPD images for samsung_8gb and hynix_8gb are missing.
 # It's possible that no mainboards with that variation were manufactured.

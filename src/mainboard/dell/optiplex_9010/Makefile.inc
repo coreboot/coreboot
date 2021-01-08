@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-smm-y += smihandler.c
-
 bootblock-y += gpio.c
 romstage-y += gpio.c
 

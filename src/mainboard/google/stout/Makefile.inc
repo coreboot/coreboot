@@ -5,7 +5,6 @@ ramstage-y += ec.c
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
 
-smm-y += mainboard_smi.c
 smm-y += ec.c
 
 SRC_ROOT = $(src)/mainboard/google/stout

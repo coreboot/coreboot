@@ -10,5 +10,3 @@ ramstage-$(CONFIG_MAINBOARD_HAS_CHROMEOS) += gpio.c
 ramstage-y += irqroute.c
 ramstage-y += ramstage.c
 ramstage-y += w25q64.c
-
-smm-y += smihandler.c

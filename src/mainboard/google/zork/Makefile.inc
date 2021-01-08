@@ -11,8 +11,6 @@ ramstage-y += sku_id.c
 
 verstage-y += verstage.c
 
-smm-y += smihandler.c
-
 subdirs-y += variants/baseboard
 subdirs-y += spd
 

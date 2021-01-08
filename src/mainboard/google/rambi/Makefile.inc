@@ -6,8 +6,6 @@ ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-y += irqroute.c
 ramstage-y += w25q64.c
 
-smm-y += mainboard_smi.c
-
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 
 ramstage-$(CONFIG_BOARD_GOOGLE_NINJA) += variants/$(VARIANT_DIR)/lan.c

@@ -15,8 +15,6 @@ ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 ramstage-y += mainboard.c
 
-smm-y += smihandler.c
-
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
 subdirs-y += variants/$(VARIANT_DIR)

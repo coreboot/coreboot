@@ -13,5 +13,3 @@ ramstage-y += mainboard.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-
-smm-y += smihandler.c

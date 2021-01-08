@@ -7,7 +7,7 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += chromeos.c
 ramstage-y += lan.c
 
-smm-y += smihandler.c variants/$(VARIANT_DIR)/led.c
+smm-y += variants/$(VARIANT_DIR)/led.c
 
 romstage-y += variants/$(VARIANT_DIR)/gpio.c
 

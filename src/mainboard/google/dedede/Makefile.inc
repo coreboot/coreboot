@@ -10,8 +10,6 @@ ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-y += board_info.c
 
-smm-y += smihandler.c
-
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 
 subdirs-y += variants/baseboard

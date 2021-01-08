@@ -2,7 +2,6 @@
 
 subdirs-y += spd
 
-smm-y += smihandler.c
 bootblock-y += gpio.c
 romstage-y += gpio.c
 

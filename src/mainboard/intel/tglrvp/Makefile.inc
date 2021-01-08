@@ -11,8 +11,6 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += romstage_fsp_params.c
 romstage-y += board_id.c
 
-smm-y += smihandler.c
-
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-y += mainboard.c

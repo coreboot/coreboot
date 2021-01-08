@@ -294,6 +294,4 @@ smm-y += memmove.c
 smm-y += memset.c
 smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c),)
-smm-srcs += src/mainboard/$(MAINBOARDDIR)/smihandler.c
-endif
+smm-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c)

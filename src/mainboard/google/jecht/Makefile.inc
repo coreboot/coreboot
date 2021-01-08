@@ -6,7 +6,7 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += lan.c
 
-smm-y += smihandler.c led.c
+smm-y += led.c
 
 romstage-y += variants/$(VARIANT_DIR)/pei_data.c
 ramstage-y += variants/$(VARIANT_DIR)/pei_data.c

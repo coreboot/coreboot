@@ -40,9 +40,9 @@ enum {
 	/* SD controller type */
 	FW_CONFIG_MASK_SD_CTRLR = 0x7,
 	FW_CONFIG_SHIFT_SD_CTRLR = 20,
-	/* SPI speed value */
-	FW_CONFIG_MASK_SPI_SPEED = 0xf,
-	FW_CONFIG_SHIFT_SPI_SPEED = 23,
+	/* SAR presence */
+	FW_CONFIG_MASK_SAR = 0x7,
+	FW_CONFIG_SHIFT_SAR = 23,
 	/* Fan information */
 	FW_CONFIG_MASK_FAN = 0x3,
 	FW_CONFIG_SHIFT_FAN = 27,
@@ -79,6 +79,11 @@ static unsigned int extract_field(uint64_t mask, int shift)
 		return 0;
 
 	return (fw_config >> shift) & mask;
+}
+
+int variant_gets_sar_config(void)
+{
+	return extract_field(FW_CONFIG_MASK_SAR, FW_CONFIG_SHIFT_SAR);
 }
 
 int variant_has_emmc(void)

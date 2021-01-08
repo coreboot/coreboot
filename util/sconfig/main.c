@@ -1211,16 +1211,16 @@ static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struc
 {
 	/* Only devices on root bus here. */
 	if (ptr->bustype == PCI && ptr->parent->dev->bustype == DOMAIN) {
-		fprintf(head, "extern DEVTREE_CONST struct device *DEVTREE_CONST __pci_0_%02x_%d;\n",
+		fprintf(head, "extern DEVTREE_CONST struct device *const __pci_0_%02x_%d;\n",
 			ptr->path_a, ptr->path_b);
-		fprintf(fil, "DEVTREE_CONST struct device *DEVTREE_CONST __pci_0_%02x_%d = &%s;\n",
+		fprintf(fil, "DEVTREE_CONST struct device *const __pci_0_%02x_%d = &%s;\n",
 			ptr->path_a, ptr->path_b, ptr->name);
 	}
 
 	if (ptr->bustype == PNP) {
-		fprintf(head, "extern DEVTREE_CONST struct device *DEVTREE_CONST __pnp_%04x_%02x;\n",
+		fprintf(head, "extern DEVTREE_CONST struct device *const __pnp_%04x_%02x;\n",
 			ptr->path_a, ptr->path_b);
-		fprintf(fil, "DEVTREE_CONST struct device *DEVTREE_CONST __pnp_%04x_%02x = &%s;\n",
+		fprintf(fil, "DEVTREE_CONST struct device *const __pnp_%04x_%02x = &%s;\n",
 			ptr->path_a, ptr->path_b, ptr->name);
 	}
 }

@@ -76,8 +76,18 @@ config TIANOCORE_BOOTSPLASH_FILE
 	default "bootsplash.bmp"
 	help
 	  The path and filename of the file to use as graphical bootsplash
-	  screen. The file format must be uncompressed BMP, and the file's
-	  resolution must be less than the native resolution of the display.
+	  image. The file must be an uncompressed BMP.
+
+	  This image will also be used as the BGRT boot image, which may
+	  persist through your OS boot process, and will be displayed
+	  vertically centered 38.2% from the top of the display.
+
+	  See ACPI spec 6.3, 5.2.22 Boot Graphics Resource Table (BGRT), and
+	  Microsoft's documentation on BGRT positioning:
+	  Docs/Windows/Windows Drivers/Bring up guide/Boot screen components
+
+	  Accordingly, the image used should be no taller/wider than 40% of
+	  the display panel's native pixel height/width (or resolution set).
 
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.

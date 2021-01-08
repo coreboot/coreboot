@@ -134,6 +134,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	params->ITbtConnectTopologyTimeoutInMs = 0;
 
+	/* Disable TcColdOnUsbConnect */
+	params->DisableTccoldOnUsbConnected = 1;
+
 	/* Chipset Lockdown */
 	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		params->PchLockDownGlobalSmi = 0;

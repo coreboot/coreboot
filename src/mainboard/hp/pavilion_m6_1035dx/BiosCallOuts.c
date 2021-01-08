@@ -7,8 +7,7 @@
 #include <southbridge/amd/agesa/hudson/imc.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 
-const BIOS_CALLOUT_STRUCT BiosCallouts[] =
-{
+const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD,                 agesa_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
@@ -41,8 +40,7 @@ static const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
 	{0xff, 0xffffffff}
 };
 
-static const CODEC_TBL_LIST CodecTableList[] =
-{
+static const CODEC_TBL_LIST CodecTableList[] = {
 	{0x10ec0272, (CODEC_ENTRY*)&Parmer_Alc272_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };

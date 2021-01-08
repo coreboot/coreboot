@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -931,7 +931,17 @@ typedef struct {
 
 /** Offset 0x04BA - Reserved
 **/
-  UINT8                       Reserved20[7];
+  UINT8                       Reserved20[2];
+
+/** Offset 0x04BC - Disable TC code On USB Connect
+  Enable(default) or Disable TC cold On Usb Connected
+  $EN_DIS
+**/
+  UINT8                       DisableTccoldOnUsbConnected;
+
+/** Offset 0x04BD - Reserved
+**/
+  UINT8                       Reserved21[4];
 
 /** Offset 0x04C1 - Enable VMD controller
   Enable/disable to VMD controller.0: Disable(Default); 1: Enable
@@ -965,7 +975,7 @@ typedef struct {
 
 /** Offset 0x04C6 - Reserved
 **/
-  UINT8                       Reserved21;
+  UINT8                       Reserved22;
 
 /** Offset 0x04C7 - VMD Config Bar Attributes
   0: VMD_32BIT_NONPREFETCH, 1: VMD_64BIT_NONPREFETCH, 2: VMD_64BIT_PREFETCH(Default)
@@ -975,7 +985,7 @@ typedef struct {
 
 /** Offset 0x04C8 - Reserved
 **/
-  UINT8                       Reserved22;
+  UINT8                       Reserved23;
 
 /** Offset 0x04C9 - VMD Mem Bar1 Attributes
   0: VMD_32BIT_NONPREFETCH(Default), 1: VMD_64BIT_NONPREFETCH, 2: VMD_64BIT_PREFETCH
@@ -985,7 +995,7 @@ typedef struct {
 
 /** Offset 0x04CA - Reserved
 **/
-  UINT8                       Reserved23;
+  UINT8                       Reserved24;
 
 /** Offset 0x04CB - VMD Mem Bar2 Attributes
   0: VMD_32BIT_NONPREFETCH, 1: VMD_64BIT_NONPREFETCH(Default), 2: VMD_64BIT_PREFETCH
@@ -1001,7 +1011,7 @@ typedef struct {
 
 /** Offset 0x04CD - Reserved
 **/
-  UINT8                       Reserved24;
+  UINT8                       Reserved25;
 
 /** Offset 0x04CE - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
@@ -1048,9 +1058,11 @@ typedef struct {
 **/
   UINT8                       VccSt;
 
-/** Offset 0x04DD - Reserved
+/** Offset 0x04DD - TCSS Usb3 Compliance Mode Enable
+  Used by IOM FW to skip powering down the PHY at the end of disconnect flow
+  $EN_DIS
 **/
-  UINT8                       Reserved25;
+  UINT8                       Usb3ComplModeEnable;
 
 /** Offset 0x04DE - ITBT DMA LTR
   TCSS DMA1, DMA2 LTR value

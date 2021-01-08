@@ -262,9 +262,7 @@ static void southbridge_smi_apmc(void)
 	u8 reg8;
 	static int chipset_finalized = 0;
 
-	/* Emulate B2 register as the FADT / Linux expects it */
-
-	reg8 = inb(APM_CNT);
+	reg8 = apm_get_apmc();
 	switch (reg8) {
 	case APM_CNT_FINALIZE:
 		if (chipset_finalized) {
@@ -284,22 +282,18 @@ static void southbridge_smi_apmc(void)
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
-		printk(BIOS_DEBUG, "C-state control\n");
 		break;
 	case APM_CNT_PST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
-		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		disable_pm1_control(SCI_EN);
-		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
 		enable_pm1_control(SCI_EN);
-		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_ROUTE_ALL_XHCI:
 		usb_xhci_route_all();

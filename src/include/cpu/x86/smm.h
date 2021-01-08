@@ -33,6 +33,7 @@
 
 /* Send cmd to APM_CNT with HAVE_SMI_HANDLER checking. */
 int apm_control(u8 cmd);
+u8 apm_get_apmc(void);
 
 void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);

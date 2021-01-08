@@ -36,16 +36,13 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	printk(BIOS_DEBUG, "mainboard_smi_apmc: %x\n", apmc);
 	switch (apmc) {
 	case APM_CNT_ACPI_ENABLE:
-		printk(BIOS_DEBUG, "APMC: ACPI_EN\n");
 		/* Clear all pending events and enable SCI */
 		ec_write_cmd(EC_CMD_ENABLE_ACPI_MODE);
 		break;
 
 	case APM_CNT_ACPI_DISABLE:
-		printk(BIOS_DEBUG, "APMC: ACPI_DIS\n");
 		/* Clear all pending events and tell the EC that ACPI is disabled */
 		ec_write_cmd(EC_CMD_DISABLE_ACPI_MODE);
 		break;

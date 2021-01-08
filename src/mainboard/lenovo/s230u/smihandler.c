@@ -74,18 +74,14 @@ void mainboard_smi_gpi(u32 gpi_sts)
 
 int mainboard_smi_apmc(u8 data)
 {
-	printk(BIOS_INFO, "%s(%02x)\n", __func__, data);
-
 	switch (data) {
 	case APM_CNT_ACPI_ENABLE:
-		printk(BIOS_DEBUG, "Enable ACPI mode\n");
 		ec_enter_acpi_mode();
 		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
 		gpi_route_interrupt(GPE_PALMDET1, GPI_IS_SCI);
 		gpi_route_interrupt(GPE_PALMDET2, GPI_IS_SCI);
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		printk(BIOS_DEBUG, "Disable ACPI mode\n");
 		ec_enter_apm_mode();
 		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
 		break;

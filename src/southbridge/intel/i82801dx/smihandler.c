@@ -297,38 +297,30 @@ static void southbridge_smi_apmc(void)
 	u32 pmctrl;
 	u8 reg8;
 
-	/* Emulate B2 register as the FADT / Linux expects it */
-
-	reg8 = inb(APM_CNT);
+	reg8 = apm_get_apmc();
 	switch (reg8) {
 	case APM_CNT_CST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
-		printk(BIOS_DEBUG, "C-state control\n");
 		break;
 	case APM_CNT_PST_CONTROL:
 		/* Calling this function seems to cause
 		 * some kind of race condition in Linux
 		 * and causes a kernel oops
 		 */
-		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		pmctrl = inl(pmbase + PM1_CNT);
 		pmctrl &= ~SCI_EN;
 		outl(pmctrl, pmbase + PM1_CNT);
-		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
 		pmctrl = inl(pmbase + PM1_CNT);
 		pmctrl |= SCI_EN;
 		outl(pmctrl, pmbase + PM1_CNT);
-		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
-	default:
-		printk(BIOS_DEBUG, "SMI#: Unknown function APM_CNT=%02x\n", reg8);
 	}
 }
 

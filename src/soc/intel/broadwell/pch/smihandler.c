@@ -312,23 +312,17 @@ static void southbridge_smi_apmc(void)
 {
 	u8 reg8;
 
-	/* Emulate B2 register as the FADT / Linux expects it */
-
-	reg8 = inb(APM_CNT);
+	reg8 = apm_get_apmc();
 	switch (reg8) {
 	case APM_CNT_CST_CONTROL:
-		printk(BIOS_DEBUG, "C-state control\n");
 		break;
 	case APM_CNT_PST_CONTROL:
-		printk(BIOS_DEBUG, "P-state control\n");
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		disable_pm1_control(SCI_EN);
-		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
 		enable_pm1_control(SCI_EN);
-		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))

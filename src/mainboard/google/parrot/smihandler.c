@@ -66,10 +66,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	printk(BIOS_DEBUG, "%s: %x\n", __func__, apmc);
 	switch (apmc) {
 	case APM_CNT_ACPI_ENABLE:
-		printk(BIOS_DEBUG, "APMC: ACPI_EN\n");
 		/* Clear all pending events */
 		/* EC cmd:59 data:E8 */
 		ec_kbc_write_cmd(0x59);
@@ -79,7 +77,6 @@ int mainboard_smi_apmc(u8 apmc)
 		gpi_route_interrupt(EC_LID_GPI, GPI_IS_SCI);
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		printk(BIOS_DEBUG, "APMC: ACPI_DIS\n");
 		/* Clear all pending events */
 		/* EC cmd:59 data:e9 */
 		ec_kbc_write_cmd(0x59);

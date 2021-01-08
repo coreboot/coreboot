@@ -33,6 +33,7 @@ ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 endif
 
 smm-y += save_state.c
+smm-y += smi_trigger.c
 
 ifeq ($(CONFIG_SMM_TSEG),y)
 

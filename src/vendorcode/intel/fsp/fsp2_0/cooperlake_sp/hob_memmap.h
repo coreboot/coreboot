@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2019-2020, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2019-2021, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -127,6 +127,7 @@ typedef struct DimmDevice {
 	UINT8    EnergyType;
 	UINT8    reserved10[1];
 	UINT16   SPDRegVen;				    // Register Vendor ID in SPD
+	UINT8    CidBitMap;          // SubRankPer CS for DIMM device
 } MEMMAP_DIMM_DEVICE_INFO_STRUCT;
 
 struct ChannelDevice {

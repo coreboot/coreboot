@@ -2,7 +2,7 @@
   Intel FSP definition from Intel Firmware Support Package External
   Architecture Specification v2.0.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2021, Intel Corporation. All rights reserved.<BR>
   This file and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License.
   The full text of the license may be found at

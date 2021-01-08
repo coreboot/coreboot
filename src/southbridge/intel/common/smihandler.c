@@ -93,20 +93,26 @@ __weak void southbridge_smm_xhci_sleep(u8 slp_type)
 {
 }
 
-static void southbridge_smi_sleep(void)
+static int power_on_after_fail(void)
 {
-	u8 reg8;
-	u32 reg32;
-	u8 slp_typ;
 	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
-	// save and recover RTC port values
+	/* save and recover RTC port values */
 	u8 tmp70, tmp72;
 	tmp70 = inb(0x70);
 	tmp72 = inb(0x72);
 	get_option(&s5pwr, "power_on_after_fail");
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);
+
+	/* For "KEEP", switch to "OFF" - KEEP is software emulated. */
+	return (s5pwr == MAINBOARD_POWER_ON);
+}
+
+static void southbridge_smi_sleep(void)
+{
+	u32 reg32;
+	u8 slp_typ;
 
 	/* First, disable further SMIs */
 	write_pmbase8(SMI_EN, read_pmbase8(SMI_EN) & ~SLP_SMI_EN);
@@ -153,16 +159,11 @@ static void southbridge_smi_sleep(void)
 
 		write_pmbase32(GPE0_EN, 0);
 
-		/* Always set the flag in case CMOS was changed on runtime. For
-		 * "KEEP", switch to "OFF" - KEEP is software emulated
-		 */
-		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), D31F0_GEN_PMCON_3);
-		if (s5pwr == MAINBOARD_POWER_ON) {
-			reg8 &= ~1;
-		} else {
-			reg8 |= 1;
-		}
-		pci_write_config8(PCI_DEV(0, 0x1f, 0), D31F0_GEN_PMCON_3, reg8);
+		/* Always set the flag in case CMOS was changed on runtime. */
+		if (power_on_after_fail())
+			pci_and_config8(PCI_DEV(0, 0x1f, 0), D31F0_GEN_PMCON_3, ~1);
+		else
+			pci_or_config8(PCI_DEV(0, 0x1f, 0), D31F0_GEN_PMCON_3, 1);
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);

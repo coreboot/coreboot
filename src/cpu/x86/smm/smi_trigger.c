@@ -7,12 +7,6 @@
 static void apmc_log(const char *fn, u8 cmd)
 {
 	switch (cmd) {
-	case APM_CNT_CST_CONTROL:
-		printk(BIOS_DEBUG, "%s: C-state control.\n", fn);
-		break;
-	case APM_CNT_PST_CONTROL:
-		printk(BIOS_DEBUG, "%s: P-state control.\n", fn);
-		break;
 	case APM_CNT_ACPI_DISABLE:
 		printk(BIOS_DEBUG, "%s: Disabling ACPI.\n", fn);
 		break;

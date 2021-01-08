@@ -277,18 +277,6 @@ static void southbridge_smi_apmc(void)
 
 	reg8 = apm_get_apmc();
 	switch (reg8) {
-	case APM_CNT_CST_CONTROL:
-		/* Calling this function seems to cause
-		 * some kind of race condition in Linux
-		 * and causes a kernel oops
-		 */
-		break;
-	case APM_CNT_PST_CONTROL:
-		/* Calling this function seems to cause
-		 * some kind of race condition in Linux
-		 * and causes a kernel oops
-		 */
-		break;
 	case APM_CNT_ACPI_DISABLE:
 		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) & ~SCI_EN);
 		break;

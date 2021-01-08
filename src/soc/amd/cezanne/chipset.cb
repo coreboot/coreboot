@@ -1,0 +1,5 @@
+chip soc/amd/cezanne
+	device domain 0 on
+		device pci 00.0 alias gnb on end
+	end
+end

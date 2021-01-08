@@ -26,6 +26,10 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SMI
 	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/amd/cezanne/chipset.cb"
+
 config EARLY_RESERVED_DRAM_BASE
 	hex
 	default 0x2000000

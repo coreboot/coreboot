@@ -48,7 +48,7 @@ enum {
 	FW_CONFIG_SHIFT_FAN = 27,
 	/* WWAN presence */
 	FW_CONFIG_MASK_WWAN = 0x1,
-	FW_CONFIG_SHIFT_WWAN = 28,
+	FW_CONFIG_SHIFT_WWAN = 29,
 };
 
 static int get_fw_config(uint64_t *val)

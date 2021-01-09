@@ -24,7 +24,6 @@
 #include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
 #include <reg_script.h>
-#include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -140,7 +139,7 @@ static struct smm_relocation_attrs relo_attrs;
 static void pre_mp_init(void)
 {
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)) {
-		fsps_load(romstage_handoff_is_resume());
+		fsps_load();
 		return;
 	}
 	x86_setup_mtrrs_with_detect();

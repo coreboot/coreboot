@@ -8,7 +8,6 @@
 
 /* Perform Intel silicon init. */
 void intel_silicon_init(void);
-void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup);
 /* Called after the silicon init code has run. */
 void soc_after_silicon_init(void);
 /* Initialize UPD data before SiliconInit call. */

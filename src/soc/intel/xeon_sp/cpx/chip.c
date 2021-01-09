@@ -91,7 +91,7 @@ static void chip_final(void *data)
 static void chip_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
-	fsp_silicon_init(false);
+	fsp_silicon_init();
 	override_hpet_ioapic_bdf();
 	pch_enable_ioapic();
 	pch_lock_dmictl();

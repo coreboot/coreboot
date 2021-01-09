@@ -18,7 +18,6 @@
 #include <intelblocks/xdci.h>
 #include <intelblocks/p2sb.h>
 #include <intelpch/lockdown.h>
-#include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/interrupt.h>
@@ -56,7 +55,7 @@ void soc_init_pre_device(void *chip_info)
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
 	/* Perform silicon specific init. */
-	fsp_silicon_init(romstage_handoff_is_resume());
+	fsp_silicon_init();
 
 	/*
 	 * Keep the P2SB device visible so it and the other devices are
@@ -77,7 +76,7 @@ void soc_init_pre_device(void *chip_info)
 
 void soc_fsp_load(void)
 {
-	fsps_load(romstage_handoff_is_resume());
+	fsps_load();
 }
 
 static struct device_operations pci_domain_ops = {

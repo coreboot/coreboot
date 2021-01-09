@@ -51,7 +51,7 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 	}
 }
 
-void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
+static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 {
 	FSP_SILICON_INIT fsp_silicon_init;
 	SILICON_INIT_UPD *original_params;
@@ -179,7 +179,7 @@ static void fsp_load(void)
 void intel_silicon_init(void)
 {
 	fsp_load();
-	fsp_run_silicon_init(fsp_get_fih(), acpi_is_wakeup_s3());
+	fsp_run_silicon_init(fsp_get_fih());
 }
 
 /* Initialize the UPD parameters for SiliconInit */

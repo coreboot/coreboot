@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <device/device.h>
 #include <fsp/api.h>
 #include <soc/southbridge.h>
@@ -27,7 +26,7 @@ static void enable_dev(struct device *dev)
 
 static void soc_init(void *chip_info)
 {
-	fsp_silicon_init(acpi_is_wakeup_s3());
+	fsp_silicon_init();
 
 	fch_init(chip_info);
 }

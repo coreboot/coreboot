@@ -191,7 +191,7 @@ static int fsps_get_dest(const struct fsp_load_descriptor *fspld, void **dest,
 	return 0;
 }
 
-void fsps_load(bool s3wake)
+void fsps_load(void)
 {
 	struct fsp_load_descriptor fspld = {
 		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_S_CBFS),
@@ -220,9 +220,9 @@ void fsps_load(bool s3wake)
 	load_done = 1;
 }
 
-void fsp_silicon_init(bool s3wake)
+void fsp_silicon_init(void)
 {
-	fsps_load(s3wake);
+	fsps_load();
 	do_silicon_init(&fsps_hdr);
 }
 

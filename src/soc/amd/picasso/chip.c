@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -102,7 +101,7 @@ static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = agesa_write_acpi_tables;
 
-	fsp_silicon_init(acpi_is_wakeup_s3());
+	fsp_silicon_init();
 
 	data_fabric_set_mmio_np();
 	fch_init(chip_info);

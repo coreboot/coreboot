@@ -10,7 +10,6 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/xdci.h>
-#include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
@@ -171,7 +170,7 @@ void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads)
 void soc_init_pre_device(void *chip_info)
 {
 	/* Perform silicon specific init. */
-	fsp_silicon_init(romstage_handoff_is_resume());
+	fsp_silicon_init();
 
 	 /* Display FIRMWARE_VERSION_INFO_HOB */
 	fsp_display_fvi_version_hob();

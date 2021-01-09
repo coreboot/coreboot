@@ -33,7 +33,7 @@ enum fsp_notify_phase {
 
 /* Main FSP stages */
 void fsp_memory_init(bool s3wake);
-void fsp_silicon_init(bool s3wake);
+void fsp_silicon_init(void);
 void fsp_temp_ram_exit(void);
 
 /*
@@ -41,7 +41,7 @@ void fsp_temp_ram_exit(void);
  * separately from calling silicon init. It might be required in cases where
  * stage cache is no longer available by the point SoC calls into silicon init.
  */
-void fsps_load(bool s3wake);
+void fsps_load(void);
 
 /* Callbacks for updating stage-specific parameters */
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version);

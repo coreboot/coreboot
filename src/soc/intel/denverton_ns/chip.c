@@ -43,7 +43,7 @@ static void soc_enable_dev(struct device *dev)
 
 static void soc_init(void *data)
 {
-	fsp_silicon_init(false);
+	fsp_silicon_init();
 	soc_save_dimm_info();
 }
 

@@ -19,7 +19,6 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
-#include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -27,7 +26,7 @@
 
 static void soc_fsp_load(void)
 {
-	fsps_load(romstage_handoff_is_resume());
+	fsps_load();
 }
 
 static void configure_misc(void)

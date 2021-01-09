@@ -59,7 +59,7 @@ static void soc_enable_dev(struct device *dev)
 static void soc_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
-	fsp_silicon_init(false);
+	fsp_silicon_init();
 	override_hpet_ioapic_bdf();
 	pch_lock_dmictl();
 }

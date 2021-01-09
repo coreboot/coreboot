@@ -143,21 +143,6 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	soc_after_silicon_init();
 }
 
-static void fsp_cache_save(struct prog *fsp)
-{
-	if (CONFIG(NO_STAGE_CACHE))
-		return;
-
-	printk(BIOS_DEBUG, "FSP: Saving binary in cache\n");
-
-	if (prog_entry(fsp) == NULL) {
-		printk(BIOS_ERR, "ERROR: No FSP to save in cache.\n");
-		return;
-	}
-
-	stage_cache_add(STAGE_REFCODE, fsp);
-}
-
 static int fsp_find_and_relocate(struct prog *fsp)
 {
 	if (prog_locate(fsp)) {
@@ -176,14 +161,14 @@ static int fsp_find_and_relocate(struct prog *fsp)
 static void fsp_load(void)
 {
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
-	int is_s3_wakeup = acpi_is_wakeup_s3();
 
-	if (is_s3_wakeup && !CONFIG(NO_STAGE_CACHE)) {
-		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
+	if (resume_from_stage_cache()) {
 		stage_cache_load_stage(STAGE_REFCODE, &fsp);
 	} else {
 		fsp_find_and_relocate(&fsp);
-		fsp_cache_save(&fsp);
+
+		if (prog_entry(&fsp))
+			stage_cache_add(STAGE_REFCODE, &fsp);
 	}
 
 	/* FSP_INFO_HEADER is set as the program entry. */

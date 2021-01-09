@@ -9,7 +9,6 @@
 #include <program_loading.h>
 #include <reset.h>
 #include <rmodule.h>
-#include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
@@ -183,8 +182,7 @@ void run_postcar_phase(struct postcar_frame *pcf)
 
 	postcar_commit_mtrrs(pcf);
 
-	if (!CONFIG(NO_STAGE_CACHE) &&
-				romstage_handoff_is_resume()) {
+	if (resume_from_stage_cache()) {
 		stage_cache_load_stage(STAGE_POSTCAR, &prog);
 		/* This is here to allow platforms to pass different stack
 		   parameters between S3 resume and normal boot. On the

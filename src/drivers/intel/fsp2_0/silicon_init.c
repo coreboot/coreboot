@@ -205,7 +205,7 @@ void fsps_load(bool s3wake)
 	if (load_done)
 		return;
 
-	if (s3wake && !CONFIG(NO_STAGE_CACHE)) {
+	if (resume_from_stage_cache()) {
 		printk(BIOS_DEBUG, "Loading FSPS from stage_cache\n");
 		stage_cache_load_stage(STAGE_REFCODE, fsps);
 		if (fsp_validate_component(&fsps_hdr, prog_rdev(fsps)) != CB_SUCCESS)

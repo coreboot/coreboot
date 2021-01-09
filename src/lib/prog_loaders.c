@@ -10,7 +10,6 @@
 #include <lib.h>
 #include <program_loading.h>
 #include <reset.h>
-#include <romstage_handoff.h>
 #include <rmodule.h>
 #include <stage_cache.h>
 #include <symbols.h>
@@ -76,9 +75,6 @@ int __weak prog_locate_hook(struct prog *prog) { return 0; }
 
 static void run_ramstage_from_resume(struct prog *ramstage)
 {
-	if (!romstage_handoff_is_resume())
-		return;
-
 	/* Load the cached ramstage to runtime location. */
 	stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
 
@@ -119,7 +115,7 @@ void run_ramstage(void)
 	 * Only x86 systems using ramstage stage cache currently take the same
 	 * firmware path on resume.
 	 */
-	if (ENV_X86 && !CONFIG(NO_STAGE_CACHE))
+	if (ENV_X86 && resume_from_stage_cache())
 		run_ramstage_from_resume(&ramstage);
 
 	vboot_run_logic();

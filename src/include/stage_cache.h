@@ -3,6 +3,7 @@
 #ifndef _STAGE_CACHE_H_
 #define _STAGE_CACHE_H_
 
+#include <romstage_handoff.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <program_loading.h>
@@ -37,6 +38,15 @@ static inline void stage_cache_add_raw(int stage_id, const void *base, const siz
 static inline void stage_cache_get_raw(int stage_id, void **base, size_t *size) {}
 
 #endif
+
+static inline int resume_from_stage_cache(void)
+{
+	if (CONFIG(NO_STAGE_CACHE))
+		return 0;
+
+	/* TBD: Replace this with acpi_is_wakeup_s3(). */
+	return romstage_handoff_is_resume();
+}
 
 /* Fill in parameters for the external stage cache, if utilized. */
 void stage_cache_external_region(void **base, size_t *size);

@@ -17,17 +17,6 @@ static void ABI_X86 send_to_console(unsigned char b)
 	console_tx_byte(b);
 }
 
-static efi_wrapper_entry_t load_refcode_from_cache(void)
-{
-	struct prog refcode;
-
-	printk(BIOS_DEBUG, "refcode loading from cache.\n");
-
-	stage_cache_load_stage(STAGE_REFCODE, &refcode);
-
-	return (efi_wrapper_entry_t)prog_entry(&refcode);
-}
-
 static efi_wrapper_entry_t load_reference_code(void)
 {
 	struct prog prog =
@@ -37,8 +26,10 @@ static efi_wrapper_entry_t load_reference_code(void)
 		.prog = &prog,
 	};
 
-	if (acpi_is_wakeup_s3()) {
-		return load_refcode_from_cache();
+	if (resume_from_stage_cache()) {
+		struct prog refcode;
+		stage_cache_load_stage(STAGE_REFCODE, &refcode);
+		return prog_entry(&refcode);
 	}
 
 	if (prog_locate(&prog)) {

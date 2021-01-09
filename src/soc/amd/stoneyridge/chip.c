@@ -6,7 +6,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
@@ -138,9 +137,7 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 
 static void earliest_ramstage(void *unused)
 {
-	int s3_resume = acpi_s3_resume_allowed() &&
-			romstage_handoff_is_resume();
-	if (!s3_resume) {
+	if (!acpi_is_wakeup_s3()) {
 		post_code(0x46);
 		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 			psp_load_named_blob(BLOB_SMU_FW2, "smu_fw2");

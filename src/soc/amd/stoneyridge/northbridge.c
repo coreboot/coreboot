@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <romstage_handoff.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <agesa_headers.h>
@@ -408,7 +407,7 @@ void fam15_finalize(void *chip_info)
 void domain_enable_resources(struct device *dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */
-	if (!romstage_handoff_is_resume())
+	if (!acpi_is_wakeup_s3())
 		do_agesawrapper(AMD_INIT_MID, "amdinitmid");
 }
 

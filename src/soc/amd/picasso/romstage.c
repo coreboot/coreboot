@@ -143,13 +143,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 asmlinkage void car_stage_entry(void)
 {
-	int s3_resume;
-
 	post_code(0x40);
 	console_init();
-
-	post_code(0x41);
-	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 
 	post_code(0x42);
 	u32 val = cpuid_eax(1);
@@ -159,7 +154,7 @@ asmlinkage void car_stage_entry(void)
 	fill_chipset_state();
 
 	post_code(0x43);
-	fsp_memory_init(s3_resume);
+	fsp_memory_init(acpi_is_wakeup_s3());
 	soc_update_mrc_cache();
 
 	memmap_stash_early_dram_usage();

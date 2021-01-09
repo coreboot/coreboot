@@ -20,13 +20,12 @@
 #include <amdblocks/agesawrapper_call.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 
 #include "chip.h"
 
-void __weak mainboard_romstage_entry_s3(int s3_resume)
+void __weak mainboard_romstage_entry(void)
 {
 	/* By default, don't do anything */
 }
@@ -54,7 +53,7 @@ asmlinkage void car_stage_entry(void)
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
-	int s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
+	int s3_resume = acpi_is_wakeup_s3();
 	int i;
 
 	console_init();
@@ -63,7 +62,7 @@ asmlinkage void car_stage_entry(void)
 	if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 		psp_load_named_blob(BLOB_SMU_FW, "smu_fw");
 
-	mainboard_romstage_entry_s3(s3_resume);
+	mainboard_romstage_entry();
 	elog_boot_notify(s3_resume);
 
 	bsp_agesa_call();

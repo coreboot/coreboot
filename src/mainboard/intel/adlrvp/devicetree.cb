@@ -40,39 +40,44 @@ chip soc/intel/alderlake
 	register "PrmrrSize" = "0"
 
 	# Enable PCH PCIE RP 5 using CLK 2
-	register "PcieRpEnable[4]" = "1"
+	register "PchPcieRpEnable[4]" = "1"
 	register "PcieClkSrcClkReq[2]" = "2"
 	register "PcieClkSrcUsage[2]" = "0x4"
 	register "PcieRpClkReqDetect[4]" = "1"
 
 	# Enable PCH PCIE RP 6 using CLK 5
-	register "PcieRpEnable[5]" = "1"
+	register "PchPcieRpEnable[5]" = "1"
 	register "PcieClkSrcClkReq[5]" = "5"
 	register "PcieClkSrcUsage[5]" = "0x5"
 	register "PcieRpClkReqDetect[5]" = "1"
 
 	# Enable PCH PCIE RP 8 using CLK 6
-	register "PcieRpEnable[7]" = "1"
+	register "PchPcieRpEnable[7]" = "1"
 	register "PcieClkSrcClkReq[7]" = "6" # CLKSRC -> 7 and CLKREQ -> 6
 	register "PcieClkSrcUsage[6]" = "PCIE_CLK_FREE" # CLK 6 is using free running CLK
 	register "PcieRpClkReqDetect[6]" = "1"
 
 	# Enable PCH PCIE RP 9 using CLK 1
-	register "PcieRpEnable[8]" = "1"
+	register "PchPcieRpEnable[8]" = "1"
 	register "PcieClkSrcClkReq[1]" = "1"
 	register "PcieClkSrcUsage[1]" = "0x8"
 	register "PcieRpClkReqDetect[8]" = "1"
 
 	# Enable PCH PCIE RP 11 for optane
-	register "PcieRpEnable[10]" = "1"
+	register "PchPcieRpEnable[10]" = "1"
 	# Hybrid storage mode
 	register "HybridStorageMode" = "1"
 
-	# Enable CPU PCIE RP 1 using PEG CLK 0
+	# Enable CPU PCIE RP 1 using CLK 0
+	register "CpuPcieRpEnable[0]" = "1"
 	register "PcieClkSrcUsage[0]" = "0x40"
 
-	# Enable PCU PCIE PEG Slot 1 and 2
+	# Enable CPU PCIE RP 2 using CLK 3
+	register "CpuPcieRpEnable[1]" = "1"
 	register "PcieClkSrcUsage[3]" = "0x41"
+
+	# Enable CPU PCIE RP 3 using CLK 4
+	register "CpuPcieRpEnable[2]" = "1"
 	register "PcieClkSrcUsage[4]" = "0x42"
 
 	# Mark LAN CLK pins as unused as GbE 0:0x1f.6 is disabled below
@@ -177,10 +182,12 @@ chip soc/intel/alderlake
 
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
+		device pci 01.0 on  end # PEG10
 		device pci 02.0 on  end # Graphics
 		device pci 04.0 on  end # DPTF
 		device pci 05.0 on  end # IPU
 		device pci 06.0 on  end # PEG60
+		device pci 06.2 on  end # PEG62
 		device pci 07.0 on  end # TBT_PCIe0
 		device pci 07.1 on  end # TBT_PCIe1
 		device pci 07.2 on  end # TBT_PCIe2

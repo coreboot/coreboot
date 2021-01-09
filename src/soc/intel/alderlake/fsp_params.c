@@ -270,7 +270,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable Hybrid storage auto detection */
 	params->HybridStorageMode = config->HybridStorageMode;
 
-	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+	for (i = 0; i < CONFIG_MAX_PCH_ROOT_PORTS; i++) {
 		params->PcieRpL1Substates[i] =
 			get_l1_substate_control(config->PcieRpL1Substates[i]);
 		params->PcieRpLtrEnable[i] = config->PcieRpLtrEnable[i];

@@ -119,9 +119,17 @@ config HEAP_SIZE
 	hex
 	default 0x10000
 
-config MAX_ROOT_PORTS
+config MAX_PCH_ROOT_PORTS
 	int
 	default 12
+
+config MAX_CPU_ROOT_PORTS
+	int
+	default 3
+
+config MAX_ROOT_PORTS
+	int
+	default MAX_PCH_ROOT_PORTS
 
 config MAX_PCIE_CLOCKS
 	int

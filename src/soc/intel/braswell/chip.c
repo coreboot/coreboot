@@ -120,8 +120,6 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->PcdPchUsbHsicPort		= config->PcdPchUsbHsicPort;
 	params->PcdPcieRootPortSpeed		= 0;
 	params->PcdPchSsicEnable		= config->PcdPchSsicEnable;
-	params->PcdLogoPtr			= config->PcdLogoPtr;
-	params->PcdLogoSize			= config->PcdLogoSize;
 	params->PcdRtcLock			= 0;
 	params->PMIC_I2CBus			= config->PMIC_I2CBus;
 	params->ISPEnable			= config->ISPEnable;

@@ -256,9 +256,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = pcidev_path_on_root(PCH_DEVFN_CSE_3);
 	params->Heci3Enabled = dev && dev->enabled;
 
-	params->LogoPtr = config->LogoPtr;
-	params->LogoSize = config->LogoSize;
-
 	params->CpuConfig.Bits.VmxEnable = CONFIG(ENABLE_VMX);
 
 	params->PchPmWoWlanEnable = config->PchPmWoWlanEnable;

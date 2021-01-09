@@ -288,14 +288,6 @@ struct soc_intel_skylake_config {
 	u8 SkipExtGfxScan;
 	u8 ScanExtGfxForLegacyOpRom;
 
-	/*
-	 * The following fields come from fsp_vpd.h
-	 * These are configuration values that are passed to FSP during
-	 * SiliconInit.
-	 */
-	u32 LogoPtr;
-	u32 LogoSize;
-
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
 	u8 GpioIrqSelect;
 	/* SCI IRQ Select  The valid values is 9, 10, 11 and 20 21, 22, 23*/

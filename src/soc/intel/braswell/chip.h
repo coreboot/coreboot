@@ -131,8 +131,6 @@ struct soc_intel_braswell_config {
 	uint8_t  PcdPchUsbSsicPort;
 	uint8_t  PcdPchUsbHsicPort;
 	uint8_t  PcdPchSsicEnable;
-	uint32_t PcdLogoPtr;
-	uint32_t PcdLogoSize;
 	uint8_t  PMIC_I2CBus;
 	uint8_t  ISPEnable;
 	uint8_t  ISPPciDevConfig;

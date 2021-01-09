@@ -78,7 +78,7 @@ config SKIP_FSP_CAR
 	help
 	  Selected by platforms that implement their own CAR setup.
 
-config FSP1_1_DISPLAY_LOGO
+config BMP_LOGO
 	bool "Enable logo"
 	default n
 	help
@@ -87,7 +87,7 @@ config FSP1_1_DISPLAY_LOGO
 
 config FSP1_1_LOGO_FILE_NAME
 	string "Logo file"
-	depends on FSP1_1_DISPLAY_LOGO
+	depends on BMP_LOGO
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
 
 endif #PLATFORM_USES_FSP1_1

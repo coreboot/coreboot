@@ -59,16 +59,13 @@ int soc_fsp_multi_phase_init_is_enable(void);
 uint8_t fsp_memory_mainboard_version(void);
 uint8_t fsp_memory_soc_version(void);
 
-/* Load logo to be displayed by FSP */
-const struct cbmem_entry *fsp_load_logo(UINT32 *logo_ptr, UINT32 *logo_size);
-
 /* Callback after processing FSP notify */
 void platform_fsp_notify_status(enum fsp_notify_phase phase);
 
 /* Initialize memory margin analysis settings. */
 void setup_mma(FSP_M_CONFIG *memory_cfg);
 /* Update the SOC specific logo param and load the logo. */
-const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd);
+void soc_load_logo(FSPS_UPD *supd);
 /* Update the SOC specific memory config param for mma. */
 void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	struct mma_config_param *mma_cfg);

@@ -139,6 +139,7 @@ ramstage-y += stack.c
 ramstage-y += hexstrtobin.c
 ramstage-y += wrdd.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+ramstage-$(CONFIG_BMP_LOGO) += bmp_logo.c
 ramstage-$(CONFIG_BOOTSPLASH) += bootsplash.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

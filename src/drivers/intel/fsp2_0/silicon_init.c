@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <bootsplash.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
@@ -81,7 +82,6 @@ static void do_silicon_init(struct fsp_header *hdr)
 	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
-	const struct cbmem_entry *logo_entry = NULL;
 	fsp_multi_phase_si_init_fn multi_phase_si_init;
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
@@ -106,8 +106,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 	platform_fsp_silicon_init_params_cb(upd);
 
 	/* Populate logo related entries */
-	if (CONFIG(FSP2_0_DISPLAY_LOGO))
-		logo_entry = soc_load_logo(upd);
+	if (CONFIG(BMP_LOGO))
+		soc_load_logo(upd);
 
 	/* Call SiliconInit */
 	silicon_init = (void *) (uintptr_t)(hdr->image_base +
@@ -127,8 +127,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
 
-	if (logo_entry)
-		cbmem_entry_remove(logo_entry);
+	if (CONFIG(BMP_LOGO))
+		bmp_release_logo();
 
 	fsp_debug_after_silicon_init(status);
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
@@ -226,8 +226,4 @@ void fsp_silicon_init(bool s3wake)
 	do_silicon_init(&fsps_hdr);
 }
 
-/* Load bmp and set FSP parameters, fsp_load_logo can be used */
-__weak const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd)
-{
-	return NULL;
-}
+__weak void soc_load_logo(FSPS_UPD *supd) { }

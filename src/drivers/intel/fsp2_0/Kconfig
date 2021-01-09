@@ -184,7 +184,7 @@ config HAVE_FSP_LOGO_SUPPORT
 	bool
 	default n
 
-config FSP2_0_DISPLAY_LOGO
+config BMP_LOGO
 	bool "Enable logo"
 	default n
 	depends on HAVE_FSP_LOGO_SUPPORT
@@ -195,7 +195,7 @@ config FSP2_0_DISPLAY_LOGO
 
 config FSP2_0_LOGO_FILE_NAME
 	string "Logo file"
-	depends on FSP2_0_DISPLAY_LOGO
+	depends on BMP_LOGO
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
 
 config FSP_COMPRESS_FSP_S_LZMA

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootsplash.h>
 #include <cbmem.h>
 #include <fsp/api.h>
 #include <acpi/acpi.h>
@@ -443,7 +444,7 @@ __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 }
 
 /* Handle FSP logo params */
-const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd)
+void soc_load_logo(FSPS_UPD *supd)
 {
-	return fsp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
+	bmp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
 }

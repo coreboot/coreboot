@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootmode.h>
+#include <bootsplash.h>
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <fsp/ramstage.h>
@@ -58,7 +59,6 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	EFI_STATUS status;
 	UPD_DATA_REGION *upd_ptr;
 	VPD_DATA_REGION *vpd_ptr;
-	const struct cbmem_entry *logo_entry = NULL;
 
 	/* Display the FSP header */
 	if (fsp_info_header == NULL) {
@@ -85,8 +85,9 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 		load_vbt(&silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
-	if (CONFIG(FSP1_1_DISPLAY_LOGO) && !is_s3_wakeup)
-		logo_entry = soc_load_logo(&silicon_init_params);
+	if (CONFIG(BMP_LOGO))
+		bmp_load_logo(&silicon_init_params.PcdLogoPtr,
+			      &silicon_init_params.PcdLogoSize);
 
 	/* Display the UPD data */
 	if (CONFIG(DISPLAY_UPD_DATA))
@@ -106,8 +107,8 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* The logo_entry can be freed up now as it is not required any longer */
-	if (logo_entry && !is_s3_wakeup)
-		cbmem_entry_remove(logo_entry);
+	if (CONFIG(BMP_LOGO))
+		bmp_release_logo();
 
 	/* Mark graphics init done after SiliconInit if VBT was provided */
 #if CONFIG(RUN_FSP_GOP)

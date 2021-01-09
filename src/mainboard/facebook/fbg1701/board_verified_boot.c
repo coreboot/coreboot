@@ -57,7 +57,7 @@ const verify_item_t postcar_verify_list[] = {
 static const verify_item_t ram_stage_additional_list[] = {
 	{ VERIFY_FILE, OP_ROM_VBT, { { NULL, CBFS_TYPE_RAW } },
 		HASH_IDX_OPROM, MBOOT_PCR_INDEX_2 },
-#if CONFIG(FSP1_1_DISPLAY_LOGO)
+#if CONFIG(BMP_LOGO)
 	{ VERIFY_FILE, "logo.bmp", { { NULL, CBFS_TYPE_RAW } },
 		HASH_IDX_LOGO, MBOOT_PCR_INDEX_2 },
 #endif

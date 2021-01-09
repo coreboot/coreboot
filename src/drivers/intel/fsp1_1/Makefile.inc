@@ -21,7 +21,6 @@ romstage-$(CONFIG_MMA) += mma_core.c
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
-ramstage-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_INTEL_GMA_ADD_VBT) += vbt.c
 ramstage-$(CONFIG_MMA) += mma_core.c
@@ -44,7 +43,7 @@ fsp.bin-COREBOOT-position := $(CONFIG_FSP_LOC)
 endif
 
 # Add logo to the cbfs image
-cbfs-files-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.bmp
+cbfs-files-$(CONFIG_BMP_LOGO) += logo.bmp
 logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP1_1_LOGO_FILE_NAME))
 logo.bmp-type := raw
 logo.bmp-compression := LZMA

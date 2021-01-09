@@ -6,12 +6,6 @@
 #include <fsp/util.h>
 #include <stdint.h>
 
-/*
- * Load FSP from stage cache or CBFS. This allows SoCs to load FSP separately
- * from calling silicon init. It might be required in cases where stage cache is
- * no longer available by the point SoC calls into silicon init.
- */
-void fsp_load(void);
 /* Perform Intel silicon init. */
 void intel_silicon_init(void);
 void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup);

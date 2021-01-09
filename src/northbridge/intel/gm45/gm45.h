@@ -274,7 +274,7 @@ enum {
  * All registers (4 ranks per channel) have to be set.
  */
 #define CxDRBy_MCHBAR(x, r)	(0x1200 + (x * 0x0100) + ((r / 2) * 4))
-#define CxDRBy_BOUND_SHIFT(r)	((r % 2) * 16)
+#define CxDRBy_BOUND_SHIFT(r)	(((r) % 2) * 16)
 #define CxDRBy_BOUND_MASK(r)	(0x1fc << CxDRBy_BOUND_SHIFT(r))
 #define CxDRBy_BOUND_MB(r, b)	/* for boundary in MB b */ \
 	(((b >> 5) << CxDRBy_BOUND_SHIFT(r)) & CxDRBy_BOUND_MASK(r))

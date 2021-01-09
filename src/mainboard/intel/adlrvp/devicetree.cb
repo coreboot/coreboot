@@ -80,6 +80,12 @@ chip soc/intel/alderlake
 	register "CpuPcieRpEnable[2]" = "1"
 	register "PcieClkSrcUsage[4]" = "0x42"
 
+	# W/A to FSP issue where FSP is using PCH PCIE port
+	# enable UPD to download FW on CPU PCIE
+	register "PchPcieRpEnable[0]" = "1"
+	register "PchPcieRpEnable[2]" = "1"
+	register "PchPcieRpEnable[3]" = "1"
+
 	# Mark LAN CLK pins as unused as GbE 0:0x1f.6 is disabled below
 	register "PcieClkSrcUsage[7]" = "PCIE_CLK_NOTUSED"
 
@@ -253,8 +259,8 @@ chip soc/intel/alderlake
 		device pci 19.2 off end # UART2
 		device pci 1c.0 on  end # RP1
 		device pci 1c.1 off end # RP2
-		device pci 1c.2 off end # RP3
-		device pci 1c.3 off end # RP4
+		device pci 1c.2 on  end # RP3 # W/A to FSP issue
+		device pci 1c.3 on  end # RP4 # W/A to FSP issue
 		device pci 1c.4 on  end # RP5
 		device pci 1c.5 on  end # RP6
 		device pci 1c.6 off end # RP7

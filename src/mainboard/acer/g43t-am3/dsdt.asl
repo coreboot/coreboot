@@ -15,7 +15,6 @@ DefinitionBlock(
 	OSYS = 2002
 	// global NVS and variables
 	#include <southbridge/intel/common/acpi/platform.asl>
-	#include <southbridge/intel/i82801jx/acpi/globalnvs.asl>
 
 	Device (\_SB.PCI0)
 	{

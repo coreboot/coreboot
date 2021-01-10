@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801jx.h"
 
@@ -12,23 +11,6 @@
  * initialize it with a sane value
  */
 u16 pmbase = DEFAULT_PMBASE;
-
-int southbridge_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x32:
-		printk(BIOS_DEBUG, "OS Init\n");
-		/* gnvs->smif:
-		 *  On success, the IO Trap Handler returns 0
-		 *  On failure, the IO Trap Handler returns a value != 0
-		 */
-		gnvs->smif = 0;
-		return 1; /* IO trap handled */
-	}
-
-	/* Not handled */
-	return 0;
-}
 
 void southbridge_smi_monitor(void)
 {
@@ -46,10 +28,9 @@ void southbridge_smi_monitor(void)
 			mask |= (0xff << ((i - 16) << 3));
 	}
 
-	/* IOTRAP(3) SMI function call */
+	/* IOTRAP(3) SMI function call (unused) */
 	if (IOTRAP(3)) {
-		if (gnvs && gnvs->smif)
-			io_trap_handler(gnvs->smif); // call function smif
+		printk(BIOS_DEBUG, "SMI function call not implemented\n");
 		return;
 	}
 

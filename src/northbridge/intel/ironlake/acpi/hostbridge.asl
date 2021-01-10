@@ -5,6 +5,8 @@ Name(_CID,EISAID("PNP0A03"))	// PCI
 
 Name(_BBN, 0)
 
+Name(\PPCM, 0)
+
 Device (MCHC)
 {
 	Name(_ADR, 0x00000000)	// 0:0.0

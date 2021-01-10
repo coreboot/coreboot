@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <northbridge/intel/ironlake/ironlake.h>
 #include <ec/acpi/ec.h>

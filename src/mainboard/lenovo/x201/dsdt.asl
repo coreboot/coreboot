@@ -20,9 +20,6 @@ DefinitionBlock(
 
 	#include "acpi/platform.asl"
 
-	/* global NVS and variables */
-	#include <southbridge/intel/ibexpeak/acpi/globalnvs.asl>
-
 	/* General Purpose Events */
 	#include "acpi/gpe.asl"
 
@@ -32,6 +29,9 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <northbridge/intel/ironlake/acpi/ironlake.asl>
+
+			/* TBD: Remove. */
+			Name(\XHCI, 0)
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>

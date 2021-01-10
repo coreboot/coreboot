@@ -38,6 +38,12 @@ config ACPI_NO_PCAT_8259
 	help
 	  Selected by platforms that don't expose a PC/AT 8259 PIC pair.
 
+config ACPI_EINJ
+	def_bool n
+	depends on HAVE_ACPI_TABLES
+	help
+	  This variable provides control for ACPI error injection table (EINJ)
+
 config HAVE_ACPI_TABLES
 	bool
 	help

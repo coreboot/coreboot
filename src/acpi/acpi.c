@@ -785,6 +785,152 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
+/*
+ * This method adds the ACPI error injection capability. It fills the default information.
+ * HW dependent code (caller) can modify the defaults upon return. If no changes are necessary
+ * and the defaults are acceptable then caller can simply add the table (acpi_add_table).
+ * INPUTS:
+ * einj - ptr to the starting location of EINJ table
+ * actions - number of actions to trigger an error (HW dependent)
+ * addr - address of trigger action table. This should be ACPI reserved memory and it will be
+ *        shared between OS and FW.
+ */
+void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
+{
+	int i;
+	acpi_header_t *header = &(einj->header);
+	acpi_injection_header_t *inj_header = &(einj->inj_header);
+	acpi_einj_smi_t *einj_smi = (acpi_einj_smi_t *)addr;
+	acpi_einj_trigger_table_t *tat;
+	if (!header)
+		return;
+
+	printk(BIOS_DEBUG, "%s einj_smi = %p\n", __func__, einj_smi);
+	memset(einj_smi, 0, sizeof(acpi_einj_smi_t));
+	tat = (acpi_einj_trigger_table_t *)(einj_smi + sizeof(acpi_einj_smi_t));
+	tat->header_size =  16;
+	tat->revision =  0;
+	tat->table_size =  sizeof(acpi_einj_trigger_table_t) +
+		sizeof(acpi_einj_action_table_t) * actions - 1;
+	tat->entry_count = actions;
+	printk(BIOS_DEBUG, "%s trigger_action_table = %p\n", __func__, tat);
+
+	for (i = 0; i < actions; i++) {
+		tat->trigger_action[i].action = TRIGGER_ERROR;
+		tat->trigger_action[i].instruction = NO_OP;
+		tat->trigger_action[i].flags = FLAG_IGNORE;
+		tat->trigger_action[i].reg.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+		tat->trigger_action[i].reg.bit_width = 64;
+		tat->trigger_action[i].reg.bit_offset = 0;
+		tat->trigger_action[i].reg.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS;
+		tat->trigger_action[i].reg.addr = 0;
+		tat->trigger_action[i].value = 0;
+		tat->trigger_action[i].mask = 0xFFFFFFFF;
+	}
+
+	acpi_einj_action_table_t default_actions[ACTION_COUNT] = {
+		[0] = {
+			.action = BEGIN_INJECT_OP,
+			.instruction = WRITE_REGISTER_VALUE,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->op_state),
+			.value = 0,
+			.mask = 0xFFFFFFFF
+		},
+		[1] = {
+			.action = GET_TRIGGER_ACTION_TABLE,
+			.instruction = READ_REGISTER,
+			.flags = FLAG_IGNORE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->trigger_action_table),
+			.value = 0,
+			.mask = 0xFFFFFFFFFFFFFFFF
+		},
+		[2] = {
+			.action = SET_ERROR_TYPE,
+			.instruction = WRITE_REGISTER,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->err_inject[0]),
+			.value = 0,
+			.mask = 0xFFFFFFFF
+		},
+		[3] = {
+			.action = GET_ERROR_TYPE,
+			.instruction = READ_REGISTER,
+			.flags = FLAG_IGNORE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->err_inj_cap),
+			.value = 0,
+			.mask = 0xFFFFFFFF
+		},
+		[4] = {
+			.action = END_INJECT_OP,
+			.instruction = WRITE_REGISTER_VALUE,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->op_state),
+			.value = 0,
+			.mask = 0xFFFFFFFF
+
+		},
+		[5] = {
+			.action = EXECUTE_INJECT_OP,
+			.instruction = WRITE_REGISTER_VALUE,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_IO(),
+			.value = 0x9a,
+			.mask = 0xFFFF,
+		},
+		[6] = {
+			.action = CHECK_BUSY_STATUS,
+			.instruction = READ_REGISTER_VALUE,
+			.flags = FLAG_IGNORE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->op_status),
+			.value = 1,
+			.mask = 1,
+		},
+		[7] = {
+			.action = GET_CMD_STATUS,
+			.instruction = READ_REGISTER,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->cmd_sts),
+			.value = 0,
+			.mask = 0x1fe,
+		},
+		[8] = {
+			.action = SET_ERROR_TYPE_WITH_ADDRESS,
+			.instruction = WRITE_REGISTER,
+			.flags = FLAG_PRESERVE,
+			.reg = EINJ_REG_MEMORY((u64)(uintptr_t)&einj_smi->setaddrtable),
+			.value = 1,
+			.mask = 0xffffffff
+		}
+	};
+
+	einj_smi->err_inj_cap = ACPI_EINJ_DEFAULT_CAP;
+	einj_smi->trigger_action_table = (u64) (uintptr_t)tat;
+
+	for (i = 0; i < ACTION_COUNT; i++)
+		printk(BIOS_DEBUG, "default_actions[%d].reg.addr is %llx\n", i,
+			default_actions[i].reg.addr);
+
+	memset((void *)einj, 0, sizeof(einj));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "EINJ", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->length = sizeof(acpi_einj_t);
+	header->revision = 1;
+	inj_header->einj_header_size = sizeof(acpi_injection_header_t);
+	inj_header->entry_count = ACTION_COUNT;
+
+	printk(BIOS_DEBUG, "%s einj->action_table = %p\n",
+		 __func__, einj->action_table);
+	memcpy((void *)einj->action_table, (void *)default_actions, sizeof(einj->action_table));
+	header->checksum = acpi_checksum((void *)einj, sizeof(einj));
+}
+
 void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,
 		      unsigned long (*acpi_fill_vfct)(const struct device *device,
@@ -1756,6 +1902,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 1;
 	case RSDP: /* ACPI 2.0 upto 6.3: 2 */
 		return 2;
+	case EINJ:
+		return 1;
 	case HEST:
 		return 1;
 	case NHLT:

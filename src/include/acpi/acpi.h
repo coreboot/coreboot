@@ -71,7 +71,7 @@ enum coreboot_acpi_ids {
 
 enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
-	BERT, DBG2, DMAR, DSDT, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
+	BERT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
 	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
@@ -979,6 +979,134 @@ struct acpi_spmi {
 	};
 	u8 reserved3;
 } __packed;
+
+/* EINJ APEI Standard Definitions */
+/* EINJ Error Types
+   Refer to the ACPI spec, EINJ section, for more info on bit definitions
+*/
+#define ACPI_EINJ_CPU_CE		(1 << 0)
+#define ACPI_EINJ_CPU_UCE		(1 << 1)
+#define ACPI_EINJ_CPU_UCE_FATAL		(1 << 2)
+#define ACPI_EINJ_MEM_CE		(1 << 3)
+#define ACPI_EINJ_MEM_UCE		(1 << 4)
+#define ACPI_EINJ_MEM_UCE_FATAL		(1 << 5)
+#define ACPI_EINJ_PCIE_CE		(1 << 6)
+#define ACPI_EINJ_PCIE_UCE_NON_FATAL	(1 << 7)
+#define ACPI_EINJ_PCIE_UCE_FATAL	(1 << 8)
+#define ACPI_EINJ_PLATFORM_CE		(1 << 9)
+#define ACPI_EINJ_PLATFORM_UCE		(1 << 10)
+#define ACPI_EINJ_PLATFORM_UCE_FATAL	(1 << 11)
+#define ACPI_EINJ_VENDOR_DEFINED	(1 << 31)
+#define ACPI_EINJ_DEFAULT_CAP		(ACPI_EINJ_MEM_CE | ACPI_EINJ_MEM_UCE | \
+					ACPI_EINJ_PCIE_CE | ACPI_EINJ_PCIE_UCE_FATAL)
+
+/* EINJ actions */
+#define ACTION_COUNT			9
+#define BEGIN_INJECT_OP			0x00
+#define GET_TRIGGER_ACTION_TABLE	0x01
+#define SET_ERROR_TYPE			0x02
+#define GET_ERROR_TYPE			0x03
+#define END_INJECT_OP			0x04
+#define EXECUTE_INJECT_OP		0x05
+#define CHECK_BUSY_STATUS		0x06
+#define GET_CMD_STATUS			0x07
+#define SET_ERROR_TYPE_WITH_ADDRESS	0x08
+#define TRIGGER_ERROR			0xFF
+
+/* EINJ Instructions */
+#define READ_REGISTER			0x00
+#define READ_REGISTER_VALUE		0x01
+#define WRITE_REGISTER			0x02
+#define WRITE_REGISTER_VALUE		0x03
+#define NO_OP				0x04
+
+/* EINJ (Error Injection Table) */
+typedef struct acpi_gen_regaddr1 {
+	u8  space_id;		/* Address space ID */
+	u8  bit_width;		/* Register size in bits */
+	u8  bit_offset;		/* Register bit offset */
+	u8  access_size;	/* Access size since ACPI 2.0c */
+	u64 addr;		/* Register address */
+} __packed acpi_addr64_t;
+
+/* Instruction entry */
+typedef struct acpi_einj_action_table {
+	u8 action;
+	u8 instruction;
+	u16 flags;
+	acpi_addr64_t reg;
+	u64 value;
+	u64 mask;
+} __packed acpi_einj_action_table_t;
+
+typedef struct acpi_injection_header {
+	u32 einj_header_size;
+	u32 flags;
+	u32 entry_count;
+} __packed acpi_injection_header_t;
+
+typedef struct acpi_einj_trigger_table {
+	u32 header_size;
+	u32 revision;
+	u32 table_size;
+	u32 entry_count;
+	acpi_einj_action_table_t trigger_action[1];
+} __packed acpi_einj_trigger_table_t;
+
+typedef struct set_error_type {
+	u32 errtype;
+	u32 vendorerrortype;
+	u32 flags;
+	u32 apicid;
+	u64 memaddr;
+	u64 memrange;
+	u32 pciesbdf;
+} __packed set_error_type_t;
+
+#define EINJ_PARAM_NUM 6
+typedef struct acpi_einj_smi {
+	u64 op_state;
+	u64 err_inject[EINJ_PARAM_NUM];
+	u64 trigger_action_table;
+	u64 err_inj_cap;
+	u64 op_status;
+	u64 cmd_sts;
+	u64 einj_addr;
+	u64 einj_addr_msk;
+	set_error_type_t setaddrtable;
+	u64 reserved[50];
+} __packed acpi_einj_smi_t;
+
+/* EINJ Flags */
+#define EINJ_DEF_TRIGGER_PORT	0xb2
+#define FLAG_PRESERVE		0x01
+#define FLAG_IGNORE		0x00
+
+/* EINJ Registers */
+#define EINJ_REG_MEMORY(address) \
+	{ \
+	.space_id = ACPI_ADDRESS_SPACE_MEMORY, \
+	.bit_width = 64, \
+	.bit_offset = 0, \
+	.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS, \
+	.addr = address}
+
+#define EINJ_REG_IO() \
+	{ \
+	.space_id = ACPI_ADDRESS_SPACE_IO, \
+	.bit_width = 0x10, \
+	.bit_offset = 0, \
+	.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS, \
+	.addr = EINJ_DEF_TRIGGER_PORT} /* HW dependent code can override this also */
+
+typedef struct acpi_einj {
+	acpi_header_t header;
+	acpi_injection_header_t inj_header;
+	acpi_einj_action_table_t action_table[ACTION_COUNT];
+} __packed acpi_einj_t;
+
+
+void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 

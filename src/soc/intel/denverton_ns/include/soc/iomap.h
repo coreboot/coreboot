@@ -12,7 +12,6 @@
 
 /* Southbridge internal device IO BARs (Set to match FSP settings) */
 #define DEFAULT_PMBASE 0x1800
-#define DEFAULT_ACPI_BASE DEFAULT_PMBASE
 #define ACPI_BASE_ADDRESS DEFAULT_PMBASE
 #define DEFAULT_TCO_BASE 0x400
 

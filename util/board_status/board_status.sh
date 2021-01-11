@@ -315,7 +315,14 @@ fi
 
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
-tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
+case $(uname) in
+	FreeBSD)
+		tmpdir=$(mktemp -d -t coreboot_board_status)
+		;;
+	*)
+		tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
+		;;
+esac
 
 # Obtain coreboot config by running cbfstool on the ROM image. cbfstool may
 # already exist in build/ or util/cbfstool/, but if not then we'll build it

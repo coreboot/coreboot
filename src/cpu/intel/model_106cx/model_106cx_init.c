@@ -63,9 +63,6 @@ static void model_106cx_init(struct device *cpu)
 {
 	char processor_name[49];
 
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);

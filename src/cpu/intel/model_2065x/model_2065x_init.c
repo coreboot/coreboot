@@ -185,9 +185,6 @@ static void model_2065x_init(struct device *cpu)
 {
 	char processor_name[49];
 
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-
 	/* Clear out pending MCEs */
 	configure_mca();
 

@@ -264,9 +264,6 @@ static void model_1067x_init(struct device *cpu)
 	/* Test for TM2 only if EIST is available. */
 	const char tm2 = eist && (cpuid1.ecx & (1 << 8));
 
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);

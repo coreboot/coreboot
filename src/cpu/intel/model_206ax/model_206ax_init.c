@@ -425,9 +425,6 @@ static void model_206ax_report(void)
 static void model_206ax_init(struct device *cpu)
 {
 
-	/* Turn on caching if we haven't already */
-	x86_enable_cache();
-
 	/* Clear out pending MCEs */
 	configure_mca();
 

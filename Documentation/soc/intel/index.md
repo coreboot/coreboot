@@ -11,4 +11,4 @@ This section contains documentation about coreboot on specific Intel SOCs.
 - [Microcode Updates](microcode.md)
 - [Firmware Interface Table](fit.md)
 - [Apollolake](apollolake/index.md)
-- [CSE FW Update](cse_fw_update/cse_fw_update_model.md)
+- [CSE FW Update](cse_fw_update/cse_fw_update.md)

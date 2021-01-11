@@ -212,7 +212,21 @@ Long options:
 "
 }
 
-getopt -T
+case $(uname) in
+	FreeBSD)
+		if [ ! -x /usr/local/bin/getopt ]; then
+			echo "Please install getopt, or build and install misc/getopt from ports."
+			exit $EXIT_FAILURE
+		else
+			GETOPT=/usr/local/bin/getopt
+		fi
+		;;
+	*)
+	GETOPT=/usr/bin/getopt
+	;;
+esac
+
+$GETOPT -T
 if [ $? -ne 4 ]; then
 	echo "GNU-compatible getopt(1) required."
 	exit $EXIT_FAILURE
@@ -222,7 +236,7 @@ LONGOPTS="cbmem:,clobber,help,image:,remote-host:,upload-results"
 LONGOPTS="${LONGOPTS},serial-device:,serial-speed:"
 LONGOPTS="${LONGOPTS},ssh-port:"
 
-ARGS=$(getopt -o c:n:Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
+ARGS=$($GETOPT -o c:n:Chi:r:s:S:u -l "$LONGOPTS" -n "$0" -- "$@");
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 eval set -- "$ARGS"
 while true ; do

@@ -1,4 +1,8 @@
 chip soc/intel/jasperlake
+	# Disable PCIe Root Port 8 (index 7)
+	register "PcieRpEnable[7]" = "0"
+	# Disable PCIe Clock Source 4 (index 3)
+	register "PcieClkSrcUsage[3]" = "0xff"
 
 	# USB Port Configuration
 	register "usb2_ports[0]" = "{
@@ -107,7 +111,7 @@ chip soc/intel/jasperlake
 			end
 		end # I2C 0
 		device pci 15.2 on end
-		device pci 1c.7 on end
+		device pci 1c.7 off end # PCI Express Root Port 8
 		device pci 19.0 on
 			chip drivers/i2c/da7219
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"

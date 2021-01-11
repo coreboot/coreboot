@@ -344,9 +344,9 @@ static atomic_t *load_sipi_vector(struct mp_params *mp_params)
 	sp->microcode_ptr = (uintptr_t)mp_params->microcode_pointer;
 	/* Pass on ability to load microcode in parallel. */
 	if (mp_params->parallel_microcode_load)
-		sp->microcode_lock = 0;
-	else
 		sp->microcode_lock = ~0;
+	else
+		sp->microcode_lock = 0;
 	sp->c_handler = (uintptr_t)&ap_init;
 	ap_count = &sp->ap_count;
 	atomic_set(ap_count, 0);

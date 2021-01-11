@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -116,12 +117,7 @@ struct soc_intel_elkhartlake_config {
 	uint8_t PcieRpClkReqDetect[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe RP L1 substate */
-	enum L1_substates_control {
-		L1_SS_FSP_DEFAULT,
-		L1_SS_DISABLED,
-		L1_SS_L1_1,
-		L1_SS_L1_2,
-	} PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
+	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
 	/* SMBus */
 	uint8_t SmbusEnable;

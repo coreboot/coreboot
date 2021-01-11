@@ -63,4 +63,12 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 
+/* This enum is for passing into an FSP UPD, typically PcieRpL1Substates */
+enum L1_substates_control {
+	L1_SS_FSP_DEFAULT,
+	L1_SS_DISABLED,
+	L1_SS_L1_1,
+	L1_SS_L1_2,
+};
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PCIE_RP_H */

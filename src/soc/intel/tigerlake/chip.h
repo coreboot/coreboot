@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -247,12 +248,7 @@ struct soc_intel_tigerlake_config {
 	uint8_t PciePtm[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe RP L1 substate */
-	enum L1_substates_control {
-		L1_SS_FSP_DEFAULT,
-		L1_SS_DISABLED,
-		L1_SS_L1_1,
-		L1_SS_L1_2,
-	} PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
+	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe LTR: Enable (1) / Disable (0) */
 	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];

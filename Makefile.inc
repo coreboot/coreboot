@@ -85,6 +85,7 @@ subdirs-y += $(wildcard src/drivers/*) $(wildcard src/drivers/*/*) $(wildcard sr
 subdirs-y += src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool util/pgtblgen util/amdfwtool
 subdirs-y += util/futility util/marvell util/bincfg util/supermicro util/qemu
+subdirs-y += util/ifdtool
 subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += src/security
@@ -576,10 +577,6 @@ endif
 BINCFG:=$(objutil)/bincfg/bincfg
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
-$(IFDTOOL):
-	@printf "    Compile IFDTOOL\n"
-	+$(MAKE) -C $(top)/util/ifdtool
-	cp -a $(top)/util/ifdtool/ifdtool $@
 
 AMDFWTOOL:=$(objutil)/amdfwtool/amdfwtool
 

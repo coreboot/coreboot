@@ -497,7 +497,7 @@ static void get_microcode_info(const void **microcode, int *parallel)
 {
 	microcode_patch = intel_microcode_find();
 	*microcode = microcode_patch;
-	*parallel = 1;
+	*parallel = !intel_ht_supported();
 }
 
 static void per_cpu_smm_trigger(void)

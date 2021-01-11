@@ -33,7 +33,7 @@ static int get_cpu_count(void)
 static void get_microcode_info(const void **microcode, int *parallel)
 {
 	*microcode = microcode_patch;
-	*parallel = 1;
+	*parallel = !intel_ht_supported();
 }
 
 /* the SMRR enable and lock bit need to be set in IA32_FEATURE_CONTROL

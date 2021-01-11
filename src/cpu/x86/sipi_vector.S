@@ -102,6 +102,13 @@ _start:
 	/* Save CPU number. */
 	mov	%ecx, %esi
 
+	/*
+	 * The following code only needs to run on Intel platforms and thus the caller
+	 * doesn't provide a microcode_ptr if not on Intel.
+	 * On Intel platforms which update microcode using FIT the version check will
+	 * also skip the microcode update.
+	 */
+
 	/* Determine if one should check microcode versions. */
 	mov	microcode_ptr, %edi
 	test	%edi, %edi
@@ -115,6 +122,16 @@ _start:
 	/* If something already loaded skip loading again. */
 	test	%edx, %edx
 	jnz	microcode_done
+
+	/*
+	 * Intel SDM and various BWGs specify to use a semaphore to update microcode
+	 * on one thread per core on Hyper-Threading enabled CPUs. Due to this complex
+	 * code would be necessary to determine the core #ID, initializing and picking
+	 * the right semaphore out of CONFIG_MAX_CPUS / 2.
+	 * Instead of the per core approachm, as recommended, use one global spinlock.
+	 * Assuming that only pre-FIT platforms with Hyper-Threading enabled and at
+	 * most 8 threads will ever run into this condition, the boot delay is negligible.
+	 */
 
 	/* Determine if parallel microcode loading is allowed. */
 	cmpl	$0xffffffff, microcode_lock

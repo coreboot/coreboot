@@ -450,7 +450,7 @@ void main(void)
 
 	/* Initialise GNVS early. */
 	if (CONFIG(ACPI_SOC_NVS))
-		gnvs_get_or_create();
+		acpi_create_gnvs();
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

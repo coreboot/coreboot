@@ -1473,7 +1473,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 		acpigen_set_current((char *) current);
 
-		acpi_fill_gnvs();
+		if (CONFIG(ACPI_SOC_NVS))
+			acpi_fill_gnvs();
 
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_inject_dsdt)

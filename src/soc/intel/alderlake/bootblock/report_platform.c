@@ -79,6 +79,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_30, "Alderlake-P SKU" },
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_31, "Alderlake-P SKU" },
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_32, "Alderlake-P SKU" },
+	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_33, "Alderlake-P SKU" },
 };
 
 static struct {

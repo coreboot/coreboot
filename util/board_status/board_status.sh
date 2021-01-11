@@ -361,7 +361,14 @@ if [ -n "$(echo $rom_contents | grep payload_version)" ]; then
 	echo "Extracting payload_version from $COREBOOT_IMAGE"
 	$cbfstool_cmd "$COREBOOT_IMAGE" extract -n payload_version -f "${tmpdir}/payload_version.txt" >/dev/null 2>&1
 fi
-md5sum -b "$COREBOOT_IMAGE" > "${tmpdir}/rom_checksum.txt"
+case $(uname) in
+	FreeBSD)
+		md5 "$COREBOOT_IMAGE" > "${tmpdir}/rom_checksum.txt"
+		;;
+	*)
+		md5sum -b "$COREBOOT_IMAGE" > "${tmpdir}/rom_checksum.txt"
+		;;
+esac
 
 if test $do_clean_cbfstool -eq 1; then
 	$MAKE -C util/cbfstool clean

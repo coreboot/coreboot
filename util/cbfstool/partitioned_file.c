@@ -1,6 +1,8 @@
 /* read and write binary file "partitions" described by FMAP */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __BSD_VISIBLE 1
+
 #include "partitioned_file.h"
 
 #include "cbfs_sections.h"

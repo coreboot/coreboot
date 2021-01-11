@@ -21,7 +21,7 @@
 #define UART_CONSOLE_INVALID_INDEX	0xFF
 
 extern const struct uart_controller_config uart_ctrlr_config[];
-extern const int uart_max_index;
+extern const int uart_ctrlr_config_size;
 
 static void uart_lpss_init(pci_devfn_t dev, uintptr_t baseaddr)
 {
@@ -49,7 +49,7 @@ static int uart_get_valid_index(void)
 {
 	int index;
 
-	for (index = 0; index < uart_max_index; index++) {
+	for (index = 0; index < uart_ctrlr_config_size; index++) {
 		if (uart_ctrlr_config[index].console_index ==
 				CONFIG_UART_FOR_CONSOLE)
 			return index;

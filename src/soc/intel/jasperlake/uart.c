@@ -38,4 +38,4 @@ const struct uart_controller_config uart_ctrlr_config[] = {
 	}
 };
 
-const int uart_max_index = ARRAY_SIZE(uart_ctrlr_config);
+const int uart_ctrlr_config_size = ARRAY_SIZE(uart_ctrlr_config);

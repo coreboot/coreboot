@@ -95,7 +95,9 @@ struct __packed global_nvs {
 	/* Mainboard specific */
 	u8	dock; /* 0xf0 - Docking Status */
 	u8	bten;
-	u8	rsvd13[14];
+
+	u32     cbmc;
+	u8	rsvd13[10];
 };
 
 #endif /* SOUTHBRIDGE_INTEL_I82801JX_NVS_H */

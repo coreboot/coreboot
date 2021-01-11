@@ -100,8 +100,10 @@ struct __packed global_nvs {
 	/* XHCI */
 	u8	xhci;
 	u8	rsvd12[65];
+
 	u8	tpiq; /* 0xf5 - trackpad IRQ value */
-	u8	rsvd13[10]; /* 0xf6 - rsvd */
+	u32     cbmc;
+	u8	rsvd13[6]; /* 0xfa - rsvd */
 
 	/* ChromeOS specific (starts at 0x100)*/
 	chromeos_acpi_t chromeos;

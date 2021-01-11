@@ -98,7 +98,9 @@ struct __packed global_nvs {
 	u8	rsvd11[6];
 	/* XHCI */
 	u8	xhci;
-	u8	rsvd13[76]; /* 0xf5 - rsvd */
+
+	u32     cbmc;
+	u8	rsvd13[72]; /* rsvd */
 };
 
 #endif /* SOUTHBRIDGE_INTEL_IBEXPEAK_NVS_H */

@@ -110,6 +110,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 
 	Offset (0xf5),
 	TPIQ,	 8,	// 0xf5 - trackpad IRQ value
+	CBMC,	32,
 
 	/* ChromeOS specific */
 	Offset (0x100),

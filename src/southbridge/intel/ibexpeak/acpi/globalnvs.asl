@@ -107,6 +107,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* XHCI */
 	Offset (0xb2),
 	XHCI,	 8,
+	CBMC,	32,
 }
 
 /* Set flag to enable USB charging in S3 */

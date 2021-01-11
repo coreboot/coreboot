@@ -26,6 +26,20 @@ CBMEM_PATH=""
 # Used if nvramtool is not in default $PATH, e.g. not installed or when using `sudo`
 NVRAMTOOL_PATH=""
 
+case $(uname) in
+	FreeBSD)
+		if [ ! -x /usr/local/bin/gmake ]; then
+			echo "Please install gmake, or build and install devel/gmake from ports."
+			exit $EXIT_FAILURE
+		else
+			MAKE=gmake
+		fi
+		;;
+	*)
+		MAKE=make
+		;;
+esac
+
 # test a command
 #
 # $1: 0 ($LOCAL) to run command locally,
@@ -302,7 +316,7 @@ if [ ! -x $cbfstool_cmd ]; then
 			exit $EXIT_FAILURE
 		fi
 	else
-		make -C util/cbfstool/
+		$MAKE -C util/cbfstool/
 		do_clean_cbfstool=1
 	fi
 fi
@@ -313,7 +327,7 @@ echo "Extracting config.txt from $COREBOOT_IMAGE"
 $cbfstool_cmd "$COREBOOT_IMAGE" extract -n config -f "${tmpdir}/config.txt" >/dev/null 2>&1
 mv "${tmpdir}/config.txt" "${tmpdir}/config.short.txt"
 cp "${tmpdir}/config.short.txt" "${tmpcfg}"
-yes "" | make "DOTCONFIG=${tmpcfg}" oldconfig 2>/dev/null >/dev/null
+yes "" | $MAKE "DOTCONFIG=${tmpcfg}" oldconfig 2>/dev/null >/dev/null
 mv "${tmpcfg}" "${tmpdir}/config.txt"
 rm -f "${tmpcfg}.old"
 $cbfstool_cmd "$COREBOOT_IMAGE" print > "${tmpdir}/cbfs.txt"
@@ -329,7 +343,7 @@ fi
 md5sum -b "$COREBOOT_IMAGE" > "${tmpdir}/rom_checksum.txt"
 
 if test $do_clean_cbfstool -eq 1; then
-	make -C util/cbfstool clean
+	$MAKE -C util/cbfstool clean
 fi
 
 # Obtain board and revision info to form the directory structure:

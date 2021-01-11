@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
 #include <stdint.h>
 #include <string.h>
 #include <rmodule.h>
@@ -447,6 +448,7 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	stub_params->runtime.smm_size = smm_size;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 	stub_params->runtime.num_cpus = params->num_concurrent_stacks;
+	stub_params->runtime.gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	printk(BIOS_DEBUG, "%s: stack_end = 0x%lx\n",
 		__func__, stub_params->stack_top - total_stack_size);

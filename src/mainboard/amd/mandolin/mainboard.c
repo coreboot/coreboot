@@ -34,10 +34,14 @@ static const struct fch_irq_routing {
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
 } mandolin_fch[] = {
-	{ PIRQ_A,	8,		16 },
-	{ PIRQ_B,	10,		17 },
-	{ PIRQ_C,	11,		18 },
-	{ PIRQ_D,	12,		19 },
+	{ PIRQ_A,	10,		PIRQ_NC },
+	{ PIRQ_B,	11,		PIRQ_NC },
+	{ PIRQ_C,	12,		PIRQ_NC },
+	{ PIRQ_D,	13,		PIRQ_NC },
+	{ PIRQ_E,	13,		PIRQ_NC },
+	{ PIRQ_F,	12,		PIRQ_NC },
+	{ PIRQ_G,	11,		PIRQ_NC },
+	{ PIRQ_H,	10,		PIRQ_NC },
 	{ PIRQ_SCI,	9,		 9 },
 	{ PIRQ_SD,	PIRQ_NC,	16 },
 	{ PIRQ_SDIO,	PIRQ_NC,	16 },

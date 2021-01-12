@@ -26,8 +26,4 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
 	A4GB,	64,	// 0x30 - 0x37 Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x38 - 0x3f Length of above 4GB MMIO Resource
-
-	/* ChromeOS specific */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }

@@ -46,10 +46,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	ELNG,	64,	// 0x4C - 0x53 EPC Length
 	A4GB,	64,	// 0x54 - 0x5B Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x5C - 0x63 Length of above 4GB MMIO Resource
-
-	/* ChromeOS specific */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

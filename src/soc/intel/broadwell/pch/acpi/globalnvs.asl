@@ -34,10 +34,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CBMC,	32,	// 0x1c - 0x1f - coreboot Memory Console
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit
 	GPEI,	64,	// 0x28 - 0x2f - GPE wake status bit
-
-	/* ChromeOS specific */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

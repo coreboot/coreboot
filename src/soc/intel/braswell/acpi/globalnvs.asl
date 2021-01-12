@@ -44,10 +44,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CMEM,	 32,	/* 0x30 - CBMEM TOC */
 	TOLM,	 32,	/* 0x34 - Top of Low Memory */
 	CBMC,	 32,	/* 0x38 - coreboot mem console pointer */
-
-	/* ChromeOS specific */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

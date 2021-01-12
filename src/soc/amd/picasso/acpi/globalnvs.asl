@@ -21,7 +21,4 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TMPS,	8,	// 0x17 - Temperature Sensor ID
 	TCRT,	8,	// 0x18 - Critical Threshold
 	TPSV,	8,	// 0x19 - Passive Threshold
-	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }

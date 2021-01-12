@@ -42,7 +42,4 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	FW01,	32,	// 0x28 - xHCI FW RAM addr, boot RAM
 	FW03,	32,	// 0x2c - xHCI FW RAM addr, Instruction RAM
 	EH10,	32,	// 0x30 - EHCI BAR
-	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }

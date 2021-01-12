@@ -28,8 +28,4 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	ELNG,   64,     // 0x35 - 0x3C EPC Length
 	A4GB,	64,	// 0x3D - 0x44 Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x45 - 0x4C Length of above 4GB MMIO Resource
-
-	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }

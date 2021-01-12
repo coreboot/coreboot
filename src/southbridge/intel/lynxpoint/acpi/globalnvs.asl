@@ -93,10 +93,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 
 	Offset (0xa0),
 	CBMC, 32,	// 0xa0 - coreboot mem console pointer
-
-	/* ChromeOS specific */
-	Offset (0x100),
-	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

@@ -14,7 +14,6 @@
 #include <stage_cache.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <fit_payload.h>
 #include <security/vboot/vboot_common.h>
 
 /* Only can represent up to 1 byte less than size_t. */
@@ -154,24 +153,30 @@ void payload_load(void)
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
-	if (prog_locate(payload))
+	if (prog_locate_hook(payload))
+		goto out;
+
+	payload->cbfs_type = CBFS_TYPE_QUERY;
+	void *mapping = cbfs_type_map(prog_name(payload), NULL, &payload->cbfs_type);
+	if (!mapping)
 		goto out;
 
 	switch (prog_cbfs_type(payload)) {
 	case CBFS_TYPE_SELF: /* Simple ELF */
-		selfload_check(payload, BM_MEM_RAM);
+		selfload_mapped(payload, mapping, BM_MEM_RAM);
 		break;
 	case CBFS_TYPE_FIT: /* Flattened image tree */
 		if (CONFIG(PAYLOAD_FIT_SUPPORT)) {
-			fit_payload(payload);
+			fit_payload(payload, mapping);
 			break;
 		} /* else fall-through */
 	default:
 		die_with_post_code(POST_INVALID_ROM,
-				   "Unsupported payload type.\n");
+				   "Unsupported payload type %d.\n", payload->cbfs_type);
 		break;
 	}
 
+	cbfs_unmap(mapping);
 out:
 	if (prog_entry(payload) == NULL)
 		die_with_post_code(POST_INVALID_ROM, "Payload not loaded.\n");

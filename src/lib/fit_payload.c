@@ -13,7 +13,6 @@
 #include <timestamp.h>
 #include <string.h>
 #include <lib.h>
-#include <fit_payload.h>
 #include <boardid.h>
 
 /* Pack the device_tree and place it at given position. */
@@ -168,16 +167,10 @@ static void add_cb_fdt_data(struct device_tree *tree)
 /*
  * Parse the uImage FIT, choose a configuration and extract images.
  */
-void fit_payload(struct prog *payload)
+void fit_payload(struct prog *payload, void *data)
 {
 	struct device_tree *dt = NULL;
 	struct region kernel = {0}, fdt = {0}, initrd = {0};
-	void *data;
-
-	data = rdev_mmap_full(prog_rdev(payload));
-
-	if (data == NULL)
-		return;
 
 	printk(BIOS_INFO, "FIT: Examine payload %s\n", payload->name);
 
@@ -185,14 +178,12 @@ void fit_payload(struct prog *payload)
 
 	if (!config) {
 		printk(BIOS_ERR, "ERROR: Could not load FIT\n");
-		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
 	dt = unpack_fdt(config->fdt);
 	if (!dt) {
 		printk(BIOS_ERR, "ERROR: Failed to unflatten the FDT.\n");
-		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
@@ -225,7 +216,6 @@ void fit_payload(struct prog *payload)
 	if (!fit_payload_arch(payload, config, &kernel, &fdt, &initrd)) {
 		printk(BIOS_ERR, "ERROR: Failed to find free memory region\n");
 		bootmem_dump_ranges();
-		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
@@ -240,7 +230,6 @@ void fit_payload(struct prog *payload)
 	    extract(&initrd, config->ramdisk)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract initrd\n");
 		prog_set_entry(payload, NULL, NULL);
-		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
@@ -249,11 +238,8 @@ void fit_payload(struct prog *payload)
 	if (extract(&kernel, config->kernel)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract kernel\n");
 		prog_set_entry(payload, NULL, NULL);
-		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
 	timestamp_add_now(TS_START_KERNEL);
-
-	rdev_munmap(prog_rdev(payload), data);
 }

@@ -13,9 +13,6 @@ void aop_fw_load_reset(void)
 	struct prog aop_fw_prog =
 		PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/aop");
 
-	if (prog_locate(&aop_fw_prog))
-		die("SOC image: AOP_FW not found");
-
 	aop_fw_entry = selfload(&aop_fw_prog);
 	if (!aop_fw_entry)
 		die("SOC image: AOP load failed");

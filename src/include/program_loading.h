@@ -3,6 +3,7 @@
 #define PROGRAM_LOADING_H
 
 #include <bootmem.h>
+#include <commonlib/bsd/cbfs_serialized.h>
 #include <commonlib/region.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -45,7 +46,7 @@ struct prog {
 	 * payload. For architectures that use a bounce buffer
 	 * then it would represent the bounce buffer. */
 	enum prog_type type;
-	uint32_t cbfs_type;
+	enum cbfs_type cbfs_type;
 	const char *name;
 	struct region_device rdev;
 	/* Entry to program with optional argument. It's up to the architecture
@@ -70,7 +71,7 @@ static inline enum prog_type prog_type(const struct prog *prog)
 	return prog->type;
 }
 
-static inline uint32_t prog_cbfs_type(const struct prog *prog)
+static inline enum cbfs_type prog_cbfs_type(const struct prog *prog)
 {
 	return prog->cbfs_type;
 }
@@ -197,5 +198,11 @@ void payload_run(void);
  */
 bool selfload_check(struct prog *payload, enum bootmem_type dest_type);
 bool selfload(struct prog *payload);
+/* Like selfload_check() but with the payload data already mapped to memory. */
+bool selfload_mapped(struct prog *payload, void *mapping,
+		     enum bootmem_type dest_type);
+
+/* Load a FIT payload. The payload data must already be mapped to memory. */
+void fit_payload(struct prog *payload, void *data);
 
 #endif /* PROGRAM_LOADING_H */

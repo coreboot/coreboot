@@ -126,12 +126,15 @@ static int last_loadable_segment(struct cbfs_payload_segment *seg)
 }
 
 static int check_payload_segments(struct cbfs_payload_segment *cbfssegs,
-		void *args)
+				  enum bootmem_type dest_type)
 {
 	uint8_t *dest;
 	size_t memsz;
 	struct cbfs_payload_segment *seg, segment;
-	enum bootmem_type dest_type = *(enum bootmem_type *)args;
+
+	/* dest_type == INVALID means we're not supposed to check anything. */
+	if (dest_type == BM_MEM_INVALID)
+		return 0;
 
 	for (seg = cbfssegs;; ++seg) {
 		printk(BIOS_DEBUG, "Checking segment from ROM address %p\n", seg);
@@ -224,50 +227,45 @@ __weak int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 	return 0;
 }
 
-static void *selfprepare(struct prog *payload)
-{
-	void *data;
-	data = rdev_mmap_full(prog_rdev(payload));
-	return data;
-}
-
-static bool _selfload(struct prog *payload, checker_t f, void *args)
+bool selfload_mapped(struct prog *payload, void *mapping,
+		     enum bootmem_type dest_type)
 {
 	uintptr_t entry = 0;
 	struct cbfs_payload_segment *cbfssegs;
-	void *data;
 
-	data = selfprepare(payload);
-	if (data == NULL)
+	cbfssegs = &((struct cbfs_payload *)mapping)->segments;
+
+	if (check_payload_segments(cbfssegs, dest_type))
 		return false;
 
-	cbfssegs = &((struct cbfs_payload *)data)->segments;
-
-	if (f && f(cbfssegs, args))
-		goto out;
-
 	if (load_payload_segments(cbfssegs, &entry))
-		goto out;
+		return false;
 
 	printk(BIOS_SPEW, "Loaded segments\n");
-
-	rdev_munmap(prog_rdev(payload), data);
 
 	/* Pass cbtables to payload if architecture desires it. */
 	prog_set_entry(payload, (void *)entry, cbmem_find(CBMEM_ID_CBTABLE));
 
 	return true;
-out:
-	rdev_munmap(prog_rdev(payload), data);
-	return false;
 }
 
 bool selfload_check(struct prog *payload, enum bootmem_type dest_type)
 {
-	return _selfload(payload, check_payload_segments, &dest_type);
+	if (prog_locate_hook(payload))
+		return false;
+
+	payload->cbfs_type = CBFS_TYPE_SELF;
+	void *mapping = cbfs_type_map(prog_name(payload), NULL, &payload->cbfs_type);
+	if (!mapping)
+		return false;
+
+	bool ret = selfload_mapped(payload, mapping, dest_type);
+
+	cbfs_unmap(mapping);
+	return ret;
 }
 
 bool selfload(struct prog *payload)
 {
-	return _selfload(payload, NULL, 0);
+	return selfload_check(payload, BM_MEM_INVALID);
 }

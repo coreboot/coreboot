@@ -17,6 +17,8 @@
  * Start at 0x10000 to make sure that the caller doesn't provide LB_MEM tags.
  */
 enum bootmem_type {
+	BM_MEM_INVALID = 0,	/* Invalid type (used in optional arguments). */
+
 	BM_MEM_FIRST = 0x10000,	/* First entry in this list */
 	BM_MEM_RAM,		/* Memory anyone can use */
 	BM_MEM_RESERVED,	/* Don't use this memory region */

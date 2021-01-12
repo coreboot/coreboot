@@ -53,9 +53,6 @@ void arch_prog_run(struct prog *prog)
 	if (ENV_RAMSTAGE && CONFIG(RISCV_OPENSBI)) {
 		struct prog sbi = PROG_INIT(PROG_OPENSBI, CONFIG_CBFS_PREFIX"/opensbi");
 
-		if (prog_locate(&sbi))
-			die("OpenSBI not found");
-
 		if (!selfload_check(&sbi, BM_MEM_OPENSBI))
 			die("OpenSBI load failed");
 

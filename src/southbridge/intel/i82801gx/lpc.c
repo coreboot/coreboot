@@ -18,6 +18,7 @@
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
+#include <southbridge/intel/common/hpet.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/spi.h>
 
@@ -266,21 +267,6 @@ static void i82801gx_rtc_init(struct device *dev)
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
 	cmos_init(rtc_failed);
-}
-
-static void enable_hpet(void)
-{
-	u32 reg32;
-
-	/* Move HPET to default address 0xfed00000 and enable it */
-	reg32 = RCBA32(HPTC);
-	reg32 |= (1 << 7); // HPET Address Enable
-	reg32 &= ~(3 << 0);
-	RCBA32(HPTC) = reg32;
-	/* On NM10 this only works if read back */
-	RCBA32(HPTC);
-
-	write32((u32 *)0xfed00010, read32((u32 *)0xfed00010) | 1);
 }
 
 static void enable_clock_gating(void)

@@ -8,6 +8,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <lib.h>
+#include <southbridge/intel/common/hpet.h>
 #include "pineview.h"
 #include "raminit.h"
 #include <spd.h>
@@ -527,20 +528,6 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		PRINTK_DEBUG("MCH set to unknown (%02x)\n",
 			(uint8_t) s->selected_timings.mem_clock & 0xff);
 	}
-}
-
-#define HPET_BASE 0xfed00000
-#define HPET32(x) *((volatile u32 *)(HPET_BASE + x))
-static void enable_hpet(void)
-{
-	u32 reg32;
-	reg32 = RCBA32(HPTC);
-	reg32 &= ~0x03;
-	reg32 |= (1 << 7);
-	RCBA32(HPTC) = reg32;
-	/* On NM10 this only works if read back */
-	RCBA32(HPTC);
-	HPET32(0x10) = HPET32(0x10) | 1;
 }
 
 static void sdram_clk_crossing(struct sysinfo *s)
@@ -1593,27 +1580,6 @@ static void sdram_mmap(struct sysinfo *s)
 	pci_write_config32(HOST_BRIDGE, 0xa4,   gbsm[s->dimm_config[0]]);
 	pci_write_config32(HOST_BRIDGE, 0xa8,   bgsm[s->dimm_config[0]]);
 	pci_write_config32(HOST_BRIDGE, 0xac, tsegmb[s->dimm_config[0]]);
-}
-
-static void hpet_udelay(u32 del)
-{
-	u32 start, finish, now;
-
-	del *= 15; /* now in usec */
-
-	start = HPET32(0xf0);
-	finish = start + del;
-	while (1) {
-		now = HPET32(0xf0);
-		if (finish > start) {
-			if (now >= finish)
-				break;
-		} else {
-			if ((now < start) && (now >= finish)) {
-				break;
-			}
-		}
-	}
 }
 
 static u8 sdram_checkrcompoverride(void)

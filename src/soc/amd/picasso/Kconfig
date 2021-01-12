@@ -275,6 +275,14 @@ config PICASSO_ACPI_IO_BASE
 	help
 	  Base address for the ACPI registers.
 
+config CONSOLE_UART_BASE_ADDRESS
+	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
+	hex
+	default 0xfedc9000 if UART_FOR_CONSOLE = 0
+	default 0xfedca000 if UART_FOR_CONSOLE = 1
+	default 0xfedc3000 if UART_FOR_CONSOLE = 2
+	default 0xfedcf000 if UART_FOR_CONSOLE = 3
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000 if SMM_TSEG && HAVE_SMI_HANDLER

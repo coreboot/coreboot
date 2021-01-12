@@ -68,8 +68,6 @@
 		Method(_STA) { \
 			Local0 = (PRBS && RCOS && RBS) \
 \
-			Printf("AOAC.%s._STA: %o", #DEV_NAME, Local0) \
-\
 			If (Local0) { \
 				Return (1) \
 			} Else { \
@@ -77,34 +75,22 @@
 			} \
 		} \
 		Method(_ON, 0, Serialized) { \
-			Printf("AOAC.%s._ON", #DEV_NAME) \
-\
 			ISWC=0 \
 			POD=1 \
 \
 			While (!PRBS || !RCOS || !RBS) { \
-				Printf ("Waiting for device to power on") \
 				Stall (100) \
 			} \
-\
-			Printf("Done waiting") \
 		} \
 		Method(_OFF, 0, Serialized) { \
-			Printf("AOAC.%s._OFF", #DEV_NAME) \
-\
 			ISWC=0 \
 			POD=0 \
 \
 			While (PRBS || RCOS || RBS) { \
-				Printf ("Waiting for device to power off") \
 				Stall (100) \
 			} \
-\
-			Printf("Done waiting") \
 		} \
 		Method(_RST, 0, Serialized) { \
-			Printf("AOAC.%s._RST", #DEV_NAME) \
-\
 			ISWC=1 \
 			SRB=1 \
 \

@@ -144,21 +144,6 @@ static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 	soc_after_silicon_init();
 }
 
-static int fsp_find_and_relocate(struct prog *fsp)
-{
-	if (prog_locate(fsp)) {
-		printk(BIOS_ERR, "ERROR: Couldn't find %s\n", prog_name(fsp));
-		return -1;
-	}
-
-	if (fsp_relocate(fsp, prog_rdev(fsp))) {
-		printk(BIOS_ERR, "ERROR: FSP relocation failed.\n");
-		return -1;
-	}
-
-	return 0;
-}
-
 static void fsp_load(void)
 {
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
@@ -166,7 +151,7 @@ static void fsp_load(void)
 	if (resume_from_stage_cache()) {
 		stage_cache_load_stage(STAGE_REFCODE, &fsp);
 	} else {
-		fsp_find_and_relocate(&fsp);
+		fsp_relocate(&fsp);
 
 		if (prog_entry(&fsp))
 			stage_cache_add(STAGE_REFCODE, &fsp);

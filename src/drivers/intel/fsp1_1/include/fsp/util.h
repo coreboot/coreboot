@@ -40,10 +40,10 @@ static inline uint32_t fsp_version(FSP_INFO_HEADER *fih)
 
 /*
  * Relocate FSP entire binary into ram. Returns < 0 on error, 0 on success.
- * The FSP source is pointed to by region_device and the relocation information
+ * The CBFS file name of the FSP source and the relocation information
  * is encoded in a struct prog with its entry point set to the FSP info header.
  */
-int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src);
+int fsp_relocate(struct prog *fsp_relocd);
 
 /* Additional HOB types not included in the FSP:
  * #define EFI_HOB_TYPE_HANDOFF 0x0001

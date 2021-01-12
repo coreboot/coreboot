@@ -2,13 +2,13 @@
 
 #include <arch/romstage.h>
 #include <arch/symbols.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
-#include <program_loading.h>
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
@@ -27,14 +27,14 @@ void mainboard_romstage_entry(void)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
-	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
+	void *fsp = cbfs_map("fsp.bin", NULL);
 
-	if (prog_locate(&fsp))
+	if (!fsp)
 		die_with_post_code(POST_INVALID_CBFS, "Unable to locate fsp.bin");
 
 	/* This leaks a mapping which this code assumes is benign as
 	 * the flash is memory mapped CPU's address space. */
-	FSP_INFO_HEADER *fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
+	FSP_INFO_HEADER *fih = find_fsp((uintptr_t)fsp);
 
 	if (!fih)
 		die("Invalid FSP header\n");

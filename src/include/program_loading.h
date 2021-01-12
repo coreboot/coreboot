@@ -41,8 +41,7 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags);
 
 /* Representation of a program. */
 struct prog {
-	/* The region_device is the source of program content to load. After
-	 * loading program it represents the memory region of the stages and
+	/* The region_device represents the memory region of the stages and
 	 * payload. For architectures that use a bounce buffer
 	 * then it would represent the bounce buffer. */
 	enum prog_type type;
@@ -128,13 +127,10 @@ static inline void prog_set_arg(struct prog *prog, void *arg)
 	prog->arg = arg;
 }
 
-/* Locate the identified program to run. Return 0 on success. < 0 on error. */
-int prog_locate(struct prog *prog);
 /* The prog_locate_hook() is called prior to CBFS traversal. The hook can be
- * used to implement policy that allows or prohibits further progress through
- * prog_locate(). The type and name field within struct prog are the only valid
- * fields. A 0 return value allows further progress while a non-zero return
- * value prohibits further progress */
+ * used to implement policy that allows or prohibits further program loading.
+ * The type and name field within struct prog are the only valid fields. A 0
+ * return value allows loading while a non-zero return value prohibits it. */
 int prog_locate_hook(struct prog *prog);
 
 /* Run the program described by prog. */
@@ -146,17 +142,6 @@ void arch_prog_run(struct prog *prog);
  * special that needs to be done by the platform similar to the architecture
  * code it needs to that as well. */
 void platform_prog_run(struct prog *prog);
-
-struct prog_loader_ops {
-	const char *name;
-	/* Determine if the loader is the active one. If so returns 1 else 0
-	 * or < 0 on error. */
-	int (*is_loader_active)(struct prog *prog);
-	/* Returns < 0 on error or 0 on success. This function locates
-	 * the rdev representing the file data associated with the passed in
-	 * prog. */
-	int (*locate)(struct prog *prog);
-};
 
 /************************
  *   ROMSTAGE LOADING   *

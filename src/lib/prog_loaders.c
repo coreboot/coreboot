@@ -20,23 +20,6 @@
 const struct mem_region_device addrspace_32bit =
 	MEM_REGION_DEV_RO_INIT(0, ~0UL);
 
-int prog_locate(struct prog *prog)
-{
-	struct cbfsf file;
-
-	if (prog_locate_hook(prog))
-		return -1;
-
-	if (cbfs_boot_locate(&file, prog_name(prog), NULL))
-		return -1;
-
-	cbfsf_file_type(&file, &prog->cbfs_type);
-
-	cbfs_file_data(prog_rdev(prog), &file);
-
-	return 0;
-}
-
 void run_romstage(void)
 {
 	struct prog romstage =

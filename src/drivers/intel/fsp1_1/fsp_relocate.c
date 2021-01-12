@@ -1,26 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
 #include <fsp/util.h>
 
-int fsp_relocate(struct prog *fsp_relocd, const struct region_device *fsp_src)
+int fsp_relocate(struct prog *fsp_relocd)
 {
-	void *new_loc;
 	void *fih;
 	ssize_t fih_offset;
-	size_t size = region_device_sz(fsp_src);
+	size_t size;
 
-	new_loc = cbmem_add(CBMEM_ID_REFCODE, size);
-
+	void *new_loc = cbfs_cbmem_alloc(prog_name(fsp_relocd),
+					 CBMEM_ID_REFCODE, &size);
 	if (new_loc == NULL) {
 		printk(BIOS_ERR, "ERROR: Unable to load FSP into memory.\n");
-		return -1;
-	}
-
-	if (rdev_readat(fsp_src, new_loc, 0, size) != size) {
-		printk(BIOS_ERR, "ERROR: Can't read FSP's region device.\n");
 		return -1;
 	}
 

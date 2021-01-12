@@ -125,6 +125,9 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 	static uint32_t gpe0_sts;
 
+	if (!ps)
+		return -1;
+
 	*pm1 = ps->pm1_sts & ps->pm1_en;
 
 	gpe0_sts = ps->gpe0_sts & ps->gpe0_en;

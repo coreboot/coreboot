@@ -433,7 +433,8 @@ typedef struct ramctr_timing_st {
 #define MIN_CAS 4
 
 /*
- * 1 QCLK (quarter of a clock cycle) equals 64 PI (phase interpolator) ticks.
+ * 1 QCLK (quadrature clock) is one half of a full clock cycle (tCK).
+ * In addition, 64 PI (phase interpolator) ticks are equal to 1 QCLK.
  * Logic delay values in I/O register bitfields are expressed in QCLKs.
  */
 #define QCLK_PI	64

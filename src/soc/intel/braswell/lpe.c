@@ -12,7 +12,7 @@
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/lpc.h>
-#include <soc/nvs.h>
+#include <soc/device_nvs.h>
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -53,20 +53,15 @@ static void lpe_enable_acpi_mode(struct device *dev)
 
 		REG_SCRIPT_END
 	};
-	struct global_nvs *gnvs;
-
-	/* Find ACPI NVS to update BARs */
-	gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 
 	/* Save BAR0, BAR1, and firmware base  to ACPI NVS */
-	assign_device_nvs(dev, &gnvs->dev.lpe_bar0, PCI_BASE_ADDRESS_0);
-	assign_device_nvs(dev, &gnvs->dev.lpe_bar1, PCI_BASE_ADDRESS_2);
-	assign_device_nvs(dev, &gnvs->dev.lpe_fw, FIRMWARE_PCI_REG_BASE);
+	assign_device_nvs(dev, &dev_nvs->lpe_bar0, PCI_BASE_ADDRESS_0);
+	assign_device_nvs(dev, &dev_nvs->lpe_bar1, PCI_BASE_ADDRESS_2);
+	assign_device_nvs(dev, &dev_nvs->lpe_fw, FIRMWARE_PCI_REG_BASE);
 
 	/* Device is enabled in ACPI mode */
-	gnvs->dev.lpe_en = 1;
+	dev_nvs->lpe_en = 1;
 
 	/* Put device in ACPI mode */
 	reg_script_run_on_dev(dev, ops);

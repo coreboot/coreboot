@@ -6,6 +6,7 @@
 #include <boardid.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
+#include <soc/device_nvs.h>
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
@@ -21,8 +22,9 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->dpte = 1;
 
 	/* Disable PMIC I2C port for ACPI for all boards except cyan */
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	if (!CONFIG(BOARD_GOOGLE_CYAN))
-		gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
+		dev_nvs->lpss_en[LPSS_NVS_I2C2] = 0;
 
 	gnvs->bdid = board_id();
 }

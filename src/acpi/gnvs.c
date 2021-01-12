@@ -39,7 +39,7 @@ void acpi_create_gnvs(void)
 	gnvs_size = sizeof(struct global_nvs);
 	if (gnvs_size < 0x100)
 		gnvs_size = 0x100;
-	if (gnvs_size > 0x1000)
+	if (CONFIG(ACPI_HAS_DEVICE_NVS))
 		gnvs_size = 0x2000;
 	else if (CONFIG(MAINBOARD_HAS_CHROMEOS))
 		gnvs_size = 0x1000;
@@ -57,6 +57,11 @@ void acpi_create_gnvs(void)
 		gnvs_assign_chromeos((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
 }
 
+void *acpi_get_device_nvs(void)
+{
+	return (u8 *)gnvs + GNVS_DEVICE_NVS_OFFSET;
+}
+
 void acpi_fill_gnvs(void)
 {
 	if (!gnvs)
@@ -68,4 +73,10 @@ void acpi_fill_gnvs(void)
 	acpigen_write_scope("\\");
 	acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
 	acpigen_pop_len();
+
+	if (CONFIG(ACPI_HAS_DEVICE_NVS)) {
+		acpigen_write_scope("\\");
+		acpigen_write_name_dword("NVSD", (uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET);
+		acpigen_pop_len();
+	}
 }

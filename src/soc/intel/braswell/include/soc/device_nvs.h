@@ -24,7 +24,7 @@
 #define SCC_NVS_SDIO		1
 #define SCC_NVS_SD		2
 
-typedef struct {
+struct __packed device_nvs {
 	/* Device Enabled in ACPI Mode */
 	u8	lpss_en[14];
 	u8	scc_en[3];
@@ -42,6 +42,6 @@ typedef struct {
 
 	/* Extra */
 	u32	lpe_fw; /* LPE Firmware */
-} __packed device_nvs_t;
+};
 
 #endif	/* _SOC_DEVICE_NVS_H_ */

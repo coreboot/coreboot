@@ -13,7 +13,7 @@ Name(\PICM, 0)		/* IOAPIC/8259 */
 
 External (NVSA)
 
-OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
+OperationRegion (GNVS, SystemMemory, NVSA, 0x1000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
@@ -56,9 +56,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* ChromeOS specific */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
-
-	Offset (0x1000),
-	#include <soc/intel/baytrail/acpi/device_nvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

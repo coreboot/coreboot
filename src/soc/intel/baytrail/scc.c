@@ -7,7 +7,7 @@
 #include <reg_script.h>
 
 #include <soc/iosf.h>
-#include <soc/nvs.h>
+#include <soc/device_nvs.h>
 #include <soc/ramstage.h>
 
 static const struct reg_script scc_start_dll[] = {
@@ -80,24 +80,19 @@ void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 		REG_SCRIPT_END
 	};
 	struct resource *bar;
-	struct global_nvs *gnvs;
-
-	/* Find ACPI NVS to update BARs */
-	gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 
 	/* Save BAR0 and BAR1 to ACPI NVS */
 	bar = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (bar)
-		gnvs->dev.scc_bar0[nvs_index] = (u32)bar->base;
+		dev_nvs->scc_bar0[nvs_index] = (u32)bar->base;
 
 	bar = find_resource(dev, PCI_BASE_ADDRESS_1);
 	if (bar)
-		gnvs->dev.scc_bar1[nvs_index] = (u32)bar->base;
+		dev_nvs->scc_bar1[nvs_index] = (u32)bar->base;
 
 	/* Device is enabled in ACPI mode */
-	gnvs->dev.scc_en[nvs_index] = 1;
+	dev_nvs->scc_en[nvs_index] = 1;
 
 	/* Put device in ACPI mode */
 	reg_script_run_on_dev(dev, ops);

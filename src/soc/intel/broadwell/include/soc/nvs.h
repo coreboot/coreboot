@@ -4,7 +4,6 @@
 #define _BROADWELL_NVS_H_
 
 #include <stdint.h>
-#include <soc/device_nvs.h>
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -35,15 +34,6 @@ struct __packed global_nvs {
 	u32	cbmc; /* 0x1c - 0x1f - coreboot Memory Console */
 	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */
 	u64	gpei; /* 0x28 - 0x2f - GPE wake status bit */
-	u8	unused1[132]; /* 0x30 - 0xb3 - unused */
-
-	u8	unused2[76];
-
-	/* ChromeOS specific (0x100 - 0xfff) */
-	u8	chromeos_reserve[0xf00];
-
-	/* Device specific (0x1000) */
-	device_nvs_t dev;
 };
 
 #endif

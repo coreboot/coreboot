@@ -30,6 +30,9 @@ config ACPI_SOC_NVS
 	  Set to indicate <soc/nvs.h> exists for the platform with a definition
 	  for global_nvs.
 
+config ACPI_HAS_DEVICE_NVS
+	bool
+
 config ACPI_NO_PCAT_8259
 	bool
 	help

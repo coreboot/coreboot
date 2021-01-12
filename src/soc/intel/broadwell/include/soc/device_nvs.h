@@ -15,10 +15,10 @@
 #define SIO_NVS_SDIO		7
 #define SIO_NVS_ADSP		8
 
-typedef struct {
+struct __packed device_nvs {
 	u8	enable[9];
 	u32	bar0[9];
 	u32	bar1[9];
-} __packed device_nvs_t;
+};
 
 #endif

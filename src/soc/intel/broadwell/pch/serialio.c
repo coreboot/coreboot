@@ -8,7 +8,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/iobp.h>
-#include <soc/nvs.h>
+#include <soc/device_nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pch.h>
 #include <soc/ramstage.h>
@@ -233,20 +233,15 @@ static void serialio_init(struct device *dev)
 	}
 
 	if (config->sio_acpi_mode) {
-		struct global_nvs *gnvs;
-
-		/* Find ACPI NVS to update BARs */
-		gnvs = acpi_get_gnvs();
-		if (!gnvs)
-			return;
+		struct device_nvs *dev_nvs = acpi_get_device_nvs();
 
 		/* Save BAR0 and BAR1 to ACPI NVS */
-		gnvs->dev.bar0[sio_index] = (u32)bar0->base;
-		gnvs->dev.bar1[sio_index] = (u32)bar1->base;
+		dev_nvs->bar0[sio_index] = (u32)bar0->base;
+		dev_nvs->bar1[sio_index] = (u32)bar1->base;
 
 		/* Do not enable UART if it is used as debug port */
 		if (!serialio_uart_is_debug(dev))
-			gnvs->dev.enable[sio_index] = 1;
+			dev_nvs->enable[sio_index] = 1;
 
 		/* Put device in D3hot state via BAR1 */
 		if (dev->path.pci.devfn != PCH_DEVFN_SDMA)

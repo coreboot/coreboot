@@ -8,6 +8,7 @@
 void acpi_create_gnvs(void);
 #if CONFIG(ACPI_SOC_NVS)
 void *acpi_get_gnvs(void);
+void *acpi_get_device_nvs(void);
 #else
 static inline void *acpi_get_gnvs(void) { return NULL; }
 #endif

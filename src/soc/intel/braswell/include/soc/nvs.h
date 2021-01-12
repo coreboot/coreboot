@@ -4,7 +4,6 @@
 #define _SOC_NVS_H_
 
 #include <stdint.h>
-#include <soc/device_nvs.h>
 
 struct __packed global_nvs {
 	/* Miscellaneous */
@@ -45,15 +44,6 @@ struct __packed global_nvs {
 	u32	obsolete_cmem; /* 0x30 - CBMEM TOC */
 	u32	tolm; /* 0x34 - Top of Low Memory */
 	u32	cbmc; /* 0x38 - coreboot memconsole */
-	u8	rsvd3[120]; /* 0x3c - 0xb3 - unused */
-
-	u8	unused[76];
-
-	/* ChromeOS specific (0x100-0xfff) */
-	u8	chromeos_reserve[0xf00];
-
-	/* LPSS (0x1000) */
-	device_nvs_t dev;
 };
 
 #endif /* _SOC_NVS_H_ */

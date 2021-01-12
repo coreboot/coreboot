@@ -18,6 +18,7 @@ DefinitionBlock(
 
 	// global NVS and variables
 	#include <soc/intel/broadwell/pch/acpi/globalnvs.asl>
+	#include <soc/intel/broadwell/acpi/device_nvs.asl>
 
 	// CPU
 	#include <cpu/intel/common/acpi/cpu.asl>

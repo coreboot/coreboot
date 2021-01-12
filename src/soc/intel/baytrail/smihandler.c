@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
+#include <acpi/acpi_gnvs.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
@@ -17,6 +18,9 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/nvs.h>
+#include <soc/device_nvs.h>
+
+#include <vendorcode/google/chromeos/gnvs.h>
 
 int southbridge_io_trap_handler(int smif)
 {
@@ -204,6 +208,11 @@ static void southbridge_smi_gsmi(void)
 	*ret = gsmi_exec(sub_command, param);
 }
 
+void *acpi_get_device_nvs(void)
+{
+	return (u8 *)gnvs + GNVS_DEVICE_NVS_OFFSET;
+}
+
 /*
  * soc_legacy: A payload (Depthcharge) has indicated that the
  *   legacy payload (SeaBIOS) is being loaded. Switch devices that are
@@ -212,10 +221,11 @@ static void southbridge_smi_gsmi(void)
  */
 static void soc_legacy(void)
 {
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	u32 reg32;
 
 	/* LPE Device */
-	 if (gnvs->dev.lpe_en) {
+	if (dev_nvs->lpe_en) {
 		reg32 = iosf_port58_read(LPE_PCICFGCTR1);
 		reg32 &=
 		~(LPE_PCICFGCTR1_PCI_CFG_DIS | LPE_PCICFGCTR1_ACPI_INT_EN);
@@ -224,7 +234,7 @@ static void soc_legacy(void)
 
 	/* SCC Devices */
 #define SCC_ACPI_MODE_DISABLE(name_) \
-	do { if (gnvs->dev.scc_en[SCC_NVS_ ## name_]) { \
+	do { if (dev_nvs->scc_en[SCC_NVS_ ## name_]) { \
 		reg32 = iosf_scc_read(SCC_ ## name_ ## _CTL); \
 		reg32 &= ~(SCC_CTL_PCI_CFG_DIS | SCC_CTL_ACPI_INT_EN); \
 		iosf_scc_write(SCC_ ## name_ ## _CTL, reg32); \
@@ -236,7 +246,7 @@ static void soc_legacy(void)
 
 	 /* LPSS Devices */
 #define LPSS_ACPI_MODE_DISABLE(name_) \
-	do { if (gnvs->dev.lpss_en[LPSS_NVS_ ## name_]) { \
+	do { if (dev_nvs->lpss_en[LPSS_NVS_ ## name_]) { \
 		reg32 = iosf_lpss_read(LPSS_ ## name_ ## _CTL); \
 		reg32 &= ~LPSS_CTL_PCI_CFG_DIS | ~LPSS_CTL_ACPI_INT_EN; \
 		iosf_lpss_write(LPSS_ ## name_ ## _CTL, reg32); \

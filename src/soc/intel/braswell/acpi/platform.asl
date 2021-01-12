@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/intel/braswell/acpi/device_nvs.asl>
+
 /* Enable ACPI _SWS methods */
 #include <soc/intel/common/acpi/acpi_wake_source.asl>
 #include <southbridge/intel/common/acpi/platform.asl>
-
 
 /*
  * The _PTS method (Prepare To Sleep) is called before the OS is

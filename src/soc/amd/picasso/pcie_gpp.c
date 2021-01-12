@@ -42,20 +42,7 @@ static const struct pci_routing pci_routing_table[] = {
  * by amd/common/block/pci/amd_pci_util to write the PCI_INT_LINE register
  * to each PCI device.
  */
-static struct pirq_struct pirq_data[] = {
-	{ PCIE_GPP_0_DEVFN },
-	{ PCIE_GPP_1_DEVFN },
-	{ PCIE_GPP_2_DEVFN },
-	{ PCIE_GPP_3_DEVFN },
-	{ PCIE_GPP_4_DEVFN },
-	{ PCIE_GPP_5_DEVFN },
-	{ PCIE_GPP_6_DEVFN },
-	{ PCIE_GPP_A_DEVFN },
-	{ PCIE_GPP_B_DEVFN },
-};
-
-_Static_assert(ARRAY_SIZE(pci_routing_table) == ARRAY_SIZE(pirq_data),
-	"PCI and PIRQ tables must be the same size");
+static struct pirq_struct pirq_data[ARRAY_SIZE(pci_routing_table)];
 
 static const struct pci_routing *get_pci_routing(unsigned int devfn)
 {
@@ -84,10 +71,9 @@ void populate_pirq_data(void)
 
 	for (size_t i = 0; i < ARRAY_SIZE(pirq_data); ++i) {
 		pirq = &pirq_data[i];
-		pci_routing = get_pci_routing(pirq->devfn);
-		if (!pci_routing)
-			die("%s: devfn %u not found\n", __func__, pirq->devfn);
+		pci_routing = &pci_routing_table[i];
 
+		pirq->devfn = pci_routing->devfn;
 		for (size_t j = 0; j < 4; ++j) {
 			irq_index = calculate_irq(pci_routing, j);
 

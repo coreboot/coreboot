@@ -16,12 +16,9 @@ else # CONFIG_BOARD_AMD_CEREME
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_cereme.bin
 endif
 
-PHONY+=add_mchp_fw
-INTERMEDIATE+=add_mchp_fw
-
 ifeq ($(CONFIG_MANDOLIN_HAVE_MCHP_FW),y)
 
-add_mchp_fw: $(obj)/coreboot.pre
+$(call add_intermediate, add_mchp_fw, $(obj)/coreboot.pre)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_MANDOLIN_MCHP_FW_FILE) --fill-upward
 
 else

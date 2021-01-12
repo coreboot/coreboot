@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-PHONY+=add_mchp_fw
-INTERMEDIATE+=add_mchp_fw
-
 ifeq ($(CONFIG_MAJOLICA_HAVE_MCHP_FW),y)
-add_mchp_fw: $(obj)/coreboot.pre
+$(call add_intermediate, add_mchp_fw, $(obj)/coreboot.pre)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_MAJOLICA_MCHP_FW_FILE) --fill-upward
 else
 files_added:: warn_no_mchp

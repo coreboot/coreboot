@@ -1144,6 +1144,10 @@ else
 RAMSTAGE=
 endif
 
+add_intermediate = \
+	$(1): $(2) | $(INTERMEDIATE) \
+	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(RAMSTAGE) $(CBFSTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
@@ -1247,7 +1251,7 @@ cbfs-get-segments-cmd = $(CBFSTOOL) $(obj)/coreboot.pre print -v | sed -n \
 ramstage-symbol-addr-cmd = $(OBJDUMP_ramstage) -t $(objcbfs)/ramstage.elf | \
 	sed -n '/ $(1)$$/s/^\([0-9a-fA-F]*\) .*/0x\1/p'
 
-check-ramstage-overlaps: $(obj)/coreboot.pre
+$(call add_intermediate, check-ramstage-overlaps, $(obj)/coreboot.pre)
 	programs=$$($(foreach file,$(check-ramstage-overlap-files), \
 		$(call cbfs-get-segments-cmd,$(file)) ; )) ; \
 	regions=$$($(foreach region,$(check-ramstage-overlap-regions), \
@@ -1273,6 +1277,4 @@ check-ramstage-overlaps: $(obj)/coreboot.pre
 	    pstart= ; pend= ; \
 	done
 
-INTERMEDIATE+=check-ramstage-overlaps
-PHONY+=check-ramstage-overlaps
 endif

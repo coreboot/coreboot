@@ -7,8 +7,7 @@ ifeq ($(CONFIG_HAVE_INTEL_FIRMWARE),y)
 # image outside of CBFS
 
 ifeq ($(CONFIG_HAVE_IFD_BIN),y)
-PHONY+=add_intel_firmware
-INTERMEDIATE+=add_intel_firmware
+$(call add_intermediate, add_intel_firmware)
 else ifeq ($(CONFIG_INTEL_DESCRIPTOR_MODE_REQUIRED),y)
 files_added:: warn_intel_firmware
 endif
@@ -107,6 +106,6 @@ warn_intel_firmware:
 	printf "board's flash chip! You can use flashrom's IFD or layout\n"
 	printf "parameters to flash only to the BIOS region.\n\n"
 
-PHONY+=add_intel_firmware warn_intel_firmware
+PHONY+=warn_intel_firmware
 
 endif

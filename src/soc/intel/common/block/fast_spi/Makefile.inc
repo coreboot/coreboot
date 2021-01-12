@@ -35,7 +35,7 @@ smm-y += mmap_boot.c
 # Check to ensure that no sections in the FMAP cross 16MiB boundary if
 # the platform supports split decode windows for BIOS region greater
 # than 16MiB.
-check-fmap-16mib-crossing: $(obj)/fmap_config.h
+$(call add_intermediate, check-fmap-16mib-crossing, $(obj)/fmap_config.h)
 		flash_offset=$$(printf "%d" $$(cat $(obj)/fmap_config.h | grep "FMAP_SECTION_FLASH_START" | awk '{print $$NF}')); \
 		for x in $$(cat $(obj)/fmap_config.h | grep "FMAP_TERMINAL_SECTIONS" | cut -d\" -f2); do \
 		    start=$$(printf "%d" $$(cat $(obj)/fmap_config.h | grep "FMAP_SECTION_"$$x"_START" | awk '{print $$NF}')); \
@@ -45,9 +45,6 @@ check-fmap-16mib-crossing: $(obj)/fmap_config.h
 		    if [ $$start -lt 16777216 ] && [ $$end -ge 16777216 ]; then echo "ERROR:" $$x "crosses 16MiB boundary"; fail=1; break; fi; \
 		done; \
 		if [ $$fail -eq 1 ]; then false; fi
-
-PHONY+=check-fmap-16mib-crossing
-INTERMEDIATE+=check-fmap-16mib-crossing
 
 CBFSTOOL_ADD_CMD_OPTIONS += --ext-win-base $(CONFIG_EXT_BIOS_WIN_BASE) --ext-win-size $(CONFIG_EXT_BIOS_WIN_SIZE)
 

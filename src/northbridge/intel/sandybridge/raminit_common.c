@@ -938,16 +938,11 @@ void program_timings(ramctr_timing *ctrl, int channel)
 	u32 clk_logic_dly = 0;
 
 	/*
-	 * Apply command delay if desired setting is negative. Find the
-	 * most negative value: 'cmd_delay' will be the absolute value.
+	 * Compute command timing as abs() of the most negative PI code
+	 * across all ranks. Use zero if none of the values is negative.
 	 */
 	FOR_ALL_POPULATED_RANKS {
-		if (cmd_delay < -ctrl->timings[channel][slotrank].pi_coding)
-			cmd_delay = -ctrl->timings[channel][slotrank].pi_coding;
-	}
-	if (cmd_delay < 0) {
-		printk(BIOS_ERR, "C%d command delay underflow: %d\n", channel, cmd_delay);
-		cmd_delay = 0;
+		cmd_delay = MAX(cmd_delay, -ctrl->timings[channel][slotrank].pi_coding);
 	}
 	if (cmd_delay > CCC_MAX_PI) {
 		printk(BIOS_ERR, "C%d command delay overflow: %d\n", channel, cmd_delay);

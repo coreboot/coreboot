@@ -977,13 +977,23 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		}
 	}
 	FOR_ALL_POPULATED_RANKS {
-		u32 clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
+		int clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
 
-		if (clk_delay > CCC_MAX_PI) {
-			printk(BIOS_ERR, "C%dR%d clock delay overflow: %d\n",
+		/*
+		 * Clock is a differential signal, whereas command and control are not.
+		 * This affects its timing, and it is also why it needs a magic offset.
+		 */
+		clk_delay += ctrl->pi_code_offset;
+
+		/* Can never happen with valid values */
+		if (clk_delay < 0) {
+			printk(BIOS_ERR, "C%dR%d clock delay underflow: %d\n",
 				channel, slotrank, clk_delay);
-			clk_delay = CCC_MAX_PI;
+			clk_delay = 0;
 		}
+
+		/* Clock can safely wrap around because it is a periodic signal */
+		clk_delay %= CCC_MAX_PI + 1;
 
 		clk_pi_coding |= (clk_delay % QCLK_PI) << (6 * slotrank);
 		clk_logic_dly |= (clk_delay / QCLK_PI) << slotrank;

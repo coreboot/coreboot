@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpigen.h>
 #include <acpi/acpi_gnvs.h>
 #include <soc/nvs.h>
 
@@ -11,10 +10,4 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->apic = 1;    /* Enable APIC */
 	gnvs->mpen = 1;    /* Enable Multi Processing */
 	gnvs->cmap = 0x01; /* Enable COM 1 port */
-}
-
-/* TODO: Could work... */
-int get_cst_entries(acpi_cstate_t **entries)
-{
-	return 0;
 }

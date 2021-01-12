@@ -19,6 +19,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C18, NONE),
 	/* C19 : AP_I2C_EMR_SCL */
 	PAD_NC(GPP_C19, NONE),
+	/* C22 : UART2_RTS_N */
+	PAD_NC(GPP_C22, NONE),
+	/* C23 : UART2_CTS_N */
+	PAD_NC(GPP_C23, NONE),
 
 	/* D12 : WCAM_RST_L */
 	PAD_NC(GPP_D12, NONE),
@@ -45,6 +49,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E2, NONE),
 	/* E11 : AP_I2C_SUB_INT_ODL */
 	PAD_CFG_GPI_INT(GPP_E11, NONE, PLTRST, EDGE_BOTH),
+
+	/* G7  : SD_SDIO_WP */
+	PAD_NC(GPP_G7, NONE),
 
 	/* H6  : AP_I2C_CAM_SDA */
 	PAD_NC(GPP_H6, NONE),

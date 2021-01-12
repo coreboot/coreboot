@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/uart.h>
 #include <console/uart.h>
-#include <soc/uart.h>
 
 /*
  * uart_platform_base and uart_platform_refclk are used by the console UART driver and need to

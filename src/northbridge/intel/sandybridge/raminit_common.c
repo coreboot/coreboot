@@ -954,42 +954,39 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		cmd_delay = CCC_MAX_PI;
 	}
 
-	/* Apply control and clock delay if desired setting is positive */
-	if (cmd_delay == 0) {
-		for (slot = 0; slot < NUM_SLOTS; slot++) {
-			const int pi_coding_0 = ctrl->timings[channel][2 * slot + 0].pi_coding;
-			const int pi_coding_1 = ctrl->timings[channel][2 * slot + 1].pi_coding;
+	for (slot = 0; slot < NUM_SLOTS; slot++) {
+		const int pi_coding_0 = ctrl->timings[channel][2 * slot + 0].pi_coding;
+		const int pi_coding_1 = ctrl->timings[channel][2 * slot + 1].pi_coding;
 
-			const u8 slot_map = (ctrl->rankmap[channel] >> (2 * slot)) & 3;
+		const u8 slot_map = (ctrl->rankmap[channel] >> (2 * slot)) & 3;
 
-			if (slot_map & 1)
-				ctl_delay[slot] += pi_coding_0 + cmd_delay;
+		if (slot_map & 1)
+			ctl_delay[slot] += pi_coding_0 + cmd_delay;
 
-			if (slot_map & 2)
-				ctl_delay[slot] += pi_coding_1 + cmd_delay;
+		if (slot_map & 2)
+			ctl_delay[slot] += pi_coding_1 + cmd_delay;
 
-			/* If both ranks in a slot are populated, use the average */
-			if (slot_map == 3)
-				ctl_delay[slot] /= 2;
+		/* If both ranks in a slot are populated, use the average */
+		if (slot_map == 3)
+			ctl_delay[slot] /= 2;
 
-			if (ctl_delay[slot] > CCC_MAX_PI) {
-				printk(BIOS_ERR, "C%dS%d control delay overflow: %d\n",
-					channel, slot, ctl_delay[slot]);
-				ctl_delay[slot] = CCC_MAX_PI;
-			}
+		if (ctl_delay[slot] > CCC_MAX_PI) {
+			printk(BIOS_ERR, "C%dS%d control delay overflow: %d\n",
+				channel, slot, ctl_delay[slot]);
+			ctl_delay[slot] = CCC_MAX_PI;
 		}
-		FOR_ALL_POPULATED_RANKS {
-			u32 clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
+	}
+	FOR_ALL_POPULATED_RANKS {
+		u32 clk_delay = ctrl->timings[channel][slotrank].pi_coding + cmd_delay;
 
-			if (clk_delay > CCC_MAX_PI) {
-				printk(BIOS_ERR, "C%dR%d clock delay overflow: %d\n",
-					channel, slotrank, clk_delay);
-				clk_delay = CCC_MAX_PI;
-			}
-
-			clk_pi_coding |= (clk_delay % QCLK_PI) << (6 * slotrank);
-			clk_logic_dly |= (clk_delay / QCLK_PI) << slotrank;
+		if (clk_delay > CCC_MAX_PI) {
+			printk(BIOS_ERR, "C%dR%d clock delay overflow: %d\n",
+				channel, slotrank, clk_delay);
+			clk_delay = CCC_MAX_PI;
 		}
+
+		clk_pi_coding |= (clk_delay % QCLK_PI) << (6 * slotrank);
+		clk_logic_dly |= (clk_delay / QCLK_PI) << slotrank;
 	}
 
 	/* Enable CMD XOVER */

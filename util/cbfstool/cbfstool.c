@@ -926,9 +926,10 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 
 		ret = parse_elf_to_xip_stage(buffer, &output, offset,
 						param.ignore_section);
-	} else
+	} else {
 		ret = parse_elf_to_stage(buffer, &output, param.compression,
-					 offset, param.ignore_section);
+					 param.ignore_section);
+	}
 
 	if (ret != 0)
 		return -1;

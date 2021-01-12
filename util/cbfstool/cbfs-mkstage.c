@@ -93,8 +93,7 @@ static void fill_cbfs_stage(struct buffer *outheader, enum cbfs_compression algo
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       enum cbfs_compression algo, uint32_t *location,
-		       const char *ignore_section)
+		       enum cbfs_compression algo, const char *ignore_section)
 {
 	struct parsed_elf pelf;
 	Elf64_Phdr *phdr;
@@ -112,8 +111,6 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
 		return -1;
-
-	DEBUG("start: parse_elf_to_stage(location=0x%x)\n", *location);
 
 	int flags = ELF_PARSE_PHDR | ELF_PARSE_SHDR | ELF_PARSE_STRTAB;
 
@@ -174,10 +171,6 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			virt_to_phys = phdr[i].p_paddr - phdr[i].p_vaddr;
 	}
 
-	if (data_start < *location) {
-		data_start = *location;
-	}
-
 	if (data_end <= data_start) {
 		ERROR("data ends (%08lx) before it starts (%08lx). Make sure "
 		      "the ELF file is correct and resides in ROM space.\n",
@@ -196,19 +189,11 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	/* Copy the file data into the buffer */
 
 	for (i = 0; i < headers; i++) {
-		uint64_t l_start, l_offset = 0;
-
 		if (phdr[i].p_type != PT_LOAD)
 			continue;
 
 		if (phdr[i].p_memsz == 0)
 			continue;
-
-		l_start = phdr[i].p_paddr;
-		if (l_start < *location) {
-			l_offset = *location - l_start;
-			l_start = *location;
-		}
 
 		/* A legal ELF file can have a program header with
 		 * non-zero length but zero-length file size and a
@@ -216,7 +201,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 		 * input->size (i.e. the total file size).  So we need
 		 * to not even test in the case that p_filesz is zero.
 		 */
-		if (! phdr[i].p_filesz)
+		if (!phdr[i].p_filesz)
 			continue;
 		if (input->size < (phdr[i].p_offset + phdr[i].p_filesz)){
 			ERROR("Underflow copying out the segment."
@@ -225,9 +210,9 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			free(buffer);
 			goto err;
 		}
-		memcpy(buffer + (l_start - data_start),
-		       &input->data[phdr[i].p_offset + l_offset],
-		       phdr[i].p_filesz - l_offset);
+		memcpy(buffer + (phdr[i].p_paddr - data_start),
+		       &input->data[phdr[i].p_offset],
+		       phdr[i].p_filesz);
 	}
 
 	/* Now make the output buffer */
@@ -303,8 +288,6 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	fill_cbfs_stage(&outheader, algo, ehdr->e_entry + virt_to_phys,
 			data_start, outlen, mem_end - data_start);
 
-	if (*location)
-		*location -= sizeof(struct cbfs_stage);
 	output->size = sizeof(struct cbfs_stage) + outlen;
 	ret = 0;
 

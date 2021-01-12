@@ -28,11 +28,13 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 {
 	u32 sample_offset = 0x400 * channel + 0x561 + lane * 4;
 
-	/* Reset the DQS probe */
-	MCHBAR8(RESET_CNTL(channel)) &= ~0x2;
-	udelay(2);
-	MCHBAR8(RESET_CNTL(channel)) |= 0x2;
-	udelay(2);
+	/* Reset the DQS probe, on both channels? */
+	for (u8 i = 0; i < TOTAL_CHANNELS; i++) {
+		MCHBAR8(RESET_CNTL(i)) &= ~0x2;
+		udelay(1);
+		MCHBAR8(RESET_CNTL(i)) |= 0x2;
+		udelay(1);
+	}
 	mfence();
 	/* Read strobe */
 	read32((u32 *)addr);

@@ -89,7 +89,7 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
-	if (CONFIG(STONEYRIDGE_UART))
+	if (CONFIG(AMD_SOC_CONSOLE_UART))
 		assert(CONFIG_UART_FOR_CONSOLE >= 0
 					&& CONFIG_UART_FOR_CONSOLE <= 1);
 

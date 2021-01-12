@@ -42,6 +42,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SMBUS
 	select SOC_AMD_COMMON_BLOCK_SMI
 	select SOC_AMD_COMMON_BLOCK_SPI
+	select SOC_AMD_COMMON_BLOCK_UART
 	select SSE2
 	select TSC_SYNC_LFENCE
 	select X86_AMD_FIXED_MTRRS
@@ -257,20 +258,6 @@ config STONEYRIDGE_ACPI_IO_BASE
 	help
 	  Base address for the ACPI registers.
 	  This value must match the hardcoded value of AGESA.
-
-config STONEYRIDGE_UART
-	bool "UART controller on Stoney Ridge"
-	default n
-	select DRIVERS_UART_8250MEM
-	select DRIVERS_UART_8250MEM_32
-	select NO_UART_ON_SUPERIO
-	select UART_OVERRIDE_REFCLK
-	help
-	  There are two UART controllers in Stoney Ridge.
-	  The UART registers are memory-mapped. UART
-	  controller 0 registers range from FEDC_6000h
-	  to FEDC_6FFFh. UART controller 1 registers
-	  range from FEDC_8000h to FEDC_8FFFh.
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL

@@ -170,6 +170,13 @@ static const struct pmic_setting init_setting[] = {
 	{0x202C, 0x8, 0xC, 0},
 	{0x208C, 0x100, 0xF00, 0},
 	{0x209C, 0x80, 0x1E0, 0},
+	/*
+	 * BUCK_VGPU11_OP_MODE/CFG/EN
+	 * Vreq setting for scp usage
+	 */
+	{0x15a0, 0x0, 0x1, 11},
+	{0x159a, 0x0, 0x1, 11},
+	{0x1594, 0x1, 0x1, 11},
 };
 
 static const struct pmic_setting lp_setting[] = {

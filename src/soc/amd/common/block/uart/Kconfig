@@ -21,31 +21,6 @@ config AMD_SOC_CONSOLE_UART
 	  2: 0xfedc3000
 	  3: 0xfedcf000
 
-choice
-	prompt "UART Frequency"
-	depends on AMD_SOC_CONSOLE_UART
-	default AMD_SOC_UART_48MZ
-
-config AMD_SOC_UART_48MZ
-	bool "48 MHz clock"
-	help
-	  Select this option for the most compatibility.
-
-config AMD_SOC_UART_1_8MZ
-	bool "1.8432 MHz clock"
-	help
-	  Select this option if an old payload or Linux ttyS0 arguments require
-	  a 1.8432 MHz clock source for the UART.
-
-endchoice
-
-config AMD_SOC_UART_LEGACY
-	bool "Decode legacy I/O range"
-	help
-	  Assign I/O 3F8, 2F8, etc. to an integrated AMD SoC UART. A UART
-	  accessed with I/O does not allow all the features of MMIO. The MMIO
-	  decode is still present when this option is used.
-
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex

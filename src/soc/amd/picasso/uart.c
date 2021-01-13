@@ -5,7 +5,6 @@
 #include <commonlib/helpers.h>
 #include <device/mmio.h>
 #include <amdblocks/gpio_banks.h>
-#include <amdblocks/acpimmio.h>
 #include <amdblocks/aoac.h>
 #include <soc/southbridge.h>
 #include <soc/gpio.h>
@@ -42,71 +41,17 @@ uintptr_t get_uart_base(unsigned int idx)
 	return uart_info[idx].base;
 }
 
-static bool get_uart_idx(uintptr_t base, unsigned int *idx)
-{
-	for (unsigned int i = 0; i < ARRAY_SIZE(uart_info); i++) {
-		if (base == uart_info[i].base) {
-			*idx = i;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void clear_uart_legacy_config(void)
 {
 	write16((void *)FCH_LEGACY_UART_DECODE, 0);
 }
 
-void set_uart_legacy_config(unsigned int uart_idx, unsigned int range_idx)
-{
-	uint16_t uart_legacy_decode;
-	uint8_t uart_map_offset;
-
-	if (uart_idx >= ARRAY_SIZE(uart_info) || range_idx >= ARRAY_SIZE(uart_info))
-		return;
-
-	uart_legacy_decode = read16((void *)FCH_LEGACY_UART_DECODE);
-	/* Map uart_idx to io range_idx */
-	uart_map_offset = range_idx * FCH_LEGACY_UART_MAP_SIZE + FCH_LEGACY_UART_MAP_SHIFT;
-	uart_legacy_decode &= ~(FCH_LEGACY_UART_MAP_MASK << uart_map_offset);
-	uart_legacy_decode |= uart_idx << uart_map_offset;
-	/* Enable io range */
-	uart_legacy_decode |= 1 << range_idx;
-	write16((void *)FCH_LEGACY_UART_DECODE, uart_legacy_decode);
-}
-
-static void enable_uart_legacy_decode(uintptr_t base)
-{
-	unsigned int idx;
-	const uint8_t range_idx[ARRAY_SIZE(uart_info)] = {
-		FCH_LEGACY_UART_RANGE_3F8,
-		FCH_LEGACY_UART_RANGE_2F8,
-		FCH_LEGACY_UART_RANGE_3E8,
-		FCH_LEGACY_UART_RANGE_2E8,
-	};
-
-	if (get_uart_idx(base, &idx)) {
-		set_uart_legacy_config(idx, range_idx[idx]);
-	}
-}
-
 void set_uart_config(unsigned int idx)
 {
-	uint32_t uart_ctrl;
-
 	if (idx >= ARRAY_SIZE(uart_info))
 		return;
 
 	program_gpios(uart_info[idx].mux, 2);
-
-	if (CONFIG(AMD_SOC_UART_1_8MZ)) {
-		uart_ctrl = sm_pci_read32(SMB_UART_CONFIG);
-		uart_ctrl |= 1 << (SMB_UART_1_8M_SHIFT + idx);
-		sm_pci_write32(SMB_UART_CONFIG, uart_ctrl);
-	}
-
 }
 
 static const char *uart_acpi_name(const struct device *dev)
@@ -151,8 +96,6 @@ static void uart_enable(struct device *dev)
 	if (dev->enabled) {
 		power_on_aoac_device(dev_id);
 		wait_for_aoac_enabled(dev_id);
-		if (CONFIG(AMD_SOC_UART_LEGACY))
-			enable_uart_legacy_decode(dev->path.mmio.addr);
 	} else {
 		power_off_aoac_device(dev_id);
 	}

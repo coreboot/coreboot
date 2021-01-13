@@ -1037,9 +1037,9 @@ static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 static void prog_rcomp(struct sysinfo *s)
 {
 	u8 i, j, k, reg8;
-	const u32 ddr2_x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0D0C0B0A,
-			0x04040404, 0x08070605, 0x0C0B0A09, 0x100F0E0D };
-	const u16 ddr2_x378[5] = { 0xAAAA, 0x7777, 0x7777, 0x7777, 0x7777 };
+	const u32 ddr2_x32a[8] = { 0x04040404, 0x06050505, 0x09090807, 0x0d0c0b0a,
+				   0x04040404, 0x08070605, 0x0c0b0a09, 0x100f0e0d };
+	const u16 ddr2_x378[5] = { 0xaaaa, 0x7777, 0x7777, 0x7777, 0x7777 };
 	const u32 ddr2_x382[5] = { 0x02020202, 0x02020202, 0x02020202, 0x04030303, 0x04030303 };
 	const u32 ddr2_x386[5] = { 0x03020202, 0x03020202, 0x03020202, 0x05040404, 0x05040404 };
 	const u32 ddr2_x38a[5] = { 0x04040303, 0x04040303, 0x04040303, 0x07070605, 0x07070605 };
@@ -1049,24 +1049,24 @@ static void prog_rcomp(struct sysinfo *s)
 	const u32 ddr2_x39a[5] = { 0x04040403, 0x04040403, 0x04040403, 0x07070605, 0x07070605 };
 	const u32 ddr2_x39e[5] = { 0x06060505, 0x06060505, 0x06060505, 0x08080808, 0x08080808 };
 
-	const u32 ddr3_x32a[8] = {0x06060606, 0x06060606, 0x0b090807, 0x12110f0d,
-				 0x06060606, 0x08070606, 0x0d0b0a09, 0x16161511};
-	const u16 ddr3_x378[5] = {0xbbbb, 0x6666, 0x6666, 0x6666, 0x6666};
-	const u32 ddr3_x382[5] = {0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
-	const u32 ddr3_x386[5] = {0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
-	const u32 ddr3_x38a[5] = {0x06060605, 0x07060504, 0x07060504, 0x34343434, 0x34343434};
-	const u32 ddr3_x38e[5] = {0x09080707, 0x09090808, 0x09090808, 0x34343434, 0x34343434};
-	const u32 ddr3_x392[5] = {0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
-	const u32 ddr3_x396[5] = {0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434};
-	const u32 ddr3_x39a[5] = {0x07060606, 0x08070605, 0x08070605, 0x34343434, 0x34343434};
-	const u32 ddr3_x39e[5] = {0x09090807, 0x0b0b0a09, 0x0b0b0a09, 0x34343434, 0x34343434};
+	const u32 ddr3_x32a[8] = { 0x06060606, 0x06060606, 0x0b090807, 0x12110f0d,
+				   0x06060606, 0x08070606, 0x0d0b0a09, 0x16161511 };
+	const u16 ddr3_x378[5] = { 0xbbbb, 0x6666, 0x6666, 0x6666, 0x6666 };
+	const u32 ddr3_x382[5] = { 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434 };
+	const u32 ddr3_x386[5] = { 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434 };
+	const u32 ddr3_x38a[5] = { 0x06060605, 0x07060504, 0x07060504, 0x34343434, 0x34343434 };
+	const u32 ddr3_x38e[5] = { 0x09080707, 0x09090808, 0x09090808, 0x34343434, 0x34343434 };
+	const u32 ddr3_x392[5] = { 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434 };
+	const u32 ddr3_x396[5] = { 0x05050505, 0x04040404, 0x04040404, 0x34343434, 0x34343434 };
+	const u32 ddr3_x39a[5] = { 0x07060606, 0x08070605, 0x08070605, 0x34343434, 0x34343434 };
+	const u32 ddr3_x39e[5] = { 0x09090807, 0x0b0b0a09, 0x0b0b0a09, 0x34343434, 0x34343434 };
 
 	const u16 *x378;
 	const u32 *x32a, *x382, *x386, *x38a, *x38e;
 	const u32 *x392, *x396, *x39a, *x39e;
 
 	const u16 addr[5] = { 0x374, 0x3a2, 0x3d0, 0x3fe, 0x42c };
-	u8 bit[5] = { 0, 1, 1, 0, 0 };
+	const u8 bit[5] = { 0, 1, 1, 0, 0 };
 
 	if (s->spd_type == DDR2) {
 		x32a = ddr2_x32a;
@@ -1094,50 +1094,32 @@ static void prog_rcomp(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		/* RCOMP data group is special, program it separately */
-		MCHBAR32_AND_OR(0x400*i + 0x31c, ~0xff000,
-			0xaa000);
-		MCHBAR16_AND_OR(0x400*i + 0x320, ~0xffff,
-			0x6666);
+		MCHBAR32_AND_OR(0x400*i + 0x31c, ~0xff000, 0xaa000);
+		MCHBAR16_AND_OR(0x400*i + 0x320, ~0xffff, 0x6666);
 		for (k = 0; k < 8; k++) {
-			MCHBAR32_AND_OR(0x400*i + 0x31c +
-				0xe + (k << 2),
-				~0x3f3f3f3f, x32a[k]);
-			MCHBAR32_AND_OR(0x400*i + 0x31c +
-				0x2e + (k << 2),
-				~0x3f3f3f3f, x32a[k]);
+			MCHBAR32_AND_OR(0x400*i + 0x32a + (k << 2), ~0x3f3f3f3f, x32a[k]);
+			MCHBAR32_AND_OR(0x400*i + 0x34a + (k << 2), ~0x3f3f3f3f, x32a[k]);
 		}
 		MCHBAR8_AND_OR(0x400*i + 0x31c, ~1, 0);
 
 		/* Now program the other RCOMP groups */
 		for (j = 0; j < ARRAY_SIZE(addr); j++) {
-			{
-				MCHBAR16_AND_OR(0x400*i + addr[j],
-					~0xf000, 0xa000);
-				MCHBAR16_AND_OR(0x400*i + addr[j] + 4,
-					~0xffff, x378[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0xe,
-					~0x3f3f3f3f, x382[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x12,
-					~0x3f3f3f3f, x386[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x16,
-					~0x3f3f3f3f, x38a[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x1a,
-					~0x3f3f3f3f, x38e[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x1e,
-					~0x3f3f3f3f, x392[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x22,
-					~0x3f3f3f3f, x396[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x26,
-					~0x3f3f3f3f, x39a[j]);
-				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x2a,
-					~0x3f3f3f3f, x39e[j]);
-			}
+			MCHBAR16_AND_OR(0x400*i + addr[j] + 0, ~0xf000, 0xa000);
+			MCHBAR16_AND_OR(0x400*i + addr[j] + 4, ~0xffff, x378[j]);
+
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x0e, ~0x3f3f3f3f, x382[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x12, ~0x3f3f3f3f, x386[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x16, ~0x3f3f3f3f, x38a[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x1a, ~0x3f3f3f3f, x38e[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x1e, ~0x3f3f3f3f, x392[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x22, ~0x3f3f3f3f, x396[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x26, ~0x3f3f3f3f, x39a[j]);
+			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x2a, ~0x3f3f3f3f, x39e[j]);
 
 			/* Override command group strength multiplier */
 			if (s->spd_type == DDR3 &&
 				BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
-				MCHBAR16_AND_OR(0x378 + 0x400 * i,
-					~0xffff, 0xcccc);
+				MCHBAR16_AND_OR(0x378 + 0x400 * i, ~0xffff, 0xcccc);
 			}
 			MCHBAR8_AND_OR(0x400*i + addr[j], ~1, bit[j]);
 		}

@@ -12,7 +12,7 @@
 #include <soc/uart.h>
 #include <types.h>
 
-static const struct _uart_info {
+static const struct {
 	uintptr_t base;
 	struct soc_amd_gpio mux[2];
 } uart_info[] = {

@@ -13,10 +13,15 @@ chip soc/amd/picasso
 	register "slow_ppt_limit_mW" = "6000"
 	register "fast_ppt_limit_mW" = "9000"
 	register "slow_ppt_time_constant_s" = "5"
-	register "stapm_time_constant_s" = "2500"
+	register "stapm_time_constant_s" = "1400"
 	register "sustained_power_limit_mW" = "4800"
 
 	# End : OPN Performance Configuration
+
+	register "telemetry_vddcr_vdd_slope_mA" = "30518"
+	register "telemetry_vddcr_vdd_offset" = "435"
+	register "telemetry_vddcr_soc_slope_mA" = "22965"
+	register "telemetry_vddcr_soc_offset" = "165"
 
 	# I2C2 for touchscreen and trackpad
 

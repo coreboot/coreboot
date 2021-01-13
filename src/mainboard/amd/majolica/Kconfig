@@ -5,6 +5,7 @@ if BOARD_AMD_MAJOLICA
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_AMD_CEZANNE
+	select AMD_SOC_CONSOLE_UART
 
 config FMDFILE
 	string

@@ -1093,20 +1093,25 @@ static void prog_rcomp(struct sysinfo *s)
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
+		/* RCOMP data group is special, program it separately */
+		MCHBAR32_AND_OR(0x400*i + 0x31c, ~0xff000,
+			0xaa000);
+		MCHBAR16_AND_OR(0x400*i + 0x320, ~0xffff,
+			0x6666);
+		for (k = 0; k < 8; k++) {
+			MCHBAR32_AND_OR(0x400*i + 0x31c +
+				0xe + (k << 2),
+				~0x3f3f3f3f, x32a[k]);
+			MCHBAR32_AND_OR(0x400*i + 0x31c +
+				0x2e + (k << 2),
+				~0x3f3f3f3f, x32a[k]);
+		}
+		MCHBAR8_AND_OR(0x400*i + 0x31c, ~1, 0);
+
+		/* Now program the other RCOMP groups */
 		for (j = 0; j < 6; j++) {
 			if (j == 0) {
-				MCHBAR32_AND_OR(0x400*i + addr[j], ~0xff000,
-					0xaa000);
-				MCHBAR16_AND_OR(0x400*i + 0x320, ~0xffff,
-					0x6666);
-				for (k = 0; k < 8; k++) {
-					MCHBAR32_AND_OR(0x400*i + addr[j] +
-						0xe + (k << 2),
-						~0x3f3f3f3f, x32a[k]);
-					MCHBAR32_AND_OR(0x400*i + addr[j] +
-						0x2e + (k << 2),
-						~0x3f3f3f3f, x32a[k]);
-				}
+				continue;
 			} else {
 				MCHBAR16_AND_OR(0x400*i + addr[j],
 					~0xf000, 0xa000);
@@ -1129,6 +1134,8 @@ static void prog_rcomp(struct sysinfo *s)
 				MCHBAR32_AND_OR(0x400*i + addr[j] + 0x2a,
 					~0x3f3f3f3f, x39e[j]);
 			}
+
+			/* Override command group strength multiplier */
 			if (s->spd_type == DDR3 &&
 				BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
 				MCHBAR16_AND_OR(0x378 + 0x400 * i,

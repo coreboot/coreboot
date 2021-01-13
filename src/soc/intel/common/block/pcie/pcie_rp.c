@@ -54,7 +54,7 @@ static void pcie_rp_scan_groups(int mapping[], const struct pcie_rp_group *const
 	const struct pcie_rp_group *group;
 	for (group = groups; group->count; ++group) {
 		unsigned int fn;
-		for (fn = 0; fn < group->count; ++fn) {
+		for (fn = rp_start_fn(group); fn <= rp_end_fn(group); ++fn) {
 			const pci_devfn_t dev = PCI_DEV(0, group->slot, fn);
 			const uint16_t did = pci_s_read_config16(dev, PCI_DEVICE_ID);
 			if (did == 0xffff) {
@@ -96,7 +96,8 @@ static bool pcie_rp_update_dev(
 	const struct pcie_rp_group *group;
 	for (group = groups; group->count; ++group) {
 		if (PCI_SLOT(dev->path.pci.devfn) == group->slot &&
-		    PCI_FUNC(dev->path.pci.devfn) < group->count)
+		    PCI_FUNC(dev->path.pci.devfn) >= rp_start_fn(group) &&
+		    PCI_FUNC(dev->path.pci.devfn) <= rp_end_fn(group))
 			break;
 		offset += group->count;
 	}

@@ -5,14 +5,15 @@
 #include <intelblocks/pcie_rp.h>
 #include <stdint.h>
 
-static uint32_t pcie_slot_enable_mask(unsigned int slot, unsigned int count)
+static uint32_t pcie_slot_enable_mask(const struct pcie_rp_group *group)
 {
 	uint32_t mask = 0;
+	unsigned int fn;
 	unsigned int i;
 	const struct device *dev;
 
-	for (i = 0; i < count; i++) {
-		dev = pcidev_on_root(slot, i);
+	for (i = 0, fn = rp_start_fn(group); i < group->count; i++, fn++) {
+		dev = pcidev_on_root(group->slot, fn);
 		if (is_dev_enabled(dev))
 			mask |= BIT(i);
 	}
@@ -32,7 +33,7 @@ uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *const groups)
 			       __func__);
 			break;
 		}
-		mask |= pcie_slot_enable_mask(group->slot, group->count) << offset;
+		mask |= pcie_slot_enable_mask(group) << offset;
 		offset += group->count;
 	}
 

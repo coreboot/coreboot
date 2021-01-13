@@ -10,14 +10,26 @@
  * functions.
  *
  * `slot` is the PCI device/slot number of such a group.
- * `count` is the number of functions within the group. It is assumed that
- * the first group includes the RPs 1 to the first group's `count` and that
- * adjacent groups follow without gaps in the numbering.
+ * `start` is the initial PCI function number within the group. This is useful in case the
+ * root port numbers are not contiguous within the slot.
+ * `count` is the number of functions within the group starting with the `start` function
+ * number.
  */
 struct pcie_rp_group {
 	unsigned int slot;
+	unsigned int start;
 	unsigned int count;
 };
+
+static inline unsigned int rp_start_fn(const struct pcie_rp_group *group)
+{
+	return group->start;
+}
+
+static inline unsigned int rp_end_fn(const struct pcie_rp_group *group)
+{
+	return group->start + group->count - 1;
+}
 
 /*
  * Update PCI paths of the root ports in the devicetree.
@@ -32,7 +44,9 @@ struct pcie_rp_group {
  * Call this once, after root ports have been reordered, but before PCI
  * enumeration.
  *
- * `groups` points to a list of groups terminated by an entry with `count == 0`.
+ * `groups` points to a list of groups terminated by an entry with `count == 0`. It is assumed
+ * that the first group includes the RPs 1 to the first group's `count` and that adjacent groups
+ * follow without gaps in the numbering.
  */
 void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
 

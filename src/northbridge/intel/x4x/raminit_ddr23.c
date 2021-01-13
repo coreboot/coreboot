@@ -399,18 +399,18 @@ static void program_timings(struct sysinfo *s)
 	adjusted_cas = s->selected_timings.CAS - 3;
 
 	u16 fsb_to_ps[3] = {
-		5000, // 800
-		3750, // 1067
-		3000  // 1333
+		5000, /*  800 */
+		3750, /* 1067 */
+		3000  /* 1333 */
 	};
 
 	u16 ddr_to_ps[6] = {
-		5000, // 400
-		3750, // 533
-		3000, // 667
-		2500, // 800
-		1875, // 1067
-		1500  // 1333
+		5000, /*  400 */
+		3750, /*  533 */
+		3000, /*  667 */
+		2500, /*  800 */
+		1875, /* 1067 */
+		1500  /* 1333 */
 	};
 
 	u16 lut1[6] = {
@@ -634,7 +634,7 @@ static void program_timings(struct sysinfo *s)
 		MCHBAR32_AND_OR(0x400*i + 0x269, ~0xfa300000, reg32);
 		MCHBAR8_AND(0x400*i + 0x271, ~0x80);
 		MCHBAR8_AND(0x400*i + 0x274, ~0x6);
-	} // END EACH POPULATED CHANNEL
+	} /* END EACH POPULATED CHANNEL */
 
 	reg16 = 0x1f << 5;
 	reg16 |= 0xe << 10;
@@ -701,19 +701,19 @@ static void program_dll(struct sysinfo *s)
 
 	udelay(1);
 	MCHBAR8_AND(0x190, ~1);
-	udelay(1); // 533ns
+	udelay(1); /* 533ns */
 	MCHBAR32_AND(0x198, ~0x11554000);
 	udelay(1);
 	MCHBAR32_AND(0x198, ~0x1455);
 	udelay(1);
 	MCHBAR8_AND(0x583, ~0x1c);
 	MCHBAR8_AND(0x983, ~0x1c);
-	udelay(1); // 533ns
+	udelay(1); /* 533ns */
 	MCHBAR8_AND(0x583, ~0x3);
 	MCHBAR8_AND(0x983, ~0x3);
-	udelay(1); // 533ns
+	udelay(1); /* 533ns */
 
-	// ME related
+	/* ME related */
 	MCHBAR32_AND_OR(0x1a0, ~0x7ffffff,
 		s->spd_type == DDR2 ? 0x551803 : 0x555801);
 
@@ -778,7 +778,7 @@ static void program_dll(struct sysinfo *s)
 		}
 
 		//reg8 = 0x00; // FIXME don't switch on all clocks anyway
-	} // END EACH CHANNEL
+	} /* END EACH CHANNEL */
 
 	if (s->spd_type == DDR2) {
 		MCHBAR8_OR(0x1a8, 1);
@@ -788,7 +788,7 @@ static void program_dll(struct sysinfo *s)
 		MCHBAR8_OR(0x1a8, 0x4);
 	}
 
-	// Update DLL timing
+	/* Update DLL timing */
 	MCHBAR8_AND(0x1a4, ~0x80);
 	MCHBAR8_OR(0x1a4, 0x40);
 	MCHBAR16_AND_OR(0x5f0, ~0x400, 0x400);
@@ -833,7 +833,7 @@ static void program_dll(struct sysinfo *s)
 		cmdset(i, &setting[CMD]);
 	}
 
-	// XXX if not async mode
+	/* XXX if not async mode */
 	MCHBAR16_AND(0x180, ~0x8200);
 	MCHBAR8_OR(0x180, 0x4);
 	j = 0;
@@ -1016,7 +1016,7 @@ static void select_default_dq_dqs_settings(struct sysinfo *s)
  */
 static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 {
-	// Program DQ/DQS dll settings
+	/* Program DQ/DQS dll settings */
 	int ch, lane, rank;
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
@@ -1138,7 +1138,7 @@ static void prog_rcomp(struct sysinfo *s)
 		MCHBAR8_AND_OR(0x400*i + 0x45e, ~0x3f, reg8);
 		MCHBAR8_AND_OR(0x400*i + 0x462, ~0x3f, reg8);
 		MCHBAR8_AND_OR(0x400*i + 0x466, ~0x3f, reg8);
-	} // END EACH POPULATED CHANNEL
+	} /* END EACH POPULATED CHANNEL */
 
 	MCHBAR32_AND_OR(0x134, ~0x63c00, 0x63c00);
 	MCHBAR16_AND_OR(0x174, ~0x63ff, 0x63ff);
@@ -1157,41 +1157,41 @@ static void program_odt(struct sysinfo *s)
 {
 	u8 i;
 	static u16 ddr2_odt[16][2] = {
-		{ 0x0000, 0x0000 }, // NC_NC
-		{ 0x0000, 0x0001 }, // x8SS_NC
-		{ 0x0000, 0x0011 }, // x8DS_NC
-		{ 0x0000, 0x0001 }, // x16SS_NC
-		{ 0x0004, 0x0000 }, // NC_x8SS
-		{ 0x0101, 0x0404 }, // x8SS_x8SS
-		{ 0x0101, 0x4444 }, // x8DS_x8SS
-		{ 0x0101, 0x0404 }, // x16SS_x8SS
-		{ 0x0044, 0x0000 }, // NC_x8DS
-		{ 0x1111, 0x0404 }, // x8SS_x8DS
-		{ 0x1111, 0x4444 }, // x8DS_x8DS
-		{ 0x1111, 0x0404 }, // x16SS_x8DS
-		{ 0x0004, 0x0000 }, // NC_x16SS
-		{ 0x0101, 0x0404 }, // x8SS_x16SS
-		{ 0x0101, 0x4444 }, // x8DS_x16SS
-		{ 0x0101, 0x0404 }, // x16SS_x16SS
+		{ 0x0000, 0x0000 }, /* NC_NC */
+		{ 0x0000, 0x0001 }, /* x8SS_NC */
+		{ 0x0000, 0x0011 }, /* x8DS_NC */
+		{ 0x0000, 0x0001 }, /* x16SS_NC */
+		{ 0x0004, 0x0000 }, /* NC_x8SS */
+		{ 0x0101, 0x0404 }, /* x8SS_x8SS */
+		{ 0x0101, 0x4444 }, /* x8DS_x8SS */
+		{ 0x0101, 0x0404 }, /* x16SS_x8SS */
+		{ 0x0044, 0x0000 }, /* NC_x8DS */
+		{ 0x1111, 0x0404 }, /* x8SS_x8DS */
+		{ 0x1111, 0x4444 }, /* x8DS_x8DS */
+		{ 0x1111, 0x0404 }, /* x16SS_x8DS */
+		{ 0x0004, 0x0000 }, /* NC_x16SS */
+		{ 0x0101, 0x0404 }, /* x8SS_x16SS */
+		{ 0x0101, 0x4444 }, /* x8DS_x16SS */
+		{ 0x0101, 0x0404 }, /* x16SS_x16SS */
 	};
 
 	static const u16 ddr3_odt[16][2] = {
-		{ 0x0000, 0x0000 }, // NC_NC
-		{ 0x0000, 0x0001 }, // x8SS_NC
-		{ 0x0000, 0x0021 }, // x8DS_NC
-		{ 0x0000, 0x0001 }, // x16SS_NC
-		{ 0x0004, 0x0000 }, // NC_x8SS
-		{ 0x0105, 0x0405 }, // x8SS_x8SS
-		{ 0x0105, 0x4465 }, // x8DS_x8SS
-		{ 0x0105, 0x0405 }, // x16SS_x8SS
-		{ 0x0084, 0x0000 }, // NC_x8DS
-		{ 0x1195, 0x0405 }, // x8SS_x8DS
-		{ 0x1195, 0x4465 }, // x8DS_x8DS
-		{ 0x1195, 0x0405 }, // x16SS_x8DS
-		{ 0x0004, 0x0000 }, // NC_x16SS
-		{ 0x0105, 0x0405 }, // x8SS_x16SS
-		{ 0x0105, 0x4465 }, // x8DS_x16SS
-		{ 0x0105, 0x0405 }, // x16SS_x16SS
+		{ 0x0000, 0x0000 }, /* NC_NC */
+		{ 0x0000, 0x0001 }, /* x8SS_NC */
+		{ 0x0000, 0x0021 }, /* x8DS_NC */
+		{ 0x0000, 0x0001 }, /* x16SS_NC */
+		{ 0x0004, 0x0000 }, /* NC_x8SS */
+		{ 0x0105, 0x0405 }, /* x8SS_x8SS */
+		{ 0x0105, 0x4465 }, /* x8DS_x8SS */
+		{ 0x0105, 0x0405 }, /* x16SS_x8SS */
+		{ 0x0084, 0x0000 }, /* NC_x8DS */
+		{ 0x1195, 0x0405 }, /* x8SS_x8DS */
+		{ 0x1195, 0x4465 }, /* x8DS_x8DS */
+		{ 0x1195, 0x0405 }, /* x16SS_x8DS */
+		{ 0x0004, 0x0000 }, /* NC_x16SS */
+		{ 0x0105, 0x0405 }, /* x8SS_x16SS */
+		{ 0x0105, 0x4465 }, /* x8DS_x16SS */
+		{ 0x0105, 0x0405 }, /* x16SS_x16SS */
 	};
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
@@ -1283,8 +1283,8 @@ u32 test_address(int channel, int rank)
 }
 
 /* DDR3 Rank1 Address mirror
- * swap the following pins:
- * A3<->A4, A5<->A6, A7<->A8, BA0<->BA1 */
+   swap the following pins:
+   A3<->A4, A5<->A6, A7<->A8, BA0<->BA1 */
 static u32 mirror_shift_bit(const u32 data, u8 bit)
 {
 	u32 temp0 = data, temp1 = data;
@@ -1353,12 +1353,12 @@ static void jedec_ddr2(struct sysinfo *s)
 		{EMRS2_CMD, 0x0},
 		{EMRS3_CMD, 0x0},
 		{EMRS1_CMD, 0x0},
-		{MRS_CMD, 0x100},	// DLL Reset
+		{MRS_CMD, 0x100},	/* DLL Reset */
 		{PRECHARGE_CMD, 0x0},
 		{CBR_CMD, 0x0},
 		{CBR_CMD, 0x0},
-		{MRS_CMD, 0x0},		// DLL out of reset
-		{EMRS1_CMD, 0x380},	// OCD calib default
+		{MRS_CMD, 0x0},		/* DLL out of reset */
+		{EMRS1_CMD, 0x380},	/* OCD calib default */
 		{EMRS1_CMD, 0x0}
 	};
 
@@ -1430,7 +1430,7 @@ static void jedec_ddr3(struct sysinfo *s)
 		cmd |= (1 << 1);
 		send_jedec_cmd(s, r, ch, EMRS1_CMD, cmd);
 		/* Burst type interleaved, burst length 8, Reset DLL,
-		 * Precharge PD: DLL on */
+		   Precharge PD: DLL on */
 		send_jedec_cmd(s, r, ch, MRS_CMD, (1 << 3) | (1 << 8)
 			| (1 << 12) | ((s->selected_timings.CAS - 4) << 4)
 			| ((s->selected_timings.tWR - 4) << 9));
@@ -1519,7 +1519,7 @@ static void set_dradrb(struct sysinfo *s)
 
 	u8 drbtab[10] = {0x04, 0x02, 0x08, 0x04, 0x08, 0x04, 0x10, 0x08, 0x20, 0x10};
 
-	// DRA
+	/* DRA */
 	rankpop0 = 0;
 	rankpop1 = 0;
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
@@ -1563,7 +1563,7 @@ static void set_dradrb(struct sysinfo *s)
 			ONLY_DIMMB_IS_POPULATED(s->dimms, 1))
 		MCHBAR8_OR(0x660, 1);
 
-	// DRB
+	/* DRB */
 	lastrank_ch1 = 0;
 	FOR_EACH_RANK(ch, r) {
 		if (ch == 0) {
@@ -1703,7 +1703,7 @@ static void configure_mmap(struct sysinfo *s)
 	/* TSEG 2M, This amount can easily be covered by SMRR MTRR's,
 	   which requires to have TSEG_BASE aligned to TSEG_SIZE. */
 	tsegsize = 2;
-	mmiosize = 0x800; // 2GB MMIO
+	mmiosize = 0x800; /* 2GB MMIO */
 	umasizem = gfxsize + gttsize + tsegsize;
 	mmiostart = 0x1000 - mmiosize + umasizem;
 	tom = s->channel_capacity[0] + s->channel_capacity[1] - ME_UMA_SIZEMB;
@@ -1890,7 +1890,7 @@ static void power_settings(struct sysinfo *s)
 	MCHBAR16(0x115) = (u16) reg1;
 	MCHBAR32_AND_OR(0x117, ~0xffffff, reg2);
 	MCHBAR8(0x124) = 0x7;
-	// not sure if dummy reads are needed
+	/* not sure if dummy reads are needed */
 	MCHBAR16_AND_OR(0x12a, 0, 0x80);
 	MCHBAR8_AND_OR(0x12c, 0, 0xa0);
 	MCHBAR16_AND(0x174, ~(1 << 15));
@@ -1899,14 +1899,14 @@ static void power_settings(struct sysinfo *s)
 	MCHBAR8_OR(0x192, 1);
 	MCHBAR8_OR(0x193, 0xf);
 	MCHBAR16_AND_OR(0x1b4, ~0x480, 0x80);
-	MCHBAR16_AND_OR(0x210, ~0x1fff, 0x3f); // | clockgatingiii
-	// non-aligned access: possible bug?
+	MCHBAR16_AND_OR(0x210, ~0x1fff, 0x3f); /* clockgating iii */
+	/* non-aligned access: possible bug? */
 	MCHBAR32_AND_OR(0x6d1, ~0xff03ff, 0x100 | clkgate);
 	MCHBAR8_AND_OR(0x212, ~0x7f, 0x7f);
 	MCHBAR32_AND_OR(0x2c0, ~0xffff0, 0xcc5f0);
 	MCHBAR8_AND_OR(0x2c4, ~0x70, 0x70);
-	// non-aligned access: possible bug?
-	MCHBAR32_AND_OR(0x2d1, ~0xffffff, 0xff2831); // | clockgatingi
+	/* non-aligned access: possible bug? */
+	MCHBAR32_AND_OR(0x2d1, ~0xffffff, 0xff2831); /* clockgating i */
 	MCHBAR32(0x2d4) = 0x40453600;
 	MCHBAR32(0x300) = 0xc0b0a08;
 	MCHBAR32(0x304) = 0x6040201;
@@ -1980,30 +1980,30 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	u32 reg32;
 
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
-		// Clear self refresh
+		/* Clear self refresh */
 		MCHBAR32(PMSTS_MCHBAR) = MCHBAR32(PMSTS_MCHBAR)
 			| PMSTS_BOTH_SELFREFRESH;
 
-		// Clear host clk gate reg
+		/* Clear host clk gate reg */
 		MCHBAR32_OR(0x1c, 0xffffffff);
 
-		// Select type
+		/* Select type */
 		if (s->spd_type == DDR2)
 			MCHBAR8_AND(0x1a8, ~0x4);
 		else
 			MCHBAR8_OR(0x1a8, 0x4);
 
-		// Set freq
+		/* Set frequency */
 		MCHBAR32_AND_OR(0xc00, ~0x70,
 			(s->selected_timings.mem_clk << 4) | (1 << 10));
 
-		// Overwrite freq if chipset rejects it
+		/* Overwrite value if chipset rejects it */
 		s->selected_timings.mem_clk = (MCHBAR8(0xc00) & 0x70) >> 4;
 		if (s->selected_timings.mem_clk > (s->max_fsb + 3))
 			die("Error: DDR is faster than FSB, halt\n");
 	}
 
-	// Program clock crossing
+	/* Program clock crossing */
 	program_crossclock(s);
 	printk(BIOS_DEBUG, "Done clk crossing\n");
 
@@ -2012,31 +2012,31 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		printk(BIOS_DEBUG, "Done I/O clk\n");
 	}
 
-	// Grant to launch
+	/* Grant to launch */
 	launch_dram(s);
 	printk(BIOS_DEBUG, "Done launch\n");
 
-	// Program DRAM timings
+	/* Program DRAM timings */
 	program_timings(s);
 	printk(BIOS_DEBUG, "Done timings\n");
 
-	// Program DLL
+	/* Program DLL */
 	program_dll(s);
 	if (!fast_boot)
 		select_default_dq_dqs_settings(s);
 	set_all_dq_dqs_dll_settings(s);
 
-	// RCOMP
+	/* RCOMP */
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
 		prog_rcomp(s);
 		printk(BIOS_DEBUG, "RCOMP\n");
 	}
 
-	// ODT
+	/* ODT */
 	program_odt(s);
 	printk(BIOS_DEBUG, "Done ODT\n");
 
-	// RCOMP update
+	/* RCOMP update */
 	if (s->boot_path != BOOT_PATH_WARM_RESET) {
 		while (MCHBAR8(0x130) & 1)
 			;
@@ -2045,7 +2045,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 
 	pre_jedec_memory_map();
 
-	// IOBUFACT
+	/* IOBUFACT */
 	if (CHANNEL_IS_POPULATED(s->dimms, 0)) {
 		MCHBAR8_AND_OR(0x5dd, ~0x3f, 0x3f);
 		MCHBAR8_OR(0x5d8, 0x7);
@@ -2070,7 +2070,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		udelay(500);
 	}
 
-	// Pre jedec
+	/* Pre jedec */
 	MCHBAR8_OR(0x40, 0x2);
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		MCHBAR32_OR(0x400*ch + 0x260, 1 << 27);
@@ -2079,7 +2079,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	MCHBAR16_OR(0x212, 0xf00);
 	printk(BIOS_DEBUG, "Done pre-jedec\n");
 
-	// JEDEC reset
+	/* JEDEC reset */
 	if (s->boot_path != BOOT_PATH_RESUME) {
 		if (s->spd_type == DDR2)
 			jedec_ddr2(s);
@@ -2096,7 +2096,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 			software_ddr3_reset(s);
 	}
 
-	// After JEDEC reset
+	/* After JEDEC reset */
 	MCHBAR8_AND(0x40, ~0x2);
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		reg32 = (2 << 18);
@@ -2128,12 +2128,12 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 
 	printk(BIOS_DEBUG, "Done post-jedec\n");
 
-	// Set DDR init complete
+	/* Set DDR init complete */
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		MCHBAR32_OR(0x400*ch + 0x268, 0xc0000000);
 	}
 
-	// Dummy reads
+	/* Dummy reads */
 	if (s->boot_path == BOOT_PATH_NORMAL) {
 		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 			for (bank = 0; bank < 4; bank++)
@@ -2142,11 +2142,11 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	}
 	printk(BIOS_DEBUG, "Done dummy reads\n");
 
-	// Receive enable
+	/* Receive enable */
 	sdram_program_receive_enable(s, fast_boot);
 	printk(BIOS_DEBUG, "Done rcven\n");
 
-	// Finish rcven
+	/* Finish rcven */
 	FOR_EACH_CHANNEL(ch) {
 		MCHBAR8_AND(0x400*ch + 0x5d8, ~0xe);
 		MCHBAR8_OR(0x400*ch + 0x5d8, 0x2);
@@ -2157,7 +2157,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	MCHBAR8_AND(0x5dc, ~0x80);
 	MCHBAR8_OR(0x5dc, 0x80);
 
-	// XXX tRD
+	/* XXX tRD */
 
 	if (!fast_boot) {
 		if (s->selected_timings.mem_clk > MEM_CLOCK_667MHz) {
@@ -2168,29 +2168,29 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 			die("DQS read training failed!");
 	}
 
-	// DRADRB
+	/* DRADRB */
 	set_dradrb(s);
 	printk(BIOS_DEBUG, "Done DRADRB\n");
 
-	// Memory map
+	/* Memory map */
 	configure_mmap(s);
 	printk(BIOS_DEBUG, "Done memory map\n");
 
-	// Enhanced mode
+	/* Enhanced mode */
 	set_enhanced_mode(s);
 	printk(BIOS_DEBUG, "Done enhanced mode\n");
 
-	// Periodic RCOMP
+	/* Periodic RCOMP */
 	MCHBAR16_AND_OR(0x160, ~0xfff, 0x999);
 	MCHBAR16_OR(0x1b4, 0x3000);
 	MCHBAR8_OR(0x130, 0x82);
 	printk(BIOS_DEBUG, "Done PRCOMP\n");
 
-	// Power settings
+	/* Power settings */
 	power_settings(s);
 	printk(BIOS_DEBUG, "Done power settings\n");
 
-	// ME related
+	/* ME related */
 	/*
 	 * FIXME: This locks some registers like bit1 of GGC
 	 * and is only needed in case of ME being used.

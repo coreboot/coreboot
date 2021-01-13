@@ -635,8 +635,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	/* verify MRC cache for fast boot */
 	if (boot_path != BOOT_PATH_RESUME && ctrl_cached) {
-		/* check SPD checksum to make sure the DIMMs haven't been
-		 * replaced */
+		/* check SPD checksum to make sure the DIMMs haven't been replaced */
 		fast_boot = verify_spds(spd_map, ctrl_cached) == CB_SUCCESS;
 		if (!fast_boot) {
 			printk(BIOS_DEBUG, "SPD checksums don't match,"

@@ -65,8 +65,6 @@ each soc will need to define the init. */
 void lpc_soc_init(struct device *dev);
 /* Fill up LPC IO resource structure inside SoC directory */
 void pch_lpc_soc_fill_io_resources(struct device *dev);
-/* Init LPC GPIO pads */
-void lpc_configure_pads(void);
 /* Set LPC BIOS Control BILD bit. */
 void lpc_set_bios_interface_lock_down(void);
 /* Set LPC BIOS Control LE bit. */

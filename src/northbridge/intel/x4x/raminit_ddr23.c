@@ -289,7 +289,12 @@ static void ctrlset1(u8 ch, const struct dll_setting *setting)
 
 static void ctrlset2(u8 ch, const struct dll_setting *setting)
 {
-	MCHBAR32_AND_OR(0x400*ch + 0x598, ~0x18c00000,
+	/*
+	 * MRC uses an incorrect mask when programming this register, but
+	 * the reset default value is zero and it is only programmed once.
+	 * As it makes no difference, we can safely use the correct mask.
+	 */
+	MCHBAR32_AND_OR(0x400*ch + 0x598, ~0xf000,
 		(setting->clk_delay << 14) |
 		(setting->db_sel << 12) |
 		(setting->db_en << 13));
@@ -299,7 +304,12 @@ static void ctrlset2(u8 ch, const struct dll_setting *setting)
 
 static void ctrlset3(u8 ch, const struct dll_setting *setting)
 {
-	MCHBAR32_AND_OR(0x400*ch + 0x598, ~0x18c00000,
+	/*
+	 * MRC uses an incorrect mask when programming this register, but
+	 * the reset default value is zero and it is only programmed once.
+	 * As it makes no difference, we can safely use the correct mask.
+	 */
+	MCHBAR32_AND_OR(0x400*ch + 0x598, ~0xf00,
 		(setting->clk_delay << 10) |
 		(setting->db_sel << 8) |
 		(setting->db_en << 9));

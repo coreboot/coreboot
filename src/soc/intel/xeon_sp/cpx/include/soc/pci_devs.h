@@ -53,6 +53,7 @@
 #define UBOX_DECS_DEV			8
 #define UBOX_DECS_FUNC			2
 #define UBOX_DECS_CPUBUSNO_CSR		0xcc
+#define UBOX_DECS_CPUBUSNO1_CSR		0xd0
 
 #define VTD_TOLM_CSR			0xd0
 #define VTD_TSEG_BASE_CSR		0xa8

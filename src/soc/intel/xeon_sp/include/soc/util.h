@@ -8,7 +8,7 @@
 
 void get_cpubusnos(uint32_t *bus0, uint32_t *bus1, uint32_t *bus2, uint32_t *bus3);
 void unlock_pam_regions(void);
-void get_stack_busnos(uint32_t *bus);
+uint8_t get_stack_busno(const uint8_t stack);
 msr_t read_msr_ppin(void);
 int get_threads_per_package(void);
 int get_platform_thread_count(void);

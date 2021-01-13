@@ -213,7 +213,7 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 	uint8_t characteristics_1 = 0;
 	uint8_t characteristics_2 = 0;
 	uint32_t vendor_device_id;
-	uint32_t stack_busnos[6];
+	uint8_t stack_busnos[MAX_IIO_STACK];
 	pci_devfn_t pci_dev;
 	unsigned int cap;
 	uint16_t sltcap;
@@ -221,7 +221,8 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 	if (ipmi_get_pcie_config(&pcie_config) != CB_SUCCESS)
 		printk(BIOS_ERR, "Failed to get IPMI PCIe config\n");
 
-	get_stack_busnos(stack_busnos);
+	for (index = 0; index < ARRAY_SIZE(stack_busnos); index++)
+		stack_busnos[index] = get_stack_busno(index);
 
 	for (index = 0; index < ARRAY_SIZE(slotinfo); index++) {
 		if (pcie_config == PCIE_CONFIG_A) {

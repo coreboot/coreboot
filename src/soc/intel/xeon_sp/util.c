@@ -13,19 +13,15 @@
 #include <soc/util.h>
 #include <timer.h>
 
-void get_stack_busnos(uint32_t *bus)
+uint8_t get_stack_busno(const uint8_t stack)
 {
-	uint32_t reg1, reg2;
-
-	reg1 = pci_mmio_read_config32(PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC),
-		0xcc);
-	reg2 = pci_mmio_read_config32(PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC),
-		0xd0);
-
-	for (int i = 0; i < 4; ++i)
-		bus[i] = ((reg1 >> (i * 8)) & 0xff);
-	for (int i = 0; i < 2; ++i)
-		bus[4+i] = ((reg2 >> (i * 8)) & 0xff);
+	if (stack >= MAX_IIO_STACK) {
+		printk(BIOS_ERR, "%s: Stack %u does not exist!\n", __func__, stack);
+		return 0;
+	}
+	const pci_devfn_t dev = PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC);
+	const uint16_t offset = stack / 4 ? UBOX_DECS_CPUBUSNO1_CSR : UBOX_DECS_CPUBUSNO_CSR;
+	return pci_io_read_config32(dev, offset) >> (8 * (stack % 4)) & 0xff;
 }
 
 void unlock_pam_regions(void)

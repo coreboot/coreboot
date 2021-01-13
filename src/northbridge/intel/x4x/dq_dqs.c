@@ -766,9 +766,9 @@ void search_write_leveling(struct sysinfo *s)
 	u8 config, rank0, rank1, lane;
 	struct dll_setting dq_setting;
 
-	u8 chanconfig_lut[16]={0, 6, 4, 6, 7, 3, 1, 3, 5, 2, 0, 2, 7, 3, 1, 3};
+	const u8 chanconfig_lut[16] = {0, 6, 4, 6, 7, 3, 1, 3, 5, 2, 0, 2, 7, 3, 1, 3};
 
-	u8 odt_force[8][4] = { /* [Config][leveling rank] */
+	const u8 odt_force[8][4] = { /* [Config][leveling rank] */
 		{0x5, 0x6, 0x5, 0x9},
 		{0x5, 0x6, 0x5, 0x0},
 		{0x5, 0x0, 0x5, 0x9},

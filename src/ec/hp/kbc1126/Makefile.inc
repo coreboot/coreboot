@@ -16,7 +16,7 @@ ecfw2.bin-position := $(CONFIG_KBC1126_FW2_OFFSET)
 ecfw2.bin-type := raw
 endif
 
-$(call add_intermediate, kbc1126_ec_insert, $(obj)/coreboot.pre)
+$(call add_intermediate, kbc1126_ec_insert)
 ifeq ($(CONFIG_KBC1126_FIRMWARE),y)
 	printf "    Building kbc1126_ec_insert.\n"
 	$(MAKE) -C util/kbc1126

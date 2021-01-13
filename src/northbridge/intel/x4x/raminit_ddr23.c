@@ -776,8 +776,6 @@ static void program_dll(struct sysinfo *s)
 					~rank2clken[r + i * 4]);
 			}
 		}
-
-		//reg8 = 0x00; // FIXME don't switch on all clocks anyway
 	} /* END EACH CHANNEL */
 
 	if (s->spd_type == DDR2) {

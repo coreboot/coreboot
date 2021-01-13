@@ -10,6 +10,8 @@
 #define   TOGGLE_ALL_PWR_GOOD		(1 << 1)
 #define PM_ACPI_SMI_CMD			0x6a
 
+#define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
+
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			(1 << 7) /* Write-once */
 

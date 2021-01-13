@@ -24,7 +24,6 @@
 #include <soc/amd_pci_int_defs.h>
 #include <soc/pci.h>
 #include <soc/pci_devs.h>
-#include <soc/nvs.h>
 #include <types.h>
 #include "chip.h"
 

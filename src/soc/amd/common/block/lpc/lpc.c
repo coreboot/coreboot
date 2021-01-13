@@ -19,7 +19,6 @@
 #include <amdblocks/lpc.h>
 #include <soc/acpi.h>
 #include <soc/southbridge.h>
-#include <soc/nvs.h>
 #include <soc/iomap.h>
 
 /* Most systems should have already enabled the bridge */

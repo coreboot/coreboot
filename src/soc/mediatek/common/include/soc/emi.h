@@ -7,7 +7,8 @@
 
 size_t sdram_size(void);
 void mt_set_emi(struct dramc_param *dparam);
-void mt_mem_init(struct dramc_param_ops *dparam_ops);
+void mt_mem_init(struct dramc_param *dparam);
+void mtk_dram_init(void);
 int complex_mem_test(u8 *start, unsigned int len);
 
 bool is_dvfs_enabled(void);

@@ -5,9 +5,19 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <ip_checksum.h>
+#include <mrc_cache.h>
+#include <soc/dramc_param.h>
 #include <soc/emi.h>
+#include <soc/mmu_operations.h>
 #include <symbols.h>
 #include <timer.h>
+
+/* This must be defined in chromeos.fmd in same name and size. */
+#define CALIBRATION_REGION		"RW_MRC_CACHE"
+#define CALIBRATION_REGION_SIZE		0x2000
+
+_Static_assert(sizeof(struct dramc_param) <= CALIBRATION_REGION_SIZE,
+	       "sizeof(struct dramc_param) exceeds " CALIBRATION_REGION);
 
 const char *get_dram_geometry_str(u32 ddr_geometry);
 const char *get_dram_type_str(u32 ddr_type);
@@ -33,12 +43,6 @@ static int mt_mem_test(const struct dramc_data *dparam)
 	}
 
 	return 0;
-}
-
-static u32 compute_checksum(const struct dramc_param *dparam)
-{
-	return (u32)compute_ip_checksum(&dparam->dramc_datas,
-					sizeof(dparam->dramc_datas));
 }
 
 const char *get_dram_geometry_str(u32 ddr_geometry)
@@ -93,21 +97,6 @@ const char *get_dram_type_str(u32 ddr_type)
 
 static int dram_run_fast_calibration(struct dramc_param *dparam)
 {
-	if (!is_valid_dramc_param(dparam)) {
-		printk(BIOS_WARNING, "DRAM-K: Invalid DRAM calibration data from flash\n");
-		dump_param_header((void *)dparam);
-		return -1;
-	}
-
-	const u32 checksum = compute_checksum(dparam);
-	if (dparam->header.checksum != checksum) {
-		printk(BIOS_ERR,
-		       "DRAM-K: Invalid DRAM calibration checksum from flash "
-		       "(expected: %#x, saved: %#x)\n",
-		       checksum, dparam->header.checksum);
-		return DRAMC_ERR_INVALID_CHECKSUM;
-	}
-
 	const u16 config = CONFIG(MEDIATEK_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
 	if (dparam->dramc_datas.ddr_info.config_dvfs != config) {
 		printk(BIOS_WARNING,
@@ -131,6 +120,7 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 	struct prog dram = PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/dram");
 
 	initialize_dramc_param(dparam);
+	dump_param_header(dparam);
 
 	if (cbfs_prog_stage_load(&dram)) {
 		printk(BIOS_ERR, "DRAM-K: CBFS load program failed\n");
@@ -179,16 +169,21 @@ static void mem_init_set_default_config(struct dramc_param *dparam,
 	       get_dram_geometry_str(geometry));
 }
 
-static void mt_mem_init_run(struct dramc_param_ops *dparam_ops,
+static void mt_mem_init_run(struct dramc_param *dparam,
 			    const struct sdram_info *dram_info)
 {
-	struct dramc_param *dparam = dparam_ops->param;
+	const ssize_t mrc_cache_size = sizeof(dparam->dramc_datas);
+	ssize_t data_size;
 	struct stopwatch sw;
 	int ret;
 
 	/* Load calibration params from flash and run fast calibration */
 	mem_init_set_default_config(dparam, dram_info);
-	if (dparam_ops->read_from_flash(dparam)) {
+	data_size = mrc_cache_load_current(MRC_TRAINING_DATA,
+					   DRAMC_PARAM_HEADER_VERSION,
+					   &dparam->dramc_datas,
+					   mrc_cache_size);
+	if (data_size == mrc_cache_size) {
 		printk(BIOS_INFO, "DRAM-K: Running fast calibration\n");
 		stopwatch_init(&sw);
 
@@ -199,15 +194,20 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops,
 			       stopwatch_duration_msecs(&sw), ret);
 
 			/* Erase flash data after fast calibration failed */
-			memset(dparam, 0xa5, sizeof(*dparam));
-			dparam_ops->write_to_flash(dparam);
+			memset(&dparam->dramc_datas, 0xa5, mrc_cache_size);
+			if (mrc_cache_stash_data(MRC_TRAINING_DATA,
+						 DRAMC_PARAM_HEADER_VERSION,
+						 &dparam->dramc_datas, mrc_cache_size))
+				printk(BIOS_ERR, "DRAM-K: Failed to erase "
+				       "calibration data\n");
 		} else {
 			printk(BIOS_INFO, "DRAM-K: Fast calibration passed in %ld msecs\n",
 			       stopwatch_duration_msecs(&sw));
 			return;
 		}
 	} else {
-		printk(BIOS_WARNING, "DRAM-K: Failed to read calibration data from flash\n");
+		printk(BIOS_WARNING, "DRAM-K: Invalid data in flash (size: %#zx, expected: %#zx)\n",
+		       data_size, mrc_cache_size);
 	}
 
 	/* Run full calibration */
@@ -220,20 +220,32 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops,
 		printk(BIOS_INFO, "DRAM-K: Full calibration passed in %ld msecs\n",
 		       stopwatch_duration_msecs(&sw));
 
-		dparam->header.checksum = compute_checksum(dparam);
-		dparam_ops->write_to_flash(dparam);
-		printk(BIOS_DEBUG, "DRAM-K: Calibration params saved to flash: "
-		       "version=%#x, size=%#x\n",
-		       dparam->header.version, dparam->header.size);
+		if (mrc_cache_stash_data(MRC_TRAINING_DATA,
+					 DRAMC_PARAM_HEADER_VERSION,
+					 &dparam->dramc_datas, mrc_cache_size) == 0)
+			printk(BIOS_DEBUG, "DRAM-K: Calibration params saved "
+			       "to flash: version=%#x, size=%#zx\n",
+			       DRAMC_PARAM_HEADER_VERSION, sizeof(*dparam));
+		else
+			printk(BIOS_ERR, "DRAM-K: Failed to save calibration "
+			       "data to flash\n");
 	} else {
 		printk(BIOS_ERR, "DRAM-K: Full calibration failed in %ld msecs\n",
 		       stopwatch_duration_msecs(&sw));
 	}
 }
 
-void mt_mem_init(struct dramc_param_ops *dparam_ops)
+void mt_mem_init(struct dramc_param *dparam)
 {
 	const struct sdram_info *sdram_param = get_sdram_config();
 
-	mt_mem_init_run(dparam_ops, sdram_param);
+	mt_mem_init_run(dparam, sdram_param);
+}
+
+void mtk_dram_init(void)
+{
+	/* dramc_param is too large to fit in stack. */
+	static struct dramc_param dramc_parameter;
+	mt_mem_init(&dramc_parameter);
+	mtk_mmu_after_dram();
 }

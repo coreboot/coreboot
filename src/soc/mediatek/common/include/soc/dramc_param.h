@@ -3,21 +3,21 @@
 #ifndef __SOC_MEDIATEK_DRAMC_PARAM_H__
 #define __SOC_MEDIATEK_DRAMC_PARAM_H__
 
-/* any change in this file should sync to blob dramc_param.h */
+/*
+ * This file is shared between coreboot and dram blob. Any change in this file
+ * should be synced to the other repository.
+ */
 
 #include <stdint.h>
 #include <sys/types.h>
 #include <soc/dramc_soc.h>
 
-enum {
-	DRAMC_PARAM_HEADER_VERSION = 5,
-};
+#define DRAMC_PARAM_HEADER_VERSION 6
 
 enum DRAMC_PARAM_STATUS_CODES {
 	DRAMC_SUCCESS = 0,
 	DRAMC_ERR_INVALID_VERSION,
 	DRAMC_ERR_INVALID_SIZE,
-	DRAMC_ERR_INVALID_CHECKSUM,
 	DRAMC_ERR_INVALID_FLAGS,
 	DRAMC_ERR_RECALIBRATE,
 	DRAMC_ERR_INIT_DRAM,
@@ -41,7 +41,6 @@ enum DRAMC_PARAM_DDR_TYPE {
 	DDR_TYPE_EMCP,
 };
 
-/* Don't change the order, which is matched with blob */
 enum DRAMC_PARAM_GEOMETRY_TYPE {
 	DDR_TYPE_2CH_2RK_4GB_2_2,
 	DDR_TYPE_2CH_2RK_6GB_3_3,
@@ -58,7 +57,6 @@ enum DRAM_PARAM_VOLTAGE_TYPE {
 };
 
 struct dramc_param_header {
-	u32 checksum;	/* checksum of dramc_datas, update in the coreboot */
 	u16 version;	/* DRAMC_PARAM_HEADER_VERSION, update in the coreboot */
 	u16 size;	/* size of whole dramc_param, update in the coreboot */
 	u16 status;	/* DRAMC_PARAM_STATUS_CODES, update in the dram blob */
@@ -139,12 +137,6 @@ struct dramc_param {
 	struct dramc_param_header header;
 	void (*do_putc)(unsigned char c);
 	struct dramc_data dramc_datas;
-};
-
-struct dramc_param_ops {
-	struct dramc_param *param;
-	bool (*read_from_flash)(struct dramc_param *dparam);
-	bool (*write_to_flash)(const struct dramc_param *dparam);
 };
 
 struct sdram_info {

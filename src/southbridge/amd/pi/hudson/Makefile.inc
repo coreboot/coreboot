@@ -159,7 +159,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 $(call add_intermediate, add_amdfw, $(obj)/coreboot.pre $(obj)/amdfw.rom)
 	printf "    DD         Adding AMD Firmware\n"
-	flock $< dd if=$(obj)/amdfw.rom \
+	dd if=$(obj)/amdfw.rom \
 		of=$(obj)/coreboot.pre conv=notrunc bs=1 seek=131072 >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

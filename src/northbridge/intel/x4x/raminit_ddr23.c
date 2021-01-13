@@ -895,6 +895,7 @@ static void program_dll(struct sysinfo *s)
 	if (j < 2) {
 		MCHBAR8_AND(0x1c8, ~0x1f);
 		async = 1;
+		printk(BIOS_NOTICE, "HMC failed, using async mode\n");
 	}
 
 	switch (s->selected_timings.mem_clk) {

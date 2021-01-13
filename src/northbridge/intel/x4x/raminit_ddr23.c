@@ -1146,7 +1146,7 @@ static void prog_rcomp(struct sysinfo *s)
 static void program_odt(struct sysinfo *s)
 {
 	u8 i;
-	static u16 ddr2_odt[16][2] = {
+	static const u16 ddr2_odt[16][2] = {
 		{ 0x0000, 0x0000 }, /* NC_NC */
 		{ 0x0000, 0x0001 }, /* x8SS_NC */
 		{ 0x0000, 0x0011 }, /* x8DS_NC */

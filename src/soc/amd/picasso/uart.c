@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/aoac.h>

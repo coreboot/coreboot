@@ -48,10 +48,17 @@ fb_add_framebuffer_info_ex(const struct lb_framebuffer *fb)
 
 	bpp_mask = fb->blue_mask_size + fb->green_mask_size + fb->red_mask_size +
 		fb->reserved_mask_size;
-	if (fb->bits_per_pixel != bpp_mask) {
-		printk(BIOS_ERR, "%s: BPP=%d and channel bit mask=%d doesn't match."
-		       " This is a driver bug.\n", __func__, fb->bits_per_pixel, bpp_mask);
+	if (bpp_mask > fb->bits_per_pixel) {
+		printk(BIOS_ERR,
+		       "%s: channel bit mask=%d is greater than BPP=%d ."
+		       " This is a driver bug. Framebuffer is invalid.\n",
+		       __func__, bpp_mask, fb->bits_per_pixel);
 		return NULL;
+	} else if (bpp_mask != fb->bits_per_pixel) {
+		printk(BIOS_WARNING,
+		       "%s: channel bit mask=%d and BPP=%d don't match."
+		       " This is a driver bug.\n",
+		       __func__, bpp_mask, fb->bits_per_pixel);
 	}
 
 	info = fb_new_framebuffer_info();

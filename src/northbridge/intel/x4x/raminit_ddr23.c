@@ -247,14 +247,18 @@ static void launch_dram(struct sysinfo *s)
 		MCHBAR32_OR(0x2c4, 0x100);
 }
 
+static void write_txdll_tap_pi(u8 ch, u16 reg, u8 tap, u8 pi)
+{
+	MCHBAR8_AND_OR(0x400 * ch + reg, ~0x7f, pi << 4 | tap);
+}
+
 static void clkset0(u8 ch, const struct dll_setting *setting)
 {
 	MCHBAR16_AND_OR(0x400*ch + 0x5a0, ~0xc440,
 		(setting->clk_delay << 14) |
 		(setting->db_sel << 6) |
 		(setting->db_en << 10));
-	MCHBAR8_AND_OR(0x400*ch + 0x581, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x581, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x581, setting->tap, setting->pi);
 }
 
 static void clkset1(u8 ch, const struct dll_setting *setting)
@@ -263,8 +267,7 @@ static void clkset1(u8 ch, const struct dll_setting *setting)
 		(setting->clk_delay << 16) |
 		(setting->db_sel << 7) |
 		(setting->db_en << 11));
-	MCHBAR8_AND_OR(0x400*ch + 0x582, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x582, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x582, setting->tap, setting->pi);
 }
 
 static void ctrlset0(u8 ch, const struct dll_setting *setting)
@@ -273,8 +276,7 @@ static void ctrlset0(u8 ch, const struct dll_setting *setting)
 		(setting->clk_delay << 24) |
 		(setting->db_sel << 20) |
 		(setting->db_en << 21));
-	MCHBAR8_AND_OR(0x400*ch + 0x584, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x584, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x584, setting->tap, setting->pi);
 }
 
 static void ctrlset1(u8 ch, const struct dll_setting *setting)
@@ -283,8 +285,7 @@ static void ctrlset1(u8 ch, const struct dll_setting *setting)
 		(setting->clk_delay << 27) |
 		(setting->db_sel << 22) |
 		(setting->db_en << 23));
-	MCHBAR8_AND_OR(0x400*ch + 0x585, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x585, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x585, setting->tap, setting->pi);
 }
 
 static void ctrlset2(u8 ch, const struct dll_setting *setting)
@@ -298,8 +299,7 @@ static void ctrlset2(u8 ch, const struct dll_setting *setting)
 		(setting->clk_delay << 14) |
 		(setting->db_sel << 12) |
 		(setting->db_en << 13));
-	MCHBAR8_AND_OR(0x400*ch + 0x586, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x586, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x586, setting->tap, setting->pi);
 }
 
 static void ctrlset3(u8 ch, const struct dll_setting *setting)
@@ -313,8 +313,7 @@ static void ctrlset3(u8 ch, const struct dll_setting *setting)
 		(setting->clk_delay << 10) |
 		(setting->db_sel << 8) |
 		(setting->db_en << 9));
-	MCHBAR8_AND_OR(0x400*ch + 0x587, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x587, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x587, setting->tap, setting->pi);
 }
 
 static void cmdset(u8 ch, const struct dll_setting *setting)
@@ -323,8 +322,7 @@ static void cmdset(u8 ch, const struct dll_setting *setting)
 	MCHBAR8_AND_OR(0x400*ch + 0x594, ~0x60,
 		(setting->db_sel << 5) |
 		(setting->db_en << 6));
-	MCHBAR8_AND_OR(0x400*ch + 0x580, ~0x70, setting->pi << 4);
-	MCHBAR8_AND_OR(0x400*ch + 0x580, ~0xf, setting->tap);
+	write_txdll_tap_pi(ch, 0x580, setting->tap, setting->pi);
 }
 
 /**
@@ -347,10 +345,7 @@ void dqsset(u8 ch, u8 lane, const struct dll_setting *setting)
 			~(0x3 << (16 + lane * 2)),
 			setting->clk_delay << (16+lane * 2));
 
-		MCHBAR8(0x400*ch + 0x520 + lane * 4 + rank) =
-			(MCHBAR8(0x400*ch + 0x520 + lane * 4) & ~0x7f) |
-			(setting->pi << 4) |
-			setting->tap;
+		write_txdll_tap_pi(ch, 0x520 + lane * 4 + rank, setting->tap, setting->pi);
 	}
 }
 
@@ -368,8 +363,7 @@ void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 		MCHBAR32_AND_OR(0x400 * ch + 0x5c8 + rank * 4,
 			~(0x3 << (lane * 2)), setting->clk_delay << (2 * lane));
 
-		MCHBAR8_AND_OR(0x400*ch + 0x500 + lane * 4 + rank, ~0x7f,
-			(setting->pi << 4) | setting->tap);
+		write_txdll_tap_pi(ch, 0x500 + lane * 4 + rank, setting->tap, setting->pi);
 	}
 }
 

@@ -5,6 +5,9 @@ chip soc/intel/tigerlake
 	# and controller 1 channel 0 and 1.
 	register "CmdMirror" = "0x00000033"
 
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C Port 1
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C Port 0
+
 	register "TcssAuxOri" = "1"
 	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"

@@ -111,4 +111,51 @@ Device (S76D) {
 		}
 	}
 #endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+
+	// Fan names
+	Method (NFAN, 0, Serialized) {
+		Return (Package() {
+			"CPU fan",
+		})
+	}
+
+	// Get fan duty cycle and RPM as a single value
+	Method (GFAN, 1, Serialized) {
+		Local0 = 0
+		Local1 = 0
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			If (Arg0 == 0) {
+				Local0 = ^^PCI0.LPCB.EC0.DUT1
+				Local1 = ^^PCI0.LPCB.EC0.RPM1
+			} ElseIf (Arg0 == 1) {
+				Local0 = ^^PCI0.LPCB.EC0.DUT2
+				Local1 = ^^PCI0.LPCB.EC0.RPM2
+			}
+		}
+		If (Local1 != 0) {
+			// 60 * (EC frequency / 120) / 2
+			Local1 = 2156250 / Local1
+		}
+		Return ((Local1 << 8) | Local0)
+	}
+
+	// Temperature names
+	Method (NTMP, 0, Serialized) {
+		Return (Package() {
+			"CPU temp",
+		})
+	}
+
+	// Get temperature
+	Method (GTMP, 1, Serialized) {
+		Local0 = 0;
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			If (Arg0 == 0) {
+				Local0 = ^^PCI0.LPCB.EC0.TMP1
+			} ElseIf (Arg0 == 1) {
+				Local0 = ^^PCI0.LPCB.EC0.TMP2
+			}
+		}
+		Return (Local0)
+	}
 }

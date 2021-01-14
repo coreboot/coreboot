@@ -484,7 +484,13 @@ ADAFLAGS_common += -gnatwa.eeD.HHTU.U.W.Y
 # Disable style checks for now
 ADAFLAGS_common += -gnatyN
 
-LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static --emit-relocs
+LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static
+
+# Workaround for RISC-V linker bug, merge back into above line when fixed.
+# https://sourceware.org/bugzilla/show_bug.cgi?id=27180
+ifneq ($(CONFIG_ARCH_RISCV),y)
+LDFLAGS_common += --emit-relocs
+endif
 
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror

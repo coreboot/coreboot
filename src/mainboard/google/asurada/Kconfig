@@ -12,6 +12,7 @@ config VBOOT
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
+	select RTC
 	select SOC_MEDIATEK_MT8192
 	select BOARD_ROMSIZE_KB_8192
 	select MAINBOARD_HAS_CHROMEOS

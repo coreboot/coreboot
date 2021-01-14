@@ -25,11 +25,15 @@ romstage-y	+= romstage.c
 romstage-y	+= uart.c
 
 ramstage-y	+= chip.c
+ramstage-y      += fsp_params.c
 ramstage-y	+= gpio.c
 ramstage-y      += reset.c
 ramstage-y	+= uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
+CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne
+
+$(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)
 
 MAINBOARD_BLOBS_DIR:=$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 

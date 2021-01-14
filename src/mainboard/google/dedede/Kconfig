@@ -99,6 +99,7 @@ config MAINBOARD_PART_NUMBER
 	default "Galtic" if BOARD_GOOGLE_GALTIC
 	default "Sasuke" if BOARD_GOOGLE_SASUKE
 	default "Storo" if BOARD_GOOGLE_STORO
+	default "Sasukette" if BOARD_GOOGLE_SASUKETTE
 
 config MAX_CPUS
 	int
@@ -133,5 +134,6 @@ config VARIANT_DIR
 	default "galtic" if BOARD_GOOGLE_GALTIC
 	default "sasuke" if BOARD_GOOGLE_SASUKE
 	default "storo" if BOARD_GOOGLE_STORO
+	default "sasukette" if BOARD_GOOGLE_SASUKETTE
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

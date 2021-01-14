@@ -15,6 +15,9 @@
 # Reason: AFE means `Analog Front-End`, and appears on register names.
 #afe||safe
 #
+# Reason: It is sometimes used as an abbreviation for `presence`.
+#pres||press
+#
 # Reason: On RISC-V, `SEPC` is the name of a register.
 #sepc||spec
 #
@@ -6766,7 +6769,6 @@ pressentation||presentation
 pressented||presented
 pressent||present
 pressre||pressure
-pres||press
 preverve||preserve
 prevews||previews
 prevew||preview

@@ -209,4 +209,16 @@ config AP_STACK_SIZE
 	  This is the amount of stack each AP needs. The BSP stack size can be
 	  larger and is set with STACK_SIZE.
 
+config RUNTIME_CONFIGURABLE_SMM_LOGLEVEL
+	bool
+	default n
+	depends on DEBUG_SMI && CONSOLE_OVERRIDE_LOGLEVEL
+	help
+	  This enables setting the SMM console log level at runtime for more
+	  flexibility to use different log levels for each stage. Another reason
+	  is that reading the log level from non-volatile memory such as flash
+	  VPD or CMOS is not very ideal to be done in SMM, with this option the
+	  value can be passed via the member variable in struct smm_runtime and
+	  be referenced directly in SMM.
+
 endif # ARCH_X86

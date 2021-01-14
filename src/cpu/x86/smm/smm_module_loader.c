@@ -338,6 +338,11 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 
 	for (int i = 0; i < loader_params->num_cpus; i++)
 		mod_params->save_state_top[i] = region_end(&cpus[i].ss);
+
+	if (CONFIG(RUNTIME_CONFIGURABLE_SMM_LOGLEVEL))
+		mod_params->smm_log_level = mainboard_set_smm_log_level();
+	else
+		mod_params->smm_log_level = 0;
 }
 
 static void print_region(const char *name, const struct region region)

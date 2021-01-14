@@ -52,6 +52,13 @@ static void smi_release_lock(void)
 	);
 }
 
+#if CONFIG(RUNTIME_CONFIGURABLE_SMM_LOGLEVEL)
+int get_console_loglevel(void)
+{
+	return smm_runtime.smm_log_level;
+}
+#endif
+
 void smm_get_cbmemc_buffer(void **buffer_out, size_t *size_out)
 {
 	*buffer_out = smm_runtime.cbmemc;

@@ -66,7 +66,15 @@ chip soc/intel/tigerlake
 	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
 
 	#improve the USB2 Port1 eye diagram
-	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_39P35MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_39P35MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+		.type_c = 1,
+	}"
 
 	#lower camera driving
 	register "usb2_ports[4]" = "{
@@ -76,6 +84,9 @@ chip soc/intel/tigerlake
 		.pre_emp_bias = 0,
 		.pre_emp_bit = 0,
 	}"
+
+	#Type-A / Type-C C0
+	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 
 	device domain 0 on
 		device ref dptf on

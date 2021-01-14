@@ -1,0 +1,2 @@
+DRAM Part Name                 ID to assign
+MT53E512M32D2NP-046 WT:F       0 (0000)

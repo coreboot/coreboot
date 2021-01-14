@@ -6,15 +6,6 @@ chip soc/intel/apollolake
 
 	register "sci_irq" = "SCIS_IRQ10"
 
-	# Disable all clkreq of PCIe root ports as SMARC interface do not
-	# have this pins.
-	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
-	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
-
 	# EMMC TX DATA Delay 1
 	# Refer to EDS-Vol2-22.3.
 	# [14:8] steps of delay for HS400, each 125ps.
@@ -64,12 +55,30 @@ chip soc/intel/apollolake
 		device pci 0f.0 on  end	# - CSE
 		device pci 11.0 on  end	# - ISH
 		device pci 12.0 on  end	# - SATA
-		device pci 13.0 on  end	# - RP 2 - PCIe A 0
-		device pci 13.1 on  end	# - RP 3 - PCIe A 1
-		device pci 13.2 on  end	# - RP 4 - PCIe-A 2
-		device pci 13.3 on  end	# - RP 5 - PCIe-A 3
-		device pci 14.0 on  end	# - RP 0 - PCIe-B 0
-		device pci 14.1 on  end	# - RP 1 - PCIe-B 1
+		device pci 13.0 on	# - RP 2 - PCIe A 0
+			register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[2]" = "0"
+		end
+		device pci 13.1 on	# - RP 3 - PCIe A 1
+			register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[3]" = "0"
+		end
+		device pci 13.2 on	# - RP 4 - PCIe-A 2
+			register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[4]" = "0"
+		end
+		device pci 13.3 on	# - RP 5 - PCIe-A 3
+			register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[5]" = "0"
+		end
+		device pci 14.0 on	# - RP 0 - PCIe-B 0
+			register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[0]" = "0"
+		end
+		device pci 14.1 on	# - RP 1 - PCIe-B 1
+			register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[1]" = "0"
+		end
 		device pci 15.0 on  end	# - XHCI
 		device pci 15.1 off end	# - XDCI
 		device pci 16.0 on	# - I2C 0

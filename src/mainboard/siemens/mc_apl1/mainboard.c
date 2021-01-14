@@ -12,6 +12,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/systemagent.h>
 #include <soc/pci_devs.h>
+#include <soc/ramstage.h>
 #include <string.h>
 #include <timer.h>
 #include <timestamp.h>
@@ -171,6 +172,29 @@ static void config_pmic_imon(void)
 	}
 
 	printk(BIOS_DEBUG, "PMIC: Configure PMIC IMON - End\n");
+}
+
+void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
+{
+	printk(BIOS_DEBUG, "MAINBOARD: %s/%s called\n", __FILE__, __func__);
+
+	/* Disable CPU power states (C-states) */
+	silconfig->EnableCx = 0;
+
+	/* Set max Pkg Cstate to PkgC0C1 */
+	silconfig->PkgCStateLimit = 0;
+
+	/* Disable PCIe Transmitter Half Swing for all RPs */
+	memset(silconfig->PcieRpTransmitterHalfSwing, 0,
+			sizeof(silconfig->PcieRpTransmitterHalfSwing));
+
+	/* Disable PCI Express Active State Power Management for all RPs */
+	memset(silconfig->PcieRpAspm, 0,
+			sizeof(silconfig->PcieRpAspm));
+
+	/* Disable PCI Express L1 Substate for all RPs */
+	memset(silconfig->PcieRpL1Substates, 0,
+			sizeof(silconfig->PcieRpL1Substates));
 }
 
 static void mainboard_init(void *chip_info)

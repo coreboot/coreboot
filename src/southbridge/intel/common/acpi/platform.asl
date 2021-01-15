@@ -76,3 +76,19 @@ Method(GOS, 0)
 		}
 	}
 }
+
+/* Arg0 is state of HPET hardware enablement. */
+Method (HPTS, 1)
+{
+	/* HPET hardware disabled. */
+	If (!Arg0) {
+		Return (0x0)
+	}
+
+	/* Ancient versions of Windows don't want to see the HPET. */
+	If (OSYS < 2001) {
+		Return (0xb)
+	}
+
+	Return (0xf)
+}

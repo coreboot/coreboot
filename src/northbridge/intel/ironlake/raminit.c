@@ -219,10 +219,6 @@ struct raminfo {
 /* Global allocation of timings_car */
 timing_bounds_t timings_car[64];
 
-static void
-write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
-	  int flag);
-
 /* OK */
 static u16
 read_500(struct raminfo *info, int channel, u16 addr, int split)

@@ -459,7 +459,7 @@ Scope (\_SB.PCI0.I2C3)
 				Package (0x02)
 				{
 					"address-width",
-					0x0D
+					0x10
 				},
 				Package (0x02)
 				{

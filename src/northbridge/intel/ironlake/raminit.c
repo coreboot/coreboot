@@ -490,11 +490,11 @@ static void set_334(int zero)
 		;
 }
 
-static void rmw_1d0(u16 addr, u32 and, u32 or, int split, int flag)
+static void rmw_1d0(u16 addr, u32 and, u32 or, int split)
 {
 	u32 v;
 	v = read_1d0(addr, split);
-	write_1d0((v & and) | or, addr, split, flag);
+	write_1d0((v & and) | or, addr, split, 1);
 }
 
 static int find_highest_bit_set(u16 val)
@@ -1207,7 +1207,7 @@ static void program_board_delay(struct raminfo *info)
 		if (info->revision >= 0x10 && info->clock_speed_index <= 1
 		    && (info->silicon_revision == 2
 			|| info->silicon_revision == 3))
-			rmw_1d0(0x116, 5, 2, 4, 1);
+			rmw_1d0(0x116, 5, 2, 4);
 	}
 	MCHBAR32(0x120) = (1 << (info->max_slots_used_in_channel + 28)) |
 		0x188e7f9f;
@@ -4252,7 +4252,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_500(&info, 1, 1, 0x6b3, 4, 1);
 	write_500(&info, 1, 1, 0x6cf, 4, 1);
 
-	rmw_1d0(0x21c, 0x38, 0, 6, 1);
+	rmw_1d0(0x21c, 0x38, 0, 6);
 
 	write_1d0(((!info.populated_ranks[1][0][0]) << 1) | ((!info.
 							      populated_ranks[0]
@@ -4361,22 +4361,20 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		val_a1 = read_1d0(0xa1, 6);	// = 0x1cf4040 // !!!!
 		t = read_1d0(0x2f3, 6);	// = 0x10a4040 // !!!!
 		rmw_1d0(0x320, 0x07,
-			(t & 4) | ((t & 8) >> 2) | ((t & 0x10) >> 4), 6, 1);
+			(t & 4) | ((t & 8) >> 2) | ((t & 0x10) >> 4), 6);
 		rmw_1d0(0x14b, 0x78,
 			((((val_a1 >> 2) & 4) | (val_a1 & 8)) >> 2) | (val_a1 &
-								       4), 7,
-			1);
+								       4), 7);
 		rmw_1d0(0xce, 0x38,
 			((((val_a1 >> 2) & 4) | (val_a1 & 8)) >> 2) | (val_a1 &
-								       4), 6,
-			1);
+								       4), 6);
 	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel,
 			info.populated_ranks[channel][0][0] ? 9 : 1);
 
-	rmw_1d0(0x116, 0xe, 1, 4, 1);	// = 0x4040432 // !!!!
+	rmw_1d0(0x116, 0xe, 1, 4);	// = 0x4040432 // !!!!
 	MCHBAR32(0x144);	// !!!!
 	write_1d0(2, 0xae, 6, 1);
 	write_1d0(2, 0x300, 6, 1);

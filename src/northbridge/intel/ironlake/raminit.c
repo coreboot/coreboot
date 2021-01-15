@@ -3683,6 +3683,15 @@ void chipset_init(const int s3resume)
 	RCBA32(0x3428) = 0x1d;
 }
 
+static u8 get_bits_420(const u32 reg32)
+{
+	u8 val = 0;
+	val |= (reg32 >> 4) & (1 << 0);
+	val |= (reg32 >> 2) & (1 << 1);
+	val |= (reg32 >> 0) & (1 << 2);
+	return val;
+}
+
 void raminit(const int s3resume, const u8 *spd_addrmap)
 {
 	unsigned int channel, slot, lane, rank;
@@ -4364,31 +4373,35 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	while (MCHBAR32(0x130) & 1)
 		;
 
+	u8 value_a1;
 	{
-		u32 t;
-		u8 val_a1;
-		val_a1 = read_1d0(0xa1, 6);	// = 0x1cf4040 // !!!!
-		t = read_1d0(0x2f3, 6);	// = 0x10a4040 // !!!!
-		rmw_1d0(0x320, 0x07,
-			(t & 4) | ((t & 8) >> 2) | ((t & 0x10) >> 4), 6);
-		rmw_1d0(0x14b, 0x78,
-			((((val_a1 >> 2) & 4) | (val_a1 & 8)) >> 2) | (val_a1 &
-								       4), 7);
-		rmw_1d0(0xce, 0x38,
-			((((val_a1 >> 2) & 4) | (val_a1 & 8)) >> 2) | (val_a1 &
-								       4), 6);
+		const u8 val_xa1 = get_bits_420(read_1d0(0xa1, 6));	// = 0x1cf4040 // !!!!
+		const u8 val_2f3 = get_bits_420(read_1d0(0x2f3, 6));	// = 0x10a4040 // !!!!
+		value_a1 = val_xa1;
+		rmw_1d0(0x320, 0x38, val_2f3, 6);
+		rmw_1d0(0x14b, 0x78, val_xa1, 7);
+		rmw_1d0(0xce,  0x38, val_xa1, 6);
 	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel, 1, 1);
 
 	rmw_1d0(0x116, 0xe, 1, 4);	// = 0x4040432 // !!!!
-	MCHBAR32(0x144);	// !!!!
-	write_1d0(2, 0xae, 6, 1);
-	write_1d0(2, 0x300, 6, 1);
-	write_1d0(2, 0x121, 3, 1);
-	rmw_1d0(0xd6,  0x38, 4, 6);
-	rmw_1d0(0x328, 0x38, 4, 6);
+	{
+		if ((MCHBAR32(0x144) & 0x1f) < 0x13)
+			value_a1 += 2;
+		else
+			value_a1 += 1;
+
+		if (value_a1 > 7)
+			value_a1 = 7;
+
+		write_1d0(2, 0xae, 6, 1);
+		write_1d0(2, 0x300, 6, 1);
+		write_1d0(value_a1, 0x121, 3, 1);
+		rmw_1d0(0xd6,  0x38, 4, 6);
+		rmw_1d0(0x328, 0x38, 4, 6);
+	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		set_4cf(&info, channel, 2, 0);
@@ -4399,14 +4412,10 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		;
 
 	{
-		u32 reg32 = read_1d0(0xa1, 6);
+		const u8 val_xa1 = get_bits_420(read_1d0(0xa1, 6));
 		read_1d0(0x2f3, 6);		// = 0x10a4054 // !!!!
 		rmw_1d0(0x21c, 0x38, 0, 6);
-		u8 reg8 = 0;
-		reg8 |= (reg32 >> 4) & (1 << 0);
-		reg8 |= (reg32 >> 2) & (1 << 1);
-		reg8 |= (reg32 >> 0) & (1 << 2);
-		rmw_1d0(0x14b, 0x78, reg8, 7);
+		rmw_1d0(0x14b, 0x78, val_xa1, 7);
 	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)

@@ -79,10 +79,11 @@ chip soc/intel/tigerlake
 	#lower camera driving
 	register "usb2_ports[4]" = "{
 		.enable = 1,
-		.tx_bias = 0,
-		.tx_emp_enable = 0,
-		.pre_emp_bias = 0,
-		.pre_emp_bit = 0,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_EMP_OFF,
+		.pre_emp_bias = USB2_BIAS_0MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
 	}"
 
 	#Type-A / Type-C C0

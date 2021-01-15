@@ -12,7 +12,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	,	8,      // 0x00 - Processor Count
 	PPCM,	8,      // 0x01 - Max PPC State
 	LIDS,	8,      // 0x02 - LID State
-	PWRS,	8,      // 0x03 - AC Power State
+	,	8,      // 0x03 - AC Power State
 	DPTE,	8,      // 0x04 - Enable DPTF
 	CBMC,	32,     // 0x05 - 0x08 - coreboot Memory Console
 	PM1I,	64,     // 0x09 - 0x10 - System Wake Source - PM1 Index

@@ -20,7 +20,7 @@ struct __packed global_nvs {
 	u8	prm5; /* 0x0a - Lock function parameter */
 	u32	p80d; /* 0x0b - Debug port (IO 0x80) value */
 	u8	lids; /* 0x0f - LID state (open = 1) */
-	u8	pwrs; /* 0x10 - Power state (AC = 1) */
+	u8	unused_was_pwrs; /* 0x10 - Power state (AC = 1) */
 	/* Thermal policy */
 	u8	tlvl; /* 0x11 - Throttle Level Limit */
 	u8	flvl; /* 0x12 - Current FAN Level */

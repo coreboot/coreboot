@@ -16,7 +16,7 @@ struct __packed global_nvs {
 	uint8_t		unused_was_pcnt; /* 0x00 - Processor Count */
 	uint8_t		ppcm; /* 0x01 - Max PPC State */
 	uint8_t		lids; /* 0x02 - LID State */
-	uint8_t		pwrs; /* 0x03 - AC Power State */
+	uint8_t		unused_was_pwrs; /* 0x03 - AC Power State */
 	uint8_t		dpte; /* 0x04 - Enable DPTF */
 	uint32_t	cbmc; /* 0x05 - 0x08 - coreboot Memory Console */
 	uint64_t	pm1i; /* 0x09 - 0x10 - System Wake Source - PM1 Index */

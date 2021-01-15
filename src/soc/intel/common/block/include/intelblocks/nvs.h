@@ -13,7 +13,7 @@ struct __packed global_nvs {
 	u8	ppcm; /* 0x04 - Max PPC State */
 	u8	tlvl; /* 0x05 - Throttle Level Limit */
 	u8	lids; /* 0x06 - LID State */
-	u8	pwrs; /* 0x07 - AC Power State */
+	u8	unused_was_pwrs; /* 0x07 - AC Power State */
 	u32	cbmc; /* 0x08 - 0xb coreboot Memory Console */
 	u64	pm1i; /* 0x0c - 0x13 PM1 wake status bit */
 	u64	gpei; /* 0x14 - 0x1b GPE wake status bit */

@@ -18,7 +18,7 @@ struct __packed global_nvs {
 	u8	prm5; /* 0x0a - Lock function parameter */
 	u32	p80d; /* 0x0b - Debug port (IO 0x80) value */
 	u8	lids; /* 0x0f - LID state (open = 1) */
-	u8	pwrs; /* 0x10 - Power state (AC = 1) */
+	u8	unused_was_pwrs; /* 0x10 - Power state (AC = 1) */
 	u8	dbgs; /* 0x11 - Debug state */
 	u8	linx; /* 0x12 - Linux OS */
 	u8	dckn; /* 0x13 - PCIe docking state */

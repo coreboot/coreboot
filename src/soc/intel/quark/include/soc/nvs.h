@@ -7,7 +7,7 @@
 
 struct __packed global_nvs {
 	uint32_t	cbmc; /* 0x00 - 0x03 - coreboot Memory Console */
-	uint8_t		pwrs; /* 0x4 - Power state (AC = 1) */
+	uint8_t		unused_was_pwrs; /* 0x4 - Power state (AC = 1) */
 
 	/* Required for future unified acpi_save_wake_source. */
 	uint32_t	pm1i;

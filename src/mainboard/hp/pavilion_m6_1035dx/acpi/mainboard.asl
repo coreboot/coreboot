@@ -16,10 +16,6 @@
 	Name(OSV, Ones) /* Assume nothing */
 	Name(PICM, One) /* Assume APIC */
 
-	/* Variables used by EC */
-	/* TODO: These may belong in global non-volatile storage */
-	Name(PWRS, Zero)
-
 	/* AcpiGpe0Blk */
 	OperationRegion(GP0B, SystemMemory, 0xfed80814, 0x04)
 		Field(GP0B, ByteAcc, NoLock, Preserve) {

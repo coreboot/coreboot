@@ -7,3 +7,6 @@
 #include <vendorcode/google/chromeos/acpi/gnvs.asl>
 #include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
+
+/* Power state (AC = 1) */
+Name (PWRS, One)

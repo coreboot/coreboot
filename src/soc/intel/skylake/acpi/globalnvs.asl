@@ -29,7 +29,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	S3U0,	8,	// 0x14 - Enable USB in S3
 	S33G,	8,	// 0x15 - Enable 3G in S3
 	LIDS,	8,	// 0x16 - LID State
-	PWRS,	8,	// 0x17 - AC Power State
+	,	8,	// 0x17 - AC Power State
 	,	32,	// 0x18 - 0x1b - CBMEM TOC
 	CBMC,	32,	// 0x1c - 0x1f - coreboot Memory Console
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit

@@ -29,7 +29,7 @@ struct __packed global_nvs {
 	u8	s3u0; /* 0x14 - Enable USB in S3 */
 	u8	s33g; /* 0x15 - Enable 3G in S3 */
 	u8	lids; /* 0x16 - LID State */
-	u8	pwrs; /* 0x17 - AC Power State */
+	u8	unused_was_pwrs; /* 0x17 - AC Power State */
 	u32	obsolete_cmem; /* 0x18 - 0x1b - CBMEM TOC */
 	u32	cbmc; /* 0x1c - 0x1f - coreboot Memory Console */
 	u64	pm1i; /* 0x20 - 0x27 - PM1 wake status bit */

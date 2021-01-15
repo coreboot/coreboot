@@ -260,6 +260,12 @@ write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
 		;
 }
 
+static void rmw_500(struct raminfo *info, int channel, u16 addr, int bits, u32 and, u32 or)
+{
+	const u32 val = read_500(info, channel, addr, bits) & and;
+	write_500(info, channel, val | or, addr, bits, 1);
+}
+
 static int rw_test(int rank)
 {
 	const u32 mask = 0xf00fc33c;
@@ -436,14 +442,13 @@ config_rank(struct raminfo *info, int s3resume, int channel, int slot, int rank)
 	MCHBAR8(0x5ff) = 0x80;
 }
 
-static void set_4cf(struct raminfo *info, int channel, u8 val)
+static void set_4cf(struct raminfo *info, int channel, u8 bit, u8 val)
 {
-	gav(read_500(info, channel, 0x4cf, 4));	// = 0xc2300cf9
-	write_500(info, channel, val, 0x4cf, 4, 1);
-	gav(read_500(info, channel, 0x659, 4));	// = 0x80300839
-	write_500(info, channel, val, 0x659, 4, 1);
-	gav(read_500(info, channel, 0x697, 4));	// = 0x80300839
-	write_500(info, channel, val, 0x697, 4, 1);
+	const u16 regtable[] = { 0x4cf, 0x659, 0x697 };
+
+	val &= 1;
+	for (int i = 0; i < ARRAY_SIZE(regtable); i++)
+		rmw_500(info, channel, regtable[i], 4, ~(1 << bit), val << bit);
 }
 
 static void set_334(int zero)
@@ -4327,8 +4332,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(7, 0x328, 6, 1);
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		set_4cf(&info, channel,
-			info.populated_ranks[channel][0][0] ? 8 : 0);
+		set_4cf(&info, channel, 1, 0);
 
 	read_1d0(0x116, 4);	// = 0x4040432 // !!!!
 	write_1d0(2, 0x116, 4, 1);
@@ -4361,8 +4365,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		set_4cf(&info, channel,
-			info.populated_ranks[channel][0][0] ? 9 : 1);
+		set_4cf(&info, channel, 1, 1);
 
 	rmw_1d0(0x116, 0xe, 1, 4);	// = 0x4040432 // !!!!
 	MCHBAR32(0x144);	// !!!!
@@ -4375,8 +4378,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(4, 0x328, 6, 1);
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		set_4cf(&info, channel,
-			info.populated_ranks[channel][0][0] ? 9 : 0);
+		set_4cf(&info, channel, 2, 0);
 
 	MCHBAR32(0x130) = 0x11111301 | (info.populated_ranks[1][0][0] << 30) |
 		(info.populated_ranks[0][0][0] << 29);
@@ -4390,8 +4392,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(0x35, 0x14b, 7, 1);
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		set_4cf(&info, channel,
-			info.populated_ranks[channel][0][0] ? 0xb : 0x2);
+		set_4cf(&info, channel, 2, 1);
 
 	set_334(1);
 

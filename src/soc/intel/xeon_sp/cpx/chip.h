@@ -4,6 +4,7 @@
 #define _SOC_CHIP_H_
 
 #include <intelblocks/cfg.h>
+#include <soc/acpi.h>
 #include <soc/gpio.h>
 #include <soc/irq.h>
 #include <stdint.h>
@@ -96,6 +97,8 @@ struct soc_intel_xeon_sp_cpx_config {
 
 	/* TCC activation offset */
 	uint32_t tcc_offset;
+
+	enum acpi_cstate_mode cstate_states;
 };
 
 typedef struct soc_intel_xeon_sp_cpx_config config_t;

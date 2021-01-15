@@ -98,7 +98,18 @@
 #define  XHCI_BUS_NUMBER        0x0
 #define  PCH_DEV_SLOT_XHCI      0x14
 #define  XHCI_FUNC_NUM          0x0
+#define  PCH_DEVFN_XHCI		_PCH_DEVFN(XHCI, 0)
+#define  PCH_DEV_XHCI		_PCH_DEV(XHCI, 0)
 #define   PCH_DEVFN_THERMAL	_PCH_DEVFN(XHCI, 2)
+
+
+#define PCH_DEV_SLOT_CSE	0x16
+#define  PCH_DEVFN_CSE		_PCH_DEVFN(CSE, 0)
+#define  PCH_DEVFN_CSE_2	_PCH_DEVFN(CSE, 1)
+#define  PCH_DEVFN_CSE_3	_PCH_DEVFN(CSE, 4)
+#define  PCH_DEV_CSE		_PCH_DEV(CSE, 0)
+#define  PCH_DEV_CSE_2		_PCH_DEV(CSE, 1)
+#define  PCH_DEV_CSE_3		_PCH_DEV(CSE, 4)
 
 #define PCH_DEV_SLOT_LPC        0x1f
 #define  PCH_DEVFN_LPC          _PCH_DEVFN(LPC, 0)

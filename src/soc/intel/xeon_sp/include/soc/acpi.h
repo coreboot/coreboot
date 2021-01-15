@@ -5,6 +5,14 @@
 
 #include <acpi/acpi.h>
 
+/**
+ Select C-state map set in config cstate_states
+ **/
+enum acpi_cstate_mode {
+	CSTATES_ALL = 0,
+	CSTATES_C1C6
+};
+
 #define MEM_BLK_COUNT      0x140
 typedef struct {
 	uint8_t   buf[32];

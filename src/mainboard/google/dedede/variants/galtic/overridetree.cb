@@ -57,7 +57,53 @@ chip soc/intel/jasperlake
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
 
+	register "tcc_offset" = "8"     # TCC of 97C
+
 	device domain 0 on
+		device pci 04.0 on
+			# Default DPTF Policy for all Dedede boards if not overridden
+			chip drivers/intel/dptf
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           67, 1000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 62, 1000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 58, 1000),
+					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 40, 1000)
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 98, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 80, SHUTDOWN)
+				}"
+
+				## Power Limits Control
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 4500,
+						.max_power = 7000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 200,
+					},
+					.pl2 = {
+						.min_power = 20000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+
+				register "options.tsr[0].desc" = ""Charger""
+				register "options.tsr[1].desc" = ""Vcore""
+				register "options.tsr[2].desc" = ""Ambient""
+
+				device generic 0 on end
+			end
+		end # SA Thermal device
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on

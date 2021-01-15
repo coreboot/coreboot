@@ -16,6 +16,7 @@ romstage-y += raminit.c
 romstage-y += raminit_tables.c
 romstage-y += early_init.c
 romstage-y += romstage.c
+romstage-y += quickpath.c
 
 smm-y += finalize.c
 

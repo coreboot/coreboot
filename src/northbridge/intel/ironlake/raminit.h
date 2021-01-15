@@ -103,6 +103,7 @@ void chipset_init(const int s3resume);
 void raminit(const int s3resume, const u8 *spd_addrmap);
 
 u16 get_max_timing(struct raminfo *info, int channel);
+void early_quickpath_init(const u8 x2ca8);
 void late_quickpath_init(struct raminfo *info, const int s3resume);
 
 #endif				/* RAMINIT_H */

@@ -70,6 +70,15 @@ chip soc/intel/tigerlake
 		},
 	}"
 
+	# Disable M.2 WWAN
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
+
+	# Type-A / Type-C C1
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+
+	# Type-A / Type-C C0
+	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
+
 	device domain 0 on
 		device ref north_xhci on
 			chip drivers/usb/acpi

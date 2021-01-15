@@ -64,19 +64,6 @@ static uint32_t check_cmos_recovery(void)
 	return 0;
 }
 
-static uintptr_t locate_amdfw(const char *name, struct region_device *rdev)
-{
-	struct cbfsf fh;
-	uint32_t type = CBFS_TYPE_RAW;
-
-	if (cbfs_locate(&fh, rdev, name, &type))
-		return 0;
-
-	cbfs_file_data(rdev, &fh);
-
-	return (uintptr_t)rdev_mmap_full(rdev);
-}
-
 /*
  * Tell the PSP where to load the rest of the firmware from
  */
@@ -85,9 +72,8 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	struct psp_ef_table *ef_table;
 	uint32_t psp_dir_addr, bios_dir_addr;
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
-	const char *rname, *fname;
-	struct region_device rdev;
-	uintptr_t amdfw_location;
+	const char *fname;
+	void *amdfw_location;
 
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
@@ -96,19 +82,12 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	}
 
 	if (vboot_is_firmware_slot_a(ctx)) {
-		rname = "FW_MAIN_A";
 		fname = "apu/amdfw_a";
 	} else {
-		rname = "FW_MAIN_B";
 		fname = "apu/amdfw_b";
 	}
 
-	if (fmap_locate_area_as_rdev(rname, &rdev)) {
-		printk(BIOS_ERR, "Error: Could not locate fmap region %s.\n", rname);
-		return POSTCODE_FMAP_REGION_MISSING;
-	}
-
-	amdfw_location = locate_amdfw(fname, &rdev);
+	amdfw_location = cbfs_map(fname, NULL);
 	if (!amdfw_location) {
 		printk(BIOS_ERR, "Error: AMD Firmware table not found.\n");
 		return POSTCODE_AMD_FW_MISSING;
@@ -244,10 +223,15 @@ void Main(void)
 
 	post_code(POSTCODE_VERSTAGE_MAIN);
 
-	verstage_main();
+	vboot_run_logic();
 
 	ctx = vboot_get_context();
 	retval = check_cmos_recovery();
+	if (retval)
+		reboot_into_recovery(ctx, retval);
+
+	post_code(POSTCODE_UPDATE_BOOT_REGION);
+	retval = update_boot_region(ctx);
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 
@@ -256,10 +240,6 @@ void Main(void)
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 
-	post_code(POSTCODE_UPDATE_BOOT_REGION);
-	retval = update_boot_region(ctx);
-	if (retval)
-		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_UNMAP_SPI_ROM);
 	if (boot_dev.base) {

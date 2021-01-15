@@ -5,16 +5,10 @@
 #include <acpi/acpi_pm.h>
 #include <bootstate.h>
 #include <console/console.h>
+#include <intelblocks/acpi_wake_source.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <stdint.h>
-#include "acpi.h"
-
-__weak int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1,
-			      uint32_t **gpe0)
-{
-	return -1;
-}
 
 /* Save wake source data for ACPI _SWS methods in NVS */
 static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)

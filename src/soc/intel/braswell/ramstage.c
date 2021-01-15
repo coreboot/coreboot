@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <intelblocks/acpi_wake_source.h>
 #include <fsp/util.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
@@ -18,7 +19,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
-#include <soc/intel/common/acpi.h>
 #include <string.h>
 
 #define SHOW_PATTRS 1

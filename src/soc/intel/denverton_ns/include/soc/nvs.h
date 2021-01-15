@@ -46,7 +46,7 @@ struct __packed global_nvs {
 	u32 tsegb;	 /* 0x54 - TSEG Base Low */
 	u32 tsegl;	 /* 0x58 - TSEG Length/Size */
 
-	/* Just to satisfy common/block/acpi/acpi.c. */
+	/* Required for future unified acpi_save_wake_source. */
 	u32 pm1i;
 	u32 gpei;
 

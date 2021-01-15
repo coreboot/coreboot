@@ -143,7 +143,7 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 	result->freq_max_reduced = freq_max_reduced;
 }
 
-static void set_274265(struct raminfo *info)
+static void compute_274265(struct raminfo *info)
 {
 	int delay_a_ps, delay_b_ps, delay_c_ps, delay_d_ps;
 	int delay_e_ps, delay_e_cycles, delay_f_cycles;
@@ -222,36 +222,34 @@ static void set_274265(struct raminfo *info)
 			info->training.reg274265[channel][1] =
 				div_roundup(delay_d_ps + 7 * halfcycle_ps(info),
 				4 * halfcycle_ps(info)) - 6;
-		MCHBAR32((channel << 10) + 0x274) =
-			info->training.reg274265[channel][1] |
-			(info->training.reg274265[channel][0] << 16);
 		info->training.reg274265[channel][2] =
 			div_roundup(delay_c_ps + 3 * fsbcycle_ps(info),
 			4 * halfcycle_ps(info)) + 1;
-		MCHBAR16((channel << 10) + 0x265) =
-			info->training.reg274265[channel][2] << 8;
 	}
-	if (info->training.reg2ca9_bit0)
-		MCHBAR8_OR(0x2ca9, 1);
-	else
-		MCHBAR8_AND(0x2ca9, ~1);
 }
 
-static void restore_274265(struct raminfo *info)
+static void program_274265(const struct ram_training *const training)
 {
 	int channel;
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		MCHBAR32((channel << 10) + 0x274) =
-			(info->cached_training->reg274265[channel][0] << 16) |
-			info->cached_training->reg274265[channel][1];
+			(training->reg274265[channel][0] << 16) |
+			training->reg274265[channel][1];
 		MCHBAR16((channel << 10) + 0x265) =
-			info->cached_training->reg274265[channel][2] << 8;
+			training->reg274265[channel][2] << 8;
 	}
-	if (info->cached_training->reg2ca9_bit0)
+	if (training->reg2ca9_bit0)
 		MCHBAR8_OR(0x2ca9, 1);
 	else
 		MCHBAR8_AND(0x2ca9, ~1);
+
+	printk(RAM_SPEW, "reg2ca9_bit0 = %x\n", training->reg2ca9_bit0);
+
+	for (int i = 0; i < 2; i++)
+		for (int j = 0; j < 3; j++)
+			printk(RAM_SPEW, "reg274265[%d][%d] = %x\n",
+			       i, j, training->reg274265[i][j]);
 }
 
 static void
@@ -435,23 +433,11 @@ void late_quickpath_init(struct raminfo *info, const int s3resume)
 {
 	const u16 deven = pci_read_config16(NORTHBRIDGE, DEVEN);
 
-	int i, j;
 	if (s3resume && info->cached_training) {
-		restore_274265(info);
-		printk(RAM_SPEW, "reg2ca9_bit0 = %x\n",
-		       info->cached_training->reg2ca9_bit0);
-		for (i = 0; i < 2; i++)
-			for (j = 0; j < 3; j++)
-				printk(RAM_SPEW, "reg274265[%d][%d] = %x\n",
-				       i, j, info->cached_training->reg274265[i][j]);
+		program_274265(info->cached_training);
 	} else {
-		set_274265(info);
-		printk(RAM_SPEW, "reg2ca9_bit0 = %x\n",
-		       info->training.reg2ca9_bit0);
-		for (i = 0; i < 2; i++)
-			for (j = 0; j < 3; j++)
-				printk(RAM_SPEW, "reg274265[%d][%d] = %x\n",
-				       i, j, info->training.reg274265[i][j]);
+		compute_274265(info);
+		program_274265(&info->training);
 	}
 
 	set_2dxx_series(info, s3resume);

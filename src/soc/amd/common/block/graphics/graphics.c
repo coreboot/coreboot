@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <fsp/graphics.h>
+#include <soc/intel/common/vbt.h>
 
 #define ATIF_FUNCTION_VERIFY_INTERFACE 0x0
 struct atif_verify_interface_output {
@@ -116,6 +117,16 @@ static void graphics_fill_ssdt(const struct device *dev)
 static const char *graphics_acpi_name(const struct device *dev)
 {
 	return "IGFX";
+}
+
+/*
+ * Even though AMD does not need VBT we still need to implement the
+ * vbt_get() function to not break the build with GOP driver enabled
+ * (see fsps_return_value_handler() in fsp2_0/silicon_init.c
+ */
+void *vbt_get(void)
+{
+	return NULL;
 }
 
 static void graphics_dev_init(struct device *const dev)

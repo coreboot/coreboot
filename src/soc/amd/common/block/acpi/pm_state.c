@@ -35,29 +35,25 @@ static void pm_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state
 	int index;
 
 	index = get_index_bit(state->pm1_sts & state->pm1_en, PM1_LIMIT);
-	if (index < 0)
-		gnvs->pm1i = ~0ULL;
-	else
+	if (index >= 0)
 		gnvs->pm1i = index;
 
 	index = get_index_bit(state->gpe0_sts & state->gpe0_en, GPE0_LIMIT);
-	if (index < 0)
-		gnvs->gpei = ~0ULL;
-	else
+	if (index >= 0)
 		gnvs->gpei = index;
 }
 
 static void acpi_save_wake_source(void *unused)
 {
 	const struct chipset_power_state *ps;
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
+	struct global_nvs *gnvs;
 
+	if (acpi_reset_gnvs_for_wake(&gnvs) < 0)
+		return;
 	if (acpi_pm_state_for_wake(&ps) < 0)
 		return;
 
 	pm_fill_gnvs(gnvs, &ps->gpe_state);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, acpi_save_wake_source, NULL);

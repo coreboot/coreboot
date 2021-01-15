@@ -7,7 +7,6 @@
 #include <string.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
@@ -26,7 +25,6 @@
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
 #include <soc/southbridge.h>
-#include <soc/nvs.h>
 #include <soc/gpio.h>
 #include <version.h>
 #include "chip.h"
@@ -364,13 +362,6 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_write_scope("\\");
 	acpigen_write_name_integer("PCNT", logical_cores);
 	acpigen_pop_len();
-}
-
-void soc_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* Set unknown wake source */
-	gnvs->pm1i = ~0ULL;
-	gnvs->gpei = ~0ULL;
 }
 
 static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)

@@ -61,9 +61,6 @@ static acpi_cstate_t cstate_map[] = {
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
-	/* Set unknown wake source */
-	gnvs->pm1i = -1;
-
 	/* Fill in the Wi-Fi Region ID */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN))
 		gnvs->cid1 = wifi_regulatory_domain();

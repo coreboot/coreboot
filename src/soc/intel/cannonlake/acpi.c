@@ -175,9 +175,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	const struct soc_intel_cannonlake_config *config;
 	config = config_of_soc();
 
-	/* Set unknown wake source */
-	gnvs->pm1i = -1;
-
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = config->dptf_enable;
 

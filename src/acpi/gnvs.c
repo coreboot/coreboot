@@ -92,3 +92,16 @@ void acpi_fill_gnvs(void)
 		acpigen_pop_len();
 	}
 }
+
+int acpi_reset_gnvs_for_wake(struct global_nvs **gnvs_)
+{
+	if (!gnvs)
+		return -1;
+
+	/* Set unknown wake source */
+	gnvs->pm1i = -1;
+	gnvs->gpei = -1;
+
+	*gnvs_ = gnvs;
+	return 0;
+}

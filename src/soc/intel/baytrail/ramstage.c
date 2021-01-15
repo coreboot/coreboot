@@ -121,37 +121,38 @@ static void fill_in_pattrs(void)
 static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)
 {
 	uint16_t pm1;
+	int index;
+
 	pm1 = ps->pm1_sts & ps->pm1_en;
 
 	/* Scan for first set bit in PM1 */
-	for (gnvs->pm1i = 0; gnvs->pm1i < 16; gnvs->pm1i++) {
+	for (index = 0; index < 16; index++) {
 		if (pm1 & 1)
 			break;
 		pm1 >>= 1;
 	}
 
-	/* If unable to determine then return -1 */
-	if (gnvs->pm1i >= 16)
-		gnvs->pm1i = -1;
-
-	printk(BIOS_DEBUG, "ACPI System Wake Source is PM1 Index %d\n",
-	       gnvs->pm1i);
+	if (index < 16)
+		gnvs->pm1i = index;
 }
 
 static void acpi_save_wake_source(void *unused)
 {
 	const struct chipset_power_state *ps;
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (!gnvs)
-		return;
+	struct global_nvs *gnvs;
 
+	if (acpi_reset_gnvs_for_wake(&gnvs) < 0)
+		return;
 	if (acpi_pm_state_for_wake(&ps) < 0)
 		return;
 
 	pm_fill_gnvs(gnvs, ps);
+
+	printk(BIOS_DEBUG, "ACPI System Wake Source is PM1 Index %d\n",
+	       gnvs->pm1i);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, acpi_save_wake_source, NULL);
 
 static void baytrail_enable_2x_refresh_rate(void)
 {

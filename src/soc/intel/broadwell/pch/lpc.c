@@ -10,13 +10,11 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include <soc/iobp.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
-#include <soc/nvs.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
@@ -601,12 +599,6 @@ static void pch_lpc_read_resources(struct device *dev)
 
 	/* Add IO resources. */
 	pch_lpc_add_io_resources(dev);
-}
-
-void soc_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* Set unknown wake source */
-	gnvs->pm1i = -1;
 }
 
 static unsigned long broadwell_write_acpi_tables(const struct device *device,

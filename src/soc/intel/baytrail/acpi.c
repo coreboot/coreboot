@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/ioapic.h>
 #include <device/mmio.h>
@@ -16,7 +15,6 @@
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/msr.h>
-#include <soc/nvs.h>
 #include <soc/pattrs.h>
 #include <soc/pm.h>
 
@@ -54,12 +52,6 @@ static acpi_cstate_t cstate_map[] = {
 		.resource = MWAIT_RES(5, 2),
 	}
 };
-
-void soc_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* Set unknown wake source */
-	gnvs->pm1i = -1;
-}
 
 int acpi_sci_irq(void)
 {

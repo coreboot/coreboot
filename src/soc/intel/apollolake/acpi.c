@@ -76,9 +76,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	struct soc_intel_apollolake_config *cfg;
 	cfg = config_of_soc();
 
-	/* Set unknown wake source */
-	gnvs->pm1i = ~0ULL;
-
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = cfg->dptf_enable;
 

@@ -1470,16 +1470,6 @@ static void collect_system_info(struct raminfo *info)
 	int i;
 	unsigned int channel;
 
-	/* Wait for some bit, maybe TXT clear. */
-	while (!(read8((u8 *)0xfed40000) & (1 << 7)))
-		;
-
-	if (!info->memory_reserved_for_heci_mb) {
-		/* Wait for ME to be ready */
-		intel_early_me_init();
-		info->memory_reserved_for_heci_mb = intel_early_me_uma_size();
-	}
-
 	for (i = 0; i < 3; i++) {
 		capid0[i] = pci_read_config32(NORTHBRIDGE, CAPID0 | (i << 2));
 		printk(BIOS_DEBUG, "CAPID0[%d] = 0x%08x\n", i, capid0[i]);
@@ -3713,16 +3703,18 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	info.training.reg_178 = 0;
 	info.training.reg_10b = 0;
 
-	info.memory_reserved_for_heci_mb = 0;
+	/* Wait for some bit, maybe TXT clear. */
+	while (!(read8((u8 *)0xfed40000) & (1 << 7)))
+		;
+
+	/* Wait for ME to be ready */
+	intel_early_me_init();
+	info.memory_reserved_for_heci_mb = intel_early_me_uma_size();
 
 	/* before SPD */
 	timestamp_add_now(101);
 
 	if (!s3resume || 1) {	// possible error
-		pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2);	// = 0x80
-
-		collect_system_info(&info);
-
 		memset(&info.populated_ranks, 0, sizeof(info.populated_ranks));
 
 		info.use_ecc = 1;

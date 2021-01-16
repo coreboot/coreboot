@@ -32,7 +32,7 @@ void set_var_mtrr(
 	unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type)
 {
-	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
+	/* Bit 32-35 of MTRRphysMask should be set to 1 */
 	/* FIXME: It only support 4G less range */
 	msr_t basem, maskm;
 

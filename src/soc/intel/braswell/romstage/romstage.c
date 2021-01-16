@@ -105,9 +105,8 @@ void soc_memory_init_params(struct romstage_params *params, MEMORY_INIT_UPD *upd
 	dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
 
 	if (!dev) {
-		printk(BIOS_ERR,
-			"Error! Device (PCI:0:%02x.%01x) not found, soc_memory_init_params!\n",
-			LPC_DEV, LPC_FUNC);
+		printk(BIOS_ERR, "Error! Device (PCI:0:%02x.%01x) not found, %s!\n",
+			LPC_DEV, LPC_FUNC, __func__);
 		return;
 	}
 

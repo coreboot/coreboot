@@ -206,8 +206,8 @@ struct old_child_dev_config {
 } __packed;
 
 /* This one contains field offsets that are known to be common for all BDB
- * versions. Notice that the meaning of the contents contents may still change,
- * but at least the offsets are consistent. */
+ * versions. Notice that the meaning of the contents may still change, but
+ * at least the offsets are consistent. */
 struct common_child_dev_config {
 	u16 handle;
 	u16 device_type;

@@ -120,7 +120,7 @@ void itss_restore_irq_polarities(int start, int end)
 		if (end < irq_start)
 			break;
 
-		/* Track bits within the bounds of of the register. */
+		/* Track bits within the bounds of the register. */
 		irq_start = MAX(start, irq_start) % IRQS_PER_IPC;
 		irq_end = MIN(end, irq_end) % IRQS_PER_IPC;
 

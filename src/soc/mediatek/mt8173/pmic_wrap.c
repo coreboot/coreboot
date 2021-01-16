@@ -120,7 +120,7 @@ static s32 pwrap_init_reg_clock(enum pmic_regck regck_sel)
 	pwrap_write_nochk(PMIC_TOP_CKCON2, wdata);
 	pwrap_read_nochk(PMIC_TOP_CKCON2, &rdata);
 	if (rdata != wdata) {
-		pwrap_err("pwrap_init_reg_clock,rdata=%#x\n", rdata);
+		pwrap_err("%s,rdata=%#x\n", __func__, rdata);
 		return E_PWR_INIT_REG_CLOCK;
 	}
 	/* Config SPI Waveform according to reg clk */

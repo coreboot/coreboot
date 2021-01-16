@@ -50,8 +50,8 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	struct soc_intel_braswell_config *config;
 
 	if (!dev) {
-		printk(BIOS_ERR, "Error! Device (%s) not found, soc_silicon_init_params!\n",
-			dev_path(dev));
+		printk(BIOS_ERR, "Error! Device (%s) not found, %s!\n",
+			dev_path(dev), __func__);
 		return;
 	}
 

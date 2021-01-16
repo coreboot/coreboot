@@ -639,7 +639,7 @@ static int xfer_setup(struct tegra_spi_channel *spi, void *buf,
 	 * When we enable caching we'll need to clean/invalidate portions of
 	 * memory. So we need to be careful about memory alignment. Also, DMA
 	 * likes to operate on 4-bytes at a time on the AHB side. So for
-	 * example, if we only want to receive 1 byte, 4 bytes will be be
+	 * example, if we only want to receive 1 byte, 4 bytes will be
 	 * written in memory even if those extra 3 bytes are beyond the length
 	 * we want.
 	 *

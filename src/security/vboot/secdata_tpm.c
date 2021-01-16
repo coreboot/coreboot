@@ -221,7 +221,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 * Define and set rec hash space, if available.  No need to
 	 * create the RW hash space because we will definitely boot
 	 * once in normal mode before shipping, meaning that the space
-	 * will get created with correct permissions while still in in
+	 * will get created with correct permissions while still in
 	 * our hands.
 	 */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))

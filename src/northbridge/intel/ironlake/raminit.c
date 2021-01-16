@@ -1480,10 +1480,14 @@ static void collect_system_info(struct raminfo *info)
 		info->memory_reserved_for_heci_mb = intel_early_me_uma_size();
 	}
 
-	for (i = 0; i < 3; i++)
-		gav(capid0[i] =
-		    pci_read_config32(NORTHBRIDGE, CAPID0 | (i << 2)));
-	gav(info->revision = pci_read_config8(NORTHBRIDGE, PCI_REVISION_ID));
+	for (i = 0; i < 3; i++) {
+		capid0[i] = pci_read_config32(NORTHBRIDGE, CAPID0 | (i << 2));
+		printk(BIOS_DEBUG, "CAPID0[%d] = 0x%08x\n", i, capid0[i]);
+	}
+	info->revision = pci_read_config8(NORTHBRIDGE, PCI_REVISION_ID);
+	printk(BIOS_DEBUG, "Revision ID: 0x%x\n", info->revision);
+	printk(BIOS_DEBUG, "Device ID: 0x%x\n", pci_read_config16(NORTHBRIDGE, PCI_DEVICE_ID));
+
 	info->max_supported_clock_speed_index = (~capid0[1] & 7);
 
 	if ((capid0[1] >> 11) & 1)

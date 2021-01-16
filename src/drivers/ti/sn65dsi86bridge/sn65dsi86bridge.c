@@ -10,8 +10,8 @@
 #include <soc/addressmap.h>
 #include "sn65dsi86bridge.h"
 
-#define BRIDGE_GETHIGHERBYTE(x)		(uint8_t)((x & 0xff00) >> 8)
-#define BRIDGE_GETLOWERBYTE(x)		(uint8_t)((x & 0x00ff))
+#define BRIDGE_GETHIGHERBYTE(x)		((uint8_t)((x & 0xff00) >> 8))
+#define BRIDGE_GETLOWERBYTE(x)		((uint8_t)(x & 0x00ff))
 
 /* fudge factor required to account for 8b/10b encoding */
 #define DP_CLK_FUDGE_NUM 10

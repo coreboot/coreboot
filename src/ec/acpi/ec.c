@@ -84,7 +84,7 @@ u8 recv_ec_data(void)
 	udelay(10);
 
 	data = inb(ec_data_reg);
-	printk(BIOS_SPEW, "recv_ec_data: 0x%02x\n", data);
+	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, data);
 
 	return data;
 }

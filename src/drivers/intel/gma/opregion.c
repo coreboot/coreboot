@@ -155,7 +155,7 @@ static enum cb_err locate_vbt_vbios(const u8 *vbios, struct region_device *rdev)
 		return CB_ERR;
 	}
 
-	printk(BIOS_DEBUG, "GMA: locate_vbt_vbios: %x %x %x %x %x\n",
+	printk(BIOS_DEBUG, "GMA: %s: %x %x %x %x %x\n", __func__,
 		oprom->signature, pcir->vendor, pcir->classcode[0],
 		pcir->classcode[1], pcir->classcode[2]);
 

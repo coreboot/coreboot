@@ -307,7 +307,7 @@ struct soc_intel_skylake_config {
 	u8 LockDownConfigGlobalSmi;
 	/*
 	 * Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh
-	 * in the upper and and lower 128-byte bank of RTC RAM.
+	 * in the upper and lower 128-byte bank of RTC RAM.
 	 */
 	u8 LockDownConfigRtcLock;
 

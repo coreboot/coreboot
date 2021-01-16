@@ -1263,7 +1263,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	post_code(0x25);
 
 	/*
-	 * Warn if any leftover static devices are are found.
+	 * Warn if any leftover static devices are found.
 	 * There's probably a problem in devicetree.cb.
 	 */
 

@@ -1211,14 +1211,13 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	struct device *dev, **prev;
 	int once = 0;
 
-	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
+	printk(BIOS_DEBUG, "PCI: %s for bus %02x\n", __func__, bus->secondary);
 
 	/* Maximum sane devfn is 0xFF. */
 	if (max_devfn > 0xff) {
-		printk(BIOS_ERR, "PCI: pci_scan_bus limits devfn %x - "
-		       "devfn %x\n", min_devfn, max_devfn);
-		printk(BIOS_ERR, "PCI: pci_scan_bus upper limit too big. "
-		       "Using 0xff.\n");
+		printk(BIOS_ERR, "PCI: %s limits devfn %x - devfn %x\n",
+		       __func__, min_devfn, max_devfn);
+		printk(BIOS_ERR, "PCI: %s upper limit too big. Using 0xff.\n", __func__);
 		max_devfn=0xff;
 	}
 

@@ -52,7 +52,7 @@ static inline resource_t range_entry_end(const struct range_entry *r)
 	return r->end + 1;
 }
 
-/* Return size of of memory range. */
+/* Return size of memory range. */
 static inline resource_t range_entry_size(const struct range_entry *r)
 {
 	return r->end - r->begin + 1;

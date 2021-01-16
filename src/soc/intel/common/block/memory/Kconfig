@@ -1,0 +1,31 @@
+config SOC_INTEL_COMMON_BLOCK_MEMINIT
+	bool
+	help
+	  Intel common block support for performing initialization
+	  of FSPM UPDs.
+
+if SOC_INTEL_COMMON_BLOCK_MEMINIT
+
+config DIMMS_PER_CHANNEL
+	int
+	default 0
+	help
+	  Maximum number of DIMMs per channel if the memory controller
+	  supports DIMM modules for any memory technology.
+
+config DATA_BUS_WIDTH
+	int
+	default 0
+	help
+	  Data bus width of the platform.
+
+config MRC_CHANNEL_WIDTH
+	int
+	default 0
+	help
+	  Width of the memory channel from the perspective of MRC. This
+	  determines the UPD organization. SoC using this common block
+	  support is expected to set MRC_CHANNEL_WIDTH as per the FSP
+	  MRC expectation.
+
+endif

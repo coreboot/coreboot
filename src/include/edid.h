@@ -41,7 +41,7 @@ struct edid_mode {
 /* structure for communicating EDID information from a raw EDID block to
  * higher level functions.
  * The size of the data types is not critical, so we leave them as
- * unsigned int. We can move more into into this struct as needed.
+ * unsigned int. We can move more into this struct as needed.
  */
 
 #define EDID_ASCII_STRING_LENGTH 13

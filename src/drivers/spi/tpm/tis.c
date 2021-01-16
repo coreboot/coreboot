@@ -31,7 +31,7 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 int tis_open(void)
 {
 	if (tpm_is_open) {
-		printk(BIOS_ERR, "tis_open() called twice.\n");
+		printk(BIOS_ERR, "%s() called twice.\n", __func__);
 		return -1;
 	}
 	return 0;

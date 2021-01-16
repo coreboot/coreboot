@@ -207,7 +207,7 @@ pci_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 	if (!rom)
 		rom = pci_rom_probe(device);
 	if (!rom) {
-		printk(BIOS_ERR, "pci_rom_acpi_fill_vfct failed\n");
+		printk(BIOS_ERR, "%s failed\n", __func__);
 		return current;
 	}
 

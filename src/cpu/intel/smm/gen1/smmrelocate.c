@@ -134,7 +134,7 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	if (smm_reloc_params.ied_size)
 		setup_ied_area(&smm_reloc_params);
 
-	/* This may not be be correct for older CPU's supported by this code,
+	/* This may not be correct for older CPU's supported by this code,
 	   but given that em64t101_smm_state_save_area_t is larger than the
 	   save_state of these CPU's it works. */
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);

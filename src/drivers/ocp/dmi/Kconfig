@@ -10,3 +10,4 @@ config OCP_DMI
 config FRU_DEVICE_ID
 	int
 	default 0
+	depends on OCP_DMI

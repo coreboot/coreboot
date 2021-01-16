@@ -29,7 +29,7 @@ void google_chromeec_init(void);
 int google_chromeec_pd_get_amode(uint16_t svid);
 /* Check for the current mux state in EC
  * in: int port physical port number of the type-c port
- * out: uint8_t flags flags representing the status of the mux such as
+ * out: uint8_t flags representing the status of the mux such as
  *	usb capability, dp capability, cable type, etc
  */
 int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
@@ -78,7 +78,7 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
 /**
  * Get data from Cros Board Info
  *
- * @param id/fw_config/buf [OUT] value from from CBI.
+ * @param id/fw_config/buf [OUT] value from CBI.
  * @return 0 on success or negative integer for errors.
  */
 int google_chromeec_cbi_get_oem_id(uint32_t *id);

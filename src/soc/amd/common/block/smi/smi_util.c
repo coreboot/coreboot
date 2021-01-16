@@ -49,7 +49,7 @@ void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
 	/* SMI0 source is GEVENT0 and so on */
 	configure_smi(gevent, mode);
 
-	/* And set set the trigger level */
+	/* And set the trigger level */
 	reg32 = smi_read32(SMI_REG_SMITRIG0);
 	reg32 &= ~(1 << gevent);
 	reg32 |= (level & 0x1) << gevent;

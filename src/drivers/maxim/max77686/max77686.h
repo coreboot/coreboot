@@ -48,7 +48,7 @@ enum max77686_regnum {
  * @param vol_bitpos	bit position to be set or clear within register
  * @param vol_bitmask	bit mask value
  * @param reg_enaddr	control register address, which enable the given
- *			given buck/ldo.
+ *			buck/ldo.
  * @param reg_enbitpos	bit position to be enabled
  * @param reg_enbiton	value to be written to buck/ldo to make it ON
  * @param reg_enbitoff	value to be written to buck/ldo to make it OFF

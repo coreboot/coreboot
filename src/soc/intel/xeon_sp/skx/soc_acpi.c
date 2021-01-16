@@ -12,7 +12,6 @@
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
-#include <device/mmio.h>
 #include <soc/msr.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>

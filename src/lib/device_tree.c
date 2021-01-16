@@ -1346,7 +1346,7 @@ static int dt_fixup_all_externals(struct device_tree *tree,
 		if (!path)
 			return -1;
 
-		/* Find node the label pointed to to figure out its phandle. */
+		/* Find node the label pointed to figure out its phandle. */
 		struct device_tree_node *node = dt_find_node_by_path(tree, path,
 			NULL, NULL, 0);
 		if (!node)

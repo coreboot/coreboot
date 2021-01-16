@@ -165,7 +165,7 @@ static void lb_gpios(struct lb_header *header)
 		"            NAME |       PORT | POLARITY |     VALUE\n",
 		gpios->count);
 	for (g = &gpios->gpios[0]; g < &gpios->gpios[gpios->count]; g++) {
-		printk(BIOS_INFO, "%16s | ", g->name);
+		printk(BIOS_INFO, "%16.16s | ", g->name);
 		if (g->port == -1)
 			printk(BIOS_INFO, " undefined | ");
 		else

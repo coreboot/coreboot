@@ -36,7 +36,7 @@ enum cb_err xhci_for_each_ext_cap(const struct device *device, void *context,
 	}
 
 	if (!(res->flags & IORESOURCE_ASSIGNED)) {
-		printk(BIOS_ERR, "%s: BAR is is not assigned\n", __func__);
+		printk(BIOS_ERR, "%s: BAR is not assigned\n", __func__);
 		return CB_ERR;
 	}
 

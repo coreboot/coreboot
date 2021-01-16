@@ -3353,7 +3353,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	compute_derived_timings(&info);
 
-	early_quickpath_init(x2ca8);
+	early_quickpath_init(&info, x2ca8);
 
 	info.cached_training = get_cached_training();
 

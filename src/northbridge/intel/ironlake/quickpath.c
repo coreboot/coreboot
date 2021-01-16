@@ -429,37 +429,65 @@ static void set_2dxx_series(struct raminfo *info, int s3resume)
 	MCHBAR32(0x2db8) = ((info->fsb_frequency - 1) << 16) | 0x77;
 }
 
-#define gav(x)	(x)
-
-void early_quickpath_init(const u8 x2ca8)
+static u16 quickpath_configure_pll_ratio(struct raminfo *info, const u8 x2ca8)
 {
-	if (x2ca8 == 0) {
-		gav(MCHBAR8(0x164));
-		MCHBAR8(0x164) = 0x26;
-		MCHBAR16(0x2c20) = 0x10;
-	}
-
 	MCHBAR32_OR(0x18b4, 0x210000);
 	MCHBAR32_OR(0x1890, 0x2000000);
 	MCHBAR32_OR(0x18b4, 0x8000);
 
-	gav(pci_read_config32(QPI_PHY_0, QPI_PLL_STATUS));	// !!!!
-	pci_write_config8(QPI_PHY_0, QPI_PLL_RATIO, 0x12);
+	/* Get maximum supported PLL ratio */
+	u16 qpi_pll_ratio = (pci_read_config32(QPI_PHY_0, QPI_PLL_STATUS) >> 24 & 0x7f);
 
-	gav(MCHBAR16(0x2c10));
-	MCHBAR16(0x2c10) = 0x412;
-	gav(MCHBAR16(0x2c10));
+	/* Adjust value if invalid */
+	if (qpi_pll_ratio == 0 || qpi_pll_ratio > 40)
+		qpi_pll_ratio = 40;
+
+	if (qpi_pll_ratio == 16)
+		qpi_pll_ratio = 12;
+
+	while (qpi_pll_ratio >= 12) {
+		if (qpi_pll_ratio <= (info->clock_speed_index + 3) * 8)
+			break;
+
+		qpi_pll_ratio -= 2;
+	}
+
+	/* Finally, program the ratio */
+	pci_write_config8(QPI_PHY_0, QPI_PLL_RATIO, qpi_pll_ratio);
+
+	const u16 csipll0 = MCHBAR16(0x2c10);
+	MCHBAR16(0x2c10) = (qpi_pll_ratio > 26) << 11 | 0x400 | qpi_pll_ratio;
+
+	if (csipll0 != MCHBAR16(0x2c10) && x2ca8 == 0)
+		MCHBAR8_OR(0x2ca8, 1);
+
 	MCHBAR16_OR(0x2c12, 0x100);
 
-	gav(MCHBAR8(0x2ca8));	// !!!!
+	return qpi_pll_ratio;
+}
+
+void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
+{
+	u8 reg8;
+	u32 reg32;
+
+	/* Initialize DDR MPLL first */
+	if (x2ca8 == 0) {
+		MCHBAR8_AND_OR(0x164, 0xd9, info->clock_speed_index == 0 ? 0x24 : 0x26);
+
+		/* Program DDR MPLL feedback divider ratio */
+		MCHBAR16(0x2c20) = (info->clock_speed_index + 3) * 4;
+	}
+
+	const u16 qpi_pll_ratio = quickpath_configure_pll_ratio(info, x2ca8);
+
 	MCHBAR32_AND_OR(0x1804, 0xfffffffc, 0x8400080);
+	pci_update_config32(QPI_PHY_0, QPI_PHY_CONTROL, 0xfffffffc, 0x400080);
 
-	pci_read_config32(QPI_PHY_0, QPI_PHY_CONTROL);	// !!!!
-	pci_write_config32(QPI_PHY_0, QPI_PHY_CONTROL, 0x40a0a0);
-	gav(MCHBAR32(0x1c04));	// !!!!
-	gav(MCHBAR32(0x1804));	// !!!!
+	const u32 x1c04 = MCHBAR32(0x1c04) & 0xc01080;
+	const u32 x1804 = MCHBAR32(0x1804) & 0xc01080;
 
-	if (x2ca8 == 0)
+	if (x1c04 != x1804 && x2ca8 == 0)
 		MCHBAR8_OR(0x2ca8, 1);
 
 	MCHBAR32(0x18d8) = 0x120000;
@@ -476,62 +504,68 @@ void early_quickpath_init(const u8 x2ca8)
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x142);
 	MCHBAR32(0x18d8) = 0x1e0000;
 
-	gav(MCHBAR32(0x18dc));	// !!!!
-	MCHBAR32(0x18dc) = 0x3;
-	gav(MCHBAR32(0x18dc));	// !!!!
+	const u32 x18dc = MCHBAR32(0x18dc);
+	MCHBAR32(0x18dc) = qpi_pll_ratio < 18 ? 2 : 3;
 
-	if (x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);	// guess
+	if (x18dc != MCHBAR32(0x18dc) && x2ca8 == 0)
+		MCHBAR8_OR(0x2ca8, 1);
 
-	MCHBAR32(0x188c) = 0x20bc09;
-	pci_write_config32(QPI_PHY_0, QPI_PHY_PWR_MGMT, 0x40b0c09);
-	MCHBAR32(0x1a10) = 0x4200010e;
+	reg8 = qpi_pll_ratio > 20 ? 10 : 9;
+
+	MCHBAR32(0x188c) = 0x20bc00 | reg8;
+	pci_write_config32(QPI_PHY_0, QPI_PHY_PWR_MGMT, 0x40b0c00 | reg8);
+
+	if (qpi_pll_ratio <= 14)
+		reg8 = 0x33;
+	else if (qpi_pll_ratio <= 26)
+		reg8 = 0x42;
+	else
+		reg8 = 0x51;
+
+	MCHBAR32(0x1a10) = reg8 << 24 | qpi_pll_ratio * 60;
 	MCHBAR32_OR(0x18b8, 0x200);
-	gav(MCHBAR32(0x1918));	// !!!!
-	MCHBAR32(0x1918) = 0x332;
+	MCHBAR32_OR(0x1918, 0x300);
 
-	gav(MCHBAR32(0x18b8));	// !!!!
-	MCHBAR32(0x18b8) = 0xe00;
-	gav(MCHBAR32(0x182c));	// !!!!
-	MCHBAR32(0x182c) = 0x10202;
-	gav(pci_read_config32(QPI_PHY_0, QPI_PHY_PRIM_TIMEOUT));	// !!!!
-	pci_write_config32(QPI_PHY_0, QPI_PHY_PRIM_TIMEOUT, 0x10202);
+	if (info->revision > 0x17)
+		MCHBAR32_OR(0x18b8, 0xc00);
+
+	reg32 = ((qpi_pll_ratio > 20) + 1) << 16;
+
+	MCHBAR32_AND_OR(0x182c, 0xfff0f0ff, reg32 | 0x200);
+	pci_update_config32(QPI_PHY_0, QPI_PHY_PRIM_TIMEOUT, 0xfff0f0ff, reg32 | 0x200);
 	MCHBAR32_AND(0x1a1c, 0x8fffffff);
 	MCHBAR32_OR(0x1a70, 0x100000);
 
 	MCHBAR32_AND(0x18b4, 0xffff7fff);
-	gav(MCHBAR32(0x1a68));	// !!!!
-	MCHBAR32(0x1a68) = 0x343800;
-	gav(MCHBAR32(0x1e68));	// !!!!
-	gav(MCHBAR32(0x1a68));	// !!!!
+	MCHBAR32_AND_OR(0x1a68, 0xffebc03f, 0x143800);
 
-	if (x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);	// guess
+	const u32 x1e68 = MCHBAR32(0x1e68) & 0x143fc0;
+	const u32 x1a68 = MCHBAR32(0x1a68) & 0x143fc0;
 
-	pci_read_config32(QPI_LINK_0, QPI_QPILCL);	// !!!!
-	pci_write_config32(QPI_LINK_0, QPI_QPILCL, 0x140000);
-	pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS);	// !!!!
-	pci_write_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS, 0x64555);
-	pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS);	// !!!!
-	pci_read_config32(QPI_NON_CORE, MIRROR_PORT_CTL);	// !!!!
-	pci_write_config32(QPI_NON_CORE, MIRROR_PORT_CTL, 0x180);
-	gav(MCHBAR32(0x1af0));	// !!!!
-	gav(MCHBAR32(0x1af0));	// !!!!
-	MCHBAR32(0x1af0) = 0x1f020003;
-	gav(MCHBAR32(0x1af0));	// !!!!
+	if (x1e68 != x1a68 && x2ca8 == 0)
+		MCHBAR8_OR(0x2ca8, 1);
 
-	if (x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);	// guess
+	pci_update_config32(QPI_LINK_0, QPI_QPILCL, 0xffffff3f, 0x140000);
 
-	gav(MCHBAR32(0x1890));	// !!!!
-	MCHBAR32(0x1890) = 0x80102;
-	gav(MCHBAR32(0x18b4));	// !!!!
-	MCHBAR32(0x18b4) = 0x216000;
+	reg32 = pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS);
+	pci_write_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS, (reg32 & 0xfffe4555) | 0x64555);
+
+	if (reg32 != pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS) && x2ca8 == 0)
+		MCHBAR8_OR(0x2ca8, 1);
+
+	pci_update_config32(QPI_NON_CORE, MIRROR_PORT_CTL, ~3, 0x80 * 3);
+
+	reg32 = MCHBAR32(0x1af0);
+	MCHBAR32(0x1af0) = (reg32 & 0xfdffcf) | 0x1f020000;
+
+	if (reg32 != MCHBAR32(0x1af0) && x2ca8 == 0)
+		MCHBAR8_OR(0x2ca8, 1);
+
+	MCHBAR32_AND(0x1890, 0xfdffffff);
+	MCHBAR32_AND_OR(0x18b4, 0xffff6fff, 0x600);
 	MCHBAR32(0x18a4) = 0x22222222;
 	MCHBAR32(0x18a8) = 0x22222222;
 	MCHBAR32(0x18ac) = 0x22222;
-
-	udelay(1000);
 }
 
 void late_quickpath_init(struct raminfo *info, const int s3resume)

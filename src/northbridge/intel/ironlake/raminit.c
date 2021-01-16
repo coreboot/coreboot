@@ -3458,15 +3458,18 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_1d0(0x0, 0xeb, 3, 1);
 	write_1d0(0x0, 0xf3, 6, 1);
 
-	for (channel = 0; channel < NUM_CHANNELS; channel++)
-		for (lane = 0; lane < 9; lane++) {
-			u16 addr = 0x125 + get_lane_offset(0, 0, lane);
-			u8 a;
-			a = read_500(&info, channel, addr, 6);	// = 0x20040080 //!!!!
-			write_500(&info, channel, a, addr, 6, 1);
-		}
+	for (channel = 0; channel < NUM_CHANNELS; channel++) {
+		u8 a = 0;
+		if (info.populated_ranks[channel][0][1] && info.clock_speed_index > 1)
+			a = 3;
+		if (info.silicon_revision == 0 || info.silicon_revision == 1)
+			a = 3;
 
-	udelay(1000);
+		for (lane = 0; lane < 9; lane++) {
+			const u16 addr = 0x125 + get_lane_offset(0, 0, lane);
+			rmw_500(&info, channel, addr, 6, 0xf, a);
+		}
+	}
 
 	if (s3resume) {
 		if (info.cached_training == NULL) {

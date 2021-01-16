@@ -12,7 +12,7 @@
 __weak void mainboard_gpio_i2c_init(struct device *dev)
 {
 	/* Initialize any of the GPIOs or I2C devices */
-	printk(BIOS_SPEW, "WEAK; mainboard_gpio_i2c_init\n");
+	printk(BIOS_SPEW, "WEAK; %s\n", __func__);
 }
 
 static struct device_operations device_ops = {

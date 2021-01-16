@@ -30,7 +30,7 @@ static void pch_set_acpi_mode(void)
 
 static void pmc_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "pch: pmc_init\n");
+	printk(BIOS_DEBUG, "pch: %s\n", __func__);
 
 	/* Get the base address */
 	acpi_base = pci_read_config16(dev, PMC_ACPI_BASE) & MASK_PMC_ACPI_BASE;

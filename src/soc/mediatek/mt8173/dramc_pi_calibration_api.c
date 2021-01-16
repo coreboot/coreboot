@@ -1086,7 +1086,7 @@ void perbit_window_cal(u32 channel, u8 type)
 	}
 
 	if (fail == 1) /* error handling */
-		die("fail on perbit_window_cal()\n");
+		die("fail on %s()\n", __func__);
 
 	dramc_dbg_msg("==================================================\n");
 	dramc_dbg_msg("        dramc_perbit_window_swcal:\n");

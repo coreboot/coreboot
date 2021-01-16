@@ -80,7 +80,7 @@ asmlinkage void car_stage_entry(void)
 		 *
 		 * After setting up DRAM, AGESA also completes the configuration
 		 * of the MTRRs, setting regions to WB.  Anything written to
-		 * memory between now and and when CAR is dismantled will be
+		 * memory between now and when CAR is dismantled will be
 		 * in cache and lost.  For now, set the regions UC to ensure
 		 * the writes get to DRAM.
 		 */

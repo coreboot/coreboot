@@ -10,7 +10,7 @@
 
 static void npk_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "pch: npk_init\n");
+	printk(BIOS_DEBUG, "pch: %s\n", __func__);
 
 	/* TODO */
 }

@@ -180,14 +180,14 @@ Device (EC)
 	Method (_Q34)
 	{
 		TPSN (0x87)
-		XOr (^TPAD, One, ^TPAD)
+		^TPAD ^= 1
 	}
 
 	/* KEY_WLAN */
 	Method (_Q35)
 	{
 		TPSN (0x88)
-		XOr (^WIFI, One, ^WIFI)
+		^WIFI ^= 1
 	}
 
 	/* KEY_BLUETOOTH */

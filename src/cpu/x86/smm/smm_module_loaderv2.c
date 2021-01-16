@@ -333,7 +333,7 @@ static int smm_stub_place_staggered_entry_points(char *base,
  *
  * The save state and smm stack are treated as contiguous for the number of
  * concurrent areas requested. The save state always lives at the top of the
- * the CPUS smbase (and the entry point is at offset 0x8000). This allows only a certain
+ * CPUS smbase (and the entry point is at offset 0x8000). This allows only a certain
  * number of CPUs with staggered entry points until the save state area comes
  * down far enough to overwrite/corrupt the entry code (stub code). Therefore,
  * an SMM map is created to avoid this corruption, see smm_create_map() above.

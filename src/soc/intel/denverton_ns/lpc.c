@@ -445,7 +445,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "pch: lpc_init\n");
+	printk(BIOS_DEBUG, "pch: %s\n", __func__);
 
 	/* Get the base address */
 

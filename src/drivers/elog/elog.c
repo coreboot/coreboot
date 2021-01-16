@@ -212,7 +212,7 @@ static int elog_is_buffer_clear(size_t offset)
 	uint8_t *buffer = rdev_mmap(rdev, offset, size);
 	int ret = 1;
 
-	elog_debug("elog_is_buffer_clear(offset=%zu size=%zu)\n", offset, size);
+	elog_debug("%s(offset=%zu size=%zu)\n", __func__, offset, size);
 
 	if (buffer == NULL)
 		return 0;
@@ -235,7 +235,7 @@ static int elog_is_header_valid(void)
 {
 	struct elog_header *header;
 
-	elog_debug("elog_is_header_valid()\n");
+	elog_debug("%s()\n", __func__);
 
 	header = rdev_mmap(mirror_dev_get(), 0, sizeof(*header));
 
@@ -348,7 +348,7 @@ static int elog_update_event_buffer_state(void)
 {
 	size_t offset = elog_events_start();
 
-	elog_debug("elog_update_event_buffer_state()\n");
+	elog_debug("%s()\n", __func__);
 
 	/* Go through each event and validate it */
 	while (1) {
@@ -392,7 +392,7 @@ static int elog_update_event_buffer_state(void)
 
 static int elog_scan_flash(void)
 {
-	elog_debug("elog_scan_flash()\n");
+	elog_debug("%s()\n", __func__);
 	void *mirror_buffer;
 	const struct region_device *rdev = mirror_dev_get();
 
@@ -558,7 +558,7 @@ static int elog_shrink_by_size(size_t requested_size)
 
 static int elog_prepare_empty(void)
 {
-	elog_debug("elog_prepare_empty()\n");
+	elog_debug("%s()\n", __func__);
 	return elog_shrink_by_size(elog_events_total_space());
 }
 
@@ -638,7 +638,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
  */
 int elog_clear(void)
 {
-	elog_debug("elog_clear()\n");
+	elog_debug("%s()\n", __func__);
 
 	/* Make sure ELOG structures are initialized */
 	if (elog_init() < 0)
@@ -786,7 +786,7 @@ int elog_init(void)
 	}
 	elog_state.elog_initialized = ELOG_BROKEN;
 
-	elog_debug("elog_init()\n");
+	elog_debug("%s()\n", __func__);
 
 	/* Set up the backing store */
 	if (elog_find_flash() < 0)
@@ -860,7 +860,7 @@ int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	struct event_header *event;
 	u8 event_size;
 
-	elog_debug("elog_add_event_raw(type=%X)\n", event_type);
+	elog_debug("%s(type=%X)\n", __func__, event_type);
 
 	/* Make sure ELOG structures are initialized */
 	if (elog_init() < 0)

@@ -221,7 +221,7 @@ static void launch_dram(struct sysinfo *s)
 
 		if (s->selected_timings.mem_clk <= MEM_CLOCK_1066MHz)
 			s->nmode = 1;
-		/* 2N on DDR3 1066 with with 2 dimms per channel */
+		/* 2N on DDR3 1066 with 2 dimms per channel */
 		if ((s->selected_timings.mem_clk == MEM_CLOCK_1066MHz) &&
 			(BOTH_DIMMS_ARE_POPULATED(s->dimms, 0) ||
 				BOTH_DIMMS_ARE_POPULATED(s->dimms, 1)))

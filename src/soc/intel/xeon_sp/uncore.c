@@ -12,7 +12,6 @@
 #include <soc/util.h>
 #include <fsp/util.h>
 #include <security/intel/txt/txt_platform.h>
-#include <soc/pci_devs.h>
 
 struct map_entry {
 	uint32_t    reg;

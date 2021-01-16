@@ -49,7 +49,8 @@ __weak int tis_plat_irq_status(void)
 	static int warning_displayed;
 
 	if (!warning_displayed) {
-		printk(BIOS_WARNING, "WARNING: tis_plat_irq_status() not implemented, wasting 20ms to wait on Cr50!\n");
+		printk(BIOS_WARNING, "WARNING: %s() not implemented, wasting 20ms to wait on"
+		       " Cr50!\n", __func__);
 		warning_displayed = 1;
 	}
 	mdelay(CR50_TIMEOUT_NOIRQ_MS);

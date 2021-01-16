@@ -24,7 +24,7 @@ int tis_open(void)
 	int rc;
 
 	if (chip.is_open) {
-		printk(BIOS_DEBUG, "tis_open() called twice.\n");
+		printk(BIOS_DEBUG, "%s() called twice.\n", __func__);
 		return -1;
 	}
 
@@ -68,11 +68,11 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		return -1;
 
 	if (count == 0) {
-		printk(BIOS_DEBUG, "tpm_transmit: no data\n");
+		printk(BIOS_DEBUG, "%s: no data\n", __func__);
 		return -1;
 	}
 	if (count > sbufsiz) {
-		printk(BIOS_DEBUG, "tpm_transmit: invalid count value %x %zx\n",
+		printk(BIOS_DEBUG, "%s: invalid count value %x %zx\n", __func__,
 			count, sbufsiz);
 		return -1;
 	}
@@ -80,7 +80,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	ASSERT(chip.vendor.send);
 	rc = chip.vendor.send(&chip, (uint8_t *) sbuf, count);
 	if (rc < 0) {
-		printk(BIOS_DEBUG, "tpm_transmit: tpm_send error\n");
+		printk(BIOS_DEBUG, "%s: tpm_send error\n", __func__);
 		goto out;
 	}
 
@@ -95,7 +95,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 		if (status == chip.vendor.req_canceled) {
 			printk(BIOS_DEBUG,
-				"tpm_transmit: Operation Canceled\n");
+				"%s: Operation Canceled\n", __func__);
 			rc = -1;
 			goto out;
 		}
@@ -105,7 +105,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 	ASSERT(chip.vendor.cancel);
 	chip.vendor.cancel(&chip);
-	printk(BIOS_DEBUG, "tpm_transmit: Operation Timed out\n");
+	printk(BIOS_DEBUG, "%s: Operation Timed out\n", __func__);
 	rc = -1; //ETIME;
 	goto out;
 
@@ -113,7 +113,7 @@ out_recv:
 
 	rc = chip.vendor.recv(&chip, (uint8_t *) rbuf, rbufsiz);
 	if (rc < 0)
-		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %d\n", rc);
+		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rc);
 out:
 	return rc;
 }

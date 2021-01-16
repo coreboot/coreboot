@@ -74,7 +74,7 @@ void mainboard_smi_gpi(u32 gpi_sts)
 
 int mainboard_smi_apmc(u8 data)
 {
-	printk(BIOS_INFO, "mainboard_smi_apmc(%02x)\n", data);
+	printk(BIOS_INFO, "%s(%02x)\n", __func__, data);
 
 	switch (data) {
 	case APM_CNT_ACPI_ENABLE:

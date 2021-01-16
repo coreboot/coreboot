@@ -432,7 +432,7 @@ int s5p_dp_is_video_stream_on(struct s5p_dp_device *dp)
 	} while (!stopwatch_expired(&sw));
 
 	if (i != 4) {
-		printk(BIOS_DEBUG, "s5p_dp_is_video_stream_on timeout\n");
+		printk(BIOS_DEBUG, "%s timeout\n", __func__);
 		return -1;
 	}
 

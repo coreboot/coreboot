@@ -13,30 +13,30 @@
  * use IOE_KBC_60_64 macro. For IOE_ macros that do not specify a port range,
  * the port range is selectable via the IO decodes register.
  */
-#define LPC_IOE_EC_4E_4F               (1 << 13)
-#define LPC_IOE_SUPERIO_2E_2F          (1 << 12)
-#define LPC_IOE_EC_62_66               (1 << 11)
-#define LPC_IOE_KBC_60_64              (1 << 10)
-#define LPC_IOE_HGE_208                (1 << 9)
-#define LPC_IOE_LGE_200                (1 << 8)
-#define LPC_IOE_FDD_EN                 (1 << 3)
-#define LPC_IOE_LPT_EN                 (1 << 2)
-#define LPC_IOE_COMB_EN                (1 << 1)
-#define LPC_IOE_COMA_EN                (1 << 0)
-#define LPC_NUM_GENERIC_IO_RANGES       4
+#define LPC_IOE_EC_4E_4F		(1 << 13)
+#define LPC_IOE_SUPERIO_2E_2F		(1 << 12)
+#define LPC_IOE_EC_62_66		(1 << 11)
+#define LPC_IOE_KBC_60_64		(1 << 10)
+#define LPC_IOE_HGE_208			(1 << 9)
+#define LPC_IOE_LGE_200			(1 << 8)
+#define LPC_IOE_FDD_EN			(1 << 3)
+#define LPC_IOE_LPT_EN			(1 << 2)
+#define LPC_IOE_COMB_EN			(1 << 1)
+#define LPC_IOE_COMA_EN			(1 << 0)
+#define LPC_NUM_GENERIC_IO_RANGES	4
 
-#define PCR_DMI_LPCLGIR1        0x2730
-#define PCR_DMI_LPCLGIR2        0x2734
-#define PCR_DMI_LPCLGIR3        0x2738
-#define PCR_DMI_LPCLGIR4        0x273c
+#define PCR_DMI_LPCLGIR1		0x2730
+#define PCR_DMI_LPCLGIR2		0x2734
+#define PCR_DMI_LPCLGIR3		0x2738
+#define PCR_DMI_LPCLGIR4		0x273c
 
-#define PCR_DMI_LPCIOD          0x2770
-#define PCR_DMI_LPCIOE          0x2774
+#define PCR_DMI_LPCIOD			0x2770
+#define PCR_DMI_LPCIOE			0x2774
 
 /* LPC PCR configuration */
-#define PCR_LPC_PRC            0x341c
-#define PCR_LPC_CCE_EN         0xf
-#define PCR_LPC_PCE_EN         (9 << 8)
+#define PCR_LPC_PRC			0x341c
+#define PCR_LPC_CCE_EN			0xf
+#define PCR_LPC_PCE_EN			(9 << 8)
 
 /* Serial IRQ control. SERIRQ_QUIET is the default (0). */
 enum serirq_mode {

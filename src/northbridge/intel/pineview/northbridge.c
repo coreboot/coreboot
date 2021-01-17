@@ -98,7 +98,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* Report the memory regions */
 	ram_resource(dev, index++, 0, 0xa0000 / KiB);
-	ram_resource(dev, index++, 0xc0000 / KiB, tomk - 0xc0000 / KiB);
+	ram_resource(dev, index++, 1 * MiB / KiB, tomk - 1 * MiB / KiB);
 	mmio_resource(dev, index++, tseg_basek, tseg_sizek);
 	mmio_resource(dev, index++, gtt_basek,  gsm_sizek);
 	mmio_resource(dev, index++, igd_basek,  gms_sizek);

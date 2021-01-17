@@ -74,7 +74,7 @@ static void mch_domain_read_resources(struct device *dev)
 		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 		int uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
 
-		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
+		printk(BIOS_DEBUG, "%dM UMA\n", uma_size / KiB);
 		tomk_stolen -= uma_size;
 
 		/* For reserving UMA memory in the memory map */
@@ -85,15 +85,15 @@ static void mch_domain_read_resources(struct device *dev)
 		       (unsigned int)uma_memory_base);
 	}
 
-	tseg_sizek = decode_tseg_size(pci_read_config8(d0f0, ESMRAMC)) >> 10;
-	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
+	tseg_sizek = decode_tseg_size(pci_read_config8(d0f0, ESMRAMC)) / KiB;
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek / KiB);
 	tomk_stolen -= tseg_sizek;
 	tseg_memory_base = tomk_stolen * 1024ULL;
 	tseg_memory_size = tseg_sizek * 1024ULL;
 
 	/* cbmem_top can be shifted downwards due to alignment.
 	   Mark the region between cbmem_top and tomk as unusable */
-	cbmem_topk = ((uint32_t)cbmem_top() >> 10);
+	cbmem_topk = ((uint32_t)cbmem_top() / KiB);
 	delta_cbmem = tomk_stolen - cbmem_topk;
 	tomk_stolen -= delta_cbmem;
 
@@ -103,16 +103,16 @@ static void mch_domain_read_resources(struct device *dev)
 	 * number is always 0
 	 */
 	printk(BIOS_INFO, "Available memory: %dK", (uint32_t)tomk_stolen);
-	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen >> 10));
+	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen / KiB));
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, 640);
-	ram_resource(dev, 4, 768, (tomk - 768));
-	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
-	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
+	ram_resource(dev, 3, 0, 0xa0000 / KiB);
+	ram_resource(dev, 4, 0xc0000 / KiB, (tomk - 0xc0000 / KiB));
+	uma_resource(dev, 5, uma_memory_base / KiB, uma_memory_size / KiB);
+	mmio_resource(dev, 6, tseg_memory_base / KiB, tseg_memory_size / KiB);
 	uma_resource(dev, 7, cbmem_topk, delta_cbmem);
 	/* legacy VGA memory */
-	mmio_resource(dev, 8, 640, 768 - 640);
+	mmio_resource(dev, 8, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 }
 
 static void mch_domain_set_resources(struct device *dev)

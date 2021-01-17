@@ -20,10 +20,6 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
 
-#if CONFIG(CHROMEOS_RAMOOPS)
-		Memory32Fixed(ReadWrite, CONFIG_CHROMEOS_RAMOOPS_RAM_START,
-					 CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE)
-#endif
 
 		/* Required for SandyBridge sighting 3715511 */
 		Memory32Fixed(ReadWrite, 0x20000000, 0x00200000)

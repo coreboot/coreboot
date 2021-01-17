@@ -30,6 +30,8 @@
 #define PCR_DMI_LPCLGIR3		0x2738
 #define PCR_DMI_LPCLGIR4		0x273c
 
+#define PCR_DMI_LPCGMR			0x2740
+
 #define PCR_DMI_LPCIOD			0x2770
 #define PCR_DMI_LPCIOE			0x2774
 

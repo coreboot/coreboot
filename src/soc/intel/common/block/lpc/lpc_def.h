@@ -7,8 +7,10 @@
 #define  LPC_SCNT_EN			(1 << 7)
 #define  LPC_SCNT_MODE			(1 << 6)
 #define LPC_IO_DECODE			0x80
-#define  LPC_IOD_COMA_RANGE             (0 << 0) /* 0x3F8 - 0x3FF COMA*/
-#define  LPC_IOD_COMB_RANGE             (1 << 4) /* 0x2F8 - 0x2FF COMB*/
+#define  LPC_IOD_COMA_RANGE_MASK	(7 << 0)
+#define  LPC_IOD_COMB_RANGE_MASK	(7 << 4)
+#define  LPC_IOD_COMA_RANGE		(0 << 0) /* 0x3F8 - 0x3FF COMA */
+#define  LPC_IOD_COMB_RANGE		(1 << 4) /* 0x2F8 - 0x2FF COMB */
 /* Use IO_<peripheral>_<IO port> style macros defined in lpc_lib.h
  * to enable decoding of I/O locations for a peripheral. */
 #define LPC_IO_ENABLES			0x82

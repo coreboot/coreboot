@@ -8,25 +8,6 @@
 #include <soc/pm.h>
 #include "chip.h"
 
-static const struct lpc_mmio_range apl_lpc_fixed_mmio_ranges[] = {
-	{ 0xfed40000, 0x8000 },
-	{ 0xfedc0000, 0x4000 },
-	{ 0xfed20800, 16 },
-	{ 0xfed20880, 8 },
-	{ 0xfed208e0, 16 },
-	{ 0xfed208f0, 8 },
-	{ 0xfed30800, 16 },
-	{ 0xfed30880, 8 },
-	{ 0xfed308e0, 16 },
-	{ 0xfed308f0, 8 },
-	{ 0, 0 }
-};
-
-const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
-{
-	return apl_lpc_fixed_mmio_ranges;
-}
-
 static const struct pad_config lpc_gpios[] = {
 #if CONFIG(SOC_INTEL_GEMINILAKE)
 #if !CONFIG(SOC_ESPI)

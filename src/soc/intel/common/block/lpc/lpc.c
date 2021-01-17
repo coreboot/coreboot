@@ -59,14 +59,6 @@ static void pch_lpc_loop_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next) {
 		if (res->flags & IORESOURCE_IO)
 			lpc_open_pmio_window(res->base, res->size);
-
-		if (res->flags & IORESOURCE_MEM) {
-			/* Check if this is already decoded. */
-			if (lpc_fits_fixed_mmio_window(res->base, res->size))
-				continue;
-
-			lpc_open_mmio_window(res->base, res->size);
-		}
 	}
 	pch_lpc_set_child_resources(dev);
 }

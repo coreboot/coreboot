@@ -15,20 +15,6 @@
 
 #include "chip.h"
 
-/**
-  PCH preserved MMIO range, 24 MB, from 0xFD000000 to 0xFE7FFFFF
-**/
-
-static const struct lpc_mmio_range skl_lpc_fixed_mmio_ranges[] = {
-	{ PCH_PRESERVED_BASE_ADDRESS, PCH_PRESERVED_BASE_SIZE },
-	{ 0, 0 }
-};
-
-const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
-{
-	return skl_lpc_fixed_mmio_ranges;
-}
-
 void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
 {
 	const config_t *config = config_of_soc();

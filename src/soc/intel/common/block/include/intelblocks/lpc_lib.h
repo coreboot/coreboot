@@ -45,11 +45,6 @@ enum serirq_mode {
 	SERIRQ_OFF,
 };
 
-struct lpc_mmio_range {
-	uintptr_t base;
-	size_t size;
-};
-
 /*
  * Enable fixed IO ranges to LPC. IOE_* macros can be OR'ed together.
  * Output:I/O Enable Bits
@@ -65,8 +60,6 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size);
 void lpc_close_pmio_windows(void);
 /* Open a generic MMIO window to the LPC bus. One window is available. */
 void lpc_open_mmio_window(uintptr_t base, size_t size);
-/* Returns true if given window is decoded to LPC via a fixed range. */
-bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size);
 /* Init SoC Specific LPC features. Common definition will be weak and
 each soc will need to define the init. */
 void lpc_soc_init(struct device *dev);
@@ -74,8 +67,6 @@ void lpc_soc_init(struct device *dev);
 void pch_lpc_soc_fill_io_resources(struct device *dev);
 /* Init LPC GPIO pads */
 void lpc_configure_pads(void);
-/* Get SoC specific MMIO ranges */
-const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void);
 /* Set LPC BIOS Control BILD bit. */
 void lpc_set_bios_interface_lock_down(void);
 /* Set LPC BIOS Control LE bit. */

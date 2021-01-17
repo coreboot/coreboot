@@ -17,20 +17,6 @@
 #include <soc/pcr_ids.h>
 #include <soc/soc_chip.h>
 
-/*
-* To reserve certain memory range as reserved range for BIOS usage.
-* For this SOC, the range will be from 0FC800000h till FE7FFFFFh"
-*/
-static const struct lpc_mmio_range ehl_lpc_fixed_mmio_ranges[] = {
-	{ PCH_PRESERVED_BASE_ADDRESS, PCH_PRESERVED_BASE_SIZE },
-	{ 0, 0 }
-};
-
-const struct lpc_mmio_range *soc_get_fixed_mmio_ranges()
-{
-	return ehl_lpc_fixed_mmio_ranges;
-}
-
 void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
 {
 	const config_t *config = config_of_soc();

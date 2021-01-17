@@ -9,15 +9,6 @@
 
 #include <chip.h>
 
-static const struct lpc_mmio_range xeon_lpc_fixed_mmio_ranges[] = {
-	{ 0, 0 }
-};
-
-const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
-{
-	return xeon_lpc_fixed_mmio_ranges;
-}
-
 void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
 {
 	const config_t *config = config_of_soc();

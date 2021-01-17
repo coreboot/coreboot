@@ -148,28 +148,6 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 	pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE, lgmr);
 }
 
-bool lpc_fits_fixed_mmio_window(uintptr_t base, size_t size)
-{
-	resource_t res_end, range_end;
-	const struct lpc_mmio_range *range;
-	const struct lpc_mmio_range *lpc_fixed_mmio_ranges =
-		soc_get_fixed_mmio_ranges();
-
-	for (range = lpc_fixed_mmio_ranges; range->size; range++) {
-		range_end = range->base + range->size;
-		res_end = base + size;
-
-		if ((base >= range->base) && (res_end <= range_end)) {
-			printk(BIOS_DEBUG,
-			       "Resource %lx size %zx fits in fixed window"
-			       " %lx size %zx\n",
-			       base, size, range->base, range->size);
-			return true;
-		}
-	}
-	return false;
-}
-
 /*
  * Set FAST_SPIBAR BIOS Control register based on input bit field.
  */

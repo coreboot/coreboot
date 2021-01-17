@@ -43,6 +43,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_JSP_SRAM,
 	PCI_DEVICE_ID_INTEL_ADP_P_SRAM,
 	PCI_DEVICE_ID_INTEL_ADP_S_SRAM,
+	PCI_DEVICE_ID_INTEL_ADP_M_SRAM,
 	0,
 };
 

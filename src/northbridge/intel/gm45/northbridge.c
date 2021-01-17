@@ -14,13 +14,6 @@
 #include "chip.h"
 #include "gm45.h"
 
-/* Reserve segments A and B:
- *
- * 0xa0000 - 0xbffff: legacy VGA
- */
-static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 128;
-
 int decode_pcie_bar(u32 *const base, u32 *const len)
 {
 	*base = 0;
@@ -133,10 +126,20 @@ static void mch_domain_read_resources(struct device *dev)
 
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
-	/* Report the memory regions */
-	ram_resource(dev, 3, 0, legacy_hole_base_k);
-	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-		     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+	/* Report lowest memory region */
+	ram_resource(dev, 3, 0, 0xa0000 / KiB);
+
+	/*
+	 * Reserve everything between A segment and 1MB:
+	 *
+	 * 0xa0000 - 0xbffff: Legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	mmio_resource(dev, 4, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	reserved_ram_resource(dev, 5, 0xc0000 / KiB, (1*MiB - 0xc0000) / KiB);
+
+	/* Report < 4GB memory */
+	ram_resource(dev, 6, 1*MiB / KiB, tomk - 1*MiB / KiB);
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -144,7 +147,7 @@ static void mch_domain_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > 4096 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
+		ram_resource(dev, 7, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 		       (touud >> 10) - 4096);
 	}
@@ -152,12 +155,12 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
 	       "size=0x%llx\n", ((u64)tomk) << 10, ((u64)uma_sizek) << 10);
 	/* Don't use uma_resource() as our UMA touches the PCI hole. */
-	fixed_mem_resource(dev, 6, tomk, uma_sizek, IORESOURCE_RESERVE);
+	fixed_mem_resource(dev, 8, tomk, uma_sizek, IORESOURCE_RESERVE);
 
 	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
 		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		fixed_mem_resource(dev, 7, pcie_config_base >> 10,
+		fixed_mem_resource(dev, 9, pcie_config_base >> 10,
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
 }
@@ -167,7 +170,7 @@ static void mch_domain_set_resources(struct device *dev)
 	struct resource *resource;
 	int i;
 
-	for (i = 3; i < 8; ++i) {
+	for (i = 3; i <= 9; ++i) {
 		/* Report read resources. */
 		resource = probe_resource(dev, i);
 		if (resource)

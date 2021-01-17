@@ -107,12 +107,14 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, 0xa0000 / KiB);
-	ram_resource(dev, 4, 0xc0000 / KiB, (tomk - 0xc0000 / KiB));
+	ram_resource(dev, 4, 1 * MiB / KiB, (tomk - 1 * MiB / KiB));
 	uma_resource(dev, 5, uma_memory_base / KiB, uma_memory_size / KiB);
 	mmio_resource(dev, 6, tseg_memory_base / KiB, tseg_memory_size / KiB);
 	uma_resource(dev, 7, cbmem_topk, delta_cbmem);
 	/* legacy VGA memory */
 	mmio_resource(dev, 8, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	/* RAM to be used for option roms and BIOS */
+	reserved_ram_resource(dev, 9, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
 }
 
 static void mch_domain_set_resources(struct device *dev)

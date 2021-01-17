@@ -2,6 +2,7 @@
 
 #include <cbmem.h>
 #include <console/console.h>
+#include <commonlib/bsd/helpers.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
@@ -65,39 +66,39 @@ static void mch_domain_read_resources(struct device *dev)
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx ", touud, tolud, tom);
 
-	tomk = tolud >> 10;
+	tomk = tolud / KiB;
 
 	/* Graphics memory */
 	const u16 ggc = pci_read_config16(mch, GGC);
 	const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-	printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
+	printk(BIOS_DEBUG, "%uM UMA", gms_sizek / KiB);
 	tomk -= gms_sizek;
 
 	/* GTT Graphics Stolen Memory Size (GGMS) */
 	const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
+	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek / KiB);
 	tomk -= gsm_sizek;
 
-	const u32 tseg_basek = pci_read_config32(mch, TSEG) >> 10;
-	const u32 igd_basek = pci_read_config32(mch, GBSM) >> 10;
-	const u32 gtt_basek = pci_read_config32(mch, BGSM) >> 10;
+	const u32 tseg_basek = pci_read_config32(mch, TSEG) / KiB;
+	const u32 igd_basek = pci_read_config32(mch, GBSM) / KiB;
+	const u32 gtt_basek = pci_read_config32(mch, BGSM) / KiB;
 
 	/* Subtract TSEG size */
 	tseg_sizek = gtt_basek - tseg_basek;
 	tomk -= tseg_sizek;
-	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
+	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek / KiB);
 
 	/* cbmem_top can be shifted downwards due to alignment.
 	   Mark the region between cbmem_top and tomk as unusable */
-	cbmem_topk = (uint32_t)cbmem_top() >> 10;
+	cbmem_topk = (uint32_t)cbmem_top() / KiB;
 	delta_cbmem = tomk - cbmem_topk;
 	tomk -= delta_cbmem;
 
 	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOMK: 0x%xK\n", delta_cbmem);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, 640);
-	ram_resource(dev, index++, 768, tomk - 768);
+	ram_resource(dev, index++, 0, 0xa0000 / KiB);
+	ram_resource(dev, index++, 0xc0000 / KiB, tomk - 0xc0000 / KiB);
 	mmio_resource(dev, index++, tseg_basek, tseg_sizek);
 	mmio_resource(dev, index++, gtt_basek,  gsm_sizek);
 	mmio_resource(dev, index++, igd_basek,  gms_sizek);
@@ -111,15 +112,15 @@ static void mch_domain_read_resources(struct device *dev)
 	if (touud > top32memk) {
 		ram_resource(dev, index++, top32memk, touud - top32memk);
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-			(touud - top32memk) >> 10);
+			(touud - top32memk) / KiB);
 	}
 
 	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x size=0x%x\n",
 			pcie_config_base, pcie_config_size);
 
-		fixed_mem_resource(dev, index++, pcie_config_base >> 10,
-			pcie_config_size >> 10, IORESOURCE_RESERVE);
+		fixed_mem_resource(dev, index++, pcie_config_base / KiB,
+			pcie_config_size / KiB, IORESOURCE_RESERVE);
 	}
 
 	add_fixed_resources(dev, index);

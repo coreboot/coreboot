@@ -14,6 +14,8 @@ config ARCH_RAMSTAGE_ARMV8_64
 	bool
 	select ARCH_RAMSTAGE_ARM64
 
+if ARCH_ARM64
+
 config ARCH_ARMV8_EXTENSION
 	int
 	default 0
@@ -25,3 +27,5 @@ config ARCH_ARMV8_EXTENSION
 	  All ARMv8 implementations are downwards-compatible, so this does not
 	  need to be changed unless specific features (e.g. new instructions)
 	  are used by the SoC's coreboot code.
+
+endif # ARCH_ARM64

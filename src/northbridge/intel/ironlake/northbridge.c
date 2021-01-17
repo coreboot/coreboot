@@ -9,6 +9,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "chip.h"
+#include <commonlib/bsd/helpers.h>
 #include "ironlake.h"
 #include <cpu/intel/smm_reloc.h>
 
@@ -52,10 +53,8 @@ static void add_fixed_resources(struct device *dev, int index)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
-
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
-
+	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 / KiB) - legacy_hole_base_k);
+	reserved_ram_resource(dev, index++, 0xc0000 / KiB, (0x100000 - 0xc0000) / KiB);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)
@@ -105,10 +104,10 @@ static void mc_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)touud);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, 640);
-	ram_resource(dev, index++, 768, ((tseg_base >> 10) - 768));
+	ram_resource(dev, index++, 0, 0xa0000 / KiB);
+	ram_resource(dev, index++, 0xc0000 / KiB, (tseg_base - 0xc0000) / KiB);
 
-	mmio_resource(dev, index++, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
+	mmio_resource(dev, index++, tseg_base / KiB, CONFIG_SMM_TSEG_SIZE / KiB);
 
 	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	const int uma_sizes_gtt[16] =
@@ -130,17 +129,17 @@ static void mc_read_resources(struct device *dev)
 	if (gtt_base > tseg_end) {
 		/* Reserve the gap. MMIO doesn't work in this range. Keep
 		   it uncacheable, though, for easier MTRR allocation. */
-		mmio_resource(dev, index++, tseg_end >> 10, (gtt_base - tseg_end) >> 10);
+		mmio_resource(dev, index++, tseg_end / KiB, (gtt_base - tseg_end) / KiB);
 	}
-	mmio_resource(dev, index++, gtt_base >> 10, uma_size_gtt << 10);
-	mmio_resource(dev, index++, igd_base >> 10, uma_size_igd << 10);
+	mmio_resource(dev, index++, gtt_base / KiB, uma_size_gtt * KiB);
+	mmio_resource(dev, index++, igd_base / KiB, uma_size_igd * KiB);
 
 	if (touud > 4096)
-		ram_resource(dev, index++, (4096 << 10), ((touud - 4096) << 10));
+		ram_resource(dev, index++, (4096 * KiB), ((touud - 4096) * KiB));
 
 	/* This memory is not DMA-capable. */
 	if (touud >= 8192 - 64)
-		bad_ram_resource(dev, index++, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
+		bad_ram_resource(dev, index++, 0x1fc000000ULL / KiB, 0x004000000 / KiB);
 
 	add_fixed_resources(dev, index);
 }

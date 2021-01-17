@@ -105,7 +105,7 @@ static void mc_read_resources(struct device *dev)
 
 	/* Report the memory regions */
 	ram_resource(dev, index++, 0, 0xa0000 / KiB);
-	ram_resource(dev, index++, 0xc0000 / KiB, (tseg_base - 0xc0000) / KiB);
+	ram_resource(dev, index++, 1 * MiB / KiB, (tseg_base - 1 * MiB) / KiB);
 
 	mmio_resource(dev, index++, tseg_base / KiB, CONFIG_SMM_TSEG_SIZE / KiB);
 

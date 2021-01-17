@@ -26,9 +26,6 @@
 #define LPC_NUM_GENERIC_IO_RANGES	4
 
 #define PCR_DMI_LPCLGIR1		0x2730
-#define PCR_DMI_LPCLGIR2		0x2734
-#define PCR_DMI_LPCLGIR3		0x2738
-#define PCR_DMI_LPCLGIR4		0x273c
 
 #define PCR_DMI_LPCGMR			0x2740
 
@@ -88,8 +85,6 @@ void lpc_io_setup_comm_a_b(void);
 void pch_enable_lpc(void);
 /* Get SoC's generic IO decoder range register settings. */
 void soc_get_gen_io_dec_range(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
-/* Mirror generic IO decoder range register settings into DMI PCR. */
-void soc_setup_dmi_pcr_io_dec(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES]);
 /* Add resource into LPC PCI device space */
 void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
 	uintptr_t base, size_t size, unsigned long flags);

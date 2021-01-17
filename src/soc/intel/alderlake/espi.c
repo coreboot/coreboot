@@ -30,15 +30,6 @@ void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
 	gen_io_dec[3] = config->gen4_dec;
 }
 
-void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
-{
-	/* Mirror these same settings in DMI PCR */
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
-}
-
 #if ENV_RAMSTAGE
 void lpc_soc_init(struct device *dev)
 {

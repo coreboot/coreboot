@@ -9,7 +9,6 @@
 #include <arch/ioapic.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
-#include <intelblocks/pcr.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
@@ -28,28 +27,7 @@ void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
 	gen_io_dec[3] = config->gen4_dec;
 }
 
-void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
-{
-	/* Mirror these same settings in DMI PCR */
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1, gen_io_dec[0]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
-	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
-}
-
 #if ENV_RAMSTAGE
-static void soc_mirror_dmi_pcr_io_dec(void)
-{
-	uint32_t io_dec_arr[] = {
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN1_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN2_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN3_DEC),
-		pci_read_config32(PCH_DEV_LPC, LPC_GEN4_DEC),
-	};
-	/* Mirror these same settings in DMI PCR */
-	soc_setup_dmi_pcr_io_dec(&io_dec_arr[0]);
-}
-
 void lpc_soc_init(struct device *dev)
 {
 	const config_t *config = dev->chip_info;
@@ -69,7 +47,6 @@ void lpc_soc_init(struct device *dev)
 	pch_pirq_init();
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
-	soc_mirror_dmi_pcr_io_dec();
 }
 
 /* Fill up LPC IO resource structure inside SoC directory */

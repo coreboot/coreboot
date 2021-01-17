@@ -33,9 +33,6 @@
 #define PCR_DMI_PMBASEA		0x27AC
 #define PCR_DMI_PMBASEC		0x27B0
 
-#define PCR_DMI_LPCIOD		0x2770
-#define PCR_DMI_LPCIOE		0x2774
-
 static void soc_config_pwrmbase(void)
 {
 	/*
@@ -120,19 +117,8 @@ void pch_early_iorange_init(void)
 		lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */
-	if (pch_check_decode_enable() == 0) {
-		io_enables = lpc_enable_fixed_io_ranges(io_enables);
-		/*
-		 * Set ESPI IO Enables PCR[DMI] + 2774h [15:0] to the same
-		 * value programmed in ESPI PCI offset 82h.
-		 */
-		pcr_write16(PID_DMI, PCR_DMI_LPCIOE, io_enables);
-		/*
-		 * Set LPC IO Decode Ranges PCR[DMI] + 2770h [15:0] to the same
-		 * value programmed in LPC PCI offset 80h.
-		 */
-		pcr_write16(PID_DMI, PCR_DMI_LPCIOD, lpc_get_fixed_io_decode());
-	}
+	if (pch_check_decode_enable() == 0)
+		lpc_enable_fixed_io_ranges(io_enables);
 
 	/* Program generic IO Decode Range */
 	pch_enable_lpc();

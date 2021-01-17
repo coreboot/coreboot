@@ -7,3 +7,12 @@ config SOC_INTEL_CONFIGURE_DDI_A_4_LANES
 	bool
 	help
 	  Selected by platforms that require DDI-A bifurcation setup.
+
+config SOC_INTEL_DISABLE_IGD
+	bool "Disable Integrated GFX Controller (0:2:0)"
+	default n
+	select MAINBOARD_NO_FSP_GOP
+	help
+	  Selected by mainboard user that need to skip IGD initialization
+	  where OS can only use one GPU hence need to disable IGD and don't
+	  need to run FSP GOP.

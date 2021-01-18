@@ -6,9 +6,9 @@ chip soc/intel/tigerlake
 	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
 	# USB Port Config
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C C1
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C C1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C C0
+	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C C0
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0

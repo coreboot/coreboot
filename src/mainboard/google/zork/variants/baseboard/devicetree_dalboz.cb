@@ -338,12 +338,6 @@ chip soc/amd/picasso
 							end
 						end
 					end
-					chip ec/google/chromeec/i2c_tunnel
-						register "name" = ""MSTH""
-						register "uid" = "1"
-						register "remote_bus" = "9"
-						device generic 1.0 on end
-					end
 					chip ec/google/chromeec/audio_codec
 						register "uid" = "1"
 						device generic 0 on end

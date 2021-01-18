@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
 
@@ -9,6 +10,10 @@ asmlinkage void chipset_teardown_car_main(void)
 	uint32_t status;
 	FSP_TEMP_RAM_EXIT temp_ram_exit;
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
+
+	/* CBMEM_ID_VBOOT_WORKBUF is used as vboot workbuffer.
+	 * Init CBMEM before loading fsp, to have buffer available */
+	cbmem_initialize();
 
 	if (prog_locate(&fsp)) {
 		die("Unable to locate fsp.bin\n");

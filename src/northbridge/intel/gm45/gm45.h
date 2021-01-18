@@ -164,6 +164,8 @@ enum {
 #define CMOS_READ_TRAINING	0x80 /* 16 bytes */
 #define CMOS_WRITE_TRAINING	0x90 /* 16 bytes (could be reduced to 10 bytes) */
 
+#include "memmap.h"
+
 /*
  * D0:F0
  */

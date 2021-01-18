@@ -51,10 +51,15 @@ static void xeon_configure_mca(void)
 	mca_configure();
 }
 
+/*
+ * On server platforms the FIT mechanism only updates the microcode on
+ * the BSP. Loading MCU on AP in parallel seems to fail in 10% of the cases
+ * so do it serialized.
+ */
 void get_microcode_info(const void **microcode, int *parallel)
 {
 	*microcode = intel_mp_current_microcode();
-	*parallel = 1;
+	*parallel = 0;
 }
 
 const void *intel_mp_current_microcode(void)

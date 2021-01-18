@@ -23,8 +23,12 @@ void main(void)
 	/*
 	 * CBMEM needs to be recovered because timestamps rely on
 	 * the cbmem infrastructure being around. Explicitly recover it.
+	 *
+	 * On some platforms CBMEM needs to be initialized earlier.
+	 * Use cbmem_online() to avoid init CBMEM twice.
 	 */
-	cbmem_initialize();
+	if (!cbmem_online())
+		cbmem_initialize();
 
 	timestamp_add_now(TS_START_POSTCAR);
 

@@ -115,6 +115,10 @@ _start:
 	jz	microcode_done /* Bypass if no microde exists. */
 
 	/* Get the Microcode version. */
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	movl	$IA32_BIOS_SIGN_ID, %ecx
+	wrmsr
 	mov	$1, %eax
 	cpuid
 	mov	$IA32_BIOS_SIGN_ID, %ecx

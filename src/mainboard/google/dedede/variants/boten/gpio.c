@@ -10,6 +10,9 @@ static const struct pad_config gpio_table[] = {
 	/* A10 : WWAN_EN => LTE_PWR_OFF_ODL */
 	PAD_CFG_GPO(GPP_A10, 1, PWROK),
 
+	/* B7  : WWAN_SAR_DETECT_R_ODL */
+	PAD_CFG_GPO(GPP_B7, 1, DEEP),
+
 	/* C12 : AP_PEN_DET_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, UP_20K, DEEP),
 	/* C18 : AP_I2C_EMR_SDA */
@@ -25,6 +28,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D14, NONE),
 	/* D15 : UCAM_RST_L */
 	PAD_NC(GPP_D15, NONE),
+	/* D19 : WWAN_WLAN_COEX1 */
+	PAD_NC(GPP_D19, NONE),
+	/* D20 : WWAN_WLAN_COEX2 */
+	PAD_NC(GPP_D20, NONE),
+	/* D21 : WWAN_WLAN_COEX3 */
+	PAD_NC(GPP_D21, NONE),
 	/* D22 : AP_I2C_SUB_SDA*/
 	PAD_CFG_NF(GPP_D22, NONE, DEEP, NF1),
 	/* D23 : AP_I2C_SUB_SCL */

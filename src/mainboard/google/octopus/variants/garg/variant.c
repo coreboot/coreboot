@@ -19,9 +19,13 @@ const char *mainboard_vbt_filename(void)
 	switch (sku_id) {
 	case SKU_9_HDMI:
 	case SKU_19_HDMI_TS:
+		return "vbt_garg_hdmi.bin";
+	case SKU_49_2A2C_TS:
+	case SKU_51_2A2C:
+		return "vbt_garfour.bin";
 	case SKU_50_HDMI:
 	case SKU_52_HDMI_TS:
-		return "vbt_garg_hdmi.bin";
+		return "vbt_garfour_hdmi.bin";
 	default:
 		return "vbt.bin";
 	}

@@ -3,6 +3,11 @@ config SOC_INTEL_ALDERLAKE
 	help
 	  Intel Alderlake support
 
+config SOC_INTEL_ALDERLAKE_PCH_M
+	bool
+	help
+	  Choose this option if you have PCH-M chipset.
+
 if SOC_INTEL_ALDERLAKE
 
 config CPU_SPECIFIC_OPTIONS
@@ -121,10 +126,12 @@ config HEAP_SIZE
 
 config MAX_PCH_ROOT_PORTS
 	int
+	default 10 if SOC_INTEL_ALDERLAKE_PCH_M
 	default 12
 
 config MAX_CPU_ROOT_PORTS
 	int
+	default 1 if SOC_INTEL_ALDERLAKE_PCH_M
 	default 3
 
 config MAX_ROOT_PORTS
@@ -133,6 +140,7 @@ config MAX_ROOT_PORTS
 
 config MAX_PCIE_CLOCKS
 	int
+	default 10 if SOC_INTEL_ALDERLAKE_PCH_M
 	default 12
 
 config SMM_TSEG_SIZE

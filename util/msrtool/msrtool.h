@@ -18,14 +18,14 @@
 
 #define HEXCHARS "0123456789abcdefABCDEF"
 
-enum {
+typedef enum {
 	MSRTYPE_RDONLY,
 	MSRTYPE_RDWR,
 	MSRTYPE_WRONLY,
 	MSRTYPE_EOT
 } MsrTypes;
 
-enum {
+typedef enum {
 	PRESENT_RSVD,
 	PRESENT_DEC,
 	PRESENT_BIN,

@@ -129,7 +129,7 @@ trylink() {
 	exit 1
 }
 
-CC=`findprog "compiler" "${CC}" gcc cc icc` || exit
+CC=`findprog "compiler" "${CC}" clang gcc cc icc` || exit
 INSTALL=`findprog "install" "${INSTALL}" install ginstall` || exit
 
 test -n "$DEBUG" && myCFLAGS="-O2 -g" || myCFLAGS="-Os"

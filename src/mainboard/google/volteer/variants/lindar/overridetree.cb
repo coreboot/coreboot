@@ -13,7 +13,6 @@ chip soc/intel/tigerlake
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
 
-	register "SaGv" = "SaGv_Disabled"
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+

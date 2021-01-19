@@ -143,7 +143,7 @@ static uint32_t smmstorev2_exec(uint8_t command, void *param)
 
 uint32_t smmstore_exec(uint8_t command, void *param)
 {
-	if (!param)
+	if (command != SMMSTORE_CMD_CLEAR && !param)
 		return SMMSTORE_RET_FAILURE;
 
 	if (CONFIG(SMMSTORE_V2))

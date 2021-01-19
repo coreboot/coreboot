@@ -218,9 +218,7 @@ enum {
  * MCHBAR
  */
 
-#define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#include <northbridge/intel/common/fixed_bars.h>
 
 #define HPLLVCO_MCHBAR		0x0c0f
 
@@ -342,10 +340,6 @@ enum {
  * DMIBAR
  */
 
-#define DMIBAR8(x)  (*((volatile u8  *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
-
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */
 
@@ -373,10 +367,6 @@ enum {
 /*
  * EPBAR
  */
-
-#define EPBAR8(x)  (*((volatile u8  *)(DEFAULT_EPBAR + (x))))
-#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCTL	0x00c	/* 32bit */

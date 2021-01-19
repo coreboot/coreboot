@@ -43,4 +43,13 @@ config INTEL_GMA_BCLV_OFFSET
 config INTEL_GMA_BCLM_OFFSET
 	default 0x61256
 
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed14000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
 endif

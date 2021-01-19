@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config NORTHBRIDGE_INTEL_COMMON
+	bool
+
+if NORTHBRIDGE_INTEL_COMMON
+
+config FIXED_DMIBAR_MMIO_BASE
+	hex
+
+config FIXED_EPBAR_MMIO_BASE
+	hex
+
+config FIXED_MCHBAR_MMIO_BASE
+	hex
+
+endif # NORTHBRIDGE_INTEL_COMMON

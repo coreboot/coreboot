@@ -101,8 +101,6 @@ PSP_ELF_FILE=$(objcbfs)/bootblock.elf
 PSP_BIOSBIN_SIZE=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | awk '{print $$5}')
 PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | awk '{print $$3}')
 
-# type = 0x66
-
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28
 
@@ -182,5 +180,7 @@ cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(CEZANNE_FWM_POSITION)
 apu/amdfw-type := raw
+
+cpu_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/UcodePatch_*.bin)
 
 endif # ($(CONFIG_SOC_AMD_CEZANNE),y)

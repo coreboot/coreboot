@@ -240,10 +240,6 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
-config EHCI_BAR
-	hex
-	default 0xfef00000
-
 config PICASSO_FCH_IOAPIC_ID
 	hex
 	default 0x8

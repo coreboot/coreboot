@@ -108,6 +108,10 @@ config MMCONF_BUS_NUMBER
 	int
 	default 64
 
+config MAX_CPUS
+	int
+	default 16
+
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex

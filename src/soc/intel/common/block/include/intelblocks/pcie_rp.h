@@ -10,10 +10,10 @@
  * functions.
  *
  * `slot` is the PCI device/slot number of such a group.
- * `start` is the initial PCI function number within the group. This is useful in case the
- * root port numbers are not contiguous within the slot.
- * `count` is the number of functions within the group starting with the `start` function
- * number.
+ * `start` is the initial PCI function number within the group. This is useful
+ * in case the root port numbers are not contiguous within the slot.
+ * `count` is the number of functions within the group starting with the `start`
+ * function number.
  */
 struct pcie_rp_group {
 	unsigned int slot;
@@ -44,22 +44,22 @@ static inline unsigned int rp_end_fn(const struct pcie_rp_group *group)
  * Call this once, after root ports have been reordered, but before PCI
  * enumeration.
  *
- * `groups` points to a list of groups terminated by an entry with `count == 0`. It is assumed
- * that the first group includes the RPs 1 to the first group's `count` and that adjacent groups
- * follow without gaps in the numbering.
+ * `groups` points to a list of groups terminated by an entry with `count == 0`.
+ * It is assumed that the first group includes the RPs 1 to the first group's
+ * `count` and that adjacent groups follow without gaps in the numbering.
  */
 void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
 
 /*
- * Return mask of PCIe root ports that are enabled by mainboard. Mask is set in the same order
- * as the root ports in pcie_rp_group groups table.
+ * Return mask of PCIe root ports that are enabled by mainboard. Mask is set in
+ * the same order as the root ports in pcie_rp_group groups table.
  *
- * Thus, the status of first root port in the groups table is indicated by bit 0 in the returned
- * mask, second root port by bit 1 and so on.
+ * Thus, the status of first root port in the groups table is indicated by bit 0
+ * in the returned mask, second root port by bit 1 and so on.
 
- * 1 in the bit position indicates root port is enabled, whereas 0 indicates root port is
- * disabled. This function assumes that the maximum count of root ports in the groups table is
- * <= 32.
+ * 1 in the bit position indicates root port is enabled, whereas 0 indicates root
+ * port is disabled. This function assumes that the maximum count of root ports
+ * in the groups table is <= 32.
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 

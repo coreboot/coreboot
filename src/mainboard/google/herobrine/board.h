@@ -6,6 +6,8 @@
 #include <boardid.h>
 #include <gpio.h>
 
+#define GPIO_SD_CD_L	GPIO(91)
+
 void setup_chromeos_gpios(void);
 
 #endif /* _COREBOOT_SRC_MAINBOARD_GOOGLE_HEROBRINE_BOARD_H_ */

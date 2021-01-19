@@ -80,6 +80,57 @@ chip soc/intel/tigerlake
 	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
 
 	device domain 0 on
+		device ref dptf on
+			chip drivers/intel/dptf
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,	CPU,	       95, 5000),
+					[1] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_1, 55, 6000),
+					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 70, 6000),
+					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2, 52, 6000),
+					[4] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_3, 60, 6000)}"
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,	       105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,	80, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	70, SHUTDOWN)}"
+
+				## Power Limits Control
+				# 3-17W PL1 in 200mW increments, avg over 28-32s interval
+				# PL2 set to 60W, avg over 28-32s interval
+				register "controls.power_limits" = "{
+					.pl1 = {.min_power = 3000,
+						.max_power = 17000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 200,},
+					.pl2 = {.min_power = 60000,
+						.max_power = 60000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,}}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = { 100, 6500, 220, 2200, },
+					[1] = {  90, 5900, 180, 1800, },
+					[2] = {  80, 5400, 145, 1450, },
+					[3] = {  70, 4900, 115, 1150, },
+					[4] = {  63, 4600,  90,  900, },
+					[5] = {  58, 4300,  55,  550, },
+					[6] = {  54, 4100,  30,  300, },
+					[7] = {  50, 3800,  15,  150, },
+					[8] = {  45, 3500,  10,  100, },
+					[9] = {   0,    0,   0,   50, }}"
+
+				# Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 on end
+			end
+		end # DPTF				0x9A03
+
 		device ref north_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

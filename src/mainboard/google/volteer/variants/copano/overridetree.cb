@@ -97,14 +97,26 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "probed" = "1"
+				device i2c 15 on
+					probe TOUCHPAD REGULAR_TOUCHPAD
+				end
+			end
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN0000""
+				register "generic.hid" = ""ELAN2701""
 				register "generic.desc" = ""ELAN Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E15_IRQ)"
 				register "generic.wake" = "GPE0_DW2_15"
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 on end
+				device i2c 15 on
+					probe TOUCHPAD NUMPAD_TOUCHPAD
+				end
 			end
 		end
 		device ref pch_espi on

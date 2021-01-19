@@ -58,6 +58,10 @@ fw_config
 		option BOOT_SATA_DISABLED 0
 		option BOOT_SATA_ENABLED 1
 	end
+	field TOUCHPAD 25
+		option REGULAR_TOUCHPAD 0
+		option NUMPAD_TOUCHPAD 1
+	end
 end
 
 chip soc/intel/tigerlake

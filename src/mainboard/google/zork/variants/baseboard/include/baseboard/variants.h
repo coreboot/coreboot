@@ -64,6 +64,8 @@ const fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num);
 /* Retrieve attributes from FW_CONFIG in CBI. */
 /* Return value of SAR config. */
 int variant_gets_sar_config(void);
+/* Return value of Mainboard Type config */
+int variant_gets_mb_type_config(void);
 /* Return 0 if non-existent, 1 if present. */
 int variant_has_emmc(void);
 /* Return 0 if non-existent, 1 if present. */

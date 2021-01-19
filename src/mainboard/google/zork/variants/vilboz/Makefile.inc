@@ -2,5 +2,7 @@
 
 subdirs-y += ./spd
 
+romstage-y += romstage.c
+
 ramstage-y += variant.c
 ramstage-y += gpio.c

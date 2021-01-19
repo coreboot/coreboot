@@ -43,6 +43,9 @@ enum {
 	/* SAR presence */
 	FW_CONFIG_MASK_SAR = 0x7,
 	FW_CONFIG_SHIFT_SAR = 23,
+	/* Mainboard Type for VCORE IC */
+	FW_CONFIG_MASK_MB_TYPE = 0x1,
+	FW_CONFIG_SHIFT_MB_TYPE = 26,
 	/* Fan information */
 	FW_CONFIG_MASK_FAN = 0x3,
 	FW_CONFIG_SHIFT_FAN = 27,
@@ -84,6 +87,11 @@ static unsigned int extract_field(uint64_t mask, int shift)
 int variant_gets_sar_config(void)
 {
 	return extract_field(FW_CONFIG_MASK_SAR, FW_CONFIG_SHIFT_SAR);
+}
+
+int variant_gets_mb_type_config(void)
+{
+	return extract_field(FW_CONFIG_MASK_MB_TYPE, FW_CONFIG_SHIFT_MB_TYPE);
 }
 
 int variant_has_emmc(void)

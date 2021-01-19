@@ -71,12 +71,14 @@ void acpi_fill_gnvs(void)
 	mainboard_fill_gnvs(gnvs);
 
 	acpigen_write_scope("\\");
-	acpigen_write_name_dword("NVSA", (uintptr_t)gnvs);
+	acpigen_write_name_dword("NVB0", (uintptr_t)gnvs);
+	acpigen_write_name_dword("NVS0", CONFIG(MAINBOARD_HAS_CHROMEOS) ? 0x1000 : 0x100);
 	acpigen_pop_len();
 
 	if (CONFIG(ACPI_HAS_DEVICE_NVS)) {
 		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSD", (uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET);
+		acpigen_write_name_dword("NVB1", (uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET);
+		acpigen_write_name_dword("NVS1", 0x1000);
 		acpigen_pop_len();
 	}
 }

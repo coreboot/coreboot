@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-External (NVSD)
-
-OperationRegion (DNVS, SystemMemory, NVSD, 0x1000)
 Field (DNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Device enables in ACPI mode */

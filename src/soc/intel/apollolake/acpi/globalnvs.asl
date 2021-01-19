@@ -6,9 +6,6 @@
  *
  */
 
-External (NVSA)
-
-OperationRegion (GNVS, SystemMemory, NVSA, 0x1000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */

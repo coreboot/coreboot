@@ -9,10 +9,15 @@
 #include <soc/gpio.h>
 #include <soc/me.h>
 #include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <stdint.h>
 #include <timestamp.h>
+
+__weak void mainboard_fill_spd_data(struct pei_data *pei_data)
+{
+}
 
 __weak void mainboard_post_raminit(const int s3resume)
 {
@@ -45,8 +50,8 @@ void mainboard_romstage_entry(void)
 	/* Initialize GPIOs */
 	init_gpios(mainboard_gpio_config);
 
-	/* Fill in mainboard pei_date. */
-	mainboard_pre_raminit(&rp);
+	mainboard_fill_pei_data(&rp.pei_data);
+	mainboard_fill_spd_data(&rp.pei_data);
 
 	post_code(0x32);
 

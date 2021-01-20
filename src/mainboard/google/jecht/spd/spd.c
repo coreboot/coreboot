@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/pei_data.h>
-#include <mainboard/google/jecht/spd/spd.h>
+#include <soc/romstage.h>
 
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)

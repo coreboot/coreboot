@@ -74,6 +74,8 @@ void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
 	size_t spd_file_len;
 	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
 
+	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
+
 	if (!spd_file)
 		die("SPD data not found.");
 

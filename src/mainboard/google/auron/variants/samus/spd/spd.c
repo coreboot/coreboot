@@ -20,27 +20,15 @@
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	int spd_bits[4] = {
+	const int gpio_vector[] = {
 		SPD_GPIO_BIT0,
 		SPD_GPIO_BIT1,
 		SPD_GPIO_BIT2,
-		SPD_GPIO_BIT3
+		SPD_GPIO_BIT3,
+		-1,
 	};
-	int spd_gpio[4];
-	int spd_index;
 
-	spd_gpio[0] = get_gpio(spd_bits[0]);
-	spd_gpio[1] = get_gpio(spd_bits[1]);
-	spd_gpio[2] = get_gpio(spd_bits[2]);
-	spd_gpio[3] = get_gpio(spd_bits[3]);
-
-	spd_index = (spd_gpio[3] << 3) | (spd_gpio[2] << 2) |
-		(spd_gpio[1] << 1) | spd_gpio[0];
-
-	printk(BIOS_DEBUG, "SPD: index %d (GPIO%d=%d GPIO%d=%d "
-	       "GPIO%d=%d GPIO%d=%d)\n", spd_index,
-	       spd_bits[3], spd_gpio[3], spd_bits[2], spd_gpio[2],
-	       spd_bits[1], spd_gpio[1], spd_bits[0], spd_gpio[0]);
+	const unsigned int spd_index = get_gpios(gpio_vector);
 
 	fill_spd_for_index(pei_data->spd_data[0][0], spd_index);
 

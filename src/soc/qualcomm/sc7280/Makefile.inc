@@ -37,6 +37,7 @@ ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-y += ../common/aop_load_reset.c
+ramstage-y += cpucp_load_reset.c
 
 ################################################################################
 
@@ -110,6 +111,14 @@ $(AOP_CBFS)-file := $(AOP_FILE)
 $(AOP_CBFS)-type := payload
 $(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_CBFS)
+
+################################################################################
+CPUCP_FILE := $(SC7280_BLOB)/cpucp/cpucp.elf
+CPUCP_CBFS := $(CONFIG_CBFS_PREFIX)/cpucp
+$(CPUCP_CBFS)-file := $(CPUCP_FILE)
+$(CPUCP_CBFS)-type := payload
+$(CPUCP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(CPUCP_CBFS)
 
 ################################################################################
 SHRM_FILE := $(SC7280_BLOB)/shrm/shrm.elf

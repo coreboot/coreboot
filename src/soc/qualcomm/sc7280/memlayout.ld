@@ -54,9 +54,10 @@ SECTIONS
 	/* Various hardware/software subsystems make use of this area */
 	REGION(dram_aop,  0x80800000, 0x080000, 0x1000)
 	REGION(dram_soc,  0x80900000, 0x200000, 0x1000)
-	BL31(0x80B00000, 1M)
+	REGION(dram_cpucp,0x80B00000, 0x100000, 0x1000)
 	REGION(dram_wlan, 0x80C00000, 0xC00000, 0x1000)
 	REGION(dram_wpss, 0x9AE00000, 0x1900000, 0x1000)
 	POSTRAM_CBFS_CACHE(0x9F800000, 16M)
 	RAMSTAGE(0xA0800000, 16M)
+	BL31(0xC0000000, 1M)
 }

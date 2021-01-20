@@ -5,6 +5,7 @@
 #include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
 #include <soc/aop_common.h>
+#include <soc/cpucp.h>
 
 static void soc_read_resources(struct device *dev)
 {
@@ -13,16 +14,19 @@ static void soc_read_resources(struct device *dev)
 	reserved_ram_resource(dev, 1, (uintptr_t)_dram_soc / KiB,
 				REGION_SIZE(dram_soc) / KiB);
 	reserved_ram_resource(dev, 2, (uintptr_t)_dram_wlan / KiB,
-                               REGION_SIZE(dram_wlan) / KiB);
+				REGION_SIZE(dram_wlan) / KiB);
 	reserved_ram_resource(dev, 3, (uintptr_t)_dram_wpss / KiB,
-                               REGION_SIZE(dram_wpss) / KiB);
+				REGION_SIZE(dram_wpss) / KiB);
 	reserved_ram_resource(dev, 4, (uintptr_t)_dram_aop / KiB,
 				REGION_SIZE(dram_aop) / KiB);
+	reserved_ram_resource(dev, 5, (uintptr_t)_dram_cpucp / KiB,
+				REGION_SIZE(dram_cpucp) / KiB);
 }
 
 static void soc_init(struct device *dev)
 {
 	aop_fw_load_reset();
+	cpucp_fw_load_reset();
 }
 
 static struct device_operations soc_ops = {

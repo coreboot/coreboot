@@ -41,6 +41,10 @@ config I945_LVDS
 config MMCONF_BASE_ADDRESS
 	default 0xf0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 64
+
 config OVERRIDE_CLOCK_DISABLE
 	bool
 	default n

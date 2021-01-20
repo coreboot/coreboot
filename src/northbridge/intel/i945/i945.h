@@ -353,8 +353,6 @@ void sdram_dump_mchbar_registers(void);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_tseg_size(const u8 esmramc);
 
-int decode_pcie_bar(u32 *const base, u32 *const len);
-
 /* Romstage mainboard callbacks */
 /* Optional: Override the default LPC config. */
 void mainboard_lpc_decode(void);

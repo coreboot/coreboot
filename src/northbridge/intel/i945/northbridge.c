@@ -12,38 +12,6 @@
 #include <cpu/intel/smm_reloc.h>
 #include "i945.h"
 
-int decode_pcie_bar(u32 *const base, u32 *const len)
-{
-	*base = 0;
-	*len = 0;
-
-	struct device *dev = pcidev_on_root(0, 0);
-	if (!dev)
-		return 0;
-
-	const u32 pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
-
-	if (!(pciexbar_reg & (1 << 0)))
-		return 0;
-
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: /* 256MB */
-		*base = pciexbar_reg & (0x0f << 28);
-		*len = 256 * MiB;
-		return 1;
-	case 1: /* 128M */
-		*base = pciexbar_reg & (0x1f << 27);
-		*len = 128 * MiB;
-		return 1;
-	case 2: /* 64M */
-		*base = pciexbar_reg & (0x3f << 26);
-		*len = 64 * MiB;
-		return 1;
-	}
-
-	return 0;
-}
-
 static void mch_domain_read_resources(struct device *dev)
 {
 	uint32_t pci_tolm, tseg_sizek, cbmem_topk, delta_cbmem;
@@ -153,9 +121,6 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(dev, SMRAM, smram);
 }
 
-	/* TODO We could determine how many PCIe busses we need in
-	 * the bar. For now that number is hardcoded to a max of 64.
-	 */
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
@@ -165,15 +130,9 @@ static struct device_operations pci_domain_ops = {
 
 static void mc_read_resources(struct device *dev)
 {
-	u32 pcie_config_base, pcie_config_len;
-
 	pci_dev_read_resources(dev);
 
-	if (decode_pcie_bar(&pcie_config_base, &pcie_config_len)) {
-		const int buses = pcie_config_len / MiB;
-		struct resource *resource = new_resource(dev, PCIEXBAR);
-		mmconf_resource_init(resource, pcie_config_base, buses);
-	}
+	mmconf_resource(dev, PCIEXBAR);
 }
 
 static struct device_operations mc_ops = {

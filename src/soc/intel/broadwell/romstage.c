@@ -2,6 +2,8 @@
 
 #include <acpi/acpi.h>
 #include <arch/romstage.h>
+#include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <elog.h>
@@ -67,9 +69,21 @@ void mainboard_romstage_entry(void)
 			      &power_state->hsio_checksum);
 
 	/* Initialize RAM */
-	raminit(&pei_data);
+	sdram_initialize(&pei_data);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
+
+	if (pei_data.boot_mode != ACPI_S3) {
+		cbmem_initialize_empty();
+	} else if (cbmem_initialize()) {
+		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+		/* Failed S3 resume, reset to come up cleanly */
+		system_reset();
+	}
+
+	save_mrc_data(&pei_data);
+
+	setup_sdram_meminfo(&pei_data);
 
 	romstage_handoff_init(power_state->prev_sleep_state == ACPI_S3);
 

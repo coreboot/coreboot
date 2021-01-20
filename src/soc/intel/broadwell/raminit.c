@@ -16,6 +16,17 @@
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 
+void save_mrc_data(struct pei_data *pei_data)
+{
+	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", pei_data->data_to_save,
+	       pei_data->data_to_save_size);
+
+	if (pei_data->data_to_save != NULL && pei_data->data_to_save_size > 0)
+		mrc_cache_stash_data(MRC_TRAINING_DATA, 0,
+					pei_data->data_to_save,
+					pei_data->data_to_save_size);
+}
+
 static const char *const ecc_decoder[] = {
 	"inactive",
 	"active on IO",
@@ -69,10 +80,9 @@ static void report_memory_config(void)
 /*
  * Find PEI executable in coreboot filesystem and execute it.
  */
-void raminit(struct pei_data *pei_data)
+void sdram_initialize(struct pei_data *pei_data)
 {
 	size_t mrc_size;
-	struct memory_info *mem_info;
 	pei_wrapper_entry_t entry;
 	int ret;
 
@@ -125,22 +135,11 @@ void raminit(struct pei_data *pei_data)
 		(version >>  8) & 0xff, (version >>  0) & 0xff);
 
 	report_memory_config();
+}
 
-	if (pei_data->boot_mode != ACPI_S3) {
-		cbmem_initialize_empty();
-	} else if (cbmem_initialize()) {
-		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
-		/* Failed S3 resume, reset to come up cleanly */
-		system_reset();
-	}
-
-	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", pei_data->data_to_save,
-	       pei_data->data_to_save_size);
-
-	if (pei_data->data_to_save != NULL && pei_data->data_to_save_size > 0)
-		mrc_cache_stash_data(MRC_TRAINING_DATA, 0,
-					pei_data->data_to_save,
-					pei_data->data_to_save_size);
+void setup_sdram_meminfo(struct pei_data *pei_data)
+{
+	struct memory_info *mem_info;
 
 	printk(BIOS_DEBUG, "create cbmem for dimm information\n");
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));

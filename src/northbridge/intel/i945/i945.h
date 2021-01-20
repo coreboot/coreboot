@@ -3,7 +3,7 @@
 #ifndef NORTHBRIDGE_INTEL_I945_H
 #define NORTHBRIDGE_INTEL_I945_H
 
-#include "memmap.h"
+#define DEFAULT_X60BAR		0xfed13000
 
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
@@ -90,9 +90,7 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x) (*((volatile u8 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#include <northbridge/intel/common/fixed_bars.h>
 
 /* Chipset Control Registers */
 #define FSBPMC3		0x40	/* 32bit */
@@ -274,10 +272,6 @@
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x) (*((volatile u8 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
-
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
 
@@ -304,10 +298,6 @@
 /*
  * DMIBAR
  */
-
-#define DMIBAR8(x) (*((volatile u8 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */

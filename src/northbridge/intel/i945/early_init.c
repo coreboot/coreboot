@@ -143,9 +143,9 @@ static void i945_setup_bars(void)
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(HOST_BRIDGE, EPBAR, DEFAULT_EPBAR | 1);
-	pci_write_config32(HOST_BRIDGE, MCHBAR, (uintptr_t)DEFAULT_MCHBAR | 1);
-	pci_write_config32(HOST_BRIDGE, DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
+	pci_write_config32(HOST_BRIDGE, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
+	pci_write_config32(HOST_BRIDGE, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
+	pci_write_config32(HOST_BRIDGE, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
 	pci_write_config32(HOST_BRIDGE, X60BAR, DEFAULT_X60BAR | 1);
 
 	/* vram size from CMOS option */
@@ -715,7 +715,7 @@ static void i945_setup_root_complex_topology(void)
 
 	EPBAR32(EPLE1D) |= (1 << 16) | (1 << 0);
 
-	EPBAR32(EPLE1A) = (uintptr_t)DEFAULT_DMIBAR;
+	EPBAR32(EPLE1A) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
 
 	EPBAR32(EPLE2D) |= (1 << 16) | (1 << 0);
 
@@ -734,11 +734,11 @@ static void i945_setup_root_complex_topology(void)
 
 	DMIBAR32(DMILE2D) |= (1 << 16) | (1 << 0);
 
-	DMIBAR32(DMILE2A) = DEFAULT_EPBAR;
+	DMIBAR32(DMILE2A) = CONFIG_FIXED_EPBAR_MMIO_BASE;
 
 	/* PCI Express x16 Port Root Topology */
 	if (pci_read_config8(HOST_BRIDGE, DEVEN) & DEVEN_D1F0) {
-		pci_write_config32(p2peg, LE1A, DEFAULT_EPBAR);
+		pci_write_config32(p2peg, LE1A, CONFIG_FIXED_EPBAR_MMIO_BASE);
 		pci_or_config32(p2peg, LE1D, 1 << 0);
 	}
 }
@@ -751,7 +751,7 @@ static void ich7_setup_root_complex_topology(void)
 
 	RCBA32(ULD) |= (1 << 24) | (1 << 16);
 
-	RCBA32(ULBA) = (uintptr_t)DEFAULT_DMIBAR;
+	RCBA32(ULBA) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
 	/* Write ESD.CID to TCID */
 	RCBA32(RP1D) |= (2 << 16);
 	RCBA32(RP2D) |= (2 << 16);

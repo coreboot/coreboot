@@ -80,4 +80,13 @@ config MAX_CPUS
 	int
 	default 4
 
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed14000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
 endif

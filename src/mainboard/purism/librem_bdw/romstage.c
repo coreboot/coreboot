@@ -9,7 +9,3 @@ void mainboard_pre_raminit(struct romstage_params *rp)
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(&rp->pei_data);
 }
-
-void mainboard_post_raminit(struct romstage_params *rp)
-{
-}

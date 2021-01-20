@@ -18,7 +18,7 @@ void mainboard_pre_raminit(struct romstage_params *rp)
 	mainboard_fill_spd_data(&rp->pei_data);
 }
 
-void mainboard_post_raminit(struct romstage_params *rp)
+void mainboard_post_raminit(const int s3resume)
 {
 	if (CONFIG(CHROMEOS))
 		init_bootmode_straps();

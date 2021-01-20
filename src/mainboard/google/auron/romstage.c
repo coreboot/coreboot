@@ -14,7 +14,3 @@ void mainboard_pre_raminit(struct romstage_params *rp)
 	mainboard_fill_spd_data(&rp->pei_data);
 
 }
-
-__weak void mainboard_post_raminit(struct romstage_params *rp)
-{
-}

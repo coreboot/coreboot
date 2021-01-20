@@ -14,6 +14,10 @@
 #include <stdint.h>
 #include <timestamp.h>
 
+__weak void mainboard_post_raminit(const int s3resume)
+{
+}
+
 /* Entry from cpu/intel/car/romstage.c. */
 void mainboard_romstage_entry(void)
 {
@@ -64,5 +68,5 @@ void mainboard_romstage_entry(void)
 
 	romstage_handoff_init(rp.power_state->prev_sleep_state == ACPI_S3);
 
-	mainboard_post_raminit(&rp);
+	mainboard_post_raminit(rp.power_state->prev_sleep_state == ACPI_S3);
 }

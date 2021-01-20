@@ -12,7 +12,7 @@ struct romstage_params {
 };
 
 void mainboard_pre_raminit(struct romstage_params *params);
-void mainboard_post_raminit(struct romstage_params *params);
+void mainboard_post_raminit(const int s3resume);
 
 void raminit(struct pei_data *pei_data);
 

@@ -19,7 +19,7 @@
 #define SPD_PART_OFF		128
 #define SPD_PART_LEN		18
 
-void mainboard_print_spd_info(uint8_t spd[])
+static void mainboard_print_spd_info(uint8_t spd[])
 {
 	const int spd_banks[8] = {  8, 16, 32, 64, -1, -1, -1, -1 };
 	const int spd_capmb[8] = {  1,  2,  4,  8, 16, 32, 64,  0 };
@@ -67,4 +67,29 @@ void mainboard_print_spd_info(uint8_t spd[])
 		printk(BIOS_INFO, "SPD: module size is %u MB (per channel)\n",
 		       capmb / 8 * busw / devw * ranks);
 	}
+}
+
+void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
+{
+	size_t spd_file_len;
+	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
+
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (spd_file_len < SPD_LEN)
+		die("Missing SPD data.");
+
+	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spd_index = 0;
+	}
+
+	memcpy(spd, spd_file + (spd_index * SPD_LEN), SPD_LEN);
+
+	/* Make sure a valid SPD was found */
+	if (spd[0] == 0)
+		die("Invalid SPD data.");
+
+	mainboard_print_spd_info(spd);
 }

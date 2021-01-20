@@ -13,7 +13,7 @@ void variant_romstage_entry(struct romstage_params *rp);
 void lan_init(void);
 
 void mainboard_fill_spd_data(struct pei_data *pei_data);
-void mainboard_print_spd_info(uint8_t spd[]);
+void fill_spd_for_index(uint8_t spd[], unsigned int index);
 
 #define SPD_LEN			256
 

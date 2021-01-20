@@ -28,8 +28,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	};
 	int spd_gpio[4];
 	int spd_index;
-	size_t spd_file_len;
-	char *spd_file;
 
 	spd_gpio[0] = get_gpio(SPD_GPIO_BIT0);
 	spd_gpio[1] = get_gpio(SPD_GPIO_BIT1);
@@ -46,32 +44,12 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 		spd_bits[1], spd_gpio[1],
 		spd_bits[0], spd_gpio[0]);
 
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	if (spd_file_len < SPD_LEN)
-		die("Missing SPD data.");
-
 	/* CH0 */
-	memcpy(pei_data->spd_data[0][0],
-		spd_file + (spd_index * SPD_LEN), SPD_LEN);
+	fill_spd_for_index(pei_data->spd_data[0][0], spd_index);
 
 	/* CH1 not used in 2GB configurations */
 	if (!((spd_index == 0b0000) || (spd_index == 0b0011) ||
 	    (spd_index == 0b1010))) {
-		memcpy(pei_data->spd_data[1][0],
-			spd_file + (spd_index * SPD_LEN), SPD_LEN);
+		memcpy(pei_data->spd_data[1][0], pei_data->spd_data[0][0], SPD_LEN);
 	}
-
-	/* Make sure a valid SPD was found */
-	if (pei_data->spd_data[0][0][0] == 0)
-		die("Invalid SPD data.");
-
-	mainboard_print_spd_info(pei_data->spd_data[0][0]);
 }

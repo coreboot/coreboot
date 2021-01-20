@@ -3,7 +3,10 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <arch/pci_io_cfg.h>
+#include <device/pci_ops.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
@@ -48,6 +51,55 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
 		ctl = L1_SS_L1_2;
 	return ctl - 1;
+}
+
+/* Function returns true if the platform is TGL-UP3 */
+static bool platform_is_up3(void)
+{
+	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	u32 cpu_id = cpu_get_cpuid();
+	uint16_t mchid = pci_read_config16(dev, PCI_DEVICE_ID);
+
+	if ((cpu_id != CPUID_TIGERLAKE_A0) && (cpu_id != CPUID_TIGERLAKE_B0))
+		return false;
+
+	return ((mchid == PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2) ||
+		(mchid == PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2));
+}
+
+static int get_disable_mask(struct soc_intel_tigerlake_config *config)
+{
+	int disable_mask;
+
+	/* Disable any sub-states requested by mainboard */
+	disable_mask = config->LpmStateDisableMask;
+
+	/* UP3 does not support S0i2.2/S0i3.3/S0i3.4 */
+	if (platform_is_up3())
+		disable_mask |= LPM_S0i3_3 | LPM_S0i3_4 | LPM_S0i2_2;
+
+	/* If external bypass is not used, S0i3 isn't recommended. */
+	if (config->external_bypass == false)
+		disable_mask |= LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4;
+
+	/* If external clock gating is not implemented, S0i3.4 isn't recommended. */
+	if (config->external_clk_gated == false)
+		disable_mask |= LPM_S0i3_4;
+
+	/*
+	 * If external phy gating is not implemented,
+	 * S0i3.3/S0i3.4/S0i2.2 are not recommended.
+	 */
+	if (config->external_phy_gated == false)
+		disable_mask |= LPM_S0i3_3 | LPM_S0i3_4 | LPM_S0i2_2;
+
+	/* If CNVi or ISH is used, S0i3.2/S0i3.3/S0i3.4 cannot be achieved. */
+	if (is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_CNVI_BT)) ||
+		is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI)) ||
+		is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_ISH)))
+		disable_mask |= LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4;
+
+	return disable_mask;
 }
 
 static void parse_devicetree(FSP_S_CONFIG *params)
@@ -234,7 +286,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * LPM0-s0i2.0, LPM1-s0i2.1, LPM2-s0i2.2, LPM3-s0i3.0,
 	 * LPM4-s0i3.1, LPM5-s0i3.2, LPM6-s0i3.3, LPM7-s0i3.4
 	 */
-	params->LpmStateEnableMask = LPM_S0iX_ALL & ~config->LpmStateDisableMask;
+	params->LpmStateEnableMask = LPM_S0iX_ALL & ~get_disable_mask(config);
 
 	/*
 	 * Power Optimizer for DMI and SATA.

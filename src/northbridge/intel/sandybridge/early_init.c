@@ -50,12 +50,12 @@ static void sandybridge_setup_bars(void)
 {
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(HOST_BRIDGE, EPBAR,  DEFAULT_EPBAR | 1);
-	pci_write_config32(HOST_BRIDGE, EPBAR  + 4, (0LL + DEFAULT_EPBAR) >> 32);
-	pci_write_config32(HOST_BRIDGE, MCHBAR, DEFAULT_MCHBAR | 1);
-	pci_write_config32(HOST_BRIDGE, MCHBAR + 4, (0LL + DEFAULT_MCHBAR) >> 32);
-	pci_write_config32(HOST_BRIDGE, DMIBAR, DEFAULT_DMIBAR | 1);
-	pci_write_config32(HOST_BRIDGE, DMIBAR + 4, (0LL + DEFAULT_DMIBAR) >> 32);
+	pci_write_config32(HOST_BRIDGE, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
+	pci_write_config32(HOST_BRIDGE, EPBAR  + 4, 0);
+	pci_write_config32(HOST_BRIDGE, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
+	pci_write_config32(HOST_BRIDGE, MCHBAR + 4, 0);
+	pci_write_config32(HOST_BRIDGE, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
+	pci_write_config32(HOST_BRIDGE, DMIBAR + 4, 0);
 
 	printk(BIOS_DEBUG, " done\n");
 }

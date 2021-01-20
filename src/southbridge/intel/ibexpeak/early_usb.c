@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/common/pmbase.h>
 

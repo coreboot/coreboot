@@ -227,9 +227,9 @@ struct mrc_var_data {
 
 static void northbridge_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->mchbar       = (uintptr_t)DEFAULT_MCHBAR;
-	pei_data->dmibar       = (uintptr_t)DEFAULT_DMIBAR;
-	pei_data->epbar        = DEFAULT_EPBAR;
+	pei_data->mchbar       = CONFIG_FIXED_MCHBAR_MMIO_BASE;
+	pei_data->dmibar       = CONFIG_FIXED_DMIBAR_MMIO_BASE;
+	pei_data->epbar        = CONFIG_FIXED_EPBAR_MMIO_BASE;
 	pei_data->pciexbar     = CONFIG_MMCONF_BASE_ADDRESS;
 	pei_data->hpet_address = CONFIG_HPET_ADDRESS;
 	pei_data->thermalbase  = 0xfed08000;

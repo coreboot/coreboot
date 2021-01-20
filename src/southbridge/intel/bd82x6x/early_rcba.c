@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include "pch.h"
 
 void southbridge_configure_default_intmap(void)

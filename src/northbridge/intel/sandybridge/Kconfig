@@ -154,4 +154,13 @@ endif # !USE_NATIVE_RAMINIT
 config INTEL_GMA_BCLV_OFFSET
 	default 0x48254
 
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed10000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
 endif

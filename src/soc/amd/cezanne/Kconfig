@@ -118,4 +118,73 @@ config CONSOLE_UART_BASE_ADDRESS
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1
 
+menu "PSP Configuration Options"
+
+config AMD_FWM_POSITION_INDEX
+	int "Firmware Directory Table location (0 to 5)"
+	range 0 5
+	default 0 if BOARD_ROMSIZE_KB_512
+	default 1 if BOARD_ROMSIZE_KB_1024
+	default 2 if BOARD_ROMSIZE_KB_2048
+	default 3 if BOARD_ROMSIZE_KB_4096
+	default 4 if BOARD_ROMSIZE_KB_8192
+	default 5 if BOARD_ROMSIZE_KB_16384
+	help
+	  Typically this is calculated by the ROM size, but there may
+	  be situations where you want to put the firmware directory
+	  table in a different location.
+	    0: 512 KB - 0xFFFA0000
+	    1: 1 MB   - 0xFFF20000
+	    2: 2 MB   - 0xFFE20000
+	    3: 4 MB   - 0xFFC20000
+	    4: 8 MB   - 0xFF820000
+	    5: 16 MB  - 0xFF020000
+
+comment "AMD Firmware Directory Table set to location for 512KB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 0
+comment "AMD Firmware Directory Table set to location for 1MB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 1
+comment "AMD Firmware Directory Table set to location for 2MB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 2
+comment "AMD Firmware Directory Table set to location for 4MB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 3
+comment "AMD Firmware Directory Table set to location for 8MB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 4
+comment "AMD Firmware Directory Table set to location for 16MB ROM"
+	depends on AMD_FWM_POSITION_INDEX = 5
+
+config AMDFW_CONFIG_FILE
+	string
+	default "src/soc/amd/cezanne/fw.cfg"
+
+config USE_PSPSECUREOS
+	bool
+	default y
+	help
+	  Include the PspSecureOs and PspTrustlet binaries in the PSP build.
+
+	  If unsure, answer 'y'
+
+config PSP_LOAD_MP2_FW
+	bool
+	default n
+	help
+	  Include the MP2 firmwares and configuration into the PSP build.
+
+	  If unsure, answer 'n'
+
+config PSP_LOAD_S0I3_FW
+	bool
+	default n
+	help
+	  Select this item to include the S0i3 file into the PSP build.
+
+config PSP_UNLOCK_SECURE_DEBUG
+	bool "Unlock secure debug"
+	default y
+	help
+	  Select this item to enable secure debug options in PSP.
+
+endmenu
+
 endif # SOC_AMD_CEZANNE

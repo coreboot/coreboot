@@ -9,6 +9,10 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += romstage.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-y += ec.c
+ramstage-y += mainboard.c
+
+smm-y += smihandler.c
 
 subdirs-y += spd
 

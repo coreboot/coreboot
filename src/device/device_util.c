@@ -862,24 +862,17 @@ void fixed_io_resource(struct device *dev, unsigned long index,
 		 IORESOURCE_RESERVE;
 }
 
-void mmconf_resource_init(struct resource *resource, resource_t base,
-	int buses)
+void mmconf_resource(struct device *dev, unsigned long index)
 {
-	resource->base = base;
-	resource->size = buses * MiB;
+	struct resource *resource = new_resource(dev, index);
+	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
+	resource->size = CONFIG_MMCONF_LENGTH;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR "
 			"0x%08lx-0x%08lx.\n", (unsigned long)(resource->base),
 			(unsigned long)(resource->base + resource->size));
-}
-
-void mmconf_resource(struct device *dev, unsigned long index)
-{
-	struct resource *resource = new_resource(dev, index);
-	mmconf_resource_init(resource, CONFIG_MMCONF_BASE_ADDRESS,
-		CONFIG_MMCONF_BUS_NUMBER);
 }
 
 void tolm_test(void *gp, struct device *dev, struct resource *new)

@@ -313,7 +313,6 @@ void fixed_io_resource(struct device *dev, unsigned long index,
 void fixed_mem_resource(struct device *dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
-void mmconf_resource_init(struct resource *res, resource_t base, int buses);
 void mmconf_resource(struct device *dev, unsigned long index);
 
 /* It is the caller's responsibility to adjust regions such that ram_resource()

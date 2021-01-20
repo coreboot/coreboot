@@ -1548,6 +1548,12 @@ static void override_devicetree(struct bus *base_parent,
  * |                    |                                            |
  * +-----------------------------------------------------------------+
  * |                    |                                            |
+ * | smbios_slot info   | Copy SMBIOS slot information from override.|
+ * |                    | This allows variants to override PCI(e)    |
+ * |                    | slot information in SMBIOS tables.         |
+ * |                    |                                            |
+ * +-----------------------------------------------------------------+
+ * |                    |                                            |
  * | chip_instance      | Each register of chip_instance is copied   |
  * |                    | over from override device to base device:  |
  * |                    | 1. If register with same key is present in |
@@ -1657,6 +1663,12 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	 * to allow an override to remove a probe from the base device.
 	 */
 	base_dev->probe = override_dev->probe;
+
+	/* Copy SMBIOS slot information from base device */
+	base_dev->smbios_slot_type = override_dev->smbios_slot_type;
+	base_dev->smbios_slot_length = override_dev->smbios_slot_length;
+	base_dev->smbios_slot_data_width = override_dev->smbios_slot_data_width;
+	base_dev->smbios_slot_designation = override_dev->smbios_slot_designation;
 
 	/*
 	 * Update base_chip_instance member in chip instance of override tree to forward it to

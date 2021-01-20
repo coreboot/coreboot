@@ -18,7 +18,7 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 							revision.rev.bld_num);
 	printk(BIOS_SPEW, "Type: %s/%s\n",
 			(hdr->component_attribute & 1) ? "release" : "debug",
-			(hdr->component_attribute & 2) ? "test" : "official");
+			(hdr->component_attribute & 2) ? "official" : "test");
 	printk(BIOS_SPEW, "image ID: %s, base 0x%lx + 0x%zx\n",
 		hdr->image_id, hdr->image_base, hdr->image_size);
 	printk(BIOS_SPEW, "\tConfig region        0x%zx + 0x%zx\n",

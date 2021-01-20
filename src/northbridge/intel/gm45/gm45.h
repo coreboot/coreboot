@@ -444,8 +444,6 @@ struct blc_pwm_t {
 int get_blc_values(const struct blc_pwm_t **entries);
 u16 get_blc_pwm_freq_value(const char *edid_ascii_string);
 
-int decode_pcie_bar(u32 *const base, u32 *const len);
-
 #include <device/device.h>
 
 struct acpi_rsdp;

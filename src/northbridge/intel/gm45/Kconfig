@@ -29,6 +29,10 @@ config VGA_BIOS_ID
 config MMCONF_BASE_ADDRESS
 	default 0xf0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 64
+
 config SMM_RESERVED_SIZE
 	hex
 	default 0x100000

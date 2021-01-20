@@ -14,43 +14,10 @@
 #include "chip.h"
 #include "gm45.h"
 
-int decode_pcie_bar(u32 *const base, u32 *const len)
-{
-	*base = 0;
-	*len = 0;
-
-	struct device *dev = pcidev_on_root(0, 0);
-	if (!dev)
-		return 0;
-
-	const u32 pciexbar_reg = pci_read_config32(dev, D0F0_PCIEXBAR_LO);
-
-	if (!(pciexbar_reg & (1 << 0)))
-		return 0;
-
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: /* 256MB */
-		*base = pciexbar_reg & (0x0f << 28);
-		*len = 256 * MiB;
-		return 1;
-	case 1: /* 128M */
-		*base = pciexbar_reg & (0x1f << 27);
-		*len = 128 * MiB;
-		return 1;
-	case 2: /* 64M */
-		*base = pciexbar_reg & (0x3f << 26);
-		*len = 64 * MiB;
-		return 1;
-	}
-
-	return 0;
-}
-
 static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, uma_sizek = 0, delta_cbmem;
-	u32 pcie_config_base, pcie_config_size;
 
 	/* Total Memory 2GB example:
 	 *
@@ -157,12 +124,7 @@ static void mch_domain_read_resources(struct device *dev)
 	/* Don't use uma_resource() as our UMA touches the PCI hole. */
 	fixed_mem_resource(dev, 8, tomk, uma_sizek, IORESOURCE_RESERVE);
 
-	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
-		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		fixed_mem_resource(dev, 9, pcie_config_base >> 10,
-			pcie_config_size >> 10, IORESOURCE_RESERVE);
-	}
+	mmconf_resource(dev, 9);
 }
 
 static void mch_domain_set_resources(struct device *dev)

@@ -3,8 +3,9 @@
 #ifndef NORTHBRIDGE_INTEL_PINEVIEW_H
 #define NORTHBRIDGE_INTEL_PINEVIEW_H
 
-#include <northbridge/intel/pineview/memmap.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+
+#define DEFAULT_PMIOBAR		0x00000400
 
 #define BOOT_PATH_NORMAL	0
 #define BOOT_PATH_RESET		1
@@ -32,9 +33,8 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
-#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#include <northbridge/intel/common/fixed_bars.h>
+
 #define MCHBAR8_AND(x,  and) (MCHBAR8(x)  = MCHBAR8(x)  & (and))
 #define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
 #define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
@@ -48,22 +48,6 @@
 /* As there are many registers, define them on a separate file */
 
 #include "mchbar_regs.h"
-
-/*
- * EPBAR - Egress Port Root Complex Register Block
- */
-
-#define EPBAR8(x)  (*((volatile u8  *)(DEFAULT_EPBAR + (x))))
-#define EPBAR16(x) (*((volatile u16 *)(DEFAULT_EPBAR + (x))))
-#define EPBAR32(x) (*((volatile u32 *)(DEFAULT_EPBAR + (x))))
-
-/*
- * DMIBAR
- */
-
-#define DMIBAR8(x)  (*((volatile u8  *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR16(x) (*((volatile u16 *)(DEFAULT_DMIBAR + (x))))
-#define DMIBAR32(x) (*((volatile u32 *)(DEFAULT_DMIBAR + (x))))
 
 void pineview_early_init(void);
 u32 decode_igd_memory_size(const u32 gms);

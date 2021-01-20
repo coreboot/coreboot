@@ -31,4 +31,13 @@ config SMM_RESERVED_SIZE
 	hex
 	default 0x80000
 
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed14000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
 endif

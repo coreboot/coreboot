@@ -172,7 +172,6 @@ void mb_pre_raminit_setup(int s3_resume);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
 u32 decode_tseg_size(const u32 esmramc);
-int decode_pcie_bar(u32 *const base, u32 *const len);
 
 #include <device/device.h>
 struct acpi_rsdp;

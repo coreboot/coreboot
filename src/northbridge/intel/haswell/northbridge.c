@@ -18,46 +18,6 @@
 #include "chip.h"
 #include "haswell.h"
 
-static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
-{
-	u32 pciexbar_reg, mask;
-
-	*base = 0;
-	*len = 0;
-
-	pciexbar_reg = pci_read_config32(dev, index);
-
-	if (!(pciexbar_reg & (1 << 0)))
-		return 0;
-
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: /* 256MB */
-		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
-		*base = pciexbar_reg & mask;
-		*len = 256 * 1024 * 1024;
-		return 1;
-	case 1: /* 128M */
-		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
-		mask |= (1 << 27);
-		*base = pciexbar_reg & mask;
-		*len = 128 * 1024 * 1024;
-		return 1;
-	case 2: /* 64M */
-		mask = (1 << 31) | (1 << 30) | (1 << 29) | (1 << 28);
-		mask |= (1 << 27) | (1 << 26);
-		*base = pciexbar_reg & mask;
-		*len = 64 * 1024 * 1024;
-		return 1;
-	}
-
-	return 0;
-}
-
-int decode_pcie_bar(u32 *const base, u32 *const len)
-{
-	return get_pcie_bar(pcidev_on_root(0, 0), PCIEXBAR, base, len);
-}
-
 static const char *northbridge_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -127,7 +87,6 @@ struct fixed_mmio_descriptor {
 
 #define SIZE_KB(x) ((x) * 1024)
 struct fixed_mmio_descriptor mc_fixed_resources[] = {
-	{ PCIEXBAR, SIZE_KB(0),  get_pcie_bar,      "PCIEXBAR" },
 	{ MCHBAR,   SIZE_KB(32), get_bar,           "MCHBAR"   },
 	{ DMIBAR,   SIZE_KB(4),  get_bar,           "DMIBAR"   },
 	{ EPBAR,    SIZE_KB(4),  get_bar,           "EPBAR"    },
@@ -162,6 +121,8 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 		       __func__, mc_fixed_resources[i].description, index,
 		       (unsigned long)base, (unsigned long)(base + size - 1));
 	}
+
+	mmconf_resource(dev, PCIEXBAR);
 }
 
 /*

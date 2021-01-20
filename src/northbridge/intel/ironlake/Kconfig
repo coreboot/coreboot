@@ -18,9 +18,6 @@ config VBOOT
 	# CPU is reset without platform/TPM during romstage
 	select TPM_STARTUP_IGNORE_POSTINIT
 
-config MMCONF_BUS_NUMBER
-	default 256
-
 config CBFS_SIZE
 	hex
 	default 0x100000
@@ -46,6 +43,9 @@ config DCACHE_BSP_STACK_SIZE
 
 config MMCONF_BASE_ADDRESS
 	default 0xe0000000
+
+config MMCONF_BUS_NUMBER
+	default 256
 
 config INTEL_GMA_BCLV_OFFSET
 	default 0x48254

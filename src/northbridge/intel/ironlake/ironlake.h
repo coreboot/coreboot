@@ -21,7 +21,7 @@
 
 #include "memmap.h"
 
-#define QUICKPATH_BUS 0xff
+#define QUICKPATH_BUS (CONFIG_MMCONF_BUS_NUMBER - 1)
 
 #include <southbridge/intel/ibexpeak/pch.h>
 

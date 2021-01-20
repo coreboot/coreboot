@@ -15,7 +15,7 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR,   0x00008000)
 		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR,   0x00001000)
 		Memory32Fixed(ReadWrite, DEFAULT_EPBAR,    0x00001000)
-		Memory32Fixed(ReadWrite, CONFIG_MMCONF_BASE_ADDRESS, 0x04000000)
+		Memory32Fixed(ReadWrite, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH)
 		Memory32Fixed(ReadWrite, 0xfed20000, 0x00020000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH

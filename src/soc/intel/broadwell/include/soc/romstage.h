@@ -5,12 +5,6 @@
 
 #include <soc/pei_data.h>
 
-struct chipset_power_state;
-struct romstage_params {
-	struct chipset_power_state *power_state;
-	struct pei_data pei_data;
-};
-
 void mainboard_fill_spd_data(struct pei_data *pei_data);
 void mainboard_post_raminit(const int s3resume);
 

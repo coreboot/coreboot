@@ -26,7 +26,7 @@ __weak void mainboard_post_raminit(const int s3resume)
 /* Entry from cpu/intel/car/romstage.c. */
 void mainboard_romstage_entry(void)
 {
-	struct romstage_params rp = { 0 };
+	struct pei_data pei_data = { 0 };
 
 	post_code(0x30);
 
@@ -37,9 +37,9 @@ void mainboard_romstage_entry(void)
 	pch_early_init();
 
 	/* Get power state */
-	rp.power_state = fill_power_state();
+	struct chipset_power_state *const power_state = fill_power_state();
 
-	elog_boot_notify(rp.power_state->prev_sleep_state == ACPI_S3);
+	elog_boot_notify(power_state->prev_sleep_state == ACPI_S3);
 
 	/* Print useful platform information */
 	report_platform_info();
@@ -50,28 +50,28 @@ void mainboard_romstage_entry(void)
 	/* Initialize GPIOs */
 	init_gpios(mainboard_gpio_config);
 
-	mainboard_fill_pei_data(&rp.pei_data);
-	mainboard_fill_spd_data(&rp.pei_data);
+	mainboard_fill_pei_data(&pei_data);
+	mainboard_fill_spd_data(&pei_data);
 
 	post_code(0x32);
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	rp.pei_data.boot_mode = rp.power_state->prev_sleep_state;
+	pei_data.boot_mode = power_state->prev_sleep_state;
 
 	/* Print ME state before MRC */
 	intel_me_status();
 
 	/* Save ME HSIO version */
-	intel_me_hsio_version(&rp.power_state->hsio_version,
-			      &rp.power_state->hsio_checksum);
+	intel_me_hsio_version(&power_state->hsio_version,
+			      &power_state->hsio_checksum);
 
 	/* Initialize RAM */
-	raminit(&rp.pei_data);
+	raminit(&pei_data);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
-	romstage_handoff_init(rp.power_state->prev_sleep_state == ACPI_S3);
+	romstage_handoff_init(power_state->prev_sleep_state == ACPI_S3);
 
-	mainboard_post_raminit(rp.power_state->prev_sleep_state == ACPI_S3);
+	mainboard_post_raminit(power_state->prev_sleep_state == ACPI_S3);
 }

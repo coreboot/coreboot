@@ -21,7 +21,7 @@ int variant_smbios_data(struct device *dev, int *handle, unsigned long *current)
 	return 0;
 }
 
-void variant_romstage_entry(struct romstage_params *rp)
+void mainboard_post_raminit(struct romstage_params *rp)
 {
 	if (rp->power_state->prev_sleep_state != ACPI_S3)
 		google_chromeec_kbbacklight(100);

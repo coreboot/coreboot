@@ -7,10 +7,6 @@
 #include <soc/romstage.h>
 #include "variant.h"
 
-__weak void variant_romstage_entry(struct romstage_params *rp)
-{
-}
-
 void mainboard_pre_raminit(struct romstage_params *rp)
 {
 	/* Fill out PEI DATA */
@@ -19,8 +15,6 @@ void mainboard_pre_raminit(struct romstage_params *rp)
 
 }
 
-void mainboard_post_raminit(struct romstage_params *rp)
+__weak void mainboard_post_raminit(struct romstage_params *rp)
 {
-	/* Do variant-specific init */
-	variant_romstage_entry(rp);
 }

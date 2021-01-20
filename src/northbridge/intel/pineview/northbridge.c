@@ -42,7 +42,7 @@ static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, tseg_sizek;
-	u32 pcie_config_base, pcie_config_size, cbmem_topk, delta_cbmem;
+	u32 cbmem_topk, delta_cbmem;
 	u16 index;
 	const u32 top32memk = 4 * (GiB / KiB);
 
@@ -115,13 +115,7 @@ static void mch_domain_read_resources(struct device *dev)
 			(touud - top32memk) / KiB);
 	}
 
-	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
-		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x size=0x%x\n",
-			pcie_config_base, pcie_config_size);
-
-		fixed_mem_resource(dev, index++, pcie_config_base / KiB,
-			pcie_config_size / KiB, IORESOURCE_RESERVE);
-	}
+	mmconf_resource(dev, index++);
 
 	add_fixed_resources(dev, index);
 }

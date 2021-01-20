@@ -15,43 +15,6 @@
 #include <cpu/intel/smm_reloc.h>
 #include <stdint.h>
 
-int decode_pcie_bar(u32 *const base, u32 *const len)
-{
-	*base = 0;
-	*len = 0;
-
-	const struct {
-		u16 num_buses;
-		u32 addr_mask;
-	} busmask[] = {
-		{256, 0xf0000000},
-		{128, 0xf8000000},
-		{64,  0xfc000000},
-		{0,   0},
-	};
-
-	const u32 pciexbar_reg = pci_read_config32(HOST_BRIDGE, PCIEXBAR);
-
-	/* MMCFG not supported or not enabled */
-	if (!(pciexbar_reg & (1 << 0))) {
-		printk(BIOS_WARNING, "WARNING: MMCONF not set\n");
-		return 0;
-	}
-
-	const u32 index = (pciexbar_reg >> 1) & 3;
-	const u32 pciexbar = pciexbar_reg & busmask[index].addr_mask;
-	const int max_buses = busmask[index].num_buses;
-
-	if (!pciexbar) {
-		printk(BIOS_WARNING, "WARNING: pciexbar invalid\n");
-		return 0;
-	}
-
-	*base = pciexbar;
-	*len = max_buses * MiB;
-	return 1;
-}
-
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)
 {

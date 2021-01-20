@@ -103,8 +103,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
 		.ec_present = 0, /* Asus 2203 BIOS shows XUECA016, but no EC */
 		.gbe_enable = 0, /* Board uses no Intel GbE but a RTL8111F */
-		.dimm_channel0_disabled = 0, /* Both DIMM enabled */
-		.dimm_channel1_disabled = 0, /* Both DIMM enabled */
 		.max_ddr3_freq = 1600, /* 1333=Sandy; 1600=Ivy */
 		.usb_port_config = {
 			/* {enabled, oc_pin, cable len 0x0080=<8inches/20cm} */

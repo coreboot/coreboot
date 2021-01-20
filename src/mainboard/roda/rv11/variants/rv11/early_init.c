@@ -29,12 +29,6 @@ void mainboard_fill_pei_data(struct pei_data *const pei_data)
 		.ec_present = 1,
 		.gbe_enable = 1,
 		.ddr3lv_support = 0,
-		// 0 = leave channel enabled
-		// 1 = disable dimm 0 on channel
-		// 2 = disable dimm 1 on channel
-		// 3 = disable dimm 0+1 on channel
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
 		.max_ddr3_freq = 1600,
 		.usb_port_config = {
 			/* Enabled / OC PIN / Length */

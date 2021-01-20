@@ -17,12 +17,12 @@ static void ironlake_setup_bars(void)
 {
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR + 4, 0);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, 0);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
-	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, 0);
+	pci_write_config32(PCI_DEV(0, 0, 0), EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
+	pci_write_config32(PCI_DEV(0, 0, 0), EPBAR  + 4, 0);
+	pci_write_config32(PCI_DEV(0, 0, 0), MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
+	pci_write_config32(PCI_DEV(0, 0, 0), MCHBAR + 4, 0);
+	pci_write_config32(PCI_DEV(0, 0, 0), DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
+	pci_write_config32(PCI_DEV(0, 0, 0), DMIBAR + 4, 0);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(QPI_SAD, QPD0F1_PAM(0), 0x30);

@@ -55,9 +55,7 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	printk(BIOS_INFO, "SPD: module part is %s\n", spd_name);
 
 	printk(BIOS_INFO, "SPD: banks %d, ranks %d, rows %d, columns %d, "
-	       , banks, ranks, rows, cols);
-	printk(BIOS_INFO, "density %d Mb\n", capmb);
-
+	       "density %d Mb\n", banks, ranks, rows, cols, capmb);
 	printk(BIOS_INFO, "SPD: device width %d bits, bus width %d bits\n",
 	       devw, busw);
 

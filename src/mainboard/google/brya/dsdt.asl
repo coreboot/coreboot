@@ -33,9 +33,6 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	/* Chrome OS specific */
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{

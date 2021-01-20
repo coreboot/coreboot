@@ -39,9 +39,6 @@ DefinitionBlock(
 	#include <variant/acpi/camera.asl>
 #endif
 
-	/* Chrome OS specific */
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	/* Chrome OS Embedded Controller */

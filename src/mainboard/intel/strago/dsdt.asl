@@ -40,8 +40,6 @@ DefinitionBlock(
 			#include <soc/intel/common/acpi/wifi.asl>
 		}
 	}
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	#include "acpi/mainboard.asl"

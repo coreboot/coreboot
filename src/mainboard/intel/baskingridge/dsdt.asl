@@ -32,7 +32,5 @@ DefinitionBlock(
 		}
 	}
 
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

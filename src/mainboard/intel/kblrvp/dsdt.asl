@@ -36,10 +36,5 @@ DefinitionBlock(
 	#include "acpi/ipu_mainboard.asl"
 	#include "acpi/mipi_camera.asl"
 
-#if CONFIG(CHROMEOS)
-	// Chrome OS specific
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-#endif
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

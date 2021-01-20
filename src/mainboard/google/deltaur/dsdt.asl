@@ -30,9 +30,6 @@ DefinitionBlock(
 		}
 	}
 
-	/* Chrome OS specific */
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-
 	/* VPD support */
 	#include <vendorcode/google/chromeos/acpi/vpd.asl>
 

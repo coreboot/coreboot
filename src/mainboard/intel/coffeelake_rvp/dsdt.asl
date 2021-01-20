@@ -24,11 +24,6 @@ DefinitionBlock(
 		}
 	}
 
-#if CONFIG(CHROMEOS)
-	// Chrome OS specific
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-#endif
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 }

@@ -31,11 +31,6 @@ DefinitionBlock(
 	/* Camera */
 	#include <acpi/mipi_camera.asl>
 
-#if CONFIG(CHROMEOS)
-	/* Chrome OS specific */
-	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
-#endif
-
 #if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)

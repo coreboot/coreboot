@@ -18,4 +18,6 @@
 #define BIT(x)				(1ul << (x))
 #endif
 
+#define BITS_PER_BYTE			8
+
 #endif /* __TYPES_H */

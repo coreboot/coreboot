@@ -303,6 +303,6 @@ endif
 
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)
 
-cpu_microcode_bins += $(wildcard 3rdparty/amd_blobs/picasso/PSP/UcodePatch_*.bin)
+cpu_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/UcodePatch_*.bin)
 
 endif # ($(CONFIG_SOC_AMD_PICASSO),y)

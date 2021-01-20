@@ -9,7 +9,13 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <mainboard/google/auron/ec.h>
-#include <variant/spd.h>
+#include <mainboard/google/auron/variant.h>
+
+/* Samus board memory configuration GPIOs */
+#define SPD_GPIO_BIT0		69
+#define SPD_GPIO_BIT1		68
+#define SPD_GPIO_BIT2		67
+#define SPD_GPIO_BIT3		65
 
 static void mainboard_print_spd_info(uint8_t spd[])
 {

@@ -5,7 +5,6 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
-#include <variant/spd.h>
 #include "variant.h"
 
 __weak void variant_romstage_entry(struct romstage_params *rp)

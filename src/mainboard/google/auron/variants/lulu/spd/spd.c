@@ -9,7 +9,13 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <mainboard/google/auron/ec.h>
-#include <variant/spd.h>
+#include <mainboard/google/auron/variant.h>
+
+/* Lulu board memory configuration GPIOs */
+#define SPD_GPIO_BIT0		13
+#define SPD_GPIO_BIT1		9
+#define SPD_GPIO_BIT2		47
+#define SPD_GPIO_BIT3		8
 
 static void mainboard_print_spd_info(uint8_t spd[])
 {

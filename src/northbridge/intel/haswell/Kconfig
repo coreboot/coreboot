@@ -108,4 +108,13 @@ config ENABLE_DDR_2X_REFRESH
 	  This probably only happens when the DRAM gets hot, but what MRC exactly
 	  does when this setting is enabled has not been investigated.
 
+config FIXED_MCHBAR_MMIO_BASE
+	default 0xfed10000
+
+config FIXED_DMIBAR_MMIO_BASE
+	default 0xfed18000
+
+config FIXED_EPBAR_MMIO_BASE
+	default 0xfed19000
+
 endif

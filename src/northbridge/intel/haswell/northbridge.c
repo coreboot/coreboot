@@ -477,7 +477,7 @@ static void northbridge_topology_init(void)
 	reg32 &= ~(0xff << 16);
 	reg32 |= 1 | (1 << 16);
 	EPBAR32(EPLE1D) = reg32;
-	EPBAR64(EPLE1A) = (uintptr_t)DEFAULT_DMIBAR;
+	EPBAR64(EPLE1A) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
 
 	for (unsigned int i = 0; i <= 2; i++) {
 		const struct device *const dev = pcidev_on_root(1, i);
@@ -493,7 +493,7 @@ static void northbridge_topology_init(void)
 		EPBAR32(eple_d[i]) = reg32;
 
 		pci_update_config32(dev, PEG_ESD, ~(0xff << 16), (1 << 16));
-		pci_write_config32(dev, PEG_LE1A, (uintptr_t)DEFAULT_EPBAR);
+		pci_write_config32(dev, PEG_LE1A, CONFIG_FIXED_EPBAR_MMIO_BASE);
 		pci_write_config32(dev, PEG_LE1A + 4, 0);
 		pci_update_config32(dev, PEG_LE1D, ~(0xff << 16), (1 << 16) | 1);
 
@@ -513,7 +513,7 @@ static void northbridge_topology_init(void)
 	DMIBAR32(DMILE1D) = reg32;
 	DMIBAR64(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
 
-	DMIBAR64(DMILE2A) = (uintptr_t)DEFAULT_EPBAR;
+	DMIBAR64(DMILE2A) = CONFIG_FIXED_EPBAR_MMIO_BASE;
 	reg32 = DMIBAR32(DMILE2D);
 	reg32 &= ~(0xff << 16);
 	reg32 |= 1 | (1 << 16);

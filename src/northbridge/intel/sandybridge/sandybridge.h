@@ -91,8 +91,6 @@ void perform_raminit(int s3resume);
 void report_memory_config(void);
 enum platform_type get_platform_type(void);
 
-int decode_pcie_bar(u32 *const base, u32 *const len);
-
 #include <device/device.h>
 
 struct acpi_rsdp;

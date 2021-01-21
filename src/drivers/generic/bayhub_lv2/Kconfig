@@ -1,0 +1,2 @@
+config DRIVERS_GENERIC_BAYHUB_LV2
+	bool

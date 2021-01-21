@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <string.h>
@@ -12,15 +13,10 @@
 #include <soc/intel/broadwell/chip.h>
 
 /* Save bit index for PM1_STS and GPE_STS for ACPI _SWS */
-static void save_acpi_wake_source(void)
+static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)
 {
-	struct chipset_power_state *ps = acpi_get_pm_state();
-	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
 	int gpe_reg;
-
-	if (!ps || !gnvs)
-		return;
 
 	pm1 = ps->pm1_sts & ps->pm1_en;
 
@@ -63,10 +59,22 @@ static void save_acpi_wake_source(void)
 	       gnvs->pm1i, gnvs->gpei);
 }
 
+static void acpi_save_wake_source(void *unused)
+{
+	const struct chipset_power_state *ps;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
+
+	if (acpi_pm_state_for_wake(&ps) < 0)
+		return;
+
+	pm_fill_gnvs(gnvs, ps);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);
+
 void broadwell_init_pre_device(void *chip_info)
 {
-	if (acpi_is_wakeup_s3())
-		save_acpi_wake_source();
-
 	broadwell_run_reference_code();
 }

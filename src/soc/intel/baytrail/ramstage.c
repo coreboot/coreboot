@@ -4,6 +4,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>
@@ -117,15 +118,9 @@ static void fill_in_pattrs(void)
 }
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
-static void save_acpi_wake_source(void)
+static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)
 {
-	struct chipset_power_state *ps = acpi_get_pm_state();
-	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
-
-	if (!ps || !gnvs)
-		return;
-
 	pm1 = ps->pm1_sts & ps->pm1_en;
 
 	/* Scan for first set bit in PM1 */
@@ -142,6 +137,21 @@ static void save_acpi_wake_source(void)
 	printk(BIOS_DEBUG, "ACPI System Wake Source is PM1 Index %d\n",
 	       gnvs->pm1i);
 }
+
+static void acpi_save_wake_source(void *unused)
+{
+	const struct chipset_power_state *ps;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
+
+	if (acpi_pm_state_for_wake(&ps) < 0)
+		return;
+
+	pm_fill_gnvs(gnvs, ps);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);
 
 static void baytrail_enable_2x_refresh_rate(void)
 {
@@ -163,10 +173,6 @@ void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)
 
 	/* Allow for SSE instructions to be executed. */
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
-
-	/* Indicate S3 resume to rest of ramstage. */
-	if (acpi_is_wakeup_s3())
-		save_acpi_wake_source();
 
 	/* Run reference code. */
 	baytrail_run_reference_code();

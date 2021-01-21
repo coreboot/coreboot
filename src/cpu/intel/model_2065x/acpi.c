@@ -28,80 +28,9 @@ static int get_cores_per_package(void)
 	return cores;
 }
 
-static void generate_cstate_entries(acpi_cstate_t *cstates,
-				   int c1, int c2, int c3)
-{
-	int cstate_count = 0;
-
-	/* Count number of active C-states */
-	if (c1 > 0)
-		++cstate_count;
-	if (c2 > 0)
-		++cstate_count;
-	if (c3 > 0)
-		++cstate_count;
-	if (!cstate_count)
-		return;
-
-	acpigen_write_package(cstate_count + 1);
-	acpigen_write_byte(cstate_count);
-
-	/* Add an entry if the level is enabled */
-	if (c1 > 0) {
-		cstates[c1].ctype = 1;
-		acpigen_write_CST_package_entry(&cstates[c1]);
-	}
-	if (c2 > 0) {
-		cstates[c2].ctype = 2;
-		acpigen_write_CST_package_entry(&cstates[c2]);
-	}
-	if (c3 > 0) {
-		cstates[c3].ctype = 3;
-		acpigen_write_CST_package_entry(&cstates[c3]);
-	}
-
-	acpigen_pop_len();
-}
-
 static void generate_C_state_entries(void)
 {
-	struct cpu_info *info;
-	struct cpu_driver *cpu;
-	struct device *lapic;
-	struct cpu_intel_model_2065x_config *conf = NULL;
-
-	/* Find the SpeedStep CPU in the device tree using magic APIC ID */
-	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	if (!lapic)
-		return;
-	conf = lapic->chip_info;
-	if (!conf)
-		return;
-
-	/* Find CPU map of supported C-states */
-	info = cpu_info();
-	if (!info)
-		return;
-	cpu = find_cpu_driver(info->cpu);
-	if (!cpu || !cpu->cstates)
-		return;
-
-	acpigen_write_method("_CST", 0);
-
-	/* If running on AC power */
-	acpigen_emit_byte(0xa0);		/* IfOp */
-	acpigen_write_len_f();		/* PkgLength */
-	acpigen_emit_namestring("PWRS");
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->c1_acpower,
-				conf->c2_acpower, conf->c3_acpower);
-	acpigen_pop_len();
-
-	/* Else on battery power */
-	acpigen_emit_byte(0xa4);	/* ReturnOp */
-	generate_cstate_entries(cpu->cstates, conf->c1_battery,
-				conf->c2_battery, conf->c3_battery);
-	acpigen_pop_len();
+	/* TODO */
 }
 
 static acpi_tstate_t tss_table_fine[] = {

@@ -22,6 +22,7 @@ Device(LPCB) {
 	Device(LDRC)	// LPC device: Resource consumption
 	{
 		Name (_HID, EISAID("PNP0C02"))  // ID for Motherboard resources
+		Name (_UID, 0x3278)
 		Name (CRS, ResourceTemplate ()  // Current Motherboard resources
 		{
 			Memory32Fixed(ReadWrite,	// Setup for fixed resource location for SPI base address
@@ -68,6 +69,7 @@ Device(LPCB) {
 
 	Device(SPKR) {	/* Speaker */
 		Name(_HID,EISAID(IO61_HID))
+		Name (_UID, 0x7239)
 		Name(_CRS, ResourceTemplate() {
 			IO(Decode16, 0x0061, 0x0061, 0, 1)
 		})

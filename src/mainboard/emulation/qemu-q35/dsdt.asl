@@ -15,6 +15,7 @@ DefinitionBlock (
 	0x2                 // OEM Revision
 	)
 {
+	#include <acpi/dsdt_top.asl>
 
 #include "../qemu-i440fx/acpi/dbug.asl"
 

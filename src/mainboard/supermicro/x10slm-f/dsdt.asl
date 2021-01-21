@@ -11,6 +11,7 @@ DefinitionBlock(
 	0x20181220
 	)
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>

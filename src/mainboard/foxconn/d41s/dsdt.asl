@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
 

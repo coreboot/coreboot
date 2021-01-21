@@ -10,6 +10,7 @@ DefinitionBlock(
 	ACPI_TABLE_CREATOR,
 	0x20111103	// OEM revision
 ) {
+	#include <acpi/dsdt_top.asl>
 
 Scope(\_SB)
 {

@@ -11,6 +11,7 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
+	#include <acpi/dsdt_top.asl>
 
 	/* global NVS and variables */
 	#include <globalnvs.asl>

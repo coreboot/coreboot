@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x20141018	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 	#include "acpi/superio.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>

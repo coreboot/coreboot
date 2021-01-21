@@ -12,6 +12,7 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	/* Some generic macros */
 	#include <soc/intel/common/acpi/platform.asl>
 

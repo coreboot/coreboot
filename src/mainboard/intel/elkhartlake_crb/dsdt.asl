@@ -11,6 +11,7 @@ DefinitionBlock(
 	0x20110725	/* OEM revision */
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/common/block/acpi/acpi/platform.asl>
 
 	/* global NVS and variables */

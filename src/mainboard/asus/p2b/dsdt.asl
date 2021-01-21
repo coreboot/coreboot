@@ -19,6 +19,7 @@ DefinitionBlock (
 	1
 	)
 {
+	#include <acpi/dsdt_top.asl>
 	/* \_SB scope defining the main processor is generated in SSDT. */
 
 	OperationRegion(X80, SystemIO, 0x80, 1)

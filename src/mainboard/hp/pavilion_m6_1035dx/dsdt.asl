@@ -13,6 +13,7 @@ DefinitionBlock (
 	0x00010001		/* OEM Revision */
 	)
 {	/* Start of ASL file */
+	#include <acpi/dsdt_top.asl>
 
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"

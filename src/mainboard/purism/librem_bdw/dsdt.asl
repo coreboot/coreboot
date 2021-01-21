@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x20160115	/* OEM revision */
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/broadwell/acpi/platform.asl>
 
 	/* Global NVS and variables */

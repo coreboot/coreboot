@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x20181031	/* OEM Revision */
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>

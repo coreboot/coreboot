@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	// global NVS and variables
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>

@@ -10,6 +10,7 @@ DefinitionBlock(
 	0x00010001	/* OEM revision */
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "onboard.h"
 
 	#include <acpi/platform.asl>

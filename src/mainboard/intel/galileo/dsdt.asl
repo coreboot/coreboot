@@ -10,4 +10,5 @@ DefinitionBlock(
 	0x20160220	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 }

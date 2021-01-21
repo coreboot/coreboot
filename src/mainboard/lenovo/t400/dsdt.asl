@@ -15,6 +15,7 @@ DefinitionBlock(
 	0x20090419	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 
 	// global NVS and variables

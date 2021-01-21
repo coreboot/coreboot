@@ -12,6 +12,7 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 
 	Name(_S0, Package() { 0x00, 0x00, 0x00, 0x00 })

@@ -11,6 +11,7 @@ DefinitionBlock (
 	0x1                 // OEM Revision
 	)
 {
+	#include <acpi/dsdt_top.asl>
 
 #include "acpi/dbug.asl"
 

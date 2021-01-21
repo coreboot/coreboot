@@ -46,6 +46,8 @@ chip soc/intel/xeon_sp/cpx
 		.PortLinkSpeed = PcieAuto,
 	}"
 
+	register "cstate_states" = "CSTATES_C1C6"
+
 	device cpu_cluster 0 on
 	  device lapic 0 on end
 	end

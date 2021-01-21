@@ -23,6 +23,16 @@ uint32_t soc_read_sci_irq_select(void);
 /* Write the scis from soc specific register. */
 void soc_write_sci_irq_select(uint32_t scis);
 
+/* _CST MWAIT resource used by cstate_map. */
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
 /*
  * get_cstate_map returns a table of processor specific acpi_cstate_t entries
  * and number of entries in the table

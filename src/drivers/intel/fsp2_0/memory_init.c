@@ -36,7 +36,7 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 
 	mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
 	if (!mrc_data) {
-		printk(BIOS_ERR, "Couldn't find memory training data HOB.\n");
+		printk(BIOS_ERR, "ERROR: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
 		return;
 	}
 
@@ -48,7 +48,7 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 	 */
 	if (mrc_cache_stash_data(MRC_TRAINING_DATA, fsp_version, mrc_data,
 				mrc_data_size) < 0)
-		printk(BIOS_ERR, "Failed to stash MRC data\n");
+		printk(BIOS_ERR, "ERROR: Failed to stash MRC data\n");
 }
 
 static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
@@ -64,8 +64,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 				range_entry_size(&fsp_mem))) {
 		if (CONFIG(HAVE_ACPI_RESUME)) {
-			printk(BIOS_ERR,
-				"Failed to recover CBMEM in S3 resume.\n");
+			printk(BIOS_ERR, "ERROR: Failed to recover CBMEM in S3 resume.\n");
 			/* Failed S3 resume, reset to come up cleanly */
 			/* FIXME: A "system" reset is likely enough: */
 			full_reset();

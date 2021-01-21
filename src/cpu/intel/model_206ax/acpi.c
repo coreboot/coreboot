@@ -13,6 +13,82 @@
 #include "model_206ax.h"
 #include "chip.h"
 
+/*
+ * List of supported C-states in this processor
+ *
+ * Latencies are typical worst-case package exit time in uS
+ * taken from the SandyBridge BIOS specification.
+ */
+static const acpi_cstate_t cstate_map[] = {
+	{	/* 0: C0 */
+	}, {	/* 1: C1 */
+		.latency = 1,
+		.power = 1000,
+		.resource = {
+			.addrl = 0x00,	/* MWAIT State 0 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+	{	/* 2: C1E */
+		.latency = 1,
+		.power = 1000,
+		.resource = {
+			.addrl = 0x01,	/* MWAIT State 0 Sub-state 1 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+	{	/* 3: C3 */
+		.latency = 63,
+		.power = 500,
+		.resource = {
+			.addrl = 0x10,	/* MWAIT State 1 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+	{	/* 4: C6 */
+		.latency = 87,
+		.power = 350,
+		.resource = {
+			.addrl = 0x20,	/* MWAIT State 2 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+	{	/* 5: C7 */
+		.latency = 90,
+		.power = 200,
+		.resource = {
+			.addrl = 0x30,	/* MWAIT State 3 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+	{	/* 6: C7S */
+		.latency = 90,
+		.power = 200,
+		.resource = {
+			.addrl = 0x31,	/* MWAIT State 3 Sub-state 1 */
+			.space_id = ACPI_ADDRESS_SPACE_FIXED,
+			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
+		}
+	},
+};
+
 static int get_logical_cores_per_package(void)
 {
 	msr_t msr = rdmsr(MSR_CORE_THREAD_COUNT);
@@ -21,8 +97,6 @@ static int get_logical_cores_per_package(void)
 
 static void generate_C_state_entries(void)
 {
-	struct cpu_info *info;
-	struct cpu_driver *cpu;
 	struct device *lapic;
 	struct cpu_intel_model_206ax_config *conf = NULL;
 
@@ -34,14 +108,6 @@ static void generate_C_state_entries(void)
 	if (!conf)
 		return;
 
-	/* Find CPU map of supported C-states */
-	info = cpu_info();
-	if (!info)
-		return;
-	cpu = find_cpu_driver(info->cpu);
-	if (!cpu || !cpu->cstates)
-		return;
-
 	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
 
 	acpi_cstate_t acpi_cstate_map[ARRAY_SIZE(acpi_cstates)] = { 0 };
@@ -50,8 +116,8 @@ static void generate_C_state_entries(void)
 	int count = 0;
 
 	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
-		if (acpi_cstates[i] > 0) {
-			acpi_cstate_map[count] = cpu->cstates[acpi_cstates[i]];
+		if (acpi_cstates[i] > 0 && acpi_cstates[i] < ARRAY_SIZE(cstate_map)) {
+			acpi_cstate_map[count] = cstate_map[acpi_cstates[i]];
 			acpi_cstate_map[count].ctype = i + 1;
 			count++;
 		}

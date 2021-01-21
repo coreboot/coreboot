@@ -29,12 +29,9 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 	return i;
 }
 
-static void pm_fill_gnvs(const struct acpi_pm_gpe_state *state)
+static void pm_fill_gnvs(struct global_nvs *gnvs, const struct acpi_pm_gpe_state *state)
 {
 	int index;
-	struct global_nvs *gnvs = acpi_get_gnvs();
-	if (gnvs == NULL)
-		return;
 
 	index = get_index_bit(state->pm1_sts & state->pm1_en, PM1_LIMIT);
 	if (index < 0)
@@ -49,15 +46,17 @@ static void pm_fill_gnvs(const struct acpi_pm_gpe_state *state)
 		gnvs->gpei = index;
 }
 
-static void set_nvs_sws(void *unused)
+static void acpi_save_wake_source(void *unused)
 {
-	struct chipset_power_state *state;
-
-	state = acpi_get_pm_state();
-	if (state == NULL)
+	const struct chipset_power_state *ps;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
 		return;
 
-	pm_fill_gnvs(&state->gpe_state);
+	if (acpi_pm_state_for_wake(&ps) < 0)
+		return;
+
+	pm_fill_gnvs(gnvs, &ps->gpe_state);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);

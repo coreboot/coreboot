@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_pm.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <stdint.h>
 #include <elog.h>
@@ -106,13 +106,10 @@ static void pch_log_power_and_resets(const struct chipset_power_state *ps)
 
 static void pch_log_state(void *unused)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	const struct chipset_power_state *ps;
 
-	if (ps == NULL) {
-		printk(BIOS_ERR, "Not logging power state information. "
-		       "Power state not found in cbmem.\n");
+	if (acpi_pm_state_for_elog(&ps) < 0)
 		return;
-	}
 
 	/* Power and Reset */
 	pch_log_power_and_resets(ps);

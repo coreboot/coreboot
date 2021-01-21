@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_pm.h>
 #include <arch/io.h>
 #include <bootmode.h>
 #include <device/mmio.h>
@@ -56,7 +57,7 @@ struct chipset_power_state *pmc_get_power_state(void)
 	struct chipset_power_state *ptr = NULL;
 
 	if (cbmem_possibly_online())
-		ptr = cbmem_find(CBMEM_ID_POWER_STATE);
+		ptr = acpi_get_pm_state();
 
 	/* cbmem is online but ptr is not populated yet */
 	if (ptr == NULL && !(ENV_RAMSTAGE || ENV_POSTCAR))

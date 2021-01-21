@@ -2,7 +2,7 @@
 
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
-#include <cbmem.h>
+#include <acpi/acpi_pm.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>
@@ -122,7 +122,7 @@ static void fill_in_pattrs(void)
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct chipset_power_state *ps = acpi_get_pm_state();
 	static uint32_t gpe0_sts;
 
 	if (!ps)

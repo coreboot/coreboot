@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
+#include <acpi/acpi_pm.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <bootstate.h>
@@ -9,8 +11,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
-#include <acpi/acpi_gnvs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
@@ -210,7 +210,7 @@ void southbridge_init(void *chip_info)
 	i2c_soc_init();
 	sb_init_acpi_ports();
 
-	state = cbmem_find(CBMEM_ID_POWER_STATE);
+	state = acpi_get_pm_state();
 	if (state) {
 		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
 		gpio_add_events(&state->gpio_state);

@@ -2,7 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <cbmem.h>
+#include <acpi/acpi_pm.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <string.h>
@@ -14,7 +14,7 @@
 /* Save bit index for PM1_STS and GPE_STS for ACPI _SWS */
 static void save_acpi_wake_source(void)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct chipset_power_state *ps = acpi_get_pm_state();
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
 	int gpe_reg;

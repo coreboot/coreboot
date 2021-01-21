@@ -3,7 +3,7 @@
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <cbmem.h>
+#include <acpi/acpi_pm.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>
@@ -119,7 +119,7 @@ static void fill_in_pattrs(void)
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */
 static void save_acpi_wake_source(void)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct chipset_power_state *ps = acpi_get_pm_state();
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint16_t pm1;
 

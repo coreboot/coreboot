@@ -2,11 +2,11 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
+#include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
@@ -530,7 +530,7 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	int i;
 	const int last_index = GPE0_REG_MAX - 1;
 
-	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	ps = acpi_get_pm_state();
 	if (ps == NULL)
 		return -1;
 

@@ -2,13 +2,13 @@
 
 #include <stdint.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_pm.h>
 #include <arch/io.h>
 #include <bootmode.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
 #include <console/console.h>
 
 #include <soc/iomap.h>
@@ -349,7 +349,7 @@ int rtc_failure(void)
 {
 	uint32_t gen_pmcon1;
 	int rtc_fail;
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	struct chipset_power_state *ps = acpi_get_pm_state();
 
 	if (ps != NULL)
 		gen_pmcon1 = ps->gen_pmcon1;

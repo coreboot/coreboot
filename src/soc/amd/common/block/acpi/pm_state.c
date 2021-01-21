@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi_gnvs.h>
+#include <acpi/acpi_pm.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <soc/southbridge.h>
@@ -53,7 +53,7 @@ static void set_nvs_sws(void *unused)
 {
 	struct chipset_power_state *state;
 
-	state = cbmem_find(CBMEM_ID_POWER_STATE);
+	state = acpi_get_pm_state();
 	if (state == NULL)
 		return;
 

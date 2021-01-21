@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi_gnvs.h>
+#include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
@@ -213,7 +213,7 @@ static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
 	uint32_t pm1_en;
 	int i;
 
-	ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	ps = acpi_get_pm_state();
 	if (ps == NULL)
 		return -1;
 

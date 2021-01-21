@@ -13,8 +13,8 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <acpi/acpi_pm.h>
 #include <device/mmio.h>
-#include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
@@ -186,12 +186,10 @@ static int rtc_failed(uint32_t gen_pmcon_b)
 
 int soc_get_rtc_failed(void)
 {
-	const struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	const struct chipset_power_state *ps;
 
-	if (!ps) {
-		printk(BIOS_ERR, "Could not find power state in cbmem, RTC init aborted\n");
+	if (acpi_pm_state_for_rtc(&ps) < 0)
 		return 1;
-	}
 
 	return rtc_failed(ps->gen_pmcon_b);
 }

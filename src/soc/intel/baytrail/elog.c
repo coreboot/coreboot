@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <cbmem.h>
+#include <acpi/acpi_pm.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -76,13 +76,10 @@ static void log_wake_events(const struct chipset_power_state *ps)
 
 void southcluster_log_state(void)
 {
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+	const struct chipset_power_state *ps;
 
-	if (ps == NULL) {
-		printk(BIOS_DEBUG,
-			"Not logging power state information. Power state not found in cbmem.\n");
+	if (acpi_pm_state_for_elog(&ps) < 0)
 		return;
-	}
 
 	log_power_and_resets(ps);
 	log_wake_events(ps);

@@ -87,19 +87,19 @@ static acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	},
 };
 
-static int cstate_set_s0ix[3] = {
+static const int cstate_set_s0ix[3] = {
 	C_STATE_C1E,
 	C_STATE_C7S_LONG_LAT,
 	C_STATE_C10,
 };
 
-static int cstate_set_lp[3] = {
+static const int cstate_set_lp[3] = {
 	C_STATE_C1E,
 	C_STATE_C3,
 	C_STATE_C7S_LONG_LAT,
 };
 
-static int cstate_set_trad[3] = {
+static const int cstate_set_trad[3] = {
 	C_STATE_C1,
 	C_STATE_C3,
 	C_STATE_C6_LONG_LAT,
@@ -182,7 +182,7 @@ static void generate_C_state_entries(void)
 {
 	acpi_cstate_t acpi_cstate_map[3] = {0};
 
-	int *acpi_cstates;
+	const int *acpi_cstates;
 
 	if (is_s0ix_enabled())
 		acpi_cstates = cstate_set_s0ix;

@@ -347,7 +347,7 @@ chip soc/amd/picasso
 			chip ec/google/chromeec
 				device pnp 0c09.0 on
 					chip ec/google/chromeec/i2c_tunnel
-						register "uid" = "1"
+						register "uid" = "0"
 						register "remote_bus" = "8"
 						device generic 0.0 on
 							chip drivers/i2c/generic

@@ -124,15 +124,9 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	ratio_min = (msr.hi >> (40-32)) & 0xff; /* Max Efficiency Ratio */
 
-	/* Determine if this CPU has configurable TDP */
-	if (cpu_config_tdp_levels()) {
-		/* Set max ratio to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		ratio_max = msr.lo & 0xff;
-	} else {
-		/* Max Non-Turbo Ratio */
-		ratio_max = (msr.lo >> 8) & 0xff;
-	}
+	/* Max Non-Turbo Ratio */
+	ratio_max = (msr.lo >> 8) & 0xff;
+
 	clock_max = ratio_max * IRONLAKE_BCLK + ratio_max / 3;
 
 	/* Calculate CPU TDP in mW */

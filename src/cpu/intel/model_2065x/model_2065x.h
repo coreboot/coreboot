@@ -43,13 +43,6 @@
 #define  PKG_POWER_LIMIT_TIME_SHIFT	17
 #define  PKG_POWER_LIMIT_TIME_MASK	0x7f
 
-#define IVB_CONFIG_TDP_MIN_CPUID	0x306a2
-#define MSR_CONFIG_TDP_NOMINAL		0x648
-#define MSR_CONFIG_TDP_LEVEL1		0x649
-#define MSR_CONFIG_TDP_LEVEL2		0x64a
-#define MSR_CONFIG_TDP_CONTROL		0x64b
-#define MSR_TURBO_ACTIVATION_RATIO	0x64c
-
 /* P-state configuration */
 #define PSS_MAX_ENTRIES			16
 #define PSS_RATIO_STEP			1
@@ -61,7 +54,6 @@ void intel_model_2065x_finalize_smm(void);
 
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
-int cpu_config_tdp_levels(void);
 
 /* Sanity check config options. */
 #if (CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE)

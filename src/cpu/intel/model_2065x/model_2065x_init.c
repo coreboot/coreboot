@@ -20,19 +20,6 @@
 #include <cpu/intel/common/common.h>
 #include <smp/node.h>
 
-int cpu_config_tdp_levels(void)
-{
-	msr_t platform_info;
-
-	/* Minimum CPU revision */
-	if (cpuid_eax(1) < IVB_CONFIG_TDP_MIN_CPUID)
-		return 0;
-
-	/* Bits 34:33 indicate how many levels supported */
-	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return (platform_info.hi >> 1) & 3;
-}
-
 static void configure_thermal_target(void)
 {
 	struct cpu_intel_model_2065x_config *conf;
@@ -77,19 +64,12 @@ static void set_max_ratio(void)
 
 	perf_ctl.hi = 0;
 
-	/* Check for configurable TDP option */
-	if (cpu_config_tdp_levels()) {
-		/* Set to nominal TDP ratio */
-		msr = rdmsr(MSR_CONFIG_TDP_NOMINAL);
-		perf_ctl.lo = (msr.lo & 0xff) << 8;
-	} else {
-		/* Platform Info bits 15:8 give max ratio */
-		msr = rdmsr(MSR_PLATFORM_INFO);
-		perf_ctl.lo = msr.lo & 0xff00;
-	}
+	/* Platform Info bits 15:8 give max ratio */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	perf_ctl.lo = msr.lo & 0xff00;
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
-	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
+	printk(BIOS_DEBUG, "model_x065x: frequency set to %d\n",
 	       ((perf_ctl.lo >> 8) & 0xff) * IRONLAKE_BCLK);
 }
 

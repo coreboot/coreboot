@@ -12,7 +12,7 @@
 #define SRAM_L2C_START(addr) SYMBOL(sram_l2c, addr)
 #define SRAM_L2C_END(addr) SYMBOL(esram_l2c, addr)
 #define DRAM_INIT_CODE(addr, size) \
-	REGION(dram_init_code, addr, size, 4)
+	REGION(dram_init_code, addr, size, 64K)
 
 #define DRAM_DMA(addr, size) \
 	REGION(dram_dma, addr, size, 4K) \
@@ -40,11 +40,16 @@ SECTIONS
 	SRAM_END(0x00120000)
 
 	SRAM_L2C_START(0x00200000)
+	/* 4K reserved for BOOTROM until BOOTBLOCK is started */
 	BOOTBLOCK(0x00201000, 64K)
-	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x00211000, 188K)
-	DRAM_INIT_CODE(0x00240000, 208K)
-	PRERAM_CBFS_CACHE(0x00274000, 48K)
-	SRAM_L2C_END(0x00280000)
+	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x00211000, 252K)
+	/*
+	 * The needed size can be obtained by:
+	 *  aarch64-cros-linux-gnu-objdump -x dram.elf | grep memsz
+	 */
+	DRAM_INIT_CODE(0x00250000, 256K)
+	PRERAM_CBFS_CACHE(0x00290000, 48K)
+	SRAM_L2C_END(0x00300000)
 
 	DRAM_START(0x40000000)
 	DRAM_DMA(0x40000000, 1M)

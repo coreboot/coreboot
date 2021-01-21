@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <amdblocks/acpimmio_map.h>
-
-#define AOAC_DEVICE(DEV_NAME, DEV_ID, SX) \
-	PowerResource(DEV_NAME, SX, 0) { \
+#define AOAC_DEVICE(DEV_ID, SX) \
+	PowerResource(AOAC, SX, 0) { \
 		OperationRegion (AOAC, SystemMemory, ACPIMMIO_BASE(AOAC) + 0x40 + (DEV_ID << 1), 2) \
 		Field (AOAC, ByteAcc, NoLock, Preserve) { \
 			/* \
@@ -105,28 +103,13 @@
 				Stall (100) \
 			} \
 		} \
+	} \
+	Name (_PR0, Package () { AOAC }) \
+	Name (_PR2, Package () { AOAC }) \
+	Name (_PR3, Package () { AOAC }) \
+	Method (_PS0, 0, Serialized) { \
+		^AOAC.TDS = 1 \
+	} \
+	Method (_PS3, 0, Serialized) { \
+		^AOAC.TDS = 3 \
 	}
-
-
-Device (AOAC) {
-	Name (_HID, EISAID("PNP0C02"))  // ID for Motherboard resources
-
-	Method (_STA, 0x0, NotSerialized)
-	{
-		/*
-		 * This case is used to indicate a valid device for which no
-		 * device driver should be loaded (for example, a bridge
-		 * device.) Children of this device may be present and valid.
-		 * OSPM should continue enumeration below a device whose _STA
-		 * returns this bit combination.
-		 */
-		Return (0x08)
-	}
-
-	AOAC_DEVICE(I2C2,	7, 0)
-	AOAC_DEVICE(I2C3,	8, 0)
-	AOAC_DEVICE(FUR0,	11, 0)
-	AOAC_DEVICE(FUR1,	12, 0)
-	AOAC_DEVICE(FUR2,	16, 0)
-	AOAC_DEVICE(FUR3,	26, 0)
-}

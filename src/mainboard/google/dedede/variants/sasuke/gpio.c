@@ -48,9 +48,6 @@ static const struct pad_config gpio_table[] = {
 	/* E2  : CLK_24M_WCAM ==> NC */
 	PAD_NC(GPP_E2, NONE),
 
-	/* G7  : SD_SDIO_WP ==> NC */
-	PAD_NC(GPP_G7, NONE),
-
 	/* H4  : AP_I2C_TS_SDA ==> NC */
 	PAD_NC(GPP_H4, NONE),
 	/* H5  : AP_I2C_TS_SCL ==> NC */

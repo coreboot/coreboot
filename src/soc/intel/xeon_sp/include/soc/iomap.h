@@ -29,6 +29,8 @@
 /* High Performance Event Timer */
 #define HPET_BASE_ADDRESS            0xfed00000
 
+#define HECI1_BASE_ADDRESS	0xfed1a000
+
 #define PCH_PWRM_BASE_ADDRESS	0xfe000000
 #define PCH_PWRM_BASE_SIZE	0x10000
 

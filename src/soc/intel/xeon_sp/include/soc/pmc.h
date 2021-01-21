@@ -34,6 +34,8 @@
 #define  SLEEP_AFTER_POWER_FAIL	(1 << 0)
 
 /* Memory mapped IO registers in PMC */
+#define PMSYNC_TPR_CFG		0xc8
+#define  PMSYNC_LOCK		(1 << 15)
 #define GPIO_GPE_CFG		0x120
 #define  GPE0_DWX_MASK		0xf
 #define GPE0_DW_SHIFT(x)	(4 * (x))

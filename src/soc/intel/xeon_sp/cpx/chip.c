@@ -5,6 +5,7 @@
 #include <console/debug.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
@@ -25,7 +26,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static const char *soc_acpi_name(const struct device *dev)
+const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PC00";

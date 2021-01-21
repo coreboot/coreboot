@@ -31,11 +31,6 @@ DefinitionBlock(
 		#include <variant/acpi/mainboard.asl>
 	}
 
-#if CONFIG(CHROMEOS)
-	/* VPD support */
-	#include <vendorcode/google/chromeos/acpi/vpd.asl>
-#endif
-
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 #if CONFIG(EC_GOOGLE_WILCO)

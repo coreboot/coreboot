@@ -30,9 +30,6 @@ DefinitionBlock(
 		}
 	}
 
-	/* VPD support */
-	#include <vendorcode/google/chromeos/acpi/vpd.asl>
-
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{

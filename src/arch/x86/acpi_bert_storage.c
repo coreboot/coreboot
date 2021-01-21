@@ -106,6 +106,7 @@ static void revise_error_sizes(acpi_generic_error_status_t *status, size_t size)
 	entries = bert_entry_count(status);
 	entry = acpi_hest_generic_data_nth(status, entries);
 	status->data_length += size;
+	status->raw_data_length += size;
 	if (entry)
 		entry->data_length += size;
 }
@@ -174,6 +175,7 @@ static acpi_hest_generic_data_v300_t *new_generic_error_entry(
 	entry->validation_bits |= ACPI_GENERROR_VALID_TIMESTAMP;
 
 	status->data_length += sizeof(*entry);
+	status->raw_data_length += sizeof(*entry);
 	bert_bump_entry_count(status);
 
 	return entry;
@@ -186,10 +188,50 @@ static size_t sizeof_error_section(guid_t *guid)
 		return sizeof(cper_proc_generic_error_section_t);
 	else if (!guidcmp(guid, &CPER_SEC_PROC_IA32X64_GUID))
 		return sizeof(cper_ia32x64_proc_error_section_t);
+	else if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
+		return sizeof(cper_fw_err_rec_section_t);
 	/* else if ... sizeof(structures not yet defined) */
 
 	printk(BIOS_ERR, "Error: Requested size of unrecognized CPER GUID\n");
 	return 0;
+}
+
+void *new_cper_fw_error_crashlog(acpi_generic_error_status_t *status, size_t cl_size)
+{
+	void *cl_data = bert_allocate_storage(cl_size);
+	if (!cl_data) {
+		printk(BIOS_ERR, "Error: Crashlog entry (size %lu) would exceed available region\n",
+			cl_size);
+		return NULL;
+	}
+
+	revise_error_sizes(status, cl_size);
+
+	return cl_data;
+}
+
+/* Helper to append an ACPI Generic Error Data Entry per crashlog data */
+acpi_hest_generic_data_v300_t *bert_append_fw_err(acpi_generic_error_status_t *status)
+{
+	acpi_hest_generic_data_v300_t *entry;
+	cper_fw_err_rec_section_t *fw_err;
+
+	entry = bert_append_error_datasection(status, &CPER_SEC_FW_ERR_REC_REF_GUID);
+	if (!entry)
+		return NULL;
+
+	status->block_status |= GENERIC_ERR_STS_UNCORRECTABLE_VALID;
+	status->error_severity = ACPI_GENERROR_SEV_FATAL;
+	entry->error_severity = ACPI_GENERROR_SEV_FATAL;
+
+	fw_err = section_of_acpientry(fw_err, entry);
+
+	fw_err->record_type = CRASHLOG_RECORD_TYPE;
+	fw_err->revision = CRASHLOG_FW_ERR_REV;
+	fw_err->record_id = 0;
+	guidcpy(&fw_err->record_guid, &FW_ERR_RECORD_ID_CRASHLOG_GUID);
+
+	return entry;
 }
 
 /* Append a new ACPI Generic Error Data Entry plus CPER Error Section to an
@@ -486,10 +528,14 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 	if (!status)
 		return NULL;
 
+	status->raw_data_length = sizeof(*status);
+
 	if (!guidcmp(guid, &CPER_SEC_PROC_GENERIC_GUID))
 		r = bert_append_genproc(status);
 	else if (!guidcmp(guid, &CPER_SEC_PROC_GENERIC_GUID))
 		r = bert_append_ia32x64(status);
+	if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
+		r = bert_append_fw_err(status);
 	/* else if other types not implemented */
 	else
 		r = NULL;

@@ -370,6 +370,19 @@ typedef struct cper_ia32x64_ctx_x64state {
 	u16 tr;
 } cper_ia32x64_ctx_x64state_t;
 
+#define FW_ERR_RECORD_ID_CRASHLOG_GUID				\
+	GUID_INIT(0x8f87f311, 0xc998, 0x4d9e,			\
+		0xa0, 0xc4, 0x60, 0x65, 0x51, 0x8c, 0x4f, 0x6d)
+
+/* Firmware Error Record Reference, UEFI v2.8 sec N.2.10  */
+typedef struct cper_fw_err_rec_section {
+	u8 record_type;
+	u8 revision;
+	u8 reserved[6];
+	u64 record_id;
+	guid_t record_guid;
+} cper_fw_err_rec_section_t;
+
 static inline cper_timestamp_t cper_timestamp(int precise)
 {
 	cper_timestamp_t ts;

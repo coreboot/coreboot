@@ -41,6 +41,9 @@
  * +--------------------------------------------------------------------+
  */
 
+#define CRASHLOG_RECORD_TYPE	0x2
+#define CRASHLOG_FW_ERR_REV	0x2
+
 /* Get implementation-specific reserved area for generating BERT info */
 void bert_reserved_region(void **start, size_t *size);
 
@@ -119,6 +122,9 @@ acpi_hest_generic_data_v300_t *bert_append_genproc(
  */
 acpi_hest_generic_data_v300_t *bert_append_ia32x64(
 					acpi_generic_error_status_t *status);
+
+void *new_cper_fw_error_crashlog(acpi_generic_error_status_t *status, size_t cl_size);
+acpi_hest_generic_data_v300_t *bert_append_fw_err(acpi_generic_error_status_t *status);
 
 /* Add a new event to the BERT region.  An event consists of an ACPI Error
  * Status Block, a Generic Error Data Entry, and an associated CPER Error

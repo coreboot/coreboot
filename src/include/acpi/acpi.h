@@ -1075,6 +1075,10 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 void acpi_create_lpit(acpi_lpit_t *lpit);
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 
+/* For crashlog. */
+bool acpi_is_boot_error_src_present(void);
+void acpi_soc_fill_bert(acpi_bert_t *bert, void **region, size_t *length);
+
 /* For ACPI S3 support. */
 void __noreturn acpi_resume(void *wake_vec);
 void mainboard_suspend_resume(void);

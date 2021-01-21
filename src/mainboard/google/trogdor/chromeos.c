@@ -13,6 +13,8 @@ void setup_chromeos_gpios(void)
 	gpio_input_irq(GPIO_H1_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);
 	gpio_output(GPIO_AMP_ENABLE, 0);
 	gpio_output(GPIO_BACKLIGHT_ENABLE, 0);
+	gpio_output(GPIO_EN_PP3300_DX_EDP, 0);
+	gpio_output(GPIO_EDP_BRIDGE_ENABLE, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

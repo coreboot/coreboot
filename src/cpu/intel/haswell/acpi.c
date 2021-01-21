@@ -14,6 +14,79 @@
 
 #include <southbridge/intel/lynxpoint/pch.h>
 
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
+static acpi_cstate_t cstate_map[NUM_C_STATES] = {
+	[C_STATE_C0] = { },
+	[C_STATE_C1] = {
+		.latency = 0,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 0),
+	},
+	[C_STATE_C1E] = {
+		.latency = 0,
+		.power = 1000,
+		.resource = MWAIT_RES(0, 1),
+	},
+	[C_STATE_C3] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),
+		.power = 900,
+		.resource = MWAIT_RES(1, 0),
+	},
+	[C_STATE_C6_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 800,
+		.resource = MWAIT_RES(2, 0),
+	},
+	[C_STATE_C6_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 800,
+		.resource = MWAIT_RES(2, 1),
+	},
+	[C_STATE_C7_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 700,
+		.resource = MWAIT_RES(3, 0),
+	},
+	[C_STATE_C7_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 700,
+		.resource = MWAIT_RES(3, 1),
+	},
+	[C_STATE_C7S_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 700,
+		.resource = MWAIT_RES(3, 2),
+	},
+	[C_STATE_C7S_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 700,
+		.resource = MWAIT_RES(3, 3),
+	},
+	[C_STATE_C8] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(3),
+		.power = 600,
+		.resource = MWAIT_RES(4, 0),
+	},
+	[C_STATE_C9] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(4),
+		.power = 500,
+		.resource = MWAIT_RES(5, 0),
+	},
+	[C_STATE_C10] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(5),
+		.power = 400,
+		.resource = MWAIT_RES(6, 0),
+	},
+};
+
 static int cstate_set_s0ix[3] = {
 	C_STATE_C1E,
 	C_STATE_C7S_LONG_LAT,
@@ -107,35 +180,28 @@ static bool is_s0ix_enabled(void)
 
 static void generate_C_state_entries(void)
 {
-	acpi_cstate_t map[3];
-	int *set;
-	int i;
+	acpi_cstate_t acpi_cstate_map[3] = {0};
 
-	struct cpu_info *info;
-	struct cpu_driver *cpu;
-
-	/* Find CPU map of supported C-states */
-	info = cpu_info();
-	if (!info)
-		return;
-	cpu = find_cpu_driver(info->cpu);
-	if (!cpu || !cpu->cstates)
-		return;
+	int *acpi_cstates;
 
 	if (is_s0ix_enabled())
-		set = cstate_set_s0ix;
+		acpi_cstates = cstate_set_s0ix;
 	else if (haswell_is_ult())
-		set = cstate_set_lp;
+		acpi_cstates = cstate_set_lp;
 	else
-		set = cstate_set_trad;
+		acpi_cstates = cstate_set_trad;
 
-	for (i = 0; i < ARRAY_SIZE(map); i++) {
-		map[i] = cpu->cstates[set[i]];
-		map[i].ctype = i + 1;
+	/* Count number of active C-states */
+	int count = 0;
+
+	for (int i = 0; i < ARRAY_SIZE(acpi_cstate_map); i++) {
+		if (acpi_cstates[i] > 0 && acpi_cstates[i] < ARRAY_SIZE(cstate_map)) {
+			acpi_cstate_map[count] = cstate_map[acpi_cstates[i]];
+			acpi_cstate_map[count].ctype = i + 1;
+			count++;
+		}
 	}
-
-	/* Generate C-state tables */
-	acpigen_write_CST_package(map, ARRAY_SIZE(map));
+	acpigen_write_CST_package(acpi_cstate_map, count);
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)

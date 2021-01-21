@@ -20,79 +20,6 @@
 #include "haswell.h"
 #include "chip.h"
 
-#define MWAIT_RES(state, sub_state)                         \
-	{                                                   \
-		.addrl = (((state) << 4) | (sub_state)),    \
-		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
-		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
-		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
-		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
-	}
-
-static acpi_cstate_t cstate_map[NUM_C_STATES] = {
-	[C_STATE_C0] = { },
-	[C_STATE_C1] = {
-		.latency = 0,
-		.power = 1000,
-		.resource = MWAIT_RES(0, 0),
-	},
-	[C_STATE_C1E] = {
-		.latency = 0,
-		.power = 1000,
-		.resource = MWAIT_RES(0, 1),
-	},
-	[C_STATE_C3] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),
-		.power = 900,
-		.resource = MWAIT_RES(1, 0),
-	},
-	[C_STATE_C6_SHORT_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 800,
-		.resource = MWAIT_RES(2, 0),
-	},
-	[C_STATE_C6_LONG_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 800,
-		.resource = MWAIT_RES(2, 1),
-	},
-	[C_STATE_C7_SHORT_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 700,
-		.resource = MWAIT_RES(3, 0),
-	},
-	[C_STATE_C7_LONG_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 700,
-		.resource = MWAIT_RES(3, 1),
-	},
-	[C_STATE_C7S_SHORT_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
-		.power = 700,
-		.resource = MWAIT_RES(3, 2),
-	},
-	[C_STATE_C7S_LONG_LAT] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
-		.power = 700,
-		.resource = MWAIT_RES(3, 3),
-	},
-	[C_STATE_C8] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(3),
-		.power = 600,
-		.resource = MWAIT_RES(4, 0),
-	},
-	[C_STATE_C9] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(4),
-		.power = 500,
-		.resource = MWAIT_RES(5, 0),
-	},
-	[C_STATE_C10] = {
-		.latency = C_STATE_LATENCY_FROM_LAT_REG(5),
-		.power = 400,
-		.resource = MWAIT_RES(6, 0),
-	},
-};
-
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
 	[0]   = 0x00,
@@ -738,5 +665,4 @@ static const struct cpu_device_id cpu_table[] = {
 static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
-	.cstates  = cstate_map,
 };

@@ -411,7 +411,7 @@ void southbridge_init(void *chip_info)
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 	if (state) {
 		acpi_fill_pm_gpe_state(&state->gpe_state);
-		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
+		acpi_pm_gpe_add_events_print_events();
 	}
 
 	acpi_clear_pm_gpe_status();

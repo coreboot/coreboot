@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_pm.h>
 #include <device/mmio.h>
 #include <device/device.h>
 #include <console/console.h>
 #include <elog.h>
 #include <gpio.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/smi.h>
@@ -363,10 +365,16 @@ void gpio_fill_wake_state(struct gpio_wake_state *state)
 	check_gpios(state->wake_stat[1], 14, 128, state);
 }
 
-void gpio_add_events(const struct gpio_wake_state *state)
+void gpio_add_events(void)
 {
+	const struct chipset_power_state *ps;
+	const struct gpio_wake_state *state;
 	int i;
 	int end;
+
+	if (acpi_pm_state_for_elog(&ps) < 0)
+		return;
+	state = &ps->gpio_state;
 
 	end = MIN(state->num_valid_wake_gpios, ARRAY_SIZE(state->wake_gpios));
 	for (i = 0; i < end; i++)

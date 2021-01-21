@@ -17,8 +17,4 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 const char *soc_acpi_name(const struct device *dev);
 
-struct chipset_power_state {
-	struct acpi_pm_gpe_state gpe_state;
-};
-
 #endif /* AMD_STONEYRIDGE_ACPI_H */

@@ -30,7 +30,7 @@ struct gpio_wake_state {
 /* Fill gpio_wake_state object for future event reporting. */
 void gpio_fill_wake_state(struct gpio_wake_state *state);
 /* Add gpio events to the eventlog. */
-void gpio_add_events(const struct gpio_wake_state *state);
+void gpio_add_events(void);
 
 enum {
 	GEVENT_0,

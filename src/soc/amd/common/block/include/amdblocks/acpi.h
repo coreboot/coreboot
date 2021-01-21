@@ -4,6 +4,7 @@
 #define AMD_BLOCK_ACPI_H
 
 #include <types.h>
+#include <amdblocks/gpio_banks.h>
 
 /* ACPI MMIO registers 0xfed80800 */
 #define MMIO_ACPI_PM1_STS		0x00
@@ -29,7 +30,7 @@ struct acpi_pm_gpe_state {
 /* Fill object with the ACPI PM and GPE state. */
 void acpi_fill_pm_gpe_state(struct acpi_pm_gpe_state *state);
 /* Save events to eventlog log and also print information on console. */
-void acpi_pm_gpe_add_events_print_events(const struct acpi_pm_gpe_state *state);
+void acpi_pm_gpe_add_events_print_events(void);
 /* Clear PM and GPE status registers. */
 void acpi_clear_pm_gpe_status(void);
 
@@ -40,5 +41,10 @@ void acpi_clear_pm_gpe_status(void);
 void set_pm1cnt_s5(void);
 void acpi_enable_sci(void);
 void acpi_disable_sci(void);
+
+struct chipset_power_state {
+	struct acpi_pm_gpe_state gpe_state;
+	struct gpio_wake_state gpio_state;
+};
 
 #endif /* AMD_BLOCK_ACPI_H */

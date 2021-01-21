@@ -205,16 +205,12 @@ static void gpp_clk_setup(void)
 
 void southbridge_init(void *chip_info)
 {
-	struct chipset_power_state *state;
-
 	i2c_soc_init();
 	sb_init_acpi_ports();
 
-	state = acpi_get_pm_state();
-	if (state) {
-		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
-		gpio_add_events(&state->gpio_state);
-	}
+	acpi_pm_gpe_add_events_print_events();
+	gpio_add_events();
+
 	acpi_clear_pm_gpe_status();
 
 	al2ahb_clock_gate();

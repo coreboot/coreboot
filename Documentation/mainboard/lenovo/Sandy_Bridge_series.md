@@ -22,6 +22,10 @@
 ```
 
 ## Installation instructions
+
+Flashing coreboot for the first time needs to be done using an external
+programmer, because vendor firmware prevents rewriting the BIOS region.
+
 * Update the EC firmware, as there's no support for EC updates in coreboot.
 * Do **NOT** accidentally swap pins or power on the board while a SPI flasher
   is connected. It will destroy your device.

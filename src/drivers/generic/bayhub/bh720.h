@@ -39,5 +39,3 @@ enum {
 	BH720_PCR_CSR			= 0x3e4,
 	BH720_PCR_CSR_EMMC_MODE_SEL	= BIT(22),
 };
-
-void board_bh720(struct device *dev);

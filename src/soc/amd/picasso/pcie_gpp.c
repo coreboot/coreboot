@@ -21,20 +21,20 @@
 struct pci_routing {
 	unsigned int devfn;
 	unsigned int group;
-	const char intx[5];
+	uint8_t pin[4];
 };
 
 /* See AMD PPR 55570 - IOAPIC Initialization for the table that AGESA sets up */
 static const struct pci_routing pci_routing_table[] = {
-	{PCIE_GPP_0_DEVFN, 0, "ABCD"},
-	{PCIE_GPP_1_DEVFN, 1, "ABCD"},
-	{PCIE_GPP_2_DEVFN, 2, "ABCD"},
-	{PCIE_GPP_3_DEVFN, 3, "ABCD"},
-	{PCIE_GPP_4_DEVFN, 4, "ABCD"},
-	{PCIE_GPP_5_DEVFN, 5, "ABCD"},
-	{PCIE_GPP_6_DEVFN, 6, "ABCD"},
-	{PCIE_GPP_A_DEVFN, 7, "ABCD"},
-	{PCIE_GPP_B_DEVFN, 7, "CDAB"},
+	{PCIE_GPP_0_DEVFN, 0, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_1_DEVFN, 1, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_2_DEVFN, 2, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_3_DEVFN, 3, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_4_DEVFN, 4, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_5_DEVFN, 5, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_6_DEVFN, 6, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_A_DEVFN, 7, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
+	{PCIE_GPP_B_DEVFN, 7, {PIRQ_C, PIRQ_D, PIRQ_A, PIRQ_B} },
 };
 
 /*
@@ -71,7 +71,7 @@ static unsigned int calculate_irq(const struct pci_routing *pci_routing, unsigne
 {
 	unsigned int irq_index;
 	irq_index = pci_routing->group * 4;
-	irq_index += pci_routing->intx[i] - 'A';
+	irq_index += pci_routing->pin[i];
 
 	return irq_index;
 }

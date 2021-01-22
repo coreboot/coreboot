@@ -51,7 +51,7 @@ static void pm_fill_gnvs(const struct acpi_pm_gpe_state *state)
 
 static void set_nvs_sws(void *unused)
 {
-	struct chipset_state *state;
+	struct chipset_power_state *state;
 
 	state = cbmem_find(CBMEM_ID_POWER_STATE);
 	if (state == NULL)

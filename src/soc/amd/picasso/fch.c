@@ -205,7 +205,7 @@ static void gpp_clk_setup(void)
 
 void southbridge_init(void *chip_info)
 {
-	struct chipset_state *state;
+	struct chipset_power_state *state;
 
 	i2c_soc_init();
 	sb_init_acpi_ports();

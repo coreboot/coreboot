@@ -18,7 +18,7 @@ uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current
 const char *soc_acpi_name(const struct device *dev);
 
 /* Object to capture state of chipset for logging events. */
-struct chipset_state {
+struct chipset_power_state {
 	struct acpi_pm_gpe_state gpe_state;
 	struct gpio_wake_state gpio_state;
 };

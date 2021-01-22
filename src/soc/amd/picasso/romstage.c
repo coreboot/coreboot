@@ -20,7 +20,7 @@
 #include "chip.h"
 #include <fsp/api.h>
 
-static struct chipset_state chipset_state;
+static struct chipset_power_state chipset_state;
 
 static void fill_chipset_state(void)
 {
@@ -30,7 +30,7 @@ static void fill_chipset_state(void)
 
 static void add_chipset_state_cbmem(int unused)
 {
-	struct chipset_state *state;
+	struct chipset_power_state *state;
 
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 

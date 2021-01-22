@@ -11,6 +11,7 @@ romstage-y += memory.c
 romstage-y += tpm_tis.c
 
 ramstage-y += gpio.c
+ramstage-y += mainboard.c
 ramstage-y += tpm_tis.c
 
 # Add OEM ID table

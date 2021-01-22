@@ -57,6 +57,7 @@ config CHECK_ME
 
 config ME_REGION_ALLOW_CPU_READ_ACCESS
 	bool "Allows HOST/CPU read access to ME region"
+	default y if SOC_INTEL_CSE_LITE_SKU
 	default n
 	help
 	 The config ensures Host has read access to the ME region if it is locked

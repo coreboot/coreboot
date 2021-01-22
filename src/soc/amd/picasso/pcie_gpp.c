@@ -153,6 +153,7 @@ static void acpigen_write_PRT(const struct device *dev)
 		irq_index = calculate_irq(pci_routing, i);
 
 		acpigen_write_package(4);
+		/* There is only one device attached to the bridge */
 		acpigen_write_dword(0x0000FFFF);
 		acpigen_write_byte(i);
 		acpigen_write_byte(0); /* Source: GSI  */
@@ -176,6 +177,7 @@ static void acpigen_write_PRT(const struct device *dev)
 		link_template[8] = 'A' + (irq_index % 8);
 
 		acpigen_write_package(4);
+		/* There is only one device attached to the bridge */
 		acpigen_write_dword(0x0000FFFF);
 		acpigen_write_byte(i);
 		acpigen_emit_namestring(link_template);

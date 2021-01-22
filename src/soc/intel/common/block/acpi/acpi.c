@@ -202,20 +202,14 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
  * @pm1:  PM1_STS register with only enabled events set
  * @gpe0: GPE0_STS registers with only enabled events set
  *
- * return the number of registers in the gpe0 array or -1 if nothing
- * is provided by this function.
+ * return the number of registers in the gpe0 array
  */
 
-static int acpi_fill_wake(uint32_t *pm1, uint32_t **gpe0)
+static int acpi_fill_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint32_t **gpe0)
 {
-	struct chipset_power_state *ps;
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
 	uint32_t pm1_en;
 	int i;
-
-	ps = acpi_get_pm_state();
-	if (ps == NULL)
-		return -1;
 
 	/*
 	 * PM1_EN to check the basic wake events which can happen through
@@ -462,7 +456,11 @@ static void acpi_save_wake_source(void *unused)
 	gnvs->pm1i = -1;
 	gnvs->gpei = -1;
 
-	gpe_reg_count = acpi_fill_wake(&pm1, &gpe0);
+	const struct chipset_power_state *ps = acpi_get_pm_state();
+	if (!ps)
+		return;
+
+	gpe_reg_count = acpi_fill_wake(ps, &pm1, &gpe0);
 	if (gpe_reg_count < 0)
 		return;
 

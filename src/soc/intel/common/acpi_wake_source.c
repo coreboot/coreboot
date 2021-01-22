@@ -2,13 +2,16 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
+#include <acpi/acpi_pm.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <soc/nvs.h>
+#include <soc/pm.h>
 #include <stdint.h>
 #include "acpi.h"
 
-__weak int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
+__weak int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1,
+			      uint32_t **gpe0)
 {
 	return -1;
 }
@@ -27,7 +30,11 @@ static void acpi_save_wake_source(void *unused)
 	gnvs->pm1i = -1;
 	gnvs->gpei = -1;
 
-	gpe_reg_count = soc_fill_acpi_wake(&pm1, &gpe0);
+	const struct chipset_power_state *ps = acpi_get_pm_state();
+	if (!ps)
+		return;
+
+	gpe_reg_count = soc_fill_acpi_wake(ps, &pm1, &gpe0);
 	if (gpe_reg_count < 0)
 		return;
 

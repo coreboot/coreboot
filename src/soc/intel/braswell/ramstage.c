@@ -120,13 +120,9 @@ static void fill_in_pattrs(void)
 }
 
 /* Save wake source information for calculating ACPI _SWS values */
-int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
+int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint32_t **gpe0)
 {
-	struct chipset_power_state *ps = acpi_get_pm_state();
 	static uint32_t gpe0_sts;
-
-	if (!ps)
-		return -1;
 
 	*pm1 = ps->pm1_sts & ps->pm1_en;
 

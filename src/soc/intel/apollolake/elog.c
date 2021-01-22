@@ -23,7 +23,7 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 	}
 }
 
-static void pch_log_wake_source(struct chipset_power_state *ps)
+static void pch_log_wake_source(const struct chipset_power_state *ps)
 {
 	const struct xhci_wake_info xhci_wake_info[] = {
 		{ PCH_DEVFN_XHCI, ELOG_WAKE_SOURCE_PME_XHCI },
@@ -65,7 +65,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE0_D], ps->gpe0_en[GPE0_D], 96);
 }
 
-static void pch_log_power_and_resets(struct chipset_power_state *ps)
+static void pch_log_power_and_resets(const struct chipset_power_state *ps)
 {
 	/* RTC Reset */
 	if (ps->gen_pmcon1 & RPS)

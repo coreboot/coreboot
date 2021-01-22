@@ -126,7 +126,7 @@ static void pch_log_pme_internal_wake_source(void)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
 }
 
-static void pch_log_wake_source(struct chipset_power_state *ps)
+static void pch_log_wake_source(const struct chipset_power_state *ps)
 {
 	/* Power Button */
 	if (ps->pm1_sts & PWRBTN_STS)
@@ -160,7 +160,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE_STD], ps->gpe0_en[GPE_STD], 96);
 }
 
-static void pch_log_power_and_resets(struct chipset_power_state *ps)
+static void pch_log_power_and_resets(const struct chipset_power_state *ps)
 {
 	/* Thermal Trip */
 	if (ps->gblrst_cause[0] & GBLRST_CAUSE0_THERMTRIP)

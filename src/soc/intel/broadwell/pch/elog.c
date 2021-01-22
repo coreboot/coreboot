@@ -20,7 +20,7 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 	}
 }
 
-static void pch_log_wake_source(struct chipset_power_state *ps)
+static void pch_log_wake_source(const struct chipset_power_state *ps)
 {
 	/* Power Button */
 	if (ps->pm1_sts & PWRBTN_STS)
@@ -56,7 +56,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 	pch_log_gpio_gpe(ps->gpe0_sts[GPE_94_64], ps->gpe0_en[GPE_94_64], 64);
 }
 
-static void pch_log_power_and_resets(struct chipset_power_state *ps)
+static void pch_log_power_and_resets(const struct chipset_power_state *ps)
 {
 	/* Thermal Trip Status */
 	if (ps->gen_pmcon2 & THERMTRIP_STS)

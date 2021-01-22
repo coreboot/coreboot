@@ -44,6 +44,19 @@ static void bh720_init(struct device *dev)
 	}
 
 	board_bh720(dev);
+
+	if (config && config->vih_tuning_value) {
+		/* Tune VIH */
+		u32 bh720_pcr_data;
+		pci_write_config32(dev, BH720_PROTECT,
+			BH720_PROTECT_OFF | BH720_PROTECT_LOCK_OFF);
+		bh720_pcr_data = pci_read_config32(dev, BH720_PCR_DrvStrength_PLL);
+		bh720_pcr_data &= 0xFFFFFF00;
+		bh720_pcr_data |= config->vih_tuning_value;
+		pci_write_config32(dev, BH720_PCR_DrvStrength_PLL, bh720_pcr_data);
+		pci_write_config32(dev, BH720_PROTECT,
+			BH720_PROTECT_ON | BH720_PROTECT_LOCK_ON);
+	}
 }
 
 static struct device_operations bh720_ops = {

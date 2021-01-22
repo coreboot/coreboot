@@ -62,6 +62,7 @@ chip soc/amd/stoneyridge
 		device pci 2.4 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
+				register "vih_tuning_value" = "0x35"
 				device pci 00.0 on end
 			end
 		end #

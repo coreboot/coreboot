@@ -77,17 +77,6 @@ void board_bh720(struct device *dev)
 	write32((void *)(sdbar + BH720_MEM_RW_DATA), 0x80000001);
 	write32((void *)(sdbar + BH720_MEM_RW_ADR), 0x800000D0);
 	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x80000000);
-
-	/* Tune VIH */
-	pci_write_config32(dev, BH720_PROTECT,
-		BH720_PROTECT_OFF | BH720_PROTECT_LOCK_OFF);
-	bh720_pcr_data = pci_read_config32(dev, BH720_PCR_DrvStrength_PLL);
-	bh720_pcr_data &= 0xFFFFFF00;
-	/* CLK = 3 and DAT = 2 */
-	bh720_pcr_data |= 0x35;
-	pci_write_config32(dev, BH720_PCR_DrvStrength_PLL, bh720_pcr_data);
-	pci_write_config32(dev, BH720_PROTECT,
-		BH720_PROTECT_ON | BH720_PROTECT_LOCK_ON);
 }
 
 const char *smbios_mainboard_manufacturer(void)

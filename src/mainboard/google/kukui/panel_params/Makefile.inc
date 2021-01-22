@@ -9,6 +9,8 @@ panel-params-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel-AUO_NT51021D8P
 panel-params-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel-BOE_TV080WUM_NG0
 panel-params-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel-BOE_TV101WUM_NG0
 panel-params-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel-INX_OTA7290D10P
+panel-params-$(CONFIG_BOARD_GOOGLE_KATSU) += panel-STA_2081101QFH032011_53G
+panel-params-$(CONFIG_BOARD_GOOGLE_KATSU) += panel-BOE_TV105WUM_NW0
 
 $(foreach params,$(panel-params-y), \
 	$(eval cbfs-files-y += $(params)) \

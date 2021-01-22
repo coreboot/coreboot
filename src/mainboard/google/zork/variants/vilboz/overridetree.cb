@@ -75,6 +75,12 @@ chip soc/amd/picasso
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
+		device pci 1.3 on
+			chip drivers/generic/bayhub_lv2
+				register "enable_power_saving" = "1"
+				device pci 00.0 on end
+			end
+		end # GPP Bridge 2 - SD
 		device pci 8.1 on
 			device pci 0.5 on
 				chip drivers/amd/i2s_machine_dev

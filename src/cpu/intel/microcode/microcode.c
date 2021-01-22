@@ -123,8 +123,8 @@ const void *intel_microcode_find(void)
 	size_t microcode_len;
 	u32 eax;
 	u32 pf, rev, sig, update_size;
-	unsigned int x86_model, x86_family;
 	msr_t msr;
+	struct cpuinfo_x86 c;
 
 	if (ucode_updates)
 		return ucode_updates;
@@ -133,19 +133,13 @@ const void *intel_microcode_find(void)
 	if (ucode_updates == NULL)
 		return NULL;
 
-	/* CPUID sets MSR 0x8B if a microcode update has been loaded. */
-	msr.lo = 0;
-	msr.hi = 0;
-	wrmsr(IA32_BIOS_SIGN_ID, msr);
+	rev = read_microcode_rev();
 	eax = cpuid_eax(1);
-	msr = rdmsr(IA32_BIOS_SIGN_ID);
-	rev = msr.hi;
-	x86_model = (eax >> 4) & 0x0f;
-	x86_family = (eax >> 8) & 0x0f;
+	get_fms(&c, eax);
 	sig = eax;
 
 	pf = 0;
-	if ((x86_model >= 5) || (x86_family > 6)) {
+	if ((c.x86_model >= 5) || (c.x86 > 6)) {
 		msr = rdmsr(IA32_PLATFORM_ID);
 		pf = 1 << ((msr.hi >> 18) & 7);
 	}

@@ -22,12 +22,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	uint32_t cpu_id, mask = 0;
 	const struct device *dev;
 
-	/*
-	 * If IGD is enabled, set IGD stolen size to 60MB.
-	 * Otherwise, skip IGD init in FSP.
-	 */
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	m_cfg->InternalGfx = is_dev_enabled(dev);
+	if (!CONFIG(SOC_INTEL_DISABLE_IGD) && is_dev_enabled(dev))
+		m_cfg->InternalGfx = 1;
+	else
+		m_cfg->InternalGfx = 0;
+
+	/* If IGD is enabled, set IGD stolen size to 60MB. Otherwise, skip IGD init in FSP */
 	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? 0xFE : 0;
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;

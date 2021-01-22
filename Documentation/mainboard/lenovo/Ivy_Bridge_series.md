@@ -25,7 +25,7 @@ This information is valid for all supported models, except T430s, [T431s](t431s.
 
 ## Installation instructions
 * Update the EC firmware, as there's no support for EC updates in coreboot.
-* Do **NOT** accidently swap pins or power on the board while a SPI flasher
+* Do **NOT** accidentally swap pins or power on the board while a SPI flasher
   is connected. It will permanently brick your device.
 * It's recommended to only flash the BIOS region. In that case you don't
   need to extract blobs from vendor firmware.

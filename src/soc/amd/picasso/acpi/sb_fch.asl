@@ -227,7 +227,7 @@ Device (FUR3) {
 }
 
 Device (I2C2) {
-	Name (_HID, "AMD0010")
+	Name (_HID, "AMDI0010")
 	Name (_UID, 0x2)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
@@ -264,7 +264,7 @@ Device (I2C2) {
 
 Device (I2C3)
 {
-	Name (_HID, "AMD0010")
+	Name (_HID, "AMDI0010")
 	Name (_UID, 0x3)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {

@@ -95,7 +95,7 @@ Device (MMC0)
 
 Device (FUR0)
 {
-	Name (_HID, "AMD0020")
+	Name (_HID, "AMDI0020")
 	Name (_UID, 0x0)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
@@ -128,7 +128,7 @@ Device (FUR0)
 }
 
 Device (FUR1) {
-	Name (_HID, "AMD0020")
+	Name (_HID, "AMDI0020")
 	Name (_UID, 0x1)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
@@ -161,7 +161,7 @@ Device (FUR1) {
 }
 
 Device (FUR2) {
-	Name (_HID, "AMD0020")
+	Name (_HID, "AMDI0020")
 	Name (_UID, 0x2)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
@@ -194,7 +194,7 @@ Device (FUR2) {
 }
 
 Device (FUR3) {
-	Name (_HID, "AMD0020")
+	Name (_HID, "AMDI0020")
 	Name (_UID, 0x3)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {

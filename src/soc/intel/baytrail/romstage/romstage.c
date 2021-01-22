@@ -59,7 +59,7 @@ static struct chipset_power_state *fill_power_state(void)
 }
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
-static int chipset_prev_sleep_state(struct chipset_power_state *ps)
+static int chipset_prev_sleep_state(const struct chipset_power_state *ps)
 {
 	/* Default to S0. */
 	int prev_sleep_state = ACPI_S0;

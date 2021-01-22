@@ -33,7 +33,7 @@ static void migrate_power_state(int is_recovery)
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
-static int prev_sleep_state(struct chipset_power_state *ps)
+static int prev_sleep_state(const struct chipset_power_state *ps)
 {
 	/* Default to S0. */
 	int prev_sleep_state = ACPI_S0;

@@ -45,8 +45,12 @@ struct __packed global_nvs {
 	u64 mmiohl;	/* 0x4c - MMIO Base Limit */
 	u32 tsegb;	 /* 0x54 - TSEG Base Low */
 	u32 tsegl;	 /* 0x58 - TSEG Length/Size */
-	u8 rsvd3[164];
 
+	/* Just to satisfy common/block/acpi/acpi.c. */
+	u32 pm1i;
+	u32 gpei;
+
+	u8 rsvd3[156];
 };
 
 #endif /* _DENVERTON_NS_NVS_H_ */

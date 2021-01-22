@@ -17,22 +17,11 @@ __weak int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm
 }
 
 /* Save wake source data for ACPI _SWS methods in NVS */
-static void acpi_save_wake_source(void *unused)
+static void pm_fill_gnvs(struct global_nvs *gnvs, const struct chipset_power_state *ps)
 {
-	struct global_nvs *gnvs = acpi_get_gnvs();
 	uint32_t pm1, *gpe0;
 	int gpe_reg, gpe_reg_count;
 	int reg_size = sizeof(uint32_t) * 8;
-
-	if (!gnvs)
-		return;
-
-	gnvs->pm1i = -1;
-	gnvs->gpei = -1;
-
-	const struct chipset_power_state *ps = acpi_get_pm_state();
-	if (!ps)
-		return;
 
 	gpe_reg_count = soc_fill_acpi_wake(ps, &pm1, &gpe0);
 	if (gpe_reg_count < 0)
@@ -74,6 +63,22 @@ static void acpi_save_wake_source(void *unused)
 
 	printk(BIOS_DEBUG, "ACPI _SWS is PM1 Index %lld GPE Index %lld\n",
 	       (long long)gnvs->pm1i, (long long)gnvs->gpei);
+}
+
+static void acpi_save_wake_source(void *unused)
+{
+	const struct chipset_power_state *ps;
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (!gnvs)
+		return;
+
+	gnvs->pm1i = -1;
+	gnvs->gpei = -1;
+
+	if (acpi_pm_state_for_wake(&ps) < 0)
+		return;
+
+	pm_fill_gnvs(gnvs, ps);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);

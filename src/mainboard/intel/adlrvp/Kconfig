@@ -1,4 +1,4 @@
-if BOARD_INTEL_ADLRVP_P || BOARD_INTEL_ADLRVP_P_EXT_EC
+if BOARD_INTEL_ADLRVP_P || BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_M || BOARD_INTEL_ADLRVP_M_EXT_EC
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -9,10 +9,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_I2C_HID
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_INTEL_SOUNDWIRE
-	select DRIVERS_INTEL_PMC if BOARD_INTEL_ADLRVP_P_EXT_EC
+	select DRIVERS_INTEL_PMC if BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_M_EXT_EC
 	select DRIVERS_USB_ACPI
 	select DRIVERS_SPI_ACPI
 	select SOC_INTEL_ALDERLAKE
+	select SOC_INTEL_ALDERLAKE_PCH_M if BOARD_INTEL_ADLRVP_M || BOARD_INTEL_ADLRVP_M_EXT_EC
 	select HAVE_SPD_IN_CBFS
 	select DRIVERS_SOUNDWIRE_ALC711
 	select PCIEXP_HOTPLUG
@@ -33,10 +34,13 @@ config VARIANT_DIR
 	string
 	default "adlrvp_p" if BOARD_INTEL_ADLRVP_P
 	default "adlrvp_p_ext_ec" if BOARD_INTEL_ADLRVP_P_EXT_EC
+	default "adlrvp_m" if BOARD_INTEL_ADLRVP_M
+	default "adlrvp_m_ext_ec" if BOARD_INTEL_ADLRVP_M_EXT_EC
 
 config GBB_HWID
 	string
 	depends on CHROMEOS
+	default "ADLRVPM" if BOARD_INTEL_ADLRVP_M || BOARD_INTEL_ADLRVP_M_EXT_EC
 	default "ADLRVPP"
 
 config MAINBOARD_PART_NUMBER
@@ -46,6 +50,11 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_FAMILY
 	string
 	default "Intel_adlrvp"
+
+config DEVICETREE
+	string
+	default "devicetree_m.cb" if BOARD_INTEL_ADLRVP_M || BOARD_INTEL_ADLRVP_M_EXT_EC
+	default "devicetree.cb"
 
 config OVERRIDE_DEVICETREE
 	string
@@ -57,8 +66,8 @@ config DIMM_SPD_SIZE
 
 choice
 	prompt "ON BOARD EC"
-	default ADL_INTEL_EC if BOARD_INTEL_ADLRVP_P
-	default ADL_CHROME_EC if BOARD_INTEL_ADLRVP_P_EXT_EC
+	default ADL_INTEL_EC if BOARD_INTEL_ADLRVP_P || BOARD_INTEL_ADLRVP_M
+	default ADL_CHROME_EC if BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_M_EXT_EC
 	help
 	  This option allows you to select the on board EC to use.
 	  Select whether the board has Intel EC or Chrome EC

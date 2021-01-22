@@ -196,8 +196,12 @@ static void asmlinkage ap_init(unsigned int cpu)
 	/* Fix up APIC id with reality. */
 	info->cpu->path.apic.apic_id = lapicid();
 
-	printk(BIOS_INFO, "AP: slot %d apic_id %x.\n", cpu,
-		info->cpu->path.apic.apic_id);
+	if (cpu_is_intel())
+		printk(BIOS_INFO, "AP: slot %d apic_id %x, MCU rev: 0x%08x\n", cpu,
+		       info->cpu->path.apic.apic_id, get_current_microcode_rev());
+	else
+		printk(BIOS_INFO, "AP: slot %d apic_id %x\n", cpu,
+		       info->cpu->path.apic.apic_id);
 
 	/* Walk the flight plan */
 	ap_do_flight_plan();

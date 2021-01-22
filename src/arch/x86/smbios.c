@@ -1028,6 +1028,7 @@ static int smbios_write_type16(unsigned long *current, int *handle)
 
 	int len;
 	int i;
+	uint64_t max_capacity;
 
 	struct memory_info *meminfo;
 	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
@@ -1057,7 +1058,13 @@ static int smbios_write_type16(unsigned long *current, int *handle)
 
 	/* no error information handle available */
 	t->memory_error_information_handle = 0xFFFE;
-	t->maximum_capacity = meminfo->max_capacity_mib * (MiB / KiB);
+	max_capacity = meminfo->max_capacity_mib;
+	if (max_capacity * (MiB / KiB) < SMBIOS_USE_EXTENDED_MAX_CAPACITY)
+		t->maximum_capacity = max_capacity * (MiB / KiB);
+	else {
+		t->maximum_capacity = SMBIOS_USE_EXTENDED_MAX_CAPACITY;
+		t->extended_maximum_capacity = max_capacity * MiB;
+	}
 	t->number_of_memory_devices = meminfo->number_of_devices;
 
 	len += smbios_string_table_len(t->eos);

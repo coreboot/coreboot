@@ -829,6 +829,8 @@ enum {
 	SMBIOS_EVENTLOG_STATUS_FULL  = 2, /* Bit 1 */
 };
 
+#define SMBIOS_USE_EXTENDED_MAX_CAPACITY	(1 << 31)
+
 struct smbios_type16 {
 	u8 type;
 	u8 length;

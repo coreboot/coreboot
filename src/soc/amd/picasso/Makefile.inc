@@ -226,7 +226,6 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_LOAD_MP2_FW) \
 		$(OPT_PSP_LOAD_S0I3_FW) \
 		$(OPT_WHITELIST_FILE) \
-		$(OPT_SEC_DEBUG_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
 		--combo-capable \
@@ -249,7 +248,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
-		$(OPT_PSPBTLDR_FILE) \
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB0_NV_SIZE) \
 		$(OPT_APOB0_NV_BASE) \

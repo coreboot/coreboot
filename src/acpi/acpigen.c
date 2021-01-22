@@ -151,18 +151,6 @@ void acpigen_write_integer(uint64_t data)
 		acpigen_write_qword(data);
 }
 
-void acpigen_write_name_zero(const char *name)
-{
-	acpigen_write_name(name);
-	acpigen_write_one();
-}
-
-void acpigen_write_name_one(const char *name)
-{
-	acpigen_write_name(name);
-	acpigen_write_zero();
-}
-
 void acpigen_write_name_byte(const char *name, uint8_t val)
 {
 	acpigen_write_name(name);

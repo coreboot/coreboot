@@ -45,6 +45,9 @@ MAINBOARD_BLOBS_DIR:=$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 # |           |  PSPDIR ADDR  |  BIOSDIR ADDR  |
 # +-----------+---------------+----------------+
 
+$(if $(CONFIG_AMD_FWM_POSITION_INDEX), ,\
+     $(error Invalid AMD firmware position index. Check if the board sets a valid ROM size))
+
 CEZANNE_FWM_POSITION=$(call int-add, \
 	$(call int-subtract, 0xffffffff \
 	$(call int-shift-left, \

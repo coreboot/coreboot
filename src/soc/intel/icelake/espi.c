@@ -36,24 +36,6 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
 }
 
-uint8_t get_pch_series(void)
-{
-	uint16_t lpc_did_hi_byte;
-
-	/*
-	 * Fetch upper 8 bits on ESPI device ID to determine PCH type
-	 * Adding 1 to the offset to fetch upper 8 bits
-	 */
-	lpc_did_hi_byte = pci_read_config8(PCH_DEV_ESPI, PCI_DEVICE_ID + 1);
-
-	if (lpc_did_hi_byte == 0x9D)
-		return PCH_LP;
-	else if (lpc_did_hi_byte == 0xA3)
-		return PCH_H;
-	else
-		return PCH_UNKNOWN_SERIES;
-}
-
 #if ENV_RAMSTAGE
 static void soc_mirror_dmi_pcr_io_dec(void)
 {

@@ -43,16 +43,10 @@
 
 static uint32_t get_pmc_reg_base(void)
 {
-	uint8_t pch_series;
-
-	pch_series = get_pch_series();
-
-	if (pch_series == PCH_H)
+	if (CONFIG(SOC_INTEL_CANNONLAKE_PCH_H))
 		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_H;
-	else if (pch_series == PCH_LP)
-		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_LP;
 	else
-		return 0;
+		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_LP;
 }
 
 static void soc_config_pwrmbase(void)

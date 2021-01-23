@@ -31,15 +31,4 @@
 #define PCCTL			0xE0 /* PCI Clock Control */
 #define   CLKRUN_EN		(1 << 0)
 
-/*
- * This function will help to differentiate between 2 PCH on single type of soc.
- * Since same soc may have LP series pch or H series PCH, we need to
- * differentiate by reading upper 8 bits of PCH device ids.
- *
- * Return:
- *	Return PCH_LP or PCH_H macro in case of respective device ID found.
- *	PCH_UNKNOWN_SERIES in case of invalid device ID.
- */
-uint8_t get_pch_series(void);
-
 #endif

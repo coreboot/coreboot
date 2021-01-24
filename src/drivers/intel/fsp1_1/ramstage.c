@@ -82,7 +82,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 
 	/* Locate VBT and pass to FSP GOP */
 	if (CONFIG(RUN_FSP_GOP))
-		load_vbt(is_s3_wakeup, &silicon_init_params);
+		load_vbt(&silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
 	if (CONFIG(FSP1_1_DISPLAY_LOGO) && !is_s3_wakeup)

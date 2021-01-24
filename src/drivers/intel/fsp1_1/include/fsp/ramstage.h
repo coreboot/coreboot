@@ -18,6 +18,6 @@ void mainboard_silicon_init_params(SILICON_INIT_UPD *params);
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	SILICON_INIT_UPD *new);
 const struct cbmem_entry *soc_load_logo(SILICON_INIT_UPD *params);
-void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params);
+void load_vbt(SILICON_INIT_UPD *params);
 
 #endif /* _INTEL_COMMON_RAMSTAGE_H_ */

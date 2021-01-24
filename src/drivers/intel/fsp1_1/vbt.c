@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <drivers/intel/gma/opregion.h>
@@ -8,13 +9,13 @@
 #include <lib.h>
 
 /* Locate VBT and pass it to FSP GOP */
-void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
+void load_vbt(SILICON_INIT_UPD *params)
 {
 	const optionrom_vbt_t *vbt_data = NULL;
 	size_t vbt_len;
 
 	/* Check boot mode - for S3 resume path VBT loading is not needed */
-	if (s3_resume) {
+	if (acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "S3 resume do not pass VBT to GOP\n");
 	} else if (display_init_required()) {
 		/* Get VBT data */

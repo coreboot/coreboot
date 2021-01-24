@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
 #
-# This file is part of the coreboot project.
-#
 # This file is sourced from src/security/Kconfig for menuconfig convenience.
 
 #menu "CBFS verification"	# TODO: enable once it works

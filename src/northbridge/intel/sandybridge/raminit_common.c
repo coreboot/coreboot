@@ -170,15 +170,16 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 	/* Other parameters */
 	const union tc_othp_reg tc_othp = {
-		.tXPDLL  = ctrl->tXPDLL,
-		.tXP     = ctrl->tXP,
+		.tXPDLL  = MIN(ctrl->tXPDLL, 31),
+		.tXP     = MIN(ctrl->tXP, 7),
 		.tAONPD  = ctrl->tAONPD,
 		.tCPDED  = 2,
 		.tPRPDEN = 1,
 	};
 
 	/*
-	 * If tXP and tXPDLL are very high, we need to increase them by one.
+	 * If tXP and tXPDLL are very high, they no longer fit in the bitfields
+	 * of the TC_OTHP register. If so, we set bits in TC_DTP to compensate.
 	 * This can only happen on Ivy Bridge, and when overclocking the RAM.
 	 */
 	const union tc_dtp_reg tc_dtp = {

@@ -30,3 +30,15 @@ You can use the *SMCIPMITool* to remotely flash the BIOS:
 
 Make sure that the ME isn't in recovery mode, otherwise you get an error
 message on updating the BIOS.
+
+## Flashing with disabled ME
+
+If ME is disabled via `me_cleaner` or the ME recovery jumper, it is still
+possible to flash remotely with the [`Supermicro Update Manager`](SUM) (`SUM`).
+
+```sh
+./sum -i <remote BMC IP> -u <user> -p <password> -c UpdateBios --reboot \
+  --force_update --file build/coreboot.rom
+```
+
+[SUM]: https://www.supermicro.com/SwDownload/SwSelect_Free.aspx?cat=SUM

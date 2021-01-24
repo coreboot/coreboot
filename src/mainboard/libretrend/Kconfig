@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/libretrend/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string "Mainboard Vendor"
 	default "Libretrend"
 
 endif # VENDOR_LIBRETREND

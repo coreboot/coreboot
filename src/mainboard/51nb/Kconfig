@@ -12,7 +12,6 @@ endchoice
 source "src/mainboard/51nb/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string "Mainboard Vendor"
 	default "51NB"
 
 endif # VENDOR_51NB

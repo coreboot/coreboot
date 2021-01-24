@@ -60,14 +60,6 @@ static int find_unused_pmio_window(void)
 	return -1;
 }
 
-void lpc_close_pmio_windows(void)
-{
-	size_t i;
-
-	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++)
-		pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i), 0);
-}
-
 void lpc_open_pmio_window(uint16_t base, uint16_t size)
 {
 	int i, lgir_reg_num;

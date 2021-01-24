@@ -56,8 +56,6 @@ uint16_t lpc_get_fixed_io_decode(void);
 uint16_t lpc_set_fixed_io_ranges(uint16_t io_ranges, uint16_t mask);
 /* Open a generic IO window to the LPC bus. Four windows are available. */
 void lpc_open_pmio_window(uint16_t base, uint16_t size);
-/* Close all generic IO windows to the LPC bus. */
-void lpc_close_pmio_windows(void);
 /* Open a generic MMIO window to the LPC bus. One window is available. */
 void lpc_open_mmio_window(uintptr_t base, size_t size);
 /* Init SoC Specific LPC features. Common definition will be weak and

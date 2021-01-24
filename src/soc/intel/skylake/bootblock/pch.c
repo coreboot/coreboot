@@ -98,20 +98,6 @@ static void soc_config_pwrmbase(void)
 		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a0);
 }
 
-static int pch_check_decode_enable(void)
-{
-	uint32_t dmi_control;
-
-	/*
-	 * This cycle decoding is only allowed to set when
-	 * DMICTL.SRLOCK is 0.
-	 */
-	dmi_control = pcr_read32(PID_DMI, PCR_DMI_DMICTL);
-	if (dmi_control & PCR_DMI_DMICTL_SRLOCK)
-		return -1;
-	return 0;
-}
-
 void pch_early_iorange_init(void)
 {
 	uint16_t io_enables = LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
@@ -129,8 +115,7 @@ void pch_early_iorange_init(void)
 	}
 
 	/* IO Decode Enable */
-	if (pch_check_decode_enable() == 0)
-		lpc_enable_fixed_io_ranges(io_enables);
+	lpc_enable_fixed_io_ranges(io_enables);
 
 	/* Program generic IO Decode Range */
 	pch_enable_lpc();

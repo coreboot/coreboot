@@ -142,10 +142,6 @@ DefinitionBlock (
  * PCI IRQs
  ****************************************************************/
 
-	Method(\_PIC, 1, NotSerialized) {
-		\PICM = Arg0
-	}
-
 	Scope(\_SB) {
 		Scope(PCI0) {
 #define prt_slot_lnk(nr, lnk0, lnk1, lnk2, lnk3)  \

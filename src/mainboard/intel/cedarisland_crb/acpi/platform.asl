@@ -19,11 +19,6 @@ Field (POST, ByteAcc, Lock, Preserve)
 
 Name(\APC1, Zero) // IIO IOAPIC
 
-Method(_PIC, 1)
-{
-	Store(Arg0, PICM)
-}
-
 /*
  * The _PTS method (Prepare To Sleep) is called before the OS is
  * entering a sleep state. The sleep state number is passed in Arg0

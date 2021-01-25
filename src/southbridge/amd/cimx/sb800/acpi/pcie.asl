@@ -132,11 +132,6 @@ Scope(\_SB) {
 		P3PR, 1,
 	}
 
-		Method(\_PIC, 0x01, NotSerialized)
-		{
-			PICM = Arg0
-		}
-
 		Name(IRQB, ResourceTemplate(){
 			IRQ(Level,ActiveLow,Shared){15}
 		})

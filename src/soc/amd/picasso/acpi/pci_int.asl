@@ -1,11 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-	Method(\_PIC, 0x01, NotSerialized)
-	{
-		printf("PIC MODE: %o", Arg0)
-		PICM = Arg0
-	}
-
 	/* PIC Possible Resource Values */
 	Name(IRQP, ResourceTemplate() {
 		Interrupt(ResourceConsumer, Level, ActiveLow, Exclusive, , , PIC){

@@ -45,7 +45,7 @@ Device (PCIB)
 	// TODO: How many slots, where?
 
 	// PCI Interrupt Routing.
-	// If PICM is set, interrupts are routed over the i8259, otherwise
+	// If PICM is _not_ set, interrupts are routed over the i8259, otherwise
 	// over the IOAPIC. (Really? If they're above 15 they need to be routed
 	// fixed over the IOAPIC?)
 

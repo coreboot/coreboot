@@ -19,8 +19,6 @@ Field (POST, ByteAcc, Lock, Preserve)
 
 Name(\APC1, Zero) // IIO IOAPIC
 
-Name(\PICM, Zero) // IOAPIC/8259
-
 Method(_PIC, 1)
 {
 	Store(Arg0, PICM)

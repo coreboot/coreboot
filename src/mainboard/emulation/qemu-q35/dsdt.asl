@@ -142,8 +142,6 @@ DefinitionBlock (
  * PCI IRQs
  ****************************************************************/
 
-	/* Zero => PIC mode, One => APIC Mode */
-	Name(\PICM, Zero)
 	Method(\_PIC, 1, NotSerialized) {
 		\PICM = Arg0
 	}

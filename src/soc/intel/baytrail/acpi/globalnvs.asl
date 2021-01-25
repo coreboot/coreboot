@@ -2,8 +2,6 @@
 
 /* Global Variables */
 
-Name(\PICM, 0)		/* IOAPIC/8259 */
-
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */

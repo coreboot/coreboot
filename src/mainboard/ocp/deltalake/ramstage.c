@@ -320,7 +320,7 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17
 {
 	char buf[40];
 
-	snprintf(buf, sizeof(buf), "DIMM %c0", 'A' + dimm->channel_num);
+	snprintf(buf, sizeof(buf), "DIMM_%c0", 'A' + dimm->channel_num);
 	t->device_locator = smbios_add_string(t->eos, buf);
 
 	snprintf(buf, sizeof(buf), "_Node0_Channel%d_Dimm0", dimm->channel_num);

@@ -9,11 +9,6 @@
 #include <arch/ioapic.h>
 #include <soc/southbridge.h>
 
-/*
-* The southbridge enables all USB controllers by default in SMBUS Control.
-* The southbridge enables SATA by default in SMBUS Control.
-*/
-
 static void sm_init(struct device *dev)
 {
 	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);

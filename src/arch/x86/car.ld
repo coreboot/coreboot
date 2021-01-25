@@ -94,8 +94,6 @@
 .car.mrc_var . (NOLOAD) : {
 	. += CONFIG_DCACHE_RAM_MRC_VAR_SIZE;
 }
-
-. = _car_region_end;
 .car.fspt_reserved . (NOLOAD) : {
 	. +=  CONFIG_FSP_T_RESERVED_SIZE;
 }

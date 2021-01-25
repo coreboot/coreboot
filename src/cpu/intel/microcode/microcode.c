@@ -119,12 +119,15 @@ uint32_t get_microcode_checksum(const void *microcode)
 
 const void *intel_microcode_find(void)
 {
-	const struct microcode *ucode_updates;
+	static const struct microcode *ucode_updates;
 	size_t microcode_len;
 	u32 eax;
 	u32 pf, rev, sig, update_size;
 	unsigned int x86_model, x86_family;
 	msr_t msr;
+
+	if (ucode_updates)
+		return ucode_updates;
 
 	ucode_updates = cbfs_map(MICROCODE_CBFS_FILE, &microcode_len);
 	if (ucode_updates == NULL)
@@ -172,6 +175,8 @@ const void *intel_microcode_find(void)
 		ucode_updates = (void *)((char *)ucode_updates + update_size);
 		microcode_len -= update_size;
 	}
+
+	ucode_updates = NULL;
 
 	return NULL;
 }

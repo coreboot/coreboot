@@ -134,22 +134,7 @@ Scope(\_SB) {
 
 		Method(\_PIC, 0x01, NotSerialized)
 		{
-			If (Arg0)
-			{
-				\_SB.CIRQ()
-			}
 			PICM = Arg0
-		}
-
-		Method(CIRQ, 0x00, NotSerialized){
-			PIRA = 0
-			PIRB = 0
-			PIRC = 0
-			PIRD = 0
-			PIRE = 0
-			PIRF = 0
-			PIRG = 0
-			PIRH = 0
 		}
 
 		Name(IRQB, ResourceTemplate(){

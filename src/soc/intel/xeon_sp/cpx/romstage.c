@@ -60,6 +60,9 @@ void save_dimm_info(void)
 		return;
 	}
 	memset(mem_info, 0, sizeof(*mem_info));
+	/* According to Dear Customer Letter it's 1.12 TB per processor. */
+	mem_info->max_capacity_mib = 1.12 * MiB * CONFIG_MAX_SOCKET;
+	mem_info->number_of_devices = CONFIG_DIMM_MAX;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
 	vdd_voltage = get_ddr_voltage(hob->DdrVoltage);
 	/* For now only implement for one socket and hard-coded for DDR4 */

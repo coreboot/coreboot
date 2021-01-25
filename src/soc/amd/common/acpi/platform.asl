@@ -18,6 +18,8 @@ Scope (\_SB){
 /* Platform-wide wake methods */
 Method (\_WAK, 1, NotSerialized)
 {
+	PNOT ()
+
 	If (CondRefOf (\_SB.MWAK)) {
 		\_SB.MWAK()
 	}

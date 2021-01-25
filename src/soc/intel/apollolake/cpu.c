@@ -48,6 +48,10 @@ static const struct reg_script core_msr_script[] = {
 
 void soc_core_init(struct device *cpu)
 {
+	/* Configure Core PRMRR for SGX. */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
+		prmrr_core_configure();
+
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): Some of these banks are core vs package
 			  scope. For now every CPU clears every bank. */
@@ -65,10 +69,6 @@ void soc_core_init(struct device *cpu)
 	 * implemented in microcode.
 	*/
 	enable_pm_timer_emulation();
-
-	/* Configure Core PRMRR for SGX. */
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		prmrr_core_configure();
 
 	/* Set Max Non-Turbo ratio if RAPL is disabled. */
 	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {

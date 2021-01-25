@@ -97,6 +97,10 @@ static void configure_c_states(void)
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
+	/* Configure Core PRMRR for SGX. */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
+		prmrr_core_configure();
+
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
@@ -126,10 +130,6 @@ void soc_core_init(struct device *cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
-
-	/* Configure Core PRMRR for SGX. */
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		prmrr_core_configure();
 }
 
 static void per_cpu_smm_trigger(void)

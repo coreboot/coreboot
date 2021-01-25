@@ -1,7 +1,7 @@
 comment "Zork"
 
 config BOARD_GOOGLE_DALBOZ
-	bool "->  Dalboz"
+	bool "-> Dalboz"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_VILBOZ
@@ -9,15 +9,15 @@ config BOARD_GOOGLE_VILBOZ
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_EZKINIL
-	bool "->  Ezkinil"
+	bool "-> Ezkinil"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_MORPHIUS
-	bool "->  Morphius"
+	bool "-> Morphius"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_TREMBYLE
-	bool "->  Trembyle"
+	bool "-> Trembyle"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_BERKNIP

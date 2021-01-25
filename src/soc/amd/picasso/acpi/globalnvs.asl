@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Global variables */
-Name (PMOD, Zero)	/* Interrupt Mode used by OS. Assume PIC. */
+Name (PICM, Zero)	/* Interrupt Mode used by OS. Assume PIC. */
 
 /*
  * NOTE: The layout of the GNVS structure below must match the layout in

@@ -27,7 +27,7 @@ Method(_STA, 0) {
 }
 
 Method(_PRT,0) {
-	If(PMOD){ Return(APR0) }   /* APIC mode */
+	If(PICM){ Return(APR0) }   /* APIC mode */
 	Return (PR0)                  /* PIC Mode */
 } /* end _PRT */
 

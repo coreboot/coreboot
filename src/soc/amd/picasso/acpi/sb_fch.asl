@@ -38,7 +38,7 @@ Device (GPIO)
 			Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IGPI
 		} Else {
 			IRQN = PGPI
@@ -73,7 +73,7 @@ Device (MMC0)
 			Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IMMC
 		} Else {
 			IRQN = PMMC
@@ -109,7 +109,7 @@ Device (FUR0)
 			Memory32Fixed (ReadWrite, APU_DMAC0_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IUA0
 		} Else {
 			IRQN = PUA0
@@ -142,7 +142,7 @@ Device (FUR1) {
 			Memory32Fixed (ReadWrite, APU_DMAC1_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IUA1
 		} Else {
 			IRQN = PUA1
@@ -175,7 +175,7 @@ Device (FUR2) {
 			Memory32Fixed (ReadWrite, APU_DMAC2_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IUA2
 		} Else {
 			IRQN = PUA2
@@ -208,7 +208,7 @@ Device (FUR3) {
 			Memory32Fixed (ReadWrite, APU_DMAC3_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = IUA3
 		} Else {
 			IRQN = PUA3
@@ -240,7 +240,7 @@ Device (I2C2) {
 			Memory32Fixed (ReadWrite, APU_I2C2_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = II22
 		} Else {
 			IRQN = PI22
@@ -277,7 +277,7 @@ Device (I2C3)
 			Memory32Fixed (ReadWrite, APU_I2C3_BASE, 0x1000)
 		}
 		CreateDWordField (Local0, IRQR._INT, IRQN)
-		If (PMOD) {
+		If (PICM) {
 			IRQN = II23
 		} Else {
 			IRQN = PI23

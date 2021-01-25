@@ -19,7 +19,7 @@ Method (_STA, 0, NotSerialized)
 
 Method (_PRT, 0, NotSerialized)
 {
-	If (PMOD)
+	If (PICM)
 	{
 		Return (APR0)
 	}
@@ -36,7 +36,7 @@ Device(PBR2) {
 	Name(_ADR, 0x00020000)
 	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
-		If(PMOD) { Return(APS2) }   /* APIC mode */
+		If(PICM) { Return(APS2) }   /* APIC mode */
 		Return (PS2)                  /* PIC Mode */
 	} /* end _PRT */
 } /* end PBR2 */
@@ -46,7 +46,7 @@ Device(PBR3) {
 	Name(_ADR, 0x00030000)
 	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
-		If(PMOD) { Return(APS3) }	/* APIC mode */
+		If(PICM) { Return(APS3) }	/* APIC mode */
 		Return (PS3)				/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR3 */

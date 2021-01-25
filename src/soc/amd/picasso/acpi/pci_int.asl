@@ -3,7 +3,7 @@
 	Method(\_PIC, 0x01, NotSerialized)
 	{
 		printf("PIC MODE: %o", Arg0)
-		PMOD = Arg0
+		PICM = Arg0
 	}
 
 	/* PIC Possible Resource Values */
@@ -26,7 +26,7 @@
 		Name(_UID, UID) \
 \
 		Method(_STA, 0) { \
-			If (PMOD) { \
+			If (PICM) { \
 				local0=APIC_REG \
 			} Else { \
 				local0=PIC_REG \
@@ -44,7 +44,7 @@
 		} \
 \
 		Method(_DIS ,0) { \
-			If(PMOD) { \
+			If(PICM) { \
 				printf("PCI: \\_SB.%s._DIS APIC", #DEV_NAME) \
 				APIC_REG=0x1f \
 			} Else { \
@@ -54,7 +54,7 @@
 		} \
 \
 		Method(_PRS ,0) { \
-			If(PMOD) { \
+			If(PICM) { \
 				printf("PCI: \\_SB.%s._PRS => APIC", #DEV_NAME) \
 				Return(IRQI) \
 			} Else { \
@@ -73,7 +73,7 @@
 				{ 0 } \
 			} \
 			CreateDWordField(local0, NUMB._INT, IRQN) \
-			If(PMOD) { \
+			If(PICM) { \
 				printf("PCI: \\_SB.%s._CRS APIC: %o", #DEV_NAME, APIC_REG) \
 				IRQN=APIC_REG \
 			} Else { \
@@ -90,7 +90,7 @@
 		Method(_SRS, 1) { \
 			CreateWordField(ARG0, 0x5, IRQN) \
 \
-			If(PMOD) { \
+			If(PICM) { \
 				printf("PCI: \\_SB.%s._SRS APIC: %o", #DEV_NAME, IRQN) \
 				APIC_REG=IRQN \
 			} Else { \

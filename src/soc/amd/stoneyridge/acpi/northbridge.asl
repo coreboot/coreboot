@@ -20,7 +20,7 @@ Method(_STA, 0, NotSerialized)
 
 Method(_PRT,0, NotSerialized)
 {
-	If(PMOD)
+	If(PICM)
 	{
 		Return(APR0)	/* APIC mode */
 	}
@@ -40,7 +40,7 @@ Device(IGFX) {
 Device(PBR4) {
 	Name(_ADR, 0x00020001)
 	Method(_PRT,0) {
-		If(PMOD){ Return(APS4) }	/* APIC mode */
+		If(PICM){ Return(APS4) }	/* APIC mode */
 		Return (PS4)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR4 */
@@ -49,7 +49,7 @@ Device(PBR4) {
 Device(PBR5) {
 	Name(_ADR, 0x00020002)
 	Method(_PRT,0) {
-		If(PMOD){ Return(APS5) }	/* APIC mode */
+		If(PICM){ Return(APS5) }	/* APIC mode */
 		Return (PS5)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR5 */
@@ -58,7 +58,7 @@ Device(PBR5) {
 Device(PBR6) {
 	Name(_ADR, 0x00020003)
 	Method(_PRT,0) {
-		If(PMOD){ Return(APS6) }	/* APIC mode */
+		If(PICM){ Return(APS6) }	/* APIC mode */
 		Return (PS6)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR6 */
@@ -67,7 +67,7 @@ Device(PBR6) {
 Device(PBR7) {
 	Name(_ADR, 0x00020004)
 	Method(_PRT,0) {
-		If(PMOD){ Return(APS7) }	/* APIC mode */
+		If(PICM){ Return(APS7) }	/* APIC mode */
 		Return (PS7)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR7 */
@@ -76,7 +76,7 @@ Device(PBR7) {
 Device(PBR8) {
 	Name(_ADR, 0x00020005)
 	Method(_PRT,0) {
-		If(PMOD){ Return(APS8) }	/* APIC mode */
+		If(PICM){ Return(APS8) }	/* APIC mode */
 		Return (PS8)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR8 */

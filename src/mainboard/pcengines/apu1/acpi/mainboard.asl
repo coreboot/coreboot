@@ -13,7 +13,7 @@ Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 /* Some global data */
 Name(OSVR, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 Name(OSV, Ones)	/* Assume nothing */
-Name(PMOD, One)	/* Assume APIC */
+Name(PICM, One)	/* Assume APIC */
 
 Scope(\_SB) {
 	Method(OSFL, 0){

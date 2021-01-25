@@ -37,7 +37,7 @@ DefinitionBlock (
 	/* Some global data */
 	Name(OSVR, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 	Name(OSV, Ones)	/* Assume nothing */
-	Name(PMOD, One)	/* Assume APIC */
+	Name(PICM, One)	/* Assume APIC */
 
 	/*
 	 * Processor Object
@@ -394,7 +394,7 @@ DefinitionBlock (
 			{
 				\_SB.CIRQ()
 			}
-			PMOD = Arg0
+			PICM = Arg0
 		}
 		Method(CIRQ, 0x00, NotSerialized){
 			PIRA = 0
@@ -883,7 +883,7 @@ DefinitionBlock (
 			}
 
 			Method(_PRT,0) {
-				If(PMOD){ Return(APR0) }   /* APIC mode */
+				If(PICM){ Return(APR0) }   /* APIC mode */
 				Return (PR0)                  /* PIC Mode */
 			} /* end _PRT */
 
@@ -906,7 +906,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00020000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS2) }   /* APIC mode */
+					If(PICM){ Return(APS2) }   /* APIC mode */
 					Return (PS2)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR2 */
@@ -917,7 +917,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00040000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS4) }   /* APIC mode */
+					If(PICM){ Return(APS4) }   /* APIC mode */
 					Return (PS4)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR4 */
@@ -926,7 +926,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00050000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS5) }   /* APIC mode */
+					If(PICM){ Return(APS5) }   /* APIC mode */
 					Return (PS5)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR5 */
@@ -935,7 +935,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00060000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS6) }   /* APIC mode */
+					If(PICM){ Return(APS6) }   /* APIC mode */
 					Return (PS6)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR6 */
@@ -945,7 +945,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00070000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS7) }   /* APIC mode */
+					If(PICM){ Return(APS7) }   /* APIC mode */
 					Return (PS7)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR7 */
@@ -955,7 +955,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00090000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS9) }   /* APIC mode */
+					If(PICM){ Return(APS9) }   /* APIC mode */
 					Return (PS9)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR9 */
@@ -964,7 +964,7 @@ DefinitionBlock (
 				Name(_ADR, 0x000A0000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APSa) }   /* APIC mode */
+					If(PICM){ Return(APSa) }   /* APIC mode */
 					Return (PSa)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBRa */
@@ -973,7 +973,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00150000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APE0) }   /* APIC mode */
+					If(PICM){ Return(APE0) }   /* APIC mode */
 					Return (PE0)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE20 */
@@ -981,7 +981,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00150001)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APE1) }   /* APIC mode */
+					If(PICM){ Return(APE1) }   /* APIC mode */
 					Return (PE1)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE21 */
@@ -989,7 +989,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00150002)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APE2) }   /* APIC mode */
+					If(PICM){ Return(APE2) }   /* APIC mode */
 					Return (APE2)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE22 */
@@ -997,7 +997,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00150003)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APE3) }   /* APIC mode */
+					If(PICM){ Return(APE3) }   /* APIC mode */
 					Return (PE3)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE23 */

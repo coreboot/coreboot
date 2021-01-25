@@ -3,6 +3,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
@@ -11,12 +12,24 @@
 #include <soc/soc_util.h>
 #include <soc/util.h>
 
+#if CONFIG(HAVE_ACPI_TABLES)
+const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PC00";
+	return NULL;
+}
+#endif
+
 static struct device_operations pci_domain_ops = {
 	.read_resources = &pci_domain_read_resources,
 	.set_resources = &xeonsp_pci_domain_set_resources,
 	.scan_bus = &xeonsp_pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables  = &northbridge_write_acpi_tables,
+	#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name        = soc_acpi_name
+#endif
 #endif
 };
 

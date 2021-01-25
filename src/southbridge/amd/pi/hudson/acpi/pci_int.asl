@@ -105,14 +105,7 @@
 
 	Method(\_PIC, 0x01, NotSerialized)
 	{
-		If (Arg0)
-		{
-			\_SB.CIRQ()
-		}
 		PICM = Arg0
-	}
-
-	Method(CIRQ, 0x00, NotSerialized){
 	}
 
 	Name(IRQB, ResourceTemplate(){

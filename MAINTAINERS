@@ -563,6 +563,7 @@ AMD Cezanne
 M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Raul E Rangel <rrangel@chromium.org>
 S:	Maintained
 F:	src/soc/amd/cezanne/
 
@@ -570,6 +571,7 @@ AMD common SoC code
 M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Raul E Rangel <rrangel@chromium.org>
 S:	Maintained
 F:	src/soc/amd/common/
 
@@ -577,6 +579,7 @@ AMD Picasso
 M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Raul E Rangel <rrangel@chromium.org>
 S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/

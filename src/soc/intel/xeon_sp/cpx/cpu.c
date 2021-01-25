@@ -58,13 +58,8 @@ static void xeon_configure_mca(void)
  */
 void get_microcode_info(const void **microcode, int *parallel)
 {
-	*microcode = intel_mp_current_microcode();
+	*microcode = intel_microcode_find();
 	*parallel = 0;
-}
-
-const void *intel_mp_current_microcode(void)
-{
-	return microcode_patch;
 }
 
 static void each_cpu_init(struct device *cpu)

@@ -224,7 +224,7 @@ void sgx_configure(void *unused)
 	 * loads and to prevent simultaneous load attempts to the same core.
 	 */
 	if (!intel_ht_sibling()) {
-		const void *microcode_patch = intel_mp_current_microcode();
+		const void *microcode_patch = intel_microcode_find();
 		intel_microcode_load_unlocked(microcode_patch);
 	}
 

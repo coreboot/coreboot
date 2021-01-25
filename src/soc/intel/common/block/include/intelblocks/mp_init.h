@@ -54,14 +54,6 @@
 int get_cpu_count(void);
 
 /*
- * Function to get the microcode patch pointer. Use this function to avoid
- * reading the microcode patch from the boot media. init_cpus() would
- * initialize microcode_patch global variable to point to microcode patch
- * in boot media and this function can be used to access the pointer.
- */
-const void *intel_mp_current_microcode(void);
-
-/*
  * MP Init callback function(get_microcode_info) to find the Microcode at
  * Pre MP Init phase. This function is common among all SOCs and thus its in
  * Common CPU block.

@@ -15,8 +15,6 @@
 #include <intelblocks/msr.h>
 #include <soc/cpu.h>
 
-static const void *microcode_patch;
-
 /* SoC override function */
 __weak void soc_core_init(struct device *dev)
 {
@@ -31,6 +29,8 @@ __weak void soc_init_cpus(struct bus *cpu_bus)
 static void init_one_cpu(struct device *dev)
 {
 	soc_core_init(dev);
+
+	const void *microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 }
 
@@ -105,17 +105,6 @@ int get_cpu_count(void)
 }
 
 /*
- * Function to get the microcode patch pointer. Use this function to avoid
- * reading the microcode patch from the boot media. init_cpus() would
- * initialize microcode_patch global variable to point to microcode patch
- * in boot media and this function can be used to access the pointer.
- */
-const void *intel_mp_current_microcode(void)
-{
-	return microcode_patch;
-}
-
-/*
  * MP Init callback function(get_microcode_info) to find the Microcode at
  * Pre MP Init phase. This function is common among all SOCs and thus its in
  * Common CPU block.
@@ -125,7 +114,7 @@ const void *intel_mp_current_microcode(void)
  */
 void get_microcode_info(const void **microcode, int *parallel)
 {
-	*microcode = intel_mp_current_microcode();
+	*microcode = intel_microcode_find();
 	*parallel = 1;
 }
 
@@ -151,7 +140,7 @@ static void coreboot_init_cpus(void *unused)
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
-	microcode_patch = intel_microcode_find();
+	const void *microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 
 	init_cpus();

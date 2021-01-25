@@ -123,8 +123,6 @@ static void model_2065x_init(struct device *cpu)
 }
 
 /* MP initialization support. */
-static const void *microcode_patch;
-
 static void pre_mp_init(void)
 {
 	/* Setup MTRRs based on physical address size. */
@@ -149,8 +147,7 @@ static int get_cpu_count(void)
 
 static void get_microcode_info(const void **microcode, int *parallel)
 {
-	microcode_patch = intel_microcode_find();
-	*microcode = microcode_patch;
+	*microcode = intel_microcode_find();
 	*parallel = !intel_ht_supported();
 }
 
@@ -160,6 +157,7 @@ static void per_cpu_smm_trigger(void)
 	smm_relocate();
 
 	/* After SMM relocation a 2nd microcode load is required. */
+	const void *microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 }
 

@@ -2,6 +2,8 @@
 
 // Intel LPC Bus Device  - 0:1f.0
 
+#include <southbridge/intel/lynxpoint/pch.h>
+
 Device (LPCB)
 {
 	Name (_ADR, 0x001f0000)

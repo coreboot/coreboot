@@ -10,8 +10,6 @@
 
 #include "memmap.h"
 
-#include <southbridge/intel/lynxpoint/pch.h>
-
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 

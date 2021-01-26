@@ -15,6 +15,7 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <drivers/intel/gma/opregion.h>
+#include <southbridge/intel/lynxpoint/pch.h>
 #include <string.h>
 #include <types.h>
 

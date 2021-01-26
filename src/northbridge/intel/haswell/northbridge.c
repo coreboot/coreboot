@@ -13,6 +13,7 @@
 #include <device/pci_ops.h>
 #include <boot/tables.h>
 #include <security/intel/txt/txt_register.h>
+#include <southbridge/intel/lynxpoint/pch.h>
 
 #include "chip.h"
 #include "haswell.h"

@@ -82,12 +82,18 @@ static void set_mmio_dev_ops(struct device *dev)
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+	switch (dev->path.type) {
+	case DEVICE_PATH_DOMAIN:
 		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		break;
+	case DEVICE_PATH_CPU_CLUSTER:
 		dev->ops = &cpu_bus_ops;
-	} else if (dev->path.type == DEVICE_PATH_MMIO) {
+		break;
+	case DEVICE_PATH_MMIO:
 		set_mmio_dev_ops(dev);
+		break;
+	default:
+		break;
 	}
 }
 

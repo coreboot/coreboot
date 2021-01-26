@@ -2,11 +2,14 @@
 
 #include <arch/stages.h>
 #include <console/console.h>
+#include <delay.h>
 #include <fmap.h>
 #include <soc/dramc_param.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
+#include <soc/mt6315.h>
 #include <soc/mt6359p.h>
+#include <soc/pll_common.h>
 
 /* This must be defined in chromeos.fmd in same name and size. */
 #define CALIBRATION_REGION		"RW_DDR_TRAINING"
@@ -42,9 +45,20 @@ static struct dramc_param_ops dparam_ops = {
 	.write_to_flash = &write_calibration_data_to_flash,
 };
 
+static void raise_little_cpu_freq(void)
+{
+	mt6359p_buck_set_voltage(MT6359P_SRAM_PROC2, 1000 * 1000);
+	mt6315_buck_set_voltage(MT6315_CPU, MT6315_BUCK_3, 925 * 1000);
+	udelay(200);
+	mt_pll_raise_little_cpu_freq(2000 * MHz);
+	mt_pll_raise_cci_freq(1400 * MHz);
+}
+
 void platform_romstage_main(void)
 {
 	mt6359p_romstage_init();
+	mt6315_romstage_init();
+	raise_little_cpu_freq();
 	mt_mem_init(&dparam_ops);
 	mtk_mmu_after_dram();
 }

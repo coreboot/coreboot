@@ -474,6 +474,11 @@ static void broadwell_enable(struct device *dev)
 	}
 }
 
+static void broadwell_init_pre_device(void *chip_info)
+{
+	broadwell_run_reference_code();
+}
+
 struct chip_operations soc_intel_broadwell_ops = {
 	CHIP_NAME("Intel Broadwell")
 	.enable_dev = &broadwell_enable,

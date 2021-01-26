@@ -9,7 +9,6 @@
 #include <string.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
-#include <soc/ramstage.h>
 #include <soc/intel/broadwell/chip.h>
 
 /* Save bit index for PM1_STS and GPE_STS for ACPI _SWS */
@@ -73,8 +72,3 @@ static void acpi_save_wake_source(void *unused)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, acpi_save_wake_source, NULL);
-
-void broadwell_init_pre_device(void *chip_info)
-{
-	broadwell_run_reference_code();
-}

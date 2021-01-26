@@ -4,6 +4,7 @@
 #define AMD_CEZANNE_IOMAP_H
 
 /* MMIO Ranges */
+#define SPI_BASE_ADDRESS		0xfec10000
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 

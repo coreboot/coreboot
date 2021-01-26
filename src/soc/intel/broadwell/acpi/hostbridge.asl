@@ -194,7 +194,7 @@ Device (PDRC)
 #include "pci_irqs.asl"
 
 /* Configurable TDP */
-#include "ctdp.asl"
+#include <northbridge/intel/haswell/acpi/ctdp.asl>
 
 /* Integrated graphics 0:2.0 */
 #include <drivers/intel/gma/acpi/gfx.asl>

@@ -44,8 +44,10 @@ static int get_fsb_tsc(int *fsb, int *ratio)
 		case 0x2a: /* SandyBridge BCLK fixed at 100MHz */
 		case 0x3a: /* IvyBridge BCLK fixed at 100MHz */
 		case 0x3c: /* Haswell BCLK fixed at 100MHz */
+		case 0x3d: /* Broadwell-ULT BCLK fixed at 100MHz */
 		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
 		case 0x46: /* Haswell-GT3e BCLK fixed at 100MHz */
+		case 0x47: /* Broadwell BCLK fixed at 100MHz */
 			*fsb = 100;
 			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
 			break;

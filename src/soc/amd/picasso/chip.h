@@ -48,7 +48,25 @@ union __packed usb3_force_gen1 {
 		uint8_t usb3_port_force_gen1_en;
 };
 
+enum rfmux_configuration_setting {
+	USB_PD_RFMUX_SAFE_STATE = 0x0,
+	USB_PD_RFMUX_USB31_MODE = 0x1,
+	USB_PD_RFMUX_USB31_MODE_FLIP = 0x2,
+	USB_PD_RFMUX_ATE_MODE = 0x3,
+	USB_PD_RFMUX_DP_X2_MODE = 0x4,
+	USB_PD_RFMUX_MF_MODE_ALT_D_F = 0x6,
+	USB_PD_RFMUX_DP_X2_MODE_FLIP = 0x8,
+	USB_PD_RFMUX_MF_MODE_ALT_D_F_FLIP = 0x9,
+	USB_PD_RFMUX_DP_X4_MODE = 0xc,
+};
+
+struct usb_pd_control {
+		uint8_t rfmux_override_en;
+		uint32_t rfmux_config;
+};
+
 #define USB_PORT_COUNT	6
+#define USB_PD_PORT_COUNT 2
 
 enum sd_emmc_driver_strength {
 	SD_EMMC_DRIVE_STRENGTH_B,
@@ -257,6 +275,9 @@ struct soc_amd_picasso_config {
 	uint8_t pwron_varybl_to_blon;
 	uint8_t pwrdown_bloff_to_varybloff;
 	uint8_t min_allowed_bl_level;
+
+	/* allow USB PD port setting override */
+	struct usb_pd_control usb_pd_config_override[USB_PD_PORT_COUNT];
 };
 
 #endif /* __PICASSO_CHIP_H__ */

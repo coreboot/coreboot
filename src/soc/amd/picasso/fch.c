@@ -101,6 +101,22 @@ void sb_clk_output_48Mhz(void)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
+static void sb_rfmux_config_override(void)
+{
+	u8 port;
+	const struct soc_amd_picasso_config *cfg;
+
+	cfg = config_of_soc();
+
+	for (port = 0; port < USB_PD_PORT_COUNT; port++) {
+		if (cfg->usb_pd_config_override[port].rfmux_override_en) {
+			write32((void *)(USB_PD_PORT_CONTROL + PD_PORT_MUX_OFFSET(port)),
+				cfg->usb_pd_config_override[port].rfmux_config
+				| USB_PD_RFMUX_OVERRIDE);
+		}
+	}
+}
+
 static void sb_init_acpi_ports(void)
 {
 	u32 reg;
@@ -218,6 +234,8 @@ void southbridge_init(void *chip_info)
 	gpp_clk_setup();
 
 	sb_clk_output_48Mhz();
+
+	sb_rfmux_config_override();
 }
 
 void southbridge_final(void *chip_info)

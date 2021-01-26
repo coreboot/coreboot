@@ -15,7 +15,6 @@ DefinitionBlock(
 	#include "acpi/mainboard.asl"
 	#include "acpi/platform.asl"
 	#include "acpi/superio.asl"
-	#include "acpi/thermal.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
 

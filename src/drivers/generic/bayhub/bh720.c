@@ -12,49 +12,45 @@
 #include "chip.h"
 #include "bh720.h"
 
+static u32 bh720_read_pcr(u32 sdbar, u32 addr)
+{
+	write32((void *)(sdbar + BH720_MEM_RW_ADR), BH720_MEM_RW_READ | addr);
+	return read32((void *)(sdbar + BH720_MEM_RW_DATA));
+}
+
+static void bh720_write_pcr(u32 sdbar, u32 addr, u32 data)
+{
+	write32((void *)(sdbar + BH720_MEM_RW_DATA), data);
+	write32((void *)(sdbar + BH720_MEM_RW_ADR), BH720_MEM_RW_WRITE | addr);
+}
+
+static void bh720_rmw_pcr(u32 sdbar, u32 addr, u32 clear, u32 set)
+{
+	u32 data = bh720_read_pcr(sdbar, addr);
+	data &= ~clear;
+	data |= set;
+	bh720_write_pcr(sdbar, addr, data);
+}
+
 static void bh720_program_hs200_mode(struct device *dev)
 {
-	u32 sdbar;
-	u32 bh720_pcr_data;
-
-	sdbar = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
+	u32 sdbar = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
 
 	/* Enable Memory Access Function */
 	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x40000000);
-	write32((void *)(sdbar + BH720_MEM_RW_DATA), 0x80000000);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR), 0x800000D0);
+	bh720_write_pcr(sdbar, 0xd0, 0x80000000);
 
 	/* Set EMMC VCCQ 1.8V PCR 0x308[4] */
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_READ | BH720_PCR_EMMC_SETTING);
-	bh720_pcr_data = read32((void *)(sdbar + BH720_MEM_RW_DATA));
-	write32((void *)(sdbar + BH720_MEM_RW_DATA),
-		bh720_pcr_data | BH720_PCR_EMMC_SETTING_1_8V);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_WRITE | BH720_PCR_EMMC_SETTING);
+	bh720_rmw_pcr(sdbar, BH720_PCR_EMMC_SETTING, 0, BH720_PCR_EMMC_SETTING_1_8V);
 
 	/* Set Base clock to 200MHz(PCR 0x304[31:16] = 0x2510) */
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_READ | BH720_PCR_DrvStrength_PLL);
-	bh720_pcr_data = read32((void *)(sdbar + BH720_MEM_RW_DATA));
-	bh720_pcr_data &= 0x0000FFFF;
-	bh720_pcr_data |= 0x2510 << 16;
-	write32((void *)(sdbar + BH720_MEM_RW_DATA), bh720_pcr_data);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_WRITE | BH720_PCR_DrvStrength_PLL);
+	bh720_rmw_pcr(sdbar, BH720_PCR_DrvStrength_PLL, 0xffff << 16, 0x2510 << 16);
 
 	/* Use PLL Base clock PCR 0x3E4[22] = 1 */
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_READ | BH720_PCR_CSR);
-	bh720_pcr_data = read32((void *)(sdbar + BH720_MEM_RW_DATA));
-	write32((void *)(sdbar + BH720_MEM_RW_DATA),
-		bh720_pcr_data | BH720_PCR_CSR_EMMC_MODE_SEL);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR),
-		BH720_MEM_RW_WRITE | BH720_PCR_CSR);
+	bh720_rmw_pcr(sdbar, BH720_PCR_CSR, 0, BH720_PCR_CSR_EMMC_MODE_SEL);
 
 	/* Disable Memory Access */
-	write32((void *)(sdbar + BH720_MEM_RW_DATA), 0x80000001);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR), 0x800000D0);
+	bh720_write_pcr(sdbar, 0xd0, 0x80000001);
 	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x80000000);
 }
 

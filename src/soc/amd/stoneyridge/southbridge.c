@@ -404,17 +404,7 @@ static void fch_init_acpi_ports(void)
 
 void fch_init(void *chip_info)
 {
-	struct chipset_power_state *state;
-
 	fch_init_acpi_ports();
-
-	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
-	if (state) {
-		acpi_fill_pm_gpe_state(&state->gpe_state);
-		acpi_pm_gpe_add_events_print_events();
-	}
-
-	acpi_clear_pm_gpe_status();
 }
 
 static void set_sb_aoac(struct aoac_devs *aoac)

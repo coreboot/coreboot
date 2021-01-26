@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/acpi.h>
 #include <amdblocks/biosram.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>
@@ -204,3 +205,15 @@ void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly)
 		platform->PlatStapmConfig.CfgStapmBoost = StapmBoostEnabled;
 	}
 }
+
+static void migrate_power_state(int is_recovery)
+{
+	struct chipset_power_state *state;
+	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
+	if (state) {
+		acpi_fill_pm_gpe_state(&state->gpe_state);
+		acpi_pm_gpe_add_events_print_events();
+	}
+	acpi_clear_pm_gpe_status();
+}
+ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)

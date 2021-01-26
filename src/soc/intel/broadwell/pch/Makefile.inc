@@ -24,6 +24,7 @@ romstage-y += pmutil.c
 smm-y      += pmutil.c
 verstage-y += pmutil.c
 romstage-y += power_state.c
+ramstage-y += ramstage.c
 ramstage-y += sata.c
 ramstage-y += serialio.c
 ramstage-y += smbus.c

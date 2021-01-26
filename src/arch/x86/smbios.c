@@ -930,7 +930,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 			const enum slot_data_bus_bandwidth bandwidth,
 			const enum misc_slot_usage usage,
 			const enum misc_slot_length length,
-			u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func)
+			const u16 id, u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func)
 {
 	struct smbios_type9 *t = (struct smbios_type9 *)*current;
 	int len = sizeof(struct smbios_type9);
@@ -942,6 +942,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 	t->slot_designation = smbios_add_string(t->eos, name ? name : "SLOT");
 	t->slot_type = type;
 	/* TODO add slot_id supoort, will be "_SUN" for ACPI devices */
+	t->slot_id = id;
 	t->slot_data_bus_width = bandwidth;
 	t->current_usage = usage;
 	t->slot_length = length;
@@ -1272,6 +1273,7 @@ static int smbios_walk_device_tree_type9(struct device *dev, int *handle,
 				  bandwidth,
 				  usage,
 				  length,
+				  0,
 				  1,
 				  0,
 				  dev->bus->secondary,

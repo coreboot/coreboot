@@ -83,6 +83,7 @@ typedef struct {
 	const char *slot_designator;
 } slot_info;
 
+/* Array index + 1 would be used as Slot ID */
 slot_info slotinfo[] = {
 	{CSTACK,  SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0xE8, "SSD1_M2_Data_Drive"},
 	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "SSD0_M2_Boot_Drive"},
@@ -265,12 +266,14 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		if (sltcap & PCI_EXP_SLTCAP_HPC)
 			characteristics_2 |= SMBIOS_SLOT_HOTPLUG;
 
+		const uint16_t slot_id = index + 1;
 		length += smbios_write_type9(current, handle,
 					  slotinfo[index].slot_designator,
 					  slotinfo[index].slot_type,
 					  slotinfo[index].slot_data_bus_width,
 					  slot_usage,
 					  slot_length,
+					  slot_id,
 					  characteristics_1,
 					  characteristics_2,
 					  stack_busnos[slotinfo[index].stack],

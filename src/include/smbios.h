@@ -20,7 +20,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 			const enum slot_data_bus_bandwidth bandwidth,
 			const enum misc_slot_usage usage,
 			const enum misc_slot_length length,
-			u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func);
+			const u16 id, u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func);
 enum smbios_bmc_interface_type;
 int smbios_write_type38(unsigned long *current, int *handle,
 			const enum smbios_bmc_interface_type interface_type,

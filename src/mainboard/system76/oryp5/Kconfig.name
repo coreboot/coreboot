@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_ORYP5
+	bool "oryp5"

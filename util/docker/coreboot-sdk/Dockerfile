@@ -123,6 +123,7 @@ RUN mkdir -p /tmp/work && \
   git clone https://review.coreboot.org/em100.git && \
   make -C em100 && \
   git clone https://review.coreboot.org/coreboot.git && \
+  (cd coreboot && git submodule update --init --checkout ) && \
   make -C coreboot CPUS=$(nproc) test-abuild && \
   \
   make -C coreboot olddefconfig && \

@@ -322,7 +322,9 @@ static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = lpc_enable_resources,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = southbridge_write_acpi_tables,
+#endif
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
 	.ops_pci = &pci_dev_ops_pci,

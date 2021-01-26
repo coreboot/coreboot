@@ -6,9 +6,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <console/console.h>
 
-/* Just define these here, there is no gm35.h file to include. */
-#define D0F0_PCIEXBAR_LO 0x60
-#define D0F0_PCIEXBAR_HI 0x64
+#include "gm35.h"
 
 static void bootblock_northbridge_init(void)
 {

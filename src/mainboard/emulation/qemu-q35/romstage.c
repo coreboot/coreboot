@@ -6,7 +6,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <device/pci_ops.h>
 
-#define D0F0_PCIEXBAR_LO 0x60
+#include "gm35.h"
 
 static void mainboard_machine_check(void)
 {

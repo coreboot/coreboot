@@ -149,11 +149,6 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 APOB_NV_SIZE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_SIZE" $(obj)/fmap_config.h | awk '{print $$(NF)}')
 APOB_NV_BASE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_START" $(obj)/fmap_config.h | awk '{print $$(NF)}')
 
-# type = 0x66
-PSP_UCODE_FILE1=$(FIRMWARE_LOCATION)/UcodePatch_PCO_B1.bin
-PSP_UCODE_FILE2=$(FIRMWARE_LOCATION)/UcodePatch_PCO_B0.bin
-PSP_UCODE_FILE3=$(FIRMWARE_LOCATION)/UcodePatch_RV2_A0.bin
-
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 # type = 0x6B - PSP Shared memory location
 ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)

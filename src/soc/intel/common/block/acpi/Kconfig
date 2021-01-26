@@ -10,7 +10,13 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_LPIT
 	depends on HAVE_ACPI_TABLES
 	select ACPI_LPIT
 	help
-	  Generate LPIT table with LPI state entries.
+	  Generate LPIT table with LPI state entries
+
+config SOC_INTEL_COMMON_BLOCK_CRASHLOG
+	bool
+	depends on SOC_INTEL_CRASHLOG
+	help
+	  Generate crash data for BERT table
 
 if SOC_INTEL_COMMON_BLOCK_ACPI
 
@@ -18,5 +24,6 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_CPPC
 	bool
 	help
 	  Generate CPPC entries for Intel SpeedShift
+
 
 endif

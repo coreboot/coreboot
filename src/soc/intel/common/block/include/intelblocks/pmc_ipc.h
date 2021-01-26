@@ -17,7 +17,7 @@
 #define PMC_IPC_CMD_SIZE_MASK		0xff
 
 #define PMC_IPC_CMD_FIELD(name, val) \
-	(((val) & PMC_IPC_CMD_##name##_MASK << PMC_IPC_CMD_##name##_SHIFT))
+	((((val) & PMC_IPC_CMD_##name##_MASK) << PMC_IPC_CMD_##name##_SHIFT))
 
 #define PMC_IPC_CMD_NO_MSI		0
 

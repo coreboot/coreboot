@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_I2C_TAS5825M) += tas5825m.c

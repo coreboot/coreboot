@@ -5,17 +5,6 @@ chip soc/intel/alderlake
 
 	register "SaGv" = "SaGv_Disabled"
 
-	# Acoustic settings
-	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
-	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
-	register "SlowSlewRate[VR_DOMAIN_SA]" = "SLEW_FAST_8"
-	register "SlowSlewRate[VR_DOMAIN_VLCC]" = "SLEW_FAST_8"
-	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
-	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
-	register "FastPkgCRampDisable[VR_DOMAIN_SA]" = "1"
-	register "FastPkgCRampDisable[VR_DOMAIN_VLCC]" = "1"
-
 	device domain 0 on
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic

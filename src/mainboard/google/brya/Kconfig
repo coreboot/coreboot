@@ -32,6 +32,10 @@ config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
 
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
 config MAINBOARD_DIR
 	string
 	default "google/brya"

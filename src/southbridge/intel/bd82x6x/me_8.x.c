@@ -27,8 +27,10 @@
 #include "me.h"
 #include "pch.h"
 
+#ifdef __SIMPLE_DEVICE__
+
 /* Send END OF POST message to the ME */
-static int __unused mkhi_end_of_post(void)
+static int mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -53,79 +55,6 @@ static int __unused mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
 	return 0;
 }
-
-static inline void print_cap(const char *name, int state)
-{
-	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
-	       name, state ? " en" : "dis");
-}
-
-static void __unused me_print_fw_version(mbp_fw_version_name *vers_name)
-{
-	if (!vers_name->major_version) {
-		printk(BIOS_ERR, "ME: mbp missing version report\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "ME: found version %d.%d.%d.%d\n",
-	       vers_name->major_version, vers_name->minor_version,
-	       vers_name->hotfix_version, vers_name->build_version);
-}
-
-/* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(mefwcaps_sku *cap)
-{
-	u32 rule_id = 0;
-	struct me_fwcaps cap_msg;
-	struct mkhi_header mkhi = {
-		.group_id       = MKHI_GROUP_ID_FWCAPS,
-		.command        = MKHI_FWCAPS_GET_RULE,
-	};
-	struct mei_header mei = {
-		.is_complete    = 1,
-		.host_address   = MEI_HOST_ADDRESS,
-		.client_address = MEI_ADDRESS_MKHI,
-		.length         = sizeof(mkhi) + sizeof(rule_id),
-	};
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
-		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
-		return -1;
-	}
-	*cap = cap_msg.caps_sku;
-	return 0;
-}
-
-/* Get ME Firmware Capabilities */
-static void __unused me_print_fwcaps(mbp_fw_caps *caps_section)
-{
-	mefwcaps_sku *cap = &caps_section->fw_capabilities;
-	if (!caps_section->available) {
-		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
-		if (mkhi_get_fwcaps(cap))
-			return;
-	}
-
-	print_cap("Full Network manageability", cap->full_net);
-	print_cap("Regular Network manageability", cap->std_net);
-	print_cap("Manageability", cap->manageability);
-	print_cap("Small business technology", cap->small_business);
-	print_cap("Level III manageability", cap->l3manageability);
-	print_cap("IntelR Anti-Theft (AT)", cap->intel_at);
-	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
-	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
-	print_cap("ICC Over Clocking", cap->icc_over_clocking);
-	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
-	print_cap("IPV6", cap->ipv6);
-	print_cap("KVM Remote Control (KVM)", cap->kvm);
-	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
-	print_cap("Virtual LAN (VLAN)", cap->vlan);
-	print_cap("TLS", cap->tls);
-	print_cap("Wireless LAN (WLAN)", cap->wlan);
-}
-
-#ifdef __SIMPLE_DEVICE__
 
 void intel_me8_finalize_smm(void)
 {
@@ -160,6 +89,24 @@ void intel_me8_finalize_smm(void)
 }
 
 #else /* !__SIMPLE_DEVICE__ */
+
+static inline void print_cap(const char *name, int state)
+{
+	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
+	       name, state ? " en" : "dis");
+}
+
+static void me_print_fw_version(mbp_fw_version_name *vers_name)
+{
+	if (!vers_name->major_version) {
+		printk(BIOS_ERR, "ME: mbp missing version report\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "ME: found version %d.%d.%d.%d\n",
+	       vers_name->major_version, vers_name->minor_version,
+	       vers_name->hotfix_version, vers_name->build_version);
+}
 
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(struct device *dev)
@@ -233,6 +180,59 @@ static me_bios_path intel_me_path(struct device *dev)
 }
 
 static int intel_me_read_mbp(me_bios_payload *mbp_data);
+
+/* Get ME Firmware Capabilities */
+static int mkhi_get_fwcaps(mefwcaps_sku *cap)
+{
+	u32 rule_id = 0;
+	struct me_fwcaps cap_msg;
+	struct mkhi_header mkhi = {
+		.group_id       = MKHI_GROUP_ID_FWCAPS,
+		.command        = MKHI_FWCAPS_GET_RULE,
+	};
+	struct mei_header mei = {
+		.is_complete    = 1,
+		.host_address   = MEI_HOST_ADDRESS,
+		.client_address = MEI_ADDRESS_MKHI,
+		.length         = sizeof(mkhi) + sizeof(rule_id),
+	};
+
+	/* Send request and wait for response */
+	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
+		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
+		return -1;
+	}
+	*cap = cap_msg.caps_sku;
+	return 0;
+}
+
+/* Get ME Firmware Capabilities */
+static void me_print_fwcaps(mbp_fw_caps *caps_section)
+{
+	mefwcaps_sku *cap = &caps_section->fw_capabilities;
+	if (!caps_section->available) {
+		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
+		if (mkhi_get_fwcaps(cap))
+			return;
+	}
+
+	print_cap("Full Network manageability", cap->full_net);
+	print_cap("Regular Network manageability", cap->std_net);
+	print_cap("Manageability", cap->manageability);
+	print_cap("Small business technology", cap->small_business);
+	print_cap("Level III manageability", cap->l3manageability);
+	print_cap("IntelR Anti-Theft (AT)", cap->intel_at);
+	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
+	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
+	print_cap("ICC Over Clocking", cap->icc_over_clocking);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("IPV6", cap->ipv6);
+	print_cap("KVM Remote Control (KVM)", cap->kvm);
+	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
+	print_cap("Virtual LAN (VLAN)", cap->vlan);
+	print_cap("TLS", cap->tls);
+	print_cap("Wireless LAN (WLAN)", cap->wlan);
+}
 
 /* Check whether ME is present and do basic init */
 static void intel_me_init(struct device *dev)
@@ -354,8 +354,6 @@ static const struct pci_driver intel_me __pci_driver = {
 	.device	= 0x1e3a,
 };
 
-#endif /* !__SIMPLE_DEVICE__ */
-
 /******************************************************************************
  *									     */
 static u32 me_to_host_words_pending(void)
@@ -372,7 +370,7 @@ static u32 me_to_host_words_pending(void)
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
-static int __unused intel_me_read_mbp(me_bios_payload *mbp_data)
+static int intel_me_read_mbp(me_bios_payload *mbp_data)
 {
 	mbp_header mbp_hdr;
 	mbp_item_header	mbp_item_hdr;
@@ -496,3 +494,5 @@ static int __unused intel_me_read_mbp(me_bios_payload *mbp_data)
 
 	return 0;
 }
+
+#endif /* !__SIMPLE_DEVICE__ */

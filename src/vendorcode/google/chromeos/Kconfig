@@ -49,14 +49,6 @@ config CHROMEOS_RAMOOPS_RAM_SIZE
 	default 0x00100000
 	depends on CHROMEOS_RAMOOPS
 
-config NO_TPM_RESUME
-	bool
-	default n
-	help
-	  On some boards the TPM stays powered up in S3. On those
-	  boards, booting Windows will break if the TPM resume command
-	  is sent during an S3 resume.
-
 config HAVE_REGULATORY_DOMAIN
 	bool "Add regulatory domain methods"
 	default n

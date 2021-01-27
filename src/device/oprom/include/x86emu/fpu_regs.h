@@ -1,8 +1,8 @@
 /****************************************************************************
 *
-*						Realmode X86 Emulator Library
+*		Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
+*			Copyright (C) 1996-1999 SciTech Software, Inc.
 * 				     Copyright (C) David Mosberger-Tang
 * 					   Copyright (C) 1999 Egbert Eich
 *
@@ -103,13 +103,13 @@ struct x86_fpu_registers {
 #endif /* X86_FPU_SUPPORT */
 
 #if CONFIG(X86EMU_DEBUG)
-# define DECODE_PRINTINSTR32(t,mod,rh,rl)     	\
-	DECODE_PRINTF(t[(mod<<3)+(rh)]);
-# define DECODE_PRINTINSTR256(t,mod,rh,rl)    	\
-	DECODE_PRINTF(t[(mod<<6)+(rh<<3)+(rl)]);
+# define DECODE_PRINTINSTR32(t, mod, rh, rl)	\
+	DECODE_PRINTF(t[(mod<<3)+(rh)])
+# define DECODE_PRINTINSTR256(t, mod, rh, rl)	\
+	DECODE_PRINTF(t[(mod<<6)+(rh<<3)+(rl)])
 #else
-# define DECODE_PRINTINSTR32(t,mod,rh,rl)
-# define DECODE_PRINTINSTR256(t,mod,rh,rl)
+# define DECODE_PRINTINSTR32(t, mod, rh, rl)
+# define DECODE_PRINTINSTR256(t, mod, rh, rl)
 #endif
 
 #endif /* __X86EMU_FPU_REGS_H */

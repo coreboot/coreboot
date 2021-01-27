@@ -322,84 +322,6 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-/* Send END OF POST message to the ME */
-static int __unused mkhi_end_of_post(void)
-{
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_GEN,
-		.command	= MKHI_END_OF_POST,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi),
-	};
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, NULL, NULL, 0) < 0) {
-		printk(BIOS_ERR, "ME: END OF POST message failed\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "ME: END OF POST message successful\n");
-	return 0;
-}
-
-#ifdef __SIMPLE_DEVICE__
-
-static void intel_me7_finalize_smm(void)
-{
-	struct me_hfs hfs;
-	u32 reg32;
-	u16 reg16;
-
-	mei_base_address = (u32 *)(uintptr_t)
-		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
-
-	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
-		return;
-
-	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
-	memcpy(&hfs, &reg32, sizeof(u32));
-
-	/* Abort and leave device alone if not normal mode */
-	if (hfs.fpt_bad ||
-	    hfs.working_state != ME_HFS_CWS_NORMAL ||
-	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
-		return;
-
-	/* Try to send EOP command so ME stops accepting other commands */
-	mkhi_end_of_post();
-
-	/* Make sure IO is disabled */
-	reg16 = pci_read_config16(PCH_ME_DEV, PCI_COMMAND);
-	reg16 &= ~(PCI_COMMAND_MASTER |
-		   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-	pci_write_config16(PCH_ME_DEV, PCI_COMMAND, reg16);
-
-	/* Hide the PCI device */
-	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
-}
-
-void intel_me_finalize_smm(void)
-{
-	u32 did = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
-	switch (did) {
-	case 0x1c3a8086:
-		intel_me7_finalize_smm();
-		break;
-	case 0x1e3a8086:
-		intel_me8_finalize_smm();
-		break;
-	default:
-		printk(BIOS_ERR, "No finalize handler for ME %08x.\n", did);
-	}
-}
-#else /* !__SIMPLE_DEVICE__ */
-
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(struct device *dev)
 {
@@ -599,5 +521,3 @@ static const struct pci_driver intel_me __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.devices	= pci_device_ids
 };
-
-#endif /* !__SIMPLE_DEVICE__ */

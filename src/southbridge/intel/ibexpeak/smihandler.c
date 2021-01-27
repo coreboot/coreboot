@@ -148,7 +148,7 @@ void southbridge_smi_monitor(void)
 
 void southbridge_finalize_all(void)
 {
-	intel_me_finalize_smm();
+	/* TODO: Finalize ME */
 	intel_pch_finalize_smm();
 	intel_ironlake_finalize_smm();
 	intel_model_2065x_finalize_smm();

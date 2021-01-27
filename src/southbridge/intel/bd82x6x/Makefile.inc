@@ -26,7 +26,7 @@ ramstage-y += me_status.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
 
-smm-y += smihandler.c me.c me_8.x.c pch.c me_common.c
+smm-y += smihandler.c me_smm.c pch.c me_common.c
 
 romstage-y += me_status.c
 romstage-y += early_rcba.c

@@ -103,7 +103,6 @@ static void resolve_timebase(void)
 	/* Set some semi-ridiculous defaults. */
 	timer_fsb = 500;
 	timer_tsc = 5000;
-	return;
 }
 
 u32 get_timer_fsb(void)

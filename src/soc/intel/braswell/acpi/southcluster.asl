@@ -30,6 +30,8 @@ Scope(\)
 	}
 }
 
+External (\TOLM, IntObj)
+
 Name(_HID,EISAID("PNP0A08"))	/* PCIe */
 Name(_CID,EISAID("PNP0A03"))	/* PCI */
 

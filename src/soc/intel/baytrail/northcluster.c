@@ -1,15 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <acpi/acpi.h>
 #include <stdint.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /*
  * Host Memory Map:
@@ -123,9 +124,18 @@ static void nc_read_resources(struct device *dev)
 		chromeos_reserve_ram_oops(dev, index++);
 }
 
+static void nc_generate_ssdt(const struct device *dev)
+{
+	generate_cpu_entries(dev);
+
+	acpigen_write_scope("\\");
+	acpigen_write_name_dword("TOLM", nc_read_top_of_low_memory());
+	acpigen_pop_len();
+}
+
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
-	.acpi_fill_ssdt   = generate_cpu_entries,
+	.acpi_fill_ssdt   = nc_generate_ssdt,
 	.ops_pci          = &soc_pci_ops,
 };
 

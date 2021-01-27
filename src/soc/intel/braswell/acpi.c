@@ -64,9 +64,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
 
-	/* Top of Low Memory (start of resource allocation) */
-	gnvs->tolm = nc_read_top_of_low_memory();
-
 	/* Fill in the Wi-Fi Region ID */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN))
 		gnvs->cid1 = wifi_regulatory_domain();

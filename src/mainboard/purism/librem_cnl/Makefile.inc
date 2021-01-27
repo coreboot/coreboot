@@ -7,3 +7,5 @@ ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 ramstage-y += ramstage.c
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+
+subdirs-y += variants/$(VARIANT_DIR)/

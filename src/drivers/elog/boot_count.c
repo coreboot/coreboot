@@ -37,7 +37,7 @@ static int boot_count_cmos_read(struct boot_count *bc)
 	u8 i, *p;
 	u16 csum;
 
-	for (p = (u8*)bc, i = 0; i < sizeof(*bc); i++, p++)
+	for (p = (u8 *)bc, i = 0; i < sizeof(*bc); i++, p++)
 		*p = cmos_read(BOOT_COUNT_CMOS_OFFSET + i);
 
 	/* Verify signature */
@@ -66,7 +66,7 @@ static void boot_count_cmos_write(struct boot_count *bc)
 	bc->checksum = compute_ip_checksum(
 		bc, offsetof(struct boot_count, checksum));
 
-	for (p = (u8*)bc, i = 0; i < sizeof(*bc); i++, p++)
+	for (p = (u8 *)bc, i = 0; i < sizeof(*bc); i++, p++)
 		cmos_write(*p, BOOT_COUNT_CMOS_OFFSET + i);
 }
 

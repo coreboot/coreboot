@@ -183,7 +183,7 @@ static void elog_debug_dump_buffer(const char *msg)
  */
 static void elog_update_checksum(struct event_header *event, u8 checksum)
 {
-	u8 *event_data = (u8*)event;
+	u8 *event_data = (u8 *)event;
 	event_data[event->length - 1] = checksum;
 }
 
@@ -193,7 +193,7 @@ static void elog_update_checksum(struct event_header *event, u8 checksum)
 static u8 elog_checksum_event(struct event_header *event)
 {
 	u8 index, checksum = 0;
-	u8 *data = (u8*)event;
+	u8 *data = (u8 *)event;
 
 	for (index = 0; index < event->length; index++)
 		checksum += data[index];

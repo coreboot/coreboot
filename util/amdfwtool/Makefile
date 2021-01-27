@@ -7,6 +7,7 @@ OBJ = $(SRC:%.c=%.o)
 TARGET = amdfwtool
 CFLAGS=-O2 -Wall -Wextra -Wshadow
 
+all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@

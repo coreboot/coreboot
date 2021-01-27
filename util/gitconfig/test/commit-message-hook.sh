@@ -55,7 +55,7 @@ git clone "$(git rev-parse --show-toplevel)" "${clone_dir}" \
 	# test
 	echo "good case..."
 	log_file="${base_dir}/good_case.log"
-	echo "this is a test" >> README
+	echo "this is a test" >> README.md
 	timeout 4m git commit --all --signoff --message="good case" \
 		1>"${log_file}" 2>&1 \
 		|| check_exit_code positive "${log_file}"

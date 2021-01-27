@@ -37,6 +37,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Asurada" if BOARD_GOOGLE_ASURADA
 	default "Hayato" if BOARD_GOOGLE_HAYATO
+	default "Spherion" if BOARD_GOOGLE_SPHERION
 
 config DRIVER_TPM_SPI_BUS
 	hex

@@ -7,3 +7,7 @@ config BOARD_GOOGLE_ASURADA
 config BOARD_GOOGLE_HAYATO
 	bool "->  Hayato"
 	select BOARD_GOOGLE_ASURADA_COMMON
+
+config BOARD_GOOGLE_SPHERION
+	bool "->  Spherion"
+	select BOARD_GOOGLE_ASURADA_COMMON

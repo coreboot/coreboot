@@ -13,6 +13,12 @@
 #          Because we're piping the contents of the dockerfile into the
 #          docker build command, the 'COPY' keyword isn't valid.
 
+FROM coreboot/coreboot-sdk:{{SDK_VERSION}} AS zephyr-sdk
+USER root
+RUN wget -O zephyr.run https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.11.3/zephyr-sdk-0.11.3-setup.run
+RUN chmod +x ./zephyr.run
+RUN ./zephyr.run -- -d /opt/zephyr-sdk
+
 FROM coreboot/coreboot-sdk:{{SDK_VERSION}}
 MAINTAINER Martin Roth <martin@coreboot.org>
 USER root
@@ -51,6 +57,8 @@ ADD https://raw.githubusercontent.com/coreboot/encapsulate/master/encapsulate.c 
 RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 	chown root /usr/sbin/encapsulate && \
 	chmod +s /usr/sbin/encapsulate
+
+COPY --from=zephyr-sdk /opt/zephyr-sdk /opt/zephyr-sdk
 
 VOLUME /data/cache
 ENTRYPOINT mount /cb-build && \

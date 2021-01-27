@@ -138,6 +138,5 @@ RUN mkdir -p /tmp/work && \
   make -C coreboot test-tools -j && \
   make -C coreboot test-lint -j && \
   make -C coreboot test-cleanup -j && \
-  make -C coreboot CPUS=$(nproc) crostools && \
   cd && \
   rm -rf /tmp/work/

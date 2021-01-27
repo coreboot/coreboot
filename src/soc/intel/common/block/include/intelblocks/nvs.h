@@ -20,7 +20,7 @@ struct __packed global_nvs {
 	u8	dpte; /* 0x1c - Enable DPTF */
 	u64	nhla; /* 0x1d - 0x24 NHLT Address */
 	u32	nhll; /* 0x25 - 0x28 NHLT Length */
-	u16	cid1; /* 0x29 - 0x2a Wifi Country Identifier */
+	u16	unused_was_cid1; /* 0x29 - 0x2a Wifi Country Identifier */
 	u16	u2we; /* 0x2b - 0x2c USB2 Wake Enable Bitmap */
 	u16	u3we; /* 0x2d - 0x2e USB3 Wake Enable Bitmap */
 	u8	uior; /* 0x2f - UART debug controller init on S3 resume */

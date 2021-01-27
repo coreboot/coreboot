@@ -20,7 +20,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	DPTE,	8,	// 0x1c - Enable DPTF
 	NHLA,	64,	// 0x1d - 0x24 NHLT Address
 	NHLL,	32,	// 0x25 - 0x28 NHLT Length
-	CID1,	16,	// 0x29 - 0x2a Wifi Country Identifier
+	,	16,	// 0x29 - 0x2a Wifi Country Identifier
 	U2WE,	16,	// 0x2b - 0x2c USB2 Wake Enable Bitmap
 	U3WE,	16,	// 0x2d - 0x2e USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume

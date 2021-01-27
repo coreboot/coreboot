@@ -18,7 +18,6 @@
 #include <soc/pm.h>
 #include <soc/systemagent.h>
 #include <string.h>
-#include <wrdd.h>
 
 #include "chip.h"
 
@@ -181,9 +180,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = config->dptf_enable;
-
-	/* Fill in the Wifi Region id */
-	gnvs->cid1 = wifi_regulatory_domain();
 
 	/* Set USB2/USB3 wake enable bitmaps. */
 	gnvs->u2we = config->usb2_wake_enable_bitmap;

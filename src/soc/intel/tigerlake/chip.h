@@ -105,6 +105,9 @@ struct soc_intel_tigerlake_config {
 	/* Common struct containing power limits configuration information */
 	struct soc_power_limits_config power_limits_config[POWER_LIMITS_MAX];
 
+	/* Configuration for boot TDP selection; */
+	uint8_t ConfigTdpLevel;
+
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */
 	uint8_t pmc_gpe0_dw0; /* GPE0_31_0 STS/EN */

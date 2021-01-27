@@ -1304,9 +1304,14 @@ typedef struct {
 **/
   UINT8                       IsTPMPresence;
 
-/** Offset 0x0389 - Reserved
+/** Offset 0x0389 - ConfigTdpLevel
+  Configuration for boot TDP selection; <b>0: TDP Nominal</b>; 1: TDP Down; 2: TDP Up;0xFF : Deactivate
 **/
-  UINT8                       Reserved17[6];
+  UINT8                       ConfigTdpLevel;
+
+/** Offset 0x038A - Reserved
+**/
+  UINT8                       Reserved17[5];
 
 /** Offset 0x038F - Enable PCH HSIO PCIE Rx Set Ctle
   Enable PCH PCIe Gen 3 Set CTLE Value.

@@ -59,7 +59,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	S3U0,	 8,	// 0x35 - Enable USB0 in S3
 	S3U1,	 8,	// 0x36 - Enable USB1 in S3
 	S33G,	 8,	// 0x37 - Enable 3G in S3
-	CMEM,	 32,	// 0x38 - CBMEM TOC
+	,	 32,	// 0x38 - CBMEM TOC
 	/* Integrated Graphics Device */
 	Offset (0x3c),
 	IGDS,	 8,	// 0x3c - IGD state (primary = 1)

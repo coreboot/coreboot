@@ -39,7 +39,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 
 	/* Base addresses */
 	Offset (0x30),
-	CMEM,	 32,	/* 0x30 - CBMEM TOC */
+	,	 32,	/* 0x30 - CBMEM TOC */
 	TOLM,	 32,	/* 0x34 - Top of Low Memory */
 	CBMC,	 32,	/* 0x38 - coreboot mem console pointer */
 }

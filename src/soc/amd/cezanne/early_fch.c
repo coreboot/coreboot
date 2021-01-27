@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/smbus.h>
 #include <console/console.h>
@@ -32,4 +33,9 @@ void fch_pre_init(void)
 void fch_early_init(void)
 {
 	fch_print_pmxc0_status();
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+		espi_setup();
+		espi_configure_decodes();
+	}
 }

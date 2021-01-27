@@ -11,7 +11,3 @@ config SUPERIO_NUVOTON_COMMON_COM_A
 	help
 	  When enabled, the 'nuvoton_enable_serial()' function will unset
 	  global CR 0x2a bit 7 to route COM A to the GPIO8 pin group.
-
-# Generic Nuvoton HWM driver
-config SUPERIO_NUVOTON_COMMON_HWM
-	bool

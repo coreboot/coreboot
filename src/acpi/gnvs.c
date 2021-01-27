@@ -12,27 +12,12 @@
 
 static struct global_nvs *gnvs;
 
-void *acpi_get_gnvs(void)
-{
-	if (gnvs)
-		return gnvs;
-
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (gnvs)
-		return gnvs;
-
-	printk(BIOS_ERR, "Unable to locate Global NVS\n");
-	return NULL;
-}
-
-__weak void soc_fill_gnvs(struct global_nvs *gnvs_) { }
-__weak void mainboard_fill_gnvs(struct global_nvs *gnvs_) { }
-
 void acpi_create_gnvs(void)
 {
 	size_t gnvs_size;
 
-	if (cbmem_find(CBMEM_ID_ACPI_GNVS))
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs)
 		return;
 
 	/* Match with OpRegion declared in global_nvs.asl. */
@@ -57,11 +42,29 @@ void acpi_create_gnvs(void)
 		gnvs_assign_chromeos((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
 }
 
+void *acpi_get_gnvs(void)
+{
+	if (gnvs)
+		return gnvs;
+
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (gnvs)
+		return gnvs;
+
+	printk(BIOS_ERR, "Unable to locate Global NVS\n");
+	return NULL;
+}
+
 void *acpi_get_device_nvs(void)
 {
 	return (u8 *)gnvs + GNVS_DEVICE_NVS_OFFSET;
 }
 
+/* Implemented under platform. */
+__weak void soc_fill_gnvs(struct global_nvs *gnvs_) { }
+__weak void mainboard_fill_gnvs(struct global_nvs *gnvs_) { }
+
+/* Called from write_acpi_tables() only on normal boot path. */
 void acpi_fill_gnvs(void)
 {
 	if (!gnvs)

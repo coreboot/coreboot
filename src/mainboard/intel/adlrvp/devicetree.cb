@@ -53,9 +53,7 @@ chip soc/intel/alderlake
 
 	# Enable PCH PCIE RP 8 using CLK 6
 	register "PchPcieRpEnable[7]" = "1"
-	register "PcieClkSrcClkReq[7]" = "6" # CLKSRC -> 7 and CLKREQ -> 6
 	register "PcieClkSrcUsage[6]" = "PCIE_CLK_FREE" # CLK 6 is using free running CLK
-	register "PcieRpClkReqDetect[6]" = "1"
 
 	# Enable PCH PCIE RP 9 using CLK 1
 	register "PchPcieRpEnable[8]" = "1"

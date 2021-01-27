@@ -138,18 +138,18 @@ Scope(\_SB) {
 			{
 				\_SB.CIRQ()
 			}
-			Store(Arg0, PICM)
+			PICM = Arg0
 		}
 
 		Method(CIRQ, 0x00, NotSerialized){
-			Store(0, PIRA)
-			Store(0, PIRB)
-			Store(0, PIRC)
-			Store(0, PIRD)
-			Store(0, PIRE)
-			Store(0, PIRF)
-			Store(0, PIRG)
-			Store(0, PIRH)
+			PIRA = 0
+			PIRB = 0
+			PIRC = 0
+			PIRD = 0
+			PIRE = 0
+			PIRF = 0
+			PIRG = 0
+			PIRH = 0
 		}
 
 		Name(IRQB, ResourceTemplate(){
@@ -170,27 +170,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRA) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTA._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKA\\_DIS\n") */
-				Store(0, PIRA)
+				PIRA = 0
 			} /* End Method(_SB.INTA._DIS) */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKA\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTA._PRS) */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKA\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRA, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRA
+				Return (IRQB)
 			} /* Method(_SB.INTA._CRS) */
 
 			Method(_SRS, 1) {
@@ -200,9 +200,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRA)
+				PIRA = Local0
 			} /* End Method(_SB.INTA._SRS) */
 		} /* End Device(INTA) */
 
@@ -212,27 +212,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRB) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTB._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKB\\_DIS\n") */
-				Store(0, PIRB)
+				PIRB = 0
 			} /* End Method(_SB.INTB._DIS) */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKB\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTB._PRS) */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKB\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRB, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRB
+				Return (IRQB)
 			} /* Method(_SB.INTB._CRS) */
 
 			Method(_SRS, 1) {
@@ -242,9 +242,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRB)
+				PIRB = Local0
 			} /* End Method(_SB.INTB._SRS) */
 		} /* End Device(INTB)  */
 
@@ -254,15 +254,15 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRC) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTC._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKC\\_DIS\n") */
-				Store(0, PIRC)
+				PIRC = 0
 			} /* End Method(_SB.INTC._DIS) */
 
 			Method(_PRS ,0) {
@@ -273,8 +273,8 @@ Scope(\_SB) {
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKC\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRC, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRC
+				Return (IRQB)
 			} /* Method(_SB.INTC._CRS) */
 
 			Method(_SRS, 1) {
@@ -284,9 +284,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRC)
+				PIRC = Local0
 			} /* End Method(_SB.INTC._SRS) */
 		} /* End Device(INTC)  */
 
@@ -296,27 +296,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRD) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTD._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKD\\_DIS\n") */
-				Store(0, PIRD)
+				PIRD = 0
 			} /* End Method(_SB.INTD._DIS) */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKD\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTD._PRS) */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKD\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRD, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRD
+				Return (IRQB)
 			} /* Method(_SB.INTD._CRS) */
 
 			Method(_SRS, 1) {
@@ -326,9 +326,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRD)
+				PIRD = Local0
 			} /* End Method(_SB.INTD._SRS) */
 		} /* End Device(INTD)  */
 
@@ -338,27 +338,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRE) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTE._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKE\\_DIS\n") */
-				Store(0, PIRE)
+				PIRE = 0
 			} /* End Method(_SB.INTE._DIS) */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKE\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTE._PRS) */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKE\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRE, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRE
+				Return (IRQB)
 			} /* Method(_SB.INTE._CRS) */
 
 			Method(_SRS, 1) {
@@ -368,9 +368,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRE)
+				PIRE = Local0
 			} /* End Method(_SB.INTE._SRS) */
 		} /* End Device(INTE)  */
 
@@ -380,27 +380,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRF) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTF._STA) */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKF\\_DIS\n") */
-				Store(0, PIRF)
+				PIRF = 0
 			} /* End Method(_SB.INTF._DIS) */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKF\\_PRS\n") */
-				Return(PITF)
+				Return (PITF)
 			} /* Method(_SB.INTF._PRS) */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKF\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRF, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRF
+				Return (IRQB)
 			} /* Method(_SB.INTF._CRS) */
 
 			Method(_SRS, 1) {
@@ -410,9 +410,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRF)
+				PIRF = Local0
 			} /*  End Method(_SB.INTF._SRS) */
 		} /* End Device(INTF)  */
 
@@ -422,27 +422,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRG) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTG._STA)  */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKG\\_DIS\n") */
-				Store(0, PIRG)
+				PIRG = 0
 			} /* End Method(_SB.INTG._DIS)  */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKG\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTG._CRS)  */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKG\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRG, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRG
+				Return (IRQB)
 			} /* Method(_SB.INTG._CRS)  */
 
 			Method(_SRS, 1) {
@@ -452,9 +452,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRG)
+				PIRG = Local0
 			} /* End Method(_SB.INTG._SRS)  */
 		} /* End Device(INTG)  */
 
@@ -464,27 +464,27 @@ Scope(\_SB) {
 
 			Method(_STA, 0) {
 				if (PIRH) {
-					Return(0x0B) /* sata is invisible */
+					Return (0x0b) /* sata is invisible */
 				} else {
-					Return(0x09) /* sata is disabled */
+					Return (0x09) /* sata is disabled */
 				}
 			} /* End Method(_SB.INTH._STA)  */
 
 			Method(_DIS ,0) {
 				/* DBGO("\\_SB\\LNKH\\_DIS\n") */
-				Store(0, PIRH)
+				PIRH = 0
 			} /* End Method(_SB.INTH._DIS)  */
 
 			Method(_PRS ,0) {
 				/* DBGO("\\_SB\\LNKH\\_PRS\n") */
-				Return(IRQP)
+				Return (IRQP)
 			} /* Method(_SB.INTH._CRS)  */
 
 			Method(_CRS ,0) {
 				/* DBGO("\\_SB\\LNKH\\_CRS\n") */
 				CreateWordField(IRQB, 0x1, IRQN)
-				ShiftLeft(1, PIRH, IRQN)
-				Return(IRQB)
+				IRQN = 1 << PIRH
+				Return (IRQB)
 			} /* Method(_SB.INTH._CRS)  */
 
 			Method(_SRS, 1) {
@@ -494,9 +494,9 @@ Scope(\_SB) {
 				/* Use lowest available IRQ */
 				FindSetRightBit(IRQM, Local0)
 				if (Local0) {
-					Decrement(Local0)
+					Local0--
 				}
-				Store(Local0, PIRH)
+				PIRH = Local0
 			} /* End Method(_SB.INTH._SRS)  */
 		} /* End Device(INTH)   */
 

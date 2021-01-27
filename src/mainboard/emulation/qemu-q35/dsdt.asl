@@ -143,9 +143,9 @@ DefinitionBlock (
  ****************************************************************/
 
 	/* Zero => PIC mode, One => APIC Mode */
-	Name(\PICF, Zero)
+	Name(\PICM, Zero)
 	Method(\_PIC, 1, NotSerialized) {
-		\PICF = Arg0
+		\PICM = Arg0
 	}
 
 	Scope(\_SB) {
@@ -269,7 +269,7 @@ DefinitionBlock (
 				  section 6.2.8.1 */
 				/* Note: we provide the same info as the PCI routing
 				  table of the Bochs BIOS */
-				If (\PICF ==  0) {
+				If (\PICM ==  0) {
 					Return (PRTP)
 				} Else {
 					Return (PRTA)

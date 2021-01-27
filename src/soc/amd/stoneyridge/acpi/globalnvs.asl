@@ -9,7 +9,7 @@
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	PCNT,	8,	// 0x00 - Processor Count
+	,	8,	// 0x00 - Processor Count
 	LIDS,	8,	// 0x01 - LID State
 	PWRS,	8,	// 0x02 - AC Power State
 	CBMC,	32,	// 0x03 - 0x06 - coreboot Memory Console

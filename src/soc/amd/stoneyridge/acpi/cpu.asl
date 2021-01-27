@@ -9,6 +9,7 @@ Method (PNOT)
  * Processor Object
  */
 /* These devices are created at runtime */
+External (\PCNT, IntObj)
 External (\_SB.P000, DeviceObj)
 External (\_SB.P001, DeviceObj)
 External (\_SB.P002, DeviceObj)

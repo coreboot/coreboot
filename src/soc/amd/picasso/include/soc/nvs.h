@@ -14,7 +14,7 @@
 
 struct __packed global_nvs {
 	/* Miscellaneous */
-	uint8_t		pcnt; /* 0x00 - Processor Count */
+	uint8_t		unused_was_pcnt; /* 0x00 - Processor Count */
 	uint8_t		lids; /* 0x01 - LID State */
 	uint8_t		pwrs; /* 0x02 - AC Power State */
 	uint32_t	cbmc; /* 0x03 - 0x06 - coreboot Memory Console */

@@ -1,15 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
-#include <device/mmio.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
-#include <device/pci_ids.h>
+#include <device/pci.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <stdint.h>
 #include <string.h>
-#include <delay.h>
 
 #include "me.h"
 #include "pch.h"
@@ -41,38 +38,6 @@ static int me8_mkhi_end_of_post(void)
 	return 0;
 }
 
-void intel_me8_finalize_smm(void)
-{
-	struct me_hfs hfs;
-	u32 reg32;
-
-	update_mei_base_address();
-
-	/* S3 path will have hidden this device already */
-	if (!is_mei_base_address_valid())
-		return;
-
-	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
-	memcpy(&hfs, &reg32, sizeof(u32));
-
-	/* Abort and leave device alone if not normal mode */
-	if (hfs.fpt_bad ||
-	    hfs.working_state != ME_HFS_CWS_NORMAL ||
-	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
-		return;
-
-	/* Try to send EOP command so ME stops accepting other commands */
-	me8_mkhi_end_of_post();
-
-	/* Make sure IO is disabled */
-	pci_and_config16(PCH_ME_DEV, PCI_COMMAND,
-			 ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
-
-	/* Hide the PCI device */
-	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
-}
-
 /* Send END OF POST message to the ME */
 static int me7_mkhi_end_of_post(void)
 {
@@ -97,7 +62,7 @@ static int me7_mkhi_end_of_post(void)
 	return 0;
 }
 
-static void intel_me7_finalize_smm(void)
+void intel_me_finalize_smm(void)
 {
 	struct me_hfs hfs;
 	u32 reg32;
@@ -119,7 +84,17 @@ static void intel_me7_finalize_smm(void)
 		return;
 
 	/* Try to send EOP command so ME stops accepting other commands */
-	me7_mkhi_end_of_post();
+	const u16 did = pci_read_config16(PCH_ME_DEV, PCI_DEVICE_ID);
+	switch (did) {
+	case 0x1c3a:
+		me7_mkhi_end_of_post();
+		break;
+	case 0x1e3a:
+		me8_mkhi_end_of_post();
+		break;
+	default:
+		printk(BIOS_ERR, "No finalize handler for ME %04x.\n", did);
+	}
 
 	/* Make sure IO is disabled */
 	pci_and_config16(PCH_ME_DEV, PCI_COMMAND,
@@ -127,19 +102,4 @@ static void intel_me7_finalize_smm(void)
 
 	/* Hide the PCI device */
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
-}
-
-void intel_me_finalize_smm(void)
-{
-	u16 did = pci_read_config16(PCH_ME_DEV, PCI_DEVICE_ID);
-	switch (did) {
-	case 0x1c3a:
-		intel_me7_finalize_smm();
-		break;
-	case 0x1e3a:
-		intel_me8_finalize_smm();
-		break;
-	default:
-		printk(BIOS_ERR, "No finalize handler for ME %04x.\n", did);
-	}
 }

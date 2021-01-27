@@ -276,7 +276,6 @@ int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
 
 void intel_me_finalize_smm(void);
-void intel_me8_finalize_smm(void);
 
 typedef struct {
 	u32       major_version  : 16;

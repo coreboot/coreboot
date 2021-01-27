@@ -104,7 +104,7 @@ int intel_early_me_init_done(u8 status)
 	};
 	u32 meDID;
 
-	hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xff000) >> 12;
+	hfs = (pci_read_config32(PCH_ME_DEV, PCI_ME_HFS) & 0xff000) >> 12;
 
 	opmode = (hfs & 0xf0) >> 4;
 	errorcode = hfs & 0xf;
@@ -118,7 +118,7 @@ int intel_early_me_init_done(u8 status)
 		//return 0;
 	}
 
-	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
+	me_fws2 = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);
 	printk(BIOS_NOTICE, "ME:  Bist in progress: 0x%x\n", me_fws2 & 0x1);
 	printk(BIOS_NOTICE, "ME:  ICC Status      : 0x%x\n", (me_fws2 & 0x6) >> 1);
@@ -135,11 +135,11 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
 
-	// Poll CPU replaced for 50ms
+	/* Poll CPU replaced for 50ms */
 	millisec = 0;
 	while ((((me_fws2 & 0x100) >> 8) == 0) && millisec < 50) {
 		udelay(1000);
-		me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
+		me_fws2 = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
 		millisec++;
 	}
 	if (millisec >= 50 || ((me_fws2 & 0x100) >> 8) == 0x0) {
@@ -147,7 +147,7 @@ int intel_early_me_init_done(u8 status)
 	} else if ((me_fws2 & 0x100) == 0x100) {
 		if ((me_fws2 & 0x80) == 0x80) {
 			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
-			pci_and_config16(PCI_DEV(0, 31, 0), 0xa2, ~0x80);
+			pci_and_config16(PCH_LPC_DEV, GEN_PMCON_2, ~0x80);
 			set_global_reset(0);
 			system_reset();
 		}
@@ -165,7 +165,7 @@ int intel_early_me_init_done(u8 status)
 	did.uma_base = (mebase_l >> 20) | (mebase_h << 12);
 
 	meDID = did.uma_base | (1 << 28);// | (1 << 23);
-	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_ME_H_GS, meDID);
+	pci_write_config32(PCH_ME_DEV, PCI_ME_H_GS, meDID);
 
 	/* Must wait for ME acknowledgement */
 	if (opmode == ME_HFS_MODE_DEBUG) {
@@ -179,7 +179,7 @@ int intel_early_me_init_done(u8 status)
 		do {
 			udelay(1000);
 			hfs = (pci_read_config32(
-				PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xfe000000)
+				PCH_ME_DEV, PCI_ME_HFS) & 0xfe000000)
 				>> 24;
 			millisec++;
 		} while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK)
@@ -187,7 +187,7 @@ int intel_early_me_init_done(u8 status)
 		timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
 	}
 
-	me_fws2 = pci_read_config32(PCI_DEV(0, 0x16, 0), 0x48);
+	me_fws2 = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
 	printk(BIOS_NOTICE, "ME: FWS2: 0x%x\n", me_fws2);
 	printk(BIOS_NOTICE, "ME:  Bist in progress: 0x%x\n", me_fws2 & 0x1);
 	printk(BIOS_NOTICE, "ME:  ICC Status      : 0x%x\n", (me_fws2 & 0x6) >> 1);

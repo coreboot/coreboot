@@ -226,10 +226,9 @@ static const struct pad_config gpio_table[] = {
 	/* SMB_DATA */
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 
-	/* SATADevSlpPin to GPIO pin mapping */
-	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1),
-	/* SATA DIRECT DEVSLP*/
-	PAD_CFG_NF(GPP_H12, NONE, DEEP, NF5),
+	/* SATA DEVSLP */
+	PAD_CFG_NF(GPP_H12, NONE, DEEP, NF4),
+	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF5),
 
 	/* SATA LED pin */
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),

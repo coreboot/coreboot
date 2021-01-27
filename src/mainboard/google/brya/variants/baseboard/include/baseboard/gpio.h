@@ -8,7 +8,7 @@
 
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI	GPE0_ESPI
-/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
-#define GPE_EC_WAKE	GPE0_LAN_WAK
+/* EC wake is EC_PCH_INT which is routed to GPP_F17 pin */
+#define GPE_EC_WAKE	GPE0_DW2_17
 
 #endif /* __BASEBOARD_GPIO_H__ */

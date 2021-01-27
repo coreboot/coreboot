@@ -5,6 +5,7 @@ External (\_SB.CNOT, MethodObj)
 External (\_SB_.CP00, DeviceObj)
 External (\_SB_.CP00._PPC)
 External (\_SB_.CP01._PPC)
+External (\MPEN, IntObj)
 
 Method (PNOT)
 {

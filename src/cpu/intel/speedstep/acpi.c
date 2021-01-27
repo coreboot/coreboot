@@ -133,4 +133,8 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_write_processor_package("PPKG", 0, cores_per_package);
 
 	acpigen_write_processor_cnot(cores_per_package);
+
+	acpigen_write_scope("\\");
+	acpigen_write_name_integer("MPEN", numcpus > 1);
+	acpigen_pop_len();
 }

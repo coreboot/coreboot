@@ -12,7 +12,6 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
 #include <string.h>
@@ -21,7 +20,6 @@
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
-#include <soc/nvs.h>
 
 #define NMI_OFF	0
 
@@ -450,12 +448,6 @@ static void i82801ix_lpc_read_resources(struct device *dev)
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-}
-
-void soc_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* MPEN, Enable Multi Processing. */
-	gnvs->mpen = dev_count_cpu() > 1 ? 1 : 0;
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

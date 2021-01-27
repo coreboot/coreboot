@@ -41,7 +41,7 @@ struct __packed global_nvs {
 	u8	rsvd3[3];
 	/* Processor Identification */
 	u8	unused_was_apic; /* 0x28 - APIC enabled */
-	u8	mpen; /* 0x29 - MP capable/enabled */
+	u8	unused_was_mpen; /* 0x29 - MP capable/enabled */
 	u8	pcp0; /* 0x2a - PDC CPU/CORE 0 */
 	u8	pcp1; /* 0x2b - PDC CPU/CORE 1 */
 	u8	ppcm; /* 0x2c - Max. PPC state */

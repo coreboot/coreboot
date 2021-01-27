@@ -31,15 +31,15 @@
 static me_bios_path intel_me_path(struct device *dev)
 {
 	me_bios_path path = ME_DISABLE_BIOS_PATH;
-	struct me_hfs hfs;
-	struct me_gmes gmes;
+	union me_hfs hfs;
+	union me_gmes gmes;
 
 	/* S3 wake skips all MKHI messages */
 	if (acpi_is_wakeup_s3())
 		return ME_S3WAKE_BIOS_PATH;
 
-	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(dev, &gmes, PCI_ME_GMES);
+	hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
+	gmes.raw = pci_read_config32(dev, PCI_ME_GMES);
 
 	/* Check and dump status */
 	intel_me_status(&hfs, &gmes);
@@ -180,7 +180,7 @@ static void intel_me_init(struct device *dev)
 	me_bios_path path = intel_me_path(dev);
 	u8 me_state = 0, me_state_prev = 0;
 	bool need_reset = false;
-	struct me_hfs hfs;
+	union me_hfs hfs;
 
 	/* Do initial setup and determine the BIOS path */
 	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_get_bios_path_string(path));
@@ -236,7 +236,7 @@ static void intel_me_init(struct device *dev)
 
 	case ME_DISABLE_BIOS_PATH:
 		/* Bring ME out of Soft Temporary Disable mode, if needed */
-		pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
+		hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
 		if (hfs.operation_mode == ME_HFS_MODE_DIS
 				&& me_state == CMOS_ME_STATE_NORMAL
 				&& (CMOS_ME_STATE(me_state_prev) == CMOS_ME_STATE_DISABLED

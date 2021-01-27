@@ -64,8 +64,7 @@ static int me7_mkhi_end_of_post(void)
 
 void intel_me_finalize_smm(void)
 {
-	struct me_hfs hfs;
-	u32 reg32;
+	union me_hfs hfs;
 
 	update_mei_base_address();
 
@@ -74,8 +73,7 @@ void intel_me_finalize_smm(void)
 		return;
 
 	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
-	memcpy(&hfs, &reg32, sizeof(u32));
+	hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 
 	/* Abort and leave device alone if not normal mode */
 	if (hfs.fpt_bad ||

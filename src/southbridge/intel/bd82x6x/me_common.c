@@ -88,15 +88,6 @@ void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-#ifndef __SIMPLE_DEVICE__
-void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
-{
-	u32 dword = pci_read_config32(dev, offset);
-	memcpy(ptr, &dword, sizeof(dword));
-	mei_dump(ptr, dword, offset, "PCI READ");
-}
-#endif
-
 void read_host_csr(struct mei_csr *csr)
 {
 	mei_read_dword_ptr(csr, MEI_H_CSR);
@@ -368,11 +359,11 @@ int intel_mei_setup(struct device *dev)
 /* Read the Extend register hash of ME firmware */
 int intel_me_extend_valid(struct device *dev)
 {
-	struct me_heres status;
+	union me_heres status;
 	u32 extend[8] = {0};
 	int i, count = 0;
 
-	pci_read_dword_ptr(dev, &status, PCI_ME_HERES);
+	status.raw = pci_read_config32(dev, PCI_ME_HERES);
 	if (!status.extend_feature_present) {
 		printk(BIOS_ERR, "ME: Extend Feature not present\n");
 		return -1;
@@ -469,7 +460,7 @@ void exit_soft_temp_disable(struct device *dev)
 
 void exit_soft_temp_disable_wait(struct device *dev)
 {
-	struct me_hfs hfs;
+	union me_hfs hfs;
 	struct stopwatch sw;
 
 	stopwatch_init_msecs_expire(&sw, ME_ENABLE_TIMEOUT);
@@ -480,7 +471,7 @@ void exit_soft_temp_disable_wait(struct device *dev)
 	 */
 	do {
 		mdelay(50);
-		pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
+		hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
 		if (hfs.fw_init_complete)
 			break;
 	} while (!stopwatch_expired(&sw));

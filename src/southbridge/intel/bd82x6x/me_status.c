@@ -122,7 +122,7 @@ static const char *me_progress_policy_values[] = {
 	[0x10] = "Required VSCC values for flash parts do not match",
 };
 
-void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes)
+void intel_me_status(union me_hfs *hfs, union me_gmes *gmes)
 {
 	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL < BIOS_DEBUG)
 		return;

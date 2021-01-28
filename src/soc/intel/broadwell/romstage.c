@@ -8,12 +8,12 @@
 #include <cpu/intel/haswell/haswell.h>
 #include <elog.h>
 #include <romstage_handoff.h>
-#include <soc/gpio.h>
 #include <soc/me.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <stdint.h>
 #include <timestamp.h>
 

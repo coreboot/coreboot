@@ -4,9 +4,9 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 /*
  * This function will return a number that indicates which PIRQ

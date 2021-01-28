@@ -8,13 +8,13 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/iobp.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <delay.h>
 
 /* Low Power variant has 6 root ports. */

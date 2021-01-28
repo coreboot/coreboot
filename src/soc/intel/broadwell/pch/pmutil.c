@@ -17,9 +17,11 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/gpio.h>
 #include <security/vboot/vbnv.h>
 #include <stdint.h>
+
+#define GPIO_ALT_GPI_SMI_STS	0x50
+#define GPIO_ALT_GPI_SMI_EN	0x54
 
 static inline uint16_t get_gpiobase(void)
 {

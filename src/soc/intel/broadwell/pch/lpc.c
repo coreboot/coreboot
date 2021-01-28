@@ -13,7 +13,6 @@
 #include <acpi/acpi_gnvs.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
-#include <soc/gpio.h>
 #include <soc/iobp.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -26,6 +25,7 @@
 #include <soc/intel/broadwell/pch/chip.h>
 #include <acpi/acpigen.h>
 #include <southbridge/intel/common/rtc.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {

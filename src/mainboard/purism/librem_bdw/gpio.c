@@ -2,7 +2,7 @@
 
 #include <soc/gpio.h>
 
-const struct gpio_config mainboard_gpio_config[] = {
+const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	[0]  = PCH_GPIO_INPUT,
 	[1]  = PCH_GPIO_INPUT,
 	[2]  = PCH_GPIO_INPUT,

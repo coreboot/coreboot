@@ -2,7 +2,7 @@
 
 #include <soc/gpio.h>
 
-const struct gpio_config mainboard_gpio_config[] = {
+const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	PCH_GPIO_NATIVE,        /* 0: LPSS_UART1_RXD */
 	PCH_GPIO_NATIVE,        /* 1: LPSS_UART1_TXD */
 	PCH_GPIO_NATIVE,        /* 2: LPSS_UART1_RTS_N_R */

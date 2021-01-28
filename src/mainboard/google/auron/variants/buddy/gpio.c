@@ -2,7 +2,7 @@
 
 #include <soc/gpio.h>
 
-const struct gpio_config mainboard_gpio_config[] = {
+const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
 	PCH_GPIO_UNUSED,        /* 1: UNUSED */
 	PCH_GPIO_UNUSED,        /* 2: UNUSED */

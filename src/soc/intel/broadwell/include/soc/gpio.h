@@ -149,7 +149,7 @@
 	  .owner = GPIO_OWNER_GPIO, \
 	  .conf1 = GPIO_SENSE_DISABLE }
 
-struct gpio_config {
+struct pch_lp_gpio_map {
 	u8 gpio;
 	u32 conf0;
 	u32 conf1;
@@ -162,7 +162,7 @@ struct gpio_config {
 } __packed;
 
 /* Configure GPIOs with mainboard provided settings */
-void init_gpios(const struct gpio_config config[]);
+void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[]);
 
 /* Get GPIO pin value */
 int get_gpio(int gpio_num);
@@ -179,6 +179,6 @@ int gpio_is_native(int gpio_num);
  */
 unsigned int get_gpios(const int *gpio_num_array);
 
-extern const struct gpio_config mainboard_gpio_config[];
+extern const struct pch_lp_gpio_map mainboard_gpio_map[];
 
 #endif

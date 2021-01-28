@@ -36,9 +36,9 @@ static int gpio_to_pirq(int gpio)
 	};
 }
 
-void init_gpios(const struct gpio_config config[])
+void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[])
 {
-	const struct gpio_config *entry;
+	const struct pch_lp_gpio_map *config;
 	u32 owner[3] = {0};
 	u32 route[3] = {0};
 	u32 irqen[3] = {0};
@@ -47,29 +47,29 @@ void init_gpios(const struct gpio_config config[])
 	u16 pirq2apic = 0;
 	int set, bit, gpio = 0;
 
-	for (entry = config; entry->conf0 != GPIO_LIST_END; entry++, gpio++) {
+	for (config = map; config->conf0 != GPIO_LIST_END; config++, gpio++) {
 		if (gpio > MAX_GPIO_NUMBER)
 			break;
 
 		/* Setup Configuration registers 1 and 2 */
-		outl(entry->conf0, GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio));
-		outl(entry->conf1, GPIO_BASE_ADDRESS + GPIO_CONFIG1(gpio));
+		outl(config->conf0, GPIO_BASE_ADDRESS + GPIO_CONFIG0(gpio));
+		outl(config->conf1, GPIO_BASE_ADDRESS + GPIO_CONFIG1(gpio));
 
 		/* Determine set and bit based on GPIO number */
 		set = gpio >> 5;
 		bit = gpio % 32;
 
 		/* Apply settings to set specific bits */
-		owner[set] |= entry->owner << bit;
-		route[set] |= entry->route << bit;
-		irqen[set] |= entry->irqen << bit;
-		reset[set] |= entry->reset << bit;
+		owner[set] |= config->owner << bit;
+		route[set] |= config->route << bit;
+		irqen[set] |= config->irqen << bit;
+		reset[set] |= config->reset << bit;
 
 		if (set == 0)
-			blink |= entry->blink << bit;
+			blink |= config->blink << bit;
 
 		/* PIRQ to IO-APIC map */
-		if (entry->pirq == GPIO_PIRQ_APIC_ROUTE) {
+		if (config->pirq == GPIO_PIRQ_APIC_ROUTE) {
 			set = gpio_to_pirq(gpio);
 			if (set >= 0)
 				pirq2apic |= 1 << set;

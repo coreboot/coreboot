@@ -6,38 +6,35 @@
 #include "cpu/intel/model_206ax/model_206ax.h"
 #include <cpu/x86/msr.h>
 
-static void write8p(uintptr_t addr, uint32_t val)
+static void write8p(uintptr_t addr, uint8_t val)
 {
-	write8((u8 *)addr, val);
+	write8((uint8_t *)addr, val);
 }
 
-static void write16p(uintptr_t addr, uint32_t val)
+static void write16p(uintptr_t addr, uint16_t val)
 {
-	write16((u16 *)addr, val);
+	write16((uint16_t *)addr, val);
 }
 
 static uint16_t read16p(uintptr_t addr)
 {
-	return read16((u16 *)addr);
+	return read16((uint16_t *)addr);
 }
 
 /* Temporary address for the thermal BAR */
 #define TBARB_TEMP 0x40000000
 
 /* Early thermal init, must be done prior to giving ME its memory
-   which is done at the end of raminit.  */
+   which is done at the end of raminit */
 void early_thermal_init(void)
 {
-	pci_devfn_t dev;
-	msr_t msr;
+	const pci_devfn_t dev = PCH_THERMAL_DEV;
 
-	dev = PCI_DEV(0x0, 0x1f, 0x6);
-
-	/* Program address for temporary BAR.  */
+	/* Program address for temporary BAR */
 	pci_write_config32(dev, 0x40, TBARB_TEMP);
 	pci_write_config32(dev, 0x44, 0x0);
 
-	/* Activate temporary BAR.  */
+	/* Activate temporary BAR */
 	pci_or_config32(dev, 0x40, 5);
 
 	write16p(TBARB_TEMP + 0x04, 0x3a2b);
@@ -48,9 +45,9 @@ void early_thermal_init(void)
 	write8p(TBARB_TEMP + 0x82, 0x00);
 	write8p(TBARB_TEMP + 0x01, 0xba);
 
-	/* Perform init.  */
-	/* Configure TJmax.  */
-	msr = rdmsr(MSR_TEMPERATURE_TARGET);
+	/* Perform init */
+	/* Configure TJmax */
+	const msr_t msr = rdmsr(MSR_TEMPERATURE_TARGET);
 	write16p(TBARB_TEMP + 0x12, ((msr.lo >> 16) & 0xff) << 6);
 	/* Northbridge temperature slope and offset */
 	write16p(TBARB_TEMP + 0x16, 0x808c);
@@ -65,5 +62,5 @@ void early_thermal_init(void)
 
 	pci_write_config32(dev, 0x40, 0);
 
-	write32(DEFAULT_RCBA + 0x38b0, (read32(DEFAULT_RCBA + 0x38b0) & 0xffff8003) | 0x403c);
+	RCBA32_AND_OR(0x38b0, 0xffff8003, 0x403c);
 }

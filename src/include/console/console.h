@@ -28,6 +28,19 @@ void __noreturn die(const char *fmt, ...);
  */
 void die_notify(void);
 
+#if CONFIG(CONSOLE_OVERRIDE_LOGLEVEL)
+/*
+ * This function should be implemented at mainboard level.
+ * The returned value will _replace_ the loglevel value;
+ */
+int get_console_loglevel(void);
+#else
+static inline int get_console_loglevel(void)
+{
+	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+}
+#endif
+
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
 	 (ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
@@ -48,19 +61,6 @@ void console_time_report(void);
 #define vprintk(LEVEL, fmt, args) do_vprintk(LEVEL, fmt, args)
 
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
-
-#if CONFIG(CONSOLE_OVERRIDE_LOGLEVEL)
-/*
- * This function should be implemented at mainboard level.
- * The returned value will _replace_ the loglevel value;
- */
-int get_console_loglevel(void);
-#else
-static inline int get_console_loglevel(void)
-{
-	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-}
-#endif
 #else
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }

@@ -25,6 +25,6 @@ config DCACHE_BSP_STACK_SIZE
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xfeffc000 # 4GB - 16MB - DCACHE_RAM_SIZE
+	default 0xfeff8000 # 4GB - 16MB - DCACHE_RAM_SIZE
 
 endif # CPU_INTEL_SOCKET_LGA775

@@ -13,7 +13,6 @@
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
 #include "lp_gpio.h"
-extern const struct pch_lp_gpio_map mainboard_gpio_map[];
 #else
 #include <southbridge/intel/common/gpio.h>
 #endif

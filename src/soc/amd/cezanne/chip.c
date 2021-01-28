@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <fsp/api.h>
+#include <types.h>
 #include "chip.h"
 
 static void enable_dev(struct device *dev)
@@ -9,6 +11,7 @@ static void enable_dev(struct device *dev)
 
 static void soc_init(void *chip_info)
 {
+	fsp_silicon_init(false); /* no S3 support yet */
 }
 
 static void soc_final(void *chip_info)

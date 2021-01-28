@@ -51,6 +51,84 @@ chip soc/amd/picasso
 	# USB OC pin mapping
 	register "usb_port_overcurrent_pin[1]" = "USB_OC_NONE"	# LTE instead of USB C1
 
+	# Controller0 Port0
+	register "usb_2_port_tune_params[0]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port1
+	register "usb_2_port_tune_params[1]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port2
+	register "usb_2_port_tune_params[2]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller0 Port3
+	register "usb_2_port_tune_params[3]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller1 Port0
+	register "usb_2_port_tune_params[4]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
+	# Controller1 Port1
+	register "usb_2_port_tune_params[5]" = "{
+		.com_pds_tune = 0x07,
+		.sq_rx_tune = 0x3,
+		.tx_fsls_tune = 0x3,
+		.tx_pre_emp_amp_tune = 0x03,
+		.tx_pre_emp_pulse_tune = 0x0,
+		.tx_rise_tune = 0x1,
+		.tx_vref_tune = 0x6,
+		.tx_hsxv_tune = 0x3,
+		.tx_res_tune = 0x01,
+	}"
+
 	# I2C2 for touchscreen and trackpad
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,

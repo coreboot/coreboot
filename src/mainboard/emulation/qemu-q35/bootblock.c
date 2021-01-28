@@ -6,7 +6,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <console/console.h>
 
-#include "gm35.h"
+#include "q35.h"
 
 static void bootblock_northbridge_init(void)
 {

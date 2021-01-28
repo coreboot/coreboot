@@ -6,7 +6,7 @@
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <device/pci_ops.h>
 
-#include "gm35.h"
+#include "q35.h"
 
 static void mainboard_machine_check(void)
 {

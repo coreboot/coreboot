@@ -88,9 +88,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
-	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE)
-		die_with_post_code(POST_INVALID_VENDOR_BINARY,
-			"Invalid FSPS signature\n");
+	fsp_verify_upd_header_signature(supd->FspUpdHeader.Signature, FSPS_UPD_SIGNATURE);
 
 	/* Disallow invalid config regions.  Default settings are likely bad
 	 * choices for coreboot, and different sized UPD from what the region

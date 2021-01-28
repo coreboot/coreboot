@@ -239,9 +239,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	upd = (FSPM_UPD *)(hdr->cfg_region_offset + hdr->image_base);
 
-	if (upd->FspUpdHeader.Signature != FSPM_UPD_SIGNATURE)
-		die_with_post_code(POST_INVALID_VENDOR_BINARY,
-			"Invalid FSPM signature!\n");
+	fsp_verify_upd_header_signature(upd->FspUpdHeader.Signature, FSPM_UPD_SIGNATURE);
 
 	/* Copy the default values from the UPD area */
 	memcpy(&fspm_upd, upd, sizeof(fspm_upd));

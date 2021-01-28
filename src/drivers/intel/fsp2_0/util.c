@@ -224,6 +224,21 @@ void fsp_get_version(char *buf)
 		revision.rev.minor, revision.rev.revision, revision.rev.bld_num);
 }
 
+/* Check if the signature in the UPD header matches the expected one. If it doesn't match, the
+   FSP binaries in CBFS are for a different platform than the platform code trying to use it
+   in which case the function calls die(). */
+void fsp_verify_upd_header_signature(uint64_t upd_signature, uint64_t expected_signature)
+{
+	if (upd_signature != expected_signature) {
+		/* The UPD signatures are non-zero-terminated ASCII stored as a little endian
+		   uint64_t, so this needs some casts. */
+		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			"Invalid UPD signature! FSP provided \"%8s\", expected was \"%8s\".\n",
+			(char *)&upd_signature,
+			(char *)&expected_signature);
+	}
+}
+
 /* Add FSP version to coreboot table LB_TAG_PLATFORM_BLOB_VERSION */
 void lb_string_platform_blob_version(struct lb_header *header)
 {

@@ -97,6 +97,8 @@ const struct hob_header *fsp_next_hob(const struct hob_header *parent);
 bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 void fsp_find_bootloader_tolum(struct range_entry *re);
 void fsp_get_version(char *buf);
+/* fsp_verify_upd_header_signature calls die() on signature mismatch */
+void fsp_verify_upd_header_signature(uint64_t upd_signature, uint64_t expected_signature);
 void lb_string_platform_blob_version(struct lb_header *header);
 void report_fspt_output(void);
 void soc_validate_fsp_version(const struct fsp_header *hdr);

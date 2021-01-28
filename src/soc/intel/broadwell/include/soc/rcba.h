@@ -3,18 +3,7 @@
 #ifndef _BROADWELL_RCBA_H_
 #define _BROADWELL_RCBA_H_
 
-#include <soc/iomap.h>
-
-#define RCBA8(x)	*((volatile u8 *)(RCBA_BASE_ADDRESS + x))
-#define RCBA16(x)	*((volatile u16 *)(RCBA_BASE_ADDRESS + x))
-#define RCBA32(x)	*((volatile u32 *)(RCBA_BASE_ADDRESS + x))
-
-#define RCBA_AND_OR(bits, x, and, or) \
-	RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
-#define RCBA8_AND_OR(x, and, or)  RCBA_AND_OR(8, x, and, or)
-#define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
-#define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
-#define RCBA32_OR(x, or) RCBA_AND_OR(32, x, ~0UL, or)
+#include <southbridge/intel/common/rcba.h>
 
 #define RPC		0x0400	/* 32bit */
 #define RPFN		0x0404	/* 32bit */

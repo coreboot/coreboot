@@ -491,10 +491,10 @@ static void pch_lpc_add_mmio_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* RCBA */
-	if (default_decode_base > RCBA_BASE_ADDRESS) {
+	if (default_decode_base > CONFIG_FIXED_RCBA_MMIO_BASE) {
 		res = new_resource(dev, RCBA);
-		res->base = RCBA_BASE_ADDRESS;
-		res->size = 16 * 1024;
+		res->base = CONFIG_FIXED_RCBA_MMIO_BASE;
+		res->size = CONFIG_RCBA_LENGTH;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
 			     IORESOURCE_FIXED | IORESOURCE_RESERVE;
 	}

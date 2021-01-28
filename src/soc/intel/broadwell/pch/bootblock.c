@@ -13,7 +13,7 @@
 
 static void map_rcba(void)
 {
-	pci_write_config32(PCH_DEV_LPC, RCBA, RCBA_BASE_ADDRESS | 1);
+	pci_write_config32(PCH_DEV_LPC, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 }
 
 static void enable_port80_on_lpc(void)
@@ -48,7 +48,7 @@ static void set_spi_speed(void)
 static void pch_enable_bars(void)
 {
 	/* Set up southbridge BARs */
-	pci_write_config32(PCH_DEV_LPC, RCBA, RCBA_BASE_ADDRESS | 1);
+	pci_write_config32(PCH_DEV_LPC, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 
 	pci_write_config32(PCH_DEV_LPC, PMBASE, ACPI_BASE_ADDRESS | 1);
 

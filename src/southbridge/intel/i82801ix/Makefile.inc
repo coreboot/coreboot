@@ -24,6 +24,10 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
 smm-y += smihandler.c
 
+ifneq ($(CONFIG_BOARD_EMULATION_QEMU_X86_Q35),y)
+ramstage-y += madt.c
+endif
+
 ifeq ($(CONFIG_SMM_ASEG),y)
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S

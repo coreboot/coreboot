@@ -25,6 +25,7 @@ USER root
 
 RUN apt-get -y update && \
 	apt-get -y install \
+	parallel \
 	meson ninja-build \
 	sdcc \
 	lua5.3 liblua5.3-dev default-jre-headless openssh-server && \

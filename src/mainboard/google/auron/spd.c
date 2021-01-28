@@ -3,7 +3,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <mainboard/google/auron/variant.h>
-#include <soc/gpio.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <string.h>

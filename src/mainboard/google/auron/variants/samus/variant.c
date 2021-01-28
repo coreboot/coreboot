@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/gpio.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <smbios.h>

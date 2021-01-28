@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <endian.h>
 #include <string.h>
-#include <soc/gpio.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>

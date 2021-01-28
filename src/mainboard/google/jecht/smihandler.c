@@ -5,7 +5,7 @@
 #include <cpu/x86/smm.h>
 #include <soc/pm.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/gpio.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include "onboard.h"

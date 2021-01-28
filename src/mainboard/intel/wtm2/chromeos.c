@@ -3,7 +3,8 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
-#include <soc/gpio.h>
+#include <soc/chromeos.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Compile-time settings for recovery mode. */

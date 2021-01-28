@@ -5,8 +5,9 @@
 #include <device/device.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/gpio.h>
+#include <soc/chromeos.h>
 #include <soc/sata.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "onboard.h"
 
 #define GPIO_SPI_WP	58

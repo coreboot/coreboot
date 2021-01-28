@@ -2,7 +2,8 @@
 
 #include <boot/coreboot_tables.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <soc/gpio.h>
+#include <soc/chromeos.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 /* SPI Write protect is GPIO 16 */
 #define CROS_WP_GPIO	58

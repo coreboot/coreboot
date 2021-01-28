@@ -34,7 +34,6 @@ config VGA_BIOS_ID
 	default "8086,0166"
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xf0000000
 
 config DCACHE_RAM_BASE

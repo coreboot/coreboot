@@ -44,7 +44,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xe0000000
 
 config FSP_T_ADDR

@@ -127,7 +127,6 @@ config PCR_BASE_ADDRESS
 	  This option allows you to select MMIO Base Address of sideband bus.
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xc0000000
 
 config CPU_BCLK_MHZ

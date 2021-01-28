@@ -19,7 +19,6 @@ config VBOOT
 	select TPM_STARTUP_IGNORE_POSTINIT
 
 config MMCONF_BUS_NUMBER
-	int
 	default 256
 
 config CBFS_SIZE
@@ -46,7 +45,6 @@ config DCACHE_BSP_STACK_SIZE
 	  other stages.
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xe0000000
 
 config INTEL_GMA_BCLV_OFFSET

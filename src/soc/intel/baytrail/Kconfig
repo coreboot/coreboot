@@ -42,7 +42,6 @@ config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xe0000000
 
 config MAX_CPUS

@@ -86,7 +86,6 @@ config VGA_BIOS_ID
 	default "8086,0106"
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xf0000000
 	help
 	  The MRC blob requires it to be at 0xf0000000.

@@ -125,11 +125,9 @@ config BOTTOMIO_POSITION
 	  ranges are present.
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xF8000000
 
 config MMCONF_BUS_NUMBER
-	int
 	default 64
 
 config VGA_BIOS_ID

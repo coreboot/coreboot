@@ -513,6 +513,14 @@ config PCIEXP_PLUGIN_SUPPORT
 	bool
 	default y
 
+config MMCONF_BASE_ADDRESS
+	hex
+	depends on MMCONF_SUPPORT
+
+config MMCONF_BUS_NUMBER
+	int
+	depends on MMCONF_SUPPORT
+
 config PCI_ALLOW_BUS_MASTER
 	bool "Allow coreboot to set optional PCI bus master bits"
 	default y

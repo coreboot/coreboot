@@ -61,7 +61,6 @@ config MAINBOARD_PART_NUMBER
 	default "QEMU x86 q35/ich9"
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xb0000000
 
 # fw_cfg tables can be larger than the default when TPM is enabled

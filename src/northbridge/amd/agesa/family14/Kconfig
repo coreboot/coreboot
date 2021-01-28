@@ -11,11 +11,9 @@ config HW_MEM_HOLE_SIZEK
 	default 0x100000
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xF8000000
 
 config MMCONF_BUS_NUMBER
-	int
 	default 64
 
 endif # NORTHBRIDGE_AMD_AGESA_FAMILY14

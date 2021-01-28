@@ -27,7 +27,6 @@ config VGA_BIOS_ID
 	default "8086,2a42"
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xf0000000
 
 config SMM_RESERVED_SIZE

@@ -74,6 +74,33 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D4, NONE, DEEP, NF1),
 	/* IMGCLKOUT1 */
 	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
+
+	/* C16 : I2C0 SDA */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
+
+	/* S0 : SNDW1_CLK */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF1),
+
+	/* S1 : SNDW1_DATA */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF1),
+
+	/* S2 : SNDW2_CLK */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF2),
+
+	/* S3 : SNDW2_DATA */
+	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF2),
+
+	/* S4 : SNDW3_CLK */
+	PAD_CFG_NF(GPP_S4, NONE, DEEP, NF2),
+
+	/* S5 : SNDW3_DATA */
+	PAD_CFG_NF(GPP_S5, NONE, DEEP, NF2),
+
+	/* S6 : SNDW4_CLK */
+	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
+
+	/* S7 : SNDW4_DATA */
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2)
 };
 
 void variant_configure_gpio_pads(void)

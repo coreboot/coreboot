@@ -30,9 +30,12 @@
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			(1 << 7) /* Write-once */
 
-void enable_aoac_devices(void);
-void wait_for_aoac_enabled(unsigned int dev);
 void fch_pre_init(void);
 void fch_early_init(void);
+void fch_init(void *chip_info);
+void fch_final(void *chip_info);
+
+void enable_aoac_devices(void);
+void wait_for_aoac_enabled(unsigned int dev);
 
 #endif /* AMD_CEZANNE_SOUTHBRIDGE_H */

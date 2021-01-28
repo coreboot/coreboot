@@ -25,6 +25,7 @@ romstage-y	+= romstage.c
 romstage-y	+= uart.c
 
 ramstage-y	+= chip.c
+ramstage-y	+= fch.c
 ramstage-y      += fsp_params.c
 ramstage-y	+= gpio.c
 ramstage-y      += reset.c

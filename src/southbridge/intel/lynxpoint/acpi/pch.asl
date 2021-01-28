@@ -19,7 +19,7 @@ Scope (\)
 	}
 
 	// Root Complex Register Block
-	OperationRegion (RCRB, SystemMemory, CONFIG_FIXED_RCBA_MMIO_BASE, 0x4000)
+	OperationRegion (RCRB, SystemMemory, CONFIG_FIXED_RCBA_MMIO_BASE, CONFIG_RCBA_LENGTH)
 	Field (RCRB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x3404), // High Performance Timer Configuration

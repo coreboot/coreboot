@@ -10,7 +10,7 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, CONFIG_FIXED_RCBA_MMIO_BASE, 0x00004000)
+		Memory32Fixed(ReadWrite, CONFIG_FIXED_RCBA_MMIO_BASE, CONFIG_RCBA_LENGTH)
 		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR,   0x00008000)
 		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR,   0x00001000)
 		Memory32Fixed(ReadWrite, DEFAULT_EPBAR,    0x00001000)

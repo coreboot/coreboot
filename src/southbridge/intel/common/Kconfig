@@ -108,6 +108,10 @@ config FIXED_RCBA_MMIO_BASE
 	hex
 	default 0xfed1c000
 
+config RCBA_LENGTH
+	hex
+	default 0x4000
+
 config FIXED_SMBUS_IO_BASE
 	hex
 	depends on SOUTHBRIDGE_INTEL_COMMON_SMBUS

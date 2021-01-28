@@ -609,6 +609,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->thermal_state = SMBIOS_STATE_SAFE;
 	t->_type = smbios_mainboard_enclosure_type();
 	t->security_status = SMBIOS_STATE_SAFE;
+	t->number_of_power_cords = smbios_chassis_power_cords();
 	t->asset_tag_number = smbios_add_string(t->eos, smbios_mainboard_asset_tag());
 	t->version = smbios_add_string(t->eos, smbios_chassis_version());
 	t->serial_number = smbios_add_string(t->eos, smbios_chassis_serial_number());

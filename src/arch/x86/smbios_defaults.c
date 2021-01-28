@@ -143,3 +143,8 @@ __weak const char *smbios_processor_serial_number(void)
 {
 	return "";
 }
+
+__weak u8 smbios_chassis_power_cords(void)
+{
+	return 1;
+}

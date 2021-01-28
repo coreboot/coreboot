@@ -126,7 +126,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2_2, "Coffeelake-S GT2" },
 	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2_3, "Coffeelake-S GT2" },
 	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2_4, "Coffeelake-S GT2" },
-	{ PCI_DEVICE_ID_INTEL_CFL_U_GT2, "Coffeelake-U GT2" },
+	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2_5, "Coffeelake-S GT2" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_1, "CometLake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_2, "CometLake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULT_1, "CometLake ULT GT2" },

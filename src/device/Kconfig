@@ -521,6 +521,14 @@ config MMCONF_BUS_NUMBER
 	int
 	depends on MMCONF_SUPPORT
 
+config MMCONF_LENGTH
+	hex
+	depends on MMCONF_SUPPORT
+	default 0x04000000 if MMCONF_BUS_NUMBER = 64
+	default 0x08000000 if MMCONF_BUS_NUMBER = 128
+	default 0x10000000 if MMCONF_BUS_NUMBER = 256
+	default 0x0
+
 config PCI_ALLOW_BUS_MASTER
 	bool "Allow coreboot to set optional PCI bus master bits"
 	default y

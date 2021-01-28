@@ -101,6 +101,10 @@ uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
 #error "CONFIG_MMCONF_BASE_ADDRESS undefined!"
 #endif
 
+#if CONFIG_MMCONF_BUS_NUMBER * MiB != CONFIG_MMCONF_LENGTH
+#error "CONFIG_MMCONF_LENGTH does not correspond with CONFIG_MMCONF_BUS_NUMBER!"
+#endif
+
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or
  * MMIO variant.

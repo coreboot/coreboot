@@ -10,8 +10,6 @@
 
 static void bootblock_northbridge_init(void)
 {
-	uint32_t reg;
-
 	/*
 	 * The "io" variant of the config access is explicitly used to
 	 * setup the PCIEXBAR because CONFIG(MMCONF_SUPPORT) is set to
@@ -24,16 +22,12 @@ static void bootblock_northbridge_init(void)
 	 * The PCIEXBAR is assumed to live in the memory mapped IO space under
 	 * 4GiB.
 	 */
-	reg = 0;
-	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_HI, reg);
-	reg = CONFIG_MMCONF_BASE_ADDRESS | 1; /* 256MiB - 0-255 buses. */
-	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO, reg);
+	const uint32_t pciexbar = make_pciexbar();
+	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_HI, 0);
+	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO, pciexbar);
 
-	/* MCFG is now active. If it's not qemu was started for machine PC */
-	if (CONFIG(BOOTBLOCK_CONSOLE) &&
-	    (pci_read_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO) !=
-	     (CONFIG_MMCONF_BASE_ADDRESS | 1)))
-		die("You must run qemu for machine Q35 (-M q35)");
+	if (CONFIG(BOOTBLOCK_CONSOLE))
+		mainboard_machine_check();
 }
 
 static void bootblock_southbridge_init(void)

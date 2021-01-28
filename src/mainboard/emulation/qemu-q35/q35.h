@@ -4,6 +4,7 @@
 #define __MAINBOARD_EMU_Q35_H__
 
 #include <device/pci_type.h>
+#include <types.h>
 
 #define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
@@ -22,5 +23,9 @@
 #define  T_EN			(1 << 0)
 #define  TSEG_SZ_MASK		(3 << 1)
 #define  H_SMRAME		(1 << 7)
+
+uint32_t make_pciexbar(void);
+
+void mainboard_machine_check(void);
 
 #endif

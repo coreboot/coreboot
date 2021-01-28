@@ -63,6 +63,10 @@ config MAINBOARD_PART_NUMBER
 config MMCONF_BASE_ADDRESS
 	default 0xb0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 256
+
 # fw_cfg tables can be larger than the default when TPM is enabled
 config MAX_ACPI_TABLE_SIZE_KB
 	int

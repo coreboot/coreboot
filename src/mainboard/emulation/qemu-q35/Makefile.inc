@@ -1,4 +1,5 @@
 bootblock-y += bootblock.c
+bootblock-y += memmap.c
 
 romstage-y += ../qemu-i440fx/fw_cfg.c
 romstage-y += ../qemu-i440fx/memmap.c

@@ -1,10 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <arch/ioapic.h>
 #include <boardid.h>
-#include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <soc/device_nvs.h>
 
@@ -27,18 +24,4 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 		dev_nvs->lpss_en[LPSS_NVS_I2C2] = 0;
 
 	gnvs->bdid = board_id();
-}
-
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
-
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
-
-	current = acpi_madt_irq_overrides(current);
-
-	return current;
 }

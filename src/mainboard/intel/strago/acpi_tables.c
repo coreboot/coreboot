@@ -2,13 +2,8 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
-#include <arch/ioapic.h>
-#include <device/device.h>
-#include <soc/acpi.h>
-#include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/device_nvs.h>
-#include "onboard.h"
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
@@ -26,20 +21,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	/* PMIC is configured in I2C1, hidden it from OS */
 	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	dev_nvs->lpss_en[LPSS_NVS_I2C2] = 0;
-}
-
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
-
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
-
-	current = acpi_madt_irq_overrides(current);
-
-	return current;
 }
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)

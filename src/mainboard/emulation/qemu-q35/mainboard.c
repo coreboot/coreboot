@@ -5,7 +5,7 @@
 #include <device/pci_ops.h>
 #include <pc80/keyboard.h>
 
-#define Q35_PAM0            0x90
+#include "q35.h"
 
 static const unsigned char qemu_q35_irqs[] = {
 	10, 10, 11, 11,
@@ -16,15 +16,15 @@ static void qemu_nb_init(struct device *dev)
 {
 	/* Map memory at 0xc0000 - 0xfffff */
 	int i;
-	uint8_t v = pci_read_config8(dev, Q35_PAM0);
+	uint8_t v = pci_read_config8(dev, D0F0_PAM(0));
 	v |= 0x30;
-	pci_write_config8(dev, Q35_PAM0, v);
-	pci_write_config8(dev, Q35_PAM0 + 1, 0x33);
-	pci_write_config8(dev, Q35_PAM0 + 2, 0x33);
-	pci_write_config8(dev, Q35_PAM0 + 3, 0x33);
-	pci_write_config8(dev, Q35_PAM0 + 4, 0x33);
-	pci_write_config8(dev, Q35_PAM0 + 5, 0x33);
-	pci_write_config8(dev, Q35_PAM0 + 6, 0x33);
+	pci_write_config8(dev, D0F0_PAM(0), v);
+	pci_write_config8(dev, D0F0_PAM(1), 0x33);
+	pci_write_config8(dev, D0F0_PAM(2), 0x33);
+	pci_write_config8(dev, D0F0_PAM(3), 0x33);
+	pci_write_config8(dev, D0F0_PAM(4), 0x33);
+	pci_write_config8(dev, D0F0_PAM(5), 0x33);
+	pci_write_config8(dev, D0F0_PAM(6), 0x33);
 
 	/* This sneaked in here, because Qemu does not emulate a SuperIO chip. */
 	pc_keyboard_init(NO_AUX_DEVICE);

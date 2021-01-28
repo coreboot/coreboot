@@ -12,7 +12,7 @@ static void mainboard_machine_check(void)
 {
 	/* Check that MCFG is active. If it's not qemu was started for machine PC */
 	if (!CONFIG(BOOTBLOCK_CONSOLE) &&
-	    (pci_read_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_LO) !=
+	    (pci_read_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO) !=
 	     (CONFIG_MMCONF_BASE_ADDRESS | 1)))
 		die("You must run qemu for machine Q35 (-M q35)");
 }

@@ -10,6 +10,7 @@
 
 #include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"
+#include "q35.h"
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {
@@ -46,7 +47,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	if (!dev)
 		return current;
 
-	reg = pci_read_config32(dev, 0x60);
+	reg = pci_read_config32(dev, D0F0_PCIEXBAR_LO);
 	if ((reg & 0x07) != 0x01)  /* require enabled + 256MB size */
 		return current;
 

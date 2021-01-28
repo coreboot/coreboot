@@ -17,6 +17,7 @@ Field (POST, ByteAcc, Lock, Preserve)
 	DBG0, 8
 }
 
+#if CONFIG(ACPI_SOC_NVS)
 /* SMI I/O Trap */
 Method(TRAP, 1, Serialized)
 {
@@ -24,6 +25,7 @@ Method(TRAP, 1, Serialized)
 	TRP0 = 0		// Generate trap
 	Return (SMIF)		// Return value of SMI handler
 }
+#endif /* ACPI_SOC_NVS */
 
 /* The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.

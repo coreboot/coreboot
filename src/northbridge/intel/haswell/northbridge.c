@@ -511,7 +511,7 @@ static void northbridge_topology_init(void)
 	reg32 &= ~(0xffff << 16);
 	reg32 |= 1 | (2 << 16);
 	DMIBAR32(DMILE1D) = reg32;
-	DMIBAR64(DMILE1A) = (uintptr_t)DEFAULT_RCBA;
+	DMIBAR64(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
 
 	DMIBAR64(DMILE2A) = (uintptr_t)DEFAULT_EPBAR;
 	reg32 = DMIBAR32(DMILE2D);

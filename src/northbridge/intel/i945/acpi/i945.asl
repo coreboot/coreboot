@@ -2,7 +2,6 @@
 
 #include "hostbridge.asl"
 #include "../i945.h"
-#include <southbridge/intel/common/rcba.h>
 
 /* Operating System Capabilities Method */
 Method (_OSC, 4)
@@ -38,7 +37,7 @@ Device (PDRC)
 	//})
 
 	Name (PDRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, DEFAULT_RCBA, 0x00004000)
+		Memory32Fixed(ReadWrite, CONFIG_FIXED_RCBA_MMIO_BASE, 0x00004000)
 		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR, 0x00004000)
 		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR, 0x00001000)
 		Memory32Fixed(ReadWrite, DEFAULT_EPBAR, 0x00001000)

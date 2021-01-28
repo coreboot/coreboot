@@ -48,7 +48,7 @@ void i82801gx_lpc_setup(void)
 void i82801gx_setup_bars(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
-	pci_write_config32(d31f0, RCBA, (uint32_t)DEFAULT_RCBA | 1);
+	pci_write_config32(d31f0, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 	pci_write_config32(d31f0, PMBASE, DEFAULT_PMBASE | 1);
 	pci_write_config8(d31f0, ACPI_CNTL, ACPI_EN);
 

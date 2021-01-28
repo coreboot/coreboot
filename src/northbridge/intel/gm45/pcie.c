@@ -264,7 +264,7 @@ static void setup_rcrb(const int peg_enabled)
 
 	/* Link1: target port 0, component id 2 (ICH), link valid. */
 	DMIBAR32(DMILE1D) = (0 << 24) | (2 << 16) | (1 << 0);
-	DMIBAR32(DMILE1A) = (uintptr_t)DEFAULT_RCBA;
+	DMIBAR32(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
 
 	/* Link2: component ID 1 (MCH), link valid */
 	DMIBAR32(DMILE2D) =

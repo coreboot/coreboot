@@ -3,9 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_DEFAULT_RCBA_H
 #define SOUTHBRIDGE_INTEL_DEFAULT_RCBA_H
 
-#ifndef __ACPI__
-
-#define DEFAULT_RCBA		((u8 *)0xfed1c000)
+#define DEFAULT_RCBA		((u8 *)CONFIG_FIXED_RCBA_MMIO_BASE)
 
 /* Root Complex Register Block */
 #define RCBA 0xf0
@@ -22,11 +20,5 @@
 #define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
 #define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
 #define RCBA32_OR(x, or) RCBA_AND_OR(32, x, ~0UL, or)
-
-#else
-
-#define DEFAULT_RCBA	        0xfed1c000
-
-#endif /* __ACPI__ */
 
 #endif /* SOUTHBRIDGE_INTEL_DEFAULT_RCBA_H */

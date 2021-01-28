@@ -186,7 +186,7 @@ void southbridge_smm_xhci_sleep(u8 slp_type)
 		return;
 
 	/* Verify that RCBA is still valid */
-	if (pci_read_config32(PCH_LPC_DEV, RCBA) != ((u32)DEFAULT_RCBA | RCBA_ENABLE))
+	if (pci_read_config32(PCH_LPC_DEV, RCBA) != (CONFIG_FIXED_RCBA_MMIO_BASE | RCBA_ENABLE))
 		return;
 
 	if (RCBA32(FD) & PCH_DISABLE_XHCI)

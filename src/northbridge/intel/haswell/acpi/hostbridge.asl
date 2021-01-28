@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include "../haswell.h"
-#include <southbridge/intel/common/rcba.h>
 
 Name (_HID, EISAID ("PNP0A08"))	// PCIe
 Name (_CID, EISAID ("PNP0A03"))	// PCI
@@ -175,7 +174,7 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate () {
-		Memory32Fixed (ReadWrite, DEFAULT_RCBA, 0x00004000)
+		Memory32Fixed (ReadWrite, CONFIG_FIXED_RCBA_MMIO_BASE, 0x00004000)
 		Memory32Fixed (ReadWrite, DEFAULT_MCHBAR,   0x00008000)
 		Memory32Fixed (ReadWrite, DEFAULT_DMIBAR,   0x00001000)
 		Memory32Fixed (ReadWrite, DEFAULT_EPBAR,    0x00001000)

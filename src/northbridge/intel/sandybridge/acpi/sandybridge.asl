@@ -2,7 +2,6 @@
 
 #include "hostbridge.asl"
 #include "peg.asl"
-#include <southbridge/intel/common/rcba.h>
 
 /* PCI Device Resource Consumption */
 Device (PDRC)
@@ -11,7 +10,7 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, DEFAULT_RCBA, 0x00004000)
+		Memory32Fixed(ReadWrite, CONFIG_FIXED_RCBA_MMIO_BASE, 0x00004000)
 		// Filled by _CRS
 		Memory32Fixed(ReadWrite, 0, 0x00008000, MCHB)
 		Memory32Fixed(ReadWrite, 0, 0x00001000, DMIB)

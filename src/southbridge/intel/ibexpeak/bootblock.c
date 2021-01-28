@@ -80,7 +80,7 @@ void bootblock_early_southbridge_init(void)
 
 	/* Enable RCBA */
 	pci_devfn_t lpc_dev = PCI_DEV(0, 0x1f, 0);
-	pci_write_config32(lpc_dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(lpc_dev, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 
 	enable_port80_on_lpc();
 	set_spi_speed();

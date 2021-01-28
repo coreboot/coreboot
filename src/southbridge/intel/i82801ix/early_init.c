@@ -51,7 +51,7 @@ void i82801ix_early_init(void)
 		enable_smbus();
 
 	/* Set up RCBA. */
-	pci_write_config32(d31f0, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	pci_write_config32(d31f0, RCBA, CONFIG_FIXED_RCBA_MMIO_BASE | 1);
 
 	/* Set up PMBASE. */
 	pci_write_config32(d31f0, D31F0_PMBASE, DEFAULT_PMBASE | 1);

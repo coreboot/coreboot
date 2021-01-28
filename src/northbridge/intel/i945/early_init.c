@@ -730,7 +730,7 @@ static void i945_setup_root_complex_topology(void)
 	reg32 |= (1 << 0);
 	DMIBAR32(DMILE1D) = reg32;
 
-	DMIBAR32(DMILE1A) = (uintptr_t)DEFAULT_RCBA;
+	DMIBAR32(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
 
 	DMIBAR32(DMILE2D) |= (1 << 16) | (1 << 0);
 

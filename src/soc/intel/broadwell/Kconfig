@@ -77,8 +77,10 @@ config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE if !BROADWELL_VBOOT_IN_BOOTBLOCK
 
 config MMCONF_BASE_ADDRESS
-	hex
 	default 0xf0000000
+
+config MMCONF_BUS_NUMBER
+	default 64
 
 config VGA_BIOS_ID
 	string

@@ -104,12 +104,12 @@ static void soc_init(void *chip_info)
 	fsp_silicon_init(acpi_is_wakeup_s3());
 
 	data_fabric_set_mmio_np();
-	southbridge_init(chip_info);
+	fch_init(chip_info);
 }
 
 static void soc_final(void *chip_info)
 {
-	southbridge_final(chip_info);
+	fch_final(chip_info);
 }
 
 struct chip_operations soc_amd_picasso_ops = {

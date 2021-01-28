@@ -174,13 +174,14 @@ typedef struct aoac_devs {
 	unsigned int :4;
 } __packed aoac_devs_t;
 
+void fch_pre_init(void);
+void fch_early_init(void);
+void fch_init(void *chip_info);
+void fch_final(void *chip_info);
+
 void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
 void sb_clk_output_48Mhz(void);
-void southbridge_final(void *chip_info);
-void southbridge_init(void *chip_info);
-void fch_pre_init(void);
-void fch_early_init(void);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

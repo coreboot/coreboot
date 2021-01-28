@@ -219,7 +219,7 @@ static void gpp_clk_setup(void)
 	misc_write32(GPP_CLK_CNTRL, gpp_clk_ctl);
 }
 
-void southbridge_init(void *chip_info)
+void fch_init(void *chip_info)
 {
 	i2c_soc_init();
 	sb_init_acpi_ports();
@@ -238,7 +238,7 @@ void southbridge_init(void *chip_info)
 	sb_rfmux_config_override();
 }
 
-void southbridge_final(void *chip_info)
+void fch_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
 

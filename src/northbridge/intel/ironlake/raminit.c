@@ -1822,19 +1822,18 @@ static void setup_heci_uma(struct raminfo *info)
 	pci_read_config32(NORTHBRIDGE, DMIBAR);
 	if (info->memory_reserved_for_heci_mb) {
 		DMIBAR32(DMIVC0RCTL) &= ~0x80;
-		write32(DEFAULT_RCBA   + 0x14, read32(DEFAULT_RCBA   + 0x14) & ~0x80);
+		RCBA32(0x14) &= ~0x80;
 		DMIBAR32(DMIVC1RCTL) &= ~0x80;
-		write32(DEFAULT_RCBA   + 0x20, read32(DEFAULT_RCBA   + 0x20) & ~0x80);
+		RCBA32(0x20) &= ~0x80;
 		DMIBAR32(DMIVCPRCTL) &= ~0x80;
-		write32(DEFAULT_RCBA   + 0x30, read32(DEFAULT_RCBA   + 0x30) & ~0x80);
+		RCBA32(0x30) &= ~0x80;
 		DMIBAR32(DMIVCMRCTL) &= ~0x80;
-		write32(DEFAULT_RCBA   + 0x40, read32(DEFAULT_RCBA   + 0x40) & ~0x80);
+		RCBA32(0x40) &= ~0x80;
 
-		write32(DEFAULT_RCBA   + 0x40, 0x87000080);	// OK
+		RCBA32(0x40) = 0x87000080;	// OK
 		DMIBAR32(DMIVCMRCTL) = 0x87000080;	// OK
 
-		while ((read16(DEFAULT_RCBA + 0x46) & 2) &&
-			DMIBAR16(DMIVCMRSTS) & VCMNP)
+		while ((RCBA16(0x46) & 2) && DMIBAR16(DMIVCMRSTS) & VCMNP)
 			;
 	}
 
@@ -3667,17 +3666,17 @@ void chipset_init(const int s3resume)
 		MCHBAR32_AND_OR(0x2c44, 0, 0x1053687);
 		pci_read_config8(GMA, MSAC);	// = 0x2
 		pci_write_config8(GMA, MSAC, 0x2);
-		read8(DEFAULT_RCBA + 0x2318);
-		write8(DEFAULT_RCBA + 0x2318, 0x47);
-		read8(DEFAULT_RCBA + 0x2320);
-		write8(DEFAULT_RCBA + 0x2320, 0xfc);
+		RCBA8(0x2318);
+		RCBA8(0x2318) = 0x47;
+		RCBA8(0x2320);
+		RCBA8(0x2320) = 0xfc;
 	}
 
 	MCHBAR32_AND_OR(0x30, 0, 0x40);
 
 	pci_write_config16(NORTHBRIDGE, GGC, ggc);
-	gav(read32(DEFAULT_RCBA + 0x3428));
-	write32(DEFAULT_RCBA + 0x3428, 0x1d);
+	gav(RCBA32(0x3428));
+	RCBA32(0x3428) = 0x1d;
 }
 
 void raminit(const int s3resume, const u8 *spd_addrmap)

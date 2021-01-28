@@ -57,4 +57,11 @@ config CONSOLE_POST
 	bool
 	default y
 
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0xc000 if FIXED_BOOTBLOCK_SIZE
+	help
+	  This matches the IBB size used for CBnT. Adjust this to the
+	  used CBnT settings.
+
 endif # BOARD_OCP_DELTALAKE

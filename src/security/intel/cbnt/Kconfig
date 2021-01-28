@@ -6,6 +6,8 @@ config INTEL_CBNT_SUPPORT
 	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	#depends on PLATFORM_HAS_DRAM_CLEAR
 	select INTEL_TXT
+	# With CBnT the bootblock is set up as a CBnT IBB and needs a fixed size
+	select FIXED_BOOTBLOCK_SIZE
 	help
 	  Enables Intel Converged Bootguard and Trusted Execution Technology
 	  Support. This will enable one to add a Key Manifest (KM) and a Boot

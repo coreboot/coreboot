@@ -29,11 +29,11 @@ void mainboard_post_raminit(const int s3resume)
 	printk(BIOS_INFO, "MLB: board version %s\n", samus_board_version());
 
 	/* Bring SSD out of reset */
-	set_gpio(BOARD_SSD_RESET_GPIO, GPIO_OUT_HIGH);
+	set_gpio(BOARD_SSD_RESET_GPIO, 1);
 
 	/*
 	 * Enable PP3300_AUTOBAHN_EN after initial GPIO setup
 	 * to prevent possible brownout.
 	 */
-	set_gpio(BOARD_PP3300_AUTOBAHN_GPIO, GPIO_OUT_HIGH);
+	set_gpio(BOARD_PP3300_AUTOBAHN_GPIO, 1);
 }

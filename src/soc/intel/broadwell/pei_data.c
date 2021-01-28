@@ -16,7 +16,7 @@ void broadwell_fill_pei_data(struct pei_data *pei_data)
 	pei_data->board_type = BOARD_TYPE_ULT;
 	pei_data->usbdebug = CONFIG(USBDEBUG);
 	pei_data->pciexbar = MCFG_BASE_ADDRESS;
-	pei_data->smbusbar = SMBUS_BASE_ADDRESS;
+	pei_data->smbusbar = CONFIG_FIXED_SMBUS_IO_BASE;
 	pei_data->ehcibar = EARLY_EHCI_BAR;
 	pei_data->xhcibar = EARLY_XHCI_BAR;
 	pei_data->gttbar = EARLY_GTT_BAR;

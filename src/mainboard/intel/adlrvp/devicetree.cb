@@ -90,17 +90,17 @@ chip soc/intel/alderlake
 	register "SataSalpSupport" = "1"
 
 	register "SataPortsEnable" = "{
-		[0]  = 1,
-		[1]  = 1,
-		[2]  = 1,
-		[3]  = 1,
+		[0] = 1,
+		[1] = 1,
+		[2] = 1,
+		[3] = 1,
 	}"
 
 	register "SataPortsDevSlp" = "{
-		[0]  = 1,
-		[1]  = 1,
-		[2]  = 1,
-		[3]  = 1,
+		[0] = 1,
+		[1] = 1,
+		[2] = 1,
+		[3] = 1,
 	}"
 
 	# Enable EDP in PortA
@@ -115,12 +115,12 @@ chip soc/intel/alderlake
 	register "s0ix_enable" = "1"
 
 	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
 	register "SerialIoGSpiMode" = "{

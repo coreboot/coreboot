@@ -233,15 +233,16 @@ typedef struct aoac_devs {
 #define XHCI_FW_SIZE_OFFSET			0x8
 #define XHCI_FW_BOOTRAM_SIZE			0x8000
 
+void bootblock_fch_early_init(void);
+void bootblock_fch_init(void);
+void fch_init(void *chip_info);
+void fch_final(void *chip_info);
+
 void enable_aoac_devices(void);
 void sb_clk_output_48Mhz(u32 osc);
 void sb_enable(struct device *dev);
-void southbridge_final(void *chip_info);
-void southbridge_init(void *chip_info);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-void bootblock_fch_early_init(void);
-void bootblock_fch_init(void);
 
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard

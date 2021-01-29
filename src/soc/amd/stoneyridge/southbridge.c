@@ -402,7 +402,7 @@ static void sb_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
-void southbridge_init(void *chip_info)
+void fch_init(void *chip_info)
 {
 	struct chipset_power_state *state;
 
@@ -461,7 +461,7 @@ static void set_sb_gnvs(struct global_nvs *gnvs)
 			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
-void southbridge_final(void *chip_info)
+void fch_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
 

@@ -118,13 +118,13 @@ static void enable_dev(struct device *dev)
 
 static void soc_init(void *chip_info)
 {
-	southbridge_init(chip_info);
+	fch_init(chip_info);
 	setup_bsp_ramtop();
 }
 
 static void soc_final(void *chip_info)
 {
-	southbridge_final(chip_info);
+	fch_final(chip_info);
 	fam15_finalize(chip_info);
 }
 

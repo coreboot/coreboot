@@ -2,6 +2,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <assert.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
@@ -28,18 +29,18 @@ void bootblock_systemagent_early_init(void)
 	pci_io_write_config32(SA_DEV_ROOT, PCIEXBAR + 4, reg);
 
 	/* Get PCI Express Region Length */
-	switch (CONFIG_SA_PCIEX_LENGTH) {
-	case 256 * MiB:
+	switch (CONFIG_MMCONF_BUS_NUMBER) {
+	case 256:
 		pciexbar_length = PCIEXBAR_LENGTH_256MB;
 		break;
-	case 128 * MiB:
+	case 128:
 		pciexbar_length = PCIEXBAR_LENGTH_128MB;
 		break;
-	case 64 * MiB:
+	case 64:
 		pciexbar_length = PCIEXBAR_LENGTH_64MB;
 		break;
 	default:
-		pciexbar_length = PCIEXBAR_LENGTH_256MB;
+		dead_code();
 	}
 	reg = CONFIG_MMCONF_BASE_ADDRESS | (pciexbar_length << 1)
 				| PCIEXBAR_PCIEXBAREN;

@@ -8,23 +8,8 @@ if SOC_INTEL_COMMON_BLOCK_SA
 config MMCONF_BASE_ADDRESS
 	default 0xe0000000
 
-config SA_PCIEX_LENGTH
-	hex
-	default 0x10000000 if (PCIEX_LENGTH_256MB)
-	default 0x8000000 if (PCIEX_LENGTH_128MB)
-	default 0x4000000 if (PCIEX_LENGTH_64MB)
-	default 0x10000000
-	help
-	  This option allows you to select length of PCIEX region.
-
-config PCIEX_LENGTH_256MB
-	bool
-
-config PCIEX_LENGTH_128MB
-	bool
-
-config PCIEX_LENGTH_64MB
-	bool
+config MMCONF_BUS_NUMBER
+	default 256
 
 config SA_ENABLE_IMR
 	bool

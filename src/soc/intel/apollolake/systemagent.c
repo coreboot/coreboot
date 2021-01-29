@@ -18,7 +18,7 @@
 void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 {
 	static const struct sa_mmio_descriptor soc_fixed_resources[] = {
-		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_SA_PCIEX_LENGTH,
+		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH,
 				"PCIEXBAR" },
 		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
 	};

@@ -31,7 +31,7 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 	struct device *const igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	static const struct sa_mmio_descriptor soc_fixed_resources[] = {
-		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_SA_PCIEX_LENGTH,
+		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH,
 				"PCIEXBAR" },
 		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
 		{ DMIBAR, DMI_BASE_ADDRESS, DMI_BASE_SIZE, "DMIBAR" },

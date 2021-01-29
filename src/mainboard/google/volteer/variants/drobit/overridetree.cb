@@ -60,6 +60,14 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
+		device ref tbt_pcie_rp0 on
+			probe DB_USB USB4_GEN3
+		end
+
+		device ref tbt_pcie_rp1 on
+			probe DB_USB USB4_GEN3
+		end
+
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

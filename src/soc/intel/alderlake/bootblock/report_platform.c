@@ -23,6 +23,7 @@ static struct {
 	const char *name;
 } cpu_table[] = {
 	{ CPUID_ALDERLAKE_P_A0, "Alderlake-P A0" },
+	{ CPUID_ALDERLAKE_M_A0, "Alderlake-M A0" },
 };
 
 static struct {
@@ -78,6 +79,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_31, "Alderlake-P SKU" },
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_32, "Alderlake-P SKU" },
 	{ PCI_DEVICE_ID_INTEL_ADP_P_ESPI_33, "Alderlake-P SKU" },
+	{ PCI_DEVICE_ID_INTEL_ADP_M_ESPI_32, "Alderlake-M SKU" },
 };
 
 static struct {
@@ -96,6 +98,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADL_GT1_8, "Alderlake GT1" },
 	{ PCI_DEVICE_ID_INTEL_ADL_GT1_9, "Alderlake GT1" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_GT2, "Alderlake P GT2" },
+	{ PCI_DEVICE_ID_INTEL_ADL_M_GT1, "Alderlake M GT1" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

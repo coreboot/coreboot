@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
 #include <arch/cpu.h>
@@ -20,7 +19,6 @@
 #include <intelblocks/uart.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/nvs.h>
 #include <soc/pm.h>
 #include <string.h>
 

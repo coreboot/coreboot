@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <acpi/acpi_gnvs.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

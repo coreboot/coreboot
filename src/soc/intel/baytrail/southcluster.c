@@ -5,7 +5,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>

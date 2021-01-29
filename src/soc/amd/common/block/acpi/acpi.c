@@ -3,7 +3,6 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
 #include <acpi/acpi.h>
-#include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -11,7 +10,6 @@
 #include <halt.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/southbridge.h>
-#include <soc/nvs.h>
 
 void poweroff(void)
 {

@@ -84,9 +84,6 @@ chip soc/intel/alderlake
 	register "PchPcieRpEnable[2]" = "1"
 	register "PchPcieRpEnable[3]" = "1"
 
-	# Mark LAN CLK pins as unused as GbE 0:0x1f.6 is disabled below
-	register "PcieClkSrcUsage[7]" = "PCIE_CLK_NOTUSED"
-
 	register "SataSalpSupport" = "1"
 
 	register "SataPortsEnable" = "{

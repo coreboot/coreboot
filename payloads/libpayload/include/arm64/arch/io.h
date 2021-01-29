@@ -99,6 +99,12 @@ static inline uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)addr;
 }
 
+static inline uint64_t read64(const void *addr)
+{
+	dmb();
+	return *(volatile uint64_t *)addr;
+}
+
 static inline void write8(void *addr, uint8_t val)
 {
 	dmb();
@@ -117,6 +123,13 @@ static inline void write32(void *addr, uint32_t val)
 {
 	dmb();
 	*(volatile uint32_t *)addr = val;
+	dmb();
+}
+
+static inline void write64(void *addr, uint64_t val)
+{
+	dmb();
+	*(volatile uint64_t *)addr = val;
 	dmb();
 }
 

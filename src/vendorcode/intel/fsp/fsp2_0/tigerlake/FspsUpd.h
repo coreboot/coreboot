@@ -934,7 +934,8 @@ typedef struct {
   UINT8                       Reserved20[2];
 
 /** Offset 0x04BC - Disable TC code On USB Connect
-  Enable(default) or Disable TC cold On Usb Connected
+  Enable: Unsupported TC cold capability on Usb Connected, Disable(default): Supported
+  TC cold On Usb Connected
   $EN_DIS
 **/
   UINT8                       DisableTccoldOnUsbConnected;

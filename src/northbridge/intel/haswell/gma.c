@@ -485,6 +485,8 @@ static const unsigned short pci_device_ids[] = {
 	0x0a06, /* ULT GT1 */
 	0x0a16, /* ULT GT2 */
 	0x0a26, /* ULT GT3 */
+	0x0a0e, /* ULX GT1 */
+	0x0a1e, /* ULX GT2 */
 	0,
 };
 

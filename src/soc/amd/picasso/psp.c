@@ -8,15 +8,14 @@
 #include <amdblocks/smi.h>
 
 #define PSP_MAILBOX_OFFSET		0x10570
-#define MSR_CU_CBBCFG			0xc00110a2
 
 void *soc_get_mbox_address(void)
 {
 	uintptr_t psp_mmio;
 
-	psp_mmio = rdmsr(MSR_CU_CBBCFG).lo;
+	psp_mmio = rdmsr(MSR_PSP_ADDR).lo;
 	if (psp_mmio == 0xffffffff) {
-		printk(BIOS_WARNING, "PSP: MSR_CU_CBBCFG uninitialized\n");
+		printk(BIOS_WARNING, "PSP: MSR_PSP_ADDR uninitialized\n");
 		return 0;
 	}
 

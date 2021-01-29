@@ -205,8 +205,6 @@ void soc_enable_psp_early(void);
 #define  BAR3HIDE			BIT(12) /* Bit to hide BAR3 addr */
 #define  PSP_MAILBOX_BAR_EN		BIT(4)
 
-#define MSR_CU_CBBCFG			0xc00110a2 /* PSP Pvt Blk Base Addr */
-
 typedef struct aoac_devs {
 	unsigned int :5;
 	unsigned int ic0e:1; /* 5: I2C0 */

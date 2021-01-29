@@ -72,6 +72,6 @@
 #define DF_IND_CFG_INST_ID_MASK			(0xff << DF_IND_CFG_ACC_REG_SHIFT)
 
 void data_fabric_set_mmio_np(void);
-uint32_t data_fabric_read_reg32(uint8_t function, uint16_t reg, uint8_t  instance_id);
+uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t  instance_id);
 
 #endif /* AMD_PICASSO_DATA_FABRIC_H */

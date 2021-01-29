@@ -543,10 +543,10 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 	for (size_t dram_map_idx = 0; dram_map_idx < PICASSO_NUM_DRAM_REG;
 	     dram_map_idx++) {
 		dram_base_reg =
-			data_fabric_read_reg32(0, DF_DRAM_BASE(dram_map_idx), IOMS0_FABRIC_ID);
+			data_fabric_read32(0, DF_DRAM_BASE(dram_map_idx), IOMS0_FABRIC_ID);
 
 		if (dram_base_reg & DRAM_BASE_REG_VALID) {
-			dram_limit_reg = data_fabric_read_reg32(0, DF_DRAM_LIMIT(dram_map_idx),
+			dram_limit_reg = data_fabric_read32(0, DF_DRAM_LIMIT(dram_map_idx),
 								IOMS0_FABRIC_ID);
 			memory_length =
 				((dram_limit_reg & DRAM_LIMIT_ADDR) >> DRAM_LIMIT_ADDR_SHFT) + 1
@@ -564,7 +564,7 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 			}
 
 			if (dram_base_reg & DRAM_BASE_HOLE_EN) {
-				dram_hole_ctl = data_fabric_read_reg32(0, D18F0_DRAM_HOLE_CTL,
+				dram_hole_ctl = data_fabric_read32(0, D18F0_DRAM_HOLE_CTL,
 								       IOMS0_FABRIC_ID);
 				hole_base = (dram_hole_ctl & DRAM_HOLE_CTL_BASE);
 				size_below_hole = hole_base - memory_base;

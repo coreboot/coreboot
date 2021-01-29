@@ -44,9 +44,6 @@ config MAINBOARD_FAMILY
 	default "Intel_cflrvp"
 
 config CHROMEOS
-	bool
-	default n if BOARD_INTEL_COFFEELAKE_RVP11 || BOARD_INTEL_COFFEELAKE_RVP8
-	default y
 	select GBB_FLAG_FORCE_MANUAL_RECOVERY
 
 config MAX_CPUS

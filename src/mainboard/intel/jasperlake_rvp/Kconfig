@@ -51,8 +51,6 @@ config DIMM_SPD_SIZE
 	default 512
 
 config CHROMEOS
-	bool
-	default y
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 	select GBB_FLAG_FORCE_DEV_BOOT_USB
 	select GBB_FLAG_FORCE_DEV_BOOT_LEGACY

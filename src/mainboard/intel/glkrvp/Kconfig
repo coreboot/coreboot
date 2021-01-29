@@ -38,8 +38,6 @@ config GLK_INTEL_EC
 endchoice
 
 config CHROMEOS
-	bool
-	default y
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select VBOOT_LID_SWITCH if GLK_CHROME_EC
 

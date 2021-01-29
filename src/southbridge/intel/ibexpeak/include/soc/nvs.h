@@ -100,6 +100,10 @@ struct __packed global_nvs {
 	u8	xhci;
 
 	u32     cbmc;
+
+	/* Required for future unified acpi_save_wake_source. */
+	u32	pm1i;
+	u32	gpei;
 };
 
 #endif /* SOUTHBRIDGE_INTEL_IBEXPEAK_NVS_H */

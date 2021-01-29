@@ -100,6 +100,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0xb2),
 	XHCI,	 8,
 	CBMC,	32,
+	PM1I,	32,	// System Wake Source - PM1 Index
+	GPEI,	32,	// GPE Wake Source
+
 }
 
 /* Set flag to enable USB charging in S3 */

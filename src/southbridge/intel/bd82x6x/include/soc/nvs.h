@@ -97,7 +97,11 @@ struct __packed global_nvs {
 	u8	rsvd11[6];
 	/* XHCI */
 	u8	xhci;
-	u8	rsvd12[65];
+
+	/* Required for future unified acpi_save_wake_source. */
+	u32	pm1i;
+	u32	gpei;
+	u8	rsvd12[57];
 
 	u8	tpiq; /* 0xf5 - trackpad IRQ value */
 	u32     cbmc;

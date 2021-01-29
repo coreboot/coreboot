@@ -93,6 +93,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 
 	Offset (0xa0),
 	CBMC, 32,	// 0xa0 - coreboot mem console pointer
+
+	PM1I,	32,	// System Wake Source - PM1 Index
+	GPEI,	32,	// GPE Wake Source
 }
 
 /* Set flag to enable USB charging in S3 */

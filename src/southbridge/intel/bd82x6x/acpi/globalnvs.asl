@@ -100,6 +100,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0xb2),
 	XHCI,	 8,
 
+	PM1I,	32,	// System Wake Source - PM1 Index
+	GPEI,	32,	// GPE Wake Source
+
 	Offset (0xf5),
 	TPIQ,	 8,	// 0xf5 - trackpad IRQ value
 	CBMC,	32,

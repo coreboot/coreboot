@@ -104,7 +104,6 @@ config MAINBOARD_PART_NUMBER
 	default "Volteer2" if BOARD_GOOGLE_VOLTEER2
 	default "Volteer2_Ti50" if BOARD_GOOGLE_VOLTEER2_TI50
 	default "Voxel" if BOARD_GOOGLE_VOXEL
-	default "Boldar" if BOARD_GOOGLE_BOLDAR
 	default "Elemi" if BOARD_GOOGLE_ELEMI
 	default "Voema" if BOARD_GOOGLE_VOEMA
 	default "Drobit" if BOARD_GOOGLE_DROBIT
@@ -146,7 +145,6 @@ config VARIANT_DIR
 	default "volteer2" if BOARD_GOOGLE_VOLTEER2
 	default "volteer2" if BOARD_GOOGLE_VOLTEER2_TI50
 	default "voxel" if BOARD_GOOGLE_VOXEL
-	default "boldar" if BOARD_GOOGLE_BOLDAR
 	default "elemi" if BOARD_GOOGLE_ELEMI
 	default "voema" if BOARD_GOOGLE_VOEMA
 	default "drobit" if BOARD_GOOGLE_DROBIT

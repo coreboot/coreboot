@@ -338,6 +338,10 @@ config GBB_FLAG_DISABLE_FWMP
 	bool "Disable Firmware Management Parameters (FWMP)"
 	default n
 
+config GBB_FLAG_ENABLE_UDC
+	bool "Enable USB Device Controller"
+	default n
+
 endmenu # GBB
 
 menu "Vboot Keys"

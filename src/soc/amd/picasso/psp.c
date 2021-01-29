@@ -1,26 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <soc/smi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/smi.h>
-
-#define PSP_MAILBOX_OFFSET		0x10570
-
-void *soc_get_mbox_address(void)
-{
-	uintptr_t psp_mmio;
-
-	psp_mmio = rdmsr(MSR_PSP_ADDR).lo;
-	if (!psp_mmio) {
-		printk(BIOS_WARNING, "PSP: MSR_PSP_ADDR uninitialized\n");
-		return 0;
-	}
-
-	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
-}
 
 void soc_fill_smm_trig_info(struct smm_trigger_info *trig)
 {

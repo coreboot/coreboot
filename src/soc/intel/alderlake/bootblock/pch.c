@@ -21,7 +21,6 @@
 #include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
-#include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>

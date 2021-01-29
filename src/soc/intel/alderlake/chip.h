@@ -9,7 +9,6 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/pcie_rp.h>
 #include <soc/gpe.h>
-#include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
@@ -19,6 +18,10 @@
 #define MAX_HD_AUDIO_DMIC_LINKS 2
 #define MAX_HD_AUDIO_SNDW_LINKS 4
 #define MAX_HD_AUDIO_SSP_LINKS  6
+
+#define PCIE_CLK_NOTUSED 0xFF
+#define PCIE_CLK_LAN     0x70
+#define PCIE_CLK_FREE    0x80
 
 struct soc_intel_alderlake_config {
 

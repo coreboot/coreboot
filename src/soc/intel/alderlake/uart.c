@@ -13,7 +13,6 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/uart.h>
 #include <soc/iomap.h>
-#include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 

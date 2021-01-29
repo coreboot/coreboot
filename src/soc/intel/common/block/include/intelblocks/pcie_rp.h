@@ -6,6 +6,54 @@
 #include <stdint.h>
 
 /*
+ * In schematic PCIe root port numbers are 1-based, but FSP use 0-based indexes for
+ * the configuration arrays and so this macro subtracts 1 to convert RP# to array index.
+ */
+#define PCIE_RP(x)      ((x) - 1)
+#define PCH_RP(x)       PCIE_RP(x)
+#define CPU_RP(x)       PCIE_RP(x)
+
+enum pcie_rp_flags {
+	PCIE_RP_HOTPLUG = (1 << 0),
+	PCIE_RP_LTR = (1 << 1),
+	/* PCIE RP Advanced Error Report */
+	PCIE_RP_AER = (1 << 2),
+	/* Clock source is not used by the root port. */
+	PCIE_RP_CLK_SRC_UNUSED = (1 << 3),
+	/*
+	 * Clock request signal requires probing before enabling CLKREQ# based power
+	 * management.
+	 */
+	PCIE_RP_CLK_REQ_DETECT = (1 << 4),
+	/* Clock request signal is not used by the root port. */
+	PCIE_RP_CLK_REQ_UNUSED = (1 << 5),
+};
+
+enum pcie_clk_src_flags {
+	PCIE_CLK_FREE_RUNNING = (1 << 0),
+	PCIE_CLK_LAN = (1 << 1),
+};
+
+/* This enum is for passing into an FSP UPD, typically PcieRpL1Substates */
+enum L1_substates_control {
+	L1_SS_FSP_DEFAULT,
+	L1_SS_DISABLED,
+	L1_SS_L1_1,
+	L1_SS_L1_2,
+};
+
+/* PCIe Root Ports */
+struct pcie_rp_config {
+	/* CLKOUT_PCIE_P/N# used by this root port as per schematics. */
+	uint8_t clk_src;
+	/* SRCCLKREQ# used by this root port as per schematics. */
+	uint8_t clk_req;
+	enum pcie_rp_flags flags;
+	/* PCIe RP L1 substate */
+	enum L1_substates_control PcieRpL1Substates;
+};
+
+/*
  * The PCIe Root Ports usually come in groups of up to 8 PCI-device
  * functions.
  *
@@ -62,13 +110,5 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
  * in the groups table is <= 32.
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
-
-/* This enum is for passing into an FSP UPD, typically PcieRpL1Substates */
-enum L1_substates_control {
-	L1_SS_FSP_DEFAULT,
-	L1_SS_DISABLED,
-	L1_SS_L1_1,
-	L1_SS_L1_2,
-};
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PCIE_RP_H */

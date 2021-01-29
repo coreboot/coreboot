@@ -14,7 +14,7 @@ void *soc_get_mbox_address(void)
 	uintptr_t psp_mmio;
 
 	psp_mmio = rdmsr(MSR_PSP_ADDR).lo;
-	if (psp_mmio == 0xffffffff) {
+	if (!psp_mmio) {
 		printk(BIOS_WARNING, "PSP: MSR_PSP_ADDR uninitialized\n");
 		return 0;
 	}

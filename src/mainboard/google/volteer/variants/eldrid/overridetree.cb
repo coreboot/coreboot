@@ -3,10 +3,12 @@ chip soc/intel/tigerlake
 	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 51,
+		.tdp_pl4 = 71,
 	}"
 	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 51,
+		.tdp_pl4 = 105,
 	}"
 
 	register "tcc_offset" = "5"     # TCC of 95
@@ -98,27 +100,27 @@ chip soc/intel/tigerlake
 				register "policies.active" = "{[0] = {.target=DPTF_NONE}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,CPU,95,5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60,6000)"
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,CPU,87,5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60.8,6000)"
 
 				## Critical Policy
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,100,SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_2,80,SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_2,75,SHUTDOWN)"
 
 				## Power Limits Control
-				# 3-15W PL1 in 200mW increments, avg over 28-32s interval
-				# PL2 is fixed at 51W, avg over 28-32s interval
+				# 3-15W PL1 in 200mW increments, avg over 26-34s interval
+				# PL2 is fixed at 51W, avg over 26-34s interval
 				register "controls.power_limits" = "{
 					.pl1 = {.min_power = 3000,
 						.max_power = 15000,
-						.time_window_min = 28 * MSECS_PER_SEC,
-						.time_window_max = 32 * MSECS_PER_SEC,
-						.granularity = 200,},
+						.time_window_min = 26 * MSECS_PER_SEC,
+						.time_window_max = 34 * MSECS_PER_SEC,
+						.granularity = 250,},
 					.pl2 = {.min_power = 51000,
 						.max_power = 51000,
-						.time_window_min = 28 * MSECS_PER_SEC,
-						.time_window_max = 32 * MSECS_PER_SEC,
-						.granularity = 1000,}}"
+						.time_window_min = 26 * MSECS_PER_SEC,
+						.time_window_max = 34 * MSECS_PER_SEC,
+						.granularity = 250,}}"
 
 				device generic 0 on end
 			end

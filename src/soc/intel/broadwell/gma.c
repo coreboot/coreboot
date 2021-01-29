@@ -476,6 +476,7 @@ static void igd_cdclk_init(struct device *dev, const int is_broadwell)
 		dpdiv = 338;
 		reg_em4 = 8;
 		reg_em5 = 225;
+		break;
 	default:
 		return;
 	}

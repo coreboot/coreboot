@@ -22,6 +22,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	soc_memory_init_params(m_cfg, config);
 
+	/* Set debug probe type */
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT;
+
 	mainboard_memory_init_params(mupd);
 }
 

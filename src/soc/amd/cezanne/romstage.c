@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -19,7 +20,7 @@ asmlinkage void car_stage_entry(void)
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
-	fsp_memory_init(false); /* no S3 resume yet */
+	fsp_memory_init(acpi_is_wakeup_s3());
 
 	run_ramstage();
 }

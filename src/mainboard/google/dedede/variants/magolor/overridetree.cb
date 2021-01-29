@@ -71,6 +71,12 @@ chip soc/intel/jasperlake
 
         register "tcc_offset" = "15" # TCC of 90C
 
+	# Enable Acoustic noise mitigation and set slew rate to 1/8
+	# Rest of the parameters are 0 by default.
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate" = "SlewRateFastBy8"
+	register "FastPkgCRampDisable" = "1"
+
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf

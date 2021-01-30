@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <assert.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -7,7 +8,6 @@
 #include <string.h>
 #include <soc/meminit.h>
 #include <baseboard/variants.h>
-#include <cbfs.h>
 #include "board_id.h"
 
 #define SPD_ID_MASK 0x7

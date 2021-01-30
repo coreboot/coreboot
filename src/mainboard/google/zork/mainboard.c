@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <console/console.h>
-#include <cbfs.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <acpi/acpi.h>

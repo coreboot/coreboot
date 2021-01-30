@@ -82,10 +82,7 @@
 #define  PRSCAPDIS	(1 << 2)
 
 /* MCHBAR */
-
-#define MCHBAR8(x)	*((volatile u8  *)(MCH_BASE_ADDRESS + (x)))
-#define MCHBAR16(x)	*((volatile u16 *)(MCH_BASE_ADDRESS + (x)))
-#define MCHBAR32(x)	*((volatile u32 *)(MCH_BASE_ADDRESS + (x)))
+#include <northbridge/intel/common/fixed_bars.h>
 
 /* Memory controller characteristics */
 #define NUM_CHANNELS	2

@@ -11,9 +11,9 @@
 static void broadwell_setup_bars(void)
 {
 	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(SA_DEV_ROOT, MCHBAR, MCH_BASE_ADDRESS | 1);
-	pci_write_config32(SA_DEV_ROOT, DMIBAR, DMI_BASE_ADDRESS | 1);
-	pci_write_config32(SA_DEV_ROOT, EPBAR,  EP_BASE_ADDRESS  | 1);
+	pci_write_config32(SA_DEV_ROOT, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
+	pci_write_config32(SA_DEV_ROOT, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
+	pci_write_config32(SA_DEV_ROOT, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
 
 	MCHBAR32(EDRAMBAR) = EDRAM_BASE_ADDRESS | 1;
 	MCHBAR32(GDXCBAR)  =  GDXC_BASE_ADDRESS | 1;

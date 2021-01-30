@@ -9,7 +9,7 @@ Scope (\_SB.PCI0.MCHC)
 	Name (CTCU, 2)		/* CTDP Up Select */
 	Name (SPL1, 0)		/* Saved PL1 value */
 
-	OperationRegion (MCHB, SystemMemory, MCH_BASE_ADDRESS + 0x5000, 0x1000)
+	OperationRegion (MCHB, SystemMemory, CONFIG_FIXED_MCHBAR_MMIO_BASE + 0x5000, 0x1000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x930), /* PACKAGE_POWER_SKU */

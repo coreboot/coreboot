@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/mmio.h>
 #include <soc/mcu_common.h>
 #include <soc/spm.h>
 #include <soc/symbols.h>
+#include <string.h>
 #include <timer.h>
 
 #define SPM_SYSTEM_BASE_OFFSET	0x40000000

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/bootblock.h>
+#include <arch/pci_io_cfg.h>
 #include <assert.h>
-#include <device/pci_ops.h>
 #include <types.h>
 
 #include "gm45.h"
@@ -31,7 +31,7 @@ void bootblock_early_northbridge_init(void)
 	 * The PCIEXBAR is assumed to live in the memory mapped IO space under
 	 * 4GiB.
 	 */
-	const uint32_t reg = CONFIG_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
+	const uint32_t reg32 = CONFIG_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
 	pci_io_write_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_HI, 0);
-	pci_io_write_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_LO, reg);
+	pci_io_write_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_LO, reg32);
 }

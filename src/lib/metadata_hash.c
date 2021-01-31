@@ -2,7 +2,6 @@
 /* This file is part of the coreboot project. */
 
 #include <assert.h>
-#include <cbmem.h>
 #include <metadata_hash.h>
 #include <symbols.h>
 

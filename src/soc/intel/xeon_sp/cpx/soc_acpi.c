@@ -3,7 +3,6 @@
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <assert.h>
-#include <cbmem.h>
 #include <cpu/intel/turbo.h>
 #include <device/mmio.h>
 #include <device/pci.h>

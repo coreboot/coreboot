@@ -4,7 +4,6 @@
 #include <acpi/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
-#include <cbmem.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <types.h>

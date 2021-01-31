@@ -6,7 +6,6 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cpulib.h>

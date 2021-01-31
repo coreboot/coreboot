@@ -3,7 +3,6 @@
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <stdlib.h>
-#include <boardid.h>
 #include <variant/gpio.h>
 
 static const struct soc_amd_gpio early_gpio_table[] = {

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/ramstage.h>
-#include <boardid.h>
 #include "onboard.h"
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)

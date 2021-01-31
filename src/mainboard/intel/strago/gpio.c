@@ -2,7 +2,6 @@
 
 #include "irqroute.h"
 #include <soc/gpio.h>
-#include <boardid.h>
 #include "onboard.h"
 #include "gpio.h"
 

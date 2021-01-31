@@ -2,7 +2,6 @@
 
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
-#include <boardid.h>
 #include <gpio.h>
 #include <soc/cnl_memcfg_init.h>
 #include <string.h>

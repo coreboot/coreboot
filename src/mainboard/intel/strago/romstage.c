@@ -2,7 +2,6 @@
 
 #include <soc/romstage.h>
 #include "onboard.h"
-#include <boardid.h>
 
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)

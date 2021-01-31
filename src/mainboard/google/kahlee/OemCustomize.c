@@ -2,7 +2,6 @@
 
 #include <chip.h>
 #include <amdblocks/agesawrapper.h>
-#include <boardid.h>
 #include <gpio.h>
 #include <console/console.h>
 #include <soc/pci_devs.h>

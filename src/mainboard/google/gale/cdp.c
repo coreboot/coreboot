@@ -4,7 +4,6 @@
 #include <soc/cdp.h>
 #include <soc/ebi2.h>
 #include <soc/clock.h>
-#include <boardid.h>
 
 void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned int count)
 {

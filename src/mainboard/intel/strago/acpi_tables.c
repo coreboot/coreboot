@@ -8,7 +8,6 @@
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/device_nvs.h>
-#include <boardid.h>
 #include "onboard.h"
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)

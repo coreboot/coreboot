@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <string.h>
 #include <baseboard/variants.h>
-#include <boardid.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 

@@ -9,7 +9,6 @@
 #include <console/console.h>
 #include <types.h>
 #include <string.h>
-#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
 #include <soc/acpi.h>

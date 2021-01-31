@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <types.h>
-#include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
+
 #include "model_2065x.h"
 
 /* MSR Documentation based on

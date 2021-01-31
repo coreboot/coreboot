@@ -167,9 +167,9 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
-static bool nb_supports_ecc(const uint32_t capid0_a)
+static uint8_t nb_get_ecc_type(const uint32_t capid0_a)
 {
-	return !(capid0_a & CAPID_ECCDIS);
+	return capid0_a & CAPID_ECCDIS ? MEMORY_ARRAY_ECC_NONE : MEMORY_ARRAY_ECC_SINGLE_BIT;
 }
 
 static uint16_t nb_slots_per_channel(const uint32_t capid0_a)
@@ -256,7 +256,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 
 	const uint16_t channels = nb_number_of_channels(capid0_a);
 
-	mem_info->ecc_capable = nb_supports_ecc(capid0_a);
+	mem_info->ecc_type = nb_get_ecc_type(capid0_a);
 	mem_info->max_capacity_mib = channels * nb_max_chan_capacity_mib(capid0_a);
 	mem_info->number_of_devices = channels * nb_slots_per_channel(capid0_a);
 }

@@ -96,8 +96,11 @@ struct dimm_info {
 } __packed;
 
 struct memory_info {
-	/* controller specific */
-	bool ecc_capable;
+	/*
+	 * SMBIOS error correction type.
+	 * See the smbios.h smbios_memory_array_ecc enum.
+	 */
+	uint8_t ecc_type;
 	/* Maximum capacity the DRAM controller/mainboard supports */
 	uint32_t max_capacity_mib;
 	/* Maximum number of DIMMs the DRAM controller/mainboard supports */

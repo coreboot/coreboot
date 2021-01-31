@@ -445,8 +445,7 @@ static int get_socket_type(void)
 
 unsigned int __weak smbios_memory_error_correction_type(struct memory_info *meminfo)
 {
-	return meminfo->ecc_capable ?
-		MEMORY_ARRAY_ECC_SINGLE_BIT : MEMORY_ARRAY_ECC_NONE;
+	return meminfo->ecc_type;
 }
 
 unsigned int __weak smbios_processor_external_clock(void)

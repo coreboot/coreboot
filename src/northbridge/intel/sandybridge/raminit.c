@@ -53,9 +53,9 @@ static void disable_channel(ramctr_timing *ctrl, int channel)
 	memset(&ctrl->info.dimm[channel][0], 0, sizeof(ctrl->info.dimm[0]));
 }
 
-static bool nb_supports_ecc(const uint32_t capid0_a)
+static uint8_t nb_get_ecc_type(const uint32_t capid0_a)
 {
-	return !(capid0_a & CAPID_ECCDIS);
+	return capid0_a & CAPID_ECCDIS ? MEMORY_ARRAY_ECC_NONE : MEMORY_ARRAY_ECC_SINGLE_BIT;
 }
 
 static uint16_t nb_slots_per_channel(const uint32_t capid0_a)
@@ -114,7 +114,7 @@ static void setup_sdram_meminfo(ramctr_timing *ctrl)
 
 	const uint16_t channels = nb_number_of_channels(capid0_a);
 
-	m->ecc_capable = nb_supports_ecc(capid0_a);
+	m->ecc_type = nb_get_ecc_type(capid0_a);
 	m->max_capacity_mib = channels * nb_max_chan_capacity_mib(capid0_a);
 	m->number_of_devices = channels * nb_slots_per_channel(capid0_a);
 }

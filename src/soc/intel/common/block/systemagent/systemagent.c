@@ -48,9 +48,9 @@ __weak uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
 	return 32768;	/* 32 GiB per channel */
 }
 
-static bool sa_supports_ecc(const uint32_t capid0_a)
+static uint8_t sa_get_ecc_type(const uint32_t capid0_a)
 {
-	return !(capid0_a & CAPID_ECCDIS);
+	return capid0_a & CAPID_ECCDIS ? MEMORY_ARRAY_ECC_NONE : MEMORY_ARRAY_ECC_SINGLE_BIT;
 }
 
 static size_t sa_slots_per_channel(const uint32_t capid0_a)
@@ -73,7 +73,7 @@ static void sa_soc_systemagent_init(struct device *dev)
 
 	const uint32_t capid0_a = pci_read_config32(dev, CAPID0_A);
 
-	m->ecc_capable = sa_supports_ecc(capid0_a);
+	m->ecc_type = sa_get_ecc_type(capid0_a);
 	m->max_capacity_mib = soc_systemagent_max_chan_capacity_mib(CAPID_DDRSZ(capid0_a)) *
 			      sa_number_of_channels(capid0_a);
 	m->number_of_devices = sa_slots_per_channel(capid0_a) *

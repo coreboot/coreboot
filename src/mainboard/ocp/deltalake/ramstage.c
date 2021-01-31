@@ -23,31 +23,6 @@
 extern struct fru_info_str fru_strings;
 static char slot_id_str[SLOT_ID_LEN];
 
-/* Override SMBIOS type 16 error correction type. */
-unsigned int smbios_memory_error_correction_type(struct memory_info *meminfo)
-{
-	const struct SystemMemoryMapHob *hob;
-
-	hob = get_system_memory_map();
-	assert(hob != NULL);
-
-	switch (hob->RasModesEnabled) {
-	case CH_INDEPENDENT:
-		return MEMORY_ARRAY_ECC_SINGLE_BIT;
-	case FULL_MIRROR_1LM:
-	case PARTIAL_MIRROR_1LM:
-	case FULL_MIRROR_2LM:
-	case PARTIAL_MIRROR_2LM:
-		return MEMORY_ARRAY_ECC_MULTI_BIT;
-	case RK_SPARE:
-		return MEMORY_ARRAY_ECC_SINGLE_BIT;
-	case CH_LOCKSTEP:
-		return MEMORY_ARRAY_ECC_SINGLE_BIT;
-	default:
-		return MEMORY_ARRAY_ECC_MULTI_BIT;
-	}
-}
-
 /*
  * Update SMBIOS type 0 ec version.
  * In deltalake, BMC version is used to represent ec version.

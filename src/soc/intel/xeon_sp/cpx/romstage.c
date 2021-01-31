@@ -37,6 +37,25 @@ static const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return *memmap_addr;
 }
 
+static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
+{
+	switch (RasModesEnabled) {
+	case CH_INDEPENDENT:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	case FULL_MIRROR_1LM:
+	case PARTIAL_MIRROR_1LM:
+	case FULL_MIRROR_2LM:
+	case PARTIAL_MIRROR_2LM:
+		return MEMORY_ARRAY_ECC_MULTI_BIT;
+	case RK_SPARE:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	case CH_LOCKSTEP:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	default:
+		return MEMORY_ARRAY_ECC_MULTI_BIT;
+	}
+}
+
 /* Save the DIMM information for SMBIOS table 17 */
 void save_dimm_info(void)
 {
@@ -63,6 +82,7 @@ void save_dimm_info(void)
 	/* According to Dear Customer Letter it's 1.12 TB per processor. */
 	mem_info->max_capacity_mib = 1.12 * MiB * CONFIG_MAX_SOCKET;
 	mem_info->number_of_devices = CONFIG_DIMM_MAX;
+	mem_info->ecc_type = get_error_correction_type(hob->RasModesEnabled);
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
 	vdd_voltage = get_ddr_voltage(hob->DdrVoltage);
 	/* For now only implement for one socket and hard-coded for DDR4 */

@@ -61,7 +61,6 @@ void smbios_type0_bios_version(uintptr_t address);
 
 void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision);
 
-unsigned int smbios_memory_error_correction_type(struct memory_info *meminfo);
 unsigned int smbios_processor_external_clock(void);
 unsigned int smbios_processor_characteristics(void);
 struct cpuid_result;

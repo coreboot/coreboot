@@ -69,7 +69,7 @@ __weak const char *smbios_mainboard_location_in_chassis(void)
 
 __weak smbios_board_type smbios_mainboard_board_type(void)
 {
-	return SMBIOS_BOARD_TYPE_UNKNOWN;
+	return SMBIOS_BOARD_TYPE_MOTHERBOARD;
 }
 
 __weak void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)

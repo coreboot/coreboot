@@ -7,7 +7,6 @@
 #include <acpi/acpi.h>
 #include <bootstate.h>
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

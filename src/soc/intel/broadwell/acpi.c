@@ -7,7 +7,6 @@
 #include <cbmem.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/smm.h>
 #include <console/console.h>
 #include <types.h>
 #include <string.h>

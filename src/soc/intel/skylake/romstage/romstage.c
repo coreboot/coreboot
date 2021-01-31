@@ -4,7 +4,6 @@
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/pci_def.h>

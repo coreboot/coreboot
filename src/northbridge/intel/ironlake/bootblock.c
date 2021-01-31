@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/bootblock.h>
+#include <arch/pci_io_cfg.h>
 #include <assert.h>
-#include <device/pci_ops.h>
 #include <types.h>
+
 #include "ironlake.h"
 
 static uint32_t encode_pciexbar_length(void)

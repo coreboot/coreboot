@@ -3,7 +3,6 @@
 #ifndef RAMINIT_COMMON_H
 #define RAMINIT_COMMON_H
 
-#include <cpu/intel/model_206ax/model_206ax.h>
 #include <stdint.h>
 
 #define BASEFREQ	133

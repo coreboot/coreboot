@@ -6,7 +6,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
 
 /* Include EC functions */
 #include <ec/quanta/ene_kb3940q/ec.h>

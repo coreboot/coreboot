@@ -7,7 +7,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
 
 /* Include for SIO helper functions */
 #include <superio/ite/it8772f/it8772f.h>

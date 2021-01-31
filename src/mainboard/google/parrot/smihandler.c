@@ -8,7 +8,6 @@
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 

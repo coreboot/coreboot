@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_GOOGLE_VEYRON # dummy option to be selected by variant boards
+config BOARD_GOOGLE_VEYRON
 	def_bool n
 
 if BOARD_GOOGLE_VEYRON

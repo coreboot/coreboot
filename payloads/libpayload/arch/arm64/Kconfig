@@ -28,7 +28,7 @@
 
 if ARCH_ARM64
 
-config ARCH_SPECIFIC_OPTIONS # dummy
+config ARCH_SPECIFIC_OPTIONS
 	def_bool y
 	select LITTLE_ENDIAN
 

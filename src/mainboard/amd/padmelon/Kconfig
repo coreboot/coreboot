@@ -2,7 +2,7 @@
 
 if BOARD_AMD_PADMELON
 
-config BOARD_SPECIFIC_OPTIONS # dummy
+config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_AMD_STONEYRIDGE
 	select AMD_APU_PKG_FP4

@@ -370,7 +370,8 @@ struct resource *new_resource(struct device *dev, unsigned int index)
 		resource->next = NULL;
 		tail = dev->resource_list;
 		if (tail) {
-			while (tail->next) tail = tail->next;
+			while (tail->next)
+				tail = tail->next;
 			tail->next = resource;
 		} else {
 			dev->resource_list = resource;
@@ -555,7 +556,7 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 
 			/* If it is a subtractive resource recurse. */
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
-				struct bus * subbus;
+				struct bus *subbus;
 				for (subbus = curdev->link_list; subbus;
 				     subbus = subbus->next)
 					if (subbus->link_num
@@ -604,11 +605,10 @@ void dev_set_enabled(struct device *dev, int enable)
 		return;
 
 	dev->enabled = enable;
-	if (dev->ops && dev->ops->enable) {
+	if (dev->ops && dev->ops->enable)
 		dev->ops->enable(dev);
-	} else if (dev->chip_ops && dev->chip_ops->enable_dev) {
+	else if (dev->chip_ops && dev->chip_ops->enable_dev)
 		dev->chip_ops->enable_dev(dev);
-	}
 }
 
 void disable_children(struct bus *bus)
@@ -814,7 +814,7 @@ void show_one_resource(int debug_level, struct device *dev,
 		  buf, resource_type(resource), comment);
 }
 
-void show_all_devs_resources(int debug_level, const char* msg)
+void show_all_devs_resources(int debug_level, const char *msg)
 {
 	struct device *dev;
 

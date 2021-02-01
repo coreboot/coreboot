@@ -48,19 +48,17 @@ int i2c_dev_readb(struct device *const dev)
 			.len	= sizeof(val),
 		};
 
-		const int ret = busdev->ops->ops_i2c_bus->
-			transfer(busdev, &msg, 1);
+		const int ret = busdev->ops->ops_i2c_bus->transfer(busdev, &msg, 1);
 		if (ret)
 			return ret;
 		else
 			return val;
 	} else if (busdev->ops->ops_smbus_bus->recv_byte) {
 		return busdev->ops->ops_smbus_bus->recv_byte(dev);
-	} else {
-		printk(BIOS_ERR, "%s Missing ops_smbus_bus->recv_byte",
-		       dev_path(busdev));
-		return -1;
 	}
+
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->recv_byte", dev_path(busdev));
+	return -1;
 }
 
 int i2c_dev_writeb(struct device *const dev, uint8_t val)
@@ -79,11 +77,11 @@ int i2c_dev_writeb(struct device *const dev, uint8_t val)
 		return busdev->ops->ops_i2c_bus->transfer(busdev, &msg, 1);
 	} else if (busdev->ops->ops_smbus_bus->send_byte) {
 		return busdev->ops->ops_smbus_bus->send_byte(dev, val);
-	} else {
-		printk(BIOS_ERR, "%s Missing ops_smbus_bus->send_byte",
-		       dev_path(busdev));
-		return -1;
 	}
+
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->send_byte",
+	       dev_path(busdev));
+	return -1;
 }
 
 int i2c_dev_readb_at(struct device *const dev, uint8_t off)
@@ -109,23 +107,21 @@ int i2c_dev_readb_at(struct device *const dev, uint8_t off)
 			},
 		};
 
-		const int ret = busdev->ops->ops_i2c_bus->
-			transfer(busdev, msg, ARRAY_SIZE(msg));
+		const int ret = busdev->ops->ops_i2c_bus->transfer(busdev, msg,
+								   ARRAY_SIZE(msg));
 		if (ret)
 			return ret;
 		else
 			return val;
 	} else if (busdev->ops->ops_smbus_bus->read_byte) {
 		return busdev->ops->ops_smbus_bus->read_byte(dev, off);
-	} else {
-		printk(BIOS_ERR, "%s Missing ops_smbus_bus->read_byte",
-		       dev_path(busdev));
-		return -1;
 	}
+
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->read_byte", dev_path(busdev));
+	return -1;
 }
 
-int i2c_dev_writeb_at(struct device *const dev,
-			const uint8_t off, const uint8_t val)
+int i2c_dev_writeb_at(struct device *const dev, const uint8_t off, const uint8_t val)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)
@@ -142,15 +138,15 @@ int i2c_dev_writeb_at(struct device *const dev,
 		return busdev->ops->ops_i2c_bus->transfer(busdev, &msg, 1);
 	} else if (busdev->ops->ops_smbus_bus->write_byte) {
 		return busdev->ops->ops_smbus_bus->write_byte(dev, off, val);
-	} else {
-		printk(BIOS_ERR, "%s Missing ops_smbus_bus->write_byte",
-		       dev_path(busdev));
-		return -1;
 	}
+
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->write_byte",
+	       dev_path(busdev));
+	return -1;
 }
 
-int i2c_dev_read_at16(struct device *const dev,
-		      uint8_t *const buf, const size_t len, uint16_t off)
+int i2c_dev_read_at16(struct device *const dev, uint8_t *const buf, const size_t len,
+		      uint16_t off)
 {
 	struct device *const busdev = i2c_busdev(dev);
 	if (!busdev)
@@ -173,8 +169,8 @@ int i2c_dev_read_at16(struct device *const dev,
 		};
 
 		write_be16(&off, off);
-		const int ret = busdev->ops->ops_i2c_bus->transfer(
-					busdev, msg, ARRAY_SIZE(msg));
+		const int ret = busdev->ops->ops_i2c_bus->transfer(busdev, msg,
+								   ARRAY_SIZE(msg));
 		if (ret)
 			return ret;
 		else

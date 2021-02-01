@@ -9,7 +9,7 @@
 #include <device/resource.h>
 
 /** Linked list of ALL devices */
-DEVTREE_CONST struct device * DEVTREE_CONST all_devices = &dev_root;
+DEVTREE_CONST struct device *DEVTREE_CONST all_devices = &dev_root;
 
 /**
  * Given a PCI bus and a devfn number, find the device structure.

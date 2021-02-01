@@ -166,8 +166,8 @@ static void read_resources(struct bus *bus)
 
 		if (!curdev->ops || !curdev->ops->read_resources) {
 			if (curdev->path.type != DEVICE_PATH_APIC)
-				printk(BIOS_ERR, "%s missing read_resources\n",
-				       dev_path(curdev));
+				printk(BIOS_ERR, "%s missing %s\n",
+				       dev_path(curdev), __func__);
 			continue;
 		}
 		post_log_path(curdev);
@@ -178,8 +178,8 @@ static void read_resources(struct bus *bus)
 			read_resources(link);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s read_resources bus %d link: %d done\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s bus %d link: %d done\n",
+	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
 }
 
 struct device *vga_pri = NULL;
@@ -210,11 +210,10 @@ static void set_vga_bridge_bits(void)
 				"A bridge on the path doesn't support 16-bit VGA decoding!");
 		}
 
-		if (dev->on_mainboard) {
+		if (dev->on_mainboard)
 			vga_onboard = dev;
-		} else {
+		else
 			vga = dev;
-		}
 
 		/* It isn't safe to enable all VGA cards. */
 		dev->command &= ~(PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
@@ -269,8 +268,8 @@ void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, bus %d link: %d\n",
+	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resource_list)
@@ -285,8 +284,8 @@ void assign_resources(struct bus *bus)
 		curdev->ops->set_resources(curdev);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, bus %d link: %d\n",
+	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
 }
 
 /**

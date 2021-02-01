@@ -174,9 +174,9 @@ static int wait_for_valid(u8 *base)
 	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
 	write32(base + HDA_ICII_REG, reg32);
 
-	while (timeout--) {
+	while (timeout--)
 		udelay(1);
-	}
+
 	timeout = 50;
 	while (timeout--) {
 		reg32 = read32(base + HDA_ICII_REG);

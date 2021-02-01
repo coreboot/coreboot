@@ -775,6 +775,11 @@ W:	https://github.com/corna/me_cleaner
 S:	Maintained
 F:	util/me_cleaner/
 
+LIVEISO
+M:	Felix Singer <felixsinger@posteo.net>
+S:	Supported
+F:	util/liveiso/
+
 ################################################################################
 # Miscellaneous
 ################################################################################

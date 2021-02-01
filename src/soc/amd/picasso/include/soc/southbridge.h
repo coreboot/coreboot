@@ -74,8 +74,6 @@
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)
 #define   PM_LPC_ENABLE			BIT(0)
-#define PM_USB_ENABLE			0xef
-#define   PM_USB_ALL_CONTROLLERS	0x7f
 
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00

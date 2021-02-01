@@ -144,11 +144,11 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x20000000, 0x201FFFFF, 0x00000000,
 				0x00200000,,, LMEM)
 
-		/* PCI Memory Region (Top of memory-0xfeafffff) */
+		/* PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
-				0x00000000, 0xfea00000, 0xfeafffff, 0x00000000,
-				0x00100000,,, PMEM)
+				0x00000000, 0x00000000, 0x00000000, 0x00000000,
+				0x00000000,,, PMEM)
 
 		/* TPM Area (0xfed40000-0xfed44fff) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,

@@ -143,7 +143,7 @@ Name (MCRS, ResourceTemplate()
 			0x00000000,,, LMEM)
 
 	/* PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS) */
-	DwordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
                         0x00000000,,, PMEM)

@@ -25,10 +25,8 @@ struct bus *i2c_link(struct device *const dev)
 			link = NULL;
 	}
 
-	if (!link) {
-		printk(BIOS_ALERT, "%s Cannot find I2C or SMBus bus operations",
-		       dev_path(dev));
-	}
+	if (!link)
+		printk(BIOS_ALERT, "%s Cannot find I2C or SMBus bus operations", dev_path(dev));
 
 	return link;
 }
@@ -79,8 +77,7 @@ int i2c_dev_writeb(struct device *const dev, uint8_t val)
 		return busdev->ops->ops_smbus_bus->send_byte(dev, val);
 	}
 
-	printk(BIOS_ERR, "%s Missing ops_smbus_bus->send_byte",
-	       dev_path(busdev));
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->send_byte", dev_path(busdev));
 	return -1;
 }
 
@@ -140,8 +137,7 @@ int i2c_dev_writeb_at(struct device *const dev, const uint8_t off, const uint8_t
 		return busdev->ops->ops_smbus_bus->write_byte(dev, off, val);
 	}
 
-	printk(BIOS_ERR, "%s Missing ops_smbus_bus->write_byte",
-	       dev_path(busdev));
+	printk(BIOS_ERR, "%s Missing ops_smbus_bus->write_byte", dev_path(busdev));
 	return -1;
 }
 

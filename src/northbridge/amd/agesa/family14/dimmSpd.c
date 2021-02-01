@@ -2,7 +2,7 @@
 
 #include <device/pci_def.h>
 #include <device/device.h>
-#include <OEM.h>		/* SMBUS0_BASE_ADDRESS */
+#include <OEM.h>
 
 /* warning: Porting.h includes an open #pragma pack(1) */
 #include <Porting.h>

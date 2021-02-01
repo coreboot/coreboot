@@ -4,7 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <delay.h>
-#include <OEM.h> /* SMBUS0_BASE_ADDRESS */
+#include <OEM.h>
 
 #include <Porting.h>
 #include <AGESA.h>

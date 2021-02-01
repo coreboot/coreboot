@@ -3,7 +3,7 @@
 #include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>	/* Platform Specific Definitions */
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 /**********************************************
  * Enable the dedicated functions of the board.

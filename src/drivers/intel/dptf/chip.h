@@ -4,7 +4,7 @@
 #define _DRIVERS_INTEL_DPTF_CHIP_H_
 
 #include <acpi/acpigen_dptf.h>
-#include <timer.h> /* for MSECS_PER_SEC */
+#include <timer.h>
 
 #define DPTF_PASSIVE(src, tgt, tmp, prd) \
 	{.source = DPTF_##src, .target = DPTF_##tgt, .temp = (tmp), .period = (prd)}

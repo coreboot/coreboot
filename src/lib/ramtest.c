@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <lib.h> /* Prototypes */
+#include <lib.h>
 #include <console/console.h>
 #include <device/mmio.h>
 

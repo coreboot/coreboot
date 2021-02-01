@@ -2,7 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <console/console.h>
-#include <gpio.h> /* src/include/gpio.h */
+#include <gpio.h>
 #include <spd_bin.h>
 #include <variant/gpio.h>
 #include <amdblocks/dimm_spd.h>

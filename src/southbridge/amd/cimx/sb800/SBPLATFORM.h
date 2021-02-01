@@ -44,8 +44,8 @@ typedef union _PCI_ADDR {
 #include <SBDEF.h>
 #include <AMDSBLIB.h>
 #include <SBSUBFUN.h>
-#include "platform_cfg.h"	/* mainboard specific configuration */
-#include <OEM.h>		/* platform default configuration */
+#include "platform_cfg.h"
+#include <OEM.h>
 #include <AMD.h>
 
 //------------------------------------------------------------------------------------------------------------------------//

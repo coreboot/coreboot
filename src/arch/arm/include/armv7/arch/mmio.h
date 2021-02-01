@@ -7,7 +7,7 @@
 #ifndef __ARCH_MMIO_H__
 #define __ARCH_MMIO_H__
 
-#include <arch/cache.h>		/* for dmb() */
+#include <arch/cache.h>
 #include <endian.h>
 #include <stdint.h>
 

@@ -9,7 +9,7 @@
 #include <fsp/car.h>
 #include <fsp/util.h>
 #include <soc/intel/common/mma.h>
-#include <soc/pm.h>		/* chip_power_state */
+#include <soc/pm.h>
 
 struct romstage_params {
 	uint32_t fsp_version;

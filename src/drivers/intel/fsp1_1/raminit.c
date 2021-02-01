@@ -8,7 +8,7 @@
 #include <cpu/x86/smm.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
-#include <lib.h> /* hexdump */
+#include <lib.h>
 #include <string.h>
 #include <timestamp.h>
 

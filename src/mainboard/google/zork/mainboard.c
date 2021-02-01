@@ -25,7 +25,6 @@
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <commonlib/helpers.h>
-#include <bootstate.h>
 
 #define METHOD_BACKLIGHT_ENABLE    "\\_SB.BKEN"
 #define METHOD_BACKLIGHT_DISABLE   "\\_SB.BKDS"

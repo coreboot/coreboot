@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <console/console.h>
-#include <bootstate.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <soc/ramstage.h>

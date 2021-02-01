@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
-#include <boot_device.h>
 #include <boot/coreboot_tables.h>
+#include <commonlib/region.h>
 #include <console/console.h>
 #include <string.h>
 #include <spi-generic.h>

@@ -2,7 +2,6 @@
 
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
-#include <boot_device.h>
 #include <fmap.h>
 #include <console/console.h>
 #include <console/flash.h>

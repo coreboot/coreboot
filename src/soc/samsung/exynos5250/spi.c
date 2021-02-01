@@ -2,7 +2,7 @@
 
 #include <device/mmio.h>
 #include <assert.h>
-#include <boot_device.h>
+#include <commonlib/region.h>
 #include <console/console.h>
 #include <soc/clk.h>
 #include <soc/gpio.h>

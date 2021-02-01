@@ -393,7 +393,7 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 	ast->dev = dev;
 
 	/* PCI BAR 1 */
-	res = find_resource(dev->pdev, PCI_BASE_ADDRESS_1);
+	res = probe_resource(dev->pdev, PCI_BASE_ADDRESS_1);
 	if (!res) {
 		dev_err(dev->pdev, "BAR1 resource not found.\n");
 		ret = -EIO;
@@ -407,19 +407,16 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 
 	/* PCI BAR 2 */
 	ast->io_space_uses_mmap = false;
-	res = find_resource(dev->pdev, PCI_BASE_ADDRESS_2);
-	if (!res) {
+	res = probe_resource(dev->pdev, PCI_BASE_ADDRESS_2);
+	if (!res)
 		dev_err(dev->pdev, "BAR2 resource not found.\n");
-		ret = -EIO;
-		goto out_free;
-	}
 
 	/*
 	 * If we don't have IO space at all, use MMIO now and
 	 * assume the chip has MMIO enabled by default (rev 0x20
 	 * and higher).
 	 */
-	if (!(res->flags & IORESOURCE_IO)) {
+	if (!res || !(res->flags & IORESOURCE_IO)) {
 		DRM_INFO("platform has no IO space, trying MMIO\n");
 		ast->ioregs = ast->regs + AST_IO_MM_OFFSET;
 		ast->io_space_uses_mmap = true;
@@ -432,8 +429,6 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 			ret = -EIO;
 			goto out_free;
 		}
-		/* Adjust the I/O space location to match expectations (the code expects offset 0x0 to be I/O location 0x380) */
-		ast->ioregs = (void *)AST_IO_MM_OFFSET;
 	}
 
 	ast_detect_chip(dev, &need_post);

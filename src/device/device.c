@@ -284,7 +284,7 @@ void assign_resources(struct bus *bus)
 		curdev->ops->set_resources(curdev);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s %s, bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s %s, bus %d link: %d done\n",
 	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
 }
 

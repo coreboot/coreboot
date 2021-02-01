@@ -1,14 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <hwilib.h>
-#include <intelblocks/lpc_lib.h>
+#include <device/device.h>
 #include <baseboard/variants.h>
-#include <soc/pci_devs.h>
-#include <types.h>
 
 void variant_mainboard_final(void)
 {

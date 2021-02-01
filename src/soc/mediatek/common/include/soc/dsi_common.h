@@ -39,7 +39,9 @@ enum {
 	/* device supports non-continuous clock behavior (DSI spec 5.6.1) */
 	MIPI_DSI_CLOCK_NON_CONTINUOUS = BIT(10),
 	/* transmit data in low power */
-	MIPI_DSI_MODE_LPM = BIT(11)
+	MIPI_DSI_MODE_LPM = BIT(11),
+	/* dsi per line's data end same time on all lanes */
+	MIPI_DSI_MODE_LINE_END = BIT(12),
 };
 
 struct dsi_regs {

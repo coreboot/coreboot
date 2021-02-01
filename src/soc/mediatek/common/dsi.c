@@ -224,6 +224,13 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		       "the panel may not work properly.\n");
 	}
 
+	if (mode_flags & MIPI_DSI_MODE_LINE_END) {
+		hsync_active_byte = DIV_ROUND_UP(hsync_active_byte, lanes) * lanes - 2;
+		hbp_byte = DIV_ROUND_UP(hbp_byte, lanes) * lanes - 2;
+		hfp_byte = DIV_ROUND_UP(hfp_byte, lanes) * lanes - 2;
+		hbp_byte -= (edid->mode.ha * bytes_per_pixel + 2) % lanes;
+	}
+
 	if (hfp_byte + hbp_byte < MIN_HFP_BYTE + MIN_HBP_BYTE) {
 		printk(BIOS_ERR, "Calculated hfp_byte and hbp_byte are too small, "
 		       "the panel may not work properly.\n");

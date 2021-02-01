@@ -127,9 +127,9 @@ static void acpigen_write_PRT(const struct device *dev)
 
 	acpigen_write_method("_PRT", 0);
 
-	/* If (PMOD) */
+	/* If (PICM) */
 	acpigen_write_if();
-	acpigen_emit_namestring("PMOD");
+	acpigen_emit_namestring("PICM");
 
 	/* Return (Package{...}) */
 	acpigen_emit_byte(RETURN_OP);
@@ -192,7 +192,7 @@ static void acpigen_write_PRT(const struct device *dev)
  *
  *         Method (_PRT, 0, NotSerialized)  // _PRT: PCI Routing Table
  *         {
- *             If (PMOD)
+ *             If (PICM)
  *             {
  *                 Return (Package (0x04)
  *                 {

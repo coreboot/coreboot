@@ -10,7 +10,50 @@
 #include <FspUpd.h>
 
 typedef struct __packed {
-	uint16_t                    UpdTerminator;
+	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
+	/** Offset 0x0024**/	uint16_t                    emmc0_init_khz_preset;
+	/** Offset 0x0026**/	uint8_t                     emmc0_sdr104_hs400_driver_strength;
+	/** Offset 0x0027**/	uint8_t                     emmc0_ddr50_driver_strength;
+	/** Offset 0x0028**/	uint8_t                     emmc0_sdr50_driver_strength;
+	/** Offset 0x0029**/	uint8_t                     unused0[7];
+	/** Offset 0x0030**/	uint8_t                     dxio_descriptor0[16];
+	/** Offset 0x0040**/	uint8_t                     dxio_descriptor1[16];
+	/** Offset 0x0050**/	uint8_t                     dxio_descriptor2[16];
+	/** Offset 0x0060**/	uint8_t                     dxio_descriptor3[16];
+	/** Offset 0x0070**/	uint8_t                     dxio_descriptor4[16];
+	/** Offset 0x0080**/	uint8_t                     dxio_descriptor5[16];
+	/** Offset 0x0090**/	uint8_t                     dxio_descriptor6[16];
+	/** Offset 0x00A0**/	uint8_t                     dxio_descriptor7[16];
+	/** Offset 0x00B0**/	uint8_t                     unused1[16];
+	/** Offset 0x00C0**/	uint32_t                    ddi_descriptor0;
+	/** Offset 0x00C4**/	uint32_t                    ddi_descriptor1;
+	/** Offset 0x00C8**/	uint32_t                    ddi_descriptor2;
+	/** Offset 0x00CC**/	uint32_t                    ddi_descriptor3;
+	/** Offset 0x00D0**/	uint8_t                     unused2[16];
+	/** Offset 0x00E0**/	uint8_t                     fch_usb_version_major;
+	/** Offset 0x00E1**/	uint8_t                     fch_usb_version_minor;
+	/** Offset 0x00E2**/	uint8_t                     fch_usb_2_port0_phy_tune[9];
+	/** Offset 0x00EB**/	uint8_t                     fch_usb_2_port1_phy_tune[9];
+	/** Offset 0x00F4**/	uint8_t                     fch_usb_2_port2_phy_tune[9];
+	/** Offset 0x00FD**/	uint8_t                     fch_usb_2_port3_phy_tune[9];
+	/** Offset 0x0106**/	uint8_t                     fch_usb_2_port4_phy_tune[9];
+	/** Offset 0x010F**/	uint8_t                     fch_usb_2_port5_phy_tune[9];
+	/** Offset 0x0118**/	uint8_t                     fch_usb_device_removable;
+	/** Offset 0x0119**/	uint8_t                     fch_usb_3_port_force_gen1;
+	/** Offset 0x011A**/	uint8_t                     fch_usb_u3_rx_det_wa_enable;
+	/** Offset 0x011B**/	uint8_t                     fch_usb_u3_rx_det_wa_portmap;
+	/** Offset 0x011C**/	uint8_t                     fch_usb_early_debug_select_enable;
+	/** Offset 0x011D**/	uint8_t                     unused3;
+	/** Offset 0x011E**/	uint32_t                    xhci_oc_pin_select;
+	/** Offset 0x0122**/	uint8_t                     xhci0_force_gen1;
+	/** Offset 0x0123**/	uint8_t                     xhci_sparse_mode_enable;
+	/** Offset 0x0124**/	uint32_t                    gnb_ioapic_base;
+	/** Offset 0x0128**/	uint8_t                     gnb_ioapic_id;
+	/** Offset 0x0129**/	uint8_t                     fch_ioapic_id;
+	/** Offset 0x012A**/	uint8_t                     UnusedUpdSpace0[6];
+	/** Offset 0x0130**/	uint8_t                     unused4[16];
+	/** Offset 0x0140**/	uint8_t                     UnusedUpdSpace1[16];
+	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

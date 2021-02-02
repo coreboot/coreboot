@@ -244,6 +244,9 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "RPMC_FILE") == 0) {
 		fw_type = AMD_RPMC_NVRAM;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSPBTLDR_AB_FILE") == 0) {
+		fw_type =  AMD_FW_PSP_BOOTLOADER_AB;
+		subprog = 0;
 	} else {
 		fw_type = AMD_FW_INVALID;
 		/* TODO: Add more */

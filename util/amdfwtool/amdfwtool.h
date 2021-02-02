@@ -47,6 +47,7 @@ typedef enum _amd_fw_type {
 	AMD_RPMC_NVRAM = 0x54,
 	AMD_FW_DMCU_ERAM = 0x58,
 	AMD_FW_DMCU_ISR = 0x59,
+	AMD_FW_PSP_BOOTLOADER_AB = 0x73,
 	AMD_FW_IMC = 0x200,	/* Large enough to be larger than the top BHD entry type. */
 	AMD_FW_GEC,
 	AMD_FW_XHCI,

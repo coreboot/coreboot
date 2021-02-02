@@ -261,6 +261,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_DMCU_ERAM, .level = PSP_LVL2 },
 	{ .type = AMD_FW_DMCU_ISR, .level = PSP_LVL2 },
 	{ .type = AMD_RPMC_NVRAM, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 },
 	{ .type = AMD_ABL0, .level = PSP_BOTH },
 	{ .type = AMD_ABL1, .level = PSP_BOTH },
 	{ .type = AMD_ABL2, .level = PSP_BOTH },

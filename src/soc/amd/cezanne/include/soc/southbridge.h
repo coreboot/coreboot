@@ -22,9 +22,7 @@
 #define FCH_AOAC_DEV_I2C5		10
 #define FCH_AOAC_DEV_UART0		11
 #define FCH_AOAC_DEV_UART1		12
-#define FCH_AOAC_DEV_UART2		16
 #define FCH_AOAC_DEV_AMBA		17
-#define FCH_AOAC_DEV_UART3		26
 #define FCH_AOAC_DEV_ESPI		27
 
 /* IO 0xf0 NCP Error */

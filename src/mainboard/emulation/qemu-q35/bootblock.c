@@ -4,7 +4,6 @@
 #include <bootblock_common.h>
 #include <southbridge/intel/common/early_spi.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
-#include <console/console.h>
 
 #include "q35.h"
 

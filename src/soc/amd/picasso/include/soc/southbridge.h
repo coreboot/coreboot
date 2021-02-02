@@ -75,6 +75,10 @@
 #define   PM_LPC_A20_EN			BIT(1)
 #define   PM_LPC_ENABLE			BIT(0)
 
+#define PM1_LIMIT			16
+#define GPE0_LIMIT			32
+#define TOTAL_BITS(a)			(8 * sizeof(a))
+
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
 #define   GPP_CLK0_REQ_SHIFT		0
@@ -134,10 +138,6 @@
 #define FCH_AOAC_DEV_ESPI		27
 
 #define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
-
-#define PM1_LIMIT			16
-#define GPE0_LIMIT			28
-#define TOTAL_BITS(a)			(8 * sizeof(a))
 
 /* SATA Controller D11F0 */
 #define SATA_MISC_CONTROL_REG		0x40

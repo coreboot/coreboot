@@ -66,6 +66,13 @@ struct usb_pd_control {
 };
 
 #define USB_PORT_COUNT	6
+
+struct __packed usb3_phy_tune {
+	uint8_t rx_eq_delta_iq_ovrd_val;
+	uint8_t rx_eq_delta_iq_ovrd_en;
+};
+/* the RV2 USB3 port count */
+#define RV2_USB3_PORT_COUNT 4
 #define USB_PD_PORT_COUNT 2
 
 enum sd_emmc_driver_strength {
@@ -246,6 +253,30 @@ struct soc_amd_picasso_config {
 		USB_OC_PIN_5	= 0x5,
 		USB_OC_NONE	= 0xf,
 	} usb_port_overcurrent_pin[USB_PORT_COUNT];
+
+	/* RV2 SOC Usb 3.1 PHY Parameters */
+	uint8_t usb3_phy_override;
+	/*
+	 * 1,RX_EQ_DELTA_IQ_OVRD_VAL- Override value for rx_eq_delta_iq. Range 0-0xF
+	 * 2,RX_EQ_DELTA_IQ_OVRD_EN - Enable override value for rx_eq_delta_iq. Range 0-0x1
+	 */
+	struct usb3_phy_tune usb3_phy_tune_params[RV2_USB3_PORT_COUNT];
+	/* Override value for rx_vref_ctrl. Range 0 - 0x1F */
+	uint8_t usb3_rx_vref_ctrl;
+	/* Enable override value for rx_vref_ctrl. Range 0 - 0x1 */
+	uint8_t usb3_rx_vref_ctrl_en;
+	/* Override value for tx_vboost_lvl: 0 - 0x7. */
+	uint8_t usb_3_tx_vboost_lvl;
+	/* Enable override value for tx_vboost_lvl. Range: 0 - 0x1 */
+	uint8_t usb_3_tx_vboost_lvl_en;
+	/* Override value for rx_vref_ctrl. Range 0 - 0x1F.*/
+	uint8_t usb_3_rx_vref_ctrl_x;
+	/* Enable override value for rx_vref_ctrl. Range 0 - 0x1. */
+	uint8_t usb_3_rx_vref_ctrl_en_x;
+	/* Override value for tx_vboost_lvl: 0 - 0x7. */
+	uint8_t usb_3_tx_vboost_lvl_x;
+	/* Enable override value for tx_vboost_lvl. Range: 0 - 0x1. */
+	uint8_t usb_3_tx_vboost_lvl_en_x;
 
 	/* The array index is the general purpose PCIe clock output number. */
 	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];

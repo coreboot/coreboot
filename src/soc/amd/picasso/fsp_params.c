@@ -5,6 +5,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
+#include <soc/soc_util.h>
 #include <fsp/api.h>
 #include "chip.h"
 
@@ -125,6 +126,23 @@ static void fsp_usb_oem_customization(FSP_S_CONFIG *scfg,
 		scfg->xhci_oc_pin_select &= ~(0xf << (i * 4));
 		scfg->xhci_oc_pin_select |=
 			(cfg->usb_port_overcurrent_pin[i] & 0xf) << (i * 4);
+	}
+
+	if ((get_silicon_type() == SILICON_RV2) && cfg->usb3_phy_override) {
+		scfg->usb_3_phy_enable = cfg->usb3_phy_override;
+		for (i = 0; i < FSPS_UPD_RV2_USB3_PORT_COUNT; i++) {
+			memcpy(scfg->usb_3_port_phy_tune[i],
+				&cfg->usb3_phy_tune_params[i],
+				sizeof(scfg->usb_3_port_phy_tune[0]));
+		}
+		scfg->usb_3_rx_vref_ctrl = cfg->usb3_rx_vref_ctrl;
+		scfg->usb_3_rx_vref_ctrl_en = cfg->usb3_rx_vref_ctrl_en;
+		scfg->usb_3_tx_vboost_lvl = cfg->usb_3_tx_vboost_lvl;
+		scfg->usb_3_tx_vboost_lvl_en = cfg->usb_3_tx_vboost_lvl_en;
+		scfg->usb_3_rx_vref_ctrl_x = cfg->usb_3_rx_vref_ctrl_x;
+		scfg->usb_3_rx_vref_ctrl_en_x = cfg->usb_3_rx_vref_ctrl_en_x;
+		scfg->usb_3_tx_vboost_lvl_x = cfg->usb_3_tx_vboost_lvl_x;
+		scfg->usb_3_tx_vboost_lvl_en_x = cfg->usb_3_tx_vboost_lvl_en_x;
 	}
 }
 

@@ -134,6 +134,47 @@ chip soc/amd/picasso
 		.tx_res_tune = 0x01,
 	}"
 
+	# Start RV2 USB3 PHY Parameters
+	register "usb3_phy_override" = "0"
+
+	# USB3 Port0 Default
+	register "usb3_phy_tune_params[0]" = "{
+			.rx_eq_delta_iq_ovrd_val = 0x0,
+			.rx_eq_delta_iq_ovrd_en = 0x0,
+	}"
+
+	# USB3 Port1 Default
+	register "usb3_phy_tune_params[1]" = "{
+			.rx_eq_delta_iq_ovrd_val = 0x0,
+			.rx_eq_delta_iq_ovrd_en = 0x0,
+	}"
+
+	# USB3 Port2 Default
+	register "usb3_phy_tune_params[2]" = "{
+			.rx_eq_delta_iq_ovrd_val = 0x0,
+			.rx_eq_delta_iq_ovrd_en = 0x0,
+	}"
+
+	# USB3 Port3 Default
+	register "usb3_phy_tune_params[3]" = "{
+			.rx_eq_delta_iq_ovrd_val = 0x0,
+			.rx_eq_delta_iq_ovrd_en = 0x0,
+	}"
+
+	# SUP_DIG_LVL_OVRD_IN Default
+	register "usb3_rx_vref_ctrl" = "0x10"
+	register "usb3_rx_vref_ctrl_en" = "0x00"
+	register "usb_3_tx_vboost_lvl" = "0x07"
+	register "usb_3_tx_vboost_lvl_en" = "0x00"
+
+	# SUPX_DIG_LVL_OVRD_IN Default
+	register "usb_3_rx_vref_ctrl_x" = "0x10"
+	register "usb_3_rx_vref_ctrl_en_x" = "0x00"
+	register "usb_3_tx_vboost_lvl_x" = "0x07"
+	register "usb_3_tx_vboost_lvl_en_x" = "0x00"
+
+	# End RV2 USB3 phy setting
+
 	# USB OC pin mapping
 	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"	# USB C0
 	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_1"	# USB C1

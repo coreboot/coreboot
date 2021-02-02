@@ -12,6 +12,7 @@
 #define FSPS_UPD_DXIO_DESCRIPTOR_COUNT	8
 #define FSPS_UPD_DDI_DESCRIPTOR_COUNT	4
 #define FSPS_UPD_USB2_PORT_COUNT	6
+#define FSPS_UPD_RV2_USB3_PORT_COUNT	4
 
 typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
@@ -54,7 +55,17 @@ typedef struct __packed {
 	/** Offset 0x0139**/	uint8_t                     pwron_varybl_to_blon;
 	/** Offset 0x013A**/	uint8_t                     pwrdown_bloff_to_varybloff;
 	/** Offset 0x013B**/	uint8_t                     min_allowed_bl_level;
-	/** Offset 0x013C**/	uint8_t                     UnusedUpdSpace0[20];
+	/** Offset 0x013C**/	uint8_t                     usb_3_phy_enable;
+	/** Offset 0x013D**/	uint8_t                     usb_3_port_phy_tune[FSPS_UPD_RV2_USB3_PORT_COUNT][2];
+	/** Offset 0x0145**/	uint8_t                     usb_3_rx_vref_ctrl;
+	/** Offset 0x0146**/	uint8_t                     usb_3_rx_vref_ctrl_en;
+	/** Offset 0x0147**/	uint8_t                     usb_3_tx_vboost_lvl;
+	/** Offset 0x0148**/	uint8_t                     usb_3_tx_vboost_lvl_en;
+	/** Offset 0x0149**/	uint8_t                     usb_3_rx_vref_ctrl_x;
+	/** Offset 0x014A**/	uint8_t                     usb_3_rx_vref_ctrl_en_x;
+	/** Offset 0x014B**/	uint8_t                     usb_3_tx_vboost_lvl_x;
+	/** Offset 0x014C**/	uint8_t                     usb_3_tx_vboost_lvl_en_x;
+	/** Offset 0x014D**/	uint8_t                     UnusedUpdSpace0[3];
 	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

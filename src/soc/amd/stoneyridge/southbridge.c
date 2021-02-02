@@ -356,7 +356,7 @@ void sb_enable(struct device *dev)
 	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
-static void sb_init_acpi_ports(void)
+static void fch_init_acpi_ports(void)
 {
 	u32 reg;
 
@@ -406,7 +406,7 @@ void fch_init(void *chip_info)
 {
 	struct chipset_power_state *state;
 
-	sb_init_acpi_ports();
+	fch_init_acpi_ports();
 
 	state = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*state));
 	if (state) {

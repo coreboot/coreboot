@@ -115,7 +115,7 @@ static void sb_rfmux_config_override(void)
 	}
 }
 
-static void sb_init_acpi_ports(void)
+static void fch_init_acpi_ports(void)
 {
 	u32 reg;
 
@@ -220,7 +220,7 @@ static void gpp_clk_setup(void)
 void fch_init(void *chip_info)
 {
 	i2c_soc_init();
-	sb_init_acpi_ports();
+	fch_init_acpi_ports();
 
 	acpi_pm_gpe_add_events_print_events();
 	gpio_add_events();

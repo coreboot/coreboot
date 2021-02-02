@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_MT8192_PMIC_WRAP_H__
-#define __SOC_MEDIATEK_MT8192_PMIC_WRAP_H__
+#ifndef __SOC_MEDIATEK_PMIF_SPI_H__
+#define __SOC_MEDIATEK_PMIF_SPI_H__
 
 #include <soc/addressmap.h>
+#include <soc/pmif.h>
 #include <types.h>
 
-struct mt8192_pmicspi_mst_regs {
+struct mtk_pmicspi_mst_regs {
 	u32 reserved1[4];
 	u32 other_busy_sta_0;
 	u32 wrap_en;
@@ -27,20 +28,12 @@ struct mt8192_pmicspi_mst_regs {
 	u32 si_sampling_ctrl;
 };
 
-check_member(mt8192_pmicspi_mst_regs, other_busy_sta_0, 0x10);
-check_member(mt8192_pmicspi_mst_regs, man_en, 0x20);
-check_member(mt8192_pmicspi_mst_regs, mux_sel, 0x34);
-check_member(mt8192_pmicspi_mst_regs, dio_en, 0x44);
+check_member(mtk_pmicspi_mst_regs, other_busy_sta_0, 0x10);
+check_member(mtk_pmicspi_mst_regs, man_en, 0x20);
+check_member(mtk_pmicspi_mst_regs, mux_sel, 0x34);
+check_member(mtk_pmicspi_mst_regs, dio_en, 0x44);
 
-static struct mt8192_pmicspi_mst_regs * const mtk_pmicspi_mst = (void *)PMICSPI_MST_BASE;
-
-struct mt8192_iocfg_lm_regs {
-	u32 reserved[4];
-	u32 drv_cfg1;
-};
-check_member(mt8192_iocfg_lm_regs, drv_cfg1, 0x10);
-
-static struct mt8192_iocfg_lm_regs * const mtk_iocfg_lm = (void *)IOCFG_LM_BASE;
+static struct mtk_pmicspi_mst_regs * const mtk_pmicspi_mst = (void *)PMICSPI_MST_BASE;
 
 /* PMIC registers */
 enum {
@@ -88,7 +81,6 @@ enum {
 };
 
 enum {
-	IO_4_MA = 0x1,
 	SLV_IO_4_MA = 0x8,
 };
 
@@ -121,5 +113,7 @@ enum {
 	E_CLK_EDGE = 1,
 	E_CLK_LAST_SETTING,
 };
-extern int pmif_spi_init(struct pmif *arb);
-#endif /* __SOC_MEDIATEK_MT8192_PMIC_WRAP_H__ */
+
+int pmif_spi_init(struct pmif *arb);
+void pmif_spi_iocfg(void);
+#endif /* __SOC_MEDIATEK_PMIF_SPI_H__ */

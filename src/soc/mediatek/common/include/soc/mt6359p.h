@@ -66,4 +66,7 @@ void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv);
 u32 mt6359p_buck_get_voltage(u32 buck_id);
 void mt6359p_set_vm18_voltage(u32 vm18_uv);
 u32 mt6359p_get_vm18_voltage(void);
+void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);
+void pmic_init_setting(void);
+void pmic_lp_setting(void);
 #endif /* __SOC_MEDIATEK_MT6359P_H__ */

@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __PMIF_SPMI_H__
-#define __PMIF_SPMI_H__
+#ifndef __SOC_MEDIATEK_PMIF_SPMI_H__
+#define __SOC_MEDIATEK_PMIF_SPMI_H__
 
 #include <soc/addressmap.h>
+#include <soc/pmif.h>
 
 #define DEFAULT_VALUE_READ_TEST		(0x5a)
 #define DEFAULT_VALUE_WRITE_TEST	(0xa5)
@@ -17,12 +18,6 @@ struct mtk_rgu_regs {
 	u32 wdt_swsysrst2;
 };
 check_member(mtk_rgu_regs, wdt_swsysrst2, 0x90);
-
-struct mtk_iocfg_bm_regs {
-	u32 reserved[8];
-	u32 drv_cfg2;
-};
-check_member(mtk_iocfg_bm_regs, drv_cfg2, 0x20);
 
 struct mtk_spmi_mst_reg {
 	u32 op_st_ctrl;
@@ -45,7 +40,6 @@ check_member(mtk_spmi_mst_reg, rec_ctrl, 0x40);
 check_member(mtk_spmi_mst_reg, mst_dbg, 0xfc);
 
 #define mtk_rug	((struct mtk_rgu_regs *)RGU_BASE)
-#define mtk_iocfg_bm	((struct mtk_iocfg_bm_regs *)IOCFG_BM_BASE)
 #define mtk_spmi_mst	((struct mtk_spmi_mst_reg *)SPMI_MST_BASE)
 
 struct cali {
@@ -87,5 +81,7 @@ enum {
 
 #define MT6315_DEFAULT_VALUE_READ 0x15
 
-extern int pmif_spmi_init(struct pmif *arb);
-#endif /*__PMIF_SPMI_H__*/
+int pmif_spmi_init(struct pmif *arb);
+int spmi_config_master(void);
+void pmif_spmi_iocfg(void);
+#endif /* __SOC_MEDIATEK_PMIF_SPMI_H__ */

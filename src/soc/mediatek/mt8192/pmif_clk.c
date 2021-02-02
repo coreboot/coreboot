@@ -84,7 +84,7 @@ static u32 pmif_get_ulposc_freq_mhz(u32 cali_val)
 	return result / 1000;
 }
 
-static int pmif_ulposc_cali(void)
+static int pmif_ulposc_cali(u32 target_val)
 {
 	u32 current_val = 0, min = 0, max = CAL_MAX_VAL, middle;
 	int ret = 0, diff_by_min, diff_by_max, cal_result;
@@ -95,16 +95,16 @@ static int pmif_ulposc_cali(void)
 			break;
 
 		current_val = pmif_get_ulposc_freq_mhz(middle);
-		if (current_val > FREQ_260MHZ)
+		if (current_val > target_val)
 			max = middle;
 		else
 			min = middle;
 	} while (min <= max);
 
-	diff_by_min = pmif_get_ulposc_freq_mhz(min) - FREQ_260MHZ;
+	diff_by_min = pmif_get_ulposc_freq_mhz(min) - target_val;
 	diff_by_min = ABS(diff_by_min);
 
-	diff_by_max = pmif_get_ulposc_freq_mhz(max) - FREQ_260MHZ;
+	diff_by_max = pmif_get_ulposc_freq_mhz(max) - target_val;
 	diff_by_max = ABS(diff_by_max);
 
 	if (diff_by_min < diff_by_max) {
@@ -116,8 +116,8 @@ static int pmif_ulposc_cali(void)
 	}
 
 	/* check if calibrated value is in the range of target value +- 15% */
-	if (current_val < (FREQ_260MHZ * (1000 - CAL_TOL_RATE) / 1000) ||
-		current_val > (FREQ_260MHZ * (1000 + CAL_TOL_RATE) / 1000)) {
+	if (current_val < (target_val * (1000 - CAL_TOL_RATE) / 1000) ||
+		current_val > (target_val * (1000 + CAL_TOL_RATE) / 1000)) {
 		printk(BIOS_ERR, "[%s] calibration fail: %dM\n", __func__, current_val);
 		ret = 1;
 	}
@@ -140,7 +140,7 @@ static int pmif_init_ulposc(void)
 	udelay(100);
 	SET32_BITFIELDS(&mtk_spm->ulposc_con, ULPOSC_CG_EN, 1);
 
-	return pmif_ulposc_cali();
+	return pmif_ulposc_cali(FREQ_260MHZ);
 }
 
 int pmif_clk_init(void)

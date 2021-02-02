@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SPMI_H__
-#define __SPMI_H__
+#ifndef __SOC_MEDIATEK_SPMI_H__
+#define __SOC_MEDIATEK_SPMI_H__
+
+#include <types.h>
 
 enum spmi_master {
 	SPMI_MASTER_0,
@@ -47,4 +49,4 @@ struct spmi_device {
 	enum slv_type type;
 	enum slv_type_id type_id;
 };
-#endif /*__SPMI_H__*/
+#endif /* __SOC_MEDIATEK_SPMI_H__ */

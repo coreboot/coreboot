@@ -2,7 +2,6 @@
 
 #include <amdblocks/acpimmio.h>
 #include <bootblock_common.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
 #include <superio/smsc/lpc47n217/lpc47n217.h>
 

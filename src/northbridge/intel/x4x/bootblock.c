@@ -2,8 +2,8 @@
 
 #include <arch/bootblock.h>
 #include <arch/mmio.h>
-#include <arch/pci_io_cfg.h>
 #include <assert.h>
+#include <device/pci_ops.h>
 #include <types.h>
 
 #include "x4x.h"

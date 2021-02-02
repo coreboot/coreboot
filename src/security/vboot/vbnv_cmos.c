@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <types.h>
 #include <pc80/mc146818rtc.h>
@@ -84,6 +85,17 @@ void vbnv_init_cmos(uint8_t *vbnv_copy)
 		regen_vbnv_crc(vbnv_copy);
 		save_vbnv_cmos(vbnv_copy);
 	}
+}
+
+void lb_table_add_vbnv_cmos(struct lb_header *header)
+{
+	struct lb_range *vbnv;
+
+	vbnv = (struct lb_range *)lb_new_record(header);
+	vbnv->tag = LB_TAG_VBNV;
+	vbnv->size = sizeof(*vbnv);
+	vbnv->range_start = CONFIG_VBOOT_VBNV_OFFSET + 14;
+	vbnv->range_size = VBOOT_VBNV_BLOCK_SIZE;
 }
 
 #if CONFIG(VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)

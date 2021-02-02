@@ -20,7 +20,6 @@
 #include <bootmem.h>
 #include <bootsplash.h>
 #include <spi_flash.h>
-#include <security/vboot/vbnv_layout.h>
 #include <smmstore.h>
 
 #if CONFIG(USE_OPTION_TABLE)
@@ -187,17 +186,6 @@ static void lb_gpios(struct lb_header *header)
 			break;
 		}
 	}
-}
-
-static void lb_vbnv(struct lb_header *header)
-{
-	struct lb_range *vbnv;
-
-	vbnv = (struct lb_range *)lb_new_record(header);
-	vbnv->tag = LB_TAG_VBNV;
-	vbnv->size = sizeof(*vbnv);
-	vbnv->range_start = CONFIG_VBOOT_VBNV_OFFSET + 14;
-	vbnv->range_size = VBOOT_VBNV_BLOCK_SIZE;
 }
 
 __weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
@@ -487,8 +475,8 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 		lb_gpios(head);
 
 	/* pass along VBNV offsets in CMOS */
-	if (CONFIG(CHROMEOS) && CONFIG(PC80_SYSTEM))
-		lb_vbnv(head);
+	if (CONFIG(VBOOT_VBNV_CMOS))
+		lb_table_add_vbnv_cmos(head);
 
 	/* Pass mmc early init status */
 	lb_mmc_info(head);

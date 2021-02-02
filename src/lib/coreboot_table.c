@@ -20,7 +20,6 @@
 #include <bootmem.h>
 #include <bootsplash.h>
 #include <spi_flash.h>
-#include <security/vboot/misc.h>
 #include <security/vboot/vbnv_layout.h>
 #include <smmstore.h>
 

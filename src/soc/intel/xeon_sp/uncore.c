@@ -12,6 +12,7 @@
 #include <soc/util.h>
 #include <fsp/util.h>
 #include <security/intel/txt/txt_platform.h>
+#include <security/intel/txt/txt.h>
 
 struct map_entry {
 	uint32_t    reg;
@@ -350,6 +351,8 @@ static const struct pci_driver vtd_driver __pci_driver = {
 
 static void dmi3_init(struct device *dev)
 {
+	if (CONFIG(INTEL_TXT) && skip_intel_txt_lockdown())
+		return;
 	/* Disable error injection */
 	pci_or_config16(dev, ERRINJCON, 1 << 0);
 
@@ -376,6 +379,9 @@ static const struct pci_driver dmi3_driver __pci_driver = {
 
 static void iio_dfx_global_init(struct device *dev)
 {
+	if (CONFIG(INTEL_TXT) && skip_intel_txt_lockdown())
+		return;
+
 	uint16_t reg16;
 	pci_or_config16(dev, IIO_DFX_LCK_CTL, 0x3ff);
 	reg16 = pci_read_config16(dev, IIO_DFX_TSWCTL0);

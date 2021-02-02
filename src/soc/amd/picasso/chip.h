@@ -253,7 +253,9 @@ struct soc_amd_picasso_config {
 	bool acp_i2s_use_external_48mhz_osc;
 
 	/* eDP phy tuning settings */
-	uint8_t dp_phy_override;
+	uint16_t edp_phy_override;
+	/* bit vector of phy, bit0=1: DP0, bit1=1: DP1, bit2=1: DP2 bit3=1: DP3 */
+	uint8_t edp_physel;
 
 	struct {
 		uint8_t dp_vs_pemph_level;

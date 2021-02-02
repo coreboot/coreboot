@@ -145,12 +145,13 @@ static void fsp_assign_ioapic_upds(FSP_S_CONFIG *scfg)
 static void fsp_edp_tuning_upds(FSP_S_CONFIG *scfg,
 			const struct soc_amd_picasso_config *cfg)
 {
-	if (cfg->dp_phy_override & ENABLE_EDP_TUNINGSET) {
-		scfg->DpPhyOverride = cfg->dp_phy_override;
-		scfg->DpVsPemphLevel = cfg->edp_tuningset.dp_vs_pemph_level;
-		scfg->MarginDeemPh = cfg->edp_tuningset.margin_deemph;
-		scfg->Deemph6db4 = cfg->edp_tuningset.deemph_6db4;
-		scfg->BoostAdj = cfg->edp_tuningset.boostadj;
+	if (cfg->edp_phy_override & ENABLE_EDP_TUNINGSET) {
+		scfg->edp_phy_override = cfg->edp_phy_override;
+		scfg->edp_physel = cfg->edp_physel;
+		scfg->edp_dp_vs_pemph_level = cfg->edp_tuningset.dp_vs_pemph_level;
+		scfg->edp_margin_deemph = cfg->edp_tuningset.margin_deemph;
+		scfg->edp_deemph_6db_4 = cfg->edp_tuningset.deemph_6db4;
+		scfg->edp_boost_adj = cfg->edp_tuningset.boostadj;
 	}
 	if (cfg->edp_pwr_adjust_enable) {
 		scfg->pwron_digon_to_de = cfg->pwron_digon_to_de;

@@ -24,7 +24,17 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_offset" = "168"
 
 	# eDP phy tuning settings
-	register  "dp_phy_override" = "ENABLE_EDP_TUNINGSET"
+	register "edp_phy_override" = "ENABLE_EDP_TUNINGSET"
+
+	# bit vector of phy, bit0=1: DP0, bit1=1: DP1, bit2=1: DP2 bit3=1: DP3
+	register "edp_physel" = "0x1"
+
+	register "edp_tuningset" = "{
+		.dp_vs_pemph_level = 0x00,
+		.margin_deemph = 0x004b,
+		.deemph_6db4 = 0x0,
+		.boostadj = 0x80,
+	}"
 
 	# eDP power sequence. all pwr sequence numbers below are in uint of 4ms,
 	# and "0" as default value
@@ -37,13 +47,6 @@ chip soc/amd/picasso
 	register "pwron_varybl_to_blon" = "5"
 	register "pwrdown_bloff_to_varybloff" = "5"
 	register "min_allowed_bl_level" = "0"
-
-	register "edp_tuningset" = "{
-		.dp_vs_pemph_level = 0x0,
-		.deemph_6db4 = 0x004b,
-		.boostadj = 0x0,
-		.margin_deemph = 0x80,
-	}"
 
 	# USB OC pin mapping
 	register "usb_port_overcurrent_pin[1]" = "USB_OC_NONE"	# LTE instead of USB C1

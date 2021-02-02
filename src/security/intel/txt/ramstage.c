@@ -289,6 +289,11 @@ static void txt_initialize_heap(void)
 	push_sinit_heap(&heap_struct, NULL, 0);
 }
 
+__weak bool skip_intel_txt_lockdown(void)
+{
+	return false;
+}
+
 /**
  * Finalize the TXT device.
  *
@@ -300,6 +305,9 @@ static void txt_initialize_heap(void)
  */
 static void lockdown_intel_txt(void *unused)
 {
+	if (skip_intel_txt_lockdown())
+		return;
+
 	const uint64_t status = read64((void *)TXT_SPAD);
 
 	uint32_t txt_feature_flags = 0;

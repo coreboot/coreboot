@@ -239,6 +239,23 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	upd = (FSPM_UPD *)(uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 
+	/*
+	 * Verify UPD region size. We don't have malloc before ramstage, so we
+	 * use a static buffer for the FSP-M UPDs which is sizeof(FSPM_UPD)
+	 * bytes long, since that is the value known at compile time. If
+	 * hdr->cfg_region_size is bigger than that, not all UPD defaults will
+	 * be copied, so it'll contain random data at the end, so we just call
+	 * die() in that case. If hdr->cfg_region_size is smaller than that,
+	 * there's a mismatch between the FSP and the header, but since it will
+	 * copy the full UPD defaults to the buffer, we try to continue and
+	 * hope that there was no incompatible change in the UPDs.
+	 */
+	if (hdr->cfg_region_size > sizeof(FSPM_UPD))
+		die("FSP-M UPD size is larger than FSPM_UPD struct size.\n");
+	if (hdr->cfg_region_size < sizeof(FSPM_UPD))
+		printk(BIOS_ERR, "FSP-M UPD size is smaller than FSPM_UPD struct size. "
+				"Check if the FSP binary matches the FSP headers.\n");
+
 	fsp_verify_upd_header_signature(upd->FspUpdHeader.Signature, FSPM_UPD_SIGNATURE);
 
 	/* Copy the default values from the UPD area */

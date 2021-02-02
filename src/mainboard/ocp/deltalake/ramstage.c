@@ -4,6 +4,8 @@
 #include <console/console.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
+#include <drivers/vpd/vpd.h>
+#include <security/intel/txt/txt.h>
 #include <soc/ramstage.h>
 #include <soc/soc_util.h>
 #include <stdio.h>
@@ -17,6 +19,7 @@
 #include <cpxsp_dl_gpio.h>
 
 #include "ipmi.h"
+#include "vpd.h"
 
 #define SLOT_ID_LEN 2
 
@@ -348,3 +351,23 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.final = mainboard_final,
 };
+
+bool skip_intel_txt_lockdown(void)
+{
+	static bool fetched_vpd = 0;
+	static uint8_t skip_txt = SKIP_INTEL_TXT_LOCKDOWN_DEFAULT;
+
+	if (fetched_vpd)
+		return (bool)skip_txt;
+
+	if (!vpd_get_bool(SKIP_INTEL_TXT_LOCKDOWN, VPD_RW_THEN_RO, &skip_txt))
+		printk(BIOS_INFO, "%s: not able to get VPD %s, default set to %d\n",
+		       __func__, SKIP_INTEL_TXT_LOCKDOWN, SKIP_INTEL_TXT_LOCKDOWN_DEFAULT);
+	else
+		printk(BIOS_DEBUG, "%s: VPD %s, got %d\n", __func__, SKIP_INTEL_TXT_LOCKDOWN,
+		       skip_txt);
+
+	fetched_vpd = 1;
+
+	return (bool)skip_txt;
+}

@@ -46,4 +46,8 @@
 #define FSP_DIMM_FREQ "fsp_dimm_freq"
 #define FSP_DIMM_FREQ_DEFAULT 0
 
+/* Skip TXT lockdown */
+#define SKIP_INTEL_TXT_LOCKDOWN "skip_intel_txt_lockdown"
+#define SKIP_INTEL_TXT_LOCKDOWN_DEFAULT 0
+
 #endif

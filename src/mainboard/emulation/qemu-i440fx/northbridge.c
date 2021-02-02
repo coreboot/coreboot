@@ -271,6 +271,12 @@ static void cpu_bus_scan(struct device *bus)
 
 	if (max_cpus < 0)
 		return;
+	/*
+	 * Do not install more CPUs than supported by coreboot.
+	 * This will cause a buffer overflow where fixed arrays of CONFIG_MAX_CPUS
+	 * are used and might result in a boot failure.
+	 */
+	max_cpus = MIN(max_cpus, CONFIG_MAX_CPUS);
 
 	/*
 	 * TODO: This only handles the simple "qemu -smp $nr" case

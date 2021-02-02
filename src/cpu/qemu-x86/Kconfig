@@ -44,8 +44,8 @@ endchoice
 
 config MAX_CPUS
 	int
-	default 4 if SMM_ASEG
-	default 32
+	default 32 if SMM_TSEG
+	default 4
 
 config CPU_QEMU_X86_64
 	bool "Experimental 64bit support"

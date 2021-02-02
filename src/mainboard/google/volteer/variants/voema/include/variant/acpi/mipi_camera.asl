@@ -271,4 +271,70 @@ Scope (\_SB.PCI0.I2C2)
 			}
 		})
 	}
+	Device (NVM0)
+	{
+		Name (_HID, "PRP0001")  // _HID: Hardware ID
+		Name (_UID, 0x01)  // _UID: Unique ID
+		Name (_DDN, "AT24 EEPROM")  // _DDN: DOS Device Name
+		Method (_STA, 0, NotSerialized)  // _STA: Status
+		{
+			Return (0x0F)
+		}
+		Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
+		{
+			I2cSerialBusV2 (0x0050, ControllerInitiated, 0x00061A80,
+				AddressingMode7Bit, "\\_SB.PCI0.I2C2",
+				0x00, ResourceConsumer, , Exclusive,
+				)
+		})
+		Name (_DEP, Package (0x01)  // _DEP: Dependencies
+		{
+			CAM1
+		})
+		Name (_PR0, Package (0x01)  // _PR0: Power Resources for D0
+		{
+			FCPR
+		})
+		Name (_PR3, Package (0x01)  // _PR3: Power Resources for D3hot
+		{
+			FCPR
+		})
+		Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device Properties for _DSD */,
+			Package (0x06)
+			{
+				Package (0x02)
+				{
+					"size",
+					0x2000
+				},
+				Package (0x02)
+				{
+					"pagesize",
+					One
+				},
+				Package (0x02)
+				{
+					"read-only",
+					One
+				},
+				Package (0x02)
+				{
+					"address-width",
+					0x10
+				},
+				Package (0x02)
+				{
+					"compatible",
+					"atmel,24c64"
+				},
+				Package (0x02)
+				{
+					"i2c-allow-low-power-probe",
+					0x01
+				}
+			}
+		})
+	}
 }

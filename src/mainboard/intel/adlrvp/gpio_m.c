@@ -11,14 +11,14 @@ static const struct pad_config gpio_table[] = {
 	/* H6  : I2C1 SDA */
 	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
 	/* B16 : I2C5 SDA */
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 
 	/* H5  : I2C0 SCL */
 	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
 	/* H7  : I2C1 SCL */
 	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
 	/* B17 : I2C5 SCL */
-	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF2),
 
 	/* C5  : WWAN_PERST_N */
 	PAD_CFG_GPO(GPP_C5, 1, PLTRST),
@@ -62,6 +62,18 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 
+	/* CAM1_RST */
+	PAD_CFG_GPO(GPP_R5, 1, PLTRST),
+	/* CAM2_RST */
+	PAD_CFG_GPO(GPP_E15, 1, PLTRST),
+	/* CAM1_PWR_EN */
+	PAD_CFG_GPO(GPP_B23, 1, PLTRST),
+	/* CAM2_PWR_EN */
+	PAD_CFG_GPO(GPP_E16, 1, PLTRST),
+	/* IMGCLKOUT0 */
+	PAD_CFG_NF(GPP_D4, NONE, DEEP, NF1),
+	/* IMGCLKOUT1 */
+	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
 };
 
 void variant_configure_gpio_pads(void)

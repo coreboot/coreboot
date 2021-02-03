@@ -16,9 +16,9 @@ chip soc/amd/picasso
 	register "stapm_time_constant_s" = "200"
 	register "sustained_power_limit_mW" = "15000"
 
-	register "telemetry_vddcr_vdd_slope_mA" = "101070"
+	register "telemetry_vddcr_vdd_slope_mA" = "102586"
 	register "telemetry_vddcr_vdd_offset" = "0"
-	register "telemetry_vddcr_soc_slope_mA" = "24560"
+	register "telemetry_vddcr_soc_slope_mA" = "24674"
 	register "telemetry_vddcr_soc_offset" = "0"
 
 	# End : OPN Performance Configuration

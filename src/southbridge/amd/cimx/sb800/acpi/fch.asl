@@ -134,6 +134,30 @@ Method(_CRS, 0) {
 	Return (CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
+/* Some global data */
+Name(OSVR, 3)  /* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
+
+Method(OSFL, 0){
+
+	if (OSVR != Ones) {Return (OSVR)}	/* OS version was already detected */
+
+	if(CondRefOf(\_OSI))
+	{
+		OSVR = 1				/* Assume some form of XP */
+		if (\_OSI("Windows 2006"))		/* Vista */
+		{
+			OSVR = 2
+		}
+	} else {
+		If (WCMP(\_OS,"Linux")) {
+			OSVR = 3			/* Linux */
+		} Else {
+			OSVR = 4			/* Gotta be WinCE */
+		}
+	}
+	Return(OSVR)
+}
+
 /*
 *
 *               FIRST METHOD CALLED UPON BOOT

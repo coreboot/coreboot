@@ -23,5 +23,5 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	#include "acpi/mainboard.asl"
+	#include <variant/acpi/variant.asl>
 }

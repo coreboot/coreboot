@@ -834,21 +834,50 @@ subject to this rule. Generally they indicate failure by returning some
 out-of-range result. Typical examples would be functions that return
 pointers; they use NULL or the ERR_PTR mechanism to report failure.
 
-Don't re-invent the kernel macros
-----------------------------------
+Headers and includes
+---------------
 
-The header file include/linux/kernel.h contains a number of macros that
-you should use, rather than explicitly coding some variant of them
-yourself. For example, if you need to calculate the length of an array,
-take advantage of the macro
+Headers should always be included at the top of the file, preferrably in
+alphabetical order. Includes should always use the `#include <file.h>`
+notation, except for rare cases where a file in the same directory that
+is not part of a normal include path gets included (e.g. local headers
+in mainboard directories), which should use `#include "file.h"`. Headers
+that can be included from both assembly files and .c files should keep
+all C code wrapped in `#ifndef __ASSEMBLER__` blocks, including includes
+to other headers that don't follow that provision.
+
+Files should generally include every header they need a definition from
+directly (and not include any unnecessary extra headers). Excepted from
+this are certain headers that intentionally chain-include other headers
+which logically belong to them and are just factored out into a separate
+location for implementation or organizatory reasons. This could be
+because part of the definitions is generic and part SoC-specific (e.g.
+`<gpio.h>` chain-including `<soc/gpio.h>`), architecture-specific (e.g.
+`<device/mmio.h>` chain-including `<arch/mmio.h>`), separated out into
+commonlib[/bsd] for sharing/license reasons (e.g. `<cbfs.h>`
+chain-including `<commonlib/bsd/cbfs_serialized.h>`) or just split out
+to make organizing subunits of a larger header easier. This can also
+happen when certain definitions need to be in a specific header for
+legacy POSIX reasons but we would like to logically group them together
+(e.g. `uintptr_t` is in `<stdint.h>` and `size_t` in `<stddef.h>`, but
+it's nicer to be able to just include `<types.h>` and get all the common
+type and helper function stuff we need everywhere).
+
+The headers `<kconfig.h>`, `<rules.h>` and `<commonlib/bsd/compiler.h>`
+are always automatically included in all compilation units by the build
+system and should not be included manually.
+
+Don't re-invent common macros
+-----------------------------
+
+The header file `src/commonlib/bsd/include/commonlib/bsd/helpers.h`
+contains a number of macros that you should use, rather than explicitly
+coding some variant of them yourself. For example, if you need to
+calculate the length of an array, take advantage of the macro
 
 ```c
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 ```
-
-There are also min() and max() macros that do strict type checking if
-you need them. Feel free to peruse that header file to see what else is
-already defined that you shouldn't reproduce in your code.
 
 Editor modelines and other cruft
 --------------------------------

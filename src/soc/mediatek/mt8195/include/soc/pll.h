@@ -502,6 +502,63 @@ check_member(mtk_apmixed_regs, occscan_con4, 0x0d80);
 check_member(mtk_apmixed_regs, apll1_con5, 0x0dc0);
 check_member(mtk_apmixed_regs, hdmirx_apll_con5, 0x0dd4);
 
+enum {
+	PLL_CKSQ_ON_DELAY = 100,
+	PLL_PWR_ON_DELAY = 30,
+	PLL_ISO_DELAY = 1,
+	PLL_EN_DELAY = 20,
+};
+
+enum {
+	PCW_INTEGER_BITS = 8,
+};
+
+enum {
+	MT8195_PLL_EN = 0x1 << 9,
+	MT8195_APLL5_EN = (0x1 << 9) | (0x1 << 20),
+	GLITCH_FREE_EN = 0x1 << 12,
+	PLL_DIV_EN = 0xff << 24,
+};
+
+enum {
+	MCU_DIV_MASK = 0x1f << 17,
+	MCU_DIV_1 = 0x8 << 17,
+
+	MCU_MUX_MASK = 0x3 << 9,
+	MCU_MUX_SRC_PLL = 0x1 << 9,
+	MCU_MUX_SRC_26M = 0x0 << 9,
+};
+
+/* PLL rate */
+enum {
+	ARMPLL_LL_HZ	= 1036 * MHz,
+	ARMPLL_BL_HZ	= 1027 * MHz,
+	CCIPLL_HZ	= 835 * MHz,
+	NNAPLL_HZ	= 860 * MHz,
+	RESPLL_HZ	= 600 * MHz,
+	ETHPLL_HZ	= 500 * MHz,
+	MSDCPLL_HZ	= 384 * MHz,
+	TVDPLL1_HZ	= 594 * MHz,
+	TVDPLL2_HZ	= 594 * MHz,
+	MMPLL_HZ	= 2750UL * MHz,
+	MAINPLL_HZ	= 2184UL * MHz,
+	VDECPLL_HZ	= 220 * MHz,
+	IMGPLL_HZ	= 650 * MHz,
+	UNIVPLL_HZ	= 2496UL * MHz,
+	HDMIPLL1_HZ	= 884 * MHz,
+	HDMIPLL2_HZ	= 600 * MHz,
+	HDMIRX_APLL_HZ	= 294915 * KHz,
+	USB1PLL_HZ	= 192 * MHz,
+	ADSPPLL_HZ	= 720 * MHz,
+	APLL1_HZ	= 196608 * KHz,
+	APLL2_HZ	= 180633600,
+	APLL3_HZ	= 196608 * KHz,
+	APLL4_HZ	= 196608 * KHz,
+	APLL5_HZ	= 196608 * KHz,
+	MFGPLL_HZ	= 700 * MHz,
+	DGIPLL_HZ	= 165 * MHz,
+};
+
 /* top_div rate */
 enum {
 	CLK26M_HZ	= 26 * MHz,
@@ -511,5 +568,13 @@ enum {
 enum {
 	UART_HZ		= CLK26M_HZ,
 };
+
+DEFINE_BITFIELD(CLK_DBG_CFG_ABIST_CK_SEL, 14, 8)
+DEFINE_BITFIELD(CLK_DBG_CFG_CKGEN_CK_SEL, 23, 16)
+DEFINE_BITFIELD(CLK_DBG_CFG_METER_CK_SEL, 1, 0)
+DEFINE_BITFIELD(CLK_DBG_CFG_CKGEN_EN, 24, 24)
+DEFINE_BITFIELD(CLK_MISC_CFG_0_METER_DIV, 31, 24)
+DEFINE_BITFIELD(CLK26CALI_0_TRIGGER, 4, 4)
+DEFINE_BITFIELD(CLK26CALI_1_LOAD_CNT, 25, 16)
 
 #endif /* SOC_MEDIATEK_MT8195_PLL_H */

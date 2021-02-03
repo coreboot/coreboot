@@ -3,6 +3,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8195),y)
 bootblock-y += bootblock.c
 bootblock-y += ../common/gpio.c gpio.c
 bootblock-y += ../common/mmu_operations.c
+bootblock-y += ../common/pll.c pll.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-y += ../common/timer.c timer.c
 bootblock-y += ../common/uart.c
@@ -17,6 +18,7 @@ verstage-y += ../common/wdt.c
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c
 romstage-y += ../common/gpio.c gpio.c
+romstage-y += ../common/pll.c pll.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += ../common/timer.c timer.c
 romstage-y += ../common/uart.c

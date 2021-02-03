@@ -24,6 +24,7 @@ romstage-y	+= reset.c
 romstage-y	+= romstage.c
 romstage-y	+= uart.c
 
+ramstage-y	+= acpi.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= fch.c
@@ -37,6 +38,7 @@ ramstage-y	+= uart.c
 smm-y		+= smihandler.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
+CPPFLAGS_common += -I$(src)/soc/amd/cezanne/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne
 
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)

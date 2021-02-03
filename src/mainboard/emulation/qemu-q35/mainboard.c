@@ -4,6 +4,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <pc80/keyboard.h>
+#include <cpu/x86/smm.h>
 
 #include "q35.h"
 
@@ -39,6 +40,9 @@ static void qemu_nb_init(struct device *dev)
 
 static void qemu_nb_read_resources(struct device *dev)
 {
+	size_t tseg_size;
+	uintptr_t tseg_base;
+
 	pci_dev_read_resources(dev);
 
 	mmconf_resource(dev, 2);
@@ -48,6 +52,9 @@ static void qemu_nb_read_resources(struct device *dev)
 		reserved_ram_resource(dev, 0, CONFIG_ARCH_X86_64_PGTBL_LOC / KiB,
 			(6 * 0x1000) / KiB);
 	}
+
+	smm_region(&tseg_base, &tseg_size);
+	reserved_ram_resource(dev, ESMRAMC, tseg_base / 1024, tseg_size / 1024);
 }
 
 

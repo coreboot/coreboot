@@ -4,7 +4,7 @@
   data hobs.
 
   @copyright
-  Copyright (c) 1999 - 2020, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2021, Intel Corporation. All rights reserved.<BR>
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.
   The full text of the license may be found at
@@ -24,10 +24,8 @@ extern EFI_GUID gSiMemoryS3DataGuid;
 extern EFI_GUID gSiMemoryInfoDataGuid;
 extern EFI_GUID gSiMemoryPlatformDataGuid;
 
-#define MAX_TRACE_CACHE_TYPE  3
-
-#define MAX_NODE        1
-#define MAX_CH          2
+#define MAX_NODE        2
+#define MAX_CH          4
 #define MAX_DIMM        2
 
 ///
@@ -153,6 +151,9 @@ typedef enum {
 #define MAX_PROFILE_NUM     4 // number of memory profiles supported
 #define MAX_XMP_PROFILE_NUM 2 // number of XMP profiles supported
 
+#define MAX_TRACE_REGION             5
+#define MAX_TRACE_CACHE_TYPE         2
+
 //
 // DIMM timings
 //
@@ -243,10 +244,11 @@ typedef struct {
   UINT32            TotalPhysicalMemorySize;
   UINT32            DefaultXmptCK[MAX_XMP_PROFILE_NUM];///< Stores the tCK value read from SPD XMP profiles if they exist.
   UINT8             XmpProfileEnable;                  ///< If XMP capable DIMMs are detected, this will indicate which XMP Profiles are common among all DIMMs.
-  UINT8             Ratio;
+  UINT8             Ratio;                             ///< DDR Frequency Ratio, Max Value 255
   UINT8             RefClk;
   UINT32            VddVoltage[MAX_PROFILE_NUM];
   CONTROLLER_INFO   Controller[MAX_NODE];
+  UINT16            Ratio_UINT16;                      ///< DDR Frequency Ratio, used for programs that require ratios higher then 255
 } MEMORY_INFO_DATA_HOB;
 
 /**
@@ -265,21 +267,12 @@ typedef struct {
   UINT32            TsegBase;
   UINT32            PrmrrSize;
   UINT64            PrmrrBase;
-  UINT32            PramSize;
-  UINT64            PramBase;
-  UINT64            DismLimit;
-  UINT64            DismBase;
   UINT32            GttBase;
   UINT32            MmioSize;
   UINT32            PciEBaseAddress;
-//
-// CPU:RestrictedBegin
-//
-  UINT32            SharedMailboxBase;
-//
-// CPU:RestrictedEnd
-//
   PSMI_MEM_INFO     PsmiInfo[MAX_TRACE_CACHE_TYPE];
+  PSMI_MEM_INFO     PsmiRegionInfo[MAX_TRACE_REGION];
+  BOOLEAN           MrcBasicMemoryTestPass;
 } MEMORY_PLATFORM_DATA;
 
 typedef struct {

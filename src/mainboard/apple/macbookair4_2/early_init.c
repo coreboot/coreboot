@@ -6,20 +6,20 @@
 #include <cbfs.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
+	{ 1, 0, -1 }, /* USB HUB 1 */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 1, 0, -1 }, /* USB HUB 2 */
+	{ 1, 0, -1 }, /* Camera */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
+	{ 0, 0, -1 }, /* Unused */
 };
 
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)

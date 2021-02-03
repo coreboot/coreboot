@@ -20,6 +20,8 @@ enum adl_boardid {
 	/* ADL-P DDR4 RVPs */
 	ADL_P_DDR4_1 = 0x14,
 	ADL_P_DDR4_2 = 0x3F,
+	/* ADL-M LP4 and LP5 RVPs */
+	ADL_M_LP4 = 0x1,
 };
 
 /* The next set of functions return the gpio table and fill in the number of

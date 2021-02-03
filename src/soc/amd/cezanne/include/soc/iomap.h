@@ -16,6 +16,16 @@
 
 /* I/O Ranges */
 #define NCP_ERR				0x00f0
+#define ACPI_IO_BASE		0x0400
+#define  ACPI_PM_EVT_BLK		(ACPI_IO_BASE + 0x00)
+#define   ACPI_PM1_STS			(ACPI_PM_EVT_BLK + 0x00)
+#define   ACPI_PM1_EN			(ACPI_PM_EVT_BLK + 0x02)
+#define  ACPI_PM1_CNT_BLK		(ACPI_IO_BASE + 0x04)
+#define  ACPI_PM_TMR_BLK		(ACPI_IO_BASE + 0x08)
+#define  ACPI_CPU_CONTROL		(ACPI_IO_BASE + 0x10)
+#define  ACPI_GPE0_BLK			(ACPI_IO_BASE + 0x20)
+#define   ACPI_GPE0_STS			(ACPI_GPE0_BLK + 0x00)
+#define   ACPI_GPE0_EN			(ACPI_GPE0_BLK + 0x04)
 #define SMB_BASE_ADDR			0x0b00
 
 #endif /* AMD_CEZANNE_IOMAP_H */

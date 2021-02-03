@@ -19,9 +19,6 @@
 #include <soc/romstage.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <drivers/vpd/vpd.h>
-#include <cpu/x86/msr.h>
-#include <cf9_reset.h>
-#include <console/console.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/lpc.h>
@@ -193,20 +190,7 @@ static const struct gpio_config gpio_tables[] = {
  */
 void early_mainboard_romstage_entry(void)
 {
-	/*
-	 * Sometimes the system boots in an invalid state, where random values
-	 * have been written to MSRs and then the MSRs are locked.
-	 * Seems to always happen on warm reset.
-	 *
-	 * Power cycling or a board_reset() isn't sufficient in this case, so
-	 * issue a full_reset() to "fix" this issue.
-	 */
-	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
-	if (msr.lo & 1) {
-		console_init();
-		printk(BIOS_EMERG, "Detected broken platform state. Issuing full reset\n");
-		full_reset();
-	}
+
 }
 
 /**

@@ -21,8 +21,10 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/usb.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cf9_reset.h>
 #include <program_loading.h>
 #include <timestamp.h>
 #include <version.h>
@@ -125,7 +127,24 @@ static void early_iio_hide(void)
 			iio_hide(dev);
 		}
 	}
+}
 
+static void check_msr_lock(void)
+{
+	/*
+	 * Sometimes the system boots in an invalid state, where random values
+	 * have been written to MSRs and then the MSRs are locked.
+	 * Seems to always happen on warm reset.
+	 *
+	 * Power cycling or a board_reset() isn't sufficient in this case, so
+	 * issue a full_reset() to "fix" this issue.
+	 */
+	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
+	if (msr.lo & 1) {
+		console_init();
+		printk(BIOS_EMERG, "Detected broken platform state. Issuing full reset\n");
+		full_reset();
+	}
 }
 
 /* Entry from cache-as-ram.inc. */
@@ -145,6 +164,8 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	} else {
 		enable_integrated_uart(CONFIG_UART_FOR_CONSOLE);
 	}
+
+	check_msr_lock();
 
 	/* Call into mainboard. */
 	post_code(0x41);

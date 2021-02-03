@@ -2,6 +2,7 @@
 
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
+#include <amdblocks/acpi.h>
 #include <bootstate.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>

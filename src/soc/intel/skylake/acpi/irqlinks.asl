@@ -5,7 +5,7 @@
  *
  * Due to what appears to be an ACPI interpreter bug we do not use
  * the PCRB() method here as it may not be defined yet because the method
- * definiton depends on the order of the include files in pch.asl.
+ * definition depends on the order of the include files in pch.asl.
  *
  * https://bugs.acpica.org/show_bug.cgi?id=1201
  */

@@ -389,7 +389,7 @@ struct mmu_new_range_prop {
 
 /*
  * Func: mmu_is_range_free
- * Desc: We need to ensure that the new range being allocated doesnt overlap
+ * Desc: We need to ensure that the new range being allocated doesn't overlap
  * with any used memory range. Basically:
  * 1. Memory ranges used by the payload (usedmem_ranges)
  * 2. Any area that falls below _end symbol in linker script (Kernel needs to be

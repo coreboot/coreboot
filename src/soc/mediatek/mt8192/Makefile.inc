@@ -78,7 +78,7 @@ mcu-firmware-files := \
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	  $(eval $(fw)-file := $(MT8192_BLOB_DIR)/$(fw)) \
 	  $(eval $(fw)-type := raw) \
-	  $(eval $(fw)-compression := $(CBFS_COMPRESS_FLAG)) \
+	  $(eval $(fw)-compression := LZ4) \
 	  $(if $(wildcard $($(fw)-file)), $(eval cbfs-files-y += $(fw)), ) \
 )
 

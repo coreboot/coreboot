@@ -30,7 +30,9 @@ static const char *const sdram_configs[] = {
 	[0x12] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
 	[0x13] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
 	[0x14] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+	[0x15] = "sdram-lpddr4x-H9HCNNNFAMMLXR-NEE-8GB",
 	[0x16] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
+	[0x17] = "sdram-lpddr4x-MT53E1G32D2NP-046-4GB",
 
 	/* Table shared by Kakadu and its variants, offset = 0x20 */
 	[0x20] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",

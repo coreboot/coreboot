@@ -12,9 +12,7 @@
 #define BSP_CPU_SLOT 0
 #define SINGLE_CHIP_PACKAGE 0
 
-static efi_return_status_t mp_get_number_of_processors(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_uintn_t *number_of_processors,
+efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processors,
 	efi_uintn_t *number_of_enabled_processors)
 {
 	if (number_of_processors == NULL || number_of_enabled_processors ==
@@ -27,9 +25,7 @@ static efi_return_status_t mp_get_number_of_processors(const
 	return FSP_SUCCESS;
 }
 
-static efi_return_status_t mp_get_processor_info(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_uintn_t processor_number,
+efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
 	unsigned int num_virt_cores, num_phys_cores;
@@ -62,9 +58,7 @@ static efi_return_status_t mp_get_processor_info(const
 	return FSP_SUCCESS;
 }
 
-static efi_return_status_t mp_startup_all_aps(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_ap_procedure procedure, efi_boolean_t ignored3,
+efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 	efi_uintn_t timeout_usec, void *argument)
 {
 	if (cpu_index() < 0)
@@ -82,10 +76,30 @@ static efi_return_status_t mp_startup_all_aps(const
 	return FSP_SUCCESS;
 }
 
-static efi_return_status_t mp_startup_this_ap(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_ap_procedure procedure, efi_uintn_t processor_number,
+efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	efi_uintn_t timeout_usec, void *argument)
+{
+	if (cpu_index() < 0)
+		return FSP_DEVICE_ERROR;
+
+	if (procedure == NULL)
+		return FSP_INVALID_PARAMETER;
+
+	/* Run on BSP */
+	procedure(argument);
+
+	/* Run on APs */
+	if (mp_run_on_aps((void *)procedure, argument,
+			MP_RUN_ON_ALL_CPUS, timeout_usec)) {
+		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
+		return FSP_NOT_STARTED;
+	}
+
+	return FSP_SUCCESS;
+}
+
+efi_return_status_t mp_startup_this_ap(efi_ap_procedure procedure,
+	efi_uintn_t processor_number, efi_uintn_t timeout_usec, void *argument)
 {
 	if (cpu_index() < 0)
 		return FSP_DEVICE_ERROR;
@@ -108,25 +122,7 @@ static efi_return_status_t mp_startup_this_ap(const
 	return FSP_SUCCESS;
 }
 
-static efi_return_status_t mp_switch_bsp(const efi_pei_services **ignored1,
-	efi_pei_mp_services_ppi *ignored2, efi_uintn_t ignored3,
-	efi_boolean_t ignored4)
-{
-	/* FSP don't need this API hence return unsupported */
-	return FSP_UNSUPPORTED;
-}
-
-static efi_return_status_t mp_enable_disable_ap(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_uintn_t ignored3, efi_boolean_t ignored4, efi_uint32_t *ignored5)
-{
-	/* FSP don't need this API hence return unsupported */
-	return FSP_UNSUPPORTED;
-}
-
-static efi_return_status_t mp_identify_processor(const
-	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_uintn_t *processor_number)
+efi_return_status_t mp_identify_processor(efi_uintn_t *processor_number)
 {
 	int index;
 
@@ -141,23 +137,4 @@ static efi_return_status_t mp_identify_processor(const
 	*processor_number = index;
 
 	return FSP_SUCCESS;
-}
-
-/*
- * EDK2 UEFIPKG Open Source MP Service PPI to be installed
- */
-
-static efi_pei_mp_services_ppi mp_service_ppi = {
-	mp_get_number_of_processors,
-	mp_get_processor_info,
-	mp_startup_all_aps,
-	mp_startup_this_ap,
-	mp_switch_bsp,
-	mp_enable_disable_ap,
-	mp_identify_processor,
-};
-
-efi_pei_mp_services_ppi *mp_fill_ppi_services_data(void)
-{
-	return &mp_service_ppi;
 }

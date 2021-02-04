@@ -268,7 +268,4 @@ config SOC_INTEL_COMMON_FSP_RESET
 	  Common code block to handle platform reset request raised by FSP. The FSP
 	  will use the FSP EAS v2.0 section 12.2.2 (OEM Status Code) to indicate that
 	  a reset is required.
-
-source "src/drivers/intel/fsp2_0/ppi/Kconfig"
-
 endif

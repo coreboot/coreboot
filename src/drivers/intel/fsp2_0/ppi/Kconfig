@@ -5,7 +5,24 @@ config MP_SERVICES_PPI
 	default n
 	depends on SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
 	help
-	  This option allows SoC user to create MP service PPI for Intel
-	  FSP usage, coreboot will provide EFI_PEI_MP_SERVICES_PPI structure
-	  definitions along with all APIs as per EDK2 specification. Intel FSP
-	  will use this PPI to run CPU feature programming on APs.
+	  This option allows to create MP service PPI for Intel FSP usage.
+	  Intel FSP will use this PPI to run CPU feature programming on APs.
+
+config MP_SERVICES_PPI_V1
+	bool
+	default n
+	select MP_SERVICES_PPI
+	help
+	  This option provides EFI_PEI_MP_SERVICES_PPI structure definitions
+	  along with all APIs as per EDK2 specification.
+
+config MP_SERVICES_PPI_V2
+	bool
+	default n
+	select MP_SERVICES_PPI
+	help
+	  This option provides EDKII_PEI_MP_SERVICES2_PPI structure definitions
+	  along with all APIs as per EDK2 specification. MP services2 PPI is slight
+	  modification over MP services1 PPIs. A new API StartupAllCPUs have been
+	  added to allow running a task on BSP and all APs. Also the EFI_PEI_SERVICES
+	  parameter has been removed from all MP PPI APIs.

@@ -35,11 +35,15 @@ void init_timer(void)
 	timer_prepare();
 
 	/* Disable timer and clear the counter */
-	clrbits32(&mtk_gpt->gpt6_con, GPT_CON_EN);
-	setbits32(&mtk_gpt->gpt6_con, GPT_CON_CLR);
+	clrbits32(&mtk_gpt->gpt6_con, GPT6_CON_EN);
+	setbits32(&mtk_gpt->gpt6_con, GPT6_CON_CLR);
 
 	/* Set clock source to system clock and set clock divider to 1 */
-	write32(&mtk_gpt->gpt6_clk, GPT_SYS_CLK | GPT_CLK_DIV1);
+	SET32_BITFIELDS(&GPT6_CLOCK_REG(mtk_gpt),
+			GPT6_CLK_CLK6, GPT6_CLK_CLK6_SYS,
+			GPT6_CLK_CLKDIV6, GPT6_CLK_CLKDIV_DIV1);
 	/* Set operation mode to FREERUN mode and enable timer */
-	write32(&mtk_gpt->gpt6_con, GPT_CON_EN | GPT_MODE_FREERUN);
+	SET32_BITFIELDS(&mtk_gpt->gpt6_con,
+			GPT6_CON_MODE6, GPT6_MODE_FREERUN,
+			GPT6_CON_EN6, GPT6_CON_EN);
 }

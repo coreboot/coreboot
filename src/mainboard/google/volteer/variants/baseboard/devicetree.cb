@@ -255,6 +255,15 @@ chip soc/intel/tigerlake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
+	# Enable External Bypass
+	register "external_bypass" = "1"
+
+	# Enable External Clk Gate
+	register "external_clk_gated" = "1"
+
+	# Enable External Phy Gate
+	register "external_phy_gated" = "1"
+
 	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 38,

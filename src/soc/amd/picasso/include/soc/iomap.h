@@ -78,7 +78,7 @@
 #define  ACPI_PM1_EN		(ACPI_PM_EVT_BLK + 0x02)	  /* 2 bytes */
 #define  ACPI_PM1_CNT_BLK	(ACPI_IO_BASE + 0x04)     /* 2 bytes */
 #define  ACPI_PM_TMR_BLK	(ACPI_IO_BASE + 0x08)     /* 4 bytes */
-#define  ACPI_CPU_CONTROL	(ACPI_IO_BASE + 0x13)
+#define  ACPI_CPU_CONTROL	(ACPI_IO_BASE + 0x10)
 /* doc says 0x14 for GPE0_BLK but FT5 only works with 0x20 */
 #define  ACPI_GPE0_BLK		(ACPI_IO_BASE + 0x20)     /* 8 bytes */
 #define  ACPI_GPE0_STS		(ACPI_GPE0_BLK + 0x00)		  /* 4 bytes */

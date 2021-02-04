@@ -180,16 +180,6 @@ config FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	  This allows deployed systems to bump their version number
 	  with the same FSP which will trigger a retrain of the memory.
 
-config FSP_PEIM_TO_PEIM_INTERFACE
-	bool
-	select FSP_USES_MP_SERVICES_PPI
-	help
-	  This option allows SOC user to create specific PPI for Intel FSP
-	  usage, coreboot will provide required PPI structure definitions
-	  along with all APIs as per EFI specification. So far this feature
-	  is limited till EFI_PEI_MP_SERVICE_PPI and this option might be
-	  useful to add further PPI if required.
-
 config HAVE_FSP_LOGO_SUPPORT
 	bool
 	default n
@@ -279,8 +269,6 @@ config SOC_INTEL_COMMON_FSP_RESET
 	  will use the FSP EAS v2.0 section 12.2.2 (OEM Status Code) to indicate that
 	  a reset is required.
 
-if FSP_PEIM_TO_PEIM_INTERFACE
 source "src/drivers/intel/fsp2_0/ppi/Kconfig"
-endif
 
 endif

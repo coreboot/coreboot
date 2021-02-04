@@ -3,6 +3,7 @@
 #ifndef AMD_CEZANNE_IOMAP_H
 #define AMD_CEZANNE_IOMAP_H
 
+/* MMIO Ranges */
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 
@@ -11,7 +12,6 @@
 #define APU_UART0_BASE			0xfedc9000
 #define APU_UART1_BASE			0xfedca000
 
-/* MMIO Ranges */
 #define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
 
 /* I/O Ranges */

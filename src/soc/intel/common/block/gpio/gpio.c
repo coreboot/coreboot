@@ -210,14 +210,29 @@ static void gpi_enable_nmi(const struct pad_config *cfg,
 	pcr_or32(comm->port, en_reg, en_value);
 }
 
+/* 120 GSIs is the default for IOxAPIC */
+static uint32_t gpio_ioapic_irqs_used[120 / (sizeof(uint32_t) * BITS_PER_BYTE) + 1];
+static void set_ioapic_used(uint32_t irq)
+{
+	size_t word_offset = irq / 32;
+	size_t bit_offset = irq % 32;
+	assert (word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
+	gpio_ioapic_irqs_used[word_offset] |= BIT(bit_offset);
+}
+
+bool gpio_routes_ioapic_irq(uint32_t irq)
+{
+	size_t word_offset = irq / 32;
+	size_t bit_offset = irq % 32;
+	assert (word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
+	return (gpio_ioapic_irqs_used[word_offset] & BIT(bit_offset)) != 0;
+}
+
 static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 	uint16_t  pad_cfg_offset)
 {
 	/* No ITSS configuration in SMM. */
 	if (ENV_SMM)
-		return;
-
-	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG))
 		return;
 
 	int irq;
@@ -242,8 +257,12 @@ static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 			cfg->pad);
 		return;
 	}
-	itss_set_irq_polarity(irq, !!(cfg->pad_config[0] &
-			PAD_CFG0_RX_POL_INVERT));
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG))
+		itss_set_irq_polarity(irq, !!(cfg->pad_config[0] &
+					      PAD_CFG0_RX_POL_INVERT));
+
+	set_ioapic_used(irq);
 }
 
 /* Number of DWx config registers can be different for different SOCs */

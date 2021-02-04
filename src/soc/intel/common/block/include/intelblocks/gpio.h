@@ -229,5 +229,11 @@ void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num);
  */
 void block_gpio_enable(struct device *dev);
 
+/*
+ * Returns true if any GPIO that uses the specified IRQ is also programmed to
+ * route IRQs to IOAPIC.
+ */
+bool gpio_routes_ioapic_irq(unsigned int irq);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

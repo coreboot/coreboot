@@ -15,10 +15,10 @@ chip soc/amd/picasso
 	register "stapm_time_constant_s" = "1640"
 	register "sustained_power_limit_mW" = "4800"
 
-	register "telemetry_vddcr_vdd_slope_mA" = "42465"
-	register "telemetry_vddcr_vdd_offset" = "69"
-	register "telemetry_vddcr_soc_slope_mA" = "42667"
-	register "telemetry_vddcr_soc_offset" = "167"
+	register "telemetry_vddcr_vdd_slope_mA" = "41322"
+	register "telemetry_vddcr_vdd_offset" = "-25"
+	register "telemetry_vddcr_soc_slope_mA" = "43440"
+	register "telemetry_vddcr_soc_offset" = "115"
 	# End : OPN Performance Configuration
 
 	# USB 2.0 strength - MB type-C C0

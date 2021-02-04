@@ -94,7 +94,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const struct soc_amd_picasso_config *cfg = config_of_soc();
 
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 

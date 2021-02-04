@@ -263,12 +263,6 @@ config SERIRQ_CONTINUOUS_MODE
 	  Set this option to y for serial IRQ in continuous mode.
 	  Otherwise it is in quiet mode.
 
-config PICASSO_ACPI_IO_BASE
-	hex
-	default 0x400
-	help
-	  Base address for the ACPI registers.
-
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex

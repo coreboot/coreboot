@@ -75,7 +75,7 @@ config USE_INTEL_FSP_MP_INIT
 
 config USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	bool "Perform MP Initialization by FSP using coreboot MP PPI service"
-	default y if FSP_USES_MP_SERVICES_PPI
+	default y if MP_SERVICES_PPI
 	default n
 	help
 	  This option allows FSP to make use of MP services PPI published by

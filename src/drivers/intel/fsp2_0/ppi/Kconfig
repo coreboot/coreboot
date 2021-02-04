@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-config FSP_USES_MP_SERVICES_PPI
+config MP_SERVICES_PPI
 	bool
 	default n
 	depends on SOC_INTEL_COMMON_BLOCK_CPU_MPINIT

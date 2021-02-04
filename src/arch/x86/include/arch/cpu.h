@@ -306,7 +306,7 @@ uint32_t cpu_get_feature_flags_edx(void);
  * function will always getting called from coreboot context
  * (ESP stack pointer will always refer to coreboot).
  *
- * But with FSP_USES_MP_SERVICES_PPI implementation in coreboot this
+ * But with MP_SERVICES_PPI implementation in coreboot this
  * assumption might not be true, where FSP context (stack pointer refers
  * to FSP) will request to get cpu_index().
  *

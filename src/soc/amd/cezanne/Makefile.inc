@@ -31,6 +31,7 @@ ramstage-y	+= fsp_params.c
 ramstage-y	+= gpio.c
 ramstage-y	+= pcie_gpp.c
 ramstage-y	+= reset.c
+ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include

@@ -80,7 +80,7 @@ Field (ERAM, ByteAcc, NoLock, Preserve)
  */
 Method(BPAG, 1, NotSerialized)
 {
-	Store(Arg0, PAGE)
+	PAGE = Arg0
 #ifdef BATTERY_PAGE_DELAY_MS
 	Sleep(BATTERY_PAGE_DELAY_MS)
 #endif
@@ -94,32 +94,32 @@ Method(BPAG, 1, NotSerialized)
 Method(BSTA, 4, NotSerialized)
 {
 	Acquire(ECLK, 0xffff)
-	Store(0, Local0)
-	^BPAG(Or(1, Arg0))
-	Store(BAMA, Local1)
+	Local0 = 0
+	^BPAG(Arg0 | 1)
+	Local1 = BAMA
 	^BPAG(Arg0) /* Battery dynamic information */
 
 	/*
 	 * Present rate is a 16bit signed int, positive while charging
 	 * and negative while discharging.
 	 */
-	Store(BAPR, Local2)
+	Local2 = BAPR
 
 	If (Arg2) // Charging
 	{
-		Or(2, Local0, Local0)
+		Local0 |= 2
 	}
 	Else
 	{
 		If (Arg3) // Discharging
 		{
-			Or(1, Local0, Local0)
+			Local0 |= 1
 			// Negate present rate
-			Subtract(0x10000, Local2, Local2)
+			Local2 -= 0x10000
 		}
 		Else // Full battery, force to 0
 		{
-			Store(0, Local2)
+			Local2 = 0
 		}
 	}
 
@@ -127,21 +127,21 @@ Method(BSTA, 4, NotSerialized)
 	 * The present rate value must be positive now, if it is not we have an
 	 * EC bug or inconsistency and force the value to 0.
 	 */
-	If (LGreaterEqual (Local2, 0x8000)) {
-		Store(0, Local2)
+	If (Local2 >= 0x8000) {
+		Local2 = 0
 	}
 
-	Store(Local0, Index(Arg1, 0x00))
+	Arg1 [0] = Local0
 
 	if (Local1) {
-		Multiply (BARC, 10, Index(Arg1, 2))
-		Multiply (Local2, BAVO, Local2)
-		Divide (Local2, 1000, , Index(Arg1, 1))
+		Arg1 [2] = BARC * 10
+		Local2 *= BAVO
+		Arg1 [1] = Local2 / 1000
 	} else {
-		Store(BARC, Index(Arg1, 2))
-		Store(Local2, Index(Arg1, 1))
+		Arg1 [2] = BARC
+		Arg1 [1] = Local2
 	}
-	Store(BAVO, Index(Arg1, 3))
+	Arg1 [3] = BAVO
 	Release(ECLK)
 	Return (Arg1)
 }
@@ -150,43 +150,45 @@ Method(BINF, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
 	^BPAG(Or(1, Arg1)) /* Battery 0 static information */
-	Xor(BAMA, 1, Index(Arg0, 0))
-	Store(BAMA, Local0)
+	Arg0 [0] = BAMA ^ 1
+	Local0 = BAMA
 	^BPAG(Arg1)
-	Store(BAFC, Local2)
-	^BPAG(Or(2, Arg1))
-	Store(BADC, Local1)
+	Local2 = BAFC
+	^BPAG(Arg1 | 2)
+	Local1 = BADC
 
 	if (Local0)
 	{
-		Multiply (Local1, 10, Local1)
-		Multiply (Local2, 10, Local2)
+		Local1 *= 10
+		Local2 *= 10
 	}
 
-	Store(Local1, Index(Arg0, 1))	// Design Capacity
-	Store(Local2, Index(Arg0, 2))	// Last full charge capacity
-	Store(BADV, Index(Arg0, 4))	// Design Voltage
-	Divide (Local2, 20, Local0, Index(Arg0, 5)) // Warning capacity
+	Arg0 [1] = Local1	// Design Capacity
+	Arg0 [2] = Local2	// Last full charge capacity
+	Arg0 [4] = BADV		// Design Voltage
+	Local0 = Local2 % 20	// FIXME: Local0 not used
+	Arg0 [5] = Local2 / 20	// Warning capacity
 
-	Store (BASN, Local0)
+	Local0 = BASN
 	Name (SERN, Buffer (0x06) { "     " })
-	Store (4, Local1)
+	Local1 = 4
 	While (Local0)
 	{
-		Divide (Local0, 0x0A, Local2, Local0)
-		Add (Local2, 48, Index (SERN, Local1))
-		Decrement (Local1)
+		Local2 = Local0 % 10
+		Local0 /= 10
+		SERN [Local1] = Local2 + 48
+		Local1--
 	}
-	Store (SERN, Index (Arg0, 10)) // Serial Number
+	Arg0 [10] = SERN // Serial Number
 
 	^BPAG(Or(4, Arg1))
 	Name (TYPE, Buffer() { 0, 0, 0, 0, 0 })
-	Store(BATY, TYPE)
-	Store(TYPE, Index (Arg0, 11)) // Battery type
-	^BPAG(Or(5, Arg1))
-	Store(BAOE, Index (Arg0, 12)) // OEM information
-	^BPAG(Or(6, Arg1))
-	Store(BANA, Index (Arg0, 9))  // Model number
+	TYPE = BATY
+	Arg0 [11] = TYPE // Battery type
+	^BPAG(Arg1 | 5)
+	Arg0 [12] = BAOE // OEM information
+	^BPAG(Arg1 | 6)
+	Arg0 [9] = BANA  // Model number
 	Release(ECLK)
 	Return (Arg0)
 }

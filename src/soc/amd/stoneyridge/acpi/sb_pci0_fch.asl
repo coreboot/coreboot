@@ -583,7 +583,7 @@ Method(PWGC,2, Serialized)
 		Local1 = ~Arg0
 		Local0 &= Local1
 	}
-	Store(Local0, PGA3)
+	PGA3 = Local0
 	if (Arg0 == 0x20) { /* if SwUsb3SlpShutdown */
 		Local0 = PGA3
 		Local0 &= Arg0

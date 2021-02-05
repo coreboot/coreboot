@@ -109,7 +109,7 @@
 		{
 			\_SB.CIRQ()
 		}
-		Store(Arg0, PICM)
+		PICM = Arg0
 	}
 
 	Method(CIRQ, 0x00, NotSerialized){

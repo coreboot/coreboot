@@ -15,5 +15,7 @@
 #define   SNOOP_SCALE		(0x3 << 10)
 #define   NO_SNOOP_VALUE	(0x25 << 16)
 #define   NO_SNOOP_SCALE	(0x3 << 26)
+#define CFG3			0x70
+#define	  SCP_DEBUG		(0x1 << 19)
 
 #endif /* DRIVERS_GENESYSLOGIC_GL9755_H */

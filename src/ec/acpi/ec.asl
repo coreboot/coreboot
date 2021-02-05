@@ -68,7 +68,7 @@ Method (SEND_EC_COMMAND, 1)
 {
 	Local0 = WAIT_EC_SC (EC_IBF, 0)
 	If (!Local0) {
-		Store (Arg0, EC_SC)
+		EC_SC = Arg0
 	}
 	Return (Local0)
 }

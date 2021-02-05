@@ -37,12 +37,12 @@ Device (EHC1)
 			})
 
 			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
-			Store (0x02, REV)
+			CreateField (DerefOf (PCKG [0]), 0, 0x07, REV)
+			REV = 0x02
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
-			Store (Arg0, VISI)
+			CreateField (DerefOf (PCKG [0]), 0x40, 1, VISI)
+			VISI = Arg0
 
 			Return (PCKG)
 		}
@@ -90,12 +90,12 @@ Device (EHC2)
 			})
 
 			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
-			Store (0x02, REV)
+			CreateField (DerefOf (PCKG [0]), 0, 0x07, REV)
+			REV = 0x02
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
-			Store (Arg0, VISI)
+			CreateField (DerefOf (PCKG [0]), 0x40, 1, VISI)
+			VISI = Arg0
 
 			Return (PCKG)
 		}
@@ -137,38 +137,38 @@ Device (XHC)
 		CreateDWordField(Arg1,0,CDW1)
 
 		// Check revision
-		If(LNotEqual(Arg0,One)) {
+		If(Arg0 != 1) {
 			// Set unknown revision bit
-			Or(CDW1,0x8,CDW1)
+			CDW1 |= 8
 		}
 
 		// Set failure if xHCI is disabled by coreboot
-		If(LEqual(XHCI, 0)) {
-			Or(CDW1,0x2,CDW1)
+		If(XHCI == 0) {
+			CDW1 |= 2
 		}
 
 		// Query flag clear and xHCI in auto mode
-		If(LAnd(LNot(And(CDW1,0x1)),LOr(LEqual(XHCI ,2), LEqual(XHCI ,3)))) {
-			Store ("XHCI Switch", Debug)
-			Store(Zero, Local0)
-			And(XPRT, 0x3, Local0)
-			If(LOr(LEqual(Local0, 0), LEqual(Local0, 1))) {
-				Store(0xF, Local1)
+		If(!(CDW1 & 0x1) && (XHCI == 2 || XHCI  == 3)) {
+			Debug = "XHCI Switch"
+			Local0 = 0
+			Local0 = XPRT & 0x03
+			If(Local0 == 0 || Local0 == 1) {
+				Local1 = 0x0f
 			}
-			ElseIf(LEqual(Local0, 2)) {
-				Store(0x3, Local1)
+			ElseIf(Local0 == 2) {
+				Local1 = 3
 			}
-			ElseIf(LEqual(Local0, 3)) {
-				Store(Zero, Local1)
+			ElseIf(Local0 == 3) {
+				Local1 = 0
 			}
-			And(RPM3, 0xFFFFFFF0, Local0)
-			Or(Local0, Local1, RPM3)
-			And(PRM2, 0xFFFFFFF0, Local0)
-			Or(Local0, Local1, PRM2)
-			And(SSEN, 0xFFFFFFF0, Local0)
-			Or(Local0, Local1, SSEN)
-			And(X2PR, 0xFFFFFFF0, Local0)
-			Or(Local0, Local1, X2PR)
+			Local0 = RPM3 & 0xfffffff0
+			RPM3 = Local0 | Local1
+			Local0 = PRM2 & 0xfffffff0
+			PRM2 = Local0 | Local1
+			Local0 = SSEN & 0xfffffff0
+			SSEN = Local0 | Local1
+			Local0 = X2PR & 0xfffffff0
+			X2PR = Local0 | Local1
 		}
 		Return(Arg1)
 	}

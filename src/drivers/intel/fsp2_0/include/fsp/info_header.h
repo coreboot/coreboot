@@ -4,7 +4,6 @@
 #define _FSP2_0_INFO_HEADER_H_
 
 #include <types.h>
-#include <commonlib/bsd/compiler.h>
 
 #define FSP_HDR_OFFSET			0x94
 #if CONFIG(PLATFORM_USES_FSP2_2)

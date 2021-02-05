@@ -2,7 +2,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <commonlib/bsd/compiler.h>
 #include <soc/soc_util.h>
 
 void __weak variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,

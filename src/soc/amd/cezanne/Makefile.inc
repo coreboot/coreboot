@@ -28,6 +28,7 @@ ramstage-y	+= chip.c
 ramstage-y	+= fch.c
 ramstage-y      += fsp_params.c
 ramstage-y	+= gpio.c
+ramstage-y	+= pcie_gpp.c
 ramstage-y      += reset.c
 ramstage-y	+= uart.c
 

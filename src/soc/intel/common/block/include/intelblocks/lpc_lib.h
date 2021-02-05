@@ -105,5 +105,5 @@ void pch_misc_init(void);
 unsigned long southbridge_write_acpi_tables(const struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp);
-
+const uint8_t *lpc_get_pic_pirq_routing(size_t *num);
 #endif /* _SOC_COMMON_BLOCK_LPC_LIB_H_ */

@@ -3,9 +3,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_ITSS_H
 #define SOC_INTEL_COMMON_BLOCK_ITSS_H
 
-/* Max PXRC registers in ITSS*/
-#define MAX_PXRC_CONFIG	(PCR_ITSS_PIRQH_ROUT - PCR_ITSS_PIRQA_ROUT + 1)
-
 /* PIRQA Routing Control Register*/
 #define PCR_ITSS_PIRQA_ROUT	0x3100
 /* PIRQB Routing Control Register*/
@@ -29,6 +26,7 @@
 
 #if !defined(__ACPI__)
 
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <stdint.h>
 
 /* Set the interrupt polarity for provided IRQ to the APIC. */
@@ -38,7 +36,7 @@ void itss_set_irq_polarity(int irq, int active_low);
 void itss_snapshot_irq_polarities(int start, int end);
 void itss_restore_irq_polarities(int start, int end);
 
-void itss_irq_init(uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG]);
+void itss_irq_init(const uint8_t pch_interrupt_routing[PIRQ_COUNT]);
 void itss_clock_gate_8254(void);
 
 #endif /* !defined(__ACPI__) */

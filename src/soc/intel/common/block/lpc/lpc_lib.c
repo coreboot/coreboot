@@ -15,6 +15,7 @@
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 
 uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables)
 {
@@ -297,6 +298,23 @@ void pch_enable_ioapic(void)
 	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
 }
 
+static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {
+	[PIRQ_A] = PCH_IRQ11,
+	[PIRQ_B] = PCH_IRQ10,
+	[PIRQ_C] = PCH_IRQ11,
+	[PIRQ_D] = PCH_IRQ11,
+	[PIRQ_E] = PCH_IRQ11,
+	[PIRQ_F] = PCH_IRQ11,
+	[PIRQ_G] = PCH_IRQ11,
+	[PIRQ_H] = PCH_IRQ11,
+};
+
+const uint8_t *lpc_get_pic_pirq_routing(size_t *num)
+{
+	*num = ARRAY_SIZE(pch_interrupt_routing);
+	return pch_interrupt_routing;
+}
+
 /*
  * PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved
@@ -321,17 +339,6 @@ void pch_enable_ioapic(void)
 void pch_pirq_init(void)
 {
 	const struct device *irq_dev;
-	uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG];
-
-	pch_interrupt_routing[0] = PCH_IRQ11;
-	pch_interrupt_routing[1] = PCH_IRQ10;
-	pch_interrupt_routing[2] = PCH_IRQ11;
-	pch_interrupt_routing[3] = PCH_IRQ11;
-	pch_interrupt_routing[4] = PCH_IRQ11;
-	pch_interrupt_routing[5] = PCH_IRQ11;
-	pch_interrupt_routing[6] = PCH_IRQ11;
-	pch_interrupt_routing[7] = PCH_IRQ11;
-
 	itss_irq_init(pch_interrupt_routing);
 
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {

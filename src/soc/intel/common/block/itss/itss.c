@@ -7,10 +7,11 @@
 #include <intelblocks/pcr.h>
 #include <soc/itss.h>
 #include <soc/pcr_ids.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 
-void itss_irq_init(uint8_t pch_interrupt_routing[MAX_PXRC_CONFIG])
+void itss_irq_init(const uint8_t pch_interrupt_routing[PIRQ_COUNT])
 {
-	uint32_t regs[MAX_PXRC_CONFIG/sizeof(uint32_t)] = {0};
+	uint32_t regs[PIRQ_COUNT/sizeof(uint32_t)] = {0};
 	uint8_t index, byte;
 
 	/* Fill in all the PIRx routes into one array. */

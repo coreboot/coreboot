@@ -269,7 +269,7 @@ If several slots are soldered there are two ways to handle them:
 * If they use different data, use several files.
 
 If memory initialization is not working, in particular write training (timB)
-on DIMM's second rank fails, try enbling rank 1 mirroring, which can't be
+on DIMM's second rank fails, try enabling rank 1 mirroring, which can't be
 detected by inteltool. It is described by SPD field "Address Mapping from Edge
 Connector to DRAM", byte `63` (`0x3f`). Bit 0 describes Rank 1 Mapping,
 0 = standard, 1 = mirrored; set it to 1. Bits 1-7 are reserved.

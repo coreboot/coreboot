@@ -39,18 +39,18 @@ Device (BATX)
 	})
 
 	// Workaround for full battery status, enabled by default
-	Name (BFWK, One)
+	Name (BFWK, 1)
 
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		Store (One, BFWK)
+		BFWK = 1
 	}
 
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		Store (Zero, BFWK)
+		BFWK = 0
 	}
 
 	// Device insertion/removal control method that returns a device's status.
@@ -68,18 +68,18 @@ Device (BATX)
 	Method (_BIF, 0, Serialized)
 	{
 		// Update fields from EC
-		Store (BDC0, Index (PBIF, 1)) // Batt Design Capacity
-		Store (BFC0, Index (PBIF, 2)) // Batt Last Full Charge Capacity
-		Store (BDV0, Index (PBIF, 4)) // Batt Design Voltage
-		Divide(BFC0, 0x64, , Local1)
-		Multiply(Local1, 0x0A, Local0)
-		Store(Local0, Index(PBIF, 5))
-		Multiply(Local1, 0x05, Local0)
-		Store (Local0, Index (PBIF, 6))
-		Store (ToString(Concatenate(BATD, 0x00)), Index (PBIF, 9)) // Model Number
-		Store (ToDecimalString(BSN0), Index (PBIF, 10)) // Serial Number
-		Store (ToString(Concatenate(BCHM, 0x00)), Index (PBIF, 11)) // Battery Type
-		Store (\BATV, Index (PBIF, 12)) // OEM information
+		PBIF [1] = BDC0 // Batt Design Capacity
+		PBIF [2] = BFC0 // Batt Last Full Charge Capacity
+		PBIF [4] = BDV0 // Batt Design Voltage
+		Local1 = BFC0 / 100
+		Local0 = Local1 * 10
+		PBIF [5] = Local0
+		Local0 = Local1 * 5
+		PBIF [6] = Local0
+		PBIF [9] = ToString(Concatenate(BATD, 0x00))	// Model Number
+		PBIF [10] = ToDecimalString(BSN0)		// Serial Number
+		PBIF [11] = ToString(Concatenate(BCHM, 0x00))	// Battery Type
+		PBIF [12] = \BATV				// OEM information
 
 		Return (PBIF)
 	}
@@ -95,45 +95,44 @@ Device (BATX)
 		//
 
 		// Get battery state from EC
-		Store (BST0, Local0)
-		Store (Local0, Index (PBST, 0))
+		Local0 = BST0
+		PBST [0] = Local0
 
 		//
 		// 1: BATTERY PRESENT RATE/CURRENT
 		//
-		Store (BPC0, Local1)
-		If (LAnd (Local1, 0x8000)) {
-			Xor (Local1, 0xFFFF, Local1)
-			Increment (Local1)
+		Local1 = BPC0
+		If (Local1 && 0x8000) {
+			Local1 ^= 0xffff
+			Local1++
 		}
-		Store (Local1, Index (PBST, 1))
+		PBST [1] = Local1
 
 		//
 		// 2: BATTERY REMAINING CAPACITY
 		//
-		Store (BRC0, Local1)
+		Local1 = BRC0
 
-		If (LAnd (BFWK, LAnd (ADPT, LNot (Local0)))) {
+		If (BFWK &&  ADPT && !Local0) {
 			// On AC power and battery is neither charging
 			// nor discharging.  Linux expects a full battery
 			// to report same capacity as last full charge.
 			// https://bugzilla.kernel.org/show_bug.cgi?id=12632
-			Store (BFC0, Local2)
+			Local2 = BFC0
 
 			// See if within ~3% of full
-			ShiftRight (Local2, 5, Local3)
-			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+			Local3 = Local2 >> 5
+			If (Local1 > (Local2 - Local3) && Local1 < (Local2 + Local3))
 			{
-				Store (Local2, Local1)
+				Local1 = Local2
 			}
 		}
-		Store (Local1, Index (PBST, 2))
+		PBST [2] = Local1
 
 		//
 		// 3: BATTERY PRESENT VOLTAGE
 		//
-		Store (BPV0, Index (PBST, 3))
+		PBST [3] = BPV0
 
 		Return (PBST)
 	}

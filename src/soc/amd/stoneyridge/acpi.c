@@ -59,7 +59,7 @@ unsigned long acpi_fill_madt(unsigned long current)
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", STONEYRIDGE_ACPI_IO_BASE);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 

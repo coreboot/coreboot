@@ -198,6 +198,10 @@ config CONSOLE_UART_BASE_ADDRESS
 	default 0xfe03e000
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
+config VBT_DATA_SIZE_KB
+	int
+	default 9
+
 # Clock divider parameters for 115200 baud rate
 # Baudrate = (UART source clcok * M) /(N *16)
 # ADL UART source clock: 120MHz

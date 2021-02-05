@@ -63,7 +63,7 @@ void bert_reserved_region(void **start, size_t *size)
 	*start = cbmem_add(CBMEM_ID_ACPI_BERT, BERT_REGION_MAX_SIZE);
 	*size = BERT_REGION_MAX_SIZE;
 
-	printk(BIOS_DEBUG, "Reserving BERT start %lx, size %lx\n", (uintptr_t)*start, *size);
+	printk(BIOS_DEBUG, "Reserving BERT start %lx, size %zx\n", (uintptr_t)*start, *size);
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

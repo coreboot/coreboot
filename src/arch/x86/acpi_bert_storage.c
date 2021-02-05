@@ -200,7 +200,7 @@ void *new_cper_fw_error_crashlog(acpi_generic_error_status_t *status, size_t cl_
 {
 	void *cl_data = bert_allocate_storage(cl_size);
 	if (!cl_data) {
-		printk(BIOS_ERR, "Error: Crashlog entry (size %lu) would exceed available region\n",
+		printk(BIOS_ERR, "Error: Crashlog entry (size %zu) would exceed available region\n",
 			cl_size);
 		return NULL;
 	}

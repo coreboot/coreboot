@@ -72,4 +72,8 @@ int __weak get_recovery_mode_switch(void)
 	return 0;
 }
 
+void __weak fill_lb_gpios(struct lb_gpios *gpios)
+{
+}
+
 #endif

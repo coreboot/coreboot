@@ -3,7 +3,6 @@
 #include <device/pci_ops.h>
 #include <assert.h>
 #include <cbmem.h>
-#include <commonlib/cbmem_id.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
 #include <console/console.h>

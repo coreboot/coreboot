@@ -9,7 +9,6 @@
 
 #include <arch/stages.h>
 #include <arch/smp/smp.h>
-#include <rules.h>
 #include <mcall.h>
 
 void stage_entry(int hart_id, void *fdt)

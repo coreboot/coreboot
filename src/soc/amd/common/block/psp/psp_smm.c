@@ -4,7 +4,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <region_file.h>
-#include <rules.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>

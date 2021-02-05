@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <amdblocks/memmap.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <console/uart.h>
@@ -32,6 +33,8 @@ asmlinkage void car_stage_entry(void)
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
 	fsp_memory_init(acpi_is_wakeup_s3());
+
+	memmap_stash_early_dram_usage();
 
 	run_ramstage();
 }

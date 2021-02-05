@@ -28,8 +28,8 @@ Device(LIBR) {
 		{
 			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
 			CreateDwordField(^CRS,^BAR0._LEN,SPIL)	// Field to hold SPI address length
-			Store(BAR,SPIB)		// SPI base address mapped
-			Store(0x1000,SPIL)	// 4k space mapped
+			SPIB = BAR				// SPI base address mapped
+			SPIL = 0x1000				// 4k space mapped
 			Return(CRS)
 		}
 	}

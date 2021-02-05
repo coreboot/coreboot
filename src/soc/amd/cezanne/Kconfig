@@ -109,9 +109,30 @@ config FSP_TEMP_RAM_SIZE
 	help
 	  The amount of coreboot-allocated heap and stack usage by the FSP.
 
+config VERSTAGE_ADDR
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x2140000
+	help
+	  Sets the address in DRAM where verstage should be loaded if running
+	  as a separate stage on x86.
+
+config VERSTAGE_SIZE
+	hex
+	depends on VBOOT_SEPARATE_VERSTAGE
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for verstage in linker script if
+	  running as a separate stage on x86.
+
 config RAMBASE
 	hex
 	default 0x10000000
+
+config RO_REGION_ONLY
+	string
+	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
+	default "apu/amdfw"
 
 config CPU_ADDR_BITS
 	int

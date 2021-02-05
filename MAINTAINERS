@@ -614,6 +614,12 @@ M:	Hung-Te Lin <hungte@chromium.org>
 S:	Supported
 F:	src/soc/mediatek/
 
+MEDIATEK MT8192
+M:	Xi Chen <xixi.chen@mediatek.com>
+S:	Maintained
+F:	src/soc/mediatek/mt8192/
+F:	src/vendorcode/mediatek/mt8192/
+
 ORPHANED ARM SOCS
 S:	Orphaned
 F:	src/cpu/armltd/

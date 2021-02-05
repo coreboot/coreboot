@@ -7,8 +7,22 @@
 #include <types.h>
 #include "chip.h"
 
+static struct device_operations pci_domain_ops = {
+	.read_resources	= pci_domain_read_resources,
+	.set_resources	= pci_domain_set_resources,
+	.scan_bus	= pci_domain_scan_bus,
+};
+
 static void enable_dev(struct device *dev)
 {
+	/* Set the operations if it is a special bus type */
+	switch (dev->path.type) {
+	case DEVICE_PATH_DOMAIN:
+		dev->ops = &pci_domain_ops;
+		break;
+	default:
+		break;
+	}
 }
 
 static void soc_init(void *chip_info)

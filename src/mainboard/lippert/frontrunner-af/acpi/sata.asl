@@ -35,7 +35,7 @@ Device(PMRY)
 	Device(PMST) {
 		Name(_ADR, 0)
 		Method(_STA,0) {
-			if (LGreater(P0IS,0)) {
+			if (P0IS > 0) {
 				return (0x0F) /* sata is visible */
 			}
 			else {
@@ -48,7 +48,7 @@ Device(PMRY)
 	{
 		Name(_ADR, 1)
 		Method(_STA,0) {
-			if (LGreater(P1IS,0)) {
+			if (P1IS > 0) {
 				return (0x0F) /* sata is visible */
 			}
 			else {
@@ -71,7 +71,7 @@ Device(SEDY)
 	{
 		Name(_ADR, 0)
 		Method(_STA,0) {
-			if (LGreater(P2IS,0)) {
+			if (P2IS > 0) {
 				return (0x0F) /* sata is visible */
 			}
 			else {
@@ -84,7 +84,7 @@ Device(SEDY)
 	{
 		Name(_ADR, 1)
 		Method(_STA,0) {
-			if (LGreater(P3IS,0)) {
+			if (P3IS > 0) {
 				return (0x0F) /* sata is visible */
 			}
 			else {
@@ -98,35 +98,35 @@ Device(SEDY)
 Scope(\_GPE) {
 	Method(_L1F,0x0,NotSerialized) {
 		if (\_SB.P0PR) {
-			if (LGreater(\_SB.P0IS,0)) {
+			if (\_SB.P0IS > 0) {
 				sleep(32)
 			}
 			Notify(\_SB.PCI0.STCR.PMRY.PMST, 0x01) /* NOTIFY_DEVICE_CHECK */
-			store(one, \_SB.P0PR)
+			\_SB.P0PR = 1
 		}
 
 		if (\_SB.P1PR) {
-			if (LGreater(\_SB.P1IS,0)) {
+			if (\_SB.P1IS > 0) {
 				sleep(32)
 			}
 			Notify(\_SB.PCI0.STCR.PMRY.PSLA, 0x01) /* NOTIFY_DEVICE_CHECK */
-			store(one, \_SB.P1PR)
+			\_SB.P1PR = 1
 		}
 
 		if (\_SB.P2PR) {
-			if (LGreater(\_SB.P2IS,0)) {
+			if (\_SB.P2IS > 0) {
 				sleep(32)
 			}
 			Notify(\_SB.PCI0.STCR.SEDY.SMST, 0x01) /* NOTIFY_DEVICE_CHECK */
-			store(one, \_SB.P2PR)
+			\_SB.P2PR = 1
 		}
 
 		if (\_SB.P3PR) {
-			if (LGreater(\_SB.P3IS,0)) {
+			if (\_SB.P3IS > 0) {
 				sleep(32)
 			}
 			Notify(\_SB.PCI0.STCR.SEDY.SSLA, 0x01) /* NOTIFY_DEVICE_CHECK */
-			store(one, \_SB.P3PR)
+			\_SB.P3PR = 1
 		}
 	}
 }

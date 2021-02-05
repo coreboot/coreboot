@@ -1,0 +1,136 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_AMD_BILBY
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select SOC_AMD_PICASSO
+	select BOARD_ROMSIZE_KB_16384
+	select AZALIA_PLUGIN_SUPPORT
+	select HAVE_ACPI_RESUME
+	select DRIVERS_UART_ACPI
+	select AMD_SOC_CONSOLE_UART if !AMD_LPC_DEBUG_CARD
+
+config FMDFILE
+	string
+	default "src/mainboard/amd/bilby/board.fmd"
+
+config AMD_LPC_DEBUG_CARD
+	bool "Enable LPC-Serial debug card on the debug header"
+	default n
+	select BILBY_LPC
+	select SUPERIO_SMSC_SIO1036
+	help
+	  AMD's debug card contains an SMSC SIO1036 device which provides an
+	  I/O-mapped UART in the system. This is mutually exclusive with
+	  AMD_SOC_CONSOLE_UART which selects the SoC's integrated memory-mapped
+	  UART for coreboot console output.
+
+choice
+	prompt "SMSC/Microchip 1036 SuperIO config address"
+	depends on SUPERIO_SMSC_SIO1036
+	default BILBY_SMSC_SIO1036_BASE_164E
+
+config BILBY_SMSC_SIO1036_BASE_4E
+	bool "0x4e/0x4d base address"
+
+config BILBY_SMSC_SIO1036_BASE_164E
+	bool "0x164e/0x164d base address"
+
+endchoice
+
+config SUPERIO_ADDR_BASE
+	hex
+	default 0x4e	if BILBY_SMSC_SIO1036_BASE_4E
+	default 0x164e	if BILBY_SMSC_SIO1036_BASE_164E
+
+config CBFS_SIZE
+	hex
+	default 0xfcf000 # Maximum size for the Bilby FMAP
+
+config MAINBOARD_DIR
+	string
+	default "amd/bilby"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "BILBY"
+
+config DEVICETREE
+	string
+	default "devicetree.cb"
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 4
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
+config MANDOLIN_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config MANDOLIN_MCHP_FW_FILE
+	string
+	depends on MANDOLIN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/mandolin/EC_mandolin.bin" if BOARD_AMD_MANDOLIN
+	default "3rdparty/blobs/mainboard/amd/mandolin/EC_cereme.bin" if BOARD_AMD_BILBY
+	help
+	  The EC firmware blob is usually the first 128kByte of the stock
+	  firmware image.
+if !AMD_LPC_DEBUG_CARD
+choice
+	prompt "State of IOMux for LPC/eMMC signals"
+	default BILBY_IOMUX_USE_EMMC
+	help
+	  Bilby is designed to use either LPC or eMMC signals.  Use this
+	  selection to determine which are configured for this image.
+
+config BILBY_IOMUX_USE_LPC
+	bool "LPC signals"
+
+config BILBY_IOMUX_USE_EMMC
+	bool "eMMC signals"
+
+endchoice
+endif # !AMD_LPC_DEBUG_CARD
+
+config BILBY_LPC
+	bool
+	default y if BILBY_IOMUX_USE_LPC
+	help
+	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
+	  Select this option if LPC signals are required.
+
+#TODO: remove this hack to not break graphics in combination with SeaBIOS
+config VGA_BIOS_DGPU_ID
+	string
+	default "1002,15d8"
+	help
+	  The default VGA BIOS PCI vendor/device ID should be set to the
+	  result of the map_oprom_vendev() function in northbridge.c.
+
+config VGA_BIOS_DGPU_FILE
+	string
+	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin"
+
+config EFS_SPI_READ_MODE
+	int
+	default 0 if EM100
+	default 3
+
+config EFS_SPI_SPEED
+	int
+	default 3 if EM100
+	default 0
+
+config EFS_SPI_MICRON_FLAG
+	int
+	default 0
+
+endif # BOARD_AMD_BILBY

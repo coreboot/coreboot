@@ -94,7 +94,7 @@ Scope (\_SB.PCI0.RP01)
 
 		Method (_DSW, 3, NotSerialized)
 		{
-			Store (BUDDY_NIC_WAKE_GPIO, Local0)
+			Local0 = BUDDY_NIC_WAKE_GPIO
 
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source

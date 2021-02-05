@@ -3,7 +3,7 @@
 #ifndef _BROADWELL_ME_H_
 #define _BROADWELL_ME_H_
 
-#include <commonlib/loglevel.h>
+#include <stdint.h>
 
 #define ME_RETRY		100000	/* 1 second */
 #define ME_DELAY		10	/* 10 us */

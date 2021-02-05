@@ -422,7 +422,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->vendor = smbios_add_string(t->eos, "coreboot");
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
-	if (CONFIG(CHROMEOS)) {
+	if (CONFIG(CHROMEOS) && CONFIG(HAVE_ACPI_TABLES)) {
 		uintptr_t version_address = (uintptr_t)t->eos;
 		/* SMBIOS offsets start at 1 rather than 0 */
 		version_address += (u32)smbios_string_table_len(t->eos) - 1;

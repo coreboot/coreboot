@@ -40,7 +40,7 @@ Device (B0DB)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -100,8 +100,8 @@ Device (B0DB)
 	Method (_TDL)
 	{
 		If (CondRefOf (\_SB.CP00._TSS)) {
-			Store (SizeOf (\_SB.CP00._TSS ()), Local0)
-			Decrement (Local0)
+			Local0 = SizeOf (\_SB.CP00._TSS ())
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -119,7 +119,7 @@ Device (B0DB)
 
 	Method (SPPC, 1)
 	{
-		Store (Arg0, \PPCM)
+		\PPCM = Arg0
 
 		/* Notify OS to re-read _PPC limit on each CPU */
 		\PPCN ()
@@ -143,8 +143,8 @@ Device (B0DB)
 		If (CondRefOf (\_SB.MPDL)) {
 			Return (\_SB.MPDL)
 		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
-			Store (SizeOf (\_SB.CP00._PSS ()), Local0)
-			Decrement (Local0)
+			Local0 = SizeOf (\_SB.CP00._PSS ())
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -154,7 +154,7 @@ Device (B0DB)
 	/* Return PPCC table defined by Terra2 or Terra3 mainboard */
 	Method (PPCC)
 	{
-		If (LEqual (\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
 			Return (\_SB.PPT2)
 		} Else {
@@ -165,7 +165,7 @@ Device (B0DB)
 	/* Return critical thermal point defined by Terra2 or Terra3 mainboard */
 	Method (_CRT)
 	{
-		If (Lequal(\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
 			Return (\_SB.DPTF.CTOK(DPTF_TERRA2_CPU_CRITICAL))
 		} Else {
@@ -176,7 +176,7 @@ Device (B0DB)
 	/* Return passive thermal point defined by Terra2 or Terra3 mainboard */
 	Method (_PSV)
 	{
-		If (Lequal(\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
 			Return (\_SB.DPTF.CTOK(DPTF_TERRA2_CPU_PASSIVE))
 		} Else {

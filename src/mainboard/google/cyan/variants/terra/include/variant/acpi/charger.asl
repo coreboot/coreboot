@@ -9,7 +9,7 @@ Device (TCHG)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -19,7 +19,7 @@ Device (TCHG)
 	/* Return charger performance states defined by Terra2 or Terra3 mainboard */
 	Method (PPSS)
 	{
-		If (LEqual (\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
 			Return (\_SB.CPT2)
 		} Else {
@@ -31,17 +31,17 @@ Device (TCHG)
 	Method (PPPC)
 	{
 		/* Convert size of PPSS table to index */
-		If (LEqual (\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
-			Store (SizeOf (\_SB.CPT2), Local0)
+			Local0 = SizeOf (\_SB.CPT2)
 		} Else {
-			Store (SizeOf (\_SB.CPT3), Local0)
+			Local0 = SizeOf (\_SB.CPT3)
 		}
 
-		Decrement (Local0)
+		Local0--
 
 		/* Check if charging is disabled (AC removed) */
-		If (LEqual (\_SB.PCI0.LPCB.EC0.ACEX, Zero)) {
+		If (\_SB.PCI0.LPCB.EC0.ACEX == 0) {
 			/* Return last power state */
 			Return (Local0)
 		} Else {
@@ -57,13 +57,11 @@ Device (TCHG)
 	{
 		/* Retrieve Control (index 4) for specified PPSS level */
 		/* Convert size of PPSS table to index */
-		If (LEqual (\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
-			Store (DeRefOf (Index (DeRefOf (Index
-				(\_SB.CPT2, ToInteger (Arg0))), 4)), Local0)
+			Local0 = DeRefOf (DeRefOf (\_SB.CPT2 [ToInteger (Arg0)])[4])
 		} Else {
-			Store (DeRefOf (Index (DeRefOf (Index
-				(\_SB.CPT3, ToInteger (Arg0))), 4)), Local0)
+			Local0 = DeRefOf (DeRefOf (\_SB.CPT3 [ToInteger (Arg0)])[4])
 		}
 
 		/* Pass Control value to EC to limit charging */

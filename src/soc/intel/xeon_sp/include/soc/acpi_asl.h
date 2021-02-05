@@ -44,22 +44,22 @@
 			  IRQ (Level, ActiveLow, Shared) {}		\
 			})						\
 			CreateWordField (RTLA, 1, IRQ0)			\
-			Store (Zero, IRQ0)				\
+			IRQ0 = 0					\
 									\
 			/* Set the bit from PIRQ Routing Register */	\
-			ShiftLeft (1, And (^^PIR##id, ^^IREM), IRQ0)	\
+			IRQ0 = 1 << (^^PIR##id & ^^IREM)		\
 			Return (RTLA)					\
 		}							\
 		Method (_SRS, 1, Serialized)				\
 		{							\
 			CreateWordField (Arg0, 1, IRQ0)			\
 			FindSetRightBit (IRQ0, Local0)			\
-			Decrement (Local0)				\
-			Store (Local0, ^^PIR##id)			\
+			Local0--					\
+			^^PIR##id = Local0				\
 		}							\
 		Method (_STA, 0, Serialized)				\
 		{							\
-			If (And (^^PIR##id, ^^IREN)) {			\
+			If (^^PIR##id & ^^IREN) {			\
 				Return (0x9)				\
 			} Else {					\
 				Return (0xb)				\
@@ -67,7 +67,7 @@
 		}							\
 		Method (_DIS, 0, Serialized)				\
 		{							\
-			Or (^^PIR##id, ^^IREN, ^^PIR##id)		\
+			^^PIR##id |= ^^IREN				\
 		}							\
 	}
 

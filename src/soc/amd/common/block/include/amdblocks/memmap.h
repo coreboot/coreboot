@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef AMD_PICASSO_MEMMAP_H
-#define AMD_PICASSO_MEMMAP_H
+#ifndef AMD_BLOCK_MEMMAP_H
+#define AMD_BLOCK_MEMMAP_H
 
 #include <stdint.h>
 #include <symbols.h>
@@ -16,4 +16,4 @@ struct memmap_early_dram {
 void memmap_stash_early_dram_usage(void);
 const struct memmap_early_dram *memmap_get_early_dram_usage(void);
 
-#endif /* AMD_PICASSO_MEMMAP_H */
+#endif /* AMD_BLOCK_MEMMAP_H */

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
+#include <amdblocks/memmap.h>
 #include <arch/ioapic.h>
 #include <assert.h>
 #include <cbmem.h>
@@ -12,7 +13,6 @@
 #include <device/pci_ids.h>
 #include <fsp/util.h>
 #include <stdint.h>
-#include <soc/memmap.h>
 #include <soc/iomap.h>
 #include "chip.h"
 

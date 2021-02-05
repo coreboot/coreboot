@@ -3,6 +3,7 @@
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/memmap.h>
 #include <cbmem.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
@@ -13,7 +14,6 @@
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/acpi.h>
-#include <soc/memmap.h>
 #include <soc/mrc_cache.h>
 #include <soc/pci_devs.h>
 #include <types.h>

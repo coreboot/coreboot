@@ -7,6 +7,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOARD_ROMSIZE_KB_16384
 	select SOC_AMD_CEZANNE
 	select AMD_SOC_CONSOLE_UART
+	select MAINBOARD_HAS_CHROMEOS
 
 config FMDFILE
 	string
@@ -21,6 +22,7 @@ config MAINBOARD_PART_NUMBER
 
 config AMD_FWM_POSITION_INDEX
 	int
+	default 3 if CHROMEOS
 	default 4
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
@@ -36,5 +38,18 @@ config MAJOLICA_MCHP_FW_FILE
 	help
 	  The EC firmware blob is usually the first 128kByte of the stock
 	  firmware image.
+
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
 
 endif # BOARD_AMD_MAJOLICA

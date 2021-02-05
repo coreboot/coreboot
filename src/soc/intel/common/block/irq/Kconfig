@@ -1,0 +1,9 @@
+config SOC_INTEL_COMMON_BLOCK_IRQ
+	bool
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	help
+	  Intel common block support for assigning PCI IRQs dynamically. This
+	  allows coreboot to control the IRQ assignments. They are passed to the
+	  FSP via UPD, and also exposed to the OS in ACPI tables. The SoC must
+	  provide a list of IRQ programming constraints; this module will avoid
+	  IRQs that are used by GPIOs routed to IOAPIC.

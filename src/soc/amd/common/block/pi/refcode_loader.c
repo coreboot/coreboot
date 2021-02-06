@@ -9,32 +9,19 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/image.h>
 
-static int agesa_locate_file(const char *name, struct region_device *rdev,
-				uint32_t type)
+static void *agesa_map_raw_file(const char *name, size_t *size)
 {
-	struct cbfsf fh;
-
-	if (cbfs_boot_locate(&fh, name, &type))
-		return -1;
-
-	cbfs_file_data(rdev, &fh);
-	return 0;
+	enum cbfs_type type = CBFS_TYPE_RAW;
+	return cbfs_type_map(name, size, &type);
 }
 
-static int agesa_locate_raw_file(const char *name, struct region_device *rdev)
+static void *agesa_map_stage_file_early(const char *name, size_t *size)
 {
-	return agesa_locate_file(name, rdev, CBFS_TYPE_RAW);
+	enum cbfs_type type = CBFS_TYPE_STAGE;
+	return cbfs_type_map(name, size, &type);
 }
 
-static int agesa_locate_stage_file_early(const char *name,
-					struct region_device *rdev)
-{
-	if (agesa_locate_file(name, rdev, CBFS_TYPE_STAGE))
-		return -1;
-}
-
-static int agesa_locate_stage_file_ramstage(const char *name,
-						struct region_device *rdev)
+static void *agesa_map_stage_file_ramstage(const char *name, size_t *size)
 {
 	struct prog prog = PROG_INIT(PROG_REFCODE, name);
 	struct rmod_stage_load rmod_agesa = {
@@ -46,21 +33,20 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 		stage_cache_load_stage(STAGE_REFCODE, &prog);
 	} else {
 		if (rmodule_stage_load(&rmod_agesa) < 0)
-			return -1;
+			return NULL;
 
 		stage_cache_add(STAGE_REFCODE, &prog);
 	}
 
-	prog_chain_rdev(&prog, rdev);
-
-	return 0;
+	*size = prog_size(&prog);
+	return prog_start(&prog);
 }
 
-static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
+static void *agesa_map_stage_file(const char *name, size_t *size)
 {
 	if (!ENV_RAMSTAGE || !CONFIG(AGESA_SPLIT_MEMORY_FILES))
-		return agesa_locate_stage_file_early(name, rdev);
-	return agesa_locate_stage_file_ramstage(name, rdev);
+		return agesa_map_stage_file_early(name, size);
+	return agesa_map_stage_file_ramstage(name, size);
 }
 
 static const char *get_agesa_cbfs_name(void)
@@ -76,27 +62,18 @@ const void *agesawrapper_locate_module(const char name[8])
 {
 	const void *agesa;
 	const AMD_IMAGE_HEADER *image;
-	struct region_device rdev;
 	size_t file_size;
 	const char *fname;
-	int ret;
-
-	fname = get_agesa_cbfs_name();
-
-	if (CONFIG(AGESA_BINARY_PI_AS_STAGE))
-		ret = agesa_locate_stage_file(fname, &rdev);
-	else
-		ret = agesa_locate_raw_file(fname, &rdev);
-
-	if (ret)
-		return NULL;
-
-	file_size = region_device_sz(&rdev);
 
 	/* Assume boot device is memory mapped so the mapping can leak. */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
-	agesa = rdev_mmap_full(&rdev);
+	fname = get_agesa_cbfs_name();
+
+	if (CONFIG(AGESA_BINARY_PI_AS_STAGE))
+		agesa = agesa_map_stage_file(fname, &file_size);
+	else
+		agesa = agesa_map_raw_file(fname, &file_size);
 
 	if (!agesa)
 		return NULL;

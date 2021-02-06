@@ -28,14 +28,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 
 	if (CONFIG(BOARD_INTEL_KBLRVP3)) {
-		struct region_device spd_rdev;
-
 		mem_cfg->DqPinsInterleaved = 0;
-		if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
-			die("spd.bin not found\n");
-		mem_cfg->MemorySpdDataLen = region_device_sz(&spd_rdev);
+		mem_cfg->MemorySpdDataLen = CONFIG_DIMM_SPD_SIZE;
 		/* Memory leak is ok since we have memory mapped boot media */
-		mem_cfg->MemorySpdPtr00 = (uintptr_t)rdev_mmap_full(&spd_rdev);
+		mem_cfg->MemorySpdPtr00 = spd_cbfs_map(spd_index);
+		if (!mem_cfg->MemorySpdPtr00)
+			die("spd.bin not found\n");
 	} else { /* CONFIG_BOARD_INTEL_KBLRVP7 and CONFIG_BOARD_INTEL_KBLRVP8 */
 		struct spd_block blk = {
 			.addr_map = { 0x50, 0x51, 0x52, 0x53, },

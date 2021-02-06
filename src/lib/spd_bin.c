@@ -210,17 +210,16 @@ void print_spd_info(uint8_t spd[])
 	}
 }
 
-int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
+uintptr_t spd_cbfs_map(u8 spd_index)
 {
-	struct cbfsf fh;
+	enum cbfs_type cbfs_type = CBFS_TYPE_SPD;
+	size_t size;
 
-	uint32_t cbfs_type = CBFS_TYPE_SPD;
+	void *map = cbfs_type_map("spd.bin", &size, &cbfs_type);
+	if (!map || size < (spd_index + 1) * CONFIG_DIMM_SPD_SIZE)
+		return 0;
 
-	if (cbfs_boot_locate(&fh, "spd.bin", &cbfs_type) < 0)
-		return -1;
-	cbfs_file_data(spd_rdev, &fh);
-	return rdev_chain(spd_rdev, spd_rdev, spd_index * CONFIG_DIMM_SPD_SIZE,
-							CONFIG_DIMM_SPD_SIZE);
+	return (uintptr_t)map + spd_index * CONFIG_DIMM_SPD_SIZE;
 }
 
 #if CONFIG_DIMM_SPD_SIZE == 128

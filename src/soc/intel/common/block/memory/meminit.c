@@ -39,7 +39,6 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 {
 	size_t ch;
 	size_t num_phys_ch = soc_mem_cfg->num_phys_channels;
-	struct region_device spd_rdev;
 	uintptr_t spd_data;
 
 	/*
@@ -63,15 +62,14 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 
 	printk(BIOS_DEBUG, "SPD index = %zu\n", info->cbfs_index);
 
-	if (get_spd_cbfs_rdev(&spd_rdev, info->cbfs_index) < 0)
-		die("SPD not found in CBFS or incorrect index!\n");
-
 	/* Memory leak is ok as long as we have memory mapped boot media */
 	_Static_assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED),
 		"Function assumes memory-mapped boot media");
 
-	spd_data = (uintptr_t)rdev_mmap_full(&spd_rdev);
-	*spd_len = region_device_sz(&spd_rdev);
+	*spd_len = CONFIG_DIMM_SPD_SIZE;
+	spd_data = spd_cbfs_map(info->cbfs_index);
+	if (!spd_data)
+		die("SPD not found in CBFS or incorrect index!\n");
 
 	print_spd_info((uint8_t *)spd_data);
 

@@ -10,19 +10,17 @@
 static void spd_read_from_cbfs(const struct spd_info *spd_info, uintptr_t *spd_data_ptr,
 				size_t *spd_data_len)
 {
-	struct region_device spd_rdev;
 	size_t spd_index = spd_info->spd_spec.spd_index;
 
 	printk(BIOS_DEBUG, "SPD INDEX = %lu\n", spd_index);
-	if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
-		die("spd.bin not found or incorrect index\n");
-
-	*spd_data_len = region_device_sz(&spd_rdev);
 
 	/* Memory leak is ok since we have memory mapped boot media */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
-	*spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
+	*spd_data_len = CONFIG_DIMM_SPD_SIZE;
+	*spd_data_ptr = spd_cbfs_map(spd_index);
+	if (!*spd_data_ptr)
+		die("spd.bin not found or incorrect index\n");
 }
 
 static void get_spd_data(const struct spd_info *spd_info, uintptr_t *spd_data_ptr,

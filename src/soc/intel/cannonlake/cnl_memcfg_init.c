@@ -86,19 +86,17 @@ static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 	assert(mem_slot < NUM_DIMM_SLOT);
 
 	if ((spd_data_ptr == 0) || (last_spd_index != spd_index)) {
-		struct region_device spd_rdev;
-
 		printk(BIOS_DEBUG, "SPD INDEX = %d\n", spd_index);
 
-		if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
+		spd_data_ptr = spd_cbfs_map(spd_index);
+		if (!spd_data_ptr)
 			die("spd.bin not found or incorrect index\n");
 
-		spd_data_len = region_device_sz(&spd_rdev);
+		spd_data_len = CONFIG_DIMM_SPD_SIZE;
 
 		/* Memory leak is ok since we have memory mapped boot media */
 		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
-		spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
 		last_spd_index = spd_index;
 		print_spd_info((unsigned char *)spd_data_ptr);
 	}

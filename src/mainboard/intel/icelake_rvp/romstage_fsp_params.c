@@ -14,15 +14,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	printk(BIOS_DEBUG, "spd index is 0x%x\n", spd_index);
 
 	if (spd_index > 0 && spd_index != 2) {
-		struct region_device spd_rdev;
-
-		if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
-			die("spd.bin not found\n");
-
-		mem_cfg->MemorySpdDataLen = region_device_sz(&spd_rdev);
+		mem_cfg->MemorySpdDataLen = CONFIG_DIMM_SPD_SIZE;
 
 		/* Memory leak is ok since we have memory mapped boot media */
-		mem_cfg->MemorySpdPtr00 = (uintptr_t)rdev_mmap_full(&spd_rdev);
+		mem_cfg->MemorySpdPtr00 = spd_cbfs_map(spd_index);
+		if (!mem_cfg->MemorySpdPtr00)
+			die("spd.bin not found\n");
 		mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 
 		mem_cfg->SpdAddressTable[0] = 0x0;

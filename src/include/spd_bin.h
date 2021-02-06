@@ -43,8 +43,7 @@ struct spd_block {
 };
 
 void print_spd_info(uint8_t spd[]);
-/* Return 0 on success & -1 on failure */
-int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index);
+uintptr_t spd_cbfs_map(u8 spd_index);
 void dump_spd_info(struct spd_block *blk);
 void get_spd_smbus(struct spd_block *blk);
 

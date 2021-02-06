@@ -1397,7 +1397,6 @@ static void sdram_rcomp(struct sysinfo *s)
 	MCHBAR16(ZQCALCTRL) = 0x0134;
 	MCHBAR32(COMPCTRL1) = 0x4C293600;
 
-	/* FIXME: wtf did these MRC guys smoke */
 	MCHBAR8_AND_OR(COMPCTRL1 + 3, ~0x44, (1 << 6) | (1 << 2));
 	MCHBAR16_AND(XCOMPSDR0BNS, ~(1 << 13));
 	MCHBAR8_AND(XCOMPSDR0BNS,  ~(1 <<  5));

@@ -7,6 +7,7 @@
 #include <delay.h>
 #include <device/pci_def.h>
 #include <halt.h>
+#include <southbridge/intel/common/me.h>
 #include <string.h>
 #include <timestamp.h>
 #include "me.h"
@@ -89,22 +90,6 @@ int intel_early_me_uma_size(void)
 
 	printk(BIOS_DEBUG, "ME: Invalid UMA size\n");
 	return 0;
-}
-
-static inline void set_global_reset(int enable)
-{
-	u32 etr3 = pci_read_config32(PCH_LPC_DEV, ETR3);
-
-	/* Clear CF9 Without Resume Well Reset Enable */
-	etr3 &= ~ETR3_CWORWRE;
-
-	/* CF9GR indicates a Global Reset */
-	if (enable)
-		etr3 |= ETR3_CF9GR;
-	else
-		etr3 &= ~ETR3_CF9GR;
-
-	pci_write_config32(PCH_LPC_DEV, ETR3, etr3);
 }
 
 int intel_early_me_init_done(u8 status)

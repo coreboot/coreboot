@@ -534,7 +534,7 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 		r = bert_append_genproc(status);
 	else if (!guidcmp(guid, &CPER_SEC_PROC_GENERIC_GUID))
 		r = bert_append_ia32x64(status);
-	if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
+	else if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
 		r = bert_append_fw_err(status);
 	/* else if other types not implemented */
 	else

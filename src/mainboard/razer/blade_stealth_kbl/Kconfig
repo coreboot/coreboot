@@ -14,6 +14,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_I2C_HID
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select DRIVERS_GENERIC_CBFS_SERIAL
 
 	# For now no way to choose the correct the available RAM
 	config BOARD_RAZER_BLADE_STEALTH_KBL_16GB

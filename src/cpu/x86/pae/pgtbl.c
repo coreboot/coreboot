@@ -321,42 +321,17 @@ void paging_set_default_pat(void)
 	paging_set_pat(pat);
 }
 
-static int read_from_cbfs(const char *name, void *buf, size_t size)
-{
-	struct cbfsf fh;
-	struct region_device rdev;
-	size_t rdev_sz;
-
-	if (cbfs_boot_locate(&fh, name, NULL))
-		return -1;
-
-	cbfs_file_data(&rdev, &fh);
-
-	rdev_sz = region_device_sz(&rdev);
-
-	if (size < rdev_sz) {
-		printk(BIOS_ERR, "%s region too small to load: %zx < %zx\n",
-			name, size, rdev_sz);
-		return -1;
-	}
-
-	if (rdev_readat(&rdev, buf, 0, rdev_sz) != rdev_sz)
-		return -1;
-
-	return 0;
-}
-
 int paging_enable_for_car(const char *pdpt_name, const char *pt_name)
 {
 	if (!preram_symbols_available())
 		return -1;
 
-	if (read_from_cbfs(pdpt_name, _pdpt, REGION_SIZE(pdpt))) {
+	if (!cbfs_load(pdpt_name, _pdpt, REGION_SIZE(pdpt))) {
 		printk(BIOS_ERR, "Couldn't load pdpt\n");
 		return -1;
 	}
 
-	if (read_from_cbfs(pt_name, _pagetables, REGION_SIZE(pagetables))) {
+	if (!cbfs_load(pt_name, _pagetables, REGION_SIZE(pagetables))) {
 		printk(BIOS_ERR, "Couldn't load page tables\n");
 		return -1;
 	}

@@ -15,27 +15,14 @@ static size_t mtc_table_size;
 
 int tegra210_run_mtc(void)
 {
-	ssize_t nread;
-	struct region_device fh;
-	struct cbfsf mtc_file;
-
+	size_t nread;
 	void *const mtc = (void *)(uintptr_t)CONFIG_MTC_ADDRESS;
 	void *dvfs_table;
 	size_t (*mtc_fw)(void **dvfs_table) = (void *)mtc;
 
-	if (cbfs_boot_locate(&mtc_file, "tegra_mtc.bin", NULL)) {
+	nread = cbfs_load("tegra_mtc.bin", mtc, 1*GiB);
+	if (!nread) {
 		printk(BIOS_ERR, "MTC file not found: tegra_mtc.bin\n");
-		return -1;
-	}
-
-	cbfs_file_data(&fh, &mtc_file);
-
-	/* Read MTC file into predefined region. */
-	nread = rdev_readat(&fh, mtc, 0, region_device_sz(&fh));
-
-	if (nread != region_device_sz(&fh)) {
-		printk(BIOS_ERR, "MTC bytes read (%zu) != file length(%zu)!\n",
-		       nread, region_device_sz(&fh));
 		return -1;
 	}
 

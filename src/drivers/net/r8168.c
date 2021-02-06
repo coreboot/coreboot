@@ -166,18 +166,11 @@ static void fetch_mac_string_vpd(struct drivers_net_config *config, u8 *macstrbu
 
 static enum cb_err fetch_mac_string_cbfs(u8 *macstrbuf)
 {
-	struct cbfsf fh;
-	uint32_t matchraw = CBFS_TYPE_RAW;
-
-	if (!cbfs_boot_locate(&fh, "rt8168-macaddress", &matchraw)) {
-		/* check the cbfs for the mac address */
-		if (rdev_readat(&fh.data, macstrbuf, 0, MACLEN) != MACLEN) {
-			printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
-			return CB_ERR;
-		}
-		return CB_SUCCESS;
+	if (!cbfs_load("rt8168-macaddress", macstrbuf, MACLEN)) {
+		printk(BIOS_ERR, "r8168: Error reading MAC from CBFS\n");
+		return CB_ERR;
 	}
-	return CB_ERR;
+	return CB_SUCCESS;
 }
 
 static void get_mac_address(u8 *macaddr, const u8 *strbuf)

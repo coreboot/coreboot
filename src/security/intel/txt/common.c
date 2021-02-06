@@ -215,22 +215,14 @@ static int validate_acm(const void *ptr)
  */
 static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_len)
 {
-	struct cbfsf file;
 	void *acm_data = NULL;
 
 	if (!acm || !acm_len)
 		return NULL;
 
-	if (cbfs_boot_locate(&file, CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL)) {
+	acm_data = cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_ACM, acm_len);
+	if (!acm_data) {
 		printk(BIOS_ERR, "TEE-TXT: Couldn't locate BIOS ACM in CBFS.\n");
-		return NULL;
-	}
-
-	cbfs_file_data(acm, &file);
-	acm_data = rdev_mmap_full(acm);
-	*acm_len = region_device_sz(acm);
-	if (!acm_data || *acm_len == 0) {
-		printk(BIOS_ERR, "TEE-TXT: Couldn't map BIOS ACM from CBFS.\n");
 		return NULL;
 	}
 
@@ -241,7 +233,7 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	 */
 	if (!IS_ALIGNED((uintptr_t)acm_data, 4096)) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't mapped at page boundary.\n");
-		rdev_munmap(acm, acm_data);
+		cbfs_unmap(acm_data);
 		return NULL;
 	}
 
@@ -252,7 +244,7 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	 */
 	if (!IS_ALIGNED(*acm_len, 64)) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM size isn't multiple of 64.\n");
-		rdev_munmap(acm, acm_data);
+		cbfs_unmap(acm_data);
 		return NULL;
 	}
 
@@ -262,7 +254,7 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	 */
 	if (!IS_ALIGNED((uintptr_t)acm_data, (1UL << log2_ceil(*acm_len)))) {
 		printk(BIOS_ERR, "TEE-TXT: BIOS ACM isn't aligned to its size.\n");
-		rdev_munmap(acm, acm_data);
+		cbfs_unmap(acm_data);
 		return NULL;
 	}
 
@@ -273,7 +265,7 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	 */
 	if (popcnt(ALIGN_UP(*acm_len, 4096)) > get_var_mtrr_count()) {
 		printk(BIOS_ERR, "TEE-TXT: Not enough MTRRs to cache this BIOS ACM's size.\n");
-		rdev_munmap(acm, acm_data);
+		cbfs_unmap(acm_data);
 		return NULL;
 	}
 
@@ -283,7 +275,7 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 	const int ret = validate_acm(acm_data);
 	if (ret < 0) {
 		printk(BIOS_ERR, "TEE-TXT: Validation of ACM failed with: %d\n", ret);
-		rdev_munmap(acm, acm_data);
+		cbfs_unmap(acm_data);
 		return NULL;
 	}
 

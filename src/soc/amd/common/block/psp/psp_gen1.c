@@ -101,8 +101,6 @@ int psp_load_named_blob(enum psp_blob_type type, const char *name)
 	int cmd_status;
 	u32 command;
 	void *blob;
-	struct cbfsf cbfs_file;
-	struct region_device rdev;
 
 	switch (type) {
 	case BLOB_SMU_FW:
@@ -122,13 +120,7 @@ int psp_load_named_blob(enum psp_blob_type type, const char *name)
 		return -PSPSTS_UNSUPPORTED;
 	}
 
-	if (cbfs_boot_locate(&cbfs_file, name, NULL)) {
-		printk(BIOS_ERR, "BUG: Cannot locate blob for PSP loading\n");
-		return -PSPSTS_INVALID_NAME;
-	}
-
-	cbfs_file_data(&rdev, &cbfs_file);
-	blob = rdev_mmap_full(&rdev);
+	blob = cbfs_map(name, NULL);
 	if (!blob) {
 		printk(BIOS_ERR, "BUG: Cannot map blob for PSP loading\n");
 		return -PSPSTS_INVALID_NAME;
@@ -140,6 +132,6 @@ int psp_load_named_blob(enum psp_blob_type type, const char *name)
 	cmd_status = send_psp_command(command, blob);
 	psp_print_cmd_status(cmd_status, NULL);
 
-	rdev_munmap(&rdev, blob);
+	cbfs_unmap(blob);
 	return cmd_status;
 }

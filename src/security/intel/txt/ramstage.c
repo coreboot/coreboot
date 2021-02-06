@@ -233,23 +233,14 @@ static void txt_initialize_heap(void)
 		memset(sinit_base, 0, read64((void *)TXT_SINIT_SIZE));
 	}
 
-	struct cbfsf file;
 	/* The following have been removed from BIOS Data Table in version 6 */
-	if (!cbfs_boot_locate(&file, CONFIG_INTEL_TXT_CBFS_BIOS_POLICY, NULL)) {
-		struct region_device policy;
-
-		cbfs_file_data(&policy, &file);
-		void *policy_data = rdev_mmap_full(&policy);
-		size_t policy_len = region_device_sz(&policy);
-
-		if (policy_data && policy_len) {
-			/* Point to FIT Type 9 entry in flash */
-			data.bdr.lcp_pd_base = (uintptr_t)policy_data;
-			data.bdr.lcp_pd_size = (uint64_t)policy_len;
-			rdev_munmap(&policy, policy_data);
-		} else {
-			printk(BIOS_ERR, "TEE-TXT: Couldn't map LCP PD Policy from CBFS.\n");
-		}
+	size_t policy_len;
+	void *policy_data = cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_POLICY, &policy_len);
+	if (policy_data) {
+		/* Point to FIT Type 9 entry in flash */
+		data.bdr.lcp_pd_base = (uintptr_t)policy_data;
+		data.bdr.lcp_pd_size = (uint64_t)policy_len;
+		cbfs_unmap(policy_data);
 	} else {
 		printk(BIOS_ERR, "TEE-TXT: Couldn't locate LCP PD Policy in CBFS.\n");
 	}

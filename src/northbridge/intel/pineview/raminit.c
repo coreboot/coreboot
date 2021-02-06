@@ -916,9 +916,7 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk])  << (dqs + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dqs;
 
-	/* FIXME: Somehow, touching this changes the binary... */
-	MCHBAR32(C0DQSRyTX1(rank)) = (MCHBAR32(0x5b4 + (rank * 4))
-				   & ~((1 << (dqs + 9)) | (1 << dqs))) | reg32;
+	MCHBAR32_AND_OR(C0DQSRyTX1(rank), ~((1 << (dqs + 9)) | (1 << dqs)), reg32);
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << ((dqs * 2) + 16);
 	MCHBAR32_AND_OR(C0DQSDQRyTX3(rank), ~((1 << (dqs * 2 + 17)) | (1 << (dqs * 2 + 16))),
@@ -942,9 +940,7 @@ static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk])  << (dq + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dq;
 
-	/* FIXME: Somehow, touching this changes the binary... */
-	MCHBAR32(C0DQRyTX1(rank)) = (MCHBAR32(0x5a4 + rank * 4)
-				  & ~((1 << (dq + 9)) | (1 << dq))) | reg32;
+	MCHBAR32_AND_OR(C0DQRyTX1(rank), ~((1 << (dq + 9)) | (1 << dq)), reg32);
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << (dq*2);
 	MCHBAR32_AND_OR(C0DQSDQRyTX3(rank), ~((1 << (dq * 2 + 1)) | (1 << (dq * 2))), reg32);

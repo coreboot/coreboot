@@ -167,11 +167,16 @@
  * PAD_SCI		The pin is a SCI source
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
- *	event trigger		LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH
+ *	event trigger	LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH
  * PAD_SMI		The pin is a SMI source
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
- *	event trigger		LEVEL_LOW, LEVEL_HIGH
+ *      event trigger	LEVEL_LOW, LEVEL_HIGH
+ * PAD_NF_SCI		Define native alternate function and confiure SCI source
+ *	pin		the pin to be programmed
+ *	function	the native function
+ *	pull		pull up, pull down or no pull
+ *	event trigger	LEVEL_LOW, LEVEL_HIGH, EDGE_LOW, EDGE_HIGH
  * PAD_WAKE		The pin can wake, use after PAD_INT or PAD_SCI
  *	pin		the pin to be programmed
  *	pull		pull up, pull down or no pull
@@ -231,6 +236,12 @@
 	PAD_CFG_STRUCT_FLAGS(pin, pin ## _IOMUX_GPIOxx,		\
 		PAD_PULL(pull) | PAD_TRIGGER(LEVEL_HIGH),		\
 		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SMI)
+
+/* Native function + SCI pad configuration */
+#define PAD_NF_SCI(pin, func, pull, trigger)				\
+	PAD_CFG_STRUCT_FLAGS(pin, pin ## _IOMUX_ ## func,		\
+		PAD_PULL(pull),						\
+		PAD_FLAG_EVENT_TRIGGER(trigger) | GPIO_FLAG_SCI)
 
 /* WAKE pad configuration */
 #define PAD_WAKE(pin, pull, trigger, type)				\

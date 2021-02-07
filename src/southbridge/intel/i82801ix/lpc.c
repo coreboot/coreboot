@@ -188,7 +188,7 @@ static void i82801ix_power_options(struct device *dev)
 	}
 
 	reg8 |= (3 << 4);	/* avoid #S4 assertions */
-	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
+	reg8 &= ~(1 << 3);	/* minimum assertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, D31F0_GEN_PMCON_3, reg8);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);

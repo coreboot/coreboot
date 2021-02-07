@@ -119,7 +119,7 @@ static void i82801dx_power_options(struct device *dev)
 			state = "undefined";
 	}
 
-	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
+	reg8 &= ~(1 << 3);	/* minimum assertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);

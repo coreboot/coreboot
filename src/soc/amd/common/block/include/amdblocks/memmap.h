@@ -9,6 +9,7 @@
 DECLARE_REGION(early_reserved_dram)
 
 struct memmap_early_dram {
+	/* fixed size types, so the layout in CBMEM won't change for 32 vs. 64 bit stages */
 	uint32_t base;
 	uint32_t size;
 };

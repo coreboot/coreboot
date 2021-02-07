@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -9,17 +11,11 @@
 #include "pmutil.h"
 #include "rtc.h"
 
-/* PCI Configuration Space (D31:F0): LPC */
-#if defined(__SIMPLE_DEVICE__)
 #define PCH_LPC_DEV	PCI_DEV(0, 0x1f, 0)
-#else
-#define PCH_LPC_DEV	pcidev_on_root(0x1f, 0)
-#endif
 
 int rtc_failure(void)
 {
-	return !!(pci_read_config8(PCH_LPC_DEV, D31F0_GEN_PMCON_3)
-		  & RTC_BATTERY_DEAD);
+	return !!(pci_read_config8(PCH_LPC_DEV, D31F0_GEN_PMCON_3) & RTC_BATTERY_DEAD);
 }
 
 void sb_rtc_init(void)

@@ -13,7 +13,7 @@ uint32_t tlcl_cr50_enable_nvcommits(void)
 	uint16_t sub_command = TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS;
 	struct tpm2_response *response;
 
-	printk(BIOS_INFO, "Enabling cr50 nvmem commmits\n");
+	printk(BIOS_INFO, "Enabling cr50 nvmem commits\n");
 
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 

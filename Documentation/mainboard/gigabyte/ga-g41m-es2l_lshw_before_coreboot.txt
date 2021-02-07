@@ -1,0 +1,304 @@
+my-desktop
+    description: Desktop Computer
+    product: G41M-ES2L
+    vendor: Gigabyte Technology Co., Ltd.
+    width: 64 bits
+    capabilities: smbios-2.4 dmi-2.4 smp vsyscall32
+    configuration: boot=normal chassis=desktop uuid=00000000-0000-0000-0000-6CF049A3E3D5
+  *-core
+       description: Motherboard
+       product: G41M-ES2L
+       vendor: Gigabyte Technology Co., Ltd.
+       physical id: 0
+     *-firmware
+          description: BIOS
+          vendor: Award Software International, Inc.
+          physical id: 0
+          version: F9
+          date: 06/21/2010
+          size: 128KiB
+          capacity: 1MiB
+          capabilities: pci pnp apm upgrade shadowing cdboot bootselect edd int13floppy360 int13floppy1200 int13floppy720 int13floppy2880 int5printscreen int9keyboard int14serial int17printer int10video acpi usb ls120boot zipboot biosbootspecification
+     *-cpu
+          description: CPU
+          product: Intel(R) Core(TM)2 Duo CPU     E8400  @ 3.00GHz
+          vendor: Intel Corp.
+          physical id: 4
+          bus info: cpu@0
+          version: Intel(R) Core(TM)2 Duo CPU
+          slot: Socket 775
+          size: 2631MHz
+          capacity: 4GHz
+          width: 64 bits
+          clock: 333MHz
+          capabilities: fpu fpu_exception wp vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ht tm pbe syscall nx x86-64 constant_tsc arch_perfmon pebs bts rep_good nopl cpuid aperfmperf pni dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 xsave lahf_lm pti tpr_shadow vnmi flexpriority vpid dtherm cpufreq
+        *-cache:0
+             description: L1 cache
+             physical id: a
+             slot: Internal Cache
+             size: 64KiB
+             capacity: 64KiB
+             capabilities: synchronous internal write-back
+             configuration: level=1
+        *-cache:1
+             description: L2 cache
+             physical id: b
+             slot: External Cache
+             size: 6MiB
+             capabilities: synchronous internal write-back
+             configuration: level=2
+     *-memory
+          description: System Memory
+          physical id: 19
+          slot: System board or motherboard
+          size: 2GiB
+        *-bank:0
+             description: DIMM 800 MHz (1.2 ns)
+             physical id: 0
+             slot: A0
+             size: 1GiB
+             width: 64 bits
+             clock: 800MHz (1.2ns)
+        *-bank:1
+             description: DIMM [empty]
+             physical id: 1
+             slot: A1
+        *-bank:2
+             description: DIMM 800 MHz (1.2 ns)
+             physical id: 2
+             slot: A2
+             size: 1GiB
+             width: 64 bits
+             clock: 800MHz (1.2ns)
+        *-bank:3
+             description: DIMM [empty]
+             physical id: 3
+             slot: A3
+     *-pci
+          description: Host bridge
+          product: 4 Series Chipset DRAM Controller
+          vendor: Intel Corporation
+          physical id: 100
+          bus info: pci@0000:00:00.0
+          version: 03
+          width: 32 bits
+          clock: 33MHz
+        *-display
+             description: VGA compatible controller
+             product: 4 Series Chipset Integrated Graphics Controller
+             vendor: Intel Corporation
+             physical id: 2
+             bus info: pci@0000:00:02.0
+             version: 03
+             width: 64 bits
+             clock: 33MHz
+             capabilities: msi pm vga_controller bus_master cap_list rom
+             configuration: driver=i915 latency=0
+             resources: irq:16 memory:fd800000-fdbfffff memory:d0000000-dfffffff ioport:ff00(size=8) memory:c0000-dffff
+        *-multimedia
+             description: Audio device
+             product: NM10/ICH7 Family High Definition Audio Controller
+             vendor: Intel Corporation
+             physical id: 1b
+             bus info: pci@0000:00:1b.0
+             version: 01
+             width: 64 bits
+             clock: 33MHz
+             capabilities: pm msi pciexpress bus_master cap_list
+             configuration: driver=snd_hda_intel latency=0
+             resources: irq:27 memory:fdff8000-fdffbfff
+        *-pci:0
+             description: PCI bridge
+             product: NM10/ICH7 Family PCI Express Port 1
+             vendor: Intel Corporation
+             physical id: 1c
+             bus info: pci@0000:00:1c.0
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: pci pciexpress msi pm normal_decode bus_master cap_list
+             configuration: driver=pcieport
+             resources: irq:24 ioport:1000(size=4096) memory:7dd00000-7defffff ioport:80000000(size=2097152)
+        *-pci:1
+             description: PCI bridge
+             product: NM10/ICH7 Family PCI Express Port 2
+             vendor: Intel Corporation
+             physical id: 1c.1
+             bus info: pci@0000:00:1c.1
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: pci pciexpress msi pm normal_decode bus_master cap_list
+             configuration: driver=pcieport
+             resources: irq:25 ioport:d000(size=4096) memory:fdd00000-fddfffff ioport:fde00000(size=1048576)
+           *-network
+                description: Ethernet interface
+                product: RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+                vendor: Realtek Semiconductor Co., Ltd.
+                physical id: 0
+                bus info: pci@0000:02:00.0
+                logical name: eth0
+                version: 02
+                serial: 6c:f0:49:a3:e3:d5
+                size: 1Gbit/s
+                capacity: 1Gbit/s
+                width: 64 bits
+                clock: 33MHz
+                capabilities: pm msi pciexpress msix vpd bus_master cap_list rom ethernet physical tp mii 10bt 10bt-fd 100bt 100bt-fd 1000bt 1000bt-fd autonegotiation
+                configuration: autonegotiation=on broadcast=yes driver=r8169 driverversion=5.10.0-2-amd64 duplex=full ip=192.168.155.137 latency=0 link=yes multicast=yes port=MII speed=1Gbit/s
+                resources: irq:17 ioport:de00(size=256) memory:fdeff000-fdefffff memory:fdee0000-fdeeffff memory:fdd00000-fdd0ffff
+        *-usb:0
+             description: USB controller
+             product: NM10/ICH7 Family USB UHCI Controller #1
+             vendor: Intel Corporation
+             physical id: 1d
+             bus info: pci@0000:00:1d.0
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: uhci bus_master
+             configuration: driver=uhci_hcd latency=0
+             resources: irq:23 ioport:fe00(size=32)
+        *-usb:1
+             description: USB controller
+             product: NM10/ICH7 Family USB UHCI Controller #2
+             vendor: Intel Corporation
+             physical id: 1d.1
+             bus info: pci@0000:00:1d.1
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: uhci bus_master
+             configuration: driver=uhci_hcd latency=0
+             resources: irq:19 ioport:fd00(size=32)
+        *-usb:2
+             description: USB controller
+             product: NM10/ICH7 Family USB UHCI Controller #3
+             vendor: Intel Corporation
+             physical id: 1d.2
+             bus info: pci@0000:00:1d.2
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: uhci bus_master
+             configuration: driver=uhci_hcd latency=0
+             resources: irq:18 ioport:fc00(size=32)
+        *-usb:3
+             description: USB controller
+             product: NM10/ICH7 Family USB UHCI Controller #4
+             vendor: Intel Corporation
+             physical id: 1d.3
+             bus info: pci@0000:00:1d.3
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: uhci bus_master
+             configuration: driver=uhci_hcd latency=0
+             resources: irq:16 ioport:fb00(size=32)
+        *-usb:4
+             description: USB controller
+             product: NM10/ICH7 Family USB2 EHCI Controller
+             vendor: Intel Corporation
+             physical id: 1d.7
+             bus info: pci@0000:00:1d.7
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: pm ehci bus_master cap_list
+             configuration: driver=ehci-pci latency=0
+             resources: irq:23 memory:fdfff000-fdfff3ff
+        *-pci:2
+             description: PCI bridge
+             product: 82801 PCI Bridge
+             vendor: Intel Corporation
+             physical id: 1e
+             bus info: pci@0000:00:1e.0
+             version: e1
+             width: 32 bits
+             clock: 33MHz
+             capabilities: pci subtractive_decode cap_list
+        *-isa
+             description: ISA bridge
+             product: 82801GB/GR (ICH7 Family) LPC Interface Bridge
+             vendor: Intel Corporation
+             physical id: 1f
+             bus info: pci@0000:00:1f.0
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: isa bus_master cap_list
+             configuration: driver=lpc_ich latency=0
+             resources: irq:0
+        *-ide:0
+             description: IDE interface
+             product: 82801G (ICH7 Family) IDE Controller
+             vendor: Intel Corporation
+             physical id: 1f.1
+             bus info: pci@0000:00:1f.1
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             capabilities: ide isa_compat_mode pci_native_mode bus_master
+             configuration: driver=ata_piix latency=0
+             resources: irq:18 ioport:1f0(size=8) ioport:3f6 ioport:170(size=8) ioport:376 ioport:f800(size=16)
+        *-ide:1
+             description: IDE interface
+             product: NM10/ICH7 Family SATA Controller [IDE mode]
+             vendor: Intel Corporation
+             physical id: 1f.2
+             bus info: pci@0000:00:1f.2
+             logical name: scsi2
+             version: 01
+             width: 32 bits
+             clock: 66MHz
+             capabilities: ide pm isa_compat_mode pci_native_mode bus_master cap_list emulated
+             configuration: driver=ata_piix latency=0
+             resources: irq:19 ioport:f700(size=8) ioport:f600(size=4) ioport:f500(size=8) ioport:f400(size=4) ioport:f300(size=16)
+           *-disk
+                description: ATA Disk
+                product: WDC WD5000BPVT-2
+                vendor: Western Digital
+                physical id: 0.0.0
+                bus info: scsi@2:0.0.0
+                logical name: /dev/sda
+                version: 1A03
+                serial: WD-WXD1E71MYND4
+                size: 465GiB (500GB)
+                capabilities: gpt-1.00 partitioned partitioned:gpt
+                configuration: ansiversion=5 guid=868a1c85-f309-4f3d-8282-6b5c4c373275 logicalsectorsize=512 sectorsize=4096
+        *-serial
+             description: SMBus
+             product: NM10/ICH7 Family SMBus Controller
+             vendor: Intel Corporation
+             physical id: 1f.3
+             bus info: pci@0000:00:1f.3
+             version: 01
+             width: 32 bits
+             clock: 33MHz
+             configuration: driver=i801_smbus latency=0
+             resources: irq:19 ioport:500(size=32)
+     *-pnp00:00
+          product: PnP device PNP0c02
+          physical id: 1
+          capabilities: pnp
+          configuration: driver=system
+     *-pnp00:01
+          product: PnP device PNP0b00
+          physical id: 2
+          capabilities: pnp
+          configuration: driver=rtc_cmos
+     *-pnp00:02
+          product: PnP device PNP0c02
+          physical id: 3
+          capabilities: pnp
+          configuration: driver=system
+     *-pnp00:03
+          product: PnP device PNP0c02
+          physical id: 5
+          capabilities: pnp
+          configuration: driver=system
+     *-pnp00:04
+          product: PnP device PNP0c01
+          physical id: 6
+          capabilities: pnp
+          configuration: driver=system

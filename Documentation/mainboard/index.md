@@ -56,6 +56,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ## Gigabyte
 
+- [GA-G41M-ES2L](gigabyte/ga-g41m-es2l.md)
 - [GA-H61M-S2PV](gigabyte/ga-h61m-s2pv.md)
 
 ## HP

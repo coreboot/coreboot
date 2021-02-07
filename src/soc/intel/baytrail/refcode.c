@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <console/streams.h>
 #include <cpu/x86/tsc.h>

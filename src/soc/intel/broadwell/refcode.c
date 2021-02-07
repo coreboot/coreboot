@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <acpi/acpi.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <console/streams.h>
 #include <program_loading.h>

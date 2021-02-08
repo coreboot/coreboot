@@ -19,9 +19,9 @@
 #include <device/pci.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/cpu.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
-#include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>

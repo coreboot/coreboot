@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <soc/cpu.h>
+#include <amdblocks/cpu.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <stdlib.h>

@@ -3,7 +3,6 @@
 #ifndef AMD_PICASSO_CPU_H
 #define AMD_PICASSO_CPU_H
 
-int get_cpu_count(void);
 void check_mca(void);
 
 #define RAVEN1_B0_CPUID			0x00810f10

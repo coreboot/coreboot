@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/cpu.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
@@ -39,11 +40,6 @@ static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect_no_above_4gb();
 	x86_mtrr_check();
-}
-
-int get_cpu_count(void)
-{
-	return 1 + (cpuid_ecx(0x80000008) & 0xff);
 }
 
 static void set_cstate_io_addr(void)

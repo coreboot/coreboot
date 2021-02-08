@@ -188,12 +188,33 @@ static int wait_for_valid(u8 *base)
 	return -1;
 }
 
+static int azalia_write_verb(u8 *base, u32 verb)
+{
+	if (wait_for_ready(base) < 0)
+		return -1;
+
+	write32(base + HDA_IC_REG, verb);
+
+	return wait_for_valid(base);
+}
+
+int azalia_program_verb_table(u8 *base, const u32 *verbs, u32 verb_size)
+{
+	if (!verbs)
+		return 0;
+
+	for (u32 i = 0; i < verb_size; i++) {
+		if (azalia_write_verb(base, verbs[i]) < 0)
+			return -1;
+	}
+	return 0;
+}
+
 static void codec_init(struct device *dev, u8 *base, int addr)
 {
 	u32 reg32;
 	const u32 *verb;
 	u32 verb_size;
-	int i;
 
 	printk(BIOS_DEBUG, "azalia_audio: Initializing codec #%d\n", addr);
 
@@ -223,15 +244,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "azalia_audio: verb_size: %u\n", verb_size);
 
 	/* 3 */
-	for (i = 0; i < verb_size; i++) {
-		if (wait_for_ready(base) < 0)
-			return;
-
-		write32(base + HDA_IC_REG, verb[i]);
-
-		if (wait_for_valid(base) < 0)
-			return;
-	}
+	azalia_program_verb_table(base, verb, verb_size);
 	printk(BIOS_DEBUG, "azalia_audio: verb loaded.\n");
 }
 

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define __SIMPLE_DEVICE__
-
 #include <assert.h>
 #include <stdint.h>
 #include <console/console.h>

@@ -25,21 +25,6 @@ static void mb_configure_dp3_pwr(bool enable)
 	gpio_output(GPP_K5, enable);
 }
 
-static void mb_pcie_reset_pch_slots(bool enable)
-{
-	gpio_output(GPP_K0, enable);
-}
-
-static void mb_pcie_reset_cpu_slots(bool enable)
-{
-	gpio_output(GPP_K1, enable);
-}
-
-static void mb_pcie_reset_cnvi_slot(bool enable)
-{
-	gpio_output(GPP_K2, enable);
-}
-
 static void mb_hda_amp_enable(bool enable)
 {
 	gpio_output(GPP_C19, enable);
@@ -136,11 +121,7 @@ static void mainboard_enable(struct device *dev)
 	mb_configure_dp1_pwr(1);
 	mb_configure_dp2_pwr(1);
 	mb_configure_dp3_pwr(1);
-	if (0) {
-		mb_pcie_reset_pch_slots(1);
-		mb_pcie_reset_cpu_slots(0);
-		mb_pcie_reset_cnvi_slot(0);
-	}
+
 	mb_hda_amp_enable(1);
 	mb_usb31_rp1_pwr_enable(1);
 	mb_usb31_rp2_pwr_enable(1);

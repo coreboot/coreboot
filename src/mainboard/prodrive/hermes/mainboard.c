@@ -62,9 +62,16 @@ static void mainboard_init(void *chip_info)
 	if (!board_cfg)
 		return;
 
+	/* Set Deep Sx */
 	config_t *config = config_of_soc();
 	config->deep_s5_enable_ac = board_cfg->deep_sx_enabled;
 	config->deep_s5_enable_dc = board_cfg->deep_sx_enabled;
+
+	/* Enable internal speaker amplifier */
+	if (board_cfg->internal_audio_connection == 2)
+		mb_hda_amp_enable(1);
+	else
+		mb_hda_amp_enable(0);
 }
 
 static void mainboard_final(struct device *dev)
@@ -122,7 +129,6 @@ static void mainboard_enable(struct device *dev)
 	mb_configure_dp2_pwr(1);
 	mb_configure_dp3_pwr(1);
 
-	mb_hda_amp_enable(1);
 	mb_usb31_rp1_pwr_enable(1);
 	mb_usb31_rp2_pwr_enable(1);
 	mb_usb31_fp_pwr_enable(1);

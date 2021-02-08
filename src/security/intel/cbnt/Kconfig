@@ -16,6 +16,25 @@ config INTEL_CBNT_SUPPORT
 
 if INTEL_CBNT_SUPPORT
 
+config INTEL_CBNT_GENERATE_KM
+	bool "Generate Key Manifest (KM)"
+	default y
+	select INTEL_CBNT_NEED_KM_PUB_KEY
+	select INTEL_CBNT_NEED_KM_PRIV_KEY
+	help
+	  Select y to generate the Key Manifest (KM).
+	  Select n to include a KM binary.
+
+config INTEL_CBNT_BG_PROV_CFG_FILE
+	string "CBnT json config file"
+	depends on INTEL_CBNT_GENERATE_KM
+	help
+	  Location of the bg-prov json config file.
+	  Either get a sample JSON config file:
+	  $ bg-prov template
+	  Or extract it from a working configuration:
+	  $ bg-prov read-config
+
 config INTEL_CBNT_NEED_KM_PUB_KEY
 	bool
 
@@ -54,6 +73,7 @@ config INTEL_CBNT_BPM_PRIV_KEY_FILE
 
 config INTEL_CBNT_KEY_MANIFEST_BINARY
 	string "KM (Key Manifest) binary location"
+	depends on !INTEL_CBNT_GENERATE_KM
 	help
 	  Location of the Key Manifest (KM)
 

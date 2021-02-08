@@ -21,13 +21,22 @@ config INTEL_CBNT_GENERATE_KM
 	default y
 	select INTEL_CBNT_NEED_KM_PUB_KEY
 	select INTEL_CBNT_NEED_KM_PRIV_KEY
+	select INTEL_CBNT_NEED_BPM_PUB_KEY if !INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 	help
 	  Select y to generate the Key Manifest (KM).
 	  Select n to include a KM binary.
 
+config INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
+	bool "KM: use a CBnT json config file"
+	depends on INTEL_CBNT_GENERATE_KM
+	default y
+	help
+	  Select y to generate KM from a json config file.
+	  Select n to generate KM from Kconfig options
+
 config INTEL_CBNT_BG_PROV_CFG_FILE
 	string "CBnT json config file"
-	depends on INTEL_CBNT_GENERATE_KM
+	depends on INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 	help
 	  Location of the bg-prov json config file.
 	  Either get a sample JSON config file:
@@ -70,6 +79,45 @@ config INTEL_CBNT_BPM_PRIV_KEY_FILE
 	depends on INTEL_CBNT_NEED_BPM_PRIV_KEY
 	help
 	  Location of the boot policy manifest (BPM) private key file in .pem format.
+
+if !INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE && INTEL_CBNT_GENERATE_KM
+
+menu "KM options"
+
+config INTEL_CBNT_KM_REVISION
+	int "KM revision"
+	default 1
+	help
+	  Version of the Key Manifest defined by the Platform Manufacturer.
+	  The actual value is transparent to Boot Guard and is not processed by Boot Guard.
+
+config INTEL_CBNT_KM_SVN
+	int "KM security Version Number"
+	range 0 15
+	default 0
+	help
+	  This value is determined by the Platform Manufacturer.
+	  Boot Guard uses this to compare it to the Key Manifest
+	  Revocation Value (Revocation.KMSVN) in FPF.
+
+	  If KMSVN < Revocation.KMSVN, the KM will be revoked. It will trigger ENF (the
+	  enforcement policy).
+	  IF KMSVN > Revocation.KMSVN, the Revocation.KMSVN will be set to the KMSVN.
+
+	  Note: Once the value reaches 0Fh, revocation saturates and one can no longer
+	  revoke newer KMs.
+
+config INTEL_CBNT_KM_ID
+	int "KM ID"
+	default 1
+	help
+	  This identifies the Key Manifest to be used for a platform.
+	  This must match the Key Manifest Identifier programmed in
+	  the field programmable fuses.
+
+endmenu
+
+endif # !INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 
 config INTEL_CBNT_KEY_MANIFEST_BINARY
 	string "KM (Key Manifest) binary location"

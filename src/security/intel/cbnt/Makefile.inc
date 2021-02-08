@@ -44,9 +44,22 @@ $(call add_intermediate, add_bpm_fit, $(IFITTOOL) set_fit_ptr)
 endif
 
 ifeq ($(CONFIG_INTEL_CBNT_GENERATE_KM),y)
+ifeq ($(CONFIG_INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE),y)
 $(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(BG_PROV) $(CBNT_CFG)
 	printf "    BG_PROV    creating unsigned KM using config file\n"
 	$(BG_PROV) km-gen $@ $< --config=$(CBNT_CFG)
+else
+PK_HASH_ALG_SHA256:=11 # Hardcode as no other options are available for CBnT
+$(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(obj)/bpm_pub.pem $(BG_PROV)
+	printf "    BG_PROV    creating unsigned KM\n"
+	$(BG_PROV) km-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_KM_REVISION) \
+				--svn=$(CONFIG_INTEL_CBNT_KM_SVN) \
+				--id=$(CONFIG_INTEL_CBNT_KM_ID) \
+				--pkhashalg=$(PK_HASH_ALG_SHA256) \
+				--bpmpubkey=$(obj)/bpm_pub.pem \
+				--bpmhashalgo=$(PK_HASH_ALG_SHA256) \
+				--out=$(obj)/km_cfg.json
+endif
 
 $(obj)/km.bin: $(obj)/km_unsigned.bin $(BG_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE))
 	printf "    BG_PROV    signing KM\n"

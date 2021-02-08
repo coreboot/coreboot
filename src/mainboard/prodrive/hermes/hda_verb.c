@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/azalia_device.h>
+#include <types.h>
+
+#include "variants/baseboard/include/eeprom.h"
 
 const u32 cim_verb_data[] = {
 	0x10ec0888,	/* Codec Vendor / Device ID: Realtek ALC888 */
@@ -168,3 +171,44 @@ const u32 cim_verb_data[] = {
 const u32 pc_beep_verbs[0] = {};
 
 AZALIA_ARRAY_SIZES;
+
+static u32 get_internal_audio_cfg(uint8_t internal_audio_connection)
+{
+	switch (internal_audio_connection) {
+	default:
+	case 0:
+		return AZALIA_PIN_CFG_NC(0);
+	case 1:
+		return 0x022a4c40;
+	case 2:
+		return AZALIA_PIN_DESC(
+			INTEGRATED,
+			INTERNAL,
+			NA,
+			SPEAKER,
+			TYPE_UNKNOWN,
+			COLOR_UNKNOWN,
+			false,
+			0xf,
+			0);
+	}
+}
+
+void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
+{
+	if (viddid != 0x10ec0888)
+		return;
+
+	const struct eeprom_board_settings *const board_cfg = get_board_settings();
+
+	if (!board_cfg)
+		return;
+
+	const u32 config = get_internal_audio_cfg(board_cfg->internal_audio_connection);
+
+	const u32 verbs[] = {
+		AZALIA_PIN_CFG(0, 0x1b, config),
+	};
+
+	azalia_program_verb_table(base, verbs, ARRAY_SIZE(verbs));
+}

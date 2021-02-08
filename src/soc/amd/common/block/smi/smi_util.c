@@ -56,6 +56,11 @@ void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
 	smi_write32(SMI_REG_SMITRIG0, reg32);
 }
 
+void soc_route_sci(uint8_t event)
+{
+	smi_write8(SMI_SCI_MAP(event), event);
+}
+
 /**
  * Configure generation of SCIs.
  */

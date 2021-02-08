@@ -58,6 +58,11 @@ values.
 VPD variables supported are:
 - firmware_version: This variable holds overall firmware version. coreboot
   uses that value to populate smbios type 1 version field.
+- bmc_bootorder_override: When it's set to 1 IPMI OEM command can override boot
+  order. The boot order override is done in the u-root LinuxBoot payload.
+- systemboot_log_level: u-root package systemboot log levels, would be mapped to
+  quiet/verbose in systemboot as that is all we have for now. 5 to 8 would be mapped
+  to verbose, 0 to 4 and 9 would be mapped to quiet.
 - DeltaLake specific VPDs: check mb/ocp/deltalake/vpd.h.
 
 ## Working features

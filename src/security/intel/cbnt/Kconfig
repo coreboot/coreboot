@@ -47,9 +47,17 @@ config INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 	  Select y to generate KM from a json config file.
 	  Select n to generate KM from Kconfig options
 
+config INTEL_CBNT_GENERATE_BPM
+	bool "Generate Boot Policy Manifest (BPM)"
+	default y
+	select INTEL_CBNT_NEED_BPM_PRIV_KEY
+	help
+	  Select y to generate the Boot Policy Manifest (BPM).
+	  Select n to include a BPM binary.
+
 config INTEL_CBNT_BG_PROV_CFG_FILE
 	string "CBnT json config file"
-	depends on INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
+	depends on INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE || INTEL_CBNT_GENERATE_BPM
 	help
 	  Location of the bg-prov json config file.
 	  Either get a sample JSON config file:
@@ -140,6 +148,7 @@ config INTEL_CBNT_KEY_MANIFEST_BINARY
 
 config INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY
 	string "BPM (Boot Policy Manifest) binary location"
+	depends on !INTEL_CBNT_GENERATE_BPM
 	help
 	  Location of the Boot Policy Manifest (BPM)
 

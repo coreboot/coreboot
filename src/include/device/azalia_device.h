@@ -26,6 +26,9 @@ int azalia_program_verb_table(u8 *base, const u32 *verbs, u32 verb_size);
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 
+/* Optional hook to program codec settings that are only known at runtime */
+void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid);
+
 extern const u32 cim_verb_data[];
 extern const u32 cim_verb_data_size;
 extern const u32 pc_beep_verbs[];

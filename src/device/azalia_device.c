@@ -210,6 +210,10 @@ int azalia_program_verb_table(u8 *base, const u32 *verbs, u32 verb_size)
 	return 0;
 }
 
+__weak void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
+{
+}
+
 static void codec_init(struct device *dev, u8 *base, int addr)
 {
 	u32 reg32;
@@ -246,6 +250,8 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	/* 3 */
 	azalia_program_verb_table(base, verb, verb_size);
 	printk(BIOS_DEBUG, "azalia_audio: verb loaded.\n");
+
+	mainboard_azalia_program_runtime_verbs(base, reg32);
 }
 
 static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)

@@ -53,67 +53,66 @@ static int load_one_segment(uint8_t *dest,
 			    uint32_t compression,
 			    int flags)
 {
-		unsigned char *middle, *end;
-		printk(BIOS_DEBUG, "Loading Segment: addr: %p memsz: 0x%016zx filesz: 0x%016zx\n",
-		       dest, memsz, len);
+	unsigned char *middle, *end;
+	printk(BIOS_DEBUG, "Loading Segment: addr: %p memsz: 0x%016zx filesz: 0x%016zx\n",
+	       dest, memsz, len);
 
-		/* Compute the boundaries of the segment */
-		end = dest + memsz;
+	/* Compute the boundaries of the segment */
+	end = dest + memsz;
 
-		/* Copy data from the initial buffer */
-		switch (compression) {
-		case CBFS_COMPRESS_LZMA: {
-			printk(BIOS_DEBUG, "using LZMA\n");
-			timestamp_add_now(TS_START_ULZMA);
-			len = ulzman(src, len, dest, memsz);
-			timestamp_add_now(TS_END_ULZMA);
-			if (!len) /* Decompression Error. */
-				return 0;
-			break;
-		}
-		case CBFS_COMPRESS_LZ4: {
-			printk(BIOS_DEBUG, "using LZ4\n");
-			timestamp_add_now(TS_START_ULZ4F);
-			len = ulz4fn(src, len, dest, memsz);
-			timestamp_add_now(TS_END_ULZ4F);
-			if (!len) /* Decompression Error. */
-				return 0;
-			break;
-		}
-		case CBFS_COMPRESS_NONE: {
-			printk(BIOS_DEBUG, "it's not compressed!\n");
-			memcpy(dest, src, len);
-			break;
-		}
-		default:
-			printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", compression);
+	/* Copy data from the initial buffer */
+	switch (compression) {
+	case CBFS_COMPRESS_LZMA: {
+		printk(BIOS_DEBUG, "using LZMA\n");
+		timestamp_add_now(TS_START_ULZMA);
+		len = ulzman(src, len, dest, memsz);
+		timestamp_add_now(TS_END_ULZMA);
+		if (!len) /* Decompression Error. */
 			return 0;
-		}
-		/* Calculate middle after any changes to len. */
-		middle = dest + len;
-		printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
-			(unsigned long)dest,
+		break;
+	}
+	case CBFS_COMPRESS_LZ4: {
+		printk(BIOS_DEBUG, "using LZ4\n");
+		timestamp_add_now(TS_START_ULZ4F);
+		len = ulz4fn(src, len, dest, memsz);
+		timestamp_add_now(TS_END_ULZ4F);
+		if (!len) /* Decompression Error. */
+			return 0;
+		break;
+	}
+	case CBFS_COMPRESS_NONE: {
+		printk(BIOS_DEBUG, "it's not compressed!\n");
+		memcpy(dest, src, len);
+		break;
+	}
+	default:
+		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", compression);
+		return 0;
+	}
+	/* Calculate middle after any changes to len. */
+	middle = dest + len;
+	printk(BIOS_SPEW, "[ 0x%08lx, %08lx, 0x%08lx) <- %08lx\n",
+		(unsigned long)dest,
+		(unsigned long)middle,
+		(unsigned long)end,
+		(unsigned long)src);
+
+	/* Zero the extra bytes between middle & end */
+	if (middle < end) {
+		printk(BIOS_DEBUG,
+			"Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
 			(unsigned long)middle,
-			(unsigned long)end,
-			(unsigned long)src);
+			(unsigned long)(end - middle));
 
-		/* Zero the extra bytes between middle & end */
-		if (middle < end) {
-			printk(BIOS_DEBUG,
-				"Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
-				(unsigned long)middle,
-				(unsigned long)(end - middle));
+		/* Zero the extra bytes */
+		memset(middle, 0, end - middle);
+	}
 
-			/* Zero the extra bytes */
-			memset(middle, 0, end - middle);
-		}
-
-		/*
-		 * Each architecture can perform additional operations
-		 * on the loaded segment
-		 */
-		prog_segment_loaded((uintptr_t)dest, memsz, flags);
-
+	/*
+	 * Each architecture can perform additional operations
+	 * on the loaded segment
+	 */
+	prog_segment_loaded((uintptr_t)dest, memsz, flags);
 
 	return 1;
 }

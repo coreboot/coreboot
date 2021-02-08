@@ -23,7 +23,6 @@ romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += reset.c
-romstage-y += memmap.c
 romstage-y += uart.c
 romstage-y += mrc_cache.c
 
@@ -45,7 +44,6 @@ ramstage-y += fch.c
 ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c
-ramstage-y += memmap.c
 ramstage-y += uart.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c

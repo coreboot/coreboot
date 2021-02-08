@@ -172,6 +172,23 @@ const u32 pc_beep_verbs[0] = {};
 
 AZALIA_ARRAY_SIZES;
 
+static u32 get_port_c_vref_cfg(uint8_t blue_rear_vref)
+{
+	switch (blue_rear_vref) {
+	default:
+	case 0:
+		return 0x02040000;
+	case 1:
+		return 0x02041000;
+	case 2:
+		return 0x02044000;
+	case 3:
+		return 0x02045000;
+	case 4:
+		return 0x02046000;
+	}
+}
+
 static u32 get_internal_audio_cfg(uint8_t internal_audio_connection)
 {
 	switch (internal_audio_connection) {
@@ -208,6 +225,8 @@ void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 
 	const u32 verbs[] = {
 		AZALIA_PIN_CFG(0, 0x1b, config),
+		0x0205000d,
+		get_port_c_vref_cfg(board_cfg->blue_rear_vref),
 	};
 
 	azalia_program_verb_table(base, verbs, ARRAY_SIZE(verbs));

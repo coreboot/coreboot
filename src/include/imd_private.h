@@ -1,6 +1,7 @@
 #ifndef _IMD_PRIVATE_H_
 #define _IMD_PRIVATE_H_
 
+#include <cbmem.h>
 #include <commonlib/bsd/helpers.h>
 
 /* In-memory data structures. */

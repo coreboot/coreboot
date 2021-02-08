@@ -2,6 +2,7 @@
 
 #include <boot_device.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <commonlib/bsd/cbfs_private.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>

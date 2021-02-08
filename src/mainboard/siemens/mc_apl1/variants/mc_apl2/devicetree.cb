@@ -81,7 +81,10 @@ chip soc/intel/apollolake
 		end
 		device pci 15.0 on  end	# - XHCI
 		device pci 15.1 off end	# - XDCI
-		device pci 16.0 on	# - I2C 0
+		device pci 16.0 on  end	# - I2C 0
+		device pci 16.1 on  end	# - I2C 1
+		device pci 16.2 on  end	# - I2C 2
+		device pci 16.3 on	# - I2C 3
 			# Enable external RTC chip
 			chip drivers/i2c/rx6110sa
 				register "pmon_sampling" = "PMON_SAMPL_256_MS"
@@ -96,9 +99,6 @@ chip soc/intel/apollolake
 				device i2c 0x32 on end	# RTC RX6110 SA
 			end
 		end
-		device pci 16.1 on  end	# - I2C 1
-		device pci 16.2 on  end	# - I2C 2
-		device pci 16.3 on  end	# - I2C 3
 		device pci 17.0 on  end	# - I2C 4
 		device pci 17.1 on  end	# - I2C 5
 		device pci 17.2 on  end	# - I2C 6

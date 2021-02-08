@@ -42,15 +42,6 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-static void set_cstate_io_addr(void)
-{
-	msr_t cst_addr;
-
-	cst_addr.hi = 0;
-	cst_addr.lo = ACPI_CPU_CONTROL;
-	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
-}
-
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
 	uintptr_t tseg_base;

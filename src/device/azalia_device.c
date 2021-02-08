@@ -220,7 +220,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 		printk(BIOS_DEBUG, "azalia_audio: No verb!\n");
 		return;
 	}
-	printk(BIOS_DEBUG, "azalia_audio: verb_size: %d\n", verb_size);
+	printk(BIOS_DEBUG, "azalia_audio: verb_size: %u\n", verb_size);
 
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {

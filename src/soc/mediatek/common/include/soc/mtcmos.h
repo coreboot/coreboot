@@ -8,7 +8,10 @@ struct power_domain_data {
 	u32 pwr_sta_mask;
 	u32 sram_pdn_mask;
 	u32 sram_ack_mask;
+	u32 caps;
 };
+
+#define SCPD_SRAM_ISO	(1U << 0)
 
 void mtcmos_audio_power_on(void);
 void mtcmos_display_power_on(void);

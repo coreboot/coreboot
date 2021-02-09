@@ -33,6 +33,12 @@ static void mtcmos_power_on(const struct power_domain_data *pd)
 
 	while (read32(pd->pwr_con) & pd->sram_ack_mask)
 		continue;
+
+	if (pd->caps & SCPD_SRAM_ISO) {
+		setbits32(pd->pwr_con, SRAM_ISOINT_B);
+		udelay(1);
+		clrbits32(pd->pwr_con, SRAM_CKISO);
+	}
 }
 
 void mtcmos_display_power_on(void)

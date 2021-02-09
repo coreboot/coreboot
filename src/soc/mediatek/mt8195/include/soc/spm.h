@@ -4,7 +4,12 @@
 #define SOC_MEDIATEK_MT8195_SPM_H
 
 #include <soc/addressmap.h>
+#include <soc/mtcmos.h>
 #include <types.h>
+
+/* SPM READ/WRITE CFG */
+#define SPM_PROJECT_CODE	0xb16
+#define SPM_REGWR_CFG_KEY	(SPM_PROJECT_CODE << 16)
 
 struct mtk_spm_regs {
 	u32 poweron_config_set;
@@ -528,9 +533,54 @@ struct mtk_spm_regs {
 	u32 spm_pmsr_len_con2;
 };
 
+check_member(mtk_spm_regs, pwr_status, 0x016c);
+check_member(mtk_spm_regs, audio_pwr_con, 0x0358);
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x043c);
 check_member(mtk_spm_regs, ulposc_con, 0x644);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
+
+static const struct power_domain_data disp[] = {
+	{
+		.pwr_con = &mtk_spm->vppsys0_pwr_con,
+		.pwr_sta_mask = 0x1 << 11,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+	{
+		.pwr_con = &mtk_spm->vdosys0_pwr_con,
+		.pwr_sta_mask = 0x1 << 13,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+	{
+		.pwr_con = &mtk_spm->vppsys1_pwr_con,
+		.pwr_sta_mask = 0x1 << 12,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+	{
+		.pwr_con = &mtk_spm->vdosys1_pwr_con,
+		.pwr_sta_mask = 0x1 << 14,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+};
+
+static const struct power_domain_data audio[] = {
+	{
+		.pwr_con = &mtk_spm->adsp_pwr_con,
+		.pwr_sta_mask = 0x1 << 10,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+		.caps = SCPD_SRAM_ISO,
+	},
+	{
+		.pwr_con = &mtk_spm->audio_pwr_con,
+		.pwr_sta_mask = 0x1 << 8,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+};
 
 #endif  /* SOC_MEDIATEK_MT8195_SPM_H */

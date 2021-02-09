@@ -35,9 +35,6 @@ DefinitionBlock (
 	Name(UOM8, 6)
 	Name(UOM9, 6)
 
-	/* Some global data */
-	Name(OSVR, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
-
 	/*
 	 * Processor Object
 	 *
@@ -233,31 +230,6 @@ DefinitionBlock (
 	#include "acpi/routing.asl"
 
 	#include <southbridge/amd/cimx/sb800/acpi/pcie.asl>
-
-	Scope(\_SB) {
-
-		Method(OSFL, 0){
-
-			if (OSVR != Ones) {Return(OSVR)}	/* OS version was already detected */
-
-			if(CondRefOf(\_OSI))
-			{
-				OSVR = 1                /* Assume some form of XP */
-				if (\_OSI("Windows 2006"))      /* Vista */
-				{
-					OSVR = 2
-				}
-			} else {
-				If(WCMP(\_OS,"Linux")) {
-					OSVR = 3            /* Linux */
-				} Else {
-					OSVR = 4            /* Gotta be WinCE */
-				}
-			}
-			Return(OSVR)
-		}
-
-	}   /* End Scope(_SB)  */
 
 	/* Contains the supported sleep states for this chipset */
 	#include <southbridge/amd/common/acpi/sleepstates.asl>
@@ -752,18 +724,6 @@ DefinitionBlock (
 				Return(CRES) /* note to change the Name buffer */
 			} /* end of Method(_SB.PCI0._CRS) */
 
-			/*
-			*
-			*               FIRST METHOD CALLED UPON BOOT
-			*
-			*  1. If debugging, print current OS and ACPI interpreter.
-			*  2. Get PCI Interrupt routing from ACPI VSM, this
-			*     value is based on user choice in BIOS setup.
-			*/
-			Method(_INI, 0) {
-				/* Determine the OS we're running on */
-				OSFL()
-			} /* End Method(_SB._INI) */
 		} /* End Device(PCI0)  */
 
 		Device(PWRB) {	/* Start Power button device */

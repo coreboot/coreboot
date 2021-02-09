@@ -43,8 +43,8 @@ endchoice
 
 config SUPERIO_ADDR_BASE
 	hex
-	default 0x4e 	if SMSC_SIO1036_BASE_4E
-	default 0x164e 	if SMSC_SIO1036_BASE_164E
+	default 0x4e	if SMSC_SIO1036_BASE_4E
+	default 0x164e	if SMSC_SIO1036_BASE_164E
 
 config CBFS_SIZE
 	hex

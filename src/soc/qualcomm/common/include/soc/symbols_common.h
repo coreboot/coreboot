@@ -21,5 +21,7 @@ DECLARE_REGION(aop_code_ram)
 DECLARE_REGION(aop_data_ram)
 DECLARE_REGION(dram_modem_wifi_only)
 DECLARE_REGION(dram_modem_extra)
+DECLARE_REGION(dram_wlan)
+DECLARE_REGION(dram_wpss)
 
 #endif // _SOC_QUALCOMM_SYMBOLS_COMMON_H_

@@ -12,6 +12,10 @@ static void soc_read_resources(struct device *dev)
 				ddr_region->size / KiB);
 	reserved_ram_resource(dev, 1, (uintptr_t)_dram_soc / KiB,
 				REGION_SIZE(dram_soc) / KiB);
+	reserved_ram_resource(dev, 4, (uintptr_t)_dram_wlan / KiB,
+                               REGION_SIZE(dram_wlan) / KiB);
+	reserved_ram_resource(dev, 5, (uintptr_t)_dram_wpss / KiB,
+                               REGION_SIZE(dram_wpss) / KiB);
 }
 
 static void soc_init(struct device *dev)

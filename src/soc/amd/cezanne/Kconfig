@@ -17,6 +17,7 @@ config SOC_SPECIFIC_OPTIONS
 	select FSP_COMPRESS_FSP_M_LZMA
 	select FSP_COMPRESS_FSP_S_LZMA
 	select HAVE_CF9_RESET
+	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
 	select IOAPIC
 	select PLATFORM_USES_FSP2_0
@@ -153,6 +154,19 @@ config CONSOLE_UART_BASE_ADDRESS
 	hex
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000 if SMM_TSEG && HAVE_SMI_HANDLER
+	default 0x0
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x180000
+
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x800
 
 menu "PSP Configuration Options"
 

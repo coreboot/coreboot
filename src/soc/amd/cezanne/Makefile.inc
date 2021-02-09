@@ -4,6 +4,7 @@ ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
+subdirs-y += ../../../cpu/x86/smm
 
 # Beware that all-y also adds the compilation unit to verstage on PSP
 all-y		+= config.c
@@ -33,6 +34,8 @@ ramstage-y	+= pcie_gpp.c
 ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
+
+smm-y		+= smihandler.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne

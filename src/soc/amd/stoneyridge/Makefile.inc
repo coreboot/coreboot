@@ -58,7 +58,6 @@ ramstage-y += southbridge.c
 ramstage-y += northbridge.c
 ramstage-y += sata.c
 ramstage-y += memmap.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-y += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c

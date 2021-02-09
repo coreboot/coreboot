@@ -56,6 +56,15 @@ void configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level)
 	smi_write32(SMI_REG_SMITRIG0, reg32);
 }
 
+/** Set the EOS bit and enable SMI generation from southbridge */
+void global_smi_enable(void)
+{
+	uint32_t reg = smi_read32(SMI_REG_SMITRIG0);
+	reg &= ~SMITRG0_SMIENB;	/* Enable SMI generation */
+	reg |= SMITRG0_EOS;	/* Set EOS bit */
+	smi_write32(SMI_REG_SMITRIG0, reg);
+}
+
 void soc_route_sci(uint8_t event)
 {
 	smi_write8(SMI_SCI_MAP(event), event);

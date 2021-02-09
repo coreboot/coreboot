@@ -48,7 +48,6 @@ ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += memmap.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-y += uart.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c

@@ -28,9 +28,9 @@
 #define PIRQ_MISC1	0x0A	/* Miscellaneous1 IRQ Settings */
 #define PIRQ_MISC2	0x0B	/* Miscellaneous2 IRQ Settings */
 #define PIRQ_SIRQA	0x0C	/* Serial IRQ INTA */
-#define PIRQ_SIRQB	0x0D	/* Serial IRQ INTA */
-#define PIRQ_SIRQC	0x0E	/* Serial IRQ INTA */
-#define PIRQ_SIRQD	0x0F	/* Serial IRQ INTA */
+#define PIRQ_SIRQB	0x0D	/* Serial IRQ INTB */
+#define PIRQ_SIRQC	0x0E	/* Serial IRQ INTC */
+#define PIRQ_SIRQD	0x0F	/* Serial IRQ INTD */
 #define PIRQ_SCI	0x10	/* SCI IRQ */
 #define PIRQ_SMBUS	0x11	/* SMBUS	14h.0 */
 #define PIRQ_ASF	0x12	/* ASF */

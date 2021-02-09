@@ -578,7 +578,7 @@ Scope (\_SB.PCI0.I2C2)
 				{
 					"i2c-allow-low-power-probe",
 					0x01
- 				}
+				}
 			}
 		})
 		Name (PRT0, Package (0x04)

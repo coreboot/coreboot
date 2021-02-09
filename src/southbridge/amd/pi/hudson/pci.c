@@ -7,10 +7,6 @@
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <bootstate.h>
 
-static void pci_init(struct device *dev)
-{
-}
-
 /*
  * Update the PCI devices with a valid IRQ number
  * that is set in the mainboard PCI_IRQ structures.
@@ -38,7 +34,6 @@ static struct device_operations pci_ops = {
 	.read_resources = pci_bus_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init = pci_init,
 	.scan_bus = pci_scan_bridge,
 	.reset_bus = pci_bus_reset,
 	.ops_pci = &lops_pci,

@@ -6,6 +6,8 @@
 #include <soc/iomap.h>
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
+#define PM_PCI_CTRL			0x08
+#define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		(1 << 1)
 #define PM_SERIRQ_CONF			0x54
@@ -50,6 +52,8 @@
 #define   PM_ACPI_WAKE_AS_GEVENT	BIT(27)
 #define   PM_ACPI_NB_PME_GEVENT		BIT(28)
 #define   PM_ACPI_RTC_WAKE_EN		BIT(29)
+#define PM_RST_CTRL1			0xbe
+#define   SLPTYPE_CONTROL_EN		BIT(5)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)

@@ -6,6 +6,11 @@
 #include <types.h>
 #include "chip.h"
 
+struct device_operations cpu_bus_ops = {
+	.read_resources	  = noop_read_resources,
+	.set_resources	  = noop_set_resources,
+};
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	= pci_domain_read_resources,
 	.set_resources	= pci_domain_set_resources,
@@ -18,6 +23,9 @@ static void enable_dev(struct device *dev)
 	switch (dev->path.type) {
 	case DEVICE_PATH_DOMAIN:
 		dev->ops = &pci_domain_ops;
+		break;
+	case DEVICE_PATH_CPU_CLUSTER:
+		dev->ops = &cpu_bus_ops;
 		break;
 	default:
 		break;

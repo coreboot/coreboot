@@ -10,6 +10,7 @@
 #include <soc/pmif.h>
 #include <soc/pmif_sw.h>
 #include <soc/pmif_spmi.h>
+#include <soc/spm.h>
 
 /* APMIXED, ULPOSC1_CON0 */
 DEFINE_BITFIELD(OSC1_CALI, 6, 0)
@@ -130,8 +131,8 @@ static int pmif_init_ulposc(void)
 	pmif_ulposc_config();
 
 	/* enable spm swinf */
-	if (!READ32_BITFIELD(&mtk_spm->poweron_config_en, BCLK_CG_EN))
-		SET32_BITFIELDS(&mtk_spm->poweron_config_en, BCLK_CG_EN, 1,
+	if (!READ32_BITFIELD(&mtk_spm->poweron_config_set, BCLK_CG_EN))
+		SET32_BITFIELDS(&mtk_spm->poweron_config_set, BCLK_CG_EN, 1,
 				PROJECT_CODE, 0xb16);
 
 	/* turn on ulposc */

@@ -639,6 +639,7 @@ check_member(mtk_spm_regs, root_core_addr, 0x2a4);
 check_member(mtk_spm_regs, spm2sw_mailbox_0, 0x2d0);
 check_member(mtk_spm_regs, peri_pwr_con, 0x3c8);
 check_member(mtk_spm_regs, spm_mem_ck_sel, 0x400);
+check_member(mtk_spm_regs, ulposc_con, 0x420);
 check_member(mtk_spm_regs, spm_force_dvfs, 0x4fc);
 check_member(mtk_spm_regs, spm_sw_flag_0, 0x600);
 check_member(mtk_spm_regs, spm_sw_flag_1, 0x608);

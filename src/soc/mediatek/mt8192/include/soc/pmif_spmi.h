@@ -24,13 +24,6 @@ struct mtk_iocfg_bm_regs {
 };
 check_member(mtk_iocfg_bm_regs, drv_cfg2, 0x20);
 
-struct mtk_spm_regs {
-	u32 poweron_config_en;
-	u32 reserved[263];
-	u32 ulposc_con;
-};
-check_member(mtk_spm_regs, ulposc_con, 0x420);
-
 struct mtk_spmi_mst_reg {
 	u32 op_st_ctrl;
 	u32 grp_id_en;
@@ -53,7 +46,6 @@ check_member(mtk_spmi_mst_reg, mst_dbg, 0xfc);
 
 #define mtk_rug	((struct mtk_rgu_regs *)RGU_BASE)
 #define mtk_iocfg_bm	((struct mtk_iocfg_bm_regs *)IOCFG_BM_BASE)
-#define mtk_spm	((struct mtk_spm_regs *)SPM_BASE)
 #define mtk_spmi_mst	((struct mtk_spmi_mst_reg *)SPMI_MST_BASE)
 
 struct cali {

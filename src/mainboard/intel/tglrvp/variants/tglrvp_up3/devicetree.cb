@@ -19,6 +19,9 @@ chip soc/intel/tigerlake
 	register "SaGv" = "SaGv_Enabled"
 	register "SmbusEnable" = "1"
 
+	# CNVi BT enable/disable
+	register "CnviBtCore" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# M.2 WWAN
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# M.2 Bluetooth
@@ -213,7 +216,6 @@ chip soc/intel/tigerlake
 		device pci 0e.0 off end # VMD			0x9A0B
 
 		# From PCH EDS(576591)
-		device pci 10.2 on end # CNVi: BT		0xA0F5 - A0F7
 		device pci 10.6 off end # THC0			0xA0D0
 		device pci 10.7 off end # THC1			0xA0D1
 		device pci 12.0 on      # SensorHUB		0xA0FC

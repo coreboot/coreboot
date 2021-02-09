@@ -17,6 +17,10 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus	= pci_domain_scan_bus,
 };
 
+static void set_mmio_dev_ops(struct device *dev)
+{
+}
+
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
@@ -26,6 +30,9 @@ static void enable_dev(struct device *dev)
 		break;
 	case DEVICE_PATH_CPU_CLUSTER:
 		dev->ops = &cpu_bus_ops;
+		break;
+	case DEVICE_PATH_MMIO:
+		set_mmio_dev_ops(dev);
 		break;
 	default:
 		break;

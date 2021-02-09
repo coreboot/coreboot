@@ -4,6 +4,8 @@
 #include <acpi/acpigen.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <console/console.h>
+#include <fsp/graphics.h>
 
 #define ATIF_FUNCTION_VERIFY_INTERFACE 0x0
 struct atif_verify_interface_output {
@@ -116,11 +118,27 @@ static const char *graphics_acpi_name(const struct device *dev)
 	return "IGFX";
 }
 
+static void graphics_dev_init(struct device *const dev)
+{
+	if (CONFIG(RUN_FSP_GOP)) {
+		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+
+		if (res && res->base)
+			fsp_report_framebuffer_info(res->base);
+		else
+			printk(BIOS_ERR, "%s: Unable to find resource for %s\n",
+			       __func__, dev_path(dev));
+	}
+
+	/* Initialize PCI device, load/execute BIOS Option ROM */
+	pci_dev_init(dev);
+}
+
 static const struct device_operations graphics_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= pci_dev_init,
+	.init			= graphics_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
 	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= graphics_fill_ssdt,

@@ -37,7 +37,7 @@
 		{							\
 			Return (PRS##id)				\
 		}							\
-		Method (_CRS, 0, Serialized) 				\
+		Method (_CRS, 0, Serialized)				\
 		{							\
 			Name (RTLA, ResourceTemplate ()			\
 			{						\

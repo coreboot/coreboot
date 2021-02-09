@@ -13,7 +13,7 @@
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* MRC Revision */
 
-#define MC_LOCK			0x50fc /* Memory Controlller Lock register */
+#define MC_LOCK			0x50fc /* Memory Controller Lock register */
 
 #define GFXVTBAR		0x5400 /* Base address for IGD */
 #define EDRAMBAR		0x5408 /* Base address for eDRAM */

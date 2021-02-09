@@ -483,7 +483,7 @@
 #define ECC_INJ_ADDR_COMPARE	0x5090 /* Address compare for ECC error inject */
 #define ECC_INJ_ADDR_MASK	0x5094 /* Address mask for ECC error inject */
 
-#define MC_LOCK			0x50fc /* Memory Controlller Lock register */
+#define MC_LOCK			0x50fc /* Memory Controller Lock register */
 
 #define GFXVTBAR		0x5400 /* Base address for IGD */
 #define VTVC0BAR		0x5410 /* Base address for PEG, USB, SATA, etc. */

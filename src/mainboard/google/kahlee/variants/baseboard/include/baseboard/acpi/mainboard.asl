@@ -13,6 +13,3 @@ Name (PCLN, Multiply(0x100000, CONFIG_MMCONF_BUS_NUMBER))
 
 /* Base address of HPET table */
 Name (HPBA, 0xFED00000)
-
-/* Global Data */
-Name (OSVR, 3)		/* WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */

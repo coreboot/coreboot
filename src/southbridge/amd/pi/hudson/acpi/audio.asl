@@ -28,11 +28,8 @@ Device(AZHD) {	/* 0:14.2 - HD Audio */
 
 	Method (_INI, 0, NotSerialized)
 	{
-		If (OSVR == 0x03)
-		{
-			NSEN = 0
-			NSDO = 1
-			NSDI = 1
-		}
+		NSEN = 0
+		NSDO = 1
+		NSDI = 1
 	}
 } /* end AZHD */

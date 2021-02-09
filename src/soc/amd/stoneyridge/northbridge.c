@@ -519,22 +519,16 @@ void hda_soc_ssdt_quirks(const struct device *dev)
 
 	/*
 	 * Method (_INI, 0, NotSerialized) {
-	 *	If (LEqual (OSVR, 0x03)) {
-	 *		Store (Zero, NSEN)
-	 *		Store (One, NSDO)
-	 *		Store (One, NSDI)
-	 *	}
+	 *	Store (Zero, NSEN)
+	 *	Store (One, NSDO)
+	 *	Store (One, NSDI)
 	 * }
 	 */
 	acpigen_write_method("_INI", 0);
 
-	acpigen_write_if_lequal_namestr_int("OSVR", 0x03);
-
 	acpigen_write_store_op_to_namestr(ZERO_OP, "NSEN");
 	acpigen_write_store_op_to_namestr(ONE_OP, "NSDO");
 	acpigen_write_store_op_to_namestr(ONE_OP, "NSDI");
-
-	acpigen_pop_len(); /* If */
 
 	acpigen_pop_len(); /* Method _INI */
 

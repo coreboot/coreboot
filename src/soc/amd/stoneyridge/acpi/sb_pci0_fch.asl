@@ -134,9 +134,6 @@ Method(_INI, 0, Serialized) {
 	/* DBGO(\_REV) */
 	/* DBGO("\n") */
 
-	/* Determine the OS we're running on */
-	OSFL()
-
 	/* Send ALIB Function 1 the AC/DC state */
 	Name(F1BF, Buffer(0x03){})
 	CreateWordField(F1BF, 0, F1SZ)
@@ -148,27 +145,6 @@ Method(_INI, 0, Serialized) {
 	\_SB.ALIB(1, F1BF)
 
 } /* End Method(_SB._INI) */
-
-Method(OSFL, 0){
-
-	if (OSVR != Ones) {Return (OSVR)}	/* OS version was already detected */
-
-	if (CondRefOf(\_OSI))
-	{
-		OSVR = 1				/* Assume some form of XP */
-		if (\_OSI("Windows 2006"))		/* Vista */
-		{
-			OSVR = 2
-		}
-	} else {
-		If (WCMP(\_OS,"Linux")) {
-			OSVR = 3			/* Linux */
-		} Else {
-			OSVR = 4			/* Gotta be WinCE */
-		}
-	}
-	Return (OSVR)
-}
 
 OperationRegion(SMIC, SystemMemory, 0xfed80000, 0x80000)
 Field( SMIC, ByteAcc, NoLock, Preserve) {

@@ -105,15 +105,23 @@ static struct device_operations pci_domain_ops = {
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
+	switch (dev->path.type) {
+	case DEVICE_PATH_DOMAIN:
 		dev->ops = &pci_domain_ops;
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		break;
+	case DEVICE_PATH_CPU_CLUSTER:
 		dev->ops = &cpu_bus_ops;
-	else if (dev->path.type == DEVICE_PATH_PCI)
+		break;
+	case DEVICE_PATH_PCI:
 		sb_enable(dev);
-	else if (dev->path.type == DEVICE_PATH_MMIO)
+		break;
+	case DEVICE_PATH_MMIO:
 		if (i2c_acpi_name(dev) != NULL)
 			dev->ops = &stoneyridge_i2c_mmio_ops;
+		break;
+	default:
+		break;
+	}
 }
 
 static void soc_init(void *chip_info)

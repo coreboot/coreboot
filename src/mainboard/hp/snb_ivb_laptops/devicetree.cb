@@ -44,7 +44,7 @@ chip northbridge/intel/sandybridge
 			device pci 1b.0 on  end	# HD Audio controller
 			device pci 1d.0 on  end	# USB2 EHCI #1
 			device pci 1e.0 off end	# PCI bridge
-			device pci 1f.0 on     	# LPC bridge
+			device pci 1f.0 on	# LPC bridge
 				chip drivers/pc80/tpm
 					device pnp 0c31.0 on end
 				end

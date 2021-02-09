@@ -108,7 +108,7 @@ chip northbridge/intel/x4x		# Northbridge
 						irq 0x70 = 0x0c
 						irq 0xf0 = 0x00
 					end
-					device pnp 2e.7 on  		# GPIO
+					device pnp 2e.7 on		# GPIO
 						io 0x60 = 0x000
 						io 0x62 = 0xa20
 						io 0x64 = 0xa30
@@ -140,7 +140,7 @@ chip northbridge/intel/x4x		# Northbridge
 				end
 			end
 			device pci 1f.2 on  end		# SATA (IDE: port 0-3, AHCI/RAID: 0-5)
-			device pci 1f.3 on  		# SMBus
+			device pci 1f.3 on		# SMBus
 				chip drivers/i2c/ck505	# IDT CV194
 					register "mask" = "{ 0xff, 0xff, 0xff, 0x00,
 							     0xff, 0x00, 0x00, 0x00,

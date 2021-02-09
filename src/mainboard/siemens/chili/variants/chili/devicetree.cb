@@ -55,11 +55,11 @@ chip soc/intel/cannonlake
 				register "vin[4].high"	= "12000 * 105/100"
 
 				register "temp_in[0].low"	= "-25"
-				register "temp_in[0].high" 	= " 85"
+				register "temp_in[0].high"	= " 85"
 				register "temp_in[1].low"	= "-25"
-				register "temp_in[1].high" 	= " 85"
+				register "temp_in[1].high"	= " 85"
 				register "temp_in[2].low"	= "-25"
-				register "temp_in[2].high" 	= " 85"
+				register "temp_in[2].high"	= " 85"
 
 				register "fan[0]" = "{
 					.mode		= LM96000_FAN_HOTTEST_123,

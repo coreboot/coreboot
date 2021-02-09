@@ -4,6 +4,9 @@
 #ifndef INTELTOOL_H
 #define INTELTOOL_H 1
 
+#if defined(__linux__)
+#include <linux/stddef.h>
+#endif
 #include <arch/mmio.h>
 #include <commonlib/helpers.h>
 
@@ -17,6 +20,7 @@
 #define __DARWIN__
 #include <DirectHW/DirectHW.h>
 #endif
+
 #ifdef __NetBSD__
 #include <pciutils/pci.h>
 #else

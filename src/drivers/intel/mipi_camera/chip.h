@@ -247,6 +247,8 @@ struct drivers_intel_mipi_camera_config {
 	const char *vcm_compat;
 	/* Does the device have a power resource entries */
 	bool has_power_resource;
+	/* Perform low power probe */
+	bool low_power_probe;
 };
 
 #endif

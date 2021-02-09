@@ -187,7 +187,7 @@ void intel_update_microcode_from_cbfs(void)
 }
 
 #if ENV_RAMSTAGE
-__weak int soc_skip_ucode_update(u32 currrent_patch_id,
+__weak int soc_skip_ucode_update(u32 current_patch_id,
 	u32 new_patch_id)
 {
 	return 0;

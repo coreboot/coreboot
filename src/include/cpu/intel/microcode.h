@@ -17,7 +17,7 @@ void intel_microcode_load_unlocked(const void *microcode_patch);
 
 /* SoC specific check to determine if microcode update is really
  * required, will skip microcode update if true. */
-int soc_skip_ucode_update(u32 currrent_patch_id, u32 new_patch_id);
+int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id);
 
 /* return the version of the currently running microcode */
 uint32_t get_current_microcode_rev(void);

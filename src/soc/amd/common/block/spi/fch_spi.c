@@ -6,6 +6,7 @@
 #include <arch/mmio.h>
 #include <console/console.h>
 #include <soc/iomap.h>
+#include <soc/lpc.h>
 #include <stdint.h>
 
 static void fch_spi_set_spi100(int norm, int fast, int alt, int tpm)

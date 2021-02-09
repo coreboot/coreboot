@@ -8,6 +8,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <soc/iomap.h>
+#include <soc/lpc.h>
 #include <soc/southbridge.h>
 
 /* The LPC-ISA bridge is always at D14F3 */

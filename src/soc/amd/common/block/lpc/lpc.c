@@ -16,8 +16,9 @@
 #include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
 #include <soc/acpi.h>
-#include <soc/southbridge.h>
 #include <soc/iomap.h>
+#include <soc/lpc.h>
+#include <soc/southbridge.h>
 
 /* Most systems should have already enabled the bridge */
 void __weak soc_late_lpc_bridge_enable(void) { }

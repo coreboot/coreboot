@@ -26,6 +26,7 @@
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
 #include <soc/acpi.h>
+#include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <types.h>
 

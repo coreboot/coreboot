@@ -4,6 +4,7 @@
 #define __SOC_MEDIATEK_MT8173_SPM_H__
 
 #include <soc/addressmap.h>
+#include <soc/mtcmos.h>
 #include <stddef.h>
 
 enum {
@@ -151,5 +152,23 @@ struct mtk_spm_regs {
 check_member(mtk_spm_regs, sleep_ca15_wfi_en[3], 0xf1c);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
+
+static const struct power_domain_data disp[] = {
+	{
+		.pwr_con = &mtk_spm->dis_pwr_con,
+		.pwr_sta_mask = DISP_PWR_STA_MASK,
+		.sram_pdn_mask = DISP_SRAM_PDN_MASK,
+		.sram_ack_mask = DISP_SRAM_ACK_MASK,
+	},
+};
+
+static const struct power_domain_data audio[] = {
+	{
+		.pwr_con = &mtk_spm->audio_pwr_con,
+		.pwr_sta_mask = AUDIO_PWR_STA_MASK,
+		.sram_pdn_mask = AUDIO_SRAM_PDN_MASK,
+		.sram_ack_mask = AUDIO_SRAM_ACK_MASK,
+	},
+};
 
 #endif  /* __SOC_MEDIATEK_MT8173_SPM_H__ */

@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8192_SPM_H
 
 #include <soc/addressmap.h>
+#include <soc/mtcmos.h>
 #include <stdint.h>
 #include <types.h>
 
@@ -673,5 +674,23 @@ struct dyna_load_pcm {
 };
 
 int spm_init(void);
+
+static const struct power_domain_data disp[] = {
+	{
+		.pwr_con = &mtk_spm->dis_pwr_con,
+		.pwr_sta_mask = DISP_PWR_STA_MASK,
+		.sram_pdn_mask = DISP_SRAM_PDN_MASK,
+		.sram_ack_mask = DISP_SRAM_ACK_MASK,
+	},
+};
+
+static const struct power_domain_data audio[] = {
+	{
+		.pwr_con = &mtk_spm->audio_pwr_con,
+		.pwr_sta_mask = AUDIO_PWR_STA_MASK,
+		.sram_pdn_mask = AUDIO_SRAM_PDN_MASK,
+		.sram_ack_mask = AUDIO_SRAM_ACK_MASK,
+	},
+};
 
 #endif  /* SOC_MEDIATEK_MT8192_SPM_H */

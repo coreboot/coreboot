@@ -65,6 +65,13 @@ void global_smi_enable(void)
 	smi_write32(SMI_REG_SMITRIG0, reg);
 }
 
+void southbridge_smi_set_eos(void)
+{
+	uint32_t reg = smi_read32(SMI_REG_SMITRIG0);
+	reg |= SMITRG0_EOS;
+	smi_write32(SMI_REG_SMITRIG0, reg);
+}
+
 void soc_route_sci(uint8_t event)
 {
 	smi_write8(SMI_SCI_MAP(event), event);

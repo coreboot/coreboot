@@ -293,10 +293,3 @@ void southbridge_smi_handler(void)
 	if (smi_src & SMI_STATUS_SRC_4)
 		process_smi_sources(SMI_REG_SMISTS4);
 }
-
-void southbridge_smi_set_eos(void)
-{
-	uint32_t reg = smi_read32(SMI_REG_SMITRIG0);
-	reg |= SMITRG0_EOS;
-	smi_write32(SMI_REG_SMITRIG0, reg);
-}

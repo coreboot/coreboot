@@ -238,7 +238,6 @@ void fch_final(void *chip_info);
 
 void enable_aoac_devices(void);
 void sb_clk_output_48Mhz(u32 osc);
-void sb_enable(struct device *dev);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 

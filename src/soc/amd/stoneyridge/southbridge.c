@@ -352,11 +352,6 @@ void bootblock_fch_init(void)
 	fch_print_pmxc0_status();
 }
 
-void sb_enable(struct device *dev)
-{
-	printk(BIOS_DEBUG, "%s\n", __func__);
-}
-
 static void fch_init_acpi_ports(void)
 {
 	u32 reg;

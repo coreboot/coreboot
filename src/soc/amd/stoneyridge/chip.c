@@ -112,9 +112,6 @@ static void enable_dev(struct device *dev)
 	case DEVICE_PATH_CPU_CLUSTER:
 		dev->ops = &cpu_bus_ops;
 		break;
-	case DEVICE_PATH_PCI:
-		sb_enable(dev);
-		break;
 	case DEVICE_PATH_MMIO:
 		if (i2c_acpi_name(dev) != NULL)
 			dev->ops = &stoneyridge_i2c_mmio_ops;

@@ -19,8 +19,6 @@ void imc_reg_init(void)
 	u8 reg8;
 	/* Init Power Management Block 2 (PM2) Registers.
 	 * Check BKDG for AMD Family 16h for details. */
-	/* Init Power Management Block 2 (PM2) Registers.
-	 * Check BKDG for AMD Family 16h for details. */
 	pm2_write8(0, 0x06);
 	pm2_write8(1, 0x06);
 	pm2_write8(2, 0xf7);

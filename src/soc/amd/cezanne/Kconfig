@@ -160,7 +160,7 @@ config CONSOLE_UART_BASE_ADDRESS
 
 config SMM_TSEG_SIZE
 	hex
-	default 0x800000 if SMM_TSEG && HAVE_SMI_HANDLER
+	default 0x800000 if HAVE_SMI_HANDLER
 	default 0x0
 
 config SMM_RESERVED_SIZE

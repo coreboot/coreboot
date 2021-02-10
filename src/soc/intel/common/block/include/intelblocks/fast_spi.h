@@ -77,6 +77,10 @@ bool fast_spi_wpd_status(void);
  */
 void fast_spi_enable_wp(void);
 /*
+ * Disable SPI Write protect.
+ */
+void fast_spi_disable_wp(void);
+/*
  * Get base and size of extended BIOS decode window used at runtime in host address space. If
  * the BIOS region is not greater than 16MiB, then this function returns 0 for both base and
  * size.

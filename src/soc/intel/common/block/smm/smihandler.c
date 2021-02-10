@@ -44,31 +44,6 @@ __weak int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 	return 1;
 }
 
-/*
- * Needs to implement the mechanism to know if an illegal attempt
- * has been made to write to the BIOS area.
- */
-static void smihandler_soc_check_illegal_access(
-	uint32_t tco_sts)
-{
-	if (!((tco_sts & (1 << 8)) && CONFIG(SPI_FLASH_SMM)
-			&& fast_spi_wpd_status()))
-		return;
-
-	/*
-	 * BWE is RW, so the SMI was caused by a
-	 * write to BWE, not by a write to the BIOS
-	 *
-	 * This is the place where we notice someone
-	 * is trying to tinker with the BIOS. We are
-	 * trying to be nice and just ignore it. A more
-	 * resolute answer would be to power down the
-	 * box.
-	 */
-	printk(BIOS_DEBUG, "Switching back to RO\n");
-	fast_spi_enable_wp();
-}
-
 /* Mainboard overrides. */
 
 __weak void mainboard_smi_gpi_handler(
@@ -301,9 +276,19 @@ static void southbridge_smi_store(
 	/* Parameter buffer in EBX */
 	reg_ebx = save_state_ops->get_reg(io_smi, RBX);
 
+	const bool wp_enabled = !fast_spi_wpd_status();
+	if (wp_enabled) {
+		fast_spi_disable_wp();
+		/* Not clearing SPI sync SMI status here results in hangs */
+		fast_spi_clear_sync_smi_status();
+	}
+
 	/* drivers/smmstore/smi.c */
 	ret = smmstore_exec(sub_command, (void *)(uintptr_t)reg_ebx);
 	save_state_ops->set_reg(io_smi, RAX, ret);
+
+	if (wp_enabled)
+		fast_spi_enable_wp();
 }
 
 static void finalize(void)
@@ -319,6 +304,9 @@ static void finalize(void)
 	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
+
+	if (CONFIG(BOOTMEDIA_SMM_BWP))
+		fast_spi_enable_wp();
 
 	/*
 	 * HECI is disabled in smihandler_soc_at_finalize() which also locks down the side band
@@ -401,11 +389,25 @@ void smihandler_southbridge_tco(
 	 */
 	fast_spi_clear_sync_smi_status();
 
+	/* If enabled, enforce SMM BIOS write protection */
+	if (CONFIG(BOOTMEDIA_SMM_BWP) && fast_spi_wpd_status()) {
+		/*
+		 * BWE is RW, so the SMI was caused by a
+		 * write to BWE, not by a write to the BIOS
+		 *
+		 * This is the place where we notice someone
+		 * is trying to tinker with the BIOS. We are
+		 * trying to be nice and just ignore it. A more
+		 * resolute answer would be to power down the
+		 * box.
+		 */
+		printk(BIOS_DEBUG, "Switching SPI back to RO\n");
+		fast_spi_enable_wp();
+	}
+
 	/* Any TCO event? */
 	if (!tco_sts)
 		return;
-
-	smihandler_soc_check_illegal_access(tco_sts);
 
 	if (tco_sts & TCO_TIMEOUT) { /* TIMEOUT */
 		/* Handle TCO timeout */

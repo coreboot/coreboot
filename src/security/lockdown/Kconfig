@@ -84,6 +84,17 @@ config BOOTMEDIA_LOCK_IN_VERSTAGE
 	  ramstage, like the MRC cache for example.
 	  Use this option if you don't trust code running after verstage.
 
+config BOOTMEDIA_SMM_BWP
+	bool "Boot media only writable in SMM"
+	depends on !CONSOLE_SPI_FLASH
+	depends on BOOT_DEVICE_SPI_FLASH && HAVE_SMI_HANDLER
+	depends on SOUTHBRIDGE_INTEL_COMMON_SPI || SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE if SOC_INTEL_COMMON_BLOCK_SPI
+	help
+	  Only allow flash writes in SMM. Select this if you want to use SMMSTORE
+	  while also preventing unauthorized writes through the internal controller.
+	  Note that this breaks flashconsole, since the flash becomes read-only.
+
 choice
 	prompt "SPI Flash write protection duration"
 	default BOOTMEDIA_SPI_LOCK_REBOOT

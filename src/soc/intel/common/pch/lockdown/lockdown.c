@@ -65,6 +65,12 @@ static void fast_spi_lockdown_cfg(int chipset_lockdown)
 		/* BIOS Interface Lock */
 		fast_spi_set_bios_interface_lock_down();
 
+		/* Only allow writes in SMM */
+		if (CONFIG(BOOTMEDIA_SMM_BWP)) {
+			//fast_spi_set_eiss();	/* TODO */
+			fast_spi_enable_wp();
+		}
+
 		/* BIOS Lock */
 		fast_spi_set_lock_enable();
 

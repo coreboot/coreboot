@@ -418,3 +418,14 @@ void fast_spi_enable_wp(void)
 	bios_cntl &= ~SPI_BIOS_CONTROL_WPD;
 	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
 }
+
+/* Disable SPI Write Protect. */
+void fast_spi_disable_wp(void)
+{
+	const pci_devfn_t dev = PCH_DEV_SPI;
+	uint8_t bios_cntl;
+
+	bios_cntl = pci_read_config8(dev, SPI_BIOS_CONTROL);
+	bios_cntl |= SPI_BIOS_CONTROL_WPD;
+	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
+}

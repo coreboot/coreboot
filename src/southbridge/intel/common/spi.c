@@ -27,6 +27,8 @@
 
 static int spi_is_multichip(void);
 
+static void spi_set_smm_only_flashing(bool enable);
+
 struct ich7_spi_regs {
 	uint16_t spis;
 	uint16_t spic;
@@ -282,7 +284,6 @@ static void *get_spi_bar(pci_devfn_t dev)
 
 void spi_init(void)
 {
-	uint8_t bios_cntl;
 	struct ich9_spi_regs *ich9_spi;
 	struct ich7_spi_regs *ich7_spi;
 	uint16_t hsfs;
@@ -332,13 +333,8 @@ void spi_init(void)
 
 	ich_set_bbar(0);
 
-	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX) || CONFIG(SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9)) {
-		/* Disable the BIOS write protect so write commands are allowed. */
-		bios_cntl = pci_read_config8(dev, 0xdc);
-		/* Deassert SMM BIOS Write Protect Disable. */
-		bios_cntl &= ~(1 << 5);
-		pci_write_config8(dev, 0xdc, bios_cntl | 0x1);
-	}
+	/* Disable the BIOS write protect so write commands are allowed. */
+	spi_set_smm_only_flashing(false);
 }
 
 static int spi_locked(void)
@@ -1096,10 +1092,37 @@ void spi_finalize_ops(void)
 		writeb_(spi_config->ops[i].op, &cntlr.opmenu[i]);
 	}
 	writew_(optype, cntlr.optype);
+
+	spi_set_smm_only_flashing(CONFIG(BOOTMEDIA_SMM_BWP));
 }
 
 __weak void intel_southbridge_override_spi(struct intel_swseq_spi_config *spi_config)
 {
+}
+
+#define BIOS_CNTL		0xdc
+#define  BIOS_CNTL_BIOSWE	(1 << 0)
+#define  BIOS_CNTL_BLE		(1 << 1)
+#define  BIOS_CNTL_SMM_BWP	(1 << 5)
+
+static void spi_set_smm_only_flashing(bool enable)
+{
+	if (!(CONFIG(SOUTHBRIDGE_INTEL_I82801GX) || CONFIG(SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9)))
+		return;
+
+	const pci_devfn_t dev = PCI_DEV(0, 31, 0);
+
+	uint8_t bios_cntl = pci_read_config8(dev, BIOS_CNTL);
+
+	if (enable) {
+		bios_cntl &= ~BIOS_CNTL_BIOSWE;
+		bios_cntl |= BIOS_CNTL_BLE | BIOS_CNTL_SMM_BWP;
+	} else {
+		bios_cntl &= ~(BIOS_CNTL_BLE | BIOS_CNTL_SMM_BWP);
+		bios_cntl |= BIOS_CNTL_BIOSWE;
+	}
+
+	pci_write_config8(dev, BIOS_CNTL, bios_cntl);
 }
 
 static const struct spi_ctrlr spi_ctrlr = {

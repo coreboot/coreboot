@@ -18,7 +18,7 @@ static int get_index_bit(uint32_t value, uint16_t limit)
 		return -1;
 
 	/* get a mask of valid bits. Ex limit = 3, set bits 0-2 */
-	t = (1 << limit) - 1;
+	t = (1ULL << limit) - 1;
 	if ((value & t) == 0)
 		return -1;
 	t = 1;

@@ -38,8 +38,6 @@ void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 	/* Copy saved ME hash into NVS */
 	memcpy(chromeos_acpi->mehh, me_hash_saved, sizeof(chromeos_acpi->mehh));
 
-	chromeos_ram_oops_init(chromeos_acpi);
-
 	vpd_size = chromeos_vpd_region("RO_VPD", &vpd_base);
 	if (vpd_size && vpd_base) {
 		chromeos_acpi->vpd_ro_base = vpd_base;

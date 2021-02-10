@@ -27,14 +27,6 @@ static inline void reboot_from_watchdog(void) { return; }
  */
 void mainboard_prepare_cr50_reset(void);
 
-#include "gnvs.h"
-
-#if CONFIG(CHROMEOS_RAMOOPS)
-void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
-#else  /* !CONFIG_CHROMEOS_RAMOOPS */
-static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
-#endif /* CONFIG_CHROMEOS_RAMOOPS */
-
 void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);
 

@@ -9,11 +9,11 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include "chromeos.h"
+#include "gnvs.h"
 
-#if CONFIG(HAVE_ACPI_TABLES)
-
-static void set_ramoops(chromeos_acpi_t *chromeos, void *ram_oops, size_t size)
+static void set_ramoops(void *ram_oops, size_t size)
 {
+	chromeos_acpi_t *chromeos = chromeos_get_chromeos_acpi();
 	if (chromeos == NULL) {
 		printk(BIOS_DEBUG, "chromeos gnvs is NULL. ramoops not set.\n");
 		return;
@@ -24,32 +24,25 @@ static void set_ramoops(chromeos_acpi_t *chromeos, void *ram_oops, size_t size)
 	chromeos->ramoops_len = size;
 }
 
-void chromeos_ram_oops_init(chromeos_acpi_t *chromeos)
+static void ramoops_alloc(void *arg)
 {
 	const size_t size = CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE;
 	void *ram_oops;
 
-	ram_oops = cbmem_add(CBMEM_ID_RAM_OOPS, size);
-
-	set_ramoops(chromeos, ram_oops, size);
-}
-
-#else
-
-static void ramoops_alloc(void *arg)
-{
-	const size_t size = CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE;
-
 	if (size == 0)
 		return;
 
-	if (cbmem_add(CBMEM_ID_RAM_OOPS, size) == NULL)
+	ram_oops = cbmem_add(CBMEM_ID_RAM_OOPS, size);
+	if (ram_oops == NULL) {
 		printk(BIOS_ERR, "Could not allocate RAMOOPS buffer\n");
+		return;
+	}
+
+	if (CONFIG(HAVE_ACPI_TABLES))
+		set_ramoops(ram_oops, size);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, ramoops_alloc, NULL);
-
-#endif
 
 void lb_ramoops(struct lb_header *header)
 {

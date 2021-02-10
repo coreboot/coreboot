@@ -135,9 +135,7 @@ static void fch_init_acpi_ports(void)
 		configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 
 		/* SMI on SlpTyp requires sending SMI before completion
-		 * response of the I/O write.  The BKDG also specifies
-		 * clearing ForceStpClkRetry for SMI trapping.
-		 */
+		   response of the I/O write. */
 		reg = pm_read32(PM_PCI_CTRL);
 		reg |= FORCE_SLPSTATE_RETRY;
 		pm_write32(PM_PCI_CTRL, reg);

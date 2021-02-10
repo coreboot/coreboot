@@ -62,9 +62,13 @@ Device (\_SB.PCI0.LPCB.EC0)
 		}
 	}
 
+	Name (S3OS, Zero)
 	Method (PTS, 1, Serialized) {
 		Debug = Concatenate("EC: PTS: ", ToHexString(Arg0))
 		If (ECOK) {
+			// Save ECOS during sleep
+			S3OS = ECOS
+
 			// Clear wake cause
 			WFNO = Zero
 		}
@@ -73,6 +77,9 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (WAK, 1, Serialized) {
 		Debug = Concatenate("EC: WAK: ", ToHexString(Arg0))
 		If (ECOK) {
+			// Restore ECOS after sleep
+			ECOS = S3OS
+
 			// Set current AC state
 			^^^^AC.ACFG = ADP
 

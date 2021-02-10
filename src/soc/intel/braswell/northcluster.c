@@ -146,7 +146,7 @@ static void nc_read_resources(struct device *dev)
 	size_k = RES_IN_KiB(0x00100000);
 	mmio_resource(dev, index++, base_k, size_k);
 
-	if (CONFIG(CHROMEOS))
+	if (CONFIG(CHROMEOS_RAMOOPS))
 		chromeos_reserve_ram_oops(dev, index++);
 }
 

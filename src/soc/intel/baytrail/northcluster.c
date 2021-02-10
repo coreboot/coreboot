@@ -120,7 +120,7 @@ static void nc_read_resources(struct device *dev)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
 
-	if (CONFIG(CHROMEOS))
+	if (CONFIG(CHROMEOS_RAMOOPS))
 		chromeos_reserve_ram_oops(dev, index++);
 }
 

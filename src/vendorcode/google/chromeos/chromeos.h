@@ -34,15 +34,11 @@ struct device;
 
 #if CONFIG(CHROMEOS_RAMOOPS)
 void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
-#if CONFIG(CHROMEOS_RAMOOPS_DYNAMIC)
-static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
-#else /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
-void chromeos_reserve_ram_oops(struct device *dev, int idx);
-#endif /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
 #else  /* !CONFIG_CHROMEOS_RAMOOPS */
 static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
-static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
+
+void chromeos_reserve_ram_oops(struct device *dev, int idx);
 
 void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);

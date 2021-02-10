@@ -7,6 +7,10 @@
 #include <device/device.h>
 #include <soc/cpu.h>
 
+void mp_init_cpus(struct bus *cpu_bus)
+{
+}
+
 static void zen_2_3_init(struct device *dev)
 {
 	setup_lapic();

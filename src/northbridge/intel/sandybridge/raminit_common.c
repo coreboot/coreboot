@@ -1711,7 +1711,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 					.rank    = slotrank,
 				},
 			},
-			/* DRAM command RD */
+			/* DRAM command RDA */
 			[2] = {
 				.sp_cmd_ctrl = {
 					.command    = IOSAV_RD,

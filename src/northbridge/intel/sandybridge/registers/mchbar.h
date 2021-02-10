@@ -112,7 +112,7 @@
  *          end architecture RTL;
  *
  *   [16]       Chip Select mode control.
- *   [17]       Auto Precharge. Only valid when using 10 row bits!
+ *   [17]       Auto Precharge. Used to send RDA commands.
  *
  * IOSAV_n_SUBSEQ_CTRL_ch(channel, index)
  *   The parameters of the subseq: number of repetitions of the command,

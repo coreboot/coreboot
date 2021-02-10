@@ -8,7 +8,6 @@ subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
-subdirs-y += ../../../cpu/x86/smm
 
 bootblock-y += uart.c
 bootblock-y += BiosCallOuts.c

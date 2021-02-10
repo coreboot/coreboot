@@ -4,7 +4,6 @@ ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
-subdirs-y += ../../../cpu/x86/smm
 
 # Beware that all-y also adds the compilation unit to verstage on PSP
 all-y		+= config.c

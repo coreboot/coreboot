@@ -1,6 +1,6 @@
-diff -rupN tint-0.04+nmu1/config.h tint/config.h
---- tint-0.04+nmu1/config.h	2001-12-08 00:03:24.000000000 +0100
-+++ tint/config.h	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/config.h tint/config.h
+--- tint-0.05/config.h	2001-12-08 00:03:24.000000000 +0100
++++ tint/config.h	2021-02-09 08:00:00.000000000 +0200
 @@ -29,7 +29,15 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -17,9 +17,9 @@ diff -rupN tint-0.04+nmu1/config.h tint/config.h
 +#endif
  
  #endif	/* #ifndef CONFIG_H */
-diff -rupN tint-0.04+nmu1/engine.c tint/engine.c
---- tint-0.04+nmu1/engine.c	2005-07-17 13:26:22.000000000 +0200
-+++ tint/engine.c	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/engine.c tint/engine.c
+--- tint-0.05/engine.c	2005-07-17 13:26:22.000000000 +0200
++++ tint/engine.c	2021-02-09 08:00:00.000000000 +0200
 @@ -27,10 +27,13 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -35,21 +35,21 @@ diff -rupN tint-0.04+nmu1/engine.c tint/engine.c
  #include "utils.h"
  #include "io.h"
  #include "engine.h"
-diff -rupN tint-0.04+nmu1/engine.h tint/engine.h
---- tint-0.04+nmu1/engine.h	2001-12-07 16:48:08.000000000 +0100
-+++ tint/engine.h	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/engine.h tint/engine.h
+--- tint-0.05/engine.h	2001-12-07 16:48:08.000000000 +0100
++++ tint/engine.h	2021-02-09 08:00:00.000000000 +0200
 @@ -29,7 +29,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
-
+ 
 -#include "typedefs.h"		/* bool */
 +#include "curses.h"		/* bool */
-
+ 
  /*
   * Macros
-diff -rupN tint-0.04+nmu1/io.c tint/io.c
---- tint-0.04+nmu1/io.c	2010-06-23 15:05:12.000000000 +0100
-+++ tint/io.c	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/io.c tint/io.c
+--- tint-0.05/io.c	2010-06-23 15:05:12.000000000 +0100
++++ tint/io.c	2021-02-09 08:00:00.000000000 +0200
 @@ -27,9 +27,13 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -102,25 +102,21 @@ diff -rupN tint-0.04+nmu1/io.c tint/io.c
     return ch;
  }
  
-diff -rupN tint-0.04+nmu1/io.h tint/io.h
---- tint-0.04+nmu1/io.h	2010-06-23 14:55:03.000000000 +0100
-+++ tint/io.h	2018-02-23 12:00:00.000000000 +0200
-@@ -29,9 +29,8 @@
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+diff -rupN tint-0.05/io.h tint/io.h
+--- tint-0.05/io.h	2010-06-23 14:55:03.000000000 +0100
++++ tint/io.h	2021-02-09 08:00:00.000000000 +0200
+@@ -30,7 +30,6 @@
   */
--
-+
+ 
  #include <curses.h>
 -#include <wchar.h>
--
-+
+ 
  /*
   * Colors
-  */
-diff -rupN tint-0.04+nmu1/Makefile tint/Makefile
---- tint-0.04+nmu1/Makefile	2010-06-23 15:06:11.000000000 +0200
-+++ tint/Makefile	2018-02-23 12:00:00.000000000 +0200
-@@ -1,0 +1,106 @@
+diff -rupN tint-0.05/Makefile tint/Makefile
+--- tint-0.05/Makefile	2010-06-23 15:06:11.000000000 +0200
++++ tint/Makefile	2021-02-09 08:00:00.000000000 +0200
+@@ -0,0 +1,106 @@
 +
 +# -*- sh -*-
 +
@@ -227,9 +223,9 @@ diff -rupN tint-0.04+nmu1/Makefile tint/Makefile
 +
 +
 +.PHONY: all clean do-it-all depend with-depends without-depends debian postinst
-diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
---- tint-0.04+nmu1/tint.c	2010-08-08 19:42:50.000000000 +0200
-+++ tint/tint.c	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/tint.c tint/tint.c
+--- tint-0.05/tint.c	2010-08-08 19:42:50.000000000 +0200
++++ tint/tint.c	2021-02-09 08:00:00.000000000 +0200
 @@ -1,4 +1,3 @@
 -
  /*
@@ -253,13 +249,15 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
  #include "utils.h"
  #include "io.h"
  #include "config.h"
-@@ -306,4 +306,4 @@
+@@ -304,7 +304,7 @@ static void showstatus (engine_t *engine
+           /***************************************************************************/
+ 
  /* Header for scorefile */
 -#define SCORE_HEADER	"Tint 0.02b (c) Abraham vd Merwe - Scores"
-+#define SCORE_HEADER	"Tint 0.04+nmu1 (c) Abraham vd Merwe - Scores"
--
-+
++#define SCORE_HEADER	"Tint 0.05 (c) Abraham vd Merwe - Scores"
+ 
  /* Header for score title */
+ static const char scoretitle[] = "\n\t   TINT HIGH SCORES\n\n\tRank   Score        Name\n\n";
 @@ -322,6 +322,7 @@ typedef struct
     time_t timestamp;
  } score_t;
@@ -376,7 +374,7 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
     rand_init ();							/* must be called before engine_init () */
     engine_init (&engine,score_function);	/* must be called before using engine.curshape */
     finished = shownext = FALSE;
-@@ -632,13 +651,15 @@ int main (int argc,char *argv[])
+@@ -632,12 +651,14 @@ int main (int argc,char *argv[])
  				  /* pause */
  				case 'p':
  				  out_setcolor (COLOR_WHITE,COLOR_BLACK);
@@ -393,8 +391,8 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
  				  break;
  				  /* unknown keypress */
  				default:
- 				  out_beep ();
-@@ -673,11 +694,31 @@ int main (int argc,char *argv[])
+@@ -672,12 +693,32 @@ int main (int argc,char *argv[])
+    while (!finished);
     /* Restore console settings and exit */
     io_close ();
 +#if 0
@@ -426,9 +424,9 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
 +#endif
  }
  
-diff -rupN tint-0.04+nmu1/utils.c tint/utils.c
---- tint-0.04+nmu1/utils.c	2001-12-07 16:49:19.000000000 +0100
-+++ tint/utils.c	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/utils.c tint/utils.c
+--- tint-0.05/utils.c	2001-12-07 16:49:19.000000000 +0100
++++ tint/utils.c	2021-02-09 08:00:00.000000000 +0200
 @@ -27,11 +27,13 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -458,15 +456,15 @@ diff -rupN tint-0.04+nmu1/utils.c tint/utils.c
  }
  
 +#endif
-diff -rupN tint-0.04+nmu1/utils.h tint/utils.h
---- tint-0.04+nmu1/utils.h	2001-12-07 16:49:35.000000000 +0100
-+++ tint/utils.h	2018-02-23 12:00:00.000000000 +0200
+diff -rupN tint-0.05/utils.h tint/utils.h
+--- tint-0.05/utils.h	2001-12-07 16:49:35.000000000 +0100
++++ tint/utils.h	2021-02-09 08:00:00.000000000 +0200
 @@ -29,7 +29,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
-
+ 
 -#include "typedefs.h"
 +#include <curses.h>
-
+ 
  /*
   * Initialize random number generator

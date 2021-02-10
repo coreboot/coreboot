@@ -97,7 +97,7 @@ static void southbridge_smi_store(void)
 	io_smi->rax = smmstore_exec(sub_command, (void *)reg_ebx);
 }
 
-static void sb_apmc_smi_handler(void)
+static void fch_apmc_smi_handler(void)
 {
 	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
 
@@ -124,7 +124,7 @@ static void sb_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
-static void sb_slp_typ_handler(void)
+static void fch_slp_typ_handler(void)
 {
 	uint32_t pci_ctrl, reg32;
 	uint16_t pm1cnt, reg16;
@@ -219,8 +219,8 @@ int southbridge_io_trap_handler(int smif)
  * in fch.c is unrelated to this list.
  */
 static const struct smi_sources_t smi_sources[] = {
-	{ .type = SMITYPE_SMI_CMD_PORT, .handler = sb_apmc_smi_handler },
-	{ .type = SMITYPE_SLP_TYP, .handler = sb_slp_typ_handler},
+	{ .type = SMITYPE_SMI_CMD_PORT, .handler = fch_apmc_smi_handler },
+	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler},
 };
 
 void *get_smi_source_handler(int source)

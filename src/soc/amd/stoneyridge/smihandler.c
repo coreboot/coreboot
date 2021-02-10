@@ -118,17 +118,6 @@ static void sb_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
-static void disable_all_smi_status(void)
-{
-	smi_write32(SMI_SCI_STATUS, smi_read32(SMI_SCI_STATUS));
-	smi_write32(SMI_EVENT_STATUS, smi_read32(SMI_EVENT_STATUS));
-	smi_write32(SMI_REG_SMISTS0, smi_read32(SMI_REG_SMISTS0));
-	smi_write32(SMI_REG_SMISTS1, smi_read32(SMI_REG_SMISTS1));
-	smi_write32(SMI_REG_SMISTS2, smi_read32(SMI_REG_SMISTS2));
-	smi_write32(SMI_REG_SMISTS3, smi_read32(SMI_REG_SMISTS3));
-	smi_write32(SMI_REG_SMISTS4, smi_read32(SMI_REG_SMISTS4));
-}
-
 static void sb_slp_typ_handler(void)
 {
 	uint32_t pci_ctrl, reg32;
@@ -167,7 +156,7 @@ static void sb_slp_typ_handler(void)
 
 		wbinvd();
 
-		disable_all_smi_status();
+		clear_all_smi_status();
 
 		/* Do not send SMI before AcpiPm1CntBlkx00[SlpTyp] */
 		pci_ctrl = pm_read32(PM_PCI_CTRL);

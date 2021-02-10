@@ -47,5 +47,6 @@ void configure_scimap(const struct sci_source *sci);
 void disable_gevent_smi(uint8_t gevent);
 void gpe_configure_sci(const struct sci_source *scis, size_t num_gpes);
 void soc_route_sci(uint8_t event);
+void clear_all_smi_status(void);
 
 #endif /* AMD_BLOCK_SMI_H */

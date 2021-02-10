@@ -298,12 +298,11 @@ void enable_alt_smi(u32 mask)
  * TCO
  */
 
-/* Clear TCO status and return events that are enabled and active */
+/* Clear TCO status and return events that are active */
 static u32 reset_tco_status(void)
 {
 	u32 tcobase = get_pmbase() + 0x60;
 	u32 tco_sts = inl(tcobase + 0x04);
-	u32 tco_en = inl(get_pmbase() + 0x68);
 
 	/* Don't clear BOOT_STS before SECOND_TO_STS */
 	outl(tco_sts & ~(1 << 18), tcobase + 0x04);
@@ -312,7 +311,7 @@ static u32 reset_tco_status(void)
 	if (tco_sts & (1 << 18))
 		outl(tco_sts & (1 << 18), tcobase + 0x04);
 
-	return tco_sts & tco_en;
+	return tco_sts;
 }
 
 /* Print TCO status bits */

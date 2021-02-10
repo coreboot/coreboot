@@ -191,9 +191,6 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
 	default 0x7fff
 
-config CHROMEOS
-	select CHROMEOS_RAMOOPS_DYNAMIC
-
 # Tiger Lake SoC requires at least 100us interrupt pulses in order to guarantee detection
 # in all low power states.  Cr50 TPM, if used, needs to be told to generate longer pulses.
 config TPM_CR50

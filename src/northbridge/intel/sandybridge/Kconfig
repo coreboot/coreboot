@@ -32,9 +32,6 @@ config SANDYBRIDGE_VBOOT_IN_BOOTBLOCK
 	  binary is used meaning a jump is made from RW to the RO region
 	  and back to the RW region after the binary is done.
 
-config CHROMEOS
-	select CHROMEOS_RAMOOPS_DYNAMIC
-
 config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_ROMSTAGE if !SANDYBRIDGE_VBOOT_IN_BOOTBLOCK

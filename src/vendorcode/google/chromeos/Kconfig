@@ -29,21 +29,6 @@ config CHROMEOS_RAMOOPS
 	bool "Reserve space for Chrome OS ramoops"
 	default y
 
-config CHROMEOS_RAMOOPS_DYNAMIC
-	bool "Allocate RAM oops buffer in cbmem"
-	default n
-	depends on CHROMEOS_RAMOOPS && HAVE_ACPI_TABLES
-
-config CHROMEOS_RAMOOPS_NON_ACPI
-	bool "Allocate RAM oops buffer in cbmem passed through cb tables to payload"
-	default y if !HAVE_ACPI_TABLES
-	depends on CHROMEOS_RAMOOPS && !HAVE_ACPI_TABLES
-
-config CHROMEOS_RAMOOPS_RAM_START
-	hex "Physical address of preserved RAM"
-	default 0x00f00000
-	depends on CHROMEOS_RAMOOPS && !CHROMEOS_RAMOOPS_DYNAMIC
-
 config CHROMEOS_RAMOOPS_RAM_SIZE
 	hex "Size of preserved RAM"
 	default 0x00100000

@@ -299,7 +299,6 @@ config ACPI_SSDT_PSD_INDEPENDENT
 	  choose to generate _PSD object to allow cores to transition together.
 
 config CHROMEOS
-	select CHROMEOS_RAMOOPS_DYNAMIC
 	select ALWAYS_LOAD_OPROM
 	select ALWAYS_RUN_OPROM
 

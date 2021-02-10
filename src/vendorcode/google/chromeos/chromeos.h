@@ -27,18 +27,13 @@ static inline void reboot_from_watchdog(void) { return; }
  */
 void mainboard_prepare_cr50_reset(void);
 
-struct romstage_handoff;
-
 #include "gnvs.h"
-struct device;
 
 #if CONFIG(CHROMEOS_RAMOOPS)
 void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
 #else  /* !CONFIG_CHROMEOS_RAMOOPS */
 static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
-
-void chromeos_reserve_ram_oops(struct device *dev, int idx);
 
 void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);
@@ -66,6 +61,7 @@ void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num);
  */
 void mainboard_chromeos_acpi_generate(void);
 #if CONFIG(CHROMEOS)
+struct device;
 void chromeos_dsdt_generator(const struct device *dev);
 #else
 #define chromeos_dsdt_generator NULL

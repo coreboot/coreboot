@@ -404,13 +404,6 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-static void pch_disable_smm_only_flashing(struct device *dev)
-{
-	printk(BIOS_SPEW, "Enabling BIOS updates outside of SMM... ");
-
-	pci_and_config8(dev, BIOS_CNTL, ~(1 << 5));
-}
-
 static void pch_fixups(struct device *dev)
 {
 	/* Indicate DRAM init done for MRC S3 to know it can resume */
@@ -556,8 +549,6 @@ static void lpc_init(struct device *dev)
 	/* The OS should do this? */
 	/* Interrupt 9 should be level triggered (SCI) */
 	i8259_configure_irq_trigger(9, 1);
-
-	pch_disable_smm_only_flashing(dev);
 
 	pch_set_acpi_mode();
 

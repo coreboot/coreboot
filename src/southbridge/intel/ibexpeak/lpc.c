@@ -403,16 +403,6 @@ static void pch_set_acpi_mode(void)
 	}
 }
 
-static void pch_disable_smm_only_flashing(struct device *dev)
-{
-	u8 reg8;
-
-	printk(BIOS_SPEW, "Enabling BIOS updates outside of SMM... ");
-	reg8 = pci_read_config8(dev, BIOS_CNTL);
-	reg8 &= ~(1 << 5);
-	pci_write_config8(dev, BIOS_CNTL, reg8);
-}
-
 static void pch_fixups(struct device *dev)
 {
 	/*
@@ -461,8 +451,6 @@ static void lpc_init(struct device *dev)
 	/* The OS should do this? */
 	/* Interrupt 9 should be level triggered (SCI) */
 	i8259_configure_irq_trigger(9, 1);
-
-	pch_disable_smm_only_flashing(dev);
 
 	pch_set_acpi_mode();
 

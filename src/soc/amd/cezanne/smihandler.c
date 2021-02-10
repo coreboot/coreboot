@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <cpu/x86/smm.h>
+#include <amdblocks/smm.h>
 
-void southbridge_smi_handler(void)
+void *get_smi_source_handler(int source)
 {
+	return NULL;
 }

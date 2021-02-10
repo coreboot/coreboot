@@ -6,6 +6,7 @@
 //   0x82 - backlight down
 //   0x83 - backlight up
 //   0x84 - backlight color change
+//   0x85 - OLED screen toggle
 Device (S76D) {
 	Name (_HID, "17761776")
 	Name (_UID, 0)

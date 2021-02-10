@@ -104,6 +104,9 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (_Q0B, 0, NotSerialized) // Screen Toggle
 	{
 		Debug = "EC: Screen Toggle"
+#if CONFIG(EC_SYSTEM76_EC_OLED)
+		Notify (^^^^S76D, 0x85)
+#endif // CONFIG(EC_SYSTEM76_EC_OLED)
 	}
 
 	Method (_Q0C, 0, NotSerialized)  // Mute

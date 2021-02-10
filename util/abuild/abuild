@@ -330,14 +330,23 @@ function check_config
 	local BUILD_DIR="$1"
 	local TEST_TYPE="$2"
 	local TEST_STRING="$3"
+	local NEGATE="$4"
 
 	local CONFIG_FILE="$BUILD_DIR/config.build"
 	local CONFIG_LOG="$BUILD_DIR/config.log"
 
-	if ! grep -q "$TEST_STRING" "$CONFIG_FILE"; then
-		echo "config file: $CONFIG_FILE has incorrect $TEST_TYPE"
-		echo "Error: Expected '$TEST_STRING' in config file." >> "$CONFIG_LOG"
-		return 1
+	if [ -z "$NEGATE" ]; then
+		if ! grep -q "$TEST_STRING" "$CONFIG_FILE"; then
+			echo "config file: $CONFIG_FILE has incorrect $TEST_TYPE"
+			echo "Error: Expected '$TEST_STRING' in config file." >> "$CONFIG_LOG"
+			return 1
+		fi
+	else
+		if grep -q "$TEST_STRING" "$CONFIG_FILE"; then
+			echo "config file: $CONFIG_FILE has incorrect $TEST_TYPE"
+			echo "Error: Expected not to see '$TEST_STRING' in config file." >> "$CONFIG_LOG"
+			return 1
+		fi
 	fi
 
 	return 0
@@ -443,7 +452,17 @@ function build_config
 	check_config "$build_dir" "vendor" "CONFIG_VENDOR_$(mainboard_vendor "${MAINBOARD}")=y"
 	local VENDOR_OK=$?
 
-	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ]; then
+	if [ "$chromeos" = false ]; then
+		# Skip this rule for configs created from templates that already
+		# come with CHROMEOS enabled.
+		grep -q "^CONFIG_CHROMEOS=y" ${config_file:-/dev/null} || \
+		check_config "$build_dir" "Chrome OS" "CONFIG_CHROMEOS=y" negate
+		local FORCE_ENABLED_CROS=$?
+	else
+		local FORCE_ENABLED_CROS=0
+	fi
+
+	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ] || [ $FORCE_ENABLED_CROS -eq 1 ]; then
 		junit " <testcase classname='board${testclass/#/.}' name='$BUILD_NAME' >"
 
 		junit "<failure type='BuildFailed'>"

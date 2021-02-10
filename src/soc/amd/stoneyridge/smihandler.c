@@ -217,14 +217,6 @@ static const struct smi_sources_t smi_sources[] = {
 	{ .type = SMITYPE_SLP_TYP, .handler = sb_slp_typ_handler},
 };
 
-static void process_smi_sci(void)
-{
-	const uint32_t status = smi_read32(SMI_SCI_STATUS);
-
-	/* Clear events to prevent re-entering SMI if event isn't handled */
-	smi_write32(SMI_SCI_STATUS, status);
-}
-
 static void *get_source_handler(int source)
 {
 	int i;
@@ -265,7 +257,8 @@ void southbridge_smi_handler(void)
 	const uint16_t smi_src = smi_read16(SMI_REG_POINTER);
 
 	if (smi_src & SMI_STATUS_SRC_SCI)
-		process_smi_sci();
+		/* Clear events to prevent re-entering SMI if event isn't handled */
+		clear_smi_sci_status();
 	if (smi_src & SMI_STATUS_SRC_0)
 		process_smi_sources(SMI_REG_SMISTS0);
 	if (smi_src & SMI_STATUS_SRC_1)

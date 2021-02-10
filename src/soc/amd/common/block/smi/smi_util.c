@@ -154,3 +154,8 @@ void clear_all_smi_status(void)
 	smi_write32(SMI_REG_SMISTS3, smi_read32(SMI_REG_SMISTS3));
 	smi_write32(SMI_REG_SMISTS4, smi_read32(SMI_REG_SMISTS4));
 }
+
+void clear_smi_sci_status(void)
+{
+	smi_write32(SMI_SCI_STATUS, smi_read32(SMI_SCI_STATUS));
+}

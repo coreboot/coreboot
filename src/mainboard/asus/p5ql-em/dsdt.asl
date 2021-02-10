@@ -23,7 +23,6 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/x4x/acpi/x4x.asl>
 			#include <southbridge/intel/i82801jx/acpi/ich10.asl>
-			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
 

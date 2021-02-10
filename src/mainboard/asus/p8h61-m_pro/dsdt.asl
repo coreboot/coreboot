@@ -23,7 +23,6 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
-		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 		}
 	}

@@ -28,6 +28,12 @@ config MEMLAYOUT_LD_FILE
 
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
+config SOC_AMD_COMMON_BLOCK_SMM
+	bool
+	default n
+	help
+	  Add common SMM relocation and handler functionality to the build.
+
 config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	bool
 	select COLLECT_TIMESTAMPS_NO_TSC # selected use SoC-specific timestamp function

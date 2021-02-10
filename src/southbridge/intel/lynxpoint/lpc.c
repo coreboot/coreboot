@@ -692,7 +692,6 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 						   struct acpi_rsdp *rsdp)
 {
 	unsigned long current;
-	acpi_header_t *ssdt;
 
 	current = start;
 
@@ -706,12 +705,14 @@ static unsigned long southbridge_write_acpi_tables(const struct device *device,
 
 	current = acpi_align_current(current);
 
-	printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
-	ssdt = (acpi_header_t *)current;
-	acpi_create_serialio_ssdt(ssdt);
-	current += ssdt->length;
-	acpi_add_table(rsdp, ssdt);
-	current = acpi_align_current(current);
+	if (pch_is_lp()) {
+		printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
+		acpi_header_t *ssdt = (acpi_header_t *)current;
+		acpi_create_serialio_ssdt(ssdt);
+		current += ssdt->length;
+		acpi_add_table(rsdp, ssdt);
+		current = acpi_align_current(current);
+	}
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;

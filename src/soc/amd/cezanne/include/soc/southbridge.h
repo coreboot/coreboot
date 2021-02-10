@@ -59,6 +59,10 @@
 #define   PM_LPC_A20_EN			BIT(1)
 #define   PM_LPC_ENABLE			BIT(0)
 
+#define PM1_LIMIT			16
+#define GPE0_LIMIT			32
+#define TOTAL_BITS(a)			(8 * sizeof(a))
+
 #define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
 
 /* FCH AOAC device offsets for AOAC_DEV_D3_CTL/AOAC_DEV_D3_STATE */

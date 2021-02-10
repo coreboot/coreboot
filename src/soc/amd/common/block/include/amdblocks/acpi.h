@@ -3,8 +3,9 @@
 #ifndef AMD_BLOCK_ACPI_H
 #define AMD_BLOCK_ACPI_H
 
-#include <types.h>
+#include <acpi/acpi.h>
 #include <amdblocks/gpio_banks.h>
+#include <types.h>
 
 /* ACPI MMIO registers 0xfed80800 */
 #define MMIO_ACPI_PM1_STS		0x00
@@ -46,5 +47,8 @@ struct chipset_power_state {
 	struct acpi_pm_gpe_state gpe_state;
 	struct gpio_wake_state gpio_state;
 };
+
+unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
+					    struct acpi_rsdp *rsdp);
 
 #endif /* AMD_BLOCK_ACPI_H */

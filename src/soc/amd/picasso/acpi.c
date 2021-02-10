@@ -390,13 +390,6 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_pop_len();
 }
 
-unsigned long southbridge_write_acpi_tables(const struct device *device,
-		unsigned long current,
-		struct acpi_rsdp *rsdp)
-{
-	return acpi_write_hpet(device, current, rsdp);
-}
-
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Set unknown wake source */

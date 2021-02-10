@@ -12,10 +12,10 @@
 #include <arch/ioapic.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
-#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/southbridge.h>

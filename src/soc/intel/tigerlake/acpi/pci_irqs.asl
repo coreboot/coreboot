@@ -53,7 +53,6 @@ Name (PICP, Package () {
 	/* D16 */
 	Package(){0x0010FFFF, 0, 0, 23 },
 	Package(){0x0010FFFF, 1, 0, 22 },
-	Package(){0x0010FFFF, 2, 0, 18 },
 	Package(){0x0010FFFF, 3, 0, 19 },
 	/* D13 */
 	Package(){0x000DFFFF, 0, 0, 16 },

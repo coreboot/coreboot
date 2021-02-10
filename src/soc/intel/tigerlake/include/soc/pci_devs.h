@@ -74,10 +74,8 @@
 
 /* PCH Devices */
 #define PCH_DEV_SLOT_SIO0	0x10
-#define  PCH_DEVFN_CNVI_BT	_PCH_DEVFN(SIO0, 2)
 #define  PCH_DEVFN_THC0		_PCH_DEVFN(SIO0, 6)
 #define  PCH_DEVFN_THC1		_PCH_DEVFN(SIO0, 7)
-#define  PCH_DEV_CNVI_BT	_PCH_DEV(SIO0, 2)
 #define  PCH_DEV_THC0		_PCH_DEV(SIO0, 6)
 #define  PCH_DEV_THC1		_PCH_DEV(SIO0, 7)
 

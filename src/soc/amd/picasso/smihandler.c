@@ -18,6 +18,7 @@
 #include <amdblocks/smm.h>
 #include <elog.h>
 #include <soc/smu.h>
+#include <types.h>
 
 /* bits in smm_io_trap   */
 #define SMM_IO_TRAP_PORT_OFFSET		16
@@ -33,7 +34,7 @@ static inline u16 get_io_address(u32 info)
 
 static void *find_save_state(int cmd)
 {
-	int core;
+	unsigned int core;
 	amd64_smm_state_save_area_t *state;
 	u32 smm_io_trap;
 	u8 reg_al;
@@ -225,7 +226,7 @@ static const struct smi_sources_t smi_sources[] = {
 
 void *get_smi_source_handler(int source)
 {
-	int i;
+	size_t i;
 
 	for (i = 0 ; i < ARRAY_SIZE(smi_sources) ; i++)
 		if (smi_sources[i].type == source)

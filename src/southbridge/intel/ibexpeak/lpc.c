@@ -431,9 +431,6 @@ static void lpc_init(struct device *dev)
 	/* Initialize power management */
 	mobile5_pm_init(dev);
 
-	/* Set the state of the GPIO lines. */
-	//gpio_init(dev);
-
 	/* Initialize the real time clock. */
 	pch_rtc_init(dev);
 

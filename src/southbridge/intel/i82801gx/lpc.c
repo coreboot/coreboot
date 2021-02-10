@@ -335,9 +335,6 @@ static void lpc_init(struct device *dev)
 	/* Configure Cx state registers */
 	i82801gx_configure_cstates(dev);
 
-	/* Set the state of the GPIO lines. */
-	//gpio_init(dev);
-
 	/* Initialize the real time clock. */
 	i82801gx_rtc_init(dev);
 

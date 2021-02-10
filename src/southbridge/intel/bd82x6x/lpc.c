@@ -529,9 +529,6 @@ static void lpc_init(struct device *dev)
 		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
 	}
 
-	/* Set the state of the GPIO lines. */
-	//gpio_init(dev);
-
 	/* Initialize the real time clock. */
 	sb_rtc_init();
 

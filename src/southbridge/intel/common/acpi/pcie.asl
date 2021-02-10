@@ -2,55 +2,55 @@
 
 /* Intel southbridge PCIe support */
 
+/* Interrupt Map INTA->INTA, INTB->INTB, INTC->INTC, INTD->INTD */
+Name (IQAA, Package() {
+	Package() { 0x0000ffff, 0, 0, 16 },
+	Package() { 0x0000ffff, 1, 0, 17 },
+	Package() { 0x0000ffff, 2, 0, 18 },
+	Package() { 0x0000ffff, 3, 0, 19 } })
+Name (IQAP, Package() {
+	Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+	Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+	Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+	Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
+
+/* Interrupt Map INTA->INTB, INTB->INTC, INTC->INTD, INTD->INTA */
+Name (IQBA, Package() {
+	Package() { 0x0000ffff, 0, 0, 17 },
+	Package() { 0x0000ffff, 1, 0, 18 },
+	Package() { 0x0000ffff, 2, 0, 19 },
+	Package() { 0x0000ffff, 3, 0, 16 } })
+Name (IQBP, Package() {
+	Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
+	Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKC, 0 },
+	Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKD, 0 },
+	Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKA, 0 } })
+
+/* Interrupt Map INTA->INTC, INTB->INTD, INTC->INTA, INTD->INTB */
+Name (IQCA, Package() {
+	Package() { 0x0000ffff, 0, 0, 18 },
+	Package() { 0x0000ffff, 1, 0, 19 },
+	Package() { 0x0000ffff, 2, 0, 16 },
+	Package() { 0x0000ffff, 3, 0, 17 } })
+Name (IQCP, Package() {
+	Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
+	Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKD, 0 },
+	Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKA, 0 },
+	Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKB, 0 } })
+
+/* Interrupt Map INTA->INTD, INTB->INTA, INTC->INTB, INTD->INTC */
+Name (IQDA, Package() {
+	Package() { 0x0000ffff, 0, 0, 19 },
+	Package() { 0x0000ffff, 1, 0, 16 },
+	Package() { 0x0000ffff, 2, 0, 17 },
+	Package() { 0x0000ffff, 3, 0, 18 } })
+Name (IQDP, Package() {
+	Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
+	Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKA, 0 },
+	Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKB, 0 },
+	Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKC, 0 } })
+
 Method (IRQM, 1, Serialized) {
-
-	/* Interrupt Map INTA->INTA, INTB->INTB, INTC->INTC, INTD->INTD */
-	Name (IQAA, Package() {
-		Package() { 0x0000ffff, 0, 0, 16 },
-		Package() { 0x0000ffff, 1, 0, 17 },
-		Package() { 0x0000ffff, 2, 0, 18 },
-		Package() { 0x0000ffff, 3, 0, 19 } })
-	Name (IQAP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
-
-	/* Interrupt Map INTA->INTB, INTB->INTC, INTC->INTD, INTD->INTA */
-	Name (IQBA, Package() {
-		Package() { 0x0000ffff, 0, 0, 17 },
-		Package() { 0x0000ffff, 1, 0, 18 },
-		Package() { 0x0000ffff, 2, 0, 19 },
-		Package() { 0x0000ffff, 3, 0, 16 } })
-	Name (IQBP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKA, 0 } })
-
-	/* Interrupt Map INTA->INTC, INTB->INTD, INTC->INTA, INTD->INTB */
-	Name (IQCA, Package() {
-		Package() { 0x0000ffff, 0, 0, 18 },
-		Package() { 0x0000ffff, 1, 0, 19 },
-		Package() { 0x0000ffff, 2, 0, 16 },
-		Package() { 0x0000ffff, 3, 0, 17 } })
-	Name (IQCP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKB, 0 } })
-
-	/* Interrupt Map INTA->INTD, INTB->INTA, INTC->INTB, INTD->INTC */
-	Name (IQDA, Package() {
-		Package() { 0x0000ffff, 0, 0, 19 },
-		Package() { 0x0000ffff, 1, 0, 16 },
-		Package() { 0x0000ffff, 2, 0, 17 },
-		Package() { 0x0000ffff, 3, 0, 18 } })
-	Name (IQDP, Package() {
-		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
-		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKA, 0 },
-		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKB, 0 },
-		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKC, 0 } })
 
 	Switch (ToInteger (Arg0)) {
 		/* PCIe Root Port 1 and 5 */

@@ -38,7 +38,7 @@ static void ramoops_alloc(void *arg)
 		return;
 	}
 
-	if (CONFIG(HAVE_ACPI_TABLES))
+	if (CONFIG(CHROMEOS_NVS))
 		set_ramoops(ram_oops, size);
 }
 

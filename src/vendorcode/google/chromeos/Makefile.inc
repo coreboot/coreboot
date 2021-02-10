@@ -1,7 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
+ramstage-$(CONFIG_CHROMEOS_NVS) += gnvs.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
 ramstage-y += vpd_mac.c vpd_serialno.c vpd_calibration.c

@@ -770,7 +770,7 @@ static int intel_me_extend_valid(struct device *dev)
 	printk(BIOS_DEBUG, "\n");
 
 	/* Save hash in NVS for the OS to verify */
-	if (CONFIG(CHROMEOS))
+	if (CONFIG(CHROMEOS_NVS))
 		chromeos_set_me_hash(extend, count);
 
 	return 0;

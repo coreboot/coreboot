@@ -12,6 +12,7 @@ config CHROMEOS
 	select ELOG if BOOT_DEVICE_SUPPORTS_WRITES
 	select COLLECT_TIMESTAMPS
 	select VBOOT
+	select CHROMEOS_NVS if ACPI_SOC_NVS
 	select VPD
 	select VBOOT_SLOTS_RW_AB
 	help
@@ -86,6 +87,10 @@ config CHROMEOS_DRAM_PART_NUMBER_IN_CBI
 	help
 	  Some boards declare the DRAM part number in the CBI instead of the SPD.  This option
 	  allows those boards to declare that their DRAM part number is stored in the CBI.
+
+config CHROMEOS_NVS
+	bool
+	depends on ACPI_SOC_NVS
 
 endif # CHROMEOS
 endmenu

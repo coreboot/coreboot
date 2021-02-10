@@ -21,7 +21,7 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	if (CONFIG(CHROMEOS) && !parrot_ec_running_ro())
+	if (CONFIG(CHROMEOS_NVS) && !parrot_ec_running_ro())
 		gnvs_set_ecfw_rw();
 
 	/* EC handles all active thermal and fan control on Parrot. */

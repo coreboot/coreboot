@@ -18,7 +18,7 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	// The firmware read/write status is a "virtual" switch and
 	// will be handled elsewhere.  Until then hard-code to
 	// read/write instead of read-only for developer mode.
-	if (CONFIG(CHROMEOS))
+	if (CONFIG(CHROMEOS_NVS))
 		gnvs_set_ecfw_rw();
 
 	// the lid is open by default.

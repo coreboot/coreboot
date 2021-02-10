@@ -26,7 +26,7 @@ void acpi_create_gnvs(void)
 		gnvs_size = 0x100;
 	if (CONFIG(ACPI_HAS_DEVICE_NVS))
 		gnvs_size = 0x2000;
-	else if (CONFIG(CHROMEOS))
+	else if (CONFIG(CHROMEOS_NVS))
 		gnvs_size = 0x1000;
 
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size);
@@ -38,7 +38,7 @@ void acpi_create_gnvs(void)
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 
-	if (CONFIG(CHROMEOS))
+	if (CONFIG(CHROMEOS_NVS))
 		gnvs_assign_chromeos((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
 }
 
@@ -78,7 +78,7 @@ void acpi_fill_gnvs(void)
 	acpigen_write_name_dword("NVS0", 0x100);
 	acpigen_pop_len();
 
-	if (CONFIG(CHROMEOS)) {
+	if (CONFIG(CHROMEOS_NVS)) {
 		acpigen_write_scope("\\");
 		acpigen_write_name_dword("NVB2", (uintptr_t)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
 		acpigen_write_name_dword("NVS2", 0xf00);

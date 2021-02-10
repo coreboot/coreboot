@@ -19,7 +19,7 @@ External (NVS1, IntObj)
 OperationRegion (DNVS, SystemMemory, NVB1, NVS1)
 #endif
 
-#if CONFIG(CHROMEOS)
+#if CONFIG(CHROMEOS_NVS)
 External (NVB2, IntObj)
 External (NVS2, IntObj)
 OperationRegion (CNVS, SystemMemory, NVB2, NVS2)

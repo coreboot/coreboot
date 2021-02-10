@@ -44,6 +44,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->tmax = MAX_TEMPERATURE;
 	gnvs->flvl = 5;
 
-	if (CONFIG(CHROMEOS) && ec_read(0xcb))
+	if (CONFIG(CHROMEOS_NVS) && ec_read(0xcb))
 		gnvs_set_ecfw_rw();
 }

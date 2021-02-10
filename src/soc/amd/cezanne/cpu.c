@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/cpu.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/lapic.h>
 #include <device/device.h>
 #include <soc/cpu.h>
 
 static void zen_2_3_init(struct device *dev)
 {
+	setup_lapic();
+	set_cstate_io_addr();
 }
 
 static struct device_operations cpu_dev_ops = {

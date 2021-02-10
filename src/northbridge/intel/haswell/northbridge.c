@@ -14,7 +14,6 @@
 #include <boot/tables.h>
 #include <security/intel/txt/txt_register.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "chip.h"
 #include "haswell.h"
@@ -335,9 +334,6 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
-
-	if (CONFIG(CHROMEOS_RAMOOPS))
-		chromeos_reserve_ram_oops(dev, index++);
 
 	*resource_cnt = index;
 }

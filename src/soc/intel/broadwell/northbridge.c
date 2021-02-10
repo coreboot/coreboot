@@ -9,7 +9,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -371,9 +370,6 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
 				(0x100000 - 0xc0000) >> 10);
-
-	if (CONFIG(CHROMEOS))
-		chromeos_reserve_ram_oops(dev, index++);
 
 	*resource_cnt = index;
 }

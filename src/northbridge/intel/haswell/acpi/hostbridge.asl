@@ -182,11 +182,6 @@ Device (PDRC)
 		Memory32Fixed (ReadWrite, 0xfed20000, 0x00020000) // Misc ICH
 		Memory32Fixed (ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
 		Memory32Fixed (ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
-
-#if CONFIG(CHROMEOS_RAMOOPS)
-		Memory32Fixed (ReadWrite, CONFIG_CHROMEOS_RAMOOPS_RAM_START,
-					  CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE)
-#endif
 	})
 
 	// Current Resource Settings

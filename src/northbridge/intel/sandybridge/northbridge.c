@@ -14,6 +14,7 @@
 #include "chip.h"
 #include "sandybridge.h"
 #include <cpu/intel/smm_reloc.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* IGD UMA memory */
 static uint64_t uma_memory_base = 0;
@@ -67,11 +68,8 @@ static void add_fixed_resources(struct device *dev, int index)
 
 	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
-#if CONFIG(CHROMEOS_RAMOOPS)
-	reserved_ram_resource(dev, index++,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE  >> 10);
-#endif
+	if (CONFIG(CHROMEOS_RAMOOPS))
+		chromeos_reserve_ram_oops(dev, index++);
 
 	if (is_sandybridge()) {
 		/* Required for SandyBridge sighting 3715511 */

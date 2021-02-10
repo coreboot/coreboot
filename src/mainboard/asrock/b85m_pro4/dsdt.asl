@@ -13,7 +13,6 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
-	#include "acpi/superio.asl"
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
 	#include <southbridge/intel/common/acpi/sleepstates.asl>

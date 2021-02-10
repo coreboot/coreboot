@@ -13,7 +13,6 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
-	#include "acpi/superio.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>

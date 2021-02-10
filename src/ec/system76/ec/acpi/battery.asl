@@ -30,29 +30,29 @@ Device (BAT0)
 
 	Name (PBIF, Package (0x0D)
 	{
-		One,
-		0xFFFFFFFF,
-		0xFFFFFFFF,
-		One,
-		0x39D0,
-		Zero,
-		Zero,
-		0x40,
-		0x40,
-		"BAT",
-		"0001",
-		"LION",
-		"Notebook"
+		One, // 0 - Power Unit
+		0xFFFFFFFF, // 1 - Design Capacity
+		0xFFFFFFFF, // 2 - Last Full Charge Capacity
+		One, // 3 - Battery Technology
+		0xFFFFFFFF, // 4 - Design Voltage
+		Zero, // 5 - Design Capacity of Warning
+		Zero, // 6 - Design Capacity of Low
+		0x40, // 7 - Battery Capacity Granularity 1
+		0x40, // 8 - Battery Capacity Granularity 2
+		" ", // 9 - Model Number
+		" ", // 10 - Serial Number
+		" ", // 11 - Battery Type
+		" " // 12 - OEM Information
 	})
 	Method (IVBI, 0, NotSerialized)
 	{
-		PBIF [One] = 0xFFFFFFFF
-		PBIF [0x02] = 0xFFFFFFFF
-		PBIF [0x04] = 0xFFFFFFFF
-		PBIF [0x09] = " "
-		PBIF [0x0A] = " "
-		PBIF [0x0B] = " "
-		PBIF [0x0C] = " "
+		PBIF [1] = 0xFFFFFFFF
+		PBIF [2] = 0xFFFFFFFF
+		PBIF [4] = 0xFFFFFFFF
+		PBIF [9] = " "
+		PBIF [10] = " "
+		PBIF [11] = " "
+		PBIF [12] = " "
 		BFCC = Zero
 	}
 
@@ -61,20 +61,20 @@ Device (BAT0)
 		If (^^PCI0.LPCB.EC0.BAT0)
 		{
 			Local0 = (^^PCI0.LPCB.EC0.BDC0 & 0xFFFF)
-			PBIF [One] = Local0
+			PBIF [1] = Local0
 			Local0 = (^^PCI0.LPCB.EC0.BFC0 & 0xFFFF)
-			PBIF [0x02] = Local0
+			PBIF [2] = Local0
 			BFCC = Local0
 			Local0 = (^^PCI0.LPCB.EC0.BDV0 & 0xFFFF)
-			PBIF [0x04] = Local0
+			PBIF [4] = Local0
 			Local0 = (^^PCI0.LPCB.EC0.BCW0 & 0xFFFF)
-			PBIF [0x05] = Local0
+			PBIF [5] = Local0
 			Local0 = (^^PCI0.LPCB.EC0.BCL0 & 0xFFFF)
-			PBIF [0x06] = Local0
-			PBIF [0x09] = "BAT"
-			PBIF [0x0A] = "0001"
-			PBIF [0x0B] = "LION"
-			PBIF [0x0C] = "Notebook"
+			PBIF [6] = Local0
+			PBIF [9] = "BAT"
+			PBIF [10] = "0001"
+			PBIF [11] = "LION"
+			PBIF [12] = "Notebook"
 		}
 		Else
 		{
@@ -98,17 +98,17 @@ Device (BAT0)
 
 	Name (PBST, Package (0x04)
 	{
-		Zero,
-		0xFFFFFFFF,
-		0xFFFFFFFF,
-		0x3D90
+		Zero, // 0 - Battery state
+		0xFFFFFFFF, // 1 - Battery present rate
+		0xFFFFFFFF, // 2 - Battery remaining capacity
+		0xFFFFFFFF // 3 - Battery present voltage
 	})
 	Method (IVBS, 0, NotSerialized)
 	{
-		PBST [Zero] = Zero
-		PBST [One] = 0xFFFFFFFF
-		PBST [0x02] = 0xFFFFFFFF
-		PBST [0x03] = 0x2710
+		PBST [0] = Zero
+		PBST [1] = 0xFFFFFFFF
+		PBST [2] = 0xFFFFFFFF
+		PBST [3] = 0xFFFFFFFF
 	}
 
 	Method (UPBS, 0, NotSerialized)
@@ -139,10 +139,10 @@ Device (BAT0)
 
 			Local2 = (^^PCI0.LPCB.EC0.BRC0 & 0xFFFF)
 			Local3 = (^^PCI0.LPCB.EC0.BPV0 & 0xFFFF)
-			PBST [Zero] = Local0
-			PBST [One] = Local1
-			PBST [0x02] = Local2
-			PBST [0x03] = Local3
+			PBST [0] = Local0
+			PBST [1] = Local1
+			PBST [2] = Local2
+			PBST [3] = Local3
 			If ((BFCC != ^^PCI0.LPCB.EC0.BFC0))
 			{
 				Notify (BAT0, 0x81) // Information Change

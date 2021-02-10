@@ -12,7 +12,6 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include "acpi/mainboard.asl"
 	#include "acpi/platform.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>

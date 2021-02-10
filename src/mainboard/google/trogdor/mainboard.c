@@ -110,6 +110,11 @@ static void display_startup(void)
 
 static void mainboard_init(struct device *dev)
 {
+	/* Take FPMCU out of reset. Power was already applied
+	   in romstage and should have stabilized by now. */
+	if (CONFIG(TROGDOR_HAS_FINGERPRINT))
+		gpio_output(GPIO_FP_RST_L, 1);
+
 	setup_usb();
 	qi2s_configure_gpios();
 	load_qup_fw();

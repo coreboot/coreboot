@@ -12,9 +12,16 @@ void setup_chromeos_gpios(void)
 	gpio_input_pullup(GPIO_SD_CD_L);
 	gpio_input_irq(GPIO_H1_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);
 	gpio_output(GPIO_AMP_ENABLE, 0);
+
 	gpio_output(GPIO_BACKLIGHT_ENABLE, 0);
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 0);
 	gpio_output(GPIO_EDP_BRIDGE_ENABLE, 0);
+
+	if (CONFIG(TROGDOR_HAS_FINGERPRINT)) {
+		gpio_output(GPIO_FPMCU_BOOT0, 0);
+		gpio_output(GPIO_FP_RST_L, 0);
+		gpio_output(GPIO_EN_FP_RAILS, 0);
+	}
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

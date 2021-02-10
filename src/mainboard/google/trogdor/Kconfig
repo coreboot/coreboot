@@ -8,6 +8,11 @@ config TROGDOR_REV0
 	def_bool y if BOARD_GOOGLE_TROGDOR
 	def_bool n
 
+config TROGDOR_HAS_FINGERPRINT
+	bool
+	default y if BOARD_GOOGLE_COACHZ
+	default n
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_8192

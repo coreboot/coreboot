@@ -3,7 +3,7 @@
 #ifndef AMD_BLOCK_PCI_UTIL_H
 #define AMD_BLOCK_PCI_UTIL_H
 
-#include <stdint.h>
+#include <types.h>
 #include <soc/amd_pci_int_defs.h>
 
 /* FCH index/data registers */

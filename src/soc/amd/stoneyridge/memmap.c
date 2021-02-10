@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/smm.h>
 #include <assert.h>
 #include <stdint.h>
 #include <console/console.h>
@@ -54,28 +55,6 @@ static uintptr_t smm_region_start(void)
 static size_t smm_region_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;
-}
-
-/*
- * For data stored in TSEG, ensure TValid is clear so R/W access can reach
- * the DRAM when not in SMM.
- */
-static void clear_tvalid(void)
-{
-	msr_t hwcr = rdmsr(HWCR_MSR);
-	msr_t mask = rdmsr(SMM_MASK_MSR);
-	int tvalid = !!(mask.lo & SMM_TSEG_VALID);
-
-	if (hwcr.lo & SMM_LOCK) {
-		if (!tvalid) /* not valid but locked means still accessible */
-			return;
-
-		printk(BIOS_ERR, "Error: can't clear TValid, already locked\n");
-		return;
-	}
-
-	mask.lo &= ~SMM_TSEG_VALID;
-	wrmsr(SMM_MASK_MSR, mask);
 }
 
 void smm_region(uintptr_t *start, size_t *size)

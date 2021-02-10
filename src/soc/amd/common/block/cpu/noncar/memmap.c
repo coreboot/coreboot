@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/memmap.h>
+#include <amdblocks/smm.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/amd/msr.h>
@@ -31,28 +32,6 @@ const struct memmap_early_dram *memmap_get_early_dram_usage(void)
 		die("ERROR: Failed to read early dram usage!\n");
 
 	return e;
-}
-
-/*
- * For data stored in TSEG, ensure TValid is clear so R/W access can reach
- * the DRAM when not in SMM.
- */
-static void clear_tvalid(void)
-{
-	msr_t hwcr = rdmsr(HWCR_MSR);
-	msr_t mask = rdmsr(SMM_MASK_MSR);
-	int tvalid = !!(mask.lo & SMM_TSEG_VALID);
-
-	if (hwcr.lo & SMM_LOCK) {
-		if (!tvalid) /* not valid but locked means still accessible */
-			return;
-
-		printk(BIOS_ERR, "Error: can't clear TValid, already locked\n");
-		return;
-	}
-
-	mask.lo &= ~SMM_TSEG_VALID;
-	wrmsr(SMM_MASK_MSR, mask);
 }
 
 void smm_region(uintptr_t *start, size_t *size)

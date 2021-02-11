@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <fmap.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>

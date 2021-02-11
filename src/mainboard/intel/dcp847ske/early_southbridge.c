@@ -9,14 +9,6 @@
 #include "superio.h"
 #include "thermal.h"
 
-void mainboard_late_rcba_config(void)
-{
-	/* Set "mobile" bit in MCH (which makes sense layout-wise). */
-	/* Note sure if this has any effect at all though. */
-	MCHBAR32(0x0004) |= 0x00001000;
-	MCHBAR32(0x0104) |= 0x00001000;
-}
-
 static const u16 hwm_initvals[] = {
 	HWM_BANK(0),
 	HWM_INITVAL(0xae, 0x01), /* Enable PECI Agent0 */

@@ -52,7 +52,7 @@ config MAINBOARD_VERSION
 	default "1.0" if BOARD_PURISM_LIBREM13_V1
 	default "2.0" if BOARD_PURISM_LIBREM15_V2
 
-config PRE_GRAPHICS_DELAY
+config PRE_GRAPHICS_DELAY_MS
 	int
 	default 50
 

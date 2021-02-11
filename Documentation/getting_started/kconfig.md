@@ -607,7 +607,7 @@ int &lt;expr&gt; \[if &lt;expr&gt;\]
 
 
 ##### Example:
-    config PRE_GRAPHICS_DELAY
+    config PRE_GRAPHICS_DELAY_MS
         int "Graphics initialization delay in ms"
         default 0
         help

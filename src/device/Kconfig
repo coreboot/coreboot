@@ -117,7 +117,7 @@ config NO_GFX_INIT
 
 endchoice
 
-config PRE_GRAPHICS_DELAY
+config PRE_GRAPHICS_DELAY_MS
 	int "Graphics initialization delay in ms"
 	default 0
 	depends on VGA_ROM_RUN

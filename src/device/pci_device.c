@@ -734,8 +734,8 @@ static int should_load_oprom(struct device *dev)
 
 static void oprom_pre_graphics_stall(void)
 {
-	if (CONFIG_PRE_GRAPHICS_DELAY)
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY);
+	if (CONFIG_PRE_GRAPHICS_DELAY_MS)
+		mdelay(CONFIG_PRE_GRAPHICS_DELAY_MS);
 }
 
 /** Default handler: only runs the relevant PCI BIOS. */

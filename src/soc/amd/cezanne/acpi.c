@@ -33,6 +33,14 @@ unsigned long acpi_fill_madt(unsigned long current)
 		(acpi_madt_irqoverride_t *)current,
 		MP_BUS_ISA, ACPI_SCI_IRQ, ACPI_SCI_IRQ,
 		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+	current = acpi_fill_madt_irqoverride(current);
+
+	/* create all subtables for processors */
+	current += acpi_create_madt_lapic_nmi(
+		(acpi_madt_lapic_nmi_t *)current,
+		ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS,
+		MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+		1 /* 1: LINT1 connect to NMI */);
 
 	return current;
 }

@@ -5,7 +5,6 @@
  */
 
 #include <amdblocks/acpimmio.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 
 #include "smi.h"

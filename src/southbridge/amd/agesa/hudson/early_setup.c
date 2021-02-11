@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
 
 #include "hudson.h"
 

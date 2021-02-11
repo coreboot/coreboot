@@ -8,7 +8,6 @@
 #include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
 
 #include "hudson.h"
 #include "pci_devs.h"

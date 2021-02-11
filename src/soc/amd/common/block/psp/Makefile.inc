@@ -20,5 +20,6 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2),y)
 romstage-y += psp_gen2.c
 ramstage-y += psp_gen2.c
 smm-y += psp_gen2.c
+smm-y += psp_smm_gen2.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2

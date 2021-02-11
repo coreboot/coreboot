@@ -11,6 +11,7 @@
 
 static void sm_init(struct device *dev)
 {
+	fch_enable_ioapic_decode();
 	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 }
 

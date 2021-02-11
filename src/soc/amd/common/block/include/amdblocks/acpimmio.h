@@ -17,6 +17,7 @@
 #define PM_DECODE_EN			0x00
 #define   SMBUS_ASF_IO_BASE_SHIFT	8
 #define   SMBUS_ASF_IO_BASE_MASK	(0xff << SMBUS_ASF_IO_BASE_SHIFT)
+#define   FCH_IOAPIC_EN			(1 << 5)
 #define   SMBUS_ASF_IO_EN		(1 << 4)
 #define   CF9_IO_EN			(1 << 1)
 #define   LEGACY_IO_EN			(1 << 0)
@@ -75,6 +76,7 @@ void enable_acpimmio_decode_pm04(void);
 void fch_enable_cf9_io(void);
 void fch_enable_legacy_io(void);
 void fch_io_enable_legacy_io(void);
+void fch_enable_ioapic_decode(void);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

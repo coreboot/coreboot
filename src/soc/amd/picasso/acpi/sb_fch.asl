@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/amd/common/acpi/aoac.asl>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio_map.h>
-#include <aoac.asl>
 
 Device (AAHB)
 {

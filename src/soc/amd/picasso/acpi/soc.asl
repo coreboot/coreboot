@@ -11,9 +11,6 @@ Device(PCI0) {
 /* Describe PCI INT[A-H] for the Southbridge */
 #include "pci_int.asl"
 
-/* Describe the AOAC devices */
-#include "aoac.asl"
-
 /* Describe the devices in the Southbridge */
 #include "sb_fch.asl"
 

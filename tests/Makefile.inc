@@ -59,8 +59,8 @@ stages:= decompressor bootblock romstage smm verstage
 stages+= ramstage rmodule postcar libagesa
 
 alltests:=
-subdirs:= tests/arch tests/commonlib tests/console tests/cpu tests/device
-subdirs+= tests/drivers tests/ec tests/lib tests/mainboard
+subdirs:= tests/arch tests/acpi tests/commonlib tests/console tests/cpu
+subdirs+= tests/device tests/drivers tests/ec tests/lib tests/mainboard
 subdirs+= tests/northbridge tests/security tests/soc tests/southbridge
 subdirs+= tests/superio tests/vendorcode
 

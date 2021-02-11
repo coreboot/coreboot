@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <spi_flash.h>
 #include <spi-generic.h>

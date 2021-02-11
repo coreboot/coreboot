@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <endian.h>
 #include <string.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>

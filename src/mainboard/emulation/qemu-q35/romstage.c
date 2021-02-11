@@ -2,7 +2,6 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <device/pci_ops.h>
 

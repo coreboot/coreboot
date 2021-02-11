@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <fw_config.h>
-#include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 
 /* Pad configuration in ramstage*/

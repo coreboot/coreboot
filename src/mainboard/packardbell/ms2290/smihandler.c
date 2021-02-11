@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/common/pmutil.h>

@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <superio/smsc/sch5545/sch5545.h>
 

@@ -8,7 +8,6 @@
 #include <soc/smi.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
-#include <console/console.h>
 
 void mainboard_smi_gpi(u32 gpi_sts)
 {

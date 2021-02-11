@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
-#include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <gpio.h>

@@ -3,7 +3,6 @@
 #include <arch/io.h>
 #include <bootstate.h>
 #include <cf9_reset.h>
-#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>

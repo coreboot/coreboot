@@ -40,6 +40,4 @@ DefinitionBlock(
 
 		#include <acpi/uncore.asl>
 	}
-
-	#include "acpi/mainboard.asl"
 }

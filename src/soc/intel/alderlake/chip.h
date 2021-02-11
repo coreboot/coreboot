@@ -206,6 +206,9 @@ struct soc_intel_alderlake_config {
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 
+	/* CNVi BT Core Enable/Disable */
+	bool CnviBtCore;
+
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	bool CnviBtAudioOffload;
 

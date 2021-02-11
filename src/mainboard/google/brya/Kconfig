@@ -13,6 +13,8 @@ config BOARD_GOOGLE_BASEBOARD_BRYA
 	select HAVE_SPD_IN_CBFS
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select MAINBOARD_HAS_TPM2
 	select SOC_INTEL_ALDERLAKE
 
 if BOARD_GOOGLE_BASEBOARD_BRYA
@@ -29,6 +31,18 @@ config CHROMEOS
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x3
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 13 # GPE0_DW0_13 (GPP_A13_IRQ)
 
 config OVERRIDE_DEVICETREE
 	string

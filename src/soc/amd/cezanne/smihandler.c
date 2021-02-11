@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/psp.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
 #include <arch/hlt.h>
@@ -22,6 +23,10 @@ static void fch_apmc_smi_handler(void)
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		acpi_disable_sci();
+		break;
+	case APM_CNT_SMMINFO:
+		psp_notify_smm();
+		break;
 	}
 
 	mainboard_smi_apmc(cmd);

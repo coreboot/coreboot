@@ -46,9 +46,7 @@ void mb_get_spd_map(uint8_t spd_map[4])
 	spd_map[2] = 0xa4;
 }
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
-{
-	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
+	const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */
 		{ 0x0064, 1, 0,               /* P0: VP8 */
 		  USB_PORT_MINI_PCIE },
@@ -68,14 +66,10 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		  USB_PORT_SKIP },
 	};
 
-	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS] = {
+	const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
 		/* Enable, OCn# */
 		{ 1, 0 }, /* P1; CN22 */
 		{ 1, 1 }, /* P2; CN23  */
 		{ 1, 2 }, /* P3; CN25 */
 		{ 1, 2 }, /* P4; CN25 */
 	};
-
-	memcpy(pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
-	memcpy(pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
-}

@@ -18,6 +18,7 @@
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
+#include <string.h>
 
 /* Copy SPD data for on-board memory */
 void __weak copy_spd(struct pei_data *peid)
@@ -70,7 +71,8 @@ void mainboard_romstage_entry(void)
 		.usb_xhci_on_resume	= cfg->usb_xhci_on_resume,
 	};
 
-	mainboard_fill_pei_data(&pei_data);
+	memcpy(pei_data.usb2_ports, mainboard_usb2_ports, sizeof(mainboard_usb2_ports));
+	memcpy(pei_data.usb3_ports, mainboard_usb3_ports, sizeof(mainboard_usb3_ports));
 
 	enable_lapic();
 

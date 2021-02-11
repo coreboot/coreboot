@@ -46,8 +46,3 @@ void mb_get_spd_map(uint8_t spd_map[4])
 	spd_map[0] = 0xff;
 	spd_map[2] = 0xff;
 }
-
-void mainboard_fill_pei_data(struct pei_data *pei_data)
-{
-	variant_romstage_entry(pei_data);
-}

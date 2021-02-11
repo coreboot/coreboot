@@ -62,9 +62,7 @@ void copy_spd(struct pei_data *peid)
 	}
 }
 
-void variant_romstage_entry(struct pei_data *pei_data)
-{
-	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS] = {
+	const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
 		/* Length, Enable, OCn#, Location */
 		{ 0x0150, 1, USB_OC_PIN_SKIP, /* P0: LTE */
 		  USB_PORT_MINI_PCIE },
@@ -84,14 +82,10 @@ void variant_romstage_entry(struct pei_data *pei_data)
 		  USB_PORT_SKIP },
 	};
 
-	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS] = {
+	const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
 		/* Enable, OCn# */
 		{ 1, 0               }, /* P1; Port A, CN6 */
 		{ 0, USB_OC_PIN_SKIP }, /* P2; */
 		{ 0, USB_OC_PIN_SKIP }, /* P3; */
 		{ 0, USB_OC_PIN_SKIP }, /* P4; */
 	};
-
-	memcpy(pei_data->usb2_ports, usb2_ports, sizeof(usb2_ports));
-	memcpy(pei_data->usb3_ports, usb3_ports, sizeof(usb3_ports));
-}

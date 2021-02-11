@@ -29,18 +29,6 @@
 #include <version.h>
 #include "chip.h"
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-					     CONFIG_MMCONF_BASE_ADDRESS,
-					     0,
-					     0,
-					     CONFIG_MMCONF_BUS_NUMBER - 1);
-
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	const struct soc_amd_picasso_config *cfg = config_of_soc();

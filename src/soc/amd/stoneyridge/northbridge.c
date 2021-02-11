@@ -162,18 +162,6 @@ static void northbridge_init(struct device *dev)
 	setup_ioapic((u8 *)IO_APIC2_ADDR, CONFIG_MAX_CPUS+1);
 }
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-					     CONFIG_MMCONF_BASE_ADDRESS,
-					     0,
-					     0,
-					     CONFIG_MMCONF_BUS_NUMBER - 1);
-
-	return current;
-}
-
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 {
 	void *addr, *current;

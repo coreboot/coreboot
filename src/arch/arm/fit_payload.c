@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <console/console.h>
 #include <bootmem.h>
 #include <program_loading.h>
 #include <fit.h>

@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_pm.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <elog.h>

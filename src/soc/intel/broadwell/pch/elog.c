@@ -2,7 +2,6 @@
 
 #include <acpi/acpi_pm.h>
 #include <bootstate.h>
-#include <console/console.h>
 #include <stdint.h>
 #include <elog.h>
 #include <soc/lpc.h>

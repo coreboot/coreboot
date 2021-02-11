@@ -3,7 +3,6 @@
 #include <acpi/acpi_pm.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <stdint.h>

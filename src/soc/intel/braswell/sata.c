@@ -3,7 +3,6 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/sata.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

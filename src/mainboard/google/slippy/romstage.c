@@ -1,9 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
+#include <cbfs.h>
+#include <console/console.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <string.h>
+#include <types.h>
+
 #include "variant.h"
 
 void mainboard_config_rcba(void)
@@ -45,4 +49,27 @@ void mb_get_spd_map(uint8_t spd_map[4])
 {
 	spd_map[0] = 0xff;
 	spd_map[2] = 0xff;
+}
+
+unsigned int fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
+{
+	uint8_t *spd_file;
+	size_t spd_file_len;
+
+	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spd_index = 0;
+	}
+
+	if (spd_file_len < SPD_LEN)
+		die("Missing SPD data.");
+
+	memcpy(spd, spd_file + (spd_index * SPD_LEN), SPD_LEN);
+
+	return spd_index;
 }

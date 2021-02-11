@@ -1,11 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <string.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <cpu/intel/haswell/haswell.h>
-#include "ec/google/chromeec/ec.h"
-#include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
@@ -15,33 +10,15 @@
 void copy_spd(struct pei_data *peid)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
-	int spd_index = get_gpios(gpio_vector);
-	char *spd_file;
-	size_t spd_file_len;
-	size_t spd_len = sizeof(peid->spd_data[0]);
 
-	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < ((spd_index + 1) * spd_len)) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	if (spd_file_len < spd_len)
-		die("Missing SPD data.");
-
-	memcpy(peid->spd_data[0], spd_file + (spd_index * spd_len), spd_len);
+	unsigned int spd_index = fill_spd_for_index(peid->spd_data[0], get_gpios(gpio_vector));
 
 	/* Index 0-2, are 4GB config with both CH0 and CH1
 	 * Index 3-5, are 2GB config with CH0 only
 	 */
 	switch (spd_index) {
 	case 0: case 1: case 2:
-		memcpy(peid->spd_data[1],
-			spd_file + (spd_index * spd_len), spd_len);
+		memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
 		break;
 	case 3: case 4: case 5:
 		peid->dimm_channel1_disabled = 3;

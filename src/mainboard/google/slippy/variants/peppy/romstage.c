@@ -2,11 +2,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <cpu/intel/haswell/haswell.h>
-#include "ec/google/chromeec/ec.h"
-#include <northbridge/intel/haswell/haswell.h>
+#include <ec/google/chromeec/ec.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
@@ -17,27 +13,10 @@
 void copy_spd(struct pei_data *peid)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
-	int spd_index = get_gpios(gpio_vector);
-	char *spd_file;
-	size_t spd_file_len;
-	size_t spd_len = sizeof(peid->spd_data[0]);
+
+	unsigned int spd_index = fill_spd_for_index(peid->spd_data[0], get_gpios(gpio_vector));
+
 	uint32_t board_version = PEPPY_BOARD_VERSION_PROTO;
-
-	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
-		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	if (spd_file_len < spd_len)
-		die("Missing SPD data.");
-
-	memcpy(peid->spd_data[0], spd_file + (spd_index * spd_len), spd_len);
-
 	google_chromeec_get_board_version(&board_version);
 	switch (board_version) {
 	case PEPPY_BOARD_VERSION_PROTO:
@@ -45,8 +24,7 @@ void copy_spd(struct pei_data *peid)
 		if (spd_index == 0)
 			peid->dimm_channel1_disabled = 3;
 		else
-			memcpy(peid->spd_data[1],
-				spd_file + (spd_index * spd_len), spd_len);
+			memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
 		break;
 
 	case PEPPY_BOARD_VERSION_EVT:
@@ -56,8 +34,7 @@ void copy_spd(struct pei_data *peid)
 		if (spd_index > 3)
 			peid->dimm_channel1_disabled = 3;
 		else
-			memcpy(peid->spd_data[1],
-				spd_file + (spd_index * spd_len), spd_len);
+			memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
 		break;
 	}
 }

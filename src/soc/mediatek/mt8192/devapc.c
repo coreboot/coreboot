@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <soc/devapc.h>
 
 static void *getreg(uintptr_t base, unsigned int offset)

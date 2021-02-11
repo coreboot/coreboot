@@ -14,6 +14,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	0,		 /* miniport */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0xf,		 /* u8 checksum. */
+	/* clang-format off */
 	{
 		/* bus,       dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00,(0x01 << 3)|0x0, {{0x60, 0xdcf8}, {0x61, 0xdcf8}, {0x62, 0xdcf8}, {0x63, 0x0dcd8}}, 0x0, 0x0}, /* PCIe? */
@@ -35,6 +36,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 		{0x02,(0x00 << 3)|0x0, {{0x60, 0xdcf8}, {0x61, 0xdcf8}, {0x62, 0xdcf8}, {0x63, 0x0dcd8}}, 0x9, 0x0},
 		{0x03,(0x00 << 3)|0x0, {{0x61, 0xdcf8}, {0x62, 0xdcf8}, {0x63, 0xdcd8}, {0x60, 0x0dcf8}}, 0xa, 0x0},
 	}
+	/* clang-format on */
 };
 
 unsigned long write_pirq_routing_table(unsigned long addr)

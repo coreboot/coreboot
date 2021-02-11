@@ -17,6 +17,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 				 * would give 0 after the sum of all bytes
 				 * for this structure (including checksum).
 				 */
+	/* clang-format off */
 	{
 		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
 		{0x00, (0x0c << 3) | 0x0, {{0x60, 0x1eb8}, {0x61, 0x1eb8}, {0x62, 0x1eb8}, {0x63, 0x1eb8}}, 0x1, 0x0},
@@ -28,6 +29,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 		{0x00, (0x06 << 3) | 0x0, {{0x63, 0x1eb8}, {0x60, 0x1eb8}, {0x61, 0x1eb8}, {0x62, 0x1eb8}}, 0x0, 0x0},
 		{0x00, (0x07 << 3) | 0x0, {{0x62, 0x1eb8}, {0x63, 0x1eb8}, {0x60, 0x1eb8}, {0x61, 0x1eb8}}, 0x0, 0x0},
 	}
+	/* clang-format on */
 };
 
 unsigned long write_pirq_routing_table(unsigned long addr)

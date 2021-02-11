@@ -14,6 +14,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	0,		 /* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0x7,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	/* clang-format off */
 	{
 		/* bus,       dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00,(0x01 << 3)|0x0, {{0x60, 0xdef8}, {0x61, 0xdef8}, {0x62, 0xdef8}, {0x63, 0x0def8}}, 0x0, 0x0},
@@ -23,6 +24,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 		{0x00,(0x05 << 3)|0x0, {{0x60, 0xdef8}, {0x61, 0xdef8}, {0x62, 0xdef8}, {0x63, 0x0def8}}, 0x4, 0x0},
 		{0x00,(0x06 << 3)|0x0, {{0x61, 0xdef8}, {0x62, 0xdef8}, {0x63, 0xdef8}, {0x60, 0x0def8}}, 0x5, 0x0},
 	}
+	/* clang-format on */
 };
 unsigned long write_pirq_routing_table(unsigned long addr)
 {

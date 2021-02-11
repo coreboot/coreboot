@@ -76,6 +76,7 @@ DECLARE_REGION(pdpt)
 DECLARE_OPTIONAL_REGION(opensbi)
 DECLARE_OPTIONAL_REGION(bl31)
 DECLARE_REGION(transfer_buffer)
+DECLARE_OPTIONAL_REGION(watchdog_tombstone)
 
 /* Returns true when pre-RAM symbols are known to the linker.
  * (Does not necessarily mean that the memory is accessible.) */

@@ -11,6 +11,7 @@
 /* functions implemented in watchdog.c */
 void mark_watchdog_tombstone(void);
 void reboot_from_watchdog(void);
+bool reset_watchdog_tombstone(void);
 #else
 static inline void mark_watchdog_tombstone(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }

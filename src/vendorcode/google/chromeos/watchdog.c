@@ -10,7 +10,6 @@
 #include <symbols.h>
 
 #include "chromeos.h"
-#include "symbols.h"
 
 #define WATCHDOG_TOMBSTONE_MAGIC	0x9d2f41a7
 
@@ -21,11 +20,7 @@ static void elog_handle_watchdog_tombstone(void *unused)
 	if (CONFIG(CHROMEOS_USE_EC_WATCHDOG_FLAG))
 		flag |= google_chromeec_get_ap_watchdog_flag();
 
-	if (REGION_SIZE(watchdog_tombstone)) {
-		flag |= (read32(_watchdog_tombstone) ==
-			 WATCHDOG_TOMBSTONE_MAGIC);
-		write32(_watchdog_tombstone, 0);
-	}
+	flag |= reset_watchdog_tombstone();
 
 	if (flag)
 		elog_add_event(ELOG_TYPE_ASYNC_HW_TIMER_EXPIRED);
@@ -33,6 +28,16 @@ static void elog_handle_watchdog_tombstone(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
 		      elog_handle_watchdog_tombstone, NULL);
+
+bool reset_watchdog_tombstone(void)
+{
+	if (!REGION_SIZE(watchdog_tombstone))
+		return false;
+
+	bool flag = (read32(_watchdog_tombstone) == WATCHDOG_TOMBSTONE_MAGIC);
+	write32(_watchdog_tombstone, 0);
+	return flag;
+}
 
 void mark_watchdog_tombstone(void)
 {

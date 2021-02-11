@@ -20,6 +20,10 @@ struct soc_amd_common_config {
 
 	/* eSPI configuration */
 	struct espi_config espi_config;
+
+	/* Options for these are in src/include/acpi/acpi.h */
+	uint16_t fadt_boot_arch;
+	uint32_t fadt_flags;
 };
 
 /*

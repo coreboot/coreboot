@@ -4,8 +4,8 @@ chip soc/amd/picasso
 	register "acp_pin_cfg" = "I2S_PINS_MAX_HDA"
 
 	# Set FADT Configuration
-	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
-	register "fadt_flags" = "ACPI_FADT_SLEEP_BUTTON" # See table 5-34 ACPI 6.3 spec
+	register "common_config.fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
+	register "common_config.fadt_flags" = "ACPI_FADT_SLEEP_BUTTON" # See table 5-34 ACPI 6.3 spec
 
 	register "emmc_config" = "{
 		.timing = SD_EMMC_DISABLE,

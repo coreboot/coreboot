@@ -2,9 +2,9 @@
 chip soc/amd/picasso
 
 	# Set FADT Configuration
-	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
+	register "common_config.fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
 	# See table 5-34 ACPI 6.3 spec
-	register "fadt_flags" = "ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_SEALED_CASE"
+	register "common_config.fadt_flags" = "ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_SEALED_CASE"
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 	register "acp_i2s_wake_enable" = "0"

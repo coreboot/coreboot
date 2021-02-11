@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/chip.h>
 #include <amdblocks/cpu.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
@@ -80,7 +81,7 @@ unsigned long acpi_fill_madt(unsigned long current)
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	const struct soc_amd_picasso_config *cfg = config_of_soc();
+	const struct soc_amd_common_config *cfg = soc_get_common_config();
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 

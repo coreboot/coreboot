@@ -18,7 +18,7 @@ void mb_get_spd_map(uint8_t spd_map[4]);
 
 void sdram_initialize(struct pei_data *pei_data);
 void setup_sdram_meminfo(struct pei_data *pei_data);
-int fixup_haswell_errata(void);
+
 /* save_mrc_data() must be called after cbmem has been initialized. */
 void save_mrc_data(struct pei_data *pei_data);
 

@@ -16,6 +16,7 @@
 #include <device/pci.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/ioapic.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
@@ -31,10 +32,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write Kern IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
+			FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			CONFIG_MAX_CPUS+1, IO_APIC2_ADDR, 24);
+			GNB_IOAPIC_ID, IO_APIC2_ADDR, 24);
 
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */

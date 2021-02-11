@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <amdblocks/memmap.h>
+#include <amdblocks/ioapic.h>
 #include <arch/ioapic.h>
 #include <assert.h>
 #include <cbmem.h>
@@ -184,7 +185,7 @@ static void read_resources(struct device *dev)
 
 static void root_complex_init(struct device *dev)
 {
-	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, CONFIG_PICASSO_GNB_IOAPIC_ID);
+	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, GNB_IOAPIC_ID);
 }
 
 static void dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size)

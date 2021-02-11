@@ -21,6 +21,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/chip.h>
 #include <amdblocks/cpu.h>
+#include <amdblocks/ioapic.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
@@ -36,10 +37,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			CONFIG_PICASSO_FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
+			FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			CONFIG_PICASSO_GNB_IOAPIC_ID, GNB_IO_APIC_ADDR, IO_APIC_INTERRUPTS);
+			GNB_IOAPIC_ID, GNB_IO_APIC_ADDR, IO_APIC_INTERRUPTS);
 
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */

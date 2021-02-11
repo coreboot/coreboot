@@ -18,6 +18,7 @@
 #include <device/pci_ids.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <amdblocks/ioapic.h>
 #include <agesa_headers.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
@@ -159,7 +160,7 @@ static void set_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	setup_ioapic((u8 *)IO_APIC2_ADDR, CONFIG_MAX_CPUS+1);
+	setup_ioapic((u8 *)IO_APIC2_ADDR, GNB_IOAPIC_ID);
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)

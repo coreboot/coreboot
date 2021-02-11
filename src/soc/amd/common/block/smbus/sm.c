@@ -1,18 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/ioapic.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/smbus.h>
 #include <device/smbus_host.h>
 #include <arch/ioapic.h>
-#include <soc/southbridge.h>
 
 static void sm_init(struct device *dev)
 {
 	fch_enable_ioapic_decode();
-	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
+	setup_ioapic(VIO_APIC_VADDR, FCH_IOAPIC_ID);
 	fch_configure_hpet();
 }
 

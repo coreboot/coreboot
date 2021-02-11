@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/iomap.h>
+#include <amdblocks/acpimmio_map.h>
 #include <amdblocks/gpio_defs.h>
+#include <soc/iomap.h>
 
 /* Get pin control MMIO address */
 Method (GPAD, 0x1)

@@ -2,7 +2,6 @@
 
 #include <cbfs.h>
 #include <fmap.h>
-#include <console/console.h>
 #include <soc/symbols.h>
 #include <soc/qclib_common.h>
 

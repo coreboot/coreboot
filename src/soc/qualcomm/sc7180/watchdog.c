@@ -2,7 +2,6 @@
 
 #include <soc/watchdog.h>
 #include <soc/clock.h>
-#include <console/console.h>
 #include <device/mmio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

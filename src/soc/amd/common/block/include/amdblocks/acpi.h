@@ -51,4 +51,6 @@ struct chipset_power_state {
 unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp);
 
+unsigned long acpi_fill_madt_irqoverride(unsigned long current);
+
 #endif /* AMD_BLOCK_ACPI_H */

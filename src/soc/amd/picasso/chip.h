@@ -120,17 +120,6 @@ struct soc_amd_picasso_config {
 	/* Enable ACP PME (0 = disable, 1 = enable) */
 	u8 acp_pme_enable;
 
-	/**
-	 * IRQ 0 - 15 have a default trigger of edge and default polarity of high.
-	 * If you have a device that requires a different configuration you can override the
-	 * settings here.
-	 */
-	struct {
-		uint8_t irq;
-		/* See MP_IRQ_* from mpspec.h */
-		uint8_t flags;
-	} irq_override[16];
-
 	/* System config index */
 	uint8_t system_config;
 

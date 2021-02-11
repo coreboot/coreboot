@@ -430,12 +430,6 @@ function build_config
 		return
 	fi
 
-	if [ -f "src/mainboard/${board_srcdir}/abuild.disabled" ]; then
-		echo "${BUILD_NAME} disabled:"
-		cat "src/mainboard/${board_srcdir}/abuild.disabled"
-		return
-	fi
-
 	if [ "$quiet" == "false" ]; then echo "Building $BUILD_NAME"; fi
 	mkdir -p "$TARGET/${BUILD_NAME}" "$TARGET/abuild"
 	ABSPATH="$(cd "$TARGET/abuild" && pwd)"

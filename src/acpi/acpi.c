@@ -23,6 +23,7 @@
 #include <commonlib/helpers.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>
+#include <types.h>
 #include <version.h>
 #include <commonlib/sort.h>
 

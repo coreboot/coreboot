@@ -21,6 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_type.h>
 #include <device/soundwire.h>
+#include <types.h>
 
 static char *gencurrent;
 

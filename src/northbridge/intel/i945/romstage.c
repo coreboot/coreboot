@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <cf9_reset.h>
 #include <cpu/x86/lapic.h>
-#include <console/console.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>

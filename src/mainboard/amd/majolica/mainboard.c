@@ -46,7 +46,7 @@ static const struct fch_irq_routing {
 	{ PIRQ_G,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_H,	PIRQ_NC,	PIRQ_NC },
 
-	{ PIRQ_SCI,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
 	{ PIRQ_SD,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SDIO,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SATA,	PIRQ_NC,	PIRQ_NC },

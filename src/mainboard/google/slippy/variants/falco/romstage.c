@@ -48,30 +48,30 @@ void copy_spd(struct pei_data *peid)
 	}
 }
 
-	const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
-		/* Length, Enable, OCn#, Location */
-		{ 0x0064, 1, 0,               /* P0: Port A, CN8 */
-		  USB_PORT_BACK_PANEL },
-		{ 0x0052, 1, 0,               /* P1: Port B, CN9  */
-		  USB_PORT_BACK_PANEL },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P2: CCD */
-		  USB_PORT_INTERNAL },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: BT */
-		  USB_PORT_INTERNAL },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: LTE */
-		  USB_PORT_INTERNAL },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P5: TOUCH */
-		  USB_PORT_INTERNAL },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
-		  USB_PORT_INTERNAL },
-		{ 0x0123, 1, 3,               /* P7: USB2 Port */
-		  USB_PORT_INTERNAL },
-	};
+const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
+	/* Length, Enable, OCn#, Location */
+	{ 0x0064, 1, 0,               /* P0: Port A, CN8 */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0052, 1, 0,               /* P1: Port B, CN9  */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P2: CCD */
+	  USB_PORT_INTERNAL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: BT */
+	  USB_PORT_INTERNAL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: LTE */
+	  USB_PORT_INTERNAL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P5: TOUCH */
+	  USB_PORT_INTERNAL },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
+	  USB_PORT_INTERNAL },
+	{ 0x0123, 1, 3,               /* P7: USB2 Port */
+	  USB_PORT_INTERNAL },
+};
 
-	const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
-		/* Enable, OCn# */
-		{ 1, 0               }, /* P1; Port A, CN8 */
-		{ 1, 0               }, /* P2; Port B, CN9  */
-		{ 0, USB_OC_PIN_SKIP }, /* P3; */
-		{ 0, USB_OC_PIN_SKIP }, /* P4; */
-	};
+const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
+	/* Enable, OCn# */
+	{ 1, 0               }, /* P1; Port A, CN8 */
+	{ 1, 0               }, /* P2; Port B, CN9  */
+	{ 0, USB_OC_PIN_SKIP }, /* P3; */
+	{ 0, USB_OC_PIN_SKIP }, /* P4; */
+};

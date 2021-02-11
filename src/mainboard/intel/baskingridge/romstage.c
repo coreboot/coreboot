@@ -49,44 +49,44 @@ void mb_get_spd_map(uint8_t spd_map[4])
 	spd_map[3] = 0xa6;
 }
 
-	const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
-		/* Length, Enable, OCn#, Location */
-		{ 0x0040, 1, 0, /* P0: Back USB3 port  (OC0) */
-		  USB_PORT_BACK_PANEL },
-		{ 0x0040, 1, 0, /* P1: Back USB3 port  (OC0) */
-		  USB_PORT_BACK_PANEL },
-		{ 0x0040, 1, 1, /* P2: Flex Port on bottom (OC1) */
-		  USB_PORT_FLEX },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: Dock connector */
-		  USB_PORT_DOCK },
-		{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: Mini PCIE  */
-		  USB_PORT_MINI_PCIE },
-		{ 0x0040, 1, 1, /* P5: USB eSATA header (OC1) */
-		  USB_PORT_FLEX },
-		{ 0x0040, 1, 3, /* P6: Front Header J8H2 (OC3) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 3, /* P7: Front Header J8H2 (OC3) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 4, /* P8: USB/LAN Jack (OC4) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 4, /* P9: USB/LAN Jack (OC4) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 5, /* P10: Front Header J7H3 (OC5) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 5, /* P11: Front Header J7H3 (OC5) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 6, /* P12: USB/DP Jack (OC6) */
-		  USB_PORT_FRONT_PANEL },
-		{ 0x0040, 1, 6, /* P13: USB/DP Jack (OC6) */
-		  USB_PORT_FRONT_PANEL },
-	};
+const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
+	/* Length, Enable, OCn#, Location */
+	{ 0x0040, 1, 0, /* P0: Back USB3 port  (OC0) */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, 0, /* P1: Back USB3 port  (OC0) */
+	  USB_PORT_BACK_PANEL },
+	{ 0x0040, 1, 1, /* P2: Flex Port on bottom (OC1) */
+	  USB_PORT_FLEX },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: Dock connector */
+	  USB_PORT_DOCK },
+	{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: Mini PCIE  */
+	  USB_PORT_MINI_PCIE },
+	{ 0x0040, 1, 1, /* P5: USB eSATA header (OC1) */
+	  USB_PORT_FLEX },
+	{ 0x0040, 1, 3, /* P6: Front Header J8H2 (OC3) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 3, /* P7: Front Header J8H2 (OC3) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 4, /* P8: USB/LAN Jack (OC4) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 4, /* P9: USB/LAN Jack (OC4) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 5, /* P10: Front Header J7H3 (OC5) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 5, /* P11: Front Header J7H3 (OC5) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 6, /* P12: USB/DP Jack (OC6) */
+	  USB_PORT_FRONT_PANEL },
+	{ 0x0040, 1, 6, /* P13: USB/DP Jack (OC6) */
+	  USB_PORT_FRONT_PANEL },
+};
 
-	const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
-		/* Enable, OCn# */
-		{ 1, 0 }, /* P1; */
-		{ 1, 0 }, /* P2; */
-		{ 1, 0 }, /* P3; */
-		{ 1, 0 }, /* P4; */
-		{ 1, 0 }, /* P6; */
-		{ 1, 0 }, /* P6; */
-	};
+const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
+	/* Enable, OCn# */
+	{ 1, 0 }, /* P1; */
+	{ 1, 0 }, /* P2; */
+	{ 1, 0 }, /* P3; */
+	{ 1, 0 }, /* P4; */
+	{ 1, 0 }, /* P6; */
+	{ 1, 0 }, /* P6; */
+};

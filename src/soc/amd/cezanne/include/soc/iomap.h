@@ -3,6 +3,8 @@
 #ifndef AMD_CEZANNE_IOMAP_H
 #define AMD_CEZANNE_IOMAP_H
 
+#if ENV_X86
+
 /* MMIO Ranges */
 #define SPI_BASE_ADDRESS		0xfec10000
 
@@ -14,12 +16,19 @@
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 
+#define APU_I2C0_BASE			0xfedc2000
+#define APU_I2C1_BASE			0xfedc3000
+#define APU_I2C2_BASE			0xfedc4000
+#define APU_I2C3_BASE			0xfedc5000
+
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000
 #define APU_UART0_BASE			0xfedc9000
 #define APU_UART1_BASE			0xfedca000
 
 #define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
+
+#endif /* ENV_X86 */
 
 /* I/O Ranges */
 #define NCP_ERR				0x00f0

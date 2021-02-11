@@ -5,4 +5,8 @@ Scope(\_SB) {
 	#include <arch/x86/acpi/globutil.asl>
 
 	#include <soc/amd/common/acpi/gpio_bank_lib.asl>
+
+	#include "pci_int_defs.asl"
+
+	#include "mmio.asl"
 } /* End \_SB scope */

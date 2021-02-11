@@ -79,6 +79,14 @@ void fch_enable_ioapic_decode(void)
 	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) | FCH_IOAPIC_EN);
 }
 
+void fch_configure_hpet(void)
+{
+	uint32_t reg = pm_read32(PM_DECODE_EN);
+	reg |=  HPET_EN | HPET_MSI_EN;
+	reg &= ~HPET_WIDTH_SEL; /* 32 bit HPET */
+	pm_write32(PM_DECODE_EN, reg);
+}
+
 /* PM registers are accessed a byte at a time via CD6/CD7 */
 uint8_t pm_io_read8(uint8_t reg)
 {

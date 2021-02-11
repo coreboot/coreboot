@@ -15,8 +15,11 @@
  * newer SoCs, but not for the generations with separate FCH or Kabini.
  */
 #define PM_DECODE_EN			0x00
+#define   HPET_MSI_EN			(1 << 29)
+#define   HPET_WIDTH_SEL		(1 << 28) /* 0=32bit, 1=64bit */
 #define   SMBUS_ASF_IO_BASE_SHIFT	8
 #define   SMBUS_ASF_IO_BASE_MASK	(0xff << SMBUS_ASF_IO_BASE_SHIFT)
+#define   HPET_EN			(1 << 6) /* decode HPET MMIO at 0xfed00000 */
 #define   FCH_IOAPIC_EN			(1 << 5)
 #define   SMBUS_ASF_IO_EN		(1 << 4)
 #define   CF9_IO_EN			(1 << 1)
@@ -77,6 +80,7 @@ void fch_enable_cf9_io(void);
 void fch_enable_legacy_io(void);
 void fch_io_enable_legacy_io(void);
 void fch_enable_ioapic_decode(void);
+void fch_configure_hpet(void);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

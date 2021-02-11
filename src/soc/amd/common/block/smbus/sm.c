@@ -13,6 +13,7 @@ static void sm_init(struct device *dev)
 {
 	fch_enable_ioapic_decode();
 	setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
+	fch_configure_hpet();
 }
 
 static u32 get_sm_mmio(struct device *dev)

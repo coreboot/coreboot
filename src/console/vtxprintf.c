@@ -7,7 +7,7 @@
 #include <console/vtxprintf.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdint.h>
+#include <types.h>
 
 #define call_tx(x) tx_byte(x, data)
 

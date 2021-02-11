@@ -514,6 +514,8 @@ typedef struct acpi_madt_lapic_nmi {
 	u8 lint;			/* Local APIC LINT# */
 } __packed acpi_madt_lapic_nmi_t;
 
+#define ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS 0xff
+
 /* MADT: I/O APIC Structure */
 typedef struct acpi_madt_ioapic {
 	u8 type;			/* Type (1) */

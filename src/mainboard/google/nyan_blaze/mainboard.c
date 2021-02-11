@@ -234,7 +234,6 @@ static void mainboard_enable(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	.name	= "nyan_blaze",
 	.enable_dev = mainboard_enable,
 };
 

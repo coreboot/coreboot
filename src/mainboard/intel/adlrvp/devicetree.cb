@@ -14,6 +14,9 @@ chip soc/intel/alderlake
 
 	# FSP configuration
 
+	# Enable CNVi BT
+	register "CnviBtCore" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-C Port2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
@@ -212,7 +215,6 @@ chip soc/intel/alderlake
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
 		device pci 10.1 off end
-		device pci 10.2 on  end # CNVi: BT
 		device pci 10.6 off end # THC0
 		device pci 10.7 off end # THC1
 		device pci 11.0 off end

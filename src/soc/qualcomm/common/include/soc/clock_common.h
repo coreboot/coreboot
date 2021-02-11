@@ -155,6 +155,8 @@ enum cb_err clock_configure_enable_gpll(struct alpha_pll_reg_val_config *cfg,
 					bool enable, int br_enable);
 enum cb_err agera_pll_enable(struct alpha_pll_reg_val_config *cfg);
 
+enum cb_err zonda_pll_enable(struct alpha_pll_reg_val_config *cfg);
+
 struct aoss {
 	u8 _res0[0x50020];
 	u32 aoss_cc_reset_status;

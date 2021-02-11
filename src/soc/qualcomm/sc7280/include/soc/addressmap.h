@@ -5,6 +5,13 @@
 
 #include <stdint.h>
 
+#define AOSS_CC_BASE			0x0C2A0000
+#define DISP_CC_BASE			0x0AF00000
+#define GCC_BASE			0x00100000
+#define L3_PLL_BASE			0x18284000
+#define QSPI_BASE			0x088DC000
+#define SHRM_SPROC_BASE			0x09051000
+#define SILVER_PLL_BASE			0x18280000
 #define TLMM_TILE_BASE			0x0F100000
 
 #endif /*  __SOC_QUALCOMM_SC7280_ADDRESS_MAP_H__ */

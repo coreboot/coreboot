@@ -373,14 +373,6 @@ config AMDFW_CONFIG_FILE
 	string
 	default "src/soc/amd/picasso/fw.cfg"
 
-config USE_PSPSECUREOS
-	bool
-	default y
-	help
-	  Include the PspSecureOs and PspTrustlet binaries in the PSP build.
-
-	  If unsure, answer 'y'
-
 config PSP_LOAD_MP2_FW
 	bool
 	default n

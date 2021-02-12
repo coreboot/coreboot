@@ -5,6 +5,7 @@
 #include <device/pnp.h>
 #include <device/pnp_ops.h>
 #include <superio/conf_mode.h>
+#include <types.h>
 
 #include "sch5545.h"
 #include "sch5545_emi.h"

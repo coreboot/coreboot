@@ -4,7 +4,7 @@
 #define SUPERIO_SCH_5545_EMI_H
 
 #include <stdlib.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Embedded Memory Interface registers */
 #define SCH5545_EMI_HOST_TO_EC_MAILBOX		0x0

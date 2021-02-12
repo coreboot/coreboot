@@ -4,7 +4,6 @@
 
 /* This file is derived from the flashrom project. */
 
-#include <stdint.h>
 #include <string.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
@@ -17,6 +16,7 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <timer.h>
+#include <types.h>
 
 #include "spi.h"
 

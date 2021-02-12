@@ -23,6 +23,7 @@
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/common/spi.h>
+#include <types.h>
 
 #define NMI_OFF	0
 

@@ -38,8 +38,10 @@ void acpi_create_gnvs(void)
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 
-	if (CONFIG(CHROMEOS_NVS))
-		gnvs_assign_chromeos((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
+	if (CONFIG(CHROMEOS_NVS)) {
+		chromeos_acpi_t *init = (void *)((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
+		chromeos_init_chromeos_acpi(init);
+	}
 }
 
 void *acpi_get_gnvs(void)

@@ -10,7 +10,6 @@ ramstage-$(CONFIG_PCI) += acpigen_pci.c
 ramstage-y += acpigen_ps2_keybd.c
 ramstage-y += acpigen_usb.c
 ramstage-y += device.c
-ramstage-$(CONFIG_CHROMEOS_NVS) += chromeos-gnvs.c
 ramstage-$(CONFIG_ACPI_SOC_NVS) += gnvs.c
 ramstage-y += pld.c
 ramstage-y += sata.c

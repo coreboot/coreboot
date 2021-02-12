@@ -1,14 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
 #include <types.h>
 #include <string.h>
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <ec/google/chromeec/ec.h>
 #include <fmap.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>
+#include <smbios.h>
 
 #include "chromeos.h"
 #include "gnvs.h"
@@ -45,6 +48,12 @@ void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 		chromeos_acpi->vpd_rw_base = vpd_base;
 		chromeos_acpi->vpd_rw_size = vpd_size;
 	}
+
+	/* EC can override to ECFW_RW. */
+	chromeos_acpi->vbt2 = ACTIVE_ECFW_RO;
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && !google_ec_running_ro())
+		chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)
@@ -57,7 +66,27 @@ void chromeos_set_me_hash(u32 *hash, int len)
 		memcpy(chromeos_acpi->mehh, hash, len*sizeof(u32));
 }
 
-chromeos_acpi_t *chromeos_get_chromeos_acpi(void)
+void chromeos_set_ramoops(void *ram_oops, size_t size)
 {
-	return chromeos_acpi;
+	if (!chromeos_acpi)
+		return;
+
+	printk(BIOS_DEBUG, "Ramoops buffer: 0x%zx@%p.\n", size, ram_oops);
+	chromeos_acpi->ramoops_base = (uintptr_t)ram_oops;
+	chromeos_acpi->ramoops_len = size;
+}
+
+void gnvs_set_ecfw_rw(void)
+{
+	if (!chromeos_acpi)
+		return;
+	chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
+}
+
+void smbios_type0_bios_version(uintptr_t address)
+{
+	if (!chromeos_acpi)
+		return;
+	/* Location of smbios_type0.bios_version() string filled with spaces. */
+	chromeos_acpi->vbt10 = address;
 }

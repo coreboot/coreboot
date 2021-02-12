@@ -17,7 +17,6 @@ static inline void *acpi_get_gnvs(void) { return NULL; }
 static inline int acpi_reset_gnvs_for_wake(struct global_nvs **gnvs) { return -1; }
 #endif
 
-void gnvs_assign_chromeos(void *gnvs_section);
 void gnvs_set_ecfw_rw(void);
 
 /*

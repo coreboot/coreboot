@@ -7,22 +7,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cbmem.h>
-#include <device/device.h>
 #include "chromeos.h"
-#include "gnvs.h"
-
-static void set_ramoops(void *ram_oops, size_t size)
-{
-	chromeos_acpi_t *chromeos = chromeos_get_chromeos_acpi();
-	if (chromeos == NULL) {
-		printk(BIOS_DEBUG, "chromeos gnvs is NULL. ramoops not set.\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "Ramoops buffer: 0x%zx@%p.\n", size, ram_oops);
-	chromeos->ramoops_base = (uintptr_t)ram_oops;
-	chromeos->ramoops_len = size;
-}
 
 static void ramoops_alloc(void *arg)
 {
@@ -39,7 +24,7 @@ static void ramoops_alloc(void *arg)
 	}
 
 	if (CONFIG(CHROMEOS_NVS))
-		set_ramoops(ram_oops, size);
+		chromeos_set_ramoops(ram_oops, size);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, ramoops_alloc, NULL);

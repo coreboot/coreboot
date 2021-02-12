@@ -42,6 +42,5 @@ typedef struct {
 } __packed chromeos_acpi_t;
 
 void chromeos_init_chromeos_acpi(chromeos_acpi_t *init);
-chromeos_acpi_t *chromeos_get_chromeos_acpi(void);
 
 #endif

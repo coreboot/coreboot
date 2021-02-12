@@ -4,7 +4,6 @@
 
 #include <cbmem.h>
 #include <commonlib/helpers.h>
-#include <stdint.h>
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -14,6 +13,7 @@
 #include <northbridge/intel/x4x/x4x.h>
 #include <program_loading.h>
 #include <cpu/intel/smm_reloc.h>
+#include <types.h>
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)

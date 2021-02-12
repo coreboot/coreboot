@@ -13,7 +13,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/smm_reloc.h>
-#include <stdint.h>
+#include <types.h>
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)

@@ -16,6 +16,8 @@
 #include <spd.h>
 #include <security/vboot/vboot_common.h>
 #include <commonlib/region.h>
+#include <types.h>
+
 #include "raminit.h"
 #include "pei_data.h"
 #include "haswell.h"

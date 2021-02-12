@@ -3,7 +3,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
-#include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <device/device.h>
@@ -14,6 +13,7 @@
 #include <boot/tables.h>
 #include <security/intel/txt/txt_register.h>
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <types.h>
 
 #include "chip.h"
 #include "haswell.h"

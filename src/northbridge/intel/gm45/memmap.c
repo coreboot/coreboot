@@ -3,7 +3,6 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <stdint.h>
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -13,6 +12,8 @@
 #include <cbmem.h>
 #include <program_loading.h>
 #include <cpu/intel/smm_reloc.h>
+#include <types.h>
+
 #include "gm45.h"
 
 /*

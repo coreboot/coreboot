@@ -12,7 +12,7 @@
 #include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <cpu/intel/smm_reloc.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Decodes TSEG region size to bytes. */
 u32 decode_tseg_size(const u8 esmramc)

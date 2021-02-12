@@ -48,7 +48,6 @@ ramstage-y += uart.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
-ramstage-y += update_microcode.c
 ramstage-y += graphics.c
 ramstage-y += pcie_gpp.c
 ramstage-y += xhci.c

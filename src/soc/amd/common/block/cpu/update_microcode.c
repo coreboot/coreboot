@@ -8,7 +8,10 @@
 #include <cpu/amd/msr.h>
 #include <cbfs.h>
 
-#define MPB_MAX_SIZE 3200
+_Static_assert(CONFIG_SOC_AMD_COMMON_BLOCK_UCODE_SIZE > 0,
+	       "SOC_AMD_COMMON_BLOCK_UCODE_SIZE is not set");
+
+#define MPB_MAX_SIZE CONFIG_SOC_AMD_COMMON_BLOCK_UCODE_SIZE
 #define MPB_DATA_OFFSET 32
 
 struct microcode {

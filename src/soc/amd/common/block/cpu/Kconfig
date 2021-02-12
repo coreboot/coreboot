@@ -44,3 +44,16 @@ config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	  Select this option to add the common functions for getting the TSC
 	  frequency of AMD family 17h and 19h CPUs/APUs and to provide TSC-
 	  based monotonic timer functionality to the build.
+
+config SOC_AMD_COMMON_BLOCK_UCODE
+	bool
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	default n
+	help
+	  Builds in support for loading uCode.
+
+config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
+	int
+	depends on SOC_AMD_COMMON_BLOCK_UCODE
+	help
+	  Defines the size of the uCode binary in bytes.

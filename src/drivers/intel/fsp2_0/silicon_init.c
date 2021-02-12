@@ -90,13 +90,17 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	fsp_verify_upd_header_signature(supd->FspUpdHeader.Signature, FSPS_UPD_SIGNATURE);
 
-	/* Disallow invalid config regions.  Default settings are likely bad
-	 * choices for coreboot, and different sized UPD from what the region
-	 * allows is potentially a build problem.
+	/* FSPS UPD and coreboot structure sizes should match. However, enforcing the exact
+	 * match mandates simultaneous updates to coreboot and FSP repos. Allow coreboot
+	 * to proceed if its UPD structure is smaller than FSP one to enable staggered UPD
+	 * update process on both sides. The mismatch indicates a temporary build problem,
+	 * don't leave it like this as FSP default settings can be bad choices for coreboot.
 	 */
-	if (!hdr->cfg_region_size || hdr->cfg_region_size != sizeof(FSPS_UPD))
+	if (!hdr->cfg_region_size || hdr->cfg_region_size < sizeof(FSPS_UPD))
 		die_with_post_code(POST_INVALID_VENDOR_BINARY,
 			"Invalid FSPS UPD region\n");
+	else if (hdr->cfg_region_size > sizeof(FSPS_UPD))
+		printk(BIOS_ERR, "FSP and coreboot are out of sync! FSPS UPD size > coreboot\n");
 
 	upd = xmalloc(hdr->cfg_region_size);
 

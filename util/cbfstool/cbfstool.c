@@ -255,7 +255,8 @@ static int find_mmap_window(enum mmap_addr_type addr_type, unsigned int addr)
 		else
 			reg = &mmap_window_table[i].flash_space;
 
-		if (region_offset(reg) <= addr && region_end(reg) >= addr)
+		if (region_offset(reg) <= addr &&
+		   ((uint64_t)region_offset(reg) + (uint64_t)region_sz(reg) - 1) >= addr)
 			return i;
 	}
 

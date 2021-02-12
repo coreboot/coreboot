@@ -253,7 +253,7 @@ GfxIntegratedExtConnectorInfo (
   )
 {
   UINTN Index;
-  for (Index = 0; Index < (sizeof (ConnectorInfoTable) / sizeof (EXT_CONNECTOR_INFO)); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(ConnectorInfoTable); Index++) {
     if (ConnectorInfoTable[Index].ConnectorType == ConnectorType) {
       return &ConnectorInfoTable[Index];
     }
@@ -331,7 +331,7 @@ GfxIntegratedExtDisplayDeviceInfo (
   UINT8 Index;
   UINT8 LastIndex;
   LastIndex = 0xff;
-  for (Index = 0; Index < (sizeof (DisplayDeviceInfoTable) / sizeof (EXT_DISPLAY_DEVICE_INFO)); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(DisplayDeviceInfoTable); Index++) {
     if (DisplayDeviceInfoTable[Index].DisplayDeviceEnum == DisplayDeviceEnum) {
       LastIndex = Index;
       if (DisplayDeviceInfoTable[Index].DeviceIndex == DisplayDeviceIndex) {

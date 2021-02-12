@@ -417,7 +417,7 @@ GnbCacEnablement (
 
   // Program GPU CAC weights
 
-  for (Index = 0; Index < (sizeof (CacWeightsTN) / sizeof (CacWeightsTN[0])); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(CacWeightsTN); Index++) {
     GnbRegisterWriteTN (TYPE_D0F0xBC , (0x1f9a0  + (Index * 4)), &CacWeightsTN[Index], 0, StdHeader);
   }
 

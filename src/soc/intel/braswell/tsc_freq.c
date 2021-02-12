@@ -20,7 +20,7 @@ unsigned int cpu_bus_freq_khz(void)
 {
 	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
 
-	if ((clk_info.lo & 0xf) < (sizeof(cpu_bus_clk_freq_table) / sizeof(unsigned int)))
+	if ((clk_info.lo & 0xf) < ARRAY_SIZE(cpu_bus_clk_freq_table))
 		return cpu_bus_clk_freq_table[clk_info.lo & 0xf];
 
 	return 0;

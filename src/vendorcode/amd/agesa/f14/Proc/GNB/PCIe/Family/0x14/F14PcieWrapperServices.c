@@ -477,7 +477,7 @@ PcieFmPreInit (
     PcieFmExecuteNativeGen1Reconfig (Pcie);
   }
   Silicon = PcieComplexGetSiliconList (&Pcie->ComplexList[0]);
-  for (Index = 0; Index < (sizeof (PcieInitTable) / sizeof (PCIE_HOST_REGISTER_ENTRY)); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(PcieInitTable); Index++) {
     PcieSiliconRegisterRMW (
       Silicon,
       PcieInitTable[Index].Reg,

@@ -759,9 +759,9 @@ GfxPowerPlayBuildVceStateTable (
   UINT8                       UsedStateBitmap;
   UsedStateBitmap = 0;
   // build used state
-  for (Index = 0; Index < (sizeof (PpWorkspace->PpFuses->VceFlags) / sizeof (PpWorkspace->PpFuses->VceFlags[0])) ; Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(PpWorkspace->PpFuses->VceFlags); Index++) {
     UsedStateBitmap |= PpWorkspace->PpFuses->VceFlags[Index];
-    for (VceStateIndex = 0; VceStateIndex < (sizeof (PpWorkspace->VceStateArray) / sizeof (PpWorkspace->VceStateArray[0])); VceStateIndex++) {
+    for (VceStateIndex = 0; VceStateIndex < ARRAY_SIZE(PpWorkspace->VceStateArray); VceStateIndex++) {
       if ((PpWorkspace->PpFuses->VceFlags[Index] & (1 << VceStateIndex)) != 0) {
         Sclk = GfxFmCalculateClock (PpWorkspace->PpFuses->SclkDpmDid[PpWorkspace->PpFuses->VceReqSclkSel[Index]], GnbLibGetHeader (PpWorkspace->Gfx));
         Vid = PpWorkspace->PpFuses->SclkDpmVid[PpWorkspace->PpFuses->VceReqSclkSel[Index]];
@@ -777,7 +777,7 @@ GfxPowerPlayBuildVceStateTable (
     }
   }
   //build unused states
-  for (VceStateIndex = 0; VceStateIndex < (sizeof (PpWorkspace->VceStateArray) / sizeof (PpWorkspace->VceStateArray[0])); VceStateIndex++) {
+  for (VceStateIndex = 0; VceStateIndex < ARRAY_SIZE(PpWorkspace->VceStateArray); VceStateIndex++) {
     if ((UsedStateBitmap & (1 << VceStateIndex)) == 0) {
       PpWorkspace->VceStateArray[VceStateIndex].ucClockInfoIndex = 0;
       PpWorkspace->VceStateArray[VceStateIndex].ucVCEClockInfoIndex = GfxPowerPlayAddEclkState (PpWorkspace, 0);

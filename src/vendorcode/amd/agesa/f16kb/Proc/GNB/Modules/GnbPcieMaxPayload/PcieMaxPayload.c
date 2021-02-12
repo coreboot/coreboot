@@ -289,7 +289,7 @@ PciePayloadBlackListFeature (
   UINT32  VendorId;
 
   GnbLibPciRead (Device.AddressValue, AccessWidth32, &TargetDeviceId, StdHeader);
-  for (i = 0; i < (sizeof (PayloadBlacklistDeviceTable) / sizeof (UINT16)); i = i + 3) {
+  for (i = 0; i < ARRAY_SIZE(PayloadBlacklistDeviceTable); i = i + 3) {
     VendorId = PayloadBlacklistDeviceTable[i];
     DeviceId = PayloadBlacklistDeviceTable[i + 1];
     if (VendorId == (UINT16)TargetDeviceId) {

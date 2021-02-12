@@ -105,7 +105,7 @@ CONST FUNCTION_PARAMS_INFO ROMDATA FuncParamsInfo[] =
   { 0, 0, NULL }
 };
 
-CONST UINTN InitializerCount = ((sizeof (FuncParamsInfo)) / (sizeof (FuncParamsInfo[0])));
+CONST UINTN InitializerCount = ARRAY_SIZE(FuncParamsInfo);
 
 CONST DISPATCH_TABLE ROMDATA DispatchTable[] =
 {

@@ -209,7 +209,7 @@ NbFmInitLclkDpmRcActivity (
       NbSmuRcuRegisterWrite (
         0x84AC,
         &LclkDpmCacTable[0],
-        sizeof (LclkDpmCacTable) / sizeof (UINT32),
+        ARRAY_SIZE(LclkDpmCacTable),
         TRUE,
         StdHeader
         );
@@ -225,7 +225,7 @@ NbFmInitLclkDpmRcActivity (
         StdHeader
         );
       // Program sampling period
-      for (Index = 0; Index < (sizeof (SamplingPeriod) / sizeof (SamplingPeriod[0])); Index = Index + 2) {
+      for (Index = 0; Index < ARRAY_SIZE(SamplingPeriod); Index = Index + 2) {
         UINT16 Temp;
         Temp = SamplingPeriod[Index];
         SamplingPeriod[Index] = SamplingPeriod[Index + 1];

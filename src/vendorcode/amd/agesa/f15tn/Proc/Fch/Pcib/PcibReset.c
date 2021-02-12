@@ -82,7 +82,7 @@ FchInitResetPcib (
 
   ProgramPciByteTable (
     (REG8_MASK*) (&FchInitResetPcibPciTable[0]),
-    sizeof (FchInitResetPcibPciTable) / sizeof (REG8_MASK),
+    ARRAY_SIZE(FchInitResetPcibPciTable),
     StdHeader
     );
   if ( UserOptions.FchBldCfg->CfgFchPort80BehindPcib ) {
@@ -129,7 +129,7 @@ FchInitResetPcibPort80Enable (
 
   ProgramPciByteTable (
     (REG8_MASK*) (&FchInitResetPcibPort80EnableTable[0]),
-    sizeof (FchInitResetPcibPort80EnableTable) / sizeof (REG8_MASK),
+    ARRAY_SIZE(FchInitResetPcibPort80EnableTable),
     StdHeader
     );
 }

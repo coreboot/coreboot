@@ -315,7 +315,7 @@ CONST PROC_FAMILY_TABLE ROMDATA ProcFamily14DmiTable =
   &DmiF14GetMaxSpeed,
   &DmiF14GetExtClock,
   &DmiF14GetMemInfo,              // Get memory information
-  (sizeof (Family14BrandList) / sizeof (Family14BrandList[0])), // Number of entries in following table
+  ARRAY_SIZE(Family14BrandList), // Number of entries in following table
   &Family14BrandList[0]
 };
 

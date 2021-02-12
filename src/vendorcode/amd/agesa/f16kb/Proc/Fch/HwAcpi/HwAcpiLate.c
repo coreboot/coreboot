@@ -86,7 +86,7 @@ STATIC PCI_IRQ_REG_BLOCK FchInternalDeviceIrqForApicMode[] = {
     { (FCH_IRQ_GPPINT3 | FCH_IRQ_IOAPIC), 0x13},
   };
 
-#define NUM_OF_DEVICE_FOR_APICIRQ  sizeof (FchInternalDeviceIrqForApicMode) / sizeof (PCI_IRQ_REG_BLOCK)
+#define NUM_OF_DEVICE_FOR_APICIRQ  ARRAY_SIZE(FchInternalDeviceIrqForApicMode)
 
 /**
  * FchInitLateHwAcpi - Prepare HwAcpi controller to boot to OS.

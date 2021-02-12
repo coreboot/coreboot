@@ -260,7 +260,7 @@ GfxGmcDctMemoryChannelInfoTN (
   UINT32       Index;
   UINT32       Value;
 
-  for (Index = 0; Index < (sizeof (DctRegisterTable) / sizeof (DCT_REGISTER_ENTRY)); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(DctRegisterTable); Index++) {
     GnbRegisterReadTN (
       DctRegisterTable[Index].RegisterSpaceType,
       DctRegisterTable[Index].Address,

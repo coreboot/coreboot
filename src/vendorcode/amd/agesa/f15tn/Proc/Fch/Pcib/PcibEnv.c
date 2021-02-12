@@ -88,7 +88,8 @@ FchInitEnvPcib (
   //
   //Early post initialization of pci config space
   //
-  ProgramPciByteTable ((REG8_MASK*) (&FchInitEnvPcibPciTable[0]), sizeof (FchInitEnvPcibPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ((REG8_MASK*) (&FchInitEnvPcibPciTable[0]),
+                       ARRAY_SIZE(FchInitEnvPcibPciTable), StdHeader);
 
   //
   //Disable or Enable PCI Clks based on input

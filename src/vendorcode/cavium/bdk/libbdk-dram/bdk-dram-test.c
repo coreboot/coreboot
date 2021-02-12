@@ -134,7 +134,7 @@ void __bdk_dram_flush_to_mem_range(uint64_t area, uint64_t max_address)
  */
 const char *bdk_dram_get_test_name(int test)
 {
-    if (test < (int)(sizeof(TEST_INFO) / sizeof(TEST_INFO[0])))
+    if (test < (int) ARRAY_SIZE(TEST_INFO))
         return TEST_INFO[test].name;
     else
         return NULL;

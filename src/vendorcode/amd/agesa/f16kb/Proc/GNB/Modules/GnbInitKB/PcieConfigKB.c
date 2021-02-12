@@ -351,7 +351,7 @@ PcieCheckPortPciDeviceMappingKB (
   if (DevFunc == 0) {
     return TRUE;
   }
-  for (Index = 0; Index < (sizeof (DefaultPortDevMap) / sizeof (DefaultPortDevMap[0])); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(DefaultPortDevMap); Index++) {
     if (DefaultPortDevMap[Index] == DevFunc) {
       return TRUE;
     }

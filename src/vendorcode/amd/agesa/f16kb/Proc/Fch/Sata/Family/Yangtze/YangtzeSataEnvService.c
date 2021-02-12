@@ -202,7 +202,7 @@ FchProgramSataPhy (
 
   PhyTablePtr = &SataPhyTable[0];
 
-  for (Index = 0; Index < (sizeof (SataPhyTable) / sizeof (SATA_PHY_SETTING)); Index++) {
+  for (Index = 0; Index < ARRAY_SIZE(SataPhyTable); Index++) {
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0xFC00, PhyTablePtr->PhyCoreControlWord, StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x98, AccessWidth32, 0x00, PhyTablePtr->PhyFineTuneDword, StdHeader);
     ++PhyTablePtr;

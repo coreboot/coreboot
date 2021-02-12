@@ -154,7 +154,7 @@ F14PmPwrPlaneInit (
   // Next, round it to the appropriate encoded value.  We will start from encoding 111b which corresponds
   // to the fastest slew rate, and work our way down to 000b, which represents the slowest an acceptable
   // VRM can be.
-  for (VSRampSlamTime = ((sizeof (F14VSRampSlamWaitTimes) / sizeof (F14VSRampSlamWaitTimes[0])) - 1); VSRampSlamTime > 0; VSRampSlamTime--) {
+  for (VSRampSlamTime = (ARRAY_SIZE(F14VSRampSlamWaitTimes)- 1); VSRampSlamTime > 0; VSRampSlamTime--) {
     if (WaitTime <= F14VSRampSlamWaitTimes[VSRampSlamTime]) {
       break;
     }

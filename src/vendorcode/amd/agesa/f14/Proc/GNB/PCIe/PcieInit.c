@@ -198,7 +198,7 @@ PcieCommonCoreInit (
   if (PcieLibIsPcieWrapper (Wrapper)) {
     IDS_HDT_CONSOLE (GNB_TRACE, "PcieCommonCoreInit Enter\n");
     for (CoreId = Wrapper->StartPcieCoreId; CoreId <= Wrapper->EndPcieCoreId; CoreId++) {
-      for (Index = 0; Index < sizeof (CoreInitTable) / sizeof (PCIE_HOST_REGISTER_ENTRY); Index++) {
+      for (Index = 0; Index < ARRAY_SIZE(CoreInitTable); Index++) {
         UINT32 Value;
         Value = PcieRegisterRead (
                   Wrapper,

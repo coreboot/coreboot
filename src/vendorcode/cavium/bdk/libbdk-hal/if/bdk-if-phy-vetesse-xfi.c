@@ -141,7 +141,7 @@ int bdk_xfi_vsc7224_dump(int twsi_id, int unit){
 
 	uint64_t pagenum[9] = {0x00, 0x01, 0x02, 0x03, 0x20, 0x21, 0x30, 0x31, 0x40};
 
-	for(p=0; p < (sizeof(pagenum)/sizeof(pagenum[0])); p++){
+	for(p=0; p < ARRAY_SIZE(pagenum); p++){
 		data = pagenum[p];
 		bdk_twsix_write_ia(node, twsi_id, dev_addr, internal_addr, num_bytes, ia_width_bytes, data);
 		for(i=0x80; i<=0xFF; i++){

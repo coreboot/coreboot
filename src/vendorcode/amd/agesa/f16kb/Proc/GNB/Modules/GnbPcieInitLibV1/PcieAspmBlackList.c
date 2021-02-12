@@ -139,7 +139,7 @@ PcieAspmBlackListFeature (
   GnbLibPciRead (LinkAspm->UpstreamPort.AddressValue, AccessWidth32, &UpstreamDeviceId, StdHeader);
   GnbLibPciRead (LinkAspm->DownstreamPort.AddressValue, AccessWidth32, &DownstreamDeviceId, StdHeader);
   LinkAspm->BlackList = FALSE;
-  for (i = 0; i < (sizeof (AspmBrDeviceTable) / sizeof (UINT16)); i = i + 3) {
+  for (i = 0; i < ARRAY_SIZE(AspmBrDeviceTable); i = i + 3) {
     VendorId = AspmBrDeviceTable[i];
     DeviceId = AspmBrDeviceTable[i + 1];
     if (VendorId == (UINT16)UpstreamDeviceId || VendorId == (UINT16)DownstreamDeviceId ) {
@@ -157,7 +157,7 @@ PcieAspmBlackListFeature (
     GnbLibPciRMW (LinkAspm->UpstreamPort.AddressValue | 0x70C, AccessS3SaveWidth32, 0x0, 0x0F003F01, StdHeader);
 
     DeviceId = UpstreamDeviceId >> 16;
-    for (i = 0; i < (sizeof (Aspm168cL0sEnabled) / sizeof (UINT16)); i++) {
+    for (i = 0; i < ARRAY_SIZE(Aspm168cL0sEnabled); i++) {
       if (DeviceId == Aspm168cL0sEnabled[i]) {
         LinkAspm->UpstreamAspm = LinkAspm->RequestedAspm & AspmL0sL1;
         LinkAspm->DownstreamAspm = LinkAspm->UpstreamAspm & AspmL1;

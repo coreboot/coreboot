@@ -99,7 +99,8 @@ FchInitResetLpcProgram (
   //
   RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGBA, AccessWidth16, 0xFFFF, BIT8, StdHeader);
 
-  ProgramPciByteTable ( (REG8_MASK*) (&FchInitHudson2ResetLpcPciTable[0]), sizeof (FchInitHudson2ResetLpcPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ( (REG8_MASK*) (&FchInitHudson2ResetLpcPciTable[0]),
+                       ARRAY_SIZE(FchInitHudson2ResetLpcPciTable), StdHeader);
 
   //
   // Enabling ClkRun Function

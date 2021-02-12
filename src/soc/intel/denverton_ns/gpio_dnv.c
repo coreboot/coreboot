@@ -59,8 +59,7 @@ static const struct GPIO_GROUP_INFO mGpioGroupInfo[] = {
 static struct GPIO_GROUP_INFO *
 GpioGetGroupInfoTable(uint32_t *GpioGroupInfoTableLength)
 {
-	*GpioGroupInfoTableLength =
-		sizeof(mGpioGroupInfo) / sizeof(struct GPIO_GROUP_INFO);
+	*GpioGroupInfoTableLength = ARRAY_SIZE(mGpioGroupInfo);
 	return (struct GPIO_GROUP_INFO *)mGpioGroupInfo;
 }
 

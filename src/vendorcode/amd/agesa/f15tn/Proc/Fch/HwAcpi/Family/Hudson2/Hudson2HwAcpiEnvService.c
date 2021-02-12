@@ -211,7 +211,8 @@ ProgramFchEnvHwAcpiPciReg (
   //
   //Early post initialization of pci config space
   //
-  ProgramPciByteTable ((REG8_MASK*) (&FchHudson2InitEnvHwAcpiPciTable[0]), sizeof (FchHudson2InitEnvHwAcpiPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ((REG8_MASK*) (&FchHudson2InitEnvHwAcpiPciTable[0]),
+                       ARRAY_SIZE(FchHudson2InitEnvHwAcpiPciTable), StdHeader);
 
   if ( LocalCfgPtr->Smbus.SmbusSsid != 0 ) {
     RwPci ((SMBUS_BUS_DEV_FUN << 16) + FCH_CFG_REG2C, AccessWidth32, 0x00, LocalCfgPtr->Smbus.SmbusSsid, StdHeader);

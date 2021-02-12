@@ -82,7 +82,8 @@ FchInitEnvLpcProgram (
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
 
-  ProgramPciByteTable ((REG8_MASK*) (&FchInitYangtzeEnvLpcPciTable[0]), sizeof (FchInitYangtzeEnvLpcPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ((REG8_MASK*) (&FchInitYangtzeEnvLpcPciTable[0]),
+                       ARRAY_SIZE(FchInitYangtzeEnvLpcPciTable), StdHeader);
 
   RwMem (ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG28, AccessWidth32, (UINT32)~(BIT21 + BIT20 + BIT19), 0);
 }

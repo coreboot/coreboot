@@ -147,7 +147,7 @@ static void load_rank_data(dram_config_t *cfg, int ranks, int num_dimms, int lmc
 const dram_config_t *libdram_config_load(bdk_node_t node)
 {
     dram_config_t *cfg = &__libdram_global_cfg;
-    const int MAX_LMCS = sizeof(cfg->config) / sizeof(cfg->config[0]);
+    const int MAX_LMCS = ARRAY_SIZE(cfg->config);
 
     /* Make all fields for the node default to zero */
     memset(cfg, 0, sizeof(*cfg));

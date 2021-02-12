@@ -110,8 +110,8 @@ STATIC PCIE_HOST_REGISTER_ENTRY PcieInitEarlyTable ROMDATA[] = {
 
 CONST PCIE_HOST_REGISTER_TABLE_HEADER ROMDATA PcieInitEarlyTableTN  = {
   &PcieInitEarlyTable[0],
-  sizeof (PcieInitEarlyTable) / sizeof (PCIE_HOST_REGISTER_ENTRY)
-};
+  ARRAY_SIZE(PcieInitEarlyTable)
+  };
 
 STATIC PCIE_HOST_REGISTER_ENTRY ROMDATA CoreInitTable [] = {
   {
@@ -160,8 +160,8 @@ STATIC PCIE_HOST_REGISTER_ENTRY ROMDATA CoreInitTable [] = {
 
 CONST PCIE_HOST_REGISTER_TABLE_HEADER ROMDATA CoreInitTableTN  = {
   &CoreInitTable[0],
-  sizeof (CoreInitTable) / sizeof (PCIE_HOST_REGISTER_ENTRY)
-};
+  ARRAY_SIZE(CoreInitTable)
+  };
 
 
 STATIC PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitEarlyTable [] = {
@@ -208,8 +208,8 @@ STATIC PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitEarlyTable [] = {
 
 CONST PCIE_PORT_REGISTER_TABLE_HEADER ROMDATA PortInitEarlyTableTN  = {
   &PortInitEarlyTable[0],
-  sizeof (PortInitEarlyTable) / sizeof (PCIE_PORT_REGISTER_ENTRY)
-};
+  ARRAY_SIZE(PortInitEarlyTable)
+  };
 
 
 STATIC PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitMidTable [] = {
@@ -227,5 +227,5 @@ STATIC PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitMidTable [] = {
 
 CONST PCIE_PORT_REGISTER_TABLE_HEADER ROMDATA PortInitMidTableTN  = {
   &PortInitMidTable[0],
-  sizeof (PortInitMidTable) / sizeof (PCIE_PORT_REGISTER_ENTRY)
-};
+  ARRAY_SIZE(PortInitMidTable)
+  };

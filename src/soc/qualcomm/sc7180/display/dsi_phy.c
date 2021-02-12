@@ -564,7 +564,7 @@ static unsigned long dsi_phy_calc_clk_divider(struct dsi_phy_configtype *phy_cfg
 
 	/* D Phy */
 	lut = pll_dividerlut_dphy;
-	lut_max = sizeof(pll_dividerlut_dphy) / sizeof(*lut);
+	lut_max = ARRAY_SIZE(pll_dividerlut_dphy);
 	lut += (lut_max - 1);
 
 	/* PLL Post Div - from LUT

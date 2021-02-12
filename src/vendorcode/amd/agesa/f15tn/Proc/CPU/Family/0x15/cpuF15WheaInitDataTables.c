@@ -97,7 +97,7 @@ AMD_WHEA_INIT_DATA F15WheaInitData = {
   0x00,                     // AmdMcbClrStatusOnInit
   0x02,                     // AmdMcbStatusDataFormat
   0x00,                     // AmdMcbConfWriteEn
-  (sizeof (F15HestBankInitData) / sizeof (F15HestBankInitData[0])), // HestBankNum
+  ARRAY_SIZE(F15HestBankInitData), // HestBankNum
   &F15HestBankInitData[0]   // Pointer to Initial data of HEST Bank
 };
 

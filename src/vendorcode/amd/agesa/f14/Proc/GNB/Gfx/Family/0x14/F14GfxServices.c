@@ -363,7 +363,7 @@ GMM_REG_ENTRY  GmcDisableClockGating[] = {
 };
 
 TABLE_INDIRECT_PTR GmcDisableClockGatingPtr = {
-  sizeof (GmcDisableClockGating) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcDisableClockGating),
   GmcDisableClockGating
 };
 
@@ -383,7 +383,7 @@ GMM_REG_ENTRY  GmcEnableClockGating[] = {
 
 
 TABLE_INDIRECT_PTR GmcEnableClockGatingPtr = {
-  sizeof (GmcEnableClockGating) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcEnableClockGating),
   GmcEnableClockGating
 };
 
@@ -414,7 +414,7 @@ GMM_REG_ENTRY  GmcPerformanceTuningTable [] = {
 };
 
 TABLE_INDIRECT_PTR GmcPerformanceTuningTablePtr = {
-  sizeof (GmcPerformanceTuningTable) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcPerformanceTuningTable),
   GmcPerformanceTuningTable
 };
 
@@ -431,7 +431,7 @@ GMM_REG_ENTRY  GmcMiscInitTable [] = {
 };
 
 TABLE_INDIRECT_PTR GmcMiscInitTablePtr = {
-  sizeof (GmcMiscInitTable) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcMiscInitTable),
   GmcMiscInitTable
 };
 
@@ -446,7 +446,7 @@ GMM_REG_ENTRY  GmcRemoveBlackoutTable [] = {
 };
 
 TABLE_INDIRECT_PTR GmcRemoveBlackoutTablePtr = {
-  sizeof (GmcRemoveBlackoutTable) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcRemoveBlackoutTable),
   GmcRemoveBlackoutTable
 };
 
@@ -522,7 +522,7 @@ GMM_REG_ENTRY GmcRegisterEngineInitTable [] = {
 };
 
 TABLE_INDIRECT_PTR GmcRegisterEngineInitTablePtr = {
-  sizeof (GmcRegisterEngineInitTable) / sizeof (GMM_REG_ENTRY),
+  ARRAY_SIZE(GmcRegisterEngineInitTable),
   GmcRegisterEngineInitTable
 };
 
@@ -633,7 +633,7 @@ REGISTER_COPY_ENTRY CnbToGncRegisterCopyTable [] = {
 
 
 TABLE_INDIRECT_PTR CnbToGncRegisterCopyTablePtr = {
-  sizeof (CnbToGncRegisterCopyTable) / sizeof (REGISTER_COPY_ENTRY),
+  ARRAY_SIZE(CnbToGncRegisterCopyTable),
   CnbToGncRegisterCopyTable
 };
 

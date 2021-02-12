@@ -129,7 +129,7 @@ static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
 		return 0;
 	}
 
-	if (sizeof(cpus) / sizeof(struct cpu_smm_info) < num_cpus) {
+	if (ARRAY_SIZE(cpus) < num_cpus) {
 		printk(BIOS_ERR,
 			"%s: increase MAX_CPUS in Kconfig\n", __func__);
 		return 0;

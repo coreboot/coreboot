@@ -487,7 +487,7 @@ sataInitBeforePciEnum (
 
   // RPR 9.5 SATA PHY Programming Sequence
   pPhyTable = (SATAPHYSETTING*)FIXUP_PTR (&sataPhyTable[0]);
-  for (i = 0; i < (sizeof (sataPhyTable) / sizeof (SATAPHYSETTING)); i++) {
+  for (i = 0; i < ARRAY_SIZE(sataPhyTable); i++) {
     RWPCI ((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG80, AccWidthUint16 | S3_SAVE, 0x00, pPhyTable->wPhyCoreControl);
     RWPCI ((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG98, AccWidthUint32 | S3_SAVE, 0x00, pPhyTable->dwPhyFineTune);
     ++pPhyTable;

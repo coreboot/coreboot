@@ -889,13 +889,11 @@ GfxPwrPlayBuildVceStateTable (
   UsedStateBitmap = 0;
   // build used state
   for (Index = 0;
-       Index < (sizeof (PpWorkspace->PpF1s->VceFlags) /
-                sizeof (PpWorkspace->PpF1s->VceFlags[0])) ;
+       Index < ARRAY_SIZE(PpWorkspace->PpF1s->VceFlags);
        Index++) {
     UsedStateBitmap |= PpWorkspace->PpF1s->VceFlags[Index];
     for (VceStateIndex = 0;
-         VceStateIndex < (sizeof (PpWorkspace->VceStateArray) /
-                          sizeof (PpWorkspace->VceStateArray[0]));
+         VceStateIndex < ARRAY_SIZE(PpWorkspace->VceStateArray);
          VceStateIndex++) {
       if ((PpWorkspace->PpF1s->VceFlags[Index] & (1 << VceStateIndex)) != 0) {
         v4 = GfxFmCalculateClock (PpWorkspace->PpF1s->PP_FUSE_ARRAY_V2_fld33[PpWorkspace->PpF1s->PP_FUSE_ARRAY_V2_fld16[Index]],
@@ -919,7 +917,7 @@ GfxPwrPlayBuildVceStateTable (
   }
   //build unused states
   for (VceStateIndex = 0;
-       VceStateIndex < (sizeof (PpWorkspace->VceStateArray) / sizeof (PpWorkspace->VceStateArray[0]));
+       VceStateIndex < ARRAY_SIZE(PpWorkspace->VceStateArray);
        VceStateIndex++) {
     if ((UsedStateBitmap & (1 << VceStateIndex)) == 0) {
       PpWorkspace->VceStateArray[VceStateIndex].ucClockInfoIndex = 0;

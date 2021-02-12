@@ -3770,8 +3770,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 					continue;
 				for (addr = 0;
 				     addr <
-				     sizeof(useful_addresses) /
-				     sizeof(useful_addresses[0]); addr++)
+				     ARRAY_SIZE(useful_addresses); addr++)
 					gav(info.
 					    spd[channel][0][useful_addresses
 							    [addr]] =

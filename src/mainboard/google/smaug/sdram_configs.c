@@ -31,7 +31,7 @@ const struct sdram_params *get_sdram_config()
 	 */
 
 	printk(BIOS_SPEW, "%s: RAMCODE=%d\n", __func__, ramcode);
-	if (ramcode >= sizeof(sdram_configs) / sizeof(sdram_configs[0]) ||
+	if (ramcode >= ARRAY_SIZE(sdram_configs) ||
 	    sdram_configs[ramcode].MemoryType == NvBootMemoryType_Unused) {
 		die("Invalid RAMCODE.");
 	}

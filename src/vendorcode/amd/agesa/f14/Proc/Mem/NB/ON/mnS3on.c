@@ -240,7 +240,7 @@ PCI_REG_DESCRIPTOR ROMDATA S3PciPreSelfRefDescriptorON[] = {
 
 CONST PCI_REGISTER_BLOCK_HEADER ROMDATA S3PciPreSelfRefON = {
   0,
-  (sizeof (S3PciPreSelfRefDescriptorON) / sizeof (PCI_REG_DESCRIPTOR)),
+  ARRAY_SIZE(S3PciPreSelfRefDescriptorON),
   S3PciPreSelfRefDescriptorON,
   PciSpecialCaseFuncON
 };
@@ -293,7 +293,7 @@ CONDITIONAL_PCI_REG_DESCRIPTOR ROMDATA S3CPciPostSelfDescriptorON[] = {
 
 CONST CPCI_REGISTER_BLOCK_HEADER ROMDATA S3CPciPostSelfRefON = {
   0,
-  (sizeof (S3CPciPostSelfDescriptorON) / sizeof (CONDITIONAL_PCI_REG_DESCRIPTOR)),
+  ARRAY_SIZE(S3CPciPostSelfDescriptorON),
   S3CPciPostSelfDescriptorON,
   PciSpecialCaseFuncON
 };
@@ -307,7 +307,7 @@ MSR_REG_DESCRIPTOR ROMDATA S3MSRPreSelfRefDescriptorON[] = {
 
 CONST MSR_REGISTER_BLOCK_HEADER ROMDATA S3MSRPreSelfRefON = {
   0,
-  (sizeof (S3MSRPreSelfRefDescriptorON) / sizeof (MSR_REG_DESCRIPTOR)),
+  ARRAY_SIZE(S3MSRPreSelfRefDescriptorON),
   S3MSRPreSelfRefDescriptorON,
   NULL
 };

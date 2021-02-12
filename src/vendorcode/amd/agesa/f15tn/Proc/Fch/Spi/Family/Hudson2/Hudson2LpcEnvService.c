@@ -82,7 +82,8 @@ FchInitEnvLpcProgram (
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
 
-  ProgramPciByteTable ((REG8_MASK*) (&FchInitHudson2EnvLpcPciTable[0]), sizeof (FchInitHudson2EnvLpcPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ((REG8_MASK*) (&FchInitHudson2EnvLpcPciTable[0]),
+                       ARRAY_SIZE(FchInitHudson2EnvLpcPciTable), StdHeader);
 
   //
   // Disable LPC A-Link Cycle Bypass

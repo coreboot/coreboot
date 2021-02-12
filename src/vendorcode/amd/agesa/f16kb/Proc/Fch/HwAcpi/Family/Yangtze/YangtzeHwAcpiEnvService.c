@@ -183,7 +183,8 @@ ProgramFchEnvHwAcpiPciReg (
   //
   //Early post initialization of pci config space
   //
-  ProgramPciByteTable ((REG8_MASK*) (&FchYangtzeInitEnvHwAcpiPciTable[0]), sizeof (FchYangtzeInitEnvHwAcpiPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ((REG8_MASK*) (&FchYangtzeInitEnvHwAcpiPciTable[0]),
+                       ARRAY_SIZE(FchYangtzeInitEnvHwAcpiPciTable), StdHeader);
 
   if ( LocalCfgPtr->Smbus.SmbusSsid != 0 ) {
     RwPci ((SMBUS_BUS_DEV_FUN << 16) + FCH_CFG_REG2C, AccessWidth32, 0x00, LocalCfgPtr->Smbus.SmbusSsid, StdHeader);

@@ -125,7 +125,8 @@ FchInitResetLpcProgram (
   //
   RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGBA, AccessWidth16, 0xFFFF, BIT8, StdHeader);
 
-  ProgramPciByteTable ( (REG8_MASK*) (&FchInitYangtzeResetLpcPciTable[0]), sizeof (FchInitYangtzeResetLpcPciTable) / sizeof (REG8_MASK), StdHeader);
+  ProgramPciByteTable ( (REG8_MASK*) (&FchInitYangtzeResetLpcPciTable[0]),
+                       ARRAY_SIZE(FchInitYangtzeResetLpcPciTable), StdHeader);
 
   if ( LocalCfgPtr->Spi.LpcClk0 ) {
     RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGD0 + 1, AccessWidth8, 0xDF, 0x20, StdHeader);

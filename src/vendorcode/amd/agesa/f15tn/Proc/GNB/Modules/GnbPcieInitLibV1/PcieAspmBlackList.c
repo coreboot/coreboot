@@ -123,7 +123,7 @@ PcieAspmBlackListFeature (
 
   GnbLibPciRead (LinkAsmp->UpstreamPort.AddressValue, AccessWidth32, &UpstreamDeviceId, StdHeader);
   GnbLibPciRead (LinkAsmp->DownstreamPort.AddressValue, AccessWidth32, &DownstreamDeviceId, StdHeader);
-  for (i = 0; i < (sizeof (AspmBrDeviceTable) / sizeof (UINT16)); i = i + 3) {
+  for (i = 0; i < ARRAY_SIZE(AspmBrDeviceTable); i = i + 3) {
     VendorId = AspmBrDeviceTable[i];
     DeviceId = AspmBrDeviceTable[i + 1];
     if (VendorId == (UINT16)UpstreamDeviceId || VendorId == (UINT16)DownstreamDeviceId ) {

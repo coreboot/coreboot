@@ -330,7 +330,8 @@ sbPowerOnInit (
 //    RWMEM ((pConfig->BuildParameters.SpiRomBaseAddress) + SB_SPI_MMIO_REG0C, AccWidthUint16 | S3_SAVE, ~(BIT15 + BIT14), ( cimSpiFastReadSpeed << 14));
 //  }
   //Program power on pci init table
-  programPciByteTable ( (REG8MASK*) FIXUP_PTR (&sbPorInitPciTable[0]), sizeof (sbPorInitPciTable) / sizeof (REG8MASK) );
+  programPciByteTable ( (REG8MASK*) FIXUP_PTR (&sbPorInitPciTable[0]),
+                       ARRAY_SIZE(sbPorInitPciTable));
 
   programSbAcpiMmioTbl ((AcpiRegWrite *) (pConfig->OEMPROGTBL.OemProgrammingTablePtr_Ptr));
 

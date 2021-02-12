@@ -207,12 +207,12 @@ MemConstructTechBlock3 (
       //
       // Initialize the SPD pointers for each Dimm
       //
-      for (i = 0 ; i < (sizeof (ChannelPtr->DimmSpdPtr) / sizeof (ChannelPtr->DimmSpdPtr[0])) ; i++) {
+      for (i = 0 ; i < ARRAY_SIZE(ChannelPtr->DimmSpdPtr); i++) {
         ChannelPtr->DimmSpdPtr[i] = NULL;
       }
       for (i = 0 ; i < DimmSlots; i++) {
         ChannelPtr->DimmSpdPtr[i] = &(ChannelPtr->SpdPtr[i]);
-        if ( (i + 2) < (sizeof (ChannelPtr->DimmSpdPtr) / sizeof (ChannelPtr->DimmSpdPtr[0]))) {
+        if ( (i + 2) < ARRAY_SIZE(ChannelPtr->DimmSpdPtr)) {
           if (ChannelPtr->DimmSpdPtr[i]->DimmPresent) {
             if ((((ChannelPtr->DimmSpdPtr[i]->Data[SPD_RANKS] >> 3) & 0x07) + 1) > 2) {
               ChannelPtr->DimmSpdPtr[i + 2] = &(ChannelPtr->SpdPtr[i]);

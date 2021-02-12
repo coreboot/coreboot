@@ -1,0 +1,36 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_PINE64_ROCKPRO64
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select COMMON_CBFS_SPI_WRAPPER
+	select SOC_ROCKCHIP_RK3399
+	select SPI_FLASH
+	select SPI_FLASH_GIGADEVICE
+
+config MAINBOARD_DIR
+	string
+	default "pine64/rockpro64"
+
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 1
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on DRIVERS_UART
+	default 0xFF1A0000
+
+##########################################################
+#### Update below when adding a new derivative board. ####
+##########################################################
+config DEVICETREE
+	string
+	default "devicetree.cb" if BOARD_PINE64_ROCKPRO64
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ROCKPro64" if BOARD_PINE64_ROCKPRO64
+endif # BOARD_PINE64_ROCKPRO64

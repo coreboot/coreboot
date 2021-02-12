@@ -1,0 +1,2 @@
+config BOARD_PINE64_ROCKPRO64
+	bool "ROCKPro64"

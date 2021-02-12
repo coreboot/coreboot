@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_PINE64
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/pine64/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/pine64/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Pine64"
+
+endif # VENDOR_PINE64

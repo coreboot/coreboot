@@ -1,0 +1,2 @@
+config VENDOR_PINE64
+	bool "Pine64"

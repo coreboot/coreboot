@@ -2,6 +2,7 @@
 
 #include <amdblocks/cpu.h>
 #include <console/console.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <device/device.h>
@@ -15,6 +16,8 @@ static void zen_2_3_init(struct device *dev)
 {
 	setup_lapic();
 	set_cstate_io_addr();
+
+	amd_update_microcode_from_cbfs();
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -65,7 +65,9 @@ typedef struct __packed {
 	/** Offset 0x014A**/	uint8_t                     usb_3_rx_vref_ctrl_en_x;
 	/** Offset 0x014B**/	uint8_t                     usb_3_tx_vboost_lvl_x;
 	/** Offset 0x014C**/	uint8_t                     usb_3_tx_vboost_lvl_en_x;
-	/** Offset 0x014D**/	uint8_t                     UnusedUpdSpace0[179];
+	/** Offset 0x014D**/	uint8_t                     UnusedUpdSpace0[3];
+	/** Offset 0x0150**/	uint32_t                    vbios_buffer_addr;
+	/** Offset 0x0154**/	uint8_t                     UnusedUpdSpace1[172];
 	/** Offset 0x0200**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

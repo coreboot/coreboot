@@ -51,8 +51,8 @@ typedef struct __packed {
 	/** Offset 0x0128**/	uint8_t                     gnb_ioapic_id;
 	/** Offset 0x0129**/	uint8_t                     fch_ioapic_id;
 	/** Offset 0x012A**/	uint8_t                     UnusedUpdSpace0[6];
-	/** Offset 0x0130**/	uint8_t                     unused4[16];
-	/** Offset 0x0140**/	uint8_t                     UnusedUpdSpace1[16];
+	/** Offset 0x0130**/	uint32_t                    vbios_buffer_addr;
+	/** Offset 0x0134**/    uint8_t                     UnusedUpdSpace1[28];
 	/** Offset 0x0150**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

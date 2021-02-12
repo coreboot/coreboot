@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/acpi.h>
 #include <amdblocks/memmap.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -130,6 +131,11 @@ static void read_resources(struct device *dev)
 	}
 }
 
+static void root_complex_fill_ssdt(const struct device *device)
+{
+	acpi_fill_root_complex_tom(device);
+}
+
 static const char *gnb_acpi_name(const struct device *dev)
 {
 	return "GNB";
@@ -140,6 +146,7 @@ static struct device_operations root_complex_operations = {
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.acpi_name		= gnb_acpi_name,
+	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };
 
 static const struct pci_driver family17_root_complex __pci_driver = {

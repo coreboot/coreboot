@@ -9,6 +9,8 @@ Scope(\_SB) {
 	#include "pci_int_defs.asl"
 
 	#include "mmio.asl"
+
+	#include "pci0.asl"
 } /* End \_SB scope */
 
 #include <soc/amd/common/acpi/platform.asl>

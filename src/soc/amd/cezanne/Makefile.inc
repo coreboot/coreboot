@@ -87,10 +87,6 @@ else
 PSP_SOFTFUSE_BITS += 29
 endif
 
-ifeq ($(CONFIG_PSP_LOAD_S0I3_FW),y)
-OPT_PSP_LOAD_S0I3_FW="--load-s0i3"
-endif
-
 #
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
@@ -152,7 +148,7 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_SOFTFUSE) \
 		$(OPT_PSP_USE_PSPSECUREOS) \
 		$(OPT_PSP_LOAD_MP2_FW) \
-		$(OPT_PSP_LOAD_S0I3_FW) \
+		--load-s0i3 \
 		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_EFS_SPI_READ_MODE) \

@@ -227,12 +227,6 @@ config PSP_LOAD_MP2_FW
 
 	  If unsure, answer 'n'
 
-config PSP_LOAD_S0I3_FW
-	bool
-	default n
-	help
-	  Select this item to include the S0i3 file into the PSP build.
-
 config PSP_UNLOCK_SECURE_DEBUG
 	bool "Unlock secure debug"
 	default y

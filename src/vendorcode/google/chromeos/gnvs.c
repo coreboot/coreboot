@@ -14,7 +14,6 @@
 #include "gnvs.h"
 
 static chromeos_acpi_t *chromeos_acpi;
-static u32 me_hash_saved[8];
 
 static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 {
@@ -35,9 +34,6 @@ void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 
 	chromeos_acpi = init;
 
-	/* Copy saved ME hash into NVS */
-	memcpy(chromeos_acpi->mehh, me_hash_saved, sizeof(chromeos_acpi->mehh));
-
 	vpd_size = chromeos_vpd_region("RO_VPD", &vpd_base);
 	if (vpd_size && vpd_base) {
 		chromeos_acpi->vpd_ro_base = vpd_base;
@@ -56,12 +52,9 @@ void chromeos_set_me_hash(u32 *hash, int len)
 	if ((len*sizeof(u32)) > sizeof(chromeos_acpi->mehh))
 		return;
 
-	/* Copy to NVS or save until it is ready */
+	/* Copy to NVS. */
 	if (chromeos_acpi)
-		/* This does never happen! */
 		memcpy(chromeos_acpi->mehh, hash, len*sizeof(u32));
-	else
-		memcpy(me_hash_saved, hash, len*sizeof(u32));
 }
 
 chromeos_acpi_t *chromeos_get_chromeos_acpi(void)

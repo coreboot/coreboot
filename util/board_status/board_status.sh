@@ -32,11 +32,11 @@ case $(uname) in
 			echo "Please install gmake, or build and install devel/gmake from ports."
 			exit $EXIT_FAILURE
 		else
-			MAKE=gmake
+			MAKE='gmake'
 		fi
 		;;
 	*)
-		MAKE=make
+		MAKE='make'
 		;;
 esac
 

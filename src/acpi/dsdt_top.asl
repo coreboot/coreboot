@@ -30,3 +30,11 @@ Method (_PIC, 1)
 	/* Remember the OS' IRQ routing choice. */
 	PICM = Arg0
 }
+
+#if CONFIG(MMCONF_SUPPORT)
+/* Base address of PCIe config space */
+Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)
+
+/* Length of PCIe config space, 1MB each bus */
+Name(PCLN, CONFIG_MMCONF_LENGTH)
+#endif

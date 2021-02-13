@@ -13,7 +13,6 @@ DefinitionBlock (
 {	/* Start of ASL file */
 	#include <acpi/dsdt_top.asl>
 
-	Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)	/* Base address of PCIe config space */
 
 	/* USB overcurrent mapping pins.   */
 	Name(UOM0, 0)

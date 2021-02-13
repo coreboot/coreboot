@@ -14,9 +14,6 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	#include <arch/x86/acpi/debug.asl>	/* Include global debug methods if needed */
 
-	/* Globals for the platform */
-	#include "acpi/mainboard.asl"
-
 	/* PCI IRQ mapping for the Southbridge */
 	#include <southbridge/amd/agesa/hudson/acpi/pcie.asl>
 

@@ -13,9 +13,6 @@ DefinitionBlock (
 {	/* Start of ASL file */
 	#include <acpi/dsdt_top.asl>
 
-	/* Globals for the platform */
-	#include "acpi/mainboard.asl"
-
 	/* Describe the USB Overcurrent pins */
 	#include "acpi/usb_oc.asl"
 

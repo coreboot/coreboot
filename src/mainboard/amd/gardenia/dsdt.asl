@@ -18,9 +18,6 @@ DefinitionBlock (
 	/* global NVS and variables */
 	#include <globalnvs.asl>
 
-	/* Globals for the platform */
-	#include "acpi/mainboard.asl"
-
 	/* Describe the USB Overcurrent pins */
 	#include "acpi/usb_oc.asl"
 

@@ -7,23 +7,21 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <soc/data_fabric.h>
 #include <soc/iomap.h>
-#include <soc/pci_devs.h>
 #include <types.h>
 
 static void disable_mmio_reg(unsigned int reg)
 {
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg),
+	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
 			   IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT);
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(reg), 0);
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(reg), 0);
+	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
+	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
 }
 
 static bool is_mmio_reg_disabled(unsigned int reg)
 {
-	uint32_t val = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg));
+	uint32_t val = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
 	return !(val & ((MMIO_WE | MMIO_RE)));
 }
 
@@ -68,12 +66,12 @@ void data_fabric_set_mmio_np(void)
 
 	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
 		/* Adjust all registers that overlap */
-		ctrl = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(i));
+		ctrl = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
 		if (!(ctrl & (MMIO_WE | MMIO_RE)))
 			continue; /* not enabled */
 
-		base = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(i));
-		limit = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i));
+		base = data_fabric_broadcast_read32(0, NB_MMIO_BASE(i));
+		limit = data_fabric_broadcast_read32(0, NB_MMIO_LIMIT(i));
 
 		if (base > np_top || limit < np_bot)
 			continue; /* no overlap at all */
@@ -85,7 +83,7 @@ void data_fabric_set_mmio_np(void)
 
 		if (base < np_bot && limit > np_top) {
 			/* Split the configured region */
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i), np_bot - 1);
+			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(i), np_bot - 1);
 			reg = find_unused_mmio_reg();
 			if (reg < 0) {
 				/* Although a pair could be freed later, this condition is
@@ -95,17 +93,17 @@ void data_fabric_set_mmio_np(void)
 				       "Error: Not enough NB MMIO routing registers\n");
 				continue;
 			}
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(reg), np_top + 1);
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(reg), limit);
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg), ctrl);
+			data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_top + 1);
+			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), limit);
+			data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl);
 			continue;
 		}
 
 		/* If still here, adjust only the base or limit */
 		if (base <= np_bot)
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i), np_bot - 1);
+			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(i), np_bot - 1);
 		else
-			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(i), np_top + 1);
+			data_fabric_broadcast_write32(0, NB_MMIO_BASE(i), np_top + 1);
 	}
 
 	reg = find_unused_mmio_reg();
@@ -114,9 +112,9 @@ void data_fabric_set_mmio_np(void)
 		return;
 	}
 
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(reg), np_bot);
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(reg), np_top);
-	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg),
+	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_bot);
+	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), np_top);
+	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
 			   (IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT) | MMIO_NP | MMIO_WE
 				   | MMIO_RE);
 }

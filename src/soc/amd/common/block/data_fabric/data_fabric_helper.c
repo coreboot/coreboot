@@ -22,8 +22,7 @@ static void data_fabric_set_indirect_address(uint8_t func, uint16_t reg, uint8_t
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id)
 {
 	if (instance_id == BROADCAST_FABRIC_ID)
-		/* No bit masking required. Macros will apply mask to values. */
-		return pci_read_config32(_SOC_DEV(DF_DEV, function), reg);
+		return data_fabric_broadcast_read32(function, reg);
 
 	/* non-broadcast data fabric accesses need to be done via indirect access */
 	data_fabric_set_indirect_address(function, reg, instance_id);
@@ -33,8 +32,7 @@ uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id)
 void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data)
 {
 	if (instance_id == BROADCAST_FABRIC_ID) {
-		/* No bit masking required. Macros will apply mask to values. */
-		pci_write_config32(_SOC_DEV(DF_DEV, function), reg, data);
+		data_fabric_write32(function, reg, BROADCAST_FABRIC_ID, data);
 		return;
 	}
 

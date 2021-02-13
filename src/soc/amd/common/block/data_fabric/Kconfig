@@ -1,0 +1,5 @@
+config SOC_AMD_COMMON_BLOCK_DATA_FABRIC
+	bool
+	help
+	  Select this option to add data fabric configuration related
+	  functionality to the build.

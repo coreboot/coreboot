@@ -13,6 +13,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <amdblocks/cpu.h>
+#include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>

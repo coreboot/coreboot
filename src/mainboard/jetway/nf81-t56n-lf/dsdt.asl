@@ -41,6 +41,8 @@ DefinitionBlock (
 	#include "acpi/sleep.asl"
 
 	#include "acpi/gpe.asl"
+	#include "acpi/usb_oc.asl"
+
 	#include "acpi/superio.asl"
 }
 /* End of ASL file */

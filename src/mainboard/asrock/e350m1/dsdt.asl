@@ -43,5 +43,6 @@ DefinitionBlock (
 	#include "acpi/sleep.asl"
 
 	#include "acpi/gpe.asl"
+	#include "acpi/usb_oc.asl"
 }
 /* End of ASL file */

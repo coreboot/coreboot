@@ -41,6 +41,7 @@ DefinitionBlock (
 	#include "acpi/sleep.asl"
 
 	#include "acpi/gpe.asl"
+	#include "acpi/usb_oc.asl"
 
 	/* Contains the GPIO led and button setup for this board */
 	#include "acpi/buttons.asl"

@@ -59,6 +59,10 @@ config VBOOT
 config MMCONF_BASE_ADDRESS
 	default 0xe0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 256
+
 config MAX_CPUS
 	int
 	default 4

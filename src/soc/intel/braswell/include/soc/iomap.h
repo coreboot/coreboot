@@ -7,10 +7,6 @@
  * Memory Mapped IO bases.
  */
 
-/* PCI Configuration Space */
-#define MCFG_BASE_ADDRESS		CONFIG_MMCONF_BASE_ADDRESS
-#define MCFG_BASE_SIZE			0x10000000
-
 /* Transactions in this range will abort */
 #define ABORT_BASE_ADDRESS		0xfeb00000
 #define ABORT_BASE_SIZE			0x00100000

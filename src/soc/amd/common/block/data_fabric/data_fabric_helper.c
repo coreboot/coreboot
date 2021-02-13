@@ -3,6 +3,7 @@
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/pci_devs.h>
 #include <device/pci_ops.h>
+#include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <types.h>
 #include "data_fabric_def.h"
@@ -39,4 +40,27 @@ void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, ui
 	/* non-broadcast data fabric accesses need to be done via indirect access */
 	data_fabric_set_indirect_address(function, reg, instance_id);
 	pci_write_config32(SOC_DF_F4_DEV, DF_FICAD_LO, data);
+}
+
+void data_fabric_disable_mmio_reg(unsigned int reg)
+{
+	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
+		IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT);
+	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
+	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
+}
+
+static bool is_mmio_reg_disabled(unsigned int reg)
+{
+	uint32_t val = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
+	return !(val & (MMIO_WE | MMIO_RE));
+}
+
+int data_fabric_find_unused_mmio_reg(void)
+{
+	for (unsigned int i = 0; i < NUM_NB_MMIO_REGS; i++) {
+		if (is_mmio_reg_disabled(i))
+			return i;
+	}
+	return -1;
 }

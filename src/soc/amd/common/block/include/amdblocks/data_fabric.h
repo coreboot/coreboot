@@ -27,4 +27,7 @@ void data_fabric_broadcast_write32(uint8_t function, uint16_t reg, uint32_t data
 	pci_write_config32(_SOC_DEV(DF_DEV, function), reg, data);
 }
 
+void data_fabric_disable_mmio_reg(unsigned int reg);
+int data_fabric_find_unused_mmio_reg(void);
+
 #endif /* AMD_BLOCK_DATA_FABRIC_H */

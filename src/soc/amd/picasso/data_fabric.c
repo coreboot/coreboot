@@ -11,31 +11,6 @@
 #include <soc/iomap.h>
 #include <types.h>
 
-static void disable_mmio_reg(unsigned int reg)
-{
-	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
-			   IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT);
-	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
-	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
-}
-
-static bool is_mmio_reg_disabled(unsigned int reg)
-{
-	uint32_t val = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
-	return !(val & ((MMIO_WE | MMIO_RE)));
-}
-
-static int find_unused_mmio_reg(void)
-{
-	unsigned int i;
-
-	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
-		if (is_mmio_reg_disabled(i))
-			return i;
-	}
-	return -1;
-}
-
 void data_fabric_set_mmio_np(void)
 {
 	/*
@@ -77,14 +52,14 @@ void data_fabric_set_mmio_np(void)
 			continue; /* no overlap at all */
 
 		if (base >= np_bot && limit <= np_top) {
-			disable_mmio_reg(i); /* 100% within, so remove */
+			data_fabric_disable_mmio_reg(i); /* 100% within, so remove */
 			continue;
 		}
 
 		if (base < np_bot && limit > np_top) {
 			/* Split the configured region */
 			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(i), np_bot - 1);
-			reg = find_unused_mmio_reg();
+			reg = data_fabric_find_unused_mmio_reg();
 			if (reg < 0) {
 				/* Although a pair could be freed later, this condition is
 				 * very unusual and deserves analysis.  Flag an error and
@@ -106,7 +81,7 @@ void data_fabric_set_mmio_np(void)
 			data_fabric_broadcast_write32(0, NB_MMIO_BASE(i), np_top + 1);
 	}
 
-	reg = find_unused_mmio_reg();
+	reg = data_fabric_find_unused_mmio_reg();
 	if (reg < 0) {
 		printk(BIOS_ERR, "Error: cannot configure region as NP\n");
 		return;

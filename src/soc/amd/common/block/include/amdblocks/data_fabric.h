@@ -8,5 +8,6 @@
 #define BROADCAST_FABRIC_ID		0xff
 
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id);
+void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data);
 
 #endif /* AMD_BLOCK_DATA_FABRIC_H */

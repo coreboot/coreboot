@@ -71,6 +71,10 @@ config CPU_SPECIFIC_OPTIONS
 config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
 	default 3200
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/amd/picasso/chipset.cb"
+
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES

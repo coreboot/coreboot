@@ -39,6 +39,8 @@ void data_fabric_set_mmio_np(void)
 	const uint32_t np_bot = HPET_BASE_ADDRESS >> D18F0_MMIO_SHIFT;
 	const uint32_t np_top = (LOCAL_APIC_ADDR - 1) >> D18F0_MMIO_SHIFT;
 
+	data_fabric_print_mmio_conf();
+
 	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
 		/* Adjust all registers that overlap */
 		ctrl = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
@@ -92,6 +94,8 @@ void data_fabric_set_mmio_np(void)
 	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
 			   (IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT) | MMIO_NP | MMIO_WE
 				   | MMIO_RE);
+
+	data_fabric_print_mmio_conf();
 }
 
 static const char *data_fabric_acpi_name(const struct device *dev)

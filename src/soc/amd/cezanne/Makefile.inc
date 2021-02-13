@@ -27,6 +27,7 @@ romstage-y	+= uart.c
 ramstage-y	+= acpi.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
+ramstage-y	+= data_fabric.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_params.c
 ramstage-y	+= gpio.c

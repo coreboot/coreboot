@@ -2,6 +2,7 @@
 
 #include <device/device.h>
 #include <fsp/api.h>
+#include <soc/data_fabric.h>
 #include <soc/southbridge.h>
 #include <types.h>
 #include "chip.h"
@@ -52,6 +53,8 @@ static void enable_dev(struct device *dev)
 static void soc_init(void *chip_info)
 {
 	fsp_silicon_init();
+
+	data_fabric_set_mmio_np();
 
 	fch_init(chip_info);
 }

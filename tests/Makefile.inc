@@ -48,6 +48,10 @@ TEST_CFLAGS += -I$(cmockasrc)/include
 TEST_LDFLAGS = -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
 TEST_LDFLAGS += -Wl,--gc-sections
 
+# Some memlayout symbols don't work with userspace relocation -- disable it.
+TEST_CFLAGS += -fno-pie -fno-pic
+TEST_LDFLAGS += -no-pie
+
 # Extra attributes for unit tests, declared per test
 attributes:= srcs cflags mocks stage
 

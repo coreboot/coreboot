@@ -29,6 +29,8 @@ struct rmod_context {
 	struct parsed_elf pelf;
 	/* Program segment. */
 	Elf64_Phdr *phdr;
+	/* Symbol string table. */
+	char *strtab;
 
 	/* Collection of relocation addresses fixup in the module. */
 	Elf64_Xword nrelocs;

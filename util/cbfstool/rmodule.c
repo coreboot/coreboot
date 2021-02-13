@@ -72,7 +72,7 @@ static int valid_reloc_arm(Elf64_Rela *rel)
 
 	/* Only these 6 relocations are expected to be found. */
 	return (type == R_ARM_ABS32 || type == R_ARM_THM_PC22 ||
-                type == R_ARM_THM_JUMP24 || type == R_ARM_V4BX ||
+		type == R_ARM_THM_JUMP24 || type == R_ARM_V4BX ||
 		type == R_ARM_CALL || type == R_ARM_JUMP24);
 }
 
@@ -137,6 +137,19 @@ static const struct arch_ops reloc_ops[] = {
 	},
 };
 
+static int relocation_for_absolute_symbol(struct rmod_context *ctx, Elf64_Rela *r)
+{
+	Elf64_Sym *s = &ctx->pelf.syms[ELF64_R_SYM(r->r_info)];
+
+	if (s->st_shndx == SHN_ABS) {
+		DEBUG("Omitting relocation for absolute symbol: %s\n",
+		      &ctx->strtab[s->st_name]);
+		return 1;
+	}
+
+	return 0;
+}
+
 /*
  * Relocation processing loops.
  */
@@ -171,6 +184,9 @@ static int for_each_reloc(struct rmod_context *ctx, struct reloc_filter *f,
 				      (unsigned int)ELF64_R_TYPE(r->r_info));
 				return -1;
 			}
+
+			if (relocation_for_absolute_symbol(ctx, r))
+				continue;
 
 			/* Allow the provided filter to have precedence. */
 			if (f != NULL) {
@@ -341,7 +357,7 @@ int rmodule_collect_relocations(struct rmod_context *ctx,
 
 static int
 populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
-             int nsyms, const char *strtab, int optional)
+	     int nsyms, int optional)
 {
 	int i;
 	Elf64_Sym *syms;
@@ -351,7 +367,7 @@ populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
 	for (i = 0; i < nsyms; i++) {
 		if (syms[i].st_name == 0)
 			continue;
-		if (strcmp(sym_name, &strtab[syms[i].st_name]))
+		if (strcmp(sym_name, &ctx->strtab[syms[i].st_name]))
 			continue;
 		DEBUG("%s -> 0x%llx\n", sym_name, (long long)syms[i].st_value);
 		*addr = syms[i].st_value;
@@ -371,30 +387,12 @@ populate_sym(struct rmod_context *ctx, const char *sym_name, Elf64_Addr *addr,
 static int populate_rmodule_info(struct rmod_context *ctx)
 {
 	int i;
-	const char *strtab;
 	struct parsed_elf *pelf;
 	Elf64_Ehdr *ehdr;
 	int nsyms;
 
 	pelf = &ctx->pelf;
 	ehdr = &pelf->ehdr;
-
-	/* Obtain the string table. */
-	strtab = NULL;
-	for (i = 0; i < ehdr->e_shnum; i++) {
-		if (ctx->pelf.strtabs[i] == NULL)
-			continue;
-		/* Don't use the section headers' string table. */
-		if (i == ehdr->e_shstrndx)
-			continue;
-		strtab = buffer_get(ctx->pelf.strtabs[i]);
-		break;
-	}
-
-	if (strtab == NULL) {
-		ERROR("No string table found.\n");
-		return -1;
-	}
 
 	/* Determine number of symbols. */
 	nsyms = 0;
@@ -406,18 +404,16 @@ static int populate_rmodule_info(struct rmod_context *ctx)
 		break;
 	}
 
-	if (populate_sym(ctx, "_rmodule_params", &ctx->parameters_begin,
-	                 nsyms, strtab, 1))
+	if (populate_sym(ctx, "_rmodule_params", &ctx->parameters_begin, nsyms, 1))
 		return -1;
 
-	if (populate_sym(ctx, "_ermodule_params", &ctx->parameters_end,
-	                 nsyms, strtab, 1))
+	if (populate_sym(ctx, "_ermodule_params", &ctx->parameters_end, nsyms, 1))
 		return -1;
 
-	if (populate_sym(ctx, "_bss", &ctx->bss_begin, nsyms, strtab, 0))
+	if (populate_sym(ctx, "_bss", &ctx->bss_begin, nsyms, 0))
 		return -1;
 
-	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, strtab, 0))
+	if (populate_sym(ctx, "_ebss", &ctx->bss_end, nsyms, 0))
 		return -1;
 
 	return 0;
@@ -425,7 +421,7 @@ static int populate_rmodule_info(struct rmod_context *ctx)
 
 static int
 add_section(struct elf_writer *ew, struct buffer *data, const char *name,
-            Elf64_Addr addr, Elf64_Word size)
+	    Elf64_Addr addr, Elf64_Word size)
 {
 	Elf64_Shdr shdr;
 	int ret;
@@ -452,7 +448,7 @@ add_section(struct elf_writer *ew, struct buffer *data, const char *name,
 
 static int
 write_elf(const struct rmod_context *ctx, const struct buffer *in,
-          struct buffer *out)
+	  struct buffer *out)
 {
 	int ret;
 	int bit64;
@@ -657,6 +653,22 @@ int rmodule_init(struct rmod_context *ctx, const struct buffer *elfin)
 		ctx->xdr = &xdr_be;
 	else
 		ctx->xdr = &xdr_le;
+
+	/* Obtain the string table. */
+	for (i = 0; i < pelf->ehdr.e_shnum; i++) {
+		if (pelf->strtabs[i] == NULL)
+			continue;
+		/* Don't use the section headers' string table. */
+		if (i == pelf->ehdr.e_shstrndx)
+			continue;
+		ctx->strtab = buffer_get(pelf->strtabs[i]);
+		break;
+	}
+
+	if (ctx->strtab == NULL) {
+		ERROR("No string table found.\n");
+		return -1;
+	}
 
 	if (find_program_segment(ctx))
 		goto out;

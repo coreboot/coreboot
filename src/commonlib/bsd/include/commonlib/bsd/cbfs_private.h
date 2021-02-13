@@ -6,7 +6,7 @@
 
 #include <commonlib/bsd/cb_err.h>
 #include <commonlib/bsd/cbfs_serialized.h>
-#include <endian.h>
+#include <commonlib/bsd/sysincludes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <vb2_sha.h>

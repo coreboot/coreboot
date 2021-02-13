@@ -5,6 +5,12 @@
 
 /* MMIO Ranges */
 #define SPI_BASE_ADDRESS		0xfec10000
+
+#if CONFIG(HPET_ADDRESS_OVERRIDE)
+#error HPET address override is not allowed and must be fixed at 0xfed00000
+#endif
+#define HPET_BASE_ADDRESS		0xfed00000
+
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 

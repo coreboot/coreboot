@@ -10,6 +10,21 @@
 
 #define BROADCAST_FABRIC_ID		0xff
 
+/* D18F0 - Fabric Configuration registers */
+#define D18F0_MMIO_BASE0		0x200
+#define D18F0_MMIO_LIMIT0		0x204
+#define   D18F0_MMIO_SHIFT		16
+#define D18F0_MMIO_CTRL0		0x208
+#define   MMIO_NP			BIT(12)
+#define   MMIO_DST_FABRIC_ID_SHIFT	4
+#define   MMIO_WE			BIT(1)
+#define   MMIO_RE			BIT(0)
+
+/* The number of data fabric MMIO registers is SoC-specific */
+#define NB_MMIO_BASE(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_BASE0)
+#define NB_MMIO_LIMIT(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_LIMIT0)
+#define NB_MMIO_CONTROL(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_CTRL0)
+
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id);
 void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data);
 

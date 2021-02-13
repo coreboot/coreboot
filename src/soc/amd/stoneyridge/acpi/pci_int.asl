@@ -103,7 +103,7 @@
 		P3PR, 1,
 	}
 
-	Method(_PIC, 0x01, NotSerialized)
+	Method(\_PIC, 0x01, NotSerialized)
 	{
 		If (Arg0)
 		{

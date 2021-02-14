@@ -48,7 +48,7 @@ linux_trampoline.c: linux_trampoline.S
 	mv trampoline.c linux_trampoline.c
 	rm linux_trampoline trampoline
 
-.PHONY: install
+.PHONY: install distclean help
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
 	$(INSTALL) cbfstool $(DESTDIR)$(BINDIR)
@@ -57,6 +57,18 @@ install: all
 	$(INSTALL) ifwitool $(DESTDIR)$(BINDIR)
 	$(INSTALL) ifittool $(DESTDIR)$(BINDIR)
 	$(INSTALL) cbfs-compression-tool $(DESTDIR)$(BINDIR)
+
+distclean: clean
+
+help:
+	@echo "cbfstool & associated tools"
+	@echo "Targets: all, clean, distclean, help"
+	@echo "  cbfstool - Manipulate CBFS images"
+	@echo "  fmaptool - Compile Flashmap descriptor (fmd) files"
+	@echo "  rmodtool - Create relocatable modules"
+	@echo "  ifwitool - Manipulate Intel FW Image (IFWI)"
+	@echo "  ifittool - Manipulate Intel FW Interface Table (FIT)"
+	@echo "  cbfs-compression-tool - benchmark compression algorithms"
 
 ifneq ($(V),1)
 .SILENT:

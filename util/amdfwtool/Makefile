@@ -5,7 +5,7 @@ HOSTCC ?= cc
 SRC = amdfwtool.c data_parse.c
 OBJ = $(SRC:%.c=%.o)
 TARGET = amdfwtool
-CFLAGS=-O2 -Wall -Wextra -Wshadow
+CFLAGS=-O2 -Wall -Wextra -Wshadow -Werror
 
 all: $(TARGET)
 

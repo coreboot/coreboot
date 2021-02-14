@@ -19,7 +19,6 @@
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
-#include <string.h>
 
 #define  CPUID_6_EAX_ISST	(1 << 7)
 

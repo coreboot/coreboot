@@ -104,6 +104,9 @@ config DCACHE_BSP_STACK_SIZE
 config MMCONF_BASE_ADDRESS
 	default 0x80000000
 
+config MMCONF_BUS_NUMBER
+	default 256
+
 config HEAP_SIZE
 	hex
 	default 0x80000

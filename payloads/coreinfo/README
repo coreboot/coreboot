@@ -22,5 +22,5 @@ Then you can build coreinfo now:
  $ cd coreinfo
 
  $ make menuconfig
- 
+
  $ make

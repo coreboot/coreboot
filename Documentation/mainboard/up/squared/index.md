@@ -76,15 +76,15 @@ firmware_vendor.rom
 
 ```bash
 [upsquared]$ mkdir extracted && cd extracted
-[extracted]$ ifdtool -x ../firmware_vendor.rom 
+[extracted]$ ifdtool -x ../firmware_vendor.rom
 File ../firmware_vendor.rom is 16777216 bytes
 Peculiar firmware descriptor, assuming Ibex Peak compatibility.
-  Flash Region 0 (Flash Descriptor): 00000000 - 00000fff 
-  Flash Region 1 (BIOS): 00001000 - 00efefff 
+  Flash Region 0 (Flash Descriptor): 00000000 - 00000fff
+  Flash Region 1 (BIOS): 00001000 - 00efefff
   Flash Region 2 (Intel ME): 07fff000 - 00000fff (unused)
   Flash Region 3 (GbE): 07fff000 - 00000fff (unused)
   Flash Region 4 (Platform Data): 07fff000 - 00000fff (unused)
-  Flash Region 5 (Reserved): 00eff000 - 00ffefff 
+  Flash Region 5 (Reserved): 00eff000 - 00ffefff
   Flash Region 6 (Reserved): 07fff000 - 00000fff (unused)
   Flash Region 7 (Reserved): 07fff000 - 00000fff (unused)
   Flash Region 8 (EC): 07fff000 - 00000fff (unused)

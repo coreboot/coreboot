@@ -171,7 +171,7 @@ typedef struct {
   /// This value is only valid if Revision is >= 2.
   ///
   /// Note: This ought to be FSP_EVENT_HANDLER*, but that won't allow calling this binary on x86_64.
-  /// 
+  ///
   UINT32                      FspEventHandler;
   UINT8                       Reserved1[4];
 } FSPM_ARCH_UPD;

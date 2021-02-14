@@ -20,9 +20,9 @@ I use [radare2](https://radare.org) to analyze the firmware. Open the
 firmware image, and we can see 8 bytes at `$s-0x100` (`$s` means the
 image size).
 
-  [0x00000000]> x @ $s-0x100  
-  - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  
-  0x00ffff00  fff7 0008 f700 08ff 0000 0000 0000 0000  ................  
+  [0x00000000]> x @ $s-0x100
+  - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+  0x00ffff00  fff7 0008 f700 08ff 0000 0000 0000 0000  ................
 
 X86 machines map the firmware at the end of the memory address
 space. These 8 bytes tell the address of the two blobs, which we call
@@ -33,9 +33,9 @@ Let's look at FW1. The first two bytes mean the address of FW1 is
 3 are just complements of byte 1 and 2 (in this case,
 0x0008=0xffff-0xfff7).
 
-  [0x00000000]> x @ $s-0x900  
-  - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF  
-  0x00fff700  fc07 c13e 02ff 1000 0000 0000 0000 0000  ...>............  
+  [0x00000000]> x @ $s-0x900
+  - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+  0x00fff700  fc07 c13e 02ff 1000 0000 0000 0000 0000  ...>............
 
 Both FW1 and FW2 use the same format: the first two bytes is payload
 length, then a two-byte checksum, then the payload. The payload length

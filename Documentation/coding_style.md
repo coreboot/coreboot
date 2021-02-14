@@ -530,7 +530,7 @@ than desirable (in fact, they are worse than random typing - an infinite
 number of monkeys typing into GNU emacs would never make a good program).
 
 So, you can either get rid of GNU emacs, or change it to use saner values.
-To do the latter, you can stick the following in your .emacs file: 
+To do the latter, you can stick the following in your .emacs file:
 
 ```lisp
 (defun c-lineup-arglist-tabs-only (ignored)

@@ -396,7 +396,7 @@ typedef struct _psp_directory_entry {
 typedef struct _psp_directory_table {
 	psp_directory_header header;
 	psp_directory_entry entries[];
-} __attribute__((packed)) psp_directory_table;
+} __attribute__((packed, aligned(16))) psp_directory_table;
 
 #define MAX_PSP_ENTRIES 0x1f
 
@@ -417,7 +417,7 @@ typedef struct _psp_combo_entry {
 typedef struct _psp_combo_directory {
 	psp_combo_header header;
 	psp_combo_entry entries[];
-} __attribute__((packed)) psp_combo_directory;
+} __attribute__((packed, aligned(16))) psp_combo_directory;
 
 #define MAX_COMBO_ENTRIES 1
 

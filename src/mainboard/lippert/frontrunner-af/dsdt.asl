@@ -724,10 +724,5 @@ DefinitionBlock (
 			Name(_STA, 0x0B) /* sata is invisible */
 		}
 	} /* End \_SB scope */
-
-	Scope(\_SI) {
-		Method(_SST, 1) {
-		}
-	} /* End Scope SI */
 }
 /* End of ASL file */

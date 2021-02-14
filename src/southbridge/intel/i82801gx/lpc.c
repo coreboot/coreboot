@@ -15,7 +15,6 @@
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
-#include <string.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/hpet.h>
 #include <southbridge/intel/common/pmbase.h>

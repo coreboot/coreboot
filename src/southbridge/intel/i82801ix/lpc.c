@@ -14,7 +14,6 @@
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <acpi/acpigen.h>
-#include <string.h>
 #include "chip.h"
 #include "i82801ix.h"
 #include <southbridge/intel/common/pciehp.h>

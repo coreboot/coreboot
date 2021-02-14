@@ -15,7 +15,6 @@
 #include <acpi/acpi.h>
 #include <elog.h>
 #include <acpi/acpigen.h>
-#include <string.h>
 #include <cpu/x86/smm.h>
 #include "chip.h"
 #include "pch.h"

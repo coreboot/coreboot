@@ -12,7 +12,6 @@
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 #include "chip.h"
 #include "iobp.h"
 #include "pch.h"

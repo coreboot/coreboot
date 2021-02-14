@@ -1,8 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_device.h>
 #include <amdblocks/data_fabric.h>
 #include <console/console.h>
 #include <cpu/x86/lapic_def.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 #include <soc/data_fabric.h>
 #include <soc/iomap.h>
 #include <types.h>
@@ -93,3 +97,72 @@ void data_fabric_set_mmio_np(void)
 
 	data_fabric_print_mmio_conf();
 }
+
+static const char *data_fabric_acpi_name(const struct device *dev)
+{
+	switch (dev->device) {
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF0:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF0:
+		return "DFD0";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF1:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF1:
+		return "DFD1";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF2:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF2:
+		return "DFD2";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF3:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF3:
+		return "DFD3";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF4:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF4:
+		return "DFD4";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF5:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF5:
+		return "DFD5";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF6:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF6:
+		return "DFD6";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF7:
+	case PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF7:
+		return "DFD7";
+	default:
+		printk(BIOS_ERR, "%s: Unhandled device id 0x%x\n", __func__, dev->device);
+	}
+
+	return NULL;
+}
+
+static struct device_operations data_fabric_ops = {
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
+	.acpi_name		= data_fabric_acpi_name,
+	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
+};
+
+static const unsigned short pci_device_ids[] = {
+	/* Renoir DF devices */
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF0,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF1,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF2,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF3,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF4,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF5,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF6,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_DF7,
+	/* Cezanne DF devices */
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF0,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF1,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF2,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF3,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF4,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF5,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF6,
+	PCI_DEVICE_ID_AMD_FAM19H_MODEL51H_DF7,
+	0
+};
+
+static const struct pci_driver data_fabric_driver __pci_driver = {
+	.ops			= &data_fabric_ops,
+	.vendor			= PCI_VENDOR_ID_AMD,
+	.devices		= pci_device_ids,
+};

@@ -9,7 +9,6 @@
 #include <soc/pmif_spmi.h>
 #include <soc/pmif_sw.h>
 #include <soc/spmi.h>
-#include <string.h>
 
 #define PMIF_CMD_PER_3	(0x1 << PMIF_CMD_EXT_REG_LONG)
 #define PMIF_CMD_PER_1_3	((0x1 << PMIF_CMD_REG) | (0x1 << PMIF_CMD_EXT_REG_LONG))

@@ -9,7 +9,6 @@
 #include <soc/pmif_spmi.h>
 #include <soc/pmif_sw.h>
 #include <soc/spmi.h>
-#include <string.h>
 #include <timer.h>
 
 static int pmif_check_swinf(struct pmif *arb, long timeout_us, u32 expected_status)

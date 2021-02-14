@@ -2,7 +2,6 @@
 
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
-#include <string.h>
 
 static const u8 imp_vref_sel[ODT_MAX][IMP_DRV_MAX] = {
 	/* DRVP  DRVN  ODTP  ODTN */

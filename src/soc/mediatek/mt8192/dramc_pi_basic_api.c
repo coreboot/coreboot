@@ -4,7 +4,6 @@
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 #include <soc/gpio.h>
-#include <string.h>
 #include <timer.h>
 
 static const u8 mrr_o1_pinmux_mapping[PINMUX_MAX][CHANNEL_MAX][DQ_DATA_WIDTH] = {

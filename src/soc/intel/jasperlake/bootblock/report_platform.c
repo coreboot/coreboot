@@ -12,7 +12,6 @@
 #include <soc/bootblock.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
-#include <string.h>
 
 static struct {
 	u32 cpuid;

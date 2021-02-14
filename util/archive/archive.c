@@ -43,7 +43,7 @@ static int set_file_name(const char *path, struct dentry *dest)
 {
 	struct dentry *entry;
 	char *name, *copy;
-	int i;
+	uint32_t i;
 
 	copy = strdup(path);
 	name = basename(copy);
@@ -106,7 +106,7 @@ static int add_file(const char *path, struct dentry *entry, uint32_t offset)
 			path, errno, strerror(errno));
 		return -1;
 	}
-	if (fread((char *)archive + offset, sizeof(char), size, fp) != size) {
+	if (fread((char *)archive + offset, sizeof(char), size, fp) != (size_t)size) {
 		fprintf(stderr, "Error: failed to read %s\n", path);
 		fclose(fp);
 		return -1;
@@ -169,7 +169,7 @@ static int archive_files(const char **files)
 {
 	struct dentry *entry;
 	uint32_t offset;
-	int i;
+	uint32_t i;
 
 	entry = get_first_dentry(archive);
 	offset = get_first_offset(archive);
@@ -186,7 +186,7 @@ static int archive_files(const char **files)
 static void convert_endian(void)
 {
 	struct dentry *entry;
-	int i;
+	uint32_t i;
 
 	entry = get_first_dentry(archive);
 	for (i = 0; i < archive->count; i++) {

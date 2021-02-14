@@ -223,7 +223,7 @@ static void generate_setter_bitfields(FILE* fp, unsigned char *bin)
 
 static void generate_binary_with_gbe_checksum(FILE* fp)
 {
-	int i;
+	unsigned int i;
 	unsigned short checksum;
 
 	/* traverse spec, push to blob and add up for checksum */
@@ -407,6 +407,7 @@ setpair:
 /* Called by yyparse on error.  */
 static void yyerror (FILE* fp, char const *s)
 {
+	(void)fp;
 	fprintf (stderr, "yyerror: %s\n", s);
 }
 
@@ -448,8 +449,6 @@ int main (int argc, char *argv[])
 {
 	unsigned int lenspec;
 	unsigned char *parsestring;
-	unsigned char c;
-	unsigned int pos = 0;
 	int ret = 0;
 	FILE* fp;
 

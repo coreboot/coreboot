@@ -11,7 +11,7 @@ extern struct blob binary;
 
 unsigned int parsehex (char *s)
 {
-	unsigned int i, nib, val = 0;
+	unsigned int i, nib, retval = 0;
 	unsigned int nibs = strlen(s) - 2;
 
 	for (i = 2; i < nibs + 2; i++) {
@@ -24,9 +24,9 @@ unsigned int parsehex (char *s)
 		} else {
 			return 0;
 		}
-		val |= nib << (((nibs - 1) - (i - 2)) * 4);
+		retval |= nib << (((nibs - 1) - (i - 2)) * 4);
 	}
-	return val;
+	return retval;
 }
 
 char* stripquotes (char *string)

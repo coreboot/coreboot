@@ -263,6 +263,13 @@ void acpi_create_madt(acpi_madt_t *madt)
 	header->checksum = acpi_checksum((void *)madt, header->length);
 }
 
+static unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+			CONFIG_MMCONF_BASE_ADDRESS, 0, 0, CONFIG_MMCONF_BUS_NUMBER - 1);
+	return current;
+}
+
 /* MCFG is defined in the PCI Firmware Specification 3.0. */
 void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 {
@@ -284,7 +291,8 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->length = sizeof(acpi_mcfg_t);
 	header->revision = get_acpi_table_revision(MCFG);
 
-	current = acpi_fill_mcfg(current);
+	if (CONFIG(MMCONF_SUPPORT))
+		current = acpi_fill_mcfg(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)mcfg;

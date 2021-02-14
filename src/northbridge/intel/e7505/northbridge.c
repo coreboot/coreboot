@@ -9,12 +9,6 @@
 
 #include "e7505.h"
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* Just a dummy */
-	return current;
-}
-
 static void mch_domain_read_resources(struct device *dev)
 {
 	int idx;

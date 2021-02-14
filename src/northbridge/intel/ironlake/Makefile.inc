@@ -9,8 +9,6 @@ ramstage-y += northbridge.c
 ramstage-y += smi.c
 ramstage-y += gma.c
 
-ramstage-y += acpi.c
-
 romstage-y += memmap.c
 romstage-y += raminit.c
 romstage-y += raminit_tables.c

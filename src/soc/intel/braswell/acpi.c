@@ -108,13 +108,6 @@ int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-			CONFIG_MMCONF_BASE_ADDRESS, 0, 0, CONFIG_MMCONF_BUS_NUMBER - 1);
-	return current;
-}
-
 static acpi_tstate_t soc_tss_table[] = {
 	{ 100, 1000, 0, 0x00, 0 },
 	{  88,  875, 0, 0x1e, 0 },

@@ -10,11 +10,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	return current;
-}
-
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	struct device *dev = pcidev_on_root(PCI_DEVICE_NUMBER_QNC_LPC,

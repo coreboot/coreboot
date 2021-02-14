@@ -9,14 +9,6 @@
 #include "sandybridge.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-			CONFIG_MMCONF_BASE_ADDRESS, 0, 0, CONFIG_MMCONF_BUS_NUMBER - 1);
-
-	return current;
-}
-
 static unsigned long acpi_create_igfx_rmrr(const unsigned long current)
 {
 	const u32 base_mask = ~(u32)(MiB - 1);

@@ -38,9 +38,3 @@ void generate_cpu_entries(const struct device *device)
 	}
 	acpigen_pop_len();
 }
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-	/* chipset doesn't have mmconfig */
-	return current;
-}

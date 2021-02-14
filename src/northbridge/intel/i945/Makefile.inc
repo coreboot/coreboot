@@ -7,7 +7,6 @@ bootblock-y += bootblock.c
 ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
-ramstage-y += acpi.c
 
 romstage-y += romstage.c
 romstage-y += memmap.c

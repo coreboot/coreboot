@@ -4,7 +4,6 @@
 #include <arch/ioapic.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
-#include <string.h>
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {

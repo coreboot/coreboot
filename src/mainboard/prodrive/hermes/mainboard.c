@@ -3,7 +3,6 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <intelblocks/pmclib.h>
-#include <string.h>
 #include <types.h>
 #include "variants/baseboard/include/eeprom.h"
 #include "gpio.h"

@@ -58,8 +58,5 @@ DefinitionBlock (
 
 	/* Describe SMBUS for the Southbridge */
 	#include <southbridge/amd/agesa/hudson/acpi/smbus.asl>
-
-	/* Define the System Indicators for the platform */
-	#include "acpi/si.asl"
 }
 /* End of ASL file */

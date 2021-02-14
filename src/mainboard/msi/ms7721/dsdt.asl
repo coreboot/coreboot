@@ -57,9 +57,5 @@ DefinitionBlock (
 
 	/* Define the Thermal zones and methods for the platform */
 	#include "acpi/thermal.asl"
-
-	/* Define the System Indicators for the platform */
-	#include "acpi/si.asl"
-
 }
 /* End of ASL file */

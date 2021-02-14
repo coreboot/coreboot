@@ -7,7 +7,8 @@ CC       ?= $(CROSS_COMPILE)gcc
 INSTALL  ?= /usr/bin/env install
 PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
-CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Werror
+WERROR=-Werror
+CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Wshadow $(WERROR)
 CPPFLAGS += -I . -I $(ROOT)/commonlib/include -I $(ROOT)/commonlib/bsd/include
 CPPFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
@@ -29,6 +30,12 @@ distclean: clean
 .dependencies:
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -MM *.c > .dependencies
 
-.PHONY: all clean distclean
+help:
+	@echo "${PROGRAM}: View machine's cbmem contents"
+	@echo "Targets: all, clean, distclean, help, install"
+	@echo "To disable warnings as errors, run make as:"
+	@echo "  make all WERROR=\"\""
+
+.PHONY: all clean distclean install help
 
 -include .dependencies

@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <drivers/vpd/vpd.h>
-#include <string.h>
 
 #include "vpd.h"
 

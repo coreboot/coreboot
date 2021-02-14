@@ -7,7 +7,6 @@
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <soc/romstage.h>
-#include <string.h>
 
 #include "chip.h"
 #include "ipmi.h"

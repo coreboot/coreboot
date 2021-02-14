@@ -5,7 +5,6 @@
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <drivers/vpd/vpd.h>
-#include <string.h>
 
 #include "ipmi.h"
 #include "vpd.h"

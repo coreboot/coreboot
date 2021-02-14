@@ -11,7 +11,6 @@
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 #include <soc/iobp.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

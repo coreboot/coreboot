@@ -6,7 +6,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <string.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
 #include <soc/intel/broadwell/chip.h>

@@ -12,7 +12,6 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <string.h>
 
 #include <soc/gpio.h>
 #include <soc/lpc.h>

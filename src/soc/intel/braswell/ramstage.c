@@ -19,7 +19,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
-#include <string.h>
 
 #define SHOW_PATTRS 1
 

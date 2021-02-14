@@ -16,7 +16,6 @@
 #include <soc/auxadc_common.h>
 #include <soc/i2c.h>
 #include <soc/pmic_wrap_common.h>
-#include <string.h>
 
 /* For CBI un-provisioned/corrupted Flapjack board. */
 #define FLAPJACK_UNDEF_SKU_ID 0

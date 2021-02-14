@@ -6,7 +6,6 @@
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/i2c_tunnel/chip.h>
-#include <string.h>
 
 /* FIXME: Comments seem to suggest these are not entirely correct. */
 static const fsp_ddi_descriptor non_hdmi_ddi_descriptors[] = {

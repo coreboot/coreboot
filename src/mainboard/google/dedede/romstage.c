@@ -6,7 +6,6 @@
 #include <memory_info.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include <string.h>
 #include <variant/gpio.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)

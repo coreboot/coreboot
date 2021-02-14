@@ -4,7 +4,6 @@
 #include <soc/mmu_common.h>
 #include <soc/symbols.h>
 #include <device/mmio.h>
-#include <string.h>
 
 #define MODEM_ID_LTE 0x004c5445
 #define MODEM_ID_WIFI 0x57494649

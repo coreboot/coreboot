@@ -47,6 +47,10 @@ config CPU_SPECIFIC_OPTIONS
 config MMCONF_BASE_ADDRESS
 	default 0xe0000000
 
+config MMCONF_BUS_NUMBER
+	int
+	default 256
+
 config FSP_HEADER_PATH
 	default "3rdparty/fsp/DenvertonNSFspBinPkg/Include/"
 

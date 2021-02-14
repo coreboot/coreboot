@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <assert.h>
 #include <bootblock_common.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <FsptUpd.h>
 #include <intelblocks/fast_spi.h>
 #include <soc/bootblock.h>
-#include <soc/iomap.h>
+#include <soc/pci_devs.h>
+#include <soc/systemagent.h>
 #include <spi-generic.h>
+#include <stdint.h>
 #include <console/console.h>
 
 const FSPT_UPD temp_ram_init_params = {
@@ -48,6 +52,32 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	bootblock_main_with_basetime(base_timestamp);
 };
 
+static void sanity_check_pci_mmconf(void)
+{
+	u32 pciexbar, base = 0, length = 0;
+
+	pciexbar = pci_io_read_config32(PCH_SA_DEV, PCIEXBAR);
+	assert(pciexbar & (1 << 0));
+
+	switch (pciexbar & MASK_PCIEXBAR_LENGTH) {
+	case MASK_PCIEXBAR_LENGTH_256M:
+		base = pciexbar & MASK_PCIEXBAR_256M;
+		length = 256;
+		break;
+	case MASK_PCIEXBAR_LENGTH_128M:
+		base = pciexbar & MASK_PCIEXBAR_128M;
+		length = 128;
+		break;
+	case MASK_PCIEXBAR_LENGTH_64M:
+		base = pciexbar & MASK_PCIEXBAR_64M;
+		length = 64;
+		break;
+	}
+
+	assert(base == CONFIG_MMCONF_BASE_ADDRESS);
+	assert(length == CONFIG_MMCONF_BUS_NUMBER);
+}
+
 void bootblock_soc_early_init(void)
 {
 
@@ -58,6 +88,8 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
+	sanity_check_pci_mmconf();
+
 	if (CONFIG(BOOTBLOCK_CONSOLE))
 		printk(BIOS_DEBUG, "FSP TempRamInit successful...\n");
 };

@@ -4,7 +4,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
-#include <string.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/chip.h>

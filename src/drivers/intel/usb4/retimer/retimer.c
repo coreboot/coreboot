@@ -6,7 +6,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <gpio.h>
-#include <string.h>
+
 #include "chip.h"
 #include "retimer.h"
 

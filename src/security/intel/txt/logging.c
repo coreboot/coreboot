@@ -3,7 +3,6 @@
 #include <arch/mmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 #include <types.h>
 
 #include "txt.h"

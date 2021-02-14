@@ -2124,6 +2124,9 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	int integrated_graphics = 1;
 	int i;
 
+	if (!(pci_read_config8(HOST_BRIDGE, DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)))
+		integrated_graphics = false;
+
 	reg32 = MCHBAR32(C0DRT2);
 	reg32 &= 0xffffff00;
 	/* Idle timer = 8 clocks, CKE idle timer = 16 clocks */

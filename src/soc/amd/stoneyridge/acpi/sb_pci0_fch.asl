@@ -284,8 +284,7 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	PGA3, 8 ,
 }
 
-OperationRegion(FCFG, SystemMemory, PCBA, 0x01000000)
-Field(FCFG, DwordAcc, NoLock, Preserve)
+Field(PCFG, DwordAcc, NoLock, Preserve)
 {
 	/* XHCI */
 	Offset(0x00080010), /* Base address */

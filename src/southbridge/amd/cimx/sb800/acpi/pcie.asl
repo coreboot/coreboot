@@ -29,9 +29,7 @@ Scope(\) {
 }
 
 Scope(\_SB) {
-	/* PCIe Configuration Space for 16 busses */
-	OperationRegion(PCFG, SystemMemory, PCBA, 0x01000000) /* Each bus consumes 1MB */
-		Field(PCFG, ByteAcc, NoLock, Preserve) {
+	Field(PCFG, ByteAcc, NoLock, Preserve) {
 		/* Byte offsets are computed using the following technique:
 		 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 		 * The 8 comes from 8 functions per device, and 4096 bytes per function config space

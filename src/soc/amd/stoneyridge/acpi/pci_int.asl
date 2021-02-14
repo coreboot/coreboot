@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-	/* PCIe Configuration Space for CONFIG_MMCONF_BUS_NUMBER busses */
-	OperationRegion(PCFG, SystemMemory, PCBA, PCLN) /* Each bus consumes 1MB */
-		Field(PCFG, ByteAcc, NoLock, Preserve) {
+	Field(PCFG, ByteAcc, NoLock, Preserve) {
 		/* Byte offsets are computed using the following technique:
 		 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 		 * The 8 comes from 8 functions per device, and 4096 bytes per function config space

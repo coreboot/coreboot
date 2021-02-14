@@ -32,9 +32,14 @@ Method (_PIC, 1)
 }
 
 #if CONFIG(MMCONF_SUPPORT)
-/* Base address of PCIe config space */
-Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)
+Scope(\_SB) {
+	/* Base address of PCIe config space */
+	Name(PCBA, CONFIG_MMCONF_BASE_ADDRESS)
 
-/* Length of PCIe config space, 1MB each bus */
-Name(PCLN, CONFIG_MMCONF_LENGTH)
+	/* Length of PCIe config space, 1MB each bus */
+	Name(PCLN, CONFIG_MMCONF_LENGTH)
+
+	/* PCIe Configuration Space */
+	OperationRegion(PCFG, SystemMemory, PCBA, PCLN) /* Each bus consumes 1MB */
+}
 #endif

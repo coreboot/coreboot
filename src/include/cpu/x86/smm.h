@@ -138,6 +138,7 @@ struct smm_loader_params {
 	size_t per_cpu_stack_size;
 	size_t num_concurrent_stacks;
 
+	size_t real_cpu_save_state_size;
 	size_t per_cpu_save_state_size;
 	size_t num_concurrent_save_states;
 

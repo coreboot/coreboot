@@ -4,6 +4,7 @@
 #include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <southbridge/amd/common/amd_pci_util.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -12,6 +13,16 @@
 #include <vendorcode/amd/cimx/sb800/OEM.h> /* SMBUS0_BASE_ADDRESS */
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
 #include "sema.h"
+
+static const u8 mainboard_intr_data[] = {
+	[0x00] = 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,  /* INTA# - INTH# */
+	[0x08] = 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F, 0x1F, 0x1F,  /* Misc-nil, 0, 1, 2,  INT from Serial irq */
+	[0x10] = 0x09, 0x1F, 0x1F, 0x10, 0x1F, 0x12, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x12, 0x11, 0x12, 0x11, 0x12, 0x11, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x11, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x10, 0x11, 0x12, 0x13
+};
 
 /* Init SIO GPIOs. */
 #define SIO_RUNTIME_BASE 0x0E00
@@ -43,6 +54,12 @@ static const u16 sio_init_table[] = { // hi = offset, lo = value
 	0x5680, // GP64: USB power 2/3    = open drain output
 	0x5780, // GP65: USB power 4/5    = open drain output
 };
+
+/* PIRQ Setup */
+static void pirq_setup(void)
+{
+	intr_data_ptr = mainboard_intr_data;
+}
 
 static void init(struct device *dev)
 {
@@ -78,7 +95,6 @@ static void init(struct device *dev)
 	iomux_write8(190, 1);
 	iomux_write8(191, 1);
 	iomux_write8(192, 1);
-
 	/* just in case anyone cares */
 	if (!fch_gpio_state(197))
 		printk(BIOS_INFO, "BIOS_DEFAULTS jumper is present.\n");
@@ -114,6 +130,9 @@ static void init(struct device *dev)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
+	/* Initialize the PIRQ data structures for consumption */
+	pirq_setup();
+
 	dev->ops->init = init;
 
 	/* enable GPP CLK0 */

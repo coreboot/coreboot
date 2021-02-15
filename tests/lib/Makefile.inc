@@ -18,6 +18,7 @@ tests-y += memset-test
 tests-y += memcmp-test
 tests-y += memchr-test
 tests-y += memcpy-test
+tests-y += malloc-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -90,4 +91,7 @@ memchr-test-srcs += tests/lib/memchr-test.c
 memchr-test-srcs += src/lib/memchr.c
 
 memcpy-test-srcs += tests/lib/memcpy-test.c
+
+malloc-test-srcs += tests/lib/malloc-test.c
+malloc-test-srcs += tests/stubs/console.c
 

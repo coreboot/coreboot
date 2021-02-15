@@ -34,20 +34,6 @@ apic_to_cpu_num:
 start32_offset:
 .long smm_trampoline32 - _start
 
-/* struct smm_runtime begins here. */
-smm_runtime:
-smbase:
-.long 0
-smm_size:
-.long 0
-save_state_size:
-.long 0
-num_cpus:
-.long 0
-gnvs_ptr:
-.long 0
-/* end struct smm_runtime */
-
 .data
 /* Provide fallback stack to use when a valid CPU number cannot be found. */
 fallback_stack_bottom:
@@ -200,9 +186,7 @@ smm_trampoline32:
 	 *   c_handler(&arg)
 	 */
 #ifdef __x86_64__
-	push	$0x0 /* Padding */
 	push	%rbx /* uintptr_t *canary */
-	push	$(smm_runtime)
 	push	%rcx /* size_t cpu */
 
 	mov	%rsp, %rdi	/* *arg */
@@ -228,8 +212,8 @@ smm_trampoline32:
 	wrmsr
 
 #else
+	push	$0x0 /* Padding */
 	push	%ebx /* uintptr_t *canary */
-	push	$(smm_runtime)
 	push	%ecx /* size_t cpu */
 	push	%esp /* smm_module_params *arg (allocated on stack). */
 	mov	c_handler, %eax

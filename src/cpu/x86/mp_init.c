@@ -709,15 +709,12 @@ static void smm_enable(void)
 static void asmlinkage smm_do_relocation(void *arg)
 {
 	const struct smm_module_params *p;
-	const struct smm_runtime *runtime;
 	int cpu;
-	uintptr_t curr_smbase;
+	const uintptr_t curr_smbase = SMM_DEFAULT_BASE;
 	uintptr_t perm_smbase;
 
 	p = arg;
-	runtime = p->runtime;
 	cpu = p->cpu;
-	curr_smbase = runtime->smbase;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,

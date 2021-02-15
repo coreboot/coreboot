@@ -342,7 +342,6 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	size_t i;
 	struct smm_stub_params *stub_params;
 	struct rmodule smm_stub;
-	unsigned int total_size_all;
 	base = smbase;
 	size = smm_size;
 
@@ -431,11 +430,6 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	stub_params->c_handler = (uintptr_t)params->handler;
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
-	stub_params->runtime.smbase = (uintptr_t)smbase;
-	stub_params->runtime.smm_size = smm_size;
-	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
-	stub_params->runtime.num_cpus = params->num_concurrent_stacks;
-	stub_params->runtime.gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	printk(BIOS_DEBUG, "%s: stack_end = 0x%lx\n",
 		__func__, stub_params->stack_top - total_stack_size);
@@ -443,24 +437,10 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 		"%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
 	printk(BIOS_DEBUG, "%s: stack_size = 0x%x\n",
 		__func__, stub_params->stack_size);
-	printk(BIOS_DEBUG, "%s: runtime.smbase = 0x%x\n",
-		__func__, stub_params->runtime.smbase);
 	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
 		stub_params->start32_offset);
 	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n",
 		__func__, smm_size);
-	printk(BIOS_DEBUG, "%s: per_cpu_save_state_size = 0x%x\n",
-		__func__, stub_params->runtime.save_state_size);
-	printk(BIOS_DEBUG, "%s: num_cpus = 0x%x\n", __func__,
-		stub_params->runtime.num_cpus);
-	printk(BIOS_DEBUG, "%s: total_save_state_size = 0x%x\n",
-		__func__, (stub_params->runtime.save_state_size *
-		stub_params->runtime.num_cpus));
-	total_size_all = stub_params->stack_size +
-		(stub_params->runtime.save_state_size *
-		stub_params->runtime.num_cpus);
-	printk(BIOS_DEBUG, "%s: total_size_all = 0x%x\n", __func__,
-		total_size_all);
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
 	for (i = 0; i < params->num_concurrent_stacks; i++)

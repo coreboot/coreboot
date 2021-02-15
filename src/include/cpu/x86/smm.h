@@ -64,7 +64,6 @@ struct smm_runtime {
 
 struct smm_module_params {
 	size_t cpu;
-	const struct smm_runtime *runtime;
 	/* A canary value that has been placed at the end of the stack.
 	 * If (uintptr_t)canary != *canary then a stack overflow has occurred.
 	 */
@@ -88,7 +87,6 @@ struct smm_stub_params {
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 	/* STM's 32bit entry into SMI handler */
 	u32 start32_offset;
-	struct smm_runtime runtime;
 } __packed;
 
 /* smm_handler_t is called with arg of smm_module_params pointer. */

@@ -686,6 +686,7 @@ struct mp_state {
 	uintptr_t perm_smbase;
 	size_t perm_smsize;
 	size_t smm_save_state_size;
+	uintptr_t reloc_start32_offset;
 	int do_smm;
 } mp_state;
 
@@ -755,7 +756,7 @@ static void asmlinkage smm_do_relocation(void *arg)
 		stm_setup(mseg, p->cpu,
 				perm_smbase,
 				mp_state.perm_smbase,
-				runtime->start32_offset);
+				mp_state.reloc_start32_offset);
 	}
 }
 
@@ -795,6 +796,8 @@ static int install_relocation_handler(int num_cpus, size_t save_state_size)
 		return -1;
 	}
 	adjust_smm_apic_id_map(&smm_params);
+
+	mp_state.reloc_start32_offset = smm_params.stub_params->start32_offset;
 
 	return 0;
 }

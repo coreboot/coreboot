@@ -446,7 +446,7 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	printk(BIOS_DEBUG, "%s: runtime.smbase = 0x%x\n",
 		__func__, stub_params->runtime.smbase);
 	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
-		stub_params->runtime.start32_offset);
+		stub_params->start32_offset);
 	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n",
 		__func__, smm_size);
 	printk(BIOS_DEBUG, "%s: per_cpu_save_state_size = 0x%x\n",

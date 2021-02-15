@@ -60,8 +60,6 @@ struct smm_runtime {
 	u32 save_state_size;
 	u32 num_cpus;
 	u32 gnvs_ptr;
-	/* STM's 32bit entry into SMI handler */
-	u32 start32_offset;
 } __packed;
 
 struct smm_module_params {
@@ -88,6 +86,8 @@ struct smm_stub_params {
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
+	/* STM's 32bit entry into SMI handler */
+	u32 start32_offset;
 	struct smm_runtime runtime;
 } __packed;
 

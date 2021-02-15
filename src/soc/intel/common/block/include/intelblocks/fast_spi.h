@@ -65,6 +65,10 @@ void fast_spi_early_init(uintptr_t spi_base_address);
  */
 extern const struct spi_ctrlr fast_spi_flash_ctrlr;
 /*
+ * Clear SPI Synchronous SMI status bit and return its value.
+ */
+bool fast_spi_clear_sync_smi_status(void);
+/*
  * Read SPI Write protect disable bit.
  */
 bool fast_spi_wpd_status(void);

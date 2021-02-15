@@ -27,18 +27,6 @@ __attribute__((aligned(16)));
  * The components are assumed to consist of one consecutive region.
  */
 
-/* These parameters are used by the SMM stub code. A pointer to the params
- * is also passed to the C-base handler. */
-struct smm_stub_params {
-	u32 stack_size;
-	u32 stack_top;
-	u32 c_handler;
-	u32 c_handler_arg;
-	u32 fxsave_area;
-	u32 fxsave_area_size;
-	struct smm_runtime runtime;
-} __packed;
-
 /*
  * The stub is the entry point that sets up protected mode and stacks for each
  * CPU. It then calls into the SMM handler module. It is encoded as an rmodule.

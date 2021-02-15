@@ -81,6 +81,18 @@ struct smm_module_params {
 	const uintptr_t *canary;
 };
 
+/* These parameters are used by the SMM stub code. A pointer to the params
+ * is also passed to the C-base handler. */
+struct smm_stub_params {
+	u32 stack_size;
+	u32 stack_top;
+	u32 c_handler;
+	u32 c_handler_arg;
+	u32 fxsave_area;
+	u32 fxsave_area_size;
+	struct smm_runtime runtime;
+} __packed;
+
 /* smm_handler_t is called with arg of smm_module_params pointer. */
 typedef asmlinkage void (*smm_handler_t)(void *);
 

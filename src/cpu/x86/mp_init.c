@@ -738,7 +738,7 @@ static void asmlinkage smm_do_relocation(void *arg)
 	}
 #else
 	perm_smbase = mp_state.perm_smbase;
-	perm_smbase -= cpu * runtime->save_state_size;
+	perm_smbase -= cpu * mp_state.smm_save_state_size;
 #endif
 
 	/* Setup code checks this callback for validity. */

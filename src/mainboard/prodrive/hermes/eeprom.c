@@ -70,6 +70,25 @@ struct eeprom_board_settings *get_board_settings(void)
 	return checked_valid > 0 ? &board_cfg : NULL;
 }
 
+struct eeprom_bmc_settings *get_bmc_settings(void)
+{
+	const size_t bmc_settings_offset = offsetof(struct eeprom_layout, BMCSettings);
+	static struct eeprom_bmc_settings bmc_cfg = {0};
+
+	/* 0: uninitialized, 1: settings are valid */
+	static int valid = 0;
+
+	if (valid == 0) {
+		if (read_write_config(&bmc_cfg, bmc_settings_offset, 0, sizeof(bmc_cfg))) {
+			printk(BIOS_ERR, "CFG EEPROM: Failed to read BMC settings\n");
+			return NULL;
+		}
+		valid = 1;
+	}
+	return &bmc_cfg;
+}
+
+
 /* Read data from offset and write it to offset in UPD */
 bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size_t size)
 {

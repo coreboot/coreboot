@@ -18,6 +18,4 @@
 #define SMBXMITADD	0x4
 #define SMBHSTDAT0	0x5
 
-#define SMBUS_TIMEOUT	15	/* 15ms */
-
 #endif	/* SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H */

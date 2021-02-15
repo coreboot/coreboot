@@ -25,6 +25,12 @@ fxsave_area:
 .long 0
 fxsave_area_size:
 .long 0
+/* apic_to_cpu_num is a table mapping the default APIC id to CPU num. If the
+ * APIC id is found at the given index, the contiguous CPU number is index
+ * into the table. */
+apic_to_cpu_num:
+.fill CONFIG_MAX_CPUS,1,0xff
+
 /* struct smm_runtime begins here. */
 smm_runtime:
 smbase:
@@ -40,11 +46,6 @@ gnvs_ptr:
 /* allows the STM to bring up SMM in 32-bit mode */
 start32_offset:
 .long smm_trampoline32 - _start
-/* apic_to_cpu_num is a table mapping the default APIC id to CPU num. If the
- * APIC id is found at the given index, the contiguous CPU number is index
- * into the table. */
-apic_to_cpu_num:
-.fill CONFIG_MAX_CPUS,1,0xff
 /* end struct smm_runtime */
 
 .data

@@ -762,10 +762,10 @@ static void asmlinkage smm_do_relocation(void *arg)
 static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 {
 	int i;
-	struct smm_runtime *runtime = smm_params->runtime;
+	struct smm_stub_params *stub_params = smm_params->stub_params;
 
 	for (i = 0; i < CONFIG_MAX_CPUS; i++)
-		runtime->apic_id_to_cpu[i] = cpu_get_apic_id(i);
+		stub_params->apic_id_to_cpu[i] = cpu_get_apic_id(i);
 }
 
 static int install_relocation_handler(int num_cpus, size_t save_state_size)

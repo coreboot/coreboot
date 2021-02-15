@@ -62,13 +62,6 @@ struct smm_runtime {
 	u32 gnvs_ptr;
 	/* STM's 32bit entry into SMI handler */
 	u32 start32_offset;
-	/* The apic_id_to_cpu provides a mapping from APIC id to CPU number.
-	 * The CPU number is indicated by the index into the array by matching
-	 * the default APIC id and value at the index. The stub loader
-	 * initializes this array with a 1:1 mapping. If the APIC ids are not
-	 * contiguous like the 1:1 mapping it is up to the caller of the stub
-	 * loader to adjust this mapping. */
-	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 } __packed;
 
 struct smm_module_params {
@@ -88,6 +81,13 @@ struct smm_stub_params {
 	u32 c_handler;
 	u32 fxsave_area;
 	u32 fxsave_area_size;
+	/* The apic_id_to_cpu provides a mapping from APIC id to CPU number.
+	 * The CPU number is indicated by the index into the array by matching
+	 * the default APIC id and value at the index. The stub loader
+	 * initializes this array with a 1:1 mapping. If the APIC ids are not
+	 * contiguous like the 1:1 mapping it is up to the caller of the stub
+	 * loader to adjust this mapping. */
+	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 	struct smm_runtime runtime;
 } __packed;
 
@@ -150,6 +150,7 @@ struct smm_loader_params {
 
 	smm_handler_t handler;
 
+	struct smm_stub_params *stub_params;
 	struct smm_runtime *runtime;
 
 	/* The following are only used by X86_SMM_LOADER_VERSION2 */

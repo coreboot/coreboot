@@ -464,9 +464,10 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
 	for (i = 0; i < params->num_concurrent_stacks; i++)
-		stub_params->runtime.apic_id_to_cpu[i] = i;
+		stub_params->apic_id_to_cpu[i] = i;
 
 	/* Allow the initiator to manipulate SMM stub parameters. */
+	params->stub_params = stub_params;
 	params->runtime = &stub_params->runtime;
 
 	printk(BIOS_DEBUG, "SMM Module: stub loaded at %p. Will call %p\n",

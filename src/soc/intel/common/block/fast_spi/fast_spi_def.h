@@ -5,22 +5,21 @@
 
 /* PCI configuration registers */
 
-#define SPIDVID_OFFSET			0x0
-#define SPIBAR_BIOS_CONTROL		0xdc
+#define SPI_BIOS_CONTROL		0xdc
 
 /* Extended Bios Support Registers */
 #define SPI_CFG_BAR1			0xe0	/* SPI BAR1 MMIO */
 
 /* Bit definitions for BIOS_CONTROL */
-#define SPIBAR_BIOS_CONTROL_WPD		(1 << 0)
-#define SPIBAR_BIOS_CONTROL_LOCK_ENABLE	(1 << 1)
-#define SPIBAR_BIOS_CONTROL_EXT_BIOS_LOCK_ENABLE	(1 << 28)
-#define SPIBAR_BIOS_CONTROL_CACHE_DISABLE	(1 << 2)
-#define SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE	(1 << 3)
-#define SPIBAR_BIOS_CONTROL_EISS	(1 << 5)
-#define SPIBAR_BIOS_CONTROL_BILD	(1 << 7)
-#define SPIBAR_BIOS_CONTROL_EXT_BIOS_ENABLE	(1 << 27)
-#define SPIBAR_BIOS_CONTROL_EXT_BIOS_LIMIT(x)	((x) & ~(0xfff))
+#define SPI_BIOS_CONTROL_WPD			(1 << 0)
+#define SPI_BIOS_CONTROL_LOCK_ENABLE		(1 << 1)
+#define SPI_BIOS_CONTROL_CACHE_DISABLE		(1 << 2)
+#define SPI_BIOS_CONTROL_PREFETCH_ENABLE	(1 << 3)
+#define SPI_BIOS_CONTROL_EISS			(1 << 5)
+#define SPI_BIOS_CONTROL_BILD			(1 << 7)
+#define SPI_BIOS_CONTROL_EXT_BIOS_ENABLE	(1 << 27)
+#define SPI_BIOS_CONTROL_EXT_BIOS_LOCK_ENABLE	(1 << 28)
+#define SPI_BIOS_CONTROL_EXT_BIOS_LIMIT(x)	((x) & ~(0xfff))
 
 /* Register offsets from the MMIO region base (PCI_BASE_ADDRESS_0) */
 
@@ -30,29 +29,29 @@
 #define SPIBAR_DLOCK			0x0c
 #define SPIBAR_FDATA(n)			(0x10 + ((n) & 0xf) * 4)
 #define SPIBAR_FPR_BASE			0x84
-#define SPIBAR_FPR(n)			0x84 + (4 * n))
-#define SPIBAR_PREOP			0xA4
-#define SPIBAR_OPTYPE			0xA6
-#define SPIBAR_OPMENU_LOWER		0xA8
-#define SPIBAR_OPMENU_UPPER		0xAc
-#define SPIBAR_FDOC			0xB4
-#define SPIBAR_FDOD			0xB8
+#define SPIBAR_FPR(n)			(0x84 + (4 * (n)))
+#define SPIBAR_PREOP			0xa4
+#define SPIBAR_OPTYPE			0xa6
+#define SPIBAR_OPMENU_LOWER		0xa8
+#define SPIBAR_OPMENU_UPPER		0xac
+#define SPIBAR_FDOC			0xb4
+#define SPIBAR_FDOD			0xb8
 #define SPIBAR_PTINX			0xcc
 #define SPIBAR_PTDATA			0xd0
 
 /* Bit definitions for BFPREG (0x00) register */
-#define SPIBAR_BFPREG_PRB_MASK		(0x7fff)
-#define SPIBAR_BFPREG_PRL_SHIFT	(16)
+#define SPIBAR_BFPREG_PRB_MASK		0x7fff
+#define SPIBAR_BFPREG_PRL_SHIFT		16
 #define SPIBAR_BFPREG_PRL_MASK		(0x7fff << SPIBAR_BFPREG_PRL_SHIFT)
 #define SPIBAR_BFPREG_SBRS		(1 << 31)
 
 /* Bit definitions for HSFSTS_CTL (0x04) register */
-#define SPIBAR_HSFSTS_FDBC_MASK	(0x3f << 24)
+#define SPIBAR_HSFSTS_FDBC_MASK		(0x3f << 24)
 #define SPIBAR_HSFSTS_FDBC(n)		(((n) << 24) & SPIBAR_HSFSTS_FDBC_MASK)
 #define SPIBAR_HSFSTS_WET		(1 << 21)
 #define SPIBAR_HSFSTS_FCYCLE_MASK	(0xf << 17)
-#define SPIBAR_HSFSTS_FCYCLE(cyc)	(((cyc) << 17) \
-					& SPIBAR_HSFSTS_FCYCLE_MASK)
+#define SPIBAR_HSFSTS_FCYCLE(cyc)	(((cyc) << 17) & SPIBAR_HSFSTS_FCYCLE_MASK)
+
 /* Supported flash cycle types */
 #define SPIBAR_HSFSTS_CYCLE_READ	SPIBAR_HSFSTS_FCYCLE(0)
 #define SPIBAR_HSFSTS_CYCLE_WRITE	SPIBAR_HSFSTS_FCYCLE(2)
@@ -74,12 +73,12 @@
 #define SPIBAR_HSFSTS_AEL		(1 << 2)
 #define SPIBAR_HSFSTS_FCERR		(1 << 1)
 #define SPIBAR_HSFSTS_FDONE		(1 << 0)
-#define SPIBAR_HSFSTS_W1C_BITS		(0xff)
+#define SPIBAR_HSFSTS_W1C_BITS		0xff
 
 /* Bit definitions for FADDR (0x08) register */
-#define SPIBAR_FADDR_MASK		0x7FFFFFF
+#define SPIBAR_FADDR_MASK		0x7ffffff
 
-/* Bit definitions for DLOCK (0x0C) register */
+/* Bit definitions for DLOCK (0x0c) register */
 #define SPIBAR_DLOCK_PR0LOCKDN		(1 << 8)
 #define SPIBAR_DLOCK_PR1LOCKDN		(1 << 9)
 #define SPIBAR_DLOCK_PR2LOCKDN		(1 << 10)
@@ -89,12 +88,12 @@
 /* Maximum bytes of data that can fit in FDATAn (0x10) registers */
 #define SPIBAR_FDATA_FIFO_SIZE		0x40
 
-/* Bit definitions for FDOC (0xB4) register */
+/* Bit definitions for FDOC (0xb4) register */
 #define SPIBAR_FDOC_COMPONENT		(1 << 12)
 #define SPIBAR_FDOC_FDSI_1		(1 << 2)
 
 /* Flash Descriptor Component Section - Component 0 Density Bit Settings */
-#define FLCOMP_C0DEN_MASK		0xF
+#define FLCOMP_C0DEN_MASK		0xf
 #define FLCOMP_C0DEN_8MB		4
 #define FLCOMP_C0DEN_16MB		5
 #define FLCOMP_C0DEN_32MB		6
@@ -103,7 +102,7 @@
 #define SPIBAR_FPR_WPE			(1 << 31) /* Flash Write protected */
 #define SPIBAR_FPR_MAX			5
 
-/* Programmable values for OPMENU_LOWER(0xA8) & OPMENU_UPPER(0xAC) register */
+/* Programmable values for OPMENU_LOWER(0xa8) & OPMENU_UPPER(0xac) register */
 #define SPI_OPMENU_0			0x01 /* WRSR: Write Status Register */
 #define SPI_OPTYPE_0			0x01 /* Write, no address */
 #define SPI_OPMENU_1			0x02 /* BYPR: Byte Program */
@@ -130,7 +129,7 @@
 		    (SPI_OPTYPE_1 << 2) | (SPI_OPTYPE_0))
 #define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
 
-/* Bit definitions for PTINX (0xCC) register */
+/* Bit definitions for PTINX (0xcc) register */
 #define SPIBAR_PTINX_COMP_0		(0 << 14)
 #define SPIBAR_PTINX_COMP_1		(1 << 14)
 #define SPIBAR_PTINX_HORD_SFDP		(0 << 12)
@@ -139,9 +138,9 @@
 #define SPIBAR_PTINX_IDX_MASK		0xffc
 
 /* Register Offsets of BIOS Flash Program Registers */
-#define SPIBAR_RESET_LOCK               0xF0
-#define SPIBAR_RESET_CTRL               0xF4
-#define SPIBAR_RESET_DATA               0xF8
+#define SPIBAR_RESET_LOCK               0xf0
+#define SPIBAR_RESET_CTRL               0xf4
+#define SPIBAR_RESET_DATA               0xf8
 
 /* Programmable values of Bit0 (SSL) of Set STRAP MSG LOCK (0xF0) Register */
 #define SPIBAR_RESET_LOCK_DISABLE	0 /* Set_Strap Lock(SSL) Bit 0 = 0 */
@@ -150,7 +149,7 @@
 /* Programmable values of Bit0(SSMS) of Set STRAP MSG Control (0xF4) Register*/
 #define SPIBAR_RESET_CTRL_SSMC		1 /* Set_Strap Mux Select(SSMS) Bit=1*/
 
-#define SPIBAR_HWSEQ_XFER_TIMEOUT	5000 /* max 5s*/
+#define SPIBAR_HWSEQ_XFER_TIMEOUT_MS	5000
 
 void *fast_spi_get_bar(void);
 

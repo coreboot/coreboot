@@ -42,16 +42,16 @@ void fast_spi_init(void)
 	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint8_t bios_cntl;
 
-	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
+	bios_cntl = pci_read_config8(dev, SPI_BIOS_CONTROL);
 
 	/* Disable the BIOS write protect so write commands are allowed. */
-	bios_cntl &= ~SPIBAR_BIOS_CONTROL_EISS;
-	bios_cntl |= SPIBAR_BIOS_CONTROL_WPD;
+	bios_cntl &= ~SPI_BIOS_CONTROL_EISS;
+	bios_cntl |= SPI_BIOS_CONTROL_WPD;
 	/* Enable Prefetching and caching. */
-	bios_cntl |= SPIBAR_BIOS_CONTROL_PREFETCH_ENABLE;
-	bios_cntl &= ~SPIBAR_BIOS_CONTROL_CACHE_DISABLE;
+	bios_cntl |= SPI_BIOS_CONTROL_PREFETCH_ENABLE;
+	bios_cntl &= ~SPI_BIOS_CONTROL_CACHE_DISABLE;
 
-	pci_write_config8(dev, SPIBAR_BIOS_CONTROL, bios_cntl);
+	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
 }
 
 /*
@@ -63,9 +63,9 @@ static void fast_spi_set_bios_control_reg(uint32_t bios_cntl_bit)
 	uint32_t bc_cntl;
 
 	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
-	bc_cntl = pci_read_config32(dev, SPIBAR_BIOS_CONTROL);
+	bc_cntl = pci_read_config32(dev, SPI_BIOS_CONTROL);
 	bc_cntl |= bios_cntl_bit;
-	pci_write_config32(dev, SPIBAR_BIOS_CONTROL, bc_cntl);
+	pci_write_config32(dev, SPI_BIOS_CONTROL, bc_cntl);
 }
 
 /*
@@ -81,9 +81,9 @@ static void fast_spi_read_post_write(uint8_t reg)
  */
 void fast_spi_set_bios_interface_lock_down(void)
 {
-	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_BILD);
+	fast_spi_set_bios_control_reg(SPI_BIOS_CONTROL_BILD);
 
-	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
+	fast_spi_read_post_write(SPI_BIOS_CONTROL);
 }
 
 /*
@@ -91,9 +91,9 @@ void fast_spi_set_bios_interface_lock_down(void)
  */
 void fast_spi_set_lock_enable(void)
 {
-	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_LOCK_ENABLE);
+	fast_spi_set_bios_control_reg(SPI_BIOS_CONTROL_LOCK_ENABLE);
 
-	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
+	fast_spi_read_post_write(SPI_BIOS_CONTROL);
 }
 
 /*
@@ -104,9 +104,9 @@ void fast_spi_set_ext_bios_lock_enable(void)
 	if (!CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
 		return;
 
-	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_EXT_BIOS_LOCK_ENABLE);
+	fast_spi_set_bios_control_reg(SPI_BIOS_CONTROL_EXT_BIOS_LOCK_ENABLE);
 
-	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
+	fast_spi_read_post_write(SPI_BIOS_CONTROL);
 }
 
 /*
@@ -114,9 +114,9 @@ void fast_spi_set_ext_bios_lock_enable(void)
  */
 void fast_spi_set_eiss(void)
 {
-	fast_spi_set_bios_control_reg(SPIBAR_BIOS_CONTROL_EISS);
+	fast_spi_set_bios_control_reg(SPI_BIOS_CONTROL_EISS);
 
-	fast_spi_read_post_write(SPIBAR_BIOS_CONTROL);
+	fast_spi_read_post_write(SPI_BIOS_CONTROL);
 }
 
 /*
@@ -348,10 +348,10 @@ static void fast_spi_enable_ext_bios(void)
 			(bios_region_top - 16MiB - MIN(extended_window_size, bios_size - 16MiB))
 			to (bios_region_top - 16MiB).
 	 */
-	pci_or_config32(dev, SPIBAR_BIOS_CONTROL, SPIBAR_BIOS_CONTROL_EXT_BIOS_LIMIT(16 * MiB));
+	pci_or_config32(dev, SPI_BIOS_CONTROL, SPI_BIOS_CONTROL_EXT_BIOS_LIMIT(16 * MiB));
 
 	/* Program EXT_BIOS EN */
-	pci_or_config32(dev, SPIBAR_BIOS_CONTROL, SPIBAR_BIOS_CONTROL_EXT_BIOS_ENABLE);
+	pci_or_config32(dev, SPI_BIOS_CONTROL, SPI_BIOS_CONTROL_EXT_BIOS_ENABLE);
 }
 
 /*
@@ -390,8 +390,8 @@ void fast_spi_early_init(uintptr_t spi_base_address)
 /* Read SPI Write Protect disable status. */
 bool fast_spi_wpd_status(void)
 {
-	return pci_read_config16(PCH_DEV_SPI, SPIBAR_BIOS_CONTROL) &
-		SPIBAR_BIOS_CONTROL_WPD;
+	return pci_read_config16(PCH_DEV_SPI, SPI_BIOS_CONTROL) &
+		SPI_BIOS_CONTROL_WPD;
 }
 
 /* Enable SPI Write Protect. */
@@ -400,7 +400,7 @@ void fast_spi_enable_wp(void)
 	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint8_t bios_cntl;
 
-	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
-	bios_cntl &= ~SPIBAR_BIOS_CONTROL_WPD;
-	pci_write_config8(dev, SPIBAR_BIOS_CONTROL, bios_cntl);
+	bios_cntl = pci_read_config8(dev, SPI_BIOS_CONTROL);
+	bios_cntl &= ~SPI_BIOS_CONTROL_WPD;
+	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
 }

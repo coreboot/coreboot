@@ -110,7 +110,7 @@ static int wait_for_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 	struct stopwatch sw;
 	uint32_t hsfsts;
 
-	stopwatch_init_msecs_expire(&sw, SPIBAR_HWSEQ_XFER_TIMEOUT);
+	stopwatch_init_msecs_expire(&sw, SPIBAR_HWSEQ_XFER_TIMEOUT_MS);
 	do {
 		hsfsts = fast_spi_flash_ctrlr_reg_read(ctx, SPIBAR_HSFSTS_CTL);
 
@@ -125,7 +125,7 @@ static int wait_for_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 	} while (!(stopwatch_expired(&sw)));
 
 	printk(BIOS_ERR, "SPI Transaction Timeout (Exceeded %d ms) at Flash Offset %x HSFSTS = 0x%08x\n",
-		SPIBAR_HWSEQ_XFER_TIMEOUT, flash_addr, hsfsts);
+		SPIBAR_HWSEQ_XFER_TIMEOUT_MS, flash_addr, hsfsts);
 	return E_TIMEOUT;
 }
 

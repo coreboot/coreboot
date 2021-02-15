@@ -75,7 +75,6 @@ static void init_tables(void)
 
 static void pirq_setup(void)
 {
-	init_tables();
 	intr_data_ptr = fch_apic_routing;
 	picr_data_ptr = fch_pic_routing;
 }
@@ -100,6 +99,7 @@ static void bilby_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
+	init_tables();
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 }

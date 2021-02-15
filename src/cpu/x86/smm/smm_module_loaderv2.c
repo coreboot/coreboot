@@ -89,7 +89,7 @@ static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
 	unsigned int i;
 	struct rmodule smm_stub;
 	unsigned int ss_size = params->per_cpu_save_state_size, stub_size;
-	unsigned int smm_entry_offset = params->smm_main_entry_offset;
+	unsigned int smm_entry_offset = SMM_ENTRY_OFFSET;
 	unsigned int seg_count = 0, segments = 0, available;
 	unsigned int cpus_in_segment = 0;
 	unsigned int base = smbase;
@@ -221,8 +221,7 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 	 * + size of stack.
 	 */
 	if (cpus[num_cpus].active) {
-		if (cpus[num_cpus - 1].smbase +
-		    params->smm_main_entry_offset < stack_top) {
+		if (cpus[num_cpus - 1].smbase + SMM_ENTRY_OFFSET < stack_top) {
 			printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
 				printk(BIOS_ERR, "%s: smbase %zx, stack_top %lx\n",
 				       __func__, cpus[num_cpus].smbase, stack_top);
@@ -330,7 +329,6 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;
-	size_t stub_entry_offset;
 	char *smm_stub_loc;
 	void *stacks_top;
 	size_t size;
@@ -366,10 +364,10 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	size -= total_save_state_size;
 
 	/* The save state size encroached over the first SMM entry point. */
-	if (size <= params->smm_main_entry_offset) {
+	if (size <= SMM_ENTRY_OFFSET) {
 		printk(BIOS_ERR, "%s: encroachment over SMM entry point\n", __func__);
 		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %lx\n",
-			__func__, size, params->smm_main_entry_offset);
+		       __func__, size, (size_t)SMM_ENTRY_OFFSET);
 		return -1;
 	}
 
@@ -382,13 +380,12 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 
 	smm_stub_loc = NULL;
 	smm_stub_size = rmodule_memory_size(&smm_stub);
-	stub_entry_offset = rmodule_entry_offset(&smm_stub);
 
 	/* Put the stub at the main entry point */
-	smm_stub_loc = &base[params->smm_main_entry_offset];
+	smm_stub_loc = &base[SMM_ENTRY_OFFSET];
 
 	/* Stub is too big to fit. */
-	if (smm_stub_size > (size - params->smm_main_entry_offset)) {
+	if (smm_stub_size > (size - SMM_ENTRY_OFFSET)) {
 		printk(BIOS_ERR, "%s: stub is too big to fit\n", __func__);
 		return -1;
 	}
@@ -399,7 +396,7 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	 */
 	const size_t total_stack_size = params->num_concurrent_stacks *
 		params->per_cpu_stack_size;
-	stacks_top = smm_stub_place_stacks((char *)params->smram_start, total_stack_size,
+	stacks_top = smm_stub_place_stacks(smbase, total_stack_size,
 					   params);
 	if (stacks_top == NULL) {
 		printk(BIOS_ERR, "%s: not enough space for stacks\n", __func__);
@@ -474,9 +471,6 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 	if (params->num_concurrent_stacks == 0)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
-	params->smm_main_entry_offset = SMM_ENTRY_OFFSET;
-	params->smram_start = SMM_DEFAULT_BASE;
-	params->smram_end = SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE;
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
 				params, fxsave_area_relocation);
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
@@ -529,9 +523,6 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	 */
 	base = smram;
 	base += size;
-	params->smram_start = (uintptr_t)smram;
-	params->smram_end = params->smram_start + size;
-	params->smm_main_entry_offset = SMM_ENTRY_OFFSET;
 
 	/* Fail if can't parse the smm rmodule. */
 	if (rmodule_parse(&_binary_smm_start, &smm_mod))
@@ -634,7 +625,6 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	base -= SMM_CODE_SEGMENT_SIZE;
 	printk(BIOS_DEBUG, "%s: cpu0 entry: %p\n",
 		 __func__, base);
-	params->smm_entry = (uintptr_t)base + params->smm_main_entry_offset;
 
 	if (!smm_create_map((uintptr_t)base, params->num_concurrent_save_states, params)) {
 		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);

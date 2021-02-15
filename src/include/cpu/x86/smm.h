@@ -132,12 +132,6 @@ static inline bool smm_points_to_smram(const void *ptr, const size_t len)
  *             into this field so the code doing the loading can manipulate the
  *             runtime's assumptions. e.g. updating the APIC id to CPU map to
  *             handle sparse APIC id space.
- * The following parameters are only used when X86_SMM_LOADER_VERSION2 is enabled.
- * - smm_entry - entry address of first CPU thread, all others will be tiled
- *               below this address.
- * - smm_main_entry_offset - default entry offset (e.g 0x8000)
- * - smram_start - smaram starting address
- * - smram_end - smram ending address
  */
 struct smm_loader_params {
 	void *stack_top;
@@ -150,14 +144,6 @@ struct smm_loader_params {
 	smm_handler_t handler;
 
 	struct smm_stub_params *stub_params;
-
-	/* The following are only used by X86_SMM_LOADER_VERSION2 */
-#if CONFIG(X86_SMM_LOADER_VERSION2)
-	uintptr_t smm_entry;
-	uintptr_t smm_main_entry_offset;
-	uintptr_t smram_start;
-	uintptr_t smram_end;
-#endif
 };
 
 /* Both of these return 0 on success, < 0 on failure. */

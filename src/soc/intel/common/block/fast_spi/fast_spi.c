@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <arch/romstage.h>
 #include <device/mmio.h>
 #include <assert.h>
@@ -20,11 +22,7 @@
  */
 void *fast_spi_get_bar(void)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	uintptr_t bar;
 
 	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -41,11 +39,7 @@ void *fast_spi_get_bar(void)
  */
 void fast_spi_init(void)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint8_t bios_cntl;
 
 	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);
@@ -65,11 +59,7 @@ void fast_spi_init(void)
  */
 static void fast_spi_set_bios_control_reg(uint32_t bios_cntl_bit)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint32_t bc_cntl;
 
 	assert((bios_cntl_bit & (bios_cntl_bit - 1)) == 0);
@@ -318,11 +308,7 @@ void fast_spi_cache_bios_region(void)
  */
 static void fast_spi_enable_ext_bios(void)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	if (!CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
 		return;
 
@@ -375,11 +361,7 @@ static void fast_spi_enable_ext_bios(void)
  */
 void fast_spi_early_init(uintptr_t spi_base_address)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint16_t pcireg;
 
 	/* Assign Resources to SPI Controller */
@@ -415,11 +397,7 @@ bool fast_spi_wpd_status(void)
 /* Enable SPI Write Protect. */
 void fast_spi_enable_wp(void)
 {
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = PCH_DEV_SPI;
-#else
-	struct device *dev = PCH_DEV_SPI;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SPI;
 	uint8_t bios_cntl;
 
 	bios_cntl = pci_read_config8(dev, SPIBAR_BIOS_CONTROL);

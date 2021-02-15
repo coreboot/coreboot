@@ -2,6 +2,5 @@ config SOC_AMD_COMMON_BLOCK_ACPI
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	select ACPI_AMD_HARDWARE_SLEEP_VALUES
-	default n
 	help
 	  Select this option to use the AcpiMmio ACPI registers.

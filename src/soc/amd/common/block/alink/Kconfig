@@ -1,5 +1,4 @@
 config SOC_AMD_COMMON_BLOCK_ALINK
 	bool
-	default n
 	help
 	  Select this option to access the FCH A-link configuration registers.

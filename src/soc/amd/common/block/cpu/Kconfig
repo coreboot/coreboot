@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_CAR
 	bool
-	default n
 	help
 	  This option allows the SOC to use a standard AMD cache-as-ram (CAR)
 	  implementation.  CAR setup is built into bootblock and teardown is
@@ -14,7 +13,6 @@ config SOC_AMD_COMMON_BLOCK_CAR
 
 config SOC_AMD_COMMON_BLOCK_NONCAR
 	bool
-	default n
 	help
 	  From family 17h on AMD CPUs/APUs don't use cache as RAM (CAR) any
 	  more, since the RAM initialization is already done by the PSP when
@@ -30,7 +28,6 @@ endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
 config SOC_AMD_COMMON_BLOCK_SMM
 	bool
-	default n
 	help
 	  Add common SMM relocation and handler functionality to the build.
 
@@ -39,7 +36,6 @@ config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	select COLLECT_TIMESTAMPS_NO_TSC # selected use SoC-specific timestamp function
 	select TSC_SYNC_LFENCE
 	select UDELAY_TSC
-	default n
 	help
 	  Select this option to add the common functions for getting the TSC
 	  frequency of AMD family 17h and 19h CPUs/APUs and to provide TSC-
@@ -48,7 +44,6 @@ config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 config SOC_AMD_COMMON_BLOCK_UCODE
 	bool
 	select SUPPORT_CPU_UCODE_IN_CBFS
-	default n
 	help
 	  Builds in support for loading uCode.
 

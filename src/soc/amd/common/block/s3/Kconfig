@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_S3
 	bool
-	default n
 	depends on SOC_AMD_COMMON_BLOCK_ACPI
 	select CACHE_MRC_SETTINGS
 	select MRC_WRITE_NV_LATE

@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	bool
-	default n
 	help
 	  Select this option to enable hardware blocks in the AcpiMmio
 	  address space (0xfed8xxxx).

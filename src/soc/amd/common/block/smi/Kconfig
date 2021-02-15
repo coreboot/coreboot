@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_SMI
 	bool
-	default n
 	help
 	  Select this option to add the common functions for setting up the SMI
 	  configuration to the build.

@@ -1,7 +1,6 @@
 config SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_ACPIMMIO
-	default n
 	help
 	  Select this option to use the newer style banks of GPIO signals.
 	  These are at offsets +0x1500, +0x1600, and +0x1700 from the AcpiMmio

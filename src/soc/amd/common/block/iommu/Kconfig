@@ -1,5 +1,4 @@
 config SOC_AMD_COMMON_BLOCK_IOMMU
 	bool
-	default n
 	help
 	  Select this option to use AMD common IOMMU support.

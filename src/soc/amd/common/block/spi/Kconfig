@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_SPI
 	bool
-	default n
 	help
 	  Select this option to add FCH SPI controller functions to the build.
 	  This overwrites the structure spi_flash_ops to use FCH SPI code
@@ -8,7 +7,6 @@ config SOC_AMD_COMMON_BLOCK_SPI
 
 config SOC_AMD_COMMON_BLOCK_SPI_DEBUG
 	bool
-	default n
 
 config EFS_SPI_READ_MODE
 	int

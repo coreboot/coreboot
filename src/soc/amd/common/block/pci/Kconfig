@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_PCI
 	bool
-	default n
 	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF
 	help
 	  This option builds functions used to program PCI interrupt
@@ -8,7 +7,6 @@ config SOC_AMD_COMMON_BLOCK_PCI
 
 config SOC_AMD_COMMON_BLOCK_PCI_MMCONF
 	bool
-	default n
 	help
 	  Selecting this option adds the AMD-common enable_pci_mmconf function
 	  to the build.

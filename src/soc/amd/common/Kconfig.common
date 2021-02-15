@@ -7,7 +7,6 @@ if SOC_AMD_COMMON
 
 config SOC_AMD_PI
 	bool
-	default n
 
 source "src/soc/amd/common/block/*/Kconfig"
 

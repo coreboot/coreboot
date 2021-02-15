@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_PSP
 	bool
-	default n
 	help
 	  This option builds in the Platform Security Processor initialization
 	  functions. Do not select this directly in SoC code, select
@@ -8,21 +7,18 @@ config SOC_AMD_COMMON_BLOCK_PSP
 
 config SOC_AMD_COMMON_BLOCK_PSP_GEN1
 	bool
-	default n
 	select SOC_AMD_COMMON_BLOCK_PSP
 	help
 	  Used by the PSP in AMD systems before family 17h, e.g. stoneyridge.
 
 config SOC_AMD_COMMON_BLOCK_PSP_GEN2
 	bool
-	default n
 	select SOC_AMD_COMMON_BLOCK_PSP
 	help
 	  Used by the PSP in AMD family 17h, 19h and possibly newer CPUs.
 
 config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	bool
-	default n
 	help
 	  Some PSP implementations allow storing SMU firmware into cbfs and
 	  calling the PSP to load the blobs at the proper time.

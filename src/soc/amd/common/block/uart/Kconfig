@@ -1,6 +1,5 @@
 config SOC_AMD_COMMON_BLOCK_UART
 	bool
-	default n
 	help
 	  Select this option to add the common functions for setting up the
 	  UART configuration to the build.
@@ -9,7 +8,6 @@ if SOC_AMD_COMMON_BLOCK_UART
 
 config AMD_SOC_CONSOLE_UART
 	bool "Use integrated AMD SoC UART controller for console"
-	default n
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO

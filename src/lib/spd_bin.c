@@ -33,6 +33,7 @@ static bool use_ddr4_params(int dram_type)
 	/* Below DDR type share the same attributes */
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
+	case SPD_DRAM_DDR5:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
 		return true;
@@ -163,6 +164,7 @@ static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, s
 	/* LPDDR3, LPDDR4 and DDR4 have same part number offset and length */
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
+	case SPD_DRAM_DDR5:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
 		*spd_name = (const char *) &spd[DDR4_SPD_PART_OFF];

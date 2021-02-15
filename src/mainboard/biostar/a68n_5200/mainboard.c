@@ -8,7 +8,6 @@
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {

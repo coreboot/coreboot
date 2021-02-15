@@ -254,6 +254,7 @@ static int mainboard_smbios_data(struct device *dev, int *handle,
 
 static void mainboard_enable(struct device *dev)
 {
+	/* Maintain this text unchanged for manufacture process. */
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	config_gpio_mux();
@@ -363,6 +364,7 @@ const char *smbios_system_sku(void)
 
 static void mainboard_final(void *chip_info)
 {
+	/* Maintain this text unchanged for manufacture process. */
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Final.\n");
 
 	/*

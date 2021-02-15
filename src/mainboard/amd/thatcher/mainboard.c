@@ -12,8 +12,6 @@ static void mainboard_enable(struct device *dev)
 {
 	msr_t msr;
 
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	msr = rdmsr(LS_CFG_MSR);
 	msr.lo &= ~(1 << 28);
 	wrmsr(LS_CFG_MSR, msr);

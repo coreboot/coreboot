@@ -78,8 +78,6 @@ static void pirq_setup(void)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 }

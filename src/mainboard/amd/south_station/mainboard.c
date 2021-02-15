@@ -31,7 +31,6 @@ static void southstation_led_init(void)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 	southstation_led_init();
 
 	/*

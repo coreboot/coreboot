@@ -109,8 +109,6 @@ static void pirq_setup(void)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	/* enable GPP CLK0 thru CLK3 (interleaved) */
 	/* disable GPP CLK4 thru SLT_GFX_CLK */
 	misc_write8(0, 0xff);

@@ -36,8 +36,6 @@ static void init_gpios(void)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	/* Inagua mainboard specific setting */
 	init_gpios();
 

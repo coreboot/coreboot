@@ -48,7 +48,6 @@ static void init(struct device *dev)
 {
 	volatile u8 *spi_base;	/* base addr of Hudson's SPI host controller */
 	int i;
-	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " ENTER %s\n", __func__);
 
 	/* Init Hudson GPIOs. */
 	printk(BIOS_DEBUG, "Init FCH GPIOs @ 0x%08x\n", ACPI_MMIO_BASE+GPIO_BASE);
@@ -108,7 +107,6 @@ static void init(struct device *dev)
 	 */
 	sema_send_alive();
 
-	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " EXIT %s\n", __func__);
 }
 
 /**********************************************
@@ -116,7 +114,6 @@ static void init(struct device *dev)
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 	dev->ops->init = init;
 
 	/* enable GPP CLK0 */

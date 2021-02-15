@@ -11,8 +11,6 @@
  **********************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	/* Power off unused clock pins of GPP PCIe devices
 	 * GPP CLK0 connected to unpopulated mini PCIe slot
 	 * GPP CLK1 connected to ethernet chip

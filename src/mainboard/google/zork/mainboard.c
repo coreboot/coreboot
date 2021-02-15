@@ -199,8 +199,6 @@ static void mainboard_fill_ssdt(const struct device *dev)
  *************************************************/
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	init_tables();
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

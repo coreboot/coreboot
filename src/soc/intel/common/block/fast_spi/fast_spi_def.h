@@ -76,8 +76,6 @@
 #define SPIBAR_HSFSTS_FDONE		(1 << 0)
 #define SPIBAR_HSFSTS_W1C_BITS		(0xff)
 
-#define WPSR_MASK_SRP0_BIT 0x80
-
 /* Bit definitions for FADDR (0x08) register */
 #define SPIBAR_FADDR_MASK		0x7FFFFFF
 

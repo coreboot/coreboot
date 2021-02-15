@@ -302,30 +302,6 @@ static int fast_spi_flash_probe(const struct spi_slave *dev,
 	return 0;
 }
 
-/*
- * Minimal set of commands to read WPSR from FAST_SPI.
- * Returns 0 on success, < 0 on failure.
- */
-int fast_spi_flash_read_wpsr(u8 *sr)
-{
-	uint8_t rdsr;
-	int ret = 0;
-
-	fast_spi_init();
-
-	/* sending NULL for spiflash struct parameter since we are not
-	 * calling HWSEQ read_status() call via Probe.
-	 */
-	ret = fast_spi_flash_status(NULL, &rdsr);
-	if (ret) {
-		printk(BIOS_ERR, "SPI rdsr failed\n");
-		return ret;
-	}
-	*sr = rdsr & WPSR_MASK_SRP0_BIT;
-
-	return 0;
-}
-
 static int fast_spi_flash_ctrlr_setup(const struct spi_slave *dev)
 {
 	if (dev->cs != 0) {

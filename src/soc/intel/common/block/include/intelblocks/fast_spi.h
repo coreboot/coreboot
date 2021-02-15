@@ -10,11 +10,6 @@
  */
 void fast_spi_init(void);
 /*
- * Minimal set of commands to read WPSR from SPI.
- * Returns 0 on success, < 0 on failure.
- */
-int fast_spi_flash_read_wpsr(u8 *sr);
-/*
  * Set FAST_SPIBAR BIOS Control BILD bit.
  */
 void fast_spi_set_bios_interface_lock_down(void);

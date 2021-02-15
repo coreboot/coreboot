@@ -46,8 +46,6 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void);
  */
 extern const smi_handler_t southbridge_smi[32];
 
-#define SMI_HANDLER_SCI_EN(__bit)	(1 << (__bit))
-
 /*
  * This function should be implemented in SOC specific code to handle
  * the SMI event on SLP_EN. The default functionality is provided in

@@ -16,6 +16,7 @@ tests-y += region_file-test
 tests-y += stack-test
 tests-y += memset-test
 tests-y += memcmp-test
+tests-y += memchr-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -83,4 +84,7 @@ memset-test-srcs += tests/lib/memset-test.c
 memset-test-srcs += src/lib/memset.c
 
 memcmp-test-srcs += tests/lib/memcmp-test.c
+
+memchr-test-srcs += tests/lib/memchr-test.c
+memchr-test-srcs += src/lib/memchr.c
 

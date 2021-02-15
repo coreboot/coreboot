@@ -641,5 +641,10 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		return -1;
 	}
 
+	for (int i = 0; i < params->num_concurrent_stacks; i++) {
+		handler_mod_params->save_state_top[i] =
+			cpus[i].ss_start + params->per_cpu_save_state_size;
+	}
+
 	return smm_module_setup_stub(base, size, params, fxsave_area);
 }

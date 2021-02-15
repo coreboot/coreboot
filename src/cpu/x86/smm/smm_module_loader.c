@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <stdint.h>
 #include <string.h>
 #include <acpi/acpi_gnvs.h>
 #include <rmodule.h>
@@ -391,6 +392,11 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	handler_mod_params->save_state_size = params->per_cpu_save_state_size;
 	handler_mod_params->num_cpus = params->num_concurrent_stacks;
 	handler_mod_params->gnvs_ptr = (uintptr_t)acpi_get_gnvs();
+
+	for (int i = 0; i < CONFIG_MAX_CPUS; i++) {
+		handler_mod_params->save_state_top[i] = (uintptr_t)smram + SMM_DEFAULT_SIZE
+			- params->per_cpu_save_state_size * i;
+	}
 
 	return smm_module_setup_stub(smram, size, params, fxsave_area);
 }

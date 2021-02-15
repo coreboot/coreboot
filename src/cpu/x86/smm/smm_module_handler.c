@@ -94,15 +94,10 @@ struct global_nvs *gnvs;
 
 void *smm_get_save_state(int cpu)
 {
-	char *base;
+	if (cpu > smm_runtime.num_cpus)
+		return NULL;
 
-	/* This function assumes all save states start at top of default
-	 * SMRAM size space and are staggered down by save state size. */
-	base = (void *)(uintptr_t)smm_runtime.smbase;
-	base += SMM_DEFAULT_SIZE;
-	base -= (cpu + 1) * smm_runtime.save_state_size;
-
-	return base;
+	return (void *)(smm_runtime.save_state_top[cpu] - smm_runtime.save_state_size);
 }
 
 uint32_t smm_revision(void)

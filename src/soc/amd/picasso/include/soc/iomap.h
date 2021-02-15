@@ -71,7 +71,6 @@
 #endif /* ENV_X86 */
 
 /* I/O Ranges */
-#define ACPI_SMI_CTL_PORT		0xb2
 #define ACPI_IO_BASE			0x400
 #define  ACPI_PM_EVT_BLK	(ACPI_IO_BASE + 0x00)     /* 4 bytes */
 #define  ACPI_PM1_STS		(ACPI_PM_EVT_BLK + 0x00)	  /* 2 bytes */

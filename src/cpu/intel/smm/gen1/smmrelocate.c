@@ -135,15 +135,6 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 
-void smm_initialize(void)
-{
-	/* Clear the SMM state in the southbridge. */
-	smm_southbridge_clear_state();
-
-	/* Run the relocation handler on the BSP. */
-	smm_initiate_relocation();
-}
-
 /* The relocation work is actually performed in SMM context, but the code
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here. */
@@ -185,14 +176,4 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_smrr_alt(relo_params);
 	else
 		write_smrr(relo_params);
-}
-
-void smm_relocate(void)
-{
-	/*
-	 * The BSP had already run SMM relocation in smm_initialize(),
-	 * so skip it for the BSP and only run it on the APs.
-	 */
-	if (!boot_cpu())
-		smm_initiate_relocation();
 }

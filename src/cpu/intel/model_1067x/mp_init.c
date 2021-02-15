@@ -42,11 +42,6 @@ static void get_microcode_info(const void **microcode, size_t *size, int *parall
 
 /* the SMRR enable and lock bit need to be set in IA32_FEATURE_CONTROL
    to enable SMRR so configure IA32_FEATURE_CONTROL early on */
-static void pre_mp_smm_init(void)
-{
-	smm_initialize();
-}
-
 static void per_cpu_smm_trigger(void)
 {
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
@@ -74,7 +69,7 @@ static void per_cpu_smm_trigger(void)
 	}
 
 	/* Relocate the SMM handler. */
-	smm_relocate();
+	smm_initiate_relocation();
 }
 
 static void post_mp_init(void)
@@ -92,7 +87,7 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = pre_mp_smm_init,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,

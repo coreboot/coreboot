@@ -133,7 +133,7 @@ static void get_microcode_info(const void **microcode, size_t *size, int *parall
 static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */
-	smm_relocate();
+	smm_initiate_relocation();
 
 	/* After SMM relocation a 2nd microcode load is required. */
 	const void *microcode_patch = intel_microcode_find();
@@ -158,7 +158,7 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = smm_initialize,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,

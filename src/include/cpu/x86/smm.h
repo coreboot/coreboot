@@ -151,7 +151,6 @@ struct smm_loader_params {
 	smm_handler_t handler;
 
 	struct smm_stub_params *stub_params;
-	struct smm_runtime *runtime;
 
 	/* The following are only used by X86_SMM_LOADER_VERSION2 */
 #if CONFIG(X86_SMM_LOADER_VERSION2)

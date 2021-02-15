@@ -468,7 +468,6 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 
 	/* Allow the initiator to manipulate SMM stub parameters. */
 	params->stub_params = stub_params;
-	params->runtime = &stub_params->runtime;
 
 	printk(BIOS_DEBUG, "SMM Module: stub loaded at %p. Will call %p\n",
 	       smm_stub_loc, params->handler);

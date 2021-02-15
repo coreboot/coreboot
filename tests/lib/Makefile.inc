@@ -14,6 +14,7 @@ tests-y += imd_cbmem-romstage-test
 tests-y += imd_cbmem-ramstage-test
 tests-y += region_file-test
 tests-y += stack-test
+tests-y += memset-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -76,3 +77,6 @@ region_file-test-srcs += tests/stubs/console.c
 stack-test-srcs += tests/lib/stack-test.c
 stack-test-srcs += src/lib/stack.c
 stack-test-srcs += tests/stubs/console.c
+
+memset-test-srcs += tests/lib/memset-test.c
+memset-test-srcs += src/lib/memset.c

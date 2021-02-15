@@ -536,6 +536,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 {
 	struct rmodule smm_mod;
+	struct smm_runtime *handler_mod_params;
 	size_t total_stack_size;
 	size_t handler_size;
 	size_t module_alignment;
@@ -618,6 +619,12 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		return -1;
 
 	params->handler = rmodule_entry(&smm_mod);
+	handler_mod_params = rmodule_parameters(&smm_mod);
+	handler_mod_params->smbase = (uintptr_t)smram;
+	handler_mod_params->smm_size = size;
+	handler_mod_params->save_state_size = params->per_cpu_save_state_size;
+	handler_mod_params->num_cpus = params->num_concurrent_stacks;
+	handler_mod_params->gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	printk(BIOS_DEBUG, "%s: smram_start: 0x%p\n",
 		 __func__, smram);
@@ -637,6 +644,14 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		 __func__, CONFIG_MSEG_SIZE);
 	printk(BIOS_DEBUG, "%s: CONFIG_BIOS_RESOURCE_LIST_SIZE 0x%x\n",
 		 __func__, CONFIG_BIOS_RESOURCE_LIST_SIZE);
+
+	printk(BIOS_DEBUG, "%s: handler_mod_params.smbase = 0x%x\n", __func__,
+	       handler_mod_params->smbase);
+	printk(BIOS_DEBUG, "%s: per_cpu_save_state_size = 0x%x\n", __func__,
+	       handler_mod_params->save_state_size);
+	printk(BIOS_DEBUG, "%s: num_cpus = 0x%x\n", __func__, handler_mod_params->num_cpus);
+	printk(BIOS_DEBUG, "%s: total_save_state_size = 0x%x\n", __func__,
+	       (handler_mod_params->save_state_size * handler_mod_params->num_cpus));
 
 	/* CPU 0 smbase goes first, all other CPUs
 	 * will be staggered below

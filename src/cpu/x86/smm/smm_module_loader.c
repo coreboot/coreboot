@@ -324,6 +324,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 {
 	struct rmodule smm_mod;
+	struct smm_runtime *handler_mod_params;
 	size_t total_stack_size;
 	size_t handler_size;
 	size_t module_alignment;
@@ -390,6 +391,12 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		return -1;
 
 	params->handler = rmodule_entry(&smm_mod);
+	handler_mod_params = rmodule_parameters(&smm_mod);
+	handler_mod_params->smbase = (uintptr_t)smram;
+	handler_mod_params->smm_size = size;
+	handler_mod_params->save_state_size = params->per_cpu_save_state_size;
+	handler_mod_params->num_cpus = params->num_concurrent_stacks;
+	handler_mod_params->gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	return smm_module_setup_stub(smram, size, params, fxsave_area);
 }

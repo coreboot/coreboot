@@ -554,7 +554,7 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 				((dram_limit_reg & DRAM_LIMIT_ADDR) >> DRAM_LIMIT_ADDR_SHFT) + 1
 				- ((dram_base_reg & DRAM_BASE_ADDR) >> DRAM_BASE_ADDR_SHFT);
 			memory_length = memory_length << 28;
-			memory_base = (dram_base_reg & DRAM_BASE_ADDR)
+			memory_base = (uint64_t)(dram_base_reg & DRAM_BASE_ADDR)
 				      << (28 - DRAM_BASE_ADDR_SHFT);
 
 			if (memory_base == 0) {
@@ -572,7 +572,7 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 				size_below_hole = hole_base - memory_base;
 				current = create_crat_memory_entry(0, memory_base,
 								   size_below_hole, current);
-				memory_length = (((dram_limit_reg & DRAM_LIMIT_ADDR)
+				memory_length = (uint64_t)(((dram_limit_reg & DRAM_LIMIT_ADDR)
 						  >> DRAM_LIMIT_ADDR_SHFT)
 						 + 1 - 0x10)
 						<< 28;

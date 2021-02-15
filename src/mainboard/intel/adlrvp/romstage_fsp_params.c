@@ -39,12 +39,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.topo = MEM_TOPO_DIMM_MODULE,
 		.smbus = {
 			[0] = {
-				.addr_dimm[0] = 0xa0,
-				.addr_dimm[1] = 0xa2,
+				.addr_dimm[0] = 0x50,
+				.addr_dimm[1] = 0x51,
 			},
 			[1] = {
-				.addr_dimm[0] = 0xa4,
-				.addr_dimm[1] = 0xa6,
+				.addr_dimm[0] = 0x52,
+				.addr_dimm[1] = 0x53,
 			},
 		},
 	};

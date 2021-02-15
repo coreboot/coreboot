@@ -214,24 +214,20 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 {
 	unsigned int i;
 	unsigned int size;
-	if (smm_create_map(smbase, num_cpus, params)) {
-		/*
-		 * Ensure there was enough space and the last CPUs smbase
-		 * did not encroach upon the stack. Stack top is smram start
-		 * + size of stack.
-		 */
-		if (cpus[num_cpus].active) {
-			if (cpus[num_cpus - 1].smbase +
-				params->smm_main_entry_offset < stack_top) {
-				printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
+
+	/*
+	 * Ensure there was enough space and the last CPUs smbase
+	 * did not encroach upon the stack. Stack top is smram start
+	 * + size of stack.
+	 */
+	if (cpus[num_cpus].active) {
+		if (cpus[num_cpus - 1].smbase +
+		    params->smm_main_entry_offset < stack_top) {
+			printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
 				printk(BIOS_ERR, "%s: smbase %zx, stack_top %lx\n",
-					__func__, cpus[num_cpus].smbase, stack_top);
+				       __func__, cpus[num_cpus].smbase, stack_top);
 				return 0;
-			}
 		}
-	} else {
-		printk(BIOS_ERR, "%s: unable to place smm entry code\n", __func__);
-		return 0;
 	}
 
 	printk(BIOS_INFO, "%s: smbase %zx, stack_top %lx\n",
@@ -639,5 +635,11 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	printk(BIOS_DEBUG, "%s: cpu0 entry: %p\n",
 		 __func__, base);
 	params->smm_entry = (uintptr_t)base + params->smm_main_entry_offset;
+
+	if (!smm_create_map((uintptr_t)base, params->num_concurrent_save_states, params)) {
+		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);
+		return -1;
+	}
+
 	return smm_module_setup_stub(base, size, params, fxsave_area);
 }

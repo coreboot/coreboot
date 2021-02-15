@@ -217,7 +217,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_platform_thread_count,
 	.get_smm_info = get_smm_info,
-	.pre_mp_smm_init = smm_initialize,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = smm_relocation_handler,
 	.post_mp_init = post_mp_init,
 };

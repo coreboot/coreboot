@@ -127,18 +127,3 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
 }
-
-void smm_initialize(void)
-{
-	/* Clear the SMM state in the southbridge. */
-	smm_southbridge_clear_state();
-	/* Run the relocation handler for on the BSP . */
-	smm_initiate_relocation();
-}
-
-void smm_relocate(void)
-{
-	/* Save states via MSR does not seem to be supported on CPX */
-	if (!boot_cpu())
-		smm_initiate_relocation();
-}

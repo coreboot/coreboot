@@ -86,7 +86,6 @@ void write_pci_cfg_irqs(void)
 	u16 int_line = 0;	/* IRQ number read from PCI_INTR table and programmed to INT_LINE reg 0x3C */
 	u16 pci_intr_idx = 0;	/* Index into PCI_INTR table, 0xC00/0xC01 */
 	u16 devfn = 0;		/* A PCI Device and Function number */
-	u8  bridged_device = 0;	/* This device is on a PCI bridge */
 	u32 i = 0;
 
 	if (pirq_data_ptr == NULL) {
@@ -171,9 +170,7 @@ void write_pci_cfg_irqs(void)
 		 */
 		printk(BIOS_SPEW, "\tOrig INT_PIN\t: %d (%s)\n",
 						int_pin, pin_to_str(int_pin));
-		if (bridged_device)
-			printk(BIOS_SPEW, "\tSwizzled to\t: %d (%s)\n",
-							target_pin, pin_to_str(target_pin));
+
 		printk(BIOS_SPEW, "\tPCI_INTR idx\t: 0x%02x (%s)\n"
 						"\tINT_LINE\t: 0x%X (IRQ %d)\n",
 						pci_intr_idx, intr_types[pci_intr_idx], int_line, int_line);

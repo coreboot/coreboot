@@ -88,6 +88,16 @@ struct eeprom_bmc_settings *get_bmc_settings(void)
 	return &bmc_cfg;
 }
 
+uint8_t get_bmc_hsi(void)
+{
+	uint8_t hsi = 0;
+	struct eeprom_bmc_settings *s = get_bmc_settings();
+	if (s)
+		hsi = s->hsi;
+	printk(BIOS_DEBUG, "CFG EEPROM: HSI 0x%x\n", hsi);
+
+	return hsi;
+}
 
 /* Read data from offset and write it to offset in UPD */
 bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size_t size)

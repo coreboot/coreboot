@@ -86,6 +86,7 @@ bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size
 int check_signature(const size_t offset, const uint64_t signature);
 struct eeprom_board_settings *get_board_settings(void);
 struct eeprom_bmc_settings *get_bmc_settings(void);
+uint8_t get_bmc_hsi(void);
 void report_eeprom_error(const size_t off);
 bool write_board_settings(const struct eeprom_board_layout *new_layout);
 

@@ -39,8 +39,6 @@ static const char *soc_acpi_name(const struct device *dev)
 			return "GNB";
 		case IOMMU_DEVFN:
 			return "IOMM";
-		case SMBUS_DEVFN:
-			return "SBUS";
 		default:
 			printk(BIOS_WARNING, "Unknown root PCI device: dev: %d, fn: %d\n",
 			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));

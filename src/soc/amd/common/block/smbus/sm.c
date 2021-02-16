@@ -58,6 +58,7 @@ static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 	device = dev->path.i2c.device;
 	return do_smbus_write_byte(get_sm_mmio(dev), device, address, val);
 }
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.recv_byte = lsmbus_recv_byte,
 	.send_byte = lsmbus_send_byte,
@@ -65,15 +66,26 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static const char *smbus_acpi_name(const struct device *dev)
+{
+	return "SBUS";
+}
+#endif
+
 static struct device_operations smbus_ops = {
-	.read_resources = noop_read_resources,
-	.set_resources = noop_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init = sm_init,
-	.scan_bus = scan_smbus,
-	.ops_pci = &pci_dev_ops_pci,
-	.ops_smbus_bus = &lops_smbus_bus,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= sm_init,
+	.scan_bus		= scan_smbus,
+	.ops_pci		= &pci_dev_ops_pci,
+	.ops_smbus_bus		= &lops_smbus_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name		= smbus_acpi_name,
+#endif
 };
+
 static const struct pci_driver smbus_driver __pci_driver = {
 	.ops = &smbus_ops,
 	.vendor = PCI_VENDOR_ID_AMD,

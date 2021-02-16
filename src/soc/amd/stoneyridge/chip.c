@@ -83,8 +83,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "EHC0";
 	case SD_DEVFN:
 		return "SDCN";
-	case SMBUS_DEVFN:
-		return "SBUS";
 	case XHCI_DEVFN:
 		return "XHC0";
 	default:

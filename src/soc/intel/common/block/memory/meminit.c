@@ -167,5 +167,7 @@ void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
 		 */
 		if (spd_md_len != spd_dimm_len)
 			die("Length of SPD does not match for mixed topology!\n");
+
+		data->spd_len = spd_md_len;
 	}
 }

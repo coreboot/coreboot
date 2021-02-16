@@ -130,10 +130,16 @@ static void read_resources(struct device *dev)
 	}
 }
 
+static const char *gnb_acpi_name(const struct device *dev)
+{
+	return "GNB";
+}
+
 static struct device_operations root_complex_operations = {
 	.read_resources		= read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.acpi_name		= gnb_acpi_name,
 };
 
 static const struct pci_driver family17_root_complex __pci_driver = {

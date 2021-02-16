@@ -35,8 +35,6 @@ static const char *soc_acpi_name(const struct device *dev)
 
 	if (dev->bus->dev->path.type == DEVICE_PATH_DOMAIN) {
 		switch (dev->path.pci.devfn) {
-		case IOMMU_DEVFN:
-			return "IOMM";
 		default:
 			printk(BIOS_WARNING, "Unknown root PCI device: dev: %d, fn: %d\n",
 			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));

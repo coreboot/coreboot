@@ -13,7 +13,6 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	/* Some generic macros */
 	#include <soc/intel/common/acpi/platform.asl>
 
 	/* global NVS and variables */

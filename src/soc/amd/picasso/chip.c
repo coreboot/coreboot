@@ -25,7 +25,7 @@ struct device_operations cpu_bus_ops = {
 	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 
-const char *soc_acpi_name(const struct device *dev)
+static const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		return "PCI0";

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
@@ -101,16 +100,6 @@ static void uart_enable(struct device *dev)
 	} else {
 		power_off_aoac_device(dev_id);
 	}
-}
-
-/* This gets called for both enabled and disabled devices. */
-static void uart_inject_ssdt(const struct device *dev)
-{
-	acpigen_write_scope(acpi_device_path(dev));
-
-	acpigen_write_STA(acpi_device_status(dev));
-
-	acpigen_pop_len(); /* Scope */
 }
 
 struct device_operations picasso_uart_mmio_ops = {

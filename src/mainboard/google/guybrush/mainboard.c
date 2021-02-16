@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_configure_gpios(void)
 {
@@ -22,7 +23,9 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO: Enable mainboard */
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

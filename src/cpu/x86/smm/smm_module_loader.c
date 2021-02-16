@@ -266,7 +266,7 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
  * assumption is that the stub will be entered from the default SMRAM
  * location: 0x30000 -> 0x40000.
  */
-int smm_setup_relocation_handler(struct smm_loader_params *params)
+int smm_setup_relocation_handler(void *const perm_smram, struct smm_loader_params *params)
 {
 	void *smram = (void *)SMM_DEFAULT_BASE;
 

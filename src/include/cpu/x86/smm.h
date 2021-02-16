@@ -148,7 +148,7 @@ struct smm_loader_params {
 };
 
 /* Both of these return 0 on success, < 0 on failure. */
-int smm_setup_relocation_handler(struct smm_loader_params *params);
+int smm_setup_relocation_handler(void * const perm_smram, struct smm_loader_params *params);
 int smm_load_module(void *smram, size_t size, struct smm_loader_params *params);
 
 u32 smm_get_cpu_smbase(unsigned int cpu_num);

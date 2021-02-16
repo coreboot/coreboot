@@ -295,20 +295,22 @@ static int smm_stub_place_staggered_entry_points(char *base,
  * 0x30000), but no assumption should be made for the permanent SMI handler.
  * The placement of CPU entry points for permanent handler are determined
  * by the number of CPUs in the system and the amount of SMRAM.
- * There are potentially 3 regions to place
+ * There are potentially 2 regions to place
  * within the default SMRAM size:
  * 1. Save state areas
  * 2. Stub code
- * 3. Stack areas
  *
- * The save state and smm stack are treated as contiguous for the number of
- * concurrent areas requested. The save state always lives at the top of the
- * CPUS smbase (and the entry point is at offset 0x8000). This allows only a certain
- * number of CPUs with staggered entry points until the save state area comes
- * down far enough to overwrite/corrupt the entry code (stub code). Therefore,
- * an SMM map is created to avoid this corruption, see smm_create_map() above.
+ * The save state always lives at the top of the CPUS smbase (and the entry
+ * point is at offset 0x8000). This allows only a certain number of CPUs with
+ * staggered entry points until the save state area comes down far enough to
+ * overwrite/corrupt the entry code (stub code). Therefore, an SMM map is
+ * created to avoid this corruption, see smm_create_map() above.
  * This module setup code works for the default (0x30000) SMM handler setup and the
  * permanent SMM handler.
+ * The CPU stack is decided at runtime in the stub and is treaded as a continuous
+ * region. As this might not fit the default SMRAM region, the same region used
+ * by the permanent handler can be used during relocation. This is done via the
+ * smram_start argument.
  */
 static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 				 struct smm_loader_params *params,
@@ -438,7 +440,7 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
  * assumption is that the stub will be entered from the default SMRAM
  * location: 0x30000 -> 0x40000.
  */
-int smm_setup_relocation_handler(struct smm_loader_params *params)
+int smm_setup_relocation_handler(void * const perm_smram,  struct smm_loader_params *params)
 {
 	void *smram = (void *)(SMM_DEFAULT_BASE);
 	printk(BIOS_SPEW, "%s: enter\n", __func__);
@@ -457,7 +459,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
-				params, fxsave_area_relocation, smram);
+				     params, fxsave_area_relocation, perm_smram);
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
 }
 

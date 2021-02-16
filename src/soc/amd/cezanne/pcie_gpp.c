@@ -12,13 +12,8 @@ static struct device_operations internal_pcie_gpp_ops = {
 	.reset_bus		= pci_bus_reset,
 };
 
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_PCIE_GPP_BUSABC,
-	0
-};
-
 static const struct pci_driver internal_pcie_gpp_driver __pci_driver = {
 	.ops			= &internal_pcie_gpp_ops,
 	.vendor			= PCI_VENDOR_ID_AMD,
-	.devices		= pci_device_ids,
+	.device			= PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_PCIE_GPP_BUSABC,
 };

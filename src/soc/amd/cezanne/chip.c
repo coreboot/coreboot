@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <fsp/api.h>
 #include <soc/data_fabric.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <types.h>
 #include "chip.h"
@@ -16,10 +19,24 @@ struct device_operations cpu_bus_ops = {
 	.init		= mp_cpu_bus_init,
 };
 
+static const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	printk(BIOS_WARNING, "Unknown PCI device: dev: %d, fn: %d\n",
+	       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+	return NULL;
+};
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	= pci_domain_read_resources,
 	.set_resources	= pci_domain_set_resources,
 	.scan_bus	= pci_domain_scan_bus,
+	.acpi_name	= soc_acpi_name,
 };
 
 static void set_mmio_dev_ops(struct device *dev)

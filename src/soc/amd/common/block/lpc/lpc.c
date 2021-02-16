@@ -319,11 +319,19 @@ static void lpc_enable_resources(struct device *dev)
 	lpc_enable_children_resources(dev);
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static const char *lpc_acpi_name(const struct device *dev)
+{
+	return "LPCB";
+}
+#endif
+
 static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = lpc_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name = lpc_acpi_name,
 	.write_acpi_tables = southbridge_write_acpi_tables,
 #endif
 	.init = lpc_init,

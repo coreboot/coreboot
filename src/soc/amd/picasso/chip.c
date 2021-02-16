@@ -39,8 +39,6 @@ static const char *soc_acpi_name(const struct device *dev)
 			return "GNB";
 		case IOMMU_DEVFN:
 			return "IOMM";
-		case LPC_DEVFN:
-			return "LPCB";
 		case SMBUS_DEVFN:
 			return "SBUS";
 		default:

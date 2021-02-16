@@ -5,6 +5,8 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/ioapic.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -18,7 +20,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
-	/* TODO: Add IOAPIC and GNB-IOAPIC */
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
+		FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
+
+	/* TODO: Add GNB-IOAPIC */
 
 	current += acpi_create_madt_irqoverride(
 		(acpi_madt_irqoverride_t *)current,

@@ -35,8 +35,6 @@ static const char *soc_acpi_name(const struct device *dev)
 
 	if (dev->bus->dev->path.type == DEVICE_PATH_DOMAIN) {
 		switch (dev->path.pci.devfn) {
-		case GNB_DEVFN:
-			return "GNB";
 		case IOMMU_DEVFN:
 			return "IOMM";
 		default:

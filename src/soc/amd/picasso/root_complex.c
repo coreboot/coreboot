@@ -269,11 +269,17 @@ static void root_complex_fill_ssdt(const struct device *device)
 	acipgen_dptci();
 }
 
+static const char *gnb_acpi_name(const struct device *dev)
+{
+	return "GNB";
+}
+
 static struct device_operations root_complex_operations = {
 	.read_resources		= read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= root_complex_init,
+	.acpi_name		= gnb_acpi_name,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };
 

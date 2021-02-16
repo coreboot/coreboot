@@ -1,0 +1,18 @@
+# layout for firmware when flash address space matches used address layout
+# +-------------+ <-- 0
+# | unspecified |
+# +-------------+ <-- BIOS_BASE
+# | bootblock   |
+# +-------------+ <-- BIOS_BASE + 128K
+# | FMAP        |
+# +-------------+ <-- BIOS_BASE + 128K + FMAP_SIZE
+# | CBFS        |
+# +-------------+ <-- ROM_SIZE
+
+FLASH@0 CONFIG_ROM_SIZE {
+	BIOS@0 CONFIG_ROM_SIZE {
+		BOOTBLOCK 128K
+		FMAP 0x200
+		COREBOOT(CBFS)
+	}
+}

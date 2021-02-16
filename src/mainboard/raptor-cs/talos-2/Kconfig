@@ -2,6 +2,14 @@
 
 if BOARD_RAPTOR_CS_TALOS_2
 
+config BOOTBLOCK_IN_SEEPROM
+	bool "Bootblock in SEEPROM"
+	default n
+	help
+	  Enable this option if coreboot shall build image with separate
+	  bootblock (i.e. not in coreboot.rom) to be put into SEEPROM
+	  directly.
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_POWER9
@@ -14,6 +22,11 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MEMLAYOUT_LD_FILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board-bootblock-in-seeprom.fmd"	if BOOTBLOCK_IN_SEEPROM
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"			if !BOOTBLOCK_IN_SEEPROM
 
 config MAINBOARD_DIR
 	default "raptor-cs/talos-2"

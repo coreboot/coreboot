@@ -1,6 +1,15 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ppc64_flags = -I$(src)/arch/ppc64/ -mbig-endian -mcpu=power8 -mtune=power8
+ifeq ($(CONFIG_COMPILER_GCC),y)
+# disable use of %r11 for static chains on invoking nested functions through
+# pointers
+ppc64_flags += -mno-pointers-to-nested-functions
+else ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+# use GNU assember at least until LLVM's integrated PPC64 assember will be able
+# to handle "slbia" instruction with an argument
+ppc64_flags += -fno-integrated-as
+endif
 
 ppc64_asm_flags =
 

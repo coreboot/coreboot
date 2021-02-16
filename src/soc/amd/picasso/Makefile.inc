@@ -45,7 +45,6 @@ ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += uart.c
-ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
 ramstage-y += graphics.c

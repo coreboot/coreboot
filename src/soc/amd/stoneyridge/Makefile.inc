@@ -60,7 +60,6 @@ ramstage-y += memmap.c
 ramstage-y += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
-ramstage-y += finalize.c
 ramstage-y += psp.c
 
 all-y += reset.c

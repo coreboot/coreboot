@@ -439,6 +439,9 @@ struct soc_intel_cannonlake_config {
 	struct i915_gpu_panel_config panel_cfg;
 
 	struct i915_gpu_controller_info gfx;
+
+	/* Disable CPU Turbo in IA32_MISC_ENABLE */
+	bool cpu_turbo_disable;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

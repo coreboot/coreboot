@@ -91,6 +91,8 @@ static void configure_c_states(void)
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
+	config_t *cfg = config_of_soc();
+
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
@@ -117,8 +119,10 @@ void soc_core_init(struct device *cpu)
 	/* Set energy policy */
 	set_energy_perf_bias(ENERGY_POLICY_NORMAL);
 
-	/* Enable Turbo */
-	enable_turbo();
+	if (cfg->cpu_turbo_disable)
+		disable_turbo();
+	else
+		enable_turbo();
 
 	/* Enable Vmx */
 	set_vmx_and_lock();

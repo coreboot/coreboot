@@ -144,18 +144,6 @@ Method (D3CX, 0, Serialized)
 		Local1 = L23R
 	}
 	STAT = 0x1
-
-	/* Wait for LA = 1 */
-	Local0 = 0
-	Local1 = LASX
-	While (Local1 == 0) {
-		If (Local0 > 20) {
-			Break
-		}
-		Sleep(5)
-		Local0++
-		Local1 = LASX
-	}
 }
 
 /*

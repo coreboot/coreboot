@@ -6,11 +6,12 @@
 #include <device/azalia_device.h>
 #include <device/mmio.h>
 #include <delay.h>
+#include <timer.h>
 
 int azalia_set_bits(void *port, u32 mask, u32 val)
 {
+	struct stopwatch sw;
 	u32 reg32;
-	int count;
 
 	/* Write (val & mask) to port */
 	val &= mask;
@@ -20,16 +21,16 @@ int azalia_set_bits(void *port, u32 mask, u32 val)
 	write32(port, reg32);
 
 	/* Wait for readback of register to match what was just written to it */
-	count = 50;
+	stopwatch_init_msecs_expire(&sw, 50);
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
 		reg32 = read32(port);
 		reg32 &= mask;
-	} while ((reg32 != val) && --count);
+	} while ((reg32 != val) && !stopwatch_expired(&sw));
 
 	/* Timeout occurred */
-	if (!count)
+	if (stopwatch_expired(&sw))
 		return -1;
 	return 0;
 }
@@ -48,8 +49,8 @@ int azalia_exit_reset(u8 *base)
 
 static int codec_detect(u8 *base)
 {
+	struct stopwatch sw;
 	u32 reg32;
-	int count;
 
 	if (azalia_exit_reset(base) < 0)
 		goto no_codec;
@@ -62,14 +63,15 @@ static int codec_detect(u8 *base)
 	/* Wait for readback of register to
 	 * match what was just written to it
 	 */
-	count = 50;
+	stopwatch_init_msecs_expire(&sw, 50);
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
 		reg32 = read32(base + HDA_STATESTS_REG);
-	} while ((reg32 != 0) && --count);
+	} while ((reg32 != 0) && !stopwatch_expired(&sw));
+
 	/* Timeout occurred */
-	if (!count)
+	if (stopwatch_expired(&sw))
 		goto no_codec;
 
 	if (azalia_enter_reset(base) < 0)
@@ -145,10 +147,11 @@ u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, co
 
 static int wait_for_ready(u8 *base)
 {
+	struct stopwatch sw;
 	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
-	int timeout = 50;
+	stopwatch_init_usecs_expire(&sw, 50);
 
-	while (timeout--) {
+	while (!stopwatch_expired(&sw)) {
 		u32 reg32 = read32(base + HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
@@ -165,6 +168,7 @@ static int wait_for_ready(u8 *base)
 
 static int wait_for_valid(u8 *base)
 {
+	struct stopwatch sw;
 	u32 reg32;
 	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
 	int timeout = 25;
@@ -177,8 +181,8 @@ static int wait_for_valid(u8 *base)
 	while (timeout--)
 		udelay(1);
 
-	timeout = 50;
-	while (timeout--) {
+	stopwatch_init_usecs_expire(&sw, 50);
+	while (!stopwatch_expired(&sw)) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)
 			return 0;

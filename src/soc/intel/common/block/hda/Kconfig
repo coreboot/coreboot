@@ -6,5 +6,9 @@ config SOC_INTEL_COMMON_BLOCK_HDA
 config SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	bool
 	depends on SOC_INTEL_COMMON_BLOCK_HDA
+	select AZALIA_LOCK_DOWN_R_WO_GCAP
 	help
 	  Enable initialization of HDA codecs.
+
+config AZALIA_MAX_CODECS
+	default 4 if SOC_INTEL_COMMON_BLOCK_HDA_VERB

@@ -5,6 +5,10 @@ chip soc/intel/alderlake
 
 	register "SaGv" = "SaGv_Disabled"
 
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A MLB Port
+
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
+
 	device domain 0 on
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -204,19 +208,19 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C0 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
 						device ref tcss_usb3_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(3, 2)"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
 						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C2 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(4, 2)"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref tcss_usb3_port3 on end
 					end
 				end
@@ -254,7 +258,13 @@ chip soc/intel/alderlake
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port A0 (MLB)""
+						register "desc" = ""USB2 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (DB)""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device ref usb2_port9 on end
@@ -267,15 +277,21 @@ chip soc/intel/alderlake
 						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Port A0 (MLB)""
+						register "desc" = ""USB3 Type-A Port A0 (DB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on end
+						device ref usb3_port4 on end
 					end
 				end
 			end

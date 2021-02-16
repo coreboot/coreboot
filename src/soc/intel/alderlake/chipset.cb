@@ -60,7 +60,6 @@ chip soc/intel/alderlake
 		device pci 0e.0 alias vmd off end
 		device pci 10.0 alias thc0 off end
 		device pci 10.1 alias thc1 off end
-		device pci 10.2 alias cnvi_bt off end
 		device pci 12.0 alias ish off end
 		device pci 12.6 alias gspi2 off end
 		device pci 13.0 alias gspi3 off end

@@ -47,6 +47,18 @@ void set_uart_config(unsigned int idx)
 	program_gpios(uart_info[idx].mux, 2);
 }
 
+static const char *uart_acpi_name(const struct device *dev)
+{
+	switch (dev->path.mmio.addr) {
+	case APU_UART0_BASE:
+		return "FUR0";
+	case APU_UART1_BASE:
+		return "FUR1";
+	default:
+		return NULL;
+	}
+}
+
 /* Even though this is called enable, it gets called for both enabled and disabled devices. */
 static void uart_enable(struct device *dev)
 {
@@ -77,4 +89,6 @@ struct device_operations cezanne_uart_mmio_ops = {
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_static_bus,
 	.enable = uart_enable,
+	.acpi_name = uart_acpi_name,
+	.acpi_fill_ssdt = uart_inject_ssdt,
 };

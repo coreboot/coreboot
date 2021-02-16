@@ -176,6 +176,11 @@ static void post_mp_init(void)
 		printk(BIOS_CRIT, "CRITICAL ERROR: MP post init failed\n");
 }
 
+static void soc_fsp_load(void)
+{
+	fsps_load();
+}
+
 static const struct mp_ops mp_ops = {
 	/*
 	 * Skip Pre MP init MTRR programming as MTRRs are mirrored from BSP,

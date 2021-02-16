@@ -74,11 +74,6 @@ void soc_init_pre_device(void *chip_info)
 		pcie_rp_update_devicetree(pch_lp_rp_groups);
 }
 
-void soc_fsp_load(void)
-{
-	fsps_load();
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,

@@ -129,6 +129,8 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	mp->prev_sleep_state = prev_sleep_state;
 	mp->rmt_enabled = CONFIG(MRC_RMT);
 
+	int s3resume = prev_sleep_state == ACPI_S3;
+
 	/* Default to 2GiB IO hole. */
 	if (!mp->io_hole_mb)
 		mp->io_hole_mb = 2048;
@@ -141,7 +143,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 						     &mrc_size);
 	if (mp->saved_data) {
 		mp->saved_data_size = mrc_size;
-	} else if (prev_sleep_state == ACPI_S3) {
+	} else if (s3resume) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
 		post_code(POST_RESUME_FAILURE);
@@ -180,11 +182,10 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	ret = mrc_entry(mp);
 
-	if (prev_sleep_state != ACPI_S3) {
-		cbmem_initialize_empty();
-	} else if (cbmem_initialize()) {
-		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
+		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");
 		system_reset();
 	}
 

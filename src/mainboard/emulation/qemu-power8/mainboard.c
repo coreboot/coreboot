@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <cbmem.h>
 
 static void mainboard_enable(struct device *dev)
 {
@@ -13,7 +12,6 @@ static void mainboard_enable(struct device *dev)
 
 	/* Where does RAM live? */
 	ram_resource(dev, 0, 2048, 32768);
-	cbmem_recovery(0);
 }
 
 struct chip_operations mainboard_ops = {

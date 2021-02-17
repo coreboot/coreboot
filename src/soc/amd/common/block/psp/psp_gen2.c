@@ -13,9 +13,9 @@
 
 static uintptr_t soc_get_psp_base_address(void)
 {
-	uintptr_t psp_mmio = rdmsr(MSR_PSP_ADDR).lo;
+	uintptr_t psp_mmio = rdmsr(PSP_ADDR_MSR).lo;
 	if (!psp_mmio)
-		printk(BIOS_ERR, "PSP: MSR_PSP_ADDR uninitialized\n");
+		printk(BIOS_ERR, "PSP: PSP_ADDR_MSR uninitialized\n");
 	return psp_mmio;
 }
 

@@ -34,7 +34,7 @@ uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id)
 void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data)
 {
 	if (instance_id == BROADCAST_FABRIC_ID) {
-		data_fabric_write32(function, reg, BROADCAST_FABRIC_ID, data);
+		data_fabric_broadcast_write32(function, reg, data);
 		return;
 	}
 

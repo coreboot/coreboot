@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+chip soc/amd/cezanne
+	device domain 0 on
+	end # domain
+end	# chip soc/amd/cezanne

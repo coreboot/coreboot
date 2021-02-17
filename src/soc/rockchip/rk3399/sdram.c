@@ -182,34 +182,40 @@ static void set_ds_odt(u32 channel, const struct rk3399_sdram_params *params)
 
 	if (params->dramtype == LPDDR4) {
 		tsel_rd_select_p = PHY_DRV_ODT_Hi_Z;
-		tsel_wr_select_p = PHY_DRV_ODT_40;
-		ca_tsel_wr_select_p = PHY_DRV_ODT_40;
-		tsel_idle_select_p = PHY_DRV_ODT_Hi_Z;
-
 		tsel_rd_select_n = PHY_DRV_ODT_240;
+
+		tsel_wr_select_p = PHY_DRV_ODT_40;
 		tsel_wr_select_n = PHY_DRV_ODT_40;
-		ca_tsel_wr_select_n = PHY_DRV_ODT_40;
+
+		tsel_idle_select_p = PHY_DRV_ODT_Hi_Z;
 		tsel_idle_select_n = PHY_DRV_ODT_240;
+
+		ca_tsel_wr_select_p = PHY_DRV_ODT_40;
+		ca_tsel_wr_select_n = PHY_DRV_ODT_40;
 	} else if (params->dramtype == LPDDR3) {
 		tsel_rd_select_p = PHY_DRV_ODT_240;
-		tsel_wr_select_p = PHY_DRV_ODT_34_3;
-		ca_tsel_wr_select_p = PHY_DRV_ODT_48;
-		tsel_idle_select_p = PHY_DRV_ODT_240;
-
 		tsel_rd_select_n = PHY_DRV_ODT_Hi_Z;
+
+		tsel_wr_select_p = PHY_DRV_ODT_34_3;
 		tsel_wr_select_n = PHY_DRV_ODT_34_3;
-		ca_tsel_wr_select_n = PHY_DRV_ODT_48;
+
+		tsel_idle_select_p = PHY_DRV_ODT_240;
 		tsel_idle_select_n = PHY_DRV_ODT_Hi_Z;
+
+		ca_tsel_wr_select_p = PHY_DRV_ODT_48;
+		ca_tsel_wr_select_n = PHY_DRV_ODT_48;
 	} else {
 		tsel_rd_select_p = PHY_DRV_ODT_240;
-		tsel_wr_select_p = PHY_DRV_ODT_34_3;
-		ca_tsel_wr_select_p = PHY_DRV_ODT_34_3;
-		tsel_idle_select_p = PHY_DRV_ODT_240;
-
 		tsel_rd_select_n = PHY_DRV_ODT_240;
+
+		tsel_wr_select_p = PHY_DRV_ODT_34_3;
 		tsel_wr_select_n = PHY_DRV_ODT_34_3;
-		ca_tsel_wr_select_n = PHY_DRV_ODT_34_3;
+
+		tsel_idle_select_p = PHY_DRV_ODT_240;
 		tsel_idle_select_n = PHY_DRV_ODT_240;
+
+		ca_tsel_wr_select_p = PHY_DRV_ODT_34_3;
+		ca_tsel_wr_select_n = PHY_DRV_ODT_34_3;
 	}
 
 	if (params->odt == 1)

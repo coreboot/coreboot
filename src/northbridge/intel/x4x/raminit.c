@@ -688,11 +688,14 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 
-	cbmem_was_inited = !cbmem_recovery(s.boot_path == BOOT_PATH_RESUME);
+	int s3resume = boot_path == BOOT_PATH_RESUME;
+
+	cbmem_was_inited = !cbmem_recovery(s3resume);
 	if (!fast_boot)
 		mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
 					&s, sizeof(s));
-	if (s.boot_path == BOOT_PATH_RESUME && !cbmem_was_inited) {
+
+	if (s3resume && !cbmem_was_inited) {
 		/* Failed S3 resume, reset to come up cleanly */
 		system_reset();
 	}

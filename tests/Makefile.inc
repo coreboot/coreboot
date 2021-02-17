@@ -32,7 +32,7 @@ TEST_CFLAGS += -I$(src)/include -I$(src)/commonlib/include \
 # -Wmissing-prototypes just make working with the test framework cumbersome.
 # Only put conservative warnings here that really detect code that's obviously
 # unintentional.
-TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes
+TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-inline-asm
 
 # Path for Kconfig autoheader
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))

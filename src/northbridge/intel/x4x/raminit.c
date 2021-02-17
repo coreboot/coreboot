@@ -684,6 +684,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	pci_or_config8(HOST_BRIDGE, 0xf4, 1);
 
+	timestamp_add_now(TS_AFTER_INITRAM);
+
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 
 	cbmem_was_inited = !cbmem_recovery(s.boot_path == BOOT_PATH_RESUME);
@@ -695,6 +697,5 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 		system_reset();
 	}
 
-	timestamp_add_now(TS_AFTER_INITRAM);
 	printk(BIOS_DEBUG, "Memory initialized\n");
 }

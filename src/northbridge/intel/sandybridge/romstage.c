@@ -5,7 +5,6 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>
 #include <romstage_handoff.h>
-#include <timestamp.h>
 #include "sandybridge.h"
 #include <arch/romstage.h>
 #include <device/pci_def.h>
@@ -62,8 +61,6 @@ void mainboard_romstage_entry(void)
 	post_code(0x39);
 
 	perform_raminit(s3resume);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
 
 	post_code(0x3b);
 	/* Perform some initialization that must run before stage2 */

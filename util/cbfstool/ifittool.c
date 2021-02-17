@@ -15,23 +15,24 @@
 /* Global variables */
 partitioned_file_t *image_file;
 
-static const char *optstring  = "H:j:f:r:d:t:n:s:cAaDvh?";
+static const char *optstring  = "H:j:f:r:d:t:n:s:cAaDvhF?";
 static struct option long_options[] = {
-	{"file",           required_argument, 0, 'f' },
-	{"region",         required_argument, 0, 'r' },
-	{"add-cbfs-entry", no_argument,       0, 'a' },
-	{"add-region",     no_argument,       0, 'A' },
-	{"del-entry",      required_argument, 0, 'd' },
-	{"clear-table",    no_argument,       0, 'c' },
-	{"fit-type",       required_argument, 0, 't' },
-	{"cbfs-filename",  required_argument, 0, 'n' },
-	{"max-table-size", required_argument, 0, 's' },
-	{"topswap-size",   required_argument, 0, 'j' },
-	{"dump",           no_argument,       0, 'D' },
-	{"verbose",        no_argument,       0, 'v' },
-	{"help",           no_argument,       0, 'h' },
-	{"header-offset",  required_argument, 0, 'H' },
-	{NULL,             0,                 0,  0  }
+	{"file",            required_argument, 0, 'f' },
+	{"region",          required_argument, 0, 'r' },
+	{"add-cbfs-entry",  no_argument,       0, 'a' },
+	{"add-region",      no_argument,       0, 'A' },
+	{"del-entry",       required_argument, 0, 'd' },
+	{"clear-table",     no_argument,       0, 'c' },
+	{"set-fit-pointer", no_argument,       0, 'F' },
+	{"fit-type",        required_argument, 0, 't' },
+	{"cbfs-filename",   required_argument, 0, 'n' },
+	{"max-table-size",  required_argument, 0, 's' },
+	{"topswap-size",    required_argument, 0, 'j' },
+	{"dump",            no_argument,       0, 'D' },
+	{"verbose",         no_argument,       0, 'v' },
+	{"help",            no_argument,       0, 'h' },
+	{"header-offset",   required_argument, 0, 'H' },
+	{NULL,              0,                 0,  0  }
 };
 
 static void usage(const char *name)
@@ -43,6 +44,7 @@ static void usage(const char *name)
 		"\t\t-a|--add-entry        :   Add a CBFS file as new entry to FIT\n"
 		"\t\t-A|--add-region       :   Add region as new entry to FIT (for microcodes)\n"
 		"\t\t-d|--del-entry number :   Delete existing <number> entry\n"
+		"\t\t-F|--set-fit-pointer  :   Set the FIT pointer to a CBFS file\n"
 		"\t\t-t|--fit-type         :   Type of new entry\n"
 		"\t\t-n|--name             :   The CBFS filename or region to add to table\n"
 		"\tOPTIONAL ARGUMENTS:\n"
@@ -127,7 +129,8 @@ enum fit_operation {
 	NO_OP = 0,
 	ADD_CBFS_OP,
 	ADD_REGI_OP,
-	DEL_OP
+	DEL_OP,
+	SET_FIT_PTR_OP
 };
 
 int main(int argc, char *argv[])
@@ -199,6 +202,14 @@ int main(int argc, char *argv[])
 		case 'f':
 			input_file = optarg;
 			break;
+		case 'F':
+			if (op != NO_OP) {
+				ERROR("specified multiple actions at once\n");
+				usage(argv[0]);
+				return 1;
+			}
+			op = SET_FIT_PTR_OP;
+			break;
 		case 'H':
 			headeroffset = strtoul(optarg, &suffix, 0);
 			if (!*optarg || (suffix && *suffix)) {
@@ -253,6 +264,14 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if (op == SET_FIT_PTR_OP) {
+		if (name == NULL) {
+			ERROR("Adding FIT entry, but no name set\n");
+			usage(argv[0]);
+			return 1;
+		}
+	}
+
 	if (!region_name) {
 		ERROR("Region not given\n");
 		usage(argv[0]);
@@ -281,13 +300,14 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	struct fit_table *fit = fit_get_table(&bootblock,
-					      convert_to_from_top_aligned,
-					      topswap_size);
-	if (!fit) {
-		partitioned_file_close(image_file);
-		ERROR("FIT not found.\n");
-		return 1;
+	struct fit_table *fit = NULL;
+	if (op != SET_FIT_PTR_OP) {
+		fit = fit_get_table(&bootblock, convert_to_from_top_aligned, topswap_size);
+		if (!fit) {
+			partitioned_file_close(image_file);
+			ERROR("FIT not found.\n");
+			return 1;
+		}
 	}
 
 	if (clear_table) {
@@ -350,6 +370,30 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 		}
+		break;
+	}
+	case SET_FIT_PTR_OP:
+	{
+		uint32_t fit_address;
+		struct cbfs_file *cbfs_file = cbfs_get_entry(&image, name);
+		if (!cbfs_file) {
+			partitioned_file_close(image_file);
+			ERROR("%s not found in CBFS.\n", name);
+			return 1;
+		}
+
+		fit_address = offset_to_ptr(convert_to_from_top_aligned, &image.buffer,
+				       cbfs_get_entry_addr(&image, cbfs_file)
+					       + ntohl(cbfs_file->offset));
+
+
+		if (set_fit_pointer(&bootblock, fit_address, convert_to_from_top_aligned,
+				    topswap_size)) {
+			partitioned_file_close(image_file);
+			ERROR("%s is not a FIT table\n", name);
+			return 1;
+		}
+		fit = fit_get_table(&bootblock, convert_to_from_top_aligned, topswap_size);
 		break;
 	}
 	case DEL_OP:

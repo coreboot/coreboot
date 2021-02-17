@@ -57,5 +57,6 @@ int fit_add_microcode_file(struct fit_table *fit,
 			   const char *blob_name,
 			   fit_offset_converter_t offset_helper,
 			   const size_t max_fit_entries);
-
+int set_fit_pointer(struct buffer *bootblock, const uint32_t offset,
+		    fit_offset_converter_t offset_fn, uint32_t topswap_size);
 #endif

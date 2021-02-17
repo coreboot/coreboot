@@ -519,6 +519,40 @@ int fit_add_microcode_file(struct fit_table *fit,
 	return 0;
 }
 
+static uint32_t *get_fit_ptr(struct buffer *bootblock, fit_offset_converter_t offset_fn,
+		      uint32_t topswap_size)
+{
+	return rom_buffer_pointer(bootblock,
+				  ptr_to_offset(offset_fn, bootblock,
+						FIT_POINTER_LOCATION - topswap_size));
+}
+
+/* Set the FIT pointer to a FIT table. */
+int set_fit_pointer(struct buffer *bootblock,
+		    const uint32_t fit_address,
+		    fit_offset_converter_t offset_fn,
+		    uint32_t topswap_size)
+{
+	struct fit_table *fit;
+	uint32_t *fit_pointer = get_fit_ptr(bootblock, offset_fn, topswap_size);
+
+	fit = rom_buffer_pointer(bootblock, ptr_to_offset(offset_fn, bootblock, fit_address));
+
+	if (fit_address < FIT_TABLE_LOWEST_ADDRESS) {
+		ERROR("FIT must be reside in the top 16MiB.\n");
+		return 1;
+	}
+
+	if (!fit_table_verified(fit)) {
+		ERROR("FIT not found at address.\n");
+		return 1;
+	}
+
+	fit_pointer[0] = fit_address;
+	fit_pointer[1] = 0;
+	return 0;
+}
+
 /*
  * Return a pointer to the active FIT.
  */
@@ -527,11 +561,7 @@ struct fit_table *fit_get_table(struct buffer *bootblock,
 				uint32_t topswap_size)
 {
 	struct fit_table *fit;
-	uint32_t *fit_pointer;
-
-	fit_pointer = rom_buffer_pointer(bootblock,
-			ptr_to_offset(offset_fn, bootblock,
-			FIT_POINTER_LOCATION));
+	uint32_t *fit_pointer = get_fit_ptr(bootblock, offset_fn, 0);
 
 	/* Ensure pointer is below 4GiB and within 16MiB of 4GiB */
 	if (fit_pointer[1] != 0 || fit_pointer[0] < FIT_TABLE_LOWEST_ADDRESS) {

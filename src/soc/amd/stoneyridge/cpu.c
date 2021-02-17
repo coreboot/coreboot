@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/smm.h>
+#include <cpu/amd/msr.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
@@ -15,7 +16,6 @@
 #include <soc/smi.h>
 #include <soc/iomap.h>
 #include <console/console.h>
-#include <amdblocks/psp.h>
 
 /*
  * MP and SMM loading initialization.

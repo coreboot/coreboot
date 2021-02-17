@@ -3,8 +3,6 @@
 #ifndef AMD_BLOCK_PSP_H
 #define AMD_BLOCK_PSP_H
 
-#define MSR_PSP_ADDR		0xc00110a2
-
 /* Get the mailbox base address - specific to family of device. */
 void *soc_get_mbox_address(void);
 

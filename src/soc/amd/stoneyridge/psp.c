@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/northbridge.h>

@@ -701,15 +701,95 @@ static int data_training_wl(u32 channel, const struct rk3399_sdram_params *param
 	return 0;
 }
 
+static int data_training_rg(u32 channel, const struct rk3399_sdram_params *params)
+{
+	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
+	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
+	u32 rank = params->ch[channel].rank;
+	u32 obs_0, obs_1, obs_2, obs_3, obs_err;
+	u32 reg_value = 0;
+	u32 i, tmp;
+
+	/*
+	 * The differential signal of DQS needs to keep low level
+	 * before gate training. RPULL will connect 4Kn from PADP
+	 * to VSS and a 4Kn from PADN to VDDQ to ensure it.
+	 * But if it has PHY side ODT connect at this time,
+	 * it will change the DQS signal level. So disable PHY
+	 * side ODT before gate training and restore ODT state
+	 * after gate training.
+	 */
+	if (params->dramtype != LPDDR4) {
+		reg_value = (read32(&denali_phy[6]) >> 24) & 0x7;
+
+		/*
+		 * phy_dqs_tsel_enable_X 3bits
+		 * DENALI_PHY_6/134/262/390 offset_24
+		 */
+		clrbits32(&denali_phy[6], 0x7 << 24);
+		clrbits32(&denali_phy[134], 0x7 << 24);
+		clrbits32(&denali_phy[262], 0x7 << 24);
+		clrbits32(&denali_phy[390], 0x7 << 24);
+	}
+	for (i = 0; i < rank; i++) {
+		select_per_cs_training_index(channel, i);
+		/* PI_80 PI_RDLVL_GATE_EN:RW:24:2 */
+		clrsetbits32(&denali_pi[80], 0x3 << 24, 0x2 << 24);
+		/*
+		 * PI_74 PI_RDLVL_GATE_REQ:WR:16:1
+		 * PI_RDLVL_CS:RW:24:2
+		 */
+		clrsetbits32(&denali_pi[74], (0x1 << 16) | (0x3 << 24),
+			     (0x1 << 16) | (i << 24));
+
+		while (1) {
+			/* PI_174 PI_INT_STATUS:RD:8:18 */
+			tmp = read32(&denali_pi[174]) >> 8;
+
+			/*
+			 * check status obs
+			 * PHY_43/171/299/427
+			 *     PHY_GTLVL_STATUS_OBS_x:16:8
+			 */
+			obs_0 = read32(&denali_phy[43]);
+			obs_1 = read32(&denali_phy[171]);
+			obs_2 = read32(&denali_phy[299]);
+			obs_3 = read32(&denali_phy[427]);
+			if (((obs_0 >> (16 + 6)) & 0x3) || ((obs_1 >> (16 + 6)) & 0x3)
+			    || ((obs_2 >> (16 + 6)) & 0x3) || ((obs_3 >> (16 + 6)) & 0x3))
+				obs_err = 1;
+			if ((((tmp >> 9) & 0x1) == 0x1) && (((tmp >> 13) & 0x1) == 0x1)
+			    && (((tmp >> 3) & 0x1) == 0x0) && (obs_err == 0))
+				break;
+			else if ((((tmp >> 3) & 0x1) == 0x1) || (obs_err == 1))
+				return -1;
+		}
+		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+		write32((&denali_pi[175]), 0x00003f7c);
+	}
+	clrbits32(&denali_pi[80], 0x3 << 24);
+
+	if (params->dramtype != LPDDR4) {
+		/*
+		 * phy_dqs_tsel_enable_X 3bits
+		 * DENALI_PHY_6/134/262/390 offset_24
+		 */
+		tmp = reg_value << 24;
+		clrsetbits32(&denali_phy[6], 0x7 << 24, tmp);
+		clrsetbits32(&denali_phy[134], 0x7 << 24, tmp);
+		clrsetbits32(&denali_phy[262], 0x7 << 24, tmp);
+		clrsetbits32(&denali_phy[390], 0x7 << 24, tmp);
+	}
+	return 0;
+}
+
 static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 			 u32 training_flag)
 {
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
 	u32 i, tmp;
-	u32 obs_0, obs_1, obs_2, obs_3, obs_err = 0;
 	u32 rank = params->ch[channel].rank;
-	u32 reg_value = 0;
 	int ret;
 
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */
@@ -750,82 +830,10 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 
 	/* read gate training(LPDDR4,LPDDR3,DDR3 support) */
 	if ((training_flag & PI_READ_GATE_TRAINING) == PI_READ_GATE_TRAINING) {
-
-		/*
-		 * The differential signal of DQS needs to keep low level
-		 * before gate training. RPULL will connect 4Kn from PADP
-		 * to VSS and a 4Kn from PADN to VDDQ to ensure it.
-		 * But if it has PHY side ODT connect at this time,
-		 * it will change the DQS signal level. So disable PHY
-		 * side ODT before gate training and restore ODT state
-		 * after gate training.
-		 */
-		if (params->dramtype != LPDDR4) {
-			reg_value = (read32(&denali_phy[6]) >> 24) & 0x7;
-
-			/*
-			 * phy_dqs_tsel_enable_X 3bits
-			 * DENALI_PHY_6/134/262/390 offset_24
-			 */
-			clrbits32(&denali_phy[6], 0x7 << 24);
-			clrbits32(&denali_phy[134], 0x7 << 24);
-			clrbits32(&denali_phy[262], 0x7 << 24);
-			clrbits32(&denali_phy[390], 0x7 << 24);
-		}
-		for (i = 0; i < rank; i++) {
-			select_per_cs_training_index(channel, i);
-			/* PI_80 PI_RDLVL_GATE_EN:RW:24:2 */
-			clrsetbits32(&denali_pi[80], 0x3 << 24, 0x2 << 24);
-			/*
-			 * PI_74 PI_RDLVL_GATE_REQ:WR:16:1
-			 * PI_RDLVL_CS:RW:24:2
-			 */
-			clrsetbits32(&denali_pi[74],
-				     (0x1 << 16) | (0x3 << 24),
-				     (0x1 << 16) | (i << 24));
-
-			while (1) {
-				/* PI_174 PI_INT_STATUS:RD:8:18 */
-				tmp = read32(&denali_pi[174]) >> 8;
-
-				/*
-				 * check status obs
-				 * PHY_43/171/299/427
-				 *     PHY_GTLVL_STATUS_OBS_x:16:8
-				 */
-				obs_0 = read32(&denali_phy[43]);
-				obs_1 = read32(&denali_phy[171]);
-				obs_2 = read32(&denali_phy[299]);
-				obs_3 = read32(&denali_phy[427]);
-				if (((obs_0 >> (16 + 6)) & 0x3) ||
-				    ((obs_1 >> (16 + 6)) & 0x3) ||
-				    ((obs_2 >> (16 + 6)) & 0x3) ||
-				    ((obs_3 >> (16 + 6)) & 0x3))
-					obs_err = 1;
-				if ((((tmp >> 9) & 0x1) == 0x1) &&
-				    (((tmp >> 13) & 0x1) == 0x1) &&
-				    (((tmp >> 3) & 0x1) == 0x0) &&
-				    (obs_err == 0))
-					break;
-				else if ((((tmp >> 3) & 0x1) == 0x1) ||
-					 (obs_err == 1))
-					return -1;
-			}
-			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-			write32((&denali_pi[175]), 0x00003f7c);
-		}
-		clrbits32(&denali_pi[80], 0x3 << 24);
-
-		if (params->dramtype != LPDDR4) {
-			/*
-			 * phy_dqs_tsel_enable_X 3bits
-			 * DENALI_PHY_6/134/262/390 offset_24
-			 */
-			tmp = reg_value << 24;
-			clrsetbits32(&denali_phy[6], 0x7 << 24, tmp);
-			clrsetbits32(&denali_phy[134], 0x7 << 24, tmp);
-			clrsetbits32(&denali_phy[262], 0x7 << 24, tmp);
-			clrsetbits32(&denali_phy[390], 0x7 << 24, tmp);
+		ret = data_training_rg(channel, params);
+		if (ret) {
+			printk(BIOS_ERR, "RG training failed\n");
+			return ret;
 		}
 	}
 

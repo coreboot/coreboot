@@ -654,6 +654,53 @@ static int data_training_ca(u32 channel, const struct rk3399_sdram_params *param
 	return 0;
 }
 
+static int data_training_wl(u32 channel, const struct rk3399_sdram_params *params)
+{
+	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
+	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
+	u32 obs_0, obs_1, obs_2, obs_3, obs_err = 0;
+	u32 rank = params->ch[channel].rank;
+	u32 i, tmp;
+
+	for (i = 0; i < rank; i++) {
+		select_per_cs_training_index(channel, i);
+		/* PI_60 PI_WRLVL_EN:RW:8:2 */
+		clrsetbits32(&denali_pi[60], 0x3 << 8, 0x2 << 8);
+		/* PI_59 PI_WRLVL_REQ:WR:8:1,PI_WRLVL_CS:RW:16:2 */
+		clrsetbits32(&denali_pi[59], (0x1 << 8) | (0x3 << 16), (0x1 << 8) | (i << 16));
+
+		while (1) {
+			/* PI_174 PI_INT_STATUS:RD:8:18 */
+			tmp = read32(&denali_pi[174]) >> 8;
+
+			/*
+			 * check status obs, if error maybe can not
+			 * get leveling done PHY_40/168/296/424
+			 * phy_wrlvl_status_obs_X:0:13
+			 */
+			obs_0 = read32(&denali_phy[40]);
+			obs_1 = read32(&denali_phy[168]);
+			obs_2 = read32(&denali_phy[296]);
+			obs_3 = read32(&denali_phy[424]);
+			if (((obs_0 >> 12) & 0x1) || ((obs_1 >> 12) & 0x1)
+			    || ((obs_2 >> 12) & 0x1) || ((obs_3 >> 12) & 0x1))
+				obs_err = 1;
+			if ((((tmp >> 10) & 0x1) == 0x1) && (((tmp >> 13) & 0x1) == 0x1)
+			    && (((tmp >> 4) & 0x1) == 0x0) && (obs_err == 0))
+				break;
+			else if ((((tmp >> 4) & 0x1) == 0x1) || (obs_err == 1))
+				return -1;
+		}
+		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+		write32((&denali_pi[175]), 0x00003f7c);
+	}
+
+	override_write_leveling_value(channel);
+	clrbits32(&denali_pi[60], 0x3 << 8);
+
+	return 0;
+}
+
 static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 			 u32 training_flag)
 {
@@ -694,48 +741,11 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 
 	/* write leveling(LPDDR4,LPDDR3,DDR3 support) */
 	if ((training_flag & PI_WRITE_LEVELING) == PI_WRITE_LEVELING) {
-		for (i = 0; i < rank; i++) {
-			select_per_cs_training_index(channel, i);
-			/* PI_60 PI_WRLVL_EN:RW:8:2 */
-			clrsetbits32(&denali_pi[60], 0x3 << 8, 0x2 << 8);
-			/* PI_59 PI_WRLVL_REQ:WR:8:1,PI_WRLVL_CS:RW:16:2 */
-			clrsetbits32(&denali_pi[59],
-				     (0x1 << 8) | (0x3 << 16),
-				     (0x1 << 8) | (i << 16));
-
-			while (1) {
-				/* PI_174 PI_INT_STATUS:RD:8:18 */
-				tmp = read32(&denali_pi[174]) >> 8;
-
-				/*
-				 * check status obs, if error maybe can not
-				 * get leveling done PHY_40/168/296/424
-				 * phy_wrlvl_status_obs_X:0:13
-				 */
-				obs_0 = read32(&denali_phy[40]);
-				obs_1 = read32(&denali_phy[168]);
-				obs_2 = read32(&denali_phy[296]);
-				obs_3 = read32(&denali_phy[424]);
-				if (((obs_0 >> 12) & 0x1) ||
-				    ((obs_1 >> 12) & 0x1) ||
-				    ((obs_2 >> 12) & 0x1) ||
-				    ((obs_3 >> 12) & 0x1))
-					obs_err = 1;
-				if ((((tmp >> 10) & 0x1) == 0x1) &&
-				    (((tmp >> 13) & 0x1) == 0x1) &&
-				    (((tmp >> 4) & 0x1) == 0x0) &&
-				    (obs_err == 0))
-					break;
-				else if ((((tmp >> 4) & 0x1) == 0x1) ||
-					 (obs_err == 1))
-					return -1;
-			}
-			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-			write32((&denali_pi[175]), 0x00003f7c);
+		ret = data_training_wl(channel, params);
+		if (ret) {
+			printk(BIOS_ERR, "WL training failed\n");
+			return ret;
 		}
-
-		override_write_leveling_value(channel);
-		clrbits32(&denali_pi[60], 0x3 << 8);
 	}
 
 	/* read gate training(LPDDR4,LPDDR3,DDR3 support) */

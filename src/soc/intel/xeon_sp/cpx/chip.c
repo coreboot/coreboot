@@ -67,6 +67,49 @@ static void chip_enable_dev(struct device *dev)
 	}
 }
 
+static void iio_write_mask(u16 bus, u16 dev, u8 func)
+{
+	pci_devfn_t device = PCI_DEV(bus, dev, func);
+	u32 val = pci_s_read_config32(device, IIO_XPUNCCERRMSK_REG);
+	val |= (SENT_PCIE_UNSUPP_MASK | RCVD_PCIE_CA_STS_MASK | RCVD_PCIE_UR_STS_MASK);
+	pci_s_write_config32(device, IIO_XPUNCCERRMSK_REG, val);
+
+	val = pci_s_read_config32(device, RP_UNCERRMSK);
+	val |= (SURPRISE_DWN_ERR_MSK | UNSUPPORTED_REQ_ERR_MSK);
+	pci_s_write_config32(device, RP_UNCERRMSK, val);
+}
+
+static void iio_dmi_en_masks(void)
+{
+	pci_devfn_t device;
+	u32 val;
+	device = PCI_DEV(DMI_BUS_INDEX, DMI_DEV, DMI_FUNC);
+	val = pci_s_read_config32(device, IIO_XPUNCCERRMSK_REG);
+	val |= (SENT_PCIE_UNSUPP_MASK | RCVD_PCIE_CA_STS_MASK | RCVD_PCIE_UR_STS_MASK);
+	pci_s_write_config32(device, IIO_XPUNCCERRMSK_REG, val);
+
+	val = pci_s_read_config32(device, DMI_UNCERRMSK);
+	val |= (ECRC_ERR | MLFRMD_TLP | RCV_BUF_OVRFLOW | FLOW_CNTR | POISON_TLP | DLL_PRT_ERR);
+	pci_s_write_config32(device, DMI_UNCERRMSK, val);
+}
+
+static void iio_enable_masks(void)
+{
+	struct iiostack_resource iio = {0};
+	get_iiostack_info(&iio);
+	int i, k;
+	for (i = 0; i < iio.no_of_stacks; i++) {
+		const STACK_RES *st = &iio.res[i];
+		if (st->BusBase > 0 && st->BusBase != 0xff) {
+			for (k = 0; k < DEVICES_PER_IIO_STACK; k++) {
+				printk(BIOS_DEBUG, "%s: bus:%x dev:%x func:%x\n", __func__,
+					st->BusBase, k, 0);
+				iio_write_mask(st->BusBase, k, 0);
+			}
+		}
+	}
+	iio_dmi_en_masks();
+}
 static void chip_final(void *data)
 {
 	/* Lock SBI */
@@ -84,7 +127,7 @@ static void chip_final(void *data)
 	pci_io_write_config8(PCI_DEV(0, 0, 0), 0x88, reg8 | (1 << 4));
 
 	p2sb_hide();
-
+	iio_enable_masks();
 	set_bios_init_completion();
 }
 

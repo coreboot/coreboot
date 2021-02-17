@@ -92,6 +92,16 @@
 #define APIC_DEV_NUM            0x05
 #define APIC_FUNC_NUM           0x04
 
+/* Root port Registers */
+#define RP_UNCERRMSK			0x150
+#define  SURPRISE_DWN_ERR_MSK		(1 << 5)
+#define  UNSUPPORTED_REQ_ERR_MSK	(1 << 20)
+#define IIO_XPUNCCERRMSK_REG		0x20c
+#define  SENT_PCIE_UNSUPP_MASK		(1 << 4)
+#define  RCVD_PCIE_CA_STS_MASK		(1 << 5)
+#define  RCVD_PCIE_UR_STS_MASK		(1 << 6)
+
+#define DEVICES_PER_IIO_STACK		4
 
 /* PCH Device info */
 
@@ -138,6 +148,19 @@
 #define DMI3_DEVID		0x2020
 #define DMIRCBAR		0x50
 #define ERRINJCON		0x1d8
+#define DMI_BUS_INDEX		0
+#define DMI_DEV			0
+#define DMI_FUNC		0
+#define DMI_ERRCAP_REG		0x160
+#define DMI_RPERR_CMD_REG	0x174
+#define DMI_UNCERRMSK		0x150
+#define  ECRC_ERR		(1 << 19)
+#define  MLFRMD_TLP		(1 << 18)
+#define  RCV_BUF_OVRFLOW	(1 << 17)
+#define  FLOW_CNTR		(1 << 13)
+#define  POISON_TLP		(1 << 12)
+#define  DLL_PRT_ERR		(1 << 4)
+
 
 // IIO DFX Global D7F7 registers
 #define IIO_DFX_TSWCTL0		0x30c

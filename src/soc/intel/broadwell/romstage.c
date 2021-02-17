@@ -41,7 +41,9 @@ void mainboard_romstage_entry(void)
 	/* Get power state */
 	struct chipset_power_state *const power_state = fill_power_state();
 
-	elog_boot_notify(power_state->prev_sleep_state == ACPI_S3);
+	int s3resume = power_state->prev_sleep_state == ACPI_S3;
+
+	elog_boot_notify(s3resume);
 
 	/* Print useful platform information */
 	report_platform_info();
@@ -73,11 +75,10 @@ void mainboard_romstage_entry(void)
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
-	if (pei_data.boot_mode != ACPI_S3) {
-		cbmem_initialize_empty();
-	} else if (cbmem_initialize()) {
-		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
+		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");
 		system_reset();
 	}
 
@@ -85,7 +86,7 @@ void mainboard_romstage_entry(void)
 
 	setup_sdram_meminfo(&pei_data);
 
-	romstage_handoff_init(power_state->prev_sleep_state == ACPI_S3);
+	romstage_handoff_init(s3resume);
 
-	mainboard_post_raminit(power_state->prev_sleep_state == ACPI_S3);
+	mainboard_post_raminit(s3resume);
 }

@@ -47,7 +47,7 @@ void mainboard_romstage_entry(void)
 
 	const struct northbridge_intel_haswell_config *cfg = config_of_soc();
 
-	int wake_from_s3;
+	int s3resume;
 
 	struct pei_data pei_data = {
 		.pei_version		= PEI_VERSION,
@@ -76,7 +76,7 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	wake_from_s3 = early_pch_init();
+	s3resume = early_pch_init();
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
@@ -84,23 +84,23 @@ void mainboard_romstage_entry(void)
 	haswell_early_initialization();
 	printk(BIOS_DEBUG, "Back from haswell_early_initialization()\n");
 
-	if (wake_from_s3) {
+	if (s3resume) {
 #if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 #else
 		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		wake_from_s3 = 0;
+		s3resume = 0;
 #endif
 	}
 
 	/* Prepare USB controller early in S3 resume */
-	if (wake_from_s3)
+	if (s3resume)
 		enable_usb_bar();
 
 	post_code(0x3a);
 
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
-	pei_data.boot_mode = wake_from_s3 ? 2 : 0;
+	pei_data.boot_mode = s3resume ? 2 : 0;
 
 	/* Obtain the SPD addresses from mainboard code */
 	mb_get_spd_map(pei_data.spd_addresses);
@@ -138,22 +138,23 @@ void mainboard_romstage_entry(void)
 
 	intel_early_me_status();
 
-	if (!wake_from_s3) {
-		cbmem_initialize_empty();
-		/* Save data returned from MRC on non-S3 resumes. */
-		save_mrc_data(&pei_data);
-	} else if (cbmem_initialize()) {
-	#if CONFIG(HAVE_ACPI_RESUME)
+	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
+		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");
 		system_reset();
-	#endif
 	}
+
+	/* Save data returned from MRC on non-S3 resumes. */
+	if (!s3resume)
+		save_mrc_data(&pei_data);
+
 
 	haswell_unhide_peg();
 
 	setup_sdram_meminfo(&pei_data);
 
-	romstage_handoff_init(wake_from_s3);
+	romstage_handoff_init(s3resume);
 
 	mb_late_romstage_setup();
 

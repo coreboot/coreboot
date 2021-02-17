@@ -610,6 +610,50 @@ static void override_write_leveling_value(u32 channel)
 	clrsetbits32(&denali_ctl[200], 0x1 << 8, 0x1 << 8);
 }
 
+static int data_training_ca(u32 channel, const struct rk3399_sdram_params *params)
+{
+	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
+	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
+	u32 i, tmp;
+	u32 obs_0, obs_1, obs_2, obs_err = 0;
+	u32 rank = params->ch[channel].rank;
+
+	for (i = 0; i < rank; i++) {
+		select_per_cs_training_index(channel, i);
+		/* PI_100 PI_CALVL_EN:RW:8:2 */
+		clrsetbits32(&denali_pi[100], 0x3 << 8, 0x2 << 8);
+		/* PI_92 PI_CALVL_REQ:WR:16:1,PI_CALVL_CS:RW:24:2 */
+		clrsetbits32(&denali_pi[92], (0x1 << 16) | (0x3 << 24),
+			     (0x1 << 16) | (i << 24));
+
+		while (1) {
+			/* PI_174 PI_INT_STATUS:RD:8:18 */
+			tmp = read32(&denali_pi[174]) >> 8;
+
+			/*
+			 * check status obs
+			 * PHY_532/660/789 phy_adr_calvl_obs1_:0:32
+			 */
+			obs_0 = read32(&denali_phy[532]);
+			obs_1 = read32(&denali_phy[660]);
+			obs_2 = read32(&denali_phy[788]);
+			if (((obs_0 >> 30) & 0x3) || ((obs_1 >> 30) & 0x3)
+			    || ((obs_2 >> 30) & 0x3))
+				obs_err = 1;
+			if ((((tmp >> 11) & 0x1) == 0x1) && (((tmp >> 13) & 0x1) == 0x1)
+			    && (((tmp >> 5) & 0x1) == 0x0) && (obs_err == 0))
+				break;
+			else if ((((tmp >> 5) & 0x1) == 0x1) || (obs_err == 1))
+				return -1;
+		}
+		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+		write32((&denali_pi[175]), 0x00003f7c);
+	}
+	clrbits32(&denali_pi[100], 0x3 << 8);
+
+	return 0;
+}
+
 static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 			 u32 training_flag)
 {
@@ -619,6 +663,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	u32 obs_0, obs_1, obs_2, obs_3, obs_err = 0;
 	u32 rank = params->ch[channel].rank;
 	u32 reg_value = 0;
+	int ret;
 
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */
 	setbits32(&denali_phy[927], (1 << 22));
@@ -640,43 +685,11 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 
 	/* ca training(LPDDR4,LPDDR3 support) */
 	if ((training_flag & PI_CA_TRAINING) == PI_CA_TRAINING) {
-		for (i = 0; i < rank; i++) {
-			select_per_cs_training_index(channel, i);
-			/* PI_100 PI_CALVL_EN:RW:8:2 */
-			clrsetbits32(&denali_pi[100], 0x3 << 8, 0x2 << 8);
-			/* PI_92 PI_CALVL_REQ:WR:16:1,PI_CALVL_CS:RW:24:2 */
-			clrsetbits32(&denali_pi[92],
-				     (0x1 << 16) | (0x3 << 24),
-				     (0x1 << 16) | (i << 24));
-
-			while (1) {
-				/* PI_174 PI_INT_STATUS:RD:8:18 */
-				tmp = read32(&denali_pi[174]) >> 8;
-
-				/*
-				 * check status obs
-				 * PHY_532/660/789 phy_adr_calvl_obs1_:0:32
-				 */
-				obs_0 = read32(&denali_phy[532]);
-				obs_1 = read32(&denali_phy[660]);
-				obs_2 = read32(&denali_phy[788]);
-				if (((obs_0 >> 30) & 0x3) ||
-				    ((obs_1 >> 30) & 0x3) ||
-				    ((obs_2 >> 30) & 0x3))
-					obs_err = 1;
-				if ((((tmp >> 11) & 0x1) == 0x1) &&
-				    (((tmp >> 13) & 0x1) == 0x1) &&
-				    (((tmp >> 5) & 0x1) == 0x0) &&
-				    (obs_err == 0))
-					break;
-				else if ((((tmp >> 5) & 0x1) == 0x1) ||
-					 (obs_err == 1))
-					return -1;
-			}
-			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-			write32((&denali_pi[175]), 0x00003f7c);
+		ret = data_training_ca(channel, params);
+		if (ret) {
+			printk(BIOS_ERR, "CA training failed\n");
+			return ret;
 		}
-		clrbits32(&denali_pi[100], 0x3 << 8);
 	}
 
 	/* write leveling(LPDDR4,LPDDR3,DDR3 support) */

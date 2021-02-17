@@ -162,7 +162,7 @@ Contents:
 
 * [Getting Started](getting_started/index.md)
 * [Tutorial](tutorial/index.md)
-* [Coding Style](coding_style.md)
+* [Coding Style](contributing/coding_style.md)
 * [Project Ideas](contributing/project_ideas.md)
 * [Documentation Ideas](contributing/documentation_ideas.md)
 * [Code of Conduct](community/code_of_conduct.md)

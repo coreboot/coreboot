@@ -127,7 +127,6 @@ enum fit_operation {
 	NO_OP = 0,
 	ADD_CBFS_OP,
 	ADD_REGI_OP,
-	ADD_ADDR_OP,
 	DEL_OP
 };
 
@@ -181,15 +180,6 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 			op = ADD_REGI_OP;
-			break;
-		case 'x':
-			if (op != NO_OP) {
-				ERROR("specified multiple actions at once\n");
-				usage(argv[0]);
-				return 1;
-			}
-			op = ADD_ADDR_OP;
-			addr = atoll(optarg);
 			break;
 		case 'c':
 			clear_table = true;
@@ -254,17 +244,6 @@ int main(int argc, char *argv[])
 			return 1;
 		} else if (name == NULL) {
 			ERROR("Adding FIT entry, but no name set\n");
-			usage(argv[0]);
-			return 1;
-		} else if (max_table_size == 0) {
-			ERROR("Maximum table size not given\n");
-			usage(argv[0]);
-			return 1;
-		}
-	}
-	if (op == ADD_ADDR_OP) {
-		if (fit_type == 0) {
-			ERROR("Adding FIT entry, but no type given\n");
 			usage(argv[0]);
 			return 1;
 		} else if (max_table_size == 0) {
@@ -373,15 +352,6 @@ int main(int argc, char *argv[])
 		}
 		break;
 	}
-	case ADD_ADDR_OP:
-	{
-		if (fit_add_entry(fit, addr, 0, fit_type, max_table_size)) {
-			partitioned_file_close(image_file);
-			ERROR("Adding type %u FIT entry\n", fit_type);
-			return 1;
-		}
-	}
-	break;
 	case DEL_OP:
 	{
 		if (fit_delete_entry(fit, table_entry)) {

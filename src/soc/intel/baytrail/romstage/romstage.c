@@ -108,12 +108,14 @@ void mainboard_romstage_entry(void)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-	elog_boot_notify(prev_sleep_state == ACPI_S3);
+	int s3resume = prev_sleep_state == ACPI_S3;
+
+	elog_boot_notify(s3resume);
 
 	/* Initialize RAM */
 	raminit(&mp, prev_sleep_state);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 
-	romstage_handoff_init(prev_sleep_state == ACPI_S3);
+	romstage_handoff_init(s3resume);
 }

@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# DESCR: Verify that files don't contain windows line endings
+
+LC_ALL=C export LC_ALL
+
+EXCLUDE='^3rdparty/\|^payloads/external\|^.git'
+
+# Use git grep if the code is in a git repo, otherwise use grep.
+if [ -n "$(command -v git)" ] && \
+	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
+then
+	GREP_FILES="git grep -IlP"
+else
+	GREP_FILES="grep -rIlP"
+fi
+
+${GREP_FILES} "\r$" | grep -v "$EXCLUDE"

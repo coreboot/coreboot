@@ -820,13 +820,46 @@ static int data_training_rl(u32 channel, const struct rk3399_sdram_params *param
 	return 0;
 }
 
+static int data_training_wdql(u32 channel, const struct rk3399_sdram_params *params)
+{
+	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
+	u32 rank = params->ch[channel].rank;
+	u32 i, tmp;
+
+	for (i = 0; i < rank; i++) {
+		select_per_cs_training_index(channel, i);
+		/*
+		 * disable PI_WDQLVL_VREF_EN before wdq leveling?
+		 * PI_181 PI_WDQLVL_VREF_EN:RW:8:1
+		 */
+		clrbits32(&denali_pi[181], 0x1 << 8);
+		/* PI_124 PI_WDQLVL_EN:RW:16:2 */
+		clrsetbits32(&denali_pi[124], 0x3 << 16, 0x2 << 16);
+		/* PI_121 PI_WDQLVL_REQ:WR:8:1,PI_WDQLVL_CS:RW:16:2 */
+		clrsetbits32(&denali_pi[121], (0x1 << 8) | (0x3 << 16), (0x1 << 8) | (i << 16));
+
+		while (1) {
+			/* PI_174 PI_INT_STATUS:RD:8:18 */
+			tmp = read32(&denali_pi[174]) >> 8;
+			if ((((tmp >> 12) & 0x1) == 0x1) && (((tmp >> 13) & 0x1) == 0x1)
+			    && (((tmp >> 6) & 0x1) == 0x0))
+				break;
+			else if (((tmp >> 6) & 0x1) == 0x1)
+				return -1;
+		}
+		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+		write32((&denali_pi[175]), 0x00003f7c);
+	}
+	clrbits32(&denali_pi[124], 0x3 << 16);
+
+	return 0;
+}
+
+
 static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 			 u32 training_flag)
 {
-	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
-	u32 i, tmp;
-	u32 rank = params->ch[channel].rank;
 	int ret;
 
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */
@@ -885,34 +918,11 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 
 	/* wdq leveling(LPDDR4 support) */
 	if ((training_flag & PI_WDQ_LEVELING) == PI_WDQ_LEVELING) {
-		for (i = 0; i < rank; i++) {
-			select_per_cs_training_index(channel, i);
-			/*
-			 * disable PI_WDQLVL_VREF_EN before wdq leveling?
-			 * PI_181 PI_WDQLVL_VREF_EN:RW:8:1
-			 */
-			clrbits32(&denali_pi[181], 0x1 << 8);
-			/* PI_124 PI_WDQLVL_EN:RW:16:2 */
-			clrsetbits32(&denali_pi[124], 0x3 << 16, 0x2 << 16);
-			/* PI_121 PI_WDQLVL_REQ:WR:8:1,PI_WDQLVL_CS:RW:16:2 */
-			clrsetbits32(&denali_pi[121],
-				     (0x1 << 8) | (0x3 << 16),
-				     (0x1 << 8) | (i << 16));
-
-			while (1) {
-				/* PI_174 PI_INT_STATUS:RD:8:18 */
-				tmp = read32(&denali_pi[174]) >> 8;
-				if ((((tmp >> 12) & 0x1) == 0x1) &&
-				    (((tmp >> 13) & 0x1) == 0x1) &&
-				    (((tmp >> 6) & 0x1) == 0x0))
-					break;
-				else if (((tmp >> 6) & 0x1) == 0x1)
-					return -1;
-			}
-			/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-			write32((&denali_pi[175]), 0x00003f7c);
+		ret = data_training_wdql(channel, params);
+		if (ret) {
+			printk(BIOS_ERR, "WDQL training failed\n");
+			return ret;
 		}
-		clrbits32(&denali_pi[124], 0x3 << 16);
 	}
 
 	/* PHY_927 PHY_PAD_DQS_DRIVE  RPULL offset_22 */

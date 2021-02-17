@@ -78,6 +78,11 @@ void __weak variant_devtree_update(void)
 {
 }
 
+void __weak variant_ramstage_init(void)
+{
+	/* Default weak implementation */
+}
+
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
 {
 	struct smbios_type11 *t;
@@ -99,6 +104,8 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->init = mainboard_init;
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
+
+	variant_ramstage_init();
 }
 
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)

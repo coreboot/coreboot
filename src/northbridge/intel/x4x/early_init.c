@@ -10,7 +10,6 @@
 #include <option.h>
 #include "x4x.h"
 #include <console/console.h>
-#include <romstage_handoff.h>
 
 void x4x_early_init(void)
 {
@@ -216,14 +215,8 @@ static void init_dmi(void)
 	DMIBAR16(DMILCTL);
 }
 
-static void x4x_prepare_resume(int s3resume)
-{
-	romstage_handoff_init(s3resume);
-}
-
-void x4x_late_init(int s3resume)
+void x4x_late_init(void)
 {
 	init_egress();
 	init_dmi();
-	x4x_prepare_resume(s3resume);
 }

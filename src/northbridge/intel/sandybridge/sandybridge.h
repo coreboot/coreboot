@@ -72,7 +72,7 @@ void intel_sandybridge_finalize_smm(void);
 void systemagent_early_init(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
-void northbridge_romstage_finalize(int s3resume);
+void northbridge_romstage_finalize(void);
 void early_init_dmi(void);
 
 /* mainboard_early_init: Optional callback, run after console init but before raminit. */

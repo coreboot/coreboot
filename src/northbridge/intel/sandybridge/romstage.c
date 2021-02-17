@@ -4,6 +4,7 @@
 #include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>
+#include <romstage_handoff.h>
 #include <timestamp.h>
 #include "sandybridge.h"
 #include <arch/romstage.h>
@@ -75,7 +76,9 @@ void mainboard_romstage_entry(void)
 
 	post_code(0x3d);
 
-	northbridge_romstage_finalize(s3resume);
+	northbridge_romstage_finalize();
 
 	post_code(0x3f);
+
+	romstage_handoff_init(s3resume);
 }

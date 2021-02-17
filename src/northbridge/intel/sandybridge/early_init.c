@@ -6,7 +6,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <option.h>
-#include <romstage_handoff.h>
 #include <types.h>
 
 #include "sandybridge.h"
@@ -194,9 +193,7 @@ void systemagent_early_init(void)
 	start_peg_link_training();
 }
 
-void northbridge_romstage_finalize(int s3resume)
+void northbridge_romstage_finalize(void)
 {
 	MCHBAR16(SSKPD_HI) = 0xCAFE;
-
-	romstage_handoff_init(s3resume);
 }

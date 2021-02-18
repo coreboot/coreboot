@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/ioapic.h>
 #include <arch/ioapic.h>
@@ -8,7 +9,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
-#include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -241,31 +241,9 @@ static void acipgen_dptci(void)
 	acpigen_pop_len(); /* Scope \_SB */
 }
 
-/* Used by \_SB.PCI0._CRS */
 static void root_complex_fill_ssdt(const struct device *device)
 {
-	msr_t msr;
-	const char *scope;
-
-	assert(device);
-
-	scope = acpi_device_scope(device);
-	assert(scope);
-	acpigen_write_scope(scope);
-
-	msr = rdmsr(TOP_MEM);
-	acpigen_write_name_dword("TOM1", msr.lo);
-	msr = rdmsr(TOP_MEM2);
-	/*
-	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
-	 * here.
-	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
-	 * slide 22ff.
-	 * Shift value right by 20 bit to make it fit into 32bit,
-	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
-	 */
-	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
-	acpigen_pop_len();
+	acpi_fill_root_complex_tom(device);
 	acipgen_dptci();
 }
 

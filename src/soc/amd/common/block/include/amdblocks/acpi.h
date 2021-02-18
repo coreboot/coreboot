@@ -54,5 +54,6 @@ unsigned long southbridge_write_acpi_tables(const struct device *device, unsigne
 					    struct acpi_rsdp *rsdp);
 
 unsigned long acpi_fill_madt_irqoverride(unsigned long current);
+void acpi_fill_root_complex_tom(const struct device *device);
 
 #endif /* AMD_BLOCK_ACPI_H */

@@ -1674,7 +1674,7 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	 * Update base_chip_instance member in chip instance of override tree to forward it to
 	 * the chip instance in base tree.
 	 */
-	override_dev->chip_instance->base_chip_instance = base_dev->chip_instance;
+	override_dev->chip_instance->base_chip_instance = get_chip_instance(base_dev);
 
 	/*
 	 * Now that the device properties are all copied over, look at each bus

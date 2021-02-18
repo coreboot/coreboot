@@ -650,6 +650,16 @@ void rkclk_configure_ddr(unsigned int hz)
 		rkclk_set_dpllssc(&dpll_cfg);
 }
 
+#define CRU_SFTRST_DDR_CTRL(ch, n)	((1 << 16 | (n)) << (8 + (ch) * 4))
+#define CRU_SFTRST_DDR_PHY(ch, n)	((1 << 16 | (n)) << (9 + (ch) * 4))
+
+void rkclk_ddr_reset(u32 channel, u32 ctl, u32 phy)
+{
+	write32(&cru_ptr->softrst_con[4],
+		CRU_SFTRST_DDR_CTRL(channel, ctl) |
+		CRU_SFTRST_DDR_PHY(channel, phy));
+}
+
 #define SPI_CLK_REG_VALUE(bus, clk_div) \
 		RK_CLRSETBITS(CLK_SPI_PLL_SEL_MASK << \
 					CLK_SPI ##bus## _PLL_SEL_SHIFT | \

@@ -73,9 +73,9 @@ Method(_CRS, 0) {
 	CreateDWordField(CRES, ^MMIO._BAS, MM1B)
 	CreateDWordField(CRES, ^MMIO._LEN, MM1L)
 
-	/* Declare memory between TOM1 and IOAPIC as available for PCI MMIO. */
+	/* Declare memory between TOM1 and MMCONF as available for PCI MMIO. */
 	MM1B = TOM1
-	Local0 = IO_APIC_ADDR /* This is the first MMIO device after TOM1. */
+	Local0 = CONFIG_MMCONF_BASE_ADDRESS
 	Local0 -= TOM1
 	MM1L = Local0
 

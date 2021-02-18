@@ -864,13 +864,16 @@ static int data_training_rl(u32 channel, const struct rk3399_sdram_params *param
 static int data_training_wdql(u32 channel, const struct rk3399_sdram_params *params)
 {
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
-	u32 rank = params->ch[channel].rank;
+	const u32 rank_mask = get_rank_mask(channel, params);
 	u32 i, tmp;
 
 	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 	write32(&denali_pi[175], 0x00003f7c);
 
-	for (i = 0; i < rank; i++) {
+	for (i = 0; i < MAX_RANKS_PER_CHANNEL; i++) {
+		if (!(rank_mask & (1 << i)))
+			continue;
+
 		select_per_cs_training_index(channel, i);
 		/*
 		 * disable PI_WDQLVL_VREF_EN before wdq leveling?

@@ -23,6 +23,8 @@ static void data_fabric_set_indirect_address(uint8_t func, uint16_t reg, uint8_t
 
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id)
 {
+	/* Broadcast reads might return unexpected results when a register has different
+	   contents in the different instances. */
 	if (instance_id == BROADCAST_FABRIC_ID)
 		return data_fabric_broadcast_read32(function, reg);
 

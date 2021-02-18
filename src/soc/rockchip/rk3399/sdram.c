@@ -89,6 +89,8 @@ static struct rk3399_ddr_cic_regs *const rk3399_ddr_cic = (void *)CIC_BASE_ADDR;
 #define PHY_DRV_ODT_40		(0xe)
 #define PHY_DRV_ODT_34_3	(0xf)
 
+#define MAX_RANKS_PER_CHANNEL	4
+
 static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 {
 	int i;
@@ -622,18 +624,32 @@ static void override_write_leveling_value(u32 channel)
 	clrsetbits32(&denali_ctl[200], 0x1 << 8, 0x1 << 8);
 }
 
+static u32 get_rank_mask(u32 channel, const struct rk3399_sdram_params *params)
+{
+	const u32 rank = params->ch[channel].rank;
+
+	/* required rank mask is different for LPDDR4 */
+	if (params->dramtype == LPDDR4)
+		return (rank == 1) ? 0x5 : 0xf;
+	else
+		return (rank == 1) ? 0x1 : 0x3;
+}
+
 static int data_training_ca(u32 channel, const struct rk3399_sdram_params *params)
 {
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 *denali_phy = rk3399_ddr_publ[channel]->denali_phy;
-	u32 i, tmp;
 	u32 obs_0, obs_1, obs_2, obs_err = 0;
-	u32 rank = params->ch[channel].rank;
+	const u32 rank_mask = get_rank_mask(channel, params);
+	u32 i, tmp;
 
 	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
 	write32(&denali_pi[175], 0x00003f7c);
 
-	for (i = 0; i < rank; i++) {
+	for (i = 0; i < MAX_RANKS_PER_CHANNEL; i++) {
+		if (!(rank_mask & (1 << i)))
+			continue;
+
 		select_per_cs_training_index(channel, i);
 		/* PI_100 PI_CALVL_EN:RW:8:2 */
 		clrsetbits32(&denali_pi[100], 0x3 << 8, 0x2 << 8);

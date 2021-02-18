@@ -11,7 +11,7 @@
 #include "chip.h"
 #include "lv2.h"
 
-static void lv2_init(struct device *dev)
+static void lv2_enable(struct device *dev)
 {
 	struct drivers_generic_bayhub_lv2_config *config = dev->chip_info;
 	pci_dev_init(dev);
@@ -50,7 +50,7 @@ static struct device_operations lv2_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
-	.init			= lv2_init,
+	.enable			= lv2_enable,
 };
 
 static const unsigned short pci_device_ids[] = {

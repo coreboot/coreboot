@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <ec/acpi/ec.h>
 #include <soc/nvs.h>
 
 #include "thermal.h"
@@ -43,7 +42,4 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
 	gnvs->flvl = 5;
-
-	if (CONFIG(CHROMEOS_NVS) && ec_read(0xcb))
-		gnvs_set_ecfw_rw();
 }

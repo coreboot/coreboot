@@ -68,5 +68,12 @@ static const struct cros_gpio cros_gpios[] = {
 
 void mainboard_chromeos_acpi_generate(void)
 {
+	// TODO: MLR
+	// The firmware read/write status is a "virtual" switch and
+	// will be handled elsewhere.  Until then hard-code to
+	// read/write instead of read-only for developer mode.
+	if (CONFIG(CHROMEOS_NVS))
+		chromeos_set_ecfw_rw();
+
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

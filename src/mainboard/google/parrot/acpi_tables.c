@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <device/device.h>
-#include <ec/compal/ene932/ec.h>
 #include "ec.h"
 
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -20,9 +19,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	/* Disable USB ports in S5 by default */
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
-
-	if (CONFIG(CHROMEOS_NVS) && !parrot_ec_running_ro())
-		gnvs_set_ecfw_rw();
 
 	/* EC handles all active thermal and fan control on Parrot. */
 	gnvs->tcrt = CRITICAL_TEMPERATURE;

@@ -76,7 +76,7 @@ void chromeos_set_ramoops(void *ram_oops, size_t size)
 	chromeos_acpi->ramoops_len = size;
 }
 
-void gnvs_set_ecfw_rw(void)
+void chromeos_set_ecfw_rw(void)
 {
 	if (!chromeos_acpi)
 		return;

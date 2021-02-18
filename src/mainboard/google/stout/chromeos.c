@@ -81,5 +81,8 @@ static const struct cros_gpio cros_gpios[] = {
 
 void mainboard_chromeos_acpi_generate(void)
 {
+	if (CONFIG(CHROMEOS_NVS) && !get_recovery_mode_switch())
+		chromeos_set_ecfw_rw();
+
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

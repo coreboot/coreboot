@@ -43,7 +43,6 @@
 #ifndef __ACPI__
 extern void parrot_ec_init(void);
 u8 parrot_rev(void);
-int parrot_ec_running_ro(void);
 #endif
 
 #endif // PARROT_EC_H

@@ -51,7 +51,7 @@ int get_recovery_mode_switch(void)
 	return gpio;
 }
 
-int parrot_ec_running_ro(void)
+static int parrot_ec_running_ro(void)
 {
 	return !get_gpio(68);
 }
@@ -63,5 +63,8 @@ static const struct cros_gpio cros_gpios[] = {
 
 void mainboard_chromeos_acpi_generate(void)
 {
+	if (CONFIG(CHROMEOS_NVS) && !parrot_ec_running_ro())
+		chromeos_set_ecfw_rw();
+
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

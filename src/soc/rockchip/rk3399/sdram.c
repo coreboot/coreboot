@@ -618,6 +618,9 @@ static int data_training_ca(u32 channel, const struct rk3399_sdram_params *param
 	u32 obs_0, obs_1, obs_2, obs_err = 0;
 	u32 rank = params->ch[channel].rank;
 
+	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+	write32(&denali_pi[175], 0x00003f7c);
+
 	for (i = 0; i < rank; i++) {
 		select_per_cs_training_index(channel, i);
 		/* PI_100 PI_CALVL_EN:RW:8:2 */
@@ -647,7 +650,7 @@ static int data_training_ca(u32 channel, const struct rk3399_sdram_params *param
 				return -1;
 		}
 		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-		write32((&denali_pi[175]), 0x00003f7c);
+		write32(&denali_pi[175], 0x00003f7c);
 	}
 	clrbits32(&denali_pi[100], 0x3 << 8);
 
@@ -661,6 +664,9 @@ static int data_training_wl(u32 channel, const struct rk3399_sdram_params *param
 	u32 obs_0, obs_1, obs_2, obs_3, obs_err = 0;
 	u32 rank = params->ch[channel].rank;
 	u32 i, tmp;
+
+	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+	write32(&denali_pi[175], 0x00003f7c);
 
 	for (i = 0; i < rank; i++) {
 		select_per_cs_training_index(channel, i);
@@ -692,7 +698,7 @@ static int data_training_wl(u32 channel, const struct rk3399_sdram_params *param
 				return -1;
 		}
 		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-		write32((&denali_pi[175]), 0x00003f7c);
+		write32(&denali_pi[175], 0x00003f7c);
 	}
 
 	override_write_leveling_value(channel);
@@ -731,6 +737,10 @@ static int data_training_rg(u32 channel, const struct rk3399_sdram_params *param
 		clrbits32(&denali_phy[262], 0x7 << 24);
 		clrbits32(&denali_phy[390], 0x7 << 24);
 	}
+
+	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+	write32(&denali_pi[175], 0x00003f7c);
+
 	for (i = 0; i < rank; i++) {
 		select_per_cs_training_index(channel, i);
 		/* PI_80 PI_RDLVL_GATE_EN:RW:24:2 */
@@ -765,7 +775,7 @@ static int data_training_rg(u32 channel, const struct rk3399_sdram_params *param
 				return -1;
 		}
 		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-		write32((&denali_pi[175]), 0x00003f7c);
+		write32(&denali_pi[175], 0x00003f7c);
 	}
 	clrbits32(&denali_pi[80], 0x3 << 24);
 
@@ -790,6 +800,9 @@ static int data_training_rl(u32 channel, const struct rk3399_sdram_params *param
 
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 
+	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+	write32(&denali_pi[175], 0x00003f7c);
+
 	for (i = 0; i < rank; i++) {
 		select_per_cs_training_index(channel, i);
 		/* PI_80 PI_RDLVL_EN:RW:16:2 */
@@ -813,7 +826,7 @@ static int data_training_rl(u32 channel, const struct rk3399_sdram_params *param
 				return -1;
 		}
 		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-		write32((&denali_pi[175]), 0x00003f7c);
+		write32(&denali_pi[175], 0x00003f7c);
 	}
 	clrbits32(&denali_pi[80], 0x3 << 16);
 
@@ -825,6 +838,9 @@ static int data_training_wdql(u32 channel, const struct rk3399_sdram_params *par
 	u32 *denali_pi = rk3399_ddr_pi[channel]->denali_pi;
 	u32 rank = params->ch[channel].rank;
 	u32 i, tmp;
+
+	/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
+	write32(&denali_pi[175], 0x00003f7c);
 
 	for (i = 0; i < rank; i++) {
 		select_per_cs_training_index(channel, i);
@@ -848,7 +864,7 @@ static int data_training_wdql(u32 channel, const struct rk3399_sdram_params *par
 				return -1;
 		}
 		/* clear interrupt,PI_175 PI_INT_ACK:WR:0:17 */
-		write32((&denali_pi[175]), 0x00003f7c);
+		write32(&denali_pi[175], 0x00003f7c);
 	}
 	clrbits32(&denali_pi[124], 0x3 << 16);
 

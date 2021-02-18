@@ -332,12 +332,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	params->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
-	memcpy(&params->SlowSlewRate, &config->SlowSlewRate,
-		ARRAY_SIZE(config->SlowSlewRate) * sizeof(config->SlowSlewRate[0]));
-
-	memcpy(&params->FastPkgCRampDisable, &config->FastPkgCRampDisable,
-		ARRAY_SIZE(config->FastPkgCRampDisable) *
-			sizeof(config->FastPkgCRampDisable[0]));
+	params->FastPkgCRampDisable[0] = config->FastPkgCRampDisable;
+	params->SlowSlewRate[0] = config->SlowSlewRate;
 
 	/* Enable TCPU for processor thermal control */
 	params->Device4Enable = config->Device4Enable;

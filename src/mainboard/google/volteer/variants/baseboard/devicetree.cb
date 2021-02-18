@@ -352,6 +352,11 @@ chip soc/intel/tigerlake
 		.vnn_sx_voltage_mv = 1250,
 	}"
 
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable" = "1"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dptf on

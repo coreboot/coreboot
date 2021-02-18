@@ -100,6 +100,18 @@ static void copy_to_reg(u32 *dest, const u32 *src, u32 n)
 	}
 }
 
+static void phy_pctrl_reset(u32 channel)
+{
+	rkclk_ddr_reset(channel, 1, 1);
+	udelay(10);
+
+	rkclk_ddr_reset(channel, 1, 0);
+	udelay(10);
+
+	rkclk_ddr_reset(channel, 0, 0);
+	udelay(10);
+}
+
 static void phy_dll_bypass_set(u32 channel,
 	struct rk3399_ddr_publ_regs *ddr_publ_regs, u32 freq)
 {
@@ -1083,6 +1095,7 @@ void sdram_init(const struct rk3399_sdram_params *params)
 	rkclk_configure_ddr(ddr_freq);
 
 	for (channel = 0; channel < 2; channel++) {
+		phy_pctrl_reset(channel);
 		phy_dll_bypass_set(channel, rk3399_ddr_publ[channel], ddr_freq);
 
 		if (channel >= params->num_channels)

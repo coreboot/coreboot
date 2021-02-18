@@ -22,6 +22,8 @@ DefinitionBlock(
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
+		#include "mainboard.asl"
+
 		Device (PCI0)
 		{
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>

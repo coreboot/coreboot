@@ -10,3 +10,14 @@ Scope(\_SB) {
 
 	#include "mmio.asl"
 } /* End \_SB scope */
+
+#include <soc/amd/common/acpi/platform.asl>
+
+/*
+ * Platform Wake Notify
+ *
+ * This is called by soc/amd/common/acpi/platform.asl.
+ */
+Method (PNOT)
+{
+}

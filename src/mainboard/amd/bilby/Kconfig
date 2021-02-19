@@ -47,7 +47,7 @@ config SUPERIO_ADDR_BASE
 
 config CBFS_SIZE
 	hex
-	default 0xfcf000 # Maximum size for the Bilby FMAP
+	default 0xfef000 # Maximum size for the Bilby FMAP
 
 config MAINBOARD_DIR
 	string
@@ -65,24 +65,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config AMD_FWM_POSITION_INDEX
-	int
-	default 4
-	help
-	  TODO: might need to be adapted for better placement of files in cbfs
-
-config MANDOLIN_HAVE_MCHP_FW
-	bool "Have Microchip EC firmware?"
-	default n
-
-config MANDOLIN_MCHP_FW_FILE
-	string
-	depends on MANDOLIN_HAVE_MCHP_FW
-	default "3rdparty/blobs/mainboard/amd/mandolin/EC_mandolin.bin" if BOARD_AMD_MANDOLIN
-	default "3rdparty/blobs/mainboard/amd/mandolin/EC_cereme.bin" if BOARD_AMD_BILBY
-	help
-	  The EC firmware blob is usually the first 128kByte of the stock
-	  firmware image.
 if !AMD_LPC_DEBUG_CARD
 choice
 	prompt "State of IOMux for LPC/eMMC signals"

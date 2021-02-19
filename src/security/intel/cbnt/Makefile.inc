@@ -34,9 +34,35 @@ $(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_BG_PROV_CFG_FILE))
 	cp $(CONFIG_INTEL_CBNT_BG_PROV_CFG_FILE) $@
 
 ifeq ($(CONFIG_INTEL_CBNT_GENERATE_BPM),y)
+ifeq ($(CONFIG_INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE),y)
 $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV) $(CBNT_CFG)
 	printf "    BG_PROV    creating unsigned BPM using config file\n"
 	$(BG_PROV) bpm-gen $@ $< --config=$(CBNT_CFG) --cut
+else
+$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV)
+	printf "    BG_PROV    creating unsigned BPM\n"
+	# SHA256, SHA1, SHA384 for digest
+	$(BG_PROV) bpm-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_BPM_REVISION) \
+				 --svn=$(CONFIG_INTEL_CBNT_BPM_SVN) \
+				 --acmsvn=$(CONFIG_INTEL_CBNT_ACM_SVN) \
+				 --nems=$(CONFIG_INTEL_CBNT_NUM_NEM_PAGES) \
+				 --pbet=$(CONFIG_INTEL_CBNT_PBET) \
+				 --ibbflags=$(CONFIG_INTEL_CBNT_IBB_FLAGS) \
+				 --entrypoint=$(shell printf "%d" 0xfffffff0) \
+				 --ibbhash={11,4,12} \
+				 --ibbsegbase=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) 1) \
+				 --ibbsegsize=$(shell printf "%d" $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) \
+				 --ibbsegflag=0 \
+				 --sintmin=$(CONFIG_INTEL_CBNT_SINIT_SVN) \
+				 --txtflags=0 \
+				 --powerdowninterval=$(CONFIG_INTEL_CBNT_PD_INTERVAL) \
+				 --acpibaseoffset=$(shell printf "%d" $(CONFIG_INTEL_ACPI_BASE_ADDRESS)) \
+				 --powermbaseoffset=$(shell printf "%d" $(CONFIG_INTEL_PCH_PWRM_BASE_ADDRESS)) \
+				 --cmosoff0=$(shell printf "%d" $(CONFIG_INTEL_CBNT_CMOS_OFFSET)) \
+				 --cmosoff1=$(call int-add, $(CONFIG_INTEL_CBNT_CMOS_OFFSET) 1) \
+				 --cut \
+				 --out=$(obj)/bpm_cfg.json
+endif
 
 ifeq ($(CONFIG_INTEL_CBNT_BPM_ONLY_UNSIGNED),y)
 build_complete:: $(obj)/bpm_unsigned.bin

@@ -68,9 +68,17 @@ config INTEL_CBNT_BPM_ONLY_UNSIGNED
 	  "$ ifittool -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s 12 -f build/coreboot.rom"
 	  '-s 12' where 12 is CONFIG_CPU_INTEL_NUM_FIT_ENTRIES.
 
+config INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE
+	bool "BPM: use a CBnT json config file"
+	depends on INTEL_CBNT_GENERATE_BPM
+	default y
+	help
+	  Select y to generate BPM from a json config file.
+	  Select n to generate BPM from Kconfig options
+
 config INTEL_CBNT_BG_PROV_CFG_FILE
 	string "CBnT json config file"
-	depends on INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE || INTEL_CBNT_GENERATE_BPM
+	depends on INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE || INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE
 	help
 	  Location of the bg-prov json config file.
 	  Either get a sample JSON config file:
@@ -152,6 +160,67 @@ config INTEL_CBNT_KM_ID
 endmenu
 
 endif # !INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
+
+if !INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE && INTEL_CBNT_GENERATE_BPM
+menu "BPM options"
+
+config INTEL_CBNT_BPM_REVISION
+	int "BPM revision"
+	default 1
+	help
+	  Version of the Key Manifest defined by the Platform Manufacturer.
+	  The actual value is transparent to Boot Guard and is not processed by Boot Guard.
+
+config INTEL_CBNT_BPM_SVN
+	int "BPM Security Version Number"
+	default 0
+	help
+	  This value is determined by the Platform Manufacturer.
+
+config INTEL_CBNT_ACM_SVN
+	int "S-ACM Security Version Number"
+	default 2
+	help
+	  This defines the minimum version the S-ACM must have.
+
+config INTEL_CBNT_NUM_NEM_PAGES
+	int
+	default 32
+	help
+	  Set the amount of 4K pages of CAR required.
+
+config INTEL_CBNT_PBET
+	int "PBET value in s"
+	default 15
+	help
+	  Protect BIOS Environment Timer (PBET) value.
+	  Factor used by CSE to compute PBE timer value.
+	  Actual PBE timer value is set by CSE using formula:
+	  PBE timer value = 5 sec + PBETValue.
+
+config INTEL_CBNT_IBB_FLAGS
+	int "IBB flags"
+	default 7
+	help
+	  IBB Control flags.
+	  3: Don't extend PCR 0
+	  7: extend PCR 7
+
+config INTEL_CBNT_SINIT_SVN
+	int "SINIT ACM security version number"
+	default 0
+	help
+	  Minimum required version for the SINIT ACM.
+
+config INTEL_CBNT_PD_INTERVAL
+	int
+	default 60
+	help
+	  Duration of Power Down in 5 sec increments.
+
+endmenu
+
+endif # !INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE
 
 config INTEL_CBNT_KEY_MANIFEST_BINARY
 	string "KM (Key Manifest) binary location"

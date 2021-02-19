@@ -156,7 +156,7 @@ chip soc/intel/skylake
 	register "SendVrMbxCmd" = "2"
 
 	# Use default SD card detect GPIO configuration
-	register "sdcard_cd_gpio_default" = "GPP_A7"
+	register "sdcard_cd_gpio" = "GPP_A7"
 
 	# Lock Down
 	register "common_soc_config" = "{

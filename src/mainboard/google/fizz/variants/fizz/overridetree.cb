@@ -1,7 +1,7 @@
 chip soc/intel/skylake
 
 	# Use default SD card detect GPIO configuration
-	register "sdcard_cd_gpio_default" = "GPP_A7"
+	register "sdcard_cd_gpio" = "GPP_A7"
 
 	device domain 0 on
 		device pci 14.0 on

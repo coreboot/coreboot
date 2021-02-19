@@ -427,12 +427,9 @@ struct soc_intel_skylake_config {
 	 *
 	 * GpioInt (Edge, ActiveBoth, SharedAndWake, PullNone, 10000,
 	 *          "\\_SB.PCI0.GPIO", 0, ResourceConsumer)
-	 *          { sdcard_cd_gpio_default }
+	 *          { sdcard_cd_gpio }
 	 */
-	unsigned int sdcard_cd_gpio_default;
-
-	/* Use custom SD card detect GPIO configuration */
-	struct acpi_gpio sdcard_cd_gpio;
+	unsigned int sdcard_cd_gpio;
 
 	/* Wake Enable Bitmap for USB2 ports */
 	u16 usb2_wake_enable_bitmap;

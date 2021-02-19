@@ -232,7 +232,7 @@ chip soc/intel/skylake
 	register "tcc_offset" = "10"     # TCC of 90C
 
 	# Use default SD card detect GPIO configuration
-	register "sdcard_cd_gpio_default" = "GPP_E15"
+	register "sdcard_cd_gpio" = "GPP_E15"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

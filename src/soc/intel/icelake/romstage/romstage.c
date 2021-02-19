@@ -111,7 +111,7 @@ void mainboard_romstage_entry(void)
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 	/* Program PCH init */
-	pch_init();
+	romstage_pch_init();
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
 

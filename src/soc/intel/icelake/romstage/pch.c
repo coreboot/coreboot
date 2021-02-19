@@ -4,7 +4,7 @@
 #include <intelblocks/tco.h>
 #include <soc/romstage.h>
 
-void pch_init(void)
+void romstage_pch_init(void)
 {
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	tco_configure();

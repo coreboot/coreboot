@@ -24,5 +24,5 @@ void bootblock_soc_early_init(void)
 void bootblock_soc_init(void)
 {
 	report_platform_info();
-	pch_init();
+	bootblock_pch_init();
 }

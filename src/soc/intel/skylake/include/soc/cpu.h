@@ -5,9 +5,6 @@
 
 #include <device/device.h>
 
-/* CPU types */
-#define SKYLAKE_FAMILY_ULT	0x406e0
-
 /* Latency times in units of 1024ns. */
 #define C_STATE_LATENCY_CONTROL_0_LIMIT	0x4e
 #define C_STATE_LATENCY_CONTROL_1_LIMIT	0x76

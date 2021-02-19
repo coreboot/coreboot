@@ -209,10 +209,8 @@ static inline int deep_s3_enabled(void)
 }
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
-int soc_prev_sleep_state(const struct chipset_power_state *ps,
-	int prev_sleep_state)
+int soc_prev_sleep_state(const struct chipset_power_state *ps, int prev_sleep_state)
 {
-
 	/*
 	 * Check for any power failure to determine if this a wake from
 	 * S5 because the PCH does not set the WAK_STS bit when waking

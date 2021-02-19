@@ -204,8 +204,7 @@ int vbnv_cmos_failed(void)
 }
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
-int soc_prev_sleep_state(const struct chipset_power_state *ps,
-						int prev_sleep_state)
+int soc_prev_sleep_state(const struct chipset_power_state *ps, int prev_sleep_state)
 {
 	/*
 	 * Check for any power failure to determine if this a wake from
@@ -242,8 +241,7 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	ps->tco1_sts = tco_read_reg(TCO1_STS);
 	ps->tco2_sts = tco_read_reg(TCO2_STS);
 
-	printk(BIOS_DEBUG, "TCO_STS:   %04x %04x\n",
-	       ps->tco1_sts, ps->tco2_sts);
+	printk(BIOS_DEBUG, "TCO_STS:   %04x %04x\n", ps->tco1_sts, ps->tco2_sts);
 
 	ps->gen_pmcon_a = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_A);
 	ps->gen_pmcon_b = pci_read_config32(PCH_DEV_PMC, GEN_PMCON_B);

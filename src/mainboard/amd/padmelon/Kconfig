@@ -33,16 +33,13 @@ choice
 
 config PADMELON_MERLIN_FALCON
 	bool "Merlin Falcon"
+	select AMD_APU_MERLINFALCON
 
 config PADMELON_PRAIRIE_FALCON
 	bool "Prairie Falcon"
+	select AMD_APU_PRAIRIEFALCON
 
 endchoice
-
-config PADMELON_SOC_IN_USE
-	def_bool y
-	select AMD_APU_MERLINFALCON if PADMELON_MERLIN_FALCON
-	select AMD_APU_PRAIRIEFALCON if PADMELON_PRAIRIE_FALCON
 
 config MAX_CPUS
 	int

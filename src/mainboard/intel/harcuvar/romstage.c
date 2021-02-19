@@ -7,8 +7,6 @@
 #include <fsp/api.h>
 #include <fsp/soc_binding.h>
 
-#if CONFIG(ENABLE_FSP_MEMORY_DOWN)
-
 /*
  * Define platform specific Memory Down Configure structure.
  *
@@ -63,8 +61,6 @@ const MEMORY_DOWN_CONFIG mMemoryDownConfig = {
 	}
 };
 
-#endif /* CONFIG_ENABLE_FSP_MEMORY_DOWN */
-
 void mainboard_config_gpios(void);
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 
@@ -103,7 +99,9 @@ void mainboard_config_gpios(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-#if CONFIG(ENABLE_FSP_MEMORY_DOWN)
+	if (!CONFIG(ENABLE_FSP_MEMORY_DOWN))
+		return;
+
 	uint8_t *spd_data_ptr = NULL;
 
 	/* Get SPD data pointer */
@@ -125,5 +123,4 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mupd->FspmConfig.PcdMemoryDown = 0;
 		mupd->FspmConfig.PcdMemoryDownConfigPtr = 0;
 	}
-#endif /* CONFIG_ENABLE_FSP_MEMORY_DOWN */
 }

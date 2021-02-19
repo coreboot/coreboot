@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-subdirs-$(CONFIG_ENABLE_FSP_MEMORY_DOWN) += spd
+subdirs-y += spd
 
 romstage-y += boardid.c
 romstage-y += hsio.c

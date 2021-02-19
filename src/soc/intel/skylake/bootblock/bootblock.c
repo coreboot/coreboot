@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <intelblocks/systemagent.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
 #include <soc/bootblock.h>

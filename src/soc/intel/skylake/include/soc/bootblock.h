@@ -3,8 +3,6 @@
 #ifndef _SOC_SKYLAKE_BOOTBLOCK_H_
 #define _SOC_SKYLAKE_BOOTBLOCK_H_
 
-#include <intelblocks/systemagent.h>
-
 /* Bootblock pre console init programming */
 void bootblock_cpu_init(void);
 void bootblock_pch_early_init(void);

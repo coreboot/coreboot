@@ -6,6 +6,8 @@ Scope(\_SB) {
 
 	#include <soc/amd/common/acpi/gpio_bank_lib.asl>
 
+	#include "globalnvs.asl"
+
 	#include "pci_int_defs.asl"
 
 	#include "mmio.asl"

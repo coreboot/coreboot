@@ -1,22 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
-#include <string.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ops.h>
+#include <console/console.h>
+#include <cpu/intel/em64t101_save_state.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <cpu/intel/em64t101_save_state.h>
-#include <cpu/intel/smm_reloc.h>
-#include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ops.h>
 #include <smp/node.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
+#include <string.h>
+#include <types.h>
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,

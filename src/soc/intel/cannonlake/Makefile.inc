@@ -10,7 +10,6 @@ subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/intel/common
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
 bootblock-y += pmutil.c
 bootblock-y += bootblock/report_platform.c

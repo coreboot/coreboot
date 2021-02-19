@@ -15,7 +15,6 @@ all-y += spi.c
 all-y += uart.c
 
 bootblock-y += bootblock/bootblock.c
-bootblock-y += bootblock/cpu.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += espi.c

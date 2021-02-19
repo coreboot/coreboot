@@ -237,9 +237,6 @@ void raminit(struct romstage_params *params)
 		die_with_post_code(POST_INVALID_VENDOR_BINARY,
 				   "ERROR - coreboot's requirements not met by FSP binary!\n");
 
-	/* Display the memory configuration */
-	report_memory_config();
-
 	/* Locate the memory configuration data to speed up the next reboot */
 	mrc_hob = get_next_guid_hob(&mrc_guid, hob_list_ptr);
 	if (mrc_hob == NULL) {

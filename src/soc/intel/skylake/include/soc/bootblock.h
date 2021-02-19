@@ -13,6 +13,5 @@ void bootblock_pch_early_init(void);
 void bootblock_pch_init(void);
 void pch_early_iorange_init(void);
 void report_platform_info(void);
-void report_memory_config(void);
 
 #endif

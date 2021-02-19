@@ -108,6 +108,7 @@
 #define  MC_SMI_STS_BIT		12
 #define  GPIO_UNLOCK_SMI_STS_BIT	11
 #define  GPIO_STS_BIT		10
+#define  GPE0_STS_BIT		9	/* Datasheet says this is reserved */
 #define  PM1_STS_BIT		8
 #define  SWSMI_TMR_STS_BIT	6
 #define  APM_STS_BIT		5

@@ -48,6 +48,7 @@ const char *const *soc_smi_sts_array(size_t *a)
 		[APM_STS_BIT] = "APM",
 		[SWSMI_TMR_STS_BIT] = "SWSMI_TMR",
 		[PM1_STS_BIT] = "PM1",
+		[GPE0_STS_BIT] = "GPE0 (reserved)",
 		[GPIO_STS_BIT] = "GPIO_SMI",
 		[GPIO_UNLOCK_SMI_STS_BIT] = "GPIO_UNLOCK_SSMI",
 		[MC_SMI_STS_BIT] = "MCSMI",
@@ -86,7 +87,11 @@ uint32_t soc_get_smi_status(uint32_t generic_sts)
 			generic_sts |= (1 << PM1_STS_BIT);
 	}
 
-	return generic_sts;
+	/*
+	 * GPE0_STS is reserved in APL/GLK datasheets. For compatibility
+	 * with common code, mask it out so that it is always zero.
+	 */
+	return generic_sts & ~(1 << GPE0_STS_BIT);
 }
 
 const char *const *soc_tco_sts_array(size_t *a)

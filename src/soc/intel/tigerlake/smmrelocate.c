@@ -170,8 +170,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	smm_region(&tseg_base, &tseg_size);
 
 	if (!IS_ALIGNED(tseg_base, tseg_size)) {
-		printk(BIOS_WARNING,
-		     "TSEG base not aligned with TSEG SIZE! Not setting SMRR\n");
+		printk(BIOS_WARNING, "TSEG base not aligned with TSEG size! Not setting SMRR\n");
 		return;
 	}
 

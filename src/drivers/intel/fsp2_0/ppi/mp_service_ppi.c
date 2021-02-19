@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
@@ -10,7 +11,6 @@
 #include <intelblocks/mp_init.h>
 
 #define BSP_CPU_SLOT 0
-#define SINGLE_CHIP_PACKAGE 0
 
 efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processors,
 	efi_uintn_t *number_of_enabled_processors)
@@ -28,7 +28,8 @@ efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processor
 efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
-	unsigned int num_virt_cores, num_phys_cores;
+	int apicid;
+	uint8_t package, core, thread;
 
 	if (cpu_index() < 0)
 		return FSP_DEVICE_ERROR;
@@ -39,7 +40,12 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	if (processor_number >= get_cpu_count())
 		return FSP_NOT_FOUND;
 
-	processor_info_buffer->ProcessorId = lapicid();
+	apicid = cpu_get_apic_id(processor_number);
+
+	if (apicid < 0)
+		return FSP_DEVICE_ERROR;
+
+	processor_info_buffer->ProcessorId = apicid;
 
 	processor_info_buffer->StatusFlag = PROCESSOR_HEALTH_STATUS_BIT
 			| PROCESSOR_ENABLED_BIT;
@@ -48,12 +54,11 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 		processor_info_buffer->StatusFlag |= PROCESSOR_AS_BSP_BIT;
 
 	/* Fill EFI_CPU_PHYSICAL_LOCATION structure information */
-	cpu_read_topology(&num_phys_cores, &num_virt_cores);
+	get_cpu_topology_from_apicid(apicid, &package, &core, &thread);
 
-	/* FSP will add one to the value in this Package field */
-	processor_info_buffer->Location.Package = SINGLE_CHIP_PACKAGE;
-	processor_info_buffer->Location.Core = num_phys_cores;
-	processor_info_buffer->Location.Thread = num_virt_cores;
+	processor_info_buffer->Location.Package = package;
+	processor_info_buffer->Location.Core = core;
+	processor_info_buffer->Location.Thread = thread;
 
 	return FSP_SUCCESS;
 }

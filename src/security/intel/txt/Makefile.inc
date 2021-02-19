@@ -28,7 +28,7 @@ endif
 
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 
-$(call add_intermediate, add_acm_fit, $(IFITTOOL))
+$(call add_intermediate, add_acm_fit, $(IFITTOOL) set_fit_ptr)
 	$(IFITTOOL) -r COREBOOT -a -n $(CONFIG_INTEL_TXT_CBFS_BIOS_ACM) -t 2 \
 		-s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $<
 
@@ -41,7 +41,7 @@ ibb-files := $(foreach file,$(cbfs-files), \
 
 ibb-files += bootblock
 
-$(call add_intermediate, add_ibb_fit, $(IFITTOOL))
+$(call add_intermediate, add_ibb_fit, $(IFITTOOL) set_fit_ptr)
 	$(foreach file, $(ibb-files), $(shell $(IFITTOOL) -f $< -a -n $(file) -t 7 \
 		-s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT)) true
 

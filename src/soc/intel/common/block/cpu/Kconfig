@@ -18,6 +18,10 @@ config SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
 	  ensured that all MTRRs are re-programmed based on the DRAM
 	  resource settings.
 
+config SOC_INTEL_COMMON_BLOCK_CPU_SMMRELOCATE
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_CPU
+
 config SOC_INTEL_COMMON_BLOCK_CAR
 	bool
 	default n

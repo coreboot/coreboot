@@ -39,7 +39,6 @@ ramstage-y += lockdown.c
 ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
-ramstage-y += smmrelocate.c
 ramstage-y += systemagent.c
 ramstage-y += sd.c
 ramstage-y += me.c

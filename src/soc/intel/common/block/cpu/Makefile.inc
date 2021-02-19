@@ -16,3 +16,4 @@ romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT) += mp_init.c
 ramstage-$(CONFIG_CPU_SUPPORTS_PM_TIMER_EMULATION) += pm_timer_emulation.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_SMMRELOCATE) += smmrelocate.c

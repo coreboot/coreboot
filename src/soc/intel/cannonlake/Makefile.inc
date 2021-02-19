@@ -46,7 +46,6 @@ ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
 ramstage-y += reset.c
-ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
 ramstage-y += uart.c

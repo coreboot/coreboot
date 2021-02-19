@@ -1422,8 +1422,10 @@ void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val)
 	acpigen_write_integer(val);
 }
 
+/* Closes previously opened if statement and generates ACPI code for else statement. */
 void acpigen_write_else(void)
 {
+	acpigen_pop_len();
 	acpigen_emit_byte(ELSE_OP);
 	acpigen_write_len_f();
 }

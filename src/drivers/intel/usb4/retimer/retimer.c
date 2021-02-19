@@ -77,7 +77,6 @@ static void usb4_retimer_cb_set_power_state(void *arg)
 	 */
 	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 	acpigen_disable_tx_gpio(power_gpio);
-	acpigen_pop_len(); /* If */
 
 	/*
 	 * Else {

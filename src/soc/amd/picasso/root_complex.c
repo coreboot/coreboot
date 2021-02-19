@@ -228,8 +228,6 @@ static void acipgen_dptci(void)
 	dptc_call_alib("TABB", (uint8_t *)(void *)&tablet_mode_input,
 			sizeof(tablet_mode_input));
 
-	acpigen_pop_len(); /* If */
-
 	/* Else */
 	acpigen_write_else();
 

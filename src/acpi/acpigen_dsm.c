@@ -22,7 +22,6 @@ static void i2c_hid_func0_cb(void *arg)
 	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0x1);
 	/*   Return (Buffer (One) { 0x3 }) */
 	acpigen_write_return_singleton_buffer(0x3);
-	acpigen_pop_len();	/* Pop : If */
 	/* Else */
 	acpigen_write_else();
 	/*     Return (Buffer (One) { 0x0 }) */

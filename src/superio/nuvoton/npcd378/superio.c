@@ -248,7 +248,6 @@ static void npcd378_ssdt_pwr(const struct device *dev)
 		acpigen_write_integer(0xE8);
 		acpigen_emit_namestring("^GPE2");
 
-	acpigen_pop_len();		/* Pop If */
 	acpigen_write_else();
 
 		acpigen_emit_byte(AND_OP);
@@ -268,7 +267,6 @@ static void npcd378_ssdt_pwr(const struct device *dev)
 		acpigen_write_integer(0x10);
 		acpigen_emit_namestring("^GPE2");
 
-	acpigen_pop_len();		/* Pop If */
 	acpigen_write_else();
 
 		acpigen_emit_byte(AND_OP);

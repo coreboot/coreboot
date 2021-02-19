@@ -255,8 +255,6 @@ static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 	/* Store (One, Local0) */
 	acpigen_write_store_ops(ONE_OP, LOCAL0_OP);
 
-	acpigen_pop_len();	/* If */
-
 	/* Else */
 	acpigen_write_else();
 

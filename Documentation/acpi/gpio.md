@@ -159,7 +159,6 @@ for the GPIO.
 	 */
 	acpigen_write_if_and(Local5, TX_BIT);
 	acpigen_write_store_args(ONE_OP, LOCAL0_OP);
-	acpigen_pop_len();
 	acpigen_write_else();
 	acpigen_write_store_args(ZERO_OP, LOCAL0_OP);
 	acpigen_pop_len();

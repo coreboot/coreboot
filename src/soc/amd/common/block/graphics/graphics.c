@@ -76,7 +76,6 @@ static void generate_atif(const struct device *dev)
 	/* Return (Buffer (0x0C) { ... } */
 	acpigen_write_return_byte_buffer((uint8_t *)(void *)&verify_output,
 		sizeof(verify_output));
-	acpigen_pop_len(); /* if (LEqual(Local0, 0) */
 
 	/* ElseIf ((Local0 == 0x10)) */
 	acpigen_write_else();
@@ -92,7 +91,6 @@ static void generate_atif(const struct device *dev)
 	/* Return (Buffer (0x0A) { ... } */
 	acpigen_write_return_byte_buffer((uint8_t *)(void *)&brightness_out,
 		sizeof(brightness_out));
-	acpigen_pop_len(); /* if (LEqual(Local2, ATIF_QBTC_REQUEST_LCD1) */
 	/* Else */
 	acpigen_write_else();
 	/* Return (Buffer (0x0A) */

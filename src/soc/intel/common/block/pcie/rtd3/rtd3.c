@@ -158,7 +158,6 @@ pcie_rtd3_acpi_method_status(int pcie_rp,
 
 	acpigen_write_if_lequal_op_op(LOCAL0_OP, LOCAL1_OP);
 	acpigen_write_return_op(ZERO_OP);
-	acpigen_pop_len(); /* If */
 	acpigen_write_else();
 	acpigen_write_return_op(ONE_OP);
 	acpigen_pop_len(); /* Else */

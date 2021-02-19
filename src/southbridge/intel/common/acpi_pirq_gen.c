@@ -94,7 +94,6 @@ void intel_acpi_gen_def_acpi_pirq(const struct device *dev)
 	acpigen_write_package(num_devs);
 	gen_pirq_route(EMIT_APIC, lpcb_path, pci_int_mapping);
 	acpigen_pop_len(); /* package */
-	acpigen_pop_len(); /* if PICM */
 	acpigen_write_else();
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(num_devs);

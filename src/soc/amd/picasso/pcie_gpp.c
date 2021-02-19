@@ -149,7 +149,6 @@ static void acpigen_write_PRT(const struct device *dev)
 		acpigen_pop_len();
 	}
 	acpigen_pop_len(); /* Package - APIC Routing */
-	acpigen_pop_len(); /* End If */
 
 	/* Else */
 	acpigen_write_else();

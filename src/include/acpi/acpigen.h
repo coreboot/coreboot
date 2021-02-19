@@ -293,6 +293,10 @@ void acpigen_pop_len(void);
 void acpigen_set_current(char *curr);
 char *acpigen_get_current(void);
 char *acpigen_write_package(int nr_el);
+inline void acpigen_write_package_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_zero(void);
 void acpigen_write_one(void);
 void acpigen_write_ones(void);
@@ -319,9 +323,21 @@ void acpigen_write_name_byte(const char *name, uint8_t val);
 void acpigen_write_name_integer(const char *name, uint64_t val);
 void acpigen_write_coreboot_hid(enum coreboot_acpi_ids id);
 void acpigen_write_scope(const char *name);
+inline void acpigen_write_scope_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_method(const char *name, int nargs);
 void acpigen_write_method_serialized(const char *name, int nargs);
+inline void acpigen_write_method_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_device(const char *name);
+inline void acpigen_write_device_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_PPC(u8 nr);
 void acpigen_write_PPC_NVS(void);
 void acpigen_write_empty_PCT(void);
@@ -345,6 +361,10 @@ void acpigen_write_xpss_package(const struct acpi_xpss_sw_pstate *pstate_value);
 void acpigen_write_xpss_object(const struct acpi_xpss_sw_pstate *pstate_values,
 			       size_t nentries);
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
+inline void acpigen_write_processor_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_processor_package(const char *name,
 				     unsigned int first_core,
 				     unsigned int core_count);
@@ -362,6 +382,10 @@ void acpigen_write_irq(u16 mask);
 void acpigen_write_uuid(const char *uuid);
 void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
 			     const char * const dev_states[], size_t dev_states_count);
+inline void acpigen_write_power_res_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_sleep(uint64_t sleep_ms);
 void acpigen_write_store(void);
 void acpigen_write_store_int_to_namestr(uint64_t src, const char *dst);
@@ -381,6 +405,10 @@ void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
 void acpigen_write_if_lequal_op_op(uint8_t op, uint8_t val);
 void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val);
 void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val);
+inline void acpigen_write_if_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_else(void);
 void acpigen_write_shiftleft_op_int(uint8_t src_result, uint64_t count);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);

@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/smbus.h>
 #include <memory_info.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/iomap.h>
@@ -121,8 +122,8 @@ void mainboard_romstage_entry(void)
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
-	/* Program PCH init */
-	romstage_pch_init();
+	/* Program SMBus base address and enable it */
+	smbus_common_init();
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
 

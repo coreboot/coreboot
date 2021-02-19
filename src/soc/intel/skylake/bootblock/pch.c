@@ -5,6 +5,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/gspi.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
@@ -142,4 +143,6 @@ void bootblock_pch_init(void)
 
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
+
+	gspi_early_bar_init();
 }

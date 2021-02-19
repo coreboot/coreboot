@@ -2,7 +2,6 @@
 
 #include <bootblock_common.h>
 #include <intelblocks/fast_spi.h>
-#include <intelblocks/gspi.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
@@ -34,7 +33,6 @@ void bootblock_soc_init(void)
 	 */
 	report_platform_info();
 	bootblock_pch_init();
-	gspi_early_bar_init();
 
 	/* Program TCO_BASE_ADDRESS and TCO Timer Halt */
 	tco_configure();

@@ -530,9 +530,9 @@ void hda_soc_ssdt_quirks(const struct device *dev)
 
 	acpigen_write_if_lequal_namestr_int("OSVR", 0x03);
 
-	acpigen_write_store_op_to_namestr(ONE_OP, "NSEN");
-	acpigen_write_store_op_to_namestr(ZERO_OP, "NSDO");
-	acpigen_write_store_op_to_namestr(ZERO_OP, "NSDI");
+	acpigen_write_store_op_to_namestr(ZERO_OP, "NSEN");
+	acpigen_write_store_op_to_namestr(ONE_OP, "NSDO");
+	acpigen_write_store_op_to_namestr(ONE_OP, "NSDI");
 
 	acpigen_pop_len(); /* If */
 

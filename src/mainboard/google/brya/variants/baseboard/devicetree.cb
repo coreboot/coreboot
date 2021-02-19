@@ -107,9 +107,8 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c3 on
-			chip drivers/i2c/generic
-				register "hid" = "ACPI_DT_NAMESPACE_HID"
-				register "compat_string" = ""google,cr50""
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
 				device i2c 50 on end
 			end

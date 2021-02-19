@@ -154,6 +154,7 @@
 - Stout (Lenovo Thinkpad X131e Chromebook)
 - Bubs
 - Coachz
+- Homestar
 - Lazor
 - Pompom
 - Trogdor

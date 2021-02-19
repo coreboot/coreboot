@@ -58,6 +58,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Bubs" if BOARD_GOOGLE_BUBS
 	default "Coachz" if BOARD_GOOGLE_COACHZ
+	default "Homestar" if BOARD_GOOGLE_HOMESTAR
 	default "Lazor" if BOARD_GOOGLE_LAZOR
 	default "Pompom" if BOARD_GOOGLE_POMPOM
 	default "Trogdor" if BOARD_GOOGLE_TROGDOR

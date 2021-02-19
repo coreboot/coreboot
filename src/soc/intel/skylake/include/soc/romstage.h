@@ -11,9 +11,10 @@ void romstage_pch_init(void);
 int smbus_read_byte(unsigned int device, unsigned int address);
 /* Board type */
 enum board_type {
-	BOARD_TYPE_MOBILE	= 0,
-	BOARD_TYPE_DESKTOP	= 1,
-	BOARD_TYPE_ULT_ULX	= 5,
-	BOARD_TYPE_SERVER	= 7
+	BOARD_TYPE_MOBILE  = 0,
+	BOARD_TYPE_DESKTOP = 1,
+	BOARD_TYPE_ULT_ULX = 5,
+	BOARD_TYPE_SERVER  = 7
 };
+
 #endif /* _SOC_ROMSTAGE_H_ */

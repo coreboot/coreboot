@@ -85,35 +85,31 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_REMOTE_POWER_ON;
 	fadt->flags |= cfg->fadt_flags; /* additional board-specific flags */
 
-	/*
-	 * The Cezanne PPR defines the ACPI registers starting at PMx00000500. This translates
-	 * to 0x300 + 0x500 = 0x800 which is identical to acpimmio_acpi.
-	 */
-	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
 	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_evt_blk.addrl = (u32)acpimmio_acpi + MMIO_ACPI_PM1_EVT_BLK;
+	fadt->x_pm1a_evt_blk.addrl = ACPI_PM_EVT_BLK;
 	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
-	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_cnt_blk.bit_width = 16;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
 	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_cnt_blk.addrl = (u32)acpimmio_acpi + MMIO_ACPI_PM1_CNT_BLK;
+	fadt->x_pm1a_cnt_blk.addrl = ACPI_PM1_CNT_BLK;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 
-	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm_tmr_blk.bit_width = 32;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	fadt->x_pm_tmr_blk.addrl = (u32)acpimmio_acpi + MMIO_ACPI_PM_TMR_BLK;
+	fadt->x_pm_tmr_blk.addrl = ACPI_PM_TMR_BLK;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
-	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_MEMORY;
+	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_gpe0_blk.bit_width = 64;
 	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	fadt->x_gpe0_blk.addrl = (u32)acpimmio_acpi + MMIO_ACPI_GPE0_BLK;
+	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+	fadt->x_gpe0_blk.addrl = ACPI_GPE0_BLK;
 	fadt->x_gpe0_blk.addrh = 0x0;
 }

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/mp.h>
@@ -137,8 +138,24 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	/* Make appropriate changes to the save state map. */
 	update_save_state(cpu, curr_smbase, staggered_smbase, relo_params);
 
+	/*
+	 * The SMRR MSRs are core-level registers, so if two threads that share
+	 * a core try to both set the lock bit (in the same physical register),
+	 * a #GP will be raised on the second write to that register (which is
+	 * exactly what the lock is supposed to do), therefore secondary threads
+	 * should exit here.
+	 */
+	if (intel_ht_sibling())
+		return;
+
 	/* Write SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
+
+	/* Set Lock bit if supported */
+	if (mtrr_cap.lo & SMRR_LOCK_SUPPORTED)
+		relo_params->smrr_mask.lo |= SMRR_PHYS_MASK_LOCK;
+
+	/* Write SMRRs if supported */
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
 }

@@ -20,7 +20,6 @@
 #include "raminit_common.h"
 #include "sandybridge.h"
 
-/* FIXME: no ECC support */
 /* FIXME: no support for 3-channel chipsets */
 
 static void wait_txt_clear(void)

@@ -8,7 +8,7 @@
 void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
 void romstage_pch_init(void);
-int smbus_read_byte(unsigned int device, unsigned int address);
+
 /* Board type */
 enum board_type {
 	BOARD_TYPE_MOBILE  = 0,

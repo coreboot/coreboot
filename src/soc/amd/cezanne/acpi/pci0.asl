@@ -78,4 +78,7 @@ Device(PCI0) {
 		Return(CRES) /* note to change the Name buffer */
 	} /* end of Method(_SB.PCI0._CRS) */
 
+	/* 0:14.3 - LPC */
+	#include <soc/amd/common/acpi/lpc.asl>
+
 } /* End PCI0 scope */

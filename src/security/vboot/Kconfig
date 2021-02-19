@@ -306,8 +306,8 @@ config GBB_FLAG_ENTER_TRIGGERS_TONORM
 	bool "Return to normal boot with Enter"
 	default n
 
-config GBB_FLAG_FORCE_DEV_BOOT_LEGACY
-	bool "Allow booting to legacy in dev mode even if dev_boot_legacy=0"
+config GBB_FLAG_FORCE_DEV_BOOT_ALTFW
+	bool "Allow booting altfw in dev mode even if dev_boot_altfw=0"
 	default n
 
 config GBB_FLAG_RUNNING_FAFT
@@ -318,8 +318,8 @@ config GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	bool "Disable EC software sync"
 	default n
 
-config GBB_FLAG_DEFAULT_DEV_BOOT_LEGACY
-	bool "Default to booting to legacy in dev mode"
+config GBB_FLAG_DEFAULT_DEV_BOOT_ALTFW
+	bool "Default to booting altfw in dev mode"
 	default n
 
 config GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC

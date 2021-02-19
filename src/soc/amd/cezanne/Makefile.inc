@@ -102,10 +102,10 @@ PSP_BIOSBIN_SIZE=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | awk '{print $$3}')
 
 # type = 0xb - See #55758 (NDA) for bit definitions.
-PSP_SOFTFUSE_BITS += 28
+PSP_SOFTFUSE_BITS += 28 6
 
 #hardcode post code to eSPI
-PSP_SOFTFUSE_BITS += 15 6
+PSP_SOFTFUSE_BITS += 15
 
 # Helper function to return a value with given bit set
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))

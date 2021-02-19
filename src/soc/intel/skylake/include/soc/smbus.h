@@ -17,7 +17,11 @@
 #define  TCO_INTRD_SEL_SMI		(1 << 2)
 #define  TCO_INTRD_SEL_INT		(1 << 1)
 
-/* SMBus I/O bits. */
-#define SMBUS_SLAVE_ADDR	0x24
+/*
+ * Default slave address value for PCH. This value is set to match default
+ * value set by hardware. It is useful since PCH is able to respond even
+ * before CPU is up. This is reset by RSMRST# but not by PLTRST#.
+ */
+#define SMBUS_SLAVE_ADDR		0x44
 
 #endif

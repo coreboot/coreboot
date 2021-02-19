@@ -138,6 +138,18 @@ static void per_cpu_smm_trigger(void)
 	smm_relocate();
 }
 
+void smm_lock(void)
+{
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	/*
+	 * LOCK the SMM memory window and enable normal SMM.
+	 * After running this function, only a full reset can
+	 * make the SMM registers writable again.
+	 */
+	printk(BIOS_DEBUG, "Locking SMM.\n");
+	pci_write_config8(sa_dev, SMRAM, D_LCK | G_SMRAME | C_BASE_SEG);
+}
+
 static void vmx_configure(void *unused)
 {
 	set_feature_ctrl_vmx();

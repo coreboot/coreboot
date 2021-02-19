@@ -66,8 +66,8 @@
 #define PM2_CNT			0x50
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32
-#define GPE0_STS(x)		(0x80 + (x * 4))
-#define GPE0_EN(x)		(0x90 + (x * 4))
+#define GPE0_STS(x)		(0x80 + ((x) * 4))
+#define GPE0_EN(x)		(0x90 + ((x) * 4))
 #define  GPE_STD		3	/* 0x8c/0x9c = Standard GPE */
 #define GPE_STS_RSVD            GPE_STD
 #define   GPIO_T2_STS		(1 << 15)
@@ -76,7 +76,7 @@
 #define   PCI_EXP_STS		(1 << 9)
 #define   SMB_WAK_STS		(1 << 7)
 #define   TCOSCI_STS		(1 << 6)
-#define GPE0_EN(x)		(0x90 + (x * 4))
+#define GPE0_EN(x)		(0x90 + ((x) * 4))
 #define   GPIO_T2_EN		(1 << 15)
 #define   ESPI_EN		(1 << 14)
 #define   PME_B0_EN		(1 << 13)

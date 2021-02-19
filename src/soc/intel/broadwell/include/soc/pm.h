@@ -62,7 +62,7 @@
 
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32
-#define GPE0_STS(x)		(0x80 + (x * 4))
+#define GPE0_STS(x)		(0x80 + ((x) * 4))
 #define  GPE_31_0		0	/* 0x80/0x90 = GPE[31:0] */
 #define  GPE_63_32		1	/* 0x84/0x94 = GPE[63:32] */
 #define  GPE_94_64		2	/* 0x88/0x98 = GPE[94:64] */
@@ -78,7 +78,7 @@
 #define   TCOSCI_STS		(1 << 6)
 #define   SWGPE_STS		(1 << 2)
 #define   HOT_PLUG_STS		(1 << 1)
-#define GPE0_EN(x)		(0x90 + (x * 4))
+#define GPE0_EN(x)		(0x90 + ((x) * 4))
 #define   WADT_en		(1 << 18)
 #define   GP27_EN		(1 << 16)
 #define   PME_B0_EN		(1 << 13)

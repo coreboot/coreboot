@@ -120,7 +120,7 @@
 
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32
-#define GPE0_STS(x)		(0x20 + (x * 4))
+#define GPE0_STS(x)		(0x20 + ((x) * 4))
 #define  GPE0_A			0
 #define  GPE0_B			1
 #define  GPE0_C			2
@@ -136,7 +136,7 @@
 #define   BATLOW_STS		(1 << 10)
 #define   PCIE_GPE_STS		(1 << 9)
 #define   SWGPE_STS		(1 << 2)
-#define GPE0_EN(x)		(0x30 + (x * 4))
+#define GPE0_EN(x)		(0x30 + ((x) * 4))
 #define   ESPI_EN		(1 << 20) /* This bit is present in GLK */
 #define   SATA_PME_EN		(1 << 17)
 #define   SMB_WAK_EN		(1 << 16)

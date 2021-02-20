@@ -83,5 +83,31 @@ chip soc/intel/jasperlake
 				device i2c 2c on end
 			end
 		end #I2C 0
+		device pci 19.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1015""
+				register "desc" = ""Realtek SPK AMP L""
+				register "uid" = "0"
+				device i2c 28 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1015""
+				register "desc" = ""Realtek SPK AMP R""
+				register "uid" = "1"
+				device i2c 29 on end
+			end
+		end #I2C 4
+		device pci 1f.3 on end # Intel HDA
 	end
 end

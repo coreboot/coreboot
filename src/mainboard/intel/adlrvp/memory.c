@@ -171,7 +171,8 @@ const struct mb_cfg *variant_memory_params(void)
 		return &ddr4_mem_config;
 	case ADL_P_DDR5:
 		return &ddr5_mem_config;
-	case ADL_P_LP5:
+	case ADL_P_LP5_1:
+	case ADL_P_LP5_2:
 		return &lp5_mem_config;
 	default:
 		die("unsupported board id : 0x%x\n", board_id);

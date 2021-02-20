@@ -57,7 +57,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		break;
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:
-	case ADL_P_LP5:
+	case ADL_P_LP5_1:
+	case ADL_P_LP5_2:
 		memcfg_init(&mupd->FspmConfig, mem_config, &lp4_lp5_spd_info, half_populated);
 		break;
 	default:

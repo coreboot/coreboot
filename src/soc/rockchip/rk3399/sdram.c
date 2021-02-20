@@ -114,8 +114,8 @@ static void phy_pctrl_reset(u32 channel)
 	udelay(10);
 }
 
-static void phy_dll_bypass_set(u32 channel,
-	struct rk3399_ddr_publ_regs *ddr_publ_regs, u32 freq)
+static void phy_dll_bypass_set(struct rk3399_ddr_publ_regs *ddr_publ_regs,
+			       u32 freq)
 {
 	u32 *denali_phy = ddr_publ_regs->denali_phy;
 
@@ -1115,7 +1115,7 @@ void sdram_init(const struct rk3399_sdram_params *params)
 
 	for (channel = 0; channel < 2; channel++) {
 		phy_pctrl_reset(channel);
-		phy_dll_bypass_set(channel, rk3399_ddr_publ[channel], ddr_freq);
+		phy_dll_bypass_set(rk3399_ddr_publ[channel], ddr_freq);
 
 		if (channel >= params->num_channels)
 			continue;

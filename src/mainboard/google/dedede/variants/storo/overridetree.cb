@@ -47,5 +47,21 @@ chip soc/intel/jasperlake
 				device i2c 15 on end
 			end
 		end #I2C 0
+		device pci 15.2 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9008""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "7"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end # I2C 2
 	end
 end

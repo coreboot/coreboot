@@ -50,9 +50,6 @@ static const struct pad_config gpio_table[] = {
 	/* E11 : AP_I2C_SUB_INT_ODL */
 	PAD_CFG_GPI_INT(GPP_E11, NONE, PLTRST, EDGE_BOTH),
 
-	/* G7  : SD_SDIO_WP */
-	PAD_NC(GPP_G7, NONE),
-
 	/* H6  : AP_I2C_CAM_SDA */
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : AP_I2C_CAM_SCL */

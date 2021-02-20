@@ -54,6 +54,34 @@ chip soc/intel/jasperlake
 				end
 			end
 		end # USB xHCI
-		device pci 15.0 on end
+		device pci 15.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SYNA0A00""
+				register "generic.desc" = ""SYNA Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GXTP7288""
+				register "generic.desc" = ""GXTP Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 14 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SPPT2600""
+				register "generic.desc" = ""SPPT Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+		end #I2C 0
 	end
 end

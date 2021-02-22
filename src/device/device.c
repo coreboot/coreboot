@@ -228,9 +228,9 @@ static void set_vga_bridge_bits(void)
 	/* If we prefer plugin VGA over chipset VGA, the chipset might
 	   want to know. */
 	if (!CONFIG(ONBOARD_VGA_IS_PRIMARY) && (vga != vga_onboard) &&
-		vga_onboard && vga_onboard->ops && vga_onboard->ops->disable) {
+		vga_onboard && vga_onboard->ops && vga_onboard->ops->vga_disable) {
 		printk(BIOS_DEBUG, "Use plugin graphics over integrated.\n");
-		vga_onboard->ops->disable(vga_onboard);
+		vga_onboard->ops->vga_disable(vga_onboard);
 	}
 
 	if (vga) {

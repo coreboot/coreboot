@@ -71,7 +71,7 @@ static struct device_operations gma_func0_ops = {
 	.acpi_fill_ssdt		= gma_generate_ssdt,
 	.init			= gma_func0_init,
 	.ops_pci		= &pci_dev_ops_pci,
-	.disable		= gma_func0_disable,
+	.vga_disable		= gma_func0_disable,
 	.acpi_name		= gma_acpi_name,
 };
 

@@ -43,7 +43,7 @@ struct device_operations {
 	void (*final)(struct device *dev);
 	void (*scan_bus)(struct device *bus);
 	void (*enable)(struct device *dev);
-	void (*disable)(struct device *dev);
+	void (*vga_disable)(struct device *dev);
 	void (*reset_bus)(struct bus *bus);
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	int (*get_smbios_data)(struct device *dev, int *handle,

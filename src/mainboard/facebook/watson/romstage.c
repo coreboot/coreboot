@@ -25,7 +25,7 @@
  */
 void early_mainboard_romstage_entry(void)
 {
-
+	variant_early_mainboard_romstage_entry();
 }
 
 /**
@@ -49,6 +49,11 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 }
 
 __weak void variant_romstage_fsp_init_params(UPD_DATA_REGION *UpdData)
+{
+
+}
+
+__weak void variant_early_mainboard_romstage_entry(void)
 {
 
 }

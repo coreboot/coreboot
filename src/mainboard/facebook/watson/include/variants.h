@@ -21,5 +21,6 @@
 #include <soc/romstage.h>
 
 void variant_romstage_fsp_init_params(UPD_DATA_REGION *UpdData);
+void variant_early_mainboard_romstage_entry(void);
 
 #endif /* BASEBOARD_VARIANTS_H */

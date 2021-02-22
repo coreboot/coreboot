@@ -56,6 +56,7 @@
 #define LPC_DEV			31
 #define LPC_FUNC		0
 #define PCH_DEVFN_LPC		PCI_DEVFN(LPC_DEV, LPC_FUNC)
+#define PCH_DEV_LPC		PCI_DEV(BUS0, LPC_DEV, LPC_FUNC)
 
 #define SATA_DEV		31
 #define SATA_FUNC		2

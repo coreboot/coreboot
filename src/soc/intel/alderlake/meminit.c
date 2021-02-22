@@ -217,6 +217,22 @@ static void mem_init_dqs_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 	mem_init_dq_dqs_upds(dqs_upds, mb_cfg->dqs_map, upd_size, data, auto_detect);
 }
 
+#define DDR5_CH_DIMM_OFFSET(ch, dimm)        ((ch) * CONFIG_DIMMS_PER_CHANNEL + (dimm))
+
+static void ddr5_fill_dimm_module_info(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
+						 const struct mem_spd *spd_info)
+{
+	for (size_t ch = 0; ch < soc_mem_cfg[MEM_TYPE_DDR5].num_phys_channels; ch++) {
+		for (size_t dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
+			size_t mrc_ch = soc_mem_cfg[MEM_TYPE_DDR5].phys_to_mrc_map[ch];
+			mem_cfg->SpdAddressTable[DDR5_CH_DIMM_OFFSET(mrc_ch, dimm)] =
+				spd_info->smbus[ch].addr_dimm[dimm] << 1;
+		}
+	}
+	mem_init_dq_upds(mem_cfg, NULL, mb_cfg, true);
+	mem_init_dqs_upds(mem_cfg, NULL, mb_cfg, true);
+}
+
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated)
 {
@@ -235,9 +251,20 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
 
 	switch (mb_cfg->type) {
 	case MEM_TYPE_DDR4:
+		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
+		dq_dqs_auto_detect = true;
+		break;
 	case MEM_TYPE_DDR5:
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
+		/*
+		* TODO: Drop this workaround once SMBus driver in coreboot is updated to
+		* support DDR5 EEPROM reading.
+		*/
+		if (spd_info->topo == MEM_TOPO_DIMM_MODULE) {
+			ddr5_fill_dimm_module_info(mem_cfg, mb_cfg, spd_info);
+			return;
+		}
 		break;
 	case MEM_TYPE_LP4X:
 		meminit_lp4x(mem_cfg);

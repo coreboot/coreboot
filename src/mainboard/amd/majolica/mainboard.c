@@ -89,7 +89,7 @@ static void mainboard_init(void *chip_info)
 {
 }
 
-static void majolica_enable(struct device *dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -100,5 +100,5 @@ static void majolica_enable(struct device *dev)
 
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
-	.enable_dev = majolica_enable,
+	.enable_dev = mainboard_enable,
 };

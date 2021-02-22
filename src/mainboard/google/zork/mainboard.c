@@ -197,7 +197,7 @@ static void mainboard_fill_ssdt(const struct device *dev)
 /*************************************************
  * Dedicated mainboard function
  *************************************************/
-static void zork_enable(struct device *dev)
+static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
@@ -217,7 +217,7 @@ static void mainboard_final(void *chip_info)
 
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
-	.enable_dev = zork_enable,
+	.enable_dev = mainboard_enable,
 	.final = mainboard_final,
 };
 

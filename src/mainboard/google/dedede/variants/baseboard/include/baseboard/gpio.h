@@ -17,6 +17,9 @@
 /* EC sync irq is GPP_C15_IRQ */
 #define EC_SYNC_IRQ	GPP_C15_IRQ
 
+/* EC in RW */
+#define GPIO_EC_IN_RW		GPP_C14
+
 /* Memory configuration board straps */
 #define GPIO_MEM_CONFIG_0	GPP_C0
 #define GPIO_MEM_CONFIG_1	GPP_C3

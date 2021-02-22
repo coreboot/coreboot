@@ -116,18 +116,11 @@ static void soc_fill_gpio_pm_configuration(void)
 
 void soc_init_pre_device(void *chip_info)
 {
-	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
-	 * default policy that doesn't honor boards' requirements. */
-	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
-
 	/* Perform silicon specific init. */
 	fsp_silicon_init();
 
 	 /* Display FIRMWARE_VERSION_INFO_HOB */
 	fsp_display_fvi_version_hob();
-
-	/* Restore GPIO IRQ polarities back to previous settings. */
-	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
 	soc_fill_gpio_pm_configuration();
 

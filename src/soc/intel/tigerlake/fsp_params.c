@@ -35,6 +35,18 @@
 #define DEF_DITOVAL	625
 
 /*
+ * ME End of Post configuration
+ * 0 - Disable EOP.
+ * 1 - Send in PEI (Applicable for FSP in API mode)
+ * 2 - Send in DXE (Not applicable for FSP in API mode)
+ */
+enum {
+	EOP_DISABLE,
+	EOP_PEI,
+	EOP_DXE,
+} EndOfPost;
+
+/*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
  * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
  * In order to ensure that mainboard setting does not disable L1 substates
@@ -202,6 +214,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchUnlockGpioPads = 0;
 		params->RtcMemoryLock = 1;
 	}
+
+	/* Enable End of Post in PEI phase */
+	params->EndOfPostMessage = EOP_PEI;
 
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {

@@ -26,8 +26,8 @@ import (
  */
 const (
 	SPDManifestFileName = "lp4x_spd_manifest.generated.txt"
-	MakefileName = "Makefile.inc"
-	DRAMIdFileName = "dram_id.generated.txt"
+	MakefileName        = "Makefile.inc"
+	DRAMIdFileName      = "dram_id.generated.txt"
 )
 
 func usage() {
@@ -41,7 +41,7 @@ func usage() {
 func checkArgs() error {
 
 	for _, arg := range os.Args[1:] {
-		if _, err := os.Stat(arg); err  != nil {
+		if _, err := os.Stat(arg); err != nil {
 			return err
 		}
 	}
@@ -112,7 +112,7 @@ func appendPartIdInfo(s *string, partName string, index int) {
 
 type partIds struct {
 	SPDFileName string
-	memParts string
+	memParts    string
 }
 
 /*
@@ -136,7 +136,7 @@ func genPartIdInfo(parts []string, partToSPDMap map[string]string, SPDToIndexMap
 			continue
 		}
 
-		SPDFileName,ok := partToSPDMap[p]
+		SPDFileName, ok := partToSPDMap[p]
 		if !ok {
 			return nil, fmt.Errorf("Failed to find part ", p, " in SPD Manifest. Please add the part to global part list and regenerate SPD Manifest")
 		}

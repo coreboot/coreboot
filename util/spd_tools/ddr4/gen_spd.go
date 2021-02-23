@@ -10,9 +10,9 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
-	"regexp"
 )
 
 /*
@@ -33,7 +33,7 @@ const (
 	PlatformPLK = 2
 )
 
-var platformMap = map[string]int {
+var platformMap = map[string]int{
 	"TGL": PlatformTGL,
 	"PCO": PlatformPCO,
 	"PLK": PlatformPLK,
@@ -43,41 +43,41 @@ var currPlatform int
 
 type memAttributes struct {
 	/* Primary attributes - must be provided by JSON file for each part */
-	SpeedMTps int
-	CL_nRCD_nRP int
+	SpeedMTps        int
+	CL_nRCD_nRP      int
 	CapacityPerDieGb int
-	DiesPerPackage int
+	DiesPerPackage   int
 	PackageBusWidth  int
-	RanksPerPackage int
+	RanksPerPackage  int
 
 	/*
-         * All the following parameters are optional and required only if the part requires
-         * special parameters as per the datasheet.
-         */
-        /* Timing parameters */
-	TAAMinPs int
-	TRCDMinPs int
-	TRPMinPs int
-	TRASMinPs int
-	TRCMinPs int
-	TCKMinPs int
-	TCKMaxPs int
+	 * All the following parameters are optional and required only if the part requires
+	 * special parameters as per the datasheet.
+	 */
+	/* Timing parameters */
+	TAAMinPs   int
+	TRCDMinPs  int
+	TRPMinPs   int
+	TRASMinPs  int
+	TRCMinPs   int
+	TCKMinPs   int
+	TCKMaxPs   int
 	TRFC1MinPs int
 	TRFC2MinPs int
 	TRFC4MinPs int
-	TFAWMinPs int
+	TFAWMinPs  int
 	TRRDLMinPs int
 	TRRDSMinPs int
 	TCCDLMinPs int
-	TWRMinPs int
+	TWRMinPs   int
 	TWTRLMinPs int
 	TWTRSMinPs int
 
 	/* CAS */
-	CASLatencies string
-	CASFirstByte byte
+	CASLatencies  string
+	CASFirstByte  byte
 	CASSecondByte byte
-	CASThirdByte byte
+	CASThirdByte  byte
 	CASFourthByte byte
 
 	/* The following is for internal-use only and is not overridable */
@@ -85,10 +85,10 @@ type memAttributes struct {
 }
 
 /* This encodes the density in Gb to SPD low nibble value as per JESD 4.1.2.L-5 R29 */
-var densityGbToSPDEncoding = map[int]byte {
-	2: 0x3,
-	4: 0x4,
-	8: 0x5,
+var densityGbToSPDEncoding = map[int]byte{
+	2:  0x3,
+	4:  0x4,
+	8:  0x5,
 	16: 0x6,
 }
 
@@ -97,10 +97,10 @@ var densityGbToSPDEncoding = map[int]byte {
  * Maps density per die to row-column encoding for a device with x8/x16
  * physical channel.
  */
-var densityGbx8x16DieCapacityToRowColumnEncoding = map[int]byte {
-	2: 0x11, /* 14 rows, 10 columns */
-	4: 0x19, /* 15 rows, 10 columns */
-	8: 0x21, /* 16 rows, 10 columns */
+var densityGbx8x16DieCapacityToRowColumnEncoding = map[int]byte{
+	2:  0x11, /* 14 rows, 10 columns */
+	4:  0x19, /* 15 rows, 10 columns */
+	8:  0x21, /* 16 rows, 10 columns */
 	16: 0x29, /* 17 rows, 10 columns */
 }
 
@@ -111,26 +111,26 @@ var densityGbx8x16DieCapacityToRowColumnEncoding = map[int]byte {
  */
 
 /* maps die density to rcf1 timing in pico seconds */
-var tRFC1Encoding = map[int]int {
-	2: 160000,
-	4: 260000,
-	8: 350000,
+var tRFC1Encoding = map[int]int{
+	2:  160000,
+	4:  260000,
+	8:  350000,
 	16: 550000,
 }
 
 /* maps die density to rcf2 timing in pico seconds */
-var tRFC2Encoding = map[int]int {
-	2: 110000,
-	4: 160000,
-	8: 260000,
+var tRFC2Encoding = map[int]int{
+	2:  110000,
+	4:  160000,
+	8:  260000,
 	16: 350000,
 }
 
 /* maps die density to rcf4 timing in pico seconds */
-var tRFC4Encoding = map[int]int {
-	2: 90000,
-	4: 110000,
-	8: 160000,
+var tRFC4Encoding = map[int]int{
+	2:  90000,
+	4:  110000,
+	8:  160000,
 	16: 260000,
 }
 
@@ -145,37 +145,37 @@ func getDefaultTCKMinPs(memAttribs *memAttributes) int {
 
 type speedBinAttributes struct {
 	TRASMinPs int
-	TCKMaxPs int
+	TCKMaxPs  int
 }
 
-var speedBinToSPDEncoding = map[int]speedBinAttributes {
+var speedBinToSPDEncoding = map[int]speedBinAttributes{
 	1600: {
 		TRASMinPs: 35000,
-		TCKMaxPs: 1500,
+		TCKMaxPs:  1500,
 	},
 	1866: {
 		TRASMinPs: 34000,
-		TCKMaxPs: 1250,
+		TCKMaxPs:  1250,
 	},
 	2133: {
 		TRASMinPs: 33000,
-		TCKMaxPs: 1071,
+		TCKMaxPs:  1071,
 	},
 	2400: {
 		TRASMinPs: 32000,
-		TCKMaxPs: 937,
+		TCKMaxPs:  937,
 	},
 	2666: {
 		TRASMinPs: 32000,
-		TCKMaxPs: 833,
+		TCKMaxPs:  833,
 	},
 	2933: {
 		TRASMinPs: 32000,
-		TCKMaxPs: 750,
+		TCKMaxPs:  750,
 	},
 	3200: {
 		TRASMinPs: 32000,
-		TCKMaxPs: 682,
+		TCKMaxPs:  682,
 	},
 }
 
@@ -394,8 +394,8 @@ func encodeTRCMinLsb(memAttribs *memAttributes) byte {
 }
 
 /* This takes memAttribs.PackageBusWidth as an index */
-var pageSizefromBusWidthEncoding = map[int]int {
-	8: 1,
+var pageSizefromBusWidthEncoding = map[int]int{
+	8:  1,
 	16: 2,
 }
 
@@ -498,7 +498,7 @@ func updateTRRDLMin(memAttribs *memAttributes) {
 	var tRRDLFromTck int
 
 	if memAttribs.TRRDLMinPs == 0 {
-		memAttribs.TRRDLMinPs= getTRRDLMinPs(memAttribs)
+		memAttribs.TRRDLMinPs = getTRRDLMinPs(memAttribs)
 	}
 
 	tRRDLFromTck = 4 * memAttribs.TCKMinPs
@@ -508,7 +508,7 @@ func updateTRRDLMin(memAttribs *memAttributes) {
 	}
 }
 
-var speedToTRRDSMinPsOneKPageSize = map[int]int {
+var speedToTRRDSMinPsOneKPageSize = map[int]int{
 	1600: 5000,
 	1866: 4200,
 	2133: 3700,
@@ -518,7 +518,7 @@ var speedToTRRDSMinPsOneKPageSize = map[int]int {
 	3200: 2500,
 }
 
-var speedToTRRDSMinPsTwoKPageSize = map[int]int {
+var speedToTRRDSMinPsTwoKPageSize = map[int]int{
 	1600: 6000,
 	1866: 5300,
 	2133: 5300,
@@ -564,11 +564,11 @@ func getTCCDLMinPs(memAttribs *memAttributes) int {
 	var tCCDLFixed int
 
 	switch memAttribs.SpeedMTps {
-        case 1600:
+	case 1600:
 		tCCDLFixed = 6250
-        case 1866:
+	case 1866:
 		tCCDLFixed = 5355
-        case 2133:
+	case 2133:
 		tCCDLFixed = 5355
 	default:
 		tCCDLFixed = 5000
@@ -720,66 +720,66 @@ func encodeTWTRLMinLsb(memAttribs *memAttributes) byte {
 	return byte(convPsToMtb(memAttribs.TWTRLMinPs) & 0xff)
 }
 
-type SPDMemAttribFunc func (*memAttributes) byte
-type SPDConvConstFunc func () byte
+type SPDMemAttribFunc func(*memAttributes) byte
+type SPDConvConstFunc func() byte
 
 type SPDAttribTableEntry struct {
 	constVal byte
-	getVal SPDMemAttribFunc
+	getVal   SPDMemAttribFunc
 }
 
 const (
 	/* SPD Byte Index */
-	SPDIndexSize = 0
-	SPDIndexRevision = 1
-	SPDIndexMemoryType = 2
-	SPDIndexModuleType = 3
-	SPDIndexDensityBanks = 4
-	SPDIndexAddressing = 5
-	SPDIndexPackageType = 6
-	SPDIndexOptionalFeatures = 7
-	SPDIndexModuleOrganization = 12
-	SPDIndexBusWidth = 13
-	SPDIndexTimebases = 17
-	SPDIndexTCKMin = 18
-	SPDIndexTCKMax = 19
-	SPDIndexCASFirstByte = 20
-	SPDIndexCASSecondByte = 21
-	SPDIndexCASThirdByte = 22
-	SPDIndexCASFourthByte = 23
-	SPDIndexTAAMin = 24
-	SPDIndexTRCDMin = 25
-	SPDIndexTRPMin = 26
-	SPDIndexTRASRCMinMSNs = 27
-	SPDIndexTRASMinLsb = 28
-	SPDIndexTRCMinLsb = 29
-	SPDIndexTRFC1MinLsb = 30
-	SPDIndexTRFC1MinMsb = 31
-	SPDIndexTRFC2MinLsb = 32
-	SPDIndexTRFC2MinMsb = 33
-	SPDIndexTRFC4MinLsb = 34
-	SPDIndexTRFC4MinMsb = 35
-	SPDIndexTFAWMinMSN = 36
-	SPDIndexTFAWMinLsb = 37
-	SPDIndexTRRDSMin = 38
-	SPDIndexTRRDLMin = 39
-	SPDIndexTCCDLMin = 40
-	SPDIndexTWRMinMSN = 41
-	SPDIndexTWRMinLsb = 42
-	SPDIndexTWTRMinMSNs = 43
-	SPDIndexWTRSMinLsb = 44
-	SPDIndexWTRLMinLsb = 45
-	SPDIndexTCCDLMinFineOffset = 117
-	SPDIndexTRRDLMinFineOffset = 118
-	SPDIndexTRRDSMinFineOffset = 119
-	SPDIndexTRCMinFineOffset = 120
-	SPDIndexTRPMinFineOffset = 121
-	SPDIndexTRCDMinFineOffset = 122
-	SPDIndexTAAMinFineOffset = 123
-	SPDIndexTCKMaxFineOffset = 124
-	SPDIndexTCKMinFineOffset = 125
+	SPDIndexSize                            = 0
+	SPDIndexRevision                        = 1
+	SPDIndexMemoryType                      = 2
+	SPDIndexModuleType                      = 3
+	SPDIndexDensityBanks                    = 4
+	SPDIndexAddressing                      = 5
+	SPDIndexPackageType                     = 6
+	SPDIndexOptionalFeatures                = 7
+	SPDIndexModuleOrganization              = 12
+	SPDIndexBusWidth                        = 13
+	SPDIndexTimebases                       = 17
+	SPDIndexTCKMin                          = 18
+	SPDIndexTCKMax                          = 19
+	SPDIndexCASFirstByte                    = 20
+	SPDIndexCASSecondByte                   = 21
+	SPDIndexCASThirdByte                    = 22
+	SPDIndexCASFourthByte                   = 23
+	SPDIndexTAAMin                          = 24
+	SPDIndexTRCDMin                         = 25
+	SPDIndexTRPMin                          = 26
+	SPDIndexTRASRCMinMSNs                   = 27
+	SPDIndexTRASMinLsb                      = 28
+	SPDIndexTRCMinLsb                       = 29
+	SPDIndexTRFC1MinLsb                     = 30
+	SPDIndexTRFC1MinMsb                     = 31
+	SPDIndexTRFC2MinLsb                     = 32
+	SPDIndexTRFC2MinMsb                     = 33
+	SPDIndexTRFC4MinLsb                     = 34
+	SPDIndexTRFC4MinMsb                     = 35
+	SPDIndexTFAWMinMSN                      = 36
+	SPDIndexTFAWMinLsb                      = 37
+	SPDIndexTRRDSMin                        = 38
+	SPDIndexTRRDLMin                        = 39
+	SPDIndexTCCDLMin                        = 40
+	SPDIndexTWRMinMSN                       = 41
+	SPDIndexTWRMinLsb                       = 42
+	SPDIndexTWTRMinMSNs                     = 43
+	SPDIndexWTRSMinLsb                      = 44
+	SPDIndexWTRLMinLsb                      = 45
+	SPDIndexTCCDLMinFineOffset              = 117
+	SPDIndexTRRDLMinFineOffset              = 118
+	SPDIndexTRRDSMinFineOffset              = 119
+	SPDIndexTRCMinFineOffset                = 120
+	SPDIndexTRPMinFineOffset                = 121
+	SPDIndexTRCDMinFineOffset               = 122
+	SPDIndexTAAMinFineOffset                = 123
+	SPDIndexTCKMaxFineOffset                = 124
+	SPDIndexTCKMinFineOffset                = 125
 	SPDIndexManufacturerPartNumberStartByte = 329
-	SPDIndexManufacturerPartNumberEndByte = 348
+	SPDIndexManufacturerPartNumberEndByte   = 348
 
 	/* SPD Byte Value */
 
@@ -801,17 +801,17 @@ const (
 	SPDValueMemoryType = 0x0C
 
 	/*
-	 * From JEDEC spec:
- 	 * Module Type [0:3] :
-	 *  0 = Undefined
-	 *  1 = RDIMM (width = 133.35 mm nom)
-	 *  2 = UDIMM (width = 133.35 mm nom)
-	 *  3 = SO-DIMM (width = 68.60 mm nom)
-	 *  4 = LRDIMM (width = 133.35 mm nom)
-	 *
-	 * DDR4 on TGL uses SO-DIMM type for for both memory down and DIMM config.
-	 * Set to 0x03.
-	 */
+		 * From JEDEC spec:
+	 	 * Module Type [0:3] :
+		 *  0 = Undefined
+		 *  1 = RDIMM (width = 133.35 mm nom)
+		 *  2 = UDIMM (width = 133.35 mm nom)
+		 *  3 = SO-DIMM (width = 68.60 mm nom)
+		 *  4 = LRDIMM (width = 133.35 mm nom)
+		 *
+		 * DDR4 on TGL uses SO-DIMM type for for both memory down and DIMM config.
+		 * Set to 0x03.
+	*/
 	SPDValueModuleType = 0x03
 
 	/*
@@ -844,7 +844,6 @@ const (
 
 	/* As per JEDEC spec, unused digits of manufacturer part number are left as blank. */
 	SPDValueManufacturerPartNumberBlank = 0x20
-
 )
 
 const (
@@ -853,72 +852,72 @@ const (
 	 * tWRMin = 15nS for all DDR4 Speed Bins
 	 * Set to 15000 pS
 	 */
-	 TimingValueTWRMinPs = 15000
+	TimingValueTWRMinPs = 15000
 
 	/*
 	 * As per Table 78 of Jedec spec 4.1.20-L-5 R29 v103:
 	 * tWTR_SMin = 2.5nS for all DDR4 Speed Bins
 	 * Set to 2500 pS
 	 */
-	 TimingValueTWTRSMinPs = 2500
+	TimingValueTWTRSMinPs = 2500
 
 	/*
 	 * As per Table 80 of Jedec spec 4.1.20-L-5 R29 v103:
 	 * tWTR_LMin = 7.5 nS for all DDR4 Speed Bins
 	 * Set to 7500 pS
 	 */
-	 TimingValueTWTRLMinPs = 7500
+	TimingValueTWTRLMinPs = 7500
 )
 
-var SPDAttribTable = map[int]SPDAttribTableEntry {
-	SPDIndexSize: { constVal: SPDValueSize },
-	SPDIndexRevision: { constVal: SPDValueRevision },
-	SPDIndexMemoryType: { constVal: SPDValueMemoryType },
-	SPDIndexModuleType: { constVal: SPDValueModuleType },
-	SPDIndexDensityBanks: { getVal: encodeDensityBanks },
-	SPDIndexAddressing: { getVal: encodeSdramAddressing },
-	SPDIndexPackageType: { getVal: encodePackageType },
-	SPDIndexOptionalFeatures: { constVal: SPDValueOptionalFeatures },
-	SPDIndexModuleOrganization: { getVal: encodeModuleOrganization },
-	SPDIndexBusWidth: { constVal: SPDValueModuleBusWidth },
-	SPDIndexTimebases: { constVal: SPDValueTimebases },
-	SPDIndexTCKMin: { getVal: encodeTCKMin },
-	SPDIndexTCKMinFineOffset: { getVal: encodeTCKMinFineOffset },
-	SPDIndexTCKMax: { getVal: encodeTCKMax },
-	SPDIndexTCKMaxFineOffset: { getVal: encodeTCKMaxFineOffset },
-	SPDIndexCASFirstByte: { getVal: encodeCASFirstByte },
-	SPDIndexCASSecondByte: { getVal: encodeCASSecondByte },
-	SPDIndexCASThirdByte: { getVal: encodeCASThirdByte },
-	SPDIndexCASFourthByte: { getVal: encodeCASFourthByte },
-	SPDIndexTAAMin: { getVal: encodeTAAMin },
-	SPDIndexTAAMinFineOffset: { getVal: encodeTAAMinFineOffset },
-	SPDIndexTRCDMin: { getVal: encodeTRCDMin },
-	SPDIndexTRCDMinFineOffset: { getVal: encodeTRCDMinFineOffset },
-	SPDIndexTRPMin: { getVal: encodeTRPMin },
-	SPDIndexTRPMinFineOffset: { getVal: encodeTRPMinFineOffset },
-	SPDIndexTRASRCMinMSNs: { getVal: encodeTRASRCMinMSNs },
-	SPDIndexTRASMinLsb: { getVal: encodeTRASMinLsb },
-	SPDIndexTRCMinLsb: { getVal: encodeTRCMinLsb },
-	SPDIndexTRCMinFineOffset: { getVal: encodeTRCMinFineOffset },
-	SPDIndexTRFC1MinLsb: { getVal: encodeTRFC1MinLsb },
-	SPDIndexTRFC1MinMsb: { getVal: encodeTRFC1MinMsb },
-	SPDIndexTRFC2MinLsb: { getVal: encodeTRFC2MinLsb },
-	SPDIndexTRFC2MinMsb: { getVal: encodeTRFC2MinMsb },
-	SPDIndexTRFC4MinLsb: { getVal: encodeTRFC4MinLsb },
-	SPDIndexTRFC4MinMsb: { getVal: encodeTRFC4MinMsb },
-	SPDIndexTFAWMinMSN: { getVal: encodeTFAWMinMSN },
-	SPDIndexTFAWMinLsb: { getVal: encodeTFAWMinLsb },
-	SPDIndexTRRDSMin: { getVal: encodeTRRDSMin },
-	SPDIndexTRRDSMinFineOffset: { getVal: encodeTRRDSMinFineOffset },
-	SPDIndexTRRDLMin: { getVal: encodeTRRDLMin },
-	SPDIndexTRRDLMinFineOffset: { getVal: encodeTRRDLMinFineOffset },
-	SPDIndexTCCDLMin: { getVal: encodeTCCDLMin },
-	SPDIndexTCCDLMinFineOffset: { getVal: encodeTCCDLMinFineOffset },
-	SPDIndexTWRMinMSN: { getVal: encodeTWRMinMSN },
-	SPDIndexTWRMinLsb: { getVal: encodeTWRMinLsb },
-	SPDIndexTWTRMinMSNs: { getVal: encodeTWTRMinMSNs },
-	SPDIndexWTRSMinLsb: { getVal: encodeTWTRSMinLsb },
-	SPDIndexWTRLMinLsb: { getVal: encodeTWTRLMinLsb },
+var SPDAttribTable = map[int]SPDAttribTableEntry{
+	SPDIndexSize:               {constVal: SPDValueSize},
+	SPDIndexRevision:           {constVal: SPDValueRevision},
+	SPDIndexMemoryType:         {constVal: SPDValueMemoryType},
+	SPDIndexModuleType:         {constVal: SPDValueModuleType},
+	SPDIndexDensityBanks:       {getVal: encodeDensityBanks},
+	SPDIndexAddressing:         {getVal: encodeSdramAddressing},
+	SPDIndexPackageType:        {getVal: encodePackageType},
+	SPDIndexOptionalFeatures:   {constVal: SPDValueOptionalFeatures},
+	SPDIndexModuleOrganization: {getVal: encodeModuleOrganization},
+	SPDIndexBusWidth:           {constVal: SPDValueModuleBusWidth},
+	SPDIndexTimebases:          {constVal: SPDValueTimebases},
+	SPDIndexTCKMin:             {getVal: encodeTCKMin},
+	SPDIndexTCKMinFineOffset:   {getVal: encodeTCKMinFineOffset},
+	SPDIndexTCKMax:             {getVal: encodeTCKMax},
+	SPDIndexTCKMaxFineOffset:   {getVal: encodeTCKMaxFineOffset},
+	SPDIndexCASFirstByte:       {getVal: encodeCASFirstByte},
+	SPDIndexCASSecondByte:      {getVal: encodeCASSecondByte},
+	SPDIndexCASThirdByte:       {getVal: encodeCASThirdByte},
+	SPDIndexCASFourthByte:      {getVal: encodeCASFourthByte},
+	SPDIndexTAAMin:             {getVal: encodeTAAMin},
+	SPDIndexTAAMinFineOffset:   {getVal: encodeTAAMinFineOffset},
+	SPDIndexTRCDMin:            {getVal: encodeTRCDMin},
+	SPDIndexTRCDMinFineOffset:  {getVal: encodeTRCDMinFineOffset},
+	SPDIndexTRPMin:             {getVal: encodeTRPMin},
+	SPDIndexTRPMinFineOffset:   {getVal: encodeTRPMinFineOffset},
+	SPDIndexTRASRCMinMSNs:      {getVal: encodeTRASRCMinMSNs},
+	SPDIndexTRASMinLsb:         {getVal: encodeTRASMinLsb},
+	SPDIndexTRCMinLsb:          {getVal: encodeTRCMinLsb},
+	SPDIndexTRCMinFineOffset:   {getVal: encodeTRCMinFineOffset},
+	SPDIndexTRFC1MinLsb:        {getVal: encodeTRFC1MinLsb},
+	SPDIndexTRFC1MinMsb:        {getVal: encodeTRFC1MinMsb},
+	SPDIndexTRFC2MinLsb:        {getVal: encodeTRFC2MinLsb},
+	SPDIndexTRFC2MinMsb:        {getVal: encodeTRFC2MinMsb},
+	SPDIndexTRFC4MinLsb:        {getVal: encodeTRFC4MinLsb},
+	SPDIndexTRFC4MinMsb:        {getVal: encodeTRFC4MinMsb},
+	SPDIndexTFAWMinMSN:         {getVal: encodeTFAWMinMSN},
+	SPDIndexTFAWMinLsb:         {getVal: encodeTFAWMinLsb},
+	SPDIndexTRRDSMin:           {getVal: encodeTRRDSMin},
+	SPDIndexTRRDSMinFineOffset: {getVal: encodeTRRDSMinFineOffset},
+	SPDIndexTRRDLMin:           {getVal: encodeTRRDLMin},
+	SPDIndexTRRDLMinFineOffset: {getVal: encodeTRRDLMinFineOffset},
+	SPDIndexTCCDLMin:           {getVal: encodeTCCDLMin},
+	SPDIndexTCCDLMinFineOffset: {getVal: encodeTCCDLMinFineOffset},
+	SPDIndexTWRMinMSN:          {getVal: encodeTWRMinMSN},
+	SPDIndexTWRMinLsb:          {getVal: encodeTWRMinLsb},
+	SPDIndexTWTRMinMSNs:        {getVal: encodeTWTRMinMSNs},
+	SPDIndexWTRSMinLsb:         {getVal: encodeTWTRSMinLsb},
+	SPDIndexWTRLMinLsb:         {getVal: encodeTWTRLMinLsb},
 }
 
 type memParts struct {
@@ -926,8 +925,8 @@ type memParts struct {
 }
 
 type memPart struct {
-	Name string
-	Attribs memAttributes
+	Name        string
+	Attribs     memAttributes
 	SPDFileName string
 }
 
@@ -950,7 +949,6 @@ func isManufacturerPartNumberByte(index int) bool {
 	}
 	return false
 }
-
 
 func getSPDByte(index int, memAttribs *memAttributes) byte {
 	e, ok := SPDAttribTable[index]
@@ -977,7 +975,7 @@ func createSPD(memAttribs *memAttributes) string {
 			b = getSPDByte(i, memAttribs)
 		}
 
-		if (i + 1) % 16 == 0 {
+		if (i+1)%16 == 0 {
 			s += fmt.Sprintf("%02X\n", b)
 		} else {
 			s += fmt.Sprintf("%02X ", b)
@@ -1059,7 +1057,6 @@ func validateRanksPerPackage(ranks int) error {
 	return fmt.Errorf("Incorrect package ranks: ", ranks)
 }
 
-
 func validateCASLatency(CL int) error {
 	if CL >= 10 && CL <= 24 && CL != 23 {
 		return nil
@@ -1120,24 +1117,24 @@ func validateMemoryParts(memParts *memParts) error {
 }
 
 const (
-        /* First Byte */
-        CAS9 = 1 << 2
-        CAS10 = 1 << 3
-        CAS11 = 1 << 4
-        CAS12 = 1 << 5
-        CAS13 = 1 << 6
-        CAS14 = 1 << 7
-        /* Second Byte */
-        CAS15 = 1 << 0
-        CAS16 = 1 << 1
-        CAS17 = 1 << 2
-        CAS18 = 1 << 3
-        CAS19 = 1 << 4
-        CAS20 = 1 << 5
-        CAS21 = 1 << 6
-        CAS22 = 1 << 7
-        /* Third Byte */
-        CAS24 = 1 << 1
+	/* First Byte */
+	CAS9  = 1 << 2
+	CAS10 = 1 << 3
+	CAS11 = 1 << 4
+	CAS12 = 1 << 5
+	CAS13 = 1 << 6
+	CAS14 = 1 << 7
+	/* Second Byte */
+	CAS15 = 1 << 0
+	CAS16 = 1 << 1
+	CAS17 = 1 << 2
+	CAS18 = 1 << 3
+	CAS19 = 1 << 4
+	CAS20 = 1 << 5
+	CAS21 = 1 << 6
+	CAS22 = 1 << 7
+	/* Third Byte */
+	CAS24 = 1 << 1
 )
 
 func encodeLatencies(latency int, memAttribs *memAttributes) error {
@@ -1260,7 +1257,7 @@ func getDefaultCASLatencies(memAttribs *memAttributes) string {
 
 func updateDieBusWidth(memAttribs *memAttributes) {
 	if memAttribs.PackageBusWidth == 16 && memAttribs.RanksPerPackage == 1 &&
-			memAttribs.DiesPerPackage == 2 {
+		memAttribs.DiesPerPackage == 2 {
 		/*
 		 * If a x16 part has 2 die with single rank, PackageBusWidth
 		 * needs to be converted to match die bus width.
@@ -1278,7 +1275,7 @@ func updateCAS(memAttribs *memAttributes) error {
 
 	latencies := strings.Fields(memAttribs.CASLatencies)
 	for i := 0; i < len(latencies); i++ {
-		latency,err := strconv.Atoi(latencies[i])
+		latency, err := strconv.Atoi(latencies[i])
 		if err != nil {
 			return fmt.Errorf("Unable to convert latency ", latencies[i])
 		}
@@ -1320,7 +1317,6 @@ func updateTRASMin(memAttribs *memAttributes) {
 	}
 }
 
-
 func updateTRCMin(memAttribs *memAttributes) {
 	if memAttribs.TRCMinPs == 0 {
 		memAttribs.TRCMinPs = getTRCMinPs(memAttribs)
@@ -1342,7 +1338,7 @@ func updateTWRMin(memAttribs *memAttributes) {
 	}
 }
 
-func  updateTWTRMin(memAttribs *memAttributes) {
+func updateTWTRMin(memAttribs *memAttributes) {
 	if memAttribs.TWTRLMinPs == 0 {
 		memAttribs.TWTRLMinPs = TimingValueTWTRLMinPs
 	}

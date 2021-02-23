@@ -26,9 +26,9 @@ import (
  */
 const (
 	SPDManifestFileName = "ddr4_spd_manifest.generated.txt"
-	MakefileName = "Makefile.inc"
-	DRAMIdFileName = "dram_id.generated.txt"
-	MaxMemoryId = 15
+	MakefileName        = "Makefile.inc"
+	DRAMIdFileName      = "dram_id.generated.txt"
+	MaxMemoryId         = 15
 )
 
 func usage() {
@@ -42,7 +42,7 @@ func usage() {
 func checkArgs() error {
 
 	for _, arg := range os.Args[1:] {
-		if _, err := os.Stat(arg); err  != nil {
+		if _, err := os.Stat(arg); err != nil {
 			return err
 		}
 	}
@@ -52,8 +52,9 @@ func checkArgs() error {
 
 type usedPart struct {
 	partName string
-	index int
+	index    int
 }
+
 /*
  * Read input file CSV that contains list of memory part names used by the variant
  * and an optional assigned id.
@@ -150,7 +151,7 @@ func appendPartIdInfo(s *string, partName string, index int) {
 
 type partIds struct {
 	SPDFileName string
-	memParts string
+	memParts    string
 }
 
 /*
@@ -178,7 +179,7 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
 			return nil, fmt.Errorf("Invalid part entry")
 		}
 
-		SPDFileName,ok := partToSPDMap[p.partName]
+		SPDFileName, ok := partToSPDMap[p.partName]
 		if !ok {
 			return nil, fmt.Errorf("Failed to find part ", p.partName, " in SPD Manifest. Please add the part to global part list and regenerate SPD Manifest")
 		}
@@ -214,7 +215,7 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
 			continue
 		}
 
-		SPDFileName,ok := partToSPDMap[p.partName]
+		SPDFileName, ok := partToSPDMap[p.partName]
 		if !ok {
 			return nil, fmt.Errorf("Failed to find part ", p.partName, " in SPD Manifest. Please add the part to global part list and regenerate SPD Manifest")
 		}

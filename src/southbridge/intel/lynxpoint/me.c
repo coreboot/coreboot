@@ -28,7 +28,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Path that the BIOS should take based on ME state */
-static const char *const me_bios_path_values[] __unused = {
+static const char *const me_bios_path_values[] = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -40,11 +40,6 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev);
 
 /* MMIO base address for MEI interface */
 static u8 *mei_base_address;
-#ifdef __SIMPLE_DEVICE__
-void intel_me_mbp_clear(pci_devfn_t dev);
-#else
-void intel_me_mbp_clear(struct device *dev);
-#endif
 
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
@@ -98,11 +93,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-#ifdef __SIMPLE_DEVICE__
-static inline void pci_read_dword_ptr(pci_devfn_t dev, void *ptr, int offset)
-#else
 static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
-#endif
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
@@ -401,11 +392,7 @@ static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
  * state machine on the BIOS end doesn't match the ME's state machine.
  */
-#ifdef __SIMPLE_DEVICE__
-static void intel_me_mbp_give_up(pci_devfn_t dev)
-#else
 static void intel_me_mbp_give_up(struct device *dev)
-#endif
 {
 	struct mei_csr csr;
 
@@ -421,11 +408,7 @@ static void intel_me_mbp_give_up(struct device *dev)
  * mbp clear routine. This will wait for the ME to indicate that
  * the MBP has been read and cleared.
  */
-#ifdef __SIMPLE_DEVICE__
-void intel_me_mbp_clear(pci_devfn_t dev)
-#else
-void intel_me_mbp_clear(struct device *dev)
-#endif
+static void intel_me_mbp_clear(struct device *dev)
 {
 	int count;
 	struct me_hfs2 hfs2;
@@ -446,7 +429,7 @@ void intel_me_mbp_clear(struct device *dev)
 	}
 }
 
-static void __unused me_print_fw_version(mbp_fw_version_name *vers_name)
+static void me_print_fw_version(mbp_fw_version_name *vers_name)
 {
 	if (!vers_name) {
 		printk(BIOS_ERR, "ME: mbp missing version report\n");
@@ -485,7 +468,7 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 }
 
 /* Get ME Firmware Capabilities */
-static void __unused me_print_fwcaps(mbp_mefwcaps *cap)
+static void me_print_fwcaps(mbp_mefwcaps *cap)
 {
 	mbp_mefwcaps local_caps;
 	if (!cap) {
@@ -512,7 +495,7 @@ static void __unused me_print_fwcaps(mbp_mefwcaps *cap)
 }
 
 /* Send END OF POST message to the ME */
-static int __unused mkhi_end_of_post(void)
+static int mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -531,14 +514,12 @@ static int __unused mkhi_end_of_post(void)
 	return 0;
 }
 
-#ifdef __SIMPLE_DEVICE__
-
-void intel_me_finalize_smm(void)
+void intel_me_finalize(struct device *dev)
 {
 	struct me_hfs hfs;
 	u32 reg32;
 
-	reg32 = pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0);
+	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	mei_base_address = (u8 *)(uintptr_t)(reg32 & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
 
 	/* S3 path will have hidden this device already */
@@ -546,10 +527,10 @@ void intel_me_finalize_smm(void)
 		return;
 
 	/* Wait for ME MBP Cleared indicator */
-	intel_me_mbp_clear(PCH_ME_DEV);
+	intel_me_mbp_clear(dev);
 
 	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
+	reg32 = pci_read_config32(dev, PCI_ME_HFS);
 	memcpy(&hfs, &reg32, sizeof(u32));
 
 	/* Abort and leave device alone if not normal mode */
@@ -562,14 +543,12 @@ void intel_me_finalize_smm(void)
 	mkhi_end_of_post();
 
 	/* Make sure IO is disabled */
-	pci_and_config16(PCH_ME_DEV, PCI_COMMAND,
+	pci_and_config16(dev, PCI_COMMAND,
 			 ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO));
 
 	/* Hide the PCI device */
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 }
-
-#else /* !__SIMPLE_DEVICE__ */
 
 static inline int mei_sendrecv_icc(struct icc_header *icc,
 				   void *req_data, int req_bytes,
@@ -809,7 +788,7 @@ static void intel_me_init(struct device *dev)
 		me_icc_set_clock_enables(config->icc_clock_disable);
 
 	/*
-	 * Leave the ME unlocked. It will be locked via SMI command later.
+	 * Leave the ME unlocked. It will be locked later.
 	 */
 }
 
@@ -828,6 +807,7 @@ static struct device_operations device_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.enable			= intel_me_enable,
 	.init			= intel_me_init,
+	.final			= intel_me_finalize,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
@@ -842,8 +822,6 @@ static const struct pci_driver intel_me __pci_driver = {
 	.vendor  = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };
-
-#endif /* !__SIMPLE_DEVICE__ */
 
 /******************************************************************************
  *									     */
@@ -866,7 +844,7 @@ struct mbp_payload {
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
-static int __unused intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
+static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 {
 	mbp_header mbp_hdr;
 	u32 me2host_pending;
@@ -875,11 +853,7 @@ static int __unused intel_me_read_mbp(me_bios_payload *mbp_data, struct device *
 	struct mbp_payload *mbp;
 	int i;
 
-#ifdef __SIMPLE_DEVICE__
-	pci_read_dword_ptr(PCI_BDF(dev), &hfs2, PCI_ME_HFS2);
-#else
 	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
-#endif
 
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_ERR, "ME: MBP not ready\n");
@@ -984,10 +958,6 @@ static int __unused intel_me_read_mbp(me_bios_payload *mbp_data, struct device *
 	return 0;
 
 mbp_failure:
-#ifdef __SIMPLE_DEVICE__
-	intel_me_mbp_give_up(PCI_BDF(dev));
-#else
 	intel_me_mbp_give_up(dev);
-#endif
 	return -1;
 }

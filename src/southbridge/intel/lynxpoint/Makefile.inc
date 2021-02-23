@@ -30,7 +30,7 @@ ramstage-y += acpi.c
 ramstage-$(CONFIG_ELOG) += elog.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c pmutil.c
-smm-y += smihandler.c me.c pch.c
+smm-y += smihandler.c pch.c
 smm-y += pmutil.c usb_ehci.c usb_xhci.c
 
 bootblock-y += early_pch.c

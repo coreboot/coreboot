@@ -12,6 +12,11 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# TCSS
+	register "TcssAuxOri" = "1"
+	register "IomTypeCPortPadCfg[0]" = "0x09020005"
+	register "IomTypeCPortPadCfg[1]" = "0x09020006"
+
 	# Enable heci communication
 	register "HeciEnabled" = "1"
 
@@ -193,7 +198,12 @@ chip soc/intel/alderlake
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
 		device pci 0d.1 on  end # USB xDCI (OTG)
-		device pci 0d.2 on  end
+		device pci 0d.2 on
+			chip drivers/intel/usb4/retimer
+				register "power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19)"
+				device generic 0 on end
+			end
+		end
 		device pci 0d.3 on  end # TBT DMA1
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
@@ -303,11 +313,34 @@ chip soc/intel/alderlake
 		device pci 1e.3 off end # GSPI1
 		device pci 1f.0 on
 			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
 				device pnp 0c09.0 on end
 			end
 		end # eSPI
 		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 hidden end # PMC
+		device pci 1f.2 hidden
+			# The pmc_mux chip driver is a placeholder for the
+			# PMC.MUX device in the ACPI hierarchy.
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "6"
+						register "usb3_port_number" = "1"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "4"
+						register "usb3_port_number" = "2"
+						# SBU is fixed, HSL follows CC
+						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
+						device generic 1 alias conn1 on end
+					end
+				end
+			end
+		end # PMC
 		device pci 1f.3 on  end # Intel Audio SNDW
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # SPI

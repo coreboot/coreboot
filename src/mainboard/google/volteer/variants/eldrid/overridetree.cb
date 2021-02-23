@@ -100,12 +100,14 @@ chip soc/intel/tigerlake
 				register "policies.active" = "{[0] = {.target=DPTF_NONE}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU,CPU,87,5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60.8,6000)"
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,CPU,87,5000),
+					[1] = DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60.8,6000)}"
 
 				## Critical Policy
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,100,SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_2,75,SHUTDOWN)"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,100,SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_2,75,SHUTDOWN)}"
 
 				## Power Limits Control
 				# 3-15W PL1 in 200mW increments, avg over 26-34s interval

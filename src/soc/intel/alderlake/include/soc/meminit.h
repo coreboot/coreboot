@@ -103,6 +103,12 @@ struct mb_cfg {
 
 	/* Board type */
 	uint8_t UserBd;
+
+	/* Command Mirror */
+	uint8_t CmdMirror;
+
+	/* Enable/Disable TxDqDqs Retraining for Lp4/Lp5/DDR */
+	uint8_t LpDdrDqDqsReTraining;
 };
 
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,

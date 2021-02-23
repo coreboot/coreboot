@@ -226,6 +226,12 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
 	mem_cfg->UserBd = mb_cfg->UserBd;
 	set_rcomp_config(mem_cfg, mb_cfg);
 
+	/* Fill command mirror for memory */
+	mem_cfg->CmdMirror = mb_cfg->CmdMirror;
+
+	/* Fill LpDdrrDqDqs Retraining for memory */
+	mem_cfg->LpDdrDqDqsReTraining = mb_cfg->LpDdrDqDqsReTraining;
+
 	switch (mb_cfg->type) {
 	case MEM_TYPE_DDR4:
 	case MEM_TYPE_DDR5:

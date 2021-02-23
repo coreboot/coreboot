@@ -173,6 +173,8 @@ chip soc/intel/alderlake
 	# Not disconnected/enumerable
 	register "PchHdaIDispCodecDisconnect" = "0"
 
+	register "CnviBtAudioOffload" = "true"
+
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,

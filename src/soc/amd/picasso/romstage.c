@@ -147,8 +147,6 @@ asmlinkage void car_stage_entry(void)
 	console_init();
 
 	post_code(0x42);
-	u32 val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
 	/* Snapshot chipset state prior to any FSP call. */
 	fill_chipset_state();

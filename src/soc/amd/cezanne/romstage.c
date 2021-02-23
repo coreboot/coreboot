@@ -29,9 +29,6 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x41);
 
-	u32 val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
-
 	fsp_memory_init(acpi_is_wakeup_s3());
 
 	memmap_stash_early_dram_usage();

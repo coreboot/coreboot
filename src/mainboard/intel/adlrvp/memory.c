@@ -20,6 +20,8 @@ static const struct mb_cfg ddr4_mem_config = {
 
 	.UserBd = BOARD_TYPE_MOBILE,
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.ddr_config = {
 		.dq_pins_interleaved = false,
 	},
@@ -75,6 +77,8 @@ static const struct mb_cfg lpddr4_mem_config = {
 		.ddr6 = { .dqs0 = 1, .dqs1 = 0 },
 		.ddr7 = { .dqs0 = 0, .dqs1 = 1 },
 	},
+
+	.LpDdrDqDqsReTraining = 1,
 
 	.ect = true, /* Early Command Training */
 
@@ -134,6 +138,8 @@ static const struct mb_cfg lp5_mem_config = {
 
 	.ect = false, /* Early Command Training */
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.UserBd = BOARD_TYPE_MOBILE,
 
 	.lp5x_config = {
@@ -155,6 +161,8 @@ static const struct mb_cfg ddr5_mem_config = {
 	.ect = true, /* Early Command Training */
 
 	.UserBd = BOARD_TYPE_MOBILE,
+
+	.LpDdrDqDqsReTraining = 1,
 
 	.ddr_config = {
 		.dq_pins_interleaved = false,
@@ -213,6 +221,10 @@ static const struct mb_cfg adlm_lp4_mem_config = {
 	},
 
 	.ect = true, /* Early Command Training */
+
+	.CmdMirror = 0xCC,
+
+	.LpDdrDqDqsReTraining = 1,
 
 	.UserBd = BOARD_TYPE_ULT_ULX,
 };

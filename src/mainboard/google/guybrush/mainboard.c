@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <variant/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_configure_gpios(void)
@@ -19,6 +20,7 @@ static void mainboard_configure_gpios(void)
 static void mainboard_init(void *chip_info)
 {
 	mainboard_configure_gpios();
+	mainboard_ec_init();
 }
 
 static void mainboard_enable(struct device *dev)

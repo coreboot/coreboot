@@ -39,7 +39,7 @@ static const char *const me_bios_path_values[] __unused = {
 static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev);
 
 /* MMIO base address for MEI interface */
-static u32 *mei_base_address;
+static u8 *mei_base_address;
 #ifdef __SIMPLE_DEVICE__
 void intel_me_mbp_clear(pci_devfn_t dev);
 #else
@@ -85,7 +85,7 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 
 static inline void mei_read_dword_ptr(void *ptr, int offset)
 {
-	u32 dword = read32(mei_base_address + (offset/sizeof(u32)));
+	u32 dword = read32(mei_base_address + offset);
 	memcpy(ptr, &dword, sizeof(dword));
 	mei_dump(ptr, dword, offset, "READ");
 }
@@ -94,7 +94,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 {
 	u32 dword = 0;
 	memcpy(&dword, ptr, sizeof(dword));
-	write32(mei_base_address + (offset/sizeof(u32)), dword);
+	write32(mei_base_address + offset, dword);
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
@@ -126,13 +126,13 @@ static inline void read_me_csr(struct mei_csr *csr)
 
 static inline void write_cb(u32 dword)
 {
-	write32(mei_base_address + (MEI_H_CB_WW/sizeof(u32)), dword);
+	write32(mei_base_address + MEI_H_CB_WW, dword);
 	mei_dump(NULL, dword, MEI_H_CB_WW, "WRITE");
 }
 
 static inline u32 read_cb(void)
 {
-	u32 dword = read32(mei_base_address + (MEI_ME_CB_RW/sizeof(u32)));
+	u32 dword = read32(mei_base_address + MEI_ME_CB_RW);
 	mei_dump(NULL, dword, MEI_ME_CB_RW, "READ");
 	return dword;
 }
@@ -538,11 +538,11 @@ void intel_me_finalize_smm(void)
 	struct me_hfs hfs;
 	u32 reg32;
 
-	mei_base_address = (u32 *)
-		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
+	reg32 = pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0);
+	mei_base_address = (u8 *)(uintptr_t)(reg32 & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
 
 	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
+	if (!mei_base_address || mei_base_address == (u8 *)0xfffffff0)
 		return;
 
 	/* Wait for ME MBP Cleared indicator */
@@ -698,7 +698,7 @@ static int intel_mei_setup(struct device *dev)
 		printk(BIOS_DEBUG, "ME: MEI resource not present!\n");
 		return -1;
 	}
-	mei_base_address = (u32 *)(uintptr_t)res->base;
+	mei_base_address = (u8 *)(uintptr_t)res->base;
 
 	/* Ensure Memory and Bus Master bits are set */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);

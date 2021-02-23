@@ -698,7 +698,7 @@ static int intel_mei_setup(struct device *dev)
 		printk(BIOS_DEBUG, "ME: MEI resource not present!\n");
 		return -1;
 	}
-	mei_base_address = (u8 *)(uintptr_t)res->base;
+	mei_base_address = res2mmio(res, 0, 0);
 
 	/* Ensure Memory and Bus Master bits are set */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);

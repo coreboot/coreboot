@@ -3,8 +3,7 @@
 bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4_Updatable.bin
-APCB_SOURCES_68 = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4_Updatable_68.bin
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4_DefaultRecovery.bin
 
 ifeq ($(CONFIG_MAJOLICA_HAVE_MCHP_FW),y)

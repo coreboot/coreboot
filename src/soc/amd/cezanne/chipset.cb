@@ -4,14 +4,54 @@ chip soc/amd/cezanne
 	end
 	device domain 0 on
 		device pci 00.0 alias gnb on end
-		device pci 14.0 on end # SMBus, primary FCH function
-		device pci 18.0 on end # Data fabric [0-7]
-		device pci 18.1 on end
-		device pci 18.2 on end
-		device pci 18.3 on end
-		device pci 18.4 on end
-		device pci 18.5 on end
-		device pci 18.6 on end
-		device pci 18.7 on end
+		device pci 0.2 alias iommu off end # IOMMU
+
+		device pci 1.0 on end # Dummy Host Bridge, do not disable
+		device pci 1.1 alias gpp_bridge_1_1 off end # GPP Bridge 0
+		device pci 1.2 alias gpp_bridge_1_2 off end # GPP Bridge 1
+		device pci 1.3 alias gpp_bridge_1_3 off end # GPP Bridge 2
+
+		device pci 2.0 on end # Dummy Host Bridge, do not disable
+		device pci 2.1 alias gpp_bridge_2_1 off end # GPP Bridge 0
+		device pci 2.2 alias gpp_bridge_2_2 off end # GPP Bridge 1
+		device pci 2.3 alias gpp_bridge_2_3 off end # GPP Bridge 2
+		device pci 2.4 alias gpp_bridge_2_4 off end # GPP Bridge 3
+		device pci 2.5 alias gpp_bridge_2_5 off end # GPP Bridge 4
+		device pci 2.6 alias gpp_bridge_2_6 off end # GPP Bridge 5
+		device pci 2.7 alias gpp_bridge_2_7 off end # GPP Bridge 6
+
+		device pci 8.0 on end # Dummy Host Bridge, do not disable
+		device pci 8.1 alias gpp_bridge_a off  # Internal GPP Bridge 0 to Bus A
+			device pci 0.0 alias gfx off end # Internal GPU (GFX)
+			device pci 0.1 alias gfx_az off end # Display HD Audio Controller (GFXAZ)
+			device pci 0.2 alias crypto off end # Crypto Coprocessor
+			device pci 0.3 alias xhci_0 off end # USB 3.1 (USB0)
+			device pci 0.4 alias xhci_1 off end # USB 3.1 (USB1)
+			device pci 0.5 alias acp off end # Audio Processor (ACP)
+			device pci 0.6 alias standalone_az off end # Audio Processor HD Audio Controller (Standalone AZ)
+			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
+		end
+		device pci 8.2 alias gpp_bridge_b off # Internal GPP Bridge 1 to Bus B
+			device pci 0.0 alias sata_ahci off end # SATA AHCI Mode
+			device pci 0.1 alias sata_raid off end # SATA Controller; SATA Raid/AHCI Mode
+			device pci 0.2 alias xgbe_0 off end # 10 GbE Controller Port 0 (XGBE0)
+			device pci 0.3 alias xgbe_1 off end # 10 GbE Controller Port 1 (XGBE1)
+		end
+		device pci 8.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
+			device pci 0.0 alias dummy_function_c off end # PCIe Dummy Function
+			device pci 0.2 alias i2s_ac97 off end # I2S/AC'97 Audio
+		end
+
+		device pci 14.0 alias smbus on end # SMBus, primary FCH function
+		device pci 14.3 alias lpc_bridge on end # LPC Bridge
+
+		device pci 18.0 alias data_fabric_0 on end # Data fabric [0-7]
+		device pci 18.1 alias data_fabric_1 on end
+		device pci 18.2 alias data_fabric_2 on end
+		device pci 18.3 alias data_fabric_3 on end
+		device pci 18.4 alias data_fabric_4 on end
+		device pci 18.5 alias data_fabric_5 on end
+		device pci 18.6 alias data_fabric_6 on end
+		device pci 18.7 alias data_fabric_7 on end
 	end
 end

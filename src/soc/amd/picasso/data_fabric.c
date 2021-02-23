@@ -115,6 +115,8 @@ static const char *data_fabric_acpi_name(const struct device *dev)
 		return "DFD5";
 	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF6:
 		return "DFD6";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF7:
+		return "DFD7";
 	default:
 		printk(BIOS_ERR, "%s: Unhandled device id 0x%x\n", __func__, dev->device);
 	}
@@ -137,6 +139,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF4,
 	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF5,
 	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF6,
+	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_DF7,
 	0
 };
 

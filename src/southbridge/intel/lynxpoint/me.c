@@ -36,7 +36,6 @@ static const char *const me_bios_path_values[] = {
 	[ME_DISABLE_BIOS_PATH]		= "Disable",
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
-static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev);
 
 /* MMIO base address for MEI interface */
 static u8 *mei_base_address;
@@ -388,6 +387,30 @@ static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 	return 0;
 }
 
+static inline int mei_sendrecv_icc(struct icc_header *icc,
+				   void *req_data, int req_bytes,
+				   void *rsp_data, int rsp_bytes)
+{
+	struct icc_header icc_rsp;
+
+	/* Send header */
+	if (mei_send_header(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+			    icc, sizeof(*icc), req_bytes ? 0 : 1) < 0)
+		return -1;
+
+	/* Send data if available */
+	if (req_bytes && mei_send_data(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+				       req_data, req_bytes) < 0)
+		return -1;
+
+	/* Read header and data, if needed */
+	if (rsp_bytes && mei_recv_msg(&icc_rsp, sizeof(icc_rsp),
+				      rsp_data, rsp_bytes) < 0)
+		return -1;
+
+	return 0;
+}
+
 /*
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
  * state machine on the BIOS end doesn't match the ME's state machine.
@@ -550,30 +573,6 @@ void intel_me_finalize(struct device *dev)
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 }
 
-static inline int mei_sendrecv_icc(struct icc_header *icc,
-				   void *req_data, int req_bytes,
-				   void *rsp_data, int rsp_bytes)
-{
-	struct icc_header icc_rsp;
-
-	/* Send header */
-	if (mei_send_header(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
-			    icc, sizeof(*icc), req_bytes ? 0 : 1) < 0)
-		return -1;
-
-	/* Send data if available */
-	if (req_bytes && mei_send_data(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
-				       req_data, req_bytes) < 0)
-		return -1;
-
-	/* Read header and data, if needed */
-	if (rsp_bytes && mei_recv_msg(&icc_rsp, sizeof(icc_rsp),
-				      rsp_data, rsp_bytes) < 0)
-		return -1;
-
-	return 0;
-}
-
 static int me_icc_set_clock_enables(u32 mask)
 {
 	struct icc_clock_enables_msg clk = {
@@ -592,7 +591,6 @@ static int me_icc_set_clock_enables(u32 mask)
 		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
 		return -1;
 	}
-
 	printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
 	return 0;
 }
@@ -738,93 +736,6 @@ static int intel_me_extend_valid(struct device *dev)
 	return 0;
 }
 
-/* Check whether ME is present and do basic init */
-static void intel_me_init(struct device *dev)
-{
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
-	me_bios_path path = intel_me_path(dev);
-	me_bios_payload mbp_data;
-
-	/* Do initial setup and determine the BIOS path */
-	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
-
-	if (path == ME_NORMAL_BIOS_PATH) {
-		/* Validate the extend register */
-		intel_me_extend_valid(dev);
-	}
-
-	memset(&mbp_data, 0, sizeof(mbp_data));
-
-	/*
-	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
-	 * all boot flows except S3 Resume.
-	 */
-
-	/* Prepare MEI MMIO interface */
-	if (intel_mei_setup(dev) < 0)
-		return;
-
-	if (intel_me_read_mbp(&mbp_data, dev))
-		return;
-
-	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
-		me_print_fw_version(mbp_data.fw_version_name);
-
-		if (CONFIG(DEBUG_INTEL_ME))
-			me_print_fwcaps(mbp_data.fw_capabilities);
-
-		if (mbp_data.plat_time) {
-			printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
-			       mbp_data.plat_time->wake_event_mrst_time_ms);
-			printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
-			       mbp_data.plat_time->mrst_pltrst_time_ms);
-			printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
-			       mbp_data.plat_time->pltrst_cpurst_time_ms);
-		}
-	}
-
-	/* Set clock enables according to devicetree */
-	if (config && config->icc_clock_disable)
-		me_icc_set_clock_enables(config->icc_clock_disable);
-
-	/*
-	 * Leave the ME unlocked. It will be locked later.
-	 */
-}
-
-static void intel_me_enable(struct device *dev)
-{
-	/* Avoid talking to the device in S3 path */
-	if (acpi_is_wakeup_s3()) {
-		dev->enabled = 0;
-		pch_disable_devfn(dev);
-	}
-}
-
-static struct device_operations device_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.enable			= intel_me_enable,
-	.init			= intel_me_init,
-	.final			= intel_me_finalize,
-	.ops_pci		= &pci_dev_ops_pci,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_H_MEI,
-	PCI_DEVICE_ID_INTEL_LPT_LP_MEI,
-	0
-};
-
-static const struct pci_driver intel_me __pci_driver = {
-	.ops     = &device_ops,
-	.vendor  = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
-};
-
-/******************************************************************************
- *									     */
 static u32 me_to_host_words_pending(void)
 {
 	struct mei_csr me;
@@ -841,8 +752,10 @@ struct mbp_payload {
 };
 
 /*
- * mbp seems to be following its own flow, let's retrieve it in a dedicated
- * function.
+ * Read and print ME MBP data
+ *
+ * Return -1 to indicate a problem (give up)
+ * Return 0 to indicate success (send LOCK+EOP)
  */
 static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 {
@@ -961,3 +874,88 @@ mbp_failure:
 	intel_me_mbp_give_up(dev);
 	return -1;
 }
+
+/* Check whether ME is present and do basic init */
+static void intel_me_init(struct device *dev)
+{
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	me_bios_path path = intel_me_path(dev);
+	me_bios_payload mbp_data;
+
+	/* Do initial setup and determine the BIOS path */
+	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
+
+	if (path == ME_NORMAL_BIOS_PATH) {
+		/* Validate the extend register */
+		intel_me_extend_valid(dev);
+	}
+
+	memset(&mbp_data, 0, sizeof(mbp_data));
+
+	/*
+	 * According to the ME9 BWG, BIOS is required to fetch MBP data in
+	 * all boot flows except S3 Resume.
+	 */
+
+	/* Prepare MEI MMIO interface */
+	if (intel_mei_setup(dev) < 0)
+		return;
+
+	if (intel_me_read_mbp(&mbp_data, dev))
+		return;
+
+	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+		me_print_fw_version(mbp_data.fw_version_name);
+
+		if (CONFIG(DEBUG_INTEL_ME))
+			me_print_fwcaps(mbp_data.fw_capabilities);
+
+		if (mbp_data.plat_time) {
+			printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
+			       mbp_data.plat_time->wake_event_mrst_time_ms);
+			printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
+			       mbp_data.plat_time->mrst_pltrst_time_ms);
+			printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
+			       mbp_data.plat_time->pltrst_cpurst_time_ms);
+		}
+	}
+
+	/* Set clock enables according to devicetree */
+	if (config && config->icc_clock_disable)
+		me_icc_set_clock_enables(config->icc_clock_disable);
+
+	/*
+	 * Leave the ME unlocked. It will be locked later.
+	 */
+}
+
+static void intel_me_enable(struct device *dev)
+{
+	/* Avoid talking to the device in S3 path */
+	if (acpi_is_wakeup_s3()) {
+		dev->enabled = 0;
+		pch_disable_devfn(dev);
+	}
+}
+
+static struct device_operations device_ops = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= intel_me_enable,
+	.init			= intel_me_init,
+	.final			= intel_me_finalize,
+	.ops_pci		= &pci_dev_ops_pci,
+};
+
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_INTEL_LPT_H_MEI,
+	PCI_DEVICE_ID_INTEL_LPT_LP_MEI,
+	0
+};
+
+static const struct pci_driver intel_me __pci_driver = {
+	.ops     = &device_ops,
+	.vendor  = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
+};

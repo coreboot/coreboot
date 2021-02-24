@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_GENERIC_ALC1015) += alc1015.c

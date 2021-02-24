@@ -22,6 +22,8 @@
 #define   HPET_EN			(1 << 6) /* decode HPET MMIO at 0xfed00000 */
 #define   FCH_IOAPIC_EN			(1 << 5)
 #define   SMBUS_ASF_IO_EN		(1 << 4)
+#define   LEGACY_DMA_IO_80_EN		(1 << 3) /* pass 0x80-0x83 to legacy DMA IO range */
+#define   LEGACY_DMA_IO_EN		(1 << 2)
 #define   CF9_IO_EN			(1 << 1)
 #define   LEGACY_IO_EN			(1 << 0)
 #define PM_RST_STATUS			0xc0
@@ -78,6 +80,7 @@ void enable_acpimmio_decode_pm24(void);
 void enable_acpimmio_decode_pm04(void);
 void fch_enable_cf9_io(void);
 void fch_enable_legacy_io(void);
+void fch_disable_legacy_dma_io(void);
 void fch_io_enable_legacy_io(void);
 void fch_enable_ioapic_decode(void);
 void fch_configure_hpet(void);

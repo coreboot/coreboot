@@ -69,6 +69,12 @@ void fch_enable_legacy_io(void)
 	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) | LEGACY_IO_EN);
 }
 
+void fch_disable_legacy_dma_io(void)
+{
+	pm_write32(PM_DECODE_EN, pm_read32(PM_DECODE_EN) &
+		~(LEGACY_DMA_IO_EN | LEGACY_DMA_IO_80_EN));
+}
+
 void fch_io_enable_legacy_io(void)
 {
 	pm_io_write32(PM_DECODE_EN, pm_io_read32(PM_DECODE_EN) | LEGACY_IO_EN);

@@ -35,8 +35,8 @@ chip soc/amd/picasso
 
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 184, /* 0 to 1.26v (1.8 * .7) */
-		.fall_time_ns = 42,  /* 1.26v to 0 */
+		.rise_time_ns = 110, /* 0 to 1.26v (1.8 * .7) */
+		.fall_time_ns = 34,  /* 1.26v to 0 */
 		.early_init = true,
 	}"
 

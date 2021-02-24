@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select ELOG_GSMI
 	select FW_CONFIG
 	select HAVE_ACPI_RESUME
+	select HAVE_EM100_SUPPORT
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_AMD_CEZANNE
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
@@ -45,6 +46,16 @@ config AMD_FWM_POSITION_INDEX
 	default 3
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
+
+config EFS_SPI_READ_MODE
+	int
+	default 0 if EM100 # Normal read mode
+	default 4          # Dual IO (1-2-2)
+
+config EFS_SPI_SPEED
+	int
+	default 3 if EM100 # 16.66 MHz
+	default 1          # 33.33 MHz
 
 config VARIANT_DIR
 	string

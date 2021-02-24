@@ -235,6 +235,21 @@ config PSP_UNLOCK_SECURE_DEBUG
 	help
 	  Select this item to enable secure debug options in PSP.
 
+config HAVE_PSP_WHITELIST_FILE
+	bool "Include a debug whitelist file in PSP build"
+	default n
+	help
+	  Support secured unlock prior to reset using a whitelisted
+	  serial number. This feature requires a signed whitelist image
+	  and bootloader from AMD.
+
+	  If unsure, answer 'n'
+
+config PSP_WHITELIST_FILE
+	string "Debug whitelist file path"
+	depends on HAVE_PSP_WHITELIST_FILE
+	default "3rdparty/amd_blobs/cezanne/PSP/wtl-czn.sbin"
+
 endmenu
 
 endif # SOC_AMD_CEZANNE

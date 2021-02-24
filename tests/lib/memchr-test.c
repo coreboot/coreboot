@@ -47,7 +47,7 @@ static void test_memchr_existing_value(void **state)
 {
 	/* Test using character string */
 	void *v1 = memchr(test_data1, 'A', test_data1_sz);
-	void *v2 = memchr(test_data1 + 26, 'A', test_data1_sz - 10);
+	void *v2 = memchr(test_data1 + 26, 'A', test_data1_sz - 26);
 
 	assert_non_null(v1);
 	assert_non_null(v2);
@@ -67,13 +67,17 @@ static void test_memchr_existing_value(void **state)
 static void test_memchr_last_character_in_string(void **state)
 {
 	void *v1 = memchr(test_data1, '9', test_data1_sz);
-	void *v2 = memchr(&test_data1[test_data1_sz - 2], '9', test_data1_sz);
+	void *v2 = memchr(&test_data1[test_data1_sz - 2], '9', 2);
 	void *v3 = memchr(test_data2, 0xff, test_data2_sz);
-	void *v4 = memchr(&test_data2[test_data2_sz - 1], 0xff, test_data2_sz);
+	void *v4 = memchr(&test_data2[test_data2_sz - 1], 0xff, 1);
 
+	assert_non_null(v1);
+	assert_non_null(v2);
 	assert_ptr_equal(v1, v2);
 	assert_ptr_equal(v1, &test_data1[test_data1_sz - 2]);
 
+	assert_non_null(v3);
+	assert_non_null(v4);
 	assert_ptr_equal(v3, v4);
 	assert_ptr_equal(v3, &test_data2[test_data2_sz - 1]);
 }

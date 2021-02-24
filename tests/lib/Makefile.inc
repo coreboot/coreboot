@@ -20,6 +20,7 @@ tests-y += memchr-test
 tests-y += memcpy-test
 tests-y += malloc-test
 tests-y += memmove-test
+tests-y += crc_byte-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -97,4 +98,7 @@ malloc-test-srcs += tests/lib/malloc-test.c
 malloc-test-srcs += tests/stubs/console.c
 
 memmove-test-srcs += tests/lib/memmove-test.c
+
+crc_byte-test-srcs += tests/lib/crc_byte-test.c
+crc_byte-test-srcs += src/lib/crc_byte.c
 

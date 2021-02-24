@@ -38,4 +38,7 @@ config INTEL_DESCRIPTOR_MODE_REQUIRED
 	bool
 	default n
 
+config PCIEXP_HOTPLUG
+	default y
+
 endif

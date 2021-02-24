@@ -65,4 +65,7 @@ config HIDE_MEI_ON_ERROR
 	  device will be hidden when ME is in an inoperable mode, e.g.
 	  if me_cleaner was used.
 
+config PCIEXP_HOTPLUG
+	default y
+
 endif

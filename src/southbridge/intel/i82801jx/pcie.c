@@ -63,11 +63,11 @@ static void pch_pciexp_scan_bridge(struct device *dev)
 {
 	struct southbridge_intel_i82801jx_config *config = dev->chip_info;
 
-	/* Normal PCIe Scan */
-	pciexp_scan_bridge(dev);
-
-	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
-		intel_acpi_pcie_hotplug_scan_slot(dev->link_list);
+	if (CONFIG(PCIEXP_HOTPLUG) && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
+		pciexp_hotplug_scan_bridge(dev);
+	} else {
+		/* Normal PCIe Scan */
+		pciexp_scan_bridge(dev);
 	}
 }
 

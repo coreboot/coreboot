@@ -9,7 +9,6 @@ ramstage-y += azalia.c
 ramstage-y += fadt.c
 ramstage-y += lpc.c
 ramstage-y += ../bd82x6x/pci.c
-ramstage-y += ../bd82x6x/pcie.c
 ramstage-y += sata.c
 ramstage-y += usb_ehci.c
 ramstage-y += me.c

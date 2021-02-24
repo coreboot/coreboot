@@ -12,7 +12,7 @@ chip soc/amd/picasso
 	register "slow_ppt_limit_mW" = "6000"
 	register "fast_ppt_limit_mW" = "9000"
 	register "slow_ppt_time_constant_s" = "5"
-	register "stapm_time_constant_s" = "1640"
+	register "stapm_time_constant_s" = "2500"
 	register "sustained_power_limit_mW" = "4800"
 
 	register "telemetry_vddcr_vdd_slope_mA" = "41322"

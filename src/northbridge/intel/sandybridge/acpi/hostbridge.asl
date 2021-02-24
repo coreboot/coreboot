@@ -326,12 +326,21 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
 			0x00000000,,, PM01)
 
+	// PCI Memory Region above 4G TOUUD -> 1 << cpu_addr_bits
+	QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadWrite,
+			0x00000000, 0x00000000, 0x00000000, 0x00000000,
+			0x00000000,,, PM02)
+
 	// TPM Area (0xfed40000-0xfed44fff)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0xfed40000, 0xfed44fff, 0x00000000,
 			0x00005000,,, TPMR)
 })
+
+External (\A4GS, IntObj)
+External (\A4GB, IntObj)
 
 Method (_CRS, 0, Serialized)
 {
@@ -358,6 +367,16 @@ Method (_CRS, 0, Serialized)
 	PMIN = Local0
 	PMAX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
 	PLEN = PMAX - PMIN + 1
+
+	If (A4GS != 0) {
+		CreateQwordField(MCRS, ^PM02._MIN, MMIN)
+		CreateQwordField(MCRS, ^PM02._MAX, MMAX)
+		CreateQwordField(MCRS, ^PM02._LEN, MLEN)
+		/* Set 64bit MMIO resource base and length */
+		MLEN = \A4GS
+		MMIN = \A4GB
+		MMAX = MMIN + MLEN - 1
+	}
 
 	Return (MCRS)
 }

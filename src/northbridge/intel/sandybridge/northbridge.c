@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/cpu.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <commonlib/helpers.h>
 #include <device/pci_ops.h>
 #include <delay.h>
@@ -82,6 +84,14 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 }
 
+static uint64_t get_touud(const struct device *dev)
+{
+	uint64_t touud = pci_read_config32(dev, TOUUD + 4);
+	touud <<= 32;
+	touud |= pci_read_config32(dev, TOUUD);
+	return touud;
+}
+
 static void mc_read_resources(struct device *dev)
 {
 	uint64_t tom, me_base, touud;
@@ -123,9 +133,7 @@ static void mc_read_resources(struct device *dev)
 	 */
 
 	/* Top of Upper Usable DRAM, including remap */
-	touud  = pci_read_config32(dev, TOUUD + 4);
-	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD);
+	touud  = get_touud(dev);
 
 	/* Top of Lower Usable DRAM */
 	tolud = pci_read_config32(dev, TOLUD);
@@ -372,13 +380,32 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(pcidev_on_root(0, 0), SMRAM, smram);
 }
 
+static void set_above_4g_pci(const struct device *dev)
+{
+	const uint64_t touud = get_touud(dev);
+	const uint64_t len = POWER_OF_2(cpu_phys_address_size()) - touud;
+
+	acpigen_write_scope("\\");
+	acpigen_write_name_qword("A4GB", touud);
+	acpigen_write_name_qword("A4GS", len);
+	acpigen_pop_len();
+
+	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
+}
+
+static void mc_gen_ssdt(const struct device *dev)
+{
+	generate_cpu_entries(dev);
+	set_above_4g_pci(dev);
+}
+
 static struct device_operations mc_ops = {
 	.read_resources         = mc_read_resources,
 	.set_resources          = pci_dev_set_resources,
 	.enable_resources       = pci_dev_enable_resources,
 	.init                   = northbridge_init,
 	.ops_pci                = &pci_dev_ops_pci,
-	.acpi_fill_ssdt		= generate_cpu_entries,
+	.acpi_fill_ssdt		= mc_gen_ssdt,
 };
 
 static const unsigned short pci_device_ids[] = {

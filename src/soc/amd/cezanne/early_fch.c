@@ -17,6 +17,7 @@ void fch_pre_init(void)
 	fch_smbus_init();
 	fch_enable_cf9_io();
 	fch_enable_legacy_io();
+	fch_disable_legacy_dma_io();
 	enable_aoac_devices();
 
 	/*

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/memmap.h>
 #include <arch/cpu.h>
 #include <console/console.h>
@@ -30,6 +31,9 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x41);
 
 	fsp_memory_init(acpi_is_wakeup_s3());
+
+	/* Fixup settings FSP-M should not be changing */
+	fch_disable_legacy_dma_io();
 
 	memmap_stash_early_dram_usage();
 

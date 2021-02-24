@@ -1725,7 +1725,7 @@ static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int he
 
 static void setup_heci_uma(struct raminfo *info)
 {
-	if (!info->memory_reserved_for_heci_mb && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
+	if (!info->memory_reserved_for_heci_mb || !(pci_read_config32(HECIDEV, 0x40) & 0x20))
 		return;
 
 	const u64 heci_uma_addr =
@@ -3215,8 +3215,10 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		;
 
 	/* Wait for ME to be ready */
-	intel_early_me_init();
-	info.memory_reserved_for_heci_mb = intel_early_me_uma_size();
+	if (intel_early_me_init() == 0)
+		info.memory_reserved_for_heci_mb = intel_early_me_uma_size();
+	else
+		info.memory_reserved_for_heci_mb = 0;
 
 	/* before SPD */
 	timestamp_add_now(101);

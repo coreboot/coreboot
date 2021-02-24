@@ -100,6 +100,7 @@ config MAINBOARD_PART_NUMBER
 	default "Storo" if BOARD_GOOGLE_STORO
 	default "Sasukette" if BOARD_GOOGLE_SASUKETTE
 	default "Kracko" if BOARD_GOOGLE_KRACKO
+	default "Blipper" if BOARD_GOOGLE_BLIPPER
 
 config MAX_CPUS
 	int
@@ -136,5 +137,6 @@ config VARIANT_DIR
 	default "storo" if BOARD_GOOGLE_STORO
 	default "sasukette" if BOARD_GOOGLE_SASUKETTE
 	default "kracko" if BOARD_GOOGLE_KRACKO
+	default "blipper" if BOARD_GOOGLE_BLIPPER
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

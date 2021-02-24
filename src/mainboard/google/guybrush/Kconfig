@@ -55,4 +55,11 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Guybrush"
 
+config GPIO_SIGN_OF_LIFE
+	def_bool n
+	help
+	  Enable toggling GPIO 31 as a sign of life on Guybrush
+
+	  TODO: Remove this option when board is booting
+
 endif # BOARD_GOOGLE_BASEBOARD_GUYBRUSH

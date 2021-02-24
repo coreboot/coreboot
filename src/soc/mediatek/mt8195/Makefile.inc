@@ -46,6 +46,7 @@ ramstage-y += soc.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/wdt.c
+ramstage-y += mt6360.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8195/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

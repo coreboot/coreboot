@@ -11,7 +11,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A11, NONE),
 
 	/* B7  : PCIE_CLKREQ2_N ==> WWAN_SAR_DETECT_ODL*/
-	PAD_CFG_GPI_IRQ_WAKE(GPP_B7, NONE, DEEP, LEVEL, INVERT),
+	PAD_CFG_GPO(GPP_B7, 1, DEEP),
 	/* B8  : WLAN_CLKREQ_ODL ==> NC */
 	PAD_NC(GPP_B8, NONE),
 

@@ -23,10 +23,10 @@ static efi_return_status_t mps1_get_processor_info(const
 
 static efi_return_status_t mps1_startup_all_aps(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
-	efi_ap_procedure procedure, efi_boolean_t ignored3,
+	efi_ap_procedure procedure, efi_boolean_t run_serial,
 	efi_uintn_t timeout_usec, void *argument)
 {
-	return mp_startup_all_aps(procedure, timeout_usec, argument);
+	return mp_startup_all_aps(procedure, run_serial, timeout_usec, argument);
 }
 
 static efi_return_status_t mps1_startup_this_ap(const

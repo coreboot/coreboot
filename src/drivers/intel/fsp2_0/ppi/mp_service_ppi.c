@@ -64,7 +64,7 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 }
 
 efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
-	efi_uintn_t timeout_usec, void *argument)
+	bool run_serial, efi_uintn_t timeout_usec, void *argument)
 {
 	if (cpu_index() < 0)
 		return FSP_DEVICE_ERROR;
@@ -72,8 +72,7 @@ efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 	if (procedure == NULL)
 		return FSP_INVALID_PARAMETER;
 
-	if (mp_run_on_aps((void *)procedure, argument,
-			MP_RUN_ON_ALL_CPUS, timeout_usec)) {
+	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, !run_serial)) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}

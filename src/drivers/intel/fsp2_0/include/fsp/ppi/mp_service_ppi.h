@@ -24,7 +24,7 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 
 /* executes a caller provided function on all enabled APs */
 efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
-	efi_uintn_t timeout_usec, void *argument);
+	bool run_serial, efi_uintn_t timeout_usec, void *argument);
 
 /* executes a caller provided function on all enabled APs + BSP */
 efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,

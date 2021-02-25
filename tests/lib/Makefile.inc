@@ -21,6 +21,7 @@ tests-y += memcpy-test
 tests-y += malloc-test
 tests-y += memmove-test
 tests-y += crc_byte-test
+tests-y += compute_ip_checksum-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -101,4 +102,7 @@ memmove-test-srcs += tests/lib/memmove-test.c
 
 crc_byte-test-srcs += tests/lib/crc_byte-test.c
 crc_byte-test-srcs += src/lib/crc_byte.c
+
+compute_ip_checksum-test-srcs += tests/lib/compute_ip_checksum-test.c
+compute_ip_checksum-test-srcs += src/lib/compute_ip_checksum.c
 

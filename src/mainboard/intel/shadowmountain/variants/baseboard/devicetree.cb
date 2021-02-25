@@ -311,7 +311,14 @@ chip soc/intel/alderlake
 		device pci 1d.3 off end # RP12
 		device pci 1e.0 on  end # UART0
 		device pci 1e.1 off end # UART1
-		device pci 1e.2 on  end # GSPI0
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C3_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI0
 		device pci 1e.3 off end # GSPI1
 		device pci 1f.0 on
 			chip ec/google/chromeec

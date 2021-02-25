@@ -394,8 +394,6 @@ void acpigen_write_return_byte(uint8_t arg);
 void acpigen_write_upc(enum acpi_upc_type type);
 void acpigen_write_pld(const struct acpi_pld *pld);
 void acpigen_write_ADR(uint64_t adr);
-void acpigen_write_ADR_pci_devfn(pci_devfn_t devfn);
-void acpigen_write_ADR_pci_device(const struct device *dev);
 struct soundwire_address;
 void acpigen_write_ADR_soundwire_device(const struct soundwire_address *address);
 void acpigen_write_create_byte_field(uint8_t op, size_t byte_offset, const char *name);

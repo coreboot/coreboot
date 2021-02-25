@@ -2,6 +2,7 @@
 
 #include "pci_xhci.h"
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

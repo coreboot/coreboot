@@ -2,6 +2,7 @@
 
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <sar.h>

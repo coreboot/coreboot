@@ -6,6 +6,7 @@ ramstage-y += acpi.c
 ramstage-y += acpigen.c
 ramstage-y += acpigen_dptf.c
 ramstage-y += acpigen_dsm.c
+ramstage-$(CONFIG_PCI) += acpigen_pci.c
 ramstage-y += acpigen_ps2_keybd.c
 ramstage-y += acpigen_usb.c
 ramstage-y += device.c

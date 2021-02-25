@@ -5,6 +5,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <stdlib.h>

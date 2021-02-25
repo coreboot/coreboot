@@ -4,6 +4,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <device/device.h>

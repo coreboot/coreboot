@@ -840,6 +840,7 @@ DefinitionBlock(
 	0x20141018	/* OEM revision */
 )
 {
+	#include <acpi/dsdt_top.asl>
 	#include "acpi/platform.asl"
 `)
 

@@ -220,9 +220,9 @@ bool cpu_cl_discovery(void)
 	printk(BIOS_DEBUG, "tmp_bar_addr: 0x%X\n", tmp_bar_addr);
 
 	if (cpu_cl_devsc_cap.discovery_data.fields.t_bir_q == TEL_DVSEC_TBIR_BAR0) {
-		pci_write_config32(SA_DEV_TMT, TEL_CFG_BAR0, tmp_bar_addr);
+		pci_write_config32(SA_DEV_TMT, PCI_BASE_ADDRESS_0, tmp_bar_addr);
 	} else if (cpu_cl_devsc_cap.discovery_data.fields.t_bir_q == TEL_DVSEC_TBIR_BAR1) {
-		pci_write_config32(SA_DEV_TMT, TEL_CFG_BAR1, tmp_bar_addr);
+		pci_write_config32(SA_DEV_TMT, PCI_BASE_ADDRESS_1, tmp_bar_addr);
 	} else {
 		printk(BIOS_DEBUG, "invalid discovery data t_bir_q: 0x%x\n",
 			cpu_cl_devsc_cap.discovery_data.fields.t_bir_q);

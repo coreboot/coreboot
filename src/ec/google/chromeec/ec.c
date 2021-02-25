@@ -848,8 +848,19 @@ int google_chromeec_cbi_get_fw_config(uint64_t *fw_config)
 	if (cbi_get_uint32(&config, CBI_TAG_FW_CONFIG))
 		return -1;
 
-	/* FIXME: Yet to determine source of other 32 bits... */
 	*fw_config = (uint64_t)config;
+	/*
+	 * If SSFC is configured to be part of FW_CONFIG, add it at the most significant
+	 * 32 bits.
+	 */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG)) {
+		uint32_t ssfc;
+
+		if (google_chromeec_cbi_get_ssfc(&ssfc))
+			return -1;
+
+		*fw_config |= (uint64_t)ssfc << 32;
+	}
 	return 0;
 }
 

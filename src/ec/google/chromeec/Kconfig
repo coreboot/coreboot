@@ -197,4 +197,11 @@ config EC_GOOGLE_CHROMEEC_SWITCHES
 	  Enable support for Chrome OS mode switches provided by the Chrome OS
 	  EC.
 
+config EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG
+	depends on FW_CONFIG_SOURCE_CHROMEEC_CBI
+	bool
+	help
+	  Fetch Second Source Factory Cache from CBI EEPROM and add it in the most significant
+	  32 bits of firmware configuration.
+
 source "src/ec/google/chromeec/*/Kconfig"

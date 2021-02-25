@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_GAZE15
+	bool "gaze15"

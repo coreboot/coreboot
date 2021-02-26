@@ -24,3 +24,34 @@ void acpigen_write_ADR_pci_device(const struct device *dev)
 	assert(dev->path.type == DEVICE_PATH_PCI);
 	acpigen_write_ADR_pci_devfn(dev->path.pci.devfn);
 }
+
+void acpigen_write_PRT_GSI_entry(unsigned int pci_dev, unsigned int acpi_pin, unsigned int gsi)
+{
+	acpigen_write_package(4);
+	acpigen_write_dword((pci_dev << 16) | 0xffff);
+	acpigen_write_byte(acpi_pin);
+
+	/* Source */
+	acpigen_write_byte(0);
+
+	/* Source Index */
+	acpigen_write_dword(gsi);
+
+	acpigen_pop_len(); /* Package */
+}
+
+void acpigen_write_PRT_source_entry(unsigned int pci_dev, unsigned int acpi_pin,
+				    const char *source_path, unsigned int index)
+{
+	acpigen_write_package(4);
+	acpigen_write_dword((pci_dev << 16) | 0xffff);
+	acpigen_write_byte(acpi_pin);
+
+	/* Source */
+	acpigen_emit_namestring(source_path);
+
+	/* Source Index */
+	acpigen_write_dword(index);
+
+	acpigen_pop_len(); /* Package */
+}

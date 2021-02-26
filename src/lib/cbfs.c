@@ -69,8 +69,9 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 	if (rdev_chain(rdev, &cbd->rdev, data_offset, be32toh(mdata->h.len)))
 		return CB_ERR;
 
-	if (tspi_measure_cbfs_hook(rdev, name, be32toh(mdata->h.type)))
-		return CB_ERR;
+	if (tspi_measure_cbfs_hook(rdev, name, be32toh(mdata->h.type))) {
+		printk(BIOS_ERR, "CBFS ERROR: error when measuring '%s'\n", name);
+	}
 
 	return CB_SUCCESS;
 }
@@ -144,7 +145,7 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 	ret = cbfs_locate(fh, &rdev, name, type);
 	if (!ret)
 		if (tspi_measure_cbfs_hook(&rdev, name, *type))
-			return -1;
+			LOG("error measuring %s in region %s\n", name, region_name);
 	return ret;
 }
 

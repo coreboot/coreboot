@@ -298,12 +298,12 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	/* 0xc0000 -> TSEG - DPR */
 	base_k = 0xc0000 >> 10;
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
-	size_k -= dpr.size >> 10;
+	size_k -= dpr.size * MiB / KiB;
 	ram_resource(dev, index++, base_k, size_k);
 
 	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG] - dpr.size;
+	resource->base = mc_values[TSEG_REG] - dpr.size * MiB;
 	resource->size = mc_values[BGSM_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 			  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;

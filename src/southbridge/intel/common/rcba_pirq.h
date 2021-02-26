@@ -3,6 +3,8 @@
 #ifndef SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ_H
 #define SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ_H
 
+#include <device/device.h>
+
 /*
  * The DnnIR registers use common RCBA offsets across these chipsets:
  * bd82x6x, i82801, i89xx, ibexpeak, lynxpoint
@@ -22,5 +24,8 @@
 #define D21IR		0x3164	/* 16bit */
 #define D20IR		0x3160	/* 16bit */
 #define D19IR		0x3168	/* 16bit */
+
+/* Generate an ACPI _PRT table for chipsets that use PIRQs exclusively */
+void intel_acpi_gen_def_acpi_pirq(const struct device *dev);
 
 #endif /* SOUTHBRIDGE_INTEL_COMMON_RCBA_PIRQ_H */

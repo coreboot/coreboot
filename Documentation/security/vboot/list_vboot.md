@@ -254,7 +254,7 @@
 ## Supermicro
 - X11SSH-TF
 - X11SSM-F
-- X11SSH-F
+- X11SSH-F/X11SSH-LN4F
 
 ## UP
 - Squared

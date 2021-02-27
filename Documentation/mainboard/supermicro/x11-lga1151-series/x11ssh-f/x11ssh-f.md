@@ -1,6 +1,6 @@
-# Supermicro X11SSH-F
+# Supermicro X11SSH-F/X11SSH-LN4F
 
-This section details how to run coreboot on the [Supermicro X11SSH-F].
+This section details how to run coreboot on the [Supermicro X11SSH-F] or [Supermicro X11SSH-LN4F].
 
 ## Flashing coreboot
 
@@ -43,6 +43,11 @@ tasks, or for offloading graphics rendering via "muxless" [vga_witcheroo].
 - S3 resume not working (vendor and coreboot)
 - SeaBIOS cannot make use of VGA on Aspeed (even if IGD is disabled)
 
+## Difference between X11SSH-F and X11SSH-LN4F
+
+The PCB is identical. The X11SSH-F has 2 NICs, the X11SSH-LN4F has 4 NICs.
+So the X11SSH-F just doesn't have 2 NICs populated.
+
 ## ToDo
 
 - Fix known issues
@@ -60,7 +65,8 @@ tasks, or for offloading graphics rendering via "muxless" [vga_witcheroo].
 +------------------+--------------------------------------------------+
 | Super I/O        | ASPEED AST2400                                   |
 +------------------+--------------------------------------------------+
-| Ethernet         | 2x Intel I210-AT 1 GbE                           |
+| Ethernet         | 2x Intel I210-AT 1 GbE (for X11SSH-F)            |
+|                  | 4x Intel I210-AT 1 GbE (for X11SSH-LN4F)         |
 |                  | 1x dedicated BMC                                 |
 +------------------+--------------------------------------------------+
 | PCIe slots       | 1x 3.0 x8                                        |
@@ -95,6 +101,7 @@ tasks, or for offloading graphics rendering via "muxless" [vga_witcheroo].
 - [Board manual]
 
 [Supermicro X11SSH-F]: https://www.supermicro.com/en/products/motherboard/X11SSH-F
+[Supermicro X11SSH-LN4F]: https://www.supermicro.com/en/products/motherboard/X11SSH-LN4F
 [Board manual]: https://www.supermicro.com/manuals/motherboard/C236/MNL-1778.pdf
 [AST2400]: https://www.aspeedtech.com/products.php?fPath=20&rId=376
 [IPMI]: ../../../../drivers/ipmi_kcs.md

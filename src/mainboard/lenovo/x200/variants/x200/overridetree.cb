@@ -16,6 +16,7 @@ chip northbridge/intel/gm45
 
 			device pci 1f.0 on # LPC bridge
 				chip ec/lenovo/pmh7
+					device pnp ff.1 on end # dummy
 					register "dock_event_enable" = "0x01"
 				end
 				chip superio/nsc/pc87382

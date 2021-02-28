@@ -25,7 +25,11 @@ static struct fw_config_field_bits *cur_bits;
 %%
 devtree: { cur_parent = root_parent; } | devtree chip | devtree fw_config_table;
 
-chipchildren: chipchildren device | chipchildren chip | chipchildren registers | chipchildren reference | /* empty */ ;
+/* Ensure at least one `device` below each `chip`. */
+chipchild_nondev: chip | registers | reference;
+chipchild: device | chipchild_nondev;
+chipchildren: chipchildren chipchild | /* empty */ ;
+chipchildren_dev: device chipchildren | chipchild_nondev chipchildren_dev;
 
 devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | devicechildren registers | devicechildren fw_config_probe | /* empty */ ;
 
@@ -34,7 +38,7 @@ chip: CHIP STRING /* == path */ {
 	chip_enqueue_tail(cur_chip_instance);
 	cur_chip_instance = $<chip_instance>$;
 }
-	chipchildren END {
+	chipchildren_dev END {
 	cur_chip_instance = chip_dequeue_tail();
 };
 

@@ -13,7 +13,6 @@ chip northbridge/intel/pineview		# Northbridge
 	device domain 0 on	# PCI domain
 		subsystemid 0x105b 0x0d55 inherit
 		device pci 0.0 on  end	# Host Bridge
-		device pci 1.0 off end	# PEG
 		device pci 2.0 on  end	# Integrated graphics controller
 		device pci 2.1 off end	# Integrated graphics controller 2
 

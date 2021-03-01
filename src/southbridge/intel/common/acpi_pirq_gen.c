@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -52,20 +53,16 @@ static void gen_pirq_route(const enum emit_type emit, const char *lpcb_path,
 			pirq = pci_int_mapping[pci_dev][int_pin];
 			if (pirq == PIRQ_NONE)
 				continue;
-			acpigen_write_package(4);
-			acpigen_write_dword((pci_dev << 16) | 0xffff);
-			acpigen_write_byte(int_pin);
+
 			if (emit == EMIT_APIC) {
-				acpigen_write_zero();
-				acpigen_write_dword(16 + pirq - PIRQ_A);
+				const unsigned int gsi = 16 + pirq - PIRQ_A;
+				acpigen_write_PRT_GSI_entry(pci_dev, int_pin, gsi);
 			} else {
 				snprintf(buffer, sizeof(buffer),
-					"%s.LNK%c",
-					lpcb_path, 'A' + pirq - PIRQ_A);
-				acpigen_emit_namestring(buffer);
-				acpigen_write_dword(0);
+					 "%s.LNK%c",
+					 lpcb_path, 'A' + pirq - PIRQ_A);
+				acpigen_write_PRT_source_entry(pci_dev, int_pin, buffer, 0);
 			}
-			acpigen_pop_len();
 		}
 	}
 }

@@ -15,6 +15,7 @@
 #define TPM2_CR50_SUB_CMD_GET_REC_BTN (29)
 #define TPM2_CR50_SUB_CMD_TPM_MODE (40)
 #define TPM2_CR50_SUB_CMD_GET_BOOT_MODE (52)
+#define TPM2_CR50_SUB_CMD_RESET_EC (53)
 
 /* Cr50 vendor-specific error codes. */
 #define VENDOR_RC_ERR              0x00000500
@@ -94,5 +95,13 @@ uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode);
  * Return value indicates success or failure of accessing the TPM.
  */
 uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms);
+
+/**
+ * CR50 specific TPM command sequence to issue an EC reset.
+ *
+ * Returns TPM_E_* for errors.
+ * On Success, this function invokes halt() and does not return.
+ */
+uint32_t tlcl_cr50_reset_ec(void);
 
 #endif /* CR50_TSS_STRUCTURES_H_ */

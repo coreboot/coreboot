@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <endian.h>
+#include <halt.h>
 #include <vb2_api.h>
 #include <security/tpm/tis.h>
 #include <security/tpm/tss.h>
@@ -145,6 +146,33 @@ uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms)
 
 	if (!response)
 		return TPM_E_IOERROR;
+
+	return TPM_SUCCESS;
+}
+
+uint32_t tlcl_cr50_reset_ec(void)
+{
+	struct tpm2_response *response;
+	uint16_t reset_cmd = TPM2_CR50_SUB_CMD_RESET_EC;
+
+	printk(BIOS_DEBUG, "Issuing EC reset\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_cmd);
+
+	if (!response)
+		return TPM_E_IOERROR;
+
+	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
+	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND)
+		/* Explicitly inform caller when command is not supported */
+		return TPM_E_NO_SUCH_COMMAND;
+
+	if (response->hdr.tpm_code)
+		/* Unexpected return code from Cr50 */
+		return TPM_E_IOERROR;
+
+	printk(BIOS_DEBUG, "EC reset coming up...\n");
+	halt();
 
 	return TPM_SUCCESS;
 }

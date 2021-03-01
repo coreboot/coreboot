@@ -30,7 +30,6 @@ config BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select MAINBOARD_HAS_SPI_TPM_CR50 if !BOARD_GOOGLE_VOLTEER2_TI50
 	select MAINBOARD_HAS_I2C_TPM_CR50 if BOARD_GOOGLE_VOLTEER2_TI50
 	select MAINBOARD_HAS_TPM2
-	select PCIEXP_HOTPLUG
 	select SOC_INTEL_CSE_LITE_SKU
 	select SOC_INTEL_TIGERLAKE
 	select HAVE_SPD_IN_CBFS
@@ -111,6 +110,9 @@ config MAINBOARD_PART_NUMBER
 config MAX_CPUS
 	int
 	default 8
+
+config PCIEXP_HOTPLUG
+	default y
 
 # Reserving resources for PCIe Hotplug as per TGL BIOS Spec (doc #611569)
 # Revision 0.7.6 Section 7.2.5.1.5

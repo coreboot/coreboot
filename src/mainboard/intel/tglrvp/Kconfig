@@ -18,7 +18,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select DRIVERS_INTEL_ISH
 	select EC_ACPI
-	select PCIEXP_HOTPLUG
 	select HAVE_SPD_IN_CBFS
 	select SOC_INTEL_CSE_LITE_SKU
 	select MAINBOARD_HAS_TPM2
@@ -60,6 +59,9 @@ config MAINBOARD_FAMILY
 config MAX_CPUS
 	int
 	default 8
+
+config PCIEXP_HOTPLUG
+	default y
 
 config PCIEXP_HOTPLUG_BUSES
 	int

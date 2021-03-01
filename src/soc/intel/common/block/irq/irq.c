@@ -6,6 +6,7 @@
 #include <device/pci_def.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/irq.h>
+#include <intelblocks/lpc_lib.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <stdlib.h>
 #include <string.h>
@@ -342,4 +343,54 @@ const struct pci_irq_entry *assign_pci_irqs(const struct slot_irq_constraints *c
 	}
 
 	return entries;
+}
+
+static enum pirq irq_to_pirq(unsigned int irq)
+{
+	if (irq >= MIN_SHARED_IRQ && irq <= MAX_SHARED_IRQ)
+		return (enum pirq)(irq - MIN_SHARED_IRQ + PIRQ_A);
+	else
+		/*
+		 * Unknown if devices that require unique IRQs will
+		 * even work in legacy PIC mode, given they cannot map
+		 * to a PIRQ, therefore skip adding an entry.
+		 */
+		return PIRQ_INVALID;
+}
+
+void generate_pin_irq_map(const struct pci_irq_entry *entries)
+{
+	struct slot_pin_irq_map *pin_irq_map;
+	const uint8_t *legacy_pirq_routing;
+	struct pic_pirq_map pirq_map = {0};
+	size_t map_count = 0;
+	size_t pirq_routes;
+	size_t i;
+
+	pin_irq_map = calloc(MAX_SLOTS, sizeof(struct slot_pin_irq_map) * PCI_INT_MAX);
+
+	pirq_map.type = PIRQ_GSI;
+	legacy_pirq_routing = lpc_get_pic_pirq_routing(&pirq_routes);
+	for (i = 0; i < PIRQ_COUNT && i < pirq_routes; i++)
+		pirq_map.gsi[i] = legacy_pirq_routing[i];
+
+	const struct pci_irq_entry *entry = entries;
+	while (entry) {
+		const unsigned int slot = PCI_SLOT(entry->devfn);
+
+		if (is_slot_pin_assigned(pin_irq_map, map_count, slot, entry->pin)) {
+			entry = entry->next;
+			continue;
+		}
+
+		pin_irq_map[map_count].slot = slot;
+		pin_irq_map[map_count].pin = entry->pin;
+		pin_irq_map[map_count].apic_gsi = entry->irq;
+		pin_irq_map[map_count].pic_pirq = irq_to_pirq(entry->irq);
+		map_count++;
+		entry = entry->next;
+	}
+
+	intel_write_pci0_PRT(pin_irq_map, map_count, &pirq_map);
+	free(pin_irq_map);
 }

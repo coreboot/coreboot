@@ -1,6 +1,7 @@
 config SOC_INTEL_COMMON_BLOCK_IRQ
 	bool
 	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOUTHBRIDGE_INTEL_COMMON_PIRQ_ACPI_GEN
 	help
 	  Intel common block support for assigning PCI IRQs dynamically. This
 	  allows coreboot to control the IRQ assignments. They are passed to the

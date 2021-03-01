@@ -1133,7 +1133,7 @@ void sdram_init(const struct rk3399_sdram_params *params)
 		 * step may fail, before that, we just reset the
 		 * system, and start again.
 		 */
-		if (pctl_cfg(channel, params) != 0) {
+		if (pctl_cfg(channel, params)) {
 			printk(BIOS_ERR, "pctl_cfg fail, reset\n");
 			board_reset();
 		}

@@ -73,7 +73,7 @@ chip soc/intel/alderlake
 				register "desc" = ""SAR1 Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_H19_IRQ)"
 				register "speed" = "I2C_SPEED_FAST"
-				register "uid" = "2"
+				register "uid" = "1"
 				register "reg_gnrl_ctrl0" = "0x16"
 				register "reg_gnrl_ctrl1" = "0x21"
 				register "reg_afe_ctrl0" = "0x00"
@@ -183,6 +183,7 @@ chip soc/intel/alderlake
 				register "sdmode_gpio" =
 						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
 				register "sdmode_delay" = "5"
+				device generic 0 on end
 			end
 		end
 		device ref gspi1 on

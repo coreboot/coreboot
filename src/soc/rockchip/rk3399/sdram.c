@@ -939,7 +939,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	if ((training_flag & PI_CA_TRAINING) == PI_CA_TRAINING) {
 		ret = data_training_ca(channel, params);
 		if (ret) {
-			printk(BIOS_ERR, "CA training failed\n");
+			printk(BIOS_ERR, "Channel %d CA training failed\n", channel);
 			return ret;
 		}
 	}
@@ -948,7 +948,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	if ((training_flag & PI_WRITE_LEVELING) == PI_WRITE_LEVELING) {
 		ret = data_training_wl(channel, params);
 		if (ret) {
-			printk(BIOS_ERR, "WL training failed\n");
+			printk(BIOS_ERR, "Channel %d WL training failed\n", channel);
 			return ret;
 		}
 	}
@@ -957,7 +957,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	if ((training_flag & PI_READ_GATE_TRAINING) == PI_READ_GATE_TRAINING) {
 		ret = data_training_rg(channel, params);
 		if (ret) {
-			printk(BIOS_ERR, "RG training failed\n");
+			printk(BIOS_ERR, "Channel %d RG training failed\n", channel);
 			return ret;
 		}
 	}
@@ -966,7 +966,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	if ((training_flag & PI_READ_LEVELING) == PI_READ_LEVELING) {
 		ret = data_training_rl(channel, params);
 		if (ret) {
-			printk(BIOS_ERR, "RL training failed\n");
+			printk(BIOS_ERR, "Channel %d RL training failed\n", channel);
 			return ret;
 		}
 	}
@@ -975,7 +975,7 @@ static int data_training(u32 channel, const struct rk3399_sdram_params *params,
 	if ((training_flag & PI_WDQ_LEVELING) == PI_WDQ_LEVELING) {
 		ret = data_training_wdql(channel, params);
 		if (ret) {
-			printk(BIOS_ERR, "WDQL training failed\n");
+			printk(BIOS_ERR, "Channel %d WDQL training failed\n", channel);
 			return ret;
 		}
 	}

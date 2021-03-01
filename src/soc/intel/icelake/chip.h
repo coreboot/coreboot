@@ -184,11 +184,7 @@ struct soc_intel_icelake_config {
 	uint8_t pch_isclk;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	enum {
-		PLATFORM_POR,
-		FORCE_ENABLE,
-		FORCE_DISABLE,
-	} CnviBtAudioOffload;
+	bool CnviBtAudioOffload;
 
 	/*
 	 * Override GPIO PM configuration:

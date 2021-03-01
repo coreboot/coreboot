@@ -207,10 +207,7 @@ struct soc_intel_alderlake_config {
 	uint8_t pch_isclk;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	enum {
-		FORCE_DISABLE,
-		FORCE_ENABLE,
-	} CnviBtAudioOffload;
+	bool CnviBtAudioOffload;
 
 	/*
 	 * IOM Port Config

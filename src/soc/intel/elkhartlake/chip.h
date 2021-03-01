@@ -196,10 +196,7 @@ struct soc_intel_elkhartlake_config {
 	unsigned int sdcard_cd_gpio;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	enum {
-		FORCE_DISABLE,
-		FORCE_ENABLE,
-	} CnviBtAudioOffload;
+	bool CnviBtAudioOffload;
 
 	/* Tcss */
 	uint8_t TcssXhciEn;

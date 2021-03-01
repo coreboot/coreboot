@@ -317,10 +317,7 @@ struct soc_intel_tigerlake_config {
 	} debug_interface_flag;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	enum {
-		FORCE_DISABLE,
-		FORCE_ENABLE,
-	} CnviBtAudioOffload;
+	bool CnviBtAudioOffload;
 
 	/* TCSS USB */
 	uint8_t TcssXhciEn;

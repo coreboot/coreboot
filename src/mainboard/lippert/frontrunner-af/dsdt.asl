@@ -339,8 +339,8 @@ DefinitionBlock (
 				Name(_ADR, 0x000A0000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PICM){ Return(APSa) }   /* APIC mode */
-					Return (PSa)                  /* PIC Mode */
+					If(PICM){ Return(APSA) }   /* APIC mode */
+					Return (PSA)                  /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBRa */
 

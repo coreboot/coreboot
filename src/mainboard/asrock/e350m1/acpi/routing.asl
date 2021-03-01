@@ -289,14 +289,14 @@ Scope(\_SB) {
 		Package(){0x0000FFFF, 3, 0, 16 },
 	})
 
-	Name(PSa, Package(){
+	Name(PSA, Package(){
 		/* PCIe slot - Hooked to PCIe slot 10 */
 		Package(){0x0000FFFF, 0, INTD, 0 },
 		Package(){0x0000FFFF, 1, INTA, 0 },
 		Package(){0x0000FFFF, 2, INTB, 0 },
 		Package(){0x0000FFFF, 3, INTC, 0 },
 	})
-	Name(APSa, Package(){
+	Name(APSA, Package(){
 		/* PCIe slot - Hooked to PCIe slot 10 */
 		Package(){0x0000FFFF, 0, 0, 18 },
 		Package(){0x0000FFFF, 1, 0, 19 },

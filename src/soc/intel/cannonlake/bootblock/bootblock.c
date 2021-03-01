@@ -61,11 +61,6 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
-	/*
-	 * Clear the GPI interrupt status and enable registers. These
-	 * registers do not get reset to default state when booting from S5.
-	 */
-	gpi_clear_int_cfg();
 	report_platform_info();
 	bootblock_pch_init();
 

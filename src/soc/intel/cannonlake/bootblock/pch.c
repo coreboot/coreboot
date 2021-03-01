@@ -6,6 +6,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
@@ -131,6 +132,12 @@ void pch_early_iorange_init(void)
 
 void bootblock_pch_init(void)
 {
+	/*
+	 * Clear the GPI interrupt status and enable registers. These
+	 * registers do not get reset to default state when booting from S5.
+	 */
+	gpi_clear_int_cfg();
+
 	/*
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,
 	 * GPE0_STS, GPE0_EN registers.

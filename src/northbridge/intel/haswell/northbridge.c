@@ -547,12 +547,12 @@ static void northbridge_init(struct device *dev)
 }
 
 static struct device_operations mc_ops = {
-	.read_resources         = mc_read_resources,
-	.set_resources          = pci_dev_set_resources,
-	.enable_resources       = pci_dev_enable_resources,
-	.init                   = northbridge_init,
+	.read_resources		= mc_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= northbridge_init,
 	.acpi_fill_ssdt		= generate_cpu_entries,
-	.ops_pci                = &pci_dev_ops_pci,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const unsigned short mc_pci_device_ids[] = {

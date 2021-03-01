@@ -273,7 +273,6 @@ static void southbridge_smi_apmc(void)
 		}
 
 		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
 		intel_cpu_haswell_finalize_smm();
 
 		chipset_finalized = 1;

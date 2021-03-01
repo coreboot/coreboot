@@ -546,11 +546,44 @@ static void northbridge_init(struct device *dev)
 	set_power_limits(28);
 }
 
+static void northbridge_final(struct device *dev)
+{
+	pci_or_config16(dev, GGC,         1 << 0);
+	pci_or_config32(dev, DPR,         1 << 0);
+	pci_or_config32(dev, MESEG_LIMIT, 1 << 10);
+	pci_or_config32(dev, REMAPBASE,   1 << 0);
+	pci_or_config32(dev, REMAPLIMIT,  1 << 0);
+	pci_or_config32(dev, TOM,         1 << 0);
+	pci_or_config32(dev, TOUUD,       1 << 0);
+	pci_or_config32(dev, BDSM,        1 << 0);
+	pci_or_config32(dev, BGSM,        1 << 0);
+	pci_or_config32(dev, TSEG,        1 << 0);
+	pci_or_config32(dev, TOLUD,       1 << 0);
+
+	/* Memory Controller Lockdown */
+	MCHBAR32(MC_LOCK) |= 0x8f;
+
+	MCHBAR32_OR(MMIO_PAVP_MSG, 1 << 0);	/* PAVP */
+	MCHBAR32_OR(PCU_DDR_PTM_CTL, 1 << 5);	/* DDR PTM */
+	MCHBAR32_OR(DMIVCLIM, 1 << 31);
+	MCHBAR32_OR(CRDTLCK, 1 << 0);
+	MCHBAR32_OR(MCARBLCK, 1 << 0);
+	MCHBAR32_OR(REQLIM, 1 << 31);
+	MCHBAR32_OR(UMAGFXCTL, 1 << 0);		/* UMA GFX */
+	MCHBAR32_OR(VTDTRKLCK, 1 << 0);		/* VTDTRK */
+
+	/* Read+write the following */
+	MCHBAR32(VDMBDFBARKVM)  = MCHBAR32(VDMBDFBARKVM);
+	MCHBAR32(VDMBDFBARPAVP) = MCHBAR32(VDMBDFBARPAVP);
+	MCHBAR32(HDAUDRID)      = MCHBAR32(HDAUDRID);
+}
+
 static struct device_operations mc_ops = {
 	.read_resources		= mc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= northbridge_init,
+	.final			= northbridge_final,
 	.acpi_fill_ssdt		= generate_cpu_entries,
 	.ops_pci		= &pci_dev_ops_pci,
 };

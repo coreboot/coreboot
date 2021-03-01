@@ -96,8 +96,6 @@
 
 #ifndef __ASSEMBLER__
 
-void intel_northbridge_haswell_finalize_smm(void);
-
 void mb_late_romstage_setup(void); /* optional */
 
 void haswell_early_initialization(void);

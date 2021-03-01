@@ -18,8 +18,6 @@ romstage-y += romstage.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 
-smm-y += finalize.c
-
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin
 mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))

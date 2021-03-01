@@ -5,6 +5,7 @@
 #include <soc/mt6315.h>
 #include <soc/mt6359p.h>
 #include <soc/pmif.h>
+#include <soc/rtc.h>
 
 void platform_romstage_main(void)
 {
@@ -12,4 +13,5 @@ void platform_romstage_main(void)
 	mt6359p_init();
 	mt6315_init();
 	clk_buf_init();
+	rtc_boot();
 }

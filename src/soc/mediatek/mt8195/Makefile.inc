@@ -35,6 +35,7 @@ romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/mt6359p.c mt6359p.c
+romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
@@ -46,6 +47,7 @@ ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
+ramstage-y += ../common/usb.c usb.c
 ramstage-y += ../common/wdt.c
 ramstage-y += mt6360.c
 

@@ -168,6 +168,7 @@ struct mtk_topckgen_regs {
 };
 
 check_member(mtk_topckgen_regs, clk_cfg_0, 0x0020);
+check_member(mtk_topckgen_regs, clk_cfg_11_clr, 0x00ac);
 check_member(mtk_topckgen_regs, clk_extck_reg, 0x0204);
 check_member(mtk_topckgen_regs, clk26cali_0, 0x0218);
 check_member(mtk_topckgen_regs, clk_misc_cfg_0, 0x022c);

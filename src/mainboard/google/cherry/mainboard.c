@@ -10,6 +10,7 @@
 #include <soc/i2c.h>
 #include <soc/mt6360.h>
 #include <soc/regulator.h>
+#include <soc/usb.h>
 
 DEFINE_BITFIELD(MSDC0_DRV, 29, 0)
 DEFINE_BITFIELD(MSDC1_DRV, 17, 0)
@@ -105,6 +106,7 @@ static void mainboard_init(struct device *dev)
 {
 	configure_emmc();
 	configure_sdcard();
+	setup_usb_host();
 }
 
 static void mainboard_enable(struct device *dev)

@@ -38,12 +38,3 @@ static const struct pci_driver ti_pcixx12_driver __pci_driver = {
 	.vendor = 0x104c,
 	.device = 0x8039,
 };
-
-static void southbridge_init(struct device *dev)
-{
-}
-
-struct chip_operations southbridge_ti_pcixx12_ops = {
-	CHIP_NAME("Texas Instruments PCIxx12 Cardbus Controller")
-	.enable_dev    = southbridge_init,
-};

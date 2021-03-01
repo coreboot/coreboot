@@ -288,7 +288,13 @@ chip soc/intel/tigerlake
 		device pci 1c.0 off end # RP1			0xA0B8
 		device pci 1c.1 off end # RP2			0xA0B9
 		device pci 1c.2 on  end # RP3			0xA0BA
-		device pci 1c.3 on  end # RP4			0xA0BB
+		device pci 1c.3 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B17)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+		end # RP4					0xA0BB
 		device pci 1c.4 off end # RP5			0xA0BC
 		device pci 1c.5 off end # RP6			0xA0BD
 		device pci 1c.6 off end # RP7			0xA0BE

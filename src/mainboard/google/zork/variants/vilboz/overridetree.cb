@@ -18,10 +18,10 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	register "telemetry_vddcr_vdd_slope_mA" = "26939"
-	register "telemetry_vddcr_vdd_offset" = "125"
-	register "telemetry_vddcr_soc_slope_mA" = "20001"
-	register "telemetry_vddcr_soc_offset" = "168"
+	register "telemetry_vddcr_vdd_slope_mA" = "27225"
+	register "telemetry_vddcr_vdd_offset" = "187"
+	register "telemetry_vddcr_soc_slope_mA" = "26559"
+	register "telemetry_vddcr_soc_offset" = "89"
 
 	# eDP phy tuning settings
 	register "edp_phy_override" = "ENABLE_EDP_TUNINGSET"

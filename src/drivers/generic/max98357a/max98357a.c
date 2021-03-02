@@ -8,8 +8,6 @@
 #include <gpio.h>
 #include "chip.h"
 
-#if CONFIG(HAVE_ACPI_TABLES)
-
 #define MAX98357A_ACPI_NAME	"MAXM"
 
 static void max98357a_fill_ssdt(const struct device *dev)
@@ -65,15 +63,12 @@ static const char *max98357a_acpi_name(const struct device *dev)
 {
 	return MAX98357A_ACPI_NAME;
 }
-#endif
 
 static struct device_operations max98357a_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
-#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= max98357a_acpi_name,
 	.acpi_fill_ssdt		= max98357a_fill_ssdt,
-#endif
 };
 
 static void max98357a_enable(struct device *dev)

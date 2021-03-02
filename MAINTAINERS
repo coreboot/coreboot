@@ -798,6 +798,11 @@ M:	Wim Vervoorn <wvervoorn@eltan.com>
 S:	Maintained
 F:	src/vendorcode/eltan/
 
+TESTS
+M:	Jakub Czapiga <jacz@semihalf.com>
+S:	Maintained
+F:	tests/
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS

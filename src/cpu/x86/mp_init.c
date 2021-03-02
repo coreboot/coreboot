@@ -730,16 +730,16 @@ static void asmlinkage smm_do_relocation(void *arg)
 	 * the location of the new SMBASE. If using SMM modules then this
 	 * calculation needs to match that of the module loader.
 	 */
-#if CONFIG(X86_SMM_LOADER_VERSION2)
-	perm_smbase = smm_get_cpu_smbase(cpu);
-	if (!perm_smbase) {
-		printk(BIOS_ERR, "%s: bad SMBASE for CPU %d\n", __func__, cpu);
-		return;
+	if (CONFIG(X86_SMM_LOADER_VERSION2)) {
+		perm_smbase = smm_get_cpu_smbase(cpu);
+		if (!perm_smbase) {
+			printk(BIOS_ERR, "%s: bad SMBASE for CPU %d\n", __func__, cpu);
+			return;
+		}
+	} else {
+		perm_smbase = mp_state.perm_smbase;
+		perm_smbase -= cpu * mp_state.smm_save_state_size;
 	}
-#else
-	perm_smbase = mp_state.perm_smbase;
-	perm_smbase -= cpu * mp_state.smm_save_state_size;
-#endif
 
 	/* Setup code checks this callback for validity. */
 	printk(BIOS_INFO, "%s : curr_smbase 0x%x perm_smbase 0x%x, cpu = %d\n",

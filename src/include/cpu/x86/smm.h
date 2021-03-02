@@ -151,9 +151,7 @@ struct smm_loader_params {
 int smm_setup_relocation_handler(struct smm_loader_params *params);
 int smm_load_module(void *smram, size_t size, struct smm_loader_params *params);
 
-#if CONFIG(X86_SMM_LOADER_VERSION2)
 u32 smm_get_cpu_smbase(unsigned int cpu_num);
-#endif
 
 /* Backup and restore default SMM region. */
 void *backup_default_smm_area(void);

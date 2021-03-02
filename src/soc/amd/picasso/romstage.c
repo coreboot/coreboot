@@ -16,10 +16,12 @@
 #include <elog.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
+#include <soc/romstage.h>
 #include <types.h>
 #include "chip.h"
 #include <fsp/api.h>
 
+void __weak mainboard_updm_update(FSP_M_CONFIG *mupd) {}
 static struct chipset_power_state chipset_state;
 
 static void fill_chipset_state(void)
@@ -139,6 +141,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
 	mcfg->sata_enable = devtree_sata_dev_enabled();
+
+	mainboard_updm_update(mcfg);
 }
 
 asmlinkage void car_stage_entry(void)

@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
+#include <FspmUpd.h>
 #include <soc/platform_descriptors.h>
 #include "chip.h"
 
@@ -31,6 +32,8 @@ const struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int slp_ty
  * sleep.
  */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
+
+void variant_updm_update(FSP_M_CONFIG *mcfg);
 
 /* Program any required GPIOs at the finalize phase */
 void finalize_gpios(int slp_typ);

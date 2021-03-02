@@ -57,7 +57,6 @@ config	CPU_SPECIFIC_OPTIONS
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select SMM_TSEG
 	select HAVE_SMI_HANDLER
-	select X86_SMM_LOADER_VERSION2
 	select REG_SCRIPT
 	select NO_FSP_TEMP_RAM_EXIT
 	select INTEL_CAR_NEM # For postcar only now

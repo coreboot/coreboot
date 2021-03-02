@@ -32,8 +32,8 @@ chip soc/amd/cezanne
 			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
 		end
 		device pci 8.2 alias gpp_bridge_b off # Internal GPP Bridge 1 to Bus B
-			device pci 0.0 alias sata_ahci off end # SATA AHCI Mode
-			device pci 0.1 alias sata_raid off end # SATA Controller; SATA Raid/AHCI Mode
+			device pci 0.0 alias sata_0 off end # first SATA controller; AHCI Mode
+			device pci 0.1 alias sata_1 off end # second SATA Controller; SATA Raid/AHCI Mode
 			device pci 0.2 alias xgbe_0 off end # 10 GbE Controller Port 0 (XGBE0)
 			device pci 0.3 alias xgbe_1 off end # 10 GbE Controller Port 1 (XGBE1)
 		end

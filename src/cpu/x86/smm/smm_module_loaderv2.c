@@ -324,9 +324,9 @@ static int smm_stub_place_staggered_entry_points(char *base,
  * This module setup code works for the default (0x30000) SMM handler setup and the
  * permanent SMM handler.
  */
-static int smm_module_setup_stub(void *smbase, size_t smm_size,
+static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 				 struct smm_loader_params *params,
-				 void *fxsave_area)
+				 void *const fxsave_area)
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;

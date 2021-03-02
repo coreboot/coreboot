@@ -140,18 +140,6 @@ Method (D3CX, 0, Serialized)
 		Local1 = L23R
 	}
 	STAT = 0x1
-
-	/* Wait for LA = 1 */
-	Local0 = 0
-	Local1 = LASX
-	While (Local1 == 0) {
-		If (Local0 > 20) {
-			Break
-		}
-		Sleep(5)
-		Local0++
-		Local1 = LASX
-	}
 }
 
 /*
@@ -192,8 +180,6 @@ Method (_PS0, 0, Serialized)
 	If (PMEX == 1) {
 		PMEX = 0  /* Disable Power Management SCI */
 	}
-
-	Sleep(100)  /* Wait for 100ms before return to OS starts any OS activities. */
 }
 
 Method (_PS3, 0, Serialized)

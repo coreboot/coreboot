@@ -37,6 +37,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Watson"
 
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
 config IRQ_SLOT_COUNT
 	int
 	default 18
@@ -47,6 +51,7 @@ config CBFS_SIZE
 
 config VARIANT_DIR
 	string
+	default "watson" if BOARD_FACEBOOK_WATSON
 	default "watson_v2" if BOARD_FACEBOOK_WATSON_V2
 
 config VBOOT_FWID_MODEL

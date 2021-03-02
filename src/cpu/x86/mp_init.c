@@ -732,7 +732,6 @@ static void asmlinkage smm_do_relocation(void *arg)
 	 */
 #if CONFIG(X86_SMM_LOADER_VERSION2)
 	perm_smbase = smm_get_cpu_smbase(cpu);
-	mp_state.perm_smbase = perm_smbase;
 	if (!perm_smbase) {
 		printk(BIOS_ERR, "%s: bad SMBASE for CPU %d\n", __func__, cpu);
 		return;

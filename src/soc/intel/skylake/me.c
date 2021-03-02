@@ -310,19 +310,19 @@ void intel_me_status(void)
 		       hfs3.fields.encrypt_key_check ? "FAIL" : "PASS");
 		printk(BIOS_DEBUG, "ME: PCH Configuration Info  : %s\n",
 		       hfs3.fields.pch_config_change ? "Changed" : "No Change");
+	}
 
-		printk(BIOS_DEBUG, "ME: Firmware SKU            : ");
-		switch (hfs3.fields.fw_sku) {
-		case ME_HFS3_FW_SKU_CONSUMER:
-			printk(BIOS_DEBUG, "Consumer\n");
-			break;
-		case ME_HFS3_FW_SKU_CORPORATE:
-			printk(BIOS_DEBUG, "Corporate\n");
-			break;
-		default:
-			printk(BIOS_DEBUG, "Unknown (0x%x)\n",
-				hfs3.fields.fw_sku);
-		}
+	printk(BIOS_DEBUG, "ME: Firmware SKU            : ");
+	switch (hfs3.fields.fw_sku) {
+	case ME_HFS3_FW_SKU_CONSUMER:
+		printk(BIOS_DEBUG, "Consumer\n");
+		break;
+	case ME_HFS3_FW_SKU_CORPORATE:
+		printk(BIOS_DEBUG, "Corporate\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown (0x%x)\n",
+			hfs3.fields.fw_sku);
 	}
 
 	printk(BIOS_DEBUG, "ME: FPF status              : ");

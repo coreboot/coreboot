@@ -4,6 +4,7 @@
 #define _I2C_RX6110SA_H_
 
 #define RX6110SA_ACPI_NAME		"ERX6"
+#define RX6110SA_HID_NAME		"SECC6110"
 #define RX6110SA_HID_DESC		"Real Time Clock"
 
 /* Register layout */

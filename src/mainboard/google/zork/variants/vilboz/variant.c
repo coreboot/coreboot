@@ -80,11 +80,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 		filename = "wifi_sar-vilboz-1.hex";
 		break;
 	case 7:
-		/*
-		TODO: Set default first. It will be replaced after the
-		new table is generated.
-		*/
-		filename = "wifi_sar_defaults.hex";
+		filename = "wifi_sar-vilboz-1.hex";
 		break;
 	}
 

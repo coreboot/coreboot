@@ -56,7 +56,6 @@ static uint32_t tcss_make_hpd_mode_cmd(int u, int u3, int hpd_lvl, int hpd_irq)
 static int send_pmc_req(int cmd_type, const struct pmc_ipc_buffer *req,
 			struct pmc_ipc_buffer *res, uint32_t size)
 {
-
 	uint32_t cmd_reg;
 	uint32_t res_reg;
 	int tries = 2;
@@ -103,11 +102,11 @@ static int send_pmc_req(int cmd_type, const struct pmc_ipc_buffer *req,
 	return -1;
 }
 
-static int send_pmc_connect_request(int port, struct tcss_mux mux_data,
-					struct pmc_ipc_buffer *res)
+static int send_pmc_connect_request(int port, struct tcss_mux mux_data)
 {
 	uint32_t cmd;
 	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
 
 	cmd = tcss_make_conn_cmd(
 		PMC_IPC_TCSS_CONN_REQ_RES,
@@ -131,14 +130,14 @@ static int send_pmc_connect_request(int port, struct tcss_mux mux_data,
 	      GET_TCSS_CD_FIELD(SBU, cmd),
 	      GET_TCSS_CD_FIELD(ACC, cmd));
 
-	return send_pmc_req(CONNECT_REQ, &req, res, PMC_IPC_CONN_REQ_SIZE);
+	return send_pmc_req(CONNECT_REQ, &req, &rsp, PMC_IPC_CONN_REQ_SIZE);
 }
 
-static int send_pmc_safe_mode_request(int port, struct tcss_mux mux_data,
-					struct pmc_ipc_buffer *res)
+static int send_pmc_safe_mode_request(int port, struct tcss_mux mux_data)
 {
 	uint32_t cmd;
 	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
 
 	cmd = tcss_make_safe_mode_cmd(PMC_IPC_TCSS_SAFE_MODE_REQ_RES, mux_data.usb3_port);
 
@@ -149,13 +148,13 @@ static int send_pmc_safe_mode_request(int port, struct tcss_mux mux_data,
 		GET_TCSS_CD_FIELD(USAGE, cmd),
 		GET_TCSS_CD_FIELD(USB3, cmd));
 
-	return send_pmc_req(SAFE_REQ, &req, res, PMC_IPC_SAFE_REQ_SIZE);
+	return send_pmc_req(SAFE_REQ, &req, &rsp, PMC_IPC_SAFE_REQ_SIZE);
 }
 
 static int send_pmc_dp_hpd_request(int port, struct tcss_mux mux_data)
 {
-	struct pmc_ipc_buffer *res = NULL;
 	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
 	uint32_t cmd;
 
 	cmd = tcss_make_hpd_mode_cmd(
@@ -166,18 +165,16 @@ static int send_pmc_dp_hpd_request(int port, struct tcss_mux mux_data)
 
 	req.buf[0] = cmd;
 
-	return send_pmc_req(HPD_REQ, &req, res, PMC_IPC_HPD_REQ_SIZE);
-
+	return send_pmc_req(HPD_REQ, &req, &rsp, PMC_IPC_HPD_REQ_SIZE);
 }
 
-static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data,
-					struct pmc_ipc_buffer *res)
+static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
 {
 	uint32_t cmd;
 	uint8_t dp_mode;
 	int ret;
-
 	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
 
 	cmd = tcss_make_alt_mode_cmd_buf_0(
 		PMC_IPC_TCSS_ALTMODE_REQ_RES,
@@ -232,7 +229,7 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data,
 
 	req.buf[1] = cmd;
 
-	ret = send_pmc_req(DP_REQ, &req, res, PMC_IPC_ALT_REQ_SIZE);
+	ret = send_pmc_req(DP_REQ, &req, &rsp, PMC_IPC_ALT_REQ_SIZE);
 	if (ret)
 		return ret;
 
@@ -242,23 +239,22 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data,
 
 void update_tcss_mux(int port, struct tcss_mux mux_data)
 {
-	struct pmc_ipc_buffer *rbuf = NULL;
 	int ret = 0;
 
 	/* check if mux has a DP device */
 	if (mux_data.dp) {
-		ret = send_pmc_connect_request(port, mux_data, rbuf);
+		ret = send_pmc_connect_request(port, mux_data);
 		if (ret) {
 			printk(BIOS_ERR, "Port %d connect request failed\n", port);
 			return;
 		}
-		ret = send_pmc_safe_mode_request(port, mux_data, rbuf);
+		ret = send_pmc_safe_mode_request(port, mux_data);
 		if (ret) {
 			printk(BIOS_ERR, "Port %d safe mode request failed\n", port);
 			return;
 		}
 
-		ret = send_pmc_dp_mode_request(port, mux_data, rbuf);
+		ret = send_pmc_dp_mode_request(port, mux_data);
 	}
 
 	if (ret)

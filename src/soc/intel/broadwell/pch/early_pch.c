@@ -11,7 +11,6 @@
 #include <soc/pm.h>
 #include <soc/rcba.h>
 #include <soc/romstage.h>
-#include <soc/smbus.h>
 #include <soc/intel/broadwell/pch/chip.h>
 
 static void pch_route_interrupts(void)

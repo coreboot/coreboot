@@ -33,8 +33,8 @@ romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 bootblock-y += usb_debug.c
 romstage-y += usb_debug.c
 ramstage-y += usb_debug.c
-ramstage-y += ehci.c
-ramstage-y += xhci.c
-smm-y      += xhci.c
+ramstage-y += usb_ehci.c
+ramstage-y += usb_xhci.c
+smm-y      += usb_xhci.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c

@@ -8,13 +8,31 @@
 #include <fsp/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
+#include <pc80/mc146818rtc.h>
 #include <soc/ddr.h>
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/intel/common/smbios.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "chip.h"
+
+/*
+ * Address of the MRC status byte in CMOS. Should be reserved
+ * in mainboards' cmos.layout and not covered by checksum.
+ */
+#define CMOS_OFFSET_MRC_STATUS 0x47
+
+#if CONFIG(USE_OPTION_TABLE)
+#include "option_table.h"
+#if CMOS_VSTART_mrc_status != CMOS_OFFSET_MRC_STATUS * 8
+#error "CMOS start for CPX-SP MRC status byte is not correct, check your cmos.layout"
+#endif
+#if CMOS_VLEN_mrc_status != 8
+#error "CMOS length for CPX-SP MRC status byte is not correct, check your cmos.layout"
+#endif
+#endif
 
 void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 {
@@ -124,6 +142,16 @@ void save_dimm_info(void)
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
 
+static void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)
+{
+	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);
+	uint8_t new_mrc_status = (mrc_status & 0xfe) | cold_boot_required;
+	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
+	if (new_mrc_status != mrc_status) {
+		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
+	}
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSPM_CONFIG *m_cfg = &mupd->FspmConfig;
@@ -190,4 +218,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->isocEn = 0;
 
 	mainboard_memory_init_params(mupd);
+
+	/* Adjust the "cold boot required" flag in CMOS. */
+	set_cmos_mrc_cold_boot_flag(!mupd->FspmArchUpd.NvsBufferPtr);
 }

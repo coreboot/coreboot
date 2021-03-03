@@ -10,6 +10,7 @@ config SOC_MEDIATEK_MT8173
 	select HAVE_UART_SPECIAL
 	select GENERIC_GPIO_LIB
 	select RTC
+	select SOC_MEDIATEK_COMMON
 
 if SOC_MEDIATEK_MT8173
 
@@ -21,10 +22,6 @@ config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_SEPARATE_VERSTAGE
-
-config MEMORY_TEST
-	bool
-	default n
 
 config DEBUG_SOC_DRIVER
 	bool "The top level switch for soc driver debug messages"

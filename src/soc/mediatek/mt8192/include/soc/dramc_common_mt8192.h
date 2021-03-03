@@ -4,18 +4,6 @@
 #define __SOC_MEDIATEK_MT8192_DRAMC_COMMON_MT8192_H__
 
 enum {
-	CHANNEL_A = 0,
-	CHANNEL_B,
-	CHANNEL_MAX
-};
-
-enum {
-	RANK_0 = 0,
-	RANK_1,
-	RANK_MAX
-};
-
-enum {
 	FSP_0 = 0,
 	FSP_1,
 	FSP_MAX,
@@ -56,13 +44,6 @@ enum {
 	DQS_NUMBER = (DQ_DATA_WIDTH / DQS_BIT_NUMBER),
 };
 #define BYTE_NUM		DQS_NUMBER
-#define DQS_NUMBER_LP4		DQS_NUMBER
-#define DQ_DATA_WIDTH_LP4	DQ_DATA_WIDTH
-
-typedef enum {
-	CBT_NORMAL_MODE = 0,
-	CBT_BYTE_MODE1
-} dram_cbt_mode;
 
 /* DONOT change the sequence of pinmux */
 typedef enum {

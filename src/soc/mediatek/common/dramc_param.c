@@ -18,9 +18,9 @@ void dump_param_header(const void *blob)
 
 	print("header.status = %#x\n", header->status);
 	print("header.version = %#x (expected: %#x)\n",
-	       header->version, DRAMC_PARAM_HEADER_VERSION);
+	      header->version, DRAMC_PARAM_HEADER_VERSION);
 	print("header.size = %#x (expected: %#lx)\n",
-	       header->size, sizeof(*dparam));
+	      header->size, sizeof(*dparam));
 	print("header.flags = %#x\n", header->flags);
 	print("header.checksum = %#x\n", header->checksum);
 }

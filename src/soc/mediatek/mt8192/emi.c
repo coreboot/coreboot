@@ -434,7 +434,7 @@ size_t sdram_size(void)
 	return dram_size;
 }
 
-void mt_set_emi(const struct dramc_data *dparam)
+void mt_set_emi(struct dramc_param *dparam)
 {
-	init_dram(dparam);
+	init_dram(&dparam->dramc_datas);
 }

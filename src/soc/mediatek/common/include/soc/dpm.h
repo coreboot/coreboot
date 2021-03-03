@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_MT8192_DPM_H__
-#define __SOC_MEDIATEK_MT8192_DPM_H__
+#ifndef __SOC_MEDIATEK_DPM_H__
+#define __SOC_MEDIATEK_DPM_H__
 
 #include <soc/addressmap.h>
 #include <stdint.h>

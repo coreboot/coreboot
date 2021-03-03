@@ -8,6 +8,7 @@ config SOC_MEDIATEK_MT8183
 	select ARM64_USE_ARM_TRUSTED_FIRMWARE
 	select HAVE_UART_SPECIAL
 	select COMPRESS_BOOTBLOCK
+	select SOC_MEDIATEK_COMMON
 
 if SOC_MEDIATEK_MT8183
 
@@ -40,10 +41,6 @@ config MT8183_DRAM_DVFS
 	help
 	  This options enables DRAM calibration with multiple frequencies (low,
 	  medium and high) for DVFS feature.
-
-config MEMORY_TEST
-	bool
-	default y
 
 config SSPM_FIRMWARE
 	string

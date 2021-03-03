@@ -1,14 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_MT8192_DRAMC_PARAM_H__
-#define __SOC_MEDIATEK_MT8192_DRAMC_PARAM_H__
+#ifndef __SOC_MEDIATEK_DRAMC_PARAM_H__
+#define __SOC_MEDIATEK_DRAMC_PARAM_H__
+
+/* any change in this file should sync to blob dramc_param.h */
 
 #include <stdint.h>
 #include <sys/types.h>
-#include <soc/dramc_common_mt8192.h>
+#include <soc/dramc_soc.h>
 
 enum {
-	DRAMC_PARAM_HEADER_VERSION = 3,
+	DRAMC_PARAM_HEADER_VERSION = 5,
 };
 
 enum DRAMC_PARAM_STATUS_CODES {
@@ -39,12 +41,14 @@ enum DRAMC_PARAM_DDR_TYPE {
 	DDR_TYPE_EMCP,
 };
 
+/* Don't change the order, which is matched with blob */
 enum DRAMC_PARAM_GEOMETRY_TYPE {
 	DDR_TYPE_2CH_2RK_4GB_2_2,
 	DDR_TYPE_2CH_2RK_6GB_3_3,
-	DDR_TYPE_2CH_2RK_8GB_4_4,
+	DDR_TYPE_2CH_2RK_8GB_4_4_BYTE,
 	DDR_TYPE_2CH_1RK_4GB_4_0,
 	DDR_TYPE_2CH_2RK_6GB_2_4,
+	DDR_TYPE_2CH_2RK_8GB_4_4,
 };
 
 enum DRAM_PARAM_VOLTAGE_TYPE {
@@ -116,10 +120,10 @@ struct emi_mdl {
 };
 
 struct ddr_base_info {
-	u16 config_dvfs;		/* DRAMC_PARAM_DVFS_FLAG */
-	u16 ddr_type;			/* DRAMC_PARAM_DDR_TYPE */
-	u16 ddr_geometry;		/* DRAMC_PARAM_GEOMETRY_TYPE */
-	u16 voltage_type;		/* DRAM_PARAM_VOLTAGE_TYPE */
+	u32 config_dvfs;		/* DRAMC_PARAM_DVFS_FLAG */
+	u32 ddr_type;			/* DRAMC_PARAM_DDR_TYPE */
+	u32 ddr_geometry;		/* DRAMC_PARAM_GEOMETRY_TYPE */
+	u32 voltage_type;		/* DRAM_PARAM_VOLTAGE_TYPE */
 	u32 support_ranks;
 	u64 rank_size[RANK_MAX];
 	struct emi_mdl emi_config;
@@ -145,6 +149,7 @@ struct dramc_param_ops {
 
 struct sdram_info {
 	u32 ddr_geometry;		/* DRAMC_PARAM_GEOMETRY_TYPE */
+	u32 ddr_type;			/* DRAMC_PARAM_DDR_TYPE */
 };
 
 const struct sdram_info *get_sdram_config(void);
@@ -153,4 +158,4 @@ void dump_param_header(const void *blob);
 int validate_dramc_param(const void *blob);
 int is_valid_dramc_param(const void *blob);
 int initialize_dramc_param(void *blob);
-#endif  /* __SOC_MEDIATEK_MT8192_DRAMC_PARAM_H__ */
+#endif  /* __SOC_MEDIATEK_DRAMC_PARAM_H__ */

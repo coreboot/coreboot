@@ -9,6 +9,9 @@
 #include <symbols.h>
 #include <timer.h>
 
+const char *get_dram_geometry_str(u32 ddr_geometry);
+const char *get_dram_type_str(u32 ddr_type);
+
 static int mt_mem_test(const struct dramc_data *dparam)
 {
 	if (CONFIG(MEMORY_TEST)) {
@@ -22,9 +25,8 @@ static int mt_mem_test(const struct dramc_data *dparam)
 				printk(BIOS_ERR,
 				       "[MEM] complex R/W mem test failed: %d\n", result);
 				return -1;
-			} else {
-				printk(BIOS_DEBUG, "[MEM] complex R/W mem test passed\n");
 			}
+			printk(BIOS_DEBUG, "[MEM] rank %u complex R/W mem test passed\n", rank);
 
 			addr += ddr_info->rank_size[rank];
 		}
@@ -39,7 +41,57 @@ static u32 compute_checksum(const struct dramc_param *dparam)
 					sizeof(dparam->dramc_datas));
 }
 
-static int dram_run_fast_calibration(const struct dramc_param *dparam)
+const char *get_dram_geometry_str(u32 ddr_geometry)
+{
+	const char *s;
+
+	switch (ddr_geometry) {
+	case DDR_TYPE_2CH_2RK_4GB_2_2:
+		s = "2CH_2RK_4GB_2_2";
+		break;
+	case DDR_TYPE_2CH_2RK_6GB_3_3:
+		s = "2CH_2RK_6GB_3_3";
+		break;
+	case DDR_TYPE_2CH_2RK_8GB_4_4:
+		s = "2CH_2RK_8GB_4_4";
+		break;
+	case DDR_TYPE_2CH_2RK_8GB_4_4_BYTE:
+		s = "2CH_2RK_8GB_4_4_BYTE";
+		break;
+	case DDR_TYPE_2CH_1RK_4GB_4_0:
+		s = "2CH_1RK_4GB_4_0";
+		break;
+	case DDR_TYPE_2CH_2RK_6GB_2_4:
+		s = "2CH_2RK_6GB_2_4";
+		break;
+	default:
+		s = "";
+		break;
+	}
+
+	return s;
+}
+
+const char *get_dram_type_str(u32 ddr_type)
+{
+	const char *s;
+
+	switch (ddr_type) {
+	case DDR_TYPE_DISCRETE:
+		s = "DSC";
+		break;
+	case DDR_TYPE_EMCP:
+		s = "EMCP";
+		break;
+	default:
+		s = "";
+		break;
+	}
+
+	return s;
+}
+
+static int dram_run_fast_calibration(struct dramc_param *dparam)
 {
 	if (!is_valid_dramc_param(dparam)) {
 		printk(BIOS_WARNING, "DRAM-K: Invalid DRAM calibration data from flash\n");
@@ -56,7 +108,7 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam)
 		return DRAMC_ERR_INVALID_CHECKSUM;
 	}
 
-	const u16 config = CONFIG(MT8192_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
+	const u16 config = CONFIG(MEDIATEK_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
 	if (dparam->dramc_datas.ddr_info.config_dvfs != config) {
 		printk(BIOS_WARNING,
 		       "DRAM-K: Incompatible config for calibration data from flash "
@@ -66,7 +118,7 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam)
 	}
 
 	printk(BIOS_INFO, "DRAM-K: DRAM calibration data valid pass\n");
-	mt_set_emi(&dparam->dramc_datas);
+	init_dram_by_params(dparam);
 	if (mt_mem_test(&dparam->dramc_datas) == 0)
 		return 0;
 
@@ -96,7 +148,7 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 	prog_run(&dram);
 	if (dparam->header.status != DRAMC_SUCCESS) {
 		printk(BIOS_ERR, "DRAM-K: Full calibration failed: status = %d\n",
-			dparam->header.status);
+		       dparam->header.status);
 		return -3;
 	}
 
@@ -111,31 +163,36 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 }
 
 static void mem_init_set_default_config(struct dramc_param *dparam,
-	u32 ddr_geometry)
+					const struct sdram_info *dram_info)
 {
+	u32 type, geometry;
 	memset(dparam, 0, sizeof(*dparam));
 
-	if (CONFIG(MT8192_DRAM_EMCP))
-		dparam->dramc_datas.ddr_info.ddr_type = DDR_TYPE_EMCP;
+	type = dram_info->ddr_type;
+	geometry = dram_info->ddr_geometry;
 
-	if (CONFIG(MT8192_DRAM_DVFS))
+	dparam->dramc_datas.ddr_info.ddr_type = type;
+
+	if (CONFIG(MEDIATEK_DRAM_DVFS))
 		dparam->dramc_datas.ddr_info.config_dvfs = DRAMC_ENABLE_DVFS;
-	dparam->dramc_datas.ddr_info.ddr_geometry = ddr_geometry;
 
-	printk(BIOS_INFO, "DRAM-K: ddr_type: %d, config_dvfs: %d, ddr_geometry: %d\n",
-		dparam->dramc_datas.ddr_info.ddr_type,
-		dparam->dramc_datas.ddr_info.config_dvfs,
-		dparam->dramc_datas.ddr_info.ddr_geometry);
+	dparam->dramc_datas.ddr_info.ddr_geometry = geometry;
+
+	printk(BIOS_INFO, "DRAM-K: ddr_type: %s, config_dvfs: %d, ddr_geometry: %s\n",
+	       get_dram_type_str(type),
+	       dparam->dramc_datas.ddr_info.config_dvfs,
+	       get_dram_geometry_str(geometry));
 }
 
-static void mt_mem_init_run(struct dramc_param_ops *dparam_ops, u32 ddr_geometry)
+static void mt_mem_init_run(struct dramc_param_ops *dparam_ops,
+			    const struct sdram_info *dram_info)
 {
 	struct dramc_param *dparam = dparam_ops->param;
 	struct stopwatch sw;
 	int ret;
 
 	/* Load calibration params from flash and run fast calibration */
-	mem_init_set_default_config(dparam, ddr_geometry);
+	mem_init_set_default_config(dparam, dram_info);
 	if (dparam_ops->read_from_flash(dparam)) {
 		printk(BIOS_INFO, "DRAM-K: Running fast calibration\n");
 		stopwatch_init(&sw);
@@ -160,7 +217,7 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops, u32 ddr_geometry
 
 	/* Run full calibration */
 	printk(BIOS_INFO, "DRAM-K: Running full calibration\n");
-	mem_init_set_default_config(dparam, ddr_geometry);
+	mem_init_set_default_config(dparam, dram_info);
 
 	stopwatch_init(&sw);
 	int err = dram_run_full_calibration(dparam);
@@ -183,5 +240,5 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 {
 	const struct sdram_info *sdram_param = get_sdram_config();
 
-	mt_mem_init_run(dparam_ops, sdram_param->ddr_geometry);
+	mt_mem_init_run(dparam_ops, sdram_param);
 }

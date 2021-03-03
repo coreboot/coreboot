@@ -5,10 +5,12 @@
 #define PMC_IPC_USBC_SUBCMD_ID		0x0
 #define PMC_IPC_CMD			0x0
 #define PMC_IPC_TCSS_CONN_REQ_RES	0x0
+#define PMC_IPC_TCSS_DISC_REQ_RES	0x1
 #define PMC_IPC_TCSS_SAFE_MODE_REQ_RES	0x2
 #define PMC_IPC_TCSS_ALTMODE_REQ_RES	0x3
 #define PMC_IPC_TCSS_HPD_REQ_RES	0x4
 #define PMC_IPC_CONN_REQ_SIZE		2
+#define PMC_IPC_DISC_REQ_SIZE		2
 #define PMC_IPC_ALT_REQ_SIZE		8
 #define PMC_IPC_SAFE_REQ_SIZE		1
 #define PMC_IPC_HPD_REQ_SIZE		2
@@ -61,6 +63,8 @@
 #define TCSS_HPD_IRQ_SHIFT		13
 #define TCSS_HPD_IRQ_MASK		0x01
 
+#define MAX_TYPE_C_PORTS		4
+
 #define TCSS_CD_FIELD(name, val) \
 	(((val) & TCSS_CD_##name##_MASK) << TCSS_CD_##name##_SHIFT)
 
@@ -112,7 +116,7 @@ enum pmc_ipc_command_type {
 #define MODE_DP_PIN_F BIT(5)
 
 /* struct to hold all tcss_mux related variables */
-struct tcss_mux {
+struct tcss_mux_info {
 	bool dp; /* DP connected */
 	bool usb; /* USB connected */
 	bool cable; /* Activ/Passive Cable */
@@ -122,18 +126,28 @@ struct tcss_mux {
 	bool ufp;
 	bool acc;
 	uint8_t dp_mode; /* DP Operation Mode */
-	uint8_t usb3_port; /* USB2 Port Number */
-	uint8_t usb2_port; /* USB3 Port Number */
+};
+
+struct tcss_port_map {
+	uint8_t usb2_port; /* USB2 Port Number */
+	uint8_t usb3_port; /* USB3 Port Number */
 };
 
 void tcss_early_configure(void);
 
 /*
- * Mainboard method to setup any mux configuration needed for early TCSS operations.
- * This function will need to obtain any mux data needed to forward to IOM/PMC.
- * Since the mux data may be stored differently by different mainboards this
- * must be defined by the mainboard with its specific mux data stored in a struct tcss_mux
- * as defined above.
- * Returns completed tcss_mux structure
+ * Mainboard method to setup any mux config needed for early TCSS display operations.
+ * This function will need to obtain any mux data needed to forward to IOM/PMC
+ * Since the mux data may be stored differently by different mainboards this function
+ * must be defined by mainboard with its specific mux data stored in a tcss_mux_info
+ * struct as defined above.
+ * Returns completed tcss_mux_info structure for the specified port
  */
-const struct tcss_mux *mainboard_tcss_fill_mux_info(size_t *num_ports);
+const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
+
+/*
+ * Mainboard method to get only the port information to initialize the muxes to
+ * disconnect mode during boot.
+ * returns tscc_port_map of all ports on system
+ */
+const struct tcss_port_map *mainboard_tcss_get_port_info(size_t *num_ports);

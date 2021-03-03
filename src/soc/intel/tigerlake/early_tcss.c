@@ -104,7 +104,28 @@ static int send_pmc_req(int cmd_type, const struct pmc_ipc_buffer *req,
 	return -1;
 }
 
-static int send_pmc_connect_request(int port, struct tcss_mux mux_data)
+static int send_pmc_disconnect_request(int port, const struct tcss_port_map *port_map)
+{
+	uint32_t cmd;
+	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
+
+	cmd = tcss_make_conn_cmd(PMC_IPC_TCSS_DISC_REQ_RES, port_map->usb3_port,
+				port_map->usb2_port, 0, 0, 0, 0);
+
+	req.buf[0] = cmd;
+
+	printk(BIOS_DEBUG, "port C%d DISC req: usage %d usb3 %d usb2 %d\n",
+		port,
+		GET_TCSS_CD_FIELD(USAGE, cmd),
+		GET_TCSS_CD_FIELD(USB3, cmd),
+		GET_TCSS_CD_FIELD(USB2, cmd));
+
+	return send_pmc_req(CONNECT_REQ, &req, &rsp, PMC_IPC_DISC_REQ_SIZE);
+}
+
+static int send_pmc_connect_request(int port, const struct tcss_mux_info *mux_data,
+					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
 	struct pmc_ipc_buffer req = { 0 };
@@ -112,12 +133,12 @@ static int send_pmc_connect_request(int port, struct tcss_mux mux_data)
 
 	cmd = tcss_make_conn_cmd(
 		PMC_IPC_TCSS_CONN_REQ_RES,
-		mux_data.usb3_port,
-		mux_data.usb2_port,
-		mux_data.ufp,
-		mux_data.polarity,
-		mux_data.polarity,
-		mux_data.acc);
+		port_map->usb3_port,
+		port_map->usb2_port,
+		mux_data->ufp,
+		mux_data->polarity,
+		mux_data->polarity,
+		mux_data->acc);
 
 	req.buf[0] = cmd;
 
@@ -135,13 +156,14 @@ static int send_pmc_connect_request(int port, struct tcss_mux mux_data)
 	return send_pmc_req(CONNECT_REQ, &req, &rsp, PMC_IPC_CONN_REQ_SIZE);
 }
 
-static int send_pmc_safe_mode_request(int port, struct tcss_mux mux_data)
+static int send_pmc_safe_mode_request(int port, const struct tcss_mux_info *mux_data,
+					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
 	struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer rsp;
 
-	cmd = tcss_make_safe_mode_cmd(PMC_IPC_TCSS_SAFE_MODE_REQ_RES, mux_data.usb3_port);
+	cmd = tcss_make_safe_mode_cmd(PMC_IPC_TCSS_SAFE_MODE_REQ_RES, port_map->usb3_port);
 
 	req.buf[0] = cmd;
 
@@ -153,7 +175,8 @@ static int send_pmc_safe_mode_request(int port, struct tcss_mux mux_data)
 	return send_pmc_req(SAFE_REQ, &req, &rsp, PMC_IPC_SAFE_REQ_SIZE);
 }
 
-static int send_pmc_dp_hpd_request(int port, struct tcss_mux mux_data)
+static int send_pmc_dp_hpd_request(int port, const struct tcss_mux_info *mux_data,
+					const struct tcss_port_map *port_map)
 {
 	struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer rsp;
@@ -161,26 +184,29 @@ static int send_pmc_dp_hpd_request(int port, struct tcss_mux mux_data)
 
 	cmd = tcss_make_hpd_mode_cmd(
 		PMC_IPC_TCSS_HPD_REQ_RES,
-		mux_data.usb3_port,
-		mux_data.hpd_lvl,
-		mux_data.hpd_irq);
+		port_map->usb3_port,
+		mux_data->hpd_lvl,
+		mux_data->hpd_irq);
 
 	req.buf[0] = cmd;
 
 	return send_pmc_req(HPD_REQ, &req, &rsp, PMC_IPC_HPD_REQ_SIZE);
+
 }
 
-static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
+static int send_pmc_dp_mode_request(int port, const struct tcss_mux_info *mux_data,
+					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
 	uint8_t dp_mode;
 	int ret;
+
 	struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer rsp;
 
 	cmd = tcss_make_alt_mode_cmd_buf_0(
 		PMC_IPC_TCSS_ALTMODE_REQ_RES,
-		mux_data.usb3_port,
+		port_map->usb3_port,
 		PMC_IPC_DP_MODE);
 
 	req.buf[0] = cmd;
@@ -191,7 +217,7 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
 		GET_TCSS_ALT_FIELD(USB3, cmd),
 		GET_TCSS_ALT_FIELD(MODE, cmd));
 
-	switch (mux_data.dp_mode) {
+	switch (mux_data->dp_mode) {
 	case MODE_DP_PIN_A:
 		dp_mode = 1;
 		break;
@@ -216,8 +242,8 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
 	}
 
 	cmd = tcss_make_alt_mode_cmd_buf_1(
-		mux_data.polarity,
-		mux_data.cable,
+		mux_data->polarity,
+		mux_data->cable,
 		0, /* ufp is not supported in DP ALT Mode request */
 		dp_mode);
 
@@ -235,46 +261,66 @@ static int send_pmc_dp_mode_request(int port, struct tcss_mux mux_data)
 	if (ret)
 		return ret;
 
-	send_pmc_dp_hpd_request(port, mux_data);
+	send_pmc_dp_hpd_request(port, mux_data, port_map);
 	return 0;
 }
 
-static void update_tcss_mux(int port, struct tcss_mux mux_data)
+static void tcss_init_mux(int port, const struct tcss_port_map *port_map)
 {
-	int ret = 0;
+	int ret;
 
-	/* check if mux has a DP device */
-	if (mux_data.dp) {
-		ret = send_pmc_connect_request(port, mux_data);
-		if (ret) {
-			printk(BIOS_ERR, "Port %d connect request failed\n", port);
-			return;
-		}
-		ret = send_pmc_safe_mode_request(port, mux_data);
-		if (ret) {
-			printk(BIOS_ERR, "Port %d safe mode request failed\n", port);
-			return;
-		}
-
-		ret = send_pmc_dp_mode_request(port, mux_data);
-	}
-
+	ret = send_pmc_disconnect_request(port, port_map);
 	if (ret)
-		printk(BIOS_ERR, "Port C%d mux set failed with error %d\n", port, ret);
+		printk(BIOS_ERR, "Failed to setup port:%d to initial state\n", port);
 }
 
-void tcss_early_configure(void)
+static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t num_ports)
 {
-	const struct tcss_mux *mux_info;
-	size_t num_ports;
-	int i;
+	int ret;
+	size_t i;
+	const struct tcss_mux_info *mux_info;
+	const struct tcss_port_map *port_info;
 
 	if (!display_init_required())
 		return;
 
-	mux_info = mainboard_tcss_fill_mux_info(&num_ports);
+	for (i = 0; i < num_ports; i++) {
+		mux_info = mainboard_tcss_get_mux_info(i);
+		port_info = &port_map[i];
+
+		if (!mux_info->dp)
+			continue;
+
+		ret = send_pmc_connect_request(i, mux_info, port_info);
+		if (ret) {
+			printk(BIOS_ERR, "Port %zd connect request failed\n", i);
+			continue;
+		}
+		ret = send_pmc_safe_mode_request(i, mux_info, port_info);
+		if (ret) {
+			printk(BIOS_ERR, "Port %zd safe mode request failed\n", i);
+			continue;
+		}
+
+		ret = send_pmc_dp_mode_request(i, mux_info, port_info);
+		if (ret)
+			printk(BIOS_ERR, "Port C%zd mux set failed with error %d\n", i, ret);
+	}
+}
+
+void tcss_early_configure(void)
+{
+	const struct tcss_port_map *port_map;
+	size_t num_ports;
+	size_t i;
+
+	port_map = mainboard_tcss_get_port_info(&num_ports);
+	if (port_map == NULL)
+		return;
 
 	for (i = 0; i < num_ports; i++)
-		update_tcss_mux(i, mux_info[i]);
+		tcss_init_mux(i, &port_map[i]);
 
+	if (CONFIG(EARLY_TCSS_DISPLAY))
+		tcss_configure_dp_mode(port_map, num_ports);
 }

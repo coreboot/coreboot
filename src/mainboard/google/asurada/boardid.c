@@ -10,7 +10,8 @@
 #define ADC_LEVELS 15
 
 enum {
-	RAM_ID_CHANNEL = 3,
+	RAM_ID_HIGH_CHANNEL = 4,
+	RAM_ID_LOW_CHANNEL = 3,
 };
 
 static const unsigned int ram_voltages[ADC_LEVELS] = {
@@ -33,7 +34,8 @@ static const unsigned int ram_voltages[ADC_LEVELS] = {
 };
 
 static const unsigned int *adc_voltages[] = {
-	[RAM_ID_CHANNEL] = ram_voltages,
+	[RAM_ID_HIGH_CHANNEL] = ram_voltages,
+	[RAM_ID_LOW_CHANNEL] = ram_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)
@@ -63,8 +65,11 @@ uint32_t ram_code(void)
 {
 	static uint32_t cached_ram_code = BOARD_ID_INIT;
 
-	if (cached_ram_code == BOARD_ID_INIT)
-		cached_ram_code = get_adc_index(RAM_ID_CHANNEL);
+	if (cached_ram_code == BOARD_ID_INIT) {
+		cached_ram_code = (get_adc_index(RAM_ID_HIGH_CHANNEL) << 4 |
+				   get_adc_index(RAM_ID_LOW_CHANNEL));
+		printk(BIOS_DEBUG, "RAM Code: %#02x\n", cached_ram_code);
+	}
 
 	return cached_ram_code;
 }

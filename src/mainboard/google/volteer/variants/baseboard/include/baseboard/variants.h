@@ -21,6 +21,7 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 const struct mb_cfg *variant_memory_params(void);
 int variant_memory_sku(void);
+void memcfg_variant_init(FSPM_UPD *mupd);
 
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);

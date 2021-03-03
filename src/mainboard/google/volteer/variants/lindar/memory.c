@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <boardid.h>
 
 static const struct mb_cfg board_memcfg = {
 	.type = MEM_TYPE_LP4X,
@@ -58,4 +59,12 @@ static const struct mb_cfg board_memcfg = {
 const struct mb_cfg *variant_memory_params(void)
 {
 	return &board_memcfg;
+}
+
+void memcfg_variant_init(FSPM_UPD *mupd)
+{
+	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
+
+	if (board_id() == 1)
+		mem_cfg->SaGv = 0x00;
 }

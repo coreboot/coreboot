@@ -22,4 +22,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	bool half_populated = gpio_get(GPIO_MEM_CH_SEL);
 
 	memcfg_init(mem_cfg, board_cfg, &spd_info, half_populated);
+	memcfg_variant_init(mupd);
+}
+
+void __weak memcfg_variant_init(FSPM_UPD *mupd)
+{
 }

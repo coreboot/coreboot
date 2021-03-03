@@ -37,6 +37,7 @@ ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
 
 smm-y		+= smihandler.c
+smm-y		+= smu.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include

@@ -8,6 +8,7 @@
 #include <soc/dramc_common.h>
 #include <soc/dramc_register.h>
 #include <soc/dramc_pi_api.h>
+#include <soc/dramc_soc.h>
 #include <soc/emi.h>
 #include <soc/mt6391.h>
 #include <soc/pll.h>
@@ -184,7 +185,7 @@ static void pll_phase_check(u32 channel, struct mem_pll *mempll, int idx)
 	u16 one_count = (u16)((value >> 16) & 0xffff);
 	u16 zero_count = (u16)(value & 0xffff);
 
-	dramc_dbg_msg("PLL %d, phase %d, one_count %d, zero_count %d\n",
+	dramc_dbg("PLL %d, phase %d, one_count %d, zero_count %d\n",
 		      (idx + 2), mempll->phase, one_count, zero_count);
 
 	switch (mempll->phase) {
@@ -232,8 +233,8 @@ static void mem_pll_phase_cali(u32 channel)
 		{0, 0, 0},
 	};
 
-	dramc_dbg_msg("[PLL_Phase_Calib] ===== PLL Phase Calibration: ");
-	dramc_dbg_msg("CHANNEL %d (0: CHA, 1: CHB) =====\n", channel);
+	dramc_dbg("[PLL_Phase_Calib] ===== PLL Phase Calibration: ");
+	dramc_dbg("CHANNEL %d (0: CHA, 1: CHB) =====\n", channel);
 
 	/* 1. set jitter meter count number to 1024 for mempll 2 3 4 */
 	for (i = 0; i < 3; i++)
@@ -283,11 +284,11 @@ static void mem_pll_phase_cali(u32 channel)
 		}
 	}
 
-	dramc_dbg_msg("pll done: ");
+	dramc_dbg("pll done: ");
 
-	dramc_dbg_msg("%d, %d, %d\n",
+	dramc_dbg("%d, %d, %d\n",
 		      mempll[0].done, mempll[1].done, mempll[2].done);
-	dramc_dbg_msg("pll dl: %d, %d, %d\n",
+	dramc_dbg("pll dl: %d, %d, %d\n",
 		      mempll[0].delay, mempll[1].delay, mempll[2].delay);
 }
 

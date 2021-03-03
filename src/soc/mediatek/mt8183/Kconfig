@@ -6,6 +6,7 @@ config SOC_MEDIATEK_MT8183
 	select ARCH_ROMSTAGE_ARMV8_64
 	select ARCH_VERSTAGE_ARMV8_64
 	select ARM64_USE_ARM_TRUSTED_FIRMWARE
+	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_UART_SPECIAL
 	select COMPRESS_BOOTBLOCK
 	select SOC_MEDIATEK_COMMON
@@ -21,12 +22,6 @@ config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
-
-config DEBUG_DRAM
-	bool "Output verbose DRAM related debug messages"
-	default n
-	help
-	  This option enables additional DRAM related debug messages.
 
 config MT8183_DRAM_EMCP
 	bool

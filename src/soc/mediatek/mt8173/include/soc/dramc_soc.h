@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef _DRAMC_COMMON_H_
-#define _DRAMC_COMMON_H_
+#ifndef _DRAMC_SOC_H_
+#define _DRAMC_SOC_H_
 
 enum {
 	CHANNEL_A = 0,

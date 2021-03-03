@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8173_EMI_H
 
 #include <soc/dramc_common.h>
+#include <soc/dramc_soc.h>
 #include <types.h>
 
 /* DDR type */

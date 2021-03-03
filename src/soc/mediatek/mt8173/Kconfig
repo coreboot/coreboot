@@ -7,6 +7,7 @@ config SOC_MEDIATEK_MT8173
 	select ARCH_ROMSTAGE_ARMV8_64
 	select ARCH_VERSTAGE_ARMV8_64
 	select ARM64_USE_ARM_TRUSTED_FIRMWARE
+	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_UART_SPECIAL
 	select GENERIC_GPIO_LIB
 	select RTC
@@ -26,16 +27,10 @@ config VBOOT
 config DEBUG_SOC_DRIVER
 	bool "The top level switch for soc driver debug messages"
 	default n
-	select DEBUG_DRAM
+	select DEBUG_RAM_SETUP
 	select DEBUG_I2C
 	select DEBUG_PMIC
 	select DEBUG_PMIC_WRAP
-
-config DEBUG_DRAM
-	bool "Output verbose DRAM related debug messages"
-	default n
-	help
-	  This option enables additional DRAM related debug messages.
 
 config DEBUG_I2C
 	bool "Output verbose I2C related debug messages"

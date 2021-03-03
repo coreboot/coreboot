@@ -4,16 +4,9 @@
 #define _DRAMC_PI_API_MT8183_H
 
 #include <types.h>
+#include <soc/dramc_common.h>
 #include <soc/emi.h>
 #include <console/console.h>
-
-#define dramc_err(_x_...) printk(BIOS_ERR, _x_)
-#define dramc_show(_x_...) printk(BIOS_INFO, _x_)
-#if CONFIG(DEBUG_DRAM)
-#define dramc_dbg(_x_...) printk(BIOS_DEBUG, _x_)
-#else
-#define dramc_dbg(_x_...)
-#endif
 
 #define DATLAT_TAP_NUMBER 32
 #define HW_REG_SHUFFLE_MAX  4

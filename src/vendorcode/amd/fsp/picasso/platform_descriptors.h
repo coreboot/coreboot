@@ -76,7 +76,7 @@ typedef enum {
 	AUX5,
 	AUX6,
 	AUX_MAX			// Not valid value, used to verify input
-} pcie_aux_type;
+} ddi_aux_type;
 
 /* DDI Hdp Index */
 typedef enum {
@@ -87,7 +87,7 @@ typedef enum {
 	HDP5,
 	HDP6,
 	HDP_MAX			// Not valid value, used to verify input
-} pcie_hdp_type;
+} ddi_hdp_type;
 
 /* DDI display connector type */
 typedef enum {
@@ -107,7 +107,7 @@ typedef enum {
 	AUTO_DETECT,		// VBIOS auto detect connector type
 	UNUSED_PTYPE,		// UnusedType
 	MAX_CONNECTOR_TYPE	// Not valid value, used to verify input
-} pcie_connector_type;
+} ddi_connector_type;
 
 /* Picasso DDI Descriptor: used for configuring display outputs */
 typedef struct __packed {

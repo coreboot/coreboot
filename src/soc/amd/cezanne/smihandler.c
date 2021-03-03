@@ -9,8 +9,11 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <soc/smi.h>
+#include <soc/smu.h>
+#include <soc/southbridge.h>
 #include <types.h>
 
 static void fch_apmc_smi_handler(void)
@@ -34,8 +37,9 @@ static void fch_apmc_smi_handler(void)
 
 static void fch_slp_typ_handler(void)
 {
+	uint32_t pci_ctrl;
 	uint16_t pm1cnt;
-	uint8_t slp_typ;
+	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
 	pm1cnt = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
@@ -64,6 +68,24 @@ static void fch_slp_typ_handler(void)
 	}
 
 	if (slp_typ >= ACPI_S3) {
+		wbinvd();
+
+		clear_all_smi_status();
+
+		/* Do not send SMI before AcpiPm1CntBlkx00[SlpTyp] */
+		pci_ctrl = pm_read32(PM_PCI_CTRL);
+		pci_ctrl &= ~FORCE_SLPSTATE_RETRY;
+		pm_write32(PM_PCI_CTRL, pci_ctrl);
+
+		/* Enable SlpTyp */
+		rst_ctrl = pm_read8(PM_RST_CTRL1);
+		rst_ctrl |= SLPTYPE_CONTROL_EN;
+		pm_write8(PM_RST_CTRL1, rst_ctrl);
+
+		if (slp_typ == ACPI_S3)
+			psp_notify_sx_info(ACPI_S3);
+
+		smu_sx_entry(); /* Leave SlpTypeEn clear, SMU will set */
 		printk(BIOS_ERR, "Error: System did not go to sleep\n");
 		hlt();
 	}

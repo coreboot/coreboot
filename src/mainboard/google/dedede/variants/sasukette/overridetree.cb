@@ -49,7 +49,30 @@ chip soc/intel/jasperlake
 	}"
 
 	# USB Port Configuration
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_16P9MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # WWAN
+	register "usb2_ports[5]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Camera
 
 	device domain 0 on
 		device pci 14.0 on

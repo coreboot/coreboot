@@ -207,7 +207,7 @@ static void mt6315_write(u32 slvid, u32 reg, u32 data)
 
 static void mt6315_write_field(u32 slvid, u32 reg, u32 val, u32 mask, u32 shift)
 {
-	pmif_arb->write_field(pmif_arb, 0, reg, val, mask, shift);
+	pmif_arb->write_field(pmif_arb, slvid, reg, val, mask, shift);
 }
 
 static void mt6315_wdt_enable(u32 slvid)

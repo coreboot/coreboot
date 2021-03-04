@@ -24,7 +24,6 @@ romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += reset.c
 romstage-y += uart.c
-romstage-y += mrc_cache.c
 
 verstage-y += i2c.c
 verstage_x86-y += gpio.c

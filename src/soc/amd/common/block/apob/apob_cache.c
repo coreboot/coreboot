@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
+#include <amdblocks/apob_cache.h>
 #include <assert.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <soc/mrc_cache.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
@@ -95,7 +95,7 @@ static void *get_apob_from_nv_region(struct region *region)
 }
 
 /* Save APOB buffer to flash */
-void soc_update_mrc_cache(void)
+void soc_update_apob_cache(void)
 {
 	struct apob_base_header *apob_rom;
 	struct region_device write_rdev;
@@ -159,7 +159,7 @@ static void *get_apob_nv_address(void)
 	return get_apob_from_nv_region(&region);
 }
 
-void *soc_fill_mrc_cache(void)
+void *soc_fill_apob_cache(void)
 {
 	/* If this is non-S3 boot, then use the APOB data placed by PSP in DRAM. */
 	if (!acpi_is_wakeup_s3())

@@ -3,6 +3,7 @@
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/apob_cache.h>
 #include <amdblocks/memmap.h>
 #include <cbmem.h>
 #include <cpu/x86/cache.h>
@@ -14,7 +15,6 @@
 #include <program_loading.h>
 #include <elog.h>
 #include <soc/acpi.h>
-#include <soc/mrc_cache.h>
 #include <soc/pci_devs.h>
 #include <types.h>
 #include "chip.h"
@@ -92,7 +92,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
 	const struct soc_amd_picasso_config *config = config_of_soc();
 
-	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_mrc_cache();
+	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_apob_cache();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 	mcfg->tseg_size = CONFIG_SMM_TSEG_SIZE;
@@ -153,7 +153,7 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x43);
 	fsp_memory_init(acpi_is_wakeup_s3());
-	soc_update_mrc_cache();
+	soc_update_apob_cache();
 
 	memmap_stash_early_dram_usage();
 

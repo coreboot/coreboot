@@ -28,7 +28,7 @@ DefinitionBlock (
 	#include <cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
-	#include <sleepstates.asl>
+	#include <soc/amd/common/acpi/sleepstates.asl>
 
 	/* Contains the Sleep methods (WAK, PTS, GTS, etc.) */
 	#include <variant/acpi/sleep.asl>

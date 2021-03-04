@@ -25,7 +25,7 @@ DefinitionBlock (
 	#include <cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */
-	#include <sleepstates.asl>
+	#include <soc/amd/common/acpi/sleepstates.asl>
 
 	/* Contains _SWS methods */
 	#include <soc/amd/common/acpi/acpi_wake_source.asl>

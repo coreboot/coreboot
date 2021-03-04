@@ -15,4 +15,5 @@
 
 ramstage-y += irqroute.c
 
+subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include

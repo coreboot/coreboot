@@ -5,6 +5,7 @@ chip soc/intel/alderlake
 		device pci 01.0 alias pcie5 off end
 		device pci 02.0 alias igpu off end
 		device pci 04.0 alias dtt off end
+		device pci 05.0 alias ipu off end
 		device pci 06.0 alias pcie4_0 off end
 		device pci 06.2 alias pcie4_1 off end
 		device pci 07.0 alias tbt_pcie_rp0 off

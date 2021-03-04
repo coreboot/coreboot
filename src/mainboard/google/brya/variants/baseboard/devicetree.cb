@@ -91,6 +91,7 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end
+		device ref ipu on end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on end
 		device ref tbt_pcie_rp2 on end

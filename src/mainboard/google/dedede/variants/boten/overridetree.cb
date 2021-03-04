@@ -158,8 +158,12 @@ chip soc/intel/jasperlake
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
-				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_delay_ms" = "180"
 				register "generic.reset_off_delay_ms" = "3"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "generic.stop_delay_ms" = "20"
+				register "generic.stop_off_delay_ms" = "2"
 				register "generic.enable_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "generic.enable_delay_ms" = "12"

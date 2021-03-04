@@ -36,6 +36,7 @@ ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
 
+smm-y		+= gpio.c
 smm-y		+= smihandler.c
 smm-y		+= smu.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c

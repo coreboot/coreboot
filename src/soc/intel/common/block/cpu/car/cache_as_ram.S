@@ -398,9 +398,9 @@ find_llc_subleaf:
 	 * Then we need to allocate just one way for non-eviction
 	 * of RW data.
 	 */
-       movl    $0x01, %eax
-       cmp     $CONFIG_DCACHE_RAM_SIZE, %ecx
-       jnc     set_eviction_mask
+	movl    $0x01, %eax
+	cmp     $CONFIG_DCACHE_RAM_SIZE, %ecx
+	jnc     set_eviction_mask
 
 	/*
 	 * RW data size / way size is equal to number of

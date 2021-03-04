@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/apob_cache.h>
 #include <amdblocks/memmap.h>
 #include <arch/cpu.h>
 #include <console/console.h>
@@ -12,6 +13,8 @@
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
+
+	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_apob_cache();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 	mcfg->tseg_size = CONFIG_SMM_TSEG_SIZE;
@@ -31,6 +34,7 @@ asmlinkage void car_stage_entry(void)
 	post_code(0x41);
 
 	fsp_memory_init(acpi_is_wakeup_s3());
+	soc_update_apob_cache();
 
 	/* Fixup settings FSP-M should not be changing */
 	fch_disable_legacy_dma_io();

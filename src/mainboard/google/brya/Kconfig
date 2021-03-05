@@ -61,7 +61,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "brya" if BOARD_GOOGLE_BRYA0
+	default "Brya" if BOARD_GOOGLE_BRYA0
 
 config VARIANT_DIR
 	string

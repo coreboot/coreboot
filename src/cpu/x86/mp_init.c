@@ -992,6 +992,28 @@ int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
 	return run_ap_work(&lcb, expire_us);
 }
 
+int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_parallel)
+{
+	int ap_index, bsp_index;
+
+	if (run_parallel)
+		return mp_run_on_aps(func, arg, 0, expire_us);
+
+	bsp_index = cpu_index();
+
+	const int total_threads = global_num_aps + 1; /* +1 for BSP */
+
+	for (ap_index = 0; ap_index < total_threads; ap_index++) {
+		/* skip if BSP */
+		if (ap_index == bsp_index)
+			continue;
+		if (mp_run_on_aps(func, arg, ap_index, expire_us))
+			return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
 int mp_run_on_all_cpus(void (*func)(void *), void *arg)
 {
 	/* Run on BSP first. */

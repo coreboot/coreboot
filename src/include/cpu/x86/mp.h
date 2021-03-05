@@ -125,6 +125,12 @@ enum {
 int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
 		long expire_us);
 
+/*
+ * Runs func on all APs excluding BSP, with a provision to run calls in parallel
+ * or serially per AP.
+ */
+int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_parallel);
+
 /* Like mp_run_on_aps() but also runs func on BSP. */
 int mp_run_on_all_cpus(void (*func)(void *), void *arg);
 

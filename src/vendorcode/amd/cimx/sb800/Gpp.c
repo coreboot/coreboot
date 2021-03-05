@@ -137,28 +137,28 @@ sbPcieGppEarlyInit (
   if ( cimAlinkPhyPllPowerDown == TRUE ) {
     UINT32  abValue;
     // Set PCIE_P_CNTL in Alink PCIEIND space
-    writeAlink (SB_AX_INDXC_REG30 | (UINT32) (AXINDC << 29), 0x40);
-    abValue = readAlink (SB_AX_DATAC_REG34 | (UINT32) (AXINDC << 29));
+    writeAlink (SB_AX_INDXC_REG30 | ((UINT32) AXINDC << 29), 0x40);
+    abValue = readAlink (SB_AX_DATAC_REG34 | ((UINT32) AXINDC << 29));
     abValue |= BIT12 + BIT3 + BIT0;
     abValue &= ~(BIT9 + BIT4);
-    writeAlink (SB_AX_DATAC_REG34 | (UINT32) (AXINDC << 29), abValue);
-    rwAlink (SB_AX_INDXC_REG02 | (UINT32) (AXINDC << 29), ~BIT8, (BIT8));
+    writeAlink (SB_AX_DATAC_REG34 | ((UINT32) AXINDC << 29), abValue);
+    rwAlink (SB_AX_INDXC_REG02 | ((UINT32) AXINDC << 29), ~BIT8, (BIT8));
   }
 
 //
 // Set ABCFG 0x031C[0] = 1 enable the lane reversal support.
 //
-  reg32Value = readAlink (SB_ABCFG_REG31C | (UINT32) (ABCFG << 29));
+  reg32Value = readAlink (SB_ABCFG_REG31C | ((UINT32) ABCFG << 29));
   if ( cimGppLaneReversal ) {
-    writeAlink (SB_ABCFG_REG31C | (UINT32) (ABCFG << 29), reg32Value | BIT0);
+    writeAlink (SB_ABCFG_REG31C | ((UINT32) ABCFG << 29), reg32Value | BIT0);
   } else {
-    writeAlink (SB_ABCFG_REG31C | (UINT32) (ABCFG << 29), reg32Value | 0x00);
+    writeAlink (SB_ABCFG_REG31C | ((UINT32) ABCFG << 29), reg32Value | 0x00);
   }
 //
 // Set abcfg:0x90[20] = 1 to enable GPP bridge multi-function
 //
-  reg32Value = readAlink (SB_ABCFG_REG90 | (UINT32) (ABCFG << 29));
-  writeAlink (SB_ABCFG_REG90 | (UINT32) (ABCFG << 29), reg32Value | BIT20);
+  reg32Value = readAlink (SB_ABCFG_REG90 | ((UINT32) ABCFG << 29));
+  writeAlink (SB_ABCFG_REG90 | ((UINT32) ABCFG << 29), reg32Value | BIT20);
 
 
 //
@@ -173,14 +173,14 @@ sbPcieGppEarlyInit (
 // GPP Memory Write Max Payload Improvement RCINDC_Reg 0x10[12:10] = 0x4
 //
     if ( cimGppMemWrImprove == TRUE ) {
-      rwAlink (SB_ABCFG_REG54 | (UINT32) (ABCFG << 29), ~BIT26, (BIT26));
-      rwAlink (SB_RCINDXC_REG10 | (UINT32) (RCINDXC << 29), ~(BIT12 + BIT11 + BIT10), (BIT12));
+      rwAlink (SB_ABCFG_REG54 | ((UINT32) ABCFG << 29), ~BIT26, (BIT26));
+      rwAlink (SB_RCINDXC_REG10 | ((UINT32) RCINDXC << 29), ~(BIT12 + BIT11 + BIT10), (BIT12));
     }
 
     if ( pConfig->S3Resume ) {
       for ( portNum = 0; portNum < MAX_GPP_PORTS; portNum++ ) {
-        reg32Value = readAlink ((SB_ABCFG_REG340 + portNum * 4) | (UINT32) (ABCFG << 29));
-        writeAlink ((SB_ABCFG_REG340 + portNum * 4) | (UINT32) (ABCFG << 29), reg32Value & ~BIT21);
+        reg32Value = readAlink ((SB_ABCFG_REG340 + portNum * 4) | ((UINT32) ABCFG << 29));
+        writeAlink ((SB_ABCFG_REG340 + portNum * 4) | ((UINT32) ABCFG << 29), reg32Value & ~BIT21);
       }
     }
     //
@@ -202,8 +202,8 @@ sbPcieGppEarlyInit (
         // Check failure port and clear STRAP_BIF_DE_EMPHASIS_SEL_x_GPP bit (abcfg:0x34[0, 4, 8, C][21]=0)
         for ( portNum = 0; portNum < MAX_GPP_PORTS; portNum++ ) {
           if (TogglePort & (1 << portNum)) {
-            reg32Value = readAlink ((SB_ABCFG_REG340 + portNum * 4) | (UINT32) (ABCFG << 29));
-            writeAlink ((SB_ABCFG_REG340 + portNum * 4) | (UINT32) (ABCFG << 29), reg32Value & ~BIT21);
+            reg32Value = readAlink ((SB_ABCFG_REG340 + portNum * 4) | ((UINT32) ABCFG << 29));
+            writeAlink ((SB_ABCFG_REG340 + portNum * 4) | ((UINT32) ABCFG << 29), reg32Value & ~BIT21);
           }
           sbGppForceGen1 (portNum);
         }
@@ -229,13 +229,13 @@ sbPcieGppEarlyInit (
 // RCINDC_Reg 0x65 [27:0] = 0xFFFFFFF
 // ABCFG 0xC0[7:4] = 0x0
 
-    rwAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), ~BIT8, (BIT4 + BIT5 + BIT6 + BIT7));
-    rwAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), 0xFFFFFFFF, (BIT12 + BIT13 + BIT14 + BIT15));
+    rwAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), ~BIT8, (BIT4 + BIT5 + BIT6 + BIT7));
+    rwAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), 0xFFFFFFFF, (BIT12 + BIT13 + BIT14 + BIT15));
     rwAlink (SB_AX_INDXC_REG40, ~(BIT9 + BIT4), (BIT0 + BIT3 + BIT12));
     rwAlink (RC_INDXC_REG40, ~(BIT9 + BIT4), (BIT0 + BIT3 + BIT12));
-    rwAlink ((SB_ABCFG_REG90 | (UINT32) (ABCFG << 29)), 0xFFFFFFFF, (BIT6 + BIT19));
+    rwAlink ((SB_ABCFG_REG90 | ((UINT32) ABCFG << 29)), 0xFFFFFFFF, (BIT6 + BIT19));
     rwAlink (RC_INDXC_REG65, 0xFFFFFFFF, 0x0fffffff);
-    rwAlink ((SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29)), ~(BIT4 + BIT5 + BIT6 + BIT7), 0);
+    rwAlink ((SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29)), ~(BIT4 + BIT5 + BIT6 + BIT7), 0);
   }
   sbGppDisableUnusedPadMap ( pConfig );
 }
@@ -304,10 +304,10 @@ PreInitGppLink (
   //
   tmp16Value = (UINT16) (~reg32Value << 12);
   reg32Value = (UINT32) (tmp16Value + (reg32Value << 4) + cfgMode);
-  writeAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), reg32Value);
+  writeAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), reg32Value);
 
-  reg32Value = readAlink (0xC0 | (UINT32) (RCINDXC << 29));
-  writeAlink (0xC0 | (UINT32) (RCINDXC << 29), reg32Value | 0x400);  // Set STRAP_F0_MSI_EN
+  reg32Value = readAlink (0xC0 | ((UINT32) RCINDXC << 29));
+  writeAlink (0xC0 | ((UINT32) RCINDXC << 29), reg32Value | 0x400);  // Set STRAP_F0_MSI_EN
 
   // A-Link L1 Entry Delay Shortening
   // AXINDP_Reg 0xA0[7:4] = 0x3
@@ -373,7 +373,7 @@ CheckGppLinkStatus (
         //
         // Get port link state (reading LC_CURRENT_STATE of PCIEIND_P)
         //
-        abIndex = SB_RCINDXP_REGA5 | (UINT32) (RCINDXP << 29) | (portId << 24);
+        abIndex = SB_RCINDXP_REGA5 | ((UINT32) RCINDXP << 29) | (portId << 24);
         Data32 = readAlink (abIndex) & 0x3F;
         if ((UINT8) (Data32) > 4) {
           portScanMap2 &= ~(1 << portId);       // This port is not empty
@@ -397,7 +397,7 @@ CheckGppLinkStatus (
         // Get port link state (reading LC_CURRENT_STATE of PCIEIND_P)
         //
         SbStall (1000);                          // Delay 400us
-        abIndex = SB_RCINDXP_REGA5 | (UINT32) (RCINDXP << 29) | (portId << 24);
+        abIndex = SB_RCINDXP_REGA5 | ((UINT32) RCINDXP << 29) | (portId << 24);
         Data32 = readAlink (abIndex) & 0x3F3F3F3F;
 
         if ( (UINT8) (Data32) == 0x10 ) {
@@ -485,7 +485,7 @@ AfterGppLinkInit (
       i = 500;
       Data32 = 0;
       while ( --i ) {
-        abIndex = SB_RCINDXP_REGA5 | (UINT32) (RCINDXP << 29) | (portId << 24);
+        abIndex = SB_RCINDXP_REGA5 | ((UINT32) RCINDXP << 29) | (portId << 24);
         Data32 = readAlink (abIndex) & 0x3F;
         if ((UINT8) (Data32) == 0x10) {
           break;
@@ -514,7 +514,7 @@ AfterGppLinkInit (
 
 //  Status = AGESA_SUCCESS;
   pConfig->GppFoundGfxDev = 0;
-  abValue = readAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29));
+  abValue = readAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29));
 
   for ( portId = 0; portId < MAX_GPP_PORTS; portId++ ) {
     portCfg = &pConfig->PORTCONFIG[portId].PortCfg;
@@ -541,7 +541,7 @@ AfterGppLinkInit (
     }
     // Clear STRAP_BIF_DE_EMPHASIS_SEL_x_GPP bit (abcfg:0x34[0, 4, 8, C][21]=0) to make hotplug working
     if ( portCfg->PortHotPlug == TRUE ) {
-      rwAlink ((SB_ABCFG_REG340 + portId * 4) | (UINT32) (ABCFG << 29), ~BIT21, 0);
+      rwAlink ((SB_ABCFG_REG340 + portId * 4) | ((UINT32) ABCFG << 29), ~BIT21, 0);
 
 // RPR5.12 Hot Plug: PCIe Native Support
 // RCINDP_Reg 0x10[3] = 0x1
@@ -549,10 +549,10 @@ AfterGppLinkInit (
 // PCIe_Cfg 0x6C[6] = 0x1
 // RCINDP_Reg 0x20[19] = 0x0
 
-      rwAlink ((SB_RCINDXP_REG10 | (UINT32) (RCINDXP << 29) | (portId << 24)), 0xFFFFFFFF, BIT3);
+      rwAlink ((SB_RCINDXP_REG10 | ((UINT32) RCINDXP << 29) | (portId << 24)), 0xFFFFFFFF, BIT3);
       RWPCI (PCI_ADDRESS (0, GPP_DEV_NUM, portId, 0x5b), AccWidthUint8, 0xff, BIT0);
       RWPCI (PCI_ADDRESS (0, GPP_DEV_NUM, portId, 0x6c), AccWidthUint8, 0xff, BIT6);
-      rwAlink ((SB_RCINDXP_REG20 | (UINT32) (RCINDXP << 29) | (portId << 24)), ~BIT19, 0);
+      rwAlink ((SB_RCINDXP_REG20 | ((UINT32) RCINDXP << 29) | (portId << 24)), ~BIT19, 0);
     }
   }
   if ( pConfig->GppUnhidePorts == FALSE ) {
@@ -563,7 +563,7 @@ AfterGppLinkInit (
     }
 
     // Update GPP_Portx_Enable (abcfg:0xC0[7:5])
-    writeAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), abValue);
+    writeAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), abValue);
   }
 
   //
@@ -578,12 +578,12 @@ AfterGppLinkInit (
       WritePCI (PCI_ADDRESS (0, GPP_DEV_NUM, portId, 0x80), AccWidthUint8, &bValue);
 
         // Set PCIEIND_P:PCIE_RX_CNTL[RX_RCB_CPL_TIMEOUT_MODE] (0x70:[19]) = 1
-      abIndex = SB_RCINDXP_REG70 | (UINT32) (RCINDXP << 29) | (portId << 24);
+      abIndex = SB_RCINDXP_REG70 | ((UINT32) RCINDXP << 29) | (portId << 24);
       abValue = readAlink (abIndex) | BIT19;
       writeAlink (abIndex, abValue);
 
         // Set PCIEIND_P:PCIE_TX_CNTL[TX_FLUSH_TLP_DIS] (0x20:[19]) = 0
-      abIndex = SB_RCINDXP_REG20 | (UINT32) (RCINDXP << 29) | (portId << 24);
+      abIndex = SB_RCINDXP_REG20 | ((UINT32) RCINDXP << 29) | (portId << 24);
       abValue = readAlink (abIndex) & ~BIT19;
       writeAlink (abIndex, abValue);
 
@@ -615,7 +615,7 @@ sbPcieGppLateInit (
 //
 // Configure ASPM
 //
-//  writeAlink (0xC0 | (UINT32) (RCINDXC << 29), 0x400);  // Set STRAP_F0_MSI_EN
+//  writeAlink (0xC0 | ((UINT32) RCINDXC << 29), 0x400);  // Set STRAP_F0_MSI_EN
   aspmValue = (UINT8)pConfig->GppPortAspm;
   cimGppPhyPllPowerDown = (UINT8) pConfig->GppPhyPllPowerDown;
 #if  SB_CIMx_PARAMETER == 0
@@ -644,10 +644,10 @@ sbPcieGppLateInit (
 //
 // Configure Lock HWInit registers
 //
-  reg32Value = readAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29));
+  reg32Value = readAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29));
   if (reg32Value & 0xF0) {
-    reg32Value = readAlink (SB_RCINDXC_REG10 | (UINT32) (RCINDXC << 29));
-    writeAlink (SB_RCINDXC_REG10 | (UINT32) (RCINDXC << 29), reg32Value | BIT0);  // Set HWINIT_WR_LOCK
+    reg32Value = readAlink (SB_RCINDXC_REG10 | ((UINT32) RCINDXC << 29));
+    writeAlink (SB_RCINDXC_REG10 | ((UINT32) RCINDXC << 29), reg32Value | BIT0);  // Set HWINIT_WR_LOCK
 
     if ( cimGppPhyPllPowerDown == TRUE ) {
 //
@@ -655,22 +655,22 @@ sbPcieGppLateInit (
 //
       UINT32  abValue;
       // Set PCIE_P_CNTL in Alink PCIEIND space
-      abValue = readAlink (RC_INDXC_REG40 | (UINT32) (RCINDXC << 29));
+      abValue = readAlink (RC_INDXC_REG40 | ((UINT32) RCINDXC << 29));
       abValue |= BIT12 + BIT3 + BIT0;
       abValue &= ~(BIT9 + BIT4);
-      writeAlink (RC_INDXC_REG40 | (UINT32) (RCINDXC << 29), abValue);
+      writeAlink (RC_INDXC_REG40 | ((UINT32) RCINDXC << 29), abValue);
     }
   }
 
 //
 // Configure Lock HWInit registers
 //
-  reg32Value = readAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29));
+  reg32Value = readAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29));
 //
 // Disable hidden register decode and serial number capability
 //
-  reg32Value = readAlink (SB_ABCFG_REG330 | (UINT32) (ABCFG << 29));
-  writeAlink (SB_ABCFG_REG330 | (UINT32) (ABCFG << 29), reg32Value & ~(BIT26 + BIT10));
+  reg32Value = readAlink (SB_ABCFG_REG330 | ((UINT32) ABCFG << 29));
+  writeAlink (SB_ABCFG_REG330 | ((UINT32) ABCFG << 29), reg32Value & ~(BIT26 + BIT10));
 }
 
 /**
@@ -890,11 +890,11 @@ sbGppDisableUnusedPadMap (
 // ABCFG 0xC0[7:4] = 0x0
   if ( (Data32 & 0xf) == 0xf ) Data32 |= 0x0cff0000;
   if ( cimAlinkPhyPllPowerDown && cimGppPhyPllPowerDown ) {
-    rwAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), ~BIT8, 0);
-    rwAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29), 0xFFFFFFFF, HoldData32);
+    rwAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), ~BIT8, 0);
+    rwAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29), 0xFFFFFFFF, HoldData32);
     rwAlink (SB_AX_INDXC_REG40, ~(BIT9 + BIT4), (BIT0 + BIT3 + BIT12));
     rwAlink (RC_INDXC_REG40, ~(BIT9 + BIT4), (BIT0 + BIT3 + BIT12));
-    rwAlink ((SB_ABCFG_REG90 | (UINT32) (ABCFG << 29)), 0xFFFFFFFF, (BIT6 + BIT19));
+    rwAlink ((SB_ABCFG_REG90 | ((UINT32) ABCFG << 29)), 0xFFFFFFFF, (BIT6 + BIT19));
     rwAlink (RC_INDXC_REG65, 0xFFFFFFFF, Data32);
   }
 }

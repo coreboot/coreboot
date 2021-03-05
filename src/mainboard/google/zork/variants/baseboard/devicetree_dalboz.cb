@@ -1,4 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	field TOUCHPAD 26
+		option REGULAR_TOUCHPAD 1
+		option NUMPAD_TOUCHPAD 0
+	end
+end
+
 chip soc/amd/picasso
 
 	# Set FADT Configuration

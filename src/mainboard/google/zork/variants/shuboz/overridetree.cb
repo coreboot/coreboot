@@ -60,14 +60,26 @@ chip soc/amd/picasso
 			register "disable_gpio_export_in_crs" = "1"
 			device i2c 10 on end
 		end
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
+			register "wake" = "GEVENT_22"
+			register "probed" = "1"
+			device i2c 15 on
+				probe TOUCHPAD REGULAR_TOUCHPAD
+			end
+		end
 		chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN2702""
-				register "generic.desc" = ""ELAN Touchpad""
-				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
-				register "generic.wake" = "GEVENT_22"
-				register "generic.probed" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 on end
+			register "generic.hid" = ""ELAN2702""
+			register "generic.desc" = ""ELAN Touchpad""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
+			register "generic.wake" = "GEVENT_22"
+			register "generic.probed" = "1"
+			register "hid_desc_reg_offset" = "0x01"
+			device i2c 15 on
+				probe TOUCHPAD NUMPAD_TOUCHPAD
+			end
 		end
 	end # device
 end	# chip soc/amd/picasso

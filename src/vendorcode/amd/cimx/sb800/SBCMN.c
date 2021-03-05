@@ -640,12 +640,12 @@ abcfgTbl (
 
   while ( (pABTbl->regType) != 0xFF ) {
     if ( pABTbl->regType > AXINDC ) {
-      ddValue = pABTbl->regIndex | (pABTbl->regType << 29);
+      ddValue = pABTbl->regIndex | ((UINT32) pABTbl->regType << 29);
       writeAlink (ddValue, ((readAlink (ddValue)) & (0xFFFFFFFF^ (pABTbl->regMask))) | pABTbl->regData);
     } else {
-      ddValue = 0x30 | (pABTbl->regType << 29);
+      ddValue = 0x30 | ((UINT32) pABTbl->regType << 29);
       writeAlink (ddValue, pABTbl->regIndex);
-      ddValue = 0x34 | (pABTbl->regType << 29);
+      ddValue = 0x34 | ((UINT32) pABTbl->regType << 29);
       writeAlink (ddValue, ((readAlink (ddValue)) & (0xFFFFFFFF^ (pABTbl->regMask))) | pABTbl->regData);
     }
     ++pABTbl;

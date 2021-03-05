@@ -17,6 +17,8 @@ Scope(\_SB) {
 
 #include <soc/amd/common/acpi/platform.asl>
 
+#include <soc/amd/common/acpi/sleepstates.asl>
+
 /*
  * Platform Wake Notify
  *

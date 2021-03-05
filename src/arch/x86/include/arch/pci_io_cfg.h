@@ -13,7 +13,7 @@
 static __always_inline
 uint32_t pci_io_encode_addr(pci_devfn_t dev, uint16_t reg)
 {
-	uint32_t addr = 1 << 31;
+	uint32_t addr = 1U << 31;
 
 	addr |= dev >> 4;
 	addr |= reg & 0xfc;

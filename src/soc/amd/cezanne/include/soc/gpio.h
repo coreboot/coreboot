@@ -9,6 +9,9 @@
 #ifndef __ACPI__
 #include <soc/iomap.h>
 #include <amdblocks/gpio_banks.h>
+#endif /* !__ACPI__ */
+
+#include <amdblocks/gpio_defs.h>
 
 /* The following sections describe only the GPIOs defined for this SOC */
 
@@ -281,5 +284,4 @@
 
 #define GPIO_2_EVENT GEVENT_8
 
-#endif /* !__ACPI__ */
 #endif /* AMD_CEZANNE_GPIO_H */

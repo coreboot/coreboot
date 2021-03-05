@@ -7,10 +7,17 @@
 #include <soc/intel/apollolake/chip.h>
 
 #define MIN_LTE_SKU         4
+#define FLEEX_MAX_SKU         0x20
 
 static bool is_lte_sku(void)
 {
-	return (google_chromeec_get_board_sku() >= MIN_LTE_SKU);
+	uint32_t sku_id = google_chromeec_get_board_sku();
+
+	/* Only Fleex has LTE sku */
+	if (sku_id <= FLEEX_MAX_SKU)
+		return (sku_id >= MIN_LTE_SKU);
+
+	return false;
 }
 
 void variant_smi_sleep(u8 slp_typ)

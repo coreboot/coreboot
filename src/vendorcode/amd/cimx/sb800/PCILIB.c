@@ -46,7 +46,7 @@ ReadPCI (
   if ( (UINT16)Address < 0xff ) {
     //Normal Config Access
     UINT32 AddrCf8;
-    AddrCf8 = (1 << 31) + ((Address >> 8) & 0x0FFFF00) + (Address & 0xFC);
+    AddrCf8 = (1U << 31) + ((Address >> 8) & 0x0FFFF00) + (Address & 0xFC);
     WriteIO (0xCf8, AccWidthUint32, &AddrCf8);
     ReadIO ((UINT16) (0xCfC + (Address & 0x3)), OpFlag, Value);
   }
@@ -63,7 +63,7 @@ WritePCI (
   if ( (UINT16)Address < 0xff ) {
     //Normal Config Access
     UINT32 AddrCf8;
-    AddrCf8 = (1 << 31) + ((Address >> 8)&0x0FFFF00) + (Address & 0xFC);
+    AddrCf8 = (1U << 31) + ((Address >> 8)&0x0FFFF00) + (Address & 0xFC);
     WriteIO (0xCf8, AccWidthUint32, &AddrCf8);
     WriteIO ((UINT16) (0xCfC + (Address & 0x3)), OpFlag, Value);
   }

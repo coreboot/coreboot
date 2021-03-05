@@ -197,7 +197,7 @@ chip soc/intel/alderlake
 		device pci 09.0 off end # NPK
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
-		device pci 0d.1 on  end # USB xDCI (OTG)
+		device pci 0d.1 off end # USB xDCI (OTG)
 		device pci 0d.2 on
 			chip drivers/intel/usb4/retimer
 				register "power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19)"

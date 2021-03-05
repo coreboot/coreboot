@@ -3,6 +3,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Pad configuration in ramstage */
@@ -397,6 +398,8 @@ const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
 };
 
 const struct cros_gpio *__weak variant_cros_gpios(size_t *num)

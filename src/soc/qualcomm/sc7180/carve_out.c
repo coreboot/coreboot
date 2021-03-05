@@ -2,7 +2,7 @@
 
 #include <arch/stages.h>
 #include <soc/mmu_common.h>
-#include <soc/symbols.h>
+#include <soc/symbols_common.h>
 #include <device/mmio.h>
 
 #define MODEM_ID_LTE 0x004c5445

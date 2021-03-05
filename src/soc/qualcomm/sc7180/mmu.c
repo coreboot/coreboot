@@ -5,7 +5,7 @@
 #include <arch/cache.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
-#include <soc/symbols.h>
+#include <soc/symbols_common.h>
 
 void sc7180_mmu_init(void)
 {

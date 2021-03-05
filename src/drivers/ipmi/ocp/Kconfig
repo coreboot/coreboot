@@ -3,8 +3,3 @@ config IPMI_OCP
 	default n
 	help
 	  This implements OCP specific IPMI command
-
-config IPMI_OCP_MANU_ID
-	hex
-	default 0x0
-	depends on IPMI_OCP

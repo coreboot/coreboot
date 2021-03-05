@@ -417,9 +417,9 @@ commonInitEarlyBoot (
   abLinkInitBeforePciEnum (pConfig);            // Set ABCFG registers
   // AB MSI
   if ( pConfig->BuildParameters.AbMsi) {
-    abValue = readAlink (SB_ABCFG_REG94 | (UINT32) (ABCFG << 29));
+    abValue = readAlink (SB_ABCFG_REG94 | ((UINT32) ABCFG << 29));
     abValue = abValue | BIT20;
-    writeAlink (SB_ABCFG_REG94 | (UINT32) (ABCFG << 29), abValue);
+    writeAlink (SB_ABCFG_REG94 | ((UINT32) ABCFG << 29), abValue);
   }
 
 
@@ -483,12 +483,12 @@ abSpecialSetBeforePciEnum (
   )
 {
   UINT32   abValue;
-  abValue = readAlink (SB_ABCFG_REGC0 | (UINT32) (ABCFG << 29));
+  abValue = readAlink (SB_ABCFG_REGC0 | ((UINT32) ABCFG << 29));
   abValue &= 0xf0;
   if ( pConfig->SbPcieOrderRule && abValue ) {
-    abValue = readAlink (SB_RCINDXC_REG02 | (UINT32) (RCINDXC << 29));
+    abValue = readAlink (SB_RCINDXC_REG02 | ((UINT32) RCINDXC << 29));
     abValue = abValue | BIT9;
-    writeAlink (SB_RCINDXC_REG02 | (UINT32) (RCINDXC << 29), abValue);
+    writeAlink (SB_RCINDXC_REG02 | ((UINT32) RCINDXC << 29), abValue);
   }
 }
 
@@ -620,7 +620,7 @@ abLinkInitBeforePciEnum (
   pAbTblPtr = (ABTBLENTRY *) FIXUP_PTR (&abTblEntry800[0]);
   abcfgTbl (pAbTblPtr);
   if ( cimResetCpuOnSyncFlood ) {
-    rwAlink (SB_ABCFG_REG10050 | (UINT32) (ABCFG << 29), ~BIT2, BIT2);
+    rwAlink (SB_ABCFG_REG10050 | ((UINT32) ABCFG << 29), ~BIT2, BIT2);
   }
 }
 

@@ -42,5 +42,11 @@ chip soc/amd/cezanne
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 		end
+
+		device ref lpc_bridge on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
 	end # domain
 end	# chip soc/amd/cezanne

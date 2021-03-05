@@ -54,4 +54,8 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x1
 
+config CONSOLE_CBMEM_BUFFER_SIZE
+	hex
+	default 0x80000
+
 endif

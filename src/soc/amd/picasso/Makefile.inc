@@ -137,8 +137,7 @@ ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 # type = 0x6B - PSP Shared memory location
 ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
 PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
-_PSP_SHAREDMEM_BASE=$(shell grep _psp_sharedmem_dram $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)/bootblock.map | cut -f1 -d' ')
-PSP_SHAREDMEM_BASE=$(shell printf "0x%s" $(_PSP_SHAREDMEM_BASE))
+PSP_SHAREDMEM_BASE=$(shell awk '$$3 == "_psp_sharedmem_dram" {printf "0x" $$1}' $(objcbfs)/bootblock.map)
 endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
@@ -225,7 +224,8 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$$(PSP_APCB_FILES) \
 			$(DEP_FILES) \
 			$(AMDFWTOOL) \
-			$(obj)/fmap_config.h
+			$(obj)/fmap_config.h \
+			$(objcbfs)/bootblock.elf # this target also creates the .map file
 	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"

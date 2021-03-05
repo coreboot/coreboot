@@ -32,41 +32,6 @@ void gpio_fill_wake_state(struct gpio_wake_state *state);
 /* Add gpio events to the eventlog. */
 void gpio_add_events(void);
 
-enum {
-	GEVENT_0,
-	GEVENT_1,
-	GEVENT_2,
-	GEVENT_3,
-	GEVENT_4,
-	GEVENT_5,
-	GEVENT_6,
-	GEVENT_7,
-	GEVENT_8,
-	GEVENT_9,
-	GEVENT_10,
-	GEVENT_11,
-	GEVENT_12,
-	GEVENT_13,
-	GEVENT_14,
-	GEVENT_15,
-	GEVENT_16,
-	GEVENT_17,
-	GEVENT_18,
-	GEVENT_19,
-	GEVENT_20,
-	GEVENT_21,
-	GEVENT_22,
-	GEVENT_23,
-	GEVENT_24,
-	GEVENT_25,
-	GEVENT_26,
-	GEVENT_27,
-	GEVENT_28,
-	GEVENT_29,
-	GEVENT_30,
-	GEVENT_31,
-};
-
 static inline bool is_gpio_event_level_triggered(uint32_t flags)
 {
 	return (flags & GPIO_FLAG_EVENT_TRIGGER_MASK) == GPIO_FLAG_EVENT_TRIGGER_LEVEL;

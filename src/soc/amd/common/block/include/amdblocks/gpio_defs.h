@@ -245,4 +245,37 @@
 #define PAD_NC(pin)							\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(PULL_DOWN))
 
+#define GEVENT_0	0
+#define GEVENT_1	1
+#define GEVENT_2	2
+#define GEVENT_3	3
+#define GEVENT_4	4
+#define GEVENT_5	5
+#define GEVENT_6	6
+#define GEVENT_7	7
+#define GEVENT_8	8
+#define GEVENT_9	9
+#define GEVENT_10	10
+#define GEVENT_11	11
+#define GEVENT_12	12
+#define GEVENT_13	13
+#define GEVENT_14	14
+#define GEVENT_15	15
+#define GEVENT_16	16
+#define GEVENT_17	17
+#define GEVENT_18	18
+#define GEVENT_19	19
+#define GEVENT_20	20
+#define GEVENT_21	21
+#define GEVENT_22	22
+#define GEVENT_23	23
+#define GEVENT_24	24
+#define GEVENT_25	25
+#define GEVENT_26	26
+#define GEVENT_27	27
+#define GEVENT_28	28
+#define GEVENT_29	29
+#define GEVENT_30	30
+#define GEVENT_31	31
+
 #endif /* AMD_BLOCK_GPIO_DEFS_H */

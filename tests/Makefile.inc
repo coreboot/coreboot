@@ -148,7 +148,7 @@ $(TEST_KCONFIG_AUTOCONFIG): $(TEST_KCONFIG_AUTOHEADER)
 
 ifeq ($(JUNIT_OUTPUT),y)
 $(alltests): export CMOCKA_MESSAGE_OUTPUT=xml
-$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-$(subst /,_,$^).xml
+$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-$(subst /,_,$^)-%g.xml
 endif
 
 $(alltests): $$($$(@)-bin)

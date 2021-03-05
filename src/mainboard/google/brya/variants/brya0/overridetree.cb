@@ -1,8 +1,4 @@
 chip soc/intel/alderlake
-	register "pmc_gpe0_dw0" = "GPP_A"
-	register "pmc_gpe0_dw1" = "GPP_E"
-	register "pmc_gpe0_dw2" = "GPP_F"
-
 	register "SaGv" = "SaGv_Disabled"
 
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A MLB Port

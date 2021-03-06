@@ -107,6 +107,7 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_ADP_M_SPI0,
 	PCI_DEVICE_ID_INTEL_ADP_M_SPI1,
 	PCI_DEVICE_ID_INTEL_ADP_M_SPI2,
+	PCI_DEVICE_ID_INTEL_SPR_HWSEQ_SPI,
 	0
 };
 

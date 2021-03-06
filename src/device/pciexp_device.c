@@ -132,8 +132,8 @@ static void pciexp_config_max_latency(struct device *root, struct device *dev)
 	unsigned int cap;
 	cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
 	if ((cap) && (root->ops->ops_pci != NULL) &&
-		(root->ops->ops_pci->set_L1_ss_latency != NULL))
-			root->ops->ops_pci->set_L1_ss_latency(dev, cap + 4);
+		(root->ops->ops_pci->set_ltr_max_latencies != NULL))
+			root->ops->ops_pci->set_ltr_max_latencies(dev, cap + 4);
 }
 
 static bool pciexp_is_ltr_supported(struct device *dev, unsigned int cap)

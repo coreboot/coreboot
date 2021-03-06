@@ -31,7 +31,7 @@ struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
 	void (*set_subsystem)(struct device *dev, unsigned int vendor,
 		unsigned int device);
-	void (*set_L1_ss_latency)(struct device *dev, unsigned int off);
+	void (*set_ltr_max_latencies)(struct device *dev, unsigned int off);
 };
 
 struct pci_driver {

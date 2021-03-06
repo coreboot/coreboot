@@ -42,6 +42,7 @@ COREBOOT_EXPORTS += MAINBOARDDIR VARIANT_DIR CARRIER_DIR
 ## rom image file, are placed under $(objcbfs).
 ## These typically have suffixes .debug .elf .bin and .map
 objcbfs := $(obj)/cbfs/$(CONFIG_CBFS_PREFIX)
+additional-dirs += $(objcbfs)
 COREBOOT_EXPORTS += objcbfs
 
 ## Based on the active configuration, Makefile conditionally collects
@@ -49,6 +50,7 @@ COREBOOT_EXPORTS += objcbfs
 ## Such files that do not have a clear one-to-one relation to a source
 ## file under src/ are placed and built under $(objgenerated)
 objgenerated := $(obj)/generated
+additional-dirs += $(objgenerated)
 COREBOOT_EXPORTS += objgenerated
 
 ## CCACHE_EXTRAFILES can be set by individual rules to help CCACHE
@@ -58,7 +60,7 @@ COREBOOT_EXPORTS += CCACHE_EXTRAFILES
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot files_added
-coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool $(obj)/ifwitool
+coreboot: $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool $(obj)/ifwitool
 
 # This target can be used in site local to run scripts or additional
 # targets after the build completes by creating a Makefile.inc in the
@@ -73,7 +75,7 @@ files_added:: build_complete
 
 #######################################################################
 # our phony targets
-PHONY+= clean-abuild coreboot check-style build-dirs build_complete
+PHONY+= clean-abuild coreboot check-style build_complete
 
 #######################################################################
 # root source directories of coreboot
@@ -508,7 +510,7 @@ ifeq ($(CONFIG_DEBUG_ADA_CODE),y)
 ADAFLAGS_common += -gnata
 endif
 
-additional-dirs := $(objutil)/cbfstool $(objutil)/ifdtool \
+additional-dirs += $(objutil)/cbfstool $(objutil)/ifdtool \
 		   $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage
 
@@ -535,9 +537,6 @@ build_h_check := \
 $(build_h): $$(shell $$(build_h_check))
 	@printf "    GEN        build.h\n"
 	mv $< $@
-
-build-dirs $(objcbfs) $(objgenerated):
-	mkdir -p $(objcbfs) $(objgenerated)
 
 $(obj)/build_info:
 	@echo 'COREBOOT_VERSION: $(call strip_quotes,$(KERNELVERSION))' > $@.tmp
@@ -770,7 +769,7 @@ $(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
 	$(OBJCOPY_bootblock) -O binary $< $@
 
 ifneq ($(CONFIG_HAVE_BOOTBLOCK),y)
-$(objcbfs)/bootblock.bin: $(objcbfs)
+$(objcbfs)/bootblock.bin:
 	dd if=/dev/zero of=$@ bs=64 count=1
 endif
 

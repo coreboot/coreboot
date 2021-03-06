@@ -59,7 +59,7 @@ the `new_layout.txt` file:
 |                           |                           |                           |
 |    00000000:00000fff fd   |    00000000:00000fff fd   |    00000000:00000fff fd   |
 |    00001000:00002fff gbe  |    00001000:00002fff gbe  |    00001000:00002fff gbe  |
-|    00003000:003fffff bios |    00003000:007fffff bios |    00003000:01ffffff bios |
+|    00003000:003fffff bios |    00003000:007fffff bios |    00003000:00ffffff bios |
 |    00fff000:00000fff pd   |    00fff000:00000fff pd   |    00fff000:00000fff pd   |
 |    00fff000:00000fff me   |    00fff000:00000fff me   |    00fff000:00000fff me   |
 +---------------------------+---------------------------+---------------------------+
@@ -108,7 +108,7 @@ If your flash is not 8 MiB, you need to change values of `flcomp_density1` and
 +=================+=======+=======+========+
 | flcomp_density1 | 0x3   | 0x4   | 0x5    |
 +-----------------+-------+-------+--------+
-| flreg1_limit    | 0x3ff | 0x7ff | 0x1fff |
+| flreg1_limit    | 0x3ff | 0x7ff | 0xfff  |
 +-----------------+-------+-------+--------+
 ```
 
@@ -127,7 +127,7 @@ to flash descriptor and gbe dump.
 ```
 Mainboard --->
     ROM chip size (8192 KB (8 MB)) # According to your chip
-    (0x7fd000) Size of CBFS filesystem in ROM # or 0x3fd000 for 4 MiB chip / 0x1ffd000 for 16 MiB chip
+    (0x7fd000) Size of CBFS filesystem in ROM # or 0x3fd000 for 4 MiB chip / 0xffd000 for 16 MiB chip
 
 Chipset --->
     [*] Add Intel descriptor.bin file

@@ -386,12 +386,6 @@
 #define PCI_EXP_DEVCAP		4	/* Device capabilities */
 #define  PCI_EXP_DEVCAP_PAYLOAD	0x07	/* Max_Payload_Size */
 #define  PCI_EXP_DEVCAP_PHANTOM	0x18	/* Phantom functions */
-#define PCI_EXP_DEV_CAP2_OFFSET	0x24	/* Device Capabilities 2 offset */
-/* LTR mechanism supported.Bit 11 of Device Cap 2 Register */
-#define  LTR_MECHANISM_SUPPORT	(1 << 11)
-#define PCI_EXP_DEV_CTL_STS2_CAP_OFFSET	0x28	/* Device Control 2  offset */
-/* LTR mechanism enable. Bit 10 of Device Control 2 Register */
-#define  LTR_MECHANISM_EN	(1 << 10)
 #define  PCI_EXP_DEVCAP_EXT_TAG	0x20	/* Extended tags */
 #define  PCI_EXP_DEVCAP_L0S	0x1c0	/* L0s Acceptable Latency */
 #define  PCI_EXP_DEVCAP_L1	0xe00	/* L1 Acceptable Latency */
@@ -445,6 +439,10 @@
 #define  PCI_EXP_RTCTL_CRSSVE	0x10	/* CRS Software Visibility Enable */
 #define PCI_EXP_RTCAP		30	/* Root Capabilities */
 #define PCI_EXP_RTSTA		32	/* Root Status */
+#define PCI_EXP_DEVCAP2		36	/* Device capabilities 2 */
+#define  PCI_EXP_DEVCAP2_LTR	0x0800	/* LTR supported */
+#define PCI_EXP_DEVCTL2		40	/* Device Control 2 */
+#define  PCI_EXP_DEV2_LTR	0x0400	/* LTR enabled */
 
 /* Extended Capabilities (PCI-X 2.0 and Express) */
 #define PCI_EXT_CAP_ID(header)		(header & 0x0000ffff)

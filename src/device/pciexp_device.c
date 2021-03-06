@@ -140,9 +140,9 @@ static bool pciexp_is_ltr_supported(struct device *dev, unsigned int cap)
 {
 	unsigned int val;
 
-	val = pci_read_config16(dev, cap + PCI_EXP_DEV_CAP2_OFFSET);
+	val = pci_read_config16(dev, cap + PCI_EXP_DEVCAP2);
 
-	if (val & LTR_MECHANISM_SUPPORT)
+	if (val & PCI_EXP_DEVCAP2_LTR)
 		return true;
 
 	return false;
@@ -164,10 +164,10 @@ static void pciexp_configure_ltr(struct device *dev)
 		return;
 	}
 
-	cap += PCI_EXP_DEV_CTL_STS2_CAP_OFFSET;
+	cap += PCI_EXP_DEVCTL2;
 
 	/* Enable LTR for device */
-	pci_update_config32(dev, cap, ~LTR_MECHANISM_EN, LTR_MECHANISM_EN);
+	pci_update_config32(dev, cap, ~PCI_EXP_DEV2_LTR, PCI_EXP_DEV2_LTR);
 
 	/* Configure Max Snoop Latency */
 	pciexp_config_max_latency(dev->bus->dev, dev);

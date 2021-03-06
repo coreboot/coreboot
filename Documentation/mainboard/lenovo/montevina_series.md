@@ -88,10 +88,12 @@ $ mv flashregion_0_flashdescriptor.bin.new.new flashregion_0_flashdescriptor.bin
 
 Continue to the [Configuring coreboot](#configuring-coreboot) section.
 
-#### Creating a new flash descriptor using bincfg
+#### Using checked-in flash descriptor via bincfg
 
-There is a tool to generate a modified flash descriptor called **bincfg**. Go to
-`util/bincfg` and build it:
+There is a copy of an X200's flash descriptor checked into the coreboot
+repository. It is supposed to work for the T400/T500 as well. The descriptor
+can be converted back to its binary form using a tool called **bincfg**. Go
+to `util/bincfg` and build it:
 ```console
 $ cd util/bincfg
 $ make
@@ -110,7 +112,7 @@ If your flash is not 8 MiB, you need to change values of `flcomp_density1` and
 +-----------------+-------+-------+--------+
 ```
 
-Then create the flash descriptor:
+Then convert the flash descriptor:
 ```console
 $ make gen-ifd-x200
 ```

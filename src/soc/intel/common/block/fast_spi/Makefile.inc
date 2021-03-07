@@ -44,7 +44,7 @@ $(call add_intermediate, check-fmap-16mib-crossing, $(obj)/fmap_config.h)
 		    end=$$((start+size-1)); \
 		    if [ $$start -lt 16777216 ] && [ $$end -ge 16777216 ]; then echo "ERROR:" $$x "crosses 16MiB boundary"; fail=1; break; fi; \
 		done; \
-		if [ $$fail -eq 1 ]; then false; fi
+		exit $$fail
 
 CBFSTOOL_ADD_CMD_OPTIONS += --ext-win-base $(CONFIG_EXT_BIOS_WIN_BASE) --ext-win-size $(CONFIG_EXT_BIOS_WIN_SIZE)
 

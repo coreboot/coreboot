@@ -253,10 +253,10 @@ config LINUXBOOT_UROOT_SHELL
 
 config LINUXBOOT_UROOT_COMMANDS
 	string "U-root commands"
-	default "coreboot-app"
+	default "boot coreboot-app"
 	help
 	  List of additional modules to include,
-	  separated by space. (default "coreboot-app")
+	  separated by space. (default "boot coreboot-app")
 
 endif #LINUXBOOT_UROOT
 

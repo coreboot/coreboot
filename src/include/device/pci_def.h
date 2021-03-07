@@ -518,6 +518,10 @@
 #define PCI_PWR_CAP		12	/* Capability */
 #define  PCI_PWR_CAP_BUDGET(x)	((x) & 1)	/* Included in system budget */
 
+/* Latency Tolerance Reporting */
+#define PCI_LTR_MAX_SNOOP	4
+#define PCI_LTR_MAX_NOSNOOP	6
+
 /*
  * The PCI interface treats multi-function devices as independent
  * devices.  The slot/function address of each device is encoded

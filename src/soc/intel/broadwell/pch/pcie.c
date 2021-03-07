@@ -609,17 +609,15 @@ static void pch_pcie_enable(struct device *dev)
 		root_port_commit_config();
 }
 
-static void pcie_set_ltr_max_latencies(struct device *dev, unsigned int off)
+static void pcie_get_ltr_max_latencies(u16 *max_snoop, u16 *max_nosnoop)
 {
-	/* Set max snoop and non-snoop latency for Broadwell */
-	pci_write_config32(dev, off,
-		PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US << 16 |
-		PCIE_LTR_MAX_SNOOP_LATENCY_3146US);
+	*max_snoop = PCIE_LTR_MAX_SNOOP_LATENCY_3146US;
+	*max_nosnoop = PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US;
 }
 
 static struct pci_operations pcie_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
-	.set_ltr_max_latencies = pcie_set_ltr_max_latencies,
+	.get_ltr_max_latencies = pcie_get_ltr_max_latencies,
 };
 
 static struct device_operations device_ops = {

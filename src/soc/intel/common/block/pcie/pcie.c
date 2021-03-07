@@ -45,16 +45,14 @@ static void pch_pcie_init(struct device *dev)
 	pci_write_config16(dev, PCI_SEC_STATUS, reg16);
 }
 
-static void pcie_set_ltr_max_latencies(struct device *dev, unsigned int offset)
+static void pcie_get_ltr_max_latencies(u16 *max_snoop, u16 *max_nosnoop)
 {
-	/* Set max snoop and non-snoop latency for the SOC */
-	pci_write_config32(dev, offset,
-		PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US << 16 |
-		PCIE_LTR_MAX_SNOOP_LATENCY_3146US);
+	*max_snoop = PCIE_LTR_MAX_SNOOP_LATENCY_3146US;
+	*max_nosnoop = PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US;
 }
 
 static struct pci_operations pcie_ops = {
-	.set_ltr_max_latencies = pcie_set_ltr_max_latencies,
+	.get_ltr_max_latencies = pcie_get_ltr_max_latencies,
 	.set_subsystem = pci_dev_set_subsystem,
 };
 

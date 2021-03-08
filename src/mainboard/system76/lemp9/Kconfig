@@ -55,10 +55,6 @@ config MAX_CPUS
 config DIMM_MAX
 	default 2
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,9b41.rom"
-
 config VGA_BIOS_ID
 	string
 	default "8086,9b41"

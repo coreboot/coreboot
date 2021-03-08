@@ -25,10 +25,6 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 1
 
-config VGA_BIOS_FILE
-	string
-	default "pci102b,0532.rom"
-
 config VGA_BIOS_ID
 	string
 	depends on VGA_BIOS

@@ -25,8 +25,4 @@ config MAX_CPUS
 	int
 	default 16
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0166.rom"
-
 endif # BOARD_INTEL_BASKING_RIDGE

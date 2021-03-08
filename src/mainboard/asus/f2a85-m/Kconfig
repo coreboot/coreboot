@@ -95,10 +95,6 @@ config VGA_BIOS_ID
 	string
 	default "1002,9901"
 
-config VGA_BIOS_FILE
-	string
-	default "pci1002,9901.rom"
-
 endif
 
 config DEVICETREE

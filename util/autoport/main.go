@@ -510,9 +510,6 @@ func (g GenericVGA) Scan(ctx Context, addr PCIDevData) {
 	KconfigString["VGA_BIOS_ID"] = fmt.Sprintf("%04x,%04x",
 		addr.PCIVenID,
 		addr.PCIDevID)
-	KconfigString["VGA_BIOS_FILE"] = fmt.Sprintf("pci%04x,%04x.rom",
-		addr.PCIVenID,
-		addr.PCIDevID)
 	PutPCIDevParent(addr, g.Comment, g.MissingParent)
 	IGDEnabled = true
 }

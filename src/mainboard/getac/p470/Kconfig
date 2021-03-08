@@ -32,8 +32,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config VGA_BIOS_FILE
-	string
-	default "getac-pci8086,27a2.rom"
-
 endif # BOARD_GETAC_P470

@@ -36,10 +36,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config VGA_BIOS_FILE
-	string
-	default "site-local/vgabios.bin"
-
 config VGA_BIOS_ID
 	string
 	default "1002,9806"

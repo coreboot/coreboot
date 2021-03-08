@@ -38,10 +38,6 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 60
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0166.rom"
-
 config VGA_BIOS_ID
 	string
 	default "8086,0166"

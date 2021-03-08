@@ -30,8 +30,4 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "Stumpy"
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0106.rom"
-
 endif # BOARD_SAMSUNG_STUMPY

@@ -26,8 +26,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config VGA_BIOS_FILE
-	string
-	default "amipci_01.20"
-
 endif # BOARD_IBASE_MB899

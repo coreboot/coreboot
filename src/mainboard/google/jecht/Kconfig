@@ -33,10 +33,6 @@ config MAINBOARD_PART_NUMBER
 	default "Rikku" if BOARD_GOOGLE_RIKKU
 	default "Tidus" if BOARD_GOOGLE_TIDUS
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0406.rom"
-
 # Override the default variant behavior, since the data.vbt is the same
 # for all variants except tidus
 config INTEL_GMA_VBT_FILE

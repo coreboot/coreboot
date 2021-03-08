@@ -37,11 +37,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-#config VGA_BIOS_FILE
-#	string "VGA BIOS path and filename"
-#	depends on VGA_BIOS
-#	default "rom/video/OntarioGenericVbios.bin"
-
 config VGA_BIOS_ID
 	string
 	default "1002,9806" # FUSION_G_T56N

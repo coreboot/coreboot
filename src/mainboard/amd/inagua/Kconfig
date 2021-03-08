@@ -36,11 +36,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-#config VGA_BIOS_FILE
-#        string "VGA BIOS path and filename"
-#        depends on VGA_BIOS
-#        default "rom/video/OntarioGenericVBios.bin"
-
 config VGA_BIOS_ID
 	string "VGA device PCI IDs"
 	depends on VGA_BIOS

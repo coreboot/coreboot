@@ -51,13 +51,6 @@ config PXE_ROM_ID
 	default "8086,157b" if BOARD_PROTECTLI_FW4B
 
 if !RUN_FSP_GOP
-config VGA_BIOS_FILE
-	string
-	default "3rdparty/blobs/mainboard/protectli/vault_bsw/vgabios.bin"
-	help
-	  The C0 version of the video bios gets computed from this name
-	  so that they can both be added.  Only the correct one for the
-	  system will be run.
 
 config VGA_BIOS_ID
 	string

@@ -20,8 +20,4 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "WHITETIP MOUNTAIN 2"
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0166.rom"
-
 endif # BOARD_INTEL_WTM2

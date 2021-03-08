@@ -1,20 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <arch/io.h>
-#include <console/console.h>
-#include <cpu/x86/smm.h>
-#include <cpu/x86/cache.h>
 #include <acpi/acpi.h>
-#include <arch/hlt.h>
-#include <soc/smi.h>
-#include <soc/southbridge.h>
-#include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
+#include <arch/hlt.h>
+#include <arch/io.h>
+#include <console/console.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/smm.h>
 #include <elog.h>
+#include <soc/smi.h>
 #include <soc/smu.h>
+#include <soc/southbridge.h>
 #include <types.h>
 
 static void fch_apmc_smi_handler(void)

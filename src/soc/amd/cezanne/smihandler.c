@@ -11,6 +11,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <elog.h>
 #include <soc/smi.h>
 #include <soc/smu.h>
 #include <soc/southbridge.h>
@@ -27,6 +28,14 @@ static void fch_apmc_smi_handler(void)
 	case APM_CNT_ACPI_DISABLE:
 		acpi_disable_sci();
 		break;
+	case APM_CNT_ELOG_GSMI:
+		if (CONFIG(ELOG_GSMI))
+			handle_smi_gsmi();
+		break;
+	case APM_CNT_SMMSTORE:
+		if (CONFIG(SMMSTORE))
+			handle_smi_store();
+		break;
 	case APM_CNT_SMMINFO:
 		psp_notify_smm();
 		break;
@@ -37,8 +46,8 @@ static void fch_apmc_smi_handler(void)
 
 static void fch_slp_typ_handler(void)
 {
-	uint32_t pci_ctrl;
-	uint16_t pm1cnt;
+	uint32_t pci_ctrl, reg32;
+	uint16_t pm1cnt, reg16;
 	uint8_t slp_typ, rst_ctrl;
 
 	/* Figure out SLP_TYP */
@@ -81,6 +90,31 @@ static void fch_slp_typ_handler(void)
 		rst_ctrl = pm_read8(PM_RST_CTRL1);
 		rst_ctrl |= SLPTYPE_CONTROL_EN;
 		pm_write8(PM_RST_CTRL1, rst_ctrl);
+
+		/*
+		 * Before the final command, check if there's pending wake
+		 * event. Read enable first, so that reading the actual status
+		 * is as close as possible to entering S3. The idea is to
+		 * minimize the opportunity for a wake event to happen before
+		 * actually entering S3. If there's a pending wake event, log
+		 * it and continue normal path. S3 will fail and the wake event
+		 * becomes a SCI.
+		 */
+		if (CONFIG(ELOG_GSMI)) {
+			reg16 = acpi_read16(MMIO_ACPI_PM1_EN);
+			reg16 &= acpi_read16(MMIO_ACPI_PM1_STS);
+			if (reg16)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_PM1_WAKE,
+						(u32)reg16);
+
+			reg32 = acpi_read32(MMIO_ACPI_GPE0_EN);
+			reg32 &= acpi_read32(MMIO_ACPI_GPE0_STS);
+			if (reg32)
+				elog_add_extended_event(
+						ELOG_SLEEP_PENDING_GPE0_WAKE,
+						reg32);
+		} /* if (CONFIG(ELOG_GSMI)) */
 
 		if (slp_typ == ACPI_S3)
 			psp_notify_sx_info(ACPI_S3);

@@ -40,10 +40,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config VGA_BIOS
-	bool
-	default n
-
 #config VGA_BIOS_FILE
 #	string "VGA BIOS path and filename"
 #	depends on VGA_BIOS

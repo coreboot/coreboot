@@ -48,10 +48,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config VGA_BIOS
-	bool
-	default n
-
 config SB800_AHCI_ROM
 	bool
 	default n

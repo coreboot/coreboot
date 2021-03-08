@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_FINTEK_COMMON_PRE_RAM
 	select SUPERIO_FINTEK_FAN_CONTROL
 	select SUPERIO_FINTEK_FAN_API_CALL
-	select VGA_BIOS
 	select AZALIA_PLUGIN_SUPPORT
 
 config MAINBOARD_DIR
@@ -48,6 +47,9 @@ config MAX_CPUS
 config IRQ_SLOT_COUNT
 	int
 	default 11
+
+config VGA_BIOS
+	default y if USE_AMD_BLOBS
 
 config HWM_PORT
 	hex

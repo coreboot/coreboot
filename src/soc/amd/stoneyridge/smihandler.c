@@ -4,11 +4,9 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/cache.h>
-#include <cpu/amd/amd64_save_state.h>
 #include <acpi/acpi.h>
 #include <arch/hlt.h>
 #include <device/pci_def.h>
-#include <smmstore.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
@@ -17,84 +15,6 @@
 #include <amdblocks/smm.h>
 #include <elog.h>
 #include <types.h>
-
-/* bits in smm_io_trap   */
-#define SMM_IO_TRAP_PORT_OFFSET		16
-#define SMM_IO_TRAP_PORT_ADDRESS_MASK	0xffff
-#define SMM_IO_TRAP_RW			(1 << 0)
-#define SMM_IO_TRAP_VALID		(1 << 1)
-
-static inline u16 get_io_address(u32 info)
-{
-	return ((info >> SMM_IO_TRAP_PORT_OFFSET) &
-		SMM_IO_TRAP_PORT_ADDRESS_MASK);
-}
-
-static void *find_save_state(int cmd)
-{
-	unsigned int core;
-	amd64_smm_state_save_area_t *state;
-	u32 smm_io_trap;
-	u8 reg_al;
-
-	/* Check all nodes looking for the one that issued the IO */
-	for (core = 0; core < CONFIG_MAX_CPUS; core++) {
-		state = smm_get_save_state(core);
-		smm_io_trap = state->smm_io_trap_offset;
-		/* Check for Valid IO Trap Word (bit1==1) */
-		if (!(smm_io_trap & SMM_IO_TRAP_VALID))
-			continue;
-		/* Make sure it was a write (bit0==0) */
-		if (smm_io_trap & SMM_IO_TRAP_RW)
-			continue;
-		/* Check for APMC IO port */
-		if (pm_acpi_smi_cmd_port() != get_io_address(smm_io_trap))
-			continue;
-		/* Check AL against the requested command */
-		reg_al = state->rax;
-		if (reg_al == cmd)
-			return state;
-	}
-	return NULL;
-}
-
-static void southbridge_smi_gsmi(void)
-{
-	u8 sub_command;
-	amd64_smm_state_save_area_t *io_smi;
-	u32 reg_ebx;
-
-	io_smi = find_save_state(APM_CNT_ELOG_GSMI);
-	if (!io_smi)
-		return;
-	/* Command and return value in EAX */
-	sub_command = (io_smi->rax >> 8) & 0xff;
-
-	/* Parameter buffer in EBX */
-	reg_ebx = io_smi->rbx;
-
-	/* drivers/elog/gsmi.c */
-	io_smi->rax = gsmi_exec(sub_command, &reg_ebx);
-}
-
-static void southbridge_smi_store(void)
-{
-	u8 sub_command;
-	amd64_smm_state_save_area_t *io_smi;
-	u32 reg_ebx;
-
-	io_smi = find_save_state(APM_CNT_SMMSTORE);
-	if (!io_smi)
-		return;
-	/* Command and return value in EAX */
-	sub_command = (io_smi->rax >> 8) & 0xff;
-
-	/* Parameter buffer in EBX */
-	reg_ebx = io_smi->rbx;
-
-	/* drivers/smmstore/smi.c */
-	io_smi->rax = smmstore_exec(sub_command, (void *)reg_ebx);
-}
 
 static void fch_apmc_smi_handler(void)
 {
@@ -109,11 +29,11 @@ static void fch_apmc_smi_handler(void)
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))
-			southbridge_smi_gsmi();
+			handle_smi_gsmi();
 		break;
 	case APM_CNT_SMMSTORE:
 		if (CONFIG(SMMSTORE))
-			southbridge_smi_store();
+			handle_smi_store();
 		break;
 	}
 

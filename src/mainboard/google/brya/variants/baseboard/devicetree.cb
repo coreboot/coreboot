@@ -24,6 +24,9 @@ chip soc/intel/alderlake
 	register "gpio_pm[COMM_4]" = "0"
 	register "gpio_pm[COMM_5]" = "0"
 
+	# Enable CNVi BT
+	register "CnviBtCore" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# USB2_C2
@@ -103,7 +106,6 @@ chip soc/intel/alderlake
 		device ref tcss_xhci on end
 		device ref tcss_dma0 on end
 		device ref tcss_dma1 on end
-		device ref cnvi_bt on end
 		device ref xhci on end
 		device ref shared_sram on end
 		device ref cnvi_wifi on

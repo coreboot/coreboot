@@ -130,8 +130,8 @@ PSP_BIOSBIN_SIZE=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | awk '{print $$3}')
 # type = 0x63 - construct APOB NV base/size from flash map
 # The flashmap section used for this is expected to be named RW_MRC_CACHE
-APOB_NV_SIZE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_SIZE" $(obj)/fmap_config.h | awk '{print $$(NF)}')
-APOB_NV_BASE=$(shell grep "FMAP_SECTION_RW_MRC_CACHE_START" $(obj)/fmap_config.h | awk '{print $$(NF)}')
+APOB_NV_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
+APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
 
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 # type = 0x6B - PSP Shared memory location

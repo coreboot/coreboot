@@ -130,7 +130,7 @@ chip soc/intel/alderlake
 	register "PchHdaAudioLinkSndwEnable[0]" = "1"
 	register "PchHdaAudioLinkSndwEnable[1]" = "1"
 	# iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T
-	register "PchHdaIDispLinkTmode" = "2"
+	register "PchHdaIDispLinkTmode" = "3"
 	# iDisp-Link Freq 4: 96MHz, 3: 48MHz.
 	register "PchHdaIDispLinkFrequency" = "4"
 	# Not disconnected/enumerable

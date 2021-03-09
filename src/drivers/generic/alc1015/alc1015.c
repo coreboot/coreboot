@@ -40,7 +40,8 @@ static void alc1015_fill_ssdt(const struct device *dev)
 	/* This points to the first pin in the first gpio entry in _CRS */
 	path = acpi_device_path(dev);
 	dp = acpi_dp_new_table("_DSD");
-	acpi_dp_add_gpio(dp, "sdb", path, 0, 0, config->sdb.active_low);
+	acpi_dp_add_gpio(dp, "sdb-gpios", path, 0, 0, config->sdb.active_low);
+	acpi_dp_write(dp);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

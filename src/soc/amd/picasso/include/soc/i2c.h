@@ -6,11 +6,6 @@
 #include <types.h>
 #include <soc/gpio.h>
 
-struct soc_amd_i2c_save {
-	uint32_t control_value;
-	uint8_t mux_value;
-};
-
 #define GPIO_I2C2_SCL		BIT(2)
 #define GPIO_I2C3_SCL		BIT(3)
 #define GPIO_I2C_MASK		(BIT(2) | BIT(3))
@@ -27,8 +22,6 @@ struct soc_amd_i2c_save {
 #define DP_REVERSE	BIT(4)
 #define USB_PD_RFMUX_OVERRIDE	BIT(8)
 #define USB_PD_DP_OVERRIDE	BIT(9)
-
-void sb_reset_i2c_slaves(void);
 
 /* Sets the base address for the specific I2C bus. */
 void i2c_set_bar(unsigned int bus, uintptr_t bar);

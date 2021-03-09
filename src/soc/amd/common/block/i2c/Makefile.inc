@@ -1,0 +1,1 @@
+all-$(CONFIG_SOC_AMD_COMMON_BLOCK_I2C) += i2c.c

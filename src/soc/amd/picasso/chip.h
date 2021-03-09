@@ -97,9 +97,9 @@ enum sysinfo_dpphy_override {
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
 	/*
-	 * If sb_reset_i2c_slaves() is called, this devicetree register
+	 * If sb_reset_i2c_peripherals() is called, this devicetree register
 	 * defines which I2C SCL will be toggled 9 times at 100 KHz.
-	 * For example, should we need I2C0 and  I2C3 have their slave
+	 * For example, should we need I2C0 and  I2C3 have their peripheral
 	 * devices reseted by toggling SCL, use:
 	 *
 	 * register i2c_scl_reset = (GPIO_I2C0_SCL | GPIO_I2C3_SCL)

@@ -6,11 +6,6 @@
 #include <types.h>
 #include <soc/gpio.h>
 
-struct soc_amd_i2c_save {
-	uint32_t control_value;
-	uint8_t mux_value;
-};
-
 #define GPIO_I2C0_SCL			BIT(0)
 #define GPIO_I2C1_SCL			BIT(1)
 #define GPIO_I2C2_SCL			BIT(2)
@@ -26,7 +21,5 @@ struct soc_amd_i2c_save {
 #define I2C1_SCL_PIN_IOMUX_GPIOxx	GPIO_147_IOMUX_GPIOxx
 #define I2C2_SCL_PIN_IOMUX_GPIOxx	GPIO_113_IOMUX_GPIOxx
 #define I2C3_SCL_PIN_IOMUX_GPIOxx	GPIO_19_IOMUX_GPIOxx
-
-void sb_reset_i2c_slaves(void);
 
 #endif /* AMD_STONEYRIDGE_I2C_H */

@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -141,81 +142,3 @@ struct device_operations picasso_i2c_mmio_ops = {
 	.acpi_name = i2c_acpi_name,
 	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,
 };
-
-/*
- * I2C pins are open drain with external pull up, so in order to bit bang them
- * all, SCL pins must become GPIO inputs with no pull, then they need to be
- * toggled between input-no-pull and output-low. This table is for the initial
- * conversion of all SCL pins to input with no pull.
- */
-static const struct soc_amd_gpio i2c_2_gpi[] = {
-	PAD_GPI(I2C2_SCL_PIN, PULL_NONE),
-	PAD_GPI(I2C3_SCL_PIN, PULL_NONE),
-	/* I2C4 is a slave device only */
-};
-#define saved_pins_count ARRAY_SIZE(i2c_2_gpi)
-
-/*
- * To program I2C pins without destroying their programming, the registers
- * that will be changed need to be saved first.
- */
-static void save_i2c_pin_registers(uint8_t gpio,
-					struct soc_amd_i2c_save *save_table)
-{
-	save_table->mux_value = iomux_read8(gpio);
-	save_table->control_value = gpio_read32(gpio);
-}
-
-static void restore_i2c_pin_registers(uint8_t gpio,
-					struct soc_amd_i2c_save *save_table)
-{
-	/* Write and flush posted writes. */
-	iomux_write8(gpio, save_table->mux_value);
-	iomux_read8(gpio);
-	gpio_write32(gpio, save_table->control_value);
-	gpio_read32(gpio);
-}
-
-/* Slaves to be reset are controlled by devicetree register i2c_scl_reset */
-void sb_reset_i2c_slaves(void)
-{
-	const struct soc_amd_picasso_config *cfg;
-	struct soc_amd_i2c_save save_table[saved_pins_count];
-	uint8_t i, j, control;
-
-	cfg = config_of_soc();
-	control = cfg->i2c_scl_reset & GPIO_I2C_MASK;
-	if (control == 0)
-		return;
-
-	/* Save and reprogram I2C SCL pins */
-	for (i = 0; i < saved_pins_count; i++)
-		save_i2c_pin_registers(i2c_2_gpi[i].gpio, &save_table[i]);
-	program_gpios(i2c_2_gpi, saved_pins_count);
-
-	/*
-	 * Toggle SCL back and forth 9 times under 100KHz. A single read is
-	 * needed after the writes to force the posted write to complete.
-	 */
-	for (j = 0; j < 9; j++) {
-		if (control & GPIO_I2C2_SCL)
-			gpio_write32(I2C2_SCL_PIN, GPIO_OUTPUT_ENABLE);
-		if (control & GPIO_I2C3_SCL)
-			gpio_write32(I2C3_SCL_PIN, GPIO_OUTPUT_ENABLE);
-
-		gpio_read32(0); /* Flush posted write */
-		udelay(4); /* 4usec gets 85KHz for 1 pin, 70KHz for 4 pins */
-
-		if (control & GPIO_I2C2_SCL)
-			gpio_write32(I2C2_SCL_PIN, 0);
-		if (control & GPIO_I2C3_SCL)
-			gpio_write32(I2C3_SCL_PIN, 0);
-
-		gpio_read32(0); /* Flush posted write */
-		udelay(4);
-	}
-
-	/* Restore I2C pins. */
-	for (i = 0; i < saved_pins_count; i++)
-		restore_i2c_pin_registers(i2c_2_gpi[i].gpio, &save_table[i]);
-}

@@ -12,11 +12,14 @@
 #include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
+#include <amdblocks/i2c.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <timestamp.h>
 #include <halt.h>
+
+#include "chip.h"
 
 #if CONFIG_PI_AGESA_TEMP_RAM_BASE < 0x100000
 #error "Error: CONFIG_PI_AGESA_TEMP_RAM_BASE must be >= 1MB"
@@ -24,6 +27,14 @@
 #if CONFIG_PI_AGESA_CAR_HEAP_BASE < 0x100000
 #error "Error: CONFIG_PI_AGESA_CAR_HEAP_BASE must be >= 1MB"
 #endif
+
+/* This table is for the initial conversion of all SCL pins to input with no pull. */
+static const struct soc_i2c_scl_pin i2c_scl_pins[] = {
+	{ PAD_GPI(I2C0_SCL_PIN, PULL_NONE), GPIO_I2C0_SCL },
+	{ PAD_GPI(I2C1_SCL_PIN, PULL_NONE), GPIO_I2C1_SCL },
+	{ PAD_GPI(I2C2_SCL_PIN, PULL_NONE), GPIO_I2C2_SCL },
+	{ PAD_GPI(I2C3_SCL_PIN, PULL_NONE), GPIO_I2C3_SCL },
+};
 
 /* Set the MMIO Configuration Base Address, Bus Range, and misc MTRRs. */
 static void amd_initmmio(void)
@@ -53,6 +64,17 @@ static void amd_initmmio(void)
 			CONFIG_PI_AGESA_HEAP_SIZE, MTRR_TYPE_UNCACHEABLE);
 }
 
+static void reset_i2c_peripherals(void)
+{
+	const struct soc_amd_stoneyridge_config *cfg = config_of_soc();
+	struct soc_i2c_peripheral_reset_info reset_info;
+
+	reset_info.i2c_scl_reset_mask = cfg->i2c_scl_reset & GPIO_I2C_MASK;
+	reset_info.i2c_scl = i2c_scl_pins;
+	reset_info.num_pins = ARRAY_SIZE(i2c_scl_pins);
+	sb_reset_i2c_peripherals(&reset_info);
+}
+
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	enable_pci_mmconf();
@@ -75,14 +97,14 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 void bootblock_soc_early_init(void)
 {
 	/*
-	 * This call (sb_reset_i2c_slaves) was originally early at
+	 * This call (sb_reset_i2c_peripherals) was originally early at
 	 * bootblock_c_entry, but had to be moved here. There was an
 	 * unexplained delay in the middle of the i2c transaction when
 	 * we had it in bootblock_c_entry.  Moving it to this point
 	 * (or adding delays) fixes the issue.  It seems like the processor
 	 * just pauses but we don't know why.
 	 */
-	sb_reset_i2c_slaves();
+	reset_i2c_peripherals();
 	bootblock_fch_early_init();
 	post_code(0x90);
 }

@@ -398,15 +398,15 @@ find_llc_subleaf:
 	 * Then we need to allocate just one way for non-eviction
 	 * of RW data.
 	 */
-	movl    $0x01, %eax
-	cmp     $CONFIG_DCACHE_RAM_SIZE, %ecx
-	jnc     set_eviction_mask
+	movl	$0x01, %eax
+	cmp	$CONFIG_DCACHE_RAM_SIZE, %ecx
+	jnc	set_eviction_mask
 
 	/*
 	 * RW data size / way size is equal to number of
 	 * ways to be configured for non-eviction
 	 */
-	mov     $CONFIG_DCACHE_RAM_SIZE, %eax
+	mov	$CONFIG_DCACHE_RAM_SIZE, %eax
 	div	%ecx
 	mov	%eax, %ecx
 	movl	$0x01, %eax
@@ -441,11 +441,11 @@ set_eviction_mask:
 	 * - If this bit is '0' - the way is protected from eviction
 	 * - If this bit is '1' - the way is not protected from eviction
 	 */
-	mov     $0x1, %eax
-        shl     %cl, %eax
-        subl    $0x01, %eax
-        mov     %eax, %ecx
-        mov     %ebx, %eax
+	mov	$0x1, %eax
+	shl	%cl, %eax
+	subl	$0x01, %eax
+	mov	%eax, %ecx
+	mov	%ebx, %eax
 
 	xor	$~0, %eax	/* invert 32 bits */
 	and	%ecx, %eax

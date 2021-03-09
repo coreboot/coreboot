@@ -117,17 +117,14 @@ uint32_t get_microcode_checksum(const void *microcode)
 	return ((struct microcode *)microcode)->cksum;
 }
 
-const void *intel_microcode_find(void)
+static const void *find_cbfs_microcode(void)
 {
-	static const struct microcode *ucode_updates;
+	const struct microcode *ucode_updates;
 	size_t microcode_len;
 	u32 eax;
 	u32 pf, rev, sig, update_size;
 	msr_t msr;
 	struct cpuinfo_x86 c;
-
-	if (ucode_updates)
-		return ucode_updates;
 
 	ucode_updates = cbfs_map(MICROCODE_CBFS_FILE, &microcode_len);
 	if (ucode_updates == NULL)
@@ -170,9 +167,26 @@ const void *intel_microcode_find(void)
 		microcode_len -= update_size;
 	}
 
-	ucode_updates = NULL;
-
 	return NULL;
+}
+
+const void *intel_microcode_find(void)
+{
+	static bool microcode_checked;
+	static const void *ucode_update;
+
+	if (microcode_checked)
+		return ucode_update;
+
+	/*
+	 * Since this function caches the found microcode (NULL or a valid
+	 * microcode pointer), it is expected to be run from BSP before starting
+	 * any other APs. This sequence is not multithread safe otherwise.
+	 */
+	ucode_update = find_cbfs_microcode();
+	microcode_checked = true;
+
+	return ucode_update;
 }
 
 void intel_update_microcode_from_cbfs(void)

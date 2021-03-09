@@ -7,7 +7,11 @@
 void intel_update_microcode_from_cbfs(void);
 /* Find a microcode that matches the revision and platform family returning
  * NULL if none found. The found microcode is cached for faster access on
- * subsequent calls of this function. */
+ * subsequent calls of this function.
+ *
+ * Since this function caches the found microcode (NULL or a valid microcode
+ * pointer), it is expected to be run from BSP before starting any other APs.
+ * It is not multithread safe otherwise. */
 const void *intel_microcode_find(void);
 
 /* It is up to the caller to determine if parallel loading is possible as

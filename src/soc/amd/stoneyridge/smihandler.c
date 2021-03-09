@@ -6,7 +6,6 @@
 #include <cpu/x86/cache.h>
 #include <acpi/acpi.h>
 #include <arch/hlt.h>
-#include <device/pci_def.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>

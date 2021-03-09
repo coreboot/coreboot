@@ -40,6 +40,10 @@ chip soc/intel/xeon_sp/skx
 
 	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
 
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
 	device cpu_cluster 0 on
 	  device lapic 0 on end
 	end

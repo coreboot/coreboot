@@ -1,4 +1,9 @@
 chip soc/intel/xeon_sp/cpx
+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

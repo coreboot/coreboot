@@ -24,9 +24,10 @@ COREBOOT_EXPORTS += top src srck obj objutil objk
 LANG:=C
 LC_ALL:=C
 TZ:=UTC0
+SOURCE_DATE_EPOCH := $(shell $(top)/util/genbuild_h/genbuild_h.sh . | sed -n 's/^.define COREBOOT_BUILD_EPOCH\>.*"\(.*\)".*/\1/p')
 # don't use COREBOOT_EXPORTS to ensure build steps outside the coreboot build system
 # are reproducible
-export LANG LC_ALL TZ
+export LANG LC_ALL TZ SOURCE_DATE_EPOCH
 
 DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)

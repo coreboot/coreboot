@@ -39,9 +39,17 @@ config AMD_FWM_POSITION_INDEX
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
 
+config VARIANT_DIR
+	string
+	default "mancomb" if BOARD_GOOGLE_MANCOMB
+
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_FAMILY
 	string

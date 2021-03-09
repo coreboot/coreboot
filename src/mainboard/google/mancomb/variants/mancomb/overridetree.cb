@@ -1,0 +1,4 @@
+chip soc/amd/cezanne
+	device domain 0 on
+	end # domain
+end # chip soc/amd/cezanne

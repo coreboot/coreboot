@@ -24,7 +24,9 @@ COREBOOT_EXPORTS += top src srck obj objutil objk
 LANG:=C
 LC_ALL:=C
 TZ:=UTC0
-COREBOOT_EXPORTS += LANG LC_ALL TZ
+# don't use COREBOOT_EXPORTS to ensure build steps outside the coreboot build system
+# are reproducible
+export LANG LC_ALL TZ
 
 DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)

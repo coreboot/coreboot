@@ -13,53 +13,53 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* WAKE_L */
 	PAD_NF(GPIO_2, WAKE_L, PULL_NONE),
-	/* AGPIO3 */
-	PAD_NC(GPIO_3),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* AGPIO4 */
 	PAD_NC(GPIO_4),
 	/* AGPIO5 */
 	PAD_NC(GPIO_5),
-	/* AGPIO6 */
-	PAD_NC(GPIO_6),
+	/* EN_PP3300_WLAN */
+	PAD_GPO(GPIO_6, LOW),
 	/* AGPIO7 */
 	PAD_NC(GPIO_7),
-	/* AGPIO8 */
-	PAD_NC(GPIO_8),
-	/* AGPIO9 */
-	PAD_NC(GPIO_9),
+	/* EN_PP3300_LAN */
+	PAD_GPO(GPIO_8, LOW),
+	/* SD_EX_PRSNT_L */
+	PAD_GPI(GPIO_9, PULL_NONE),
 	/* S0A3 */
 	PAD_NF(GPIO_10, S0A3, PULL_NONE),
 	/* AGPIO11 */
 	PAD_NC(GPIO_11),
-	/* AGPIO12 */
-	PAD_NC(GPIO_12),
+	/* SLP_S3_GATED */
+	PAD_GPO(GPIO_12, LOW),
 	/* GPIO_13 - GPIO_15: Not available */
 	/* USB_FAULT_ODL */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_NONE),
 	/* AGPIO17 */
 	PAD_NC(GPIO_17),
-	/* AGPIO18 */
-	PAD_NC(GPIO_18),
+	/* LAN_AUX_RESET_L */
+	PAD_GPO(GPIO_18, LOW),
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* AGPIO21 */
 	PAD_NC(GPIO_21),
-	/* AGPIO22 */
-	PAD_NC(GPIO_22),
+	/* EC_SOC_WAKE_ODL */
+	PAD_WAKE(GPIO_22, PULL_NONE, EDGE_LOW, S0i3),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
-	/* AGPIO24 */
-	PAD_NC(GPIO_24),
+	/* HUB_RST_L */
+	PAD_GPO(GPIO_24, LOW),
 	/* GPIO_25: Not available */
 	/* PCIE_RST0_L */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* PCIE_RST1_L */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* GPIO_28: Not available */
-	/* AGPIO29 */
-	PAD_NC(GPIO_29),
+	/* WLAN_AUX_RESET */
+	PAD_GPO(GPIO_29, HIGH),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* AGPIO31 */
@@ -67,20 +67,20 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AGPIO32 */
 	PAD_NC(GPIO_32),
 	/* GPIO_33 - GPIO_39: Not available */
-	/* AGPIO40 */
-	PAD_NC(GPIO_40),
+	/* SSD_AUX_RESET_L */
+	PAD_GPO(GPIO_40, LOW),
 	/* GPIO_41: Not available */
 	/* EGPIO42 */
 	PAD_NC(GPIO_42),
 	/* GPIO_43 - GPIO_66: Not available */
-	/* EGPIO67 */
-	PAD_NC(GPIO_67),
+	/* SOC_BIOS_WP_L */
+	PAD_GPI(GPIO_67, PULL_NONE),
 	/* AGPIO68 */
 	PAD_NC(GPIO_68),
 	/* AGPIO69 */
 	PAD_NC(GPIO_69),
-	/* EGPIO70 */
-	PAD_NC(GPIO_70),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_70, LOW),
 	/* GPIO_71 - GPIO_73: Not available */
 	/* EGPIO74 */
 	PAD_NC(GPIO_74),
@@ -89,8 +89,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EGPIO76 */
 	PAD_NC(GPIO_76),
 	/* GPIO_77 - GPIO_83: Not available */
-	/* AGPIO84 */
-	PAD_NC(GPIO_84),
+	/* EC_SOC_INT_ODL */
+	PAD_GPI(GPIO_84, PULL_NONE),
 	/* AGPIO85 */
 	PAD_NC(GPIO_85),
 	/* SPI_CLK2 */
@@ -101,10 +101,10 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NC(GPIO_88),
 	/* AGPIO89 */
 	PAD_NC(GPIO_89),
-	/* AGPIO90 */
-	PAD_NC(GPIO_90),
-	/* AGPIO91 */
-	PAD_NC(GPIO_91),
+	/* HP_INT_ODL */
+	PAD_GPI(GPIO_90, PULL_NONE),
+	/* PWM_3V3_BUZZER */
+	PAD_GPO(GPIO_91, LOW),
 	/* CLK_REQ0_L */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
 	/* GPIO_93 - GPIO_103: Not available */
@@ -137,12 +137,12 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* GPIO_122 - GPIO_128: Not available */
 	/* AGPIO129 */
 	PAD_NC(GPIO_129),
-	/* AGPIO130 */
-	PAD_NC(GPIO_130),
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_130, HIGH),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
-	/* EGPIO132 */
-	PAD_NC(GPIO_132),
+	/* BT_DISABLE */
+	PAD_GPO(GPIO_132, HIGH),
 	/* EGPIO140 */
 	PAD_NC(GPIO_140),
 	/* UART0_RXD */

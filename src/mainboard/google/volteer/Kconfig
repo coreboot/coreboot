@@ -107,6 +107,7 @@ config MAINBOARD_PART_NUMBER
 	default "Voema" if BOARD_GOOGLE_VOEMA
 	default "Drobit" if BOARD_GOOGLE_DROBIT
 	default "Copano" if BOARD_GOOGLE_COPANO
+	default "Collis" if BOARD_GOOGLE_COLLIS
 
 config MAX_CPUS
 	int
@@ -151,6 +152,7 @@ config VARIANT_DIR
 	default "voema" if BOARD_GOOGLE_VOEMA
 	default "drobit" if BOARD_GOOGLE_DROBIT
 	default "copano" if BOARD_GOOGLE_COPANO
+	default "collis" if BOARD_GOOGLE_COLLIS
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool

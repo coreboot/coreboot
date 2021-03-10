@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/power_limit.h>
 #include <intelblocks/pcie_rp.h>
 #include <soc/gpe.h>
 #include <soc/pci_devs.h>
@@ -23,6 +24,9 @@ struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration information */
+	struct soc_power_limits_config power_limits_config;
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */

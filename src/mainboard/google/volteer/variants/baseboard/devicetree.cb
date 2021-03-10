@@ -62,6 +62,12 @@ fw_config
 		option REGULAR_TOUCHPAD 0
 		option NUMPAD_TOUCHPAD 1
 	end
+	field WIFI_SAR_ID 26 27
+		option WIFI_SAR_ID_0 0
+		option WIFI_SAR_ID_1 1
+		option WIFI_SAR_ID_2 2
+		option WIFI_SAR_ID_3 3
+	end
 end
 
 chip soc/intel/tigerlake

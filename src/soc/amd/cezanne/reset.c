@@ -3,7 +3,6 @@
 #include <arch/io.h>
 #include <cf9_reset.h>
 #include <reset.h>
-#include <soc/reset.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/reset.h>

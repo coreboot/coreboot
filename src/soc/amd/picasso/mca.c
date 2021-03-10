@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/reset.h>
 #include <cpu/x86/msr.h>
 #include <acpi/acpi.h>
 #include <soc/cpu.h>
-#include <soc/reset.h>
 #include <console/console.h>
 #include <arch/bert_storage.h>
 #include <cper.h>

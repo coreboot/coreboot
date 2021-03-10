@@ -9,6 +9,8 @@
 
 void do_warm_reset(void);
 void do_cold_reset(void);
+void set_warm_reset_flag(void);
+int is_warm_reset(void);
 
 static inline __noreturn void warm_reset(void)
 {

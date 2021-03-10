@@ -86,7 +86,5 @@
 void domain_enable_resources(struct device *dev);
 void domain_read_resources(struct device *dev);
 void fam15_finalize(void *chip_info);
-void set_warm_reset_flag(void);
-int is_warm_reset(void);
 
 #endif /* AMD_STONEYRIDGE_NORTHBRIDGE_H */

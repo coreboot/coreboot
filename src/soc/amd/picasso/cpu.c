@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
@@ -12,7 +13,6 @@
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
-#include <soc/reset.h>
 #include <soc/smi.h>
 #include <soc/iomap.h>
 #include <console/console.h>

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
@@ -12,7 +13,6 @@
 #include <device/device.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
-#include <soc/reset.h>
 
 /* MP and SMM loading initialization */
 

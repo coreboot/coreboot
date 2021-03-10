@@ -1906,7 +1906,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
 #ifdef BLDCFG_PLATFORM_CPB_MODE
   #define CFG_CPB_MODE                        BLDCFG_PLATFORM_CPB_MODE
 #else
-  #define CFG_CPB_MODE                        CpbModeDisabled
+  #define CFG_CPB_MODE                        CpbModeAuto
 #endif
 
 #ifdef BLDCFG_CORE_LEVELING_MODE

@@ -2,23 +2,10 @@
 
 #include <timer.h>
 #include <console/console.h>
-#include <device/pci_ops.h>
+#include <amdblocks/smn.h>
 #include <amdblocks/smu.h>
-#include <soc/pci_devs.h>
 #include <soc/smu.h>
 #include <types.h>
-
-static uint32_t smu_read32(uint32_t reg)
-{
-	pci_write_config32(SOC_GNB_DEV, SMU_INDEX_ADDR, reg);
-	return pci_read_config32(SOC_GNB_DEV, SMU_DATA_ADDR);
-}
-
-static void smu_write32(uint32_t reg, uint32_t val)
-{
-	pci_write_config32(SOC_GNB_DEV, SMU_INDEX_ADDR, reg);
-	pci_write_config32(SOC_GNB_DEV, SMU_DATA_ADDR, val);
-}
 
 #define SMU_MESG_RESP_TIMEOUT	0x00
 #define SMU_MESG_RESP_OK	0x01
@@ -33,7 +20,7 @@ static int32_t smu_poll_response(bool print_command_duration)
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
 	do {
-		result = smu_read32(REG_ADDR_MESG_RESP);
+		result = smn_read32(REG_ADDR_MESG_RESP);
 		if (result) {
 			if (print_command_duration)
 				printk(BIOS_SPEW, "SMU command consumed %ld usecs\n",
@@ -59,14 +46,14 @@ enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload 
 		return CB_ERR;
 
 	/* clear response register */
-	smu_write32(REG_ADDR_MESG_RESP, 0);
+	smn_write32(REG_ADDR_MESG_RESP, 0);
 
 	/* populate arguments */
 	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
-		smu_write32(REG_ADDR_MESG_ARG(i), arg->msg[i]);
+		smn_write32(REG_ADDR_MESG_ARG(i), arg->msg[i]);
 
 	/* send message to SMU */
-	smu_write32(REG_ADDR_MESG_ID, message_id);
+	smn_write32(REG_ADDR_MESG_ID, message_id);
 
 	/* wait until SMU has processed the message and check if it was successful */
 	if (smu_poll_response(true) != SMU_MESG_RESP_OK)
@@ -74,7 +61,7 @@ enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload 
 
 	/* copy returned values */
 	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
-		arg->msg[i] = smu_read32(REG_ADDR_MESG_ARG(i));
+		arg->msg[i] = smn_read32(REG_ADDR_MESG_ARG(i));
 
 	return CB_SUCCESS;
 }

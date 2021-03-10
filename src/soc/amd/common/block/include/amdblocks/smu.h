@@ -6,10 +6,6 @@
 #include <types.h>
 #include <soc/smu.h> /* SoC-dependent definitions for SMU access */
 
-/* SMU registers accessed indirectly using an index/data pair in D0F00 config space */
-#define SMU_INDEX_ADDR		0xb8 /* 32 bit */
-#define SMU_DATA_ADDR		0xbc /* 32 bit */
-
 /* Arguments indexed locations are contiguous; the number is SoC-dependent */
 #define REG_ADDR_MESG_ARG(x)	(REG_ADDR_MESG_ARGS_BASE + ((x) * sizeof(uint32_t)))
 

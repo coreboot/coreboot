@@ -1,0 +1,4 @@
+config SOC_AMD_COMMON_BLOCK_SMN
+	bool
+	help
+	  Select this option to add functions to access the SMN register space to the build.

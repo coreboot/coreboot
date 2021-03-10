@@ -3,13 +3,10 @@
 #ifndef AMD_PICASSO_SMU_H
 #define AMD_PICASSO_SMU_H
 
-/*
- * SMU mailbox register offsets in indirect address space accessed by an index/data pair in
- * D0F00 config space.
- */
-#define REG_ADDR_MESG_ID	0x3b10528
-#define REG_ADDR_MESG_RESP	0x3b10564
-#define REG_ADDR_MESG_ARGS_BASE	0x3b10998
+/* SMU mailbox register offsets in SMN */
+#define SMN_SMU_MESG_ID		0x3b10528
+#define SMN_SMU_MESG_RESP	0x3b10564
+#define SMN_SMU_MESG_ARGS_BASE	0x3b10998
 
 #define SMU_NUM_ARGS		6
 

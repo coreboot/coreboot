@@ -7,7 +7,7 @@
 #include <soc/smu.h> /* SoC-dependent definitions for SMU access */
 
 /* Arguments indexed locations are contiguous; the number is SoC-dependent */
-#define REG_ADDR_MESG_ARG(x)	(REG_ADDR_MESG_ARGS_BASE + ((x) * sizeof(uint32_t)))
+#define SMN_SMU_MESG_ARG(x)	(SMN_SMU_MESG_ARGS_BASE + ((x) * sizeof(uint32_t)))
 
 struct smu_payload {
 	uint32_t msg[SMU_NUM_ARGS];

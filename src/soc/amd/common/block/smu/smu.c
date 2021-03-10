@@ -20,7 +20,7 @@ static int32_t smu_poll_response(bool print_command_duration)
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 
 	do {
-		result = smn_read32(REG_ADDR_MESG_RESP);
+		result = smn_read32(SMN_SMU_MESG_RESP);
 		if (result) {
 			if (print_command_duration)
 				printk(BIOS_SPEW, "SMU command consumed %ld usecs\n",
@@ -46,14 +46,14 @@ enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload 
 		return CB_ERR;
 
 	/* clear response register */
-	smn_write32(REG_ADDR_MESG_RESP, 0);
+	smn_write32(SMN_SMU_MESG_RESP, 0);
 
 	/* populate arguments */
 	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
-		smn_write32(REG_ADDR_MESG_ARG(i), arg->msg[i]);
+		smn_write32(SMN_SMU_MESG_ARG(i), arg->msg[i]);
 
 	/* send message to SMU */
-	smn_write32(REG_ADDR_MESG_ID, message_id);
+	smn_write32(SMN_SMU_MESG_ID, message_id);
 
 	/* wait until SMU has processed the message and check if it was successful */
 	if (smu_poll_response(true) != SMU_MESG_RESP_OK)
@@ -61,7 +61,7 @@ enum cb_err send_smu_message(enum smu_message_id message_id, struct smu_payload 
 
 	/* copy returned values */
 	for (i = 0 ; i < SMU_NUM_ARGS ; i++)
-		arg->msg[i] = smn_read32(REG_ADDR_MESG_ARG(i));
+		arg->msg[i] = smn_read32(SMN_SMU_MESG_ARG(i));
 
 	return CB_SUCCESS;
 }

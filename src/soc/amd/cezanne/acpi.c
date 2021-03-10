@@ -56,7 +56,7 @@ unsigned long acpi_fill_madt(unsigned long current)
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	const struct soc_amd_common_config *cfg = soc_get_common_config();
+	const struct soc_amd_cezanne_config *cfg = config_of_soc();
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
@@ -87,7 +87,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->mon_alrm = 0;
 	fadt->century = RTC_ALT_CENTURY;
-	fadt->iapc_boot_arch = cfg->fadt_boot_arch; /* legacy free default */
+	fadt->iapc_boot_arch = cfg->common_config.fadt_boot_arch; /* legacy free default */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
 			ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_S4_RTC_WAKE |
@@ -96,7 +96,10 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_PLATFORM_CLOCK |
 			ACPI_FADT_S4_RTC_VALID |
 			ACPI_FADT_REMOTE_POWER_ON;
-	fadt->flags |= cfg->fadt_flags; /* additional board-specific flags */
+	if (cfg->s0ix_enable)
+		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
+
+	fadt->flags |= cfg->common_config.fadt_flags; /* additional board-specific flags */
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm1a_evt_blk.bit_width = 32;

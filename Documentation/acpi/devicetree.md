@@ -30,7 +30,7 @@ device pci 15.0 on
 	chip drivers/i2c/generic
 		register "hid" = ""ELAN0000""
 		register "desc" = ""ELAN Touchpad""
-		register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_A21_IRQ)"
+		register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A21_IRQ)"
 		register "wake" = "GPE0_DW0_21"
 		device i2c 15 on end
 	end
@@ -60,7 +60,7 @@ Scope (\_SB.PCI0.I2C0)
             I2cSerialBusV2 (0x0015, ControllerInitiated, 400000,
                 AddressingMode7Bit, "\\_SB.PCI0.I2C0",
                 0x00, ResourceConsumer, , Exclusive, )
-            Interrupt (ResourceConsumer, Edge, ActiveLow, ExclusiveAndWake, ,, )
+            Interrupt (ResourceConsumer, Level, ActiveLow, ExclusiveAndWake, ,, )
             {
                 0x0000002D,
             }
@@ -136,7 +136,7 @@ corresponds to **const char *desc** and in ASL:
 It also adds the interrupt,
 
 ```
-    Interrupt (ResourceConsumer, Edge, ActiveLow, ExclusiveAndWake, ,, )
+    Interrupt (ResourceConsumer, Level, ActiveLow, ExclusiveAndWake, ,, )
     {
         0x0000002D,
     }
@@ -145,15 +145,15 @@ It also adds the interrupt,
 which comes from:
 
 ```
-    register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_A21_IRQ)"
+    register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A21_IRQ)"
 ```
 
-The GPIO pin IRQ settings control the "Edge", "ActiveLow", and
-"ExclusiveAndWake" settings seen above (edge means it is an edge-triggered
-interrupt as opposed to level-triggered; active low means the interrupt is
-triggered on a falling edge).
+The GPIO pin IRQ settings control the "Level", "ActiveLow", and
+"ExclusiveAndWake" settings seen above (level means it is a level-triggered
+interrupt as opposed to edge-triggered; active low means the interrupt is
+triggered when the signal is low).
 
-Note that the ACPI_IRQ_WAKE_EDGE_LOW macro informs the platform that the GPIO
+Note that the ACPI_IRQ_WAKE_LEVEL_LOW macro informs the platform that the GPIO
 will be routed through SCI (ACPI's System Control Interrupt) for use as a wake
 source.  Also note that the IRQ names are SoC-specific, and you will need to
 find the names in your SoC's header file.  The ACPI_* macros are defined in

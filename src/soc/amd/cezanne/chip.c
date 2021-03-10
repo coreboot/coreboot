@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <soc/cpu.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
@@ -19,6 +20,7 @@ struct device_operations cpu_bus_ops = {
 	.read_resources	= noop_read_resources,
 	.set_resources	= noop_set_resources,
 	.init		= mp_cpu_bus_init,
+	.acpi_fill_ssdt	= generate_cpu_entries,
 };
 
 static const char *soc_acpi_name(const struct device *dev)

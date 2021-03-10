@@ -216,6 +216,14 @@ config DISABLE_KEYBOARD_RESET_PIN
 	  functionality isn't disabled, configuring it as an output and driving
 	  it as 0 will cause a reset.
 
+config ACPI_SSDT_PSD_INDEPENDENT
+	bool "Allow core p-state independent transitions"
+	default y
+	help
+	  AMD recommends the ACPI _PSD object to be configured to cause
+	  cores to transition between p-states independently. A vendor may
+	  choose to generate _PSD object to allow cores to transition together.
+
 menu "PSP Configuration Options"
 
 config AMD_FWM_POSITION_INDEX

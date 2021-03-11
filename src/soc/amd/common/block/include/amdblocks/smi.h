@@ -3,7 +3,7 @@
 #ifndef AMD_BLOCK_SMI_H
 #define AMD_BLOCK_SMI_H
 
-#include <stdint.h>
+#include <types.h>
 
 enum smi_mode {
 	SMI_MODE_DISABLE = 0,

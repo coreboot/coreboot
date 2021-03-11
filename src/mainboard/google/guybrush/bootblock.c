@@ -11,8 +11,10 @@ void bootblock_mainboard_early_init(void)
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
 
-	gpios = variant_bootblock_gpio_table(&num_gpios);
-	program_gpios(gpios, num_gpios);
+	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
+		gpios = variant_early_gpio_table(&num_gpios);
+		program_gpios(gpios, num_gpios);
+	}
 
 	if (CONFIG(GPIO_SIGN_OF_LIFE)) {
 		for (int x = 0; x < 20; x++) {

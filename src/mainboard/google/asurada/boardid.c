@@ -10,8 +10,12 @@
 #define ADC_LEVELS 15
 
 enum {
+	/* RAM IDs */
 	RAM_ID_HIGH_CHANNEL = 4,
 	RAM_ID_LOW_CHANNEL = 3,
+	/* SKU IDs */
+	SKU_ID_HIGH_CHANNEL = 6,
+	SKU_ID_LOW_CHANNEL = 5,
 };
 
 static const unsigned int ram_voltages[ADC_LEVELS] = {
@@ -58,7 +62,15 @@ static uint32_t get_adc_index(unsigned int channel)
 
 uint32_t sku_id(void)
 {
-	return 0;
+	static uint32_t cached_sku_code = BOARD_ID_INIT;
+
+	if (cached_sku_code == BOARD_ID_INIT) {
+		cached_sku_code = (get_adc_index(SKU_ID_HIGH_CHANNEL) << 4 |
+				   get_adc_index(SKU_ID_LOW_CHANNEL));
+		printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
+	}
+
+	return cached_sku_code;
 }
 
 uint32_t ram_code(void)

@@ -35,7 +35,6 @@ enum {
 };
 
 void mt6315_init(void);
-void mt6315_romstage_init(void);
 void mt6315_buck_set_voltage(u32 slvid, u32 buck_id, u32 buck_uv);
 u32 mt6315_buck_get_voltage(u32 slvid, u32 buck_id);
 #endif /* __SOC_MEDIATEK_MT6315_H__ */

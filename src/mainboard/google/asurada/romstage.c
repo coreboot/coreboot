@@ -4,12 +4,16 @@
 #include <console/console.h>
 #include <delay.h>
 #include <fmap.h>
+#include <soc/clkbuf.h>
 #include <soc/dramc_param.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
 #include <soc/mt6315.h>
 #include <soc/mt6359p.h>
 #include <soc/pll_common.h>
+#include <soc/pmif.h>
+#include <soc/rtc.h>
+#include <soc/srclken_rc.h>
 
 /* This must be defined in chromeos.fmd in same name and size. */
 #define CALIBRATION_REGION		"RW_DDR_TRAINING"
@@ -56,8 +60,12 @@ static void raise_little_cpu_freq(void)
 
 void platform_romstage_main(void)
 {
-	mt6359p_romstage_init();
-	mt6315_romstage_init();
+	mtk_pmif_init();
+	mt6359p_init();
+	mt6315_init();
+	srclken_rc_init();
+	clk_buf_init();
+	rtc_boot();
 	raise_little_cpu_freq();
 	mt_mem_init(&dparam_ops);
 	mtk_mmu_after_dram();

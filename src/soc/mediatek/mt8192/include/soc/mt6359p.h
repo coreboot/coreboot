@@ -62,7 +62,6 @@ enum {
 #define EFUSE_RG_VPA_OC_FT 78
 
 void mt6359p_init(void);
-void mt6359p_romstage_init(void);
 void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv);
 u32 mt6359p_buck_get_voltage(u32 buck_id);
 void mt6359p_set_vm18_voltage(u32 vm18_uv);

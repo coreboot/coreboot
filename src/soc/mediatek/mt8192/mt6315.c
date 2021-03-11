@@ -300,8 +300,3 @@ void mt6315_init(void)
 	mt6315_wdt_enable(MT6315_GPU);
 	mt6315_init_setting();
 }
-
-void mt6315_romstage_init(void)
-{
-	init_pmif_arb();
-}

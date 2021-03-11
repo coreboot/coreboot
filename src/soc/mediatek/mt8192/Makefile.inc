@@ -2,7 +2,6 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8192),y)
 
 bootblock-y += ../common/auxadc.c
 bootblock-y += bootblock.c
-bootblock-y += clkbuf.c srclken_rc.c
 bootblock-y += eint_event.c
 bootblock-y += ../common/flash_controller.c
 bootblock-y += ../common/gpio.c gpio.c
@@ -13,10 +12,6 @@ bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
-bootblock-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
-bootblock-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
-bootblock-y += mt6315.c
-bootblock-y += mt6359p.c
 
 verstage-y += ../common/auxadc.c
 verstage-y += ../common/flash_controller.c
@@ -28,6 +23,7 @@ verstage-y += ../common/uart.c
 
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
+romstage-y += clkbuf.c srclken_rc.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
 romstage-y += ../common/flash_controller.c
@@ -40,6 +36,7 @@ romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c
 romstage-y += pmif.c pmif_clk.c pmif_spi.c pmif_spmi.c
+romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 romstage-y += mt6315.c
 romstage-y += mt6359p.c
 

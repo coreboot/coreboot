@@ -564,8 +564,3 @@ void mt6359p_init(void)
 	pmic_protect_key_setting(true);
 	pmic_wk_vs2_voter_setting();
 }
-
-void mt6359p_romstage_init(void)
-{
-	init_pmif_arb();
-}

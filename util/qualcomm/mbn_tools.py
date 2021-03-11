@@ -1094,7 +1094,7 @@ def pboot_gen_elf(env, elf_in_file_name,
 
          # Check if the vaddr is page aligned
          off = curr_phdr.p_vaddr & (ELF_BLOCK_ALIGN - 1)
-         if int(off) is not 0:
+         if int(off) != 0:
             seg_size -= (ELF_BLOCK_ALIGN - off)
             seg_offset += (ELF_BLOCK_ALIGN - off)
 
@@ -1163,7 +1163,7 @@ def pboot_gen_elf(env, elf_in_file_name,
          # Error checking for hash segment size validity
         if hashtable_size > hash_seg_max_size:
            raise RuntimeError("Hash table exceeds maximum hash segment size: " + hex(hash_seg_max_size))
-        if (hash_seg_max_size & (ELF_BLOCK_ALIGN-1)) is not 0:
+        if (hash_seg_max_size & (ELF_BLOCK_ALIGN-1)) != 0:
            raise RuntimeError("Hash segment size passed is not ELF Block Aligned: " + hex(hash_seg_max_size))
 
      # Check if hash physical address parameter was passed
@@ -1646,7 +1646,7 @@ def readSCL(filename, global_dict):
      # Look for the symbol '{' for the line to read.
      # Use bracket counter to skip nested '{ }'
      if ('{' in current_line):
-        if bracket_counter is 0:
+        if bracket_counter == 0:
            # Create a new SegmentInfo class and set up tokens
            new_scl_entry = SegmentInfo()
            previous_line = previous_line.strip()
@@ -1702,7 +1702,7 @@ def getSegmentFlag(seg_info):
    PAGELOCKED = "PAGELOCKED"
    UNSECURE = "UNSECURE"
 
-   if seg_info is None or len(seg_info) is 0:
+   if seg_info is None or len(seg_info) == 0:
       raise RuntimeError('Invalid segment information passed: ' + seg_info)
 
    # Conditional checks and assignments of the corresponding segment flag values
@@ -1947,9 +1947,9 @@ def filter_dictionary(env, global_dict, **kwargs):
       id_mbn_type = image_id_table[image_type][2]
 
    # Handle MBN Type and assign image destination address
-   if id_mbn_type is 'elf':
+   if id_mbn_type == 'elf':
       pass
-   elif id_mbn_type is 'bin':
+   elif id_mbn_type == 'bin':
       template_key_match = 'IMAGE_KEY_' + id_match_str + "_DEST_ADDR"
       if template_key_match in global_dict:
          image_dest = global_dict[template_key_match]

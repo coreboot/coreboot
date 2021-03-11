@@ -369,7 +369,7 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 	return loc;
 }
 
-void *_cbfs_default_allocator(void *arg, size_t size, union cbfs_mdata *unused)
+void *_cbfs_default_allocator(void *arg, size_t size, const union cbfs_mdata *unused)
 {
 	struct _cbfs_default_allocator_arg *darg = arg;
 	if (size > darg->buf_size)
@@ -377,7 +377,7 @@ void *_cbfs_default_allocator(void *arg, size_t size, union cbfs_mdata *unused)
 	return darg->buf;
 }
 
-void *_cbfs_cbmem_allocator(void *arg, size_t size, union cbfs_mdata *unused)
+void *_cbfs_cbmem_allocator(void *arg, size_t size, const union cbfs_mdata *unused)
 {
 	return cbmem_add((uintptr_t)arg, size);
 }

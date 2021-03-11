@@ -67,7 +67,7 @@
  * attributes). Must return a pointer to space of the requested size where the file data should
  * be loaded, or NULL to make the operation fail.
  */
-typedef void *(*cbfs_allocator_t)(void *arg, size_t size, union cbfs_mdata *mdata);
+typedef void *(*cbfs_allocator_t)(void *arg, size_t size, const union cbfs_mdata *mdata);
 
 static inline size_t cbfs_load(const char *name, void *buf, size_t size);
 static inline size_t cbfs_ro_load(const char *name, void *buf, size_t size);
@@ -183,9 +183,9 @@ struct _cbfs_default_allocator_arg {
 	void *buf;
 	size_t buf_size;
 };
-void *_cbfs_default_allocator(void *arg, size_t size, union cbfs_mdata *unused);
+void *_cbfs_default_allocator(void *arg, size_t size, const union cbfs_mdata *unused);
 
-void *_cbfs_cbmem_allocator(void *arg, size_t size, union cbfs_mdata *unused);
+void *_cbfs_cbmem_allocator(void *arg, size_t size, const union cbfs_mdata *unused);
 
 /**********************************************************************************************
  *                                  INLINE IMPLEMENTATIONS                                    *

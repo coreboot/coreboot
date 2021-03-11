@@ -192,7 +192,7 @@ int rmodule_load(void *base, struct rmodule *module)
 }
 
 static void *rmodule_cbfs_allocator(void *rsl_arg, size_t unused,
-				    union cbfs_mdata *mdata)
+				    const union cbfs_mdata *mdata)
 {
 	struct rmod_stage_load *rsl = rsl_arg;
 

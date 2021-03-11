@@ -16,8 +16,10 @@
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <intelpch/lockdown.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
+#include <soc/pm.h>
 #include <soc/soc_util.h>
 #include <soc/smmrelocate.h>
 #include <soc/util.h>
@@ -175,8 +177,11 @@ static void post_mp_init(void)
 	/* Set Max Ratio */
 	set_max_turbo_freq();
 
-	if (CONFIG(HAVE_SMI_HANDLER))
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		global_smi_enable();
+		if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
+			pmc_lock_smi();
+	}
 }
 
 static const struct mp_ops mp_ops = {

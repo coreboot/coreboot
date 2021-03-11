@@ -16,18 +16,6 @@ static void lpc_lockdown_config(int chipset_lockdown)
 	}
 }
 
-static void pmc_lock_smi(void)
-{
-	uint8_t *pmcbase;
-	uint8_t reg8;
-
-	pmcbase = pmc_mmio_regs();
-
-	reg8 = read8(pmcbase + GEN_PMCON_A);
-	reg8 |= SMI_LOCK;
-	write8(pmcbase + GEN_PMCON_A, reg8);
-}
-
 static void pmc_lockdown_config(int chipset_lockdown)
 {
 	uint8_t *pmcbase;
@@ -41,9 +29,6 @@ static void pmc_lockdown_config(int chipset_lockdown)
 
 	/* Make sure payload/OS can't trigger global reset */
 	pmc_global_reset_disable_and_lock();
-
-	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
-		pmc_lock_smi();
 }
 
 void soc_lockdown_config(int chipset_lockdown)

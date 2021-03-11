@@ -125,4 +125,6 @@ int rtc_failure(void);
 
 uint16_t get_pmbase(void);
 
+void pmc_lock_smi(void);
+
 #endif

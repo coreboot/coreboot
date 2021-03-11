@@ -163,6 +163,12 @@ uint16_t get_pmbase(void)
 	return ACPI_BASE_ADDRESS;
 }
 
+void pmc_lock_smi(void)
+{
+	printk(BIOS_DEBUG, "Locking SMM enable.\n");
+	pci_or_config32(PCH_DEV_PMC, GEN_PMCON_A, SMI_LOCK);
+}
+
 const char *const *soc_smi_sts_array(size_t *smi_arr)
 {
 	static const char *const smi_sts_bits[] = {

@@ -5,6 +5,7 @@
 
 #include <amdblocks/espi.h>
 #include <amdblocks/spi.h>
+#include <stdint.h>
 
 struct soc_amd_common_config {
 	/*

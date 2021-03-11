@@ -3,6 +3,8 @@
 #ifndef AMD_BLOCK_PSP_H
 #define AMD_BLOCK_PSP_H
 
+#include <stdint.h>
+
 /* Get the mailbox base address - specific to family of device. */
 void *soc_get_mbox_address(void);
 

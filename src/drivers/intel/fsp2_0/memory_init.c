@@ -339,40 +339,20 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	fsp_debug_after_memory_init(status);
 }
 
-static int fspm_get_dest(const struct fsp_load_descriptor *fspld, void **dest,
-				size_t size, const struct region_device *source)
+static void *fspm_allocator(void *arg, size_t size, const union cbfs_mdata *unused)
 {
+	const struct fsp_load_descriptor *fspld = arg;
 	struct fspm_context *context = fspld->arg;
-	struct fsp_header *hdr = &context->header;
 	struct memranges *memmap = &context->memmap;
-	uintptr_t fspm_begin;
-	uintptr_t fspm_end;
-
-	if (CONFIG(FSP_M_XIP)) {
-		if (fsp_validate_component(hdr, source) != CB_SUCCESS)
-			return -1;
-
-		*dest = rdev_mmap_full(source);
-		if ((uintptr_t)*dest != hdr->image_base) {
-			printk(BIOS_CRIT, "FSPM XIP base does not match: %p vs %p\n",
-				(void *)(uintptr_t)hdr->image_base, *dest);
-			return -1;
-		}
-		/* Since the component is XIP it's already in the address space.
-		   Thus, there's no need to rdev_munmap(). */
-		return 0;
-	}
 
 	/* Non XIP FSP-M uses FSP-M address */
-	fspm_begin = (uintptr_t)CONFIG_FSP_M_ADDR;
-	fspm_end = fspm_begin + size;
+	uintptr_t fspm_begin = (uintptr_t)CONFIG_FSP_M_ADDR;
+	uintptr_t fspm_end = fspm_begin + size;
 
 	if (check_region_overlap(memmap, "FSPM", fspm_begin, fspm_end) != CB_SUCCESS)
-		return -1;
+		return NULL;
 
-	*dest = (void *)fspm_begin;
-
-	return 0;
+	return (void *)fspm_begin;
 }
 
 void fsp_memory_init(bool s3wake)
@@ -381,11 +361,14 @@ void fsp_memory_init(bool s3wake)
 	struct fspm_context context;
 	struct fsp_load_descriptor fspld = {
 		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_M_CBFS),
-		.get_destination = fspm_get_dest,
 		.arg = &context,
 	};
 	struct fsp_header *hdr = &context.header;
 	struct memranges *memmap = &context.memmap;
+
+	/* For FSP-M XIP we leave alloc NULL to get a direct mapping to flash. */
+	if (!CONFIG(FSP_M_XIP))
+		fspld.alloc = fspm_allocator;
 
 	elog_boot_notify(s3wake);
 
@@ -398,6 +381,10 @@ void fsp_memory_init(bool s3wake)
 
 	if (fsp_load_component(&fspld, hdr) != CB_SUCCESS)
 		die("FSPM not available or failed to load!\n");
+
+	if (CONFIG(FSP_M_XIP) && (uintptr_t)prog_start(&fspld.fsp_prog) != hdr->image_base)
+		die("FSPM XIP base does not match: %p vs %p\n",
+		    (void *)(uintptr_t)hdr->image_base, prog_start(&fspld.fsp_prog));
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 

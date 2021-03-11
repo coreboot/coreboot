@@ -4,6 +4,7 @@
 #define _FSP2_0_UTIL_H_
 
 #include <boot/coreboot_tables.h>
+#include <cbfs.h>
 #include <commonlib/region.h>
 #include <arch/cpu.h>
 #include <fsp/api.h>
@@ -111,11 +112,8 @@ struct fsp_load_descriptor {
 	/* fsp_prog object will have region_device initialized to final
 	 * load location in memory. */
 	struct prog fsp_prog;
-	/* Fill in destination location given final load size. Return 0 on
-	 * success, < 0 on error. */
-	int (*get_destination)(const struct fsp_load_descriptor *fspld,
-			void **dest, size_t final_load_size,
-			const struct region_device *source);
+	/* CBFS allocator to place loaded FSP. NULL to map flash directly. */
+	cbfs_allocator_t alloc;
 	/* Optional argument to be utilized by get_destination() callback. */
 	void *arg;
 };

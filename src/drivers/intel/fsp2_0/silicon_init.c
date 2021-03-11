@@ -184,22 +184,16 @@ static void do_silicon_init(struct fsp_header *hdr)
 	post_code(POST_FSP_MULTI_PHASE_SI_INIT_EXIT);
 }
 
-static int fsps_get_dest(const struct fsp_load_descriptor *fspld, void **dest,
-				size_t size, const struct region_device *source)
+static void *fsps_allocator(void *arg_unused, size_t size, const union cbfs_mdata *mdata_unused)
 {
-	*dest = cbmem_add(CBMEM_ID_REFCODE, size);
-
-	if (*dest == NULL)
-		return -1;
-
-	return 0;
+	return cbmem_add(CBMEM_ID_REFCODE, size);
 }
 
 void fsps_load(void)
 {
 	struct fsp_load_descriptor fspld = {
 		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_S_CBFS),
-		.get_destination = fsps_get_dest,
+		.alloc = fsps_allocator,
 	};
 	struct prog *fsps = &fspld.fsp_prog;
 	static int load_done;

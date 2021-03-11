@@ -139,65 +139,24 @@ static inline bool fspm_xip(void)
 	return false;
 }
 
-static void *fsp_get_dest_and_load(struct fsp_load_descriptor *fspld, size_t size,
-				const struct region_device *source_rdev,
-				uint32_t compression_algo)
-{
-	void *dest;
-
-	if (fspld->get_destination(fspld, &dest, size, source_rdev) < 0) {
-		printk(BIOS_ERR, "FSP Destination not obtained.\n");
-		return NULL;
-	}
-
-	/* Don't load when executing in place. */
-	if (fspm_xip())
-		return dest;
-
-	if (cbfs_load_and_decompress(source_rdev, 0, region_device_sz(source_rdev),
-			dest, size, compression_algo) != size) {
-		printk(BIOS_ERR, "Failed to load FSP component.\n");
-		return NULL;
-	}
-
-	/* Don't allow FSP-M relocation. */
-	if (fspm_env())
-		return dest;
-
-	if (fsp_component_relocate((uintptr_t)dest, dest, size) < 0) {
-		printk(BIOS_ERR, "Unable to relocate FSP component!\n");
-		return NULL;
-	}
-
-	return dest;
-}
-
 /* Load the FSP component described by fsp_load_descriptor from cbfs. The FSP
  * header object will be validated and filled in on successful load. */
 enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_header *hdr)
 {
-	struct cbfsf file_desc;
-	uint32_t compression_algo;
 	size_t output_size;
 	void *dest;
-	struct region_device source_rdev, prog_rdev;
+	struct region_device prog_rdev;
 	struct prog *fsp_prog = &fspld->fsp_prog;
 
-	if (fspld->get_destination == NULL)
+	dest = cbfs_alloc(prog_name(fsp_prog), fspld->alloc, fspld, &output_size);
+	if (!dest)
 		return CB_ERR;
 
-	if (cbfs_boot_locate(&file_desc, prog_name(fsp_prog), &fsp_prog->cbfs_type) < 0)
+	/* Don't allow FSP-M relocation. */
+	if (!fspm_env() && fsp_component_relocate((uintptr_t)dest, dest, output_size) < 0) {
+		printk(BIOS_ERR, "Unable to relocate FSP component!\n");
 		return CB_ERR;
-
-	if (cbfsf_decompression_info(&file_desc, &compression_algo, &output_size) < 0)
-		return CB_ERR;
-
-	cbfs_file_data(&source_rdev, &file_desc);
-
-	dest = fsp_get_dest_and_load(fspld, output_size, &source_rdev, compression_algo);
-
-	if (dest == NULL)
-		return CB_ERR;
+	}
 
 	prog_set_area(fsp_prog, dest, output_size);
 

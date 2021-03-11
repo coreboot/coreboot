@@ -35,6 +35,7 @@ ramstage-y	+= pcie_gpp.c
 ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
+ramstage-y	+= xhci.c
 
 smm-y		+= gpio.c
 smm-y		+= smihandler.c

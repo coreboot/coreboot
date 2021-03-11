@@ -25,7 +25,7 @@ static void alc1015_fill_ssdt(const struct device *dev)
 	acpigen_write_scope(scope);
 	acpigen_write_device(name);
 
-	acpigen_write_name_string("_HID", "ALCP1015");
+	acpigen_write_name_string("_HID", "RTL1015");
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));

@@ -12,6 +12,7 @@
 #include "dramc_pi_api.h"
 #include <soc/dramc_param.h>
 #include <soc/emi.h>
+#include <types.h>
 
 DRAMC_CTX_T dram_ctx_chb;
 
@@ -1299,6 +1300,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 
 	DRAMC_CTX_T * p;
 	U8 final_shu;
+	DRAM_DFS_FREQUENCY_TABLE_T *first_cali_freq_tbl;
 
 #ifdef DDR_INIT_TIME_PROFILING
 	U32 CPU_Cycle;
@@ -1403,11 +1405,12 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 
 	// DramC & PHY init for all channels
 	//===  First frequency ======
+	first_cali_freq_tbl = &gFreqTbl[DRAM_DFS_SHUFFLE_MAX-1];
 
 #if defined(DUMP_INIT_RG_LOG_TO_DE)
 	vSetDFSFreqSelByTable(p, &gFreqTbl[1]); //0:3200 1:4266, 2:800, 3:1866, 4:1200, 5:2400, 6:1600
 #else
-	vSetDFSFreqSelByTable(p, &gFreqTbl[DRAM_DFS_SHUFFLE_MAX-1]);
+	vSetDFSFreqSelByTable(p, first_cali_freq_tbl);
 	//vSetDFSFreqSelByTable(p, &gFreqTbl[1]);
 #endif
 	//#if (ENABLE_DRAM_SINGLE_FREQ_SELECT != 0xFF) || defined(FIRST_BRING_UP) || (__FLASH_TOOL_DA__)
@@ -1509,6 +1512,16 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	#endif
 
 	S8 u1ShuIdx;
+	S8 allCaliShuIdx = 0xFF;
+
+	if (CONFIG(MEDIATEK_DRAM_DVFS_LIMIT_FREQ_CNT)) {
+		if (p->DRAMPinmux == PINMUX_DSC)
+			allCaliShuIdx = 0x61;	// 3200, 2400, 1600
+		else
+			allCaliShuIdx = 0x43;	// 3200, 4266, 1600
+	}
+	dramc_debug("all cali shu idx: 0x%x\n", allCaliShuIdx);
+
 //#if (ENABLE_DRAM_SINGLE_FREQ_SELECT == 0xFF)
 	if (is_dvfs_enabled()) {
 		for (u1ShuIdx = DRAM_DFS_SHUFFLE_MAX - 2; u1ShuIdx >= DRAM_DFS_SHUFFLE_1; u1ShuIdx--)
@@ -1517,6 +1530,13 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 			if ((p->DRAMPinmux == PINMUX_DSC) && (gFreqTbl[u1ShuIdx].shuffleIdx == SRAM_SHU0))
 				continue;
 			#endif
+
+			// ignore the calibration for shuffle which is not in allCaliShuIdx, just copy first cali shuffle data
+			if (!(allCaliShuIdx & BIT(u1ShuIdx))) {
+				// copy first calibration shuffle to this shuffle (if DVFS, need double confirm)
+				DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, gFreqTbl[u1ShuIdx].shuffleIdx);
+				continue;
+			}
 
 			vSetDFSFreqSelByTable(p, &gFreqTbl[u1ShuIdx]);
 			#if SUPPORT_SAVE_TIME_FOR_CALIBRATION

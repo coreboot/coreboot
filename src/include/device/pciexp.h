@@ -26,11 +26,9 @@ void pciexp_scan_bridge(struct device *dev);
 
 extern struct device_operations default_pciexp_ops_bus;
 
-#if CONFIG(PCIEXP_HOTPLUG)
 void pciexp_hotplug_scan_bridge(struct device *dev);
 
 extern struct device_operations default_pciexp_hotplug_ops_bus;
-#endif /* CONFIG(PCIEXP_HOTPLUG) */
 
 unsigned int pciexp_find_extended_cap(struct device *dev, unsigned int cap);
 #endif /* DEVICE_PCIEXP_H */

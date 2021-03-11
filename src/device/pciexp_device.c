@@ -510,8 +510,6 @@ struct device_operations default_pciexp_ops_bus = {
 	.ops_pci          = &pciexp_bus_ops_pci,
 };
 
-#if CONFIG(PCIEXP_HOTPLUG)
-
 static void pciexp_hotplug_dummy_read_resources(struct device *dev)
 {
 	struct resource *resource;
@@ -571,4 +569,3 @@ struct device_operations default_pciexp_hotplug_ops_bus = {
 	.reset_bus        = pci_bus_reset,
 	.ops_pci          = &pciexp_bus_ops_pci,
 };
-#endif /* CONFIG(PCIEXP_HOTPLUG) */

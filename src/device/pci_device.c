@@ -882,14 +882,15 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		case PCI_EXP_TYPE_DOWNSTREAM:
 			printk(BIOS_DEBUG, "%s subordinate bus PCI Express\n",
 			       dev_path(dev));
-#if CONFIG(PCIEXP_HOTPLUG)
-			u16 sltcap;
-			sltcap = pci_read_config16(dev, pciexpos + PCI_EXP_SLTCAP);
-			if (sltcap & PCI_EXP_SLTCAP_HPC) {
-				printk(BIOS_DEBUG, "%s hot-plug capable\n", dev_path(dev));
-				return &default_pciexp_hotplug_ops_bus;
+			if (CONFIG(PCIEXP_HOTPLUG)) {
+				u16 sltcap;
+				sltcap = pci_read_config16(dev, pciexpos + PCI_EXP_SLTCAP);
+				if (sltcap & PCI_EXP_SLTCAP_HPC) {
+					printk(BIOS_DEBUG, "%s hot-plug capable\n",
+					       dev_path(dev));
+					return &default_pciexp_hotplug_ops_bus;
+				}
 			}
-#endif /* CONFIG(PCIEXP_HOTPLUG) */
 			return &default_pciexp_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
 			printk(BIOS_DEBUG, "%s subordinate PCI\n",

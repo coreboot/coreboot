@@ -4,6 +4,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <smbios.h>
 #include <string.h>
+#include <sar.h>
 
 #define SKU_UNKNOWN     0xFFFFFFFF
 
@@ -28,4 +29,18 @@ const char *smbios_system_sku(void)
 	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
 
 	return sku_str;
+}
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	const char *filename = NULL;
+	uint32_t sku_id;
+
+	sku_id = variant_board_sku();
+	if (sku_id & 0x200)
+		filename = "wifi_sar-shyvana.hex";
+	else
+		filename = "wifi_sar-leona.hex";
+
+	return filename;
 }

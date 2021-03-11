@@ -186,19 +186,20 @@ static inline bool cbfs_lzma_enabled(void)
 	return true;
 }
 
-size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset, size_t in_size,
-				void *buffer, size_t buffer_size, uint32_t compression)
+static size_t cbfs_load_and_decompress(const struct region_device *rdev,
+				       void *buffer, size_t buffer_size, uint32_t compression)
 {
+	size_t in_size = region_device_sz(rdev);
 	size_t out_size;
 	void *map;
 
-	DEBUG("Decompressing %zu bytes to %p with algo %d\n", buffer_size, buffer, compression);
+	DEBUG("Decompressing %zu bytes to %p with algo %d\n", in_size, buffer, compression);
 
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
 		if (buffer_size < in_size)
 			return 0;
-		if (rdev_readat(rdev, buffer, offset, in_size) != in_size)
+		if (rdev_readat(rdev, buffer, 0, in_size) != in_size)
 			return 0;
 		return in_size;
 
@@ -206,9 +207,9 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		if (!cbfs_lz4_enabled())
 			return 0;
 
-		/* cbfs_stage_load_and_decompress() takes care of in-place LZ4 decompression by
+		/* cbfs_prog_stage_load() takes care of in-place LZ4 decompression by
 		   setting up the rdev to be in memory. */
-		map = rdev_mmap(rdev, offset, in_size);
+		map = rdev_mmap_full(rdev);
 		if (map == NULL)
 			return 0;
 
@@ -223,7 +224,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	case CBFS_COMPRESS_LZMA:
 		if (!cbfs_lzma_enabled())
 			return 0;
-		map = rdev_mmap(rdev, offset, in_size);
+		map = rdev_mmap_full(rdev);
 		if (map == NULL)
 			return 0;
 
@@ -239,33 +240,6 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 	default:
 		return 0;
 	}
-}
-
-static size_t cbfs_stage_load_and_decompress(const struct region_device *rdev, size_t offset,
-	size_t in_size, void *buffer, size_t buffer_size, uint32_t compression)
-{
-	struct region_device rdev_src;
-
-	if (compression == CBFS_COMPRESS_LZ4) {
-		if (!cbfs_lz4_enabled())
-			return 0;
-		/* Load the compressed image to the end of the available memory area for
-		   in-place decompression. It is the responsibility of the caller to ensure that
-		   buffer_size is large enough (see compression.h, guaranteed by cbfstool for
-		   stages). */
-		void *compr_start = buffer + buffer_size - in_size;
-		if (rdev_readat(rdev, compr_start, offset, in_size) != in_size)
-			return 0;
-		/* Create a region device backed by memory. */
-		rdev_chain(&rdev_src, &addrspace_32bit.rdev, (uintptr_t)compr_start, in_size);
-
-		return cbfs_load_and_decompress(&rdev_src, 0, in_size, buffer, buffer_size,
-						compression);
-	}
-
-	/* All other algorithms can use the generic implementation. */
-	return cbfs_load_and_decompress(rdev, offset, in_size, buffer, buffer_size,
-					compression);
 }
 
 static inline int tohex4(unsigned int c)
@@ -361,8 +335,7 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		return NULL;
 	}
 
-	size = cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
-					loc, size, compression);
+	size = cbfs_load_and_decompress(&rdev, loc, size, compression);
 	if (!size)
 		return NULL;
 
@@ -421,8 +394,18 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 			return CB_SUCCESS;
 	}
 
-	size_t fsize = cbfs_stage_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
-				prog_start(pstage), prog_size(pstage), compression);
+	/* LZ4 stages can be decompressed in-place to save mapping scratch space. Load the
+	   compressed data to the end of the buffer and point &rdev to that memory location. */
+	if (cbfs_lz4_enabled() && compression == CBFS_COMPRESS_LZ4) {
+		size_t in_size = region_device_sz(&rdev);
+		void *compr_start = prog_start(pstage) + prog_size(pstage) - in_size;
+		if (rdev_readat(&rdev, compr_start, 0, in_size) != in_size)
+			return CB_ERR;
+		rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)compr_start, in_size);
+	}
+
+	size_t fsize = cbfs_load_and_decompress(&rdev, prog_start(pstage), prog_size(pstage),
+						compression);
 	if (!fsize)
 		return CB_ERR;
 

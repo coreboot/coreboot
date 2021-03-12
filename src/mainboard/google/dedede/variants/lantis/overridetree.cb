@@ -62,7 +62,7 @@ chip soc/intel/jasperlake
 
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 6,
-		.tdp_pl2_override = 20,
+		.tdp_pl2_override = 15,
 	}"
 
 	device domain 0 on
@@ -70,18 +70,24 @@ chip soc/intel/jasperlake
 			chip drivers/intel/dptf
 				register "options.tsr[0].desc" = ""Memory""
 				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""5V regulator""
 
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU, CPU,           90, 10000),
-					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000),
-					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 55, 15000),
+					[0] = DPTF_PASSIVE(CPU, 	CPU,	       80, 1000),
+					[1] = DPTF_PASSIVE(CPU, 	TEMP_SENSOR_0, 70, 4000),
+					[2] = DPTF_PASSIVE(CPU, 	TEMP_SENSOR_1, 51, 1000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 75, 5000),
+					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 60, 1000)
 				}"
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 105, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 105, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 105, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 105, SHUTDOWN)
 				}"
 				## Power Limits Control
 				register "controls.power_limits" = "{
@@ -93,13 +99,22 @@ chip soc/intel/jasperlake
 						.granularity = 200,
 					},
 					.pl2 = {
-						.min_power = 20000,
-						.max_power = 20000,
+						.min_power = 15000,
+						.max_power = 15000,
 						.time_window_min = 1 * MSECS_PER_SEC,
 						.time_window_max = 1 * MSECS_PER_SEC,
 						.granularity = 1000,
 					}
 				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
 				device generic 0 on end
 			end
 		end # SA Thermal device

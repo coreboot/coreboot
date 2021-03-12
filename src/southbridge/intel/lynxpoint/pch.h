@@ -121,7 +121,7 @@ void pch_log_state(void);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 void enable_usb_bar(void);
-int early_pch_init(void);
+void early_pch_init(void);
 void pch_enable_lpc(void);
 void mainboard_config_superio(void);
 void mainboard_config_rcba(void);

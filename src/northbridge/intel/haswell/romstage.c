@@ -5,6 +5,7 @@
 #include <cf9_reset.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <elog.h>
 #include <timestamp.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
@@ -16,6 +17,7 @@
 #include <northbridge/intel/haswell/chip.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
 #include <string.h>
@@ -47,8 +49,6 @@ void mainboard_romstage_entry(void)
 
 	const struct northbridge_intel_haswell_config *cfg = config_of_soc();
 
-	int s3resume;
-
 	struct pei_data pei_data = {
 		.pei_version		= PEI_VERSION,
 		.mchbar			= CONFIG_FIXED_MCHBAR_MMIO_BASE,
@@ -76,22 +76,17 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	s3resume = early_pch_init();
+	early_pch_init();
+
+	const int s3resume = southbridge_detect_s3_resume();
+
+	elog_boot_notify(s3resume);
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
 	haswell_early_initialization();
 	printk(BIOS_DEBUG, "Back from haswell_early_initialization()\n");
-
-	if (s3resume) {
-#if CONFIG(HAVE_ACPI_RESUME)
-		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-#else
-		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		s3resume = 0;
-#endif
-	}
 
 	/* Prepare USB controller early in S3 resume */
 	if (s3resume)

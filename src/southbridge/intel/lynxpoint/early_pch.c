@@ -6,7 +6,6 @@
 #include <device/pci_def.h>
 #include <device/smbus_host.h>
 #include <southbridge/intel/common/pmbase.h>
-#include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 #include "pch.h"
 #include "chip.h"
@@ -86,10 +85,8 @@ void __weak mainboard_config_superio(void)
 {
 }
 
-int early_pch_init(void)
+void early_pch_init(void)
 {
-	int wake_from_s3;
-
 	pch_enable_bars();
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
@@ -123,11 +120,4 @@ int early_pch_init(void)
 
 		RCBA32(0x2324) = 0x00854c74;
 	}
-
-	wake_from_s3 = southbridge_detect_s3_resume();
-
-	elog_boot_notify(wake_from_s3);
-
-	/* Report if we are waking from s3. */
-	return wake_from_s3;
 }

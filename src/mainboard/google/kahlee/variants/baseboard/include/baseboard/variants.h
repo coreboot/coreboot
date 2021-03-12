@@ -6,7 +6,6 @@
 #include <stddef.h>
 #include <soc/southbridge.h>
 
-const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
 /* Return board SKU. Limited to uint8_t, so it fits into 3 decimal digits */
 uint8_t variant_board_sku(void);

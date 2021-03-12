@@ -83,14 +83,14 @@ chip soc/intel/jasperlake
 				register "options.tsr[0].desc" = ""Memory""
 				register "options.tsr[1].desc" = ""Ambient""
 
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           90, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 70, 6000)"
-				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 60, 5000)"
-
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,           105, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0,  80, SHUTDOWN)"
-				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1,  80, SHUTDOWN)"
-
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           90, 5000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 70, 6000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 60, 5000)}"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,  80, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,  80, SHUTDOWN)}"
 				register "controls.power_limits.pl1" = "{
 					.min_power = 3000,
 					.max_power = 7000,

@@ -2,6 +2,7 @@ if BOARD_INTEL_ADLRVP_P || BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_M |
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
+	select ADL_ENABLE_USB4_PCIE_RESOURCES
 	select BOARD_ROMSIZE_KB_32768
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -83,21 +84,6 @@ config ADL_INTEL_EC
 	select EC_ACPI
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC if VBOOT
 endchoice
-
-config PCIEXP_HOTPLUG
-	default y
-
-config PCIEXP_HOTPLUG_BUSES
-	int
-	default 42
-
-config PCIEXP_HOTPLUG_MEM
-	hex
-	default 0xc200000  # 194 MiB
-
-config PCIEXP_HOTPLUG_PREFETCH_MEM
-	hex
-	default 0x1c000000 # 448 MiB
 
 config VBOOT
 	select VBOOT_LID_SWITCH

@@ -65,3 +65,7 @@ config BOARD_GOOGLE_BURNET
 config BOARD_GOOGLE_FENNEL
 	bool "->  Fennel"
 	select BOARD_GOOGLE_JACUZZI_COMMON
+
+config BOARD_GOOGLE_COZMO
+	bool "->  Cozmo"
+	select BOARD_GOOGLE_JACUZZI_COMMON

@@ -60,6 +60,7 @@ config MAINBOARD_PART_NUMBER
 	default "Burnet" if BOARD_GOOGLE_BURNET
 	default "Fennel" if BOARD_GOOGLE_FENNEL
 	default "Katsu" if BOARD_GOOGLE_KATSU
+	default "Cozmo" if BOARD_GOOGLE_COZMO
 
 config DRIVER_TPM_SPI_BUS
 	hex

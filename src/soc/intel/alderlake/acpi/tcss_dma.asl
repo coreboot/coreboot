@@ -83,28 +83,6 @@ Method (_PRW, 0)
 	Return (Package() { 0x6D, 4 })
 }
 
-Method (_DSD, 0)
-{
-	Return(
-		Package()
-		{
-			/* Thunderbolt GUID for IMR_VALID at ../drivers/acpi/property.c */
-			ToUUID("C44D002F-69F9-4E7D-A904-A7BAABDF43F7"),
-			Package ()
-			{
-				Package (2) { "IMR_VALID", 1 }
-			},
-
-			/* Thunderbolt GUID for WAKE_SUPPORTED at ../drivers/acpi/property.c */
-			ToUUID("6C501103-C189-4296-BA72-9BF5A26EBE5D"),
-			Package ()
-			{
-				Package (2) { "WAKE_SUPPORTED", 1 }
-			}
-		}
-	)
-}
-
 Method (_DSM, 4, Serialized)
 {
 	Return (Buffer() { 0 })

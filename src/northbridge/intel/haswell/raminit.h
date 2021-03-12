@@ -17,7 +17,7 @@ struct spd_info {
 extern const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS];
 extern const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS];
 
-/* Mainboard callback to fill in the SPD addresses in MRC format */
+/* Mainboard callback to fill in the SPD addresses */
 void mb_get_spd_map(struct spd_info *spdi);
 
 void perform_raminit(const int s3resume);

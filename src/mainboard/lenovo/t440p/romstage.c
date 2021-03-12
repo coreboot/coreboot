@@ -42,8 +42,8 @@ void mb_late_romstage_setup(void)
 
 void mb_get_spd_map(struct spd_info *spdi)
 {
-	spdi->addresses[0] = 0xa0;
-	spdi->addresses[2] = 0xa2;
+	spdi->addresses[0] = 0x50;
+	spdi->addresses[2] = 0x51;
 }
 
 const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {

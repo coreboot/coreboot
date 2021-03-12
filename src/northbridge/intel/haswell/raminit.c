@@ -347,8 +347,11 @@ void perform_raminit(const int s3resume)
 	struct spd_info spdi = {0};
 	mb_get_spd_map(&spdi);
 
-	for (size_t i = 0; i < ARRAY_SIZE(spdi.addresses); i++)
-		pei_data.spd_addresses[i] = spdi.addresses[i];
+	/* MRC expects left-aligned SMBus addresses, and 0xff for memory-down */
+	for (size_t i = 0; i < ARRAY_SIZE(spdi.addresses); i++) {
+		const uint8_t addr = spdi.addresses[i];
+		pei_data.spd_addresses[i] = addr == SPD_MEMORY_DOWN ? 0xff : addr << 1;
+	}
 
 	/* Calculate unimplemented DIMM slots for each channel */
 	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);

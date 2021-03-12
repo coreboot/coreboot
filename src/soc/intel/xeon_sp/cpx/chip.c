@@ -111,6 +111,32 @@ static void iio_enable_masks(void)
 	}
 	iio_dmi_en_masks();
 }
+
+static void set_pcu_locks(void)
+{
+	for (uint32_t socket = 0; socket < soc_get_num_cpus(); ++socket) {
+		uint32_t bus = get_socket_stack_busno(socket, PCU_IIO_STACK);
+
+		/* configure PCU_CR0_FUN csrs */
+		const struct device *cr0_dev = PCU_DEV_CR0(bus);
+		pci_or_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS, P_STATE_LIMITS_LOCK);
+		pci_or_config32(cr0_dev, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR, PKG_PWR_LIM_LOCK_UPR);
+
+		/* configure PCU_CR1_FUN csrs */
+		const struct device *cr1_dev = PCU_DEV_CR1(bus);
+		pci_or_config32(cr1_dev, PCU_CR1_SAPMCTL, SAPMCTL_LOCK_MASK);
+
+		/* configure PCU_CR2_FUN csrs */
+		const struct device *cr2_dev = PCU_DEV_CR2(bus);
+		pci_or_config32(cr2_dev, PCU_CR2_DRAM_PLANE_POWER_LIMIT, PP_PWR_LIM_LOCK);
+
+		/* configure PCU_CR3_FUN csrs */
+		const struct device *cr3_dev = PCU_DEV_CR3(bus);
+		pci_or_config32(cr3_dev, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
+	}
+
+}
+
 static void chip_final(void *data)
 {
 	/* Lock SBI */
@@ -126,6 +152,8 @@ static void chip_final(void *data)
 	 */
 	uint8_t reg8 = pci_io_read_config8(PCI_DEV(0, 0, 0), 0x88);
 	pci_io_write_config8(PCI_DEV(0, 0, 0), 0x88, reg8 | (1 << 4));
+
+	set_pcu_locks();
 
 	p2sb_hide();
 	iio_enable_masks();

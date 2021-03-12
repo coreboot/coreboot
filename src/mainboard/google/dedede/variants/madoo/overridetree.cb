@@ -69,8 +69,14 @@ chip soc/intel/jasperlake
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU, 65, 1000)"
-				register "policies.critical[0]" = "DPTF_CRITICAL(CPU, 100, SHUTDOWN)"
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU, 65, 1000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 55, 15000)}"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU, 100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN)}"
 				register "controls.power_limits.pl1" = "{
 						.min_power = 4800,
 						.max_power = 6000,

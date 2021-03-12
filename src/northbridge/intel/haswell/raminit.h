@@ -13,6 +13,14 @@ struct spd_info {
 	unsigned int spd_index;
 };
 
+#if CONFIG(INTEL_LYNXPOINT_LP)
+#define MAX_USB2_PORTS	10
+#define MAX_USB3_PORTS	4
+#else
+#define MAX_USB2_PORTS	14
+#define MAX_USB3_PORTS	6
+#endif
+
 /* Mainboard-specific USB configuration */
 extern const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS];
 extern const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS];

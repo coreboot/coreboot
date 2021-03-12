@@ -10,8 +10,6 @@ typedef void (*tx_byte_func)(unsigned char byte);
 
 #define SPD_LEN 256
 
-#define MAX_USB2_PORTS 16
-#define MAX_USB3_PORTS 16
 #define USB_OC_PIN_SKIP 8
 
 enum usb2_port_location {
@@ -82,8 +80,8 @@ struct pei_data
 	uint32_t max_ddr3_freq;
 	/* Route all USB ports to XHCI controller in resume path */
 	int usb_xhci_on_resume;
-	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS];
-	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS];
+	struct usb2_port_setting usb2_ports[16];
+	struct usb3_port_setting usb3_ports[16];
 	uint8_t spd_data[4][SPD_LEN];
 	tx_byte_func tx_byte;
 } __packed;

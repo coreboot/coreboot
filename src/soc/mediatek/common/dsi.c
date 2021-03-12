@@ -204,7 +204,7 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
 			  phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
 
-	u32 delta = 12;
+	u32 delta = 10;
 
 	if (mode_flags & MIPI_DSI_MODE_EOT_PACKET)
 		delta += 2;

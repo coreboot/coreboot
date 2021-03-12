@@ -9,33 +9,26 @@
 #include "../../onboard.h"
 #include "../../variant.h"
 
-/* Copy SPD data for on-board memory */
-void copy_spd(struct pei_data *peid)
+unsigned int variant_get_spd_index(void)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
+	return get_gpios(gpio_vector);
+}
 
-	unsigned int spd_index = fill_spd_for_index(peid->spd_data[0], get_gpios(gpio_vector));
-
+bool variant_is_dual_channel(const unsigned int spd_index)
+{
 	uint32_t board_version = PEPPY_BOARD_VERSION_PROTO;
 	google_chromeec_get_board_version(&board_version);
 	switch (board_version) {
 	case PEPPY_BOARD_VERSION_PROTO:
 		/* Index 0 is 2GB config with CH0 only. */
-		if (spd_index == 0)
-			peid->dimm_channel1_disabled = 3;
-		else
-			memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
-		break;
+		return spd_index != 0;
 
 	case PEPPY_BOARD_VERSION_EVT:
 	default:
 		/* Index 0-3 are 4GB config with both CH0 and CH1.
-		 * Index 4-7 are 2GB config with CH0 only. */
-		if (spd_index > 3)
-			peid->dimm_channel1_disabled = 3;
-		else
-			memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
-		break;
+		   Index 4-7 are 2GB config with CH0 only. */
+		return spd_index <= 3;
 	}
 }
 

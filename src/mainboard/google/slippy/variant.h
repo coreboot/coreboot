@@ -3,8 +3,9 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
-#include <stdint.h>
+#include <types.h>
 
-unsigned int fill_spd_for_index(uint8_t spd[], unsigned int index);
+unsigned int variant_get_spd_index(void);
+bool variant_is_dual_channel(const unsigned int spd_index);
 
 #endif

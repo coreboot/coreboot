@@ -6,22 +6,22 @@
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "../../variant.h"
 
-/* Copy SPD data for on-board memory */
-void copy_spd(struct pei_data *peid)
+unsigned int variant_get_spd_index(void)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
+	return get_gpios(gpio_vector);
+}
 
-	unsigned int spd_index = fill_spd_for_index(peid->spd_data[0], get_gpios(gpio_vector));
-
-	/* Index 0-2, are 4GB config with both CH0 and CH1
-	 * Index 3-5, are 2GB config with CH0 only
-	 */
+bool variant_is_dual_channel(const unsigned int spd_index)
+{
+	/* Index 0-2 are 4GB config with both CH0 and CH1
+	   Index 3-5 are 2GB config with CH0 only */
 	switch (spd_index) {
 	case 0: case 1: case 2:
-		memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
-		break;
+		return true;
 	case 3: case 4: case 5:
-		peid->dimm_channel1_disabled = 3;
+	default:
+		return false;
 	}
 }
 

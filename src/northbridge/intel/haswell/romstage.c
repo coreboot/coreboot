@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/romstage.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <cf9_reset.h>
 #include <device/device.h>
@@ -21,10 +22,37 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
 #include <string.h>
+#include <types.h>
 
 /* Copy SPD data for on-board memory */
-void __weak copy_spd(struct pei_data *peid)
+static void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
 {
+	if (!CONFIG(HAVE_SPD_IN_CBFS))
+		return;
+
+	printk(BIOS_DEBUG, "SPD index %d\n", spdi->spd_index);
+
+	size_t spd_file_len;
+	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
+
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (spd_file_len < ((spdi->spd_index + 1) * SPD_LEN)) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spdi->spd_index = 0;
+	}
+
+	if (spd_file_len < SPD_LEN)
+		die("Missing SPD data.");
+
+	/* MRC only uses index 0, but coreboot uses the other indices */
+	memcpy(pei_data->spd_data[0], spd_file + (spdi->spd_index * SPD_LEN), SPD_LEN);
+
+	for (size_t i = 1; i < ARRAY_SIZE(spdi->addresses); i++) {
+		if (spdi->addresses[i] == SPD_MEMORY_DOWN)
+			memcpy(pei_data->spd_data[i], pei_data->spd_data[0], SPD_LEN);
+	}
 }
 
 void __weak mb_late_romstage_setup(void)
@@ -98,7 +126,11 @@ void mainboard_romstage_entry(void)
 	pei_data.boot_mode = s3resume ? 2 : 0;
 
 	/* Obtain the SPD addresses from mainboard code */
-	mb_get_spd_map(pei_data.spd_addresses);
+	struct spd_info spdi = {0};
+	mb_get_spd_map(&spdi);
+
+	for (size_t i = 0; i < ARRAY_SIZE(spdi.addresses); i++)
+		pei_data.spd_addresses[i] = spdi.addresses[i];
 
 	/* Calculate unimplemented DIMM slots for each channel */
 	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);
@@ -111,7 +143,7 @@ void mainboard_romstage_entry(void)
 	if (CONFIG(INTEL_TXT))
 		intel_txt_romstage_init();
 
-	copy_spd(&pei_data);
+	copy_spd(&pei_data, &spdi);
 
 	sdram_initialize(&pei_data);
 

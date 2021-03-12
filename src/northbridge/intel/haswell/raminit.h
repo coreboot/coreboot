@@ -20,10 +20,6 @@ extern const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS];
 /* Mainboard callback to fill in the SPD addresses in MRC format */
 void mb_get_spd_map(struct spd_info *spdi);
 
-void sdram_initialize(struct pei_data *pei_data);
-void setup_sdram_meminfo(struct pei_data *pei_data);
-
-/* save_mrc_data() must be called after cbmem has been initialized. */
-void save_mrc_data(struct pei_data *pei_data);
+void perform_raminit(const int s3resume);
 
 #endif				/* RAMINIT_H */

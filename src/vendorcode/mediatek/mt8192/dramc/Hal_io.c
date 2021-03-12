@@ -254,7 +254,7 @@ inline void _ucDram_Register_Write(U64 u4reg_addr, U32 u4reg_value)
 #ifdef DUMP_INIT_RG_LOG_TO_DE
 	if (gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag == 1)
 	{
-		mcSHOW_DUMP_INIT_RG_MSG(("*((UINT32P)(0x%x)) = 0x%x;\n",u4reg_addr,u4reg_value));
+		mcSHOW_DUMP_INIT_RG_MSG("*(UINT32P)(0x%x) = 0x%x;\n",u4reg_addr,u4reg_value);
 		gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag = 0;
 		mcDELAY_MS(1); // to receive log for log
 		gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag = 1;
@@ -264,7 +264,7 @@ inline void _ucDram_Register_Write(U64 u4reg_addr, U32 u4reg_value)
 #if REG_ACCESS_PORTING_DGB
 	if (RegLogEnable)
 	{
-		mcSHOW_DBG_MSG(("\n[REG_ACCESS_PORTING_DBG]   ucDramC_Register_Write Reg(0x%X) = 0x%X\n", u4reg_addr, u4reg_value));
+		msg("\n[REG_ACCESS_PORTING_DBG]   ucDramC_Register_Write Reg(0x%X) = 0x%X\n", u4reg_addr, u4reg_value);
 	}
 #endif
 }
@@ -276,7 +276,7 @@ void ucDram_Register_Write(DRAMC_CTX_T *p, U32 u4reg_addr, U32 u4reg_value)
 	//CheckDramcWBR(u4reg_addr);
 #endif
 
-	//mcSHOW_DBG_MSG(("\n[REG_ACCESS_PORTING_DBG]	ucDramC_Register_Write Reg(0x%X) = 0x%X\n", u4reg_addr, u4reg_value));
+	//msg("\n[REG_ACCESS_PORTING_DBG]	ucDramC_Register_Write Reg(0x%X) = 0x%X\n", u4reg_addr, u4reg_value);
 	u4reg_addr = u4RegBaseAddrTraslate(p->ShuRGAccessIdx, p->rank, u4reg_addr);
 
 	_ucDram_Register_Write(u4reg_addr, u4reg_value);
@@ -304,7 +304,7 @@ U32 u4RegType = (reg32 & (0x1f << POS_BANK_NUM));
 #if __ETT__
 	if (GetDramcBroadcast()==DRAMC_BROADCAST_ON)
 	{
-		mcSHOW_ERR_MSG(("Error! virtual address 0x%x don't have to use write_all when Dramc WBR is on\n", reg32));
+		err("Error! virtual address 0x%x don't have to use write_all when Dramc WBR is on\n", reg32);
 		while (1);
 	}
 #endif
@@ -351,7 +351,7 @@ void vIO32Write4BMsk_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32)
 #if __ETT__
 	if (GetDramcBroadcast()==DRAMC_BROADCAST_ON)
 	{
-		mcSHOW_ERR_MSG(("Error! virtual address 0x%x don't have to use write_all when Dramc WBR is on\n", reg32));
+		err("Error! virtual address 0x%x don't have to use write_all when Dramc WBR is on\n", reg32);
 		while (1);
 	}
 #endif

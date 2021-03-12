@@ -51,8 +51,8 @@ static U8 u1GetACTimingIdx(DRAMC_CTX_T *p)
 			   )
 			{
 				u1TimingIdx = u1TmpIdx;
-				mcSHOW_DBG_MSG(("match AC timing %d\n", u1TimingIdx));
-				mcDUMP_REG_MSG(("match AC timing %d\n", u1TimingIdx));
+				msg("match AC timing %d\n", u1TimingIdx);
+				reg_msg("match AC timing %d\n", u1TimingIdx);
 				break;
 			}
 		}
@@ -71,9 +71,9 @@ static U8 u1GetACTimingIdx(DRAMC_CTX_T *p)
 			   )
 			{
 				u1TimingIdx = u1TmpIdx;
-				mcSHOW_DBG_MSG(("match AC timing %d\n", u1TimingIdx));
-				mcDUMP_REG_MSG(("match AC timing %d\n", u1TimingIdx));
-				mcSHOW_DBG_MSG(("dramType %d, freq %d, readDBI %d, DivMode %d, cbtMode %d\n", u1TmpDramType, p->freqGroup, p->DBI_R_onoff[p->dram_fsp], vGet_Div_Mode(p), vGet_Dram_CBT_Mode(p)));
+				msg("match AC timing %d\n", u1TimingIdx);
+				reg_msg("match AC timing %d\n", u1TimingIdx);
+				msg("dramType %d, freq %d, readDBI %d, DivMode %d, cbtMode %d\n", u1TmpDramType, p->freqGroup, p->DBI_R_onoff[p->dram_fsp], vGet_Div_Mode(p), vGet_Dram_CBT_Mode(p));
 				break;
 			}
 		}
@@ -376,7 +376,7 @@ else
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("u4RankINCTL_ROOT <2, Please check\n"));
+		err("u4RankINCTL_ROOT <2, Please check\n");
 		u4RankINCTL_ROOT = 0;
 	}
 
@@ -480,7 +480,7 @@ static void WDQSMode2AcTimingEnlarge(DRAMC_CTX_T *p, U16 *u2_XRTW2W, U16 *u2_XRT
 			u2XRTR2W_enlarge = 1;
 			break;
 		default:
-			mcSHOW_ERR_MSG(("[WDQSMode2AcTimingEnlarge] frequency err!\n"));
+			err("[WDQSMode2AcTimingEnlarge] frequency err!\n");
 			#if __ETT__
 			while (1);
 			#endif
@@ -782,7 +782,7 @@ else
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("u4RankINCTL_ROOT <2, Please check\n"));
+		err("u4RankINCTL_ROOT <2, Please check\n");
 		u4RankINCTL_ROOT = 0;
 	}
 
@@ -847,7 +847,7 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
 {
 	U8 u1TimingIdx = 0;
 
-	mcSHOW_DBG_MSG3(("[UpdateACTiming]\n"));
+	msg3("[UpdateACTiming]\n");
 
 	//Retrieve ACTimingTable's corresponding index
 	u1TimingIdx = u1GetACTimingIdx(p);
@@ -859,9 +859,9 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
 			u1TimingIdx = 0;
 		else // LPDDR3
 			u1TimingIdx = 6;
-		mcSHOW_ERR_MSG(("Error, no match AC timing, use default timing %d\n", u1TimingIdx));
+		err("Error, no match AC timing, use default timing %d\n", u1TimingIdx);
 		#else
-		mcSHOW_ERR_MSG(("Error, no match AC timing, not apply table\n"));
+		err("Error, no match AC timing, not apply table\n");
 		return DRAM_FAIL;
 		#endif
 	}
@@ -889,7 +889,7 @@ DRAM_STATUS_T DdrUpdateACTiming_EMI(DRAMC_CTX_T *p, AC_TIMING_EXTERNAL_T *ACRegF
 	ACTime_T_LP5 ACTime_LP5;
 	#endif
 	ACTime_T_LP4 ACTime_LP4;
-	mcSHOW_DBG_MSG3(("[DdrUpdateACTiming_EMI]\n"));
+	msg3("[DdrUpdateACTiming_EMI]\n");
 
    if (ACRegFromEmi == NULL)
 		return DRAM_FAIL;
@@ -1083,12 +1083,12 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 	};
 
 
-	mcSHOW_DBG_MSG(("[ACTimingOptimize]"));
+	msg("[ACTimingOptimize]");
 
 #if __ETT__
 	if (p->density==0xff)
 	{
-		mcSHOW_ERR_MSG(("Error : No call MR8 to get density!!\n"));
+		err("Error : No call MR8 to get density!!\n");
 		while(1);
 	}
 #endif
@@ -1113,7 +1113,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 			break;
 		default:
 			u1ExecuteOptimize = DISABLE;
-			mcSHOW_ERR_MSG(("MR8 density err!\n"));
+			err("MR8 density err!\n");
 	}
 	/* Set freqGroup Idx */
 	switch (p->freqGroup)
@@ -1124,7 +1124,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 			else
 			{
 				u1ExecuteOptimize = DISABLE;
-				mcSHOW_ERR_MSG(("freqGroup err!\n"));
+				err("freqGroup err!\n");
 				#if __ETT__
 				while(1);
 				#endif
@@ -1162,7 +1162,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 			break;
 		default:
 			u1ExecuteOptimize = DISABLE;
-			mcSHOW_ERR_MSG(("freqGroup err!\n"));
+			err("freqGroup err!\n");
 			#if __ETT__
 			while(1);
 			#endif
@@ -1171,7 +1171,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 	if (vGet_Div_Mode(p) == DIV4_MODE && u1FreqGrpIdx >= GRP_ACTIM_NUM_DIV4)
 	{
 			u1ExecuteOptimize = DISABLE;
-			mcSHOW_ERR_MSG(("freqGroup err!\n"));
+			err("freqGroup err!\n");
 			#if __ETT__
 			while(1);
 			#endif
@@ -1196,7 +1196,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 		vIO32WriteFldAlign_All(DRAMC_REG_SHU_ACTIM3, u1TRFCpb, SHU_ACTIM3_TRFCPB);
 		vIO32WriteFldAlign_All(DRAMC_REG_SHU_AC_TIME_05T, u1TRFCpb_05T, SHU_AC_TIME_05T_TRFCPB_05T);
 
-		mcSHOW_DBG_MSG(("Density (MR8 OP[5:2]) %u, TRFC %u, TRFC_05T %u, TXREFCNT %u, TRFCpb %u, TRFCpb_05T %u\n", p->density, u1TRFC, u1TRFC_05T, u1TXREFCNT, u1TRFCpb, u1TRFCpb_05T));
+		msg("Density (MR8 OP[5:2]) %u, TRFC %u, TRFC_05T %u, TXREFCNT %u, TRFCpb %u, TRFCpb_05T %u\n", p->density, u1TRFC, u1TRFC_05T, u1TXREFCNT, u1TRFCpb, u1TRFCpb_05T);
 	}
 
 	return;

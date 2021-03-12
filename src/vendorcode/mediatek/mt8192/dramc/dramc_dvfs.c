@@ -115,12 +115,12 @@ void FullRGDump(DRAMC_CTX_T *p, U8 step, U32 u4ShuOffset)
 {
 	U8 u1RankIdx=0;
 
-	mcSHOW_DBG_MSG(("[FullRGDump] STEP%d\n", step));
+	msg("[FullRGDump] STEP%d\n", step);
 	//Darren-DumpAoNonShuReg();
 	for (u1RankIdx=RANK_0; u1RankIdx<p->support_rank_num; u1RankIdx++)
 	{
 		vSetRank(p, u1RankIdx);
-		mcSHOW_DBG_MSG(("[FullRGDump] RANK%d\n", u1RankIdx));
+		msg("[FullRGDump] RANK%d\n", u1RankIdx);
 		DumpAoShuReg(u4ShuOffset, u4ShuOffset);
 	}
 	//Darren-DumpNaoReg();
@@ -156,7 +156,7 @@ U32 SramDebugModeRead(DRAMC_CTX_T *p, U8 sram_shu_level, U32 u4Reg)
 	u4Value = u4IO32Read4B(DRAMC_REG_ADDR(u4Reg));// SHU1
 	DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 	p->ShuRGAccessIdx = DRAM_DFS_REG_SHU0;
-	mcSHOW_DBG_MSG(("[SramDebugModeRead] RK%d Reg=0x%x, Value=0x%x\n", p->rank, u4Reg, u4Value));
+	msg("[SramDebugModeRead] RK%d Reg=0x%x, Value=0x%x\n", p->rank, u4Reg, u4Value);
 
 	//vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SRAM_DMA0, 0x0, MISC_SRAM_DMA0_APB_SLV_SEL);
 	//vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SRAM_DMA1, 0x0, MISC_SRAM_DMA1_R_APB_DMA_DBG_ACCESS);
@@ -192,7 +192,7 @@ void SramDebugModeWrite(DRAMC_CTX_T *p, U8 sram_shu_level, U32 u4Reg, U32 u4Data
 	vIO32Write4B(DRAMC_REG_ADDR(u4Reg), u4Data); // SHU1
 	DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 	p->ShuRGAccessIdx = DRAM_DFS_REG_SHU0;
-	mcSHOW_DBG_MSG(("[SramDebugModeWrite] RK%d Reg=0x%x, Value=0x%x\n", p->rank, u4Reg, u4Data));
+	msg("[SramDebugModeWrite] RK%d Reg=0x%x, Value=0x%x\n", p->rank, u4Reg, u4Data);
 
 	//vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SRAM_DMA0, 0x0, MISC_SRAM_DMA0_APB_SLV_SEL);
 	//vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SRAM_DMA1, 0x0, MISC_SRAM_DMA1_R_APB_DMA_DBG_ACCESS);
@@ -276,10 +276,10 @@ void DFSRuntimeMRW_preset(DRAMC_CTX_T *p, U8 sram_shu_level)
 		ch_end = CHANNEL_D;
 #endif
 
-	//Darren-mcSHOW_DBG_MSG(("[DFSRuntimeMRW_preset] FSP%d\n", p->dram_fsp));
+	//Darren-msg("[DFSRuntimeMRW_preset] FSP%d\n", p->dram_fsp);
 	//! save mr13
 	vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_MR_OP_STORE_SHU_15_0, u1MR13Value[RANK_0], LPIF_MR_OP_STORE_SHU_15_0_MR_OP_SET_SHU_15_0);
-	//Darren-mcSHOW_DBG_MSG(("\tMR13 = 0x%x\n", u1MR13Value[RANK_0]));
+	//Darren-msg("\tMR13 = 0x%x\n", u1MR13Value[RANK_0]);
 
 #if ENABLE_READ_DBI
 	u1MR03_Value = ((u1MR03Value[p->dram_fsp] & 0xbf) | (p->DBI_R_onoff[p->dram_fsp] << 6));
@@ -295,14 +295,14 @@ void DFSRuntimeMRW_preset(DRAMC_CTX_T *p, U8 sram_shu_level)
 		P_Fld(u1MR02Value[p->dram_fsp], LPIF_MR_OP_STORE_SHU_0_0_MR_OP_SET_SHU_0_1) |
 		P_Fld(u1MR03_Value, LPIF_MR_OP_STORE_SHU_0_0_MR_OP_SET_SHU_0_2) |
 		P_Fld(u1MR11Value[p->dram_fsp], LPIF_MR_OP_STORE_SHU_0_0_MR_OP_SET_SHU_0_3));
-		//Darren-mcSHOW_DBG_MSG(("\tMR01 = 0x%x, MR02 = 0x%x, MR03 = 0x%x, MR1 = 0x%x\n", u1MR01Value[p->dram_fsp], u1MR02Value[p->dram_fsp], u1MR03Value[p->dram_fsp], u1MR11Value[p->dram_fsp]));
+		//Darren-msg("\tMR01 = 0x%x, MR02 = 0x%x, MR03 = 0x%x, MR1 = 0x%x\n", u1MR01Value[p->dram_fsp], u1MR02Value[p->dram_fsp], u1MR03Value[p->dram_fsp], u1MR11Value[p->dram_fsp]);
 
 	//! save shux mr22/mr51
 	vIO32WriteFldMulti_All(DDRPHY_MD32_REG_LPIF_MR_OP_STORE_SHU_0_1 + (sram_shu_level << 4),
 		P_Fld(u1MR21Value[p->dram_fsp], LPIF_MR_OP_STORE_SHU_0_1_MR_OP_SET_SHU_0_5) |
 		P_Fld(u1MR22Value[p->dram_fsp], LPIF_MR_OP_STORE_SHU_0_1_MR_OP_SET_SHU_0_6) |
 		P_Fld(u1MR51Value[p->dram_fsp], LPIF_MR_OP_STORE_SHU_0_1_MR_OP_SET_SHU_0_7));
-		//Darren-mcSHOW_DBG_MSG(("\tMR22 = 0x%x, MR51 = 0x%x\n", u1MR22Value[p->dram_fsp], u1MR51Value[p->dram_fsp]));
+		//Darren-msg("\tMR22 = 0x%x, MR51 = 0x%x\n", u1MR22Value[p->dram_fsp], u1MR51Value[p->dram_fsp]);
 
 	//! save shux mr12/mr14
 	vIO32WriteFldMulti_All(DDRPHY_MD32_REG_LPIF_MR_OP_STORE_SHU_7_0 + (sram_shu_level << 4),
@@ -322,7 +322,7 @@ void DFSRuntimeMRW_preset(DRAMC_CTX_T *p, U8 sram_shu_level)
 	{
 		for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
 		{
-			mcSHOW_DBG_MSG(("\tCH%d, RK%d, MR12 = 0x%x, MR14 = 0x%x\n", u1ChIdx, u1RankIdx,u1MR12Value[u1ChIdx][u1RankIdx][p->dram_fsp], u1MR14Value[u1ChIdx][u1RankIdx][p->dram_fsp]));
+			msg("\tCH%d, RK%d, MR12 = 0x%x, MR14 = 0x%x\n", u1ChIdx, u1RankIdx,u1MR12Value[u1ChIdx][u1RankIdx][p->dram_fsp], u1MR14Value[u1ChIdx][u1RankIdx][p->dram_fsp]);
 		}
 	}
 #endif
@@ -539,7 +539,7 @@ static void DFSRuntimeMRWEn(DRAMC_CTX_T *p, U8 cur_shu_mux_index, U8 nxt_shu_lev
 		md32_rtmrw_rank = 0x1; //! single rank
 #endif
 
-	//Darren-mcSHOW_DBG_MSG(("[DFSRuntimeMRWEn]\n"));
+	//Darren-msg("[DFSRuntimeMRWEn]\n");
 	u1FldIdx = 0; // shift 8-bits field
 	for (u1ChIdx = ch_start; u1ChIdx < ch_end; u1ChIdx++)
 	{
@@ -549,12 +549,12 @@ static void DFSRuntimeMRWEn(DRAMC_CTX_T *p, U8 cur_shu_mux_index, U8 nxt_shu_lev
 
 		for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
 		{
-			//Darren-mcSHOW_DBG_MSG(("CH%d RK%d\n", u1ChIdx, u1RankIdx));
+			//Darren-msg("CH%d RK%d\n", u1ChIdx, u1RankIdx);
 			//! get shux mr12/mr14/
 			rtmr12 = u4IO32ReadFldAlign(DDRPHY_MD32_REG_LPIF_MR_OP_STORE_SHU_7_0 + (nxt_shu_level << 4),  Fld(8, u1FldIdx*8));
 			rtmr14 = u4IO32ReadFldAlign(DDRPHY_MD32_REG_LPIF_MR_OP_STORE_SHU_7_1 + (nxt_shu_level << 4),  Fld(8, u1FldIdx*8));
-			//Darren-mcSHOW_DBG_MSG(("\tMR1=0x%x, MR2=0x%x, MR3=0x%x, MR11=0x%x\n", rtmr1, rtmr2, rtmr3, rtmr11));
-			//Darren-mcSHOW_DBG_MSG(("\tMR12=0x%x, MR13=0x%x, MR14=0x%x, MR22=0x%x, MR51=0x%x\n", rtmr12, rtmr13, rtmr14, rtmr22, rtmr51));
+			//Darren-msg("\tMR1=0x%x, MR2=0x%x, MR3=0x%x, MR11=0x%x\n", rtmr1, rtmr2, rtmr3, rtmr11);
+			//Darren-msg("\tMR12=0x%x, MR13=0x%x, MR14=0x%x, MR22=0x%x, MR51=0x%x\n", rtmr12, rtmr13, rtmr14, rtmr22, rtmr51);
 			TriggerRTMRW_SingleChannel(p, u1RankIdx, rtmr1, rtmr2, rtmr3, rtmr11, rtmr12, rtmr13, rtmr14, rtmr21, rtmr22, rtmr51);
 			u1FldIdx++; // shift 8-bits field
 		}
@@ -643,7 +643,7 @@ void WaitDFSDebugSM(DRAMC_CTX_T *p, U8 u1HangStatus)
 		do {
 			u1Status[u1ChIdx] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_DVFS_STATUS), DVFS_STATUS_CUT_PHY_ST_SHU);
 			u1DvfsState[u1ChIdx] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MRR_STATUS2), MRR_STATUS2_DVFS_STATE);
-			//mcSHOW_DBG_MSG(("[WaitDFSDebugSM] CH%d DFS debug mode state (0x%x, 0x%x), Dvfs State = 0x%x\n", u1ChIdx, u1Status[u1ChIdx], u1HangStatus, u1DvfsState[u1ChIdx]));
+			//msg("[WaitDFSDebugSM] CH%d DFS debug mode state (0x%x, 0x%x), Dvfs State = 0x%x\n", u1ChIdx, u1Status[u1ChIdx], u1HangStatus, u1DvfsState[u1ChIdx]);
 			if (u1Status[u1ChIdx] == u1HangStatus)
 				break;
 
@@ -674,7 +674,7 @@ void ExitDFSDebugMode(DRAMC_CTX_T *p, DFS_DBG_T eDbgMode)
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("DFS debug mode err!\n"));
+		err("DFS debug mode err!\n");
 		#if __ETT__
 		while (1);
 		#endif
@@ -715,7 +715,7 @@ void ChkDFSDebugMode(DRAMC_CTX_T *p, DFS_DBG_T eDbgMode)
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("DFS debug mode err!\n"));
+		err("DFS debug mode err!\n");
 		#if __ETT__
 		while (1);
 		#endif
@@ -745,7 +745,7 @@ void EntryDFSDebugMode(DRAMC_CTX_T *p, DFS_DBG_T eDbgMode)
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("DFS debug mode err!\n"));
+		err("DFS debug mode err!\n");
 		#if __ETT__
 		while (1);
 		#endif
@@ -805,7 +805,7 @@ static void NoQueueFlushWA(DRAMC_CTX_T *p, U8 u1WA_enable)
 		u4PERFCTL0_backup = (u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_PERFCTL0)) >> Fld_shft(PERFCTL0_RWAGEEN)) & 0x3;
 		vIO32WriteFldMulti(DRAMC_REG_PERFCTL0, P_Fld(0, PERFCTL0_RWAGEEN)
 				| P_Fld(0, PERFCTL0_EMILLATEN));
-		//mcSHOW_DBG_MSG(("[NoQueueFlushWA] PERFCTL0[11:10] backup = 0x%x\n", u4PERFCTL0_backup));
+		//msg("[NoQueueFlushWA] PERFCTL0[11:10] backup = 0x%x\n", u4PERFCTL0_backup);
 	}
 	else
 	{
@@ -857,7 +857,7 @@ void TxReadBaseODTWA(DRAMC_CTX_T *p, U8 next_shu_level)
 	else
 		termen_dis = ENABLE; // un-term
 
-	//mcSHOW_DBG_MSG(("[TxReadBaseODTWA] SRAM SHU%d, termen_dis = %d\n", next_shu_level, termen_dis));
+	//msg("[TxReadBaseODTWA] SRAM SHU%d, termen_dis = %d\n", next_shu_level, termen_dis);
 	vIO32WriteFldAlign(DDRPHY_REG_B0_DQ6, termen_dis, B0_DQ6_RG_TX_ARDQ_ODTEN_EXT_DIS_B0);
 	vIO32WriteFldAlign(DDRPHY_REG_B1_DQ6, termen_dis, B1_DQ6_RG_TX_ARDQ_ODTEN_EXT_DIS_B1);
 	vIO32WriteFldAlign(DDRPHY_REG_CA_CMD6, termen_dis, CA_CMD6_RG_TX_ARCMD_ODTEN_EXT_DIS);
@@ -929,7 +929,7 @@ void DPHYSaveToSRAMShuWA(DRAMC_CTX_T *p, U8 sram_shu_level)
 
 			u4PHY_VREF_SEL = (u4B1_PHY_VREF_SEL<<16) | u4B0_PHY_VREF_SEL;
 
-			mcSHOW_DBG_MSG(("[DPHYSaveToSRAMShuWA] CH%d RK%d, B1B0_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u4PHY_VREF_SEL));
+			msg("[DPHYSaveToSRAMShuWA] CH%d RK%d, B1B0_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u4PHY_VREF_SEL);
 			p->ShuRGAccessIdx = DRAM_DFS_REG_SHU0;
 			vIO32Write4B(DRAMC_REG_ADDR(gSRAMBackupIdx[sram_shu_level][u1RankIdx]), u4PHY_VREF_SEL);
 		}
@@ -960,7 +960,7 @@ void DPHYSRAMShuWAToSHU1(DRAMC_CTX_T *p)
 			u4B1_PHY_VREF_SEL = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL+u4Offset));
 
 			u4PHY_VREF_SEL = (u4B1_PHY_VREF_SEL<<16) | u4B0_PHY_VREF_SEL;
-			mcSHOW_DBG_MSG(("[DPHYRxVrefWAToSHU1] CH%d RK%d, B1B0_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u4PHY_VREF_SEL));
+			msg("[DPHYRxVrefWAToSHU1] CH%d RK%d, B1B0_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u4PHY_VREF_SEL);
 
 			p->ShuRGAccessIdx = DRAM_DFS_REG_SHU1;
 			u4Offset = 0; // B0
@@ -999,7 +999,7 @@ void SRAMShuRestoreToDPHYWA(DRAMC_CTX_T *p, U8 sram_shu_level, U8 pingpong_shu_l
 				u4Offset = u1ByteIdx*DDRPHY_AO_B0_B1_OFFSET;
 				u4Byte_PHY_VREF_SEL = (u4PHY_VREF_SEL >> (16*u1ByteIdx)) & 0xffff;
 
-				//mcSHOW_DBG_MSG(("[SRAMShuRestoreToDPHYWA] CH%d RK%d B%d, u4Byte_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u1ByteIdx, u4Byte_PHY_VREF_SEL));
+				//msg("[SRAMShuRestoreToDPHYWA] CH%d RK%d B%d, u4Byte_PHY_VREF_SEL=0x%x\n", u1ChannelIdx, u1RankIdx, u1ByteIdx, u4Byte_PHY_VREF_SEL);
 
 				p->ShuRGAccessIdx = pingpong_shu_level;
 				vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL+u4Offset), u4Byte_PHY_VREF_SEL);
@@ -1057,7 +1057,7 @@ void DVFSSettings(DRAMC_CTX_T *p)
 
 	// @Darren, set current SRAM SHU index for SPM mode DFS latch/restore
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, vGet_Current_ShuLevel(p), MISC_RG_DFS_CTRL_RG_DR_SHU_LEVEL_SRAM);
-	//mcSHOW_DBG_MSG(("[DVFSSettings] SHU_LEVEL_SRAM = %d\n", vGet_Current_ShuLevel(p)));
+	//msg("[DVFSSettings] SHU_LEVEL_SRAM = %d\n", vGet_Current_ShuLevel(p));
 
 #if (fcFOR_CHIP_ID == fcA60868) // @Darren, for A60868 only
 	for (u1Channel = CHANNEL_A; u1Channel < p->support_channel_num; u1Channel++)
@@ -1293,13 +1293,13 @@ void DPMInit(DRAMC_CTX_T *p)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG(("PHYPLL\n"));
+		msg("PHYPLL\n");
 		u1Pll1Val = u1SetVal;
 		u1Pll2Val = 0;
 	}
 	else
 	{
-		mcSHOW_DBG_MSG(("CLRPLL\n"));
+		msg("CLRPLL\n");
 		u1Pll1Val = 0;
 		u1Pll2Val = u1SetVal;
 	}
@@ -1394,11 +1394,11 @@ void TransferPLLToSPMControl(DRAMC_CTX_T *p, U32 MD32Offset)
 		| P_Fld(1, LPIF_FSM_CFG_1_LPIF_OUTPUT_PATH_FROM_SW) // 1: MD32 RG mode, 0: MD32 PST mode
 		| P_Fld(1, LPIF_FSM_CFG_1_LPIF_OUTPUT_PATH_FROM_SW_2ND));*/ // 1: MD32 RG mode, 0: MD32 PST mode
 
-	mcSHOW_DBG_MSG(("TransferPLLToSPMControl - MODE SW "));
+	msg("TransferPLLToSPMControl - MODE SW ");
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		/*mcSHOW_DBG_MSG(("PHYPLL\n"));
+		/*msg("PHYPLL\n");
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, 0, LPIF_LOW_POWER_CFG_0_PHYPLL2_SHU_EN);
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, u1EnMd32Ch, LPIF_LOW_POWER_CFG_0_PHYPLL_SHU_EN);  // PHYPLL for part of SHU RG
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, 0, LPIF_LOW_POWER_CFG_0_PHYPLL2_MODE_SW); // same as DRAMC_DPY_CLK_SW_CON2_SW_PHYPLL2_MODE_SW by MUX
@@ -1414,7 +1414,7 @@ void TransferPLLToSPMControl(DRAMC_CTX_T *p, U32 MD32Offset)
 	}
 	else
 	{
-		/*mcSHOW_DBG_MSG(("CLRPLL\n"));
+		/*msg("CLRPLL\n");
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, 0, LPIF_LOW_POWER_CFG_0_PHYPLL_SHU_EN);
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, u1EnMd32Ch, LPIF_LOW_POWER_CFG_0_PHYPLL2_SHU_EN);  // CLRPLL for part of SHU RG
 		vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0+MD32Offset, 0, LPIF_LOW_POWER_CFG_0_PHYPLL_MODE_SW); // same as DRAMC_DPY_CLK_SW_CON2_SW_PHYPLL2_MODE_SW by MUX
@@ -1437,7 +1437,7 @@ void TransferPLLToSPMControl(DRAMC_CTX_T *p, U32 MD32Offset)
 	// @Darren for MD32 RG mode only
 	// MD32 PST mode shuffle level = (LPIF_CTRL_CTRL1_LPIF_DRAMC_DR_SHU_LEVEL_SRAM | LPIF_LOW_POWER_CFG_1_DR_SHU_SRAM_LEVEL)
 	//Darren-vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_1+MD32Offset, u2SramLevel, LPIF_LOW_POWER_CFG_1_DR_SHU_SRAM_LEVEL);
-	//mcSHOW_DBG_MSG(("TransferPLLToSPMControl - Current SRAM SHU LEVEL = %d\n", u1CurrShuLevel));
+	//msg("TransferPLLToSPMControl - Current SRAM SHU LEVEL = %d\n", u1CurrShuLevel);
 
 #if DFS_NOQUEUE_FLUSH_WA
 	// Enable Max cnt for latency measure from shu_en to shu_ack
@@ -1497,11 +1497,11 @@ void DFSBypassMR13HwSet(DRAMC_CTX_T *p)
 				TransferReg.u4Fld = BYPASS_FSPOP_BPFSP_SET_SHU9;
 				break;
 			default:
-				mcSHOW_ERR_MSG(("[DFSBypassMR13HwSet] fail at BPFSP_SHU%d incorrect !!!\n", u1SramShuIdx));
+				err("[DFSBypassMR13HwSet] fail at BPFSP_SHU%d incorrect !!!\n", u1SramShuIdx);
 				break;
 		}
 		BFSP = (gFreqTbl[u1ShuffleIdx].freq_sel <= LP4_DDR2667)? 0x1: 0x0; //0x1 (Bypass), 0x0 (Not bypass)
-		//mcSHOW_DBG_MSG(("[DFSBypassMR13HwSet] BPFSP_SHU%d = 0x%x\n", u1SramShuIdx, BFSP));
+		//msg("[DFSBypassMR13HwSet] BPFSP_SHU%d = 0x%x\n", u1SramShuIdx, BFSP);
 		vIO32WriteFldAlign_All(TransferReg.u4Addr, BFSP, TransferReg.u4Fld);
 	}
 	vIO32WriteFldAlign_All(DRAMC_REG_TX_FREQ_RATIO_OLD_MODE0, 0x1, TX_FREQ_RATIO_OLD_MODE0_SHUFFLE_LEVEL_MODE_SELECT); // 1: shuffle level = 10, 0: shuffle level =4
@@ -1545,7 +1545,7 @@ void DramcSaveToShuffleSRAM(DRAMC_CTX_T *p, DRAM_DFS_SHUFFLE_TYPE_T srcRG, DRAM_
 		do {
 			u1value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DMA_DEBUG0), MISC_DMA_DEBUG0_SRAM_DONE);
 			u1value |= (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DMA_DEBUG0), MISC_DMA_DEBUG0_APB_DONE) << 1);
-			mcSHOW_DBG_MSG3(("\twait dramc to shuffle sram done.\n"));
+			msg3("\twait dramc to shuffle sram done.\n");
 		} while (u1value != 0x3);
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0), 0, MISC_SRAM_DMA0_SW_DMA_FIRE);
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0), 0, MISC_SRAM_DMA0_SW_STEP_EN_MODE);
@@ -1579,7 +1579,7 @@ void LoadShuffleSRAMtoDramc(DRAMC_CTX_T *p, DRAM_DFS_SHUFFLE_TYPE_T srcRG, DRAM_
 		do {
 			u1value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DMA_DEBUG0), MISC_DMA_DEBUG0_SRAM_DONE);
 			u1value |= (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DMA_DEBUG0), MISC_DMA_DEBUG0_APB_DONE) << 1);
-			mcSHOW_DBG_MSG3(("\twait shuffle sram to dramc done.\n"));
+			msg3("\twait shuffle sram to dramc done.\n");
 		} while (u1value != 0x3);
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0), 0, MISC_SRAM_DMA0_SW_DMA_FIRE);
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0), 0, MISC_SRAM_DMA0_SW_STEP_EN_MODE);
@@ -1600,7 +1600,7 @@ static U8 WaitChShuEnAck(DRAMC_CTX_T *p, U32 u4Addr, U32 u4Fld, U8 u1Status)
 
 		do {
 			u1WaitShuAckState = u4IO32ReadFldAlign(DRAMC_REG_ADDR(u4Addr), u4Fld);
-			//mcSHOW_DBG_MSG(("[WaitChShuEnAck] Wait Shu Ack State = 0x%x\n", u1WaitShuAckState));
+			//msg("[WaitChShuEnAck] Wait Shu Ack State = 0x%x\n", u1WaitShuAckState);
 			if (u1WaitShuAckState == u1Status)
 				break;
 		} while(1);
@@ -1620,12 +1620,12 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG3(("Disable CLRPLL\n"));
+		msg3("Disable CLRPLL\n");
 		vIO32WriteFldAlign_All(DDRPHY_REG_CLRPLL0, 0, CLRPLL0_RG_RCLRPLL_EN);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG3(("Disable PHYPLL\n"));
+		msg3("Disable PHYPLL\n");
 		vIO32WriteFldAlign_All(DDRPHY_REG_PHYPLL0, 0, PHYPLL0_RG_RPHYPLL_EN);
 	}
 
@@ -1636,11 +1636,11 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG3(("DFSDirectJump to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DFSDirectJump to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG3(("DFSDirectJump to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DFSDirectJump to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 
 	/*TINFO="DRAM : set ddrphy_fb_ck_en=1"*/
@@ -1656,14 +1656,14 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_PHYPLL_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, !p->u1PLLMode, MISC_RG_DFS_CTRL_RG_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_PHYPLL2_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable CLRPLL\n"));
+		msg3("Enable CLRPLL\n");
 	}
 	else
 	{
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_PHYPLL2_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, !p->u1PLLMode, MISC_RG_DFS_CTRL_RG_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_PHYPLL_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable PHYPLL\n"));
+		msg3("Enable PHYPLL\n");
 	}
 	mcDELAY_US(1);
 
@@ -1678,7 +1678,7 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 	while (WaitChShuEnAck(p, DDRPHY_REG_MISC_DMA_DEBUG0, MISC_DMA_DEBUG0_SC_DR_SRAM_LOAD_ACK, u1ChkComplete) != u1ShuAck)
 	//while (!u4IO32ReadFldAlign(DDRPHY_REG_MISC_DMA_DEBUG0, MISC_DMA_DEBUG0_SC_DR_SRAM_LOAD_ACK))
 	{
-		mcSHOW_DBG_MSG3(("\twait sram load ack.\n"));
+		msg3("\twait sram load ack.\n");
 	}
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_DR_SRAM_LOAD);
 #endif
@@ -1713,17 +1713,17 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 
 #if 0
-	mcSHOW_DBG_MSG3(("Enable SHORT-QUEUE\n"));
+	msg3("Enable SHORT-QUEUE\n");
 	vIO32WriteFldAlign(DDRPHY_MISC_SPM_CTRL1, 1, MISC_SPM_CTRL1_RG_DR_SHORT_QUEUE);
 
-	mcSHOW_DBG_MSG3(("\twait 5us for short queue ack.\n"));
+	msg3("\twait 5us for short queue ack.\n");
 	mcDELAY_US(5);
 #endif
 
-	//mcSHOW_DBG_MSG(("Disable RX-Tracking\n"));
+	//msg("Disable RX-Tracking\n");
 	//vIO32WriteFldAlign(SPM_SW_RSV_8, 0, SW_RSV_8_RX_TRACKING_EN);
 
-	mcSHOW_DBG_MSG3(("SHUFFLE Start\n"));
+	msg3("SHUFFLE Start\n");
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_DR_SHU_EN); // NOTE: from SHU_EN=1 to ACK, DV spec < 5.1us
 
 #if DFS_NOQUEUE_FLUSH_WA && ENABLE_DFS_NOQUEUE_FLUSH_DBG
@@ -1732,7 +1732,7 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	// Fixed DV sim spec for DFS shu_en=1 < 5.1us and shu_en=0 < 120ns
 #if 1//Darren-for test chip(FOR_DV_SIMULATION_USED == 0 && SW_CHANGE_FOR_SIMULATION == 0)
-	//mcSHOW_DBG_MSG3(("\twait 5us for shu_en ack.\n"));
+	//msg3("\twait 5us for shu_en ack.\n");
 	//mcDELAY_US(5);
 	#if 0//ENABLE_DFS_DEBUG_MODE
 	ChkDFSDebugMode(p, CHG_CLK_MODE);
@@ -1746,7 +1746,7 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	)
 	{
-		mcSHOW_DBG_MSG3(("\twait shu_en ack.\n"));
+		msg3("\twait shu_en ack.\n");
 	}
 #else
 	while (u4IO32ReadFldAlign(DRAMC_REG_MRR_STATUS2, MRR_STATUS2_DVFS_STATE) != u1ShuAckState); // SHUFFLE_END
@@ -1766,11 +1766,11 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	//vIO32WriteFldAlign(DDRPHY_MISC_SPM_CTRL1, 0, MISC_SPM_CTRL1_RG_DR_SHORT_QUEUE);
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_DR_SHU_EN); // NOTE: from ACK to SHU_EN=0, DV spec < 120ns
-	mcSHOW_DBG_MSG3(("SHUFFLE End\n"));
+	msg3("SHUFFLE End\n");
 
 	//if(shu_level == 0)//LP4-2CH
 	//{
-		//mcSHOW_DBG_MSG(("Enable RX-Tracking for shuffle-0\n"));
+		//msg("Enable RX-Tracking for shuffle-0\n");
 		//vIO32WriteFldAlign(SPM_SW_RSV_8, 3, SW_RSV_8_RX_TRACKING_EN);
 	//}
 
@@ -1793,7 +1793,7 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 	while (WaitChShuEnAck(p, DDRPHY_REG_MISC_DMA_DEBUG0, MISC_DMA_DEBUG0_SC_DR_SRAM_RESTORE_ACK, u1ChkComplete) != u1ShuAck)
 	//while (!u4IO32ReadFldAlign(DDRPHY_REG_MISC_DMA_DEBUG0, MISC_DMA_DEBUG0_SC_DR_SRAM_RESTORE_ACK))
 	{
-		mcSHOW_DBG_MSG3(("\twait sram restore ack.\n"));
+		msg3("\twait sram restore ack.\n");
 	}
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_DR_SRAM_RESTORE);
 
@@ -1809,7 +1809,7 @@ void DramcDFSDirectJump_SRAMShuRGMode(DRAMC_CTX_T *p, U8 shu_level)
 	TimingTxsrWA(p, shu_level);
 	#endif
 
-	mcSHOW_DBG_MSG3(("Shuffle flow complete\n"));
+	msg3("Shuffle flow complete\n");
 
 	p->u1PLLMode = !p->u1PLLMode;
 	return;
@@ -1824,12 +1824,12 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG3(("Disable CLRPLL\n"));
+		msg3("Disable CLRPLL\n");
 		vIO32WriteFldAlign_All(DDRPHY_REG_CLRPLL0, 0, CLRPLL0_RG_RCLRPLL_EN);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG3(("Disable PHYPLL\n"));
+		msg3("Disable PHYPLL\n");
 		vIO32WriteFldAlign_All(DDRPHY_REG_PHYPLL0, 0, PHYPLL0_RG_RPHYPLL_EN);
 	}
 
@@ -1840,11 +1840,11 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG3(("DFSDirectJump_RGMode to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DFSDirectJump_RGMode to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG3(("DFSDirectJump_RGMode to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DFSDirectJump_RGMode to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 
 	/*TINFO="DRAM : set ddrphy_fb_ck_en=1"*/
@@ -1860,14 +1860,14 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_PHYPLL_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, u1shu_level, MISC_RG_DFS_CTRL_RG_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_PHYPLL2_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable CLRPLL\n"));
+		msg3("Enable CLRPLL\n");
 	}
 	else
 	{
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_PHYPLL2_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, u1shu_level, MISC_RG_DFS_CTRL_RG_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_PHYPLL_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable PHYPLL\n"));
+		msg3("Enable PHYPLL\n");
 	}
 	mcDELAY_US(1);
 
@@ -1889,21 +1889,21 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 
 #if 0
-	mcSHOW_DBG_MSG3(("Enable SHORT-QUEUE\n"));
+	msg3("Enable SHORT-QUEUE\n");
 	vIO32WriteFldAlign(DDRPHY_MISC_SPM_CTRL1, 1, MISC_SPM_CTRL1_RG_DR_SHORT_QUEUE);
 
-	mcSHOW_DBG_MSG3(("\twait 5us for short queue ack.\n"));
+	msg3("\twait 5us for short queue ack.\n");
 	mcDELAY_US(5);
 #endif
 
-	//mcSHOW_DBG_MSG(("Disable RX-Tracking\n"));
+	//msg("Disable RX-Tracking\n");
 	//vIO32WriteFldAlign(SPM_SW_RSV_8, 0, SW_RSV_8_RX_TRACKING_EN);
 
 
-	mcSHOW_DBG_MSG3(("SHUFFLE Start\n"));
+	msg3("SHUFFLE Start\n");
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 1, MISC_RG_DFS_CTRL_RG_DR_SHU_EN);
 
-	//mcSHOW_DBG_MSG3(("\twait 5us for shu_en ack.\n"));
+	//msg3("\twait 5us for shu_en ack.\n");
 	//mcDELAY_US(5);
 	//while (WaitChShuEnAck(p, DRAMC_REG_MRR_STATUS2, MRR_STATUS2_DVFS_STATE, u1ShuAckState) != u1ShuAck) // SHUFFLE_END
 	//@tg Fix RG mode can not recevie shuffle end ack.
@@ -1913,16 +1913,16 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	)
 	{
-		mcSHOW_DBG_MSG3(("\twait shu_en ack.\n"));
+		msg3("\twait shu_en ack.\n");
 	}
 
 	//vIO32WriteFldAlign(DDRPHY_MISC_SPM_CTRL1, 0, MISC_SPM_CTRL1_RG_DR_SHORT_QUEUE);
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_DR_SHU_EN);
-	mcSHOW_DBG_MSG3(("SHUFFLE End\n"));
+	msg3("SHUFFLE End\n");
 
 	//if(shu_level == 0)//LP4-2CH
 	//{
-		//mcSHOW_DBG_MSG(("Enable RX-Tracking for shuffle-0\n"));
+		//msg("Enable RX-Tracking for shuffle-0\n");
 		//vIO32WriteFldAlign(SPM_SW_RSV_8, 3, SW_RSV_8_RX_TRACKING_EN);
 	//}
 
@@ -1942,7 +1942,7 @@ void DramcDFSDirectJump_RGMode(DRAMC_CTX_T *p, U8 shu_level)
 	/*TINFO="DRAM : set ddrphy_fb_ck_en=0"*/
 	vIO32WriteFldAlign_All(DDRPHY_REG_MISC_RG_DFS_CTRL, 0, MISC_RG_DFS_CTRL_RG_DDRPHY_FB_CK_EN);
 
-	mcSHOW_DBG_MSG3(("Shuffle flow complete\n"));
+	msg3("Shuffle flow complete\n");
 
 	p->u1PLLMode = !p->u1PLLMode;
 	return;
@@ -1967,11 +1967,11 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 	{
-		mcSHOW_DBG_MSG3(("DramcDFSDirectJump_SPMMode to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DramcDFSDirectJump_SPMMode to CLRPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG3(("DramcDFSDirectJump_SPMMode to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck));
+		msg3("DramcDFSDirectJump_SPMMode to PHYPLL, SHU_LEVEL=%d, ACK=%x\n", shu_level, u1ShuAck);
 	}
 
 	//vIO32WriteFldAlign(DDRPHY_REG_MISC_STBCAL2, 0x1, MISC_STBCAL2_STB_DBG_STATUS); // HJ Huang
@@ -1984,7 +1984,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 	//LPIF_STATUS_10_DRAMC_DR_SHU_LEVEL[1:0] for CHA
 	//LPIF_STATUS_10_DRAMC_DR_SHU_LEVEL[3:2] for CHB
 	pingpong_shu_level = u4IO32ReadFldAlign(DDRPHY_MD32_REG_LPIF_STATUS_10, LPIF_STATUS_10_DRAMC_DR_SHU_LEVEL); // read shuffle level for dramc conf0/1
-	mcSHOW_DBG_MSG3(("Ping-pong CONF%d\n", (pingpong_shu_level & 0x1)));
+	msg3("Ping-pong CONF%d\n", (pingpong_shu_level & 0x1));
 	for (i = 0; i < DPM_CH_NUM; i++)
 	{
 		u2SramLevel |= (shu_level << (i*4));
@@ -1997,14 +1997,14 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, 0, LPIF_LOW_POWER_CFG_0_PHYPLL_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_1, pingpong_shu_level, LPIF_LOW_POWER_CFG_1_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, u1EnMd32Ch, LPIF_LOW_POWER_CFG_0_PHYPLL2_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable CLRPLL (0x%x 0x%x)\n", pingpong_shu_level, u2SramLevel));
+		msg3("Enable CLRPLL (0x%x 0x%x)\n", pingpong_shu_level, u2SramLevel);
 	}
 	else
 	{
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, 0, LPIF_LOW_POWER_CFG_0_PHYPLL2_SHU_EN);
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_1, pingpong_shu_level, LPIF_LOW_POWER_CFG_1_DR_SHU_LEVEL);
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, u1EnMd32Ch, LPIF_LOW_POWER_CFG_0_PHYPLL_SHU_EN);
-		mcSHOW_DBG_MSG3(("Enable PHYPLL (0x%x 0x%x)\n", pingpong_shu_level, u2SramLevel));
+		msg3("Enable PHYPLL (0x%x 0x%x)\n", pingpong_shu_level, u2SramLevel);
 	}
 	mcDELAY_US(1);
 
@@ -2024,7 +2024,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	)
 	{
-		mcSHOW_DBG_MSG3(("\twait sram load ack.\n"));
+		msg3("\twait sram load ack.\n");
 	}
 	vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_1, 0, LPIF_LOW_POWER_CFG_1_DR_SRAM_LOAD);
 #endif
@@ -2089,7 +2089,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 	SPMTx_Track_Retry_OnOff(p, shu_level, ENABLE);
 #endif
 
-	mcSHOW_DBG_MSG3(("SHUFFLE Start\n"));
+	msg3("SHUFFLE Start\n");
 	//vIO32WriteFldAlign(DDRPHY_REG_MISC_STBCAL2, 0x3, MISC_STBCAL2_STB_DBG_STATUS);
 	vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, u1EnMd32Ch, LPIF_LOW_POWER_CFG_0_DR_SHU_EN);
 
@@ -2105,13 +2105,13 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	)
 	{
-		mcSHOW_DBG_MSG3(("\twait shu_en ack.\n"));
+		msg3("\twait shu_en ack.\n");
 	}
 
 #if DFS_NOQUEUE_FLUSH_LATENCY_CNT
 	U8 MaxCnt = u4IO32ReadFldAlign(DDRPHY_MD32_REG_LPIF_RESERVED_6, LPIF_RESERVED_6_MAX_CNT_SHU_EN_HIGH_TO_ACK); // show chx max cnt
 	// cnt * 8 * 4.8ns (208M)
-	mcSHOW_DBG_MSG(("\tMAX CNT = %d\n", MaxCnt));
+	msg("\tMAX CNT = %d\n", MaxCnt);
 #endif
 
 #if ENABLE_TX_REBASE_WDQS_DQS_PI_WA
@@ -2123,7 +2123,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, 0, LPIF_LOW_POWER_CFG_0_DR_SHU_EN);
 	//vIO32WriteFldAlign(DDRPHY_REG_MISC_STBCAL2, 0x4, MISC_STBCAL2_STB_DBG_STATUS);
-	mcSHOW_DBG_MSG3(("SHUFFLE End\n"));
+	msg3("SHUFFLE End\n");
 
 	if (p->u1PLLMode == PHYPLL_MODE)
 		vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_0, 0, LPIF_LOW_POWER_CFG_0_PHYPLL_MODE_SW); // PHYPLL off
@@ -2151,7 +2151,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 #endif
 	)
 	{
-		mcSHOW_DBG_MSG3(("\twait sram restore ack.\n"));
+		msg3("\twait sram restore ack.\n");
 	}
 	vIO32WriteFldAlign_All(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_2, 0, LPIF_LOW_POWER_CFG_2_DR_SRAM_RESTORE);
 #endif
@@ -2174,7 +2174,7 @@ static void DramcDFSDirectJump_SPMMode(DRAMC_CTX_T *p, U8 shu_level)
 	p->u1PLLMode = !p->u1PLLMode;
 
 	//vIO32WriteFldAlign(DDRPHY_REG_MISC_STBCAL2, 0x5, MISC_STBCAL2_STB_DBG_STATUS);
-	mcSHOW_DBG_MSG3(("Shuffle flow complete\n"));
+	msg3("Shuffle flow complete\n");
 
 	return;
 }

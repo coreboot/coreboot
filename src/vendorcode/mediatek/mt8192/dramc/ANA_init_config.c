@@ -32,10 +32,10 @@ static void ANA_PLL_shuffle_Config(DRAMC_CTX_T *p,U32 PLL_FREQ,U16 data_rate)
 	PCW    = (PLL_FREQ/XTAL_FREQ) << (8+1-FBKSEL-PREDIV-POSDIV);
 
 
-	mcSHOW_DBG_MSG((">>>>>> [CONFIGURE PHASE][SHUFFLE]: PLL\n"));
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("data_rate = %d,PCW = 0X%x\n",data_rate,PCW));
-	mcSHOW_DBG_MSG(("=================================== \n"));
+	msg(">>>>>> [CONFIGURE PHASE][SHUFFLE]: PLL\n");
+	msg("=================================== \n");
+	msg("data_rate = %d,PCW = 0X%x\n",data_rate,PCW);
+	msg("=================================== \n");
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_PHYPLL1), P_Fld(0, PHYPLL1_RG_RPHYPLL_TST_EN) | P_Fld(0, PHYPLL1_RG_RPHYPLL_TSTOP_EN));
 	// @Darren, Mp settings sync @WL
@@ -72,7 +72,7 @@ static void ANA_PLL_shuffle_Config(DRAMC_CTX_T *p,U32 PLL_FREQ,U16 data_rate)
 																  | P_Fld( DIV16_CK_SEL 		 , SHU_CLRPLL3_RG_RCLRPLL_DIV_CK_SEL	   )); //@Darren, DDR250 = 4G/div16, confirm with WL Lee
 	}
 //	  vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_PLL2)		, P_Fld(1			, SHU_PLL2_RG_RPHYPLL_ADA_MCK8X_EN_SHU	  ));
-	mcSHOW_DBG_MSG(("<<<<<< [CONFIGURE PHASE][SHUFFLE]: PLL\n"));
+	msg("<<<<<< [CONFIGURE PHASE][SHUFFLE]: PLL\n");
 }
 
 
@@ -83,13 +83,13 @@ static void ANA_CLK_DIV_config_setting(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_to
 	U8 ARDLL_SERMODE_B=0;
 	U8 ARDLL_SERMODE_C=0;
 
-	mcSHOW_DBG_MSG((">>>>>> [CONFIGURE PHASE][SHUFFLE]: ANA CLOCK DIV configuration\n"));
+	msg(">>>>>> [CONFIGURE PHASE][SHUFFLE]: ANA CLOCK DIV configuration\n");
 	switch (tr->DQ_P2S_RATIO)
 	{
 		case 4 : { TX_ARDQ_SERMODE = 1; break; }
 		case 8 : { TX_ARDQ_SERMODE = 2; break; }
 		case 16: { TX_ARDQ_SERMODE = 3; break; }
-		default: mcSHOW_DBG_MSG(("ERROR: tr->DQ_P2S_RATIO= %2d, Not support!!",tr->DQ_P2S_RATIO));
+		default: msg("ERROR: tr->DQ_P2S_RATIO= %2d, Not support!!",tr->DQ_P2S_RATIO);
 	}
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ14), P_Fld(  TX_ARDQ_SERMODE	  , SHU_B0_DQ14_RG_TX_ARDQ_SER_MODE_B0		  ));
@@ -107,7 +107,7 @@ static void ANA_CLK_DIV_config_setting(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_to
 		case 2 : { TX_ARCA_SERMODE = (0 + tr->CA_FULL_RATE); break; }
 		case 4 : { TX_ARCA_SERMODE = (1 + tr->CA_FULL_RATE); break; }
 		case 8:  { TX_ARCA_SERMODE = (2 + tr->CA_FULL_RATE); break; }
-		default: mcSHOW_DBG_MSG(("ERROR: tr->CA_P2S_RATIO= %2d, Not support!!",tr->CA_P2S_RATIO));
+		default: msg("ERROR: tr->CA_P2S_RATIO= %2d, Not support!!",tr->CA_P2S_RATIO);
 	}
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD14), P_Fld(TX_ARCA_SERMODE, SHU_CA_CMD14_RG_TX_ARCA_SER_MODE_CA));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD6),	P_Fld(TX_ARCA_SERMODE, SHU_CA_CMD6_RG_RX_ARCMD_RANK_SEL_SER_MODE));
@@ -117,7 +117,7 @@ static void ANA_CLK_DIV_config_setting(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_to
 		case 2 : { ARDLL_SERMODE_B = 1; break; }
 		case 4 : { ARDLL_SERMODE_B = 2; break; }
 		case 8:  { ARDLL_SERMODE_B = 3; break; }
-		default: mcSHOW_DBG_MSG(("WARN: tr->DQ_AAMCK_DIV= %2d, Because of DQ_SEMI_OPEN, It's don't care.",tr->DQ_AAMCK_DIV));
+		default: msg("WARN: tr->DQ_AAMCK_DIV= %2d, Because of DQ_SEMI_OPEN, It's don't care.",tr->DQ_AAMCK_DIV);
 	}
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL1), P_Fld(ARDLL_SERMODE_B			 , SHU_B0_DLL1_RG_ARDLL_SER_MODE_B0));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL1), P_Fld(ARDLL_SERMODE_B			 , SHU_B1_DLL1_RG_ARDLL_SER_MODE_B1));
@@ -127,7 +127,7 @@ static void ANA_CLK_DIV_config_setting(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_to
 		case 2 : { ARDLL_SERMODE_C = 1; break; }
 		case 4 : { ARDLL_SERMODE_C = 2; break; }
 		case 8:  { ARDLL_SERMODE_C = 3; break; }
-		default: mcSHOW_DBG_MSG(("ERROR: tr->CA_ADMCK_DIV= %2d, Not support!!",tr->CA_ADMCK_DIV));
+		default: msg("ERROR: tr->CA_ADMCK_DIV= %2d, Not support!!",tr->CA_ADMCK_DIV);
 	}
 	DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 	vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_DLL1),	P_Fld(ARDLL_SERMODE_C			, SHU_CA_DLL1_RG_ARDLL_SER_MODE_CA));
@@ -205,7 +205,7 @@ static void ANA_CLK_DIV_config_setting(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_to
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL1)		 , P_Fld( tr->DQ_TRACK_CA_EN, SHU_B0_DLL1_RG_ARDLL_TRACKING_CA_EN_B0 ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL1)		 , P_Fld( tr->DQ_TRACK_CA_EN, SHU_B1_DLL1_RG_ARDLL_TRACKING_CA_EN_B1 ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_DLL_ARPI2)	 , P_Fld( 1 				, SHU_CA_DLL_ARPI2_RG_ARPI_CG_CLKIEN	 ));
-  mcSHOW_DBG_MSG(("<<<<<< [CONFIGURE PHASE][SHUFFLE]: ANA CLOCK DIV configuration\n"));
+  msg("<<<<<< [CONFIGURE PHASE][SHUFFLE]: ANA CLOCK DIV configuration\n");
 }
 
 //==========================
@@ -319,10 +319,10 @@ static void ANA_DLL_shuffle_Config(DRAMC_CTX_T *p, ANA_top_config_T *a_cfg)
 	if(p->frequency<=1600)
 	{
 		u1Gain = 2;
-		mcSHOW_DBG_MSG((">>>>>> [CONFIGURE PHASE][SHUFFLE]: Add DLL Gain = %d\n",u1Gain));
+		msg(">>>>>> [CONFIGURE PHASE][SHUFFLE]: Add DLL Gain = %d\n",u1Gain);
 	}
 
-	mcSHOW_DBG_MSG((">>>>>> [CONFIGURE PHASE][SHUFFLE]: DLL\n"));
+	msg(">>>>>> [CONFIGURE PHASE][SHUFFLE]: DLL\n");
 	if(a_cfg->DLL_ASYNC_EN == 1)
 	{
 	  DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
@@ -439,7 +439,7 @@ static void ANA_DLL_shuffle_Config(DRAMC_CTX_T *p, ANA_top_config_T *a_cfg)
 																	 | P_Fld(  1					   , SHU_B1_DLL1_RG_ARDLL_UDIV_EN_B1	  ) \
 																	 | P_Fld(  1					   , SHU_B1_DLL1_RG_ARDLL_PS_EN_B1		  ) \
 																	 | P_Fld(  0					   , SHU_B1_DLL1_RG_ARDLL_PD_CK_SEL_B1	  ));
-	mcSHOW_DBG_MSG(("<<<<<< [CONFIGURE PHASE][SHUFFLE]: DLL\n"));
+	msg("<<<<<< [CONFIGURE PHASE][SHUFFLE]: DLL\n");
 }
 
 static void ANA_ARPI_shuffle_config(DRAMC_CTX_T *p,ANA_top_config_T *a_cfg,ANA_DVFS_CORE_T *tr)
@@ -501,7 +501,7 @@ static void ANA_TX_nonshuffle_config(DRAMC_CTX_T *p,ANA_top_config_T *a_cfg)
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ6)		, P_Fld(0							 , B1_DQ6_RG_TX_ARDQ_DDR3_SEL_B1		) \
 																| P_Fld(!(a_cfg->LP45_APHY_COMB_EN)  , B1_DQ6_RG_TX_ARDQ_DDR4_SEL_B1		) \
 																| P_Fld(a_cfg->LP45_APHY_COMB_EN	 , B1_DQ6_RG_TX_ARDQ_LP4_SEL_B1 		));
-	mcSHOW_DBG_MSG(("<<<<<< [CONFIGURE PHASE]: ANA_TX\n"));
+	msg("<<<<<< [CONFIGURE PHASE]: ANA_TX\n");
 	//enable TX OE
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2)		, P_Fld(1					   , CA_CMD2_RG_TX_ARCMD_OE_DIS_CA		  ) \
 																| P_Fld(0					   , CA_CMD2_RG_TX_ARCMD_ODTEN_DIS_CA	  ) \
@@ -683,7 +683,7 @@ static void ANA_RX_nonshuffle_config(DRAMC_CTX_T *p)
 //============================================
 void RESETB_PULL_DN(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG(("============ PULL DRAM RESETB DOWN ============\n"));
+	msg("============ PULL DRAM RESETB DOWN ============\n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD11)		, P_Fld( 1					   , CA_CMD11_RG_RRESETB_DRVP		  ) \
 																| P_Fld( 1					   , CA_CMD11_RG_RRESETB_DRVN		  ) \
 																| P_Fld( 1					   , CA_CMD11_RG_TX_RRESETB_DDR3_SEL  ) \
@@ -694,7 +694,7 @@ void RESETB_PULL_DN(DRAMC_CTX_T *p)
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1)	, P_Fld( 1					   , MISC_CTRL1_R_DMDA_RRESETB_E	  ));
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD11)		, P_Fld( 0					   , CA_CMD11_RG_TX_RRESETB_PULL_DN   ));
-	mcSHOW_DBG_MSG(("========== PULL DRAM RESETB DOWN end =========\n"));
+	msg("========== PULL DRAM RESETB DOWN end =========\n");
 }
 //============================================
 // SUSPEND_OFF_control
@@ -944,16 +944,16 @@ static void ANA_PHY_Config(DRAMC_CTX_T *p,ANA_top_config_T *a_cfg)
 
 static void ANA_PLL_sequence(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG(("[ANA_INIT] PLL >>>>>>>> \n"));
+	msg("[ANA_INIT] PLL >>>>>>>> \n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_PHYPLL2)	 , P_Fld(1, PHYPLL2_RG_RPHYPLL_RESETB				 ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_PHYPLL0)	 , P_Fld(1, PHYPLL0_RG_RPHYPLL_EN					 ));
 	mcDELAY_XUS(20);
-	mcSHOW_DBG_MSG(("[ANA_INIT] PLL <<<<<<<< \n"));
+	msg("[ANA_INIT] PLL <<<<<<<< \n");
 }
 
 static void ANA_MIDPI_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr)
 {
-	mcSHOW_DBG_MSG(("[ANA_INIT] MIDPI >>>>>>>> \n"));
+	msg("[ANA_INIT] MIDPI >>>>>>>> \n");
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ1)   , 1, SHU_B0_DQ1_RG_ARPI_MIDPI_LDO_VREF_SEL_B0   );
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ1)   , 1, SHU_B1_DQ1_RG_ARPI_MIDPI_LDO_VREF_SEL_B1   );
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD1)  , 1, SHU_CA_CMD1_RG_ARPI_MIDPI_LDO_VREF_SEL_CA	);
@@ -1054,7 +1054,7 @@ static void ANA_MIDPI_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr)
 				| P_Fld(0x0, SHU_CA_DLL_ARPI2_RG_ARPI_CG_CLKIEN)
 				| P_Fld(0x0, SHU_CA_DLL_ARPI2_RG_ARPI_MPDIV_CG_CA));
 
-	mcSHOW_DBG_MSG(("[ANA_INIT] MIDPI <<<<<<<< \n"));
+	msg("[ANA_INIT] MIDPI <<<<<<<< \n");
 }
 
 static void ANA_DLL_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_top_config_T *a_cfg)
@@ -1065,7 +1065,7 @@ static void ANA_DLL_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_top_config_T
 	DLL_ASYNC_EN = a_cfg->DLL_ASYNC_EN;
 	ALL_SLAVE_EN = a_cfg->ALL_SLAVE_EN;
 
-	mcSHOW_DBG_MSG(("[ANA_INIT] DLL >>>>>>>> \n"));
+	msg("[ANA_INIT] DLL >>>>>>>> \n");
 	//step1: DLL_RESETB
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD8)			 , P_Fld(  1		 , CA_CMD8_RG_ARDLL_RESETB_CA ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ8)			 , P_Fld(  1		 , B0_DQ8_RG_ARDLL_RESETB_B0  ));
@@ -1111,7 +1111,7 @@ static void ANA_DLL_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_top_config_T
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL1)		 , P_Fld(!(tr->DQ_SEMI_OPEN), SHU_B0_DLL1_RG_ARDLL_PHDET_EN_B0		 ));
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL1)		 , P_Fld(!(tr->DQ_SEMI_OPEN), SHU_B1_DLL1_RG_ARDLL_PHDET_EN_B1		 ));
 		mcDELAY_XNS(400); //2nd DLL > 77TMCK
-	mcSHOW_DBG_MSG(("[ANA_INIT] DLL <<<<<<<< \n"));
+	msg("[ANA_INIT] DLL <<<<<<<< \n");
 	}
 }
 
@@ -1209,18 +1209,18 @@ static void ANA_ClockOff_Sequence(DRAMC_CTX_T *p)
 
 static void ANA_init_sequence(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr,ANA_top_config_T *a_cfg)
 {
-	mcSHOW_DBG_MSG(("[ANA_INIT] flow start \n"));
+	msg("[ANA_INIT] flow start \n");
 	ANA_PLL_sequence(p);
 	ANA_MIDPI_sequence(p,tr);
 	ANA_CLOCK_SWITCH(p); //clock switch supply correct FB clk. have to do this before DLL
 	ANA_DLL_sequence(p,tr,a_cfg);
-	mcSHOW_DBG_MSG(("[ANA_INIT] flow end \n"));
+	msg("[ANA_INIT] flow end \n");
 }
 
 void ANA_init(DRAMC_CTX_T *p)
 {
 	DRAMC_SUBSYS_PRE_CONFIG(p, &DV_p);
-	mcSHOW_DBG_MSG(("[ANA_INIT] >>>>>>>>>>>>>> \n"));
+	msg("[ANA_INIT] >>>>>>>>>>>>>> \n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2), P_Fld(1, CA_CMD2_RG_TX_ARCMD_OE_DIS_CA)
 													| P_Fld(0, CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA)
 													| P_Fld(0xff, CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA));
@@ -1231,7 +1231,7 @@ void ANA_init(DRAMC_CTX_T *p)
 											| P_Fld(1, CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA)
 											| P_Fld(0xff, CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA));
 	LP4_single_end_DRAMC_post_config(p, M_LP4->LP4Y_EN);
-	mcSHOW_DBG_MSG(("[ANA_INIT] <<<<<<<<<<<<< \n"));
+	msg("[ANA_INIT] <<<<<<<<<<<<< \n");
 }
 
 #if 0

@@ -11,7 +11,7 @@
 //====================================
 static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id);
 
 	U8 backup_ch_id = p->channel;
 	u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
@@ -90,7 +90,7 @@ static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
 
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id);
 }
 
 //====================================
@@ -101,7 +101,7 @@ static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
 //====================================
 static void DIG_CONFIG_SHUF_IMP(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id);
 	U8	IPM_ODT_EN;
 	U8	CHKCYCLE	  = 7; //200ns algrith --TODO, @Darren, fix hw imp tracking
 	U8	TXDLY_CMD	  = 8; //Need algrithm support .. RL . TODO
@@ -131,7 +131,7 @@ static void DIG_CONFIG_SHUF_IMP(DRAMC_CTX_T *p, int ch_id, int group_id)
 
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id);
 }
 
 //====================================
@@ -152,7 +152,7 @@ static void DIG_CONFIG_SHUF_RXINPUT(DRAMC_CTX_T *p, int ch_id, int group_id)
 	vSetPHY2ChannelMapping(p, ch_id);
 	p->ShuRGAccessIdx = (group_id == 0) ? DRAM_DFS_REG_SHU0 : DRAM_DFS_REG_SHU1;
 
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][RX_INPUT][Configuration] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][RX_INPUT][Configuration] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id);
 	if(RX_force_upd == 1)
 	{
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ8), P_Fld(1, SHU_B0_DQ8_R_DMRXDVS_UPD_FORCE_EN_B0));
@@ -173,7 +173,7 @@ static void DIG_CONFIG_SHUF_RXINPUT(DRAMC_CTX_T *p, int ch_id, int group_id)
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
 
-	mcSHOW_DBG_MSG(("[DIG_FREQ_CONFIG][RX_INPUT][Configuration] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id));
+	msg("[DIG_FREQ_CONFIG][RX_INPUT][Configuration] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id);
 }
 
 #if ENABLE_WDQS_MODE_2
@@ -197,7 +197,7 @@ static void WDQSMode2TxDQOE_CNT(DRAMC_CTX_T *p, U8 *u1DQOE_CNT)
 			*u1DQOE_CNT = 9;
 			break;
 		default:
-			mcSHOW_ERR_MSG(("[WDQSMode2TxDQOE_CNT] frequency err!\n"));
+			err("[WDQSMode2TxDQOE_CNT] frequency err!\n");
 			#if __ETT__
 			while (1);
 			#endif
@@ -232,7 +232,7 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 
 	backup_rank = p->rank;
 
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] MISC >>>>>, group_id=%2d \n", group_id));
+	msg("[DIG_SHUF_CONFIG] MISC >>>>>, group_id=%2d \n", group_id);
 	if(LPDDR4_EN_S)
 	{
 		DUALSCHEN = (A_D->DQ_P2S_RATIO==4) ? 0 : 1;
@@ -250,7 +250,7 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 		case 3: {DQSIEN_DQSSTB_MODE = 3;break;}
 		case 6: {DQSIEN_DQSSTB_MODE = 2;break;}
 		case 7: {DQSIEN_DQSSTB_MODE = 3;break;}
-		default: mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] Unexpected DFS(group_id)->DQSIEN_MODE=%1d input, group_id=%2d, \n",DFS(group_id)->DQSIEN_MODE, group_id));
+		default: msg("[DIG_SHUF_CONFIG] Unexpected DFS(group_id)->DQSIEN_MODE=%1d input, group_id=%2d, \n",DFS(group_id)->DQSIEN_MODE, group_id);
 	}
 
 	switch(LP5_CASMODE)
@@ -258,7 +258,7 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 		case 1: {WCKDUAL=0;LP5_HEFF=0;break;}
 		case 2: {WCKDUAL=1;LP5_HEFF=0;break;}
 		case 3: {WCKDUAL=0;LP5_HEFF=1;break;}
-		default: mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] Unexpected LP5_CASMODE(%d) input\n",LP5_CASMODE));
+		default: msg("[DIG_SHUF_CONFIG] Unexpected LP5_CASMODE(%d) input\n",LP5_CASMODE);
 	}
 
 
@@ -377,14 +377,14 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 																				| P_Fld( 0			, MISC_SHU_RDAT1_R_DMRDSEL_HIBYTE_OPT		 ));
 			break;
 		}
-		default:mcSHOW_DBG_MSG(("ERROR:Unexcepted A_D.DQ_P2S_RATIO = %2d \n", A_D->DQ_P2S_RATIO));
+		default:msg("ERROR:Unexcepted A_D.DQ_P2S_RATIO = %2d \n", A_D->DQ_P2S_RATIO);
 	}
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_CKE_CTRL) 				, P_Fld(  0 		, SHURK_CKE_CTRL_CKE_DBE_CNT				 ));
 
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
 
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] MISC <<<<<<, group_id=%2d \n", group_id));
+	msg("[DIG_SHUF_CONFIG] MISC <<<<<<, group_id=%2d \n", group_id);
 }
 
 static void DIG_CONFIG_SHUF_DQSGRETRY(DRAMC_CTX_T *p, int ch_id, int group_id)
@@ -393,7 +393,7 @@ static void DIG_CONFIG_SHUF_DQSGRETRY(DRAMC_CTX_T *p, int ch_id, int group_id)
 	u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
 
 	vSetPHY2ChannelMapping(p, ch_id);
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] DQSG_RETRY >>>>>>, group_id=%2d \n", group_id));
+	msg("[DIG_SHUF_CONFIG] DQSG_RETRY >>>>>>, group_id=%2d \n", group_id);
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_DQSG_RETRY1), P_Fld( 0								, MISC_SHU_DQSG_RETRY1_RETRY_SW_RESET		 ) \
 																	  | P_Fld( 0								, MISC_SHU_DQSG_RETRY1_RETRY_SW_EN			 ) \
 																	  | P_Fld( (DFS(group_id)->data_rate>=3733) , MISC_SHU_DQSG_RETRY1_RETRY_DDR1866_PLUS	 ) \
@@ -419,7 +419,7 @@ static void DIG_CONFIG_SHUF_DQSGRETRY(DRAMC_CTX_T *p, int ch_id, int group_id)
 
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] DQSG_RETRY <<<<<<, group_id=%2d \n", group_id));
+	msg("[DIG_SHUF_CONFIG] DQSG_RETRY <<<<<<, group_id=%2d \n", group_id);
 }
 
 static void DIG_CONFIG_SHUF_DBI(DRAMC_CTX_T *p, int ch_id, int group_id)
@@ -433,7 +433,7 @@ static void DIG_CONFIG_SHUF_DBI(DRAMC_CTX_T *p, int ch_id, int group_id)
 	U8 backup_ch_id = p->channel;
 	u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
 
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] DBI >>>>>>, group_id=%2d \n",  group_id));
+	msg("[DIG_SHUF_CONFIG] DBI >>>>>>, group_id=%2d \n",  group_id);
 	if(LPDDR4_EN_S)
 	{
 		LP4_DRAM_config(DFS(group_id)->data_rate,&LP4_temp);
@@ -459,7 +459,7 @@ static void DIG_CONFIG_SHUF_DBI(DRAMC_CTX_T *p, int ch_id, int group_id)
 
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] DBI <<<<<<, group_id=%2d \n",  group_id));
+	msg("[DIG_SHUF_CONFIG] DBI <<<<<<, group_id=%2d \n",  group_id);
 }
 
 //TODO LPDDR5
@@ -474,7 +474,7 @@ static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 	U8	HWSET_VRCG_OP_Value   =0;
 	U8	HWSET_MR2_OP_Value	  =0;
 
-	mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] DVFSRLWL >>>>>>, group_id=%2d \n",  group_id));
+	msg("[DIG_SHUF_CONFIG] DVFSRLWL >>>>>>, group_id=%2d \n",  group_id);
 	p->ShuRGAccessIdx = (group_id == 0) ? DRAM_DFS_REG_SHU0 : DRAM_DFS_REG_SHU1;
 
 	if(LPDDR4_EN_S)
@@ -485,7 +485,7 @@ static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 		HWSET_VRCG_OP_Value = ((LP4_temp.WORK_FSP & 1) << 7) | ((LP4_temp.WORK_FSP & 1) << 6);
 		HWSET_MR2_OP_Value	= ((LP4_temp.MR_WL & 7) << 3) | (LP4_temp.MR_WL & 7);
 	} else {
-		mcSHOW_DBG_MSG(("[DIG_SHUF_CONFIG] LPDDR5 have to use Run-time MRW to support DVFS! Do not Use HWSET_MR serial Registers."));
+		msg("[DIG_SHUF_CONFIG] LPDDR5 have to use Run-time MRW to support DVFS! Do not Use HWSET_MR serial Registers.");
 	}
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_HWSET_MR13), P_Fld(HWSET_MR13_OP_Value, SHU_HWSET_MR13_HWSET_MR13_OP ));
@@ -495,7 +495,7 @@ static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
 
-	mcSHOW_DBG_MSG(("[test_sa.c]====>ch_id:%2d, group_id:%2d, DPI_TBA_DVFS_WLRL_setting Exit\n", ch_id, group_id));
+	msg("[test_sa.c]====>ch_id:%2d, group_id:%2d, DPI_TBA_DVFS_WLRL_setting Exit\n", ch_id, group_id);
 }
 
 //=================================================
@@ -516,7 +516,7 @@ void TX_RX_jumpratio_calculate(DRAMC_CTX_T *p,int ch_id,int group_id)
 	u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
 
 	vSetPHY2ChannelMapping(p, ch_id);
-	mcSHOW_DBG_MSG(("[TX_RX_jumpratio_calculate]>>>>>>>> group_id = %1d",group_id));
+	msg("[TX_RX_jumpratio_calculate]>>>>>>>> group_id = %1d",group_id);
 	for(tar = 0; tar<DFS_GROUP_NUM;tar++)
 	{
 		if(((DFS(group_id)->data_rate == 800) || (DFS(group_id)->data_rate == 400)) || ((DFS(tar)->data_rate == 800) || (DFS(tar)->data_rate == 400))) //TODO wihtout tracking
@@ -527,7 +527,7 @@ void TX_RX_jumpratio_calculate(DRAMC_CTX_T *p,int ch_id,int group_id)
 		{
 			result[tar] = (int)(((float)(DFS(tar)->data_rate) * (float)ratio) / (float)(DFS(group_id)->data_rate) + 0.5); //+0.5 for roundup
 		}
-		mcSHOW_DBG_MSG(("\n[TXRX_jumpratio]current_group data_rate=%1d,tar_data_rate=%1d,jumpratio=%1d;\n",DFS(group_id)->data_rate,DFS(tar)->data_rate,result[tar]));
+		msg("\n[TXRX_jumpratio]current_group data_rate=%1d,tar_data_rate=%1d,jumpratio=%1d;\n",DFS(group_id)->data_rate,DFS(tar)->data_rate,result[tar]);
 	}
 	//=============================
 	//setting
@@ -546,7 +546,7 @@ void TX_RX_jumpratio_calculate(DRAMC_CTX_T *p,int ch_id,int group_id)
 																	| P_Fld(   result[9]  , SHU_FREQ_RATIO_SET2_TDQSCK_JUMP_RATIO9));
 	vSetPHY2ChannelMapping(p, backup_ch_id);
 	p->ShuRGAccessIdx = DRAM_DFS_REG_SHU0;
-	mcSHOW_DBG_MSG(("[TX_RX_jumpratio_calculate]<<<<<<< group_id = %1d",group_id));
+	msg("[TX_RX_jumpratio_calculate]<<<<<<< group_id = %1d",group_id);
 }
 #endif
 

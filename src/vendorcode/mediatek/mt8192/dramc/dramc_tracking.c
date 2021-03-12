@@ -40,8 +40,8 @@ static DRAM_STATUS_T DramcStartDQSOSC_SWCMD(DRAMC_CTX_T *p)
 	// Backup rank, CKE fix on/off, HW MIOCK control settings
 	DramcBackupRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
-	mcSHOW_DBG_MSG3(("[ZQCalibration]\n"));
-	//mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
+	msg3("[ZQCalibration]\n");
+	//mcFPRINTF(fp_A60501, "[ZQCalibration]\n");
 
 	// Disable HW MIOCK control to make CLK always on
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
@@ -60,24 +60,24 @@ static DRAM_STATUS_T DramcStartDQSOSC_SWCMD(DRAMC_CTX_T *p)
 		u4TimeCnt --;
 		mcDELAY_US(1);	// Wait tZQCAL(min) 1us or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d- ", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
+		msg3("%d- ", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d- ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_WCK2DQI_START_SWTRIG);
 
 	if(u4TimeCnt==0)//time out
 	{
-		mcSHOW_DBG_MSG(("ZQCAL Start fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Start fail (time out)\n"));
+		msg("ZQCAL Start fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Start fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
 	// Restore rank, CKE fix on, HW MIOCK control settings
 	DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
-	mcSHOW_DBG_MSG3(("\n[DramcZQCalibration] Done\n\n"));
-	//mcFPRINTF((fp_A60501, "\n[DramcZQCalibration] Done\n\n"));
+	msg3("\n[DramcZQCalibration] Done\n\n");
+	//mcFPRINTF(fp_A60501, "\n[DramcZQCalibration] Done\n\n");
 
 	return DRAM_OK;
 }
@@ -98,7 +98,7 @@ DRAM_STATUS_T DramcDQSOSCAuto(DRAMC_CTX_T *p)
 	U32 u4RegBak[2];
 
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 	u4RegBak[0] = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
@@ -138,7 +138,7 @@ DRAM_STATUS_T DramcDQSOSCAuto(DRAMC_CTX_T *p)
 		u2DQSOsc[1] = u1MR23 * 16 * 1000000 / (2 * u2DQSCnt * p->frequency); //tDQSOSC = 16*MR23*tCK/2*count
 	else
 		u2DQSOsc[1] = 0;
-	mcSHOW_DBG_MSG(("[DQSOSCAuto] RK%d, (LSB)MR18= 0x%x, (MSB)MR19= 0x%x, tDQSOscB0 = %d ps tDQSOscB1 = %d ps\n", u1GetRank(p), u2MR18, u2MR19, u2DQSOsc[0], u2DQSOsc[1]));
+	msg("[DQSOSCAuto] RK%d, (LSB)MR18= 0x%x, (MSB)MR19= 0x%x, tDQSOscB0 = %d ps tDQSOscB1 = %d ps\n", u1GetRank(p), u2MR18, u2MR19, u2DQSOsc[0], u2DQSOsc[1]);
 #endif
 
 	gu2MR18[p->channel][p->rank] = u2MR18;
@@ -174,9 +174,9 @@ DRAM_STATUS_T DramcDQSOSCMR23(DRAMC_CTX_T *p)
 		gu2DQSOSCTHRD_DEC[p->channel][p->rank] = (u1MR23 * u4tCK * u4tCK) / (u2DQSOSC * u2DQSOSC * 10);
 	}
 
-	mcSHOW_DBG_MSG(("CH%d_RK%d: MR19=0x%X, MR18=0x%X, DQSOSC=%d, MR23=%u, INC=%u, DEC=%u\n", p->channel, p->rank,
+	msg("CH%d_RK%d: MR19=0x%X, MR18=0x%X, DQSOSC=%d, MR23=%u, INC=%u, DEC=%u\n", p->channel, p->rank,
 					gu2MR19[p->channel][p->rank], gu2MR18[p->channel][p->rank], gu2DQSOSC[p->channel][p->rank],
-					u1MR23, gu2DQSOSCTHRD_INC[p->channel][p->rank], gu2DQSOSCTHRD_DEC[p->channel][p->rank]));
+					u1MR23, gu2DQSOSCTHRD_INC[p->channel][p->rank], gu2DQSOSCTHRD_DEC[p->channel][p->rank]);
 #endif
 	return DRAM_OK;
 }
@@ -201,8 +201,8 @@ DRAM_STATUS_T DramcDQSOSCSetMR18MR19(DRAMC_CTX_T *p)
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_DQSOSC), P_Fld(u2DQSOscCnt[0], SHURK_DQSOSC_DQSOSC_BASE_RK0) | P_Fld(u2DQSOscCnt[1], SHURK_DQSOSC_DQSOSC_BASE_RK0_B1));
 
-	mcSHOW_DBG_MSG(("CH%d RK%d: MR19=%X, MR18=%X\n", p->channel, p->rank, gu2MR19[p->channel][p->rank], gu2MR18[p->channel][p->rank]));
-	mcDUMP_REG_MSG(("CH%d RK%d: MR19=%X, MR18=%X\n", p->channel, p->rank, gu2MR19[p->channel][p->rank], gu2MR18[p->channel][p->rank]));
+	msg("CH%d RK%d: MR19=%X, MR18=%X\n", p->channel, p->rank, gu2MR19[p->channel][p->rank], gu2MR18[p->channel][p->rank]);
+	reg_msg("CH%d RK%d: MR19=%X, MR18=%X\n", p->channel, p->rank, gu2MR19[p->channel][p->rank], gu2MR18[p->channel][p->rank]);
 	return DRAM_OK;
 }
 
@@ -500,7 +500,7 @@ void DramcSWTxTracking(DRAMC_CTX_T *p)
 		DRAM_DFS_FREQUENCY_TABLE_T *pDstFreqTbl = get_FreqTbl_by_shuffleIndex(p, shuIdx);
 		if (pDstFreqTbl == NULL)
 		{
-			mcSHOW_ERR_MSG(("NULL pFreqTbl %d\n", shuIdx));
+			err("NULL pFreqTbl %d\n", shuIdx);
 			while (1);
 		}
 
@@ -511,11 +511,11 @@ void DramcSWTxTracking(DRAMC_CTX_T *p)
 		else
 		{
 			u1FreqRatioTX[shuIdx] = ((GetFreqBySel(p, pDstFreqTbl->freq_sel)) * 8) / p->frequency;
-			mcSHOW_DBG_MSG(("[SWTxTracking] ShuLevel=%d, Ratio[%d]=%d (%d, %d)\n", u1SRAMShuLevel, shuIdx, u1FreqRatioTX[shuIdx], GetFreqBySel(p, pDstFreqTbl->freq_sel), p->frequency));
+			msg("[SWTxTracking] ShuLevel=%d, Ratio[%d]=%d (%d, %d)\n", u1SRAMShuLevel, shuIdx, u1FreqRatioTX[shuIdx], GetFreqBySel(p, pDstFreqTbl->freq_sel), p->frequency);
 		}
 	}
 
-	mcSHOW_DBG_MSG(("[SWTxTracking] channel=%d\n", p->channel));
+	msg("[SWTxTracking] channel=%d\n", p->channel);
 	rankBak = u1GetRank(p);
 	shuBak = p->ShuRGAccessIdx;
 
@@ -583,9 +583,9 @@ void DramcSWTxTracking(DRAMC_CTX_T *p)
 				{
 					u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx] = u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx] - (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]);
 					u1UpdatedPI_DQM[shuIdx][rankIdx][byteIdx] = u1OriginalPI_DQM[shuIdx][rankIdx][byteIdx] - (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]);
-					mcSHOW_DBG_MSG(("SHU%u CH%d RK%d B%d, Base=%X Runtime=%X delta=%d INC=%d PI=0x%B Adj=%d newPI=0x%B\n", shuIdx, p->channel, u1GetRank(p), byteIdx
+					msg("SHU%u CH%d RK%d B%d, Base=%X Runtime=%X delta=%d INC=%d PI=0x%B Adj=%d newPI=0x%B\n", shuIdx, p->channel, u1GetRank(p), byteIdx
 								, u2MR1819_Base[p->rank][byteIdx], u2MR1819_Runtime[p->rank][byteIdx], deltaMR1819, u2DQSOSC_INC[rankIdx]
-								, u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx], (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]), u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx]));
+								, u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx], (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]), u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx]);
 				}
 			}
 			else
@@ -596,9 +596,9 @@ void DramcSWTxTracking(DRAMC_CTX_T *p)
 				{
 					u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx] = u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx] + (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]);
 					u1UpdatedPI_DQM[shuIdx][rankIdx][byteIdx] = u1OriginalPI_DQM[shuIdx][rankIdx][byteIdx] + (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]);
-					mcSHOW_DBG_MSG(("SHU%u CH%d RK%d B%d, Base=%X Runtime=%X delta=%d DEC=%d PI=0x%B Adj=%d newPI=0x%B\n", shuIdx, p->channel, u1GetRank(p), byteIdx
+					msg("SHU%u CH%d RK%d B%d, Base=%X Runtime=%X delta=%d DEC=%d PI=0x%B Adj=%d newPI=0x%B\n", shuIdx, p->channel, u1GetRank(p), byteIdx
 								, u2MR1819_Base[p->rank][byteIdx], u2MR1819_Runtime[p->rank][byteIdx], deltaMR1819, u2DQSOSC_DEC[rankIdx]
-								, u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx], (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]), u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx]));
+								, u1OriginalPI_DQ[shuIdx][rankIdx][byteIdx], (u1AdjPI[rankIdx][byteIdx] * u1FreqRatioTX[shuIdx] / u1FreqRatioTX[u1SRAMShuLevel]), u1UpdatedPI_DQ[shuIdx][rankIdx][byteIdx]);
 				}
 			}
 		}
@@ -891,11 +891,11 @@ void DramcPrintRxDlyTrackDebugStatus(DRAMC_CTX_T *p)
 		p->channel = u1ChannelIdx;
 
 		u4value = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_MISC_DQ_RXDLY_TRRO18));
-		//mcSHOW_DBG_MSG(("\nCH_%d DQ_RXDLY_TRRO18 = 0x\033[1;36m%x\033[m\n",u1ChannelIdx,u4value));
+		//msg("\nCH_%d DQ_RXDLY_TRRO18 = 0x\033[1;36m%x\033[m\n",u1ChannelIdx,u4value);
 		if (u4value & 1)
 		{
-			mcSHOW_DBG_MSG(("=== CH_%d DQ_RXDLY_TRRO18 = 0x\033[1;36m%x\033[m, %s %s shu: %d\n", u1ChannelIdx, u4value,
-						u4value & 0x2? "RK0: fail":"",u4value&0x4?"RK1: fail":"", (u4value >> 4) & 0x3));
+			msg("=== CH_%d DQ_RXDLY_TRRO18 = 0x\033[1;36m%x\033[m, %s %s shu: %d\n", u1ChannelIdx, u4value,
+						u4value & 0x2? "RK0: fail":"",u4value&0x4?"RK1: fail":"", (u4value >> 4) & 0x3);
 		}
 	}
 }
@@ -925,7 +925,7 @@ void DramcPrintRXDQDQSStatus(DRAMC_CTX_T *p, U8 u1Channel)
 	for (u1RankIdx = 0; u1RankIdx < u1RankMax; u1RankIdx++)
 	{
 		vSetRank(p, u1RankIdx);
-		mcSHOW_DBG_MSG(("[RXDQDQSStatus] CH%d, RK%d\n", p->channel, u1RankIdx));
+		msg("[RXDQDQSStatus] CH%d, RK%d\n", p->channel, u1RankIdx);
 		if (u1RankIdx == 0)
 		u4ResultDQS_PI = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_MISC_DQ_RXDLY_TRRO22));
 		if (u1RankIdx == 1)
@@ -936,7 +936,7 @@ void DramcPrintRXDQDQSStatus(DRAMC_CTX_T *p, U8 u1Channel)
 		u1DQX_B1 = (u4ResultDQS_PI >> 16) & 0xff;
 		u1DQS1 = (u4ResultDQS_PI >> 24) & 0xff;
 
-		mcSHOW_DBG_MSG(("DQX_B0, DQS0, DQX_B1, DQS1 =(%d, %d, %d, %d)\n\n", u1DQX_B0, u1DQS0, u1DQX_B1, u1DQS1));
+		msg("DQX_B0, DQS0, DQX_B1, DQS1 =(%d, %d, %d, %d)\n\n", u1DQX_B0, u1DQS0, u1DQX_B1, u1DQS1);
 
 		}
 	vSetRank(p, backup_rank);
@@ -1012,8 +1012,8 @@ void DramcDummyReadAddressSetting(DRAMC_CTX_T *p)
 			dram_addr.rk = rankIdx;
 
 			get_dummy_read_addr(&dram_addr);
-			mcSHOW_DBG_MSG3(("=== dummy read address: CH_%d, RK%d, row: 0x%x, bk: %d, col: 0x%x\n\n",
-					channelIdx, rankIdx, dram_addr.row, dram_addr.bk, dram_addr.col));
+			msg3("=== dummy read address: CH_%d, RK%d, row: 0x%x, bk: %d, col: 0x%x\n\n",
+					channelIdx, rankIdx, dram_addr.row, dram_addr.bk, dram_addr.col);
 
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RK_DUMMY_RD_ADR2), P_Fld(dram_addr.row, RK_DUMMY_RD_ADR2_DMY_RD_ROW_ADR)
 																		| P_Fld(dram_addr.bk, RK_DUMMY_RD_ADR2_DMY_RD_BK));
@@ -1083,11 +1083,11 @@ void DramcDummyReadForTrackingEnable(DRAMC_CTX_T *p)
 	if (p->frequency >= 1600)
 	{
 		vIO32WriteFldMulti_All(DRAMC_REG_DUMMY_RD, P_Fld(1, DUMMY_RD_DMY_RD_RX_TRACK) | P_Fld(1, DUMMY_RD_DUMMY_RD_EN));
-		mcSHOW_DBG_MSG(("High Freq DUMMY_READ_FOR_TRACKING: ON\n"));
+		msg("High Freq DUMMY_READ_FOR_TRACKING: ON\n");
 	}
 	else
 	{
-		mcSHOW_DBG_MSG(("Low Freq DUMMY_READ_FOR_TRACKING: OFF\n"));
+		msg("Low Freq DUMMY_READ_FOR_TRACKING: OFF\n");
 	}
 
 	return;
@@ -1181,7 +1181,7 @@ void FreqJumpRatioCalculation(DRAMC_CTX_T *p)
 			DRAM_DFS_FREQUENCY_TABLE_T *pDstFreqTbl = get_FreqTbl_by_shuffleIndex(p, shuffle_dst_index);
 			if (pDstFreqTbl == NULL)
 			{
-				mcSHOW_ERR_MSG(("NULL pFreqTbl\n"));
+				err("NULL pFreqTbl\n");
 				#if __ETT__
 				while (1);
 				#endif
@@ -1197,12 +1197,12 @@ void FreqJumpRatioCalculation(DRAMC_CTX_T *p)
 				u2Freq = GetFreqBySel(p, pDstFreqTbl->freq_sel);
 				u2JumpRatio[jump_ratio_index] = divRoundClosest(u2Freq * 32, shuffle_src_freq);
 				//u2JumpRatio[jump_ratio_index] = (pDstFreqTbl->frequency/shuffle_src_freq)*32;
-				//mcSHOW_DBG_MSG3(("shuffle_%d=DDR%d / shuffle_%d=DDR%d \n", shuffle_dst_index, pFreqTbl->frequency<<1,
-				//															  shuffle_src_index, get_FreqTbl_by_shuffleIndex(p,shuffle_src_index)->frequency<<1));
-				//mcSHOW_DBG_MSG3(("Jump_RATIO_%d : 0x%x\n", jump_ratio_index, u2JumpRatio[jump_ratio_index],
-				//											  get_FreqTbl_by_shuffleIndex(p,shuffle_src_index)->frequency));
+				//msg3("shuffle_%d=DDR%d / shuffle_%d=DDR%d \n", shuffle_dst_index, pFreqTbl->frequency<<1,
+				//															  shuffle_src_index, get_FreqTbl_by_shuffleIndex(p,shuffle_src_index)->frequency<<1);
+				//msg3("Jump_RATIO_%d : 0x%x\n", jump_ratio_index, u2JumpRatio[jump_ratio_index],
+				//											  get_FreqTbl_by_shuffleIndex(p,shuffle_src_index)->frequency);
 			}
-			mcSHOW_DBG_MSG3(("Jump_RATIO [%d]: %x\tFreq %d -> %d\tDDR%d -> DDR%d\n", jump_ratio_index, u2JumpRatio[jump_ratio_index], get_shuffleIndex_by_Freq(p), shuffle_dst_index, shuffle_src_freq << 1, u2Freq << 1));
+			msg3("Jump_RATIO [%d]: %x\tFreq %d -> %d\tDDR%d -> DDR%d\n", jump_ratio_index, u2JumpRatio[jump_ratio_index], get_shuffleIndex_by_Freq(p), shuffle_dst_index, shuffle_src_freq << 1, u2Freq << 1);
 			jump_ratio_index++;
 		}
 	}
@@ -1246,7 +1246,7 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)
 		mck2ui = 2; /* 1: 4 mode */
 #endif
 
-	mcSHOW_DBG_MSG(("Pre-setting of DQS Precalculation\n"));
+	msg("Pre-setting of DQS Precalculation\n");
 
 	for (byte_idx = 0; byte_idx < (p->data_width / DQS_BIT_NUMBER); byte_idx++) {
 		for (rank = RANK_0; rank < p->support_rank_num; rank++) {
@@ -1326,8 +1326,8 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calcula
 	U32 u1Delay_Addr[2] = {0}, u1Delay_Fld[2];
 	REG_FLD_DQS_PRE_K TransferReg;
 
-	mcSHOW_DBG_MSG(("Pre-setting of DQS Precalculation\n"));
-	mcDUMP_REG_MSG(("Pre-setting of DQS Precalculation\n"));
+	msg("Pre-setting of DQS Precalculation\n");
+	reg_msg("Pre-setting of DQS Precalculation\n");
 
 	if ((u1ShuLevel >= SRAM_SHU4) && (u1ShuLevel <= SRAM_SHU7))
 	{ //SHU4, 5, 6, 7
@@ -1557,7 +1557,7 @@ void DramcPrintHWGatingStatus(DRAMC_CTX_T *p, U8 u1Channel)
 	for (u1RankIdx = 0; u1RankIdx < u1RankMax; u1RankIdx++)
 	{
 		vSetRank(p, u1RankIdx);
-		mcSHOW_DBG_MSG(("[DramcHWGatingStatus] Channel=%d, Rank=%d\n", p->channel, u1RankIdx));
+		msg("[DramcHWGatingStatus] Channel=%d, Rank=%d\n", p->channel, u1RankIdx);
 
 		u1Dqs_pi[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_GATING_ERR_LATCH_DLY_B0_RK0),
 			GATING_ERR_LATCH_DLY_B0_RK0_DQSIEN0_PI_DLY_RK0);
@@ -1573,10 +1573,10 @@ void DramcPrintHWGatingStatus(DRAMC_CTX_T *p, U8 u1Channel)
 		u1Dqs_ui_P1[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_GATING_ERR_LATCH_DLY_B1_RK0),
 			GATING_ERR_LATCH_DLY_B1_RK0_DQSIEN1_UI_P1_DLY_RK0);;
 
-		mcSHOW_DBG_MSG(("Byte0(ui, pi) =(%d, %d)\n Byte1(ui, pi) =(%d, %d)\n",
-			u1Dqs_ui[0], u1Dqs_pi[0], u1Dqs_ui[1], u1Dqs_pi[1]));
-		mcSHOW_DBG_MSG(("UI_Phase1 (DQS0~3) =(%d, %d, %d, %d)\n\n",
-			u1Dqs_ui_P1[0], u1Dqs_ui_P1[1], u1Dqs_ui_P1[2], u1Dqs_ui_P1[3]));
+		msg("Byte0(ui, pi) =(%d, %d)\n Byte1(ui, pi) =(%d, %d)\n",
+			u1Dqs_ui[0], u1Dqs_pi[0], u1Dqs_ui[1], u1Dqs_pi[1]);
+		msg("UI_Phase1 (DQS0~3) =(%d, %d, %d, %d)\n\n",
+			u1Dqs_ui_P1[0], u1Dqs_ui_P1[1], u1Dqs_ui_P1[2], u1Dqs_ui_P1[3]);
 	}
 
 	vSetRank(p, backup_rank);
@@ -1622,10 +1622,10 @@ void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
 
 		u1ShuffleLevel = u4IO32ReadFldAlign(DRAMC_REG_SHUSTATUS, SHUSTATUS_SHUFFLE_LEVEL);
 
-		mcSHOW_DBG_MSG3(("\n[HWGatingTrackingRecord] Channel=%d, Rank=%d, SHU_LEVEL=%d\n", p->channel, u1RankIdx, u1ShuffleLevel));
+		msg3("\n[HWGatingTrackingRecord] Channel=%d, Rank=%d, SHU_LEVEL=%d\n", p->channel, u1RankIdx, u1ShuffleLevel);
 
-		mcSHOW_DBG_MSG3(("Run Time HW Gating Debug Information :\n"));
-		mcSHOW_DBG_MSG3(("		  B0=(DFS,Lead,Lag,4T, UI, PI), B1=(DFS,Lead,Lag,4T, UI, PI)\n"));
+		msg3("Run Time HW Gating Debug Information :\n");
+		msg3("		  B0=(DFS,Lead,Lag,4T, UI, PI), B1=(DFS,Lead,Lag,4T, UI, PI)\n");
 
 		for (u1Info_NUM = 0; u1Info_NUM < u1Info_Max_MUM; u1Info_NUM++)
 		{
@@ -1652,16 +1652,16 @@ void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
 
 		  if (u1Info_NUM < 10)
 		  {
-			mcSHOW_DBG_MSG3(("Info= %d ", u1Info_NUM));
+			msg3("Info= %d ", u1Info_NUM);
 		  }
 		  else
 		  {
-			mcSHOW_DBG_MSG3(("Info=%d ", u1Info_NUM));
+			msg3("Info=%d ", u1Info_NUM);
 		  }
 
-		  mcSHOW_DBG_MSG3(("B0=(  %d,  %d,	%d,  %d,  %d, %d), B1=(  %d,  %d,  %d,	%d,  %d,  %d)\n",
+		  msg3("B0=(  %d,  %d,	%d,  %d,  %d, %d), B1=(  %d,  %d,  %d,	%d,  %d,  %d)\n",
 		  u1DBG_Dqs0_DFS, u1DBG_Dqs0_Lead, u1DBG_Dqs0_Lag, u1DBG_Dqs0_UI / 8, u1DBG_Dqs0_UI % 8, u1DBG_Dqs0_PI,
-		  u1DBG_Dqs1_DFS, u1DBG_Dqs1_Lead, u1DBG_Dqs1_Lag, u1DBG_Dqs1_UI / 8, u1DBG_Dqs1_UI % 8, u1DBG_Dqs1_PI));
+		  u1DBG_Dqs1_DFS, u1DBG_Dqs1_Lead, u1DBG_Dqs1_Lag, u1DBG_Dqs1_UI / 8, u1DBG_Dqs1_UI % 8, u1DBG_Dqs1_PI);
 		}
 
 		//Run Time HW Gating Max and Min Value Record
@@ -1681,12 +1681,12 @@ void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
 		u2Dqs1_UI_MIN_DLY = (u4Dqs1_MAX_MIN_DLY >> 6) & 0x3f;
 		u2Dqs1_PI_MIN_DLY = (u4Dqs1_MAX_MIN_DLY >> 0) & 0x3f;
 
-		mcSHOW_DBG_MSG3(("B0 = MAX(4T, UI, PI) MIN(4T, UI, PI), B1 = MAX(4T, UI, PI) MIN(4T, UI, PI)\n"));
-		mcSHOW_DBG_MSG3(("B0 = MAX( %d,  %d, %d) MIN( %d,  %d, %d),  B1 = MAX( %d,	%d, %d) MIN( %d,  %d, %d)\n",
+		msg3("B0 = MAX(4T, UI, PI) MIN(4T, UI, PI), B1 = MAX(4T, UI, PI) MIN(4T, UI, PI)\n");
+		msg3("B0 = MAX( %d,  %d, %d) MIN( %d,  %d, %d),  B1 = MAX( %d,	%d, %d) MIN( %d,  %d, %d)\n",
 						u2Dqs0_UI_MAX_DLY / 8, u2Dqs0_UI_MAX_DLY % 8, u2Dqs0_PI_MAX_DLY,
 						u2Dqs0_UI_MIN_DLY / 8, u2Dqs0_UI_MIN_DLY % 8, u2Dqs0_PI_MIN_DLY,
 						u2Dqs1_UI_MAX_DLY / 8, u2Dqs1_UI_MAX_DLY % 8, u2Dqs1_PI_MAX_DLY,
-						u2Dqs1_UI_MIN_DLY / 8, u2Dqs1_UI_MIN_DLY % 8, u2Dqs1_PI_MIN_DLY));
+						u2Dqs1_UI_MIN_DLY / 8, u2Dqs1_UI_MIN_DLY % 8, u2Dqs1_PI_MIN_DLY);
 	}
 	vSetRank(p, u1RankBak);
 	p->channel = u1ChannelBak;
@@ -1715,7 +1715,7 @@ void DramcPrintRXFIFODebugStatus(DRAMC_CTX_T *p)
 		u4value = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBERR_RK0_R)) & (0xf << 24); //DDRPHY NAO bit24~27
 		if (u4value)
 		{
-			mcSHOW_DBG_MSG(("\n[RXFIFODebugStatus] CH_%d MISC_STBERR_RK0_R_RX_ARDQ = 0x\033[1;36m%x\033[m for Gating error information\n", u1ChannelIdx, u4value));
+			msg("\n[RXFIFODebugStatus] CH_%d MISC_STBERR_RK0_R_RX_ARDQ = 0x\033[1;36m%x\033[m for Gating error information\n", u1ChannelIdx, u4value);
 		}
 	}
 	p->channel = u1ChannelBak;

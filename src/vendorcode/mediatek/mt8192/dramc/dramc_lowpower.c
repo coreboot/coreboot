@@ -678,7 +678,7 @@ void EnableDramcPhyDCM(DRAMC_CTX_T *p, bool bEn)
 
 #if ((CHECK_GOLDEN_SETTING == TRUE) && (APPLY_LOWPOWER_GOLDEN_SETTINGS == 0))
 	DRAM_STATUS_T stResult = CheckGoldenSetting(p);
-	mcSHOW_DBG_MSG(("Golden setting check: %s\n", (stResult == DRAM_OK)? ("OK") : ("NG")));
+	msg("Golden setting check: %s\n", (stResult == DRAM_OK)? ("OK") : ("NG"));
 #endif
 
 	DramcBroadcastOnOff(u4WbrBackup);
@@ -698,65 +698,65 @@ DRAM_STATUS_T CheckRxPICGNewModeSetting(DRAMC_CTX_T *p)
 	for(channel_idx = CHANNEL_A; channel_idx < p->support_channel_num; channel_idx++)
 	{
 		p->channel = channel_idx;
-		mcSHOW_DBG_MSG(("CH[%d] \n", channel_idx));
+		msg("CH[%d] \n", channel_idx);
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4), MISC_CTRL4_R_OPT2_CG_MCK);
-		mcSHOW_DBG_MSG(("MISC_CTRL4_R_OPT2_CG_MCK:0x%x \n", u4Value));
+		msg("MISC_CTRL4_R_OPT2_CG_MCK:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4), MISC_CTRL4_R_OPT2_MPDIV_CG);
-		mcSHOW_DBG_MSG(("MISC_CTRL4_R_OPT2_MPDIV_CG:0x%x \n", u4Value));
+		msg("MISC_CTRL4_R_OPT2_MPDIV_CG:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4), MISC_CTRL4_R_OPT2_CG_DQSIEN);
-		mcSHOW_DBG_MSG(("MISC_CTRL4_R_OPT2_CG_DQSIEN:0x%x \n", u4Value));
+		msg("MISC_CTRL4_R_OPT2_CG_DQSIEN:0x%x \n", u4Value);
 
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1), MISC_STBCAL1_STBCNT_SHU_RST_EN);
-		mcSHOW_DBG_MSG(("MISC_STBCAL1_STBCNT_SHU_RST_EN:0x%x \n", u4Value));
+		msg("MISC_STBCAL1_STBCNT_SHU_RST_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN);
-		mcSHOW_DBG_MSG(("MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN:0x%x \n", u4Value));
+		msg("MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL), MISC_SHU_STBCAL_DQSIEN_PICG_MODE);
-		mcSHOW_DBG_MSG(("MISC_SHU_STBCAL_DQSIEN_PICG_MODE:0x%x \n", u4Value));
+		msg("MISC_SHU_STBCAL_DQSIEN_PICG_MODE:0x%x \n", u4Value);
 
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_OPT);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_OPT:0x%x \n", u4Value));
+		msg("MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_OPT:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_BUFF_EN_CTRL), MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_OPT);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_OPT:0x%x \n", u4Value));
+		msg("MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_OPT:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN);
-		mcSHOW_DBG_MSG(("MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN:0x%x \n", u4Value));
+		msg("MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN:0x%x \n", u4Value);
 
 		for (u1RankIdx = 0; u1RankIdx < p->support_rank_num; u1RankIdx++)//Should set 2 rank
 		{
 
 			vSetRank(p, u1RankIdx);
 			u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSIEN_PICG_CTRL), MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_TAIL_EXT_LAT);
-			mcSHOW_DBG_MSG(("Rank[%d] MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_TAIL_EXT_LAT:0x%x \n", u1RankIdx, u4Value));
+			msg("Rank[%d] MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_TAIL_EXT_LAT:0x%x \n", u1RankIdx, u4Value);
 			u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSIEN_PICG_CTRL), MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_HEAD_EXT_LAT);
-			mcSHOW_DBG_MSG(("Rank[%d] MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_HEAD_EXT_LAT:0x%x \n", u1RankIdx, u4Value));
+			msg("Rank[%d] MISC_SHU_RK_DQSIEN_PICG_CTRL_DQSIEN_PICG_HEAD_EXT_LAT:0x%x \n", u1RankIdx, u4Value);
 		}
 		vSetRank(p, RANK_0);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_BUFF_EN_CTRL), MISC_RX_IN_BUFF_EN_CTRL_DIS_IN_BUFF_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_BUFF_EN_CTRL_DIS_IN_BUFF_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_BUFF_EN_CTRL_DIS_IN_BUFF_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_BUFF_EN_CTRL), MISC_RX_IN_BUFF_EN_CTRL_FIX_IN_BUFF_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_BUFF_EN_CTRL_FIX_IN_BUFF_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_BUFF_EN_CTRL_FIX_IN_BUFF_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_BUFF_EN_CTRL), MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_4BYTE_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_4BYTE_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_4BYTE_EN:0x%x \n", u4Value);
 
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), MISC_RX_IN_GATE_EN_CTRL_DIS_IN_GATE_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_GATE_EN_CTRL_DIS_IN_GATE_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_GATE_EN_CTRL_DIS_IN_GATE_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN:0x%x \n", u4Value);
 
 		u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_4BYTE_EN);
-		mcSHOW_DBG_MSG(("MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_4BYTE_EN:0x%x \n", u4Value));
+		msg("MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_4BYTE_EN:0x%x \n", u4Value);
 
 	}
 	p->channel = CHANNEL_A;
@@ -780,7 +780,7 @@ DRAM_STATUS_T CheckGoldenField(DRAMC_CTX_T *p, GOLDEN_FIELD_T *golden_setting_an
 		{
 			vSetPHY2ChannelMapping(p, channel_idx);
 			u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(golden_setting_anwer[u2Idx].group), golden_setting_anwer[u2Idx].field);
-			//mcSHOW_DBG_MSG(("%s: 0x%x\n", golden_setting_anwer[u2Idx].fieldName, u4Value));
+			//msg("%s: 0x%x\n", golden_setting_anwer[u2Idx].fieldName, u4Value);
 
 			u4Answer = *(&golden_setting_anwer[u2Idx].u4ChaValue);//golden_setting_anwer only has CHA value
 
@@ -788,11 +788,11 @@ DRAM_STATUS_T CheckGoldenField(DRAMC_CTX_T *p, GOLDEN_FIELD_T *golden_setting_an
 			{
 				if(u4Answer == u4Value)
 				{
-					//mcSHOW_DBG_MSG(("OK [%s] 0x%x\n", golden_setting_anwer[u2Idx].fieldName, u4Answer));
+					//msg("OK [%s] 0x%x\n", golden_setting_anwer[u2Idx].fieldName, u4Answer);
 				}
 				else
 				{
-					mcSHOW_DBG_MSG(("*** fail ***[%s]CH[%d][0x%x][ANS:0x%x]****** fail\n", golden_setting_anwer[u2Idx].fieldName, channel_idx, u4Value, u4Answer));
+					msg("*** fail ***[%s]CH[%d][0x%x][ANS:0x%x]****** fail\n", golden_setting_anwer[u2Idx].fieldName, channel_idx, u4Value, u4Answer);
 					eStatus |= DRAM_FAIL;
 				}
 			}
@@ -809,7 +809,7 @@ DRAM_STATUS_T CheckGoldenSetting(DRAMC_CTX_T *p)
 	U8 backup_channel = vGetPHY2ChannelMapping(p);
 	DRAM_STATUS_T eStatus = DRAM_OK;
 
-	mcSHOW_DBG_MSG(("Golden setting check[Begin]\n"));
+	msg("Golden setting check[Begin]\n");
 	eStatus |= CheckGoldenField(p, nonshuf_golden_setting_anwer, sizeof(nonshuf_golden_setting_anwer));
 
 
@@ -819,16 +819,16 @@ DRAM_STATUS_T CheckGoldenSetting(DRAMC_CTX_T *p)
 		{
 			if (u1ShuffleIdx < DRAM_DFS_SRAM_MAX)
 			{
-				mcSHOW_DBG_MSG(("SRAM SHU%d\n", u1ShuffleIdx));
+				msg("SRAM SHU%d\n", u1ShuffleIdx);
 				u1SramShuffleIdx = u1ShuffleIdx;
 			}
 			else
 			{
-				mcSHOW_DBG_MSG(("CONF SHU0, DDR[%d]\n", p->frequency * 2));
+				msg("CONF SHU0, DDR[%d]\n", p->frequency * 2);
 				u1SramShuffleIdx = u1BkShuffleIdx; //Restore to original freq && check conf SHU0
 			}
 
-			//mcSHOW_DBG_MSG(("shuf_golden_setting_anwer:%d %d\n",	sizeof(shuf_golden_setting_anwer), sizeof(shuf_golden_setting_anwer[0])));
+			//msg("shuf_golden_setting_anwer:%d %d\n",	sizeof(shuf_golden_setting_anwer), sizeof(shuf_golden_setting_anwer[0]));
 			DramcDFSDirectJump(p, u1SramShuffleIdx); //fill conf SHU0 && SHU1 from SRAM SHU(0~9) while DVFS twice
 			DramcDFSDirectJump(p, u1SramShuffleIdx);
 
@@ -837,11 +837,11 @@ DRAM_STATUS_T CheckGoldenSetting(DRAMC_CTX_T *p)
 	}
 	else
 	{
-		mcSHOW_DBG_MSG(("CONF SHU0, DDR[%d]\n", p->frequency * 2));
+		msg("CONF SHU0, DDR[%d]\n", p->frequency * 2);
 		eStatus |= CheckGoldenField(p, shuf_golden_setting_anwer, sizeof(shuf_golden_setting_anwer));
 	}
 
-	mcSHOW_DBG_MSG(("Golden setting check[End]\n"));
+	msg("Golden setting check[End]\n");
 
 	vSetPHY2ChannelMapping(p, backup_channel);
 	return eStatus;
@@ -922,7 +922,7 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 
 	u4TimeCnt = TIME_OUT_CNT;
 
-	mcSHOW_DBG_MSG(("[EnterSelfRefresh] %s\n", ((op == 1) ? "enter" : "exit")));
+	msg("[EnterSelfRefresh] %s\n", (op == 1) ? "enter" : "exit");
 
 	if (op == 1) // enter self refresh
 	{
@@ -936,7 +936,7 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 		uiTemp = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_SREF_STATE);
 		while ((uiTemp == 0) && (u4TimeCnt > 0))
 		{
-			mcSHOW_DBG_MSG2(("Still not enter self refresh(%d)\n", u4TimeCnt));
+			msg2("Still not enter self refresh(%d)\n", u4TimeCnt);
 			mcDELAY_US(1);
 			uiTemp = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_SREF_STATE);
 			u4TimeCnt --;
@@ -950,7 +950,7 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 		uiTemp = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_SREF_STATE);
 		while ((uiTemp != 0) && (u4TimeCnt > 0))
 		{
-			mcSHOW_DBG_MSG2(("Still not exit self refresh(%d)\n", u4TimeCnt));
+			msg2("Still not exit self refresh(%d)\n", u4TimeCnt);
 			mcDELAY_US(1);
 			uiTemp = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_SREF_STATE);
 			u4TimeCnt--;
@@ -959,11 +959,11 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 
    if (u4TimeCnt == 0)
    {
-		mcSHOW_DBG_MSG(("Self refresh fail\n"));
+		msg("Self refresh fail\n");
    }
    else
    {
-		mcSHOW_DBG_MSG(("Self refresh done\n"));
+		msg("Self refresh done\n");
    }
 }
 #endif

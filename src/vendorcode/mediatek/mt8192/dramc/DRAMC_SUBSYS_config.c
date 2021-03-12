@@ -29,17 +29,17 @@ void ANA_TOP_FUNCTION_CFG(ANA_top_config_T *tr,U16 data_rate)
 		tr->TX_ODT_DIS = (data_rate <=2400) ? 1 : 0 ;
 	}
 
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("ANA top config\n"				));
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("DLL_ASYNC_EN			 = %2d\n",tr->DLL_ASYNC_EN	   ));
-	mcSHOW_DBG_MSG(("ALL_SLAVE_EN			 = %2d\n",tr->ALL_SLAVE_EN	   ));
-	mcSHOW_DBG_MSG(("NEW_RANK_MODE			 = %2d\n",tr->NEW_RANK_MODE    ));
-	mcSHOW_DBG_MSG(("DLL_IDLE_MODE			 = %2d\n",tr->DLL_IDLE_MODE    ));
-	mcSHOW_DBG_MSG(("LP45_APHY_COMB_EN		 = %2d\n",tr->LP45_APHY_COMB_EN));
-	mcSHOW_DBG_MSG(("TX_ODT_DIS 			 = %2d\n",tr->TX_ODT_DIS	   ));
-	mcSHOW_DBG_MSG(("NEW_8X_MODE			 = %2d\n",tr->NEW_8X_MODE	   ));
-	mcSHOW_DBG_MSG(("=================================== \n"));
+	msg("=================================== \n");
+	msg("ANA top config\n"				);
+	msg("=================================== \n");
+	msg("DLL_ASYNC_EN			 = %2d\n",tr->DLL_ASYNC_EN	   );
+	msg("ALL_SLAVE_EN			 = %2d\n",tr->ALL_SLAVE_EN	   );
+	msg("NEW_RANK_MODE			 = %2d\n",tr->NEW_RANK_MODE    );
+	msg("DLL_IDLE_MODE			 = %2d\n",tr->DLL_IDLE_MODE    );
+	msg("LP45_APHY_COMB_EN		 = %2d\n",tr->LP45_APHY_COMB_EN);
+	msg("TX_ODT_DIS 			 = %2d\n",tr->TX_ODT_DIS	   );
+	msg("NEW_8X_MODE			 = %2d\n",tr->NEW_8X_MODE	   );
+	msg("=================================== \n");
 }
 
 
@@ -123,32 +123,32 @@ void ANA_CLK_DIV_config( ANA_DVFS_CORE_T *tr,DRAMC_DVFS_GROUP_CONFIG_T *dfs)
 	tr->DQ_UI_PI_RATIO = 32; //TODO:notice here. infact if DQ_SEMI_OPEM == 1 UI_PI_RATIO will only 4 lower 2bit wihtout use
 	tr->CA_UI_PI_RATIO = (tr->CA_SEMI_OPEN == 0) ? ((tr->CA_FULL_RATE == 1)? 64 : DONT_CARE_VALUE) : 32;
 
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("data_rate					= %4d\n"	,data_rate						));
-	mcSHOW_DBG_MSG(("CKR						= %1d\n"	,tr->CKR						));
-	mcSHOW_DBG_MSG(("DQ_P2S_RATIO				= %1d\n"	,tr->DQ_P2S_RATIO				));
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("CA_P2S_RATIO				= %1d\n"	,tr->CA_P2S_RATIO				));
-	mcSHOW_DBG_MSG(("DQ_CA_OPEN 				= %1d\n"	,tr->DQ_CA_OPEN 				));
-	mcSHOW_DBG_MSG(("DQ_SEMI_OPEN				= %1d\n"	,tr->DQ_SEMI_OPEN				));
-	mcSHOW_DBG_MSG(("CA_SEMI_OPEN				= %1d\n"	,tr->CA_SEMI_OPEN				));
-	mcSHOW_DBG_MSG(("CA_FULL_RATE				= %1d\n"	,tr->CA_FULL_RATE				));
-	mcSHOW_DBG_MSG(("DQ_CKDIV4_EN				= %1d\n"	,tr->DQ_CKDIV4_EN				));
-	mcSHOW_DBG_MSG(("CA_CKDIV4_EN				= %1d\n"	,tr->CA_CKDIV4_EN				));
-	mcSHOW_DBG_MSG(("CA_PREDIV_EN				= %1d\n"	,tr->CA_PREDIV_EN				));
-	mcSHOW_DBG_MSG(("PH8_DLY					= %1d\n"	,tr->PH8_DLY					));
-	mcSHOW_DBG_MSG(("SEMI_OPEN_CA_PICK_MCK_RATIO= %1d\n"	,tr->SEMI_OPEN_CA_PICK_MCK_RATIO));
-	mcSHOW_DBG_MSG(("DQ_AAMCK_DIV				= %1d\n"	,tr->DQ_AAMCK_DIV				));
-	mcSHOW_DBG_MSG(("CA_AAMCK_DIV				= %1d\n"	,tr->CA_AAMCK_DIV				));
-	mcSHOW_DBG_MSG(("CA_ADMCK_DIV				= %1d\n"	,tr->CA_ADMCK_DIV				));
-	mcSHOW_DBG_MSG(("DQ_TRACK_CA_EN 			= %1d\n"	,tr->DQ_TRACK_CA_EN 			));
-	mcSHOW_DBG_MSG(("CA_PICK					= %2d\n"	,CA_PICK						));
-	mcSHOW_DBG_MSG(("CA_MCKIO					= %1d\n"	,CA_MCKIO						));
-	mcSHOW_DBG_MSG(("MCKIO_SEMI 				= %1d\n"	,MCKIO_SEMI 					));
-	mcSHOW_DBG_MSG(("PLL_FREQ					= %1d\n"	,tr->PLL_FREQ					));
-	mcSHOW_DBG_MSG(("DQ_UI_PI_RATIO 			= %1d\n"	,tr->DQ_UI_PI_RATIO 			));
-	mcSHOW_DBG_MSG(("CA_UI_PI_RATIO 			= %1d\n"	,tr->CA_UI_PI_RATIO 			));
-	mcSHOW_DBG_MSG(("=================================== \n"));
+	msg("=================================== \n");
+	msg("data_rate					= %4d\n"	,data_rate						);
+	msg("CKR						= %1d\n"	,tr->CKR						);
+	msg("DQ_P2S_RATIO				= %1d\n"	,tr->DQ_P2S_RATIO				);
+	msg("=================================== \n");
+	msg("CA_P2S_RATIO				= %1d\n"	,tr->CA_P2S_RATIO				);
+	msg("DQ_CA_OPEN 				= %1d\n"	,tr->DQ_CA_OPEN 				);
+	msg("DQ_SEMI_OPEN				= %1d\n"	,tr->DQ_SEMI_OPEN				);
+	msg("CA_SEMI_OPEN				= %1d\n"	,tr->CA_SEMI_OPEN				);
+	msg("CA_FULL_RATE				= %1d\n"	,tr->CA_FULL_RATE				);
+	msg("DQ_CKDIV4_EN				= %1d\n"	,tr->DQ_CKDIV4_EN				);
+	msg("CA_CKDIV4_EN				= %1d\n"	,tr->CA_CKDIV4_EN				);
+	msg("CA_PREDIV_EN				= %1d\n"	,tr->CA_PREDIV_EN				);
+	msg("PH8_DLY					= %1d\n"	,tr->PH8_DLY					);
+	msg("SEMI_OPEN_CA_PICK_MCK_RATIO= %1d\n"	,tr->SEMI_OPEN_CA_PICK_MCK_RATIO);
+	msg("DQ_AAMCK_DIV				= %1d\n"	,tr->DQ_AAMCK_DIV				);
+	msg("CA_AAMCK_DIV				= %1d\n"	,tr->CA_AAMCK_DIV				);
+	msg("CA_ADMCK_DIV				= %1d\n"	,tr->CA_ADMCK_DIV				);
+	msg("DQ_TRACK_CA_EN 			= %1d\n"	,tr->DQ_TRACK_CA_EN 			);
+	msg("CA_PICK					= %2d\n"	,CA_PICK						);
+	msg("CA_MCKIO					= %1d\n"	,CA_MCKIO						);
+	msg("MCKIO_SEMI 				= %1d\n"	,MCKIO_SEMI 					);
+	msg("PLL_FREQ					= %1d\n"	,tr->PLL_FREQ					);
+	msg("DQ_UI_PI_RATIO 			= %1d\n"	,tr->DQ_UI_PI_RATIO 			);
+	msg("CA_UI_PI_RATIO 			= %1d\n"	,tr->CA_UI_PI_RATIO 			);
+	msg("=================================== \n");
 }
 
 void DRAMC_SUBSYS_PRE_CONFIG(DRAMC_CTX_T *p, DRAMC_SUBSYS_CONFIG_T *tr)
@@ -311,10 +311,10 @@ void DRAMC_SUBSYS_PRE_CONFIG(DRAMC_CTX_T *p, DRAMC_SUBSYS_CONFIG_T *tr)
 	ANA_TOP_FUNCTION_CFG(tr->a_cfg,tr->DFS_GP[0]->data_rate);
 	ANA_CLK_DIV_config(tr->a_opt,tr->DFS_GP[0]);
 
-	mcSHOW_DBG_MSG(("=================================== \n"));
-	mcSHOW_DBG_MSG(("memory_type:%s 		\n",LPDDR5_EN_S?"LPDDR5":"LPDDR4"	  ));
-	mcSHOW_DBG_MSG(("GP_NUM 	: %1d		\n",tr->GP_NUM		));
-	mcSHOW_DBG_MSG(("SRAM_EN	: %1d		\n",tr->SRAM_EN 	));
-	mcSHOW_DBG_MSG(("MD32_EN	: %1d		\n",tr->MD32_EN 	));
-	mcSHOW_DBG_MSG(("=================================== \n"));
+	msg("=================================== \n");
+	msg("memory_type:%s 		\n",LPDDR5_EN_S?"LPDDR5":"LPDDR4"	  );
+	msg("GP_NUM 	: %1d		\n",tr->GP_NUM		);
+	msg("SRAM_EN	: %1d		\n",tr->SRAM_EN 	);
+	msg("MD32_EN	: %1d		\n",tr->MD32_EN 	);
+	msg("=================================== \n");
 }

@@ -390,7 +390,7 @@ void GetVcoreDelayCellTimeFromTable(DRAMC_CTX_T *p)
 		}
 	}
 
-	mcSHOW_DBG_MSG(("[GetVcoreDelayCellTimeFromTable(%d)] VCore=%d(x100), DelayCell=%d(x100)\n", u1delay_cell_cnt, get_vcore, u2gdelay_cell_ps));
+	msg("[GetVcoreDelayCellTimeFromTable(%d)] VCore=%d(x100), DelayCell=%d(x100)\n", u1delay_cell_cnt, get_vcore, u2gdelay_cell_ps);
 
 	for(channel_i=CHANNEL_A; channel_i < p->support_channel_num; channel_i++)
 	{
@@ -429,14 +429,14 @@ void Test_Broadcast_Feature(DRAMC_CTX_T *p)
 	read_value = u4IO32Read4B(DRAMC_REG_SHURK_SELPH_DQ2 + SHIFT_TO_CHB_ADDR);
 	if (read_value != 0xA55A00FF)
 	{
-		mcSHOW_ERR_MSG(("Check Erro! Broad Cast CHA RG to CHB Fail!!\n"));
+		err("Check Erro! Broad Cast CHA RG to CHB Fail!!\n");
 		while (1);
 	}
 
 	read_value = u4IO32Read4B(DDRPHY_REG_SHU_RK_B0_DQ0 + SHIFT_TO_CHB_ADDR);
 	if (read_value != 0xA55A00FF)
 	{
-		mcSHOW_ERR_MSG(("Check Erro! Broad Cast CHA RG to CHB Fail!!\n"));
+		err("Check Erro! Broad Cast CHA RG to CHB Fail!!\n");
 		while (1);
 	}
 
@@ -462,7 +462,7 @@ void Get_RX_DelayCell(DRAMC_CTX_T *p)
 		if (gHQALOG_RX_delay_cell_ps_075V == 0)
 		{
 #if __ETT__
-			mcSHOW_DBG_MSG(("RX delay cell calibration (%d):\n", hqa_vmddr_class));
+			msg("RX delay cell calibration (%d):\n", hqa_vmddr_class);
 
 			switch (hqa_vmddr_class)
 			{
@@ -518,7 +518,7 @@ void PRE_MIOCK_JMETER_HQA_USED(DRAMC_CTX_T *p)
 	backup_freq_sel = vGet_PLL_FreqSel(p);
 	backup_channel = p->channel;
 
-	mcSHOW_DBG_MSG3(("[JMETER_HQA]\n"));
+	msg3("[JMETER_HQA]\n");
 	Set_PRE_MIOCK_JMETER_HQA_USED_flag(1);
 
 	vSetPHY2ChannelMapping(p, CHANNEL_A);
@@ -548,16 +548,16 @@ static DRAM_STATUS_T DramcSave_Time_For_Cal_End(DRAMC_CTX_T *p)
 	{
 		#if EMMC_READY
 		write_offline_dram_calibration_data(p->shu_type, p->pSavetimeData);
-		mcSHOW_DBG_MSG(("[FAST_K] Save calibration result to emmc\n"));
+		msg("[FAST_K] Save calibration result to emmc\n");
 		#else
 		g_dram_save_time_init_done[p->shu_type] = 1;
 		memcpy(&(SaveTimeDataByShuffle[p->shu_type]), p->pSavetimeData, sizeof(SAVE_TIME_FOR_CALIBRATION_T));
-		mcSHOW_DBG_MSG(("[FAST_K] Save calibration result to SW memory\n"));
+		msg("[FAST_K] Save calibration result to SW memory\n");
 		#endif
 	}
 	else
 	{
-		mcSHOW_DBG_MSG(("[FAST_K] Bypass saving calibration result to emmc\n"));
+		msg("[FAST_K] Bypass saving calibration result to emmc\n");
 	}
 
 	return DRAM_OK;
@@ -625,11 +625,11 @@ static DRAM_STATUS_T DramcSave_Time_For_Cal_Init(DRAMC_CTX_T *p)
 	}
 
 #if EMMC_READY
-	mcSHOW_DBG_MSG(("[FAST_K] DramcSave_Time_For_Cal_Init SHU%d, femmc_Ready=%d\n", p->shu_type, p->femmc_Ready));
+	msg("[FAST_K] DramcSave_Time_For_Cal_Init SHU%d, femmc_Ready=%d\n", p->shu_type, p->femmc_Ready);
 #else
-	mcSHOW_DBG_MSG(("[FAST_K] DramcSave_Time_For_Cal_Init SHU%d, Init_done=%d, femmc_Ready=%d\n", p->shu_type, g_dram_save_time_init_done[p->shu_type], p->femmc_Ready));
+	msg("[FAST_K] DramcSave_Time_For_Cal_Init SHU%d, Init_done=%d, femmc_Ready=%d\n", p->shu_type, g_dram_save_time_init_done[p->shu_type], p->femmc_Ready);
 #endif
-	mcSHOW_DBG_MSG(("[FAST_K] Bypass_RDDQC %d, Bypass_RXWINDOW=%d, Bypass_TXWINDOW=%d\n", p->Bypass_RDDQC, p->Bypass_RXWINDOW, p->Bypass_TXWINDOW));
+	msg("[FAST_K] Bypass_RDDQC %d, Bypass_RXWINDOW=%d, Bypass_TXWINDOW=%d\n", p->Bypass_RDDQC, p->Bypass_RXWINDOW, p->Bypass_TXWINDOW);
 
 	return DRAM_OK;
 }
@@ -655,7 +655,7 @@ static void DramRankNumberDetection(DRAMC_CTX_T *p)
 		p->support_rank_num = RANK_SINGLE;
 		vIO32WriteFldAlign(DRAMC_REG_SA_RESERVE, 1, SA_RESERVE_SINGLE_RANK);  //keep support_rank_num to reserved rg
 	}
-	mcSHOW_DBG_MSG(("[RankNumberDetection] %d\n", p->support_rank_num));
+	msg("[RankNumberDetection] %d\n", p->support_rank_num);
 
 	vSetRank(p, u1RankBak);  // restore rank setting
 }
@@ -665,7 +665,7 @@ static void UpdateGlobal10GBEnVariables(DRAMC_CTX_T *p)
 {
 	p->u110GBEn[RANK_0] = (get_row_width_by_emi(RANK_0) >= 18) ? ENABLE : DISABLE;
 	p->u110GBEn[RANK_1] = (get_row_width_by_emi(RANK_1) >= 18) ? ENABLE : DISABLE;
-	//mcSHOW_DBG_MSG(("[10GBEn] RANK0=%d, RANK1=%d\n", p->u110GBEn[RANK_0], p->u110GBEn[RANK_1]));
+	//msg("[10GBEn] RANK0=%d, RANK1=%d\n", p->u110GBEn[RANK_0], p->u110GBEn[RANK_1]);
 }
 
 void vCalibration_Flow_For_MDL(DRAMC_CTX_T *p)
@@ -691,7 +691,7 @@ void vCalibration_Flow_For_MDL(DRAMC_CTX_T *p)
 		DramcRxWindowPerbitCal(p, PATTERN_RDDQC, NULL, AUTOK_OFF);
 
 #if MRW_CHECK_ONLY
-		mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+		mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 		vAutoRefreshSwitch(p, DISABLE); //After gating, Rx and Tx calibration, auto refresh should be disable
 	}
@@ -719,13 +719,13 @@ static int GetDramInforAfterCalByMRR(DRAMC_CTX_T *p, DRAM_INFO_BY_MRR_T *DramInf
 	// Read MR5 for Vendor ID
 	DramcModeRegReadByRank(p, RANK_0, 5, &(p->vendor_id));// for byte mode, don't show value of another die.
 	p->vendor_id &= 0xFF;
-	mcSHOW_DBG_MSG(("[GetDramInforAfterCalByMRR] Vendor %x.\n", p->vendor_id));
+	msg("[GetDramInforAfterCalByMRR] Vendor %x.\n", p->vendor_id);
 	// Read MR6 for Revision ID
 	DramcModeRegReadByRank(p, RANK_0, 6, &(p->revision_id));// for byte mode, don't show value of another die.
-	mcSHOW_DBG_MSG(("[GetDramInforAfterCalByMRR] Revision %x.\n", p->revision_id));
+	msg("[GetDramInforAfterCalByMRR] Revision %x.\n", p->revision_id);
 	// Read MR6 for Revision ID2
 	DramcModeRegReadByRank(p, RANK_0, 7, &u2MR7);// for byte mode, don't show value of another die.
-	mcSHOW_DBG_MSG(("[GetDramInforAfterCalByMRR] Revision 2 %x.\n", u2MR7));
+	msg("[GetDramInforAfterCalByMRR] Revision 2 %x.\n", u2MR7);
 #if (!__ETT__) && (FOR_DV_SIMULATION_USED==0)
 	set_dram_mr(5, p->vendor_id);
 	set_dram_mr(6, p->revision_id);
@@ -749,10 +749,10 @@ static int GetDramInforAfterCalByMRR(DRAMC_CTX_T *p, DRAM_INFO_BY_MRR_T *DramInf
 		#endif
 		{
 			DramcModeRegReadByRank(p, u1RankIdx, 0, &(gu2MR0_Value[u1RankIdx]));
-			mcSHOW_DBG_MSG(("MR0 0x%x\n", gu2MR0_Value[u1RankIdx]));
+			msg("MR0 0x%x\n", gu2MR0_Value[u1RankIdx]);
 
 			DramcModeRegReadByRank(p, u1RankIdx, 8, &u2Density);
-			mcSHOW_DBG_MSG(("MR8 0x%x\n", u2Density));
+			msg("MR8 0x%x\n", u2Density);
 			u2MR8 |= (u2Density & 0xFF) << (u1RankIdx * 8);
 
 			u1DieNumber = 1;
@@ -766,31 +766,31 @@ static int GetDramInforAfterCalByMRR(DRAMC_CTX_T *p, DRAM_INFO_BY_MRR_T *DramInf
 				///TODO: Darren, please check the value of u8Size.
 				case 0x0:
 					u8Size = 0x20000000;  //4Gb = 512MB
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 4Gb\n"));
+					//msg("[EMI]DRAM density = 4Gb\n");
 					break;
 				case 0x1:
 					u8Size = 0x30000000;  //6Gb = 768MB
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 6Gb\n"));
+					//msg("[EMI]DRAM density = 6Gb\n");
 					break;
 				case 0x2:
 					u8Size = 0x40000000;  //8Gb = 1GB = 2^30 bytes = 0x40000000 bytes
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 8Gb\n"));
+					//msg("[EMI]DRAM density = 8Gb\n");
 					break;
 				case 0x3:
 					u8Size = 0x60000000;  //12Gb = 1.5GB = 3^30 bytes = 0x60000000 bytes
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 12Gb\n"));
+					//msg("[EMI]DRAM density = 12Gb\n");
 					break;
 				case 0x4:
 					u8Size = 0x80000000;  //16Gb = 2GB = 4^30 bytes = 0x80000000 bytes
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 16Gb\n"));
+					//msg("[EMI]DRAM density = 16Gb\n");
 					break;
 				case 0x5:
 					u8Size = 0xc0000000; //24Gb = 3GB = 6^30 bytes = 0xc0000000 bytes
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 24Gb\n"));
+					//msg("[EMI]DRAM density = 24Gb\n");
 					break;
 				case 0x6:
 					u8Size = 0x100000000L; //32Gb = 4GB = 8^30 bytes = 0x10000000 bytes
-					//mcSHOW_DBG_MSG(("[EMI]DRAM density = 32Gb\n"));
+					//msg("[EMI]DRAM density = 32Gb\n");
 					break;
 				default:
 					u8Size = 0; //reserved
@@ -811,7 +811,7 @@ static int GetDramInforAfterCalByMRR(DRAMC_CTX_T *p, DRAM_INFO_BY_MRR_T *DramInf
 		}
 		// 1GB = 2^30 bytes
 		// u8Size * (2^3) / (2^30)	==>Gb
-		mcSHOW_DBG_MSG(("RK%d, DieNum %d, Density %dGb, RKsize %dGb.\n\n", u1RankIdx, u1DieNumber, (U32)(u8Size >> 27), (U32)(p->ranksize[u1RankIdx] >> 27)));
+		msg("RK%d, DieNum %d, Density %dGb, RKsize %dGb.\n\n", u1RankIdx, u1DieNumber, (U32)(u8Size >> 27), (U32)(p->ranksize[u1RankIdx] >> 27));
 	}
 #if (!__ETT__) && (FOR_DV_SIMULATION_USED==0)
 	set_dram_mr(8, u2MR8);
@@ -838,7 +838,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 #ifdef DDR_INIT_TIME_PROFILING
 	CPU_Cycle=TimeProfileEnd();
-	mcSHOW_TIME_MSG(("\tRX input cal takes %d us\n", CPU_Cycle));
+	time_msg("\tRX input cal takes %d us\n", CPU_Cycle);
 	TimeProfileBegin();
 #endif
 #endif
@@ -873,7 +873,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d CBT takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d CBT takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 	}
@@ -900,17 +900,17 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 		{
 			if (!(u1IsLP4Div4DDR800(p) && (p->rank == RANK_1))) // skip for DDR800 rank1
 			{
-				mcSHOW_DBG_MSG(("\n----->DramcWriteLeveling(PI) begin...\n"));
+				msg("\n----->DramcWriteLeveling(PI) begin...\n");
 
 				DramcWriteLeveling(p, AUTOK_OFF, PI_BASED);
 
-				mcSHOW_DBG_MSG(("DramcWriteLeveling(PI) end<-----\n\n"));
+				msg("DramcWriteLeveling(PI) end<-----\n\n");
 			}
 		}
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d Write leveling takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d Write leveling takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 	}
@@ -938,15 +938,15 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 		{
 			if (!(u1IsLP4Div4DDR800(p) && (p->rank == RANK_1))) // skip for DDR800 rank1
 			{
-				mcSHOW_DBG_MSG(("\n----->DramcWriteLeveling(PI) begin...\n"));
+				msg("\n----->DramcWriteLeveling(PI) begin...\n");
 
 				DramcWriteLeveling(p, AUTOK_ON, PI_BASED);
 
-				mcSHOW_DBG_MSG(("DramcWriteLeveling(PI) end<-----\n\n"));
+				msg("DramcWriteLeveling(PI) end<-----\n\n");
 			}
 			#ifdef DDR_INIT_TIME_PROFILING
 			CPU_Cycle=TimeProfileEnd();
-			mcSHOW_TIME_MSG(("\tRank %d Write leveling takes %d us\n", s1RankIdx, CPU_Cycle));
+			time_msg("\tRank %d Write leveling takes %d us\n", s1RankIdx, CPU_Cycle);
 			TimeProfileBegin();
 			#endif
 		}
@@ -958,7 +958,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d Gating takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d Gating takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 
@@ -966,12 +966,12 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d RX RDDQC takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d RX RDDQC takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 
 #if MRW_CHECK_ONLY
-		mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+		mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 		DramcTxWindowPerbitCal(p, TX_DQ_DQS_MOVE_DQ_DQM, FALSE, AUTOK_OFF);
@@ -990,7 +990,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 		if ((p->DBI_W_onoff[p->dram_fsp]==DBI_ON))
 		{
 			// K DQM with DBI_ON, and check DQM window spec.
-			//mcSHOW_DBG_MSG(("[TX_K_DQM_WITH_WDBI] Step1: K DQM with DBI_ON, and check DQM window spec.\n\n"));
+			//msg("[TX_K_DQM_WITH_WDBI] Step1: K DQM with DBI_ON, and check DQM window spec.\n\n");
 			vSwitchWriteDBISettings(p, DBI_ON);
 			DramcTxWindowPerbitCal((DRAMC_CTX_T *) p, TX_DQ_DQS_MOVE_DQM_ONLY, FALSE, AUTOK_OFF);
 			vSwitchWriteDBISettings(p, DBI_OFF);
@@ -1004,7 +1004,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d TX calibration takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d TX calibration takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 
@@ -1012,7 +1012,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d Datlat takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d Datlat takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 
@@ -1023,7 +1023,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 		#ifdef DDR_INIT_TIME_PROFILING
 		CPU_Cycle=TimeProfileEnd();
-		mcSHOW_TIME_MSG(("\tRank %d RX calibration takes %d us\n", s1RankIdx, CPU_Cycle));
+		time_msg("\tRank %d RX calibration takes %d us\n", s1RankIdx, CPU_Cycle);
 		TimeProfileBegin();
 		#endif
 	   // DramcRxdqsGatingCal(p);
@@ -1064,7 +1064,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 			for(u1ByteIdx =0 ; u1ByteIdx<(p->data_width/DQS_BIT_NUMBER); u1ByteIdx++)
 			{
 				u1HighFreqRXVref[u1ByteIdx] = (gFinalRXVrefDQ[p->channel][RANK_0][u1ByteIdx] + gFinalRXVrefDQ[p->channel][RANK_1][u1ByteIdx]) >> 1;
-				mcSHOW_DBG_MSG(("RX Vref Byte%d (u1HighFreqRXVref) = %d = (%d+ %d)>>1\n", u1ByteIdx, u1HighFreqRXVref[u1ByteIdx], gFinalRXVrefDQ[p->channel][RANK_0][u1ByteIdx], gFinalRXVrefDQ[p->channel][RANK_1][u1ByteIdx]));
+				msg("RX Vref Byte%d (u1HighFreqRXVref) = %d = (%d+ %d)>>1\n", u1ByteIdx, u1HighFreqRXVref[u1ByteIdx], gFinalRXVrefDQ[p->channel][RANK_0][u1ByteIdx], gFinalRXVrefDQ[p->channel][RANK_1][u1ByteIdx]);
 			}
 
 			for(s1RankIdx=RANK_0; s1RankIdx < u1RankMax; s1RankIdx++)
@@ -1117,7 +1117,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 
 	#ifdef DDR_INIT_TIME_PROFILING
 	CPU_Cycle=TimeProfileEnd();
-	mcSHOW_TIME_MSG(("\tMisc takes %d us\n\n", s1RankIdx, CPU_Cycle));
+	time_msg("\tMisc takes %d us\n\n", s1RankIdx, CPU_Cycle);
 	#endif
 }
 
@@ -1171,7 +1171,7 @@ void vDramCalibrationAllChannel(DRAMC_CTX_T *p)
 	#if SUPPORT_SAVE_TIME_FOR_CALIBRATION
 	if (p->femmc_Ready == 1)
 	{
-		mcSHOW_DBG_MSG(("\nCalibration fast K is enable, cannot show HQA measurement information\n"));
+		msg("\nCalibration fast K is enable, cannot show HQA measurement information\n");
 	}
 	else
 	#endif
@@ -1259,9 +1259,9 @@ void vDramCalibrationAllChannel(DRAMC_CTX_T *p)
 	}
 
 	vSetPHY2ChannelMapping(p, backup_channel);
-	mcSHOW_DBG_MSG(("TX_TRACKING: ON\n"));
+	msg("TX_TRACKING: ON\n");
 #else
-	mcSHOW_DBG_MSG(("TX_TRACKING: OFF\n"));
+	msg("TX_TRACKING: OFF\n");
 #endif
 
 
@@ -1272,10 +1272,10 @@ void vDramCalibrationAllChannel(DRAMC_CTX_T *p)
 #ifdef DDR_INIT_TIME_PROFILING
 #if __ETT__
 	u4low_tick1 = GPT_GetTickCount(&u4high_tick1);
-	mcSHOW_TIME_MSG(("	(4) vDramCalibrationAllChannel() take %d ms\n\r", ((u4low_tick1 - u4low_tick0) * 76) / 1000000));
+	time_msg("	(4) vDramCalibrationAllChannel() take %d ms\n\r", ((u4low_tick1 - u4low_tick0) * 76) / 1000000);
 #else
 	u4low_tick1 = get_timer(u4low_tick0);
-	mcSHOW_TIME_MSG(("	(4) vDramCalibrationAllChannel() take %d ms\n\r", u4low_tick1));
+	time_msg("	(4) vDramCalibrationAllChannel() take %d ms\n\r", u4low_tick1);
 #endif
 #endif
 }
@@ -1350,12 +1350,12 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 			p->dram_cbt_mode[RANK_1] = CBT_NORMAL_MODE;
 			break;
 		default:
-			mcSHOW_ERR_MSG(("Error!"));
+			err("Error!");
 			break;
 	}
-	mcSHOW_DBG_MSG2(("dram_cbt_mode_extern: %d\n"
+	msg2("dram_cbt_mode_extern: %d\n"
 					  "dram_cbt_mode [RK0]: %d, [RK1]: %d\n",
-					  (int)dram_cbt_mode_extern, p->dram_cbt_mode[RANK_0], p->dram_cbt_mode[RANK_1]));
+					  (int)dram_cbt_mode_extern, p->dram_cbt_mode[RANK_0], p->dram_cbt_mode[RANK_1]);
 
 #if ENABLE_APB_MASK_WRITE
 	U32 u4GPTTickCnt;
@@ -1365,7 +1365,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	DramcRegAPBWriteMask(p);
 
 	u4GPTTickCnt = TimeProfileEnd();
-	mcSHOW_TIME_MSG(("[DramcRegAPBWriteMask] take %d ms\n", u4GPTTickCnt / 1000));
+	time_msg("[DramcRegAPBWriteMask] take %d ms\n", u4GPTTickCnt / 1000);
 
 	TestAPBMaskWriteFunc(p);
 
@@ -1397,7 +1397,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	}
 #endif
 
-	mcSHOW_DBG_MSG(("\n\n[Bian_co] ETT version 0.0.0.1\n dram_type %d, R0 cbt_mode %d, R1 cbt_mode %d VENDOR=%d\n\n", p->dram_type, p->dram_cbt_mode[RANK_0], p->dram_cbt_mode[RANK_1], p->vendor_id));
+	info("\n\n[Bian_co] ETT version 0.0.0.1\n dram_type %d, R0 cbt_mode %d, R1 cbt_mode %d VENDOR=%d\n\n", p->dram_type, p->dram_cbt_mode[RANK_0], p->dram_cbt_mode[RANK_1], p->vendor_id);
 
 #if __Petrus_TO_BE_PORTING__
 	vDramcInit_PreSettings(p);
@@ -1435,7 +1435,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("[DramcSwImpedanceCal] Warnning: Need confirm DRAM type for SW IMP Calibration !!!\n"));
+		err("[DramcSwImpedanceCal] Warnning: Need confirm DRAM type for SW IMP Calibration !!!\n");
 		#if __ETT__
 		while (1);
 		#endif
@@ -1444,12 +1444,12 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 
 #ifdef DDR_INIT_TIME_PROFILING
 	CPU_Cycle = TimeProfileEnd();
-	mcSHOW_TIME_MSG(("(0)Pre_Init + SwImdepance takes %d ms\n\r", CPU_Cycle / 1000));
+	time_msg("(0)Pre_Init + SwImdepance takes %d ms\n\r", CPU_Cycle / 1000);
 #endif
 
 #ifdef DUMP_INIT_RG_LOG_TO_DE
 	gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag = 1;
-	mcSHOW_DUMP_INIT_RG_MSG(("\n\n//=== DDR\033[1;32m%d\033[m\n",p->frequency<<1));
+	mcSHOW_DUMP_INIT_RG_MSG("\n\n//=== DDR\033[1;32m%d\033[m\n",p->frequency<<1);
 #endif
 
 	//Clk free run
@@ -1595,7 +1595,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	U32 u4err_value;
 	DramcDmaEngine((DRAMC_CTX_T *)p, 0x50000000, 0x60000000, 0xff00, 8, DMA_PREPARE_DATA_ONLY, p->support_channel_num);
 	u4err_value = DramcDmaEngine((DRAMC_CTX_T *)p, 0x50000000, 0x60000000, 0xff00, 8, DMA_CHECK_DATA_ACCESS_AND_COMPARE, p->support_channel_num);
-	mcSHOW_DBG_MSG(("DramC_TX_OE_Calibration  0x%X\n", u4err_value));
+	msg("DramC_TX_OE_Calibration  0x%X\n", u4err_value);
 #endif
 
 #if !LCPLL_IC_SCAN
@@ -1626,12 +1626,12 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	vGetErrorTypeResult(p);
 	#endif
 	#if CPU_RW_TEST_AFTER_K
-	mcSHOW_DBG_MSG(("\n[MEM_TEST] 02: After DFS, before run time config\n"));
+	msg("\n[MEM_TEST] 02: After DFS, before run time config\n");
 	vDramCPUReadWriteTestAfterCalibration(p);
 #endif
 
 	#if TA2_RW_TEST_AFTER_K
-	mcSHOW_DBG_MSG(("\n[TA2_TEST]\n"));
+	msg("\n[TA2_TEST]\n");
 	TA2_Test_Run_Time_HW(p);
 	#endif
 
@@ -1644,7 +1644,7 @@ if (u2TimeProfileCnt == (DDR_INIT_TIME_PROFILING_TEST_CNT - 1)) //last time of l
 #endif
 	{
 		EnableDFSHwModeClk(p);
-		mcSHOW_DBG_MSG(("DFS_SHUFFLE_HW_MODE: ON\n"));
+		msg("DFS_SHUFFLE_HW_MODE: ON\n");
 		if (gAndroid_DVFS_en == TRUE) // shuffle to DDR3733 boot
 		{
 #if defined(SLT)
@@ -1667,20 +1667,20 @@ if (u2TimeProfileCnt == (DDR_INIT_TIME_PROFILING_TEST_CNT - 1)) //last time of l
 
 		EnableDramcTrackingBySPMControl(p);
 
-		mcSHOW_DBG_MSG(("\n\nSettings after calibration\n\n"));
-		mcDUMP_REG_MSG(("\n\nSettings after calibration\n\n"));
+		msg("\n\nSettings after calibration\n\n");
+		reg_msg("\n\nSettings after calibration\n\n");
 #endif
 
 		DramcRunTimeConfig(p);
 	}
 
 	#if CPU_RW_TEST_AFTER_K
-	mcSHOW_DBG_MSG(("\n[MEM_TEST] 03: After run time config\n"));
+	msg("\n[MEM_TEST] 03: After run time config\n");
 	vDramCPUReadWriteTestAfterCalibration(p);
 	#endif
 
 	#if TA2_RW_TEST_AFTER_K
-	mcSHOW_DBG_MSG(("\n[TA2_TEST]\n"));
+	msg("\n[TA2_TEST]\n");
 	TA2_Test_Run_Time_HW(p);
 	#endif
 
@@ -1692,13 +1692,13 @@ if (u2TimeProfileCnt == (DDR_INIT_TIME_PROFILING_TEST_CNT - 1)) //last time of l
 		//if ((s4value = dramc_complex_mem_test (0x46000000, 0x2000)) == 0)
 		if ((s4value = dramc_complex_mem_test (0x40024000, 0x20000)) == 0)
 		{
-			mcSHOW_DBG_MSG(("1st complex R/W mem test pass\n"));
+			msg("1st complex R/W mem test pass\n");
 		}
 		else
 		{
-			mcSHOW_DBG_MSG(("1st complex R/W mem test fail :-%d\n", -s4value));
+			msg("1st complex R/W mem test fail :-%d\n", -s4value);
 #if defined(SLT)
-			mcSHOW_ERR_MSG(("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000\n"));
+			err("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000\n");
 			while (1);
 #endif
 		}
@@ -1711,7 +1711,7 @@ if (u2TimeProfileCnt == (DDR_INIT_TIME_PROFILING_TEST_CNT - 1)) //last time of l
 
 #ifdef DDR_INIT_TIME_PROFILING
 	CPU_Cycle = TimeProfileEnd();
-	mcSHOW_TIME_MSG(("	(5) After calibration takes %d ms\n\r", CPU_Cycle / 1000));
+	time_msg("	(5) After calibration takes %d ms\n\r", CPU_Cycle / 1000);
 #endif	// end of DDR_INIT_TIME_PROFILING
 
 #endif//SW_CHANGE_FOR_SIMULATION
@@ -1745,7 +1745,7 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 		vSetRank(DramConfig, ii);
 
 		if (!psra || psra->cbt) {
-			mcSHOW_DBG_MSG(("\n----->DramcCBT begin...\n"));
+			msg("\n----->DramcCBT begin...\n");
 			timestamp_show();
 		#if CBT_O1_PINMUX_WORKAROUND
 			CmdBusTrainingLP45(DramConfig, AUTOK_OFF); //Cannot use aito-k in A60868
@@ -1756,12 +1756,12 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 				CmdBusTrainingLP45(DramConfig, AUTOK_OFF);
 		#endif
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcCBT end<-----\n\n"));
+			msg("DramcCBT end<-----\n\n");
 		}
 	#if ENABLE_EYESCAN_GRAPH
-	   mcSHOW_DBG_MSG(("CBT EYESCAN start<-----\n\n"));
+	   msg("CBT EYESCAN start<-----\n\n");
 	   print_EYESCAN_LOG_message(DramConfig, 0); //draw CBT eyescan
-	   mcSHOW_DBG_MSG(("CBT EYESCAN end<-----\n\n"));
+	   msg("CBT EYESCAN end<-----\n\n");
 	   #endif
 	}
 
@@ -1788,7 +1788,7 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 		if (!(u1IsLP4Div4DDR800(DramConfig) && (DramConfig->rank == RANK_1))) // skip for DDR800 rank1
 		{
 			if (!psra || psra->wl) {
-				mcSHOW_DBG_MSG(("\n----->DramcWriteLeveling(PI) begin...\n"));
+				msg("\n----->DramcWriteLeveling(PI) begin...\n");
 				timestamp_show();
 				if (psra)
 				{
@@ -1798,7 +1798,7 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 					DramcWriteLeveling(DramConfig, AUTOK_OFF, PI_BASED);
 
 				timestamp_show();
-				mcSHOW_DBG_MSG(("DramcWriteLeveling(PI) end<-----\n\n"));
+				msg("DramcWriteLeveling(PI) end<-----\n\n");
 			}
 		}
 	}
@@ -1808,20 +1808,20 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 
 #if 1//(SIMULATION_GATING == 1)
 		if (!psra || psra->gating) {
-			mcSHOW_DBG_MSG(("\n----->DramcGating begin...\n"));
+			msg("\n----->DramcGating begin...\n");
 			timestamp_show();
 			if (psra)
 				dramc_rx_dqs_gating_cal(DramConfig, psra->gating_autok, 0);
 			else
 				dramc_rx_dqs_gating_cal(DramConfig, AUTOK_OFF, 0);
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcGating end < -----\n\n"));
+			msg("DramcGating end < -----\n\n");
 		}
 #endif
 
 #if 1//(SIMULATION_RX_RDDQC == 1)
 		if (!psra || psra->rddqc) {
-			mcSHOW_DBG_MSG(("\n----->DramcRxWindowPerbitCal RDDQC begin...\n"));
+			msg("\n----->DramcRxWindowPerbitCal RDDQC begin...\n");
 			timestamp_show();
 
 			#if 0 // Used when testing LP5 RK1 WCK2CK in high efficiency mode and differential mode.
@@ -1835,7 +1835,7 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 			#endif
 			DramcRxWindowPerbitCal(DramConfig, PATTERN_RDDQC, NULL, AUTOK_OFF);
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcRxWindowPerbitCal end<-----\n\n"));
+			msg("DramcRxWindowPerbitCal end<-----\n\n");
 		}
 #endif // (SIMULATION_RX_RDDQC == 1)
 
@@ -1844,17 +1844,17 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 		if (is_lp5_family(DramConfig) && DramConfig->frequency >= GetFreqBySel(DramConfig,LP5_DDR4266))
 		{
 			if (!psra) {
-				mcSHOW_DBG_MSG(("\n----->DramcDutyCycleMonitor begin...\n"));
+				msg("\n----->DramcDutyCycleMonitor begin...\n");
 				timestamp_show();
 				DramcDutyCycleMonitor(DramConfig);
 				timestamp_show();
-				mcSHOW_DBG_MSG(("DramcDutyCycleMonitor end<-----\n\n"));
+				msg("DramcDutyCycleMonitor end<-----\n\n");
 
-				mcSHOW_DBG_MSG(("\n----->DramcWriteLeveling(DLY) begin...\n"));
+				msg("\n----->DramcWriteLeveling(DLY) begin...\n");
 				timestamp_show();
 				DramcWriteLeveling(DramConfig, psra->wl_autok, DLY_BASED);
 				timestamp_show();
-				mcSHOW_DBG_MSG(("DramcWriteLeveling(DLY)end<-----\n\n"));
+				msg("DramcWriteLeveling(DLY)end<-----\n\n");
 			}
 		}
 #endif /* (SIMULATION_DUTY_CYC_MONITOR == 1) */
@@ -1862,7 +1862,7 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 
 #if 1//(SIMULATION_TX_PERBIT == 1)
 		if (!psra || psra->tx_perbit) {
-			mcSHOW_DBG_MSG(("\n----->DramcTxWindowPerbitCal begin...\n"));
+			msg("\n----->DramcTxWindowPerbitCal begin...\n");
 			timestamp_show();
 			if (psra)
 				DramcTxWindowPerbitCal(DramConfig, TX_DQ_DQS_MOVE_DQ_DQM,
@@ -1885,32 +1885,32 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 				DramcTxWindowPerbitCal(DramConfig, TX_DQ_DQS_MOVE_DQ_ONLY,
 						FALSE, AUTOK_OFF);
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcTxWindowPerbitCal end<-----\n\n"));
+			msg("DramcTxWindowPerbitCal end<-----\n\n");
 
 		#if ENABLE_EYESCAN_GRAPH
-			   mcSHOW_DBG_MSG(("\n----->DramcTxEYESCAN begin...\n"));
+			   msg("\n----->DramcTxEYESCAN begin...\n");
 			   Dramc_K_TX_EyeScan_Log(DramConfig);
 			   print_EYESCAN_LOG_message(DramConfig, 2); //draw TX eyescan
-			   mcSHOW_DBG_MSG(("\n----->DramcTxEYESCAN end...\n"));
+			   msg("\n----->DramcTxEYESCAN end...\n");
 			   #endif
 		}
 #endif // (SIMULATION_TX_PERBIT == 1)
 
 #if 1//(SIMULATION_DATLAT == 1)
 		if (1) { // No parameter in correspondence with by now
-			mcSHOW_DBG_MSG(("\n----->DramcRxdatlatCal begin...\n"));
+			msg("\n----->DramcRxdatlatCal begin...\n");
 			timestamp_show();
 
 			DramcRxdatlatCal(DramConfig);
 
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcRxdatlatCal end<-----\n\n"));
+			msg("DramcRxdatlatCal end<-----\n\n");
 		}
 #endif // (SIMULATION_DATLAT == 1)
 
 #if 1//(SIMULATION_RX_PERBIT == 1)
 		if (!psra || psra->rx_perbit) {
-			mcSHOW_DBG_MSG(("\n----->DramcRxWindowPerbitCal begin...\n"));
+			msg("\n----->DramcRxWindowPerbitCal begin...\n");
 			timestamp_show();
 			if (psra)
 				DramcRxWindowPerbitCal(DramConfig, PATTERN_TEST_ENGINE,
@@ -1919,12 +1919,12 @@ static void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_ra
 				DramcRxWindowPerbitCal(DramConfig, PATTERN_TEST_ENGINE,
 						NULL /*Set Vref = 0 to test*/, AUTOK_OFF);
 			timestamp_show();
-			mcSHOW_DBG_MSG(("DramcRxWindowPerbitCal end<-----\n\n"));
+			msg("DramcRxWindowPerbitCal end<-----\n\n");
 
 			#if ENABLE_EYESCAN_GRAPH
-			   mcSHOW_DBG_MSG(("DramcRxWindowPerbitCal EYESCAN start<-----\n\n"));
+			   msg("DramcRxWindowPerbitCal EYESCAN start<-----\n\n");
 			   print_EYESCAN_LOG_message(DramConfig, 1); //draw RX eyescan
-			   mcSHOW_DBG_MSG(("DramcRxWindowPerbitCal EYESCAN end<-----\n\n"));
+			   msg("DramcRxWindowPerbitCal EYESCAN end<-----\n\n");
 			#endif
 		}
 #endif // (SIMULATION_RX_PERBIT == 1)
@@ -2076,9 +2076,9 @@ static void DPI_vDramCalibrationAllChannel(DRAMC_CTX_T *DramConfig, cal_sv_rand_
 	}
 
 	vSetPHY2ChannelMapping(DramConfig, backup_channel);
-	mcSHOW_DBG_MSG(("TX_TRACKING: ON\n"));
+	msg("TX_TRACKING: ON\n");
 #else
-	mcSHOW_DBG_MSG(("TX_TRACKING: OFF\n"));
+	msg("TX_TRACKING: OFF\n");
 #endif
 
 ///TODO: wait for porting ---
@@ -2103,29 +2103,29 @@ void EnablePLLtoSPMControl(DRAMC_CTX_T *p)
 
 void dump_dramc_ctx(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG(("== DRAMC_CTX_T ==\n"));
-	mcSHOW_DBG_MSG(("support_channel_num:	 %d\n", p->support_channel_num));
-	mcSHOW_DBG_MSG(("channel:				 %d\n", p->channel));
-	mcSHOW_DBG_MSG(("support_rank_num:		 %d\n", p->support_rank_num));
-	mcSHOW_DBG_MSG(("rank:					 %d\n", p->rank));
-	mcSHOW_DBG_MSG(("freq_sel:				 %d\n", p->freq_sel));
-	mcSHOW_DBG_MSG(("shu_type:				 %d\n", p->shu_type));
-	mcSHOW_DBG_MSG(("dram_type: 			 %d\n", p->dram_type));
-	mcSHOW_DBG_MSG(("dram_fsp:				 %d\n", p->dram_fsp));
-	mcSHOW_DBG_MSG(("odt_onoff: 			 %d\n", p->odt_onoff));
-	mcSHOW_DBG_MSG(("dram_cbt_mode: 		 %d, %d\n", (int)p->dram_cbt_mode[0], (int)p->dram_cbt_mode[1]));
-	mcSHOW_DBG_MSG(("DBI_R_onoff:			 %d, %d\n", (int)p->DBI_R_onoff[0], (int)p->DBI_R_onoff[1]));
-	mcSHOW_DBG_MSG(("DBI_W_onoff:			 %d, %d\n", (int)p->DBI_W_onoff[0], (int)p->DBI_W_onoff[1]));
-	mcSHOW_DBG_MSG(("data_width:			 %d\n", p->data_width));
-	mcSHOW_DBG_MSG(("test2_1:			  0x%x\n", p->test2_1));
-	mcSHOW_DBG_MSG(("test2_2:			  0x%x\n", p->test2_2));
-	mcSHOW_DBG_MSG(("frequency: 			 %d\n", p->frequency));
-	mcSHOW_DBG_MSG(("freqGroup: 			 %d\n", p->freqGroup));
-	mcSHOW_DBG_MSG(("lp5_training_mode: 			 %d\n", p->lp5_training_mode));
-	mcSHOW_DBG_MSG(("lp5_cbt_phase: 			 %d\n", p->lp5_cbt_phase));
-	mcSHOW_DBG_MSG(("new_cbt_mode:				%d\n", p->new_cbt_mode));
-	mcSHOW_DBG_MSG(("u1PLLMode: 			 %d\n", p->u1PLLMode));
-	mcSHOW_DBG_MSG(("curDBIState:			   %d\n", p->curDBIState));
+	msg("== DRAMC_CTX_T ==\n");
+	msg("support_channel_num:	 %d\n", p->support_channel_num);
+	msg("channel:				 %d\n", p->channel);
+	msg("support_rank_num:		 %d\n", p->support_rank_num);
+	msg("rank:					 %d\n", p->rank);
+	msg("freq_sel:				 %d\n", p->freq_sel);
+	msg("shu_type:				 %d\n", p->shu_type);
+	msg("dram_type: 			 %d\n", p->dram_type);
+	msg("dram_fsp:				 %d\n", p->dram_fsp);
+	msg("odt_onoff: 			 %d\n", p->odt_onoff);
+	msg("dram_cbt_mode: 		 %d, %d\n", (int)p->dram_cbt_mode[0], (int)p->dram_cbt_mode[1]);
+	msg("DBI_R_onoff:			 %d, %d\n", (int)p->DBI_R_onoff[0], (int)p->DBI_R_onoff[1]);
+	msg("DBI_W_onoff:			 %d, %d\n", (int)p->DBI_W_onoff[0], (int)p->DBI_W_onoff[1]);
+	msg("data_width:			 %d\n", p->data_width);
+	msg("test2_1:			  0x%x\n", p->test2_1);
+	msg("test2_2:			  0x%x\n", p->test2_2);
+	msg("frequency: 			 %d\n", p->frequency);
+	msg("freqGroup: 			 %d\n", p->freqGroup);
+	msg("lp5_training_mode: 			 %d\n", p->lp5_training_mode);
+	msg("lp5_cbt_phase: 			 %d\n", p->lp5_cbt_phase);
+	msg("new_cbt_mode:				%d\n", p->new_cbt_mode);
+	msg("u1PLLMode: 			 %d\n", p->u1PLLMode);
+	msg("curDBIState:			   %d\n", p->curDBIState);
 }
 
 
@@ -2192,7 +2192,7 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 		/*
 		 * for SA's simulation
 		 */
-		mcSHOW_DBG_MSG(("enter SA's simulation flow.\n"));
+		msg("enter SA's simulation flow.\n");
 		p->support_channel_num = CHANNEL_SINGLE;
 		p->channel = CHANNEL_A;
 		p->support_rank_num = RANK_DUAL;
@@ -2275,7 +2275,7 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 		/*
 		 * for DV's regression
 		 */
-		mcSHOW_DBG_MSG(("enter DV's regression flow.\n"));
+		msg("enter DV's regression flow.\n");
 		p->support_channel_num = CHANNEL_SINGLE;
 		p->channel = psra->calibration_channel;
 		p->support_rank_num = RANK_DUAL;
@@ -2342,44 +2342,44 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 	#define __FW_VER__ "All struct move done, new RX range -- 444"
 
 	if (u1IsLP4Family(p->dram_type)) {
-		mcSHOW_DBG_MSG(("%s enter == LP4 == ...%s\n", __FUNCTION__, __FW_VER__));
+		msg("%s enter == LP4 == ...%s\n", __FUNCTION__, __FW_VER__);
 	} else {
-		mcSHOW_DBG_MSG(("%s enter == LP5 == ...%s\n", __FUNCTION__, __FW_VER__));
+		msg("%s enter == LP5 == ...%s\n", __FUNCTION__, __FW_VER__);
 	}
-	mcSHOW_DBG_MSG((CHK_INCLUDE_LOCAL_HEADER));
+	msg(CHK_INCLUDE_LOCAL_HEADER);
 
-	mcSHOW_DBG_MSG(("SIMULATION_LP4_ZQ			 ... %d\n", SIMULATION_LP4_ZQ));
-	mcSHOW_DBG_MSG(("SIMULATION_SW_IMPED		 ... %d\n", SIMULATION_SW_IMPED));
-	mcSHOW_DBG_MSG(("SIMULATION_MIOCK_JMETER	 ... %d\n", SIMULATION_MIOCK_JMETER));
-	mcSHOW_DBG_MSG(("SIMULATION_8PHASE			 ... %d\n", SIMULATION_8PHASE));
-	mcSHOW_DBG_MSG(("SIMULATION_RX_INPUT_BUF	 ... %d\n", SIMULATION_RX_INPUT_BUF));
-	mcSHOW_DBG_MSG(("SIMUILATION_CBT			 ... %d\n", SIMUILATION_CBT));
-	mcSHOW_DBG_MSG(("SIMULATION_WRITE_LEVELING	 ... %d\n", SIMULATION_WRITE_LEVELING));
-	mcSHOW_DBG_MSG(("SIMULATION_DUTY_CYC_MONITOR ... %d\n", SIMULATION_DUTY_CYC_MONITOR));
-	mcSHOW_DBG_MSG(("SIMULATION_GATING			 ... %d\n", SIMULATION_GATING));
-	mcSHOW_DBG_MSG(("SIMULATION_DATLAT			 ... %d\n", SIMULATION_DATLAT));
-	mcSHOW_DBG_MSG(("SIMULATION_RX_RDDQC		 ... %d\n", SIMULATION_RX_RDDQC));
-	mcSHOW_DBG_MSG(("SIMULATION_RX_PERBIT		 ... %d\n", SIMULATION_RX_PERBIT));
-	mcSHOW_DBG_MSG(("SIMULATION_TX_PERBIT		 ... %d\n", SIMULATION_TX_PERBIT));
-	mcSHOW_DBG_MSG(("\n\n"));
+	msg("SIMULATION_LP4_ZQ			 ... %d\n", SIMULATION_LP4_ZQ);
+	msg("SIMULATION_SW_IMPED		 ... %d\n", SIMULATION_SW_IMPED);
+	msg("SIMULATION_MIOCK_JMETER	 ... %d\n", SIMULATION_MIOCK_JMETER);
+	msg("SIMULATION_8PHASE			 ... %d\n", SIMULATION_8PHASE);
+	msg("SIMULATION_RX_INPUT_BUF	 ... %d\n", SIMULATION_RX_INPUT_BUF);
+	msg("SIMUILATION_CBT			 ... %d\n", SIMUILATION_CBT);
+	msg("SIMULATION_WRITE_LEVELING	 ... %d\n", SIMULATION_WRITE_LEVELING);
+	msg("SIMULATION_DUTY_CYC_MONITOR ... %d\n", SIMULATION_DUTY_CYC_MONITOR);
+	msg("SIMULATION_GATING			 ... %d\n", SIMULATION_GATING);
+	msg("SIMULATION_DATLAT			 ... %d\n", SIMULATION_DATLAT);
+	msg("SIMULATION_RX_RDDQC		 ... %d\n", SIMULATION_RX_RDDQC);
+	msg("SIMULATION_RX_PERBIT		 ... %d\n", SIMULATION_RX_PERBIT);
+	msg("SIMULATION_TX_PERBIT		 ... %d\n", SIMULATION_TX_PERBIT);
+	msg("\n\n");
 
-	mcSHOW_DBG_MSG(("============== CTX before calibration ================\n"));
+	msg("============== CTX before calibration ================\n");
 	dump_dramc_ctx(p);
 
 	DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 
 	//vIO32Write4B_All2(p, DDRPHY_SHU_RK_CA_CMD1, 0x0FFF);
 	value = u4Dram_Register_Read(p, DRAMC_REG_DDRCOMMON0);
-	mcSHOW_DBG_MSG(("Get Addr:0x%x, Value:0x%x\n", DRAMC_REG_DDRCOMMON0, value));
+	msg("Get Addr:0x%x, Value:0x%x\n", DRAMC_REG_DDRCOMMON0, value);
 
 	value = u4Dram_Register_Read(p, DDRPHY_REG_SHU_RK_CA_CMD1);
-	mcSHOW_DBG_MSG(("Get Addr:0x%x, Value:0x%x\n", DDRPHY_REG_SHU_RK_CA_CMD1, value));
+	msg("Get Addr:0x%x, Value:0x%x\n", DDRPHY_REG_SHU_RK_CA_CMD1, value);
 
 	value = u4Dram_Register_Read(p, DDRPHY_REG_MISC_DQO1);
-	mcSHOW_DBG_MSG(("Get Addr:0x%x, Value:0x%x\n", DDRPHY_REG_MISC_DQO1, value));
+	msg("Get Addr:0x%x, Value:0x%x\n", DDRPHY_REG_MISC_DQO1, value);
 
 	value = u4Dram_Register_Read(p, DDRPHY_MD32_REG_SSPM_TIMER0_RESET_VAL );
-	mcSHOW_DBG_MSG(("Get Addr:0x%x, Value:0x%x\n", DDRPHY_MD32_REG_SSPM_TIMER0_RESET_VAL, value));
+	msg("Get Addr:0x%x, Value:0x%x\n", DDRPHY_MD32_REG_SSPM_TIMER0_RESET_VAL, value);
 
 	DramcBroadcastOnOff(DRAMC_BROADCAST_ON); //LP4 broadcast on
 
@@ -2405,14 +2405,14 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 	}
 
 #if (SIMULATION_SW_IMPED == 1)
-	mcSHOW_DBG_MSG(("\n----->DramcSwImpedanceCal begin...\n"));
+	msg("\n----->DramcSwImpedanceCal begin...\n");
 	timestamp_show();
 	// LP4 IMP_LOW_FREQ <= DDR3733, IMP_HIGH_FREQ >= DDR4266
 	// LP5 IMP_LOW_FREQ <= DDR3733, IMP_HIGH_FREQ >= DDR4266
 	DramcSwImpedanceCal(p, 1, IMP_LOW_FREQ);
 	DramcSwImpedanceCal(p, 1, IMP_HIGH_FREQ);
 	timestamp_show();
-	mcSHOW_DBG_MSG(("DramcSwImpedanceCal end<-----\n\n"));
+	msg("DramcSwImpedanceCal end<-----\n\n");
 #endif /* (SIMULATION_SW_IMPED == 1) */
 
 #if DV_SIMULATION_INIT_C
@@ -2429,7 +2429,7 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 
 #ifdef DUMP_INIT_RG_LOG_TO_DE
 	#if 0 //Dump RG to other shuffle for FT used, don't delete
-		mcSHOW_DUMP_INIT_RG_MSG(("\n\n\n\n\n\n===== Save to Shuffle RG ======\n"));
+		mcSHOW_DUMP_INIT_RG_MSG("\n\n\n\n\n\n===== Save to Shuffle RG ======\n");
 		DramcSaveToShuffleReg(p, DRAM_DFS_SHUFFLE_1, DRAM_DFS_SHUFFLE_3);
 	#endif
 		while (1);
@@ -2440,20 +2440,20 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 
 
 #if (SIMULATION_MIOCK_JMETER == 1)
-	mcSHOW_DBG_MSG(("\n----->DramcMiockJmeter begin...\n"));
+	msg("\n----->DramcMiockJmeter begin...\n");
 	timestamp_show();
 	PRE_MIOCK_JMETER_HQA_USED(p);
 	timestamp_show();
-	mcSHOW_DBG_MSG(("DramcMiockJmeter end<-----\n\n"));
+	msg("DramcMiockJmeter end<-----\n\n");
 #endif /* (SIMULATION_MIOCK_JMETER == 1) */
 
 #if (SIMULATION_8PHASE == 1)
 	if(is_lp5_family(p) && (p->frequency >= 2133)) {
-		mcSHOW_DBG_MSG(("\n----->Dramc8PhaseCal begin...\n"));
+		msg("\n----->Dramc8PhaseCal begin...\n");
 		timestamp_show();
 		Dramc8PhaseCal(p); // it must set before duty calib
 		timestamp_show();
-		mcSHOW_DBG_MSG(("Dramc8PhaseCal end<-----\n\n"));
+		msg("Dramc8PhaseCal end<-----\n\n");
 	}
 #endif /* (SIMULATION_8PHASE == 1) */
 
@@ -2486,11 +2486,11 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 
 		#if (SIMULATION_8PHASE == 1)
 		if(is_lp5_family(p) && (p->frequency >= 2133)) {
-			mcSHOW_DBG_MSG(("\n----->Dramc8PhaseCal begin...\n"));
+			msg("\n----->Dramc8PhaseCal begin...\n");
 			timestamp_show();
 			Dramc8PhaseCal(p); // it must set before duty calib
 			timestamp_show();
-			mcSHOW_DBG_MSG(("Dramc8PhaseCal end<-----\n\n"));
+			msg("Dramc8PhaseCal end<-----\n\n");
 		}
 		#endif /* (SIMULATION_8PHASE == 1) */
 
@@ -2528,7 +2528,7 @@ DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SHUFFLE_MAX] = {
 	DramcModeRegReadByRank(p, RANK_0, 4, &u2val1);
 	DramcModeRegReadByRank(p, RANK_0, 5, &u2val2);
 	DramcModeRegReadByRank(p, RANK_0, 8, &u2val3);
-	mcSHOW_DBG_MSG(("[Runtime time MRR] MR4 = 0x%x, MR5 = 0x%x, MR8 = 0x%x\n", u2val1, u2val2, u2val3));
+	msg("[Runtime time MRR] MR4 = 0x%x, MR5 = 0x%x, MR8 = 0x%x\n", u2val1, u2val2, u2val3);
 #endif
 
 #if 0//DV_SIMULATION_DFS // NOTE: Don't use DramcDFSDirectJump_SPMMode. it will cause NULL object access.

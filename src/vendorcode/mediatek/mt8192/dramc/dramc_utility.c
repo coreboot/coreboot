@@ -39,7 +39,7 @@ u8 is_heff_mode(DRAMC_CTX_T *p)
 {
 	u8 res = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0),
 			SHU_COMMON0_LP5HEFF_MODE);
-	mcSHOW_DBG_MSG5(("HEFF Mode: %d\n", res));
+	msg5("HEFF Mode: %d\n", res);
 	return res? TRUE: FALSE;
 }
 
@@ -120,13 +120,13 @@ void DramcBroadcastOnOff(U32 bOnOff)
 			if (bOnOff)
 			{
 				broadcast_on();
-				mcSHOW_DBG_MSG(("Broadcast ON\n"));
+				msg("Broadcast ON\n");
 				u1BroadcastOnOff = bOnOff;
 			}
 			else
 			{
 				broadcast_off();
-				mcSHOW_DBG_MSG(("Broadcast OFF\n"));
+				msg("Broadcast OFF\n");
 				u1BroadcastOnOff = bOnOff;
 			}
 		}
@@ -142,7 +142,7 @@ void DramcBroadcastOnOff(U32 bOnOff)
 			val = bOnOff;
 			// *((volatile unsigned int *)(DRAMC_WBR)) = bOnOff;
 
-			mcSHOW_DUMP_INIT_RG_MSG(("*((UINT32P)(0x%x)) = 0x%x;\n",addr, val));
+			mcSHOW_DUMP_INIT_RG_MSG("*(UINT32P)(0x%x)) = 0x%x;\n",addr, val);
 	//		  mcDELAY_MS(1);
 #if (FOR_DV_SIMULATION_USED==0)
 			GPT_Delay_ms(1);
@@ -188,14 +188,14 @@ void CheckDramcWBR(U32 u4address)
 		#endif
 		if ((((u4address - Channel_A_DRAMC_NAO_BASE_VIRTUAL) >> POS_BANK_NUM) & channel_and_value) != CHANNEL_A)
 		{
-			mcSHOW_ERR_MSG(("Error! virtual address 0x%x is not CHA and cannot use Dramc WBR\n", u4address));
+			err("Error! virtual address 0x%x is not CHA and cannot use Dramc WBR\n", u4address);
 			while (1);
 		}
 			for (i = 0; i < CANNOT_USE_WBR_SIZE; i++)
 			{
 				if (u4Cannot_Use_Dramc_WBR_Reg[i] == u4address)
 				{
-					mcSHOW_ERR_MSG(("Error! virtual address 0x%x cannot use Dramc WBR\n", u4address));
+					err("Error! virtual address 0x%x cannot use Dramc WBR\n", u4address);
 					while (1);
 				}
 			 }
@@ -359,7 +359,7 @@ static void setFreqGroup(DRAMC_CTX_T *p)
 		}
 	}
 
-	mcSHOW_DBG_MSG3(("[setFreqGroup] p-> frequency %u, freqGroup: %u\n", p->frequency, p->freqGroup));
+	msg3("[setFreqGroup] p-> frequency %u, freqGroup: %u\n", p->frequency, p->freqGroup);
 	return;
 }
 
@@ -399,8 +399,8 @@ void GetPhyPllFrequency(DRAMC_CTX_T *p)
 	if (u1SopenDQ == ENABLE) // for 1:4 mode DDR800 (3.2G/DIV4)
 		u4DataRate >>= 2;
 
-	//mcSHOW_DBG_MSG(("PCW=0x%X, u4PREDIV=%d, u4POSDIV=%d, CKDIV4=%d, DataRate=%d\n", u4SDM_PCW, u4PREDIV, u4POSDIV, u4CKDIV4, u4DataRate));
-	mcSHOW_DBG_MSG(("[F] DataRate=%d at SHU%d\n", u4DataRate, u1ShuLevel));
+	//msg("PCW=0x%X, u4PREDIV=%d, u4POSDIV=%d, CKDIV4=%d, DataRate=%d\n", u4SDM_PCW, u4PREDIV, u4POSDIV, u4CKDIV4, u4DataRate);
+	msg("[F] DataRate=%d at SHU%d\n", u4DataRate, u1ShuLevel);
 }
 #endif
 
@@ -484,14 +484,14 @@ DRAM_CBT_MODE_T vGet_Dram_CBT_Mode(DRAMC_CTX_T *p)
 void vPrintCalibrationBasicInfo(DRAMC_CTX_T *p)
 {
 #if __ETT__
-	mcSHOW_DBG_MSG(("===============================================================================\n"
+	msg("===============================================================================\n"
 					"Dram Type= %d, Freq= %u, FreqGroup= %u, CH_%d, rank %d\n"
 					"fsp= %d, odt_onoff= %d, Byte mode= %d, DivMode= %d\n"
 					"===============================================================================\n",
 						p->dram_type, DDRPhyFMeter()?DDRPhyFMeter():p->frequency, p->freqGroup, p->channel, p->rank,
-						p->dram_fsp, p->odt_onoff, p->dram_cbt_mode[p->rank], vGet_Div_Mode(p)));
+						p->dram_fsp, p->odt_onoff, p->dram_cbt_mode[p->rank], vGet_Div_Mode(p));
 #else
-	mcSHOW_DBG_MSG(("==\n"
+	msg("==\n"
 					"Dram Type= %d, Freq= %u, CH_%d, rank %d\n"
 					"fsp= %d, odt_onoff= %d, Byte mode= %d, DivMode= %d\n"
 					"==\n",
@@ -502,34 +502,34 @@ void vPrintCalibrationBasicInfo(DRAMC_CTX_T *p)
 						p->dram_fsp,
 						p->odt_onoff,
 						p->dram_cbt_mode[p->rank],
-						vGet_Div_Mode(p)));
+						vGet_Div_Mode(p));
 #endif
 }
 
 #if VENDER_JV_LOG
 void vPrintCalibrationBasicInfo_ForJV(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG5(("\n\nDram type:"));
+	msg5("\n\nDram type:");
 
 	switch (p->dram_type)
 	{
 		case TYPE_LPDDR4:
-			mcSHOW_DBG_MSG5(("LPDDR4\t"));
+			msg5("LPDDR4\t");
 			break;
 
 		case TYPE_LPDDR4X:
-			mcSHOW_DBG_MSG5(("LPDDR4X\t"));
+			msg5("LPDDR4X\t");
 			break;
 
 		case TYPE_LPDDR4P:
-			mcSHOW_DBG_MSG5(("LPDDR4P\t"));
+			msg5("LPDDR4P\t");
 			break;
 	}
 
-	mcSHOW_DBG_MSG5(("Freq: %d, FreqGroup %u, channel %d, rank %d\n"
+	msg5("Freq: %d, FreqGroup %u, channel %d, rank %d\n"
 					 "dram_fsp= %d, odt_onoff= %d, Byte mode= %d, DivMode= %d\n\n",
 										p->frequency, p->freqGroup, p->channel, p->rank,
-										p->dram_fsp, p->odt_onoff, p->dram_cbt_mode[p->rank], vGet_Div_Mode(p)));
+										p->dram_fsp, p->odt_onoff, p->dram_cbt_mode[p->rank], vGet_Div_Mode(p));
 
 	return;
 }
@@ -607,7 +607,7 @@ U16 GetFreqBySel(DRAMC_CTX_T *p, DRAM_PLL_FREQ_SEL_T sel)
 			break;
 
 		default:
-			mcSHOW_ERR_MSG(("[GetFreqBySel] freq sel is incorrect !!!\n"));
+			err("[GetFreqBySel] freq sel is incorrect !!!\n");
 			break;
 	}
 
@@ -651,7 +651,7 @@ DRAM_PLL_FREQ_SEL_T GetSelByFreq(DRAMC_CTX_T *p, U16 u2freq)
 			sel=LP4_DDR400;
 			break;
 		default:
-			mcSHOW_ERR_MSG(("[GetSelByFreq] sel is incorrect !!!\n"));
+			err("[GetSelByFreq] sel is incorrect !!!\n");
 			break;
 	}
 
@@ -769,7 +769,7 @@ void DramcWriteDBIOnOff(DRAMC_CTX_T *p, U8 onoff)
 {
 	// DRAMC Write-DBI On/Off
 	vIO32WriteFldAlign_All(DRAMC_REG_SHU_TX_SET0, onoff, SHU_TX_SET0_DBIWR);
-	mcSHOW_DBG_MSG(("DramC Write-DBI %s\n", ((onoff == DBI_ON) ? "on" : "off")));
+	msg("DramC Write-DBI %s\n", (onoff == DBI_ON) ? "on" : "off");
 }
 
 void DramcReadDBIOnOff(DRAMC_CTX_T *p, U8 onoff)
@@ -777,15 +777,15 @@ void DramcReadDBIOnOff(DRAMC_CTX_T *p, U8 onoff)
 	// DRAMC Read-DBI On/Off
 	vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B0_DQ7, onoff, SHU_B0_DQ7_R_DMDQMDBI_SHU_B0);
 	vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ7, onoff, SHU_B1_DQ7_R_DMDQMDBI_SHU_B1);
-	mcSHOW_DBG_MSG(("DramC Read-DBI %s\n", ((onoff == DBI_ON) ? "on" : "off")));
+	msg("DramC Read-DBI %s\n", (onoff == DBI_ON) ? "on" : "off");
 }
 #if ENABLE_READ_DBI
 void SetDramModeRegForReadDBIOnOff(DRAMC_CTX_T *p, U8 u1fsp, U8 onoff)
 {
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
-	//mcSHOW_DBG_MSG(("--Fsp%d --\n", p->dram_fsp));
+	//msg("--Fsp%d --\n", p->dram_fsp);
 
 	//DRAM MR3[6] read-DBI On/Off
 	u1MR03Value[u1fsp] = ((u1MR03Value[u1fsp] & 0xbf) | (onoff << 6));
@@ -797,7 +797,7 @@ void SetDramModeRegForReadDBIOnOff(DRAMC_CTX_T *p, U8 u1fsp, U8 onoff)
 void SetDramModeRegForWriteDBIOnOff(DRAMC_CTX_T *p, U8 u1fsp, U8 onoff)
 {
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 	//DRAM MR3[7] write-DBI On/Off
 	u1MR03Value[u1fsp] = ((u1MR03Value[u1fsp] & 0x7F) | (onoff << 7));
@@ -941,7 +941,7 @@ static void DramcSetRWOFOEN(DRAMC_CTX_T *p, U8 u1onoff)
 
 			if(u4loop_count > MAX_CMP_CPT_WAIT_LOOP)
 			{
-				mcSHOW_ERR_MSG(("RWOFOEN timout! queue is not empty\n"));
+				err("RWOFOEN timout! queue is not empty\n");
 			#if __ETT__
 				while(1);
 			#else
@@ -1134,14 +1134,14 @@ static void DramcEngine2CheckComplete(DRAMC_CTX_T *p, U8 u1status)
 		u4loop_count++;
 		if ((u4loop_count > 3) && (u4loop_count <= MAX_CMP_CPT_WAIT_LOOP))
 		{
-			//mcSHOW_ERR_MSG(("TESTRPT_DM_CMP_CPT: %d\n", u4loop_count));
+			//err("TESTRPT_DM_CMP_CPT: %d\n", u4loop_count);
 		}
 		else if (u4loop_count > MAX_CMP_CPT_WAIT_LOOP)
 		{
 			/*TINFO="fcWAVEFORM_MEASURE_A %d: time out\n", u4loop_count*/
-			mcSHOW_DBG_MSG(("fcWAVEFORM_MEASURE_A %d :time out, [22:20]=0x%x\n", u4loop_count, u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TESTRPT), TESTRPT_TESTSTAT)));
+			msg("fcWAVEFORM_MEASURE_A %d :time out, [22:20]=0x%x\n", u4loop_count, u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TESTRPT), TESTRPT_TESTSTAT));
 
-			//mcFPRINTF((fp_A60501, "fcWAVEFORM_MEASURE_A %d: time out\n", u4loop_count));
+			//mcFPRINTF(fp_A60501, "fcWAVEFORM_MEASURE_A %d: time out\n", u4loop_count);
 
 			break;
 		}
@@ -1156,7 +1156,7 @@ static void DramcEngine2CheckComplete(DRAMC_CTX_T *p, U8 u1status)
 			u4loop_count++;
 			if(u4loop_count > MAX_CMP_CPT_WAIT_LOOP)
 			{
-				mcSHOW_DBG_MSG(("over MAX_CMP_CPT_WAIT_LOOP[%d] TEST_LOOP_CNT[%d]\n", u4loop_count, u4Ta2_loop_count));
+				msg("over MAX_CMP_CPT_WAIT_LOOP[%d] TEST_LOOP_CNT[%d]\n", u4loop_count, u4Ta2_loop_count);
 				break;
 			}
 		}
@@ -1236,7 +1236,7 @@ DRAM_STATUS_T DramcEngine2Init(DRAMC_CTX_T *p, U32 test2_1, U32 test2_2, U8 u1Te
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context is NULL\n"));
+		err("context is NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -1244,7 +1244,7 @@ DRAM_STATUS_T DramcEngine2Init(DRAMC_CTX_T *p, U32 test2_1, U32 test2_2, U8 u1Te
 //	  if ((u1LoopCnt > 15) || (u1LoopCnt < 0))		// U8 >=0 always.
 	if (u1LoopCnt > 15)
 	{
-		mcSHOW_ERR_MSG(("wrong param: u1LoopCnt > 15\n"));
+		err("wrong param: u1LoopCnt > 15\n");
 		return DRAM_FAIL;
 	}
 
@@ -1495,17 +1495,17 @@ void TA2_Test_Run_Time_HW_Presetting(DRAMC_CTX_T * p, U32 len, TA2_RKSEL_TYPE_T 
 	{
 		// In order to enhance XRT R2R/W2W probability, use TEST2_4_TESTAGENTRKSEL=3, PERFCTL0_RWOFOEN=0 mode
 		uiRWOFOEN = 0;
-		mcSHOW_DBG_MSG(("=== TA2 XRT R2R/W2W\n"));
+		msg("=== TA2 XRT R2R/W2W\n");
 	}
 	else
 	{
 		uiRWOFOEN = 1;
 #if !ENABLE_EMI_LPBK_TEST
-		mcSHOW_DBG_MSG(("=== TA2 HW\n"));
+		msg("=== TA2 HW\n");
 #endif
 	}
 #if !ENABLE_EMI_LPBK_TEST
-	mcSHOW_DBG_MSG(("=== OFFSET:0x%x\n", u4Offset));
+	msg("=== OFFSET:0x%x\n", u4Offset);
 #endif
 	for (u1ChannelIdx = 0; u1ChannelIdx < p->support_channel_num; u1ChannelIdx++)
 	{
@@ -1540,7 +1540,7 @@ void TA2_Test_Run_Time_Pat_Setting(DRAMC_CTX_T *p, U8 PatSwitch)
 	if (u1loop || PatSwitch == TA2_PAT_SWITCH_ON)
 	{
 #if !ENABLE_EMI_LPBK_TEST
-		mcSHOW_DBG_MSG(("TA2 PAT: %d\n", u1Pat));
+		msg("TA2 PAT: %d\n", u1Pat);
 #endif
 		for (u1ChannelIdx = CHANNEL_A; u1ChannelIdx < p->support_channel_num; u1ChannelIdx++)
 		{
@@ -1573,7 +1573,7 @@ void TA2_Test_Run_Time_HW_Write(DRAMC_CTX_T * p, U8 u1Enable)
 	U8 u1ChannelIdx;
 
 #if !ENABLE_EMI_LPBK_TEST
-	mcSHOW_DBG_MSG(("\nTA2 Trigger Write\n"));
+	msg("\nTA2 Trigger Write\n");
 #endif
 	for (u1ChannelIdx = 0; u1ChannelIdx < p->support_channel_num; u1ChannelIdx++)
 	{
@@ -1594,12 +1594,12 @@ static void TA2_Show_Cnt(DRAMC_CTX_T * p, U32 u4ErrorValue)
 		if (u4ErrorValue & (1 << u1RankIdx))
 		{
 			err_count++;
-			mcSHOW_DBG_MSG(("HW channel(%d) Rank(%d), TA2 failed, pass_cnt:%d, err_cnt:%d\n", p->channel, u1RankIdx, pass_count, err_count));
+			msg("HW channel(%d) Rank(%d), TA2 failed, pass_cnt:%d, err_cnt:%d\n", p->channel, u1RankIdx, pass_count, err_count);
 		}
 		else
 		{
 			pass_count++;
-			mcSHOW_DBG_MSG(("HW channel(%d) Rank(%d), TA2 pass, pass_cnt:%d, err_cnt:%d\n", p->channel, u1RankIdx, pass_count, err_count));
+			msg("HW channel(%d) Rank(%d), TA2 pass, pass_cnt:%d, err_cnt:%d\n", p->channel, u1RankIdx, pass_count, err_count);
 		}
 	}
 }
@@ -1616,9 +1616,9 @@ U32 TA2_Test_Run_Time_HW_Status(DRAMC_CTX_T * p)
 		u4ErrorValue = DramcEngine2Compare(p, TE_OP_WRITE_READ_CHECK);
 		if (u4ErrorValue & 0x3) //RK0 or RK1 test fail
 		{
-			mcSHOW_DBG_MSG(("=== HW channel(%d) u4ErrorValue: 0x%x, bit error: 0x%x\n", u1ChannelIdx, u4ErrorValue, u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CMP_ERR))));
+			msg("=== HW channel(%d) u4ErrorValue: 0x%x, bit error: 0x%x\n", u1ChannelIdx, u4ErrorValue, u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CMP_ERR)));
 #if defined(SLT)
-			mcSHOW_ERR_MSG(("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000, line: %d\n",__LINE__));
+			err("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000, line: %d\n",__LINE__);
 			while (1);
 #endif
 		}
@@ -1646,7 +1646,7 @@ U32 TA2_Test_Run_Time_HW_Status(DRAMC_CTX_T * p)
 	{
 		vSetPHY2ChannelMapping(p, u1ChannelIdx);
 		u4Ta2LoopEn = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TEST2_A0), TEST2_A0_TA2_LOOP_EN);
-		//mcSHOW_DBG_MSG(("### u4Ta2LoopEn:%d ### \n", u4Ta2LoopEn));
+		//msg("### u4Ta2LoopEn:%d ### \n", u4Ta2LoopEn);
 
 		if(u4Ta2LoopEn)
 		{
@@ -1656,7 +1656,7 @@ U32 TA2_Test_Run_Time_HW_Status(DRAMC_CTX_T * p)
 
 			vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TEST2_A0), 0, TEST2_A0_LOOP_NV_END);//cancel NV_END
 			DramcEngine2CheckComplete(p, u1status);//Wait for complete
-			//mcSHOW_DBG_MSG(("TESTRPT_TESTSTAT:%x\n", u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TESTRPT), TESTRPT_TESTSTAT)));//check TESTRPT_TESTSTAT
+			//msg("TESTRPT_TESTSTAT:%x\n", u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TESTRPT), TESTRPT_TESTSTAT));//check TESTRPT_TESTSTAT
 			u4ErrorValue = (u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_TESTRPT)) >> 4) & 0x3; //CMP_ERR_RK0/1
 		}
 		else
@@ -1664,9 +1664,9 @@ U32 TA2_Test_Run_Time_HW_Status(DRAMC_CTX_T * p)
 
 		if (u4ErrorValue & 0x3) //RK0 or RK1 test fail
 		{
-			mcSHOW_DBG_MSG(("=== HW channel(%d) u4ErrorValue: 0x%x, bit error: 0x%x\n", u1ChannelIdx, u4ErrorValue, u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CMP_ERR))));
+			msg("=== HW channel(%d) u4ErrorValue: 0x%x, bit error: 0x%x\n", u1ChannelIdx, u4ErrorValue, u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CMP_ERR)));
 #if defined(SLT)
-			mcSHOW_ERR_MSG(("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000, line: %d\n",__LINE__));
+			err("[dramc] DRAM_FATAL_ERR_FLAG = 0x80000000, line: %d\n",__LINE__);
 			while (1);
 #endif
 		}
@@ -1724,7 +1724,7 @@ static U8 *DramcFetchGlobalMR(DRAMC_CTX_T *p, U8 mr_idx)
 		case 26: pMRGlobalValue = &u1MR26Value[p->rank]; break;
 		case 30: pMRGlobalValue = &u1MR30Value[p->rank]; break;
 		default:
-			mcSHOW_ERR_MSG(("%s NULL\n", __func__));
+			err("%s NULL\n", __func__);
 			#if __ETT__
 			while(1);
 			#endif
@@ -2004,7 +2004,7 @@ U8 DramcMRWriteBackup(DRAMC_CTX_T *p, U8 u1MRIdx, U8 u1Rank)
 	if (u1MRBackup_ERR_Flag==0)
 	{
 		u1Value=u4IO32ReadFldAlign(DRAMC_REG_ADDR(TransferReg.u4Addr), TransferReg.u4Fld);
-		mcSHOW_MRW_MSG(("  [MRW Backup] Rank%d FSP%d MR%d=0x%x\n",u1Rank, gFSPWR_Flag[u1Rank], u1MRIdx, u1Value));
+		mcSHOW_MRW_MSG("  [MRW Backup] Rank%d FSP%d MR%d=0x%x\n",u1Rank, gFSPWR_Flag[u1Rank], u1MRIdx, u1Value);
 	}
 	vSetRank(p, u1backupRK);
 
@@ -2075,7 +2075,7 @@ void DramcModeRegRead(DRAMC_CTX_T *p, U8 u1MRIdx, U16 *u2pValue)
 	gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag=1;
 #endif
 
-	mcSHOW_DBG_MSG3(("Read MR%d =0x%x\n", u1MRIdx, u4MRValue));
+	msg3("Read MR%d =0x%x\n", u1MRIdx, u4MRValue);
 }
 
 
@@ -2171,7 +2171,7 @@ void DramcModeRegWriteByRank_RTMRW(DRAMC_CTX_T *p, U8 *u1Rank, U8 *u1MRIdx, U8 *
 
 	if (u4TimeCnt == 0)//time out
 	{
-		mcSHOW_DBG_MSG(("[LP5 RT MRW ] Resp fail (time out) Rank=%d, MR%d=0x%x\n", u1Rank[0], u1MRIdx[0], u1Value[0]));
+		msg("[LP5 RT MRW ] Resp fail (time out) Rank=%d, MR%d=0x%x\n", u1Rank[0], u1MRIdx[0], u1Value[0]);
 	}
 
 #if __LP5_COMBO__
@@ -2217,7 +2217,7 @@ static void DramcModeRegWriteByRank_SCSM(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, 
 	while (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP), SPCMDRESP_MRW_RESPONSE) == 0)
 	{
 		counter++;
-		mcSHOW_DBG_MSG2(("wait MRW command Rank%d MR%d =0x%x fired (%d)\n", u1Rank, u1MRIdx, u1Value, counter));
+		msg2("wait MRW command Rank%d MR%d =0x%x fired (%d)\n", u1Rank, u1MRIdx, u1Value, counter);
 		mcDELAY_US(1);
 	}
 
@@ -2233,12 +2233,12 @@ static void DramcModeRegWriteByRank_SCSM(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, 
 
 void DramcModeRegWriteByRank(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
 {
-	mcSHOW_DBG_MSG2(("MRW RK%d MR#%d = 0x%x\n", u1Rank,u1MRIdx, u1Value));
+	msg2("MRW RK%d MR#%d = 0x%x\n", u1Rank,u1MRIdx, u1Value);
 
 #ifndef ENABLE_POST_PACKAGE_REPAIR
 	if ((u1MRIdx == 0x04) && (u1Value & 0x10))
 	{
-		mcSHOW_ERR_MSG(("ERROR MRW RK%d MR#%d = 0x%x\n", u1Rank,u1MRIdx, u1Value));
+		err("ERROR MRW RK%d MR#%d = 0x%x\n", u1Rank,u1MRIdx, u1Value);
 		while(1);
 	}
 #endif
@@ -2308,20 +2308,20 @@ void DramcModeRegWriteByRank(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
 		if(u1PrintModeRegWrite)
 		{
 			#if VENDER_JV_LOG
-			mcSHOW_JV_LOG_MSG(("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value));
+			jv_msg("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value);
 			#endif
 			#if MRW_CHECK_ONLY
-			mcSHOW_MRW_MSG(("MRW CH%d Rank%d FSP%d MR%d =0x%x\n", p->channel, u1RankIdx, gFSPWR_Flag[u1RankIdx], u1MRIdx, u1Value));
+			mcSHOW_MRW_MSG("MRW CH%d Rank%d FSP%d MR%d =0x%x\n", p->channel, u1RankIdx, gFSPWR_Flag[u1RankIdx], u1MRIdx, u1Value);
 			#endif
-			mcSHOW_DBG_MSG2(("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value));
-			mcDUMP_REG_MSG(("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value));
+			msg2("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value);
+			reg_msg("Write Rank%d MR%d =0x%x\n", u1RankIdx, u1MRIdx, u1Value);
 		}
 		#if MRW_BACKUP
 		U8 MR_backup;
 
 			MR_backup=DramcMRWriteBackup(p, u1MRIdx, u1RankIdx);
 			if (MR_backup!=0xff)
-			mcSHOW_MRW_MSG(("  [MRW Check] Rank%d FSP%d Backup_MR%d= 0x%x MR%d= 0x%x ==>%s\n", u1RankIdx, gFSPWR_Flag[u1RankIdx], u1MRIdx, MR_backup, u1MRIdx, u1Value, (u1Value==MR_backup?"PASS":"FAIL")));
+			mcSHOW_MRW_MSG("  [MRW Check] Rank%d FSP%d Backup_MR%d= 0x%x MR%d= 0x%x ==>%s\n", u1RankIdx, gFSPWR_Flag[u1RankIdx], u1MRIdx, MR_backup, u1MRIdx, u1Value, (u1Value==MR_backup?"PASS":"FAIL"));
 		#endif
 
 		#if (__LP5_COMBO__ == TRUE)
@@ -2352,7 +2352,7 @@ void DramcBackupRegisters(DRAMC_CTX_T *p, U32 *backup_addr, U32 backup_num)
 #ifdef __ETT__
 	if (backup_num > 100 || u1gpRegBackup)
 	{
-		mcSHOW_ERR_MSG(("[DramcBackupRegisters] backup number over 64!!!\n"));
+		err("[DramcBackupRegisters] backup number over 64!!!\n");
 		while (1);
 	}
 
@@ -2362,7 +2362,7 @@ void DramcBackupRegisters(DRAMC_CTX_T *p, U32 *backup_addr, U32 backup_num)
 	for (u4RegIdx = 0; u4RegIdx < backup_num; u4RegIdx++)
 	{
 		u4gpRegBackupVlaue[u4RegIdx] = u4IO32Read4B(backup_addr[u4RegIdx]);
-		//mcSHOW_DBG_MSG(("Backup Reg(0x%X) = 0x%X\n", backup_addr[u4RegIdx], u4gpRegBackupVlaue[u4RegIdx]));
+		//msg("Backup Reg(0x%X) = 0x%X\n", backup_addr[u4RegIdx], u4gpRegBackupVlaue[u4RegIdx]);
 	}
 }
 
@@ -2373,7 +2373,7 @@ void DramcRestoreRegisters(DRAMC_CTX_T *p, U32 *restore_addr, U32 restore_num)
 #ifdef __ETT__
 	if (u1gpRegBackup == 0)
 	{
-		mcSHOW_ERR_MSG(("[DramcRestoreRegisters] Need to call backup first\n"));
+		err("[DramcRestoreRegisters] Need to call backup first\n");
 	}
 
 	u1gpRegBackup--;
@@ -2382,7 +2382,7 @@ void DramcRestoreRegisters(DRAMC_CTX_T *p, U32 *restore_addr, U32 restore_num)
 	for (u4RegIdx = 0; u4RegIdx < restore_num; u4RegIdx++)
 	{
 		vIO32Write4B(restore_addr[u4RegIdx], u4gpRegBackupVlaue[u4RegIdx]);
-		//mcSHOW_DBG_MSG(("Restore Reg(0x%X) = 0x%X\n", restore_addr[u4RegIdx], u4gpRegBackupVlaue[u4RegIdx]));
+		//msg("Restore Reg(0x%X) = 0x%X\n", restore_addr[u4RegIdx], u4gpRegBackupVlaue[u4RegIdx]);
 	}
 }
 
@@ -2410,14 +2410,14 @@ void DramcConfInfraReset(DRAMC_CTX_T *p)
 		vIO32WriteFldAlign_All(DDRPHY_MISC_CG_CTRL0, 0, MISC_CG_CTRL0_W_CHG_MEM);//disable memory clock change
 
 		// dramc conf reset
-		//mcSHOW_TIME_MSG(("Before infra reset, 0x10001148:%x\n", *(volatile unsigned *)(0x10001148)));
+		//time_msg("Before infra reset, 0x10001148:%x\n", *(volatile unsigned *)(0x10001148));
 		*(volatile unsigned *)(0x10001140) = (0x1 << 15);
-		//mcSHOW_TIME_MSG(("After infra reset, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148)));
+		//time_msg("After infra reset, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148));
 		__asm__ __volatile__ ("dsb" : : : "memory");
 		mcDELAY_US(200);
-		//mcSHOW_TIME_MSG(("Before infra clear, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148)));
+		//time_msg("Before infra clear, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148));
 		*(volatile unsigned *)(0x10001144) = (0x1 << 15);
-		//mcSHOW_TIME_MSG(("After infra clear, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148)));
+		//time_msg("After infra clear, 0x10001148:%x\n",  *(volatile unsigned *)(0x10001148));
 
 		#if 0
 		mcDELAY_US(200);
@@ -2474,8 +2474,8 @@ U32 TimeProfileEnd(void)
 #if __ETT__
 	l_low_tick1 = GPT_GetTickCount(&l_high_tick1);
 
-	//mcSHOW_TIME_MSG(("Time0 %u %u\n", l_high_tick0, l_low_tick0));
-	//mcSHOW_TIME_MSG(("Time1 %u %u\n", l_high_tick1, l_low_tick1));
+	//time_msg("Time0 %u %u\n", l_high_tick0, l_low_tick0);
+	//time_msg("Time1 %u %u\n", l_high_tick1, l_low_tick1);
 	return ((l_low_tick1 - l_low_tick0) * 76) / 1000;
 #else
 	l_low_tick1 = get_timer(l_low_tick0);

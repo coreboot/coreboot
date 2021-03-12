@@ -236,7 +236,7 @@ void Fast_K_CheckResult(DRAMC_CTX_T *p, U8 ucCalType)
 		debug_cnt[0] = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_CAL_DQSG_CNT_B0));
 		debug_cnt[1] = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_CAL_DQSG_CNT_B1));
 
-		//mcSHOW_DBG_MSG((" 0x%X  ",u4DebugCnt))
+		//msg(" 0x%X  ",u4DebugCnt)
 		if (debug_cnt[0]==0x4646 && debug_cnt[1]==0x4646)
 			CheckResult=0;
 
@@ -247,13 +247,13 @@ void Fast_K_CheckResult(DRAMC_CTX_T *p, U8 ucCalType)
 
 	if ((FastK_Check_flag==1)&&(CheckResult==0))
 	{
-		//mcSHOW_DBG_MSG((" [FAST K CHECK]->PASS\n"))
+		//msg(" [FAST K CHECK]->PASS\n")
 		*Pointer_FastKResult &= (~(1<<ucCalType)); // result PASS
 		*Pointer_FastKExecute |= (1<<ucCalType);; // Excuted
 	}
 	else if ((FastK_Check_flag==1)&&(CheckResult !=0))
 	{
-		//mcSHOW_DBG_MSG((" [FAST K CHECK]->FAIL\n"))
+		//msg(" [FAST K CHECK]->FAIL\n")
 		*Pointer_FastKResult |= (1<<ucCalType); // result FAIL
 		*Pointer_FastKExecute |= (1<<ucCalType);; // Excuted
 	}
@@ -283,11 +283,11 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
 	U8 ucCalResult, ucCalExecute;
 	U8 u1CalibrationFail;
 
-	mcSHOW_DBG_MSG(("\n\n[Calibration Summary] %d Mbps\n", p->frequency * 2));
+	msg("\n\n[Calibration Summary] %d Mbps\n", p->frequency * 2);
 
 	//for(ucFreqIdx=0; ucFreqIdx<DRAM_DFS_SHUFFLE_MAX; ucFreqIdx++)
 	{
-		//mcSHOW_DBG_MSG(("==Freqency = %d==\n", get_FreqTbl_by_shuffleIndex(p,ucFreqIdx)->frequency));
+		//msg("==Freqency = %d==\n", get_FreqTbl_by_shuffleIndex(p,ucFreqIdx)->frequency);
 		for(ucCHIdx=0; ucCHIdx<p->support_channel_num; ucCHIdx++)
 		{
 			for(ucRankIdx=0; ucRankIdx<p->support_rank_num; ucRankIdx++)
@@ -295,8 +295,8 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
 				u1CalibrationFail =0;
 				ucCalExecute_All = p->aru4CalExecuteFlag[ucCHIdx][ucRankIdx];
 				ucCalResult_All = p->aru4CalResultFlag[ucCHIdx][ucRankIdx];
-				mcSHOW_DBG_MSG(("CH %d, Rank %d\n", ucCHIdx, ucRankIdx));
-				//mcSHOW_DBG_MSG(("[vPrintCalibrationResult] Channel = %d, Rank= %d, Freq.= %d, (ucCalExecute_All 0x%x, ucCalResult_All 0x%x)\n", ucCHIdx, ucRankIdx, ucFreqIdx, ucCalExecute_All, ucCalResult_All));
+				msg("CH %d, Rank %d\n", ucCHIdx, ucRankIdx);
+				//msg("[vPrintCalibrationResult] Channel = %d, Rank= %d, Freq.= %d, (ucCalExecute_All 0x%x, ucCalResult_All 0x%x)\n", ucCHIdx, ucRankIdx, ucFreqIdx, ucCalExecute_All, ucCalResult_All);
 
 				for(ucCalIdx =0; ucCalIdx<DRAM_CALIBRATION_MAX; ucCalIdx++)
 				{
@@ -312,39 +312,39 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
 						}
 
 					#if PRINT_CALIBRATION_SUMMARY_DETAIL
-					mcSHOW_DBG_MSG(("%s: ", szCalibStatusName[ucCalIdx]))
+					msg("%s: ", szCalibStatusName[ucCalIdx])
 					if(ucCalExecute==1 && ucCalResult ==1) // excuted and fail
 					{
 						u1CalibrationFail =1;
-						mcSHOW_DBG_MSG(("%s\n", "@_@FAIL@_@"))
+						msg("%s\n", "@_@FAIL@_@")
 					}
 					else if (ucCalExecute==1 && ucCalResult ==0) // DRAM_OK
 					{
-						mcSHOW_DBG_MSG(("%s\n", "PASS"))
+						msg("%s\n", "PASS")
 					}
 					else if (ucCalExecute==0 && ucCalResult ==0) // DRAM_FAST K
 					{
-						mcSHOW_DBG_MSG(("%s\n", "FAST K"))
+						msg("%s\n", "FAST K")
 					}
 					else //DRAM_NO K
 					{
-						mcSHOW_DBG_MSG(("%s\n", "NO K"))
+						msg("%s\n", "NO K")
 					}
 
 					#else
 					if(ucCalExecute==1 && ucCalResult ==1) // excuted and fail
 					{
 						u1CalibrationFail =1;
-						mcSHOW_DBG_MSG(("%s: %s\n", szCalibStatusName[ucCalIdx],"@_@FAIL@_@"))
+						msg("%s: %s\n", szCalibStatusName[ucCalIdx],"@_@FAIL@_@")
 					}
 					#endif
 				}
 
 				if(u1CalibrationFail ==0)
 				{
-					mcSHOW_DBG_MSG(("All Pass.\n"));
+					msg("All Pass.\n");
 				}
-				mcSHOW_DBG_MSG(("\n"));
+				msg("\n");
 			}
 		}
 	}
@@ -373,12 +373,12 @@ void vPrintPinInfoResult(DRAMC_CTX_T *p)
 {
 	U8 u1CHIdx, u1RankIdx, u1CAIdx, u1ByteIdx, u1ByteIdx_DQ, u1BitIdx, u1BitIdx_DQ, u1FreqRegionIdx, u1ImpIdx;
 	U8 u1PinError=0;
-	mcSHOW_DBG_MSG(("\n\n[Pin Info Summary] Freqency %d\n", p->frequency));
+	msg("\n\n[Pin Info Summary] Freqency %d\n", p->frequency);
 	for (u1FreqRegionIdx=0;u1FreqRegionIdx<2/*IMP_VREF_MAX*/;u1FreqRegionIdx++)
 	{
 		for (u1ImpIdx=0;u1ImpIdx<IMP_DRV_MAX;u1ImpIdx++)
 		{
-			mcSHOW_DBG_MSG(("IMP %s type:%s %s\n", u1FreqRegionIdx?"Region1":"Region0", print_Impedence_LOG_type(u1ImpIdx), ((PINInfo_flashtool.IMP_ERR_FLAG>>(u1FreqRegionIdx*4+u1ImpIdx)&0x1)?"ERROR":"PASS")));
+			msg("IMP %s type:%s %s\n", u1FreqRegionIdx?"Region1":"Region0", print_Impedence_LOG_type(u1ImpIdx), (PINInfo_flashtool.IMP_ERR_FLAG>>(u1FreqRegionIdx*4+u1ImpIdx)&0x1)?"ERROR":"PASS");
 		}
 	}
 	{
@@ -386,7 +386,7 @@ void vPrintPinInfoResult(DRAMC_CTX_T *p)
 		{
 			for(u1RankIdx=0; u1RankIdx<p->support_rank_num; u1RankIdx++)
 			{
-				mcSHOW_DBG_MSG(("CH %d, Rank %d\n", u1CHIdx, u1RankIdx));
+				msg("CH %d, Rank %d\n", u1CHIdx, u1RankIdx);
 				for (u1CAIdx =0; u1CAIdx <CATRAINING_NUM_LP4; u1CAIdx++)
 				{
 					#if 1//Transfer to Percentage
@@ -399,11 +399,11 @@ void vPrintPinInfoResult(DRAMC_CTX_T *p)
 						PINInfo_flashtool.CA_ERR_FLAG[u1CHIdx][u1RankIdx] |= (1<<u1CAIdx);
 						PINInfo_flashtool.TOTAL_ERR |= (0x1<<(u1CHIdx*4+u1RankIdx*2));
 					}
-					mcSHOW_DBG_MSG(("CA %d: %s ", u1CAIdx, ((PINInfo_flashtool.CA_ERR_FLAG[u1CHIdx][u1RankIdx]>>u1CAIdx)&0x1)?"ERROR":"PASS"));
+					msg("CA %d: %s ", u1CAIdx, (PINInfo_flashtool.CA_ERR_FLAG[u1CHIdx][u1RankIdx]>>u1CAIdx) & 0x1 ? "ERROR" : "PASS");
 					#if PRINT_WIN_SIZE
-					mcSHOW_DBG_MSG(("(WIN_SIZE: %d %% )", (PINInfo_flashtool.CA_WIN_SIZE[u1CHIdx][u1RankIdx][u1CAIdx])));
+					msg("(WIN_SIZE: %d %% )", (PINInfo_flashtool.CA_WIN_SIZE[u1CHIdx][u1RankIdx][u1CAIdx]));
 					#endif
-					mcSHOW_DBG_MSG(("\n"));
+					msg("\n");
 				}
 				for (u1BitIdx =0; u1BitIdx <DQ_DATA_WIDTH_LP4; u1BitIdx++)
 				{
@@ -438,12 +438,12 @@ void vPrintPinInfoResult(DRAMC_CTX_T *p)
 				for (u1BitIdx_DQ=0; u1BitIdx_DQ<DQ_DATA_WIDTH_LP4; u1BitIdx_DQ++)
 				{
 					u1ByteIdx_DQ = (u1BitIdx_DQ>=8?1:0);
-					mcSHOW_DBG_MSG(("DRAM DQ %d: RX %s, TX %s ", u1BitIdx_DQ, (((PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx_DQ]>>(u1BitIdx_DQ-(u1ByteIdx_DQ==1?8:0)))&0x1)?"ERROR":"PASS"),\
-																														(((PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx_DQ]>>(u1BitIdx_DQ-(u1ByteIdx_DQ==1?8:0)))&0x1)?"ERROR":"PASS")));
+					msg("DRAM DQ %d: RX %s, TX %s ", u1BitIdx_DQ, ((PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx_DQ]>>(u1BitIdx_DQ-(u1ByteIdx_DQ==1?8:0))&0x1)?"ERROR":"PASS"),\
+																														(((PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx_DQ]>>(u1BitIdx_DQ-(u1ByteIdx_DQ==1?8:0)))&0x1)?"ERROR":"PASS"));
 					#if PRINT_WIN_SIZE
-					mcSHOW_DBG_MSG(("(RX WIN SIZE: %d %%, TX WIN SIZE: %d %% )", PINInfo_flashtool.DQ_RX_WIN_SIZE[u1CHIdx][u1RankIdx][uiLPDDR4_O1_Mapping_POP[u1CHIdx][u1BitIdx_DQ]], PINInfo_flashtool.DQ_TX_WIN_SIZE[u1CHIdx][u1RankIdx][uiLPDDR4_O1_Mapping_POP[u1CHIdx][u1BitIdx_DQ]]));
+					msg("(RX WIN SIZE: %d %%, TX WIN SIZE: %d %% )", PINInfo_flashtool.DQ_RX_WIN_SIZE[u1CHIdx][u1RankIdx][uiLPDDR4_O1_Mapping_POP[u1CHIdx][u1BitIdx_DQ]], PINInfo_flashtool.DQ_TX_WIN_SIZE[u1CHIdx][u1RankIdx][uiLPDDR4_O1_Mapping_POP[u1CHIdx][u1BitIdx_DQ]]);
 					#endif
-					mcSHOW_DBG_MSG(("\n"));
+					msg("\n");
 				}
 			}
 		}
@@ -452,22 +452,22 @@ void vPrintPinInfoResult(DRAMC_CTX_T *p)
 void vGetErrorTypeResult(DRAMC_CTX_T *p)
 {
 	U8 u1CHIdx, u1CHIdx_EMI, u1RankIdx, u1CAIdx, u1ByteIdx, u1BitIdx, u1FreqRegionIdx, u1ImpIdx;
-	mcSHOW_DBG_MSG(("\n[Get Pin Error Type Result]\n"));
+	msg("\n[Get Pin Error Type Result]\n");
 	if (PINInfo_flashtool.TOTAL_ERR==0 && PINInfo_flashtool.IMP_ERR_FLAG==0)//ALL PASS
 	{
-		mcSHOW_DBG_MSG(("ALL PASS\n"));
+		msg("ALL PASS\n");
 	}
 	if (PINInfo_flashtool.IMP_ERR_FLAG)
 	{
-		mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: Impedance calibration fail\n"));
-		mcSHOW_DBG_MSG(("Suspect EXTR contact issue\n"));
-		mcSHOW_DBG_MSG(("Suspect EXTR related resistor contact issue\n"));
+		msg("[CHECK RESULT] FAIL: Impedance calibration fail\n");
+		msg("Suspect EXTR contact issue\n");
+		msg("Suspect EXTR related resistor contact issue\n");
 	}
 	if ((PINInfo_flashtool.TOTAL_ERR == 0xffff) && (PINInfo_flashtool.WL_ERR_FLAG== 0xff))
 	{
-		mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: ALL calibration fail\n"));
-		mcSHOW_DBG_MSG(("Suspect RESET_N contact issue\n"));
-		mcSHOW_DBG_MSG(("Suspect DRAM Power (VDD1/VDD2/VDDQ) contact issue\n"));
+		msg("[CHECK RESULT] FAIL: ALL calibration fail\n");
+		msg("Suspect RESET_N contact issue\n");
+		msg("Suspect DRAM Power (VDD1/VDD2/VDDQ) contact issue\n");
 	}
 	else
 	{
@@ -483,12 +483,12 @@ void vGetErrorTypeResult(DRAMC_CTX_T *p)
 				u1CHIdx_EMI = u1CHIdx;
 			if ((PINInfo_flashtool.TOTAL_ERR>>(u1CHIdx*4) & 0xf) == 0xf)
 			{
-				mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: CH%d all calibration fail\n",u1CHIdx));
-				mcSHOW_DBG_MSG(("Suspect EMI%d_CK_T contact issue\n",u1CHIdx_EMI));
-				mcSHOW_DBG_MSG(("Suspect EMI%d_CK_C contact issue\n",u1CHIdx_EMI));
+				msg("[CHECK RESULT] FAIL: CH%d all calibration fail\n",u1CHIdx);
+				msg("Suspect EMI%d_CK_T contact issue\n",u1CHIdx_EMI);
+				msg("Suspect EMI%d_CK_C contact issue\n",u1CHIdx_EMI);
 				for (u1CAIdx =0; u1CAIdx <CATRAINING_NUM_LP4; u1CAIdx++)
 				{
-					mcSHOW_DBG_MSG(("Suspect EMI%d_CA%d contact issue\n",u1CHIdx_EMI,u1CAIdx));
+					msg("Suspect EMI%d_CA%d contact issue\n",u1CHIdx_EMI,u1CAIdx);
 				}
 			}
 			else
@@ -501,9 +501,9 @@ void vGetErrorTypeResult(DRAMC_CTX_T *p)
 						 (PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][BYTE_0] == 0xff) && \
 						 (PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][BYTE_1] == 0xff))
 					{
-						mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: CH%d RK%d all calibration fail\n",u1CHIdx,u1RankIdx));
-						mcSHOW_DBG_MSG(("Suspect EMI%d_CKE_%d contact issue\n",u1CHIdx_EMI,u1RankIdx));
-						mcSHOW_DBG_MSG(("Suspect EMI%d_CS_%d contact issue\n",u1CHIdx_EMI,u1RankIdx));
+						msg("[CHECK RESULT] FAIL: CH%d RK%d all calibration fail\n",u1CHIdx,u1RankIdx);
+						msg("Suspect EMI%d_CKE_%d contact issue\n",u1CHIdx_EMI,u1RankIdx);
+						msg("Suspect EMI%d_CS_%d contact issue\n",u1CHIdx_EMI,u1RankIdx);
 					}
 					else
 					{
@@ -512,9 +512,9 @@ void vGetErrorTypeResult(DRAMC_CTX_T *p)
 							if((PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx] == 0xff) &&\
 									  (PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx] == 0xff))
 							{
-								mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: CH%d RK%d Byte%d WL/Read/Write calibration fail\n",u1CHIdx,u1RankIdx,u1ByteIdx));
-								mcSHOW_DBG_MSG(("Suspect EMI%d_DQS%d_T contact issue\n",u1CHIdx_EMI,u1ByteIdx));
-								mcSHOW_DBG_MSG(("Suspect EMI%d_DQS%d_C contact issue\n",u1CHIdx_EMI,u1ByteIdx));
+								msg("[CHECK RESULT] FAIL: CH%d RK%d Byte%d WL/Read/Write calibration fail\n",u1CHIdx,u1RankIdx,u1ByteIdx);
+								msg("Suspect EMI%d_DQS%d_T contact issue\n",u1CHIdx_EMI,u1ByteIdx);
+								msg("Suspect EMI%d_DQS%d_C contact issue\n",u1CHIdx_EMI,u1ByteIdx);
 							}
 							else if (PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx]&&\
 									   PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx])
@@ -524,15 +524,15 @@ void vGetErrorTypeResult(DRAMC_CTX_T *p)
 									if (((PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx]>>u1BitIdx)&0x1)&&\
 										 ((PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx]>>u1BitIdx)&0x1))
 									{
-											mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: CH%d RK%d DRAM DQ%d Read/Write fail\n",u1CHIdx,u1RankIdx,u1ByteIdx*8+u1BitIdx));
-											mcSHOW_DBG_MSG(("Suspect EMI%d_DQ%d contact issue\n",u1CHIdx_EMI,u1ByteIdx*8+u1BitIdx));
+											msg("[CHECK RESULT] FAIL: CH%d RK%d DRAM DQ%d Read/Write fail\n",u1CHIdx,u1RankIdx,u1ByteIdx*8+u1BitIdx);
+											msg("Suspect EMI%d_DQ%d contact issue\n",u1CHIdx_EMI,u1ByteIdx*8+u1BitIdx);
 									}
 								}
 							}
 							else if((PINInfo_flashtool.DRAM_PIN_RX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx] == 0xff) ||\
 									  (PINInfo_flashtool.DRAM_PIN_TX_ERR_FLAG[u1CHIdx][u1RankIdx][u1ByteIdx] == 0xff))
 							{
-								mcSHOW_DBG_MSG(("[CHECK RESULT] FAIL: CH%d RK%d Byte%d Suspect other special contact or calibration issue\n",u1CHIdx_EMI,u1RankIdx,u1ByteIdx));
+								msg("[CHECK RESULT] FAIL: CH%d RK%d Byte%d Suspect other special contact or calibration issue\n",u1CHIdx_EMI,u1RankIdx,u1ByteIdx);
 							}
 						}
 					}
@@ -540,7 +540,7 @@ void vGetErrorTypeResult(DRAMC_CTX_T *p)
 			}
 		}
 	}
-	mcSHOW_DBG_MSG(("\n"));
+	msg("\n");
 	return;
 }
 #endif
@@ -1194,7 +1194,7 @@ static void set_cbt_wlev_intv_lp4(DRAMC_CTX_T *p)
 	pintv = lookup_cbt_intv(intv, ARRAY_SIZE(intv),
 			p->freq_sel, vGet_Div_Mode(p));
 	if (!pintv) {
-		mcSHOW_DBG_MSG(("not found entry!\n"));
+		msg("not found entry!\n");
 		return;
 	}
 
@@ -1289,7 +1289,7 @@ static void set_cbt_wlev_intv_lp5(DRAMC_CTX_T *p)
 
 	pintv = lookup_cbt_intv(intv, ARRAY_SIZE(intv), p->freq_sel, UNKNOWN_MODE);
 	if (!pintv) {
-		mcSHOW_DBG_MSG(("not found entry!\n"));
+		msg("not found entry!\n");
 		return;
 	}
 
@@ -1543,7 +1543,7 @@ static u8 get_mck_ck_ratio(DRAMC_CTX_T *p)
 	ratio = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_LP5_CMD),
 		SHU_LP5_CMD_LP5_CMD1TO2EN);
 
-	mcSHOW_DBG_MSG5(("LP5 MCK:CK=%s\n", ratio == 1 ? "1:1" : "1:2"));
+	msg5("LP5 MCK:CK=%s\n", ratio == 1 ? "1:1" : "1:2");
 
 	return ratio;
 }
@@ -1685,8 +1685,8 @@ static S16 adjust_ca_ui(DRAMC_CTX_T *p, U32 ca_mck,
 
 	put_ca_ui(p, ui_new);
 	put_ca_mck(p, mck_new);
-	mcSHOW_DBG_MSG5(("mck_new: 0x%x, ui_new: 0x%x, pi:%d\n",
-		mck_new, ui_new, pi));
+	msg5("mck_new: 0x%x, ui_new: 0x%x, pi:%d\n",
+		mck_new, ui_new, pi);
 
 	return pi;
 }
@@ -1778,10 +1778,10 @@ static S16 adjust_cs_ui(DRAMC_CTX_T *p, u32 cs_mck, u32 cs_ui, S16 pi_dly)
 	put_cs_ui(p, cs_ui_tmp);
 	put_cs_mck(p, cs_mck_tmp);
 
-	mcSHOW_DBG_MSG5(("csmck:%d, csui: %d, pi:%d before\n",
-			cs_mck, cs_ui, 0));
-	mcSHOW_DBG_MSG5(("csmck:%d, csui: %d, pi:%d after\n",
-			cs_mck_tmp, cs_ui_tmp, pi));
+	msg5("csmck:%d, csui: %d, pi:%d before\n",
+			cs_mck, cs_ui, 0);
+	msg5("csmck:%d, csui: %d, pi:%d after\n",
+			cs_mck_tmp, cs_ui_tmp, pi);
 
 	return pi;
 }
@@ -1937,8 +1937,8 @@ static u32 CBTDelayCACLKCompareWorkaround(DRAMC_CTX_T *p)
 
 			if (u4TimeCnt == 0)//time out
 			{
-				mcSHOW_DBG_MSG(("[CBTDelayCACLKCompare] Resp fail (time out)\n"));
-				mcFPRINTF((fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n"));//Eddie Test
+				msg("[CBTDelayCACLKCompare] Resp fail (time out)\n");
+				mcFPRINTF(fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n");//Eddie Test
 				//return DRAM_FAIL;
 			}
 
@@ -2047,8 +2047,8 @@ static u32 new_cbt_pat_compare_workaround(DRAMC_CTX_T *p, new_cbt_pat_cfg_t *ncm
 
 			if (u4TimeCnt == 0)//time out
 			{
-				mcSHOW_DBG_MSG(("[CBTDelayCACLKCompare] Resp fail (time out)\n"));
-				mcFPRINTF((fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n"));//Eddie Test
+				msg("[CBTDelayCACLKCompare] Resp fail (time out)\n");
+				mcFPRINTF(fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n");//Eddie Test
 				//return DRAM_FAIL;
 			}
 
@@ -2157,7 +2157,7 @@ static void CBTAdjustCS(DRAMC_CTX_T *p, int autok)
 
 	vSetRank(p, backup_rank);
 
-	mcSHOW_DBG_MSG(("CS Dly: %d (%d~%d)\n", iCSFinalDelay, iFirstCSPass, iLastCSPass));
+	msg("CS Dly: %d (%d~%d)\n", iCSFinalDelay, iFirstCSPass, iLastCSPass);
 }
 
 #if CA_PER_BIT_DELAY_CELL
@@ -2217,7 +2217,7 @@ static void CBTSetCACLKResult(DRAMC_CTX_T *p, U32 u4MCK, U32 u4UI, S8 iFinalCACL
 
 	iFinalCACLK = CATrain_CmdDelay[p->channel][p->rank];
 
-	mcSHOW_DBG_MSG(("\n[CBTSetCACLKResult] CA Dly = %d\n", iFinalCACLK));
+	msg("\n[CBTSetCACLKResult] CA Dly = %d\n", iFinalCACLK);
 
 	iFinalCACLK = adjust_ca_ui(p, u4MCK, u4UI, iFinalCACLK);
 
@@ -2250,14 +2250,14 @@ static U8 GetCBTVrefPinMuxValue_lp5(DRAMC_CTX_T *p, U8 u1VrefLevel)
 
 	for (u2VrefBit = 0; u2VrefBit < 8; u2VrefBit++)
 	{
-		//mcSHOW_DBG_MSG(("=== u2VrefBit: %d, %d\n",u2VrefBit,uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]));
+		//msg("=== u2VrefBit: %d, %d\n",u2VrefBit,uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]);
 		if (u2Vref_org & (1 << u2VrefBit))
 		{
 			u2Vref_new |= (1 << uiLPDDR5_O1_Mapping_POP[p->channel][u2VrefBit]);
 		}
 	}
 
-	mcSHOW_DBG_MSG3(("=== u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new));
+	msg3("=== u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new);
 
 	if (lp5_cp[p->channel].dram_dq_b0)
 		u2Vref_new >>= 8;
@@ -2280,14 +2280,14 @@ static U8 GetCBTVrefPinMuxValue(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel)
 	u2Vref_new = 0;
 	for (u2VrefBit = 0; u2VrefBit < 8; u2VrefBit++)
 	{
-		//mcSHOW_DBG_MSG(("=== u2VrefBit: %d, %d\n",u2VrefBit,uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]));
+		//msg("=== u2VrefBit: %d, %d\n",u2VrefBit,uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]);
 		if (u2Vref_org & (1 << u2VrefBit))
 		{
 			u2Vref_new |= (1 << uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]);
 		}
 	}
 
-	mcSHOW_DBG_MSG3(("=== u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new));
+	msg3("=== u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new);
 
 	if (lp4_cp[p->channel].dram_dq_b0)
 		u2Vref_new >>= 8;
@@ -2308,7 +2308,7 @@ static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 ope
 		u1VrefValue_pinmux = GetCBTVrefPinMuxValue(p, u1VrefRange, u1VrefLevel);
 
 #if !REDUCE_LOG_FOR_PRELOADER
-		mcSHOW_DBG_MSG(("\nCH_%d, RK_%d, Range=%d, VrefValue_pinmux = 0x%x\n", p->channel, p->rank, u1VrefRange, u1VrefValue_pinmux));
+		msg("\nCH_%d, RK_%d, Range=%d, VrefValue_pinmux = 0x%x\n", p->channel, p->rank, u1VrefRange, u1VrefValue_pinmux);
 #endif
 		u1MR12Value[p->channel][p->rank][operating_fsp] = ((u1VrefRange & 0x1) << 6) | u1VrefLevel;
 
@@ -2335,7 +2335,7 @@ static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 ope
 
 		u4DbgValue = (((u1VrefRange & 0x1) << 6) | (u1VrefLevel & 0x3f));
 		u1MR12Value[p->channel][p->rank][operating_fsp] = u4DbgValue;
-		mcSHOW_DBG_MSG3(("u4DbgValue = 0x%x\n", u4DbgValue));
+		msg3("u4DbgValue = 0x%x\n", u4DbgValue);
 
 		DramcModeRegWriteByRank(p, p->rank, 12, u4DbgValue);
 	}
@@ -3044,7 +3044,7 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 	}
 
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 #if __LP5_COMBO__
@@ -3078,13 +3078,13 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 #endif
 
 	vPrintCalibrationBasicInfo(p);
-	mcSHOW_DBG_MSG(("pi_start=%d, pi_end=%d, pi_step=%d, new_cbt_mode=%d, autok=%d\n",
-			pi_start, pi_end, pi_step, p->new_cbt_mode, autok));
+	msg("pi_start=%d, pi_end=%d, pi_step=%d, new_cbt_mode=%d, autok=%d\n",
+			pi_start, pi_end, pi_step, p->new_cbt_mode, autok);
 
 #if __LP5_COMBO__
 	if (is_lp5_family(p))
 	{
-		mcSHOW_DBG_MSG(("lp5_training_mode=%d, lp5_cbt_phase=%d\n", p->lp5_training_mode, p->lp5_cbt_phase));
+		msg("lp5_training_mode=%d, lp5_cbt_phase=%d\n", p->lp5_training_mode, p->lp5_cbt_phase);
 	}
 #endif
 
@@ -3172,7 +3172,7 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 	}
 #endif
 
-	mcSHOW_DBG_MSG(("\n[CmdBusTrainingLP45] Vref(ca) range %d: %d\n", u1FinalRange, u1FinalVref));
+	msg("\n[CmdBusTrainingLP45] Vref(ca) range %d: %d\n", u1FinalRange, u1FinalVref);
 
 #ifdef FOR_HQA_TEST_USED
 	gFinalCBTVrefCA[p->channel][p->rank] = u1FinalVref;
@@ -3196,7 +3196,7 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 	gEyeScan_CaliDelay[0] = CATrain_CmdDelay[p->channel][p->rank] -pi_start;
 #endif
 
-	//mcSHOW_DBG_MSG(("\nAverage CA Dly: %d\n", iFinalCACLK));
+	//msg("\nAverage CA Dly: %d\n", iFinalCACLK);
 
 	/* -------------  CS and CLK ---------- */
 	/* delay ca 1UI before K CS */
@@ -3244,7 +3244,7 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 	gFinalCBTVrefDQ[p->channel][p->rank] = u1FinalVref;
 #endif
 
-	mcSHOW_DBG_MSG3(("\n[CmdBusTrainingLP45] Done\n"));
+	msg3("\n[CmdBusTrainingLP45] Done\n");
 
 	//tx_rank_sel is selected by HW //Lewis@20180509: tx_rank_sel is selected by SW in CBT if TMRRI design has changed.
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANK);
@@ -3315,7 +3315,7 @@ static DRAM_STATUS_T ExecuteMoveDramCDelay(DRAMC_CTX_T *p,
 
 	u4TmpUI = u4IO32ReadFldAlign(DRAMC_REG_ADDR(ui_reg.u4Addr), ui_reg.u4Fld) & (~(1 << ucDataRateDivShift));
 	u4TmpMCK = u4IO32ReadFldAlign(DRAMC_REG_ADDR(mck_reg.u4Addr), mck_reg.u4Fld);
-	//mcSHOW_DBG_MSG(("Base:  u4TmpMCK:%d,	u4TmpUI: %d,\n", u4TmpMCK, u4TmpUI));
+	//msg("Base:  u4TmpMCK:%d,	u4TmpUI: %d,\n", u4TmpMCK, u4TmpUI);
 
 	s4HighLevelDelay = (u4TmpMCK << ucDataRateDivShift) + u4TmpUI;
 	s4DelaySum = (s4HighLevelDelay + iShiftUI);
@@ -3335,7 +3335,7 @@ static DRAM_STATUS_T ExecuteMoveDramCDelay(DRAMC_CTX_T *p,
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(ui_reg.u4Addr), u4TmpUI, ui_reg.u4Fld);
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(mck_reg.u4Addr), u4TmpMCK, mck_reg.u4Fld);
-	//mcSHOW_DBG_MSG(("[%d]  Final ==> u4TmpMCK:%d,  u4TmpUI: %d,\n", iShiftUI, u4TmpMCK, u4TmpUI));
+	//msg("[%d]  Final ==> u4TmpMCK:%d,  u4TmpUI: %d,\n", iShiftUI, u4TmpMCK, u4TmpUI);
 
 	return MoveResult;
 }
@@ -3511,7 +3511,7 @@ static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerR
 
 	if (u4TimeCnt == 0)//time out
 	{
-		mcSHOW_DBG_MSG(("[DramcTriggerAndWait] Wait 0x%x respond fail (time out)\n", RepondsReg.u4Addr));
+		msg("[DramcTriggerAndWait] Wait 0x%x respond fail (time out)\n", RepondsReg.u4Addr);
 		return DRAM_FAIL;
 	}
 
@@ -3524,7 +3524,7 @@ static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerR
 #define ASSERT(x) \
 		if (!(x)) \
 			while (1)\
-				mcSHOW_ERR_MSG(("ASSERT FAIL at %s[%d]!\n", __FUNCTION__, __LINE__));
+				err("ASSERT FAIL at %s[%d]!\n", __FUNCTION__, __LINE__);
 #endif
 
 
@@ -3567,7 +3567,7 @@ static void WriteLevelingScanRange_PI(DRAMC_CTX_T *p, S32 *ps4DlyBegin, S32 *ps4
 		u1PIStep = 1;	 // One step is 1/4 delay cell
 		PI_bound = 1024; // No bounadary as delay cell based
 	}
-	mcSHOW_DBG_MSG2(("Begin: %d, End: %d, Step: %d, Bound: %d\n", s4DlyBegin, s4DlyEnd, u1PIStep, PI_bound));
+	msg2("Begin: %d, End: %d, Step: %d, Bound: %d\n", s4DlyBegin, s4DlyEnd, u1PIStep, PI_bound);
 
 	*ps4DlyBegin = s4DlyBegin;
 	*ps4DlyEnd = s4DlyEnd;
@@ -3588,7 +3588,7 @@ DRAM_STATUS_T WriteLevelingPosCal(DRAMC_CTX_T *p, WLEV_DELAY_BASED_T stDelayBase
 		(wrlevel_dqs_final_delay[RANK_0][1] - wrlevel_dqs_final_delay[RANK_1][1])>=9 ||
 		(wrlevel_dqs_final_delay[RANK_0][1] - wrlevel_dqs_final_delay[RANK_1][1])<=-9 )
 	{
-		mcSHOW_ERR_MSG(("[WARNING] Larger WL R2R !!\n"));
+		err("[WARNING] Larger WL R2R !!\n");
 		#if CHECK_HQA_CRITERIA
 		while(1);
 		#endif
@@ -3622,7 +3622,7 @@ DRAM_STATUS_T WriteLevelingPosCal(DRAMC_CTX_T *p, WLEV_DELAY_BASED_T stDelayBase
 
 	vSetRank(p, backup_rank);
 
-	mcSHOW_DBG_MSG(("[WriteLevelingPosCal] DQS PI B0/B1 = %d/%d\n", wrlevel_dqs_delay[0], wrlevel_dqs_delay[1]));
+	msg("[WriteLevelingPosCal] DQS PI B0/B1 = %d/%d\n", wrlevel_dqs_delay[0], wrlevel_dqs_delay[1]);
 }
 #endif
 
@@ -3648,7 +3648,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -3688,7 +3688,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 	vSetCalibrationResult(p, DRAM_CALIBRATION_WRITE_LEVEL, DRAM_FAIL);
 
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 	if (p->isWLevInitShift[p->channel] == FALSE)
@@ -3760,7 +3760,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 		#endif
 	}
 	vSetCalibrationResult(p, DRAM_CALIBRATION_WRITE_LEVEL, KResult);
-	mcSHOW_DBG_MSG2(("pass bytecount = 0x%x (0xff: all bytes pass) \n\n", ucDoneFlg));
+	msg2("pass bytecount = 0x%x (0xff: all bytes pass) \n\n", ucDoneFlg);
 
 #if defined(FOR_HQA_TEST_USED) && defined(FOR_HQA_REPORT_USED)
 	if (gHQALog_flag == 1)
@@ -3797,8 +3797,8 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 	// Calculate DQS "PI" delay, nothing to do with delay cell
 	for (byte_i = 0; byte_i < (p->data_width / DQS_BIT_NUMBER); byte_i++)
 	{
-		mcSHOW_DBG_MSG(("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]));
-		mcDUMP_REG_MSG(("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]));
+		msg("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]);
+		reg_msg("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]);
 		if (wrlevel_dqs_final_delay[p->rank][byte_i] >= PI_bound)
 		{
 			ShiftDQSWCK_UI(p, (wrlevel_dqs_final_delay[p->rank][byte_i] / PI_bound) * (PI_bound / DQPI_PER_UI), byte_i);
@@ -3807,8 +3807,8 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 		}
 
 		wrlevel_dqs_delay[byte_i] = wrlevel_dqs_final_delay[p->rank][byte_i];
-		mcSHOW_DBG_MSG((" => %d\n", wrlevel_dqs_delay[byte_i]));
-		mcDUMP_REG_MSG((" => %d\n", wrlevel_dqs_delay[byte_i]));
+		msg(" => %d\n", wrlevel_dqs_delay[byte_i]);
+		reg_msg(" => %d\n", wrlevel_dqs_delay[byte_i]);
 	}
 
 	for (rank_i = p->rank; rank_i < RANK_MAX; rank_i++)
@@ -3833,7 +3833,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 
 	vSetRank(p, backup_rank);
 
-	mcSHOW_DBG_MSG3(("[DramcWriteLeveling] Done\n\n"));
+	msg3("[DramcWriteLeveling] Done\n\n");
 
 	return KResult;
 }
@@ -3856,7 +3856,7 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -3872,7 +3872,7 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
 	{
 		// MRW MR30 OP[7:4] = i(Set DCAU) and OP[3:0] = i(Set DCAL)
 		U8 u8RGSettingVal = FetchRGSettingVal(i);
-		mcSHOW_ERR_MSG(("Set value %d into MR30\n", u8RGSettingVal));
+		err("Set value %d into MR30\n", u8RGSettingVal);
 		MRWriteFldMulti(p, 30, P_Fld(u8RGSettingVal, MR30_DCAU) |
 							   P_Fld(u8RGSettingVal, MR30_DCAL),
 							   TO_MR);
@@ -3901,7 +3901,7 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
 		// Delay tMRD
 		mcDELAY_US(2);
 
-		mcSHOW_ERR_MSG(("Wait tMRD and MRR MR26\n"));
+		err("Wait tMRD and MRR MR26\n");
 
 		///TODO:  Read back result MR25[5:2]
 		// Store result into u8ResultDutyCycMonitor[]
@@ -4017,8 +4017,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	u4SPDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
 	u4CKECTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL));
 
-	mcSHOW_DBG_MSG3(("[ZQCalibration]\n"));
-	//mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
+	msg3("[ZQCalibration]\n");
+	//mcFPRINTF(fp_A60501, "[ZQCalibration]\n");
 
 	// Disable HW MIOCK control to make CLK always on
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
@@ -4040,8 +4040,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);	// Wait tZQCAL(min) 1us or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d- ", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
+		msg3("%d- ", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d- ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQCEN_SWTRIG);
@@ -4049,8 +4049,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Start fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Start fail (time out)\n"));
+		msg("ZQCAL Start fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Start fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4066,8 +4066,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d=", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
+		msg3("%d=", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d= ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQLATEN_SWTRIG);
@@ -4075,8 +4075,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Latch fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Latch fail (time out)\n"));
+		msg("ZQCAL Latch fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Latch fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4090,8 +4090,8 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL), u4CKECTRL);
 
 	vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_OK);
-	mcSHOW_DBG_MSG3(("\n[DramcZQCalibration] Done\n\n"));
-	//mcFPRINTF((fp_A60501, "\n[DramcZQCalibration] Done\n\n"));
+	msg3("\n[DramcZQCalibration] Done\n\n");
+	//mcFPRINTF(fp_A60501, "\n[DramcZQCalibration] Done\n\n");
 
 	return DRAM_OK;
 }
@@ -4111,8 +4111,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	u4SPDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
 	u4CKECTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL));
 
-	mcSHOW_DBG_MSG3(("[ZQCalibration]\n"));
-	//mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
+	msg3("[ZQCalibration]\n");
+	//mcFPRINTF(fp_A60501, "[ZQCalibration]\n");
 
 	// Disable HW MIOCK control to make CLK always on
 	//vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
@@ -4140,8 +4140,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);	// Wait tZQCAL(min) 1us or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d- ", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
+		msg3("%d- ", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d- ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
@@ -4149,8 +4149,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Start fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Start fail (time out)\n"));
+		msg("ZQCAL Start fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Start fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4168,8 +4168,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d=", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
+		msg3("%d=", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d= ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
@@ -4177,8 +4177,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Latch fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Latch fail (time out)\n"));
+		msg("ZQCAL Latch fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Latch fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4194,8 +4194,8 @@ DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL), u4CKECTRL);
 
 	vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_OK);
-	mcSHOW_DBG_MSG3(("\n[DramcZQCalibration] Done\n\n"));
-	//mcFPRINTF((fp_A60501, "\n[DramcZQCalibration] Done\n\n"));
+	msg3("\n[DramcZQCalibration] Done\n\n");
+	//mcFPRINTF(fp_A60501, "\n[DramcZQCalibration] Done\n\n");
 
 	return DRAM_OK;
 }
@@ -4214,8 +4214,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	u4SPDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
 	u4CKECTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL));
 
-	mcSHOW_DBG_MSG3(("[ZQCalibration]\n"));
-	//mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
+	msg3("[ZQCalibration]\n");
+	//mcFPRINTF(fp_A60501, "[ZQCalibration]\n");
 
 	// Disable HW MIOCK control to make CLK always on
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
@@ -4242,8 +4242,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);	// Wait tZQCAL(min) 1us or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d- ", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
+		msg3("%d- ", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d- ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQCEN);
@@ -4251,8 +4251,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Start fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Start fail (time out)\n"));
+		msg("ZQCAL Start fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Start fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4271,8 +4271,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 		u4TimeCnt --;
 		mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
 
-		mcSHOW_DBG_MSG3(("%d=", u4TimeCnt));
-		//mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
+		msg3("%d=", u4TimeCnt);
+		//mcFPRINTF(fp_A60501, "%d= ", u4TimeCnt);
 	}while((u4Response==0) &&(u4TimeCnt>0));
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQLATEN);
@@ -4280,8 +4280,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	if(u4TimeCnt==0)//time out
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
-		mcSHOW_DBG_MSG(("ZQCAL Latch fail (time out)\n"));
-		//mcFPRINTF((fp_A60501, "ZQCAL Latch fail (time out)\n"));
+		msg("ZQCAL Latch fail (time out)\n");
+		//mcFPRINTF(fp_A60501, "ZQCAL Latch fail (time out)\n");
 		return DRAM_FAIL;
 	}
 
@@ -4296,8 +4296,8 @@ DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 	vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL), u4CKECTRL);
 
 	vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_OK);
-	mcSHOW_DBG_MSG3(("\n[DramcZQCalibration] Done\n\n"));
-	//mcFPRINTF((fp_A60501, "\n[DramcZQCalibration] Done\n\n"));
+	msg3("\n[DramcZQCalibration] Done\n\n");
+	//mcFPRINTF(fp_A60501, "\n[DramcZQCalibration] Done\n\n");
 
 	return DRAM_OK;
 }
@@ -4423,8 +4423,8 @@ static U8 u1GetLp5ReadLatency(DRAMC_CTX_T *p)
 	else
 		read_latency *= 2;
 
-	mcSHOW_DBG_MSG(("ckr = %d, dvfsc = %d, rl = %d, read_latency = %d\n",
-		ckr, dvfsc, rl, read_latency));
+	msg("ckr = %d, dvfsc = %d, rl = %d, read_latency = %d\n",
+		ckr, dvfsc, rl, read_latency);
 
 	return read_latency;
 }
@@ -4511,24 +4511,24 @@ static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
 	else
 	{
 		u1StartUI =0;
-		mcSHOW_ERR_MSG(("GatingStartPos err! Need to fine-tune default DQSINCTL value.\n(RX_Path_delay_UI %d) < DQSINCTL_UI %d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI));
+		err("GatingStartPos err! Need to fine-tune default DQSINCTL value.\n(RX_Path_delay_UI %d) < DQSINCTL_UI %d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI);
 		#if __ETT__
 		while(1);
 		#endif
 	}
 
-	mcSHOW_DBG_MSG(("[GatingStartPos] MR0_LatencyMode %d, u1RealRL %d , u4TDQSCK_UI_min %d, 1:4ExtraMCK %d\n", u1MR0_LatencyMode, u1RealRL, u4TDQSCK_UI_min, u1ExtraMCKfor1_4mode));
-	mcDUMP_REG_MSG(("[GatingStartPos] MR0_LatencyMode %d, u1RealRL %d , u4TDQSCK_UI_min %d, 1:4ExtraMCK %d\n", u1MR0_LatencyMode, u1RealRL, u4TDQSCK_UI_min, u1ExtraMCKfor1_4mode));
+	msg("[GatingStartPos] MR0_LatencyMode %d, u1RealRL %d , u4TDQSCK_UI_min %d, 1:4ExtraMCK %d\n", u1MR0_LatencyMode, u1RealRL, u4TDQSCK_UI_min, u1ExtraMCKfor1_4mode);
+	reg_msg("[GatingStartPos] MR0_LatencyMode %d, u1RealRL %d , u4TDQSCK_UI_min %d, 1:4ExtraMCK %d\n", u1MR0_LatencyMode, u1RealRL, u4TDQSCK_UI_min, u1ExtraMCKfor1_4mode);
 
 	if(u1AutoK)
 	{
-		mcSHOW_DBG_MSG(("RX_Path_delay_UI(%d) - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI));
-		mcDUMP_REG_MSG(("RX_Path_delay_UI(%d) - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI));
+		msg("RX_Path_delay_UI(%d) - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI);
+		reg_msg("RX_Path_delay_UI(%d) - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI);
 	}
 	else
 	{
-		mcSHOW_DBG_MSG(("RX_Path_delay_UI(%d) -3 - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI));
-		mcDUMP_REG_MSG(("RX_Path_delay_UI(%d) -3 - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI));
+		msg("RX_Path_delay_UI(%d) -3 - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI);
+		reg_msg("RX_Path_delay_UI(%d) -3 - DQSINCTL_UI(%d) = u1StartUI(%d)\n", u1RX_Path_delay_UI, u1DQSINCTL_UI, u1StartUI);
 	}
 
 	return u1StartUI;
@@ -4550,7 +4550,7 @@ static u8 rxdqs_gating_bypass(DRAMC_CTX_T *p)
 {
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_GatingCal
 		if (p->femmc_Ready == 1) {
-			mcSHOW_DBG_MSG(("[FAST_K] Bypass Gating Calibration\n"));
+			msg("[FAST_K] Bypass Gating Calibration\n");
 			return 1;
 		}
 #endif
@@ -4590,14 +4590,14 @@ static void rxdqs_gating_fastk_save_restore(DRAMC_CTX_T *p,
 
 				vSetCalibrationResult(p, DRAM_CALIBRATION_GATING, DRAM_FAST_K);
 
-				mcSHOW_DBG_MSG(("[FAST_K] CH%d RK%d best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n",
+				msg("[FAST_K] CH%d RK%d best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n",
 					ch, rk, dqs_i, best_win->best_dqsien_dly_mck[dqs_i],
 					best_win->best_dqsien_dly_ui[dqs_i],
-					best_win->best_dqsien_dly_pi[dqs_i]));
-				mcSHOW_DBG_MSG(("[FAST_K] CH%d RK%d best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n",
+					best_win->best_dqsien_dly_pi[dqs_i]);
+				msg("[FAST_K] CH%d RK%d best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n",
 					ch, rk, dqs_i, best_win->best_dqsien_dly_mck_p1[dqs_i],
 					best_win->best_dqsien_dly_ui_p1[dqs_i],
-					best_win->best_dqsien_dly_pi_p1[dqs_i]));
+					best_win->best_dqsien_dly_pi_p1[dqs_i]);
 
 			}
 		}
@@ -4642,18 +4642,18 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
 #endif
 
 		/*TINFO="best DQS%d delay(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i, rxdqs_best_win.best_dqsien_dly_mck[dqs_i], rxdqs_best_win.best_dqsien_dly_ui[dqs_i], rxdqs_best_win.best_dqsien_dly_pi[dqs_i])); */
-		mcSHOW_DBG_MSG(("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
+		msg("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win->best_dqsien_dly_mck[dqs_i],
 			rxdqs_best_win->best_dqsien_dly_ui[dqs_i],
-			rxdqs_best_win->best_dqsien_dly_pi[dqs_i]));
-		mcDUMP_REG_MSG(("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
+			rxdqs_best_win->best_dqsien_dly_pi[dqs_i]);
+		reg_msg("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win->best_dqsien_dly_mck[dqs_i],
 			rxdqs_best_win->best_dqsien_dly_ui[dqs_i],
-			rxdqs_best_win->best_dqsien_dly_pi[dqs_i]));
-		/* cc mark mcFPRINTF((fp_A60501,"best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
+			rxdqs_best_win->best_dqsien_dly_pi[dqs_i]);
+		/* cc mark mcFPRINTF(fp_A60501,"best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win.best_dqsien_dly_mck[dqs_i],
 			rxdqs_best_win.best_dqsien_dly_ui[dqs_i],
-			rxdqs_best_win.best_dqsien_dly_pi[dqs_i]));
+			rxdqs_best_win.best_dqsien_dly_pi[dqs_i]);
 		*/
 
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
@@ -4675,23 +4675,23 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
 #endif
 	}
 
-	mcSHOW_DBG_MSG(("\n"));
-	//cc mark mcFPRINTF((fp_A60501,"\n"));
+	msg("\n");
+	//cc mark mcFPRINTF(fp_A60501,"\n");
 
 	for (dqs_i=0; dqs_i<(p->data_width/DQS_BIT_NUMBER); dqs_i++) {
 		/*TINFO="best DQS%d P1 delay(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i, rxdqs_best_win.best_dqsien_dly_mck_p1[dqs_i], rxdqs_best_win.best_dqsien_dly_ui_p1[dqs_i], rxdqs_best_win.best_dqsien_dly_pi_p1[dqs_i]*/
-		mcSHOW_DBG_MSG(("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
+		msg("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win->best_dqsien_dly_mck_p1[dqs_i],
 			rxdqs_best_win->best_dqsien_dly_ui_p1[dqs_i],
-			rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]));
-		mcDUMP_REG_MSG(("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
+			rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]);
+		reg_msg("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win->best_dqsien_dly_mck_p1[dqs_i],
 			rxdqs_best_win->best_dqsien_dly_ui_p1[dqs_i],
-			rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]));
-		/* cc mark mcFPRINTF((fp_A60501,"best DQS%d P1 dly(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i,
+			rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]);
+		/* cc mark mcFPRINTF(fp_A60501,"best DQS%d P1 dly(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i,
 			rxdqs_best_win.best_dqsien_dly_mck_p1[dqs_i],
 			rxdqs_best_win.best_dqsien_dly_ui_p1[dqs_i],
-			rxdqs_best_win.best_dqsien_dly_pi_p1[dqs_i]));
+			rxdqs_best_win.best_dqsien_dly_pi_p1[dqs_i]);
 		*/
 
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
@@ -4868,24 +4868,24 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
 		P_Fld(0x0, MISC_SHU_STBCAL_STBCALEN) |
 		P_Fld(0x0, MISC_SHU_STBCAL_STB_SELPHCALEN));
 
-	mcSHOW_DBG_MSG(("[Gating] AUTO K with param:\n"));
-	mcSHOW_DBG_MSG(("\tinit_mck: %d, init_ui: %d, end_mck: %d, end_ui: %d\n",
+	msg("[Gating] AUTO K with param:\n");
+	msg("\tinit_mck: %d, init_ui: %d, end_mck: %d, end_ui: %d\n",
 		auto_param->init_mck, auto_param->init_ui,
-		auto_param->end_mck, auto_param->end_ui));
-	mcSHOW_DBG_MSG(("\tpi_offset: %d, early_break: %s\n", auto_param->pi_offset,
-		(auto_param->early_break)? "ENABLE" : "DISABLE"));
+		auto_param->end_mck, auto_param->end_ui);
+	msg("\tpi_offset: %d, early_break: %s\n", auto_param->pi_offset,
+		(auto_param->early_break)? "ENABLE" : "DISABLE");
 }
 
 static void rxdqs_gating_auto_cal_trigger(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG(("[Gating] AUTO K start...\n"));
+	msg("[Gating] AUTO K start...\n");
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQSIEN_AUTOK_CFG0),
 		0x1, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_GO);
 }
 
 static void rxdqs_gating_auto_cal_stop(DRAMC_CTX_T *p)
 {
-	mcSHOW_DBG_MSG(("[Gating] AUTO K stop...\n"));
+	msg("[Gating] AUTO K stop...\n");
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQSIEN_AUTOK_CFG0),
 		0x0, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_GO);
 
@@ -4926,14 +4926,14 @@ static void rxdqs_gating_set_final_result(DRAMC_CTX_T *p, U8 mck2ui,
 			reg_ui_rodt[dqs_i] = 0;
 			reg_mck_rodt_p1[dqs_i] = 4;
 			reg_ui_rodt_p1[dqs_i] = 4;
-			mcSHOW_DBG_MSG(("[Warning] RODT cannot be -11UI for B%d\n",
-				dqs_i));
+			msg("[Warning] RODT cannot be -11UI for B%d\n",
+				dqs_i);
 		}
 
-		mcSHOW_DBG_MSG(("DQS%d Final RODTEN: (%2d, %2d)\n",
-			dqs_i, reg_mck_rodt[dqs_i], reg_ui_rodt[dqs_i]));
-		mcSHOW_DBG_MSG(("DQS%d Final RODTEN_P1: (%2d, %2d)\n",
-			dqs_i, reg_mck_rodt_p1[dqs_i], reg_ui_rodt_p1[dqs_i]));
+		msg("DQS%d Final RODTEN: (%2d, %2d)\n",
+			dqs_i, reg_mck_rodt[dqs_i], reg_ui_rodt[dqs_i]);
+		msg("DQS%d Final RODTEN_P1: (%2d, %2d)\n",
+			dqs_i, reg_mck_rodt_p1[dqs_i], reg_ui_rodt_p1[dqs_i]);
 	}
 #endif
 
@@ -5029,8 +5029,8 @@ static void rxdqs_gating_auto_xlate(DRAMC_CTX_T *p,
 		mck_p1 = (value + freq_div) / mck2ui;
 		ui_p1 = (value + freq_div) % mck2ui;
 
-		mcSHOW_DBG_MSG(("[Gating][RG] DQS%d Final result: (%d, %d, %d)\n", dqs_i, mck, ui, pi));
-		mcSHOW_DBG_MSG(("[Gating][RG] DQS%d Final result P1: (%d, %d)\n", dqs_i, mck_p1, ui_p1));
+		msg("[Gating][RG] DQS%d Final result: (%d, %d, %d)\n", dqs_i, mck, ui, pi);
+		msg("[Gating][RG] DQS%d Final result P1: (%d, %d)\n", dqs_i, mck_p1, ui_p1);
 
 		best_win->best_dqsien_dly_mck[dqs_i] = mck;
 		best_win->best_dqsien_dly_ui[dqs_i] = ui;
@@ -5131,8 +5131,8 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
 						dbg_reg_idx++, dbg_reg_addr += 4) {
 						dbg_reg_val = u4IO32Read4B(dbg_reg_addr);
 
-						mcSHOW_ERR_MSG(("B%d Gating AUTOK DBG Status-%d: [0x%08x]\n",
-							dqs_i, dbg_reg_idx, dbg_reg_val));
+						err("B%d Gating AUTOK DBG Status-%d: [0x%08x]\n",
+							dqs_i, dbg_reg_idx, dbg_reg_val);
 					}
 				}
 				done_bytes++;
@@ -5144,19 +5144,19 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
 
 	/* Log it */
 	for (dqs_i = 0; dqs_i < (p->data_width / DQS_BIT_NUMBER); dqs_i++) {
-		mcSHOW_DBG_MSG(("[Gating][%s] AUTOK of CH-%d, Rk-%d, Byte-%d:\n",
-			error[dqs_i]? "Fail" : "Pass", p->channel, p->rank, dqs_i));
+		msg("[Gating][%s] AUTOK of CH-%d, Rk-%d, Byte-%d:\n",
+			error[dqs_i]? "Fail" : "Pass", p->channel, p->rank, dqs_i);
 
 		if (done[dqs_i]) {
 			if (error[dqs_i] == 0) {
-				mcSHOW_DBG_MSG(("\tcenter(%2d, %2d, %2d)\n",
-							mck_center[dqs_i], ui_center[dqs_i], pi_center[dqs_i]));
-				mcSHOW_DBG_MSG(("\tleft(%2d, %2d, %2d)\n",
-							mck_left[dqs_i], ui_left[dqs_i], pi_left[dqs_i]));
+				msg("\tcenter(%2d, %2d, %2d)\n",
+							mck_center[dqs_i], ui_center[dqs_i], pi_center[dqs_i]);
+				msg("\tleft(%2d, %2d, %2d)\n",
+							mck_left[dqs_i], ui_left[dqs_i], pi_left[dqs_i]);
 
 				if (auto_param->early_break == DISABLE) {
-					mcSHOW_DBG_MSG(("\tright(%2d, %2d, %2d)\n",
-								mck_right[dqs_i], ui_right[dqs_i], pi_right[dqs_i]));
+					msg("\tright(%2d, %2d, %2d)\n",
+								mck_right[dqs_i], ui_right[dqs_i], pi_right[dqs_i]);
 				}
 			}
 			if (error[dqs_i]) {
@@ -5413,7 +5413,7 @@ static void rxdqs_gating_set_dqsien_dly(DRAMC_CTX_T *p, U8 dly_ui,
 		reg_ui_rodt = 0;
 		reg_mck_rodt_p1 = 4;
 		reg_ui_rodt_p1 = 4;
-		mcSHOW_DBG_MSG(("[Warning] RODT cannot be -11UI\n"));
+		msg("[Warning] RODT cannot be -11UI\n");
 	}
 #endif
 
@@ -5607,14 +5607,14 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
 	/* read (lead, lag) */
 	rxdqs_gating_get_leadlag(p, rxdqs_trans, rxdqs_cal);
 
-	mcSHOW_DBG_MSG(("%2d %2d %2d | ",
+	msg("%2d %2d %2d | ",
 		rxdqs_cal->dqsien_dly_mck, rxdqs_cal->dqsien_dly_ui,
-		rxdqs_cal->dqsien_dly_pi));
-	mcSHOW_DBG_MSG(("B1->B0 | %x %x | %x %x | (%d %d) (%d %d)\n",
+		rxdqs_cal->dqsien_dly_pi);
+	msg("B1->B0 | %x %x | %x %x | (%d %d) (%d %d)\n",
 		debug_cnt[1], debug_cnt[0],
 		gating_error[1], gating_error[0],
 		rxdqs_trans->dqs_lead[1], rxdqs_trans->dqs_lag[1],
-		rxdqs_trans->dqs_lead[0], rxdqs_trans->dqs_lag[0]));
+		rxdqs_trans->dqs_lead[0], rxdqs_trans->dqs_lag[0]);
 
 #if (__LP5_COMBO__)
 	if((is_lp5_family(p)) && (vGet_Div_Mode(p) == DIV16_MODE))
@@ -5657,18 +5657,18 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
 				best_win->best_dqsien_dly_ui_p1[dqs_i] =
 					best_win->best_dqsien_dly_mck[dqs_i] * mck2ui +
 					best_win->best_dqsien_dly_ui[dqs_i] + freq_div; /* Total UI for Phase1 */
-				mcSHOW_DBG_MSG(("Total UI for P1: %d, mck2ui %d\n",
-					best_win->best_dqsien_dly_mck_p1[dqs_i], mck2ui));
+				msg("Total UI for P1: %d, mck2ui %d\n",
+					best_win->best_dqsien_dly_mck_p1[dqs_i], mck2ui);
 				best_win->best_dqsien_dly_mck_p1[dqs_i] =
 					best_win->best_dqsien_dly_ui_p1[dqs_i] / mck2ui;
 				best_win->best_dqsien_dly_ui_p1[dqs_i] =
 					best_win->best_dqsien_dly_ui_p1[dqs_i] % mck2ui;
 
-				mcSHOW_DBG_MSG(("best dqsien dly found for B%d: "
+				msg("best dqsien dly found for B%d: "
 					"(%2d, %2d, %2d)\n", dqs_i,
 					best_win->best_dqsien_dly_mck[dqs_i],
 					best_win->best_dqsien_dly_ui[dqs_i],
-					best_win->best_dqsien_dly_pi[dqs_i]));
+					best_win->best_dqsien_dly_pi[dqs_i]);
 				passed_bytes |= 1 << dqs_i;
 
 				if (((p->data_width == DATA_WIDTH_16BIT) &&
@@ -5706,7 +5706,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
 	U8 u1GatingErrorFlag=0;
 
 	if (p == NULL) {
-		mcSHOW_ERR_MSG(("[Error] Context NULL\n"));
+		err("[Error] Context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -5817,7 +5817,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
 			{
 				u1GatingErrorFlag=1;
 				/*TINFO="error, no pass taps in DQS_%d !!!\n", dqs_i*/
-				mcSHOW_ERR_MSG(("error, no pass taps in DQS_%d!\n", dqs_i));
+				err("error, no pass taps in DQS_%d!\n", dqs_i);
 			}
 		}
 	if (u1GatingErrorFlag==0)
@@ -5846,7 +5846,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
 	rxdqs_gating_fastk_save_restore(p, &rxdqs_best_win, &rxdqs_cal);
 	rxdqs_gating_misc_process(p, &rxdqs_best_win);
 
-	mcSHOW_DBG_MSG(("[Gating] SW calibration Done\n"));
+	msg("[Gating] SW calibration Done\n");
 
 	/* Set MCK & UI */
 	rxdqs_gating_set_final_result(p, ui_per_mck, &rxdqs_best_win);
@@ -5892,10 +5892,10 @@ DRAM_STATUS_T dramc_rx_dqs_gating_cal(DRAMC_CTX_T *p,
 			return DRAM_OK;
 		}
 
-		mcSHOW_ERR_MSG(("[Error] Gating auto calibration fail!!\n"));
+		err("[Error] Gating auto calibration fail!!\n");
 	}
 
-	mcSHOW_DBG_MSG(("[Gating] SW mode calibration\n"));
+	msg("[Gating] SW mode calibration\n");
 
 	return dramc_rx_dqs_gating_sw_cal(p, use_enhanced_rdqs);
 }
@@ -5959,14 +5959,14 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 
 	s1ChangeDQSINCTL = reg_TX_dly_DQSgated_min - u1TXDLY_Cal_min;
 
-	mcSHOW_DBG_MSG(("[RxdqsGatingPostProcess] freq %d\n"
+	msg("[RxdqsGatingPostProcess] freq %d\n"
 					"ChangeDQSINCTL %d, reg_TX_dly_DQSgated_min %d, u1TXDLY_Cal_min %d\n",
 						p->frequency,
-						s1ChangeDQSINCTL, reg_TX_dly_DQSgated_min, u1TXDLY_Cal_min));
-	mcDUMP_REG_MSG(("[RxdqsGatingPostProcess] freq %d\n"
+						s1ChangeDQSINCTL, reg_TX_dly_DQSgated_min, u1TXDLY_Cal_min);
+	reg_msg("[RxdqsGatingPostProcess] freq %d\n"
 					   "ChangeDQSINCTL %d, reg_TX_dly_DQSgated_min %d, u1TXDLY_Cal_min %d\n",
 						p->frequency,
-						s1ChangeDQSINCTL, reg_TX_dly_DQSgated_min, u1TXDLY_Cal_min));
+						s1ChangeDQSINCTL, reg_TX_dly_DQSgated_min, u1TXDLY_Cal_min);
 
 	if (vGet_Div_Mode(p) == DIV16_MODE)
 		mck2ui_shift = 4;
@@ -5987,8 +5987,8 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 
 		for (u1RankIdx = 0; u1RankIdx < u1RankMax; u1RankIdx++)
 		{
-			mcSHOW_DBG_MSG2(("Rank: %d\n", u1RankIdx));
-			mcDUMP_REG_MSG(("Rank: %d\n", u1RankIdx));
+			msg2("Rank: %d\n", u1RankIdx);
+			reg_msg("Rank: %d\n", u1RankIdx);
 
 			for (dqs_i = 0; dqs_i < (p->data_width / DQS_BIT_NUMBER); dqs_i++)
 			{
@@ -6032,13 +6032,13 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 					ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i] = ((u4ReadTXDLY_P1[u1RankIdx][dqs_i] & 0x1) << 2) + (ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i] & 0x3);
 				}
 #endif
-				mcSHOW_DBG_MSG(("best DQS%d dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_backup[u1RankIdx][dqs_i]));
-				mcDUMP_REG_MSG(("PostProcess best DQS%d dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_backup[u1RankIdx][dqs_i]));
+				msg("best DQS%d dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_backup[u1RankIdx][dqs_i]);
+				reg_msg("PostProcess best DQS%d dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_backup[u1RankIdx][dqs_i]);
 			}
 			for (dqs_i = 0; dqs_i < (p->data_width / DQS_BIT_NUMBER); dqs_i++)
 			{
-				mcSHOW_DBG_MSG(("best DQS%d P1 dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i]));
-				mcDUMP_REG_MSG(("PostProcess best DQS%d P1 dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i]));
+				msg("best DQS%d P1 dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i]);
+				reg_msg("PostProcess best DQS%d P1 dly(2T, 0.5T) = (%d, %d)\n", dqs_i, ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i], ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i]);
 			}
 		}
 
@@ -6082,7 +6082,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 
 	u4ReadDQSINCTL = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSCTL),
 		MISC_SHU_RK_DQSCTL_DQSINCTL);
-	mcDUMP_REG_MSG(("u4ReadDQSINCTL=%d\n", u4ReadDQSINCTL));
+	reg_msg("u4ReadDQSINCTL=%d\n", u4ReadDQSINCTL);
 	u4ReadDQSINCTL -= s1ChangeDQSINCTL;
 
 	#if ENABLE_READ_DBI
@@ -6133,7 +6133,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 	else
 	{
 		u4RankINCTL_ROOT = 0;
-		mcSHOW_ERR_MSG(("u4RankINCTL_ROOT <2, Please check\n"));
+		err("u4RankINCTL_ROOT <2, Please check\n");
 #if (__ETT__)
 		while (1);
 #endif
@@ -6147,7 +6147,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 	else
 	{
 		u4RankINCTL_ROOT = 0;
-		mcSHOW_ERR_MSG(("u4RankINCTL_ROOT <3, Risk for supporting 1066/RL8\n"));
+		err("u4RankINCTL_ROOT <3, Risk for supporting 1066/RL8\n");
 	}
 #endif
 
@@ -6175,9 +6175,9 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 
 	u4XRTR2R = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ACTIM_XRT), SHU_ACTIM_XRT_XRTR2R);
 
-	mcSHOW_DBG_MSG2(("TX_dly_DQSgated check: min %d  max %d, ChangeDQSINCTL=%d\n", u1TXDLY_Cal_min, u1TXDLY_Cal_max, s1ChangeDQSINCTL));
-	mcSHOW_DBG_MSG2(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
-	mcDUMP_REG_MSG(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
+	msg2("TX_dly_DQSgated check: min %d  max %d, ChangeDQSINCTL=%d\n", u1TXDLY_Cal_min, u1TXDLY_Cal_max, s1ChangeDQSINCTL);
+	msg2("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R);
+	reg_msg("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R);
 #else
 	//XRTR2R=A-phy forbidden margin(6T) + reg_TX_dly_DQSgated (max) +Roundup(tDQSCKdiff/MCK+0.25MCK)+1(05T sel_ph margin)-1(forbidden margin overlap part)
 	//Roundup(tDQSCKdiff/MCK+1UI) =1~2 all LP3 and LP4 timing
@@ -6188,13 +6188,13 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 	if (u4XRTR2R > 12)
 	{
 		u4XRTR2R = 12;
-		mcSHOW_ERR_MSG(("XRTR2R > 12, Max value is 12\n"));
+		err("XRTR2R > 12, Max value is 12\n");
 	}
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ACTIM_XRT), u4XRTR2R, SHU_ACTIM_XRT_XRTR2R);
 
-	mcSHOW_DBG_MSG2(("TX_dly_DQSgated check: min %d  max %d, ChangeDQSINCTL=%d\n", u1TXDLY_Cal_min, u1TXDLY_Cal_max, s1ChangeDQSINCTL));
-	mcSHOW_DBG_MSG2(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
-	mcDUMP_REG_MSG(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
+	msg2("TX_dly_DQSgated check: min %d  max %d, ChangeDQSINCTL=%d\n", u1TXDLY_Cal_min, u1TXDLY_Cal_max, s1ChangeDQSINCTL);
+	msg2("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R);
+	reg_msg("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R);
 #endif
 
 #if 0//ENABLE_RODT_TRACKING
@@ -6557,7 +6557,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -6665,7 +6665,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
 	if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
 	{
-		mcSHOW_DBG_MSG(("[FAST_K] Bypass RX Calibration\n"));
+		msg("[FAST_K] Bypass RX Calibration\n");
 	}
 	else
 #endif
@@ -6678,11 +6678,11 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 #else
 		vPrintCalibrationBasicInfo(p);
 #endif
-		mcSHOW_DBG_MSG2(("Start DQ dly to find pass range UseTestEngine =%d\n", u1UseTestEngine));
+		msg2("Start DQ dly to find pass range UseTestEngine =%d\n", u1UseTestEngine);
 	}
 
-	mcSHOW_DBG_MSG2(("UseTestEngine: %d\n", u1UseTestEngine));
-	mcSHOW_DBG_MSG(("RX Vref Scan: %d\n", u1VrefScanEnable));
+	msg2("UseTestEngine: %d\n", u1UseTestEngine);
+	msg("RX Vref Scan: %d\n", u1VrefScanEnable);
 
 	if (u1VrefScanEnable)
 	{
@@ -6695,7 +6695,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 
 			if (u1UseTestEngine == PATTERN_TEST_ENGINE && ((u1KnownVref[0] == 0) || (u1KnownVref[1] == 0)))
 			{
-//				  mcSHOW_ERR_MSG(("\nWrong frequency K order= %d\n"));
+//				  err("\nWrong frequency K order= %d\n");
 				#if __ETT__
 				while (1);
 				#endif
@@ -6724,13 +6724,13 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 					u2VrefBegin = RX_VREF_RANGE_BEGIN_ODT_OFF;
 				}
 				u2VrefEnd = RX_VREF_RANGE_END-1;
-				mcSHOW_DBG_MSG(("\nSet Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd));
+				msg("\nSet Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd);
 			}
 			else
 			{
 				u2VrefBegin = 0;//Lewis@20160817: Enlarge RX Vref range for eye scan
 				u2VrefEnd = EYESCAN_RX_VREF_RANGE_END-1;
-				mcSHOW_DBG_MSG(("\nSet Eyescan Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd));
+				msg("\nSet Eyescan Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd);
 			}
 		#endif
 		}
@@ -6805,8 +6805,8 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 
 			for (u1ByteIdx = 0; u1ByteIdx < (p->data_width / DQS_BIT_NUMBER); u1ByteIdx++)
 			{
-				mcSHOW_DBG_MSG(("\nFinal RX Vref Byte %d = %d to rank%d", u1ByteIdx, u2FinalVref[u1ByteIdx], rank_i));
-				mcDUMP_REG_MSG(("\nFinal RX Vref Byte %d = %d to rank%d", u1ByteIdx, u2FinalVref[u1ByteIdx], rank_i));
+				msg("\nFinal RX Vref Byte %d = %d to rank%d", u1ByteIdx, u2FinalVref[u1ByteIdx], rank_i);
+				reg_msg("\nFinal RX Vref Byte %d = %d to rank%d", u1ByteIdx, u2FinalVref[u1ByteIdx], rank_i);
 
 				gFinalRXVrefDQ[p->channel][rank_i][u1ByteIdx] = (U8) u2FinalVref[u1ByteIdx];
 				gFinalRXVrefDQForSpeedUp[p->channel][rank_i][p->odt_onoff][u1ByteIdx] = (U8) u2FinalVref[u1ByteIdx];
@@ -6821,10 +6821,10 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 	{
 		U32 u4B0Tatal =0;
 		U32 u4B1Tatal =0;
-		mcSHOW_DBG_MSG(("RX window per bit CH[%d] Rank[%d] window size\n", p->channel, p->rank));
+		msg("RX window per bit CH[%d] Rank[%d] window size\n", p->channel, p->rank);
 		for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
 		{
-			mcSHOW_DBG_MSG(("DQ[%d] size = %d\n", u1BitIdx, gFinalRXPerbitWin[p->channel][p->rank][u1BitIdx]));
+			msg("DQ[%d] size = %d\n", u1BitIdx, gFinalRXPerbitWin[p->channel][p->rank][u1BitIdx]);
 			if(u1BitIdx < 8)
 			{
 				u4B0Tatal += gFinalRXPerbitWin[p->channel][p->rank][u1BitIdx];
@@ -6834,7 +6834,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 				u4B1Tatal += gFinalRXPerbitWin[p->channel][p->rank][u1BitIdx];
 			}
 		}
-		mcSHOW_DBG_MSG(("total rx window size B0: %d B1: %d\n", u4B0Tatal, u4B1Tatal));
+		msg("total rx window size B0: %d B1: %d\n", u4B0Tatal, u4B1Tatal);
 	}
 #endif
 
@@ -6859,8 +6859,8 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 										P_Fld((U32)FinalWinPerBit[u1BitIdx + 8].best_dqdly, SHU_R0_B1_RXDLY0_RX_ARDQ0_R_DLY_B1) |
 										P_Fld((U32)FinalWinPerBit[u1BitIdx + 9].best_dqdly, SHU_R0_B1_RXDLY0_RX_ARDQ1_R_DLY_B1));
 
-		//mcSHOW_DBG_MSG(("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
-		//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly));
+		//msg("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
+		//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly);
 	}
 
 	DramPhyReset(p);
@@ -6874,39 +6874,39 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 	vPrintCalibrationBasicInfo(p);
 
 #ifdef ETT_PRINT_FORMAT
-	mcSHOW_DBG_MSG(("DQS Delay:\nDQS0 = %d, DQS1 = %d\n"
+	msg("DQS Delay:\nDQS0 = %d, DQS1 = %d\n"
 					"DQM Delay:\nDQM0 = %d, DQM1 = %d\n",
 						iDQSDlyPerbyte[0], iDQSDlyPerbyte[1],
-						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]));
-	mcDUMP_REG_MSG(("DQS Delay:\nDQS0 = %d, DQS1 = %d\n"
+						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]);
+	reg_msg("DQS Delay:\nDQS0 = %d, DQS1 = %d\n"
 					"DQM Delay:\nDQM0 = %d, DQM1 = %d\n",
 						iDQSDlyPerbyte[0], iDQSDlyPerbyte[1],
-						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]));
+						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]);
 #else
-	mcSHOW_DBG_MSG(("DQS Delay:\nDQS0 = %2d, DQS1 = %2d\n"
+	msg("DQS Delay:\nDQS0 = %2d, DQS1 = %2d\n"
 					"DQM Delay:\nDQM0 = %2d, DQM1 = %2d\n",
 						iDQSDlyPerbyte[0], iDQSDlyPerbyte[1],
-						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]));
-	mcDUMP_REG_MSG(("DQS Delay:\nDQS0 = %2d, DQS1 = %2d\n"
+						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]);
+	reg_msg("DQS Delay:\nDQS0 = %2d, DQS1 = %2d\n"
 					"DQM Delay:\nDQM0 = %2d, DQM1 = %2d\n",
 						iDQSDlyPerbyte[0], iDQSDlyPerbyte[1],
-						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]));
+						iDQMDlyPerbyte[0], iDQMDlyPerbyte[1]);
 #endif
-	mcSHOW_DBG_MSG(("DQ Delay:\n"));
-	mcDUMP_REG_MSG(("DQ Delay:\n"));
+	msg("DQ Delay:\n");
+	reg_msg("DQ Delay:\n");
 
 	for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx = u1BitIdx + 4)
 	{
 #ifdef ETT_PRINT_FORMAT
-		mcSHOW_DBG_MSG(("DQ%d =%d, DQ%d =%d, DQ%d =%d, DQ%d =%d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly));
-		mcDUMP_REG_MSG(("DQ%d =%d, DQ%d =%d, DQ%d =%d, DQ%d =%d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly));
+		msg("DQ%d =%d, DQ%d =%d, DQ%d =%d, DQ%d =%d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly);
+		reg_msg("DQ%d =%d, DQ%d =%d, DQ%d =%d, DQ%d =%d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly);
 #else
-		mcSHOW_DBG_MSG(("DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly));
-		mcDUMP_REG_MSG(("DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly));
+		msg("DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly);
+		reg_msg("DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d, DQ%2d =%2d\n", u1BitIdx, FinalWinPerBit[u1BitIdx].best_dqdly, u1BitIdx+1, FinalWinPerBit[u1BitIdx+1].best_dqdly, u1BitIdx+2, FinalWinPerBit[u1BitIdx+2].best_dqdly, u1BitIdx+3, FinalWinPerBit[u1BitIdx+3].best_dqdly);
 #endif
 	}
-	mcSHOW_DBG_MSG(("\n\n"));
-	mcSHOW_DBG_MSG3(("[DramcRxWindowPerbitCal] Done\n"));
+	msg("\n\n");
+	msg3("[DramcRxWindowPerbitCal] Done\n");
 
 	#if LP5_DDR4266_RDBI_WORKAROUND
 	if((is_lp5_family(p)) && (p->frequency >= 2133))
@@ -6999,7 +6999,7 @@ static U8 DramcRxDVSCal(DRAMC_CTX_T *p, U8 u1byte)
 		u1falling_lag = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_FT_STATUS1), MISC_FT_STATUS1_AD_RX_ARDQ_DVS_F_LAG_B1);
 	}
 
-	mcSHOW_DBG_MSG2(("Byte%d | LEAD(%d %d) | LAG(%d %d)\n", u1byte, u1rising_lead, u1falling_lead, u1rising_lag, u1falling_lag));
+	msg2("Byte%d | LEAD(%d %d) | LAG(%d %d)\n", u1byte, u1rising_lead, u1falling_lead, u1rising_lag, u1falling_lag);
 
 	u1lead_lag = (u1rising_lead | u1falling_lead | u1rising_lag | u1falling_lag);
 
@@ -7029,11 +7029,11 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
-	mcSHOW_DBG_MSG(("\\\RX DVS calibration\\\\n"));
+	msg("\\\RX DVS calibration\\\\n");
 
 	//When doing RxWindowPerbitCal, should make sure that auto refresh is disable
 	vAutoRefreshSwitch(p, DISABLE);
@@ -7071,7 +7071,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 	S16DelayBegin = -80;
 	u16DelayEnd = 100;
 
-	mcSHOW_DBG_MSG(("\nRX Delay %d -> %d, step: %d\n", S16DelayBegin, u16DelayEnd, u16DelayStep));
+	msg("\nRX Delay %d -> %d, step: %d\n", S16DelayBegin, u16DelayEnd, u16DelayStep);
 
 	{
 		// Adjust DQM output delay to 0
@@ -7094,7 +7094,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 
 				u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, p->test_pattern);
 
-				mcSHOW_DBG_MSG2(("iDelay= %4d, err_value: 0x%x", iDelay, u4err_value));
+				msg2("iDelay= %4d, err_value: 0x%x", iDelay, u4err_value);
 
 				for(u1ByteIdx=0; u1ByteIdx<(p->data_width/DQS_BIT_NUMBER); u1ByteIdx++)
 				{
@@ -7104,7 +7104,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 					{
 						u1DVS_first_pass[u1ByteIdx] = iDelay;
 						u1DVS_first_flag[u1ByteIdx] = 1;
-						mcSHOW_DBG_MSG(("Byte%d find first pass delay\n"))
+						msg("Byte%d find first pass delay\n")
 					}
 					else if (((u1lead_lag == 1) || (((u4err_value >> (u1ByteIdx<<3)) & 0xff) != 0)) && (u1DVS_first_flag[u1ByteIdx] == 1) && (u1finish_flag[u1ByteIdx] == 0))
 					{
@@ -7114,19 +7114,19 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 						{
 							u1DVS_pass_window[u1ByteIdx] = 0;
 							u1DVS_first_flag[u1ByteIdx] = 0;
-							mcSHOW_DBG_MSG(("Byte%d find fake window\n"))
+							msg("Byte%d find fake window\n")
 						}
 						else
 						{
 							 u1finish_flag[u1ByteIdx] = 1;
-							 mcSHOW_DBG_MSG(("Byte%d find pass window\n"))
+							 msg("Byte%d find pass window\n")
 						}
 					}
 				}
 
 				if ((u1finish_flag[0]==1) && (u1finish_flag[1]==1))
 				{
-					mcSHOW_DBG_MSG(("Two byte DVS window find, early break!\n"));
+					msg("Two byte DVS window find, early break!\n");
 					break;
 				}
 			}
@@ -7138,7 +7138,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 	for (u1ByteIdx = 0; u1ByteIdx < (p->data_width / DQS_BIT_NUMBER); u1ByteIdx++)
 	{
 		u1DVS_increase[p->rank][u1ByteIdx] = (u1DVS_pass_window[u1ByteIdx] > 8)? ((u1DVS_pass_window[u1ByteIdx] - 8) >> 3): 0;
-		mcSHOW_DBG_MSG(("\nByte %d final DVS window size(M) %d, DVS increase %d\n", u1ByteIdx, u1DVS_pass_window[u1ByteIdx], u1DVS_increase[p->rank][u1ByteIdx]));
+		msg("\nByte %d final DVS window size(M) %d, DVS increase %d\n", u1ByteIdx, u1DVS_pass_window[u1ByteIdx], u1DVS_increase[p->rank][u1ByteIdx]);
 	}
 
 	DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
@@ -7149,8 +7149,8 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 
 	vPrintCalibrationBasicInfo(p);
 
-	mcSHOW_DBG_MSG(("\n\n"));
-	mcSHOW_DBG_MSG3(("[DramcRxDVSWindowCal] Done\n"));
+	msg("\n\n");
+	msg3("[DramcRxDVSWindowCal] Done\n");
 
 return DRAM_OK;
 }
@@ -7177,7 +7177,7 @@ void DramcDramcRxDVSCalPostProcess(DRAMC_CTX_T *p)
 			u1DVS_dly_final[u1ByteIdx] = u1DVS_increase_final + (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), SHU_B1_DQ11_RG_RX_ARDQ_DVS_DLY_B1));
 			vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), u1DVS_dly_final[u1ByteIdx], SHU_B1_DQ11_RG_RX_ARDQ_DVS_DLY_B1);
 		}
-		mcSHOW_DBG_MSG(("Byte%d final DVS delay: %d\n", u1ByteIdx, u1DVS_dly_final[u1ByteIdx]));
+		msg("Byte%d final DVS delay: %d\n", u1ByteIdx, u1DVS_dly_final[u1ByteIdx]);
 	}
 
 	for(rank_i=RANK_0; rank_i< p->support_rank_num; rank_i++)
@@ -7188,7 +7188,7 @@ void DramcDramcRxDVSCalPostProcess(DRAMC_CTX_T *p)
 
 	if ((DramcRxDVSCal(p, 0) == 1) || (DramcRxDVSCal(p, 1) == 1)) //Prevent set wrong DV dly
 	{
-		mcSHOW_ERR_MSG(("Final DVS delay is out of RX window\n"));
+		err("Final DVS delay is out of RX window\n");
 		for (u1ByteIdx = 0; u1ByteIdx < (p->data_width / DQS_BIT_NUMBER); u1ByteIdx++)
 		{
 			if (u1DVS_dly_final[u1ByteIdx] > 0)
@@ -7240,7 +7240,7 @@ static void dle_factor_handler(DRAMC_CTX_T *p, U8 curr_val)
 			u1DATLAT_DSEL = curr_val - 1;
 	}
 
-//	  mcSHOW_DBG_MSG(("DATLAT: %d, u1DATLAT_DSEL: %d\n", curr_val, u1DATLAT_DSEL));
+//	  msg("DATLAT: %d, u1DATLAT_DSEL: %d\n", curr_val, u1DATLAT_DSEL);
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT),
 			P_Fld(curr_val, MISC_SHU_RDAT_DATLAT) |
@@ -7254,7 +7254,7 @@ static void dle_factor_handler(DRAMC_CTX_T *p, U8 curr_val)
 	u1DLECG_OptionEXT1 = (curr_val >= 8)? (1): (0);
 	u1DLECG_OptionEXT2 = (curr_val >= 14)? (1): (0);
 	u1DLECG_OptionEXT3 = (curr_val >= 19)? (1): (0);
-//	  mcSHOW_DBG_MSG(("u1DLECG_OptionEXT1: %d, 2 for %d, 3 for %d\n", u1DLECG_OptionEXT1, u1DLECG_OptionEXT2, u1DLECG_OptionEXT3));
+//	  msg("u1DLECG_OptionEXT1: %d, 2 for %d, 3 for %d\n", u1DLECG_OptionEXT1, u1DLECG_OptionEXT2, u1DLECG_OptionEXT3);
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_RX_CG_SET0),
 			P_Fld(u1DLECG_OptionEXT1, SHU_RX_CG_SET0_READ_START_EXTEND1) |
 			P_Fld(u1DLECG_OptionEXT1, SHU_RX_CG_SET0_DLE_LAST_EXTEND1) |
@@ -7277,12 +7277,12 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
-	mcSHOW_DBG_MSG(("\n[DATLAT]\n"
-					"Freq=%d, CH%d RK%d\n\n", p->frequency, p->channel, p->rank));
+	msg("\n[DATLAT]\n"
+					"Freq=%d, CH%d RK%d\n\n", p->frequency, p->channel, p->rank);
 
 	// pre-save
 	// 0x07c[6:4]	DATLAT bit2-bit0
@@ -7293,8 +7293,8 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 
 	// init best_step to default
 	ucbest_step = (U8) u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT), MISC_SHU_RDAT_DATLAT);
-	mcSHOW_DBG_MSG(("DATLAT Default: 0x%x\n", ucbest_step));
-	mcDUMP_REG_MSG(("DATLAT Default: 0x%x\n", ucbest_step));
+	msg("DATLAT Default: 0x%x\n", ucbest_step);
+	reg_msg("DATLAT Default: 0x%x\n", ucbest_step);
 
 	// 1.set DATLAT 0-15 (0-21 for MT6595)
 	// 2.enable engine1 or engine2
@@ -7318,19 +7318,19 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 
 	aru1RxDatlatResult[p->rank] = ucbest_step;
 
-	mcSHOW_DBG_MSG(("best_step = %d\n\n", ucbest_step));
-	mcDUMP_REG_MSG(("best_step=%d\n\n", ucbest_step));
+	msg("best_step = %d\n\n", ucbest_step);
+	reg_msg("best_step=%d\n\n", ucbest_step);
 
 #if __A60868_TO_BE_PORTING__
 #if __ETT__
 	U8 _init_Datlat_value = vDramcACTimingGetDatLat(p);
 	if ((_init_Datlat_value > (ucbest_step + 1)) || (_init_Datlat_value < (ucbest_step - 1)))
 	{
-		mcSHOW_DBG_MSG(("[WARNING!!] Datlat initial value(%d) = best_step(%d) %c %d, out of range!\n\n",
+		msg("[WARNING!!] Datlat initial value(%d) = best_step(%d) %c %d, out of range!\n\n",
 						   _init_Datlat_value,
 						   ucbest_step,
 						   (ucbest_step > _init_Datlat_value)? '-': '+',
-						   abs(ucbest_step - _init_Datlat_value)));
+						   abs(ucbest_step - _init_Datlat_value));
 		while (1);
 	}
 #endif
@@ -7348,7 +7348,7 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 	}
 #endif
 
-	mcSHOW_DBG_MSG3(("[DramcRxdatlatCal] Done\n"));
+	msg3("[DramcRxdatlatCal] Done\n");
 	return DRAM_OK;
 }
 
@@ -7388,7 +7388,7 @@ DRAM_STATUS_T DramcDualRankRxdatlatCal(DRAMC_CTX_T *p)
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_RDSEL_TRACK), u1FinalDatlat, SHU_MISC_RDSEL_TRACK_DMDATLAT_I);
 #endif
 
-	mcSHOW_DBG_MSG(("[DualRankRxdatlatCal] RK0: %d, RK1: %d, Final_Datlat %d\n", u1Datlat0, u1Datlat1, u1FinalDatlat));
+	msg("[DualRankRxdatlatCal] RK0: %d, RK1: %d, Final_Datlat %d\n", u1Datlat0, u1Datlat1, u1FinalDatlat);
 
 	return DRAM_OK;
 
@@ -7627,7 +7627,7 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
 		if (u2DQS2DQ_Pre_Cal[p->channel][p->rank][vGet_Div_Mode(p)] > 0)
 		{
 			U16 u2TmpShift;
-			mcSHOW_DBG_MSG(("TX_TDQS2DQ_PRE_CAL : change DQ begin %d -->", u2DQDelayBegin));
+			msg("TX_TDQS2DQ_PRE_CAL : change DQ begin %d -->", u2DQDelayBegin);
 
 			u2TmpShift = (u2DQS2DQ_Pre_Cal[p->channel][p->rank][vGet_Div_Mode(p)]* p->frequency) / 1000;
 			if (u2TmpShift >= 15)
@@ -7636,7 +7636,7 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
 				u2TmpShift = 0;
 
 			u2DQDelayBegin += u2TmpShift;
-			mcSHOW_DBG_MSG(("%d (+%d)\n", u2DQDelayBegin, u2TmpShift));
+			msg("%d (+%d)\n", u2DQDelayBegin, u2TmpShift);
 		}
 	}
 	#endif
@@ -7667,7 +7667,7 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
 	*pu2End = u2DQDelayEnd;
 
 	#if 0//TX_TDQS2DQ_PRE_CAL
-	mcSHOW_DBG_MSG(("TXScanRange_PI %d~%d\n", u2DQDelayBegin, u2DQDelayEnd));
+	msg("TXScanRange_PI %d~%d\n", u2DQDelayBegin, u2DQDelayEnd);
 	#endif
 }
 
@@ -7708,11 +7708,11 @@ static U16 TxChooseVref(DRAMC_CTX_T *p, PASS_WIN_DATA_BY_VREF_T pVrefInfo[], U8 
 
 	for (u1VrefIdx = 0; u1VrefIdx < u1VrefNum; u1VrefIdx++)
 	{
-		mcSHOW_DBG_MSG(("TX Vref=%d, minBit %d, minWin=%d, winSum=%d\n",
+		msg("TX Vref=%d, minBit %d, minWin=%d, winSum=%d\n",
 			pVrefInfo[u1VrefIdx].u2VrefUsed,
 			pVrefInfo[u1VrefIdx].u1WorseBitIdx_byVref,
 			pVrefInfo[u1VrefIdx].u1WorseBitWinSize_byVref,
-			pVrefInfo[u1VrefIdx].u2WinSum_byVref));
+			pVrefInfo[u1VrefIdx].u2WinSum_byVref);
 
 		#if LP4_TX_VREF_PASS_CONDITION
 		if ((pVrefInfo[u1VrefIdx].u1WorseBitWinSize_byVref > LP4_TX_VREF_PASS_CONDITION))
@@ -7761,7 +7761,7 @@ static U16 TxChooseVref(DRAMC_CTX_T *p, PASS_WIN_DATA_BY_VREF_T pVrefInfo[], U8 
 	{
 		// vref pass window found
 		u2FinalVref = (u1VrefPassBegin_Final + u1VrefPassEnd_Final) >> 1;
-		mcSHOW_DBG_MSG(("[TxChooseVref] Window > %d, Vref (%d~%d), Final Vref %d\n", LP4_TX_VREF_PASS_CONDITION, u1VrefPassBegin_Final, u1VrefPassEnd_Final, u2FinalVref));
+		msg("[TxChooseVref] Window > %d, Vref (%d~%d), Final Vref %d\n", LP4_TX_VREF_PASS_CONDITION, u1VrefPassBegin_Final, u1VrefPassEnd_Final, u2FinalVref);
 	}
 	else
 	#endif
@@ -7779,7 +7779,7 @@ static U16 TxChooseVref(DRAMC_CTX_T *p, PASS_WIN_DATA_BY_VREF_T pVrefInfo[], U8 
 			}
 		}
 
-		mcSHOW_DBG_MSG(("[TxChooseVref] Worse bit %d, Min win %d, Win sum %d, Final Vref %d\n", u1WorseBitIdx, u1WinSizeOfWorseBit, u2MaxWinSum, u2FinalVref));
+		msg("[TxChooseVref] Worse bit %d, Min win %d, Win sum %d, Final Vref %d\n", u1WorseBitIdx, u1WinSizeOfWorseBit, u2MaxWinSum, u2FinalVref);
 	}
 
 	return u2FinalVref;
@@ -7807,7 +7807,7 @@ static void DramcTXSetVref(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefValue)
 #endif
 
 	#if CALIBRATION_SPEED_UP_DEBUG
-	mcSHOW_DBG_MSG(("Yulia TX Vref : CH%d Rank%d, TX Range %d Vref %d\n\n", p->channel, p->rank, u1VrefRange, (u1VrefValue & 0x3f)));
+	msg("Yulia TX Vref : CH%d Rank%d, TX Range %d Vref %d\n\n", p->channel, p->rank, u1VrefRange, (u1VrefValue & 0x3f));
 	#endif
 }
 
@@ -7821,13 +7821,13 @@ static void TXSetFinalVref(DRAMC_CTX_T *p, U16 u2FinalRange, U16 u2FinalVref)
 #endif
 
 #if VENDER_JV_LOG
-	mcSHOW_DBG_MSG5(("\nFinal TX Range %d Vref %d\n\n", u2FinalRange, u2FinalVref));
+	msg5("\nFinal TX Range %d Vref %d\n\n", u2FinalRange, u2FinalVref);
 #else
-	mcSHOW_DBG_MSG(("\nFinal TX Range %d Vref %d\n\n", u2FinalRange, u2FinalVref));
+	msg("\nFinal TX Range %d Vref %d\n\n", u2FinalRange, u2FinalVref);
 #endif
 
 	#if CALIBRATION_SPEED_UP_DEBUG
-	mcSHOW_DBG_MSG(("Yulia TX Vref Final: CH%d Rank%d, TX Range %d Vref %d\n\n", p->channel, p->rank, u2FinalRange, u2FinalVref));
+	msg("Yulia TX Vref Final: CH%d Rank%d, TX Range %d Vref %d\n\n", p->channel, p->rank, u2FinalRange, u2FinalVref);
 	#endif
 }
 
@@ -8029,10 +8029,10 @@ static void Tx_Auto_K_complete_check(DRAMC_CTX_T *p)
 	{
 		mcDELAY_US(1);
 		u4loop_count++;
-		//mcSHOW_DBG_MSG(("Wait! TX auto K is not done!\n"));
+		//msg("Wait! TX auto K is not done!\n");
 		if (u4loop_count > 100000)
 		{
-			mcSHOW_ERR_MSG(("Error! TX auto K is not done!\n"));
+			err("Error! TX auto K is not done!\n");
 			break;
 		}
 	}
@@ -8040,11 +8040,11 @@ static void Tx_Auto_K_complete_check(DRAMC_CTX_T *p)
 	if ((u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_RESULT8), TX_ATK_RESULT8_TX_ATK_FIND_PW) == 0x1))
 	{
 		vSetCalibrationResult(p, DRAM_CALIBRATION_TX_PERBIT, DRAM_OK);
-		mcSHOW_DBG_MSG(("Tx auto K, all bit find passs window\n"));
+		msg("Tx auto K, all bit find passs window\n");
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("Error! TX auto K is fail!\n"));
+		err("Error! TX auto K is fail!\n");
 	}
 }
 
@@ -8107,11 +8107,11 @@ static void Tx_Auto_K_Debug_Message(DRAMC_CTX_T *p, U8 u1PI_Len)
 		u4status_bit[3][u1BitIdx] = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_DBG_BIT_STATUS4));
 	}
 
-	mcSHOW_DBG_MSG2(("Debug TX DQ PASS/FAIL status:\n"));
+	msg2("Debug TX DQ PASS/FAIL status:\n");
 
 	for (u2Length = 0; u2Length < u2Length_max; u2Length++)
 	{
-		mcSHOW_DBG_MSG2(("Delay=%3d ", u2Length));
+		msg2("Delay=%3d ", u2Length);
 
 		for (u1bit_num = 0; u1bit_num < p->data_width; u1bit_num++)
 		{
@@ -8119,21 +8119,21 @@ static void Tx_Auto_K_Debug_Message(DRAMC_CTX_T *p, U8 u1PI_Len)
 
 			if (u4status == 0)
 			{
-				mcSHOW_DBG_MSG2(("x"));
+				msg2("x");
 			}
 			else
 			{
-				mcSHOW_DBG_MSG2(("o"));
+				msg2("o");
 			}
 
 			if (u1bit_num == (p->data_width - 1))
 			{
-				mcSHOW_DBG_MSG2((" \n"));
+				msg2(" \n");
 			}
 		}
 	}
 
-	//mcSHOW_DBG_MSG(("Debug DQ PASS(1)/FAIL(0) bit: %d, STATUS1: 0x%x, STATUS2: 0x%x, STATUS3: 0x%x, STATUS4: 0x%x,\n",u1BitIdx,u4status_bit[0][u1BitIdx],u4status_bit[1][u1BitIdx],u4status_bit[2][u1BitIdx],u4status_bit[3][u1BitIdx]));
+	//msg("Debug DQ PASS(1)/FAIL(0) bit: %d, STATUS1: 0x%x, STATUS2: 0x%x, STATUS3: 0x%x, STATUS4: 0x%x,\n",u1BitIdx,u4status_bit[0][u1BitIdx],u4status_bit[1][u1BitIdx],u4status_bit[2][u1BitIdx],u4status_bit[3][u1BitIdx]);
 }
 #endif
 #endif
@@ -8195,7 +8195,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -8280,7 +8280,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 	if (calType == TX_DQ_DQS_MOVE_DQ_ONLY || calType == TX_DQ_DQS_MOVE_DQ_DQM)
 	{
 		TXSetDelayReg_DQ(p, u1UpdateRegUI, ucdq_reg_ui_large, ucdq_reg_oen_ui_large, ucdq_reg_ui_small, ucdq_reg_oen_ui_small, ucdq_reg_pi);
-		mcSHOW_DBG_MSG(("TX Auto-K set begin delay DQ MCK: %d, UI: %d, PI: %d\n", ucdq_reg_ui_large[0], ucdq_reg_ui_small[0], ucdq_reg_pi[0]));
+		msg("TX Auto-K set begin delay DQ MCK: %d, UI: %d, PI: %d\n", ucdq_reg_ui_large[0], ucdq_reg_ui_small[0], ucdq_reg_pi[0]);
 
 		#if TX_AUTO_K_WORKAROUND
 		if ((calType == TX_DQ_DQS_MOVE_DQ_ONLY) && (u1backup_Rank == 1))
@@ -8290,7 +8290,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 	if (calType == TX_DQ_DQS_MOVE_DQM_ONLY || calType == TX_DQ_DQS_MOVE_DQ_DQM)
 	{
 		TXSetDelayReg_DQM(p, u1UpdateRegUI, ucdq_reg_dqm_ui_large, ucdq_reg_dqm_oen_ui_large, ucdq_reg_dqm_ui_small, ucdq_reg_dqm_oen_ui_small, ucdq_reg_dqm_pi);
-		mcSHOW_DBG_MSG(("TX Auto-K set begin delay DQM MCK: %d, UI: %d, PI: %d\n", ucdq_reg_dqm_ui_large[0], ucdq_reg_dqm_ui_small[0], ucdq_reg_dqm_pi[0]));
+		msg("TX Auto-K set begin delay DQM MCK: %d, UI: %d, PI: %d\n", ucdq_reg_dqm_ui_large[0], ucdq_reg_dqm_ui_small[0], ucdq_reg_dqm_pi[0]);
 
 		#if TX_AUTO_K_WORKAROUND
 		if ((calType == TX_DQ_DQS_MOVE_DQM_ONLY) && (u1backup_Rank == 1))
@@ -8324,9 +8324,9 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 	}
 
 #if 0
-	mcSHOW_DBG_MSG(("[TxWindowPerbitCal] calType=%d, VrefScanEnable %d (Range %d,  VrefBegin %d, u2VrefEnd %d)\n"
+	msg("[TxWindowPerbitCal] calType=%d, VrefScanEnable %d (Range %d,  VrefBegin %d, u2VrefEnd %d)\n"
 					"\nBegin, DQ Scan Range %d~%d\n",
-					calType, u1VrefScanEnable, u2FinalRange, u2VrefBegin, u2VrefEnd, u2DQDelayBegin, u2DQDelayEnd));
+					calType, u1VrefScanEnable, u2FinalRange, u2VrefBegin, u2VrefEnd, u2DQDelayBegin, u2DQDelayEnd);
 #endif
 
 	#if SUPPORT_SAVE_TIME_FOR_CALIBRATION
@@ -8360,13 +8360,13 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 			if (u1VrefScanEnable)
 			{
 				#if (!REDUCE_LOG_FOR_PRELOADER)
-				mcSHOW_DBG_MSG(("\n\n\tLP4 TX VrefRange %d, VrefLevel=%d\n", u2FinalRange, u2VrefLevel));
+				msg("\n\n\tLP4 TX VrefRange %d, VrefLevel=%d\n", u2FinalRange, u2VrefLevel);
 				#endif
 
 				#if VENDER_JV_LOG
 				if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
 				{
-					mcSHOW_DBG_MSG5(("\n\tLP4 TX VrefRange %d, VrefLevel=%d\n", u2FinalRange, u2VrefLevel));
+					msg5("\n\tLP4 TX VrefRange %d, VrefLevel=%d\n", u2FinalRange, u2VrefLevel);
 				}
 				#endif
 
@@ -8374,7 +8374,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 			}
 			else
 			{
-				mcSHOW_DBG_MSG(("\n\n\tTX Vref Scan disable\n"));
+				msg("\n\n\tTX Vref Scan disable\n");
 			}
 
 			// initialize parameters
@@ -8464,14 +8464,14 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
 				if (u1VrefScanEnable == 0 && (calType != TX_DQ_DQS_MOVE_DQM_ONLY))
 				{
-					//mcSHOW_DBG_MSG(("Delay=%3d |%2d %2d %3d| %2d %2d| 0x%8x [0]",uiDelay, ucdq_ui_large,ucdq_ui_small, ucdq_pi, ucdq_oen_ui_large,ucdq_oen_ui_small, u4err_value));
+					//msg("Delay=%3d |%2d %2d %3d| %2d %2d| 0x%8x [0]",uiDelay, ucdq_ui_large,ucdq_ui_small, ucdq_pi, ucdq_oen_ui_large,ucdq_oen_ui_small, u4err_value);
 					#ifdef ETT_PRINT_FORMAT
 					if (u4err_value != 0)
 					{
-						mcSHOW_DBG_MSG2(("%d |%d %d %d|[0]", uiDelay, ucdq_ui_large, ucdq_ui_small, ucdq_pi));
+						msg2("%d |%d %d %d|[0]", uiDelay, ucdq_ui_large, ucdq_ui_small, ucdq_pi);
 					}
 					#else
-					mcSHOW_DBG_MSG2(("Delay=%3d |%2d %2d %3d| 0x%8x [0]", uiDelay, ucdq_ui_large, ucdq_ui_small, ucdq_pi, u4err_value));
+					msg2("Delay=%3d |%2d %2d %3d| 0x%8x [0]", uiDelay, ucdq_ui_large, ucdq_ui_small, ucdq_pi, u4err_value);
 					#endif
 				}
 
@@ -8486,16 +8486,16 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 						{
 							if (u1BitIdx % DQS_BIT_NUMBER == 0)
 							{
-								mcSHOW_DBG_MSG2((" "));
+								msg2(" ");
 							}
 
 							if (u4fail_bit == 0)
 							{
-								 mcSHOW_DBG_MSG2(("o"));
+								 msg2("o");
 							}
 							else
 							{
-								mcSHOW_DBG_MSG2(("x"));
+								msg2("x");
 							}
 						}
 					}
@@ -8516,7 +8516,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
 								if (uiDelay == u2DQDelayBegin)
 								{
-									mcSHOW_ERR_MSG(("TX_TDQS2DQ_PRE_CAL: Warning, possible miss TX window boundary\n"));
+									err("TX_TDQS2DQ_PRE_CAL: Warning, possible miss TX window boundary\n");
 									#if __ETT__
 									while (1);
 									#endif
@@ -8542,8 +8542,8 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 							{
 								if ((VrefWinPerBit[u1BitIdx].last_pass != PASS_RANGE_NA) && (VrefWinPerBit[u1BitIdx].last_pass - VrefWinPerBit[u1BitIdx].first_pass) > 0)
 								{
-									mcSHOW_DBG_MSG2(("Bit[%d] Bigger window update %d > %d, window broken?\n", u1BitIdx, \
-										(WinPerBit[u1BitIdx].last_pass - WinPerBit[u1BitIdx].first_pass), (VrefWinPerBit[u1BitIdx].last_pass - VrefWinPerBit[u1BitIdx].first_pass)));
+									msg2("Bit[%d] Bigger window update %d > %d, window broken?\n", u1BitIdx, \
+										(WinPerBit[u1BitIdx].last_pass - WinPerBit[u1BitIdx].first_pass), (VrefWinPerBit[u1BitIdx].last_pass - VrefWinPerBit[u1BitIdx].first_pass));
 								}
 
 								//if window size bigger than TX_PASS_WIN_CRITERIA, consider as real pass window. If not, don't update finish counte and won't do early break;
@@ -8566,7 +8566,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 				{
 					if(u4err_value != 0)
 					{
-						mcSHOW_DBG_MSG2((" [MSB]\n"));
+						msg2(" [MSB]\n");
 					}
 				}
 
@@ -8576,9 +8576,9 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 					vSetCalibrationResult(p, DRAM_CALIBRATION_TX_PERBIT, DRAM_OK);
 					#if !REDUCE_LOG_FOR_PRELOADER
 					#ifdef ETT_PRINT_FORMAT
-					mcSHOW_DBG_MSG2(("TX calibration finding left boundary early break. PI DQ delay=0x%B\n", uiDelay));
+					msg2("TX calibration finding left boundary early break. PI DQ delay=0x%B\n", uiDelay);
 					#else
-					mcSHOW_DBG_MSG2(("TX calibration finding left boundary early break. PI DQ delay=0x%2x\n", uiDelay));
+					msg2("TX calibration finding left boundary early break. PI DQ delay=0x%2x\n", uiDelay);
 					#endif
 					#endif
 					break;	//early break
@@ -8618,10 +8618,10 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
 				if ((VrefWinPerBit[u1BitIdx].first_pass == (int)(u2DQDelayBegin - ucdq_pi)) || (VrefWinPerBit[u1BitIdx].last_pass == (int)(u2DQDelayBegin + u4Length)))
 				{
-					mcSHOW_ERR_MSG(("Error! Probably miss pass window!\n"));
+					err("Error! Probably miss pass window!\n");
 				}
 
-				mcSHOW_DBG_MSG(("TX DQ bit %d, first pass: %d, last pass: %d\n", u1BitIdx, VrefWinPerBit[u1BitIdx].first_pass, VrefWinPerBit[u1BitIdx].last_pass));
+				msg("TX DQ bit %d, first pass: %d, last pass: %d\n", u1BitIdx, VrefWinPerBit[u1BitIdx].first_pass, VrefWinPerBit[u1BitIdx].last_pass);
 				#else
 				//if(VrefWinPerBit[u1BitIdx].last_pass == VrefWinPerBit[u1BitIdx].first_pass)
 				if (VrefWinPerBit[u1BitIdx].first_pass == PASS_RANGE_NA)
@@ -8649,7 +8649,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 				#if VENDER_JV_LOG
 				if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
 				{
-					mcSHOW_DBG_MSG5(("TX Bit%d, %d%%\n", u1BitIdx, (VrefWinPerBit[u1BitIdx].win_size * 100 + 31) / 32));
+					msg5("TX Bit%d, %d%%\n", u1BitIdx, (VrefWinPerBit[u1BitIdx].win_size * 100 + 31) / 32);
 				}
 				#endif
 
@@ -8665,7 +8665,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 			#if __ETT__
 			if (u1VrefScanEnable == 0)
 			{
-				//mcSHOW_DBG_MSG(("\n\tCH=%d, VrefRange= %d, VrefLevel = %d\n", p->channel, u2FinalRange, u2VrefLevel));
+				//msg("\n\tCH=%d, VrefRange= %d, VrefLevel = %d\n", p->channel, u2FinalRange, u2VrefLevel);
 				TxPrintWidnowInfo(p, VrefWinPerBit);
 			}
 			#endif
@@ -8693,7 +8693,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 			if (u1VrefScanEnable && (u2TempWinSum < (u2MaxWindowSum * 95 / 100)) && (u1min_winsize > TX_PASS_WIN_CRITERIA))
 			#endif
 			{
-				mcSHOW_DBG_MSG(("\nTX Vref early break, caculate TX vref\n"));
+				msg("\nTX Vref early break, caculate TX vref\n");
 				break;
 			}
 
@@ -8771,7 +8771,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 		gFinalTXPerbitWin_min_max[p->channel][p->rank] = u1min_winsize;
 		if(u1min_winsize<16)
 		{
-			mcSHOW_ERR_MSG(("[WARNING] Smaller TX win !!\n"));
+			err("[WARNING] Smaller TX win !!\n");
 			#if CHECK_HQA_CRITERIA
 			while(1);
 			#endif
@@ -8784,14 +8784,14 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 	if ((calType == TX_DQ_DQS_MOVE_DQ_ONLY) && (p->frequency >= 1333) && (p->u2DelayCellTimex100 != 0))
 	{
 		u1EnableDelayCell = 1;
-		mcSHOW_DBG_MSG(("[TX_PER_BIT_DELAY_CELL] DelayCellTimex100 =%d/100 ps\n", p->u2DelayCellTimex100));
+		msg("[TX_PER_BIT_DELAY_CELL] DelayCellTimex100 =%d/100 ps\n", p->u2DelayCellTimex100);
 	}
 
 	//Calculate the center of DQ pass window
 	//average the center delay
 	for (u1ByteIdx = 0; u1ByteIdx < (p->data_width / DQS_BIT_NUMBER); u1ByteIdx++)
 	{
-		mcSHOW_DBG_MSG((" == TX Byte %d ==\n", u1ByteIdx));
+		msg(" == TX Byte %d ==\n", u1ByteIdx);
 		u2DQM_Delay = ((u2Center_min[u1ByteIdx] + u2Center_max[u1ByteIdx]) >> 1); //(max +min)/2
 
 		if (u1EnableDelayCell == 0)
@@ -8811,17 +8811,17 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 				{
 					u2DelayCellOfst[u1BitTemp] = (u1PIDiff * 100000000 / (p->frequency << 6)) / p->u2DelayCellTimex100;
 
-					mcSHOW_DBG_MSG(("u2DelayCellOfst[%d]=%d cells (%d PI)\n", u1BitTemp, u2DelayCellOfst[u1BitTemp], u1PIDiff));
+					msg("u2DelayCellOfst[%d]=%d cells (%d PI)\n", u1BitTemp, u2DelayCellOfst[u1BitTemp], u1PIDiff);
 
 					if(u2DelayCellOfst[u1BitTemp]>255)
 					{
-						mcSHOW_DBG_MSG(("[WARNING] TX DQ%d delay cell %d >255, adjust to 255 cell\n", u1BitIdx, u2DelayCellOfst[u1BitTemp]));
+						msg("[WARNING] TX DQ%d delay cell %d >255, adjust to 255 cell\n", u1BitIdx, u2DelayCellOfst[u1BitTemp]);
 						u2DelayCellOfst[u1BitTemp] =255;
 					}
 				}
 				else
 				{
-					mcSHOW_ERR_MSG(("Error: Cell time (p->u2DelayCellTimex100) is 0 \n"));
+					err("Error: Cell time (p->u2DelayCellTimex100) is 0 \n");
 					break;
 				}
 			}
@@ -8836,18 +8836,18 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
 		if (calType == TX_DQ_DQS_MOVE_DQ_ONLY || calType == TX_DQ_DQS_MOVE_DQ_DQM)
 		{
-			mcSHOW_DBG_MSG(("Update DQ	dly =%d (%d ,%d, %d)  DQ  OEN =(%d ,%d)\n",
+			msg("Update DQ	dly =%d (%d ,%d, %d)  DQ  OEN =(%d ,%d)\n",
 							uiDelay, ucdq_reg_ui_large[u1ByteIdx], ucdq_reg_ui_small[u1ByteIdx], ucdq_reg_pi[u1ByteIdx], \
-							ucdq_reg_oen_ui_large[u1ByteIdx], ucdq_reg_oen_ui_small[u1ByteIdx]));
+							ucdq_reg_oen_ui_large[u1ByteIdx], ucdq_reg_oen_ui_small[u1ByteIdx]);
 		}
 
 		//if(calType ==TX_DQ_DQS_MOVE_DQM_ONLY || calType== TX_DQ_DQS_MOVE_DQ_DQM)
 		{
-			mcSHOW_DBG_MSG(("Update DQM dly =%d (%d ,%d, %d)  DQM OEN =(%d ,%d)",
+			msg("Update DQM dly =%d (%d ,%d, %d)  DQM OEN =(%d ,%d)",
 					u2DQM_Delay, ucdq_reg_dqm_ui_large[u1ByteIdx], ucdq_reg_dqm_ui_small[u1ByteIdx], ucdq_reg_dqm_pi[u1ByteIdx], \
-					ucdq_reg_dqm_oen_ui_large[u1ByteIdx], ucdq_reg_dqm_oen_ui_small[u1ByteIdx]));
+					ucdq_reg_dqm_oen_ui_large[u1ByteIdx], ucdq_reg_dqm_oen_ui_small[u1ByteIdx]);
 		}
-		mcSHOW_DBG_MSG(("\n"));
+		msg("\n");
 
 #ifdef FOR_HQA_REPORT_USED
 		if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
@@ -8950,7 +8950,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 	}
 #endif
 
-	mcSHOW_DBG_MSG3(("[TxWindowPerbitCal] Done\n\n"));
+	msg3("[TxWindowPerbitCal] Done\n\n");
 
 	#if 0
 	vIO32WriteFldAlign_All(DRAMC_REG_ADDR(DRAMC_REG_PADCTL4), 1, PADCTL4_CKEFIXON);  // test only
@@ -9076,7 +9076,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 	u2VrefBegin = 0;
 	u2VrefEnd = (p->dram_type==TYPE_LPDDR5?VREF_VOLTAGE_TABLE_NUM_LP5:VREF_VOLTAGE_TABLE_NUM_LP4)-1;
 	u2VrefStep = EYESCAN_GRAPH_CATX_VREF_STEP;
-	mcSHOW_DBG_MSG3(("\nTX Vref %d -> %d, step: %d\n", u2VrefBegin, u2VrefEnd, u2VrefStep));
+	msg3("\nTX Vref %d -> %d, step: %d\n", u2VrefBegin, u2VrefEnd, u2VrefStep);
 
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
 	DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
@@ -9090,7 +9090,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 		//set vref
 //fra		 u1MR14Value[p->channel][p->rank][p->dram_fsp] = (u2VrefLevel | (u2VrefRange<<6));
 		DramcTXSetVref(p, u2VrefRange, u2VrefLevel);
-		mcSHOW_DBG_MSG3(("\n\n Set TX VrefRange %d, VrefLevel=%d\n", u2VrefRange, u2VrefLevel));
+		msg3("\n\n Set TX VrefRange %d, VrefLevel=%d\n", u2VrefRange, u2VrefLevel);
 
 		// initialize parameters
 		uiFinishCount = 0;
@@ -9218,7 +9218,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 //fra								 gEyeScan_Max[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = WinPerBit[u1BitIdx].last_pass + tx_pi_delay[u1BitIdx/8]-32;
 								gEyeScan_Min[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = (S8) WinPerBit[u1BitIdx].first_pass;
 								gEyeScan_Max[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = (S8) WinPerBit[u1BitIdx].last_pass;
-								mcSHOW_DBG_MSG3(("VrefRange %d, VrefLevel=%d, u1BitIdx=%d, index=%d (%d, %d)==\n",u2VrefRange,u2VrefLevel, u1BitIdx, EyeScan_index[u1BitIdx], gEyeScan_Min[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]], gEyeScan_Max[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]]));
+								msg3("VrefRange %d, VrefLevel=%d, u1BitIdx=%d, index=%d (%d, %d)==\n",u2VrefRange,u2VrefLevel, u1BitIdx, EyeScan_index[u1BitIdx], gEyeScan_Min[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]], gEyeScan_Max[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]]);
 								gEyeScan_MinMax_store_delay[u1BitIdx/8] =  tx_pi_delay[u1BitIdx/8]-32; /* save this information for HQA pass/fail judgement used */
 #endif
 								EyeScan_index[u1BitIdx]=EyeScan_index[u1BitIdx]+1;
@@ -9357,9 +9357,9 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
 	u1TxDQOEShift = TX_DQ_OE_SHIFT_LP4;
 
 	#if TX_OE_PATTERN_USE_TA2
-	mcSHOW_DBG_MSG(("\n[DramC_TX_OE_Calibration] TA2\n"));
+	msg("\n[DramC_TX_OE_Calibration] TA2\n");
 	#else
-	mcSHOW_DBG_MSG(("\n[DramC_TX_OE_Calibration] DMA\n"));
+	msg("\n[DramC_TX_OE_Calibration] DMA\n");
 	#endif
 
 	//default set FAIL
@@ -9379,9 +9379,9 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
 
 	for (u1ByteIdx = 0; u1ByteIdx < DQS_NUMBER_LP4; u1ByteIdx++)
 	{
-		mcSHOW_DBG_MSG(("Byte%d TX OE(2T, 0.5T) = (%d, %d)\n", u1ByteIdx, ucdq_oen_ui_large[u1ByteIdx], ucdq_oen_ui_small[u1ByteIdx]));
+		msg("Byte%d TX OE(2T, 0.5T) = (%d, %d)\n", u1ByteIdx, ucdq_oen_ui_large[u1ByteIdx], ucdq_oen_ui_small[u1ByteIdx]);
 	}
-	mcSHOW_DBG_MSG(("\n\n"));
+	msg("\n\n");
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ0), \
 									P_Fld(ucdq_oen_ui_large[0], SHURK_SELPH_DQ0_TXDLY_OEN_DQ0) | \
@@ -9437,7 +9437,7 @@ DRAM_STATUS_T DramcMiockJmeter(DRAMC_CTX_T *p)
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
@@ -9618,7 +9618,7 @@ DRAM_STATUS_T DramcMiockJmeter(DRAMC_CTX_T *p)
 
 	for (u1RxGatingPI = u1RxGatingPI_start; u1RxGatingPI < u1RxGatingPI_end; u1RxGatingPI++)
 	{
-		mcSHOW_DBG_MSG(("\n[DramcMiockJmeter] u1RxGatingPI = %d\n", u1RxGatingPI));
+		msg("\n[DramcMiockJmeter] u1RxGatingPI = %d\n", u1RxGatingPI);
 
 		ucsearch_state = 0;
 		for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
@@ -9659,9 +9659,9 @@ DRAM_STATUS_T DramcMiockJmeter(DRAMC_CTX_T *p)
 			//u4ones_cnt[2] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS2_ERR_CNT), MISC_DUTY_DQS2_ERR_CNT_DQS2_ERR_CNT);
 			//u4ones_cnt[3] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS3_ERR_CNT), MISC_DUTY_DQS3_ERR_CNT_DQS3_ERR_CNT);
 			#ifdef ETT_PRINT_FORMAT
-			mcSHOW_DBG_MSG(("%d : %d, %d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0]));
+			msg("%d : %d, %d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0]);
 			#else
-			mcSHOW_DBG_MSG(("%3d : %8d, %8d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0]));
+			msg("%3d : %8d, %8d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0]);
 			#endif
 
 			//change to boolean value
@@ -9764,8 +9764,8 @@ DRAM_STATUS_T DramcMiockJmeter(DRAMC_CTX_T *p)
 	{
 		if (ucsearch_state != 3)
 		{
-			mcSHOW_DBG_MSG(("\n\tMIOCK jitter meter - ch=%d\n", p->channel));
-			mcSHOW_DBG_MSG(("\tLess than 0.5T data. Cannot calculate delay cell time\n\n"));
+			msg("\n\tMIOCK jitter meter - ch=%d\n", p->channel);
+			msg("\tLess than 0.5T data. Cannot calculate delay cell time\n\n");
 
 			u2g_num_dlycell_perT = 0;	//for LP3 and LP4 lookup table used
 
@@ -9807,21 +9807,21 @@ DRAM_STATUS_T DramcMiockJmeter(DRAMC_CTX_T *p)
 
 	if (ucsearch_state == 4)
 	{ // 1T
-		mcSHOW_DBG_MSG(("\n\tMIOCK jitter meter\tch=%d\n\n"
+		msg("\n\tMIOCK jitter meter\tch=%d\n\n"
 						"1T = (%d-%d) = %d dly cells\n"
 						"Clock freq = %d MHz, period = %d ps, 1 dly cell = %d/100 ps\n",
 							p->channel,
 							ucend_period, ucstart_period, u2g_num_dlycell_perT,
-							u2real_freq, u2real_period, u2gdelay_cell_ps));
+							u2real_freq, u2real_period, u2gdelay_cell_ps);
 	}
 	else
 	{ // 0.5T
-		mcSHOW_DBG_MSG(("\n\tMIOCK jitter meter\tch=%d\n\n"
+		msg("\n\tMIOCK jitter meter\tch=%d\n\n"
 						"1T = (%d-%d)*2 = %d dly cells\n"
 						"Clock freq = %d MHz, period = %d ps, 1 dly cell = %d/100 ps\n",
 							p->channel,
 							ucmiddle_period, ucstart_period, u2g_num_dlycell_perT,
-							u2real_freq, u2real_period, u2gdelay_cell_ps));
+							u2real_freq, u2real_period, u2gdelay_cell_ps);
 	}
 
 	return DRAM_OK;
@@ -9973,7 +9973,7 @@ static void GetVcoreDelayCellTime(DRAMC_CTX_T *p, U8 shuffleIdx)
 		u2gdelay_cell_ps_all[shuffleIdx][channel_i] = u2gdelay_cell_ps;
 	}
 #if __ETT__
-	mcSHOW_DBG_MSG(("Freq=%d, CH_%d, VCORE=%d, cell=%d\n", p->frequency, p->channel, u4gVcore[shuffleIdx], u2gdelay_cell_ps_all[shuffleIdx][p->channel]));
+	msg("Freq=%d, CH_%d, VCORE=%d, cell=%d\n", p->frequency, p->channel, u4gVcore[shuffleIdx], u2gdelay_cell_ps_all[shuffleIdx][p->channel]);
 #endif
 
 	return;
@@ -9984,7 +9984,7 @@ void DramcMiockJmeterHQA(DRAMC_CTX_T *p)
 	//do MiockJitterMeter@DDR2667
 	U8 shuffleIdx;
 
-	mcSHOW_DBG_MSG(("[MiockJmeterHQA]\n"));
+	msg("[MiockJmeterHQA]\n");
 
 	shuffleIdx = get_shuffleIndex_by_Freq(p);
 
@@ -10008,7 +10008,7 @@ void DramcMiockJmeterHQA(DRAMC_CTX_T *p)
 	/* Use highest freq's delay cell time measurement results as reference */
 	p->u2num_dlycell_perT = u2g_num_dlycell_perT_all[shuffleIdx][p->channel];
 	p->u2DelayCellTimex100 = u2gdelay_cell_ps_all[shuffleIdx][p->channel];
-	mcSHOW_DBG_MSG3(("DelayCellTimex100 CH_%d, (VCORE=%d, cell=%d)\n",p->channel, u4gVcore[shuffleIdx], p->u2DelayCellTimex100));
+	msg3("DelayCellTimex100 CH_%d, (VCORE=%d, cell=%d)\n",p->channel, u4gVcore[shuffleIdx], p->u2DelayCellTimex100);
 }
 #endif
 
@@ -10046,13 +10046,13 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 	// error handling
 	if (!p)
 	{
-		mcSHOW_ERR_MSG(("context NULL\n"));
+		err("context NULL\n");
 		return DRAM_FAIL;
 	}
 
 	if (p->frequency < 1866)
 	{
-		//mcSHOW_ERR_MSG(("skip 8-Phase Calib Freq is %d < 1866 !!!\n", p->frequency));
+		//err("skip 8-Phase Calib Freq is %d < 1866 !!!\n", p->frequency);
 		return DRAM_OK;
 	}
 
@@ -10278,13 +10278,13 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 				u18Ph_end = 32;
 				break;
 			default:
-				mcSHOW_ERR_MSG(("u18Phase_SM err!\n"));
+				err("u18Phase_SM err!\n");
 				#if __ETT__
 				while (1);
 				#endif
 		}
 
-		mcSHOW_DBG_MSG(("\n[Dramc8PhaseCal] 8-Phase SM_%d, 8PH_dly (%d~%d), DQSIEN PI = %d, 8PH_Dly = %d\n", u18Phase_SM, u18Ph_start, u18Ph_end, u1DqsienPI, u18PhDlyBackup));
+		msg("\n[Dramc8PhaseCal] 8-Phase SM_%d, 8PH_dly (%d~%d), DQSIEN PI = %d, 8PH_Dly = %d\n", u18Phase_SM, u18Ph_start, u18Ph_end, u1DqsienPI, u18PhDlyBackup);
 
 		//to see 1T(H,L) or 1T(L,H) from delaycell=0 to 127
 		//NOTE: Must set dual ranks for Rx path
@@ -10298,7 +10298,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 
 		for (u18Ph_dly = u18Ph_start; u18Ph_dly < u18Ph_end; u18Ph_dly++)
 		{
-			mcSHOW_DBG_MSG(("8PH dly = %d\n", u18Ph_dly));
+			msg("8PH dly = %d\n", u18Ph_dly);
 
 			u1DqsLevel = 0xff;
 			vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ1), u18Ph_dly, SHU_B0_DQ1_RG_ARPI_MIDPI_8PH_DLY_B0);
@@ -10331,15 +10331,15 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 				//u4ones_cnt[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS1_ERR_CNT), MISC_DUTY_DQS1_ERR_CNT_DQS1_ERR_CNT);
 				//u4ones_cnt[2] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS2_ERR_CNT), MISC_DUTY_DQS2_ERR_CNT_DQS2_ERR_CNT);
 				//u4ones_cnt[3] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS3_ERR_CNT), MISC_DUTY_DQS3_ERR_CNT_DQS3_ERR_CNT);
-				//Darren-mcSHOW_DBG_MSG(("%3d : %8d, %8d, %8d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0], u4ones_cnt[1]));
+				//Darren-msg("%3d : %8d, %8d, %8d\n", ucdqs_dly, u4sample_cnt, u4ones_cnt[0], u4ones_cnt[1]);
 
 				//change to boolean value
 				if (u4ones_cnt[0] < (u4sample_cnt / 2))
 				{
 					if (u1DqsLevel == 0xff) // print once
 					{
-						mcSHOW_DBG_MSG(("[L] %d, %8d\n", ucdqs_dly, u4ones_cnt[0]));
-						//mcSHOW_DBG_MSG(("[L] %d, %8d, %8d\n", ucdqs_dly, u4ones_cnt[0], u4ones_cnt[1]));
+						msg("[L] %d, %8d\n", ucdqs_dly, u4ones_cnt[0]);
+						//msg("[L] %d, %8d, %8d\n", ucdqs_dly, u4ones_cnt[0], u4ones_cnt[1]);
 					}
 
 					u1DqsLevel = 0;
@@ -10349,13 +10349,13 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 					if (u1DqsLevel == 0)  // from low to high
 					{
 						u1DqsLevel = 1;
-						mcSHOW_DBG_MSG(("[H] %d, %8d\n", ucdqs_dly, u4ones_cnt[0]));
-						//mcSHOW_DBG_MSG(("[H] %d, %8d, %8d\n", ucdqs_dly, u4ones_cnt[0], u4ones_cnt[1]));
+						msg("[H] %d, %8d\n", ucdqs_dly, u4ones_cnt[0]);
+						//msg("[H] %d, %8d, %8d\n", ucdqs_dly, u4ones_cnt[0], u4ones_cnt[1]);
 
 						if (u18Phase_SM == DQS_8PH_DEGREE_0)
 						{
 							u2R0 = ucdqs_dly;
-							mcSHOW_DBG_MSG(("R0 = %d\n", u2R0));
+							msg("R0 = %d\n", u2R0);
 							break; // break ucdqs_dly for loop
 						}
 						else if (u18Phase_SM == DQS_8PH_DEGREE_180)
@@ -10364,7 +10364,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 							if (u2R180 > u2R0)
 							{
 								u2R = u2R0 + ((u2R180 - u2R0) >> 2); // u2R180 >= u2R0 for (u1R180 - u1R0)/4 for 180 degree. /2 for 90 degree
-								mcSHOW_DBG_MSG(("R = %d, R180 = %d\n", u2R, u2R180));
+								msg("R = %d, R180 = %d\n", u2R, u2R180);
 								break; // break ucdqs_dly for loop
 							}
 							else
@@ -10404,7 +10404,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 									}
 								}
 
-								mcSHOW_DBG_MSG(("diff (P-R) = %d, min = %d, break count = %d\n", s2Err_code, s2Err_code_min, u1loop_cnt));
+								msg("diff (P-R) = %d, min = %d, break count = %d\n", s2Err_code, s2Err_code_min, u1loop_cnt);
 
 								break; // if (s2Err_code == s2Err_code_min) for next u18Ph_dly
 							}
@@ -10415,7 +10415,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 						}
 						else
 						{
-							mcSHOW_ERR_MSG(("u18Phase_SM err!\n"));
+							err("u18Phase_SM err!\n");
 							#if __ETT__
 							while (1);
 							#endif
@@ -10433,7 +10433,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 				// NOTE: 8-Phase calib must from 0 to 1
 				u18Ph_dly_final = u18PhDlyBackup; //rollback to init settings
 				eDRAMStatus = DRAM_FAIL;
-				mcSHOW_ERR_MSG(("\n[Dramc8PhaseCal] 8-Phase SM_%d is fail (to Default)!!!\n", u18Phase_SM));
+				err("\n[Dramc8PhaseCal] 8-Phase SM_%d is fail (to Default)!!!\n", u18Phase_SM);
 				goto exit;
 			} else if (u18Ph_dly_loop_break == 1)
 				break;
@@ -10442,7 +10442,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 	}
 
 exit:
-	mcSHOW_DBG_MSG(("\n[Dramc8PhaseCal] u18Ph_dly_final = %d\n\n", u18Ph_dly_final));
+	msg("\n[Dramc8PhaseCal] u18Ph_dly_final = %d\n\n", u18Ph_dly_final);
 	vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B0_DQ1, u18Ph_dly_final, SHU_B0_DQ1_RG_ARPI_MIDPI_8PH_DLY_B0);
 	vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ1, u18Ph_dly_final, SHU_B1_DQ1_RG_ARPI_MIDPI_8PH_DLY_B1);
 	vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD1, u18Ph_dly_final, SHU_CA_CMD1_RG_ARPI_MIDPI_8PH_DLY_CA);
@@ -10588,7 +10588,7 @@ static void vImpCalVrefSel(DRAMC_CTX_T *p, DRAMC_IMP_T efreq_region, U8 u1ImpCal
 	}
 	else
 	{
-		mcSHOW_ERR_MSG(("[vImpCalVrefSel] Warnning: Need confirm DRAM type for IMP_VREF_SEL !!!\n"));
+		err("[vImpCalVrefSel] Warnning: Need confirm DRAM type for IMP_VREF_SEL !!!\n");
 		#if __ETT__
 		while(1);
 		#endif
@@ -10606,13 +10606,13 @@ static void vImpCalVrefSel(DRAMC_CTX_T *p, DRAMC_IMP_T efreq_region, U8 u1ImpCal
 			u4DrvFld = SHU_CA_CMD12_RG_RIMP_VREF_SEL_ODTN;
 			break;
 		default:
-			mcSHOW_ERR_MSG(("[vImpCalVrefSel] Warnning: Need confirm u1ImpCalStage for SW IMP Calibration !!!\n"));
+			err("[vImpCalVrefSel] Warnning: Need confirm u1ImpCalStage for SW IMP Calibration !!!\n");
 			break;
 	}
 
 	// dbg msg after vref_sel selection
-	mcSHOW_DBG_MSG3(("[vImpCalVrefSel] IMP_VREF_SEL 0x%x, IMPCAL stage:%u, freq_region:%u\n",
-					  u1RegTmpValue, u1ImpCalStage, efreq_region));
+	msg3("[vImpCalVrefSel] IMP_VREF_SEL 0x%x, IMPCAL stage:%u, freq_region:%u\n",
+					  u1RegTmpValue, u1ImpCalStage, efreq_region);
 
 	/* Set IMP_VREF_SEL register field's value */
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD12), u1RegTmpValue, u4DrvFld);
@@ -10635,11 +10635,11 @@ static U32 DramcSwImpCalResult(DRAMC_CTX_T *p, const char *drvType, U32 u4Fld)
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4ImpxDrv, u4Fld);
 		mcDELAY_US(1);
 		u4ImpCalResult = u4IO32ReadFldAlign((DDRPHY_REG_MISC_PHY_RGS_CMD), MISC_PHY_RGS_CMD_RGS_RIMPCALOUT);
-		mcSHOW_DBG_MSG2(("OCD %s=%d ,CALOUT=%d\n", drvType, u4ImpxDrv, u4ImpCalResult));
+		msg2("OCD %s=%d ,CALOUT=%d\n", drvType, u4ImpxDrv, u4ImpCalResult);
 
 		if (u4ImpCalResult == u4CheckImpChange)//first found
 		{
-			mcSHOW_DBG_MSG2(("\nOCD %s calibration OK! %s=%d\n\n", drvType, drvType, u4ImpxDrv));
+			msg2("\nOCD %s calibration OK! %s=%d\n\n", drvType, drvType, u4ImpxDrv);
 			break;
 		}
 	}
@@ -10647,7 +10647,7 @@ static U32 DramcSwImpCalResult(DRAMC_CTX_T *p, const char *drvType, U32 u4Fld)
 	if (u4ImpxDrv == 32) // Can't find SwImp drv results
 	{
 		u4ImpxDrv = 31;
-		mcSHOW_DBG_MSG2(("\nOCD %s calibration FAIL! %s=%d\n\n", drvType, drvType, u4ImpxDrv));
+		msg2("\nOCD %s calibration FAIL! %s=%d\n\n", drvType, drvType, u4ImpxDrv);
 	}
 
 	return u4ImpxDrv;
@@ -10735,7 +10735,7 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 				u4DrvFld = SHU_MISC_IMPCAL1_IMPDRVN;
 				break;
 			default:
-				mcSHOW_ERR_MSG(("[DramcSwImpedanceCal] Warnning: Need confirm u1DrvType for SW IMP Calibration !!!\n"));
+				err("[DramcSwImpedanceCal] Warnning: Need confirm u1DrvType for SW IMP Calibration !!!\n");
 				break;
 		}
 
@@ -10743,7 +10743,7 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENP, MISC_IMPCAL_IMPCAL_CALI_ENP);  //MISC_IMP_CTRL1_RG_IMP_OCD_PUCMP_EN move to CALI_ENP
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENN, MISC_IMPCAL_IMPCAL_CALI_ENN);  //MISC_IMP_CTRL1_RG_RIMP_ODT_EN move to CALI_ENN
 
-		mcSHOW_DBG_MSG2(("\n\n\tK %s\n", drvStr));
+		msg2("\n\n\tK %s\n", drvStr);
 
 		//DRVP=DRVP_FINAL
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4DRVP_Result, SHU_MISC_IMPCAL1_IMPDRVP);  //PUCMP_EN move to CALI_ENP
@@ -10768,7 +10768,7 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 				u4ODTN_Result = u4SwImpCalResult;
 				break;
 			default:
-				mcSHOW_ERR_MSG(("[DramcSwImpedanceCal] Warnning: Need confirm u4SwImpCalResult for SW IMP Calibration !!!\n"));
+				err("[DramcSwImpedanceCal] Warnning: Need confirm u4SwImpCalResult for SW IMP Calibration !!!\n");
 				break;
 		}
 	}
@@ -10785,7 +10785,7 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 	LP4X(T):  DRVP=5, DRVN=9, ODTN=14
 	LP4P: DRVP=8, DRVN=10
 ***/
-	mcSHOW_DBG_MSG(("[SwImpedanceCal] DRVP=%d, DRVN=%d, ODTN=%d\n", u4DRVP_Result, u4DRVN_Result, u4ODTN_Result));
+	msg("[SwImpedanceCal] DRVP=%d, DRVN=%d, ODTN=%d\n", u4DRVP_Result, u4DRVN_Result, u4ODTN_Result);
 
 	#if 0//HYNIX_IMPX_ADJUST
 	if (u1Para)
@@ -10817,8 +10817,8 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 	}
 #endif
 
-	mcSHOW_DBG_MSG(("freq_region=%d, Reg: DRVP=%d, DRVN=%d, ODTN=%d\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP],
-									gDramcSwImpedanceResult[freq_region][DRVN], gDramcSwImpedanceResult[freq_region][ODTN]));
+	msg("freq_region=%d, Reg: DRVP=%d, DRVN=%d, ODTN=%d\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP],
+									gDramcSwImpedanceResult[freq_region][DRVN], gDramcSwImpedanceResult[freq_region][ODTN]);
 
 #if APPLY_SIGNAL_WAVEFORM_SETTINGS_ADJUST
 	if ((p->dram_type == TYPE_LPDDR4) && (freq_region == 0))
@@ -10832,24 +10832,24 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 		gDramcSwImpedanceResult[freq_region][ODTN] = SwImpedanceAdjust(gDramcSwImpedanceResult[freq_region][ODTN], gDramcSwImpedanceAdjust[freq_region][ODTN]);
 	}
 
-	mcSHOW_DBG_MSG(("freq_region=%d, Reg: DRVP=%d, DRVN=%d, ODTN=%d (After Adjust)\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP],
-										gDramcSwImpedanceResult[freq_region][DRVN], gDramcSwImpedanceResult[freq_region][ODTN]));
+	msg("freq_region=%d, Reg: DRVP=%d, DRVN=%d, ODTN=%d (After Adjust)\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP],
+										gDramcSwImpedanceResult[freq_region][DRVN], gDramcSwImpedanceResult[freq_region][ODTN]);
 #endif
 
 #if __FLASH_TOOL_DA__
 	if((gDramcSwImpedanceResult[freq_region][ODTN] ==0)||(gDramcSwImpedanceResult[freq_region][ODTN] >=31))
 	{
-		mcSHOW_DBG_MSG(("[WARNING] freq_region = %d, ODTN = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][ODTN]));
+		msg("[WARNING] freq_region = %d, ODTN = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][ODTN]);
 		PINInfo_flashtool.IMP_ERR_FLAG |= (0x1<<(freq_region+ODTN));
 	}
 	else if((gDramcSwImpedanceResult[freq_region][DRVP] ==0)||(gDramcSwImpedanceResult[freq_region][DRVP] >=31))
 	{
-		mcSHOW_DBG_MSG(("[WARNING] freq_region = %d, DRVP = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP]));
+		msg("[WARNING] freq_region = %d, DRVP = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVP]);
 		PINInfo_flashtool.IMP_ERR_FLAG |= (0x1<<(freq_region+DRVP));
 	}
 	else if((gDramcSwImpedanceResult[freq_region][DRVN] ==0)||(gDramcSwImpedanceResult[freq_region][DRVN] >=31))
 	{
-		mcSHOW_DBG_MSG(("[WARNING] freq_region = %d, DRVN = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVN]));
+		msg("[WARNING] freq_region = %d, DRVN = %d ==> unexpect value\n", freq_region, gDramcSwImpedanceResult[freq_region][DRVN]);
 		PINInfo_flashtool.IMP_ERR_FLAG |= (0x1<<(freq_region+DRVN));
 	}
 	else
@@ -10857,7 +10857,7 @@ DRAM_STATUS_T DramcSwImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_re
 	{
 	vSetCalibrationResult(p, DRAM_CALIBRATION_SW_IMPEDANCE, DRAM_OK);
 	}
-	mcSHOW_DBG_MSG3(("[DramcSwImpedanceCal] Done\n\n"));
+	msg3("[DramcSwImpedanceCal] Done\n\n");
 
 	vSetPHY2ChannelMapping(p, backup_channel);
 	DramcBroadcastOnOff(backup_broadcast);
@@ -10950,8 +10950,8 @@ static void DQSDutyScan_SetDqsDelayCell(DRAMC_CTX_T *p, S8 *scDutyDelay)
 	U32 save_offset;
 	U8 tDelay[2];
 
-//	  mcSHOW_DBG_MSG(("CH%d, Final DQS0 duty delay cell = %d\n", p->channel, scDutyDelay[0]));
-//	  mcSHOW_DBG_MSG(("CH%d, Final DQS1 duty delay cell = %d\n", p->channel, scDutyDelay[1]));
+//	  msg("CH%d, Final DQS0 duty delay cell = %d\n", p->channel, scDutyDelay[0]);
+//	  msg("CH%d, Final DQS1 duty delay cell = %d\n", p->channel, scDutyDelay[1]);
 
 	for(u1DQSIdx=0; u1DQSIdx<2; u1DQSIdx++)
 	{

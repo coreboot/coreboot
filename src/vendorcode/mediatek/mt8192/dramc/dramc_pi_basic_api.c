@@ -157,7 +157,7 @@ static void Set_DRAM_Pinmux_Sel(DRAMC_CTX_T *p)
 #endif
 		p->DRAMPinmux = PINMUX_EMCP;
 
-	mcSHOW_DBG_MSG(("[Set_DRAM_Pinmux_Sel] DRAMPinmux = %d\n", p->DRAMPinmux));
+	msg("[Set_DRAM_Pinmux_Sel] DRAMPinmux = %d\n", p->DRAMPinmux);
 
 	memcpy(&uiLPDDR4_MRR_Mapping_POP, uiLPDDR4_MRR_DRAM_Pinmux[p->DRAMPinmux], sizeof(uiLPDDR4_MRR_Mapping_POP));
 	memcpy(&uiLPDDR4_O1_Mapping_POP, uiLPDDR4_O1_DRAM_Pinmux[p->DRAMPinmux], sizeof(uiLPDDR4_O1_Mapping_POP));
@@ -276,7 +276,7 @@ static void SetRankInfoToConf(DRAMC_CTX_T *p)
 
 	vIO32WriteFldAlign(DRAMC_REG_SA_RESERVE, u4value, SA_RESERVE_SINGLE_RANK);
 
-	mcSHOW_JV_LOG_MSG(("Rank info: %d emi_setting_index: %d CONA[0x%x]\n", u4value, emi_setting_index, emi_set->EMI_CONA_VAL));
+	jv_msg("Rank info: %d emi_setting_index: %d CONA[0x%x]\n", u4value, emi_setting_index, emi_set->EMI_CONA_VAL);
 #endif
 	return;
 }
@@ -323,7 +323,7 @@ void UpdateDFSTbltoDDR3200(DRAMC_CTX_T *p)
 	#if __ETT__
 	UpdateEttDFVSTbltoDDR3200(p, u2HighestFreq); //@Darren, Update for DDR3200 ETT DVFS stress
 	#endif
-	mcSHOW_DBG_MSG(("[UpdateDFSTbltoDDR3200] Get Highest Freq is %d\n", u2HighestFreq));
+	msg("[UpdateDFSTbltoDDR3200] Get Highest Freq is %d\n", u2HighestFreq);
 #endif
 }
 
@@ -478,7 +478,7 @@ void DramcPowerOnSequence(DRAMC_CTX_T *p)
 	//// Enable  HW MIOCK control to make CLK dynamic
 	vIO32WriteFldAlign_All(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 0, DRAMC_PD_CTRL_TCKFIXON);
 	vIO32WriteFldAlign_All(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 0, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
-	mcSHOW_DBG_MSG3(("APPLY_LP4_POWER_INIT_SEQUENCE\n"));
+	msg3("APPLY_LP4_POWER_INIT_SEQUENCE\n");
 	}
 	#endif
 }
@@ -508,10 +508,10 @@ DRAM_STATUS_T DramcModeRegInit_CATerm(DRAMC_CTX_T *p, U8 bWorkAround)
 	{
 		vSetRank(p, u1RankIdx);
 
-		mcSHOW_DBG_MSG(("[DramcModeRegInit_CATerm] CH%u RK%u bWorkAround=%d\n", u1ChannelIdx, u1RankIdx, bWorkAround));
+		msg("[DramcModeRegInit_CATerm] CH%u RK%u bWorkAround=%d\n", u1ChannelIdx, u1RankIdx, bWorkAround);
 		/* FSP_1: 1. For term freqs   2. Assumes "data rate >= DDR2667" are terminated */
 		#if MRW_CHECK_ONLY
-		mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+		mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 		#endif
 		DramcMRWriteFldAlign(p, 13, 0, MR13_FSP_OP, TO_MR);
 		DramcMRWriteFldAlign(p, 13, 1, MR13_FSP_WR, TO_MR);
@@ -654,8 +654,8 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 			u1nWR = 30;
 		}
 
-		mcSHOW_DBG_MSG(("nWR fixed to %d\n", u1nWR));
-		mcDUMP_REG_MSG(("nWR fixed to %d\n", u1nWR));
+		msg("nWR fixed to %d\n", u1nWR);
+		reg_msg("nWR fixed to %d\n", u1nWR);
 	}
 
 #ifndef DUMP_INIT_RG_LOG_TO_DE
@@ -681,13 +681,13 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 		{
 			vSetRank(p, u4RankIdx);
 
-			mcSHOW_DBG_MSG(("[ModeRegInit_LP4] CH%u RK%u\n", u1ChannelIdx, u4RankIdx));
-			mcDUMP_REG_MSG(("[ModeRegInit_LP4] CH%u RK%u\n", u1ChannelIdx, u4RankIdx));
+			msg("[ModeRegInit_LP4] CH%u RK%u\n", u1ChannelIdx, u4RankIdx);
+			reg_msg("[ModeRegInit_LP4] CH%u RK%u\n", u1ChannelIdx, u4RankIdx);
 		#if VENDER_JV_LOG
-			mcSHOW_JV_LOG_MSG(("\n[ModeRegInit_LP4] CH%u RK%d\n", u1ChannelIdx, u4RankIdx));
+			jv_msg("\n[ModeRegInit_LP4] CH%u RK%d\n", u1ChannelIdx, u4RankIdx);
 		#endif
 		#if MRW_CHECK_ONLY
-			mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+			mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 		#endif
 
 			//vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MRS), u4RankIdx, MRS_MRSRK);
@@ -722,9 +722,9 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 			{
 				/* FSP_0: 1. For un-term freqs	 2. Assumes "data rate < DDR2667" are un-term */
 				u1MRFsp = FSP_0;
-				mcSHOW_DBG_MSG3(("\tFsp%d\n", u1MRFsp));
+				msg3("\tFsp%d\n", u1MRFsp);
 			#if VENDER_JV_LOG
-				mcSHOW_JV_LOG_MSG(("\tFsp%d\n", u1MRFsp));
+				jv_msg("\tFsp%d\n", u1MRFsp);
 			#endif
 
 				u1MR13Value[u4RankIdx] = 0;
@@ -796,8 +796,8 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 				DramcModeRegWriteByRank(p, u4RankIdx, 14, u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]); //MR14 VREF-DQ
 
 			#if CALIBRATION_SPEED_UP_DEBUG
-				mcSHOW_DBG_MSG(("CBT Vref Init: CH%d Rank%d FSP%d, Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f)));
-				mcSHOW_DBG_MSG(("TX Vref Init: CH%d Rank%d FSP%d, TX Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp,u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f)));
+				msg("CBT Vref Init: CH%d Rank%d FSP%d, Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f));
+				msg("TX Vref Init: CH%d Rank%d FSP%d, TX Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp,u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f));
 			#endif
 
 				//MR3 set write-DBI and read-DBI (Disabled during calibration, enabled after K)
@@ -821,9 +821,9 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 			{
 				/* FSP_1: 1. For term freqs   2. Assumes "data rate >= DDR2667" are terminated */
 				u1MRFsp = FSP_1;
-				mcSHOW_DBG_MSG3(("\tFsp%d\n", u1MRFsp));
+				msg3("\tFsp%d\n", u1MRFsp);
 			#if VENDER_JV_LOG
-				mcSHOW_JV_LOG_MSG(("\tFsp%d\n", u1MRFsp));
+				jv_msg("\tFsp%d\n", u1MRFsp);
 			#endif
 
 				DramcMRWriteFldAlign(p, 13, 1, MR13_FSP_WR, TO_MR);
@@ -922,8 +922,8 @@ DRAM_STATUS_T DramcModeRegInit_LP4(DRAMC_CTX_T *p)
 				DramcModeRegWriteByRank(p, u4RankIdx, 14, u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]); //MR14 VREF-DQ
 
 			#if CALIBRATION_SPEED_UP_DEBUG
-				mcSHOW_DBG_MSG(("CBT Vref Init: CH%d Rank%d FSP%d, Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f)));
-				mcSHOW_DBG_MSG(("TX Vref Init: CH%d Rank%d FSP%d, TX Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f)));
+				msg("CBT Vref Init: CH%d Rank%d FSP%d, Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR12Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f));
+				msg("TX Vref Init: CH%d Rank%d FSP%d, TX Range %d Vref %d\n\n",p->channel, p->rank, u1MRFsp, u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp]>>6, (u1MR14Value[u1ChannelIdx][u4RankIdx][u1MRFsp] & 0x3f));
 			#endif
 
 				//MR3 set write-DBI and read-DBI (Disabled during calibration, enabled after K)
@@ -1775,30 +1775,30 @@ static void SV_BroadcastOn_DramcInit(DRAMC_CTX_T *p)
 	{
 		if(p->frequency>=2133)	//Term
 		{
-			mcSHOW_DBG_MSG(("sv_algorithm_assistance_LP4_4266 \n"));
+			msg("sv_algorithm_assistance_LP4_4266 \n");
 			sv_algorithm_assistance_LP4_4266(p);
 		}
 		else if(p->frequency>=1333)  //Term
 		{
-			mcSHOW_DBG_MSG(("sv_algorithm_assistance_LP4_3733 \n"));
+			msg("sv_algorithm_assistance_LP4_3733 \n");
 			sv_algorithm_assistance_LP4_3733(p);
 		}
 		else if(p->frequency>400) //Unterm
 		{
-			mcSHOW_DBG_MSG(("sv_algorithm_assistance_LP4_1600 \n"));
+			msg("sv_algorithm_assistance_LP4_1600 \n");
 			sv_algorithm_assistance_LP4_1600(p);
 		}
 		else /*if(p->frequency==400)*/	//DDR800 Semi-Open
 		{
-			//mcSHOW_DBG_MSG(("CInit_golden_mini_freq_related_vseq_LP4_1600 \n"));
+			//msg("CInit_golden_mini_freq_related_vseq_LP4_1600 \n");
 			//CInit_golden_mini_freq_related_vseq_LP4_1600(p);
 			//CInit_golden_mini_freq_related_vseq_LP4_1600_SHU1(DramcConfig);
-			mcSHOW_DBG_MSG(("sv_algorithm_assistance_LP4_800 \n"));
+			msg("sv_algorithm_assistance_LP4_800 \n");
 			sv_algorithm_assistance_LP4_800(p);
 		}
 		/*else //DDR250 Open Loop (DV random seed not ready)
 		{
-			mcSHOW_DBG_MSG(("sv_algorithm_assistance_LP4_250 \n"));
+			msg("sv_algorithm_assistance_LP4_250 \n");
 			sv_algorithm_assistance_LP4_250(p);
 		}*/
 	}
@@ -1807,17 +1807,17 @@ static void SV_BroadcastOn_DramcInit(DRAMC_CTX_T *p)
 	{
 		if(p->freq_sel==LP5_DDR4266)
 		{
-			mcSHOW_DBG_MSG(("CInit_golden_mini_freq_related_vseq_LP5_4266 \n"));
+			msg("CInit_golden_mini_freq_related_vseq_LP5_4266 \n");
 			CInit_golden_mini_freq_related_vseq_LP5_4266(p);
 		}
 		else if(p->freq_sel==LP5_DDR5500)
 		{
-			mcSHOW_DBG_MSG(("CInit_golden_mini_freq_related_vseq_LP5_5500 \n"));
+			msg("CInit_golden_mini_freq_related_vseq_LP5_5500 \n");
 			CInit_golden_mini_freq_related_vseq_LP5_5500(p);
 		}
 		else
 		{
-			mcSHOW_DBG_MSG(("CInit_golden_mini_freq_related_vseq_LP5_3200 \n"));
+			msg("CInit_golden_mini_freq_related_vseq_LP5_3200 \n");
 			CInit_golden_mini_freq_related_vseq_LP5_3200(p);
 			CInit_golden_mini_freq_related_vseq_LP5_3200_SHU1(p);
 		}
@@ -1844,11 +1844,11 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 #ifdef FOR_HQA_REPORT_USED
 	if (gHQALog_flag==1)
 	{
-		mcSHOW_DBG_MSG(("[HQA] Log parsing, "));
-		mcSHOW_DBG_MSG(("\tDram Data rate = ")); HQA_LOG_Print_Freq_String(p); mcSHOW_DBG_MSG(("\n"));
+		msg("[HQA] Log parsing, ");
+		msg("\tDram Data rate = "); HQA_LOG_Print_Freq_String(p); msg("\n");
 	}
 #endif
-	mcSHOW_DBG_MSG(("MEM_TYPE=%d, freq_sel=%d\n", MEM_TYPE, p->freq_sel));
+	msg("MEM_TYPE=%d, freq_sel=%d\n", MEM_TYPE, p->freq_sel);
 	SV_BroadcastOn_DramcInit(p); // @Darren, Broadcast Off after SV_BroadcastOn_DramcInit done
 	#if PRINT_CALIBRATION_SUMMARY
 	//default set DRAM status = NO K
@@ -1886,7 +1886,7 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 
 	else if(p->freq_sel==LP4_DDR1600)
 	{
-		mcSHOW_DBG_MSG(("BYPASS CALIBRATION LP4 1600 \n"));
+		msg("BYPASS CALIBRATION LP4 1600 \n");
 		Apply_LP4_1600_Calibraton_Result(p);
 	}
 	#endif
@@ -1899,7 +1899,7 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 	#endif
 	U8 dram_cbt_mode;
 
-	mcSHOW_DBG_MSG(("\n[DramcInit]\n"));
+	msg("\n[DramcInit]\n");
 
 	vSetPHY2ChannelMapping(p, CHANNEL_A);
 
@@ -1942,7 +1942,7 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 			break;
 		default:
 			dram_t = 0;
-			mcSHOW_ERR_MSG(("Incorrect DRAM Type!\n"));
+			err("Incorrect DRAM Type!\n");
 			break;
 	}
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_ARBCTL), dram_t, ARBCTL_RSV_DRAM_TYPE);
@@ -1967,7 +1967,7 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 	vSetPHY2ChannelMapping(p, save_ch);
 #endif
 
-	mcSHOW_DBG_MSG3(("[DramcInit] Done\n"));
+	msg3("[DramcInit] Done\n");
 #endif//__A60868_TO_BE_PORTING__
 	return DRAM_OK;
 }
@@ -1976,10 +1976,10 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 void SetCKE2RankIndependent(DRAMC_CTX_T *p)
 {
 	#if ENABLE_TMRRI_NEW_MODE//Newly added CKE control mode API
-	mcSHOW_DBG_MSG(("SET_CKE_2_RANK_INDEPENDENT_RUN_TIME: ON\n"));
+	msg("SET_CKE_2_RANK_INDEPENDENT_RUN_TIME: ON\n");
 	vCKERankCtrl(p, CKE_RANK_INDEPENDENT);
 	#else //Legacy individual CKE control register settings
-	mcSHOW_DBG_MSG(("SET_CKE_2_RANK_INDEPENDENT_RUN_TIME: OFF\n"));
+	msg("SET_CKE_2_RANK_INDEPENDENT_RUN_TIME: OFF\n");
 	vCKERankCtrl(p, CKE_RANK_DEPENDENT);
 	#endif
 }
@@ -2069,7 +2069,7 @@ void SetMr13VrcgToNormalOperation(DRAMC_CTX_T *p)
 	U8 u1RankIdx = 0;
 
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 
@@ -2096,7 +2096,7 @@ static void DramcShuTrackingDcmEnBySRAM(DRAMC_CTX_T *p)
 	U32 u4DDRPhyShuOffset = 0;
 
 	ShuRGAccessIdxBak = p->ShuRGAccessIdx;
-	mcSHOW_DBG_MSG(("\n==[DramcShuTrackingDcmEnBySRAM]==\n"));
+	msg("\n==[DramcShuTrackingDcmEnBySRAM]==\n");
 	for (u1ShuffleIdx = 0; u1ShuffleIdx <= 1; u1ShuffleIdx++) //fill SHU1 of conf while (u1ShuffleIdx==DRAM_DFS_SRAM_MAX)
 	{
 		//Aceess DMA SRAM by APB bus use debug mode by conf SHU3
@@ -2215,17 +2215,17 @@ void DramcEnablePerBankRefresh(DRAMC_CTX_T *p, bool en)
 
 	#if PER_BANK_REFRESH_USE_MODE==0
 			vIO32WriteFldMulti_All(DRAMC_REG_REFCTRL0, P_Fld(0, REFCTRL0_KEEP_PBREF) | P_Fld(0, REFCTRL0_KEEP_PBREF_OPT)); //Original mode
-			mcSHOW_DBG_MSG(("\tPER_BANK_REFRESH: Original Mode\n"));
+			msg("\tPER_BANK_REFRESH: Original Mode\n");
 	#endif
 
 	#if PER_BANK_REFRESH_USE_MODE==1
 			vIO32WriteFldMulti_All(DRAMC_REG_REFCTRL0, P_Fld(0, REFCTRL0_KEEP_PBREF) | P_Fld(1, REFCTRL0_KEEP_PBREF_OPT)); //Hybrid mode
-			mcSHOW_DBG_MSG(("\tPER_BANK_REFRESH: Hybrid Mode\n"));
+			msg("\tPER_BANK_REFRESH: Hybrid Mode\n");
 	#endif
 
 	#if PER_BANK_REFRESH_USE_MODE==2
 			vIO32WriteFldMulti_All(DRAMC_REG_REFCTRL0, P_Fld(1, REFCTRL0_KEEP_PBREF) | P_Fld(0, REFCTRL0_KEEP_PBREF_OPT)); //Always per-bank mode
-			mcSHOW_DBG_MSG(("\tPER_BANK_REFRESH: Always Per-Bank Mode\n"));
+			msg("\tPER_BANK_REFRESH: Always Per-Bank Mode\n");
 	#endif
 
 		vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL1, 1, REFCTRL1_REFPB2AB_IGZQCS);
@@ -2302,31 +2302,31 @@ static void SwitchHMR4(DRAMC_CTX_T *p, bool en)
 #if 0	// Reading HMR4 repeatedly for debugging
 	while(1)
 	{
-		mcSHOW_DBG_MSG(("@@ --------------------\n"));
-		mcSHOW_DBG_MSG(("@@ MISC_STATUSA_REFRESH_RATE: %d\n",
-			u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_REFRESH_RATE)));
-		mcSHOW_DBG_MSG(("@@ MIN: %d, MAX: %d\n",
+		msg("@@ --------------------\n");
+		msg("@@ MISC_STATUSA_REFRESH_RATE: %d\n",
+			u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MISC_STATUSA), MISC_STATUSA_REFRESH_RATE));
+		msg("@@ MIN: %d, MAX: %d\n",
 			u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON), HW_REFRATE_MON_REFRESH_RATE_MIN_MON),
-			u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON), HW_REFRATE_MON_REFRESH_RATE_MAX_MON)));
+			u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON), HW_REFRATE_MON_REFRESH_RATE_MAX_MON));
 
 		// if HMR4_HMR4_TOG_OPT == 1
 		{
-			mcSHOW_DBG_MSG(("@@ 		MIN    MAX\n"));
-			mcSHOW_DBG_MSG(("@@ RK0_B0:  %d 	%d\n",
+			msg("@@ 		MIN    MAX\n");
+			msg("@@ RK0_B0:  %d 	%d\n",
 				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MIN_MON_RK0_B0),
-				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MAX_MON_RK0_B0)));
-			mcSHOW_DBG_MSG(("@@ RK1_B0:  %d 	%d\n",
+				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MAX_MON_RK0_B0));
+			msg("@@ RK1_B0:  %d 	%d\n",
 				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MIN_MON_RK1_B0),
-				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MAX_MON_RK1_B0)));
-			mcSHOW_DBG_MSG(("@@ RK0_B1:  %d 	%d\n",
+				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON3), HW_REFRATE_MON3_REFRESH_RATE_MAX_MON_RK1_B0));
+			msg("@@ RK0_B1:  %d 	%d\n",
 				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MIN_MON_RK0_B1),
-				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MAX_MON_RK0_B1)));
-			mcSHOW_DBG_MSG(("@@ RK1_B1:  %d 	%d\n",
+				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MAX_MON_RK0_B1));
+			msg("@@ RK1_B1:  %d 	%d\n",
 				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MIN_MON_RK1_B1),
-				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MAX_MON_RK1_B1)));
+				u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_HW_REFRATE_MON2), HW_REFRATE_MON2_REFRESH_RATE_MAX_MON_RK1_B1));
 		}
 
-		mcSHOW_DBG_MSG(("@@ Wait to measure!!\n\n"));
+		msg("@@ Wait to measure!!\n\n");
 		Sleep(500);
 	}
 #endif
@@ -2370,7 +2370,7 @@ void DramcCKEDebounce(DRAMC_CTX_T *p)
 		{
 			vSetRank(p, u1RKIdx);
 			vIO32WriteFldAlign_All(DRAMC_REG_SHURK_CKE_CTRL, u1CKE_DBECnt, SHURK_CKE_CTRL_CKE_DBE_CNT);
-			mcSHOW_DBG_MSG(("CKE Debounce cnt = %d\n", u1CKE_DBECnt));
+			msg("CKE Debounce cnt = %d\n", u1CKE_DBECnt);
 		}
 		vSetRank(p, rank_backup);
 	}
@@ -2398,16 +2398,16 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 	u1EnterRuntime = 1;
 #endif
 
-	mcSHOW_DBG_MSG(("[DramcRunTimeConfig]\n"));
+	msg("[DramcRunTimeConfig]\n");
 
 	SetDramInfoToConf(p);
 
 #if defined(DPM_CONTROL_AFTERK) && ((DRAMC_DFS_MODE%2) != 0) // for MD32 RG/PST mode
 	DPMInit(p);
-	mcSHOW_DBG_MSG(("DPM_CONTROL_AFTERK: ON\n"));
+	msg("DPM_CONTROL_AFTERK: ON\n");
 #else
-	mcSHOW_DBG_MSG(("!!! DPM_CONTROL_AFTERK: OFF\n"));
-	mcSHOW_DBG_MSG(("!!! DPM could not control APHY\n"));
+	msg("!!! DPM_CONTROL_AFTERK: OFF\n");
+	msg("!!! DPM could not control APHY\n");
 #endif
 
 #if ENABLE_PER_BANK_REFRESH
@@ -2415,9 +2415,9 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 	// enable pb-ref for current shu
 	vIO32WriteFldAlign_All(DRAMC_REG_SHU_CONF0, 0x1, SHU_CONF0_PBREFEN);
 	#endif
-	mcSHOW_DBG_MSG(("PER_BANK_REFRESH: ON\n"));
+	msg("PER_BANK_REFRESH: ON\n");
 #else
-	mcSHOW_DBG_MSG(("PER_BANK_REFRESH: OFF\n"));
+	msg("PER_BANK_REFRESH: OFF\n");
 #endif
 
 ///TODO:KIWI
@@ -2434,77 +2434,77 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 
 #if REFRESH_OVERHEAD_REDUCTION
 	vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL1, 0x1, REFCTRL1_REF_OVERHEAD_SLOW_REFPB_ENA);
-	mcSHOW_DBG_MSG(("REFRESH_OVERHEAD_REDUCTION: ON\n"));
+	msg("REFRESH_OVERHEAD_REDUCTION: ON\n");
 #else
-	mcSHOW_DBG_MSG(("REFRESH_OVERHEAD_REDUCTION: OFF\n"));
+	msg("REFRESH_OVERHEAD_REDUCTION: OFF\n");
 #endif
 
 #if CMD_PICG_NEW_MODE
-	mcSHOW_DBG_MSG(("CMD_PICG_NEW_MODE: ON\n"));
+	msg("CMD_PICG_NEW_MODE: ON\n");
 #else
-	mcSHOW_DBG_MSG(("CMD_PICG_NEW_MODE: OFF\n"));
+	msg("CMD_PICG_NEW_MODE: OFF\n");
 #endif
 
 #if XRTWTW_NEW_CROSS_RK_MODE
 	if (p->support_rank_num == RANK_DUAL)
 	{
 		//ENABLE_XRTWTW_Setting(p); // @Darren, DV codes is included
-		mcSHOW_DBG_MSG(("XRTWTW_NEW_MODE: ON\n"));
+		msg("XRTWTW_NEW_MODE: ON\n");
 	}
 #else
-	mcSHOW_DBG_MSG(("XRTWTW_NEW_MODE: OFF\n"));
+	msg("XRTWTW_NEW_MODE: OFF\n");
 #endif
 
 #if XRTRTR_NEW_CROSS_RK_MODE
 	if (p->support_rank_num == RANK_DUAL)
 	{
 		//ENABLE_XRTRTR_Setting(p); // @Darren, DV codes is included
-		mcSHOW_DBG_MSG(("XRTRTR_NEW_MODE: ON\n"));
+		msg("XRTRTR_NEW_MODE: ON\n");
 	}
 #else
-	mcSHOW_DBG_MSG(("XRTRTR_NEW_MODE: OFF\n"));
+	msg("XRTRTR_NEW_MODE: OFF\n");
 #endif
 
 #if ENABLE_TX_TRACKING
-	mcSHOW_DBG_MSG(("TX_TRACKING: ON\n"));
+	msg("TX_TRACKING: ON\n");
 #else
-	mcSHOW_DBG_MSG(("TX_TRACKING: OFF\n"));
+	msg("TX_TRACKING: OFF\n");
 #endif
 
 #if RDSEL_TRACKING_EN
-	mcSHOW_DBG_MSG(("RDSEL_TRACKING: ON\n"));
+	msg("RDSEL_TRACKING: ON\n");
 #else
-	mcSHOW_DBG_MSG(("RDSEL_TRACKING: OFF\n"));
+	msg("RDSEL_TRACKING: OFF\n");
 #endif
 
 #if TDQSCK_PRECALCULATION_FOR_DVFS
-	mcSHOW_DBG_MSG(("DQS Precalculation for DVFS: "));
+	msg("DQS Precalculation for DVFS: ");
 	/* Maoauo: Enable DQS precalculation for LP4, disable for LP3(same as Kibo) */
 	DramcDQSPrecalculation_enable(p);
-	mcSHOW_DBG_MSG(("ON\n"));
+	msg("ON\n");
 #else
-	mcSHOW_DBG_MSG(("DQS Precalculation for DVFS: OFF\n"));
+	msg("DQS Precalculation for DVFS: OFF\n");
 #endif
 
 #if ENABLE_RX_TRACKING
 	DramcRxInputDelayTrackingInit_Common(p);
 	DramcRxInputDelayTrackingHW(p);
-	mcSHOW_DBG_MSG(("RX_TRACKING: ON\n"));
+	msg("RX_TRACKING: ON\n");
 #else
-	mcSHOW_DBG_MSG(("RX_TRACKING: OFF\n"));
+	msg("RX_TRACKING: OFF\n");
 #endif
 
 #if (ENABLE_RX_TRACKING && RX_DLY_TRACK_ONLY_FOR_DEBUG && defined(DUMMY_READ_FOR_TRACKING))
-	mcSHOW_DBG_MSG(("RX_DLY_TRACK_DBG: ON\n"));
+	msg("RX_DLY_TRACK_DBG: ON\n");
 	DramcRxDlyTrackDebug(p);
 #endif
 
 /* HW gating - Disabled by default(in preloader) to save power (DE: HJ Huang) */
 #if (defined(HW_GATING))
-	mcSHOW_DBG_MSG(("HW_GATING DBG: ON\n"));
+	msg("HW_GATING DBG: ON\n");
 	DramcHWGatingDebugOnOff(p, ENABLE);
 #else
-	mcSHOW_DBG_MSG(("HW_GATING DBG: OFF\n"));
+	msg("HW_GATING DBG: OFF\n");
 	DramcHWGatingDebugOnOff(p, DISABLE);
 #endif
 
@@ -2521,40 +2521,40 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 #elif (fcFOR_CHIP_ID == fcMargaux)
 	vIO32WriteFldAlign_All(DRAMC_REG_ZQ_SET1, 1, ZQ_SET1_ZQCALDISB);// LP3 and LP4 are different, be careful.
 #endif
-	mcSHOW_DBG_MSG(("ZQCS_ENABLE_LP4: ON\n"));
+	msg("ZQCS_ENABLE_LP4: ON\n");
 #else
 	vIO32WriteFldAlign_All(DRAMC_REG_ZQ_SET1, 0, ZQ_SET1_ZQCALDISB);// LP3 and LP4 are different, be careful.
-	mcSHOW_DBG_MSG(("ZQCS_ENABLE_LP4: OFF\n"));
+	msg("ZQCS_ENABLE_LP4: OFF\n");
 #endif
 
 ///TODO:JEREMY
 #if 0
 #ifdef DUMMY_READ_FOR_DQS_GATING_RETRY
 	DummyReadForDqsGatingRetryNonShuffle(p, 1);
-	mcSHOW_DBG_MSG(("DUMMY_READ_FOR_DQS_GATING_RETRY: ON\n"));
+	msg("DUMMY_READ_FOR_DQS_GATING_RETRY: ON\n");
 #else
 	DummyReadForDqsGatingRetryNonShuffle(p, 0);
-	mcSHOW_DBG_MSG(("DUMMY_READ_FOR_DQS_GATING_RETRY: OFF\n"));
+	msg("DUMMY_READ_FOR_DQS_GATING_RETRY: OFF\n");
 #endif
 #endif
 
 #if RX_PICG_NEW_MODE
-	mcSHOW_DBG_MSG(("RX_PICG_NEW_MODE: ON\n"));
+	msg("RX_PICG_NEW_MODE: ON\n");
 #else
-	mcSHOW_DBG_MSG(("RX_PICG_NEW_MODE: OFF\n"));
+	msg("RX_PICG_NEW_MODE: OFF\n");
 #endif
 
 #if TX_PICG_NEW_MODE
 	TXPICGNewModeEnable(p);
-	mcSHOW_DBG_MSG(("TX_PICG_NEW_MODE: ON\n"));
+	msg("TX_PICG_NEW_MODE: ON\n");
 #else
-	mcSHOW_DBG_MSG(("TX_PICG_NEW_MODE: OFF\n"));
+	msg("TX_PICG_NEW_MODE: OFF\n");
 #endif
 
 #if ENABLE_RX_DCM_DPHY
-	mcSHOW_DBG_MSG(("ENABLE_RX_DCM_DPHY: ON\n"));
+	msg("ENABLE_RX_DCM_DPHY: ON\n");
 #else
-	mcSHOW_DBG_MSG(("ENABLE_RX_DCM_DPHY: OFF\n"));
+	msg("ENABLE_RX_DCM_DPHY: OFF\n");
 #endif
 
 #if (SW_CHANGE_FOR_SIMULATION == 0)
@@ -2563,7 +2563,7 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 	const char *str = (enable_dcm == 1)? ("ON") : ("OFF");
 //	  EnableDramcPhyDCM(p, enable_dcm);
 	EnableDramcPhyDCMNonShuffle(p, enable_dcm);
-	mcSHOW_DBG_MSG(("LOWPOWER_GOLDEN_SETTINGS(DCM): %s\n", str));
+	msg("LOWPOWER_GOLDEN_SETTINGS(DCM): %s\n", str);
 
 	if(enable_dcm == 0)
 	{
@@ -2573,7 +2573,7 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 #else
 //	  EnableDramcPhyDCM(p, DCM_OFF);
 	EnableDramcPhyDCMNonShuffle(p, 0);
-	mcSHOW_DBG_MSG(("LOWPOWER_GOLDEN_SETTINGS(DCM): OFF\n"));
+	msg("LOWPOWER_GOLDEN_SETTINGS(DCM): OFF\n");
 
 	S0_DCMOffWA(p);//For S0 + DCM off
 #endif
@@ -2592,17 +2592,17 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 #ifdef DUMMY_READ_FOR_TRACKING
 	DramcDummyReadForTrackingEnable(p);
 #else
-	mcSHOW_DBG_MSG(("DUMMY_READ_FOR_TRACKING: OFF\n"));
+	msg("DUMMY_READ_FOR_TRACKING: OFF\n");
 #endif
 
 
 #ifdef SPM_CONTROL_AFTERK
 	DVFS_PRE_config(p);
 	TransferToSPMControl(p);
-	mcSHOW_DBG_MSG(("SPM_CONTROL_AFTERK: ON\n"));
+	msg("SPM_CONTROL_AFTERK: ON\n");
 #else
-	mcSHOW_DBG_MSG(("!!! SPM_CONTROL_AFTERK: OFF\n"));
-	mcSHOW_DBG_MSG(("!!! SPM could not control APHY\n"));
+	msg("!!! SPM_CONTROL_AFTERK: OFF\n");
+	msg("!!! SPM could not control APHY\n");
 #endif
 
 // when time profiling multi times, SW impedance tracking will fail when trakcing enable.
@@ -2612,14 +2612,14 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 	if (p->dram_type == TYPE_LPDDR4 || p->dram_type == TYPE_LPDDR4X)
 	{
 		DramcImpedanceTrackingEnable(p);
-		mcSHOW_DBG_MSG(("IMPEDANCE_TRACKING: ON\n"));
+		msg("IMPEDANCE_TRACKING: ON\n");
 
 #ifdef IMPEDANCE_HW_SAVING
 		DramcImpedanceHWSaving(p);
 #endif
 	}
 #else
-	mcSHOW_DBG_MSG(("IMPEDANCE_TRACKING: OFF\n"));
+	msg("IMPEDANCE_TRACKING: OFF\n");
 #endif
 #endif
 
@@ -2628,40 +2628,40 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 
 #ifdef TEMP_SENSOR_ENABLE
 	SwitchHMR4(p, ON);
-	mcSHOW_DBG_MSG(("TEMP_SENSOR: ON\n"));
+	msg("TEMP_SENSOR: ON\n");
 #else
 	SwitchHMR4(p, OFF);
-	mcSHOW_DBG_MSG(("TEMP_SENSOR: OFF\n"));
+	msg("TEMP_SENSOR: OFF\n");
 #endif
 
 #ifdef HW_SAVE_FOR_SR
-	mcSHOW_DBG_MSG(("HW_SAVE_FOR_SR: ON, no implementation\n"));
+	msg("HW_SAVE_FOR_SR: ON, no implementation\n");
 #else
-	mcSHOW_DBG_MSG(("HW_SAVE_FOR_SR: OFF\n"));
+	msg("HW_SAVE_FOR_SR: OFF\n");
 #endif
 
 #ifdef CLK_FREE_FUN_FOR_DRAMC_PSEL
 	ClkFreeRunForDramcPsel(p);
-	mcSHOW_DBG_MSG(("CLK_FREE_FUN_FOR_DRAMC_PSEL: ON\n"));
+	msg("CLK_FREE_FUN_FOR_DRAMC_PSEL: ON\n");
 #else
-	mcSHOW_DBG_MSG(("CLK_FREE_FUN_FOR_DRAMC_PSEL: OFF\n"));
+	msg("CLK_FREE_FUN_FOR_DRAMC_PSEL: OFF\n");
 #endif
 
 #if PA_IMPROVEMENT_FOR_DRAMC_ACTIVE_POWER
 	DramcPAImprove(p);
-	mcSHOW_DBG_MSG(("PA_IMPROVEMENT_FOR_DRAMC_ACTIVE_POWER: ON\n"));
+	msg("PA_IMPROVEMENT_FOR_DRAMC_ACTIVE_POWER: ON\n");
 #else
-	mcSHOW_DBG_MSG(("PA_IMPROVEMENT_FOR_DRAMC_ACTIVE_POWER: OFF\n"));
+	msg("PA_IMPROVEMENT_FOR_DRAMC_ACTIVE_POWER: OFF\n");
 #endif
 
 #if ENABLE_RODT_TRACKING
-	mcSHOW_DBG_MSG(("Read ODT Tracking: ON\n"));
+	msg("Read ODT Tracking: ON\n");
 #else
-	mcSHOW_DBG_MSG(("Read ODT Tracking: OFF\n"));
+	msg("Read ODT Tracking: OFF\n");
 #endif
 
 #if ENABLE_REFRESH_RATE_DEBOUNCE
-	mcSHOW_DBG_MSG(("Refresh Rate DeBounce: ON\n"));
+	msg("Refresh Rate DeBounce: ON\n");
 	DramcRefreshRateDeBounceEnable(p);
 #endif
 
@@ -2672,14 +2672,14 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 
 #if (CHECK_GOLDEN_SETTING == TRUE)
 	DRAM_STATUS_T stResult = CheckGoldenSetting(p);
-	mcSHOW_DBG_MSG(("End of run time ==>Golden setting check: %s\n", (stResult == DRAM_OK)? ("OK") : ("NG")));
+	msg("End of run time ==>Golden setting check: %s\n", (stResult == DRAM_OK)? ("OK") : ("NG"));
 #endif
 
 #if DFS_NOQUEUE_FLUSH_WA
 	EnableDFSNoQueueFlush(p);
-	mcSHOW_DBG_MSG(("DFS_NO_QUEUE_FLUSH: ON\n"));
+	msg("DFS_NO_QUEUE_FLUSH: ON\n");
 #else
-	mcSHOW_DBG_MSG(("DFS_NO_QUEUE_FLUSH: OFF\n"));
+	msg("DFS_NO_QUEUE_FLUSH: OFF\n");
 #endif
 
 #if DFS_NOQUEUE_FLUSH_LATENCY_CNT
@@ -2687,36 +2687,36 @@ void DramcRunTimeConfig(DRAMC_CTX_T *p)
 	// MD32 clock is 208M
 	vIO32WriteFldMulti_All(DDRPHY_MD32_REG_SSPM_MCLK_DIV, P_Fld(0, SSPM_MCLK_DIV_MCLK_SRC)
 		| P_Fld(0, SSPM_MCLK_DIV_MCLK_DIV));
-	mcSHOW_DBG_MSG(("DFS_NO_QUEUE_FLUSH_LATENCY_CNT: ON\n"));
+	msg("DFS_NO_QUEUE_FLUSH_LATENCY_CNT: ON\n");
 #else
-	mcSHOW_DBG_MSG(("DFS_NO_QUEUE_FLUSH_LATENCY_CNT: OFF\n"));
+	msg("DFS_NO_QUEUE_FLUSH_LATENCY_CNT: OFF\n");
 #endif
 
 #if ENABLE_DFS_RUNTIME_MRW
 	DFSRuntimeFspMRW(p);
-	mcSHOW_DBG_MSG(("ENABLE_DFS_RUNTIME_MRW: ON\n"));
+	msg("ENABLE_DFS_RUNTIME_MRW: ON\n");
 #else
-	mcSHOW_DBG_MSG(("ENABLE_DFS_RUNTIME_MRW: OFF\n"));
+	msg("ENABLE_DFS_RUNTIME_MRW: OFF\n");
 #endif
 
 	//CheckRxPICGNewModeSetting(p);
 	vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL0, 0x0, REFCTRL0_REFDIS); //After k, auto refresh should be enable
 
 #if DDR_RESERVE_NEW_MODE
-	mcSHOW_DBG_MSG(("DDR_RESERVE_NEW_MODE: ON\n"));
+	msg("DDR_RESERVE_NEW_MODE: ON\n");
 	vIO32WriteFldMulti_All(DDRPHY_REG_MISC_DDR_RESERVE, P_Fld(1, MISC_DDR_RESERVE_WDT_LITE_EN) | P_Fld(0, MISC_DDR_RESERVE_WDT_SM_CLR));
 #else
-	mcSHOW_DBG_MSG(("DDR_RESERVE_NEW_MODE: OFF\n"));
+	msg("DDR_RESERVE_NEW_MODE: OFF\n");
 	vIO32WriteFldMulti_All(DDRPHY_REG_MISC_DDR_RESERVE, P_Fld(0, MISC_DDR_RESERVE_WDT_LITE_EN) | P_Fld(1, MISC_DDR_RESERVE_WDT_SM_CLR));
 #endif
 
 #if MR_CBT_SWITCH_FREQ
-	mcSHOW_DBG_MSG(("MR_CBT_SWITCH_FREQ: ON\n"));
+	msg("MR_CBT_SWITCH_FREQ: ON\n");
 #else
-	mcSHOW_DBG_MSG(("MR_CBT_SWITCH_FREQ: OFF\n"));
+	msg("MR_CBT_SWITCH_FREQ: OFF\n");
 #endif
 
-	mcSHOW_DBG_MSG(("=========================\n"));
+	msg("=========================\n");
 }
 
 #if 0  //no use?
@@ -2726,7 +2726,7 @@ void DramcTest_DualSch_stress(DRAMC_CTX_T *p)
 	U16 u2Value = 0;
 
 #if MRW_CHECK_ONLY
-	mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
+	mcSHOW_MRW_MSG("\n==[MR Dump] %s==\n", __func__);
 #endif
 
 	//vIO32WriteFldAlign_All(DRAMC_REG_PERFCTL0, 1, PERFCTL0_DUALSCHEN);
@@ -2739,7 +2739,7 @@ void DramcTest_DualSch_stress(DRAMC_CTX_T *p)
 		u1MR12Value[p->channel][p->rank][p->dram_fsp] = 0x14;
 		DramcModeRegWriteByRank(p, p->rank, 12, u1MR12Value[p->channel][p->rank][p->dram_fsp]);
 		DramcModeRegReadByRank(p, p->rank, 12, &u2Value);
-		//mcSHOW_DBG_MSG(("MR12 = 0x%0X\n", u1Value));
+		//msg("MR12 = 0x%0X\n", u1Value);
 	}
 }
 #endif
@@ -2759,7 +2759,7 @@ void SPMTx_Track_Retry_OnOff(DRAMC_CTX_T *p, U8 shu_level, U8 onoff)
 	{
 		if (onoff == ENABLE)
 		{
-			mcSHOW_DBG_MSG(("TX track retry: ENABLE! (DDR800 to DDR1200)\n"));
+			msg("TX track retry: ENABLE! (DDR800 to DDR1200)\n");
 			vIO32WriteFldAlign_All(DRAMC_REG_TX_RETRY_SET0, 1, TX_RETRY_SET0_XSR_TX_RETRY_BLOCK_ALE_MASK);
 			mcDELAY_US(1);
 			#if TX_RETRY_CONTROL_BY_SPM
@@ -2770,7 +2770,7 @@ void SPMTx_Track_Retry_OnOff(DRAMC_CTX_T *p, U8 shu_level, U8 onoff)
 		}
 		else //DISABLE
 		{
-			mcSHOW_DBG_MSG(("TX track retry: DISABLE! (DDR800 to DDR1200)\n"));
+			msg("TX track retry: DISABLE! (DDR800 to DDR1200)\n");
 			#if TX_RETRY_CONTROL_BY_SPM
 			vIO32WriteFldAlign(DDRPHY_MD32_REG_LPIF_LOW_POWER_CFG_1, 0, LPIF_LOW_POWER_CFG_1_TX_TRACKING_RETRY_EN);
 			#else //control by DRAMC
@@ -2788,7 +2788,7 @@ void SWTx_Track_Retry_OnOff(DRAMC_CTX_T *p)
 {
 	U8 u4Response;
 
-	mcSHOW_DBG_MSG(("SW TX track retry!\n"));
+	msg("SW TX track retry!\n");
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_RETRY_SET0), 0, TX_RETRY_SET0_XSR_TX_RETRY_SW_EN);
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_RETRY_SET0), 1, TX_RETRY_SET0_XSR_TX_RETRY_BLOCK_ALE_MASK);
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_RETRY_SET0), 1, TX_RETRY_SET0_XSR_TX_RETRY_SW_EN);
@@ -2796,7 +2796,7 @@ void SWTx_Track_Retry_OnOff(DRAMC_CTX_T *p)
 	{
 		u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP), SPCMDRESP_TX_RETRY_DONE_RESPONSE);
 		mcDELAY_US(1);	// Wait tZQCAL(min) 1us or wait next polling
-		mcSHOW_DBG_MSG3(("still wait tx retry be done\n", u4Response));
+		msg3("still wait tx retry be done\n", u4Response);
 	}while (u4Response == 0);
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_RETRY_SET0), 0, TX_RETRY_SET0_XSR_TX_RETRY_SW_EN);
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_RETRY_SET0), 0, TX_RETRY_SET0_XSR_TX_RETRY_BLOCK_ALE_MASK);
@@ -2809,7 +2809,7 @@ void DFSInitForCalibration(DRAMC_CTX_T *p)
 {
 #ifdef DDR_INIT_TIME_PROFILING
 	U32 CPU_Cycle;
-	mcSHOW_TIME_MSG(("*** Data rate %d ***\n\n", p->frequency << 1));
+	time_msg("*** Data rate %d ***\n\n", p->frequency << 1);
 
 	TimeProfileBegin();
 #endif
@@ -2837,8 +2837,8 @@ void DFSInitForCalibration(DRAMC_CTX_T *p)
 #if ENABLE_DUTY_SCAN_V2
 #ifdef DDR_INIT_TIME_PROFILING
 	CPU_Cycle = TimeProfileEnd();
-	mcSHOW_TIME_MSG(("	(1) DFSInitForCalibration() take %d ms\n\n", (CPU_Cycle / 1000) - gu4DutyCalibrationTime));
-	mcSHOW_TIME_MSG(("	(2) DramcNewDutyCalibration take %d ms\n\r", gu4DutyCalibrationTime));
+	time_msg("	(1) DFSInitForCalibration() take %d ms\n\n", (CPU_Cycle / 1000) - gu4DutyCalibrationTime);
+	time_msg("	(2) DramcNewDutyCalibration take %d ms\n\r", gu4DutyCalibrationTime);
 #endif
 #endif
 
@@ -2870,7 +2870,7 @@ void DFSInitForCalibration(DRAMC_CTX_T *p)
 
 #ifdef DDR_INIT_TIME_PROFILING
 	  CPU_Cycle=TimeProfileEnd();
-	  mcSHOW_TIME_MSG(("  (3) JMeter takes %d ms\n\r", CPU_Cycle / 1000));
+	  time_msg("  (3) JMeter takes %d ms\n\r", CPU_Cycle / 1000);
 #endif
 	}
 
@@ -2961,7 +2961,7 @@ void GetTXPICGSetting(DRAMC_CTX_T * p)
 	U16 u2COMB_TX_PICG_CNT;
 	U8 u1CHIdx, u1RankIdx, u1Rank_bak = u1GetRank(p), u1backup_CH = vGetPHY2ChannelMapping(p), u1Div_ratio;
 
-	mcSHOW_DBG_MSG(("****** GetTXPICGSetting DDR[%d] @@@\n", p->frequency * 2));
+	msg("****** GetTXPICGSetting DDR[%d] @@@\n", p->frequency * 2);
 
 	for (u1CHIdx = 0; u1CHIdx < p->support_channel_num; u1CHIdx++)
 	{
@@ -2974,9 +2974,9 @@ void GetTXPICGSetting(DRAMC_CTX_T * p)
 		u2DQS_OEN_2T[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_DQS0), SHU_SELPH_DQS0_TXDLY_OEN_DQS1);//m
 		u2DQS_OEN_05T[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_DQS1), SHU_SELPH_DQS1_DLY_OEN_DQS1);//n
 
-		mcSHOW_DBG_MSG(("CH%d\n", u1CHIdx));
-		mcSHOW_DBG_MSG(("DQS0 m=%d n=%d \n", u2DQS_OEN_2T[0], u2DQS_OEN_05T[0]));
-		mcSHOW_DBG_MSG(("DQS1 m=%d n=%d \n", u2DQS_OEN_2T[1], u2DQS_OEN_05T[1]));
+		msg("CH%d\n", u1CHIdx);
+		msg("DQS0 m=%d n=%d \n", u2DQS_OEN_2T[0], u2DQS_OEN_05T[0]);
+		msg("DQS1 m=%d n=%d \n", u2DQS_OEN_2T[1], u2DQS_OEN_05T[1]);
 
 
 
@@ -2984,14 +2984,14 @@ void GetTXPICGSetting(DRAMC_CTX_T * p)
 		u2COMB_TX_SEL[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_APHY_TX_PICG_CTRL), SHU_APHY_TX_PICG_CTRL_DDRPHY_CLK_EN_COMB_TX_DQS_SEL_P1);
 		u2COMB_TX_PICG_CNT = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_APHY_TX_PICG_CTRL), SHU_APHY_TX_PICG_CTRL_DDRPHY_CLK_EN_COMB_TX_PICG_CNT);
 
-		mcSHOW_DBG_MSG(("TX_DQS_SEL_P0 %d \n", u2COMB_TX_SEL[0]));
-		mcSHOW_DBG_MSG(("TX_DQS_SEL_P1 %d \n", u2COMB_TX_SEL[1]));
-		mcSHOW_DBG_MSG(("COMB_TX_PICG_CNT %d \n", u2COMB_TX_PICG_CNT));
+		msg("TX_DQS_SEL_P0 %d \n", u2COMB_TX_SEL[0]);
+		msg("TX_DQS_SEL_P1 %d \n", u2COMB_TX_SEL[1]);
+		msg("COMB_TX_PICG_CNT %d \n", u2COMB_TX_PICG_CNT);
 
 		//Set TX RK0 and RK1 DQ PICG
 		for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
 		{
-			mcSHOW_DBG_MSG(("Rank%d\n", u1RankIdx));
+			msg("Rank%d\n", u1RankIdx);
 
 			vSetRank(p, u1RankIdx);
 			//DQ0
@@ -3001,14 +3001,14 @@ void GetTXPICGSetting(DRAMC_CTX_T * p)
 			u2DQ_OEN_2T[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ0), SHURK_SELPH_DQ0_TXDLY_OEN_DQ1);//p
 			u2DQ_OEN_05T[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ2), SHURK_SELPH_DQ2_DLY_OEN_DQ1);//q
 
-			mcSHOW_DBG_MSG(("DQ0 p=%d q=%d \n", u2DQ_OEN_2T[0], u2DQ_OEN_05T[0]));
-			mcSHOW_DBG_MSG(("DQ1 p=%d q=%d \n", u2DQ_OEN_2T[1], u2DQ_OEN_05T[1]));
+			msg("DQ0 p=%d q=%d \n", u2DQ_OEN_2T[0], u2DQ_OEN_05T[0]);
+			msg("DQ1 p=%d q=%d \n", u2DQ_OEN_2T[1], u2DQ_OEN_05T[1]);
 
 			u2COMB_TX_SEL[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK_APHY_TX_PICG_CTRL), SHURK_APHY_TX_PICG_CTRL_DDRPHY_CLK_EN_COMB_TX_DQ_RK_SEL_P0);
 			u2COMB_TX_SEL[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK_APHY_TX_PICG_CTRL), SHURK_APHY_TX_PICG_CTRL_DDRPHY_CLK_EN_COMB_TX_DQ_RK_SEL_P1);
 
-			mcSHOW_DBG_MSG(("TX_DQ_RK_SEL_P0 %d \n", u2COMB_TX_SEL[0]));
-			mcSHOW_DBG_MSG(("TX_DQ_RK_SEL_P1 %d \n", u2COMB_TX_SEL[1]));
+			msg("TX_DQ_RK_SEL_P0 %d \n", u2COMB_TX_SEL[0]);
+			msg("TX_DQ_RK_SEL_P1 %d \n", u2COMB_TX_SEL[1]);
 		}
 		vSetRank(p, u1Rank_bak);
 	}
@@ -3584,7 +3584,7 @@ unsigned int DDRPhyFreqMeter(void)
 
 	// abist_clk29: AD_MPLL_CK
 	frq_result = FMeter(ABIST_FMETER, 29) ;
-	mcSHOW_DBG_MSG(("AD_MPLL_CK FREQ=%d\n", frq_result));
+	msg("AD_MPLL_CK FREQ=%d\n", frq_result);
 	/*TINFO="AD_MPLL_CK FREQ=%d\n", frq_result*/
 
 	// abist_clk40: DA_MPLL_52M_DIV_CK
@@ -3595,14 +3595,14 @@ unsigned int DDRPhyFreqMeter(void)
 	{
 		// abist_clk31: AD_RCLRPLL_DIV4_CK_ch02
 		//frq_result = FMeter(ABIST_FMETER, 31) ;
-		mcSHOW_DBG_MSG(("AD_RCLRPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result));
+		msg("AD_RCLRPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result);
 		/*TINFO="AD_RCLRPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result*/
 	}
 	else
 	{
 		// abist_clk33: AD_RPHYRPLL_DIV4_CK_ch02
 		frq_result = FMeter(ABIST_FMETER, 33) ;
-		mcSHOW_DBG_MSG(("AD_RPHYPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result));
+		msg("AD_RPHYPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result);
 		/*TINFO="AD_RPHYPLL_DIV4_CK_ch02 FREQ=%d\n", frq_result*/
 	}
 	#endif
@@ -3612,7 +3612,7 @@ unsigned int DDRPhyFreqMeter(void)
 
 	// abistgen_clk44: fmem_ck_aft_dcm_ch0 (DRAMC CHA's clock after idle mask)
 	before_value = FMeter(ABIST_FMETER, 44);
-	mcSHOW_DBG_MSG(("fmem_ck_aft_dcm_ch0 FREQ=%d\n", before_value));
+	msg("fmem_ck_aft_dcm_ch0 FREQ=%d\n", before_value);
 	/*TINFO="fmem_ck_aft_dcm_ch0 FREQ=%d\n", after_value*/
 
 #if (fcFOR_CHIP_ID == fcMargaux)
@@ -3623,7 +3623,7 @@ unsigned int DDRPhyFreqMeter(void)
 		DRV_WriteReg32	(Channel_B_DDRPHY_AO_BASE_ADDRESS + 0x504  , reg0 | (1 << 11));
 	// abistgen_clk45: fmem_ck_aft_dcm_ch1 (DRAMC CHB's clock after idle mask)
 	after_value = FMeter(ABIST_FMETER, 45);
-	mcSHOW_DBG_MSG(("fmem_ck_aft_dcm_ch1 FREQ=%d\n", after_value));
+	msg("fmem_ck_aft_dcm_ch1 FREQ=%d\n", after_value);
 	}
 	/*TINFO="fmem_ck_aft_dcm_ch1 FREQ=%d\n", after_value*/
 
@@ -3645,14 +3645,14 @@ unsigned int DDRPhyFreqMeter(void)
 	{
 		// abist_clk32: AD_RCLRPLL_DIV4_CK_ch13
 		//frq_result = FMeter(ABIST_FMETER, 32) ;
-		mcSHOW_DBG_MSG(("AD_RCLRPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result));
+		msg("AD_RCLRPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result);
 		/*TINFO="AD_RCLRPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result*/
 	}
 	else
 	{
 		// abist_clk34: AD_RPHYRPLL_DIV4_CK_ch13
 		frq_result = FMeter(ABIST_FMETER, 34) ;
-		mcSHOW_DBG_MSG(("AD_RPHYPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result));
+		msg("AD_RPHYPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result);
 		/*TINFO="AD_RPHYPLL_DIV4_CK_ch13 FREQ=%d\n", frq_result*/
 	}
 	#endif
@@ -3664,12 +3664,12 @@ unsigned int DDRPhyFreqMeter(void)
 
 	// abistgen_clk46: fmem_ck_aft_dcm_ch2 (DRAMC CHC's clock after idle mask)
 	before_value = FMeter(ABIST_FMETER, 46);
-	mcSHOW_DBG_MSG(("fmem_ck_aft_dcm_ch2 FREQ=%d\n", before_value));
+	msg("fmem_ck_aft_dcm_ch2 FREQ=%d\n", before_value);
 	/*TINFO="fmem_ck_aft_dcm_ch2 FREQ=%d\n", after_value*/
 
 	// abistgen_clk47: fmem_ck_aft_dcm_ch3 (DRAMC CHC's clock after idle mask)
 	after_value = FMeter(ABIST_FMETER, 47);
-	mcSHOW_DBG_MSG(("fmem_ck_aft_dcm_ch3 FREQ=%d\n", after_value));
+	msg("fmem_ck_aft_dcm_ch3 FREQ=%d\n", after_value);
 	/*TINFO="fmem_ck_aft_dcm_ch3 FREQ=%d\n", after_value*/
 
 	reg0 = DRV_Reg32(Channel_C_DDRPHY_AO_BASE_ADDRESS + 0x70c) ;

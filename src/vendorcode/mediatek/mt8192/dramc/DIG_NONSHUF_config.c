@@ -15,7 +15,7 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
 	U8 RK_SWAP_EN = 0;
 #endif
 
-	mcSHOW_DBG_MSG(("[Flow] Enable top DCM control >>>>> \n"));
+	msg("[Flow] Enable top DCM control >>>>> \n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL2) 		 , P_Fld(	3	  , MISC_CG_CTRL2_RG_MEM_DCM_IDLE_FSEL		));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL2) 		 , P_Fld(	0	  , MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG		) \
 																		 | P_Fld(	0x1f  , MISC_CG_CTRL2_RG_MEM_DCM_APB_SEL		));
@@ -33,9 +33,9 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
 																		 | P_Fld(	1	  , MISC_CTRL0_R_DMSHU_PHYDCM_FORCEOFF		));
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RXDVS2)			 , P_Fld(	1	  , MISC_RXDVS2_R_DMRXDVS_SHUFFLE_CTRL_CG_IG));
-	mcSHOW_DBG_MSG(("[Flow] Enable top DCM control <<<<< \n"));
+	msg("[Flow] Enable top DCM control <<<<< \n");
 
-	mcSHOW_DBG_MSG(("Enable DLL master slave shuffle \n"));
+	msg("Enable DLL master slave shuffle \n");
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFS_EMI_CLK) 	 , P_Fld(	1	  , MISC_DVFS_EMI_CLK_RG_DLL_SHUFFLE_DDRPHY ));
 
@@ -85,21 +85,21 @@ static void GATING_MODE_CFG(Gating_confg_T *tr)
 	tr->SELPH_MODE			 = 1; //random inside {0,1} //for improve APHY XRTR2R. NEW_APHY MODE with 1.
 	tr->VALID_LAT_VALUE 	 = 1; //random inside {0,1}
 
-	mcSHOW_DBG_MSG(("============================================================== \n"));
-	mcSHOW_DBG_MSG(("Gating Mode config\n"				));
-	mcSHOW_DBG_MSG(("============================================================== \n"));
-	mcSHOW_DBG_MSG(("Config description: \n"));
-	mcSHOW_DBG_MSG(("RX_GATING_MODE 	   0: Pulse Mode	  1: Burst Mode(8UI)		2: Burst Mode(7UI)	3: Original Burst Mode\n"));
-	mcSHOW_DBG_MSG(("RX_GATING_TRACK_MODE  0: Valid DLY Mode  1: Valid Mode (-like) 2: FIFO mode\n"));
-	mcSHOW_DBG_MSG(("SELPH_MODE 		   0: By rank		  1: By Phase \n"));
-	mcSHOW_DBG_MSG(("============================================================== \n"));
-	mcSHOW_DBG_MSG(("GAT_TRACK_EN				  = %2d\n",tr->GAT_TRACK_EN 	   ));
-	mcSHOW_DBG_MSG(("RX_GATING_MODE 			  = %2d\n",tr->RX_GATING_MODE	   ));
-	mcSHOW_DBG_MSG(("RX_GATING_TRACK_MODE		  = %2d\n",tr->RX_GATING_TRACK_MODE));
-	mcSHOW_DBG_MSG(("SELPH_MODE 				  = %2d\n",tr->SELPH_MODE		   ));
-	mcSHOW_DBG_MSG(("PICG_EARLY_EN				  = %2d\n",tr->PICG_EARLY_EN	   ));
-	mcSHOW_DBG_MSG(("VALID_LAT_VALUE			  = %2d\n",tr->VALID_LAT_VALUE	   ));
-	mcSHOW_DBG_MSG(("============================================================== \n"));
+	msg("============================================================== \n");
+	msg("Gating Mode config\n"				);
+	msg("============================================================== \n");
+	msg("Config description: \n");
+	msg("RX_GATING_MODE 	   0: Pulse Mode	  1: Burst Mode(8UI)		2: Burst Mode(7UI)	3: Original Burst Mode\n");
+	msg("RX_GATING_TRACK_MODE  0: Valid DLY Mode  1: Valid Mode (-like) 2: FIFO mode\n");
+	msg("SELPH_MODE 		   0: By rank		  1: By Phase \n");
+	msg("============================================================== \n");
+	msg("GAT_TRACK_EN				  = %2d\n",tr->GAT_TRACK_EN 	   );
+	msg("RX_GATING_MODE 			  = %2d\n",tr->RX_GATING_MODE	   );
+	msg("RX_GATING_TRACK_MODE		  = %2d\n",tr->RX_GATING_TRACK_MODE);
+	msg("SELPH_MODE 				  = %2d\n",tr->SELPH_MODE		   );
+	msg("PICG_EARLY_EN				  = %2d\n",tr->PICG_EARLY_EN	   );
+	msg("VALID_LAT_VALUE			  = %2d\n",tr->VALID_LAT_VALUE	   );
+	msg("============================================================== \n");
 }
 
 //======================================
@@ -107,7 +107,7 @@ static void GATING_MODE_CFG(Gating_confg_T *tr)
 //======================================
 static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 {
-	mcSHOW_DBG_MSG(("Enter into Gating configuration >>>> \n"));
+	msg("Enter into Gating configuration >>>> \n");
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1)		, P_Fld(!gat_c->GAT_TRACK_EN, MISC_STBCAL1_STBCNT_SW_RST		  ));
 
@@ -169,7 +169,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 		}
 		default:
 		{
-			mcSHOW_DBG_MSG(("ERROR: Gating Mode choose unexpected Mode!!!!\n"));
+			msg("ERROR: Gating Mode choose unexpected Mode!!!!\n");
 			break;
 		}
 	}
@@ -269,7 +269,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 		}
 		default:
 		{
-			mcSHOW_DBG_MSG(("ERROR: Gating tracking Mode choose unexpected Mode!!!!"));
+			msg("ERROR: Gating tracking Mode choose unexpected Mode!!!!");
 			break;
 		}
 	}
@@ -298,7 +298,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 																	| P_Fld(   1  , MISC_STBCAL2_STB_RST_BY_RANK				) \
 																	| P_Fld(   1  , MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN		));
 	}
-	mcSHOW_DBG_MSG(("Exit from Gating configuration <<<< \n"));
+	msg("Exit from Gating configuration <<<< \n");
 }
 
 static void RX_INTPUT_Config(DRAMC_CTX_T *p)
@@ -319,7 +319,7 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
 
 	backup_rank = p->rank;
 
-	mcSHOW_DBG_MSG(("[RX_INPUT] configuration >>>>> \n"));
+	msg("[RX_INPUT] configuration >>>>> \n");
 
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_RXDVS0) 	 , P_Fld(  1   , B0_RXDVS0_R_HWSAVE_MODE_ENA_B0 						   ) \
 																 | P_Fld(  0   , B0_RXDVS0_R_DMRXDVS_CNTCMP_OPT_B0						   ) \
@@ -428,7 +428,7 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
 //		  `TBA_TOP.dvfs_spm_vif.sc_dphy_reserved[1:0] = 2'b11; //TODO
 	}
 
-	mcSHOW_DBG_MSG(("[RX_INPUT] configuration <<<<< \n"));
+	msg("[RX_INPUT] configuration <<<<< \n");
 }
 
 static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
@@ -437,7 +437,7 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
 	U8 MISC_CG_EN = 1;
 	U8 MISC_CG_REVERSE_DEFAULT_ON = 0;	//for default CG enable.
 
-	mcSHOW_DBG_MSG(("Enter into PICG configuration >>>> \n"));
+	msg("Enter into PICG configuration >>>> \n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4)		, P_Fld(   PICG_MODE  , MISC_CTRL4_R_OPT2_MPDIV_CG					) \
 																	| P_Fld(   PICG_MODE  , MISC_CTRL4_R_OPT2_CG_MCK					) \
 																	| P_Fld(   PICG_MODE  , MISC_CTRL4_R_OPT2_CG_DQM					) \
@@ -530,7 +530,7 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
 																		| P_Fld(   1	  , SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1		 ));
 	}
 
-	mcSHOW_DBG_MSG(("Exit from PICG configuration <<<< \n"));
+	msg("Exit from PICG configuration <<<< \n");
 }
 
 static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
@@ -551,7 +551,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
 		RUNTIME_MRR   = 1;
 	} else {
 		//TODO
-		mcSHOW_DBG_MSG(("NONBLOCKALE RUNTIMEMRR could be random.--for MP should setting 1. just record it."));
+		msg("NONBLOCKALE RUNTIMEMRR could be random.--for MP should setting 1. just record it.");
 	}
 
 
@@ -836,7 +836,7 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
 #endif
 	U32 REF_104M_EN = 1;
 	DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
-	mcSHOW_DBG_MSG(("Enter into  DVFS_PRE_config >>>>> \n"));
+	msg("Enter into  DVFS_PRE_config >>>>> \n");
 
 #if ENABLE_ECO_SRAM_DMA_MISS_REG
 	vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ11  )  , P_Fld( 1 	, B0_DQ11_DMY_DQ11_B0					));
@@ -904,7 +904,7 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
 																	| P_Fld((REF_104M_EN==1)?3:1, MISC_DVFSCTL_R_DVFS_PICG_MARGIN3_NEW			) );
 	if(A_T->DLL_ASYNC_EN == 0)
 	{
-		mcSHOW_DBG_MSG(("Because of DLL_ASYNC_EN for indenpendent DLL NOT enable, salve channel's DVFS_DLL_CHA should set 0 to follow master CH's DLL. \n"));
+		msg("Because of DLL_ASYNC_EN for indenpendent DLL NOT enable, salve channel's DVFS_DLL_CHA should set 0 to follow master CH's DLL. \n");
 		//DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 		vSetPHY2ChannelMapping(p, CHANNEL_B);
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL2	 )	, P_Fld(   0			 , MISC_DVFSCTL2_R_DVFS_DLL_CHA 				 ));
@@ -923,12 +923,12 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
 	{
 		//DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 		vSetPHY2ChannelMapping(p, CHANNEL_B);
-		mcSHOW_DBG_MSG(("MCP Enable leading 2ch's sync singles should adjust delay margin."));
+		msg("MCP Enable leading 2ch's sync singles should adjust delay margin.");
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL	 )	, P_Fld((REF_104M_EN==1)?6:4, MISC_DVFSCTL_R_DVFS_PICG_MARGIN_NEW		 ));
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL3	)	, P_Fld(   9				, MISC_DVFSCTL3_RG_CNT_PHY_ST_DELAY_BEF_CHG_TO_BCLK    ));
 		#if (CHANNEL_NUM>2)
 		vSetPHY2ChannelMapping(p, CHANNEL_D);
-		mcSHOW_DBG_MSG(("MCP Enable leading 2ch's sync singles should adjust delay margin."));
+		msg("MCP Enable leading 2ch's sync singles should adjust delay margin.");
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL	 )	, P_Fld((REF_104M_EN==1)?6:4, MISC_DVFSCTL_R_DVFS_PICG_MARGIN_NEW		 ));
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL3	)	, P_Fld(   9				, MISC_DVFSCTL3_RG_CNT_PHY_ST_DELAY_BEF_CHG_TO_BCLK    ));
 		#endif
@@ -957,7 +957,7 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
 	#endif
 	vSetPHY2ChannelMapping(p, CHANNEL_A);
 	DramcBroadcastOnOff(DRAMC_BROADCAST_ON);
-	mcSHOW_DBG_MSG(("Exit from	DVFS_PRE_config <<<<< \n"));
+	msg("Exit from	DVFS_PRE_config <<<<< \n");
 }
 
 void DIG_STATIC_SETTING(DRAMC_CTX_T *p)

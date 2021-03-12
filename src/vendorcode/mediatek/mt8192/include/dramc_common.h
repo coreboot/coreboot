@@ -45,47 +45,49 @@
 /**********************************************/
 /* Priority of debug log                      */
 /*--------------------------------------------*/
-/* mcSHOW_DBG_MSG: High                       */
-/* mcSHOW_DBG_MSG2: Medium High               */
-/* mcSHOW_DBG_MSG3: Medium Low                */
-/* mcSHOW_DBG_MSG4: Low                       */
+/* msg: High                       */
+/* msg2: Medium High               */
+/* msg3: Medium Low                */
+/* msg4: Low                       */
 /**********************************************/
 
 #define CALIBRATION_LOG		1
 
 #if CALIBRATION_LOG
-#define mcSHOW_DBG_MSG(_x_)	{print _x_;}
-#define mcSHOW_DBG_MSG2(_x_)	//{print _x_;}
-#define mcSHOW_ERR_MSG(_x_) 	{print _x_;}
+#define msg(_x_...)	{ print(_x_); }
+#define msg2(_x_...)	// { print(_x_); }
+#define err(_x_...) 	{ print(_x_); }
 #else
-#define mcSHOW_DBG_MSG(_x_)
-#define mcSHOW_DBG_MSG2(_x_)
-#define mcSHOW_ERR_MSG(_x_)
+#define msg(_x_...)
+#define msg2(_x_...)
+#define err(_x_...)
 #endif
 
-#define mcSHOW_DBG_MSG3(_x_) // {print _x_;}
-#define mcSHOW_DBG_MSG4(_x_)
-#define mcSHOW_DBG_MSG5(_x_)
-#define mcSHOW_JV_LOG_MSG(_x_)
+#define info(_x_...) msg(_x_)
+
+#define msg3(_x_...) // { print(_x_); }
+#define msg4(_x_...)
+#define msg5(_x_...)
+#define jv_msg(_x_...)
 #if EYESCAN_LOG
-#define mcSHOW_EYESCAN_MSG(_x_) {print _x_;}
+#define eye_msg(_x_...) { print(_x_); }
 #else
-#define mcSHOW_EYESCAN_MSG(_x_) //{print _x_;}
+#define eye_msg(_x_...) //{ print(_x_); }
 #endif
-#define mcSHOW_DBG_MSG5(_x_)
-#define mcSHOW_TIME_MSG(_x_)
-#define mcDUMP_REG_MSG(_x_)
-#define mcFPRINTF(_x_)
+
+#define time_msg(_x_...)
+#define reg_msg(_x_...)
+#define mcFPRINTF(_x_...)
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x)    (sizeof (x) / sizeof (x[0]))
 #endif
 
 #define enter_function() \
-	({mcSHOW_DBG_MSG(("enter %s\n", __FUNCTION__));})
+	( { msg("enter %s\n", __FUNCTION__); } )
 
 #define exit_function() \
-	({mcSHOW_DBG_MSG(("exit %s\n", __FUNCTION__));})
+	( { msg("exit %s\n", __FUNCTION__); } )
 
 extern int dump_log;
 #endif   // _DRAMC_COMMON_H_

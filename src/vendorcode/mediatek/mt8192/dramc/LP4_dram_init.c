@@ -8,7 +8,7 @@ void CKE_FIX_ON(DRAMC_CTX_T *p, U8 EN, U8 rank)
 	{
 		case 0 : vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL), P_Fld(EN, CKECTRL_CKEFIXON));  break;
 		case 1 : vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL), P_Fld(EN, CKECTRL_CKE1FIXON)); break;
-		default: mcSHOW_DBG_MSG(("ERROR: CKE FIX ON error. Unexpected Rank	\n"));
+		default: msg("ERROR: CKE FIX ON error. Unexpected Rank	\n");
 	}
 }
 //[SV] task LP4_MRS(bit [7:0] reg_addr, bit[7:0] reg_op, bit[1:0] rank);
@@ -16,7 +16,7 @@ static void LP4_MRS(DRAMC_CTX_T *p, U16 reg_addr, U8 reg_op, U8 rank)
 {
 	U8 temp_MRS_RESPONSE  ;
 
-	mcSHOW_DBG_MSG(("[LP4_DRAM_INIT_MRS] RK:%1d-MA:%2d-OP:0x%2x @Channle:%1d\n",rank,reg_addr,reg_op,vGetPHY2ChannelMapping(p)));
+	msg("[LP4_DRAM_INIT_MRS] RK:%1d-MA:%2d-OP:0x%2x @Channle:%1d\n",rank,reg_addr,reg_op,vGetPHY2ChannelMapping(p));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), P_Fld(rank , SWCMD_CTRL0_MRSRK	   ) \
 															| P_Fld(reg_addr, SWCMD_CTRL0_MRSMA    ) \
 															| P_Fld(reg_op	, SWCMD_CTRL0_MRSOP    ));
@@ -91,7 +91,7 @@ static void lp4_dram_init_single_rank(DRAMC_CTX_T *p,LP4_DRAM_CONFIG_T *tr,U8 ra
 	DramcZQCalibration(p, rank); //ZQ calobration should be done before CBT calibration by switching to low frequency
 	#endif
 
-	mcSHOW_DBG_MSG(("[LP4_DRAM_INIT] Channle:%1d-Rank:%1d >>>>>>\n",vGetPHY2ChannelMapping(p),rank));
+	msg("[LP4_DRAM_INIT] Channle:%1d-Rank:%1d >>>>>>\n",vGetPHY2ChannelMapping(p),rank);
 
 	//first FSP
 	if(tr->WORK_FSP == 0) {LP4_FSP_WR_or_OP(p, 0, 1, rank);}
@@ -130,12 +130,12 @@ static void lp4_dram_init_single_rank(DRAMC_CTX_T *p,LP4_DRAM_CONFIG_T *tr,U8 ra
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ7)	  , P_Fld( 1	   , B0_DQ7_RG_TX_ARDQS0B_PULL_DN_B0_LP4Y	 ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ7)	  , P_Fld( 1	   , B1_DQ7_RG_TX_ARDQS0B_PULL_DN_B1_LP4Y	 ));
 
-	mcSHOW_DBG_MSG(("[LP4_DRAM_INIT] Channle:%1d-Rank:%1d <<<<<<\n",vGetPHY2ChannelMapping(p),rank));
+	msg("[LP4_DRAM_INIT] Channle:%1d-Rank:%1d <<<<<<\n",vGetPHY2ChannelMapping(p),rank);
 }
 
 void LP4_single_end_DRAMC_post_config(DRAMC_CTX_T *p, U8 LP4Y_EN)
 {
-	mcSHOW_DBG_MSG(("============ LP4 DIFF to SE enter ============\n"));
+	msg("============ LP4 DIFF to SE enter ============\n");
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD13), P_Fld( LP4Y_EN , SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_SEL_CA ) \
 															  | P_Fld( LP4Y_EN		 , SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_EN_CA  ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ13) , P_Fld( LP4Y_EN , SHU_B0_DQ13_RG_TX_ARDQSB_OE_TIE_SEL_B0  ) \
@@ -160,7 +160,7 @@ void LP4_single_end_DRAMC_post_config(DRAMC_CTX_T *p, U8 LP4Y_EN)
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ7)	  , P_Fld( 1 , B0_DQ7_RG_TX_ARDQS0B_PULL_DN_B0_LP4Y    ));
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ7)	  , P_Fld( 1 , B1_DQ7_RG_TX_ARDQS0B_PULL_DN_B1_LP4Y    ));
 #endif
-	mcSHOW_DBG_MSG(("============ LP4 DIFF to SE exit  ============\n"));
+	msg("============ LP4 DIFF to SE exit  ============\n");
 }
 
 void LP4_DRAM_INIT(DRAMC_CTX_T *p)

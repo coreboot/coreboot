@@ -8,7 +8,7 @@
 
 #define print_svarg(arg) \
 ({ \
-	mcSHOW_DBG_MSG((TOSTRING(arg) "=0x%x\n", psra->arg)); \
+	msg(TOSTRING(arg) "=0x%x\n", psra->arg); \
 })
 
 /*

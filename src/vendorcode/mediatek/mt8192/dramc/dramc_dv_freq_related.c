@@ -32,16 +32,16 @@ void CInit_ConfigFromTBA(void)
 	TbaConfig.DBI_R_onoff_FSP1	= 0;
 	TbaConfig.frequency 		= 1600;
 	TbaConfig.voltage_state 	= 3;
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: dramc_dram_ratio  = %1d\n", TbaConfig.dramc_dram_ratio));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: channel		   = %1d\n", TbaConfig.channel));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: dram_type		   = %1d\n", TbaConfig.dram_type));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: shu_type		   = %1d\n", TbaConfig.shu_type));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: dram_cbt_mode_RK0 = %1d\n", TbaConfig.dram_cbt_mode_RK0));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: dram_cbt_mode_RK1 = %1d\n", TbaConfig.dram_cbt_mode_RK1));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: DBI_R_onoff_FSP0  = %1d\n", TbaConfig.DBI_R_onoff_FSP0));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: DBI_R_onoff_FSP1  = %1d\n", TbaConfig.DBI_R_onoff_FSP1));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: frequency		   = %1d\n", TbaConfig.frequency));
-	mcSHOW_DBG_MSG(("[TBA_CTX_T] Global: voltage_state	   = %1d\n", TbaConfig.voltage_state));
+	msg("[TBA_CTX_T] Global: dramc_dram_ratio  = %1d\n", TbaConfig.dramc_dram_ratio);
+	msg("[TBA_CTX_T] Global: channel		   = %1d\n", TbaConfig.channel);
+	msg("[TBA_CTX_T] Global: dram_type		   = %1d\n", TbaConfig.dram_type);
+	msg("[TBA_CTX_T] Global: shu_type		   = %1d\n", TbaConfig.shu_type);
+	msg("[TBA_CTX_T] Global: dram_cbt_mode_RK0 = %1d\n", TbaConfig.dram_cbt_mode_RK0);
+	msg("[TBA_CTX_T] Global: dram_cbt_mode_RK1 = %1d\n", TbaConfig.dram_cbt_mode_RK1);
+	msg("[TBA_CTX_T] Global: DBI_R_onoff_FSP0  = %1d\n", TbaConfig.DBI_R_onoff_FSP0);
+	msg("[TBA_CTX_T] Global: DBI_R_onoff_FSP1  = %1d\n", TbaConfig.DBI_R_onoff_FSP1);
+	msg("[TBA_CTX_T] Global: frequency		   = %1d\n", TbaConfig.frequency);
+	msg("[TBA_CTX_T] Global: voltage_state	   = %1d\n", TbaConfig.voltage_state);
 
 
 	TbaEnvConfig.TMRRI_way			   = 1;
@@ -62,27 +62,27 @@ void CInit_ConfigFromTBA(void)
 	TbaEnvConfig.WPST1P5T_OPT		   = 1;
 	TbaEnvConfig.TXP_WORKAROUND_OPT    = 0;
 	TbaEnvConfig.DLL_IDLE_MODE		   = 1;
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: TMRRI_way 			= %1d\n", TbaEnvConfig.TMRRI_way));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: RUNTIMEMRR_way		= %1d\n", TbaEnvConfig.RUNTIMEMRR_way));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: PICG_MODE 			= %1d\n", TbaEnvConfig.PICG_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: LP_NEW8X_SEQ_MODE 	= %1d\n", TbaEnvConfig.LP_NEW8X_SEQ_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: DDR400_OPEN_LOOP_MODE = %1d\n", TbaEnvConfig.DDR400_OPEN_LOOP_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: RXTRACK_PBYTE_OPT 	= %1d\n", TbaEnvConfig.RXTRACK_PBYTE_OPT));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: RG_SPM_MODE			= %1d\n", TbaEnvConfig.RG_SPM_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: TX_OE_EXT_OPT 		= %1d\n", TbaEnvConfig.TX_OE_EXT_OPT));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: PLL_MODE_OPTION		= %1d\n", TbaEnvConfig.PLL_MODE_OPTION));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: TREFBWIG_IGNORE		= %1d\n", TbaEnvConfig.TREFBWIG_IGNORE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: SHUFFLE_LVL_MODE		= %1d\n", TbaEnvConfig.SHUFFLE_LVL_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: SELPH_MODE			= %1d\n", TbaEnvConfig.SELPH_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: TRACK_UP_MODE 		= %1d\n", TbaEnvConfig.TRACK_UP_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: VALID_LAT_VALUE		= %1d\n", TbaEnvConfig.VALID_LAT_VALUE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: NEW_RANK_MODE 		= %1d\n", TbaEnvConfig.NEW_RANK_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: WPST1P5T_OPT			= %1d\n", TbaEnvConfig.WPST1P5T_OPT));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: TXP_WORKAROUND_OPT	= %1d\n", TbaEnvConfig.TXP_WORKAROUND_OPT));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_config_T] Global: DLL_IDLE_MODE 		= %1d\n", TbaEnvConfig.DLL_IDLE_MODE));
+	msg("[TBA_dramc_env_config_T] Global: TMRRI_way 			= %1d\n", TbaEnvConfig.TMRRI_way);
+	msg("[TBA_dramc_env_config_T] Global: RUNTIMEMRR_way		= %1d\n", TbaEnvConfig.RUNTIMEMRR_way);
+	msg("[TBA_dramc_env_config_T] Global: PICG_MODE 			= %1d\n", TbaEnvConfig.PICG_MODE);
+	msg("[TBA_dramc_env_config_T] Global: LP_NEW8X_SEQ_MODE 	= %1d\n", TbaEnvConfig.LP_NEW8X_SEQ_MODE);
+	msg("[TBA_dramc_env_config_T] Global: DDR400_OPEN_LOOP_MODE = %1d\n", TbaEnvConfig.DDR400_OPEN_LOOP_MODE);
+	msg("[TBA_dramc_env_config_T] Global: RXTRACK_PBYTE_OPT 	= %1d\n", TbaEnvConfig.RXTRACK_PBYTE_OPT);
+	msg("[TBA_dramc_env_config_T] Global: RG_SPM_MODE			= %1d\n", TbaEnvConfig.RG_SPM_MODE);
+	msg("[TBA_dramc_env_config_T] Global: TX_OE_EXT_OPT 		= %1d\n", TbaEnvConfig.TX_OE_EXT_OPT);
+	msg("[TBA_dramc_env_config_T] Global: PLL_MODE_OPTION		= %1d\n", TbaEnvConfig.PLL_MODE_OPTION);
+	msg("[TBA_dramc_env_config_T] Global: TREFBWIG_IGNORE		= %1d\n", TbaEnvConfig.TREFBWIG_IGNORE);
+	msg("[TBA_dramc_env_config_T] Global: SHUFFLE_LVL_MODE		= %1d\n", TbaEnvConfig.SHUFFLE_LVL_MODE);
+	msg("[TBA_dramc_env_config_T] Global: SELPH_MODE			= %1d\n", TbaEnvConfig.SELPH_MODE);
+	msg("[TBA_dramc_env_config_T] Global: TRACK_UP_MODE 		= %1d\n", TbaEnvConfig.TRACK_UP_MODE);
+	msg("[TBA_dramc_env_config_T] Global: VALID_LAT_VALUE		= %1d\n", TbaEnvConfig.VALID_LAT_VALUE);
+	msg("[TBA_dramc_env_config_T] Global: NEW_RANK_MODE 		= %1d\n", TbaEnvConfig.NEW_RANK_MODE);
+	msg("[TBA_dramc_env_config_T] Global: WPST1P5T_OPT			= %1d\n", TbaEnvConfig.WPST1P5T_OPT);
+	msg("[TBA_dramc_env_config_T] Global: TXP_WORKAROUND_OPT	= %1d\n", TbaEnvConfig.TXP_WORKAROUND_OPT);
+	msg("[TBA_dramc_env_config_T] Global: DLL_IDLE_MODE 		= %1d\n", TbaEnvConfig.DLL_IDLE_MODE);
 
 	TBA_Build_Def.DQSG_TRACK_on = 1;
-	mcSHOW_DBG_MSG(("[TBA_build_def_T] Global: DQSG_TRACK_on = %1d\n", TBA_Build_Def.DQSG_TRACK_on));
+	msg("[TBA_build_def_T] Global: DQSG_TRACK_on = %1d\n", TBA_Build_Def.DQSG_TRACK_on);
 
 
 	TbaEnvDVFSCfg.group_num 			= 2;
@@ -93,14 +93,14 @@ void CInit_ConfigFromTBA(void)
 	TbaEnvDVFSCfg.DQSIEN_MODE			= 1;
 	TbaEnvDVFSCfg.freq_group_map_0		= 2;
 	TbaEnvDVFSCfg.freq_group_map_1		= 6;
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: group_num		= %1d\n", TbaEnvDVFSCfg.group_num));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: LP5BGOTF 		= %1d\n", TbaEnvDVFSCfg.LP5BGOTF));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: LP5BGEN			= %1d\n", TbaEnvDVFSCfg.LP5BGEN));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: CAS_MODE 		= %1d\n", TbaEnvDVFSCfg.CAS_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: LP5_RDQS_SE_EN	= %1d\n", TbaEnvDVFSCfg.LP5_RDQS_SE_EN));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: DQSIEN_MODE		= %1d\n", TbaEnvDVFSCfg.DQSIEN_MODE));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: freq_group_map_0 = %1d\n", TbaEnvDVFSCfg.freq_group_map_0));
-	mcSHOW_DBG_MSG(("[TBA_dramc_env_dvfs_config_T] Global: freq_group_map_1 = %1d\n", TbaEnvDVFSCfg.freq_group_map_1));
+	msg("[TBA_dramc_env_dvfs_config_T] Global: group_num		= %1d\n", TbaEnvDVFSCfg.group_num);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: LP5BGOTF 		= %1d\n", TbaEnvDVFSCfg.LP5BGOTF);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: LP5BGEN			= %1d\n", TbaEnvDVFSCfg.LP5BGEN);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: CAS_MODE 		= %1d\n", TbaEnvDVFSCfg.CAS_MODE);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: LP5_RDQS_SE_EN	= %1d\n", TbaEnvDVFSCfg.LP5_RDQS_SE_EN);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: DQSIEN_MODE		= %1d\n", TbaEnvDVFSCfg.DQSIEN_MODE);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: freq_group_map_0 = %1d\n", TbaEnvDVFSCfg.freq_group_map_0);
+	msg("[TBA_dramc_env_dvfs_config_T] Global: freq_group_map_1 = %1d\n", TbaEnvDVFSCfg.freq_group_map_1);
 
 
 	TbaEnvHwFuncCfg.HW_MR4_OPTION_RANDOM			 = 1;
@@ -118,21 +118,21 @@ void CInit_ConfigFromTBA(void)
 	TbaEnvHwFuncCfg.DQSG_RUNTIME_DEBUG_EN			 = 1;
 	TbaEnvHwFuncCfg.RDSEL_TRACK_EN					 = 0;
 	TbaEnvHwFuncCfg.DQSG_TRACK_EN					 = 0;
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_MR4_OPTION_RANDOM			   = %1d\n", TbaEnvHwFuncCfg.HW_MR4_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_DMYRD_OPTION_RANDOM		   = %1d\n", TbaEnvHwFuncCfg.HW_DMYRD_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_DQSOSC_OPTION_RANDOM		   = %1d\n", TbaEnvHwFuncCfg.HW_DQSOSC_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_ZQ_OPTION_RANDOM			   = %1d\n", TbaEnvHwFuncCfg.HW_ZQ_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: RX_INPUT_TRACK_OPTION_RANDOM	   = %1d\n", TbaEnvHwFuncCfg.RX_INPUT_TRACK_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: DQSG_RUNTIME_DEBUG_OPTION_RANDOM = %1d\n", TbaEnvHwFuncCfg.DQSG_RUNTIME_DEBUG_OPTION_RANDOM));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_MR4_EN 					   = %1d\n", TbaEnvHwFuncCfg.HW_MR4_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_DMYRD_EN					   = %1d\n", TbaEnvHwFuncCfg.HW_DMYRD_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_DQSOSC_EN					   = %1d\n", TbaEnvHwFuncCfg.HW_DQSOSC_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: HW_ZQ_EN						   = %1d\n", TbaEnvHwFuncCfg.HW_ZQ_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: DQSG_RETRY_EN 				   = %1d\n", TbaEnvHwFuncCfg.DQSG_RETRY_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: RX_INPUT_TRACK_EN 			   = %1d\n", TbaEnvHwFuncCfg.RX_INPUT_TRACK_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: DQSG_RUNTIME_DEBUG_EN 		   = %1d\n", TbaEnvHwFuncCfg.DQSG_RUNTIME_DEBUG_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: RDSEL_TRACK_EN				   = %1d\n", TbaEnvHwFuncCfg.RDSEL_TRACK_EN));
-	mcSHOW_DBG_MSG(("[dramc_env_hw_func_config_T] Global: DQSG_TRACK_EN 				   = %1d\n", TbaEnvHwFuncCfg.DQSG_TRACK_EN));
+	msg("[dramc_env_hw_func_config_T] Global: HW_MR4_OPTION_RANDOM			   = %1d\n", TbaEnvHwFuncCfg.HW_MR4_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: HW_DMYRD_OPTION_RANDOM		   = %1d\n", TbaEnvHwFuncCfg.HW_DMYRD_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: HW_DQSOSC_OPTION_RANDOM		   = %1d\n", TbaEnvHwFuncCfg.HW_DQSOSC_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: HW_ZQ_OPTION_RANDOM			   = %1d\n", TbaEnvHwFuncCfg.HW_ZQ_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: RX_INPUT_TRACK_OPTION_RANDOM	   = %1d\n", TbaEnvHwFuncCfg.RX_INPUT_TRACK_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: DQSG_RUNTIME_DEBUG_OPTION_RANDOM = %1d\n", TbaEnvHwFuncCfg.DQSG_RUNTIME_DEBUG_OPTION_RANDOM);
+	msg("[dramc_env_hw_func_config_T] Global: HW_MR4_EN 					   = %1d\n", TbaEnvHwFuncCfg.HW_MR4_EN);
+	msg("[dramc_env_hw_func_config_T] Global: HW_DMYRD_EN					   = %1d\n", TbaEnvHwFuncCfg.HW_DMYRD_EN);
+	msg("[dramc_env_hw_func_config_T] Global: HW_DQSOSC_EN					   = %1d\n", TbaEnvHwFuncCfg.HW_DQSOSC_EN);
+	msg("[dramc_env_hw_func_config_T] Global: HW_ZQ_EN						   = %1d\n", TbaEnvHwFuncCfg.HW_ZQ_EN);
+	msg("[dramc_env_hw_func_config_T] Global: DQSG_RETRY_EN 				   = %1d\n", TbaEnvHwFuncCfg.DQSG_RETRY_EN);
+	msg("[dramc_env_hw_func_config_T] Global: RX_INPUT_TRACK_EN 			   = %1d\n", TbaEnvHwFuncCfg.RX_INPUT_TRACK_EN);
+	msg("[dramc_env_hw_func_config_T] Global: DQSG_RUNTIME_DEBUG_EN 		   = %1d\n", TbaEnvHwFuncCfg.DQSG_RUNTIME_DEBUG_EN);
+	msg("[dramc_env_hw_func_config_T] Global: RDSEL_TRACK_EN				   = %1d\n", TbaEnvHwFuncCfg.RDSEL_TRACK_EN);
+	msg("[dramc_env_hw_func_config_T] Global: DQSG_TRACK_EN 				   = %1d\n", TbaEnvHwFuncCfg.DQSG_TRACK_EN);
 
 
 	TbaTestListDef.RandDefaultData_on	   = 1;
@@ -145,15 +145,15 @@ void CInit_ConfigFromTBA(void)
 	TbaTestListDef.LP45_COMBO_APHY_EN	   = 1;
 	TbaTestListDef.LPDDR5_EN			   = 0;
 	TbaTestListDef.LP3_4_PINMUX_EN		   = 0;
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: RandDefaultData_on	  = %1d\n", TbaTestListDef.RandDefaultData_on));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: DQS2DQ_TRACK_on		  = %1d\n", TbaTestListDef.DQS2DQ_TRACK_on));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: LPDDR4_EN 			  = %1d\n", TbaTestListDef.LPDDR4_EN));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: ESL_LOG_GEN			  = %1d\n", TbaTestListDef.ESL_LOG_GEN));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: LP4_X8_on 			  = %1d\n", TbaTestListDef.LP4_X8_on));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: INCLUDE_LP45_COMBO_APHY = %1d\n", TbaTestListDef.INCLUDE_LP45_COMBO_APHY));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: LP45_COMBO_APHY_EN	  = %1d\n", TbaTestListDef.LP45_COMBO_APHY_EN));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: LPDDR5_EN 			  = %1d\n", TbaTestListDef.LPDDR5_EN));
-	mcSHOW_DBG_MSG(("[TBA_TestList_Def_T] Global: LP3_4_PINMUX_EN		  = %1d\n", TbaTestListDef.LP3_4_PINMUX_EN));
+	msg("[TBA_TestList_Def_T] Global: RandDefaultData_on	  = %1d\n", TbaTestListDef.RandDefaultData_on);
+	msg("[TBA_TestList_Def_T] Global: DQS2DQ_TRACK_on		  = %1d\n", TbaTestListDef.DQS2DQ_TRACK_on);
+	msg("[TBA_TestList_Def_T] Global: LPDDR4_EN 			  = %1d\n", TbaTestListDef.LPDDR4_EN);
+	msg("[TBA_TestList_Def_T] Global: ESL_LOG_GEN			  = %1d\n", TbaTestListDef.ESL_LOG_GEN);
+	msg("[TBA_TestList_Def_T] Global: LP4_X8_on 			  = %1d\n", TbaTestListDef.LP4_X8_on);
+	msg("[TBA_TestList_Def_T] Global: INCLUDE_LP45_COMBO_APHY = %1d\n", TbaTestListDef.INCLUDE_LP45_COMBO_APHY);
+	msg("[TBA_TestList_Def_T] Global: LP45_COMBO_APHY_EN	  = %1d\n", TbaTestListDef.LP45_COMBO_APHY_EN);
+	msg("[TBA_TestList_Def_T] Global: LPDDR5_EN 			  = %1d\n", TbaTestListDef.LPDDR5_EN);
+	msg("[TBA_TestList_Def_T] Global: LP3_4_PINMUX_EN		  = %1d\n", TbaTestListDef.LP3_4_PINMUX_EN);
 
 
 
@@ -197,45 +197,45 @@ void CInit_ConfigFromTBA(void)
 	TbaDramcBenchConfig.chb_pinmux_anti_order_14 = 14;
 	TbaDramcBenchConfig.chb_pinmux_anti_order_15 = 15;
 
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: rank_swap				  = %1d\n", TbaDramcBenchConfig.rank_swap));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: new_uP_spm_mode		  = %1d\n", TbaDramcBenchConfig.new_uP_spm_mode));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: LP_MTCMOS_CONTROL_SEL	  = %1d\n", TbaDramcBenchConfig.LP_MTCMOS_CONTROL_SEL));
+	msg("[TBA_dramc_bench_T] Global: rank_swap				  = %1d\n", TbaDramcBenchConfig.rank_swap);
+	msg("[TBA_dramc_bench_T] Global: new_uP_spm_mode		  = %1d\n", TbaDramcBenchConfig.new_uP_spm_mode);
+	msg("[TBA_dramc_bench_T] Global: LP_MTCMOS_CONTROL_SEL	  = %1d\n", TbaDramcBenchConfig.LP_MTCMOS_CONTROL_SEL);
 	// CHA, BYTE 0
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_0  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_0));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_1  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_1));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_2  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_2));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_3  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_3));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_4  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_4));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_5  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_5));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_6  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_6));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_7  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_7));
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_0  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_0);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_1  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_1);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_2  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_2);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_3  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_3);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_4  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_4);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_5  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_5);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_6  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_6);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_7  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_7);
 	// CHA BYTE 1
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_8  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_8));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_9  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_9));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_10 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_10));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_11 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_11));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_12 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_12));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_13 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_13));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_14 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_14));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_15 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_15));
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_8  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_8);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_9  = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_9);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_10 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_10);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_11 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_11);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_12 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_12);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_13 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_13);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_14 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_14);
+	msg("[TBA_dramc_bench_T] Global: cha_pinmux_anti_order_15 = %1d\n", TbaDramcBenchConfig.cha_pinmux_anti_order_15);
 	// CHB, BYTE 0
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_0  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_0));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_1  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_1));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_2  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_2));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_3  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_3));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_4  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_4));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_5  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_5));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_6  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_6));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_7  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_7));
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_0  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_0);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_1  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_1);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_2  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_2);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_3  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_3);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_4  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_4);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_5  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_5);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_6  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_6);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_7  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_7);
 	// CHB, BYTE 1
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_8  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_8));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_9  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_9));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_10 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_10));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_11 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_11));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_12 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_12));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_13 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_13));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_14 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_14));
-	mcSHOW_DBG_MSG(("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_15 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_15));
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_8  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_8);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_9  = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_9);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_10 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_10);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_11 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_11);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_12 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_12);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_13 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_13);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_14 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_14);
+	msg("[TBA_dramc_bench_T] Global: chb_pinmux_anti_order_15 = %1d\n", TbaDramcBenchConfig.chb_pinmux_anti_order_15);
 
 }
 #endif
@@ -391,8 +391,8 @@ void Apply_LP4_1600_Calibraton_Result(DRAMC_CTX_T *p)
 											P_Fld((U32)0x46, SHU_R0_B1_RXDLY0_RX_ARDQ0_R_DLY_B1) |
 											P_Fld((U32)0x46, SHU_R0_B1_RXDLY0_RX_ARDQ1_R_DLY_B1));
 
-			//mcSHOW_DBG_MSG(("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
-			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly));
+			//msg("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
+			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly);
 		}
 
 		{
@@ -656,8 +656,8 @@ void Apply_LP4_4266_Calibraton_Result(DRAMC_CTX_T *p)
 											P_Fld((U32)pRxB1DQ[u1BitIdx], SHU_R0_B1_RXDLY0_RX_ARDQ0_R_DLY_B1) |
 											P_Fld((U32)pRxB1DQ[u1BitIdx+1], SHU_R0_B1_RXDLY0_RX_ARDQ1_R_DLY_B1));
 
-			//mcSHOW_DBG_MSG(("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
-			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly));
+			//msg("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
+			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly);
 		}
 
 		{
@@ -903,8 +903,8 @@ void Apply_LP4_1600_Calibraton_Result(DRAMC_CTX_T *p)//simulation
 											P_Fld((U32)0x0, SHU_R0_B1_RXDLY0_RX_ARDQ0_R_DLY_B1) |
 											P_Fld((U32)0x0, SHU_R0_B1_RXDLY0_RX_ARDQ1_R_DLY_B1));
 
-			//mcSHOW_DBG_MSG(("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
-			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly));
+			//msg("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
+			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly);
 		}
 
 		{
@@ -1116,8 +1116,8 @@ void Apply_LP4_4266_Calibraton_Result(DRAMC_CTX_T *p)//simulation
 											P_Fld((U32)pRxB1DQ[u1BitIdx], SHU_R0_B1_RXDLY0_RX_ARDQ0_R_DLY_B1) |
 											P_Fld((U32)pRxB1DQ[u1BitIdx+1], SHU_R0_B1_RXDLY0_RX_ARDQ1_R_DLY_B1));
 
-			//mcSHOW_DBG_MSG(("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
-			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly));
+			//msg("u1BitId %d  Addr 0x%2x = %2d %2d %2d %2d \n", u1BitIdx, DDRPHY_RXDQ1+u1BitIdx*2,
+			//				  FinalWinPerBit[u1BitIdx].best_dqdly, FinalWinPerBit[u1BitIdx+1].best_dqdly,  FinalWinPerBit[u1BitIdx+8].best_dqdly, FinalWinPerBit[u1BitIdx+9].best_dqdly);
 		}
 
 		{
@@ -8185,8 +8185,8 @@ void TX_Path_Algorithm(DRAMC_CTX_T *p)
 
 	//u1DQ_UI  = WL*DFS_TOP[0].CKR*2 - u1WDBI_EN*(DFS_TOP[0].DQ_P2S_RATIO) + (tDQSS+tDQS2DQ)*1000000/DFS_TOP[0].data_rate;
 
-	mcSHOW_DBG_MSG(("[TX_path_calculate] data rate=%d, WL=%d, DQS_TotalUI=%d\n", DFS_TOP[0].data_rate, WL, u1DQS_TotalUI));
-	mcSHOW_DBG_MSG(("[TX_path_calculate] DQS = (%d,%d) DQS_OE = (%d,%d)\n", u1DQS_MCK, u1DQS_UI, u1DQS_OE_MCK, u1DQS_OE_UI));
+	msg("[TX_path_calculate] data rate=%d, WL=%d, DQS_TotalUI=%d\n", DFS_TOP[0].data_rate, WL, u1DQS_TotalUI);
+	msg("[TX_path_calculate] DQS = (%d,%d) DQS_OE = (%d,%d)\n", u1DQS_MCK, u1DQS_UI, u1DQS_OE_MCK, u1DQS_OE_UI);
 
 	for(u1RandIdx = 0; u1RandIdx < p->support_rank_num; u1RandIdx ++)
 	{

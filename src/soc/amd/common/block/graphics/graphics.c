@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <fsp/graphics.h>
 #include <soc/intel/common/vbt.h>
+#include <timestamp.h>
 
 #define ATIF_FUNCTION_VERIFY_INTERFACE 0x0
 struct atif_verify_interface_output {
@@ -129,6 +130,25 @@ void *vbt_get(void)
 	return NULL;
 }
 
+static void graphics_set_resources(struct device *const dev)
+{
+	struct rom_header *rom, *ram;
+
+	pci_dev_set_resources(dev);
+
+	if (!CONFIG(RUN_FSP_GOP))
+		return;
+
+	timestamp_add_now(TS_OPROM_INITIALIZE);
+	rom = pci_rom_probe(dev);
+	if (rom == NULL)
+		return;
+	ram = pci_rom_load(dev, rom);
+	if (ram == NULL)
+		return;
+	timestamp_add_now(TS_OPROM_COPY_END);
+}
+
 static void graphics_dev_init(struct device *const dev)
 {
 	if (CONFIG(RUN_FSP_GOP)) {
@@ -147,7 +167,7 @@ static void graphics_dev_init(struct device *const dev)
 
 static const struct device_operations graphics_ops = {
 	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
+	.set_resources		= graphics_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= graphics_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
@@ -158,6 +178,7 @@ static const struct device_operations graphics_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_ATI_FAM17H_MODEL18H_GPU,
+	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU,
 	0,
 };
 

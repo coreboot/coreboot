@@ -178,7 +178,7 @@ static struct rom_header *check_initialized(const struct device *dev)
 	struct rom_header *run_rom;
 	struct pci_data *rom_data;
 
-	if (!CONFIG(VGA_ROM_RUN))
+	if (!CONFIG(VGA_ROM_RUN) && !CONFIG(RUN_FSP_GOP))
 		return NULL;
 
 	run_rom = (struct rom_header *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;

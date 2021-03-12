@@ -18,7 +18,7 @@ void copy_spd(struct pei_data *peid)
 	 */
 	switch (spd_index) {
 	case 0: case 1: case 2:
-		memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
+		memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
 		break;
 	case 3: case 4: case 5:
 		peid->dimm_channel1_disabled = 3;

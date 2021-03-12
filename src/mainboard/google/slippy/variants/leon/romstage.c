@@ -19,7 +19,7 @@ void copy_spd(struct pei_data *peid)
 	if (spd_index & 0x4)
 		peid->dimm_channel1_disabled = 3;
 	else
-		memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
+		memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
 }
 
 const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {

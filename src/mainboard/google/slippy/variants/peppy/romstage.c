@@ -24,7 +24,7 @@ void copy_spd(struct pei_data *peid)
 		if (spd_index == 0)
 			peid->dimm_channel1_disabled = 3;
 		else
-			memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
+			memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
 		break;
 
 	case PEPPY_BOARD_VERSION_EVT:
@@ -34,7 +34,7 @@ void copy_spd(struct pei_data *peid)
 		if (spd_index > 3)
 			peid->dimm_channel1_disabled = 3;
 		else
-			memcpy(peid->spd_data[1], peid->spd_data[0], SPD_LEN);
+			memcpy(peid->spd_data[2], peid->spd_data[0], SPD_LEN);
 		break;
 	}
 }

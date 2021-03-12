@@ -227,6 +227,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		for (d_num = 0; d_num < NUM_SLOTS; d_num++) {
 			const u32 dimm_size = ((ch_conf >> (d_num * 8)) & 0xff) * 256;
 			if (dimm_size) {
+				const int index = ch * NUM_SLOTS + d_num;
 				dimm = &mem_info->dimm[dimm_cnt];
 				dimm->dimm_size = dimm_size;
 				dimm->ddr_type = MEMORY_TYPE_DDR3;
@@ -236,14 +237,14 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 				dimm->dimm_num = d_num;
 				dimm->bank_locator = ch * 2;
 				memcpy(dimm->serial,
-					&pei_data->spd_data[dimm_cnt][SPD_DIMM_SERIAL_NUM],
+					&pei_data->spd_data[index][SPD_DIMM_SERIAL_NUM],
 					SPD_DIMM_SERIAL_LEN);
 				memcpy(dimm->module_part_number,
-					&pei_data->spd_data[dimm_cnt][SPD_DIMM_PART_NUM],
+					&pei_data->spd_data[index][SPD_DIMM_PART_NUM],
 					SPD_DIMM_PART_LEN);
 				dimm->mod_id =
-					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID2] << 8) |
-					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID1] & 0xff);
+					(pei_data->spd_data[index][SPD_DIMM_MOD_ID2] << 8) |
+					(pei_data->spd_data[index][SPD_DIMM_MOD_ID1] & 0xff);
 				dimm->mod_type = SPD_SODIMM;
 				dimm->bus_width = MEMORY_BUS_WIDTH_64;
 				dimm_cnt++;

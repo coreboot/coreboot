@@ -4586,6 +4586,7 @@ static void rxdqs_gating_fastk_save_restore(DRAMC_CTX_T *p,
 					best_win->best_dqsien_dly_ui_p1[dqs_i] / ui_per_mck;
 				best_win->best_dqsien_dly_ui_p1[dqs_i] =
 					best_win->best_dqsien_dly_ui_p1[dqs_i] % ui_per_mck;
+				best_win->best_dqsien_dly_pi_p1[dqs_i] = best_win->best_dqsien_dly_pi[dqs_i];
 
 				vSetCalibrationResult(p, DRAM_CALIBRATION_GATING, DRAM_FAST_K);
 

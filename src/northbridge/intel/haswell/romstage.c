@@ -56,7 +56,7 @@ void mainboard_romstage_entry(void)
 		.epbar			= CONFIG_FIXED_EPBAR_MMIO_BASE,
 		.pciexbar		= CONFIG_MMCONF_BASE_ADDRESS,
 		.smbusbar		= CONFIG_FIXED_SMBUS_IO_BASE,
-		.hpet_address		= HPET_ADDR,
+		.hpet_address		= CONFIG_HPET_ADDRESS,
 		.rcba			= CONFIG_FIXED_RCBA_MMIO_BASE,
 		.pmbase			= DEFAULT_PMBASE,
 		.gpiobase		= DEFAULT_GPIOBASE,

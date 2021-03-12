@@ -63,8 +63,6 @@
 #define DEFAULT_GPIOSIZE	0x80
 #endif
 
-#define HPET_ADDR		0xfed00000
-
 #include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__

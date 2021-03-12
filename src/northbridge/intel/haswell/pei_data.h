@@ -10,30 +10,30 @@ typedef void (*tx_byte_func)(unsigned char byte);
 
 #define SPD_LEN 256
 
-#define USB_OC_PIN_SKIP 8
+#define PEI_USB_OC_PIN_SKIP 8
 
-enum usb2_port_location {
-	USB_PORT_BACK_PANEL = 0,
-	USB_PORT_FRONT_PANEL,
-	USB_PORT_DOCK,
-	USB_PORT_MINI_PCIE,
-	USB_PORT_FLEX,
-	USB_PORT_INTERNAL,
-	USB_PORT_SKIP
+enum pei_usb2_port_location {
+	PEI_USB_PORT_BACK_PANEL = 0,
+	PEI_USB_PORT_FRONT_PANEL,
+	PEI_USB_PORT_DOCK,
+	PEI_USB_PORT_MINI_PCIE,
+	PEI_USB_PORT_FLEX,
+	PEI_USB_PORT_INTERNAL,
+	PEI_USB_PORT_SKIP
 };
 
 /* Usb Port Length:
  * [16:4] = length in inches in octal format
  * [3:0]  = decimal point
  */
-struct usb2_port_setting {
+struct pei_usb2_port_setting {
 	uint16_t length;
 	uint8_t enable;
 	uint8_t over_current_pin;
 	uint8_t location;
 } __packed;
 
-struct usb3_port_setting {
+struct pei_usb3_port_setting {
 	uint8_t enable;
 	uint8_t over_current_pin;
 } __packed;
@@ -80,8 +80,8 @@ struct pei_data
 	uint32_t max_ddr3_freq;
 	/* Route all USB ports to XHCI controller in resume path */
 	int usb_xhci_on_resume;
-	struct usb2_port_setting usb2_ports[16];
-	struct usb3_port_setting usb3_ports[16];
+	struct pei_usb2_port_setting usb2_ports[16];
+	struct pei_usb3_port_setting usb3_ports[16];
 	uint8_t spd_data[4][SPD_LEN];
 	tx_byte_func tx_byte;
 } __packed;

@@ -309,6 +309,25 @@ static int make_channel_disabled_mask(const struct pei_data *pd, int ch)
 	return (!pd->spd_addresses[ch + ch] << 0) | (!pd->spd_addresses[ch + ch + 1] << 1);
 }
 
+static enum pei_usb2_port_location map_to_pei_usb2_location(const enum usb2_port_location loc)
+{
+	static const enum pei_usb2_port_location map[] = {
+		[USB_PORT_SKIP]		= PEI_USB_PORT_SKIP,
+		[USB_PORT_BACK_PANEL]	= PEI_USB_PORT_BACK_PANEL,
+		[USB_PORT_FRONT_PANEL]	= PEI_USB_PORT_FRONT_PANEL,
+		[USB_PORT_DOCK]		= PEI_USB_PORT_DOCK,
+		[USB_PORT_MINI_PCIE]	= PEI_USB_PORT_MINI_PCIE,
+		[USB_PORT_FLEX]		= PEI_USB_PORT_FLEX,
+		[USB_PORT_INTERNAL]	= PEI_USB_PORT_INTERNAL,
+	};
+	return loc >= ARRAY_SIZE(map) ? PEI_USB_PORT_SKIP : map[loc];
+}
+
+static uint8_t map_to_pei_oc_pin(const uint8_t oc_pin)
+{
+	return oc_pin >= USB_OC_PIN_SKIP ? PEI_USB_OC_PIN_SKIP : oc_pin;
+}
+
 void perform_raminit(const int s3resume)
 {
 	const struct device *gbe = pcidev_on_root(0x19, 0);
@@ -337,8 +356,26 @@ void perform_raminit(const int s3resume)
 		.usb_xhci_on_resume	= cfg->usb_xhci_on_resume,
 	};
 
-	memcpy(pei_data.usb2_ports, mainboard_usb2_ports, sizeof(mainboard_usb2_ports));
-	memcpy(pei_data.usb3_ports, mainboard_usb3_ports, sizeof(mainboard_usb3_ports));
+	for (size_t i = 0; i < ARRAY_SIZE(mainboard_usb2_ports); i++) {
+		/* If a port is not enabled, skip it */
+		if (!mainboard_usb2_ports[i].enable) {
+			pei_data.usb2_ports[i].over_current_pin	= PEI_USB_OC_PIN_SKIP;
+			pei_data.usb2_ports[i].location		= PEI_USB_PORT_SKIP;
+			continue;
+		}
+		const enum usb2_port_location loc = mainboard_usb2_ports[i].location;
+		const uint8_t oc_pin = mainboard_usb2_ports[i].oc_pin;
+		pei_data.usb2_ports[i].length		= mainboard_usb2_ports[i].length;
+		pei_data.usb2_ports[i].enable		= mainboard_usb2_ports[i].enable;
+		pei_data.usb2_ports[i].over_current_pin	= map_to_pei_oc_pin(oc_pin);
+		pei_data.usb2_ports[i].location		= map_to_pei_usb2_location(loc);
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(mainboard_usb3_ports); i++) {
+		const uint8_t oc_pin = mainboard_usb3_ports[i].oc_pin;
+		pei_data.usb3_ports[i].enable		= mainboard_usb3_ports[i].enable;
+		pei_data.usb3_ports[i].over_current_pin	= map_to_pei_oc_pin(oc_pin);
+	}
 
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
 	pei_data.boot_mode = s3resume ? 2 : 0;

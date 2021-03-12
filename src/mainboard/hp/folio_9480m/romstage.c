@@ -23,7 +23,7 @@ void mb_get_spd_map(struct spd_info *spdi)
 	spdi->addresses[2] = 0x52;
 }
 
-const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
+const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */
 	{ 0x0080, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL }, /* dock */
 	{ 0x0040, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL }, /* left, EHCI debug */
@@ -35,7 +35,7 @@ const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	{ 0x0040, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL },
 };
 
-const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
+const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS] = {
 	{ 1, USB_OC_PIN_SKIP }, /* dock */
 	{ 1, USB_OC_PIN_SKIP }, /* left */
 	{ 1, USB_OC_PIN_SKIP }, /* right */

@@ -25,7 +25,7 @@ bool variant_is_dual_channel(const unsigned int spd_index)
 	}
 }
 
-const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
+const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */
 	{ 0x0064, 1, 0,               /* P0: Port A, CN8 */
 	  USB_PORT_BACK_PANEL },
@@ -45,7 +45,7 @@ const struct usb2_port_setting mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	  USB_PORT_INTERNAL },
 };
 
-const struct usb3_port_setting mainboard_usb3_ports[MAX_USB3_PORTS] = {
+const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS] = {
 	/* Enable, OCn# */
 	{ 1, 0               }, /* P1; Port A, CN8 */
 	{ 1, 0               }, /* P2; Port B, CN9  */

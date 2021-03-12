@@ -130,6 +130,31 @@ config HEAP_SIZE
 	hex
 	default 0x10000
 
+# Intel recommends reserving the following resources per PCIe TBT root port,
+# from ADL BIOS Spec (doc #627270) Revision 0.6.0 Section 7.2.5.1.5
+# - 42 buses
+# - 194 MiB Non-prefetchable memory
+# - 448 MiB Prefetchable memory
+config ADL_ENABLE_USB4_PCIE_RESOURCES
+	def_bool n
+	select PCIEXP_HOTPLUG
+
+if ADL_ENABLE_USB4_PCIE_RESOURCES
+
+config PCIEXP_HOTPLUG_BUSES
+	int
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	hex
+	default 0xc200000
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	hex
+	default 0x1c000000
+
+endif # ADL_ENABLE_USB4_PCIE_RESOURCES
+
 config MAX_PCH_ROOT_PORTS
 	int
 	default 10 if SOC_INTEL_ALDERLAKE_PCH_M

@@ -136,11 +136,12 @@ failed:
 static const char *const mca_bank_name[] = {
 	"Load-store unit",
 	"Instruction fetch unit",
-	"Combined unit",
-	"Reserved",
-	"Northbridge",
+	"L2 cache unit",
+	"Decode unit"
+	"",
 	"Execution unit",
-	"Floating point unit"
+	"Floating point unit",
+	"L3 cache unit"
 };
 
 /* Check the Legacy Machine Check Architecture registers */

@@ -102,4 +102,9 @@ chip soc/amd/cezanne
 		device pci 18.6 alias data_fabric_6 on end
 		device pci 18.7 alias data_fabric_7 on end
 	end
+
+	device mmio 0xfedc2000 alias i2c_0 off end
+	device mmio 0xfedc3000 alias i2c_1 off end
+	device mmio 0xfedc4000 alias i2c_2 off end
+	device mmio 0xfedc5000 alias i2c_3 off end
 end

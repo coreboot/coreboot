@@ -162,7 +162,8 @@ void check_mca(void)
 				int core = cpuid_ebx(1) >> 24;
 
 				printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
-						core, i, mca_bank_name[i]);
+				       core, i,
+				       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
 
 				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
 						i, mci.sts.hi, mci.sts.lo);

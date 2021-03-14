@@ -6,14 +6,10 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id;
 
-	if (google_chromeec_cbi_get_sku_id(&sku_id))
-		return NULL;
+	if (google_chromeec_cbi_get_sku_id(&sku_id) || (sku_id != 5))
+		return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 
-	if (sku_id == 5)
-		filename = "wifi_sar-laser.hex";
-
-	return filename;
+	return "wifi_sar-laser.hex";
 }

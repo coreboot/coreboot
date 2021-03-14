@@ -41,6 +41,8 @@ struct wifi_sar_limits {
  */
 int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits);
 
+#define WIFI_SAR_CBFS_DEFAULT_FILENAME	"wifi_sar_defaults.hex"
+
 const char *get_wifi_sar_cbfs_filename(void);
 
 #endif /* _SAR_H_ */

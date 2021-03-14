@@ -5,10 +5,8 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
-
 	if (fw_config_probe(FW_CONFIG(TABLETMODE, TABLETMODE_ENABLED)))
-		filename = "wifi_sar-madoo.hex";
+		return "wifi_sar-madoo.hex";
 
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

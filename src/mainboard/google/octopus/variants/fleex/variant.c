@@ -32,12 +32,10 @@ void variant_smi_sleep(u8 slp_typ)
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
-
 	if (!is_lte_sku())
-		filename = "wifi_sar-fleex.hex";
+		return "wifi_sar-fleex.hex";
 
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 void variant_update_devtree(struct device *dev)

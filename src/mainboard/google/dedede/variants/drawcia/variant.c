@@ -6,12 +6,10 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
-
 	if (fw_config_probe(FW_CONFIG(TABLETMODE, TABLETMODE_ENABLED)))
-		filename = "wifi_sar-drawcia.hex";
+		return "wifi_sar-drawcia.hex";
 
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 const char *mainboard_vbt_filename(void)

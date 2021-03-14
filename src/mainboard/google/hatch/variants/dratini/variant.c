@@ -7,7 +7,6 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
@@ -15,8 +14,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_22_DRAGONAIR:
 	case SKU_23_DRAGONAIR:
 	case SKU_24_DRAGONAIR:
-		filename = "wifi_sar-dragonair.hex";
-		break;
+		return "wifi_sar-dragonair.hex";
 	}
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

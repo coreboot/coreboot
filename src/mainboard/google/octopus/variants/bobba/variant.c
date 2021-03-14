@@ -18,13 +18,12 @@ enum {
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	if (sku_id >= 33 && sku_id <= 44)
-		filename = "wifi_sar-droid.hex";
+		return "wifi_sar-droid.hex";
 
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 void variant_smi_sleep(u8 slp_typ)

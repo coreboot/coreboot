@@ -25,11 +25,10 @@ void variant_update_devtree(struct device *dev)
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = SKU_UNKNOWN;
 
 	sku_id = google_chromeec_get_board_sku();
 	if (sku_id == 9)
-		filename = "wifi_sar-foob360.hex";
-	return filename;
+		return "wifi_sar-foob360.hex";
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

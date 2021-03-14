@@ -8,7 +8,6 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
@@ -16,16 +15,14 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_2_MEEP:
 	case SKU_3_MEEP:
 	case SKU_4_MEEP:
-		filename = "wifi_sar-meep.hex";
-		break;
+		return "wifi_sar-meep.hex";
 	case SKU_49_VORTININJA:
 	case SKU_50_VORTININJA:
 	case SKU_51_VORTININJA:
 	case SKU_52_VORTININJA:
-		filename = "wifi_sar-vortininja.hex";
-		break;
+		return "wifi_sar-vortininja.hex";
 	}
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 const char *mainboard_vbt_filename(void)

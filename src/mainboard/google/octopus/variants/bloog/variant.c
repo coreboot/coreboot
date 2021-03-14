@@ -28,7 +28,6 @@ enum {
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
@@ -36,18 +35,16 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_34_BLOOG:
 	case SKU_35_BLOOG:
 	case SKU_36_BLOOG:
-		filename = "wifi_sar-bloog.hex";
-		break;
+		return "wifi_sar-bloog.hex";
 	case SKU_49_BLOOGUARD:
 	case SKU_50_BLOOGUARD:
 	case SKU_51_BLOOGUARD:
 	case SKU_52_BLOOGUARD:
 	case SKU_53_BIPSHIP:
 	case SKU_54_BIPSHIP:
-		filename = "wifi_sar-blooguard.hex";
-		break;
+		return "wifi_sar-blooguard.hex";
 	}
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 const char *mainboard_vbt_filename(void)

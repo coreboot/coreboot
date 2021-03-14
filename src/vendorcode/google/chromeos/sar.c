@@ -9,8 +9,6 @@
 #include <string.h>
 #include <types.h>
 
-#define WIFI_SAR_CBFS_FILENAME	"wifi_sar_defaults.hex"
-
 /*
  * Retrieve WiFi SAR limits data from CBFS and decode it
  * WiFi SAR data is expected in the format: [<WRDD><EWRD>][WGDS]
@@ -36,6 +34,12 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	size_t sar_str_len, sar_bin_len;
 	char *sar_str;
 	int ret = -1;
+
+	filename = get_wifi_sar_cbfs_filename();
+	if (filename == NULL) {
+		printk(BIOS_DEBUG, "Filename missing for CBFS SAR file!\n");
+		return ret;
+	}
 
 	/*
 	 * If GEO_SAR_ENABLE is not selected, SAR file does not contain
@@ -64,10 +68,6 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 
 	printk(BIOS_DEBUG, "Checking CBFS for default SAR values\n");
 
-	filename = get_wifi_sar_cbfs_filename();
-	if (filename == NULL)
-		filename = WIFI_SAR_CBFS_FILENAME;
-
 	if (cbfs_load(filename, sar_str, sar_str_len) != sar_str_len) {
 		printk(BIOS_ERR, "%s has bad len in CBFS\n", filename);
 		goto done;
@@ -88,5 +88,5 @@ done:
 __weak
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return WIFI_SAR_CBFS_FILENAME;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

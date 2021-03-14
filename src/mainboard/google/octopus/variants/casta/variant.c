@@ -8,13 +8,12 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	const char *filename = NULL;
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	if (sku_id == 2)
-		filename = "wifi_sar-bluebird.hex";
+		return "wifi_sar-bluebird.hex";
 
-	return filename;
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }
 
 bool variant_ext_usb_status(unsigned int port_type, unsigned int port_id)

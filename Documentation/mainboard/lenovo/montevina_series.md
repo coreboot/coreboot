@@ -44,7 +44,7 @@ $ ifdtool -x backup.rom
 
 Now you need to patch the flash descriptor. You can either [modify the one from
 your backup with **ifdtool**](#modifying-flash-descriptor-using-ifdtool), or
-[generate a completely new one with **bincfg**](#creating-a-new-flash-descriptor-using-bincfg).
+[use one from the coreboot repository](#using-checked-in-flash-descriptor-via-bincfg).
 
 #### Modifying flash descriptor using ifdtool
 

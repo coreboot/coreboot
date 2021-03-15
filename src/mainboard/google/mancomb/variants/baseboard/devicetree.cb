@@ -39,5 +39,8 @@ chip soc/amd/cezanne
 	}"
 
 	device domain 0 on
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref gfx on end # Internal GPU (GFX)
+		end
 	end # domain
 end	# chip soc/amd/cezanne

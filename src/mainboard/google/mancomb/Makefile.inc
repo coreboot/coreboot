@@ -4,6 +4,7 @@ bootblock-y += bootblock.c
 
 verstage-y += verstage.c
 
+ramstage-y += ec.c
 ramstage-y += mainboard.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 

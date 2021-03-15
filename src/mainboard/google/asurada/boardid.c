@@ -40,6 +40,8 @@ static const unsigned int ram_voltages[ADC_LEVELS] = {
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_HIGH_CHANNEL] = ram_voltages,
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,
+	[SKU_ID_HIGH_CHANNEL] = ram_voltages,
+	[SKU_ID_LOW_CHANNEL] = ram_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)

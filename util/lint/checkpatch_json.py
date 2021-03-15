@@ -19,6 +19,9 @@ def update_struct( file_path, msg_output, line_number):
     if file_path not in list_temp:
         list_temp[file_path] = []
     list_temp[file_path].append({
+        "robot_id" : "checkpatch",
+        "robot_run_id" : sys.argv[3],
+        "url" : sys.argv[4],
         "line" : line_number,
         "message" : msg_output,}
     )
@@ -40,14 +43,14 @@ def parse_file(input_file):
     fp.close()
 
 def main():
-    if (len(sys.argv) < 3) or (sys.argv[1] == "-h"):
+    if (len(sys.argv) < 5) or (sys.argv[1] == "-h"):
         print("HELP:")
-        print(sys.argv[0] + " <input file> <output file in json>")
+        print(sys.argv[0] + " <input file> <output file in json> <job-id> <job-url>")
         sys.exit()
 
     print(sys.argv[1])
     parse_file(sys.argv[1])
-    data['comments'] = list_temp
+    data['robot_comments'] = list_temp
     print(json.dumps(data))
     out_file = open( sys.argv[2] , "w")
     json.dump(data, out_file, sort_keys=True, indent=4)

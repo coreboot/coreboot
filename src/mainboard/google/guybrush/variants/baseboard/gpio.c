@@ -163,6 +163,12 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* ESPI1_DATA0 */
 	PAD_NF(GPIO_104, SPI2_DO_ESPI2_D0, PULL_NONE),
 	/* ESPI1_DATA1 */

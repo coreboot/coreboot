@@ -22,6 +22,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_EM100_SUPPORT
 	select HAVE_SPD_IN_CBFS
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select MAINBOARD_HAS_TPM2
 	select SOC_AMD_CEZANNE
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 
@@ -49,6 +51,14 @@ config AMD_FWM_POSITION_INDEX
 	default 3
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x03
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
 
 config EFS_SPI_READ_MODE
 	int

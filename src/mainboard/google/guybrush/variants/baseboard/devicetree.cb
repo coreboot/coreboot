@@ -132,4 +132,13 @@ chip soc/amd/cezanne
 			end
 		end
 	end # domain
+
+	device ref i2c_3 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_3)"
+			device i2c 50 on end
+		end
+	end
 end	# chip soc/amd/cezanne

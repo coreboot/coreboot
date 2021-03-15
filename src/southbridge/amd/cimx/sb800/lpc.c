@@ -158,10 +158,10 @@ void lpc_enable_childrens_resources(struct device *dev)
 	switch (var_num) {
 	case 3:
 		pci_write_config16(dev, 0x90, reg_var[2]);
-		/* fall through */
+		__fallthrough;
 	case 2:
 		pci_write_config16(dev, 0x66, reg_var[1]);
-		/* fall through */
+		__fallthrough;
 	case 1:
 		//pci_write_config16(dev, 0x64, reg_var[0]); //cause filo can not find sata
 		break;

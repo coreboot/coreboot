@@ -275,7 +275,7 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	/* MRC only supports fixed numbers of frequencies */
 	default:
 		printk(BIOS_WARNING, "RAMINIT: Limiting DDR3 clock to 800 Mhz\n");
-		/* fallthrough */
+		__fallthrough;
 	case 400:
 		pei_data->max_ddr3_freq = 800;
 		break;

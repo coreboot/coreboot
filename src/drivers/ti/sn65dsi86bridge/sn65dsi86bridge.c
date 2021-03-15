@@ -301,13 +301,13 @@ static void sn65dsi86_bridge_valid_dp_rates(uint8_t bus, uint8_t chip, bool rate
 	default:
 		printk(BIOS_ERR, "Unexpected max rate (%#x); assuming 5.4 GHz\n",
 		       (int)dpcd_val);
-		/* fall through */
+		__fallthrough;
 	case DP_LINK_BW_5_4:
 		rate_valid[7] = 1;
-		/* fall through */
+		__fallthrough;
 	case DP_LINK_BW_2_7:
 		rate_valid[4] = 1;
-		/* fall through */
+		__fallthrough;
 	case DP_LINK_BW_1_62:
 		rate_valid[1] = 1;
 		break;

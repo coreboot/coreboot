@@ -247,7 +247,7 @@ ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 		break;
 	default:
 		printk(BIOS_ERR, "IPMI: Unsupported register spacing for SPMI\n");
-		/* fall through */
+		__fallthrough;
 	case 1:
 		addr.bit_offset = 8;
 		break;
@@ -369,7 +369,7 @@ static int ipmi_smbios_data(struct device *dev, int *handle,
 		break;
 	default:
 		printk(BIOS_ERR, "IPMI: Unsupported register spacing for SMBIOS\n");
-		/* fall through */
+		__fallthrough;
 	case 1:
 		register_spacing = 0 << 6;
 		break;

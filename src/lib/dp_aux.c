@@ -20,13 +20,13 @@ enum i2c_over_aux dp_get_aux_cmd(enum aux_request request, uint32_t remaining_af
 	case I2C_RAW_WRITE_AND_STOP:
 		if (!remaining_after_this)
 			return I2C_OVER_AUX_WRITE_MOT_0;
-		/* fallthrough */
+		__fallthrough;
 	case I2C_RAW_WRITE:
 		return I2C_OVER_AUX_WRITE_MOT_1;
 	case I2C_RAW_READ_AND_STOP:
 		if (!remaining_after_this)
 			return I2C_OVER_AUX_READ_MOT_0;
-		/* fallthrough */
+		__fallthrough;
 	case I2C_RAW_READ:
 		return I2C_OVER_AUX_READ_MOT_1;
 	case DPCD_WRITE:

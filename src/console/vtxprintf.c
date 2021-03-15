@@ -244,7 +244,7 @@ repeat:
 
 		case 'X':
 			flags |= LARGE;
-			/* fall through */
+			__fallthrough;
 		case 'x':
 			base = 16;
 			break;
@@ -252,6 +252,7 @@ repeat:
 		case 'd':
 		case 'i':
 			flags |= SIGN;
+			__fallthrough;
 		case 'u':
 			break;
 

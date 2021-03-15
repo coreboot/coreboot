@@ -111,7 +111,8 @@ static const char *port_location_to_str(enum ec_pd_port_location port_location)
 		return "BACK_LEFT";
 	case EC_PD_PORT_LOCATION_BACK_RIGHT:
 		return "BACK_RIGHT";
-	case EC_PD_PORT_LOCATION_UNKNOWN: /* intentional fallthrough */
+	case EC_PD_PORT_LOCATION_UNKNOWN:
+		__fallthrough;
 	default:
 		return "UNKNOWN";
 	}

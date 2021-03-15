@@ -222,9 +222,10 @@ static int tegra_dc_sor_power_dplanes(struct tegra_dc_sor_data *sor,
 		case 4:
 			reg_val |= (NV_SOR_DP_PADCTL_PD_TXD_3_NO |
 				NV_SOR_DP_PADCTL_PD_TXD_2_NO);
-			/* fall through */
+			fallthrough;
 		case 2:
 			reg_val |= NV_SOR_DP_PADCTL_PD_TXD_1_NO;
+			fallthrough;
 		case 1:
 			reg_val |= NV_SOR_DP_PADCTL_PD_TXD_0_NO;
 			break;
@@ -889,10 +890,10 @@ void tegra_sor_precharge_lanes(struct tegra_dc_sor_data *sor)
 	case 4:
 		val |= (NV_SOR_DP_PADCTL_PD_TXD_3_NO |
 			NV_SOR_DP_PADCTL_PD_TXD_2_NO);
-		/* fall through */
+		fallthrough;
 	case 2:
 		val |= NV_SOR_DP_PADCTL_PD_TXD_1_NO;
-		/* fall through */
+		fallthrough;
 	case 1:
 		val |= NV_SOR_DP_PADCTL_PD_TXD_0_NO;
 		break;

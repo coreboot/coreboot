@@ -167,7 +167,8 @@ void payload_load(void)
 		if (CONFIG(PAYLOAD_FIT_SUPPORT)) {
 			fit_payload(payload, mapping);
 			break;
-		} /* else fall-through */
+		}
+		__fallthrough;
 	default:
 		die_with_post_code(POST_INVALID_ROM,
 				   "Unsupported payload type %d.\n", payload->cbfs_type);

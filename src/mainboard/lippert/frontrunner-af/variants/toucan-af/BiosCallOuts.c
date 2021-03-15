@@ -39,7 +39,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	case VOLT1_25: // board is not able to provide this
 		MemData->ParameterListPtr->DDR3Voltage = VOLT1_35; // sorry
 		printk(BIOS_INFO, "can't provide 1.25 V, using ");
-		// fall through
+		__fallthrough;
 	default: // AGESA.h says in mixed case 1.5V DIMMs get excluded
 	case VOLT1_35:
 		FCH_GPIO(65) = 0x08; // = output, disable PU, set to 0

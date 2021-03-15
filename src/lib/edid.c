@@ -1183,13 +1183,13 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		switch (edid[0x13]) {
 		case 4:
 			c.claims_one_point_four = 1;
-			/* fall through */
+			__fallthrough;
 		case 3:
 			c.claims_one_point_three = 1;
-			/* fall through */
+			__fallthrough;
 		case 2:
 			c.claims_one_point_two = 1;
-			/* fall through */
+			__fallthrough;
 		default:
 			c.claims_one_point_oh = 1;
 		}

@@ -3,3 +3,5 @@
 ramstage-y += gpio.c
 
 smm-y += variant.c
+
+ramstage-y += variant.c

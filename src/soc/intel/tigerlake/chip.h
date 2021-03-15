@@ -174,6 +174,8 @@ struct soc_intel_tigerlake_config {
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
+	/* PCH USB2 PHY Power Gating disable */
+	uint8_t usb2_phy_sus_pg_disable;
 
 	/*
 	 * Acoustic Noise Mitigation

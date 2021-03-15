@@ -443,6 +443,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Disable C1 C-state Demotion */
 	params->C1StateAutoDemotion = 0;
 
+	/* USB2 Phy Sus power gating setting override */
+	params->PmcUsb2PhySusPgEnable = !config->usb2_phy_sus_pg_disable;
+
 	mainboard_silicon_init_params(params);
 }
 

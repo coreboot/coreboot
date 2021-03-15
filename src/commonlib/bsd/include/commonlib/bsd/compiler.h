@@ -35,6 +35,10 @@
 #define __always_inline inline __attribute__((always_inline))
 #endif
 
+#ifndef __fallthrough
+#define __fallthrough __attribute__((__fallthrough__))
+#endif
+
 /* This evaluates to the type of the first expression, unless that is constant
    in which case it evaluates to the type of the second. This is useful when
    assigning macro parameters to temporary variables, because that would

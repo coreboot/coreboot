@@ -108,16 +108,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* CLK_REQ0_L */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
 	/* GPIO_93 - GPIO_103: Not available */
-	/* ESPI1_DATA0 */
-	PAD_NF(GPIO_104, SPI2_DO_ESPI2_D0, PULL_NONE),
-	/* ESPI1_DATA1 */
-	PAD_NF(GPIO_105, SPI2_DI_ESPI2_D1, PULL_NONE),
-	/* ESPI1_DATA2 */
-	PAD_NF(GPIO_106, EMMC_SPI2_WP_L_ESPI2_D2, PULL_NONE),
-	/* ESPI1_DATA3 */
-	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
-	/* ESPI_ALERT_L */
-	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
+	/* GPIO_104 - GPIO_108: eSPI configured in early stage */
 	/* EGPIO109 */
 	PAD_NC(GPIO_109),
 	/* GPIO_110 - GPIO_112: Not available */
@@ -165,7 +156,16 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
-	/* TODO: Fill early gpio configuration */
+	/* ESPI1_DATA0 */
+	PAD_NF(GPIO_104, SPI2_DO_ESPI2_D0, PULL_NONE),
+	/* ESPI1_DATA1 */
+	PAD_NF(GPIO_105, SPI2_DI_ESPI2_D1, PULL_NONE),
+	/* ESPI1_DATA2 */
+	PAD_NF(GPIO_106, EMMC_SPI2_WP_L_ESPI2_D2, PULL_NONE),
+	/* ESPI1_DATA3 */
+	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
 };
 
 const struct soc_amd_gpio *__weak variant_base_gpio_table(size_t *size)
@@ -178,7 +178,6 @@ const struct soc_amd_gpio *__weak variant_override_gpio_table(size_t *size)
 	*size = 0;
 	return NULL;
 }
-
 const struct soc_amd_gpio *__weak variant_early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(early_gpio_table);

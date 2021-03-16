@@ -9,6 +9,7 @@
 static const u32 r04_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x19, 0x02a19c20), /* PORT F - front mic in */
 	AZALIA_PIN_CFG(0, 0x1a, 0x01813c51), /* PORT C - rear line in (mic support) */
+	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0), /* PORT E - disabled */
 	AZALIA_PIN_CFG(0, 0x15, 0x411111f0), /* PORT A - disabled */
 };
 

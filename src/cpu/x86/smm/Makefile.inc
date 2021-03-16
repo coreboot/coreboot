@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-ramstage-y += smm_module_loaderv2.c
+ramstage-y += smm_module_loader.c
 ramstage-y += smi_trigger.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)

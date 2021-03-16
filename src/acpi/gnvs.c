@@ -69,6 +69,12 @@ __weak void mainboard_fill_gnvs(struct global_nvs *gnvs_) { }
 /* Called from write_acpi_tables() only on normal boot path. */
 void acpi_fill_gnvs(void)
 {
+	const struct opregion gnvs_op = OPREGION("GNVS", SYSTEMMEMORY, (uintptr_t)gnvs, 0x100);
+	const struct opregion cnvs_op =	OPREGION("CNVS", SYSTEMMEMORY,
+					(uintptr_t)gnvs + GNVS_CHROMEOS_ACPI_OFFSET, 0xf00);
+	const struct opregion dnvs_op = OPREGION("DNVS", SYSTEMMEMORY,
+					(uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET, 0x1000);
+
 	if (!gnvs)
 		return;
 
@@ -76,23 +82,15 @@ void acpi_fill_gnvs(void)
 	mainboard_fill_gnvs(gnvs);
 
 	acpigen_write_scope("\\");
-	acpigen_write_name_dword("NVB0", (uintptr_t)gnvs);
-	acpigen_write_name_dword("NVS0", 0x100);
+	acpigen_write_opregion(&gnvs_op);
+
+	if (CONFIG(CHROMEOS_NVS))
+		acpigen_write_opregion(&cnvs_op);
+
+	if (CONFIG(ACPI_HAS_DEVICE_NVS))
+		acpigen_write_opregion(&dnvs_op);
+
 	acpigen_pop_len();
-
-	if (CONFIG(CHROMEOS_NVS)) {
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVB2", (uintptr_t)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
-		acpigen_write_name_dword("NVS2", 0xf00);
-		acpigen_pop_len();
-	}
-
-	if (CONFIG(ACPI_HAS_DEVICE_NVS)) {
-		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVB1", (uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET);
-		acpigen_write_name_dword("NVS1", 0x1000);
-		acpigen_pop_len();
-	}
 }
 
 int acpi_reset_gnvs_for_wake(struct global_nvs **gnvs_)

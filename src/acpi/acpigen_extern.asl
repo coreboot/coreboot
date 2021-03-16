@@ -8,19 +8,13 @@
  */
 
 #if CONFIG(ACPI_SOC_NVS)
-External (NVB0, IntObj)
-External (NVS0, IntObj)
-OperationRegion (GNVS, SystemMemory, NVB0, NVS0)
+External (GNVS, OpRegionObj)
 #endif
 
 #if CONFIG(ACPI_HAS_DEVICE_NVS)
-External (NVB1, IntObj)
-External (NVS1, IntObj)
-OperationRegion (DNVS, SystemMemory, NVB1, NVS1)
+External (DNVS, OpRegionObj)
 #endif
 
 #if CONFIG(CHROMEOS_NVS)
-External (NVB2, IntObj)
-External (NVS2, IntObj)
-OperationRegion (CNVS, SystemMemory, NVB2, NVS2)
+External (CNVS, OpRegionObj)
 #endif

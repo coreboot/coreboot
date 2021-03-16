@@ -40,10 +40,6 @@ config CBFS_SIZE
 	default 0x800000 if BOARD_PURISM_LIBREM_MINI
 	default 0xA00000 if BOARD_PURISM_LIBREM_MINI_V2
 
-config MAX_CPUS
-	int
-	default 8
-
 config DIMM_MAX
 	int
 	default 2

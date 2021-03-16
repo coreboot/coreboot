@@ -26,4 +26,11 @@ config INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY
 	help
 	  Location of the Boot Policy Manifest (BPM)
 
+config INTEL_CBNT_CMOS_OFFSET
+	hex
+	default 0x7e
+	help
+	  Address in RTC CMOS used by CBNT. Uses 2 bytes. If using an option table
+	  adapt the cmos.layout accordingly. The bytes should not be checksummed.
+
 endif # INTEL_CBNT_SUPPORT

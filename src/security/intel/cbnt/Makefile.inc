@@ -1,5 +1,7 @@
 ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
 
+ramstage-y += cmos.c
+
 ifneq ($(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY),"")
 cbfs-files-y += boot_policy_manifest.bin
 boot_policy_manifest.bin-file := $(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY)

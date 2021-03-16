@@ -24,6 +24,7 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <thread.h>
+#include <vendorcode/google/chromeos/gnvs.h>
 
 static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);
@@ -460,6 +461,9 @@ void main(void)
 	/* Initialise GNVS early. */
 	if (CONFIG(ACPI_SOC_NVS))
 		acpi_create_gnvs();
+
+	if (CONFIG(CHROMEOS_NVS))
+		chromeos_init_chromeos_acpi();
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

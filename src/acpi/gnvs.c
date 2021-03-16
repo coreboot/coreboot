@@ -37,11 +37,6 @@ void acpi_create_gnvs(void)
 
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
-
-	if (CONFIG(CHROMEOS_NVS)) {
-		chromeos_acpi_t *init = (void *)((u8 *)gnvs + GNVS_CHROMEOS_ACPI_OFFSET);
-		chromeos_init_chromeos_acpi(init);
-	}
 }
 
 void *acpi_get_gnvs(void)
@@ -70,8 +65,6 @@ __weak void mainboard_fill_gnvs(struct global_nvs *gnvs_) { }
 void acpi_fill_gnvs(void)
 {
 	const struct opregion gnvs_op = OPREGION("GNVS", SYSTEMMEMORY, (uintptr_t)gnvs, 0x100);
-	const struct opregion cnvs_op =	OPREGION("CNVS", SYSTEMMEMORY,
-					(uintptr_t)gnvs + GNVS_CHROMEOS_ACPI_OFFSET, 0xf00);
 	const struct opregion dnvs_op = OPREGION("DNVS", SYSTEMMEMORY,
 					(uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET, 0x1000);
 
@@ -83,9 +76,6 @@ void acpi_fill_gnvs(void)
 
 	acpigen_write_scope("\\");
 	acpigen_write_opregion(&gnvs_op);
-
-	if (CONFIG(CHROMEOS_NVS))
-		acpigen_write_opregion(&cnvs_op);
 
 	if (CONFIG(ACPI_HAS_DEVICE_NVS))
 		acpigen_write_opregion(&dnvs_op);

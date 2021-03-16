@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi_gnvs.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <types.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,7 +17,7 @@
 #include "chromeos.h"
 #include "gnvs.h"
 
-static chromeos_acpi_t *chromeos_acpi;
+static struct chromeos_acpi *chromeos_acpi;
 
 static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 {
@@ -30,12 +31,14 @@ static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 	return region_device_sz(&vpd);
 }
 
-void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
+void chromeos_init_chromeos_acpi(void)
 {
 	size_t vpd_size;
 	uintptr_t vpd_base = 0;
 
-	chromeos_acpi = init;
+	chromeos_acpi = cbmem_add(CBMEM_ID_ACPI_CNVS, sizeof(struct chromeos_acpi));
+	if (!chromeos_acpi)
+		return;
 
 	vpd_size = chromeos_vpd_region("RO_VPD", &vpd_base);
 	if (vpd_size && vpd_base) {
@@ -89,4 +92,13 @@ void smbios_type0_bios_version(uintptr_t address)
 		return;
 	/* Location of smbios_type0.bios_version() string filled with spaces. */
 	chromeos_acpi->vbt10 = address;
+}
+
+void acpi_fill_cnvs(void)
+{
+	const struct opregion cnvs_op = OPREGION("CNVS", SYSTEMMEMORY, (uintptr_t)chromeos_acpi,
+						 sizeof(*chromeos_acpi));
+	acpigen_write_scope("\\");
+	acpigen_write_opregion(&cnvs_op);
+	acpigen_pop_len();
 }

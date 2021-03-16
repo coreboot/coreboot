@@ -8,16 +8,9 @@
 #define ACTIVE_ECFW_RO		0
 #define ACTIVE_ECFW_RW		1
 
-/*
- * chromeos_acpi_t portion of ACPI GNVS is assumed to live at
- * 0x100 - 0x1000.
- */
-#define GNVS_CHROMEOS_ACPI_OFFSET 0x100
-
-/* device_nvs_t is assumed to live directly after chromeos_acpi_t. */
 #define GNVS_DEVICE_NVS_OFFSET 0x1000
 
-typedef struct {
+struct chromeos_acpi {
 	/* ChromeOS specific */
 	u32	vbt0;		// 00 boot reason
 	u32	vbt1;		// 04 active main firmware
@@ -39,8 +32,8 @@ typedef struct {
 	u32	vpd_rw_base;	// dce pointer to RW_VPD
 	u32	vpd_rw_size;	// dd2 size of RW_VPD
 	u8	pad[298];	// dd6-eff
-} __packed chromeos_acpi_t;
+} __packed;
 
-void chromeos_init_chromeos_acpi(chromeos_acpi_t *init);
+void chromeos_init_chromeos_acpi(void);
 
 #endif

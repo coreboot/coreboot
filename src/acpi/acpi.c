@@ -1704,6 +1704,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 		if (CONFIG(ACPI_SOC_NVS))
 			acpi_fill_gnvs();
+		if (CONFIG(CHROMEOS_NVS))
+			acpi_fill_cnvs();
 
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_inject_dsdt)

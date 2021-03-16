@@ -112,6 +112,12 @@ int variant_has_wwan(void)
 	return !!extract_field(FW_CONFIG_MASK_WWAN, FW_CONFIG_SHIFT_WWAN);
 }
 
+int variant_is_convertible(void)
+{
+	return !!extract_field(FW_CONFIG_MASK_LID_ANGLE_TABLET_MODE,
+			       FW_CONFIG_LID_ANGLE_TABLET_MODE_SHIFT);
+}
+
 bool variant_uses_v3_schematics(void)
 {
 	uint32_t board_version;

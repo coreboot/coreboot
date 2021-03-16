@@ -72,6 +72,8 @@ int variant_has_emmc(void);
 int variant_has_nvme(void);
 /* Return 0 if non-existent, 1 if present. */
 int variant_has_wwan(void);
+/* Add variant is_convertible to identify convertible sku */
+int variant_is_convertible(void);
 
 /* Determine if booting in factory by using CROS_SKU_UNPROVISIONED. */
 int boot_is_factory_unprovisioned(void);

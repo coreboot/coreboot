@@ -23,6 +23,13 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_slope_mA" = "24063"
 	register "telemetry_vddcr_soc_offset" = "105"
 
+	# USB OC pin mapping
+
+	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"	# USB C0
+	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"	# USB A0
+	register "usb_port_overcurrent_pin[2]" = "USB_OC_PIN_1"	# USB C1
+	register "usb_port_overcurrent_pin[3]" = "USB_OC_PIN_1"	# USB C1
+
 	# I2C2 for touchscreen and trackpad
 
 	register "i2c[2]" = "{

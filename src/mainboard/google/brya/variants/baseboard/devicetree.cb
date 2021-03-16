@@ -14,6 +14,9 @@ chip soc/intel/alderlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+        # S0ix enable
+        register "s0ix_enable" = "1"
+
 	# This disabled autonomous GPIO power management, otherwise
 	# old cr50 FW only supports short pulses; need to clarify
 	# the minimum PCH IRQ pulse width with Intel, b/180111628

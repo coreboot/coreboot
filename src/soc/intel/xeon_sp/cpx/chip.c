@@ -182,14 +182,6 @@ static void chip_final(void *data)
 	/* LOCK PAM */
 	pci_or_config32(pcidev_path_on_root(PCI_DEVFN(0, 0)), 0x80, 1 << 0);
 
-	/*
-	 * LOCK SMRAM
-	 * According to the CedarIsland FSP Integration Guide this needs to
-	 * be done with legacy 0xCF8/0xCFC IO ops.
-	 */
-	uint8_t reg8 = pci_io_read_config8(PCI_DEV(0, 0, 0), 0x88);
-	pci_io_write_config8(PCI_DEV(0, 0, 0), 0x88, reg8 | (1 << 4));
-
 	mp_run_on_all_cpus(set_msr_locks, NULL);
 	set_pcu_locks();
 	set_imc_locks();

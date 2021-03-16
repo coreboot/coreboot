@@ -71,6 +71,12 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	# HD Audio
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
+	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
+	register "PchHdaIDispCodecEnable" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

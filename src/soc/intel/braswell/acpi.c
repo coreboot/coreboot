@@ -13,6 +13,7 @@
 #include <device/pci.h>
 #include <drivers/intel/gma/opregion.h>
 #include <soc/acpi.h>
+#include <soc/device_nvs.h>
 #include <soc/gfx.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
@@ -59,6 +60,11 @@ static acpi_cstate_t cstate_map[] = {
 		.resource = MWAIT_RES(5, 2),
 	}
 };
+
+size_t size_of_dnvs(void)
+{
+	return sizeof(struct device_nvs);
+}
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {

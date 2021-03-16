@@ -9,9 +9,6 @@
 
 #if CONFIG(ACPI_SOC_NVS)
 External (GNVS, OpRegionObj)
-#endif
-
-#if CONFIG(ACPI_HAS_DEVICE_NVS)
 External (DNVS, OpRegionObj)
 #endif
 

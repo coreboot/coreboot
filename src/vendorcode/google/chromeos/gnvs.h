@@ -8,8 +8,6 @@
 #define ACTIVE_ECFW_RO		0
 #define ACTIVE_ECFW_RW		1
 
-#define GNVS_DEVICE_NVS_OFFSET 0x1000
-
 struct chromeos_acpi {
 	/* ChromeOS specific */
 	u32	vbt0;		// 00 boot reason

@@ -13,6 +13,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 
+#include <soc/device_nvs.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
@@ -114,6 +115,11 @@ static void fill_in_pattrs(void)
 
 	/* Set bus clock speed */
 	attrs->bclk_khz = bus_freq_khz();
+}
+
+size_t size_of_dnvs(void)
+{
+	return sizeof(struct device_nvs);
 }
 
 /* Save bit index for first enabled event in PM1_STS for \_SB._SWS */

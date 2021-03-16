@@ -20,8 +20,6 @@
 #include <soc/nvs.h>
 #include <soc/device_nvs.h>
 
-#include <vendorcode/google/chromeos/gnvs.h>
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -210,7 +208,7 @@ static void southbridge_smi_gsmi(void)
 
 void *acpi_get_device_nvs(void)
 {
-	return (u8 *)gnvs + GNVS_DEVICE_NVS_OFFSET;
+	return (u8 *)gnvs + ALIGN_UP(sizeof(struct global_nvs), sizeof(uint64_t));
 }
 
 /*

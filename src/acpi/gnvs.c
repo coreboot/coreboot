@@ -8,32 +8,28 @@
 #include <stdint.h>
 #include <string.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 
 static struct global_nvs *gnvs;
+static void *dnvs;
 
 void acpi_create_gnvs(void)
 {
-	size_t gnvs_size;
+	const size_t gnvs_size = ALIGN_UP(sizeof(struct global_nvs), sizeof(uint64_t));
+	const size_t dnvs_size = ALIGN_UP(size_of_dnvs(), sizeof(uint64_t));
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs)
 		return;
 
-	/* Match with OpRegion declared in global_nvs.asl. */
-	gnvs_size = sizeof(struct global_nvs);
-	if (gnvs_size < 0x100)
-		gnvs_size = 0x100;
-	if (CONFIG(ACPI_HAS_DEVICE_NVS))
-		gnvs_size = 0x2000;
-	else if (CONFIG(CHROMEOS_NVS))
-		gnvs_size = 0x1000;
-
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size);
+	/* Allocate for both GNVS and DNVS OpRegions. */
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, gnvs_size + dnvs_size);
 	if (!gnvs)
 		return;
 
-	memset(gnvs, 0, gnvs_size);
+	memset(gnvs, 0, gnvs_size + dnvs_size);
+
+	if (dnvs_size)
+		dnvs = (char *)gnvs + gnvs_size;
 
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
@@ -54,19 +50,21 @@ void *acpi_get_gnvs(void)
 
 void *acpi_get_device_nvs(void)
 {
-	return (u8 *)gnvs + GNVS_DEVICE_NVS_OFFSET;
+	return dnvs;
 }
 
 /* Implemented under platform. */
 __weak void soc_fill_gnvs(struct global_nvs *gnvs_) { }
 __weak void mainboard_fill_gnvs(struct global_nvs *gnvs_) { }
+__weak size_t size_of_dnvs(void) { return 0; }
 
 /* Called from write_acpi_tables() only on normal boot path. */
 void acpi_fill_gnvs(void)
 {
-	const struct opregion gnvs_op = OPREGION("GNVS", SYSTEMMEMORY, (uintptr_t)gnvs, 0x100);
-	const struct opregion dnvs_op = OPREGION("DNVS", SYSTEMMEMORY,
-					(uintptr_t)gnvs + GNVS_DEVICE_NVS_OFFSET, 0x1000);
+	const struct opregion gnvs_op = OPREGION("GNVS", SYSTEMMEMORY, (uintptr_t)gnvs,
+						 sizeof(struct global_nvs));
+	const struct opregion dnvs_op = OPREGION("DNVS", SYSTEMMEMORY, (uintptr_t)dnvs,
+						 size_of_dnvs());
 
 	if (!gnvs)
 		return;
@@ -76,10 +74,8 @@ void acpi_fill_gnvs(void)
 
 	acpigen_write_scope("\\");
 	acpigen_write_opregion(&gnvs_op);
-
-	if (CONFIG(ACPI_HAS_DEVICE_NVS))
+	if (dnvs)
 		acpigen_write_opregion(&dnvs_op);
-
 	acpigen_pop_len();
 }
 

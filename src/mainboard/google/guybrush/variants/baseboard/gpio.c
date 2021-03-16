@@ -166,6 +166,10 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
+	/* UART0_RXD */
+	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
+	/* UART0_TXD */
+	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
 };
 
 /* GPIO configuration for sleep */

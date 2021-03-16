@@ -243,8 +243,7 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
  * Place stacks in base -> base + size region, but ensure the stacks don't
  * overlap the staggered entry points.
  */
-static void *smm_stub_place_stacks(char *base, size_t size,
-				   struct smm_loader_params *params)
+static void *smm_stub_place_stacks(char *base, struct smm_loader_params *params)
 {
 	size_t total_stack_size;
 	char *stacks_top;
@@ -256,15 +255,9 @@ static void *smm_stub_place_stacks(char *base, size_t size,
 	printk(BIOS_DEBUG, "%s: cpus: %zx : stack space: needed -> %zx\n",
 		__func__, params->num_concurrent_stacks,
 		total_stack_size);
-	printk(BIOS_DEBUG, "  available -> %zx : per_cpu_stack_size : %zx\n",
-		size, params->per_cpu_stack_size);
 
 	/* There has to be at least one stack user. */
 	if (params->num_concurrent_stacks < 1)
-		return NULL;
-
-	/* Total stack size cannot fit. */
-	if (total_stack_size > size)
 		return NULL;
 
 	/* Stacks extend down to SMBASE */
@@ -388,14 +381,9 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	 * for default handler, but for relocated handler it lives at the beginning
 	 * of SMRAM which is TSEG base
 	 */
-	const size_t total_stack_size = params->num_concurrent_stacks *
-		params->per_cpu_stack_size;
-	stacks_top = smm_stub_place_stacks(smbase, total_stack_size,
-					   params);
+	stacks_top = smm_stub_place_stacks(smbase, params);
 	if (stacks_top == NULL) {
-		printk(BIOS_ERR, "%s: not enough space for stacks\n", __func__);
-		printk(BIOS_ERR, "%s: ....need -> %p : available -> %zx\n", __func__,
-			base, total_stack_size);
+		printk(BIOS_ERR, "%s: error assigning stacks\n", __func__);
 		return -1;
 	}
 	params->stack_top = stacks_top;
@@ -418,6 +406,8 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 
+	const size_t total_stack_size =
+		params->num_concurrent_stacks * params->per_cpu_stack_size;
 	printk(BIOS_DEBUG, "%s: stack_end = 0x%lx\n",
 		__func__, stub_params->stack_top - total_stack_size);
 	printk(BIOS_DEBUG,

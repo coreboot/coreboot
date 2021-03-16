@@ -1,4 +1,4 @@
-bootblock-y += fit.S
+bootblock-y += fit.c
 
 # The FIT table is generated as a separate CBFS file.
 # The FIT pointer is reserved in fit.c and updated to point to the 'intel_fit'

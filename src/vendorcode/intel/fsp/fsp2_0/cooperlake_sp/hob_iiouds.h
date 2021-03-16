@@ -56,6 +56,18 @@ are permitted provided that the following conditions are met:
 
 #define MAX_LOGIC_IIO_STACK       (MAX_IIO_STACK+2)
 
+// RC version number structure.
+typedef struct {
+    uint8_t   Major;
+    uint8_t   Minor;
+    uint8_t   Revision;
+    uint16_t  BuildNumber;
+} RC_VERSION;
+// Note: the struct is not packed for a reason: it is not packed in FSP code.
+// It is a bug acknowledged by Intel (IPS case 00600003) that has been fixed for SRP
+// but won't be fixed for CPX.
+_Static_assert(sizeof(RC_VERSION) == 6, "Incorrect size of struct 'RC_VERSION'");
+
 #pragma pack(1)
 
 //--------------------------------------------------------------------------------------//
@@ -76,16 +88,6 @@ typedef enum {
   TYPE_SBREG_BAR,
   TYPE_MAX_MMIO_BAR
 } MMIO_BARS;
-
-///
-/// RC version number structure.
-///
-typedef struct {
-	uint8_t   Major;
-	uint8_t   Minor;
-	uint8_t   Revision;
-	uint16_t  BuildNumber;
-} RC_VERSION;
 
 /**
  IIO PCIe Ports

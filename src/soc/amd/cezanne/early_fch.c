@@ -58,6 +58,7 @@ void fch_pre_init(void)
 void fch_early_init(void)
 {
 	fch_print_pmxc0_status();
+	i2c_soc_early_init();
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
 		espi_setup();

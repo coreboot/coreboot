@@ -12,6 +12,7 @@
 #include <soc/qupv3_config.h>
 #include <soc/qupv3_i2c.h>
 #include <soc/usb.h>
+#include <types.h>
 
 #include "board.h"
 
@@ -74,39 +75,52 @@ static void configure_display(void)
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
 }
 
-static void display_init(struct edid *edid)
+static enum cb_err display_init(struct edid *edid, const struct panel_data *pinfo)
 {
 	uint32_t dsi_bpp = 24;
-	uint32_t lanes = 4;
+	uint32_t lanes = pinfo ? pinfo->lanes : 4;
 
 	if (mdss_dsi_config(edid, lanes, dsi_bpp))
-		return;
+		return CB_ERR;
+	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
+		if (mdss_dsi_panel_initialize(pinfo))
+			return CB_ERR;
+	} else {
+		sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, edid, lanes, dsi_bpp);
+	}
 
-	sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, edid, lanes, dsi_bpp);
 	if (CONFIG(TROGDOR_HAS_BRIDGE_BACKLIGHT))
 		sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_CHIP);
 
 	mdp_dsi_video_config(edid);
 	mdss_dsi_video_mode_config(edid, dsi_bpp);
 	mdp_dsi_video_on();
+
+	return CB_SUCCESS;
 }
 
 static void display_startup(void)
 {
 	static struct edid ed;
 	enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
+	const struct panel_data *pinfo = NULL;
 
-	i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
 	if (display_init_required()) {
-		configure_display();
-		mdelay(250); /* Delay for the panel to be up */
-		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
-		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &ed) < 0)
-			return;
+		if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
+			pinfo = get_panel_config(&ed);
+		} else {
+			i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
+			configure_display();
+			mdelay(250); /* Delay for the panel to be up */
+			sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
+			if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &ed) < 0)
+				return;
+		}
 
 		printk(BIOS_INFO, "display init!\n");
-		display_init(&ed);
-		fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
+		if (display_init(&ed, pinfo) == CB_SUCCESS)
+			fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
+
 	} else
 		printk(BIOS_INFO, "Skipping display init.\n");
 }

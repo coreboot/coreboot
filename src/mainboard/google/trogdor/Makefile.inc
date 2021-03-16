@@ -15,6 +15,7 @@ romstage-y += boardid.c
 romstage-y += chromeos.c
 
 ramstage-y += mainboard.c
+ramstage-y += panel_driver.c
 ifneq ($(CONFIG_BOARD_GOOGLE_BUBS),y)
 ramstage-y += reset.c
 endif

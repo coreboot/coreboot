@@ -12,6 +12,10 @@ config TROGDOR_HAS_BRIDGE_BACKLIGHT
 	default y if BOARD_GOOGLE_HOMESTAR
 	default n
 
+config TROGDOR_HAS_MIPI_PANEL
+	bool
+	default n
+
 config TROGDOR_HAS_FINGERPRINT
 	bool
 	default y if BOARD_GOOGLE_COACHZ

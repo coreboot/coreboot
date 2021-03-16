@@ -156,6 +156,8 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* C0  : SMBCLK ==> EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C13 : UART1_TXD ==> EN_PP5000_TRACKPAD */
+	PAD_CFG_GPO(GPP_C13, 1, DEEP),
 	/* C21 : UART2_TXD ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, PLTRST, LEVEL, INVERT),
 	/* C22 : UART2_RTS# ==> PCH_FPMCU_BOOT0 */

@@ -15,17 +15,6 @@
 #include <intelblocks/msr.h>
 #include <soc/cpu.h>
 
-/* SoC override function */
-__weak void soc_core_init(struct device *dev)
-{
-	/* no-op */
-}
-
-__weak void soc_init_cpus(struct bus *cpu_bus)
-{
-	/* no-op */
-}
-
 static void init_one_cpu(struct device *dev)
 {
 	soc_core_init(dev);

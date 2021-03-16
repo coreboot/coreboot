@@ -65,6 +65,33 @@
 
 #define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
 
+#define MISC_I2C0_PAD_CTRL		0xd8
+#define MISC_I2C1_PAD_CTRL		0xdc
+#define MISC_I2C2_PAD_CTRL		0xe0
+#define MISC_I2C3_PAD_CTRL		0xe4
+#define   I2C_PAD_CTRL_NG_MASK		(BIT(0) + BIT(1) + BIT(2) + BIT(3))
+#define     I2C_PAD_CTRL_NG_NORMAL	0xc
+#define   I2C_PAD_CTRL_RX_SEL_MASK	(BIT(4) + BIT(5))
+#define     I2C_PAD_CTRL_RX_SHIFT	4
+#define     I2C_PAD_CTRL_RX_SEL_OFF	(0 << I2C_PAD_CTRL_RX_SHIFT)
+#define     I2C_PAD_CTRL_RX_SEL_3_3V	(1 << I2C_PAD_CTRL_RX_SHIFT)
+#define     I2C_PAD_CTRL_RX_SEL_1_8V	(3 << I2C_PAD_CTRL_RX_SHIFT)
+#define   I2C_PAD_CTRL_PULLDOWN_EN	BIT(6)
+#define   I2C_PAD_CTRL_FALLSLEW_MASK	(BIT(7) + BIT(8))
+#define     I2C_PAD_CTRL_FALLSLEW_SHIFT	7
+#define     I2C_PAD_CTRL_FALLSLEW_STD	(0 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
+#define     I2C_PAD_CTRL_FALLSLEW_LOW	(1 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
+#define   I2C_PAD_CTRL_FALLSLEW_EN	BIT(9)
+#define   I2C_PAD_CTRL_SPIKE_RC_EN	BIT(10)
+#define   I2C_PAD_CTRL_SPIKE_RC_SEL	BIT(11) /* 0 = 50ns, 1 = 20ns */
+#define   I2C_PAD_CTRL_CAP_DOWN		BIT(12)
+#define   I2C_PAD_CTRL_CAP_UP		BIT(13)
+#define   I2C_PAD_CTRL_RES_DOWN		BIT(14)
+#define   I2C_PAD_CTRL_RES_UP		BIT(15)
+#define   I2C_PAD_CTRL_BIOS_CRT_EN	BIT(16)
+#define   I2C_PAD_CTRL_SPARE0		BIT(17)
+#define   I2C_PAD_CTRL_SPARE1		BIT(18)
+
 /* FCH AOAC device offsets for AOAC_DEV_D3_CTL/AOAC_DEV_D3_STATE */
 #define FCH_AOAC_DEV_CLK_GEN		0
 #define FCH_AOAC_DEV_I2C0		5
@@ -88,5 +115,8 @@ void fch_final(void *chip_info);
 
 void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
+
+/* Allow the board to change the default I2C pad configuration */
+void mainboard_i2c_override(int bus, uint32_t *pad_settings);
 
 #endif /* AMD_CEZANNE_SOUTHBRIDGE_H */

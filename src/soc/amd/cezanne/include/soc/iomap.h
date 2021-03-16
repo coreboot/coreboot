@@ -16,10 +16,21 @@
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 
+#define I2C_MASTER_DEV_COUNT		4
+#define I2C_MASTER_START_INDEX		0
+#define I2C_PERIPHERAL_DEV_COUNT	0 /* TODO: Only master for now. */
+#define I2C_CTRLR_COUNT			(I2C_MASTER_DEV_COUNT + I2C_PERIPHERAL_DEV_COUNT)
+
 #define APU_I2C0_BASE			0xfedc2000
 #define APU_I2C1_BASE			0xfedc3000
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
+
+/* I2C parameters for lpc_read_resources */
+#define I2C_BASE_ADDRESS		APU_I2C2_BASE
+#define I2C_DEVICE_SIZE			0x00001000
+#define I2C_DEVICE_COUNT		(I2C_MASTER_DEV_COUNT \
+					 - I2C_MASTER_START_INDEX)
 
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000

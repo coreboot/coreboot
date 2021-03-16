@@ -13,7 +13,7 @@ static void infra_master_init(uintptr_t base)
 	SET32_BITFIELDS(getreg(base, MAS_SEC_0), SCP_SSPM_SEC, 1, CPU_EB_SEC, 1);
 
 	/* Domain */
-	SET32_BITFIELDS(getreg(base, MAS_SEC_0), PCIE_DOM, MAS_DOMAIN_1);
+	SET32_BITFIELDS(getreg(base, MAS_DOM_0), PCIE_DOM, MAS_DOMAIN_1);
 	SET32_BITFIELDS(getreg(base, MAS_DOM_1), SCP_SSPM_DOM, MAS_DOMAIN_2,
 			CPU_EB_DOM, MAS_DOMAIN_2);
 

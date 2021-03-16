@@ -49,7 +49,7 @@ static void fch_spi_config_em100_modes(void)
 	fch_spi_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
 }
 
-void fch_spi_config_modes(void)
+static void fch_spi_config_modes(void)
 {
 	if (CONFIG(EM100))
 		fch_spi_config_em100_modes();

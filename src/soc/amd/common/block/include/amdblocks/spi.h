@@ -88,14 +88,6 @@ struct spi_config {
  */
 void fch_spi_early_init(void);
 
-/*
- * Configure SPI speed and read mode.
- *
- * This function expects SoC to include soc_amd_common_config in chip SoC config and uses
- * settings from mainboard devicetree to configure speed and read mode.
- */
-void fch_spi_config_modes(void);
-
 /* Set the SPI base address variable */
 void spi_set_base(void *base);
 

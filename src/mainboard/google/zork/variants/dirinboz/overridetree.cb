@@ -145,4 +145,11 @@ chip soc/amd/picasso
 			device i2c 40 on end
 		end
 	end
+
+	chip drivers/generic/max98357a
+			register "hid" = ""MX98357A""
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
+	end
 end	# chip soc/amd/picasso

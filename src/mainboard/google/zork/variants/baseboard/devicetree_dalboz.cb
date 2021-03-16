@@ -402,13 +402,6 @@ chip soc/amd/picasso
 		device pci 18.6 on  end
 	end # domain
 
-	chip drivers/generic/max98357a
-			register "hid" = ""MX98357A""
-			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
-			register "sdmode_delay" = "5"
-			device generic 0.1 on end
-	end
-
 	device mmio 0xfedc5000 on
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""

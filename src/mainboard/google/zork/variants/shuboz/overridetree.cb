@@ -18,10 +18,10 @@ chip soc/amd/picasso
 
 	# End : OPN Performance Configuration
 
-	register "telemetry_vddcr_vdd_slope_mA" = "30518"
-	register "telemetry_vddcr_vdd_offset" = "435"
-	register "telemetry_vddcr_soc_slope_mA" = "22965"
-	register "telemetry_vddcr_soc_offset" = "165"
+	register "telemetry_vddcr_vdd_slope_mA" = "30595"
+	register "telemetry_vddcr_vdd_offset" = "77"
+	register "telemetry_vddcr_soc_slope_mA" = "24063"
+	register "telemetry_vddcr_soc_offset" = "105"
 
 	# I2C2 for touchscreen and trackpad
 

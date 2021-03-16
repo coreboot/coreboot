@@ -108,7 +108,11 @@ static void generate_atif(const struct device *dev)
 static void graphics_fill_ssdt(const struct device *dev)
 {
 	acpi_device_write_pci_dev(dev);
-	pci_rom_ssdt(dev);
+
+	/* Use the VFCT copy when using GOP */
+	if (!CONFIG(RUN_FSP_GOP))
+		pci_rom_ssdt(dev);
+
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF))
 		generate_atif(dev);
 }

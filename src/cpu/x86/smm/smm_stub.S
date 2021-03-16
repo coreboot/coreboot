@@ -21,8 +21,6 @@ stack_top:
 .long 0
 c_handler:
 .long 0
-c_handler_arg:
-.long 0
 fxsave_area:
 .long 0
 fxsave_area_size:
@@ -201,10 +199,10 @@ smm_trampoline32:
 	 *   c_handler(&arg)
 	 */
 #ifdef __x86_64__
+	push	$0x0 /* Padding */
 	push	%rbx /* uintptr_t *canary */
 	push	$(smm_runtime)
 	push	%rcx /* size_t cpu */
-	push	c_handler_arg /* void *arg */
 
 	mov	%rsp, %rdi	/* *arg */
 
@@ -229,13 +227,9 @@ smm_trampoline32:
 	wrmsr
 
 #else
-	push	$0x0 /* Padding */
-	push	$0x0 /* Padding */
-	push	$0x0 /* Padding */
 	push	%ebx /* uintptr_t *canary */
 	push	$(smm_runtime)
 	push	%ecx /* size_t cpu */
-	push	c_handler_arg /* void *arg */
 	push	%esp /* smm_module_params *arg (allocated on stack). */
 	mov	c_handler, %eax
 	call	*%eax

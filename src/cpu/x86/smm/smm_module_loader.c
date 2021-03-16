@@ -249,7 +249,6 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	stub_params->stack_top = (uintptr_t)stacks_top;
 	stub_params->stack_size = params->per_cpu_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
-	stub_params->c_handler_arg = (uintptr_t)params->handler_arg;
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 	stub_params->runtime.smbase = (uintptr_t)smbase;
@@ -265,8 +264,8 @@ static int smm_module_setup_stub(void *smbase, size_t smm_size,
 	/* Allow the initiator to manipulate SMM stub parameters. */
 	params->runtime = &stub_params->runtime;
 
-	printk(BIOS_DEBUG, "SMM Module: stub loaded at %p. Will call %p(%p)\n",
-	       smm_stub_loc, params->handler, params->handler_arg);
+	printk(BIOS_DEBUG, "SMM Module: stub loaded at %p. Will call %p\n",
+	       smm_stub_loc, params->handler);
 
 	return 0;
 }
@@ -390,7 +389,6 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		return -1;
 
 	params->handler = rmodule_entry(&smm_mod);
-	params->handler_arg = rmodule_parameters(&smm_mod);
 
 	return smm_module_setup_stub(smram, size, params, fxsave_area);
 }

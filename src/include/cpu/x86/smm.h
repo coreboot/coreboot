@@ -72,7 +72,6 @@ struct smm_runtime {
 } __packed;
 
 struct smm_module_params {
-	void *arg;
 	size_t cpu;
 	const struct smm_runtime *runtime;
 	/* A canary value that has been placed at the end of the stack.
@@ -87,7 +86,6 @@ struct smm_stub_params {
 	u32 stack_size;
 	u32 stack_top;
 	u32 c_handler;
-	u32 c_handler_arg;
 	u32 fxsave_area;
 	u32 fxsave_area_size;
 	struct smm_runtime runtime;
@@ -131,9 +129,6 @@ static inline bool smm_points_to_smram(const void *ptr, const size_t len)
  * - num_concurrent_save_states - number of concurrent cpus needing save state
  *                                space
  * - handler - optional handler to call. Only used during SMM relocation setup.
- * - handler_arg - optional argument to handler for SMM relocation setup. For
- *                 loading the SMM module, the handler_arg is filled in with
- *                 the address of the module's parameters (if present).
  * - runtime - this field is a result only. The SMM runtime location is filled
  *             into this field so the code doing the loading can manipulate the
  *             runtime's assumptions. e.g. updating the APIC id to CPU map to
@@ -154,7 +149,6 @@ struct smm_loader_params {
 	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;
-	void *handler_arg;
 
 	struct smm_runtime *runtime;
 

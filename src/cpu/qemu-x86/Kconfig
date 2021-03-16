@@ -43,6 +43,20 @@ config CPU_QEMU_X86_TSEG_SMM
 
 endchoice
 
+choice
+	prompt "SMM loader"
+	default CPU_QEMU_X86_SMMLOADERV1
+	depends on SMM_TSEG
+
+config CPU_QEMU_X86_SMMLOADERV1
+	bool "smmloader v1"
+
+config CPU_QEMU_X86_SMMLOADERV2
+	bool "smmloader v2"
+	select X86_SMM_LOADER_VERSION2
+
+endchoice
+
 config MAX_CPUS
 	int
 	default 32 if SMM_TSEG

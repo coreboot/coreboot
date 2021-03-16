@@ -837,14 +837,16 @@ pointers; they use NULL or the ERR_PTR mechanism to report failure.
 Headers and includes
 ---------------
 
-Headers should always be included at the top of the file, preferrably in
-alphabetical order. Includes should always use the `#include <file.h>`
-notation, except for rare cases where a file in the same directory that
-is not part of a normal include path gets included (e.g. local headers
-in mainboard directories), which should use `#include "file.h"`. Headers
-that can be included from both assembly files and .c files should keep
-all C code wrapped in `#ifndef __ASSEMBLER__` blocks, including includes
-to other headers that don't follow that provision.
+Headers should always be included at the top of the file. Includes should
+always use the `#include <file.h>` notation, except for rare cases where a file
+in the same directory that is not part of a normal include path gets included
+(e.g. local headers in mainboard directories), which should use `#include
+"file.h"`. Local "file.h" includes should always come separately after all
+<file.h> includes.  Headers that can be included from both assembly files and
+.c files should keep all C code wrapped in `#ifndef __ASSEMBLER__` blocks,
+including includes to other headers that don't follow that provision. Where a
+specific include order is required for technical reasons, it should be clearly
+documented with comments.
 
 Files should generally include every header they need a definition from
 directly (and not include any unnecessary extra headers). Excepted from

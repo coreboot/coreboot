@@ -45,6 +45,59 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
+		device ref dptf on
+			chip drivers/intel/dptf
+				## Disable Active Policy
+				register "policies.active" = "{[0] = {.target=DPTF_NONE}}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,		CPU,	       57, 30000),
+					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 45, 10000),
+					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 56, 30000),
+					[3] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_2, 54, 10000),
+					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 46, 10000)}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,	       100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,	75, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	75, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	75, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,	75, SHUTDOWN)}"
+
+				## Power Limits Control
+				# 7-9W PL1 in 200mW increments, avg over 28-32s interval
+				# PL2 is fixed at 40W, avg over 28-32s interval
+				register "controls.power_limits" = "{
+					.pl1 = {.min_power = 7000,
+						.max_power = 9000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 200,},
+					.pl2 = {.min_power = 40000,
+						.max_power = 40000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,}}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 2500 },
+					[1] = {  24, 1900 },
+					[2] = {  16, 1500 },
+					[3] = {   8, 1000 }}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{[0] = {0}}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "0"
+				register "options.fan.step_size" = "0"
+
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

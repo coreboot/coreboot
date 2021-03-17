@@ -10,8 +10,8 @@ Update this document with changes that should be in the release notes.
 * The chip and board additions and removals will be updated right
   before the release, so those do not need to be added.
 
-Deprecations
-------------
+Deprecations and incompatible changes
+-------------------------------------
 
 ### SAR support in VPD for Chrome OS
 
@@ -33,6 +33,21 @@ steps:
        string
        default "site-local/${BOARD}-sar.hex"
     ```
+
+### CBFS stage file format change
+
+[CB:46484](https://review.coreboot.org/46484) changed the in-flash
+file format of coreboot stages to prepare for per-file signature
+verification. As described in the commit message in more details,
+when manipulating stages in a CBFS, the cbfstool build must match the
+coreboot image so that they're using the same format: coreboot.rom
+and cbfstool must be built from coreboot sources that either both
+contain this change or both do not contain this change.
+
+Since stages are usually only handled by the coreboot build system
+which builds its own cbfstool (and therefore it always matches
+coreboot.rom) this shouldn't be a concern in the vast majority of
+scenarios.
 
 Significant changes
 -------------------

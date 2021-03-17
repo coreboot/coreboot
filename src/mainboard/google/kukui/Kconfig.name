@@ -69,3 +69,7 @@ config BOARD_GOOGLE_FENNEL
 config BOARD_GOOGLE_COZMO
 	bool "->  Cozmo"
 	select BOARD_GOOGLE_JACUZZI_COMMON
+
+config BOARD_GOOGLE_MAKOMO
+	bool "->  Makomo"
+	select BOARD_GOOGLE_JACUZZI_COMMON

@@ -2,6 +2,8 @@ chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
 
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+

@@ -12,6 +12,8 @@ Scope(\_SB) {
 
 	#include "pci_int_defs.asl"
 
+	#include <soc/amd/common/acpi/pci_int.asl>
+
 	#include "mmio.asl"
 
 	#include "pci0.asl"

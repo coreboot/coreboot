@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
+#include <amdblocks/amd_pci_util.h>
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -46,6 +50,28 @@ static const char *pcie_gpp_acpi_name(const struct device *dev)
 	}
 }
 
+static void acpi_device_write_gpp_pci_dev(const struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+
+	assert(dev->path.type == DEVICE_PATH_PCI);
+	assert(name);
+	assert(scope);
+
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
+
+	acpigen_write_ADR_pci_device(dev);
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* b/187083211 - Enable GNB IO-APIC */
+	acpigen_write_pci_FCH_PRT(dev);
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
 static struct device_operations internal_pcie_gpp_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -53,7 +79,7 @@ static struct device_operations internal_pcie_gpp_ops = {
 	.scan_bus		= pci_scan_bridge,
 	.reset_bus		= pci_bus_reset,
 	.acpi_name		= pcie_gpp_acpi_name,
-	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
+	.acpi_fill_ssdt		= acpi_device_write_gpp_pci_dev,
 };
 
 static const struct pci_driver internal_pcie_gpp_driver __pci_driver = {
@@ -69,7 +95,7 @@ static struct device_operations external_pcie_gpp_ops = {
 	.scan_bus		= pciexp_scan_bridge,
 	.reset_bus		= pci_bus_reset,
 	.acpi_name		= pcie_gpp_acpi_name,
-	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
+	.acpi_fill_ssdt		= acpi_device_write_gpp_pci_dev,
 };
 
 static const unsigned short external_pci_gpp_ids[] = {

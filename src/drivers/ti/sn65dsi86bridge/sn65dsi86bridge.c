@@ -31,6 +31,14 @@
 #define DP_MAX_SUPPORTED_RATES		8 /* 16-bit little-endian */
 #define DP_LANE_COUNT_MASK		0xf
 
+/* Backlight configuration */
+#define DP_BACKLIGHT_MODE_SET			0x721
+#define DP_BACKLIGHT_CONTROL_MODE_MASK		0x3
+#define DP_BACKLIGHT_CONTROL_MODE_DPCD		0x2
+#define DP_DISPLAY_CONTROL_REGISTER		0x720
+#define DP_BACKLIGHT_ENABLE			0x1
+#define DP_BACKLIGHT_BRIGHTNESS_MSB		0x722
+
 /* link configuration */
 #define DP_LINK_BW_SET		0x100
 #define DP_LINK_BW_1_62		0x06
@@ -495,6 +503,20 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 	}
 
 	printk(BIOS_ERR, "ERROR: Link training failed 10 times\n");
+}
+
+void sn65dsi86_backlight_enable(uint8_t bus, uint8_t chip)
+{
+	uint8_t val = DP_BACKLIGHT_CONTROL_MODE_DPCD;
+	sn65dsi86_bridge_aux_request(bus, chip, DP_BACKLIGHT_MODE_SET, 1, DPCD_WRITE, &val);
+
+	val = 0xff;
+	sn65dsi86_bridge_aux_request(bus, chip, DP_BACKLIGHT_BRIGHTNESS_MSB, 1,
+				     DPCD_WRITE, &val);
+
+	val = DP_BACKLIGHT_ENABLE;
+	sn65dsi86_bridge_aux_request(bus, chip, DP_DISPLAY_CONTROL_REGISTER, 1,
+				     DPCD_WRITE, &val);
 }
 
 static void sn65dsi86_bridge_assr_config(uint8_t bus, uint8_t chip, int enable)

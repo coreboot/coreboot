@@ -18,5 +18,6 @@ void sn65dsi86_bridge_configure(uint8_t bus, uint8_t chip,
 				struct edid *edid, uint32_t num_of_lines,
 				uint32_t dsi_bpp);
 enum cb_err sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out);
+void sn65dsi86_backlight_enable(uint8_t bus, uint8_t chip);
 
 #endif

@@ -7,6 +7,11 @@ if BOARD_GOOGLE_TROGDOR_COMMON
 config TROGDOR_REV0
 	def_bool n
 
+config TROGDOR_HAS_BRIDGE_BACKLIGHT
+	bool
+	default y if BOARD_GOOGLE_HOMESTAR
+	default n
+
 config TROGDOR_HAS_FINGERPRINT
 	bool
 	default y if BOARD_GOOGLE_COACHZ

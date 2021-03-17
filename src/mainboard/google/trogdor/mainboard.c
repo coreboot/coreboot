@@ -83,6 +83,9 @@ static void display_init(struct edid *edid)
 		return;
 
 	sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, edid, lanes, dsi_bpp);
+	if (CONFIG(TROGDOR_HAS_BRIDGE_BACKLIGHT))
+		sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_CHIP);
+
 	mdp_dsi_video_config(edid);
 	mdss_dsi_video_mode_config(edid, dsi_bpp);
 	mdp_dsi_video_on();

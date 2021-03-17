@@ -1,6 +1,13 @@
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	    # None
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# LTE
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	    # None
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Camera (UFC)
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Camera (WFC)
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	    # None
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# LTE
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
@@ -38,7 +45,38 @@ chip soc/intel/jasperlake
 		},
 	}"
 	device domain 0 on
-		device pci 14.0 on end
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						device usb 2.1 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Camera (UFC)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Camera (WFC)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.3 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 15.0 on end
 		device pci 15.2 on end
 		device pci 1c.7 on end

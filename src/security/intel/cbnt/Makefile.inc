@@ -2,6 +2,24 @@ ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
 
 ramstage-y += cmos.c
 
+# The private key also contains the public key, so use that if a private key is provided.
+ifeq ($(CONFIG_INTEL_CBNT_NEED_KM_PRIV_KEY),y)
+$(obj)/km_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE))
+	openssl pkey -in $< -pubout > $@
+else ifeq ($(CONFIG_INTEL_CBNT_NEED_KM_PUB_KEY),y)
+$(obj)/km_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PUB_KEY_FILE))
+	cp $< $@
+endif
+
+# The private key also contains the public key, so use that if a private key is provided.
+ifeq ($(CONFIG_INTEL_CBNT_NEED_BPM_PRIV_KEY),y)
+$(obj)/bpm_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE))
+	openssl pkey -in $< -pubout > $@
+else ifeq ($(CONFIG_INTEL_CBNT_NEED_BPM_PUB_KEY),y)
+$(obj)/bpm_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PUB_KEY_FILE))
+	cp $< $@
+endif
+
 ifneq ($(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY),"")
 cbfs-files-y += boot_policy_manifest.bin
 boot_policy_manifest.bin-file := $(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY)

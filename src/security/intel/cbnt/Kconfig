@@ -16,6 +16,42 @@ config INTEL_CBNT_SUPPORT
 
 if INTEL_CBNT_SUPPORT
 
+config INTEL_CBNT_NEED_KM_PUB_KEY
+	bool
+
+config INTEL_CBNT_NEED_KM_PRIV_KEY
+	bool
+
+config INTEL_CBNT_KM_PUB_KEY_FILE
+	string "Key manifest (KM) public key"
+	depends on INTEL_CBNT_NEED_KM_PUB_KEY && !INTEL_CBNT_NEED_KM_PRIV_KEY
+	help
+	  Location of the key manifest (KM) public key file in .pem format.
+
+config INTEL_CBNT_KM_PRIV_KEY_FILE
+	string "Key manifest (KM) private key"
+	depends on INTEL_CBNT_NEED_KM_PRIV_KEY
+	help
+	  Location of the key manifest (KM) private key file in .pem format.
+
+config INTEL_CBNT_NEED_BPM_PUB_KEY
+	bool
+
+config INTEL_CBNT_NEED_BPM_PRIV_KEY
+	bool
+
+config INTEL_CBNT_BPM_PUB_KEY_FILE
+	string "Boot policy manifest (BPM) public key"
+	depends on INTEL_CBNT_NEED_BPM_PUB_KEY && !INTEL_CBNT_NEED_BPM_PRIV_KEY
+	help
+	  Location of the boot policy manifest (BPM) public key file in .pem format.
+
+config INTEL_CBNT_BPM_PRIV_KEY_FILE
+	string "Boot policy manifest (BPM) private key"
+	depends on INTEL_CBNT_NEED_BPM_PRIV_KEY
+	help
+	  Location of the boot policy manifest (BPM) private key file in .pem format.
+
 config INTEL_CBNT_KEY_MANIFEST_BINARY
 	string "KM (Key Manifest) binary location"
 	help

@@ -50,10 +50,23 @@ config INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 config INTEL_CBNT_GENERATE_BPM
 	bool "Generate Boot Policy Manifest (BPM)"
 	default y
-	select INTEL_CBNT_NEED_BPM_PRIV_KEY
+	select INTEL_CBNT_NEED_BPM_PRIV_KEY if !INTEL_CBNT_BPM_ONLY_UNSIGNED
 	help
 	  Select y to generate the Boot Policy Manifest (BPM).
 	  Select n to include a BPM binary.
+
+config INTEL_CBNT_BPM_ONLY_UNSIGNED
+	bool "Only unsigned boot policy manifest (BPM)"
+	depends on INTEL_CBNT_GENERATE_BPM
+	help
+	  Skip signing the BPM.
+	  The resulting unsigned BPM will be placed at build/bpm_unsigned.bin.
+	  The resulting coreboot image will not be functional with CBnT.
+	  After the unsigned BPM is signed externally you can add it to cbfs
+	  and fit:
+	  "$ cbfstool build/coreboot.rom add -f bpm.bin -n boot_policy_manifest.bin -t raw -a 16"
+	  "$ ifittool -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s 12 -f build/coreboot.rom"
+	  '-s 12' where 12 is CONFIG_CPU_INTEL_NUM_FIT_ENTRIES.
 
 config INTEL_CBNT_BG_PROV_CFG_FILE
 	string "CBnT json config file"

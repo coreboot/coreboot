@@ -38,6 +38,15 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV) $(CBNT_CFG)
 	printf "    BG_PROV    creating unsigned BPM using config file\n"
 	$(BG_PROV) bpm-gen $@ $< --config=$(CBNT_CFG) --cut
 
+ifeq ($(CONFIG_INTEL_CBNT_BPM_ONLY_UNSIGNED),y)
+build_complete:: $(obj)/bpm_unsigned.bin
+	@printf "\n** WARNING **\n"
+	@printf "Build generated an unsigned BPM image: build/bpm_unsigned.bin.\n"
+	@printf "The resulting image will not work with CBnT.\n"
+	@printf "After you have externally signed the image you can add it to the coreboot image:\n"
+	@printf "$$ cbfstool build/coreboot.rom add -f bpm.bin -n boot_policy_manifest.bin -t raw -a 16\n"
+	@printf "$$ ifittool -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s 12 -f build/coreboot.rom\n"
+else
 $(obj)/bpm.bin: $(obj)/bpm_unsigned.bin $(BG_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE))
 	printf "    BG_PROV    signing real BPM\n"
 	$(BG_PROV) bpm-sign $< $@ $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE) ""
@@ -49,7 +58,10 @@ files_added:: $(obj)/bpm.bin
 	printf "    IFITTOOL   Adding BPM\n"
 	$(IFITTOOL) -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $(obj)/coreboot.rom
 
+endif # CONFIG_INTEL_CBNT_BPM_ONLY_UNSIGNED
+
 else # CONFIG_INTEL_CBNT_GENERATE_BPM
+
 ifneq ($(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY),"")
 cbfs-files-y += boot_policy_manifest.bin
 boot_policy_manifest.bin-file := $(CONFIG_INTEL_CBNT_BOOT_POLICY_MANIFEST_BINARY)

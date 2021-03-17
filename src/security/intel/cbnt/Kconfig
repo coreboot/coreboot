@@ -20,11 +20,24 @@ config INTEL_CBNT_GENERATE_KM
 	bool "Generate Key Manifest (KM)"
 	default y
 	select INTEL_CBNT_NEED_KM_PUB_KEY
-	select INTEL_CBNT_NEED_KM_PRIV_KEY
+	select INTEL_CBNT_NEED_KM_PRIV_KEY if !INTEL_CBNT_KM_ONLY_UNSIGNED
 	select INTEL_CBNT_NEED_BPM_PUB_KEY if !INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 	help
 	  Select y to generate the Key Manifest (KM).
 	  Select n to include a KM binary.
+
+config INTEL_CBNT_KM_ONLY_UNSIGNED
+	bool "Only unsigned key manifest (KM)"
+	depends on INTEL_CBNT_GENERATE_KM
+	help
+	  Skip signing the KM.
+	  The resulting unsigned KM will be placed at build/km_unsigned.bin.
+	  The resulting coreboot image will not be functional with CBnT.
+	  After the unsigned KM is signed externally you can either rebuild
+	  coreboot using that binary or add it to cbfs and fit:
+	  "$ cbfstool build/coreboot.rom add -f km.bin -n key_manifest.bin -t raw -a 16"
+	  "$ ifittool -r COREBOOT -a -n key_manifest.bin -t 11 -s 12 -f build/coreboot.rom"
+	  '-s 12' where 12 is CONFIG_CPU_INTEL_NUM_FIT_ENTRIES.
 
 config INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE
 	bool "KM: use a CBnT json config file"

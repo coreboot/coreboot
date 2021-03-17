@@ -71,6 +71,19 @@ KM_FILE=$(CONFIG_INTEL_CBNT_KEY_MANIFEST_BINARY)
 endif
 
 ifneq ($(KM_FILE),"")
+ifeq ($(CONFIG_INTEL_CBNT_KM_ONLY_UNSIGNED),y)
+$(call add_intermediate, gen_unsigned_km, $(obj)/km_unsigned.bin)
+	@printf "Generating unsgined KM\n"
+
+build_complete::
+	@printf "\n** WARNING **\n"
+	@printf "Build generated an unsigned KM image: build/km_unsiged.bin.\n"
+	@printf "The resulting image will not work with CBnT.\n"
+	@printf "After you have externally signed the image you can add it to the coreboot image:\n"
+	@printf "$$ cbfstool build/coreboot.rom add -f km.bin -n key_manifest.bin -t raw -a 16\n"
+	@printf "$$ ifittool -r COREBOOT -a -n key_manifest.bin -t 11 -s 12 -f build/coreboot.rom\n"
+
+else
 cbfs-files-y += key_manifest.bin
 key_manifest.bin-file := $(KM_FILE)
 key_manifest.bin-type := raw
@@ -80,4 +93,5 @@ $(call add_intermediate, add_km_fit, $(IFITTOOL) set_fit_ptr)
 	$(IFITTOOL) -r COREBOOT -a -n key_manifest.bin -t 11 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $<
 endif
 
+endif # CONFIG_INTEL_CBNT_KM_ONLY_UNSIGNED
 endif # CONFIG_INTEL_CBNT_SUPPORT

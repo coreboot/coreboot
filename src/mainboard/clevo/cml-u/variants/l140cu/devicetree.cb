@@ -189,7 +189,7 @@ chip soc/intel/cannonlake
 			# LPC configuration from lspci -s 1f.0 -xxx
 			# Address 0x84: Decode 0x80 - 0x8F (Port 80)
 			register "gen1_dec" = "0x000c0081"
-			# Address 0x88: Decode 0x68 - 0x6F (PMC)
+			# Address 0x88: Decode 0x68 - 0x6F (EC PM channel)
 			register "gen2_dec" = "0x00040069"
 			# Address 0x8C: Decode 0xE00 - 0xEFF (AP/EC command)
 			register "gen3_dec" = "0x00fc0e01"

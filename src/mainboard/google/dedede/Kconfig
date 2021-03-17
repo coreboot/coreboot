@@ -101,6 +101,7 @@ config MAINBOARD_PART_NUMBER
 	default "Sasukette" if BOARD_GOOGLE_SASUKETTE
 	default "Kracko" if BOARD_GOOGLE_KRACKO
 	default "Blipper" if BOARD_GOOGLE_BLIPPER
+	default "Cret" if BOARD_GOOGLE_CRET
 
 config MAX_CPUS
 	int
@@ -138,5 +139,6 @@ config VARIANT_DIR
 	default "sasukette" if BOARD_GOOGLE_SASUKETTE
 	default "kracko" if BOARD_GOOGLE_KRACKO
 	default "blipper" if BOARD_GOOGLE_BLIPPER
+	default "cret" if BOARD_GOOGLE_CRET
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

@@ -9,7 +9,7 @@
 
 unsigned int get_uart_for_console(void)
 {
-	int val_int;
+	int val_int = COREBOOT_UART_IO_DEFAULT;
 
 	if (vpd_get_int(COREBOOT_UART_IO, VPD_RW_THEN_RO, (int *const) &val_int)) {
 		if (val_int > 3)

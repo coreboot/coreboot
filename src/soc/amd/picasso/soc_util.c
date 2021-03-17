@@ -18,13 +18,13 @@
  */
 
 #define SOCKET_TYPE_SHIFT	28
-#define SOCKET_TYPSE_MASK	(0xf << SOCKET_TYPE_SHIFT)
+#define SOCKET_TYPE_MASK	(0xf << SOCKET_TYPE_SHIFT)
 
 /* some Pollock engineering samples return the wrong socket type */
 enum socket_type get_socket_type(void)
 {
 	uint32_t ebx = cpuid_ebx(0x80000001);
-	ebx = (ebx & SOCKET_TYPSE_MASK) >> SOCKET_TYPE_SHIFT;
+	ebx = (ebx & SOCKET_TYPE_MASK) >> SOCKET_TYPE_SHIFT;
 	return (enum socket_type)ebx;
 }
 

@@ -50,6 +50,7 @@ int azalia_exit_reset(u8 *base)
 static u16 codec_detect(u8 *base)
 {
 	struct stopwatch sw;
+	const u16 codec_mask = (1 << CONFIG_AZALIA_MAX_CODECS) - 1;
 	u16 reg16;
 
 	if (azalia_exit_reset(base) < 0)
@@ -57,7 +58,7 @@ static u16 codec_detect(u8 *base)
 
 	/* clear STATESTS bits (BAR + 0xe)[2:0] */
 	reg16 = read16(base + HDA_STATESTS_REG);
-	reg16 |= 7;
+	reg16 |= codec_mask;
 	write16(base + HDA_STATESTS_REG, reg16);
 
 	/* Wait for readback of register to
@@ -82,7 +83,7 @@ static u16 codec_detect(u8 *base)
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
 	reg16 = read16(base + HDA_STATESTS_REG);
-	reg16 &= 0x0f;
+	reg16 &= codec_mask;
 	if (!reg16)
 		goto no_codec;
 
@@ -265,7 +266,7 @@ static void codecs_init(struct device *dev, u8 *base, u16 codec_mask)
 {
 	int i;
 
-	for (i = 2; i >= 0; i--) {
+	for (i = CONFIG_AZALIA_MAX_CODECS - 1; i >= 0; i--) {
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
 	}

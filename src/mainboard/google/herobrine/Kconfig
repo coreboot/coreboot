@@ -1,0 +1,42 @@
+config BOARD_GOOGLE_HEROBRINE_COMMON  # Umbrella option to be selected by variants
+	def_bool n
+
+if BOARD_GOOGLE_HEROBRINE_COMMON
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select COMMON_CBFS_SPI_WRAPPER
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_RTC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select RTC
+	select SOC_QUALCOMM_SC7280
+	select SPI_FLASH
+	select SPI_FLASH_WINBOND
+	select MAINBOARD_HAS_CHROMEOS
+
+config VBOOT
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_VBNV_FLASH
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select VBOOT_MOCK_SECDATA
+
+config MAINBOARD_DIR
+	string
+	default "google/herobrine"
+
+config MAINBOARD_VENDOR
+	string
+	default "Google"
+
+
+##########################################################
+#### Update below when adding a new derivative board. ####
+##########################################################
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Herobrine" if BOARD_GOOGLE_HEROBRINE
+
+endif # BOARD_GOOGLE_HEROBRINE_COMMON

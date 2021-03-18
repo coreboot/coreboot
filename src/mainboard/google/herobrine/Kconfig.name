@@ -1,0 +1,12 @@
+comment "Herobrine"
+
+if USE_QC_BLOBS
+
+config BOARD_GOOGLE_HEROBRINE
+	bool "-> Herobrine"
+	select BOARD_GOOGLE_HEROBRINE_COMMON
+
+endif
+
+comment "(Herobrine requires 'Allow QC blobs repository')"
+	depends on !USE_QC_BLOBS

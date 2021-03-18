@@ -63,6 +63,22 @@
 #define PCU_CR1_DESIRED_CORES_CFG2_REG                     0xa0
 #define PCU_CR1_DESIRED_CORES_CFG2_REG_LOCK_MASK           BIT(31)
 
+#if !defined(__SIMPLE_DEVICE__)
+#define _UBOX_DEV(func)		pcidev_path_on_root_debug(PCI_DEVFN(UBOX_DEV, func), __func__)
+#else
+#define _UBOX_DEV(func)		PCI_DEV(0, UBOX_DEV, func)
+#endif
+
+#define UBOX_DEV			8
+
+#define UBOX_PMON_BUS			0
+#define UBOX_PMON_DEV			8
+#define UBOX_PMON_FUNC			1
+#define UBOX_DEV_PMON			_UBOX_DEV(UBOX_PMON_FUNC)
+#define SMM_FEATURE_CONTROL		0x7c
+#define SMM_CODE_CHK_EN			BIT(2)
+#define SMM_FEATURE_CONTROL_LOCK	BIT(0)
+
 #define UBOX_DECS_BUS			0
 #define UBOX_DECS_DEV			8
 #define UBOX_DECS_FUNC			2

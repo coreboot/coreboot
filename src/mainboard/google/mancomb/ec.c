@@ -4,7 +4,17 @@
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/smi.h>
 #include <ec/google/chromeec/ec.h>
+#include <soc/smi.h>
 #include <variant/ec.h>
+
+static const struct sci_source espi_sci_sources[] = {
+	{
+		.scimap = SMITYPE_ESPI_SYS,
+		.gpe = GEVENT_24,
+		.direction = SMI_SCI_LVL,
+		.level = SMI_SCI_LVL_HIGH
+	}
+};
 
 void mainboard_ec_init(void)
 {
@@ -17,4 +27,7 @@ void mainboard_ec_init(void)
 	};
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
+
+	/* Configure eSPI VW SCI events */
+	gpe_configure_sci(espi_sci_sources, ARRAY_SIZE(espi_sci_sources));
 }

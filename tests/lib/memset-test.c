@@ -85,7 +85,7 @@ static void test_memset_zero_size(void **state)
 	}
 
 	/* Expect no change in buffer after calling memset with zero size */
-	memset(s->base_buffer, 0xAA, 0);
+	memset(s->base_buffer, 0xAA, (0));
 	assert_memory_equal(s->base_buffer, s->helper_buffer, MEMSET_BUFFER_SZ);
 }
 

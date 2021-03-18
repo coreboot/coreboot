@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef _EARLY_TCSS_H_
+#define _EARLY_TCSS_H_
+
 /* PMC IPC related offsets and commands */
 #define PMC_IPC_USBC_CMD_ID		0xA7
 #define PMC_IPC_USBC_SUBCMD_ID		0x0
@@ -151,3 +154,5 @@ const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
  * returns tscc_port_map of all ports on system
  */
 const struct tcss_port_map *mainboard_tcss_get_port_info(size_t *num_ports);
+
+#endif /* _EARLY_TCSS_H_ */

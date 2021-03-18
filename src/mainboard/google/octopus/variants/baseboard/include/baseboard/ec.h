@@ -34,12 +34,16 @@
  * EC can wake from S3/S0ix with:
  * 1. Lid open
  * 2. Power button
- * 3. Key press
- * 4. Mode change
+ * 3. AC power supply connected
+ * 4. AC power supply disconnected
+ * 5. Key press
+ * 6. Mode change
  */
 #define MAINBOARD_EC_S3_WAKE_EVENTS \
 	(MAINBOARD_EC_S5_WAKE_EVENTS |\
-	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED) |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)    |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED) |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED)     |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_MODE_CHANGE))
 
 #define MAINBOARD_EC_S0IX_WAKE_EVENTS	(MAINBOARD_EC_S3_WAKE_EVENTS)

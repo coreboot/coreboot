@@ -18,7 +18,8 @@ int hda_codec_detect(u8 *base)
 	/* Write back the value once reset bit is set. */
 	write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
 
-	/* Clear the "State Change Status Register" STATESTS bits
+	/*
+	 * Clear the "State Change Status Register" STATESTS bits
 	 * for each of the "SDIN Stat Change Status Flag"
 	 */
 	write8(base + HDA_STATESTS_REG, 0xf);
@@ -31,7 +32,7 @@ int hda_codec_detect(u8 *base)
 	if (azalia_exit_reset(base) < 0)
 		goto no_codec;
 
-	/* Read in Codec location (BAR + 0xe)[2..0]*/
+	/* Read in Codec location (BAR + 0xe)[2..0] */
 	reg8 = read8(base + HDA_STATESTS_REG);
 	reg8 &= 0x0f;
 	if (!reg8)

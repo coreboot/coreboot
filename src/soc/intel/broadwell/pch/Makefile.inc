@@ -8,6 +8,7 @@ ramstage-y += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 romstage-y += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 smm-y      += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 ramstage-y += hda.c
+ramstage-y += ../../../../southbridge/intel/lynxpoint/hda_verb.c
 ramstage-y += iobp.c
 romstage-y += iobp.c
 ramstage-y += fadt.c

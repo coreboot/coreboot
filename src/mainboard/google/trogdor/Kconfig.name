@@ -18,6 +18,10 @@ config BOARD_GOOGLE_LAZOR
 	bool "->  Lazor"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
+config BOARD_GOOGLE_MARZIPAN
+	bool "->  Marzipan"
+	select BOARD_GOOGLE_TROGDOR_COMMON
+
 config BOARD_GOOGLE_POMPOM
 	bool "->  Pompom"
 	select BOARD_GOOGLE_TROGDOR_COMMON

@@ -11,6 +11,7 @@ config TROGDOR_REV0
 config TROGDOR_HAS_FINGERPRINT
 	bool
 	default y if BOARD_GOOGLE_COACHZ
+	default y if BOARD_GOOGLE_MARZIPAN
 	default n
 
 config BOARD_SPECIFIC_OPTIONS
@@ -61,6 +62,7 @@ config MAINBOARD_PART_NUMBER
 	default "Coachz" if BOARD_GOOGLE_COACHZ
 	default "Homestar" if BOARD_GOOGLE_HOMESTAR
 	default "Lazor" if BOARD_GOOGLE_LAZOR
+	default "Marzipan" if BOARD_GOOGLE_MARZIPAN
 	default "Pompom" if BOARD_GOOGLE_POMPOM
 	default "Trogdor" if BOARD_GOOGLE_TROGDOR
 

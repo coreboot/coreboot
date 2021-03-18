@@ -156,6 +156,7 @@
 - Coachz
 - Homestar
 - Lazor
+- Marzipan
 - Pompom
 - Trogdor
 - Veyron_Jaq (Haier Chromebook 11)

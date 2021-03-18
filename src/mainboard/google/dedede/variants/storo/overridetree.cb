@@ -2,6 +2,7 @@ chip soc/intel/jasperlake
 
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # User Facing Camera
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A1
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

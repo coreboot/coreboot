@@ -60,10 +60,6 @@ static void hda_pch_init(struct device *dev, u8 *base)
 	reg32 |= (1 << 24);
 	pci_write_config32(dev, 0xc4, reg32);
 
-	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select HDA mode
-	pci_write_config8(dev, 0x40, reg8);
-
 	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
 	reg8 &= ~(1 << 7); // Docking not supported
 	pci_write_config8(dev, 0x4d, reg8);

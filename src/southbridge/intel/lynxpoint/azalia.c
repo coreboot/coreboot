@@ -81,9 +81,6 @@ static void azalia_pch_init(struct device *dev, u8 *base)
 	if (!pch_is_lp())
 		pci_and_config32(dev, 0xd0, ~(1 << 31));
 
-	// Select Azalia mode
-	pci_or_config8(dev, 0x40, 1); // Audio Control
-
 	// Docking not supported
 	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 

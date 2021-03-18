@@ -162,26 +162,29 @@ static int wait_for_ready(u8 *base)
 }
 
 /*
- * Wait 50usec for the codec to indicate that it accepted the previous command.
- * No response would imply that the code is non-operative.
+ * Wait for the codec to indicate that it accepted the previous command.
+ * No response would imply that the codec is non-operative.
  */
 
 static int wait_for_valid(u8 *base)
 {
 	struct stopwatch sw;
 	u32 reg32;
-	/* Use a 50 usec timeout - the Linux kernel uses the same duration */
-	int timeout = 25;
 
 	/* Send the verb to the codec */
 	reg32 = read32(base + HDA_ICII_REG);
 	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
 	write32(base + HDA_ICII_REG, reg32);
 
-	while (timeout--)
-		udelay(1);
-
-	stopwatch_init_usecs_expire(&sw, 50);
+	/*
+	 * The timeout is never reached when the codec is functioning properly.
+	 * Using a small timeout value can result in spurious errors with some
+	 * codecs, e.g. a codec that is slow to respond but operates correctly.
+	 * When a codec is non-operative, the timeout is only reached once per
+	 * verb table, thus the impact on booting time is relatively small. So,
+	 * use a reasonably long enough timeout to cover all possible cases.
+	 */
+	stopwatch_init_msecs_expire(&sw, 1);
 	while (!stopwatch_expired(&sw)) {
 		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)

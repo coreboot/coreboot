@@ -143,7 +143,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	memset(m_cfg->PchHdaAudioLinkSndwEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
 	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
-	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
+	m_cfg->PchHdaIDispCodecDisconnect = !config->PchHdaIDispCodecEnable;
 
 	/* Disable all PCIe clock sources by default. And set RP irrelevant clock. */
 	for (i = 0; i < CONFIG_MAX_PCIE_CLOCK_SRC; i++) {

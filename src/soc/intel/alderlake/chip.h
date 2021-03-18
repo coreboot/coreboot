@@ -113,9 +113,22 @@ struct soc_intel_alderlake_config {
 
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
-	uint8_t PchHdaIDispLinkTmode;
-	uint8_t PchHdaIDispLinkFrequency;
-	uint8_t PchHdaIDispCodecDisconnect;
+
+	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
+	enum {
+		HDA_TMODE_2T = 0,
+		HDA_TMODE_4T = 2,
+		HDA_TMODE_8T = 3,
+		HDA_TMODE_16T = 4,
+	} PchHdaIDispLinkTmode;
+
+	/* iDisp-Link Freq 4: 96MHz, 3: 48MHz. */
+	enum {
+		HDA_LINKFREQ_48MHZ = 3,
+		HDA_LINKFREQ_96MHZ = 4,
+	} PchHdaIDispLinkFrequency;
+
+	bool PchHdaIDispCodecEnable;
 
 	struct pcie_rp_config pch_pcie_rp[CONFIG_MAX_PCH_ROOT_PORTS];
 	struct pcie_rp_config cpu_pcie_rp[CONFIG_MAX_CPU_ROOT_PORTS];

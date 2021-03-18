@@ -121,11 +121,18 @@ static void azalia_init(struct device *dev)
 	}
 }
 
+static void azalia_final(struct device *dev)
+{
+	/* Set HDCFG.BCLD */
+	pci_or_config16(dev, 0x40, 1 << 1);
+}
+
 static struct device_operations azalia_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_init,
+	.final			= azalia_final,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

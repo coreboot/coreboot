@@ -47,18 +47,18 @@ int azalia_exit_reset(u8 *base)
 	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST);
 }
 
-static int codec_detect(u8 *base)
+static u16 codec_detect(u8 *base)
 {
 	struct stopwatch sw;
-	u32 reg32;
+	u16 reg16;
 
 	if (azalia_exit_reset(base) < 0)
 		goto no_codec;
 
 	/* clear STATESTS bits (BAR + 0xe)[2:0] */
-	reg32 = read32(base + HDA_STATESTS_REG);
-	reg32 |= 7;
-	write32(base + HDA_STATESTS_REG, reg32);
+	reg16 = read16(base + HDA_STATESTS_REG);
+	reg16 |= 7;
+	write16(base + HDA_STATESTS_REG, reg16);
 
 	/* Wait for readback of register to
 	 * match what was just written to it
@@ -67,8 +67,8 @@ static int codec_detect(u8 *base)
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
-		reg32 = read32(base + HDA_STATESTS_REG);
-	} while ((reg32 != 0) && !stopwatch_expired(&sw));
+		reg16 = read16(base + HDA_STATESTS_REG);
+	} while ((reg16 != 0) && !stopwatch_expired(&sw));
 
 	/* Timeout occurred */
 	if (stopwatch_expired(&sw))
@@ -81,12 +81,12 @@ static int codec_detect(u8 *base)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */
-	reg32 = read32(base + HDA_STATESTS_REG);
-	reg32 &= 0x0f;
-	if (!reg32)
+	reg16 = read16(base + HDA_STATESTS_REG);
+	reg16 &= 0x0f;
+	if (!reg16)
 		goto no_codec;
 
-	return reg32;
+	return reg16;
 
 no_codec:
 	/* Codec Not found */
@@ -261,7 +261,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	mainboard_azalia_program_runtime_verbs(base, reg32);
 }
 
-static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
+static void codecs_init(struct device *dev, u8 *base, u16 codec_mask)
 {
 	int i;
 
@@ -275,7 +275,7 @@ void azalia_audio_init(struct device *dev)
 {
 	u8 *base;
 	struct resource *res;
-	u32 codec_mask;
+	u16 codec_mask;
 
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)

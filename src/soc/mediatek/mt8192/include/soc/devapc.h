@@ -21,6 +21,11 @@ enum devapc_ao_offset {
 	AO_APC_CON = 0x0F00,
 };
 
+enum scp_offset {
+	SCP_DOM = 0xA5080,
+	ONETIME_LOCK = 0xA5104,
+};
+
 /* INFRA */
 DEFINE_BIT(SCP_SSPM_SEC, 3)
 DEFINE_BIT(CPU_EB_SEC, 4)

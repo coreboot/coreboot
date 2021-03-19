@@ -1,5 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+fw_config
+	field AUDIO_AMP 35
+		option AUDIO_AMP_I2C_MODE	0
+		option AUDIO_AMP_AUTO_MODE	1
+	end
+end
+
 chip soc/amd/picasso
 
 	# Start : OPN Performance Configuration
@@ -173,7 +180,31 @@ chip soc/amd/picasso
 					# Set low (0) = Select DMIC0
 					# Set high (1) = Select DMIC1
 					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
-					device generic 0.0 on end
+					device generic 0.0 on
+						probe AUDIO_AMP AUDIO_AMP_I2C_MODE
+					end
+				end
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDP1015""
+					# DMIC select GPIO for ACP machine device
+					# This GPIO is used to select DMIC0 or DMIC1 by the
+					# kernel driver. It does not really have a polarity
+					# since low and high control the selection of DMIC and
+					# hence does not have an active polarity.
+					# Kernel driver does not use the polarity field and
+					# instead treats the GPIO selection as follows:
+					# Set low (0) = Select DMIC0
+					# Set high (1) = Select DMIC1
+					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+					device generic 1.0 on
+						probe AUDIO_AMP AUDIO_AMP_AUTO_MODE
+					end
+				end
+				chip drivers/generic/alc1015
+					register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+					device generic 1.1 on
+						probe AUDIO_AMP AUDIO_AMP_AUTO_MODE
+					end
 				end
 			end # Audio
 		end
@@ -183,7 +214,7 @@ chip soc/amd/picasso
 					chip ec/google/chromeec/i2c_tunnel
 						register "uid" = "1"
 						register "remote_bus" = "8"
-						device generic 0.0 on
+						device generic 0.1 on
 							chip drivers/i2c/generic
 								register "hid" = ""10EC1015""
 								register "desc" = ""RT1015 Tweeter Left Speaker Amp""
@@ -198,6 +229,7 @@ chip soc/amd/picasso
 								register "name" = ""TR""
 								device i2c 29 on end
 							end
+							probe AUDIO_AMP AUDIO_AMP_I2C_MODE
 						end
 					end
 				end

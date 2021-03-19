@@ -52,6 +52,9 @@ enum {
 	/* WWAN presence */
 	FW_CONFIG_MASK_WWAN = 0x1,
 	FW_CONFIG_SHIFT_WWAN = 29,
+	/* Audio AMP type */
+	FW_CONFIG_MASK_AUDIO_AMP = 0x1,
+	FW_CONFIG_SHIFT_AUDIO_AMP = 35,
 };
 
 static int get_fw_config(uint64_t *val)

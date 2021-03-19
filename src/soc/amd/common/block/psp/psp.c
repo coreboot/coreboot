@@ -7,7 +7,7 @@
 #include <soc/iomap.h>
 #include "psp_def.h"
 
-static const char *psp_status_nobase = "error: PSP BAR3 not assigned";
+static const char *psp_status_nobase = "error: PSP_ADDR_MSR and PSP BAR3 not assigned";
 static const char *psp_status_halted = "error: PSP in halted state";
 static const char *psp_status_recovery = "error: PSP recovery required";
 static const char *psp_status_errcmd = "error sending command";

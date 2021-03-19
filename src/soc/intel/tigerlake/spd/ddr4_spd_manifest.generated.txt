@@ -14,3 +14,4 @@ H5AN8G6NCJR-XNC,ddr4-spd-1.hex
 K4AAG165WA-BCTD,ddr4-spd-8.hex
 H5ANAG6NDMR-XNC,ddr4-spd-2.hex
 H5ANAG6NCJR-XNC,ddr4-spd-9.hex
+K4AAG165WB-BCWE,ddr4-spd-9.hex

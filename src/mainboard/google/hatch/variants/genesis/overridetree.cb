@@ -182,42 +182,43 @@ chip soc/intel/cannonlake
 		},
 	}"
 
-	# PCIe port 7 for LAN
+	# PCIe root port 7 for LAN
 	register "PcieRpEnable[6]" = "1"
 	register "PcieRpLtrEnable[6]" = "1"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"
 	register "PcieClkSrcClkReq[0]" = "0"
 
-	# PCIe port 8 for WLAN
+	# PCIe root port 8 for WLAN
 	register "PcieRpEnable[7]" = "1"
 	register "PcieRpLtrEnable[7]" = "1"
 	# Uses CLK SRC 5
 	register "PcieClkSrcUsage[5]" = "7"
 	register "PcieClkSrcClkReq[5]" = "5"
 
-	# PCIe port 9 for TPU #0
+	# PCIe root port 9 for SSD (PCIe Lanes 11, 12)
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
-	# RP 9 uses CLK SRC 2
-	register "PcieClkSrcUsage[2]" = "8"
-	register "PcieClkSrcClkReq[2]" = "2"
+	# RP 9 uses CLK SRC 1
+	register "PcieClkSrcUsage[1]" = "8"
+	register "PcieClkSrcClkReq[1]" = "1"
 
-	# PCIe port 10 for TPU #1
-	register "PcieRpEnable[9]" = "1"
-	register "PcieRpLtrEnable[9]" = "1"
-	# RP 10 uses CLK SRC 4
-	register "PcieClkSrcUsage[4]" = "9"
-	register "PcieClkSrcClkReq[4]" = "4"
+	# PCIe root port 10 disabled
+	register "PcieRpEnable[9]" = "0"
 
-	# PCIe port 11 (x2) for NVMe hybrid storage devices
+	# PCIe root port 11 TPU1
 	register "PcieRpEnable[10]" = "1"
 	register "PcieRpLtrEnable[10]" = "1"
 	# RP 11 uses CLK SRC 1
-	register "PcieClkSrcUsage[1]" = "10"
-	register "PcieClkSrcClkReq[1]" = "1"
-	# Disable the remaining port 12
-	register "PcieRpEnable[11]" = "0"
+	register "PcieClkSrcUsage[4]" = "10"
+	register "PcieClkSrcClkReq[4]" = "4"
+
+	# PCIe root port 12 TPU0
+	register "PcieRpEnable[11]" = "1"
+	register "PcieRpLtrEnable[11]" = "1"
+	# RP 11 uses CLK SRC 1
+	register "PcieClkSrcUsage[2]" = "11"
+	register "PcieClkSrcClkReq[2]" = "2"
 
 	# PCIe port 13 for i350 NIC (x4)
 	register "PcieRpEnable[12]" = "1"
@@ -225,6 +226,9 @@ chip soc/intel/cannonlake
 	# RP 13 uses CLK SRC 3
 	register "PcieClkSrcUsage[3]" = "12"
 	# RP 13 does not use a source clock request line
+	# NOTE: Any value other than a valid source-clock-request (0-5) is
+	# effectively "not connected"
+	register "PcieClkSrcClkReq[3]" = "0xFF"
 	# Disable the remaining ports 14-16
 	register "PcieRpEnable[13]" = "0"
 	register "PcieRpEnable[14]" = "0"
@@ -415,8 +419,8 @@ chip soc/intel/cannonlake
 				device i2c 1a on end
 			end
 		end #I2C #4
-		device pci 1a.0 on  end # eMMC
-		device pci 1c.6 on # PCI Express Port 7 (LAN)
+		device pci 1a.0 off end # eMMC
+		device pci 1c.6 on # PCI Root Port 7 (LAN)
 			chip drivers/net # RTL8111H Ethernet NIC
 				register "customized_leds" = "0x05af"
 				register "wake" = "GPE0_DW1_07" # GPP_C7
@@ -428,23 +432,23 @@ chip soc/intel/cannonlake
 				device pci 00.0 on end
 			end
 		end
-		device pci 1c.7 on # PCI Express Port 8 (WLAN)
+		device pci 1c.7 on # PCI Root Port 8 (WLAN)
 			register "PcieRpSlotImplemented[7]" = "1" # M.2 Slot
 		end
-		device pci 1d.0 on # PCI Express Port 9 (TPU)
+		device pci 1d.0 on # PCI Root Port 9 (TPU)
 			register "PcieRpSlotImplemented[8]" = "1" # M.2 Slot
 		end
-		device pci 1d.1 on # PCI Express Port 10 (TPU)
-			register "PcieRpSlotImplemented[9]" = "1" # M.2 Slot
-		end
-		device pci 1d.2 on end # PCI Express Port 11 (X2 NVMe)
-		device pci 1d.3 off end # PCI Express Port 12 (non-root)
-		device pci 1d.4 on # PCI Express Port 13 (X4 i350 NIC)
+		device pci 1d.1 off end # PCI Root Port 10 (Not connected)
+		device pci 1d.2 on end # PCI Root Port 11 (TPU1)
+			register "PcieRpSlotImplemented[10]" = "1" # M.2 Slot
+		device pci 1d.3 on end # PCI Root Port 12 (TPU0)
+			register "PcieRpSlotImplemented[11]" = "1" # M.2 Slot
+		device pci 1d.4 on # PCI Root Port 13 (X4 i350 NIC)
 			register "PcieRpSlotImplemented[12]" = "0" # Built-in
 		end
-		device pci 1d.5 off end # PCI Express Port 14 (non-root)
-		device pci 1d.6 off end # PCI Express Port 15 (non-root)
-		device pci 1d.7 off end # PCI Express Port 16 (non-root)
+		device pci 1d.5 on end # PCI Root Port 14 (non-root)
+		device pci 1d.6 on end # PCI Root Port 15 (non-root)
+		device pci 1d.7 on end # PCI Root Port 16 (non-root)
 		device pci 1e.3 off end # GSPI #1
 	end
 

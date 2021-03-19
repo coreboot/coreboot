@@ -59,6 +59,8 @@ ramstage-y += ../common/usb.c usb.c
 ramstage-y += ../common/wdt.c
 ramstage-y += mt6360.c
 
+BL31_MAKEARGS += PLAT=mt8195
+
 MT8195_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8195
 
 DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram

@@ -7,6 +7,7 @@
 #include <acpi/acpi.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
+#include <amdblocks/i2c.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <smbios.h>

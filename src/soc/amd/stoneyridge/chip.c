@@ -14,12 +14,12 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <amdblocks/i2c.h>
 
 #include "chip.h"
 
 /* Supplied by i2c.c */
-extern struct device_operations stoneyridge_i2c_mmio_ops;
-extern const char *i2c_acpi_name(const struct device *dev);
+extern struct device_operations soc_amd_i2c_mmio_ops;
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
@@ -98,6 +98,18 @@ static struct device_operations pci_domain_ops = {
 	.acpi_name	  = soc_acpi_name,
 };
 
+static void set_mmio_dev_ops(struct device *dev)
+{
+	switch (dev->path.mmio.addr) {
+	case I2CA_BASE_ADDRESS:
+	case I2CB_BASE_ADDRESS:
+	case I2CC_BASE_ADDRESS:
+	case I2CD_BASE_ADDRESS:
+		dev->ops = &soc_amd_i2c_mmio_ops;
+		break;
+	}
+}
+
 static void enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
@@ -109,8 +121,7 @@ static void enable_dev(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 		break;
 	case DEVICE_PATH_MMIO:
-		if (i2c_acpi_name(dev) != NULL)
-			dev->ops = &stoneyridge_i2c_mmio_ops;
+		set_mmio_dev_ops(dev);
 		break;
 	default:
 		break;

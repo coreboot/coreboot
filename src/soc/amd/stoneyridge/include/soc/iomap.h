@@ -15,6 +15,12 @@
 #define I2C_DEVICE_SIZE			0x00001000
 #define I2C_DEVICE_COUNT		4
 
+#define I2C_BUS_ADDRESS(x)		(I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * (x))
+#define I2CA_BASE_ADDRESS		(I2C_BUS_ADDRESS(0))
+#define I2CB_BASE_ADDRESS		(I2C_BUS_ADDRESS(1))
+#define I2CC_BASE_ADDRESS		(I2C_BUS_ADDRESS(2))
+#define I2CD_BASE_ADDRESS		(I2C_BUS_ADDRESS(3))
+
 #if CONFIG(HPET_ADDRESS_OVERRIDE)
 #error HPET address override is not allowed and must be fixed at 0xfed00000
 #endif

@@ -250,10 +250,4 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
 int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
 
-/* Initialize all the i2c buses that are marked with early init. */
-void i2c_soc_early_init(void);
-
-/* Initialize all the i2c buses that are not marked with early init. */
-void i2c_soc_init(void);
-
 #endif /* AMD_STONEYRIDGE_SOUTHBRIDGE_H */

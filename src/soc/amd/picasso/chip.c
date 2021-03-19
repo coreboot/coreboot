@@ -14,7 +14,7 @@
 #include <fsp/api.h>
 
 /* Supplied by i2c.c */
-extern struct device_operations picasso_i2c_mmio_ops;
+extern struct device_operations soc_amd_i2c_mmio_ops;
 /* Supplied by uart.c */
 extern struct device_operations picasso_uart_mmio_ops;
 
@@ -51,7 +51,7 @@ static void set_mmio_dev_ops(struct device *dev)
 	case APU_I2C2_BASE:
 	case APU_I2C3_BASE:
 	case APU_I2C4_BASE:
-		dev->ops = &picasso_i2c_mmio_ops;
+		dev->ops = &soc_amd_i2c_mmio_ops;
 		break;
 	case APU_UART0_BASE:
 	case APU_UART1_BASE:

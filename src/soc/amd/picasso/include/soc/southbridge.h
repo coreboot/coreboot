@@ -181,12 +181,6 @@ void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
 void sb_clk_output_48Mhz(void);
 
-/* Initialize all the i2c buses that are marked with early init. */
-void i2c_soc_early_init(void);
-
-/* Initialize all the i2c buses that are not marked with early init. */
-void i2c_soc_init(void);
-
 /* Allow the board to change the default I2C pad configuration */
 void mainboard_i2c_override(int bus, uint32_t *pad_settings);
 

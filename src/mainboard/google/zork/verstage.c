@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <amdblocks/gpio_banks.h>
+#include <amdblocks/i2c.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <security/vboot/vboot_common.h>

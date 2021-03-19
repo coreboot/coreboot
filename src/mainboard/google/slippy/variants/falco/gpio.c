@@ -2,7 +2,7 @@
 
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
-const struct pch_lp_gpio_map mainboard_gpio_map[] = {
+const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 0: UNUSED */
 	LP_GPIO_UNUSED,        /* 1: UNUSED */
 	LP_GPIO_UNUSED,        /* 2: UNUSED */

@@ -90,7 +90,7 @@ void early_pch_init(void)
 	pch_enable_bars();
 
 #if CONFIG(INTEL_LYNXPOINT_LP)
-	setup_pch_lp_gpios(mainboard_gpio_map);
+	setup_pch_lp_gpios(mainboard_lp_gpio_map);
 #else
 	setup_pch_gpios(&mainboard_gpio_map);
 #endif

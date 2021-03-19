@@ -52,7 +52,7 @@ void mainboard_romstage_entry(void)
 	set_max_freq();
 
 	/* Initialize GPIOs */
-	setup_pch_lp_gpios(mainboard_gpio_map);
+	setup_pch_lp_gpios(mainboard_lp_gpio_map);
 
 	mainboard_fill_pei_data(&pei_data);
 	mainboard_fill_spd_data(&pei_data);

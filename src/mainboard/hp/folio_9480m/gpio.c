@@ -2,7 +2,7 @@
 
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
-const struct pch_lp_gpio_map mainboard_gpio_map[] = {
+const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {
 	[0]  = { .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_IRQ_LEVEL },
 	[1]  = { .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_INVERT | GPIO_IRQ_LEVEL },
 	[2]  = LP_GPIO_OUT_LOW,

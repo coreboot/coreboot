@@ -2,7 +2,7 @@
 
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
-const struct pch_lp_gpio_map mainboard_gpio_map[] = {
+const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {
 	[0]  = LP_GPIO_INPUT,
 	[1]  = LP_GPIO_INPUT,
 	[2]  = LP_GPIO_INPUT,

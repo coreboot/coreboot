@@ -2,7 +2,7 @@
 
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
-const struct pch_lp_gpio_map mainboard_gpio_map[] = {
+const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {
 	LP_GPIO_NATIVE,        /* 0: LPSS_UART1_RXD */
 	LP_GPIO_NATIVE,        /* 1: LPSS_UART1_TXD */
 	LP_GPIO_NATIVE,        /* 2: LPSS_UART1_RTS_N_R */

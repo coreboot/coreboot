@@ -21,7 +21,6 @@
 #define GPP_C			0xA
 #define GPP_E			0xB
 
-#define GPIO_NUM_GROUPS		11
 #define GPIO_MAX_NUM_PER_GROUP	24
 
 /*

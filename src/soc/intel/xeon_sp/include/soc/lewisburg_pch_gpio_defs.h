@@ -33,7 +33,6 @@
 #define COMM_2			5
 #define  GPD			0xC
 
-#define GPIO_NUM_GROUPS			13
 #define GPIO_MAX_NUM_PER_GROUP		24
 
 /* Group A */

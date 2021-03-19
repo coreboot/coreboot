@@ -17,7 +17,6 @@
 #define GPP_F			5
 #define GPP_G			6
 #define GPD			7
-#define GPIO_NUM_GROUPS		8
 #define GPIO_MAX_NUM_PER_GROUP	24
 
 #define GPIO_DWx_COUNT		2 /* DW0 and DW1 */

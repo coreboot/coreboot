@@ -22,7 +22,6 @@
 #define GPP_GPD			0xA
 #define GPP_E			0xD
 
-#define GPIO_NUM_GROUPS		12
 #define GPIO_MAX_NUM_PER_GROUP	24
 #define SD_PWR_EN_PIN		GPP_H1
 

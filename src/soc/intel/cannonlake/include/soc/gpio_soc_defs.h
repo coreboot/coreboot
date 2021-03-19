@@ -25,7 +25,6 @@
 #define GROUP_JTAG		0xE
 #define GROUP_HVMOS		0xF
 
-#define GPIO_NUM_GROUPS		15
 #define GPIO_MAX_NUM_PER_GROUP	24
 
 /*

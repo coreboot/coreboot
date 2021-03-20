@@ -16,7 +16,7 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 
 	/* FIXME: on X86_64 the save state size is smaller than the size of the SMM stub */
 	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);
-	printk(BIOS_DEBUG, "Save state size: 0x%lx bytes\n", *smm_save_state_size);
+	printk(BIOS_DEBUG, "Save state size: 0x%zx bytes\n", *smm_save_state_size);
 }
 
 /*

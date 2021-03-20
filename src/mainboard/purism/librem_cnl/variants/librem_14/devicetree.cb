@@ -229,7 +229,8 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[2]" = "2"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
-		device pci 1c.7 on	# PCI Express Port 8 -- x1 (LAN)
+		device pci 1c.7 on	# PCI Express Port 8
+			device pci 00.0 on end # x1 (LAN)
 			register "PcieRpEnable[7]" = "1"
 			register "PcieClkSrcUsage[3]" = "7"
 			register "PcieClkSrcClkReq[3]" = "3"

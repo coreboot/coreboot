@@ -31,7 +31,7 @@ SECTIONS {
 	 */
 	PROGRAM_SZ = SIZEOF(.text) + 512;
 
-	. = MIN(_ID_SECTION, _FIT_POINTER) - EARLYASM_SZ;
+	. = MIN(_ECFW_PTR, MIN(_ID_SECTION, _FIT_POINTER)) - EARLYASM_SZ;
 	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);
 	BOOTBLOCK_TOP = .;
 	.init (.) : {
@@ -55,6 +55,13 @@ SECTIONS {
 	/* Flashrom and FILO have two alternatives for the location of .id section. */
 	_ID_SECTION_END = SIZEOF(.fit_pointer) && SIZEOF(.id) > 0x28 ? 0xffffff80 : _X86_RESET_VECTOR;
 	_ID_SECTION = _ID_SECTION_END - SIZEOF(.id);
+
+	. = _ECFW_PTR;
+	.ecfw_ptr (.): {
+		ASSERT((SIZEOF(.ecfw_ptr) == CONFIG_ECFW_PTR_SIZE), "Size of ecfw_ptr is incorrect");
+		KEEP(*(.ecfw_ptr));
+	}
+	_ECFW_PTR = SIZEOF(.ecfw_ptr) ? CONFIG_ECFW_PTR_ADDR : _X86_RESET_VECTOR;
 
 	. = _FIT_POINTER;
 	.fit_pointer (.): {

@@ -340,4 +340,23 @@ config MEMLAYOUT_LD_FILE
 	string
 	default "src/arch/x86/memlayout.ld"
 
+# Some EC need an "EC firmware pointer" (a data structure hinting the address
+# of its firmware blobs) being put at a fixed position. Its space
+# (__section__(".ecfw_ptr")) should be reserved if it lies in the range of a
+# stage. Different EC may have different format and/or value for it. The actual
+# address of EC firmware pointer should be provided in the Kconfig of the EC
+# requiring it, and its value could be filled by linking a read-only global
+# data object to the section above.
+
+config ECFW_PTR_ADDR
+	hex
+	help
+	   Address of reserved space for EC firmware pointer, which should not
+	   overlap other data such as reset vector or FIT pointer if present.
+
+config ECFW_PTR_SIZE
+	int
+	help
+	   Size of reserved space for EC firmware pointer
+
 endif

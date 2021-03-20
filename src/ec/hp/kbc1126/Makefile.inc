@@ -1,7 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_EC_HP_KBC1126_ECFW_IN_CBFS),y)
-KBC1126_EC_INSERT:=$(top)/util/kbc1126/kbc1126_ec_insert
+
+bootblock-y += ecfw_ptr.c
 
 ifeq ($(CONFIG_KBC1126_FIRMWARE),y)
 cbfs-files-y += ecfw1.bin
@@ -14,15 +15,6 @@ ecfw1.bin-type := raw
 ecfw2.bin-file := $(call strip_quotes,$(CONFIG_KBC1126_FW2))
 ecfw2.bin-position := $(CONFIG_KBC1126_FW2_OFFSET)
 ecfw2.bin-type := raw
-endif
-
-$(call add_intermediate, kbc1126_ec_insert)
-ifeq ($(CONFIG_KBC1126_FIRMWARE),y)
-	printf "    Building kbc1126_ec_insert.\n"
-	$(MAKE) -C util/kbc1126
-	printf "    KBC1126    Inserting KBC1126 firmware blobs.\n"
-	$(KBC1126_EC_INSERT) $(obj)/coreboot.pre \
-		$(CONFIG_KBC1126_FW1_OFFSET) $(CONFIG_KBC1126_FW2_OFFSET)
 endif
 
 build_complete::

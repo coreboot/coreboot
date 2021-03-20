@@ -27,6 +27,12 @@ config KBC1126_FIRMWARE
 	  Select this option to add the two firmware blobs for KBC1126.
 	  You need these two blobs to power on your machine.
 
+config ECFW_PTR_ADDR
+	default 0xffffff00
+
+config ECFW_PTR_SIZE
+	default 8
+
 config KBC1126_FW1
 	string "KBC1126 firmware #1 path and filename"
 	depends on KBC1126_FIRMWARE
@@ -37,9 +43,9 @@ config KBC1126_FW1
 	  vendor firmware.
 
 config KBC1126_FW1_OFFSET
-	string "Offset of KBC1126 firmware #1"
+	hex "Offset of KBC1126 firmware #1"
 	depends on KBC1126_FIRMWARE
-	default "0xfffe8000"
+	default 0xfffe8000
 
 config KBC1126_FW2
 	string "KBC1126 filename #2 path and filename"
@@ -51,8 +57,8 @@ config KBC1126_FW2
 	  vendor firmware.
 
 config KBC1126_FW2_OFFSET
-	string "Offset of KBC1126 firmware #2"
+	hex "Offset of KBC1126 firmware #2"
 	depends on KBC1126_FIRMWARE
-	default "0xfffd0000"
+	default 0xfffd0000
 
 endif

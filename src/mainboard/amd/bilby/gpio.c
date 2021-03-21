@@ -9,8 +9,6 @@
  * ramstage.
  */
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
-	/* EC SCI# */
-	PAD_SCI(GPIO_6, PULL_UP, EDGE_LOW),
 	/* I2S SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S LRCLK */
@@ -23,8 +21,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_31, PULL_UP),
 	/* NFC IRQ */
 	PAD_INT(GPIO_69, PULL_UP, EDGE_LOW, STATUS),
-	/* NFC wake output# */
-	PAD_GPO(GPIO_89, HIGH),
 };
 
 void mainboard_program_gpios(void)

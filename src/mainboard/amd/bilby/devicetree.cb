@@ -130,10 +130,10 @@ chip soc/amd/picasso
 	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[2]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[3]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[4]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[5]" = "GPP_CLK_OFF"
-	register "gpp_clk_config[6]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[5]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[6]" = "GPP_CLK_REQ"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end
@@ -143,7 +143,9 @@ chip soc/amd/picasso
 		device pci 0.0 on  end # Root Complex
 		device pci 0.2 on  end # IOMMU
 		device pci 1.0 on  end # Dummy Host Bridge
-		device pci 1.1 on  end # Bridge to PCIe Ethernet chip
+		device pci 1.1 on  end # GPP Bridge 0
+		device pci 1.2 on  end # GPP Bridge 1
+		device pci 1.5 on  end # NVMe
 		device pci 8.0 on  end # Dummy Host Bridge
 		device pci 8.1 on      # Bridge to Bus A
 			device pci 0.0 on  end # Internal GPU

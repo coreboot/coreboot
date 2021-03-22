@@ -668,3 +668,13 @@ void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num)
 		pcr_rmw8(comm->port, GPIO_MISCCFG,
 				misccfg_pm_mask, misccfg_pm_values[i]);
 }
+
+size_t gpio_get_index_in_group(gpio_t pad)
+{
+	const struct pad_community *comm;
+	size_t pin;
+
+	comm = gpio_get_community(pad);
+	pin = relative_pad_in_comm(comm, pad);
+	return gpio_within_group(comm, pin);
+}

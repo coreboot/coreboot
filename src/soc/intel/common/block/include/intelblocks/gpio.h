@@ -235,5 +235,7 @@ void block_gpio_enable(struct device *dev);
  */
 bool gpio_routes_ioapic_irq(unsigned int irq);
 
+size_t gpio_get_index_in_group(gpio_t pad);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

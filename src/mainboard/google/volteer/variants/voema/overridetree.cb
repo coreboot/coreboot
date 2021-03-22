@@ -9,8 +9,7 @@ chip soc/intel/tigerlake
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C Port 0
 
 	register "TcssAuxOri" = "1"
-	register "IomTypeCPortPadCfg[0]" = "0x090E000A"
-	register "IomTypeCPortPadCfg[1]" = "0x090E000D"
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
 	# Disable WLAN PCIE 7
 	register "PcieRpEnable[6]" = "0"

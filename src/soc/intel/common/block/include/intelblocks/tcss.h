@@ -3,6 +3,8 @@
 #ifndef _TCSS_H_
 #define _TCSS_H_
 
+#include <intelblocks/gpio.h>
+
 /* PMC IPC related offsets and commands */
 #define PMC_IPC_USBC_CMD_ID		0xA7
 #define PMC_IPC_USBC_SUBCMD_ID		0x0
@@ -136,7 +138,17 @@ struct tcss_port_map {
 	uint8_t usb3_port; /* USB3 Port Number */
 };
 
-void tcss_configure(void);
+struct typec_aux_bias_pads {
+	gpio_t pad_auxn_dc;
+	gpio_t pad_auxp_dc;
+};
+
+/*
+ * 1) Initialize TCSS muxes to disconnected state
+ * 2) Configure GPIO pads to provide DC Bias on AUX signals
+ * 3) Detect DP-over-Type-C alternate mode
+ */
+void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
 
 /*
  * Mainboard method to setup any mux config needed for TCSS display operations.

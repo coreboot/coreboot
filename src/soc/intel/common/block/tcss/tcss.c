@@ -4,11 +4,17 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/pmc_ipc.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/tcss.h>
 #include <inttypes.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
+#include <soc/tcss.h>
 #include <stdlib.h>
+
+#define BIAS_CTRL_VW_INDEX_SHIFT		16
+#define BIAS_CTRL_BIT_POS_SHIFT			8
 
 static uint32_t tcss_make_conn_cmd(int u, int u3, int u2, int ufp, int hsl,
 					int sbu, int acc)
@@ -307,7 +313,32 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 	}
 }
 
-void tcss_configure(void)
+static uint32_t calc_bias_ctrl_reg_value(gpio_t pad)
+{
+	unsigned int vw_index, vw_bit;
+	const unsigned int cpu_pid = gpio_get_pad_cpu_portid(pad);
+	if (!gpio_get_vw_info(pad, &vw_index, &vw_bit) || !cpu_pid)
+		return 0;
+
+	return vw_index << BIAS_CTRL_VW_INDEX_SHIFT |
+		vw_bit << BIAS_CTRL_BIT_POS_SHIFT |
+		cpu_pid;
+}
+
+static void tcss_configure_aux_bias_pads(
+	const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS])
+{
+	for (size_t i = 0; i < MAX_TYPE_C_PORTS; i++) {
+		if (pads[i].pad_auxn_dc && pads[i].pad_auxp_dc) {
+			REGBAR32(PID_IOM, IOM_AUX_BIAS_CTRL_PULLUP_OFFSET(i)) =
+				calc_bias_ctrl_reg_value(pads[i].pad_auxp_dc);
+			REGBAR32(PID_IOM, IOM_AUX_BIAS_CTRL_PULLDOWN_OFFSET(i)) =
+				calc_bias_ctrl_reg_value(pads[i].pad_auxn_dc);
+		}
+	}
+}
+
+void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PORTS])
 {
 	const struct tcss_port_map *port_map;
 	size_t num_ports;
@@ -319,6 +350,9 @@ void tcss_configure(void)
 
 	for (i = 0; i < num_ports; i++)
 		tcss_init_mux(i, &port_map[i]);
+
+	/* This should be performed before alternate modes are entered */
+	tcss_configure_aux_bias_pads(aux_bias_pads);
 
 	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
 		tcss_configure_dp_mode(port_map, num_ports);

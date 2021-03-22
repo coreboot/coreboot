@@ -23,6 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
+#include <soc/tcss.h>
 #include <string.h>
 
 /* THC assignment definition */
@@ -188,8 +189,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->UsbTcPortEn = config->UsbTcPortEn;
 	params->TcssAuxOri = config->TcssAuxOri;
-	for (i = 0; i < 8; i++)
-		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];
+
+	/* Explicitly clear this field to avoid using defaults */
+	memset(params->IomTypeCPortPadCfg, 0, sizeof(params->IomTypeCPortPadCfg));
 
 	/*
 	 * Set FSPS UPD ITbtConnectTopologyTimeoutInMs with value 0. FSP will
@@ -460,8 +462,10 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 		printk(BIOS_DEBUG, "FSP MultiPhaseSiInit %s/%s called\n",
 			__FILE__, __func__);
 
-		if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS))
-			tcss_configure();
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS)) {
+			const config_t *config = config_of_soc();
+			tcss_configure(config->typec_aux_bias_pads);
+		}
 		break;
 	default:
 		break;

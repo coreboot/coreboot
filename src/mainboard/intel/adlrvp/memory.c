@@ -14,8 +14,8 @@ static const struct mb_cfg ddr4_mem_config = {
 
 	.ddr_config = {
 
-		/* Baseboard uses only 100ohm Rcomp resistors */
-		.rcomp_resistor = {100, 100, 100},
+		/* Baseboard uses only 100ohm Rcomp resistor */
+		.rcomp_resistor = 100,
 
 		/* Baseboard Rcomp target values */
 		.rcomp_targets = {40, 30, 33, 33, 30},
@@ -148,8 +148,8 @@ static const struct mb_cfg ddr5_mem_config = {
 	.UserBd = BOARD_TYPE_MOBILE,
 
 	.ddr_config = {
-		/* Baseboard uses only 100ohm Rcomp resistors */
-		.rcomp_resistor = {100, 100, 100},
+		/* Baseboard uses only 100ohm Rcomp resistor */
+		.rcomp_resistor = 100,
 
 		/* Baseboard Rcomp target values */
 		.rcomp_targets = {50, 30, 30, 30, 27},

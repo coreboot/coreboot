@@ -28,9 +28,8 @@ static void meminit_lp5x(FSP_M_CONFIG *mem_cfg, const struct mem_lp5x_config *lp
 static void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct mem_ddr_config *ddr_config)
 {
 	mem_cfg->DqPinsInterleaved = ddr_config->dq_pins_interleaved;
-	memcpy(&mem_cfg->RcompResistor, ddr_config->rcomp_resistor,
-	       sizeof(mem_cfg->RcompResistor));
-	memcpy(&mem_cfg->RcompTarget, ddr_config->rcomp_targets, sizeof(mem_cfg->RcompTarget));
+	mem_cfg->RcompResistor = ddr_config->rcomp_resistor;
+	memcpy(mem_cfg->RcompTarget, ddr_config->rcomp_targets, sizeof(mem_cfg->RcompTarget));
 }
 
 static const struct soc_mem_cfg soc_mem_cfg[] = {

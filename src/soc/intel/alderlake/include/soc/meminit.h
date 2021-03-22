@@ -20,11 +20,10 @@ struct mem_ddr_config {
 	/* Dqs Pins Interleaved Setting. Enable/Disable Control */
 	bool dq_pins_interleaved;
 	/*
-	 * Rcomp resistor values.  These values represent the resistance in
-	 * ohms of the three rcomp resistors attached to the DDR_COMP_0,
-	 * DDR_COMP_1, and DDR_COMP_2 pins on the DRAM.
+	 * Rcomp resistor value. This values represents the resistance in
+	 * ohms of the rcomp resistor attached to the DDR_COMP pin on the SoC.
 	 */
-	uint16_t rcomp_resistor[3];
+	uint16_t rcomp_resistor;
 	/* Rcomp target values. */
 	uint16_t rcomp_targets[5];
 };

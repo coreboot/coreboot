@@ -14,10 +14,10 @@
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <security/vboot/vboot_common.h>
-#include <soc/early_tcss.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -463,8 +463,9 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 		/* TCSS specific initialization here */
 		printk(BIOS_DEBUG, "FSP MultiPhaseSiInit %s/%s called\n",
 			__FILE__, __func__);
-		if (CONFIG(EARLY_TCSS))
-			tcss_early_configure();
+
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS))
+			tcss_configure();
 		break;
 	default:
 		break;

@@ -1,0 +1,10 @@
+config SOC_INTEL_COMMON_BLOCK_TCSS
+	def_bool n
+	help
+	  Sets up USB2/3 port mapping in TCSS MUX and sets MUX to disconnect state
+
+config TCSS_DISPLAY
+	bool "Enable early TCSS display"
+	depends on SOC_INTEL_COMMON_BLOCK_TCSS && RUN_FSP_GOP
+	help
+	  Enable displays to be detected over Type-C ports during boot.

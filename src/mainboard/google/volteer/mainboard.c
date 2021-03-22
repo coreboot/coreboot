@@ -10,7 +10,7 @@
 #include <gpio.h>
 #include <intelblocks/gpio.h>
 #include <security/tpm/tss.h>
-#include <soc/early_tcss.h>
+#include <intelblocks/tcss.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>

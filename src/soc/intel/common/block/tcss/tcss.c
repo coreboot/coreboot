@@ -4,12 +4,11 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/pmc_ipc.h>
+#include <intelblocks/tcss.h>
+#include <inttypes.h>
 #include <security/vboot/vboot_common.h>
-#include <soc/early_tcss.h>
 #include <soc/pci_devs.h>
 #include <stdlib.h>
-#include <inttypes.h>
-
 
 static uint32_t tcss_make_conn_cmd(int u, int u3, int u2, int ufp, int hsl,
 					int sbu, int acc)
@@ -308,7 +307,7 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 	}
 }
 
-void tcss_early_configure(void)
+void tcss_configure(void)
 {
 	const struct tcss_port_map *port_map;
 	size_t num_ports;
@@ -321,6 +320,6 @@ void tcss_early_configure(void)
 	for (i = 0; i < num_ports; i++)
 		tcss_init_mux(i, &port_map[i]);
 
-	if (CONFIG(EARLY_TCSS_DISPLAY))
+	if (CONFIG(TCSS_DISPLAY))
 		tcss_configure_dp_mode(port_map, num_ports);
 }

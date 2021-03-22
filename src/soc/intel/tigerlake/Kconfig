@@ -239,17 +239,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000
 
-config EARLY_TCSS
-	bool "Enable early TCSS device Init"
-	help
-	  Sets up USB2/3 port mapping in TCSS MUX and sets MUX to disconnect state
-
-config EARLY_TCSS_DISPLAY
-	bool "Enable early TCSS display" if EARLY_TCSS
-	depends on EARLY_TCSS && RUN_FSP_GOP
-	help
-	  Enable displays to be detected over Type-C ports during boot.
-
 config DATA_BUS_WIDTH
 	int
 	default 128

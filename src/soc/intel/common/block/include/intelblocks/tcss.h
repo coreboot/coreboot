@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef _EARLY_TCSS_H_
-#define _EARLY_TCSS_H_
+#ifndef _TCSS_H_
+#define _TCSS_H_
 
 /* PMC IPC related offsets and commands */
 #define PMC_IPC_USBC_CMD_ID		0xA7
@@ -136,14 +136,14 @@ struct tcss_port_map {
 	uint8_t usb3_port; /* USB3 Port Number */
 };
 
-void tcss_early_configure(void);
+void tcss_configure(void);
 
 /*
- * Mainboard method to setup any mux config needed for early TCSS display operations.
+ * Mainboard method to setup any mux config needed for TCSS display operations.
  * This function will need to obtain any mux data needed to forward to IOM/PMC
- * Since the mux data may be stored differently by different mainboards this function
- * must be defined by mainboard with its specific mux data stored in a tcss_mux_info
- * struct as defined above.
+ * Since the mux data may be stored differently by different mainboards this
+ * function must be defined by mainboard with its specific mux data stored in a
+ * tcss_mux_info struct as defined above.
  * Returns completed tcss_mux_info structure for the specified port
  */
 const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
@@ -155,4 +155,4 @@ const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
  */
 const struct tcss_port_map *mainboard_tcss_get_port_info(size_t *num_ports);
 
-#endif /* _EARLY_TCSS_H_ */
+#endif /* _TCSS_H_ */

@@ -37,6 +37,7 @@
 #define LPC_GEN2_DEC		0x88
 #define LPC_GEN3_DEC		0x8c
 #define LPC_GEN4_DEC		0x90
+#define LGMR			0x98 /* LPC Generic Memory Range */
 #define GEN_PMCON_1		0xA0
 #define   SMI_LOCK		(1 << 4)
 #define   SMI_LOCK_GP6		(1 << 5)

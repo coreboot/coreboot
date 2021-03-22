@@ -54,7 +54,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_24, LOW),
 	/* GPIO_25: Not available */
 	/* PCIE_RST0_L */
-	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
+	/* TODO: change back to PCIE_RST_L when we figure out why PCIE_RST doesn't go high. */
+	PAD_GPO(GPIO_26, HIGH),
 	/* PCIE_RST1_L */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* GPIO_28: Not available */
@@ -93,7 +94,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPI(GPIO_84, PULL_NONE),
 	/* WWAN_DISABLE */
 	PAD_GPO(GPIO_85, HIGH),
-	/* SPI_CLK2 */
+	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* RAM_ID_1 / DEV_BEEP_DATA */
 	PAD_GPI(GPIO_87, PULL_NONE),
@@ -116,6 +117,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_106, EMMC_SPI2_WP_L_ESPI2_D2, PULL_NONE),
 	/* ESPI1_DATA3 */
 	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
 	/* RAM_ID_0 / DEV_BEEP_EN */
 	PAD_GPI(GPIO_109, PULL_NONE),
 	/* GPIO_110 - GPIO_112: Not available */
@@ -169,6 +172,12 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* PCIE_RST0_L */
+	PAD_GPO(GPIO_26, HIGH),
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* ESPI_SOC_CLK */
+	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* ESPI1_DATA0 */
 	PAD_NF(GPIO_104, SPI2_DO_ESPI2_D0, PULL_NONE),
 	/* ESPI1_DATA1 */

@@ -23,6 +23,13 @@
 #define MCHBAR32(x)	(*(volatile u32 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
 #define MCHBAR64(x)	(*(volatile u64 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
 
+/* REGBAR */
+#define REGBAR_OFFSET(pid, x)	(REG_BASE_ADDRESS + ((pid) << 16) + (x))
+#define REGBAR8(pid, x)		(*(volatile u8 *)(uintptr_t)REGBAR_OFFSET(pid, x))
+#define REGBAR16(pid, x)	(*(volatile u16 *)(uintptr_t)REGBAR_OFFSET(pid, x))
+#define REGBAR32(pid, x)	(*(volatile u32 *)(uintptr_t)REGBAR_OFFSET(pid, x))
+#define REGBAR64(pid, x)	(*(volatile u64 *)(uintptr_t)REGBAR_OFFSET(pid, x))
+
 /* Perform System Agent Initialization during Bootblock phase */
 void bootblock_systemagent_early_init(void);
 

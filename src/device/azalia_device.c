@@ -56,6 +56,11 @@ static u16 codec_detect(u8 *base)
 	if (azalia_exit_reset(base) < 0)
 		goto no_codec;
 
+	if (CONFIG(AZALIA_LOCK_DOWN_R_WO_GCAP)) {
+		/* If GCAP is R/WO, lock it down after deasserting controller reset */
+		write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
+	}
+
 	/* clear STATESTS bits (BAR + 0xe)[2:0] */
 	reg16 = read16(base + HDA_STATESTS_REG);
 	reg16 |= codec_mask;

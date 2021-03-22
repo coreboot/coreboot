@@ -28,6 +28,7 @@
 #include <pc80/i8259.h>
 #include <pc80/isa-dma.h>
 #include <soc/iomap.h>
+#include <soc/intel/common/block/lpc/lpc_def.h>
 #include <soc/irq.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
@@ -216,6 +217,17 @@ static void sc_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 	sc_add_mmio_resources(dev);
 	sc_add_io_resources(dev);
+
+	const config_t *config = config_of_soc();
+	if (config->lpc_lgmr) {
+		struct resource *res;
+		res = new_resource(dev, LGMR);
+		res->base = config->lpc_lgmr & ~(LPC_LGMR_EN);
+		res->size = 64 * KiB;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED
+			| IORESOURCE_RESERVE;
+		pci_write_config32(dev, LGMR, config->lpc_lgmr);
+	}
 }
 
 static void sc_init(struct device *dev)

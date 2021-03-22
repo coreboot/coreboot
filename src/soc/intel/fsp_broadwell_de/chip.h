@@ -25,6 +25,8 @@
 struct soc_intel_fsp_broadwell_de_config {
 	/* PCIe completion timeout value */
 	int pcie_compltoval;
+	/* LPC Generic Memory Range Register value */
+	uint32_t lpc_lgmr;
 };
 
 typedef struct soc_intel_fsp_broadwell_de_config config_t;

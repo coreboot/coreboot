@@ -19,13 +19,6 @@ enum mem_type {
 struct mem_ddr_config {
 	/* Dqs Pins Interleaved Setting. Enable/Disable Control */
 	bool dq_pins_interleaved;
-	/*
-	 * Rcomp resistor value. This values represents the resistance in
-	 * ohms of the rcomp resistor attached to the DDR_COMP pin on the SoC.
-	 */
-	uint16_t rcomp_resistor;
-	/* Rcomp target values. */
-	uint16_t rcomp_targets[5];
 };
 
 struct lpx_dq {
@@ -64,9 +57,22 @@ struct mem_lp5x_config {
 	uint8_t ccc_config;
 };
 
+struct rcomp {
+	/*
+	 * Rcomp resistor value. This values represents the resistance in
+	 * ohms of the rcomp resistor attached to the DDR_COMP pin on the SoC.
+	 *
+	 * Note: If mainboard users don't want to override rcomp related settings
+	 * then associated rcomp UPDs will have its default value.
+	 */
+	uint16_t resistor;
+	/* Rcomp target values. */
+	uint16_t targets[5];
+};
+
 struct mb_cfg {
 	enum mem_type type;
-
+	struct rcomp rcomp;
 	union {
 		/*
 		 * DQ CPU<>DRAM map:

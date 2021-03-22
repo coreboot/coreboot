@@ -8,18 +8,19 @@
 static const struct mb_cfg ddr4_mem_config = {
 	.type = MEM_TYPE_DDR4,
 
+	.rcomp = {
+		/* Baseboard uses only 100ohm Rcomp resistor */
+		.resistor = 100,
+
+		/* Baseboard Rcomp target values */
+		.targets = {40, 30, 33, 33, 30},
+	},
+
 	.ect = true, /* Early Command Training */
 
 	.UserBd = BOARD_TYPE_MOBILE,
 
 	.ddr_config = {
-
-		/* Baseboard uses only 100ohm Rcomp resistor */
-		.rcomp_resistor = 100,
-
-		/* Baseboard Rcomp target values */
-		.rcomp_targets = {40, 30, 33, 33, 30},
-
 		.dq_pins_interleaved = false,
 	},
 };
@@ -143,17 +144,19 @@ static const struct mb_cfg lp5_mem_config = {
 static const struct mb_cfg ddr5_mem_config = {
 	.type = MEM_TYPE_DDR5,
 
+	.rcomp = {
+		/* Baseboard uses only 100ohm Rcomp resistor */
+		.resistor = 100,
+
+		/* Baseboard Rcomp target values */
+		.targets = {50, 30, 30, 30, 27},
+	},
+
 	.ect = true, /* Early Command Training */
 
 	.UserBd = BOARD_TYPE_MOBILE,
 
 	.ddr_config = {
-		/* Baseboard uses only 100ohm Rcomp resistor */
-		.rcomp_resistor = 100,
-
-		/* Baseboard Rcomp target values */
-		.rcomp_targets = {50, 30, 30, 30, 27},
-
 		.dq_pins_interleaved = false,
 	}
 };

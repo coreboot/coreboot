@@ -14,6 +14,17 @@
 #define DDR5_PHYSICAL_CH_WIDTH		32
 #define DDR5_CHANNELS			CHANNEL_COUNT(DDR5_PHYSICAL_CH_WIDTH)
 
+static void set_rcomp_config(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg)
+{
+	if (mb_cfg->rcomp.resistor != 0)
+		mem_cfg->RcompResistor = mb_cfg->rcomp.resistor;
+
+	for (size_t i = 0; i < ARRAY_SIZE(mem_cfg->RcompTarget); i++) {
+		if (mb_cfg->rcomp.targets[i] != 0)
+			mem_cfg->RcompTarget[i] = mb_cfg->rcomp.targets[i];
+	}
+}
+
 static void meminit_lp4x(FSP_M_CONFIG *mem_cfg)
 {
 	mem_cfg->DqPinsInterleaved = 0;
@@ -28,8 +39,6 @@ static void meminit_lp5x(FSP_M_CONFIG *mem_cfg, const struct mem_lp5x_config *lp
 static void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct mem_ddr_config *ddr_config)
 {
 	mem_cfg->DqPinsInterleaved = ddr_config->dq_pins_interleaved;
-	mem_cfg->RcompResistor = ddr_config->rcomp_resistor;
-	memcpy(mem_cfg->RcompTarget, ddr_config->rcomp_targets, sizeof(mem_cfg->RcompTarget));
 }
 
 static const struct soc_mem_cfg soc_mem_cfg[] = {
@@ -215,6 +224,7 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
 
 	mem_cfg->ECT = mb_cfg->ect;
 	mem_cfg->UserBd = mb_cfg->UserBd;
+	set_rcomp_config(mem_cfg, mb_cfg);
 
 	switch (mb_cfg->type) {
 	case MEM_TYPE_DDR4:

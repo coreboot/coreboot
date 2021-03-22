@@ -122,13 +122,12 @@ chip soc/intel/apollolake
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_214_IRQ)"
 				register "uid" = "1"
 				register "cs0_ground" = "0x0"
-				register "combined_sensors_count" = "3"
-				register "combined_sensors[0]" = "0"
-				register "combined_sensors[1]" = "1"
-				register "combined_sensors[2]" = "2"
+				register "combined_sensors_count" = "2"
+				register "combined_sensors[0]" = "1"
+				register "combined_sensors[1]" = "2"
 				register "resolution" = "SX9310_FINEST"
 				register "avg_pos_strength" = "512"
-				register "startup_sensor" = "0"
+				register "startup_sensor" = "1"
 				register "proxraw_strength" = "0"
 				device i2c 28 on end
 			end

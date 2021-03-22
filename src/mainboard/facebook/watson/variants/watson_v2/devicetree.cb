@@ -1,4 +1,5 @@
 chip soc/intel/fsp_broadwell_de
+	register "lpc_lgmr" = "0xb0000001" # CPLD
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

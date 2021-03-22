@@ -241,6 +241,12 @@
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
 		PAD_PULL(pull) | PAD_DEBOUNCE_CONFIG(type) | PAD_DEBOUNCE_CONFIG(time))
 
+/* Wake + debounce configuration */
+#define PAD_WAKE_DEBOUNCE(pin, pull, trigger, waketype, debtype, time)	\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx,			\
+		PAD_PULL(pull) | PAD_TRIGGER(trigger) | PAD_WAKE_ENABLE(waketype) |	\
+		PAD_DEBOUNCE_CONFIG(debtype) | PAD_DEBOUNCE_CONFIG(time))
+
 /* No-connect pad - configured as input with PULL_DOWN */
 #define PAD_NC(pin)							\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_GPIOxx, PAD_PULL(PULL_DOWN))

@@ -99,6 +99,11 @@ static void pirq_setup(void)
 	picr_data_ptr = mainboard_picr_data;
 }
 
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
+}
+
 static void mainboard_init(void *chip_info)
 {
 	int boardid = board_id();
@@ -129,6 +134,8 @@ static void mainboard_init(void *chip_info)
 		     GPP_CLK0_REQ_MAP_MASK,
 		     GPP_CLK0_REQ_MAP_CLK_REQ0 <<
 		     GPP_CLK0_REQ_MAP_SHIFT);
+
+	variant_devtree_update();
 }
 
 /*************************************************

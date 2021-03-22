@@ -107,6 +107,21 @@ chip soc/amd/stoneyridge
 			register "mclk_name" = ""oscout1""
 			device i2c 1a on end
 		end
+		chip drivers/i2c/generic
+			register "hid" = ""10EC5682""
+			register "name" = ""RT58""
+			register "uid" = "1"
+			register "desc" = ""Realtek RT5682""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_14)"
+			register "property_count" = "2"
+			register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[0].name" = ""realtek,jd-src""
+			register "property_list[0].integer" = "1"
+			register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+			register "property_list[1].name" = ""realtek,mclk-name""
+			register "property_list[1].string" = ""oscout1""
+			device i2c 1a on end
+		end
 		chip drivers/generic/max98357a
 			register "hid" = ""MX98357A""
 			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_119)"

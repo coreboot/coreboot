@@ -130,6 +130,7 @@
 #define GPIO_WAKE_S0i3			(1 << 13)
 #define GPIO_WAKE_S3			(1 << 14)
 #define GPIO_WAKE_S4_S5			(1 << 15)
+#define GPIO_WAKE_S0i3_S3		(GPIO_WAKE_S0i3 | GPIO_WAKE_S3)
 #define GPIO_WAKE_S0i3_S4_S5		(GPIO_WAKE_S0i3 | GPIO_WAKE_S4_S5)
 #define GPIO_WAKE_S3_S4_S5		(GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
 #define GPIO_WAKE_MASK			(7 << 13)

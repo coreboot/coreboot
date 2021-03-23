@@ -4,6 +4,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/apob_cache.h>
 #include <amdblocks/memmap.h>
+#include <amdblocks/pmlib.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -19,6 +20,9 @@ asmlinkage void car_stage_entry(void)
 		vboot_sync_ec();
 
 	post_code(0x41);
+
+	/* Snapshot chipset state prior to any FSP call */
+	fill_chipset_state();
 
 	fsp_memory_init(acpi_is_wakeup_s3());
 	soc_update_apob_cache();

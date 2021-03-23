@@ -103,8 +103,8 @@ chip soc/intel/tigerlake
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
-				# Parameter T3 >= 10ms
-				register "generic.reset_delay_ms" = "120"
+				# Parameter T5 >= 180ms
+				register "generic.reset_delay_ms" = "180"
 				# Parameter T2 >= 1ms
 				register "generic.reset_off_delay_ms" = "3"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"

@@ -54,6 +54,7 @@
 #define   PM_ACPI_RTC_WAKE_EN		BIT(29)
 #define PM_RST_CTRL1			0xbe
 #define   SLPTYPE_CONTROL_EN		BIT(5)
+#define   KBRSTEN			BIT(4)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)

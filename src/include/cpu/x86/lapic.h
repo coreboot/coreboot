@@ -2,19 +2,54 @@
 #define CPU_X86_LAPIC_H
 
 #include <arch/mmio.h>
+#include <arch/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
 #include <stdint.h>
 
+static inline bool is_x2apic_mode(void)
+{
+	msr_t msr;
+	msr = rdmsr(LAPIC_BASE_MSR);
+	return (msr.lo & LAPIC_BASE_MSR_X2APIC_MODE);
+}
+
+static inline void x2apic_send_ipi(uint32_t icrlow, uint32_t apicid)
+{
+	msr_t icr;
+	icr.hi = apicid;
+	icr.lo = icrlow;
+	wrmsr(X2APIC_MSR_ICR_ADDRESS, icr);
+}
+
 static __always_inline uint32_t lapic_read(unsigned int reg)
 {
-	return read32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg));
+	uint32_t value, index;
+	msr_t msr;
+
+	if (is_x2apic_mode()) {
+		index = X2APIC_MSR_BASE_ADDRESS + (uint32_t)(reg >> 4);
+		msr = rdmsr(index);
+		value = msr.lo;
+	} else {
+		value = read32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg));
+	}
+	return value;
 }
 
 static __always_inline void lapic_write(unsigned int reg, uint32_t v)
 {
-	write32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg), v);
+	msr_t msr;
+	uint32_t index;
+	if (is_x2apic_mode()) {
+		index = X2APIC_MSR_BASE_ADDRESS + (uint32_t)(reg >> 4);
+		msr.hi = 0x0;
+		msr.lo = v;
+		wrmsr(index, msr);
+	} else {
+		write32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg), v);
+	}
 }
 
 static __always_inline void lapic_wait_icr_idle(void)
@@ -41,9 +76,24 @@ static inline void disable_lapic(void)
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
+static __always_inline unsigned int initial_lapicid(void)
+{
+	uint32_t lapicid;
+	if (is_x2apic_mode())
+		lapicid = lapic_read(LAPIC_ID);
+	else
+		lapicid = cpuid_ebx(1) >> 24;
+	return lapicid;
+}
+
 static __always_inline unsigned int lapicid(void)
 {
-	return lapic_read(LAPIC_ID) >> 24;
+	uint32_t lapicid = lapic_read(LAPIC_ID);
+
+	/* check x2apic mode and return accordingly */
+	if (!is_x2apic_mode())
+		lapicid >>= 24;
+	return lapicid;
 }
 
 #if !CONFIG(AP_IN_SIPI_WAIT)

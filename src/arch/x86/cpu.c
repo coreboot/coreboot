@@ -213,17 +213,6 @@ static void set_cpu_ops(struct device *cpu)
 /* Keep track of default APIC ids for SMM. */
 static int cpus_default_apic_id[CONFIG_MAX_CPUS];
 
-/*
- * When CPUID executes with EAX set to 1, additional processor identification
- * information is returned to EBX register:
- * Default APIC ID: EBX[31-24] - this number is the 8 bit ID that is assigned
- * to the local APIC on the processor during power on.
- */
-static int initial_lapicid(void)
-{
-	return cpuid_ebx(1) >> 24;
-}
-
 /* Function to keep track of cpu default apic_id */
 void cpu_add_map_entry(unsigned int index)
 {

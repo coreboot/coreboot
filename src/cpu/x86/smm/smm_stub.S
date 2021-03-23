@@ -11,6 +11,7 @@
 
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/lapic_def.h>
 
 .code32
 .section ".module_parameters", "aw", @progbits
@@ -29,7 +30,7 @@ fxsave_area_size:
  * APIC id is found at the given index, the contiguous CPU number is index
  * into the table. */
 apic_to_cpu_num:
-.fill CONFIG_MAX_CPUS,1,0xff
+.fill CONFIG_MAX_CPUS,2,0xffff
 /* allows the STM to bring up SMM in 32-bit mode */
 start32_offset:
 .long smm_trampoline32 - _start
@@ -97,16 +98,31 @@ smm_trampoline32:
 
 	/* The CPU number is calculated by reading the initial APIC id. Since
 	 * the OS can maniuplate the APIC id use the non-changing cpuid result
-	 * for APIC id (ebx[31:24]). A table is used to handle a discontiguous
+	 * for APIC id (ax). A table is used to handle a discontiguous
 	 * APIC id space.  */
-	mov	$1, %eax
-	cpuid
-	bswap	%ebx	/* Default APIC id in bl. */
-	mov	$(apic_to_cpu_num), %eax
-	xor	%ecx, %ecx
+apic_id:
+        mov $LAPIC_BASE_MSR, %ecx
+        rdmsr
+        andl $LAPIC_BASE_MSR_X2APIC_MODE, %eax
+        jz xapic
+
+x2apic:
+        mov $X2APIC_LAPIC_ID, %ecx
+        rdmsr
+        jmp apicid_end
+
+xapic:
+        movl    $(LOCAL_APIC_ADDR | LAPIC_ID), %esi
+        movl    (%esi), %eax
+        shr     $24, %eax
+
+apicid_end:
+
+        mov     $(apic_to_cpu_num), %ebx
+        xor     %ecx, %ecx
 
 1:
-	cmp	(%eax, %ecx, 1), %bl
+	cmp	(%ebx, %ecx, 2), %ax
 	je	1f
 	inc	%ecx
 	cmp	$CONFIG_MAX_CPUS, %ecx

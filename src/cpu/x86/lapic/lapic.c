@@ -47,6 +47,6 @@ void lapic_virtual_wire_mode_init(void)
 			LAPIC_DELIVERY_MODE_NMI)
 		);
 
-	printk(BIOS_DEBUG, " apic_id: 0x%02x ", lapicid());
+	printk(BIOS_DEBUG, " apic_id: 0x%x ", lapicid());
 	printk(BIOS_INFO, "done.\n");
 }

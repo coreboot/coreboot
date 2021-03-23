@@ -85,7 +85,7 @@ struct smm_stub_params {
 	 * initializes this array with a 1:1 mapping. If the APIC ids are not
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
-	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
+	u16 apic_id_to_cpu[CONFIG_MAX_CPUS];
 	/* STM's 32bit entry into SMI handler */
 	u32 start32_offset;
 } __packed;

@@ -2,8 +2,8 @@
 
 chip soc/amd/cezanne
 	register "common_config.espi_config" = "{
-		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN | ESPI_DECODE_IO_0x80_EN,
-
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN | ESPI_DECODE_IO_0x80_EN
+					| ESPI_DECODE_IO_0X2E_0X2F_EN,
 		.io_mode = ESPI_IO_MODE_QUAD,
 		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
 		.crc_check_enable = 1,

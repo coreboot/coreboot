@@ -19,6 +19,7 @@
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
+#include <cpu/x86/lapic.h>
 
 #define  CPUID_6_EAX_ISST	(1 << 7)
 
@@ -79,6 +80,10 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 	/* NMI */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0xff, 5, 1);
+
+	if (is_x2apic_mode())
+		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
+				0xff, 0xd, 1);
 
 	return current;
 }

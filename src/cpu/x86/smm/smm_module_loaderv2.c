@@ -312,7 +312,8 @@ static int smm_stub_place_staggered_entry_points(char *base,
  */
 static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 				 struct smm_loader_params *params,
-				 void *const fxsave_area)
+				 void *const fxsave_area,
+				 void *const smram_start)
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;
@@ -381,7 +382,7 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	 * for default handler, but for relocated handler it lives at the beginning
 	 * of SMRAM which is TSEG base
 	 */
-	stacks_top = smm_stub_place_stacks(smbase, params);
+	stacks_top = smm_stub_place_stacks(smram_start, params);
 	if (stacks_top == NULL) {
 		printk(BIOS_ERR, "%s: error assigning stacks\n", __func__);
 		return -1;
@@ -456,7 +457,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
-				params, fxsave_area_relocation);
+				params, fxsave_area_relocation, smram);
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
 }
 
@@ -498,7 +499,7 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	void *fxsave_area;
 	size_t total_size = 0;
 	char *base;
-
+	void *smram_start = smram;
 	if (size <= SMM_DEFAULT_SIZE)
 		return -1;
 
@@ -620,5 +621,5 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 			cpus[i].ss_start + params->per_cpu_save_state_size;
 	}
 
-	return smm_module_setup_stub(base, size, params, fxsave_area);
+	return smm_module_setup_stub(base, size, params, fxsave_area, smram_start);
 }

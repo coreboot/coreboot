@@ -17,7 +17,7 @@
 /*
  * Set symbol value and make it global.
  */
-#define TEST_SYMBOL(symbol, address) asm(".set " #symbol ", " #address "\n\t.globl " #symbol)
+#define TEST_SYMBOL(symbol, value) asm(".set " #symbol ", " #value "\n\t.globl " #symbol)
 
 /*
  * Define memory region for testing purpose.
@@ -26,6 +26,13 @@
  * Create end symbol for it.
  */
 #define TEST_REGION(region, size) uint8_t _##region[size]; \
+	TEST_SYMBOL(_e##region, _##region + size); \
+	TEST_SYMBOL(_##region##_size, size)
+
+/*
+ * Set start, end and size symbols describing region without allocating memory for it.
+ */
+#define TEST_REGION_UNALLOCATED(region, start, size) TEST_SYMBOL(_##region, start); \
 	TEST_SYMBOL(_e##region, _##region + size); \
 	TEST_SYMBOL(_##region##_size, size)
 

@@ -9,6 +9,15 @@ chip soc/intel/jasperlake
 	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	    # None
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# LTE
 
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+	}"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -18,9 +27,9 @@ chip soc/intel/jasperlake
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
+	#| I2C1              |                           |
 	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
+	#| I2C3              |                           |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -31,13 +40,7 @@ chip soc/intel/jasperlake
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-		},
 		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[4] = {
@@ -77,8 +80,28 @@ chip soc/intel/jasperlake
 				end
 			end
 		end # USB xHCI
-		device pci 15.0 on end
-		device pci 15.2 on end
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
+				register "wake" = "GPE0_DW0_03"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GXTP7288""
+				register "generic.desc" = ""Goodix Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+		end #I2C 0
+		device pci 15.1 off  end # I2C 1
+		device pci 15.2 on   end # I2C 2
+		device pci 15.3 off  end # I2C 3
 		device pci 1c.7 on end
 		device pci 19.0 on end
 		device pci 1f.3 on end

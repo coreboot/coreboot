@@ -12,7 +12,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SYS_RESET_L */
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* WAKE_L */
-	PAD_NF(GPIO_2, WAKE_L, PULL_NONE),
+	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* SOC_PEN_DETECT_ODL */

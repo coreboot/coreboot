@@ -14,7 +14,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* SYS_RESET_L */
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* WIFI_PCIE_WAKE_ODL */
-	PAD_SCI(GPIO_2, PULL_NONE, EDGE_LOW),
+	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
 	/* H1_FCH_INT_ODL */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* PEN_DETECT_ODL */

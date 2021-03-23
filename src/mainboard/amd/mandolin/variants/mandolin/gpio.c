@@ -9,6 +9,8 @@
  * ramstage.
  */
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
+	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL, SCI */
+	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_UP, EDGE_LOW),
 	/* SSD DEVSLP */
 	PAD_NF(GPIO_5, DEVSLP0, PULL_NONE),
 	/* Defeature SATA Express DEVSLP, as some boards are reworked

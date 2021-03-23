@@ -81,7 +81,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_UP),
 
 	/* GPIO_2 - WLAN_PCIE_WAKE_3V3_ODL */
-	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
+	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_UP, EDGE_LOW),
 
 	/* GPIO_3 - MEM_VOLT_SEL */
 	PAD_GPI(GPIO_3, PULL_UP),

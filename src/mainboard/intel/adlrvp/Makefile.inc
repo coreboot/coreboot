@@ -19,11 +19,6 @@ ramstage-y += mainboard.c
 ramstage-y += board_id.c
 ramstage-y += gpio.c
 
-ifeq ($(CONFIG_INTEL_GMA_ADD_VBT),y)
-$(call add_vbt_to_cbfs, vbt_lp5.bin, 3rdparty/blobs/mainboard/$(MAINBOARDDIR)/$(VARIANT_DIR)/vbt_lp5.bin)
-$(call add_vbt_to_cbfs, vbt_ddr5.bin, 3rdparty/blobs/mainboard/$(MAINBOARDDIR)/$(VARIANT_DIR)/vbt_ddr5.bin)
-endif
-
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
 
 subdirs-y += variants/$(VARIANT_DIR)

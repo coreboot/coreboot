@@ -410,7 +410,8 @@ enum dmar_type {
 	DMAR_RMRR = 1,
 	DMAR_ATSR = 2,
 	DMAR_RHSA = 3,
-	DMAR_ANDD = 4
+	DMAR_ANDD = 4,
+	DMAR_SATC = 5
 };
 
 enum {
@@ -464,6 +465,15 @@ typedef struct dmar_andd_entry {
 	u8 device_number;
 	u8 device_name[];
 } __packed dmar_andd_entry_t;
+
+typedef struct dmar_satc_entry {
+	u16 type;
+	u16 length;
+	u8 flags;
+	u8 reserved;
+	u16 segment_number;
+	u8 device_scope[];
+} __packed dmar_satc_entry_t;
 
 /* DMAR (DMA Remapping Reporting Structure) */
 typedef struct acpi_dmar {
@@ -1055,9 +1065,12 @@ unsigned long acpi_create_dmar_rhsa(unsigned long current, u64 base_addr,
 				    u32 proximity_domain);
 unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
 				    const char *device_name);
+unsigned long acpi_create_dmar_satc(unsigned long current, u8 flags,
+				    u16 segment, const char *device_scope);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);
+void acpi_dmar_satc_fixup(unsigned long base, unsigned long current);
 unsigned long acpi_create_dmar_ds_pci_br(unsigned long current,
 					   u8 bus, u8 dev, u8 fn);
 unsigned long acpi_create_dmar_ds_pci(unsigned long current,

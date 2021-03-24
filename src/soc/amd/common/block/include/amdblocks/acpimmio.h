@@ -26,6 +26,9 @@
 #define   LEGACY_DMA_IO_EN		(1 << 2)
 #define   CF9_IO_EN			(1 << 1)
 #define   LEGACY_IO_EN			(1 << 0)
+#define PM_RST_CTRL1			0xbe
+#define   SLPTYPE_CONTROL_EN		(1 << 5)
+#define   KBRSTEN			(1 << 4)
 #define PM_RST_STATUS			0xc0
 
 /*

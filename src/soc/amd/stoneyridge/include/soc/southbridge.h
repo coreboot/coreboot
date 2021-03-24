@@ -70,8 +70,6 @@
 #define   PM_ACPI_WAKE_AS_GEVENT	BIT(27)
 #define   PM_ACPI_NB_PME_GEVENT		BIT(28)
 #define   PM_ACPI_RTC_WAKE_EN		BIT(29)
-#define PM_RST_CTRL1			0xbe
-#define   SLPTYPE_CONTROL_EN		BIT(5)
 #define PM_PCIB_CFG			0xea
 #define   PM_GENINT_DISABLE		BIT(0)
 #define PM_LPC_GATING			0xec

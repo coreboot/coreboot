@@ -320,6 +320,6 @@ void tcss_configure(void)
 	for (i = 0; i < num_ports; i++)
 		tcss_init_mux(i, &port_map[i]);
 
-	if (CONFIG(TCSS_DISPLAY))
+	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
 		tcss_configure_dp_mode(port_map, num_ports);
 }

@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/smi.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
+#include <types.h>
 
 /* see the IOMUX function table for the mapping from GPIO number to GEVENT number */
 static const struct soc_amd_event gpio_event_table[] = {

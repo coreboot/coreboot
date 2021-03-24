@@ -7,6 +7,7 @@
 #include <device/pnp.h>
 #include <ec/google/common/mec.h>
 #include <stdint.h>
+#include <timer.h>
 
 #include "chip.h"
 #include "ec.h"
@@ -92,23 +93,19 @@ static inline u8 write_byte(u8 val, u16 port)
 
 static int google_chromeec_status_check(u16 port, u8 mask, u8 cond)
 {
-	u8 ec_status = read_byte(port);
-	u32 time_count = 0;
+	struct stopwatch timeout_sw;
+	/* One second is more than plenty for any EC operation to complete */
+	const uint64_t ec_status_timeout_us = 1 * USECS_PER_SEC;
+	/* Wait 1 usec between read attempts  */
+	const uint64_t ec_status_read_period_us = 1;
 
-	/*
-	 * One second is more than plenty for any EC operation to complete
-	 * (and the bus accessing/code execution) overhead will make the
-	 * timeout even longer.
-	 */
-#define MAX_EC_TIMEOUT_US 1000000
-
-	while ((ec_status & mask) != cond) {
-		udelay(1);
-		if (time_count++ == MAX_EC_TIMEOUT_US)
-			return -1;
-		ec_status = read_byte(port);
-	}
-	return 0;
+	stopwatch_init_usecs_expire(&timeout_sw, ec_status_timeout_us);
+	do {
+		if ((read_byte(port) & mask) == cond)
+			return 0;
+		udelay(ec_status_read_period_us);
+	} while (!stopwatch_expired(&timeout_sw));
+	return -1;
 }
 
 static int google_chromeec_wait_ready(u16 port)

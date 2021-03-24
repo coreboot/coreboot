@@ -30,6 +30,7 @@ config SOC_SPECIFIC_OPTIONS
 	select PARALLEL_MP
 	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_0
+	select PROVIDES_ROM_SHARING
 	select RESET_VECTOR_IN_RAM
 	select RTC
 	select SOC_AMD_COMMON
@@ -194,6 +195,14 @@ config SMM_MODULE_STACK_SIZE
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 150
+
+config DISABLE_SPI_FLASH_ROM_SHARING
+	def_bool n
+	help
+	  Instruct the chipset to not honor the EGPIO67_SPI_ROM_REQ pin
+	  which indicates a board level ROM transaction request. This
+	  removes arbitration with board and assumes the chipset controls
+	  the SPI flash bus entirely.
 
 menu "PSP Configuration Options"
 

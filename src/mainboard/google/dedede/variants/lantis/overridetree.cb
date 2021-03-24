@@ -65,6 +65,12 @@ chip soc/intel/jasperlake
 		.tdp_pl2_override = 15,
 	}"
 
+	# Enable Acoustic noise mitigation and set slew rate to 1/4
+	# Rest of the parameters are 0 by default.
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate" = "SlewRateFastBy4"
+	register "FastPkgCRampDisable" = "1"
+
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf

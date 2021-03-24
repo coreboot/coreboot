@@ -188,7 +188,7 @@ chip soc/intel/alderlake
 		device pci 02.0 on  end # Graphics
 		device pci 04.0 on  end # DPTF
 		device pci 05.0 on  end # IPU
-		device pci 06.0 on  end # PEG60
+		device pci 06.0 off end # PEG60
 		device pci 07.0 on  end # TBT_PCIe0
 		device pci 07.1 on  end # TBT_PCIe1
 		device pci 07.2 on  end # TBT_PCIe2

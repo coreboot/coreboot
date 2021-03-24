@@ -93,6 +93,11 @@ void fch_configure_hpet(void)
 	pm_write32(PM_DECODE_EN, reg);
 }
 
+void fch_disable_kb_rst(void)
+{
+	pm_write8(PM_RST_CTRL1, pm_read8(PM_RST_CTRL1) & ~KBRSTEN);
+}
+
 /* PM registers are accessed a byte at a time via CD6/CD7 */
 uint8_t pm_io_read8(uint8_t reg)
 {

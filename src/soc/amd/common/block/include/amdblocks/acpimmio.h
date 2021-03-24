@@ -87,6 +87,7 @@ void fch_disable_legacy_dma_io(void);
 void fch_io_enable_legacy_io(void);
 void fch_enable_ioapic_decode(void);
 void fch_configure_hpet(void);
+void fch_disable_kb_rst(void);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

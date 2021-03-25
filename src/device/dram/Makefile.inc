@@ -9,7 +9,7 @@ ramstage-$(CONFIG_USE_DDR5) += ddr5.c
 romstage-$(CONFIG_USE_LPDDR4) += lpddr4.c
 ramstage-$(CONFIG_USE_LPDDR4) += lpddr4.c
 
-romstage-$(CONFIG_USE_DDR4) += ddr4.c
+romstage-$(CONFIG_USE_DDR4) += ddr4.c rcd.c
 ramstage-$(CONFIG_USE_DDR4) += ddr4.c
 
 romstage-$(CONFIG_USE_DDR3) += ddr3.c

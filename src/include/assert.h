@@ -29,12 +29,24 @@
 #define __build_time_assert(x) 0
 #endif
 
+/* CMocka function redefinition. */
+void mock_assert(const int result, const char *const expression,
+		const char *const file, const int line);
+
+#if ENV_TEST
+#define MOCK_ASSERT(result, expression) \
+	mock_assert((result), (expression), __ASSERT_FILE__, __ASSERT_LINE__)
+#else
+#define MOCK_ASSERT(result, expression)
+#endif
+
 /* GCC and CAR versions */
 #define ASSERT(x) {							\
 	if (!__build_time_assert(x) && !(x)) {				\
 		printk(BIOS_EMERG,					\
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\
+		MOCK_ASSERT(!!(x), #x);					\
 		if (CONFIG(FATAL_ASSERTS))				\
 			hlt();						\
 	}								\
@@ -45,6 +57,7 @@
 			"ASSERTION ERROR: file '%s', line %d\n",	\
 			__ASSERT_FILE__, __ASSERT_LINE__);		\
 		printk(BIOS_EMERG, "%s", msg);				\
+		MOCK_ASSERT(!!(x), (msg));				\
 		if (CONFIG(FATAL_ASSERTS))				\
 			hlt();						\
 	}								\
@@ -53,6 +66,7 @@
 	printk(BIOS_EMERG,						\
 		"ERROR: BUG ENCOUNTERED at file '%s', line %d\n",	\
 		__ASSERT_FILE__, __ASSERT_LINE__);			\
+	MOCK_ASSERT(0, "BUG ENCOUNTERED");				\
 	if (CONFIG(FATAL_ASSERTS))					\
 		hlt();							\
 }

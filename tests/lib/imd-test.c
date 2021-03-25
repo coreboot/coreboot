@@ -176,9 +176,10 @@ static void test_imd_create_tiered_empty(void **state)
 	/* Fail when large region doesn't have capacity for more than 1 entry */
 	lg_region_wrong_size = sizeof(struct imd_root_pointer) + sizeof(struct imd_root) +
 			       sizeof(struct imd_entry);
-	assert_int_equal(-1, imd_create_tiered_empty(&imd, lg_region_wrong_size,
-						     LG_ENTRY_ALIGN, SM_ROOT_SIZE,
-						     SM_ENTRY_ALIGN));
+	expect_assert_failure(
+		imd_create_tiered_empty(&imd, lg_region_wrong_size, LG_ENTRY_ALIGN,
+					SM_ROOT_SIZE, SM_ENTRY_ALIGN)
+	);
 
 	assert_int_equal(0, imd_create_tiered_empty(&imd, LG_ROOT_SIZE, LG_ENTRY_ALIGN,
 						    SM_ROOT_SIZE, SM_ENTRY_ALIGN));

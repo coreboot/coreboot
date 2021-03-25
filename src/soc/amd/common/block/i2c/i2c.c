@@ -100,9 +100,10 @@ static void dw_i2c_soc_init(bool is_early_init)
 						cfg->early_init != is_early_init)
 			continue;
 
-		if (dw_i2c_init(bus, cfg))
+		if (dw_i2c_init(bus, cfg)) {
 			printk(BIOS_ERR, "Failed to init i2c bus %d\n", bus);
 			continue;
+		}
 
 		soc_i2c_misc_init(bus, cfg);
 	}

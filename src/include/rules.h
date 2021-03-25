@@ -3,6 +3,12 @@
 #ifndef _RULES_H
 #define _RULES_H
 
+#if defined(__TEST__)
+#define ENV_TEST 1
+#else
+#define ENV_TEST 0
+#endif
+
 #if defined(__TIMELESS__)
 #define ENV_TIMELESS 1
 #else

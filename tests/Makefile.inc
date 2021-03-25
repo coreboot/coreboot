@@ -39,6 +39,8 @@ TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
+TEST_CFLAGS += -D__TEST__
+
 # Checkout Cmocka repository
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty/cmocka)
 

@@ -133,16 +133,14 @@ enum pch_pmc_xtal pmc_get_xtal_freq(void);
 #define PMC_GPP_B		0x0
 #define PMC_GPP_T		0x1
 #define PMC_GPP_A		0x2
-#define PMC_GPP_S		0x3
-#define PMC_GPP_H		0x4
-#define PMC_GPP_D		0x5
-#define PMC_GPD			0x6
-#define PMC_GPP_C		0x7
-#define PMC_GPP_F		0x8
-#define PMC_GPP_HVMOS		0x9
-#define PMC_GPP_E		0xA
-#define PMC_GPP_R		0xB
-#define PMC_GPP_SPI0		0xC
+#define PMC_GPP_R		0x3
+#define PMC_GPD			0x4
+#define PMC_GPP_S		0x5
+#define PMC_GPP_H		0x6
+#define PMC_GPP_D		0x7
+#define PMC_GPP_F		0xA
+#define PMC_GPP_C		0xB
+#define PMC_GPP_E		0xC
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

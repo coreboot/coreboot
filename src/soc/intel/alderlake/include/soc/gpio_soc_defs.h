@@ -6,25 +6,21 @@
  * Most of the fixed numbers and macros are based on the GPP groups.
  * The GPIO groups are accessed through register blocks called
  * communities.
+ *
+ * Refer to Alder Lake PCH EDS Chapter 27, MISCCFG register offset 0x10
+ * for each GPIO community to get GPIO group to GPE_DWx assignment.
  */
-/* GPIO COMM 0 */
 #define GPP_B			0x0
 #define GPP_T			0x1
 #define GPP_A			0x2
-/* GPIO COMM 1 */
-#define GPP_S			0x3
-#define GPP_H			0x4
-#define GPP_D			0x5
-/* GPIO COMM 2 */
-#define GPD			0x6
-/* GPIO COMM 4 */
-#define GPP_C			0x7
-#define GPP_F			0x8
-#define GPP_HVMOS		0x9
-#define GPP_E			0xA
-/* GPIO COMM 5 */
-#define GPP_R			0xB
-#define GPP_SPI0		0xC
+#define GPP_R			0x3
+#define GPD			0x4
+#define GPP_S			0x5
+#define GPP_H			0x6
+#define GPP_D			0x7
+#define GPP_F			0xA
+#define GPP_C			0xB
+#define GPP_E			0xC
 
 #define GPIO_MAX_NUM_PER_GROUP	26
 

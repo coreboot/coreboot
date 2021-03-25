@@ -178,10 +178,8 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 		{ PMC_GPD,       GPD },
 		{ PMC_GPP_C,     GPP_C },
 		{ PMC_GPP_F,     GPP_F },
-		{ PMC_GPP_HVMOS, GPP_HVMOS },
 		{ PMC_GPP_E,     GPP_E },
 		{ PMC_GPP_R,     GPP_R },
-		{ PMC_GPP_SPI0,  GPP_SPI0 },
 	};
 	*num = ARRAY_SIZE(routes);
 	return routes;

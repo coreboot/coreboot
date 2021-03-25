@@ -125,7 +125,7 @@ enum cb_err ipmi_add_sel(const int port, struct sel_event_record *sel)
 	struct ipmi_add_sel_rsp rsp;
 
 	if (sel == NULL) {
-		printk(BIOS_ERR, "%s failed, system evnt log is not present.\n", __func__);
+		printk(BIOS_ERR, "%s failed, system event log is not present.\n", __func__);
 		return CB_ERR;
 	}
 

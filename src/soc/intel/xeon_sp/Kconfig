@@ -82,6 +82,18 @@ config MAX_CPUS
 	int
 	default 80
 
+config INTEL_ACPI_BASE_ADDRESS
+	hex
+	default 0x500
+	help
+	  IO Address of ACPI.
+
+config INTEL_PCH_PWRM_BASE_ADDRESS
+	hex
+	default 0xfe000000
+	help
+	  PCH PWRM Base address.
+
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000

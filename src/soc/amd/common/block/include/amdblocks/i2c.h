@@ -46,7 +46,7 @@ struct soc_i2c_scl_pin {
 struct soc_i2c_peripheral_reset_info {
 	uint8_t i2c_scl_reset_mask;
 	const struct soc_i2c_scl_pin *i2c_scl;
-	uint32_t num_pins;
+	size_t num_pins;
 };
 
 /* Helper function to perform misc I2C configuration specific to SoC. */

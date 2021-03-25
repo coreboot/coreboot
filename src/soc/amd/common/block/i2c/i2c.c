@@ -12,6 +12,7 @@
 #include <device/i2c.h>
 #include <device/mmio.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <types.h>
 
 #define MAX_PIN_COUNT 4
 
@@ -154,7 +155,7 @@ static void restore_i2c_pin_registers(uint8_t gpio, struct common_i2c_save *save
 
 static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, uint32_t val)
 {
-	uint8_t j;
+	size_t j;
 
 	for (j = 0; j < reset_info->num_pins; j++) {
 		if (reset_info->i2c_scl_reset_mask & reset_info->i2c_scl[j].pin_mask)
@@ -172,7 +173,7 @@ static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, ui
 void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_info)
 {
 	struct common_i2c_save save_table[MAX_PIN_COUNT];
-	uint8_t i;
+	size_t i;
 
 	if (!reset_info || !reset_info->i2c_scl || !reset_info->num_pins ||
 						!reset_info->i2c_scl_reset_mask)

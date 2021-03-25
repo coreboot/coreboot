@@ -13,6 +13,14 @@
 #define CARD_TIMEOUT		-19
 #define CARD_IN_PROGRESS	-20 /* operation is in progress */
 
+/* MMC status in CBMEM_ID_MMC_STATUS */
+enum {
+	MMC_STATUS_NEED_RESET = 0,
+	MMC_STATUS_CMD1_READY_OR_IN_PROGRESS,
+	MMC_STATUS_CMD1_READY,
+	MMC_STATUS_CMD1_IN_PROGRESS,
+};
+
 struct mmc_command {
 	uint16_t cmdidx;
 

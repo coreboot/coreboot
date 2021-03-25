@@ -35,6 +35,7 @@ romstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
+ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c

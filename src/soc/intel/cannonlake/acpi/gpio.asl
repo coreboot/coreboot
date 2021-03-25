@@ -138,9 +138,9 @@ Method (CGPM, 2, Serialized)
 	Store (GPID (Arg0), Local0)
 	If (LNotEqual (Local0, 0)) {
 		/* Mask off current PM bits */
-		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_ENABLE_GPIO_PM_CONFIG))
+		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_GPIO_PM_CONFIG_BITS))
 		/* Mask in requested bits */
-		PCRO (Local0, GPIO_MISCCFG, And (Arg1, MISCCFG_ENABLE_GPIO_PM_CONFIG))
+		PCRO (Local0, GPIO_MISCCFG, And (Arg1, MISCCFG_GPIO_PM_CONFIG_BITS))
 	}
 }
 
@@ -181,6 +181,6 @@ Method (EGPM, 0, Serialized)
 	/* Enable PM bits */
 	For (Local0 = 0, Local0 < TOTAL_GPIO_COMM, Local0++)
 	{
-		CGPM (Local0, MISCCFG_ENABLE_GPIO_PM_CONFIG)
+		CGPM (Local0, MISCCFG_GPIO_PM_CONFIG_BITS)
 	}
 }

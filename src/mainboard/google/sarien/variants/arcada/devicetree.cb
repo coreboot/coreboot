@@ -204,11 +204,11 @@ chip soc/intel/cannonlake
 	register "gpio_override_pm" = "1"
 
 	# GPIO community PM configuration
-	register "gpio_pm[COMM_0]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+	register "gpio_pm[COMM_0]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 	register "gpio_pm[COMM_1]" = "MISCCFG_GPSIDEDPCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN | MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN"
-	register "gpio_pm[COMM_2]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
-	register "gpio_pm[COMM_3]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
-	register "gpio_pm[COMM_4]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+	register "gpio_pm[COMM_2]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
+	register "gpio_pm[COMM_3]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
+	register "gpio_pm[COMM_4]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

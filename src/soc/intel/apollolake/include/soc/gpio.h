@@ -10,4 +10,11 @@
 #endif
 #include <intelblocks/gpio.h>/* intelblocks/gpio.h depends on definitions in
 				soc/gpio_glk.h and soc/gpio_apl.h */
+
+/*
+ * APL/GLK doesn't support dynamic GPIO PM hence GPIO community
+ * MISCCFG register doesn't have PM bits
+ */
+#define MISCCFG_GPIO_PM_CONFIG_BITS 0
+
 #endif

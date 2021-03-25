@@ -12,6 +12,11 @@
 #endif
 #include <intelblocks/gpio.h>
 
+/* Enable GPIO community power management configuration */
+#define MISCCFG_GPIO_PM_CONFIG_BITS (MISCCFG_GPSIDEDPCGEN | \
+	MISCCFG_GPRCOMPCDLCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN \
+	| MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN)
+
 #ifndef __ACPI__
 struct pad_config;
 void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads);

@@ -166,6 +166,6 @@ Method (EGPM, 0, Serialized)
 	/* Enable PM bits */
 	For (Local0 = 0, Local0 < TOTAL_GPIO_COMM, Local0++)
 	{
-		CGPM (Local0, MISCCFG_ENABLE_GPIO_PM_CONFIG)
+		CGPM (Local0, MISCCFG_GPIO_PM_CONFIG_BITS)
 	}
 }

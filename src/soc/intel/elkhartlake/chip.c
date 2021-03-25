@@ -108,7 +108,7 @@ static void soc_fill_gpio_pm_configuration(void)
 		memcpy(value, config->gpio_pm, sizeof(uint8_t) *
 			TOTAL_GPIO_COMM);
 	else
-		memset(value, MISCCFG_ENABLE_GPIO_PM_CONFIG, sizeof(uint8_t) *
+		memset(value, MISCCFG_GPIO_PM_CONFIG_BITS, sizeof(uint8_t) *
 			TOTAL_GPIO_COMM);
 
 	gpio_pm_configure(value, TOTAL_GPIO_COMM);

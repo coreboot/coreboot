@@ -33,4 +33,10 @@
 #include <intelblocks/gpio.h>/* intelblocks/gpio.h depends on definitions in
 				lines above and soc/gpio_defs.h */
 
+/*
+ * DNV doesn't support dynamic GPIO PM hence GPIO community
+ * MISCCFG register doesn't have PM bits
+ */
+#define MISCCFG_GPIO_PM_CONFIG_BITS 0
+
 #endif /* _SOC_DENVERTON_NS_GPIO_H_ */

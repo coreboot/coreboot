@@ -8,4 +8,11 @@
 				soc/gpio_defs.h */
 
 #define CROS_GPIO_DEVICE_NAME	"INT344B:00"
+
+/*
+ * SPT PCH doesn't support dynamic GPIO PM hence GPIO community
+ * MISCCFG register doesn't have PM bits
+ */
+#define MISCCFG_GPIO_PM_CONFIG_BITS 0
+
 #endif

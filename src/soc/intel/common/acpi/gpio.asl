@@ -11,8 +11,8 @@ Method (CGPM, 2, Serialized)
 	Local0 = GPID (Arg0)
 	If (Local0 != 0) {
 		/* Mask off current PM bits */
-		PCRA (Local0, GPIO_MISCCFG, ~MISCCFG_ENABLE_GPIO_PM_CONFIG)
+		PCRA (Local0, GPIO_MISCCFG, ~MISCCFG_GPIO_PM_CONFIG_BITS)
 		/* Mask in requested bits */
-		PCRO (Local0, GPIO_MISCCFG,  Arg1 & MISCCFG_ENABLE_GPIO_PM_CONFIG)
+		PCRO (Local0, GPIO_MISCCFG,  Arg1 & MISCCFG_GPIO_PM_CONFIG_BITS)
 	}
 }

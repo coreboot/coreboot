@@ -6,6 +6,10 @@
 #include <soc/gpio.h>
 #include "gpio_defs.h"
 
+/* GPIO community IOSF sideband VNNREQ/ACK handshake */
+#define MISCCFG_GPVNNREQEN	(1 << 7)
+/* GPIO community PGCB clock gating */
+#define MISCCFG_GPPGCBDPCGEN	(1 << 6)
 /* GPIO community IOSF sideband clock gating */
 #define MISCCFG_GPSIDEDPCGEN	(1 << 5)
 /* GPIO community RCOMP clock gating */
@@ -18,10 +22,6 @@
 #define MISCCFG_GPDPCGEN	(1 << 1)
 /* GPIO community local clock gating */
 #define MISCCFG_GPDLCGEN	(1 << 0)
-/* Enable GPIO community power management configuration */
-#define MISCCFG_ENABLE_GPIO_PM_CONFIG (MISCCFG_GPSIDEDPCGEN | \
-	MISCCFG_GPRCOMPCDLCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN \
-	| MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN)
 
 #ifndef __ACPI__
 #include <types.h>

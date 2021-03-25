@@ -1,11 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <soc/acpi.h>
-#include <soc/southbridge.h>
 #include <variant/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -90,16 +88,6 @@ static void mainboard_configure_gpios(void)
 {
 	size_t base_num_gpios, override_num_gpios;
 	const struct soc_amd_gpio *base_gpios, *override_gpios;
-	u32 reg;
-
-	/*
-	 * Disable KBRST feature
-	 * KBRSTEN is set to 1 on reset and this causes system reset
-	 * if GPIO 129 is configured as GPO_LOW.
-	 * */
-	reg = pm_read8(PM_RST_CTRL1);
-	reg &= ~KBRSTEN;
-	pm_write8(PM_RST_CTRL1, reg);
 
 	base_gpios = variant_base_gpio_table(&base_num_gpios);
 	override_gpios = variant_override_gpio_table(&override_num_gpios);

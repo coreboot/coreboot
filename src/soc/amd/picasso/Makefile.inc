@@ -19,6 +19,7 @@ bootblock-y += uart.c
 bootblock-y += gpio.c
 bootblock-y += reset.c
 
+romstage-y += fsp_m_params.c
 romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c

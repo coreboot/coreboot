@@ -2,12 +2,15 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
+#include <arch/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/intel/msr.h>
 #include <delay.h>
 #include <device/pci_def.h>
 #include <elog.h>
@@ -260,6 +263,20 @@ static void southbridge_smi_gsmi(
 	save_state_ops->set_reg(io_smi, RAX, ret);
 }
 
+static void set_insmm_sts(const bool enable_writes)
+{
+	msr_t msr = {
+		.lo = read32p(0xfed30880),
+		.hi = 0,
+	};
+	if (enable_writes)
+		msr.lo |= 1;
+	else
+		msr.lo &= ~1;
+
+	wrmsr(MSR_SPCL_CHIPSET_USAGE, msr);
+}
+
 static void southbridge_smi_store(
 	const struct smm_save_state_ops *save_state_ops)
 {
@@ -278,6 +295,7 @@ static void southbridge_smi_store(
 
 	const bool wp_enabled = !fast_spi_wpd_status();
 	if (wp_enabled) {
+		set_insmm_sts(true);
 		fast_spi_disable_wp();
 		/* Not clearing SPI sync SMI status here results in hangs */
 		fast_spi_clear_sync_smi_status();
@@ -287,8 +305,10 @@ static void southbridge_smi_store(
 	ret = smmstore_exec(sub_command, (void *)(uintptr_t)reg_ebx);
 	save_state_ops->set_reg(io_smi, RAX, ret);
 
-	if (wp_enabled)
+	if (wp_enabled) {
 		fast_spi_enable_wp();
+		set_insmm_sts(false);
+	}
 }
 
 static void finalize(void)
@@ -305,8 +325,10 @@ static void finalize(void)
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
 
-	if (CONFIG(BOOTMEDIA_SMM_BWP))
+	if (CONFIG(BOOTMEDIA_SMM_BWP)) {
 		fast_spi_enable_wp();
+		set_insmm_sts(false);
+	}
 
 	/*
 	 * HECI is disabled in smihandler_soc_at_finalize() which also locks down the side band
@@ -403,6 +425,7 @@ void smihandler_southbridge_tco(
 		 */
 		printk(BIOS_DEBUG, "Switching SPI back to RO\n");
 		fast_spi_enable_wp();
+		set_insmm_sts(false);
 	}
 
 	/* Any TCO event? */

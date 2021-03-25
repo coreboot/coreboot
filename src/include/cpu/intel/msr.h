@@ -26,6 +26,8 @@
 #define  AESNI_DISABLE		(1 << 1)
 #define  AESNI_LOCK		(1 << 0)
 
+#define MSR_SPCL_CHIPSET_USAGE	0x1fe
+
 #define MSR_PKG_C10_RESIDENCY	0x632
 
 #endif /* CPU_INTEL_MSR_H */

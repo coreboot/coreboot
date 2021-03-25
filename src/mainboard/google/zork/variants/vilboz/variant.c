@@ -40,6 +40,9 @@ void variant_devtree_update(void)
 	struct soc_amd_picasso_config *soc_cfg;
 	soc_cfg = config_of_soc();
 
+	if (board_id() <= 2 || board_id() == BOARD_ID_UNKNOWN)
+		return;
+
 	/* b:/174121847 Use external OSC to mitigate noise for WWAN sku. */
 	if (variant_has_wwan()) {
 		soc_cfg->acp_i2s_use_external_48mhz_osc = 1;

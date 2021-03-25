@@ -85,10 +85,6 @@ located underneath the Wi-Fi module, below the left cooling fan.
 
  * Automatic detection of external audio input/output via the 3.5mm jack
    does not currently work.
- * Touchpad interrupt non-functional when correctly configured as active-low
-   and level-triggered, so configured as active-high instead. This causes an
-   interrupt storm and prevents the CPU from idling due to moderate (10-20%)
-   usage on a single core.
  * PL1/PL2 limited to 15W/20W by charger and battery discharge capability,
    not SoC or thermal design.
 

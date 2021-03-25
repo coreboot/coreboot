@@ -90,8 +90,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B2 - VRALERT# */
 	PAD_CFG_NF(GPP_B2, NONE, PLTRST, NF1),
 
-	/* GPP_B3 - NC */
-	PAD_NC(GPP_B3, NONE),
+	/* GPP_B3 - TP_INT# */
+	PAD_CFG_GPI_APIC_LOW(GPP_B3, NONE, PLTRST),
 
 	/* GPP_B4 - NC */
 	PAD_NC(GPP_B4, UP_20K),
@@ -141,13 +141,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B19 - USB3_P1_PWREN */
 	PAD_CFG_GPO(GPP_B19, 1, PLTRST),
 
-	/* GPP_B20 - TP_INT#
-	 *
-	 * Due to interrupts failing to trigger when correctly configured
-	 * active-low as PAD_CFG_GPI_APIC_LOW(GPP_B20, NONE, PLTRST),
-	 * must configure instead as active-high:
-	 */
-	PAD_CFG_GPI_TRIG_OWN(GPP_B20, NONE, PLTRST, LEVEL, ACPI),
+	/* GPP_B20 - NC */
+	PAD_NC(GPP_B20, NONE),
 
 	/* GPP_B21 - NC */
 	PAD_NC(GPP_B21, UP_20K),

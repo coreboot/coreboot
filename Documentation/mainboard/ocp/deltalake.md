@@ -1,8 +1,7 @@
 # OCP Delta Lake
 
 This page describes coreboot support status for the [OCP] (Open Compute Project)
-Delta Lake server platform. This page is updated following each 4-weeks
-build/test/release cycle.
+Delta Lake server platform.
 
 ## Introduction
 
@@ -12,22 +11,23 @@ Yosemite-V3. Both were announced by Facebook and Intel in [OCP virtual summit 20
 Delta Lake server is a single socket Cooper Lake Scalable Processor (CPX-SP) server.
 
 Yosemite-V3 has multiple configurations. Depending on configurations, it may
-host up to 4 Delta Lake servers in one sled.
+host up to 4 Delta Lake servers (blades) in one sled.
 
-The Yosemite-V3 program is in PVT phase. Facebook, Intel and partners
-jointly develop FSP/coreboot/LinuxBoot stack on Delta Lake as an alternative
-solution. This development reached EVT exit equivalent status.
+The Yosemite-V3 system is in mass production. Facebook, Intel and partners
+jointly develop Open System Firmware (OSF) solution on Delta Lake as an alternative
+solution. The OSF solution is based on FSP/coreboot/LinuxBoot stack. The
+OSF solution reached DVT exit equivalent status.
 
 ## Required blobs
 
-This board currently requires:
+Delta Lake server OSF solution requires:
 - FSP blob: The blob (Intel Cooper Lake Scalable Processor Firmware Support Package)
-  is not yet available to the public. It will be made public some time after the MP
-  (Mass Production) of CPX-SP.
+  is not yet available to the public. It will be made public soon by Intel 
+  with redistributable license.
 - Microcode: Available through github.com:otcshare/Intel-Generic-Microcode.git.
-- ME binary: Ignition binary will be made public some time after the MP
-  of CPX-SP.
-- ACM binaries: only required for CBnT enablement.
+- ME binary: Ignition binary will be made public soon by Intel with
+  redistributable license.
+- ACM binaries: only required for CBnT enablement. Available under NDA with Intel.
 
 ## Payload
 - LinuxBoot: This is necessary only if you use LinuxBoot as coreboot payload.
@@ -61,13 +61,13 @@ VPD variables supported are:
 - bmc_bootorder_override: When it's set to 1 IPMI OEM command can override boot
   order. The boot order override is done in the u-root LinuxBoot payload.
 - systemboot_log_level: u-root package systemboot log levels, would be mapped to
-  quiet/verbose in systemboot as that is all we have for now. 5 to 8 would be mapped
-  to verbose, 0 to 4 and 9 would be mapped to quiet.
-- DeltaLake specific VPDs: check mb/ocp/deltalake/vpd.h.
+  quiet/verbose in systemboot as that is all we have for now. 5 to 8 would be
+  mapped to verbose, 0 to 4 and 9 would be mapped to quiet.
+- VPDs affecting coreboot are listed/documented in src/mainboard/ocp/deltalake/vpd.h.
 
 ## Working features
-The solution is developed using LinuxBoot payload with Linux kernel 5.2.9, and [u-root]
-as initramfs.
+The solution is developed using LinuxBoot payload with Linux kernel 5.2.9,
+and [u-root] as initramfs.
 - SMBIOS:
     - Type 0 -- BIOS Information
     - Type 1 -- System Information
@@ -96,11 +96,14 @@ as initramfs.
     - TPM
     - Bootguard profile 0T
     - TXT
-    - SRTM (verified through tboot)
-    - memory secret clearance upon ungraceful shutdown
+    - SRTM
+    - DRTM (verified through tboot)
+		- unsigned KM/BPM generation
+		- KM/BPM signing
+		- memory secret clearance upon ungraceful shutdown
 - Early serial output
 - port 80h direct to GPIO
-- ACPI tables: APIC/DMAR/DSDT/FACP/FACS/HPET/MCFG/SPMI/SRAT/SLIT/SSDT
+- ACPI tables: APIC/DMAR/DSDT/EINJ/FACP/FACS/HEST/HPET/MCFG/SPMI/SRAT/SLIT/SSDT
 - Skipping memory training upon subsequent reboots by using MRC cache
 - BMC crash dump
 - Error injection through ITP
@@ -109,13 +112,13 @@ as initramfs.
     - Check Microcode version: cat /proc/cpuinfo | grep microcode
 - Devices:
     - Boot drive
-    - NIC card
     - All 5 data drives
+    - NIC card
 - Power button
 - localboot
 - netboot from IPv6
-- basic memory hardware error injection/detection (SMI handler not upstreamed)
-- basic PCIe hardware error injection/detection (SMI handler not upstreamed)
+- basic memory hardware error injection/detection (SMI handlers not upstreamed)
+- basic PCIe hardware error injection/detection (SMI handlers not upstreamed)
 
 ## Stress/performance tests passed
 - OS warm reboot (1000 cycles)
@@ -125,27 +128,32 @@ as initramfs.
 - StressAppTest (6 hours)
 - Ptugen (6 hours)
 
-## Performance tests on par with traditional firmware
+## Performance on par with traditional firmware
 - coremark
-- SpecCPU
-- Linkpack
-- Iperf(IPv6)
 - FIO
+- Iperf(IPv6)
+- Linpack
+- Intel MLC (memory latency and bandwidth)
+- SpecCPU
+- stream
 
 ## Other tests passed
 - Power
 - Thermal
+- coreboot address sanitizer (both romstage and ramstage)
+- Intel selftest tool (all errors analyzed; applicable errors clean)
 
 ## Known issues
-- MLC (Intel Memory Latency Check) and stream performance issue
 - HECI access at OS run time:
     - spsInfoLinux64 command fail to return ME version
     - ptugen command fail to get memory power
+- CLTT (Closed Loop Thermal Throttling, eg. thermal protection for DIMMs)
+- ProcHot (thermal protection for processors)
 
 ## Feature gaps
 - flashrom command not able to update ME region
-- ACPI APEI tables
-- PCIe hotplug, Virtual Pin Ports
+- ACPI BERT table
+- PCIe hotplug through VPP (Virtual Pin Ports)
 - PCIe Live Error Recovery
 - RO_VPD region as well as other RO regions are not write protected
 - Not able to selectively enable/disable core

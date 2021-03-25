@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_GALP3_C
+	bool "galp3-c"

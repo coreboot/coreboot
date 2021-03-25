@@ -344,6 +344,10 @@ void bootblock_fch_early_init(void)
 
 	fch_enable_legacy_io();
 	enable_aoac_devices();
+
+	/* disable the keyboard reset function before mainboard GPIO setup */
+	if (CONFIG(DISABLE_KEYBOARD_RESET_PIN))
+		fch_disable_kb_rst();
 }
 
 /* After console init */

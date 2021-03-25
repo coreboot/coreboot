@@ -320,6 +320,14 @@ config DISABLE_SPI_FLASH_ROM_SHARING
 	  removes arbitration with board and assumes the chipset controls
 	  the SPI flash bus entirely.
 
+config DISABLE_KEYBOARD_RESET_PIN
+	bool
+	help
+	  Instruct the SoC to not use the state of GPIO_129 as keyboard reset
+	  signal. When this pin is used as GPIO and the keyboard reset
+	  functionality isn't disabled, configuring it as an output and driving
+	  it as 0 will cause a reset.
+
 config MAINBOARD_POWER_RESTORE
 	def_bool n
 	help

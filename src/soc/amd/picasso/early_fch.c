@@ -62,6 +62,10 @@ void fch_pre_init(void)
 
 	if (CONFIG(AMD_SOC_CONSOLE_UART))
 		set_uart_config(CONFIG_UART_FOR_CONSOLE);
+
+	/* disable the keyboard reset function before mainboard GPIO setup */
+	if (CONFIG(DISABLE_KEYBOARD_RESET_PIN))
+		fch_disable_kb_rst();
 }
 
 /* After console init */

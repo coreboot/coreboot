@@ -137,7 +137,7 @@ static const char *const mca_bank_name[] = {
 	"Load-store unit",
 	"Instruction fetch unit",
 	"L2 cache unit",
-	"Decode unit"
+	"Decode unit",
 	"",
 	"Execution unit",
 	"Floating point unit",

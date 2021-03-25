@@ -656,7 +656,7 @@ void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num)
 {
 	int i;
 	size_t gpio_communities;
-	const uint8_t misccfg_pm_mask = ~MISCCFG_ENABLE_GPIO_PM_CONFIG;
+	const uint8_t misccfg_pm_mask = (uint8_t)~MISCCFG_ENABLE_GPIO_PM_CONFIG;
 	const struct pad_community *comm;
 
 	comm = soc_gpio_get_community(&gpio_communities);

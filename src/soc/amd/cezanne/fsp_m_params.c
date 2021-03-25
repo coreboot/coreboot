@@ -16,7 +16,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->bert_size = CONFIG_ACPI_BERT_SIZE;
 	mcfg->serial_port_base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	mcfg->serial_port_use_mmio = CONFIG(DRIVERS_UART_8250MEM);
-	mcfg->serial_port_stride = CONFIG(DRIVERS_UART_8250MEM_32) ? 4 : 1;
 	mcfg->serial_port_baudrate = get_uart_baudrate();
 	mcfg->serial_port_refclk = uart_platform_refclk();
 }

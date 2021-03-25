@@ -5,7 +5,7 @@
 
 static void fsp_assign_vbios_upds(FSP_S_CONFIG *scfg)
 {
-	scfg->vbios_buffer_addr = CONFIG(RUN_FSP_GOP) ? PCI_VGA_RAM_IMAGE_START : 0;
+	scfg->vbios_buffer = CONFIG(RUN_FSP_GOP) ? PCI_VGA_RAM_IMAGE_START : 0;
 }
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)

@@ -21,7 +21,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	const struct soc_i2c_ctrlr_info *ctrlr = soc_get_i2c_ctrlr_info(&num_ctrlrs);
 
 	if (bus >= num_ctrlrs) {
-		printk(BIOS_ERR, "Bus ID %d is >= number of I2C controllers %zu\n",
+		printk(BIOS_ERR, "Bus ID %u is >= number of I2C controllers %zu\n",
 								bus, num_ctrlrs);
 		return 0;
 	}
@@ -35,7 +35,7 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	const struct dw_i2c_bus_config *cfg = soc_get_i2c_bus_config(&num_buses);
 
 	if (bus >= num_buses) {
-		printk(BIOS_ERR, "Bus ID %d is >= number of I2C buses %zu\n", bus, num_buses);
+		printk(BIOS_ERR, "Bus ID %u is >= number of I2C buses %zu\n", bus, num_buses);
 		return NULL;
 	}
 
@@ -101,7 +101,7 @@ static void dw_i2c_soc_init(bool is_early_init)
 			continue;
 
 		if (dw_i2c_init(bus, cfg)) {
-			printk(BIOS_ERR, "Failed to init i2c bus %d\n", bus);
+			printk(BIOS_ERR, "Failed to init i2c bus %u\n", bus);
 			continue;
 		}
 

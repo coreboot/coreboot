@@ -33,7 +33,7 @@ void mainboard_romstage_entry(void)
 {
 	int s3resume = 0;
 
-	if (MCHBAR16(SSKPD_HI) == 0xCAFE)
+	if (mchbar_read16(SSKPD_HI) == 0xcafe)
 		system_reset();
 
 	enable_lapic();

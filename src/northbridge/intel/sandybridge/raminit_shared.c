@@ -21,15 +21,15 @@ void report_memory_config(void)
 	u32 addr_decoder_common, addr_decode_ch[2];
 	int i;
 
-	addr_decoder_common = MCHBAR32(MAD_CHNL);
-	addr_decode_ch[0]   = MCHBAR32(MAD_DIMM_CH0);
-	addr_decode_ch[1]   = MCHBAR32(MAD_DIMM_CH1);
+	addr_decoder_common = mchbar_read32(MAD_CHNL);
+	addr_decode_ch[0]   = mchbar_read32(MAD_DIMM_CH0);
+	addr_decode_ch[1]   = mchbar_read32(MAD_DIMM_CH1);
 
-	const int refclk = MCHBAR32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
+	const int refclk = mchbar_read32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
 
 	printk(BIOS_DEBUG, "memcfg DDR3 ref clock %d MHz\n", refclk);
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100);
+	       (mchbar_read32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100);
 
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       (addr_decoder_common >> 0) & 3,

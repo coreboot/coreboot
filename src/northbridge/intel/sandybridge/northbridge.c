@@ -214,56 +214,40 @@ static void northbridge_dmi_init(struct device *dev)
 
 	/* Steps prior to DMI ASPM */
 	if (is_sandy) {
-		reg32 = DMIBAR32(0x250);
-		reg32 &= ~(7 << 20);
-		reg32 |= (2 << 20);
-		DMIBAR32(0x250) = reg32;
+		dmibar_clrsetbits32(0x250, 7 << 20, 2 << 20);
 	}
 
-	reg32 = DMIBAR32(DMILLTC);
-	reg32 |= (1 << 29);
-	DMIBAR32(DMILLTC) = reg32;
+	dmibar_setbits32(DMILLTC, 1 << 29);
 
 	if (is_sandy && stepping == SNB_STEP_C0) {
-		reg32 = DMIBAR32(0xbc8);
-		reg32 &= ~(0xfff << 7);
-		reg32 |= (0x7d3 << 7);
-		DMIBAR32(0xbc8) = reg32;
+		dmibar_clrsetbits32(0xbc8, 0xfff << 7, 0x7d3 << 7);
 	}
 
 	if (!is_sandy || stepping >= SNB_STEP_D1) {
-		reg32 = DMIBAR32(0x1f8);
+		reg32 = dmibar_read32(0x1f8);
 		reg32 &= ~(1 << 26);
 		reg32 |= (1 << 16);
-		DMIBAR32(0x1f8) = reg32;
+		dmibar_write32(0x1f8, reg32);
 
-		reg32 = DMIBAR32(0x1fc);
-		reg32 |= (1 << 12) | (1 << 23);
-		DMIBAR32(0x1fc) = reg32;
+		dmibar_setbits32(0x1fc, 1 << 12 | 1 << 23);
 
 	} else if (stepping >= SNB_STEP_D0) {
-		reg32 = DMIBAR32(0x1f8);
-		reg32 |= (1 << 16);
-		DMIBAR32(0x1f8) = reg32;
+		dmibar_setbits32(0x1f8, 1 << 16);
 	}
 
 	/* Clear error status bits */
-	DMIBAR32(DMIUESTS) = 0xffffffff;
-	DMIBAR32(DMICESTS) = 0xffffffff;
+	dmibar_write32(DMIUESTS, 0xffffffff);
+	dmibar_write32(DMICESTS, 0xffffffff);
 
 	if (!is_sandy)
-		DMIBAR32(0xc34) = 0xffffffff;
+		dmibar_write32(0xc34, 0xffffffff);
 
 	/* Enable ASPM on SNB link, should happen before PCH link */
 	if (is_sandy) {
-		reg32 = DMIBAR32(0xd04);
-		reg32 |= (1 << 4);
-		DMIBAR32(0xd04) = reg32;
+		dmibar_setbits32(0xd04, 1 << 4);
 	}
 
-	reg32 = DMIBAR32(DMILCTL);
-	reg32 |= (1 << 1) | (1 << 0);
-	DMIBAR32(DMILCTL) = reg32;
+	dmibar_setbits32(DMILCTL, 1 << 1 | 1 << 0);
 }
 
 /* Disable unused PEG devices based on devicetree */
@@ -320,21 +304,20 @@ static void disable_peg(void)
 		 *
 		 * FIXME: Never clock gate on Ivy Bridge stepping A0!
 		 */
-		MCHBAR32_OR(PEGCTL, 1);
+		mchbar_setbits32(PEGCTL, 1);
 		printk(BIOS_DEBUG, "Disabling PEG IO clock.\n");
 	} else {
-		MCHBAR32_AND(PEGCTL, ~1);
+		mchbar_clrbits32(PEGCTL, 1);
 	}
 }
 
 static void northbridge_init(struct device *dev)
 {
-	u8 bios_reset_cpl;
 	u32 bridge_type;
 
 	northbridge_dmi_init(dev);
 
-	bridge_type = MCHBAR32(SAPMTIMERS);
+	bridge_type = mchbar_read32(SAPMTIMERS);
 	bridge_type &= ~0xff;
 
 	if (is_sandybridge()) {
@@ -342,15 +325,12 @@ static void northbridge_init(struct device *dev)
 		bridge_type |= 0x20;
 	} else {
 		/* Enable Power Aware Interrupt Routing */
-		u8 pair = MCHBAR8(INTRDIRCTL);
-		pair &= ~0x0f;	/* Clear 3:0 */
-		pair |=  0x04;	/* Fixed Priority */
-		MCHBAR8(INTRDIRCTL) = pair;
+		mchbar_clrsetbits8(INTRDIRCTL, 0xf, 0x4); /* Clear 3:0, set Fixed Priority */
 
 		/* 30h for IvyBridge */
 		bridge_type |= 0x30;
 	}
-	MCHBAR32(SAPMTIMERS) = bridge_type;
+	mchbar_write32(SAPMTIMERS, bridge_type);
 
 	/* Turn off unused devices. Has to be done before setting BIOS_RESET_CPL. */
 	disable_peg();
@@ -359,9 +339,7 @@ static void northbridge_init(struct device *dev)
 	 * Set bit 0 of BIOS_RESET_CPL to indicate to the CPU
 	 * that BIOS has initialized memory and power management
 	 */
-	bios_reset_cpl = MCHBAR8(BIOS_RESET_CPL);
-	bios_reset_cpl |= 1;
-	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
+	mchbar_setbits8(BIOS_RESET_CPL, 1 << 0);
 	printk(BIOS_DEBUG, "Set BIOS_RESET_CPL\n");
 
 	/* Configure turbo power limits 1ms after reset complete bit */
@@ -374,12 +352,12 @@ static void northbridge_init(struct device *dev)
 	 */
 	if (cpu_config_tdp_levels()) {
 		msr_t msr = rdmsr(MSR_PKG_POWER_LIMIT);
-		MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = msr.lo;
-		MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = msr.hi;
+		mchbar_write32(MCH_PKG_POWER_LIMIT_LO, msr.lo);
+		mchbar_write32(MCH_PKG_POWER_LIMIT_HI, msr.hi);
 	}
 
 	/* Set here before graphics PM init */
-	MCHBAR32(PAVP_MSG) = 0x00100001;
+	mchbar_write32(PAVP_MSG, 0x00100001);
 }
 
 void northbridge_write_smram(u8 smram)

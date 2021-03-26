@@ -300,7 +300,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	MCHBAR32(SAPMCTL) |= 1;
+	mchbar_setbits32(SAPMCTL, 1 << 0);
 
 	/* Wait for ME to be ready */
 	intel_early_me_init();
@@ -312,9 +312,9 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 
 	wrmsr(0x2e6, (msr_t) { .lo = 0, .hi = 0 });
 
-	const u32 sskpd = MCHBAR32(SSKPD);	// !!! = 0x00000000
+	const u32 sskpd = mchbar_read32(SSKPD);	// !!! = 0x00000000
 	if ((pci_read_config16(SOUTHBRIDGE, 0xa2) & 0xa0) == 0x20 && sskpd && !s3resume) {
-		MCHBAR32(SSKPD) = 0;
+		mchbar_write32(SSKPD, 0);
 		/* Need reset */
 		system_reset();
 	}
@@ -413,7 +413,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 		die("raminit failed");
 
 	/* FIXME: should be hardware revision-dependent. The register only exists on IVB. */
-	MCHBAR32(CHANNEL_HASH) = 0x00a030ce;
+	mchbar_write32(CHANNEL_HASH, 0x00a030ce);
 
 	set_scrambling_seed(&ctrl);
 

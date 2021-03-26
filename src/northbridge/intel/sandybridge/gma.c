@@ -347,7 +347,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 			gtt_write_powermeter(snb_pm_gt2);
 		}
 	} else {
-		u32 unit = MCHBAR32(0x5938) & 0xf;
+		u32 unit = mchbar_read32(0x5938) & 0xf;
 
 		if (reg32 & (1 << 13)) {
 			/* GT1 SKU */
@@ -355,7 +355,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 			gtt_write_powermeter(ivb_pm_gt1);
 		} else {
 			/* GT2 SKU */
-			u32 tdp = MCHBAR32(0x5930) & 0x7fff;
+			u32 tdp = mchbar_read32(0x5930) & 0x7fff;
 			tdp /= (1 << unit);
 
 			if (tdp <= 17) {
@@ -467,7 +467,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	/* 12: Normal Frequency Request */
 	/* RPNFREQ_VAL comes from MCHBAR 0x5998 23:16 */
 	/* only the lower 7 bits are used and shifted left by 25 */
-	reg32 = MCHBAR32(0x5998);
+	reg32 = mchbar_read32(0x5998);
 	reg32 >>= 16;
 	reg32 &= 0x7f;
 	reg32 <<= 25;

@@ -26,10 +26,10 @@ static void sfence(void)
 /* Toggle IO reset bit */
 static void toggle_io_reset(void)
 {
-	u32 r32 = MCHBAR32(MC_INIT_STATE_G);
-	MCHBAR32(MC_INIT_STATE_G) = r32 |  (1 << 5);
+	u32 r32 = mchbar_read32(MC_INIT_STATE_G);
+	mchbar_write32(MC_INIT_STATE_G, r32 |  (1 << 5));
 	udelay(1);
-	MCHBAR32(MC_INIT_STATE_G) = r32 & ~(1 << 5);
+	mchbar_write32(MC_INIT_STATE_G, r32 & ~(1 << 5));
 	udelay(1);
 }
 
@@ -107,12 +107,12 @@ void dram_xover(ramctr_timing *ctrl)
 		/* Enable xover clk */
 		reg = get_XOVER_CLK(ctrl->rankmap[channel]);
 		printram("XOVER CLK [%x] = %x\n", GDCRCKPICODE_ch(channel), reg);
-		MCHBAR32(GDCRCKPICODE_ch(channel)) = reg;
+		mchbar_write32(GDCRCKPICODE_ch(channel), reg);
 
 		/* Enable xover ctl & xover cmd */
 		reg = get_XOVER_CMD(ctrl->rankmap[channel]);
 		printram("XOVER CMD [%x] = %x\n", GDCRCMDPICODING_ch(channel), reg);
-		MCHBAR32(GDCRCMDPICODING_ch(channel)) = reg;
+		mchbar_write32(GDCRCMDPICODING_ch(channel), reg);
 	}
 }
 
@@ -130,17 +130,17 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 			stretch = 3;
 
 		addr = SCHED_SECOND_CBIT_ch(channel);
-		MCHBAR32_AND_OR(addr, ~(0xf << 10), (stretch << 12) | (stretch << 10));
-		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr, MCHBAR32(addr));
+		mchbar_clrsetbits32(addr, 0xf << 10, stretch << 12 | stretch << 10);
+		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr, mchbar_read32(addr));
 	} else {
 		addr = TC_OTHP_ch(channel);
 		union tc_othp_reg tc_othp = {
-			.raw = MCHBAR32(addr),
+			.raw = mchbar_read32(addr),
 		};
 		tc_othp.odt_delay_d0 = stretch;
 		tc_othp.odt_delay_d1 = stretch;
-		MCHBAR32(addr) = tc_othp.raw;
-		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, MCHBAR32(addr));
+		mchbar_write32(addr, tc_othp.raw);
+		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, mchbar_read32(addr));
 	}
 }
 
@@ -210,32 +210,32 @@ void dram_timing_regs(ramctr_timing *ctrl)
 
 	FOR_ALL_CHANNELS {
 		printram("DBP [%x] = %x\n", TC_DBP_ch(channel), tc_dbp.raw);
-		MCHBAR32(TC_DBP_ch(channel)) = tc_dbp.raw;
+		mchbar_write32(TC_DBP_ch(channel), tc_dbp.raw);
 
 		printram("RAP [%x] = %x\n", TC_RAP_ch(channel), tc_rap.raw);
-		MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
+		mchbar_write32(TC_RAP_ch(channel), tc_rap.raw);
 
 		printram("OTHP [%x] = %x\n", TC_OTHP_ch(channel), tc_othp.raw);
-		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
+		mchbar_write32(TC_OTHP_ch(channel), tc_othp.raw);
 
 		if (IS_IVY_CPU(ctrl->cpu)) {
 			/* Debug parameters - only applies to Ivy Bridge */
-			MCHBAR32(TC_DTP_ch(channel)) = tc_dtp.raw;
+			mchbar_write32(TC_DTP_ch(channel), tc_dtp.raw);
 		}
 
 		dram_odt_stretch(ctrl, channel);
 
 		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), tc_rftp.raw);
-		MCHBAR32(TC_RFTP_ch(channel)) = tc_rftp.raw;
+		mchbar_write32(TC_RFTP_ch(channel), tc_rftp.raw);
 
 		union tc_rfp_reg tc_rfp = {
-			.raw = MCHBAR32(TC_RFP_ch(channel)),
+			.raw = mchbar_read32(TC_RFP_ch(channel)),
 		};
 		tc_rfp.oref_ri = 0xff;
-		MCHBAR32(TC_RFP_ch(channel)) = tc_rfp.raw;
+		mchbar_write32(TC_RFP_ch(channel), tc_rfp.raw);
 
 		printram("SRFTP [%x] = %x\n", TC_SRFTP_ch(channel), tc_srftp.raw);
-		MCHBAR32(TC_SRFTP_ch(channel)) = tc_srftp.raw;
+		mchbar_write32(TC_SRFTP_ch(channel), tc_srftp.raw);
 	}
 }
 
@@ -298,7 +298,7 @@ void dram_dimm_set_mapping(ramctr_timing *ctrl, int training)
 		ecc = 0;
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32(MAD_DIMM(channel)) = ctrl->mad_dimm[channel] | ecc;
+		mchbar_write32(MAD_DIMM(channel), ctrl->mad_dimm[channel] | ecc);
 	}
 
 	if (ctrl->ecc_enabled)
@@ -321,20 +321,20 @@ void dram_zones(ramctr_timing *ctrl, int training)
 	}
 
 	if (ch0size >= ch1size) {
-		reg = MCHBAR32(MAD_ZR);
+		reg = mchbar_read32(MAD_ZR);
 		val = ch1size / 256;
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0x00ff0000) | (2 * val) << 16;
-		MCHBAR32(MAD_ZR) = reg;
-		MCHBAR32(MAD_CHNL) = 0x24;
+		mchbar_write32(MAD_ZR, reg);
+		mchbar_write32(MAD_CHNL, 0x24);
 
 	} else {
-		reg = MCHBAR32(MAD_ZR);
+		reg = mchbar_read32(MAD_ZR);
 		val = ch0size / 256;
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0x00ff0000) | (2 * val) << 16;
-		MCHBAR32(MAD_ZR) = reg;
-		MCHBAR32(MAD_CHNL) = 0x21;
+		mchbar_write32(MAD_ZR, reg);
+		mchbar_write32(MAD_CHNL, 0x21);
 	}
 }
 
@@ -541,33 +541,33 @@ void dram_jedecreset(ramctr_timing *ctrl)
 	u32 reg;
 	int channel;
 
-	while (!(MCHBAR32(RCOMP_TIMER) & (1 << 16)))
+	while (!(mchbar_read32(RCOMP_TIMER) & (1 << 16)))
 		;
 	do {
-		reg = MCHBAR32(IOSAV_STATUS_ch(0));
+		reg = mchbar_read32(IOSAV_STATUS_ch(0));
 	} while ((reg & 0x14) == 0);
 
 	/* Set state of memory controller */
 	reg = 0x112;
-	MCHBAR32(MC_INIT_STATE_G) = reg;
-	MCHBAR32(MC_INIT_STATE) = 0;
+	mchbar_write32(MC_INIT_STATE_G, reg);
+	mchbar_write32(MC_INIT_STATE, 0);
 	reg |= 2;		/* DDR reset */
-	MCHBAR32(MC_INIT_STATE_G) = reg;
+	mchbar_write32(MC_INIT_STATE_G, reg);
 
 	/* Assert DIMM reset signal */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 1));
+	mchbar_clrbits32(MC_INIT_STATE_G, 1 << 1);
 
 	/* Wait 200us */
 	udelay(200);
 
 	/* Deassert DIMM reset signal */
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 1);
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 1);
 
 	/* Wait 500us */
 	udelay(500);
 
 	/* Enable DCLK */
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 2);
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 2);
 
 	/* XXX Wait 20ns */
 	udelay(1);
@@ -575,13 +575,13 @@ void dram_jedecreset(ramctr_timing *ctrl)
 	FOR_ALL_CHANNELS {
 		/* Set valid rank CKE */
 		reg = ctrl->rankmap[channel];
-		MCHBAR32(MC_INIT_STATE_ch(channel)) = reg;
+		mchbar_write32(MC_INIT_STATE_ch(channel), reg);
 
 		/* Wait 10ns for ranks to settle */
 		// udelay(0.01);
 
 		reg = (reg & ~0xf0) | (ctrl->rankmap[channel] << 4);
-		MCHBAR32(MC_INIT_STATE_ch(channel)) = reg;
+		mchbar_write32(MC_INIT_STATE_ch(channel), reg);
 
 		/* Write reset using a NOP */
 		write_reset(ctrl);
@@ -788,7 +788,7 @@ static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 	write_mrreg(ctrl, channel, rank, 2, mr2reg);
 
 	/* Program MR2 shadow */
-	u32 reg32 = MCHBAR32(TC_MR2_SHADOW_ch(channel));
+	u32 reg32 = mchbar_read32(TC_MR2_SHADOW_ch(channel));
 
 	reg32 &= 3 << 14 | 3 << 6;
 
@@ -800,7 +800,7 @@ static void dram_mr2(ramctr_timing *ctrl, u8 rank, int channel)
 	if (ctrl->rank_mirror[channel][rank])
 		reg32 |= 1 << (rank / 2 + 14);
 
-	MCHBAR32(TC_MR2_SHADOW_ch(channel)) = reg32;
+	mchbar_write32(TC_MR2_SHADOW_ch(channel), reg32);
 }
 
 static void dram_mr3(ramctr_timing *ctrl, u8 rank, int channel)
@@ -881,10 +881,10 @@ void dram_mrscommands(ramctr_timing *ctrl)
 	}
 
 	/* Refresh enable */
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 3);
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 3);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~(1 << 21));
+		mchbar_clrbits32(SCHED_CBIT_ch(channel), 1 << 21);
 
 		wait_for_iosav(channel);
 
@@ -989,12 +989,12 @@ void program_timings(ramctr_timing *ctrl, int channel)
 	cmd_pi_coding.ctl_logic_delay_d0 = ctl_delay[0] / QCLK_PI;
 	cmd_pi_coding.ctl_logic_delay_d1 = ctl_delay[1] / QCLK_PI;
 
-	MCHBAR32(GDCRCMDPICODING_ch(channel)) = cmd_pi_coding.raw;
+	mchbar_write32(GDCRCMDPICODING_ch(channel), cmd_pi_coding.raw);
 
-	MCHBAR32(GDCRCKPICODE_ch(channel)) = clk_pi_coding;
-	MCHBAR32(GDCRCKLOGICDELAY_ch(channel)) = clk_logic_dly;
+	mchbar_write32(GDCRCKPICODE_ch(channel), clk_pi_coding);
+	mchbar_write32(GDCRCKLOGICDELAY_ch(channel), clk_logic_dly);
 
-	reg_io_latency = MCHBAR32(SC_IO_LATENCY_ch(channel));
+	reg_io_latency = mchbar_read32(SC_IO_LATENCY_ch(channel));
 	reg_io_latency &= ~0xffff;
 
 	reg_roundtrip_latency = 0;
@@ -1015,7 +1015,8 @@ void program_timings(ramctr_timing *ctrl, int channel)
 				.rcven_logic_delay = rcven / QCLK_PI,
 				.rx_dqs_n_pi_code  = dqs_n,
 			};
-			MCHBAR32(lane_base[lane] + GDCRRX(channel, slotrank)) = gdcr_rx.raw;
+			mchbar_write32(lane_base[lane] + GDCRRX(channel, slotrank),
+				gdcr_rx.raw);
 
 			const u16 tx_dqs = ctrl->timings[channel][slotrank].lanes[lane].tx_dqs;
 			const int tx_dq = ctrl->timings[channel][slotrank].lanes[lane].tx_dq;
@@ -1025,11 +1026,12 @@ void program_timings(ramctr_timing *ctrl, int channel)
 				.tx_dqs_logic_delay = tx_dqs / QCLK_PI,
 				.tx_dq_logic_delay  = tx_dq / QCLK_PI,
 			};
-			MCHBAR32(lane_base[lane] + GDCRTX(channel, slotrank)) = gdcr_tx.raw;
+			mchbar_write32(lane_base[lane] + GDCRTX(channel, slotrank),
+				gdcr_tx.raw);
 		}
 	}
-	MCHBAR32(SC_ROUNDT_LAT_ch(channel)) = reg_roundtrip_latency;
-	MCHBAR32(SC_IO_LATENCY_ch(channel)) = reg_io_latency;
+	mchbar_write32(SC_ROUNDT_LAT_ch(channel), reg_roundtrip_latency);
+	mchbar_write32(SC_IO_LATENCY_ch(channel), reg_io_latency);
 }
 
 static void test_rcven(ramctr_timing *ctrl, int channel, int slotrank)
@@ -1046,7 +1048,7 @@ static int does_lane_work(ramctr_timing *ctrl, int channel, int slotrank, int la
 {
 	u32 rcven = ctrl->timings[channel][slotrank].lanes[lane].rcven;
 
-	return (MCHBAR32(lane_base[lane] +
+	return (mchbar_read32(lane_base[lane] +
 		GDCRTRAININGRESULT(channel, (rcven / 32) & 1)) >> (rcven % 32)) & 1;
 }
 
@@ -1328,7 +1330,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 			.training_rank_sel   = slotrank,
 			.odt_always_on       = 1,
 		};
-		MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
+		mchbar_write32(GDCRTRAININGMOD, training_mod.raw);
 
 		ctrl->timings[channel][slotrank].io_latency = 4;
 		ctrl->timings[channel][slotrank].roundtrip_latency = 55;
@@ -1387,7 +1389,7 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 			printram("Aval: %d, %d, %d: % 4d\n", channel, slotrank, lane,
 			    ctrl->timings[channel][slotrank].lanes[lane].rcven);
 
-		MCHBAR32(GDCRTRAININGMOD) = 0;
+		mchbar_write32(GDCRTRAININGMOD, 0);
 
 		toggle_io_reset();
 	}
@@ -1404,8 +1406,8 @@ static void test_tx_dq(ramctr_timing *ctrl, int channel, int slotrank)
 	int lane;
 
 	FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
-		MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+		mchbar_write32(IOSAV_By_ERROR_COUNT_ch(channel, lane), 0);
+		mchbar_read32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 	}
 
 	wait_for_iosav(channel);
@@ -1458,7 +1460,8 @@ static int tx_dq_write_leveling(ramctr_timing *ctrl, int channel, int slotrank)
 		test_tx_dq(ctrl, channel, slotrank);
 
 		FOR_ALL_LANES {
-			stats[lane][tx_dq] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			stats[lane][tx_dq] = mchbar_read32(
+				IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 	FOR_ALL_LANES {
@@ -1499,7 +1502,7 @@ static int get_precedening_channels(ramctr_timing *ctrl, int target_channel)
 /* Each cacheline is 64 bits long */
 static void program_wdb_pattern_length(int channel, const unsigned int num_cachelines)
 {
-	MCHBAR8(IOSAV_DATA_CTL_ch(channel)) = num_cachelines / 8 - 1;
+	mchbar_write8(IOSAV_DATA_CTL_ch(channel), num_cachelines / 8 - 1);
 }
 
 static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
@@ -1555,7 +1558,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 		.odt_always_on       = 1,
 		.force_drive_enable  = 1,
 	};
-	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
+	mchbar_write32(GDCRTRAININGMOD, training_mod.raw);
 
 	u32 mr1reg = make_mr1(ctrl, slotrank, channel) | 1 << 7;
 	int bank = 1;
@@ -1576,7 +1579,7 @@ static int write_level_rank(ramctr_timing *ctrl, int channel, int slotrank)
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
-			statistics[lane][tx_dqs] =  !((MCHBAR32(lane_base[lane] +
+			statistics[lane][tx_dqs] =  !((mchbar_read32(lane_base[lane] +
 				GDCRTRAININGRESULT(channel, (tx_dqs / 32) & 1)) >>
 				(tx_dqs % 32)) & 1);
 		}
@@ -1637,7 +1640,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 	const union gdcr_training_mod_reg training_mod = {
 		.dq_dqs_training_res = 1,
 	};
-	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
+	mchbar_write32(GDCRTRAININGMOD, training_mod.raw);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
@@ -1645,7 +1648,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
 
 		/* Reset read and write WDB pointers */
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x10001;
+		mchbar_write32(IOSAV_DATA_CTL_ch(channel), 0x10001);
 
 		wait_for_iosav(channel);
 
@@ -1722,8 +1725,8 @@ static void train_write_flyby(ramctr_timing *ctrl)
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
-			u64 res = MCHBAR32(lane_base[lane] + GDCRTRAININGRESULT1(channel));
-			res |= ((u64) MCHBAR32(lane_base[lane] +
+			u64 res = mchbar_read32(lane_base[lane] + GDCRTRAININGRESULT1(channel));
+			res |= ((u64) mchbar_read32(lane_base[lane] +
 				GDCRTRAININGRESULT2(channel))) << 32;
 
 			old = ctrl->timings[channel][slotrank].lanes[lane].tx_dqs;
@@ -1735,7 +1738,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 				old, ctrl->timings[channel][slotrank].lanes[lane].tx_dqs);
 		}
 	}
-	MCHBAR32(GDCRTRAININGMOD) = 0;
+	mchbar_write32(GDCRTRAININGMOD, 0);
 }
 
 static void disable_refresh_machine(ramctr_timing *ctrl)
@@ -1750,11 +1753,11 @@ static void disable_refresh_machine(ramctr_timing *ctrl)
 
 		iosav_run_once_and_wait(channel);
 
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
+		mchbar_setbits32(SCHED_CBIT_ch(channel), 1 << 21);
 	}
 
 	/* Refresh disable */
-	MCHBAR32_AND(MC_INIT_STATE_G, ~(1 << 3));
+	mchbar_clrbits32(MC_INIT_STATE_G, 1 << 3);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		/* Execute the same command queue */
@@ -1794,7 +1797,7 @@ static int jedec_write_leveling(ramctr_timing *ctrl)
 		.odt_always_on       = 1,
 		.force_drive_enable  = 1,
 	};
-	MCHBAR32(GDCRTRAININGMOD) = training_mod.raw;
+	mchbar_write32(GDCRTRAININGMOD, training_mod.raw);
 
 	toggle_io_reset();
 
@@ -1809,17 +1812,17 @@ static int jedec_write_leveling(ramctr_timing *ctrl)
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS
 		write_mrreg(ctrl, channel, slotrank, 1, make_mr1(ctrl, slotrank, channel));
 
-	MCHBAR32(GDCRTRAININGMOD) = 0;
+	mchbar_write32(GDCRTRAININGMOD, 0);
 
 	FOR_ALL_POPULATED_CHANNELS
 		wait_for_iosav(channel);
 
 	/* Refresh enable */
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 3);
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 3);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~(1 << 21));
-		MCHBAR32(IOSAV_STATUS_ch(channel));
+		mchbar_clrbits32(SCHED_CBIT_ch(channel), 1 << 21);
+		mchbar_read32(IOSAV_STATUS_ch(channel));
 		wait_for_iosav(channel);
 
 		iosav_write_zqcs_sequence(channel, 0, 4, 101, 31);
@@ -1842,7 +1845,7 @@ int write_training(ramctr_timing *ctrl)
 	 * Needs to be done before starting the write training procedure.
 	 */
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
+		mchbar_setbits32(TC_RWP_ch(channel), 1 << 27);
 
 	printram("CPE\n");
 
@@ -1889,24 +1892,24 @@ static int test_command_training(ramctr_timing *ctrl, int channel, int slotrank)
 		}
 		program_timings(ctrl, channel);
 		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_ERROR_COUNT(lane)) = 0;
+			mchbar_write32(IOSAV_By_ERROR_COUNT(lane), 0);
 		}
 
 		/* Reset read WDB pointer */
-		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
+		mchbar_write32(IOSAV_DATA_CTL_ch(channel), 0x1f);
 
 		wait_for_iosav(channel);
 
 		iosav_write_command_training_sequence(ctrl, channel, slotrank, ctr);
 
 		/* Program LFSR for the RD/WR subsequences */
-		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
-		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2)) = 0x389abcd;
+		mchbar_write32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1), 0x389abcd);
+		mchbar_write32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2), 0x389abcd);
 
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
-			u32 r32 = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			u32 r32 = mchbar_read32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 
 			if (r32 == 0)
 				lanes_ok |= 1 << lane;
@@ -1997,7 +2000,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		.tWR     = ctrl->tWR,
 		.tCMD    = ctrl->cmd_stretch[channel],
 	};
-	MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
+	mchbar_write32(TC_RAP_ch(channel), tc_rap.raw);
 
 	if (ctrl->cmd_stretch[channel] == 2)
 		delta = 2;
@@ -2106,8 +2109,8 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		program_timings(ctrl, channel);
 
 		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
-			MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+			mchbar_write32(IOSAV_By_ERROR_COUNT_ch(channel, lane), 0);
+			mchbar_read32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 		}
 
 		wait_for_iosav(channel);
@@ -2118,7 +2121,8 @@ static int find_read_mpr_margin(ramctr_timing *ctrl, int channel, int slotrank, 
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES {
-			stats[lane][dqs_pi] = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+			stats[lane][dqs_pi] = mchbar_read32(
+				IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 
@@ -2142,8 +2146,8 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 
 	fill_pattern0(ctrl, channel, 0, 0);
 	FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
-		MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+		mchbar_write32(IOSAV_By_BW_MASK_ch(channel, lane), 0);
+		mchbar_read32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 	}
 
 	FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
@@ -2183,8 +2187,8 @@ static void find_predefined_pattern(ramctr_timing *ctrl, const int channel)
 	/* XXX: check any measured value ? */
 
 	FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) =
-			~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane)) & 0xff;
+		mchbar_write32(IOSAV_By_BW_MASK_ch(channel, lane),
+			~mchbar_read32(IOSAV_By_BW_SERROR_ch(channel, lane)) & 0xff);
 	}
 }
 
@@ -2195,7 +2199,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 	int channel, slotrank, lane;
 	int err;
 
-	MCHBAR32(GDCRTRAININGMOD) = 0;
+	mchbar_write32(GDCRTRAININGMOD, 0);
 
 	toggle_io_reset();
 
@@ -2209,7 +2213,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 	 * FIXME: Under some conditions, vendor BIOS sets both edges to the same value. It will
 	 *        also use a single loop. It would seem that it is a debugging configuration.
 	 */
-	MCHBAR32(IOSAV_DC_MASK) = 3 << 8;
+	mchbar_write32(IOSAV_DC_MASK, 3 << 8);
 	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 3 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2219,7 +2223,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 2 << 8;
+	mchbar_write32(IOSAV_DC_MASK, 2 << 8);
 	printram("discover rising edges:\n[%x] = %x\n", IOSAV_DC_MASK, 2 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2229,7 +2233,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 0;
+	mchbar_write32(IOSAV_DC_MASK, 0);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		ctrl->timings[channel][slotrank].lanes[lane].rx_dqs_n =
@@ -2243,7 +2247,7 @@ int read_mpr_training(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
+		mchbar_write32(IOSAV_By_BW_MASK_ch(channel, lane), 0);
 	}
 	return 0;
 }
@@ -2266,7 +2270,7 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 		const union gdcr_training_mod_reg training_mod = {
 			.vref_gen_ctl = rd_vref_offsets[i],
 		};
-		MCHBAR32(GDCRTRAININGMOD_ch(channel)) = training_mod.raw;
+		mchbar_write32(GDCRTRAININGMOD_ch(channel), training_mod.raw);
 		printram("[%x] = 0x%08x\n", GDCRTRAININGMOD_ch(channel), training_mod.raw);
 
 		for (pat = 0; pat < NUM_PATTERNS; pat++) {
@@ -2283,8 +2287,9 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 				program_timings(ctrl, channel);
 
 				FOR_ALL_LANES {
-					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
-					MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
+					mchbar_write32(IOSAV_By_ERROR_COUNT_ch(channel, lane),
+							0);
+					mchbar_read32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 				}
 				wait_for_iosav(channel);
 
@@ -2293,11 +2298,12 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 				iosav_run_once_and_wait(channel);
 
 				FOR_ALL_LANES {
-					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
+					mchbar_read32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 				}
 
 				/* FIXME: This register only exists on Ivy Bridge */
-				raw_stats[read_pi] = MCHBAR32(IOSAV_BYTE_SERROR_C_ch(channel));
+				raw_stats[read_pi] = mchbar_read32(
+					IOSAV_BYTE_SERROR_C_ch(channel));
 			}
 
 			FOR_ALL_LANES {
@@ -2329,7 +2335,7 @@ static int find_agrsv_read_margin(ramctr_timing *ctrl, int channel, int slotrank
 	}
 
 	/* Restore nominal Vref after training */
-	MCHBAR32(GDCRTRAININGMOD_ch(channel)) = 0;
+	mchbar_write32(GDCRTRAININGMOD_ch(channel), 0);
 	printram("CPA\n");
 	return 0;
 }
@@ -2344,7 +2350,7 @@ int aggressive_read_training(ramctr_timing *ctrl)
 	 * FIXME: Under some conditions, vendor BIOS sets both edges to the same value. It will
 	 *        also use a single loop. It would seem that it is a debugging configuration.
 	 */
-	MCHBAR32(IOSAV_DC_MASK) = 3 << 8;
+	mchbar_write32(IOSAV_DC_MASK, 3 << 8);
 	printram("discover falling edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 3 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2354,7 +2360,7 @@ int aggressive_read_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 2 << 8;
+	mchbar_write32(IOSAV_DC_MASK, 2 << 8);
 	printram("discover rising edges aggressive:\n[%x] = %x\n", IOSAV_DC_MASK, 2 << 8);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2364,7 +2370,7 @@ int aggressive_read_training(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(IOSAV_DC_MASK) = 0;
+	mchbar_write32(IOSAV_DC_MASK, 0);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		ctrl->timings[channel][slotrank].lanes[lane].rx_dqs_n =
@@ -2391,7 +2397,7 @@ static void test_aggressive_write(ramctr_timing *ctrl, int channel, int slotrank
 
 static void set_write_vref(const int channel, const u8 wr_vref)
 {
-	MCHBAR32_AND_OR(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~(0x3f << 24), wr_vref << 24);
+	mchbar_clrsetbits32(GDCRCMDDEBUGMUXCFG_Cz_S(channel), 0x3f << 24, wr_vref << 24);
 	udelay(2);
 }
 
@@ -2420,7 +2426,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 	const bool enable_iosav_opt = IS_IVY_CPU_D(ctrl->cpu) || IS_IVY_CPU_E(ctrl->cpu);
 
 	if (enable_iosav_opt)
-		MCHBAR32(MCMNTS_SPARE) = 1;
+		mchbar_write32(MCMNTS_SPARE, 1);
 
 	printram("Aggresive write training:\n");
 
@@ -2448,7 +2454,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 
 						test_aggressive_write(ctrl, channel, slotrank);
 
-						raw_stats[tx_dq] = MCHBAR32(
+						raw_stats[tx_dq] = mchbar_read32(
 							IOSAV_BYTE_SERROR_C_ch(channel));
 					}
 					FOR_ALL_LANES {
@@ -2495,7 +2501,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 
 	/* Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization */
 	if (enable_iosav_opt)
-		MCHBAR32(MCMNTS_SPARE) = 0;
+		mchbar_write32(MCMNTS_SPARE, 0);
 
 	printram("CPB\n");
 
@@ -2546,7 +2552,7 @@ int channel_test(ramctr_timing *ctrl)
 
 	slotrank = 0;
 	FOR_ALL_POPULATED_CHANNELS
-		if (MCHBAR32(MC_INIT_STATE_ch(channel)) & 0xa000) {
+		if (mchbar_read32(MC_INIT_STATE_ch(channel)) & 0xa000) {
 			printk(BIOS_EMERG, "Mini channel test failed (1): %d\n", channel);
 			return MAKE_ERR;
 		}
@@ -2558,8 +2564,8 @@ int channel_test(ramctr_timing *ctrl)
 		FOR_ALL_CHANNELS
 			if (ctrl->rankmap[channel] & (1 << slotrank)) {
 		FOR_ALL_LANES {
-			MCHBAR32(IOSAV_By_ERROR_COUNT(lane)) = 0;
-			MCHBAR32(IOSAV_By_BW_SERROR_C(lane)) = 0;
+			mchbar_write32(IOSAV_By_ERROR_COUNT(lane), 0);
+			mchbar_write32(IOSAV_By_BW_SERROR_C(lane), 0);
 		}
 		wait_for_iosav(channel);
 
@@ -2568,7 +2574,7 @@ int channel_test(ramctr_timing *ctrl)
 		iosav_run_once_and_wait(channel);
 
 		FOR_ALL_LANES
-			if (MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane))) {
+			if (mchbar_read32(IOSAV_By_ERROR_COUNT_ch(channel, lane))) {
 				printk(BIOS_EMERG, "Mini channel test failed (2): %d, %d, %d\n",
 				       channel, slotrank, lane);
 				return MAKE_ERR;
@@ -2704,19 +2710,19 @@ void set_scrambling_seed(ramctr_timing *ctrl)
 		{0x00028bfa, 0x53fe4b49, 0x19ed5483}
 	};
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(SCHED_CBIT_ch(channel)) &= ~(1 << 28);
-		MCHBAR32(SCRAMBLING_SEED_1_ch(channel))    = seeds[channel][0];
-		MCHBAR32(SCRAMBLING_SEED_2_HI_ch(channel)) = seeds[channel][1];
-		MCHBAR32(SCRAMBLING_SEED_2_LO_ch(channel)) = seeds[channel][2];
+		mchbar_clrbits32(SCHED_CBIT_ch(channel), 1 << 28);
+		mchbar_write32(SCRAMBLING_SEED_1_ch(channel),    seeds[channel][0]);
+		mchbar_write32(SCRAMBLING_SEED_2_HI_ch(channel), seeds[channel][1]);
+		mchbar_write32(SCRAMBLING_SEED_2_LO_ch(channel), seeds[channel][2]);
 	}
 }
 
 void set_wmm_behavior(const u32 cpu)
 {
 	if (IS_SANDY_CPU(cpu) && (IS_SANDY_CPU_D0(cpu) || IS_SANDY_CPU_D1(cpu))) {
-		MCHBAR32(SC_WDBWM) = 0x141d1519;
+		mchbar_write32(SC_WDBWM, 0x141d1519);
 	} else {
-		MCHBAR32(SC_WDBWM) = 0x551d1519;
+		mchbar_write32(SC_WDBWM, 0x551d1519);
 	}
 }
 
@@ -2726,7 +2732,7 @@ void prepare_training(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		/* Always drive command bus */
-		MCHBAR32_OR(TC_RAP_ch(channel), 1 << 29);
+		mchbar_setbits32(TC_RAP_ch(channel), 1 << 29);
 	}
 
 	udelay(1);
@@ -2768,7 +2774,7 @@ void set_read_write_timings(ramctr_timing *ctrl)
 			.tRWSR   = 2,
 			.dec_wrd = 1,
 		};
-		MCHBAR32(TC_RWP_ch(channel)) = tc_rwp.raw;
+		mchbar_write32(TC_RWP_ch(channel), tc_rwp.raw);
 	}
 }
 
@@ -2776,8 +2782,8 @@ void set_normal_operation(ramctr_timing *ctrl)
 {
 	int channel;
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(MC_INIT_STATE_ch(channel)) = (1 << 12) | ctrl->rankmap[channel];
-		MCHBAR32_AND(TC_RAP_ch(channel), ~(1 << 29));
+		mchbar_write32(MC_INIT_STATE_ch(channel), 1 << 12 | ctrl->rankmap[channel]);
+		mchbar_clrbits32(TC_RAP_ch(channel), 1 << 29);
 	}
 }
 
@@ -2796,84 +2802,84 @@ void final_registers(ramctr_timing *ctrl)
 	u32 r32;
 
 	/* FIXME: This register only exists on Ivy Bridge */
-	MCHBAR32(WMM_READ_CONFIG) = 0x46;
+	mchbar_write32(WMM_READ_CONFIG, 0x46);
 
 	FOR_ALL_CHANNELS {
 		union tc_othp_reg tc_othp = {
-			.raw = MCHBAR32(TC_OTHP_ch(channel)),
+			.raw = mchbar_read32(TC_OTHP_ch(channel)),
 		};
 		tc_othp.tCPDED = 1;
-		MCHBAR32(TC_OTHP_ch(channel)) = tc_othp.raw;
+		mchbar_write32(TC_OTHP_ch(channel), tc_othp.raw);
 	}
 
 	/* 64 DCLKs until idle, decision per rank */
-	MCHBAR32(PM_PDWN_CONFIG) = get_power_down_mode(ctrl) << 8 | 64;
+	mchbar_write32(PM_PDWN_CONFIG, get_power_down_mode(ctrl) << 8 | 64);
 
 	FOR_ALL_CHANNELS
-		MCHBAR32(PM_TRML_M_CONFIG_ch(channel)) = 0x00000aaa;
+		mchbar_write32(PM_TRML_M_CONFIG_ch(channel), 0x00000aaa);
 
-	MCHBAR32(PM_BW_LIMIT_CONFIG) = 0x5f7003ff;
-	MCHBAR32(PM_DLL_CONFIG) = 0x00073000 | ctrl->mdll_wake_delay;
+	mchbar_write32(PM_BW_LIMIT_CONFIG, 0x5f7003ff);
+	mchbar_write32(PM_DLL_CONFIG, 0x00073000 | ctrl->mdll_wake_delay);
 
 	FOR_ALL_CHANNELS {
 		switch (ctrl->rankmap[channel]) {
 			/* Unpopulated channel */
 		case 0:
-			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0;
+			mchbar_write32(PM_CMD_PWR_ch(channel), 0);
 			break;
 			/* Only single-ranked dimms */
 		case 1:
 		case 4:
 		case 5:
-			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0x00373131;
+			mchbar_write32(PM_CMD_PWR_ch(channel), 0x00373131);
 			break;
 			/* Dual-ranked dimms present */
 		default:
-			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0x009b6ea1;
+			mchbar_write32(PM_CMD_PWR_ch(channel), 0x009b6ea1);
 			break;
 		}
 	}
 
-	MCHBAR32(MEM_TRML_ESTIMATION_CONFIG) = 0xca9171e5;
-	MCHBAR32_AND_OR(MEM_TRML_THRESHOLDS_CONFIG, ~0x00ffffff, 0x00e4d5d0);
-	MCHBAR32_AND(MEM_TRML_INTERRUPT, ~0x1f);
+	mchbar_write32(MEM_TRML_ESTIMATION_CONFIG, 0xca9171e5);
+	mchbar_clrsetbits32(MEM_TRML_THRESHOLDS_CONFIG, 0x00ffffff, 0x00e4d5d0);
+	mchbar_clrbits32(MEM_TRML_INTERRUPT, 0x1f);
 
 	FOR_ALL_CHANNELS {
 		union tc_rfp_reg tc_rfp = {
-			.raw = MCHBAR32(TC_RFP_ch(channel)),
+			.raw = mchbar_read32(TC_RFP_ch(channel)),
 		};
 		tc_rfp.refresh_2x_control = 1;
-		MCHBAR32(TC_RFP_ch(channel)) = tc_rfp.raw;
+		mchbar_write32(TC_RFP_ch(channel), tc_rfp.raw);
 	}
 
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 0);
-	MCHBAR32_OR(MC_INIT_STATE_G, 1 << 7);
-	MCHBAR32(BANDTIMERS_SNB) = 0xfa;
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 0);
+	mchbar_setbits32(MC_INIT_STATE_G, 1 << 7);
+	mchbar_write32(BANDTIMERS_SNB, 0xfa);
 
 	/* Find a populated channel */
 	FOR_ALL_POPULATED_CHANNELS
 		break;
 
-	t1_cycles = (MCHBAR32(TC_ZQCAL_ch(channel)) >> 8) & 0xff;
-	r32 = MCHBAR32(PM_DLL_CONFIG);
+	t1_cycles = (mchbar_read32(TC_ZQCAL_ch(channel)) >> 8) & 0xff;
+	r32 = mchbar_read32(PM_DLL_CONFIG);
 	if (r32 & (1 << 17))
 		t1_cycles += (r32 & 0xfff);
-	t1_cycles += MCHBAR32(TC_SRFTP_ch(channel)) & 0xfff;
+	t1_cycles += mchbar_read32(TC_SRFTP_ch(channel)) & 0xfff;
 	t1_ns = t1_cycles * ctrl->tCK / 256 + 544;
 	if (!(r32 & (1 << 17)))
 		t1_ns += 500;
 
-	t2_ns = 10 * ((MCHBAR32(SAPMTIMERS) >> 8) & 0xfff);
-	if (MCHBAR32(SAPMCTL) & 8) {
-		t3_ns  = 10 * ((MCHBAR32(BANDTIMERS_IVB) >> 8) & 0xfff);
-		t3_ns += 10 * (MCHBAR32(SAPMTIMERS2_IVB) & 0xff);
+	t2_ns = 10 * ((mchbar_read32(SAPMTIMERS) >> 8) & 0xfff);
+	if (mchbar_read32(SAPMCTL) & 8) {
+		t3_ns  = 10 * ((mchbar_read32(BANDTIMERS_IVB) >> 8) & 0xfff);
+		t3_ns += 10 * (mchbar_read32(SAPMTIMERS2_IVB) & 0xff);
 	} else {
 		t3_ns = 500;
 	}
 
 	/* The graphics driver will use these watermark values */
 	printk(BIOS_DEBUG, "t123: %d, %d, %d\n", t1_ns, t2_ns, t3_ns);
-	MCHBAR32_AND_OR(SSKPD, ~0x3f3f3f3f,
+	mchbar_clrsetbits32(SSKPD, 0x3f3f3f3f,
 		((encode_wm(t1_ns) + encode_wm(t2_ns)) << 16) | (encode_wm(t1_ns) << 8) |
 		((encode_wm(t3_ns) + encode_wm(t2_ns) + encode_wm(t1_ns)) << 24) | 0x0c);
 }
@@ -2892,7 +2898,7 @@ void restore_timings(ramctr_timing *ctrl)
 			.tWR     = ctrl->tWR,
 			.tCMD    = ctrl->cmd_stretch[channel],
 		};
-		MCHBAR32(TC_RAP_ch(channel)) = tc_rap.raw;
+		mchbar_write32(TC_RAP_ch(channel), tc_rap.raw);
 	}
 
 	udelay(1);
@@ -2902,17 +2908,17 @@ void restore_timings(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(TC_RWP_ch(channel), 1 << 27);
+		mchbar_setbits32(TC_RWP_ch(channel), 1 << 27);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		udelay(1);
-		MCHBAR32_OR(SCHED_CBIT_ch(channel), 1 << 21);
+		mchbar_setbits32(SCHED_CBIT_ch(channel), 1 << 21);
 	}
 
 	printram("CPE\n");
 
-	MCHBAR32(GDCRTRAININGMOD) = 0;
-	MCHBAR32(IOSAV_DC_MASK) = 0;
+	mchbar_write32(GDCRTRAININGMOD, 0);
+	mchbar_write32(IOSAV_DC_MASK, 0);
 
 	printram("CP5b\n");
 
@@ -2923,16 +2929,16 @@ void restore_timings(ramctr_timing *ctrl)
 	u32 reg, addr;
 
 	/* Poll for RCOMP */
-	while (!(MCHBAR32(RCOMP_TIMER) & (1 << 16)))
+	while (!(mchbar_read32(RCOMP_TIMER) & (1 << 16)))
 		;
 
 	do {
-		reg = MCHBAR32(IOSAV_STATUS_ch(0));
+		reg = mchbar_read32(IOSAV_STATUS_ch(0));
 	} while ((reg & 0x14) == 0);
 
 	/* Set state of memory controller */
-	MCHBAR32(MC_INIT_STATE_G) = 0x116;
-	MCHBAR32(MC_INIT_STATE)   = 0;
+	mchbar_write32(MC_INIT_STATE_G, 0x116);
+	mchbar_write32(MC_INIT_STATE, 0);
 
 	/* Wait 500us */
 	udelay(500);
@@ -2942,13 +2948,13 @@ void restore_timings(ramctr_timing *ctrl)
 		reg = 0;
 		reg = (reg & ~0x0f) | ctrl->rankmap[channel];
 		addr = MC_INIT_STATE_ch(channel);
-		MCHBAR32(addr) = reg;
+		mchbar_write32(addr, reg);
 
 		/* Wait 10ns for ranks to settle */
 		// udelay(0.01);
 
 		reg = (reg & ~0xf0) | (ctrl->rankmap[channel] << 4);
-		MCHBAR32(addr) = reg;
+		mchbar_write32(addr, reg);
 
 		/* Write reset using a NOP */
 		write_reset(ctrl);
@@ -2959,10 +2965,10 @@ void restore_timings(ramctr_timing *ctrl)
 
 	printram("CP5c\n");
 
-	MCHBAR32(GDCRTRAININGMOD_ch(0)) = 0;
+	mchbar_write32(GDCRTRAININGMOD_ch(0), 0);
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~(0x3f << 24));
+		mchbar_clrbits32(GDCRCMDDEBUGMUXCFG_Cz_S(channel), 0x3f << 24);
 		udelay(2);
 	}
 }

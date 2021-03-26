@@ -18,19 +18,19 @@ void intel_sandybridge_finalize_smm(void)
 	pci_or_config32(HOST_BRIDGE, TSEGMB, 1 << 0);
 	pci_or_config32(HOST_BRIDGE, TOLUD,  1 << 0);
 
-	MCHBAR32_OR(PAVP_MSG,  1 <<  0);	/* PAVP */
-	MCHBAR32_OR(SAPMCTL,   1 << 31);	/* SA PM */
-	MCHBAR32_OR(UMAGFXCTL, 1 <<  0);	/* UMA GFX */
-	MCHBAR32_OR(VTDTRKLCK, 1 <<  0);	/* VTDTRK */
-	MCHBAR32_OR(REQLIM,    1 << 31);
-	MCHBAR32_OR(DMIVCLIM,  1 << 31);
-	MCHBAR32_OR(CRDTLCK,   1 <<  0);
+	mchbar_setbits32(PAVP_MSG,  1 <<  0);	/* PAVP */
+	mchbar_setbits32(SAPMCTL,   1 << 31);	/* SA PM */
+	mchbar_setbits32(UMAGFXCTL, 1 <<  0);	/* UMA GFX */
+	mchbar_setbits32(VTDTRKLCK, 1 <<  0);	/* VTDTRK */
+	mchbar_setbits32(REQLIM,    1 << 31);
+	mchbar_setbits32(DMIVCLIM,  1 << 31);
+	mchbar_setbits32(CRDTLCK,   1 <<  0);
 
 	/* Memory Controller Lockdown */
-	MCHBAR8(MC_LOCK) = 0x8f;
+	mchbar_write8(MC_LOCK, 0x8f);
 
 	/* Read+write the following */
-	MCHBAR32(VDMBDFBARKVM)  = MCHBAR32(VDMBDFBARKVM);
-	MCHBAR32(VDMBDFBARPAVP) = MCHBAR32(VDMBDFBARPAVP);
-	MCHBAR32(HDAUDRID)      = MCHBAR32(HDAUDRID);
+	mchbar_setbits32(VDMBDFBARKVM, 0);
+	mchbar_setbits32(VDMBDFBARPAVP, 0);
+	mchbar_setbits32(HDAUDRID, 0);
 }

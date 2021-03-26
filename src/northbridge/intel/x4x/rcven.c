@@ -42,15 +42,13 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 	return (MCHBAR8(sample_offset) >> 6) & 1;
 }
 
-static void program_timing(const struct rec_timing *timing, u8 channel,
-			u8 lane)
+static void program_timing(const struct rec_timing *timing, u8 channel, u8 lane)
 {
 	u32 reg32;
 	u16 reg16;
 	u8 reg8;
 
-	printk(RAM_SPEW, "      Programming timings:"
-		"Coarse: %d, Medium: %d, TAP: %d, PI: %d\n",
+	printk(RAM_SPEW, "      Programming timings:Coarse: %d, Medium: %d, TAP: %d, PI: %d\n",
 		timing->coarse, timing->medium, timing->tap, timing->pi);
 
 	reg32 = MCHBAR32(0x400 * channel + 0x248);
@@ -122,15 +120,12 @@ static int decrease_tap(struct rec_timing *timing)
 	return 0;
 }
 
-static int decr_coarse_low(u8 channel, u8 lane, u32 addr,
-			struct rec_timing *timing)
+static int decr_coarse_low(u8 channel, u8 lane, u32 addr, struct rec_timing *timing)
 {
-	printk(RAM_DEBUG,
-		"  Decreasing coarse until high to low transition is found\n");
+	printk(RAM_DEBUG, "  Decreasing coarse until high to low transition is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_LOW) {
 		if (timing->coarse == 0) {
-			printk(BIOS_CRIT,
-				"Couldn't find DQS-high 0 indicator, halt\n");
+			printk(BIOS_CRIT, "Couldn't find DQS-high 0 indicator, halt\n");
 			return -1;
 		}
 		timing->coarse--;
@@ -141,11 +136,9 @@ static int decr_coarse_low(u8 channel, u8 lane, u32 addr,
 	return 0;
 }
 
-static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr,
-				struct rec_timing *timing)
+static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr, struct rec_timing *timing)
 {
-	printk(RAM_DEBUG,
-		"  Increasing TAP until low to high transition is found\n");
+	printk(RAM_DEBUG, "  Increasing TAP until low to high transition is found\n");
 	/*
 	 * We use a do while loop since it happens that the strobe read
 	 * is inconsistent, with the strobe already high. The current
@@ -164,8 +157,7 @@ static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr,
 	}
 	do {
 		if (increase_tap(timing)) {
-			printk(BIOS_CRIT,
-				"Could not find DQS-high on fine search.\n");
+			printk(BIOS_CRIT, "Could not find DQS-high on fine search.\n");
 			return -1;
 		}
 		program_timing(timing, channel, lane);
@@ -176,15 +168,13 @@ static int fine_search_dqs_high(u8 channel, u8 lane, u32 addr,
 	return 0;
 }
 
-static int find_dqs_low(u8 channel, u8 lane, u32 addr,
-			struct rec_timing *timing)
+static int find_dqs_low(u8 channel, u8 lane, u32 addr, struct rec_timing *timing)
 {
 	/* Look for DQS low, using quarter steps. */
 	printk(RAM_DEBUG, "  Increasing medium until DQS LOW is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_LOW) {
 		if (increase_medium(timing)) {
-			printk(BIOS_CRIT,
-				"Coarse > 15: DQS tuning failed, halt\n");
+			printk(BIOS_CRIT, "Coarse > 15: DQS tuning failed, halt\n");
 			return -1;
 		}
 		program_timing(timing, channel, lane);
@@ -200,8 +190,7 @@ static int find_dqs_high(u8 channel, u8 lane, u32 addr,
 	printk(RAM_DEBUG, "  Increasing medium until DQS HIGH is found\n");
 	while (sampledqs(addr, lane, channel) != DQS_HIGH) {
 		if (increase_medium(timing)) {
-			printk(BIOS_CRIT,
-				"Coarse > 16: DQS tuning failed, halt\n");
+			printk(BIOS_CRIT, "Coarse > 16: DQS tuning failed, halt\n");
 			return -1;
 		}
 		program_timing(timing, channel, lane);
@@ -344,8 +333,7 @@ void rcven(struct sysinfo *s)
 			timing[lane].tap = 0;
 			timing[lane].pi = 0;
 
-			if (calibrate_receive_enable(channel, lane, addr,
-							&timing[lane]))
+			if (calibrate_receive_enable(channel, lane, addr, &timing[lane]))
 				die("Receive enable calibration failed\n");
 			if (mincoarse > timing[lane].coarse)
 				mincoarse = timing[lane].coarse;
@@ -359,8 +347,8 @@ void rcven(struct sysinfo *s)
 				reg8 = 0;
 			else
 				reg8 = timing[lane].coarse - mincoarse;
-			printk(BIOS_DEBUG, "ch %d lane %d: coarse offset: %d;"
-				"medium: %d; tap: %d\n",
+			printk(BIOS_DEBUG,
+				"ch %d lane %d: coarse offset: %d;medium: %d; tap: %d\n",
 				channel, lane, reg8, timing[lane].medium,
 				timing[lane].tap);
 			s->rcven_t[channel].coarse_offset[lane] = reg8;

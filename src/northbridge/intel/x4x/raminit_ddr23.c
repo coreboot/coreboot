@@ -367,8 +367,7 @@ void dqset(u8 ch, u8 lane, const struct dll_setting *setting)
 	}
 }
 
-void rt_set_dqs(u8 channel, u8 lane, u8 rank,
-		struct rt_dqs_setting *dqs_setting)
+void rt_set_dqs(u8 channel, u8 lane, u8 rank, struct rt_dqs_setting *dqs_setting)
 {
 	u16 saved_tap = MCHBAR16(0x540 + 0x400 * channel + lane * 4);
 	u16 saved_pi = MCHBAR16(0x542 + 0x400 * channel + lane * 4);
@@ -525,12 +524,10 @@ static void program_timings(struct sysinfo *s)
 			reg8 = (MCHBAR8(0x400*i + 0x26f) >> 1) & 1;
 			if (s->spd_type == DDR2)
 				reg32 |= ddr2_x252_tab[s->selected_timings.mem_clk
-						- MEM_CLOCK_667MHz][reg8][pagemod]
-					<< 22;
+						- MEM_CLOCK_667MHz][reg8][pagemod] << 22;
 			else
 				reg32 |= ddr3_x252_tab[s->selected_timings.mem_clk
-						- MEM_CLOCK_800MHz][reg8][pagemod]
-					<< 22;
+						- MEM_CLOCK_800MHz][reg8][pagemod] << 22;
 		}
 		MCHBAR32(0x400*i + 0x252) = reg32;
 
@@ -675,8 +672,7 @@ static void program_dll(struct sysinfo *s)
 	u16 reg16 = 0;
 	u32 reg32 = 0;
 
-	const u8 rank2clken[8] = { 0x04, 0x01, 0x20, 0x08, 0x01, 0x04,
-				   0x08, 0x10 };
+	const u8 rank2clken[8] = { 0x04, 0x01, 0x20, 0x08, 0x01, 0x04, 0x08, 0x10 };
 
 	MCHBAR16_AND_OR(0x180, ~0x7e06, 0xc04);
 	MCHBAR16_AND_OR(0x182, ~0x3ff, 0xc8);
@@ -718,8 +714,7 @@ static void program_dll(struct sysinfo *s)
 	udelay(1); /* 533ns */
 
 	/* ME related */
-	MCHBAR32_AND_OR(0x1a0, ~0x7ffffff,
-		s->spd_type == DDR2 ? 0x551803 : 0x555801);
+	MCHBAR32_AND_OR(0x1a0, ~0x7ffffff, s->spd_type == DDR2 ? 0x551803 : 0x555801);
 
 	MCHBAR16_AND(0x1b4, ~0x800);
 	if (s->spd_type == DDR2) {
@@ -750,34 +745,25 @@ static void program_dll(struct sysinfo *s)
 
 		if (s->spd_type == DDR2) {
 			if (!CHANNEL_IS_POPULATED(s->dimms, i)) {
-				printk(BIOS_DEBUG,
-					"No dimms in channel %d\n", i);
+				printk(BIOS_DEBUG, "No dimms in channel %d\n", i);
 				reg8 = 0x3f;
 			} else if (ONLY_DIMMA_IS_POPULATED(s->dimms, i)) {
-				printk(BIOS_DEBUG,
-					"DimmA populated only in channel %d\n",
-					i);
+				printk(BIOS_DEBUG, "DimmA populated only in channel %d\n", i);
 				reg8 = 0x38;
 			} else if (ONLY_DIMMB_IS_POPULATED(s->dimms, i)) {
-				printk(BIOS_DEBUG,
-					"DimmB populated only in channel %d\n",
-					i);
+				printk(BIOS_DEBUG, "DimmB populated only in channel %d\n", i);
 				reg8 =  0x7;
 			} else if (BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
-				printk(BIOS_DEBUG,
-					"Both dimms populated in channel %d\n",
-					i);
+				printk(BIOS_DEBUG, "Both dimms populated in channel %d\n", i);
 				reg8 = 0;
 			} else {
 				die("Unhandled case\n");
 			}
-			MCHBAR32_AND_OR(0x400*i + 0x5a0, ~0x3f000000,
-				(u32)(reg8 << 24));
+			MCHBAR32_AND_OR(0x400*i + 0x5a0, ~0x3f000000, (u32)(reg8 << 24));
 
 		} else { /* DDR3 */
 			FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, i, r) {
-				MCHBAR8_AND(0x400 * i + 0x5a0 + 3,
-					~rank2clken[r + i * 4]);
+				MCHBAR8_AND(0x400 * i + 0x5a0 + 3, ~rank2clken[r + i * 4]);
 			}
 		}
 	} /* END EACH CHANNEL */
@@ -798,10 +784,8 @@ static void program_dll(struct sysinfo *s)
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		MCHBAR16_AND_OR(0x400*i + 0x5f0, ~0x3fc, 0x3fc);
 		MCHBAR32_AND(0x400*i + 0x5fc, ~0xcccccccc);
-		MCHBAR8_AND_OR(0x400*i + 0x5d9, ~0xf0,
-			s->spd_type == DDR2 ? 0x70 : 0x60);
-		MCHBAR16_AND_OR(0x400*i + 0x590, ~0xffff,
-			s->spd_type == DDR2 ? 0x5555 : 0xa955);
+		MCHBAR8_AND_OR(0x400*i + 0x5d9, ~0xf0, s->spd_type == DDR2 ? 0x70 : 0x60);
+		MCHBAR16_AND_OR(0x400*i + 0x590, 0, s->spd_type == DDR2 ? 0x5555 : 0xa955);
 	}
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
@@ -1025,8 +1009,7 @@ static void set_all_dq_dqs_dll_settings(struct sysinfo *s)
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		FOR_EACH_BYTELANE(lane) {
 			FOR_EACH_RANK_IN_CHANNEL(rank) {
-				rt_set_dqs(ch, lane, rank,
-					&s->rt_dqs[ch][lane]);
+				rt_set_dqs(ch, lane, rank, &s->rt_dqs[ch][lane]);
 			}
 			dqsset(ch, lane, &s->dqs_settings[ch][lane]);
 			dqset(ch, lane, &s->dq_settings[ch][lane]);
@@ -1117,8 +1100,7 @@ static void prog_rcomp(struct sysinfo *s)
 			MCHBAR32_AND_OR(0x400*i + addr[j] + 0x2a, ~0x3f3f3f3f, x39e[j]);
 
 			/* Override command group strength multiplier */
-			if (s->spd_type == DDR3 &&
-				BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
+			if (s->spd_type == DDR3 && BOTH_DIMMS_ARE_POPULATED(s->dimms, i)) {
 				MCHBAR16_AND_OR(0x378 + 0x400 * i, ~0xffff, 0xcccc);
 			}
 			MCHBAR8_AND_OR(0x400*i + addr[j], ~1, bit[j]);
@@ -1186,15 +1168,11 @@ static void program_odt(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, i) {
 		if (s->spd_type == DDR2) {
-			MCHBAR16(0x400 * i + 0x298) =
-				ddr2_odt[s->dimm_config[i]][1];
-			MCHBAR16(0x400 * i + 0x294) =
-				ddr2_odt[s->dimm_config[i]][0];
+			MCHBAR16(0x400 * i + 0x298) = ddr2_odt[s->dimm_config[i]][1];
+			MCHBAR16(0x400 * i + 0x294) = ddr2_odt[s->dimm_config[i]][0];
 		} else {
-			MCHBAR16(0x400 * i + 0x298) =
-				ddr3_odt[s->dimm_config[i]][1];
-			MCHBAR16(0x400 * i + 0x294) =
-				ddr3_odt[s->dimm_config[i]][0];
+			MCHBAR16(0x400 * i + 0x298) = ddr3_odt[s->dimm_config[i]][1];
+			MCHBAR16(0x400 * i + 0x294) = ddr3_odt[s->dimm_config[i]][0];
 		}
 		u16 reg16 = MCHBAR16(0x400*i + 0x29c);
 		reg16 &= ~0xfff;
@@ -1445,11 +1423,9 @@ static void sdram_recover_receive_enable(const struct sysinfo *s)
 		MCHBAR32(0x400 * channel + 0x248) = reg32;
 
 	        FOR_EACH_BYTELANE(lane) {
-			medium |= s->rcven_t[channel].medium[lane]
-				<< (lane * 2);
+			medium |= s->rcven_t[channel].medium[lane] << (lane * 2);
 			coarse_offset |=
-				(s->rcven_t[channel].coarse_offset[lane] & 0x3)
-				<< (lane * 2);
+				(s->rcven_t[channel].coarse_offset[lane] & 0x3) << (lane * 2);
 
 			pi_tap = MCHBAR8(0x400 * channel + 0x560 + lane * 4);
 			pi_tap &= ~0x7f;
@@ -1546,11 +1522,9 @@ static void set_dradrb(struct sysinfo *s)
 		}
 	}
 
-	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) ||
-			ONLY_DIMMB_IS_POPULATED(s->dimms, 0))
+	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) || ONLY_DIMMB_IS_POPULATED(s->dimms, 0))
 		MCHBAR8_OR(0x260, 1);
-	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 1) ||
-			ONLY_DIMMB_IS_POPULATED(s->dimms, 1))
+	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 1) || ONLY_DIMMB_IS_POPULATED(s->dimms, 1))
 		MCHBAR8_OR(0x660, 1);
 
 	/* DRB */
@@ -1659,17 +1633,14 @@ static void set_dradrb(struct sysinfo *s)
 		single_channel_offset = 0;
 	} else if (size_me == 0) {
 		if (size_ch0 > size_ch1)
-			single_channel_offset = dual_channel_size / 2
-				+ single_channel_size;
+			single_channel_offset = dual_channel_size / 2 + single_channel_size;
 		else
 			single_channel_offset = dual_channel_size / 2;
 	} else {
 		if ((size_ch0 > size_ch1) && ((map & 0x7) == 4))
-			single_channel_offset = dual_channel_size / 2
-				+ single_channel_size;
+			single_channel_offset = dual_channel_size / 2 + single_channel_size;
 		else
-			single_channel_offset = dual_channel_size / 2
-				+ size_me;
+			single_channel_offset = dual_channel_size / 2 + size_me;
 	}
 
 	MCHBAR16(0x108) = single_channel_offset;
@@ -1683,8 +1654,7 @@ static void configure_mmap(struct sysinfo *s)
 	u32 gfxbase, gttbase, tsegbase, reclaimbase, reclaimlimit;
 	u32 mmiostart, umasizem;
 	u16 ggc;
-	u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256, 96,
-			  160, 224, 352 };
+	u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256, 96, 160, 224, 352 };
 	u8 ggc2gtt[] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4};
 
 	ggc = pci_read_config16(HOST_BRIDGE, 0x52);
@@ -1721,10 +1691,8 @@ static void configure_mmap(struct sysinfo *s)
 	pci_write_config16(HOST_BRIDGE, 0xb0, tolud << 4);
 	pci_write_config16(HOST_BRIDGE, 0xa0, tom >> 6);
 	if (reclaim) {
-		pci_write_config16(HOST_BRIDGE, 0x98,
-					(u16)(reclaimbase >> 6));
-		pci_write_config16(HOST_BRIDGE, 0x9a,
-					(u16)(reclaimlimit >> 6));
+		pci_write_config16(HOST_BRIDGE, 0x98, (u16)(reclaimbase >> 6));
+		pci_write_config16(HOST_BRIDGE, 0x9a, (u16)(reclaimlimit >> 6));
 	}
 	pci_write_config16(HOST_BRIDGE, 0xa2, touud);
 	pci_write_config32(HOST_BRIDGE, 0xa4, gfxbase << 20);
@@ -2091,18 +2059,15 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, ch) {
 		reg32 = (2 << 18);
 		reg32 |= post_jedec_tab[s->selected_timings.fsb_clk]
-			[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][0]
-			<< 13;
+			[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][0] << 13;
 		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz &&
 			s->selected_timings.fsb_clk == FSB_CLOCK_1066MHz &&
 			ch == 1) {
 			reg32 |= (post_jedec_tab[s->selected_timings.fsb_clk]
-				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1]
-				- 1) << 8;
+				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1] - 1) << 8;
 		} else {
 			reg32 |= post_jedec_tab[s->selected_timings.fsb_clk]
-				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1]
-				<< 8;
+				[s->selected_timings.mem_clk - MEM_CLOCK_667MHz][1] << 8;
 		}
 		MCHBAR32_AND_OR(0x400*ch + 0x274, ~0xfff00, reg32);
 		MCHBAR8_AND(0x400*ch + 0x274, ~0x80);
@@ -2186,11 +2151,9 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	 * and is only needed in case of ME being used.
 	 */
 	if (ME_UMA_SIZEMB != 0) {
-		if (RANK_IS_POPULATED(s->dimms, 0, 0)
-				|| RANK_IS_POPULATED(s->dimms, 1, 0))
+		if (RANK_IS_POPULATED(s->dimms, 0, 0) || RANK_IS_POPULATED(s->dimms, 1, 0))
 			MCHBAR8_OR(0xa2f, 1 << 0);
-		if (RANK_IS_POPULATED(s->dimms, 0, 1)
-				|| RANK_IS_POPULATED(s->dimms, 1, 1))
+		if (RANK_IS_POPULATED(s->dimms, 0, 1) || RANK_IS_POPULATED(s->dimms, 1, 1))
 			MCHBAR8_OR(0xa2f, 1 << 1);
 		MCHBAR32_OR(0xa30, 1 << 26);
 	}

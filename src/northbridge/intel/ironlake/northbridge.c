@@ -146,23 +146,15 @@ static void mc_read_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	u32 reg32;
-
 	/* Clear error status bits */
-	DMIBAR32(DMIUESTS) = 0xffffffff;
-	DMIBAR32(DMICESTS) = 0xffffffff;
+	dmibar_write32(DMIUESTS, 0xffffffff);
+	dmibar_write32(DMICESTS, 0xffffffff);
 
-	reg32 = DMIBAR32(DMILLTC);
-	reg32 |= (1 << 29);
-	DMIBAR32(DMILLTC) = reg32;
+	dmibar_setbits32(DMILLTC, 1 << 29);
 
-	reg32 = DMIBAR32(0x1f8);
-	reg32 |= (1 << 16);
-	DMIBAR32(0x1f8) = reg32;
+	dmibar_setbits32(0x1f8, 1 << 16);
 
-	reg32 = DMIBAR32(DMILCTL);
-	reg32 |= (1 << 1) | (1 << 0);
-	DMIBAR32(DMILCTL) = reg32;
+	dmibar_setbits32(DMILCTL, 1 << 1 | 1 << 0);
 }
 
 /* Disable unused PEG devices based on devicetree before PCI enumeration */

@@ -172,9 +172,9 @@ static void compute_274265(struct raminfo *info)
 					  2 * info->cas_latency - 7 + 11);
 		delay_d_ps += info->revision >= 8 ? 2758 : 4428;
 
-		MCHBAR32_AND_OR(0x140, 0xfaffffff, 0x2000000);
-		MCHBAR32_AND_OR(0x138, 0xfaffffff, 0x2000000);
-		if ((MCHBAR8(0x144) & 0x1f) > 0x13)
+		mchbar_clrsetbits32(0x140, 7 << 24, 2 << 24);
+		mchbar_clrsetbits32(0x138, 7 << 24, 2 << 24);
+		if ((mchbar_read8(0x144) & 0x1f) > 0x13)
 			delay_d_ps += 650;
 		delay_c_ps = delay_d_ps + 1800;
 		if (delay_c_ps <= delay_a_ps)
@@ -233,16 +233,16 @@ static void program_274265(const struct ram_training *const training)
 	int channel;
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
-		MCHBAR32((channel << 10) + 0x274) =
+		mchbar_write32((channel << 10) + 0x274,
 			(training->reg274265[channel][0] << 16) |
-			training->reg274265[channel][1];
-		MCHBAR16((channel << 10) + 0x265) =
-			training->reg274265[channel][2] << 8;
+			training->reg274265[channel][1]);
+		mchbar_write16((channel << 10) + 0x265,
+			training->reg274265[channel][2] << 8);
 	}
 	if (training->reg2ca9_bit0)
-		MCHBAR8_OR(0x2ca9, 1);
+		mchbar_setbits8(0x2ca9, 1 << 0);
 	else
-		MCHBAR8_AND(0x2ca9, ~1);
+		mchbar_clrbits8(0x2ca9, 1 << 0);
 
 	printk(RAM_SPEW, "reg2ca9_bit0 = %x\n", training->reg2ca9_bit0);
 
@@ -288,11 +288,11 @@ set_2d5x_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 									 << 16)
 	    | (vv.divisor_f4_to_f2 << 20) | (vv.freq_min_reduced << 24);
 	if (reverse) {
-		MCHBAR32(reg) = y;
-		MCHBAR32(reg + 4) = x;
+		mchbar_write32(reg + 0, y);
+		mchbar_write32(reg + 4, x);
 	} else {
-		MCHBAR32(reg + 4) = y;
-		MCHBAR32(reg) = x;
+		mchbar_write32(reg + 4, y);
+		mchbar_write32(reg + 0, x);
 	}
 }
 
@@ -315,10 +315,10 @@ set_6d_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 		       | (ratios1.divisor_f4_to_fmax << 16) | (ratios2.
 							       divisor_f4_to_fmax
 							       << 20));
-	MCHBAR32(reg) = ratios1.freq4_to_max_remainder |
-		(ratios2.freq4_to_max_remainder << 8) |
-		(ratios1.divisor_f4_to_fmax << 16) |
-		(ratios2.divisor_f4_to_fmax << 20);
+	mchbar_write32(reg, ratios1.freq4_to_max_remainder |
+		ratios2.freq4_to_max_remainder << 8 |
+		ratios1.divisor_f4_to_fmax << 16 |
+		ratios2.divisor_f4_to_fmax << 20);
 }
 
 static void
@@ -331,33 +331,38 @@ set_2dx8_reg(struct raminfo *info, u16 reg, u8 mode, u16 freq1, u16 freq2,
 				 round_it, add_freqs, &ratios);
 	switch (mode) {
 	case 0:
-		MCHBAR32(reg + 4) = ratios.freq_diff_reduced |
-			(ratios.freqs_reversed << 8);
-		MCHBAR32(reg) = ratios.freq3_to_2_remainder |
-			(ratios.freq4_to_max_remainder << 8) |
-			(ratios.divisor_f3_to_fmax << 16) |
-			(ratios.divisor_f4_to_fmax << 20) |
-			(ratios.freq_min_reduced << 24);
+		mchbar_write32(reg + 4,
+			ratios.freq_diff_reduced |
+			ratios.freqs_reversed << 8);
+		mchbar_write32(reg,
+			ratios.freq3_to_2_remainder |
+			ratios.freq4_to_max_remainder << 8 |
+			ratios.divisor_f3_to_fmax << 16 |
+			ratios.divisor_f4_to_fmax << 20 |
+			ratios.freq_min_reduced << 24);
 		break;
 
 	case 1:
-		MCHBAR32(reg) = ratios.freq3_to_2_remainder |
-			(ratios.divisor_f3_to_fmax << 16);
+		mchbar_write32(reg,
+			ratios.freq3_to_2_remainder |
+			ratios.divisor_f3_to_fmax << 16);
 		break;
 
 	case 2:
-		MCHBAR32(reg) = ratios.freq3_to_2_remainder |
-			(ratios.freq4_to_max_remainder << 8) |
-			(ratios.divisor_f3_to_fmax << 16) |
-			(ratios.divisor_f4_to_fmax << 20);
+		mchbar_write32(reg,
+			ratios.freq3_to_2_remainder |
+			ratios.freq4_to_max_remainder << 8 |
+			ratios.divisor_f3_to_fmax << 16 |
+			ratios.divisor_f4_to_fmax << 20);
 		break;
 
 	case 4:
-		MCHBAR32(reg) = (ratios.divisor_f3_to_fmax << 4) |
-			(ratios.divisor_f4_to_fmax << 8) |
-			(ratios.freqs_reversed << 12) |
-			(ratios.freq_min_reduced << 16) |
-			(ratios.freq_diff_reduced << 24);
+		mchbar_write32(reg,
+			ratios.divisor_f3_to_fmax << 4 |
+			ratios.divisor_f4_to_fmax << 8 |
+			ratios.freqs_reversed << 12 |
+			ratios.freq_min_reduced << 16 |
+			ratios.freq_diff_reduced << 24);
 		break;
 	}
 }
@@ -393,7 +398,7 @@ static void set_2dxx_series(struct raminfo *info, int s3resume)
 	if (s3resume) {
 		printk(RAM_SPEW, "[6dc] <= %x\n",
 			info->cached_training->reg_6dc);
-		MCHBAR32(0x6dc) = info->cached_training->reg_6dc;
+		mchbar_write32(0x6dc, info->cached_training->reg_6dc);
 	} else
 		set_6d_reg(info, 0x6dc, 2 * info->fsb_frequency, frequency_11(info), 0,
 			   info->delay46_ps[0], 0,
@@ -405,7 +410,7 @@ static void set_2dxx_series(struct raminfo *info, int s3resume)
 	if (s3resume) {
 		printk(RAM_SPEW, "[6e8] <= %x\n",
 			info->cached_training->reg_6e8);
-		MCHBAR32(0x6e8) = info->cached_training->reg_6e8;
+		mchbar_write32(0x6e8, info->cached_training->reg_6e8);
 	} else
 		set_6d_reg(info, 0x6e8, 2 * info->fsb_frequency, frequency_11(info), 0,
 			   info->delay46_ps[1], 0,
@@ -425,15 +430,15 @@ static void set_2dxx_series(struct raminfo *info, int s3resume)
 	set_2d5x_reg(info, 0x2da8, 0x195, frequency_11(info), 1060, 775, 484,
 		     480, 0);
 	set_2d5x_reg(info, 0x2db0, 0x195, 0x78, 4183, 6023, 2217, 2048, 0);
-	MCHBAR32(0x2dbc) = ((frequency_11(info) / 2) - 1) | 0xe00000;
-	MCHBAR32(0x2db8) = ((info->fsb_frequency - 1) << 16) | 0x77;
+	mchbar_write32(0x2dbc, ((frequency_11(info) / 2) - 1) | 0xe00000);
+	mchbar_write32(0x2db8, (info->fsb_frequency - 1) << 16 | 0x77);
 }
 
 static u16 quickpath_configure_pll_ratio(struct raminfo *info, const u8 x2ca8)
 {
-	MCHBAR32_OR(0x18b4, 0x210000);
-	MCHBAR32_OR(0x1890, 0x2000000);
-	MCHBAR32_OR(0x18b4, 0x8000);
+	mchbar_setbits32(0x18b4, 1 << 21 | 1 << 16);
+	mchbar_setbits32(0x1890, 1 << 25);
+	mchbar_setbits32(0x18b4, 1 << 15);
 
 	/* Get maximum supported PLL ratio */
 	u16 qpi_pll_ratio = (pci_read_config32(QPI_PHY_0, QPI_PLL_STATUS) >> 24 & 0x7f);
@@ -455,13 +460,13 @@ static u16 quickpath_configure_pll_ratio(struct raminfo *info, const u8 x2ca8)
 	/* Finally, program the ratio */
 	pci_write_config8(QPI_PHY_0, QPI_PLL_RATIO, qpi_pll_ratio);
 
-	const u16 csipll0 = MCHBAR16(0x2c10);
-	MCHBAR16(0x2c10) = (qpi_pll_ratio > 26) << 11 | 0x400 | qpi_pll_ratio;
+	const u16 csipll0 = mchbar_read16(0x2c10);
+	mchbar_write16(0x2c10, (qpi_pll_ratio > 26) << 11 | 1 << 10 | qpi_pll_ratio);
 
-	if (csipll0 != MCHBAR16(0x2c10) && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+	if (csipll0 != mchbar_read16(0x2c10) && x2ca8 == 0)
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
-	MCHBAR16_OR(0x2c12, 0x100);
+	mchbar_setbits16(0x2c12, 1 << 8);
 
 	return qpi_pll_ratio;
 }
@@ -473,46 +478,46 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 
 	/* Initialize DDR MPLL first */
 	if (x2ca8 == 0) {
-		MCHBAR8_AND_OR(0x164, 0xd9, info->clock_speed_index == 0 ? 0x24 : 0x26);
+		mchbar_clrsetbits8(0x164, 0x26, info->clock_speed_index == 0 ? 0x24 : 0x26);
 
 		/* Program DDR MPLL feedback divider ratio */
-		MCHBAR16(0x2c20) = (info->clock_speed_index + 3) * 4;
+		mchbar_write16(0x2c20, (info->clock_speed_index + 3) * 4);
 	}
 
 	const u16 qpi_pll_ratio = quickpath_configure_pll_ratio(info, x2ca8);
 
-	MCHBAR32_AND_OR(0x1804, 0xfffffffc, 0x8400080);
+	mchbar_clrsetbits32(0x1804, 0x3, 0x8400080);
 	pci_update_config32(QPI_PHY_0, QPI_PHY_CONTROL, 0xfffffffc, 0x400080);
 
-	const u32 x1c04 = MCHBAR32(0x1c04) & 0xc01080;
-	const u32 x1804 = MCHBAR32(0x1804) & 0xc01080;
+	const u32 x1c04 = mchbar_read32(0x1c04) & 0xc01080;
+	const u32 x1804 = mchbar_read32(0x1804) & 0xc01080;
 
 	if (x1c04 != x1804 && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
-	MCHBAR32(0x18d8) = 0x120000;
-	MCHBAR32(0x18dc) = 0x30a484a;
+	mchbar_write32(0x18d8, 0x120000);
+	mchbar_write32(0x18dc, 0x30a484a);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_SELECT, 0x0);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x9444a);
-	MCHBAR32(0x18d8) = 0x40000;
-	MCHBAR32(0x18dc) = 0xb000000;
+	mchbar_write32(0x18d8, 0x40000);
+	mchbar_write32(0x18dc, 0xb000000);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_SELECT, 0x60000);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x0);
-	MCHBAR32(0x18d8) = 0x180000;
-	MCHBAR32(0x18dc) = 0xc0000142;
+	mchbar_write32(0x18d8, 0x180000);
+	mchbar_write32(0x18dc, 0xc0000142);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_SELECT, 0x20000);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x142);
-	MCHBAR32(0x18d8) = 0x1e0000;
+	mchbar_write32(0x18d8, 0x1e0000);
 
-	const u32 x18dc = MCHBAR32(0x18dc);
-	MCHBAR32(0x18dc) = qpi_pll_ratio < 18 ? 2 : 3;
+	const u32 x18dc = mchbar_read32(0x18dc);
+	mchbar_write32(0x18dc, qpi_pll_ratio < 18 ? 2 : 3);
 
-	if (x18dc != MCHBAR32(0x18dc) && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+	if (x18dc != mchbar_read32(0x18dc) && x2ca8 == 0)
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
 	reg8 = qpi_pll_ratio > 20 ? 10 : 9;
 
-	MCHBAR32(0x188c) = 0x20bc00 | reg8;
+	mchbar_write32(0x188c, 0x20bc00 | reg8);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_PWR_MGMT, 0x40b0c00 | reg8);
 
 	if (qpi_pll_ratio <= 14)
@@ -522,28 +527,28 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 	else
 		reg8 = 0x51;
 
-	MCHBAR32(0x1a10) = reg8 << 24 | qpi_pll_ratio * 60;
-	MCHBAR32_OR(0x18b8, 0x200);
-	MCHBAR32_OR(0x1918, 0x300);
+	mchbar_write32(0x1a10, reg8 << 24 | qpi_pll_ratio * 60);
+	mchbar_setbits32(0x18b8, 0x200);
+	mchbar_setbits32(0x1918, 0x300);
 
 	if (info->revision > 0x17)
-		MCHBAR32_OR(0x18b8, 0xc00);
+		mchbar_setbits32(0x18b8, 0xc00);
 
 	reg32 = ((qpi_pll_ratio > 20) + 1) << 16;
 
-	MCHBAR32_AND_OR(0x182c, 0xfff0f0ff, reg32 | 0x200);
+	mchbar_clrsetbits32(0x182c, ~0xfff0f0ff, reg32 | 0x200);
 	pci_update_config32(QPI_PHY_0, QPI_PHY_PRIM_TIMEOUT, 0xfff0f0ff, reg32 | 0x200);
-	MCHBAR32_AND(0x1a1c, 0x8fffffff);
-	MCHBAR32_OR(0x1a70, 0x100000);
+	mchbar_clrbits32(0x1a1c, 7 << 28);
+	mchbar_setbits32(0x1a70, 1 << 20);
 
-	MCHBAR32_AND(0x18b4, 0xffff7fff);
-	MCHBAR32_AND_OR(0x1a68, 0xffebc03f, 0x143800);
+	mchbar_clrbits32(0x18b4, 1 << 15);
+	mchbar_clrsetbits32(0x1a68, 0x00143fc0, 0x143800);
 
-	const u32 x1e68 = MCHBAR32(0x1e68) & 0x143fc0;
-	const u32 x1a68 = MCHBAR32(0x1a68) & 0x143fc0;
+	const u32 x1e68 = mchbar_read32(0x1e68) & 0x143fc0;
+	const u32 x1a68 = mchbar_read32(0x1a68) & 0x143fc0;
 
 	if (x1e68 != x1a68 && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
 	pci_update_config32(QPI_LINK_0, QPI_QPILCL, 0xffffff3f, 0x140000);
 
@@ -551,21 +556,21 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 	pci_write_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS, (reg32 & 0xfffe4555) | 0x64555);
 
 	if (reg32 != pci_read_config32(QPI_LINK_0, QPI_DEF_RMT_VN_CREDITS) && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
 	pci_update_config32(QPI_NON_CORE, MIRROR_PORT_CTL, ~3, 0x80 * 3);
 
-	reg32 = MCHBAR32(0x1af0);
-	MCHBAR32(0x1af0) = (reg32 & 0xfdffcf) | 0x1f020000;
+	reg32 = mchbar_read32(0x1af0);
+	mchbar_write32(0x1af0, (reg32 & 0xfdffcf) | 0x1f020000);
 
-	if (reg32 != MCHBAR32(0x1af0) && x2ca8 == 0)
-		MCHBAR8_OR(0x2ca8, 1);
+	if (reg32 != mchbar_read32(0x1af0) && x2ca8 == 0)
+		mchbar_setbits8(0x2ca8, 1 << 0);
 
-	MCHBAR32_AND(0x1890, 0xfdffffff);
-	MCHBAR32_AND_OR(0x18b4, 0xffff6fff, 0x6000);
-	MCHBAR32(0x18a4) = 0x22222222;
-	MCHBAR32(0x18a8) = 0x22222222;
-	MCHBAR32(0x18ac) = 0x22222;
+	mchbar_clrbits32(0x1890, 1 << 25);
+	mchbar_clrsetbits32(0x18b4, 0xf << 12, 0x6 << 12);
+	mchbar_write32(0x18a4, 0x22222222);
+	mchbar_write32(0x18a8, 0x22222222);
+	mchbar_write32(0x18ac, 0x22222);
 }
 
 void late_quickpath_init(struct raminfo *info, const int s3resume)
@@ -582,204 +587,204 @@ void late_quickpath_init(struct raminfo *info, const int s3resume)
 	set_2dxx_series(info, s3resume);
 
 	if (!(deven & 8)) {
-		MCHBAR32_AND_OR(0x2cb0, 0, 0x40);
+		mchbar_clrsetbits32(0x2cb0, ~0, 0x40);
 	}
 
 	udelay(1000);
 
 	if (deven & 8) {
-		MCHBAR32_OR(0xff8, 0x1800);
-		MCHBAR32_AND(0x2cb0, 0x00);
+		mchbar_setbits32(0xff8, 3 << 11);
+		mchbar_clrbits32(0x2cb0, ~0);
 		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
 		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
 		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4e);
 
-		MCHBAR8(0x1150);
-		MCHBAR8(0x1151);
-		MCHBAR8(0x1022);
-		MCHBAR8(0x16d0);
-		MCHBAR32(0x1300) = 0x60606060;
-		MCHBAR32(0x1304) = 0x60606060;
-		MCHBAR32(0x1308) = 0x78797a7b;
-		MCHBAR32(0x130c) = 0x7c7d7e7f;
-		MCHBAR32(0x1310) = 0x60606060;
-		MCHBAR32(0x1314) = 0x60606060;
-		MCHBAR32(0x1318) = 0x60606060;
-		MCHBAR32(0x131c) = 0x60606060;
-		MCHBAR32(0x1320) = 0x50515253;
-		MCHBAR32(0x1324) = 0x54555657;
-		MCHBAR32(0x1328) = 0x58595a5b;
-		MCHBAR32(0x132c) = 0x5c5d5e5f;
-		MCHBAR32(0x1330) = 0x40414243;
-		MCHBAR32(0x1334) = 0x44454647;
-		MCHBAR32(0x1338) = 0x48494a4b;
-		MCHBAR32(0x133c) = 0x4c4d4e4f;
-		MCHBAR32(0x1340) = 0x30313233;
-		MCHBAR32(0x1344) = 0x34353637;
-		MCHBAR32(0x1348) = 0x38393a3b;
-		MCHBAR32(0x134c) = 0x3c3d3e3f;
-		MCHBAR32(0x1350) = 0x20212223;
-		MCHBAR32(0x1354) = 0x24252627;
-		MCHBAR32(0x1358) = 0x28292a2b;
-		MCHBAR32(0x135c) = 0x2c2d2e2f;
-		MCHBAR32(0x1360) = 0x10111213;
-		MCHBAR32(0x1364) = 0x14151617;
-		MCHBAR32(0x1368) = 0x18191a1b;
-		MCHBAR32(0x136c) = 0x1c1d1e1f;
-		MCHBAR32(0x1370) = 0x10203;
-		MCHBAR32(0x1374) = 0x4050607;
-		MCHBAR32(0x1378) = 0x8090a0b;
-		MCHBAR32(0x137c) = 0xc0d0e0f;
-		MCHBAR8(0x11cc) = 0x4e;
-		MCHBAR32(0x1110) = 0x73970404;
-		MCHBAR32(0x1114) = 0x72960404;
-		MCHBAR32(0x1118) = 0x6f950404;
-		MCHBAR32(0x111c) = 0x6d940404;
-		MCHBAR32(0x1120) = 0x6a930404;
-		MCHBAR32(0x1124) = 0x68a41404;
-		MCHBAR32(0x1128) = 0x66a21404;
-		MCHBAR32(0x112c) = 0x63a01404;
-		MCHBAR32(0x1130) = 0x609e1404;
-		MCHBAR32(0x1134) = 0x5f9c1404;
-		MCHBAR32(0x1138) = 0x5c961404;
-		MCHBAR32(0x113c) = 0x58a02404;
-		MCHBAR32(0x1140) = 0x54942404;
-		MCHBAR32(0x1190) = 0x900080a;
-		MCHBAR16(0x11c0) = 0xc40b;
-		MCHBAR16(0x11c2) = 0x303;
-		MCHBAR16(0x11c4) = 0x301;
-		MCHBAR32_AND_OR(0x1190, 0, 0x8900080a);
-		MCHBAR32(0x11b8) = 0x70c3000;
-		MCHBAR8(0x11ec) = 0xa;
-		MCHBAR16(0x1100) = 0x800;
-		MCHBAR32_AND_OR(0x11bc, 0, 0x1e84800);
-		MCHBAR16(0x11ca) = 0xfa;
-		MCHBAR32(0x11e4) = 0x4e20;
-		MCHBAR8(0x11bc) = 0xf;
-		MCHBAR16(0x11da) = 0x19;
-		MCHBAR16(0x11ba) = 0x470c;
-		MCHBAR32(0x1680) = 0xe6ffe4ff;
-		MCHBAR32(0x1684) = 0xdeffdaff;
-		MCHBAR32(0x1688) = 0xd4ffd0ff;
-		MCHBAR32(0x168c) = 0xccffc6ff;
-		MCHBAR32(0x1690) = 0xc0ffbeff;
-		MCHBAR32(0x1694) = 0xb8ffb0ff;
-		MCHBAR32(0x1698) = 0xa8ff0000;
-		MCHBAR32(0x169c) = 0xc00;
-		MCHBAR32(0x1290) = 0x5000000;
+		mchbar_read8(0x1150);
+		mchbar_read8(0x1151);
+		mchbar_read8(0x1022);
+		mchbar_read8(0x16d0);
+		mchbar_write32(0x1300, 0x60606060);
+		mchbar_write32(0x1304, 0x60606060);
+		mchbar_write32(0x1308, 0x78797a7b);
+		mchbar_write32(0x130c, 0x7c7d7e7f);
+		mchbar_write32(0x1310, 0x60606060);
+		mchbar_write32(0x1314, 0x60606060);
+		mchbar_write32(0x1318, 0x60606060);
+		mchbar_write32(0x131c, 0x60606060);
+		mchbar_write32(0x1320, 0x50515253);
+		mchbar_write32(0x1324, 0x54555657);
+		mchbar_write32(0x1328, 0x58595a5b);
+		mchbar_write32(0x132c, 0x5c5d5e5f);
+		mchbar_write32(0x1330, 0x40414243);
+		mchbar_write32(0x1334, 0x44454647);
+		mchbar_write32(0x1338, 0x48494a4b);
+		mchbar_write32(0x133c, 0x4c4d4e4f);
+		mchbar_write32(0x1340, 0x30313233);
+		mchbar_write32(0x1344, 0x34353637);
+		mchbar_write32(0x1348, 0x38393a3b);
+		mchbar_write32(0x134c, 0x3c3d3e3f);
+		mchbar_write32(0x1350, 0x20212223);
+		mchbar_write32(0x1354, 0x24252627);
+		mchbar_write32(0x1358, 0x28292a2b);
+		mchbar_write32(0x135c, 0x2c2d2e2f);
+		mchbar_write32(0x1360, 0x10111213);
+		mchbar_write32(0x1364, 0x14151617);
+		mchbar_write32(0x1368, 0x18191a1b);
+		mchbar_write32(0x136c, 0x1c1d1e1f);
+		mchbar_write32(0x1370, 0x10203);
+		mchbar_write32(0x1374, 0x4050607);
+		mchbar_write32(0x1378, 0x8090a0b);
+		mchbar_write32(0x137c, 0xc0d0e0f);
+		mchbar_write8(0x11cc, 0x4e);
+		mchbar_write32(0x1110, 0x73970404);
+		mchbar_write32(0x1114, 0x72960404);
+		mchbar_write32(0x1118, 0x6f950404);
+		mchbar_write32(0x111c, 0x6d940404);
+		mchbar_write32(0x1120, 0x6a930404);
+		mchbar_write32(0x1124, 0x68a41404);
+		mchbar_write32(0x1128, 0x66a21404);
+		mchbar_write32(0x112c, 0x63a01404);
+		mchbar_write32(0x1130, 0x609e1404);
+		mchbar_write32(0x1134, 0x5f9c1404);
+		mchbar_write32(0x1138, 0x5c961404);
+		mchbar_write32(0x113c, 0x58a02404);
+		mchbar_write32(0x1140, 0x54942404);
+		mchbar_write32(0x1190, 0x900080a);
+		mchbar_write16(0x11c0, 0xc40b);
+		mchbar_write16(0x11c2, 0x303);
+		mchbar_write16(0x11c4, 0x301);
+		mchbar_clrsetbits32(0x1190, ~0, 0x8900080a);
+		mchbar_write32(0x11b8, 0x70c3000);
+		mchbar_write8(0x11ec, 0xa);
+		mchbar_write16(0x1100, 0x800);
+		mchbar_clrsetbits32(0x11bc, ~0, 0x1e84800);
+		mchbar_write16(0x11ca, 0xfa);
+		mchbar_write32(0x11e4, 0x4e20);
+		mchbar_write8(0x11bc, 0xf);
+		mchbar_write16(0x11da, 0x19);
+		mchbar_write16(0x11ba, 0x470c);
+		mchbar_write32(0x1680, 0xe6ffe4ff);
+		mchbar_write32(0x1684, 0xdeffdaff);
+		mchbar_write32(0x1688, 0xd4ffd0ff);
+		mchbar_write32(0x168c, 0xccffc6ff);
+		mchbar_write32(0x1690, 0xc0ffbeff);
+		mchbar_write32(0x1694, 0xb8ffb0ff);
+		mchbar_write32(0x1698, 0xa8ff0000);
+		mchbar_write32(0x169c, 0xc00);
+		mchbar_write32(0x1290, 0x5000000);
 	}
 
-	MCHBAR32(0x124c) = 0x15040d00;
-	MCHBAR32(0x1250) = 0x7f0000;
-	MCHBAR32(0x1254) = 0x1e220004;
-	MCHBAR32(0x1258) = 0x4000004;
-	MCHBAR32(0x1278) = 0x0;
-	MCHBAR32(0x125c) = 0x0;
-	MCHBAR32(0x1260) = 0x0;
-	MCHBAR32(0x1264) = 0x0;
-	MCHBAR32(0x1268) = 0x0;
-	MCHBAR32(0x126c) = 0x0;
-	MCHBAR32(0x1270) = 0x0;
-	MCHBAR32(0x1274) = 0x0;
+	mchbar_write32(0x124c, 0x15040d00);
+	mchbar_write32(0x1250, 0x7f0000);
+	mchbar_write32(0x1254, 0x1e220004);
+	mchbar_write32(0x1258, 0x4000004);
+	mchbar_write32(0x1278, 0x0);
+	mchbar_write32(0x125c, 0x0);
+	mchbar_write32(0x1260, 0x0);
+	mchbar_write32(0x1264, 0x0);
+	mchbar_write32(0x1268, 0x0);
+	mchbar_write32(0x126c, 0x0);
+	mchbar_write32(0x1270, 0x0);
+	mchbar_write32(0x1274, 0x0);
 
 	if (deven & 8) {
-		MCHBAR16(0x1214) = 0x320;
-		MCHBAR32(0x1600) = 0x40000000;
-		MCHBAR32_AND_OR(0x11f4, 0, 0x10000000);
-		MCHBAR16_AND_OR(0x1230, 0, 0x8000);
-		MCHBAR32(0x1400) = 0x13040020;
-		MCHBAR32(0x1404) = 0xe090120;
-		MCHBAR32(0x1408) = 0x5120220;
-		MCHBAR32(0x140c) = 0x5120330;
-		MCHBAR32(0x1410) = 0xe090220;
-		MCHBAR32(0x1414) = 0x1010001;
-		MCHBAR32(0x1418) = 0x1110000;
-		MCHBAR32(0x141c) = 0x9020020;
-		MCHBAR32(0x1420) = 0xd090220;
-		MCHBAR32(0x1424) = 0x2090220;
-		MCHBAR32(0x1428) = 0x2090330;
-		MCHBAR32(0x142c) = 0xd090220;
-		MCHBAR32(0x1430) = 0x1010001;
-		MCHBAR32(0x1434) = 0x1110000;
-		MCHBAR32(0x1438) = 0x11040020;
-		MCHBAR32(0x143c) = 0x4030220;
-		MCHBAR32(0x1440) = 0x1060220;
-		MCHBAR32(0x1444) = 0x1060330;
-		MCHBAR32(0x1448) = 0x4030220;
-		MCHBAR32(0x144c) = 0x1010001;
-		MCHBAR32(0x1450) = 0x1110000;
-		MCHBAR32(0x1454) = 0x4010020;
-		MCHBAR32(0x1458) = 0xb090220;
-		MCHBAR32(0x145c) = 0x1090220;
-		MCHBAR32(0x1460) = 0x1090330;
-		MCHBAR32(0x1464) = 0xb090220;
-		MCHBAR32(0x1468) = 0x1010001;
-		MCHBAR32(0x146c) = 0x1110000;
-		MCHBAR32(0x1470) = 0xf040020;
-		MCHBAR32(0x1474) = 0xa090220;
-		MCHBAR32(0x1478) = 0x1120220;
-		MCHBAR32(0x147c) = 0x1120330;
-		MCHBAR32(0x1480) = 0xa090220;
-		MCHBAR32(0x1484) = 0x1010001;
-		MCHBAR32(0x1488) = 0x1110000;
-		MCHBAR32(0x148c) = 0x7020020;
-		MCHBAR32(0x1490) = 0x1010220;
-		MCHBAR32(0x1494) = 0x10210;
-		MCHBAR32(0x1498) = 0x10320;
-		MCHBAR32(0x149c) = 0x1010220;
-		MCHBAR32(0x14a0) = 0x1010001;
-		MCHBAR32(0x14a4) = 0x1110000;
-		MCHBAR32(0x14a8) = 0xd040020;
-		MCHBAR32(0x14ac) = 0x8090220;
-		MCHBAR32(0x14b0) = 0x1111310;
-		MCHBAR32(0x14b4) = 0x1111420;
-		MCHBAR32(0x14b8) = 0x8090220;
-		MCHBAR32(0x14bc) = 0x1010001;
-		MCHBAR32(0x14c0) = 0x1110000;
-		MCHBAR32(0x14c4) = 0x3010020;
-		MCHBAR32(0x14c8) = 0x7090220;
-		MCHBAR32(0x14cc) = 0x1081310;
-		MCHBAR32(0x14d0) = 0x1081420;
-		MCHBAR32(0x14d4) = 0x7090220;
-		MCHBAR32(0x14d8) = 0x1010001;
-		MCHBAR32(0x14dc) = 0x1110000;
-		MCHBAR32(0x14e0) = 0xb040020;
-		MCHBAR32(0x14e4) = 0x2030220;
-		MCHBAR32(0x14e8) = 0x1051310;
-		MCHBAR32(0x14ec) = 0x1051420;
-		MCHBAR32(0x14f0) = 0x2030220;
-		MCHBAR32(0x14f4) = 0x1010001;
-		MCHBAR32(0x14f8) = 0x1110000;
-		MCHBAR32(0x14fc) = 0x5020020;
-		MCHBAR32(0x1500) = 0x5090220;
-		MCHBAR32(0x1504) = 0x2071310;
-		MCHBAR32(0x1508) = 0x2071420;
-		MCHBAR32(0x150c) = 0x5090220;
-		MCHBAR32(0x1510) = 0x1010001;
-		MCHBAR32(0x1514) = 0x1110000;
-		MCHBAR32(0x1518) = 0x7040120;
-		MCHBAR32(0x151c) = 0x2090220;
-		MCHBAR32(0x1520) = 0x70b1210;
-		MCHBAR32(0x1524) = 0x70b1310;
-		MCHBAR32(0x1528) = 0x2090220;
-		MCHBAR32(0x152c) = 0x1010001;
-		MCHBAR32(0x1530) = 0x1110000;
-		MCHBAR32(0x1534) = 0x1010110;
-		MCHBAR32(0x1538) = 0x1081310;
-		MCHBAR32(0x153c) = 0x5041200;
-		MCHBAR32(0x1540) = 0x5041310;
-		MCHBAR32(0x1544) = 0x1081310;
-		MCHBAR32(0x1548) = 0x1010001;
-		MCHBAR32(0x154c) = 0x1110000;
-		MCHBAR32(0x1550) = 0x1040120;
-		MCHBAR32(0x1554) = 0x4051210;
-		MCHBAR32(0x1558) = 0xd051200;
-		MCHBAR32(0x155c) = 0xd051200;
-		MCHBAR32(0x1560) = 0x4051210;
-		MCHBAR32(0x1564) = 0x1010001;
-		MCHBAR32(0x1568) = 0x1110000;
-		MCHBAR16(0x1222) = 0x220a;
-		MCHBAR16(0x123c) = 0x1fc0;
-		MCHBAR16(0x1220) = 0x1388;
+		mchbar_write16(0x1214, 0x320);
+		mchbar_write32(0x1600, 0x40000000);
+		mchbar_clrsetbits32(0x11f4, ~0, 1 << 28);
+		mchbar_clrsetbits16(0x1230, ~0, 1 << 15);
+		mchbar_write32(0x1400, 0x13040020);
+		mchbar_write32(0x1404, 0xe090120);
+		mchbar_write32(0x1408, 0x5120220);
+		mchbar_write32(0x140c, 0x5120330);
+		mchbar_write32(0x1410, 0xe090220);
+		mchbar_write32(0x1414, 0x1010001);
+		mchbar_write32(0x1418, 0x1110000);
+		mchbar_write32(0x141c, 0x9020020);
+		mchbar_write32(0x1420, 0xd090220);
+		mchbar_write32(0x1424, 0x2090220);
+		mchbar_write32(0x1428, 0x2090330);
+		mchbar_write32(0x142c, 0xd090220);
+		mchbar_write32(0x1430, 0x1010001);
+		mchbar_write32(0x1434, 0x1110000);
+		mchbar_write32(0x1438, 0x11040020);
+		mchbar_write32(0x143c, 0x4030220);
+		mchbar_write32(0x1440, 0x1060220);
+		mchbar_write32(0x1444, 0x1060330);
+		mchbar_write32(0x1448, 0x4030220);
+		mchbar_write32(0x144c, 0x1010001);
+		mchbar_write32(0x1450, 0x1110000);
+		mchbar_write32(0x1454, 0x4010020);
+		mchbar_write32(0x1458, 0xb090220);
+		mchbar_write32(0x145c, 0x1090220);
+		mchbar_write32(0x1460, 0x1090330);
+		mchbar_write32(0x1464, 0xb090220);
+		mchbar_write32(0x1468, 0x1010001);
+		mchbar_write32(0x146c, 0x1110000);
+		mchbar_write32(0x1470, 0xf040020);
+		mchbar_write32(0x1474, 0xa090220);
+		mchbar_write32(0x1478, 0x1120220);
+		mchbar_write32(0x147c, 0x1120330);
+		mchbar_write32(0x1480, 0xa090220);
+		mchbar_write32(0x1484, 0x1010001);
+		mchbar_write32(0x1488, 0x1110000);
+		mchbar_write32(0x148c, 0x7020020);
+		mchbar_write32(0x1490, 0x1010220);
+		mchbar_write32(0x1494, 0x10210);
+		mchbar_write32(0x1498, 0x10320);
+		mchbar_write32(0x149c, 0x1010220);
+		mchbar_write32(0x14a0, 0x1010001);
+		mchbar_write32(0x14a4, 0x1110000);
+		mchbar_write32(0x14a8, 0xd040020);
+		mchbar_write32(0x14ac, 0x8090220);
+		mchbar_write32(0x14b0, 0x1111310);
+		mchbar_write32(0x14b4, 0x1111420);
+		mchbar_write32(0x14b8, 0x8090220);
+		mchbar_write32(0x14bc, 0x1010001);
+		mchbar_write32(0x14c0, 0x1110000);
+		mchbar_write32(0x14c4, 0x3010020);
+		mchbar_write32(0x14c8, 0x7090220);
+		mchbar_write32(0x14cc, 0x1081310);
+		mchbar_write32(0x14d0, 0x1081420);
+		mchbar_write32(0x14d4, 0x7090220);
+		mchbar_write32(0x14d8, 0x1010001);
+		mchbar_write32(0x14dc, 0x1110000);
+		mchbar_write32(0x14e0, 0xb040020);
+		mchbar_write32(0x14e4, 0x2030220);
+		mchbar_write32(0x14e8, 0x1051310);
+		mchbar_write32(0x14ec, 0x1051420);
+		mchbar_write32(0x14f0, 0x2030220);
+		mchbar_write32(0x14f4, 0x1010001);
+		mchbar_write32(0x14f8, 0x1110000);
+		mchbar_write32(0x14fc, 0x5020020);
+		mchbar_write32(0x1500, 0x5090220);
+		mchbar_write32(0x1504, 0x2071310);
+		mchbar_write32(0x1508, 0x2071420);
+		mchbar_write32(0x150c, 0x5090220);
+		mchbar_write32(0x1510, 0x1010001);
+		mchbar_write32(0x1514, 0x1110000);
+		mchbar_write32(0x1518, 0x7040120);
+		mchbar_write32(0x151c, 0x2090220);
+		mchbar_write32(0x1520, 0x70b1210);
+		mchbar_write32(0x1524, 0x70b1310);
+		mchbar_write32(0x1528, 0x2090220);
+		mchbar_write32(0x152c, 0x1010001);
+		mchbar_write32(0x1530, 0x1110000);
+		mchbar_write32(0x1534, 0x1010110);
+		mchbar_write32(0x1538, 0x1081310);
+		mchbar_write32(0x153c, 0x5041200);
+		mchbar_write32(0x1540, 0x5041310);
+		mchbar_write32(0x1544, 0x1081310);
+		mchbar_write32(0x1548, 0x1010001);
+		mchbar_write32(0x154c, 0x1110000);
+		mchbar_write32(0x1550, 0x1040120);
+		mchbar_write32(0x1554, 0x4051210);
+		mchbar_write32(0x1558, 0xd051200);
+		mchbar_write32(0x155c, 0xd051200);
+		mchbar_write32(0x1560, 0x4051210);
+		mchbar_write32(0x1564, 0x1010001);
+		mchbar_write32(0x1568, 0x1110000);
+		mchbar_write16(0x1222, 0x220a);
+		mchbar_write16(0x123c, 0x1fc0);
+		mchbar_write16(0x1220, 0x1388);
 	}
 }

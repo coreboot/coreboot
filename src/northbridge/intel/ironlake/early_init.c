@@ -112,7 +112,7 @@ void ironlake_early_initialization(int chipset_type)
 
 	/* Magic for S3 resume. Must be done early.  */
 	if (s3_resume) {
-		MCHBAR32(0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
-		MCHBAR32(0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
+		mchbar_clrsetbits32(0x1e8, 1, 6);
+		mchbar_clrsetbits32(0x1e8, 3, 4);
 	}
 }

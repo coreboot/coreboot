@@ -118,6 +118,15 @@ chip soc/intel/jasperlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ZNT0000""
+				register "generic.desc" = ""Zinitix Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0xE"
+				device i2c 40 on end
+			end
 		end # I2C 0
 		device pci 15.2 on end
 		device pci 1c.7 off end # PCI Express Root Port 8

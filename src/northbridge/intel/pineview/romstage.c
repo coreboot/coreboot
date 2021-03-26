@@ -44,7 +44,7 @@ void mainboard_romstage_entry(void)
 	if (s3resume) {
 		boot_path = BOOT_PATH_RESUME;
 	} else {
-		if (MCHBAR32(PMSTS) & (1 << 8)) /* HOT RESET */
+		if (mchbar_read32(PMSTS) & (1 << 8)) /* HOT RESET */
 			boot_path = BOOT_PATH_RESET;
 		else
 			boot_path = BOOT_PATH_NORMAL;

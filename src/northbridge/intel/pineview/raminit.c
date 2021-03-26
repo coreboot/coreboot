@@ -502,18 +502,18 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	if (s->boot_path == BOOT_PATH_RESET)
 		return;
 
-	MCHBAR32_OR(PMSTS, 1);
+	mchbar_setbits32(PMSTS, 1 << 0);
 
-	reg32 = (MCHBAR32(CLKCFG) & ~0x70) | (1 << 10);
+	reg32 = (mchbar_read32(CLKCFG) & ~0x70) | (1 << 10);
 	if (s->selected_timings.mem_clock == MEM_CLOCK_800MHz) {
 		reg8 = 3;
 	} else {
 		reg8 = 2;
 	}
 	reg32 |= reg8 << 4;
-	MCHBAR32(CLKCFG) = reg32;
+	mchbar_write32(CLKCFG, reg32);
 
-	s->selected_timings.mem_clock = ((MCHBAR32(CLKCFG) >> 4) & 0x7) - 2;
+	s->selected_timings.mem_clock = ((mchbar_read32(CLKCFG) >> 4) & 0x7) - 2;
 	if (s->selected_timings.mem_clock == MEM_CLOCK_800MHz) {
 		PRINTK_DEBUG("MCH validated at 800MHz\n");
 		s->nodll = 0;
@@ -547,18 +547,18 @@ static void sdram_clk_crossing(struct sysinfo *s)
 	ddr_freq = s->selected_timings.mem_clock;
 	fsb_freq = s->selected_timings.fsb_clock;
 
-	MCHBAR32(HMCCMP)   = clkcross[fsb_freq][ddr_freq][0];
-	MCHBAR32(HMDCMP)   = clkcross[fsb_freq][ddr_freq][1];
-	MCHBAR32(HMBYPCP)  = clkcross[fsb_freq][ddr_freq][2];
-	MCHBAR32(HMCCPEXT) = 0;
-	MCHBAR32(HMDCPEXT) = clkcross[fsb_freq][ddr_freq][3];
+	mchbar_write32(HMCCMP,   clkcross[fsb_freq][ddr_freq][0]);
+	mchbar_write32(HMDCMP,   clkcross[fsb_freq][ddr_freq][1]);
+	mchbar_write32(HMBYPCP,  clkcross[fsb_freq][ddr_freq][2]);
+	mchbar_write32(HMCCPEXT, 0);
+	mchbar_write32(HMDCPEXT, clkcross[fsb_freq][ddr_freq][3]);
 
-	MCHBAR32_OR(HMCCMC, 1 << 7);
+	mchbar_setbits32(HMCCMC, 1 << 7);
 
 	if ((fsb_freq == 0) && (ddr_freq == 1)) {
-		MCHBAR8(CLKXSSH2MCBYPPHAS) = 0;
-		MCHBAR32(CLKXSSH2MD)       = 0;
-		MCHBAR32(CLKXSSH2MD + 4)   = 0;
+		mchbar_write8(CLKXSSH2MCBYPPHAS, 0);
+		mchbar_write32(CLKXSSH2MD, 0);
+		mchbar_write32(CLKXSSH2MD + 4, 0);
 	}
 
 	static const u32 clkcross2[2][2][8] = {
@@ -584,18 +584,18 @@ static void sdram_clk_crossing(struct sysinfo *s)
 	},
 	};
 
-	MCHBAR32(CLKXSSH2MCBYP)       = clkcross2[fsb_freq][ddr_freq][0];
-	MCHBAR32(CLKXSSH2MCRDQ)       = clkcross2[fsb_freq][ddr_freq][0];
-	MCHBAR32(CLKXSSH2MCRDCST)     = clkcross2[fsb_freq][ddr_freq][0];
-	MCHBAR32(CLKXSSH2MCBYP + 4)   = clkcross2[fsb_freq][ddr_freq][1];
-	MCHBAR32(CLKXSSH2MCRDQ + 4)   = clkcross2[fsb_freq][ddr_freq][1];
-	MCHBAR32(CLKXSSH2MCRDCST + 4) = clkcross2[fsb_freq][ddr_freq][1];
-	MCHBAR32(CLKXSSMC2H)          = clkcross2[fsb_freq][ddr_freq][2];
-	MCHBAR32(CLKXSSMC2H + 4)      = clkcross2[fsb_freq][ddr_freq][3];
-	MCHBAR32(CLKXSSMC2HALT)       = clkcross2[fsb_freq][ddr_freq][4];
-	MCHBAR32(CLKXSSMC2HALT + 4)   = clkcross2[fsb_freq][ddr_freq][5];
-	MCHBAR32(CLKXSSH2X2MD)        = clkcross2[fsb_freq][ddr_freq][6];
-	MCHBAR32(CLKXSSH2X2MD + 4)    = clkcross2[fsb_freq][ddr_freq][7];
+	mchbar_write32(CLKXSSH2MCBYP,       clkcross2[fsb_freq][ddr_freq][0]);
+	mchbar_write32(CLKXSSH2MCRDQ,       clkcross2[fsb_freq][ddr_freq][0]);
+	mchbar_write32(CLKXSSH2MCRDCST,     clkcross2[fsb_freq][ddr_freq][0]);
+	mchbar_write32(CLKXSSH2MCBYP + 4,   clkcross2[fsb_freq][ddr_freq][1]);
+	mchbar_write32(CLKXSSH2MCRDQ + 4,   clkcross2[fsb_freq][ddr_freq][1]);
+	mchbar_write32(CLKXSSH2MCRDCST + 4, clkcross2[fsb_freq][ddr_freq][1]);
+	mchbar_write32(CLKXSSMC2H,          clkcross2[fsb_freq][ddr_freq][2]);
+	mchbar_write32(CLKXSSMC2H + 4,      clkcross2[fsb_freq][ddr_freq][3]);
+	mchbar_write32(CLKXSSMC2HALT,       clkcross2[fsb_freq][ddr_freq][4]);
+	mchbar_write32(CLKXSSMC2HALT + 4,   clkcross2[fsb_freq][ddr_freq][5]);
+	mchbar_write32(CLKXSSH2X2MD,        clkcross2[fsb_freq][ddr_freq][6]);
+	mchbar_write32(CLKXSSH2X2MD + 4,    clkcross2[fsb_freq][ddr_freq][7]);
 }
 
 static void sdram_clkmode(struct sysinfo *s)
@@ -603,8 +603,8 @@ static void sdram_clkmode(struct sysinfo *s)
 	u8  ddr_freq;
 	u16 mpll_ctl;
 
-	MCHBAR16_AND(CSHRMISCCTL1, ~(1 << 8));
-	MCHBAR8_AND(CSHRMISCCTL1,  ~0x3f);
+	mchbar_clrbits16(CSHRMISCCTL1, 1 << 8);
+	mchbar_clrbits8(CSHRMISCCTL1, 0x3f);
 
 	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
 		ddr_freq = 0;
@@ -614,17 +614,17 @@ static void sdram_clkmode(struct sysinfo *s)
 		mpll_ctl = (1 << 8) | (1 << 5);
 	}
 	if (s->boot_path != BOOT_PATH_RESET)
-		MCHBAR16_AND_OR(MPLLCTL, ~(0x033f), mpll_ctl);
+		mchbar_clrsetbits16(MPLLCTL, 0x033f, mpll_ctl);
 
-	MCHBAR32(C0GNT2LNCH1) = 0x58001117;
-	MCHBAR32_OR(C0STATRDCTRL, 1 << 23);
+	mchbar_write32(C0GNT2LNCH1, 0x58001117);
+	mchbar_setbits32(C0STATRDCTRL, 1 << 23);
 
 	const u32 cas_to_reg[2][4] = {
 		{0x00000000, 0x00030100, 0x0c240201, 0x00000000}, /* DDR = 667 */
 		{0x00000000, 0x00030100, 0x0c240201, 0x10450302}  /* DDR = 800 */
 	};
 
-	MCHBAR32(C0GNT2LNCH2) = cas_to_reg[ddr_freq][s->selected_timings.CAS - 3];
+	mchbar_write32(C0GNT2LNCH2, cas_to_reg[ddr_freq][s->selected_timings.CAS - 3]);
 }
 
 static void sdram_timings(struct sysinfo *s)
@@ -649,7 +649,7 @@ static void sdram_timings(struct sysinfo *s)
 	bank = 1;
 	page = 0;
 
-	MCHBAR8(C0LATCTRL) = ((wl - 3) << 4) | (s->selected_timings.CAS - 3);
+	mchbar_write8(C0LATCTRL, (wl - 3) << 4 | (s->selected_timings.CAS - 3));
 
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 		i = ch << 1;
@@ -669,9 +669,9 @@ static void sdram_timings(struct sysinfo *s)
 		flag = 1;
 	}
 
-	MCHBAR8_OR(C0PVCFG, 0x03);
-	MCHBAR16(C0CYCTRKPCHG) = ((wl + 4 + s->selected_timings.tWR) << 6) |
-				 ((2 + MAX(s->selected_timings.tRTP, 2)) << 2) | 1;
+	mchbar_setbits8(C0PVCFG, 3);
+	mchbar_write16(C0CYCTRKPCHG, (wl + 4 + s->selected_timings.tWR) << 6 |
+				 (2 + MAX(s->selected_timings.tRTP, 2)) << 2 | 1);
 
 	reg32 = (bank << 21) | (s->selected_timings.tRRD << 17) |
 		(s->selected_timings.tRP << 13) | ((s->selected_timings.tRP + trp) << 9) |
@@ -681,30 +681,30 @@ static void sdram_timings(struct sysinfo *s)
 		reg32 |= (pagetab[flag][page] << 22);
 	}
 	/* FIXME: Why not do a single dword write? */
-	MCHBAR16(C0CYCTRKACT)     = (u16) (reg32);
-	MCHBAR16(C0CYCTRKACT + 2) = (u16) (reg32 >> 16);
+	mchbar_write16(C0CYCTRKACT + 0, (u16)(reg32));
+	mchbar_write16(C0CYCTRKACT + 2, (u16)(reg32 >> 16));
 
 	/* FIXME: Only applies to DDR2 */
-	reg16 = (MCHBAR16(C0CYCTRKACT + 2) & 0x0fc0) >> 6;
-	MCHBAR16_AND_OR(SHCYCTRKCKEL, ~0x1f80, (reg16 << 7));
+	reg16 = (mchbar_read16(C0CYCTRKACT + 2) & 0x0fc0) >> 6;
+	mchbar_clrsetbits16(SHCYCTRKCKEL, 0x3f << 7, reg16 << 7);
 
 	reg16 = (s->selected_timings.tRCD << 12) | (4 << 8) | (ta2 << 4) | ta4;
-	MCHBAR16(C0CYCTRKWR) = reg16;
+	mchbar_write16(C0CYCTRKWR, reg16);
 
 	reg32 = (s->selected_timings.tRCD << 17) | ((wl + 4 + s->selected_timings.tWTR) << 12) |
 		(ta3 << 8) | (4 << 4) | ta1;
-	MCHBAR32(C0CYCTRKRD) = reg32;
+	mchbar_write32(C0CYCTRKRD, reg32);
 
 	reg16 = ((s->selected_timings.tRP + trp) << 9) | s->selected_timings.tRFC;
 
 	/* FIXME: Why not do a single word write? */
-	MCHBAR8(C0CYCTRKREFR)     = (u8) (reg16);
-	MCHBAR8(C0CYCTRKREFR + 1) = (u8) (reg16 >> 8);
+	mchbar_write8(C0CYCTRKREFR + 0, (u8)(reg16));
+	mchbar_write8(C0CYCTRKREFR + 1, (u8)(reg16 >> 8));
 
-	MCHBAR16_AND_OR(C0CKECTRL, ~0x03fe, 100 << 1);
-	MCHBAR8_AND_OR(C0CYCTRKPCHG2, ~0x3f, s->selected_timings.tRAS);
-	MCHBAR16(C0ARBCTRL) = 0x2310;
-	MCHBAR8_AND_OR(C0ADDCSCTRL, ~0x1f, 1);
+	mchbar_clrsetbits16(C0CKECTRL, 0x1ff << 1, 100 << 1);
+	mchbar_clrsetbits8(C0CYCTRKPCHG2, 0x3f, s->selected_timings.tRAS);
+	mchbar_write16(C0ARBCTRL, 0x2310);
+	mchbar_clrsetbits8(C0ADDCSCTRL, 0x1f, 1);
 
 	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
 		reg32 = 3000;
@@ -717,7 +717,7 @@ static void sdram_timings(struct sysinfo *s)
 		reg2 = 5000;
 	}
 	reg16 = (u16)((((s->selected_timings.CAS + 7) * (reg32)) / reg2) << 8);
-	MCHBAR16_AND_OR(C0STATRDCTRL, ~0x1f00, reg16);
+	mchbar_clrsetbits16(C0STATRDCTRL, 0x1f << 8, reg16);
 
 	flag = 0;
 	if (wl > 2) {
@@ -726,13 +726,13 @@ static void sdram_timings(struct sysinfo *s)
 	reg16 = (u8) (wl - 1 - flag);
 	reg16 |= reg16 << 4;
 	reg16 |= flag << 8;
-	MCHBAR16_AND_OR(C0WRDATACTRL, ~0x01ff, reg16);
+	mchbar_clrsetbits16(C0WRDATACTRL, 0x1ff, reg16);
 
-	MCHBAR16(C0RDQCTRL) = 0x1585;
-	MCHBAR8_AND(C0PWLRCTRL, ~0x1f);
+	mchbar_write16(C0RDQCTRL, 0x1585);
+	mchbar_clrbits8(C0PWLRCTRL, 0x1f);
 
 	/* rdmodwr_window[5..0] = CL+4+5  265[13..8] (264[21..16]) */
-	MCHBAR16_AND_OR(C0PWLRCTRL, ~0x3f00, (s->selected_timings.CAS + 9) << 8);
+	mchbar_clrsetbits16(C0PWLRCTRL, 0x3f << 8, (s->selected_timings.CAS + 9) << 8);
 
 	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
 		reg16 = 0x0514;
@@ -741,114 +741,114 @@ static void sdram_timings(struct sysinfo *s)
 		reg16 = 0x0618;
 		reg32 = 0x0c30;
 	}
-	MCHBAR32_AND_OR(C0REFRCTRL2, ~0x0fffff00, (0x3f << 22) | (reg32 << 8));
+	mchbar_clrsetbits32(C0REFRCTRL2, 0xfffff << 8, 0x3f << 22 | reg32 << 8);
 
 	/* FIXME: Is this weird access necessary? Reference code does it */
-	MCHBAR8(C0REFRCTRL + 3) = 0;
-	MCHBAR16_AND_OR(C0REFCTRL, 0xc000, reg16);
+	mchbar_write8(C0REFRCTRL + 3, 0);
+	mchbar_clrsetbits16(C0REFCTRL, 0x3fff, reg16);
 
 	/* NPUT Static Mode */
-	MCHBAR8_OR(C0DYNRDCTRL, 1);
+	mchbar_setbits8(C0DYNRDCTRL, 1 << 0);
 
-	MCHBAR32_AND_OR(C0STATRDCTRL, ~0x7f000000, 0xb << 25);
+	mchbar_clrsetbits32(C0STATRDCTRL, 0x7f << 24, 0xb << 25);
 	i = s->selected_timings.mem_clock;
 	j = s->selected_timings.fsb_clock;
 	if (i > j) {
-		MCHBAR32_OR(C0STATRDCTRL, 1 << 24);
+		mchbar_setbits32(C0STATRDCTRL, 1 << 24);
 	}
 
-	MCHBAR8_AND(C0RDFIFOCTRL, ~0x3);
-	MCHBAR16_AND_OR(C0WRDATACTRL, ~0x7c00, (wl + 10) << 10);
-	MCHBAR32_AND_OR(C0CKECTRL, ~0x070e0000, (3 << 24) | (3 << 17));
+	mchbar_clrbits8(C0RDFIFOCTRL, 3);
+	mchbar_clrsetbits16(C0WRDATACTRL, 0x1f << 10, (wl + 10) << 10);
+	mchbar_clrsetbits32(C0CKECTRL, 7 << 24 | 7 << 17, 3 << 24 | 3 << 17);
 	reg16 = 0x15 << 6;
 	reg16 |= 0x1f;
 	reg16 |= (0x6 << 12);
-	MCHBAR16_AND_OR(C0REFRCTRL + 4, ~0x7fff, reg16);
+	mchbar_clrsetbits16(C0REFRCTRL + 4, 0x7fff, reg16);
 
 	reg32 = (0x6 << 27) | (1 << 25);	/* FIXME: For DDR3, set BIT26 as well */
-	MCHBAR32_AND_OR(C0REFRCTRL2, ~0x30000000, reg32 << 8);
-	MCHBAR8_AND_OR(C0REFRCTRL + 3, ~0xfa, reg32 >> 24);
-	MCHBAR8_AND(C0JEDEC, ~(1 << 7));
-	MCHBAR8_AND(C0DYNRDCTRL, ~0x6);
+	mchbar_clrsetbits32(C0REFRCTRL2, 3 << 28, reg32 << 8);
+	mchbar_clrsetbits8(C0REFRCTRL + 3, 0xfa, reg32 >> 24);
+	mchbar_clrbits8(C0JEDEC, 1 << 7);
+	mchbar_clrbits8(C0DYNRDCTRL, 3 << 1);
 
 	/* Note: This is a 64-bit register, [34..30] = 0b00110 is split across two writes */
 	reg32 = ((6 & 3) << 30) | (4 << 25) | (1 << 20) | (8 << 15) | (6 << 10) | (4 << 5) | 1;
-	MCHBAR32(C0WRWMFLSH) = reg32;
-	MCHBAR16_AND_OR(C0WRWMFLSH + 4, ~0x1ff, (8 << 3) | (6 >> 2));
-	MCHBAR16_OR(SHPENDREG, 0x1c00 | (0x1f << 5));
+	mchbar_write32(C0WRWMFLSH, reg32);
+	mchbar_clrsetbits16(C0WRWMFLSH + 4, 0x1ff, 8 << 3 | 6 >> 2);
+	mchbar_setbits16(SHPENDREG, 0x1c00 | 0x1f << 5);
 
 	/* FIXME: Why not do a single word write? */
-	MCHBAR8_AND_OR(SHPAGECTRL,     ~0xff, 0x40);
-	MCHBAR8_AND_OR(SHPAGECTRL + 1, ~0x07, 0x05);
-	MCHBAR8_OR(SHCMPLWRCMD, 0x1f);
+	mchbar_clrsetbits8(SHPAGECTRL,     0xff, 0x40);
+	mchbar_clrsetbits8(SHPAGECTRL + 1, 0x07, 0x05);
+	mchbar_setbits8(SHCMPLWRCMD, 0x1f);
 
 	reg8  = (3 << 6);
 	reg8 |= (s->dt0mode << 4);
 	reg8 |= 0x0c;
-	MCHBAR8_AND_OR(SHBONUSREG, ~0xdf, reg8);
-	MCHBAR8_AND(CSHRWRIOMLNS, ~0x02);
-	MCHBAR8_AND_OR(C0MISCTM, ~0x07, 0x02);
-	MCHBAR16_AND_OR(C0BYPCTRL, ~0x3fc, 4 << 2);
+	mchbar_clrsetbits8(SHBONUSREG, 0xdf, reg8);
+	mchbar_clrbits8(CSHRWRIOMLNS, 1 << 1);
+	mchbar_clrsetbits8(C0MISCTM, 0x07, 0x02);
+	mchbar_clrsetbits16(C0BYPCTRL, 0xff << 2, 4 << 2);
 
 	/* [31..29] = 0b010 for kN = 2 (2N) */
 	reg32 = (2 << 29) | (1 << 28) | (1 << 23);
-	MCHBAR32_AND_OR(WRWMCONFIG, ~0xffb00000, reg32);
+	mchbar_clrsetbits32(WRWMCONFIG, 0xffb << 20, reg32);
 
-	reg8  = (u8) ((MCHBAR16(C0CYCTRKACT)     & 0xe000) >> 13);
-	reg8 |= (u8) ((MCHBAR16(C0CYCTRKACT + 2) & 1) << 3);
-	MCHBAR8_AND_OR(BYPACTSF, ~0xf0, reg8 << 4);
+	reg8  = (u8) ((mchbar_read16(C0CYCTRKACT)     & 0xe000) >> 13);
+	reg8 |= (u8) ((mchbar_read16(C0CYCTRKACT + 2) & 1) << 3);
+	mchbar_clrsetbits8(BYPACTSF, 0xf << 4, reg8 << 4);
 
-	reg8 = (u8) ((MCHBAR32(C0CYCTRKRD) & 0x000f0000) >> 17);
-	MCHBAR8_AND_OR(BYPACTSF, ~0x0f, reg8);
+	reg8 = (u8) ((mchbar_read32(C0CYCTRKRD) & 0x000f0000) >> 17);
+	mchbar_clrsetbits8(BYPACTSF, 0xf, reg8);
 
 	/* FIXME: Why not clear everything at once? */
-	MCHBAR8_AND(BYPKNRULE, ~0xfc);
-	MCHBAR8_AND(BYPKNRULE, ~0x03);
-	MCHBAR8_AND(SHBONUSREG, ~0x03);
-	MCHBAR8_OR(C0BYPCTRL, 1);
-	MCHBAR16_OR(CSHRMISCCTL1, 1 << 9);
+	mchbar_clrbits8(BYPKNRULE, 0xfc);
+	mchbar_clrbits8(BYPKNRULE, 0x03);
+	mchbar_clrbits8(SHBONUSREG, 0x03);
+	mchbar_setbits8(C0BYPCTRL, 1 << 0);
+	mchbar_setbits16(CSHRMISCCTL1, 1 << 9);
 
 	for (i = 0; i < 8; i++) {
 		/* FIXME: Hardcoded for DDR2 SO-DIMMs */
-		MCHBAR32_AND_OR(C0DLLRCVCTLy(i), ~0x3f3f3f3f, 0x0c0c0c0c);
+		mchbar_clrsetbits32(C0DLLRCVCTLy(i), 0x3f3f3f3f, 0x0c0c0c0c);
 	}
 	/* RDCS to RCVEN delay: Program coarse common to all bytelanes to default tCL + 1 */
-	MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, (s->selected_timings.CAS + 1) << 16);
+	mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, (s->selected_timings.CAS + 1) << 16);
 
 	/* Program RCVEN delay with DLL-safe settings */
 	for (i = 0; i < 8; i++) {
-		MCHBAR8_AND(C0RXRCVyDLL(i), ~0x3f);
+		mchbar_clrbits8(C0RXRCVyDLL(i), 0x3f);
 		MCHBAR16_AND(C0RCVMISCCTL2, (u16) ~(3 << (i * 2)));
 		MCHBAR16_AND(C0RCVMISCCTL1, (u16) ~(3 << (i * 2)));
 		MCHBAR16_AND(C0COARSEDLY0,  (u16) ~(3 << (i * 2)));
 	}
-	MCHBAR8_AND(C0DLLPIEN, ~1);	/* Power up receiver */
-	MCHBAR8_OR(C0DLLPIEN,   2);	/* Enable RCVEN DLL */
-	MCHBAR8_OR(C0DLLPIEN,   4);	/* Enable receiver DQS DLL */
-	MCHBAR32_OR(C0COREBONUS, 0x000c0400);
-	MCHBAR32_OR(C0CMDTX1, 1 << 31);
+	mchbar_clrbits8(C0DLLPIEN, 1 << 0);	/* Power up receiver */
+	mchbar_setbits8(C0DLLPIEN, 1 << 1);	/* Enable RCVEN DLL */
+	mchbar_setbits8(C0DLLPIEN, 1 << 2);	/* Enable receiver DQS DLL */
+	mchbar_setbits32(C0COREBONUS, 0x000c0400);
+	mchbar_setbits32(C0CMDTX1, 1 << 31);
 }
 
 /* Program clkset0's register for Kcoarse, Tap, PI, DBEn and DBSel */
 static void sdram_p_clkset0(const struct pllparam *pll, u8 f, u8 i)
 {
-	MCHBAR16_AND_OR(C0CKTX, ~0xc440,
+	mchbar_clrsetbits16(C0CKTX, 0xc440,
 			(pll->clkdelay[f][i] << 14) |
 			(pll->dben[f][i] << 10) |
 			(pll->dbsel[f][i] << 6));
 
-	MCHBAR8_AND_OR(C0TXCK0DLL, ~0x3f, pll->pi[f][i]);
+	mchbar_clrsetbits8(C0TXCK0DLL, 0x3f, pll->pi[f][i]);
 }
 
 /* Program clkset1's register for Kcoarse, Tap, PI, DBEn and DBSel */
 static void sdram_p_clkset1(const struct pllparam *pll, u8 f, u8 i)
 {
-	MCHBAR32_AND_OR(C0CKTX, ~0x00030880,
+	mchbar_clrsetbits32(C0CKTX, 0x00030880,
 			(pll->clkdelay[f][i] << 16) |
 			(pll->dben[f][i] << 11) |
 			(pll->dbsel[f][i] << 7));
 
-	MCHBAR8_AND_OR(C0TXCK1DLL, ~0x3f, pll->pi[f][i]);
+	mchbar_clrsetbits8(C0TXCK1DLL, 0x3f, pll->pi[f][i]);
 }
 
 /* Program CMD0 and CMD1 registers for Kcoarse, Tap, PI, DBEn and DBSel */
@@ -858,14 +858,14 @@ static void sdram_p_cmd(const struct pllparam *pll, u8 f, u8 i)
 	/* Clock Group Index 3 */
 	reg8 = pll->dbsel[f][i] << 5;
 	reg8 |= pll->dben[f][i] << 6;
-	MCHBAR8_AND_OR(C0CMDTX1, ~0x60, reg8);
+	mchbar_clrsetbits8(C0CMDTX1, 3 << 5, reg8);
 
 	reg8 = pll->clkdelay[f][i] << 4;
-	MCHBAR8_AND_OR(C0CMDTX2, ~0x30, reg8);
+	mchbar_clrsetbits8(C0CMDTX2, 3 << 4, reg8);
 
 	reg8 = pll->pi[f][i];
-	MCHBAR8_AND_OR(C0TXCMD0DLL, ~0x3f, reg8);
-	MCHBAR8_AND_OR(C0TXCMD1DLL, ~0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCMD0DLL, 0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCMD1DLL, 0x3f, reg8);
 }
 
 /* Program CTRL registers for Kcoarse, Tap, PI, DBEn and DBSel */
@@ -881,11 +881,11 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	reg32 |= ((u32) pll->dben[f][i])  << 23;
 	reg32 |= ((u32) pll->clkdelay[f][i]) << 24;
 	reg32 |= ((u32) pll->clkdelay[f][i]) << 27;
-	MCHBAR32_AND_OR(C0CTLTX2, ~0x01bf0000, reg32);
+	mchbar_clrsetbits32(C0CTLTX2, 0x01bf0000, reg32);
 
 	reg8 = pll->pi[f][i];
-	MCHBAR8_AND_OR(C0TXCTL0DLL, ~0x3f, reg8);
-	MCHBAR8_AND_OR(C0TXCTL1DLL, ~0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCTL0DLL, 0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCTL1DLL, 0x3f, reg8);
 
 	/* CTRL2 and CTRL3 */
 	reg32  = ((u32) pll->dbsel[f][i]) << 12;
@@ -894,11 +894,11 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	reg32 |= ((u32) pll->dben[f][i])  << 9;
 	reg32 |= ((u32) pll->clkdelay[f][i]) << 14;
 	reg32 |= ((u32) pll->clkdelay[f][i]) << 10;
-	MCHBAR32_AND_OR(C0CMDTX2, ~0xff00, reg32);
+	mchbar_clrsetbits32(C0CMDTX2, 0xff << 8, reg32);
 
 	reg8 = pll->pi[f][i];
-	MCHBAR8_AND_OR(C0TXCTL2DLL, ~0x3f, reg8);
-	MCHBAR8_AND_OR(C0TXCTL3DLL, ~0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCTL2DLL, 0x3f, reg8);
+	mchbar_clrsetbits8(C0TXCTL3DLL, 0x3f, reg8);
 }
 
 static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
@@ -915,14 +915,14 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk])  << (dqs + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dqs;
 
-	MCHBAR32_AND_OR(C0DQSRyTX1(rank), ~((1 << (dqs + 9)) | (1 << dqs)), reg32);
+	mchbar_clrsetbits32(C0DQSRyTX1(rank), 1 << (dqs + 9) | 1 << dqs, reg32);
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << ((dqs * 2) + 16);
-	MCHBAR32_AND_OR(C0DQSDQRyTX3(rank), ~((1 << (dqs * 2 + 17)) | (1 << (dqs * 2 + 16))),
+	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dqs * 2 + 17) | 1 << (dqs * 2 + 16),
 			reg32);
 
 	reg8 = pll->pi[f][clk];
-	MCHBAR8_AND_OR(C0TXDQS0R0DLL + j, ~0x3f, reg8);
+	mchbar_clrsetbits8(C0TXDQS0R0DLL + j, 0x3f, reg8);
 }
 
 static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
@@ -939,13 +939,13 @@ static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 	reg32 |= ((u32) pll->dben[f][clk])  << (dq + 9);
 	reg32 |= ((u32) pll->dbsel[f][clk]) << dq;
 
-	MCHBAR32_AND_OR(C0DQRyTX1(rank), ~((1 << (dq + 9)) | (1 << dq)), reg32);
+	mchbar_clrsetbits32(C0DQRyTX1(rank), 1 << (dq + 9) | 1 << dq, reg32);
 
 	reg32 = ((u32) pll->clkdelay[f][clk]) << (dq*2);
-	MCHBAR32_AND_OR(C0DQSDQRyTX3(rank), ~((1 << (dq * 2 + 1)) | (1 << (dq * 2))), reg32);
+	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dq * 2 + 1) | 1 << (dq * 2), reg32);
 
 	reg8 = pll->pi[f][clk];
-	MCHBAR8_AND_OR(C0TXDQ0R0DLL + j, ~0x3f, reg8);
+	mchbar_clrsetbits8(C0TXDQ0R0DLL + j, 0x3f, reg8);
 }
 
 /* WDLL programming: Perform HPLL/MPLL calibration after write levelization */
@@ -1036,8 +1036,8 @@ static void sdram_calibratepll(struct sysinfo *s, u8 pidelay)
 	}
 
 	/* Disable Dynamic DQS Slave Setting Per Rank */
-	MCHBAR8_AND(CSHRDQSCMN, ~(1 << 7));
-	MCHBAR16_AND_OR(CSHRPDCTL4, ~0x3fff, 0x1fff);
+	mchbar_clrbits8(CSHRDQSCMN, 1 << 7);
+	mchbar_clrsetbits16(CSHRPDCTL4, 0x3fff, 0x1fff);
 
 	sdram_p_clkset0(&pll, f, 0);
 	sdram_p_clkset1(&pll, f, 1);
@@ -1060,20 +1060,20 @@ static void sdram_calibratehwpll(struct sysinfo *s)
 	s->async = 0;
 	reg8 = 0;
 
-	MCHBAR16_OR(CSHRPDCTL, 1 << 15);
-	MCHBAR8_AND(CSHRPDCTL, ~(1 << 7));
-	MCHBAR8_OR(CSHRPDCTL, 1 << 3);
-	MCHBAR8_OR(CSHRPDCTL, 1 << 2);
+	mchbar_setbits16(CSHRPDCTL, 1 << 15);
+	mchbar_clrbits8(CSHRPDCTL, 1 << 7);
+	mchbar_setbits8(CSHRPDCTL, 1 << 3);
+	mchbar_setbits8(CSHRPDCTL, 1 << 2);
 
 	/* Start hardware HMC calibration */
-	MCHBAR8_OR(CSHRPDCTL, 1 << 7);
+	mchbar_setbits8(CSHRPDCTL, 1 << 7);
 
 	/* Busy-wait until calibration is done */
-	while ((MCHBAR8(CSHRPDCTL) & (1 << 2)) == 0)
+	while ((mchbar_read8(CSHRPDCTL) & (1 << 2)) == 0)
 		;
 
 	/* If hardware HMC calibration failed */
-	reg8 = (MCHBAR8(CSHRPDCTL) & (1 << 3)) >> 3;
+	reg8 = (mchbar_read8(CSHRPDCTL) & (1 << 3)) >> 3;
 	if (reg8 != 0) {
 		s->async = 1;
 	}
@@ -1091,91 +1091,91 @@ static void sdram_dlltiming(struct sysinfo *s)
 	} else {
 		reg32 = 0x00014221;
 	}
-	MCHBAR32_AND_OR(CSHRMSTRCTL1, ~0x0fffffff, reg32);
-	MCHBAR32_OR(CSHRMSTRCTL1,    1 << 23);
-	MCHBAR32_OR(CSHRMSTRCTL1,    1 << 15);
-	MCHBAR32_AND(CSHRMSTRCTL1, ~(1 << 15));
+	mchbar_clrsetbits32(CSHRMSTRCTL1, 0x0fffffff, reg32);
+	mchbar_setbits32(CSHRMSTRCTL1, 1 << 23);
+	mchbar_setbits32(CSHRMSTRCTL1, 1 << 15);
+	mchbar_clrbits32(CSHRMSTRCTL1, 1 << 15);
 
 	if (s->nodll) {
 		/* Disable the Master DLLs by setting these bits, IN ORDER! */
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 0);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 2);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 4);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 8);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 10);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 12);
-		MCHBAR16_OR(CSHRMSTRCTL0, 1 << 14);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 0);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 2);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 4);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 8);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 10);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 12);
+		mchbar_setbits16(CSHRMSTRCTL0, 1 << 14);
 	} else {
 		/* Enable the Master DLLs by clearing these bits, IN ORDER! */
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 <<  0));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 <<  2));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 <<  4));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 <<  8));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 << 10));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 << 12));
-		MCHBAR16_AND(CSHRMSTRCTL0, ~(1 << 14));
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 0);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 2);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 4);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 8);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 10);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 12);
+		mchbar_clrbits16(CSHRMSTRCTL0, 1 << 14);
 	}
 
 	/* Initialize the Transmit DLL PI values in the following sequence. */
 	if (s->nodll) {
-		MCHBAR8_AND_OR(CREFPI, ~0x3f, 0x07);
+		mchbar_clrsetbits8(CREFPI, 0x3f, 0x07);
 	} else {
-		MCHBAR8_AND(CREFPI, ~0x3f);
+		mchbar_clrbits8(CREFPI, 0x3f);
 	}
 
 	sdram_calibratepll(s, 0); // XXX check
 
 	/* Enable all modular Slave DLL */
-	MCHBAR16_OR(C0DLLPIEN, 1 << 11);
-	MCHBAR16_OR(C0DLLPIEN, 1 << 12);
+	mchbar_setbits16(C0DLLPIEN, 1 << 11);
+	mchbar_setbits16(C0DLLPIEN, 1 << 12);
 
 	for (i = 0; i < 8; i++) {
-		MCHBAR16_OR(C0DLLPIEN, (1 << 10) >> i);
+		mchbar_setbits16(C0DLLPIEN, (1 << 10) >> i);
 	}
 	/* Enable DQ/DQS output */
-	MCHBAR8_OR(C0SLVDLLOUTEN, 1);
-	MCHBAR16(CSPDSLVWT) = 0x5005;
-	MCHBAR16_AND_OR(CSHRPDCTL2, ~0x1f1f, 0x051a);
-	MCHBAR16_AND_OR(CSHRPDCTL5, ~0xbf3f, 0x9010);
+	mchbar_setbits8(C0SLVDLLOUTEN, 1 << 0);
+	mchbar_write16(CSPDSLVWT, 0x5005);
+	mchbar_clrsetbits16(CSHRPDCTL2, 0x1f1f, 0x051a);
+	mchbar_clrsetbits16(CSHRPDCTL5, 0xbf3f, 0x9010);
 
 	if (s->nodll) {
-		MCHBAR8_AND_OR(CSHRPDCTL3, ~0x7f, 0x6b);
+		mchbar_clrsetbits8(CSHRPDCTL3, 0x7f, 0x6b);
 	} else {
-		MCHBAR8_AND_OR(CSHRPDCTL3, ~0x7f, 0x55);
+		mchbar_clrsetbits8(CSHRPDCTL3, 0x7f, 0x55);
 		sdram_calibratehwpll(s);
 	}
 	/* Disable Dynamic Diff Amp */
-	MCHBAR32_AND(C0STATRDCTRL, ~(1 << 22));
+	mchbar_clrbits32(C0STATRDCTRL, 1 << 22);
 
 	/* Now, start initializing the transmit FIFO */
-	MCHBAR8_AND(C0MISCCTL, ~0x02);
+	mchbar_clrbits8(C0MISCCTL, 1 << 1);
 
 	/* Disable (gate) mdclk and mdclkb */
-	MCHBAR8_OR(CSHWRIOBONUS, 0xc0);
+	mchbar_setbits8(CSHWRIOBONUS, 3 << 6);
 
 	/* Select mdmclk */
-	MCHBAR8_AND(CSHWRIOBONUS, ~(1 << 5));
+	mchbar_clrbits8(CSHWRIOBONUS, 1 << 5);
 
 	/* Ungate mdclk */
-	MCHBAR8_AND_OR(CSHWRIOBONUS, ~0xc0, 1 << 6);
-	MCHBAR8_AND_OR(CSHRFIFOCTL, ~0x3f, 0x1a);
+	mchbar_clrsetbits8(CSHWRIOBONUS, 3 << 6, 1 << 6);
+	mchbar_clrsetbits8(CSHRFIFOCTL, 0x3f, 0x1a);
 
 	/* Enable the write pointer count */
-	MCHBAR8_OR(CSHRFIFOCTL, 1);
+	mchbar_setbits8(CSHRFIFOCTL, 1 << 0);
 
 	/* Set the DDR3 Reset Enable bit */
-	MCHBAR8_OR(CSHRDDR3CTL, 1);
+	mchbar_setbits8(CSHRDDR3CTL, 1 << 0);
 
 	/* Configure DQS-DQ Transmit */
-	MCHBAR32(CSHRDQSTXPGM) = 0x00551803;
+	mchbar_write32(CSHRDQSTXPGM, 0x00551803);
 
 	reg8 = 0; /* Switch all clocks on anyway */
 
 	/* Enable clock groups depending on rank population */
-	MCHBAR32_AND_OR(C0CKTX, ~0x3f000000, reg8 << 24);
+	mchbar_clrsetbits32(C0CKTX, 0x3f << 24, reg8 << 24);
 
 	/* Enable DDR command output buffers from core */
-	MCHBAR8_AND(0x594, ~1);
+	mchbar_clrbits8(0x594, 1 << 0);
 
 	reg16 = 0;
 	if (!rank_is_populated(s->dimms, 0, 0)) {
@@ -1190,7 +1190,7 @@ static void sdram_dlltiming(struct sysinfo *s)
 	if (!rank_is_populated(s->dimms, 0, 3)) {
 		reg16 |= (1 << 11) | (1 << 7) | (1 << 3);
 	}
-	MCHBAR16_OR(C0CTLTX2, reg16);
+	mchbar_setbits16(C0CTLTX2, reg16);
 }
 
 /* Define a shorter name for these to make the lines fit in 96 characters */
@@ -1325,153 +1325,153 @@ static void sdram_rcomp(struct sysinfo *s)
 
 	FOR_EACH_RCOMP_GROUP(i) {
 		reg8 = rcompupdate[i];
-		MCHBAR8_AND_OR(C0RCOMPCTRLx(i), ~1, reg8);
-		MCHBAR8_AND(C0RCOMPCTRLx(i), ~2);
+		mchbar_clrsetbits8(C0RCOMPCTRLx(i), 1 << 0, reg8);
+		mchbar_clrbits8(C0RCOMPCTRLx(i), 1 << 1);
 
 		reg16 = rcompslew;
-		MCHBAR16_AND_OR(C0RCOMPCTRLx(i), ~0xf000, reg16 << 12);
+		mchbar_clrsetbits16(C0RCOMPCTRLx(i), 0xf << 12, reg16 << 12);
 
-		MCHBAR8(C0RCOMPMULTx(i)) = rcompstr[i];
-		MCHBAR16(C0SCOMPVREFx(i)) = rcompscomp[i];
-		MCHBAR8_AND_OR(C0DCOMPx(i), ~0x03, rcompdelay[i]);
+		mchbar_write8(C0RCOMPMULTx(i), rcompstr[i]);
+		mchbar_write16(C0SCOMPVREFx(i), rcompscomp[i]);
+		mchbar_clrsetbits8(C0DCOMPx(i), 0x03, rcompdelay[i]);
 		if (i == 2) {
 			/* FIXME: Why are we rewriting this? */
-			MCHBAR16_AND_OR(C0RCOMPCTRLx(i), ~0xf000, reg16 << 12);
+			mchbar_clrsetbits16(C0RCOMPCTRLx(i), 0xf << 12, reg16 << 12);
 
-			MCHBAR8(C0RCOMPMULTx(i)) = rcompstr2[s->dimm_config[0]];
-			MCHBAR16(C0SCOMPVREFx(i)) = rcompscomp2[s->dimm_config[0]];
-			MCHBAR8_AND_OR(C0DCOMPx(i), ~0x03, rcompdelay2[s->dimm_config[0]]);
+			mchbar_write8(C0RCOMPMULTx(i), rcompstr2[s->dimm_config[0]]);
+			mchbar_write16(C0SCOMPVREFx(i), rcompscomp2[s->dimm_config[0]]);
+			mchbar_clrsetbits8(C0DCOMPx(i), 0x03, rcompdelay2[s->dimm_config[0]]);
 		}
 
-		MCHBAR16_AND(C0SLEWBASEx(i), ~0x7f7f);
+		mchbar_clrbits16(C0SLEWBASEx(i), 0x7f7f);
 
 		/* FIXME: Why not do a single dword write? */
-		MCHBAR16_AND(C0SLEWPULUTx(i),     ~0x3f3f);
-		MCHBAR16_AND(C0SLEWPULUTx(i) + 2, ~0x3f3f);
+		mchbar_clrbits16(C0SLEWPULUTx(i),     0x3f3f);
+		mchbar_clrbits16(C0SLEWPULUTx(i) + 2, 0x3f3f);
 
 		/* FIXME: Why not do a single dword write? */
-		MCHBAR16_AND(C0SLEWPDLUTx(i),     ~0x3f3f);
-		MCHBAR16_AND(C0SLEWPDLUTx(i) + 2, ~0x3f3f);
+		mchbar_clrbits16(C0SLEWPDLUTx(i),     0x3f3f);
+		mchbar_clrbits16(C0SLEWPDLUTx(i) + 2, 0x3f3f);
 	}
 
 	/* FIXME: Hardcoded */
-	MCHBAR8_AND_OR(C0ODTRECORDX,    ~0x3f, 0x36);
-	MCHBAR8_AND_OR(C0DQSODTRECORDX, ~0x3f, 0x36);
+	mchbar_clrsetbits8(C0ODTRECORDX,    0x3f, 0x36);
+	mchbar_clrsetbits8(C0DQSODTRECORDX, 0x3f, 0x36);
 
 	FOR_EACH_RCOMP_GROUP(i) {
-		MCHBAR8_AND(C0RCOMPCTRLx(i),      ~0x60);
-		MCHBAR16_AND(C0RCOMPCTRLx(i) + 2, ~0x0706);
-		MCHBAR16_AND(C0RCOMPOSVx(i),      ~0x7f7f);
-		MCHBAR16_AND(C0SCOMPOFFx(i),      ~0x3f3f);
-		MCHBAR16_AND(C0DCOMPOFFx(i),      ~0x1f1f);
-		MCHBAR8_AND(C0DCOMPOFFx(i) + 2,   ~0x1f);
+		mchbar_clrbits8(C0RCOMPCTRLx(i), 3 << 5);
+		mchbar_clrbits16(C0RCOMPCTRLx(i) + 2, 0x0706);
+		mchbar_clrbits16(C0RCOMPOSVx(i), 0x7f7f);
+		mchbar_clrbits16(C0SCOMPOFFx(i), 0x3f3f);
+		mchbar_clrbits16(C0DCOMPOFFx(i), 0x1f1f);
+		mchbar_clrbits8(C0DCOMPOFFx(i) + 2, 0x1f);
 	}
 
-	MCHBAR16_AND(C0ODTRECORDX,     ~0xffc0);
-	MCHBAR16_AND(C0ODTRECORDX + 2, ~0x000f);
+	mchbar_clrbits16(C0ODTRECORDX,     0xffc0);
+	mchbar_clrbits16(C0ODTRECORDX + 2, 0x000f);
 
 	/* FIXME: Why not do a single dword write? */
-	MCHBAR16_AND(C0DQSODTRECORDX,     ~0xffc0);
-	MCHBAR16_AND(C0DQSODTRECORDX + 2, ~0x000f);
+	mchbar_clrbits16(C0DQSODTRECORDX,     0xffc0);
+	mchbar_clrbits16(C0DQSODTRECORDX + 2, 0x000f);
 
 	FOR_EACH_RCOMP_GROUP(i) {
-		MCHBAR16(C0SCOMPOVRx(i)) = rcompf[i];
+		mchbar_write16(C0SCOMPOVRx(i), rcompf[i]);
 
 		/* FIXME: Why not do a single dword write? */
-		MCHBAR16(C0DCOMPOVRx(i))     = 0x1219;
-		MCHBAR16(C0DCOMPOVRx(i) + 2) = 0x000C;
+		mchbar_write16(C0DCOMPOVRx(i) + 0, 0x1219);
+		mchbar_write16(C0DCOMPOVRx(i) + 2, 0x000c);
 	}
 
-	MCHBAR32_AND_OR(DCMEASBUFOVR, ~0x001f1f1f, 0x000c1219);
+	mchbar_clrsetbits32(DCMEASBUFOVR, 0x001f1f1f, 0x000c1219);
 
 	/* FIXME: Why not do a single word write? */
-	MCHBAR16_AND_OR(XCOMPSDR0BNS, ~0x1f00, 0x1200);
-	MCHBAR8_AND_OR(XCOMPSDR0BNS, ~0x1f, 0x12);
+	mchbar_clrsetbits16(XCOMPSDR0BNS, 0x1f << 8, 0x12 << 8);
+	mchbar_clrsetbits8(XCOMPSDR0BNS,  0x1f << 0, 0x12 << 0);
 
-	MCHBAR32(COMPCTRL3) = 0x007C9007;
-	MCHBAR32(OFREQDELSEL) = rcomp1;
-	MCHBAR16(XCOMPCMNBNS) = 0x1f7f;
-	MCHBAR32(COMPCTRL2) = rcomp2;
-	MCHBAR16_AND_OR(XCOMPDFCTRL, ~0x0f, 1);
-	MCHBAR16(ZQCALCTRL) = 0x0134;
-	MCHBAR32(COMPCTRL1) = 0x4C293600;
+	mchbar_write32(COMPCTRL3, 0x007c9007);
+	mchbar_write32(OFREQDELSEL, rcomp1);
+	mchbar_write16(XCOMPCMNBNS, 0x1f7f);
+	mchbar_write32(COMPCTRL2, rcomp2);
+	mchbar_clrsetbits16(XCOMPDFCTRL, 0xf, 1);
+	mchbar_write16(ZQCALCTRL, 0x0134);
+	mchbar_write32(COMPCTRL1, 0x4c293600);
 
-	MCHBAR8_AND_OR(COMPCTRL1 + 3, ~0x44, (1 << 6) | (1 << 2));
-	MCHBAR16_AND(XCOMPSDR0BNS, ~(1 << 13));
-	MCHBAR8_AND(XCOMPSDR0BNS,  ~(1 <<  5));
+	mchbar_clrsetbits8(COMPCTRL1 + 3, 0x44, 1 << 6 | 1 << 2);
+	mchbar_clrbits16(XCOMPSDR0BNS, 1 << 13);
+	mchbar_clrbits8(XCOMPSDR0BNS, 1 << 5);
 
 	FOR_EACH_RCOMP_GROUP(i) {
 		/* POR values are zero */
-		MCHBAR8_AND(C0RCOMPCTRLx(i) + 2, ~0x71);
+		mchbar_clrbits8(C0RCOMPCTRLx(i) + 2, 0x71);
 	}
 
-	if ((MCHBAR32(COMPCTRL1) & (1 << 30)) == 0) {
+	if ((mchbar_read32(COMPCTRL1) & (1 << 30)) == 0) {
 		/* Start COMP */
-		MCHBAR8_OR(COMPCTRL1, 1);
+		mchbar_setbits8(COMPCTRL1, 1 << 0);
 
 		/* Wait until COMP is done */
-		while ((MCHBAR8(COMPCTRL1) & 1) != 0)
+		while ((mchbar_read8(COMPCTRL1) & 1) != 0)
 			;
 
-		reg32 = MCHBAR32(XCOMP);
+		reg32 = mchbar_read32(XCOMP);
 		rcompp = (u8) ((reg32 & ~(1 << 31)) >> 24);
 		rcompn = (u8) ((reg32 & ~(0xff800000)) >> 16);
 
 		FOR_EACH_RCOMP_GROUP(i) {
-			srup = (MCHBAR8(C0RCOMPCTRLx(i) + 1) & 0xc0) >> 6;
-			srun = (MCHBAR8(C0RCOMPCTRLx(i) + 1) & 0x30) >> 4;
+			srup = (mchbar_read8(C0RCOMPCTRLx(i) + 1) & 0xc0) >> 6;
+			srun = (mchbar_read8(C0RCOMPCTRLx(i) + 1) & 0x30) >> 4;
 
 			/* FIXME: Why not do a single word write? */
 			reg16 = (u16)(rcompp - (1 << (srup + 1))) << 8;
-			MCHBAR16_AND_OR(C0SLEWBASEx(i), ~0x7f00, reg16);
+			mchbar_clrsetbits16(C0SLEWBASEx(i), 0x7f << 8, reg16);
 
 			reg16 = (u16)(rcompn - (1 << (srun + 1)));
-			MCHBAR8_AND_OR(C0SLEWBASEx(i), ~0x7f, (u8)reg16);
+			mchbar_clrsetbits8(C0SLEWBASEx(i), 0x7f, (u8)reg16);
 		}
 
 		reg8 = rcompp - (1 << (srup + 1));
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
-			MCHBAR8_AND_OR(C0SLEWPULUTx(0) + i, ~0x3f, rcomplut[j][0]);
+			mchbar_clrsetbits8(C0SLEWPULUTx(0) + i, 0x3f, rcomplut[j][0]);
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
 			if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
-				MCHBAR8_AND_OR(C0SLEWPULUTx(2) + i, ~0x3f, rcomplut[j][10]);
+				mchbar_clrsetbits8(C0SLEWPULUTx(2) + i, 0x3f, rcomplut[j][10]);
 			}
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
-			MCHBAR8_AND_OR(C0SLEWPULUTx(3) + i, ~0x3f, rcomplut[j][6]);
-			MCHBAR8_AND_OR(C0SLEWPULUTx(4) + i, ~0x3f, rcomplut[j][6]);
+			mchbar_clrsetbits8(C0SLEWPULUTx(3) + i, 0x3f, rcomplut[j][6]);
+			mchbar_clrsetbits8(C0SLEWPULUTx(4) + i, 0x3f, rcomplut[j][6]);
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srup)) {
-			MCHBAR8_AND_OR(C0SLEWPULUTx(5) + i, ~0x3f, rcomplut[j][8]);
-			MCHBAR8_AND_OR(C0SLEWPULUTx(6) + i, ~0x3f, rcomplut[j][8]);
+			mchbar_clrsetbits8(C0SLEWPULUTx(5) + i, 0x3f, rcomplut[j][8]);
+			mchbar_clrsetbits8(C0SLEWPULUTx(6) + i, 0x3f, rcomplut[j][8]);
 		}
 
 		reg8 = rcompn - (1 << (srun + 1));
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
-			MCHBAR8_AND_OR(C0SLEWPDLUTx(0) + i, ~0x3f, rcomplut[j][1]);
+			mchbar_clrsetbits8(C0SLEWPDLUTx(0) + i, 0x3f, rcomplut[j][1]);
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
 			if (s->dimm_config[0] < 3 || s->dimm_config[0] == 5) {
-				MCHBAR8_AND_OR(C0SLEWPDLUTx(2) + i, ~0x3f, rcomplut[j][11]);
+				mchbar_clrsetbits8(C0SLEWPDLUTx(2) + i, 0x3f, rcomplut[j][11]);
 			}
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
-			MCHBAR8_AND_OR(C0SLEWPDLUTx(3) + i, ~0x3f, rcomplut[j][7]);
-			MCHBAR8_AND_OR(C0SLEWPDLUTx(4) + i, ~0x3f, rcomplut[j][7]);
+			mchbar_clrsetbits8(C0SLEWPDLUTx(3) + i, 0x3f, rcomplut[j][7]);
+			mchbar_clrsetbits8(C0SLEWPDLUTx(4) + i, 0x3f, rcomplut[j][7]);
 		}
 
 		for (i = 0, j = reg8; i < 4; i++, j += (1 << srun)) {
-			MCHBAR8_AND_OR(C0SLEWPDLUTx(5) + i, ~0x3f, rcomplut[j][9]);
-			MCHBAR8_AND_OR(C0SLEWPDLUTx(6) + i, ~0x3f, rcomplut[j][9]);
+			mchbar_clrsetbits8(C0SLEWPDLUTx(5) + i, 0x3f, rcomplut[j][9]);
+			mchbar_clrsetbits8(C0SLEWPDLUTx(6) + i, 0x3f, rcomplut[j][9]);
 		}
 	}
-	MCHBAR8_OR(COMPCTRL1, 1);
+	mchbar_setbits8(COMPCTRL1, 1 << 0);
 }
 
 /* FIXME: The ODT tables are for DDR2 only! */
@@ -1523,10 +1523,10 @@ static void sdram_odt(struct sysinfo *s)
 	}
 
 	/* Program the ODT Matrix */
-	MCHBAR16(C0ODT) = odt_matrix[rankindex];
+	mchbar_write16(C0ODT, odt_matrix[rankindex]);
 
 	/* Program the ODT Rank Control */
-	MCHBAR16(C0ODTRKCTRL) = odt_rankctrl[rankindex];
+	mchbar_write16(C0ODTRKCTRL, odt_rankctrl[rankindex]);
 }
 
 static void sdram_mmap(struct sysinfo *s)
@@ -1546,27 +1546,27 @@ static void sdram_mmap(struct sysinfo *s)
 	if ((s->dimm_config[0] < 3) && rank_is_populated(s->dimms, 0, 0)) {
 		if (s->dimms[0].sides > 1) {
 			// 2R/NC
-			MCHBAR32_AND_OR(C0CKECTRL, ~1, 0x300001);
-			MCHBAR32(C0DRA01) = 0x00000101;
-			MCHBAR32(C0DRB0)  = 0x00040002;
-			MCHBAR32(C0DRB2)  = w204[s->dimm_config[0]];
+			mchbar_clrsetbits32(C0CKECTRL, 1, 0x300001);
+			mchbar_write32(C0DRA01, 0x00000101);
+			mchbar_write32(C0DRB0, 0x00040002);
+			mchbar_write32(C0DRB2, w204[s->dimm_config[0]]);
 		} else {
 			// 1R/NC
-			MCHBAR32_AND_OR(C0CKECTRL, ~1, 0x100001);
-			MCHBAR32(C0DRA01) = 0x00000001;
-			MCHBAR32(C0DRB0)  = 0x00020002;
-			MCHBAR32(C0DRB2)  = w204[s->dimm_config[0]];
+			mchbar_clrsetbits32(C0CKECTRL, 1, 0x100001);
+			mchbar_write32(C0DRA01, 0x00000001);
+			mchbar_write32(C0DRB0, 0x00020002);
+			mchbar_write32(C0DRB2, w204[s->dimm_config[0]]);
 		}
 	} else if ((s->dimm_config[0] == 5) && rank_is_populated(s->dimms, 0, 0)) {
-		MCHBAR32_AND_OR(C0CKECTRL, ~1, 0x300001);
-		MCHBAR32(C0DRA01) = 0x00000101;
-		MCHBAR32(C0DRB0)  = 0x00040002;
-		MCHBAR32(C0DRB2)  = 0x00040004;
+		mchbar_clrsetbits32(C0CKECTRL, 1, 0x300001);
+		mchbar_write32(C0DRA01, 0x00000101);
+		mchbar_write32(C0DRB0, 0x00040002);
+		mchbar_write32(C0DRB2, 0x00040004);
 	} else {
-		MCHBAR32_AND_OR(C0CKECTRL, ~1, w260[s->dimm_config[0]]);
-		MCHBAR32(C0DRA01) = w208[s->dimm_config[0]];
-		MCHBAR32(C0DRB0)  = w200[s->dimm_config[0]];
-		MCHBAR32(C0DRB2)  = w204[s->dimm_config[0]];
+		mchbar_clrsetbits32(C0CKECTRL, 1, w260[s->dimm_config[0]]);
+		mchbar_write32(C0DRA01, w208[s->dimm_config[0]]);
+		mchbar_write32(C0DRB0, w200[s->dimm_config[0]]);
+		mchbar_write32(C0DRB2, w204[s->dimm_config[0]]);
 	}
 	pci_write_config16(HOST_BRIDGE, 0xb0,  tolud[s->dimm_config[0]]);
 	pci_write_config16(HOST_BRIDGE, 0xa0,    tom[s->dimm_config[0]]);
@@ -1581,7 +1581,7 @@ static u8 sdram_checkrcompoverride(void)
 	u32 xcomp;
 	u8 aa, bb, a, b, c, d;
 
-	xcomp = MCHBAR32(XCOMP);
+	xcomp = mchbar_read32(XCOMP);
 	a = (u8)((xcomp & 0x7f000000) >> 24);
 	b = (u8)((xcomp & 0x007f0000) >> 16);
 	c = (u8)((xcomp & 0x00003f00) >>  8);
@@ -1599,7 +1599,7 @@ static u8 sdram_checkrcompoverride(void)
 	}
 	if ((aa > 18) || (bb > 7) || (a <= 5) || (b <= 5) || (c <= 5) || (d <= 5) ||
 			(a >= 0x7a) || (b >= 0x7a) || (c >= 0x3a) || (d >= 0x3a)) {
-		MCHBAR32(RCMEASBUFXOVR) = 0x9718a729;
+		mchbar_write32(RCMEASBUFXOVR, 0x9718a729);
 		return 1;
 	}
 	return 0;
@@ -1611,25 +1611,25 @@ static void sdram_rcompupdate(struct sysinfo *s)
 	u32 reg32a, reg32b;
 
 	ok = 0;
-	MCHBAR8_AND(XCOMPDFCTRL, ~(1 << 3));
-	MCHBAR8_AND(COMPCTRL1, ~(1 << 7));
+	mchbar_clrbits8(XCOMPDFCTRL, 1 << 3);
+	mchbar_clrbits8(COMPCTRL1, 1 << 7);
 	for (i = 0; i < 3; i++) {
-		MCHBAR8_OR(COMPCTRL1, 1);
+		mchbar_setbits8(COMPCTRL1, 1 << 0);
 		hpet_udelay(1000);
-		while ((MCHBAR8(COMPCTRL1) & 1) != 0)
+		while ((mchbar_read8(COMPCTRL1) & 1) != 0)
 			;
 		ok |= sdram_checkrcompoverride();
 	}
 	if (!ok) {
-		reg32a = MCHBAR32(XCOMP);
+		reg32a = mchbar_read32(XCOMP);
 		reg32b = ((reg32a >> 16) & 0x0000ffff);
 		reg32a = ((reg32a << 16) & 0xffff0000) | reg32b;
 		reg32a |= (1 << 31) | (1 << 15);
-		MCHBAR32(RCMEASBUFXOVR) = reg32a;
+		mchbar_write32(RCMEASBUFXOVR, reg32a);
 	}
-	MCHBAR8_OR(COMPCTRL1, 1);
+	mchbar_setbits8(COMPCTRL1, 1 << 0);
 	hpet_udelay(1000);
-	while ((MCHBAR8(COMPCTRL1) & 1) != 0)
+	while ((mchbar_read8(COMPCTRL1) & 1) != 0)
 		;
 }
 
@@ -1640,7 +1640,7 @@ sdram_jedec(struct sysinfo *s, u8 rank, u8 jmode, u16 jval)
 
 	reg32 = jval << 3;
 	reg32 |= rank * (1 << 27);
-	MCHBAR8_AND_OR(C0JEDEC, ~0x3e, jmode);
+	mchbar_clrsetbits8(C0JEDEC, 0x3e, jmode);
 	read32((void *)reg32);
 	barrier();
 	hpet_udelay(1); // 1us
@@ -1649,10 +1649,10 @@ sdram_jedec(struct sysinfo *s, u8 rank, u8 jmode, u16 jval)
 static void sdram_zqcl(struct sysinfo *s)
 {
 	if (s->boot_path == BOOT_PATH_RESUME) {
-		MCHBAR32_OR(C0CKECTRL, 1 << 27);
-		MCHBAR8_AND_OR(C0JEDEC, ~0x0e, NORMAL_OP_CMD);
-		MCHBAR8_AND(C0JEDEC, ~0x30);
-		MCHBAR32_AND_OR(C0REFRCTRL2, ~(3 << 30), 3 << 30);
+		mchbar_setbits32(C0CKECTRL, 1 << 27);
+		mchbar_clrsetbits8(C0JEDEC, 0x0e, NORMAL_OP_CMD);
+		mchbar_clrbits8(C0JEDEC, 3 << 4);
+		mchbar_clrsetbits32(C0REFRCTRL2, 3 << 30, 3 << 30);
 	}
 }
 
@@ -1718,12 +1718,12 @@ static void sdram_misc(struct sysinfo *s)
 	reg32 = 0;
 	reg32 |= (4 << 13);
 	reg32 |= (6 <<  8);
-	MCHBAR32_AND_OR(C0DYNRDCTRL, ~0x3ff00, reg32);
-	MCHBAR8_AND(C0DYNRDCTRL, ~(1 << 7));
-	MCHBAR8_OR(C0REFRCTRL + 3, 1);
+	mchbar_clrsetbits32(C0DYNRDCTRL, 0x3ff << 8, reg32);
+	mchbar_clrbits8(C0DYNRDCTRL, 1 << 7);
+	mchbar_setbits8(C0REFRCTRL + 3, 1 << 0);
 	if (s->boot_path != BOOT_PATH_RESUME) {
-		MCHBAR8_AND_OR(C0JEDEC, ~0x0e, NORMAL_OP_CMD);
-		MCHBAR8_AND(C0JEDEC, ~0x30);
+		mchbar_clrsetbits8(C0JEDEC, 0x0e, NORMAL_OP_CMD);
+		mchbar_clrbits8(C0JEDEC, 3 << 4);
 	} else {
 		sdram_zqcl(s);
 	}
@@ -1811,7 +1811,7 @@ static void sdram_dradrb(struct sysinfo *s)
 		}
 		reg32 |= (dra << (r * 8));
 	}
-	MCHBAR32(C0DRA01) = reg32;
+	mchbar_write32(C0DRA01, reg32);
 	c0dra = reg32;
 	PRINTK_DEBUG("C0DRA = 0x%08x\n", c0dra);
 
@@ -1820,10 +1820,10 @@ static void sdram_dradrb(struct sysinfo *s)
 		reg32 |= (1 << r);
 	}
 	reg8 = (u8)(reg32 << 4) & 0xf0;
-	MCHBAR8_AND_OR(C0CKECTRL + 2, ~0xf0, reg8);
+	mchbar_clrsetbits8(C0CKECTRL + 2, 0xf0, reg8);
 
 	if (ONLY_DIMMA_IS_POPULATED(s->dimms, 0) || ONLY_DIMMB_IS_POPULATED(s->dimms, 0)) {
-		MCHBAR8_OR(C0CKECTRL, 1);
+		mchbar_setbits8(C0CKECTRL, 1 << 0);
 	}
 
 	addr = C0DRB0;
@@ -1834,7 +1834,7 @@ static void sdram_dradrb(struct sysinfo *s)
 			c0drb = (u16)(c0drb + dradrb[ind][5]);
 			s->channel_capacity[0] += dradrb[ind][5] << 6;
 		}
-		MCHBAR16(addr) = c0drb;
+		mchbar_write16(addr, c0drb);
 		addr += 2;
 	}
 	printk(BIOS_DEBUG, "Total memory = %dMB\n", s->channel_capacity[0]);
@@ -1844,16 +1844,16 @@ static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 {
 	u8 dqsmatches = 1;
 	while (count--) {
-		MCHBAR8_AND(C0RSTCTL, ~2);
+		mchbar_clrbits8(C0RSTCTL, 1 << 1);
 		hpet_udelay(1);
-		MCHBAR8_OR(C0RSTCTL, 2);
+		mchbar_setbits8(C0RSTCTL, 1 << 1);
 		hpet_udelay(1);
 		barrier();
 		read32((void *)strobeaddr);
 		barrier();
 		hpet_udelay(1);
 
-		if (((MCHBAR8(dqshighaddr) & 0x40) >> 6) != highlow) {
+		if (((mchbar_read8(dqshighaddr) & (1 << 6)) >> 6) != highlow) {
 			dqsmatches = 0;
 		}
 	}
@@ -1869,7 +1869,7 @@ static void rcvenclock(u8 *coarse, u8 *medium, u8 lane)
 	} else {
 		*medium = 0;
 		(*coarse)++;
-		MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, *coarse << 16);
+		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, *coarse << 16);
 		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)(~3 << (lane * 2)), *medium << (lane * 2));
 	}
 }
@@ -1889,8 +1889,8 @@ static void sdram_rcven(struct sysinfo *s)
 	u32 strobeaddr = 0;
 	u32 dqshighaddr;
 
-	MCHBAR8_AND(C0RSTCTL, ~0x0c);
-	MCHBAR8_AND(CMNDQFIFORST, ~0x80);
+	mchbar_clrbits8(C0RSTCTL, 3 << 2);
+	mchbar_clrbits8(CMNDQFIFORST, 1 << 7);
 
 	PRINTK_DEBUG("rcven 0\n");
 	for (lane = 0; lane < maxlane; lane++) {
@@ -1902,10 +1902,10 @@ static void sdram_rcven(struct sysinfo *s)
 		pi = 0;
 		medium = 0;
 
-		MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, coarse << 16);
+		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
 		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)~(3 << (lane * 2)), medium << (lane * 2));
 
-		MCHBAR8_AND(C0RXRCVyDLL(lane), ~0x3f);
+		mchbar_clrbits8(C0RXRCVyDLL(lane), 0x3f);
 
 		savecoarse = coarse;
 		savemedium = medium;
@@ -1945,7 +1945,7 @@ static void sdram_rcven(struct sysinfo *s)
 		PRINTK_DEBUG("rcven 0.3\n");
 		coarse = savecoarse;
 		medium = savemedium;
-		MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, coarse << 16);
+		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
 		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)~(0x3 << lane * 2), medium << (lane * 2));
 
 		while (sampledqs(dqshighaddr, strobeaddr, 1, 3) == 0) {
@@ -1957,12 +1957,12 @@ static void sdram_rcven(struct sysinfo *s)
 					break;
 				// }
 			}
-			MCHBAR8_AND_OR(C0RXRCVyDLL(lane), ~0x3f, pi << s->pioffset);
+			mchbar_clrsetbits8(C0RXRCVyDLL(lane), 0x3f, pi << s->pioffset);
 		}
 		PRINTK_DEBUG("rcven 0.4\n");
 
 		pi = savepi;
-		MCHBAR8_AND_OR(C0RXRCVyDLL(lane), ~0x3f, pi << s->pioffset);
+		mchbar_clrsetbits8(C0RXRCVyDLL(lane), 0x3f, pi << s->pioffset);
 		rcvenclock(&coarse, &medium, lane);
 
 		if (sampledqs(dqshighaddr, strobeaddr, 1, 1) == 0) {
@@ -1972,7 +1972,7 @@ static void sdram_rcven(struct sysinfo *s)
 		PRINTK_DEBUG("rcven 0.5\n");
 		while (sampledqs(dqshighaddr, strobeaddr, 0, 3) == 0) {
 			coarse--;
-			MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, coarse << 16);
+			mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
 			if (coarse == 0) {
 				PRINTK_DEBUG("Error: DQS did not hit 0\n");
 				break;
@@ -2002,22 +2002,22 @@ static void sdram_rcven(struct sysinfo *s)
 		MCHBAR16_AND_OR(C0COARSEDLY0, (u16)(~(3 << (lane * 2))), offset << (lane * 2));
 	} while (lane != 0);
 
-	MCHBAR32_AND_OR(C0STATRDCTRL, ~0x000f0000, minlanecoarse << 16);
+	mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, minlanecoarse << 16);
 
 	s->coarsectrl   = minlanecoarse;
-	s->coarsedelay  = MCHBAR16(C0COARSEDLY0);
-	s->mediumphase  = MCHBAR16(C0RCVMISCCTL2);
-	s->readptrdelay = MCHBAR16(C0RCVMISCCTL1);
+	s->coarsedelay  = mchbar_read16(C0COARSEDLY0);
+	s->mediumphase  = mchbar_read16(C0RCVMISCCTL2);
+	s->readptrdelay = mchbar_read16(C0RCVMISCCTL1);
 
 	PRINTK_DEBUG("rcven 2\n");
-	MCHBAR8_AND(C0RSTCTL, ~0x0e);
-	MCHBAR8_OR(C0RSTCTL,   0x02);
-	MCHBAR8_OR(C0RSTCTL,   0x04);
-	MCHBAR8_OR(C0RSTCTL,   0x08);
+	mchbar_clrbits8(C0RSTCTL, 7 << 1);
+	mchbar_setbits8(C0RSTCTL, 1 << 1);
+	mchbar_setbits8(C0RSTCTL, 1 << 2);
+	mchbar_setbits8(C0RSTCTL, 1 << 3);
 
-	MCHBAR8_OR(CMNDQFIFORST,   0x80);
-	MCHBAR8_AND(CMNDQFIFORST, ~0x80);
-	MCHBAR8_OR(CMNDQFIFORST,   0x80);
+	mchbar_setbits8(CMNDQFIFORST, 1 << 7);
+	mchbar_clrbits8(CMNDQFIFORST, 1 << 7);
+	mchbar_setbits8(CMNDQFIFORST, 1 << 7);
 	PRINTK_DEBUG("rcven 3\n");
 }
 
@@ -2097,30 +2097,30 @@ static void sdram_enhancedmode(struct sysinfo *s)
 {
 	u8 reg8, ch, r, fsb_freq, ddr_freq;
 	u32 mask32, reg32;
-	MCHBAR8_OR(C0ADDCSCTRL, 1);
-	MCHBAR8_OR(C0REFRCTRL + 3, 1);
+	mchbar_setbits8(C0ADDCSCTRL, 1 << 0);
+	mchbar_setbits8(C0REFRCTRL + 3, 1 << 0);
 	mask32 = (0x1f << 15) | (0x1f << 10) | (0x1f << 5) | 0x1f;
 	reg32  = (0x1e << 15) | (0x10 << 10) | (0x1e << 5) | 0x10;
-	MCHBAR32_AND_OR(WRWMCONFIG, ~mask32, reg32);
-	MCHBAR8(C0DITCTRL + 1)  = 2;
-	MCHBAR16(C0DITCTRL + 2) = 0x0804;
-	MCHBAR16(C0DITCTRL + 4) = 0x2010;
-	MCHBAR8(C0DITCTRL + 6)  = 0x40;
-	MCHBAR16(C0DITCTRL + 8) = 0x091c;
-	MCHBAR8(C0DITCTRL + 10) = 0xf2;
-	MCHBAR8_OR(C0BYPCTRL, 1);
-	MCHBAR8_OR(C0CWBCTRL, 1);
-	MCHBAR16_OR(C0ARBSPL, 0x0100);
+	mchbar_clrsetbits32(WRWMCONFIG, mask32, reg32);
+	mchbar_write8(C0DITCTRL + 1, 2);
+	mchbar_write16(C0DITCTRL + 2, 0x0804);
+	mchbar_write16(C0DITCTRL + 4, 0x2010);
+	mchbar_write8(C0DITCTRL + 6,  0x40);
+	mchbar_write16(C0DITCTRL + 8, 0x091c);
+	mchbar_write8(C0DITCTRL + 10, 0xf2);
+	mchbar_setbits8(C0BYPCTRL, 1 << 0);
+	mchbar_setbits8(C0CWBCTRL, 1 << 0);
+	mchbar_setbits16(C0ARBSPL, 1 << 8);
 
 	pci_or_config8(HOST_BRIDGE, 0xf0, 1);
-	MCHBAR32(SBCTL)  = 0x00000002;
-	MCHBAR32(SBCTL2) = 0x20310002;
-	MCHBAR32(SLIMCFGTMG) = 0x02020302;
-	MCHBAR32(HIT0) = 0x001f1806;
-	MCHBAR32(HIT1) = 0x01102800;
-	MCHBAR32(HIT2) = 0x07000000;
-	MCHBAR32(HIT3) = 0x01014010;
-	MCHBAR32(HIT4) = 0x0f038000;
+	mchbar_write32(SBCTL, 0x00000002);
+	mchbar_write32(SBCTL2, 0x20310002);
+	mchbar_write32(SLIMCFGTMG, 0x02020302);
+	mchbar_write32(HIT0, 0x001f1806);
+	mchbar_write32(HIT1, 0x01102800);
+	mchbar_write32(HIT2, 0x07000000);
+	mchbar_write32(HIT3, 0x01014010);
+	mchbar_write32(HIT4, 0x0f038000);
 	pci_and_config8(HOST_BRIDGE, 0xf0, ~1);
 
 	u32 nranks, curranksize, maxranksize, dra;
@@ -2134,7 +2134,7 @@ static void sdram_enhancedmode(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 		nranks++;
-		dra = (u8) ((MCHBAR32(C0DRA01) >> (8 * r)) & 0x7f);
+		dra = (u8) ((mchbar_read32(C0DRA01) >> (8 * r)) & 0x7f);
 		curranksize = drbtab[dra];
 		if (maxranksize == 0) {
 			maxranksize = curranksize;
@@ -2168,14 +2168,14 @@ static void sdram_enhancedmode(struct sysinfo *s)
 		die("Invalid number of ranks found, halt\n");
 		break;
 	}
-	MCHBAR8_AND_OR(CHDECMISC, ~0xfc, reg8 & 0xfc);
-	MCHBAR32_AND(NOACFGBUSCTL, ~0x80000000);
+	mchbar_clrsetbits8(CHDECMISC, 0xfc, reg8 & 0xfc);
+	mchbar_clrbits32(NOACFGBUSCTL, 1 << 31);
 
-	MCHBAR32(HTBONUS0) = 0x0000000f;
-	MCHBAR8_OR(C0COREBONUS + 4, 1);
+	mchbar_write32(HTBONUS0, 0xf);
+	mchbar_setbits8(C0COREBONUS + 4, 1 << 0);
 
-	MCHBAR32_AND(HIT3, ~0x0e000000);
-	MCHBAR32_AND_OR(HIT4, ~0x000c0000, 0x00040000);
+	mchbar_clrbits32(HIT3, 7 << 25);
+	mchbar_clrsetbits32(HIT4, 3 << 18, 1 << 18);
 
 	u32 clkcx[2][2][3] = {
 	{
@@ -2191,24 +2191,24 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	fsb_freq = s->selected_timings.fsb_clock;
 	ddr_freq = s->selected_timings.mem_clock;
 
-	MCHBAR32(CLKXSSH2X2MD)      = clkcx[fsb_freq][ddr_freq][0];
-	MCHBAR32(CLKXSSH2X2MD + 4)  = clkcx[fsb_freq][ddr_freq][1];
-	MCHBAR32(CLKXSSH2MCBYP + 4) = clkcx[fsb_freq][ddr_freq][2];
+	mchbar_write32(CLKXSSH2X2MD + 0,  clkcx[fsb_freq][ddr_freq][0]);
+	mchbar_write32(CLKXSSH2X2MD + 4,  clkcx[fsb_freq][ddr_freq][1]);
+	mchbar_write32(CLKXSSH2MCBYP + 4, clkcx[fsb_freq][ddr_freq][2]);
 
-	MCHBAR8_AND(HIT4, ~0x02);
+	mchbar_clrbits8(HIT4, 1 << 1);
 }
 
 static void sdram_periodic_rcomp(void)
 {
-	MCHBAR8_AND(COMPCTRL1, ~0x02);
-	while ((MCHBAR32(COMPCTRL1) & 0x80000000) > 0) {
+	mchbar_clrbits8(COMPCTRL1, 1 << 1);
+	while ((mchbar_read32(COMPCTRL1) & (1 << 31)) > 0) {
 		;
 	}
-	MCHBAR16_AND(CSHRMISCCTL, ~0x3000);
-	MCHBAR8_OR(CMNDQFIFORST, 0x80);
-	MCHBAR16_AND_OR(XCOMPDFCTRL, ~0x0f, 0x09);
+	mchbar_clrbits16(CSHRMISCCTL, 3 << 12);
+	mchbar_setbits8(CMNDQFIFORST, 1 << 7);
+	mchbar_clrsetbits16(XCOMPDFCTRL, 0x0f, 0x09);
 
-	MCHBAR8_OR(COMPCTRL1, 0x82);
+	mchbar_setbits8(COMPCTRL1, 1 << 7 | 1 << 1);
 }
 
 static void sdram_new_trd(struct sysinfo *s)
@@ -2263,14 +2263,14 @@ static void sdram_new_trd(struct sysinfo *s)
 		maxrcvendelay = MAX(maxrcvendelay, rcvendelay);
 	}
 
-	if ((MCHBAR8(HMBYPCP + 3) == 0xff) && (MCHBAR8(HMCCMC) & 0x80)) {
+	if ((mchbar_read8(HMBYPCP + 3) == 0xff) && (mchbar_read8(HMCCMC) & (1 << 7))) {
 		bypass = 1;
 	} else {
 		bypass = 0;
 	}
 
 	txfifo = 0;
-	reg8 = (MCHBAR8(CSHRFIFOCTL) & 0x0e) >> 1;
+	reg8 = (mchbar_read8(CSHRFIFOCTL) & 0x0e) >> 1;
 	txfifo = txfifo_lut[reg8] & 0x07;
 
 	datadelay = tmclk * (2*txfifo + 4*s->coarsectrl + 4*(bypass-1) + 13) / 4
@@ -2296,7 +2296,7 @@ static void sdram_new_trd(struct sysinfo *s)
 		}
 	}
 
-	MCHBAR16_AND_OR(C0STATRDCTRL, ~0x1f00, trd << 8);
+	mchbar_clrsetbits16(C0STATRDCTRL, 0x1f << 8, trd << 8);
 }
 
 static void sdram_powersettings(struct sysinfo *s)
@@ -2305,48 +2305,48 @@ static void sdram_powersettings(struct sysinfo *s)
 	u32 reg32;
 
 	/* Thermal sensor */
-	MCHBAR8(TSC1) = 0x9b;
-	MCHBAR32_AND_OR(TSTTP, ~0x00ffffff, 0x1d00);
-	MCHBAR8(THERM1) = 0x08;
-	MCHBAR8(TSC3) = 0x00;
-	MCHBAR8_AND_OR(TSC2, ~0x0f, 0x04);
-	MCHBAR8_AND_OR(THERM1, ~1, 1);
-	MCHBAR8_AND_OR(TCO, ~0x80, 0x80);
+	mchbar_write8(TSC1, 0x9b);
+	mchbar_clrsetbits32(TSTTP, 0x00ffffff, 0x1d00);
+	mchbar_write8(THERM1, 0x08);
+	mchbar_write8(TSC3, 0);
+	mchbar_clrsetbits8(TSC2, 0x0f, 0x04);
+	mchbar_clrsetbits8(THERM1, 1, 1);
+	mchbar_clrsetbits8(TCO, 1 << 7, 1 << 7);
 
 	/* Clock gating */
-	MCHBAR32_AND(PMMISC, ~0x00040001);
-	MCHBAR8_AND(SBCTL3   + 3, ~0x80);
-	MCHBAR8_AND(CISDCTRL + 3, ~0x80);
-	MCHBAR16_AND(CICGDIS, ~0x1fff);
-	MCHBAR32_AND(SBCLKGATECTRL, ~0x0001ffff);
-	MCHBAR16_AND_OR(HICLKGTCTL, ~0x03ff, 0x06);
-	MCHBAR32_AND_OR(HTCLKGTCTL, ~0xffffffff, 0x20);
-	MCHBAR8_AND(TSMISC, ~1);
-	MCHBAR8(C0WRDPYN) = s->selected_timings.CAS - 1 + 0x15;
-	MCHBAR16_AND_OR(CLOCKGATINGI,  ~0x07fc, 0x0040);
-	MCHBAR16_AND_OR(CLOCKGATINGII, ~0x0fff, 0x0d00);
-	MCHBAR16_AND(CLOCKGATINGIII,   ~0x0d80);
-	MCHBAR16(GTDPCGC + 2) = 0xffff;
+	mchbar_clrbits32(PMMISC, 1 << 18 | 1 << 0);
+	mchbar_clrbits8(SBCTL3 + 3, 1 << 7);
+	mchbar_clrbits8(CISDCTRL + 3, 1 << 7);
+	mchbar_clrbits16(CICGDIS, 0x1fff);
+	mchbar_clrbits32(SBCLKGATECTRL, 0x1ffff);
+	mchbar_clrsetbits16(HICLKGTCTL, 0x03ff, 0x06);
+	mchbar_clrsetbits32(HTCLKGTCTL, ~0, 0x20);
+	mchbar_clrbits8(TSMISC, 1 << 0);
+	mchbar_write8(C0WRDPYN, s->selected_timings.CAS - 1 + 0x15);
+	mchbar_clrsetbits16(CLOCKGATINGI, 0x07fc, 0x0040);
+	mchbar_clrsetbits16(CLOCKGATINGII, 0x0fff, 0x0d00);
+	mchbar_clrbits16(CLOCKGATINGIII, 0x0d80);
+	mchbar_write16(GTDPCGC + 2, 0xffff);
 
 	/* Sequencing */
-	MCHBAR32(HPWRCTL1) = (MCHBAR32(HPWRCTL1) & ~0x1fffffff) | 0x1f643fff;
-	MCHBAR32(HPWRCTL2) = (MCHBAR32(HPWRCTL2) & ~0xffffff7f) | 0x02010000;
-	MCHBAR16(HPWRCTL3) = (MCHBAR16(HPWRCTL3) & ~0x7000) | (3 << 12);
+	mchbar_clrsetbits32(HPWRCTL1, 0x1fffffff, 0x1f643fff);
+	mchbar_clrsetbits32(HPWRCTL2, 0xffffff7f, 0x02010000);
+	mchbar_clrsetbits16(HPWRCTL3, 7 << 12, 3 << 12);
 
 	/* Power */
-	MCHBAR32(GFXC3C4)  = (MCHBAR32(GFXC3C4)  & ~0xffff0003) | 0x10100000;
-	MCHBAR32(PMDSLFRC) = (MCHBAR32(PMDSLFRC) & ~0x0001bff7) | 0x00000078;
+	mchbar_clrsetbits32(GFXC3C4, 0xffff0003, 0x10100000);
+	mchbar_clrsetbits32(PMDSLFRC, 0x0001bff7, 0x00000078);
 
 	if (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz)
-		MCHBAR16_AND_OR(PMMSPMRES, ~0x03ff, 0x00c8);
+		mchbar_clrsetbits16(PMMSPMRES, 0x03ff, 0x00c8);
 	else
-		MCHBAR16_AND_OR(PMMSPMRES, ~0x03ff, 0x0100);
+		mchbar_clrsetbits16(PMMSPMRES, 0x03ff, 0x0100);
 
 	j = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 0 : 1;
 
-	MCHBAR32_AND_OR(PMCLKRC, ~0x01fff37f, 0x10810700);
-	MCHBAR8_AND_OR(PMPXPRC,  ~0x07, 1);
-	MCHBAR8_AND(PMBAK, ~0x02);
+	mchbar_clrsetbits32(PMCLKRC, 0x01fff37f, 0x10810700);
+	mchbar_clrsetbits8(PMPXPRC,  7, 1);
+	mchbar_clrbits8(PMBAK, 1 << 1);
 
 	static const u16 ddr2lut[2][4][2] = {
 	{
@@ -2363,84 +2363,85 @@ static void sdram_powersettings(struct sysinfo *s)
 	},
 	};
 
-	MCHBAR16(C0C2REG)  = 0x7a89;
-	MCHBAR8(SHC2REGII) = 0xaa;
-	MCHBAR16(SHC2REGII + 1) = ddr2lut[j][s->selected_timings.CAS - 3][1];
-	MCHBAR16_AND_OR(SHC2REGI, ~0x7fff, ddr2lut[j][s->selected_timings.CAS - 3][0]);
-	MCHBAR16_AND_OR(CLOCKGATINGIII, ~0xf000, 0xf000);
-	MCHBAR8(CSHWRIOBONUSX) = (MCHBAR8(CSHWRIOBONUSX) & ~0x77) | (4 << 4 | 4);
+	mchbar_write16(C0C2REG, 0x7a89);
+	mchbar_write8(SHC2REGII, 0xaa);
+	mchbar_write16(SHC2REGII + 1, ddr2lut[j][s->selected_timings.CAS - 3][1]);
+	mchbar_clrsetbits16(SHC2REGI, 0x7fff, ddr2lut[j][s->selected_timings.CAS - 3][0]);
+	mchbar_clrsetbits16(CLOCKGATINGIII, 0xf000, 0xf000);
+	mchbar_clrsetbits8(CSHWRIOBONUSX, 0x77, 4 << 4 | 4);
 
 	reg32 = s->nodll ? 0x30000000 : 0;
 
 	/* FIXME: Compacting this results in changes to the binary */
-	MCHBAR32(C0COREBONUS)  = (MCHBAR32(C0COREBONUS)  & ~0x0f000000) | 0x20000000 | reg32;
+	mchbar_write32(C0COREBONUS,
+		(mchbar_read32(C0COREBONUS) & ~(0xf << 24)) | 1 << 29 | reg32);
 
-	MCHBAR32_AND_OR(CLOCKGATINGI, ~0x00f00000, 0x00f00000);
-	MCHBAR32_AND_OR(CLOCKGATINGII - 1, ~0x001ff000, 0xbf << 20);
-	MCHBAR16_AND_OR(SHC3C4REG2, ~0x1f7f, (0x0b << 8) | (7 << 4) | 0x0b);
-	MCHBAR16(SHC3C4REG3) = 0x3264;
-	MCHBAR16_AND_OR(SHC3C4REG4, ~0x3f3f, (0x14 << 8) | 0x0a);
+	mchbar_clrsetbits32(CLOCKGATINGI, 0xf << 20, 0xf << 20);
+	mchbar_clrsetbits32(CLOCKGATINGII - 1, 0x001ff000, 0xbf << 20);
+	mchbar_clrsetbits16(SHC3C4REG2, 0x1f7f, 0x0b << 8 | 7 << 4 | 0x0b);
+	mchbar_write16(SHC3C4REG3, 0x3264);
+	mchbar_clrsetbits16(SHC3C4REG4, 0x3f3f, 0x14 << 8 | 0x0a);
 
-	MCHBAR32_OR(C1COREBONUS, 0x80002000);
+	mchbar_setbits32(C1COREBONUS, 1 << 31 | 1 << 13);
 }
 
 static void sdram_programddr(void)
 {
-	MCHBAR16_AND_OR(CLOCKGATINGII,  ~0x03ff, 0x0100);
-	MCHBAR16_AND_OR(CLOCKGATINGIII, ~0x003f, 0x0010);
-	MCHBAR16_AND_OR(CLOCKGATINGI,   ~0x7000, 0x2000);
+	mchbar_clrsetbits16(CLOCKGATINGII, 0x03ff, 0x0100);
+	mchbar_clrsetbits16(CLOCKGATINGIII, 0x003f, 0x0010);
+	mchbar_clrsetbits16(CLOCKGATINGI, 0x7000, 0x2000);
 
-	MCHBAR8_AND(CSHRPDCTL,     ~0x0e);
-	MCHBAR8_AND(CSHRWRIOMLNS,  ~0x0c);
-	MCHBAR8_AND(C0MISCCTLy(0), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(1), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(2), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(3), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(4), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(5), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(6), ~0x0e);
-	MCHBAR8_AND(C0MISCCTLy(7), ~0x0e);
-	MCHBAR8_AND(CSHRWRIOMLNS,  ~0x02);
+	mchbar_clrbits8(CSHRPDCTL, 7 << 1);
+	mchbar_clrbits8(CSHRWRIOMLNS,  3 << 2);
+	mchbar_clrbits8(C0MISCCTLy(0), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(1), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(2), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(3), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(4), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(5), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(6), 7 << 1);
+	mchbar_clrbits8(C0MISCCTLy(7), 7 << 1);
+	mchbar_clrbits8(CSHRWRIOMLNS, 1 << 1);
 
-	MCHBAR16_AND(CSHRMISCCTL, ~0x0400);
-	MCHBAR16_AND(CLOCKGATINGIII, ~0x0dc0);
-	MCHBAR8_AND(C0WRDPYN, ~0x80);
-	MCHBAR32_AND(C0COREBONUS, ~(1 << 22));
-	MCHBAR16_AND(CLOCKGATINGI,  ~0x80fc);
-	MCHBAR16_AND(CLOCKGATINGII, ~0x0c00);
+	mchbar_clrbits16(CSHRMISCCTL, 1 << 10);
+	mchbar_clrbits16(CLOCKGATINGIII, 0x0dc0);
+	mchbar_clrbits8(C0WRDPYN, 1 << 7);
+	mchbar_clrbits32(C0COREBONUS, 1 << 22);
+	mchbar_clrbits16(CLOCKGATINGI, 0x80fc);
+	mchbar_clrbits16(CLOCKGATINGII, 0x0c00);
 
-	MCHBAR8_AND(CSHRPDCTL,     ~0x0d);
-	MCHBAR8_AND(C0MISCCTLy(0), ~1);
-	MCHBAR8_AND(C0MISCCTLy(1), ~1);
-	MCHBAR8_AND(C0MISCCTLy(2), ~1);
-	MCHBAR8_AND(C0MISCCTLy(3), ~1);
-	MCHBAR8_AND(C0MISCCTLy(4), ~1);
-	MCHBAR8_AND(C0MISCCTLy(5), ~1);
-	MCHBAR8_AND(C0MISCCTLy(6), ~1);
-	MCHBAR8_AND(C0MISCCTLy(7), ~1);
+	mchbar_clrbits8(CSHRPDCTL, 0x0d);
+	mchbar_clrbits8(C0MISCCTLy(0), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(1), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(2), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(3), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(4), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(5), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(6), 1 << 0);
+	mchbar_clrbits8(C0MISCCTLy(7), 1 << 0);
 
-	MCHBAR32_AND_OR(C0STATRDCTRL, ~0x00700000, 3 << 20);
-	MCHBAR32_AND(C0COREBONUS, ~0x00100000);
-	MCHBAR8_OR(C0DYNSLVDLLEN, 0x1e);
-	MCHBAR8_OR(C0DYNSLVDLLEN2, 0x03);
-	MCHBAR32_AND_OR(SHCYCTRKCKEL, ~0x0c000000, 0x04000000);
-	MCHBAR16_OR(C0STATRDCTRL, 0x6000);
-	MCHBAR32_OR(C0CKECTRL, 0x00010000);
-	MCHBAR8_OR(C0COREBONUS, 0x10);
-	MCHBAR32_OR(CLOCKGATINGI - 1, 0xf << 24);
-	MCHBAR8_OR(CSHWRIOBONUS, 0x07);
-	MCHBAR8_OR(C0DYNSLVDLLEN, 0xc0);
-	MCHBAR8_OR(SHC2REGIII, 7);
-	MCHBAR16_AND_OR(SHC2MINTM, ~0xffff, 0x0080);
-	MCHBAR8_AND_OR(SHC2IDLETM, ~0xff, 0x10);
-	MCHBAR16_OR(C0COREBONUS, 0x01e0);
-	MCHBAR8_OR(CSHWRIOBONUS, 0x18);
-	MCHBAR8_OR(CSHRMSTDYNDLLENB, 0x0d);
-	MCHBAR16_OR(SHC3C4REG1, 0x0a3f);
-	MCHBAR8_OR(C0STATRDCTRL, 3);
-	MCHBAR8_AND_OR(C0REFRCTRL2, ~0xff, 0x4a);
-	MCHBAR8_AND(C0COREBONUS + 4, ~0x60);
-	MCHBAR16_OR(C0DYNSLVDLLEN, 0x0321);
+	mchbar_clrsetbits32(C0STATRDCTRL, 7 << 20, 3 << 20);
+	mchbar_clrbits32(C0COREBONUS, 1 << 20);
+	mchbar_setbits8(C0DYNSLVDLLEN, 0x1e);
+	mchbar_setbits8(C0DYNSLVDLLEN2, 0x03);
+	mchbar_clrsetbits32(SHCYCTRKCKEL, 3 << 26, 1 << 26);
+	mchbar_setbits16(C0STATRDCTRL, 3 << 13);
+	mchbar_setbits32(C0CKECTRL, 1 << 16);
+	mchbar_setbits8(C0COREBONUS, 1 << 4);
+	mchbar_setbits32(CLOCKGATINGI - 1, 0xf << 24);
+	mchbar_setbits8(CSHWRIOBONUS, 7);
+	mchbar_setbits8(C0DYNSLVDLLEN, 3 << 6);
+	mchbar_setbits8(SHC2REGIII, 7);
+	mchbar_clrsetbits16(SHC2MINTM, ~0, 1 << 7);
+	mchbar_clrsetbits8(SHC2IDLETM, 0xff, 0x10);
+	mchbar_setbits16(C0COREBONUS, 0xf << 5);
+	mchbar_setbits8(CSHWRIOBONUS, 3 << 3);
+	mchbar_setbits8(CSHRMSTDYNDLLENB, 0x0d);
+	mchbar_setbits16(SHC3C4REG1, 0x0a3f);
+	mchbar_setbits8(C0STATRDCTRL, 3);
+	mchbar_clrsetbits8(C0REFRCTRL2, 0xff, 0x4a);
+	mchbar_clrbits8(C0COREBONUS + 4, 3 << 5);
+	mchbar_setbits16(C0DYNSLVDLLEN, 0x0321);
 }
 
 static void sdram_programdqdqs(struct sysinfo *s)
@@ -2472,22 +2473,22 @@ static void sdram_programdqdqs(struct sysinfo *s)
 	mdclk = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 3000 : 2500;
 	refclk = 3000 - mdclk;
 
-	coretomcp = ((MCHBAR8(C0ADDCSCTRL) >> 2) & 0x3) + 1;
+	coretomcp = ((mchbar_read8(C0ADDCSCTRL) >> 2) & 0x3) + 1;
 	coretomcp *= mdclk;
 
-	reg8 = (MCHBAR8(CSHRFIFOCTL) & 0x0e) >> 1;
+	reg8 = (mchbar_read8(CSHRFIFOCTL) & 0x0e) >> 1;
 
 	while (repeat) {
 		txdelay = mdclk * (
-				((MCHBAR16(C0GNT2LNCH1) >> 8) & 0x7) +
-				(MCHBAR8(C0WRDATACTRL) & 0xf) +
-				(MCHBAR8(C0WRDATACTRL + 1) & 0x1)
+				((mchbar_read16(C0GNT2LNCH1) >> 8) & 0x7) +
+				(mchbar_read8(C0WRDATACTRL) & 0xf) +
+				(mchbar_read8(C0WRDATACTRL + 1) & 0x1)
 				) +
 				txfifotab[reg8]*(mdclk / 2) +
 				coretomcp +
 				refclk +
 				cwb;
-		halfclk = (MCHBAR8(C0MISCCTL) >> 1) & 0x1;
+		halfclk = (mchbar_read8(C0MISCCTL) >> 1) & 0x1;
 		if (halfclk) {
 			txdelay -= mdclk / 2;
 			reg32 = dqdqs_outdelay + coretomcp - mdclk / 2;
@@ -2500,25 +2501,25 @@ static void sdram_programdqdqs(struct sysinfo *s)
 
 		if ((tmaxunmask >= reg32) && tmaxpi >= dqdqs_delay) {
 			if (repeat == 2) {
-				MCHBAR32_AND(C0COREBONUS, ~(1 << 23));
+				mchbar_clrbits32(C0COREBONUS, 1 << 23);
 			}
 			feature = 1;
 			repeat = 0;
 		} else {
 			repeat--;
-			MCHBAR32_OR(C0COREBONUS, 1 << 23);
+			mchbar_setbits32(C0COREBONUS, 1 << 23);
 			cwb = 2 * mdclk;
 		}
 	}
 
 	if (!feature) {
-		MCHBAR8(CLOCKGATINGI) = MCHBAR8(CLOCKGATINGI) & ~0x3;
+		mchbar_clrbits8(CLOCKGATINGI, 3);
 		return;
 	}
-	MCHBAR8_OR(CLOCKGATINGI, 3);
-	MCHBAR16_AND_OR(CLOCKGATINGIII, ~0xf000, pimdclk << 12);
-	MCHBAR8_AND_OR(CSHWRIOBONUSX, ~0x77, (push << 4) | push);
-	MCHBAR32_AND_OR(C0COREBONUS, ~0x0f000000, 0x03000000);
+	mchbar_setbits8(CLOCKGATINGI, 3);
+	mchbar_clrsetbits16(CLOCKGATINGIII, 0xf << 12, pimdclk << 12);
+	mchbar_clrsetbits8(CSHWRIOBONUSX, 0x77, push << 4 | push);
+	mchbar_clrsetbits32(C0COREBONUS, 0xf << 24, 3 << 24);
 }
 
 /**
@@ -2551,7 +2552,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	/* Enable HPET */
 	enable_hpet();
 
-	MCHBAR16_OR(CPCTL, 1 << 15);
+	mchbar_setbits16(CPCTL, 1 << 15);
 
 	sdram_clk_crossing(&si);
 
@@ -2578,7 +2579,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	PRINTK_DEBUG("Done odt\n");
 
 	if (si.boot_path != BOOT_PATH_RESET) {
-		while ((MCHBAR8(COMPCTRL1) & 1) != 0)
+		while ((mchbar_read8(COMPCTRL1) & 1) != 0)
 			;
 	}
 
@@ -2586,16 +2587,16 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	PRINTK_DEBUG("Done mmap\n");
 
 	/* Enable DDR IO buffer */
-	MCHBAR8_AND_OR(C0IOBUFACTCTL, ~0x3f, 0x08);
-	MCHBAR8_OR(C0RSTCTL, 1);
+	mchbar_clrsetbits8(C0IOBUFACTCTL, 0x3f, 0x08);
+	mchbar_setbits8(C0RSTCTL, 1 << 0);
 
 	sdram_rcompupdate(&si);
 	PRINTK_DEBUG("Done RCOMP update\n");
 
-	MCHBAR8_OR(HIT4, 2);
+	mchbar_setbits8(HIT4, 1 << 1);
 
 	if (si.boot_path != BOOT_PATH_RESUME) {
-		MCHBAR32_OR(C0CKECTRL, 1 << 27);
+		mchbar_setbits32(C0CKECTRL, 1 << 27);
 
 		sdram_jedecinit(&si);
 		PRINTK_DEBUG("Done MRS\n");
@@ -2608,7 +2609,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	PRINTK_DEBUG("Done zqcl\n");
 
 	if (si.boot_path != BOOT_PATH_RESUME) {
-		MCHBAR32_OR(C0REFRCTRL2, 3 << 30);
+		mchbar_setbits32(C0REFRCTRL2, 3 << 30);
 	}
 
 	sdram_dradrb(&si);
@@ -2639,7 +2640,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	PRINTK_DEBUG("Done periodic RCOMP\n");
 
 	/* Set init done */
-	MCHBAR32_OR(C0REFRCTRL2, 1 << 30);
+	mchbar_setbits32(C0REFRCTRL2, 1 << 30);
 
 	/* Tell ICH7 that we're done */
 	pci_and_config8(PCI_DEV(0, 0x1f, 0), 0xa2, (u8)~(1 << 7));

@@ -36,15 +36,15 @@ static void early_graphics_setup(void)
 	pci_write_config16(HOST_BRIDGE, GGC, (1 << 8) | ((reg8 + 3) << 4));
 
 	printk(BIOS_SPEW, "Set GFX clocks...");
-	reg16 = MCHBAR16(MCH_GCFGC);
-	MCHBAR16(MCH_GCFGC) = reg16 | (1 << 9);
+	reg16 = mchbar_read16(MCH_GCFGC);
+	mchbar_write16(MCH_GCFGC, reg16 | 1 << 9);
 	reg16 &= ~0x7f;
 	reg16 |= CDCLK_PINEVIEW | CRCLK_PINEVIEW;
 	reg16 &= ~(1 << 9);
-	MCHBAR16(MCH_GCFGC) = reg16;
+	mchbar_write16(MCH_GCFGC, reg16);
 
 	/* Graphics core */
-	reg8 = MCHBAR8(HPLLVCO);
+	reg8 = mchbar_read8(HPLLVCO);
 	reg8 &= 0x7;
 
 	reg16 = pci_read_config16(GMCH_IGD, 0xcc) & ~0x1ff;
@@ -67,29 +67,29 @@ static void early_graphics_setup(void)
 
 	if (config->use_crt) {
 		/* Enable VGA */
-		MCHBAR32_OR(DACGIOCTRL1, 1 << 15);
+		mchbar_setbits32(DACGIOCTRL1, 1 << 15);
 	} else {
 		/* Disable VGA */
-		MCHBAR32_AND(DACGIOCTRL1, ~(1 << 15));
+		mchbar_clrbits32(DACGIOCTRL1, 1 << 15);
 	}
 
 	if (config->use_lvds) {
 		/* Enable LVDS */
-		reg32 = MCHBAR32(LVDSICR2);
+		reg32 = mchbar_read32(LVDSICR2);
 		reg32 &= ~0xf1000000;
 		reg32 |=  0x90000000;
-		MCHBAR32(LVDSICR2) = reg32;
-		MCHBAR32_OR(IOCKTRR1, 1 << 9);
+		mchbar_write32(LVDSICR2, reg32);
+		mchbar_setbits32(IOCKTRR1, 1 << 9);
 	} else {
 		/* Disable LVDS */
-		MCHBAR32_OR(DACGIOCTRL1, 3 << 25);
+		mchbar_setbits32(DACGIOCTRL1, 3 << 25);
 	}
 
-	MCHBAR32(CICTRL) = 0xc6db8b5f;
-	MCHBAR16(CISDCTRL) = 0x024f;
+	mchbar_write32(CICTRL, 0xc6db8b5f);
+	mchbar_write16(CISDCTRL, 0x024f);
 
-	MCHBAR32_AND(DACGIOCTRL1, 0xffffff00);
-	MCHBAR32_OR(DACGIOCTRL1,  1 << 5);
+	mchbar_clrbits32(DACGIOCTRL1, 0xff);
+	mchbar_setbits32(DACGIOCTRL1, 1 << 5);
 
 	/* Legacy backlight control */
 	pci_write_config8(GMCH_IGD, 0xf4, 0x4c);
@@ -97,18 +97,18 @@ static void early_graphics_setup(void)
 
 static void early_misc_setup(void)
 {
-	MCHBAR32(HIT0);
-	MCHBAR32(HIT0) = 0x00021800;
-	DMIBAR32(0x2c) = 0x86000040;
+	mchbar_read32(HIT0);
+	mchbar_write32(HIT0, 0x00021800);
+	dmibar_write32(0x2c, 0x86000040);
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x18, 0x00020200);
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x18, 0x00000000);
 
 	early_graphics_setup();
 
-	MCHBAR32(HIT4);
-	MCHBAR32(HIT4) = 0;
-	MCHBAR32(HIT4);
-	MCHBAR32(HIT4) = 8;
+	mchbar_read32(HIT4);
+	mchbar_write32(HIT4, 0);
+	mchbar_read32(HIT4);
+	mchbar_write32(HIT4, 1 << 3);
 
 	pci_write_config8(LPC_DEV, 0x08, 0x1d);
 	pci_write_config8(LPC_DEV, 0x08, 0x00);

@@ -656,16 +656,13 @@ static enum cb_err increment_to_dqs_edge(struct sysinfo *s, u8 channel, u8 rank)
 				lane,
 				dq_sample[lane]);
 
-			if (dq_sample[lane] > 0) {
-				if (decrement_dq_dqs(s, &dqs_setting[lane])) {
-					printk(BIOS_EMERG,
-						"DQS setting channel%d, "
-						"lane %d reached a minimum!\n",
-						channel, lane);
-					return CB_ERR;
-				}
-			} else {
+			if (dq_sample[lane] == 0) {
 				bytelane_ok |= (1 << lane);
+			} else if (decrement_dq_dqs(s, &dqs_setting[lane])) {
+				printk(BIOS_EMERG,
+					"DQS setting channel%d, lane %d reached a minimum!\n",
+					channel, lane);
+				return CB_ERR;
 			}
 			dqsset(channel, lane, &dqs_setting[lane]);
 		}
@@ -695,14 +692,11 @@ static enum cb_err increment_to_dqs_edge(struct sysinfo *s, u8 channel, u8 rank)
 
 			if (dq_sample[lane] == N_SAMPLES) {
 				bytelane_ok |= (1 << lane);
-			} else {
-				if (increment_dq_dqs(s, &dqs_setting[lane])) {
-					printk(BIOS_EMERG,
-						"DQS setting channel%d, "
-						"lane %d reached a maximum!\n",
-						channel, lane);
-					return CB_ERR;
-				}
+			} else if (increment_dq_dqs(s, &dqs_setting[lane])) {
+				printk(BIOS_EMERG,
+					"DQS setting channel%d, lane %d reached a maximum!\n",
+					channel, lane);
+				return CB_ERR;
 			}
 			dqsset(channel, lane, &dqs_setting[lane]);
 		}

@@ -263,8 +263,8 @@ static void select_cas_dramfreq_ddr3(struct sysinfo *s, struct abs_timings *save
 	min_tCLK = MAX(min_tCLK, saved_timings->min_tclk);
 	if (min_tCLK == 0) {
 		printk(BIOS_ERR,
-			"DRAM frequency is under lowest supported frequency (400 MHz). "
-			"Increasing to 400 MHz as last resort");
+			"DRAM frequency is under lowest supported frequency (400 MHz).\n"
+			"Increasing to 400 MHz as last resort.\n");
 		min_tCLK = TCK_400MHZ;
 	}
 

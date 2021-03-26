@@ -1197,8 +1197,12 @@ sub copy_spacing {
 sub line_stats {
 	my ($line) = @_;
 
-	# Drop the diff line leader and expand tabs
+	# Drop the diff line leader
 	$line =~ s/^.//;
+
+	# Treat labels like whitespace when counting indentation
+	$line =~ s/^( ?$Ident:)/" " x length($1)/e;
+
 	$line = expand_tabs($line);
 
 	# Pick the indent from the front of the line.
@@ -1331,15 +1335,13 @@ sub ctx_statement_block {
 
 	my $type = '';
 	my $level = 0;
-	my @stack = ();
+	my @stack = (['', $level]);
 	my $p;
 	my $c;
 	my $len = 0;
 
 	my $remainder;
 	while (1) {
-		@stack = (['', 0]) if ($#stack == -1);
-
 		#warn "CSB: blk<$blk> remain<$remain>\n";
 		# If we are about to drop off the end, pull in more
 		# context.
@@ -1373,9 +1375,9 @@ sub ctx_statement_block {
 		# Handle nested #if/#else.
 		if ($remainder =~ /^#\s*(?:ifndef|ifdef|if)\s/) {
 			push(@stack, [ $type, $level ]);
-		} elsif ($remainder =~ /^#\s*(?:else|elif)\b/) {
-			($type, $level) = @{$stack[$#stack - 1]};
-		} elsif ($remainder =~ /^#\s*endif\b/) {
+		} elsif ($remainder =~ /^#\s*(?:else|elif)\b/ && $#stack > 0) {
+			($type, $level) = @{$stack[$#stack]};
+		} elsif ($remainder =~ /^#\s*endif\b/ && $#stack > 0) {
 			($type, $level) = @{pop(@stack)};
 		}
 
@@ -1545,9 +1547,9 @@ sub ctx_block_get {
 		# Handle nested #if/#else.
 		if ($lines[$line] =~ /^.\s*#\s*(?:ifndef|ifdef|if)\s/) {
 			push(@stack, $level);
-		} elsif ($lines[$line] =~ /^.\s*#\s*(?:else|elif)\b/) {
-			$level = $stack[$#stack - 1];
-		} elsif ($lines[$line] =~ /^.\s*#\s*endif\b/) {
+		} elsif ($lines[$line] =~ /^.\s*#\s*(?:else|elif)\b/ && $#stack > 0) {
+			$level = $stack[$#stack];
+		} elsif ($lines[$line] =~ /^.\s*#\s*endif\b/ && $#stack > 0) {
 			$level = pop(@stack);
 		}
 
@@ -3614,6 +3616,50 @@ sub process {
 			     ($sindent > $indent + 8))) {
 				WARN("SUSPECT_CODE_INDENT",
 				     "suspect code indent for conditional statements ($indent, $sindent)\n" . $herecurr . "$stat_real\n");
+			}
+
+# Also check if the next statement after the previous condition has the same indent
+			my ($stat_next, undef, $line_nr_next_next) =
+				ctx_statement_block($line_nr_next, $remain_next, $off_next);
+			my $s_next = $stat_next;
+
+			# Remove line prefixes
+			$s_next =~ s/\n./\n/g;
+
+			# Remove any comments
+			$s_next =~ s/$;//g;
+
+			# Remove any leading labels
+			$s_next =~ s/\n( ?$Ident:)/"\n" . " " x length($1)/eg;
+
+			# Skip this check for in case next statement starts with 'else'
+			if ($s_next !~ /\belse\b/) {
+
+				# Remove while that belongs to a do {} while
+				if ($stat =~ /\bdo\b/) {
+					$s_next =~ s/^.*\bwhile\b\s*($balanced_parens)\s*?//;
+				}
+
+				# Remove blank lines
+				$s_next =~ s/\s*\\?\n//g;
+
+				# Get the real next lines
+				my $next_nof_lines = $line_nr_next_next - $line_nr_next;
+				my $stat_next_real = raw_line($line_nr_next, $next_nof_lines);
+				if (!defined($stat_next_real)) {
+					$stat_next_real = "";
+				} elsif ($next_nof_lines > 1) {
+					$stat_next_real = "[...]\n$stat_next_real";
+				}
+				my (undef, $nindent) = line_stats('+' . $s_next);
+
+				#print "stat_next<$stat_next> stat<$stat> indent<$indent> nindent<$nindent> s_next<$s_next> stat_next_real<$stat_next_real>\n";
+
+				if ($nindent > $indent) {
+					WARN("SUSPICIOUS_CODE_INDENT",
+					     "suspicious code indentation after conditional statements\n" .
+					     $herecurr . "$stat_real\n$stat_next_real\n");
+				}
 			}
 		}
 

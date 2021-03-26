@@ -562,7 +562,7 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 		MCHBAR8_OR(0x2ca8, 1);
 
 	MCHBAR32_AND(0x1890, 0xfdffffff);
-	MCHBAR32_AND_OR(0x18b4, 0xffff6fff, 0x600);
+	MCHBAR32_AND_OR(0x18b4, 0xffff6fff, 0x6000);
 	MCHBAR32(0x18a4) = 0x22222222;
 	MCHBAR32(0x18a8) = 0x22222222;
 	MCHBAR32(0x18ac) = 0x22222;

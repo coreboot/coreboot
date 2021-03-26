@@ -6,21 +6,6 @@
 #include "cpu/intel/model_206ax/model_206ax.h"
 #include <cpu/x86/msr.h>
 
-static void write8p(uintptr_t addr, uint8_t val)
-{
-	write8((uint8_t *)addr, val);
-}
-
-static void write16p(uintptr_t addr, uint16_t val)
-{
-	write16((uint16_t *)addr, val);
-}
-
-static uint16_t read16p(uintptr_t addr)
-{
-	return read16((uint16_t *)addr);
-}
-
 /* Temporary address for the thermal BAR */
 #define TBARB_TEMP 0x40000000
 

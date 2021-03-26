@@ -115,16 +115,6 @@ static u16 read_1d0(u16 addr, int split)
 	return val;
 }
 
-static void write32p(uintptr_t addr, uint32_t val)
-{
-	write32((void *)addr, val);
-}
-
-static uint32_t read32p(uintptr_t addr)
-{
-	return read32((void *)addr);
-}
-
 static void sfence(void)
 {
 	asm volatile ("sfence");

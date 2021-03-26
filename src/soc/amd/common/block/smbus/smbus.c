@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <console/console.h>
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
@@ -30,7 +30,7 @@ static int smbus_wait_until_ready(uintptr_t mmio)
 {
 	if ((mmio != (uintptr_t)acpimmio_smbus) &&
 	   (mmio != (uintptr_t)acpimmio_asf)) {
-		printk(BIOS_ERR, "Invalid SMBus or ASF base %#zx\n", mmio);
+		printk(BIOS_ERR, "Invalid SMBus or ASF base %#" PRIxPTR "\n", mmio);
 		return -1;
 	}
 

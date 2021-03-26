@@ -442,15 +442,10 @@ static void northbridge_topology_init(void)
 	const u32 eple_a[3] = { EPLE2A, EPLE3A, EPLE4A };
 	const u32 eple_d[3] = { EPLE2D, EPLE3D, EPLE4D };
 
-	u32 reg32;
-
 	/* Set the CID1 Egress Port 0 Root Topology */
 	epbar_clrsetbits32(EPESD, 0xff << 16, 1 << 16);
 
-	reg32 = epbar_read32(EPLE1D);
-	reg32 &= ~(0xff << 16);
-	reg32 |= 1 | (1 << 16);
-	epbar_write32(EPLE1D, reg32);
+	epbar_clrsetbits32(EPLE1D, 0xff << 16, 1 | 1 << 16);
 	epbar_write32(EPLE1A, CONFIG_FIXED_DMIBAR_MMIO_BASE);
 	epbar_write32(EPLE1A + 4, 0);
 
@@ -463,10 +458,7 @@ static void northbridge_topology_init(void)
 		epbar_write32(eple_a[i], (u32)PCI_DEV(0, 1, i));
 		epbar_write32(eple_a[i] + 4, 0);
 
-		reg32 = epbar_read32(eple_d[i]);
-		reg32 &= ~(0xff << 16);
-		reg32 |= 1 | (1 << 16);
-		epbar_write32(eple_d[i], reg32);
+		epbar_clrsetbits32(eple_d[i], 0xff << 16, 1 | 1 << 16);
 
 		pci_update_config32(dev, PEG_ESD, ~(0xff << 16), (1 << 16));
 		pci_write_config32(dev, PEG_LE1A, CONFIG_FIXED_EPBAR_MMIO_BASE);
@@ -480,19 +472,13 @@ static void northbridge_topology_init(void)
 	/* Set the CID1 DMI Port Root Topology */
 	dmibar_clrsetbits32(DMIESD, 0xff << 16, 1 << 16);
 
-	reg32 = dmibar_read32(DMILE1D);
-	reg32 &= ~(0xffff << 16);
-	reg32 |= 1 | (2 << 16);
-	dmibar_write32(DMILE1D, reg32);
+	dmibar_clrsetbits32(DMILE1D, 0xffff << 16, 1 | 2 << 16);
 	dmibar_write32(DMILE1A, CONFIG_FIXED_RCBA_MMIO_BASE);
 	dmibar_write32(DMILE1A + 4, 0);
 
 	dmibar_write32(DMILE2A, CONFIG_FIXED_EPBAR_MMIO_BASE);
 	dmibar_write32(DMILE2A + 4, 0);
-	reg32 = dmibar_read32(DMILE2D);
-	reg32 &= ~(0xff << 16);
-	reg32 |= 1 | (1 << 16);
-	dmibar_write32(DMILE2D, reg32);
+	dmibar_clrsetbits32(DMILE2D, 0xff << 16, 1 | 1 << 16);
 
 	/* Program RO and Write-Once Registers */
 	dmibar_setbits32(DMIPVCCAP1, 0);

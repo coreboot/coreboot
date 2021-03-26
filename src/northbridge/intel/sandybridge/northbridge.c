@@ -210,8 +210,6 @@ static void northbridge_dmi_init(struct device *dev)
 
 	const u8 stepping = cpu_stepping();
 
-	u32 reg32;
-
 	/* Steps prior to DMI ASPM */
 	if (is_sandy) {
 		dmibar_clrsetbits32(0x250, 7 << 20, 2 << 20);
@@ -224,10 +222,7 @@ static void northbridge_dmi_init(struct device *dev)
 	}
 
 	if (!is_sandy || stepping >= SNB_STEP_D1) {
-		reg32 = dmibar_read32(0x1f8);
-		reg32 &= ~(1 << 26);
-		reg32 |= (1 << 16);
-		dmibar_write32(0x1f8, reg32);
+		dmibar_clrsetbits32(0x1f8, 1 << 26, 1 << 16);
 
 		dmibar_setbits32(0x1fc, 1 << 12 | 1 << 23);
 

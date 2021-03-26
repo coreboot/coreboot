@@ -57,16 +57,6 @@
 
 #include <northbridge/intel/common/fixed_bars.h>
 
-#define MCHBAR8_AND(x,  and) (MCHBAR8(x)  = MCHBAR8(x)  & (and))
-#define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
-#define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
-#define MCHBAR8_OR(x,  or) (MCHBAR8(x)  = MCHBAR8(x)  | (or))
-#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
-#define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
-#define MCHBAR8_AND_OR(x,  and, or) (MCHBAR8(x)  = (MCHBAR8(x)  & (and)) | (or))
-#define MCHBAR16_AND_OR(x, and, or) (MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
-#define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
-
 /* As there are many registers, define them on a separate file */
 #include "registers/mchbar.h"
 

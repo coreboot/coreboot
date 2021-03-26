@@ -843,8 +843,7 @@ static void sdram_p_clkset0(const struct pllparam *pll, u8 f, u8 i)
 /* Program clkset1's register for Kcoarse, Tap, PI, DBEn and DBSel */
 static void sdram_p_clkset1(const struct pllparam *pll, u8 f, u8 i)
 {
-	/* FIXME: This is actually a dword write! */
-	MCHBAR16_AND_OR(C0CKTX, ~0x00030880,
+	MCHBAR32_AND_OR(C0CKTX, ~0x00030880,
 			(pll->clkdelay[f][i] << 16) |
 			(pll->dben[f][i] << 11) |
 			(pll->dbsel[f][i] << 7));

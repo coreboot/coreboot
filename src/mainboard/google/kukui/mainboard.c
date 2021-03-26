@@ -124,7 +124,7 @@ struct panel_description *get_panel_from_cbfs(struct panel_description *desc)
 static struct panel_description *get_active_panel(void)
 {
 	/* TODO(hungte) Create a dedicated panel_id() in board_id.c */
-	int panel_id = sku_id() >> 4;
+	int panel_id = sku_id() >> 4 & 0x0F;
 
 	struct panel_description *panel = get_panel_description(panel_id);
 	if (!panel) {

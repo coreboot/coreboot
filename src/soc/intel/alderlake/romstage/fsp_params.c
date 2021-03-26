@@ -28,6 +28,12 @@ enum pcie_rp_type {
 	CPU_PCIE_RP,
 };
 
+enum vtd_base_index_type {
+	VTD_GFX,
+	VTD_IPU,
+	VTD_VTVCO,
+};
+
 static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
 {
 	assert(type == PCH_PCIE_RP || type == CPU_PCIE_RP);
@@ -197,9 +203,30 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
 	m_cfg->TcssItbtPcie3En = is_dev_enabled(dev);
 
-	/* Vt-D config */
-	/* Disable VT-d support for pre-QS platform */
-	m_cfg->VtdDisable = 1;
+	/* VT-d config */
+	m_cfg->VtdBaseAddress[VTD_GFX] = GFXVT_BASE_ADDRESS;
+	m_cfg->VtdBaseAddress[VTD_IPU] = IPUVT_BASE_ADDRESS;
+	m_cfg->VtdBaseAddress[VTD_VTVCO] = VTVC0_BASE_ADDRESS;
+
+	m_cfg->VtdDisable = 0;
+	m_cfg->VtdIopEnable = !m_cfg->VtdDisable;
+	m_cfg->VtdIgdEnable = m_cfg->InternalGfx;
+	m_cfg->VtdIpuEnable = m_cfg->SaIpuEnable;
+
+	if (m_cfg->VtdIgdEnable && m_cfg->VtdBaseAddress[VTD_GFX] == 0) {
+		m_cfg->VtdIgdEnable = 0;
+		printk(BIOS_ERR, "ERROR: Requested IGD VT-d, but GFXVT_BASE_ADDRESS is 0\n");
+	}
+
+	if (m_cfg->VtdIpuEnable && m_cfg->VtdBaseAddress[VTD_IPU] == 0) {
+		m_cfg->VtdIpuEnable = 0;
+		printk(BIOS_ERR, "ERROR: Requested IPU VT-d, but IPUVT_BASE_ADDRESS is 0\n");
+	}
+
+	if (!m_cfg->VtdDisable && m_cfg->VtdBaseAddress[VTD_VTVCO] == 0) {
+		m_cfg->VtdDisable = 1;
+		printk(BIOS_ERR, "ERROR: Requested VT-d, but VTVCO_BASE_ADDRESS is 0\n");
+	}
 
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);

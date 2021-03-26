@@ -1,2 +1,5 @@
 config BOARD_SYSTEM76_GALP3_C
 	bool "galp3-c"
+
+config BOARD_SYSTEM76_DARP5
+	bool "darp5"

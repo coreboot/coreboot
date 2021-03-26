@@ -1,4 +1,4 @@
-if BOARD_SYSTEM76_GALP3_C
+if BOARD_SYSTEM76_GALP3_C || BOARD_SYSTEM76_DARP5
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -6,6 +6,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_I2C_HID
 	select EC_SYSTEM76_EC
 	select EC_SYSTEM76_EC_BAT_THRESHOLDS
+	select EC_SYSTEM76_EC_COLOR_KEYBOARD if BOARD_SYSTEM76_DARP5
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select INTEL_GMA_HAVE_VBT
@@ -27,6 +28,7 @@ config MAINBOARD_DIR
 config VARIANT_DIR
 	string
 	default "galp3-c" if BOARD_SYSTEM76_GALP3_C
+	default "darp5" if BOARD_SYSTEM76_DARP5
 
 config OVERRIDE_DEVICETREE
 	string
@@ -35,14 +37,17 @@ config OVERRIDE_DEVICETREE
 config MAINBOARD_PART_NUMBER
 	string
 	default "galp3-c" if BOARD_SYSTEM76_GALP3_C
+	default "darp5" if BOARD_SYSTEM76_DARP5
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	string
 	default "Galago Pro" if BOARD_SYSTEM76_GALP3_C
+	default "Darter Pro" if BOARD_SYSTEM76_DARP5
 
 config MAINBOARD_VERSION
 	string
 	default "galp3-c" if BOARD_SYSTEM76_GALP3_C
+	default "darp5" if BOARD_SYSTEM76_DARP5
 
 config CBFS_SIZE
 	hex

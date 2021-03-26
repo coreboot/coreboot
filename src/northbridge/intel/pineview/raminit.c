@@ -818,9 +818,9 @@ static void sdram_timings(struct sysinfo *s)
 	/* Program RCVEN delay with DLL-safe settings */
 	for (i = 0; i < 8; i++) {
 		mchbar_clrbits8(C0RXRCVyDLL(i), 0x3f);
-		MCHBAR16_AND(C0RCVMISCCTL2, (u16) ~(3 << (i * 2)));
-		MCHBAR16_AND(C0RCVMISCCTL1, (u16) ~(3 << (i * 2)));
-		MCHBAR16_AND(C0COARSEDLY0,  (u16) ~(3 << (i * 2)));
+		mchbar_clrbits16(C0RCVMISCCTL2, 3 << (i * 2));
+		mchbar_clrbits16(C0RCVMISCCTL1, 3 << (i * 2));
+		mchbar_clrbits16(C0COARSEDLY0, 3 << (i * 2));
 	}
 	mchbar_clrbits8(C0DLLPIEN, 1 << 0);	/* Power up receiver */
 	mchbar_setbits8(C0DLLPIEN, 1 << 1);	/* Enable RCVEN DLL */
@@ -1865,12 +1865,12 @@ static void rcvenclock(u8 *coarse, u8 *medium, u8 lane)
 {
 	if (*medium < 3) {
 		(*medium)++;
-		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)~(3 << (lane * 2)), *medium << (lane * 2));
+		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), *medium << (lane * 2));
 	} else {
 		*medium = 0;
 		(*coarse)++;
 		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, *coarse << 16);
-		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)(~3 << (lane * 2)), *medium << (lane * 2));
+		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), *medium << (lane * 2));
 	}
 }
 
@@ -1903,7 +1903,7 @@ static void sdram_rcven(struct sysinfo *s)
 		medium = 0;
 
 		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
-		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)~(3 << (lane * 2)), medium << (lane * 2));
+		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), medium << (lane * 2));
 
 		mchbar_clrbits8(C0RXRCVyDLL(lane), 0x3f);
 
@@ -1914,7 +1914,7 @@ static void sdram_rcven(struct sysinfo *s)
 		PRINTK_DEBUG("rcven 0.1\n");
 
 		// XXX comment out
-		// MCHBAR16_AND_OR(C0RCVMISCCTL1, (u16)~3 << (lane * 2), 1 << (lane * 2));
+		// mchbar_clrsetbits16(C0RCVMISCCTL1, 3 << (lane * 2), 1 << (lane * 2));
 
 		while (sampledqs(dqshighaddr, strobeaddr, 0, 3) == 0) {
 			// printk(BIOS_DEBUG, "coarse=%d medium=%d\n", coarse, medium);
@@ -1946,7 +1946,7 @@ static void sdram_rcven(struct sysinfo *s)
 		coarse = savecoarse;
 		medium = savemedium;
 		mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, coarse << 16);
-		MCHBAR16_AND_OR(C0RCVMISCCTL2, (u16)~(0x3 << lane * 2), medium << (lane * 2));
+		mchbar_clrsetbits16(C0RCVMISCCTL2, 3 << (lane * 2), medium << (lane * 2));
 
 		while (sampledqs(dqshighaddr, strobeaddr, 1, 3) == 0) {
 			savepi = pi;
@@ -1999,7 +1999,7 @@ static void sdram_rcven(struct sysinfo *s)
 	do {
 		lane--;
 		offset = lanecoarse[lane] - minlanecoarse;
-		MCHBAR16_AND_OR(C0COARSEDLY0, (u16)(~(3 << (lane * 2))), offset << (lane * 2));
+		mchbar_clrsetbits16(C0COARSEDLY0, 3 << (lane * 2), offset << (lane * 2));
 	} while (lane != 0);
 
 	mchbar_clrsetbits32(C0STATRDCTRL, 0xf << 16, minlanecoarse << 16);
@@ -2372,9 +2372,7 @@ static void sdram_powersettings(struct sysinfo *s)
 
 	reg32 = s->nodll ? 0x30000000 : 0;
 
-	/* FIXME: Compacting this results in changes to the binary */
-	mchbar_write32(C0COREBONUS,
-		(mchbar_read32(C0COREBONUS) & ~(0xf << 24)) | 1 << 29 | reg32);
+	mchbar_clrsetbits32(C0COREBONUS, 0xf << 24, 1 << 29 | reg32);
 
 	mchbar_clrsetbits32(CLOCKGATINGI, 0xf << 20, 0xf << 20);
 	mchbar_clrsetbits32(CLOCKGATINGII - 1, 0x001ff000, 0xbf << 20);

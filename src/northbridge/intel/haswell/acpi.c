@@ -20,16 +20,16 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	struct device *const igfx_dev = pcidev_on_root(2, 0);
-	const u32 gfxvtbar = MCHBAR32(GFXVTBAR) & ~0xfff;
-	const u32 vtvc0bar = MCHBAR32(VTVC0BAR) & ~0xfff;
-	const bool gfxvten = MCHBAR32(GFXVTBAR) & 0x1;
-	const bool vtvc0en = MCHBAR32(VTVC0BAR) & 0x1;
+	const u32 gfxvtbar = mchbar_read32(GFXVTBAR) & ~0xfff;
+	const u32 vtvc0bar = mchbar_read32(VTVC0BAR) & ~0xfff;
+	const bool gfxvten = mchbar_read32(GFXVTBAR) & 0x1;
+	const bool vtvc0en = mchbar_read32(VTVC0BAR) & 0x1;
 
 	/* iGFX has to be enabled; GFXVTBAR set, enabled, in 32-bit space */
 	const bool emit_igd =
 			igfx_dev && igfx_dev->enabled &&
 			gfxvtbar && gfxvten &&
-			!MCHBAR32(GFXVTBAR + 4);
+			!mchbar_read32(GFXVTBAR + 4);
 
 	/* First, add DRHD entries */
 	if (emit_igd) {
@@ -42,7 +42,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	}
 
 	/* VTVC0BAR has to be set, enabled, and in 32-bit space */
-	if (vtvc0bar && vtvc0en && !MCHBAR32(VTVC0BAR + 4)) {
+	if (vtvc0bar && vtvc0en && !mchbar_read32(VTVC0BAR + 4)) {
 
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);

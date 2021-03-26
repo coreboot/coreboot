@@ -138,17 +138,17 @@ static void haswell_setup_misc(void)
 	u32 reg32;
 
 	/* Erratum workarounds */
-	reg32 = MCHBAR32(SAPMCTL);
+	reg32 = mchbar_read32(SAPMCTL);
 	reg32 |= (1 << 9) | (1 << 10);
-	MCHBAR32(SAPMCTL) = reg32;
+	mchbar_write32(SAPMCTL, reg32);
 
 	/* Enable SA Clock Gating */
-	reg32 = MCHBAR32(SAPMCTL);
-	MCHBAR32(SAPMCTL) = reg32 | 1;
+	reg32 = mchbar_read32(SAPMCTL);
+	mchbar_write32(SAPMCTL, reg32 | 1);
 
-	reg32 = MCHBAR32(INTRDIRCTL);
+	reg32 = mchbar_read32(INTRDIRCTL);
 	reg32 |= (1 << 4) | (1 << 5);
-	MCHBAR32(INTRDIRCTL) = reg32;
+	mchbar_write32(INTRDIRCTL, reg32);
 }
 
 static void haswell_setup_iommu(void)
@@ -159,10 +159,10 @@ static void haswell_setup_iommu(void)
 		return;
 
 	/* Setup BARs: zeroize top 32 bits; set enable bit */
-	MCHBAR32(GFXVTBAR + 4) = GFXVT_BASE_ADDRESS >> 32;
-	MCHBAR32(GFXVTBAR)     = GFXVT_BASE_ADDRESS | 1;
-	MCHBAR32(VTVC0BAR + 4) = VTVC0_BASE_ADDRESS >> 32;
-	MCHBAR32(VTVC0BAR)     = VTVC0_BASE_ADDRESS | 1;
+	mchbar_write32(GFXVTBAR + 4, GFXVT_BASE_ADDRESS >> 32);
+	mchbar_write32(GFXVTBAR + 0, GFXVT_BASE_ADDRESS | 1);
+	mchbar_write32(VTVC0BAR + 4, VTVC0_BASE_ADDRESS >> 32);
+	mchbar_write32(VTVC0BAR + 0, VTVC0_BASE_ADDRESS | 1);
 
 	/* Set L3HIT2PEND_DIS, lock GFXVTBAR policy config registers */
 	u32 reg32;

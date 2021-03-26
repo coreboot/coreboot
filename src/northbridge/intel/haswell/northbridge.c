@@ -66,7 +66,7 @@ static int get_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
  */
 static int get_bar_in_mchbar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
-	u32 bar = MCHBAR32(index);
+	u32 bar = mchbar_read32(index);
 
 	/* If not enabled don't report it */
 	if (!(bar & 0x1))
@@ -399,16 +399,16 @@ static void disable_devices(void)
 static void init_egress(void)
 {
 	/* VC0: Enable, ID0, TC0 */
-	EPBAR32(EPVC0RCTL) = (1 << 31) | (0 << 24) | (1 << 0);
+	epbar_write32(EPVC0RCTL, 1 << 31 | 0 << 24 | 1 << 0);
 
 	/* No Low Priority Extended VCs, one Extended VC */
-	EPBAR32(EPPVCCAP1) = (0 << 4) | (1 << 0);
+	epbar_write32(EPPVCCAP1, 0 << 4 | 1 << 0);
 
 	/* VC1: Enable, ID1, TC1 */
-	EPBAR32(EPVC1RCTL) = (1 << 31) | (1 << 24) | (1 << 1);
+	epbar_write32(EPVC1RCTL, 1 << 31 | 1 << 24 | 1 << 1);
 
 	/* Poll the VC1 Negotiation Pending bit */
-	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) != 0)
+	while ((epbar_read16(EPVC1RSTS) & (1 << 1)) != 0)
 		;
 }
 
@@ -416,39 +416,24 @@ static void northbridge_dmi_init(void)
 {
 	const bool is_haswell_h = !CONFIG(INTEL_LYNXPOINT_LP);
 
-	u16 reg16;
-	u32 reg32;
-
 	/* Steps prior to DMI ASPM */
 	if (is_haswell_h) {
 		/* Configure DMI De-Emphasis */
-		reg16 = DMIBAR16(DMILCTL2);
-		reg16 |= (1 << 6);	/* 0b: -6.0 dB, 1b: -3.5 dB */
-		DMIBAR16(DMILCTL2) = reg16;
+		dmibar_setbits16(DMILCTL2, 1 << 6);	/* 0b: -6.0 dB, 1b: -3.5 dB */
 
-		reg32 = DMIBAR32(DMIL0SLAT);
-		reg32 |= (1 << 31);
-		DMIBAR32(DMIL0SLAT) = reg32;
+		dmibar_setbits32(DMIL0SLAT, 1 << 31);
+		dmibar_setbits32(DMILLTC, 1 << 29);
 
-		reg32 = DMIBAR32(DMILLTC);
-		reg32 |= (1 << 29);
-		DMIBAR32(DMILLTC) = reg32;
-
-		reg32 = DMIBAR32(DMI_AFE_PM_TMR);
-		reg32 &= ~0x1f;
-		reg32 |= 0x13;
-		DMIBAR32(DMI_AFE_PM_TMR) = reg32;
+		dmibar_clrsetbits32(DMI_AFE_PM_TMR, 0x1f, 0x13);
 	}
 
 	/* Clear error status bits */
-	DMIBAR32(DMIUESTS) = 0xffffffff;
-	DMIBAR32(DMICESTS) = 0xffffffff;
+	dmibar_write32(DMIUESTS, 0xffffffff);
+	dmibar_write32(DMICESTS, 0xffffffff);
 
 	if (is_haswell_h) {
 		/* Enable ASPM L0s and L1 on SA link, should happen before PCH link */
-		reg16 = DMIBAR16(DMILCTL);
-		reg16 |= (1 << 1) | (1 << 0);
-		DMIBAR16(DMILCTL) = reg16;
+		dmibar_setbits16(DMILCTL, 1 << 1 | 1 << 0);
 	}
 }
 
@@ -460,17 +445,14 @@ static void northbridge_topology_init(void)
 	u32 reg32;
 
 	/* Set the CID1 Egress Port 0 Root Topology */
-	reg32 = EPBAR32(EPESD);
-	reg32 &= ~(0xff << 16);
-	reg32 |= 1 << 16;
-	EPBAR32(EPESD) = reg32;
+	epbar_clrsetbits32(EPESD, 0xff << 16, 1 << 16);
 
-	reg32 = EPBAR32(EPLE1D);
+	reg32 = epbar_read32(EPLE1D);
 	reg32 &= ~(0xff << 16);
 	reg32 |= 1 | (1 << 16);
-	EPBAR32(EPLE1D) = reg32;
-	EPBAR32(EPLE1A) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
-	EPBAR32(EPLE1A + 4) = 0;
+	epbar_write32(EPLE1D, reg32);
+	epbar_write32(EPLE1A, CONFIG_FIXED_DMIBAR_MMIO_BASE);
+	epbar_write32(EPLE1A + 4, 0);
 
 	for (unsigned int i = 0; i <= 2; i++) {
 		const struct device *const dev = pcidev_on_root(1, i);
@@ -478,13 +460,13 @@ static void northbridge_topology_init(void)
 		if (!dev || !dev->enabled)
 			continue;
 
-		EPBAR32(eple_a[i]) = (u32)PCI_DEV(0, 1, i);
-		EPBAR32(eple_a[i] + 4) = 0;
+		epbar_write32(eple_a[i], (u32)PCI_DEV(0, 1, i));
+		epbar_write32(eple_a[i] + 4, 0);
 
-		reg32 = EPBAR32(eple_d[i]);
+		reg32 = epbar_read32(eple_d[i]);
 		reg32 &= ~(0xff << 16);
 		reg32 |= 1 | (1 << 16);
-		EPBAR32(eple_d[i]) = reg32;
+		epbar_write32(eple_d[i], reg32);
 
 		pci_update_config32(dev, PEG_ESD, ~(0xff << 16), (1 << 16));
 		pci_write_config32(dev, PEG_LE1A, CONFIG_FIXED_EPBAR_MMIO_BASE);
@@ -496,43 +478,35 @@ static void northbridge_topology_init(void)
 	}
 
 	/* Set the CID1 DMI Port Root Topology */
-	reg32 = DMIBAR32(DMIESD);
-	reg32 &= ~(0xff << 16);
-	reg32 |= 1 << 16;
-	DMIBAR32(DMIESD) = reg32;
+	dmibar_clrsetbits32(DMIESD, 0xff << 16, 1 << 16);
 
-	reg32 = DMIBAR32(DMILE1D);
+	reg32 = dmibar_read32(DMILE1D);
 	reg32 &= ~(0xffff << 16);
 	reg32 |= 1 | (2 << 16);
-	DMIBAR32(DMILE1D) = reg32;
-	DMIBAR32(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
-	DMIBAR32(DMILE1A + 4) = 0;
+	dmibar_write32(DMILE1D, reg32);
+	dmibar_write32(DMILE1A, CONFIG_FIXED_RCBA_MMIO_BASE);
+	dmibar_write32(DMILE1A + 4, 0);
 
-	DMIBAR32(DMILE2A) = CONFIG_FIXED_EPBAR_MMIO_BASE;
-	DMIBAR32(DMILE2A + 4) = 0;
-	reg32 = DMIBAR32(DMILE2D);
+	dmibar_write32(DMILE2A, CONFIG_FIXED_EPBAR_MMIO_BASE);
+	dmibar_write32(DMILE2A + 4, 0);
+	reg32 = dmibar_read32(DMILE2D);
 	reg32 &= ~(0xff << 16);
 	reg32 |= 1 | (1 << 16);
-	DMIBAR32(DMILE2D) = reg32;
+	dmibar_write32(DMILE2D, reg32);
 
 	/* Program RO and Write-Once Registers */
-	DMIBAR32(DMIPVCCAP1) = DMIBAR32(DMIPVCCAP1);
-	DMIBAR32(DMILCAP)    = DMIBAR32(DMILCAP);
+	dmibar_setbits32(DMIPVCCAP1, 0);
+	dmibar_setbits32(DMILCAP, 0);
 }
 
 static void northbridge_init(struct device *dev)
 {
-	u8 bios_reset_cpl, pair;
-
 	init_egress();
 	northbridge_dmi_init();
 	northbridge_topology_init();
 
 	/* Enable Power Aware Interrupt Routing. */
-	pair = MCHBAR8(INTRDIRCTL);
-	pair &= ~0x7;	/* Clear 2:0 */
-	pair |= 0x4;	/* Fixed Priority */
-	MCHBAR8(INTRDIRCTL) = pair;
+	mchbar_clrsetbits8(INTRDIRCTL, 0x7, 0x4);	/* Clear 2:0, set Fixed Priority */
 
 	disable_devices();
 
@@ -540,9 +514,7 @@ static void northbridge_init(struct device *dev)
 	 * Set bits 0 + 1 of BIOS_RESET_CPL to indicate to the CPU
 	 * that BIOS has initialized memory and power management.
 	 */
-	bios_reset_cpl = MCHBAR8(BIOS_RESET_CPL);
-	bios_reset_cpl |= 3;
-	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
+	mchbar_setbits8(BIOS_RESET_CPL, 3);
 	printk(BIOS_DEBUG, "Set BIOS_RESET_CPL\n");
 
 	/* Configure turbo power limits 1ms after reset complete bit. */
@@ -565,21 +537,21 @@ static void northbridge_final(struct device *dev)
 	pci_or_config32(dev, TOLUD,       1 << 0);
 
 	/* Memory Controller Lockdown */
-	MCHBAR32(MC_LOCK) |= 0x8f;
+	mchbar_setbits32(MC_LOCK, 0x8f);
 
-	MCHBAR32_OR(MMIO_PAVP_MSG, 1 << 0);	/* PAVP */
-	MCHBAR32_OR(PCU_DDR_PTM_CTL, 1 << 5);	/* DDR PTM */
-	MCHBAR32_OR(DMIVCLIM, 1 << 31);
-	MCHBAR32_OR(CRDTLCK, 1 << 0);
-	MCHBAR32_OR(MCARBLCK, 1 << 0);
-	MCHBAR32_OR(REQLIM, 1 << 31);
-	MCHBAR32_OR(UMAGFXCTL, 1 << 0);		/* UMA GFX */
-	MCHBAR32_OR(VTDTRKLCK, 1 << 0);		/* VTDTRK */
+	mchbar_setbits32(MMIO_PAVP_MSG, 1 << 0);	/* PAVP */
+	mchbar_setbits32(PCU_DDR_PTM_CTL, 1 << 5);	/* DDR PTM */
+	mchbar_setbits32(DMIVCLIM, 1 << 31);
+	mchbar_setbits32(CRDTLCK, 1 << 0);
+	mchbar_setbits32(MCARBLCK, 1 << 0);
+	mchbar_setbits32(REQLIM, 1 << 31);
+	mchbar_setbits32(UMAGFXCTL, 1 << 0);		/* UMA GFX */
+	mchbar_setbits32(VTDTRKLCK, 1 << 0);		/* VTDTRK */
 
 	/* Read+write the following */
-	MCHBAR32(VDMBDFBARKVM)  = MCHBAR32(VDMBDFBARKVM);
-	MCHBAR32(VDMBDFBARPAVP) = MCHBAR32(VDMBDFBARPAVP);
-	MCHBAR32(HDAUDRID)      = MCHBAR32(HDAUDRID);
+	mchbar_setbits32(VDMBDFBARKVM, 0);
+	mchbar_setbits32(VDMBDFBARPAVP, 0);
+	mchbar_setbits32(HDAUDRID, 0);
 }
 
 static struct device_operations mc_ops = {

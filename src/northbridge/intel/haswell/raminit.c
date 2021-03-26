@@ -70,10 +70,10 @@ static void report_memory_config(void)
 {
 	int i;
 
-	const u32 addr_decoder_common = MCHBAR32(MAD_CHNL);
+	const u32 addr_decoder_common = mchbar_read32(MAD_CHNL);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
+	       (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
 
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       (addr_decoder_common >> 0) & 3,
@@ -81,7 +81,7 @@ static void report_memory_config(void)
 	       (addr_decoder_common >> 4) & 3);
 
 	for (i = 0; i < NUM_CHANNELS; i++) {
-		const u32 ch_conf = MCHBAR32(MAD_DIMM(i));
+		const u32 ch_conf = mchbar_read32(MAD_DIMM(i));
 
 		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
 		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
@@ -164,7 +164,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 	}
 
 	/* Print the MRC version after executing the UEFI PEI stage */
-	u32 version = MCHBAR32(MRC_REVISION);
+	u32 version = mchbar_read32(MRC_REVISION);
 	printk(BIOS_DEBUG, "MRC Version %d.%d.%d Build %d\n",
 		(version >> 24) & 0xff, (version >> 16) & 0xff,
 		(version >>  8) & 0xff, (version >>  0) & 0xff);
@@ -234,10 +234,10 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	const u32 ddr_frequency = (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
+	const u32 ddr_frequency = (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
 
 	for (ch = 0; ch < NUM_CHANNELS; ch++) {
-		const u32 ch_conf = MCHBAR32(MAD_DIMM(ch));
+		const u32 ch_conf = mchbar_read32(MAD_DIMM(ch));
 		/* DIMMs A/B */
 		for (d_num = 0; d_num < NUM_SLOTS; d_num++) {
 			const u32 dimm_size = ((ch_conf >> (d_num * 8)) & 0xff) * 256;

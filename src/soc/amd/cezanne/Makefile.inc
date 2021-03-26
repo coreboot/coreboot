@@ -21,6 +21,7 @@ verstage_x86-y	+= gpio.c
 verstage_x86-y	+= reset.c
 verstage_x86-y	+= uart.c
 
+romstage-y	+= fsp_m_params.c
 romstage-y	+= i2c.c
 romstage-y	+= gpio.c
 romstage-y	+= reset.c

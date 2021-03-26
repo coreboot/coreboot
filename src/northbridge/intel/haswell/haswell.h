@@ -82,15 +82,11 @@
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR64(x) (*((volatile u64 *)((uintptr_t)CONFIG_FIXED_EPBAR_MMIO_BASE + (x))))
-
 #include "registers/epbar.h"
 
 /*
  * DMIBAR
  */
-
-#define DMIBAR64(x) (*((volatile u64 *)((uintptr_t)CONFIG_FIXED_DMIBAR_MMIO_BASE + (x))))
 
 #include "registers/dmibar.h"
 

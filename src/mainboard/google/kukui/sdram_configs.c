@@ -46,6 +46,14 @@ static const char *const sdram_configs[] = {
 	[0x27] = "sdram-lpddr4x-SDADA4CR-128G-4GB",
 	[0x28] = "sdram-lpddr4x-MT29VZZZCD9GQKPR-046-8GB",
 
+	/* Table shared by Cozmo and its variants, offset = 0x30 */
+	[0x30] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",
+	[0x31] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
+	[0x32] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
+	[0x38] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
+	[0x39] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
+	[0x3a] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+	[0x3b] = "sdram-lpddr4x-H9HCNNNFAMMLXR-NEE-8GB",
 };
 
 static struct sdram_params params;

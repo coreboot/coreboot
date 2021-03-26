@@ -1401,8 +1401,8 @@ static void sdram_rcomp(struct sysinfo *s)
 	MCHBAR8_AND(XCOMPSDR0BNS,  ~(1 <<  5));
 
 	FOR_EACH_RCOMP_GROUP(i) {
-		/* FIXME: This should be an _AND_OR */
-		MCHBAR8(C0RCOMPCTRLx(i) + 2) = MCHBAR8(C0RCOMPCTRLx(i)) & ~0x71;
+		/* POR values are zero */
+		MCHBAR8_AND(C0RCOMPCTRLx(i) + 2, ~0x71);
 	}
 
 	if ((MCHBAR32(COMPCTRL1) & (1 << 30)) == 0) {

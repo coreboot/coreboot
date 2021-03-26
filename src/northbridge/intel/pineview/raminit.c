@@ -2320,7 +2320,7 @@ static void sdram_powersettings(struct sysinfo *s)
 	MCHBAR8_AND(CISDCTRL + 3, ~0x80);
 	MCHBAR16_AND(CICGDIS, ~0x1fff);
 	MCHBAR32_AND(SBCLKGATECTRL, ~0x0001ffff);
-	MCHBAR16_AND(HICLKGTCTL, ~0x03ff & 0x06);
+	MCHBAR16_AND_OR(HICLKGTCTL, ~0x03ff, 0x06);
 	MCHBAR32_AND_OR(HTCLKGTCTL, ~0xffffffff, 0x20);
 	MCHBAR8_AND(TSMISC, ~1);
 	MCHBAR8(C0WRDPYN) = s->selected_timings.CAS - 1 + 0x15;

@@ -1,0 +1,13 @@
+config SOC_AMD_COMMON_BLOCK_PM
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_ACPIMMIO
+	select HAVE_POWER_STATE_AFTER_FAILURE
+	help
+	  AMD Processor common code for Power Management (PM) subsystem.
+
+if SOC_AMD_COMMON_BLOCK_PM
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default y
+
+endif # SOC_AMD_COMMON_BLOCK_PM

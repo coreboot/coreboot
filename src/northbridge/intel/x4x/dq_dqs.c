@@ -213,13 +213,13 @@ static int find_dq_limit(const struct sysinfo *s, const u8 channel,
 	int lane;
 	u8 test_result;
 	u8 pass_count[TOTAL_BYTELANES];
-	u8 succes_mask = 0xff;
+	u8 success_mask = 0xff;
 
 	printk(RAM_DEBUG, "Looking for %s writes on channel %d\n",
 		expected_result == FAILING ? "failing" : "succeeding", channel);
 	memset(pass_count, 0, sizeof(pass_count));
 
-	while (succes_mask) {
+	while (success_mask) {
 		test_result = test_dq_aligned(s, channel);
 		FOR_EACH_BYTELANE(lane) {
 			if (((test_result >> lane) & 1) != expected_result) {
@@ -232,7 +232,7 @@ static int find_dq_limit(const struct sysinfo *s, const u8 channel,
 				dq_lim[lane]++;
 				pass_count[lane]++;
 			} else if (pass_count[lane] == CONSISTENCY) {
-				succes_mask &= ~(1 << lane);
+				success_mask &= ~(1 << lane);
 			}
 			if (status == CB_ERR) {
 				printk(BIOS_CRIT, "Could not find a case of %s "

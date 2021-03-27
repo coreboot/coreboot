@@ -34,7 +34,7 @@ void bootblock_mainboard_early_init(void)
 	 */
 	pci_write_config32(HOST_BRIDGE, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
 	pci_write_config32(HOST_BRIDGE, MCHBAR + 4, 0);
-	MCHBAR16(SSKPD_HI) = 0;
+	mchbar_write16(SSKPD_HI, 0);
 
 	sch5545_early_init(0x2e);
 	/* Bare EC and SIO GPIO initialization which allows to enable serial port */

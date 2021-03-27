@@ -190,90 +190,90 @@ static void i945_setup_egress_port(void)
 	/* Egress Port Virtual Channel 0 Configuration */
 
 	/* map only TC0 to VC0 */
-	reg32 = EPBAR32(EPVC0RCTL);
+	reg32 = epbar_read32(EPVC0RCTL);
 	reg32 &= 0xffffff01;
-	EPBAR32(EPVC0RCTL) = reg32;
+	epbar_write32(EPVC0RCTL, reg32);
 
-	reg32 = EPBAR32(EPPVCCAP1);
+	reg32 = epbar_read32(EPPVCCAP1);
 	reg32 &= ~(7 << 0);
 	reg32 |= 1;
-	EPBAR32(EPPVCCAP1) = reg32;
+	epbar_write32(EPPVCCAP1, reg32);
 
 	/* Egress Port Virtual Channel 1 Configuration */
-	reg32 = EPBAR32(0x2c);
+	reg32 = epbar_read32(0x2c);
 	reg32 &= 0xffffff00;
 	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
-		if ((MCHBAR32(CLKCFG) & 7) == 0)
+		if ((mchbar_read32(CLKCFG) & 7) == 0)
 			reg32 |= 0x1a;	/* 1067MHz */
 	}
-	if ((MCHBAR32(CLKCFG) & 7) == 1)
+	if ((mchbar_read32(CLKCFG) & 7) == 1)
 		reg32 |= 0x0d;	/* 533MHz */
-	if ((MCHBAR32(CLKCFG) & 7) == 2)
+	if ((mchbar_read32(CLKCFG) & 7) == 2)
 		reg32 |= 0x14;	/* 800MHz */
-	if ((MCHBAR32(CLKCFG) & 7) == 3)
+	if ((mchbar_read32(CLKCFG) & 7) == 3)
 		reg32 |= 0x10;	/* 667MHz */
-	EPBAR32(0x2c) = reg32;
+	epbar_write32(0x2c, reg32);
 
-	EPBAR32(EPVC1MTS) = 0x0a0a0a0a;
+	epbar_write32(EPVC1MTS, 0x0a0a0a0a);
 
-	reg32 = EPBAR32(EPVC1RCAP);
+	reg32 = epbar_read32(EPVC1RCAP);
 	reg32 &= ~(0x7f << 16);
 	reg32 |= (0x0a << 16);
-	EPBAR32(EPVC1RCAP) = reg32;
+	epbar_write32(EPVC1RCAP, reg32);
 
 	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
-		if ((MCHBAR32(CLKCFG) & 7) == 0) {	/* 1067MHz */
-			EPBAR32(EPVC1IST + 0) = 0x01380138;
-			EPBAR32(EPVC1IST + 4) = 0x01380138;
+		if ((mchbar_read32(CLKCFG) & 7) == 0) {	/* 1067MHz */
+			epbar_write32(EPVC1IST + 0, 0x01380138);
+			epbar_write32(EPVC1IST + 4, 0x01380138);
 		}
 	}
 
-	if ((MCHBAR32(CLKCFG) & 7) == 1) {	/* 533MHz */
-		EPBAR32(EPVC1IST + 0) = 0x009c009c;
-		EPBAR32(EPVC1IST + 4) = 0x009c009c;
+	if ((mchbar_read32(CLKCFG) & 7) == 1) {	/* 533MHz */
+		epbar_write32(EPVC1IST + 0, 0x009c009c);
+		epbar_write32(EPVC1IST + 4, 0x009c009c);
 	}
 
-	if ((MCHBAR32(CLKCFG) & 7) == 2) {	/* 800MHz */
-		EPBAR32(EPVC1IST + 0) = 0x00f000f0;
-		EPBAR32(EPVC1IST + 4) = 0x00f000f0;
+	if ((mchbar_read32(CLKCFG) & 7) == 2) {	/* 800MHz */
+		epbar_write32(EPVC1IST + 0, 0x00f000f0);
+		epbar_write32(EPVC1IST + 4, 0x00f000f0);
 	}
 
-	if ((MCHBAR32(CLKCFG) & 7) == 3) {	/* 667MHz */
-		EPBAR32(EPVC1IST + 0) = 0x00c000c0;
-		EPBAR32(EPVC1IST + 4) = 0x00c000c0;
+	if ((mchbar_read32(CLKCFG) & 7) == 3) {	/* 667MHz */
+		epbar_write32(EPVC1IST + 0, 0x00c000c0);
+		epbar_write32(EPVC1IST + 4, 0x00c000c0);
 	}
 
 	/* Is internal graphics enabled? */
 	if (pci_read_config8(HOST_BRIDGE, DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1))
-		MCHBAR32(MMARB1) |= (1 << 17);
+		mchbar_setbits32(MMARB1, 1 << 17);
 
 	/* Assign Virtual Channel ID 1 to VC1 */
-	reg32 = EPBAR32(EPVC1RCTL);
+	reg32 = epbar_read32(EPVC1RCTL);
 	reg32 &= ~(7 << 24);
 	reg32 |= (1 << 24);
-	EPBAR32(EPVC1RCTL) = reg32;
+	epbar_write32(EPVC1RCTL, reg32);
 
-	reg32 = EPBAR32(EPVC1RCTL);
+	reg32 = epbar_read32(EPVC1RCTL);
 	reg32 &= 0xffffff01;
 	reg32 |= (1 << 7);
-	EPBAR32(EPVC1RCTL) = reg32;
+	epbar_write32(EPVC1RCTL, reg32);
 
-	EPBAR32(PORTARB + 0x00) = 0x01000001;
-	EPBAR32(PORTARB + 0x04) = 0x00040000;
-	EPBAR32(PORTARB + 0x08) = 0x00001000;
-	EPBAR32(PORTARB + 0x0c) = 0x00000040;
-	EPBAR32(PORTARB + 0x10) = 0x01000001;
-	EPBAR32(PORTARB + 0x14) = 0x00040000;
-	EPBAR32(PORTARB + 0x18) = 0x00001000;
-	EPBAR32(PORTARB + 0x1c) = 0x00000040;
+	epbar_write32(PORTARB + 0x00, 0x01000001);
+	epbar_write32(PORTARB + 0x04, 0x00040000);
+	epbar_write32(PORTARB + 0x08, 0x00001000);
+	epbar_write32(PORTARB + 0x0c, 0x00000040);
+	epbar_write32(PORTARB + 0x10, 0x01000001);
+	epbar_write32(PORTARB + 0x14, 0x00040000);
+	epbar_write32(PORTARB + 0x18, 0x00001000);
+	epbar_write32(PORTARB + 0x1c, 0x00000040);
 
-	EPBAR32(EPVC1RCTL) |= (1 << 16);
-	EPBAR32(EPVC1RCTL) |= (1 << 16);
+	epbar_setbits32(EPVC1RCTL, 1 << 16);
+	epbar_setbits32(EPVC1RCTL, 1 << 16);
 
 	printk(BIOS_DEBUG, "Loading port arbitration table ...");
 	/* Loop until bit 0 becomes 0 */
 	timeout = 0x7fffff;
-	while ((EPBAR16(EPVC1RSTS) & 1) && --timeout)
+	while ((epbar_read16(EPVC1RSTS) & (1 << 0)) && --timeout)
 		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
@@ -281,12 +281,12 @@ static void i945_setup_egress_port(void)
 		printk(BIOS_DEBUG, "ok\n");
 
 	/* Now enable VC1 */
-	EPBAR32(EPVC1RCTL) |= (1 << 31);
+	epbar_setbits32(EPVC1RCTL, 1 << 31);
 
 	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7fff;
-	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) && --timeout)
+	while ((epbar_read16(EPVC1RSTS) & (1 << 1)) && --timeout)
 		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
@@ -332,32 +332,32 @@ static void i945_setup_dmi_rcrb(void)
 	printk(BIOS_DEBUG, "Setting up DMI RCRB\n");
 
 	/* Virtual Channel 0 Configuration */
-	reg32 = DMIBAR32(DMIVC0RCTL0);
+	reg32 = dmibar_read32(DMIVC0RCTL0);
 	reg32 &= 0xffffff01;
-	DMIBAR32(DMIVC0RCTL0) = reg32;
+	dmibar_write32(DMIVC0RCTL0, reg32);
 
-	reg32 = DMIBAR32(DMIPVCCAP1);
+	reg32 = dmibar_read32(DMIPVCCAP1);
 	reg32 &= ~(7 << 0);
 	reg32 |= 1;
-	DMIBAR32(DMIPVCCAP1) = reg32;
+	dmibar_write32(DMIPVCCAP1, reg32);
 
-	reg32 = DMIBAR32(DMIVC1RCTL);
+	reg32 = dmibar_read32(DMIVC1RCTL);
 	reg32 &= ~(7 << 24);
 	reg32 |= (1 << 24);	/* NOTE: This ID must match ICH7 side */
-	DMIBAR32(DMIVC1RCTL) = reg32;
+	dmibar_write32(DMIVC1RCTL, reg32);
 
-	reg32 = DMIBAR32(DMIVC1RCTL);
+	reg32 = dmibar_read32(DMIVC1RCTL);
 	reg32 &= 0xffffff01;
 	reg32 |= (1 << 7);
-	DMIBAR32(DMIVC1RCTL) = reg32;
+	dmibar_write32(DMIVC1RCTL, reg32);
 
 	/* Now enable VC1 */
-	DMIBAR32(DMIVC1RCTL) |= (1 << 31);
+	dmibar_setbits32(DMIVC1RCTL, 1 << 31);
 
 	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7ffff;
-	while ((DMIBAR16(DMIVC1RSTS) & (1 << 1)) && --timeout)
+	while ((dmibar_read16(DMIVC1RSTS) & (1 << 1)) && --timeout)
 		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
@@ -366,97 +366,97 @@ static void i945_setup_dmi_rcrb(void)
 
 	/* Enable Active State Power Management (ASPM) L0 state */
 
-	reg32 = DMIBAR32(DMILCAP);
+	reg32 = dmibar_read32(DMILCAP);
 	reg32 &= ~(7 << 12);
 	reg32 |= (2 << 12);
 
 	reg32 &= ~(7 << 15);
 
 	reg32 |= (2 << 15);
-	DMIBAR32(DMILCAP) = reg32;
+	dmibar_write32(DMILCAP, reg32);
 
-	reg32 = DMIBAR32(DMICC);
+	reg32 = dmibar_read32(DMICC);
 	reg32 &= 0x00ffffff;
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
 	reg32 &= ~(3 << 20);
 	reg32 |= (1 << 20);
 
-	DMIBAR32(DMICC) = reg32;
+	dmibar_write32(DMICC, reg32);
 
 	if (activate_aspm)
-		DMIBAR32(DMILCTL) |= (3 << 0);
+		dmibar_setbits32(DMILCTL, 3 << 0);
 
 	/* Last but not least, some additional steps */
-	reg32 = MCHBAR32(FSBSNPCTL);
+	reg32 = mchbar_read32(FSBSNPCTL);
 	reg32 &= ~(0xff << 2);
 	reg32 |= (0xaa << 2);
-	MCHBAR32(FSBSNPCTL) = reg32;
+	mchbar_write32(FSBSNPCTL, reg32);
 
-	DMIBAR32(0x2c) = 0x86000040;
+	dmibar_write32(0x2c, 0x86000040);
 
-	reg32 = DMIBAR32(0x204);
+	reg32 = dmibar_read32(0x204);
 	reg32 &= ~0x3ff;
 #if 1
 	reg32 |= 0x13f;	/* for x4 DMI only */
 #else
 	reg32 |= 0x1e4;	/* for x2 DMI only */
 #endif
-	DMIBAR32(0x204) = reg32;
+	dmibar_write32(0x204, reg32);
 
 	if (pci_read_config8(HOST_BRIDGE, DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
 		printk(BIOS_DEBUG, "Internal graphics: enabled\n");
-		DMIBAR32(0x200) |= (1 << 21);
+		dmibar_setbits32(0x200, 1 << 21);
 	} else {
 		printk(BIOS_DEBUG, "Internal graphics: disabled\n");
-		DMIBAR32(0x200) &= ~(1 << 21);
+		dmibar_clrbits32(0x200, 1 << 21);
 	}
 
-	reg32 = DMIBAR32(0x204);
+	reg32 = dmibar_read32(0x204);
 	reg32 &= ~((1 << 11) | (1 << 10));
-	DMIBAR32(0x204) = reg32;
+	dmibar_write32(0x204, reg32);
 
-	reg32 = DMIBAR32(0x204);
+	reg32 = dmibar_read32(0x204);
 	reg32 &= ~(0xff << 12);
 	reg32 |= (0x0d << 12);
-	DMIBAR32(0x204) = reg32;
+	dmibar_write32(0x204, reg32);
 
-	DMIBAR32(DMICTL1) |= (3 << 24);
+	dmibar_setbits32(DMICTL1, 3 << 24);
 
-	reg32 = DMIBAR32(0x200);
+	reg32 = dmibar_read32(0x200);
 	reg32 &= ~(0x3 << 26);
 	reg32 |= (0x02 << 26);
-	DMIBAR32(0x200) = reg32;
+	dmibar_write32(0x200, reg32);
 
-	DMIBAR32(DMIDRCCFG) &= ~(1 << 31);
-	DMIBAR32(DMICTL2) |= (1 << 31);
+	dmibar_clrbits32(DMIDRCCFG, 1 << 31);
+	dmibar_setbits32(DMICTL2, 1 << 31);
 
 	if (i945_silicon_revision() >= 3) {
-		reg32 = DMIBAR32(0xec0);
+		reg32 = dmibar_read32(0xec0);
 		reg32 &= 0x0fffffff;
 		reg32 |= (2 << 28);
-		DMIBAR32(0xec0) = reg32;
+		dmibar_write32(0xec0, reg32);
 
-		reg32 = DMIBAR32(0xed4);
+		reg32 = dmibar_read32(0xed4);
 		reg32 &= 0x0fffffff;
 		reg32 |= (2 << 28);
-		DMIBAR32(0xed4) = reg32;
+		dmibar_write32(0xed4, reg32);
 
-		reg32 = DMIBAR32(0xee8);
+		reg32 = dmibar_read32(0xee8);
 		reg32 &= 0x0fffffff;
 		reg32 |= (2 << 28);
-		DMIBAR32(0xee8) = reg32;
+		dmibar_write32(0xee8, reg32);
 
-		reg32 = DMIBAR32(0xefc);
+		reg32 = dmibar_read32(0xefc);
 		reg32 &= 0x0fffffff;
 		reg32 |= (2 << 28);
-		DMIBAR32(0xefc) = reg32;
+		dmibar_write32(0xefc, reg32);
 	}
 
 	/* wait for bit toggle to 0 */
 	printk(BIOS_DEBUG, "Waiting for DMI hardware...");
 	timeout = 0x7fffff;
-	while ((DMIBAR8(0x32) & (1 << 1)) && --timeout)
+	while ((dmibar_read8(0x32) & (1 << 1)) && --timeout)
 		;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");
@@ -464,25 +464,25 @@ static void i945_setup_dmi_rcrb(void)
 		printk(BIOS_DEBUG, "ok\n");
 
 	/* Clear Error Status Bits! */
-	DMIBAR32(0x1c4) = 0xffffffff;
-	DMIBAR32(0x1d0) = 0xffffffff;
-	DMIBAR32(0x228) = 0xffffffff;
+	dmibar_write32(0x1c4, 0xffffffff);
+	dmibar_write32(0x1d0, 0xffffffff);
+	dmibar_write32(0x228, 0xffffffff);
 
 	/* Program Read-Only Write-Once Registers */
-	DMIBAR32(0x308) = DMIBAR32(0x308);
-	DMIBAR32(0x314) = DMIBAR32(0x314);
-	DMIBAR32(0x324) = DMIBAR32(0x324);
-	DMIBAR32(0x328) = DMIBAR32(0x328);
-	DMIBAR32(0x334) = DMIBAR32(0x334);
-	DMIBAR32(0x338) = DMIBAR32(0x338);
+	dmibar_setbits32(0x308, 0);
+	dmibar_setbits32(0x314, 0);
+	dmibar_setbits32(0x324, 0);
+	dmibar_setbits32(0x328, 0);
+	dmibar_setbits32(0x334, 0);
+	dmibar_setbits32(0x338, 0);
 
-	if (i945_silicon_revision() == 1 && (MCHBAR8(DFT_STRAP1) & (1 << 5))) {
-		if ((MCHBAR32(0x214) & 0xf) != 0x3) {
+	if (i945_silicon_revision() == 1 && (mchbar_read8(DFT_STRAP1) & (1 << 5))) {
+		if ((mchbar_read32(0x214) & 0xf) != 0x3) {
 			printk(BIOS_INFO, "DMI link requires A1 stepping workaround. Rebooting.\n");
-			reg32 = DMIBAR32(0x224);
+			reg32 = dmibar_read32(0x224);
 			reg32 &= ~(7 << 0);
 			reg32 |= (3 << 0);
-			DMIBAR32(0x224) = reg32;
+			dmibar_write32(0x224, reg32);
 			system_reset();
 		}
 	}
@@ -524,7 +524,7 @@ static void i945_setup_pci_express_x16(void)
 
 	pci_and_config32(p2peg, 0x224, ~(1 << 8));
 
-	MCHBAR16(UPMC1) &= ~((1 << 5) | (1 << 0));
+	mchbar_clrbits16(UPMC1, 1 << 5 | 1 << 0);
 
 	/* Initialize PEG_CAP */
 	pci_or_config16(p2peg, PEG_CAP, 1 << 8);
@@ -665,7 +665,7 @@ static void i945_setup_pci_express_x16(void)
 		/* Set voltage specific parameters */
 		reg32 = pci_read_config32(p2peg, 0xe80);
 		reg32 &= (0xf << 4);	/* Default case 1.05V */
-		if ((MCHBAR32(DFT_STRAP1) & (1 << 20)) == 0) {	/* 1.50V */
+		if ((mchbar_read32(DFT_STRAP1) & (1 << 20)) == 0) {	/* 1.50V */
 			reg32 |= (7 << 4);
 		}
 		pci_write_config32(p2peg, 0xe80, reg32);
@@ -677,7 +677,7 @@ disable_pciexpress_x16_link:
 	/* For now we just disable the x16 link */
 	printk(BIOS_DEBUG, "Disabling PCI Express x16 Link\n");
 
-	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
+	mchbar_setbits16(UPMC1, 1 << 5 | 1 << 0);
 
 	/* Toggle PCIRST# */
 	pci_s_assert_secondary_reset(p2peg);
@@ -708,33 +708,33 @@ static void i945_setup_root_complex_topology(void)
 	printk(BIOS_DEBUG, "Setting up Root Complex Topology\n");
 	/* Egress Port Root Topology */
 
-	reg32 = EPBAR32(EPESD);
+	reg32 = epbar_read32(EPESD);
 	reg32 &= 0xff00ffff;
 	reg32 |= (1 << 16);
-	EPBAR32(EPESD) = reg32;
+	epbar_write32(EPESD, reg32);
 
-	EPBAR32(EPLE1D) |= (1 << 16) | (1 << 0);
+	epbar_setbits32(EPLE1D, 1 << 16 | 1 << 0);
 
-	EPBAR32(EPLE1A) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
+	epbar_write32(EPLE1A, CONFIG_FIXED_DMIBAR_MMIO_BASE);
 
-	EPBAR32(EPLE2D) |= (1 << 16) | (1 << 0);
+	epbar_setbits32(EPLE2D, 1 << 16 | 1 << 0);
 
 	/* DMI Port Root Topology */
 
-	reg32 = DMIBAR32(DMILE1D);
+	reg32 = dmibar_read32(DMILE1D);
 	reg32 &= 0x00ffffff;
 
 	reg32 &= 0xff00ffff;
 	reg32 |= (2 << 16);
 
 	reg32 |= (1 << 0);
-	DMIBAR32(DMILE1D) = reg32;
+	dmibar_write32(DMILE1D, reg32);
 
-	DMIBAR32(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
+	dmibar_write32(DMILE1A, CONFIG_FIXED_RCBA_MMIO_BASE);
 
-	DMIBAR32(DMILE2D) |= (1 << 16) | (1 << 0);
+	dmibar_setbits32(DMILE2D, 1 << 16 | 1 << 0);
 
-	DMIBAR32(DMILE2A) = CONFIG_FIXED_EPBAR_MMIO_BASE;
+	dmibar_write32(DMILE2A, CONFIG_FIXED_EPBAR_MMIO_BASE);
 
 	/* PCI Express x16 Port Root Topology */
 	if (pci_read_config8(HOST_BRIDGE, DEVEN) & DEVEN_D1F0) {
@@ -825,7 +825,7 @@ void i945_late_initialization(int s3resume)
 	if (CONFIG(DEBUG_RAM_SETUP))
 		sdram_dump_mchbar_registers();
 
-	MCHBAR16(SSKPD) = 0xCAFE;
+	mchbar_write16(SSKPD, 0xcafe);
 
 	i945_prepare_resume(s3resume);
 }

@@ -13,9 +13,8 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 	u32 reg32, addr;
 	int i;
 
-	MCHBAR32(C0DRC1 + channel_offset) |= (1 << 6);
-
-	MCHBAR32(C0DRC1 + channel_offset) &= ~(1 << 6);
+	mchbar_setbits32(C0DRC1 + channel_offset, 1 << 6);
+	mchbar_clrbits32(C0DRC1 + channel_offset, 1 << 6);
 
 	addr = 0;
 
@@ -23,7 +22,7 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 		if (sysinfo->interleaved == 1)
 			addr |= (1 << 6);
 		else
-			addr = ((u32)MCHBAR8(C0DRB3)) << 25;
+			addr = ((u32)mchbar_read8(C0DRB3)) << 25;
 	}
 
 	for (i = 0; i < 28; i++) {
@@ -31,7 +30,7 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 		read32((void *)(addr + 0x80));
 	}
 
-	reg32 = MCHBAR32(RCVENMT);
+	reg32 = mchbar_read32(RCVENMT);
 	if (channel_offset == 0)
 		reg32 = reg32 << 2;
 
@@ -53,10 +52,10 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 	printk(BIOS_SPEW, "    %s() medium=0x%x, coarse=0x%x\n", __func__, medium, coarse);
 
-	reg32 = MCHBAR32(C0DRT1 + channel_offset);
+	reg32 = mchbar_read32(C0DRT1 + channel_offset);
 	reg32 &= 0xf0ffffff;
 	reg32 |= ((u32)coarse & 0x0f) << 24;
-	MCHBAR32(C0DRT1 + channel_offset) = reg32;
+	mchbar_write32(C0DRT1 + channel_offset, reg32);
 
 	/* This should never happen: */
 	if (coarse > 0x0f)
@@ -70,7 +69,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 	 * 11 - 1   clock
 	 */
 
-	reg32 = MCHBAR32(RCVENMT);
+	reg32 = mchbar_read32(RCVENMT);
 	if (!channel_offset) {
 		/* Channel 0 */
 		reg32 &= ~(3 << 2);
@@ -80,7 +79,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 		reg32 &= ~(3 << 0);
 		reg32 |= medium;
 	}
-	MCHBAR32(RCVENMT) = reg32;
+	mchbar_write32(RCVENMT, reg32);
 
 }
 
@@ -101,7 +100,7 @@ static int normalize(int channel_offset, u8 *mediumcoarse, u8 *fine)
 
 	set_receive_enable(channel_offset, *mediumcoarse & 3, *mediumcoarse >> 2);
 
-	MCHBAR8(C0WL0REOST + channel_offset) = *fine;
+	mchbar_write8(C0WL0REOST + channel_offset, *fine);
 
 	return 0;
 }
@@ -157,7 +156,7 @@ static int add_quarter_clock(int channel_offset, u8 *mediumcoarse, u8 *fine)
 		*fine += 0x80;
 	}
 
-	MCHBAR8(C0WL0REOST + channel_offset) = *fine;
+	mchbar_write8(C0WL0REOST + channel_offset, *fine);
 
 	return 0;
 }
@@ -170,7 +169,7 @@ static int find_strobes_low(int channel_offset, u8 *mediumcoarse, u8 *fine,
 	printk(BIOS_SPEW, "  %s()\n", __func__);
 
 	for (;;) {
-		MCHBAR8(C0WL0REOST + channel_offset) = *fine;
+		mchbar_write8(C0WL0REOST + channel_offset, *fine);
 
 		set_receive_enable(channel_offset, *mediumcoarse & 3, *mediumcoarse >> 2);
 
@@ -208,7 +207,7 @@ static int find_strobes_edge(int channel_offset, u8 *mediumcoarse, u8 *fine,
 	set_receive_enable(channel_offset, *mediumcoarse & 3, *mediumcoarse >> 2);
 
 	for (;;) {
-		MCHBAR8(C0WL0REOST + channel_offset) = *fine;
+		mchbar_write8(C0WL0REOST + channel_offset, *fine);
 		rcvenmt = sample_strobes(channel_offset, sysinfo);
 
 		if ((rcvenmt & (1 << 19)) == 0) {
@@ -247,7 +246,7 @@ static int find_strobes_edge(int channel_offset, u8 *mediumcoarse, u8 *fine,
 	}
 
 	*fine &= ~(1 << 3);
-	MCHBAR8(C0WL0REOST + channel_offset) = *fine;
+	mchbar_write8(C0WL0REOST + channel_offset, *fine);
 
 	return 0;
 }
@@ -290,7 +289,7 @@ static int receive_enable_autoconfig(int channel_offset, struct sys_info *sysinf
 	/* This is a debug check to see if the rcven code is fully working.
 	 * It can be removed when the output message is not printed anymore
 	 */
-	if (MCHBAR8(C0WL0REOST + channel_offset) == 0)
+	if (mchbar_read8(C0WL0REOST + channel_offset) == 0)
 		printk(BIOS_DEBUG, "Weird. No C%sWL0REOST\n", channel_offset ? "1" : "0");
 
 	return 0;

@@ -34,7 +34,7 @@ void mainboard_romstage_entry(void)
 
 	mainboard_lpc_decode();
 
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
+	if (mchbar_read16(SSKPD) == 0xcafe) {
 		system_reset();
 	}
 

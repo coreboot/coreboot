@@ -294,7 +294,7 @@ enum {
 #define CxDRC1_SSDS_MASK	(0xff << CxDRC1_SSDS_SHIFT)
 #define CxDRC1_DS		(0x91 << CxDRC1_SSDS_SHIFT)
 #define CxDRC1_SS		(0xb1 << CxDRC1_SSDS_SHIFT)
-#define CxDRC1_NOTPOP(r)	(1 << (16 + r)) /* Write 1 for Not Populated */
+#define CxDRC1_NOTPOP(r)	(1 << (16 + (r))) /* Write 1 for Not Populated */
 #define CxDRC1_NOTPOP_MASK	(0xf << 16)
 #define CxDRC1_MUSTWR		(3 << 11)
 

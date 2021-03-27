@@ -22,8 +22,8 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	printk(BIOS_DEBUG, "Enabling IGD.\n");
 
 	/* HSync/VSync */
-	MCHBAR8(0xbd0 + 3) = 0x5a;
-	MCHBAR8(0xbd0 + 4) = 0x5a;
+	mchbar_write8(0xbd0 + 3, 0x5a);
+	mchbar_write8(0xbd0 + 4, 0x5a);
 
 	static const u16 display_clock_from_f0_and_vco[][4] = {
 		  /* VCO 2666    VCO 3200    VCO 4000    VCO 5333 */
@@ -58,7 +58,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 			/* Disable PEG finally. */
 			printk(BIOS_DEBUG, "Finally disabling "
 					   "PEG in favor of IGD.\n");
-			MCHBAR8(0xc14) |= (1 << 5) | (1 << 0);
+			mchbar_setbits8(0xc14, 1 << 5 | 1 << 0);
 
 			pci_or_config32(peg_dev, 0x200, 1 << 18);
 
@@ -70,7 +70,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 				;
 
 			pci_write_config32(mch_dev, D0F0_DEVEN, deven & ~2);
-			MCHBAR8(0xc14) &= ~((1 << 5) | (1 << 0));
+			mchbar_clrbits8(0xc14, 1 << 5 | 1 << 0);
 		}
 	}
 }
@@ -84,12 +84,12 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 	/* Disable Graphics Stolen Memory. */
 	pci_update_config16(mch_dev, D0F0_GGC, 0xff0f, 0x0002);
 
-	MCHBAR8(0xf10) |= (1 << 0);
+	mchbar_setbits8(0xf10, 1 << 0);
 
 	if (!(pci_read_config8(mch_dev, D0F0_CAPID0 + 4) & (1 << (33 - 32)))) {
-		MCHBAR16(0x1190) |= (1 << 14);
-		MCHBAR16(0x119e) = (MCHBAR16(0x119e) & ~(7 << 13)) | (4 << 13);
-		MCHBAR16(0x119e) |= (1 << 12);
+		mchbar_setbits16(0x1190, 1 << 14);
+		mchbar_clrsetbits16(0x119e, 7 << 13, 4 << 13);
+		mchbar_setbits16(0x119e, 1 << 12);
 	}
 
 	/* Hide IGD. */

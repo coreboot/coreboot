@@ -50,13 +50,13 @@ void mainboard_romstage_entry(void)
 
 	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
 	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);
-	if ((MCHBAR16(SSKPD_MCHBAR) == 0xCAFE) && !(reg16 & (1 << 9))) {
+	if ((mchbar_read16(SSKPD_MCHBAR) == 0xcafe) && !(reg16 & (1 << 9))) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		gm45_early_reset();
 	}
 
 	/* ASPM related setting, set early by original BIOS. */
-	DMIBAR16(0x204) &= ~(3 << 10);
+	dmibar_clrbits16(0x204, 3 << 10);
 
 	/* Check for S3 resume. */
 	s3resume = southbridge_detect_s3_resume();
@@ -89,7 +89,7 @@ void mainboard_romstage_entry(void)
 	gm45_late_init(sysinfo.stepping);
 	i82801ix_dmi_poll_vc1();
 
-	MCHBAR16(SSKPD_MCHBAR) = 0xCAFE;
+	mchbar_write16(SSKPD_MCHBAR, 0xcafe);
 
 	init_iommu();
 

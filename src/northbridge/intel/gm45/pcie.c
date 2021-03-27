@@ -11,34 +11,34 @@
 static void init_egress(void)
 {
 	/* VC0: TC0 only */
-	EPBAR8(EPVC0RCTL) &= 1;
-	EPBAR8(EPPVCCAP1) = (EPBAR8(EPPVCCAP1) & ~7) | 1;
+	epbar_clrbits8(EPVC0RCTL, ~1);
+	epbar_clrsetbits8(EPPVCCAP1, 7, 1);
 
 	/* VC1: isoch */
-	EPBAR32(EPVC1MTS) = 0x0a0a0a0a;
-	EPBAR32(EPVC1RCAP) = (EPBAR32(EPVC1RCAP) & ~(127 << 16)) | (0x0a << 16);
+	epbar_write32(EPVC1MTS, 0x0a0a0a0a);
+	epbar_clrsetbits32(EPVC1RCAP, 127 << 16, 0x0a << 16);
 
 	/* VC1: ID1, TC7 */
-	EPBAR32(EPVC1RCTL) = (EPBAR32(EPVC1RCTL) & ~(7 << 24)) | (1 << 24);
-	EPBAR8(EPVC1RCTL) = (EPBAR8(EPVC1RCTL) & 1) | (1 << 7);
+	epbar_clrsetbits32(EPVC1RCTL, 7 << 24, 1 << 24);
+	epbar_clrsetbits8(EPVC1RCTL, ~1, 1 << 7);
 
 	/* VC1 ARB table: setup and enable */
-	EPBAR32(EP_PORTARB(0)) = 0x55555555;
-	EPBAR32(EP_PORTARB(1)) = 0x55555555;
-	EPBAR32(EP_PORTARB(2)) = 0x55555555;
-	EPBAR32(EP_PORTARB(3)) = 0x55555555;
-	EPBAR32(EP_PORTARB(4)) = 0x55555555;
-	EPBAR32(EP_PORTARB(5)) = 0x55555555;
-	EPBAR32(EP_PORTARB(6)) = 0x55555555;
-	EPBAR32(EP_PORTARB(7)) = 0x00005555;
-	EPBAR32(EPVC1RCTL) |= 1 << 16;
+	epbar_write32(EP_PORTARB(0), 0x55555555);
+	epbar_write32(EP_PORTARB(1), 0x55555555);
+	epbar_write32(EP_PORTARB(2), 0x55555555);
+	epbar_write32(EP_PORTARB(3), 0x55555555);
+	epbar_write32(EP_PORTARB(4), 0x55555555);
+	epbar_write32(EP_PORTARB(5), 0x55555555);
+	epbar_write32(EP_PORTARB(6), 0x55555555);
+	epbar_write32(EP_PORTARB(7), 0x00005555);
+	epbar_setbits32(EPVC1RCTL, 1 << 16);
 
-	while ((EPBAR8(EPVC1RSTS) & 1) != 0);
+	while ((epbar_read8(EPVC1RSTS) & 1) != 0);
 
 	/* VC1: enable */
-	EPBAR32(EPVC1RCTL) |= 1 << 31;
+	epbar_setbits32(EPVC1RCTL, 1 << 31);
 
-	while ((EPBAR8(EPVC1RSTS) & 2) != 0);
+	while ((epbar_read8(EPVC1RSTS) & 2) != 0);
 }
 
 /* MCH side */
@@ -46,47 +46,47 @@ static void init_egress(void)
 static void init_dmi(int b2step)
 {
 	/* VC0: TC0 only */
-	DMIBAR8(DMIVC0RCTL) &= 1;
-	DMIBAR8(DMIPVCCAP1) = (DMIBAR8(DMIPVCCAP1) & ~7) | 1;
+	dmibar_clrbits8(DMIVC0RCTL, ~1);
+	dmibar_clrsetbits8(DMIPVCCAP1, 7, 1);
 
 	/* VC1: ID1, TC7 */
-	DMIBAR32(DMIVC1RCTL) = (DMIBAR32(DMIVC1RCTL) & ~(7 << 24)) | (1 << 24);
-	DMIBAR8(DMIVC1RCTL) = (DMIBAR8(DMIVC1RCTL) & 1) | (1 << 7);
+	dmibar_clrsetbits32(DMIVC1RCTL, 7 << 24, 1 << 24);
+	dmibar_clrsetbits8(DMIVC1RCTL, ~1, 1 << 7);
 
 	/* VC1: enable */
-	DMIBAR32(DMIVC1RCTL) |= 1 << 31;
+	dmibar_setbits32(DMIVC1RCTL, 1 << 31);
 
-	while ((DMIBAR8(DMIVC1RSTS) & VC1NP) != 0);
+	while ((dmibar_read8(DMIVC1RSTS) & VC1NP) != 0);
 
 	/* additional configuration. */
-	DMIBAR32(0x200) |= 3 << 13;
-	DMIBAR32(0x200) &= ~(1 << 21);
-	DMIBAR32(0x200) = (DMIBAR32(0x200) & ~(3 << 26)) | (2 << 26);
-	DMIBAR32(0x2c) = 0x86000040;
-	DMIBAR32(0xfc) |= 1 << 0;
-	DMIBAR32(0xfc) |= 1 << 1;
-	DMIBAR32(0xfc) |= 1 << 4;
+	dmibar_setbits32(0x200, 3 << 13);
+	dmibar_clrbits32(0x200, 1 << 21);
+	dmibar_clrsetbits32(0x200, 3 << 26, 2 << 26);
+	dmibar_write32(0x2c, 0x86000040);
+	dmibar_setbits32(0xfc, 1 << 0);
+	dmibar_setbits32(0xfc, 1 << 1);
+	dmibar_setbits32(0xfc, 1 << 4);
 	if (!b2step) {
-		DMIBAR32(0xfc) |= 1 << 11;
+		dmibar_setbits32(0xfc, 1 << 11);
 	} else {
-		DMIBAR32(0xfc) &= ~(1 << 11);
+		dmibar_clrbits32(0xfc, 1 << 11);
 	}
-	DMIBAR32(0x204) &= ~(3 << 10);
-	DMIBAR32(0xf4) &= ~(1 << 4);
-	DMIBAR32(0xf0) |= 3 << 24;
-	DMIBAR32(0xf04) = 0x07050880;
-	DMIBAR32(0xf44) = 0x07050880;
-	DMIBAR32(0xf84) = 0x07050880;
-	DMIBAR32(0xfc4) = 0x07050880;
+	dmibar_clrbits32(0x204, 3 << 10);
+	dmibar_clrbits32(0xf4, 1 << 4);
+	dmibar_setbits32(0xf0, 3 << 24);
+	dmibar_write32(0xf04, 0x07050880);
+	dmibar_write32(0xf44, 0x07050880);
+	dmibar_write32(0xf84, 0x07050880);
+	dmibar_write32(0xfc4, 0x07050880);
 
 	/* lock down write-once registers
 	   DMIBAR32(0x84) will be set in setup_aspm(). */
-	DMIBAR32(0x308) = DMIBAR32(0x308);
-	DMIBAR32(0x314) = DMIBAR32(0x314);
-	DMIBAR32(0x324) = DMIBAR32(0x324);
-	DMIBAR32(0x328) = DMIBAR32(0x328);
-	DMIBAR32(0x334) = DMIBAR32(0x334);
-	DMIBAR32(0x338) = DMIBAR32(0x338);
+	dmibar_setbits32(0x308, 0);
+	dmibar_setbits32(0x314, 0);
+	dmibar_setbits32(0x324, 0);
+	dmibar_setbits32(0x328, 0);
+	dmibar_setbits32(0x334, 0);
+	dmibar_setbits32(0x338, 0);
 }
 
 static void init_pcie(const int peg_enabled,
@@ -185,16 +185,14 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 			tmp32 &= ~(1 << 13);
 		pci_write_config32(pciex, 0x0fc, tmp32);
 	}
-	DMIBAR8 (0x0e1c) |= (1 <<  0);
-	DMIBAR16(0x0f00) |= (3 <<  8);
-	DMIBAR16(0x0f00) |= (7 <<  3);
-	DMIBAR32(0x0f14) &= ~(1 << 17);
-	DMIBAR16(0x0e1c) &= ~(1 <<  8);
+	dmibar_setbits8(0x0e1c, 1 <<  0);
+	dmibar_setbits16(0x0f00, 3 <<  8);
+	dmibar_setbits16(0x0f00, 7 <<  3);
+	dmibar_clrbits32(0x0f14, 1 << 17);
+	dmibar_clrbits16(0x0e1c, 1 <<  8);
 	if (stepping >= STEPPING_B0) {
-		DMIBAR32(0x0e28 + 4) = (DMIBAR32(0x0e28 + 4) &
-						~(0xf << (52 - 32))) |
-					(0xd << (52 - 32));
-		DMIBAR32(0x0e2c) = 0x88d07333;
+		dmibar_clrsetbits32(0x0e28 + 4, 0xf << (52 - 32), 0xd << (52 - 32));
+		dmibar_write32(0x0e2c, 0x88d07333);
 	}
 	if (peg_enabled) {
 		pci_and_config32(pciex, 0xa08, ~(1 << 15));
@@ -224,13 +222,13 @@ static void setup_aspm(const stepping_t stepping, const int peg_enabled)
 	   the endpoint (ICH), but ICH doesn't give any limits. */
 
 	if (LPC_IS_MOBILE(PCI_DEV(0, 0x1f, 0)))
-		DMIBAR8(DMILCTL) |= (3 << 0); // enable ASPM L0s, L1 (write-once)
+		dmibar_setbits8(DMILCTL, 3 << 0); // enable ASPM L0s, L1 (write-once)
 	else
-		DMIBAR8(DMILCTL) |= (1 << 0); // enable ASPM L0s (write-once)
+		dmibar_setbits8(DMILCTL, 1 << 0); // enable ASPM L0s (write-once)
 	/* timing */
-	DMIBAR32(DMILCAP) = (DMIBAR32(DMILCAP) & ~(63 << 12)) | (2 << 12) | (2 << 15);
-	DMIBAR8(0x208 + 3) = 0;
-	DMIBAR32(0x208) &= ~(3 << 20);
+	dmibar_clrsetbits32(DMILCAP, 63 << 12, 2 << 12 | 2 << 15);
+	dmibar_write8(0x208 + 3, 0);
+	dmibar_clrbits32(0x208, 3 << 20);
 
 	/*\ Setup ASPM on PEG \*/
 	/*
@@ -247,36 +245,35 @@ static void setup_rcrb(const int peg_enabled)
 	/*\ RCRB setup: Egress Port \*/
 
 	/* Set component ID of MCH (1). */
-	EPBAR8(EPESD + 2) = 1;
+	epbar_write8(EPESD + 2, 1);
 
 	/* Link1: component ID 1, link valid. */
-	EPBAR32(EPLE1D) = (EPBAR32(EPLE1D) & 0xff000000) | (1 << 16) | (1 << 0);
-	EPBAR32(EPLE1A) = CONFIG_FIXED_DMIBAR_MMIO_BASE;
+	epbar_clrsetbits32(EPLE1D, 0xffffff, 1 << 16 | 1 << 0);
+	epbar_write32(EPLE1A, CONFIG_FIXED_DMIBAR_MMIO_BASE);
 
 	if (peg_enabled)
 		/* Link2: link_valid. */
-		EPBAR8(EPLE2D) |= (1 << 0); /* link valid */
+		epbar_setbits8(EPLE2D, 1 << 0); /* link valid */
 
 	/*\ RCRB setup: DMI Port \*/
 
 	/* Set component ID of MCH (1). */
-	DMIBAR8(DMIESD + 2) = 1;
+	dmibar_write8(DMIESD + 2, 1);
 
 	/* Link1: target port 0, component id 2 (ICH), link valid. */
-	DMIBAR32(DMILE1D) = (0 << 24) | (2 << 16) | (1 << 0);
-	DMIBAR32(DMILE1A) = CONFIG_FIXED_RCBA_MMIO_BASE;
+	dmibar_write32(DMILE1D, 0 << 24 | 2 << 16 | 1 << 0);
+	dmibar_write32(DMILE1A, CONFIG_FIXED_RCBA_MMIO_BASE);
 
 	/* Link2: component ID 1 (MCH), link valid */
-	DMIBAR32(DMILE2D) =
-		(DMIBAR32(DMILE2D) & 0xff000000) | (1 << 16) | (1 << 0);
-	DMIBAR32(DMILE2A) = CONFIG_FIXED_MCHBAR_MMIO_BASE;
+	dmibar_clrsetbits32(DMILE2D, 0xffffff, 1 << 16 | 1 << 0);
+	dmibar_write32(DMILE2A, CONFIG_FIXED_MCHBAR_MMIO_BASE);
 }
 
 void gm45_late_init(const stepping_t stepping)
 {
 	const pci_devfn_t mch = PCI_DEV(0, 0, 0);
 	const int peg_enabled = (pci_read_config8(mch, D0F0_DEVEN) >> 1) & 1;
-	const int sdvo_enabled = (MCHBAR16(0x40) >> 8) & 1;
+	const int sdvo_enabled = mchbar_read16(0x40) >> 8 & 1;
 	const int peg_x16 = (peg_enabled && !sdvo_enabled);
 
 	init_egress();

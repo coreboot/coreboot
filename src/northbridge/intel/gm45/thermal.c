@@ -15,65 +15,65 @@ void raminit_thermal(const sysinfo_t *sysinfo)
 		const chip_width_t width = sysinfo->dimms[x].chip_width;
 		const chip_capacity_t size = sysinfo->dimms[x].chip_capacity;
 		if ((freq == MEM_CLOCK_1067MT) && (width == CHIP_WIDTH_x16)) {
-			MCHBAR32(CxDTPEW(x)) = 0x0d0b0403;
-			MCHBAR32(CxDTPEW(x)+4) = 0x060d;
-			MCHBAR32(CxDTAEW(x)) = 0x2d0b221a;
-			MCHBAR32(CxDTAEW(x)+4) = 0xc779956e;
+			mchbar_write32(CxDTPEW(x), 0x0d0b0403);
+			mchbar_write32(CxDTPEW(x) + 4, 0x060d);
+			mchbar_write32(CxDTAEW(x), 0x2d0b221a);
+			mchbar_write32(CxDTAEW(x) + 4, 0xc779956e);
 		} else
 		if ((freq == MEM_CLOCK_1067MT) && (width == CHIP_WIDTH_x8)) {
-			MCHBAR32(CxDTPEW(x)) = 0x06040101;
-			MCHBAR32(CxDTPEW(x)+4) = 0x0506;
+			mchbar_write32(CxDTPEW(x), 0x06040101);
+			mchbar_write32(CxDTPEW(x) + 4, 0x0506);
 			if (size == CHIP_CAP_2G)
-				MCHBAR32(CxDTAEW(x)) = 0xa1071416;
+				mchbar_write32(CxDTAEW(x), 0xa1071416);
 			else
-				MCHBAR32(CxDTAEW(x)) = 0x1a071416;
-			MCHBAR32(CxDTAEW(x)+4) = 0x7246643f;
+				mchbar_write32(CxDTAEW(x), 0x1a071416);
+			mchbar_write32(CxDTAEW(x) + 4, 0x7246643f);
 		} else
 		if ((freq == MEM_CLOCK_800MT) && (width == CHIP_WIDTH_x16)) {
-			MCHBAR32(CxDTPEW(x)) = 0x06030100;
-			MCHBAR32(CxDTPEW(x)+4) = 0x0506;
-			MCHBAR32(CxDTAEW(x)) = 0x3e081714;
-			MCHBAR32(CxDTAEW(x)+4) = 0xbb79a171;
+			mchbar_write32(CxDTPEW(x), 0x06030100);
+			mchbar_write32(CxDTPEW(x) + 4, 0x0506);
+			mchbar_write32(CxDTAEW(x), 0x3e081714);
+			mchbar_write32(CxDTAEW(x) + 4, 0xbb79a171);
 		} else
 		if ((freq == MEM_CLOCK_800MT) && (width == CHIP_WIDTH_x8)) {
 			if (size <= CHIP_CAP_512M)
-				MCHBAR32(CxDTPEW(x)) = 0x05050101;
+				mchbar_write32(CxDTPEW(x), 0x05050101);
 			else
-				MCHBAR32(CxDTPEW(x)) = 0x05060101;
-			MCHBAR32(CxDTPEW(x)+4) = 0x0503;
+				mchbar_write32(CxDTPEW(x), 0x05060101);
+			mchbar_write32(CxDTPEW(x) + 4, 0x0503);
 			if (size == CHIP_CAP_2G) {
-				MCHBAR32(CxDTAEW(x)) = 0x57051010;
-				MCHBAR32(CxDTAEW(x)+4) = 0x5fd15dde;
+				mchbar_write32(CxDTAEW(x), 0x57051010);
+				mchbar_write32(CxDTAEW(x) + 4, 0x5fd15dde);
 			} else
 			if (size == CHIP_CAP_1G) {
-				MCHBAR32(CxDTAEW(x)) = 0x3306130e;
-				MCHBAR32(CxDTAEW(x)+4) = 0x5763485d;
+				mchbar_write32(CxDTAEW(x), 0x3306130e);
+				mchbar_write32(CxDTAEW(x) + 4, 0x5763485d);
 			} else
 			if (size <= CHIP_CAP_512M) {
-				MCHBAR32(CxDTAEW(x)) = 0x1e08170d;
-				MCHBAR32(CxDTAEW(x)+4) = 0x502f3827;
+				mchbar_write32(CxDTAEW(x), 0x1e08170d);
+				mchbar_write32(CxDTAEW(x) + 4, 0x502f3827);
 			}
 		} else
 		if ((freq == MEM_CLOCK_667MT) && (width == CHIP_WIDTH_x16)) {
-			MCHBAR32(CxDTPEW(x)) = 0x02000000;
-			MCHBAR32(CxDTPEW(x)+4) = 0x0402;
-			MCHBAR32(CxDTAEW(x)) = 0x46061111;
-			MCHBAR32(CxDTAEW(x)+4) = 0xb579a772;
+			mchbar_write32(CxDTPEW(x), 0x02000000);
+			mchbar_write32(CxDTPEW(x) + 4, 0x0402);
+			mchbar_write32(CxDTAEW(x), 0x46061111);
+			mchbar_write32(CxDTAEW(x) + 4, 0xb579a772);
 		} else
 		if ((freq == MEM_CLOCK_667MT) && (width == CHIP_WIDTH_x8)) {
-			MCHBAR32(CxDTPEW(x)) = 0x04070101;
-			MCHBAR32(CxDTPEW(x)+4) = 0x0501;
+			mchbar_write32(CxDTPEW(x), 0x04070101);
+			mchbar_write32(CxDTPEW(x) + 4, 0x0501);
 			if (size == CHIP_CAP_2G) {
-				MCHBAR32(CxDTAEW(x)) = 0x32040e0d;
-				MCHBAR32(CxDTAEW(x)+4) = 0x55ff59ff;
+				mchbar_write32(CxDTAEW(x), 0x32040e0d);
+				mchbar_write32(CxDTAEW(x) + 4, 0x55ff59ff);
 			} else
 			if (size == CHIP_CAP_1G) {
-				MCHBAR32(CxDTAEW(x)) = 0x3f05120a;
-				MCHBAR32(CxDTAEW(x)+4) = 0x49713a6c;
+				mchbar_write32(CxDTAEW(x), 0x3f05120a);
+				mchbar_write32(CxDTAEW(x) + 4, 0x49713a6c);
 			} else
 			if (size <= CHIP_CAP_512M) {
-				MCHBAR32(CxDTAEW(x)) = 0x20081808;
-				MCHBAR32(CxDTAEW(x)+4) = 0x3f23221b;
+				mchbar_write32(CxDTAEW(x), 0x20081808);
+				mchbar_write32(CxDTAEW(x) + 4, 0x3f23221b);
 			}
 		}
 
@@ -81,95 +81,95 @@ void raminit_thermal(const sysinfo_t *sysinfo)
 		if (sysinfo->selected_timings.channel_mode ==
 				CHANNEL_MODE_DUAL_INTERLEAVED) {
 			if (freq == MEM_CLOCK_1067MT) {
-				MCHBAR32(CxGTEW(x)) = 0xc8f81717;
+				mchbar_write32(CxGTEW(x), 0xc8f81717);
 			} else
 			if (freq == MEM_CLOCK_800MT) {
-				MCHBAR32(CxGTEW(x)) = 0x96ba1717;
+				mchbar_write32(CxGTEW(x), 0x96ba1717);
 			} else
 			if (freq == MEM_CLOCK_667MT) {
-				MCHBAR32(CxGTEW(x)) = 0x7d9b1717;
+				mchbar_write32(CxGTEW(x), 0x7d9b1717);
 			}
 		} else {
 			if (freq == MEM_CLOCK_1067MT) {
-				MCHBAR32(CxGTEW(x)) = 0x53661717;
+				mchbar_write32(CxGTEW(x), 0x53661717);
 			} else
 			if (freq == MEM_CLOCK_800MT) {
-				MCHBAR32(CxGTEW(x)) = 0x886e1717;
+				mchbar_write32(CxGTEW(x), 0x886e1717);
 			} else
 			if (freq == MEM_CLOCK_667MT) {
-				MCHBAR32(CxGTEW(x)) = 0x38621717;
+				mchbar_write32(CxGTEW(x), 0x38621717);
 			}
 		}
 	}
 
 	// always?
-	MCHBAR32(CxDTC(0)) = 0x00004020;
-	MCHBAR32(CxDTC(1)) = 0x00004020;
-	MCHBAR32(CxGTC(0)) = 0x00304848;
-	MCHBAR32(CxGTC(1)) = 0x00304848;
+	mchbar_write32(CxDTC(0), 0x00004020);
+	mchbar_write32(CxDTC(1), 0x00004020);
+	mchbar_write32(CxGTC(0), 0x00304848);
+	mchbar_write32(CxGTC(1), 0x00304848);
 
 	/* enable thermal sensors */
 	u32 tmp;
-	tmp = MCHBAR32(0x1290) & 0xfff8;
-	MCHBAR32(0x1290) = tmp | 0xa4810007;
-	tmp = MCHBAR32(0x1390) & 0xfff8;
-	MCHBAR32(0x1390) = tmp | 0xa4810007;
-	tmp = MCHBAR32(0x12b4) & 0xfff8;
-	MCHBAR32(0x12b4) = tmp | 0xa2810007;
-	tmp = MCHBAR32(0x13b4) & 0xfff8;
-	MCHBAR32(0x13b4) = tmp | 0xa2810007;
-	MCHBAR8(0x1070) = 1;
-	MCHBAR8(0x1080) = 6;
+	tmp = mchbar_read32(0x1290) & 0xfff8;
+	mchbar_write32(0x1290, tmp | 0xa4810007);
+	tmp = mchbar_read32(0x1390) & 0xfff8;
+	mchbar_write32(0x1390, tmp | 0xa4810007);
+	tmp = mchbar_read32(0x12b4) & 0xfff8;
+	mchbar_write32(0x12b4, tmp | 0xa2810007);
+	tmp = mchbar_read32(0x13b4) & 0xfff8;
+	mchbar_write32(0x13b4, tmp | 0xa2810007);
+	mchbar_write8(0x1070, 1);
+	mchbar_write8(0x1080, 6);
 	if (sysinfo->gfx_type == GMCH_PM45) {
-		MCHBAR16(0x1001) = 0;
-		MCHBAR8(0x1007) = 0;
-		MCHBAR32(0x1010) = 0;
-		MCHBAR32(0x1014) = 0;
-		MCHBAR8(0x101c) = 0x98;
-		MCHBAR16(0x1041) = 0x9200;
-		MCHBAR8(0x1047) = 0;
-		MCHBAR32(0x1050) = 0x2309;
-		MCHBAR32(0x1054) = 0;
-		MCHBAR8(0x105c) = 0x98;
+		mchbar_write16(0x1001, 0);
+		mchbar_write8(0x1007, 0);
+		mchbar_write32(0x1010, 0);
+		mchbar_write32(0x1014, 0);
+		mchbar_write8(0x101c, 0x98);
+		mchbar_write16(0x1041, 0x9200);
+		mchbar_write8(0x1047, 0);
+		mchbar_write32(0x1050, 0x2309);
+		mchbar_write32(0x1054, 0);
+		mchbar_write8(0x105c, 0x98);
 	} else {
-		MCHBAR16(0x1001) = 0x9200;
-		MCHBAR8(0x1007) = 0;
-		MCHBAR32(0x1010) = 0x2309;
-		MCHBAR32(0x1014) = 0;
-		MCHBAR8(0x101c) = 0x98;
-		MCHBAR16(0x1041) = 0;
-		MCHBAR8(0x1047) = 0;
-		MCHBAR32(0x1050) = 0;
-		MCHBAR32(0x1054) = 0;
-		MCHBAR8(0x105c) = 0x98;
+		mchbar_write16(0x1001, 0x9200);
+		mchbar_write8(0x1007, 0);
+		mchbar_write32(0x1010, 0x2309);
+		mchbar_write32(0x1014, 0);
+		mchbar_write8(0x101c, 0x98);
+		mchbar_write16(0x1041, 0);
+		mchbar_write8(0x1047, 0);
+		mchbar_write32(0x1050, 0);
+		mchbar_write32(0x1054, 0);
+		mchbar_write8(0x105c, 0x98);
 	}
 
-	MCHBAR32(0x1010) |= 1 << 31;
-	MCHBAR32(0x1050) |= 1 << 31;
-	MCHBAR32(CxGTC(0)) |= 1 << 31;
-	MCHBAR32(CxGTC(1)) |= 1 << 31;
+	mchbar_setbits32(0x1010, 1 << 31);
+	mchbar_setbits32(0x1050, 1 << 31);
+	mchbar_setbits32(CxGTC(0), 1 << 31);
+	mchbar_setbits32(CxGTC(1), 1 << 31);
 
 	if (sysinfo->gs45_low_power_mode) {
-		MCHBAR32(0x11b0) = 0xa000083a;
+		mchbar_write32(0x11b0, 0xa000083a);
 	} else if (sysinfo->gfx_type == GMCH_GM49) {
-		MCHBAR32(0x11b0) = 0x2000383a;
-		MCHBAR16(0x1190) &= ~(1 << 15);
+		mchbar_write32(0x11b0, 0x2000383a);
+		mchbar_clrbits16(0x1190, 1 << 15);
 	} else if ((sysinfo->gfx_type != GMCH_PM45) &&
 			(sysinfo->gfx_type != GMCH_UNKNOWN)) {
-		MCHBAR32(0x11b0) = 0xa000383a;
+		mchbar_write32(0x11b0, 0xa000383a);
 	}
 
 	switch (sysinfo->selected_timings.fsb_clock) {
 		case FSB_CLOCK_667MHz:
-			MCHBAR32(0x11d0) = 0x0fd88000;
+			mchbar_write32(0x11d0, 0x0fd88000);
 			break;
 		case FSB_CLOCK_800MHz:
-			MCHBAR32(0x11d0) = 0x1303c000;
+			mchbar_write32(0x11d0, 0x1303c000);
 			break;
 		case FSB_CLOCK_1067MHz:
-			MCHBAR32(0x11d0) = 0x194a0000;
+			mchbar_write32(0x11d0, 0x194a0000);
 			break;
 	}
-	tmp = MCHBAR32(0x11d4) & ~0x1f;
-	MCHBAR32(0x11d4) = tmp | 4;
+	tmp = mchbar_read32(0x11d4) & ~0x1f;
+	mchbar_write32(0x11d4, tmp | 4);
 }

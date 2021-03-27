@@ -77,10 +77,10 @@ static int program_read_timing(const int ch, const int lane,
 	if (normalize_read_timing(timing) < 0)
 		return -1;
 
-	u32 reg = MCHBAR32(CxRDTy_MCHBAR(ch, lane));
+	u32 reg = mchbar_read32(CxRDTy_MCHBAR(ch, lane));
 	reg &= ~(CxRDTy_T_MASK | CxRDTy_P_MASK);
 	reg |= CxRDTy_T(timing->t) | CxRDTy_P(timing->p);
-	MCHBAR32(CxRDTy_MCHBAR(ch, lane)) = reg;
+	mchbar_write32(CxRDTy_MCHBAR(ch, lane), reg);
 
 	return 0;
 }
@@ -164,7 +164,7 @@ static void read_training_per_lane(const int channel, const int lane,
 {
 	read_timing_t lower, upper;
 
-	MCHBAR32(CxRDTy_MCHBAR(channel, lane)) |= 3 << 25;
+	mchbar_setbits32(CxRDTy_MCHBAR(channel, lane), 3 << 25);
 
 	/*** Search lower bound. ***/
 
@@ -227,7 +227,7 @@ static void read_training_store_results(void)
 	/* Store one timing pair in one byte each. */
 	FOR_EACH_CHANNEL(ch) {
 		for (i = 0; i < 8; ++i) {
-			const u32 bl_reg = MCHBAR32(CxRDTy_MCHBAR(ch, i));
+			const u32 bl_reg = mchbar_read32(CxRDTy_MCHBAR(ch, i));
 			bytes[(ch * 8) + i] =
 				(((bl_reg & CxRDTy_T_MASK) >> CxRDTy_T_SHIFT)
 				 << 4) |
@@ -253,10 +253,10 @@ static void read_training_restore_results(void)
 		for (i = 0; i < 8; ++i) {
 			const int t = bytes[(ch * 8) + i] >> 4;
 			const int p = bytes[(ch * 8) + i] & 7;
-			u32 bl_reg = MCHBAR32(CxRDTy_MCHBAR(ch, i));
+			u32 bl_reg = mchbar_read32(CxRDTy_MCHBAR(ch, i));
 			bl_reg &= ~(CxRDTy_T_MASK | CxRDTy_P_MASK);
 			bl_reg |= (3 << 25) | CxRDTy_T(t) | CxRDTy_P(p);
-			MCHBAR32(CxRDTy_MCHBAR(ch, i)) = bl_reg;
+			mchbar_write32(CxRDTy_MCHBAR(ch, i), bl_reg);
 			printk(BIOS_DEBUG, "Restored timings for byte lane "
 			       "%d on channel %d: %d.%d\n", i, ch, t, p);
 		}
@@ -395,11 +395,11 @@ static int program_write_timing(const int ch, const int group,
 		(t <= d_bounds[memclk1067][0]) ? CxWRTy_BELOW_D :
 		((t >  d_bounds[memclk1067][1]) ? CxWRTy_ABOVE_D : 0);
 
-	u32 reg = MCHBAR32(CxWRTy_MCHBAR(ch, group));
+	u32 reg = mchbar_read32(CxWRTy_MCHBAR(ch, group));
 	reg &= ~(CxWRTy_T_MASK | CxWRTy_P_MASK | CxWRTy_F_MASK);
 	reg &= ~CxWRTy_D_MASK;
 	reg |= CxWRTy_T(t) | CxWRTy_P(p) | CxWRTy_F(f) | d;
-	MCHBAR32(CxWRTy_MCHBAR(ch, group)) = reg;
+	mchbar_write32(CxWRTy_MCHBAR(ch, group), reg);
 
 	return 0;
 }
@@ -409,10 +409,10 @@ static int write_training_test(const address_bunch_t *const addresses,
 {
 	int i, ret = 0;
 
-	const u32 mmarb0 = MCHBAR32(0x0220);
-	const u8  wrcctl = MCHBAR8(0x0218);
-	MCHBAR32(0x0220) |= 0xf << 28;
-	MCHBAR8(0x0218)  |= 0x1 <<  4;
+	const u32 mmarb0 = mchbar_read32(0x0220);
+	const u8  wrcctl = mchbar_read8(0x0218);
+	mchbar_setbits32(0x0220, 0xf << 28);
+	mchbar_setbits8(0x0218,  0x1 <<  4);
 
 	for (i = 0; i < addresses->count; ++i) {
 		const unsigned int addr = addresses->addr[i];
@@ -423,7 +423,7 @@ static int write_training_test(const address_bunch_t *const addresses,
 			write32((u32 *)(addr + off + 4), pattern);
 		}
 
-		MCHBAR8(0x78) |= 1;
+		mchbar_setbits8(0x78, 1);
 
 		for (off = 0; off < 640; off += 8) {
 			const u32 good = write_training_schedule[off >> 3];
@@ -438,8 +438,8 @@ static int write_training_test(const address_bunch_t *const addresses,
 	ret = 1;
 
 _bad_timing_out:
-	MCHBAR32(0x0220) = mmarb0;
-	MCHBAR8(0x0218)  = wrcctl;
+	mchbar_write32(0x0220, mmarb0);
+	mchbar_write8(0x0218, wrcctl);
 
 	return ret;
 }
@@ -510,7 +510,7 @@ static void write_training_per_group(const int ch, const int group,
 	/*** Search lower bound. ***/
 
 	/* Start at -1f from current values. */
-	const u32 reg = MCHBAR32(CxWRTy_MCHBAR(ch, group));
+	const u32 reg = mchbar_read32(CxWRTy_MCHBAR(ch, group));
 	lower.t =  (reg >> 12) & 0xf;
 	lower.p =  (reg >>  8) & 0x7;
 	lower.f = ((reg >>  2) & 0x3) - 1;
@@ -592,7 +592,7 @@ static void write_training_store_results(void)
 	/* We could save six bytes by putting all F values in two bytes. */
 	FOR_EACH_CHANNEL(ch) {
 		for (i = 0; i < 4; ++i) {
-			const u32 reg = MCHBAR32(CxWRTy_MCHBAR(ch, i));
+			const u32 reg = mchbar_read32(CxWRTy_MCHBAR(ch, i));
 			bytes[(ch * 8) + (i * 2)] =
 				(((reg & CxWRTy_T_MASK)
 				  >> CxWRTy_T_SHIFT) << 4) |

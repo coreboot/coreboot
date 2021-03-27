@@ -153,11 +153,11 @@ static void lookup_and_write(const int a1step,
 
 	/* Write 4 32-bit registers, 4 values each. */
 	for (i = row; i < row + 16; i += 4) {
-		MCHBAR32(mchbar) =
-			((ddr3_lut[a1step][i + 0][col] & 0x3f) <<  0) |
-			((ddr3_lut[a1step][i + 1][col] & 0x3f) <<  8) |
-			((ddr3_lut[a1step][i + 2][col] & 0x3f) << 16) |
-			((ddr3_lut[a1step][i + 3][col] & 0x3f) << 24);
+		mchbar_write32(mchbar,
+			(ddr3_lut[a1step][i + 0][col] & 0x3f) <<  0 |
+			(ddr3_lut[a1step][i + 1][col] & 0x3f) <<  8 |
+			(ddr3_lut[a1step][i + 2][col] & 0x3f) << 16 |
+			(ddr3_lut[a1step][i + 3][col] & 0x3f) << 24);
 		mchbar += 4;
 	}
 }
@@ -175,33 +175,33 @@ void raminit_rcomp_calibration(const stepping_t stepping) {
 	for (i = 0; i < 2 * 6 * 2; ++i)
 		((char *)lut_idx)[i] = -1;
 
-	MCHBAR32(0x400) |= (1 << 2);
-	MCHBAR32(0x418) |= (1 << 17);
-	MCHBAR32(0x40c) &= ~(1 << 23);
-	MCHBAR32(0x41c) &= ~((1 << 7) | (1 << 3));
-	MCHBAR32(0x400) |= 1;
+	mchbar_setbits32(0x400, 1 << 2);
+	mchbar_setbits32(0x418, 1 << 17);
+	mchbar_clrbits32(0x40c, 1 << 23);
+	mchbar_clrbits32(0x41c, 1 << 7 | 1 << 3);
+	mchbar_setbits32(0x400, 1 << 0);
 
 	/* Read lookup indices. */
 	for (i = 0; i < 12; ++i) {
 		do {
-			MCHBAR32(0x400) |= (1 << 3);
+			mchbar_setbits32(0x400, 1 << 3);
 			udelay(10);
-			MCHBAR32(0x400) &= ~(1 << 3);
-		} while ((MCHBAR32(0x530) & 0x7) != 0x4);
-		u32 reg = MCHBAR32(0x400);
+			mchbar_clrbits32(0x400, 1 << 3);
+		} while ((mchbar_read32(0x530) & 0x7) != 0x4);
+		u32 reg = mchbar_read32(0x400);
 		const unsigned int group = (reg >> 13) & 0x7;
 		const unsigned int channel = (reg >> 12) & 0x1;
 		if (group > 5)
 			break;
-		reg = MCHBAR32(0x518);
+		reg = mchbar_read32(0x518);
 		lut_idx[channel][group][PULL_UP] = (reg >> 24) & 0x7f;
 		lut_idx[channel][group][PULL_DOWN] = (reg >> 16) & 0x7f;
 	}
 	/* Cleanup? */
-	MCHBAR32(0x400) |= (1 << 3);
+	mchbar_setbits32(0x400, 1 << 3);
 	udelay(10);
-	MCHBAR32(0x400) &= ~(1 << 3);
-	MCHBAR32(0x400) &= ~(1 << 2);
+	mchbar_clrbits32(0x400, 1 << 3);
+	mchbar_clrbits32(0x400, 1 << 2);
 
 	/* Check for consistency. */
 	for (i = 0; i < 2 * 6 * 2; ++i) {

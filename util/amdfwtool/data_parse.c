@@ -611,6 +611,39 @@ char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_c
 	return lvl;
 }
 
+static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
+	uint8_t print_deps, amd_cb_config *cb_config)
+{
+	char *path_filename, *fn = &(oneline[match[2].rm_so]);
+	char *fw_type_str = &(oneline[match[1].rm_so]);
+	char ch_lvl = 'x';
+	regoff_t ch_lvl_index = match[3].rm_so;
+
+	/* If the optional level field is present,
+	   extract the level char. */
+	ch_lvl = get_level_from_config(oneline, ch_lvl_index, cb_config);
+
+	path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
+	snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
+		MAX_LINE_SIZE, dir, MAX_LINE_SIZE, fn);
+
+	if (find_register_fw_filename_psp_dir(
+			fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
+		if (find_register_fw_filename_bios_dir(
+				fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
+			fprintf(stderr, "Module's name \"%s\" is not valid\n", fw_type_str);
+			return 0; /* Stop parsing. */
+		} else {
+			if (print_deps)
+				printf(" %s ", path_filename);
+		}
+	} else {
+		if (print_deps)
+			printf(" %s ", path_filename);
+	}
+	return 1;
+}
+
 /*
   return value:
 	0: The config file can not be parsed correctly.
@@ -618,7 +651,7 @@ char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_c
  */
 uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_deps)
 {
-	char oneline[MAX_LINE_SIZE], *path_filename;
+	char oneline[MAX_LINE_SIZE];
 	regmatch_t match[N_MATCHES];
 	char dir[MAX_LINE_SIZE] = {'\0'};
 	uint32_t dir_len;
@@ -668,34 +701,9 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
 				continue;
 			} else {
-				char ch_lvl = 'x';
-				path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
-				snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
-					MAX_LINE_SIZE, dir, MAX_LINE_SIZE,
-					&(oneline[match[2].rm_so]));
-
-				/* If the optional level field is present,
-				   extract the level char. */
-				ch_lvl = get_level_from_config(oneline,
-						match[3].rm_so, cb_config);
-
-				if (find_register_fw_filename_psp_dir(
-						&(oneline[match[1].rm_so]),
-						path_filename, ch_lvl, cb_config) == 0) {
-					if (find_register_fw_filename_bios_dir(
-							&(oneline[match[1].rm_so]),
-							path_filename, ch_lvl, cb_config)
-							== 0) {
-						fprintf(stderr, "Module's name \"%s\" is not valid\n", oneline);
-						return 0; /* Stop parsing. */
-					} else {
-						if (print_deps)
-							printf(" %s ", path_filename);
-					}
-				} else {
-					if (print_deps)
-						printf(" %s ", path_filename);
-				}
+				if (process_one_line(oneline, match, dir, print_deps,
+						cb_config) == 0)
+					return 0;
 			}
 		} else {
 			fprintf(stderr, "AMDFWTOOL config file line can't be parsed \"%s\"\n", oneline);

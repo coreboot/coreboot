@@ -167,7 +167,7 @@ static u8 test_dq_aligned(const struct sysinfo *s, const u8 channel)
 		for (count = 0; count < WT_PATTERN_SIZE; count++) {
 			for (count1 = 0; count1 < WT_PATTERN_SIZE; count1++) {
 				if ((count1 % 16) == 0)
-					MCHBAR32(0xf90) = 1;
+					mchbar_write32(0xf90, 1);
 				const u32 pattern = write_training_schedule[count1];
 				write32((u32 *)address + 8 * count1, pattern);
 				write32((u32 *)address + 8 * count1 + 4, pattern);
@@ -620,7 +620,7 @@ static void sample_dq(const struct sysinfo *s, u8 channel, u8 rank,
 		write32((u32 *)address + 4, 0x12341234);
 		udelay(5);
 		FOR_EACH_BYTELANE(lane) {
-			u8 dq_high = (MCHBAR8(0x561 + 0x400 * channel
+			u8 dq_high = (mchbar_read8(0x561 + 0x400 * channel
 					+ (lane * 4)) >> 7) & 1;
 			high_found[lane] += dq_high;
 		}
@@ -639,7 +639,7 @@ static enum cb_err increment_to_dqs_edge(struct sysinfo *s, u8 channel, u8 rank)
 	FOR_EACH_BYTELANE(lane)
 		dqsset(channel, lane, &dqs_setting[lane]);
 
-	saved_24d = MCHBAR8(0x24d + 0x400 * channel);
+	saved_24d = mchbar_read8(0x24d + 0x400 * channel);
 
 	/* Loop 0: Find DQ sample low, by decreasing */
 	while (bytelane_ok != 0xff) {
@@ -715,7 +715,7 @@ static enum cb_err increment_to_dqs_edge(struct sysinfo *s, u8 channel, u8 rank)
 		s->dqs_settings[channel][lane] = dqs_setting[lane];
 	}
 
-	MCHBAR8(0x24d + 0x400 * channel) = saved_24d;
+	mchbar_write8(0x24d + 0x400 * channel, saved_24d);
 	return CB_SUCCESS;
 }
 
@@ -762,11 +762,9 @@ void search_write_leveling(struct sysinfo *s)
 		printk(BIOS_DEBUG, "\tCH%d\n", ch);
 		config = chanconfig_lut[s->dimm_config[ch]];
 
-		MCHBAR8(0x5d8 + 0x400 * ch) = MCHBAR8(0x5d8 + 0x400 * ch) & ~0x0e;
-		MCHBAR16(0x5c4 + 0x400 * ch) = (MCHBAR16(0x5c4 + 0x400 * ch) &
-						~0x3fff) | 0x3fff;
-		MCHBAR8(0x265 + 0x400 * ch) =
-			MCHBAR8(0x265 + 0x400 * ch) & ~0x1f;
+		mchbar_clrbits8(0x5d8 + 0x400 * ch, 0x0e);
+		mchbar_clrsetbits16(0x5c4 + 0x400 * ch, 0x3fff, 0x3fff);
+		mchbar_clrbits8(0x265 + 0x400 * ch, 0x1f);
 		/* find the first populated rank */
 		FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, ch, rank0)
 			break;
@@ -776,41 +774,33 @@ void search_write_leveling(struct sysinfo *s)
 		FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, ch, rank1)
 			set_rank_write_level(s, ch, config, rank1, rank0, 1);
 
-		MCHBAR8(0x298 + 2 + 0x400 * ch) =
-			(MCHBAR8(0x298 + 2 + 0x400 * ch) & ~0x0f)
-			| odt_force[config][rank0];
-		MCHBAR8(0x271 + 0x400 * ch) = (MCHBAR8(0x271 + 0x400 * ch) & ~0x7e) | 0x4e;
-		MCHBAR8(0x5d9 + 0x400 * ch) = (MCHBAR8(0x5d9 + 0x400 * ch) & ~0x04) | 0x04;
-		MCHBAR32(0x1a0) = (MCHBAR32(0x1a0) & ~0x07ffffff) | 0x00014000;
+		mchbar_clrsetbits8(0x298 + 2 + 0x400 * ch, 0x0f, odt_force[config][rank0]);
+		mchbar_clrsetbits8(0x271 + 0x400 * ch, 0x7e, 0x4e);
+		mchbar_setbits8(0x5d9 + 0x400 * ch, 1 << 2);
+		mchbar_clrsetbits32(0x1a0, 0x07ffffff, 0x00014000);
 
 		if (increment_to_dqs_edge(s, ch, rank0))
 			die("Write Leveling failed!");
 
-		MCHBAR8(0x298 + 2 + 0x400 * ch) =
-			MCHBAR8(0x298 + 2 + 0x400 * ch) & ~0x0f;
-		MCHBAR8(0x271 + 0x400 * ch) =
-			(MCHBAR8(0x271 + 0x400 * ch) & ~0x7e)
-			| 0x0e;
-		MCHBAR8(0x5d9 + 0x400 * ch) =
-			(MCHBAR8(0x5d9 + 0x400 * ch) & ~0x04);
-		MCHBAR32(0x1a0) = (MCHBAR32(0x1a0)
-				& ~0x07ffffff) | 0x00555801;
+		mchbar_clrbits8(0x298 + 2 + 0x400 * ch, 0x0f);
+		mchbar_clrsetbits8(0x271 + 0x400 * ch, 0x7e, 0x0e);
+		mchbar_clrbits8(0x5d9 + 0x400 * ch, 1 << 2);
+		mchbar_clrsetbits32(0x1a0, 0x07ffffff, 0x00555801);
 
 		/* Disable WL on the trained rank */
 		set_rank_write_level(s, ch, config, rank0, rank0, 0);
 		send_jedec_cmd(s, rank0, ch, NORMALOP_CMD, 1 << 12);
 
-		MCHBAR8(0x5d8 + 0x400 * ch) = (MCHBAR8(0x5d8 + 0x400 * ch) & ~0x0e) | 0x0e;
-		MCHBAR16(0x5c4 + 0x400 * ch) = (MCHBAR16(0x5c4 + 0x400 * ch)
-						& ~0x3fff) | 0x1807;
-		MCHBAR8(0x265 + 0x400 * ch) = MCHBAR8(0x265 + 0x400 * ch) & ~0x1f;
+		mchbar_setbits8(0x5d8 + 0x400 * ch, 0x0e);
+		mchbar_clrsetbits16(0x5c4 + 0x400 * ch, 0x3fff, 0x1807);
+		mchbar_clrbits8(0x265 + 0x400 * ch, 0x1f);
 
 		/* Disable write level mode for all ranks */
 		FOR_EACH_POPULATED_RANK_IN_CHANNEL(s->dimms, ch, rank0)
 			set_rank_write_level(s, ch, config, rank0, rank0, 0);
 	}
 
-	MCHBAR8(0x5dc) = (MCHBAR8(0x5dc) & ~0x80) | 0x80;
+	mchbar_setbits8(0x5dc, 1 << 7);
 
 	/* Increment DQ (rx) dll setting by a standard amount past DQS,
 	   This is further trained in write training. */

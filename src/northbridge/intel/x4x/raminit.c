@@ -412,7 +412,7 @@ static void print_selected_timings(struct sysinfo *s)
 
 static void find_fsb_speed(struct sysinfo *s)
 {
-	switch ((MCHBAR32(CLKCFG_MCHBAR) & CLKCFG_FSBCLK_MASK) >> CLKCFG_FSBCLK_SHIFT) {
+	switch ((mchbar_read32(CLKCFG_MCHBAR) & CLKCFG_FSBCLK_MASK) >> CLKCFG_FSBCLK_SHIFT) {
 	case 0x0:
 		s->max_fsb = FSB_CLOCK_1066MHz;
 		break;
@@ -532,7 +532,7 @@ static void checkreset_ddr2(int boot_path)
 	u32 pmsts;
 
 	if (boot_path >= 1) {
-		pmsts = MCHBAR32(PMSTS_MCHBAR);
+		pmsts = mchbar_read32(PMSTS_MCHBAR);
 		if (!(pmsts & 1))
 			printk(BIOS_DEBUG, "Channel 0 possibly not in self refresh\n");
 		if (!(pmsts & 2))

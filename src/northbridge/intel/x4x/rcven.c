@@ -30,16 +30,16 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 
 	/* Reset the DQS probe, on both channels? */
 	for (u8 i = 0; i < TOTAL_CHANNELS; i++) {
-		MCHBAR8(RESET_CNTL(i)) &= ~0x2;
+		mchbar_clrbits8(RESET_CNTL(i), 1 << 1);
 		udelay(1);
-		MCHBAR8(RESET_CNTL(i)) |= 0x2;
+		mchbar_setbits8(RESET_CNTL(i), 1 << 1);
 		udelay(1);
 	}
 	mfence();
 	/* Read strobe */
 	read32((u32 *)addr);
 	mfence();
-	return (MCHBAR8(sample_offset) >> 6) & 1;
+	return mchbar_read8(sample_offset) >> 6 & 1;
 }
 
 static void program_timing(const struct rec_timing *timing, u8 channel, u8 lane)
@@ -51,21 +51,21 @@ static void program_timing(const struct rec_timing *timing, u8 channel, u8 lane)
 	printk(RAM_SPEW, "      Programming timings:Coarse: %d, Medium: %d, TAP: %d, PI: %d\n",
 		timing->coarse, timing->medium, timing->tap, timing->pi);
 
-	reg32 = MCHBAR32(0x400 * channel + 0x248);
+	reg32 = mchbar_read32(0x400 * channel + 0x248);
 	reg32 &= ~0xf0000;
 	reg32 |= timing->coarse << 16;
-	MCHBAR32(0x400 * channel + 0x248) = reg32;
+	mchbar_write32(0x400 * channel + 0x248, reg32);
 
-	reg16 = MCHBAR16(0x400 * channel + 0x58c);
+	reg16 = mchbar_read16(0x400 * channel + 0x58c);
 	reg16 &= ~(3 << (lane * 2));
 	reg16 |= timing->medium << (lane * 2);
-	MCHBAR16(0x400 * channel + 0x58c) = reg16;
+	mchbar_write16(0x400 * channel + 0x58c, reg16);
 
-	reg8 = MCHBAR8(0x400 * channel + 0x560 + lane * 4);
+	reg8 = mchbar_read8(0x400 * channel + 0x560 + lane * 4);
 	reg8 &= ~0x7f;
 	reg8 |= timing->tap;
 	reg8 |= timing->pi << 4;
-	MCHBAR8(0x400 * channel + 0x560 + lane * 4) = reg8;
+	mchbar_write8(0x400 * channel + 0x560 + lane * 4, reg8);
 }
 
 static int increase_medium(struct rec_timing *timing)
@@ -241,8 +241,7 @@ static int calibrate_receive_enable(u8 channel, u8 lane,
 {
 	program_timing(timing, channel, lane);
 	/* Set receive enable bit */
-	MCHBAR16(0x400 * channel + 0x588) = (MCHBAR16(0x400 * channel + 0x588)
-				& ~(3 << (lane * 2))) | (1 << (lane * 2));
+	mchbar_clrsetbits16(0x400 * channel + 0x588, 3 << (lane * 2), 1 << (lane * 2));
 
 	if (find_dqs_low(channel, lane, addr, timing))
 		return -1;
@@ -275,8 +274,7 @@ static int calibrate_receive_enable(u8 channel, u8 lane,
 	program_timing(timing, channel, lane);
 
 	/* Unset receive enable bit */
-	MCHBAR16(0x400 * channel + 0x588) = MCHBAR16(0x400 * channel + 0x588) &
-		~(3 << (lane * 2));
+	mchbar_clrbits16(0x400 * channel + 0x588, 3 << (lane * 2));
 	return 0;
 }
 
@@ -294,9 +292,9 @@ void rcven(struct sysinfo *s)
 
 	printk(BIOS_DEBUG, "Starting DQS receiver enable calibration\n");
 
-	MCHBAR8(0x5d8) = MCHBAR8(0x5d8) & ~0xc;
-	MCHBAR8(0x9d8) = MCHBAR8(0x9d8) & ~0xc;
-	MCHBAR8(0x5dc) = MCHBAR8(0x5dc) & ~0x80;
+	mchbar_clrbits8(0x5d8, 3 << 2);
+	mchbar_clrbits8(0x9d8, 3 << 2);
+	mchbar_clrbits8(0x5dc, 1 << 7);
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, channel) {
 		mincoarse = 0xff;
 		/*
@@ -355,9 +353,8 @@ void rcven(struct sysinfo *s)
 			s->rcven_t[channel].medium[lane] = timing[lane].medium;
 			s->rcven_t[channel].tap[lane] = timing[lane].tap;
 			s->rcven_t[channel].pi[lane] = timing[lane].pi;
-			MCHBAR16(0x400 * channel + 0x5fa) =
-				(MCHBAR16(0x400 * channel + 0x5fa) &
-				~(3 << (lane * 2))) | (reg8 << (lane * 2));
+			mchbar_clrsetbits16(0x400 * channel + 0x5fa, 3 << (lane * 2),
+								  reg8 << (lane * 2));
 		}
 		/* simply use timing[0] to program mincoarse */
 		timing[0].coarse = mincoarse;

@@ -37,7 +37,7 @@ void mainboard_romstage_entry(void)
 
 	if (s3_resume)
 		boot_path = BOOT_PATH_RESUME;
-	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
+	if (mchbar_read32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
 		boot_path = BOOT_PATH_WARM_RESET;
 
 	mb_get_spd_map(spd_addr_map);

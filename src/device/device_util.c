@@ -710,14 +710,14 @@ static void resource_tree(const struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
-	do_printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
+	printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
 	if (root->link_list && root->link_list->children)
-		do_printk(BIOS_DEBUG, " child on link 0 %s",
+		printk(BIOS_DEBUG, " child on link 0 %s",
 			  dev_path(root->link_list->children));
-	do_printk(BIOS_DEBUG, "\n");
+	printk(BIOS_DEBUG, "\n");
 
 	for (res = root->resource_list; res; res = res->next) {
-		do_printk(debug_level, "%s%s resource base %llx size %llx "
+		printk(debug_level, "%s%s resource base %llx size %llx "
 			  "align %d gran %d limit %llx flags %lx index %lx\n",
 			  indent, dev_path(root), res->base, res->size,
 			  res->align, res->gran, res->limit, res->flags,
@@ -735,12 +735,12 @@ void print_resource_tree(const struct device *root, int debug_level,
 {
 	/* Bail if root is null. */
 	if (!root) {
-		do_printk(debug_level, "%s passed NULL for root!\n", __func__);
+		printk(debug_level, "%s passed NULL for root!\n", __func__);
 		return;
 	}
 
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show resources in subtree (%s)...%s\n",
+	if (!printk(debug_level, "Show resources in subtree (%s)...%s\n",
 		       dev_path(root), msg))
 		return;
 
@@ -758,7 +758,7 @@ void show_devs_tree(const struct device *dev, int debug_level, int depth)
 		depth_str[i] = ' ';
 	depth_str[i] = '\0';
 
-	do_printk(debug_level, "%s%s: enabled %d\n",
+	printk(debug_level, "%s%s: enabled %d\n",
 		  depth_str, dev_path(dev), dev->enabled);
 
 	for (link = dev->link_list; link; link = link->next) {
@@ -771,7 +771,7 @@ void show_devs_tree(const struct device *dev, int debug_level, int depth)
 void show_all_devs_tree(int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs in tree form... %s\n", msg))
+	if (!printk(debug_level, "Show all devs in tree form... %s\n", msg))
 		return;
 	show_devs_tree(all_devices, debug_level, 0);
 }
@@ -779,10 +779,10 @@ void show_all_devs_tree(int debug_level, const char *msg)
 void show_devs_subtree(struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs in subtree %s... %s\n",
+	if (!printk(debug_level, "Show all devs in subtree %s... %s\n",
 		       dev_path(root), msg))
 		return;
-	do_printk(debug_level, "%s\n", msg);
+	printk(debug_level, "%s\n", msg);
 	show_devs_tree(root, debug_level, 0);
 }
 
@@ -791,10 +791,10 @@ void show_all_devs(int debug_level, const char *msg)
 	struct device *dev;
 
 	/* Bail if not printing to screen. */
-	if (!do_printk(debug_level, "Show all devs... %s\n", msg))
+	if (!printk(debug_level, "Show all devs... %s\n", msg))
 		return;
 	for (dev = all_devices; dev; dev = dev->next) {
-		do_printk(debug_level, "%s: enabled %d\n",
+		printk(debug_level, "%s: enabled %d\n",
 			  dev_path(dev), dev->enabled);
 	}
 }
@@ -808,7 +808,7 @@ void show_one_resource(int debug_level, struct device *dev,
 	end = resource_end(resource);
 	buf[0] = '\0';
 
-	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
+	printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
 		  "size 0x%08llx gran 0x%02x %s%s%s\n", dev_path(dev),
 		  resource->index, base, end, resource->size, resource->gran,
 		  buf, resource_type(resource), comment);
@@ -818,12 +818,12 @@ void show_all_devs_resources(int debug_level, const char *msg)
 {
 	struct device *dev;
 
-	if (!do_printk(debug_level, "Show all devs with resources... %s\n", msg))
+	if (!printk(debug_level, "Show all devs with resources... %s\n", msg))
 		return;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		struct resource *res;
-		do_printk(debug_level, "%s: enabled %d\n",
+		printk(debug_level, "%s: enabled %d\n",
 			  dev_path(dev), dev->enabled);
 		for (res = dev->resource_list; res; res = res->next)
 			show_one_resource(debug_level, dev, res, "");

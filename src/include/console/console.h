@@ -50,6 +50,10 @@ static inline int get_console_loglevel(void)
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);
 int console_log_level(int msg_level);
+
+int printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+int vprintk(int msg_level, const char *fmt, va_list args);
+
 void do_putchar(unsigned char byte);
 
 /* Return number of microseconds elapsed from start of stage or the previous
@@ -57,25 +61,17 @@ void do_putchar(unsigned char byte);
 long console_time_get_and_reset(void);
 void console_time_report(void);
 
-#define printk(LEVEL, fmt, args...) do_printk(LEVEL, fmt, ##args)
-#define vprintk(LEVEL, fmt, args) do_vprintk(LEVEL, fmt, args)
-
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 #else
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }
-static inline void
+static inline int
 	__attribute__((format(printf, 2, 3)))
-	printk(int LEVEL, const char *fmt, ...) {}
-static inline void vprintk(int LEVEL, const char *fmt, va_list args) {}
+	printk(int LEVEL, const char *fmt, ...) { return 0; }
+static inline int vprintk(int LEVEL, const char *fmt, va_list args) { return 0; }
 static inline void do_putchar(unsigned char byte) {}
 static inline long console_time_get_and_reset(void) { return 0; }
 static inline void console_time_report(void) {}
 #endif
-
-int do_printk(int msg_level, const char *fmt, ...)
-	__attribute__((format(printf, 2, 3)));
-
-int do_vprintk(int msg_level, const char *fmt, va_list args);
 
 #endif /* CONSOLE_CONSOLE_H_ */

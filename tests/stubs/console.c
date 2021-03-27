@@ -4,12 +4,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int do_printk(int msg_level, const char *fmt, ...)
+int printk(int msg_level, const char *fmt, ...)
 {
 	return 0;
 }
 
-int do_vprintk(int msg_level, const char *fmt, va_list args)
+int vprintk(int msg_level, const char *fmt, va_list args)
 {
 	return 0;
 }

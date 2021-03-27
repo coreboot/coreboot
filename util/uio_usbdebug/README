@@ -29,7 +29,7 @@ uio_usbdebug_intel.c -	Port enable code for Intel chipsets.
 
 linux/uio_ehci_pci.c -	Kernel part of the uio interface.
 
-console/printk.c     -	A do_printk() implementation so you can see debug
+console/printk.c     -	A printk() implementation so you can see debug
 			output with CONFIG_DEBUG_USBDEBUG enabled.
 
 device/*.c lib/*.c   -	Some stubs for (hopefully) unneeded functions for

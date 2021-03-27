@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <console/console.h>
 
-int do_printk(int msg_level, const char *const fmt, ...)
+int printk(int msg_level, const char *const fmt, ...)
 {
 	va_list args;
 	int i;

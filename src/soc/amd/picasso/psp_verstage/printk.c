@@ -11,19 +11,19 @@ void console_hw_init(void)
 	__cbmemc_init();
 }
 
-int do_printk(int msg_level, const char *fmt, ...)
+int printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;
 	int i;
 
 	va_start(args, fmt);
-	i = do_vprintk(msg_level, fmt, args);
+	i = vprintk(msg_level, fmt, args);
 	va_end(args);
 
 	return i;
 }
 
-int do_vprintk(int msg_level, const char *fmt, va_list args)
+int vprintk(int msg_level, const char *fmt, va_list args)
 {
 	int i, cnt, log_this;
 	char buf[256];

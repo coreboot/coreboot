@@ -62,7 +62,7 @@ static void init_egress(void)
 	EPBAR8(EPVC0RCTL) = 1;
 	EPBAR8(EPPVCCAP1) = 1;
 
-	switch (MCHBAR32(0xc00) & 0x7) {
+	switch (MCHBAR32(CLKCFG_MCHBAR) & CLKCFG_FSBCLK_MASK) {
 	case 0x0:
 		/* FSB 1066 */
 		EPBAR32(EPVC1ITC) = 0x0001a6db;

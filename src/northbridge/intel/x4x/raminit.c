@@ -412,7 +412,7 @@ static void print_selected_timings(struct sysinfo *s)
 
 static void find_fsb_speed(struct sysinfo *s)
 {
-	switch (MCHBAR32(0xc00) & 0x7) {
+	switch ((MCHBAR32(CLKCFG_MCHBAR) & CLKCFG_FSBCLK_MASK) >> CLKCFG_FSBCLK_SHIFT) {
 	case 0x0:
 		s->max_fsb = FSB_CLOCK_1066MHz;
 		break;

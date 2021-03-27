@@ -1952,11 +1952,12 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 			MCHBAR8_OR(0x1a8, 0x4);
 
 		/* Set frequency */
-		MCHBAR32_AND_OR(0xc00, ~0x70,
-			(s->selected_timings.mem_clk << 4) | (1 << 10));
+		MCHBAR32_AND_OR(CLKCFG_MCHBAR, ~CLKCFG_MEMCLK_MASK,
+			(s->selected_timings.mem_clk << CLKCFG_MEMCLK_SHIFT) | CLKCFG_UPDATE);
 
 		/* Overwrite value if chipset rejects it */
-		s->selected_timings.mem_clk = (MCHBAR8(0xc00) & 0x70) >> 4;
+		s->selected_timings.mem_clk =
+			(MCHBAR8(CLKCFG_MCHBAR) & CLKCFG_MEMCLK_MASK) >> CLKCFG_MEMCLK_SHIFT;
 		if (s->selected_timings.mem_clk > (s->max_fsb + 3))
 			die("Error: DDR is faster than FSB, halt\n");
 	}

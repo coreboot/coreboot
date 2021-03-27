@@ -862,7 +862,7 @@ static void program_dll(struct sysinfo *s)
 		i++;
 		for (; i < 16; i++) {
 			MCHBAR8_AND_OR(0x1c8, ~0x1f, i);
-			MCHBAR8_OR(0x180, 0x4);
+			MCHBAR8_OR(0x180, 0x10);
 			while (MCHBAR8(0x180) & 0x10)
 				;
 			if (MCHBAR32(0x184) == 0) {

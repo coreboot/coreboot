@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef RAMINIT_H
-#define RAMINIT_H
+#ifndef NORTHBRIDGE_INTEL_HASWELL_RAMINIT_H
+#define NORTHBRIDGE_INTEL_HASWELL_RAMINIT_H
 
 #include <types.h>
 
@@ -17,4 +17,4 @@ void mb_get_spd_map(struct spd_info *spdi);
 
 void perform_raminit(const int s3resume);
 
-#endif				/* RAMINIT_H */
+#endif	/* NORTHBRIDGE_INTEL_HASWELL_RAMINIT_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __HASWELL_REGISTERS_DMIBAR_H__
-#define __HASWELL_REGISTERS_DMIBAR_H__
+#ifndef HASWELL_REGISTERS_DMIBAR_H
+#define HASWELL_REGISTERS_DMIBAR_H
 
 #define DMIVCECH	0x000	/* 32bit */
 #define DMIPVCCAP1	0x004	/* 32bit */
@@ -53,4 +53,4 @@
 
 #define DMI_AFE_PM_TMR	0xc28	/* 32bit */
 
-#endif /* __HASWELL_REGISTERS_DMIBAR_H__ */
+#endif /* HASWELL_REGISTERS_DMIBAR_H */

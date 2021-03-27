@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __HASWELL_REGISTERS_MCHBAR_H__
-#define __HASWELL_REGISTERS_MCHBAR_H__
+#ifndef HASWELL_REGISTERS_MCHBAR_H
+#define HASWELL_REGISTERS_MCHBAR_H
 
 /* Memory controller characteristics */
 #define NUM_CHANNELS	2
@@ -74,4 +74,4 @@
 #define CRDTLCK			0x77fc
 #define MCARBLCK		0x7ffc
 
-#endif /* __HASWELL_REGISTERS_MCHBAR_H__ */
+#endif /* HASWELL_REGISTERS_MCHBAR_H */

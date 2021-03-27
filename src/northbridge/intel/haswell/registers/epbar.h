@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __HASWELL_REGISTERS_EPBAR_H__
-#define __HASWELL_REGISTERS_EPBAR_H__
+#ifndef HASWELL_REGISTERS_EPBAR_H
+#define HASWELL_REGISTERS_EPBAR_H
 
 #define EPPVCCAP1	0x004	/* 32bit */
 #define EPPVCCAP2	0x008	/* 32bit */
@@ -25,4 +25,4 @@
 #define EPLE4D		0x080	/* 32bit */
 #define EPLE4A		0x088	/* 64bit */
 
-#endif /* __HASWELL_REGISTERS_EPBAR_H__ */
+#endif /* HASWELL_REGISTERS_EPBAR_H */

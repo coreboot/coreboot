@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __HASWELL_REGISTERS_HOST_BRIDGE_H__
-#define __HASWELL_REGISTERS_HOST_BRIDGE_H__
+#ifndef HASWELL_REGISTERS_HOST_BRIDGE_H
+#define HASWELL_REGISTERS_HOST_BRIDGE_H
 
 #define EPBAR		0x40
 #define MCHBAR		0x48
@@ -71,4 +71,4 @@
 
 #define CAPID0_B	0xe8
 
-#endif /* __HASWELL_REGISTERS_HOST_BRIDGE_H__ */
+#endif /* HASWELL_REGISTERS_HOST_BRIDGE_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __NORTHBRIDGE_INTEL_HASWELL_HASWELL_H__
-#define __NORTHBRIDGE_INTEL_HASWELL_HASWELL_H__
+#ifndef NORTHBRIDGE_INTEL_HASWELL_HASWELL_H
+#define NORTHBRIDGE_INTEL_HASWELL_HASWELL_H
 
 #include <device/device.h>
 #include <northbridge/intel/common/fixed_bars.h>
@@ -68,4 +68,4 @@ struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long start,
 					    struct acpi_rsdp *rsdp);
 
-#endif /* __NORTHBRIDGE_INTEL_HASWELL_HASWELL_H__ */
+#endif /* NORTHBRIDGE_INTEL_HASWELL_HASWELL_H */

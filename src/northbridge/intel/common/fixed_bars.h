@@ -38,6 +38,29 @@ static __always_inline void mchbar_write32(const uintptr_t offset, const uint32_
 	write32p(CONFIG_FIXED_MCHBAR_MMIO_BASE + offset, value);
 }
 
+static __always_inline void mchbar_clrsetbits8(uintptr_t offset, uint8_t clear, uint8_t set)
+{
+	clrsetbits8((void *)((uintptr_t)CONFIG_FIXED_MCHBAR_MMIO_BASE + offset), clear, set);
+}
+
+static __always_inline void mchbar_clrsetbits16(uintptr_t offset, uint16_t clear, uint16_t set)
+{
+	clrsetbits16((void *)((uintptr_t)CONFIG_FIXED_MCHBAR_MMIO_BASE + offset), clear, set);
+}
+
+static __always_inline void mchbar_clrsetbits32(uintptr_t offset, uint32_t clear, uint32_t set)
+{
+	clrsetbits32((void *)((uintptr_t)CONFIG_FIXED_MCHBAR_MMIO_BASE + offset), clear, set);
+}
+
+#define mchbar_setbits8(addr, set)		mchbar_clrsetbits8(addr, 0, set)
+#define mchbar_setbits16(addr, set)		mchbar_clrsetbits16(addr, 0, set)
+#define mchbar_setbits32(addr, set)		mchbar_clrsetbits32(addr, 0, set)
+
+#define mchbar_clrbits8(addr, clear)		mchbar_clrsetbits8(addr, clear, 0)
+#define mchbar_clrbits16(addr, clear)		mchbar_clrsetbits16(addr, clear, 0)
+#define mchbar_clrbits32(addr, clear)		mchbar_clrsetbits32(addr, clear, 0)
+
 _Static_assert(CONFIG_FIXED_DMIBAR_MMIO_BASE != 0, "DMIBAR base address is zero");
 
 static __always_inline uint8_t dmibar_read8(const uintptr_t offset)
@@ -69,6 +92,29 @@ static __always_inline void dmibar_write32(const uintptr_t offset, const uint32_
 {
 	write32p(CONFIG_FIXED_DMIBAR_MMIO_BASE + offset, value);
 }
+
+static __always_inline void dmibar_clrsetbits8(uintptr_t offset, uint8_t clear, uint8_t set)
+{
+	clrsetbits8((void *)((uintptr_t)CONFIG_FIXED_DMIBAR_MMIO_BASE + offset), clear, set);
+}
+
+static __always_inline void dmibar_clrsetbits16(uintptr_t offset, uint16_t clear, uint16_t set)
+{
+	clrsetbits16((void *)((uintptr_t)CONFIG_FIXED_DMIBAR_MMIO_BASE + offset), clear, set);
+}
+
+static __always_inline void dmibar_clrsetbits32(uintptr_t offset, uint32_t clear, uint32_t set)
+{
+	clrsetbits32((void *)((uintptr_t)CONFIG_FIXED_DMIBAR_MMIO_BASE + offset), clear, set);
+}
+
+#define dmibar_setbits8(addr, set)		dmibar_clrsetbits8(addr, 0, set)
+#define dmibar_setbits16(addr, set)		dmibar_clrsetbits16(addr, 0, set)
+#define dmibar_setbits32(addr, set)		dmibar_clrsetbits32(addr, 0, set)
+
+#define dmibar_clrbits8(addr, clear)		dmibar_clrsetbits8(addr, clear, 0)
+#define dmibar_clrbits16(addr, clear)		dmibar_clrsetbits16(addr, clear, 0)
+#define dmibar_clrbits32(addr, clear)		dmibar_clrsetbits32(addr, clear, 0)
 
 _Static_assert(CONFIG_FIXED_EPBAR_MMIO_BASE  != 0,  "EPBAR base address is zero");
 
@@ -102,37 +148,20 @@ static __always_inline void epbar_write32(const uintptr_t offset, const uint32_t
 	write32p(CONFIG_FIXED_EPBAR_MMIO_BASE + offset, value);
 }
 
-#define _bar_clrsetbits_impl(base, addr, clear, set, bits)				\
-		base##bar_write##bits(addr,						\
-			(base##bar_read##bits(addr) & ~(uint##bits##_t)(clear)) | (set))
+static __always_inline void epbar_clrsetbits8(uintptr_t offset, uint8_t clear, uint8_t set)
+{
+	clrsetbits8((void *)((uintptr_t)CONFIG_FIXED_EPBAR_MMIO_BASE + offset), clear, set);
+}
 
-#define mchbar_clrsetbits8(addr, clear, set)	_bar_clrsetbits_impl(mch, addr, clear, set, 8)
-#define mchbar_clrsetbits16(addr, clear, set)	_bar_clrsetbits_impl(mch, addr, clear, set, 16)
-#define mchbar_clrsetbits32(addr, clear, set)	_bar_clrsetbits_impl(mch, addr, clear, set, 32)
+static __always_inline void epbar_clrsetbits16(uintptr_t offset, uint16_t clear, uint16_t set)
+{
+	clrsetbits16((void *)((uintptr_t)CONFIG_FIXED_EPBAR_MMIO_BASE + offset), clear, set);
+}
 
-#define mchbar_setbits8(addr, set)		mchbar_clrsetbits8(addr, 0, set)
-#define mchbar_setbits16(addr, set)		mchbar_clrsetbits16(addr, 0, set)
-#define mchbar_setbits32(addr, set)		mchbar_clrsetbits32(addr, 0, set)
-
-#define mchbar_clrbits8(addr, clear)		mchbar_clrsetbits8(addr, clear, 0)
-#define mchbar_clrbits16(addr, clear)		mchbar_clrsetbits16(addr, clear, 0)
-#define mchbar_clrbits32(addr, clear)		mchbar_clrsetbits32(addr, clear, 0)
-
-#define dmibar_clrsetbits8(addr, clear, set)	_bar_clrsetbits_impl(dmi, addr, clear, set, 8)
-#define dmibar_clrsetbits16(addr, clear, set)	_bar_clrsetbits_impl(dmi, addr, clear, set, 16)
-#define dmibar_clrsetbits32(addr, clear, set)	_bar_clrsetbits_impl(dmi, addr, clear, set, 32)
-
-#define dmibar_setbits8(addr, set)		dmibar_clrsetbits8(addr, 0, set)
-#define dmibar_setbits16(addr, set)		dmibar_clrsetbits16(addr, 0, set)
-#define dmibar_setbits32(addr, set)		dmibar_clrsetbits32(addr, 0, set)
-
-#define dmibar_clrbits8(addr, clear)		dmibar_clrsetbits8(addr, clear, 0)
-#define dmibar_clrbits16(addr, clear)		dmibar_clrsetbits16(addr, clear, 0)
-#define dmibar_clrbits32(addr, clear)		dmibar_clrsetbits32(addr, clear, 0)
-
-#define epbar_clrsetbits8(addr, clear, set)	_bar_clrsetbits_impl(ep, addr, clear, set, 8)
-#define epbar_clrsetbits16(addr, clear, set)	_bar_clrsetbits_impl(ep, addr, clear, set, 16)
-#define epbar_clrsetbits32(addr, clear, set)	_bar_clrsetbits_impl(ep, addr, clear, set, 32)
+static __always_inline void epbar_clrsetbits32(uintptr_t offset, uint32_t clear, uint32_t set)
+{
+	clrsetbits32((void *)((uintptr_t)CONFIG_FIXED_EPBAR_MMIO_BASE + offset), clear, set);
+}
 
 #define epbar_setbits8(addr, set)		epbar_clrsetbits8(addr, 0, set)
 #define epbar_setbits16(addr, set)		epbar_clrsetbits16(addr, 0, set)

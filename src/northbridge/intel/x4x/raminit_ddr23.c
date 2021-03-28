@@ -880,6 +880,22 @@ static void program_dll(struct sysinfo *s)
 		printk(BIOS_NOTICE, "HMC failed, using async mode\n");
 	}
 
+	mchbar_clrbits8(0x180, 1 << 7);
+
+	if ((s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
+		|| (s->spd_type == DDR2 && s->selected_timings.fsb_clk == FSB_CLOCK_800MHz
+			&& s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
+		i = mchbar_read8(0x1c8) & 0xf;
+		if (s->spd_type == DDR2)
+			i = (i + 10) % 14;
+		else /* DDR3 */
+			i = (i + 3) % 12;
+		mchbar_clrsetbits8(0x1c8, 0x1f, i);
+		mchbar_setbits8(0x180, 1 << 4);
+		while (mchbar_read8(0x180) & (1 << 4))
+			;
+	}
+
 	switch (s->selected_timings.mem_clk) {
 	case MEM_CLOCK_667MHz:
 		clk = 0x1a;
@@ -901,22 +917,6 @@ static void program_dll(struct sysinfo *s)
 	default:
 		clk = 0x1a;
 		break;
-	}
-
-	mchbar_clrbits8(0x180, 1 << 7);
-
-	if ((s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
-		|| (s->spd_type == DDR2 && s->selected_timings.fsb_clk == FSB_CLOCK_800MHz
-			&& s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
-		i = mchbar_read8(0x1c8) & 0xf;
-		if (s->spd_type == DDR2)
-			i = (i + 10) % 14;
-		else /* DDR3 */
-			i = (i + 3) % 12;
-		mchbar_clrsetbits8(0x1c8, 0x1f, i);
-		mchbar_setbits8(0x180, 1 << 4);
-		while (mchbar_read8(0x180) & (1 << 4))
-			;
 	}
 
 	reg8 = mchbar_read8(0x188) & ~1;

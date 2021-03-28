@@ -51,23 +51,23 @@
  * Module type (byte 3, bits 3:0) of SPD
  * This definition is specific to DDR3. DDR2 SPDs have a different structure.
  */
-enum spd_dimm_type {
-	SPD_DIMM_TYPE_UNDEFINED			= 0x00,
-	SPD_DIMM_TYPE_RDIMM			= 0x01,
-	SPD_DIMM_TYPE_UDIMM			= 0x02,
-	SPD_DIMM_TYPE_SO_DIMM			= 0x03,
-	SPD_DIMM_TYPE_MICRO_DIMM		= 0x04,
-	SPD_DIMM_TYPE_MINI_RDIMM		= 0x05,
-	SPD_DIMM_TYPE_MINI_UDIMM		= 0x06,
-	SPD_DIMM_TYPE_MINI_CDIMM		= 0x07,
-	SPD_DIMM_TYPE_72B_SO_UDIMM		= 0x08,
-	SPD_DIMM_TYPE_72B_SO_RDIMM		= 0x09,
-	SPD_DIMM_TYPE_72B_SO_CDIMM		= 0x0a,
-	SPD_DIMM_TYPE_LRDIMM			= 0x0b,
-	SPD_DIMM_TYPE_16B_SO_DIMM		= 0x0c,
-	SPD_DIMM_TYPE_32B_SO_DIMM		= 0x0d,
+enum spd_dimm_type_ddr3 {
+	SPD_DDR3_DIMM_TYPE_UNDEFINED		= 0x00,
+	SPD_DDR3_DIMM_TYPE_RDIMM		= 0x01,
+	SPD_DDR3_DIMM_TYPE_UDIMM		= 0x02,
+	SPD_DDR3_DIMM_TYPE_SO_DIMM		= 0x03,
+	SPD_DDR3_DIMM_TYPE_MICRO_DIMM		= 0x04,
+	SPD_DDR3_DIMM_TYPE_MINI_RDIMM		= 0x05,
+	SPD_DDR3_DIMM_TYPE_MINI_UDIMM		= 0x06,
+	SPD_DDR3_DIMM_TYPE_MINI_CDIMM		= 0x07,
+	SPD_DDR3_DIMM_TYPE_72B_SO_UDIMM		= 0x08,
+	SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM		= 0x09,
+	SPD_DDR3_DIMM_TYPE_72B_SO_CDIMM		= 0x0a,
+	SPD_DDR3_DIMM_TYPE_LRDIMM		= 0x0b,
+	SPD_DDR3_DIMM_TYPE_16B_SO_DIMM		= 0x0c,
+	SPD_DDR3_DIMM_TYPE_32B_SO_DIMM		= 0x0d,
 	/* Masks to bits 3:0 to give the dimm type */
-	SPD_DIMM_TYPE_MASK			= 0x0f,
+	SPD_DDR3_DIMM_TYPE_MASK			= 0x0f,
 };
 
 /**
@@ -120,7 +120,7 @@ union dimm_flags_ddr3_st {
  */
 struct dimm_attr_ddr3_st {
 	enum spd_memory_type dram_type;
-	enum spd_dimm_type dimm_type;
+	enum spd_dimm_type_ddr3 dimm_type;
 	u16 cas_supported;
 	/* Flags extracted from SPD */
 	union dimm_flags_ddr3_st flags;
@@ -173,7 +173,7 @@ typedef u8 spd_raw_data[256];
 u16 spd_ddr3_calc_crc(u8 *spd, int len);
 u16 spd_ddr3_calc_unique_crc(u8 *spd, int len);
 int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd_data);
-int spd_dimm_is_registered_ddr3(enum spd_dimm_type type);
+int spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type);
 void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm);
 int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 			spd_raw_data spd,

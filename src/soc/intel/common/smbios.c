@@ -17,22 +17,22 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 	dimm->mod_id = mod_id;
 	/* Translate to DDR2 module type field that SMBIOS code expects. */
 	switch (mod_type) {
-	case SPD_DIMM_TYPE_SO_DIMM:
+	case SPD_DDR3_DIMM_TYPE_SO_DIMM:
 		dimm->mod_type = SPD_SODIMM;
 		break;
-	case SPD_DIMM_TYPE_72B_SO_CDIMM:
+	case SPD_DDR3_DIMM_TYPE_72B_SO_CDIMM:
 		dimm->mod_type = SPD_72B_SO_CDIMM;
 		break;
-	case SPD_DIMM_TYPE_72B_SO_RDIMM:
+	case SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM:
 		dimm->mod_type = SPD_72B_SO_RDIMM;
 		break;
-	case SPD_DIMM_TYPE_UDIMM:
+	case SPD_DDR3_DIMM_TYPE_UDIMM:
 		dimm->mod_type = SPD_UDIMM;
 		break;
-	case SPD_DIMM_TYPE_RDIMM:
+	case SPD_DDR3_DIMM_TYPE_RDIMM:
 		dimm->mod_type = SPD_RDIMM;
 		break;
-	case SPD_DIMM_TYPE_UNDEFINED:
+	case SPD_DDR3_DIMM_TYPE_UNDEFINED:
 	default:
 		dimm->mod_type = SPD_UNDEFINED;
 		break;

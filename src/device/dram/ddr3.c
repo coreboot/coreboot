@@ -27,11 +27,11 @@
  *
  * @param type DIMM type. This is byte[3] of the SPD.
  */
-int spd_dimm_is_registered_ddr3(enum spd_dimm_type type)
+int spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type)
 {
-	if ((type == SPD_DIMM_TYPE_RDIMM)
-	    | (type == SPD_DIMM_TYPE_MINI_RDIMM)
-	    | (type == SPD_DIMM_TYPE_72B_SO_RDIMM))
+	if ((type == SPD_DDR3_DIMM_TYPE_RDIMM)
+	    | (type == SPD_DDR3_DIMM_TYPE_MINI_RDIMM)
+	    | (type == SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM))
 		return 1;
 
 	return 0;
@@ -544,22 +544,22 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 		dimm->mod_id = info->manufacturer_id;
 
 		switch (info->dimm_type) {
-		case SPD_DIMM_TYPE_SO_DIMM:
+		case SPD_DDR3_DIMM_TYPE_SO_DIMM:
 			dimm->mod_type = SPD_SODIMM;
 			break;
-		case SPD_DIMM_TYPE_72B_SO_CDIMM:
+		case SPD_DDR3_DIMM_TYPE_72B_SO_CDIMM:
 			dimm->mod_type = SPD_72B_SO_CDIMM;
 			break;
-		case SPD_DIMM_TYPE_72B_SO_RDIMM:
+		case SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM:
 			dimm->mod_type = SPD_72B_SO_RDIMM;
 			break;
-		case SPD_DIMM_TYPE_UDIMM:
+		case SPD_DDR3_DIMM_TYPE_UDIMM:
 			dimm->mod_type = SPD_UDIMM;
 			break;
-		case SPD_DIMM_TYPE_RDIMM:
+		case SPD_DDR3_DIMM_TYPE_RDIMM:
 			dimm->mod_type = SPD_RDIMM;
 			break;
-		case SPD_DIMM_TYPE_UNDEFINED:
+		case SPD_DDR3_DIMM_TYPE_UNDEFINED:
 		default:
 			dimm->mod_type = SPD_UNDEFINED;
 			break;

@@ -212,9 +212,8 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
 
 		if (serial_cur_pair != PAIR_NUMBER(attr)) {
 			short int fg, bg;
-			pair_content(PAIR_NUMBER(attr),
-				     &fg, &bg);
-			serial_set_color(fg, bg);
+			if (pair_content(PAIR_NUMBER(attr), &fg, &bg) == OK)
+				serial_set_color(fg, bg);
 			serial_cur_pair = PAIR_NUMBER(attr);
 		}
 

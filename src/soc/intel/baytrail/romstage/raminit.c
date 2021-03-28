@@ -55,7 +55,7 @@ static void ABI_X86 send_to_console(unsigned char b)
 
 static void populate_smbios_tables(void *dram_data, int speed, int num_channels)
 {
-	dimm_attr dimm;
+	struct dimm_attr_ddr3_st dimm;
 	enum spd_status status;
 
 	/* Decode into dimm_attr struct */

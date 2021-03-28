@@ -174,7 +174,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 			spd_slot = 2 * channel + slot;
 			printk(BIOS_DEBUG, "SPD probe channel%d, slot%d\n", channel, slot);
 
-			dimm_attr *const dimm = &ctrl->info.dimm[channel][slot];
+			struct dimm_attr_ddr3_st *const dimm = &ctrl->info.dimm[channel][slot];
 
 			/* Search for XMP profile */
 			spd_xmp_decode_ddr3(dimm, spd[spd_slot],

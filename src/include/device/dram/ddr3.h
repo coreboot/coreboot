@@ -75,7 +75,7 @@ enum spd_dimm_type {
  *
  * Characteristic flags for the DIMM, as presented by the SPD
  */
-typedef union dimm_flags_st {
+union dimm_flags_ddr3_st {
 	/* The whole point of the union/struct construct is to allow us to clear
 	 * all the bits with one line: flags.raw = 0.
 	 * We do not care how these bits are ordered */
@@ -111,19 +111,19 @@ typedef union dimm_flags_st {
 		unsigned int therm_sensor:1;
 	};
 	unsigned int raw;
-} dimm_flags_t;
+};
 
 /**
  * \brief DIMM characteristics
  *
  * The characteristics of each DIMM, as presented by the SPD
  */
-typedef struct dimm_attr_st {
+struct dimm_attr_ddr3_st {
 	enum spd_memory_type dram_type;
 	enum spd_dimm_type dimm_type;
 	u16 cas_supported;
 	/* Flags extracted from SPD */
-	dimm_flags_t flags;
+	union dimm_flags_ddr3_st flags;
 	/* SDRAM width */
 	u8 width;
 	/* Number of ranks */
@@ -161,7 +161,7 @@ typedef struct dimm_attr_st {
 	u8 part_number[17];
 	/* Serial number */
 	u8 serial[SPD_DIMM_SERIAL_LEN];
-} dimm_attr;
+};
 
 enum ddr3_xmp_profile {
 	DDR3_XMP_PROFILE_1 = 0,
@@ -172,15 +172,15 @@ typedef u8 spd_raw_data[256];
 
 u16 spd_ddr3_calc_crc(u8 *spd, int len);
 u16 spd_ddr3_calc_unique_crc(u8 *spd, int len);
-int spd_decode_ddr3(dimm_attr *dimm, spd_raw_data spd_data);
+int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd_data);
 int spd_dimm_is_registered_ddr3(enum spd_dimm_type type);
-void dram_print_spd_ddr3(const dimm_attr *dimm);
-int spd_xmp_decode_ddr3(dimm_attr *dimm,
+void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm);
+int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 			spd_raw_data spd,
 			enum ddr3_xmp_profile profile);
 enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 			     const u16 selected_freq,
-			     const dimm_attr *info);
+			     const struct dimm_attr_ddr3_st *info);
 /**
  * \brief Read double word from specified address
  *

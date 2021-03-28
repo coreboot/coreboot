@@ -66,7 +66,7 @@ void dram_find_common_params(ramctr_timing *ctrl)
 
 	FOR_ALL_CHANNELS for (slot = 0; slot < 2; slot++) {
 
-		const dimm_attr *dimm = &dimms->dimm[channel][slot];
+		const struct dimm_attr_ddr3_st *dimm = &dimms->dimm[channel][slot];
 		if (dimm->dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3)
 			continue;
 
@@ -245,7 +245,7 @@ void dram_dimm_mapping(ramctr_timing *ctrl)
 	dimm_info *info = &ctrl->info;
 
 	FOR_ALL_CHANNELS {
-		dimm_attr *dimmA, *dimmB;
+		struct dimm_attr_ddr3_st *dimmA, *dimmB;
 		u32 reg = 0;
 
 		if (info->dimm[channel][0].size_mb >= info->dimm[channel][1].size_mb) {

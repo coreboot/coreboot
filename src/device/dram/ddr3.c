@@ -98,7 +98,7 @@ u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
  *		SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
  *					    detected.
  */
-int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
+int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 {
 	int ret;
 	u16 crc, spd_crc;
@@ -394,7 +394,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
  *		SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
  *					    detected.
  */
-int spd_xmp_decode_ddr3(dimm_attr *dimm,
+int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 		       spd_raw_data spd,
 		       enum ddr3_xmp_profile profile)
 {
@@ -505,7 +505,7 @@ int spd_xmp_decode_ddr3(dimm_attr *dimm,
  */
 enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 			     const u16 selected_freq,
-			     const dimm_attr *info)
+			     const struct dimm_attr_ddr3_st *info)
 {
 	struct memory_info *mem_info;
 	struct dimm_info *dimm;
@@ -597,7 +597,7 @@ static void print_ns(const char *msg, u32 val)
 *
 * @param dimm pointer to already decoded @ref dimm_attr structure
 */
-void dram_print_spd_ddr3(const dimm_attr * dimm)
+void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm)
 {
 	u16 val16;
 	int i;

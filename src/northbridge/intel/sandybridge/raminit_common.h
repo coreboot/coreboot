@@ -322,7 +322,7 @@ typedef struct odtmap_st {
 
 /* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */
 typedef struct dimm_info_st {
-	dimm_attr dimm[NUM_CHANNELS][NUM_SLOTS];
+	struct dimm_attr_ddr3_st dimm[NUM_CHANNELS][NUM_SLOTS];
 } dimm_info;
 
 /* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */

@@ -351,7 +351,7 @@ static void workaround_stacked_mode(struct sysinfo *s)
 static int ddr3_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 		struct abs_timings *saved_timings, struct sysinfo *s)
 {
-	struct dimm_attr_st decoded_dimm;
+	struct dimm_attr_ddr3_st decoded_dimm;
 
 	if (spd_decode_ddr3(&decoded_dimm, raw_spd) != SPD_STATUS_OK)
 		return CB_ERR;

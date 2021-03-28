@@ -57,11 +57,13 @@ void dump_pci_devices(void)
 	}
 }
 
-void dump_spd_registers(void)
+void dump_spd_registers(u8 spd_map[4])
 {
-	unsigned int device;
-	device = DIMM0;
-	while (device <= DIMM3) {
+	for (unsigned int d = 0; d < 4; d++) {
+		const unsigned int device = spd_map[d];
+		if (device == 0)
+			continue;
+
 		int status = 0;
 		int i;
 		printk(BIOS_DEBUG, "\ndimm %02x", device);
@@ -76,7 +78,6 @@ void dump_spd_registers(void)
 			}
 			printk(BIOS_DEBUG, "%02x ", status);
 		}
-		device++;
 		printk(BIOS_DEBUG, "\n");
 	}
 }

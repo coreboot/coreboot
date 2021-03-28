@@ -337,7 +337,7 @@ void i945_late_initialization(int s3resume);
 void print_pci_devices(void);
 void dump_pci_device(unsigned int dev);
 void dump_pci_devices(void);
-void dump_spd_registers(void);
+void dump_spd_registers(u8 spd_map[4]);
 void sdram_dump_mchbar_registers(void);
 
 u32 decode_igd_memory_size(u32 gms);

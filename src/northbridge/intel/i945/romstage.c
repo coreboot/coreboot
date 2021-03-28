@@ -48,10 +48,10 @@ void mainboard_romstage_entry(void)
 
 	mainboard_pre_raminit_config(s3resume);
 
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
 	mainboard_get_spd_map(spd_map);
+
+	if (CONFIG(DEBUG_RAM_SETUP))
+		dump_spd_registers(spd_map);
 
 	sdram_initialize(s3resume ? BOOT_PATH_RESUME : BOOT_PATH_NORMAL, spd_map);
 

@@ -680,7 +680,7 @@ static bool sync_dll_test_tap(unsigned int tap, uint32_t val)
 	return mchbar_read32(0x184) == val;
 }
 
-static void sync_dll_search_tap(uint8_t *tap, uint32_t val)
+static void sync_dll_search_tap(unsigned int *tap, uint32_t val)
 {
 	for (; *tap < sync_dll_max_taps; ++*tap)
 		if (sync_dll_test_tap(*tap, val))
@@ -689,7 +689,7 @@ static void sync_dll_search_tap(uint8_t *tap, uint32_t val)
 
 static void program_dll(struct sysinfo *s)
 {
-	u8 i, j, r, reg8, clk, async = 0;
+	u8 i, r, reg8, clk, async = 0;
 	u16 reg16 = 0;
 	u32 reg32 = 0;
 
@@ -842,61 +842,59 @@ static void program_dll(struct sysinfo *s)
 	}
 
 	/* XXX if not async mode */
+	unsigned int tap;
 	mchbar_clrbits16(0x180, 1 << 15 | 1 << 9);
 	mchbar_setbits8(0x180, 1 << 2);
-	j = 0;
-	for (i = 0; i < sync_dll_max_taps; i++) {
-		if (sync_dll_test_tap(i, 0xffffffff)) {
-			j++;
-			if (j >= 2)
-				break;
+	for (tap = 0; tap < sync_dll_max_taps; ++tap) {
+		sync_dll_search_tap(&tap, 0xffffffff);
 
-			if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz) {
-				j = 2;
+		if (s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
+			break;
+
+		++tap; /* other clock speeds need a second match */
+		if (sync_dll_test_tap(tap, 0xffffffff))
+			break;
+	}
+
+	/* look for a real edge if we started with a match */
+	if (tap <= 1) {
+		unsigned int tap2 = tap + 1;
+		sync_dll_search_tap(&tap2, 0);
+
+		for (++tap2; tap2 < sync_dll_max_taps; ++tap2) {
+			sync_dll_search_tap(&tap2, 0xffffffff);
+
+			++tap2; /* we need a second match */
+			if (sync_dll_test_tap(tap2, 0xffffffff))
 				break;
-			}
+		}
+
+		if (tap2 < sync_dll_max_taps) {
+			tap = tap2;
 		} else {
-			j = 0;
-		}
-	}
-	if (i == 1 || ((i == 0) && s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
-		j = 0;
-		i++;
-		sync_dll_search_tap(&i, 0);
-		i++;
-		for (; i < sync_dll_max_taps; i++) {
-			if (sync_dll_test_tap(i, 0xffffffff)) {
-				j++;
-				if (j >= 2)
-					break;
-			} else {
-				j = 0;
-			}
-		}
-		if (j < 2) {
+			/* Using 0 instead of the original `tap` seems
+			   inconsistent, but is what the code always did. */
 			sync_dll_load_tap(0);
-			j = 2;
+			tap = 0;
 		}
 	}
 
-	if (j < 2) {
+	if (tap >= sync_dll_max_taps) {
 		mchbar_clrsetbits8(0x1c8, 0x1f, 0);
+		tap = 0;
 		async = 1;
 		printk(BIOS_NOTICE, "HMC failed, using async mode\n");
 	}
 
 	mchbar_clrbits8(0x180, 1 << 7);
 
-	if ((s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
-		|| (s->spd_type == DDR2 && s->selected_timings.fsb_clk == FSB_CLOCK_800MHz
-			&& s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
-		i = mchbar_read8(0x1c8) & 0xf;
-		if (s->spd_type == DDR2)
-			i = (i + 10) % 14;
-		else /* DDR3 */
-			i = (i + 3) % 12;
-		sync_dll_load_tap(i);
-	}
+	if (s->spd_type == DDR3 && s->selected_timings.mem_clk == MEM_CLOCK_1066MHz)
+		sync_dll_load_tap((tap + 3) % 12);
+
+	if (s->spd_type == DDR2 &&
+	    s->selected_timings.fsb_clk == FSB_CLOCK_800MHz &&
+	    s->selected_timings.mem_clk == MEM_CLOCK_667MHz)
+		sync_dll_load_tap((tap + 10) % 14);
 
 	switch (s->selected_timings.mem_clk) {
 	case MEM_CLOCK_667MHz:

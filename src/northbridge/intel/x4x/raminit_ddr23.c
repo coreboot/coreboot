@@ -663,6 +663,30 @@ static void program_timings(struct sysinfo *s)
 	mchbar_clrsetbits8(0x6c4, 0x7, 0x2);
 }
 
+const unsigned int sync_dll_max_taps = 16;
+
+static void sync_dll_load_tap(unsigned int tap)
+{
+	mchbar_clrsetbits8(0x1c8, 0x1f, tap & 0x1f);
+	mchbar_setbits8(0x180, 1 << 4);
+	do {} while (mchbar_read8(0x180) & (1 << 4));
+}
+
+static bool sync_dll_test_tap(unsigned int tap, uint32_t val)
+{
+	if (tap >= sync_dll_max_taps)
+		return false;
+	sync_dll_load_tap(tap);
+	return mchbar_read32(0x184) == val;
+}
+
+static void sync_dll_search_tap(uint8_t *tap, uint32_t val)
+{
+	for (; *tap < sync_dll_max_taps; ++*tap)
+		if (sync_dll_test_tap(*tap, val))
+			return;
+}
+
 static void program_dll(struct sysinfo *s)
 {
 	u8 i, j, r, reg8, clk, async = 0;
@@ -821,12 +845,8 @@ static void program_dll(struct sysinfo *s)
 	mchbar_clrbits16(0x180, 1 << 15 | 1 << 9);
 	mchbar_setbits8(0x180, 1 << 2);
 	j = 0;
-	for (i = 0; i < 16; i++) {
-		mchbar_clrsetbits8(0x1c8, 0x1f, i);
-		mchbar_setbits8(0x180, 1 << 4);
-		while (mchbar_read8(0x180) & (1 << 4))
-			;
-		if (mchbar_read32(0x184) == 0xffffffff) {
+	for (i = 0; i < sync_dll_max_taps; i++) {
+		if (sync_dll_test_tap(i, 0xffffffff)) {
 			j++;
 			if (j >= 2)
 				break;
@@ -842,22 +862,10 @@ static void program_dll(struct sysinfo *s)
 	if (i == 1 || ((i == 0) && s->selected_timings.mem_clk == MEM_CLOCK_667MHz)) {
 		j = 0;
 		i++;
-		for (; i < 16; i++) {
-			mchbar_clrsetbits8(0x1c8, 0x1f, i);
-			mchbar_setbits8(0x180, 1 << 4);
-			while (mchbar_read8(0x180) & (1 << 4))
-				;
-			if (mchbar_read32(0x184) == 0) {
-				i++;
-				break;
-			}
-		}
-		for (; i < 16; i++) {
-			mchbar_clrsetbits8(0x1c8, 0x1f, i);
-			mchbar_setbits8(0x180, 1 << 4);
-			while (mchbar_read8(0x180) & (1 << 4))
-				;
-			if (mchbar_read32(0x184) == 0xffffffff) {
+		sync_dll_search_tap(&i, 0);
+		i++;
+		for (; i < sync_dll_max_taps; i++) {
+			if (sync_dll_test_tap(i, 0xffffffff)) {
 				j++;
 				if (j >= 2)
 					break;
@@ -866,10 +874,7 @@ static void program_dll(struct sysinfo *s)
 			}
 		}
 		if (j < 2) {
-			mchbar_clrsetbits8(0x1c8, 0x1f, 0);
-			mchbar_setbits8(0x180, 1 << 4);
-			while (mchbar_read8(0x180) & (1 << 4))
-				;
+			sync_dll_load_tap(0);
 			j = 2;
 		}
 	}
@@ -890,10 +895,7 @@ static void program_dll(struct sysinfo *s)
 			i = (i + 10) % 14;
 		else /* DDR3 */
 			i = (i + 3) % 12;
-		mchbar_clrsetbits8(0x1c8, 0x1f, i);
-		mchbar_setbits8(0x180, 1 << 4);
-		while (mchbar_read8(0x180) & (1 << 4))
-			;
+		sync_dll_load_tap(i);
 	}
 
 	switch (s->selected_timings.mem_clk) {

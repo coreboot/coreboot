@@ -684,7 +684,7 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 }
 
 /* Obtain optimal power down mode for current configuration */
-static enum pdwm_mode get_power_down_mode(ramctr_timing *ctrl)
+static enum power_down_mode get_power_down_mode(ramctr_timing *ctrl)
 {
 	if (ctrl->tXP > 8)
 		return PDM_NONE;
@@ -703,7 +703,7 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
 
-	const enum pdwm_mode power_down = get_power_down_mode(ctrl);
+	const enum power_down_mode power_down = get_power_down_mode(ctrl);
 
 	const bool slow_exit = power_down == PDM_DLL_OFF || power_down == PDM_APD_DLL_OFF;
 

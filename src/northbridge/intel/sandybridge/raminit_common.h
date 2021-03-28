@@ -306,7 +306,7 @@ void iosav_write_memory_test_sequence(ramctr_timing *ctrl, int channel, int slot
  */
 #define MRC_CACHE_VERSION 5
 
-enum pdwm_mode {
+enum power_down_mode {
 	PDM_NONE        = 0,
 	PDM_APD         = 1,
 	PDM_PPD         = 2,

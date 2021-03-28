@@ -25,20 +25,20 @@
  * Module type (byte 3, bits 3:0) of SPD
  * This definition is specific to DDR4. DDR2/3 SPDs have a different structure.
  */
-enum spd_dimm_type {
-	SPD_DIMM_TYPE_EXTENDED			= 0x0,
-	SPD_DIMM_TYPE_RDIMM			= 0x1,
-	SPD_DIMM_TYPE_UDIMM			= 0x2,
-	SPD_DIMM_TYPE_SO_DIMM			= 0x3,
-	SPD_DIMM_TYPE_LRDIMM			= 0x4,
-	SPD_DIMM_TYPE_MINI_RDIMM		= 0x5,
-	SPD_DIMM_TYPE_MINI_UDIMM		= 0x6,
-	SPD_DIMM_TYPE_72B_SO_RDIMM		= 0x8,
-	SPD_DIMM_TYPE_72B_SO_UDIMM		= 0x9,
-	SPD_DIMM_TYPE_16B_SO_DIMM		= 0xc,
-	SPD_DIMM_TYPE_32B_SO_DIMM		= 0xd,
+enum spd_dimm_type_ddr4 {
+	SPD_DDR4_DIMM_TYPE_EXTENDED		= 0x0,
+	SPD_DDR4_DIMM_TYPE_RDIMM		= 0x1,
+	SPD_DDR4_DIMM_TYPE_UDIMM		= 0x2,
+	SPD_DDR4_DIMM_TYPE_SO_DIMM		= 0x3,
+	SPD_DDR4_DIMM_TYPE_LRDIMM		= 0x4,
+	SPD_DDR4_DIMM_TYPE_MINI_RDIMM		= 0x5,
+	SPD_DDR4_DIMM_TYPE_MINI_UDIMM		= 0x6,
+	SPD_DDR4_DIMM_TYPE_72B_SO_RDIMM		= 0x8,
+	SPD_DDR4_DIMM_TYPE_72B_SO_UDIMM		= 0x9,
+	SPD_DDR4_DIMM_TYPE_16B_SO_DIMM		= 0xc,
+	SPD_DDR4_DIMM_TYPE_32B_SO_DIMM		= 0xd,
 	/* Masks to bits 3:0 to give the dimm type */
-	SPD_DIMM_TYPE_MASK			= 0xf
+	SPD_DDR4_DIMM_TYPE_MASK			= 0xf
 };
 
 /**
@@ -46,9 +46,9 @@ enum spd_dimm_type {
  *
  * The characteristics of each DIMM, as presented by the SPD
  */
-typedef struct dimm_attr_st {
+struct dimm_attr_ddr4_st {
 	enum spd_memory_type dram_type;
-	enum spd_dimm_type dimm_type;
+	enum spd_dimm_type_ddr4 dimm_type;
 	char part_number[SPD_DDR4_PART_LEN + 1];
 	u8 serial_number[4];
 	u8 bus_width;
@@ -59,15 +59,15 @@ typedef struct dimm_attr_st {
 	u16 manufacturer_id;
 	u16 vdd_voltage;
 	bool ecc_extension;
-} dimm_attr;
+};
 
 typedef u8 spd_raw_data[512];
 
-int spd_decode_ddr4(dimm_attr *dimm, spd_raw_data spd);
+int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_raw_data spd);
 
 enum cb_err spd_add_smbios17_ddr4(const u8 channel, const u8 slot,
 				const u16 selected_freq,
-				const dimm_attr *info);
+				const struct dimm_attr_ddr4_st *info);
 
 /**
  * Converts DDR4 clock speed in MHz to the standard reported speed in MT/s

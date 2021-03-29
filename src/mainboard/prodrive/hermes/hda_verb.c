@@ -12,7 +12,7 @@ void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 	if (viddid == 0x10ec0888) {
 		u8 hsi = get_bmc_hsi();
 
-		if (hsi >= 4)
+		if (hsi >= 3) /* R04 and newer */
 			mainboard_r0x_configure_alc888(base, viddid);
 	}
 }

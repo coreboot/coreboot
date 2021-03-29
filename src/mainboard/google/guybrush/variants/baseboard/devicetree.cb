@@ -48,7 +48,8 @@ chip soc/amd/cezanne
 		device ref gpp_bridge_3 on end # NVMe
 
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
-			device ref gfx on end # Internal GPU (GFX)
+			# b/183971103 - We can't enable GFX because it locks up the OS
+			device ref gfx off end # Internal GPU (GFX)
 			device ref xhci_0 on # USB 3.1 (USB0)
 				chip drivers/usb/acpi
 					device ref xhci_0_root_hub on

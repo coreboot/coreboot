@@ -106,6 +106,14 @@ config TPM_MEASURED_BOOT
 	help
 	  Enables measured boot (experimental)
 
+config TPM_MEASURED_BOOT_INIT_BOOTBLOCK
+	bool
+	depends on TPM_MEASURED_BOOT && !VBOOT
+	help
+	  Initialize TPM inside the bootblock instead of ramstage. This is
+	  useful with some form of hardware assisted root of trust
+	  measurement like Intel TXT/CBnT.
+
 config TPM_MEASURED_BOOT_RUNTIME_DATA
 	string "Runtime data whitelist"
 	default ""

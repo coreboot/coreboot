@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <rules.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
 #include <security/tpm/tspi/crtm.h>
@@ -104,6 +105,9 @@ static inline int tspi_tpm_is_setup(void)
 		return vboot_logic_executed();
 	}
 
+	if (CONFIG(TPM_MEASURED_BOOT_INIT_BOOTBLOCK))
+		return ENV_BOOTBLOCK ? tpm_is_setup : 1;
+
 	if (ENV_RAMSTAGE)
 		return tpm_is_setup;
 
@@ -180,7 +184,7 @@ uint32_t tpm_setup(int s3flag)
 #if CONFIG(TPM1)
 	result = tpm1_invoke_state_machine();
 #endif
-	if (CONFIG(TPM_MEASURED_BOOT))
+	if (CONFIG(TPM_MEASURED_BOOT) && !CONFIG(TPM_MEASURED_BOOT_INIT_BOOTBLOCK))
 		result = tspi_measure_cache_to_pcr();
 
 	tpm_is_setup = 1;

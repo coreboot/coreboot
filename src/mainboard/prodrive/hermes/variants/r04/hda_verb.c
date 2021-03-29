@@ -66,7 +66,7 @@ void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 
 	const u32 verbs[] = {
 		AZALIA_PIN_CFG(0, 0x1b, config),
-		0x0205000d,
+		0x0205000d, /* Pin 37 vrefo hidden register - used as port C vref */
 		get_port_c_vref_cfg(board_cfg->blue_rear_vref),
 	};
 	azalia_program_verb_table(base, verbs, ARRAY_SIZE(verbs));

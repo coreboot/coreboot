@@ -6,20 +6,8 @@
 const u32 cim_verb_data[] = {
 	0x10ec0888,	/* Codec Vendor / Device ID: Realtek ALC888 */
 	0x10ec0888,	/* Subsystem ID */
-	17,		/* Number of 4 dword sets */
+	15,		/* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0, 0x10ec0888),
-
-	/* Port configuration control */
-
-	0x018707e1, /* port B VREF 50% of LDO-OUT */
-	0x019707e1, /* port F VREF 50% of LDO-OUT */
-	0x01b707e1, /* port E VREF 50% of LDO-OUT*/
-	0x0205000d, /* pin 37 vrefo hidden register - used as port C vref */
-
-	0x02041000, /* pin 37 vrefo 50% of LDO-OUT */
-	0x02041000, /* Dummy entry */
-	0x02041000, /* Dummy entry */
-	0x02041000, /* Dummy entry */
 
 	/* Pin widgets */
 	AZALIA_PIN_CFG(0, 0x11, 0x411111f0), /* SPDIF-OUT2 - disabled */

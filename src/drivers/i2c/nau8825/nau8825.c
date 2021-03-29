@@ -47,7 +47,11 @@ static void nau8825_fill_ssdt(const struct device *dev)
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
 	acpi_device_write_i2c(&i2c);
-	acpi_device_write_interrupt(&config->irq);
+	/* Allow either GpioInt() or Interrupt() */
+	if (config->irq_gpio.pin_count)
+		acpi_device_write_gpio(&config->irq_gpio);
+	else
+		acpi_device_write_interrupt(&config->irq);
 	acpigen_write_resourcetemplate_footer();
 
 	/* Device Properties */

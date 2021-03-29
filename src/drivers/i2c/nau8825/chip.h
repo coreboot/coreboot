@@ -11,6 +11,7 @@
 struct drivers_i2c_nau8825_config {
 	/* Interrupt configuration */
 	struct acpi_irq irq;
+	struct acpi_gpio irq_gpio;
 
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
 	unsigned int bus_speed;

@@ -143,7 +143,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
 	/* BT_DISABLE */
-	PAD_GPO(GPIO_132, HIGH),
+	PAD_GPO(GPIO_132, LOW),
 	/* UART1_TXD */
 	PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
 	/* UART0_RXD */

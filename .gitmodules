@@ -43,3 +43,7 @@
 	url = ../amd_blobs
 	update = none
 	ignore = dirty
+[submodule "3rdparty/stm"]
+	path = 3rdparty/stm
+	url = ../STM
+	branch = stmpe

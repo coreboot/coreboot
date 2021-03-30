@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <commonlib/storage/sd_mmc.h>
 #include <cbmem.h>
+#include <cbfs.h>
 
 #include <soc/ti/am335x/mmc.h>
 #include <soc/ti/am335x/header.h>
@@ -92,8 +93,9 @@ static const struct region_device_ops am335x_sd_ops = {
 
 extern struct omap_image_headers headers;
 
-static struct mmap_helper_region_device sd_mdev = MMAP_HELPER_REGION_INIT(
-	&am335x_sd_ops, COREBOOT_IMAGE_OFFSET + sizeof(headers), CONFIG_ROM_SIZE);
+static struct mmap_helper_region_device sd_mdev = MMAP_HELPER_DEV_INIT(
+	&am335x_sd_ops, COREBOOT_IMAGE_OFFSET + sizeof(headers), CONFIG_ROM_SIZE,
+	&cbfs_cache);
 
 static bool init_done = false;
 
@@ -107,13 +109,6 @@ void boot_device_init(void)
 	am335x_mmc_init_storage(&sd_host);
 	storage_setup_media(&media, &sd_host.sd_mmc_ctrlr);
 	storage_display_setup(&media);
-
-	if (ENV_BOOTBLOCK) {
-		mmap_helper_device_init(&sd_mdev, _cbfs_cache, REGION_SIZE(cbfs_cache));
-	} else {
-		mmap_helper_device_init(&sd_mdev, _postram_cbfs_cache,
-					REGION_SIZE(postram_cbfs_cache));
-	}
 
 	init_done = true;
 }

@@ -169,6 +169,16 @@ static void sdram_initialize(struct pei_data *pei_data)
 		(version >> 24) & 0xff, (version >> 16) & 0xff,
 		(version >>  8) & 0xff, (version >>  0) & 0xff);
 
+	/*
+	 * MRC may return zero even when raminit did not complete successfully.
+	 * Ensure the mc_init_done_ack bit is set before continuing. Otherwise,
+	 * attempting to access memory will lock up the system.
+	 */
+	if (!(MCHBAR32(MC_INIT_STATE_G) & (1 << 5))) {
+		printk(BIOS_EMERG, "Memory controller did not acknowledge raminit.\n");
+		die("MRC raminit failed\n");
+	}
+
 	report_memory_config();
 }
 

@@ -9,6 +9,9 @@
 
 #include <FspUpd.h>
 
+#define FSPM_UPD_DXIO_DESCRIPTOR_COUNT	14
+#define FSPM_UPD_DDI_DESCRIPTOR_COUNT	5
+
 /** Fsp M Configuration
 **/
 typedef struct __packed {
@@ -21,26 +24,9 @@ typedef struct __packed {
 	/** Offset 0x0074**/	uint32_t                    serial_port_baudrate;
 	/** Offset 0x0078**/	uint32_t                    serial_port_refclk;
 	/** Offset 0x007C**/	uint32_t                    serial_reserved;
-	/** Offset 0x0080**/	uint8_t                     dxio_descriptor0[52];
-	/** Offset 0x00B4**/	uint8_t                     dxio_descriptor1[52];
-	/** Offset 0x00E8**/	uint8_t                     dxio_descriptor2[52];
-	/** Offset 0x011C**/	uint8_t                     dxio_descriptor3[52];
-	/** Offset 0x0150**/	uint8_t                     dxio_descriptor4[52];
-	/** Offset 0x0184**/	uint8_t                     dxio_descriptor5[52];
-	/** Offset 0x01B8**/	uint8_t                     dxio_descriptor6[52];
-	/** Offset 0x01EC**/	uint8_t                     dxio_descriptor7[52];
-	/** Offset 0x0220**/	uint8_t                     dxio_descriptor8[52];
-	/** Offset 0x0254**/	uint8_t                     dxio_descriptor9[52];
-	/** Offset 0x0288**/	uint8_t                     dxio_descriptor10[52];
-	/** Offset 0x02BC**/	uint8_t                     dxio_descriptor11[52];
-	/** Offset 0x02F0**/	uint8_t                     dxio_descriptor12[52];
-	/** Offset 0x0324**/	uint8_t                     dxio_descriptor13[52];
+	/** Offset 0x0080**/	uint8_t                     dxio_descriptor[FSPM_UPD_DXIO_DESCRIPTOR_COUNT][52];
 	/** Offset 0x0358**/	uint8_t                     pcie_reserved[52];
-	/** Offset 0x038C**/	uint32_t                    ddi_descriptor0;
-	/** Offset 0x0390**/	uint32_t                    ddi_descriptor1;
-	/** Offset 0x0394**/	uint32_t                    ddi_descriptor2;
-	/** Offset 0x0398**/	uint32_t                    ddi_descriptor3;
-	/** Offset 0x039C**/	uint32_t                    ddi_descriptor4;
+	/** Offset 0x038C**/	uint32_t                    ddi_descriptor[FSPM_UPD_DDI_DESCRIPTOR_COUNT];
 	/** Offset 0x03A0**/	uint8_t                     ddi_reserved[6];
 	/** Offset 0x03A6**/	uint8_t                     ccx_down_core_mode;
 	/** Offset 0x03A7**/	uint8_t                     ccx_disable_smt;

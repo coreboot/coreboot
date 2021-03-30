@@ -2,9 +2,10 @@
 
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
-#include <amdblocks/lpc.h>
-#include <amdblocks/smbus.h>
 #include <amdblocks/i2c.h>
+#include <amdblocks/lpc.h>
+#include <amdblocks/pmlib.h>
+#include <amdblocks/smbus.h>
 #include <console/console.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
@@ -61,6 +62,7 @@ void fch_pre_init(void)
 /* After console init */
 void fch_early_init(void)
 {
+	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
 	i2c_soc_early_init();
 

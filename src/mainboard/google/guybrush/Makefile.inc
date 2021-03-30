@@ -10,6 +10,8 @@ else
 $(info APCB sources not found.  Skipping APCB.)
 endif
 
+romstage-y += port_descriptors.c
+
 ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c

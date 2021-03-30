@@ -3,6 +3,8 @@
 bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 
+romstage-y += port_descriptors.c
+
 ramstage-y += chromeos.c
 
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin

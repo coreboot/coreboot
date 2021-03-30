@@ -22,7 +22,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EN_PP3300_WLAN */
 	PAD_GPO(GPIO_6, LOW),
 	/* EN_PP3300_TCHPAD */
-	PAD_GPO(GPIO_7, LOW),
+	PAD_GPO(GPIO_7, HIGH),
 	/* EN_PWR_WWAN_X */
 	PAD_GPO(GPIO_8, LOW),
 	/* SOC_TCHPAD_INT_ODL */

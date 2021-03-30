@@ -16,14 +16,12 @@ romstage-y += fsp_util.c
 romstage-y += hob.c
 romstage-y += raminit.c
 romstage-y += romstage.c
-romstage-$(CONFIG_MMA) += mma_core.c
 
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_INTEL_GMA_ADD_VBT) += vbt.c
-ramstage-$(CONFIG_MMA) += mma_core.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
 

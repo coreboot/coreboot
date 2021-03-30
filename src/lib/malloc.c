@@ -1,5 +1,6 @@
-#include <stdlib.h>
 #include <console/console.h>
+#include <stdlib.h>
+#include <string.h>
 
 #if CONFIG(DEBUG_MALLOC)
 #define MALLOCDBG(x...) printk(BIOS_SPEW, x)
@@ -52,6 +53,15 @@ void *memalign(size_t boundary, size_t size)
 void *malloc(size_t size)
 {
 	return memalign(sizeof(u64), size);
+}
+
+void *calloc(size_t nitems, size_t size)
+{
+	void *p = malloc(nitems * size);
+	if (p)
+		memset(p, 0, nitems * size);
+
+	return p;
 }
 
 void free(void *ptr)

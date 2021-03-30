@@ -2,6 +2,7 @@
 
 /* Include malloc() and memalign() source code and alter its name to indicate the functions
    source origin. */
+#define calloc cb_calloc
 #define malloc cb_malloc
 #define free cb_free
 #define memalign cb_memalign
@@ -10,6 +11,7 @@
 
 #include "../lib/malloc.c"
 
+#undef calloc
 #undef malloc
 #undef free
 #undef memalign
@@ -44,6 +46,12 @@ static int setup_test(void **state)
 	free_last_alloc_ptr = &_heap;
 
 	return 0;
+}
+
+static int setup_calloc_test(void **state)
+{
+	memset(&_heap, 0xFF, TEST_HEAP_SZ);
+	return setup_test(state);
 }
 
 static void test_malloc_out_of_memory(void **state)
@@ -130,6 +138,19 @@ static void test_memalign_multiple_small_allocations(void **state)
 	}
 }
 
+static void test_calloc_memory_is_zeroed(void **state)
+{
+	const size_t nitems = 42;
+	const size_t size = sizeof(uint32_t);
+	void *ptr = cb_calloc(nitems, size);
+	assert_non_null(ptr);
+
+	for (size_t i = 0; i < nitems; i++) {
+		const uint32_t *p = (const uint32_t *)ptr + i;
+		assert_int_equal(*p, 0);
+	}
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -140,6 +161,7 @@ int main(void)
 		cmocka_unit_test_setup(test_memalign_out_of_memory, setup_test),
 		cmocka_unit_test_setup(test_memalign_zero, setup_test),
 		cmocka_unit_test_setup(test_memalign_multiple_small_allocations, setup_test),
+		cmocka_unit_test_setup(test_calloc_memory_is_zeroed, setup_calloc_test),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

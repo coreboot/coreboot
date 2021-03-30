@@ -354,7 +354,8 @@ void generate_cpu_entries(const struct device *device)
 
 		acpigen_write_CST_package(cstate_info, ARRAY_SIZE(cstate_info));
 
-		acpigen_write_CSD_package(cpu >> 1, threads_per_core, CSD_HW_ALL, 0);
+		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
+					  CSD_HW_ALL, 0);
 
 		acpigen_pop_len();
 	}

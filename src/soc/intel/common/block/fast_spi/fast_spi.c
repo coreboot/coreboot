@@ -144,7 +144,7 @@ void fast_spi_set_opcode_menu(void)
 void fast_spi_lock_bar(void)
 {
 	void *spibar = fast_spi_get_bar();
-	uint16_t hsfs = SPIBAR_HSFSTS_FLOCKDN;
+	uint16_t hsfs = SPIBAR_HSFSTS_FLOCKDN | SPIBAR_HSFSTS_PRR34_LOCKDN;
 
 	if (CONFIG(FAST_SPI_DISABLE_WRITE_STATUS))
 		hsfs |= SPIBAR_HSFSTS_WRSDIS;

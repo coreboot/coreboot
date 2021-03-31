@@ -49,7 +49,7 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV)
 				 --pbet=$(CONFIG_INTEL_CBNT_PBET) \
 				 --ibbflags=$(CONFIG_INTEL_CBNT_IBB_FLAGS) \
 				 --entrypoint=$(shell printf "%d" 0xfffffff0) \
-				 --ibbhash={11,4,12} \
+				 --ibbhash=11,4,12 \
 				 --ibbsegbase=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) 1) \
 				 --ibbsegsize=$(shell printf "%d" $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) \
 				 --ibbsegflag=0 \

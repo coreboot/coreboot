@@ -2,6 +2,7 @@
 
 #include <soc/platform_descriptors.h>
 #include <types.h>
+#include "mainboard.h"
 
 static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 	{ /* MXM - Entry 0 */
@@ -47,12 +48,12 @@ static const fsp_dxio_descriptor pco_dxio_descriptors[] = {
 
 static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
-		.connector_type = DP,
+		.connector_type = CONFIG_DDI0_CONNECTOR_TYPE,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
 	{ /* DDI1 - DP */
-		.connector_type = DP,
+		.connector_type = CONFIG_DDI1_CONNECTOR_TYPE,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
@@ -67,6 +68,11 @@ static const fsp_ddi_descriptor pco_ddi_descriptors[] = {
 		.hdp_index = HDP4,
 	}
 };
+
+int get_ddi_port_conn_type(uint8_t port_num)
+{
+	return pco_ddi_descriptors[port_num].connector_type;
+}
 
 void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,

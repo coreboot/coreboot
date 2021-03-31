@@ -5,13 +5,18 @@
 #include <acpi/acpi.h>
 #include <amdblocks/amd_pci_util.h>
 #include <FspsUpd.h>
+#include <gpio.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/platform_descriptors.h>
 #include <types.h>
 #include <commonlib/helpers.h>
 #include <chip.h>
 #include "gpio.h"
+#include "mainboard.h"
+
+#define MAINBOARD_SHARED_DDI_PORTS 2
 
 /* TODO: recheck IRQ tables */
 
@@ -79,6 +84,22 @@ static void pirq_setup(void)
 	picr_data_ptr = fch_pic_routing;
 }
 
+static void program_display_sel_gpios(void)
+{
+	int idx, port_type;
+	gpio_t display_sel[MAINBOARD_SHARED_DDI_PORTS] = {GPIO_29, GPIO_31};
+
+	for (idx = 0; idx < MAINBOARD_SHARED_DDI_PORTS; idx++) {
+		port_type = get_ddi_port_conn_type(idx);
+
+		if (port_type == HDMI)
+			gpio_output(display_sel[idx], 0);
+		else if (port_type == DP)
+			gpio_output(display_sel[idx], 1);
+	}
+
+}
+
 static void mainboard_init(void *chip_info)
 {
 	struct soc_amd_picasso_config *cfg = config_of_soc();
@@ -87,6 +108,8 @@ static void mainboard_init(void *chip_info)
 		cfg->emmc_config.timing = SD_EMMC_EMMC_HS400;
 
 	mainboard_program_gpios();
+
+	program_display_sel_gpios();
 
 	/* Re-muxing LPCCLK0 can hang the system if LPC is in use. */
 	if (CONFIG(BILBY_LPC))

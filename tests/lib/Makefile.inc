@@ -23,6 +23,7 @@ tests-y += memmove-test
 tests-y += crc_byte-test
 tests-y += compute_ip_checksum-test
 tests-y += memrange-test
+tests-y += uuid-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -112,3 +113,6 @@ memrange-test-srcs += src/lib/memrange.c
 memrange-test-srcs += tests/stubs/console.c
 memrange-test-srcs += src/device/device_util.c
 
+uuid-test-srcs += tests/lib/uuid-test.c
+uuid-test-srcs += src/lib/hexstrtobin.c
+uuid-test-srcs += src/lib/uuid.c

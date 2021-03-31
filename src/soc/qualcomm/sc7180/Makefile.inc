@@ -3,68 +3,40 @@ ifeq ($(CONFIG_SOC_QUALCOMM_SC7180),y)
 
 decompressor-y += decompressor.c
 decompressor-y += mmu.c
-decompressor-y += timer.c
+decompressor-y += ../common/timer.c
+all-y += ../common/timer.c
+all-y += spi.c
+all-y += gpio.c
+all-y += qupv3_i2c.c
+all-y += qupv3_spi.c
+all-y += clock.c
+all-$(CONFIG_SC7180_QSPI) += qspi.c
+all-y += qcom_qup_se.c
+all-y += qupv3_config.c
 
 ################################################################################
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
-bootblock-y += timer.c
-bootblock-y += spi.c
-bootblock-y += qupv3_spi.c
-bootblock-y += gpio.c
-bootblock-y += qupv3_i2c.c
 bootblock-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
-bootblock-y += clock.c
-bootblock-$(CONFIG_SC7180_QSPI) += qspi.c
-bootblock-y += qupv3_config.c
-bootblock-y += qcom_qup_se.c
 
 ################################################################################
-verstage-y += timer.c
-verstage-y += spi.c
-verstage-y += qupv3_spi.c
-verstage-y += gpio.c
-verstage-y += qupv3_i2c.c
-verstage-y += clock.c
-verstage-$(CONFIG_SC7180_QSPI) += qspi.c
-verstage-y += qcom_qup_se.c
-verstage-y += qupv3_config.c
 verstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
 romstage-y += watchdog.c
-romstage-y += timer.c
 romstage-y += ../common/qclib.c
-romstage-y += qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
 romstage-y += usb.c
-romstage-y += spi.c
-romstage-y += qupv3_spi.c
-romstage-y += gpio.c
-romstage-y += qupv3_i2c.c
-romstage-y += clock.c
 romstage-y += carve_out.c
-romstage-$(CONFIG_SC7180_QSPI) += qspi.c
-romstage-y += qcom_qup_se.c
-romstage-y += qupv3_config.c
 romstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += carve_out.c
-ramstage-y += timer.c
-ramstage-y += spi.c
-ramstage-y += qupv3_spi.c
-ramstage-y += gpio.c
-ramstage-y += qupv3_i2c.c
-ramstage-y += clock.c
-ramstage-$(CONFIG_SC7180_QSPI) += qspi.c
 ramstage-y += aop_load_reset.c
 ramstage-y += usb.c
-ramstage-y += qupv3_config.c
-ramstage-y += qcom_qup_se.c
 ramstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy_pll.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy.c

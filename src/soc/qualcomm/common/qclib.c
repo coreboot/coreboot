@@ -139,6 +139,24 @@ void qclib_load_and_run(void)
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
 				 _ddr_training, REGION_SIZE(ddr_training), 0);
 
+	/* Attempt to load PMICCFG Blob */
+	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/pmiccfg",
+			_pmic, REGION_SIZE(pmic));
+	if (!data_size) {
+		printk(BIOS_ERR, "[%s] /pmiccfg failed\n", __func__);
+		goto fail;
+	}
+	qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
+
+	/* Attempt to load DCB Blob */
+	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/dcb",
+			_dcb, REGION_SIZE(dcb));
+	if (!data_size) {
+		printk(BIOS_ERR, "[%s] /dcb failed\n", __func__);
+		goto fail;
+	}
+	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, data_size, 0);
+
 	/* hook for SoC specific binary blob loads */
 	if (qclib_soc_blob_load()) {
 		printk(BIOS_ERR, "qclib_soc_blob_load failed\n");

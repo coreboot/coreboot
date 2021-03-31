@@ -82,8 +82,3 @@ Method (_PRW, 0)
 {
 	Return (Package() { 0x6D, 4 })
 }
-
-Method (_DSM, 4, Serialized)
-{
-	Return (Buffer() { 0 })
-}

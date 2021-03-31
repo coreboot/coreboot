@@ -8,11 +8,15 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <program_loading.h>
+#include <security/vboot/vboot_common.h>
 
 asmlinkage void car_stage_entry(void)
 {
 	post_code(0x40);
 	console_init();
+
+	if (CONFIG(VBOOT_EARLY_EC_SYNC))
+		vboot_sync_ec();
 
 	post_code(0x41);
 

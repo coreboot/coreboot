@@ -690,8 +690,8 @@ typedef struct {
 **/
   UINT32                      PmcPowerButtonDebounce;
 
-/** Offset 0x03F4 - PCH eSPI Master and Slave BME enabled
-  PCH eSPI Master and Slave BME enabled
+/** Offset 0x03F4 - PCH eSPI Host and Device BME enabled
+  PCH eSPI Host and Device BME enabled
   $EN_DIS
 **/
   UINT8                       PchEspiBmeMasterSlaveEnabled;
@@ -901,7 +901,7 @@ typedef struct {
   UINT32                      CnviClkreqPinMux;
 
 /** Offset 0x0444 - Enable Host C10 reporting through eSPI
-  Enable/disable Host C10 reporting to Slave via eSPI Virtual Wire.
+  Enable/disable Host C10 reporting to Device via eSPI Virtual Wire.
   $EN_DIS
 **/
   UINT8                       PchEspiHostC10ReportEnable;
@@ -2065,9 +2065,9 @@ typedef struct {
 **/
   UINT8                       PchPmSlpAMinAssert;
 
-/** Offset 0x09C2 - USB Overcurrent Override for DbC
+/** Offset 0x09C2 - USB Overcurrent Override for VISA
   This option overrides USB Over Current enablement state that USB OC will be disabled
-  after enabling this option. Enable when DbC is used to avoid signaling conflicts.
+  after enabling this option. Enable when VISA pin is muxed with USB OC
   $EN_DIS
 **/
   UINT8                       PchEnableDbcObs;

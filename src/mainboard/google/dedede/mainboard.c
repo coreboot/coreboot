@@ -40,7 +40,8 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads_with_override(base_pads, base_num,
 		override_pads, override_num);
 
-	mainboard_update_soc_chip_config();
+	if (CONFIG(BOARD_GOOGLE_BASEBOARD_DEDEDE_CR50))
+		mainboard_update_soc_chip_config();
 }
 
 static void mainboard_dev_init(struct device *dev)

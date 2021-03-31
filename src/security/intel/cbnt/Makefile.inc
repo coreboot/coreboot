@@ -2,6 +2,12 @@ ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
 
 ramstage-y += cmos.c
 
+# As specified in Intel Trusted Execution Technology and Boot Guard Server BIOS
+# Specification, document number # 558294
+PK_HASH_ALG_SHA1:=4
+PK_HASH_ALG_SHA256:=11
+PK_HASH_ALG_SHA384:=12
+
 # The private key also contains the public key, so use that if a private key is provided.
 ifeq ($(CONFIG_INTEL_CBNT_NEED_KM_PRIV_KEY),y)
 $(obj)/km_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE))
@@ -41,7 +47,6 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV) $(CBNT_CFG)
 else
 $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
 	printf "    CBNT_PROV    creating unsigned BPM\n"
-	# SHA256, SHA1, SHA384 for digest
 	$(CBNT_PROV) bpm-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_BPM_REVISION) \
 				 --svn=$(CONFIG_INTEL_CBNT_BPM_SVN) \
 				 --acmsvn=$(CONFIG_INTEL_CBNT_ACM_SVN) \
@@ -49,7 +54,7 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
 				 --pbet=$(CONFIG_INTEL_CBNT_PBET) \
 				 --ibbflags=$(CONFIG_INTEL_CBNT_IBB_FLAGS) \
 				 --entrypoint=$(shell printf "%d" 0xfffffff0) \
-				 --ibbhash=11,4,12 \
+				 --ibbhash=$(PK_HASH_ALG_SHA256),$(PK_HASH_ALG_SHA1),$(PK_HASH_ALG_SHA384) \
 				 --coreboot \
 				 --sinitmin=$(CONFIG_INTEL_CBNT_SINIT_SVN) \
 				 --txtflags=0 \
@@ -103,7 +108,6 @@ $(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(CBNT_PROV) $(CBNT_CFG)
 	printf "    CBNT_PROV    creating unsigned KM using config file\n"
 	$(CBNT_PROV) km-gen $@ $< --config=$(CBNT_CFG)
 else
-PK_HASH_ALG_SHA256:=11 # Hardcode as no other options are available for CBnT
 $(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(obj)/bpm_pub.pem $(CBNT_PROV)
 	printf "    CBNT_PROV    creating unsigned KM\n"
 	$(CBNT_PROV) km-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_KM_REVISION) \

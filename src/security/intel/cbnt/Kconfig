@@ -87,6 +87,20 @@ config INTEL_CBNT_CBNT_PROV_CFG_FILE
 	  Or extract it from a working configuration:
 	  $ bg-prov read-config
 
+config INTEL_CBNT_PROV_EXTERNAL_BIN
+	bool "Use an external cbnt-prov binary"
+	default n
+	depends on INTEL_CBNT_GENERATE_BPM || INTEL_CBNT_GENERATE_KM
+	help
+	  Building cbnt-prov requires godeps which makes it impossible to build
+	  it in an offline environment. A solution is to use an external binary.
+
+config INTEL_CBNT_PROV_EXTERNAL_BIN_PATH
+	string "cbnt-prov path"
+	depends on INTEL_CBNT_PROV_EXTERNAL_BIN
+	help
+	  Path to the cbnt-prov binary.
+
 config INTEL_CBNT_NEED_KM_PUB_KEY
 	bool
 

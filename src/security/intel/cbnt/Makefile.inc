@@ -29,12 +29,17 @@ endif
 CBNT_PROV:=$(obj)/cbnt-prov
 CBNT_CFG:=$(obj)/cbnt.json
 
+ifneq ($(CONFIG_INTEL_CBNT_PROV_EXTERNAL_BIN),y)
 $(CBNT_PROV):
 	printf "    CBNT_PROV    building tool\n"
 	cd 3rdparty/intel-sec-tools; \
 	GO111MODULE=on go mod download; \
 	GO111MODULE=on go mod verify; \
 	GO111MODULE=on go build -o $(top)/$@ cmd/cbnt-prov/*.go
+else
+$(CBNT_PROV): $(call strip_quotes, $(CONFIG_INTEL_CBNT_PROV_EXTERNAL_BIN_PATH))
+	cp $< $@
+endif
 
 $(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE))
 	cp $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE) $@

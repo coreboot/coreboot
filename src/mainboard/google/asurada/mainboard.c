@@ -16,6 +16,7 @@
 #include <soc/gpio.h>
 #include <soc/gpio_common.h>
 #include <soc/i2c.h>
+#include <soc/msdc.h>
 #include <soc/mtcmos.h>
 #include <soc/regulator.h>
 #include <soc/spm.h>
@@ -24,6 +25,9 @@
 #include "gpio.h"
 
 #include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
+
+#define MSDC0_BASE	0x11f60000
+#define MSDC0_TOP_BASE	0x11f50000
 
 #define MSDC0_DRV_MASK	0x3fffffff
 #define MSDC1_DRV_MASK	0x3ffff000
@@ -154,6 +158,8 @@ static void configure_emmc(void)
 
 	/* set eMMC cmd/dat/clk/ds/rstb pins driving to 10mA */
 	clrsetbits32(gpio_base, MSDC0_DRV_MASK, MSDC0_DRV_VALUE);
+
+	mtk_emmc_early_init((void *)MSDC0_BASE, (void *)MSDC0_TOP_BASE);
 }
 
 static void configure_sdcard(void)

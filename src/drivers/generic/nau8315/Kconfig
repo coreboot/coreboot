@@ -1,0 +1,3 @@
+config DRIVERS_GENERIC_NAU8315
+	bool
+	depends on HAVE_ACPI_TABLES

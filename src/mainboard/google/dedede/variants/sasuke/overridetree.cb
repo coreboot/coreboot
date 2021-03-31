@@ -80,6 +80,45 @@ chip soc/intel/jasperlake
 		},
 	}"
 	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				register "options.tsr[0].desc" = ""Charger""
+				register "options.tsr[1].desc" = ""Vcore""
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           90, 10000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 60, 60000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 60, 15000),
+				}"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 90, SHUTDOWN),
+				}"
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 6000,
+						.max_power = 6000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 200,
+					},
+					.pl2 = {
+						.min_power = 20000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 2500 },
+					[2] = {  16, 2000 },
+					[3] = {   8, 1500 }
+				}"
+				device generic 0 on end
+			end
+		end # SA Thermal device
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on

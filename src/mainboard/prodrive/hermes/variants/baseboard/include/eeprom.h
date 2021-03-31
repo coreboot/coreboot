@@ -2,8 +2,8 @@
 
 #include <soc/ramstage.h>
 
-__packed union eeprom_dimm_layout {
-	struct {
+union eeprom_dimm_layout {
+	struct __packed {
 		char name[50];
 		char manufacturer[50];
 		uint8_t ranks;
@@ -16,10 +16,13 @@ __packed union eeprom_dimm_layout {
 	uint8_t raw[0x80];
 };
 
-__packed struct eeprom_board_layout {
+_Static_assert(sizeof(union eeprom_dimm_layout) == 0x80,
+		"union eeprom_dimm_layout has invalid size!");
+
+struct __packed eeprom_board_layout {
 	uint32_t signature;
 	union {
-		struct {
+		struct __packed {
 			char cpu_name[50];
 			uint8_t cpu_count;
 			uint32_t cpu_max_non_turbo_frequency;
@@ -30,10 +33,13 @@ __packed struct eeprom_board_layout {
 	};
 };
 
-__packed struct eeprom_board_settings {
+_Static_assert(sizeof(struct eeprom_board_layout) == (617 + sizeof(uint32_t)),
+		"struct eeprom_board_layout has invalid size!");
+
+struct __packed eeprom_board_settings {
 	uint32_t signature;
 	union {
-		struct {
+		struct __packed {
 			uint8_t secureboot;
 			uint8_t primary_video;
 			uint8_t deep_sx_enabled;
@@ -48,13 +54,16 @@ __packed struct eeprom_board_settings {
 	};
 };
 
-__packed struct eeprom_bmc_settings {
+_Static_assert(sizeof(struct eeprom_board_settings) == (9 + sizeof(uint32_t)),
+		"struct eeprom_board_settings has invalid size!");
+
+struct __packed eeprom_bmc_settings {
 	uint8_t pcie_mux;
 	uint8_t hsi;
 };
 
 /* The EEPROM on address 0x57 has the following vendor defined layout: */
-__packed struct eeprom_layout {
+struct __packed eeprom_layout {
 	union {
 		uint8_t RawFSPMUPD[0x600];
 		FSPM_UPD mupd;

@@ -183,11 +183,21 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
+	uint8_t val;
+
 	/* Since it's the first IPMI command, it's better to run get BMC
 	   selftest result first */
 	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
 		ipmi_set_post_start(CONFIG_BMC_KCS_BASE);
 		init_frb2_wdt();
+	}
+
+	/* Enable force memory training */
+	if (vpd_get_bool(MEM_TRAIN_FORCE, VPD_RW_THEN_RO, &val)) {
+		if (mupd->FspmArchUpd.NvsBufferPtr && val) {
+			mupd->FspmArchUpd.NvsBufferPtr = 0;
+			printk(BIOS_DEBUG, "Force Memory Training...Start\n");
+		}
 	}
 
 	mainboard_config_gpios(mupd);

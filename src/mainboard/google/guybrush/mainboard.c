@@ -1,12 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <gpio.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#define BACKLIGHT_GPIO			GPIO_129
+#define METHOD_BACKLIGHT_ENABLE		"\\_SB.BKEN"
+#define METHOD_BACKLIGHT_DISABLE	"\\_SB.BKDS"
+#define METHOD_MAINBOARD_INI		"\\_SB.MINI"
+#define METHOD_MAINBOARD_WAK		"\\_SB.MWAK"
+#define METHOD_MAINBOARD_PTS		"\\_SB.MPTS"
 
 /*
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -105,11 +115,56 @@ static void mainboard_init(void *chip_info)
 	mainboard_ec_init();
 }
 
+static void mainboard_write_blken(void)
+{
+	acpigen_write_method(METHOD_BACKLIGHT_ENABLE, 0);
+	acpigen_soc_clear_tx_gpio(BACKLIGHT_GPIO);
+	acpigen_pop_len();
+}
+
+static void mainboard_write_blkdis(void)
+{
+	acpigen_write_method(METHOD_BACKLIGHT_DISABLE, 0);
+	acpigen_soc_set_tx_gpio(BACKLIGHT_GPIO);
+	acpigen_pop_len();
+}
+
+static void mainboard_write_mini(void)
+{
+	acpigen_write_method(METHOD_MAINBOARD_INI, 0);
+	acpigen_emit_namestring(METHOD_BACKLIGHT_ENABLE);
+	acpigen_pop_len();
+}
+
+static void mainboard_write_mwak(void)
+{
+	acpigen_write_method(METHOD_MAINBOARD_WAK, 0);
+	acpigen_emit_namestring(METHOD_BACKLIGHT_ENABLE);
+	acpigen_pop_len();
+}
+
+static void mainboard_write_mpts(void)
+{
+	acpigen_write_method(METHOD_MAINBOARD_PTS, 0);
+	acpigen_emit_namestring(METHOD_BACKLIGHT_DISABLE);
+	acpigen_pop_len();
+}
+
+static void mainboard_fill_ssdt(const struct device *dev)
+{
+	mainboard_write_blken();
+	mainboard_write_blkdis();
+	mainboard_write_mini();
+	mainboard_write_mpts();
+	mainboard_write_mwak();
+}
+
 static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
+	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 
 	init_tables();
 	/* Initialize the PIRQ data structures for consumption */

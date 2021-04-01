@@ -31,7 +31,7 @@ typedef enum {
 /* Upstream Auto Speed Change Allowed */
 typedef enum {
 	SPDC_DEFAULT = 0,      // Enabled for Gen2 and Gen3
-	SPDC_DISBLED,
+	SPDC_DISABLED,
 	SPDC_ENABLED,
 	SPDC_INVALID
 } dxio_upstream_auto_speed_change;
@@ -105,7 +105,7 @@ typedef enum {
 	EDP_TO_LVDS,		// eDP-to-LVDS translator chip without AMD SW init
 	EDP_TO_LVDS_SW,		// eDP-to-LVDS translator which requires AMD SW init
 	AUTO_DETECT,		// VBIOS auto detect connector type
-	UNUSED_PTYPE,		// UnusedType
+	UNUSED_TYPE,		// UnusedType
 	MAX_CONNECTOR_TYPE	// Not valid value, used to verify input
 } ddi_connector_type;
 

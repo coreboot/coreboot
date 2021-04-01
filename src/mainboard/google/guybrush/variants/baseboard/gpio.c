@@ -88,7 +88,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* RAM_ID_2 / DEV_BEEP_LRCLK */
 	PAD_GPI(GPIO_75, PULL_NONE),
 	/* EN_PP3300_CAM */
-	PAD_GPO(GPIO_76, LOW),
+	PAD_GPO(GPIO_76, HIGH),
 	/* GPIO_77 - GPIO_83: Not available */
 	/* EC_SOC_INT_ODL */
 	PAD_GPI(GPIO_84, PULL_NONE),

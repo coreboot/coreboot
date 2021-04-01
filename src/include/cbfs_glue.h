@@ -20,7 +20,7 @@
 			     (CONFIG(TOCTOU_SAFETY) || ENV_INITIAL_STAGE))
 
 #define ERROR(...) printk(BIOS_ERR, "CBFS ERROR: " __VA_ARGS__)
-#define LOG(...) printk(BIOS_ERR, "CBFS: " __VA_ARGS__)
+#define LOG(...) printk(BIOS_INFO, "CBFS: " __VA_ARGS__)
 #define DEBUG(...) do { \
 	if (CONFIG(DEBUG_CBFS)) \
 		printk(BIOS_SPEW, "CBFS DEBUG: " __VA_ARGS__); \

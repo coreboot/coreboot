@@ -98,6 +98,7 @@ config MAINBOARD_PART_NUMBER
 	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "Waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "Wheelie" if BOARD_GOOGLE_WHEELIE
+	default "Lalala" if BOARD_GOOGLE_LALALA
 	default "Magolor" if BOARD_GOOGLE_MAGOLOR
 	default "Metaknight" if BOARD_GOOGLE_METAKNIGHT
 	default "Lantis" if BOARD_GOOGLE_LANTIS
@@ -132,6 +133,7 @@ config VARIANT_DIR
 	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "wheelie" if BOARD_GOOGLE_WHEELIE
+	default "lalala" if BOARD_GOOGLE_LALALA
 	default "magolor" if BOARD_GOOGLE_MAGOLOR
 	default "metaknight" if BOARD_GOOGLE_METAKNIGHT
 	default "lantis" if BOARD_GOOGLE_LANTIS

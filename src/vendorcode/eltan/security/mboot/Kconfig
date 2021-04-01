@@ -4,6 +4,7 @@ menu "Measured Boot (mboot)"
 
 config VENDORCODE_ELTAN_MBOOT
 	bool "Measure firmware with mboot."
+	depends on !VBOOT
 	default n
 	select VBOOT_LIB
 	help

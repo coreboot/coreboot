@@ -1,0 +1,8 @@
+chip soc/intel/cannonlake
+	device domain 0 on
+		subsystemid 0x1558 0x1403 inherit
+		device pci 15.0 on
+			# I2C HID not supported on galp4
+		end # I2C #0
+	end
+end

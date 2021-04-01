@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_GALP4
+	bool "galp4"

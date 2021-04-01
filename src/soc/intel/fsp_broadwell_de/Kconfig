@@ -95,6 +95,10 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default y
+
 ## Broadwell-DE Specific FSP Kconfig
 source src/soc/intel/fsp_broadwell_de/fsp/Kconfig
 

@@ -4,6 +4,8 @@
 #include <device/mmio.h>
 #include <soc/gpio.h>
 
+#include "gpio.h"
+
 struct pad_func {
 	u8 pin_id;
 	u8 func;
@@ -34,4 +36,5 @@ static void nor_set_gpio_pinmux(void)
 void bootblock_mainboard_init(void)
 {
 	nor_set_gpio_pinmux();
+	setup_chromeos_gpios();
 }

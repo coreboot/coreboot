@@ -55,7 +55,7 @@ Scope (\_SB.PCI0.I2C2)
 {
 	Device (DIGI)
 	{
-		Name (_HID, "ACPI0C50")
+		Name (_HID, "WCOM005C")
 		Name (_CID, "PNP0C50")
 		Name (_UID, 1)
 		Name (_S0W, 4)

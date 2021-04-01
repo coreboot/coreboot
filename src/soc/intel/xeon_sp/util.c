@@ -318,6 +318,9 @@ static void set_bios_init_completion_for_package(uint32_t socket)
 	if (timedout)
 		die("BIOS RESET CPL3 timed out.\n");
 
+	/* Set PMAX_LOCK - must be set before RESET CPL4 */
+	pci_or_config32(PCU_DEV_CR0(bus), PCU_CR0_PMAX, PMAX_LOCK);
+
 	/* update RST_CPL4, PCODE_INIT_DONE4 */
 	timedout = set_bios_reset_cpl_for_package(socket, RST_CPL4_MASK,
 		PCODE_INIT_DONE4_MASK, RST_CPL4_MASK);

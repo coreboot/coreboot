@@ -121,6 +121,8 @@ static void set_pcu_locks(void)
 		const struct device *cr0_dev = PCU_DEV_CR0(bus);
 		pci_or_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS, P_STATE_LIMITS_LOCK);
 		pci_or_config32(cr0_dev, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR, PKG_PWR_LIM_LOCK_UPR);
+		pci_or_config32(cr0_dev, PCU_CR0_TURBO_ACTIVATION_RATIO, TURBO_ACTIVATION_RATIO_LOCK);
+
 
 		/* configure PCU_CR1_FUN csrs */
 		const struct device *cr1_dev = PCU_DEV_CR1(bus);
@@ -129,10 +131,12 @@ static void set_pcu_locks(void)
 		/* configure PCU_CR2_FUN csrs */
 		const struct device *cr2_dev = PCU_DEV_CR2(bus);
 		pci_or_config32(cr2_dev, PCU_CR2_DRAM_PLANE_POWER_LIMIT, PP_PWR_LIM_LOCK);
+		pci_or_config32(cr2_dev, PCU_CR2_DRAM_POWER_INFO_UPR, DRAM_POWER_INFO_LOCK_UPR);
 
 		/* configure PCU_CR3_FUN csrs */
 		const struct device *cr3_dev = PCU_DEV_CR3(bus);
 		pci_or_config32(cr3_dev, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
+		pci_or_config32(cr3_dev, PCU_CR3_FLEX_RATIO, OC_LOCK);
 	}
 
 }

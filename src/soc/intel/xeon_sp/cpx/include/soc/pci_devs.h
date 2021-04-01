@@ -25,11 +25,15 @@
 #define PCU_CR0_FUN                     0
 #define PCU_DEV_CR0(bus)                                   _PCU_DEV(bus, PCU_CR0_FUN)
 #define PCU_CR0_PLATFORM_INFO                              0xa8
+#define PCU_CR0_TURBO_ACTIVATION_RATIO                     0xb0
+#define   TURBO_ACTIVATION_RATIO_LOCK                      BIT(31)
 #define PCU_CR0_P_STATE_LIMITS                             0xd8
-#define P_STATE_LIMITS_LOCK                                BIT(31)
+#define   P_STATE_LIMITS_LOCK                              BIT(31)
 #define PCU_CR0_PACKAGE_RAPL_LIMIT_LWR                     0xe8
 #define PCU_CR0_PACKAGE_RAPL_LIMIT_UPR                     (PCU_CR0_PACKAGE_RAPL_LIMIT_LWR + 4)
-#define PKG_PWR_LIM_LOCK_UPR                               BIT(31)
+#define   PKG_PWR_LIM_LOCK_UPR                             BIT(31)
+#define PCU_CR0_PMAX                                       0xf0
+#define   PMAX_LOCK                                        BIT(31)
 
 #define PCU_CR1_FUN                     1
 #define PCU_DEV_CR1(bus)                                   _PCU_DEV(bus, PCU_CR1_FUN)
@@ -60,13 +64,18 @@
 
 #define PCU_CR2_FUN                     2
 #define PCU_DEV_CR2(bus)                                   _PCU_DEV(bus, PCU_CR2_FUN)
+#define PCU_CR2_DRAM_POWER_INFO_LWR                        0xa8
+#define PCU_CR2_DRAM_POWER_INFO_UPR                        (PCU_CR2_DRAM_POWER_INFO_LWR + 4)
+#define   DRAM_POWER_INFO_LOCK_UPR                         BIT(31)
 #define PCU_CR2_DRAM_PLANE_POWER_LIMIT                     0xf0
 #define PP_PWR_LIM_LOCK                                    BIT(31)
 
 #define PCU_CR3_FUN                     3
 #define PCU_DEV_CR3(bus)                                   _PCU_DEV(bus, PCU_CR3_FUN)
 #define PCU_CR3_CONFIG_TDP_CONTROL                         0x60
-#define TDP_LOCK                                           BIT(31)
+#define   TDP_LOCK                                         BIT(31)
+#define PCU_CR3_FLEX_RATIO                                 0xa0
+#define   OC_LOCK                                          BIT(20)
 
 #if !defined(__SIMPLE_DEVICE__)
 #define _UBOX_DEV(func)		pcidev_path_on_root_debug(PCI_DEVFN(UBOX_DEV, func), __func__)

@@ -539,6 +539,51 @@ void acpi_create_srat(acpi_srat_t *srat,
 	header->checksum = acpi_checksum((void *)srat, header->length);
 }
 
+int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory)
+{
+	memset((void *)mpda, 0, sizeof(acpi_hmat_mpda_t));
+
+	mpda->type = 0; /* Memory Proximity Domain Attributes structure */
+	mpda->length = sizeof(acpi_hmat_mpda_t);
+	/*
+	 * Proximity Domain for Attached Initiator field is valid.
+	 * Bit 1 and bit 2 are reserved since HMAT revision 2.
+	 */
+	mpda->flags = (1 << 0);
+	mpda->proximity_domain_initiator = initiator;
+	mpda->proximity_domain_memory = memory;
+
+	return mpda->length;
+}
+
+void acpi_create_hmat(acpi_hmat_t *hmat,
+		 unsigned long (*acpi_fill_hmat)(unsigned long current))
+{
+	acpi_header_t *header = &(hmat->header);
+	unsigned long current = (unsigned long)hmat + sizeof(acpi_hmat_t);
+
+	memset((void *)hmat, 0, sizeof(acpi_hmat_t));
+
+	if (!header)
+		return;
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "HMAT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->length = sizeof(acpi_hmat_t);
+	header->revision = get_acpi_table_revision(HMAT);
+
+	current = acpi_fill_hmat(current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)hmat;
+	header->checksum = acpi_checksum((void *)hmat, header->length);
+}
+
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long))
 {
@@ -1880,6 +1925,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 2;
 	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 upto 6.3: 3 */
 		return 1; /* TODO Should probably be upgraded to 2 */
+	case HMAT: /* ACPI 6.4: 2 */
+		return 2;
 	case DMAR:
 		return 1;
 	case SLIT: /* ACPI 2.0 upto 6.3: 1 */

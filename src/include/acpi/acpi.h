@@ -71,8 +71,8 @@ enum coreboot_acpi_ids {
 
 enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
-	BERT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
-	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
+	BERT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS, MADT,
+	MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
 };
@@ -207,6 +207,71 @@ typedef struct acpi_mcfg_mmconfig {
 	u8 end_bus_number;
 	u8 reserved[4];
 } __packed acpi_mcfg_mmconfig_t;
+
+/*
+ * HMAT (Heterogeneous Memory Attribute Table)
+ * ACPI spec 6.4 section 5.2.27
+ */
+typedef struct acpi_hmat {
+	acpi_header_t header;
+	u32 resv;
+	/* Followed by HMAT table structure[n] */
+} __packed acpi_hmat_t;
+
+/* HMAT: Memory Proximity Domain Attributes structure */
+typedef struct acpi_hmat_mpda {
+	u16 type;			/* Type (0) */
+	u16 resv;
+	u32 length;			/* Length in bytes (40) */
+	u16 flags;
+	u16 resv1;
+	u32 proximity_domain_initiator;
+	u32 proximity_domain_memory;
+	u32 resv2;
+	u64 resv3;
+	u64 resv4;
+} __packed acpi_hmat_mpda_t;
+
+/* HMAT: System Locality Latency and Bandwidth Information structure */
+typedef struct acpi_hmat_sllbi {
+	u16 type;			/* Type (1) */
+	u16 resv;
+	u32 length;			/* Length in bytes */
+	u8 flags;
+	u8 data_type;
+	/*
+	 * Transfer size defined as a 5-biased power of 2 exponent,
+	 * when the bandwidth/latency value is achieved.
+	 */
+	u8 min_transfer_size;
+	u8 resv1;
+	u32 num_initiator_domains;
+	u32 num_target_domains;
+	u32 resv2;
+	u64 entry_base_unit;
+	/* Followed by initiator proximity domain list */
+	/* Followed by target proximity domain list */
+	/* Followed by latency / bandwidth values */
+} __packed acpi_hmat_sllbi_t;
+
+/* HMAT: Memory Side Cache Information structure */
+typedef struct acpi_hmat_msci {
+	u16 type;			/* Type (2) */
+	u16 resv;
+	u32 length;			/* Length in bytes */
+	u32 domain;			/* Proximity domain for the memory */
+	u32 resv1;
+	u64 cache_size;
+	/* Describes level, associativity, write policy, cache line size */
+	u32 cache_attributes;
+	u16 resv2;
+	/*
+	 * Number of SMBIOS handlers that contribute to the
+	 * memory side cache physical devices
+	 */
+	u16 num_handlers;
+	/* Followed by SMBIOS handlers*/
+} __packed acpi_hmat_msci_t;
 
 /* SRAT (System Resource Affinity Table) */
 typedef struct acpi_srat {
@@ -1161,6 +1226,16 @@ void acpi_create_srat(acpi_srat_t *srat,
 
 void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current));
+
+/*
+ * Create a Memory Proximity Domain Attributes structure for HMAT,
+ * given proximity domain for the attached initiaor, and
+ * proximimity domain for the memory.
+ */
+int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
+/* Create Heterogenous Memory Attribute Table */
+void acpi_create_hmat(acpi_hmat_t *hmat,
+		      unsigned long (*acpi_fill_hmat)(unsigned long current));
 
 void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,

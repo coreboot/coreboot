@@ -52,6 +52,7 @@ ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += pmif.c
 ramstage-y += ../common/rtc.c rtc.c

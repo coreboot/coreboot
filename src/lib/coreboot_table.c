@@ -19,6 +19,7 @@
 #include <cbmem.h>
 #include <bootmem.h>
 #include <bootsplash.h>
+#include <inttypes.h>
 #include <spi_flash.h>
 #include <smmstore.h>
 
@@ -305,10 +306,20 @@ static struct lb_board_config *lb_board_config(struct lb_header *header)
 	config->tag = LB_TAG_BOARD_CONFIG;
 	config->size = sizeof(*config);
 
+	const uint64_t fw_config = fw_config_get();
 	config->board_id = board_id();
 	config->ram_code = ram_code();
 	config->sku_id = sku_id();
-	config->fw_config = pack_lb64(fw_config_get());
+	config->fw_config = pack_lb64(fw_config);
+
+	if (config->board_id != UNDEFINED_STRAPPING_ID)
+		printk(BIOS_INFO, "Board ID: %d\n", config->board_id);
+	if (config->ram_code != UNDEFINED_STRAPPING_ID)
+		printk(BIOS_INFO, "RAM code: %d\n", config->ram_code);
+	if (config->sku_id != UNDEFINED_STRAPPING_ID)
+		printk(BIOS_INFO, "SKU ID: %d\n", config->sku_id);
+	if (fw_config != UNDEFINED_FW_CONFIG)
+		printk(BIOS_INFO, "FW config: %#" PRIx64 "\n", fw_config);
 
 	return config;
 }

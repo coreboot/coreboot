@@ -947,57 +947,74 @@ sub handle_if_line {
 }
 
 #-------------------------------------------------------------------------------
-# handle_expressions - log which symbols are being used
+# handle_symbol - log which symbols are being used
+#-------------------------------------------------------------------------------
+sub handle_symbol {
+    my ( $symbol, $filename, $line_no ) = @_;
+
+    #filter constant symbols first
+    if ( $symbol =~ /^[yn]$/ ) {                    # constant y/n
+        return;
+    }
+    if ( $symbol =~ /^-?(?:0x)?\p{XDigit}+$/ ) {    # int/hex values
+        return;
+    }
+    if ( $symbol =~ /^"[^"]*"$/ ) {                 # string values
+        return;
+    }
+
+    if ( $symbol =~ /^([A-Za-z0-9_]+)$/ ) {         # actual symbol
+        add_referenced_symbol( $1, $filename, $line_no, 'expression' );
+    }
+    else {
+        show_error("Unrecognized expression: expected symbol, "
+                    . "found '$symbol' in $filename line $line_no.");
+    }
+}
+
+#-------------------------------------------------------------------------------
+# handle_expressions - find symbols in expressions
 #-------------------------------------------------------------------------------
 sub handle_expressions {
     my ( $exprline, $inside_config, $filename, $line_no ) = @_;
 
-    return unless ($exprline);
+    my $strip = qr/\s*(.*[^\s]+)\s*/;
 
-    #filter constant symbols first
-    if ( $exprline =~ /^\s*"?([yn])"?\s*$/ ) {    # constant y/n
-        return;
-    }
-    elsif ( $exprline =~ /^\s*"?((?:-)\d+)"?\s*$/ ) {    # int values
-        return;
-    }
-    elsif ( $exprline =~ /^\s*"?((?:-)?(?:0x)?\p{XDigit})+"?\s*$/ ) {    # hex values
-        return;
-    }
-    elsif ( $exprline =~ /^\s*("[^"]*")\s*$/ ) {                         # String values
-        return;
-    }
-    elsif ( $exprline =~ /^\s*([A-Za-z0-9_]+)\s*$/ ) {                   # <symbol>                             (1)
-        add_referenced_symbol( $1, $filename, $line_no, 'expression' );
-    }
-    elsif ( $exprline =~ /^\s*!(.+)$/ ) {                                # '!' <expr>                           (5)
+    my $parens = qr/(\((?:[^\(\)]++|(?-1))*\))/;
+    my $quotes = qr/"[^"]*"/;
+    my $balanced = qr/((?:$parens|$quotes|[^\(\)"])+)/;
 
+    if ( $exprline =~ /^\s*$balanced\s*(?:\|\||&&)\s*(.+)$/ ) {
+        # <expr> '||' <expr>, <expr> '&&' <expr>                  (7)(6)
+        my ( $lhs, $rhs ) = ( $1, $3 );
+        handle_expressions( $lhs, $inside_config, $filename, $line_no );
+        handle_expressions( $rhs, $inside_config, $filename, $line_no );
+    }
+    elsif ( $exprline =~ /^\s*!(.+)$/ ) {
+        # '!' <expr>                                                 (5)
         handle_expressions( $1, $inside_config, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*\(([^)]+)\)\s*$/ ) {                       # '(' <expr> ')'                       (4)
+    elsif ( $exprline =~ /^\s*$parens\s*$/ ) {
+        # '(' <expr> ')'                                             (4)
+        $exprline =~ /^\s*\((.*)\)\s*$/;
         handle_expressions( $1, $inside_config, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*(.+)\s*!=\s*(.+)\s*$/ ) {                  # <symbol> '!=' <symbol>               (3)
-        handle_expressions( $1, $inside_config, $filename, $line_no );
-        handle_expressions( $2, $inside_config, $filename, $line_no );
+    elsif ( $exprline =~ /^\s*($quotes|[^"\s]+)\s*!=$strip$/ ) {
+        # <symbol> '!=' <symbol>                                     (3)
+        my ( $lhs, $rhs ) = ( $1, $2 );
+        handle_symbol( $lhs, $filename, $line_no );
+        handle_symbol( $rhs, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*(.+)\s*=\s*(.+)\s*$/ ) {                   # <symbol> '=' <symbol>                (2)
-        handle_expressions( $1, $inside_config, $filename, $line_no );
-        handle_expressions( $2, $inside_config, $filename, $line_no );
+    elsif ( $exprline =~ /^\s*($quotes|[^"\s]+)\s*=$strip$/ ) {
+        # <symbol> '=' <symbol>                                      (2)
+        my ( $lhs, $rhs ) = ( $1, $2 );
+        handle_symbol( $lhs, $filename, $line_no );
+        handle_symbol( $rhs, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*([^(]+|\(.+\))\s*&&\s*(.+)\s*$/ ) {        # <expr> '&&' <expr>                   (6)
-        handle_expressions( $1, $inside_config, $filename, $line_no );
-        handle_expressions( $2, $inside_config, $filename, $line_no );
+    elsif ( $exprline =~ /^$strip$/ ) {
+        # <symbol>                                                   (1)
+        handle_symbol( $1, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*([^(]+|\(.+\))\s*\|\|\s*(.+)\s*$/ ) {      # <expr> '||' <expr>                   (7)
-        handle_expressions( $1, $inside_config, $filename, $line_no );
-        handle_expressions( $2, $inside_config, $filename, $line_no );
-    }
-    else {
-        show_error("Unrecognized expression '$exprline' in $filename line $line_no.");
-    }
-
-    return;
 }
 
 #-------------------------------------------------------------------------------

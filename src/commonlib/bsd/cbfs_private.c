@@ -190,3 +190,26 @@ const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, siz
 
 	return NULL;
 }
+
+const struct vb2_hash *cbfs_file_hash(const union cbfs_mdata *mdata)
+{
+	/* Hashes are variable-length attributes, so need to manually check the length. */
+	const struct cbfs_file_attr_hash *attr =
+		cbfs_find_attr(mdata, CBFS_FILE_ATTR_TAG_HASH, 0);
+	if (!attr)
+		return NULL;	/* no hash */
+	const size_t asize = be32toh(attr->len);
+
+	const struct vb2_hash *hash = &attr->hash;
+	const size_t hsize = vb2_digest_size(hash->algo);
+	if (!hsize) {
+		ERROR("Hash algo %u for '%s' unsupported.\n", hash->algo, mdata->h.filename);
+		return NULL;
+	}
+	if (hsize != asize - offsetof(struct cbfs_file_attr_hash, hash.raw)) {
+		ERROR("Hash attribute size for '%s' (%zu) incorrect for algo %u.\n",
+		      mdata->h.filename, asize, hash->algo);
+		return NULL;
+	}
+	return hash;
+}

@@ -24,4 +24,7 @@ union cbfs_mdata {
    else caller is responsible for checking the |len| field to avoid reading out-of-bounds. */
 const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, size_t size_check);
 
+/* Returns pointer to CBFS file hash structure in metadata attributes, or NULL if invalid. */
+const struct vb2_hash *cbfs_file_hash(const union cbfs_mdata *mdata);
+
 #endif	/* _COMMONLIB_BSD_CBFS_MDATA_H_ */

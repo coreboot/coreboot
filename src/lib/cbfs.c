@@ -186,11 +186,27 @@ static inline bool cbfs_lzma_enabled(void)
 	return true;
 }
 
-static size_t cbfs_load_and_decompress(const struct region_device *rdev,
-				       void *buffer, size_t buffer_size, uint32_t compression)
+static inline bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
+					   const struct vb2_hash *file_hash)
+{
+	/* Avoid linking hash functions when verification is disabled. */
+	if (!CONFIG(CBFS_VERIFICATION))
+		return false;
+
+	/* If there is no file hash, always count that as a mismatch. */
+	if (file_hash && vb2_hash_verify(buffer, size, file_hash) == VB2_SUCCESS)
+		return false;
+
+	printk(BIOS_CRIT, "CBFS file hash mismatch!\n");
+	return true;
+}
+
+static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *buffer,
+				       size_t buffer_size, uint32_t compression,
+				       const struct vb2_hash *file_hash)
 {
 	size_t in_size = region_device_sz(rdev);
-	size_t out_size;
+	size_t out_size = 0;
 	void *map;
 
 	DEBUG("Decompressing %zu bytes to %p with algo %d\n", in_size, buffer, compression);
@@ -200,6 +216,8 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev,
 		if (buffer_size < in_size)
 			return 0;
 		if (rdev_readat(rdev, buffer, 0, in_size) != in_size)
+			return 0;
+		if (cbfs_file_hash_mismatch(buffer, in_size, file_hash))
 			return 0;
 		return in_size;
 
@@ -213,9 +231,11 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev,
 		if (map == NULL)
 			return 0;
 
-		timestamp_add_now(TS_START_ULZ4F);
-		out_size = ulz4fn(map, in_size, buffer, buffer_size);
-		timestamp_add_now(TS_END_ULZ4F);
+		if (!cbfs_file_hash_mismatch(map, in_size, file_hash)) {
+			timestamp_add_now(TS_START_ULZ4F);
+			out_size = ulz4fn(map, in_size, buffer, buffer_size);
+			timestamp_add_now(TS_END_ULZ4F);
+		}
 
 		rdev_munmap(rdev, map);
 
@@ -228,10 +248,12 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev,
 		if (map == NULL)
 			return 0;
 
-		/* Note: timestamp not useful for memory-mapped media (x86) */
-		timestamp_add_now(TS_START_ULZMA);
-		out_size = ulzman(map, in_size, buffer, buffer_size);
-		timestamp_add_now(TS_END_ULZMA);
+		if (!cbfs_file_hash_mismatch(map, in_size, file_hash)) {
+			/* Note: timestamp not useful for memory-mapped media (x86) */
+			timestamp_add_now(TS_START_ULZMA);
+			out_size = ulzman(map, in_size, buffer, buffer_size);
+			timestamp_add_now(TS_END_ULZMA);
+		}
 
 		rdev_munmap(rdev, map);
 
@@ -318,11 +340,18 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 	if (size_out)
 		*size_out = size;
 
+	const struct vb2_hash *file_hash = NULL;
+	if (CONFIG(CBFS_VERIFICATION))
+		file_hash = cbfs_file_hash(&mdata);
+
 	/* allocator == NULL means do a cbfs_map() */
 	if (allocator) {
 		loc = allocator(arg, size, &mdata);
 	} else if (compression == CBFS_COMPRESS_NONE) {
-		return rdev_mmap_full(&rdev);
+		void *mapping = rdev_mmap_full(&rdev);
+		if (!mapping || cbfs_file_hash_mismatch(mapping, size, file_hash))
+			return NULL;
+		return mapping;
 	} else if (!CBFS_CACHE_AVAILABLE) {
 		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);
 		return NULL;
@@ -335,7 +364,7 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		return NULL;
 	}
 
-	size = cbfs_load_and_decompress(&rdev, loc, size, compression);
+	size = cbfs_load_and_decompress(&rdev, loc, size, compression, file_hash);
 	if (!size)
 		return NULL;
 
@@ -384,12 +413,18 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 	prog_set_entry(pstage, prog_start(pstage) +
 			       be32toh(sattr->entry_offset), NULL);
 
+	const struct vb2_hash *file_hash = NULL;
+	if (CONFIG(CBFS_VERIFICATION))
+		file_hash = cbfs_file_hash(&mdata);
+
 	/* Hacky way to not load programs over read only media. The stages
 	 * that would hit this path initialize themselves. */
 	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
 	    !CONFIG(NO_XIP_EARLY_STAGES) && CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
 		void *mapping = rdev_mmap_full(&rdev);
 		rdev_munmap(&rdev, mapping);
+		if (cbfs_file_hash_mismatch(mapping, region_device_sz(&rdev), file_hash))
+			return CB_CBFS_HASH_MISMATCH;
 		if (mapping == prog_start(pstage))
 			return CB_SUCCESS;
 	}
@@ -405,7 +440,7 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 	}
 
 	size_t fsize = cbfs_load_and_decompress(&rdev, prog_start(pstage), prog_size(pstage),
-						compression);
+						compression, file_hash);
 	if (!fsize)
 		return CB_ERR;
 

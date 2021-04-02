@@ -993,11 +993,6 @@ sub handle_expressions {
         handle_expressions( $1, $inside_config, $filename, $line_no );
         handle_expressions( $2, $inside_config, $filename, $line_no );
     }
-
-    # work around kconfig spec violation for now - paths not in quotes
-    elsif ( $exprline =~ /^\s*([A-Za-z0-9_\-\/]+)\s*$/ ) {               # <symbol>                             (1)
-        return;
-    }
     else {
         show_error("Unrecognized expression '$exprline' in $filename line $line_no.");
     }

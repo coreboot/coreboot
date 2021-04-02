@@ -45,7 +45,7 @@ static int get_dimm_spd_address(struct sys_info *sysinfo, int device)
 	if (sysinfo->spd_addresses)
 		return sysinfo->spd_addresses[device];
 	else
-		return DIMM0 + device;
+		return 0x50 + device;
 
 }
 

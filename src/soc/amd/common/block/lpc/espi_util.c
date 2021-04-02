@@ -885,6 +885,11 @@ int espi_setup(void)
 	uint32_t slave_caps;
 	const struct espi_config *cfg = espi_get_config();
 
+	espi_write32(ESPI_GLOBAL_CONTROL_0, ESPI_AL_STOP_EN);
+	espi_write32(ESPI_GLOBAL_CONTROL_1, ESPI_RGCMD_INT(23) | ESPI_ERR_INT_SMI);
+	espi_write32(ESPI_SLAVE0_INT_EN, 0);
+	espi_clear_status();
+
 	/*
 	 * Boot sequence: Step 1
 	 * Set correct initial configuration to talk to the slave:
@@ -961,6 +966,9 @@ int espi_setup(void)
 
 	/* Enable subtractive decode if configured */
 	espi_setup_subtractive_decode(cfg);
+
+	espi_write32(ESPI_GLOBAL_CONTROL_1,
+		     espi_read32(ESPI_GLOBAL_CONTROL_1) | ESPI_BUS_MASTER_EN);
 
 	return 0;
 }

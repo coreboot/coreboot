@@ -985,22 +985,22 @@ sub handle_expressions {
     my $balanced = qr/((?:$parens|$quotes|[^\(\)"])+)/;
 
     if ( $exprline =~ /^\s*$balanced\s*(?:\|\||&&)\s*(.+)$/ ) {
-        # <expr> '||' <expr>, <expr> '&&' <expr>                  (7)(6)
+        # <expr> '||' <expr>, <expr> '&&' <expr>                  (8)(7)
         my ( $lhs, $rhs ) = ( $1, $3 );
         handle_expressions( $lhs, $inside_config, $filename, $line_no );
         handle_expressions( $rhs, $inside_config, $filename, $line_no );
     }
     elsif ( $exprline =~ /^\s*!(.+)$/ ) {
-        # '!' <expr>                                                 (5)
+        # '!' <expr>                                                 (6)
         handle_expressions( $1, $inside_config, $filename, $line_no );
     }
     elsif ( $exprline =~ /^\s*$parens\s*$/ ) {
-        # '(' <expr> ')'                                             (4)
+        # '(' <expr> ')'                                             (5)
         $exprline =~ /^\s*\((.*)\)\s*$/;
         handle_expressions( $1, $inside_config, $filename, $line_no );
     }
-    elsif ( $exprline =~ /^\s*($quotes|[^"\s]+)\s*!=$strip$/ ) {
-        # <symbol> '!=' <symbol>                                     (3)
+    elsif ( $exprline =~ /^\s*($quotes|[^"\s]+)\s*(?:[<>]=?|!=)$strip$/ ) {
+        # <symbol> '<' <symbol>, <symbol> '!=' <symbol>, etc.     (4)(3)
         my ( $lhs, $rhs ) = ( $1, $2 );
         handle_symbol( $lhs, $filename, $line_no );
         handle_symbol( $rhs, $filename, $line_no );

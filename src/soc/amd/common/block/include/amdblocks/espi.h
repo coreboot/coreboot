@@ -101,12 +101,6 @@ int espi_open_io_window(uint16_t base, size_t size);
 int espi_open_mmio_window(uint32_t base, size_t size);
 
 /*
- * Configure generic and standard I/O decode windows using the espi_config structure settings
- * provided by mainboard in device tree.
- */
-void espi_configure_decodes(void);
-
-/*
  * Clear all configured eSPI memory and I/O decode ranges.  This is useful for changing
  * the decodes, or if something else has previously setup decode windows that conflict
  * with the windows that coreboot needs.

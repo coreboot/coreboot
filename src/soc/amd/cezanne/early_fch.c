@@ -70,6 +70,5 @@ void fch_early_init(void)
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
 		espi_clear_decodes();
 		espi_setup();
-		espi_configure_decodes();
 	}
 }

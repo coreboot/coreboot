@@ -298,19 +298,22 @@ static const struct espi_config *espi_get_config(void)
 	return &soc_cfg->espi_config;
 }
 
-void espi_configure_decodes(void)
+static int espi_configure_decodes(const struct espi_config *cfg)
 {
-	int i;
-	const struct espi_config *cfg = espi_get_config();
+	int i, ret;
 
 	espi_enable_decode(cfg->std_io_decode_bitmap);
 
 	for (i = 0; i < ESPI_GENERIC_IO_WIN_COUNT; i++) {
 		if (cfg->generic_io_range[i].size == 0)
 			continue;
-		espi_open_generic_io_window(cfg->generic_io_range[i].base,
-					    cfg->generic_io_range[i].size);
+		ret = espi_open_generic_io_window(cfg->generic_io_range[i].base,
+						  cfg->generic_io_range[i].size);
+		if (ret)
+			return ret;
 	}
+
+	return 0;
 }
 
 #define ESPI_DN_TX_HDR0			0x00
@@ -963,6 +966,11 @@ int espi_setup(void)
 
 	if (espi_setup_flash_channel(cfg, slave_caps) == -1) {
 		printk(BIOS_ERR, "Error: Setup Flash channel failed!\n");
+		return -1;
+	}
+
+	if (espi_configure_decodes(cfg) == -1) {
+		printk(BIOS_ERR, "Error: Configuring decodes failed!\n");
 		return -1;
 	}
 

@@ -153,8 +153,6 @@ uint32_t verstage_soc_early_init(void)
 
 void verstage_soc_init(void)
 {
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
 		espi_setup();
-		espi_configure_decodes();
-	}
 }

@@ -43,11 +43,6 @@ struct northbridge_intel_sandybridge_config {
 
 	struct i915_gpu_controller_info gfx;
 
-	/*
-	 * Maximum PCI MMIO size in MiB.
-	 */
-	u16 pci_mmio_size;
-
 	/* Data for RAM init */
 
 	/* DIMM SPD address. Use 8bit notation where BIT0 is always zero. */

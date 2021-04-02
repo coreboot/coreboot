@@ -31,8 +31,6 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	register "pci_mmio_size" = "1024"
-
 	device domain 0 on
 		ioapic_irq 4 INTA 0x10
 		ioapic_irq 4 INTB 0x11

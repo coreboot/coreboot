@@ -338,24 +338,6 @@ void dram_zones(ramctr_timing *ctrl, int training)
 	}
 }
 
-#define DEFAULT_PCI_MMIO_SIZE 2048
-
-static unsigned int get_mmio_size(void)
-{
-	const struct device *dev;
-	const struct northbridge_intel_sandybridge_config *cfg = NULL;
-
-	dev = pcidev_path_on_root(PCI_DEVFN(0, 0));
-	if (dev)
-		cfg = dev->chip_info;
-
-	/* If this is zero, it just means devicetree.cb didn't set it */
-	if (!cfg || cfg->pci_mmio_size == 0)
-		return DEFAULT_PCI_MMIO_SIZE;
-	else
-		return cfg->pci_mmio_size;
-}
-
 /*
  * Returns the ECC mode the NB is running at. It takes precedence over ECC capability.
  * The ME/PCU/.. has the ability to change this.
@@ -382,6 +364,8 @@ bool get_host_ecc_cap(void)
 	return !(reg32 & (1 << 25));
 }
 
+#define DEFAULT_PCI_MMIO_SIZE 2048
+
 void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 {
 	u32 reg, val, reclaim, tom, gfxstolen, gttsize;
@@ -389,7 +373,7 @@ void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 	size_t tsegsize, touudbase, remaplimit, mestolenbase, tsegbasedelta;
 	uint16_t ggc;
 
-	mmiosize = get_mmio_size();
+	mmiosize = DEFAULT_PCI_MMIO_SIZE;
 
 	ggc = pci_read_config16(HOST_BRIDGE, GGC);
 	if (!(ggc & 2)) {

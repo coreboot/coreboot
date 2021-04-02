@@ -3,7 +3,7 @@
 #include <baseboard/variants.h>
 #include <bootblock_common.h>
 
-void bootblock_mainboard_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	const struct pad_config *pads;
 	size_t num;

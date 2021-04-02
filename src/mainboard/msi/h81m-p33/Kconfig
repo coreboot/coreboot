@@ -17,7 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default msi/h81m-p33
+	default "msi/h81m-p33"
 
 config MAINBOARD_PART_NUMBER
 	string

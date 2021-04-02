@@ -519,6 +519,8 @@ static int espi_send_command(const struct espi_cmd *cmd)
 		return -1;
 	}
 
+	espi_write32(ESPI_SLAVE0_INT_STS, ESPI_STATUS_DNCMD_COMPLETE);
+
 	return 0;
 }
 

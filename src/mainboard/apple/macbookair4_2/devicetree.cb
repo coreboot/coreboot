@@ -23,8 +23,6 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	register "pci_mmio_size" = "2048"
-
 	device domain 0x0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"

@@ -16,8 +16,6 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	register "pci_mmio_size" = "2048"
-
 	device domain 0x0 on
 		subsystemid 0x103c 0x1791 inherit
 

@@ -10,7 +10,6 @@ chip northbridge/intel/sandybridge
 			device lapic 0xacac off	end
 		end
 	end
-	register "pci_mmio_size" = "2048"
 	device domain 0 on
 		subsystemid 0x1565 0x3108 inherit
 

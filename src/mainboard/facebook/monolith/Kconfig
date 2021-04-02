@@ -68,10 +68,6 @@ config DIMM_MAX
 	int
 	default 2
 
-config TPM_INIT
-	bool
-	default n
-
 config MAINBOARD_SUPPORTS_SKYLAKE_CPU
 	bool
 	default n

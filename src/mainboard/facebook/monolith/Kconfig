@@ -80,13 +80,14 @@ config MAINBOARD_SUPPORTS_KABYLAKE_QUAD
 	bool
 	default n
 
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SLOTS_RW_A
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_ENABLE_CBFS_FALLBACK
+
 config RW_REGION_ONLY
 	string "Files in RW only"
-
-config VBOOT_ENABLE_CBFS_FALLBACK
-	bool
-	default y
-	depends on VBOOT
 
 config VBOOT_ALWAYS_ALLOW_UDC
 	def_bool y

@@ -101,13 +101,6 @@ int espi_open_io_window(uint16_t base, size_t size);
 int espi_open_mmio_window(uint32_t base, size_t size);
 
 /*
- * Clear all configured eSPI memory and I/O decode ranges.  This is useful for changing
- * the decodes, or if something else has previously setup decode windows that conflict
- * with the windows that coreboot needs.
- */
-void espi_clear_decodes(void);
-
-/*
  * In cases where eSPI BAR is statically provided by SoC, use that BAR instead of reading
  * SPIBASE. This is required for cases where verstage runs on PSP.
  */

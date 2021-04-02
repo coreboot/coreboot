@@ -67,8 +67,6 @@ void fch_early_init(void)
 	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
 		lpc_disable_spi_rom_sharing();
 
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
-		espi_clear_decodes();
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
 		espi_setup();
-	}
 }

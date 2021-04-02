@@ -98,7 +98,7 @@ static int espi_get_unused_io_window(void)
 	return -1;
 }
 
-void espi_clear_decodes(void)
+static void espi_clear_decodes(void)
 {
 	unsigned int idx;
 
@@ -894,6 +894,7 @@ int espi_setup(void)
 	espi_write32(ESPI_GLOBAL_CONTROL_1, ESPI_RGCMD_INT(23) | ESPI_ERR_INT_SMI);
 	espi_write32(ESPI_SLAVE0_INT_EN, 0);
 	espi_clear_status();
+	espi_clear_decodes();
 
 	/*
 	 * Boot sequence: Step 1

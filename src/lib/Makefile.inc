@@ -38,6 +38,7 @@ decompressor-y += delay.c
 decompressor-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 decompressor-y += memchr.c
 decompressor-y += memcmp.c
+decompressor-$(CONFIG_CBFS_VERIFICATION) += metadata_hash.c
 decompressor-y += prog_ops.c
 decompressor-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 

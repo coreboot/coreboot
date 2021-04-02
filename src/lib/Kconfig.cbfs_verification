@@ -6,7 +6,6 @@
 
 config CBFS_VERIFICATION
 	bool	# TODO: make user selectable once it works
-	depends on !COMPRESS_BOOTBLOCK	# TODO: figure out decompressor anchor
 	depends on !VBOOT_STARTS_BEFORE_BOOTBLOCK # this is gonna get tricky...
 	select VBOOT_LIB
 	help

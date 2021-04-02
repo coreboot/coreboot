@@ -35,6 +35,7 @@ void bootblock_main_with_timestamp(uint64_t base_timestamp,
 /* This is the argument structure passed from decompressor to bootblock. */
 struct bootblock_arg {
 	uint64_t base_timestamp;
+	void *metadata_hash_anchor;
 	uint32_t num_timestamps;
 	struct timestamp_entry timestamps[];
 };

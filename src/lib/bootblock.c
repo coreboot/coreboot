@@ -4,6 +4,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <delay.h>
+#include <metadata_hash.h>
 #include <option.h>
 #include <post.h>
 #include <program_loading.h>
@@ -88,6 +89,8 @@ void main(void)
 void _start(struct bootblock_arg *arg);
 void _start(struct bootblock_arg *arg)
 {
+	if (CONFIG(CBFS_VERIFICATION))
+		metadata_hash_import_anchor(arg->metadata_hash_anchor);
 	bootblock_main_with_timestamp(arg->base_timestamp, arg->timestamps,
 				      arg->num_timestamps);
 }

@@ -3,6 +3,7 @@
 #include <bootblock_common.h>
 #include <commonlib/bsd/compression.h>
 #include <delay.h>
+#include <metadata_hash.h>
 #include <program_loading.h>
 #include <symbols.h>
 #include <timestamp.h>
@@ -41,6 +42,9 @@ void main(void)
 
 	if (CONFIG(COLLECT_TIMESTAMPS))
 		arg.base_timestamp = timestamp_get();
+
+	if (CONFIG(CBFS_VERIFICATION))
+		arg.metadata_hash_anchor = metadata_hash_export_anchor();
 
 	decompressor_soc_init();
 

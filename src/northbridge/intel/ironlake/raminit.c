@@ -1273,23 +1273,6 @@ static void program_board_delay(struct raminfo *info)
 }
 
 #define DEFAULT_PCI_MMIO_SIZE 2048
-#define HOST_BRIDGE	PCI_DEVFN(0, 0)
-
-static unsigned int get_mmio_size(void)
-{
-	const struct device *dev;
-	const struct northbridge_intel_ironlake_config *cfg = NULL;
-
-	dev = pcidev_path_on_root(HOST_BRIDGE);
-	if (dev)
-		cfg = dev->chip_info;
-
-	/* If this is zero, it just means devicetree.cb didn't set it */
-	if (!cfg || cfg->pci_mmio_size == 0)
-		return DEFAULT_PCI_MMIO_SIZE;
-	else
-		return cfg->pci_mmio_size;
-}
 
 static void program_total_memory_map(struct raminfo *info)
 {
@@ -1323,7 +1306,7 @@ static void program_total_memory_map(struct raminfo *info)
 		uma_size_gtt = uma_sizes_gtt[(t >> 8) & 0xF];
 	}
 
-	mmio_size = get_mmio_size();
+	mmio_size = DEFAULT_PCI_MMIO_SIZE;
 
 	tom = info->total_memory_mb;
 	if (tom == 4096)

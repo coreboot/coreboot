@@ -260,7 +260,7 @@ int am335x_mmc_init_storage(struct am335x_mmc_host *mmc_host)
 	int err = 0;
 
 	struct sd_mmc_ctrlr *mmc_ctrlr = &mmc_host->sd_mmc_ctrlr;
-	memset(mmc_ctrlr, 0, sizeof(mmc_ctrlr));
+	memset(mmc_ctrlr, 0, sizeof(*mmc_ctrlr));
 
 
 	err = am335x_mmc_init(mmc_host->reg);

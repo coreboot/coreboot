@@ -626,6 +626,8 @@ if PCIEXP_HOTPLUG
 
 config PCIEXP_HOTPLUG_BUSES
 	int "PCI Express Hotplug Buses"
+	default  8 if MMCONF_SUPPORT && MMCONF_BUS_NUMBER <=  64
+	default 16 if MMCONF_SUPPORT && MMCONF_BUS_NUMBER <= 128
 	default 32
 	help
 	  This is the number of buses allocated for hotplug PCI express

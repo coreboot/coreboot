@@ -337,7 +337,7 @@ enum espi_cmd_type {
 #define  ESPI_SUB_DECODE_SLV_MASK		(0x3 << ESPI_SUB_DECODE_SLV_SHIFT)
 #define  ESPI_SUB_DECODE_EN			(1 << 2)
 
-#define SLAVE0_INT_STS				0x70
+#define ESPI_SLAVE0_INT_STS			0x70
 #define  ESPI_STATUS_DNCMD_COMPLETE		(1 << 28)
 #define  ESPI_STATUS_NON_FATAL_ERROR		(1 << 6)
 #define  ESPI_STATUS_FATAL_ERROR		(1 << 5)
@@ -418,9 +418,9 @@ static int espi_wait_ready(void)
 /* Clear interrupt status register */
 static void espi_clear_status(void)
 {
-	uint32_t status = espi_read32(SLAVE0_INT_STS);
+	uint32_t status = espi_read32(ESPI_SLAVE0_INT_STS);
 	if (status)
-		espi_write32(SLAVE0_INT_STS, status);
+		espi_write32(ESPI_SLAVE0_INT_STS, status);
 }
 
 /*
@@ -433,7 +433,7 @@ static int espi_poll_status(uint32_t *status)
 
 	stopwatch_init_usecs_expire(&sw, ESPI_CMD_TIMEOUT_US);
 	do {
-		*status = espi_read32(SLAVE0_INT_STS);
+		*status = espi_read32(ESPI_SLAVE0_INT_STS);
 		if (*status)
 			return 0;
 	} while (!stopwatch_expired(&sw));

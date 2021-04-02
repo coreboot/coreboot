@@ -1,7 +1,7 @@
 config TPM_INIT
 	bool
 	default y if TPM1 || TPM2
-	depends on !VBOOT
+	depends on !VBOOT && !VENDORCODE_ELTAN_VBOOT && !VENDORCODE_ELTAN_MBOOT
 	help
 	  This driver automatically initializes the TPM if vboot is not used.
 	  The TPM driver init is done during the ramstage chip init phase.

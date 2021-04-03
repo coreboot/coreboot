@@ -17,6 +17,7 @@ void *mem_pool_alloc(struct mem_pool *mp, size_t sz)
 	p = &mp->buf[mp->free_offset];
 
 	mp->free_offset += sz;
+	mp->second_to_last_alloc = mp->last_alloc;
 	mp->last_alloc = p;
 
 	return p;
@@ -29,6 +30,7 @@ void mem_pool_free(struct mem_pool *mp, void *p)
 		return;
 
 	mp->free_offset = mp->last_alloc - mp->buf;
+	mp->last_alloc = mp->second_to_last_alloc;
 	/* No way to track allocation before this one. */
-	mp->last_alloc = NULL;
+	mp->second_to_last_alloc = NULL;
 }

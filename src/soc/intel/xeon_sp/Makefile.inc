@@ -16,6 +16,8 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 smm-y += smihandler.c pmutil.c
 postcar-y += spi.c
 
+subdirs-$(CONFIG_SOC_INTEL_XEON_RAS) += ras
+
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/include
 CPPFLAGS_common += -I$(CONFIG_FSP_HEADER_PATH)
 

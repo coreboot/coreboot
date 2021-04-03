@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
+#include <soc/hest.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
@@ -448,6 +449,9 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 		current = acpi_align_current(current);
 		acpi_add_table(rsdp, dmar);
 	}
+
+	if (CONFIG(SOC_ACPI_HEST))
+		current = hest_create(current, rsdp);
 
 	return current;
 }

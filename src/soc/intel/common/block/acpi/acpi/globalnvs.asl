@@ -24,4 +24,5 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
 	A4GB,	64,	// 0x30 - 0x37 Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x38 - 0x3f Length of above 4GB MMIO Resource
+	,	8, 	// 0x40 - 0x48 Hest log buffer (used in SMM, not ASL code)
 }

@@ -2,6 +2,7 @@
 
 source "src/soc/intel/xeon_sp/skx/Kconfig"
 source "src/soc/intel/xeon_sp/cpx/Kconfig"
+source "src/soc/intel/xeon_sp/ras/Kconfig"
 
 config XEON_SP_COMMON_BASE
 	bool
@@ -113,5 +114,10 @@ config MMCONF_BUS_NUMBER
 config HEAP_SIZE
 	hex
 	default 0x80000
+
+config SOC_INTEL_XEON_RAS
+	bool
+	select SOC_ACPI_HEST
+	select SOC_RAS_ELOG
 
 endif ## SOC_INTEL_XEON_SP

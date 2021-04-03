@@ -39,6 +39,12 @@ chip soc/intel/alderlake
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
+	# TODO(b/184324979): Workaround to enable TCSS ports. FSP v2081
+	# uses port enable for south XHCI ports to determine if TCSS
+	# ports should be enabled. Until FSP is fixed, enable south
+	# XHCI ports 1 and 2.
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
 
 	register "SerialIoI2cMode" = "{

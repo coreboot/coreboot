@@ -19,6 +19,7 @@ void main(void)
 
 	if (CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
 		verstage_main();
+		printk(BIOS_DEBUG, "VBOOT: Returning from verstage.\n");
 	} else {
 		run_romstage();
 		hlt();

@@ -2,7 +2,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "SkipExtGfxScan" = "1"
-	register "SaGv" = "SaGv_Disabled"
 
 	# SATA configuration
 	register "SataSalpSupport" = "1"

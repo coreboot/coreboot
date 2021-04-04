@@ -304,7 +304,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		 * write" errors and others. Enabling this option solves these problems.
 		 */
 		params->SataPwrOptEnable = 1;
-		tconfig->SataTestMode = config->SataTestMode;
+		tconfig->SataTestMode = CONFIG(ENABLE_SATA_TEST_MODE);
 	}
 
 	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,

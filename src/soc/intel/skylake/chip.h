@@ -477,9 +477,6 @@ struct soc_intel_skylake_config {
 	 */
 	u8 IslVrCmd;
 
-	/* Enable/Disable Sata test mode */
-	u8 SataTestMode;
-
 	/* i915 struct for GMA backlight control */
 	struct i915_gpu_controller_info gfx;
 };

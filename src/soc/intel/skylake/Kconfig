@@ -91,6 +91,12 @@ config FSP_HYPERTHREADING
 	bool "Enable Hyper-Threading"
 	default y
 
+config ENABLE_SATA_TEST_MODE
+	bool "Enable SATA test mode"
+	default n
+	help
+	  Enable SATA test mode in FSP-S.
+
 config CPU_INTEL_NUM_FIT_ENTRIES
 	int
 	default 10

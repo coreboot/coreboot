@@ -75,9 +75,6 @@ chip soc/intel/skylake
 				[3] = 1,
 			}"
 			# DevSlp not supported
-
-			# Enable test mode for SATA margining
-			register "SataTestMode" = "1"
 		end
 		device pci 19.0 on  end		# UART #2
 		device pci 1c.0 off end		# RP #1

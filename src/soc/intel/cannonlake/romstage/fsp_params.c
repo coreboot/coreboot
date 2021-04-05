@@ -12,6 +12,7 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "../chip.h"
@@ -29,7 +30,8 @@ static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 	 * Probe for no IGD and disable InternalGfx and panel power to prevent a
 	 * crash in FSP-M.
 	 */
-	if (dev && dev->enabled && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
+	const bool igd_on = !CONFIG(SOC_INTEL_DISABLE_IGD) && dev && dev->enabled;
+	if (igd_on && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
 		/* Set IGD stolen size to 64MB. */
 		m_cfg->InternalGfx = 1;
 		m_cfg->IgdDvmt50PreAlloc = 2;

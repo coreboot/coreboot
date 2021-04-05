@@ -112,7 +112,7 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 	const struct device *dev;
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	m_cfg->InternalGfx = dev && dev->enabled;
+	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && dev && dev->enabled;
 
 	/*
 	 * If iGPU is enabled, set IGD stolen size to 64MB. The FBC

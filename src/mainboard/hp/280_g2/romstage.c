@@ -23,8 +23,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	get_spd_smbus(&blk);
 
+	mem_cfg->CaVrefConfig = 2;
 	mem_cfg->DqPinsInterleaved = true;
-
 	mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
 
 	mem_cfg->MemorySpdDataLen = blk.len;

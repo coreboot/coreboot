@@ -149,7 +149,6 @@ struct soc_intel_alderlake_config {
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
 	} IgdDvmt50PreAlloc;
-	uint8_t InternalGfx;
 	uint8_t SkipExtGfxScan;
 
 	/* HeciEnabled decides the state of Heci1 at end of boot

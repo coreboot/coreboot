@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/platform_descriptors.h>
+#include <soc/gpio.h>
 #include <types.h>
 
 /* TODO: test if this really works */
@@ -14,6 +15,7 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.function_number = 1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ0,
+		.gpio_group_id = GPIO_29,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* SD */
@@ -25,6 +27,7 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.function_number = 2,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ1,
+		.gpio_group_id = GPIO_70,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* WWAN */
@@ -36,6 +39,7 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.function_number = 3,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ2,
+		.gpio_group_id = GPIO_18,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* NVME */
@@ -47,6 +51,7 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.function_number = 4,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ3,
+		.gpio_group_id = GPIO_40,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	}
 };

@@ -5,7 +5,7 @@
 
 /*
  * Routine to perform below operations:
- * 1. SoC rotine to fill GPIO PM mask and value for GPIO_MISCCFG register
+ * 1. SoC routine to fill GPIO PM mask and value for GPIO_MISCCFG register
  * 2. Program GPIO PM configuration based on PM mask and value
  */
 void soc_gpio_pm_configuration(void)

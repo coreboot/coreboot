@@ -104,7 +104,7 @@ const char *soc_acpi_name(const struct device *dev)
 }
 #endif
 
-/* SoC rotine to fill GPIO PM mask and value for GPIO_MISCCFG register */
+/* SoC routine to fill GPIO PM mask and value for GPIO_MISCCFG register */
 static void soc_fill_gpio_pm_configuration(void)
 {
 	uint8_t value[TOTAL_GPIO_COMM];

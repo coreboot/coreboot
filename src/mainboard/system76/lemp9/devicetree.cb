@@ -9,9 +9,6 @@ chip soc/intel/cannonlake
 		},
 	}"
 
-	# Send an extra VR mailbox command for the PS4 exit issue
-	register "SendVrMbxCmd" = "2"
-
 # CPU (soc/intel/cannonlake/cpu.c)
 	# Power limit
 	register "power_limits_config" = "{

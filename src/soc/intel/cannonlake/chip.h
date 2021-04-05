@@ -223,13 +223,6 @@ struct soc_intel_cannonlake_config {
 	/* Enables support for Teton Glacier hybrid storage device */
 	uint8_t TetonGlacierMode;
 
-	/* Enable VR specific mailbox command
-	 * 00b - no VR specific cmd sent
-	 * 01b - VR mailbox cmd specifically for the MPS IMPV8 VR will be sent
-	 * 10b - VR specific cmd sent for PS4 exit issue
-	 * 11b - Reserved */
-	uint8_t SendVrMbxCmd;
-
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
 

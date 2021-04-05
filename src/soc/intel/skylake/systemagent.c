@@ -39,12 +39,11 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 		{ GDXCBAR, GDXC_BASE_ADDRESS, GDXC_BASE_SIZE, "GDXCBAR" },
 		{ EDRAMBAR, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE, "EDRAMBAR" },
 	};
-	const struct soc_intel_skylake_config *const config = config_of(dev);
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
 
-	if (!config->ignore_vtd && soc_is_vtd_capable()) {
+	if (soc_is_vtd_capable()) {
 		if (igd_dev && igd_dev->enabled)
 			sa_add_fixed_mmio_resources(dev, index,
 					&soc_gfxvt_mmio_descriptor, 1);

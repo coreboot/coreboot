@@ -13,11 +13,6 @@
 static void systemagent_vtd_init(void)
 {
 	const struct device *const igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	const struct soc_intel_skylake_config *config = NULL;
-
-	config = config_of_soc();
-	if (config->ignore_vtd)
-		return;
 
 	const bool vtd_capable =
 		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);

@@ -22,9 +22,6 @@ chip soc/intel/skylake
 	# Disable DPTF
 	register "dptf_enable" = "0"
 
-	# Enable VT-d
-	register "ignore_vtd" = "0"
-
 	# Enable SERIRQ continuous
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 

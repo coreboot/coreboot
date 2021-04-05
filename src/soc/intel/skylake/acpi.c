@@ -460,11 +460,10 @@ unsigned long northbridge_write_acpi_tables(const struct device *const dev,
 					    unsigned long current,
 					    struct acpi_rsdp *const rsdp)
 {
-	const struct soc_intel_skylake_config *const config = config_of(dev);
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
 
 	/* Create DMAR table only if we have VT-d capability. */
-	if (config->ignore_vtd || !soc_is_vtd_capable())
+	if (!soc_is_vtd_capable())
 		return current;
 
 	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");

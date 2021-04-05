@@ -78,9 +78,6 @@ struct soc_intel_skylake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	/* Whether to ignore VT-d support of the SKU */
-	int ignore_vtd;
-
 	/*
 	 * System Agent dynamic frequency configuration
 	 * When enabled memory will be trained at two different frequencies.

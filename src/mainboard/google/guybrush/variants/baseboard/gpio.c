@@ -20,11 +20,11 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EN_PP5000_PEN */
 	PAD_GPO(GPIO_5, LOW),
 	/* EN_PP3300_WLAN */
-	PAD_GPO(GPIO_6, LOW),
+	PAD_GPO(GPIO_6, HIGH),
 	/* EN_PP3300_TCHPAD */
 	PAD_GPO(GPIO_7, HIGH),
 	/* EN_PWR_WWAN_X */
-	PAD_GPO(GPIO_8, LOW),
+	PAD_GPO(GPIO_8, HIGH),
 	/* SOC_TCHPAD_INT_ODL */
 	PAD_INT(GPIO_9, PULL_NONE, EDGE_HIGH, STATUS_DELIVERY),
 	/* S0A3 */
@@ -51,7 +51,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/* WWAN_RST_L */
-	PAD_GPO(GPIO_24, LOW),
+	PAD_GPO(GPIO_24, HIGH),
 	/* GPIO_25: Not available */
 	/* PCIE_RST0_L */
 	/* TODO: change back to PCIE_RST_L when we figure out why PCIE_RST doesn't go high. */
@@ -60,7 +60,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* GPIO_28: Not available */
 	/* WLAN_AUX_RESET */
-	PAD_GPO(GPIO_29, HIGH),
+	PAD_GPO(GPIO_29, LOW),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* SPI_CS3_L */
@@ -69,7 +69,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_32, LOW),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* SSD_AUX_RESET_L */
-	PAD_GPO(GPIO_40, LOW),
+	PAD_GPO(GPIO_40, HIGH),
 	/* GPIO_41: Not available */
 	/* WWAN_DPR_SAR_ODL */
 	PAD_GPO(GPIO_42, LOW),
@@ -81,7 +81,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EN_SPKR */
 	PAD_GPO(GPIO_69, LOW),
 	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_70, LOW),
+	PAD_GPO(GPIO_70, HIGH),
 	/* GPIO_71 - GPIO_73: Not available */
 	/* RAM_ID_CHAN_SEL */
 	PAD_GPI(GPIO_74, PULL_NONE),
@@ -93,7 +93,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EC_SOC_INT_ODL */
 	PAD_GPI(GPIO_84, PULL_NONE),
 	/* WWAN_DISABLE */
-	PAD_GPO(GPIO_85, HIGH),
+	PAD_GPO(GPIO_85, LOW),
 	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* RAM_ID_1 / DEV_BEEP_DATA */
@@ -139,7 +139,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_DISABLE_DISP_BL */
 	PAD_GPO(GPIO_129, LOW),
 	/* WLAN_DISABLE */
-	PAD_GPO(GPIO_130, HIGH),
+	PAD_GPO(GPIO_130, LOW),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
 	/* BT_DISABLE */
@@ -166,6 +166,14 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
+	/* EN_PP3300_WLAN */
+	PAD_GPO(GPIO_6, HIGH),
+	/* EN_PWR_WWAN_X */
+	PAD_GPO(GPIO_8, HIGH),
+	/* WWAN_DISABLE */
+	PAD_GPO(GPIO_85, LOW),
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_130, LOW),
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* I2C3_SCL */

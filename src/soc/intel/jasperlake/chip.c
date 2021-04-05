@@ -111,11 +111,9 @@ static void soc_fill_gpio_pm_configuration(void)
 	const config_t *config = config_of_soc();
 
 	if (config->gpio_override_pm)
-		memcpy(value, config->gpio_pm, sizeof(uint8_t) *
-			TOTAL_GPIO_COMM);
+		memcpy(value, config->gpio_pm, sizeof(value));
 	else
-		memset(value, MISCCFG_GPIO_PM_CONFIG_BITS, sizeof(uint8_t) *
-			TOTAL_GPIO_COMM);
+		memset(value, MISCCFG_GPIO_PM_CONFIG_BITS, sizeof(value));
 
 	gpio_pm_configure(value, TOTAL_GPIO_COMM);
 }

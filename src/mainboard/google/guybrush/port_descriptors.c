@@ -53,6 +53,28 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.clk_req = CLK_REQ3,
 		.gpio_group_id = GPIO_40,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
+	},
+	{ /* TODO: remove this temporay workaround */
+		.engine_type = PCIE_ENGINE,
+		.port_present = true,
+		.start_logical_lane = 8,
+		.end_logical_lane = 11,
+		.device_number = 2,
+		.function_number = 5,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ5,
+		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
+	},
+	{ /* TODO: remove this temporay workaround */
+		.engine_type = PCIE_ENGINE,
+		.port_present = true,
+		.start_logical_lane = 16,
+		.end_logical_lane = 23,
+		.device_number = 1,
+		.function_number = 1,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ6,
+		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	}
 };
 

@@ -172,7 +172,7 @@ chip soc/amd/picasso
 					end
 				end
 				chip drivers/amd/i2s_machine_dev
-					register "hid" = ""AMDP1015""
+					register "hid" = ""10021015""
 					# DMIC select GPIO for ACP machine device
 					# This GPIO is used to select DMIC0 or DMIC1 by the
 					# kernel driver. It does not really have a polarity

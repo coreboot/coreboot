@@ -115,7 +115,7 @@ Method(BSTA, 4, NotSerialized)
 		{
 			Local0 |= 1
 			// Negate present rate
-			Local2 -= 0x10000
+			Local2 = 0x10000 - Local2
 		}
 		Else // Full battery, force to 0
 		{

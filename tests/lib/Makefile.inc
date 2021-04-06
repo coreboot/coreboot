@@ -26,6 +26,7 @@ tests-y += memrange-test
 tests-y += uuid-test
 tests-y += bootmem-test
 tests-y += dimm_info_util-test
+tests-y += coreboot_table-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -129,3 +130,12 @@ dimm_info_util-test-srcs += tests/lib/dimm_info_util-test.c
 dimm_info_util-test-srcs += src/lib/dimm_info_util.c
 dimm_info_util-test-srcs += tests/stubs/console.c
 
+coreboot_table-test-srcs += tests/lib/coreboot_table-test.c
+coreboot_table-test-srcs += tests/stubs/console.c
+coreboot_table-test-srcs += src/lib/compute_ip_checksum.c
+coreboot_table-test-srcs += src/lib/coreboot_table.c
+coreboot_table-test-srcs += src/lib/imd_cbmem.c
+coreboot_table-test-srcs += src/lib/imd.c
+coreboot_table-test-cflags += -I src -I 3rdparty/vboot/firmware/include
+coreboot_table-test-cflags += -I tests/include/tests/lib/fmap
+coreboot_table-test-mocks += cbmem_top_chipset

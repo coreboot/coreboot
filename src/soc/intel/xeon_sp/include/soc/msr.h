@@ -5,6 +5,9 @@
 
 #include <intelblocks/msr.h>
 
+#define MSR_FEATURE_CONFIG              0x13c
+#define   FEATURE_CONFIG_LOCK           BIT(0)
+
 #define IA32_MCG_CAP                    0x179
 #define IA32_MCG_CAP_COUNT_MASK         0xff
 #define IA32_MCG_CAP_CTL_P_BIT          8

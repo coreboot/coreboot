@@ -13,6 +13,10 @@
 
 /* PCH Device info */
 
+#define PCH_DEV_SLOT_MROM0	0x11
+#define  PCH_DEVFN_SSATA	_PCH_DEVFN(MROM0, 5)
+#define  PCH_DEV_SSATA		_PCH_DEV(MROM0, 5)
+
 #define XHCI_BUS_NUMBER		0x0
 #define PCH_DEV_SLOT_XHCI	0x14
 #define XHCI_FUNC_NUM		0x0
@@ -31,6 +35,12 @@
 #define  PCH_DEV_CSE		_PCH_DEV(CSE, 0)
 #define  PCH_DEV_CSE_2		_PCH_DEV(CSE, 1)
 #define  PCH_DEV_CSE_3		_PCH_DEV(CSE, 4)
+
+#define PCH_DEV_SLOT_SATA	0x17
+#define  PCH_DEVFN_SATA		_PCH_DEVFN(SATA, 0)
+#define  PCH_DEV_SATA		_PCH_DEV(SATA, 0)
+#define    SATAGC		0x9c
+#define      SATAGC_REGLOCK	BIT(31)
 
 #define PCH_DEV_SLOT_LPC	0x1f
 #define  PCH_DEVFN_LPC		_PCH_DEVFN(LPC, 0)

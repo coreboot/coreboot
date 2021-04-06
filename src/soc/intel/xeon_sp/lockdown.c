@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
+#include <device/pci.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
 #include <intelpch/lockdown.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 
 static void lpc_lockdown_config(int chipset_lockdown)
@@ -29,13 +31,22 @@ static void pmc_lockdown_config(int chipset_lockdown)
 
 	/* Make sure payload/OS can't trigger global reset */
 	pmc_global_reset_disable_and_lock();
+
+	/* Lock PMC stretch policy */
+	pci_or_config32(PCH_DEV_PMC, GEN_PMCON_B, SLP_STR_POL_LOCK);
+}
+
+static void sata_lockdown_config(int chipset_lockdown)
+{
+	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		pci_or_config32(PCH_DEV_SATA, SATAGC, SATAGC_REGLOCK);
+		pci_or_config32(PCH_DEV_SSATA, SATAGC, SATAGC_REGLOCK);
+	}
 }
 
 void soc_lockdown_config(int chipset_lockdown)
 {
-	/* LPC lock down configuration */
 	lpc_lockdown_config(chipset_lockdown);
-
-	/* PMC lock down configuration */
 	pmc_lockdown_config(chipset_lockdown);
+	sata_lockdown_config(chipset_lockdown);
 }

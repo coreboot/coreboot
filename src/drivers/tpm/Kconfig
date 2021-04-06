@@ -1,4 +1,4 @@
-config TPM_INIT
+config TPM_INIT_RAMSTAGE
 	bool
 	default y if TPM1 || TPM2
 	depends on !VBOOT && !VENDORCODE_ELTAN_VBOOT && !VENDORCODE_ELTAN_MBOOT

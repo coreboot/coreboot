@@ -87,7 +87,7 @@ config SPI_FLASH_WINBOND
 	bool
 	default y
 
-config TPM_INIT
+config TPM_INIT_RAMSTAGE
 	bool "TPM Setup in RAMSTAGE"
 	default n
 

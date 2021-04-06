@@ -1,4 +1,4 @@
-ramstage-$(CONFIG_TPM_INIT) += tpm.c
+ramstage-$(CONFIG_TPM_INIT_RAMSTAGE) += tpm.c
 
 ifeq ($(CONFIG_TPM_PPI),y)
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ppi.c

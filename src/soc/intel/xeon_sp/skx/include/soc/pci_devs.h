@@ -24,6 +24,7 @@
 #define SAD_ALL_DEV			29
 #define SAD_ALL_FUNC			0
 #define SAD_ALL_PAM0123_CSR		0x40
+#define   PAM_LOCK			BIT(0)
 #define SAD_ALL_PAM456_CSR		0x44
 
 #if !defined(__SIMPLE_DEVICE__)

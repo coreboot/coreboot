@@ -86,6 +86,7 @@ chip soc/intel/xeon_sp/cpx
 		device pci 16.0 on end # Communication controller: Intel Device a23a
 		device pci 16.1 on end # Communication controller: Intel Device a23b
 		device pci 16.4 on end # Communication controller: Intel Device a23e
+		device pci 17.0 on end # Intel C620 Series Chipset Family SATA Controller [AHCI mode]
 		device pci 1c.0 on end # PCI bridge: Intel Device a210
 		device pci 1c.4 on end # PCI bridge: Intel Device a214
 		device pci 1c.5 on end # PCI bridge: Intel Device a215

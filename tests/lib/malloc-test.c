@@ -50,7 +50,7 @@ static int setup_test(void **state)
 
 static int setup_calloc_test(void **state)
 {
-	memset(&_heap, 0xFF, TEST_HEAP_SZ);
+	memset(_test_heap, 0xFF, TEST_HEAP_SZ);
 	return setup_test(state);
 }
 

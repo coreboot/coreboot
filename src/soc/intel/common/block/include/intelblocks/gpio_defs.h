@@ -301,9 +301,10 @@
 		PAD_CFG_GPI_TRIG_OWN(pad, pull, rst, trig, DRIVER)
 
 /*
- * No Connect configuration for unused pad.
+ * No Connect configuration for unconnected or unused pad.
  * Both TX and RX are disabled. RX disabling is done to avoid unnecessary
- * setting of GPI_STS. RX Level/Edge Trig Configuration set to disable
+ * setting of GPI_STS and to prevent triggering the internal logic by floating
+ * pads.
  */
 #define PAD_NC(pad, pull)					\
 	_PAD_CFG_STRUCT(pad,					\

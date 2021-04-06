@@ -39,6 +39,11 @@ chip soc/amd/cezanne
 	}"
 
 	device domain 0 on
+		device ref gpp_bridge_0 on end # WLAN
+		device ref gpp_bridge_1 on end # SD
+		device ref gpp_bridge_2 on end # LAN
+		device ref gpp_bridge_3 on end # NVMe
+
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 		end

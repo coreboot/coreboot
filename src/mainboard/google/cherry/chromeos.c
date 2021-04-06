@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
+#include <security/tpm/tis.h>
 
 #include "gpio.h"
 
@@ -27,4 +28,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EN_SPK.id, ACTIVE_HIGH, -1, "speaker enable"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+}
+
+int tis_plat_irq_status(void)
+{
+	return gpio_eint_poll(GPIO_GSC_AP_INT);
 }

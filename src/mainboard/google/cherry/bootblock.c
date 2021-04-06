@@ -3,6 +3,7 @@
 #include <bootblock_common.h>
 #include <device/mmio.h>
 #include <soc/gpio.h>
+#include <soc/i2c.h>
 #include <soc/spi.h>
 
 #include "gpio.h"
@@ -36,7 +37,9 @@ static void nor_set_gpio_pinmux(void)
 
 void bootblock_mainboard_init(void)
 {
+	mtk_i2c_bus_init(CONFIG_DRIVER_TPM_I2C_BUS);
 	mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD0_MASK, 3 * MHz, 0);
 	nor_set_gpio_pinmux();
 	setup_chromeos_gpios();
+	gpio_eint_configure(GPIO_GSC_AP_INT, IRQ_TYPE_EDGE_RISING);
 }

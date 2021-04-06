@@ -22,6 +22,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_SPI
+	select MAINBOARD_HAS_I2C_TPM_CR50 if VBOOT
+	select MAINBOARD_HAS_TPM2 if VBOOT
 
 config MAINBOARD_DIR
 	string
@@ -30,6 +32,14 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "Cherry" if BOARD_GOOGLE_CHERRY
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x3
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
 
 # On MT8195 the SPI flash is actually using a SPI-NOR controller with its own bus.
 # The number here should be a virtual value as (SPI_BUS_NUMBER + 1).

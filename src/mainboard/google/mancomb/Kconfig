@@ -26,6 +26,7 @@ config CHROMEOS
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_STARTS_IN_BOOTBLOCK
+	select VBOOT_EARLY_EC_SYNC
 
 config FMDFILE
 	string

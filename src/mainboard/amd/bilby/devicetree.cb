@@ -92,6 +92,15 @@ chip soc/amd/picasso
 		.tx_res_tune = 0x01,
 	}"
 
+	register "usb_pd_config_override[0]" = "{
+		.rfmux_override_en  = 1,
+		.rfmux_config = USB_PD_RFMUX_DP_X4_MODE,
+	}"
+	register "usb_pd_config_override[1]" = "{
+		.rfmux_override_en  = 1,
+		.rfmux_config = USB_PD_RFMUX_DP_X4_MODE,
+	}"
+
 	# USB OC pin mapping; all ports share one OC pin
 	register "usb_port_overcurrent_pin[0]" = "USB_OC_PIN_0"
 	register "usb_port_overcurrent_pin[1]" = "USB_OC_PIN_0"

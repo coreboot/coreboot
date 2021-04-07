@@ -44,7 +44,7 @@ config MAINBOARD_PART_NUMBER
 
 config CBFS_SIZE
 	hex
-	default 0x00800000
+	default 0x00600000
 
 config MRC_SETTINGS_CACHE_SIZE
 	hex

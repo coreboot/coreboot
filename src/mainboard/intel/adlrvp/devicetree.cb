@@ -12,6 +12,9 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# Enable HECI1 interface
+	register "HeciEnabled" = "1"
+
 	# FSP configuration
 
 	# Enable CNVi BT

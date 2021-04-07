@@ -285,7 +285,8 @@ static int mrc_cache_find_current(int type, uint32_t version,
 	 * In recovery mode, force retraining if the memory retrain
 	 * switch is set.
 	 */
-	if (vboot_recovery_mode_enabled() && get_recovery_mode_retrain_switch())
+	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) && vboot_recovery_mode_enabled()
+	    && get_recovery_mode_retrain_switch())
 		return -1;
 
 	cr = lookup_region(&region, type);

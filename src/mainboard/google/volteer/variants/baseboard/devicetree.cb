@@ -68,6 +68,10 @@ fw_config
 		option WIFI_SAR_ID_2 2
 		option WIFI_SAR_ID_3 3
 	end
+	field OLED_SCREEN 28
+		option OLED_NOT_PRESENT 0
+		option OLED_PRESENT 1
+	end
 end
 
 chip soc/intel/tigerlake

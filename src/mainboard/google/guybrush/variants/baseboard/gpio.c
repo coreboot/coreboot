@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
@@ -30,7 +31,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* S0A3 */
 	PAD_NF(GPIO_10, S0A3, PULL_NONE),
 	/* SOC_FP_RST_L */
-	PAD_GPO(GPIO_11, LOW),
+	PAD_GPO(GPIO_11, HIGH),
 	/* SLP_S3_GATED */
 	PAD_GPO(GPIO_12, LOW),
 	/* GPIO_13 - GPIO_15: Not available */
@@ -66,7 +67,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SPI_CS3_L */
 	PAD_NF(GPIO_31, SPI_CS3_L, PULL_NONE),
 	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, LOW),
+	PAD_GPO(GPIO_32, HIGH),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -228,4 +229,24 @@ const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
+}
+
+__weak void variant_fpmcu_reset(void)
+{
+	if (acpi_get_sleep_type() == ACPI_S3)
+		return;
+	/*
+	 *  SOC_FP_RST_L line is pulled high when platform comes out of reset.
+	 *  So, it is required to be driven low before enabling power to
+	 *  ensure that power sequencing for the FPMCU is met.
+	 *  However, as the FPMCU is initialized only on platform reset,
+	 *  the reset line should not be asserted in case of S3 resume.
+	 */
+	static const struct soc_amd_gpio fpmcu_bootblock_table[] = {
+		/* SOC_FP_RST_L */
+		PAD_GPO(GPIO_11, LOW),
+		/* EN_PWR_FP */
+		PAD_GPO(GPIO_32, HIGH),
+	};
+	program_gpios(fpmcu_bootblock_table, ARRAY_SIZE(fpmcu_bootblock_table));
 }

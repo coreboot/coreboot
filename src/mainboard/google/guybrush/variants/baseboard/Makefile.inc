@@ -1,4 +1,5 @@
 bootblock-y += gpio.c
+bootblock-y += helpers.c
 
 romstage-y += tpm_tis.c
 

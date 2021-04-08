@@ -98,4 +98,17 @@ chip soc/amd/cezanne
 		end
 	end # I2C2
 
+	device ref uart_1 on
+		chip drivers/uart/acpi
+			register "name" = ""CRFP""
+			register "desc" = ""Fingerprint Reader""
+			register "hid" = "ACPI_DT_NAMESPACE_HID"
+			register "compat_string" = ""google,cros-ec-uart""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_21)"
+			register "wake" = "GEVENT_5"
+			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
+			device generic 0 on end
+		end
+	end
+
 end	# chip soc/amd/cezanne

@@ -46,4 +46,7 @@ void bootblock_mainboard_early_init(void)
 			mdelay(10);
 		}
 	}
+
+	if (variant_has_fpmcu())
+		variant_fpmcu_reset();
 }

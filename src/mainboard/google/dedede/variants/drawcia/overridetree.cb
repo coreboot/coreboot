@@ -257,6 +257,8 @@ chip soc/intel/jasperlake
 				register "remote_name" = ""IPU0""
 
 				register "has_power_resource" = "1"
+				register "low_power_probe" = "1"
+
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
@@ -289,9 +291,17 @@ chip soc/intel/jasperlake
 				register "chip_name" = ""DW AF DAC""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C3.CAM1.PRIC""
+				register "has_power_resource" = "1"
 				register "vcm_compat" = ""dongwoon,dw9714""
+				register "low_power_probe" = "1"
 
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D13" #power_enable_2p8
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				device i2c 0C on end
 			end
 			chip drivers/intel/mipi_camera
@@ -305,7 +315,17 @@ chip soc/intel/jasperlake
 				register "nvm_readonly" = "1"
 				register "nvm_width" = "0x08"
 				register "nvm_compat" = ""atmel,24c08""
+				register "low_power_probe" = "1"
 
+				register "has_power_resource" = "1"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D14" #power_enable_1p2
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				device i2c 50 on end
 			end
 		end # I2C 3

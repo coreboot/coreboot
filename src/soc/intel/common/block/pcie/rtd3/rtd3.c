@@ -200,7 +200,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		       __func__, scope);
 		return;
 	}
-	if (config->srcclk_pin > CONFIG_MAX_PCIE_CLOCKS) {
+	if (config->srcclk_pin > CONFIG_MAX_PCIE_CLOCK_SRC) {
 		printk(BIOS_ERR, "%s: Invalid clock pin %u for %s.\n", __func__,
 		       config->srcclk_pin, scope);
 		return;

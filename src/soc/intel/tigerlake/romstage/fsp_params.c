@@ -56,7 +56,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	memcpy(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage,
 		sizeof(config->PcieClkSrcUsage));
 
-	for (i = 0; i < CONFIG_MAX_PCIE_CLOCKS; i++) {
+	for (i = 0; i < CONFIG_MAX_PCIE_CLOCK_SRC; i++) {
 		if (config->PcieClkSrcUsage[i] == 0)
 			m_cfg->PcieClkSrcUsage[i] = 0xff;
 	}

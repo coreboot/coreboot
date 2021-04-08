@@ -129,7 +129,7 @@ config MAX_ROOT_PORTS
 	int
 	default 12
 
-config MAX_PCIE_CLOCKS
+config MAX_PCIE_CLOCK_SRC
 	int
 	default 7
 

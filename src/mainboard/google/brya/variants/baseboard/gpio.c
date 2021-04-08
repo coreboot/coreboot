@@ -191,7 +191,7 @@ static const struct pad_config gpio_table[] = {
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
 	/* E16 : RSVD_TP ==> WWAN_RST_L */
-	PAD_CFG_GPO(GPP_E16, 0, DEEP),
+	PAD_CFG_GPO(GPP_E16, 1, DEEP),
 	/* E17 : THC0_SPI1_INT# ==> WWAN_CONFIG3 */
 	PAD_CFG_GPI(GPP_E17, NONE, DEEP),
 	/* E18 : DDP1_CTRLCLK ==> USB_C0_LSX_SOC_TX */

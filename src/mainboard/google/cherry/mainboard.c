@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bl31.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
@@ -11,6 +12,10 @@
 #include <soc/mt6360.h>
 #include <soc/regulator.h>
 #include <soc/usb.h>
+
+#include "gpio.h"
+
+#include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
 
 DEFINE_BITFIELD(MSDC0_DRV, 29, 0)
 DEFINE_BITFIELD(MSDC1_DRV, 17, 0)
@@ -30,6 +35,17 @@ enum {
 	MSDC1_GPIO_MODE0_BASE = 0x100053d0,
 	MSDC1_GPIO_MODE1_BASE = 0x100053e0,
 };
+
+static void register_reset_to_bl31(void)
+{
+	static struct bl_aux_param_gpio param_reset = {
+		.h = { .type = BL_AUX_PARAM_MTK_RESET_GPIO },
+		.gpio = { .polarity = ARM_TF_GPIO_LEVEL_HIGH },
+	};
+
+	param_reset.gpio.index = GPIO_RESET.id;
+	register_bl31_aux_param(&param_reset.h);
+}
 
 static void configure_emmc(void)
 {
@@ -107,6 +123,8 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_sdcard();
 	setup_usb_host();
+
+	register_reset_to_bl31();
 }
 
 static void mainboard_enable(struct device *dev)

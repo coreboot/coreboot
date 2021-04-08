@@ -91,19 +91,17 @@ chip soc/intel/alderlake
 
 	register "SerialIoGSpiMode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
-		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
 	register "SerialIoGSpiCsMode" = "{
 		[PchSerialIoIndexGSPI0] = 1,
-		[PchSerialIoIndexGSPI1] = 1,
 	}"
 
 	register "SerialIoGSpiCsState" = "{
 		[PchSerialIoIndexGSPI0] = 1,
-		[PchSerialIoIndexGSPI1] = 1,
 	}"
 
 	register "SerialIoUartMode" = "{

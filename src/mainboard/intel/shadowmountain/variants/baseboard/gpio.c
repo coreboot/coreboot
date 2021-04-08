@@ -38,7 +38,7 @@ static const struct pad_config gpio_table[] = {
 	/* A18 : HDMI_HPD */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A21 : EN_FP_PWR */
-	PAD_CFG_GPO(GPP_A21, 1, DEEP),
+	PAD_CFG_GPO(GPP_A21, 0, DEEP),
 	/* A22 : EN_HDMI_PWR */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 	/* A23 : EN_SPKR_PA */
@@ -204,12 +204,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_INT(GPP_F9, NONE, PLTRST, EDGE_BOTH),
 	/* F10 : EN_PP3300_TOUCHSCREEN */
 	PAD_CFG_GPO(GPP_F10, 0, DEEP),
-	/* F11 : PCH_GSPI1_FPMCU_CLK */
-	PAD_CFG_NF(GPP_F11, NONE, DEEP, NF4),
-	/* F12 : PCH_GSPI1_FPMCU_MISO */
-	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF4),
-	/* F13 : PCH_GSPI1_FPMCU_MISO */
-	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF4),
 	/* F14 : WLAN_RST_ODL */
 	PAD_CFG_GPO(GPP_F14, 1, DEEP),
 	/* F15 : RCAM_RST_L */

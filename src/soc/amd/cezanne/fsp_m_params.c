@@ -4,10 +4,12 @@
 #include <amdblocks/memmap.h>
 #include <assert.h>
 #include <console/uart.h>
+#include <device/device.h>
 #include <fsp/api.h>
 #include <soc/platform_descriptors.h>
 #include <string.h>
 #include <types.h>
+#include "chip.h"
 
 static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
 			const fsp_dxio_descriptor *descs, size_t num)
@@ -51,6 +53,7 @@ static void fsp_fill_pcie_ddi_descriptors(FSP_M_CONFIG *mcfg)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
+	const struct soc_amd_cezanne_config *config = config_of_soc();
 
 	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_apob_cache();
 
@@ -61,6 +64,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->serial_port_use_mmio = CONFIG(DRIVERS_UART_8250MEM);
 	mcfg->serial_port_baudrate = get_uart_baudrate();
 	mcfg->serial_port_refclk = uart_platform_refclk();
+
+	/* 0 is default */
+	mcfg->ccx_down_core_mode = config->downcore_mode;
+	mcfg->ccx_disable_smt = config->disable_smt;
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 }

@@ -25,6 +25,7 @@ tests-y += compute_ip_checksum-test
 tests-y += memrange-test
 tests-y += uuid-test
 tests-y += bootmem-test
+tests-y += dimm_info_util-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -123,4 +124,8 @@ bootmem-test-srcs += tests/stubs/console.c
 bootmem-test-srcs += src/device/device_util.c
 bootmem-test-srcs += src/lib/bootmem.c
 bootmem-test-srcs += src/lib/memrange.c
+
+dimm_info_util-test-srcs += tests/lib/dimm_info_util-test.c
+dimm_info_util-test-srcs += src/lib/dimm_info_util.c
+dimm_info_util-test-srcs += tests/stubs/console.c
 

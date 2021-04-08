@@ -22,4 +22,18 @@ chip soc/amd/cezanne
 		.early_init = true,
 	}"
 
+	device ref i2c_2 on
+		chip drivers/i2c/generic
+			register "hid" = ""10EC5682""
+			register "name" = ""RT58""
+			register "desc" = ""Realtek RT5682""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_90)"
+			register "property_count" = "1"
+			register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[0].name" = ""realtek,jd-src""
+			register "property_list[0].integer" = "1"
+			device i2c 1a on end
+		end
+	end # I2C2
+
 end # chip soc/amd/cezanne

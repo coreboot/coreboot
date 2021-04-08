@@ -120,7 +120,7 @@ static const struct pad_config gpio_table[] = {
 	/* D0  : ISH_GP0 ==> PCH_FP_BOOT0 */
 	PAD_NC(GPP_D0, NONE),
 	/* D1  : ISH_GP1 ==> FP_RST_ODL */
-	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	PAD_CFG_GPO(GPP_D1, 1, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* D3  : ISH_GP3 ==> WCAM_RST_L */
@@ -373,6 +373,17 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
 	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
+	/*
+	 * D1  : ISH_GP1 ==> FP_RST_ODL
+	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
+	 * To ensure proper power sequencing for the FPMCU device, reset signal is driven low
+	 * early on in bootblock, followed by enabling of power. Reset signal is deasserted
+	 * later on in ramstage. Since reset signal is asserted in bootblock, it results in
+	 * FPMCU not working after a S3 resume. This is a known issue.
+	 */
+	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
 	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */

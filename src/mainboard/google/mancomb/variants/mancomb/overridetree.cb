@@ -1,4 +1,25 @@
 chip soc/amd/cezanne
 	device domain 0 on
 	end # domain
+
+	# I2C Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | memory SPD bus            |
+	#| I2C2              | Codec			 |
+	#| I2C3              | H1/D2 TPM                 |
+	#+-------------------+---------------------------+
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+
 end # chip soc/amd/cezanne

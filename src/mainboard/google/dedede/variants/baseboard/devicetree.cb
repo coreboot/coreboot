@@ -189,6 +189,9 @@ chip soc/intel/jasperlake
 	#       - PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	register "PchPmPwrCycDur" = "1"       # 1s
 
+	# Enable HECI
+	register "HeciEnabled" = "1"
+
 	device domain 0 on
 		device pci 00.0 on end # Host Bridge
 		device pci 02.0 on end # Integrated Graphics Device

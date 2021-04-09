@@ -98,7 +98,7 @@ config VGA_BIOS_DGPU_ID
 
 config VGA_BIOS_DGPU_FILE
 	string
-	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin"
+	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin"
 
 config EFS_SPI_READ_MODE
 	int

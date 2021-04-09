@@ -347,10 +347,6 @@ void gpio_fill_wake_state(struct gpio_wake_state *state)
 	const uint8_t stat1 = GPIO_WAKE_STAT_1 / sizeof(uint32_t);
 	const uint8_t control_switch = GPIO_MASTER_SWITCH / sizeof(uint32_t);
 
-	/* Register fields and gpio availability need to be confirmed on other chipsets. */
-	if (!CONFIG(SOC_AMD_PICASSO))
-		dead_code();
-
 	memset(state, 0, sizeof(*state));
 
 	state->control_switch = gpio_read32(control_switch);

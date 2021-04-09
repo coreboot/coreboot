@@ -1,4 +1,4 @@
-if BOARD_SYSTEM76_GALP3_B
+if BOARD_SYSTEM76_GALP3 || BOARD_SYSTEM76_GALP3_B
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -22,15 +22,18 @@ config MAINBOARD_DIR
 	default "system76/kbl-u"
 
 config VARIANT_DIR
+	default "galp3" if BOARD_SYSTEM76_GALP3
 	default "galp3-b" if BOARD_SYSTEM76_GALP3_B
 
 config MAINBOARD_PART_NUMBER
+	default "galp3" if BOARD_SYSTEM76_GALP3
 	default "galp3-b" if BOARD_SYSTEM76_GALP3_B
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default "Galago Pro"
 
 config MAINBOARD_VERSION
+	default "galp3" if BOARD_SYSTEM76_GALP3
 	default "galp3-b" if BOARD_SYSTEM76_GALP3_B
 
 config CBFS_SIZE
@@ -52,7 +55,7 @@ config DIMM_SPD_SIZE
 	default 512
 
 config VGA_BIOS_ID
-	default "8086,5917" if BOARD_SYSTEM76_GALP3_B
+	default "8086,5917" if BOARD_SYSTEM76_GALP3 || BOARD_SYSTEM76_GALP3_B
 
 config POST_DEVICE
 	default n

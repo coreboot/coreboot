@@ -118,7 +118,7 @@ cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *
 		current += ALIGN_UP(data_offset, CBFS_MCACHE_ALIGNMENT);
 	}
 
-	ERROR("CBFS mcache overflow!\n");
+	ERROR("CBFS mcache is not terminated!\n");	/* should never happen */
 	return CB_ERR;
 }
 
@@ -127,7 +127,7 @@ size_t cbfs_mcache_real_size(const void *mcache, size_t mcache_size)
 	const void *end = mcache + mcache_size;
 	const void *current = mcache;
 
-	while (current + sizeof(uint32_t) < end) {
+	while (current + sizeof(uint32_t) <= end) {
 		const union mcache_entry *entry = current;
 
 		if (entry->magic == MCACHE_MAGIC_FULL || entry->magic == MCACHE_MAGIC_END) {

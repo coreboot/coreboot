@@ -13,7 +13,17 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 };
 
+static const struct pad_config early_uart_gpio_table[] = {
+	/* UART0 RX */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
+	/* UART0 TX */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+};
+
 void variant_configure_early_gpio_pads(void)
 {
+	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
+		gpio_configure_pads(early_uart_gpio_table, ARRAY_SIZE(early_uart_gpio_table));
+
 	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
 }

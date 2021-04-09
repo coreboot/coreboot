@@ -121,10 +121,9 @@ bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size
 
 		/* Write to UPD */
 		uint8_t *writePointer = (uint8_t *)blob + write_offset + i;
-		if (size > 1 && (size % 2 == 0))
-			memcpy(writePointer, tmp, 2);
-		else
-			*writePointer = tmp[0];
+		writePointer[0] = tmp[0];
+		if (size - i > 1)
+			writePointer[1] = tmp[1];
 	}
 
 	/* Restore I2C_EN bit */

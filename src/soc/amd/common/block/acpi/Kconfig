@@ -4,3 +4,6 @@ config SOC_AMD_COMMON_BLOCK_ACPI
 	select ACPI_AMD_HARDWARE_SLEEP_VALUES
 	help
 	  Select this option to use the AcpiMmio ACPI registers.
+
+config SOC_AMD_COMMON_BLOCK_ACPI_GPIO
+	bool

@@ -1,0 +1,8 @@
+Vendor name: System76
+Board name: kbl-u
+Category: laptop
+Release year: 2018
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

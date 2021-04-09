@@ -1,0 +1,191 @@
+chip soc/intel/skylake
+	# Send an extra VR mailbox command for the PS4 exit issue
+	register "SendVrMbxCmd" = "2"
+
+	# Power limit
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 30,
+	}"
+
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+	# Serial I/O
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, // LPSS UART
+	}"
+
+	# Serial IRQ
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+	# Power
+	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
+	register "PmConfigSlpS4MinAssert" = "1"		# 1s
+	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
+	register "PmConfigSlpAMinAssert" = "3"		# 2s
+
+	# FSP Configuration
+	register "SkipExtGfxScan" = "1"
+	register "SaGv" = "SaGv_Enabled"
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-----------+-----------+-------------+----------+
+	#| Domain/Setting |     SA    |    IA     | GT Unsliced |    GT    |
+	#+----------------+-----------+-----------+-------------+----------+
+	#| Psi1Threshold  | 20A       | 20A       | 20A         | 20A      |
+	#| Psi2Threshold  | 4A        | 5A        | 5A          | 5A       |
+	#| Psi3Threshold  | 1A        | 1A        | 1A          | 1A       |
+	#| Psi3Enable     | 1         | 1         | 1           | 1        |
+	#| Psi4Enable     | 1         | 1         | 1           | 1        |
+	#| ImonSlope      | 0         | 0         | 0           | 0        |
+	#| ImonOffset     | 0         | 0         | 0           | 0        |
+	#| IccMax         | 5A        | 64A       | 31A         | 31A      |
+	#| VrVoltageLimit | 1.52V     | 1.52V     | 1.52V       | 1.52V    |
+	#+----------------+-----------+-----------+-------------+----------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(4),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 0,
+		.psi4enable = 0,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(5),
+		.voltage_limit = 1520,
+		.ac_loadline = 1030,
+		.dc_loadline = 1030,
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 0,
+		.psi4enable = 0,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(64),
+		.voltage_limit = 1520,
+		.ac_loadline = 240,
+		.dc_loadline = 240,
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 0,
+		.psi4enable = 0,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 0,
+		.psi4enable = 0,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device ref system_agent on end
+		device ref igpu on end
+		device ref sa_thermal on end
+		device ref south_xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"         # Type-A port right
+			register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"        # 3G / LTE
+			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"      # Type-C port right
+			register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)"        # Camera
+			register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)"        # Bluetooth
+			register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"        # Type-A port left
+			register "usb2_ports[7]" = "USB2_PORT_TYPE_C(OC_SKIP)"      # Type-C port right
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type-A port right
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # 4G
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type C port right
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type-A port left
+		end
+		device ref thermal on end
+		device ref sata on
+			register "SataSalpSupport" = "0"
+			register "SataPortsEnable[0]" = "1"
+			register "SataPortsEnable[2]" = "1"
+			register "SataSpeedLimit" = "2"
+		end
+		device ref pcie_rp1 on
+			# Root port #1 x4 (TBT)
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqNumber[0]" = "4"
+			register "PcieRpClkSrcNumber[0]" = "4"
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpHotPlug[0]" = "1"
+		end
+		device ref pcie_rp5 on
+			# Root port #5 x1 (LAN)
+			register "PcieRpEnable[4]" = "1"
+			register "PcieRpClkReqSupport[4]" = "1"
+			register "PcieRpClkReqNumber[4]" = "3"
+			register "PcieRpClkSrcNumber[4]" = "3"
+			register "PcieRpAdvancedErrorReporting[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "1"
+		end
+		device ref pcie_rp6 on
+			# Root port #6 x1 (WLAN)
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "1"
+			register "PcieRpClkReqNumber[5]" = "2"
+			register "PcieRpClkSrcNumber[5]" = "2"
+			register "PcieRpAdvancedErrorReporting[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "1"
+		end
+		device ref pcie_rp9 on
+			# Root port #9 x4 (NVMe)
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "5"
+			register "PcieRpClkSrcNumber[8]" = "5"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+		end
+		device ref lpc_espi on
+			register "gen1_dec" = "0x000c0681"
+			register "gen2_dec" = "0x000c1641"
+			register "gen3_dec" = "0x00040069"
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref p2sb off end
+		device ref pmc on
+			register "gpe0_dw0" = "GPP_C"
+			register "gpe0_dw1" = "GPP_D"
+			register "gpe0_dw2" = "GPP_E"
+		end
+		device ref hda on end
+		device ref smbus on end
+		device ref fast_spi on end
+	end
+end

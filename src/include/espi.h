@@ -230,8 +230,10 @@
 
 #if CONFIG(ESPI_DEBUG)
 void espi_show_slave_general_configuration(uint32_t config);
+void espi_show_slave_peripheral_channel_configuration(uint32_t config);
 #else
-static void espi_show_slave_general_configuration(uint32_t config) {}
+static inline void espi_show_slave_general_configuration(uint32_t config) {}
+static inline void espi_show_slave_peripheral_channel_configuration(uint32_t config) {}
 #endif
 
 static inline bool espi_slave_supports_quad_io(uint32_t gen_caps)

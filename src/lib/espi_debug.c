@@ -115,3 +115,89 @@ void espi_show_slave_general_configuration(uint32_t config)
 		printk(BIOS_DEBUG, "    Flash Access Channel supported\n");
 	printk(BIOS_DEBUG, "\n");
 }
+
+void espi_show_slave_peripheral_channel_configuration(uint32_t config)
+{
+	uint32_t request_size;
+	uint32_t payload_size;
+
+	printk(BIOS_DEBUG, "eSPI Slave Peripheral configuration:\n");
+
+	printk(BIOS_DEBUG, "    Peripheral Channel Maximum Read Request Size: ");
+	request_size = config & ESPI_SLAVE_PERIPH_MAX_READ_SIZE_MASK;
+	switch (request_size) {
+	case ESPI_SLAVE_PERIPH_MAX_READ_64B:
+		printk(BIOS_DEBUG, "64 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_128B:
+		printk(BIOS_DEBUG, "128 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_256B:
+		printk(BIOS_DEBUG, "256 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_512B:
+		printk(BIOS_DEBUG, "512 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_1024B:
+		printk(BIOS_DEBUG, "1024 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_2048B:
+		printk(BIOS_DEBUG, "2048 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_READ_4096B:
+		printk(BIOS_DEBUG, "4096 bytes\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown\n");
+	}
+
+	printk(BIOS_DEBUG, "    Peripheral Channel Maximum Payload Size Selected: ");
+	payload_size = config & ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SEL_MASK;
+	switch (payload_size) {
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SEL_64B:
+		printk(BIOS_DEBUG, "64 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SEL_128B:
+		printk(BIOS_DEBUG, "128 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SEL_256B:
+		printk(BIOS_DEBUG, "256 bytes\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown\n");
+	}
+
+	printk(BIOS_DEBUG, "    Peripheral Channel Maximum Payload Size Supported: ");
+	payload_size = config & ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SUPP_MASK;
+	switch (payload_size) {
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SUPP_64B:
+		printk(BIOS_DEBUG, "64 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SUPP_128B:
+		printk(BIOS_DEBUG, "128 bytes\n");
+		break;
+	case ESPI_SLAVE_PERIPH_MAX_PAYLOAD_SIZE_SUPP_256B:
+		printk(BIOS_DEBUG, "256 bytes\n");
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown\n");
+	}
+
+	printk(BIOS_DEBUG, "    Bus master: ");
+	if (config & ESPI_SLAVE_PERIPH_BUS_MASTER_ENABLE)
+		printk(BIOS_DEBUG, "enabled\n");
+	else
+		printk(BIOS_DEBUG, "disabled\n");
+
+	printk(BIOS_DEBUG, "    Peripheral Channel: ");
+	if (config & ESPI_SLAVE_CHANNEL_READY)
+		printk(BIOS_DEBUG, "ready\n");
+	else
+		printk(BIOS_DEBUG, "not ready\n");
+
+	printk(BIOS_DEBUG, "    Peripheral Channel: ");
+	if (config & ESPI_SLAVE_CHANNEL_ENABLE)
+		printk(BIOS_DEBUG, "enabled\n");
+	else
+		printk(BIOS_DEBUG, "disabled\n");
+}

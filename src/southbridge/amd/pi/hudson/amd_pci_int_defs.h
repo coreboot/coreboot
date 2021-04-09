@@ -55,14 +55,6 @@
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
 #endif
 
-#if CONFIG(SOUTHBRIDGE_AMD_PI_BOLTON)
-#define FCH_INT_TABLE_SIZE 0x54
-#define PIRQ_GPP0	0x50	/* GPP INT 0 */
-#define PIRQ_GPP1	0x51	/* GPP INT 1 */
-#define PIRQ_GPP2	0x52	/* GPP INT 2 */
-#define PIRQ_GPP3	0x53	/* GPP INT 3 */
-#endif
-
 #if CONFIG(SOUTHBRIDGE_AMD_PI_KERN)
 #define FCH_INT_TABLE_SIZE 0x76
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */

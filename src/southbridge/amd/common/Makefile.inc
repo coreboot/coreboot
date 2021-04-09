@@ -3,5 +3,4 @@ ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += amd_pci_util.c
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += amd_pci_util.c
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) += amd_pci_util.c
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON) += amd_pci_util.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON) += amd_pci_util.c
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_PI_KERN) += amd_pci_util.c

@@ -1,15 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-config SOUTHBRIDGE_AMD_PI_BOLTON
-	bool
-
 config SOUTHBRIDGE_AMD_PI_AVALON
 	bool
 
 config SOUTHBRIDGE_AMD_PI_KERN
 	bool
 
-if SOUTHBRIDGE_AMD_PI_AVALON || SOUTHBRIDGE_AMD_PI_BOLTON || SOUTHBRIDGE_AMD_PI_KERN
+if SOUTHBRIDGE_AMD_PI_AVALON || SOUTHBRIDGE_AMD_PI_KERN
 
 config SOUTHBRIDGE_SPECIFIC_OPTIONS
 	def_bool y
@@ -71,14 +68,12 @@ config AMDFW_CONFIG_FILE
 config HUDSON_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
 	default "3rdparty/blobs/southbridge/amd/avalon/xhci.bin" if SOUTHBRIDGE_AMD_PI_AVALON
-	default "3rdparty/blobs/southbridge/amd/bolton/xhci.bin" if SOUTHBRIDGE_AMD_PI_BOLTON
 	default "3rdparty/blobs/southbridge/amd/kern/xhci.bin" if SOUTHBRIDGE_AMD_PI_KERN
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
 	string "IMC firmware path and filename"
 	default "3rdparty/blobs/southbridge/amd/avalon/imc.bin" if SOUTHBRIDGE_AMD_PI_AVALON
-	default "3rdparty/blobs/southbridge/amd/bolton/imc.bin" if SOUTHBRIDGE_AMD_PI_BOLTON
 	default "3rdparty/blobs/southbridge/amd/kern/imc.bin" if SOUTHBRIDGE_AMD_PI_KERN
 	depends on HUDSON_IMC_FWM
 

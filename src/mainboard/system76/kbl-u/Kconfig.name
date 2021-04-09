@@ -1,3 +1,6 @@
+config BOARD_SYSTEM76_GALP2
+	bool "galp2"
+
 config BOARD_SYSTEM76_GALP3
 	bool "galp3"
 

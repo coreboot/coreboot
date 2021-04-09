@@ -1,0 +1,5 @@
+chip soc/intel/skylake
+	device domain 0 on
+		subsystemid 0x1558 0x1303 inherit
+	end
+end

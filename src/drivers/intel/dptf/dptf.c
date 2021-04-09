@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include "chip.h"
+#include "dptf.h"
 
 /* Generic DPTF participants have a PTYP field to distinguish them */
 enum dptf_generic_participant_type {
@@ -13,14 +14,6 @@ enum dptf_generic_participant_type {
 };
 
 #define DEFAULT_CHARGER_STR		"Battery Charger"
-
-#define DPTF_DEVICE_HID_EISAID	"INT3400"
-#define GENERIC_HID_EISAID	"INT3403"
-#define FAN_HID_EISAID		"INT3404"
-
-#define DPTF_DEVICE_HID		"INTC1040"
-#define GENERIC_HID		"INTC1043"
-#define FAN_HID			"INTC1044"
 
 /*
  * Helper method to determine if a device is "used" (called out anywhere as a source or a target
@@ -67,20 +60,26 @@ static int get_STA_value(const struct drivers_intel_dptf_config *config,
 		ACPI_STATUS_DEVICE_ALL_OFF;
 }
 
+static void dptf_write_hid(bool is_eisa, const char *hid)
+{
+	if (is_eisa)
+		acpigen_emit_eisaid(hid);
+	else
+		acpigen_write_string(hid);
+}
+
 /* Devices with GENERIC _HID (distinguished by PTYP) */
 static void dptf_write_generic_participant(const char *name,
 					   enum dptf_generic_participant_type ptype,
-					   const char *str, int sta_val)
+					   const char *str, int sta_val,
+					   const struct dptf_platform_info *platform_info)
 {
 	/* Auto-incrementing UID for generic participants */
 	static int generic_uid = 0;
 
 	acpigen_write_device(name);
 	acpigen_write_name("_HID");
-	if (CONFIG(DPTF_USE_EISA_HID))
-		acpigen_emit_eisaid(GENERIC_HID_EISAID);
-	else
-		acpigen_write_string(GENERIC_HID);
+	dptf_write_hid(platform_info->use_eisa_hids, platform_info->generic_hid);
 
 	acpigen_write_name_integer("_UID", generic_uid++);
 	acpigen_write_STA(sta_val);
@@ -107,49 +106,46 @@ static void write_tcpu(const struct device *pci_dev,
 }
 
 /* \_SB.DPTF.TFN1 */
-static void write_fan(const struct drivers_intel_dptf_config *config)
+static void write_fan(const struct drivers_intel_dptf_config *config,
+		      const struct dptf_platform_info *platform_info)
 {
 	acpigen_write_device("TFN1");
 	acpigen_write_name("_HID");
-	if (CONFIG(DPTF_USE_EISA_HID))
-		acpigen_emit_eisaid(FAN_HID_EISAID);
-	else
-		acpigen_write_string(FAN_HID);
-
+	dptf_write_hid(platform_info->use_eisa_hids, platform_info->fan_hid);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_STA(get_STA_value(config, DPTF_FAN));
 	acpigen_pop_len(); /* Device */
 }
 
 /* \_SB.DPTF.xxxx */
-static void write_generic_devices(const struct drivers_intel_dptf_config *config)
+static void write_generic_devices(const struct drivers_intel_dptf_config *config,
+				  const struct dptf_platform_info *platform_info)
 {
 	enum dptf_participant participant;
 	char name[ACPI_NAME_BUFFER_SIZE];
 	int i;
 
 	dptf_write_generic_participant("TCHG", DPTF_GENERIC_PARTICIPANT_TYPE_CHARGER,
-				       DEFAULT_CHARGER_STR, get_STA_value(config,
-									  DPTF_CHARGER));
+				       DEFAULT_CHARGER_STR,
+				       get_STA_value(config, DPTF_CHARGER),
+				       platform_info);
 
 	for (i = 0, participant = DPTF_TEMP_SENSOR_0; i < 4; ++i, ++participant) {
 		snprintf(name, sizeof(name), "TSR%1d", i);
 		dptf_write_generic_participant(name, DPTF_GENERIC_PARTICIPANT_TYPE_TSR,
-					       NULL, get_STA_value(config, participant));
+					       NULL, get_STA_value(config, participant),
+					       platform_info);
 	}
 }
 
 /* \_SB.DPTF - note: leaves the Scope open for child devices*/
-static void write_open_dptf_device(const struct device *dev)
+static void write_open_dptf_device(const struct device *dev,
+				   const struct dptf_platform_info *platform_info)
 {
 	acpigen_write_scope("\\_SB");
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_name("_HID");
-	if (CONFIG(DPTF_USE_EISA_HID))
-		acpigen_emit_eisaid(DPTF_DEVICE_HID_EISAID);
-	else
-		acpigen_write_string(DPTF_DEVICE_HID);
-
+	dptf_write_hid(platform_info->use_eisa_hids, platform_info->dptf_device_hid);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 }
@@ -157,6 +153,7 @@ static void write_open_dptf_device(const struct device *dev)
 /* Add minimal definitions of DPTF devices into the SSDT */
 static void write_device_definitions(const struct device *dev)
 {
+	const struct dptf_platform_info *platform_info = get_dptf_platform_info();
 	const struct drivers_intel_dptf_config *config;
 	struct device *parent;
 
@@ -170,9 +167,9 @@ static void write_device_definitions(const struct device *dev)
 
 	config = config_of(dev);
 	write_tcpu(parent, config);
-	write_open_dptf_device(dev);
-	write_fan(config);
-	write_generic_devices(config);
+	write_open_dptf_device(dev, platform_info);
+	write_fan(config, platform_info);
+	write_generic_devices(config, platform_info);
 
 	acpigen_pop_len(); /* DPTF Device (write_open_dptf_device) */
 	acpigen_pop_len(); /* Scope */

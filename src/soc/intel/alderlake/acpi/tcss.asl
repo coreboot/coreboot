@@ -555,6 +555,9 @@ Scope (\_SB.PCI0)
 			Printf("TDM0 does not exist.")
 		} Else {
 			If (\_SB.PCI0.TDM0.STAT == 1) {
+				If (\_SB.PCI0.TDM0.INFR != 1) {
+					Return
+				}
 				/* DMA0 is not in D3Cold now. */
 				\_SB.PCI0.TDM0.D3CE()  /* Enable DMA RTD3 */
 
@@ -610,6 +613,9 @@ Scope (\_SB.PCI0)
 			 Printf("TDM1 does not exist.")
 		} Else {
 			If (\_SB.PCI0.TDM1.STAT == 1) {
+				If (\_SB.PCI0.TDM1.INFR != 1) {
+					Return
+				}
 				/* DMA1 is not in D3Cold now */
 				\_SB.PCI0.TDM1.D3CE()  /* Enable DMA RTD3. */
 

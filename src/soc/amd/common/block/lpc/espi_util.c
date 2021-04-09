@@ -814,6 +814,8 @@ static int espi_setup_periph_channel(const struct espi_config *mb_cfg, uint32_t 
 		slave_config &= ~slave_en_mask;
 	}
 
+	espi_show_slave_peripheral_channel_configuration(slave_config);
+
 	return espi_set_channel_configuration(slave_config, ESPI_SLAVE_PERIPH_CFG,
 					      ESPI_PERIPH_CH_EN);
 }

@@ -28,7 +28,6 @@ chip soc/intel/skylake
 	register "gen1_dec" = "0x007c0a01" # EC 0xa00-0xa7f
 	register "gen2_dec" = "0x000c03e1" # COM3 port 0x3e0 - 0x3ef
 	register "gen3_dec" = "0x00fc02e1" # COM2/4/5/6 ports 0x2e0 - 0x2ff
-	register "gen4_dec" = "0x000c0081" # 0x80 - 0x8f
 
 	# Disable DPTF
 	register "dptf_enable" = "0"

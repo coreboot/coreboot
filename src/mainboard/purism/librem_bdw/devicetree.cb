@@ -29,7 +29,6 @@ chip soc/intel/broadwell
 		chip soc/intel/broadwell/pch
 			# EC host command ranges are in 0x380-0x383 & 0x80-0x8f
 			register "gen1_dec" = "0x00000381"
-			register "gen2_dec" = "0x000c0081"
 
 			device pci 13.0 off end # Smart Sound Audio DSP
 			device pci 14.0 on  end # USB3 XHCI

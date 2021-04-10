@@ -41,7 +41,6 @@ chip soc/intel/alderlake
 	register "gen2_dec" = "0x000c0201"
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
-	register "gen4_dec" = "0x000c0081"
 
 	# This disabled autonomous GPIO power management, otherwise
 	# old cr50 FW only supports short pulses; need to clarify

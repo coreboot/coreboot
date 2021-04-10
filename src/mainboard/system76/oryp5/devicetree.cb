@@ -182,10 +182,9 @@ chip soc/intel/cannonlake
 		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 on # LPC Interface
-			register "gen1_dec" = "0x000c0081"
-			register "gen2_dec" = "0x00040069"
-			register "gen3_dec" = "0x00fc0e01"
-			register "gen4_dec" = "0x00fc0f01"
+			register "gen1_dec" = "0x00040069"
+			register "gen2_dec" = "0x00fc0e01"
+			register "gen3_dec" = "0x00fc0f01"
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

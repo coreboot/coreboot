@@ -45,4 +45,21 @@ config DISPLAY_FSP_VERSION_INFO_2
 	  Select this option to display Firmware version information
 	  using new header 'FirmwareVersionInfo.h'.
 
+config HAVE_GPIO_SNAPSHOT_VERIFY_SUPPORT
+	bool
+	default n
+	help
+	  Select this option if platform provides support for GPIO
+	  config snapshot and verify callbacks: `gpio_snapshot()`
+	  and `gpio_verify_snapshot()`
+
+config CHECK_GPIO_CONFIG_CHANGES
+	bool "Check GPIO config changes across calls to FSP-S"
+	depends on HAVE_GPIO_SNAPSHOT_VERIFY_SUPPORT
+	help
+	  Select this option to identify if any GPIOs are re-configured
+	  by FSP-S differently than the mainboard configuration. This
+	  requires platform support to snapshot and verify that config
+	  matches snapshot.
+
 endif # PLATFORM_USES_FSP2_0

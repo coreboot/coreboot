@@ -57,4 +57,9 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob);
  */
 asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes);
 
+/* Callback to snapshot all GPIO configurations. */
+void gpio_snapshot(void);
+/* Callback to verify that current GPIO configuration matches the saved snapshot */
+size_t gpio_verify_snapshot(void);
+
 #endif /* _FSP2_0_DEBUG_H_ */

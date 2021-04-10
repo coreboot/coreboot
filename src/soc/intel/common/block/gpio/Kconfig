@@ -1,6 +1,7 @@
 config SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	select HAVE_DEBUG_GPIO
+	select HAVE_GPIO_SNAPSHOT_VERIFY_SUPPORT
 	help
 	  Intel Processor common GPIO support
 

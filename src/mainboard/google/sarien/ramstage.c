@@ -39,7 +39,7 @@ static void mainboard_init(void *chip_info)
 	size_t num_gpios;
 
 	gpio_table = variant_gpio_table(&num_gpios);
-	cnl_configure_pads(gpio_table, num_gpios);
+	gpio_configure_pads(gpio_table, num_gpios);
 
 	/* Disable unused pads for devices with board ID > 2 */
 	if (board_id() > 2)

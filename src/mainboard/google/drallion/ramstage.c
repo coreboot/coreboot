@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <smbios.h>
-#include <soc/gpio.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -30,7 +29,7 @@ static void mainboard_init(void *chip_info)
 	size_t num_gpios;
 
 	gpio_table = variant_gpio_table(&num_gpios);
-	cnl_configure_pads(gpio_table, num_gpios);
+	gpio_configure_pads(gpio_table, num_gpios);
 }
 
 static void mainboard_enable(struct device *dev)

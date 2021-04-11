@@ -35,7 +35,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_VERSION
 	string
-	default "2.1A" if BOARD_CLEVO_L140CU
+	default "2.1A" if BOARD_CLEVO_L140CU_BASE
 
 config DEVICETREE
 	string
@@ -43,7 +43,7 @@ config DEVICETREE
 
 config CBFS_SIZE
 	hex
-	default 0xc00000 if BOARD_CLEVO_L140CU
+	default 0xc00000 if BOARD_CLEVO_L140CU_BASE
 
 config CONSOLE_POST
 	bool
@@ -55,11 +55,11 @@ config UART_FOR_CONSOLE
 
 config MAX_CPUS
 	int
-	default 8 if BOARD_CLEVO_L140CU
+	default 8 if BOARD_CLEVO_L140CU_BASE
 
 config DIMM_MAX
 	int
-	default 2 if BOARD_CLEVO_L140CU
+	default 2 if BOARD_CLEVO_L140CU_BASE
 
 config DIMM_SPD_SIZE
 	int
@@ -71,7 +71,7 @@ config VGA_BIOS_ID
 
 config TPM_PIRQ
 	hex
-	default 0x10 if BOARD_CLEVO_L140CU # GPP_A7/PIRQA#
+	default 0x10 if BOARD_CLEVO_L140CU_BASE # GPP_A7/PIRQA#
 
 config POST_DEVICE
 	bool
@@ -79,7 +79,7 @@ config POST_DEVICE
 
 config VARIANT_DIR
 	string
-	default "l140cu" if BOARD_CLEVO_L140CU
+	default "l140cu" if BOARD_CLEVO_L140CU_BASE
 
 config SEABIOS_PS2_TIMEOUT
 	int

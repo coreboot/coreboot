@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8192_CLKBUF_H
-#define SOC_MEDIATEK_MT8192_CLKBUF_H
+#ifndef SOC_MEDIATEK_COMMON_CLKBUF_H
+#define SOC_MEDIATEK_COMMON_CLKBUF_H
 
 #include <device/mmio.h>
 
@@ -66,4 +66,4 @@ DEFINE_BITFIELD(PMIC_RG_XO_VOTE, 10, 0)
 
 int clk_buf_init(void);
 
-#endif /* SOC_MEDIATEK_MT8192_CLKBUF_H */
+#endif /* SOC_MEDIATEK_COMMON_CLKBUF_H */

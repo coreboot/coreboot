@@ -20,6 +20,7 @@ verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c
 
 romstage-y += ../common/cbmem.c
+romstage-y += ../common/clkbuf.c
 romstage-y += emi.c
 romstage-y += ../common/flash_controller.c
 romstage-y += ../common/gpio.c gpio.c

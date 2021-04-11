@@ -5,8 +5,9 @@
 #include <device/mmio.h>
 #include <soc/clkbuf.h>
 #include <soc/pmif.h>
+#if CONFIG(SRCLKEN_RC_SUPPORT)
 #include <soc/srclken_rc.h>
-
+#endif
 
 #define BUFTAG			"[CLKBUF]"
 #define buf_info(fmt, arg ...)	printk(BIOS_INFO, BUFTAG "%s,%d: " fmt, \

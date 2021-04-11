@@ -23,7 +23,7 @@ verstage-y += ../common/uart.c
 
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
-romstage-y += clkbuf.c srclken_rc.c
+romstage-y += ../common/clkbuf.c srclken_rc.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
 romstage-y += ../common/flash_controller.c

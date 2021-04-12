@@ -320,6 +320,35 @@ is criticising your code, but the whole idea is to get better code into our
 codebase. Again, this also applies in the other direction: review code,
 criticize code, but don’t make it personal.
 
+Gerrit user roles
+-----------------
+There are a few relevant roles a user can have on Gerrit:
+
+- The anonymous user can check out source code.
+- A registered user can also comment and give "+1" and "-1" code reviews.
+- A reviewer can also give "+2" code reviews.
+- A core developer can also give "-2" (that is, blocking) code reviews
+  and submit changes.
+
+Anybody can register an account on our instance, using either an
+OpenID provider or OAuth through GitHub or Google.
+
+The reviewer group is still quite open: Any core developer can add
+registered users to that group and should do so once some activity
+(commits, code reviews, and so on) has demonstrated rough knowledge
+of how we handle things.
+
+A core developer should be sufficiently well established in the
+community so that they feel comfortable when submitting good patches,
+when asking for improvements to less good patches and reasonably
+uncomfortable when -2'ing patches. They're typically the go-to
+person for _some_ part of the coreboot tree and ideally listed as its
+maintainer in our MAINTAINERS registry. To become part of this group,
+a candidate developer who already demonstrated proficiency with the
+code base as a reviewer should be nominated, by themselves or others,
+at the regular [coreboot leadership meetings](../community/forums.md)
+where a decision is made.
+
 
 Requests for clarification and suggestions for updates to these guidelines
 should be sent to the coreboot mailing list at <coreboot@coreboot.org>.

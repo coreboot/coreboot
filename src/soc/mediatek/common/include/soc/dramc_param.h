@@ -4,8 +4,8 @@
 #define __SOC_MEDIATEK_DRAMC_PARAM_H__
 
 /*
- * This file is shared between coreboot and dram blob. Any change in this file
- * should be synced to the other repository.
+ * NOTE: This file is shared between coreboot and dram blob. Any change in this
+ * file should be synced to the other repository.
  */
 
 #include <stdint.h>
@@ -27,21 +27,21 @@ enum DRAMC_PARAM_STATUS_CODES {
 	DRAMC_ERR_FAST_CALIBRATION,
 };
 
-enum DRAMC_PARAM_DVFS_FLAG {
-	DRAMC_DISABLE_DVFS,
-	DRAMC_ENABLE_DVFS,
-};
-
 enum DRAMC_PARAM_FLAGS {
 	DRAMC_FLAG_HAS_SAVED_DATA = 0x0001,
 };
 
-enum DRAMC_PARAM_DDR_TYPE {
+enum SDRAM_DVFS_FLAG {
+	DRAMC_DISABLE_DVFS,
+	DRAMC_ENABLE_DVFS,
+};
+
+enum SDRAM_DDR_TYPE {
 	DDR_TYPE_DISCRETE,
 	DDR_TYPE_EMCP,
 };
 
-enum DRAMC_PARAM_GEOMETRY_TYPE {
+enum SDRAM_DDR_GEOMETRY_TYPE {
 	DDR_TYPE_2CH_2RK_4GB_2_2,
 	DDR_TYPE_2CH_2RK_6GB_3_3,
 	DDR_TYPE_2CH_2RK_8GB_4_4_BYTE,
@@ -50,10 +50,10 @@ enum DRAMC_PARAM_GEOMETRY_TYPE {
 	DDR_TYPE_2CH_2RK_8GB_4_4,
 };
 
-enum DRAM_PARAM_VOLTAGE_TYPE {
-	DRAM_VOLTAGE_NVCORE_NVDRAM,
-	DRAM_VOLTAGE_HVCORE_HVDRAM,
-	DRAM_VOLTAGE_LVCORE_LVDRAM,
+enum SDRAM_VOLTAGE_TYPE {
+	SDRAM_VOLTAGE_NVCORE_NVDRAM,
+	SDRAM_VOLTAGE_HVCORE_HVDRAM,
+	SDRAM_VOLTAGE_LVCORE_LVDRAM,
 };
 
 struct dramc_param_header {
@@ -61,6 +61,11 @@ struct dramc_param_header {
 	u16 size;	/* size of whole dramc_param, update in the coreboot */
 	u16 status;	/* DRAMC_PARAM_STATUS_CODES, update in the dram blob */
 	u16 flags;	/* DRAMC_PARAM_FLAGS, update in the dram blob */
+};
+
+struct sdram_info {
+	u32 ddr_type;			/* SDRAM_DDR_TYPE */
+	u32 ddr_geometry;		/* SDRAM_DDR_GEOMETRY_TYPE */
 };
 
 struct sdram_params {
@@ -118,10 +123,9 @@ struct emi_mdl {
 };
 
 struct ddr_base_info {
-	u32 config_dvfs;		/* DRAMC_PARAM_DVFS_FLAG */
-	u32 ddr_type;			/* DRAMC_PARAM_DDR_TYPE */
-	u32 ddr_geometry;		/* DRAMC_PARAM_GEOMETRY_TYPE */
-	u32 voltage_type;		/* DRAM_PARAM_VOLTAGE_TYPE */
+	u32 config_dvfs;		/* SDRAM_DVFS_FLAG */
+	struct sdram_info sdram;
+	u32 voltage_type;		/* SDRAM_VOLTAGE_TYPE */
 	u32 support_ranks;
 	u64 rank_size[RANK_MAX];
 	struct emi_mdl emi_config;
@@ -137,11 +141,6 @@ struct dramc_param {
 	struct dramc_param_header header;
 	void (*do_putc)(unsigned char c);
 	struct dramc_data dramc_datas;
-};
-
-struct sdram_info {
-	u32 ddr_geometry;		/* DRAMC_PARAM_GEOMETRY_TYPE */
-	u32 ddr_type;			/* DRAMC_PARAM_DDR_TYPE */
 };
 
 const struct sdram_info *get_sdram_config(void);

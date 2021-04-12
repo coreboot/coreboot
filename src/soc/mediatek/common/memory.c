@@ -156,12 +156,12 @@ static void mem_init_set_default_config(struct dramc_param *dparam,
 	type = dram_info->ddr_type;
 	geometry = dram_info->ddr_geometry;
 
-	dparam->dramc_datas.ddr_info.ddr_type = type;
+	dparam->dramc_datas.ddr_info.sdram.ddr_type = type;
 
 	if (CONFIG(MEDIATEK_DRAM_DVFS))
 		dparam->dramc_datas.ddr_info.config_dvfs = DRAMC_ENABLE_DVFS;
 
-	dparam->dramc_datas.ddr_info.ddr_geometry = geometry;
+	dparam->dramc_datas.ddr_info.sdram.ddr_geometry = geometry;
 
 	printk(BIOS_INFO, "DRAM-K: ddr_type: %s, config_dvfs: %d, ddr_geometry: %s\n",
 	       get_dram_type_str(type),

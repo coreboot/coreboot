@@ -1,0 +1,5 @@
+comment "Cherry"
+
+config BOARD_GOOGLE_CHERRY
+	bool "->  Cherry"
+	select BOARD_GOOGLE_CHERRY_COMMON

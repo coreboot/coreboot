@@ -162,13 +162,15 @@ static void test_bootmem_write_mem_table(void **state)
 	memset(sentinel_value_buffer, 0x77, required_unused_space_size);
 
 	lb_mem = malloc(lb_mem_max_size);
+	lb_mem->tag = LB_TAG_MEMORY;
+	lb_mem->size = sizeof(*lb_mem);
 	/* Fill rest of buffer with sentinel value */
 	memset(((u8 *)lb_mem) + expected_allocation_size, 0x77, required_unused_space_size);
 
 	bootmem_write_memory_table(lb_mem);
 
 	/* There should be only `os_ranges_mock` entries visible in coreboot table */
-	assert_int_equal(lb_mem->size,
+	assert_int_equal(lb_mem->size, sizeof(*lb_mem) +
 			ARRAY_SIZE(os_ranges_mock) * sizeof(struct lb_memory_range));
 	assert_memory_equal(sentinel_value_buffer,
 			((u8 *)lb_mem) + expected_allocation_size,
@@ -230,9 +232,12 @@ static void init_memory_table_library(void)
 
 	/* Allocate space for 10 lb_mem entries to be safe */
 	lb_mem = malloc(sizeof(*lb_mem) + 10 * sizeof(struct lb_memory_range));
+	lb_mem->tag = LB_TAG_MEMORY;
+	lb_mem->size = sizeof(*lb_mem);
 
 	/* We need to call this only to initialize library */
 	bootmem_write_memory_table(lb_mem);
+
 	free(lb_mem);
 }
 

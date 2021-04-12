@@ -240,11 +240,10 @@ static enum ec_flash_region vboot_to_ec_region(enum vb2_firmware_selection selec
 }
 
 /*
- * Read the EC's burst size bytes at a time from CBFS, and then send
- * the chunk to the EC for it to write into its flash.
+ * Send an image to the EC in burst-sized chunks.
  */
-static vb2_error_t ec_flash_write(struct region_device *image_region,
-				  uint32_t region_offset, int image_size)
+static vb2_error_t ec_flash_write(void *image, uint32_t region_offset,
+				  int image_size)
 {
 	struct ec_response_get_protocol_info resp_proto;
 	struct ec_response_flash_info resp_flash;
@@ -295,23 +294,16 @@ static vb2_error_t ec_flash_write(struct region_device *image_region,
 
 	/* Fill up the buffer */
 	end = region_offset + image_size;
+	file_buf = image;
 	for (off = region_offset; off < end; off += burst) {
 		uint32_t todo = MIN(end - off, burst);
 		uint32_t xfer_size = todo + sizeof(*params);
-
-		/* Map 'todo' bytes into memory */
-		file_buf = rdev_mmap(image_region, off - region_offset, todo);
-		if (file_buf == NULL)
-			return VB2_ERROR_UNKNOWN;
 
 		params->offset = off;
 		params->size = todo;
 
 		/* Read todo bytes into the buffer */
 		memcpy(params + 1, file_buf, todo);
-
-		if (rdev_munmap(image_region, file_buf))
-			return VB2_ERROR_UNKNOWN;
 
 		/* Make sure to add back in the size of the parameters */
 		if (google_chromeec_flash_write_block(
@@ -320,6 +312,8 @@ static vb2_error_t ec_flash_write(struct region_device *image_region,
 				"relative offset %u!\n", off - region_offset);
 			return VB2_ERROR_UNKNOWN;
 		}
+
+		file_buf += todo;
 	}
 
 	return VB2_SUCCESS;
@@ -333,10 +327,8 @@ static vb2_error_t ec_update_image(enum vb2_firmware_selection select)
 	uint32_t region_offset, region_size;
 	enum ec_flash_region region;
 	vb2_error_t rv;
+	void *image;
 	size_t image_size;
-	struct cbfsf fh;
-	const char *filename;
-	struct region_device image_region;
 
 	/* Un-protect the flash region */
 	rv = ec_protect_flash(select, 0);
@@ -351,32 +343,34 @@ static vb2_error_t ec_update_image(enum vb2_firmware_selection select)
 					      &region_size))
 		return VB2_ERROR_UNKNOWN;
 
-	/* Locate the CBFS file */
-	filename = EC_IMAGE_FILENAME(select);
-	if (cbfs_boot_locate(&fh, filename, NULL))
+	/* Map the CBFS file */
+	image = cbfs_map(EC_IMAGE_FILENAME(select), &image_size);
+	if (!image)
 		return VB2_ERROR_UNKNOWN;
 
-	/* Get the file size and the region struct */
-	image_size = region_device_sz(&fh.data);
-	cbfs_file_data(&image_region, &fh);
+	rv = VB2_ERROR_UNKNOWN;
 
 	/* Bail if the image is too large */
 	if (image_size > region_size)
-		return VB2_ERROR_INVALID_PARAMETER;
+		goto unmap;
 
 	/* Erase the region */
 	if (google_chromeec_flash_erase(region_offset, region_size))
-		return VB2_ERROR_UNKNOWN;
+		goto unmap;
 
 	/* Write the image into the region */
-	if (ec_flash_write(&image_region, region_offset, image_size))
-		return VB2_ERROR_UNKNOWN;
+	if (ec_flash_write(image, region_offset, image_size))
+		goto unmap;
 
 	/* Verify the image */
 	if (google_chromeec_efs_verify(region))
-		return VB2_ERROR_UNKNOWN;
+		goto unmap;
 
-	return VB2_SUCCESS;
+	rv = VB2_SUCCESS;
+
+unmap:
+	cbfs_unmap(image);
+	return rv;
 }
 
 static vb2_error_t ec_get_expected_hash(enum vb2_firmware_selection select,

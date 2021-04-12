@@ -17,4 +17,7 @@ enum {
  */
 void pm_set_power_failure_state(void);
 
+/* stash ACPI PM/GPE and GPIO wake state before FSP-M call */
+void fill_chipset_state(void);
+
 #endif /* SOC_AMD_COMMON_BLOCK_PMLIB_H */

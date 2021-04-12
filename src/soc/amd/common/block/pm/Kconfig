@@ -10,4 +10,10 @@ if SOC_AMD_COMMON_BLOCK_PM
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default y
 
+config SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE
+	bool
+	help
+	  Add common functionality to write CBMEM_ID_POWER_STATE for AMD
+	  platforms that use FSP for hardware initialization.
+
 endif # SOC_AMD_COMMON_BLOCK_PM

@@ -335,7 +335,6 @@ chip soc/intel/alderlake
 		device ref tbt_pcie_rp3 on end
 		device ref crashlog off end
 		device ref tcss_xhci on end
-		device ref tcss_xdci on end
 		device ref tcss_dma0 on end
 		device ref tcss_dma1 on end
 		device ref xhci on

@@ -77,11 +77,14 @@ func get_maintainers() ([]string, error) {
 }
 
 func path_to_regexstr(path string) string {
-	// if prefix, allow all subdirectories
-	if path[len(path)-1] == '/' {
-		path += "*"
+	regexstr := glob_to_regex(path)
+
+	/* Handle path with trailing '/' as prefix */
+	if regexstr[len(regexstr)-2:] == "/$" {
+		regexstr = regexstr[:len(regexstr)-1] + ".*$"
 	}
-	return glob_to_regex(path)
+
+	return regexstr;
 }
 
 func path_to_regex(path string) *regexp.Regexp {
@@ -200,7 +203,7 @@ func glob_to_regex(glob string) string {
 			}
 		case '*':
 			if inClass == 0 {
-				regex += ".*"
+				regex += "[^/]*"
 			} else {
 				regex += "*"
 			}

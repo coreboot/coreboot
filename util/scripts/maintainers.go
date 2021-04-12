@@ -77,6 +77,14 @@ func get_maintainers() ([]string, error) {
 }
 
 func path_to_regexstr(path string) string {
+	/* Add missing trailing slash if path is a directory */
+	if path[len(path)-1] != '/' {
+		fileInfo, err := os.Stat(path)
+		if err == nil && fileInfo.IsDir() {
+			path += "/"
+		}
+	}
+
 	regexstr := glob_to_regex(path)
 
 	/* Handle path with trailing '/' as prefix */

@@ -113,8 +113,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
 	}
 
-	if (svc_update_psp_bios_dir((void *)&psp_dir_addr,
-			(void *)&bios_dir_addr, DIR_OFFSET_SET)) {
+	if (update_psp_bios_dir((void *)&psp_dir_addr, (void *)&bios_dir_addr)) {
 		printk(BIOS_ERR, "Error: Updated BIOS Directory could not be set.\n");
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
@@ -179,8 +178,7 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 
 	memcpy(_transfer_buffer, &buffer_info, sizeof(buffer_info));
 
-	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_transfer_buffer,
-				    buffer_size);
+	retval = save_uapp_data((void *)_transfer_buffer, buffer_size);
 	if (retval) {
 		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n", retval);
 		return POSTCODE_WORKBUF_SAVE_ERROR;

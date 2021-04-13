@@ -3,5 +3,7 @@
 verstage-generic-ccopts += -I$(src)/soc/amd/picasso/psp_verstage/include
 verstage-generic-ccopts += -I$(src)/vendorcode/amd/fsp/picasso/include
 
+verstage-y += svc.c
+
 verstage-y += $(top)/src/vendorcode/amd/fsp/picasso/bl_uapp/bl_uapp_startup.S
 verstage-y += $(top)/src/vendorcode/amd/fsp/picasso/bl_uapp/bl_uapp_end.S

@@ -16,7 +16,6 @@ verstage-y += printk.c
 verstage-y += psp_verstage.c
 verstage-y += psp.c
 verstage-y += reset.c
-verstage-y += svc.c
 verstage-y += timer.c
 verstage-y += vboot_crypto.c
 

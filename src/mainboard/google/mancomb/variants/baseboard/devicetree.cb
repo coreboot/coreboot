@@ -130,4 +130,7 @@ chip soc/amd/cezanne
 			end
 		end
 	end # domain
+
+	device ref uart_0 on end # UART0
+
 end	# chip soc/amd/cezanne

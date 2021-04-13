@@ -75,4 +75,6 @@ chip soc/amd/cezanne
 		end
 	end
 
+	device ref uart_0 on end # UART0
+
 end

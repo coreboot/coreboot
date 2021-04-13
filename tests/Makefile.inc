@@ -179,3 +179,18 @@ $(addprefix clean-,$(alltests)): clean-%:
 
 clean-unit-tests:
 	rm -rf $(testobj)
+
+list-unit-tests:
+	@echo "unit-tests:"
+	for t in $(sort $(alltests)); do \
+		echo "  $$t"; \
+	done
+
+help-unit-tests help::
+	@echo  '*** coreboot unit-tests targets ***'
+	@echo  '  unit-tests        - Run all unit-tests from tests/'
+	@echo  '  clean-unit-tests  - Remove unit-tests build artifacts'
+	@echo  '  list-unit-tests   - List all unit-tests'
+	@echo  '  <unit-test>       - Build and run single unit-test'
+	@echo  '  clean-<unit-test> - Remove single unit-test build artifacts'
+	@echo

@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <cbfs.h>
-#include <commonlib/cbfs.h>
 #include <commonlib/region.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
@@ -476,26 +475,6 @@ static const char *cse_get_source_rdev_fmap(void)
 	return CONFIG_SOC_INTEL_CSE_RW_B_FMAP_NAME;
 }
 
-static bool cse_get_source_rdev(struct region_device *rdev)
-{
-	const char *reg_name;
-	uint32_t cbfs_type = CBFS_TYPE_RAW;
-	struct cbfsf fh;
-
-	reg_name = cse_get_source_rdev_fmap();
-
-	if (reg_name == NULL)
-		return false;
-
-	if (cbfs_locate_file_in_region(&fh, reg_name, CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME,
-				&cbfs_type) < 0)
-		return false;
-
-	cbfs_file_data(rdev, &fh);
-
-	return true;
-}
-
 /*
  * Compare versions of CSE CBFS RW and CSE RW partition
  * If ver_cmp_status = 0, no update is required
@@ -686,15 +665,16 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 						      enum cse_update_status status,
 						      struct region_device *target_rdev)
 {
-	struct region_device source_rdev;
 	enum csme_failure_reason rv;
 	uint8_t *cbfs_rw_hash;
+	size_t size;
 
-	if (!cse_get_source_rdev(&source_rdev))
+	const char *area_name = cse_get_source_rdev_fmap();
+	if (!area_name)
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
 
-	void *cse_cbfs_rw = rdev_mmap_full(&source_rdev);
-
+	void *cse_cbfs_rw = cbfs_unverified_area_map(area_name,
+		CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, &size);
 	if (!cse_cbfs_rw) {
 		printk(BIOS_ERR, "cse_lite: CSE CBFS RW blob could not be mapped\n");
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
@@ -708,8 +688,7 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		goto error_exit;
 	}
 
-	if (!cse_verify_cbfs_rw_sha256(cbfs_rw_hash, cse_cbfs_rw,
-				       region_device_sz(&source_rdev))) {
+	if (!cse_verify_cbfs_rw_sha256(cbfs_rw_hash, cse_cbfs_rw, size)) {
 		rv = CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH;
 		goto error_exit;
 	}
@@ -719,12 +698,11 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		goto error_exit;
 	}
 
-	rv = cse_update_rw(cse_bp_info, cse_cbfs_rw, region_device_sz(&source_rdev),
-			target_rdev);
+	rv = cse_update_rw(cse_bp_info, cse_cbfs_rw, size, target_rdev);
 
 error_exit:
 	cbfs_unmap(cbfs_rw_hash);
-	rdev_munmap(&source_rdev, cse_cbfs_rw);
+	cbfs_unmap(cse_cbfs_rw);
 	return rv;
 }
 

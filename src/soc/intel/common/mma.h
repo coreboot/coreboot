@@ -3,18 +3,19 @@
 #ifndef _SOC_MMA_H_
 #define _SOC_MMA_H_
 
-#include <commonlib/region.h>
+#include <types.h>
 
 struct mma_config_param {
-	struct region_device test_content;
-	struct region_device test_param;
+	void *test_content;
+	size_t test_content_size;
+	void *test_param;
+	size_t test_param_size;
 };
 
-/* Locate mma metadata in CBFS, parse, find and fill rdev for
- * mma test content and test param.
+/* Locate mma metadata in CBFS, parse, find and map mma test content and test param.
  * Returns 0 on success, < 0 on failure.
  */
-int mma_locate_param(struct mma_config_param *mma_cfg);
+int mma_map_param(struct mma_config_param *mma_cfg);
 /* Locate the MMA hob from the FSP Hob list, This is implemented
  * specific to FSP version.
  * Returns 0 on success, < 0 on failure.

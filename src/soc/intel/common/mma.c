@@ -14,7 +14,6 @@
 #define TEST_PARAM_MAX_SIZE		100
 #define MMA_DATA_SIGNATURE		(('M' << 0) | ('M' << 8) | \
 					('A' << 16) | ('D' << 24))
-#define MMA_CBFS_REGION			"COREBOOT"
 
 struct mma_data_container {
 	uint32_t mma_signature; /* "MMAD" */
@@ -99,31 +98,20 @@ static int label_value(const char *haystack, size_t haystack_sz,
 	return 0;
 }
 
-int mma_locate_param(struct mma_config_param *mma_cfg)
+int mma_map_param(struct mma_config_param *mma_cfg)
 {
 	void *mma_test_metadata;
 	size_t mma_test_metadata_file_len;
 	char test_filename[TEST_NAME_MAX_SIZE],
 		test_param_filename[TEST_PARAM_MAX_SIZE];
-	struct cbfsf metadata_fh, test_content_fh, test_param_fh;
-	uint32_t mma_type = CBFS_TYPE_MMA;
-	uint32_t efi_type = CBFS_TYPE_EFI;
 	bool metadata_parse_flag = true;
 
 	printk(BIOS_DEBUG, "MMA: Entry %s\n", __func__);
 
-	if (cbfs_locate_file_in_region(&metadata_fh, MMA_CBFS_REGION,
-				MMA_TEST_METADATA_FILENAME)) {
-		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
-				MMA_TEST_METADATA_FILENAME);
-		return -1;
-	}
-
-	mma_test_metadata = rdev_mmap_full(&metadata_fh.data);
-	mma_test_metadata_file_len = region_device_sz(&metadata_fh.data);
-
-	if (!mma_test_metadata || !mma_test_metadata_file_len) {
-		printk(BIOS_DEBUG, "MMA: Failed to read %s\n",
+	mma_test_metadata = cbfs_ro_map(MMA_TEST_METADATA_FILENAME,
+					&mma_test_metadata_file_len);
+	if (!mma_test_metadata) {
+		printk(BIOS_DEBUG, "MMA: Failed to map %s\n",
 				MMA_TEST_METADATA_FILENAME);
 		return -1;
 	}
@@ -145,7 +133,7 @@ int mma_locate_param(struct mma_config_param *mma_cfg)
 		metadata_parse_flag = false;
 	}
 
-	rdev_munmap(&metadata_fh.data, mma_test_metadata);
+	cbfs_unmap(mma_test_metadata);
 
 	if (!metadata_parse_flag)
 		return -1;
@@ -153,23 +141,17 @@ int mma_locate_param(struct mma_config_param *mma_cfg)
 	printk(BIOS_DEBUG, "MMA: Got MMA_TEST_NAME=%s MMA_TEST_PARAM=%s\n",
 			test_filename, test_param_filename);
 
-	if (cbfs_locate_file_in_region(&test_content_fh, MMA_CBFS_REGION,
-				test_filename)) {
-		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
-				test_filename);
+	mma_cfg->test_content = cbfs_ro_map(test_filename, &mma_cfg->test_content_size);
+	if (!mma_cfg->test_content) {
+		printk(BIOS_DEBUG, "MMA: Failed to map %s\n", test_filename);
 		return -1;
 	}
 
-	cbfs_file_data(&mma_cfg->test_content, &test_content_fh);
-
-	if (cbfs_locate_file_in_region(&test_param_fh, MMA_CBFS_REGION,
-				test_param_filename)) {
-		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
-				test_param_filename);
+	mma_cfg->test_param = cbfs_ro_map(test_param_filename, &mma_cfg->test_param_size);
+	if (!mma_cfg->test_param) {
+		printk(BIOS_DEBUG, "MMA: Failed to map %s\n", test_param);
 		return -1;
 	}
-
-	cbfs_file_data(&mma_cfg->test_param, &test_param_fh);
 
 	printk(BIOS_DEBUG, "MMA: %s exit success\n", __func__);
 

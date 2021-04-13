@@ -23,7 +23,7 @@ void setup_mma(FSP_M_CONFIG *memory_cfg)
 {
 	struct mma_config_param mma_cfg;
 
-	if (mma_locate_param(&mma_cfg)) {
+	if (mma_map_param(&mma_cfg)) {
 		printk(BIOS_DEBUG, "MMA: set up failed\n");
 		return;
 	}

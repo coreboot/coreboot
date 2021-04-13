@@ -55,32 +55,25 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 	return CB_SUCCESS;
 }
 
-enum cb_err fsp_validate_component(struct fsp_header *hdr,
-					const struct region_device *rdev)
+enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_file, size_t file_size)
 {
-	void *membase;
+	void *raw_hdr = fsp_file + FSP_HDR_OFFSET;
 
-	/* Map just enough of the file to be able to parse the header. */
-	membase = rdev_mmap(rdev, FSP_HDR_OFFSET, FSP_HDR_LEN);
-
-	if (membase == NULL) {
-		printk(BIOS_CRIT, "Could not mmap() FSP header.\n");
+	if (file_size < FSP_HDR_OFFSET + FSP_HDR_LEN) {
+		printk(BIOS_CRIT, "FSP blob too small.\n");
 		return CB_ERR;
 	}
 
-	if (fsp_identify(hdr, membase) != CB_SUCCESS) {
-		rdev_munmap(rdev, membase);
+	if (fsp_identify(hdr, raw_hdr) != CB_SUCCESS) {
 		printk(BIOS_CRIT, "No valid FSP header\n");
 		return CB_ERR;
 	}
-
-	rdev_munmap(rdev, membase);
 
 	if (CONFIG(DISPLAY_FSP_HEADER))
 		fsp_print_header_info(hdr);
 
 	/* Check if size specified in the header matches the cbfs file size */
-	if (region_device_sz(rdev) < hdr->image_size) {
+	if (file_size < hdr->image_size) {
 		printk(BIOS_CRIT, "Component size bigger than cbfs file.\n");
 		return CB_ERR;
 	}
@@ -145,7 +138,6 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 {
 	size_t output_size;
 	void *dest;
-	struct region_device prog_rdev;
 	struct prog *fsp_prog = &fspld->fsp_prog;
 
 	dest = cbfs_alloc(prog_name(fsp_prog), fspld->alloc, fspld, &output_size);
@@ -160,8 +152,7 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 
 	prog_set_area(fsp_prog, dest, output_size);
 
-	prog_chain_rdev(fsp_prog, &prog_rdev);
-	if (fsp_validate_component(hdr, &prog_rdev) != CB_SUCCESS) {
+	if (fsp_validate_component(hdr, dest, output_size) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Invalid FSP header after load!\n");
 		return CB_ERR;
 	}

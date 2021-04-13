@@ -12,18 +12,17 @@ void fsp_temp_ram_exit(void)
 	struct fsp_header hdr;
 	uint32_t status;
 	temp_ram_exit_fn  temp_ram_exit;
-	struct cbfsf file_desc;
-	struct region_device file_data;
+	void *mapping;
+	size_t size;
 	const char *name = CONFIG_FSP_M_CBFS;
 
-	if (cbfs_boot_locate(&file_desc, name, NULL)) {
-		printk(BIOS_CRIT, "Could not locate %s in CBFS\n", name);
+	mapping = cbfs_map(name, &size);
+	if (!mapping) {
+		printk(BIOS_CRIT, "Could not map %s from CBFS\n", name);
 		die("FSPM not available for CAR Exit!\n");
 	}
 
-	cbfs_file_data(&file_data, &file_desc);
-
-	if (fsp_validate_component(&hdr, &file_data) != CB_SUCCESS)
+	if (fsp_validate_component(&hdr, mapping, size) != CB_SUCCESS)
 		die("Invalid FSPM header!\n");
 
 	temp_ram_exit = (void *)(hdr.image_base + hdr.temp_ram_exit_entry);
@@ -34,6 +33,8 @@ void fsp_temp_ram_exit(void)
 		printk(BIOS_CRIT, "TempRamExit returned 0x%08x\n", status);
 		die("TempRamExit returned an error!\n");
 	}
+
+	cbfs_unmap(mapping);
 }
 
 void late_car_teardown(void)

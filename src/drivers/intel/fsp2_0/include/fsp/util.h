@@ -104,9 +104,8 @@ void lb_string_platform_blob_version(struct lb_header *header);
 void report_fspt_output(void);
 void soc_validate_fsp_version(const struct fsp_header *hdr);
 
-/* Fill in header and validate sanity of component within region device. */
-enum cb_err fsp_validate_component(struct fsp_header *hdr,
-					const struct region_device *rdev);
+/* Fill in header and validate a loaded FSP component. */
+enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_blob, size_t size);
 
 struct fsp_load_descriptor {
 	/* fsp_prog object will have region_device initialized to final

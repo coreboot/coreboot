@@ -4,6 +4,7 @@
 #define __BASEBOARD_GPIO_H__
 
 #ifndef __ACPI__
+#include <amdblocks/gpio_defs.h>
 #include <soc/gpio.h>
 
 # define MEM_CONFIG0		GPIO_139
@@ -24,8 +25,8 @@
 #endif /* _ACPI__ */
 
 /* These define the GPE, not the GPIO. */
-#define EC_SCI_GPI		3	/* AGPIO 22 -> GPE  3 */
-#define EC_SMI_GPI		10	/* AGPIO 6  -> GPE 10 */
-#define EC_WAKE_GPI		15	/* AGPIO 24 -> GPE 15 */
+#define EC_SCI_GPI		GEVENT_3	/* AGPIO 22 -> GPE  3 */
+#define EC_SMI_GPI		GEVENT_10	/* AGPIO 6  -> GPE 10 */
+#define EC_WAKE_GPI		GEVENT_15	/* AGPIO 24 -> GPE 15 */
 
 #endif /* __BASEBOARD_GPIO_H__ */

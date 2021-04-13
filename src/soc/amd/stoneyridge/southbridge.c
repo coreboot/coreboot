@@ -17,6 +17,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/pmlib.h>
 #include <amdblocks/smbus.h>
 #include <amdblocks/smi.h>
 #include <soc/southbridge.h>
@@ -353,6 +354,7 @@ void bootblock_fch_early_init(void)
 /* After console init */
 void bootblock_fch_init(void)
 {
+	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
 }
 
@@ -453,12 +455,6 @@ static void set_sb_gnvs(struct global_nvs *gnvs)
 
 void fch_final(void *chip_info)
 {
-	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
-
-	if (CONFIG(MAINBOARD_POWER_RESTORE))
-		restored_power = PM_RESTORE_S0_IF_PREV_S0;
-	pm_write8(PM_RTC_SHADOW, restored_power);
-
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (gnvs) {
 		set_sb_aoac(&gnvs->aoac);

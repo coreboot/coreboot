@@ -36,6 +36,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_LPC
 	select SOC_AMD_COMMON_BLOCK_PCI
 	select SOC_AMD_COMMON_BLOCK_PI
+	select SOC_AMD_COMMON_BLOCK_PM
 	select SOC_AMD_COMMON_BLOCK_PSP_GEN1
 	select SOC_AMD_COMMON_BLOCK_S3
 	select SOC_AMD_COMMON_BLOCK_SATA
@@ -378,13 +379,5 @@ config DISABLE_KEYBOARD_RESET_PIN
 	  signal. When this pin is used as GPIO and the keyboard reset
 	  functionality isn't disabled, configuring it as an output and driving
 	  it as 0 will cause a reset.
-
-config MAINBOARD_POWER_RESTORE
-	def_bool n
-	help
-	  This option determines what state to go to once power is restored
-	  after having been lost in S0.  Select this option to automatically
-	  return to S0.  Otherwise the system will remain in S5 once power
-	  is restored.
 
 endif # SOC_AMD_STONEYRIDGE

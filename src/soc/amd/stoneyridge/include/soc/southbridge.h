@@ -34,10 +34,6 @@
 #define   PM_SERIRQ_MODE		BIT(6)
 #define   PM_SERIRQ_ENABLE		BIT(7)
 
-#define PM_RTC_SHADOW			0x5b	/* state when power resumes */
-#define   PM_S5_AT_POWER_RECOVERY	0x04	/* S5 */
-#define   PM_RESTORE_S0_IF_PREV_S0	0x07	/* S0 if previously at S0 */
-
 #define PM_EVT_BLK			0x60
 #define   WAK_STS			BIT(15) /*AcpiPmEvtBlkx00 Pm1Status */
 #define   PCIEXPWAK_STS			BIT(14)

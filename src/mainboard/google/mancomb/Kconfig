@@ -33,6 +33,10 @@ config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_EARLY_EC_SYNC
 
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
 config FMDFILE
 	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"

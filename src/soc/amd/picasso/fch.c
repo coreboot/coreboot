@@ -239,11 +239,6 @@ void fch_init(void *chip_info)
 
 void fch_final(void *chip_info)
 {
-	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
-
-	if (CONFIG(MAINBOARD_POWER_RESTORE))
-		restored_power = PM_RESTORE_S0_IF_PREV_S0;
-	pm_write8(PM_RTC_SHADOW, restored_power);
 }
 
 /*

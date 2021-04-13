@@ -331,14 +331,6 @@ config DISABLE_KEYBOARD_RESET_PIN
 	  functionality isn't disabled, configuring it as an output and driving
 	  it as 0 will cause a reset.
 
-config MAINBOARD_POWER_RESTORE
-	def_bool n
-	help
-	  This option determines what state to go to once power is restored
-	  after having been lost in S0.  Select this option to automatically
-	  return to S0.  Otherwise the system will remain in S5 once power
-	  is restored.
-
 config FSP_TEMP_RAM_SIZE
 	hex
 	default 0x40000

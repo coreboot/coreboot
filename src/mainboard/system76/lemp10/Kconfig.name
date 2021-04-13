@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_LEMP10
+	bool "lemp10"

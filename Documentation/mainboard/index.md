@@ -181,7 +181,8 @@ The boards in this section are not real mainboards, but emulators.
 ## System76
 
 - [Gazelle 15](system76/gaze15.md)
-- [Lemur Pro](system76/lemp9.md)
+- [Lemur Pro 9](system76/lemp9.md)
+- [Lemur Pro 10](system76/lemp10.md)
 - [Oryx Pro 5](system76/oryp5.md)
 - [Oryx Pro 6](system76/oryp6.md)
 

@@ -1,0 +1,19 @@
+config EC_LIBREM_EC
+	bool
+	help
+	  Purism Librem EC
+
+config EC_LIBREM_EC_BAT_THRESHOLDS
+	depends on EC_LIBREM_EC
+	bool
+	default n
+
+config EC_LIBREM_EC_COLOR_KEYBOARD
+	depends on EC_LIBREM_EC
+	bool
+	default n
+
+config EC_LIBREM_EC_OLED
+	depends on EC_LIBREM_EC
+	bool
+	default n

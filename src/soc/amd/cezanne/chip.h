@@ -11,6 +11,9 @@ struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;
 	u8 i2c_scl_reset;
 	struct dw_i2c_bus_config i2c[I2C_CTRLR_COUNT];
+
+	/* Enable S0iX support */
+	bool s0ix_enable;
 };
 
 #endif /* CEZANNE_CHIP_H */

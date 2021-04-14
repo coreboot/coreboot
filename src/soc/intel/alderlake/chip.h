@@ -9,6 +9,7 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/pcie_rp.h>
+#include <intelblocks/tcss.h>
 #include <soc/gpe.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
@@ -87,6 +88,8 @@ struct soc_intel_alderlake_config {
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
+	/* Program OC pins for TCSS */
+	struct tcss_port_config tcss_ports[MAX_TYPE_C_PORTS];
 
 	/* SATA related */
 	uint8_t SataEnable;

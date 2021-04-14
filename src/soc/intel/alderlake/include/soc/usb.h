@@ -135,4 +135,20 @@ struct usb3_port_config {
 	.tx_downscale_amp = 0x00, \
 }
 
+struct tcss_port_config {
+	uint8_t enable;
+	uint8_t ocpin;
+};
+
+#define TCSS_PORT_EMPTY { \
+	.enable           = 0, \
+	.ocpin            = OC_SKIP, \
+}
+
+#define TCSS_PORT_DEFAULT(pin) { \
+	.enable           = 1, \
+	.ocpin            = (pin), \
+}
+
+
 #endif

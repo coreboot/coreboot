@@ -201,7 +201,7 @@ static void audio_codec_device_update(void)
 				continue;
 			}
 		}
-
+		printk(BIOS_INFO, "%s has been disabled\n", audio_dev->chip_ops->name);
 		audio_dev->enabled = 0;
 	}
 }

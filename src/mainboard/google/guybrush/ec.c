@@ -10,7 +10,7 @@
 static const struct sci_source espi_sci_sources[] = {
 	{
 		.scimap = SMITYPE_ESPI_SYS,
-		.gpe = GEVENT_24,
+		.gpe = EC_SCI_GPI,
 		.direction = SMI_SCI_LVL,
 		.level = SMI_SCI_LVL_HIGH
 	}

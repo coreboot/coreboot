@@ -4,6 +4,7 @@
 #define __BASEBOARD_GPIO_H__
 
 #ifndef __ACPI__
+#include <amdblocks/gpio_defs.h>
 #include <soc/gpio.h>
 #include <platform_descriptors.h>
 

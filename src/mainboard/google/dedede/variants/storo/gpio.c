@@ -13,6 +13,13 @@ static const struct pad_config gpio_table[] = {
 
 	/* D15 : EN_PP3300_CAMERA */
 	PAD_CFG_GPO(GPP_D15, 1, PLTRST),
+	/* D22 : AP_I2C_SUB_SDA*/
+	PAD_CFG_NF(GPP_D22, NONE, DEEP, NF1),
+	/* D23 : AP_I2C_SUB_SCL */
+	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
+
+	/* E11 : AP_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E11, NONE, PLTRST, LEVEL, NONE),
 
 	/* H17 : WWAN_RST_L */
 	PAD_CFG_GPO(GPP_H17, 0, PLTRST),

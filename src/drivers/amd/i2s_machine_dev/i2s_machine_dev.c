@@ -9,40 +9,10 @@
 
 #define AMD_I2S_ACPI_DESC	"I2S machine driver"
 
-static void i2s_machine_dev_fill_ssdt(const struct device *dev)
+static void i2s_machine_dev_fill_crs_dsd(const char *path,
+					const struct acpi_gpio *dmic_select_gpio)
 {
-	const char *scope = acpi_device_scope(dev);
 	struct acpi_dp *dsd;
-	const struct acpi_gpio *dmic_select_gpio;
-	const struct drivers_amd_i2s_machine_dev_config *cfg;
-	const char *path = acpi_device_path(dev);
-
-	cfg = config_of(dev);
-
-	dmic_select_gpio = &cfg->dmic_select_gpio;
-
-	if (scope == NULL) {
-		printk(BIOS_ERR, "%s: ERROR: ACPI I2S scope not found\n", dev_path(dev));
-		return;
-	}
-
-	if (cfg->hid == NULL) {
-		printk(BIOS_ERR, "%s: ERROR: HID required\n", dev_path(dev));
-		return;
-	}
-
-	if (dmic_select_gpio->pin_count == 0) {
-		printk(BIOS_ERR, "%s: ERROR: DMIC select GPIO required\n", dev_path(dev));
-		return;
-	}
-
-	acpigen_write_scope(scope); /* Scope */
-	acpigen_write_device(acpi_device_name(dev)); /* Device */
-	acpigen_write_name_string("_HID", cfg->hid);
-	acpigen_write_name_integer("_UID", cfg->uid);
-	acpigen_write_name_string("_DDN", AMD_I2S_ACPI_DESC);
-
-	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */
 	acpigen_write_name("_CRS");
@@ -65,6 +35,39 @@ static void i2s_machine_dev_fill_ssdt(const struct device *dev)
 			 0,  /* Pin = 0 (There is a single pin in the GPIO resource). */
 			 0); /* Active low = 0 (Kernel driver does not use active polarity). */
 	acpi_dp_write(dsd);
+}
+
+static void i2s_machine_dev_fill_ssdt(const struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	const struct acpi_gpio *dmic_select_gpio;
+	const struct drivers_amd_i2s_machine_dev_config *cfg;
+	const char *path = acpi_device_path(dev);
+
+	cfg = config_of(dev);
+
+	dmic_select_gpio = &cfg->dmic_select_gpio;
+
+	if (scope == NULL) {
+		printk(BIOS_ERR, "%s: ERROR: ACPI I2S scope not found\n", dev_path(dev));
+		return;
+	}
+
+	if (cfg->hid == NULL) {
+		printk(BIOS_ERR, "%s: ERROR: HID required\n", dev_path(dev));
+		return;
+	}
+
+	acpigen_write_scope(scope); /* Scope */
+	acpigen_write_device(acpi_device_name(dev)); /* Device */
+	acpigen_write_name_string("_HID", cfg->hid);
+	acpigen_write_name_integer("_UID", cfg->uid);
+	acpigen_write_name_string("_DDN", AMD_I2S_ACPI_DESC);
+
+	acpigen_write_STA(acpi_device_status(dev));
+
+	if (dmic_select_gpio->pin_count)
+		i2s_machine_dev_fill_crs_dsd(path, dmic_select_gpio);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

@@ -12,7 +12,10 @@ struct drivers_amd_i2s_machine_dev_config {
 	/* ACPI _UID */
 	unsigned int uid;
 
-	/* DMIC select GPIO (required) */
+	/*
+	 * DMIC select GPIO (optional). Needs to be configured if the audio framework cannot use
+	 * all the mics and select the right channel based on the use-case.
+	 */
 	struct acpi_gpio dmic_select_gpio;
 };
 

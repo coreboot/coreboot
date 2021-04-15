@@ -11,7 +11,7 @@
 #define STARTOFTIME		1970
 #define SECDAY			86400L
 #define SECYR			(SECDAY * 365)
-#define LEAP_YEAR(year)		((year) % 4 == 0)
+#define LEAP_YEAR(year)		(((year) % 4 == 0 && (year) % 100 != 0) || (year) % 400 == 0)
 #define DAYS_IN_YEAR(a)		(LEAP_YEAR(a) ? 366 : 365)
 #define DAYS_IN_MONTH(a)	(month_days[(a) - 1])
 

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/reset.h>
-#include <bl_uapp/bl_syscall_public.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>

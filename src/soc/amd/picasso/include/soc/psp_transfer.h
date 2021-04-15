@@ -16,6 +16,11 @@
 
 #define TRANSFER_MAGIC_VAL		0x50544953
 
+/* Bit definitions for the psp_info field in the PSP transfer_info_struct */
+#define PSP_INFO_PRODUCTION_MODE	0x00000001UL
+#define PSP_INFO_PRODUCTION_SILICON	0x00000002UL
+#define PSP_INFO_VALID			0x80000000UL
+
 /* Area for things that would cause errors in a linker script */
 #if !defined(__ASSEMBLER__)
 #include <stdint.h>

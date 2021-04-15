@@ -177,16 +177,12 @@ static void mainboard_acpi_fill_ssdt(const struct device *dev)
 	else
 		acpigen_write_soc_gpio_op = acpigen_soc_clear_tx_gpio;
 
-	acpigen_write_scope("\\_SB");
+	acpigen_write_method("\\_SB.MPTS", 1);
 	{
-		acpigen_write_method("MPTS", 1);
+		acpigen_write_if_lequal_op_int(ARG0_OP, 5);
 		{
-			acpigen_write_if_lequal_op_int(ARG0_OP, 5);
-			{
-				for (size_t i = 0; i < ARRAY_SIZE(usb_power_gpios); i++)
-					acpigen_write_soc_gpio_op(usb_power_gpios[i]);
-			}
-			acpigen_pop_len();
+			for (size_t i = 0; i < ARRAY_SIZE(usb_power_gpios); i++)
+				acpigen_write_soc_gpio_op(usb_power_gpios[i]);
 		}
 		acpigen_pop_len();
 	}

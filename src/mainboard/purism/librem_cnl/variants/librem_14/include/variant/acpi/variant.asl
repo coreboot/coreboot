@@ -2,7 +2,7 @@
 
 #define EC_GPE_SWI 0x49 /* GPP_E15 */
 #define EC_GPE_SCI 0x50 /* GPP_E16 */
-#include <ec/system76/ec/acpi/ec.asl>
+#include <ec/purism/librem-ec/acpi/ec.asl>
 
 Scope (\_SB) {
 	#include "sleep.asl"

@@ -167,6 +167,13 @@ static void set_imc_locks(void)
 		pci_or_config32(dev, IMC_M2MEM_TIMEOUT, TIMEOUT_LOCK);
 }
 
+static void set_upi_locks(void)
+{
+	struct device *dev = 0;
+	while ((dev = dev_find_device(PCI_VENDOR_ID_INTEL, UPI_LL_CR_DEVID, dev)))
+		pci_or_config32(dev, UPI_LL_CR_KTIMISCMODLCK, KTIMISCMODLCK_LOCK);
+}
+
 static void chip_final(void *data)
 {
 	/* Lock SBI */
@@ -186,6 +193,7 @@ static void chip_final(void *data)
 	mp_run_on_all_cpus(set_msr_locks, NULL);
 	set_pcu_locks();
 	set_imc_locks();
+	set_upi_locks();
 
 	p2sb_hide();
 	iio_enable_masks();

@@ -124,6 +124,12 @@
 #define IMC_M2MEM_TIMEOUT		0x104
 #define   TIMEOUT_LOCK			BIT(1)
 
+/* UPI Devices */
+/* Bus: B(3), Device: 16,14, Function: 3 (LL_CR) */
+#define UPI_LL_CR_DEVID			0x205B
+#define UPI_LL_CR_KTIMISCMODLCK		0x300
+#define   KTIMISCMODLCK_LOCK		BIT(0)
+
 /* CPU Devices */
 #define CBDMA_DEV_NUM           0x04
 

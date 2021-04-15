@@ -28,7 +28,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* I2S_LRCLK - Bit banged in depthcharge */
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
-	PAD_SCI(GPIO_9, PULL_NONE, EDGE_LOW),
+	PAD_SCI(GPIO_9, PULL_NONE, LEVEL_LOW),
 	/* S0iX SLP - goes to EC */
 	PAD_GPO(GPIO_10, HIGH),
 	/* EC_IN_RW_OD */

@@ -195,11 +195,10 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 
 			/* Erase flash data after fast calibration failed */
 			memset(&dparam->dramc_datas, 0xa5, mrc_cache_size);
-			if (mrc_cache_stash_data(MRC_TRAINING_DATA,
-						 DRAMC_PARAM_HEADER_VERSION,
-						 &dparam->dramc_datas, mrc_cache_size))
-				printk(BIOS_ERR, "DRAM-K: Failed to erase "
-				       "calibration data\n");
+			mrc_cache_stash_data(MRC_TRAINING_DATA,
+					     DRAMC_PARAM_HEADER_VERSION,
+					     &dparam->dramc_datas,
+					     mrc_cache_size);
 		} else {
 			printk(BIOS_INFO, "DRAM-K: Fast calibration passed in %ld msecs\n",
 			       stopwatch_duration_msecs(&sw));
@@ -219,16 +218,9 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 	if (err == 0) {
 		printk(BIOS_INFO, "DRAM-K: Full calibration passed in %ld msecs\n",
 		       stopwatch_duration_msecs(&sw));
-
-		if (mrc_cache_stash_data(MRC_TRAINING_DATA,
-					 DRAMC_PARAM_HEADER_VERSION,
-					 &dparam->dramc_datas, mrc_cache_size) == 0)
-			printk(BIOS_DEBUG, "DRAM-K: Calibration params saved "
-			       "to flash: version=%#x, size=%#zx\n",
-			       DRAMC_PARAM_HEADER_VERSION, sizeof(*dparam));
-		else
-			printk(BIOS_ERR, "DRAM-K: Failed to save calibration "
-			       "data to flash\n");
+		mrc_cache_stash_data(MRC_TRAINING_DATA,
+				     DRAMC_PARAM_HEADER_VERSION,
+				     &dparam->dramc_datas, mrc_cache_size);
 	} else {
 		printk(BIOS_ERR, "DRAM-K: Full calibration failed in %ld msecs\n",
 		       stopwatch_duration_msecs(&sw));

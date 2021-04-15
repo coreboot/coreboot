@@ -135,6 +135,21 @@ chip soc/intel/apollolake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
+			chip drivers/i2c/cs42l42
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_144)"
+				register "ts_inv" = "true"
+				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+				register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+				register "btn_det_init_dbnce" = "100"
+				register "btn_det_event_dbnce" = "10"
+				register "bias_lvls[0]" = "15"
+				register "bias_lvls[1]" = "8"
+				register "bias_lvls[2]" = "4"
+				register "bias_lvls[3]" = "1"
+				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				device i2c 48 on end
+ 			end
 		end	# - I2C 5
 		device pci 17.2 on
 			chip drivers/i2c/generic

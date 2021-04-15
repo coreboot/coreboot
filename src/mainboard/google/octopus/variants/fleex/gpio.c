@@ -18,7 +18,8 @@ static const struct pad_config default_override_table[] = {
 	PAD_CFG_GPI_APIC_IOS(GPIO_137, NONE, DEEP, LEVEL, INVERT, HIZCRx1, DISPUPD),
 
 	PAD_NC(GPIO_143, UP_20K),
-	PAD_NC(GPIO_144, UP_20K),
+	/* GPIO_144 -- Codec reset pin. */
+	PAD_CFG_GPO(GPIO_144, 1, PWROK),
 	PAD_NC(GPIO_145, UP_20K),
 
 	/* EN_PP3300_TOUCHSCREEN */

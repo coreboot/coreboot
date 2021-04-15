@@ -25,6 +25,7 @@
 #include <variant/gpio.h>
 
 extern struct chip_operations drivers_i2c_generic_ops;
+extern struct chip_operations drivers_i2c_cs42l42_ops;
 extern struct chip_operations drivers_i2c_da7219_ops;
 
 static bool is_cnvi_held_in_reset(void)
@@ -201,6 +202,13 @@ static void audio_codec_device_update(void)
 				continue;
 			}
 		}
+
+		if ((audio_dev->chip_ops == &drivers_i2c_cs42l42_ops) &&
+			(codec == SSFC_AUDIO_CODEC_CS42L42)) {
+			printk(BIOS_INFO, "enable CS42L42.\n");
+			continue;
+		}
+
 		printk(BIOS_INFO, "%s has been disabled\n", audio_dev->chip_ops->name);
 		audio_dev->enabled = 0;
 	}

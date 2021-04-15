@@ -196,6 +196,22 @@ config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x800
 
+config ACPI_BERT
+	bool "Build ACPI BERT Table"
+	default y
+	depends on HAVE_ACPI_TABLES
+	help
+	  Report Machine Check errors identified in POST to the OS in an
+	  ACPI Boot Error Record Table.
+
+config ACPI_BERT_SIZE
+	hex
+	default 0x4000 if ACPI_BERT
+	default 0x0
+	help
+	  Specify the amount of DRAM reserved for gathering the data used to
+	  generate the ACPI table.
+
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 150

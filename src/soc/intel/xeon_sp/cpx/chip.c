@@ -6,6 +6,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
@@ -159,6 +160,13 @@ static void set_msr_locks(void *unused)
 	wrmsr(MSR_FEATURE_CONFIG, msr);
 }
 
+static void set_imc_locks(void)
+{
+	struct device *dev = 0;
+	while ((dev = dev_find_device(PCI_VENDOR_ID_INTEL, IMC_M2MEM_DEVID, dev)))
+		pci_or_config32(dev, IMC_M2MEM_TIMEOUT, TIMEOUT_LOCK);
+}
+
 static void chip_final(void *data)
 {
 	/* Lock SBI */
@@ -177,6 +185,7 @@ static void chip_final(void *data)
 
 	mp_run_on_all_cpus(set_msr_locks, NULL);
 	set_pcu_locks();
+	set_imc_locks();
 
 	p2sb_hide();
 	iio_enable_masks();

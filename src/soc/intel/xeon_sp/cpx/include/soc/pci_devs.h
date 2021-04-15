@@ -118,6 +118,12 @@
 #define VTD_EXT_CAP_HIGH		0x14
 #define VTD_LTDPR			0x290
 
+/* IMC Devices */
+/* Bus: B(2), Device: 9-8, Function: 0 (M2MEM) */
+#define IMC_M2MEM_DEVID			0x2066
+#define IMC_M2MEM_TIMEOUT		0x104
+#define   TIMEOUT_LOCK			BIT(1)
+
 /* CPU Devices */
 #define CBDMA_DEV_NUM           0x04
 

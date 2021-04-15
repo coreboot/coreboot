@@ -2,6 +2,7 @@
 
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/i2c.h>
+#include <console/console.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include "chip.h"
@@ -14,7 +15,7 @@ static const struct soc_i2c_ctrlr_info i2c_ctrlr[I2C_CTRLR_COUNT] = {
 	{ I2C_MASTER_MODE, APU_I2C3_BASE, "I2C3" }
 };
 #else
-static struct soc_i2c_ctrlr_info i2c_ctrlr[I2C_CTRLR_CNT] = {
+static struct soc_i2c_ctrlr_info i2c_ctrlr[I2C_CTRLR_COUNT] = {
 	{ I2C_MASTER_MODE, 0, "" },
 	{ I2C_MASTER_MODE, 0, "" },
 	{ I2C_MASTER_MODE, 0, "" },

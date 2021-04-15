@@ -3,6 +3,11 @@
 #ifndef AMD_CEZANNE_IOMAP_H
 #define AMD_CEZANNE_IOMAP_H
 
+#define I2C_MASTER_DEV_COUNT		4
+#define I2C_MASTER_START_INDEX		0
+#define I2C_PERIPHERAL_DEV_COUNT	0 /* TODO: Only master for now. */
+#define I2C_CTRLR_COUNT			(I2C_MASTER_DEV_COUNT + I2C_PERIPHERAL_DEV_COUNT)
+
 #if ENV_X86
 
 /* MMIO Ranges */
@@ -15,11 +20,6 @@
 
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
-
-#define I2C_MASTER_DEV_COUNT		4
-#define I2C_MASTER_START_INDEX		0
-#define I2C_PERIPHERAL_DEV_COUNT	0 /* TODO: Only master for now. */
-#define I2C_CTRLR_COUNT			(I2C_MASTER_DEV_COUNT + I2C_PERIPHERAL_DEV_COUNT)
 
 #define APU_I2C0_BASE			0xfedc2000
 #define APU_I2C1_BASE			0xfedc3000

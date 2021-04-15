@@ -137,13 +137,13 @@ chip soc/amd/picasso
 	}"
 
 	# genral purpose PCIe clock output configuration
-	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[0]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[1]" = "GPP_CLK_OFF"
 	register "gpp_clk_config[2]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[4]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[5]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[6]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[3]" = "GPP_CLK_ON"
+	register "gpp_clk_config[4]" = "GPP_CLK_ON"
+	register "gpp_clk_config[5]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[6]" = "GPP_CLK_OFF"
 
 	register "pspp_policy" = "DXIO_PSPP_BALANCED"
 

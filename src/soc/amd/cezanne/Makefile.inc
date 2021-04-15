@@ -80,6 +80,14 @@ CEZANNE_FWM_POSITION=$(call int-add, \
 
 FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 
+ifeq ($(CONFIG_PSP_DISABLE_POSTCODES),y)
+PSP_SOFTFUSE_BITS += 7
+endif
+
+ifeq ($(CONFIG_PSP_POSTCODES_ON_ESPI),y)
+PSP_SOFTFUSE_BITS += 15
+endif
+
 ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
 # Enable secure debug unlock
 PSP_SOFTFUSE_BITS += 0
@@ -121,9 +129,6 @@ APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' 
 
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28 6
-
-#hardcode post code to eSPI
-PSP_SOFTFUSE_BITS += 15
 
 # Helper function to return a value with given bit set
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))

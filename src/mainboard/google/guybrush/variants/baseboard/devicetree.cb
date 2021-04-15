@@ -132,6 +132,13 @@ chip soc/amd/cezanne
 				device pnp 0c09.0 on end
 			end
 		end
+
+		device ref acp on
+			chip drivers/amd/i2s_machine_dev
+				register "hid" = ""AMDI5682""
+				device generic 0.0 on end
+			end
+		end # Audio
 	end # domain
 
 	device ref i2c_3 on

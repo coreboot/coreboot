@@ -93,15 +93,15 @@ config UART_FOR_CONSOLE
 if BOARD_GOOGLE_BASEBOARD_HATCH
 config FMDFILE
 	string
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-16MiB.fmd" if BOARD_ROMSIZE_KB_16384 && CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-hatch-32MiB.fmd" if BOARD_ROMSIZE_KB_32768 && CHROMEOS
 endif
 
 if BOARD_GOOGLE_BASEBOARD_PUFF
 config FMDFILE
 	string
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-16MiB.fmd" if BOARD_ROMSIZE_KB_16384 && CHROMEOS
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-puff-32MiB.fmd" if BOARD_ROMSIZE_KB_32768 && CHROMEOS
 
 config POWER_OFF_ON_CR50_UPDATE
 	bool

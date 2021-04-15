@@ -42,7 +42,10 @@ Field (ERAM, ByteAcc, Lock, Preserve)
 	RPM1, 16,	// Fan 1 RPM
 	RPM2, 16,	// Fan 2 RPM
 	Offset (0xD9),
-	AIRP, 8,	// Airplane mode LED
+	WLED, 8,	// WiFi LED
+	NOTR, 8,	// notification LED R
+	NOTG, 8,	// notification LED G
+	NOTB, 8,	// notification LED B
 	WINF, 8,	// Enable ACPI brightness controls
 	Offset (0xF8),
 	FCMD, 8,

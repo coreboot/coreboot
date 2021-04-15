@@ -6,22 +6,18 @@
 //   0x82 - backlight down
 //   0x83 - backlight up
 //   0x84 - backlight color change
-//   0x85 - OLED screen toggle
-Device (S76D) {
-	Name (_HID, "17761776")
+Device (LIEC) {
+	Name (_HID, "PURI4543")
 	Name (_UID, 0)
 
 	Method (RSET, 0, Serialized) {
-		Debug = "S76D: RSET"
+		Debug = "LIEC: RSET"
 		SAPL(0)
 		SKBL(0)
-#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
-			SKBC(0xFFFFFF)
-#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
 	}
 
 	Method (INIT, 0, Serialized) {
-		Debug = "S76D: INIT"
+		Debug = "LIEC: INIT"
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use software control
@@ -33,7 +29,7 @@ Device (S76D) {
 	}
 
 	Method (FINI, 0, Serialized) {
-		Debug = "S76D: FINI"
+		Debug = "LIEC: FINI"
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use hardware control
@@ -47,7 +43,7 @@ Device (S76D) {
 	// Get Airplane LED
 	Method (GAPL, 0, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			If (^^PCI0.LPCB.EC0.AIRP & 0x40) {
+			If (^^PCI0.LPCB.EC0.WLED & 0x40) {
 				Return (1)
 			}
 		}
@@ -58,39 +54,58 @@ Device (S76D) {
 	Method (SAPL, 1, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			If (Arg0) {
-				^^PCI0.LPCB.EC0.AIRP |= 0x40
+				^^PCI0.LPCB.EC0.WLED |= 0x40
 			} Else {
-				^^PCI0.LPCB.EC0.AIRP &= 0xBF
+				^^PCI0.LPCB.EC0.WLED &= 0xBF
 			}
 		}
 	}
 
-#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
-	// Set KB LED Brightness
-	Method (SKBL, 1, Serialized) {
+	// Get notification red LED
+	Method (GNTR, 0, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = 6
-			^^PCI0.LPCB.EC0.FBUF = Arg0
-			^^PCI0.LPCB.EC0.FBF1 = 0
-			^^PCI0.LPCB.EC0.FBF2 = Arg0
-			^^PCI0.LPCB.EC0.FCMD = 0xCA
+			Return (^^PCI0.LPCB.EC0.NOTR)
+		}
+		Return (0)
+	}
+
+	// Set notification red LED
+	Method (SNTR, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.NOTR = Arg0
 		}
 	}
 
-	// Set Keyboard Color
-	Method (SKBC, 1, Serialized) {
+	// Get notification green LED
+	Method (GNTG, 0, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = 0x3
-			^^PCI0.LPCB.EC0.FBUF = (Arg0 & 0xFF)
-			^^PCI0.LPCB.EC0.FBF1 = ((Arg0 >> 16) & 0xFF)
-			^^PCI0.LPCB.EC0.FBF2 = ((Arg0 >> 8) & 0xFF)
-			^^PCI0.LPCB.EC0.FCMD = 0xCA
-			Return (Arg0)
-		} Else {
-			Return (0)
+			Return (^^PCI0.LPCB.EC0.NOTG)
+		}
+		Return (0)
+	}
+
+	// Set notification green LED
+	Method (SNTG, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.NOTG = Arg0
 		}
 	}
-#else // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+
+	// Get notification blue LED
+	Method (GNTB, 0, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			Return (^^PCI0.LPCB.EC0.NOTB)
+		}
+		Return (0)
+	}
+
+	// Set notification blue LED
+	Method (SNTB, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.NOTB = Arg0
+		}
+	}
+
 	// Get KB LED
 	Method (GKBL, 0, Serialized) {
 		Local0 = 0
@@ -111,7 +126,6 @@ Device (S76D) {
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 		}
 	}
-#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
 
 	// Fan names
 	Method (NFAN, 0, Serialized) {

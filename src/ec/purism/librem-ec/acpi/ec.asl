@@ -57,18 +57,14 @@ Device (\_SB.PCI0.LPCB.EC0)
 			// EC is now available
 			ECOK = Arg1
 
-			// Reset System76 Device
-			^^^^S76D.RSET()
+			// Reset Librem EC Device
+			^^^^LIEC.RSET()
 		}
 	}
 
-	Name (S3OS, Zero)
 	Method (PTS, 1, Serialized) {
 		Debug = Concatenate("EC: PTS: ", ToHexString(Arg0))
 		If (ECOK) {
-			// Save ECOS during sleep
-			S3OS = ECOS
-
 			// Clear wake cause
 			WFNO = Zero
 		}
@@ -77,9 +73,6 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (WAK, 1, Serialized) {
 		Debug = Concatenate("EC: WAK: ", ToHexString(Arg0))
 		If (ECOK) {
-			// Restore ECOS after sleep
-			ECOS = S3OS
-
 			// Set current AC state
 			^^^^AC.ACFG = ADP
 
@@ -91,8 +84,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 			Notify(^^^^AC, Zero)
 			Notify(^^^^BAT0, Zero)
 
-			// Reset System76 Device
-			^^^^S76D.RSET()
+			// Reset Librem EC Device
+			^^^^LIEC.RSET()
 		}
 	}
 
@@ -104,9 +97,6 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (_Q0B, 0, NotSerialized) // Screen Toggle
 	{
 		Debug = "EC: Screen Toggle"
-#if CONFIG(EC_SYSTEM76_EC_OLED)
-		Notify (^^^^S76D, 0x85)
-#endif // CONFIG(EC_SYSTEM76_EC_OLED)
 	}
 
 	Method (_Q0C, 0, NotSerialized)  // Mute
@@ -220,25 +210,23 @@ Device (\_SB.PCI0.LPCB.EC0)
 		Local0 = OEM4
 		If (Local0 == 0x8A) {
 			Debug = "EC: White Keyboard Backlight"
-			Notify (^^^^S76D, 0x80)
+			Notify (^^^^LIEC, 0x80)
 		} ElseIf (Local0 == 0x9F) {
 			Debug = "EC: Color Keyboard Toggle"
-			Notify (^^^^S76D, 0x81)
+			Notify (^^^^LIEC, 0x81)
 		} ElseIf (Local0 == 0x81) {
 			Debug = "EC: Color Keyboard Down"
-			Notify (^^^^S76D, 0x82)
+			Notify (^^^^LIEC, 0x82)
 		} ElseIf (Local0 == 0x82) {
 			Debug = "EC: Color Keyboard Up"
-			Notify (^^^^S76D, 0x83)
+			Notify (^^^^LIEC, 0x83)
 		} ElseIf (Local0 == 0x80) {
 			Debug = "EC: Color Keyboard Color Change"
-			Notify (^^^^S76D, 0x84)
+			Notify (^^^^LIEC, 0x84)
 		} Else {
 			Debug = Concatenate("EC: Other: ", ToHexString(Local0))
 		}
 	}
 
-	#if CONFIG(EC_SYSTEM76_EC_BAT_THRESHOLDS)
 	#include "battery_thresholds.asl"
-	#endif
 }

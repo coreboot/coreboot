@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define BATTERY_DESIGN_VOLTAGE_MV 14800
+
 Device (BAT0)
 {
 	Name (_HID, EisaId ("PNP0C0A") /* Control Method Battery */)  // _HID: Hardware ID
@@ -34,15 +36,15 @@ Device (BAT0)
 		0xFFFFFFFF, // 1 - Design Capacity
 		0xFFFFFFFF, // 2 - Last Full Charge Capacity
 		One, // 3 - Battery Technology
-		0xFFFFFFFF, // 4 - Design Voltage
+		BATTERY_DESIGN_VOLTAGE_MV, // 4 - Design Voltage
 		Zero, // 5 - Design Capacity of Warning
 		Zero, // 6 - Design Capacity of Low
 		0x40, // 7 - Battery Capacity Granularity 1
 		0x40, // 8 - Battery Capacity Granularity 2
-		" ", // 9 - Model Number
-		" ", // 10 - Serial Number
-		" ", // 11 - Battery Type
-		" " // 12 - OEM Information
+		"BAT", // 9 - Model Number
+		"0001", // 10 - Serial Number
+		"LION", // 11 - Battery Type
+		"Notebook" // 12 - OEM Information
 	})
 	Method (IVBI, 0, NotSerialized)
 	{
@@ -101,14 +103,14 @@ Device (BAT0)
 		Zero, // 0 - Battery state
 		0xFFFFFFFF, // 1 - Battery present rate
 		0xFFFFFFFF, // 2 - Battery remaining capacity
-		0xFFFFFFFF // 3 - Battery present voltage
+		BATTERY_DESIGN_VOLTAGE_MV // 3 - Battery present voltage
 	})
 	Method (IVBS, 0, NotSerialized)
 	{
 		PBST [0] = Zero
 		PBST [1] = 0xFFFFFFFF
 		PBST [2] = 0xFFFFFFFF
-		PBST [3] = 0xFFFFFFFF
+		PBST [3] = 0x2710
 	}
 
 	Method (UPBS, 0, NotSerialized)

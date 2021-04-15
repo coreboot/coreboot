@@ -27,6 +27,7 @@ tests-y += uuid-test
 tests-y += bootmem-test
 tests-y += dimm_info_util-test
 tests-y += coreboot_table-test
+tests-y += rtc-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -139,3 +140,7 @@ coreboot_table-test-srcs += src/lib/imd.c
 coreboot_table-test-cflags += -I src -I 3rdparty/vboot/firmware/include
 coreboot_table-test-cflags += -I tests/include/tests/lib/fmap
 coreboot_table-test-mocks += cbmem_top_chipset
+
+rtc-test-srcs += tests/lib/rtc-test.c
+rtc-test-srcs += src/lib/rtc.c
+

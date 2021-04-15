@@ -87,10 +87,6 @@ config SPI_FLASH_WINBOND
 	bool
 	default y
 
-config TPM_INIT_RAMSTAGE
-	bool "TPM Setup in RAMSTAGE"
-	default n
-
 config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
 	depends on USE_VENDORCODE_ELTAN
 	bool

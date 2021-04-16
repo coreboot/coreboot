@@ -209,7 +209,12 @@ chip soc/intel/cannonlake
 		device pci 1f.3 on      # Intel HDA
 			register "PchHdaAudioLinkHda" = "1"
 		end
-		device pci 1f.4 on  end # SMBus
+		device pci 1f.4 on      # SMBus
+			chip drivers/i2c/tas5825m
+				register "id" = "0"
+				device i2c 4e on end # (8bit address: 0x9c)
+			end
+		end
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE
 	end

@@ -101,6 +101,9 @@ else
 PSP_SOFTFUSE_BITS += 29
 endif
 
+# Use additional Soft Fuse bits specified in Kconfig
+PSP_SOFTFUSE_BITS += $(CONFIG_PSP_SOFTFUSE_BITS)
+
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
 PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
@@ -127,10 +130,8 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 APOB_NV_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
 APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
 
-# type = 0xb - See #55758 (NDA) for bit definitions.
-PSP_SOFTFUSE_BITS += 28 6
-
 # Helper function to return a value with given bit set
+# Soft Fuse type = 0xb - See #55758 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
 PSP_SOFTFUSE=$(shell A=$(call int-add, \
 		$(foreach bit,$(PSP_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)

@@ -321,6 +321,20 @@ config PSP_WHITELIST_FILE
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/amd_blobs/cezanne/PSP/wtl-czn.sbin"
 
+config PSP_SOFTFUSE_BITS
+	string "PSP Soft Fuse bits to enable"
+	default "28 6"
+	help
+	  Space separated list of Soft Fuse bits to enable.
+	  Bit 0:  Enable secure debug (Set by PSP_UNLOCK_SECURE_DEBUG)
+	  Bit 7:  Disable PSP postcodes on Renoir and newer chips only
+	          (Set by PSP_DISABLE_PORT80)
+	  Bit 15: PSP post code destination: 0=LPC 1=eSPI
+	          (Set by PSP_INITIALIZE_ESPI)
+	  Bit 29: Disable MP2 firmware loading (Set by PSP_LOAD_MP2_FW)
+
+	  See #55758 (NDA) for additional bit definitions.
+
 endmenu
 
 config VBOOT

@@ -25,7 +25,7 @@ static const fsp_dxio_descriptor majolica_czn_dxio_descriptors[] = {
 		.function_number = 1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ5,
-		.gpio_group_id = GPIO_26,
+		.gpio_group_id = GPIO_40,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* DT */

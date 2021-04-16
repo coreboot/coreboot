@@ -190,30 +190,37 @@ static inline bool cbfs_lzma_enabled(void)
 	return true;
 }
 
-static inline bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
-					   const struct vb2_hash *file_hash)
+static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
+				    const union cbfs_mdata *mdata, bool skip_verification)
 {
 	/* Avoid linking hash functions when verification is disabled. */
-	if (!CONFIG(CBFS_VERIFICATION))
+	if (!CONFIG(CBFS_VERIFICATION) || skip_verification)
 		return false;
 
-	/* If there is no file hash, always count that as a mismatch. */
-	if (file_hash && vb2_hash_verify(buffer, size, file_hash) == VB2_SUCCESS)
-		return false;
+	const struct vb2_hash *hash = cbfs_file_hash(mdata);
+	if (!hash) {
+		ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
+		return true;
+	}
 
-	printk(BIOS_CRIT, "CBFS file hash mismatch!\n");
-	return true;
+	if (vb2_hash_verify(buffer, size, hash) != VB2_SUCCESS) {
+		ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
+		return true;
+	}
+
+	return false;
 }
 
 static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *buffer,
 				       size_t buffer_size, uint32_t compression,
-				       const struct vb2_hash *file_hash)
+				       const union cbfs_mdata *mdata, bool skip_verification)
 {
 	size_t in_size = region_device_sz(rdev);
 	size_t out_size = 0;
 	void *map;
 
-	DEBUG("Decompressing %zu bytes to %p with algo %d\n", in_size, buffer, compression);
+	DEBUG("Decompressing %zu bytes from '%s' to %p with algo %d\n",
+	      in_size, mdata->h.filename, buffer, compression);
 
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
@@ -221,7 +228,7 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 			return 0;
 		if (rdev_readat(rdev, buffer, 0, in_size) != in_size)
 			return 0;
-		if (cbfs_file_hash_mismatch(buffer, in_size, file_hash))
+		if (cbfs_file_hash_mismatch(buffer, in_size, mdata, skip_verification))
 			return 0;
 		return in_size;
 
@@ -235,7 +242,7 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 		if (map == NULL)
 			return 0;
 
-		if (!cbfs_file_hash_mismatch(map, in_size, file_hash)) {
+		if (!cbfs_file_hash_mismatch(map, in_size, mdata, skip_verification)) {
 			timestamp_add_now(TS_START_ULZ4F);
 			out_size = ulz4fn(map, in_size, buffer, buffer_size);
 			timestamp_add_now(TS_END_ULZ4F);
@@ -252,7 +259,7 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 		if (map == NULL)
 			return 0;
 
-		if (!cbfs_file_hash_mismatch(map, in_size, file_hash)) {
+		if (!cbfs_file_hash_mismatch(map, in_size, mdata, skip_verification)) {
 			/* Note: timestamp not useful for memory-mapped media (x86) */
 			timestamp_add_now(TS_START_ULZMA);
 			out_size = ulzman(map, in_size, buffer, buffer_size);
@@ -411,13 +418,64 @@ out:
 	return err;
 }
 
+static void *do_alloc(union cbfs_mdata *mdata, struct region_device *rdev,
+		      cbfs_allocator_t allocator, void *arg, size_t *size_out,
+		      bool skip_verification)
+{
+	size_t size = region_device_sz(rdev);
+	void *loc = NULL;
+
+	uint32_t compression = CBFS_COMPRESS_NONE;
+	const struct cbfs_file_attr_compression *cattr = cbfs_find_attr(mdata,
+				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*cattr));
+	if (cattr) {
+		compression = be32toh(cattr->compression);
+		size = be32toh(cattr->decompressed_size);
+	}
+
+	if (size_out)
+		*size_out = size;
+
+	/* allocator == NULL means do a cbfs_map() */
+	if (allocator) {
+		loc = allocator(arg, size, mdata);
+	} else if (compression == CBFS_COMPRESS_NONE) {
+		void *mapping = rdev_mmap_full(rdev);
+		if (!mapping)
+			return NULL;
+		if (cbfs_file_hash_mismatch(mapping, size, mdata, skip_verification)) {
+			rdev_munmap(rdev, mapping);
+			return NULL;
+		}
+		return mapping;
+	} else if (!cbfs_cache.size) {
+		/* In order to use the cbfs_cache you need to add a CBFS_CACHE to your
+		 * memlayout. For stages that don't have .data sections (x86 pre-RAM),
+		 * it is not possible to add a CBFS_CACHE. */
+		ERROR("Cannot map compressed file %s without cbfs_cache\n", mdata->h.filename);
+		return NULL;
+	} else {
+		loc = mem_pool_alloc(&cbfs_cache, size);
+	}
+
+	if (!loc) {
+		ERROR("'%s' allocation failure\n", mdata->h.filename);
+		return NULL;
+	}
+
+	size = cbfs_load_and_decompress(rdev, loc, size, compression, mdata, skip_verification);
+	if (!size)
+		return NULL;
+
+	return loc;
+}
+
 void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		  size_t *size_out, bool force_ro, enum cbfs_type *type)
 {
 	struct region_device rdev;
 	bool preload_successful = false;
 	union cbfs_mdata mdata;
-	void *loc = NULL;
 
 	DEBUG("%s(name='%s', alloc=%p(%p), force_ro=%s, type=%d)\n", __func__, name, allocator,
 	      arg, force_ro ? "true" : "false", type ? *type : -1);
@@ -436,72 +494,44 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		}
 	}
 
-	size_t size = region_device_sz(&rdev);
-	uint32_t compression = CBFS_COMPRESS_NONE;
-	const struct cbfs_file_attr_compression *cattr = cbfs_find_attr(&mdata,
-				CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*cattr));
-	if (cattr) {
-		compression = be32toh(cattr->compression);
-		size = be32toh(cattr->decompressed_size);
-	}
-
-	if (size_out)
-		*size_out = size;
-
-	const struct vb2_hash *file_hash = NULL;
-	if (CONFIG(CBFS_VERIFICATION))
-		file_hash = cbfs_file_hash(&mdata);
-
 	/* Update the rdev with the preload content */
 	if (!force_ro && get_preload_rdev(&rdev, name) == CB_SUCCESS)
 		preload_successful = true;
 
-	/* allocator == NULL means do a cbfs_map() */
-	if (allocator) {
-		loc = allocator(arg, size, &mdata);
-	} else if (compression == CBFS_COMPRESS_NONE) {
-		void *mapping = rdev_mmap_full(&rdev);
+	void *ret = do_alloc(&mdata, &rdev, allocator, arg, size_out, false);
 
-		if (!mapping)
-			goto out;
-
-		if (cbfs_file_hash_mismatch(mapping, size, file_hash)) {
-			rdev_munmap(&rdev, mapping);
-			goto out;
-		}
-
-		return mapping;
-	} else if (!cbfs_cache.size) {
-		/*
-		 * In order to use the cbfs_cache you need to add a CBFS_CACHE to your
-		 * memlayout. For stages that don't have .data sections (x86 pre-RAM),
-		 * it is not possible to add a CBFS_CACHE.
-		 */
-		ERROR("Cannot map compressed file %s without cbfs_cache\n", mdata.h.filename);
-		goto out;
-	} else {
-		loc = mem_pool_alloc(&cbfs_cache, size);
-	}
-
-	if (!loc) {
-		ERROR("'%s' allocation failure\n", mdata.h.filename);
-		goto out;
-	}
-
-	size = cbfs_load_and_decompress(&rdev, loc, size, compression, file_hash);
-
-	if (!size)
-		loc = NULL;
-
-out:
-	/*
-	 * When using cbfs_preload we need to free the preload buffer after populating the
-	 * destination buffer.
-	 */
+	/* When using cbfs_preload we need to free the preload buffer after populating the
+	 * destination buffer. We know we must have a mem_rdev here, so extra mmap is fine. */
 	if (preload_successful)
 		cbfs_unmap(rdev_mmap_full(&rdev));
 
-	return loc;
+	return ret;
+}
+
+void *_cbfs_unverified_area_alloc(const char *area, const char *name,
+				  cbfs_allocator_t allocator, void *arg, size_t *size_out)
+{
+	struct region_device area_rdev, file_rdev;
+	union cbfs_mdata mdata;
+	size_t data_offset;
+
+	DEBUG("%s(area='%s', name='%s', alloc=%p(%p))\n", __func__, area, name, allocator, arg);
+
+	if (fmap_locate_area_as_rdev(area, &area_rdev))
+		return NULL;
+
+	if (cbfs_lookup(&area_rdev, name, &mdata, &data_offset, NULL)) {
+		ERROR("'%s' not found in '%s'\n", name, area);
+		return NULL;
+	}
+
+	if (rdev_chain(&file_rdev, &area_rdev, data_offset, be32toh(mdata.h.len)))
+		return NULL;
+
+	if (tspi_measure_cbfs_hook(&file_rdev, name, be32toh(mdata.h.type)))
+		ERROR("error measuring '%s' in '%s'\n", name, area);
+
+	return do_alloc(&mdata, &file_rdev, allocator, arg, size_out, true);
 }
 
 void *_cbfs_default_allocator(void *arg, size_t size, const union cbfs_mdata *unused)
@@ -546,17 +576,13 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 	prog_set_entry(pstage, prog_start(pstage) +
 			       be32toh(sattr->entry_offset), NULL);
 
-	const struct vb2_hash *file_hash = NULL;
-	if (CONFIG(CBFS_VERIFICATION))
-		file_hash = cbfs_file_hash(&mdata);
-
 	/* Hacky way to not load programs over read only media. The stages
 	 * that would hit this path initialize themselves. */
 	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
 	    !CONFIG(NO_XIP_EARLY_STAGES) && CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
 		void *mapping = rdev_mmap_full(&rdev);
 		rdev_munmap(&rdev, mapping);
-		if (cbfs_file_hash_mismatch(mapping, region_device_sz(&rdev), file_hash))
+		if (cbfs_file_hash_mismatch(mapping, region_device_sz(&rdev), &mdata, false))
 			return CB_CBFS_HASH_MISMATCH;
 		if (mapping == prog_start(pstage))
 			return CB_SUCCESS;
@@ -573,7 +599,7 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 	}
 
 	size_t fsize = cbfs_load_and_decompress(&rdev, prog_start(pstage), prog_size(pstage),
-						compression, file_hash);
+						compression, &mdata, false);
 	if (!fsize)
 		return CB_ERR;
 

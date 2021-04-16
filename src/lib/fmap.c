@@ -16,7 +16,7 @@
  */
 
 static int fmap_print_once;
-static struct mem_region_device fmap_cache;
+static struct region_device fmap_cache;
 
 #define print_once(...) do { \
 		if (!fmap_print_once) \
@@ -53,7 +53,7 @@ static void report(const struct fmap *fmap)
 	fmap_print_once = 1;
 }
 
-static void setup_preram_cache(struct mem_region_device *cache_mrdev)
+static void setup_preram_cache(struct region_device *cache_rdev)
 {
 	if (CONFIG(NO_FMAP_CACHE))
 		return;
@@ -99,7 +99,7 @@ static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 	report(fmap);
 
 register_cache:
-	mem_region_device_ro_init(cache_mrdev, fmap, FMAP_SIZE);
+	rdev_chain_mem(cache_rdev, fmap, FMAP_SIZE);
 }
 
 static int find_fmap_directory(struct region_device *fmrd)
@@ -109,10 +109,10 @@ static int find_fmap_directory(struct region_device *fmrd)
 	size_t offset = FMAP_OFFSET;
 
 	/* Try FMAP cache first */
-	if (!region_device_sz(&fmap_cache.rdev))
+	if (!region_device_sz(&fmap_cache))
 		setup_preram_cache(&fmap_cache);
-	if (region_device_sz(&fmap_cache.rdev))
-		return rdev_chain_full(fmrd, &fmap_cache.rdev);
+	if (region_device_sz(&fmap_cache))
+		return rdev_chain_full(fmrd, &fmap_cache);
 
 	boot_device_init();
 	boot = boot_device_ro();
@@ -281,7 +281,7 @@ static void fmap_register_cbmem_cache(int unused)
 	if (!e)
 		return;
 
-	mem_region_device_ro_init(&fmap_cache, cbmem_entry_start(e), cbmem_entry_size(e));
+	rdev_chain_mem(&fmap_cache, cbmem_entry_start(e), cbmem_entry_size(e));
 }
 
 /*

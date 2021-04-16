@@ -128,16 +128,14 @@ static enum cb_err locate_vbt_vbios(const u8 *vbios, struct region_device *rdev)
 	size_t offset;
 
 	// FIXME: caller should supply a region_device instead of vbios pointer
-	if (rdev_chain(&rd, &addrspace_32bit.rdev, (uintptr_t)vbios,
-	    sizeof(*oprom)))
+	if (rdev_chain_mem(&rd, vbios, sizeof(*oprom)))
 		return CB_ERR;
 
 	if (rdev_readat(&rd, &opromsize, offsetof(optionrom_header_t, size),
 	    sizeof(opromsize)) != sizeof(opromsize) || !opromsize)
 		return CB_ERR;
 
-	if (rdev_chain(&rd, &addrspace_32bit.rdev, (uintptr_t)vbios,
-	    opromsize * 512))
+	if (rdev_chain_mem(&rd, vbios, opromsize * 512))
 		return CB_ERR;
 
 	oprom = rdev_mmap(&rd, 0, sizeof(*oprom));
@@ -200,8 +198,7 @@ static enum cb_err locate_vbt_cbfs(struct region_device *rdev)
 	if (vbt == NULL)
 		return CB_ERR;
 
-	if (rdev_chain(rdev, &addrspace_32bit.rdev, (uintptr_t)vbt,
-	    vbt_data_size))
+	if (rdev_chain_mem(rdev, vbt, vbt_data_size))
 		return CB_ERR;
 
 	printk(BIOS_INFO, "GMA: Found VBT in CBFS\n");

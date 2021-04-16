@@ -164,14 +164,18 @@ static inline int rdev_chain_full(struct region_device *child,
 ssize_t rdev_relative_offset(const struct region_device *p,
 				const struct region_device *c);
 
+/* Helper functions to create an rdev that represents memory. */
+int rdev_chain_mem(struct region_device *child, const void *base, size_t size);
+int rdev_chain_mem_rw(struct region_device *child, void *base, size_t size);
+
 struct mem_region_device {
 	char *base;
 	struct region_device rdev;
 };
 
-/* Initialize at runtime a mem_region_device. This would be used when
- * the base and size are dynamic or can't be known during linking.
- * There are two variants: read-only and read-write. */
+/* Initialize at runtime a mem_region_device. Should only be used for mappings
+   that need to fit right up to the edge of the physical address space. Most use
+   cases will want to use rdev_chain_mem() instead. */
 void mem_region_device_ro_init(struct mem_region_device *mdev, void *base,
 				size_t size);
 
@@ -182,7 +186,8 @@ extern const struct region_device_ops mem_rdev_ro_ops;
 
 extern const struct region_device_ops mem_rdev_rw_ops;
 
-/* Statically initialize mem_region_device. */
+/* Statically initialize mem_region_device. Should normally only be used for
+   const globals. Most use cases will want to use rdev_chain_mem() instead. */
 #define MEM_REGION_DEV_INIT(base_, size_, ops_)				\
 	{								\
 		.base = (void *)(base_),				\

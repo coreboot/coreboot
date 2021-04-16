@@ -89,7 +89,7 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 		return -1;
 
 	size_t msize = be32toh(fh->mdata.h.offset);
-	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev, (uintptr_t)&fh->mdata, msize))
+	if (rdev_chain_mem(&fh->metadata, &fh->mdata, msize))
 		return -1;
 
 	if (type) {
@@ -436,7 +436,7 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 		void *compr_start = prog_start(pstage) + prog_size(pstage) - in_size;
 		if (rdev_readat(&rdev, compr_start, 0, in_size) != in_size)
 			return CB_ERR;
-		rdev_chain(&rdev, &addrspace_32bit.rdev, (uintptr_t)compr_start, in_size);
+		rdev_chain_mem(&rdev, compr_start, in_size);
 	}
 
 	size_t fsize = cbfs_load_and_decompress(&rdev, prog_start(pstage), prog_size(pstage),

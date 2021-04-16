@@ -101,10 +101,8 @@ static int init_vpd_rdevs_from_cbmem(void)
 	if (!cbmem)
 		return -1;
 
-	rdev_chain(&ro_vpd, &addrspace_32bit.rdev,
-		   (uintptr_t)cbmem->blob, cbmem->ro_size);
-	rdev_chain(&rw_vpd, &addrspace_32bit.rdev,
-		   (uintptr_t)cbmem->blob + cbmem->ro_size, cbmem->rw_size);
+	rdev_chain_mem(&ro_vpd, cbmem->blob, cbmem->ro_size);
+	rdev_chain_mem(&rw_vpd, cbmem->blob + cbmem->ro_size, cbmem->rw_size);
 
 	return 0;
 }

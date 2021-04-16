@@ -267,14 +267,14 @@ int smmstore_clear_region(void)
 /* Implementation of Version 2 */
 
 static bool store_initialized;
-static struct mem_region_device mdev_com_buf;
+static struct region_device mdev_com_buf;
 
 static int smmstore_rdev_chain(struct region_device *rdev)
 {
 	if (!store_initialized)
 		return -1;
 
-	return rdev_chain_full(rdev, &mdev_com_buf.rdev);
+	return rdev_chain_full(rdev, &mdev_com_buf);
 }
 
 /**
@@ -289,7 +289,7 @@ int smmstore_init(void *buf, size_t len)
 	if (store_initialized)
 		return -1;
 
-	mem_region_device_rw_init(&mdev_com_buf, buf, len);
+	rdev_chain_mem_rw(&mdev_com_buf, buf, len);
 
 	store_initialized = true;
 

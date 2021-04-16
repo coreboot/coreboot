@@ -287,6 +287,19 @@ const struct region_device_ops mem_rdev_rw_ops = {
 	.eraseat = mdev_eraseat,
 };
 
+static const struct mem_region_device mem_rdev = MEM_REGION_DEV_RO_INIT(0, ~(size_t)0);
+static const struct mem_region_device mem_rdev_rw = MEM_REGION_DEV_RW_INIT(0, ~(size_t)0);
+
+int rdev_chain_mem(struct region_device *child, const void *base, size_t size)
+{
+	return rdev_chain(child, &mem_rdev.rdev, (uintptr_t)base, size);
+}
+
+int rdev_chain_mem_rw(struct region_device *child, void *base, size_t size)
+{
+	return rdev_chain(child, &mem_rdev_rw.rdev, (uintptr_t)base, size);
+}
+
 void *mmap_helper_rdev_mmap(const struct region_device *rd, size_t offset,
 				size_t size)
 {

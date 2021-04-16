@@ -16,10 +16,6 @@
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
 
-/* Only can represent up to 1 byte less than size_t. */
-const struct mem_region_device addrspace_32bit =
-	MEM_REGION_DEV_RO_INIT(0, ~0UL);
-
 void run_romstage(void)
 {
 	struct prog romstage =

@@ -100,7 +100,7 @@ static int sdmmc_cbfs_open(void)
 }
 
 static struct mem_region_device alternate_rdev =
-	MEM_REGION_DEV_RO_INIT(NULL, 0);
+	MEM_REGION_DEV_RO_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache));
 
 const struct region_device *boot_device_ro(void)
 {
@@ -121,9 +121,6 @@ const struct region_device *boot_device_ro(void)
 
 void boot_device_init(void)
 {
-	mem_region_device_ro_init(&alternate_rdev, _cbfs_cache,
-			REGION_SIZE(cbfs_cache));
-
 	if (*iram_secondary_base == SECONDARY_BASE_BOOT_USB) {
 		printk(BIOS_DEBUG, "Using Exynos alternate boot mode USB A-A\n");
 		usb_cbfs_open();

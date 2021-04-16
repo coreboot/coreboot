@@ -8,17 +8,15 @@
 #include <commonlib/region.h>
 #include <tests/lib/region_file_data.h>
 
-static void clear_region_file(struct mem_region_device *mrdev)
+static void clear_region_file(struct region_device *rdev)
 {
-	uint8_t *mem_buffer = (uint8_t *)mrdev->base;
-
-	memset(mem_buffer, 0xff, REGION_FILE_BUFFER_SIZE);
+	memset(rdev_mmap_full(rdev), 0xff, REGION_FILE_BUFFER_SIZE);
 }
 
 static int setup_region_file_test_group(void **state)
 {
 	void *mem_buffer = malloc(REGION_FILE_BUFFER_SIZE);
-	struct mem_region_device *dev = malloc(sizeof(struct mem_region_device));
+	struct region_device *dev = malloc(sizeof(struct region_device));
 
 	if (mem_buffer == NULL || dev == NULL) {
 		free(mem_buffer);
@@ -26,8 +24,7 @@ static int setup_region_file_test_group(void **state)
 		return -1;
 	}
 
-	*dev = (struct mem_region_device)
-		MEM_REGION_DEV_RW_INIT(mem_buffer, REGION_FILE_BUFFER_SIZE);
+	rdev_chain_mem_rw(dev, mem_buffer, REGION_FILE_BUFFER_SIZE);
 	*state = dev;
 
 	clear_region_file(dev);
@@ -37,8 +34,8 @@ static int setup_region_file_test_group(void **state)
 
 static int teardown_region_file_test_group(void **state)
 {
-	struct mem_region_device *dev = *state;
-	void *mem_buffer = dev->base;
+	struct region_device *dev = *state;
+	void *mem_buffer = rdev_mmap_full(dev);
 
 	free(mem_buffer);
 	free(dev);
@@ -51,7 +48,7 @@ static int teardown_region_file_test_group(void **state)
    everything twice is known, but acceptable as it grants safety and makes tests independent. */
 static int setup_teardown_region_file_test(void **state)
 {
-	struct mem_region_device *dev = *state;
+	struct region_device *dev = *state;
 
 	clear_region_file(dev);
 
@@ -60,116 +57,110 @@ static int setup_teardown_region_file_test(void **state)
 
 static void test_region_file_init_empty(void **state)
 {
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
+	struct region_device *rdev = *state;
 	struct region_file regf;
 
 	/* Test general approach using valid mem_region_device with buffer filled with 0xff.
 	   Parameters cannot be NULL. */
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(RF_EMPTY, regf.slot);
 }
 
 static void test_region_file_init_invalid_metadata(void **state)
 {
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
-	uint16_t *mem_buffer16 = (uint16_t *)mdev->base;
+	struct region_device *rdev = *state;
+	uint16_t *mem_buffer16 = (uint16_t *)rdev_mmap_full(rdev);
 	struct region_file regf;
 
 	/* Set number of metadata blocks to 0 */
 	mem_buffer16[0] = 0;
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(RF_NEED_TO_EMPTY, regf.slot);
 }
 
 static void test_region_file_init_valid_no_data(void **state)
 {
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
-	uint16_t *mem_buffer16 = (uint16_t *)mdev->base;
+	struct region_device *rdev = *state;
+	uint16_t *mem_buffer16 = (uint16_t *)rdev_mmap_full(rdev);
 	struct region_file regf;
 
 	/* Manually allocate 4 metadata blocks and no data. */
 	mem_buffer16[0] = 4;
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(0, regf.slot);
 }
 
 static void test_region_file_init_invalid_data_offset(void **state)
 {
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
-	uint16_t *mem_buffer16 = (uint16_t *)mdev->base;
+	struct region_device *rdev = *state;
+	uint16_t *mem_buffer16 = (uint16_t *)rdev_mmap_full(rdev);
 	struct region_file regf;
 
 	/* Manually allocate 4 metadata blocks and no data. */
 	mem_buffer16[0] = 4;
 	mem_buffer16[1] = 4;
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(RF_NEED_TO_EMPTY, regf.slot);
 
 	/* Set data size to be larger than region */
 	mem_buffer16[0] = 4;
 	mem_buffer16[1] = 4 + 4096;
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(RF_NEED_TO_EMPTY, regf.slot);
 }
 
 static void test_region_file_init_correct_data_offset(void **state)
 {
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
-	uint16_t *mem_buffer16 = (uint16_t *)mdev->base;
+	struct region_device *rdev = *state;
+	uint16_t *mem_buffer16 = (uint16_t *)rdev_mmap_full(rdev);
 	struct region_file regf;
 
 	/* Set data size to 8 blocks which is correct value. */
 	mem_buffer16[0] = 4;
 	mem_buffer16[1] = 4 + 8;
-	assert_int_equal(0, region_file_init(&regf, mrdev));
+	assert_int_equal(0, region_file_init(&regf, rdev));
 	assert_int_equal(1, regf.slot);
 }
 
 static void test_region_file_init_real_data(void **state)
 {
-	struct mem_region_device dev = MEM_REGION_DEV_RW_INIT(region_file_data_buffer1,
-								REGION_FILE_BUFFER_SIZE);
-	struct region_device *rdev = &dev.rdev;
+	struct region_device rdev;
 	struct region_file regf;
 
+	rdev_chain_mem_rw(&rdev, region_file_data_buffer1, REGION_FILE_BUFFER_SIZE);
+
 	/* Check on real example with one update */
-	assert_int_equal(0, region_file_init(&regf, rdev));
+	assert_int_equal(0, region_file_init(&regf, &rdev));
 	/* There is one update available */
 	assert_int_equal(1, regf.slot);
 
 
 	/* Check on real example with multiple updates */
-	dev = (struct mem_region_device) MEM_REGION_DEV_RW_INIT(region_file_data_buffer2,
-								REGION_FILE_BUFFER_SIZE);
-	rdev = &dev.rdev;
-	assert_int_equal(0, region_file_init(&regf, rdev));
+	rdev_chain_mem_rw(&rdev, region_file_data_buffer2, REGION_FILE_BUFFER_SIZE);
+	assert_int_equal(0, region_file_init(&regf, &rdev));
 	/* There are three update available */
 	assert_int_equal(3, regf.slot);
 }
 
 static void test_region_file_init_invalid_region_device(void **state)
 {
-	struct mem_region_device bad_dev = MEM_REGION_DEV_RW_INIT(NULL, 0);
+	struct region_device bad_dev;
 	struct region_file regf;
 
+	rdev_chain_mem_rw(&bad_dev, NULL, 0);
+
 	/* Expect fail when passing invalid region_device. */
-	assert_int_equal(-1, region_file_init(&regf, &bad_dev.rdev));
+	assert_int_equal(-1, region_file_init(&regf, &bad_dev));
 }
 
 static void test_region_file_data(void **state)
 {
 	/* region_device with empty data buffer */
-	struct mem_region_device *mdev = *state;
-	struct region_device *mrdev = &mdev->rdev;
+	struct region_device *mrdev = *state;
 	/* region_device with prepared data buffer */
-	struct mem_region_device dev = MEM_REGION_DEV_RW_INIT(region_file_data_buffer1,
-								REGION_FILE_BUFFER_SIZE);
-	struct region_device *rdev = &dev.rdev;
+	struct region_device rdev;
+	rdev_chain_mem_rw(&rdev, region_file_data_buffer1, REGION_FILE_BUFFER_SIZE);
+
 	struct region_file regf;
 	struct region_device read_rdev;
 	int ret;
@@ -182,7 +173,7 @@ static void test_region_file_data(void **state)
 
 	/* Check if region_file_data() correctly returns region_device for hardcoded
 	   region_file data with update of 256 bytes */
-	ret = region_file_init(&regf, rdev);
+	ret = region_file_init(&regf, &rdev);
 	assert_int_equal(0, ret);
 	ret = region_file_data(&regf, &read_rdev);
 	assert_int_equal(0, ret);
@@ -192,8 +183,7 @@ static void test_region_file_data(void **state)
 
 static void test_region_file_update_data(void **state)
 {
-	struct mem_region_device *dev = *state;
-	struct region_device *rdev = &dev->rdev;
+	struct region_device *rdev = *state;
 	struct region_file regf;
 	struct region_device read_rdev;
 	const size_t dummy_data_size = 256;
@@ -235,8 +225,7 @@ static void test_region_file_update_data(void **state)
 
 static void test_region_file_update_data_arr(void **state)
 {
-	struct mem_region_device *dev = *state;
-	struct region_device *rdev = &dev->rdev;
+	struct region_device *rdev = *state;
 	struct region_file regf;
 	struct region_device read_rdev;
 	const size_t dummy_data_size = 256;

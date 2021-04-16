@@ -333,32 +333,33 @@ static void test_mem_rdev(void **state)
 	u8 backing[size];
 	u8 scratch[size];
 	int i;
-	struct mem_region_device mem = MEM_REGION_DEV_RW_INIT(backing, size);
+	struct region_device mem;
+	rdev_chain_mem_rw(&mem, backing, size);
 
 	/* Test writing to and reading from full mapping. */
 	memset(backing, 0xa5, size);
-	u8 *mapping = rdev_mmap_full(&mem.rdev);
+	u8 *mapping = rdev_mmap_full(&mem);
 	assert_non_null(mapping);
 	for (i = 0; i < size; i++)
 		assert_int_equal(mapping[i], 0xa5);
 	memset(mapping, 0x5a, size);
 	for (i = 0; i < size; i++)
 		assert_int_equal(backing[i], 0x5a);
-	assert_int_equal(rdev_munmap(&mem.rdev, mapping), 0);
+	assert_int_equal(rdev_munmap(&mem, mapping), 0);
 
 	/* Test read/write/erase of single bytes. */
 	for (i = 0; i < size; i++) {
 		u8 val = i + 0xaa;
 		scratch[0] = val;
-		assert_int_equal(rdev_writeat(&mem.rdev, &scratch, i, 1), 1);
+		assert_int_equal(rdev_writeat(&mem, &scratch, i, 1), 1);
 		assert_int_equal(backing[i], val);
 		assert_int_equal(scratch[0], val);
 		val = i + 0x55;
 		backing[i] = val;
-		assert_int_equal(rdev_readat(&mem.rdev, &scratch, i, 1), 1);
+		assert_int_equal(rdev_readat(&mem, &scratch, i, 1), 1);
 		assert_int_equal(scratch[0], val);
 		assert_int_equal(backing[i], val);
-		assert_int_equal(rdev_eraseat(&mem.rdev, i, 1), 1);
+		assert_int_equal(rdev_eraseat(&mem, i, 1), 1);
 		assert_int_equal(backing[i], 0);
 	}
 
@@ -368,25 +369,25 @@ static void test_mem_rdev(void **state)
 	memset(backing, 0, size);
 	memset(scratch, 0, size);
 	memset(scratch + offs, 0x39, chunk);
-	assert_int_equal(rdev_writeat(&mem.rdev, scratch + offs, offs, chunk), chunk);
+	assert_int_equal(rdev_writeat(&mem, scratch + offs, offs, chunk), chunk);
 	assert_memory_equal(backing, scratch, size);
 	memset(backing, 0, size);
-	assert_int_equal(rdev_readat(&mem.rdev, scratch + offs, offs, chunk), chunk);
+	assert_int_equal(rdev_readat(&mem, scratch + offs, offs, chunk), chunk);
 	assert_memory_equal(backing, scratch, size);
 	memset(scratch + offs + 1, 0, chunk - 1);
-	assert_int_equal(rdev_eraseat(&mem.rdev, offs + 1, chunk - 1), chunk - 1);
+	assert_int_equal(rdev_eraseat(&mem, offs + 1, chunk - 1), chunk - 1);
 	assert_memory_equal(backing, scratch, size);
 
 	/* Test mapping of larger chunk. */
 	memset(backing, 0, size);
-	mapping = rdev_mmap(&mem.rdev, offs, chunk);
+	mapping = rdev_mmap(&mem, offs, chunk);
 	assert_non_null(mapping);
 	memset(scratch, 0x93, size);
 	memcpy(mapping, scratch, chunk);
 	memset(scratch, 0, size);
 	memset(scratch + offs, 0x93, chunk);
 	assert_memory_equal(backing, scratch, size);
-	assert_int_equal(rdev_munmap(&mem.rdev, mapping), 0);
+	assert_int_equal(rdev_munmap(&mem, mapping), 0);
 	assert_memory_equal(backing, scratch, size);
 }
 

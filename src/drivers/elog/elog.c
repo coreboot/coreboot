@@ -44,7 +44,7 @@ struct elog_state {
 
 	struct region_device nv_dev;
 	/* Device that mirrors the eventlog in memory. */
-	struct mem_region_device mirror_dev;
+	struct region_device mirror_dev;
 
 	enum elog_init_state elog_initialized;
 };
@@ -56,7 +56,7 @@ static uint8_t elog_mirror_buf[ELOG_SIZE];
 
 static inline struct region_device *mirror_dev_get(void)
 {
-	return &elog_state.mirror_dev.rdev;
+	return &elog_state.mirror_dev;
 }
 
 static size_t elog_events_start(void)
@@ -798,8 +798,7 @@ int elog_init(void)
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
-	mem_region_device_rw_init(&elog_state.mirror_dev, mirror_buffer,
-				  elog_size);
+	rdev_chain_mem_rw(&elog_state.mirror_dev, mirror_buffer, elog_size);
 
 	/*
 	 * Mark as initialized to allow elog_init() to be called and deemed

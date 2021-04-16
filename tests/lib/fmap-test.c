@@ -11,8 +11,8 @@
 #include <tests/lib/fmap/fmap_data.h>
 #include <tests/lib/fmap/fmap_config.h>
 
-static struct mem_region_device mem_rdev_rw;
-static struct mem_region_device mem_rdev_ro;
+static struct region_device flash_rdev_rw;
+static struct region_device flash_rdev_ro;
 static char *flash_buffer = NULL;
 static size_t flash_buffer_size = 0;
 
@@ -38,32 +38,15 @@ static void prepare_flash_buffer(void)
 static int setup_fmap(void **state)
 {
 	prepare_flash_buffer();
-
-	mem_rdev_rw = (struct mem_region_device)
-			MEM_REGION_DEV_RW_INIT(flash_buffer, FMAP_SECTION_FLASH_SIZE);
-
-	mem_rdev_ro = (struct mem_region_device)
-			MEM_REGION_DEV_RO_INIT(flash_buffer, FMAP_SECTION_FLASH_SIZE);
-
+	rdev_chain_mem_rw(&flash_rdev_rw, flash_buffer, FMAP_SECTION_FLASH_SIZE);
+	rdev_chain_mem(&flash_rdev_ro, flash_buffer, FMAP_SECTION_FLASH_SIZE);
 	return 0;
 }
 
 static int teardown_fmap(void **state)
 {
-	struct mem_region_device empty = {
-		.base = NULL,
-		.rdev = {
-			.root = NULL,
-			.ops = NULL,
-			.region = {
-				.offset = 0,
-				.size = 0
-			}
-		}
-	};
-
-	mem_rdev_rw = empty;
-	mem_rdev_ro = empty;
+	rdev_chain_mem_rw(&flash_rdev_rw, NULL, 0);
+	rdev_chain_mem(&flash_rdev_ro, NULL, 0);
 
 	free(flash_buffer);
 	flash_buffer = NULL;
@@ -79,12 +62,12 @@ void boot_device_init(void)
 
 const struct region_device *boot_device_ro(void)
 {
-	return &mem_rdev_rw.rdev;
+	return &flash_rdev_ro;
 }
 
 const struct region_device *boot_device_rw(void)
 {
-	return &mem_rdev_rw.rdev;
+	return &flash_rdev_rw;
 }
 
 static void test_fmap_locate_area_as_rdev(void **state)
@@ -93,21 +76,21 @@ static void test_fmap_locate_area_as_rdev(void **state)
 	struct region_device rdev;
 
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev("RO_VPD", &rdev));
-	assert_int_equal(FMAP_SECTION_RO_VPD_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_RO_VPD_START, rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_RO_VPD_SIZE, region_device_sz(&rdev));
 
 	/* Check if locating area second time works */
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev("RO_VPD", &rdev));
-	assert_int_equal(FMAP_SECTION_RO_VPD_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_RO_VPD_START, rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_RO_VPD_SIZE, region_device_sz(&rdev));
 
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev("RECOVERY_MRC_CACHE", &rdev));
-	assert_int_equal(FMAP_SECTION_RECOVERY_MRC_CACHE_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_RECOVERY_MRC_CACHE_START,
+			 rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_RECOVERY_MRC_CACHE_SIZE, region_device_sz(&rdev));
 
 	/* Expect error when writing to read-only area */
-	assert_int_equal(-1, rdev_writeat(&rdev, buffer,
-					region_device_offset(&rdev), sizeof(buffer)));
+	assert_int_equal(-1, rdev_writeat(&rdev, buffer, 0, sizeof(buffer)));
 
 	/* Expect error when looking for incorrect area */
 	assert_int_equal(-1, fmap_locate_area_as_rdev("NONEXISTENT_AREA", &rdev));
@@ -131,16 +114,16 @@ static void test_fmap_locate_area_as_rdev_rw(void **state)
 		dummy_data[i] = '0' + i % ('9' - '0');
 
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev_rw("RW_SECTION_A", &rdev));
-	assert_int_equal(FMAP_SECTION_RW_SECTION_A_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_RW_SECTION_A_START, rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_RW_SECTION_A_SIZE, region_device_sz(&rdev));
 
 	/* Check if locating area second time works */
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev_rw("RW_SECTION_A", &rdev));
-	assert_int_equal(FMAP_SECTION_RW_SECTION_A_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_RW_SECTION_A_START, rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_RW_SECTION_A_SIZE, region_device_sz(&rdev));
 
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev_rw("MISC_RW", &rdev));
-	assert_int_equal(FMAP_SECTION_MISC_RW_START, region_device_offset(&rdev));
+	assert_ptr_equal(flash_buffer + FMAP_SECTION_MISC_RW_START, rdev_mmap_full(&rdev));
 	assert_int_equal(FMAP_SECTION_MISC_RW_SIZE, region_device_sz(&rdev));
 
 

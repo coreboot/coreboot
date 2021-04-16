@@ -42,7 +42,7 @@
 
 static size_t bios_size;
 
-static struct mem_region_device shadow_dev;
+static struct region_device shadow_dev;
 static struct xlate_region_device real_dev;
 static struct xlate_window real_dev_window;
 
@@ -67,10 +67,9 @@ static void bios_mmap_init(void)
 	 */
 	bios_mapped_size = size - 256 * KiB;
 
-	mem_region_device_ro_init(&shadow_dev, (void *)base,
-			       bios_mapped_size);
+	rdev_chain_mem(&shadow_dev, (void *)base, bios_mapped_size);
 
-	xlate_window_init(&real_dev_window, &shadow_dev.rdev, start, bios_mapped_size);
+	xlate_window_init(&real_dev_window, &shadow_dev, start, bios_mapped_size);
 	xlate_region_device_ro_init(&real_dev, 1, &real_dev_window, CONFIG_ROM_SIZE);
 
 	bios_size = size;
@@ -98,7 +97,7 @@ uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
 	bios_mmap_init();
 
 	table->flash_base = region_offset(&real_dev_window.sub_region);
-	table->host_base = (uintptr_t)rdev_mmap_full(&shadow_dev.rdev);
+	table->host_base = (uintptr_t)rdev_mmap_full(&shadow_dev);
 	table->size = region_sz(&real_dev_window.sub_region);
 
 	return 1;

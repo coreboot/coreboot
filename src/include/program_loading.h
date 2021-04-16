@@ -91,15 +91,11 @@ static inline void *prog_entry_arg(const struct prog *prog)
 	return prog->arg;
 }
 
-/* region_device representing the 32-bit flat address space. */
-extern const struct mem_region_device addrspace_32bit;
-
 /* Can be used to get an rdev representation of program area in memory. */
 static inline void prog_chain_rdev(const struct prog *prog,
 				   struct region_device *rdev_out)
 {
-	rdev_chain(rdev_out, &addrspace_32bit.rdev,
-		   (uintptr_t)prog->start, prog->size);
+	rdev_chain_mem(rdev_out, prog->start, prog->size);
 }
 
 static inline void prog_set_area(struct prog *prog, void *start, size_t size)

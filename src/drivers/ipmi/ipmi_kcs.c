@@ -41,7 +41,8 @@
 static unsigned char ipmi_kcs_status(int port)
 {
 	unsigned char status = inb(IPMI_STAT(port));
-	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, status);
+	if (CONFIG(DEBUG_IPMI))
+		printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, status);
 	return status;
 }
 
@@ -75,7 +76,8 @@ static int ipmi_kcs_send_data_byte(int port, const unsigned char byte)
 {
 	unsigned char status;
 
-	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
+	if (CONFIG(DEBUG_IPMI))
+		printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	outb(byte, IPMI_DATA(port));
 
@@ -98,7 +100,8 @@ static int ipmi_kcs_send_last_data_byte(int port, const unsigned char byte)
 {
 	unsigned char status;
 
-	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
+	if (CONFIG(DEBUG_IPMI))
+		printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	if (wait_ibf_timeout(port))
 		return 1;
@@ -119,7 +122,8 @@ static int ipmi_kcs_send_last_data_byte(int port, const unsigned char byte)
 
 static int ipmi_kcs_send_cmd_byte(int port, const unsigned char byte)
 {
-	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
+	if (CONFIG(DEBUG_IPMI))
+		printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	if (wait_ibf_timeout(port))
 		return 1;

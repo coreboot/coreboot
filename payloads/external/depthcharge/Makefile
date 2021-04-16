@@ -8,6 +8,7 @@ project_config_file=$(project_dir)/.config
 output_dir=$(project_dir)/build
 libpayload_dir=$(abspath $(CURDIR)/../../libpayload)
 libpayload_install_dir=$(output_dir)/lp_$(BOARD)
+coreboot_build_dir=$(abspath $(CURDIR)/../../../build)
 
 VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
 EC_HEADERS ?= $(abspath $(CURDIR)/../../../3rdparty/chromeec/include)
@@ -84,6 +85,7 @@ config: $(project_dir)/.version_$(TAG-y) $(libpayload_install_dir)
 
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"
+	cp $(coreboot_build_dir)/static_fw_config.h depthcharge/src/base/
 	$(MAKE) -C $(project_dir) depthcharge BOARD=$(BOARD) \
 		LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
 		VB_SOURCE=$(VBOOT_SOURCE) \

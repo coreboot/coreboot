@@ -155,9 +155,6 @@ struct chipset_power_state {
 	uint32_t prev_sleep_state;
 } __packed;
 
-/* Return the selected ACPI SCI IRQ */
-int acpi_sci_irq(void);
-
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
 

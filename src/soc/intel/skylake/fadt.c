@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include "chip.h"

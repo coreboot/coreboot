@@ -11,6 +11,8 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
+/* Return the selected ACPI SCI IRQ */
+int acpi_sci_irq(void);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 unsigned long northbridge_write_acpi_tables(const struct device *,
 	unsigned long current, struct acpi_rsdp *);

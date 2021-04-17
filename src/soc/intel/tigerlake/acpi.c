@@ -198,6 +198,20 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
+	/* TCSS Thunderbolt root ports */
+	for (unsigned int i = 0; i < MAX_TBT_PCIE_PORT; i++) {
+		uint64_t tbtbar = MCHBAR64(TBT0BAR + i * 8) & VTBAR_MASK;
+		bool tbten = MCHBAR32(TBT0BAR + i * 8) & VTBAR_ENABLED;
+		if (tbtbar && tbten) {
+			unsigned long tmp = current;
+
+			current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
+			current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
+
+			acpi_dmar_drhd_fixup(tmp, current);
+		}
+	}
+
 	uint64_t vtvc0bar = MCHBAR64(VTVC0BAR) & VTBAR_MASK;
 	bool vtvc0en = MCHBAR32(VTVC0BAR) & VTBAR_ENABLED;
 
@@ -214,20 +228,6 @@ static unsigned long soc_fill_dmar(unsigned long current)
 				V_P2SB_CFG_HBDF_FUNC);
 
 		acpi_dmar_drhd_fixup(tmp, current);
-	}
-
-	/* TCSS Thunderbolt root ports */
-	for (unsigned int i = 0; i < MAX_TBT_PCIE_PORT; i++) {
-		uint64_t tbtbar = MCHBAR64(TBT0BAR + i * 8) & VTBAR_MASK;
-		bool tbten = MCHBAR32(TBT0BAR + i * 8) & VTBAR_ENABLED;
-		if (tbtbar && tbten) {
-			unsigned long tmp = current;
-
-			current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
-			current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
-
-			acpi_dmar_drhd_fixup(tmp, current);
-		}
 	}
 
 	/* Add RMRR entry */

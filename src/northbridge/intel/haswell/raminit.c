@@ -174,7 +174,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 	 * Ensure the mc_init_done_ack bit is set before continuing. Otherwise,
 	 * attempting to access memory will lock up the system.
 	 */
-	if (!(MCHBAR32(MC_INIT_STATE_G) & (1 << 5))) {
+	if (!(mchbar_read32(MC_INIT_STATE_G) & (1 << 5))) {
 		printk(BIOS_EMERG, "Memory controller did not acknowledge raminit.\n");
 		die("MRC raminit failed\n");
 	}

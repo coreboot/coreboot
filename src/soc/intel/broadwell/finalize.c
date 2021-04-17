@@ -33,20 +33,20 @@ static void broadwell_systemagent_finalize(void)
 	pci_or_config32(host_bridge, TSEG,        1 << 0);
 	pci_or_config32(host_bridge, TOLUD,       1 << 0);
 
-	MCHBAR32(0x50fc) |= 0x8f;	/* MC */
-	MCHBAR32(0x5500) |= 1 << 0;	/* PAVP */
-	MCHBAR32(0x5880) |= 1 << 5;	/* DDR PTM */
-	MCHBAR32(0x7000) |= 1 << 31;
-	MCHBAR32(0x77fc) |= 1 << 0;
-	MCHBAR32(0x7ffc) |= 1 << 0;
-	MCHBAR32(0x6800) |= 1 << 31;
-	MCHBAR32(0x6020) |= 1 << 0;	/* UMA GFX */
-	MCHBAR32(0x63fc) |= 1 << 0;	/* VTDTRK */
+	mchbar_setbits32(0x50fc, 0x8f);		/* MC */
+	mchbar_setbits32(0x5500, 1 << 0);	/* PAVP */
+	mchbar_setbits32(0x5880, 1 << 5);	/* DDR PTM */
+	mchbar_setbits32(0x7000, 1 << 31);
+	mchbar_setbits32(0x77fc, 1 << 0);
+	mchbar_setbits32(0x7ffc, 1 << 0);
+	mchbar_setbits32(0x6800, 1 << 31);
+	mchbar_setbits32(0x6020, 1 << 0);		/* UMA GFX */
+	mchbar_setbits32(0x63fc, 1 << 0);		/* VTDTRK */
 
 	/* Read+write the following */
-	MCHBAR32(0x6030) = MCHBAR32(0x6030);
-	MCHBAR32(0x6034) = MCHBAR32(0x6034);
-	MCHBAR32(0x6008) = MCHBAR32(0x6008);
+	mchbar_setbits32(0x6030, 0);
+	mchbar_setbits32(0x6034, 0);
+	mchbar_setbits32(0x6008, 0);
 }
 
 static void broadwell_finalize(void *unused)

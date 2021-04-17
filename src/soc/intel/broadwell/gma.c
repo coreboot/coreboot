@@ -529,7 +529,7 @@ static void igd_init(struct device *dev)
 	}
 
 	/* Set RP1 graphics frequency */
-	rp1_gfx_freq = (MCHBAR32(0x5998) >> 8) & 0xff;
+	rp1_gfx_freq = (mchbar_read32(0x5998) >> 8) & 0xff;
 	gtt_write(0xa008, rp1_gfx_freq << 24);
 
 	/* Post VBIOS panel setup */

@@ -15,8 +15,8 @@ static void broadwell_setup_bars(void)
 	pci_write_config32(SA_DEV_ROOT, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
 	pci_write_config32(SA_DEV_ROOT, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
 
-	MCHBAR32(EDRAMBAR) = EDRAM_BASE_ADDRESS | 1;
-	MCHBAR32(GDXCBAR)  =  GDXC_BASE_ADDRESS | 1;
+	mchbar_write32(EDRAMBAR, EDRAM_BASE_ADDRESS | 1);
+	mchbar_write32(GDXCBAR, GDXC_BASE_ADDRESS | 1);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(SA_DEV_ROOT, PAM0, 0x30);
@@ -40,10 +40,10 @@ void systemagent_early_init(void)
 
 	if (vtd_capable) {
 		/* setup BARs: zeroize top 32 bits; set enable bit */
-		MCHBAR32(GFXVTBAR + 4) = GFXVT_BASE_ADDRESS >> 32;
-		MCHBAR32(GFXVTBAR) = GFXVT_BASE_ADDRESS | 1;
-		MCHBAR32(VTVC0BAR + 4) = VTVC0_BASE_ADDRESS >> 32;
-		MCHBAR32(VTVC0BAR) = VTVC0_BASE_ADDRESS | 1;
+		mchbar_write32(GFXVTBAR + 4, GFXVT_BASE_ADDRESS >> 32);
+		mchbar_write32(GFXVTBAR + 0, GFXVT_BASE_ADDRESS | 1);
+		mchbar_write32(VTVC0BAR + 4, VTVC0_BASE_ADDRESS >> 32);
+		mchbar_write32(VTVC0BAR + 0, VTVC0_BASE_ADDRESS | 1);
 
 		/* set PRSCAPDIS, lock GFXVTBAR policy cfg registers */
 		u32 reg32;

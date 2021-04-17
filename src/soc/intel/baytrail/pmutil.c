@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <stdint.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_pm.h>
@@ -17,29 +19,9 @@
 #include <soc/pm.h>
 #include <security/vboot/vbnv.h>
 
-#if defined(__SIMPLE_DEVICE__)
-
-static const pci_devfn_t pcu_dev = PCI_DEV(0, PCU_DEV, 0);
-
-static inline pci_devfn_t get_pcu_dev(void)
-{
-	return pcu_dev;
-}
-
-#else /* __SIMPLE_DEVICE__ */
-
-static struct device *pcu_dev;
-static struct device *get_pcu_dev(void)
-{
-	if (pcu_dev == NULL)
-		pcu_dev = pcidev_on_root(PCU_DEV, 0);
-	return pcu_dev;
-}
-#endif /* __SIMPLE_DEVICE__ */
-
 uint16_t get_pmbase(void)
 {
-	return pci_read_config16(get_pcu_dev(), ABASE) & 0xfff8;
+	return pci_read_config16(PCI_DEV(0, PCU_DEV, 0), ABASE) & 0xfff8;
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status, const char *const bit_names[])

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
@@ -11,11 +13,7 @@
 #include <soc/pm.h>
 
 struct pme_status_info {
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev;
-#else
-	struct device *dev;
-#endif
 	uint8_t reg_offset;
 	uint32_t elog_event;
 };
@@ -25,11 +23,7 @@ struct pme_status_info {
 static void pch_log_pme_internal_wake_source(void)
 {
 	size_t i;
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev;
-#else
-	struct device *dev;
-#endif
 	uint16_t val;
 	bool dev_found = false;
 

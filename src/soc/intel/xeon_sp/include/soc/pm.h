@@ -117,12 +117,6 @@ struct chipset_power_state {
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
 
-/* Set the DISB after DRAM init */
-void pmc_set_disb(void);
-
-/* Return non-zero when RTC failure happened. */
-int rtc_failure(void);
-
 uint16_t get_pmbase(void);
 
 void pmc_lock_smi(void);

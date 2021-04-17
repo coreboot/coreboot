@@ -126,22 +126,6 @@ int soc_get_rtc_failed(void)
 	return rtc_fail;
 }
 
-int rtc_failure(void)
-{
-	u8 reg8;
-	int rtc_failed;
-	/* PMC Controller Device 0x1F, Func 02 */
-	reg8 = pci_read_config8(PCH_DEV_PMC, GEN_PMCON_B);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(PCH_DEV_PMC, GEN_PMCON_B, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-
-	return !!rtc_failed;
-}
-
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
 int soc_prev_sleep_state(const struct chipset_power_state *ps, int prev_sleep_state)
 {

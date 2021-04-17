@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <device/pci_def.h>
@@ -10,11 +12,8 @@
 
 int smbus_i2c_block_write(u8 addr, u8 bytes, u8 *buf)
 {
-#ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
-#else
-	struct device *dev = pcidev_on_root(SMBUS_DEV, SMBUS_FUNC);
-#endif
+	const pci_devfn_t dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+
 	u32 smbase;
 	u32 smb_ctrl_reg;
 	int status;

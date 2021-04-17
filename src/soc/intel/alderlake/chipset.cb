@@ -34,7 +34,7 @@ chip soc/intel/alderlake
 		end
 		device pci 08.0 alias gna off end
 		device pci 09.0 alias north_tracehub off end
-		device pci 0a.0 alias crashlog off end
+		device pci 0a.0 alias crashlog on end
 		device pci 0d.0 alias tcss_xhci off
 			chip drivers/usb/acpi
 				register "type" = "UPC_TYPE_HUB"

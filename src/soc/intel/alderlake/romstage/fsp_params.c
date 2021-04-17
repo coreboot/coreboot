@@ -237,6 +237,12 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Skip GPIO configuration from FSP */
 	m_cfg->GpioOverride = 0x1;
+
+	/* CrashLog config */
+	if (CONFIG(SOC_INTEL_CRASHLOG)) {
+		m_cfg->CpuCrashLogDevice = 1;
+		m_cfg->CpuCrashLogEnable = 1;
+	}
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

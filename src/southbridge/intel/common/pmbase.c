@@ -16,25 +16,18 @@
 #define PMBASE		0x40
 #define PMSIZE		0x80
 
-/* PCI Configuration Space (D31:F0): LPC */
-#if defined(__SIMPLE_DEVICE__)
-#define PCH_LPC_DEV	PCI_DEV(0, 0x1f, 0)
-#else
-#define PCH_LPC_DEV	pcidev_on_root(0x1f, 0)
-#endif
-
 u16 lpc_get_pmbase(void)
 {
 #ifdef __SIMPLE_DEVICE__
 	/* Don't assume PMBASE is still the same */
-	return pci_read_config16(PCH_LPC_DEV, PMBASE) & 0xfffc;
+	return pci_read_config16(PCI_DEV(0, 0x1f, 0), PMBASE) & 0xfffc;
 #else
 	static u16 pmbase;
 
 	if (pmbase)
 		return pmbase;
 
-	pmbase = pci_read_config16(PCH_LPC_DEV, PMBASE) & 0xfffc;
+	pmbase = pci_read_config16(pcidev_on_root(0x1f, 0), PMBASE) & 0xfffc;
 
 	return pmbase;
 #endif

@@ -13,25 +13,18 @@
 /* LPC GPIO Base Address Register */
 #define GPIO_BASE	0x48
 
-/* PCI Configuration Space (D31:F0): LPC */
-#if defined(__SIMPLE_DEVICE__)
-#define PCH_LPC_DEV	PCI_DEV(0, 0x1f, 0)
-#else
-#define PCH_LPC_DEV	pcidev_on_root(0x1f, 0)
-#endif
-
 static u16 get_gpio_base(void)
 {
 #ifdef __SIMPLE_DEVICE__
 	/* Don't assume GPIO_BASE is still the same */
-	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
+	return pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIO_BASE) & 0xfffe;
 #else
 	static u16 gpiobase;
 
 	if (gpiobase)
 		return gpiobase;
 
-	gpiobase = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
+	gpiobase = pci_read_config16(pcidev_on_root(0x1f, 0), GPIO_BASE) & 0xfffe;
 
 	return gpiobase;
 #endif

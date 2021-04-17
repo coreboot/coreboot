@@ -14,28 +14,6 @@
 
 #include "chip.h"
 
-/*
- * Set which power state system will be after reapplying
- * the power (from G3 State)
- */
-void pmc_soc_set_afterg3_en(const bool on)
-{
-	uint8_t reg8;
-#if defined(__SIMPLE_DEVICE__)
-	const pci_devfn_t dev = PCH_DEV_PMC;
-#else
-	const struct device *const dev = PCH_DEV_PMC;
-#endif
-
-	reg8 = pci_read_config8(dev, GEN_PMCON_B);
-	if (on)
-		reg8 &= ~SLEEP_AFTER_POWER_FAIL;
-	else
-		reg8 |= SLEEP_AFTER_POWER_FAIL;
-	pci_write_config8(dev, GEN_PMCON_B, reg8);
-}
-
-#if ENV_RAMSTAGE
 /* Fill up PMC resource structure */
 int pmc_soc_get_resources(struct pmc_resource_config *cfg)
 {
@@ -166,5 +144,3 @@ static void pm1_handle_wake_pin(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_handle_wake_pin, NULL);
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_EXIT, pm1_handle_wake_pin, NULL);
-
-#endif

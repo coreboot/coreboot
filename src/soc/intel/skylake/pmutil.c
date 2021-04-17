@@ -248,3 +248,20 @@ uint16_t get_pmbase(void)
 {
 	return ACPI_BASE_ADDRESS;
 }
+
+/*
+ * Set which power state system will be after reapplying
+ * the power (from G3 State)
+ */
+void pmc_soc_set_afterg3_en(const bool on)
+{
+	uint8_t reg8;
+	const pci_devfn_t dev = PCH_DEV_PMC;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_B);
+	if (on)
+		reg8 &= ~SLEEP_AFTER_POWER_FAIL;
+	else
+		reg8 |= SLEEP_AFTER_POWER_FAIL;
+	pci_write_config8(dev, GEN_PMCON_B, reg8);
+}

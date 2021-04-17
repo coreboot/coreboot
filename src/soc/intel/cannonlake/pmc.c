@@ -12,23 +12,6 @@
 
 #include "chip.h"
 
-/*
- * Set which power state system will be after reapplying
- * the power (from G3 State)
- */
-void pmc_soc_set_afterg3_en(const bool on)
-{
-	uint8_t reg8;
-	uint8_t *const pmcbase = pmc_mmio_regs();
-
-	reg8 = read8(pmcbase + GEN_PMCON_A);
-	if (on)
-		reg8 &= ~SLEEP_AFTER_POWER_FAIL;
-	else
-		reg8 |= SLEEP_AFTER_POWER_FAIL;
-	write8(pmcbase + GEN_PMCON_A, reg8);
-}
-
 static void pm1_enable_pwrbtn_smi(void *unused)
 {
 	/*

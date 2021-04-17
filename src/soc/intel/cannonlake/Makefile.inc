@@ -56,7 +56,6 @@ ramstage-y += xhci.c
 
 smm-y += elog.c
 smm-y += p2sb.c
-smm-y += pmc.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c

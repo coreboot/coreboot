@@ -113,6 +113,20 @@ const char *const *soc_std_gpe_sts_array(size_t *gpe_arr)
 	return gpe_sts_bits;
 }
 
+void pmc_set_disb(void)
+{
+	/* Set the DISB after DRAM init */
+	u32 disb_val;
+	const pci_devfn_t dev = PCH_DEV_PMC;
+
+	disb_val = pci_read_config32(dev, GEN_PMCON_A);
+	disb_val |= DISB;
+
+	/* Don't clear bits that are write-1-to-clear */
+	disb_val &= ~(GBL_RST_STS | MS4V);
+	pci_write_config32(dev, GEN_PMCON_A, disb_val);
+}
+
 uint8_t *pmc_mmio_regs(void)
 {
 	uint32_t reg32;

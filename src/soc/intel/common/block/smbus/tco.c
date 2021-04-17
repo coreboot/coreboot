@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
@@ -101,13 +103,7 @@ static void tco_enable_bar(void)
 {
 	uint32_t reg32;
 	uint16_t tcobase;
-#if defined(__SIMPLE_DEVICE__)
-	int devfn = PCH_DEVFN_SMBUS;
-	pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
-#else
-	struct device *dev;
-	dev = PCH_DEV_SMBUS;
-#endif
+	const pci_devfn_t dev = PCH_DEV_SMBUS;
 
 	/* Disable TCO in SMBUS Device first before changing Base Address */
 	reg32 = pci_read_config32(dev, TCOCTL);

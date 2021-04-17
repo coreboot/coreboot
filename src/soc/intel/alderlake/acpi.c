@@ -198,6 +198,23 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
+	/* TCSS Thunderbolt root ports */
+	for (unsigned int i = 0; i < MAX_TBT_PCIE_PORT; i++) {
+		const struct device *const tbt_dev = pcidev_path_on_root(SA_DEVFN_TBT(i));
+		if (is_dev_enabled(tbt_dev)) {
+			const uint64_t tbtbar = MCHBAR64(TBTxBAR(i)) & VTBAR_MASK;
+			const bool tbten = MCHBAR32(TBTxBAR(i)) & VTBAR_ENABLED;
+			if (tbtbar && tbten) {
+				const unsigned long tmp = current;
+
+				current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
+				current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
+
+				acpi_dmar_drhd_fixup(tmp, current);
+			}
+		}
+	}
+
 	const uint64_t vtvc0bar = MCHBAR64(VTVC0BAR) & VTBAR_MASK;
 	const bool vtvc0en = MCHBAR32(VTVC0BAR) & VTBAR_ENABLED;
 
@@ -214,23 +231,6 @@ static unsigned long soc_fill_dmar(unsigned long current)
 				V_P2SB_CFG_HBDF_FUNC);
 
 		acpi_dmar_drhd_fixup(tmp, current);
-	}
-
-	/* TCSS Thunderbolt root ports */
-	for (unsigned int i = 0; i < MAX_TBT_PCIE_PORT; i++) {
-		const struct device *const tbt_dev = pcidev_path_on_root(SA_DEVFN_TBT(i));
-		if (is_dev_enabled(tbt_dev)) {
-			const uint64_t tbtbar = MCHBAR64(TBTxBAR(i)) & VTBAR_MASK;
-			const bool tbten = MCHBAR32(TBTxBAR(i)) & VTBAR_ENABLED;
-			if (tbtbar && tbten) {
-				const unsigned long tmp = current;
-
-				current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
-				current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
-
-				acpi_dmar_drhd_fixup(tmp, current);
-			}
-		}
 	}
 
 	/* Add RMRR entry */

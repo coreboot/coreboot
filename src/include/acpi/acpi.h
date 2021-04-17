@@ -418,6 +418,10 @@ enum {
 	DRHD_INCLUDE_PCI_ALL = 1
 };
 
+enum {
+	ATC_REQUIRED = 1
+};
+
 enum dmar_flags {
 	DMAR_INTR_REMAP			= 1 << 0,
 	DMAR_X2APIC_OPT_OUT		= 1 << 1,
@@ -472,7 +476,6 @@ typedef struct dmar_satc_entry {
 	u8 flags;
 	u8 reserved;
 	u16 segment_number;
-	u8 device_scope[];
 } __packed dmar_satc_entry_t;
 
 /* DMAR (DMA Remapping Reporting Structure) */
@@ -1085,7 +1088,7 @@ unsigned long acpi_create_dmar_rhsa(unsigned long current, u64 base_addr,
 unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
 				    const char *device_name);
 unsigned long acpi_create_dmar_satc(unsigned long current, u8 flags,
-				    u16 segment, const char *device_scope);
+				    u16 segment);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);

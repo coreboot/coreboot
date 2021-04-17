@@ -638,17 +638,15 @@ unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
 	return andd->length;
 }
 
-unsigned long acpi_create_dmar_satc(unsigned long current, u8 flags,
-	u16 segment, const char *device_scope)
+unsigned long acpi_create_dmar_satc(unsigned long current, u8 flags, u16 segment)
 {
 	dmar_satc_entry_t *satc = (dmar_satc_entry_t *)current;
-	int satc_len = sizeof(dmar_satc_entry_t) + strlen(device_scope) + 1;
+	int satc_len = sizeof(dmar_satc_entry_t);
 	memset(satc, 0, satc_len);
 	satc->type = DMAR_SATC;
 	satc->length = satc_len;
 	satc->flags = flags;
 	satc->segment_number = segment;
-	memcpy(&satc->device_scope, device_scope, strlen(device_scope));
 
 	return satc->length;
 }

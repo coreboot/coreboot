@@ -51,4 +51,7 @@ void bootblock_early_southbridge_init(void)
 
 	pch_enable_lpc();
 	mainboard_config_superio();
+
+	if (CONFIG(SERIALIO_UART_CONSOLE))
+		uart_bootblock_init();
 }

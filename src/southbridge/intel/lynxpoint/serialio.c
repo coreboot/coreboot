@@ -8,6 +8,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/nvs.h>
+#include <types.h>
 #include "chip.h"
 #include "iobp.h"
 #include "pch.h"
@@ -18,6 +19,19 @@ static void serialio_enable_clock(struct resource *bar0)
 	u32 reg32 = read32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0));
 	reg32 |= SIO_REG_PPR_CLOCK_EN;
 	write32(res2mmio(bar0, SIO_REG_PPR_CLOCK, 0), reg32);
+}
+
+static bool serialio_uart_is_debug(struct device *dev)
+{
+	if (CONFIG(SERIALIO_UART_CONSOLE)) {
+		switch (dev->path.pci.devfn) {
+		case PCH_DEVFN_UART0:
+			return CONFIG_UART_FOR_CONSOLE == 0;
+		case PCH_DEVFN_UART1:
+			return CONFIG_UART_FOR_CONSOLE == 1;
+		}
+	}
+	return 0;
 }
 
 /* Put Serial IO D21:F0-F6 device into desired mode. */
@@ -197,13 +211,15 @@ static void serialio_init(struct device *dev)
 		break;
 	case PCH_DEVFN_UART0: /* UART0 */
 		sio_index = SIO_ID_UART0;
-		serialio_d21_ltr(bar0);
+		if (!serialio_uart_is_debug(dev))
+			serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTD,
 				  config->sio_acpi_mode);
 		break;
 	case PCH_DEVFN_UART1: /* UART1 */
 		sio_index = SIO_ID_UART1;
-		serialio_d21_ltr(bar0);
+		if (!serialio_uart_is_debug(dev))
+			serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTD,
 				  config->sio_acpi_mode);
 		break;
@@ -221,8 +237,21 @@ static void serialio_init(struct device *dev)
 		update_bars(sio_index, (u32)bar0->base, (u32)bar1->base);
 }
 
+static void serialio_read_resources(struct device *dev)
+{
+	pci_dev_read_resources(dev);
+
+	/* Set the configured UART base address for the debug port */
+	if (CONFIG(SERIALIO_UART_CONSOLE) && serialio_uart_is_debug(dev)) {
+		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+		res->base = CONFIG_CONSOLE_UART_BASE_ADDRESS;
+		res->size = 0x1000;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	}
+}
+
 static struct device_operations device_ops = {
-	.read_resources		= pci_dev_read_resources,
+	.read_resources		= serialio_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= serialio_init,

@@ -42,6 +42,10 @@ romstage-y += lp_gpio.c
 ramstage-y += lp_gpio.c
 smm-y += lp_gpio.c
 verstage-y += lp_gpio.c
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += uart_init.c
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += iobp.c
+all-$(CONFIG_SERIALIO_UART_CONSOLE) += uart.c
+smm-$(CONFIG_SERIALIO_UART_CONSOLE) += uart.c
 endif
 
 verstage-y += pmutil.c

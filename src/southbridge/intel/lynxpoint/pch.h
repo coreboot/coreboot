@@ -157,6 +157,7 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 void enable_usb_bar(void);
 void early_pch_init(void);
 void pch_enable_lpc(void);
+void uart_bootblock_init(void);
 void mainboard_config_superio(void);
 void mainboard_config_rcba(void);
 
@@ -372,6 +373,9 @@ void mainboard_config_rcba(void);
 
 #define SIO_REG_PPR_CLOCK		0x800
 #define  SIO_REG_PPR_CLOCK_EN		 (1 << 0)
+#define  SIO_REG_PPR_CLOCK_UPDATE	 (1 << 31)
+#define  SIO_REG_PPR_CLOCK_M_DIV	 0x25a
+#define  SIO_REG_PPR_CLOCK_N_DIV	 0x7fff
 #define SIO_REG_PPR_RST			0x804
 #define  SIO_REG_PPR_RST_ASSERT		 0x3
 #define SIO_REG_PPR_GEN			0x808

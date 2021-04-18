@@ -1,0 +1,5 @@
+# Configuration used to build-test Lynx Point SerialIO UART console code.
+CONFIG_VENDOR_GOOGLE=y
+CONFIG_BOARD_GOOGLE_PANTHER=y
+CONFIG_SERIALIO_UART_CONSOLE=y
+# CONFIG_DRIVERS_UART_8250IO is not set

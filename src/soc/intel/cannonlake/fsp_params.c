@@ -59,7 +59,7 @@ static uint8_t get_param_value(const config_t *config, uint32_t dev_offset)
 }
 
 #if CONFIG(SOC_INTEL_COMETLAKE)
-static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
+static void parse_devicetree(const config_t *config, FSP_S_CONFIG *params)
 {
 	uint32_t dev_offset = 0;
 	uint32_t i = 0;
@@ -81,19 +81,12 @@ static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
 	}
 }
 #else
-static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
+static void parse_devicetree(const config_t *config, FSP_S_CONFIG *params)
 {
 	for (int i = 0; i < ARRAY_SIZE(serial_io_dev); i++)
 		params->SerialIoDevMode[i] = get_param_value(config, i);
 }
 #endif
-
-static void parse_devicetree(FSP_S_CONFIG *params)
-{
-	const config_t *config = config_of_soc();
-
-	parse_devicetree_param(config, params);
-}
 
 /* Ignore LTR value for GBE devices */
 static void ignore_gbe_ltr(void)
@@ -139,7 +132,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	config_t *config = config_of_soc();
 
 	/* Parse device tree and enable/disable devices */
-	parse_devicetree(params);
+	parse_devicetree(config, params);
 
 	/* Load VBT before devicetree-specific config. */
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();

@@ -17,19 +17,21 @@
 
 #include "../chip.h"
 
-static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
+	assert(dev != NULL);
+	const config_t *config = config_of(dev);
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
-
 	unsigned int i;
 	uint32_t mask = 0;
-	const struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	/*
 	 * Probe for no IGD and disable InternalGfx and panel power to prevent a
 	 * crash in FSP-M.
 	 */
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	const bool igd_on = !CONFIG(SOC_INTEL_DISABLE_IGD) && dev && dev->enabled;
 	if (igd_on && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
 		/* Set IGD stolen size to 64MB. */
@@ -131,17 +133,6 @@ static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 	if (config->DisableHeciRetry)
 		tconfig->DisableHeciRetry = config->DisableHeciRetry;
 #endif
-}
-
-void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
-{
-	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	assert(dev != NULL);
-	const config_t *config = config_of(dev);
-	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
-	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
-
-	soc_memory_init_params(mupd, config);
 
 	/* Enable SMBus controller based on config */
 	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);

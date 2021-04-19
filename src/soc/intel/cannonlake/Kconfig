@@ -119,6 +119,9 @@ config MAX_CPUS
 	int
 	default 12
 
+config DIMM_SPD_SIZE
+	default 512
+
 config DCACHE_RAM_BASE
 	default 0xfef00000
 

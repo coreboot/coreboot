@@ -45,10 +45,6 @@ config DIMM_MAX
 	int
 	default 2
 
-config DIMM_SPD_SIZE
-	int
-	default 512
-
 config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x4

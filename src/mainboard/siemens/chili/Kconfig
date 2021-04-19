@@ -59,10 +59,6 @@ config INTEL_GMA_VBT_FILE
 	string
 	default "src/mainboard/$(MAINBOARDDIR)/variants/$(CONFIG_VARIANT_DIR)/data.vbt"
 
-config DIMM_SPD_SIZE
-	int
-	default 512
-
 config CBFS_SIZE
 	hex
 	default 0xb00000

@@ -50,10 +50,6 @@ config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config DIMM_SPD_SIZE
-	int
-	default 512
-
 config CONSOLE_POST
 	bool
 	default y

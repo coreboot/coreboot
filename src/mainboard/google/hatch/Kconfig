@@ -70,10 +70,6 @@ config DIMM_MAX
 	int
 	default 2
 
-config DIMM_SPD_SIZE
-	int
-	default 512
-
 config ROMSTAGE_SPD_CBFS
 	bool
 	default y if !ROMSTAGE_SPD_SMBUS

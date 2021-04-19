@@ -87,12 +87,7 @@ void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_
 	FchParams_reset->Mode = 6;
 
 	/* Read SATA speed setting from CMOS */
-	enum cb_err ret;
-	ret = get_option(&FchParams_reset->SataSetMaxGen2, "sata_speed");
-	if (ret != CB_SUCCESS) {
-		FchParams_reset->SataSetMaxGen2 = 0;
-		printk(BIOS_DEBUG, "ERROR: cannot read CMOS setting, falling back to default. Error code: %x\n", (int)ret);
-	}
+	FchParams_reset->SataSetMaxGen2 = get_int_option("sata_speed", 0);
 	printk(BIOS_DEBUG, "Force SATA 3Gbps mode = %x\n", FchParams_reset->SataSetMaxGen2);
 }
 
@@ -107,12 +102,7 @@ void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 	FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 
 	/* Read SATA controller mode from CMOS */
-	enum cb_err ret;
-	ret = get_option(&FchParams_env->Sata.SataClass, "sata_mode");
-	if (ret != CB_SUCCESS) {
-		FchParams_env->Sata.SataClass = 0;
-		printk(BIOS_DEBUG, "ERROR: cannot read CMOS setting, falling back to default. Error code: %x\n", (int)ret);
-	}
+	FchParams_env->Sata.SataClass = get_int_option("sata_mode", 0);
 
 	switch ((SATA_CLASS)FchParams_env->Sata.SataClass) {
 	case SataLegacyIde:

@@ -129,7 +129,6 @@ static void sata_init(struct device *const dev)
 
 	/* Get the chip configuration */
 	const config_t *const config = dev->chip_info;
-	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "i82801jx_sata: initializing...\n");
 
@@ -139,9 +138,8 @@ static void sata_init(struct device *const dev)
 		return;
 	}
 
-	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
-		/* Default to AHCI */
-		sata_mode = 0;
+	/* Default to AHCI */
+	u8 sata_mode = get_int_option("sata_mode", 0);
 
 	/*
 	 * TODO: In contrast to ICH7 and PCH code we don't set
@@ -202,14 +200,12 @@ static void sata_enable(struct device *dev)
 	const config_t *const config = dev->chip_info;
 
 	u16 map = 0;
-	u8 sata_mode;
 
 	if (!config)
 		return;
 
-	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
-		/* Default to AHCI */
-		sata_mode = 0;
+	/* Default to AHCI */
+	u8 sata_mode = get_int_option("sata_mode", 0);
 
 	/*
 	 * Set SATA controller mode early so the resource allocator can

@@ -35,8 +35,7 @@ static void sata_read_resources(struct device *dev)
 
 	/* Assign fixed resources for IDE legacy mode */
 
-	u8 sata_mode = 0;
-	get_option(&sata_mode, "sata_mode");
+	u8 sata_mode = get_int_option("sata_mode", 0);
 	if (sata_mode != 2)
 		return;
 
@@ -72,8 +71,7 @@ static void sata_read_resources(struct device *dev)
 static void sata_set_resources(struct device *dev)
 {
 	/* work around bug in pci_dev_set_resources(), it bails out on FIXED */
-	u8 sata_mode = 0;
-	get_option(&sata_mode, "sata_mode");
+	u8 sata_mode = get_int_option("sata_mode", 0);
 	if (sata_mode == 2) {
 		unsigned int i;
 		for (i = PCI_BASE_ADDRESS_0; i <= PCI_BASE_ADDRESS_3; i += 4) {
@@ -92,7 +90,6 @@ static void sata_init(struct device *dev)
 	u16 reg16;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
-	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
@@ -101,9 +98,8 @@ static void sata_init(struct device *dev)
 		return;
 	}
 
-	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
-		/* Default to AHCI */
-		sata_mode = 0;
+	/* Default to AHCI */
+	u8 sata_mode = get_int_option("sata_mode", 0);
 
 	/* SATA configuration */
 
@@ -230,13 +226,11 @@ static void sata_enable(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 	u16 map = 0;
-	u8 sata_mode;
 
 	if (!config)
 		return;
 
-	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
-		sata_mode = 0;
+	u8 sata_mode = get_int_option("sata_mode", 0);
 
 	/*
 	 * Set SATA controller mode early so the resource allocator can

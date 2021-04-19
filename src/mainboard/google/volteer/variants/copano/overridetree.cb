@@ -150,7 +150,7 @@ chip soc/intel/tigerlake
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				# GPP_E17 is the IRQ source, and GPP_E1 is the wake source
-				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_E17)"
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_HIGH(GPP_E17)"
 				register "key.wake_gpe" = "GPE0_DW2_01"
 				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
 				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"

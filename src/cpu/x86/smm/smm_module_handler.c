@@ -132,9 +132,7 @@ asmlinkage void smm_handler_start(void *arg)
 	gnvs = (void *)(uintptr_t)smm_runtime.gnvs_ptr;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
-		console_init();
-		printk(BIOS_CRIT,
-		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
+		/* Do not log messages to console here, it is not thread safe */
 		return;
 	}
 

@@ -11,7 +11,6 @@
 #include <arch/ioapic.h>
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
-#include <soc/iobp.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pch.h>
@@ -22,6 +21,7 @@
 #include <soc/intel/broadwell/pch/chip.h>
 #include <acpi/acpigen.h>
 #include <southbridge/intel/common/rtc.h>
+#include <southbridge/intel/lynxpoint/iobp.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 static void pch_enable_ioapic(struct device *dev)

@@ -5,13 +5,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <soc/iobp.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/serialio.h>
 #include <soc/spi.h>
+#include <southbridge/intel/lynxpoint/iobp.h>
 
 u8 pch_revision(void)
 {

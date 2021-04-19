@@ -9,11 +9,11 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <soc/lpc.h>
-#include <soc/iobp.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/lynxpoint/iobp.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <delay.h>
 

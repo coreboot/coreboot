@@ -7,11 +7,11 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <delay.h>
-#include <soc/iobp.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/sata.h>
 #include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/lynxpoint/iobp.h>
 
 static inline u32 sir_read(struct device *dev, int idx)
 {

@@ -7,7 +7,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <soc/iobp.h>
 #include <soc/device_nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pch.h>
@@ -15,6 +14,7 @@
 #include <soc/rcba.h>
 #include <soc/serialio.h>
 #include <soc/intel/broadwell/pch/chip.h>
+#include <southbridge/intel/lynxpoint/iobp.h>
 
 /* Set D3Hot Power State in ACPI mode */
 static void serialio_enable_d3hot(struct resource *res)

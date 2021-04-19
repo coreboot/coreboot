@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -8,8 +7,6 @@
 #include <device/pci_ops.h>
 #include <device/mmio.h>
 #include <soc/adsp.h>
-#include <soc/device_nvs.h>
-#include <soc/device_nvs.h>
 #include <soc/pch.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
@@ -79,15 +76,14 @@ static void adsp_init(struct device *dev)
 	pch_iobp_write(ADSP_IOBP_PMCTL, ADSP_PMCTL_VALUE);
 
 	if (config->sio_acpi_mode) {
-		struct device_nvs *dev_nvs = acpi_get_device_nvs();
-
 		/* Configure for ACPI mode */
 		printk(BIOS_INFO, "ADSP: Enable ACPI Mode IRQ3\n");
 
-		/* Save BAR0 and BAR1 to ACPI NVS */
-		dev_nvs->bar0[SIO_NVS_ADSP] = (u32)bar0->base;
-		dev_nvs->bar1[SIO_NVS_ADSP] = (u32)bar1->base;
-		dev_nvs->enable[SIO_NVS_ADSP] = 1;
+		/* Save BAR0 and BAR1 */
+		struct pch_acpi_device_state *state = get_acpi_device_state(PCH_ACPI_ADSP);
+		state->enable = 1;
+		state->bar0 = (u32)bar0->base;
+		state->bar1 = (u32)bar1->base;
 
 		/* Set PCI Config Disable Bit */
 		pch_iobp_update(ADSP_IOBP_PCICFGCTL, ~0, ADSP_PCICFGCTL_PCICD);

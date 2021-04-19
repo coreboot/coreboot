@@ -604,11 +604,12 @@ static unsigned long broadwell_write_acpi_tables(const struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
 {
-	if (CONFIG(INTEL_PCH_UART_CONSOLE))
+	if (CONFIG(SERIALIO_UART_CONSOLE)) {
 		current = acpi_write_dbg2_pci_uart(rsdp, current,
-			(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1) ?
+			(CONFIG_UART_FOR_CONSOLE == 1) ?
 				PCH_DEV_UART1 : PCH_DEV_UART0,
-			ACPI_ACCESS_SIZE_BYTE_ACCESS);
+			ACPI_ACCESS_SIZE_DWORD_ACCESS);
+	}
 	return acpi_write_hpet(device, current, rsdp);
 }
 

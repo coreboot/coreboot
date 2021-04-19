@@ -15,6 +15,7 @@
 #include <soc/serialio.h>
 #include <soc/intel/broadwell/pch/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
+#include <types.h>
 
 /* Set D3Hot Power State in ACPI mode */
 static void serialio_enable_d3hot(struct resource *res)
@@ -24,17 +25,17 @@ static void serialio_enable_d3hot(struct resource *res)
 	write32(res2mmio(res, PCH_PCS, 0), reg32);
 }
 
-static int serialio_uart_is_debug(struct device *dev)
+static bool serialio_uart_is_debug(struct device *dev)
 {
-#if CONFIG(INTEL_PCH_UART_CONSOLE)
-	switch (dev->path.pci.devfn) {
-	case PCH_DEVFN_UART0: /* UART0 */
-		return !!(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 0);
-	case PCH_DEVFN_UART1: /* UART1 */
-		return !!(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1);
+	if (CONFIG(SERIALIO_UART_CONSOLE)) {
+		switch (dev->path.pci.devfn) {
+		case PCH_DEVFN_UART0:
+			return CONFIG_UART_FOR_CONSOLE == 0;
+		case PCH_DEVFN_UART1:
+			return CONFIG_UART_FOR_CONSOLE == 1;
+		}
 	}
-#endif
-	return 0;
+	return false;
 }
 
 /* Enable clock in PCI mode */
@@ -239,33 +240,33 @@ static void serialio_init(struct device *dev)
 		dev_nvs->bar0[sio_index] = (u32)bar0->base;
 		dev_nvs->bar1[sio_index] = (u32)bar1->base;
 
-		/* Do not enable UART if it is used as debug port */
-		if (!serialio_uart_is_debug(dev))
+		if (!serialio_uart_is_debug(dev)) {
+			/* Do not enable UART if it is used as debug port */
 			dev_nvs->enable[sio_index] = 1;
 
-		/* Put device in D3hot state via BAR1 */
-		if (dev->path.pci.devfn != PCH_DEVFN_SDMA)
-			serialio_enable_d3hot(bar1); /* all but SDMA */
+			/* Put device in D3hot state via BAR1 */
+			if (dev->path.pci.devfn != PCH_DEVFN_SDMA)
+				serialio_enable_d3hot(bar1); /* all but SDMA */
+		}
 	}
 }
 
-static void serialio_set_resources(struct device *dev)
+static void serialio_read_resources(struct device *dev)
 {
-	pci_dev_set_resources(dev);
+	pci_dev_read_resources(dev);
 
-#if CONFIG(INTEL_PCH_UART_CONSOLE)
-	/* Update UART base address if used for debug */
-	if (serialio_uart_is_debug(dev)) {
+	/* Set the configured UART base address for the debug port */
+	if (CONFIG(SERIALIO_UART_CONSOLE) && serialio_uart_is_debug(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
-		if (res)
-			uartmem_setbaseaddr(res->base);
+		res->base = CONFIG_CONSOLE_UART_BASE_ADDRESS;
+		res->size = 0x1000;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	}
-#endif
 }
 
 static struct device_operations device_ops = {
-	.read_resources		= &pci_dev_read_resources,
-	.set_resources		= &serialio_set_resources,
+	.read_resources		= &serialio_read_resources,
+	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &serialio_init,
 	.ops_pci		= &pci_dev_ops_pci,

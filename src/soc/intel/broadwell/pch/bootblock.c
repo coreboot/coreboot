@@ -105,6 +105,9 @@ static void pch_early_lpc(void)
 	RCBA32_OR(FD, PCH_DISABLE_ALWAYS);
 }
 
+/* Defined in Lynx Point code */
+void uart_bootblock_init(void);
+
 void bootblock_early_southbridge_init(void)
 {
 	map_rcba();
@@ -112,4 +115,7 @@ void bootblock_early_southbridge_init(void)
 	enable_port80_on_lpc();
 	set_spi_speed();
 	pch_early_lpc();
+
+	if (CONFIG(SERIALIO_UART_CONSOLE))
+		uart_bootblock_init();
 }

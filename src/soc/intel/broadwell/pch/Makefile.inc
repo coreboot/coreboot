@@ -30,12 +30,16 @@ ramstage-y += serialio.c
 ramstage-y += ../../../../southbridge/intel/lynxpoint/smbus.c
 ramstage-y += smi.c
 smm-y      += smihandler.c
-romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c
 bootblock-y += usb_debug.c
 romstage-y += usb_debug.c
 ramstage-y += usb_debug.c
 ramstage-y += usb_ehci.c
 ramstage-y += usb_xhci.c
 smm-y      += usb_xhci.c
+
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/iobp.c
+bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart_init.c
+all-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart.c
+smm-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c

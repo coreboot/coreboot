@@ -153,20 +153,16 @@ config RO_REGION_ONLY
 
 endif # HAVE_MRC
 
-config INTEL_PCH_UART_CONSOLE
-	bool "Use Serial IO UART for console"
+config SERIALIO_UART_CONSOLE
+	bool
 	default n
-	select DRIVERS_UART_8250MEM
+	select DRIVERS_UART_8250MEM_32
+	help
+	  Selected by mainboards where SerialIO UARTs can be used to retrieve
+	  coreboot logs. Boards also need to set UART_FOR_CONSOLE accordingly.
 
-config INTEL_PCH_UART_CONSOLE_NUMBER
-	hex "Serial IO UART number to use for console"
-	default 0x0
-	depends on INTEL_PCH_UART_CONSOLE
-
-config TTYS0_BASE
-	hex
-	default 0xd6000000
-	depends on INTEL_PCH_UART_CONSOLE
+config CONSOLE_UART_BASE_ADDRESS
+	default 0xd6000000 if SERIALIO_UART_CONSOLE
 
 config EHCI_BAR
 	hex

@@ -1,0 +1,5 @@
+# Configuration used to build-test Wildcat Point SerialIO UART console code.
+CONFIG_VENDOR_GOOGLE=y
+CONFIG_BOARD_GOOGLE_GUADO=y
+CONFIG_SERIALIO_UART_CONSOLE=y
+# CONFIG_DRIVERS_UART_8250IO is not set

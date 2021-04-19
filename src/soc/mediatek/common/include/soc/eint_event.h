@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8192_EINT_EVENT_H
-#define SOC_MEDIATEK_MT8192_EINT_EVENT_H
+#ifndef SOC_MEDIATEK_COMMON_EINT_EVENT_H
+#define SOC_MEDIATEK_COMMON_EINT_EVENT_H
 
 #include <device/mmio.h>
 #include <soc/addressmap.h>

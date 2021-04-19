@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8192_UFS_H
-#define SOC_MEDIATEK_MT8192_UFS_H
+#ifndef SOC_MEDIATEK_COMMON_UFS_H
+#define SOC_MEDIATEK_COMMON_UFS_H
 
 #include <device/mmio.h>
 #include <soc/addressmap.h>
@@ -14,4 +14,4 @@ enum ufshci_offset {
 
 #define UFS_REFCLK_CTRL	(UFSHCI_BASE + REG_UFS_REFCLK_CTRL)
 
-#endif /* SOC_MEDIATEK_MT8192_UFS_H */
+#endif /* SOC_MEDIATEK_COMMON_UFS_H */

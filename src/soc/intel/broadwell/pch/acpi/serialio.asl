@@ -9,7 +9,7 @@
 // Arg0 - Ref to offset 0x84 of device's PCI config space
 Method (LPD0, 1, Serialized)
 {
-	DeRefOf (Arg0) &= 0xFFFFFFFC
+	Arg0 = DeRefOf (Arg0) & 0xFFFFFFFC
 	Local0 = DeRefOf (Arg0) // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used
@@ -20,7 +20,7 @@ Method (LPD0, 1, Serialized)
 // Arg0 - Ref to offset 0x84 of device's PCI config space
 Method (LPD3, 1, Serialized)
 {
-	DeRefOf (Arg0) |= 0x3
+	Arg0 = DeRefOf (Arg0) | 0x3
 	Local0 = DeRefOf (Arg0) // Read back after writing
 
 	// Use Local0 to avoid iasl warning: Method Local is set but never used

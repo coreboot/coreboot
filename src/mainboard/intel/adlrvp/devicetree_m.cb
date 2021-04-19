@@ -29,6 +29,9 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WWAN
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WLAN
 
+	# Enable CNVi Bluetooth
+	register "CnviBtCore" = "true"
+
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
@@ -167,7 +170,6 @@ chip soc/intel/alderlake
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
 		device pci 10.1 off end
-		device pci 10.2 on  end # CNVi: BT
 		device pci 10.6 off end # THC0
 		device pci 10.7 off end # THC1
 		device pci 11.0 off end

@@ -125,7 +125,6 @@ static void pch_power_options(struct device *dev)
 {
 	u16 reg16;
 	const char *state;
-	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
@@ -133,7 +132,8 @@ static void pch_power_options(struct device *dev)
 	 *
 	 * If the option is not existent (Laptops), use Kconfig setting.
 	 */
-	get_option(&pwr_on, "power_on_after_fail");
+	const int pwr_on = get_int_option("power_on_after_fail",
+					  CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 
 	reg16 = pci_read_config16(dev, GEN_PMCON_3);
 	reg16 &= 0xfffe;

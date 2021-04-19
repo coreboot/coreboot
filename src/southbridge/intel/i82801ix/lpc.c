@@ -152,9 +152,6 @@ static void i82801ix_power_options(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-	int nmi_option;
-
 	/* BIOS must program... */
 	pci_or_config32(dev, 0xac, (1 << 30) | (3 << 8));
 
@@ -164,8 +161,7 @@ static void i82801ix_power_options(struct device *dev)
 	 *
 	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-	pwr_on = MAINBOARD_POWER_ON;
-	get_option(&pwr_on, "power_on_after_fail");
+	const int pwr_on = get_int_option("power_on_after_fail", MAINBOARD_POWER_ON);
 
 	reg8 = pci_read_config8(dev, D31F0_GEN_PMCON_3);
 	reg8 &= 0xfe;
@@ -201,8 +197,7 @@ static void i82801ix_power_options(struct device *dev)
 	outb(reg8, 0x61);
 
 	reg8 = inb(0x74); /* Read from 0x74 as 0x70 is write only. */
-	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	const int nmi_option = get_int_option("nmi", NMI_OFF);
 	if (nmi_option) {
 		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */

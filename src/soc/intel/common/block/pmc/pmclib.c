@@ -583,8 +583,8 @@ void pmc_set_power_failure_state(const bool target_on)
 {
 	bool on;
 
-	uint8_t state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-	get_option(&state, "power_on_after_fail");
+	const int state = get_int_option("power_on_after_fail",
+					 CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 
 	switch (state) {
 	case MAINBOARD_POWER_STATE_OFF:

@@ -78,13 +78,12 @@ static void busmaster_disable_on_bus(int bus)
 
 static int power_on_after_fail(void)
 {
-	u8 s5pwr = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-
 	/* save and recover RTC port values */
 	u8 tmp70, tmp72;
 	tmp70 = inb(0x70);
 	tmp72 = inb(0x72);
-	get_option(&s5pwr, "power_on_after_fail");
+	const int s5pwr = get_int_option("power_on_after_fail",
+					 CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);
 

@@ -88,17 +88,13 @@ static void i82801dx_power_options(struct device *dev)
 	u32 reg32;
 	const char *state;
 
-	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-	int nmi_option;
-
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
 	 * 1 == S5 Soft Off
 	 *
 	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-	pwr_on = MAINBOARD_POWER_ON;
-	get_option(&pwr_on, "power_on_after_fail");
+	const int pwr_on = get_int_option("power_on_after_fail", MAINBOARD_POWER_ON);
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	reg8 &= 0xfe;
@@ -133,8 +129,7 @@ static void i82801dx_power_options(struct device *dev)
 	outb(reg8, 0x61);
 
 	reg8 = inb(0x70);
-	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	const int nmi_option = get_int_option("nmi", NMI_OFF);
 	if (nmi_option) {
 		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */

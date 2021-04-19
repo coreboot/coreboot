@@ -26,7 +26,7 @@ static void init_log_level(void)
 	console_loglevel = get_console_loglevel();
 
 	if (!FIRST_CONSOLE)
-		get_option(&console_loglevel, "debug_level");
+		console_loglevel = get_int_option("debug_level", console_loglevel);
 }
 
 int console_log_level(int msg_level)

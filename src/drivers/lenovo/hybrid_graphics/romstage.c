@@ -18,7 +18,7 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 {
 	const struct drivers_lenovo_hybrid_graphics_config *config;
 	const struct device *dev;
-	enum hybrid_graphics_req mode = HYBRID_GRAPHICS_DEFAULT_GPU;
+	enum hybrid_graphics_req mode;
 
 	/* TODO: Use generic device instead of dummy PNP device */
 	dev = dev_find_slot_pnp(HYBRID_GRAPHICS_PORT, HYBRID_GRAPHICS_DEVICE);
@@ -39,7 +39,7 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 		return;
 	}
 
-	get_option(&mode, "hybrid_graphics_mode");
+	mode = get_int_option("hybrid_graphics_mode", HYBRID_GRAPHICS_DEFAULT_GPU);
 
 	if (mode == HYBRID_GRAPHICS_DISCRETE) {
 		printk(BIOS_DEBUG, "Hybrid graphics:"

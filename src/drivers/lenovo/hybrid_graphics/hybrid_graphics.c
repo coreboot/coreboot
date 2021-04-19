@@ -14,7 +14,7 @@
 static void lenovo_hybrid_graphics_enable(struct device *dev)
 {
 	const struct drivers_lenovo_hybrid_graphics_config *config;
-	enum hybrid_graphics_req mode = HYBRID_GRAPHICS_DEFAULT_GPU;
+	enum hybrid_graphics_req mode;
 
 	/* Don't confuse anyone else and disable the fake device */
 	dev->enabled = 0;
@@ -25,7 +25,7 @@ static void lenovo_hybrid_graphics_enable(struct device *dev)
 		return;
 	}
 
-	get_option(&mode, "hybrid_graphics_mode");
+	mode = get_int_option("hybrid_graphics_mode", HYBRID_GRAPHICS_DEFAULT_GPU);
 
 	if (mode == HYBRID_GRAPHICS_DISCRETE) {
 		printk(BIOS_DEBUG, "Hybrid graphics:"

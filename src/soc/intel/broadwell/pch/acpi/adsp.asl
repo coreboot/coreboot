@@ -1,5 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+// This is defined in SSDT2 which is generated at boot based
+// on whether or not the device is enabled in ACPI mode.
+External (\S8EN)
+External (\S8B0)
+External (\S8B1)
+
 Device (ADSP)
 {
 	Method (_HID, 0, Serialized)

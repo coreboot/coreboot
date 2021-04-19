@@ -3,6 +3,8 @@
 #ifndef _BROADWELL_PCH_H_
 #define _BROADWELL_PCH_H_
 
+#include <acpi/acpi.h>
+
 /* Haswell ULT Pch (LynxPoint-LP) */
 #define PCH_LPT_LP_SAMPLE	0x9c41
 #define PCH_LPT_LP_PREMIUM	0x9c43
@@ -29,6 +31,8 @@ int pch_is_wpt(void);
 int pch_is_wpt_ulx(void);
 u32 pch_read_soft_strap(int id);
 void pch_disable_devfn(struct device *dev);
+
+void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 void broadwell_pch_finalize(void);
 

@@ -600,6 +600,16 @@ static void pch_lpc_read_resources(struct device *dev)
 	pch_lpc_add_io_resources(dev);
 }
 
+static unsigned long acpi_write_serialio_ssdt(unsigned long current, struct acpi_rsdp *rsdp)
+{
+	printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
+	acpi_header_t *ssdt = (acpi_header_t *)current;
+	acpi_create_serialio_ssdt(ssdt);
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	return acpi_align_current(current);
+}
+
 static unsigned long broadwell_write_acpi_tables(const struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
@@ -610,7 +620,10 @@ static unsigned long broadwell_write_acpi_tables(const struct device *device,
 				PCH_DEV_UART1 : PCH_DEV_UART0,
 			ACPI_ACCESS_SIZE_DWORD_ACCESS);
 	}
-	return acpi_write_hpet(device, current, rsdp);
+	current = acpi_write_hpet(device, current, rsdp);
+	current = acpi_align_current(current);
+	current = acpi_write_serialio_ssdt(current, rsdp);
+	return current;
 }
 
 static struct device_operations device_ops = {

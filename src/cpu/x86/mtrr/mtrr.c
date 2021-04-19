@@ -28,10 +28,8 @@
 #define MTRR_FIXED_WRBACK_BITS 0
 #endif
 
-/* 2 MTRRS are reserved for the operating system */
-#define BIOS_MTRRS 6
-#define OS_MTRRS   2
-#define MTRRS      (BIOS_MTRRS + OS_MTRRS)
+#define MIN_MTRRS	8
+
 /*
  * Static storage size for variable MTRRs. It's sized sufficiently large to
  * handle different types of CPUs. Empirically, 16 variable MTRRs has not
@@ -39,8 +37,7 @@
  */
 #define NUM_MTRR_STATIC_STORAGE 16
 
-static int total_mtrrs = MTRRS;
-static int bios_mtrrs = BIOS_MTRRS;
+static int total_mtrrs;
 
 static void detect_var_mtrrs(void)
 {
@@ -56,7 +53,6 @@ static void detect_var_mtrrs(void)
 			total_mtrrs, NUM_MTRR_STATIC_STORAGE);
 		total_mtrrs = NUM_MTRR_STATIC_STORAGE;
 	}
-	bios_mtrrs = total_mtrrs - OS_MTRRS;
 }
 
 void enable_fixed_mtrr(void)
@@ -399,6 +395,11 @@ static void clear_var_mtrr(int index)
 	wrmsr(MTRR_PHYS_MASK(index), msr);
 }
 
+static int get_os_reserved_mtrrs(void)
+{
+	return CONFIG(RESERVE_MTRRS_FOR_OS) ? 2 : 0;
+}
+
 static void prep_var_mtrr(struct var_mtrr_state *var_state,
 			  uint64_t base, uint64_t size, int mtrr_type)
 {
@@ -407,16 +408,19 @@ static void prep_var_mtrr(struct var_mtrr_state *var_state,
 	resource_t rsize;
 	resource_t mask;
 
-	/* Some variable MTRRs are attempted to be saved for the OS use.
-	 * However, it's more important to try to map the full address space
-	 * properly. */
-	if (var_state->mtrr_index >= bios_mtrrs)
-		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
 	if (var_state->mtrr_index >= total_mtrrs) {
 		printk(BIOS_ERR, "ERROR: Not enough MTRRs available! MTRR index is %d with %d MTRRs in total.\n",
 		       var_state->mtrr_index, total_mtrrs);
 		return;
 	}
+
+	/*
+	 * If desired, 2 variable MTRRs are attempted to be saved for the OS to
+	 * use. However, it's more important to try to map the full address
+	 * space properly.
+	 */
+	if (var_state->mtrr_index >= total_mtrrs - get_os_reserved_mtrrs())
+		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
 
 	rbase = base;
 	rsize = size;
@@ -710,6 +714,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 	__calc_var_mtrrs(addr_space, above4gb, address_bits, &wb_deftype_count,
 			 &uc_deftype_count);
 
+	const int bios_mtrrs = total_mtrrs - get_os_reserved_mtrrs();
 	if (wb_deftype_count > bios_mtrrs && uc_deftype_count > bios_mtrrs) {
 		printk(BIOS_DEBUG, "MTRR: Removing WRCOMB type. "
 		       "WB/UC MTRR counts: %d/%d > %d.\n",
@@ -813,6 +818,8 @@ static void _x86_setup_mtrrs(unsigned int above4gb)
 
 void x86_setup_mtrrs(void)
 {
+	/* Without detect, assume the minimum */
+	total_mtrrs = MIN_MTRRS;
 	/* Always handle addresses above 4GiB. */
 	_x86_setup_mtrrs(1);
 }

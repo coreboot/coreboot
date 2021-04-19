@@ -160,3 +160,13 @@ config SOC_SETS_MSRS
 	help
 	  The SoC requires different access methods for reading and writing
 	  the MSRs.  Use SoC specific routines to handle the MSR access.
+
+config RESERVE_MTRRS_FOR_OS
+	bool
+	default n
+	help
+	  This option allows a platform to reserve 2 MTRRs for the OS usage.
+	  The Intel SDM documents that the the first 6 MTRRs are intended for
+	  the system BIOS and the last 2 are to be reserved for OS usage.
+	  However, modern OSes use PAT to control cacheability instead of
+	  using MTRRs.

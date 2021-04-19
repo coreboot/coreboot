@@ -304,6 +304,19 @@ void generate_cpu_entries(const struct device *device)
 				.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
 			},
 		},
+		[2] = {
+			.ctype = 3,
+			.latency = 350,
+			.power = 0,
+			.resource = {
+				.space_id = ACPI_ADDRESS_SPACE_IO,
+				.bit_width = 8,
+				.bit_offset = 0,
+				.addrl = cstate_base_address + 2,
+				.addrh = 0,
+				.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
+			},
+		},
 	};
 
 	threads_per_core = ((cpuid_ebx(CPUID_EBX_CORE_ID) & CPUID_EBX_THREADS_MASK)

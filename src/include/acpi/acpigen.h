@@ -338,6 +338,7 @@ inline void acpigen_write_device_end(void)
 {
 	acpigen_pop_len();
 }
+void acpigen_write_LPI_package(u64 level, const struct acpi_lpi_state *states, u16 nentries);
 void acpigen_write_PPC(u8 nr);
 void acpigen_write_PPC_NVS(void);
 void acpigen_write_empty_PCT(void);

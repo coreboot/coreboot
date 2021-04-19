@@ -898,6 +898,25 @@ typedef struct acpi_tstate {
 	u32 status;
 } __packed acpi_tstate_t;
 
+enum acpi_lpi_state_flags {
+	ACPI_LPI_STATE_DISABLED = 0,
+	ACPI_LPI_STATE_ENABLED
+};
+
+/* Low Power Idle State */
+struct acpi_lpi_state {
+	u32 min_residency_us;
+	u32 worst_case_wakeup_latency_us;
+	u32 flags;
+	u32 arch_context_lost_flags;
+	u32 residency_counter_frequency_hz;
+	u32 enabled_parent_state;
+	acpi_addr_t entry_method;
+	acpi_addr_t residency_counter_register;
+	acpi_addr_t usage_counter_register;
+	const char *state_name;
+};
+
 /* Port types for ACPI _UPC object */
 enum acpi_upc_type {
 	UPC_TYPE_A,

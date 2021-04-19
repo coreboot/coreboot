@@ -56,10 +56,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "BILBY"
 
-config DEVICETREE
-	string
-	default "devicetree.cb"
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

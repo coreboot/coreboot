@@ -152,7 +152,7 @@ static void configure_gpios(void)
 		GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT_ENABLE);
 
 	gpio_configure(GPIO(63), GPIO63_FUNC_QSPI_CLK,
-		GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT_ENABLE);
+		GPIO_NO_PULL, GPIO_8MA, GPIO_OUTPUT_ENABLE);
 }
 
 static void queue_bounce_data(uint8_t *data, uint32_t data_bytes,

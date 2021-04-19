@@ -58,9 +58,9 @@ static uint8_t get_param_value(const config_t *config, uint32_t dev_offset)
 	return PCH_SERIAL_IO_INDEX(config->SerialIoDevMode[dev_offset]);
 }
 
-#if CONFIG(SOC_INTEL_COMETLAKE)
 static void parse_devicetree(const config_t *config, FSP_S_CONFIG *params)
 {
+#if CONFIG(SOC_INTEL_COMETLAKE)
 	uint32_t dev_offset = 0;
 	uint32_t i = 0;
 
@@ -79,14 +79,11 @@ static void parse_devicetree(const config_t *config, FSP_S_CONFIG *params)
 		params->SerialIoUartMode[i] =
 				get_param_value(config, dev_offset);
 	}
-}
 #else
-static void parse_devicetree(const config_t *config, FSP_S_CONFIG *params)
-{
 	for (int i = 0; i < ARRAY_SIZE(serial_io_dev); i++)
 		params->SerialIoDevMode[i] = get_param_value(config, i);
-}
 #endif
+}
 
 /* Ignore LTR value for GBE devices */
 static void ignore_gbe_ltr(void)

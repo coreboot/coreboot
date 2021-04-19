@@ -50,7 +50,6 @@ void npcd378_hwm_write_finished(const uint16_t iobase)
 static void npcd378_init(struct device *dev)
 {
 	struct resource *res;
-	uint8_t pwm, fan_lvl;
 
 	if (!dev->enabled)
 		return;
@@ -69,10 +68,11 @@ static void npcd378_init(struct device *dev)
 
 		npcd378_hwm_write_start(res->base);
 
-		if (!get_option(&fan_lvl, "psu_fan_lvl") || fan_lvl > 7)
+		int fan_lvl = get_int_option("psu_fan_lvl", -1);
+		if (fan_lvl < 0 || fan_lvl > 7)
 			fan_lvl = 3;
 
-		pwm = NPCD378_HWM_PSU_FAN_MIN +
+		uint8_t pwm = NPCD378_HWM_PSU_FAN_MIN +
 		    (NPCD378_HWM_PSU_FAN_MAX - NPCD378_HWM_PSU_FAN_MIN) *
 		    fan_lvl / 7;
 

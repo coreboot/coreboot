@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -17,12 +18,7 @@
 
 static void acp_update32(uintptr_t bar, uint32_t reg, uint32_t clear, uint32_t set)
 {
-	uint32_t val;
-
-	val = read32((void *)(bar + reg));
-	val &= ~clear;
-	val |= set;
-	write32((void *)(bar + reg), val);
+	clrsetbits32((void *)(bar + reg), clear, set);
 }
 
 static void init(struct device *dev)

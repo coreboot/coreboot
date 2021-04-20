@@ -3,8 +3,6 @@
 #ifndef __PICASSO_CHIP_H__
 #define __PICASSO_CHIP_H__
 
-#include <stddef.h>
-#include <stdint.h>
 #include <amdblocks/chip.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
@@ -12,6 +10,7 @@
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <arch/x86/include/arch/smp/mpspec.h> /* point from top level */
+#include <types.h>
 
 /*
   USB 2.0 PHY Parameters

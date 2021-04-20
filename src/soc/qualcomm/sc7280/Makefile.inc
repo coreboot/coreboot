@@ -22,7 +22,7 @@ ramstage-y += cbmem.c
 CPPFLAGS_common += -Isrc/soc/qualcomm/sc7280/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
-SC7280_BLOB := $(top)/3rdparty/qc_blobs/sc7180
+SC7280_BLOB := $(top)/3rdparty/qc_blobs/sc7280
 
 ################################################################################
 

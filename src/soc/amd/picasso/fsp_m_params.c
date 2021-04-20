@@ -111,6 +111,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
 	mcfg->sata_enable = devtree_sata_dev_enabled();
+	mcfg->hdmi2_disable = config->hdmi2_disable;
 
 	mainboard_updm_update(mcfg);
 }

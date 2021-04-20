@@ -174,6 +174,12 @@ struct soc_amd_picasso_config {
 	uint32_t telemetry_vddcr_soc_slope_mA;
 	uint32_t telemetry_vddcr_soc_offset;
 
+	/*
+	 * HDMI 2.0 disable setting
+	 * bit0~3: disable HDMI 2.0 DDI0~3
+	*/
+	uint8_t hdmi2_disable;
+
 	struct {
 		/*
 		 * SDHCI doesn't directly support eMMC. There is an implicit mapping between

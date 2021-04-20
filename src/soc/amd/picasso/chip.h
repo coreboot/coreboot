@@ -146,7 +146,7 @@ struct soc_amd_picasso_config {
 		DOWNCORE_2 = 3, /* Run with two cores */
 		DOWNCORE_3 = 4, /* Run with three cores */
 	} downcore_mode;
-	uint8_t smt_disable; /* 1=disable SMT, 0=enable SMT */
+	bool smt_disable; /* true=disable SMT on all physical cores */
 
 	/* Lower die temperature limit */
 	uint32_t thermctl_limit_degreeC;

@@ -131,13 +131,16 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchHdaEnable = is_dev_enabled(dev);
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
-	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
-	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,
-		sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
-	memcpy(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable,
-		sizeof(m_cfg->PchHdaAudioLinkSspEnable));
-	memcpy(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable,
-		sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
+	/*
+	 * All the PchHdaAudioLink{Hda|Dmic|Ssp|Sndw}Enable UPDs are used by FSP only to
+	 * configure GPIO pads for audio. Mainboard is expected to perform all GPIO
+	 * configuration in coreboot and hence these UPDs are set to 0 to skip FSP GPIO
+	 * configuration for audio pads.
+	 */
+	m_cfg->PchHdaAudioLinkHdaEnable = 0;
+	memset(m_cfg->PchHdaAudioLinkDmicEnable, 0, sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
+	memset(m_cfg->PchHdaAudioLinkSspEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSspEnable));
+	memset(m_cfg->PchHdaAudioLinkSndwEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
 	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
 	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;

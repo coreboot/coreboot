@@ -17,10 +17,6 @@
 #include <soc/usb.h>
 #include <stdint.h>
 
-#define MAX_HD_AUDIO_DMIC_LINKS 2
-#define MAX_HD_AUDIO_SNDW_LINKS 4
-#define MAX_HD_AUDIO_SSP_LINKS  6
-
 struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -117,10 +113,6 @@ struct soc_intel_alderlake_config {
 
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
-	uint8_t PchHdaAudioLinkHdaEnable;
-	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
-	uint8_t PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];
-	uint8_t PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
 	uint8_t PchHdaIDispLinkTmode;
 	uint8_t PchHdaIDispLinkFrequency;
 	uint8_t PchHdaIDispCodecDisconnect;

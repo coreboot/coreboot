@@ -121,11 +121,6 @@ chip soc/intel/alderlake
 
 	# HD Audio
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkHdaEnable" = "0"
-	register "PchHdaAudioLinkDmicEnable[0]" = "1"
-	register "PchHdaAudioLinkDmicEnable[1]" = "1"
-	register "PchHdaAudioLinkSndwEnable[0]" = "1"
-	register "PchHdaAudioLinkSndwEnable[1]" = "1"
 	# iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T
 	register "PchHdaIDispLinkTmode" = "3"
 	# iDisp-Link Freq 4: 96MHz, 3: 48MHz.

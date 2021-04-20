@@ -11,7 +11,7 @@ config SOC_SPECIFIC_OPTIONS
 	def_bool y
 	select ACPI_SOC_NVS
 	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_VERSTAGE_X86_32
+	select ARCH_VERSTAGE_X86_32 if !VBOOT_STARTS_BEFORE_BOOTBLOCK
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
@@ -92,6 +92,27 @@ config PSP_APOB_DRAM_ADDRESS
 	help
 	  Location in DRAM where the PSP will copy the AGESA PSP Output
 	  Block.
+
+config PSP_SHAREDMEM_BASE
+	hex
+	default 0x2011000 if VBOOT
+	default 0x0
+	help
+	  This variable defines the base address in DRAM memory where PSP copies
+	  the vboot workbuf. This is used in the linker script to have a static
+	  allocation for the buffer as well as for adding relevant entries in
+	  the BIOS directory table for the PSP.
+
+config PSP_SHAREDMEM_SIZE
+	hex
+	default 0x8000 if VBOOT
+	default 0x0
+	help
+	  Sets the maximum size for the PSP to pass the vboot workbuf and
+	  any logs or timestamps back to coreboot.  This will be copied
+	  into main memory by the PSP and will be available when the x86 is
+	  started.  The workbuf's base depends on the address of the reset
+	  vector.
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
@@ -337,10 +358,60 @@ config PSP_SOFTFUSE_BITS
 
 	  See #55758 (NDA) for additional bit definitions.
 
+config PSP_VERSTAGE_FILE
+	string "Specify the PSP_verstage file path"
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default "$(obj)/psp_verstage.bin"
+	help
+	  Add psp_verstage file to the build & PSP Directory Table
+
+config PSP_VERSTAGE_SIGNING_TOKEN
+	string "Specify the PSP_verstage Signature Token file path"
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default ""
+	help
+	  Add psp_verstage signature token to the build & PSP Directory Table
+
 endmenu
 
 config VBOOT
 	select VBOOT_VBNV_CMOS
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+
+config VBOOT_STARTS_BEFORE_BOOTBLOCK
+	def_bool n
+	depends on VBOOT
+	select ARCH_VERSTAGE_ARMV7
+	help
+	  Runs verstage on the PSP.  Only available on
+	  certain Chrome OS branded parts from AMD.
+
+config VBOOT_HASH_BLOCK_SIZE
+	hex
+	default 0x9000
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Because the bulk of the time in psp_verstage to hash the RO cbfs is
+	  spent in the overhead of doing svc calls, increasing the hash block
+	  size significantly cuts the verstage hashing time as seen below.
+
+	  4k takes 180ms
+	  16k takes 44ms
+	  32k takes 33.7ms
+	  36k takes 32.5ms
+	  There's actually still room for an even bigger stack, but we've
+	  reached a point of diminishing returns.
+
+config CMOS_RECOVERY_BYTE
+	hex
+	default 0x51
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  If the workbuf is not passed from the PSP to coreboot, set the
+	  recovery flag and reboot.  The PSP will read this byte, mark the
+	  recovery request in VBNV, and reset the system into recovery mode.
+
+	  This is the byte before the default first byte used by VBNV
+	  (0x26 + 0x0E - 1)
 
 endif # SOC_AMD_CEZANNE

@@ -6,6 +6,7 @@
 #include <amdblocks/chip.h>
 #include <soc/i2c.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <types.h>
 
 struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;

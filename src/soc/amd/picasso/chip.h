@@ -142,9 +142,9 @@ struct soc_amd_picasso_config {
 
 	enum {
 		DOWNCORE_AUTO = 0,
-		DOWNCORE_1 = 1, /* Run with single core */
-		DOWNCORE_2 = 3, /* Run with two cores */
-		DOWNCORE_3 = 4, /* Run with three cores */
+		DOWNCORE_1 = 1, /* Run with 1 physical core */
+		DOWNCORE_2 = 3, /* Run with 2 physical cores */
+		DOWNCORE_3 = 4, /* Run with 3 physical cores */
 	} downcore_mode;
 	bool smt_disable; /* true=disable SMT on all physical cores */
 

@@ -301,6 +301,32 @@ static inline enum mca_err_code_types mca_err_type(msr_t reg)
 }
 
 /**
+ * Helper for reading a MSR
+ *
+ * @param[in] reg	The MSR.
+ */
+static inline uint64_t msr_read(unsigned int reg)
+{
+	msr_t msr = rdmsr(reg);
+	return (((uint64_t)msr.hi << 32) | msr.lo);
+}
+
+/**
+ * Helper for writing a MSR
+ *
+ * @param[in] reg	The MSR.
+ * @param[in] value	The value to be written to the MSR.
+ */
+static inline void msr_write(unsigned int reg, uint64_t value)
+{
+	msr_t msr = {
+		.lo = (unsigned int)value,
+		.hi = (unsigned int)(value >> 32)
+	};
+	wrmsr(reg, msr);
+}
+
+/**
  * Helper for (un)setting MSR bitmasks
  *
  * @param[in] reg	The MSR.

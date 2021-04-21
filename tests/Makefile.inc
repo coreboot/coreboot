@@ -29,9 +29,9 @@ stages += ramstage rmodule postcar libagesa
 
 alltests :=
 subdirs := tests/arch tests/acpi tests/commonlib tests/console tests/cpu
-subdirs += tests/device tests/drivers tests/ec tests/lib tests/mainboard
-subdirs += tests/northbridge tests/security tests/soc tests/southbridge
-subdirs += tests/superio tests/vendorcode
+subdirs += tests/device tests/drivers tests/ec tests/lib
+subdirs += tests/mainboard tests/northbridge tests/security tests/soc
+subdirs += tests/southbridge tests/superio tests/vendorcode
 
 define tests-handler
 alltests += $(1)$(2)

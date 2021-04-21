@@ -245,6 +245,11 @@ F:	src/mainboard/getac/p470/
 
 
 
+GIGABYTE GA-D510UD MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/gigabyte/ga-d510ud/
+
 GIGABYTE GA-G41M-ES2L MAINBOARD
 M:	Damien Zammit <damien@zamaudio.com>
 S:	Odd Fixes
@@ -289,6 +294,13 @@ F:	src/mainboard/google/link/
 F:	src/mainboard/google/parrot/
 F:	src/mainboard/google/slippy/
 F:	src/mainboard/google/stout/
+
+
+
+HP 280 G2 MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/hp/280_g2/
 
 
 
@@ -337,6 +349,14 @@ M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Maintained
 F:	src/mainboard/libretrend/lt1000/
+
+
+
+MSI H81M-P33 MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/msi/h81m-p33/
+
 
 
 OCP DELTALAKE MAINBOARD

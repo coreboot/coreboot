@@ -10,7 +10,7 @@
 #include <fsp/util.h>
 #include <FspGuids.h>
 #include <memrange.h>
-#include <stdint.h>
+#include <types.h>
 
 void memmap_stash_early_dram_usage(void)
 {

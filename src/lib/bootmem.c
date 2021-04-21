@@ -50,6 +50,8 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 		return LB_MEM_RESERVED;
 	case BM_MEM_TABLE:
 		return LB_MEM_TABLE;
+	case BM_MEM_SOFT_RESERVED:
+		return LB_MEM_SOFT_RESERVED;
 	default:
 		printk(BIOS_ERR, "Unsupported tag %u\n", tag);
 		return LB_MEM_RESERVED;
@@ -60,6 +62,7 @@ static void bootmem_init(void)
 {
 	const unsigned long cacheable = IORESOURCE_CACHEABLE;
 	const unsigned long reserved = IORESOURCE_RESERVE;
+	const unsigned long soft_reserved = IORESOURCE_SOFT_RESERVE;
 	struct memranges *bm = &bootmem;
 
 	initialized = 1;
@@ -71,6 +74,7 @@ static void bootmem_init(void)
 	 */
 	memranges_init(bm, cacheable, cacheable, BM_MEM_RAM);
 	memranges_add_resources(bm, reserved, reserved, BM_MEM_RESERVED);
+	memranges_add_resources(bm, soft_reserved, soft_reserved, BM_MEM_SOFT_RESERVED);
 	memranges_clone(&bootmem_os, bm);
 
 	/* Add memory used by CBMEM. */
@@ -136,6 +140,7 @@ static const struct range_strings type_strings[] = {
 	{ BM_MEM_BL31, "BL31" },
 	{ BM_MEM_OPENSBI, "OPENSBI" },
 	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
+	{ BM_MEM_SOFT_RESERVED, "SOFT RESERVED" },
 	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
 	{ BM_MEM_PAYLOAD, "PAYLOAD" },
 };

@@ -140,6 +140,7 @@ struct lb_memory_range {
 #define LB_MEM_UNUSABLE		 5	/* Unusable address space */
 #define LB_MEM_VENDOR_RSVD	 6	/* Vendor Reserved */
 #define LB_MEM_TABLE		16    /* Ram configuration tables are kept in */
+#define LB_MEM_SOFT_RESERVED	0xefffffff /* Specific purpose memory */
 };
 
 struct lb_memory {

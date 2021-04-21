@@ -22,6 +22,7 @@ enum bootmem_type {
 	BM_MEM_FIRST = 0x10000,	/* First entry in this list */
 	BM_MEM_RAM,		/* Memory anyone can use */
 	BM_MEM_RESERVED,	/* Don't use this memory region */
+	BM_MEM_SOFT_RESERVED,	/* Specific purpose memory */
 	BM_MEM_ACPI,		/* ACPI Tables */
 	BM_MEM_NVS,		/* ACPI NVS Memory */
 	BM_MEM_UNUSABLE,	/* Unusable address space */

@@ -428,6 +428,9 @@ static inline void fixed_mem_resource_kb(struct device *dev, unsigned long index
 	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_CACHEABLE \
 		| IORESOURCE_RESERVE)
 
+#define soft_reserved_ram_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_SOFT_RESERVE)
+
 #define bad_ram_resource_kb(dev, idx, basek, sizek) \
 	reserved_ram_resource_kb((dev), (idx), (basek), (sizek))
 

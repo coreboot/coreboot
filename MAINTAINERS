@@ -850,6 +850,12 @@ M:	Wim Vervoorn <wvervoorn@eltan.com>
 S:	Maintained
 F:	src/vendorcode/eltan/
 
+TAS5825M DRIVER
+M:	Jeremy Soller <jeremy@system76.com>
+M:	Tim Crawford <tcrawford@system76.com>
+S:	Maintained
+F:	src/drivers/i2c/tas5825m/
+
 TESTS
 M:	Jakub Czapiga <jacz@semihalf.com>
 S:	Maintained

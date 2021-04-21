@@ -787,3 +787,9 @@ bool gpio_get_vw_info(gpio_t pad, unsigned int *vw_index, unsigned int *vw_bit)
 
 	return true;
 }
+
+unsigned int gpio_get_pad_cpu_portid(gpio_t pad)
+{
+	const struct pad_community *comm = gpio_get_community(pad);
+	return comm->cpu_port;
+}

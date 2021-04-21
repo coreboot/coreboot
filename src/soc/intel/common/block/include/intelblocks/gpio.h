@@ -124,6 +124,7 @@ struct pad_community {
 	uint8_t		gpi_status_offset;  /* specifies offset in struct
 						gpi_status */
 	uint8_t		port;	/* PCR Port ID */
+	uint8_t		cpu_port; /* CPU Port ID */
 	const struct reset_mapping	*reset_map; /* PADRSTCFG logical to
 			chipset mapping */
 	size_t		num_reset_vals;
@@ -255,6 +256,9 @@ size_t gpio_get_index_in_group(gpio_t pad);
  * for the given GPIO, otherwise false if there is no VW index for the pad.
  */
 bool gpio_get_vw_info(gpio_t pad, unsigned int *vw_index, unsigned int *vw_bit);
+
+/* Returns PCR port ID for this pad for the CPU; will be 0 if not available */
+unsigned int gpio_get_pad_cpu_portid(gpio_t pad);
 
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

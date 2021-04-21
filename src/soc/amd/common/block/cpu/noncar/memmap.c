@@ -62,19 +62,7 @@ void smm_region(uintptr_t *start, size_t *size)
 
 void bert_reserved_region(void **start, size_t *size)
 {
-	struct range_entry bert;
-	int status;
-
-	*start = NULL;
-	*size = 0;
-
-	status = fsp_find_range_hob(&bert, AMD_FSP_BERT_HOB_GUID.b);
-
-	if (status < 0) {
-		printk(BIOS_ERR, "Error: unable to find BERT HOB\n");
-		return;
-	}
-
-	*start = (void *)(uintptr_t)range_entry_base(&bert);
-	*size = range_entry_size(&bert);
+	*start = cbmem_top();
+	*size = CONFIG_ACPI_BERT_SIZE;
+	printk(BIOS_INFO, "Reserved BERT region base: %p, size: 0x%lx\n", *start, *size);
 }

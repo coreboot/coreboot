@@ -89,6 +89,7 @@ static const struct pad_group tgl_community5_groups[] = {
 static const struct pad_community tgl_communities[] = {
 	[COMM_0] = { /* GPP B, T, A */
 		.port = PID_GPIOCOM0,
+		.cpu_port = PID_CPU_GPIOCOM0,
 		.first_pad = GPP_B0,
 		.last_pad = GPP_A24,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
@@ -111,6 +112,7 @@ static const struct pad_community tgl_communities[] = {
 	},
 	[COMM_1] = { /* GPP S, D, H, U, VGPIO */
 		.port = PID_GPIOCOM1,
+		.cpu_port = PID_CPU_GPIOCOM1,
 		.first_pad = GPP_S0,
 		.last_pad = vI2S2_RXD,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
@@ -152,6 +154,7 @@ static const struct pad_community tgl_communities[] = {
 	},
 	[COMM_4] = { /* GPP F, C, HVCOS, E, JTAG */
 		.port = PID_GPIOCOM4,
+		.cpu_port = PID_CPU_GPIOCOM4,
 		.first_pad = GPP_C0,
 		.last_pad = GPP_DBG_PMODE,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
@@ -174,6 +177,7 @@ static const struct pad_community tgl_communities[] = {
 	},
 	[COMM_5] = { /* GPP R, SPI */
 		.port = PID_GPIOCOM5,
+		.cpu_port = PID_CPU_GPIOCOM5,
 		.first_pad = GPP_R0,
 		.last_pad = GPP_CLK_LOOPBK,
 		.num_gpi_regs = NUM_GPIO_COM5_GPI_REGS,

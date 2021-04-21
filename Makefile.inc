@@ -193,6 +193,8 @@ endif
 ifneq ($(UPDATED_SUBMODULES),1)
 # try to fetch non-optional submodules if the source is under git
 forgetthis:=$(if $(GIT),$(shell git submodule update --init))
+# Checkout Cmocka repository
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/cmocka))
 ifeq ($(CONFIG_USE_BLOBS),y)
 # These items are necessary because each has update=none in .gitmodules.  They are ignored
 # until expressly requested and enabled with --checkout

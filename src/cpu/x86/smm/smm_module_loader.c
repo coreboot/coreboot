@@ -458,9 +458,9 @@ int smm_setup_relocation_handler(void * const perm_smram,  struct smm_loader_par
 	if (params->num_concurrent_stacks == 0)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
+	printk(BIOS_SPEW, "%s: exit\n", __func__);
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
 				     params, fxsave_area_relocation, perm_smram);
-	printk(BIOS_SPEW, "%s: exit\n", __func__);
 }
 
 /*

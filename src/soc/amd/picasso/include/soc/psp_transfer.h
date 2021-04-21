@@ -9,7 +9,7 @@
 #  error "Must set CONFIG_CMOS_RECOVERY_BYTE"
 # endif
 
-#define CMOS_RECOVERY_MAGIC_VAL	0x96
+#define CMOS_RECOVERY_MAGIC_VAL		0x96
 
 #define TRANSFER_INFO_SIZE		64
 #define TIMESTAMP_BUFFER_SIZE		0x200
@@ -44,7 +44,7 @@ struct transfer_info_struct {
 	uint32_t	psp_info;		/* Offset 0x3C */
 };
 
-_Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE, \
+_Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE,
 		"TRANSFER_INFO_SIZE is incorrect");
 
 /* Make sure the PSP transferred information over to x86 side. */

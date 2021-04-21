@@ -109,9 +109,9 @@ config PSP_SHAREDMEM_BASE
 	default 0x0
 	help
 	  This variable defines the base address in DRAM memory where PSP copies
-	  vboot workbuf to. This is used in linker script to have a static
+	  the vboot workbuf. This is used in the linker script to have a static
 	  allocation for the buffer as well as for adding relevant entries in
-	  BIOS directory table for the PSP.
+	  the BIOS directory table for the PSP.
 
 config PSP_SHAREDMEM_SIZE
 	hex
@@ -404,16 +404,6 @@ config PSP_WHITELIST_FILE
 	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/amd_blobs/picasso/PSP/wtl-rvn.sbin"
-
-config PSP_SHAREDMEM_SIZE
-	hex "Maximum size of shared memory area"
-	default 0x3000 if VBOOT
-	default 0x0
-	help
-	  Sets the maximum size for the PSP to pass the vboot workbuf and
-	  any logs or timestamps back to coreboot.  This will be copied
-	  into main memory by the PSP and will be available when the x86 is
-	  started.
 
 config PSP_UNLOCK_SECURE_DEBUG
 	bool "Unlock secure debug"

@@ -448,6 +448,7 @@ F:	src/mainboard/siemens/mc_apl1/
 
 SYSTEM76 MAINBOARDS
 M:	Jeremy Soller <jeremy@system76.com>
+M:	Tim Crawford <tcrawford@system76.com>
 S:	Maintained
 F:	src/mainboard/system76/
 
@@ -519,6 +520,7 @@ F:	src/ec/lenovo/
 
 SYSTEM76 EC
 M:	Jeremy Soller <jeremy@system76.com>
+M:	Tim Crawford <tcrawford@system76.com>
 S:	Maintained
 F:	src/ec/system76/
 

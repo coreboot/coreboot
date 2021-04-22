@@ -1,5 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin),)
+$(info APCB sources present.)
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
+APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
+else
+$(info APCB sources not found.  Skipping APCB.)
+endif
+
 bootblock-y += bootblock.c
 
 verstage-y += verstage.c

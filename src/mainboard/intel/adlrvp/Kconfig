@@ -80,6 +80,7 @@ config ADL_CHROME_EC
 	select EC_GOOGLE_CHROMEEC_ESPI
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_ACPI
+	select EC_GOOGLE_CHROMEEC_LPC
 
 config ADL_INTEL_EC
 	bool "Intel EC"
@@ -90,6 +91,7 @@ endchoice
 config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_MOCK_SECDATA
+	select EC_GOOGLE_CHROMEEC_SWITCHES if ADL_CHROME_EC
 
 config UART_FOR_CONSOLE
 	int

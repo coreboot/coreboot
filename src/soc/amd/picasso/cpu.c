@@ -22,9 +22,7 @@
 _Static_assert(CONFIG_MAX_CPUS == 8, "Do not override MAX_CPUS. To reduce the number of "
 	"available cores, use the downcore_mode and disable_smt devicetree settings instead.");
 
-/*
- * MP and SMM loading initialization.
- */
+/* MP and SMM loading initialization. */
 
 /*
  * Do essential initialization tasks before APs can be fired up -

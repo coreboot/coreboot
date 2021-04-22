@@ -113,5 +113,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->cppc_epp_min_range = config->cppc_epp_min_range;
 	mcfg->cppc_preferred_cores = config->cppc_preferred_cores;
 
+	/* S0i3 enable */
+	mcfg->s0i3_enable = config->s0ix_enable;
+
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 }

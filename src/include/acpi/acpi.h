@@ -281,6 +281,10 @@ typedef struct acpi_srat {
 	/* Followed by static resource allocation structure[n] */
 } __packed acpi_srat_t;
 
+#define ACPI_SRAT_STRUCTURE_LAPIC 0
+#define ACPI_SRAT_STRUCTURE_MEM   1
+#define ACPI_SRAT_STRUCTURE_GIA   5
+
 /* SRAT: Processor Local APIC/SAPIC Affinity Structure */
 typedef struct acpi_srat_lapic {
 	u8 type;			/* Type (0) */
@@ -309,6 +313,21 @@ typedef struct acpi_srat_mem {
 		    */
 	u32 resv2[2];
 } __packed acpi_srat_mem_t;
+
+/* SRAT: Generic Initiator Affinity Structure (ACPI spec 6.4 section 5.2.16.6) */
+typedef struct acpi_srat_gia {
+	u8 type;		/* Type (5) */
+	u8 length;		/* Length in bytes (32) */
+	u8 resv;
+	u8 dev_handle_type;	/* Device handle type */
+	u32 proximity_domain;	/*Proximity domain */
+	u8 dev_handle[16];	/* Device handle */
+	u32 flags;
+	u32 resv1;
+} __packed acpi_srat_gia_t;
+
+#define ACPI_SRAT_GIA_DEV_HANDLE_ACPI 0
+#define ACPI_SRAT_GIA_DEV_HANDLE_PCI  1
 
 /* SLIT (System Locality Distance Information Table) */
 typedef struct acpi_slit {
@@ -1218,6 +1237,12 @@ int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 			 u32 flags);
+/*
+ * Given the Generic Initiator device's BDF, the proximity domain's ID
+ * and flag, create Generic Initiator Affinity structure in SRAT.
+ */
+int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
+		u16 seg, u8 bus, u8 dev, u8 func, u32 flags);
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 			      u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);

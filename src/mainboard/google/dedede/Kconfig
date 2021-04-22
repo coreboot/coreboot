@@ -109,6 +109,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kracko" if BOARD_GOOGLE_KRACKO
 	default "Blipper" if BOARD_GOOGLE_BLIPPER
 	default "Cret" if BOARD_GOOGLE_CRET
+	default "Pirika" if BOARD_GOOGLE_PIRIKA
 
 config MAX_CPUS
 	int
@@ -144,6 +145,7 @@ config VARIANT_DIR
 	default "kracko" if BOARD_GOOGLE_KRACKO
 	default "blipper" if BOARD_GOOGLE_BLIPPER
 	default "cret" if BOARD_GOOGLE_CRET
+	default "pirika" if BOARD_GOOGLE_PIRIKA
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

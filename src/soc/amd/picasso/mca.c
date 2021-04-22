@@ -9,6 +9,9 @@
 #include <arch/bert_storage.h>
 #include <cper.h>
 
+/* MISC4 is the last used register in the MCAX banks of Picasso */
+#define MCAX_USED_REGISTERS_PER_BANK	(MCAX_MISC4_OFFSET + 1)
+
 struct mca_bank {
 	int bank;
 	msr_t ctl;
@@ -36,8 +39,9 @@ static inline size_t mca_report_size_reqd(void)
 	/* Context of MCG_CAP, MCG_STAT, MCG_CTL */
 	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 3);
 
-	/* Context of MCi_CTL, MCi_STATUS, MCi_ADDR, MCi_MISC */
-	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 4);
+	/* Context of CTL, STATUS, ADDR, MISC0, CONFIG, IPID, SYND, RESERVED, DESTAT, DEADDR,
+	   MISC1, MISC2, MISC3, MISC4 */
+	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, MCAX_USED_REGISTERS_PER_BANK);
 
 	/* Context of CTL_MASK */
 	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 1);
@@ -118,8 +122,8 @@ static void build_bert_mca_error(struct mca_bank *mci)
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec, IA32_MCG_CAP, 3);
 	if (!ctx)
 		goto failed;
-	ctx = cper_new_ia32x64_context_msr(status, x86_sec,
-					IA32_MC0_CTL + (mci->bank * 4), 4);
+	ctx = cper_new_ia32x64_context_msr(status, x86_sec, MCAX_CTL_MSR(mci->bank),
+					   MCAX_USED_REGISTERS_PER_BANK);
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec, MCA_CTL_MASK_MSR(mci->bank), 1);
@@ -144,7 +148,7 @@ static const char *const mca_bank_name[] = {
 	"L3 cache unit"
 };
 
-/* Check the Legacy Machine Check Architecture registers */
+/* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
 	int i;
@@ -157,7 +161,7 @@ void check_mca(void)
 
 	if (is_warm_reset()) {
 		for (i = 0 ; i < num_banks ; i++) {
-			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
+			mci.sts = rdmsr(MCAX_STATUS_MSR(i));
 			if (mci.sts.hi || mci.sts.lo) {
 				int core = cpuid_ebx(1) >> 24;
 
@@ -167,13 +171,13 @@ void check_mca(void)
 
 				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
 						i, mci.sts.hi, mci.sts.lo);
-				mci.addr = rdmsr(MC0_ADDR + (i * 4));
+				mci.addr = rdmsr(MCAX_ADDR_MSR(i));
 				printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
 						i, mci.addr.hi, mci.addr.lo);
-				mci.misc = rdmsr(MC0_MISC + (i * 4));
+				mci.misc = rdmsr(MCAX_MISC0_MSR(i));
 				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
 						i, mci.misc.hi, mci.misc.lo);
-				mci.ctl = rdmsr(IA32_MC0_CTL + (i * 4));
+				mci.ctl = rdmsr(MCAX_CTL_MSR(i));
 				printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
 						i, mci.ctl.hi, mci.ctl.lo);
 				mci.cmask = rdmsr(MCA_CTL_MASK_MSR(i));
@@ -192,5 +196,5 @@ void check_mca(void)
 	mci.sts.lo = 0;
 	mci.sts.hi = 0;
 	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(IA32_MC0_STATUS + (i * 4), mci.sts);
+		wrmsr(MCAX_STATUS_MSR(i), mci.sts);
 }

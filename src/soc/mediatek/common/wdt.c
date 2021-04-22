@@ -9,8 +9,11 @@ int mtk_wdt_init(void)
 {
 	uint32_t wdt_sta;
 
-	/* Write Mode register will clear status register */
+	/* Writing mode register will clear status register */
 	wdt_sta = read32(&mtk_wdt->wdt_status);
+
+	if (CONFIG(CLEAR_WDT_MODE_REG))
+		write32(&mtk_wdt->wdt_mode, MTK_WDT_CLR_STATUS);
 
 	printk(BIOS_INFO, "WDT: Last reset was ");
 	if (wdt_sta & MTK_WDT_STA_HW_RST) {

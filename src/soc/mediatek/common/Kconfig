@@ -29,4 +29,9 @@ config MEMORY_TEST
 	  This option enables memory basic compare test to verify the DRAM read
 	  or write is as expected.
 
+config CLEAR_WDT_MODE_REG
+	bool
+	help
+	  Enable this option to clear WTD mode register explicitly.
+
 endif

@@ -3,6 +3,7 @@
 #include <amdblocks/cpu.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
+#include <assert.h>
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
@@ -13,6 +14,9 @@
 #include <device/device.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
+
+_Static_assert(CONFIG_MAX_CPUS == 16, "Do not override MAX_CPUS. To reduce the number of "
+	"available cores, use the downcore_mode and disable_smt devicetree settings instead.");
 
 /* MP and SMM loading initialization */
 

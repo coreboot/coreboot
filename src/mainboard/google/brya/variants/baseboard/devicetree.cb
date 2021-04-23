@@ -142,14 +142,6 @@ chip soc/intel/alderlake
 		end
 		device ref heci1 on end
 		device ref sata on end
-		device ref pcie_rp5 on
-			# Enable WLAN PCIE 5 using clk 2
-			register "pch_pcie_rp[PCH_RP(5)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-		end	#PCIE5 WLAN
 		device ref pcie_rp6 on
 			# Enable WWAN PCIE 6 using clk 5
 			register "pch_pcie_rp[PCH_RP(6)]" = "{

@@ -180,7 +180,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
-		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, SA_DEV_SLOT_IGD, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
@@ -193,7 +193,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, ipuvtbar);
-		current += acpi_create_dmar_ds_pci(current, 0, 5, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, SA_DEV_SLOT_IPU, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
@@ -208,7 +208,8 @@ static unsigned long soc_fill_dmar(unsigned long current)
 				const unsigned long tmp = current;
 
 				current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
-				current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
+				current += acpi_create_dmar_ds_pci_br(current, 0,
+								      SA_DEV_SLOT_TBT, i);
 
 				acpi_dmar_drhd_fixup(tmp, current);
 			}
@@ -238,7 +239,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_rmrr(current, 0,
 				sa_get_gsm_base(), sa_get_tolud_base() - 1);
-		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		current += acpi_create_dmar_ds_pci(current, 0, SA_DEV_SLOT_IGD, 0);
 		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 

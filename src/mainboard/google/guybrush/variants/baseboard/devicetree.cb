@@ -1,6 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/cezanne
 
+	register "common_config.acp_config" = "{
+		.acp_pin_cfg = I2S_PINS_I2S_TDM,
+		.acp_i2s_wake_enable = 0,
+		.acp_pme_enable = 0,
+	}"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,
@@ -130,6 +136,12 @@ chip soc/amd/cezanne
 					end
 				end
 			end
+			device ref acp on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI5682""
+					device generic 0.0 on end
+				end
+			end # Audio
 		end
 
 		device ref lpc_bridge on
@@ -137,13 +149,6 @@ chip soc/amd/cezanne
 				device pnp 0c09.0 on end
 			end
 		end
-
-		device ref acp on
-			chip drivers/amd/i2s_machine_dev
-				register "hid" = ""AMDI5682""
-				device generic 0.0 on end
-			end
-		end # Audio
 	end # domain
 
 	device ref i2c_3 on

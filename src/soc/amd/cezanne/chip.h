@@ -55,6 +55,8 @@ struct soc_amd_cezanne_config {
 	uint32_t sustained_power_limit;
 	uint32_t fast_ppt_limit;
 	uint32_t slow_ppt_limit;
+	uint32_t slow_ppt_time_constant_s;
+	uint32_t thermctl_limit_degreeC;
 
 	uint8_t smartshift_enable;
 

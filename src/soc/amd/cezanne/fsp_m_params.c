@@ -98,6 +98,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->sustained_power_limit = config->sustained_power_limit;
 	mcfg->fast_ppt_limit = config->fast_ppt_limit;
 	mcfg->slow_ppt_limit = config->slow_ppt_limit;
+	mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant_s;
+	mcfg->thermctl_limit = config->thermctl_limit_degreeC;
 
 	/* 0 is default */
 	mcfg->smartshift_enable = config->smartshift_enable;

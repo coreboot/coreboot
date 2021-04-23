@@ -65,7 +65,9 @@ typedef struct __packed {
 	/** Offset 0x0405**/	uint8_t                     cppc_preferred_cores;
 	/** Offset 0x0406**/	uint8_t                     stapm_boost;
 	/** Offset 0x0407**/	uint32_t                    stapm_time_constant;
-	/** Offset 0x040B**/	uint8_t                     smu_soc_tuning_reserved[17];
+	/** Offset 0x040B**/	uint32_t                    slow_ppt_time_constant;
+	/** Offset 0x040F**/	uint32_t                    thermctl_limit;
+	/** Offset 0x0413**/	uint8_t                     smu_soc_tuning_reserved[9];
 	/** Offset 0x041C**/	uint8_t                     iommu_support;
 	/** Offset 0x041D**/	uint8_t                     pspp_policy;
 	/** Offset 0x041E**/	uint8_t                     enable_nb_azalia;

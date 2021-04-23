@@ -57,6 +57,12 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
+
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "0"
+	register "SlowSlewRate" = "SLEW_FAST_2"
+	register "FastPkgCRampDisable" = "0"
+
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf

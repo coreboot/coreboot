@@ -43,7 +43,6 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += agesa_acpi.c
 ramstage-y += gpio.c
 ramstage-y += fch.c
 ramstage-y += reset.c
-ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += uart.c
 ramstage-y += soc_util.c

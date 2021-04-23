@@ -5,6 +5,7 @@
 
 #include <amdblocks/espi.h>
 #include <amdblocks/spi.h>
+#include <amdblocks/acp.h>
 #include <stdint.h>
 
 struct soc_amd_common_config {
@@ -36,6 +37,9 @@ struct soc_amd_common_config {
 		/* See MP_IRQ_* from mpspec.h */
 		uint8_t flags;
 	} irq_override[16];
+
+	/* Audio Co-processor (ACP) configuration */
+	struct acp_config acp_config;
 };
 
 /*

@@ -13,9 +13,12 @@ chip soc/amd/picasso
 	# See table 5-34 ACPI 6.3 spec
 	register "common_config.fadt_flags" = "ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_SEALED_CASE"
 
-	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
-	register "acp_i2s_wake_enable" = "0"
-	register "acp_pme_enable" = "0"
+	# ACP Configuration
+	register "common_config.acp_config" = "{
+		.acp_pin_cfg = I2S_PINS_I2S_TDM,
+		.acp_i2s_wake_enable = 0,
+		.acp_pme_enable = 0,
+	}"
 
 	# Start : OPN Performance Configuration
 	# (Configuratin that is common for all variants)

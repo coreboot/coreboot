@@ -2,19 +2,24 @@
 
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <amdblocks/acp.h>
+#include <amdblocks/acpimmio.h>
+#include <amdblocks/chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include "chip.h"
-#include <soc/acp.h>
-#include <soc/acpi.h>
-#include <soc/pci_devs.h>
-#include <soc/southbridge.h>
-#include <amdblocks/acpimmio.h>
 #include <commonlib/helpers.h>
+
+/* ACP registers and associated fields */
+#define ACP_I2S_PIN_CONFIG	0x1400	/* HDA, Soundwire, I2S */
+#define  PIN_CONFIG_MASK	(7 << 0)
+#define ACP_I2S_WAKE_EN		0x1414
+#define  WAKE_EN_MASK		(1 << 0)
+#define ACP_PME_EN		0x1418
+#define  PME_EN_MASK		(1 << 0)
 
 static void acp_update32(uintptr_t bar, uint32_t reg, uint32_t clear, uint32_t set)
 {
@@ -23,12 +28,9 @@ static void acp_update32(uintptr_t bar, uint32_t reg, uint32_t clear, uint32_t s
 
 static void init(struct device *dev)
 {
-	const struct soc_amd_picasso_config *cfg;
+	const struct soc_amd_common_config *cfg = soc_get_common_config();
 	struct resource *res;
 	uintptr_t bar;
-
-	/* Set the proper I2S_PIN_CONFIG state */
-	cfg = config_of_soc();
 
 	res = dev->resource_list;
 	if (!res || !res->base) {
@@ -36,12 +38,13 @@ static void init(struct device *dev)
 		return;
 	}
 
+	/* Set the proper I2S_PIN_CONFIG state */
 	bar = (uintptr_t)res->base;
-	acp_update32(bar, ACP_I2S_PIN_CONFIG, PIN_CONFIG_MASK, cfg->acp_pin_cfg);
+	acp_update32(bar, ACP_I2S_PIN_CONFIG, PIN_CONFIG_MASK, cfg->acp_config.acp_pin_cfg);
 
 	/* Enable ACP_PME_EN and ACP_I2S_WAKE_EN for I2S_WAKE event */
-	acp_update32(bar, ACP_I2S_WAKE_EN, WAKE_EN_MASK, !!cfg->acp_i2s_wake_enable);
-	acp_update32(bar, ACP_PME_EN, PME_EN_MASK, !!cfg->acp_pme_enable);
+	acp_update32(bar, ACP_I2S_WAKE_EN, WAKE_EN_MASK, !!cfg->acp_config.acp_i2s_wake_enable);
+	acp_update32(bar, ACP_PME_EN, PME_EN_MASK, !!cfg->acp_config.acp_pme_enable);
 }
 
 static const char *acp_acpi_name(const struct device *dev)

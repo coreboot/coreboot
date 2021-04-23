@@ -1,0 +1,4 @@
+config SOC_AMD_COMMON_BLOCK_ACP
+	bool
+	help
+	  Select this option to perform Audio Co-Processor(ACP) configuration.

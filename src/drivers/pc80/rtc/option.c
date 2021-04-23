@@ -68,30 +68,33 @@ static struct cmos_option_table *get_cmos_layout(void)
 	return ct;
 }
 
+static struct cmos_entries *find_cmos_entry(struct cmos_option_table *ct, const char *name)
+{
+	/* Figure out how long name is */
+	const size_t namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
+	struct cmos_entries *ce;
+
+	/* Find the requested entry record */
+	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
+	for (; ce->tag == LB_TAG_OPTION;
+		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
+		if (memcmp(ce->name, name, namelen) == 0)
+			return ce;
+	}
+	return NULL;
+}
+
 enum cb_err cmos_get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
-	size_t namelen;
-	int found = 0;
-
-	/* Figure out how long name is */
-	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	ct = get_cmos_layout();
 	if (!ct)
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 
-	/* find the requested entry record */
-	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
-	for (; ce->tag == LB_TAG_OPTION;
-		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
-		if (memcmp(ce->name, name, namelen) == 0) {
-			found = 1;
-			break;
-		}
-	}
-	if (!found) {
+	ce = find_cmos_entry(ct, name);
+	if (!ce) {
 		printk(BIOS_DEBUG, "No CMOS option '%s'.\n", name);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
@@ -151,26 +154,13 @@ enum cb_err cmos_set_option(const char *name, void *value)
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	unsigned long length;
-	size_t namelen;
-	int found = 0;
-
-	/* Figure out how long name is */
-	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	ct = get_cmos_layout();
 	if (!ct)
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 
-	/* find the requested entry record */
-	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
-	for (; ce->tag == LB_TAG_OPTION;
-		ce = (struct cmos_entries *)((unsigned char *)ce + ce->size)) {
-		if (memcmp(ce->name, name, namelen) == 0) {
-			found = 1;
-			break;
-		}
-	}
-	if (!found) {
+	ce = find_cmos_entry(ct, name);
+	if (!ce) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}

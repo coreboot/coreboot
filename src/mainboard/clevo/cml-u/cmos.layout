@@ -13,11 +13,11 @@ entries
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-395		  4    e	6		debug_level
+395		  4	e	6		debug_level
 
 # -----------------------------------------------------------------
 # coreboot config options: cpu
-400		  1    e	2		hyper_threading
+400		  1	e	2		hyper_threading
 
 # -----------------------------------------------------------------
 # coreboot config options: southbridge
@@ -35,25 +35,25 @@ entries
 
 enumerations
 
-#ID value   text
-1     0     Disable
-1     1     Enable
-2     0     Enable
-2     1     Disable
-4     0     Fallback
-4     1     Normal
-6     0     Emergency
-6     1     Alert
-6     2     Critical
-6     3     Error
-6     4     Warning
-6     5     Notice
-6     6     Info
-6     7     Debug
-6     8     Spew
-7     0     Disable
-7     1     Enable
-7     2     Keep
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Enable
+2	1	Disable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
 
 # -----------------------------------------------------------------
 checksums

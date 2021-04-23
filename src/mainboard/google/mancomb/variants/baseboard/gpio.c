@@ -20,7 +20,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AGPIO5 */
 	PAD_NC(GPIO_5),
 	/* EN_PP3300_WLAN */
-	PAD_GPO(GPIO_6, LOW),
+	PAD_GPO(GPIO_6, HIGH),
 	/* AGPIO7 */
 	PAD_NC(GPIO_7),
 	/* EN_PP3300_LAN */
@@ -59,7 +59,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* GPIO_28: Not available */
 	/* WLAN_AUX_RESET */
-	PAD_GPO(GPIO_29, HIGH),
+	PAD_GPO(GPIO_29, LOW),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* AGPIO31 */
@@ -68,7 +68,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NC(GPIO_32),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* SSD_AUX_RESET_L */
-	PAD_GPO(GPIO_40, LOW),
+	PAD_GPO(GPIO_40, HIGH),
 	/* GPIO_41: Not available */
 	/* EGPIO42 */
 	PAD_NC(GPIO_42),
@@ -80,7 +80,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AGPIO69 */
 	PAD_NC(GPIO_69),
 	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_70, LOW),
+	PAD_GPO(GPIO_70, HIGH),
 	/* GPIO_71 - GPIO_73: Not available */
 	/* EGPIO74 */
 	PAD_NC(GPIO_74),
@@ -138,7 +138,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AGPIO129 */
 	PAD_NC(GPIO_129),
 	/* WLAN_DISABLE */
-	PAD_GPO(GPIO_130, HIGH),
+	PAD_GPO(GPIO_130, LOW),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
 	/* BT_DISABLE */
@@ -165,6 +165,10 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
+	/* EN_PP3300_WLAN */
+	PAD_GPO(GPIO_6, HIGH),
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_130, LOW),
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* I2C3_SCL */

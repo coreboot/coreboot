@@ -10,7 +10,6 @@ entries
 
 448	1	e	1	power_on_after_fail
 452	4	e	6	debug_level
-456	1	e	1	ECC_memory
 
 # VBOOT
 464	128	r	0	vbnv

@@ -5,7 +5,6 @@ entries
 384	4	r	0	reboot_bits
 # leave 3 bits to make checksummed area start byte-aligned
 392	1	e	2	boot_option
-393	1	e	1	multi_core
 400	4	e	4	debug_level
 # leave 7 bits to make checksummed area end byte-aligned
 408	16	h	0	check_sum
@@ -13,9 +12,6 @@ entries
 enumerations
 
 #<config-id>  <value>  <label>
-## for multi_core
-1	0	Enable
-1	1	Disable
 ## for boot_option
 2	0	Fallback
 2	1	Normal

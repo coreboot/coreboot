@@ -200,6 +200,8 @@ config VERSTAGE_ADDR
 config MAX_CPUS
 	int
 	default 8
+	help
+	  Maximum number of threads the platform can have.
 
 config VGA_BIOS_ID
 	string

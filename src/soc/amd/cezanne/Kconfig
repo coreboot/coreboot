@@ -176,6 +176,8 @@ config MMCONF_BUS_NUMBER
 config MAX_CPUS
 	int
 	default 16
+	help
+	  Maximum number of threads the platform can have.
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART

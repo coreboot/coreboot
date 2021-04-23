@@ -15,10 +15,6 @@ entries
 # coreboot config options: pch
 408	  2	e	4	power_on_after_fail
 
-# coreboot config options: mainboard
-440	  1	e	2	ethernet1
-441	  1	e	2	ethernet2
-
 # payload config options
 512	256	s	0	boot_devices
 768	  8	h	0	boot_default

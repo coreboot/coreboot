@@ -35,6 +35,13 @@ chip soc/amd/cezanne
 	device domain 0 on
 	end # domain
 
+	register "slow_ppt_limit_mW"         = "25000"
+	register "fast_ppt_limit_mW"         = "30000"
+	register "slow_ppt_time_constant_s"  = "5"
+	register "stapm_time_constant_s"     = "275"
+	register "sustained_power_limit_mW"  = "15000"
+	register "thermctl_limit_degreeC"    = "100"
+
 	# I2C Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

@@ -93,11 +93,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* all following fields being 0 is a valid config */
 	mcfg->stapm_boost = config->stapm_boost;
-	mcfg->stapm_time_constant = config->stapm_time_constant;
+	mcfg->stapm_time_constant = config->stapm_time_constant_s;
 	mcfg->apu_only_sppt_limit = config->apu_only_sppt_limit;
-	mcfg->sustained_power_limit = config->sustained_power_limit;
-	mcfg->fast_ppt_limit = config->fast_ppt_limit;
-	mcfg->slow_ppt_limit = config->slow_ppt_limit;
+	mcfg->sustained_power_limit = config->sustained_power_limit_mW;
+	mcfg->fast_ppt_limit = config->fast_ppt_limit_mW;
+	mcfg->slow_ppt_limit = config->slow_ppt_limit_mW;
 	mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant_s;
 	mcfg->thermctl_limit = config->thermctl_limit_degreeC;
 

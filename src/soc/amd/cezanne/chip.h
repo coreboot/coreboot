@@ -50,11 +50,11 @@ struct soc_amd_cezanne_config {
 	uint16_t stt_error_rate_coefficient;
 
 	uint8_t stapm_boost;
-	uint32_t stapm_time_constant;
+	uint32_t stapm_time_constant_s;
 	uint32_t apu_only_sppt_limit;
-	uint32_t sustained_power_limit;
-	uint32_t fast_ppt_limit;
-	uint32_t slow_ppt_limit;
+	uint32_t sustained_power_limit_mW;
+	uint32_t fast_ppt_limit_mW;
+	uint32_t slow_ppt_limit_mW;
 	uint32_t slow_ppt_time_constant_s;
 	uint32_t thermctl_limit_degreeC;
 

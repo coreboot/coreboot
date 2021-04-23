@@ -154,7 +154,7 @@ static const struct pad_config gpio_table[] = {
 	/* D17 : UART1_RXD ==> SD_PE_PRSNT_L */
 	PAD_CFG_GPI(GPP_D17, NONE, DEEP),
 	/* D18 : UART1_TXD ==> SD_PE_RST_L */
-	PAD_CFG_GPO(GPP_D18, 0, DEEP),
+	PAD_CFG_GPO(GPP_D18, 1, DEEP),
 	/* D19 : I2S_MCLK1_OUT ==> I2S_MCLK_R */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 
@@ -283,7 +283,7 @@ static const struct pad_config gpio_table[] = {
 	/* H12 : I2C7_SDA ==> SD_PE_WAKE_ODL */
 	PAD_CFG_GPI(GPP_H12, NONE, DEEP),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+	PAD_NC(GPP_H13, UP_20K),
 	/* H14 : NC */
 	PAD_NC(GPP_H14, NONE),
 	/* H15 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */
@@ -394,6 +394,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
+	PAD_NC(GPP_H13, UP_20K),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

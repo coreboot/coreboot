@@ -29,7 +29,7 @@ void report_memory_config(void)
 
 	printk(BIOS_DEBUG, "memcfg DDR3 ref clock %d MHz\n", refclk);
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (mchbar_read32(MC_BIOS_DATA) * refclk * 100 * 2 + 50) / 100);
+	       DIV_ROUND_CLOSEST(mchbar_read32(MC_BIOS_DATA) * refclk * 100 * 2, 100));
 
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       (addr_decoder_common >> 0) & 3,

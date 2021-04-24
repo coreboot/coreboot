@@ -16,6 +16,7 @@
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 #include <timestamp.h>
+#include <types.h>
 
 static void save_mrc_data(struct pei_data *pei_data)
 {
@@ -46,7 +47,7 @@ static void report_memory_config(void)
 	const u32 addr_decoder_common = mchbar_read32(MAD_CHNL);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
+	       DIV_ROUND_CLOSEST(mchbar_read32(MC_BIOS_DATA) * 13333 * 2, 100));
 
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       (addr_decoder_common >> 0) & 3,

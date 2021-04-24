@@ -15,15 +15,15 @@ static void pch_log_standard_gpe(u32 gpe0_sts_reg, u32 gpe0_en_reg)
 	u32 gpe0_sts = inl(get_pmbase() + gpe0_sts_reg) & gpe0_en;
 
 	/* PME (TODO: determine wake device) */
-	if (gpe0_sts & (1 << 11))
+	if (gpe0_sts & PME_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME, 0);
 
 	/* Internal PME (TODO: determine wake device) */
-	if (gpe0_sts & (1 << 13))
+	if (gpe0_sts & PME_B0_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);
 
 	/* SMBUS Wake */
-	if (gpe0_sts & (1 << 7))
+	if (gpe0_sts & SMB_WAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_SMBUS, 0);
 }
 
@@ -108,39 +108,39 @@ void pch_log_state(void)
 	gen_pmcon_3 = pci_read_config16(lpc, GEN_PMCON_3);
 
 	/* PWR_FLR Power Failure */
-	if (gen_pmcon_2 & (1 << 0))
+	if (gen_pmcon_2 & PWROK_FLR)
 		elog_add_event(ELOG_TYPE_POWER_FAIL);
 
 	/* SUS Well Power Failure */
-	if (gen_pmcon_3 & (1 << 14))
+	if (gen_pmcon_3 & SUS_PWR_FLR)
 		elog_add_event(ELOG_TYPE_SUS_POWER_FAIL);
 
 	/* SYS_PWROK Failure */
-	if (gen_pmcon_2 & (1 << 1))
+	if (gen_pmcon_2 & SYSPWR_FLR)
 		elog_add_event(ELOG_TYPE_SYS_PWROK_FAIL);
 
 	/* PWROK Failure */
-	if (gen_pmcon_2 & (1 << 0))
+	if (gen_pmcon_2 & PWROK_FLR)
 		elog_add_event(ELOG_TYPE_PWROK_FAIL);
 
 	/* Second TCO Timeout */
-	if (tco2_sts & (1 << 1))
+	if (tco2_sts & SECOND_TO_STS)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
 	/* Power Button Override */
-	if (pm1_sts & (1 << 11))
+	if (pm1_sts & PRBTNOR_STS)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON_OVERRIDE);
 
 	/* System Reset Status (reset button pushed) */
-	if (gen_pmcon_2 & (1 << 4))
+	if (gen_pmcon_2 & SYSTEM_RESET_STS)
 		elog_add_event(ELOG_TYPE_RESET_BUTTON);
 
 	/* General Reset Status */
-	if (gen_pmcon_3 & (1 << 9))
+	if (gen_pmcon_3 & GEN_RST_STS)
 		elog_add_event(ELOG_TYPE_SYSTEM_RESET);
 
 	/* ACPI Wake */
-	if (pm1_sts & (1 << 15))
+	if (pm1_sts & WAK_STS)
 		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
 				    acpi_is_wakeup_s3() ? 3 : 5);
 
@@ -149,15 +149,15 @@ void pch_log_state(void)
 	 */
 
 	/* Power Button */
-	if (pm1_sts & (1 << 8))
+	if (pm1_sts & PWRBTN_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);
 
 	/* RTC */
-	if (pm1_sts & (1 << 10))
+	if (pm1_sts & RTC_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_RTC, 0);
 
 	/* PCI Express (TODO: determine wake device) */
-	if (pm1_sts & (1 << 14))
+	if (pm1_sts & PCIEXPWAK_STS)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
 
 	/* GPE */

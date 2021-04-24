@@ -85,6 +85,7 @@ The boards in this section are not real mainboards, but emulators.
 - [EliteBook 2560p](hp/2560p.md)
 - [EliteBook 8760w](hp/8760w.md)
 - [EliteBook Folio 9480m](hp/folio_9480m.md)
+- [EliteBook 820 G2](hp/elitebook_820_g2.md)
 
 ## Intel
 

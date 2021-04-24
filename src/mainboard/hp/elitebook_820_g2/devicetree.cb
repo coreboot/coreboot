@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/intel/broadwell
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops broadwell_cpu_bus_ops end
+	end
+	device domain 0 on
+		ops broadwell_pci_domain_ops
+		subsystemid 0x103c 0x225a inherit
+
+		device pci 00.0 on end # Broadwell Host bridge
+		device pci 02.0 on     # Internal graphics VGA controller
+			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "panel_cfg" = "{
+				.up_delay_ms		= 200,
+				.down_delay_ms		=  50,
+				.cycle_delay_ms		= 500,
+				.backlight_on_delay_ms	=   1,
+				.backlight_off_delay_ms	=   1,
+				.backlight_pwm_hz	= 200,
+			}"
+		end
+		device pci 03.0 on end # Mini-HD audio
+
+		chip soc/intel/broadwell/pch # Wildcat Point PCH
+			device pci 13.0 off end # Smart Sound Audio DSP
+			device pci 14.0 on  end # xHCI Controller
+			device pci 15.0 off end # Serial I/O DMA
+			device pci 15.1 off end # I2C0
+			device pci 15.2 off end # I2C1
+			device pci 15.3 off end # GSPI0
+			device pci 15.4 off end # GSPI1
+			device pci 15.5 off end # UART0
+			device pci 15.6 off end # UART1
+			device pci 16.0 on  end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 17.0 off end # SDIO
+			device pci 19.0 on  end # Intel Gigabit Ethernet
+			device pci 1b.0 on  end # High Definition Audio
+			device pci 1c.0 on  end # PCIe Port #1
+			device pci 1c.1 on  end # PCIe Port #2, Card Reader
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 on      # PCIe Port #4, WLAN
+				smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther"
+					"M.2/E 2230" "SlotDataBusWidth1X"
+			end
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 on      # PCIe Port #6, PCIe SSD
+				smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					"M.2/M 2242/2260" "SlotDataBusWidth2X"
+			end
+			device pci 1d.0 on  end # USB2 EHCI #1
+			device pci 1f.0 on      # LPC bridge
+				register "gen1_dec" = "0x007c0201"
+				register "gen2_dec" = "0x000c0101"
+				register "gen4_dec" = "0x000402e9"
+				register "gpe0_en_1" = "0x40"
+				register "gpe0_en_2" = "0x600"
+				register "gpe0_en_4" = "0x46"
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+				# This laptop uses MEC1324, but it has the same interface
+				# as the KBC1126 laptops
+				chip ec/hp/kbc1126
+					register "ec_data_port" = "0x62"
+					register "ec_cmd_port"  = "0x66"
+					register "ec_ctrl_reg"  = "0x81"
+					register "ec_fan_ctrl_value" = "0x6b"
+					device pnp ff.1 off end
+				end
+			end
+			device pci 1f.2 on      # SATA Controller (AHCI)
+				register "sata_port1_gen3_dtle" = "0x2"
+				register "sata_port1_gen3_tx" = "0x80"
+				register "sata_port3_gen3_dtle" = "0x4"
+				register "sata_port3_gen3_tx" = "0x80"
+				# SATA (1), M.2 (3)
+				register "sata_port_map" = "0xa"
+			end
+			device pci 1f.3 on  end # SMBus
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

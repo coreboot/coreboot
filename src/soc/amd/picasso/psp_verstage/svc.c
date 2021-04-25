@@ -149,6 +149,11 @@ uint32_t svc_write_postcode(uint32_t postcode)
 	return retval;
 }
 
+uint32_t get_max_workbuf_size(uint32_t *size)
+{
+	return svc_get_max_workbuf_size(size);
+}
+
 uint32_t svc_get_max_workbuf_size(uint32_t *size)
 {
 	uint32_t retval = 0;

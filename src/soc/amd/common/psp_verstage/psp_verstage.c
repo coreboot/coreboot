@@ -25,6 +25,14 @@ static struct mem_region_device boot_dev =
 
 void __weak verstage_mainboard_early_init(void) {}
 void __weak verstage_mainboard_init(void) {}
+uint32_t __weak get_max_workbuf_size(uint32_t *size)
+{
+	/* This svc only exists in picasso and deprecated for later platforms.
+	 * Provide sane default function here for those platforms.
+	 */
+	*size = (uint32_t)((uintptr_t)_etransfer_buffer - (uintptr_t)_transfer_buffer);
+	return 0;
+}
 
 static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 {
@@ -133,10 +141,11 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	struct transfer_info_struct buffer_info = {0};
 
 	/*
-	 * This should never fail, but if it does, we should still try to
-	 * save the buffer. If that fails, then we should go to recovery mode.
+	 * This should never fail on picasso, but if it does, we should still
+	 * try to save the buffer. If that fails, then we should go to
+	 * recovery mode.
 	 */
-	if (svc_get_max_workbuf_size(&max_buffer_size)) {
+	if (get_max_workbuf_size(&max_buffer_size)) {
 		post_code(POSTCODE_DEFAULT_BUFFER_SIZE_NOTICE);
 		printk(BIOS_NOTICE, "Notice: using default transfer buffer size.\n");
 		max_buffer_size = MIN_TRANSFER_BUFFER_SIZE;

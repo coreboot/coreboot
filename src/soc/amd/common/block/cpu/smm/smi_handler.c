@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <amdblocks/acpimmio.h>
+#include <console/console.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
 #include <cpu/x86/smm.h>
@@ -34,9 +35,12 @@ void southbridge_smi_handler(void)
 {
 	const uint16_t smi_src = smi_read16(SMI_REG_POINTER);
 
-	if (smi_src & SMI_STATUS_SRC_SCI)
+	if (smi_src & SMI_STATUS_SRC_SCI) {
+		printk(BIOS_WARNING, "Ignoring SCI SMI: %#x\n", smi_read32(SMI_SCI_STATUS));
+
 		/* Clear events to prevent re-entering SMI if event isn't handled */
 		clear_smi_sci_status();
+	}
 	if (smi_src & SMI_STATUS_SRC_0)
 		process_smi_sources(SMI_REG_SMISTS0);
 	if (smi_src & SMI_STATUS_SRC_1)

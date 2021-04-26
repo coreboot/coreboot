@@ -24,9 +24,9 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.EccSupport = 1;
 	memupd->FspmConfig.UserBd = BOARD_TYPE_MOBILE;
 
-	const uint8_t vtd = get_int_option("vtd", 1);
+	const uint8_t vtd = get_uint_option("vtd", 1);
 	memupd->FspmTestConfig.VtdDisable = !vtd;
-	const uint8_t ht = get_int_option("hyper_threading", memupd->FspmConfig.HyperThreading);
+	const uint8_t ht = get_uint_option("hyper_threading", memupd->FspmConfig.HyperThreading);
 	memupd->FspmConfig.HyperThreading = ht;
 
 	variant_romstage_params(memupd);

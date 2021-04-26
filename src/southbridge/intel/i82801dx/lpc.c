@@ -94,7 +94,7 @@ static void i82801dx_power_options(struct device *dev)
 	 *
 	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-	const int pwr_on = get_int_option("power_on_after_fail", MAINBOARD_POWER_ON);
+	const unsigned int pwr_on = get_uint_option("power_on_after_fail", MAINBOARD_POWER_ON);
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	reg8 &= 0xfe;
@@ -129,7 +129,7 @@ static void i82801dx_power_options(struct device *dev)
 	outb(reg8, 0x61);
 
 	reg8 = inb(0x70);
-	const int nmi_option = get_int_option("nmi", NMI_OFF);
+	const unsigned int nmi_option = get_uint_option("nmi", NMI_OFF);
 	if (nmi_option) {
 		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */

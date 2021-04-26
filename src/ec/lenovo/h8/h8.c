@@ -243,7 +243,7 @@ static void h8_enable(struct device *dev)
 	reg8 = conf->config1;
 	if (conf->has_keyboard_backlight) {
 		/* Default to both backlights */
-		reg8 = (reg8 & 0xf3) | ((get_int_option("backlight", 0) & 0x3) << 2);
+		reg8 = (reg8 & 0xf3) | ((get_uint_option("backlight", 0) & 0x3) << 2);
 	}
 	ec_write(H8_CONFIG1, reg8);
 	ec_write(H8_CONFIG2, conf->config2);
@@ -253,14 +253,14 @@ static void h8_enable(struct device *dev)
 	beepmask1 = conf->beepmask1;
 
 	if (conf->has_power_management_beeps) {
-		if (get_int_option("power_management_beeps", 1) == 0) {
+		if (get_uint_option("power_management_beeps", 1) == 0) {
 			beepmask0 = 0x00;
 			beepmask1 = 0x00;
 		}
 	}
 
 	if (conf->has_power_management_beeps) {
-		if (get_int_option("low_battery_beep", 1))
+		if (get_uint_option("low_battery_beep", 1))
 			beepmask0 |= 2;
 		else
 			beepmask0 &= ~2;
@@ -292,14 +292,14 @@ static void h8_enable(struct device *dev)
 
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
 
-	h8_usb_always_on_enable(get_int_option("usb_always_on", 0));
+	h8_usb_always_on_enable(get_uint_option("usb_always_on", 0));
 
-	h8_wlan_enable(get_int_option("wlan", 1));
+	h8_wlan_enable(get_uint_option("wlan", 1));
 
 	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
 
-	unsigned int volume = get_int_option("volume", ~0);
+	unsigned int volume = get_uint_option("volume", ~0);
 	if (volume <= 0xff && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, volume);
 
@@ -311,16 +311,16 @@ static void h8_enable(struct device *dev)
 	h8_wwan_enable(val);
 
 	if (conf->has_uwb)
-		h8_uwb_enable(get_int_option("uwb", 1));
+		h8_uwb_enable(get_uint_option("uwb", 1));
 
-	h8_fn_ctrl_swap(get_int_option("fn_ctrl_swap", 0));
+	h8_fn_ctrl_swap(get_uint_option("fn_ctrl_swap", 0));
 
-	h8_sticky_fn(get_int_option("sticky_fn", 0));
+	h8_sticky_fn(get_uint_option("sticky_fn", 0));
 
 	if (CONFIG(H8_HAS_PRIMARY_FN_KEYS))
-		f1_to_f12_as_primary(get_int_option("f1_to_f12_as_primary", 1));
+		f1_to_f12_as_primary(get_uint_option("f1_to_f12_as_primary", 1));
 
-	h8_charge_priority(get_int_option("first_battery", PRIMARY_BATTERY));
+	h8_charge_priority(get_uint_option("first_battery", PRIMARY_BATTERY));
 
 	h8_set_audio_mute(0);
 	h8_mb_init();

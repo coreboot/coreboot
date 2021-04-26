@@ -21,7 +21,7 @@ void intel_sibling_init(struct device *cpu)
 	/* On the bootstrap processor see if I want sibling cpus enabled */
 	if (first_time) {
 		first_time = 0;
-		disable_siblings = get_int_option("hyper_threading", disable_siblings);
+		disable_siblings = get_uint_option("hyper_threading", disable_siblings);
 	}
 	result = cpuid(1);
 	/* Is hyperthreading supported */

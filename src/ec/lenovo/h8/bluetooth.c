@@ -48,5 +48,5 @@ bool h8_has_bdc(const struct device *dev)
  */
 bool h8_bluetooth_nv_enable(void)
 {
-	return get_int_option("bluetooth", true);
+	return get_uint_option("bluetooth", true);
 }

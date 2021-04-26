@@ -117,9 +117,9 @@ static void enable_dev(struct device *dev)
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);
 
-	pmh7_touchpad_enable(get_int_option("touchpad", 1));
+	pmh7_touchpad_enable(get_uint_option("touchpad", 1));
 
-	pmh7_trackpoint_enable(get_int_option("trackpoint", 1));
+	pmh7_trackpoint_enable(get_uint_option("trackpoint", 1));
 
 	printk(BIOS_INFO, "PMH7: ID %02x Revision %02x\n",
 	       pmh7_register_read(EC_LENOVO_PMH7_REG_ID),

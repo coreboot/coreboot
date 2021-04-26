@@ -132,7 +132,7 @@ static void pch_power_options(struct device *dev)
 	 *
 	 * If the option is not existent (Laptops), use Kconfig setting.
 	 */
-	const int pwr_on = get_int_option("power_on_after_fail",
+	const unsigned int pwr_on = get_uint_option("power_on_after_fail",
 					  CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 
 	reg16 = pci_read_config16(dev, GEN_PMCON_3);

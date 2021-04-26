@@ -23,7 +23,7 @@ static void enable_hwm_smbus(struct device *dev)
 static void init_acpi(struct device *dev)
 {
 	u8 value;
-	int power_on = get_int_option("power_on_after_fail", 1);
+	unsigned int power_on = get_uint_option("power_on_after_fail", 1);
 
 	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);

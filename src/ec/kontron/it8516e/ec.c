@@ -133,13 +133,13 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 	u8 fan_max	= config->default_fan_max[fan_idx];
 
 	fanX_mode[3] = '1' + fan_idx;
-	fan_mode = get_int_option(fanX_mode, fan_mode);
+	fan_mode = get_uint_option(fanX_mode, fan_mode);
 	if (!fan_mode)
 		fan_mode = IT8516E_MODE_AUTO;
 	it8516e_set_fan_mode(fan_idx, fan_mode);
 
 	fanX_target[3] = '1' + fan_idx;
-	fan_target = get_int_option(fanX_target, fan_target);
+	fan_target = get_uint_option(fanX_target, fan_target);
 	switch (fan_mode) {
 	case IT8516E_MODE_AUTO:
 		printk(BIOS_DEBUG,
@@ -173,8 +173,8 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 
 		fanX_min[3] = '1' + fan_idx;
 		fanX_max[3] = '1' + fan_idx;
-		fan_min = get_int_option(fanX_min, fan_min);
-		fan_max = get_int_option(fanX_max, fan_max);
+		fan_min = get_uint_option(fanX_min, fan_min);
+		fan_max = get_uint_option(fanX_max, fan_max);
 
 		if (!fan_max || fan_max > 100)	/* Constrain fan_max to 100% */
 			fan_max = 100;
@@ -202,7 +202,7 @@ static void it8516e_pm2_init(struct device *dev)
 	ec_set_ports(find_resource(dev, PNP_IDX_IO1)->base,
 		     find_resource(dev, PNP_IDX_IO0)->base);
 
-	u8 systemp_type = get_int_option("systemp_type", config->default_systemp);
+	u8 systemp_type = get_uint_option("systemp_type", config->default_systemp);
 	if (systemp_type >= IT8516E_SYSTEMP_LASTPLUSONE)
 		systemp_type = IT8516E_SYSTEMP_NONE;
 	it8516e_set_systemp_type(systemp_type);

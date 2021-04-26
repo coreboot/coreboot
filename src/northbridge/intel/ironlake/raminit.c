@@ -3102,7 +3102,7 @@ void chipset_init(const int s3resume)
 	mchbar_write16(0x1170, 0xb880);
 	mchbar_clrsetbits8(0x1210, ~0, 0x84);
 
-	gfxsize = get_int_option("gfx_uma_size", 0);	/* 0 for 32MB */
+	gfxsize = get_uint_option("gfx_uma_size", 0);	/* 0 for 32MB */
 
 	ggc = 0xb00 | ((gfxsize + 5) << 4);
 

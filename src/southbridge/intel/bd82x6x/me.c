@@ -184,8 +184,8 @@ static void intel_me_init(struct device *dev)
 	/* Do initial setup and determine the BIOS path */
 	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_get_bios_path_string(path));
 
-	u8 me_state = get_int_option("me_state", 0);
-	u8 me_state_prev = get_int_option("me_state_prev", 0);
+	u8 me_state = get_uint_option("me_state", 0);
+	u8 me_state_prev = get_uint_option("me_state_prev", 0);
 
 	printk(BIOS_DEBUG, "ME: me_state=%u, me_state_prev=%u\n", me_state, me_state_prev);
 
@@ -268,7 +268,7 @@ static void intel_me_init(struct device *dev)
 	   set the 'changed' bit here. */
 	if (me_state != CMOS_ME_STATE(me_state_prev) || need_reset) {
 		u8 new_state = me_state | CMOS_ME_STATE_CHANGED;
-		set_int_option("me_state_prev", new_state);
+		set_uint_option("me_state_prev", new_state);
 	}
 
 	if (need_reset) {

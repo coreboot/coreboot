@@ -25,7 +25,7 @@ static void lenovo_hybrid_graphics_enable(struct device *dev)
 		return;
 	}
 
-	mode = get_int_option("hybrid_graphics_mode", HYBRID_GRAPHICS_DEFAULT_GPU);
+	mode = get_uint_option("hybrid_graphics_mode", HYBRID_GRAPHICS_DEFAULT_GPU);
 
 	if (mode == HYBRID_GRAPHICS_DISCRETE) {
 		printk(BIOS_DEBUG, "Hybrid graphics:"

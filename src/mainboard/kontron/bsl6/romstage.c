@@ -38,7 +38,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	memory_params->DqPinsInterleaved = true;
 
-	const uint8_t ht = get_int_option("hyper_threading", memory_params->HyperThreading);
+	const uint8_t ht = get_uint_option("hyper_threading", memory_params->HyperThreading);
 	memory_params->HyperThreading = ht;
 
 	variant_memory_init_params(mupd);

@@ -14,7 +14,7 @@ void variant_memory_init_params(FSPM_UPD *const mupd)
 
 	for (i = 0; i < 3; ++i) {
 		nvram_var[sizeof(nvram_var) - 2] = '1' + i;
-		u8 eth_enable = get_int_option(nvram_var, 1);
+		u8 eth_enable = get_uint_option(nvram_var, 1);
 		if (!eth_enable) {
 			printk(BIOS_INFO, "Disabling ethernet%u.\n", 1 + i);
 			mupd->FspmConfig.PcieRpEnableMask &= ~(1 << (i + 8));

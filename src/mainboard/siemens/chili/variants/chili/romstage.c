@@ -7,7 +7,7 @@
 
 void variant_romstage_params(FSPM_UPD *const mupd)
 {
-	const uint8_t eth_enable = get_int_option("ethernet1", 1);
+	const uint8_t eth_enable = get_uint_option("ethernet1", 1);
 
 	if (!eth_enable) {
 		printk(BIOS_DEBUG, "Disabling ethernet1.\n");

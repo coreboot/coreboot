@@ -710,7 +710,7 @@ static void gma_func1_init(struct device *dev)
 	if (!CONFIG(NO_GFX_INIT))
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
-	pci_write_config8(dev, 0xf4, get_int_option("tft_brightness", 0xff));
+	pci_write_config8(dev, 0xf4, get_uint_option("tft_brightness", 0xff));
 }
 
 static void gma_generate_ssdt(const struct device *device)

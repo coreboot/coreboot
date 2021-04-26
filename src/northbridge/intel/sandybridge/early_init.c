@@ -87,7 +87,7 @@ static void sandybridge_setup_graphics(void)
 	printk(BIOS_DEBUG, "Initializing Graphics...\n");
 
 	/* Fall back to 32 MiB for IGD memory by setting GGC[7:3] = 1 */
-	gfxsize = get_int_option("gfx_uma_size", 0);
+	gfxsize = get_uint_option("gfx_uma_size", 0);
 
 	reg16 = pci_read_config16(HOST_BRIDGE, GGC);
 	reg16 &= ~0x00f8;

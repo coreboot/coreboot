@@ -39,7 +39,7 @@ void x4x_early_init(void)
 		pci_write_config32(HOST_BRIDGE, D0F0_DEVEN, BOARD_DEVEN);
 
 		/* Set preallocated IGD size from CMOS, or default to 64 MiB */
-		u8 gfxsize = get_int_option("gfx_uma_size", 6);
+		u8 gfxsize = get_uint_option("gfx_uma_size", 6);
 		if (gfxsize > 12)
 			gfxsize = 6;
 		/* Need at least 4M for cbmem_top alignment */

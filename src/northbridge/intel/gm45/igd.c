@@ -116,7 +116,7 @@ void igd_compute_ggc(sysinfo_t *const sysinfo)
 		sysinfo->ggc = 0x0002;
 	else {
 		/* 4 for 32MB, default if not set in CMOS */
-		u8 gfxsize = get_int_option("gfx_uma_size", 4);
+		u8 gfxsize = get_uint_option("gfx_uma_size", 4);
 
 		/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
 		   2MB GTT + 2MB shadow GTT (0x0b00) else. */

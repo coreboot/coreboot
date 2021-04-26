@@ -22,8 +22,8 @@ static void mainboard_smi_save_cmos(void)
 	tmp70 = inb(0x70);
 	tmp72 = inb(0x72);
 
-	set_int_option("tft_brightness", pci_read_config8(PCI_DEV(0, 2, 1), 0xf4));
-	set_int_option("volume", ec_read(H8_VOLUME_CONTROL));
+	set_uint_option("tft_brightness", pci_read_config8(PCI_DEV(0, 2, 1), 0xf4));
+	set_uint_option("volume", ec_read(H8_VOLUME_CONTROL));
 
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);

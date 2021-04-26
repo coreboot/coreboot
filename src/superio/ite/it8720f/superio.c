@@ -17,7 +17,7 @@
 
 static void power_control_init(struct device *dev)
 {
-	int power_on = get_int_option("power_on_after_fail", MAINBOARD_POWER_OFF);
+	unsigned int power_on = get_uint_option("power_on_after_fail", MAINBOARD_POWER_OFF);
 	u8 value;
 
 	pnp_enter_conf_mode(dev);

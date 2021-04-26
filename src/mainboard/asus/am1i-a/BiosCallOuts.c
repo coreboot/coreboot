@@ -87,7 +87,7 @@ void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_
 	FchParams_reset->Mode = 6;
 
 	/* Read SATA speed setting from CMOS */
-	FchParams_reset->SataSetMaxGen2 = get_int_option("sata_speed", 0);
+	FchParams_reset->SataSetMaxGen2 = get_uint_option("sata_speed", 0);
 	printk(BIOS_DEBUG, "Force SATA 3Gbps mode = %x\n", FchParams_reset->SataSetMaxGen2);
 }
 
@@ -102,7 +102,7 @@ void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 	FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 
 	/* Read SATA controller mode from CMOS */
-	FchParams_env->Sata.SataClass = get_int_option("sata_mode", 0);
+	FchParams_env->Sata.SataClass = get_uint_option("sata_mode", 0);
 
 	switch ((SATA_CLASS)FchParams_env->Sata.SataClass) {
 	case SataLegacyIde:

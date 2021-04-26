@@ -17,7 +17,7 @@ void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
 
-	if (get_int_option("lpt", 0))
+	if (get_uint_option("lpt", 0))
 		lpt_en = LPT_LPC_EN; /* enable LPT */
 
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0007);

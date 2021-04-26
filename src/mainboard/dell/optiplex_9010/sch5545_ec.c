@@ -656,20 +656,17 @@ void sch5545_ec_hwm_init(void *unused)
 
 	ec_read_write_reg(EC_HWM_LDN, 0x02fc, &val_2fc, WRITE_OP);
 
-	int fan_speed_full = get_int_option("fan_full_speed", -1);
-	if (fan_speed_full < 0) {
-		fan_speed_full = 0;
-		printk(BIOS_INFO, "fan_full_speed CMOS option not found. "
-				  "Fans will be set up for automatic control\n");
-	}
-
+	unsigned int fan_speed_full = get_int_option("fan_full_speed", 0);
 	if (fan_speed_full) {
+		printk(BIOS_INFO, "Will set up fans to run at full speed\n");
 		ec_read_write_reg(EC_HWM_LDN, 0x0080, &val, READ_OP);
 		val |= 0x60;
 		ec_read_write_reg(EC_HWM_LDN, 0x0080, &val, WRITE_OP);
 		ec_read_write_reg(EC_HWM_LDN, 0x0081, &val, READ_OP);
 		val |= 0x60;
 		ec_read_write_reg(EC_HWM_LDN, 0x0081, &val, WRITE_OP);
+	} else {
+		printk(BIOS_INFO, "Will set up fans for automatic control\n");
 	}
 
 	ec_read_write_reg(EC_HWM_LDN, 0x00b8, &val, READ_OP);

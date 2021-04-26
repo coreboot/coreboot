@@ -103,11 +103,7 @@ static void espi_clear_decodes(void)
 	unsigned int idx;
 
 	/* First turn off all enable bits, then zero base, range, and size registers */
-	/*
-	 * There is currently a bug where the SMU will lock up at times if the port80h enable
-	 * bit is cleared.  See b/183974365
-	 */
-	espi_write16(ESPI_DECODE, (espi_read16(ESPI_DECODE) & ESPI_DECODE_IO_0x80_EN));
+	espi_write16(ESPI_DECODE, 0);
 
 	for (idx = 0; idx < ESPI_GENERIC_IO_WIN_COUNT; idx++) {
 		espi_write16(ESPI_IO_RANGE_BASE(idx), 0);

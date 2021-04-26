@@ -41,6 +41,8 @@ chip soc/amd/cezanne
 	# Enable S0i3 support
 	register "s0ix_enable" = "1"
 
+	register "system_configuration" = "2"
+
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 

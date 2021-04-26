@@ -4,9 +4,14 @@ This section details how to run coreboot on the [Supermicro X11SSM-F].
 
 ## Flashing coreboot
 
-The board can be flashed externally. FTDI FT2232H and FT232H based programmers worked. For this,
-one needs to add a diode between VCC and the flash chip. The flash IC [MX25L12873F] can be found
-near PCH PCIe Slot 4.
+The flash IC [MX25L12873F] can be found near PCH PCIe Slot 4.
+
+The board can be flashed externally with a SOIC test clip or probes. Since
+there is no diode between VCC3.3 and the flash chip, so VCC must **not** be
+connected. Instead, the flash chip is powered from VCC3.3, which is always-on
+(even in S5). WP# and HOLD# have pull-ups and don't need to be connected.
+
+FTDI FT2232H and FT232H based programmers worked.
 
 Flashing is also possible through the BMC web interface, when a valid license was entered.
 

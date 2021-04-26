@@ -52,7 +52,7 @@ static const struct fch_irq_routing {
 	{ PIRQ_SDIO,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SATA,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_EMMC,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_GPIO,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_GPIO,	7,		7 },
 	{ PIRQ_I2C2,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_I2C3,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_UART0,	 4,		 4 },

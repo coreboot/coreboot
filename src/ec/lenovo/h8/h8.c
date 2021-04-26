@@ -299,8 +299,8 @@ static void h8_enable(struct device *dev)
 	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
 
-	int volume = get_int_option("volume", -1);
-	if (volume >= 0 && !acpi_is_wakeup_s3())
+	unsigned int volume = get_int_option("volume", ~0);
+	if (volume <= 0xff && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, volume);
 
 	val = (CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&

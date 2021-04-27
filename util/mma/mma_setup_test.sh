@@ -86,7 +86,7 @@ show_usage() {
 
 write_flash() {
 	printf "Writing back flash contents "${flashrom_temp_image}"\n"
-	flashrom -p host -w "${flashrom_temp_image}" --fast-verify || \
+	flashrom -p host -w "${flashrom_temp_image}" --noverify-all || \
 		{
 			printf "failed to read flash\n" ;
 			exit -1;

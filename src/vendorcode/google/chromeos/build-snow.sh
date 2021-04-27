@@ -28,7 +28,7 @@ fast_flash_image() {
   local diff_file="$2"
   dut-control spi2_buf_en:on spi2_buf_on_flex_en:on spi2_vref:pp1800
   sudo ${FLASHROM} -p ft2232_spi:type=servo-v2,port=a -w "$image_file" -V \
-    --noverify --ignore-fmap --diff "$diff_file"
+    --noverify --flash-contents "$diff_file"
   dut-control spi2_buf_en:off spi2_buf_on_flex_en:off spi2_vref:off
 }
 

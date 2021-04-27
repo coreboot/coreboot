@@ -103,23 +103,6 @@ void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
 		gpio_set_mode((gpio_t){.id = ptr[i].pin_id}, ptr[i].func);
 }
 
-void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks, u32 cs_ticks,
-			unsigned int tick_dly)
-{
-	write32(&regs->spi_cfg0_reg,
-		((cs_ticks - 1) << SPI_CFG0_CS_HOLD_SHIFT) |
-		((cs_ticks - 1) << SPI_CFG0_CS_SETUP_SHIFT));
-
-	write32(&regs->spi_cfg2_reg,
-		((sck_ticks - 1) << SPI_CFG2_SCK_HIGH_SHIFT) |
-		((sck_ticks - 1) << SPI_CFG2_SCK_LOW_SHIFT));
-
-	clrsetbits32(&regs->spi_cfg1_reg, SPI_CFG1_TICK_DLY_MASK |
-		     SPI_CFG1_CS_IDLE_MASK,
-		     (tick_dly << SPI_CFG1_TICK_DLY_SHIFT) |
-		     ((cs_ticks - 1) << SPI_CFG1_CS_IDLE_SHIFT));
-}
-
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{
 		.ctrlr = &spi_ctrlr,

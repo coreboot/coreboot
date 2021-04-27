@@ -26,20 +26,6 @@ void mtk_spi_set_gpio_pinmux(unsigned int bus,
 	gpio_set_mode(GPIO(MSDC2_CMD), 0);
 }
 
-void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks, u32 cs_ticks,
-			unsigned int tick_dly)
-{
-	write32(&regs->spi_cfg0_reg,
-		((sck_ticks - 1) << SPI_CFG0_SCK_HIGH_SHIFT) |
-		((sck_ticks - 1) << SPI_CFG0_SCK_LOW_SHIFT) |
-		((cs_ticks - 1) << SPI_CFG0_CS_HOLD_SHIFT) |
-		((cs_ticks - 1) << SPI_CFG0_CS_SETUP_SHIFT));
-	clrsetbits32(&regs->spi_cfg1_reg, SPI_CFG1_CS_IDLE_MASK |
-		     SPI_CFG1_TICK_DLY_MASK,
-		     (tick_dly << SPI_CFG1_TICK_DLY_SHIFT) |
-		     ((cs_ticks - 1) << SPI_CFG1_CS_IDLE_SHIFT));
-}
-
 static const struct spi_ctrlr spi_flash_ctrlr = {
 	.max_xfer_size = 65535,
 	.flash_probe = mtk_spi_flash_probe,

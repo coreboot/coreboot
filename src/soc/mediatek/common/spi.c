@@ -34,6 +34,19 @@ static inline struct mtk_spi_bus *to_mtk_spi(const struct spi_slave *slave)
 	return &spi_bus[slave->bus];
 }
 
+void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks,
+			u32 cs_ticks, unsigned int tick_dly)
+{
+	SET32_BITFIELDS(&regs->spi_cfg0_reg, SPI_CFG_CS_HOLD, cs_ticks - 1,
+			SPI_CFG_CS_SETUP, cs_ticks - 1);
+
+	SET32_BITFIELDS(&GET_SCK_REG(regs), SPI_CFG_SCK_LOW, sck_ticks - 1,
+			SPI_CFG_SCK_HIGH, sck_ticks - 1);
+
+	SET32_BITFIELDS(&regs->spi_cfg1_reg, SPI_CFG1_TICK_DLY, tick_dly,
+			SPI_CFG1_CS_IDLE, cs_ticks - 1);
+}
+
 static void spi_sw_reset(struct mtk_spi_regs *regs)
 {
 	setbits32(&regs->spi_cmd_reg, SPI_CMD_RST_EN);
@@ -121,10 +134,8 @@ static int do_transfer(const struct spi_slave *slave, void *in, const void *out,
 	else
 		size = MIN(*bytes_in, *bytes_out);
 
-	clrsetbits32(&regs->spi_cfg1_reg,
-		     SPI_CFG1_PACKET_LENGTH_MASK | SPI_CFG1_PACKET_LOOP_MASK,
-		     ((size - 1) << SPI_CFG1_PACKET_LENGTH_SHIFT) |
-		     (0 << SPI_CFG1_PACKET_LOOP_SHIFT));
+	SET32_BITFIELDS(&regs->spi_cfg1_reg, SPI_CFG1_PACKET_LENGTH, size - 1,
+			SPI_CFG1_PACKET_LOOP, 0);
 
 	if (*bytes_out) {
 		const uint8_t *outb = (const uint8_t *)out;

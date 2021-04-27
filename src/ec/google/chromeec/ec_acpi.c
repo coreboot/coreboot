@@ -241,25 +241,3 @@ const char *ec_retimer_fw_update_path(void)
 {
 	return "\\_SB_.PCI0.LPCB.EC0_.RFWU";
 }
-
-void ec_retimer_fw_update(void *arg)
-{
-	const char *RFWU = ec_retimer_fw_update_path();
-
-	/*
-	 * Get information to set retimer info from Arg3[0]
-	 * Local0 = DeRefOf (Arg3[0])
-	 */
-	acpigen_get_package_op_element(ARG3_OP, 0, LOCAL0_OP);
-
-	/*
-	 * Write the EC RAM for Retimer Upgrade
-	 * RFWU = LOCAL0
-	 */
-	acpigen_write_store();
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_emit_namestring(RFWU);
-
-	/* Return (Zero) */
-	acpigen_write_return_integer(0);
-}

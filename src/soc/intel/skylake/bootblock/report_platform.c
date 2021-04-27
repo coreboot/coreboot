@@ -78,6 +78,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_UPT_H_Z270, "Z270" },
 	{ PCI_DEVICE_ID_INTEL_UPT_H_B250, "B250" },
 	{ PCI_DEVICE_ID_INTEL_UPT_H_Q250, "Q250" },
+	{ PCI_DEVICE_ID_INTEL_UPT_LP_U_BASE, "Kabylake-U Base" },
 	{ PCI_DEVICE_ID_INTEL_UPT_LP_U_PREMIUM, "Kabylake-U Premium" },
 	{ PCI_DEVICE_ID_INTEL_UPT_LP_Y_PREMIUM, "Kabylake-Y Premium" },
 	{ PCI_DEVICE_ID_INTEL_UPT_LP_SUPER_SKU, "Kabylake Super Sku" },

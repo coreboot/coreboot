@@ -71,9 +71,10 @@ static void fmem_master_init(uintptr_t base)
 static void scp_master_init(uintptr_t base)
 {
 	write32(getreg(base, SCP_DOM), MAS_DOMAIN_3);
+	write32(getreg(base, ADSP_DOM), MAS_DOMAIN_4);
 
-	/* Let SCP_DOM register be read-only for security */
-	write32(getreg(base, ONETIME_LOCK), 0x1);
+	/* Let SCP_DOM and ADSP_DOM registers be read-only for security */
+	write32(getreg(base, ONETIME_LOCK), 0x5);
 }
 
 struct devapc_init {

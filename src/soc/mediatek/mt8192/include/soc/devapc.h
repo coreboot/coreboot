@@ -23,6 +23,7 @@ enum devapc_ao_offset {
 
 enum scp_offset {
 	SCP_DOM = 0xA5080,
+	ADSP_DOM = 0xA5088,
 	ONETIME_LOCK = 0xA5104,
 };
 

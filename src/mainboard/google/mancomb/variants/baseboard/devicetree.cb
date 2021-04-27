@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/cezanne
 
+	register "system_configuration" = "3"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,

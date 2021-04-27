@@ -1,4 +1,12 @@
 chip soc/amd/cezanne
+
+	register "slow_ppt_limit_mW"         = "37500"
+	register "fast_ppt_limit_mW"         = "48000"
+	register "slow_ppt_time_constant_s"  = "5"
+	register "stapm_time_constant_s"     = "275"
+	register "sustained_power_limit_mW"  = "25000"
+	register "thermctl_limit_degreeC"    = "100"
+
 	device domain 0 on
 	end # domain
 

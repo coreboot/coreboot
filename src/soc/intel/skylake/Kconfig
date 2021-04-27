@@ -13,6 +13,14 @@ config SOC_INTEL_KABYLAKE
 	help
 	  Intel Kabylake support
 
+config SOC_INTEL_SKYLAKE_LGA1151_V2
+	bool
+	select PLATFORM_USES_FSP2_1
+	select SOC_INTEL_COMMON_SKYLAKE_BASE
+	select SKYLAKE_SOC_PCH_H
+	help
+	  Selected by mainboards with a LGA1151 v2 socket and a Z370, H310C or B365 PCH
+
 if SOC_INTEL_COMMON_SKYLAKE_BASE
 
 config CPU_SPECIFIC_OPTIONS
@@ -85,6 +93,7 @@ config CPU_SPECIFIC_OPTIONS
 
 config MAX_CPUS
 	int
+	default 16 if MAINBOARD_SUPPORTS_COFFEELAKE_CPU
 	default 8
 
 config FSP_HYPERTHREADING
@@ -125,10 +134,20 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
+	default 0x20400 if FSP_USES_CB_STACK
 	default 0x4000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	depends on FSP_USES_CB_STACK
+	default 0x10000
+	help
+	  The amount of anticipated heap usage in CAR by FSP.
+	  Refer to Platform FSP integration guide document to know
+	  the exact FSP requirement for Heap setup.
 
 config EXCLUDE_NATIVE_SD_INTERFACE
 	bool
@@ -234,12 +253,14 @@ config NHLT_DA7219
 	help
 	  Include DSP firmware settings for DA7219 headset codec.
 
+# Use KabylakeFsp for both Skylake and Kabylake as it supports both.
+# SkylakeFsp is FSP 1.1 and therefore incompatible.
 config FSP_HEADER_PATH
-	# Use KabylakeFsp for both Skylake and Kabylake as it supports both.
-	# SkylakeFsp is FSP 1.1 and therefore incompatible.
+	default "3rdparty/fsp/AmberLakeFspBinPkg/Include/" if SOC_INTEL_SKYLAKE_LGA1151_V2
 	default "3rdparty/fsp/KabylakeFspBinPkg/Include/"
 
 config FSP_FD_PATH
+	default "3rdparty/fsp/AmberLakeFspBinPkg/Fsp.fd" if SOC_INTEL_SKYLAKE_LGA1151_V2
 	default "3rdparty/fsp/KabylakeFspBinPkg/Fsp.fd"
 
 config MAX_ROOT_PORTS
@@ -303,16 +324,17 @@ config INTEL_TXT_BIOSACM_ALIGNMENT
 
 config MAINBOARD_SUPPORTS_SKYLAKE_CPU
 	bool "Board can contain Skylake CPU"
-	default y
+	default !SOC_INTEL_SKYLAKE_LGA1151_V2
 
 if SKYLAKE_SOC_PCH_H
 
 config MAINBOARD_SUPPORTS_KABYLAKE_CPU
 	bool "Board can contain Kaby Lake CPU"
-	default y if SOC_INTEL_KABYLAKE
+	default !SOC_INTEL_SKYLAKE_LGA1151_V2 && SOC_INTEL_KABYLAKE
 
 config MAINBOARD_SUPPORTS_COFFEELAKE_CPU
 	bool "Board can contain Coffee Lake CPU"
+	default y if SOC_INTEL_SKYLAKE_LGA1151_V2
 
 endif
 

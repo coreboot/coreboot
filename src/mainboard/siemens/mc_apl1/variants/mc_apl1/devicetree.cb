@@ -46,7 +46,10 @@ chip soc/intel/apollolake
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.i2c[0] = {
-			.speed = I2C_SPEED_STANDARD
+			.speed = I2C_SPEED_STANDARD,
+			.rise_time_ns = 160,
+			.fall_time_ns = 110,
+			.data_hold_time_ns = 300
 		},
 	}"
 

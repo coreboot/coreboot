@@ -41,6 +41,16 @@ chip soc/intel/apollolake
 	# Enable Vtd feature
 	register "enable_vtd" = "1"
 
+	# I2C0 controller used for RTC
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_STANDARD,
+			.rise_time_ns = 160,
+			.fall_time_ns = 110,
+			.data_hold_time_ns = 300
+		},
+	}"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 off end	# - DPTF

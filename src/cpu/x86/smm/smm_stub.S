@@ -98,28 +98,31 @@ smm_trampoline32:
 
 	/* The CPU number is calculated by reading the initial APIC id. Since
 	 * the OS can maniuplate the APIC id use the non-changing cpuid result
-	 * for APIC id (ax). A table is used to handle a discontiguous
+	 * for APIC id (eax). A table is used to handle a discontiguous
 	 * APIC id space.  */
 apic_id:
-        mov $LAPIC_BASE_MSR, %ecx
-        rdmsr
-        andl $LAPIC_BASE_MSR_X2APIC_MODE, %eax
-        jz xapic
+	mov	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	and	$LAPIC_BASE_X2APIC_ENABLED, %eax
+	cmp	$LAPIC_BASE_X2APIC_ENABLED, %eax
+	jne	xapic
 
 x2apic:
-        mov $X2APIC_LAPIC_ID, %ecx
-        rdmsr
-        jmp apicid_end
+	mov	$0xb, %eax
+	mov	$0, %ecx
+	cpuid
+	mov	%edx, %eax
+	jmp	apicid_end
 
 xapic:
-        movl    $(LOCAL_APIC_ADDR | LAPIC_ID), %esi
-        movl    (%esi), %eax
-        shr     $24, %eax
+	mov	$1, %eax
+	cpuid
+	mov	%ebx, %eax
+	shr	$24, %eax
 
 apicid_end:
-
-        mov     $(apic_to_cpu_num), %ebx
-        xor     %ecx, %ecx
+	mov	$(apic_to_cpu_num), %ebx
+	xor	%ecx, %ecx
 
 1:
 	cmp	(%ebx, %ecx, 2), %ax

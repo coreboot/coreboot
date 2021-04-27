@@ -12,7 +12,7 @@ static inline bool is_x2apic_mode(void)
 {
 	msr_t msr;
 	msr = rdmsr(LAPIC_BASE_MSR);
-	return (msr.lo & LAPIC_BASE_MSR_X2APIC_MODE);
+	return ((msr.lo & LAPIC_BASE_X2APIC_ENABLED) == LAPIC_BASE_X2APIC_ENABLED);
 }
 
 static inline void x2apic_send_ipi(uint32_t icrlow, uint32_t apicid)
@@ -79,8 +79,8 @@ static inline void disable_lapic(void)
 static __always_inline unsigned int initial_lapicid(void)
 {
 	uint32_t lapicid;
-	if (is_x2apic_mode())
-		lapicid = lapic_read(LAPIC_ID);
+	if (is_x2apic_mode() && cpuid_get_max_func() >= 0xb)
+		lapicid = cpuid_ext(0xb, 0).edx;
 	else
 		lapicid = cpuid_ebx(1) >> 24;
 	return lapicid;

@@ -311,6 +311,9 @@ config MAINBOARD_SUPPORTS_KABYLAKE_CPU
 	bool "Board can contain Kaby Lake CPU"
 	default y if SOC_INTEL_KABYLAKE
 
+config MAINBOARD_SUPPORTS_COFFEELAKE_CPU
+	bool "Board can contain Coffee Lake CPU"
+
 endif
 
 if !SKYLAKE_SOC_PCH_H

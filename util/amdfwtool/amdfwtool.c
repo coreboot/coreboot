@@ -170,9 +170,10 @@ static void usage(void)
 	printf("-p | --load-mp2-fw             Set if load MP2 firmware\n");
 	printf("-L | --load-s0i3               Set if load s0i3 firmware\n");
 	printf("-Z | --verstage <FILE>         Add verstage\n");
-	printf("-E | --verstage_sig            Add verstage signature");
+	printf("-E | --verstage_sig            Add verstage signature\n");
 	printf("\nBIOS options:\n");
-	printf("-I | --instance <number>       Sets instance field for the next BIOS firmware\n");
+	printf("-I | --instance <number>       Sets instance field for the next BIOS\n");
+	printf("                               firmware\n");
 	printf("-a | --apcb <FILE>             Add AGESA PSP customization block\n");
 	printf("-Q | --apob-base <HEX_VAL>     Destination for AGESA PSP output block\n");
 	printf("-F | --apob-nv-base <HEX_VAL>  Location of S3 resume data\n");
@@ -182,7 +183,7 @@ static void usage(void)
 	printf("-e | --bios-bin-src <HEX_VAL>  Address in flash of source if -V not used\n");
 	printf("-v | --bios-bin-dest <HEX_VAL> Destination for uncompressed BIOS\n");
 	printf("-j | --bios-uncomp-size <HEX>  Uncompressed size of BIOS image\n");
-	printf("\n-o | --output <filename>     output filename\n");
+	printf("-o | --output <filename>       Output filename\n");
 	printf("-f | --flashsize <HEX_VAL>     ROM size in bytes\n");
 	printf("                               size must be larger than %dKB\n",
 		MIN_ROM_KB);
@@ -190,10 +191,12 @@ static void usage(void)
 	printf("-l | --location                Location of Directory\n");
 	printf("-q | --anywhere                Use any 64-byte aligned addr for Directory\n");
 	printf("-R | --sharedmem               Location of PSP/FW shared memory\n");
-	printf("-P | --sharedmem-size          Maximum size of the PSP/FW shared memory area\n");
+	printf("-P | --sharedmem-size          Maximum size of the PSP/FW shared memory\n");
+	printf("                               area\n");
 	printf("-C | --soc-name <socname>      Specify SOC name. Supported names are\n");
-	printf("                               Stoneyridge, Raven, Picasso, Renoir or Lucienne");
-	printf("-h | --help                    show this help\n");
+	printf("                               Stoneyridge, Raven, Picasso, Renoir, Cezanne\n");
+	printf("                               or Lucienne\n");
+	printf("-h | --help                    Show this help\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");

@@ -19,29 +19,33 @@ static void infra_master_init(uintptr_t base)
 
 	/*
 	 * Domain Remap: TINYSYS to non-EMI (3-bit to 4-bit)
-	 *    1. SCP from 3 to 3
-	 *    2. others from XXX to 15
+	 *     1. SCP from 3 to 3
+	 *     2. DSP from 4 to 4
+	 *     3. others from XXX to 15
 	 */
 	SET32_BITFIELDS(getreg(base, DOM_REMAP_0_0),
 			FOUR_BIT_DOM_REMAP_0, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_1, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_2, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_3, MAS_DOMAIN_3,
-			FOUR_BIT_DOM_REMAP_4, MAS_DOMAIN_15,
+			FOUR_BIT_DOM_REMAP_4, MAS_DOMAIN_4,
 			FOUR_BIT_DOM_REMAP_5, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_6, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_7, MAS_DOMAIN_15);
 
 	/*
 	 * Domain Remap: MMSYS slave domain remap (4-bit to 2-bit)
-	 *    1. From domain 0 ~ 3 to domain 0 ~ 3
-	 *    2. others from XXX to domain 0
+	 *     1. From domain 0       to domain 0 (no protection for all)
+	 *     2. From domain 1, 2, 4 to domain 1 (forbidden for all)
+	 *     3. From domain 3       to domain 3
+	 *     4. others from XXX     to domain 0
 	 */
 	SET32_BITFIELDS(getreg(base, DOM_REMAP_0_0),
 			TWO_BIT_DOM_REMAP_0, MAS_DOMAIN_0,
 			TWO_BIT_DOM_REMAP_1, MAS_DOMAIN_1,
-			TWO_BIT_DOM_REMAP_2, MAS_DOMAIN_2,
-			TWO_BIT_DOM_REMAP_3, MAS_DOMAIN_3);
+			TWO_BIT_DOM_REMAP_2, MAS_DOMAIN_1,
+			TWO_BIT_DOM_REMAP_3, MAS_DOMAIN_3,
+			TWO_BIT_DOM_REMAP_4, MAS_DOMAIN_1);
 
 }
 
@@ -49,20 +53,48 @@ static void peri_master_init(uintptr_t base)
 {
 	/* Domain */
 	SET32_BITFIELDS(getreg(base, MAS_DOM_0), SPM_DOM, MAS_DOMAIN_2);
+
+	/*
+	 * Domain Remap: CONNSYS slave domain remap (4-bit to 2-bit)
+	 *     1. From domain 0     to domain 0 (no protection for all)
+	 *     2. From domain 1 ~ 4 to domain 1 (forbidden for all)
+	 *     3. others from XXX   to domain 0
+	 */
+	SET32_BITFIELDS(getreg(base, DOM_REMAP_1_0),
+			TWO_BIT_DOM_REMAP_0, MAS_DOMAIN_0,
+			TWO_BIT_DOM_REMAP_1, MAS_DOMAIN_1,
+			TWO_BIT_DOM_REMAP_2, MAS_DOMAIN_1,
+			TWO_BIT_DOM_REMAP_3, MAS_DOMAIN_1,
+			TWO_BIT_DOM_REMAP_4, MAS_DOMAIN_1);
+
+	/*
+	 * Domain Remap: TINYSYS slave domain remap (4-bit to 3-bit)
+	 *     1. From domain 0     to domain 0 (no protection for all)
+	 *     2. From domain 1 ~ 4 to domain 1 (forbidden for all)
+	 *     3. others from XXX   to domain 0
+	 */
+	SET32_BITFIELDS(getreg(base, DOM_REMAP_0_0),
+			THREE_BIT_DOM_REMAP_0, MAS_DOMAIN_0,
+			THREE_BIT_DOM_REMAP_1, MAS_DOMAIN_1,
+			THREE_BIT_DOM_REMAP_2, MAS_DOMAIN_1,
+			THREE_BIT_DOM_REMAP_3, MAS_DOMAIN_1,
+			THREE_BIT_DOM_REMAP_4, MAS_DOMAIN_1);
 }
 
 static void fmem_master_init(uintptr_t base)
 {
-	/* Domain Remap: TINYSYS to EMI (3-bit to 4-bit)
-	 *    1. SCP from 3 to 3
-	 *    2. others from XXX to 15
+	/*
+	 * Domain Remap: TINYSYS to EMI (3-bit to 4-bit)
+	 *     1. SCP from 3 to 3
+	 *     2. DSP from 4 to 4
+	 *     3. others from XXX to 15
 	 */
 	SET32_BITFIELDS(getreg(base, DOM_REMAP_0_0),
 			FOUR_BIT_DOM_REMAP_0, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_1, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_2, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_3, MAS_DOMAIN_3,
-			FOUR_BIT_DOM_REMAP_4, MAS_DOMAIN_15,
+			FOUR_BIT_DOM_REMAP_4, MAS_DOMAIN_4,
 			FOUR_BIT_DOM_REMAP_5, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_6, MAS_DOMAIN_15,
 			FOUR_BIT_DOM_REMAP_7, MAS_DOMAIN_15);

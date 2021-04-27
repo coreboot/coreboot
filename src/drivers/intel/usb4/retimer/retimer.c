@@ -2,141 +2,401 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpi_device.h>
+#include <acpi/acpi_pld.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <gpio.h>
-
+#include <string.h>
 #include "chip.h"
 #include "retimer.h"
 
 /* Unique ID for the retimer _DSM. */
-#define INTEL_USB4_RETIMER_DSM_UUID	"61788900-C470-42BB-80F0-23A313864593"
+#define INTEL_USB4_RETIMER_DSM_UUID	"E0053122-795B-4122-8A5E-57BE1D26ACB3"
+
+static const char *usb4_retimer_scope;
+static const char *usb4_retimer_path_arg(const char *arg)
+{
+	/* \\_SB.PCI0.TDMx.ARG */
+	static char name[DEVICE_PATH_MAX];
+	snprintf(name, sizeof(name), "%s%c%s", usb4_retimer_scope, '.', arg);
+	return name;
+}
+
+/* Each polling cycle takes up to 25 ms with a total of 12 of these iterations */
+#define USB4_RETIMER_ITERATION_NUM	12
+#define USB4_RETIMER_POLL_CYCLE_MS	25
+static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expected_value)
+{
+	const char *RFWU = ec_retimer_fw_update_path();
+	const uint8_t data = cmd << USB_RETIMER_FW_UPDATE_OP_SHIFT | port;
+
+	/* Invoke EC Retimer firmware update command execution */
+	ec_retimer_fw_update(data);
+	/* If RFWU has return value 0xfe, return error -1 */
+	acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_ERROR);
+	acpigen_write_return_integer(-1);
+	acpigen_pop_len(); /* If */
+
+	acpigen_write_store_int_to_op(USB4_RETIMER_ITERATION_NUM, LOCAL2_OP);
+	acpigen_emit_byte(WHILE_OP);
+	acpigen_write_len_f();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_emit_byte(ZERO_OP);
+	acpigen_write_if_lequal_namestr_int(RFWU, expected_value);
+	acpigen_emit_byte(BREAK_OP);
+	acpigen_pop_len(); /* If */
+
+	if (cmd == USB_RETIMER_FW_UPDATE_SET_TBT) {
+		/*
+		 * EC return either USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
+		 * to RFWU after the USB_RETIMER_FW_UPDATE_SET_TBT command execution. It is
+		 * needed to add additional check for USB_PD_MUX_TBT_COMPAT_ENABLED.
+		 */
+		acpigen_write_if_lequal_namestr_int(RFWU, USB_PD_MUX_TBT_COMPAT_ENABLED);
+		acpigen_emit_byte(BREAK_OP);
+		acpigen_pop_len(); /* If */
+	}
+
+	acpigen_write_sleep(USB4_RETIMER_POLL_CYCLE_MS);
+	acpigen_emit_byte(DECREMENT_OP);
+	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_pop_len(); /* While */
+
+	/*
+	 * Check whether there is timeout error
+	 * Return: -1 if timeout error occurring
+	 */
+	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0);
+	acpigen_write_return_integer(-1);
+	acpigen_pop_len(); /* If */
+}
+
+static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gpio)
+{
+	uint8_t expected_value;
+
+	/*
+	 * Enable_retimer_online_state under NDA
+	 * 1. Force power on
+	 * 2. Check if there is a device connected
+	 * 3. Suspend PD
+	 * 4. Set Mux to USB mode
+	 * 5. Set Mux to Safe mode
+	 * 6. Set Mux to TBT mode
+	 */
+
+	/* Force power on for the retimer on the port */
+	acpigen_enable_tx_gpio(power_gpio);
+
+	/*
+	 * Get MUX mode state
+	 * Return -1 if there is a device connected on the port.
+	 * Otherwise proceed Retimer firmware upgrade operation.
+	 */
+	expected_value = USB_PD_MUX_NONE;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_GET_MUX, expected_value);
+
+	/*
+	 * Suspend PD
+	 * Command: USB_RETIMER_FW_UPDATE_SUSPEND_PD
+	 * Expect return value: 0
+	 */
+	expected_value = 0;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SUSPEND_PD, expected_value);
+
+	/*
+	 * Set MUX USB Mode
+	 * Command: USB_RETIMER_FW_UPDATE_SUSPEND_PD
+	 * Expect return value: USB_PD_MUX_USB_ENABLED
+	 */
+	expected_value = USB_PD_MUX_USB_ENABLED;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_USB, expected_value);
+
+	/*
+	 * Set MUX Safe Mode
+	 * Command: USB_RETIMER_FW_UPDATE_SET_SAFE
+	 * Expect return value: USB_PD_MUX_SAFE_MODE
+	 */
+	expected_value = USB_PD_MUX_SAFE_MODE;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_SAFE, expected_value);
+
+	/*
+	 * Set MUX TBT Mode
+	 * Command: USB_RETIMER_FW_UPDATE_SET_TBT
+	 * Expect return value: USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
+	 */
+	expected_value = USB_PD_MUX_USB4_ENABLED;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_TBT, expected_value);
+}
+
+static void disable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gpio)
+{
+	uint8_t expected_value;
+
+	/*
+	 * Disable_retimer_online_state
+	 * 1. Set Mux to disconnect mode
+	 * 2. Resume PD
+	 * 3. Force power off
+	 */
+
+	/*
+	 * Set MUX Disconnect Mode
+	 * Command: USB_RETIMER_FW_UPDATE_DISCONNECT
+	 * Expect return value: 0
+	 */
+	expected_value = 0;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_DISCONNECT, expected_value);
+
+	/*
+	 * Resume PD
+	 * Command: USB_RETIMER_FW_UPDATE_RESUME_PD
+	 * Expect return value: 1
+	 */
+	expected_value = 1;
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_RESUME_PD, expected_value);
+
+	/* Force power off */
+	acpigen_disable_tx_gpio(power_gpio);
+}
 
 /*
- * Arg0: UUID
+ * Arg0: UUID e0053122-795b-4122-8a5e-57be1d26acb3
  * Arg1: Revision ID (set to 1)
  * Arg2: Function Index
  *       0: Query command implemented
- *       1: Query force power enable state
- *       2: Set force power state
- *       3: Get Retimer FW Update EC Ram value
- *       4: Set Retimer FW Update EC Ram value
+ *       1: Get power state
+ *       2: Set power state
  * Arg3: A package containing parameters for the function specified
- *       by the UUID, revision ID and function index.
+ *       by the UUID, revision ID, function index and port index.
  */
-
-static void usb4_retimer_cb_standard_query(void *arg)
+static void usb4_retimer_cb_standard_query(uint8_t port, void *arg)
 {
 	/*
-	 * ToInteger (Arg1, Local2)
-	 * If (Local2 == 1) {
-	 *     Return(Buffer() {0x1f})
+	 * ToInteger (Arg1, Local1)
+	 * If (Local1 == 1) {
+	 *     Return(Buffer() {0x7})
 	 * }
 	 * Return (Buffer() {0x01})
 	 */
-	acpigen_write_to_integer(ARG1_OP, LOCAL2_OP);
+	acpigen_write_to_integer(ARG1_OP, LOCAL1_OP);
 
-	/* Revision 1 supports 4 Functions beyond the standard query */
-	acpigen_write_if_lequal_op_int(LOCAL2_OP, 1);
-	acpigen_write_return_singleton_buffer(0x1f);
+	/* Revision 1 supports 2 Functions beyond the standard query */
+	acpigen_write_if_lequal_op_int(LOCAL1_OP, 1);
+	acpigen_write_return_singleton_buffer(0x7);
 	acpigen_pop_len(); /* If */
 
 	/* Other revisions support no additional functions */
-	acpigen_write_return_singleton_buffer(0);
+	acpigen_write_return_singleton_buffer(0x1);
 }
 
-static void usb4_retimer_cb_get_power_state(void *arg)
+static void usb4_retimer_cb_get_power_state(uint8_t port, void *arg)
 {
-	struct acpi_gpio *power_gpio = arg;
+	const char *PWR;
+	char pwr[DEVICE_PATH_MAX];
+
+	snprintf(pwr, sizeof(pwr), "HR.DFP%1d.PWR", port);
+	PWR = usb4_retimer_path_arg(pwr);
 
 	/*
-	 * Read power gpio into Local0
-	 * Store (\_SB.PCI0.GTXS (power_gpio), Local0)
-	 * Return (Local0)
-	 */
-	acpigen_get_tx_gpio(power_gpio);
-	acpigen_write_return_op(LOCAL0_OP);
-}
-
-static void usb4_retimer_cb_set_power_state(void *arg)
-{
-	struct acpi_gpio *power_gpio = arg;
-
-	/*
-	 * Get information to set to retimer info from Arg3[0]
-	 * Local0 = DeRefOf (Arg3[0])
-	 */
-	acpigen_get_package_op_element(ARG3_OP, 0, LOCAL0_OP);
-
-	/*
-	 * If (Local0 == 0) {
-	 *     // Turn power off
-	 *     \_SB.PCI0.CTXS (power_gpio)
+	 * If (PWR > 0) {
+	 *      Return (1)
 	 * }
 	 */
-	acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
-	acpigen_disable_tx_gpio(power_gpio);
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_namestring(PWR);
+	acpigen_emit_byte(0);
+	acpigen_write_return_integer(1);
 
 	/*
 	 * Else {
-	 *     // Turn power on
-	 *     \_SB.PCI0.STXS (power_gpio)
+	 *      Return (0)
 	 * }
 	 */
 	acpigen_write_else();
-	acpigen_enable_tx_gpio(power_gpio);
-	acpigen_pop_len();
-
-	/* Return (Zero) */
 	acpigen_write_return_integer(0);
+	acpigen_pop_len();
 }
 
-static void usb4_retimer_cb_get_retimer_info(void *arg)
+static void usb4_retimer_cb_set_power_state(uint8_t port, void *arg)
 {
-	const char *RFWU = ec_retimer_fw_update_path();
+	struct acpi_gpio *power_gpio = arg;
+	const char *PWR;
+	char pwr[DEVICE_PATH_MAX];
+
+	snprintf(pwr, sizeof(pwr), "HR.DFP%1d.PWR", port);
+	PWR = usb4_retimer_path_arg(pwr);
 
 	/*
-	 * Read Mux Retimer info from EC RAM
-	 * Return RFWU if RFWU is not NULL. Otherwise return -1 to
-	 * inform kernel about error.
+	 * Get information to set retimer power state from Arg3[0]
+	 * Local1 = DeRefOf (Arg3[0])
 	 */
-	if (!RFWU)
-		acpigen_write_return_byte(-1);
-	else
-		acpigen_write_return_namestr(RFWU);
+	acpigen_get_package_op_element(ARG3_OP, 0, LOCAL1_OP);
+
+	/*
+	 * If ((Local1 == 0) && (PWR > 0)) {
+	 *      PWR--
+	 *      If (PWR == 0) {
+	 *		// Disable retimer online state
+	 *      }
+	 * }
+	 */
+	acpigen_write_if();
+	acpigen_emit_byte(LAND_OP);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(0);
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_namestring(PWR);
+	acpigen_emit_byte(0);
+	/* PWR-- */
+	acpigen_emit_byte(DECREMENT_OP);
+	acpigen_emit_namestring(PWR);
+	acpigen_write_if_lequal_namestr_int(PWR, 0); /* If (PWR == 0) */
+	disable_retimer_online_state(port, power_gpio);
+	acpigen_pop_len(); /* If (PWR == 0) */
+
+	/*
+	 * Else If ((Local1 == 1) && (PWR == 0)) {
+	 *       // Enable retimer online state
+	 *       PWR++
+	 * }
+	 */
+	acpigen_write_else();
+	acpigen_write_if();
+	acpigen_emit_byte(LAND_OP);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_emit_byte(1);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_namestring(PWR);
+	acpigen_emit_byte(0);
+	enable_retimer_online_state(port, power_gpio);
+	/* PWR++ */
+	acpigen_emit_byte(INCREMENT_OP);
+	acpigen_emit_namestring(PWR);
+
+	/*
+	 * Else {
+	 *      Return (0)
+	 * }
+	 */
+	acpigen_write_else();
+	acpigen_write_return_integer(0);
+	acpigen_pop_len(); /* Else */
+	acpigen_pop_len(); /* If */
+
+	/*
+	 * If (PWR == 1) {
+	 *      Return (1)
+	 * }
+	 */
+	acpigen_write_if_lequal_namestr_int(PWR, 1);
+	acpigen_write_return_integer(1);
+
+	/*
+	 * Else {
+	 *      Return (0)
+	 * }
+	*/
+	acpigen_write_else();
+	acpigen_write_return_integer(0);
+	acpigen_pop_len();
 }
 
-static void usb4_retimer_cb_set_retimer_info(void *arg)
-{
-	ec_retimer_fw_update(arg);
-}
-
-static void (*usb4_retimer_callbacks[5])(void *) = {
+static void (*usb4_retimer_callbacks[3])(uint8_t port, void *) = {
 	usb4_retimer_cb_standard_query,		/* Function 0 */
 	usb4_retimer_cb_get_power_state,	/* Function 1 */
 	usb4_retimer_cb_set_power_state,	/* Function 2 */
-	usb4_retimer_cb_get_retimer_info,	/* Function 3 */
-	usb4_retimer_cb_set_retimer_info,	/* Function 4 */
 };
+
+static void usb4_retimer_write_dsm(uint8_t port, const char *uuid,
+			void (**callbacks)(uint8_t port, void *), size_t count, void *arg)
+{
+	struct usb4_retimer_dsm_uuid id = DSM_UUID(uuid, callbacks, count, arg);
+	size_t i;
+
+	acpigen_write_to_integer(ARG2_OP, LOCAL0_OP);
+
+	for (i = 0; i < id.count; i++) {
+		/* If (LEqual (Local0, i)) */
+		acpigen_write_if_lequal_op_int(LOCAL0_OP, i);
+
+		/* Callback to write if handler. */
+		if (id.callbacks[i])
+			id.callbacks[i](port, id.arg);
+
+		acpigen_pop_len(); /* If */
+	}
+}
 
 static void usb4_retimer_fill_ssdt(const struct device *dev)
 {
-	const struct drivers_intel_usb4_retimer_config *config = dev->chip_info;
-	const char *scope = acpi_device_scope(dev);
+	struct drivers_intel_usb4_retimer_config *config = dev->chip_info;
+	static char dfp[DEVICE_PATH_MAX];
+	struct acpi_pld pld;
+	uint8_t port;
 
-	if (!scope || !config)
+	usb4_retimer_scope = acpi_device_scope(dev);
+	if (!usb4_retimer_scope || !config)
 		return;
 
-	if (!config->power_gpio.pin_count) {
-		printk(BIOS_ERR, "%s: Power GPIO required for %s\n", __func__, dev_path(dev));
-		return;
+	/* Scope */
+	acpigen_write_scope(usb4_retimer_scope);
+
+	/* Host router */
+	acpigen_write_device("HR");
+	acpigen_write_ADR(0);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+
+	for (port = 0; port < DFP_NUM_MAX; port++) {
+		if (!config->dfp[port].power_gpio.pin_count) {
+			printk(BIOS_ERR, "%s: No DFP%1d power GPIO for %s\n", __func__,
+			       port, dev_path(dev));
+			continue;
+		}
+
+		/* DFPx */
+		snprintf(dfp, sizeof(dfp), "DFP%1d", port);
+		acpigen_write_device(dfp);
+		/* _ADR part is for the lane adapter */
+		acpigen_write_ADR(port*2 + 1);
+
+		/* Fill _PLD with the same USB 3.x object on the Type-C connector */
+		acpi_pld_fill_usb(&pld, UPC_TYPE_PROPRIETARY, &config->dfp[port].group);
+		pld.shape = PLD_SHAPE_OVAL;
+		pld.visible = 1;
+		acpigen_write_pld(&pld);
+
+		/* Power online reference counter(_PWR) */
+		acpigen_write_name("PWR");
+		acpigen_write_zero();
+
+		/* Method (_DSM, 4, Serialized) */
+		acpigen_write_method_serialized("_DSM", 0x4);
+		/* ToBuffer (Arg0, Local0) */
+		acpigen_write_to_buffer(ARG0_OP, LOCAL0_OP);
+		acpigen_write_if();  /* If (UUID != INTEL_USB4_RETIMER_DSM_UUID) */
+		acpigen_emit_byte(LNOT_OP);
+		acpigen_emit_byte(LEQUAL_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_uuid(INTEL_USB4_RETIMER_DSM_UUID);
+		/* Return (Buffer (One) { 0x0 }) */
+		acpigen_write_return_singleton_buffer(0x0);
+		acpigen_pop_len();
+		usb4_retimer_write_dsm(port, INTEL_USB4_RETIMER_DSM_UUID,
+			usb4_retimer_callbacks, ARRAY_SIZE(usb4_retimer_callbacks),
+			(void *)&config->dfp[port].power_gpio);
+		/* Default case: Return (Buffer (One) { 0x0 }) */
+		acpigen_write_return_singleton_buffer(0x0);
+
+		acpigen_pop_len(); /* Method _DSM */
+		acpigen_pop_len(); /* DFP */
 	}
-
-	/* Write the _DSM that toggles power with provided GPIO. */
-	acpigen_write_scope(scope);
-	acpigen_write_dsm(INTEL_USB4_RETIMER_DSM_UUID, usb4_retimer_callbacks,
-			  ARRAY_SIZE(usb4_retimer_callbacks), (void *)&config->power_gpio);
+	acpigen_pop_len(); /* Host Router */
 	acpigen_pop_len(); /* Scope */
 
 	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
@@ -164,6 +424,6 @@ __weak const char *ec_retimer_fw_update_path(void)
 	return NULL;
 }
 
-__weak void ec_retimer_fw_update(void *arg)
+__weak void ec_retimer_fw_update(uint8_t data)
 {
 }

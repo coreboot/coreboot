@@ -4,10 +4,19 @@
 #define __DRIVERS_INTEL_USB4_RETIMER_H__
 
 #include <acpi/acpi_device.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_pld.h>
+
+#define DFP_NUM_MAX	2
 
 struct drivers_intel_usb4_retimer_config {
-	/* GPIO used to control power of retimer device. */
-	struct acpi_gpio power_gpio;
+	/* Downstream facing port(DFP) */
+	struct {
+		/* GPIO used to control power of retimer device */
+		struct acpi_gpio power_gpio;
+		/* _PLD setting */
+		struct acpi_pld_group group;
+	} dfp[DFP_NUM_MAX];
 };
 
 #endif /* __DRIVERS_INTEL_USB4_RETIMER_H__ */

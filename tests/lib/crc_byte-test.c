@@ -3,7 +3,7 @@
 #include <tests/test.h>
 #include <crc_byte.h>
 
-static const uint8_t test_data_u8[] = {
+static const uint8_t test_data_bytes[] = {
 	0x2f, 0x8f, 0x2d, 0x06, 0xc2, 0x11, 0x0c, 0xaf,
 	0xd7, 0x4b, 0x48, 0x71, 0xce, 0x3c, 0xfe, 0x29,
 	0x90, 0xf6, 0x33, 0x6d, 0x79, 0x23, 0x9d, 0x84,
@@ -37,10 +37,10 @@ static const uint8_t test_data_u8[] = {
 	0xf5, 0x45, 0x05, 0x0d, 0x3d, 0x62, 0xb9, 0x00,
 	0x7b, 0x1e, 0xe8, 0xb5, 0x97, 0x6e, 0xa8, 0xf3,
 };
-static const size_t test_data_u8_sz = ARRAY_SIZE(test_data_u8);
+static const size_t test_data_bytes_sz = ARRAY_SIZE(test_data_bytes);
 static const uint8_t test_data_crc7_checksum = 0x30;
-static const uint16_t test_data_crc16_checksum = 0x63;
-static const uint32_t test_data_crc32_checksum = 0x93;
+static const uint16_t test_data_crc16_checksum = 0x1263;
+static const uint32_t test_data_crc32_checksum = 0xc7f52a93;
 
 static void test_crc7_byte_zeros(void **state)
 {
@@ -106,9 +106,10 @@ static void test_crc7_byte_single_bit_difference(void **state)
 	assert_int_not_equal(crc_value_1, crc_value_2);
 }
 
+/* This test uses CRC() macro to check if it works correctly with provided crc function */
 static void test_crc7_byte_static_data(void **state)
 {
-	uint8_t crc_value = CRC(test_data_u8, test_data_u8_sz, crc7_byte);
+	uint8_t crc_value = CRC(test_data_bytes, test_data_bytes_sz, crc7_byte);
 
 	assert_int_equal(test_data_crc7_checksum, crc_value);
 
@@ -146,8 +147,8 @@ static void test_crc16_same_data_twice_different_value(void **state)
 
 static void test_crc16_byte_repeat_stream(void **state)
 {
-	uint8_t crc_value_1 = 0u;
-	uint8_t crc_value_2 = 0u;
+	uint16_t crc_value_1 = 0u;
+	uint16_t crc_value_2 = 0u;
 	const size_t iterations = 17777;
 
 	/* Calculate CRC16 twice for the same data and expect the same result.
@@ -167,8 +168,8 @@ static void test_crc16_byte_repeat_stream(void **state)
 
 static void test_crc16_byte_single_bit_difference(void **state)
 {
-	uint8_t crc_value_1 = 0u;
-	uint8_t crc_value_2 = 0u;
+	uint16_t crc_value_1 = 0u;
+	uint16_t crc_value_2 = 0u;
 
 	for (size_t i = 0; i < 2000; ++i) {
 		crc_value_1 = crc16_byte(crc_value_1, (i % 128) << 1);
@@ -181,9 +182,10 @@ static void test_crc16_byte_single_bit_difference(void **state)
 	assert_int_not_equal(crc_value_1, crc_value_2);
 }
 
+/* This test uses CRC() macro to check if it works correctly with provided crc function */
 static void test_crc16_byte_static_data(void **state)
 {
-	uint8_t crc_value = CRC(test_data_u8, test_data_u8_sz, crc16_byte);
+	uint16_t crc_value = CRC(test_data_bytes, test_data_bytes_sz, crc16_byte);
 
 	assert_int_equal(test_data_crc16_checksum, crc_value);
 
@@ -196,7 +198,7 @@ static void test_crc16_byte_static_data(void **state)
 
 static void test_crc32_byte_zeros(void **state)
 {
-	uint16_t crc_value = 0u;
+	uint32_t crc_value = 0u;
 
 	/* Expect zero as crc value after calculating it for single zero byte */
 	crc_value = crc32_byte(crc_value, 0);
@@ -211,20 +213,20 @@ static void test_crc32_byte_zeros(void **state)
 
 static void test_crc32_same_data_twice_different_value(void **state)
 {
-	uint16_t crc_value = 0u;
+	uint32_t crc_value = 0u;
 
 	/* Expect value to change after feeding crc function with the same byte twice. */
 	crc_value = crc32_byte(crc_value, 0xDF);
-	assert_int_equal(0xf654, crc_value);
+	assert_int_equal(0x29d4f654, crc_value);
 
 	crc_value = crc32_byte(crc_value, 0xDF);
-	assert_int_equal(0xa254, crc_value);
+	assert_int_equal(0x47c8e4bb, crc_value);
 }
 
 static void test_crc32_byte_repeat_stream(void **state)
 {
-	uint8_t crc_value_1 = 0u;
-	uint8_t crc_value_2 = 0u;
+	uint32_t crc_value_1 = 0u;
+	uint32_t crc_value_2 = 0u;
 	const size_t iterations = 8935;
 
 	/* Calculate CRC16 twice for the same data and expect the same result.
@@ -244,8 +246,8 @@ static void test_crc32_byte_repeat_stream(void **state)
 
 static void test_crc32_byte_single_bit_difference(void **state)
 {
-	uint8_t crc_value_1 = 0u;
-	uint8_t crc_value_2 = 0u;
+	uint32_t crc_value_1 = 0u;
+	uint32_t crc_value_2 = 0u;
 
 	for (size_t i = 0; i < 1338; ++i) {
 		crc_value_1 = crc32_byte(crc_value_1, (i % 128) << 1);
@@ -258,15 +260,16 @@ static void test_crc32_byte_single_bit_difference(void **state)
 	assert_int_not_equal(crc_value_1, crc_value_2);
 }
 
+/* This test uses CRC() macro to check if it works correctly with provided crc function */
 static void test_crc32_byte_static_data(void **state)
 {
-	uint8_t crc_value = CRC(test_data_u8, test_data_u8_sz, crc32_byte);
+	uint32_t crc_value = CRC(test_data_bytes, test_data_bytes_sz, crc32_byte);
 
 	assert_int_equal(test_data_crc32_checksum, crc_value);
 
 	/* Calculating CRC of data with its CRC should yield zero if data
 	   and/or checksum is correct */
-	for (int i = 0; i < 4; ++i)
+	for (int i = 3; i >= 0; --i)
 		crc_value = crc32_byte(crc_value, (test_data_crc32_checksum >> 8 * i) & 0xFF);
 	assert_int_equal(0, crc_value);
 }

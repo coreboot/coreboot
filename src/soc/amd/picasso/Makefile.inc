@@ -50,7 +50,6 @@ ramstage-y += fsp_s_params.c
 ramstage-y += graphics.c
 ramstage-y += pcie_gpp.c
 ramstage-y += xhci.c
-ramstage-y += dmi.c
 
 smm-y += smihandler.c
 ifeq ($(CONFIG_DEBUG_SMI),y)

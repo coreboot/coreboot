@@ -13,7 +13,7 @@
 #include <bootstate.h>
 #include <lib.h>
 #include <dimm_info_util.h>
-#include <vendorcode/amd/fsp/picasso/dmi_info.h>
+#include <dmi_info.h>
 #include <device/dram/ddr4.h>
 
 /**

@@ -266,6 +266,7 @@ F:	src/mainboard/google/panther/
 
 GOOGLE VOLTEER MAINBOARDS
 M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
+M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/volteer/
 

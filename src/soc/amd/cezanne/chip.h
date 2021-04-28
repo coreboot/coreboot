@@ -68,6 +68,13 @@ struct soc_amd_cezanne_config {
 	uint8_t cppc_epp_max_range;
 	uint8_t cppc_epp_min_range;
 	uint8_t cppc_preferred_cores;
+
+	/* telemetry settings */
+	uint32_t telemetry_vddcrvddfull_scale_current_mA;
+	uint32_t telemetry_vddcrvddoffset;
+	uint32_t telemetry_vddcrsocfull_scale_current_mA;
+	uint32_t telemetry_vddcrsocoffset;
+
 };
 
 #endif /* CEZANNE_CHIP_H */

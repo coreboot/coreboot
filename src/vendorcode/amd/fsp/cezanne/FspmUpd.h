@@ -102,8 +102,12 @@ typedef struct __packed {
 	/** Offset 0x04A4**/	uint8_t                     fch_ioapic_id;
 	/** Offset 0x04A5**/	uint8_t                     sata_enable;
 	/** Offset 0x04A6**/	uint8_t                     fch_reserved[32];
-	/** Offset 0x04A7**/	uint8_t                     s0i3_enable;
-	/** Offset 0x04C6**/	uint8_t                     UnusedUpdSpace0[57];
+	/** Offset 0x04C6**/	uint8_t                     s0i3_enable;
+	/** Offset 0x04C7**/	uint32_t                    telemetry_vddcrvddfull_scale_current;
+	/** Offset 0x04CB**/	uint32_t                    telemetry_vddcrvddoffset;
+	/** Offset 0x04CF**/	uint32_t                    telemetry_vddcrsocfull_scale_current;
+	/** Offset 0x04D3**/	uint32_t                    telemetry_vddcrsocOffset;
+	/** Offset 0x04D7**/	uint8_t                     UnusedUpdSpace0[41];
 	/** Offset 0x0500**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;
 

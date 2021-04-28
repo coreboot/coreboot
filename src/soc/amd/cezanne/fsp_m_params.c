@@ -118,5 +118,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* S0i3 enable */
 	mcfg->s0i3_enable = config->s0ix_enable;
 
+	/* voltage regulator telemetry settings */
+	mcfg->telemetry_vddcrvddfull_scale_current =
+		config->telemetry_vddcrvddfull_scale_current_mA;
+	mcfg->telemetry_vddcrvddoffset =
+		config->telemetry_vddcrvddoffset;
+	mcfg->telemetry_vddcrsocfull_scale_current =
+		config->telemetry_vddcrsocfull_scale_current_mA;
+	mcfg->telemetry_vddcrsocOffset =
+		config->telemetry_vddcrsocoffset;
+
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 }

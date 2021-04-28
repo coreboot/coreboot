@@ -164,7 +164,7 @@ chip soc/intel/alderlake
 		device pci 09.0 off end # NPK
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
-		device pci 0d.1 on  end # USB xDCI (OTG)
+		device pci 0d.1 off end # USB xDCI (OTG)
 		device pci 0d.2 on  end # TBT DMA0
 		device pci 0d.3 on  end # TBT DMA1
 		device pci 0e.0 off end # VMD

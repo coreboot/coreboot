@@ -35,11 +35,18 @@ struct fw_config_option {
 	uint64_t value;
 	struct fw_config_option *next;
 };
+
+struct fw_config_field_bits;
+struct fw_config_field_bits {
+	unsigned int start_bit;
+	unsigned int end_bit;
+	struct fw_config_field_bits *next;
+};
+
 struct fw_config_field;
 struct fw_config_field {
 	const char *name;
-	unsigned int start_bit;
-	unsigned int end_bit;
+	struct fw_config_field_bits *bits;
 	struct fw_config_field *next;
 	struct fw_config_option *options;
 };
@@ -210,10 +217,15 @@ void add_reference(struct chip_instance *chip, char *name, char *alias);
 
 struct fw_config_field *get_fw_config_field(const char *name);
 
-struct fw_config_field *new_fw_config_field(const char *name,
-					    unsigned int start_bit, unsigned int end_bit);
+void add_fw_config_field_bits(struct fw_config_field *field,
+			      unsigned int start_bit, unsigned int end_bit);
+
+struct fw_config_field *new_fw_config_field(const char *name, struct fw_config_field_bits *bits);
 
 void add_fw_config_option(struct fw_config_field *field, const char *name,
 			  uint64_t value);
 
 void add_fw_config_probe(struct bus *bus, const char *field, const char *option);
+
+void append_fw_config_bits(struct fw_config_field_bits **bits,
+			   unsigned int start_bit, unsigned int end_bit);

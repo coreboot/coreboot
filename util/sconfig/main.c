@@ -398,42 +398,77 @@ static void append_fw_config_field(struct fw_config_field *add)
 	}
 }
 
-struct fw_config_field *new_fw_config_field(const char *name,
-					    unsigned int start_bit, unsigned int end_bit)
+void append_fw_config_bits(struct fw_config_field_bits **bits,
+			   unsigned int start_bit, unsigned int end_bit)
+{
+	struct fw_config_field_bits *new_bits = S_ALLOC(sizeof(*new_bits));
+	new_bits->start_bit = start_bit;
+	new_bits->end_bit = end_bit;
+	new_bits->next = NULL;
+
+	if (*bits == NULL) {
+		*bits = new_bits;
+		return;
+	}
+
+	struct fw_config_field_bits *tmp = *bits;
+	while (tmp->next)
+		tmp = tmp->next;
+
+	tmp->next = new_bits;
+}
+
+int fw_config_masks_overlap(struct fw_config_field *existing,
+			     unsigned int start_bit, unsigned int end_bit)
+{
+	struct fw_config_field_bits *bits = existing->bits;
+	while (bits) {
+		if (start_bit <= bits->end_bit && end_bit >= bits->start_bit) {
+			printf("ERROR: fw_config field [%u-%u] overlaps %s[%u-%u]\n",
+			       start_bit, end_bit,
+			       existing->name, bits->start_bit, bits->end_bit);
+			return 1;
+		}
+		bits = bits->next;
+	}
+
+	return 0;
+}
+
+struct fw_config_field *new_fw_config_field(const char *name, struct fw_config_field_bits *bits)
 {
 	struct fw_config_field *field = find_fw_config_field(name);
-
-	/* Check that field is within 64 bits. */
-	if (start_bit > end_bit || end_bit > 63) {
-		printf("ERROR: fw_config field %s has invalid range %u-%u\n", name,
-		       start_bit, end_bit);
-		exit(1);
-	}
+	struct fw_config_field_bits *tmp;
 
 	/* Don't allow re-defining a field, only adding new fields. */
 	if (field) {
-		printf("ERROR: fw_config field %s[%u-%u] already exists with range %u-%u\n",
-		       name, start_bit, end_bit, field->start_bit, field->end_bit);
+		printf("ERROR: fw_config field %s already exists\n", name);
 		exit(1);
 	}
 
-	/* Check for overlap with an existing field. */
-	field = fw_config_fields;
-	while (field) {
-		/* Check if the mask overlaps. */
-		if (start_bit <= field->end_bit && end_bit >= field->start_bit) {
-			printf("ERROR: fw_config field %s[%u-%u] overlaps %s[%u-%u]\n",
-			       name, start_bit, end_bit,
-			       field->name, field->start_bit, field->end_bit);
+	/* Check that each field is within 64 bits. */
+	tmp = bits;
+	while (tmp) {
+		if (tmp->start_bit > tmp->end_bit || tmp->end_bit > 63) {
+			printf("ERROR: fw_config field %s has invalid range %u-%u\n", field->name,
+			       tmp->start_bit, tmp->end_bit);
 			exit(1);
 		}
-		field = field->next;
+
+		/* Check for overlap with an existing field. */
+		struct fw_config_field *existing = fw_config_fields;
+		while (existing) {
+			if (fw_config_masks_overlap(existing, tmp->start_bit, tmp->end_bit))
+				exit(1);
+			existing = existing->next;
+		}
+
+		tmp = tmp->next;
 	}
 
 	field = S_ALLOC(sizeof(*field));
 	field->name = name;
-	field->start_bit = start_bit;
-	field->end_bit = end_bit;
+	field->bits = bits;
 	append_fw_config_field(field);
 
 	return field;
@@ -453,13 +488,25 @@ static void append_fw_config_option_to_field(struct fw_config_field *field,
 	}
 }
 
+static uint64_t calc_max_field_value(const struct fw_config_field *field)
+{
+	unsigned int bit_count = 0;
+
+	const struct fw_config_field_bits *bits = field->bits;
+	while (bits) {
+		bit_count += 1 + bits->end_bit - bits->start_bit;
+		bits = bits->next;
+	};
+
+	return (1ull << bit_count) - 1ull;
+}
+
 void add_fw_config_option(struct fw_config_field *field, const char *name, uint64_t value)
 {
 	struct fw_config_option *option;
-	uint64_t field_max_value;
 
 	/* Check that option value fits within field mask. */
-	field_max_value = (1ull << (1ull + field->end_bit - field->start_bit)) - 1ull;
+	uint64_t field_max_value = calc_max_field_value(field);
 	if (value > field_max_value) {
 		printf("ERROR: fw_config option %s:%s value %" PRIx64 " larger than field max %"
 		       PRIx64 "\n",
@@ -525,6 +572,46 @@ void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
 	append_fw_config_probe_to_dev(bus->dev, probe);
 }
 
+static uint64_t compute_fw_config_mask(const struct fw_config_field_bits *bits)
+{
+	uint64_t mask = 0;
+
+	while (bits) {
+		/* Compute mask from start and end bit. */
+		uint64_t tmp = ((1ull << (1ull + bits->end_bit - bits->start_bit)) - 1ull);
+		tmp <<= bits->start_bit;
+		mask |= tmp;
+		bits = bits->next;
+	}
+
+	return mask;
+}
+
+static unsigned int bits_width(const struct fw_config_field_bits *bits)
+{
+	return 1 + bits->end_bit - bits->start_bit;
+}
+
+static uint64_t calc_option_value(const struct fw_config_field *field,
+				  const struct fw_config_option *option)
+{
+	uint64_t value = 0;
+	uint64_t original = option->value;
+
+	struct fw_config_field_bits *bits = field->bits;
+	while (bits) {
+		const unsigned int width = bits_width(bits);
+		const uint64_t orig_mask = (1ull << width) - 1ull;
+		const uint64_t orig = (original & orig_mask);
+		value |= (orig << bits->start_bit);
+
+		original >>= width;
+		bits = bits->next;
+	}
+
+	return value;
+}
+
 static void emit_fw_config(FILE *fil)
 {
 	struct fw_config_field *field = fw_config_fields;
@@ -539,20 +626,16 @@ static void emit_fw_config(FILE *fil)
 		fprintf(fil, "#define FW_CONFIG_FIELD_%s_NAME \"%s\"\n",
 			field->name, field->name);
 
-		/* Compute mask from start and end bit. */
-		mask = ((1ull << (1ull + field->end_bit - field->start_bit)) - 1ull);
-		mask <<= field->start_bit;
-
+		mask = compute_fw_config_mask(field->bits);
 		fprintf(fil, "#define FW_CONFIG_FIELD_%s_MASK 0x%" PRIx64 "\n",
 			field->name, mask);
 
 		while (option) {
+			const uint64_t value = calc_option_value(field, option);
 			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_NAME \"%s\"\n",
 				field->name, option->name, option->name);
 			fprintf(fil, "#define FW_CONFIG_FIELD_%s_OPTION_%s_VALUE 0x%"
-				PRIx64 "\n", field->name, option->name,
-				option->value << field->start_bit);
-
+				PRIx64 "\n", field->name, option->name, value);
 			option = option->next;
 		}
 
@@ -1878,6 +1961,7 @@ int main(int argc, char **argv)
 
 	if (override_devtree)
 		parse_override_devicetree(override_devtree, &override_root_dev);
+
 
 	FILE *autogen = fopen(outputc, "w");
 	if (!autogen) {

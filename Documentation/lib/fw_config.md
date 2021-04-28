@@ -121,11 +121,47 @@ Each field is defined by providing the field name and the start and end bit mark
 location in the bitmask.  Field names must be at least three characters long in order to
 satisfy the sconfig parser requirements and they must be unique with non-overlapping masks.
 
-    field <name> <start-bit> <end-bit> [option...] end
+	field <name> <start-bit> <end-bit> [option...] end
 
 For single-bit fields only one number is needed:
 
 	field <name> <bit> [option...] end
+
+A field definition can also contain multiple sets of bit masks, which can be dis-contiguous.
+They are treated as if they are contiguous when defining option values.  This allows for
+extending fields even after the bits after its current masks are occupied.
+
+	field <name> <start-bit0> <end-bit0> | <start-bit1> <end-bit1> | ...
+
+For example, if more audio options need to be supported:
+
+	field AUDIO 3 3
+		option AUDIO_0  0
+		option AUDIO_1  1
+	end
+	field OTHER 4 4
+		...
+	end
+
+the following can be done:
+
+	field AUDIO 3 3 | 5 5
+		option AUDIO_FOO   0
+		option AUDIO_BLAH  1
+		option AUDIO_BAR   2
+		option AUDIO_BAZ   3
+	end
+	field OTHER 4 4
+		...
+	end
+
+In that case, the AUDIO masks are extended like so:
+
+	#define FW_CONFIG_FIELD_AUDIO_MASK						0x28
+	#define FW_CONFIG_FIELD_AUDIO_OPTION_AUDIO_FOO_VALUE	0x0
+	#define FW_CONFIG_FIELD_AUDIO_OPTION_AUDIO_BLAH_VALUE	0x8
+	#define FW_CONFIG_FIELD_AUDIO_OPTION_AUDIO_BAR_VALUE	0x20
+	#define FW_CONFIG_FIELD_AUDIO_OPTION_AUDIO_BAz_VALUE	0x28
 
 Each `field` definition starts a new block that can be composed of zero or more field options,
 and it is terminated with `end`.

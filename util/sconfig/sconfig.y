@@ -11,6 +11,7 @@ void yyerror(const char *s);
 static struct bus *cur_parent;
 static struct chip_instance *cur_chip_instance;
 static struct fw_config_field *cur_field;
+static struct fw_config_field_bits *cur_bits;
 
 %}
 %union {
@@ -20,7 +21,7 @@ static struct fw_config_field *cur_field;
 	uint64_t number;
 }
 
-%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO LPC ESPI GPIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE
+%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO LPC ESPI GPIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE PIPE
 %%
 devtree: { cur_parent = root_parent; } | devtree chip | devtree fw_config_table;
 
@@ -97,23 +98,32 @@ fw_config_table_children: fw_config_table_children fw_config_field | /* empty */
 /* field -> option */
 fw_config_field_children: fw_config_field_children fw_config_option | /* empty */ ;
 
-/* field <start-bit> <end-bit> */
-fw_config_field: FW_CONFIG_FIELD STRING NUMBER /* == start bit */ NUMBER /* == end bit */ {
-	cur_field = new_fw_config_field($<string>2, strtoul($<string>3, NULL, 0), strtoul($<string>4, NULL, 0));
-}
-	fw_config_field_children END { };
+/* <start-bit> <end-bit> */
+fw_config_field_bits: NUMBER /* == start bit */ NUMBER /* == end bit */
+{
+	append_fw_config_bits(&cur_bits, strtoul($<string>1, NULL, 0), strtoul($<string>2, NULL, 0));
+};
+
+/* field <start-bit> <end-bit>(| <start-bit> <end-bit>)* */
+fw_config_field_bits_repeating: PIPE fw_config_field_bits fw_config_field_bits_repeating | /* empty */ ;
+
+fw_config_field: FW_CONFIG_FIELD STRING fw_config_field_bits fw_config_field_bits_repeating
+	{ cur_field = new_fw_config_field($<string>2, cur_bits); }
+	fw_config_field_children END { cur_bits = NULL; };
 
 /* field <bit> (for single-bit fields) */
 fw_config_field: FW_CONFIG_FIELD STRING NUMBER /* == bit */ {
-	cur_field = new_fw_config_field($<string>2, strtoul($<string>3, NULL, 0), strtoul($<string>3, NULL, 0));
+	cur_bits = NULL;
+	append_fw_config_bits(&cur_bits, strtoul($<string>3, NULL, 0), strtoul($<string>3, NULL, 0));
+	cur_field = new_fw_config_field($<string>2, cur_bits);
 }
-	fw_config_field_children END { };
+	fw_config_field_children END { cur_bits = NULL; };
 
 /* field (for adding options to an existing field) */
 fw_config_field: FW_CONFIG_FIELD STRING {
 	cur_field = get_fw_config_field($<string>2);
 }
-	fw_config_field_children END { };
+	fw_config_field_children END { cur_bits = NULL; };
 
 /* option <value> */
 fw_config_option: FW_CONFIG_OPTION STRING NUMBER /* == field value */

@@ -76,4 +76,28 @@ now passed from within SMM_MODULE_LOADER. Allocation and initialisations
 for common ACPI GNVS table entries were largely moved to one centralized
 implementation.
 
+### Intel Xeon Scalable Processor support is now considered mature
+
+Intel Xeon Scalable Processor (Xeon-SP) family [1] is designed
+primarily to serve the needs of the server market.
+
+coreboot support for Xeon-SP is in src/soc/intel/xeon_sp directory.
+This release has support for SkyLake-SP (SKX-SP) which is the 2nd
+generation, and for CooperLake-SP (CPX-SP) which is the 3rd generation
+or the latest generation [2] on market.
+
+With this release, the codebase for multiple generations of Xeon-SP
+were unified and optimized:
+* SKX-SP SoC code is used in OCP TiogaPass mainboard [3]. Support for
+this board is in Proof Of Concept Status.
+* CPX-SP SoC code is used in OCP DeltaLake mainboard. Support for
+this board is in DVT (Design Validation Test) exit equivalent status.
+Features supported, (performance/stability) test scopes, known issues,
+features gaps are described in [4].
+
 ### Add significant changes here
+
+[1] https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html
+[2] https://www.intel.com/content/www/us/en/products/docs/processors/xeon/3rd-gen-xeon-scalable-processors-brief.html
+[3] ../mainboard/ocp/tiogapass.md
+[4] ../mainboard/ocp/deltalake.md

@@ -385,6 +385,11 @@ config PC_KEYBOARD_LAYOUT_DE
 	depends on PC_KEYBOARD
 	default n
 
+config PC_KEYBOARD_TRANSLATION
+	bool "Enable or Disable translation in PC keyboard set 2 on exit"
+	depends on PC_KEYBOARD
+	default y
+
 endmenu
 
 menu "Drivers"

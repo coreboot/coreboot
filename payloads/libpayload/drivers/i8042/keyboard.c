@@ -658,7 +658,7 @@ void keyboard_disconnect(void)
 	/* Nobody but us seems to still use scancode set #1.
 	   So try to hand over with more modern settings. */
 	set_scancode_set(2);
-	i8042_set_kbd_translation(false);
+	i8042_set_kbd_translation(CONFIG(LP_PC_KEYBOARD_TRANSLATION));
 
 	/* Send keyboard disconnect command */
 	i8042_cmd(I8042_CMD_DIS_KB);

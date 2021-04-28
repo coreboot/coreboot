@@ -11,7 +11,7 @@
 #define DDR4_PHYSICAL_CH_WIDTH		64
 #define DDR4_CHANNELS			CHANNEL_COUNT(DDR4_PHYSICAL_CH_WIDTH)
 
-#define DDR5_PHYSICAL_CH_WIDTH		32
+#define DDR5_PHYSICAL_CH_WIDTH		64 /* 32*2 */
 #define DDR5_CHANNELS			CHANNEL_COUNT(DDR5_PHYSICAL_CH_WIDTH)
 
 static void set_rcomp_config(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg)

@@ -5,9 +5,6 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <delay.h>
-#include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 
 void bootblock_mainboard_early_init(void)
@@ -37,15 +34,6 @@ void bootblock_mainboard_early_init(void)
 	dword = pm_read32(0x74);
 	dword |= 3 << 10;
 	pm_write32(0x74, dword);
-
-	if (CONFIG(GPIO_SIGN_OF_LIFE)) {
-		for (int x = 0; x < 20; x++) {
-			gpio_set(GPIO_31, 1);
-			mdelay(10);
-			gpio_set(GPIO_31, 0);
-			mdelay(10);
-		}
-	}
 
 	if (variant_has_fpmcu())
 		variant_fpmcu_reset();

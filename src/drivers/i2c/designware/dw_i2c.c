@@ -621,7 +621,6 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 {
 	const int ic_clk = CONFIG_DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ;
 	struct dw_i2c_regs *regs;
-	uint16_t hcnt_min, lcnt_min;
 	int i;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_addr;
@@ -637,35 +636,8 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 		return 0;
 	}
 
-	/* If rise time is set use the time calculation. */
-	if (bcfg->rise_time_ns)
-		return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg,
-							ic_clk, config);
-
-	if (speed >= I2C_SPEED_HIGH) {
-		/* High speed */
-		hcnt_min = MIN_HS_SCL_HIGHTIME;
-		lcnt_min = MIN_HS_SCL_LOWTIME;
-	} else if (speed >= I2C_SPEED_FAST_PLUS) {
-		/* Fast-Plus speed */
-		hcnt_min = MIN_FP_SCL_HIGHTIME;
-		lcnt_min = MIN_FP_SCL_LOWTIME;
-	} else if (speed >= I2C_SPEED_FAST) {
-		/* Fast speed */
-		hcnt_min = MIN_FS_SCL_HIGHTIME;
-		lcnt_min = MIN_FS_SCL_LOWTIME;
-	} else {
-		/* Standard speed */
-		hcnt_min = MIN_SS_SCL_HIGHTIME;
-		lcnt_min = MIN_SS_SCL_LOWTIME;
-	}
-
-	config->speed = speed;
-	config->scl_hcnt = ic_clk * hcnt_min / KHz;
-	config->scl_lcnt = ic_clk * lcnt_min / KHz;
-	config->sda_hold = ic_clk * DEFAULT_SDA_HOLD_TIME / KHz;
-
-	return 0;
+	/* Use the time calculation. */
+	return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg, ic_clk, config);
 }
 
 static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,

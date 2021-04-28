@@ -12,7 +12,7 @@ static const struct pad_config gpio_table[] = {
 	/* A19 : GPP_A19 */
 	PAD_NC(GPP_A19, NONE),
 	/* A20 : TOUCH_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_A20, NONE, PLTRST, LEVEL, NONE),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_A20, NONE, PLTRST, LEVEL, INVERT),
 	/* A21 : FPMCU_PCH_BOOT0 */
 	PAD_NC(GPP_A21, NONE),
 	/* A22 : FPMCU_PCH_INT_L */

@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select ELOG
 	select ELOG_GSMI
 	select HAVE_ACPI_RESUME
+	select HAVE_EM100_SUPPORT
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_I2C_TPM_CR50
 	select MAINBOARD_HAS_TPM2
@@ -61,6 +62,16 @@ config DRIVER_TPM_I2C_BUS
 config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
+
+config EFS_SPI_READ_MODE
+	int
+	default 0 if EM100 # Normal read mode
+	default 4          # Dual IO (1-2-2)
+
+config EFS_SPI_SPEED
+	int
+	default 3 if EM100 # 16.66 MHz
+	default 1          # 33.33 MHz
 
 config VARIANT_DIR
 	string

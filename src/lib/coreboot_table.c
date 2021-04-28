@@ -466,12 +466,11 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	lb_mainboard(head);
 
 	/* Record the serial ports and consoles */
-#if CONFIG(CONSOLE_SERIAL)
-	uart_fill_lb(head);
-#endif
-#if CONFIG(CONSOLE_USB)
-	lb_add_console(LB_TAG_CONSOLE_EHCI, head);
-#endif
+	if (CONFIG(CONSOLE_SERIAL))
+		uart_fill_lb(head);
+
+	if (CONFIG(CONSOLE_USB))
+		lb_add_console(LB_TAG_CONSOLE_EHCI, head);
 
 	/* Record our various random string information */
 	lb_strings(head);

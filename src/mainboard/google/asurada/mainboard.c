@@ -77,7 +77,7 @@ static void configure_backlight_and_bridge(void)
 	gpio_output(GPIO_EN_PP1000_EDPBRDG, 1);
 	gpio_output(GPIO_EN_PP1800_EDPBRDG_DX, 1);
 	gpio_output(GPIO_EN_PP3300_EDP_DX, 1);
-	mdelay(2);
+	mdelay(14);
 	gpio_output(GPIO_EDPBRDG_PWREN, 1);
 	mdelay(10);
 	gpio_output(GPIO_EDPBRDG_RST_ODL, 1);

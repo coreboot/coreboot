@@ -45,7 +45,7 @@ void variant_devtree_update(void)
 
 	/* b:/174121847 Use external OSC to mitigate noise for WWAN sku. */
 	if (variant_has_wwan()) {
-		soc_cfg->common_config.acp_config.acp_i2s_use_external_48mhz_osc = 1;
+		soc_cfg->acp_i2s_use_external_48mhz_osc = 1;
 
 		/* eDP phy tuning settings */
 		soc_cfg->edp_phy_override = ENABLE_EDP_TUNINGSET;

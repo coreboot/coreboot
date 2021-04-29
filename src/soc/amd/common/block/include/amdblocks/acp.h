@@ -17,9 +17,6 @@ struct acp_config {
 	u8 acp_i2s_wake_enable;
 	/* Enable ACP PME (0 = disable, 1 = enable) */
 	u8 acp_pme_enable;
-
-	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
-	bool acp_i2s_use_external_48mhz_osc;
 };
 
 #endif /* AMD_COMMON_ACP_H */

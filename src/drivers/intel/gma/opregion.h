@@ -147,7 +147,8 @@ typedef struct {
 	u32	fdss;		/* Offset 178 FFS Display Size */
 	u32	stat;		/* Offset 182 State Indicator */
 	u64	rvda;		/* Offset 186 (Igd opregion offset 0x3BAh)
-				 *            Physical address of Raw VBT data
+				 *            Physical(2.0) or relative opregion
+				 *            (2.1+) address of Raw VBT data
 				 */
 	u32	rvds;		/* Offset 194 (Igd opregion offset 0x3C2h)
 				 *            Size of Raw VBT data

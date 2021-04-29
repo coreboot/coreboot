@@ -258,6 +258,9 @@ static enum cb_err find_vbt_location(struct region_device *rdev)
 /* Function to get the IGD Opregion version */
 static struct opregion_version opregion_get_version(void)
 {
+	if (CONFIG(INTEL_GMA_OPREGION_2_1))
+		return (struct opregion_version) { .major = 2, .minor = 1 };
+
 	return (struct opregion_version) { .major = 2, .minor = 0 };
 }
 
@@ -271,6 +274,15 @@ static inline bool is_ext_vbt_required(igd_opregion_t *opregion, optionrom_vbt_t
 	return (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1));
 }
 
+/* Function to determine if the VBT uses a relative address */
+static inline bool uses_relative_vbt_addr(opregion_header_t *header)
+{
+	if (header->opver.major > 2)
+		return true;
+
+	return header->opver.major >= 2 && header->opver.minor >= 1;
+}
+
 /*
  * Copy extended VBT at the end of opregion and fill rvda and rvds
  * values correctly for the opregion.
@@ -278,11 +290,19 @@ static inline bool is_ext_vbt_required(igd_opregion_t *opregion, optionrom_vbt_t
 static void opregion_add_ext_vbt(igd_opregion_t *opregion, uint8_t *ext_vbt,
 				optionrom_vbt_t *vbt)
 {
+
+	opregion_header_t *header = &opregion->header;
 	/* Copy VBT into extended VBT region (at offset 8 KiB) */
 	memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
 
-	/* Fill RVDA value with address of physical pointer */
-	opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
+	/* Fill RVDA value with relative address of the opregion buffer in case of
+	IGD Opregion version 2.1+ and physical address otherwise */
+
+	if (uses_relative_vbt_addr(header))
+		opregion->mailbox3.rvda = sizeof(*opregion);
+	else
+		opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
+
 	opregion->mailbox3.rvds = vbt->hdr_vbt_size;
 }
 
@@ -327,6 +347,10 @@ enum cb_err intel_gma_init_igd_opregion(void)
 		sizeof(opregion->header.signature));
 	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild,
 					ARRAY_SIZE(vbt->coreblock_biosbuild));
+
+	/* Get the opregion version information */
+	opregion->header.opver = opregion_get_version();
+
 	/* Extended VBT support */
 	if (is_ext_vbt_required(opregion, vbt)) {
 		/* Place extended VBT just after opregion */
@@ -338,9 +362,6 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	}
 
 	rdev_munmap(&rdev, vbt);
-
-	/* Get the opregion version information */
-	opregion->header.opver = opregion_get_version();
 
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;

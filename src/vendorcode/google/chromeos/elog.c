@@ -4,6 +4,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <elog.h>
+#include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 
 static void elog_add_boot_reason(void *unused)
@@ -20,9 +21,15 @@ static void elog_add_boot_reason(void *unused)
 
 	/* Skip logging developer mode in ACPI resume path */
 	if (dev && !acpi_is_wakeup_s3()) {
-
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 		printk(BIOS_DEBUG, "%s: Logged dev mode boot\n", __func__);
+	}
+
+	/* Diagnostic boot if requested */
+	if (vboot_get_context()->boot_mode == VB2_BOOT_MODE_DIAGNOSTICS) {
+		elog_add_event_byte(ELOG_TYPE_CROS_DIAGNOSTICS,
+				    ELOG_CROS_LAUNCH_DIAGNOSTICS);
+		printk(BIOS_DEBUG, "%s: Logged diagnostic boot\n", __func__);
 	}
 }
 

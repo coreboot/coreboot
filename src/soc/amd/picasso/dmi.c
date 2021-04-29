@@ -158,7 +158,7 @@ static void prepare_dmi_17(void *unused)
 	}
 	printk(BIOS_DEBUG, "AMD_FSP_DMI_HOB found\n");
 
-	if (CONFIG(CHROMEOS)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 		/* Prefer DRAM part number from CBI. */
 		if (google_chromeec_cbi_get_dram_part_num(
 			cbi_part_number, sizeof(cbi_part_number)) == 0) {

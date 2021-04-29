@@ -21,6 +21,11 @@ config TPM2
 		   MAINBOARD_HAS_SPI_TPM || \
 		   MAINBOARD_HAS_CRB_TPM
 
+config TPM
+	bool
+	default y
+	depends on TPM1 || TPM2
+
 config MAINBOARD_HAS_TPM1
 	bool
 

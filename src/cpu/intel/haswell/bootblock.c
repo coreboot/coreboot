@@ -52,7 +52,7 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	RCBA32_OR(SOFT_RESET_CTRL, 1);
 
 	/* Delay before reset to avoid potential TPM lockout */
-	if (CONFIG(TPM1) || CONFIG(TPM2))
+	if (CONFIG(TPM))
 		mdelay(30);
 
 	/* Issue warm reset, will be "CPU only" due to soft reset data */

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#if CONFIG(TPM1) || CONFIG(TPM2)
+#if CONFIG(TPM)
 
 /* Start of the root of trust */
 uint32_t vboot_setup_tpm(struct vb2_context *ctx);

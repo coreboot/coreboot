@@ -300,7 +300,8 @@ const struct mb_cfg *variant_memory_params(void)
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
 		return &ddr4_mem_config;
-	case ADL_P_DDR5:
+	case ADL_P_DDR5_1:
+	case ADL_P_DDR5_2:
 		return &ddr5_mem_config;
 	case ADL_P_LP5_1:
 	case ADL_P_LP5_2:

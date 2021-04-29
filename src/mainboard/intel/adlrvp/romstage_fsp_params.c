@@ -52,7 +52,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	switch (board_id) {
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
-	case ADL_P_DDR5:
+	case ADL_P_DDR5_1:
+	case ADL_P_DDR5_2:
 		memcfg_init(&mupd->FspmConfig, mem_config, &ddr4_ddr5_spd_info, half_populated);
 		break;
 	case ADL_P_LP4_1:

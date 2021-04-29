@@ -3,6 +3,8 @@
 #include <AGESA.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
+#include "gpio_ftns.h"
+
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
 		0,
@@ -77,4 +79,18 @@ void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
 	InitEarly->PlatformConfig.CStateMode = CStateModeC6;
 	InitEarly->PlatformConfig.CpbMode = CpbModeAuto;
+}
+
+void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
+{
+	/*
+	 * Bank interleaving does not work on this platform.
+	 * Disable it so AGESA will return success.
+	 */
+	Post->MemConfig.EnableBankIntlv = FALSE;
+	/* 4GB variants have ECC */
+	if (get_spd_offset())
+		Post->MemConfig.EnableEccFeature = TRUE;
+	else
+		Post->MemConfig.EnableEccFeature = FALSE;
 }

@@ -59,6 +59,17 @@ uint32_t tspi_init_crtm(void)
 		return VB2_SUCCESS;
 	}
 
+	struct region_device fmap;
+	if (fmap_locate_area_as_rdev("FMAP", &fmap) == 0) {
+		if (tpm_measure_region(&fmap, TPM_RUNTIME_DATA_PCR, "FMAP: FMAP")) {
+			printk(BIOS_ERR,
+			       "TSPI: Couldn't measure FMAP into CRTM!\n");
+			return VB2_ERROR_UNKNOWN;
+		}
+	} else {
+		printk(BIOS_ERR, "TSPI: Could not find FMAP!\n");
+	}
+
 	/* measure bootblock from RO */
 	struct cbfsf bootblock_data;
 	struct region_device bootblock_fmap;

@@ -5,6 +5,8 @@ ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 
+subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
+
 # Beware that all-y also adds the compilation unit to verstage on PSP
 all-y		+= config.c
 all-y		+= aoac.c
@@ -130,6 +132,18 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -l $(PSP_ELF_FILE) | grep LOAD | a
 APOB_NV_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
 APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
 
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+# type = 0x6B - PSP Shared memory location
+ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
+PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
+PSP_SHAREDMEM_BASE=$(shell awk '$$3 == "_psp_sharedmem_dram" {printf "0x" $$1}' $(objcbfs)/bootblock.map)
+endif
+
+# type = 0x52 - PSP Bootloader Userspace Application (verstage)
+PSP_VERSTAGE_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_FILE))
+PSP_VERSTAGE_SIG_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_SIGNING_TOKEN))
+endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
+
 # Helper function to return a value with given bit set
 # Soft Fuse type = 0xb - See #55758 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
@@ -143,6 +157,9 @@ PSP_SOFTFUSE=$(shell A=$(call int-add, \
 
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
+OPT_VERSTAGE_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_FILE), --verstage)
+OPT_VERSTAGE_SIG_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_SIG_FILE), --verstage_sig)
+
 OPT_PSP_APCB_FILES= $(if $(APCB_SOURCES), --instance 0 --apcb $(APCB_SOURCES)) \
                     $(if $(APCB_SOURCES_RECOVERY), --instance 10 --apcb $(APCB_SOURCES_RECOVERY)) \
                     $(if $(APCB_SOURCES_68), --instance 18 --apcb $(APCB_SOURCES_68))
@@ -152,6 +169,8 @@ OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
 OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-size)
 
+OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
+OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
 OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE),--apob-nv-base)
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
@@ -178,6 +197,8 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_WHITELIST_FILE) \
+		$(OPT_PSP_SHAREDMEM_BASE) \
+		$(OPT_PSP_SHAREDMEM_SIZE) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
@@ -186,10 +207,13 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		--flashsize $(CONFIG_ROM_SIZE)
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
+			$(PSP_VERSTAGE_FILE) \
+			$(PSP_VERSTAGE_SIG_FILE) \
 			$$(PSP_APCB_FILES) \
 			$(DEP_FILES) \
 			$(AMDFWTOOL) \
-			$(obj)/fmap_config.h
+			$(obj)/fmap_config.h \
+			$(objcbfs)/bootblock.elf # this target also creates the .map file
 	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
@@ -197,6 +221,8 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
+		$(OPT_VERSTAGE_FILE) \
+		$(OPT_VERSTAGE_SIG_FILE) \
 		--location $(shell printf "%#x" $(CEZANNE_FWM_POSITION)) \
 		--multilevel \
 		--output $@

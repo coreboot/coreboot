@@ -215,6 +215,6 @@ u16 pci_find_capability(const struct device *dev, u16 cap)
  *
  * Returns true if PCI device is wake source, false otherwise.
  */
-bool pci_dev_is_wake_source(const struct device *dev);
+bool pci_dev_is_wake_source(pci_devfn_t dev);
 
 #endif /* PCI_OPS_H */

@@ -79,19 +79,16 @@ void __noreturn pcidev_die(void)
 	die("PCI: dev is NULL!\n");
 }
 
-bool pci_dev_is_wake_source(const struct device *dev)
+bool pci_dev_is_wake_source(pci_devfn_t dev)
 {
 	unsigned int pm_cap;
 	uint16_t pmcs;
 
-	if (dev->path.type != DEVICE_PATH_PCI)
-		return false;
-
-	pm_cap = pci_find_capability(dev, PCI_CAP_ID_PM);
+	pm_cap = pci_s_find_capability(dev, PCI_CAP_ID_PM);
 	if (!pm_cap)
 		return false;
 
-	pmcs = pci_s_read_config16(PCI_BDF(dev), pm_cap + PCI_PM_CTRL);
+	pmcs = pci_s_read_config16(dev, pm_cap + PCI_PM_CTRL);
 
 	/* PCI Device is a wake source if PME_ENABLE and PME_STATUS are set in PMCS register. */
 	return (pmcs & PCI_PM_CTRL_PME_ENABLE) && (pmcs & PCI_PM_CTRL_PME_STATUS);

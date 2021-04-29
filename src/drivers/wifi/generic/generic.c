@@ -10,7 +10,7 @@
 
 static void wifi_pci_dev_init(struct device *dev)
 {
-	if (pci_dev_is_wake_source(dev))
+	if (pci_dev_is_wake_source(PCI_BDF(dev)))
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_WIFI, 0);
 }
 

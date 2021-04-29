@@ -48,11 +48,8 @@ static void pch_log_rp_wake_source(void)
 	};
 
 	for (i = 0; i < MIN(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_map)); ++i) {
-		const struct device *dev = pcidev_path_on_root(pme_map[i].devfn);
-		if (!dev)
-			continue;
-
-		if (pci_dev_is_wake_source(dev))
+		if (pci_dev_is_wake_source(PCI_DEV(0, PCI_SLOT(pme_map[i].devfn),
+						   PCI_FUNC(pme_map[i].devfn))))
 			elog_add_event_wake(pme_map[i].wake_source, 0);
 	}
 }
@@ -77,11 +74,8 @@ static void pch_log_pme_internal_wake_source(void)
 	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(ipme_map); i++) {
-		const struct device *dev = pcidev_path_on_root(ipme_map[i].devfn);
-		if (!dev)
-			continue;
-
-		if (pci_dev_is_wake_source(dev)) {
+		unsigned int devfn = ipme_map[i].devfn;
+		if (pci_dev_is_wake_source(PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn)))) {
 			elog_add_event_wake(ipme_map[i].wake_source, 0);
 			dev_found = true;
 		}
@@ -89,11 +83,8 @@ static void pch_log_pme_internal_wake_source(void)
 
 	/* Check Thunderbolt ports */
 	for (i = 0; i < NUM_TBT_FUNCTIONS; i++) {
-		const struct device *dev = pcidev_path_on_root(SA_DEVFN_TBT(i));
-		if (!dev)
-			continue;
-
-		if (pci_dev_is_wake_source(dev)) {
+		unsigned int devfn = SA_DEVFN_TBT(i);
+		if (pci_dev_is_wake_source(PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn)))) {
 			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_TBT, i);
 			dev_found = true;
 		}
@@ -101,11 +92,8 @@ static void pch_log_pme_internal_wake_source(void)
 
 	/* Check DMA devices */
 	for (i = 0; i < NUM_TCSS_DMA_FUNCTIONS; i++) {
-		const struct device *dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA(i));
-		if (!dev)
-			continue;
-
-		if (pci_dev_is_wake_source(dev)) {
+		unsigned int devfn = SA_DEVFN_TCSS_DMA(i);
+		if (pci_dev_is_wake_source(PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn)))) {
 			elog_add_event_wake(ELOG_WAKE_SOURCE_PME_TCSS_DMA, i);
 			dev_found = true;
 		}

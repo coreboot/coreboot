@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/x86/msr.h>
@@ -12,6 +14,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
+#include <smp/node.h>
 
 static void model_16_init(struct device *dev)
 {
@@ -20,36 +23,22 @@ static void model_16_init(struct device *dev)
 	u8 i;
 	msr_t msr;
 	int num_banks;
-	int msrno;
-#if CONFIG(LOGICAL_CPUS)
 	u32 siblings;
-#endif
 
-	disable_cache();
-	/* Enable access to AMD RdDram and WrDram extension bits */
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	msr.lo &= ~SYSCFG_MSR_MtrrFixDramEn;
-	wrmsr(SYSCFG_MSR, msr);
-
-	/* BSP: make a0000-bffff UC, c0000-fffff WB,
-	 * same as OntarioApMtrrSettingsList for APs
+	/*
+	 * All cores are initialized sequentially, so the solution for APs will be created
+	 * before they start.
 	 */
-	msr.lo = msr.hi = 0;
-	wrmsr(MTRR_FIX_16K_A0000, msr);
-	msr.lo = msr.hi = 0x1e1e1e1e;
-	wrmsr(MTRR_FIX_64K_00000, msr);
-	wrmsr(MTRR_FIX_16K_80000, msr);
-	for (msrno = MTRR_FIX_4K_C0000; msrno <= MTRR_FIX_4K_F8000; msrno++)
-		wrmsr(msrno, msr);
-
-	msr = rdmsr(SYSCFG_MSR);
-	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
-	wrmsr(SYSCFG_MSR, msr);
-
+	x86_setup_mtrrs_with_detect();
+	/*
+	 * Enable ROM caching on BSP we just lost when creating MTRR solution, for faster
+	 * execution of e.g. AmdInitLate
+	 */
+	if (boot_cpu()) {
+		mtrr_use_temp_range(OPTIMAL_CACHE_ROM_BASE, OPTIMAL_CACHE_ROM_SIZE,
+				    MTRR_TYPE_WRPROT);
+	}
 	x86_mtrr_check();
-	x86_enable_cache();
 
 	/* zero the machine check error status registers */
 	msr = rdmsr(IA32_MCG_CAP);
@@ -62,20 +51,20 @@ static void model_16_init(struct device *dev)
 	/* Enable the local CPU APICs */
 	setup_lapic();
 
-#if CONFIG(LOGICAL_CPUS)
-	siblings = cpuid_ecx(0x80000008) & 0xff;
+	if (CONFIG(LOGICAL_CPUS)) {
+		siblings = cpuid_ecx(0x80000008) & 0xff;
 
-	if (siblings > 0) {
-		msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
-		msr.lo |= 1 << 28;
-		wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+		if (siblings > 0) {
+			msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+			msr.lo |= 1 << 28;
+			wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
 
-		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-		msr.hi |= 1 << (33 - 32);
-		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+			msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+			msr.hi |= 1 << (33 - 32);
+			wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+		}
+		printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 	}
-	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
-#endif
 
 	/* DisableCf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);
@@ -88,6 +77,8 @@ static void model_16_init(struct device *dev)
 	wrmsr(HWCR_MSR, msr);
 
 	amd_update_microcode_from_cbfs();
+
+	display_mtrrs();
 }
 
 static struct device_operations cpu_dev_ops = {

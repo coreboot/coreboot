@@ -220,6 +220,7 @@ void fsps_load(void)
 
 void fsp_silicon_init(void)
 {
+	timestamp_add_now(TS_FSP_SILICON_INIT_LOAD);
 	fsps_load();
 	do_silicon_init(&fsps_hdr);
 }

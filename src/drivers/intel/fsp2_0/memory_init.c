@@ -379,6 +379,7 @@ void fsp_memory_init(bool s3wake)
 			_car_unallocated_start - _car_region_start, 0);
 	memranges_insert(memmap, (uintptr_t)_program, REGION_SIZE(program), 0);
 
+	timestamp_add_now(TS_FSP_MEMORY_INIT_LOAD);
 	if (fsp_load_component(&fspld, hdr) != CB_SUCCESS)
 		die("FSPM not available or failed to load!\n");
 

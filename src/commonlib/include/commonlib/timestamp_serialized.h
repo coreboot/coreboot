@@ -119,6 +119,8 @@ enum timestamp_id {
 	TS_FSP_AFTER_END_OF_FIRMWARE = 961,
 	TS_FSP_MULTI_PHASE_SI_INIT_START = 962,
 	TS_FSP_MULTI_PHASE_SI_INIT_END = 963,
+	TS_FSP_MEMORY_INIT_LOAD = 970,
+	TS_FSP_SILICON_INIT_LOAD = 971,
 
 	/* 1000+ reserved for payloads (1000-1200: ChromeOS depthcharge) */
 
@@ -261,6 +263,10 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_BEFORE_END_OF_FIRMWARE, "calling FspNotify(EndOfFirmware)" },
 	{ TS_FSP_AFTER_END_OF_FIRMWARE,
 		"returning from FspNotify(EndOfFirmware)" },
+
+	{ TS_FSP_MEMORY_INIT_LOAD, "loading FSP-M" },
+	{ TS_FSP_SILICON_INIT_LOAD, "loading FSP-S" },
+
 	{ TS_START_POSTCAR,	"start of postcar" },
 	{ TS_END_POSTCAR,	"end of postcar" },
 };

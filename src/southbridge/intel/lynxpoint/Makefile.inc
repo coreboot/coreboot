@@ -41,10 +41,10 @@ ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c
 ramstage-y += lp_gpio.c
 smm-y += lp_gpio.c
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += lp_gpio.c
 endif
 
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += pmutil.c
-verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += lp_gpio.c
 
 CPPFLAGS_common += -I$(src)/southbridge/intel/lynxpoint/include
 

@@ -50,6 +50,10 @@ static const struct pad_group adl_community2_groups[] = {
 	INTEL_GPP(GPD0, GPD0, GPD_DRAM_RESETB),				/* GPD */
 };
 
+/* This community is not visible to the OS */
+static const struct pad_group adl_community3_groups[] = {
+	INTEL_GPP(GPP_CPU_RSVD_1, GPP_CPU_RSVD_1, GPP_vGPIO_PCIE_83),	/* vGPIO */
+};
 static const struct pad_group adl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 256),			/* GPP_C */
 	INTEL_GPP_BASE(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK, 288),		/* GPP_F */
@@ -120,6 +124,25 @@ static const struct pad_community adl_communities[] = {
 		.groups = adl_community2_groups,
 		.num_groups = ARRAY_SIZE(adl_community2_groups),
 	},
+	[COMM_3] = { /* vGPIO */
+		.port = PID_GPIOCOM3,
+		.first_pad = GPIO_COM3_START,
+		.last_pad = GPIO_COM3_END,
+		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
+		.pad_cfg_base = PAD_CFG_BASE,
+		.host_own_reg_0 = HOSTSW_OWN_REG_0,
+		.gpi_int_sts_reg_0 = GPI_INT_STS_0,
+		.gpi_int_en_reg_0 = GPI_INT_EN_0,
+		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
+		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
+		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
+		.name = "GPP_VGPIO",
+		.acpi_path = "\\_SB.PCI0.GPIO",
+		.reset_map = rst_map,
+		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.groups = adl_community3_groups,
+		.num_groups = ARRAY_SIZE(adl_community3_groups),
+	},
 	[COMM_4] = { /* GPP F, C, HVMOS, E */
 		.port = PID_GPIOCOM4,
 		.first_pad = GPIO_COM4_START,
@@ -183,4 +206,4 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 	};
 	*num = ARRAY_SIZE(routes);
 	return routes;
-}
+};

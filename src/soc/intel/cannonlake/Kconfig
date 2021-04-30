@@ -7,8 +7,6 @@ config SOC_INTEL_COFFEELAKE
 	select FSP_USES_CB_STACK
 	select HAVE_INTEL_FSP_REPO
 	select SOC_INTEL_CONFIGURE_DDI_A_4_LANES
-	help
-	  Intel Coffeelake support
 
 config SOC_INTEL_WHISKEYLAKE
 	bool
@@ -16,8 +14,6 @@ config SOC_INTEL_WHISKEYLAKE
 	select FSP_USES_CB_STACK
 	select HAVE_INTEL_FSP_REPO
 	select SOC_INTEL_CONFIGURE_DDI_A_4_LANES
-	help
-	  Intel Whiskeylake support
 
 config SOC_INTEL_COMETLAKE
 	bool
@@ -25,8 +21,6 @@ config SOC_INTEL_COMETLAKE
 	select FSP_USES_CB_STACK
 	select HAVE_INTEL_FSP_REPO
 	select SOC_INTEL_CONFIGURE_DDI_A_4_LANES
-	help
-	  Intel Cometlake support
 
 config SOC_INTEL_COMETLAKE_1
 	bool
@@ -46,8 +40,6 @@ config SOC_INTEL_COMETLAKE_V
 
 config SOC_INTEL_CANNONLAKE_PCH_H
 	bool
-	help
-	  Choose this option if you have a PCH-H chipset.
 
 if SOC_INTEL_CANNONLAKE_BASE
 

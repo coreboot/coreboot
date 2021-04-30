@@ -47,7 +47,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AGPIO21 */
 	PAD_NC(GPIO_21),
 	/* EC_SOC_WAKE_ODL */
-	PAD_WAKE(GPIO_22, PULL_NONE, EDGE_LOW, S0i3),
+	PAD_SCI(GPIO_22, PULL_NONE, EDGE_LOW),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/* HUB_RST_L */

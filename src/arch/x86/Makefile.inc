@@ -101,7 +101,7 @@ endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 
-verstage-y += assembly_entry.S
+verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += assembly_entry.S
 verstage-y += boot.c
 verstage-y += post.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S

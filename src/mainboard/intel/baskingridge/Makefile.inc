@@ -4,4 +4,4 @@ romstage-y += gpio.c
 
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
-verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += chromeos.c
+verstage-y += chromeos.c

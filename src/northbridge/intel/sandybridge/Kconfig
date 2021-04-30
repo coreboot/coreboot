@@ -21,7 +21,6 @@ config SANDYBRIDGE_VBOOT_IN_BOOTBLOCK
 	bool "Start verstage in bootblock"
 	default y
 	select VBOOT_STARTS_IN_BOOTBLOCK
-	select VBOOT_SEPARATE_VERSTAGE
 	help
 	  Sandy Bridge can either start verstage in a separate stage
 	  right after the bootblock has run or it can start it

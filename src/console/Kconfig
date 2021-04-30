@@ -268,6 +268,7 @@ endif
 config CONSOLE_SPI_FLASH
 	bool "SPI Flash console output"
 	default n
+	depends on BOOT_DEVICE_SPI_FLASH
 	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Send coreboot debug output to the SPI Flash in the FMAP CONSOLE area

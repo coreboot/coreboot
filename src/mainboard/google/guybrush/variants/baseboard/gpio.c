@@ -27,7 +27,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EN_PWR_WWAN_X */
 	PAD_GPO(GPIO_8, HIGH),
 	/* SOC_TCHPAD_INT_ODL */
-	PAD_INT(GPIO_9, PULL_NONE, EDGE_HIGH, STATUS_DELIVERY),
+	PAD_SCI(GPIO_9, PULL_NONE, EDGE_HIGH),
 	/* S0A3 */
 	PAD_NF(GPIO_10, S0A3, PULL_NONE),
 	/* SOC_FP_RST_L */
@@ -38,7 +38,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* USB_OC0_L */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_NONE),
 	/* SOC_SAR_INT_L */
-	PAD_INT(GPIO_17, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	PAD_SCI(GPIO_17, PULL_NONE, EDGE_LOW),
 	/* WWAN_AUX_RESET_L */
 	PAD_GPO(GPIO_18, LOW),
 	/* I2C3_SCL */
@@ -46,9 +46,9 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* SOC_FP_INT_L */
-	PAD_INT(GPIO_21, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	PAD_SCI(GPIO_21, PULL_NONE, EDGE_LOW),
 	/* EC_SOC_WAKE_ODL */
-	PAD_WAKE(GPIO_22, PULL_NONE, EDGE_LOW, S0i3),
+	PAD_SCI(GPIO_22, PULL_NONE, EDGE_LOW),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/* WWAN_RST_L */

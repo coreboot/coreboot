@@ -4,14 +4,10 @@ config SOC_INTEL_COMMON_SKYLAKE_BASE
 config SOC_INTEL_SKYLAKE
 	bool
 	select SOC_INTEL_COMMON_SKYLAKE_BASE
-	help
-	  Intel Skylake support
 
 config SOC_INTEL_KABYLAKE
 	bool
 	select SOC_INTEL_COMMON_SKYLAKE_BASE
-	help
-	  Intel Kabylake support
 
 config SOC_INTEL_SKYLAKE_LGA1151_V2
 	bool
@@ -184,8 +180,6 @@ config VGA_BIOS_ID
 config SKYLAKE_SOC_PCH_H
 	bool
 	default n
-	help
-	  Choose this option if you have a PCH-H chipset.
 
 config NHLT_DMIC_1CH
 	bool

@@ -35,6 +35,7 @@
 #define  PAD_CFG0_TRIG_EDGE_SINGLE	(1 << 25) /* controlled by RX_INVERT*/
 #define  PAD_CFG0_TRIG_OFF		(2 << 25)
 #define  PAD_CFG0_TRIG_EDGE_BOTH	(3 << 25)
+#define PAD_CFG0_NAFVWE_ENABLE		(1 << 27)
 #define PAD_CFG0_RXRAW1_MASK		(1 << 28)
 #define PAD_CFG0_RXPADSTSEL_MASK	(1 << 29)
 #define PAD_CFG0_RESET_MASK		(3 << 30)
@@ -214,6 +215,13 @@
 	_PAD_CFG_STRUCT(pad,							\
 		PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) |		\
 		PAD_IOSSTATE(iosstate) | PAD_IOSTERM(iosterm))
+
+/* Native function configuration with "native function virtual wire
+   messaging enable (NAFVWE_ENABLE)" */
+#define PAD_CFG_NF_VWEN(pad, pull, rst, func)			\
+	_PAD_CFG_STRUCT(pad,					\
+		PAD_RESET(rst) | PAD_FUNC(func) | PAD_CFG0_NAFVWE_ENABLE,\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO(pad, val, rst)				\

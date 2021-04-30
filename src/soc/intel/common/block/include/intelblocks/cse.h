@@ -11,9 +11,14 @@
 #define MKHI_GROUP_ID_HMRFPO	0x5
 #define MKHI_GROUP_ID_GEN	0xff
 #define MKHI_GROUP_ID_BUP_COMMON	0xf0
+#define MKHI_GROUP_ID_FWCAPS	0x3
 
 /* Global Reset Command ID */
 #define MKHI_CBM_GLOBAL_RESET_REQ	0xb
+
+/* Set State Command ID */
+#define MKHI_SET_ME_DISABLE	0x3
+#define MKHI_SET_ME_ENABLE	0x3
 
 /* Origin of Global Reset command */
 #define GR_ORIGIN_BIOS_POST	0x2
@@ -43,6 +48,12 @@
 #define ME_HFS1_COM_NORMAL	0x0
 #define ME_HFS1_COM_SOFT_TEMP_DISABLE	0x3
 #define ME_HFS1_COM_SECOVER_MEI_MSG	0x5
+
+/* ME Disable Rule */
+#define ME_DISABLE_RULE_ID	6
+#define ME_DISABLE_RULE_LENGTH	4
+#define ME_DISABLE_COMMAND	0
+#define ME_DISABLE_ATTEMPTS	3
 
 /* ME Firmware SKU Types */
 #define ME_HFS3_FW_SKU_CONSUMER	0x2

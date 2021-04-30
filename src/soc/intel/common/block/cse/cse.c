@@ -11,13 +11,17 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <limits.h>
+#include <option.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/intel/common/reset.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/me.h>
 #include <string.h>
 #include <timer.h>
+#include <types.h>
 
 #define MAX_HECI_MESSAGE_RETRY_COUNT 5
 
@@ -961,12 +965,167 @@ bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_st
 
 #if ENV_RAMSTAGE
 
+/*
+ * Disable the Intel (CS)Management Engine via HECI based on a cmos value
+ * of `me_state`. A value of `0` will result in a (CS)ME state of `0` (working)
+ * and value of `1` will result in a (CS)ME state of `3` (disabled).
+ *
+ * It isn't advised to use this in combination with me_cleaner.
+ *
+ * It is advisable to have a second cmos option called `me_state_counter`.
+ * Whilst not essential, it avoid reboots loops if the (CS)ME fails to
+ * change states after 3 attempts. Some versions of the (CS)ME need to be
+ * reset 3 times.
+ *
+ * Ideal cmos values would be:
+ *
+ * # coreboot config options: cpu
+ * 432     1       e       5       me_state
+ * 440     4       h       0       me_state_counter
+ *
+ * #ID     value   text
+ * 5       0       Enable
+ * 5       1       Disable
+ */
+
+static void me_reset_with_count(void)
+{
+	unsigned int cmos_me_state_counter = get_uint_option("me_state_counter", UINT_MAX);
+
+	if (cmos_me_state_counter != UINT_MAX) {
+		printk(BIOS_DEBUG, "CMOS: me_state_counter = %u\n", cmos_me_state_counter);
+		/* Avoid boot loops by only trying a state change 3 times */
+		if (cmos_me_state_counter < ME_DISABLE_ATTEMPTS) {
+			cmos_me_state_counter++;
+			set_uint_option("me_state_counter", cmos_me_state_counter);
+			printk(BIOS_DEBUG, "ME: Reset attempt %u/%u.\n", cmos_me_state_counter,
+									 ME_DISABLE_ATTEMPTS);
+			do_global_reset();
+		} else {
+			/*
+			 * If the (CS)ME fails to change states after 3 attempts, it will
+			 * likely need a cold boot, or recovering.
+			 */
+			printk(BIOS_ERR, "Error: Failed to change ME state in %u attempts!\n",
+									 ME_DISABLE_ATTEMPTS);
+
+		}
+	} else {
+		printk(BIOS_DEBUG, "ME: Resetting");
+		do_global_reset();
+	}
+}
+
+static void cse_set_state(struct device *dev)
+{
+
+	/* (CS)ME Disable Command */
+	struct me_disable_command {
+		struct mkhi_hdr hdr;
+		uint32_t rule_id;
+		uint8_t rule_len;
+		uint32_t rule_data;
+	} __packed me_disable = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_FWCAPS,
+			.command = MKHI_SET_ME_DISABLE,
+		},
+		.rule_id = ME_DISABLE_RULE_ID,
+		.rule_len = ME_DISABLE_RULE_LENGTH,
+		.rule_data = ME_DISABLE_COMMAND,
+	};
+
+	struct me_disable_reply {
+		struct mkhi_hdr hdr;
+		uint32_t rule_id;
+	} __packed;
+
+	struct me_disable_reply disable_reply;
+
+	size_t disable_reply_size;
+
+	/* (CS)ME Enable Command */
+	struct me_enable_command {
+		struct mkhi_hdr hdr;
+	} me_enable = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_BUP_COMMON,
+			.command = MKHI_SET_ME_ENABLE,
+		},
+	};
+
+	struct me_enable_reply {
+		struct mkhi_hdr hdr;
+	} __packed;
+
+	struct me_enable_reply enable_reply;
+
+	size_t enable_reply_size;
+
+	/* Function Start */
+
+	int send;
+	int result;
+	/*
+	 * Check if the CMOS value "me_state" exists, if it doesn't, then
+	 * don't do anything.
+	 */
+	const unsigned int cmos_me_state = get_uint_option("me_state", UINT_MAX);
+
+	if (cmos_me_state == UINT_MAX)
+		return;
+
+	printk(BIOS_DEBUG, "CMOS: me_state = %u\n", cmos_me_state);
+
+	/*
+	 * We only take action if the me_state doesn't match the CS(ME) working state
+	 */
+
+	const unsigned int soft_temp_disable = cse_is_hfs1_com_soft_temp_disable();
+
+	if (cmos_me_state && !soft_temp_disable) {
+		/* me_state should be disabled, but it's enabled */
+		printk(BIOS_DEBUG, "ME needs to be disabled.\n");
+		send = heci_send_receive(&me_disable, sizeof(me_disable),
+			&disable_reply, &disable_reply_size, HECI_MKHI_ADDR);
+		result = disable_reply.hdr.result;
+	} else if (!cmos_me_state && soft_temp_disable) {
+		/* me_state should be enabled, but it's disabled */
+		printk(BIOS_DEBUG, "ME needs to be enabled.\n");
+		send = heci_send_receive(&me_enable, sizeof(me_enable),
+			&enable_reply, &enable_reply_size, HECI_MKHI_ADDR);
+		result = enable_reply.hdr.result;
+	} else {
+		printk(BIOS_DEBUG, "ME is %s.\n", cmos_me_state ? "disabled" : "enabled");
+		unsigned int cmos_me_state_counter = get_uint_option("me_state_counter",
+								 UINT_MAX);
+		/* set me_state_counter to 0 */
+		if ((cmos_me_state_counter != UINT_MAX && cmos_me_state_counter != 0))
+			set_uint_option("me_state_counter", 0);
+		return;
+	}
+
+	printk(BIOS_DEBUG, "HECI: ME state change send %s!\n",
+							send ? "success" : "failure");
+	printk(BIOS_DEBUG, "HECI: ME state change result %s!\n",
+							result ? "success" : "failure");
+
+	/*
+	 * Reset if the result was successful, or if the send failed as some older
+	 * version of the Intel (CS)ME won't successfully receive the message unless reset
+	 * twice.
+	 */
+	if (send || !result)
+		me_reset_with_count();
+}
+
 static struct device_operations cse_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.read_resources		= pci_dev_read_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
+	.enable			= cse_set_state,
 };
 
 static const unsigned short pci_device_ids[] = {

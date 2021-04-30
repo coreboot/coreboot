@@ -101,4 +101,6 @@ static CONST PSO_ENTRY ROMDATA PlatformMemoryTable[] = {
 void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
 {
 	InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *)PlatformMemoryTable;
+	/* Bank interleaving is not supported on this platform */
+	InitPost->MemConfig.EnableBankIntlv = FALSE;
 }

@@ -12,7 +12,7 @@
 #include <types.h>
 
 struct pme_map {
-	pci_devfn_t devfn;
+	unsigned int devfn;
 	unsigned int wake_source;
 };
 

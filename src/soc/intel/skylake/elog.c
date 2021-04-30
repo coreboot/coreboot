@@ -26,7 +26,7 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 }
 
 struct pme_status_info {
-	pci_devfn_t devfn;
+	unsigned int devfn;
 	uint8_t reg_offset;
 	uint32_t elog_event;
 };

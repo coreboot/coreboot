@@ -46,8 +46,8 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* Report the memory regions */
 	idx = 10;
-	ram_resource(dev, idx++, 0, 640);
-	ram_resource(dev, idx++, 768, tolmk - 768);
+	ram_resource(dev, idx++, 0, tolmk);
+	mmio_resource(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 
 	if (tomk > basek_4G)
 		ram_resource(dev, idx++, basek_4G, tomk - basek_4G);

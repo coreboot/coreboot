@@ -142,6 +142,8 @@ static const struct {
 	  "10th generation (Comet Lake family) Core Processor (Mobile)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HEWITTLAKE,
 	  "Xeon E7 v4/Xeon E5 v4/Xeon E3 v4/Xeon D (Hewitt Lake)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SAPPHIRERAPIDS_SP,
+	  "Xeon Scalable Processor 4th generation (Sapphire Rapids SP)" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },

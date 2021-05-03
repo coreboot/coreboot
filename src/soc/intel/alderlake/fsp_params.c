@@ -401,17 +401,11 @@ static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* Chipset Lockdown */
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
-		s_cfg->PchLockDownGlobalSmi = 0;
-		s_cfg->PchLockDownBiosInterface = 0;
-		s_cfg->PchUnlockGpioPads = 1;
-		s_cfg->RtcMemoryLock = 0;
-	} else {
-		s_cfg->PchLockDownGlobalSmi = 1;
-		s_cfg->PchLockDownBiosInterface = 1;
-		s_cfg->PchUnlockGpioPads = 0;
-		s_cfg->RtcMemoryLock = 1;
-	}
+	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
+	s_cfg->PchLockDownGlobalSmi = lockdown_by_fsp;
+	s_cfg->PchLockDownBiosInterface = lockdown_by_fsp;
+	s_cfg->PchUnlockGpioPads = !lockdown_by_fsp;
+	s_cfg->RtcMemoryLock = lockdown_by_fsp;
 
 	/* coreboot will send EOP before loading payload */
 	s_cfg->EndOfPostMessage = EOP_DISABLE;

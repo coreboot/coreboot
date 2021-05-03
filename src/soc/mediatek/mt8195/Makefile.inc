@@ -54,6 +54,7 @@ ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
+ramstage-y += ../common/sspm.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/ufs.c
@@ -66,7 +67,8 @@ BL31_MAKEARGS += PLAT=mt8195
 MT8195_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8195
 
 mcu-firmware-files := \
-	$(CONFIG_MCUPM_FIRMWARE)
+	$(CONFIG_MCUPM_FIRMWARE) \
+	$(CONFIG_SSPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	  $(eval $(fw)-file := $(MT8195_BLOB_DIR)/$(fw)) \

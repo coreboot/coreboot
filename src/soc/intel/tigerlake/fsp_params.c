@@ -393,17 +393,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->DisableTccoldOnUsbConnected = 1;
 
 	/* Chipset Lockdown */
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
-		params->PchLockDownGlobalSmi = 0;
-		params->PchLockDownBiosInterface = 0;
-		params->PchUnlockGpioPads = 1;
-		params->RtcMemoryLock = 0;
-	} else {
-		params->PchLockDownGlobalSmi = 1;
-		params->PchLockDownBiosInterface = 1;
-		params->PchUnlockGpioPads = 0;
-		params->RtcMemoryLock = 1;
-	}
+	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
+	params->PchLockDownGlobalSmi = lockdown_by_fsp;
+	params->PchLockDownBiosInterface = lockdown_by_fsp;
+	params->PchUnlockGpioPads = !lockdown_by_fsp;
+	params->RtcMemoryLock = lockdown_by_fsp;
 
 	/* coreboot will send EOP before loading payload */
 	params->EndOfPostMessage = EOP_DISABLE;

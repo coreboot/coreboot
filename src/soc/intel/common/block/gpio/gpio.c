@@ -763,3 +763,27 @@ static void snapshot_cleanup(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME,    BS_ON_EXIT, snapshot_cleanup, NULL);
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, snapshot_cleanup, NULL);
+
+bool gpio_get_vw_info(gpio_t pad, unsigned int *vw_index, unsigned int *vw_bit)
+{
+	const struct pad_community *comm;
+	unsigned int offset = 0;
+	size_t i;
+
+	comm = gpio_get_community(pad);
+	for (i = 0; i < comm->num_vw_entries; i++) {
+		if (pad >= comm->vw_entries[i].first_pad && pad <= comm->vw_entries[i].last_pad)
+			break;
+
+		offset += 1 + comm->vw_entries[i].last_pad - comm->vw_entries[i].first_pad;
+	}
+
+	if (i == comm->num_vw_entries)
+		return false;
+
+	offset += pad - comm->vw_entries[i].first_pad;
+	*vw_index = comm->vw_base + offset / 8;
+	*vw_bit = offset % 8;
+
+	return true;
+}

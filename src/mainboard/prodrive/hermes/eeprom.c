@@ -21,7 +21,7 @@ int check_signature(const size_t offset, const uint64_t signature)
 {
 	u8 blob[8] = {0};
 
-	if (!read_write_config(blob, offset, 0, ARRAY_SIZE(blob))) {
+	if (!read_write_config(blob, offset, ARRAY_SIZE(blob))) {
 		/* Check signature */
 		if (*(uint64_t *)blob == signature) {
 			printk(BIOS_DEBUG, "CFG EEPROM: Signature valid.\n");
@@ -41,7 +41,7 @@ static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_c
 {
 	const size_t board_settings_offset = offsetof(struct eeprom_layout, BoardSettings);
 
-	if (read_write_config(board_cfg, board_settings_offset, 0, sizeof(*board_cfg))) {
+	if (read_write_config(board_cfg, board_settings_offset, sizeof(*board_cfg))) {
 		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
 		return false;
 	}
@@ -79,7 +79,7 @@ struct eeprom_bmc_settings *get_bmc_settings(void)
 	static int valid = 0;
 
 	if (valid == 0) {
-		if (read_write_config(&bmc_cfg, bmc_settings_offset, 0, sizeof(bmc_cfg))) {
+		if (read_write_config(&bmc_cfg, bmc_settings_offset, sizeof(bmc_cfg))) {
 			printk(BIOS_ERR, "CFG EEPROM: Failed to read BMC settings\n");
 			return NULL;
 		}
@@ -100,7 +100,7 @@ uint8_t get_bmc_hsi(void)
 }
 
 /* Read data from offset and write it to offset in UPD */
-bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size_t size)
+bool read_write_config(void *blob, size_t read_offset, size_t size)
 {
 	int ret = 0;
 
@@ -120,7 +120,7 @@ bool read_write_config(void *blob, size_t read_offset, size_t write_offset, size
 			break;
 
 		/* Write to UPD */
-		uint8_t *writePointer = (uint8_t *)blob + write_offset + i;
+		uint8_t *writePointer = (uint8_t *)blob + i;
 		writePointer[0] = tmp[0];
 		if (size - i > 1)
 			writePointer[1] = tmp[1];
@@ -188,7 +188,7 @@ bool write_board_settings(const struct eeprom_board_layout *new_layout)
 	bool changed = false;
 
 	/* Read old settings */
-	if (read_write_config(&old_layout, off, 0, sizeof(old_layout))) {
+	if (read_write_config(&old_layout, off, sizeof(old_layout))) {
 		printk(BIOS_ERR, "CFG EEPROM: Read operation failed\n");
 		return true;
 	}

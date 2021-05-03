@@ -7,6 +7,7 @@
 #include <soc/gpio.h>
 
 /* GPIO configuration in ramstage*/
+/* Please make sure that *ALL* GPIOs are configured in this table */
 static const struct soc_amd_gpio base_gpio_table[] = {
 	/* PWR_BTN_L */
 	PAD_NF(GPIO_0, PWR_BTN_L, PULL_NONE),
@@ -40,7 +41,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_SAR_INT_L */
 	PAD_SCI(GPIO_17, PULL_NONE, EDGE_LOW),
 	/* WWAN_AUX_RESET_L */
-	PAD_GPO(GPIO_18, LOW),
+	PAD_GPO(GPIO_18, HIGH),
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
@@ -55,12 +56,11 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_24, HIGH),
 	/* GPIO_25: Not available */
 	/* PCIE_RST0_L */
-	/* TODO: change back to PCIE_RST_L when we figure out why PCIE_RST doesn't go high. */
-	PAD_GPO(GPIO_26, HIGH),
+	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
 	/* PCIE_RST1_L */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
 	/* GPIO_28: Not available */
-	/* WLAN_AUX_RESET */
+	/* WLAN_AUX_RESET (Active HIGH)*/
 	PAD_GPO(GPIO_29, LOW),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
@@ -167,22 +167,32 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
+	/* WWAN_AUX_RESET_L */
+	PAD_GPO(GPIO_18, LOW),
+	/* WLAN_AUX_RESET (ACTIVE HIGH) */
+	PAD_GPO(GPIO_29, HIGH),
+	/* SSD_AUX_RESET_L */
+	PAD_GPO(GPIO_40, LOW),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_69, LOW),
+	/* Guybrush BID>1: Unused TP27; BID==1: SD_AUX_RESET_L */
+	PAD_NC(GPIO_70),
+	/* PCIE_RST0_L */
+	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
+
+/* Power on WLAN & WWAN */
 	/* EN_PP3300_WLAN */
 	PAD_GPO(GPIO_6, HIGH),
 	/* EN_PWR_WWAN_X */
 	PAD_GPO(GPIO_8, HIGH),
-	/* WWAN_DISABLE */
-	PAD_GPO(GPIO_85, LOW),
-	/* WLAN_DISABLE */
-	PAD_GPO(GPIO_130, LOW),
+
+/* Enable ESPI, GSC Interrupt & I2C Communication */
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
-	/* PCIE_RST0_L */
-	PAD_GPO(GPIO_26, HIGH),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* ESPI_SOC_CLK */
@@ -197,10 +207,45 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
+
+/* Enable UART 0 */
 	/* UART0_RXD */
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
 	/* UART0_TXD */
 	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
+};
+
+/* Power-on timing requirements:
+ * Fibocom 350-GL:
+ *   FCP0# goes high (GPIO 6)	to	Reset# high (GPIO 24):	20ms min
+ *   FCP0# goes high (GPIO 6)	to	PERST# high (GPIO 26):	100ms min
+ *   PERST# high (GPIO 26)	to	PCIE Training (FSP-M):	23ms min
+ *
+ * Realtek RTL8852AE:
+ *   Power (3.3 V) valid	to	PERST# high (GPIO_26):	50ms min
+ *
+ * Qualcomm WCN6856:
+ *   Power (3.3 V) valid	to	PERST# high (GPIO_26):	50ms min
+ *
+ * RTS5250S / RTS5227S / RTS5261S
+ *   Power (3.3 V) valid	to	PERST# high (GPIO_69/70):	1ms min
+ *
+ * PCIe spec:
+ *   Power (3.3 V) valid	to	PERST# high (GPIO_26):	50ms min (SUGGESTED)
+ *
+ * NVME adapters planned for Guybrush:
+ *   No power on timings specified - Assumed to require PCIe Spec suggested
+ *   guidelines.  Testing seems to bear out this assumption.
+ */
+
+static const struct soc_amd_gpio bootblock_gpio_table[] = {
+/* Enable WWAN & WLAN */
+	/* WWAN_RST_L */
+	PAD_GPO(GPIO_24, HIGH),
+	/* WWAN_DISABLE */
+	PAD_GPO(GPIO_85, LOW),
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_130, LOW),
 };
 
 /* GPIO configuration for sleep */
@@ -208,12 +253,30 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 	/* TODO: Fill sleep gpio configuration */
 };
 
+const struct soc_amd_gpio *__weak variant_bootblock_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(bootblock_gpio_table);
+	return bootblock_gpio_table;
+}
+
 const struct soc_amd_gpio *__weak variant_base_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(base_gpio_table);
 	return base_gpio_table;
 }
 const struct soc_amd_gpio *__weak variant_override_gpio_table(size_t *size)
+{
+	*size = 0;
+	return NULL;
+}
+
+const struct soc_amd_gpio * __weak variant_early_override_gpio_table(size_t *size)
+{
+	*size = 0;
+	return NULL;
+}
+
+const struct soc_amd_gpio * __weak variant_bootblock_override_gpio_table(size_t *size)
 {
 	*size = 0;
 	return NULL;

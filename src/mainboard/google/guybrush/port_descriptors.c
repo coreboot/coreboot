@@ -6,7 +6,7 @@
 #include <soc/gpio.h>
 #include <types.h>
 
-/* TODO: test if this really works */
+/* All PCIe Resets are handled in coreboot */
 static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 	{ /* WLAN */
 		.engine_type = PCIE_ENGINE,
@@ -18,7 +18,6 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.link_aspm = ASPM_L1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ0,
-		.gpio_group_id = GPIO_29,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* SD */
@@ -31,7 +30,6 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.link_aspm = ASPM_L1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ1,
-		.gpio_group_id = GPIO_70,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* WWAN */
@@ -44,7 +42,6 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.link_aspm = ASPM_L1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ2,
-		.gpio_group_id = GPIO_18,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* NVME */
@@ -57,7 +54,6 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.link_aspm = ASPM_L1,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ3,
-		.gpio_group_id = GPIO_40,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* TODO: remove this temporay workaround */

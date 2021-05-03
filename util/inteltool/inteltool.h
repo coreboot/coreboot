@@ -183,6 +183,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_C627A_SUPER		0xa24b
 #define PCI_DEVICE_ID_INTEL_C629A_SUPER		0xa24c
 
+#define PCI_DEVICE_ID_INTEL_EBG		0x1b81
+
 #define PCI_DEVICE_ID_INTEL_H310		0xa303
 #define PCI_DEVICE_ID_INTEL_H370		0xa304
 #define PCI_DEVICE_ID_INTEL_Z390		0xa305

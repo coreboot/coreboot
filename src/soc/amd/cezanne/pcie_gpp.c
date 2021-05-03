@@ -11,43 +11,21 @@
 #include <device/pci_ids.h>
 #include <device/pciexp.h>
 #include <soc/pci_devs.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 static const char *pcie_gpp_acpi_name(const struct device *dev)
 {
+	char *name;
+
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
-	switch (dev->path.pci.devfn) {
-	case PCIE_GPP_1_0_DEVFN:
-		return "GP10";
-	case PCIE_GPP_1_1_DEVFN:
-		return "GP11";
-	case PCIE_GPP_1_2_DEVFN:
-		return "GP12";
-	case PCIE_GPP_2_0_DEVFN:
-		return "GP20";
-	case PCIE_GPP_2_1_DEVFN:
-		return "GP21";
-	case PCIE_GPP_2_2_DEVFN:
-		return "GP22";
-	case PCIE_GPP_2_3_DEVFN:
-		return "GP23";
-	case PCIE_GPP_2_4_DEVFN:
-		return "GP24";
-	case PCIE_GPP_2_5_DEVFN:
-		return "GP25";
-	case PCIE_GPP_2_6_DEVFN:
-		return "GP26";
-	case PCIE_ABC_A_DEVFN:
-		return "GPPA";
-	case PCIE_GPP_B_DEVFN:
-		return "GPPB";
-	case PCIE_GPP_C_DEVFN:
-		return "GPPC";
-	default:
-		printk(BIOS_ERR, "%s: Unhanded devfn 0x%x\n", __func__, dev->path.pci.devfn);
-		return NULL;
-	}
+	name = malloc(ACPI_NAME_BUFFER_SIZE);
+	snprintf(name, ACPI_NAME_BUFFER_SIZE, "GP%02x", dev->path.pci.devfn);
+	name[4] = '\0';
+
+	return name;
 }
 
 static void acpi_device_write_gpp_pci_dev(const struct device *dev)

@@ -642,35 +642,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 #endif
 
 	/* Chipset Lockdown */
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
-		tconfig->PchLockDownGlobalSmi = 0;
-		tconfig->PchLockDownBiosInterface = 0;
-		params->PchLockDownBiosLock = 0;
-		params->PchLockDownRtcMemoryLock = 0;
+	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
+	tconfig->PchLockDownGlobalSmi = lockdown_by_fsp;
+	tconfig->PchLockDownBiosInterface = lockdown_by_fsp;
+	params->PchLockDownBiosLock = lockdown_by_fsp;
+	params->PchLockDownRtcMemoryLock = lockdown_by_fsp;
 #if CONFIG(SOC_INTEL_COMETLAKE)
-		/*
-		 * Skip SPI Flash Lockdown from inside FSP.
-		 * Making this config "0" means FSP won't set the FLOCKDN bit
-		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
-		 * So, it becomes coreboot's responsibility to set this bit
-		 * before end of POST for security concerns.
-		 */
-		params->SpiFlashCfgLockDown = 0;
+	/*
+	 * Making this config "0" means FSP won't set the FLOCKDN bit
+	 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+	 * So, it becomes coreboot's responsibility to set this bit
+	 * before end of POST for security concerns.
+	 */
+	params->SpiFlashCfgLockDown = lockdown_by_fsp;
 #endif
-	} else {
-		tconfig->PchLockDownGlobalSmi = 1;
-		tconfig->PchLockDownBiosInterface = 1;
-		params->PchLockDownBiosLock = 1;
-		params->PchLockDownRtcMemoryLock = 1;
-#if CONFIG(SOC_INTEL_COMETLAKE)
-		/*
-		 * Enable SPI Flash Lockdown from inside FSP.
-		 * Making this config "1" means FSP will set the FLOCKDN bit
-		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
-		 */
-		params->SpiFlashCfgLockDown = 1;
-#endif
-	}
 
 #if !CONFIG(SOC_INTEL_COMETLAKE)
 	params->VrPowerDeliveryDesign = config->VrPowerDeliveryDesign;

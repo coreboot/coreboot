@@ -17,6 +17,14 @@ chip soc/intel/alderlake
         # S0ix enable
         register "s0ix_enable" = "1"
 
+	# DPTF enable
+	register "dptf_enable" = "1"
+
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 55,
+	}"
+
 	# This disabled autonomous GPIO power management, otherwise
 	# old cr50 FW only supports short pulses; need to clarify
 	# the minimum PCH IRQ pulse width with Intel, b/180111628

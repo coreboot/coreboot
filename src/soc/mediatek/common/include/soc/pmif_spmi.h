@@ -25,7 +25,8 @@ struct mtk_spmi_mst_reg {
 	u32 op_st_sta;
 	u32 mst_sampl;
 	u32 mst_req_en;
-	u32 reserved1[11];
+	u32 rcs_ctrl;
+	u32 reserved1[10];
 	u32 rec_ctrl;
 	u32 rec0;
 	u32 rec1;

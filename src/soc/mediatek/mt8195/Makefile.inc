@@ -23,6 +23,11 @@ romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += ../common/timer.c timer.c
 romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c
+romstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
+romstage-y += ../common/pmif_spi.c pmif_spi.c
+romstage-y += ../common/pmif_spmi.c pmif_spmi.c
+romstage-y += ../common/mt6315.c mt6315.c
+romstage-y += ../common/mt6359p.c mt6359p.c
 
 ramstage-y += emi.c
 ramstage-y += ../common/gpio.c gpio.c

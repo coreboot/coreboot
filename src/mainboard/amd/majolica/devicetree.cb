@@ -14,6 +14,8 @@ chip soc/amd/cezanne
 		.flash_ch_en = 0,
 	}"
 
+	register "s0ix_enable" = "true"
+
 	device domain 0 on
 		device ref gpp_gfx_bridge_0 on end # MXM
 		device ref gpp_bridge_0 on end # NVMe

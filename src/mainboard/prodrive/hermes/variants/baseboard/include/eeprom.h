@@ -91,7 +91,7 @@ _Static_assert(sizeof(FSPM_UPD) <= 0x600, "FSPM_UPD too big");
 _Static_assert(sizeof(FSPS_UPD) <= 0xC00, "FSPS_UPD too big");
 _Static_assert(sizeof(struct eeprom_layout) == 0x2000, "EEPROM layout size mismatch");
 
-bool read_write_config(void *blob, size_t read_offset, size_t size);
+bool eeprom_read_buffer(void *blob, size_t read_offset, size_t size);
 int check_signature(const size_t offset, const uint64_t signature);
 struct eeprom_board_settings *get_board_settings(void);
 struct eeprom_bmc_settings *get_bmc_settings(void);
@@ -103,7 +103,7 @@ bool write_board_settings(const struct eeprom_board_layout *new_layout);
 	do {										\
 		typeof(dest->opt_name) __tmp;						\
 		size_t __off = offsetof(struct eeprom_layout, section_name);		\
-		bool ret = read_write_config(&__tmp,					\
+		bool ret = eeprom_read_buffer(&__tmp,					\
 					__off + offsetof(section_type, opt_name),	\
 					sizeof(__tmp));					\
 		if (ret) {								\

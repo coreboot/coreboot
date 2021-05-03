@@ -21,7 +21,7 @@ int check_signature(const size_t offset, const uint64_t signature)
 {
 	u8 blob[8] = {0};
 
-	if (!read_write_config(blob, offset, ARRAY_SIZE(blob))) {
+	if (!eeprom_read_buffer(blob, offset, ARRAY_SIZE(blob))) {
 		/* Check signature */
 		if (*(uint64_t *)blob == signature) {
 			printk(BIOS_DEBUG, "CFG EEPROM: Signature valid.\n");
@@ -41,7 +41,7 @@ static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_c
 {
 	const size_t board_settings_offset = offsetof(struct eeprom_layout, BoardSettings);
 
-	if (read_write_config(board_cfg, board_settings_offset, sizeof(*board_cfg))) {
+	if (eeprom_read_buffer(board_cfg, board_settings_offset, sizeof(*board_cfg))) {
 		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
 		return false;
 	}
@@ -79,7 +79,7 @@ struct eeprom_bmc_settings *get_bmc_settings(void)
 	static int valid = 0;
 
 	if (valid == 0) {
-		if (read_write_config(&bmc_cfg, bmc_settings_offset, sizeof(bmc_cfg))) {
+		if (eeprom_read_buffer(&bmc_cfg, bmc_settings_offset, sizeof(bmc_cfg))) {
 			printk(BIOS_ERR, "CFG EEPROM: Failed to read BMC settings\n");
 			return NULL;
 		}
@@ -99,8 +99,8 @@ uint8_t get_bmc_hsi(void)
 	return hsi;
 }
 
-/* Read data from offset and write it to offset in UPD */
-bool read_write_config(void *blob, size_t read_offset, size_t size)
+/* Read data from an EEPROM on SMBus and write it to a buffer */
+bool eeprom_read_buffer(void *blob, size_t read_offset, size_t size)
 {
 	int ret = 0;
 
@@ -141,7 +141,7 @@ void report_eeprom_error(const size_t off)
  * Write a single byte into the EEPROM at specified offset.
  * Returns true on error, false on success.
  */
-static bool write_byte_eeprom(const uint8_t data, const uint16_t write_offset)
+static bool eeprom_write_byte(const uint8_t data, const uint16_t write_offset)
 {
 	int ret = 0;
 
@@ -188,7 +188,7 @@ bool write_board_settings(const struct eeprom_board_layout *new_layout)
 	bool changed = false;
 
 	/* Read old settings */
-	if (read_write_config(&old_layout, off, sizeof(old_layout))) {
+	if (eeprom_read_buffer(&old_layout, off, sizeof(old_layout))) {
 		printk(BIOS_ERR, "CFG EEPROM: Read operation failed\n");
 		return true;
 	}
@@ -201,7 +201,7 @@ bool write_board_settings(const struct eeprom_board_layout *new_layout)
 	for (size_t i = 0; i < sizeof(old_layout); i++) {
 		if (old[i] != new[i]) {
 			changed = true;
-			if (write_byte_eeprom(new[i], off + i)) {
+			if (eeprom_write_byte(new[i], off + i)) {
 				printk(BIOS_ERR, "CFG EEPROM: Write operation failed\n");
 				ret = true;
 				break;

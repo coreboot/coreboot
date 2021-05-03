@@ -65,7 +65,7 @@ Scope (\_SB.PCI0.I2C0)
                 0x0000002D,
             }
         })
-        Name (_S0W, 0x04)  // _S0W: S0 Device Wake State
+        Name (_S0W, ACPI_DEVICE_SLEEP_D3_HOT)  // _S0W: S0 Device Wake State
         Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
         {
             0x15, // GPE #21
@@ -196,7 +196,7 @@ for more details on ACPI methods)
 
 ### _S0W (S0 Device Wake State)
 _S0W indicates the deepest S0 sleep state this device can wake itself from,
-which in this case is 4, representing _D3cold_.
+which in this case is ACPI_DEVICE_SLEEP_D3_HOT, representing _D3hot_.
 
 ### _PRW (Power Resources for Wake)
 _PRW indicates the power resources and events required for wake.  There are no

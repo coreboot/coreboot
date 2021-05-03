@@ -32,12 +32,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "H81M-HDS"
 
-#
-# Since this is a desktop board, the assumption is made that most users
-# would want CMOS configuration enabled by default.
-#
-config USE_OPTION_TABLE
-	bool
-	default y
-
 endif

@@ -74,6 +74,12 @@ config FSP_T_CBFS
 	depends on FSP_CAR
 	default "fspt.bin"
 
+config FSP_T_LOCATION
+	hex
+	default 0xfffe0000
+	help
+	  The location for FSP-T.
+
 config FSP_S_CBFS
 	string "Name of FSP-S in CBFS"
 	default "fsps.bin"

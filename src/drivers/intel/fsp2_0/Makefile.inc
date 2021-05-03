@@ -48,6 +48,7 @@ $(FSP_T_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_T_FILE))
 $(FSP_T_CBFS)-type := fsp
 ifeq ($(CONFIG_FSP_T_XIP),y)
 $(FSP_T_CBFS)-options := --xip $(TXTIBB)
+$(FSP_T_CBFS)-position = $(CONFIG_FSP_T_LOCATION)
 endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(FSP_M_CBFS)

@@ -21,16 +21,7 @@ bootblock_pre_c_entry:
 cache_as_ram:
 	post_code(0x21)
 
-	/* find fsp in cbfs */
-	lea	fsp_name, %esi
-	mov	$1f, %esp
-	jmp	walkcbfs_asm
-1:
-	cmp	$0, %eax
-	jz	.halt_forever
-	mov	CBFS_FILE_OFFSET(%eax), %ebx
-	bswap	%ebx
-	add	%eax, %ebx
+	movl	$(CONFIG_FSP_T_LOCATION), %ebx
 	add	$0x94, %ebx
 
 	/*

@@ -28,7 +28,7 @@ $(CBNT_PROV):
 	cd 3rdparty/intel-sec-tools; \
 	GO111MODULE=on go mod download; \
 	GO111MODULE=on go mod verify; \
-	GO111MODULE=on go build -o $(top)/$@ cmd/bg-prov/*.go
+	GO111MODULE=on go build -o $(top)/$@ cmd/cbnt-prov/*.go
 
 $(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE))
 	cp $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE) $@
@@ -50,10 +50,8 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
 				 --ibbflags=$(CONFIG_INTEL_CBNT_IBB_FLAGS) \
 				 --entrypoint=$(shell printf "%d" 0xfffffff0) \
 				 --ibbhash=11,4,12 \
-				 --ibbsegbase=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) 1) \
-				 --ibbsegsize=$(shell printf "%d" $(CONFIG_C_ENV_BOOTBLOCK_SIZE)) \
-				 --ibbsegflag=0 \
-				 --sintmin=$(CONFIG_INTEL_CBNT_SINIT_SVN) \
+				 --coreboot \
+				 --sinitmin=$(CONFIG_INTEL_CBNT_SINIT_SVN) \
 				 --txtflags=0 \
 				 --powerdowninterval=$(CONFIG_INTEL_CBNT_PD_INTERVAL) \
 				 --acpibaseoffset=$(shell printf "%d" $(CONFIG_INTEL_ACPI_BASE_ADDRESS)) \

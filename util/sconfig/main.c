@@ -450,7 +450,7 @@ struct fw_config_field *new_fw_config_field(const char *name, struct fw_config_f
 	tmp = bits;
 	while (tmp) {
 		if (tmp->start_bit > tmp->end_bit || tmp->end_bit > 63) {
-			printf("ERROR: fw_config field %s has invalid range %u-%u\n", field->name,
+			printf("ERROR: fw_config field %s has invalid range %u-%u\n", name,
 			       tmp->start_bit, tmp->end_bit);
 			exit(1);
 		}

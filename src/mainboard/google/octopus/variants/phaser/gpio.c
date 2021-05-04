@@ -14,6 +14,8 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_53, UP_20K),
 	PAD_NC(GPIO_67, UP_20K),
 	PAD_NC(GPIO_117, UP_20K),
+	PAD_CFG_GPI_APIC_IOS(GPIO_137, NONE, DEEP, LEVEL, INVERT, HIZCRx1,
+					DISPUPD),
 	PAD_NC(GPIO_143, UP_20K),
 
 	/* EN_PP3300_TOUCHSCREEN */
@@ -35,6 +37,8 @@ static const struct pad_config sku1_default_override_table[] = {
 	PAD_NC(GPIO_53, UP_20K),
 	PAD_NC(GPIO_67, UP_20K),
 	PAD_NC(GPIO_117, UP_20K),
+	PAD_CFG_GPI_APIC_IOS(GPIO_137, NONE, DEEP, LEVEL, INVERT, HIZCRx1,
+					DISPUPD),
 	PAD_NC(GPIO_143, UP_20K),
 
 	/* EN_PP3300_TOUCHSCREEN */

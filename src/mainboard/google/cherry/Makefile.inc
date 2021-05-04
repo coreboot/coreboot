@@ -1,4 +1,5 @@
 bootblock-y += memlayout.ld
+bootblock-y += bootblock.c
 bootblock-y += chromeos.c
 
 verstage-y += memlayout.ld

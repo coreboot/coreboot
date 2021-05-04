@@ -22,4 +22,10 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "Cherry" if BOARD_GOOGLE_CHERRY
+
+# On MT8195 the SPI flash is actually using a SPI-NOR controller with its own bus.
+# The number here should be a virtual value as (SPI_BUS_NUMBER + 1).
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 7
 endif

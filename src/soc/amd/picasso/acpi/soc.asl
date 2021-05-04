@@ -9,7 +9,7 @@ Device(PCI0) {
 }
 
 /* Describe PCI INT[A-H] for the Southbridge */
-#include "pci_int.asl"
+#include <soc/amd/common/acpi/pci_int.asl>
 
 /* Describe the devices in the Southbridge */
 #include "sb_fch.asl"

@@ -93,10 +93,12 @@ static void post_mp_init(void)
 	cpu_set_max_ratio();
 
 	/*
-	 * Now that all APs have been relocated as well as the BSP let SMIs
+	 * 1. Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
+	 * 2. Skip enabling power button SMI and enable it after BS_CHIPS_INIT
+	 * to avoid shutdown hang due to lack of init on certain IP in FSP-S.
 	 */
-	global_smi_enable();
+	global_smi_enable_no_pwrbtn();
 }
 
 static const struct mp_ops mp_ops = {

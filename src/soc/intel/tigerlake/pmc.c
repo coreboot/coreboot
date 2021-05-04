@@ -18,6 +18,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
+#include <bootstate.h>
 
 #define PMC_HID		"INTC1026"
 
@@ -144,6 +145,14 @@ static void soc_acpi_mode_init(struct device *dev)
 	 */
 	pmc_set_acpi_mode();
 }
+
+static void pm1_enable_pwrbtn_smi(void *unused)
+{
+	/* Enable power button SMI after BS_DEV_INIT_CHIPS (FSP-S) is done. */
+	pmc_update_pm1_enable(PWRBTN_EN);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);
 
 struct device_operations pmc_ops = {
 	.read_resources	  = soc_pmc_read_resources,

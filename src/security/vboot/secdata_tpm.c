@@ -10,6 +10,7 @@
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <security/tpm/tss/tcg-1.2/tss_structures.h>
+#include <security/tpm/tss/tcg-2.0/tss_structures.h>
 #include <vb2_api.h>
 #include <console/console.h>
 
@@ -108,6 +109,14 @@ static const TPMA_NV rw_space_attributes = {
 	.TPMA_NV_PLATFORMCREATE = 1,
 };
 
+static const TPMA_NV fwmp_attr = {
+	.TPMA_NV_PLATFORMCREATE = 1,
+	.TPMA_NV_OWNERWRITE = 1,
+	.TPMA_NV_AUTHREAD = 1,
+	.TPMA_NV_PPREAD = 1,
+	.TPMA_NV_PPWRITE = 1,
+};
+
 /*
  * This policy digest was obtained using TPM2_PolicyOR on 3 digests
  * corresponding to a sequence of
@@ -188,6 +197,14 @@ static uint32_t setup_firmware_space(struct vb2_context *ctx)
 			   sizeof(pcr0_allowed_policy));
 }
 
+static uint32_t setup_fwmp_space(struct vb2_context *ctx)
+{
+	uint32_t fwmp_space_size = vb2api_secdata_fwmp_create(ctx);
+
+	return setup_space("FWMP", FWMP_NV_INDEX, ctx->secdata_fwmp, fwmp_space_size,
+			   fwmp_attr, NULL, 0);
+}
+
 static uint32_t setup_kernel_space(struct vb2_context *ctx)
 {
 	uint32_t kernel_space_size = vb2api_secdata_kernel_create(ctx);
@@ -229,6 +246,9 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_mrc_hash_space(MRC_REC_HASH_NV_INDEX, mrc_hash_data));
+
+	/* Define and write firmware management parameters space. */
+	RETURN_ON_FAILURE(setup_fwmp_space(ctx));
 
 	RETURN_ON_FAILURE(setup_firmware_space(ctx));
 

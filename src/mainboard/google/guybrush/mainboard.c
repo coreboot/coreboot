@@ -47,14 +47,14 @@ static const struct fch_irq_routing {
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
 } guybrush_fch[] = {
-	{ PIRQ_A,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_B,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_C,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_D,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_E,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_F,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_G,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_H,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_A,	12,		PIRQ_NC },
+	{ PIRQ_B,	14,		PIRQ_NC },
+	{ PIRQ_C,	15,		PIRQ_NC },
+	{ PIRQ_D,	12,		PIRQ_NC },
+	{ PIRQ_E,	14,		PIRQ_NC },
+	{ PIRQ_F,	15,		PIRQ_NC },
+	{ PIRQ_G,	12,		PIRQ_NC },
+	{ PIRQ_H,	14,		PIRQ_NC },
 
 	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
 	{ PIRQ_SD,	PIRQ_NC,	PIRQ_NC },

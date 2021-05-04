@@ -131,6 +131,12 @@ static void set_pci_irqs(void *unused)
 {
 	/* Write PCI_INTR regs 0xC00/0xC01 */
 	write_pci_int_table();
+
+	/* pirq_data is consumed by `write_pci_cfg_irqs` */
+	populate_pirq_data();
+
+	/* Write IRQs for all devicetree enabled devices */
+	write_pci_cfg_irqs();
 }
 
 /*

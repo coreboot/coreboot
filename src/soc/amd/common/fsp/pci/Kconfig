@@ -1,0 +1,5 @@
+config SOC_AMD_COMMON_FSP_PCI
+	bool
+	select SOC_AMD_COMMON_BLOCK_PCI
+	help
+	  This option enabled FSP to provide common PCI functions.

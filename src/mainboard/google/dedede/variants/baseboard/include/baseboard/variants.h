@@ -39,4 +39,7 @@ bool variant_mem_is_half_populated(void);
 /* Allow each variants to customize SMI sleep flow. */
 void variant_smi_sleep(u8 slp_typ);
 
+/* Modify devictree settings during ramstage. */
+void variant_devtree_update(void);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

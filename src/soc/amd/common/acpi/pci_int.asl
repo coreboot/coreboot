@@ -2,14 +2,14 @@
 
 	/* PIC Possible Resource Values */
 	Name(IRQP, ResourceTemplate() {
-		Interrupt(ResourceConsumer, Level, ActiveLow, Exclusive, , , PIC){
+		Interrupt(ResourceConsumer, Level, ActiveLow, Shared, , , PIC){
 			1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15
 		}
 	})
 
 	/* IO-APIC Possible Resource Values */
 	Name(IRQI, ResourceTemplate() {
-		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , APIC) {
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , APIC) {
 			16, 17, 18, 19, 20, 21, 22, 23
 		}
 	})
@@ -63,7 +63,7 @@
 					ResourceConsumer, \
 					Level, \
 					ActiveLow, \
-					Exclusive, , , NUMB) \
+					Shared, , , NUMB) \
 				{ 0 } \
 			} \
 			CreateDWordField(local0, NUMB._INT, IRQN) \

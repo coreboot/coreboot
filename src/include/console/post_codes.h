@@ -204,16 +204,16 @@
 #define POST_BS_PAYLOAD_BOOT			0x7b
 
 /**
- * \brief Before calling FSP Notify before End of Firmware
+ * \brief Before calling FSP Notify (end of firmware)
  *
- * Going to call into FSP binary for Notify phase
+ * Going to call into FSP binary for Notify phase (end of firmware)
  */
 #define POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE	0x88
 
 /**
- * \brief Before calling FSP Notify after End of Firmware
+ * \brief After calling FSP Notify (end of firmware)
  *
- * Going to call into FSP binary for Notify phase
+ * Going to call into FSP binary for Notify phase (end of firmware)
  */
 #define POST_FSP_NOTIFY_AFTER_END_OF_FIRMWARE	0x89
 
@@ -246,16 +246,16 @@
 #define POST_FSP_SILICON_INIT			0x93
 
 /**
- * \brief Before calling FSP Notify before resource allocation
+ * \brief Before calling FSP Notify (after PCI enumeration)
  *
- * Going to call into FSP binary for Notify phase
+ * Going to call into FSP binary for Notify phase (after PCI enumeration)
  */
 #define POST_FSP_NOTIFY_BEFORE_ENUMERATE	0x94
 
 /**
- * \brief Before calling FSP Notify before finalize
+ * \brief Before calling FSP Notify (ready to boot)
  *
- * Going to call into FSP binary for Notify phase
+ * Going to call into FSP binary for Notify phase (ready to boot)
  */
 #define POST_FSP_NOTIFY_BEFORE_FINALIZE		0x95
 
@@ -300,6 +300,20 @@
  * FSP binary returned from Multiple phase SI Init
  */
 #define POST_FSP_MULTI_PHASE_SI_INIT_EXIT	0xa1
+
+/**
+ * \brief After calling FSP Notify (after PCI enumeration)
+ *
+ * Going to call into FSP binary for Notify phase (after PCI enumeration)
+ */
+#define POST_FSP_NOTIFY_AFTER_ENUMERATE        0xa2
+
+/**
+ * \brief After calling FSP Notify (ready to boot)
+ *
+ * Going to call into FSP binary for Notify phase (ready to boot)
+ */
+#define POST_FSP_NOTIFY_AFTER_FINALIZE         0xa3
 
 /**
  * \brief Invalid or corrupt ROM

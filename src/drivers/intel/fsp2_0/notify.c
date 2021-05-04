@@ -38,10 +38,10 @@ static void fsp_notify(enum fsp_notify_phase phase)
 
 	if (phase == AFTER_PCI_ENUM) {
 		timestamp_add_now(TS_FSP_AFTER_ENUMERATE);
-		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
+		post_code(POST_FSP_NOTIFY_AFTER_ENUMERATE);
 	} else if (phase == READY_TO_BOOT) {
 		timestamp_add_now(TS_FSP_AFTER_FINALIZE);
-		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+		post_code(POST_FSP_NOTIFY_AFTER_FINALIZE);
 	} else if (phase == END_OF_FIRMWARE) {
 		timestamp_add_now(TS_FSP_AFTER_END_OF_FIRMWARE);
 		post_code(POST_FSP_NOTIFY_AFTER_END_OF_FIRMWARE);

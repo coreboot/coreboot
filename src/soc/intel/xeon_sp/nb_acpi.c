@@ -198,6 +198,19 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	if (!reg_base)
 		return current;
 
+	// Add DRHD Hardware Unit
+	if (socket == 0 && stack == CSTACK) {
+		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
+			"Register Base Address: 0x%x\n",
+			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
+		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL,
+			pcie_seg, reg_base);
+	} else {
+		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
+			"Register Base Address: 0x%x\n", 0, pcie_seg, reg_base);
+		current += acpi_create_dmar_drhd(current, 0, pcie_seg, reg_base);
+	}
+
 	// Add PCH IOAPIC
 	if (socket == 0 && stack == CSTACK) {
 		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
@@ -261,19 +274,6 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 			current += acpi_create_dmar_ds_msi_hpet(current, 0, hpet_bdf.bus,
 				hpet_bdf.dev, hpet_bdf.fn);
 		}
-	}
-
-	// Add DRHD Hardware Unit
-	if (socket == 0 && stack == CSTACK) {
-		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
-			"Register Base Address: 0x%x\n",
-			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
-		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL,
-			pcie_seg, reg_base);
-	} else {
-		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
-			"Register Base Address: 0x%x\n", 0, pcie_seg, reg_base);
-		current += acpi_create_dmar_drhd(current, 0, pcie_seg, reg_base);
 	}
 
 	acpi_dmar_drhd_fixup(tmp, current);

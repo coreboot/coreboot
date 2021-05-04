@@ -28,6 +28,12 @@ uintptr_t add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *r
 		return current;
 	}
 
+	if (data->table_size_in_bytes > sizeof(data->hob_payload)) {
+		printk(BIOS_ERR, "AGESA %s ACPI table size larger than maximum HOB payload "
+		       "size.\n", name);
+		return current;
+	}
+
 	printk(BIOS_INFO, "ACPI:    * %s (AGESA).\n", name);
 
 	memcpy(table, data->hob_payload, data->table_size_in_bytes);

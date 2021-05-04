@@ -28,7 +28,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
 		FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
 
-	/* TODO: Add GNB-IOAPIC */
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
+		GNB_IOAPIC_ID, GNB_IO_APIC_ADDR, IO_APIC_INTERRUPTS);
 
 	current += acpi_create_madt_irqoverride(
 		(acpi_madt_irqoverride_t *)current,

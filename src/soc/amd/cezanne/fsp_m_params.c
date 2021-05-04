@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/apob_cache.h>
+#include <amdblocks/ioapic.h>
 #include <amdblocks/memmap.h>
 #include <assert.h>
 #include <console/uart.h>
@@ -48,6 +49,13 @@ static void fsp_fill_pcie_ddi_descriptors(FSP_M_CONFIG *mcfg)
 						&fsp_ddi, &num_ddi);
 	fill_dxio_descriptors(mcfg, fsp_dxio, num_dxio);
 	fill_ddi_descriptors(mcfg, fsp_ddi, num_ddi);
+}
+
+static void fsp_assign_ioapic_upds(FSP_M_CONFIG *mcfg)
+{
+	mcfg->gnb_ioapic_base = GNB_IO_APIC_ADDR;
+	mcfg->gnb_ioapic_id = GNB_IOAPIC_ID;
+	mcfg->fch_ioapic_id = FCH_IOAPIC_ID;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -129,4 +137,5 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		config->telemetry_vddcrsocoffset;
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);
+	fsp_assign_ioapic_upds(mcfg);
 }

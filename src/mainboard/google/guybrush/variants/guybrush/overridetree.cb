@@ -84,6 +84,21 @@ chip soc/amd/cezanne
 		end
 	end # I2C0
 
+	device ref i2c_1 on
+		chip drivers/generic/gpio_keys
+			register "name" = ""PENH""
+			register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPIO_4)"
+			register "key.dev_name" = ""EJCT""
+			register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+			register "key.linux_code" = "SW_PEN_INSERTED"
+			register "key.linux_input_type" = "EV_SW"
+			register "key.label" = ""pen_eject""
+			register "key.debounce_interval" = "100"
+			register "key.wakeup_route" = "WAKEUP_ROUTE_GPIO_IRQ"
+			device generic 0 on end
+		end
+	end # I2C1
+
 	device ref i2c_2 on
 		chip drivers/i2c/generic
 			register "hid" = ""10EC5682""

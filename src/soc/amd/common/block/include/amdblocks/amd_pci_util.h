@@ -31,4 +31,7 @@ void write_pci_cfg_irqs(void);
 void write_pci_int_table(void);
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size);
 
+/* Implemented by the SoC */
+void populate_pirq_data(void);
+
 #endif /* AMD_BLOCK_PCI_UTIL_H */

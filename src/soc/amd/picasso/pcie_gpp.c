@@ -9,7 +9,6 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
-#include <soc/pci.h>
 #include <soc/pci_devs.h>
 #include <stdio.h>
 

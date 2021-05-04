@@ -23,7 +23,6 @@
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
-#include <soc/pci.h>
 #include <soc/pci_devs.h>
 #include <types.h>
 #include "chip.h"

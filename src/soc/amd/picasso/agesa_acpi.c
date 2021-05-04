@@ -9,6 +9,7 @@
 #include <FspGuids.h>
 #include <soc/acpi.h>
 #include <stdint.h>
+#include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <amdblocks/acpi.h>

@@ -75,6 +75,11 @@ u8 read_pmbase8(const u8 addr)
 	return inb(lpc_get_pmbase() + addr);
 }
 
+int acpi_get_sleep_type(void)
+{
+	return acpi_sleep_from_pm1(read_pmbase32(PM1_CNT));
+}
+
 int platform_is_resuming(void)
 {
 	u16 reg16 = read_pmbase16(PM1_STS);

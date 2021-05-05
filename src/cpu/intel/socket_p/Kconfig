@@ -12,7 +12,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x8000
+	default 0x10000
 
 config DCACHE_BSP_STACK_SIZE
 	hex

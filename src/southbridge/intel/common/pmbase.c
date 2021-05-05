@@ -80,6 +80,10 @@ int acpi_get_sleep_type(void)
 	return acpi_sleep_from_pm1(read_pmbase32(PM1_CNT));
 }
 
+/*
+ * Note that southbridge_detect_s3_resume clears the sleep state,
+ * so this may not be used reliable throughout romstage.
+ */
 int platform_is_resuming(void)
 {
 	u16 reg16 = read_pmbase16(PM1_STS);
@@ -87,5 +91,5 @@ int platform_is_resuming(void)
 	if (!(reg16 & WAK_STS))
 		return 0;
 
-	return acpi_sleep_from_pm1(reg16) == ACPI_S3;
+	return acpi_get_sleep_type() == ACPI_S3;
 }

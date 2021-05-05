@@ -349,6 +349,18 @@ code base as a reviewer should be nominated, by themselves or others,
 at the regular [coreboot leadership meetings](../community/forums.md)
 where a decision is made.
 
+Core developers are expected to use their privileges for the good of the
+project, which includes any of their own coreboot development but also beyond
+that. They should make sure that [ready changes] don't linger around needlessly
+just because their authors aren't well-connected with core developers but
+submit them if they went through review and generally look reasonable. They're
+also expected to help clean-up breakage as a result of their submissions.
+
+Since the project expects some activity by core developers, long-term absence
+(as in "years") can lead to removal from the group, which can easily be
+reversed after they come back.
 
 Requests for clarification and suggestions for updates to these guidelines
 should be sent to the coreboot mailing list at <coreboot@coreboot.org>.
+
+[ready changes]: https://review.coreboot.org/q/age:1d+project:coreboot+status:open+is:mergeable+label:All-Comments-Resolved%253Dok+label:Code-Review%253D2+-label:Code-Review%253C0+label:Verified%253D1+-label:Verified-1

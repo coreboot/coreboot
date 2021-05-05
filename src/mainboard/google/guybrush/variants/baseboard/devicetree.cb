@@ -35,7 +35,7 @@ chip soc/amd/cezanne
 		.io_mode = ESPI_IO_MODE_QUAD,
 		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
 		.crc_check_enable = 1,
-		.alert_pin = ESPI_ALERT_PIN_PUSH_PULL,
+		.alert_pin = ESPI_ALERT_PIN_IN_BAND,
 		.periph_ch_en = 1,
 		.vw_ch_en = 1,
 		.oob_ch_en = 0,

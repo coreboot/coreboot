@@ -112,6 +112,14 @@
 #define POST_PRE_HARDWAREMAIN			0x6e
 
 /**
+ * \brief Entry into coreboot in RAM stage main()
+ *
+ * This is the first call in hardwaremain.c. If this code is POSTed, then
+ * ramstage has successfully loaded and started executing.
+ */
+#define POST_ENTRY_HARDWAREMAIN			0x6f
+
+/**
  * \brief Before Device Probe
  *
  * Boot State Machine: bs_pre_device()
@@ -194,14 +202,6 @@
  * Boot State Machine: bs_payload_boot()
  */
 #define POST_BS_PAYLOAD_BOOT			0x7b
-
-/**
- * \brief Entry into coreboot in RAM stage main()
- *
- * This is the first call in hardwaremain.c. If this code is POSTed, then
- * ramstage has successfully loaded and started executing.
- */
-#define POST_ENTRY_RAMSTAGE                     0x80
 
 /**
  * \brief Before calling FSP Notify before End of Firmware

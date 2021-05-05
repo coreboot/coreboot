@@ -91,7 +91,7 @@ else
 $(eval $(call early_x86_stage,bootblock,elf64-x86-64))
 endif
 
-bootblock-$(CONFIG_MICROCODE_UPDATE_PRE_RAM) += walkcbfs.S
+bootblock-y += walkcbfs.S
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 

@@ -2,7 +2,6 @@
 
 bootblock-y += cache_as_ram_bootblock.S
 bootblock-y += bootblock.c
-bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_64) += $(top)/src/arch/x86/walkcbfs.S
 
 romstage-y += ../intel/car/romstage.c
 

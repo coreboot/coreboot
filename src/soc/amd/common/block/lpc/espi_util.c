@@ -705,6 +705,8 @@ static int espi_set_general_configuration(const struct espi_config *mb_cfg, uint
 		printk(BIOS_INFO, "Setting general configuration: slave: 0x%x controller: 0x%x\n",
 		       slave_config, ctrlr_config);
 
+	espi_show_slave_general_configuration(slave_config);
+
 	if (espi_set_configuration(ESPI_SLAVE_GENERAL_CFG, slave_config) == -1)
 		return -1;
 

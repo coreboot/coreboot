@@ -89,7 +89,7 @@ _start:
 	 *	bss is cleared.   Now we call the main routine and
 	 *	let it do the rest.
 	 */
-	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
+	post_code(POST_PRE_HARDWAREMAIN)	/* post 6e */
 
 	andl	$0xFFFFFFF0, %esp
 

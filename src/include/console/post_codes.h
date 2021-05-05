@@ -105,6 +105,13 @@
 #define POST_ENABLING_CACHE			0x60
 
 /**
+ * \brief Pre call to RAM stage main()
+ *
+ * POSTed right before RAM stage main() is called from c_start.S
+ */
+#define POST_PRE_HARDWAREMAIN			0x6e
+
+/**
  * \brief Before Device Probe
  *
  * Boot State Machine: bs_pre_device()
@@ -173,13 +180,6 @@
  * Boot State Machine: bs_write_tables()
  */
 #define POST_BS_WRITE_TABLES			0x79
-
-/**
- * \brief Pre call to RAM stage main()
- *
- * POSTed right before RAM stage main() is called from c_start.S
- */
-#define POST_PRE_HARDWAREMAIN			0x79
 
 /**
  * \brief Load Payload

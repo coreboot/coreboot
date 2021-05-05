@@ -118,6 +118,29 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 }
 
+static void add_fixed_resources(struct device *dev, int index)
+{
+	/* Reserve everything between A segment and 1MB:
+	 *
+	 * 0xa0000 - 0xbffff: legacy VGA
+	 * 0xc0000 - 0xfffff: option ROMs and SeaBIOS (if used)
+	 */
+	mmio_resource(dev, index++, 0xa0000 >> 10, (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
+
+	if (fx_devs == 0)
+		get_fx_devs();
+
+	/* Check if CC6 save area is enabled (bit 18 CC6SaveEn)  */
+	if (pci_read_config32(__f2_dev[0], 0x118) & (1 << 18)) {
+		/* Add CC6 DRAM UC resource residing at DRAM Limit of size 16MB as per BKDG */
+		resource_t basek, limitk;
+		if (!get_dram_base_limit(0, &basek, &limitk))
+			return;
+		mmio_resource(dev, index++, limitk, 16*1024);
+	}
+}
+
 static void nb_read_resources(struct device *dev)
 {
 	struct resource *res;
@@ -134,6 +157,8 @@ static void nb_read_resources(struct device *dev)
 	res->base = IO_APIC2_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	add_fixed_resources(dev, 0);
 }
 
 static void create_vga_resource(struct device *dev, unsigned int nodeid)
@@ -737,30 +762,15 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 static void domain_read_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
-	u32 pci_tolm;
 	int i, idx;
-	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 #endif
 
 	pci_domain_read_resources(dev);
 
-	pci_tolm = 0xffffffffUL;
-	for (link = dev->link_list; link; link = link->next) {
-		pci_tolm = find_pci_tolm(link);
-	}
-
-	// FIXME handle interleaved nodes. If you fix this here, please fix
-	// amdk8, too.
-	mmio_basek = pci_tolm >> 10;
-	/* Round mmio_basek to something the processor can support */
-	mmio_basek &= ~((1 << 6) -1);
-
-	// FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
-	// MMIO hole. If you fix this here, please fix amdk8, too.
-	/* Round the mmio hole to 64M */
-	mmio_basek &= ~((64*1024) - 1);
+	/* TOP_MEM MSR is our boundary between DRAM and MMIO under 4G */
+	mmio_basek = bsp_topmem() >> 10;
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* if the hw mem hole is already set in raminit stage, here we will compare
@@ -786,16 +796,19 @@ static void domain_read_resources(struct device *dev)
 
 		sizek = limitk - basek;
 
-		/* see if we need a hole from 0xa0000 to 0xbffff */
-		if ((basek < ((8*64)+(8*16))) && (sizek > ((8*64)+(16*16)))) {
-			ram_resource(dev, (idx | i), basek, ((8*64)+(8*16)) - basek);
-			idx += 0x10;
-			basek = (8*64)+(16*16);
-			sizek = limitk - ((8*64)+(16*16));
+		printk(BIOS_DEBUG, "node %d: basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+				   i, basek, limitk, sizek);
 
+		/* see if we need a hole from 0xa0000 to 0xfffff */
+		if ((basek < (0xa0000 >> 10) && (sizek > (0x100000 >> 10)))) {
+			ram_resource(dev, (idx | i), basek, (0xa0000 >> 10) - basek);
+			idx += 0x10;
+			basek = 0x100000 >> 10;
+			sizek = limitk - basek;
 		}
 
-		//printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", i, mmio_basek, basek, limitk);
+		printk(BIOS_DEBUG, "node %d: basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+				   i, basek, limitk, sizek);
 
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {

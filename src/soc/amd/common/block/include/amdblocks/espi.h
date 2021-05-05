@@ -73,6 +73,12 @@ enum espi_op_freq {
 	ESPI_OP_FREQ_66_MHZ = ESPI_OP_FREQ_VALUE(2),
 };
 
+enum espi_alert_pin {
+	ESPI_ALERT_PIN_IN_BAND,
+	ESPI_ALERT_PIN_PUSH_PULL,
+	ESPI_ALERT_PIN_OPEN_DRAIN,
+};
+
 struct espi_config {
 	/* Bitmap for standard IO decodes. Use ESPI_DECODE_IO_* above. */
 	uint32_t std_io_decode_bitmap;
@@ -85,9 +91,9 @@ struct espi_config {
 	/* Slave configuration parameters */
 	enum espi_io_mode io_mode;
 	enum espi_op_freq op_freq_mhz;
+	enum espi_alert_pin alert_pin;
 
 	uint32_t crc_check_enable:1;
-	uint32_t dedicated_alert_pin:1;
 	uint32_t periph_ch_en:1;
 	uint32_t vw_ch_en:1;
 	uint32_t oob_ch_en:1;

@@ -24,11 +24,6 @@
 
 #define MAX_NODE_NUMS MAX_NODES
 
-typedef struct dram_base_mask {
-	u32 base; //[47:27] at [28:8]
-	u32 mask; //[47:27] at [28:8] and enable at bit 0
-} dram_base_mask_t;
-
 static unsigned int node_nums;
 static unsigned int sblink;
 static struct device *__f0_dev[MAX_NODE_NUMS];
@@ -36,24 +31,6 @@ static struct device *__f1_dev[MAX_NODE_NUMS];
 static struct device *__f2_dev[MAX_NODE_NUMS];
 static struct device *__f4_dev[MAX_NODE_NUMS];
 static unsigned int fx_devs = 0;
-
-static dram_base_mask_t get_dram_base_mask(u32 nodeid)
-{
-	struct device *dev;
-	dram_base_mask_t d;
-	dev = __f1_dev[0];
-	u32 temp;
-	temp = pci_read_config32(dev, 0x44 + (nodeid << 3)); //[39:24] at [31:16]
-	d.mask = ((temp & 0xfff80000)>>(8+3)); // mask out  DramMask [26:24] too
-	temp = pci_read_config32(dev, 0x144 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.mask |= temp << 21;
-	temp = pci_read_config32(dev, 0x40 + (nodeid << 3)); //[39:24] at [31:16]
-	d.mask |= (temp & 1); // enable bit
-	d.base = ((temp & 0xfff80000)>>(8+3)); // mask out DramBase [26:24) too
-	temp = pci_read_config32(dev, 0x140 + (nodeid <<3)) & 0xff; //[47:40] at [7:0]
-	d.base |= temp << 21;
-	return d;
-}
 
 static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)
@@ -123,6 +100,39 @@ static void f1_write_config32(unsigned int reg, u32 value)
 			pci_write_config32(dev, reg, value);
 		}
 	}
+}
+
+static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
+{
+	u32 temp;
+
+	if (fx_devs == 0)
+		get_fx_devs();
+
+
+	temp = pci_read_config32(__f1_dev[nodeid], 0x40 + (nodeid << 3)); //[39:24] at [31:16]
+	if (!(temp & 1))
+		return 0; // this memory range is not enabled
+	/*
+	 * BKDG: {DramBase[47:24], 00_0000h} <= address[47:0] so shift left by 8 bits
+	 * for physical address and the convert to KiB by shifting 10 bits left
+	 */
+	*basek = ((temp & 0xffff0000)) >> (10 - 8);
+	 /* Now high bits [47:40] */
+	temp = pci_read_config32(__f1_dev[nodeid], 0x140 + (nodeid << 3)); //[47:40] at [7:0]
+	*basek = *basek | ((resource_t)temp << (40 - 10));
+	/*
+	 * BKDG address[39:0] <= {DramLimit[47:24], FF_FFFFh} converted as above but
+	 * ORed with 0xffff to get real limit before shifting.
+	 */
+	temp = pci_read_config32(__f1_dev[nodeid], 0x44 + (nodeid << 3)); //[39:24] at [31:16]
+	*limitk = ((temp & 0xffff0000) | 0xffff) >> (10 - 8);
+	 /* Now high bits [47:40] */
+	temp = pci_read_config32(__f1_dev[nodeid], 0x144 + (nodeid << 3)); //[47:40] at [7:0]
+	*limitk = *limitk | ((resource_t)temp << (40 - 10));
+	*limitk += 1; // round up last byte
+
+	return 1;
 }
 
 static u32 amdfam15_nodeid(struct device *dev)
@@ -616,10 +626,10 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 	mem_hole.node_id = -1;
 	for (i = 0; i < node_nums; i++) {
-		dram_base_mask_t d;
+		resource_t basek, limitk;
 		u32 hole;
-		d = get_dram_base_mask(i);
-		if (!(d.mask & 1)) continue; // no memory on this node
+		if (!get_dram_base_limit(i, &basek, &limitk))
+			continue; // no memory on this node
 		hole = pci_read_config32(__f1_dev[i], 0xf0);
 		if (hole & 1) { // we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
@@ -634,18 +644,15 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	if (mem_hole.node_id == -1) {
 		resource_t limitk_pri = 0;
 		for (i = 0; i < node_nums; i++) {
-			dram_base_mask_t d;
 			resource_t base_k, limit_k;
-			d = get_dram_base_mask(i);
-			if (!(d.base & 1)) continue;
-			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
+			if (!get_dram_base_limit(i, &base_k, &limit_k))
+				continue; // no memory on this node
 			if (base_k > 4 *1024 * 1024) break; // don't need to go to check
 			if (limitk_pri != base_k) { // we find the hole
 				mem_hole.hole_startk = (unsigned int)limitk_pri; // must beblow 4G
 				mem_hole.node_id = i;
 				break; //only one hole
 			}
-			limit_k = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
 			limitk_pri = limit_k;
 		}
 	}
@@ -698,14 +705,10 @@ static void domain_set_resources(struct device *dev)
 
 	idx = 0x10;
 	for (i = 0; i < node_nums; i++) {
-		dram_base_mask_t d;
 		resource_t basek, limitk, sizek; // 4 1T
 
-		d = get_dram_base_mask(i);
-
-		if (!(d.mask & 1)) continue;
-		basek = ((resource_t)(d.base & 0x1fffff00)) << 9; // could overflow, we may lost 6 bit here
-		limitk = ((resource_t)(((d.mask & ~1) + 0x000FF) & 0x1fffff00)) << 9;
+		if (!get_dram_base_limit(i, &basek, &limitk))
+			continue; // no memory on this node
 
 		sizek = limitk - basek;
 

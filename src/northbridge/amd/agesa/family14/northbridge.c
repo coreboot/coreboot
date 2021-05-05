@@ -26,29 +26,6 @@ static struct device *__f2_dev[FX_DEVS];
 static struct device *__f4_dev[FX_DEVS];
 static unsigned int fx_devs = 0;
 
-struct dram_base_mask_t {
-	u32 base; //[47:27] at [28:8]
-	u32 mask; //[47:27] at [28:8] and enable at bit 0
-};
-
-static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
-{
-	struct device *dev;
-	struct dram_base_mask_t d;
-	dev = __f1_dev[0];
-
-	u32 temp;
-	temp = pci_read_config32(dev, 0x44); //[39:24] at [31:16]
-	d.mask = (temp & 0xffff0000); // mask out  DramMask [26:24] too
-
-	temp = pci_read_config32(dev, 0x40); //[35:24] at [27:16]
-	d.mask |= (temp & 1); // read enable bit
-
-	d.base = (temp & 0x0fff0000); // mask out DramBase [26:24) too
-
-	return d;
-}
-
 static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	return 0;
@@ -125,6 +102,33 @@ static void f1_write_config32(unsigned int reg, u32 value)
 			pci_write_config32(dev, reg, value);
 		}
 	}
+}
+
+static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
+{
+	u32 temp;
+
+	if (fx_devs == 0)
+		get_fx_devs();
+
+
+	temp = pci_read_config32(__f1_dev[nodeid], 0x40 + (nodeid << 3)); //[39:24] at [31:16]
+	if (!(temp & 1))
+		return 0; // this memory range is not enabled
+	/*
+	 * BKDG: {DramBase[35:24], 00_0000h} <= address[35:0] so shift left by 8 bits
+	 * for physical address and the convert to KiB by shifting 10 bits left
+	 */
+	*basek = ((temp & 0x0fff0000)) >> (10 - 8);
+	/*
+	 * BKDG address[35:0] <= {DramLimit[35:24], FF_FFFFh} converted as above but
+	 * ORed with 0xffff to get real limit before shifting.
+	 */
+	temp = pci_read_config32(__f1_dev[nodeid], 0x44 + (nodeid << 3)); //[39:24] at [31:16]
+	*limitk = ((temp & 0x0fff0000) | 0xffff) >> (10 - 8);
+	*limitk += 1; // round up last byte
+
+	return 1;
 }
 
 static u32 amdfam14_nodeid(struct device *dev)
@@ -305,10 +309,10 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 	mem_hole.node_id = -1;
 
-	struct dram_base_mask_t d;
+	resource_t basek, limitk;
 	u32 hole;
-	d = get_dram_base_mask(0);
-	if (d.mask & 1) {
+
+	if (get_dram_base_limit(0, &basek, &limitk)) {
 		hole = pci_read_config32(__f1_dev[0], 0xf0);
 		if (hole & 1) {	// we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
@@ -542,27 +546,13 @@ static void domain_set_resources(struct device *dev)
 #endif
 
 	idx = 0x10;
-
-	struct dram_base_mask_t d;
 	resource_t basek, limitk, sizek;	// 4 1T
 
-	d = get_dram_base_mask(0);
+	if (get_dram_base_limit(0, &basek, &limitk)) {
+		sizek = limitk - basek;
 
-	if (d.mask & 1) {
-		basek = ((resource_t) ((u64) d.base)) << 8;
-		limitk = (resource_t) (((u64) d.mask << 8) | 0xFFFFFF);
-		printk(BIOS_DEBUG,
-			"adsr: (before) basek = %llx, limitk = %llx.\n", basek,
-			 limitk);
-
-		/* Convert these values to multiples of 1K for ease of math. */
-		basek >>= 10;
-		limitk >>= 10;
-		sizek = limitk - basek + 1;
-
-		printk(BIOS_DEBUG,
-			"adsr: (after) basek = %llx, limitk = %llx, sizek = %llx.\n",
-			 basek, limitk, sizek);
+		printk(BIOS_DEBUG, "adsr: basek = %llx, limitk = %llx, sizek = %llx.\n",
+				   basek, limitk, sizek);
 
 		/* see if we need a hole from 0xa0000 to 0xbffff */
 		if ((basek < 640) && (sizek > 768)) {

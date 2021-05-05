@@ -864,9 +864,6 @@ static void espi_set_initial_config(const struct espi_config *mb_cfg)
 {
 	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
 
-	if (mb_cfg->dedicated_alert_pin)
-		espi_initial_mode |= ESPI_ALERT_MODE;
-
 	espi_write32(ESPI_SLAVE0_CONFIG, espi_initial_mode);
 }
 

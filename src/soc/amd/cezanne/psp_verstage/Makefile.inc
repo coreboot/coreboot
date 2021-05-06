@@ -12,6 +12,3 @@ verstage-y += stub.c
 
 verstage-y += $(top)/src/vendorcode/amd/fsp/cezanne/bl_uapp/bl_uapp_startup.S
 verstage-y += $(top)/src/vendorcode/amd/fsp/cezanne/bl_uapp/bl_uapp_end.S
-
-$(obj)/psp_verstage.bin: $(objcbfs)/verstage.elf
-	$(OBJCOPY_verstage) -O binary $^ $@

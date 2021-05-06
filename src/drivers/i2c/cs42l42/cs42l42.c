@@ -87,6 +87,8 @@ static void cs42l42_fill_ssdt(const struct device *dev)
 
 	acpi_dp_add_integer_array(dsd, "cirrus,bias-lvls", config->bias_lvls, 4);
 	acpi_dp_add_integer(dsd, "cirrus,hs-bias-ramp-rate", config->hs_bias_ramp_rate);
+	if (config->hs_bias_sense_disable)
+		acpi_dp_add_integer(dsd, "cirrus,hs-bias-sense-disable", 1);
 
 	/* Write Device Property Hierarchy */
 	acpi_dp_write(dsd);

@@ -106,4 +106,14 @@ struct drivers_i2c_cs42l42_config {
 	uint64_t bias_lvls[4];
 	/* headset bias ramp rate */
 	enum cs42l42_hs_bias_ramp_rate hs_bias_ramp_rate;
+	/*
+	 * cirrus,hs-bias-sense-disable: This is boolean property. If present the
+	 * HSBIAS sense is disabled. Configures HSBIAS output current sense through
+	 * the external 2.21-k resistor. HSBIAS_SENSE is hardware feature to reduce
+	 * the potential pop noise during the headset plug out slowly. But on some
+	 * platforms ESD voltage will affect it causing test to fail, especially
+	 * with CTIA headset type. For different hardware setups, a designer might
+	 * want to tweak default behavior.
+	 */
+	bool hs_bias_sense_disable;
 };

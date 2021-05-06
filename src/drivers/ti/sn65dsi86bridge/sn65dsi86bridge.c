@@ -127,12 +127,20 @@ enum vstream_config {
 enum i2c_over_aux {
 	I2C_OVER_AUX_WRITE_MOT_0 = 0x0,
 	I2C_OVER_AUX_READ_MOT_0 = 0x1,
-	I2C_OVER_AUX_WRITE_STATUS_UPDATE_0 = 0x4,
-	I2C_OVER_AUX_WRITE_MOT_1 = 0x5,
-	I2C_OVER_AUX_READ_MOT_1 = 0x6,
-	I2C_OVER_AUX_WRITE_STATUS_UPDATE_1 = 0x7,
+	I2C_OVER_AUX_WRITE_STATUS_UPDATE_0 = 0x2,
+	I2C_OVER_AUX_WRITE_MOT_1 = 0x4,
+	I2C_OVER_AUX_READ_MOT_1 = 0x5,
+	I2C_OVER_AUX_WRITE_STATUS_UPDATE_1 = 0x6,
 	NATIVE_AUX_WRITE = 0x8,
 	NATIVE_AUX_READ = 0x9,
+};
+
+enum aux_cmd_status {
+	NAT_I2C_FAIL = 1 << 6,
+	AUX_SHORT = 1 << 5,
+	AUX_DFER = 1 << 4,
+	AUX_RPLY_TOUT = 1 << 3,
+	SEND_INT = 1 << 0,
 };
 
 enum ml_tx_mode {
@@ -150,9 +158,13 @@ enum ml_tx_mode {
 	REDRIVER_SEMI_AUTO_LINK_TRAINING = 0xb,
 };
 
-enum dpcd_request {
-	DPCD_READ = 0x0,
-	DPCD_WRITE = 0x1,
+enum aux_request {
+	DPCD_READ,
+	DPCD_WRITE,
+	I2C_RAW_READ,
+	I2C_RAW_WRITE,
+	I2C_RAW_READ_AND_STOP,
+	I2C_RAW_WRITE_AND_STOP,
 };
 
 enum {
@@ -169,29 +181,131 @@ static const unsigned int sn65dsi86_bridge_dp_rate_lut[] = {
 	0, 1620, 2160, 2430, 2700, 3240, 4320, 5400
 };
 
-enum cb_err sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
+static bool request_is_write(enum aux_request request)
 {
-	int ret;
+	switch (request) {
+	case I2C_RAW_WRITE_AND_STOP:
+	case I2C_RAW_WRITE:
+	case DPCD_WRITE:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static enum i2c_over_aux get_aux_cmd(enum aux_request request, uint32_t remaining_after_this)
+{
+	switch (request) {
+	case I2C_RAW_WRITE_AND_STOP:
+		if (!remaining_after_this)
+			return I2C_OVER_AUX_WRITE_MOT_0;
+		/* fallthrough */
+	case I2C_RAW_WRITE:
+		return I2C_OVER_AUX_WRITE_MOT_1;
+	case I2C_RAW_READ_AND_STOP:
+		if (!remaining_after_this)
+			return I2C_OVER_AUX_READ_MOT_0;
+		/* fallthrough */
+	case I2C_RAW_READ:
+		return I2C_OVER_AUX_READ_MOT_1;
+	case DPCD_WRITE:
+		return NATIVE_AUX_WRITE;
+	case DPCD_READ:
+	default:
+		return NATIVE_AUX_READ;
+	}
+}
+
+static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
+					     uint8_t chip,
+					     unsigned int target_reg,
+					     unsigned int total_size,
+					     enum aux_request request,
+					     uint8_t *data)
+{
+	int i;
+	uint32_t length;
+	uint8_t buf;
+	uint8_t reg;
+
+	/* Clear old status flags just in case they're left over from a previous transfer. */
+	i2c_writeb(bus, chip, SN_AUX_CMD_STATUS_REG,
+		   NAT_I2C_FAIL | AUX_SHORT | AUX_DFER | AUX_RPLY_TOUT | SEND_INT);
+
+	while (total_size) {
+		length = MIN(total_size, 16);
+		total_size -= length;
+
+		enum i2c_over_aux cmd = get_aux_cmd(request, total_size);
+		if (i2c_writeb(bus, chip, SN_AUX_CMD_REG, (cmd << 4)) ||
+		    i2c_writeb(bus, chip, SN_AUX_ADDR_19_16_REG, (target_reg >> 16) & 0xF) ||
+		    i2c_writeb(bus, chip, SN_AUX_ADDR_15_8_REG, (target_reg >> 8) & 0xFF) ||
+		    i2c_writeb(bus, chip, SN_AUX_ADDR_7_0_REG, (target_reg) & 0xFF) ||
+		    i2c_writeb(bus, chip, SN_AUX_LENGTH_REG, length))
+			return CB_ERR;
+
+		if (request_is_write(request)) {
+			reg = SN_AUX_WDATA_REG_0;
+			for (i = 0; i < length; i++)
+				if (i2c_writeb(bus, chip, reg++, *data++))
+					return CB_ERR;
+		}
+
+		if (i2c_writeb(bus, chip, SN_AUX_CMD_REG, AUX_CMD_SEND | (cmd << 4)))
+			return CB_ERR;
+		if (!wait_ms(100, !i2c_readb(bus, chip, SN_AUX_CMD_REG, &buf) &&
+				  !(buf & AUX_CMD_SEND))) {
+			printk(BIOS_ERR, "ERROR: AUX_CMD_SEND not acknowledged\n");
+			return CB_ERR;
+		}
+		if (i2c_readb(bus, chip, SN_AUX_CMD_STATUS_REG, &buf))
+			return CB_ERR;
+		if (buf & (NAT_I2C_FAIL | AUX_SHORT | AUX_DFER | AUX_RPLY_TOUT)) {
+			printk(BIOS_ERR, "ERROR: AUX command failed, status = %#x\n", buf);
+			return CB_ERR;
+		}
+
+		if (!request_is_write(request)) {
+			reg = SN_AUX_RDATA_REG_0;
+			for (i = 0; i < length; i++) {
+				if (i2c_readb(bus, chip, reg++, &buf))
+					return CB_ERR;
+				*data++ = buf;
+			}
+		}
+	}
+
+	return CB_SUCCESS;
+}
+
+cb_err_t sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
+{
+	cb_err_t err;
 	u8 edid[EDID_LENGTH * 2];
 	int edid_size = EDID_LENGTH;
 
-	/* Send I2C command to claim EDID I2c slave */
-	i2c_writeb(bus, chip, SN_I2C_CLAIM_ADDR_EN1, (EDID_I2C_ADDR << 1) | 0x1);
-
-	/* read EDID */
-	ret = i2c_read_bytes(bus, EDID_I2C_ADDR, 0x0, edid, EDID_LENGTH);
-	if (ret != 0) {
+	uint8_t reg_addr = 0;
+	err = sn65dsi86_bridge_aux_request(bus, chip, EDID_I2C_ADDR, 1,
+					   I2C_RAW_WRITE, &reg_addr);
+	if (!err)
+		err = sn65dsi86_bridge_aux_request(bus, chip, EDID_I2C_ADDR, EDID_LENGTH,
+						   I2C_RAW_READ_AND_STOP, edid);
+	if (err) {
 		printk(BIOS_ERR, "ERROR: Failed to read EDID.\n");
-		return CB_ERR;
+		return err;
 	}
 
 	if (edid[EDID_EXTENSION_FLAG]) {
 		edid_size += EDID_LENGTH;
-		ret = i2c_read_bytes(bus, EDID_I2C_ADDR, EDID_LENGTH,
-					&edid[EDID_LENGTH], EDID_LENGTH);
-		if (ret != 0) {
+		reg_addr = EDID_LENGTH;
+		err = sn65dsi86_bridge_aux_request(bus, chip, EDID_I2C_ADDR, 1,
+						   I2C_RAW_WRITE, &reg_addr);
+		if (!err)
+			err = sn65dsi86_bridge_aux_request(bus, chip, EDID_I2C_ADDR,
+					EDID_LENGTH, I2C_RAW_READ_AND_STOP, &edid[EDID_LENGTH]);
+		if (err) {
 			printk(BIOS_ERR, "Failed to read EDID ext block.\n");
-			return CB_ERR;
+			return err;
 		}
 	}
 
@@ -203,67 +317,21 @@ enum cb_err sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *o
 	return CB_SUCCESS;
 }
 
-static void sn65dsi86_bridge_dpcd_request(uint8_t bus,
-					  uint8_t chip,
-					  unsigned int dpcd_reg,
-					  unsigned int len,
-					  enum dpcd_request request,
-					  uint8_t *data)
-{
-	int i;
-	uint32_t length;
-	uint8_t buf;
-	uint8_t reg;
-
-	while (len) {
-		length = MIN(len, 16);
-
-		i2c_writeb(bus, chip, SN_AUX_ADDR_19_16_REG, (dpcd_reg >> 16) & 0xF);
-		i2c_writeb(bus, chip, SN_AUX_ADDR_15_8_REG, (dpcd_reg >> 8) & 0xFF);
-		i2c_writeb(bus, chip, SN_AUX_ADDR_7_0_REG, (dpcd_reg) & 0xFF);
-		i2c_writeb(bus, chip, SN_AUX_LENGTH_REG, length); /* size of 1 Byte data */
-		if (request == DPCD_WRITE) {
-			reg = SN_AUX_WDATA_REG_0;
-			for (i = 0; i < length; i++)
-				i2c_writeb(bus, chip, reg++, *data++);
-
-			i2c_writeb(bus, chip,
-				   SN_AUX_CMD_REG, AUX_CMD_SEND | (NATIVE_AUX_WRITE << 4));
-		} else {
-			i2c_writeb(bus, chip,
-				   SN_AUX_CMD_REG, AUX_CMD_SEND | (NATIVE_AUX_READ << 4));
-			if (!wait_ms(100,
-			    !i2c_readb(bus, chip, SN_AUX_CMD_REG,
-			    &buf) && !(buf & AUX_CMD_SEND))) {
-				printk(BIOS_ERR, "ERROR: aux command send failed\n");
-			}
-
-			reg = SN_AUX_RDATA_REG_0;
-			for (i = 0; i < length; i++) {
-				i2c_readb(bus, chip, reg++, &buf);
-				*data++ = buf;
-			}
-		}
-
-		len -= length;
-	}
-}
-
 static void sn65dsi86_bridge_valid_dp_rates(uint8_t bus, uint8_t chip, bool rate_valid[])
 {
 	unsigned int rate_per_200khz;
 	uint8_t dpcd_val;
 	int i, j;
 
-	sn65dsi86_bridge_dpcd_request(bus, chip,
-					DP_BRIDGE_DPCD_REV, 1, DPCD_READ, &dpcd_val);
+	sn65dsi86_bridge_aux_request(bus, chip,
+				     DP_BRIDGE_DPCD_REV, 1, DPCD_READ, &dpcd_val);
 	if (dpcd_val >= DP_BRIDGE_14) {
 		/* eDP 1.4 devices must provide a custom table */
 		uint16_t sink_rates[DP_MAX_SUPPORTED_RATES] = {0};
 
-		sn65dsi86_bridge_dpcd_request(bus, chip, DP_SUPPORTED_LINK_RATES,
-					      sizeof(sink_rates),
-					      DPCD_READ, (void *)sink_rates);
+		sn65dsi86_bridge_aux_request(bus, chip, DP_SUPPORTED_LINK_RATES,
+					     sizeof(sink_rates),
+					     DPCD_READ, (void *)sink_rates);
 		for (i = 0; i < ARRAY_SIZE(sink_rates); i++) {
 			rate_per_200khz = le16_to_cpu(sink_rates[i]);
 
@@ -288,7 +356,7 @@ static void sn65dsi86_bridge_valid_dp_rates(uint8_t bus, uint8_t chip, bool rate
 	}
 
 	/* On older versions best we can do is use DP_MAX_LINK_RATE */
-	sn65dsi86_bridge_dpcd_request(bus, chip, DP_MAX_LINK_RATE, 1, DPCD_READ, &dpcd_val);
+	sn65dsi86_bridge_aux_request(bus, chip, DP_MAX_LINK_RATE, 1, DPCD_READ, &dpcd_val);
 
 	switch (dpcd_val) {
 	default:
@@ -410,8 +478,8 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 	 * at DisplayPort address 0x0010A prior to link training.
 	 */
 	buf = 0x1;
-	sn65dsi86_bridge_dpcd_request(bus, chip,
-				      DP_BRIDGE_CONFIGURATION_SET, 1, DPCD_WRITE, &buf);
+	sn65dsi86_bridge_aux_request(bus, chip,
+				     DP_BRIDGE_CONFIGURATION_SET, 1, DPCD_WRITE, &buf);
 
 	int i;	/* Kernel driver suggests to retry this up to 10 times if it fails. */
 	for (i = 0; i < 10; i++) {
@@ -441,7 +509,7 @@ static int sn65dsi86_bridge_dp_lane_config(uint8_t bus, uint8_t chip)
 {
 	uint8_t lane_count;
 
-	sn65dsi86_bridge_dpcd_request(bus, chip, DP_MAX_LANE_COUNT, 1, DPCD_READ, &lane_count);
+	sn65dsi86_bridge_aux_request(bus, chip, DP_MAX_LANE_COUNT, 1, DPCD_READ, &lane_count);
 	lane_count &= DP_LANE_COUNT_MASK;
 	i2c_write_field(bus, chip, SN_SSC_CONFIG_REG, MIN(lane_count, 3), 3, 4);
 

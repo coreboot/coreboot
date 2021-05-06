@@ -11,6 +11,7 @@
 #include <cpu/x86/tsc.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
+#include <soc/psp_transfer.h>
 #include <stdint.h>
 
 /*
@@ -110,5 +111,11 @@ void bootblock_soc_init(void)
 {
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
+
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
+		verify_psp_transfer_buf();
+		show_psp_transfer_info();
+	}
+
 	fch_early_init();
 }

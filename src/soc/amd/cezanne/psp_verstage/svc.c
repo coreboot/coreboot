@@ -82,11 +82,6 @@ uint32_t svc_unmap_spi_rom(void *spi_rom_addr)
 	return retval;
 }
 
-uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset)
-{
-	return svc_update_psp_bios_dir(psp_dir_offset, bios_dir_offset);
-}
-
 uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 		uint32_t *bios_dir_offset)
 {
@@ -94,11 +89,6 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 	SVC_CALL2(SVC_UPDATE_PSP_BIOS_DIR, (uint32_t)psp_dir_offset,
 			(uint32_t)bios_dir_offset, retval);
 	return retval;
-}
-
-uint32_t save_uapp_data(void *address, uint32_t size)
-{
-	return svc_save_uapp_data(address, size);
 }
 
 uint32_t svc_save_uapp_data(void *address, uint32_t size)

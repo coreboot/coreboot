@@ -96,12 +96,6 @@ uint32_t svc_unmap_spi_rom(void *spi_rom_addr)
 	return retval;
 }
 
-uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset)
-{
-	return svc_update_psp_bios_dir(psp_dir_offset, bios_dir_offset,
-				       DIR_OFFSET_SET);
-}
-
 uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 		uint32_t *bios_dir_offset, enum dir_offset_operation operation)
 {
@@ -110,11 +104,6 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 	SVC_CALL3(SVC_UPDATE_PSP_BIOS_DIR, (uint32_t)psp_dir_offset,
 			(uint32_t)bios_dir_offset, operation, retval);
 	return retval;
-}
-
-uint32_t save_uapp_data(void *address, uint32_t size)
-{
-	return svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, address, size);
 }
 
 uint32_t svc_save_uapp_data(enum uapp_copybuf type, void *address,
@@ -147,11 +136,6 @@ uint32_t svc_write_postcode(uint32_t postcode)
 	uint32_t retval = 0;
 	SVC_CALL1(SVC_WRITE_POSTCODE, postcode, retval);
 	return retval;
-}
-
-uint32_t get_max_workbuf_size(uint32_t *size)
-{
-	return svc_get_max_workbuf_size(size);
 }
 
 uint32_t svc_get_max_workbuf_size(uint32_t *size)

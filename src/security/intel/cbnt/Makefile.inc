@@ -20,29 +20,29 @@ $(obj)/bpm_pub.pem: $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PUB_KEY_FILE))
 	cp $< $@
 endif
 
-BG_PROV:=$(obj)/bg-prov
+CBNT_PROV:=$(obj)/cbnt-prov
 CBNT_CFG:=$(obj)/cbnt.json
 
-$(BG_PROV):
-	printf "    BG_PROV    building tool\n"
+$(CBNT_PROV):
+	printf "    CBNT_PROV    building tool\n"
 	cd 3rdparty/intel-sec-tools; \
 	GO111MODULE=on go mod download; \
 	GO111MODULE=on go mod verify; \
 	GO111MODULE=on go build -o $(top)/$@ cmd/bg-prov/*.go
 
-$(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_BG_PROV_CFG_FILE))
-	cp $(CONFIG_INTEL_CBNT_BG_PROV_CFG_FILE) $@
+$(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE))
+	cp $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE) $@
 
 ifeq ($(CONFIG_INTEL_CBNT_GENERATE_BPM),y)
-ifeq ($(CONFIG_INTEL_CBNT_BG_PROV_BPM_USE_CFG_FILE),y)
-$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV) $(CBNT_CFG)
-	printf "    BG_PROV    creating unsigned BPM using config file\n"
-	$(BG_PROV) bpm-gen $@ $< --config=$(CBNT_CFG) --cut
+ifeq ($(CONFIG_INTEL_CBNT_CBNT_PROV_BPM_USE_CFG_FILE),y)
+$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV) $(CBNT_CFG)
+	printf "    CBNT_PROV    creating unsigned BPM using config file\n"
+	$(CBNT_PROV) bpm-gen $@ $< --config=$(CBNT_CFG) --cut
 else
-$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(BG_PROV)
-	printf "    BG_PROV    creating unsigned BPM\n"
+$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
+	printf "    CBNT_PROV    creating unsigned BPM\n"
 	# SHA256, SHA1, SHA384 for digest
-	$(BG_PROV) bpm-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_BPM_REVISION) \
+	$(CBNT_PROV) bpm-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_BPM_REVISION) \
 				 --svn=$(CONFIG_INTEL_CBNT_BPM_SVN) \
 				 --acmsvn=$(CONFIG_INTEL_CBNT_ACM_SVN) \
 				 --nems=$(CONFIG_INTEL_CBNT_NUM_NEM_PAGES) \
@@ -73,9 +73,9 @@ build_complete:: $(obj)/bpm_unsigned.bin
 	@printf "$$ cbfstool build/coreboot.rom add -f bpm.bin -n boot_policy_manifest.bin -t raw -a 16\n"
 	@printf "$$ ifittool -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s 12 -f build/coreboot.rom\n"
 else
-$(obj)/bpm.bin: $(obj)/bpm_unsigned.bin $(BG_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE))
-	printf "    BG_PROV    signing real BPM\n"
-	$(BG_PROV) bpm-sign $< $@ $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE) ""
+$(obj)/bpm.bin: $(obj)/bpm_unsigned.bin $(CBNT_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE))
+	printf "    CBNT_PROV    signing real BPM\n"
+	$(CBNT_PROV) bpm-sign $< $@ $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE) ""
 
 # Add BPM at the end of the build when all files have been added
 files_added:: $(obj)/bpm.bin
@@ -100,15 +100,15 @@ endif
 endif # CONFIG_INTEL_CBNT_GENERATE_BPM
 
 ifeq ($(CONFIG_INTEL_CBNT_GENERATE_KM),y)
-ifeq ($(CONFIG_INTEL_CBNT_BG_PROV_KM_USE_CFG_FILE),y)
-$(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(BG_PROV) $(CBNT_CFG)
-	printf "    BG_PROV    creating unsigned KM using config file\n"
-	$(BG_PROV) km-gen $@ $< --config=$(CBNT_CFG)
+ifeq ($(CONFIG_INTEL_CBNT_CBNT_PROV_KM_USE_CFG_FILE),y)
+$(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(CBNT_PROV) $(CBNT_CFG)
+	printf "    CBNT_PROV    creating unsigned KM using config file\n"
+	$(CBNT_PROV) km-gen $@ $< --config=$(CBNT_CFG)
 else
 PK_HASH_ALG_SHA256:=11 # Hardcode as no other options are available for CBnT
-$(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(obj)/bpm_pub.pem $(BG_PROV)
-	printf "    BG_PROV    creating unsigned KM\n"
-	$(BG_PROV) km-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_KM_REVISION) \
+$(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(obj)/bpm_pub.pem $(CBNT_PROV)
+	printf "    CBNT_PROV    creating unsigned KM\n"
+	$(CBNT_PROV) km-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_KM_REVISION) \
 				--svn=$(CONFIG_INTEL_CBNT_KM_SVN) \
 				--id=$(CONFIG_INTEL_CBNT_KM_ID) \
 				--pkhashalg=$(PK_HASH_ALG_SHA256) \
@@ -117,9 +117,9 @@ $(obj)/km_unsigned.bin: $(obj)/km_pub.pem $(obj)/bpm_pub.pem $(BG_PROV)
 				--out=$(obj)/km_cfg.json
 endif
 
-$(obj)/km.bin: $(obj)/km_unsigned.bin $(BG_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE))
-	printf "    BG_PROV    signing KM\n"
-	$(BG_PROV) km-sign $< $@ $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE) ""
+$(obj)/km.bin: $(obj)/km_unsigned.bin $(CBNT_PROV) $(call strip_quotes, $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE))
+	printf "    CBNT_PROV    signing KM\n"
+	$(CBNT_PROV) km-sign $< $@ $(CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE) ""
 
 KM_FILE=$(obj)/km.bin
 else

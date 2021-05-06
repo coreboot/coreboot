@@ -107,7 +107,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	}
 
 	psp_dir_addr = ef_table->psp_table;
-	bios_dir_addr = ef_table->bios1_entry;
+	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
 			(uint32_t)boot_dev.base);
 	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +

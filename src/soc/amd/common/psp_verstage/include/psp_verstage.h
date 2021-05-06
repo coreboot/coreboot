@@ -48,6 +48,8 @@ struct psp_ef_table {
 	uint32_t bios0_entry;
 	uint32_t bios1_entry;
 	uint32_t bios2_entry;
+	uint32_t reserved1;
+	uint32_t bios3_entry;
 } __attribute__((packed, aligned(16)));
 
 void test_svc_calls(void);
@@ -59,5 +61,6 @@ uintptr_t *map_spi_rom(void);
 uint32_t get_max_workbuf_size(uint32_t *size);
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset);
 uint32_t save_uapp_data(void *address, uint32_t size);
+uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table);
 
 #endif /* PSP_VERSTAGE_H */

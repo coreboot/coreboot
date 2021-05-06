@@ -22,6 +22,7 @@
  * itself.
  *
  * Summary:
+ *  + Measures the FMAP FMAP partition.
  *  + Measures bootblock in CBFS or BOOTBLOCK FMAP partition.
  *  + If vboot starts in romstage, it measures the romstage
  *    in CBFS.

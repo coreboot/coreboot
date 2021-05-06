@@ -61,7 +61,7 @@ uint32_t tspi_init_crtm(void)
 
 	struct region_device fmap;
 	if (fmap_locate_area_as_rdev("FMAP", &fmap) == 0) {
-		if (tpm_measure_region(&fmap, TPM_RUNTIME_DATA_PCR, "FMAP: FMAP")) {
+		if (tpm_measure_region(&fmap, TPM_CRTM_PCR, "FMAP: FMAP")) {
 			printk(BIOS_ERR,
 			       "TSPI: Couldn't measure FMAP into CRTM!\n");
 			return VB2_ERROR_UNKNOWN;

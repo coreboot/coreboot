@@ -73,6 +73,14 @@ CEZANNE_FWM_POSITION=$(call int-add, \
 	$(call int-subtract, 0xffffffff \
 	$(call int-shift-left, \
 	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
+
+CEZANNE_FW_A_POSITION=$(call int-add, \
+	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_A_START" {print $$3}' $(obj)/fmap_config.h) \
+	0x40)
+
+CEZANNE_FW_B_POSITION=$(call int-add, \
+	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_B_START" {print $$3}' $(obj)/fmap_config.h) \
+	0x40)
 #
 # PSP Directory Table items
 #
@@ -234,10 +242,47 @@ $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
 		--maxsize $(PSP_BIOSBIN_SIZE)
 
+$(obj)/amdfw_a.rom: $(obj)/amdfw.rom
+	rm -f $@
+	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
+	$(AMDFWTOOL) \
+		$(AMDFW_COMMON_ARGS) \
+		$(OPT_APOB_NV_SIZE) \
+		$(OPT_APOB_NV_BASE) \
+		--location $(shell printf "%#x" $(CEZANNE_FW_A_POSITION)) \
+		--anywhere \
+		--multilevel \
+		--output $@
+
+$(obj)/amdfw_b.rom: $(obj)/amdfw.rom
+	rm -f $@
+	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
+	$(AMDFWTOOL) \
+		$(AMDFW_COMMON_ARGS) \
+		$(OPT_APOB_NV_SIZE) \
+		$(OPT_APOB_NV_BASE) \
+		--location $(shell printf "%#x" $(CEZANNE_FW_B_POSITION)) \
+		--anywhere \
+		--multilevel \
+		--output $@
+
+
 cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(CEZANNE_FWM_POSITION)
 apu/amdfw-type := raw
+
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
+cbfs-files-y += apu/amdfw_a
+apu/amdfw_a-file := $(obj)/amdfw_a.rom
+apu/amdfw_a-position := $(call strip_quotes, $(CEZANNE_FW_A_POSITION))
+apu/amdfw_a-type := raw
+
+cbfs-files-y += apu/amdfw_b
+apu/amdfw_b-file := $(obj)/amdfw_b.rom
+apu/amdfw_b-position := $(call strip_quotes, $(CEZANNE_FW_B_POSITION))
+apu/amdfw_b-type := raw
+endif
 
 cpu_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/UcodePatch_*.bin)
 

@@ -7,6 +7,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/reset.h>
 
+/* TODO: is NCP_ERR still valid?  It appears reserved and always 0xff.  b/184281092 */
 void set_warm_reset_flag(void)
 {
 	uint8_t ncp = inw(NCP_ERR);
@@ -29,14 +30,13 @@ void do_cold_reset(void)
 
 void do_warm_reset(void)
 {
-	set_warm_reset_flag();
-
-	/* Assert reset signals only. */
+	/* Warm resets are not supported and must be executed as cold */
+	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) |
+		TOGGLE_ALL_PWR_GOOD);
 	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 
 void do_board_reset(void)
 {
-	/* TODO: Would a warm_reset() suffice? */
 	do_cold_reset();
 }

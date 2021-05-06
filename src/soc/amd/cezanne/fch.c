@@ -113,8 +113,14 @@ static void fch_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
+static void fch_init_resets(void)
+{
+	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) | TOGGLE_ALL_PWR_GOOD);
+}
+
 void fch_init(void *chip_info)
 {
+	fch_init_resets();
 	i2c_soc_init();
 	fch_init_acpi_ports();
 

@@ -2,8 +2,6 @@
 
 #include <arch/ioapic.h>
 
-External(\_SB.ALIB, MethodObj)
-
 /* System Bus */
 /*  _SB.PCI0 */
 

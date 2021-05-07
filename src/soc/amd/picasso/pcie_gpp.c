@@ -60,68 +60,6 @@ static const char *pcie_gpp_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static void acpigen_write_PRT(const struct device *dev)
-{
-	char link_template[] = "\\_SB.INTX";
-	unsigned int irq_index;
-
-	const struct pci_routing_info *pci_routing = get_pci_routing_info(dev->path.pci.devfn);
-	if (!pci_routing) {
-		printk(BIOS_ERR, "PCI routing table not found for %s\n", dev_path(dev));
-		return;
-	}
-
-	acpigen_write_method("_PRT", 0);
-
-	/* If (PICM) */
-	acpigen_write_if();
-	acpigen_emit_namestring("PICM");
-
-	/* Return (Package{...}) */
-	acpigen_emit_byte(RETURN_OP);
-
-	acpigen_write_package(4); /* Package - APIC Routing */
-	for (unsigned int i = 0; i < 4; ++i) {
-		irq_index = pci_calculate_irq(pci_routing, i);
-
-		acpigen_write_package(4);
-		/* There is only one device attached to the bridge */
-		acpigen_write_dword(0x0000FFFF);
-		acpigen_write_byte(i);
-		acpigen_write_byte(0); /* Source: GSI  */
-		/* GNB IO-APIC is located after the FCH IO-APIC */
-		acpigen_write_dword(IO_APIC_INTERRUPTS + irq_index);
-		acpigen_pop_len();
-	}
-	acpigen_pop_len(); /* Package - APIC Routing */
-
-	/* Else */
-	acpigen_write_else();
-
-	/* Return (Package{...}) */
-	acpigen_emit_byte(RETURN_OP);
-
-	acpigen_write_package(4); /* Package - PIC Routing */
-	for (unsigned int i = 0; i < 4; ++i) {
-		irq_index = pci_calculate_irq(pci_routing, i);
-
-		link_template[8] = 'A' + (irq_index % 8);
-
-		acpigen_write_package(4);
-		/* There is only one device attached to the bridge */
-		acpigen_write_dword(0x0000FFFF);
-		acpigen_write_byte(i);
-		acpigen_emit_namestring(link_template);
-		acpigen_write_dword(0);
-		acpigen_pop_len();
-	}
-	acpigen_pop_len(); /* Package - PIC Routing */
-
-	acpigen_pop_len(); /* End Else */
-
-	acpigen_pop_len(); /* Method */
-}
-
 /*
  * This function writes a PCI device with _ADR, _STA, and _PRT objects:
  * Example:
@@ -230,7 +168,7 @@ static void acpi_device_write_gpp_pci_dev(const struct device *dev)
 	acpigen_write_ADR_pci_device(dev);
 	acpigen_write_STA(acpi_device_status(dev));
 
-	acpigen_write_PRT(dev);
+	acpigen_write_pci_GNB_PRT(dev);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

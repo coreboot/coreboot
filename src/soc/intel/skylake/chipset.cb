@@ -59,9 +59,9 @@ chip soc/intel/skylake
 		device pci 1e.4 alias emmc         off end # EMMC
 		device pci 1e.5 alias sdio         off end # SDIO
 		device pci 1e.6 alias sdxc         off end # SDXC
-		device pci 1f.0 alias lpc_espi     off end # LPC Interface
-		device pci 1f.1 alias p2sb         off end # P2SB
-		device pci 1f.2 alias pmc          off end # Power Management Controller
+		device pci 1f.0 alias lpc_espi     on  end # LPC Interface
+		device pci 1f.1 alias p2sb         on  end # P2SB
+		device pci 1f.2 alias pmc          on  end # Power Management Controller
 		device pci 1f.3 alias hda          off end # Intel HDA
 		device pci 1f.4 alias smbus        off end # SMBus
 		device pci 1f.5 alias fast_spi     off end # PCH SPI

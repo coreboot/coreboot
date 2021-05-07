@@ -5,6 +5,7 @@
 
 #include <types.h>
 #include <soc/amd_pci_int_defs.h>
+#include <device/device.h>
 
 /* FCH index/data registers */
 #define PCI_INTR_INDEX		0xc00
@@ -59,5 +60,8 @@ const struct pci_routing_info *get_pci_routing_table(size_t *entries);
 const struct pci_routing_info *get_pci_routing_info(unsigned int devfn);
 
 unsigned int pci_calculate_irq(const struct pci_routing_info *routing_info, unsigned int pin);
+
+void acpigen_write_pci_GNB_PRT(const struct device *dev);
+void acpigen_write_pci_FCH_PRT(const struct device *dev);
 
 #endif /* AMD_BLOCK_PCI_UTIL_H */

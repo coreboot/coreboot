@@ -134,11 +134,6 @@ chip soc/intel/alderlake
 	register "s0ix_enable" = "1"
 	register "dptf_enable" = "1"
 
-	register "power_limits_config" = "{
-		.tdp_pl1_override = 45,
-		.tdp_pl2_override = 56,
-	}"
-
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,

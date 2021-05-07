@@ -17,13 +17,22 @@
 #include <soc/usb.h>
 #include <stdint.h>
 
+/* Types of different SKUs */
+enum soc_intel_alderlake_power_limits {
+	ADL_P_POWER_LIMITS_282_CORE,
+	ADL_P_POWER_LIMITS_482_CORE,
+	ADL_P_POWER_LIMITS_682_CORE,
+	ADL_M_POWER_LIMITS_282_CORE,
+	ADL_POWER_LIMITS_COUNT
+};
+
 struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 
 	/* Common struct containing power limits configuration information */
-	struct soc_power_limits_config power_limits_config;
+	struct soc_power_limits_config power_limits_config[ADL_POWER_LIMITS_COUNT];
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */

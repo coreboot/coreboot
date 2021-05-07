@@ -20,11 +20,6 @@ chip soc/intel/alderlake
 	# DPTF enable
 	register "dptf_enable" = "1"
 
-	register "power_limits_config" = "{
-		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 55,
-	}"
-
 	# Enable heci communication
 	register "HeciEnabled" = "1"
 

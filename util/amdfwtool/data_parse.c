@@ -55,18 +55,14 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 
 	if (strcmp(fw_name, "PSPBTLDR_WL_FILE") == 0) {
 		if (cb_config->have_whitelist == 1) {
-			fw_type = AMD_FW_PSP_BOOTLOADER;
+			fw_type = AMD_FW_PSP_BOOTLOADER_AB;
 			subprog = 0;
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
 	} else if (strcmp(fw_name, "PSPBTLDR_FILE") == 0) {
-		if (cb_config->have_whitelist == 0) {
-			fw_type = AMD_FW_PSP_BOOTLOADER;
-			subprog = 0;
-		} else {
-			fw_type = AMD_FW_SKIP;
-		}
+		fw_type = AMD_FW_PSP_BOOTLOADER;
+		subprog = 0;
 	} else if (strcmp(fw_name, "AMD_PUBKEY_FILE") == 0) {
 		fw_type = AMD_FW_PSP_PUBKEY;
 		subprog = 0;
@@ -245,8 +241,12 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_RPMC_NVRAM;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSPBTLDR_AB_FILE") == 0) {
-		fw_type =  AMD_FW_PSP_BOOTLOADER_AB;
-		subprog = 0;
+		if (cb_config->have_whitelist == 0) {
+			fw_type = AMD_FW_PSP_BOOTLOADER_AB;
+			subprog = 0;
+		} else {
+			fw_type = AMD_FW_SKIP;
+		}
 	} else {
 		fw_type = AMD_FW_INVALID;
 		/* TODO: Add more */

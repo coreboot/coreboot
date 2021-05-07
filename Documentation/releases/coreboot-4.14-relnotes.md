@@ -52,4 +52,13 @@ scenarios.
 Significant changes
 -------------------
 
+### AMD SoC cleanup and initial Cezanne APU support
+
+There's initial support for the AMD Cezanne APUs in the tree. This code
+hasn't started as a copy of the previous generation, but was based on a
+slightly modified version of the example/min86 SoC. During the cleanup
+of the existing Picasso SoC code the common parts of the code were
+moved to the common AMD SoC code, so that they could be used by the
+Cezanne code instead of adding another slightly different copy.
+
 ### Add significant changes here

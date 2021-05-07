@@ -20,14 +20,9 @@
 
 #define DPTC_TOTAL_UPDATE_PARAMS	4
 
-struct dptc_param {
-	uint8_t id;
-	uint32_t value;
-} __packed;
-
 struct dptc_input {
 	uint16_t size;
-	struct dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
+	struct alib_dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
 } __packed;
 
 #define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow)			\

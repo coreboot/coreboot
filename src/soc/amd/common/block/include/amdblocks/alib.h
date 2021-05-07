@@ -16,6 +16,11 @@ enum alib_dptc_parameter_ids {
 	ALIB_DPTC_SLOW_PPT_LIMIT_ID = 0x7,
 };
 
+struct alib_dptc_param {
+	uint8_t id;
+	uint32_t value;
+} __packed;
+
 #endif /* !__ACPI__ */
 
 #endif /* AMD_COMMON_ALIB_H */

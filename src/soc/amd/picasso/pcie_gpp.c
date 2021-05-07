@@ -12,30 +12,24 @@
 #include <soc/pci_devs.h>
 #include <stdio.h>
 
-/**
- * Each PCI bridge has its INTx lines routed to one of the 8 GNB IOAPIC PCI
- * groups. Each group has 4 interrupts. The INTx lines can be swizzled before
- * being routed to the IOAPIC. If the IOAPIC redirection entry is masked, the
- * interrupt is reduced modulo 8 onto INT[A-H] and forwarded to the FCH IOAPIC.
- **/
-struct pci_routing {
-	unsigned int devfn;
-	unsigned int group;
-	uint8_t pin[4];
+/* See AMD PPR 55570 - IOAPIC Initialization for the table that AGESA sets up */
+const struct pci_routing_info pci_routing_table[] = {
+	{PCIE_GPP_0_DEVFN, 0, PCI_SWIZZLE_ABCD, 0x10},
+	{PCIE_GPP_1_DEVFN, 1, PCI_SWIZZLE_ABCD, 0x11},
+	{PCIE_GPP_2_DEVFN, 2, PCI_SWIZZLE_ABCD, 0x12},
+	{PCIE_GPP_3_DEVFN, 3, PCI_SWIZZLE_ABCD, 0x13},
+	{PCIE_GPP_4_DEVFN, 4, PCI_SWIZZLE_ABCD, 0x10},
+	{PCIE_GPP_5_DEVFN, 5, PCI_SWIZZLE_ABCD, 0x11},
+	{PCIE_GPP_6_DEVFN, 6, PCI_SWIZZLE_ABCD, 0x12},
+	{PCIE_GPP_A_DEVFN, 7, PCI_SWIZZLE_ABCD, 0x13},
+	{PCIE_GPP_B_DEVFN, 7, PCI_SWIZZLE_CDAB, 0x0C},
 };
 
-/* See AMD PPR 55570 - IOAPIC Initialization for the table that AGESA sets up */
-static const struct pci_routing pci_routing_table[] = {
-	{PCIE_GPP_0_DEVFN, 0, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_1_DEVFN, 1, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_2_DEVFN, 2, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_3_DEVFN, 3, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_4_DEVFN, 4, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_5_DEVFN, 5, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_6_DEVFN, 6, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_A_DEVFN, 7, {PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D} },
-	{PCIE_GPP_B_DEVFN, 7, {PIRQ_C, PIRQ_D, PIRQ_A, PIRQ_B} },
-};
+const struct pci_routing_info *get_pci_routing_table(size_t *entries)
+{
+	*entries = ARRAY_SIZE(pci_routing_table);
+	return pci_routing_table;
+}
 
 /*
  * This data structure is populated from the raw data above. It is used
@@ -44,28 +38,9 @@ static const struct pci_routing pci_routing_table[] = {
  */
 static struct pirq_struct pirq_data[ARRAY_SIZE(pci_routing_table)];
 
-static const struct pci_routing *get_pci_routing(unsigned int devfn)
-{
-	for (size_t i = 0; i < ARRAY_SIZE(pci_routing_table); ++i) {
-		if (devfn == pci_routing_table[i].devfn)
-			return &pci_routing_table[i];
-	}
-
-	return NULL;
-}
-
-static unsigned int calculate_irq(const struct pci_routing *pci_routing, unsigned int i)
-{
-	unsigned int irq_index;
-	irq_index = pci_routing->group * 4;
-	irq_index += pci_routing->pin[i];
-
-	return irq_index;
-}
-
 void populate_pirq_data(void)
 {
-	const struct pci_routing *pci_routing;
+	const struct pci_routing_info *pci_routing;
 	struct pirq_struct *pirq;
 	unsigned int irq_index;
 
@@ -75,7 +50,7 @@ void populate_pirq_data(void)
 
 		pirq->devfn = pci_routing->devfn;
 		for (size_t j = 0; j < 4; ++j) {
-			irq_index = calculate_irq(pci_routing, j);
+			irq_index = pci_calculate_irq(pci_routing, j);
 
 			pirq->PIN[j] = irq_index % 8;
 		}
@@ -119,7 +94,7 @@ static void acpigen_write_PRT(const struct device *dev)
 	char link_template[] = "\\_SB.INTX";
 	unsigned int irq_index;
 
-	const struct pci_routing *pci_routing = get_pci_routing(dev->path.pci.devfn);
+	const struct pci_routing_info *pci_routing = get_pci_routing_info(dev->path.pci.devfn);
 	if (!pci_routing) {
 		printk(BIOS_ERR, "PCI routing table not found for %s\n", dev_path(dev));
 		return;
@@ -136,7 +111,7 @@ static void acpigen_write_PRT(const struct device *dev)
 
 	acpigen_write_package(4); /* Package - APIC Routing */
 	for (unsigned int i = 0; i < 4; ++i) {
-		irq_index = calculate_irq(pci_routing, i);
+		irq_index = pci_calculate_irq(pci_routing, i);
 
 		acpigen_write_package(4);
 		/* There is only one device attached to the bridge */
@@ -157,7 +132,7 @@ static void acpigen_write_PRT(const struct device *dev)
 
 	acpigen_write_package(4); /* Package - PIC Routing */
 	for (unsigned int i = 0; i < 4; ++i) {
-		irq_index = calculate_irq(pci_routing, i);
+		irq_index = pci_calculate_irq(pci_routing, i);
 
 		link_template[8] = 'A' + (irq_index % 8);
 

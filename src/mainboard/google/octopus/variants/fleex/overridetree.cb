@@ -148,6 +148,7 @@ chip soc/intel/apollolake
 				register "bias_lvls[2]" = "4"
 				register "bias_lvls[3]" = "1"
 				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				register "hs_bias_sense_disable" = "true"
 				device i2c 48 on end
  			end
 		end	# - I2C 5

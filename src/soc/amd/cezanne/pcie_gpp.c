@@ -65,8 +65,7 @@ static void acpi_device_write_gpp_pci_dev(const struct device *dev)
 	acpigen_write_ADR_pci_device(dev);
 	acpigen_write_STA(acpi_device_status(dev));
 
-	/* b/187083211 - Enable GNB IO-APIC */
-	acpigen_write_pci_FCH_PRT(dev);
+	acpigen_write_pci_GNB_PRT(dev);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

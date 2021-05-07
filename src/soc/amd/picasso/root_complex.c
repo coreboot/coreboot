@@ -18,13 +18,6 @@
 #include <soc/iomap.h>
 #include "chip.h"
 
-enum {
-	THERMAL_CONTROL_LIMIT_ID = 0x3,
-	SUSTAINED_POWER_LIMIT_PARAM_ID = 0x5,
-	FAST_PPT_LIMIT_PARAM_ID = 0x6,
-	SLOW_PPT_LIMIT_PARAM_ID = 0x7,
-};
-
 #define DPTC_TOTAL_UPDATE_PARAMS	4
 
 struct dptc_param {
@@ -38,27 +31,27 @@ struct dptc_input {
 } __packed;
 
 #define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow)			\
-		{								\
-			.size = sizeof(struct dptc_input),			\
-			.params = {						\
-				{						\
-					.id = THERMAL_CONTROL_LIMIT_ID,		\
-					.value = _thermctllmit,			\
-				},						\
-				{						\
-					.id = SUSTAINED_POWER_LIMIT_PARAM_ID,	\
-					.value = _sustained,			\
-				},						\
-				{						\
-					.id = FAST_PPT_LIMIT_PARAM_ID,		\
-					.value = _fast,				\
-				},						\
-				{						\
-					.id = SLOW_PPT_LIMIT_PARAM_ID,		\
-					.value = _slow,				\
-				},						\
+	{									\
+		.size = sizeof(struct dptc_input),				\
+		.params = {							\
+			{							\
+				.id = ALIB_DPTC_THERMAL_CONTROL_LIMIT_ID,	\
+				.value = _thermctllmit,				\
 			},							\
-		}
+			{							\
+				.id = ALIB_DPTC_SUSTAINED_POWER_LIMIT_ID,	\
+				.value = _sustained,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_FAST_PPT_LIMIT_ID,		\
+				.value = _fast,					\
+			},							\
+			{							\
+				.id = ALIB_DPTC_SLOW_PPT_LIMIT_ID,		\
+				.value = _slow,					\
+			},							\
+		},								\
+	}
 /*
  *
  *                     +--------------------------------+

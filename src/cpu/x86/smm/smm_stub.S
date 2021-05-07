@@ -97,7 +97,7 @@ smm_trampoline32:
 	movw	%ax, %gs
 
 	/* The CPU number is calculated by reading the initial APIC id. Since
-	 * the OS can maniuplate the APIC id use the non-changing cpuid result
+	 * the OS can manipulate the APIC id use the non-changing cpuid result
 	 * for APIC id (eax). A table is used to handle a discontiguous
 	 * APIC id space.  */
 apic_id:

@@ -177,18 +177,6 @@ static void root_complex_init(struct device *dev)
 	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, GNB_IOAPIC_ID);
 }
 
-static void dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size)
-{
-	/* Name (buf_name, Buffer(size) {...} */
-	acpigen_write_name(buf_name);
-	acpigen_write_byte_buffer(buffer, size);
-
-	/* \_SB.ALIB(0xc, buf_name) */
-	acpigen_emit_namestring("\\_SB.ALIB");
-	acpigen_write_integer(ALIB_FUNCTION_DYNAMIC_POWER_THERMAL_CONFIG);
-	acpigen_emit_namestring(buf_name);
-}
-
 static void acipgen_dptci(void)
 {
 	const struct soc_amd_picasso_config *config = config_of_soc();
@@ -214,13 +202,14 @@ static void acipgen_dptci(void)
 	/* If (LEqual ("\_SB.PCI0.LPCB.EC0.TBMD", 1)) */
 	acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.LPCB.EC0.TBMD", 1);
 
-	dptc_call_alib("TABB", (uint8_t *)(void *)&tablet_mode_input,
+	acpigen_dptc_call_alib("TABB", (uint8_t *)(void *)&tablet_mode_input,
 			sizeof(tablet_mode_input));
 
 	/* Else */
 	acpigen_write_else();
 
-	dptc_call_alib("DEFB", (uint8_t *)(void *)&default_input, sizeof(default_input));
+	acpigen_dptc_call_alib("DEFB", (uint8_t *)(void *)&default_input,
+			sizeof(default_input));
 
 	acpigen_pop_len(); /* Else */
 

@@ -21,6 +21,8 @@ struct alib_dptc_param {
 	uint32_t value;
 } __packed;
 
+void acpigen_dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size);
+
 #endif /* !__ACPI__ */
 
 #endif /* AMD_COMMON_ALIB_H */

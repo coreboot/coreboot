@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/alib.h>
+
 External(\_SB.ALIB, MethodObj)
 
 /* System Bus */
@@ -142,7 +144,7 @@ Method(_INI, 0, Serialized) {
 	F1SZ = 3
 	F1DA= \PWRS
 
-	\_SB.ALIB(1, F1BF)
+	\_SB.ALIB(ALIB_FUNCTION_REPORT_AC_DC_STATE, F1BF)
 
 } /* End Method(_SB._INI) */
 

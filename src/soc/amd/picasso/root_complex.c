@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/alib.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/ioapic.h>
 #include <arch/ioapic.h>
@@ -18,7 +19,6 @@
 #include "chip.h"
 
 enum {
-	ALIB_DPTCI_FUNCTION_ID = 0xc,
 	THERMAL_CONTROL_LIMIT_ID = 0x3,
 	SUSTAINED_POWER_LIMIT_PARAM_ID = 0x5,
 	FAST_PPT_LIMIT_PARAM_ID = 0x6,
@@ -196,7 +196,7 @@ static void dptc_call_alib(const char *buf_name, uint8_t *buffer, size_t size)
 
 	/* \_SB.ALIB(0xc, buf_name) */
 	acpigen_emit_namestring("\\_SB.ALIB");
-	acpigen_write_integer(ALIB_DPTCI_FUNCTION_ID);
+	acpigen_write_integer(ALIB_FUNCTION_DYNAMIC_POWER_THERMAL_CONFIG);
 	acpigen_emit_namestring(buf_name);
 }
 

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/alib.h>
+
 /*
  * Wrapper method that calls ALIB function 1 to report current AC/DC state.
  */
@@ -23,7 +25,7 @@ Method (WAL1)
 	F1DA = \PWRS ^ 1
 
 	Printf ("ALIB call: func 1 params %o", Local0)
-	\_SB.ALIB (1, Local0)
+	\_SB.ALIB (ALIB_FUNCTION_REPORT_AC_DC_STATE, Local0)
 }
 
 Method (PNOT)

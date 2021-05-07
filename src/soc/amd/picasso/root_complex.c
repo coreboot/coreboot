@@ -23,8 +23,9 @@ enum {
 	SUSTAINED_POWER_LIMIT_PARAM_ID = 0x5,
 	FAST_PPT_LIMIT_PARAM_ID = 0x6,
 	SLOW_PPT_LIMIT_PARAM_ID = 0x7,
-	DPTC_TOTAL_UPDATE_PARAMS = 4,
 };
+
+#define DPTC_TOTAL_UPDATE_PARAMS	4
 
 struct dptc_param {
 	uint8_t id;

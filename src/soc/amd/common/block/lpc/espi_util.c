@@ -883,6 +883,17 @@ static void espi_set_initial_config(const struct espi_config *mb_cfg)
 {
 	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
 
+	switch (mb_cfg->alert_pin) {
+	case ESPI_ALERT_PIN_IN_BAND:
+		break;
+	case ESPI_ALERT_PIN_PUSH_PULL:
+	case ESPI_ALERT_PIN_OPEN_DRAIN:
+		espi_initial_mode |= ESPI_ALERT_MODE;
+		break;
+	default:
+		die("Unknown espi alert config: %u!\n", mb_cfg->alert_pin);
+	}
+
 	espi_write32(ESPI_SLAVE0_CONFIG, espi_initial_mode);
 }
 

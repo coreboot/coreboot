@@ -1,4 +1,5 @@
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PCI) += amd_pci_util.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PCI) += pci_routing_info.c
 
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PCI_MMCONF),y)
 

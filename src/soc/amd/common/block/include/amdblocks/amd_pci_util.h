@@ -51,7 +51,6 @@ struct pci_routing_info {
 	uint8_t irq;
 } __packed;
 
-/* Implemented by the SoC */
 void populate_pirq_data(void);
 
 /* Implemented by the SoC */

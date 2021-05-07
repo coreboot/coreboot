@@ -31,35 +31,6 @@ const struct pci_routing_info *get_pci_routing_table(size_t *entries)
 	return pci_routing_table;
 }
 
-/*
- * This data structure is populated from the raw data above. It is used
- * by amd/common/block/pci/amd_pci_util to write the PCI_INT_LINE register
- * to each PCI device.
- */
-static struct pirq_struct pirq_data[ARRAY_SIZE(pci_routing_table)];
-
-void populate_pirq_data(void)
-{
-	const struct pci_routing_info *pci_routing;
-	struct pirq_struct *pirq;
-	unsigned int irq_index;
-
-	for (size_t i = 0; i < ARRAY_SIZE(pirq_data); ++i) {
-		pirq = &pirq_data[i];
-		pci_routing = &pci_routing_table[i];
-
-		pirq->devfn = pci_routing->devfn;
-		for (size_t j = 0; j < 4; ++j) {
-			irq_index = pci_calculate_irq(pci_routing, j);
-
-			pirq->PIN[j] = irq_index % 8;
-		}
-	}
-
-	pirq_data_ptr = pirq_data;
-	pirq_data_size = ARRAY_SIZE(pirq_data);
-}
-
 static const char *pcie_gpp_acpi_name(const struct device *dev)
 {
 	if (dev->path.type != DEVICE_PATH_PCI)

@@ -66,12 +66,6 @@ void dev_finalize_chips(void)
 
 DECLARE_SPIN_LOCK(dev_lock)
 
-#if CONFIG(GFXUMA)
-/* IGD UMA memory */
-uint64_t uma_memory_base = 0;
-uint64_t uma_memory_size = 0;
-#endif
-
 /**
  * Allocate a new device structure.
  *

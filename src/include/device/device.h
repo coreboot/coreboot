@@ -168,12 +168,6 @@ extern struct bus	*free_links;
 
 extern const char mainboard_name[];
 
-#if CONFIG(GFXUMA)
-/* IGD UMA memory */
-extern uint64_t uma_memory_base;
-extern uint64_t uma_memory_size;
-#endif
-
 /* Generic device interface functions */
 struct device *alloc_dev(struct bus *parent, struct device_path *path);
 void dev_initialize_chips(void);

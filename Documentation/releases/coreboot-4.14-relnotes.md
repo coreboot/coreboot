@@ -1,14 +1,73 @@
-Upcoming release - coreboot 4.14
-================================
+coreboot 4.14
+=============
 
-The 4.14 release is planned for May 2021.
+coreboot 4.14 was released on May 10th, 2021.
 
-Update this document with changes that should be in the release notes.
+Since 4.13 there have been 3660 new commits by 215 developers.
+Of these, about 50 contributed to coreboot for the first time.
+Welcome to the project!
 
-* Please use Markdown.
-* See the past few release notes for the general format.
-* The chip and board additions and removals will be updated right
-  before the release, so those do not need to be added.
+These changes have been all over the place, so that there's no
+particular area to focus on when describing this release: We had
+improvements to mainboards, to chipsets (including much welcomed
+work to open source implementations of what has been blobs before),
+to the overall architecture.
+
+Thank you to all developers who made coreboot the great open source
+firmware project that it is, and made our code better than ever.
+
+New mainboards
+--------------
+
+* AMD Bilby
+* AMD Majolica
+* GIGABYTE GA-D510UD
+* Google Blipper
+* Google Brya
+* Google Cherry
+* Google Collis
+* Google Copano
+* Google Cozmo
+* Google Cret
+* Google Drobit
+* Google Galtic
+* Google Gumboz
+* Google Guybrush
+* Google Herobrine
+* Google Homestar
+* Google Katsu
+* Google Kracko
+* Google Lalala
+* Google Makomo
+* Google Mancomb
+* Google Marzipan
+* Google Pirika
+* Google Sasuke
+* Google Sasukette
+* Google Spherion
+* Google Storo
+* Google Volet
+* HP 280 G2
+* Intel Alderlake-M RVP
+* Intel Alderlake-M RVP with Chrome EC
+* Intel Elkhartlake LPDDR4x CRB
+* Intel shadowmountain
+* Kontron COMe-mAL10
+* MSI H81M-P33 (MS-7817 v1.2)
+* Pine64 ROCKPro64
+* Purism Librem 14
+* System76 darp5
+* System76 galp3-c
+* System76 gaze15
+* System76 oryp5
+* System76 oryp6
+
+Removed mainboards
+------------------
+
+* Google Boldar
+* Intel Cannonlake U LPDDR4 RVP
+* Intel Cannonlake Y LPDDR4 RVP
 
 Deprecations and incompatible changes
 -------------------------------------
@@ -95,7 +154,6 @@ this board is in DVT (Design Validation Test) exit equivalent status.
 Features supported, (performance/stability) test scopes, known issues,
 features gaps are described in [4].
 
-### Add significant changes here
 
 [1] https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html
 [2] https://www.intel.com/content/www/us/en/products/docs/processors/xeon/3rd-gen-xeon-scalable-processors-brief.html

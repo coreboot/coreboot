@@ -1,5 +1,61 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config IDS_OPTIONS_HOOKED_UP
+	bool
+	help
+	  to Kconfig options.
+	  Historically, IDS configuration was defined in a mainboard-specific
+	  `OptionsIds.h` header. Select this on platforms where IDS config is
+	  hooked up to Kconfig options instead.
+
+if IDS_OPTIONS_HOOKED_UP
+
+config IDS_ENABLED
+	bool "Enable AGESA IDS (Integrated Debug Services) support"
+	default y
+	help
+	  This is the master switch for the IDS sub-system. Use this option to
+	  enable or remove the entire IDS feature set. This switch must be TRUE
+	  for any of the other options to function.
+
+comment "Warning: IDS options may not work. Enable at your own risk!"
+	depends on IDS_ENABLED
+
+config IDS_CONTROL_ENABLED
+	bool "Enable IDS User Interface controls"
+	depends on IDS_ENABLED
+	help
+	  This is the main switch for the IDS configuration controls. This
+	  switch must be TRUE for any of the configuration controls to function.
+
+	  This seems to allow AGESA to retrieve settings from CMOS.
+
+config IDS_PERF_ANALYSIS
+	bool "Enable IDS performance analysis"
+	depends on IDS_ENABLED
+	help
+	  This is the main switch for the IDS performance analysis controls,
+	  macros and support code needed to enable time data gathering. This
+	  switch must be TRUE for any of the performance analysis features to
+	  function.
+
+config IDS_TRACING_ENABLED
+	bool "Enable IDS console"
+	depends on IDS_ENABLED
+	help
+	  This is the main switch for the IDS console controls, macros and
+	  support code needed to enable tracing of algorithms. This switch
+	  must be TRUE for any of the tracing features to function.
+
+config IDS_TRACING_CONSOLE_SERIAL
+	bool "Use serial port as IDS console"
+	depends on IDS_TRACING_ENABLED
+	default DRIVERS_UART_8250IO && CONSOLE_SERIAL
+	help
+	  Use an I/O-mapped serial port to output IDS messages.
+
+endif # IDS_OPTIONS_HOOKED_UP
+
 choice
 	prompt "DDR3 memory profile"
 	default CPU_AMD_AGESA_OPENSOURCE_MEM_JEDEC

@@ -24,7 +24,9 @@ COREBOOT_EXPORTS += top src srck obj objutil objk
 LANG:=C
 LC_ALL:=C
 TZ:=UTC0
+ifneq ($(NOCOMPILE),1)
 SOURCE_DATE_EPOCH := $(shell $(top)/util/genbuild_h/genbuild_h.sh . | sed -n 's/^.define COREBOOT_BUILD_EPOCH\>.*"\(.*\)".*/\1/p')
+endif
 # don't use COREBOOT_EXPORTS to ensure build steps outside the coreboot build system
 # are reproducible
 export LANG LC_ALL TZ SOURCE_DATE_EPOCH

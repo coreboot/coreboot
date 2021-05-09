@@ -78,34 +78,6 @@ IdsAgesaTestPoint (
 }
 
 /**
- *  IDS Backend Function for ASSERT
- *
- * Halt execution with stop code display.  Stop Code is displayed on port 80, with rotation so that
- * it is visible on 8, 16, or 32 bit display.  The stop code is alternated with 0xDEAD on the display,
- * to help distinguish the stop code from a post code loop.
- * Additional features may be available if using simulation.
- *
- * @param[in]     FileCode    File code(define in FILECODE.h) mix with assert Line num.
- *
- * @retval         TRUE     No error
- **/
-BOOLEAN
-IdsAssert (
-  IN      UINT32 FileCode
-  )
-{
-  UINT32 file;
-  UINT32 line;
-
-  file = (FileCode >> 16);
-  line = (FileCode & 0xFFFF);
-  IDS_HDT_CONSOLE (MAIN_FLOW, "ASSERT on File[%x] Line[%x]\n", (UINTN) file, (UINTN) line);
-  IDS_HDT_CONSOLE_FLUSH_BUFFER (NULL);
-  IDS_HDT_CONSOLE_ASSERT (FileCode);
-  return TRUE;
-}
-
-/**
  *  IDS Backend Function for Memory timeout control
  *
  *  This function is used to override Memory timeout control.

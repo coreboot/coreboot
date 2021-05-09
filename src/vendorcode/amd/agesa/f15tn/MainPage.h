@@ -90,7 +90,6 @@
  * @code
  * #define IDSOPT_IDS_ENABLED TRUE
  * #define IDSOPT_ERROR_TRAP_ENABLED TRUE
- * #define IDSOPT_ASSERT_ENABLED TRUE
  * @endcode
  * <li> Edit and modify the option selections in those two files to meet the needs of the specific platform.
  * <li> Set the environment variable AGESA_ROOT to the root folder of the AGESA code.

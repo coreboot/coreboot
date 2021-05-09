@@ -223,10 +223,6 @@ typedef enum {                        //vv- for debug reference only
   #define IDSOPT_HEAP_CHECKING           FALSE
 #endif
 
-#ifndef IDSOPT_ASSERT_ENABLED
-  #define IDSOPT_ASSERT_ENABLED         FALSE
-#endif
-
 #ifndef IDSOPT_ERROR_TRAP_ENABLED
   #define IDSOPT_ERROR_TRAP_ENABLED   FALSE
 #endif
@@ -264,7 +260,6 @@ typedef enum {                        //vv- for debug reference only
   #undef  IDSOPT_TRACING_ENABLED
   #undef  IDSOPT_PERF_ANALYSIS
   #undef  IDSOPT_HEAP_CHECKING
-  #undef  IDSOPT_ASSERT_ENABLED
   #undef  IDSOPT_ERROR_TRAP_ENABLED
   #undef  IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
   #undef  IDSOPT_DEBUG_CODE_ENABLED
@@ -277,7 +272,6 @@ typedef enum {                        //vv- for debug reference only
   #define IDSOPT_TRACING_ENABLED    FALSE
   #define IDSOPT_PERF_ANALYSIS      FALSE
   #define IDSOPT_HEAP_CHECKING      FALSE
-  #define IDSOPT_ASSERT_ENABLED     FALSE
   #define IDSOPT_ERROR_TRAP_ENABLED FALSE
   #define IDSOPT_CAR_CORRUPTION_CHECK_ENABLED FALSE
   #define IDSOPT_DEBUG_CODE_ENABLED FALSE
@@ -343,34 +337,6 @@ typedef enum {                        //vv- for debug reference only
   #define STOP_HERE IdsErrorStop (STOP_CODE);
 #else
   #define STOP_HERE  STOP_HERE_Needs_To_Be_Removed //"WARNING: Debug code needs to be removed for production builds."
-#endif
-
-/**
- * @def ASSERT
- *  Test an assertion that the given statement is True.
- *
- *  The statement is evaluated to a boolean value. If the statement is True,
- *  then no action is taken (no error). If the statement is False, a error stop
- *  is generated to halt the program. Used for testing for fatal errors that
- *  must be resolved before production. This is used to do parameter checks,
- *  bounds checking, range checks and 'sanity' checks.
- *
- * @param[in]   conditional    Assert that evaluating this conditional results in TRUE.
- *
- **/
-#ifndef ASSERT
-  #if IDSOPT_ASSERT_ENABLED == TRUE
-    #ifdef STOP_CODE
-      #undef STOP_CODE
-    #endif
-    #define STOP_CODE (((UINT32)FILECODE)*0x10000ul + \
-                        ((__LINE__) % 10) + (((__LINE__ / 10) % 10)*0x10) + \
-                        (((__LINE__ / 100) % 10)*0x100) + (((__LINE__ / 1000) % 10)*0x1000))
-
-    #define ASSERT(conditional) ((conditional) ? 0 : IdsAssert (STOP_CODE));
-  #else
-    #define ASSERT(conditional)
-  #endif
 #endif
 
 #if IDSOPT_CAR_CORRUPTION_CHECK_ENABLED == TRUE
@@ -1248,23 +1214,6 @@ VOID
 IdsAgesaTestPoint (
   IN      AGESA_TP TestPoint,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
-  );
-
-/**
- *  IDS Backend Function for ASSERT
- *
- * Halt execution with stop code display.  Stop Code is displayed on port 80, with rotation so that
- * it is visible on 8, 16, or 32 bit display.  The stop code is alternated with 0xDEAD on the display,
- * to help distinguish the stop code from a post code loop.
- * Additional features may be available if using simulation.
- *
- * @param[in]     FileCode    File code(define in FILECODE.h) mix with assert Line num.
- *
- * @retval         TRUE     No error
-**/
-BOOLEAN
-IdsAssert (
-  IN      UINT32 FileCode
   );
 
 /**

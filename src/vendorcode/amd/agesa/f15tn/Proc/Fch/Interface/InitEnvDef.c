@@ -139,7 +139,7 @@ FchInitEnvCreatePrivateData (
 
   FchParams = (FCH_DATA_BLOCK *) AllocHeapParams.BufferPtr;
   ASSERT (FchParams != NULL);
-  IDS_HDT_CONSOLE (FCH_TRACE, "    FCH Data Block Allocation: [0x%x], Ptr = 0x%08x\n", AgesaStatus, FchParams);
+  IDS_HDT_CONSOLE (FCH_TRACE, "    FCH Data Block Allocation: [0x%x], Ptr = %p\n", AgesaStatus, FchParams);
 
   // Load private data block with default
   *FchParams = InitEnvCfgDefault;

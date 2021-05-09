@@ -147,10 +147,8 @@ cpuF15AddingMmioMap (
     MmioRange[MmioPair].RangeNum = MmioPair;
     MmioRange[MmioPair].Modified = FALSE;
     IDS_HDT_CONSOLE (MAIN_FLOW, " %02d ", MmioPair);
-    IDS_HDT_CONSOLE (MAIN_FLOW, "%08x%08x    %08x%08x", (MmioRange[MmioPair].Base >> 32) & 0xFFFFFFFF,
-                                                         MmioRange[MmioPair].Base & 0xFFFFFFFF,
-                                                        (MmioRange[MmioPair].Limit >> 32) & 0xFFFFFFFF,
-                                                         MmioRange[MmioPair].Limit & 0xFFFFFFFF);
+    IDS_HDT_CONSOLE (MAIN_FLOW, "%016llx    %016llx", MmioRange[MmioPair].Base,
+                                                      MmioRange[MmioPair].Limit);
     IDS_HDT_CONSOLE (MAIN_FLOW, "    %s  %s  %s  %s", MmioRange[MmioPair].Attribute.MmioPostedRange ? "Y" : "N",
                                                       MmioRange[MmioPair].Attribute.MmioReadableRange ? "Y" : "N",
                                                       MmioRange[MmioPair].Attribute.MmioWritableRange ? "Y" : "N",
@@ -164,10 +162,8 @@ cpuF15AddingMmioMap (
   NewMmioRange.Base = AmdAddMmioParams.BaseAddress;
   NewMmioRange.Limit = AmdAddMmioParams.BaseAddress + AmdAddMmioParams.Length + 0x10000;
   NewMmioRange.Attribute = AmdAddMmioParams.Attributes;
-  IDS_HDT_CONSOLE (MAIN_FLOW, "req %08x%08x    %08x%08x\n", (NewMmioRange.Base >> 32) & 0xFFFFFFFF,
-                                                         NewMmioRange.Base & 0xFFFFFFFF,
-                                                        (NewMmioRange.Limit >> 32) & 0xFFFFFFFF,
-                                                         NewMmioRange.Limit & 0xFFFFFFFF);
+  IDS_HDT_CONSOLE (MAIN_FLOW, "req %016llx    %016llx\n", NewMmioRange.Base,
+                                                          NewMmioRange.Limit);
   for (ConfMapRange = 0; ConfMapRange < CONF_MAP_NUM; ConfMapRange++) {
     PciAddress.Address.Register = (CONF_MAP_RANGE_0 + ConfMapRange * 4);
     LibAmdPciRead (AccessWidth32, PciAddress, &ConfMapRegister, &(AmdAddMmioParams.StdHeader));
@@ -298,10 +294,8 @@ cpuF15AddingMmioMap (
           PciAddress.Address.Function = FUNC_1;
           for (MmioPair = 0; MmioPair < MMIO_REG_PAIR_NUM; MmioPair++) {
             IDS_HDT_CONSOLE (MAIN_FLOW, " %02d ", MmioPair);
-            IDS_HDT_CONSOLE (MAIN_FLOW, "%08x%08x    %08x%08x", (MmioRange[MmioPair].Base >> 32) & 0xFFFFFFFF,
-                                                                 MmioRange[MmioPair].Base & 0xFFFFFFFF,
-                                                                (MmioRange[MmioPair].Limit >> 32) & 0xFFFFFFFF,
-                                                                 MmioRange[MmioPair].Limit & 0xFFFFFFFF);
+            IDS_HDT_CONSOLE (MAIN_FLOW, "%016llx    %016llx", MmioRange[MmioPair].Base,
+                                                              MmioRange[MmioPair].Limit);
             IDS_HDT_CONSOLE (MAIN_FLOW, "    %s  %s  %s  %s", MmioRange[MmioPair].Attribute.MmioPostedRange ? "Y" : "N",
                                                               MmioRange[MmioPair].Attribute.MmioReadableRange ? "Y" : "N",
                                                               MmioRange[MmioPair].Attribute.MmioWritableRange ? "Y" : "N",

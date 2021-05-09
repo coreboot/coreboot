@@ -155,7 +155,7 @@ AmdInitReset (
 
   IDS_HDT_CONSOLE (MAIN_FLOW, "\nAmdInitReset: Start\n\n");
 
-  IDS_HDT_CONSOLE (MAIN_FLOW, "\n*** %s ***\n\n", &UserOptions.VersionString);
+  IDS_HDT_CONSOLE (MAIN_FLOW, "\n*** %s ***\n\n", (char *)&UserOptions.VersionString);
 
   AGESA_TESTPOINT (TpIfAmdInitResetEntry, &ResetParams->StdHeader);
   ASSERT (ResetParams != NULL);

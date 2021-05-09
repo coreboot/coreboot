@@ -473,7 +473,7 @@ GnbLibDebugDumpBuffer (
       Index += 4;
       break;
     case 4:
-      IDS_HDT_CONSOLE (GNB_TRACE, "%08x%08", *(UINT32 *) ((UINT8 *) Buffer + Index), *(UINT32 *) ((UINT8 *) Buffer + Index + 4));
+      IDS_HDT_CONSOLE (GNB_TRACE, "%016llx", *(UINT64 *) ((UINT8 *) Buffer + Index));
       Index += 8;
       break;
     default:

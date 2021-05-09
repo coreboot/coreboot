@@ -337,7 +337,7 @@ GnbTjOffsetUpdateTN (
   ASSERT (GnbHandle != NULL);
   GetLogicalIdOfSocket (GnbGetSocketId (GnbHandle), &LogicalId, StdHeader);
   if ((LogicalId.Revision & 0x0000000000000100ull ) != 0x0000000000000100ull ) {
-    IDS_HDT_CONSOLE (GNB_TRACE, "CPU Rev = %x, Skip GnbTjOffsetUpdateTN\n", LogicalId.Revision);
+    IDS_HDT_CONSOLE (GNB_TRACE, "CPU Rev = %llx, Skip GnbTjOffsetUpdateTN\n", LogicalId.Revision);
     return;
   }
   GnbRegisterReadTN (D0F0xBC_xE0104040_TYPE, D0F0xBC_xE0104040_ADDRESS, &D0F0xBC_xE0104040, 0, StdHeader);

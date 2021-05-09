@@ -223,7 +223,7 @@ GfxConfigDebugDump (
     );
   IDS_HDT_CONSOLE (GFX_MISC, "  UmaMode - %s\n", (Gfx->UmaInfo.UmaMode == UMA_NONE) ? "No UMA" : "UMA");
   if (Gfx->UmaInfo.UmaMode != UMA_NONE) {
-    IDS_HDT_CONSOLE (GFX_MISC, "  UmaBase - 0x%x\n", Gfx->UmaInfo.UmaBase);
+    IDS_HDT_CONSOLE (GFX_MISC, "  UmaBase - 0x%llx\n", Gfx->UmaInfo.UmaBase);
     IDS_HDT_CONSOLE (GFX_MISC, "  UmaSize - 0x%x\n", Gfx->UmaInfo.UmaSize);
     IDS_HDT_CONSOLE (GFX_MISC, "  UmaAttributes - 0x%x\n", Gfx->UmaInfo.UmaAttributes);
   }

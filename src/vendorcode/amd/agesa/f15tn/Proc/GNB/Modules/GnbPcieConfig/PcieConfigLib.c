@@ -557,7 +557,10 @@ PcieConfigEngineDebugDump (
       EngineList->Type.Port.Address.Address.Device,
       EngineList->Type.Port.Address.Address.Function
       );
-    IDS_HDT_CONSOLE (PCIE_MISC, "          Misc Control  - 0x%02x\n", EngineList->Type.Port.PortData.MiscControls);
+    IDS_HDT_CONSOLE (PCIE_MISC, "          Misc Control, Compliance Mode - %u\n", EngineList->Type.Port.PortData.MiscControls.LinkComplianceMode);
+    IDS_HDT_CONSOLE (PCIE_MISC, "          Misc Control, Safe Mode - %u\n", EngineList->Type.Port.PortData.MiscControls.LinkSafeMode);
+    IDS_HDT_CONSOLE (PCIE_MISC, "          Misc Control, SB Link - %u\n", EngineList->Type.Port.PortData.MiscControls.SbLink);
+    IDS_HDT_CONSOLE (PCIE_MISC, "          Misc Control, CLK PM Support - %u\n", EngineList->Type.Port.PortData.MiscControls.ClkPmSupport);
     IDS_HDT_CONSOLE (PCIE_MISC, "          Native PCI Dev Number  - %d\n", EngineList->Type.Port.NativeDevNumber);
     IDS_HDT_CONSOLE (PCIE_MISC, "          Native PCI Func Number - %d\n", EngineList->Type.Port.NativeFunNumber);
     IDS_HDT_CONSOLE (PCIE_MISC, "          Hotplug - %s\n",
@@ -737,7 +740,7 @@ PcieUserDescriptorConfigDump (
     EngineDescriptor->EngineData.EndLane
   );
   if (EngineDescriptor->EngineData.EngineType == PciePortEngine) {
-    IDS_HDT_CONSOLE (PCIE_MISC, "    PortPresent - %d\n    ChannelType  - %d\n    DeviceNumber - %d\n    FunctionNumber - %d\n    LinkSpeedCapability - %d\n    LinkAspm - %d\n    LinkHotplug - %d\n    ResetId - %d\n    SB link - %d\n    MiscControls - 0x%02x\n" ,
+    IDS_HDT_CONSOLE (PCIE_MISC, "    PortPresent - %d\n    ChannelType  - %d\n    DeviceNumber - %d\n    FunctionNumber - %d\n    LinkSpeedCapability - %d\n    LinkAspm - %d\n    LinkHotplug - %d\n    ResetId - %d\n    Compliance Mode - %d\n    Safe Mode - %d\n    SB link - %d\n    CLK PM Support - %d\n" ,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.PortPresent,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.ChannelType,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.DeviceNumber,
@@ -746,8 +749,10 @@ PcieUserDescriptorConfigDump (
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.LinkAspm,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.LinkHotplug,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.ResetId,
+      ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.MiscControls.LinkComplianceMode,
+      ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.MiscControls.LinkSafeMode,
       ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.MiscControls.SbLink,
-      ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.MiscControls
+      ((PCIe_PORT_DESCRIPTOR *) EngineDescriptor)->Port.MiscControls.ClkPmSupport
     );
   }
   if (EngineDescriptor->EngineData.EngineType == PcieDdiEngine) {
@@ -785,7 +790,7 @@ PcieUserConfigConfigDump (
   for (ComplexIndex = 0; ComplexIndex < NumberOfComplexes; ++ComplexIndex) {
     CurrentComplexDescriptor = PcieInputParserGetComplexDescriptor (ComplexDescriptor, ComplexIndex);
     NumberOfEngines = PcieInputParserGetNumberOfEngines (CurrentComplexDescriptor);
-    IDS_HDT_CONSOLE (PCIE_MISC, "  ComplexDescriptor SocketId - %d\n  NumberOfEngines - %d\n",
+    IDS_HDT_CONSOLE (PCIE_MISC, "  ComplexDescriptor SocketId - %d\n  NumberOfEngines - %ld\n",
         ComplexDescriptor->SocketId,
         NumberOfEngines
       );

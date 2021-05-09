@@ -292,7 +292,7 @@ GnbIommuIvrsTableDump (
           Entry = Entry + 4;
           break;
         default:
-          IDS_HDT_CONSOLE (GNB_TRACE, "  Unsupported entry type [%d]\n");
+          IDS_HDT_CONSOLE (GNB_TRACE, "  Unsupported entry type [%d]\n", *Entry);
           ASSERT (FALSE);
         }
       }

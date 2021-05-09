@@ -578,7 +578,7 @@ GnbEnableIommuMmioV4 (
     BaseAddress |= Value;
 
     if ((BaseAddress & 0xfffffffffffffffe) != 0x0) {
-      IDS_HDT_CONSOLE (GNB_TRACE, "  Enable IOMMU MMIO at address %x for Socket %d Silicon %d\n", BaseAddress, GnbGetSocketId (GnbHandle) , GnbGetSiliconId (GnbHandle));
+      IDS_HDT_CONSOLE (GNB_TRACE, "  Enable IOMMU MMIO at address %llx for Socket %d Silicon %d\n", BaseAddress, GnbGetSocketId (GnbHandle) , GnbGetSiliconId (GnbHandle));
       GnbLibPciRMW (GnbIommuPciAddress.AddressValue | (CapabilityOffset + 0x8), AccessS3SaveWidth32, 0xFFFFFFFF, 0x0, StdHeader);
       GnbLibPciRMW (GnbIommuPciAddress.AddressValue | (CapabilityOffset + 0x4), AccessS3SaveWidth32, 0xFFFFFFFE, 0x1, StdHeader);
     } else {

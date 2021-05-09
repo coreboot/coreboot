@@ -442,7 +442,7 @@ MemSPDDataProcess (
           AGESA_TESTPOINT (TpProcMemAfterAgesaReadSpd, &MemPtr->StdHeader);
           if (AgesaStatus == AGESA_SUCCESS) {
             DimmSPDPtr->DimmPresent = TRUE;
-            IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %08x\n", Socket, Channel, Dimm, SpdParam.Buffer);
+            IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %p\n", Socket, Channel, Dimm, SpdParam.Buffer);
             #if (CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM))
                 AgesaCustomMemoryProfileSPD(SpdParam.Buffer);
             #endif

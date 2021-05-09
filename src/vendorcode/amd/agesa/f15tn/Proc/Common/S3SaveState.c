@@ -268,7 +268,7 @@ S3SaveStateSaveWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%016llx Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Buffer, Count, Width);
     IDS_HDT_CONSOLE (S3_TRACE, "\n");
     );
@@ -333,7 +333,7 @@ S3SaveStateSaveReadWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%016llx Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -409,7 +409,7 @@ S3SaveStateSavePollOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%016llx Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -481,7 +481,7 @@ S3SaveStateSaveInfoOp (
   SaveOffsetPtr->OpCode = OpCode;
   SaveOffsetPtr->Length = InformationLength;
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %s \n", Information);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %p\n", Information);
     );
   LibAmdMemCopy (
     (UINT8 *) SaveOffsetPtr + sizeof (S3_INFO_OP_HEADER),

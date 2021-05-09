@@ -167,7 +167,7 @@ PcieLanesToPowerDownPllInL1 (
           for (Index = 0; Index < 4; Index++) {
             if ((ActiveLanesBitmap  & (0xF << (Index * 4))) != 0) {
               if (LaneGroupExitLatency [Index] > LinkLatencyInfo.MaxL1ExitLatency) {
-                IDS_HDT_CONSOLE (GNB_TRACE, "  Index %d Latency %d\n", Index, LinkLatencyInfo.MaxL1ExitLatency);
+                IDS_HDT_CONSOLE (GNB_TRACE, "  Index %ld Latency %d\n", Index, LinkLatencyInfo.MaxL1ExitLatency);
                 LaneGroupExitLatency [Index] = LinkLatencyInfo.MaxL1ExitLatency;
               }
             }
@@ -177,7 +177,7 @@ PcieLanesToPowerDownPllInL1 (
       }
       LaneBitmapForPllOffInL1 = 0;
       for (Index = 0; Index < 4; Index++) {
-        IDS_HDT_CONSOLE (GNB_TRACE, "  Index %d Final Latency %d\n", Index, LaneGroupExitLatency[Index]);
+        IDS_HDT_CONSOLE (GNB_TRACE, "  Index %ld Final Latency %d\n", Index, LaneGroupExitLatency[Index]);
         if (LaneGroupExitLatency[Index] > PllPowerUpLatency) {
           LaneBitmapForPllOffInL1 |= (0xF << (Index * 4));
         }

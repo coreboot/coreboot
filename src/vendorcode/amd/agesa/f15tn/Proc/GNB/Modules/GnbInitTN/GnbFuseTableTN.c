@@ -888,7 +888,7 @@ GnbFuseTableDebugDumpTN (
   IN       AMD_CONFIG_PARAMS   *StdHeader
   )
 {
-  UINTN   Index;
+  UINT32   Index;
 
   IDS_HDT_CONSOLE (NB_MISC, "<------------ GNB FUSE TABLE------------>\n");
   for (Index = 0; Index < 4; Index++) {
@@ -945,7 +945,7 @@ GnbFuseTableDebugDumpTN (
       );
     IDS_HDT_CONSOLE (
       NB_MISC,
-      "  VCE Flags[ % d] - 0x % 02x\n",
+      "  VCE Flags[%d] - 0x%02x\n",
       Index,
       PpFuseArray->VceFlags[Index]
       );

@@ -35,8 +35,6 @@
 
 //#undef IDSOPT_HOST_SIMNOW
 //#define IDSOPT_HOST_SIMNOW    FALSE
-//#undef IDSOPT_HOST_HDT
-//#define IDSOPT_HOST_HDT       FALSE
 //#define IDS_DEBUG_PORT    0x80
 
 #endif

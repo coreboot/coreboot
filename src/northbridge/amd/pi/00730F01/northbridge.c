@@ -59,13 +59,6 @@ static void get_fx_devs(void)
 	printk(BIOS_DEBUG, "fx_devs = 0x%x\n", fx_devs);
 }
 
-static u32 f1_read_config32(unsigned int reg)
-{
-	if (fx_devs == 0)
-		get_fx_devs();
-	return pci_read_config32(__f1_dev[0], reg);
-}
-
 static void f1_write_config32(unsigned int reg, u32 value)
 {
 	int i;
@@ -695,46 +688,6 @@ struct chip_operations northbridge_amd_pi_00730F01_ops = {
 	.final = fam16_finalize,
 };
 
-static void domain_read_resources(struct device *dev)
-{
-	unsigned int reg;
-
-	/* Find the already assigned resource pairs */
-	get_fx_devs();
-	for (reg = 0x80; reg <= 0xd8; reg+= 0x08) {
-		u32 base, limit;
-		base  = f1_read_config32(reg);
-		limit = f1_read_config32(reg + 0x04);
-		/* Is this register allocated? */
-		if ((base & 3) != 0) {
-			unsigned int nodeid, reg_link;
-			struct device *reg_dev;
-			if (reg < 0xc0) { // mmio
-				nodeid = (limit & 0xf) + (base&0x30);
-			} else { // io
-				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
-			}
-			reg_link = (limit >> 4) & 7;
-			reg_dev = __f0_dev[nodeid];
-			if (reg_dev) {
-				/* Reserve the resource  */
-				struct resource *res;
-				res = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
-				if (res) {
-					res->flags = 1;
-				}
-			}
-		}
-	}
-	/* FIXME: do we need to check extend conf space?
-	   I don't believe that much preset value */
-	pci_domain_read_resources(dev);
-}
-
-static void domain_enable_resources(struct device *dev)
-{
-}
-
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
 	unsigned int hole_startk;
@@ -781,7 +734,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 }
 #endif
 
-static void domain_set_resources(struct device *dev)
+static void domain_read_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
 	u32 pci_tolm;
@@ -790,6 +743,8 @@ static void domain_set_resources(struct device *dev)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 #endif
+
+	pci_domain_read_resources(dev);
 
 	pci_tolm = 0xffffffffUL;
 	for (link = dev->link_list; link; link = link->next) {
@@ -871,12 +826,6 @@ static void domain_set_resources(struct device *dev)
 	}
 
 	add_uma_resource_below_tolm(dev, 7);
-
-	for (link = dev->link_list; link; link = link->next) {
-		if (link->children) {
-			assign_resources(link);
-		}
-	}
 }
 
 static const char *domain_acpi_name(const struct device *dev)
@@ -889,8 +838,7 @@ static const char *domain_acpi_name(const struct device *dev)
 
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
-	.set_resources	  = domain_set_resources,
-	.enable_resources = domain_enable_resources,
+	.set_resources	  = pci_domain_set_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name        = domain_acpi_name,
 };

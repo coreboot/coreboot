@@ -30,7 +30,7 @@
 
 subdirs-y += 00670F00
 
-ifeq ($(CONFIG_CPU_AMD_PI_00630F01)$(CONFIG_CPU_AMD_PI_00730F01),y)
+ifeq ($(CONFIG_CPU_AMD_PI_00730F01),y)
 # AGESA V5 Files
 
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
@@ -51,10 +51,6 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Feature
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
-
-ifeq ($(CONFIG_CPU_AMD_PI_00630F01),y)
-AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS
-endif
 
 AGESA_INC += -I$(src)/northbridge/amd/pi
 AGESA_INC += -I$(src)/southbridge/amd/pi/hudson

@@ -22,7 +22,7 @@ static const char *pcie_gpp_acpi_name(const struct device *dev)
 		return NULL;
 
 	name = malloc(ACPI_NAME_BUFFER_SIZE);
-	snprintf(name, ACPI_NAME_BUFFER_SIZE, "GP%02x", dev->path.pci.devfn);
+	snprintf(name, ACPI_NAME_BUFFER_SIZE, "GP%02X", dev->path.pci.devfn);
 	name[4] = '\0';
 
 	return name;

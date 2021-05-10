@@ -1,15 +1,23 @@
 # vboot-enabled devices
 
+## AMD
+- Majolica
+
+## Clevo
+- N130WU / N131WU
+
 ## Emulation
 - QEMU x86 i440fx/piix4 (aka qemu -M pc)
 - QEMU x86 q35/ich9 (aka qemu -M q35, since v1.4)
 
 ## Facebook
+- fbg1701
 - Facebook Monolith
 
 ## Google
 - Asurada
 - Hayato
+- Spherion
 - Auron_Paine (Acer C740 Chromebook)
 - Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))
 - Buddy (Acer Chromebase 24)
@@ -22,6 +30,7 @@
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
 - Butterfly (HP Pavilion Chromebook 14)
+- Cherry
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -56,6 +65,7 @@
 - Scarlet
 - Nefario
 - Rainier
+- Guybrush
 - Akemi
 - Dratini
 - Duffy Legacy (32MB)
@@ -79,6 +89,7 @@
 - Dooly
 - Ambassador
 - Genesis
+- Herobrine
 - Guado (ASUS Chromebox CN62)
 - Jecht
 - Rikku (Acer Chromebox CXI2)
@@ -94,6 +105,7 @@
 - Kodama
 - Kakadu
 - Flapjack
+- Katsu
 - Jacuzzi
 - Juniper
 - Kappa
@@ -104,7 +116,10 @@
 - Esche
 - Burnet
 - Fennel
+- Cozmo
+- Makomo
 - Link (Google Chromebook Pixel (2013))
+- Mancomb
 - Mistral
 - Nyan
 - Nyan Big (Acer Chromebook 13 (CB5-311))
@@ -175,6 +190,7 @@
 - Woomax
 - Dirinboz
 - Shuboz
+- Gumboz
 
 ## HP
 - Z220 SFF Workstation
@@ -182,14 +198,15 @@
 ## Intel
 - Alderlake-P RVP
 - Alderlake-P RVP with Chrome EC
+- Alderlake-M RVP
+- Alderlake-M RVP with Chrome EC
 - Basking Ridge CRB
-- Cannonlake U LPDDR4 RVP
-- Cannonlake Y LPDDR4 RVP
 - Coffeelake U SO-DIMM DDR4 RVP
 - Coffeelake H SO-DIMM DDR4 RVP11
 - Whiskeylake U DDR4 RVP
 - Coffeelake S U-DIMM DDR4 RVP8
 - Cometlake U DDR4 RVP
+- Elkhartlake LPDDR4x CRB
 - Emerald Lake 2 CRB
 - Galileo
 - Glkrvp
@@ -202,6 +219,7 @@
 - Kabylake DDR4 RVP8
 - Kabylake DDR4 RVP11
 - Kunimitsu
+- shadowmountain
 - Strago
 - Tigerlake UP3 RVP
 - Tigerlake UP4 RVP
@@ -255,7 +273,7 @@
 ## Supermicro
 - X11SSH-TF
 - X11SSM-F
-- X11SSH-F/X11SSH-LN4F
+- X11SSH-F/LN4F
 
 ## UP
 - Squared

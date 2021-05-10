@@ -29,3 +29,10 @@ void mtk_soc_disable_l2c_sram(void)
 			MP0_CLUSTER_CFG0_L3_SHARE_PRE_EN, 0);
 	dsb();
 }
+
+/* mtk_soc_after_dram is called in romstage */
+void mtk_soc_after_dram(void)
+{
+	mmu_config_range(_dram_dma, REGION_SIZE(dram_dma),
+			 NONSECURE_UNCACHED_MEM);
+}

@@ -4,7 +4,7 @@ by default rejects some codes in libcpp. This patch fixes them.
 --- gcc-8.3.0/libcpp/expr.c.bak	2020-09-11 15:44:45.770000000 +0900
 +++ gcc-8.3.0/libcpp/expr.c	2020-09-11 15:46:22.370000000 +0900
 @@ -794,10 +794,10 @@
- 
+
  	  if (CPP_OPTION (pfile, c99))
              cpp_warning_with_line (pfile, CPP_W_LONG_LONG, virtual_location,
 -				   0, message);
@@ -14,7 +14,7 @@ by default rejects some codes in libcpp. This patch fixes them.
 -				      virtual_location, 0, message);
 +				      virtual_location, 0, "%s", message);
          }
- 
+
        result |= CPP_N_INTEGER;
 --- gcc-8.3.0/libcpp/macro.c.bak	2020-09-11 16:01:42.550000000 +0900
 +++ gcc-8.3.0/libcpp/macro.c	2020-09-11 16:03:47.850000000 +0900
@@ -35,22 +35,22 @@ by default rejects some codes in libcpp. This patch fixes them.
 +				  "%s", vaopt_paste_error);
  		    return ERROR;
  		  }
- 
+
 @@ -3361,7 +3361,7 @@
  	     function-like macros, but not at the end.  */
  	  if (following_paste_op)
  	    {
 -	      cpp_error (pfile, CPP_DL_ERROR, paste_op_error_msg);
 +	      cpp_error (pfile, CPP_DL_ERROR, "%s", paste_op_error_msg);
- 	      return false;
+ 	      goto out;
  	    }
- 	  break;
+ 	  if (!vaopt_tracker.completed ())
 @@ -3374,7 +3374,7 @@
  	     function-like macros, but not at the beginning.  */
  	  if (macro->count == 1)
  	    {
 -	      cpp_error (pfile, CPP_DL_ERROR, paste_op_error_msg);
 +	      cpp_error (pfile, CPP_DL_ERROR, "%s", paste_op_error_msg);
- 	      return false;
+ 	      goto out;
  	    }
- 
+

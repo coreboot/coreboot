@@ -28,12 +28,10 @@ patch, it will end up in the following compilation error:
 "invalid --param name 'asan-use-shadow-offset-callback'"
 So, you cannot accidentally enable the feature without having your compiler patched.
 
+[pgeorgi: Updated for gcc 11.1]
+
 Signed-off-by: Harshit Sharma <harshitsharmajs@gmail.com>
----
- gcc/asan.c     | 29 ++++++++++++++++++++++-------
- gcc/params.def |  6 ++++++
- gcc/params.h   |  2 ++
- 3 files changed, 30 insertions(+), 7 deletions(-)
+Signed-off-by: Patrick Georgi <pgeorgi@google.com>
 
 diff --git a/gcc/asan.c b/gcc/asan.c
 index 235e21947..713bf994d 100644
@@ -50,10 +48,10 @@ index 235e21947..713bf994d 100644
 -    = plus_constant (Pmode, shadow_base,
 -		     asan_shadow_offset ()
 -		     + (base_align_bias >> ASAN_SHADOW_SHIFT));
-+  if (ASAN_USE_SHADOW_OFFSET_CALLBACK) {
++  if (param_asan_use_shadow_offset_callback) {
 +    rtx addr, shadow_offset_rtx;
 +    ret = init_one_libfunc ("__asan_shadow_offset");
-+    addr= convert_memory_address (ptr_mode, base);
++    addr = convert_memory_address (ptr_mode, base);
 +    ret = emit_library_call_value (ret, NULL_RTX, LCT_NORMAL, ptr_mode,
 +                                  addr, ptr_mode);
 +    shadow_offset_rtx = convert_memory_address (Pmode, ret);
@@ -75,35 +73,16 @@ index 235e21947..713bf994d 100644
    gcc_assert (asan_shadow_set != -1
  	      && (ASAN_RED_ZONE_SIZE >> ASAN_SHADOW_SHIFT) == 4);
    shadow_mem = gen_rtx_MEM (SImode, shadow_base);
-diff --git a/gcc/params.def b/gcc/params.def
-index dad47ec2b..bfe6eaa0b 100644
---- a/gcc/params.def
-+++ b/gcc/params.def
-@@ -1203,6 +1203,12 @@ DEFPARAM (PARAM_ASAN_INSTRUMENTATION_WITH_CALL_THRESHOLD,
-          "in function becomes greater or equal to this number.",
-          7000, 0, INT_MAX)
+--- gcc-11.1.0/gcc/params.opt~	2021-05-11 09:02:51.897508677 +0200
++++ gcc-11.1.0/gcc/params.opt	2021-05-11 09:10:43.692610696 +0200
+@@ -50,6 +50,10 @@
+ Common Joined UInteger Var(param_asan_instrumentation_with_call_threshold) Init(7000) Param Optimization
+ Use callbacks instead of inline code if number of accesses in function becomes greater or equal to this number.
 
-+DEFPARAM (PARAM_ASAN_USE_SHADOW_OFFSET_CALLBACK,
-+	 "asan-use-shadow-offset-callback",
-+	 "Use shadow offset callback function at runtime instead of "
-+	 "fixed value at compile time at the cost of runtime overhead.",
-+	 0, 0, 1)
++-param=asan-use-shadow-offset-callback=
++Common Joined UInteger Var(param_asan_use_shadow_offset_callback) Init(0) IntegerRange(0, 1) Param Optimization
++Use shadow offset callback function at runtime instead of fixed value at compile time at the cost of runtime overhead.
 +
- DEFPARAM (PARAM_USE_AFTER_SCOPE_DIRECT_EMISSION_THRESHOLD,
- 	 "use-after-scope-direct-emission-threshold",
- 	 "Use direct poisoning/unpoisoning instructions for variables "
-diff --git a/gcc/params.h b/gcc/params.h
-index 98249d2a1..d3bd6be38 100644
---- a/gcc/params.h
-+++ b/gcc/params.h
-@@ -246,6 +246,8 @@ extern void init_param_values (int *params);
-   PARAM_VALUE (PARAM_ASAN_USE_AFTER_RETURN)
- #define ASAN_INSTRUMENTATION_WITH_CALL_THRESHOLD \
-   PARAM_VALUE (PARAM_ASAN_INSTRUMENTATION_WITH_CALL_THRESHOLD)
-+#define ASAN_USE_SHADOW_OFFSET_CALLBACK \
-+  PARAM_VALUE (PARAM_ASAN_USE_SHADOW_OFFSET_CALLBACK)
- #define ASAN_PARAM_USE_AFTER_SCOPE_DIRECT_EMISSION_THRESHOLD \
-   ((unsigned) PARAM_VALUE (PARAM_USE_AFTER_SCOPE_DIRECT_EMISSION_THRESHOLD))
-
---
-2.17.1
+ -param=asan-memintrin=
+ Common Joined UInteger Var(param_asan_memintrin) Init(1) IntegerRange(0, 1) Param Optimization
+ Enable asan builtin functions protection.

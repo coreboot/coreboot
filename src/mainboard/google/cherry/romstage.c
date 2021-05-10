@@ -2,6 +2,7 @@
 
 #include <arch/stages.h>
 #include <soc/clkbuf.h>
+#include <soc/emi.h>
 #include <soc/mt6315.h>
 #include <soc/mt6359p.h>
 #include <soc/pmif.h>
@@ -15,5 +16,6 @@ void platform_romstage_main(void)
 	mt6315_init();
 	clk_buf_init();
 	rtc_boot();
+	mtk_dram_init();
 	scp_rsi_enable();
 }

@@ -148,7 +148,7 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s bus %x link: %d\n", dev_path(bus->dev),
+	printk(BIOS_SPEW, "%s %s bus %d link: %d\n", dev_path(bus->dev),
 	       __func__, bus->secondary, bus->link_num);
 
 	/* Walk through all devices and find which resources they need. */

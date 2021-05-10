@@ -132,7 +132,7 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 		[6] = { &mem_cfg->MemorySpdPtr12, &mem_cfg->MemorySpdPtr13, },
 		[7] = { &mem_cfg->MemorySpdPtr14, &mem_cfg->MemorySpdPtr15, },
 	};
-	uint8_t *disable_dimm_upds[MRC_CHANNELS] = {
+	uint8_t *disable_channel_upds[MRC_CHANNELS] = {
 		&mem_cfg->DisableMc0Ch0,
 		&mem_cfg->DisableMc0Ch1,
 		&mem_cfg->DisableMc0Ch2,
@@ -147,16 +147,17 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 	mem_cfg->MemorySpdDataLen = data->spd_len;
 
 	for (ch = 0; ch < MRC_CHANNELS; ch++) {
-		uint8_t *disable_dimm_ptr = disable_dimm_upds[ch];
-		*disable_dimm_ptr = 0;
+		uint8_t *disable_channel_ptr = disable_channel_upds[ch];
+		bool enable_channel = 0;
 
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
 			uint32_t *spd_ptr = spd_upds[ch][dimm];
 
 			*spd_ptr = data->spd[ch][dimm];
-			if (!*spd_ptr)
-				*disable_dimm_ptr |= BIT(dimm);
+			if (*spd_ptr)
+				enable_channel = 1;
 		}
+		*disable_channel_ptr = !enable_channel;
 	}
 }
 

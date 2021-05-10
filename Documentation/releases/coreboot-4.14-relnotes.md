@@ -61,4 +61,19 @@ of the existing Picasso SoC code the common parts of the code were
 moved to the common AMD SoC code, so that they could be used by the
 Cezanne code instead of adding another slightly different copy.
 
+### X86 bootblock layout
+
+The static size C_ENV_BOOTBLOCK_SIZE was mostly dropped in favor of
+dynamically allocating the stage size; the Kconfig is still available
+to use as a fixed size and to enforce a maximum for selected chipsets.
+Linker sections are now top-aligned for a reduced flash footprint and to
+maintain the requirements of near jump from reset vector.
+
+### ACPI GNVS framework
+
+SMI handlers for APM_CNT_GNVS_UDPATE were dropped; GNVS pointer to SMM is
+now passed from within SMM_MODULE_LOADER. Allocation and initialisations
+for common ACPI GNVS table entries were largely moved to one centralized
+implementation.
+
 ### Add significant changes here

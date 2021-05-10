@@ -99,6 +99,18 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_77, NONE, DEEP, NF1),
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_78, NONE, DEEP, NF1),
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_79, NONE, DEEP, NF1),
+
+	/* H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST, LEVEL, INVERT),
+	/* TPM */
+	/* F16 : GSPI1_CS0N */
+	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF4),
+	/* F11 : GSPI1_CLK */
+	PAD_CFG_NF(GPP_F11, NONE, DEEP, NF4),
+	/* F13 : GSPI1_MISO */
+	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF4),
+	/* F12 : GSPI1_MOSI */
+	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF4),
 };
 
 static const struct pad_config early_uart_gpio_table[] = {

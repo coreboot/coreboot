@@ -159,7 +159,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
 
 	/* S7 : SNDW4_DATA */
-	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2)
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),
 };
 
 void variant_configure_gpio_pads(void)

@@ -18,6 +18,8 @@ all: build
 
 build:
 	echo "STM - Build"
+	echo "--  WARNING: This uses the system toolchain instead of"
+	echo "    the coreboot toolchain, so is not reproducible."
 	cd $(project_dir)/Stm; \
 	mkdir -p build; \
 	cd build; \

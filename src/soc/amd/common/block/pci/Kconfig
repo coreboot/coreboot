@@ -10,3 +10,9 @@ config SOC_AMD_COMMON_BLOCK_PCI_MMCONF
 	help
 	  Selecting this option adds the AMD-common enable_pci_mmconf function
 	  to the build.
+
+config SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PCI
+	help
+	  Select this option to use AMD common PCIe GPP driver.

@@ -39,7 +39,6 @@ ramstage-y	+= data_fabric.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_s_params.c
 ramstage-y	+= gpio.c
-ramstage-y	+= pcie_gpp.c
 ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c

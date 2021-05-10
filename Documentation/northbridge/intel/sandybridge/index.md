@@ -4,6 +4,6 @@ This section contains documentation about coreboot on specific Intel "Sandy Brid
 
 ## Topics
 
-- [Native Ram Initialization](nri.md)
+- [Native RAM Initialization](nri.md)
 - [RAM initialization feature matrix](nri_features.md)
 - [ME Cleaner](me_cleaner.md)

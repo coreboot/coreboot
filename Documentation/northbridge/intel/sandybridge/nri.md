@@ -40,7 +40,7 @@ The memory initialization code has to take care of lots of duties:
 +---------+-------------------------------------------------------------------+------------+--------------+
 ```
 
-## (Inoffical) register documentation
+## (Unoffical) register documentation
 - [Sandy Bridge - Register documentation](nri_registers.md)
 
 ## Frequency selection
@@ -83,7 +83,7 @@ in each DIMM's SPD.
 > **Note:** This feature is available since coreboot 4.4
 
 ### MRC cache
-The name *MRC cache* might be missleading as in case of *Native ram init*
+The name *MRC cache* might be misleading as in case of *Native RAM init*
 there's no MRC, but for historical reasons it's still named *MRC cache*.
 The MRC cache is part of flash memory that is writeable by coreboot.
 At the end of the boot process coreboot will write the RAM training results to

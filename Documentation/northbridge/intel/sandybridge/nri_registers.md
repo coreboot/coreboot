@@ -1,9 +1,9 @@
-# Inoffical Documentation of Intel MCHBAR register space.
+# Unofficial Documentation of Intel MCHBAR register space.
 
 The MCHBAR can be enabled by using register 0x48 of PCI(0:0:0) device.
 
 This documentation is incomplete and might be incorrect.
-Please handle with care !
+Please handle with care!
 
 **MCHBAR + 0x4**
 

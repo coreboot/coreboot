@@ -145,7 +145,7 @@ chip northbridge/intel/x4x		# Northbridge
 			end
 			device pci 1f.3 on		# SMbus
 				subsystemid 0x8086 0x5756
-					chip drivers/i2c/ck505
+				chip drivers/i2c/ck505
 					register "mask" = "{ 0xff, 0xff, 0xff,
 						 0xff, 0xff, 0xff, 0xff, 0xff,
 						 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -158,7 +158,6 @@ chip northbridge/intel/x4x		# Northbridge
 						 0x06, 0x00, 0xea }"
 					device i2c 69 on end
 				end
-
 			end
 		end
 	end

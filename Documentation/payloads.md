@@ -21,7 +21,7 @@ mainline code.
 implementation of the UEFI Specifications that modern firmware for PCs is
 based on. There were various projects in the past to make it suitable as a
 coreboot payload, but these days this function is available directly in the
-CorebootPayloadPkg part of its source tree.
+UefiPayloadPkg part of its source tree.
 
 ## GRUB2
 

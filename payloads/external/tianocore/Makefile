@@ -6,18 +6,15 @@ export SHELL := env bash
 project_name=Tianocore
 project_dir=$(CURDIR)/tianocore
 project_git_repo=https://github.com/mrchromebox/edk2
-project_git_branch=coreboot_fb
+project_git_branch=uefipayloadpkg
 upstream_git_repo=https://github.com/tianocore/edk2
 
-ifeq ($(CONFIG_TIANOCORE_UEFIPAYLOAD),y)
-bootloader=UefiPayloadPkg
-logo_pkg=MdeModulePkg
 build_flavor=-D BOOTLOADER=COREBOOT -D PCIE_BASE=$(CONFIG_MMCONF_BASE_ADDRESS) -DPS2_KEYBOARD_ENABLE
+
+ifeq ($(CONFIG_TIANOCORE_UPSTREAM),y)
 TAG=upstream/master
 else
-bootloader=CorebootPayloadPkg
-logo_pkg=CorebootPayloadPkg
-# STABLE revision is MrChromebox's coreboot framebuffer (coreboot_fb) branch
+# STABLE revision is MrChromebox's UefiPayloadPkg (ueifpayloadpkg) branch
 TAG=origin/$(project_git_branch)
 endif
 
@@ -33,23 +30,15 @@ else
 BUILD_TYPE=RELEASE
 endif
 
-ifneq ($(CONFIG_TIANOCORE_USE_8254_TIMER), y)
-TIMER=-DUSE_HPET_TIMER
-endif
-
 TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
 
-ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-ARCH=-a IA32 -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc
+ARCH=-a IA32
 else
-ARCH=-a IA32 -a X64 -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
-endif
-else
-ARCH=-a IA32 -a X64 -p UefiPayloadPkg/UefiPayloadPkg.dsc
+ARCH=-a IA32 -a X64
 endif
 
-BUILD_STR=-q $(ARCH) -t COREBOOT -b $(BUILD_TYPE) $(TIMER) $(TIMEOUT) $(build_flavor)
+BUILD_STR=-q $(ARCH) -p UefiPayloadPkg/UefiPayloadPkg.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMEOUT) $(build_flavor)
 
 all: clean build
 
@@ -93,9 +82,9 @@ build: update checktools
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
 			/*) cp $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				$(project_dir)/$(logo_pkg)/Logo/Logo.bmp;; \
+				$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
 			*) cp $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				$(project_dir)/$(logo_pkg)/Logo/Logo.bmp;; \
+				$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
 		esac \
 	fi; \
 	cd $(project_dir); \
@@ -108,7 +97,7 @@ build: update checktools
 		fi; \
 		build $(BUILD_STR); \
 		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
-		git checkout $(logo_pkg)/Logo/Logo.bmp > /dev/null 2>&1 || true
+		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:
 	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0

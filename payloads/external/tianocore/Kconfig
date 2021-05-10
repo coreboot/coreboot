@@ -4,25 +4,25 @@ config PAYLOAD_FILE
 	string "Tianocore binary"
 	default "payloads/external/tianocore/tianocore/Build/UEFIPAYLOAD.fd"
 	help
-	  The result of a corebootPkg build
+	  The result of a UefiPayloadPkg build
 
 choice
 	prompt "Tianocore payload"
-	default TIANOCORE_COREBOOTPAYLOAD
+	default TIANOCORE_UEFIPAYLOAD
 	help
-	  Select which type of payload Tianocore will build (default is CorebootPayload)
-	  CorebootPayload: MrChromebox's customized version of Tianocore which works on most
-	  (all?) x86_64 devices
-	  UEFIPayload: Use upstream Tianocore payload from https://github.com/tianocore/edk2
-
-config TIANOCORE_COREBOOTPAYLOAD
-	bool "CorebootPayload"
-	help
-	  Select this option to build using MrChromebox's custom Tianocore tree
-	  i.e. a version of Tianocore that builds without any errors and just works.
+	  Select which type of payload Tianocore will build (default is UefiPayload)
+	  UefiPayload: MrChromebox's customized fork of Tianocore which works on most
+	  x86_64 devices
+	  Upstream: Use upstream Tianocore payload from https://github.com/tianocore/edk2
 
 config TIANOCORE_UEFIPAYLOAD
 	bool "UEFIPayload"
+	help
+	  Select this option to build using MrChromebox's custom Tianocore fork,
+	  which incorporates fixes/improvements from System 76's and 9elements' trees.
+
+config TIANOCORE_UPSTREAM
+	bool "Upstream"
 	help
 	  Select this option if you want to use upstream EDK2 to build Tianocore.
 
@@ -75,11 +75,6 @@ config TIANOCORE_RELEASE
 	  Generate a release build.
 
 endchoice
-
-config TIANOCORE_USE_8254_TIMER
-	bool "TianoCore 8254 Timer"
-	help
-	  Use 8254 Timer for legacy support.
 
 config TIANOCORE_BOOTSPLASH_IMAGE
 	bool "Use a custom bootsplash image"

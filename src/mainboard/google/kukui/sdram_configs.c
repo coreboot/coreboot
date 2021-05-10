@@ -45,6 +45,7 @@ static const char *const sdram_configs[] = {
 	[0x26] = "sdram-lpddr4x-KMDV6001DA-B620-4GB",
 	[0x27] = "sdram-lpddr4x-SDADA4CR-128G-4GB",
 	[0x28] = "sdram-lpddr4x-MT29VZZZCD9GQKPR-046-8GB",
+	[0x29] = "sdram-lpddr4x-FEPRF6432-58A1930-4GB",
 
 	/* Table shared by Cozmo and its variants, offset = 0x30 */
 	[0x30] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",

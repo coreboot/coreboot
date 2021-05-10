@@ -61,6 +61,8 @@ be more frequent than was needed, so we scaled it back to twice a year.
       part of the release notes.
 - [ ] Finalize release notes (as much as possible), without specifying
       release commit ids.
+- [ ] Run `util/vboot_list/vboot_list.sh` script to update the list of
+      boards supported by vboot.
 
 ### Day of release
 - [ ] Select a commit ID to base the release upon, announce to IRC,
@@ -71,7 +73,6 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Fill in the release date, remove "Upcoming release" and other filler
       from the current release notes.
 - [ ] Run release script.
-- [ ] Run vboot_list script.
 - [ ] Test the release from the actual release tarballs.
 - [ ] Push signed Tag to repo.
 - [ ] Announce that the release tag is done on IRC.

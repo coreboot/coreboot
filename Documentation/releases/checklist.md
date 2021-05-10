@@ -59,8 +59,9 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] If there are any deprecations announced for the following release,
       make sure that a list of currently affected boards and chipsets is
       part of the release notes.
-- [ ] Finalize release notes (as much as possible), without specifying
-      release commit ids.
+- [ ] Finalize release notes as much as possible
+- [ ] Prepare release notes template for following release
+- [ ] Update `Documentation/releases/index.md`
 - [ ] Run `util/vboot_list/vboot_list.sh` script to update the list of
       boards supported by vboot.
 
@@ -68,7 +69,7 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Select a commit ID to base the release upon, announce to IRC,
       ask for testing.
 - [ ] Test the commit selected for release.
-- [ ] Update release notes with actual commit id, push to repo.
+- [ ] Submit release notes
 - [ ] Create new release notes doc template for the next version.
 - [ ] Fill in the release date, remove "Upcoming release" and other filler
       from the current release notes.

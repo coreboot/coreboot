@@ -1,0 +1,72 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1043 0x84ca inherit
+		device pci 01.1 on  end # PCIEX_16_2
+		chip southbridge/intel/bd82x6x
+			register "gen1_dec" = "0x000c0291"
+
+			device pci 19.0 on  end	# Intel Gigabit Ethernet
+			device pci 1c.0 on  end	# PCIe Port 1 PCIEX_16_3 (electrical x1 or x4)
+			device pci 1c.1 on  end	# PCIe Port 2 PCIEX_1_1
+			device pci 1c.3 on  end	# PCIe Port 4 ASM1061 SATA or PCIEX_1_2
+			device pci 1c.4 on  end	# PCIe Port 5 ASM1083 PCI Bridge
+			device pci 1c.6 on  end	# PCIe Port 7 Wi-Fi Go!
+			device pci 1c.7 on  end	# PCIe Port 8 ASM1042 USB3
+
+			device pci 1f.0 on	# LPC bridge
+				chip superio/nuvoton/nct6779d
+					device pnp 2e.1 off end		# Parallel
+					device pnp 2e.2 on		# UART A
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# UART B, IR
+					device pnp 2e.5 on		# PS2 KBC
+						io  0x60 = 0x0060	# KBC1 base
+						io  0x62 = 0x0064	# KBC2 base
+						irq 0x70 = 1		# Keyboard IRQ
+						irq 0x72 = 12		# Mouse IRQ
+
+						# KBC 12Mhz/A20 speed/sw KBRST
+						drq 0xf0 = 0x82
+					end
+					device pnp 2e.6 off  end	# CIR
+					device pnp 2e.7 off  end	# GPIOs 6-8
+					device pnp 2e.8 off  end	# WDT1 GPIO 0-1
+					device pnp 2e.108 on end	# GPIO0-1
+					device pnp 2e.109 on end	# GPIO1
+					device pnp 2e.209 on 		# GPIO2
+						drq 0xe0 = 0xdf
+					end
+					device pnp 2e.309 on end	# GPIO3
+					device pnp 2e.509 on  		# GPIO5
+						drq 0xf4 = 0xfc
+					end
+					device pnp 2e.a on		# ACPI
+						drq 0xe3 = 0x04		# Thermal shutdown event issued
+						drq 0xe7 = 0x11		# Enable 3VSBS to power RAM on S3
+						drq 0xf2 = 0x5d		# Enable PME
+					end
+					device pnp 2e.b   on		# H/W Monitor, FP LED
+						io  0x60 = 0x290
+						io  0x62 = 0
+						irq 0x70 = 0
+					end
+					device pnp 2e.d off end		# WDT1
+					device pnp 2e.e off end		# CIR wake-up
+					device pnp 2e.f on  		# Push-pull/Open-drain
+						drq 0xe4 = 0xfc		# GP5 PP
+						drq 0xe6 = 0x7f		# GP7 PP
+					end
+					device pnp 2e.14 off end	# Port 80 UART
+					device pnp 2e.16 off end	# Deep sleep
+				end
+				chip drivers/pc80/tpm
+					device pnp c31.0 on end		# TPM
+				end
+			end
+		end
+	end
+end

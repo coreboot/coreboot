@@ -1,9 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 testsrc = $(top)/tests
+
+# Place the build output in one of two places depending on COV, so that code
+# built with code coverage never mixes with code built without code coverage.
+ifeq ($(COV),1)
+testobj = $(obj)/coverage
+else
 testobj = $(obj)/tests
+endif
+
 cmockasrc = 3rdparty/cmocka
 cmockaobj = $(objutil)/cmocka
+coverage_dir = coverage_reports
 
 CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
 
@@ -50,6 +59,12 @@ TEST_LDFLAGS += -Wl,--gc-sections
 # Some memlayout symbols don't work with userspace relocation -- disable it.
 TEST_CFLAGS += -fno-pie -fno-pic
 TEST_LDFLAGS += -no-pie
+
+# Enable code coverage if COV=1
+ifeq ($(COV),1)
+TEST_CFLAGS += --coverage
+TEST_LDFLAGS += --coverage
+endif
 
 # Extra attributes for unit tests, declared per test
 attributes:= srcs cflags config mocks stage
@@ -99,7 +114,7 @@ $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 
 $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__
-$($(1)-objs): $(obj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
+$($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	mkdir -p $$(dir $$@)
 	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags)  -MMD \
 		-MT $$@ -c $$< -o $$@
@@ -111,10 +126,10 @@ $($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
 endef
 
 $(foreach test, $(alltests), \
-	$(eval $(test)-objs:=$(addprefix $(obj)/$(test)/, \
+	$(eval $(test)-objs:=$(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$($(test)-srcs)))))
 $(foreach test, $(alltests), \
-	$(eval $(test)-bin:=$(obj)/$(test)/run))
+	$(eval $(test)-bin:=$(testobj)/$(test)/run))
 $(foreach test, $(alltests), \
 	$(eval $(call TEST_CC_template,$(test))))
 
@@ -168,14 +183,30 @@ $(alltests): $$($$(@)-bin)
 	rm -f $(testobj)/junit-$(subst /,_,$^).xml $(testobj)/$(subst /,_,$^).failed
 	-./$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
 
-.PHONY: coverage-unit-tests
+# Build a code coverage report by collecting all the gcov files into a single
+# report. If COV is not set, this might be a user error, and they're trying
+# to generate a coverage report without first having built and run the code
+# with code coverage. So instead of silently correcting it by adding COV=1,
+# let's flag it to the user so they can be sure they're doing the thing they
+# want to do.
 
-coverage-unit-tests: TEST_CFLAGS += --coverage
-coverage-unit-tests: TEST_LDFLAGS += --coverage
-coverage-unit-tests: clean-unit-tests unit-tests
-	lcov -o $(testobj)/tests.info -c -d $(testobj) --exclude '*/$(testobj)/*'
-	genhtml -q -o build/tests/coverage_rpt -t "coreboot unit tests" \
+.PHONY: coverage-report clean-coverage-report
+
+ifeq ($(COV),1)
+coverage-report:
+	lcov -o $(testobj)/tests.info -c -d $(testobj) --exclude '$(testsrc)/*'
+	genhtml -q -o $(testobj)/$(coverage_dir) -t "coreboot unit tests" \
 	-s $(testobj)/tests.info
+
+clean-coverage-report:
+	rm -Rf $(testobj)/$(coverage_dir)
+else
+coverage-report:
+	COV=1 V=$(V) $(MAKE) coverage-report
+
+clean-coverage-report:
+	COV=1 V=$(V) $(MAKE) clean-coverage-report
+endif
 
 unit-tests: build-unit-tests run-unit-tests
 
@@ -195,7 +226,7 @@ run-unit-tests: $(alltests)
 	fi
 
 $(addprefix clean-,$(alltests)): clean-%:
-	rm -rf $(obj)/$*
+	rm -rf $(testobj)/$*
 
 clean-unit-tests:
 	rm -rf $(testobj)
@@ -208,11 +239,12 @@ list-unit-tests:
 
 help-unit-tests help::
 	@echo  '*** coreboot unit-tests targets ***'
+	@echo  '  Use "COV=1 make [target]" to enable code coverage for unit tests'
 	@echo  '  unit-tests            - Run all unit-tests from tests/'
 	@echo  '  clean-unit-tests      - Remove unit-tests build artifacts'
 	@echo  '  list-unit-tests       - List all unit-tests'
 	@echo  '  <unit-test>           - Build and run single unit-test'
 	@echo  '  clean-<unit-test>     - Remove single unit-test build artifacts'
-	@echo  '  coverage-unit-tests   - Build unit tests for code coverage and'
-	@echo  '                            generate a code coverage report'
+	@echo  '  coverage-report       - Generate a code coverage report'
+	@echo  '  clean-coverage-report - Remove the code coverage report'
 	@echo

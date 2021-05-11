@@ -3,6 +3,8 @@
 ## Introduction
 General thoughts about unit testing coreboot can be found in
 [Unit testing coreboot](../technotes/2020-03-unit-testing-coreboot.md).
+Additionally, [code coverage](../technotes/2021-05-code-coverage.md) support
+is available for unit tests.
 
 This document aims to guide developers through the process of adding and writing
 unit tests for coreboot modules.

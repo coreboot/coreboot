@@ -124,8 +124,8 @@ ifneq ($(filter help%, $(MAKECMDGOALS)), )
 NOCOMPILE:=1
 UNIT_TEST:=1
 else
-ifneq ($(filter %-test %-tests, $(MAKECMDGOALS)),)
-ifneq ($(filter-out %-test %-tests, $(MAKECMDGOALS)),)
+ifneq ($(filter %-test %-tests %coverage-report, $(MAKECMDGOALS)),)
+ifneq ($(filter-out %-test %-tests %coverage-report, $(MAKECMDGOALS)),)
 $(error Cannot mix unit-tests targets with other targets)
 endif
 UNIT_TEST:=1

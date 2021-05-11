@@ -8,6 +8,7 @@
 #include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>
+#include <vendorcode/amd/fsp/cezanne/FspUsb.h>
 
 struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;
@@ -92,6 +93,9 @@ struct soc_amd_cezanne_config {
 		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
 		GPP_CLK_OFF,	/* GPP clk off */
 	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+
+	uint8_t usb_phy_custom;
+	struct usb_phy_config usb_phy;
 };
 
 #endif /* CEZANNE_CHIP_H */

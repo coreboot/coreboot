@@ -161,6 +161,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	mcfg->enable_nb_azalia = devtree_gfx_hda_dev_enabled();
 
+	if (config->usb_phy_custom)
+		mcfg->usb_phy = (struct usb_phy_config *)&config->usb_phy;
+	else
+		mcfg->usb_phy = NULL;
+
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 	fsp_assign_ioapic_upds(mcfg);
 }

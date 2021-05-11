@@ -14,9 +14,17 @@ config BOARD_PRODRIVE_HERMES_BASEBOARD
 	select INTEL_GMA_HAVE_VBT
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select ONBOARD_VGA_IS_PRIMARY
-	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_RESUME if !HERMES_USES_SPS_FIRMWARE
+	select DISABLE_ACPI_HIBERNATE if HERMES_USES_SPS_FIRMWARE
 
 if BOARD_PRODRIVE_HERMES_BASEBOARD
+
+config HERMES_USES_SPS_FIRMWARE
+	bool "Build for use with SPS (Server Platform Services) firmware"
+	help
+	  Depending on the intended use case, the Hermes mainboard can use either
+	  CSME or SPS firmware SKUs. Choose this option if using SPS firmware, as
+	  SPS doesn't support ACPI S3 and S4 sleep states.
 
 config MAINBOARD_FAMILY
 	string

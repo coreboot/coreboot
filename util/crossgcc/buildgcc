@@ -844,8 +844,9 @@ build_IASL() {
 	HOST="$HOST" CFLAGS="$CFLAGS" \
 	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION\"' " \
 	$MAKE $JOBS CC="$(hostcc host)" iasl acpibin acpidump acpiexec acpihelp acpisrc acpixtract
-	rm -f "$DESTDIR$TARGETDIR/bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpisrc,acpixtract}" || touch "$RDIR/.failed"
-	cp bin/{iasl,acpibin,acpidump,acpiexec,acpihelp,acpisrc,acpixtract} "$DESTDIR$TARGETDIR/bin" || touch "$RDIR/.failed"
+	mkdir -p "$DESTDIR$TARGETDIR/bin/"
+	(cd "$DESTDIR$TARGETDIR/bin" && rm -f iasl acpibin acpidump acpiexec acpihelp acpisrc acpixtract) || touch "$RDIR/.failed"
+	(cd bin && cp iasl acpibin acpidump acpiexec acpihelp acpisrc acpixtract "$DESTDIR$TARGETDIR/bin") || touch "$RDIR/.failed"
 }
 
 build_LLVM() {

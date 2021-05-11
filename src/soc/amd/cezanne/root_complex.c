@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/alib.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/memmap.h>
 #include <arch/ioapic.h>
@@ -13,6 +15,37 @@
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <stdint.h>
+#include "chip.h"
+
+#define DPTC_TOTAL_UPDATE_PARAMS	4
+
+struct dptc_input {
+	uint16_t size;
+	struct alib_dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
+} __packed;
+
+#define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow)			\
+	{									\
+		.size = sizeof(struct dptc_input),				\
+		.params = {							\
+			{							\
+				.id = ALIB_DPTC_THERMAL_CONTROL_LIMIT_ID,	\
+				.value = _thermctllmit,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_SUSTAINED_POWER_LIMIT_ID,	\
+				.value = _sustained,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_FAST_PPT_LIMIT_ID,		\
+				.value = _fast,					\
+			},							\
+			{							\
+				.id = ALIB_DPTC_SLOW_PPT_LIMIT_ID,		\
+				.value = _slow,					\
+			},							\
+		},								\
+	}
 
 /*
  *
@@ -146,9 +179,51 @@ static void root_complex_init(struct device *dev)
 	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, GNB_IOAPIC_ID);
 }
 
+static void acipgen_dptci(void)
+{
+	const struct soc_amd_cezanne_config *config = config_of_soc();
+
+	if (!config->dptc_enable)
+		return;
+
+	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
+					config->sustained_power_limit_mW,
+					config->fast_ppt_limit_mW,
+					config->slow_ppt_limit_mW);
+	struct dptc_input tablet_mode_input = DPTC_INPUTS(
+					config->thermctl_limit_tablet_mode_degreeC,
+					config->sustained_power_limit_tablet_mode_mW,
+					config->fast_ppt_limit_tablet_mode_mW,
+					config->slow_ppt_limit_tablet_mode_mW);
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Method(DPTC, 0, Serialized) */
+	acpigen_write_method_serialized("DPTC", 0);
+
+	/* TODO: The code assumes that if DPTC gets called the following object exists */
+	/* If (LEqual ("\_SB.PCI0.LPCB.EC0.TBMD", 1)) */
+	acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.LPCB.EC0.TBMD", 1);
+
+	acpigen_dptc_call_alib("TABB", (uint8_t *)(void *)&tablet_mode_input,
+			sizeof(tablet_mode_input));
+
+	/* Else */
+	acpigen_write_else();
+
+	acpigen_dptc_call_alib("DEFB", (uint8_t *)(void *)&default_input,
+			sizeof(default_input));
+
+	acpigen_pop_len(); /* Else */
+
+	acpigen_pop_len(); /* Method DPTC */
+	acpigen_pop_len(); /* Scope \_SB */
+}
+
 static void root_complex_fill_ssdt(const struct device *device)
 {
 	acpi_fill_root_complex_tom(device);
+	acipgen_dptci();
 }
 
 static const char *gnb_acpi_name(const struct device *dev)

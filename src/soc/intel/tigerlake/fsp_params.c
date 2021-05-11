@@ -269,6 +269,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memcpy(params->PcieRpClkReqDetect, config->PcieRpClkReqDetect,
 		sizeof(config->PcieRpClkReqDetect));
 
+	for (i = 0; i < ARRAY_SIZE(config->tcss_ports); i++) {
+		if (config->tcss_ports[i].enable)
+			params->CpuUsb3OverCurrentPin[i] =
+					config->tcss_ports[i].ocpin;
+	}
+
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
 	if (dev) {

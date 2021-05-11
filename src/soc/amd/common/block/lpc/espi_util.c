@@ -419,6 +419,7 @@ struct espi_cmd {
 	union espi_txhdr1 hdr1;
 	union espi_txhdr2 hdr2;
 	union espi_txdata data;
+	uint32_t expected_status_codes;
 } __packed;
 
 /* Wait up to ESPI_CMD_TIMEOUT_US for hardware to clear DNCMD_STATUS bit. */
@@ -512,13 +513,13 @@ static int espi_send_command(const struct espi_cmd *cmd)
 		return -1;
 	}
 
-	if (status & ~ESPI_STATUS_DNCMD_COMPLETE) {
+	if (status & ~(ESPI_STATUS_DNCMD_COMPLETE | cmd->expected_status_codes)) {
 		espi_show_failure(cmd, "Error: unexpected eSPI status register bits set",
 				  status);
 		return -1;
 	}
 
-	espi_write32(ESPI_SLAVE0_INT_STS, ESPI_STATUS_DNCMD_COMPLETE);
+	espi_write32(ESPI_SLAVE0_INT_STS, status);
 
 	return 0;
 }
@@ -530,6 +531,33 @@ static int espi_send_reset(void)
 			.cmd_type = CMD_TYPE_IN_BAND_RESET,
 			.cmd_sts = 1,
 		},
+
+		/*
+		 * When performing an in-band reset the host controller and the
+		 * peripheral can have mismatched IO configs.
+		 *
+		 * i.e., The eSPI peripheral can be in IO-4 mode while, the
+		 * eSPI host will be in IO-1. This results in the peripheral
+		 * getting invalid packets and thus not responding.
+		 *
+		 * If the peripheral is alerting when we perform an in-band
+		 * reset, there is a race condition in espi_send_command.
+		 * 1) espi_send_command clears the interrupt status.
+		 * 2) eSPI host controller hardware notices the alert and sends
+		 *    a GET_STATUS.
+		 * 3) espi_send_command writes the in-band reset command.
+		 * 4) eSPI hardware enqueues the in-band reset until GET_STATUS
+		 *    is complete.
+		 * 5) GET_STATUS fails with NO_RESPONSE and sets the interrupt
+		 *    status.
+		 * 6) eSPI hardware performs in-band reset.
+		 * 7) espi_send_command checks the status and sees a
+		 *    NO_RESPONSE bit.
+		 *
+		 * As a workaround we allow the NO_RESPONSE status code when
+		 * we perform an in-band reset.
+		 */
+		.expected_status_codes = ESPI_STATUS_NO_RESPONSE,
 	};
 
 	return espi_send_command(&cmd);

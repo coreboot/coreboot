@@ -12,6 +12,9 @@
 	{.source = DPTF_##src, .temp = (tmp), .type = DPTF_CRITICAL_##typ}
 #define TEMP_PCT(t, p) {.temp = (t), .fan_pct = (p)}
 
+/* Total number of OEM variables */
+#define DPTF_OEM_VARIABLE_COUNT		6
+
 struct drivers_intel_dptf_config {
 	struct {
 		struct dptf_active_policy active[DPTF_MAX_ACTIVE_POLICIES];
@@ -51,6 +54,11 @@ struct drivers_intel_dptf_config {
 			const char *desc;
 		} tsr[DPTF_MAX_TSR];
 	} options;
+
+	/* OEM variables */
+	struct {
+		uint32_t oem_variables[DPTF_OEM_VARIABLE_COUNT];
+	} oem_data;
 };
 
 #endif /* _DRIVERS_INTEL_DPTF_CHIP_H_ */

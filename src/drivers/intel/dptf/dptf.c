@@ -117,6 +117,53 @@ static void write_fan(const struct drivers_intel_dptf_config *config,
 	acpigen_pop_len(); /* Device */
 }
 
+/* \_SB.DPTF */
+static void write_oem_variables(const struct drivers_intel_dptf_config *config)
+{
+	int i;
+
+	acpigen_write_name("ODVX");
+	acpigen_write_package(DPTF_OEM_VARIABLE_COUNT);
+	for (i = 0; i < DPTF_OEM_VARIABLE_COUNT; i++)
+		acpigen_write_dword(config->oem_data.oem_variables[i]);
+	acpigen_write_package_end();
+
+	/*
+	 * Method (ODUP, 2)
+	 * Arg0 = Index of ODVX to update
+	 * Arg1 = Value to place in ODVX[Arg0]
+	 */
+	acpigen_write_method_serialized("ODUP", 2);
+	/* ODVX[Arg0] = Arg1 */
+	acpigen_write_store();
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring("ODVX");
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+	acpigen_write_method_end();
+
+	/*
+	 * Method (ODGT, 1)
+	 * Arg0 = Index of ODVX to get
+	 */
+	acpigen_write_method_serialized("ODGT", 1);
+	 /* Return (ODVX[Arg0]) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring("ODVX");
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
+	acpigen_write_method_end();
+
+	/* Method (ODVP) { Return (ODVX) } */
+	acpigen_write_method_serialized("ODVP", 0);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring("ODVX");
+	acpigen_write_method_end();
+}
+
 /* \_SB.DPTF.xxxx */
 static void write_generic_devices(const struct drivers_intel_dptf_config *config,
 				  const struct dptf_platform_info *platform_info)
@@ -169,6 +216,7 @@ static void write_device_definitions(const struct device *dev)
 	write_tcpu(parent, config);
 	write_open_dptf_device(dev, platform_info);
 	write_fan(config, platform_info);
+	write_oem_variables(config);
 	write_generic_devices(config, platform_info);
 
 	acpigen_pop_len(); /* DPTF Device (write_open_dptf_device) */

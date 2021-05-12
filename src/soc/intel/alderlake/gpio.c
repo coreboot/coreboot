@@ -69,6 +69,7 @@ static const struct pad_group adl_community5_groups[] = {
 static const struct pad_community adl_communities[] = {
 	[COMM_0] = { /* GPP B, T, A */
 		.port = PID_GPIOCOM0,
+		.cpu_port = PID_CPU_GPIOCOM0,
 		.first_pad = GPIO_COM0_START,
 		.last_pad = GPIO_COM0_END,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
@@ -88,6 +89,7 @@ static const struct pad_community adl_communities[] = {
 	},
 	[COMM_1] = { /* GPP S, D, H */
 		.port = PID_GPIOCOM1,
+		.cpu_port = PID_CPU_GPIOCOM1,
 		.first_pad = GPIO_COM1_START,
 		.last_pad = GPIO_COM1_END,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
@@ -126,6 +128,7 @@ static const struct pad_community adl_communities[] = {
 	},
 	[COMM_3] = { /* vGPIO */
 		.port = PID_GPIOCOM3,
+		.cpu_port = PID_CPU_GPIOCOM3,
 		.first_pad = GPIO_COM3_START,
 		.last_pad = GPIO_COM3_END,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
@@ -145,6 +148,7 @@ static const struct pad_community adl_communities[] = {
 	},
 	[COMM_4] = { /* GPP F, C, HVMOS, E */
 		.port = PID_GPIOCOM4,
+		.cpu_port = PID_CPU_GPIOCOM4,
 		.first_pad = GPIO_COM4_START,
 		.last_pad = GPIO_COM4_END,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
@@ -164,6 +168,7 @@ static const struct pad_community adl_communities[] = {
 	},
 	[COMM_5] = { /* GPP R, SPI0 */
 		.port = PID_GPIOCOM5,
+		.cpu_port = PID_CPU_GPIOCOM5,
 		.first_pad = GPIO_COM5_START,
 		.last_pad = GPIO_COM5_END,
 		.num_gpi_regs = NUM_GPIO_COM5_GPI_REGS,

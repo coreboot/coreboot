@@ -33,6 +33,12 @@
 #define PID_ITSS	0xc4
 #define PID_SERIALIO	0xcb
 
+/* CPU Port IDs */
+#define PID_CPU_GPIOCOM0	0xb7
+#define PID_CPU_GPIOCOM1	0xb8
+#define PID_CPU_GPIOCOM3	0xbb
+#define PID_CPU_GPIOCOM4	0xb9
+#define PID_CPU_GPIOCOM5	0xba
 
 /*
  * SPI - DMI Destination ID

@@ -10,6 +10,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
+#include <security/intel/cbnt/cbnt.h>
 #include <types.h>
 
 #include "txt.h"
@@ -129,6 +130,9 @@ static void init_intel_txt(void *unused)
 	printk(BIOS_INFO, "TEE-TXT: Initializing TEE...\n");
 
 	intel_txt_log_spad();
+
+	if (CONFIG(INTEL_CBNT_LOGGING))
+		intel_cbnt_log_registers();
 
 	if (CONFIG(INTEL_TXT_LOGGING)) {
 		intel_txt_log_bios_acm_error();

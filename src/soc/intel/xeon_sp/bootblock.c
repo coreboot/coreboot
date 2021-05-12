@@ -8,6 +8,7 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/lpc_lib.h>
+#include <security/intel/cbnt/cbnt.h>
 #include <soc/pci_devs.h>
 #include <soc/bootblock.h>
 #include <fsp/util.h>
@@ -67,5 +68,9 @@ void bootblock_soc_init(void)
 
 	if (CONFIG(FSP_CAR))
 		report_fspt_output();
+
+	if (CONFIG(INTEL_CBNT_LOGGING))
+		intel_cbnt_log_registers();
+
 	bootblock_pch_init();
 }

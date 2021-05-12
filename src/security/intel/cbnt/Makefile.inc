@@ -1,5 +1,6 @@
 ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
 
+all-y += logging.c
 ramstage-y += cmos.c
 
 # As specified in Intel Trusted Execution Technology and Boot Guard Server BIOS

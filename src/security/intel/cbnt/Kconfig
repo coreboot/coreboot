@@ -17,6 +17,12 @@ config INTEL_CBNT_SUPPORT
 
 if INTEL_CBNT_SUPPORT
 
+config INTEL_CBNT_LOGGING
+	bool "Enable verbose CBnT logging"
+	help
+	  Print more CBnT related debug output.
+	  Use in pre-production environments only!
+
 config INTEL_CBNT_GENERATE_KM
 	bool "Generate Key Manifest (KM)"
 	default y

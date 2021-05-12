@@ -1,0 +1,7 @@
+config DRIVERS_ACPI_THERMAL_ZONE
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	  Adds a chip driver that generates ACPI ThermalZones. See the chapter
+	  on Thermal Management in the ACPI specification.

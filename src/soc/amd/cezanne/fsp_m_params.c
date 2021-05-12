@@ -36,6 +36,10 @@ static bool devtree_gfx_hda_dev_enabled(void)
 	return gfx_hda_dev->enabled;
 }
 
+__weak void mb_pre_fspm(void)
+{
+}
+
 static void fill_dxio_descriptors(FSP_M_CONFIG *mcfg,
 			const fsp_dxio_descriptor *descs, size_t num)
 {
@@ -171,4 +175,5 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 	fsp_assign_ioapic_upds(mcfg);
+	mb_pre_fspm();
 }

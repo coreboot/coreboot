@@ -55,4 +55,11 @@ Device (CREC)
 	{
 		Return (0xB)
 	}
+
+#if CONFIG(DRIVERS_ACPI_THERMAL_ZONE)
+	Method(TMP, 1)
+	{
+		Return(^^TSRD(Arg0))
+	}
+#endif
 }

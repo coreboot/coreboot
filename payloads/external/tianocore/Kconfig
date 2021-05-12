@@ -35,29 +35,6 @@ config TIANOCORE_REVISION_ID
 	   for master branch of Tianocore release on github.
 
 choice
-	prompt "Target architecture"
-	default TIANOCORE_TARGET_X64
-	help
-	  The Tianocore coreboot Payload Package binary can be
-	  built for either only IA32 or both X64 and IA32 architectures.
-	  Select which architecture(s) to build for; default is to build
-	  for both X64 and IA32.
-
-config TIANOCORE_TARGET_IA32
-	bool "IA32"
-	help
-	  By selecting this option, the target architecture will be built
-	  for only IA32.
-
-config TIANOCORE_TARGET_X64
-	bool "X64"
-	help
-	  By selecting this option, the target architecture will be built
-	  for X64 and IA32.
-
-endchoice
-
-choice
 	prompt "Tianocore build"
 	default TIANOCORE_RELEASE
 	help

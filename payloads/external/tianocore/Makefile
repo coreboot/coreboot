@@ -32,13 +32,7 @@ endif
 
 TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
 
-ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-ARCH=-a IA32
-else
-ARCH=-a IA32 -a X64
-endif
-
-BUILD_STR=-q $(ARCH) -p UefiPayloadPkg/UefiPayloadPkg.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMEOUT) $(build_flavor)
+BUILD_STR=-q -a IA32 -a X64 -p UefiPayloadPkg/UefiPayloadPkg.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMEOUT) $(build_flavor)
 
 all: clean build
 

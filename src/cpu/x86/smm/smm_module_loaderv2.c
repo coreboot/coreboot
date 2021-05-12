@@ -586,8 +586,8 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 
 	/* MSEG starts at the top of SMRAM and works down */
 	if (CONFIG(STM)) {
-		base -= CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE;
-		total_size += CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE;
+		base -= CONFIG_BIOS_RESOURCE_LIST_SIZE;
+		total_size += CONFIG_BIOS_RESOURCE_LIST_SIZE;
 	}
 
 	/* FXSAVE goes below MSEG */

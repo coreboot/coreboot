@@ -168,6 +168,8 @@ void smm_region(uintptr_t *start, size_t *size);
 enum {
 	/* SMM handler area. */
 	SMM_SUBREGION_HANDLER,
+	/* MSEG (STM). */
+	SMM_SUBREGION_MSEG,
 	/* SMM cache region. */
 	SMM_SUBREGION_CACHE,
 	/* Chipset specific area. */

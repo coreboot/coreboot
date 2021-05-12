@@ -756,9 +756,9 @@ static void asmlinkage smm_do_relocation(void *arg)
 	if (CONFIG(STM)) {
 		if (is_smm_enabled()) {
 			uintptr_t mseg;
+			size_t mseg_size;
 
-			mseg = mp_state.perm_smbase +
-				(mp_state.perm_smsize - CONFIG_MSEG_SIZE);
+			smm_subregion(SMM_SUBREGION_MSEG, &mseg, &mseg_size);
 
 			stm_setup(mseg, p->cpu, runtime->num_cpus,
 					perm_smbase,

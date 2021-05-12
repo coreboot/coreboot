@@ -368,7 +368,7 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	base += size;
 
 	if (CONFIG(STM))
-		base -= CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE;
+		base -= CONFIG_BIOS_RESOURCE_LIST_SIZE;
 
 	params->stack_top = base;
 

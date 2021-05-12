@@ -17,6 +17,7 @@
 #include <cpu/x86/smm.h>
 #include <stage_cache.h>
 #include <types.h>
+#include <inttypes.h>
 
 /*
  *        Subregions within SMM
@@ -24,6 +25,8 @@
  *     |          IED            | IED_REGION_SIZE
  *     +-------------------------+
  *     |  External Stage Cache   | SMM_RESERVED_SIZE
+ *     +-------------------------+
+ *     |          STM            | MSEG_SIZE
  *     +-------------------------+
  *     |      code and data      |
  *     |         (TSEG)          |
@@ -35,17 +38,24 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 	size_t sub_size;
 	const size_t ied_size = CONFIG_IED_REGION_SIZE;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
+	const size_t mseg_size = CONFIG_MSEG_SIZE;
 
 	smm_region(&sub_base, &sub_size);
 
 	ASSERT(IS_ALIGNED(sub_base, sub_size));
-	ASSERT(sub_size > (cache_size + ied_size));
+	ASSERT(sub_size > (cache_size + ied_size + mseg_size));
 
 	switch (sub) {
 	case SMM_SUBREGION_HANDLER:
 		/* Handler starts at the base of TSEG. */
 		sub_size -= ied_size;
 		sub_size -= cache_size;
+		sub_size -= mseg_size;
+		break;
+	case SMM_SUBREGION_MSEG:
+		/* MSEG follows the SMM HANDLER subregion */
+		sub_base += sub_size - (ied_size + cache_size + mseg_size);
+		sub_size = mseg_size;
 		break;
 	case SMM_SUBREGION_CACHE:
 		/* External cache is in the middle of TSEG. */
@@ -88,11 +98,11 @@ void smm_list_regions(void)
 		return;
 
 	printk(BIOS_DEBUG, "SMM Memory Map\n");
-	printk(BIOS_DEBUG, "SMRAM       : 0x%zx 0x%zx\n", base, size);
+	printk(BIOS_DEBUG, "SMRAM       : 0x%" PRIxPTR " 0x%zx\n", base, size);
 
 	for (i = 0; i < SMM_SUBREGION_NUM; i++) {
 		if (smm_subregion(i, &base, &size))
 			continue;
-		printk(BIOS_DEBUG, " Subregion %d: 0x%zx 0x%zx\n", i, base, size);
+		printk(BIOS_DEBUG, " Subregion %d: 0x%" PRIxPTR " 0x%zx\n", i, base, size);
 	}
 }

@@ -161,12 +161,4 @@ config VARIANT_HAS_MIPI_CAMERA
 	bool
 	default n
 
-config CBFS_MCACHE_RW_PERCENTAGE
-	int
-	default 50
-
-config CBFS_MCACHE_SIZE
-	hex
-	default 0x4000
-
 endif # BOARD_GOOGLE_BASEBOARD_VOLTEER

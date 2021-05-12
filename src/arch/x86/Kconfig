@@ -147,9 +147,10 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 config CBFS_MCACHE_SIZE
 	hex
 	depends on !NO_CBFS_MCACHE
-	default 0x2000
+	default 0x4000
 	help
-	  Increase this value if you see CBFS mcache overflow warnings.
+	  Increase this value if you see CBFS mcache overflow warnings. Do NOT
+	  change this value for vboot RW updates!
 
 config PC80_SYSTEM
 	bool

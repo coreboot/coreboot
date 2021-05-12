@@ -235,6 +235,17 @@ config RWB_REGION_ONLY
 	  Add a space-delimited list of filenames that should only be in the
 	  RW-B section.
 
+config CBFS_MCACHE_RW_PERCENTAGE
+	int "Percentage of CBFS metadata cache used for RW CBFS"
+	depends on !NO_CBFS_MCACHE
+	default 50
+	help
+	  The amount of the CBFS_MCACHE area that's used for the RW CBFS, in
+	  percent from 0 to 100. The remaining area will be used for the RO
+	  CBFS. Default is an even 50/50 split. When VBOOT is disabled, this
+	  will automatically be 0 (meaning the whole MCACHE is used for RO).
+	  Do NOT change this value for vboot RW updates!
+
 config VBOOT_ENABLE_CBFS_FALLBACK
 	bool
 	default n

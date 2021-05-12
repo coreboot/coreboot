@@ -781,6 +781,13 @@ void acpigen_write_device(const char *name)
 	acpigen_emit_namestring(name);
 }
 
+void acpigen_write_thermal_zone(const char *name)
+{
+	acpigen_emit_ext_op(THERMAL_ZONE_OP);
+	acpigen_write_len_f();
+	acpigen_emit_namestring(name);
+}
+
 void acpigen_write_STA(uint8_t status)
 {
 	/*

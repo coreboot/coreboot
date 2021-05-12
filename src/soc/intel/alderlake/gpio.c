@@ -5,6 +5,8 @@
 #include <soc/pcr_ids.h>
 #include <soc/pmc.h>
 
+#define DEFAULT_VW_BASE		0x10
+
 /*
  * This file is created based on Intel Alder Lake Processor PCH Datasheet
  * Document number: 630094
@@ -39,10 +41,20 @@ static const struct pad_group adl_community0_groups[] = {
 	INTEL_GPP_BASE(GPP_B0, GPP_A0, GPP_ESPI_CLK_LOOPBK, 64),	/* GPP_A */
 };
 
+static const struct vw_entries adl_community0_vw[] = {
+	{GPP_A0, GPP_A23},
+	{GPP_B0, GPP_B23},
+};
+
 static const struct pad_group adl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 96),			/* GPP_S */
 	INTEL_GPP_BASE(GPP_S0, GPP_H0, GPP_H23, 128),			/* GPP_H */
 	INTEL_GPP_BASE(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK, 160),	/* GPP_D */
+};
+
+static const struct vw_entries adl_community1_vw[] = {
+	{GPP_D0, GPP_D19},
+	{GPP_H0, GPP_H23},
 };
 
 /* This community is not visible to the OS */
@@ -59,6 +71,12 @@ static const struct pad_group adl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK, 288),		/* GPP_F */
 	INTEL_GPP(GPP_C0, GPP_L_BKLTEN, GPP_MLK_RSTB),			/* GPP_HVMOS */
 	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E_CLK_LOOPBK, 320),		/* GPP_E */
+};
+
+static const struct vw_entries adl_community4_vw[] = {
+	{GPP_F0, GPP_F23},
+	{GPP_C0, GPP_C23},
+	{GPP_E0, GPP_E23},
 };
 
 static const struct pad_group adl_community5_groups[] = {
@@ -86,6 +104,9 @@ static const struct pad_community adl_communities[] = {
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = adl_community0_groups,
 		.num_groups = ARRAY_SIZE(adl_community0_groups),
+		.vw_base = DEFAULT_VW_BASE,
+		.vw_entries = adl_community0_vw,
+		.num_vw_entries = ARRAY_SIZE(adl_community0_vw),
 	},
 	[COMM_1] = { /* GPP S, D, H */
 		.port = PID_GPIOCOM1,
@@ -106,6 +127,9 @@ static const struct pad_community adl_communities[] = {
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = adl_community1_groups,
 		.num_groups = ARRAY_SIZE(adl_community1_groups),
+		.vw_base = DEFAULT_VW_BASE,
+		.vw_entries = adl_community1_vw,
+		.num_vw_entries = ARRAY_SIZE(adl_community1_vw),
 	},
 	[COMM_2] = { /* GPD */
 		.port = PID_GPIOCOM2,
@@ -165,6 +189,9 @@ static const struct pad_community adl_communities[] = {
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = adl_community4_groups,
 		.num_groups = ARRAY_SIZE(adl_community4_groups),
+		.vw_base = DEFAULT_VW_BASE,
+		.vw_entries = adl_community4_vw,
+		.num_vw_entries = ARRAY_SIZE(adl_community4_vw),
 	},
 	[COMM_5] = { /* GPP R, SPI0 */
 		.port = PID_GPIOCOM5,

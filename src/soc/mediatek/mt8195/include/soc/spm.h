@@ -3,13 +3,413 @@
 #ifndef SOC_MEDIATEK_MT8195_SPM_H
 #define SOC_MEDIATEK_MT8195_SPM_H
 
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
+#include <stdint.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */
-#define SPM_PROJECT_CODE	0xb16
-#define SPM_REGWR_CFG_KEY	(SPM_PROJECT_CODE << 16)
+#define SPM_PROJECT_CODE			0xb16
+#define SPM_REGWR_CFG_KEY			(SPM_PROJECT_CODE << 16)
+
+/* POWERON_CONFIG_EN (0x10006000+0x000) */
+#define BCLK_CG_EN_LSB				(1U << 0)
+
+/* SPM_CLK_CON (0x10006000+0x00C) */
+DEFINE_BIT(REG_SYSCLK1_SRC_MD2_SRCCLKENA, 28)
+
+/* PCM_CON0 (0x10006000+0x018) */
+#define PCM_CK_EN_LSB				(1U << 2)
+#define PCM_SW_RESET_LSB			(1U << 15)
+
+/* PCM_CON1 (0x10006000+0x01C) */
+#define RG_IM_SLAVE_LSB				(1U << 0)
+#define RG_AHBMIF_APBEN_LSB			(1U << 3)
+#define RG_PCM_TIMER_EN_LSB			(1U << 5)
+#define SPM_EVENT_COUNTER_CLR_LSB		(1U << 6)
+#define RG_PCM_WDT_WAKE_LSB			(1U << 9)
+#define REG_SPM_SRAM_ISOINT_B_LSB		(1U << 11)
+#define REG_EVENT_LOCK_EN_LSB			(1U << 12)
+#define REG_MD32_APB_INTERNAL_EN_LSB		(1U << 14)
+
+/* SPM_WAKEUP_EVENT_MASK (0x10006000+0x0D0) */
+#define SPM_WAKEUP_EVENT_MASK_BIT0		(1U << 0)
+#define SPM_WAKEUP_EVENT_MASK_CSYSPWREQ_B	(1U << 11)
+
+/* DDR_EN_DBC_CON1 (0x10006000+0x0EC) */
+#define REG_ALL_DDR_EN_DBC_EN_LSB		(1U << 0)
+
+/* SPM_DVFS_MISC (0x10006000+0x4AC) */
+DEFINE_BIT(SPM_DVFS_FORCE_ENABLE_LSB, 2)
+DEFINE_BIT(SPM_DVFSRC_ENABLE_LSB, 4)
+
+/* SPM_SW_FLAG_0 (0x10006000+0x600) */
+#define SPM_FLAG_DISABLE_VCORE_DVS		(1U << 3)
+#define SPM_FLAG_DISABLE_VCORE_DFS		(1U << 4)
+#define SPM_FLAG_RUN_COMMON_SCENARIO		(1U << 10)
+
+/* SYS_TIMER_CON (0x10006000+0x98C) */
+DEFINE_BIT(SYS_TIMER_START_EN_LSB, 0)
+
+/* MD32PCM_CFGREG_SW_RSTN (0x10006000+0xA00) */
+DEFINE_BIT(MD32PCM_CFGREG_SW_RSTN_RESET, 0)
+
+/**************************************
+ * Config and Parameter
+ **************************************/
+#define POWER_ON_VAL1_DEF		0x80015860
+#define SPM_WAKEUP_EVENT_MASK_DEF	0xffffffff
+#define SPM_BUS_PROTECT_MASK_B_DEF	0xffffffff
+#define SPM_BUS_PROTECT2_MASK_B_DEF	0xffffffff
+#define MD32PCM_DMA0_CON_VAL		0x0003820e
+#define MD32PCM_DMA0_START_VAL		0x00008000
+#define MD32PCM_CFGREG_SW_RSTN_RUN	0x1
+#define SPM_DVFS_LEVEL_DEF		0x00000001
+#define SPM_DVS_DFS_LEVEL_DEF		0x00010001
+#define SPM_RESOURCE_ACK_CON0_DEF	0xffffffff
+#define SPM_RESOURCE_ACK_CON1_DEF	0xffffffff
+#define SPM_RESOURCE_ACK_CON2_DEF	0xffffffff
+#define SPM_RESOURCE_ACK_CON3_DEF	0xffffffff
+#define ARMPLL_CLK_SEL_DEF		0x3ff
+#define SPM_SYSCLK_SETTLE		0x60fe
+#define SPM_INIT_DONE_US		20
+#define PCM_WDT_TIMEOUT			(30 * 32768)
+#define PCM_TIMER_MAX			(0xffffffff - PCM_WDT_TIMEOUT)
+
+/**************************************
+ * Definition and Declaration
+ **************************************/
+/* SPM_IRQ_MASK */
+DEFINE_BIT(ISRM_TWAM_BF, 2)
+DEFINE_BITFIELD(ISRM_RET_IRQ_AUX_BF, 17, 8)
+#define ISRM_TWAM			(1U << 2)
+#define ISRM_RET_IRQ_AUX		(0x3ff << 8)
+#define ISRM_ALL_EXC_TWAM		(ISRM_RET_IRQ_AUX)
+#define ISRM_ALL			(ISRM_ALL_EXC_TWAM | ISRM_TWAM)
+
+/* SPM_IRQ_STA */
+#define ISRS_TWAM			(1U << 2)
+#define ISRS_PCM_RETURN			(1U << 3)
+#define ISRC_TWAM			ISRS_TWAM
+#define ISRC_ALL_EXC_TWAM		ISRS_PCM_RETURN
+#define ISRC_ALL			(ISRC_ALL_EXC_TWAM | ISRC_TWAM)
+
+/* PCM_PWR_IO_EN */
+#define PCM_PWRIO_EN_R0			(1U << 0)
+#define PCM_PWRIO_EN_R7			(1U << 7)
+#define PCM_RF_SYNC_R0			(1U << 16)
+#define PCM_RF_SYNC_R6			(1U << 22)
+#define PCM_RF_SYNC_R7			(1U << 23)
+
+/* SPM_SWINT */
+#define PCM_SW_INT_ALL			0x3ff
+
+struct pwr_ctrl {
+	/* for SPM */
+	uint32_t pcm_flags;
+	/* can override pcm_flags */
+	uint32_t pcm_flags_cust;
+	/* set bit of pcm_flags, after pcm_flags_cust */
+	uint32_t pcm_flags_cust_set;
+	/* clr bit of pcm_flags, after pcm_flags_cust */
+	uint32_t pcm_flags_cust_clr;
+	uint32_t pcm_flags1;
+	/* can override pcm_flags1 */
+	uint32_t pcm_flags1_cust;
+	/* set bit of pcm_flags1, after pcm_flags1_cust */
+	uint32_t pcm_flags1_cust_set;
+	/* clr bit of pcm_flags1, after pcm_flags1_cust */
+	uint32_t pcm_flags1_cust_clr;
+	/* @ 1T 32K */
+	uint32_t timer_val;
+	/* @ 1T 32K, can override timer_val */
+	uint32_t timer_val_cust;
+	/* stress for dpidle */
+	uint32_t timer_val_ramp_en;
+	/* stress for suspend */
+	uint32_t timer_val_ramp_en_sec;
+	uint32_t wake_src;
+	/* can override wake_src */
+	uint32_t wake_src_cust;
+	/* disable wdt in suspend */
+	uint8_t wdt_disable;
+
+	/* SPM_AP_STANDBY_CON */
+	/* [0] */
+	uint8_t reg_wfi_op;
+	/* [1] */
+	uint8_t reg_wfi_type;
+	/* [2] */
+	uint8_t reg_mp0_cputop_idle_mask;
+	/* [3] */
+	uint8_t reg_mp1_cputop_idle_mask;
+	/* [4] */
+	uint8_t reg_mcusys_idle_mask;
+	/* [25] */
+	uint8_t reg_md_apsrc_1_sel;
+	/* [26] */
+	uint8_t reg_md_apsrc_0_sel;
+	/* [29] */
+	uint8_t reg_conn_apsrc_sel;
+
+	/* SPM_SRC_REQ */
+	/* [0] */
+	uint8_t reg_spm_apsrc_req;
+	/* [1] */
+	uint8_t reg_spm_f26m_req;
+	/* [3] */
+	uint8_t reg_spm_infra_req;
+	/* [4] */
+	uint8_t reg_spm_vrf18_req;
+	/* [7] */
+	uint8_t reg_spm_ddr_en_req;
+	/* [8] */
+	uint8_t reg_spm_dvfs_req;
+	/* [9] */
+	uint8_t reg_spm_sw_mailbox_req;
+	/* [10] */
+	uint8_t reg_spm_sspm_mailbox_req;
+	/* [11] */
+	uint8_t reg_spm_adsp_mailbox_req;
+	/* [12] */
+	uint8_t reg_spm_scp_mailbox_req;
+
+	/* SPM_SRC_MASK */
+	/* [0] */
+	uint8_t reg_sspm_srcclkena_0_mask_b;
+	/* [1] */
+	uint8_t reg_sspm_infra_req_0_mask_b;
+	/* [2] */
+	uint8_t reg_sspm_apsrc_req_0_mask_b;
+	/* [3] */
+	uint8_t reg_sspm_vrf18_req_0_mask_b;
+	/* [4] */
+	uint8_t reg_sspm_ddr_en_0_mask_b;
+	/* [5] */
+	uint8_t reg_scp_srcclkena_mask_b;
+	/* [6] */
+	uint8_t reg_scp_infra_req_mask_b;
+	/* [7] */
+	uint8_t reg_scp_apsrc_req_mask_b;
+	/* [8] */
+	uint8_t reg_scp_vrf18_req_mask_b;
+	/* [9] */
+	uint8_t reg_scp_ddr_en_mask_b;
+	/* [10] */
+	uint8_t reg_audio_dsp_srcclkena_mask_b;
+	/* [11] */
+	uint8_t reg_audio_dsp_infra_req_mask_b;
+	/* [12] */
+	uint8_t reg_audio_dsp_apsrc_req_mask_b;
+	/* [13] */
+	uint8_t reg_audio_dsp_vrf18_req_mask_b;
+	/* [14] */
+	uint8_t reg_audio_dsp_ddr_en_mask_b;
+	/* [15] */
+	uint8_t reg_apu_srcclkena_mask_b;
+	/* [16] */
+	uint8_t reg_apu_infra_req_mask_b;
+	/* [17] */
+	uint8_t reg_apu_apsrc_req_mask_b;
+	/* [18] */
+	uint8_t reg_apu_vrf18_req_mask_b;
+	/* [19] */
+	uint8_t reg_apu_ddr_en_mask_b;
+	/* [20] */
+	uint8_t reg_cpueb_srcclkena_mask_b;
+	/* [21] */
+	uint8_t reg_cpueb_infra_req_mask_b;
+	/* [22] */
+	uint8_t reg_cpueb_apsrc_req_mask_b;
+	/* [23] */
+	uint8_t reg_cpueb_vrf18_req_mask_b;
+	/* [24] */
+	uint8_t reg_cpueb_ddr_en_mask_b;
+	/* [25] */
+	uint8_t reg_bak_psri_srcclkena_mask_b;
+	/* [26] */
+	uint8_t reg_bak_psri_infra_req_mask_b;
+	/* [27] */
+	uint8_t reg_bak_psri_apsrc_req_mask_b;
+	/* [28] */
+	uint8_t reg_bak_psri_vrf18_req_mask_b;
+	/* [29] */
+	uint8_t reg_bak_psri_ddr_en_mask_b;
+
+	/* SPM_SRC2_MASK */
+	/* [0] */
+	uint8_t reg_msdc0_srcclkena_mask_b;
+	/* [1] */
+	uint8_t reg_msdc0_infra_req_mask_b;
+	/* [2] */
+	uint8_t reg_msdc0_apsrc_req_mask_b;
+	/* [3] */
+	uint8_t reg_msdc0_vrf18_req_mask_b;
+	/* [4] */
+	uint8_t reg_msdc0_ddr_en_mask_b;
+	/* [5] */
+	uint8_t reg_msdc1_srcclkena_mask_b;
+	/* [6] */
+	uint8_t reg_msdc1_infra_req_mask_b;
+	/* [7] */
+	uint8_t reg_msdc1_apsrc_req_mask_b;
+	/* [8] */
+	uint8_t reg_msdc1_vrf18_req_mask_b;
+	/* [9] */
+	uint8_t reg_msdc1_ddr_en_mask_b;
+	/* [10] */
+	uint8_t reg_msdc2_srcclkena_mask_b;
+	/* [11] */
+	uint8_t reg_msdc2_infra_req_mask_b;
+	/* [12] */
+	uint8_t reg_msdc2_apsrc_req_mask_b;
+	/* [13] */
+	uint8_t reg_msdc2_vrf18_req_mask_b;
+	/* [14] */
+	uint8_t reg_msdc2_ddr_en_mask_b;
+	/* [15] */
+	uint8_t reg_ufs_srcclkena_mask_b;
+	/* [16] */
+	uint8_t reg_ufs_infra_req_mask_b;
+	/* [17] */
+	uint8_t reg_ufs_apsrc_req_mask_b;
+	/* [18] */
+	uint8_t reg_ufs_vrf18_req_mask_b;
+	/* [19] */
+	uint8_t reg_ufs_ddr_en_mask_b;
+	/* [20] */
+	uint8_t reg_usb_srcclkena_mask_b;
+	/* [21] */
+	uint8_t reg_usb_infra_req_mask_b;
+	/* [22] */
+	uint8_t reg_usb_apsrc_req_mask_b;
+	/* [23] */
+	uint8_t reg_usb_vrf18_req_mask_b;
+	/* [24] */
+	uint8_t reg_usb_ddr_en_mask_b;
+	/* [25] */
+	uint8_t reg_pextp_p0_srcclkena_mask_b;
+	/* [26] */
+	uint8_t reg_pextp_p0_infra_req_mask_b;
+	/* [27] */
+	uint8_t reg_pextp_p0_apsrc_req_mask_b;
+	/* [28] */
+	uint8_t reg_pextp_p0_vrf18_req_mask_b;
+	/* [29] */
+	uint8_t reg_pextp_p0_ddr_en_mask_b;
+
+	/* SPM_SRC3_MASK */
+	/* [0] */
+	uint8_t reg_pextp_p1_srcclkena_mask_b;
+	/* [1] */
+	uint8_t reg_pextp_p1_infra_req_mask_b;
+	/* [2] */
+	uint8_t reg_pextp_p1_apsrc_req_mask_b;
+	/* [3] */
+	uint8_t reg_pextp_p1_vrf18_req_mask_b;
+	/* [4] */
+	uint8_t reg_pextp_p1_ddr_en_mask_b;
+	/* [5] */
+	uint8_t reg_gce0_infra_req_mask_b;
+	/* [6] */
+	uint8_t reg_gce0_apsrc_req_mask_b;
+	/* [7] */
+	uint8_t reg_gce0_vrf18_req_mask_b;
+	/* [8] */
+	uint8_t reg_gce0_ddr_en_mask_b;
+	/* [9] */
+	uint8_t reg_gce1_infra_req_mask_b;
+	/* [10] */
+	uint8_t reg_gce1_apsrc_req_mask_b;
+	/* [11] */
+	uint8_t reg_gce1_vrf18_req_mask_b;
+	/* [12] */
+	uint8_t reg_gce1_ddr_en_mask_b;
+	/* [13] */
+	uint8_t reg_spm_srcclkena_reserved_mask_b;
+	/* [14] */
+	uint8_t reg_spm_infra_req_reserved_mask_b;
+	/* [15] */
+	uint8_t reg_spm_apsrc_req_reserved_mask_b;
+	/* [16] */
+	uint8_t reg_spm_vrf18_req_reserved_mask_b;
+	/* [17] */
+	uint8_t reg_spm_ddr_en_reserved_mask_b;
+	/* [18] */
+	uint8_t reg_disp0_apsrc_req_mask_b;
+	/* [19] */
+	uint8_t reg_disp0_ddr_en_mask_b;
+	/* [20] */
+	uint8_t reg_disp1_apsrc_req_mask_b;
+	/* [21] */
+	uint8_t reg_disp1_ddr_en_mask_b;
+	/* [22] */
+	uint8_t reg_disp2_apsrc_req_mask_b;
+	/* [23] */
+	uint8_t reg_disp2_ddr_en_mask_b;
+	/* [24] */
+	uint8_t reg_disp3_apsrc_req_mask_b;
+	/* [25] */
+	uint8_t reg_disp3_ddr_en_mask_b;
+	/* [26] */
+	uint8_t reg_infrasys_apsrc_req_mask_b;
+	/* [27] */
+	uint8_t reg_infrasys_ddr_en_mask_b;
+	/* [28] */
+	uint8_t reg_cg_check_srcclkena_mask_b;
+	/* [29] */
+	uint8_t reg_cg_check_apsrc_req_mask_b;
+	/* [30] */
+	uint8_t reg_cg_check_vrf18_req_mask_b;
+	/* [31] */
+	uint8_t reg_cg_check_ddr_en_mask_b;
+
+	/* SPM_SRC4_MASK */
+	/* [8:0] */
+	uint32_t reg_mcusys_merge_apsrc_req_mask_b;
+	/* [17:9] */
+	uint32_t reg_mcusys_merge_ddr_en_mask_b;
+	/* [19:18] */
+	uint8_t reg_dramc_md32_infra_req_mask_b;
+	/* [21:20] */
+	uint8_t reg_dramc_md32_vrf18_req_mask_b;
+	/* [23:22] */
+	uint8_t reg_dramc_md32_ddr_en_mask_b;
+	/* [24] */
+	uint8_t reg_dvfsrc_event_trigger_mask_b;
+
+	/* SPM_WAKEUP_EVENT_MASK2 */
+	/* [3:0] */
+	uint8_t reg_sc_sw2spm_wakeup_mask_b;
+	/* [4] */
+	uint8_t reg_sc_adsp2spm_wakeup_mask_b;
+	/* [8:5] */
+	uint8_t reg_sc_sspm2spm_wakeup_mask_b;
+	/* [9] */
+	uint8_t reg_sc_scp2spm_wakeup_mask_b;
+	/* [10] */
+	uint8_t reg_csyspwrup_ack_mask;
+	/* [11] */
+	uint8_t reg_csyspwrup_req_mask;
+
+	/* SPM_WAKEUP_EVENT_MASK */
+	/* [31:0] */
+	uint32_t reg_wakeup_event_mask;
+
+	/* SPM_WAKEUP_EVENT_EXT_MASK */
+	/* [31:0] */
+	uint32_t reg_ext_wakeup_event_mask;
+};
+
+enum {
+	DISP_PWR_STA_MASK	= 0x1 << 20,
+	DISP_SRAM_PDN_MASK	= 0x1 << 8,
+	DISP_SRAM_ACK_MASK	= 0x1 << 12,
+	AUDIO_PWR_STA_MASK	= 0x1 << 21,
+	AUDIO_SRAM_PDN_MASK	= 0x1 << 8,
+	AUDIO_SRAM_ACK_MASK	= 0x1 << 12,
+};
 
 struct mtk_spm_regs {
 	u32 poweron_config_set;
@@ -496,7 +896,19 @@ struct mtk_spm_regs {
 	u32 spm_twam_window_len;
 	u32 spm_twam_idle_sel;
 	u32 spm_twam_event_clear;
-	u32 rsv_69a0[344];
+	u32 rsv_69a0[24];
+	u32 md32pcm_cfgreg_sw_rstn;
+	u32 rsv_a04[127];
+	u32 md32pcm_dma0_src;
+	u32 md32pcm_dma0_dst;
+	u32 md32pcm_dma0_wppt;
+	u32 md32pcm_dma0_wpto;
+	u32 md32pcm_dma0_count;
+	u32 md32pcm_dma0_con;
+	u32 md32pcm_dma0_start;
+	u32 rsv_c1c[2];
+	u32 md32pcm_dma0_rlct;
+	u32 rsv_c28[182];
 	u32 pmsr_last_dat;
 	u32 pmsr_last_cnt;
 	u32 pmsr_last_ack;
@@ -540,6 +952,20 @@ check_member(mtk_spm_regs, ulposc_con, 0x644);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
 
+struct pcm_desc {
+	u32 pmem_words;
+	u32 total_words;
+	u32 pmem_start;
+	u32 dmem_start;
+};
+
+struct dyna_load_pcm {
+	u8 *buf;		/* binary array */
+	struct pcm_desc desc;
+};
+
+int spm_init(void);
+
 static const struct power_domain_data disp[] = {
 	{
 		.pwr_con = &mtk_spm->vppsys0_pwr_con,
@@ -569,17 +995,10 @@ static const struct power_domain_data disp[] = {
 
 static const struct power_domain_data audio[] = {
 	{
-		.pwr_con = &mtk_spm->adsp_pwr_con,
-		.pwr_sta_mask = 0x1 << 10,
-		.sram_pdn_mask = 0x1 << 8,
-		.sram_ack_mask = 0x1 << 12,
-		.caps = SCPD_SRAM_ISO,
-	},
-	{
 		.pwr_con = &mtk_spm->audio_pwr_con,
-		.pwr_sta_mask = 0x1 << 8,
-		.sram_pdn_mask = 0x1 << 8,
-		.sram_ack_mask = 0x1 << 12,
+		.pwr_sta_mask = AUDIO_PWR_STA_MASK,
+		.sram_pdn_mask = AUDIO_SRAM_PDN_MASK,
+		.sram_ack_mask = AUDIO_SRAM_ACK_MASK,
 	},
 };
 

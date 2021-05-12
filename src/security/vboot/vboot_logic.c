@@ -244,12 +244,7 @@ static void check_boot_mode(struct vb2_context *ctx)
 	default:
 		printk(BIOS_ERR,
 		       "Communication error in getting Cr50 boot mode.\n");
-		if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
-			/* Continue to boot in recovery mode */
-			return;
 		vb2api_fail(ctx, VB2_RECOVERY_CR50_BOOT_MODE, rv);
-		vboot_save_data(ctx);
-		vboot_reboot();
 		return;
 	}
 
@@ -321,6 +316,17 @@ void verstage_main(void)
 	if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY) || CONFIG(VBOOT_ALWAYS_ENABLE_DISPLAY))
 		ctx->flags |= VB2_CONTEXT_DISPLAY_INIT;
 
+	/*
+	 * Get boot mode from GSC. This allows us to refuse to boot OS
+	 * (with VB2_CONTEXT_NO_BOOT) or to switch to developer mode (with
+	 * !VB2_CONTEXT_EC_TRUSTED).
+	 *
+	 * If there is an communication error, a recovery reason will be set and
+	 * vb2api_fw_phase1 will route us to recovery mode.
+	 */
+	if (CONFIG(TPM_CR50))
+		check_boot_mode(ctx);
+
 	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(ctx);
@@ -390,9 +396,6 @@ void verstage_main(void)
 		}
 		timestamp_add_now(TS_END_TPMPCR);
 	}
-
-	if (CONFIG(TPM_CR50))
-		check_boot_mode(ctx);
 
 	/* Lock TPM */
 

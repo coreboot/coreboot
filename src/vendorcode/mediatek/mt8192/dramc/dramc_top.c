@@ -475,7 +475,7 @@ int get_dram_freq_cnt(void)
 #if (FOR_DV_SIMULATION_USED==0)
 #if !__FLASH_TOOL_DA__ && !__ETT__
 
-void get_dram_rank_size(u64 dram_rank_size[DRAMC_MAX_RK])
+void get_dram_rank_size(u64 dram_rank_size[])
 {
 #ifdef COMBO_MCP
 	int index, rank_nr, i;

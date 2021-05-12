@@ -15,7 +15,7 @@ static void hybrid_graphics_init(sysinfo_t *sysinfo)
 	sysinfo->enable_peg = peg;
 }
 
-void get_mb_spd_addrmap(u8 *spd_addrmap)
+void get_mb_spd_addrmap(u8 spd_addrmap[4])
 {
 	spd_addrmap[0] = 0x50;
 	spd_addrmap[2] = 0x51;

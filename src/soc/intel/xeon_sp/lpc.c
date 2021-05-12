@@ -8,7 +8,7 @@
 
 #include <chip.h>
 
-void soc_get_gen_io_dec_range(uint32_t *gen_io_dec)
+void soc_get_gen_io_dec_range(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES])
 {
 	const config_t *config = config_of_soc();
 

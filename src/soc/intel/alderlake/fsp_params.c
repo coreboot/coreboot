@@ -12,6 +12,7 @@
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/tcss.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -94,6 +95,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	const struct microcode *microcode_file;
 	size_t microcode_len;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
+	FSPS_ARCH_UPD *pfsps_arch_upd = &supd->FspsArchUpd;
 	uint32_t enable_mask;
 
 	struct device *dev;
@@ -129,8 +131,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->D3ColdEnable = !config->TcssD3ColdDisable;
 
 	params->TcssAuxOri = config->TcssAuxOri;
-	for (i = 0; i < 8; i++)
-		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];
+
+	/* Explicitly clear this field to avoid using defaults */
+	memset(params->IomTypeCPortPadCfg, 0, sizeof(params->IomTypeCPortPadCfg));
 
 	/*
 	 * Set FSPS UPD ITbtConnectTopologyTimeoutInMs with value 0. FSP will
@@ -188,6 +191,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		if (config->tcss_ports[i].enable)
 			params->CpuUsb3OverCurrentPin[i] = config->tcss_ports[i].ocpin;
 	}
+
+	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
+	pfsps_arch_upd->EnableMultiPhaseSiliconInit = 1;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
@@ -298,11 +304,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 }
 
-int soc_fsp_multi_phase_init_is_enable(void)
-{
-	return 0;
-}
-
 /*
  * Callbacks for SoC/Mainboard specific overrides for FspMultiPhaseSiInit
  * This platform supports below MultiPhaseSIInit Phase(s):
@@ -315,6 +316,13 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 	switch (phase_index) {
 	case 1:
 		/* TCSS specific initialization here */
+		printk(BIOS_DEBUG, "FSP MultiPhaseSiInit %s/%s called\n",
+			__FILE__, __func__);
+
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS)) {
+			const config_t *config = config_of_soc();
+			tcss_configure(config->typec_aux_bias_pads);
+		}
 		break;
 	default:
 		break;

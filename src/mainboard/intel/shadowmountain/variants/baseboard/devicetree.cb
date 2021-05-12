@@ -14,8 +14,7 @@ chip soc/intel/alderlake
 
 	# TCSS
 	register "TcssAuxOri" = "1"
-	register "IomTypeCPortPadCfg[0]" = "0x09020005"
-	register "IomTypeCPortPadCfg[1]" = "0x09020006"
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A5, .pad_auxn_dc = GPP_A6}"
 
 	# Enable heci communication
 	register "HeciEnabled" = "1"

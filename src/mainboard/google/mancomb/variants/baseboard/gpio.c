@@ -51,7 +51,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/* HUB_RST_L */
-	PAD_GPO(GPIO_24, LOW),
+	PAD_GPO(GPIO_24, HIGH),
 	/* GPIO_25: Not available */
 	/* TODO: change back to PCIE_RST_L when we figure out why PCIE_RST doesn't go high. */
 	PAD_GPO(GPIO_26, HIGH),

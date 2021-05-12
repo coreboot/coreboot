@@ -133,14 +133,14 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 		[7] = { &mem_cfg->MemorySpdPtr14, &mem_cfg->MemorySpdPtr15, },
 	};
 	uint8_t *disable_dimm_upds[MRC_CHANNELS] = {
-		&mem_cfg->DisableDimmMc0Ch0,
-		&mem_cfg->DisableDimmMc0Ch1,
-		&mem_cfg->DisableDimmMc0Ch2,
-		&mem_cfg->DisableDimmMc0Ch3,
-		&mem_cfg->DisableDimmMc1Ch0,
-		&mem_cfg->DisableDimmMc1Ch1,
-		&mem_cfg->DisableDimmMc1Ch2,
-		&mem_cfg->DisableDimmMc1Ch3,
+		&mem_cfg->DisableMc0Ch0,
+		&mem_cfg->DisableMc0Ch1,
+		&mem_cfg->DisableMc0Ch2,
+		&mem_cfg->DisableMc0Ch3,
+		&mem_cfg->DisableMc1Ch0,
+		&mem_cfg->DisableMc1Ch1,
+		&mem_cfg->DisableMc1Ch2,
+		&mem_cfg->DisableMc1Ch3,
 	};
 	size_t ch, dimm;
 

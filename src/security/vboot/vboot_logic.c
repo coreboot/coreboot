@@ -212,9 +212,9 @@ static uint32_t extend_pcrs(struct vb2_context *ctx)
 		   vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
 }
 
-#define EC_EFS_BOOT_MODE_TRUSTED_RO	0x00
+#define EC_EFS_BOOT_MODE_VERIFIED_RW	0x00
 #define EC_EFS_BOOT_MODE_UNTRUSTED_RO	0x01
-#define EC_EFS_BOOT_MODE_VERIFIED_RW	0x02
+#define EC_EFS_BOOT_MODE_TRUSTED_RO	0x02
 
 static const char *get_boot_mode_string(uint8_t boot_mode)
 {

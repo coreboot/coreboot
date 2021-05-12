@@ -3,10 +3,31 @@
 #include <arch/mmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <stdint.h>
 #include <types.h>
 
 #include "txt.h"
 #include "txt_register.h"
+
+const char *intel_txt_processor_error_type(uint8_t type)
+{
+	static const char *const names[] = {
+		[0]  = "Legacy Shutdown",
+		[5]  = "Load memory type error in ACM area",
+		[6]  = "Unrecognized ACM format",
+		[7]  = "Failure to authenticate",
+		[8]  = "Invalid ACM format",
+		[9]  = "Unexpected Snoop hit",
+		[10] = "Invalid event",
+		[11] = "Invalid MLE",
+		[12] = "Machine check event",
+		[13] = "VMXAbort",
+		[14] = "AC memory corruption",
+		[15] = "Illegal voltage/bus ratio",
+	};
+
+	return type < ARRAY_SIZE(names) && names[type] ? names[type] : "Unknown";
+}
 
 /**
  * Logs microcode or SINIT ACM errors.
@@ -24,49 +45,8 @@ static void log_txt_error(const char *phase)
 		else
 			printk(BIOS_ERR, " Caused by: Processor\n");
 
-		printk(BIOS_ERR, " Type: ");
-
-		switch (txt_error & TXT_ERROR_MASK) {
-		case 0:
-			printk(BIOS_ERR, "Legacy Shutdown\n");
-			break;
-		case 5:
-			printk(BIOS_ERR, "Load memory type error in ACM area\n");
-			break;
-		case 6:
-			printk(BIOS_ERR, "Unrecognized ACM format\n");
-			break;
-		case 7:
-			printk(BIOS_ERR, "Failure to authenticate\n");
-			break;
-		case 8:
-			printk(BIOS_ERR, "Invalid ACM format\n");
-			break;
-		case 9:
-			printk(BIOS_ERR, "Unexpected Snoop hit\n");
-			break;
-		case 10:
-			printk(BIOS_ERR, "Invalid event\n");
-			break;
-		case 11:
-			printk(BIOS_ERR, "Invalid MLE\n");
-			break;
-		case 12:
-			printk(BIOS_ERR, "Machine check event\n");
-			break;
-		case 13:
-			printk(BIOS_ERR, "VMXAbort\n");
-			break;
-		case 14:
-			printk(BIOS_ERR, "AC memory corruption\n");
-			break;
-		case 15:
-			printk(BIOS_ERR, "Illegal voltage/bus ratio\n");
-			break;
-		default:
-			printk(BIOS_ERR, "unknown\n");
-			break;
-		}
+		printk(BIOS_ERR, " Type: %s\n",
+		       intel_txt_processor_error_type(txt_error & TXT_ERROR_MASK));
 	}
 }
 

@@ -215,7 +215,8 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 
 	to_tpm_uint32(cmd.buffer + tpm_nv_write_cmd.index, index);
 	to_tpm_uint32(cmd.buffer + tpm_nv_write_cmd.length, length);
-	memcpy(cmd.buffer + tpm_nv_write_cmd.data, data, length);
+	if (length > 0)
+		memcpy(cmd.buffer + tpm_nv_write_cmd.data, data, length);
 
 	return tlcl_send_receive(cmd.buffer, response, sizeof(response));
 }

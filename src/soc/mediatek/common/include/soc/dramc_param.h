@@ -129,7 +129,7 @@ struct ddr_base_info {
 	u32 support_ranks;
 	u64 rank_size[RANK_MAX];
 	struct emi_mdl emi_config;
-	dram_cbt_mode cbt_mode[RANK_MAX];
+	DRAM_CBT_MODE_T cbt_mode[RANK_MAX];
 };
 
 struct dramc_data {

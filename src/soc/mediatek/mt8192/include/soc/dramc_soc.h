@@ -36,7 +36,7 @@ typedef enum {
 typedef enum {
 	CBT_NORMAL_MODE = 0,
 	CBT_BYTE_MODE1
-} DRAM_CBT_MODE_T, dram_cbt_mode;
+} DRAM_CBT_MODE_T;
 
 #define DRAM_DFS_SHU_MAX	DRAM_DFS_SHUFFLE_MAX
 

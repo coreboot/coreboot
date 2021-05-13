@@ -22,10 +22,14 @@ verstage-y += ../common/wdt.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/clkbuf.c
+romstage-y += ../common/dram_init.c
+romstage-y += ../common/dramc_param.c
 romstage-y += emi.c
 romstage-y += ../common/flash_controller.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/i2c.c i2c.c
+romstage-y += ../common/memory.c
+romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c mmu_operations.c
 romstage-y += ../common/pll.c pll.c
 romstage-y += scp.c
@@ -55,8 +59,19 @@ ramstage-y += ../common/usb.c usb.c
 ramstage-y += ../common/wdt.c
 ramstage-y += mt6360.c
 
+MT8195_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8195
+
+DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
+$(DRAM_CBFS)-file := $(MT8195_BLOB_DIR)/dram.elf
+$(DRAM_CBFS)-type := stage
+$(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
+	cbfs-files-y += $(DRAM_CBFS)
+endif
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8195/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
+CPPFLAGS_common += -Isrc/vendorcode/mediatek/mt8195/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@

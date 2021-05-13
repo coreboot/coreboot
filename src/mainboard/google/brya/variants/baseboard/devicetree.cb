@@ -25,6 +25,9 @@ chip soc/intel/alderlake
 		.tdp_pl2_override = 55,
 	}"
 
+	# Enable heci communication
+	register "HeciEnabled" = "1"
+
 	# This disabled autonomous GPIO power management, otherwise
 	# old cr50 FW only supports short pulses; need to clarify
 	# the minimum PCH IRQ pulse width with Intel, b/180111628

@@ -5,29 +5,29 @@
 #include <console/console.h>
 #include "gm45.h"
 
-#define CxRECy_MCHBAR(x, y)	(0x14a0 + (x * 0x0100) + ((3 - y) * 4))
+#define CxRECy_MCHBAR(x, y)	(0x14a0 + ((x) * 0x0100) + ((3 - (y)) * 4))
 #define CxRECy_SHIFT_L		0
 #define CxRECy_MASK_L		(3 << CxRECy_SHIFT_L)
 #define CxRECy_SHIFT_H		16
 #define CxRECy_MASK_H		(3 << CxRECy_SHIFT_H)
 #define CxRECy_T_SHIFT		28
 #define CxRECy_T_MASK		(0xf << CxRECy_T_SHIFT)
-#define CxRECy_T(t)		((t << CxRECy_T_SHIFT) & CxRECy_T_MASK)
+#define CxRECy_T(t)		(((t) << CxRECy_T_SHIFT) & CxRECy_T_MASK)
 #define CxRECy_P_SHIFT		24
 #define CxRECy_P_MASK		(0x7 << CxRECy_P_SHIFT)
-#define CxRECy_P(p)		((p << CxRECy_P_SHIFT) & CxRECy_P_MASK)
+#define CxRECy_P(p)		(((p) << CxRECy_P_SHIFT) & CxRECy_P_MASK)
 #define CxRECy_PH_SHIFT		22
 #define CxRECy_PH_MASK		(0x3 << CxRECy_PH_SHIFT)
-#define CxRECy_PH(p)		((p << CxRECy_PH_SHIFT) & CxRECy_PH_MASK)
+#define CxRECy_PH(p)		(((p) << CxRECy_PH_SHIFT) & CxRECy_PH_MASK)
 #define CxRECy_PM_SHIFT		20
 #define CxRECy_PM_MASK		(0x3 << CxRECy_PM_SHIFT)
-#define CxRECy_PM(p)		((p << CxRECy_PM_SHIFT) & CxRECy_PM_MASK)
+#define CxRECy_PM(p)		(((p) << CxRECy_PM_SHIFT) & CxRECy_PM_MASK)
 #define CxRECy_TIMING_MASK	(CxRECy_T_MASK | CxRECy_P_MASK | \
 				 CxRECy_PH_MASK | CxRECy_PM_MASK)
 
 #define CxDRT3_C_SHIFT	7
 #define CxDRT3_C_MASK	(0xf << CxDRT3_C_SHIFT)
-#define CxDRT3_C(c)	((c << CxDRT3_C_SHIFT) & CxDRT3_C_MASK)
+#define CxDRT3_C(c)	(((c) << CxDRT3_C_SHIFT) & CxDRT3_C_MASK)
 /* group to byte-lane mapping: (cardF X group X 2 per group) */
 static const char bytelane_map[2][4][2] = {
 /* A,B,C */{ { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 } },

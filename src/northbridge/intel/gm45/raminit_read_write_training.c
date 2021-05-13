@@ -12,13 +12,13 @@ typedef struct {
 } address_bunch_t;
 
 /* Read Training. */
-#define CxRDTy_MCHBAR(ch, bl)	(0x14b0 + (ch * 0x0100) + ((7 - bl) * 4))
+#define CxRDTy_MCHBAR(ch, bl)	(0x14b0 + ((ch) * 0x0100) + ((7 - (bl)) * 4))
 #define CxRDTy_T_SHIFT		20
 #define CxRDTy_T_MASK		(0xf << CxRDTy_T_SHIFT)
-#define CxRDTy_T(t)		((t << CxRDTy_T_SHIFT) & CxRDTy_T_MASK)
+#define CxRDTy_T(t)		(((t) << CxRDTy_T_SHIFT) & CxRDTy_T_MASK)
 #define CxRDTy_P_SHIFT		16
 #define CxRDTy_P_MASK		(0x7 << CxRDTy_P_SHIFT)
-#define CxRDTy_P(p)		((p << CxRDTy_P_SHIFT) & CxRDTy_P_MASK)
+#define CxRDTy_P(p)		(((p) << CxRDTy_P_SHIFT) & CxRDTy_P_MASK)
 static const u32 read_training_schedule[] = {
 	0xfefefefe, 0x7f7f7f7f, 0xbebebebe, 0xdfdfdfdf,
 	0xeeeeeeee, 0xf7f7f7f7, 0xfafafafa, 0xfdfdfdfd,
@@ -276,13 +276,13 @@ void raminit_read_training(const dimminfo_t *const dimms, const int s3resume)
 /* Write Training. */
 #define CxWRTy_T_SHIFT		28
 #define CxWRTy_T_MASK		(0xf << CxWRTy_T_SHIFT)
-#define CxWRTy_T(t)		((t << CxWRTy_T_SHIFT) & CxWRTy_T_MASK)
+#define CxWRTy_T(t)		(((t) << CxWRTy_T_SHIFT) & CxWRTy_T_MASK)
 #define CxWRTy_P_SHIFT		24
 #define CxWRTy_P_MASK		(0x7 << CxWRTy_P_SHIFT)
-#define CxWRTy_P(p)		((p << CxWRTy_P_SHIFT) & CxWRTy_P_MASK)
+#define CxWRTy_P(p)		(((p) << CxWRTy_P_SHIFT) & CxWRTy_P_MASK)
 #define CxWRTy_F_SHIFT		18
 #define CxWRTy_F_MASK		(0x3 << CxWRTy_F_SHIFT)
-#define CxWRTy_F(f)		((f << CxWRTy_F_SHIFT) & CxWRTy_F_MASK)
+#define CxWRTy_F(f)		(((f) << CxWRTy_F_SHIFT) & CxWRTy_F_MASK)
 #define CxWRTy_D_SHIFT		16
 #define CxWRTy_D_MASK		(0x3 << CxWRTy_D_SHIFT)
 #define CxWRTy_BELOW_D		(0x3 << CxWRTy_D_SHIFT)

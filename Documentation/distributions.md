@@ -29,6 +29,13 @@ ships with coreboot and support upstream maintenance for the devices through a
 third party, [3mdeb](https://3mdeb.com). They provide current and tested
 firmware binaries on [GitHub](https://pcengines.github.io).
 
+### System76
+
+[System76](https://system76.com/) manufactures Linux laptops, desktops, and
+servers. Some models are sold with [System76 Open
+Firmware](https://github.com/system76/firmware-open), an open source
+distribution of coreboot, EDK2, and System76 firmware applications.
+
 ### Purism
 
 [Purism](https://www.puri.sm) sells laptops with a focus on user privacy and

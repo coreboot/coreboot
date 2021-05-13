@@ -8,13 +8,6 @@ and those providing after-market firmware to extend the usefulness of devices.
 
 ## Hardware shipping with coreboot
 
-### Purism
-
-[Purism](https://www.puri.sm) sells laptops with a focus on user privacy and
-security; part of that effort is to minimize the amount of proprietary and/or
-binary code. Their laptops ship with a blob-free OS and coreboot firmware
-with a neutralized Intel Management Engine (ME) and SeaBIOS as the payload.
-
 ### ChromeOS Devices
 
 All ChromeOS devices ([Chromebooks](https://chromebookdb.com/), Chromeboxes,
@@ -35,6 +28,13 @@ ships with coreboot firmware.
 ships with coreboot and support upstream maintenance for the devices through a
 third party, [3mdeb](https://3mdeb.com). They provide current and tested
 firmware binaries on [GitHub](https://pcengines.github.io).
+
+### Purism
+
+[Purism](https://www.puri.sm) sells laptops with a focus on user privacy and
+security; part of that effort is to minimize the amount of proprietary and/or
+binary code. Their laptops ship with a blob-free OS and coreboot firmware
+with a neutralized Intel Management Engine (ME) and SeaBIOS as the payload.
 
 ## After-market firmware
 

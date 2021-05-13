@@ -240,6 +240,8 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
 /* Enable WWAN & WLAN */
+	/* EN_PWR_WWAN_X */
+	PAD_GPO(GPIO_8, HIGH),
 	/* WWAN_RST_L */
 	PAD_GPO(GPIO_24, HIGH),
 	/* WWAN_DISABLE */

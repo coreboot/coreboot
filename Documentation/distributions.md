@@ -29,7 +29,6 @@ is open source as well.
 [Libretrend](https://libretrend.com) sells the Librebox, a NUC-like PC which
 ships with coreboot firmware.
 
-
 ### PC Engines APUs
 
 [PC Engines](https://pcengines.ch) designs and sells embedded PC hardware that

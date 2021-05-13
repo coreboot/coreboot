@@ -112,7 +112,7 @@ PSP_SOFTFUSE_BITS += 29
 endif
 
 # Use additional Soft Fuse bits specified in Kconfig
-PSP_SOFTFUSE_BITS += $(CONFIG_PSP_SOFTFUSE_BITS)
+PSP_SOFTFUSE_BITS += $(call strip_quotes, $(CONFIG_PSP_SOFTFUSE_BITS))
 
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)

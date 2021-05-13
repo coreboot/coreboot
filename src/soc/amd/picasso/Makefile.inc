@@ -107,7 +107,7 @@ PSP_SOFTFUSE_BITS += 29
 endif
 
 # Use additional Soft Fuse bits specified in Kconfig
-PSP_SOFTFUSE_BITS += $(CONFIG_PSP_SOFTFUSE_BITS)
+PSP_SOFTFUSE_BITS += $(call strip_quotes, $(CONFIG_PSP_SOFTFUSE_BITS))
 
 ifeq ($(CONFIG_PSP_LOAD_S0I3_FW),y)
 OPT_PSP_LOAD_S0I3_FW="--load-s0i3"

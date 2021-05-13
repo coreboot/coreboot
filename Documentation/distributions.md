@@ -20,8 +20,8 @@ with a neutralized Intel Management Engine (ME) and SeaBIOS as the payload.
 All ChromeOS devices ([Chromebooks](https://chromebookdb.com/), Chromeboxes,
 Chromebit, etc) released from 2012 onward use coreboot for their main system
 firmware. Additionally, starting with the 2013 Chromebook Pixel, the firmware
-running on the Embedded Controller (EC - a small microcontroller which provides
-functions like battery management, keyboard support, and sensor interfacing)
+running on the Embedded Controller (EC) – a small microcontroller which provides
+functions like battery management, keyboard support, and sensor interfacing –
 is open source as well.
 
 ### Libretrend

@@ -79,8 +79,8 @@ static const fsp_dxio_descriptor mancomb_czn_dxio_descriptors[] = {
 
 /* TODO: verify the DDI table, since this is mostly an educated guess right now */
 static const fsp_ddi_descriptor mancomb_czn_ddi_descriptors[] = {
-	{ /* DDI0 - eDP */
-		.connector_type = DDI_UNUSED_TYPE,
+	{ /* DDI0 - DP */
+		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
 		.hdp_index = DDI_HDP1
 	},

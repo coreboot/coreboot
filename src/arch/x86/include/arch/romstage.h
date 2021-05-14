@@ -16,17 +16,15 @@ void mainboard_romstage_entry(void);
  */
 
 struct postcar_frame {
-	uintptr_t stack;
 	int skip_common_mtrr;
-	struct var_mtrr_context ctx;
+	struct var_mtrr_context *mtrr;
 };
 
 /*
- * Initialize postcar_frame object allocating stack from cbmem,
- * with stack_size == 0, default 4 KiB is allocated.
+ * Initialize postcar_frame object.
  * Returns 0 on success, < 0 on error.
  */
-int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size);
+int postcar_frame_init(struct postcar_frame *pcf);
 
 /*
  * Add variable MTRR covering the provided range with MTRR type.

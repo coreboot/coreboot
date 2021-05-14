@@ -13,65 +13,32 @@
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
 
-static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
+static size_t var_mtrr_ctx_size(void)
 {
-	uint32_t *ptr;
-
-	pcf->stack -= sizeof(val);
-	ptr = (void *)pcf->stack;
-	*ptr = val;
+	int mtrr_count = get_var_mtrr_count();
+	return sizeof(struct var_mtrr_context) + mtrr_count * 2 * sizeof(msr_t);
 }
 
-static void postcar_frame_prepare(struct postcar_frame *pcf)
+int postcar_frame_init(struct postcar_frame *pcf)
 {
-	var_mtrr_context_init(&pcf->ctx, pcf);
-}
+	struct var_mtrr_context *ctx;
 
-int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
-{
-	void *stack;
-
-	/*
-	 * Use default postcar stack size of 4 KiB. This value should
-	 * not be decreased, because if mainboards use vboot, 1 KiB will
-	 * not be enough anymore.
-	 */
-
-	if (stack_size == 0)
-		stack_size = 4 * KiB;
-
-	stack = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, stack_size);
-	if (stack == NULL) {
-		printk(BIOS_ERR, "Couldn't add %zd byte stack in cbmem.\n",
-			stack_size);
+	ctx = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, var_mtrr_ctx_size());
+	if (ctx == NULL) {
+		printk(BIOS_ERR, "Couldn't add var_mtrr_ctx setup in cbmem.\n");
 		return -1;
 	}
 
-	postcar_frame_prepare(pcf);
-	pcf->stack = (uintptr_t)stack;
-	pcf->stack += stack_size;
+	pcf->mtrr = ctx;
+	var_mtrr_context_init(pcf->mtrr);
+
 	return 0;
-}
-
-static void postcar_var_mtrr_set(const struct var_mtrr_context *ctx,
-				uintptr_t addr, size_t size,
-				msr_t base, msr_t mask)
-{
-	struct postcar_frame *pcf = ctx->arg;
-
-	printk(BIOS_DEBUG, "MTRR Range: Start=%lx End=%lx (Size %zx)\n",
-			addr, addr + size - 1, size);
-
-	stack_push(pcf, mask.hi);
-	stack_push(pcf, mask.lo);
-	stack_push(pcf, base.hi);
-	stack_push(pcf, base.lo);
 }
 
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,
 				uintptr_t addr, size_t size, int type)
 {
-	var_mtrr_set_with_cb(&pcf->ctx, addr, size, type, postcar_var_mtrr_set);
+	var_mtrr_set(pcf->mtrr, addr, size, type);
 }
 
 void postcar_frame_add_romcache(struct postcar_frame *pcf, int type)
@@ -94,7 +61,7 @@ static void postcar_frame_common_mtrrs(struct postcar_frame *pcf)
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 void prepare_and_run_postcar(struct postcar_frame *pcf)
 {
-	if (postcar_frame_init(pcf, 0))
+	if (postcar_frame_init(pcf))
 		die("Unable to initialize postcar frame.\n");
 
 	fill_postcar_frame(pcf);
@@ -105,25 +72,15 @@ void prepare_and_run_postcar(struct postcar_frame *pcf)
 	/* We do not return here. */
 }
 
-static void postcar_commit_mtrrs(struct postcar_frame *pcf)
+static void finalize_load(uintptr_t *reloc_params, uintptr_t mtrr_frame_ptr)
 {
-	/*
-	 * Place the number of used variable MTRRs on stack then max number
-	 * of variable MTRRs supported in the system.
-	 */
-	stack_push(pcf, pcf->ctx.used_var_mtrrs);
-	stack_push(pcf, pcf->ctx.max_var_mtrrs);
-}
-
-static void finalize_load(uintptr_t *stack_top_ptr, uintptr_t stack_top)
-{
-	*stack_top_ptr = stack_top;
+	*reloc_params = mtrr_frame_ptr;
 	/*
 	 * Signal to rest of system that another update was made to the
 	 * postcar program prior to running it.
 	 */
-	prog_segment_loaded((uintptr_t)stack_top_ptr, sizeof(uintptr_t),
-		SEG_FINAL);
+	prog_segment_loaded((uintptr_t)reloc_params, sizeof(uintptr_t), SEG_FINAL);
+	prog_segment_loaded((uintptr_t)mtrr_frame_ptr, var_mtrr_ctx_size(), SEG_FINAL);
 }
 
 static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
@@ -144,7 +101,7 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 		die_with_post_code(POST_INVALID_ROM,
 				   "No parameters found in after CAR program.\n");
 
-	finalize_load(rsl.params, pcf->stack);
+	finalize_load(rsl.params, (uintptr_t)pcf->mtrr);
 
 	stage_cache_add(STAGE_POSTCAR, prog);
 }
@@ -177,14 +134,12 @@ void run_postcar_phase(struct postcar_frame *pcf)
 	struct prog prog =
 		PROG_INIT(PROG_POSTCAR, CONFIG_CBFS_PREFIX "/postcar");
 
-	postcar_commit_mtrrs(pcf);
-
 	if (resume_from_stage_cache()) {
 		stage_cache_load_stage(STAGE_POSTCAR, &prog);
 		/* This is here to allow platforms to pass different stack
 		   parameters between S3 resume and normal boot. On the
 		   platforms where the values are the same it's a nop. */
-		finalize_load(prog.arg, pcf->stack);
+		finalize_load(prog.arg, (uintptr_t)pcf->mtrr);
 
 		if (prog_entry(&prog) == NULL)
 			postcar_cache_invalid();

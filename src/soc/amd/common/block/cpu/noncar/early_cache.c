@@ -1,11 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <assert.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <soc/iomap.h>
+#include <stdint.h>
+
+/* Allocate a static amount of stack for the MTRR context. */
+#define MAX_VAR_MTRR_USE 10
 
 /*
  * PSP performs the memory training and setting up DRAM map prior to x86 cores being released.
@@ -19,9 +24,15 @@ void early_cache_setup(void)
 	msr_t mtrr_def_type;
 	msr_t fixed_mtrr_ram;
 	msr_t fixed_mtrr_mmio;
-	struct var_mtrr_context mtrr_ctx;
+	union mtrr_ctx {
+		struct var_mtrr_context ctx;
+		char buffer[sizeof(struct var_mtrr_context)
+			    + 2 * MAX_VAR_MTRR_USE * sizeof(msr_t)];
 
-	var_mtrr_context_init(&mtrr_ctx, NULL);
+	} mtrr_ctx;
+
+	var_mtrr_context_init(&mtrr_ctx.ctx);
+	mtrr_ctx.ctx.max_var_mtrrs = MIN(MAX_VAR_MTRR_USE, mtrr_ctx.ctx.max_var_mtrrs);
 	top_mem = rdmsr(TOP_MEM);
 	/* Enable RdDram and WrDram attributes in fixed MTRRs. */
 	sys_cfg = rdmsr(SYSCFG_MSR);
@@ -49,11 +60,11 @@ void early_cache_setup(void)
 
 	wrmsr(SYSCFG_MSR, sys_cfg);
 
-	clear_all_var_mtrr();
-
-	var_mtrr_set(&mtrr_ctx, 0, ALIGN_DOWN(top_mem.lo, 8*MiB), MTRR_TYPE_WRBACK);
+	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(top_mem.lo, 8*MiB), MTRR_TYPE_WRBACK);
 	/* TODO: check if we should always mark 16 MByte below 4 GByte as WRPROT */
-	var_mtrr_set(&mtrr_ctx, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+
+	commit_mtrr_setup(&mtrr_ctx.ctx);
 
 	/* Set up RAM caching for everything below 1MiB except for 0xa0000-0xc0000 . */
 	wrmsr(MTRR_FIX_64K_00000, fixed_mtrr_ram);

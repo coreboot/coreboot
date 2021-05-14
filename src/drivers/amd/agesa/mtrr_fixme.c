@@ -58,7 +58,7 @@ void recover_postcar_frame(struct postcar_frame *pcf, int s3resume)
 
 	/* Replicate non-UC MTRRs as left behind by AGESA.
 	 */
-	for (i = 0; i < pcf->ctx.max_var_mtrrs; i++) {
+	for (i = 0; i < pcf->mtrr->max_var_mtrrs; i++) {
 		mask = rdmsr(MTRR_PHYS_MASK(i));
 		base = rdmsr(MTRR_PHYS_BASE(i));
 		u32 size = ~(mask.lo & ~0xfff) + 1;

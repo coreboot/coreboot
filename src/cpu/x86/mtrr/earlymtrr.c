@@ -5,20 +5,17 @@
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <commonlib/bsd/helpers.h>
+#include <stdint.h>
 
-void var_mtrr_context_init(struct var_mtrr_context *ctx, void *arg)
+void var_mtrr_context_init(struct var_mtrr_context *ctx)
 {
-	ctx->upper_mask = (1U << (cpu_phys_address_size() - 32)) - 1;
 	ctx->max_var_mtrrs = get_var_mtrr_count();
 	ctx->used_var_mtrrs = 0;
-	ctx->arg = arg;
 }
 
-int var_mtrr_set_with_cb(struct var_mtrr_context *ctx, uintptr_t addr, size_t size,
-			int type, void (*callback)(const struct var_mtrr_context *ctx,
-						uintptr_t base_addr, size_t size,
-						msr_t base, msr_t mask))
+int var_mtrr_set(struct var_mtrr_context *ctx, uintptr_t addr, size_t size, int type)
 {
+	const uint32_t upper_mask = (1U << (cpu_phys_address_size() - 32)) - 1;
 	/* Utilize additional MTRRs if the specified size is greater than the
 	   base address alignment. */
 	while (size != 0) {
@@ -47,9 +44,10 @@ int var_mtrr_set_with_cb(struct var_mtrr_context *ctx, uintptr_t addr, size_t si
 
 		base.hi = (uint64_t)addr >> 32;
 		base.lo = addr | type;
-		mask.hi = ctx->upper_mask;
+		mask.hi = upper_mask;
 		mask.lo = ~(mtrr_size - 1) | MTRR_PHYS_MASK_VALID;
-		callback(ctx, addr, mtrr_size, base, mask);
+		ctx->mtrr[ctx->used_var_mtrrs].base = base;
+		ctx->mtrr[ctx->used_var_mtrrs].mask = mask;
 		ctx->used_var_mtrrs++;
 
 		size -= mtrr_size;
@@ -59,16 +57,25 @@ int var_mtrr_set_with_cb(struct var_mtrr_context *ctx, uintptr_t addr, size_t si
 	return 0;
 }
 
-static void set_mtrr(const struct var_mtrr_context *ctx, uintptr_t base_addr, size_t size,
-			msr_t base, msr_t mask)
-{
-	int i = var_mtrr_context_current_mtrr(ctx);
+/* Romstage sets up a MTRR context in cbmem and sets up this pointer in postcar stage. */
+__attribute__((used, __section__(".module_parameters"))) const volatile uintptr_t post_car_mtrrs;
 
-	wrmsr(MTRR_PHYS_BASE(i), base);
-	wrmsr(MTRR_PHYS_MASK(i), mask);
+void commit_mtrr_setup(const struct var_mtrr_context *ctx)
+{
+	clear_all_var_mtrr();
+
+	for (int i = 0; i < ctx->used_var_mtrrs; i++) {
+		wrmsr(MTRR_PHYS_BASE(i), ctx->mtrr[i].base);
+		wrmsr(MTRR_PHYS_MASK(i), ctx->mtrr[i].mask);
+	}
+	/* Enable MTRR */
+	msr_t mtrr_def_type = rdmsr(MTRR_DEF_TYPE_MSR);
+	mtrr_def_type.lo &= MTRR_DEF_TYPE_MASK;
+	mtrr_def_type.lo |= MTRR_DEF_TYPE_EN;
+	wrmsr(MTRR_DEF_TYPE_MSR, mtrr_def_type);
 }
 
-int var_mtrr_set(struct var_mtrr_context *ctx, uintptr_t addr, size_t size, int type)
+void postcar_mtrr_setup(void)
 {
-	return var_mtrr_set_with_cb(ctx, addr, size, type, set_mtrr);
+	commit_mtrr_setup((const struct var_mtrr_context *)post_car_mtrrs);
 }

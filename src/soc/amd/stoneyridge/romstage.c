@@ -121,7 +121,7 @@ asmlinkage void car_stage_entry(void)
 		smm_list_regions();
 
 	post_code(0x44);
-	if (postcar_frame_init(&pcf, 0))
+	if (postcar_frame_init(&pcf))
 		die("Unable to initialize postcar frame.\n");
 
 	/*

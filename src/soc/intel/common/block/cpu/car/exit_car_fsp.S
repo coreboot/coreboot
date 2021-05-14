@@ -17,7 +17,7 @@
 chipset_teardown_car:
 
 	/* Set up new stack. */
-	mov	post_car_stack_top, %esp
+	mov	_estack, %esp
 	/* Align the stack. */
 	andl	$0xfffffff0, %esp
 

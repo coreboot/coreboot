@@ -35,6 +35,18 @@ post_car_stack_top:
 .endm
 #endif
 
+/* Place the stack in the bss section. It's not necessary to define it in the
+ * the linker script. */
+	.section .bss, "aw", @nobits
+.global _stack
+.global _estack
+.global _stack_size
+
+_stack:
+.space CONFIG_STACK_SIZE
+_estack:
+.set _stack_size, _estack - _stack
+
 .text
 .global _start
 _start:
@@ -174,8 +186,10 @@ skip_clflush:
 	wrmsr
 #endif /* CONFIG_SOC_SETS_MSRS */
 
+	movl	$_estack, %esp
 	/* Align stack to 16 bytes at call instruction. */
 	andl	$0xfffffff0, %esp
+
 	/* Call into main for postcar. */
 	call main
 	/* Should never return. */

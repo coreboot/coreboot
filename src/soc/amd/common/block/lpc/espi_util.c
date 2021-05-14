@@ -945,6 +945,8 @@ int espi_setup(void)
 	uint32_t slave_caps;
 	const struct espi_config *cfg = espi_get_config();
 
+	printk(BIOS_SPEW, "Initializing ESPI.\n");
+
 	espi_write32(ESPI_GLOBAL_CONTROL_0, ESPI_AL_STOP_EN);
 	espi_write32(ESPI_GLOBAL_CONTROL_1, ESPI_RGCMD_INT(23) | ESPI_ERR_INT_SMI);
 	espi_write32(ESPI_SLAVE0_INT_EN, 0);
@@ -1035,6 +1037,8 @@ int espi_setup(void)
 
 	espi_write32(ESPI_GLOBAL_CONTROL_1,
 		     espi_read32(ESPI_GLOBAL_CONTROL_1) | ESPI_BUS_MASTER_EN);
+
+	printk(BIOS_SPEW, "Finished initializing ESPI.\n");
 
 	return 0;
 }

@@ -37,6 +37,7 @@
 #define SVC_DEBUG_PRINT                     0x06
 #define SVC_DEBUG_PRINT_EX                  0x1A
 #define SVC_GET_BOOT_MODE                   0x1C
+#define SVC_DELAY_IN_MICRO_SECONDS          0x2F
 #define SVC_GET_SPI_INFO                    0x60
 #define SVC_MAP_SPIROM_DEVICE               0x61
 #define SVC_UNMAP_SPIROM_DEVICE             0x62
@@ -44,6 +45,8 @@
 #define SVC_UNMAP_FCH_IO_DEVICE             0x64
 #define SVC_UPDATE_PSP_BIOS_DIR             0x65
 #define SVC_COPY_DATA_FROM_UAPP             0x66
+#define SVC_RESET_SYSTEM                    0x67
+#define SVC_READ_TIMER_VAL                  0x68
 
 enum psp_boot_mode {
 	PSP_BOOT_MODE_S0 = 0x0,
@@ -52,6 +55,13 @@ enum psp_boot_mode {
 	PSP_BOOT_MODE_S4 = 0x3,
 	PSP_BOOT_MODE_S5_COLD = 0x4,
 	PSP_BOOT_MODE_S5_WARM = 0x5,
+};
+
+enum reset_type
+{
+	RESET_TYPE_COLD    = 0,
+	RESET_TYPE_WARM    = 1,
+	RESET_TYPE_MAX     = 2,
 };
 
 enum fch_io_device {
@@ -79,6 +89,12 @@ struct spirom_info {
 	void *SpiBiosSysHubBase;
 	void *SpiBiosSmnBase;
 	uint32_t SpiBiosSize;
+};
+
+enum psp_timer_type {
+	PSP_TIMER_TYPE_CHRONO     = 0,
+	PSP_TIMER_TYPE_SECURE_RTC = 1,
+	PSP_TIMER_TYPE_MAX        = 2,
 };
 
 /*
@@ -204,6 +220,25 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
  *     size    - Total size of memory to copy (max 16Kbytes)
  */
 uint32_t svc_save_uapp_data(void *address, uint32_t size);
+
+/*
+ *    Read timer raw (currently CHRONO and RTC) value
+ *
+ *    Parameters:
+ *                type            - [in] Type of timer UAPP would like to read from
+ *                                  (currently CHRONO and RTC)
+ *                counter_value   - [out] return the raw counter value read from
+ *                                  RTC or CHRONO_LO/HI counter register
+ -----------------------------------------------------------------------------*/
+uint32_t svc_read_timer_val(enum psp_timer_type type, uint64_t *counter_value);
+
+/*
+ *    Reset the system
+ *
+ *   Parameters:
+ *      reset_type -   Cold or Warm reset
+ */
+uint32_t svc_reset_system(enum reset_type reset_type);
 
 /*
  *    Write postcode to Port-80

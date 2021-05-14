@@ -14,10 +14,10 @@ verstage-y += post.c
 verstage-y += printk.c
 verstage-y += psp_verstage.c
 verstage-y += psp.c
-ifneq ($(CONFIG_SOC_AMD_CEZANNE),y)
-# cezanne PSP does not support these functions yet (b/187906425)
 verstage-y += reset.c
 verstage-y += timer.c
+ifneq ($(CONFIG_SOC_AMD_CEZANNE),y)
+# cezanne PSP does not support these functions yet (b/187906425)
 verstage-y += vboot_crypto.c
 endif
 

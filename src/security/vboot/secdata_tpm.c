@@ -151,9 +151,9 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 	return tlcl_write(index, data, length);
 }
 
-static uint32_t set_space(const char *name, uint32_t index, const void *data,
-			  uint32_t length, const TPMA_NV nv_attributes,
-			  const uint8_t *nv_policy, size_t nv_policy_size)
+static uint32_t setup_space(const char *name, uint32_t index, const void *data,
+			    uint32_t length, const TPMA_NV nv_attributes,
+			    const uint8_t *nv_policy, size_t nv_policy_size)
 {
 	uint32_t rv;
 
@@ -178,35 +178,38 @@ static uint32_t set_space(const char *name, uint32_t index, const void *data,
 	return safe_write(index, data, length);
 }
 
-static uint32_t set_firmware_space(const void *firmware_blob)
+static uint32_t setup_firmware_space(struct vb2_context *ctx)
 {
-	return set_space("firmware", FIRMWARE_NV_INDEX, firmware_blob,
-			 VB2_SECDATA_FIRMWARE_SIZE, ro_space_attributes,
-			 pcr0_allowed_policy, sizeof(pcr0_allowed_policy));
+	uint32_t firmware_space_size = vb2api_secdata_firmware_create(ctx);
+
+	return setup_space("firmware", FIRMWARE_NV_INDEX,
+			   ctx->secdata_firmware, firmware_space_size,
+			   ro_space_attributes, pcr0_allowed_policy,
+			   sizeof(pcr0_allowed_policy));
 }
 
-static uint32_t set_kernel_space(const void *kernel_blob)
+static uint32_t setup_kernel_space(struct vb2_context *ctx)
 {
-	return set_space("kernel", KERNEL_NV_INDEX, kernel_blob,
-			 VB2_SECDATA_KERNEL_SIZE, rw_space_attributes, NULL, 0);
+	uint32_t kernel_space_size = vb2api_secdata_kernel_create(ctx);
+
+	return setup_space("kernel", KERNEL_NV_INDEX, ctx->secdata_kernel,
+			    kernel_space_size, rw_space_attributes, NULL, 0);
 }
 
 static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
 {
 	if (index == MRC_REC_HASH_NV_INDEX) {
-		return set_space("RO MRC Hash", index, data, HASH_NV_SIZE,
-				 ro_space_attributes, pcr0_allowed_policy,
+		return setup_space("RO MRC Hash", index, data, HASH_NV_SIZE,
+				   ro_space_attributes, pcr0_allowed_policy,
 				 sizeof(pcr0_allowed_policy));
 	} else {
-		return set_space("RW MRC Hash", index, data, HASH_NV_SIZE,
-				 rw_space_attributes, NULL, 0);
+		return setup_space("RW MRC Hash", index, data, HASH_NV_SIZE,
+				   rw_space_attributes, NULL, 0);
 	}
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
-	vb2api_secdata_kernel_create(ctx);
-
 	RETURN_ON_FAILURE(tlcl_force_clear());
 
 	/*
@@ -215,7 +218,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 * indication that TPM factory initialization was successfully
 	 * completed.
 	 */
-	RETURN_ON_FAILURE(set_kernel_space(ctx->secdata_kernel));
+	RETURN_ON_FAILURE(setup_kernel_space(ctx));
 
 	/*
 	 * Define and set rec hash space, if available.  No need to
@@ -227,7 +230,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_mrc_hash_space(MRC_REC_HASH_NV_INDEX, mrc_hash_data));
 
-	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata_firmware));
+	RETURN_ON_FAILURE(setup_firmware_space(ctx));
 
 	return TPM_SUCCESS;
 }

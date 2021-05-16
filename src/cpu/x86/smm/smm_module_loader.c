@@ -143,10 +143,10 @@ static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
 		for (i = 0; i < num_cpus; i++) {
 			printk(BIOS_DEBUG, "CPU 0x%x\n", i);
 			printk(BIOS_DEBUG,
-				"    smbase %zx  entry %zx\n",
+				"    smbase %lx  entry %lx\n",
 				cpus[i].smbase, cpus[i].entry);
 			printk(BIOS_DEBUG,
-				"           ss_start %zx  code_end %zx\n",
+				"           ss_start %lx  code_end %lx\n",
 				cpus[i].ss_start, cpus[i].code_end);
 			seg_count++;
 			if (seg_count >= cpus_in_segment) {
@@ -217,13 +217,13 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 	if (cpus[num_cpus].active) {
 		if (cpus[num_cpus - 1].smbase + SMM_ENTRY_OFFSET < stack_top) {
 			printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
-				printk(BIOS_ERR, "%s: smbase %zx, stack_top %lx\n",
+				printk(BIOS_ERR, "%s: smbase %lx, stack_top %lx\n",
 				       __func__, cpus[num_cpus].smbase, stack_top);
 				return 0;
 		}
 	}
 
-	printk(BIOS_INFO, "%s: smbase %zx, stack_top %lx\n",
+	printk(BIOS_INFO, "%s: smbase %lx, stack_top %lx\n",
 		__func__, cpus[num_cpus-1].smbase, stack_top);
 
 	/* start at 1, the first CPU stub code is already there */
@@ -231,9 +231,9 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 	for (i = 1; i < num_cpus; i++) {
 		memcpy((int *)cpus[i].code_start, (int *)cpus[0].code_start, size);
 		printk(BIOS_DEBUG,
-			"SMM Module: placing smm entry code at %zx,  cpu # 0x%x\n",
+			"SMM Module: placing smm entry code at %lx,  cpu # 0x%x\n",
 			cpus[i].code_start, i);
-		printk(BIOS_DEBUG, "%s: copying from %zx to %zx 0x%x bytes\n",
+		printk(BIOS_DEBUG, "%s: copying from %lx to %lx 0x%x bytes\n",
 			__func__, cpus[0].code_start, cpus[i].code_start, size);
 	}
 	return 1;

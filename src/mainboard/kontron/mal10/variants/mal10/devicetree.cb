@@ -74,6 +74,17 @@ chip soc/intel/apollolake
 				device generic 1.0 on # I2C
 					register "i2c_frequency" = "KEMPLD_I2C_FREQ_FAST_MODE_400KHZ"
 				end
+				device gpio 0 on      # GPIO
+					# The connector implements 8 GPIO lines only
+					register "gpio[0]"  = "KEMPLD_GPIO_INPUT"
+					register "gpio[1]"  = "KEMPLD_GPIO_INPUT"
+					register "gpio[2]"  = "KEMPLD_GPIO_INPUT"
+					register "gpio[3]"  = "KEMPLD_GPIO_INPUT"
+					register "gpio[4]"  = "KEMPLD_GPIO_OUTPUT_LOW"
+					register "gpio[5]"  = "KEMPLD_GPIO_OUTPUT_LOW"
+					register "gpio[6]"  = "KEMPLD_GPIO_OUTPUT_LOW"
+					register "gpio[7]"  = "KEMPLD_GPIO_OUTPUT_LOW"
+				end
 			end
 		end # LPC
 		device pci 1f.1 on      # SMBUS

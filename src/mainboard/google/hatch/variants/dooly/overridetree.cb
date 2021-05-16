@@ -348,6 +348,17 @@ chip soc/intel/cannonlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
+			chip drivers/generic/gpio_keys
+				register "name" = ""MUTE""
+				register "label" = ""mic_mute_switch""
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_D16)"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_DISABLED"
+				register "key.dev_name" = ""MMSW""
+				register "key.linux_code" = "SW_MUTE_DEVICE"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""mic_mute_switch_key""
+				device generic 0 on end
+			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
 		device pci 1d.2 on	# PCI Express Port 11 (X2 NVMe)

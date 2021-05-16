@@ -42,7 +42,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C19, NONE),
 
 	/* D16 : DMIC_ON_OFF MIC_SWITCH_L */
-	PAD_CFG_GPI(GPP_D16, NONE, DEEP),
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_D16, NONE, DEEP),
 
 	/* E2  : EN_PP_MST_OD */
 	PAD_CFG_GPO(GPP_E2, 1, DEEP),

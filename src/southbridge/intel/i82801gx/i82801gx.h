@@ -3,14 +3,6 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 #define SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 
-/*
- * It does not matter where we put the SMBus I/O base, as long as we
- * keep it consistent and don't interfere with other devices.  Stage2
- * will relocate this anyways.
- * Our solution is to have SMB initialization move the I/O to CONFIG_FIXED_SMBUS_IO_BASE
- * again. But handling static BARs is a generic problem that should be
- * solved in the device allocator.
- */
 /* TODO Make sure these don't get changed by stage2 */
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500

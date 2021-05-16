@@ -411,7 +411,7 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 
 	const size_t total_stack_size =
 		params->num_concurrent_stacks * params->per_cpu_stack_size;
-	printk(BIOS_DEBUG, "%s: stack_end = 0x%lx\n",
+	printk(BIOS_DEBUG, "%s: stack_end = 0x%zx\n",
 		__func__, stub_params->stack_top - total_stack_size);
 	printk(BIOS_DEBUG,
 		"%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);

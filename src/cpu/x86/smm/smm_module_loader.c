@@ -356,7 +356,7 @@ static int smm_module_setup_stub(void *const smbase, const size_t smm_size,
 	/* The save state size encroached over the first SMM entry point. */
 	if (size <= SMM_ENTRY_OFFSET) {
 		printk(BIOS_ERR, "%s: encroachment over SMM entry point\n", __func__);
-		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %lx\n",
+		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %zx\n",
 		       __func__, size, (size_t)SMM_ENTRY_OFFSET);
 		return -1;
 	}

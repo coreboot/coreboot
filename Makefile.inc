@@ -302,9 +302,9 @@ endef
 # arg1: source file
 # arg2: binary file name
 cbfs-files-processor-nvramtool= \
-	$(eval $(2): $(1) $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout | $(objutil)/nvramtool/nvramtool ; \
+	$(eval $(2): $(1) $(top)/$(call strip_quotes,$(CONFIG_CMOS_LAYOUT_FILE)) | $(objutil)/nvramtool/nvramtool ; \
 		printf "    CREATE     $(2) (from $(1))\n"; \
-		$(objutil)/nvramtool/nvramtool -y $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout -D $(2).tmp -p $(1) && \
+		$(objutil)/nvramtool/nvramtool -y $(top)/$(call strip_quotes,$(CONFIG_CMOS_LAYOUT_FILE)) -D $(2).tmp -p $(1) && \
 		mv $(2).tmp $(2))
 
 #######################################################################

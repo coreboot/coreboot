@@ -682,6 +682,11 @@ config HAVE_OPTION_TABLE
 	  file containing NVRAM/CMOS bit definitions.
 	  It defaults to 'n' but can be selected in mainboard/*/Kconfig.
 
+config CMOS_LAYOUT_FILE
+	string
+	default "src/mainboard/\$(MAINBOARDDIR)/cmos.layout"
+	depends on HAVE_OPTION_TABLE
+
 config PCI_IO_CFG_EXT
 	bool
 	default n

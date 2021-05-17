@@ -11,19 +11,21 @@ NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
 
+CMOS_LAYOUT_FILE := $(top)/$(call strip_quotes,$(CONFIG_CMOS_LAYOUT_FILE))
+
 cbfs-files-y += cmos_layout.bin
 cmos_layout.bin-file = $(obj)/cmos_layout.bin
 cmos_layout.bin-type = cmos_layout
 
-$(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(obj)/cmos_layout.bin: $(NVRAMTOOL) $(CMOS_LAYOUT_FILE)
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
+	$(NVRAMTOOL) -y $(CMOS_LAYOUT_FILE) -L $@
 
 OPTION_TABLE_H:=$(obj)/option_table.h
 
-$(OPTION_TABLE_H): $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(OPTION_TABLE_H): $(NVRAMTOOL) $(CMOS_LAYOUT_FILE)
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
-	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -H $@
+	$(NVRAMTOOL) -y $(CMOS_LAYOUT_FILE) -H $@
 endif # CONFIG_HAVE_OPTION_TABLE
 
 stripped_vgabios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_ID))

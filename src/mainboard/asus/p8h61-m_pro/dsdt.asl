@@ -19,11 +19,9 @@ DefinitionBlock(
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	Scope (\_SB) {
-		Device (PCI0)
-		{
+	Device (\_SB.PCI0)
+	{
 		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
-		}
 	}
 }

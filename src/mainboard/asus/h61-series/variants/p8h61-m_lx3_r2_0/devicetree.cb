@@ -1,4 +1,4 @@
-## SPDX-License-Identifier: GPL-2.0-only
+## SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/sandybridge
 	device cpu_cluster 0 on

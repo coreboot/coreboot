@@ -308,16 +308,6 @@ cbfs-files-processor-nvramtool= \
 		mv $(2).tmp $(2))
 
 #######################################################################
-# Link VSA binary to ELF-ish stage
-# arg1: source file
-# arg2: binary file name
-cbfs-files-processor-vsa= \
-	$(eval $(2): $(1) ; \
-		printf "    CREATE     $(2) (from $(1))\n"; \
-		$(OBJCOPY_ramstage) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(1) $(2).tmp && \
-		$(LD_ramstage) -m elf_i386 -e 0x60020 --section-start .data=0x60000 $(2).tmp -o $(2))
-
-#######################################################################
 # Reduce a .config file to its minimal representation
 # arg1: input
 # arg2: output

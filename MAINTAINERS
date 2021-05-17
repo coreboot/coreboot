@@ -174,6 +174,11 @@ M:	Mike Banon <mikebdp2@gmail.com>
 S:	Maintained
 F:	src/mainboard/asus/am1i-a/
 
+ASUS H61 SERIES MAINBOARDS
+M:	Angel Pons <th3fanbus@gmail.com>
+S:	Maintained
+F:	src/mainboard/asus/h61-series/
+
 ASUS MAXIMUS IV GENE-Z MAINBOARD
 M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
@@ -194,11 +199,6 @@ ASUS P8H61-M LX MAINBOARD
 M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
 F:	src/mainboard/asus/p8h61-m_lx/
-
-ASUS P8H61-M LX3 R2.0 MAINBOARD
-M:	Angel Pons <th3fanbus@gmail.com>
-S:	Maintained
-F:	src/mainboard/asus/p8h61-m_lx3_r2_0/
 
 ASUS P8H61-M PRO MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>

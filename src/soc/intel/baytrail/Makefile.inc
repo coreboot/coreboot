@@ -48,6 +48,7 @@ ramstage-y += smm.c
 ramstage-y += southcluster.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_ELOG) += elog.c
+ramstage-$(CONFIG_VGA_ROM_RUN) += int15.c
 
 ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
 ramstage-y += refcode.c

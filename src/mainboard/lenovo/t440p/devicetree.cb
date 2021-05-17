@@ -13,7 +13,7 @@ chip northbridge/intel/haswell
 		.backlight_pwm_hz	= 220,
 	}"
 	register "ec_present" = "true"
-	device cpu_cluster 0x0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/haswell
 			device lapic 0x0 on end
 			device lapic 0xacac off end

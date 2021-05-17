@@ -14,7 +14,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x11551155"
 
-	device cpu_cluster 0x0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/model_206ax
 			# Magic APIC ID to locate this chip
 			device lapic 0x0 on end

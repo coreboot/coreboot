@@ -11,7 +11,7 @@ chip northbridge/intel/sandybridge
 	# Enable DVI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	device cpu_cluster 0x0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/model_206ax
 			# Magic APIC ID to locate this chip
 			device lapic 0x0 on end

@@ -13,7 +13,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_down_delay" = "0"
 	register "gpu_panel_power_up_delay" = "0"
 	register "gpu_pch_backlight" = "0x00000000"
-	device cpu_cluster 0x0 on
+	device cpu_cluster 0 on
 		chip cpu/intel/model_206ax
 			register "acpi_c1" = "1"
 			register "acpi_c2" = "3"

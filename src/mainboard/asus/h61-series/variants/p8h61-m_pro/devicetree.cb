@@ -18,7 +18,6 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "gen1_dec" = "0x000c0291"	# HWM
-			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"

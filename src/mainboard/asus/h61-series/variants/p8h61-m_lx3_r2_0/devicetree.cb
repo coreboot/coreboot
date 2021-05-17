@@ -37,6 +37,8 @@ chip northbridge/intel/sandybridge
 			device pci 1c.3 on  end		# RP #4: PCIEX1_1
 			device pci 1c.4 on  end		# RP #5: PCIEX1_2
 			device pci 1c.5 on  end		# RP #6: RTL8111 GbE NIC
+			device pci 1c.6 off end		# RP #7
+			device pci 1c.7 off end		# RP #8
 
 			device pci 1d.0 on  end		# USB2 EHCI #1
 			device pci 1e.0 off end		# PCI bridge

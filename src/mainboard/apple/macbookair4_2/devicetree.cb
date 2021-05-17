@@ -23,7 +23,7 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	device domain 0x0 on
+	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"

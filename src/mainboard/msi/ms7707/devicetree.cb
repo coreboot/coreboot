@@ -8,7 +8,7 @@ chip northbridge/intel/sandybridge
 			device lapic 0xacac off end
 		end
 	end
-	device domain 0x0 on
+	device domain 0 on
 		subsystemid 0x1462 0x7707 inherit
 
 		device pci 00.0 on  end	# Host bridge

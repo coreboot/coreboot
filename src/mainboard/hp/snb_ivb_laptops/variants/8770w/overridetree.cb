@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/sandybridge
-	device domain 0x0 on
+	device domain 0 on
 		subsystemid 0x103c 0x176c inherit
 
 		device pci 01.0 on	# PCIe Bridge for discrete graphics

@@ -16,7 +16,7 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	device domain 0x0 on
+	device domain 0 on
 		subsystemid 0x103c 0x1791 inherit
 
 		device pci 00.0 on  end	# Host bridge Host bridge

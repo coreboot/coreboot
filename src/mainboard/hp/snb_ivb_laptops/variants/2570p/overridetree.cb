@@ -4,7 +4,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x00000437"
 	register "gpu_panel_power_backlight_off_delay" = "2300"
 	register "gpu_pch_backlight" = "0x0d9c0d9c"
-	device domain 0x0 on
+	device domain 0 on
 		subsystemid 0x103c 0x17df inherit
 
 		device pci 01.0 off end	# PCIe Bridge for discrete graphics

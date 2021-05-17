@@ -24,7 +24,7 @@ chip northbridge/intel/sandybridge
 		end
 	end
 
-	device domain 0x0 on
+	device domain 0 on
 		subsystemid 0x17aa 0x21f3 inherit
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH

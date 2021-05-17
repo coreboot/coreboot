@@ -48,6 +48,7 @@ romstage-y += ../common/mt6359p.c mt6359p.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c

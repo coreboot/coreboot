@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: GPL-2.0-only
+-- SPDX-License-Identifier: GPL-2.0-or-later
 
 with HW.GFX.GMA;
 with HW.GFX.GMA.Display_Probing;

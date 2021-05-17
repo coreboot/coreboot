@@ -5,6 +5,7 @@
 
 #include <amdblocks/chip.h>
 #include <soc/i2c.h>
+#include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>
 
@@ -83,6 +84,14 @@ struct soc_amd_cezanne_config {
 	uint32_t slow_ppt_limit_tablet_mode_mW;
 	uint32_t sustained_power_limit_tablet_mode_mW;
 	uint32_t thermctl_limit_tablet_mode_degreeC;
+
+	/* The array index is the general purpose PCIe clock output number. Values in here
+	   aren't the values written to the register to have the default to be always on. */
+	enum {
+		GPP_CLK_ON,	/* GPP clock always on; default */
+		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
+		GPP_CLK_OFF,	/* GPP clk off */
+	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 };
 
 #endif /* CEZANNE_CHIP_H */

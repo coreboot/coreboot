@@ -19,7 +19,7 @@ chip northbridge/intel/sandybridge
 		device pci 02.0 on end # VGA controller
 
 		chip southbridge/intel/bd82x6x
-			register "c2_latency" = "101"
+			register "c2_latency" = "0x0065"
 			register "gen1_dec" = "0x00000295" # Super I/O HWM
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"

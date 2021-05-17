@@ -80,6 +80,12 @@ Method (GADD, 1, NotSerialized)
 		Local0 = PID_GPIOCOM2
 		Local1 = Arg0 - GPIO_COM2_START
 	}
+	/* GPIO Community 3 */
+	If (Arg0 >= GPIO_COM3_START && Arg0 <= GPIO_COM3_END)
+	{
+		Local0 = PID_GPIOCOM3
+		Local1 = Arg0 - GPIO_COM3_START
+	}
 	/* GPIO Community 4 */
 	If (Arg0 >= GPIO_COM4_START && Arg0 <= GPIO_COM4_END)
 	{
@@ -115,6 +121,9 @@ Method (GPID, 1, Serialized)
 		Case (COMM_2) {
 			Local0 = PID_GPIOCOM2
 		}
+		case (COMM_3) {
+			Local0 = PID_GPIOCOM3
+		}
 		Case (COMM_4) {
 			Local0 = PID_GPIOCOM4
 		}
@@ -130,7 +139,7 @@ Method (GPID, 1, Serialized)
 }
 
 /* GPIO Power Management bits */
-Name(GPMB, Package(TOTAL_GPIO_COMM) {0, 0, 0, 0, 0})
+Name(GPMB, Package(TOTAL_GPIO_COMM) {0, 0, 0, 0, 0, 0})
 
 /*
  * Save GPIO Power Management bits

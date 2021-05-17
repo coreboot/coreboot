@@ -1,0 +1,39 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASUS_P8Z77_SERIES
+	bool
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_C216
+
+if BOARD_ASUS_P8Z77_SERIES
+
+config MAINBOARD_DIR
+	string
+	default "asus/p8z77-series"
+
+config VARIANT_DIR
+	string
+	default "p8z77-v_lx2" if BOARD_ASUS_P8Z77_V_LX2
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P8Z77-V LX2" if BOARD_ASUS_P8Z77_V_LX2
+
+config DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config CMOS_DEFAULT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.default"
+
+config CMOS_LAYOUT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout"
+
+endif

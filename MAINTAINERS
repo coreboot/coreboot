@@ -201,10 +201,10 @@ M:	Vlado Cibic <vladocb@protonmail.com>
 S:	Maintained
 F:	src/mainboard/asus/p8z77-m_pro/
 
-ASUS P8Z77-V LX2 MAINBOARD
+ASUS P8Z77 SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
-F:	src/mainboard/asus/p8z77-v_lx2/
+F:	src/mainboard/asus/p8z77-series/
 
 
 

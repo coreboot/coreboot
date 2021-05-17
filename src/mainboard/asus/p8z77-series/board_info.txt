@@ -1,0 +1,5 @@
+Category: desktop
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

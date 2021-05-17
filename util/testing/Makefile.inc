@@ -10,6 +10,7 @@ test-help help::
 	@echo  '  test-abuild            - basic: Builds all platforms'
 	@echo  '  test-payloads          - basic: Builds internal payloads'
 	@echo  '  test-cleanup           - basic: Cleans coreboot directories'
+	@echo
 
 # junit.xml is a helper target to wrap builds that don't create junit.xml output
 # BLD = The name of the build

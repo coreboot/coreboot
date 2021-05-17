@@ -33,14 +33,14 @@ config MAINBOARD_PART_NUMBER
 	default "P8H61-M PRO"      if BOARD_ASUS_P8H61_M_PRO
 
 # TODO: remove once all boards use overridetrees
-if BOARD_ASUS_P8H61_M_LX3_R2_0 || BOARD_ASUS_P8H61_M_PRO
+if !BOARD_ASUS_P8H61_M_LX
 
 config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 endif
-if !BOARD_ASUS_P8H61_M_LX3_R2_0 && !BOARD_ASUS_P8H61_M_PRO
+if BOARD_ASUS_P8H61_M_LX
 
 config DEVICETREE
 	string

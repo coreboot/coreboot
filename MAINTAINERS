@@ -176,6 +176,7 @@ F:	src/mainboard/asus/am1i-a/
 
 ASUS H61 SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
+M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
 F:	src/mainboard/asus/h61-series/
 
@@ -194,11 +195,6 @@ ASUS P5QPL-AM MAINBOARD & VARIANTS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/asus/p5qpl-am/
-
-ASUS P8H61-M LX MAINBOARD
-M:	Tristan Corrick <tristan@corrick.kiwi>
-S:	Maintained
-F:	src/mainboard/asus/p8h61-m_lx/
 
 ASUS P8Z77-M PRO MAINBOARD
 M:	Vlado Cibic <vladocb@protonmail.com>

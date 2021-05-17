@@ -150,7 +150,7 @@ static void test_check_if_dimm_changed_not_changed(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk;
+	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -167,7 +167,7 @@ static void test_check_if_dimm_changed_sn_error(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk;
+	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -183,7 +183,7 @@ static void test_check_if_dimm_changed_sodimm_lost(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk;
+	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -201,7 +201,7 @@ static void test_check_if_dimm_changed_new_sodimm(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk;
+	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -220,7 +220,7 @@ static void test_check_if_dimm_changed_sn_changed(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk;
+	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);

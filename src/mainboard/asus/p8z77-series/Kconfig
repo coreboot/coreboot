@@ -20,10 +20,12 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
+	default "p8z77-m_pro" if BOARD_ASUS_P8Z77_M_PRO
 	default "p8z77-v_lx2" if BOARD_ASUS_P8Z77_V_LX2
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "P8Z77-M PRO" if BOARD_ASUS_P8Z77_M_PRO
 	default "P8Z77-V LX2" if BOARD_ASUS_P8Z77_V_LX2
 
 config DEVICETREE

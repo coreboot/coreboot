@@ -255,8 +255,14 @@ struct soc_amd_picasso_config {
 	/* Enable override value for tx_vboost_lvl. Range: 0 - 0x1. */
 	uint8_t usb_3_tx_vboost_lvl_en_x;
 
-	/* The array index is the general purpose PCIe clock output number. */
-	enum gpp_clk_req_setting gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+	/* The array index is the general purpose PCIe clock output number. Values in here
+	   aren't the values written to the register to have the default to be always on. */
+	enum {
+		GPP_CLK_ON,	/* GPP clock always on; default */
+		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
+		GPP_CLK_OFF,	/* GPP clk off */
+	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+
 	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
 	bool acp_i2s_use_external_48mhz_osc;
 

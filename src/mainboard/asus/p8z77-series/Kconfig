@@ -29,9 +29,21 @@ config MAINBOARD_PART_NUMBER
 	default "P8Z77-M PRO" if BOARD_ASUS_P8Z77_M_PRO
 	default "P8Z77-V LX2" if BOARD_ASUS_P8Z77_V_LX2
 
+# TODO: remove once all boards use overridetrees
+if BOARD_ASUS_P8Z77_M_PRO
+
 config DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+endif
+if !BOARD_ASUS_P8Z77_M_PRO
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+endif
 
 config CMOS_DEFAULT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.default"

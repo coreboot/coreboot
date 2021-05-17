@@ -43,14 +43,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "HP Z220 SFF Workstation"
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0102.rom"
-
-config VGA_BIOS_ID
-	string
-	default "8086,0102"
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 60

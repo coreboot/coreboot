@@ -29,12 +29,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P8H61-M PRO"
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0152.rom"
-
-config VGA_BIOS_ID
-	string
-	default "8086,0152"
-
 endif # BOARD_ASUS_P8H61_M_PRO

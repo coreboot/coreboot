@@ -28,10 +28,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Maximus IV GENE-Z"
 
-config VGA_BIOS_ID
-	string
-	default "8086,0112"
-
 config USBDEBUG_HCD_INDEX
 	int
 	default 1

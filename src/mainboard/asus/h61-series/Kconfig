@@ -20,13 +20,21 @@ config MAINBOARD_DIR
 config VARIANT_DIR
 	string
 	default "p8h61-m_lx3_r2_0" if BOARD_ASUS_P8H61_M_LX3_R2_0
+	default "p8h61-m_pro"      if BOARD_ASUS_P8H61_M_PRO
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P8H61-M LX3 R2.0" if BOARD_ASUS_P8H61_M_LX3_R2_0
+	default "P8H61-M PRO"      if BOARD_ASUS_P8H61_M_PRO
 
 config DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config CMOS_DEFAULT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.default"
+
+config CMOS_LAYOUT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout"
 
 endif

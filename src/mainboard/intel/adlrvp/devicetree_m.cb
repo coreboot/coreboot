@@ -42,28 +42,32 @@ chip soc/intel/alderlake
 	register "pch_pcie_rp[PCH_RP(4)]" = "{
 		.clk_src = 5,
 		.clk_req = 5,
-		.flags = PCIE_RP_CLK_REQ_DETECT,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
 	}"
 
 	# Enable PCH PCIE RP 5 using CLK 2
 	register "pch_pcie_rp[PCH_RP(5)]" = "{
 		.clk_src = 2,
 		.clk_req = 2,
-		.flags = PCIE_RP_CLK_REQ_DETECT,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
 	}"
 
 	# Enable PCH PCIE RP 9 using CLK 3
 	register "pch_pcie_rp[PCH_RP(9)]" = "{
 		.clk_src = 3,
 		.clk_req = 3,
-		.flags = PCIE_RP_CLK_REQ_DETECT,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
 	}"
 
 	#Enable PCH PCIE RP 10 using CLK 1
 	register "pch_pcie_rp[PCH_RP(10)]" = "{
 		.clk_src = 1,
 		.clk_req = 1,
-		.flags = PCIE_RP_CLK_REQ_DETECT,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
 	}"
 
 	# Hybrid storage mode

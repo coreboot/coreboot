@@ -39,7 +39,7 @@ chip soc/intel/cannonlake
 
 	register "SlowSlewRateForIa" = "3"	# fast/16
 	register "SlowSlewRateForGt" = "3"	# fast/16
-	register "SlowSlewRateForSa" = "2"	# fast/8
+	register "SlowSlewRateForSa" = "3"	# fast/16
 	register "SlowSlewRateForFivr" = "3"	# fast/16
 
 	# Power

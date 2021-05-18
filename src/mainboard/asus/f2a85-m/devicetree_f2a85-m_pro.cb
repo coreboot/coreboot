@@ -92,6 +92,8 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						end
 						device pnp 2e.b on	# Hardware Monitor, Front Panel LED
 							io  0x60 = 0x0290
+							io  0x62 = 0
+							io  0x70 = 0
 							irq 0xe2 = 0x7f
 							irq 0xe4 = 0xf1
 						end

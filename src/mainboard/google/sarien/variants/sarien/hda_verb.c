@@ -119,12 +119,12 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {
-/* PCBeep pass through to NID14 for ePSA test-1 */
+	/* PCBeep pass through to NID14 for ePSA test-1 */
 	0x02050036,
 	0x02047717,
 	0x02050036,
 	0x02047717,
-/* PCBeep pass through to NID14 for ePSA test-2 */
+	/* PCBeep pass through to NID14 for ePSA test-2 */
 	0x01470740,
 	0x0143B000,
 	0x01470C02,

@@ -4,7 +4,7 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0295,	// Codec Vendor / Device ID: Realtek ALC3204
+	0x10ec0295,	// Codec Vendor / Device ID: Realtek ALC3254
 	0xffffffff,	// Subsystem ID
 	0x0000002b,	// Number of jacks (NID entries)
 

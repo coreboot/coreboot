@@ -1,6 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/cezanne
 
+	register "common_config.acp_config" = "{
+		.acp_pin_cfg = I2S_PINS_I2S_TDM,
+		.acp_i2s_wake_enable = 0,
+		.acp_pme_enable = 0,
+	}"
+
 	register "system_configuration" = "3"
 
 	# eSPI Configuration
@@ -115,6 +121,12 @@ chip soc/amd/cezanne
 					end
 				end
 			end
+			device ref acp on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI5682""
+					device generic 0.0 on end
+				end
+			end # Audio
 		end
 		device ref lpc_bridge on
 			chip ec/google/chromeec

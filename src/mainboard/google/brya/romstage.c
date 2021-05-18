@@ -17,4 +17,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	};
 
 	memcfg_init(&memupd->FspmConfig, mem_config, &spd_info, half_populated);
+
+	variant_update_fspm_upds(memupd);
 }

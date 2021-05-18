@@ -290,13 +290,13 @@ chip soc/intel/jasperlake
 				device i2c 29 on end
 			end
 		end
-		device pci 1e.2 off end # GSPI 0
-		device pci 1f.3 on end # Intel HDA
-		device pci 1f.5 on
+		device pci 1f.0 on
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end # Discrete TPM
 			end # chip drivers/pc80/tpm
-		end # PCH SPI
+		end # PCH eSPI
+		device pci 1e.2 off end # GSPI 0
+		device pci 1f.3 on end # Intel HDA
 		device pci 1c.7 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_03"

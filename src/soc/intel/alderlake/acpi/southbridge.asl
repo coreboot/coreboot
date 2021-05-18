@@ -5,9 +5,6 @@
 #include <soc/itss.h>
 #include <soc/pcr_ids.h>
 
-/* PCI IRQ assignment */
-#include "pci_irqs.asl"
-
 /* PCR access */
 #include <soc/intel/common/acpi/pcr.asl>
 

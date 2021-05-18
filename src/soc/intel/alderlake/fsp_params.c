@@ -8,6 +8,7 @@
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
+#include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
@@ -19,6 +20,7 @@
 #include <soc/pcie.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* THC assignment definition */
@@ -29,6 +31,177 @@
 /* SATA DEVSLP idle timeout default values */
 #define DEF_DMVAL	15
 #define DEF_DITOVAL	625
+
+static const struct slot_irq_constraints irq_constraints[] = {
+	{
+		.slot = SA_DEV_SLOT_IGD,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_IGD),
+		},
+	},
+	{
+		.slot = SA_DEV_SLOT_DPTF,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_DPTF),
+		},
+	},
+	{
+		.slot = SA_DEV_SLOT_IPU,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_IPU),
+		},
+	},
+	{
+		.slot = SA_DEV_SLOT_CPU_6,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_CPU_PCIE6_0),
+			ANY_PIRQ(SA_DEVFN_CPU_PCIE6_2),
+		},
+	},
+	{
+		.slot = SA_DEV_SLOT_TBT,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_TBT0),
+			ANY_PIRQ(SA_DEVFN_TBT1),
+			ANY_PIRQ(SA_DEVFN_TBT2),
+			ANY_PIRQ(SA_DEVFN_TBT3),
+		},
+	},
+	{
+		.slot = SA_DEV_SLOT_TCSS,
+		.fns = {
+			ANY_PIRQ(SA_DEVFN_TCSS_XHCI),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_ISH,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_ISH),
+			DIRECT_IRQ(PCH_DEVFN_GSPI2),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_XHCI,
+		.fns = {
+			ANY_PIRQ(PCH_DEVFN_XHCI),
+			ANY_PIRQ(PCH_DEVFN_CNVI_WIFI),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO3,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_I2C0),
+			DIRECT_IRQ(PCH_DEVFN_I2C1),
+			DIRECT_IRQ(PCH_DEVFN_I2C2),
+			DIRECT_IRQ(PCH_DEVFN_I2C3),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_CSE,
+		.fns = {
+			ANY_PIRQ(PCH_DEVFN_CSE),
+			ANY_PIRQ(PCH_DEVFN_CSE_2),
+			ANY_PIRQ(PCH_DEVFN_CSE_IDER),
+			ANY_PIRQ(PCH_DEVFN_CSE_KT),
+			ANY_PIRQ(PCH_DEVFN_CSE_3),
+			ANY_PIRQ(PCH_DEVFN_CSE_4),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SATA,
+		.fns = {
+			ANY_PIRQ(PCH_DEVFN_SATA),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO4,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_I2C4),
+			DIRECT_IRQ(PCH_DEVFN_I2C5),
+			DIRECT_IRQ(PCH_DEVFN_UART2),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_PCIE,
+		.fns = {
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE1, PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE2, PCI_INT_B, PIRQ_B),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE3, PCI_INT_C, PIRQ_C),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE4, PCI_INT_D, PIRQ_D),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE5, PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE6, PCI_INT_B, PIRQ_B),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE7, PCI_INT_C, PIRQ_C),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE8, PCI_INT_D, PIRQ_D),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_PCIE_1,
+		.fns = {
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE9,  PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE10, PCI_INT_B, PIRQ_B),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE11, PCI_INT_C, PIRQ_C),
+			FIXED_INT_PIRQ(PCH_DEVFN_PCIE12, PCI_INT_D, PIRQ_D),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO5,
+		.fns = {
+			FIXED_INT_ANY_PIRQ(PCH_DEVFN_UART0, PCI_INT_A),
+			FIXED_INT_ANY_PIRQ(PCH_DEVFN_UART1, PCI_INT_B),
+			ANY_PIRQ(PCH_DEVFN_GSPI0),
+			ANY_PIRQ(PCH_DEVFN_GSPI1),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_ESPI,
+		.fns = {
+			ANY_PIRQ(PCH_DEVFN_HDA),
+			ANY_PIRQ(PCH_DEVFN_SMBUS),
+			ANY_PIRQ(PCH_DEVFN_GBE),
+			FIXED_INT_ANY_PIRQ(PCH_DEVFN_TRACEHUB, PCI_INT_A),
+		},
+	},
+};
+
+static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
+{
+	const struct pci_irq_entry *entry = get_cached_pci_irqs();
+	SI_PCH_DEVICE_INTERRUPT_CONFIG *config;
+	size_t pch_total = 0;
+	size_t cfg_count = 0;
+
+	if (!entry)
+		return NULL;
+
+	/* Count PCH devices */
+	while (entry) {
+		if (PCI_SLOT(entry->devfn) >= MIN_PCH_SLOT)
+			++pch_total;
+		entry = entry->next;
+	}
+
+	/* Convert PCH device entries to FSP format */
+	config = calloc(pch_total, sizeof(*config));
+	entry = get_cached_pci_irqs();
+	while (entry) {
+		if (PCI_SLOT(entry->devfn) < MIN_PCH_SLOT) {
+			entry = entry->next;
+			continue;
+		}
+
+		config[cfg_count].Device = PCI_SLOT(entry->devfn);
+		config[cfg_count].Function = PCI_FUNC(entry->devfn);
+		config[cfg_count].IntX = (SI_PCH_INT_PIN)entry->pin;
+		config[cfg_count].Irq = entry->irq;
+		++cfg_count;
+
+		entry = entry->next;
+	}
+
+	*out_count = cfg_count;
+
+	return config;
+}
 
 /*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
@@ -334,6 +507,20 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PsOnEnable = 1;
 }
 
+static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,
+				 const struct soc_intel_alderlake_config *config)
+{
+	if (!assign_pci_irqs(irq_constraints, ARRAY_SIZE(irq_constraints)))
+		die("ERROR: Unable to assign PCI IRQs, and no _PRT table available\n");
+
+	size_t pch_count = 0;
+	const SI_PCH_DEVICE_INTERRUPT_CONFIG *upd_irqs = pci_irq_to_fsp(&pch_count);
+
+	s_cfg->DevIntConfigPtr = (UINT32)((uintptr_t)upd_irqs);
+	s_cfg->NumOfDevIntConfig = pch_count;
+	printk(BIOS_INFO, "IRQ: Using dynamically assigned PCI IO-APIC IRQs\n");
+}
+
 static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 {
 	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
@@ -367,6 +554,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_storage_params,
 		fill_fsps_pcie_params,
 		fill_fsps_misc_power_params,
+		fill_fsps_irq_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

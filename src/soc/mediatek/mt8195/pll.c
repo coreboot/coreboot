@@ -469,7 +469,7 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_SPINOR_SEL, .sel = 3 },			/* 3: univpll_d6_d8 */
 	/* CLK_CFG_29 */
 	{ .id = TOP_DVIO_DGI_REF_SEL, .sel = 1 },		/* 1: in_dgi_ck */
-	{ .id = TOP_SRCK_SEL, .sel = 1 },			/* 1: xtal_26m_ck */
+	{ .id = TOP_SRCK_SEL, .sel = 0 },			/* 0: ulposc_d10 */
 	/* CLK_MISC_CFG_3 */
 	{ .id = TOP_MFG_FAST_SEL, .sel = 1 },			/* 1: AD_MFGPLL_OPP_CK */
 };

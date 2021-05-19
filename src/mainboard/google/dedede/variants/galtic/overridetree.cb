@@ -66,7 +66,7 @@ chip soc/intel/jasperlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU, CPU,           67, 1000),
-					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 62, 1000),
+					[1] = DPTF_PASSIVE(CHARGER, TEMP_SENSOR_0, 62, 1000),
 					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 58, 1000),
 					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 40, 1000)
 				}"
@@ -100,6 +100,14 @@ chip soc/intel/jasperlake
 				register "options.tsr[0].desc" = ""Charger""
 				register "options.tsr[1].desc" = ""Vcore""
 				register "options.tsr[2].desc" = ""Ambient""
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = {  32, 2048 },
+					[1] = {  28, 1792 },
+					[2] = {  24, 1536 },
+					[3] = {  20, 1280 }
+				}"
 
 				device generic 0 on end
 			end

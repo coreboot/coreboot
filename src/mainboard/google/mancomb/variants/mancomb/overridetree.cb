@@ -1,3 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	field WLAN 0 1
+		option WLAN_WCN6856 0
+		option WLAN_RTL8852 1
+	end
+	field BEEP_MODE 2 3
+		option BEEP_MODE_PIEZO 0
+		option BEEP_MODE_AMP 1
+		option BEEP_MODE_BIT_BANG 2
+	end
+	field SOC_TDP 4 5
+		option TDP_25_WATTS 0
+		option TDP_15_WATTS 1
+	end
+end
+
 chip soc/amd/cezanne
 
 	register "slow_ppt_limit_mW"         = "37500"

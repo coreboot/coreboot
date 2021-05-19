@@ -47,6 +47,9 @@ chip soc/amd/cezanne
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
+	# Enable S0i3 support
+	register "s0ix_enable" = "1"
+
 	device domain 0 on
 		device ref gpp_bridge_0 on end # WLAN
 		device ref gpp_bridge_1 on end # SD

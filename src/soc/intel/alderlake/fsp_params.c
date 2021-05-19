@@ -251,6 +251,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ThcPort0Assignment = is_devfn_enabled(PCH_DEVFN_THC0) ? THC_0 : THC_NONE;
 	params->ThcPort1Assignment = is_devfn_enabled(PCH_DEVFN_THC1) ? THC_1 : THC_NONE;
 
+	/* USB4/TBT */
+	for (i = 0; i < ARRAY_SIZE(params->ITbtPcieRootPortEn); i++)
+		params->ITbtPcieRootPortEn[i] = is_devfn_enabled(SA_DEVFN_TBT(i));
+
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
 	params->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);

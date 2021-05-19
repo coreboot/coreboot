@@ -14,6 +14,7 @@ enum {
 
 /* Switch events type (Linux code emitted for EV_SW) */
 enum {
+	SW_MUTE_DEVICE = 0xe,
 	SW_PEN_INSERTED = 0xf,
 };
 

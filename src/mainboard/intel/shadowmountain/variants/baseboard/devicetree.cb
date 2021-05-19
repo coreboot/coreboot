@@ -22,9 +22,8 @@ chip soc/intel/alderlake
 	# Enable CNVi Bluetooth
 	register "CnviBtCore" = "true"
 
-
 	# FSP configuration
-	register "SaGv" = "SaGv_Disabled"
+	register "SaGv" = "SaGv_Enabled"
 
 	# S0ix enable
 	register "s0ix_enable" = "1"

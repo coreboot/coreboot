@@ -561,7 +561,7 @@ struct fit_table *fit_get_table(struct buffer *bootblock,
 				uint32_t topswap_size)
 {
 	struct fit_table *fit;
-	uint32_t *fit_pointer = get_fit_ptr(bootblock, offset_fn, 0);
+	uint32_t *fit_pointer = get_fit_ptr(bootblock, offset_fn, topswap_size);
 
 	/* Ensure pointer is below 4GiB and within 16MiB of 4GiB */
 	if (fit_pointer[1] != 0 || fit_pointer[0] < FIT_TABLE_LOWEST_ADDRESS) {
@@ -575,18 +575,6 @@ struct fit_table *fit_get_table(struct buffer *bootblock,
 		ERROR("FIT not found.\n");
 		return NULL;
 	}
-
-	if (topswap_size) {
-		struct fit_table *fit2 = (struct fit_table *)((uintptr_t)fit -
-							      topswap_size);
-		if (!fit_table_verified(fit2)) {
-			ERROR("second FIT is invalid\n");
-			return NULL;
-		}
-		fit = fit2;
-	}
-
-	DEBUG("Operating on table (0x%x)\n", *fit_pointer - topswap_size);
 
 	return fit;
 }

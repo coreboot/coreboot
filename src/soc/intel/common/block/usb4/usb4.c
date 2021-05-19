@@ -6,7 +6,10 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <intelblocks/systemagent.h>
 #include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
+#include <soc/tcss.h>
 
 #define INTEL_TBT_IMR_VALID_UUID	"C44D002F-69F9-4E7D-A904-A7BAABDF43F7"
 #define INTEL_TBT_WAKE_SUPPORTED_UUID	"6C501103-C189-4296-BA72-9BF5A26EBE5D"
@@ -24,9 +27,17 @@ static const char *tbt_dma_acpi_name(const struct device *dev)
 	}
 }
 
+static int valid_tbt_auth(void)
+{
+	return REGBAR32(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
+}
+
 static void tbt_dma_fill_ssdt(const struct device *dev)
 {
 	struct acpi_dp *dsd, *pkg;
+
+	if (!valid_tbt_auth())
+		return;
 
 	acpigen_write_scope(acpi_device_path(dev));
 

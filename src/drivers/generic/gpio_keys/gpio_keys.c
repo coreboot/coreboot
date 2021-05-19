@@ -76,6 +76,8 @@ static void gpio_keys_fill_ssdt_generator(const struct device *dev)
 	/* DSD */
 	dsd = acpi_dp_new_table("_DSD");
 	acpi_dp_add_string(dsd, "compatible", drv_string);
+	if (config->label)
+		acpi_dp_add_string(dsd, "label", config->label);
 	if (config->is_polled)
 		acpi_dp_add_integer(dsd, "poll-interval",
 					config->poll_interval);

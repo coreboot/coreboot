@@ -74,6 +74,8 @@ struct key_info {
 struct drivers_generic_gpio_keys_config {
 	/* Device name of the parent gpio-keys node */
 	const char *name;
+	/* Name of the input device - Optional */
+	const char *label;
 	/* GPIO line providing the key - Mandatory */
 	struct acpi_gpio gpio;
 	/* Is this a polled GPIO button? - Optional */

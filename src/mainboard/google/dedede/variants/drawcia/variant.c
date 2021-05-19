@@ -14,7 +14,8 @@ const char *get_wifi_sar_cbfs_filename(void)
 
 const char *mainboard_vbt_filename(void)
 {
-	if (fw_config_probe(FW_CONFIG(DB_PORTS, DB_PORTS_1A_HDMI)))
+	if (fw_config_probe(FW_CONFIG(DB_PORTS, DB_PORTS_1A_HDMI)) ||
+		fw_config_probe(FW_CONFIG(DB_PORTS, DB_PORTS_1A_HDMI_LTE)))
 		return "vbt_drawman.bin";
 
 	return "vbt.bin";

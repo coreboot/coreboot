@@ -2,6 +2,7 @@
 
 config TPM_CR50
 	bool
+	depends on TPM2
 	default y if MAINBOARD_HAS_I2C_TPM_CR50 || MAINBOARD_HAS_SPI_TPM_CR50
 
 if TPM_CR50

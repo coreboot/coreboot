@@ -4,22 +4,42 @@ source "src/security/tpm/tss/vendor/cr50/Kconfig"
 
 menu "Trusted Platform Module"
 
+choice
+	prompt "Trusted Platform Module"
+	default TPM2 if MAINBOARD_HAS_TPM2
+	default TPM1 if MAINBOARD_HAS_TPM1
+	default NO_TPM
+
+config NO_TPM
+	bool "No TPM"
+	help
+	  No TPM support. Select this option if your system doesn't have a TPM,
+	  or if you don't want coreboot to communicate with your TPM in any way.
+	  (If your board doesn't offer a TPM interface, this will be the only
+	  possible option.)
+
 config TPM1
-	bool
-	default y if MAINBOARD_HAS_TPM1 || USER_TPM1
+	bool "TPM 1.2"
 	depends on MAINBOARD_HAS_LPC_TPM || \
 		   MAINBOARD_HAS_I2C_TPM_GENERIC || \
 		   MAINBOARD_HAS_I2C_TPM_ATMEL
+	depends on !MAINBOARD_HAS_TPM2
+	help
+	  Select this option if your TPM uses the older TPM 1.2 protocol.
 
 config TPM2
-	bool
-	default y if MAINBOARD_HAS_TPM2 || USER_TPM2
+	bool "TPM 2.0"
 	depends on MAINBOARD_HAS_I2C_TPM_GENERIC || \
 		   MAINBOARD_HAS_LPC_TPM || \
 		   MAINBOARD_HAS_I2C_TPM_ATMEL || \
 		   MAINBOARD_HAS_I2C_TPM_CR50 || \
 		   MAINBOARD_HAS_SPI_TPM || \
 		   MAINBOARD_HAS_CRB_TPM
+	depends on !MAINBOARD_HAS_TPM1
+	help
+	  Select this option if your TPM uses the newer TPM 2.0 protocol.
+
+endchoice
 
 config TPM
 	bool
@@ -28,45 +48,15 @@ config TPM
 
 config MAINBOARD_HAS_TPM1
 	bool
+	help
+	  This option can be selected by a mainboard to represent that its TPM
+	  always uses the 1.2 protocol, and that it should be on by default.
 
 config MAINBOARD_HAS_TPM2
 	bool
-
-if !MAINBOARD_HAS_TPM1 && !MAINBOARD_HAS_TPM2
-
-choice
-	prompt "Trusted Platform Module"
-	default USER_NO_TPM
-
-config USER_NO_TPM
-	bool "disabled"
-
-config USER_TPM1
-	bool "1.2"
-	depends on MAINBOARD_HAS_LPC_TPM || \
-		   MAINBOARD_HAS_I2C_TPM_GENERIC || \
-		   MAINBOARD_HAS_I2C_TPM_ATMEL
 	help
-		Enable this option to enable TPM 1.0 - 1.2 support in coreboot.
-
-		If unsure, say N.
-
-config USER_TPM2
-	bool "2.0"
-	depends on MAINBOARD_HAS_I2C_TPM_GENERIC || \
-		   MAINBOARD_HAS_LPC_TPM || \
-		   MAINBOARD_HAS_I2C_TPM_ATMEL || \
-		   MAINBOARD_HAS_I2C_TPM_CR50 || \
-		   MAINBOARD_HAS_SPI_TPM || \
-		   MAINBOARD_HAS_CRB_TPM
-	help
-		Enable this option to enable TPM 2.0 support in coreboot.
-
-		If unsure, say N.
-
-endchoice
-
-endif
+	  This option can be selected by a mainboard to represent that its TPM
+	  always uses the 2.0 protocol, and that it should be on by default.
 
 config TPM_DEACTIVATE
 	bool "Deactivate TPM"

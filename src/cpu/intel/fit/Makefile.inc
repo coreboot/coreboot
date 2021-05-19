@@ -21,7 +21,7 @@ ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE),y)
 
-$(call add_intermediate, add_mcu_fit, $(IFITTOOL))
+$(call add_intermediate, add_mcu_fit, set_fit_ptr)
 	@printf "    UPDATE-FIT Microcode\n"
 	$(IFITTOOL) -f $< -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT
 

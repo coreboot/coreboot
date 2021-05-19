@@ -5,6 +5,7 @@
 
 #include <soc/gpio.h>
 #include <stdint.h>
+#include <acpi/acpi_device.h>
 
 /* The next set of functions return the gpio table and fill in the number of
  * entries for each table. */
@@ -42,4 +43,6 @@ void variant_smi_sleep(u8 slp_typ);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 
+/* Modify LTE devictree settings during ramstage. */
+void update_lte_device(struct acpi_gpio *lte_reset_gpio, struct acpi_gpio *lte_enable_gpio);
 #endif /*__BASEBOARD_VARIANTS_H__ */

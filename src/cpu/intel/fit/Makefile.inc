@@ -43,7 +43,7 @@ intel_fit_ts-align := 16
 PHONY += set_ts_fit_ptr
 set_ts_fit_ptr: $(obj)/coreboot.pre $(IFITTOOL)
 	@printf "    UPDATE-FIT Top Swap: set FIT pointer to table\n"
-	$(IFITTOOL) -f $< -F -n intel_fit_ts -r COREBOOT -t $(TS_OPTIONS)
+	$(IFITTOOL) -f $< -F -n intel_fit_ts -r COREBOOT $(TS_OPTIONS)
 
 endif # CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK
 

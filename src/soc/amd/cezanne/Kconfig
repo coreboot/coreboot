@@ -124,6 +124,10 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	help
 	  Increase this value if preram cbmem console is getting truncated
 
+config CBFS_MCACHE_SIZE
+	hex
+	default 0x2000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
+
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x10000

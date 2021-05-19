@@ -13,4 +13,10 @@ Update this document with changes that should be in the release notes.
 Significant changes
 -------------------
 
+### Merged family of Asus mainboards using H61 chipset
+
+By using newer coreboot features like board variants and override devicetrees,
+lots of code can now be shared. This should ease maintenance and also make it
+easier for newcomers to add support for even more mainboards.
+
 ### Add significant changes here

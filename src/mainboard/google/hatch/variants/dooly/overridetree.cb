@@ -189,7 +189,7 @@ chip soc/intel/cannonlake
 						     TEMP_PCT(30, 30),}}"
 
 				## Passive Policy
-				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           70, 60000)"
+				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           85, 60000)"
 				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 76, 60000)"
 
 				## Critical Policy

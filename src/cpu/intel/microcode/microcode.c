@@ -29,6 +29,18 @@ struct microcode {
 	u32 reserved[3];
 };
 
+struct ext_sig_table {
+	u32 ext_sig_cnt;
+	u32 ext_tbl_chksm;
+	u32 res[3];
+};
+
+struct ext_sig_entry {
+	u32 sig;
+	u32 pf;
+	u32 chksm;
+};
+
 static inline u32 read_microcode_rev(void)
 {
 	/* Some Intel CPUs can be very finicky about the
@@ -117,9 +129,31 @@ uint32_t get_microcode_checksum(const void *microcode)
 	return ((struct microcode *)microcode)->cksum;
 }
 
+
+static struct ext_sig_table *ucode_get_ext_sig_table(const struct microcode *ucode)
+{
+	struct ext_sig_table *ext_tbl;
+	/* header + ucode data blob size */
+	u32 size = ucode->data_size + sizeof(struct microcode);
+
+	size_t ext_tbl_len = ucode->total_size - size;
+
+	if (ext_tbl_len < sizeof(struct ext_sig_table))
+		return NULL;
+
+	ext_tbl = (struct ext_sig_table *)((uintptr_t)ucode + size);
+
+	if (ext_tbl_len < (sizeof(struct ext_sig_table) +
+				ext_tbl->ext_sig_cnt * sizeof(struct ext_sig_entry)))
+		return NULL;
+
+	return ext_tbl;
+}
+
 static const void *find_cbfs_microcode(void)
 {
 	const struct microcode *ucode_updates;
+	struct ext_sig_table *ext_tbl;
 	size_t microcode_len;
 	u32 eax;
 	u32 pf, rev, sig, update_size;
@@ -162,6 +196,22 @@ static const void *find_cbfs_microcode(void)
 
 		if ((ucode_updates->sig == sig) && (ucode_updates->pf & pf))
 			return ucode_updates;
+
+
+		/* Check if there is extended signature table */
+		ext_tbl = ucode_get_ext_sig_table(ucode_updates);
+
+		if (ext_tbl != NULL) {
+			int i;
+			struct ext_sig_entry *entry = (struct ext_sig_entry *)(ext_tbl + 1);
+
+			for (i = 0; i < ext_tbl->ext_sig_cnt; i++, entry++) {
+
+				if ((sig == entry->sig) && (pf & entry->pf)) {
+					return ucode_updates;
+				}
+			}
+		}
 
 		ucode_updates = (void *)((char *)ucode_updates + update_size);
 		microcode_len -= update_size;

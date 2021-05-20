@@ -18,7 +18,7 @@ static inline enum cb_err set_uint_option(const char *name, unsigned int value)
 	return CB_CMOS_OTABLE_DISABLED;
 }
 
-static inline int get_uint_option(const char *name, const unsigned int fallback)
+static inline unsigned int get_uint_option(const char *name, const unsigned int fallback)
 {
 	if (CONFIG(USE_OPTION_TABLE)) {
 		unsigned int value = 0;

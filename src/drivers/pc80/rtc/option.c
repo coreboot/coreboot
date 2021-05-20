@@ -84,7 +84,7 @@ static struct cmos_entries *find_cmos_entry(struct cmos_option_table *ct, const 
 	return NULL;
 }
 
-enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
+static enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -111,6 +111,12 @@ enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
 		return CB_CMOS_ACCESS_ERROR;
 
 	return CB_SUCCESS;
+}
+
+unsigned int get_uint_option(const char *name, const unsigned int fallback)
+{
+	unsigned int value = 0;
+	return cmos_get_uint_option(&value, name) == CB_SUCCESS ? value : fallback;
 }
 
 static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
@@ -154,7 +160,7 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 	return CB_SUCCESS;
 }
 
-enum cb_err cmos_set_uint_option(const char *name, unsigned int *value)
+static enum cb_err cmos_set_uint_option(const char *name, unsigned int *value)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -178,6 +184,11 @@ enum cb_err cmos_set_uint_option(const char *name, unsigned int *value)
 		return CB_CMOS_ACCESS_ERROR;
 
 	return CB_SUCCESS;
+}
+
+enum cb_err set_uint_option(const char *name, unsigned int value)
+{
+	return cmos_set_uint_option(name, &value);
 }
 
 int cmos_lb_cks_valid(void)

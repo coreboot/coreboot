@@ -120,12 +120,21 @@ config UTIL_GENPARSER
 
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
+choice
+	prompt "Option backend to use"
+	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
+
+config OPTION_BACKEND_NONE
+	bool "None"
+
 config USE_OPTION_TABLE
 	bool "Use CMOS for configuration values"
 	depends on HAVE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
+
+endchoice
 
 config STATIC_OPTION_TABLE
 	bool "Load default configuration values into CMOS on each boot"

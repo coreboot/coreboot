@@ -184,7 +184,7 @@ uint32_t tpm_setup(int s3flag)
 #if CONFIG(TPM1)
 	result = tpm1_invoke_state_machine();
 #endif
-	if (CONFIG(TPM_MEASURED_BOOT) && !CONFIG(TPM_MEASURED_BOOT_INIT_BOOTBLOCK))
+	if (CONFIG(TPM_MEASURED_BOOT))
 		result = tspi_measure_cache_to_pcr();
 
 	tpm_is_setup = 1;

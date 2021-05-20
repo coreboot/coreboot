@@ -183,6 +183,7 @@ Contents:
 * [Mainboard](mainboard/index.md)
 * [Payloads](lib/payloads/index.md)
 * [Libraries](lib/index.md)
+* [Options](lib/option.md)
 * [Security](security/index.md)
 * [SuperIO](superio/index.md)
 * [Vendorcode](vendorcode/index.md)

@@ -122,6 +122,7 @@ config UTIL_GENPARSER
 
 choice
 	prompt "Option backend to use"
+	default USE_MAINBOARD_SPECIFIC_OPTION_BACKEND if HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
 
 config OPTION_BACKEND_NONE
@@ -133,6 +134,13 @@ config USE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
+
+config USE_MAINBOARD_SPECIFIC_OPTION_BACKEND
+	bool "Use mainboard-specific option backend"
+	depends on HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
+	help
+	  Use a mainboard-specific mechanism to access runtime-configurable
+	  options.
 
 endchoice
 
@@ -682,6 +690,13 @@ config NUM_THREADS
 	depends on COOP_MULTITASKING
 	help
 	  How many execution threads to cooperatively multitask with.
+
+config HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
+	bool
+	help
+	  Selected by mainboards which implement a mainboard-specific mechanism
+	  to access the values for runtime-configurable options. For example, a
+	  custom BMC interface or an EEPROM with an externally-imposed layout.
 
 config HAVE_OPTION_TABLE
 	bool

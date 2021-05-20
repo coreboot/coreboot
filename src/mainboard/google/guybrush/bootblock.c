@@ -34,7 +34,11 @@ void bootblock_mainboard_early_init(void)
 	dword = pm_read32(0x74);
 	dword |= 3 << 10;
 	pm_write32(0x74, dword);
+}
 
+void bootblock_mainboard_init(void)
+{
+	/* Put FPMCU check after EC initialization */
 	if (variant_has_fpmcu())
 		variant_fpmcu_reset();
 }

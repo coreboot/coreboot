@@ -5,112 +5,10 @@
 
 #include <types.h>
 #include <soc/addressmap.h>
-
-typedef struct {
-	u32 addr;
-} gpio_t;
-
-#define TLMM_TILE_SIZE	0x00400000
-#define TLMM_GPIO_OFF_DELTA	0x00001000
-#define TLMM_GPIO_TILE_NUM	3
-
-#define TLMM_GPIO_IN_OUT_OFF	0x4
-#define TLMM_GPIO_ID_STATUS_OFF	0x10
-
-#define GPIO_FUNC_GPIO	0
-
-/* GPIO INTR CFG MASK */
-#define GPIO_INTR_DECT_CTL_MASK		0x3
-#define GPIO_INTR_RAW_STATUS_EN_MASK	0x1
-
-/* GPIO INTR CFG SHIFT */
-#define GPIO_INTR_DECT_CTL_SHIFT	2
-#define GPIO_INTR_RAW_STATUS_EN_SHIFT	4
-
-/* GPIO INTR STATUS MASK */
-#define GPIO_INTR_STATUS_MASK	0x1
-
-/* GPIO INTR RAW STATUS */
-#define GPIO_INTR_RAW_STATUS_ENABLE	1
-#define GPIO_INTR_RAW_STATUS_DISABLE	0
-
-/* GPIO INTR STATUS */
-#define GPIO_INTR_STATUS_ENABLE		1
-#define GPIO_INTR_STATUS_DISABLE	0
-
-/* GPIO INTR CFG MASK */
-#define GPIO_INTR_DECT_CTL_MASK		0x3
-#define GPIO_INTR_RAW_STATUS_EN_MASK	0x1
-
-/* GPIO INTR CFG SHIFT */
-#define GPIO_INTR_DECT_CTL_SHIFT	2
-#define GPIO_INTR_RAW_STATUS_EN_SHIFT	4
-
-/* GPIO INTR STATUS MASK */
-#define GPIO_INTR_STATUS_MASK	0x1
-
-/* GPIO INTR RAW STATUS */
-#define GPIO_INTR_RAW_STATUS_ENABLE	1
-#define GPIO_INTR_RAW_STATUS_DISABLE	0
-
-/* GPIO INTR STATUS */
-#define GPIO_INTR_STATUS_ENABLE		1
-#define GPIO_INTR_STATUS_DISABLE	0
-
-/* GPIO TLMM: Direction */
-#define GPIO_INPUT	0
-#define GPIO_OUTPUT	1
-
-/* GPIO TLMM: Pullup/Pulldown */
-#define GPIO_NO_PULL	0
-#define GPIO_PULL_DOWN	1
-#define GPIO_KEEPER	2
-#define GPIO_PULL_UP	3
-
-/* GPIO TLMM: Drive Strength */
-#define GPIO_2MA	0
-#define GPIO_4MA	1
-#define GPIO_6MA	2
-#define GPIO_8MA	3
-#define GPIO_10MA	4
-#define GPIO_12MA	5
-#define GPIO_14MA	6
-#define GPIO_16MA	7
-
-/* GPIO TLMM: Status */
-#define GPIO_OUTPUT_DISABLE	0
-#define GPIO_OUTPUT_ENABLE	1
-
-/* GPIO TLMM: Mask */
-#define GPIO_CFG_PULL_BMSK	0x3
-#define GPIO_CFG_FUNC_BMSK	0xF
-#define GPIO_CFG_DRV_BMSK	0x7
-#define GPIO_CFG_OE_BMSK	0x1
-
-/* GPIO TLMM: Shift */
-#define GPIO_CFG_PULL_SHFT	0
-#define GPIO_CFG_FUNC_SHFT	2
-#define GPIO_CFG_DRV_SHFT	6
-#define GPIO_CFG_OE_SHFT	9
-
-/* GPIO IO: Mask */
-#define GPIO_IO_IN_BMSK		0x1
-#define GPIO_IO_OUT_BMSK	0x1
-
-/* GPIO IO: Shift */
-#define GPIO_IO_IN_SHFT		0
-#define GPIO_IO_OUT_SHFT	1
-
-/* GPIO ID STATUS: Mask */
-#define GPIO_ID_STATUS_BMSK	0x1
-
-/* GPIO MAX Valid # */
-#define GPIO_NUM_MAX	118
-
-#define GPIO(num) ((gpio_t){.addr = GPIO##num##_ADDR})
+#include <soc/gpio_common.h>
 
 #define PIN(index, tlmm, func1, func2, func3, func4, func5, func6, func7) \
-GPIO##index##_ADDR = TLMM_##tlmm##_TILE_BASE + index * TLMM_GPIO_OFF_DELTA, \
+GPIO##index##_ADDR = TLMM_##tlmm##_TILE_BASE + (index * TLMM_GPIO_OFF_DELTA), \
 GPIO##index##_FUNC_##func1 = 1,	\
 GPIO##index##_FUNC_##func2 = 2, \
 GPIO##index##_FUNC_##func3 = 3, \
@@ -265,24 +163,4 @@ enum {
 								 RES_6, RES_7),
 	PIN(118, WEST, RES_1, RES_2, RES_3, RES_4, RES_5, RES_6, RES_7),
 };
-
-enum gpio_irq_type {
-	IRQ_TYPE_LEVEL = 0,
-	IRQ_TYPE_RISING_EDGE = 1,
-	IRQ_TYPE_FALLING_EDGE = 2,
-	IRQ_TYPE_DUAL_EDGE = 3,
-};
-
-struct tlmm_gpio {
-	uint32_t cfg;
-	uint32_t in_out;
-	uint32_t intr_cfg;
-	uint32_t intr_status;
-};
-
-void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,
-				uint32_t drive_str, uint32_t enable);
-void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, uint32_t pull);
-int gpio_irq_status(gpio_t gpio);
-
 #endif /* _SOC_QUALCOMM_SC7180_GPIO_H_ */

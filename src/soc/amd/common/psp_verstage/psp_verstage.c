@@ -238,6 +238,16 @@ void Main(void)
 		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_UPDATE_BOOT_REGION);
+
+	/*
+	 * Since psp_verstage doesn't load next stage we never call
+	 * any cbfs API on RO path. However we still need to initialize
+	 * RO CBFS MCACHE manually to pass it in transfer_buffer.
+	 * In RW path, MCACHE build will be skipped for RO region since
+	 * we already built here.
+	 */
+	cbfs_get_boot_device(true);
+
 	retval = update_boot_region(ctx);
 	if (retval)
 		reboot_into_recovery(ctx, retval);

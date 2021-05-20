@@ -85,3 +85,18 @@ struct chip_operations drivers_intel_pmc_mux_conn_ops = {
 	CHIP_NAME("Intel PMC MUX CONN Driver")
 	.enable_dev	= conn_enable,
 };
+
+bool intel_pmc_mux_conn_get_ports(const struct device *conn, unsigned int *usb2_port,
+					unsigned int *usb3_port)
+{
+	const struct drivers_intel_pmc_mux_conn_config *mux_config;
+
+	if (!conn->chip_info || conn->chip_ops != &drivers_intel_pmc_mux_conn_ops)
+		return false;
+
+	mux_config = conn->chip_info;
+	*usb2_port = mux_config->usb2_port_number;
+	*usb3_port = mux_config->usb3_port_number;
+
+	return true;
+};

@@ -23,4 +23,12 @@ struct drivers_intel_pmc_mux_conn_config {
 	enum typec_orientation hsl_orientation;
 };
 
+/*
+ * Method verifies input "conn" device.
+ * Returns 'true' if device passed is Intel PMC MUX Conn device else returns 'false'.
+ * Method also outputs the usb2 and usb3 port numbers associated with the 'conn' device
+ */
+bool intel_pmc_mux_conn_get_ports(const struct device *conn, unsigned int *usb2_port,
+				unsigned int *usb3_port);
+
 #endif /* __DRIVERS_INTEL_PMC_MUX_CONN_H__ */

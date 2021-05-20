@@ -161,10 +161,10 @@ void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
 const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
 
 /*
- * Mainboard method to get only the port information to initialize the muxes to
+ * Method to get only the port information to initialize the muxes to
  * disconnect mode during boot.
  * returns tscc_port_map of all ports on system
  */
-const struct tcss_port_map *mainboard_tcss_get_port_info(size_t *num_ports);
+const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 
 #endif /* _TCSS_H_ */

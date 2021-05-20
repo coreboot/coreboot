@@ -12,6 +12,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/tcss.h>
 #include <stdlib.h>
+#include <drivers/intel/pmc_mux/conn/chip.h>
 
 #define BIAS_CTRL_VW_INDEX_SHIFT		16
 #define BIAS_CTRL_BIT_POS_SHIFT			8
@@ -338,13 +339,44 @@ static void tcss_configure_aux_bias_pads(
 	}
 }
 
+const struct tcss_port_map *tcss_get_port_info(size_t *num_ports)
+{
+	static struct tcss_port_map port_map[MAX_TYPE_C_PORTS];
+	size_t active_ports = 0;
+	size_t port;
+
+	for (port = 0; port < MAX_TYPE_C_PORTS; port++) {
+		const struct device_path conn_path[] = {
+			{.type = DEVICE_PATH_PCI, .pci.devfn = PCH_DEVFN_PMC},
+			{.type = DEVICE_PATH_GENERIC, .generic.id = 0, .generic.subid = 0},
+			{.type = DEVICE_PATH_GENERIC, .generic.id = port},
+		};
+		const struct device *conn = find_dev_nested_path(pci_root_bus(), conn_path,
+								ARRAY_SIZE(conn_path));
+		unsigned int usb2_port, usb3_port;
+
+		if (!conn)
+			continue;
+
+		if (CONFIG(DRIVERS_INTEL_PMC) &&
+			intel_pmc_mux_conn_get_ports(conn, &usb2_port, &usb3_port)) {
+			port_map[active_ports].usb2_port = usb2_port;
+			port_map[active_ports].usb3_port = usb3_port;
+			++active_ports;
+		}
+	}
+
+	*num_ports = active_ports;
+	return port_map;
+}
+
 void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PORTS])
 {
 	const struct tcss_port_map *port_map;
 	size_t num_ports;
 	size_t i;
 
-	port_map = mainboard_tcss_get_port_info(&num_ports);
+	port_map = tcss_get_port_info(&num_ports);
 	if (port_map == NULL)
 		return;
 

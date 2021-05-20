@@ -28,4 +28,6 @@ void variant_fpmcu_reset(void);
 
 bool variant_has_fpmcu(void);
 
+bool variant_has_pcie_wwan(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

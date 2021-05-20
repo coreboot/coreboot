@@ -33,6 +33,9 @@ end
 
 chip soc/amd/cezanne
 	device domain 0 on
+		device ref gpp_bridge_2 on
+			probe WWAN WWAN_FM350GL
+		end # WWAN
 	end # domain
 
 	register "slow_ppt_limit_mW"         = "25000"

@@ -16,6 +16,8 @@
 #define GPIO_RESET	GPIO(CAM_PDN2)
 /* EN_SPK */
 #define GPIO_EN_SPK_AMP	GPIO(CAM_PDN1)
+/* AP_XHCI_INIT_DONE */
+#define GPIO_XHCI_DONE	GPIO(CAM_PDN5)
 
 void setup_chromeos_gpios(void);
 

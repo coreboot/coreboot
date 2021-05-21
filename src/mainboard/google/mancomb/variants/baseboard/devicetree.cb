@@ -127,7 +127,7 @@ chip soc/amd/cezanne
 			end
 			device ref acp on
 				chip drivers/amd/i2s_machine_dev
-					register "hid" = ""AMDI5682""
+					register "hid" = ""10025682""
 					device generic 0.0 on end
 				end
 			end # Audio

@@ -3,7 +3,6 @@
 #ifndef __BASEBOARD_VARIANTS_H__
 #define __BASEBOARD_VARIANTS_H__
 
-#include <fsp/api.h>
 #include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <stdint.h>
@@ -19,7 +18,5 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 const struct mb_cfg *variant_memory_params(void);
 int variant_memory_sku(void);
 bool variant_is_half_populated(void);
-
-void variant_update_fspm_upds(FSPM_UPD *memupd);
 
 #endif /*__BASEBOARD_VARIANTS_H__ */

@@ -11,6 +11,9 @@ static const struct pad_config gpio_table[] = {
 	/* B7  : PCIE_CLKREQ2_N ==> WWAN_SAR_DETECT_ODL*/
 	PAD_CFG_GPI_IRQ_WAKE(GPP_B7, NONE, DEEP, LEVEL, INVERT),
 
+	/* C12 : AP_PEN_DET_ODL */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, UP_20K, DEEP),
+
 	/* D15 : EN_PP3300_CAMERA */
 	PAD_CFG_GPO(GPP_D15, 1, PLTRST),
 	/* D22 : AP_I2C_SUB_SDA*/

@@ -435,27 +435,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 
 	printk(BIOS_DEBUG, "Attempting to start %d APs\n", ap_count);
 
-	if (is_x2apic_mode()) {
-		x2apic_send_ipi(LAPIC_DM_INIT | LAPIC_INT_LEVELTRIG |
-			LAPIC_INT_ASSERT | LAPIC_DEST_ALLBUT, 0);
-		mdelay(10);
-		x2apic_send_ipi(LAPIC_DM_STARTUP | LAPIC_INT_LEVELTRIG |
-			LAPIC_DEST_ALLBUT | sipi_vector, 0);
-
-		/* Wait for CPUs to check in up to 200 us. */
-		wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
-
-		x2apic_send_ipi(LAPIC_DM_STARTUP | LAPIC_INT_LEVELTRIG |
-			LAPIC_DEST_ALLBUT | sipi_vector, 0);
-
-		/* Wait for CPUs to check in. */
-		if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */)) {
-			printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
-			       atomic_read(num_aps), ap_count);
-			return -1;
-		}
-		return 0;
-	}
+	int x2apic_mode = is_x2apic_mode();
+	printk(BIOS_DEBUG, "Starting CPUs in %s mode\n", x2apic_mode ? "x2apic" : "xapic");
 
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
@@ -671,11 +652,6 @@ static void mp_initialize_cpu(void)
 
 void smm_initiate_relocation_parallel(void)
 {
-	if (is_x2apic_mode()) {
-		x2apic_send_ipi(LAPIC_DM_SMI | LAPIC_INT_LEVELTRIG, lapicid());
-		return;
-	}
-
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
@@ -686,10 +662,14 @@ void smm_initiate_relocation_parallel(void)
 	}
 
 	lapic_send_ipi(LAPIC_INT_ASSERT | LAPIC_DM_SMI, lapicid());
-	if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */))
-		printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
-	else
-		printk(BIOS_DEBUG, "Relocation complete.\n");
+
+	if (lapic_busy()) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */)) {
+			printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
+			return;
+		}
+	}
+	printk(BIOS_DEBUG, "Relocation complete.\n");
 }
 
 DECLARE_SPIN_LOCK(smm_relocation_lock);

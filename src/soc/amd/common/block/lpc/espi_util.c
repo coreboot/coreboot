@@ -563,7 +563,7 @@ static int espi_send_reset(void)
 	return espi_send_command(&cmd);
 }
 
-static int espi_send_pltrst_deassert(const struct espi_config *mb_cfg)
+static int espi_send_pltrst(const struct espi_config *mb_cfg, bool assert)
 {
 	struct espi_cmd cmd = {
 		.hdr0 = {
@@ -573,7 +573,8 @@ static int espi_send_pltrst_deassert(const struct espi_config *mb_cfg)
 		},
 		.data = {
 			.byte0 = ESPI_VW_INDEX_SYSTEM_EVENT_3,
-			.byte1 = ESPI_VW_SIGNAL_HIGH(ESPI_VW_PLTRST),
+			.byte1 = assert ? ESPI_VW_SIGNAL_LOW(ESPI_VW_PLTRST)
+					: ESPI_VW_SIGNAL_HIGH(ESPI_VW_PLTRST),
 		},
 	};
 
@@ -1006,9 +1007,15 @@ int espi_setup(void)
 		return -1;
 	}
 
+	/* Assert PLTRST# if VW channel is enabled by mainboard. */
+	if (espi_send_pltrst(cfg, true) == -1) {
+		printk(BIOS_ERR, "Error: PLTRST# assertion failed!\n");
+		return -1;
+	}
+
 	/* De-assert PLTRST# if VW channel is enabled by mainboard. */
-	if (espi_send_pltrst_deassert(cfg) == -1) {
-		printk(BIOS_ERR, "Error: PLTRST deassertion failed!\n");
+	if (espi_send_pltrst(cfg, false) == -1) {
+		printk(BIOS_ERR, "Error: PLTRST# deassertion failed!\n");
 		return -1;
 	}
 

@@ -110,6 +110,7 @@ config MAINBOARD_PART_NUMBER
 	default "Blipper" if BOARD_GOOGLE_BLIPPER
 	default "Cret" if BOARD_GOOGLE_CRET
 	default "Pirika" if BOARD_GOOGLE_PIRIKA
+	default "Haboki" if BOARD_GOOGLE_HABOKI
 
 config MAX_CPUS
 	int
@@ -146,6 +147,7 @@ config VARIANT_DIR
 	default "blipper" if BOARD_GOOGLE_BLIPPER
 	default "cret" if BOARD_GOOGLE_CRET
 	default "pirika" if BOARD_GOOGLE_PIRIKA
+	default "haboki" if BOARD_GOOGLE_HABOKI
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

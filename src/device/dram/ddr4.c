@@ -301,3 +301,225 @@ enum cb_err spd_add_smbios17_ddr4(const u8 channel, const u8 slot, const u16 sel
 
 	return CB_SUCCESS;
 }
+
+/* Returns MRS command */
+static uint32_t ddr4_wr_to_mr0_map(u8 wr)
+{
+	static const unsigned int enc[] = {0, 1, 2, 3, 4, 5, 7, 6, 8};
+	int wr_idx = wr/2 - 5;
+	if (wr_idx < 0 || wr_idx >= ARRAY_SIZE(enc))
+		die("WR index out of bounds: %d (derived from %d)\n", wr_idx, wr);
+
+	return enc[wr_idx] << 9;
+}
+
+/* Returns MRS command */
+static uint32_t ddr4_cas_to_mr0_map(u8 cas)
+{
+	static const unsigned int enc[] = {
+		/*
+		 * The only non-zero bits are at positions (LSB0): 12, 6, 5, 4, 2.
+		 */
+		0x0000,		/* CL = 9 */
+		0x0004,		/* CL = 10 */
+		0x0010,		/* CL = 11 */
+		0x0014,		/* CL = 12 */
+		0x0020,		/* CL = 13 */
+		0x0024,		/* CL = 14 */
+		0x0030,		/* CL = 15 */
+		0x0034,		/* CL = 16 */
+		0x0064,		/* CL = 17 */
+		0x0040,		/* CL = 18 */
+		0x0070,		/* CL = 19 */
+		0x0044,		/* CL = 20 */
+		0x0074,		/* CL = 21 */
+		0x0050,		/* CL = 22 */
+		0x0060,		/* CL = 23 */
+		0x0054,		/* CL = 24 */
+		0x1000,		/* CL = 25 */
+		0x1004,		/* CL = 26 */
+		0x1010,		/* CL = 27 (only 3DS) */
+		0x1014,		/* CL = 28 */
+		0x1020,		/* reserved for CL = 29 */
+		0x1024,		/* CL = 30 */
+		0x1030,		/* reserved for CL = 31 */
+		0x1034,		/* CL = 32 */
+	};
+
+	int cas_idx = cas - 9;
+	if (cas_idx < 0 || cas_idx >= ARRAY_SIZE(enc))
+		die("CAS index out of bounds: %d (derived from %d)\n", cas_idx, cas);
+
+	return enc[cas_idx];
+}
+
+uint32_t ddr4_get_mr0(u8 write_recovery,
+		      enum ddr4_mr0_dll_reset dll_reset,
+		      u8 cas,
+		      enum ddr4_mr0_burst_type burst_type,
+		      enum ddr4_mr0_burst_length burst_length)
+{
+	uint32_t cmd = 0 << 20;
+
+	cmd |= ddr4_wr_to_mr0_map(write_recovery);
+	cmd |= dll_reset << 8;
+	cmd |= DDR4_MR0_MODE_NORMAL << 7;
+	cmd |= ddr4_cas_to_mr0_map(cas);
+	cmd |= burst_type << 3;
+	cmd |= burst_length << 0;
+
+	return cmd;
+}
+
+uint32_t ddr4_get_mr1(enum ddr4_mr1_qoff qoff,
+		      enum ddr4_mr1_tdqs tdqs,
+		      enum ddr4_mr1_rtt_nom rtt_nom,
+		      enum ddr4_mr1_write_leveling write_leveling,
+		      enum ddr4_mr1_odimp output_drive_impedance,
+		      enum ddr4_mr1_additive_latency additive_latency,
+		      enum ddr4_mr1_dll dll_enable)
+{
+	uint32_t cmd = 1 << 20;
+
+	cmd |= qoff << 12;
+	cmd |= tdqs << 11;
+	cmd |= rtt_nom << 8;
+	cmd |= write_leveling << 7;
+	cmd |= output_drive_impedance << 1;
+	cmd |= additive_latency << 3;
+	cmd |= dll_enable << 0;
+
+	return cmd;
+}
+
+/* Returns MRS command */
+static uint32_t ddr4_cwl_to_mr2_map(u8 cwl)
+{
+	/* Encoding is (starting with 0): 9, 10, 11, 12, 14, 16, 18, 20 */
+	if (cwl < 14)
+		cwl -= 9;
+	else
+		cwl = (cwl - 14) / 2 + 4;
+
+	return cwl << 3;
+}
+
+uint32_t ddr4_get_mr2(enum ddr4_mr2_wr_crc wr_crc,
+		      enum ddr4_mr2_rtt_wr rtt_wr,
+		      enum ddr4_mr2_lp_asr self_refresh, u8 cwl)
+{
+	uint32_t cmd = 2 << 20;
+
+	cmd |= wr_crc << 12;
+	cmd |= rtt_wr << 9;
+	cmd |= self_refresh << 6;
+	cmd |= ddr4_cwl_to_mr2_map(cwl);
+
+	return cmd;
+}
+
+uint32_t ddr4_get_mr3(enum ddr4_mr3_mpr_read_format mpr_read_format,
+		      enum ddr4_mr3_wr_cmd_lat_crc_dm command_latency_crc_dm,
+		      enum ddr4_mr3_fine_gran_ref fine_refresh,
+		      enum ddr4_mr3_temp_sensor_readout temp_sensor,
+		      enum ddr4_mr3_pda pda,
+		      enum ddr4_mr3_geardown_mode geardown,
+		      enum ddr4_mr3_mpr_operation mpr_operation,
+		      u8 mpr_page)
+{
+	uint32_t cmd = 3 << 20;
+
+	cmd |= mpr_read_format << 11;
+	cmd |= command_latency_crc_dm << 9;
+	cmd |= fine_refresh << 6;
+	cmd |= temp_sensor << 5;
+	cmd |= pda << 4;
+	cmd |= geardown << 3;
+	cmd |= mpr_operation << 2;
+	cmd |= (mpr_page & 3) << 0;
+
+	return cmd;
+}
+
+uint32_t ddr4_get_mr4(enum ddr4_mr4_hppr hppr,
+		      enum ddr4_mr4_wr_preamble wr_preamble,
+		      enum ddr4_mr4_rd_preamble rd_preamble,
+		      enum ddr4_mr4_rd_preamble_training rd_preamble_train,
+		      enum ddr4_mr4_self_refr_abort self_ref_abrt,
+		      enum ddr4_mr4_cs_to_cmd_latency cs2cmd_lat,
+		      enum ddr4_mr4_sppr sppr,
+		      enum ddr4_mr4_internal_vref_mon int_vref_mon,
+		      enum ddr4_mr4_temp_controlled_refr temp_ctrl_ref,
+		      enum ddr4_mr4_max_pd_mode max_pd)
+{
+	uint32_t cmd = 4 << 20;
+
+	cmd |= hppr << 13;
+	cmd |= wr_preamble << 12;
+	cmd |= rd_preamble << 11;
+	cmd |= rd_preamble_train << 10;
+	cmd |= self_ref_abrt << 9;
+	cmd |= cs2cmd_lat << 6;
+	cmd |= sppr << 5;
+	cmd |= int_vref_mon << 4;
+	cmd |= temp_ctrl_ref << 2;
+	cmd |= max_pd << 1;
+
+	return cmd;
+}
+
+uint32_t ddr4_get_mr5(enum ddr4_mr5_rd_dbi rd_dbi,
+		      enum ddr4_mr5_wr_dbi wr_dbi,
+		      enum ddr4_mr5_data_mask dm,
+		      enum ddr4_mr5_rtt_park rtt_park,
+		      enum ddr4_mr5_odt_pd odt_pd,
+		      enum ddr4_mr5_ca_parity_lat pl)
+{
+	uint32_t cmd = 5 << 20;
+
+	cmd |= rd_dbi << 12;
+	cmd |= wr_dbi << 11;
+	cmd |= dm << 10;
+	cmd |= rtt_park << 6;
+	cmd |= odt_pd << 5;
+	cmd |= pl << 0;
+
+	return cmd;
+}
+
+/* Returns MRS command */
+static uint32_t ddr4_tccd_l_to_mr6_map(u8 tccd_l)
+{
+	if (tccd_l < 4 || tccd_l > 8)
+		die("tCCD_l out of range: %d\n", tccd_l);
+
+	return (tccd_l - 4) << 10;
+}
+
+uint32_t ddr4_get_mr6(u8 tccd_l,
+		      enum ddr4_mr6_vrefdq_training vrefdq_training,
+		      enum ddr4_mr6_vrefdq_training_range range,
+		      u8 vrefdq_value)
+{
+	uint32_t cmd = 6 << 20;
+
+	cmd |= ddr4_tccd_l_to_mr6_map(tccd_l);
+	cmd |= vrefdq_training << 7;
+	cmd |= range << 6;
+	cmd |= vrefdq_value & 0x3F;
+
+	return cmd;
+}
+
+/*
+ * ZQCL: A16 = H, A15 = H, A14 = L, A10 = H, rest either L or H
+ * ZQCS: A16 = H, A15 = H, A14 = L, A10 = L, rest either L or H
+ */
+uint32_t ddr4_get_zqcal_cmd(enum ddr4_zqcal_ls long_short)
+{
+	uint32_t cmd = 1 << 16 | 1 << 15;
+
+	cmd |= long_short << 10;
+
+	return cmd;
+}

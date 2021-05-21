@@ -371,7 +371,7 @@ enum espi_cmd_type {
 #define ESPI_RXVW_POLARITY			0xac
 
 #define ESPI_CMD_TIMEOUT_US			100
-#define ESPI_CH_READY_TIMEOUT_US		1000
+#define ESPI_CH_READY_TIMEOUT_US		10000
 
 union espi_txhdr0 {
 	uint32_t val;

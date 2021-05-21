@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
+#include <fw_config.h>
 
 /** Linked list of ALL devices */
 DEVTREE_CONST struct device *DEVTREE_CONST all_devices = &dev_root;
@@ -382,4 +383,17 @@ DEVTREE_CONST struct device *dev_bus_each_child(const struct bus *parent,
 		dev = prev_child->sibling;
 
 	return dev;
+}
+
+bool is_dev_enabled(const struct device *dev)
+{
+	if (!dev)
+		return false;
+
+	/* For stages with immutable device tree, first check if device is disabled because of
+	   fw_config probing. In these stages, dev->enabled does not reflect the true state of a
+	   device that uses fw_config probing. */
+	if (DEVTREE_EARLY && !fw_config_probe_dev(dev, NULL))
+		return false;
+	return dev->enabled;
 }

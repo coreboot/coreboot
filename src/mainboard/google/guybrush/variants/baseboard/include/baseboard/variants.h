@@ -25,12 +25,16 @@ const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_early_override_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_bootblock_override_gpio_table(size_t *size);
+const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size);
 
 /* This function provides early GPIO init in early bootblock or psp. */
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 
 /* This function provides GPIO settings at the end of bootblock. */
 const struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size);
+
+/* This function provides GPIO settings before PCIe enumeration. */
+const struct soc_amd_gpio *variant_pcie_gpio_table(size_t *size);
 
 /* This function provides GPIO settings before entering sleep. */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size);

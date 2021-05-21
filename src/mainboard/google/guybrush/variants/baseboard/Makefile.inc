@@ -3,6 +3,7 @@ bootblock-y += helpers.c
 
 romstage-y += helpers.c
 romstage-y += tpm_tis.c
+romstage-y += gpio.c
 
 ramstage-y += gpio.c
 ramstage-y += helpers.c

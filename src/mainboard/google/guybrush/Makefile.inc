@@ -11,6 +11,7 @@ $(info APCB sources not found.  Skipping APCB.)
 endif
 
 romstage-y += port_descriptors.c
+romstage-y += romstage.c
 
 ramstage-y += mainboard.c
 ramstage-y += ec.c

@@ -253,6 +253,29 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 	/* TODO: Fill sleep gpio configuration */
 };
 
+/* PCIE_RST needs to be brought high before FSP-M runs */
+static const struct soc_amd_gpio pcie_gpio_table[] = {
+/* Disable all AUX_RESET lines & PCIE_RST */
+	/* WWAN_AUX_RESET_L */
+	PAD_GPO(GPIO_18, HIGH),
+	/* WLAN_AUX_RESET (ACTIVE HIGH) */
+	PAD_GPO(GPIO_29, LOW),
+	/* SSD_AUX_RESET_L */
+	PAD_GPO(GPIO_40, HIGH),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_69, HIGH),
+	/* BID>1: Unused TP27; BID==1: SD_AUX_RESET_L */
+	PAD_NC(GPIO_70),
+	/* PCIE_RST0_L */
+	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
+};
+
+const struct soc_amd_gpio *__weak variant_pcie_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(pcie_gpio_table);
+	return pcie_gpio_table;
+}
+
 const struct soc_amd_gpio *__weak variant_bootblock_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(bootblock_gpio_table);
@@ -277,6 +300,12 @@ const struct soc_amd_gpio * __weak variant_early_override_gpio_table(size_t *siz
 }
 
 const struct soc_amd_gpio * __weak variant_bootblock_override_gpio_table(size_t *size)
+{
+	*size = 0;
+	return NULL;
+}
+
+const struct soc_amd_gpio * __weak variant_pcie_override_gpio_table(size_t *size)
 {
 	*size = 0;
 	return NULL;

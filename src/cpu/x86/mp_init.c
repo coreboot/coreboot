@@ -1072,6 +1072,9 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 	if (ops->get_cpu_count != NULL)
 		state->cpu_count = ops->get_cpu_count();
 
+	if (!is_smm_enabled())
+		return;
+
 	if (ops->get_smm_info != NULL)
 		ops->get_smm_info(&state->perm_smbase, &state->perm_smsize,
 					&state->smm_real_save_state_size);

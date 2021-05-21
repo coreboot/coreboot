@@ -181,7 +181,7 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 	skip_size = (msg->type == WILCO_EC_MSG_DEFAULT) ? 1 : 0;
 
 	if (msg->response_size > rs.data_size - skip_size) {
-		printk(BIOS_ERR, "%s: data too short (%lu bytes, expected %zu)",
+		printk(BIOS_ERR, "%s: data too short (%zu bytes, expected %zu)",
 		       __func__, rs.data_size - skip_size, msg->response_size);
 		return -1;
 	}

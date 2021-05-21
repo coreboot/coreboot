@@ -145,7 +145,11 @@ static void cbmemc_reinit(int is_recovery)
 	init_console_ptr(cbmem_cons_p, size);
 	copy_console_buffer(previous_cons_p);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
+
+/* Run the romstage hook early so that the console region is one of the earliest created, and
+   therefore more likely to stay in the same place even across different boot modes where some
+   other regions may sometimes not get created (e.g. RW_MCACHE in vboot recovery mode). */
+ROMSTAGE_CBMEM_INIT_HOOK_EARLY(cbmemc_reinit)
 RAMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
 POSTCAR_CBMEM_INIT_HOOK(cbmemc_reinit)
 

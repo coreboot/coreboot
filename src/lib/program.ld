@@ -27,6 +27,7 @@
 #if ENV_RAMSTAGE || ENV_ROMSTAGE || ENV_POSTCAR
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_cbmem_init_hooks = .;
+	KEEP(*(.rodata.cbmem_init_hooks_early));
 	KEEP(*(.rodata.cbmem_init_hooks));
 	_ecbmem_init_hooks = .;
 	RECORD_SIZE(cbmem_init_hooks)

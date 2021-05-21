@@ -29,6 +29,7 @@
 
 #include <soc/dramc_param.h>
 #include <soc/emi.h>
+#include <soc/regulator.h>
 
 #if DRAM_AUXADC_CONFIG
 #include <mtk_auxadc_sw.h>
@@ -357,6 +358,8 @@ unsigned int dramc_get_vcore_voltage(void)
 {
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vcore);
+#elif CONFIG(CHROMEOS)
+	return mainboard_get_regulator_vol(MTK_REGULATOR_VCORE);
 #else
 	return 0;
 #endif
@@ -366,6 +369,8 @@ unsigned int dramc_set_vmdd_voltage(unsigned int ddr_type, unsigned int vdram)
 {
 #ifdef MTK_PMIC_MT6359
 	mtk_regulator_set_voltage(&reg_vdram, vdram, MAX_VDRAM);
+#elif CONFIG(CHROMEOS)
+	mainboard_set_regulator_vol(MTK_REGULATOR_VDD2, vdram);
 #endif
 	return 0;
 }
@@ -373,8 +378,9 @@ unsigned int dramc_set_vmdd_voltage(unsigned int ddr_type, unsigned int vdram)
 unsigned int dramc_get_vmdd_voltage(unsigned int ddr_type)
 {
 #ifdef MTK_PMIC_MT6359
-	//return mtk_regulator_get_voltage(&reg_vmdd2);
 	return mtk_regulator_get_voltage(&reg_vdram);
+#elif CONFIG(CHROMEOS)
+	return mainboard_get_regulator_vol(MTK_REGULATOR_VDD2);
 #else
 	return 0;
 #endif
@@ -383,8 +389,9 @@ unsigned int dramc_get_vmdd_voltage(unsigned int ddr_type)
 unsigned int dramc_set_vmddq_voltage(unsigned int ddr_type, unsigned int vddq)
 {
 #ifdef MTK_PMIC_MT6359
-	//mtk_regulator_set_voltage(&reg_vmddq, vddq, MAX_VDDQ);
 	mtk_regulator_set_voltage(&reg_vddq, vddq, MAX_VDDQ);
+#elif CONFIG(CHROMEOS)
+	mainboard_set_regulator_vol(MTK_REGULATOR_VDDQ, vddq);
 #endif
 	return 0;
 }
@@ -392,8 +399,9 @@ unsigned int dramc_set_vmddq_voltage(unsigned int ddr_type, unsigned int vddq)
 unsigned int dramc_get_vmddq_voltage(unsigned int ddr_type)
 {
 #ifdef MTK_PMIC_MT6359
-	//return mtk_regulator_get_voltage(&reg_vmddq);
 	return mtk_regulator_get_voltage(&reg_vddq);
+#elif CONFIG(CHROMEOS)
+	return mainboard_get_regulator_vol(MTK_REGULATOR_VDDQ);
 #else
 	return 0;
 #endif
@@ -403,6 +411,8 @@ unsigned int dramc_set_vmddr_voltage(unsigned int vmddr)
 {
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_set_voltage(&reg_vmddr, vmddr, MAX_VMDDR);
+#elif CONFIG(CHROMEOS)
+	mainboard_set_regulator_vol(MTK_REGULATOR_VMDDR, vmddr);
 #endif
 	return 0;
 }
@@ -411,6 +421,8 @@ unsigned int dramc_get_vmddr_voltage(void)
 {
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vmddr);
+#elif CONFIG(CHROMEOS)
+	return mainboard_get_regulator_vol(MTK_REGULATOR_VMDDR);
 #else
 	return 0;
 #endif
@@ -419,11 +431,10 @@ unsigned int dramc_get_vmddr_voltage(void)
 unsigned int dramc_set_vio18_voltage(unsigned int vio18)
 {
 #ifdef MTK_PMIC_MT6359
-	//unsigned int twist = vio18 % UNIT_VIO18_STEP / UNIT_VIO18;
-	//vio18 -= vio18 % UNIT_VIO18_STEP;
-	//pmic_config_interface(PMIC_RG_VIO18_2_VOCAL_ADDR, twist, PMIC_RG_VIO18_2_VOCAL_MASK, PMIC_RG_VIO18_2_VOCAL_SHIFT);
-	//pmic_config_interface(PMIC_RG_VM18_VOCAL_ADDR, twist, PMIC_RG_VM18_VOCAL_MASK, PMIC_RG_VM18_VOCAL_SHIFT);
 	return mtk_regulator_set_voltage(&reg_vio18, vio18, MAX_VIO18);
+#elif CONFIG(CHROMEOS)
+	mainboard_set_regulator_vol(MTK_REGULATOR_VDD1, vio18);
+	return 0;
 #else
 	return 0;
 #endif
@@ -433,11 +444,9 @@ unsigned int dramc_set_vio18_voltage(unsigned int vio18)
 unsigned int dramc_get_vio18_voltage(void)
 {
 #ifdef MTK_PMIC_MT6359
-//	unsigned int twist = 0;
-	//pmic_read_interface(PMIC_RG_VIO18_2_VOCAL_ADDR, (void*)&twist, PMIC_RG_VIO18_2_VOCAL_MASK, PMIC_RG_VIO18_2_VOCAL_SHIFT);
-//	pmic_read_interface(PMIC_RG_VM18_VOCAL_ADDR, &twist, PMIC_RG_VM18_VOCAL_MASK, PMIC_RG_VM18_VOCAL_SHIFT);
-//	return mtk_regulator_get_voltage(&reg_vio18) + twist * UNIT_VIO18;
-    return mtk_regulator_get_voltage(&reg_vio18);
+	return mtk_regulator_get_voltage(&reg_vio18);
+#elif CONFIG(CHROMEOS)
+	return mainboard_get_regulator_vol(MTK_REGULATOR_VDD1);
 #else
 	return 0;
 #endif
@@ -447,8 +456,8 @@ unsigned int is_discrete_lpddr4(void)
 {
 #if DRAM_AUXADC_CONFIG
 	return dram_type_auxadc;
-#else 
-	return TRUE; /* for 4ch DSC */ 
+#else
+	return TRUE; /* for 4ch DSC */
 #endif
 }
 
@@ -1484,7 +1493,7 @@ void dram_auto_detection(void)
 	DRAM_CBT_MODE_EXTERN_T dram_mode;
 	unsigned int dram_type;
 	int ret;
-	
+
 	dram_type = (unsigned int)mt_get_dram_type_for_dis();
 	g_default_emi_setting.type &= ~0xFF;
 	g_default_emi_setting.type |= (dram_type & 0xFF);
@@ -2275,7 +2284,7 @@ static unsigned int get_ch_num_by_auxadc(void)
 		else /* 2CH with DSC*/
 			{
 	    		channel_num_auxadc = CHANNEL_DUAL;
-				dram_type_auxadc = PINMUX_DSC;			
+				dram_type_auxadc = PINMUX_DSC;
 			}
         dramc_crit("Channel num from auxadc: %d, \n", channel_num_auxadc);
         dramc_crit("dram_type_auxadc from auxadc: %d, \n", dram_type_auxadc);
@@ -2283,7 +2292,7 @@ static unsigned int get_ch_num_by_auxadc(void)
    	}
     else
         dramc_crit("Error! Read AUXADC value fail\n");
-	
+
 }
 #endif
 

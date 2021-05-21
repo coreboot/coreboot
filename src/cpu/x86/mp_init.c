@@ -467,9 +467,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	}
 
 	/* Send INIT IPI to all but self. */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
-	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-			   LAPIC_DM_INIT);
+	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT, 0);
 	printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
 	mdelay(10);
 
@@ -483,9 +481,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		printk(BIOS_DEBUG, "done.\n");
 	}
 
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
-	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-			   LAPIC_DM_STARTUP | sipi_vector);
+	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
+		       0);
 	printk(BIOS_DEBUG, "Waiting for 1st SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_ERR, "timed out.\n");
@@ -509,9 +506,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		printk(BIOS_DEBUG, "done.\n");
 	}
 
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
-	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-			   LAPIC_DM_STARTUP | sipi_vector);
+	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
+		       0);
 	printk(BIOS_DEBUG, "Waiting for 2nd SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_ERR, "timed out.\n");
@@ -689,8 +685,7 @@ void smm_initiate_relocation_parallel(void)
 		printk(BIOS_DEBUG, "done.\n");
 	}
 
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid()));
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_SMI);
+	lapic_send_ipi(LAPIC_INT_ASSERT | LAPIC_DM_SMI, lapicid());
 	if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */))
 		printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
 	else

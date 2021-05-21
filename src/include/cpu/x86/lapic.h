@@ -29,9 +29,14 @@ static inline void xapic_write_atomic(unsigned long reg, uint32_t v)
 		      : : "memory", "cc");
 }
 
+static __always_inline void xapic_send_ipi(uint32_t icrlow, uint32_t apicid)
+{
+	xapic_write_atomic(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+	xapic_write_atomic(LAPIC_ICR, icrlow);
+}
+
 #define lapic_read_around(x) lapic_read(x)
 #define lapic_write_around(x, y) xapic_write_atomic((x), (y))
-
 
 static __always_inline uint32_t x2apic_read(unsigned int reg)
 {
@@ -109,6 +114,14 @@ static __always_inline void lapic_update32(unsigned int reg, uint32_t mask, uint
 		value |= or;
 		xapic_write_atomic(reg, value);
 	}
+}
+
+static __always_inline void lapic_send_ipi(uint32_t icrlow, uint32_t apicid)
+{
+	if (is_x2apic_mode())
+		x2apic_send_ipi(icrlow, apicid);
+	else
+		xapic_send_ipi(icrlow, apicid);
 }
 
 static __always_inline void lapic_wait_icr_idle(void)

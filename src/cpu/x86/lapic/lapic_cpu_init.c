@@ -103,14 +103,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	/*
 	 * Turn INIT on target chip
 	 */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-
-	/*
-	 * Send IPI
-	 */
-
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT
-				| LAPIC_DM_INIT);
+	lapic_send_ipi(LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT, apicid);
 
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 	timeout = 0;
@@ -136,11 +129,7 @@ static int lapic_start_cpu(unsigned long apicid)
 
 	printk(BIOS_SPEW, "Deasserting INIT.\n");
 
-	/* Target chip */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-
-	/* Send IPI */
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
+	lapic_send_ipi(LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT, apicid);
 
 	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 	timeout = 0;
@@ -174,13 +163,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		 * STARTUP IPI
 		 */
 
-		/* Target chip */
-		lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-
-		/* Boot on the stack */
-		/* Kick the second */
-		lapic_write_around(LAPIC_ICR, LAPIC_DM_STARTUP
-					| (AP_SIPI_VECTOR >> 12));
+		lapic_send_ipi(LAPIC_DM_STARTUP | (AP_SIPI_VECTOR >> 12), apicid);
 
 		/*
 		 * Give the other CPU some time to accept the IPI.
@@ -333,16 +316,12 @@ void stop_this_cpu(void)
 {
 	int timeout;
 	unsigned long send_status;
-	unsigned long id;
-
-	id = lapicid();
+	unsigned long id = lapicid();
 
 	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
 
 	/* send an LAPIC INIT to myself */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG |
-				LAPIC_INT_ASSERT | LAPIC_DM_INIT);
+	lapic_send_ipi(LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT, id);
 
 	/* wait for the ipi send to finish */
 	dprintk(BIOS_SPEW, "Waiting for send to finish...\n");
@@ -362,8 +341,7 @@ void stop_this_cpu(void)
 	dprintk(BIOS_SPEW, "Deasserting INIT.\n");
 
 	/* Deassert the LAPIC INIT */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
-	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
+	lapic_send_ipi(LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT, id);
 
 	dprintk(BIOS_SPEW, "Waiting for send to finish...\n");
 

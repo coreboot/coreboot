@@ -213,12 +213,20 @@ Method (_S0W, 0x0, NotSerialized)
 
 Method (_PR0)
 {
-	Return (Package() { \_SB.PCI0.D3C })
+        If ((TUID == 0) || (TUID == 1)) {
+                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+        } Else {
+                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+        }
 }
 
 Method (_PR3)
 {
-	Return (Package() { \_SB.PCI0.D3C })
+        If ((TUID == 0) || (TUID == 1)) {
+                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+        } Else {
+                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+        }
 }
 
 /*

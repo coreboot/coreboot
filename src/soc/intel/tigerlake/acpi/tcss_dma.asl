@@ -32,12 +32,20 @@ Method (_S0W, 0x0)
 
 Method (_PR0)
 {
-	Return (Package() { \_SB.PCI0.D3C })
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+	}
 }
 
 Method (_PR3)
 {
-	Return (Package() { \_SB.PCI0.D3C })
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+	}
 }
 
 /*
@@ -66,20 +74,10 @@ Name (SD3C, 0)
 
 Method (_PS0, 0, Serialized)
 {
-	If (DUID == 0) {
-		\_SB.PCI0.TBT0._ON()
-	} Else {
-		\_SB.PCI0.TBT1._ON()
-	}
 }
 
 Method (_PS3, 0, Serialized)
 {
-	If (DUID == 0) {
-		\_SB.PCI0.TBT0._OFF()
-	} Else {
-		\_SB.PCI0.TBT1._OFF()
-	}
 }
 
 Method (_DSW, 3)

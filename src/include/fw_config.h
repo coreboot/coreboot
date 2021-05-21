@@ -70,11 +70,30 @@ bool fw_config_is_provisioned(void);
 */
 const struct fw_config *fw_config_get_found(uint64_t field_mask);
 
+/**
+ * fw_config_probe_dev() - Check if any of the probe conditions are true for given device.
+ * @dev: Device for which probe conditions are checked
+ * @matching_probe: If any probe condition match, then the matching probe condition is returned
+ * to the caller.
+ * Return %true if device has no probing conditions or if a matching probe condition is
+ * encountered, %false otherwise.
+ */
+bool fw_config_probe_dev(const struct device *dev, const struct fw_config **matching_probe);
+
 #else
 
 static inline bool fw_config_probe(const struct fw_config *match)
 {
 	/* Always return true when probing with disabled fw_config. */
+	return true;
+}
+
+static inline bool fw_config_probe_dev(const struct device *dev,
+				       const struct fw_config **matching_probe)
+{
+	/* Always return true when probing with disabled fw_config. */
+	if (matching_probe)
+		*matching_probe = NULL;
 	return true;
 }
 

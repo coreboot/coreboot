@@ -155,9 +155,4 @@ config VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "8086,0f31"
 
-config VGA_BIOS_FILE
-	string
-	depends on VGA_BIOS
-	default "pci8086,0f31.rom"
-
 endif

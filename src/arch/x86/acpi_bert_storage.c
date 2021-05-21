@@ -107,7 +107,6 @@ static void revise_error_sizes(acpi_generic_error_status_t *status, size_t size)
 	entries = bert_entry_count(status);
 	entry = acpi_hest_generic_data_nth(status, entries);
 	status->data_length += size;
-	status->raw_data_length += size;
 	if (entry)
 		entry->data_length += size;
 }
@@ -176,7 +175,6 @@ static acpi_hest_generic_data_v300_t *new_generic_error_entry(
 	entry->validation_bits |= ACPI_GENERROR_VALID_TIMESTAMP;
 
 	status->data_length += sizeof(*entry);
-	status->raw_data_length += sizeof(*entry);
 	bert_bump_entry_count(status);
 
 	return entry;
@@ -528,8 +526,6 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 	status = new_bert_status();
 	if (!status)
 		return NULL;
-
-	status->raw_data_length = sizeof(*status);
 
 	if (!guidcmp(guid, &CPER_SEC_PROC_GENERIC_GUID))
 		r = bert_append_genproc(status);

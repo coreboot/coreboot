@@ -110,7 +110,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	do {
 		printk(BIOS_SPEW, "+");
 		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+		send_status = lapic_busy();
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
 		printk(BIOS_ERR, "CPU %ld: First APIC write timed out. "
@@ -136,7 +136,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	do {
 		printk(BIOS_SPEW, "+");
 		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+		send_status = lapic_busy();
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
 		printk(BIOS_ERR, "CPU %ld: Second APIC write timed out. "
@@ -177,7 +177,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		do {
 			printk(BIOS_SPEW, "+");
 			udelay(100);
-			send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+			send_status = lapic_busy();
 		} while (send_status && (timeout++ < 1000));
 
 		/*
@@ -330,7 +330,7 @@ void stop_this_cpu(void)
 	do {
 		dprintk(BIOS_SPEW, "+");
 		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+		send_status = lapic_busy();
 	} while (send_status && (timeout++ < 1000));
 
 	if (timeout >= 1000)
@@ -349,7 +349,7 @@ void stop_this_cpu(void)
 	do {
 		dprintk(BIOS_SPEW, "+");
 		udelay(100);
-		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+		send_status = lapic_busy();
 	} while (send_status && (timeout++ < 1000));
 
 	if (timeout >= 1000)

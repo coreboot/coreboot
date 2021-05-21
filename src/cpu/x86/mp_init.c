@@ -403,7 +403,7 @@ static int apic_wait_timeout(int total_delay, int delay_step)
 	int total = 0;
 	int timeout = 0;
 
-	while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY) {
+	while (lapic_busy()) {
 		udelay(delay_step);
 		total += delay_step;
 		if (total >= total_delay) {
@@ -457,7 +457,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		return 0;
 	}
 
-	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
+	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
@@ -472,7 +472,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	mdelay(10);
 
 	/* Send 1st SIPI */
-	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
+	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
@@ -497,7 +497,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		return 0;
 
 	/* Send 2nd SIPI */
-	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
+	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
@@ -676,7 +676,7 @@ void smm_initiate_relocation_parallel(void)
 		return;
 	}
 
-	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
+	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");

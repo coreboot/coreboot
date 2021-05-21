@@ -35,6 +35,11 @@ static __always_inline void xapic_send_ipi(uint32_t icrlow, uint32_t apicid)
 	xapic_write_atomic(LAPIC_ICR, icrlow);
 }
 
+static __always_inline int xapic_busy(void)
+{
+	return xapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+}
+
 #define lapic_read_around(x) lapic_read(x)
 #define lapic_write_around(x, y) xapic_write_atomic((x), (y))
 
@@ -124,9 +129,12 @@ static __always_inline void lapic_send_ipi(uint32_t icrlow, uint32_t apicid)
 		xapic_send_ipi(icrlow, apicid);
 }
 
-static __always_inline void lapic_wait_icr_idle(void)
+static __always_inline int lapic_busy(void)
 {
-	do { } while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY);
+	if (is_x2apic_mode())
+		return 0;
+	else
+		return xapic_busy();
 }
 
 static __always_inline unsigned int initial_lapicid(void)

@@ -12,7 +12,7 @@ static void reset_mcupm(struct mtk_mcu *mcu)
 {
 	/* Clear abnormal boot register */
 	write32((void *)ABNORMALBOOT_REG, 0x0);
-	write32(&mt8192_mcupm->sw_rstn, 0x1);
+	write32(&mcupm_reg->sw_rstn, 0x1);
 }
 
 static struct mtk_mcu mcupm = {
@@ -26,7 +26,7 @@ void mcupm_init(void)
 	mcupm.load_buffer = _dram_dma;
 	mcupm.buffer_size = REGION_SIZE(dram_dma);
 
-	write32(&mt8192_mcupm->sw_rstn, 0x0);
+	write32(&mcupm_reg->sw_rstn, 0x0);
 
 	if (mtk_init_mcu(&mcupm))
 		die("%s() failed\n", __func__);

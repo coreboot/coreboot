@@ -956,7 +956,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 		printk(BIOS_DEBUG, "default_actions[%d].reg.addr is %llx\n", i,
 			default_actions[i].reg.addr);
 
-	memset((void *)einj, 0, sizeof(einj));
+	memset((void *)einj, 0, sizeof(*einj));
 
 	/* Fill out header fields. */
 	memcpy(header->signature, "EINJ", 4);
@@ -973,7 +973,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 	printk(BIOS_DEBUG, "%s einj->action_table = %p\n",
 		 __func__, einj->action_table);
 	memcpy((void *)einj->action_table, (void *)default_actions, sizeof(einj->action_table));
-	header->checksum = acpi_checksum((void *)einj, sizeof(einj));
+	header->checksum = acpi_checksum((void *)einj, sizeof(*einj));
 }
 
 void acpi_create_vfct(const struct device *device,

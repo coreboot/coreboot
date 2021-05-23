@@ -271,11 +271,11 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe0_blk.space_id        = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_gpe0_blk.bit_width       = 64;	/* EventStatus + EventEnable */
 	fadt->x_gpe0_blk.bit_offset      = 0;
-	fadt->x_gpe0_blk.access_size     = ACPI_ACCESS_SIZE_DWORD_ACCESS;
+	fadt->x_gpe0_blk.access_size     = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_gpe0_blk.addrl           = fadt->gpe0_blk;
 	fadt->x_gpe0_blk.addrh           = 0x00;
 
-	fadt->x_gpe1_blk.space_id        = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_gpe1_blk.space_id        = 0;
 	fadt->x_gpe1_blk.bit_width       = 0;
 	fadt->x_gpe1_blk.bit_offset      = 0;
 	fadt->x_gpe1_blk.access_size     = 0;

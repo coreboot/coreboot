@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootstate.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <cf9_reset.h>
@@ -22,6 +23,7 @@
 #include <drivers/vpd/vpd.h>
 #include <console/console.h>
 #include <drivers/ipmi/ipmi_ops.h>
+#include <gpio.h>
 #include "ipmi.h"
 /* VPD variable for enabling/disabling FRB2 timer. */
 #define FRB2_TIMER "FRB2_TIMER"
@@ -232,3 +234,13 @@ const char *smbios_mainboard_serial_number(void)
 	else
 		return CONFIG_MAINBOARD_SERIAL_NUMBER;
 }
+
+/* Set the BMC BIOS POST complete GPIO (FM_BIOS_POST_CMPLT_N) on payload load. */
+static void bmc_set_post_complete_gpio_callback(void *arg)
+{
+	/* GPIO 46 FM_BIOS_POST_CMPLT_N */
+	gpio_set(46, 0);
+	printk(BIOS_DEBUG, "BMC: POST complete gpio set\n");
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, bmc_set_post_complete_gpio_callback, NULL);

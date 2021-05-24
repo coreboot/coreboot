@@ -68,6 +68,9 @@ uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
 			     uint32_t property_count,
 			     TPMS_CAPABILITY_DATA *capability_data);
 
+/* Issue TPM2_NV_SetBits command */
+uint32_t tlcl_set_bits(uint32_t index, uint64_t bits);
+
 /*
  * Makes tpm_process_command available for on top implementations of
  * custom tpm standards like cr50

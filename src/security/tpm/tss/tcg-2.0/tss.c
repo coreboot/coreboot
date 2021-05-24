@@ -317,6 +317,29 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 	return TPM_SUCCESS;
 }
 
+uint32_t tlcl_set_bits(uint32_t index, uint64_t bits)
+{
+	struct tpm2_nv_setbits_cmd nvsb_cmd;
+	struct tpm2_response *response;
+
+	/* Prepare the command structure */
+	memset(&nvsb_cmd, 0, sizeof(nvsb_cmd));
+
+	nvsb_cmd.nvIndex = HR_NV_INDEX + index;
+	nvsb_cmd.bits = bits;
+
+	response = tpm_process_command(TPM2_NV_SetBits, &nvsb_cmd);
+
+	printk(BIOS_INFO, "%s: response is %x\n",
+	       __func__, response ? response->hdr.tpm_code : -1);
+
+	/* Need to map tpm error codes into internal values. */
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_WRITE_FAILURE;
+
+	return TPM_SUCCESS;
+}
+
 uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 			   const TPMA_NV nv_attributes,
 			   const uint8_t *nv_policy, size_t nv_policy_size)

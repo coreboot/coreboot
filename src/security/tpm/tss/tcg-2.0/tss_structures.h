@@ -81,6 +81,7 @@ struct tpm_header {
 #define TPM2_Clear             ((TPM_CC)0x00000126)
 #define TPM2_ClearControl      ((TPM_CC)0x00000127)
 #define TPM2_NV_DefineSpace    ((TPM_CC)0x0000012A)
+#define TPM2_NV_SetBits        ((TPM_CC)0x00000135)
 #define TPM2_NV_Write          ((TPM_CC)0x00000137)
 #define TPM2_NV_WriteLock      ((TPM_CC)0x00000138)
 #define TPM2_SelfTest          ((TPM_CC)0x00000143)
@@ -393,6 +394,11 @@ struct tpm2_nv_write_cmd {
 	TPMI_RH_NV_INDEX nvIndex;
 	TPM2B_MAX_NV_BUFFER data;
 	uint16_t offset;
+};
+
+struct tpm2_nv_setbits_cmd {
+	TPMI_RH_NV_INDEX nvIndex;
+	uint64_t bits;
 };
 
 struct tpm2_self_test {

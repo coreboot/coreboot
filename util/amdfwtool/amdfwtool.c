@@ -1044,6 +1044,7 @@ static void integrate_bios_firmwares(context *ctx,
 
 	if (biosdir2) {
 		biosdir->entries[count].type = AMD_BIOS_L2_PTR;
+		biosdir->entries[count].region_type = 0;
 		biosdir->entries[count].size =
 					+ MAX_BIOS_ENTRIES
 					* sizeof(bios_directory_entry);

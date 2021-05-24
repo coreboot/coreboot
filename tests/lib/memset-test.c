@@ -16,10 +16,9 @@ struct memset_test_state {
 static int setup_test(void **state)
 {
 	struct memset_test_state *s = malloc(sizeof(struct memset_test_state));
-
 	u8 *buf = malloc(MEMSET_BUFFER_SZ);
 	u8 *helper_buf = malloc(MEMSET_BUFFER_SZ);
-	if (!buf || !helper_buf)
+	if (!s || !buf || !helper_buf)
 		goto error;
 
 	s->base_buffer = buf;
@@ -31,6 +30,7 @@ static int setup_test(void **state)
 error:
 	free(buf);
 	free(helper_buf);
+	free(s);
 	return -1;
 }
 

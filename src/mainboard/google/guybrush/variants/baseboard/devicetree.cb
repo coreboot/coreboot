@@ -42,7 +42,16 @@ chip soc/amd/cezanne
 		.oob_ch_en = 0,
 		.flash_ch_en = 0,
 
-		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1),
+		/*
+		 * b/218874489 - This should really be ESPI_VW_IRQ_LEVEL_HIGH,
+		 * but eSPI gets configured in verstage which is in RO.
+		 * We have already locked RO for guybrush devices so we need
+		 * make it so x86 coreboot re-initializes the vw_irq_polarity.
+		 * This leaves another problem, verstage also runs in S0i3, but
+		 * we don't run any other x86 coreboot stages, so we need to
+		 * figure out a way to reset the eSPI polarity.
+		 */
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_LOW(1),
 	}"
 
 	# Enable S0i3 support

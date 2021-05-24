@@ -227,7 +227,13 @@ chip soc/amd/picasso
 		.oob_ch_en = 0,
 		.flash_ch_en = 0,
 
-		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1) | ESPI_VW_IRQ_LEVEL_HIGH(12),
+		/*
+		 * b/160595155 - These should really be ESPI_VW_IRQ_LEVEL_HIGH,
+		 * but eSPI gets configured in verstage which is in RO.
+		 * We have already locked RO for zork devices so we need
+		 * make it so x86 coreboot re-initializes the vw_irq_polarity.
+		 */
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_LOW(1) | ESPI_VW_IRQ_LEVEL_LOW(12),
 	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"

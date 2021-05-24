@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -990,7 +990,7 @@ typedef struct {
   UINT8                       OcSupport;
 
 /** Offset 0x026F - Over clocking Lock
-  Over clocking Lock Enable/Disable; <b>0: Disable</b>; 1: Enable.
+  Over clocking Lock Enable/Disable; 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       OcLock;
@@ -2927,71 +2927,87 @@ typedef struct {
   Tcc (Time Coordinated Computing) Tuning Enabled
   $EN_DIS
 **/
-  UINT8                       TccTuningEnable;
+  UINT8                       TccTuningEnablePreMem;
 
 /** Offset 0x06BE
 **/
   UINT8                       UnusedUpdSpace22[2];
 
-/** Offset 0x06C0 - Tcc Register File Base Address
-  Tcc (Time Coordinated Computing) Register File Base Address
+/** Offset 0x06C0 - Tcc Buffer Config File Base Address
+  Tcc (Time Coordinated Computing) Buffer Config File File Base Address
 **/
-  UINT32                      TccConfigBase;
+  UINT32                      TccBufferCfgBase;
 
-/** Offset 0x06C4 - Tcc Register File Size
-  Tcc (Time Coordinated Computing) Register File Size
+/** Offset 0x06C4 - Tcc Buffer Config File Size
+  Tcc (Time Coordinated Computing) Buffer Config File Size
 **/
-  UINT32                      TccConfigSize;
+  UINT32                      TccBufferCfgSize;
 
-/** Offset 0x06C8 - Force ME DID Init Status
+/** Offset 0x06C8 - Tcc BIOS Config File Base Address
+  Tcc (Time Coordinated Computing) TCC BIOS Config File Base Address
+**/
+  UINT32                      TccStreamCfgBasePreMem;
+
+/** Offset 0x06CC - Tcc BIOS Config File Size
+  Tcc (Time Coordinated Computing) TCC BIOS Config File Size
+**/
+  UINT32                      TccStreamCfgSizePreMem;
+
+/** Offset 0x06D0 - Force ME DID Init Status
   Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, Set
   ME DID init stat value
   $EN_DIS
 **/
   UINT8                       DidInitStat;
 
-/** Offset 0x06C9 - CPU Replaced Polling Disable
+/** Offset 0x06D1 - CPU Replaced Polling Disable
   Test, 0: disable, 1: enable, Setting this option disables CPU replacement polling loop
   $EN_DIS
 **/
   UINT8                       DisableCpuReplacedPolling;
 
-/** Offset 0x06CA - ME DID Message
+/** Offset 0x06D2 - ME DID Message
   Test, 0: disable, 1: enable, Enable/Disable ME DID Message (disable will prevent
   the DID message from being sent)
   $EN_DIS
 **/
   UINT8                       SendDidMsg;
 
-/** Offset 0x06CB - Check HECI message before send
+/** Offset 0x06D3 - Check HECI message before send
   Test, 0: disable, 1: enable, Enable/Disable message check.
   $EN_DIS
 **/
   UINT8                       DisableMessageCheck;
 
-/** Offset 0x06CC - Skip MBP HOB
+/** Offset 0x06D4 - Skip MBP HOB
   Test, 0: disable, 1: enable, Enable/Disable MOB HOB.
   $EN_DIS
 **/
   UINT8                       SkipMbpHob;
 
-/** Offset 0x06CD - HECI2 Interface Communication
+/** Offset 0x06D5 - HECI2 Interface Communication
   Test, 0: disable, 1: enable, Adds or Removes HECI2 Device from PCI space.
   $EN_DIS
 **/
   UINT8                       HeciCommunication2;
 
-/** Offset 0x06CE - Enable KT device
+/** Offset 0x06D6 - Enable KT device
   Test, 0: disable, 1: enable, Enable or Disable KT device.
   $EN_DIS
 **/
   UINT8                       KtDeviceEnable;
 
-/** Offset 0x06CF
+/** Offset 0x06D7 - Skip CPU replacement check
+  Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace23[5];
+  UINT8                       SkipCpuReplacementCheck;
 
-/** Offset 0x06D4
+/** Offset 0x06D8
+**/
+  UINT8                       UnusedUpdSpace23[4];
+
+/** Offset 0x06DC
 **/
   UINT8                       ReservedFspmUpd2[20];
 } FSP_M_CONFIG;
@@ -3012,11 +3028,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x06E8
+/** Offset 0x06F0
 **/
   UINT8                       UnusedUpdSpace24[6];
 
-/** Offset 0x06EE
+/** Offset 0x06F6
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

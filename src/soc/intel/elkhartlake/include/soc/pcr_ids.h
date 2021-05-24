@@ -23,7 +23,6 @@
 #define PID_PSF2	0xbb
 #define PID_PSF3	0xbc
 #define PID_PSF4	0xbd
-#define PID_SCS		0xc0
 #define PID_RTC		0xc3
 #define PID_ITSS	0xc4
 #define PID_ESPI	0xc7

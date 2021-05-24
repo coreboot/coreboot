@@ -68,7 +68,7 @@ Scope (\_SB.PCI0) {
 	/* SD CARD */
 	Device (SDXC)
 	{
-		Name (_ADR, 0x00140005)
+		Name (_ADR, 0x001A0001)
 		Name (_DDN, "SD Controller")
 		Name (TEMP, 0)
 		Name (DSUU, ToUUID("f6c13ea5-65cd-461f-ab7a-29f7e8d5bd61"))

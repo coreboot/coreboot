@@ -838,8 +838,8 @@ static int espi_setup_periph_channel(const struct espi_config *mb_cfg, uint32_t 
 {
 	uint32_t slave_config;
 	/* Peripheral channel requires BME bit to be set when enabling the channel. */
-	const uint32_t slave_en_mask = ESPI_SLAVE_CHANNEL_READY |
-					ESPI_SLAVE_PERIPH_BUS_MASTER_ENABLE;
+	const uint32_t slave_en_mask =
+		ESPI_SLAVE_CHANNEL_ENABLE | ESPI_SLAVE_PERIPH_BUS_MASTER_ENABLE;
 
 	if (espi_get_configuration(ESPI_SLAVE_PERIPH_CFG, &slave_config) == -1)
 		return -1;

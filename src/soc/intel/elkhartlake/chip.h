@@ -19,9 +19,10 @@
 #include <soc/usb.h>
 #include <stdint.h>
 
-#define MAX_HD_AUDIO_DMIC_LINKS 2
-#define MAX_HD_AUDIO_SNDW_LINKS 4
-#define MAX_HD_AUDIO_SSP_LINKS  6
+#define MAX_HD_AUDIO_SDI_LINKS	2
+#define MAX_HD_AUDIO_DMIC_LINKS	2
+#define MAX_HD_AUDIO_SNDW_LINKS	4
+#define MAX_HD_AUDIO_SSP_LINKS	6
 
 struct soc_intel_elkhartlake_config {
 
@@ -63,16 +64,15 @@ struct soc_intel_elkhartlake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
-	 * When enabled memory will be training at two different frequencies.
-	 * 0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2,
-	 * 4:FixedPoint3, 5:Enabled */
+	/* System Agent dynamic frequency support.
+	 * When enabled memory will be trained at different frequencies.
+	 * 0:Disabled, 1:FixedPoint0(low), 2:FixedPoint1(mid), 3:FixedPoint2
+	 * (high), 4:Enabled */
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedPoint0,
 		SaGv_FixedPoint1,
 		SaGv_FixedPoint2,
-		SaGv_FixedPoint3,
 		SaGv_Enabled,
 	} SaGv;
 
@@ -96,12 +96,10 @@ struct soc_intel_elkhartlake_config {
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
 	uint8_t PchHdaAudioLinkHdaEnable;
+	uint8_t PchHdaSdiEnable[MAX_HD_AUDIO_SDI_LINKS];
 	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
 	uint8_t PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];
 	uint8_t PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
-	uint8_t PchHdaIDispLinkTmode;
-	uint8_t PchHdaIDispLinkFrequency;
-	uint8_t PchHdaIDispCodecDisconnect;
 
 	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
@@ -127,6 +125,10 @@ struct soc_intel_elkhartlake_config {
 
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;
+
+	/* Gfx related */
+	uint8_t Heci2Enable;
+	uint8_t Heci3Enable;
 
 	/* Gfx related */
 	uint8_t SkipExtGfxScan;
@@ -197,10 +199,6 @@ struct soc_intel_elkhartlake_config {
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	bool CnviBtAudioOffload;
-
-	/* Tcss */
-	uint8_t TcssXhciEn;
-	uint8_t TcssXdciEn;
 
 	/*
 	 * Override GPIO PM configuration:

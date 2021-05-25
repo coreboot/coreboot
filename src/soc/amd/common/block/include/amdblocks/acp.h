@@ -3,6 +3,8 @@
 #ifndef AMD_COMMON_ACP_H
 #define AMD_COMMON_ACP_H
 
+#include <stdint.h>
+
 struct acp_config {
 	enum {
 		I2S_PINS_MAX_HDA = 0,	/* HDA w/reset  3xSDI, SW w/Data0 */

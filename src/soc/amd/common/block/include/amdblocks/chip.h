@@ -3,9 +3,9 @@
 #ifndef AMD_BLOCK_CHIP_H
 #define AMD_BLOCK_CHIP_H
 
+#include <amdblocks/acp.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/spi.h>
-#include <amdblocks/acp.h>
 #include <stdint.h>
 
 struct soc_amd_common_config {

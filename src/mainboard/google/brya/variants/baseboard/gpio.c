@@ -159,7 +159,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 
 	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
-	PAD_CFG_GPO(GPP_E0, 1, DEEP),
+	PAD_CFG_GPO(GPP_E0, 1, PLTRST),
 	/* E1  : THC0_SPI1_IO2 ==> MEM_STRAP_2 */
 	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
 	/* E2  : THC0_SPI1_IO3 ==> MEM_STRAP_1 */
@@ -367,6 +367,8 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* A12 : SATAXPCIE1 ==> EN_PPVAR_WWAN */
+	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
@@ -384,11 +386,12 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
-	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
-	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
-	/* E16 : RSVD_TP ==> WWAN_RST_L */
+	/* E16 : RSVD_TP ==> WWAN_RST_L
+	 * To meet timing constrains - drive reset low.
+	 * Deasserted in ramstage.
+	 */
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),

@@ -28,6 +28,10 @@ enum vb2_pcr_digest;
 /* 0x100d: Hash of MRC_CACHE training data for non-recovery boot */
 #define MRC_RW_HASH_NV_INDEX            0x100d
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
+/* Zero-Touch Enrollment related spaces */
+#define ZTE_BOARD_ID_NV_INDEX           0x3fff00
+#define ZTE_RMA_SN_BITS_INDEX           0x3fff01
+#define ZTE_RMA_BYTES_COUNTER_INDEX     0x3fff04
 
 /* Structure definitions for TPM spaces */
 

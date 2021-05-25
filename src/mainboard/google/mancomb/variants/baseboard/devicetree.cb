@@ -50,6 +50,8 @@ chip soc/amd/cezanne
 	# Enable S0i3 support
 	register "s0ix_enable" = "1"
 
+	register "pspp_policy" = "DXIO_PSPP_BALANCED"
+
 	device domain 0 on
 		device ref gpp_bridge_0 on end # WLAN
 		device ref gpp_bridge_1 on end # SD

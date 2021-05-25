@@ -650,7 +650,7 @@ static void dump_psp_firmwares(amd_fw_entry *fw_table)
 	printf("PSP firmware components:");
 	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
 		if (index->filename)
-			printf("  filename=%s\n", index->filename);
+			printf("  %2x: %s\n", index->type, index->filename);
 	}
 }
 
@@ -661,7 +661,7 @@ static void dump_bdt_firmwares(amd_bios_entry *fw_table)
 	printf("BIOS Directory Table (BDT) components:");
 	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
 		if (index->filename)
-			printf("  filename=%s\n", index->filename);
+			printf("  %2x: %s\n", index->type, index->filename);
 	}
 }
 

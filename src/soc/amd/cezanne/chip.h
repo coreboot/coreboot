@@ -94,6 +94,13 @@ struct soc_amd_cezanne_config {
 		GPP_CLK_OFF,	/* GPP clk off */
 	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 
+	/* performance policy for the PCIe links: power consumption vs. link speed */
+	enum {
+		DXIO_PSPP_PERFORMANCE = 0,
+		DXIO_PSPP_BALANCED,
+		DXIO_PSPP_POWERSAVE,
+	} pspp_policy;
+
 	uint8_t usb_phy_custom;
 	struct usb_phy_config usb_phy;
 };

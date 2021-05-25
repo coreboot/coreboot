@@ -159,6 +159,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcrsocOffset =
 		config->telemetry_vddcrsocoffset;
 
+	/* PCIe power vs. speed */
+	mcfg->pspp_policy = config->pspp_policy;
+
 	mcfg->enable_nb_azalia = devtree_gfx_hda_dev_enabled();
 
 	if (config->usb_phy_custom)

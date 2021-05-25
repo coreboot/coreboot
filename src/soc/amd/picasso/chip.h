@@ -263,6 +263,13 @@ struct soc_amd_picasso_config {
 		GPP_CLK_OFF,	/* GPP clk off */
 	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 
+	/* performance policy for the PCIe links: power consumption vs. link speed */
+	enum {
+		DXIO_PSPP_PERFORMANCE = 0,
+		DXIO_PSPP_BALANCED,
+		DXIO_PSPP_POWERSAVE,
+	} pspp_policy;
+
 	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
 	bool acp_i2s_use_external_48mhz_osc;
 

@@ -112,5 +112,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->sata_enable = devtree_sata_dev_enabled();
 	mcfg->hdmi2_disable = config->hdmi2_disable;
 
+	/* PCIe power vs. speed */
+	mcfg->pspp_policy = config->pspp_policy;
+
 	mainboard_updm_update(mcfg);
 }

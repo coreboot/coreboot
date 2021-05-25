@@ -136,6 +136,8 @@ chip soc/amd/picasso
 	register "gpp_clk_config[5]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[6]" = "GPP_CLK_REQ"
 
+	register "pspp_policy" = "DXIO_PSPP_POWERSAVE"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

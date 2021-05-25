@@ -21,5 +21,6 @@ int rtc_get(struct rtc_time *time);
 int rtc_to_tm(int tim, struct rtc_time *tm);
 unsigned long rtc_mktime(const struct rtc_time *tm);
 void rtc_display(const struct rtc_time *tm);
+int rtc_invalid(const struct rtc_time *tm);
 
 #endif /* _RTC_H_ */

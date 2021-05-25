@@ -121,3 +121,19 @@ void rtc_display(const struct rtc_time *tm)
 	       (tm->wday < 0 || tm->wday > 6) ? "unknown " : weekdays[tm->wday],
 	       tm->hour,  tm->min,  tm->sec);
 }
+
+static int rtc_month_days(unsigned int month, unsigned int year)
+{
+	int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+	return month_days[month] + (LEAP_YEAR(year) && month == 2);
+}
+
+int rtc_invalid(const struct rtc_time *tm)
+{
+	if (tm->sec > 59 || tm->min > 59 || tm->hour > 23 || tm->mon == 0 || tm->mon > 12 ||
+	    tm->year < 1970 || tm->mday > rtc_month_days(tm->mon - 1, tm->year))
+		return 1;
+	else
+		return 0;
+}

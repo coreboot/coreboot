@@ -9,7 +9,6 @@
  * without new builds of the binaryPI blobs.
  */
 #if !CONFIG(CPU_AMD_AGESA_BINARY_PI) || \
-	CONFIG(NORTHBRIDGE_AMD_PI_00630F01) || \
 	CONFIG(NORTHBRIDGE_AMD_PI_00730F01)
 
 #define HAS_ACPI_SRAT	TRUE

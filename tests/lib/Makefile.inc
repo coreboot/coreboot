@@ -30,6 +30,7 @@ tests-y += coreboot_table-test
 tests-y += rtc-test
 tests-y += spd_cache-ddr3-test
 tests-y += spd_cache-ddr4-test
+tests-y += cbmem_stage_cache-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -167,3 +168,12 @@ spd_cache-ddr4-test-config += CONFIG_SPD_CACHE_FMAP_NAME=\"RW_SPD_CACHE\" \
 				CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=512 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr4-test-cflags += -D__TEST_SPD_CACHE_DDR=4
+
+cbmem_stage_cache-test-srcs += tests/lib/cbmem_stage_cache-test.c
+cbmem_stage_cache-test-srcs += tests/stubs/console.c
+cbmem_stage_cache-test-srcs += src/lib/cbmem_stage_cache.c
+cbmem_stage_cache-test-srcs += src/lib/imd_cbmem.c
+cbmem_stage_cache-test-srcs += src/lib/imd.c
+cbmem_stage_cache-test-cflags += -I 3rdparty/vboot/firmware/include
+cbmem_stage_cache-test-cflags += -I $(src)/commonlib/include
+cbmem_stage_cache-test-config += CONFIG_CBMEM_STAGE_CACHE=1

@@ -175,6 +175,15 @@ static void wait_uip(void)
 		;
 }
 
+/* Perform a sanity check of current date and time. */
+static int cmos_date_invalid(void)
+{
+	struct rtc_time now;
+
+	rtc_get(&now);
+	return rtc_invalid(&now);
+}
+
 /*
  * If the CMOS is cleared, the rtc_reg has the invalid date. That
  * hurts some OSes. Even if we don't set USE_OPTION_TABLE, we need
@@ -190,11 +199,11 @@ void cmos_check_update_date(void)
 	year = cmos_read(RTC_CLK_YEAR);
 
 	/*
-	 * TODO: If century is 0xFF, 100% that the CMOS is cleared.
-	 * Other than that, so far rtc_year is the only entry to check
-	 * if the date is valid.
+	 * If century is 0xFF, 100% that the CMOS is cleared.
+	 * In addition, check the sanity of all values and reset the date in case of
+	 * insane values.
 	 */
-	if (century > 0x99 || year > 0x99) /* Invalid date */
+	if (century > 0x99 || year > 0x99 || cmos_date_invalid()) /* Invalid date */
 		cmos_reset_date();
 }
 

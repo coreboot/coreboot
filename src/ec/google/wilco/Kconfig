@@ -7,6 +7,13 @@ config EC_GOOGLE_WILCO
 	help
 	  Google Wilco Embedded Controller interface.
 
+	  Note, the Wilco EC firmware is a modified version of Dell's
+	  typical Latitude EC firmware, that implements a custom mailbox
+	  protocol similar to the one used in the Chromium EC.
+
+	  This particular EC firmware is not open source, just the
+	  host-side interfaces (kernel and firmware drivers) are.
+
 if EC_GOOGLE_WILCO
 
 config EC_BASE_ACPI_DATA

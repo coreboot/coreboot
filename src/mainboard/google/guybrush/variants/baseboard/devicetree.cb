@@ -52,6 +52,8 @@ chip soc/amd/cezanne
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
+	register "pspp_policy" = "DXIO_PSPP_POWERSAVE"
+
 	register "usb_phy_custom" = "1"
 	register "usb_phy" = "{
 		.Usb2PhyPort[0] = {

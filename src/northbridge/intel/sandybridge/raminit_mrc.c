@@ -371,7 +371,7 @@ void perform_raminit(int s3resume)
 
 	} else {
 		printk(BIOS_ERR, "Could not parse MRC_VAR data\n");
-		hexdump32(BIOS_ERR, mrc_var, sizeof(*mrc_var) / sizeof(u32));
+		hexdump(mrc_var, sizeof(*mrc_var));
 	}
 
 	const int cbmem_was_initted = !cbmem_recovery(s3resume);

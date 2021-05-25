@@ -29,7 +29,6 @@ int checkstack(void *top_of_stack, int core);
  * https://packages.debian.org/jessie/amd64/vim-common/filelist
  */
 void hexdump(const void *memory, size_t length);
-void hexdump32(char LEVEL, const void *d, size_t len);
 
 /*
  * hexstrtobin - Turn a string of ASCII hex characters into binary

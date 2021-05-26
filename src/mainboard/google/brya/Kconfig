@@ -72,10 +72,12 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	string
 	default "Brya" if BOARD_GOOGLE_BRYA0
+	default "Primus" if BOARD_GOOGLE_PRIMUS
 
 config VARIANT_DIR
 	string
 	default "brya0" if BOARD_GOOGLE_BRYA0
+	default "primus" if BOARD_GOOGLE_PRIMUS
 
 config DIMM_SPD_SIZE
 	int

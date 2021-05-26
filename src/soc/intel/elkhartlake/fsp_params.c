@@ -15,18 +15,6 @@
 #include <soc/soc_chip.h>
 #include <string.h>
 
-/*
- * ME End of Post configuration
- * 0 - Disable EOP.
- * 1 - Send in PEI (Applicable for FSP in API mode)
- * 2 - Send in DXE (Not applicable for FSP in API mode)
- */
-enum {
-	EOP_DISABLE,
-	EOP_PEI,
-	EOP_DXE,
-} EndOfPost;
-
 static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_I2C0,
 	PCH_DEVFN_I2C1,
@@ -111,12 +99,60 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
+	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
+	struct soc_intel_elkhartlake_config *config = config_of_soc();
 
 	/* Parse device tree and fill in FSP UPDs */
 	parse_devicetree(params);
 
-	/* TODO: Update with UPD override as FSP matures */
+	/* Load VBT before devicetree-specific config. */
+	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
+
+	/* Check if IGD is present and fill Graphics init param accordingly */
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+
+	/* Display config */
+	params->DdiPortAHpd = config->DdiPortAHpd;
+	params->DdiPortADdc = config->DdiPortADdc;
+	params->DdiPortCHpd = config->DdiPortCHpd;
+	params->DdiPortCDdc = config->DdiPortCDdc;
+
+	/* Use coreboot MP PPI services if Kconfig is enabled */
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
+		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+
+	/* Chipset Lockdown */
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
+		params->PchLockDownGlobalSmi = 0;
+		params->PchLockDownBiosLock = 0;
+		params->PchLockDownBiosInterface = 0;
+		params->PchWriteProtectionEnable[0] = 0;
+		params->PchUnlockGpioPads = 1;
+		params->RtcMemoryLock = 0;
+	} else {
+		params->PchLockDownGlobalSmi = 1;
+		params->PchLockDownBiosLock = 1;
+		params->PchLockDownBiosInterface = 1;
+		params->PchWriteProtectionEnable[0] = 1;
+		params->PchUnlockGpioPads = 0;
+		params->RtcMemoryLock = 1;
+	}
+
+	/* Disable PAVP */
+	params->PavpEnable = 0;
+
+	/* Legacy 8254 timer support */
+	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
+	params->Enable8254ClockGatingOnS3 = 1;
+
+	/* PCH Master Gating Control */
+	params->PchPostMasterClockGating = 1;
+	params->PchPostMasterPowerGating = 1;
+
+	/* HECI */
+	params->Heci3Enabled = config->Heci3Enable;
 
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);

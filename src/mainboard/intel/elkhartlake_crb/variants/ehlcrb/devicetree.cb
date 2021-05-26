@@ -12,10 +12,20 @@ chip soc/intel/elkhartlake
 	register "pmc_gpe0_dw1" = "GPP_F"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# Enable heci1 communication
+	register "HeciEnabled" = "1"
+
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "SmbusEnable" = "1"
 	register "Heci2Enable" = "1"
+
+	# Display related UPDs
+	# Enable HPD for DDI ports C
+	register "DdiPortCHpd" = "1"
+
+	# Enable DDC for DDI ports C
+	register "DdiPortCDdc" = "1"
 
 	# Skip the CPU repalcement check
 	register "SkipCpuReplacementCheck" = "1"
@@ -103,6 +113,10 @@ chip soc/intel/elkhartlake
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPP_G5"
+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
 
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge

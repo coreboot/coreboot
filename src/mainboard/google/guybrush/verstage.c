@@ -19,7 +19,3 @@ void verstage_mainboard_early_init(void)
 {
 	setup_gpio();
 }
-
-void verstage_mainboard_init(void)
-{
-}

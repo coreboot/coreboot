@@ -4,6 +4,7 @@
 
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
+#include <amdblocks/i2c.h>
 #include <amdblocks/spi.h>
 #include <arch/exception.h>
 #include <arch/hlt.h>
@@ -155,4 +156,9 @@ void verstage_soc_init(void)
 {
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
 		espi_setup();
+
+	enable_aoac_devices();
+	printk(BIOS_DEBUG, "Setting up i2c\n");
+	i2c_soc_early_init();
+	printk(BIOS_DEBUG, "i2c setup\n");
 }

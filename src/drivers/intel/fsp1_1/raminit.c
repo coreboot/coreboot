@@ -249,30 +249,6 @@ void raminit(struct romstage_params *params)
 	}
 }
 
-/* Initialize the UPD parameters for MemoryInit */
-__weak void mainboard_memory_init_params(
-	struct romstage_params *params,
-	MEMORY_INIT_UPD *upd_ptr)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-/* Display the UPD parameters for MemoryInit */
-__weak void soc_display_memory_init_params(
-	const MEMORY_INIT_UPD *old, MEMORY_INIT_UPD *new)
-{
-	printk(BIOS_SPEW, "UPD values for MemoryInit:\n");
-	hexdump32(BIOS_SPEW, new, sizeof(*new));
-}
-
-/* Initialize the UPD parameters for MemoryInit */
-__weak void soc_memory_init_params(
-	struct romstage_params *params,
-	MEMORY_INIT_UPD *upd)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
 /* Initialize the SoC after MemoryInit */
 __weak void mainboard_after_memory_init(void)
 {

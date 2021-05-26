@@ -171,14 +171,6 @@ void intel_silicon_init(void)
 __weak void mainboard_silicon_init_params(
 	SILICON_INIT_UPD *params)
 {
-};
-
-/* Display the UPD parameters for SiliconInit */
-__weak void soc_display_silicon_init_params(
-	const SILICON_INIT_UPD *old, SILICON_INIT_UPD *new)
-{
-	printk(BIOS_SPEW, "UPD values for SiliconInit:\n");
-	hexdump32(BIOS_SPEW, new, sizeof(*new));
 }
 
 /* Initialize the UPD parameters for SiliconInit */

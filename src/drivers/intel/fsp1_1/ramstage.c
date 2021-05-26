@@ -13,11 +13,6 @@
 #include <timestamp.h>
 #include <cbmem.h>
 
-/* SOC initialization after FSP silicon init */
-__weak void soc_after_silicon_init(void)
-{
-}
-
 static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 {
 	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
@@ -141,7 +136,6 @@ static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 	}
 
 	display_hob_info(fsp_info_header);
-	soc_after_silicon_init();
 }
 
 static void fsp_load(void)

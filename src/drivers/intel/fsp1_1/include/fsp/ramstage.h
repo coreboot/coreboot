@@ -8,8 +8,6 @@
 
 /* Perform Intel silicon init. */
 void intel_silicon_init(void);
-/* Called after the silicon init code has run. */
-void soc_after_silicon_init(void);
 /* Initialize UPD data before SiliconInit call. */
 void soc_silicon_init_params(SILICON_INIT_UPD *params);
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params);

@@ -33,8 +33,6 @@ static void raminit_common(struct romstage_params *params)
 
 	elog_boot_notify(s3wake);
 
-	/* Perform remaining SOC initialization */
-	soc_pre_ram_init(params);
 	post_code(0x33);
 
 	/* Check recovery and MRC cache */
@@ -258,27 +256,10 @@ __weak void mainboard_save_dimm_info(
 						MEMORY_BUS_WIDTH_128;
 					break;
 				}
-
-				/* Add any mainboard specific information */
-				mainboard_add_dimm_info(params, mem_info,
-							channel, dimm, index);
 				index++;
 			}
 		}
 	}
 	mem_info->dimm_cnt = index;
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
-}
-
-/* Add any mainboard specific information */
-__weak void mainboard_add_dimm_info(
-	struct romstage_params *params,
-	struct memory_info *mem_info,
-	int channel, int dimm, int index)
-{
-}
-
-/* SOC initialization before RAM is enabled */
-__weak void soc_pre_ram_init(struct romstage_params *params)
-{
 }

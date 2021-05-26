@@ -74,13 +74,6 @@
 
 #define DEFAULT_SOFT_FUSE_CHAIN "0x1"
 
-#define EMBEDDED_FW_SIGNATURE 0x55aa55aa
-#define PSP_COOKIE 0x50535024		/* 'PSP$' */
-#define PSPL2_COOKIE 0x324c5024		/* '2LP$' */
-#define PSP2_COOKIE 0x50535032		/* 'PSP2' */
-#define BDT1_COOKIE 0x44484224		/* 'DHB$ */
-#define BDT2_COOKIE 0x324c4224		/* '2LB$ */
-
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
  * can support an optional "combo" implementation.  If the PSP sees the
@@ -344,113 +337,6 @@ amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_INVALID },
 };
 
-struct second_gen_efs { /* todo: expand for Server products */
-	int gen:1; /* Client products only use bit 0 */
-	int reserved:31;
-} __attribute__((packed));
-
-#define EFS_SECOND_GEN 0
-
-typedef struct _embedded_firmware {
-	uint32_t signature; /* 0x55aa55aa */
-	uint32_t imc_entry;
-	uint32_t gec_entry;
-	uint32_t xhci_entry;
-	uint32_t psp_entry;
-	uint32_t comboable;
-	uint32_t bios0_entry; /* todo: add way to select correct entry */
-	uint32_t bios1_entry;
-	uint32_t bios2_entry;
-	struct second_gen_efs efs_gen;
-	uint32_t bios3_entry;
-	uint32_t reserved_2Ch;
-	uint32_t promontory_fw_ptr;
-	uint32_t lp_promontory_fw_ptr;
-	uint32_t reserved_38h;
-	uint32_t reserved_3Ch;
-	uint8_t spi_readmode_f15_mod_60_6f;
-	uint8_t fast_speed_new_f15_mod_60_6f;
-	uint8_t reserved_42h;
-	uint8_t spi_readmode_f17_mod_00_2f;
-	uint8_t spi_fastspeed_f17_mod_00_2f;
-	uint8_t qpr_dummy_cycle_f17_mod_00_2f;
-	uint8_t reserved_46h;
-	uint8_t spi_readmode_f17_mod_30_3f;
-	uint8_t spi_fastspeed_f17_mod_30_3f;
-	uint8_t micron_detect_f17_mod_30_3f;
-	uint8_t reserved_4Ah;
-	uint8_t reserved_4Bh;
-	uint32_t reserved_4Ch;
-} __attribute__((packed, aligned(16))) embedded_firmware;
-
-typedef struct _psp_directory_header {
-	uint32_t cookie;
-	uint32_t checksum;
-	uint32_t num_entries;
-	uint32_t additional_info;
-} __attribute__((packed, aligned(16))) psp_directory_header;
-
-typedef struct _psp_directory_entry {
-	uint8_t type;
-	uint8_t subprog;
-	uint16_t rsvd;
-	uint32_t size;
-	uint64_t addr; /* or a value in some cases */
-} __attribute__((packed)) psp_directory_entry;
-
-typedef struct _psp_directory_table {
-	psp_directory_header header;
-	psp_directory_entry entries[];
-} __attribute__((packed, aligned(16))) psp_directory_table;
-
-#define MAX_PSP_ENTRIES 0x1f
-
-typedef struct _psp_combo_header {
-	uint32_t cookie;
-	uint32_t checksum;
-	uint32_t num_entries;
-	uint32_t lookup;
-	uint64_t reserved[2];
-} __attribute__((packed, aligned(16))) psp_combo_header;
-
-typedef struct _psp_combo_entry {
-	uint32_t id_sel;
-	uint32_t id;
-	uint64_t lvl2_addr;
-} __attribute__((packed)) psp_combo_entry;
-
-typedef struct _psp_combo_directory {
-	psp_combo_header header;
-	psp_combo_entry entries[];
-} __attribute__((packed, aligned(16))) psp_combo_directory;
-
-#define MAX_COMBO_ENTRIES 1
-
-typedef struct _bios_directory_hdr {
-	uint32_t cookie;
-	uint32_t checksum;
-	uint32_t num_entries;
-	uint32_t additional_info;
-} __attribute__((packed, aligned(16))) bios_directory_hdr;
-
-typedef struct _bios_directory_entry {
-	uint8_t type;
-	uint8_t region_type;
-	int reset:1;
-	int copy:1;
-	int ro:1;
-	int compressed:1;
-	int inst:4;
-	uint8_t subprog; /* b[7:3] reserved */
-	uint32_t size;
-	uint64_t source;
-	uint64_t dest;
-} __attribute__((packed)) bios_directory_entry;
-
-typedef struct _bios_directory_table {
-	bios_directory_hdr header;
-	bios_directory_entry entries[];
-} bios_directory_table;
 
 #define MAX_BIOS_ENTRIES 0x2f
 

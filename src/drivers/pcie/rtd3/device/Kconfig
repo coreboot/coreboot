@@ -1,0 +1,6 @@
+config DRIVERS_PCIE_RTD3_DEVICE
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	   When enabled, this driver will add support for ACPI controlled
+	   Runtime D3 using GPIOs for power/reset control of the PCIe device.

@@ -172,8 +172,3 @@ __weak void mainboard_silicon_init_params(
 	SILICON_INIT_UPD *params)
 {
 }
-
-/* Initialize the UPD parameters for SiliconInit */
-__weak void soc_silicon_init_params(SILICON_INIT_UPD *params)
-{
-}

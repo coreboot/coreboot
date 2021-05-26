@@ -10,7 +10,7 @@
 #define DQS_HIGH 1
 #define DQS_LOW 0
 
-#define RESET_CNTL(channel) (0x5d8 + channel * 0x400)
+#define RESET_CNTL(channel) (0x5d8 + (channel) * 0x400)
 
 struct rec_timing {
 	u8 medium;

@@ -8,7 +8,6 @@
 #include <memory_info.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
-#include <soc/intel/common/mma.h>
 #include <soc/pm.h>
 
 struct romstage_params {
@@ -42,9 +41,6 @@ void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd);
 void soc_pre_ram_init(struct romstage_params *params);
-/* Update the SOC specific memory config param for mma. */
-void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,
-		struct mma_config_param *mma_cfg);
 void mainboard_after_memory_init(void);
 
 #endif /* _COMMON_ROMSTAGE_H_ */

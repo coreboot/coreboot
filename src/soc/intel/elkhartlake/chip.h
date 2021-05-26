@@ -167,6 +167,14 @@ struct soc_intel_elkhartlake_config {
 	uint8_t SerialIoGSpiMode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 	uint8_t SerialIoUartMode[CONFIG_SOC_INTEL_UART_DEV_MAX];
 	/*
+	 * UARTn Default DMA/PIO Mode Enable(1)/Disable(0):
+	 */
+	uint8_t SerialIoUartDmaEnable[CONFIG_SOC_INTEL_UART_DEV_MAX];
+	/*
+	 * GSPIn Default Chip Enable(1)/Disable(0):
+	 */
+	uint8_t SerialIoGSpiCsEnable[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	/*
 	 * GSPIn Default Chip Select Mode:
 	 * 0:Hardware Mode,
 	 * 1:Software Mode
@@ -178,6 +186,15 @@ struct soc_intel_elkhartlake_config {
 	 * 1: High
 	 */
 	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+/*
+	 * SerialIo I2C Pads Termination Config:
+	 * 0x0:Hardware default,
+	 * 0x1:None,
+	 * 0x13:1kOhm weak pull-up,
+	 * 0x15:5kOhm weak pull-up,
+	 * 0x19:20kOhm weak pull-up
+	 */
+	uint8_t SerialIoI2cPadsTermination[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 
 	/*
 	 * TraceHubMode config

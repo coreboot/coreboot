@@ -43,13 +43,71 @@ chip soc/intel/elkhartlake
 	register "PcieClkSrcClkReq[4]" = "0x4"
 	register "PcieClkSrcClkReq[5]" = "0x5"
 
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C6] = PchSerialIoPci,
+		[PchSerialIoIndexI2C7] = PchSerialIoPci,
+	}"
+
+	register "SerialIoI2cPadsTermination" = "{
+		[PchSerialIoIndexI2C0] = 1,
+		[PchSerialIoIndexI2C1] = 1,
+		[PchSerialIoIndexI2C2] = 1,
+		[PchSerialIoIndexI2C3] = 1,
+		[PchSerialIoIndexI2C4] = 1,
+		[PchSerialIoIndexI2C5] = 1,
+		[PchSerialIoIndexI2C6] = 1,
+		[PchSerialIoIndexI2C7] = 1,
+	}"
+
+	register "SerialIoGSpiMode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoHidden,
+		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
+	}"
+
+	register "SerialIoGSpiCsEnable" = "{
+		[PchSerialIoIndexGSPI0] = 1,
+		[PchSerialIoIndexGSPI1] = 1,
+		[PchSerialIoIndexGSPI2] = 1,
+	}"
+
+	register "SerialIoGSpiCsMode" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+	}"
+
+	register "SerialIoGSpiCsState" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+	}"
+
+	register "SerialIoUartMode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
+	}"
+
+	register "SerialIoUartDmaEnable" = "{
+		[PchSerialIoIndexUART0] = 1,
+		[PchSerialIoIndexUART1] = 1,
+		[PchSerialIoIndexUART2] = 1,
+	}"
+
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPP_G5"
 
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 off end # SA Thermal device
+		device pci 00.0 on	end # Host Bridge
+		device pci 02.0 on	end # Integrated Graphics Device
+		device pci 04.0 off	end # SA Thermal device
 		device pci 08.0 off	end # GNA
 		device pci 09.0 off	end # CPU Intel Trace Hub
 

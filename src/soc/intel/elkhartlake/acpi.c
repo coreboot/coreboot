@@ -156,9 +156,14 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
+	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_pm_tmr_blk.addrl = pmbase + PM1_TMR;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
+	fadt->preferred_pm_profile = PM_MOBILE;
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
+	fadt->duty_width = 0x3;	/* CLK_VAL bits 3:1 */
+	fadt->century = 0x32;
 
 	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;

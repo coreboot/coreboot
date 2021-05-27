@@ -70,7 +70,7 @@ config DEBUG_TPM
 	bool "Output verbose TPM debug messages"
 	default n
 	select DRIVER_TPM_DISPLAY_TIS_BYTES if I2C_TPM
-	depends on TPM1 || TPM2
+	depends on TPM
 	help
 	  This option enables additional TPM related debug messages.
 
@@ -96,7 +96,7 @@ config TPM_MEASURED_BOOT
 	bool "Enable Measured Boot"
 	default n
 	select VBOOT_LIB
-	depends on TPM1 || TPM2
+	depends on TPM
 	depends on !VBOOT_RETURN_FROM_VERSTAGE
 	help
 	  Enables measured boot (experimental)

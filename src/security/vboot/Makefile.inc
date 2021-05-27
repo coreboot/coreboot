@@ -109,9 +109,7 @@ romstage-y += secdata_tpm.c
 ramstage-y += secdata_tpm.c
 endif
 
-ifneq ($(CONFIG_TPM1)$(CONFIG_TPM2),)
-verstage-y += tpm_common.c
-endif
+verstage-$(CONFIG_TPM) += tpm_common.c
 
 romstage-y += common.c
 

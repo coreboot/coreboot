@@ -13,7 +13,7 @@ config VBOOT
 	bool "Verify firmware with vboot."
 	default n
 	select VBOOT_LIB
-	select VBOOT_MOCK_SECDATA if !TPM1 && !TPM2
+	select VBOOT_MOCK_SECDATA if !TPM
 	depends on 0 = 0  # Must have a 'depends on' or board overrides will break it.
 	help
 	  Enabling VBOOT will use vboot to verify the components of the firmware

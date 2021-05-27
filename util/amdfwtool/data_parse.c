@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "amdfwtool.h"
 
@@ -410,6 +411,7 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 	char oneline[MAX_LINE_SIZE], *path_filename;
 	regmatch_t match[N_MATCHES];
 	char dir[MAX_LINE_SIZE] = {'\0'};
+	uint32_t dir_len;
 
 	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
 		blank_or_comment_regex, &blank_or_comment_expr);
@@ -424,7 +426,10 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 			continue;
 		if (is_valid_entry(oneline, match)) {
 			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
-				strcpy(dir, &(oneline[match[2].rm_so]));
+				dir_len = match[2].rm_eo - match[2].rm_so;
+				assert(dir_len < MAX_LINE_SIZE);
+				snprintf(dir, MAX_LINE_SIZE, "%.*s", dir_len,
+					&(oneline[match[2].rm_so]));
 				break;
 			}
 		}
@@ -445,10 +450,10 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
 				continue;
 			} else {
-				path_filename = malloc(MAX_LINE_SIZE);
-				strcpy(path_filename, dir);
-				strcat(path_filename, "/");
-				strcat(path_filename, &(oneline[match[2].rm_so]));
+				path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
+				snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
+					MAX_LINE_SIZE, dir, MAX_LINE_SIZE,
+					&(oneline[match[2].rm_so]));
 
 				if (find_register_fw_filename_psp_dir(
 						&(oneline[match[1].rm_so]),

@@ -7,7 +7,7 @@
 
 static void reset_sspm(struct mtk_mcu *mcu)
 {
-	write32(&mt8192_sspm->sw_rstn, 0x1);
+	write32(&sspm_reg->sw_rstn, 0x1);
 }
 
 static struct mtk_mcu sspm = {

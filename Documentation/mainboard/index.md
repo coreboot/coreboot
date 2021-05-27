@@ -153,6 +153,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ## Purism
 
+- [Librem 14](purism/librem_14.md)
 - [Librem Mini](purism/librem_mini.md)
 
 ## Protectli

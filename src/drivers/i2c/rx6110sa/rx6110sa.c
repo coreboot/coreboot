@@ -166,7 +166,7 @@ static void rx6110sa_init(struct device *dev)
 	rx6110sa_write(dev, CTRL_REG, reg);
 }
 
-#if CONFIG(HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES) && !CONFIG(RX6110SA_DISABLE_ACPI)
 static void rx6110sa_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_rx6110sa_config *config = dev->chip_info;
@@ -227,7 +227,7 @@ static struct device_operations rx6110sa_ops = {
 	.set_resources		= noop_set_resources,
 	.init			= rx6110sa_init,
 	.final			= rx6110sa_final,
-#if CONFIG(HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES) && !CONFIG(RX6110SA_DISABLE_ACPI)
 	.acpi_name		= rx6110sa_acpi_name,
 	.acpi_fill_ssdt		= rx6110sa_fill_ssdt,
 #endif

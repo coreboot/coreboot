@@ -3,3 +3,10 @@ config DRIVERS_I2C_RX6110SA
 	default n
 	help
 	  Enable support for external RTC chip RX6110 SA.
+
+config RX6110SA_DISABLE_ACPI
+	bool
+	default n
+	help
+	  Disable the generation of an ACPI entry for this RTC. This is helpful
+	  when the native driver for this RTC in OS does not have ACPI support enabled.

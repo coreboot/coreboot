@@ -5,6 +5,7 @@ chip soc/amd/cezanne
 		.acp_pin_cfg = I2S_PINS_I2S_TDM,
 		.acp_i2s_wake_enable = 0,
 		.acp_pme_enable = 0,
+		.dmic_present = 1,
 	}"
 
 	# eSPI Configuration

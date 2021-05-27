@@ -56,6 +56,11 @@ void bert_errors_region(void **start, size_t *size);
 size_t bert_storage_remaining(void);
 /* Find if errors were added, a BERT region is present, and ACPI table needed */
 bool bert_errors_present(void);
+/* The BERT table should only be generated when BERT support is enabled and there's an error */
+static inline bool bert_should_generate_acpi_table(void)
+{
+	return CONFIG(ACPI_BERT) && bert_errors_present();
+}
 
 /* Get the number of entries associated with status */
 static inline size_t bert_entry_count(acpi_generic_error_status_t *status)

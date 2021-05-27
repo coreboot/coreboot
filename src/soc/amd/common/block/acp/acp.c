@@ -52,6 +52,28 @@ static const char *acp_acpi_name(const struct device *dev)
 	return "ACPD";
 }
 
+static void acp_fill_wov_method(const struct device *dev)
+{
+	const struct soc_amd_common_config *cfg = soc_get_common_config();
+	const char *scope = acpi_device_path(dev);
+
+	if (!cfg->acp_config.dmic_present || !scope)
+		return;
+
+	/* For ACP DMIC hardware runtime detection on the platform, _WOV method is populated. */
+	acpigen_write_scope(scope); /* Scope */
+	acpigen_write_method("_WOV", 0);
+	acpigen_write_return_integer(1);
+	acpigen_write_method_end();
+	acpigen_write_scope_end();
+}
+
+static void acp_fill_ssdt(const struct device *dev)
+{
+	acpi_device_write_pci_dev(dev);
+	acp_fill_wov_method(dev);
+}
+
 static struct device_operations acp_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
@@ -60,7 +82,7 @@ static struct device_operations acp_ops = {
 	.ops_pci = &pci_dev_ops_pci,
 	.scan_bus = scan_static_bus,
 	.acpi_name = acp_acpi_name,
-	.acpi_fill_ssdt = acpi_device_write_pci_dev,
+	.acpi_fill_ssdt = acp_fill_ssdt,
 };
 
 static const struct pci_driver acp_driver __pci_driver = {

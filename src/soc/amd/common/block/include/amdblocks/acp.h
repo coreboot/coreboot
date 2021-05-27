@@ -4,6 +4,7 @@
 #define AMD_COMMON_ACP_H
 
 #include <stdint.h>
+#include <types.h>
 
 struct acp_config {
 	enum {
@@ -19,6 +20,12 @@ struct acp_config {
 	u8 acp_i2s_wake_enable;
 	/* Enable ACP PME (0 = disable, 1 = enable) */
 	u8 acp_pme_enable;
+
+	/*
+	 * DMIC present (optional) to support ACP DMIC hardware runtime detection on the
+	 * platform. If dmic_present is set to true, it will populate the _WOV ACPI method.
+	 */
+	bool dmic_present;
 };
 
 #endif /* AMD_COMMON_ACP_H */

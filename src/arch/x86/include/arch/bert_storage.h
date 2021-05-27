@@ -3,8 +3,8 @@
 #ifndef _BERT_STORAGE_H_
 #define _BERT_STORAGE_H_
 
-#include <stdint.h>
 #include <acpi/acpi.h>
+#include <types.h>
 
 /* Items in the BERT region
  *
@@ -55,7 +55,7 @@ void bert_errors_region(void **start, size_t *size);
 /* Get amount of available storage left for error info */
 size_t bert_storage_remaining(void);
 /* Find if errors were added, a BERT region is present, and ACPI table needed */
-int bert_errors_present(void);
+bool bert_errors_present(void);
 
 /* Get the number of entries associated with status */
 static inline size_t bert_entry_count(acpi_generic_error_status_t *status)

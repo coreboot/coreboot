@@ -8,6 +8,7 @@
 #include <acpi/acpi.h>
 #include <arch/bert_storage.h>
 #include <string.h>
+#include <types.h>
 
 /* BERT region management:  Allow the chipset to determine the specific
  * location of the BERT region.  We find that base and size, then manage
@@ -19,7 +20,7 @@
  * resume cycles.  If the requirements change, consider using IMD to help
  * manage the space.
  */
-static int bert_region_broken;
+static bool bert_region_broken;
 static void *bert_region_base;
 static size_t bert_region_size;
 static size_t bert_region_used;
@@ -32,9 +33,9 @@ size_t bert_storage_remaining(void)
 	return bert_region_broken ? 0 : bert_region_size - bert_region_used;
 }
 
-int bert_errors_present(void)
+bool bert_errors_present(void)
 {
-	return bert_region_broken ? 0 : !!bert_region_used;
+	return !bert_region_broken && bert_region_used;
 }
 
 void bert_errors_region(void **start, size_t *size)
@@ -585,14 +586,14 @@ static void bert_storage_setup(int unused)
 	/* Always start with a blank bert region.  Make sure nothing is
 	 * maintained across reboots or resumes.
 	 */
-	bert_region_broken = 0;
+	bert_region_broken = false;
 	bert_region_used = 0;
 
 	bert_reserved_region(&bert_region_base, &bert_region_size);
 
 	if (!bert_region_base || !bert_region_size) {
 		printk(BIOS_ERR, "Bug: Can't find/add BERT storage area\n");
-		bert_region_broken = 1;
+		bert_region_broken = true;
 		return;
 	}
 

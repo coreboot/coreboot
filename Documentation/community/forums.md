@@ -14,7 +14,8 @@ read its
 ## Real time chat
 
 We also have a real time chat room on [IRC](ircs://irc.libera.chat/#coreboot),
-also bridged to [Matrix](https://matrix.to/#/#coreboot:libera.chat).
+also bridged to [Matrix](https://matrix.to/#/#coreboot:libera.chat) and a
+[Discord](https://discord.gg/JqT8NM5Zbg) presence.
 
 ## Fortnightly coreboot leadership meeting
 

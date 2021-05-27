@@ -31,6 +31,7 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
 	size_t cpu_record_size, pmc_record_size;
+	size_t gesb_header_size;
 	void *cl_data = NULL;
 
 	if (!boot_error_src_present()) {
@@ -43,6 +44,8 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	}
 
 	status = bert_new_event(&CPER_SEC_FW_ERR_REC_REF_GUID);
+	gesb_header_size = sizeof(*status);
+
 	if (!status) {
 		printk(BIOS_ERR, "Error: unable to allocate GSB\n");
 		return CB_ERR;
@@ -89,7 +92,7 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 		cl_fill_pmc_records(cl_data);
 	}
 
-	*length = status->raw_data_length;
+	*length = status->data_length + gesb_header_size;
 	*region = (void *)status;
 
 	return CB_SUCCESS;

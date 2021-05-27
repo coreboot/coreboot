@@ -60,7 +60,6 @@ $(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
 				 --ibbflags=$(CONFIG_INTEL_CBNT_IBB_FLAGS) \
 				 --entrypoint=$(shell printf "%d" 0xfffffff0) \
 				 --ibbhash=$(PK_HASH_ALG_SHA256),$(PK_HASH_ALG_SHA1),$(PK_HASH_ALG_SHA384) \
-				 --coreboot \
 				 --sinitmin=$(CONFIG_INTEL_CBNT_SINIT_SVN) \
 				 --txtflags=0 \
 				 --powerdowninterval=$(CONFIG_INTEL_CBNT_PD_INTERVAL) \

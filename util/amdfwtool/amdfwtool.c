@@ -397,10 +397,13 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 
 	if (!count)
 		return;
+	if (ctx == NULL || directory == NULL) {
+		fprintf(stderr, "Calling %s with NULL pointers\n", __func__);
+		return;
+	}
 
 	/* The table size needs to be 0x1000 aligned. So align the end of table. */
-	if (ctx != NULL)
-		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
 
 	switch (cookie) {
 	case PSP2_COOKIE:

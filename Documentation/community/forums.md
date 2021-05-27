@@ -11,11 +11,10 @@ You can subscribe on its
 read its
 [archives](https://mail.coreboot.org/hyperkitty/list/coreboot@coreboot.org/).
 
-## IRC
+## Real time chat
 
-We also have a
-[real time chat](https://webchat.freenode.net?channels=%23coreboot)
-on the Freenode IRC network's #coreboot channel.
+We also have a real time chat room on [IRC](ircs://irc.libera.chat/#coreboot),
+also bridged to [Matrix](https://matrix.to/#/#coreboot:libera.chat).
 
 ## Fortnightly coreboot leadership meeting
 

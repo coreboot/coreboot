@@ -34,7 +34,6 @@ enum fsp_notify_phase {
 /* Main FSP stages */
 void fsp_memory_init(bool s3wake);
 void fsp_silicon_init(void);
-void fsp_temp_ram_exit(void);
 
 /*
  * Load FSP-S from stage cache or CBFS. This allows SoCs to load FSPS-S

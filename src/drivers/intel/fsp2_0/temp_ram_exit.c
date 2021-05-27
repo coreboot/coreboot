@@ -7,7 +7,7 @@
 #include <cbfs.h>
 #include <types.h>
 
-void fsp_temp_ram_exit(void)
+static void fsp_temp_ram_exit(void)
 {
 	struct fsp_header hdr;
 	uint32_t status;

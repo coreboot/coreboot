@@ -17,7 +17,7 @@ SECTIONS {
 	. = _ebootblock - CONFIG_C_ENV_BOOTBLOCK_SIZE;
 #else
 	. = BOOTBLOCK_TOP - PROGRAM_SZ;
-	. = ALIGN(16);
+	. = ALIGN(64);
 #endif
 
 	_bootblock = .;

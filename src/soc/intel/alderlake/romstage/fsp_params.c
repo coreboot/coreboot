@@ -32,6 +32,10 @@ enum vtd_base_index_type {
 	VTD_GFX,
 	VTD_IPU,
 	VTD_VTVCO,
+	VTD_TBT0,
+	VTD_TBT1,
+	VTD_TBT2,
+	VTD_TBT3,
 };
 
 static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
@@ -227,6 +231,21 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->VtdDisable = 1;
 		printk(BIOS_ERR, "ERROR: Requested VT-d, but VTVCO_BASE_ADDRESS is 0\n");
 	}
+
+	if (m_cfg->TcssDma0En || m_cfg->TcssDma1En)
+		m_cfg->VtdItbtEnable = 1;
+
+	if (m_cfg->TcssItbtPcie0En)
+		m_cfg->VtdBaseAddress[VTD_TBT0] = TBT0_BASE_ADDRESS;
+
+	if (m_cfg->TcssItbtPcie1En)
+		m_cfg->VtdBaseAddress[VTD_TBT1] = TBT1_BASE_ADDRESS;
+
+	if (m_cfg->TcssItbtPcie2En)
+		m_cfg->VtdBaseAddress[VTD_TBT2] = TBT2_BASE_ADDRESS;
+
+	if (m_cfg->TcssItbtPcie3En)
+		m_cfg->VtdBaseAddress[VTD_TBT3] = TBT3_BASE_ADDRESS;
 
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);

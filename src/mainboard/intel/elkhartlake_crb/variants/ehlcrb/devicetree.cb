@@ -27,10 +27,27 @@ chip soc/intel/elkhartlake
 	# Enable DDC for DDI ports C
 	register "DdiPortCDdc" = "1"
 
+	# USB related UPDs
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"	# USB3/2 Type A port1
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"	# USB2 WWAN
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Bluetooth
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"	# Type-C Port1
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"	# Type-C Port2
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port3
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port4
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# USB3/2 Type A port2
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Type A port1
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Type A port2
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"	# USB3 WLAN
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# UNUSED
+
 	# Skip the CPU repalcement check
 	register "SkipCpuReplacementCheck" = "1"
 
-	# Enable All Root Ports (1-7)
+	# PCIe root ports related UPDs
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpEnable[1]" = "1"
 	register "PcieRpEnable[2]" = "1"

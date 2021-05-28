@@ -15,6 +15,25 @@
 #include <soc/soc_chip.h>
 #include <string.h>
 
+/*
+ * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
+ * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
+ * In order to ensure that mainboard setting does not disable L1 substates
+ * incorrectly, chip config parameter values are offset by 1 with 0 meaning
+ * use FSP UPD default. get_l1_substate_control() ensures that the right UPD
+ * value is set in fsp_params.
+ * 0: Use FSP UPD default
+ * 1: Disable L1 substates
+ * 2: Use L1.1
+ * 3: Use L1.2 (FSP UPD default)
+ */
+static int get_l1_substate_control(enum L1_substates_control ctl)
+{
+	if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
+		ctl = L1_SS_L1_2;
+	return ctl - 1;
+}
+
 static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_I2C0,
 	PCH_DEVFN_I2C1,
@@ -99,6 +118,7 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
+	unsigned int i;
 	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	struct soc_intel_elkhartlake_config *config = config_of_soc();
@@ -153,6 +173,63 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* HECI */
 	params->Heci3Enabled = config->Heci3Enable;
+
+	/* USB configuration */
+	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
+		params->PortUsb20Enable[i] = config->usb2_ports[i].enable;
+		params->Usb2PhyPetxiset[i] = config->usb2_ports[i].pre_emp_bias;
+		params->Usb2PhyTxiset[i] = config->usb2_ports[i].tx_bias;
+		params->Usb2PhyPredeemp[i] = config->usb2_ports[i].tx_emp_enable;
+		params->Usb2PhyPehalfbit[i] = config->usb2_ports[i].pre_emp_bit;
+		params->Usb2OverCurrentPin[i] = config->usb2_ports[i].enable ?
+			config->usb2_ports[i].ocpin : 0xff;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
+		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
+		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].enable ?
+			config->usb3_ports[i].ocpin : 0xff;
+		if (config->usb3_ports[i].tx_de_emp) {
+			params->Usb3HsioTxDeEmphEnable[i] = 1;
+			params->Usb3HsioTxDeEmph[i] = config->usb3_ports[i].tx_de_emp;
+		}
+		if (config->usb3_ports[i].tx_downscale_amp) {
+			params->Usb3HsioTxDownscaleAmpEnable[i] = 1;
+			params->Usb3HsioTxDownscaleAmp[i] =
+				config->usb3_ports[i].tx_downscale_amp;
+		}
+	}
+
+	params->UsbClockGatingEnable = 1;
+	params->UsbPowerGatingEnable = 1;
+
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
+	if (dev) {
+		if (!xdci_can_enable())
+			dev->enabled = 0;
+
+		params->XdciEnable = dev->enabled;
+	} else {
+		params->XdciEnable = 0;
+	}
+
+	/* PCIe root ports config */
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		params->PcieRpClkReqDetect[i] =
+			!config->PcieRpClkReqDetectDisable[i];
+		params->PcieRpL1Substates[i] =
+			get_l1_substate_control(config->PcieRpL1Substates[i]);
+		params->PcieRpLtrEnable[i] = !config->PcieRpLtrDisable[i];
+		params->PcieRpAdvancedErrorReporting[i] =
+			!config->PcieRpAdvancedErrorReportingDisable[i];
+		params->PcieRpHotPlug[i] = config->PcieRpHotPlug[i];
+		params->PciePtm[i] = config->PciePtm[i];
+		params->PcieRpLtrMaxNoSnoopLatency[i] = 0x1003;
+		params->PcieRpLtrMaxSnoopLatency[i] = 0x1003;
+		/* Virtual Channel 1 to Traffic Class mapping */
+		params->PcieRpVc1TcMap[i] = 0x60;
+	}
 
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);

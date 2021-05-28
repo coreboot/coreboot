@@ -80,8 +80,8 @@ struct soc_intel_elkhartlake_config {
 	uint8_t RMT;
 
 	/* USB related */
-	struct usb2_port_config usb2_ports[16];
-	struct usb3_port_config usb3_ports[10];
+	struct usb2_port_config usb2_ports[10];
+	struct usb3_port_config usb3_ports[4];
 	/* Wake Enable Bitmap for USB2 ports */
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
@@ -103,16 +103,29 @@ struct soc_intel_elkhartlake_config {
 
 	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
+
 	/* PCIe output clocks type to PCIe devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
 	uint8_t PcieClkSrcUsage[CONFIG_MAX_PCIE_CLOCK_SRC];
+
 	/* PCIe ClkReq-to-ClkSrc mapping, number of clkreq signal assigned to
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCK_SRC];
 
+/* Enable PCIe Precision Time Measurement for Root Ports (disabled by default) */
+	uint8_t PciePtm[CONFIG_MAX_ROOT_PORTS];
+
+	/* Probe CLKREQ# signal before enabling CLKREQ# based power management.
+	 * Enable - Default (0) / Disable (1) */
+	uint8_t PcieRpClkReqDetectDisable[CONFIG_MAX_ROOT_PORTS];
+
 	/* Probe CLKREQ# signal before enabling CLKREQ# based power management.*/
-	uint8_t PcieRpClkReqDetect[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieRpAdvancedErrorReportingDisable[CONFIG_MAX_ROOT_PORTS];
+
+	/* PCIe LTR: Enable - Default (0) / Disable (1) */
+	uint8_t PcieRpLtrDisable[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];

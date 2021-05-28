@@ -45,7 +45,7 @@
 
 /* I/O Ranges */
 #define NCP_ERR				0x00f0
-#define ACPI_IO_BASE		0x0400
+#define ACPI_IO_BASE			0x0400
 #define  ACPI_PM_EVT_BLK		(ACPI_IO_BASE + 0x00)
 #define   ACPI_PM1_STS			(ACPI_PM_EVT_BLK + 0x00)
 #define   ACPI_PM1_EN			(ACPI_PM_EVT_BLK + 0x02)

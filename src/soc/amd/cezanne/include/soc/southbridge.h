@@ -118,9 +118,6 @@
 #define FCH_AOAC_DEV_AMBA		17
 #define FCH_AOAC_DEV_ESPI		27
 
-/* IO 0xf0 NCP Error */
-#define   NCP_WARM_BOOT			(1 << 7) /* Write-once */
-
 void fch_pre_init(void);
 void fch_early_init(void);
 void fch_init(void *chip_info);

@@ -8,9 +8,7 @@
 #include <intelblocks/crashlog.h>
 
 
-void acpi_soc_fill_bert(acpi_bert_t *bert,
-			void **region,
-			size_t *length)
+void acpi_soc_fill_bert(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
 	size_t cpu_record_size, pmc_record_size;

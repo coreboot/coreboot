@@ -1565,7 +1565,7 @@ bool __weak acpi_is_boot_error_src_present(void)
 	return false;
 }
 
-__weak void acpi_soc_fill_bert(acpi_bert_t *bert, void **region, size_t *length) {}
+__weak void acpi_soc_fill_bert(void **region, size_t *length) {}
 
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {
@@ -1815,7 +1815,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		size_t size;
 		printk(BIOS_DEBUG, "ACPI:    * BERT\n");
 		bert = (acpi_bert_t *) current;
-		acpi_soc_fill_bert(bert, &region, &size);
+		acpi_soc_fill_bert(&region, &size);
 		acpi_write_bert(bert, (uintptr_t)region, size);
 		if (bert->header.length >= sizeof(acpi_bert_t)) {
 			current += bert->header.length;

@@ -140,9 +140,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-/* IO 0xf0 NCP Error */
-#define   NCP_WARM_BOOT			BIT(7) /* Write-once */
-
 typedef struct aoac_devs {
 	unsigned int :7;
 	unsigned int ic2e:1; /* 7: I2C2 */

@@ -159,36 +159,34 @@ void check_mca(void)
 	cap = rdmsr(IA32_MCG_CAP);
 	num_banks = cap.lo & MCA_BANKS_MASK;
 
-	if (is_warm_reset()) {
-		for (i = 0 ; i < num_banks ; i++) {
-			mci.sts = rdmsr(MCAX_STATUS_MSR(i));
-			if (mci.sts.hi || mci.sts.lo) {
-				int core = cpuid_ebx(1) >> 24;
+	for (i = 0 ; i < num_banks ; i++) {
+		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
+		if (mci.sts.hi || mci.sts.lo) {
+			int core = cpuid_ebx(1) >> 24;
 
-				printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
-				       core, i,
-				       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
+			printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
+			       core, i,
+			       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
 
-				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
-						i, mci.sts.hi, mci.sts.lo);
-				mci.addr = rdmsr(MCAX_ADDR_MSR(i));
-				printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
-						i, mci.addr.hi, mci.addr.lo);
-				mci.misc = rdmsr(MCAX_MISC0_MSR(i));
-				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
-						i, mci.misc.hi, mci.misc.lo);
-				mci.ctl = rdmsr(MCAX_CTL_MSR(i));
-				printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
-						i, mci.ctl.hi, mci.ctl.lo);
-				mci.cmask = rdmsr(MCA_CTL_MASK_MSR(i));
-				printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
-						i, mci.cmask.hi, mci.cmask.lo);
+			printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
+					i, mci.sts.hi, mci.sts.lo);
+			mci.addr = rdmsr(MCAX_ADDR_MSR(i));
+			printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
+					i, mci.addr.hi, mci.addr.lo);
+			mci.misc = rdmsr(MCAX_MISC0_MSR(i));
+			printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
+					i, mci.misc.hi, mci.misc.lo);
+			mci.ctl = rdmsr(MCAX_CTL_MSR(i));
+			printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
+					i, mci.ctl.hi, mci.ctl.lo);
+			mci.cmask = rdmsr(MCA_CTL_MASK_MSR(i));
+			printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
+					i, mci.cmask.hi, mci.cmask.lo);
 
-				mci.bank = i;
-				if (CONFIG(ACPI_BERT)
-						&& mca_valid(mci.sts))
-					build_bert_mca_error(&mci);
-			}
+			mci.bank = i;
+			if (CONFIG(ACPI_BERT)
+					&& mca_valid(mci.sts))
+				build_bert_mca_error(&mci);
 		}
 	}
 

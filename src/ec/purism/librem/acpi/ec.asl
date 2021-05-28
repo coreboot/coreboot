@@ -176,12 +176,14 @@ Device (EC)
 		Notify (\_SB.SLPB, 0x80)
 	}
 
-	/* KEY_F13 (Touchpad Enable/Disable) */
-	Method (_Q34)
+	/* KEY_F13 (Touchpad Enable/Disable) /*
+	/* Disabled since enabling breaks functionality
+	   with Linux topstar driver */
+	/* Method (_Q34)
 	{
 		TPSN (0x87)
 		^TPAD ^= 1
-	}
+	} */
 
 	/* KEY_WLAN */
 	Method (_Q35)

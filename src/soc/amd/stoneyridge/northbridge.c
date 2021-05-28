@@ -229,7 +229,6 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	acpi_header_t *alib;
 	acpi_header_t *ivrs;
 	acpi_hest_t *hest;
-	acpi_bert_t *bert;
 
 	/* HEST */
 	current = ALIGN(current, 8);
@@ -237,26 +236,6 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	acpi_write_hest(hest, acpi_fill_hest);
 	acpi_add_table(rsdp, (void *)current);
 	current += hest->header.length;
-
-	/* BERT */
-	if (bert_should_generate_acpi_table()) {
-		/* Skip the table if no errors are present.  ACPI driver reports
-		 * a table with a 0-length region:
-		 *   BERT: [Firmware Bug]: table invalid.
-		 */
-		void *rgn;
-		size_t size;
-		bert_errors_region(&rgn, &size);
-		if (!rgn) {
-			printk(BIOS_ERR, "Error: Can't find BERT storage area\n");
-		} else {
-			current = ALIGN(current, 8);
-			bert = (acpi_bert_t *)current;
-			acpi_write_bert(bert, (uintptr_t)rgn, size);
-			acpi_add_table(rsdp, (void *)current);
-			current += bert->header.length;
-		}
-	}
 
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);
@@ -346,6 +325,25 @@ static const struct pci_driver family15_northbridge __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.devices = pci_device_ids,
 };
+
+enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
+{
+	/*
+	 * Skip the table if no errors are present.  ACPI driver reports
+	 * a table with a 0-length region:
+	 *   BERT: [Firmware Bug]: table invalid.
+	 */
+	if (!bert_should_generate_acpi_table())
+		return CB_ERR;
+
+	bert_errors_region(region, length);
+	if (!region) {
+		printk(BIOS_ERR, "Error: Can't find BERT storage area\n");
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
 
 /*
  * Enable VGA cycles.  Set memory ranges of the FCH legacy devices (TPM, HPET,

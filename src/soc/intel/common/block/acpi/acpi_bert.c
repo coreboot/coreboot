@@ -7,12 +7,35 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/crashlog.h>
 
+static bool boot_error_src_present(void)
+{
+	if (!CONFIG(SOC_INTEL_CRASHLOG)) {
+		printk(BIOS_DEBUG, "Crashlog disabled.\n");
+		return false;
+	}
+
+	if (!discover_crashlog()) {
+		printk(BIOS_SPEW, "Crashlog discovery result: crashlog not found\n");
+		return false;
+	}
+
+	collect_pmc_and_cpu_crashlog_from_srams();
+
+	/* Discovery tables sizes can be larger than the actual valid collected data */
+	u32 crashlog_size = cl_get_total_data_size();
+
+	return (crashlog_size > 0);
+}
 
 enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
 	size_t cpu_record_size, pmc_record_size;
 	void *cl_data = NULL;
+
+	if (!boot_error_src_present()) {
+		return CB_ERR;
+	}
 
 	if (!cl_get_total_data_size()) {
 		printk(BIOS_ERR, "Error: No crashlog record present\n");
@@ -70,25 +93,4 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	*region = (void *)status;
 
 	return CB_SUCCESS;
-}
-
-bool acpi_is_boot_error_src_present(void)
-{
-
-	if (!CONFIG(SOC_INTEL_CRASHLOG)) {
-		printk(BIOS_DEBUG, "Crashlog disabled.\n");
-		return false;
-	}
-
-	if (!discover_crashlog()) {
-		printk(BIOS_SPEW, "Crashlog discovery result: crashlog not found\n");
-		return false;
-	}
-
-	collect_pmc_and_cpu_crashlog_from_srams();
-
-	/* Discovery tables sizes can be larger than the actual valid collected data */
-	u32 crashlog_size = cl_get_total_data_size();
-
-	return (crashlog_size > 0);
 }

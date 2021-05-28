@@ -1341,7 +1341,6 @@ void acpi_create_lpit(acpi_lpit_t *lpit);
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 
 /* For crashlog. */
-bool acpi_is_boot_error_src_present(void);
 enum cb_err acpi_soc_get_bert_region(void **region, size_t *length);
 
 /* For ACPI S3 support. */

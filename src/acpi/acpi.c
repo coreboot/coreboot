@@ -1560,11 +1560,6 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 }
 
 /* BERT helpers */
-bool __weak acpi_is_boot_error_src_present(void)
-{
-	return false;
-}
-
 __weak enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 {
 	return CB_ERR;
@@ -1813,18 +1808,19 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	current = acpi_align_current(current);
 
-	if (acpi_is_boot_error_src_present()) {
+	if (CONFIG(ACPI_BERT)) {
 		void *region;
 		size_t size;
-		printk(BIOS_DEBUG, "ACPI:    * BERT\n");
 		bert = (acpi_bert_t *) current;
-		acpi_soc_get_bert_region(&region, &size);
-		acpi_write_bert(bert, (uintptr_t)region, size);
-		if (bert->header.length >= sizeof(acpi_bert_t)) {
-			current += bert->header.length;
-			acpi_add_table(rsdp, bert);
+		if (acpi_soc_get_bert_region(&region, &size) == CB_SUCCESS) {
+			printk(BIOS_DEBUG, "ACPI:    * BERT\n");
+			acpi_write_bert(bert, (uintptr_t)region, size);
+			if (bert->header.length >= sizeof(acpi_bert_t)) {
+				current += bert->header.length;
+				acpi_add_table(rsdp, bert);
+			}
+			current = acpi_align_current(current);
 		}
-		current = acpi_align_current(current);
 	}
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);

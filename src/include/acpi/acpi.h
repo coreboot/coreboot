@@ -1342,7 +1342,7 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 
 /* For crashlog. */
 bool acpi_is_boot_error_src_present(void);
-void acpi_soc_fill_bert(void **region, size_t *length);
+enum cb_err acpi_soc_get_bert_region(void **region, size_t *length);
 
 /* For ACPI S3 support. */
 void __noreturn acpi_resume(void *wake_vec);

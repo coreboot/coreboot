@@ -8,7 +8,7 @@
 #include <intelblocks/crashlog.h>
 
 
-void acpi_soc_fill_bert(void **region, size_t *length)
+enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
 	size_t cpu_record_size, pmc_record_size;
@@ -16,19 +16,19 @@ void acpi_soc_fill_bert(void **region, size_t *length)
 
 	if (!cl_get_total_data_size()) {
 		printk(BIOS_ERR, "Error: No crashlog record present\n");
-		return;
+		return CB_ERR;
 	}
 
 	status = bert_new_event(&CPER_SEC_FW_ERR_REC_REF_GUID);
 	if (!status) {
 		printk(BIOS_ERR, "Error: unable to allocate GSB\n");
-		return;
+		return CB_ERR;
 	}
 
 	if (cl_get_total_data_size() > bert_storage_remaining()) {
 		printk(BIOS_ERR, "Error: Crashlog entry would exceed "
 				"available region\n");
-		return;
+		return CB_ERR;
 	}
 
 	cpu_record_size = cl_get_cpu_record_size();
@@ -38,7 +38,7 @@ void acpi_soc_fill_bert(void **region, size_t *length)
 			printk(BIOS_ERR, "Error: Crashlog CPU entry(size %lu) "
 				"would exceed available region\n",
 				cpu_record_size);
-			return;
+			return CB_ERR;
 		}
 		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size %lu\n",
 			cl_data, cpu_record_size);
@@ -51,7 +51,7 @@ void acpi_soc_fill_bert(void **region, size_t *length)
 		if (cpu_record_size && !bert_append_fw_err(status)) {
 			printk(BIOS_ERR, "Error: Crashlog PMC entry would "
 				"exceed available region\n");
-			return;
+			return CB_ERR;
 		}
 
 		cl_data = new_cper_fw_error_crashlog(status, pmc_record_size);
@@ -59,7 +59,7 @@ void acpi_soc_fill_bert(void **region, size_t *length)
 			printk(BIOS_ERR, "Error: Crashlog PMC entry(size %lu) "
 				"would exceed available region\n",
 				pmc_record_size);
-			return;
+			return CB_ERR;
 		}
 		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size %lu\n",
 			cl_data, pmc_record_size);
@@ -69,6 +69,7 @@ void acpi_soc_fill_bert(void **region, size_t *length)
 	*length = status->raw_data_length;
 	*region = (void *)status;
 
+	return CB_SUCCESS;
 }
 
 bool acpi_is_boot_error_src_present(void)

@@ -125,7 +125,7 @@ chip soc/intel/jasperlake
 				register "generic.wake" = "GPE0_DW0_03"
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+				device i2c 2a on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN0000""

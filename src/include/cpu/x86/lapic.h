@@ -139,7 +139,4 @@ static inline void setup_lapic(void)
 		disable_lapic();
 }
 
-struct device;
-int start_cpu(struct device *cpu);
-
 #endif /* CPU_X86_LAPIC_H */

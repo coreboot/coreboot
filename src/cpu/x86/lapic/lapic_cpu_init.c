@@ -241,7 +241,7 @@ static void *stacks[CONFIG_MAX_CPUS];
 volatile unsigned long secondary_stack;
 volatile unsigned int secondary_cpu_index;
 
-int start_cpu(struct device *cpu)
+static int start_cpu(struct device *cpu)
 {
 	struct cpu_info *info;
 	uintptr_t stack_top;

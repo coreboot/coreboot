@@ -1,5 +1,7 @@
-ramstage-y += lapic_cpu_init.c
-ramstage-$(CONFIG_SMP) += secondary.S
+ramstage-$(CONFIG_AP_IN_SIPI_WAIT) += lapic_cpu_stop.c
+ramstage-$(CONFIG_LEGACY_SMP_INIT) += lapic_cpu_init.c
+ramstage-$(CONFIG_LEGACY_SMP_INIT) += secondary.S
+
 bootblock-$(CONFIG_UDELAY_LAPIC) += apic_timer.c
 romstage-$(CONFIG_UDELAY_LAPIC) += apic_timer.c
 ramstage-$(CONFIG_UDELAY_LAPIC) += apic_timer.c

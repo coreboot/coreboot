@@ -29,13 +29,11 @@ config X2APIC_ONLY
 	prompt "Set X2APIC mode"
 	bool
 	depends on PARALLEL_MP
-	depends on !AP_IN_SIPI_WAIT
 
 config X2APIC_RUNTIME
 	prompt "Support both XAPIC and X2APIC"
 	bool
 	depends on PARALLEL_MP
-	depends on !AP_IN_SIPI_WAIT
 
 endchoice
 

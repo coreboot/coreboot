@@ -159,7 +159,7 @@ static __always_inline unsigned int lapicid(void)
 
 #if !CONFIG(AP_IN_SIPI_WAIT)
 /* If we need to go back to sipi wait, we use the long non-inlined version of
- * this function in lapic_cpu_init.c
+ * this function in lapic_cpu_stop.c
  */
 static __always_inline void stop_this_cpu(void)
 {

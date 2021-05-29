@@ -16,7 +16,7 @@
 
 static struct postcar_frame early_mtrrs;
 
-static void romstage_main(unsigned long bist)
+static void romstage_main(void)
 {
 	int i;
 	const int num_guards = 64;
@@ -58,11 +58,6 @@ static void romstage_main(unsigned long bist)
 	/* We do not return here. */
 }
 
-/* We don't carry BIST from bootblock in a good location to read from.
- * Any error should have been reported in bootblock already.
- */
-#define NO_BIST 0
-
 asmlinkage void car_stage_entry(void)
 {
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -70,5 +65,5 @@ asmlinkage void car_stage_entry(void)
 	/* Assumes the hardware was set up during the bootblock */
 	console_init();
 
-	romstage_main(NO_BIST);
+	romstage_main();
 }

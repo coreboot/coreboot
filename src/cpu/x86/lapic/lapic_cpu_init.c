@@ -21,8 +21,6 @@
 #include <stdlib.h>
 #include <thread.h>
 
-const int parallel_cpu_init = false;
-
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors
  * will return 0, meaning no CPU.
@@ -392,8 +390,7 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 {
 	atomic_inc(&active_cpus);
 
-	if (!parallel_cpu_init)
-		spin_lock(&start_cpu_lock);
+	spin_lock(&start_cpu_lock);
 
 #ifdef __SSE3__
 	/*
@@ -407,8 +404,7 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 #endif
 	cpu_initialize(index);
 
-	if (!parallel_cpu_init)
-		spin_unlock(&start_cpu_lock);
+	spin_unlock(&start_cpu_lock);
 
 	atomic_dec(&active_cpus);
 
@@ -424,9 +420,6 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 		if (cpu->path.type != DEVICE_PATH_APIC)
 			continue;
 
-		if (parallel_cpu_init && (cpu == bsp_cpu))
-			continue;
-
 		if (!cpu->enabled)
 			continue;
 
@@ -438,8 +431,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 
-		if (!parallel_cpu_init)
-			udelay(10);
+		udelay(10);
 	}
 
 }
@@ -542,14 +534,10 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (!CONFIG(SERIALIZED_SMM_INITIALIZATION))
 		smm_init();
 
-	/* start all aps at first, so we can init ECC all together */
-	if (is_smp_boot() && parallel_cpu_init)
-		start_other_cpus(cpu_bus, info->cpu);
-
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
-	if (is_smp_boot() && !parallel_cpu_init)
+	if (is_smp_boot())
 		start_other_cpus(cpu_bus, info->cpu);
 
 	/* Now wait the rest of the cpus stop*/

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/reset.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <acpi/acpi.h>
 #include <soc/cpu.h>
@@ -163,10 +164,8 @@ void check_mca(void)
 
 			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
 			if (mci.sts.hi || mci.sts.lo) {
-				int core = cpuid_ebx(1) >> 24;
-
-				printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
-						core, i, mca_bank_name[i]);
+				printk(BIOS_WARNING, "#MC Error: core %u, bank %d %s\n",
+						initial_lapicid(), i, mca_bank_name[i]);
 
 				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
 						i, mci.sts.hi, mci.sts.lo);

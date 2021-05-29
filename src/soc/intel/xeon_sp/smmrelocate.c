@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/smm_reloc.h>
@@ -86,7 +87,6 @@ static void update_save_state(int cpu, uintptr_t curr_smbase,
 {
 	u32 smbase;
 	u32 iedbase;
-	int apic_id;
 	em64t101_smm_state_save_area_t *save_state;
 	/*
 	 * The relocated handler runs with all CPUs concurrently. Therefore
@@ -96,9 +96,8 @@ static void update_save_state(int cpu, uintptr_t curr_smbase,
 	smbase = staggered_smbase;
 	iedbase = relo_params->ied_base;
 
-	apic_id = cpuid_ebx(1) >> 24;
 	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x\n apic_id=0x%x\n",
-		smbase, iedbase, apic_id);
+		smbase, iedbase, initial_lapicid());
 
 	save_state = (void *)(curr_smbase + SMM_DEFAULT_SIZE - sizeof(*save_state));
 

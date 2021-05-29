@@ -2,6 +2,7 @@
 
 #include <amdblocks/msr_zen.h>
 #include <amdblocks/reset.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <acpi/acpi.h>
 #include <soc/cpu.h>
@@ -160,10 +161,8 @@ void check_mca(void)
 	for (i = 0 ; i < num_banks ; i++) {
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
 		if (mci.sts.hi || mci.sts.lo) {
-			int core = cpuid_ebx(1) >> 24;
-
-			printk(BIOS_WARNING, "#MC Error: core %d, bank %d %s\n",
-			       core, i,
+			printk(BIOS_WARNING, "#MC Error: core %u, bank %d %s\n",
+			       initial_lapicid(), i,
 			       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
 
 			printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",

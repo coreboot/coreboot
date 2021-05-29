@@ -6,6 +6,7 @@
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/x86/lapic.h>
 #include <halt.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
@@ -35,7 +36,7 @@ static void romstage_main(void)
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
-	u8 initial_apic_id = (u8) (cpuid_ebx(1) >> 24);
+	unsigned int initial_apic_id = initial_lapicid();
 	int cbmem_initted = 0;
 
 	fill_sysinfo(cb);
@@ -49,7 +50,7 @@ static void romstage_main(void)
 		console_init();
 	}
 
-	printk(BIOS_DEBUG, "APIC %02d: CPU Family_Model = %08x\n",
+	printk(BIOS_DEBUG, "APIC %02u: CPU Family_Model = %08x\n",
 		initial_apic_id, cpuid_eax(1));
 
 	set_ap_entry_ptr(ap_romstage_main);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <stdint.h>
 #include <string.h>
@@ -97,7 +98,7 @@ void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func)
 {
 	int i;
 
-	task->apic_id = (u8) (cpuid_ebx(1) >> 24);
+	task->apic_id = (u8)initial_lapicid();
 	task->func = func;
 	task->function_name = undefined;
 

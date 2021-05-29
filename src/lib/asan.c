@@ -16,7 +16,7 @@
 
 static inline void *asan_mem_to_shadow(const void *addr)
 {
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	return (void *)((uintptr_t)&_asan_shadow + (((uintptr_t)addr -
 		(uintptr_t)&_car_region_start) >> ASAN_SHADOW_SCALE_SHIFT));
 #elif ENV_RAMSTAGE
@@ -27,7 +27,7 @@ static inline void *asan_mem_to_shadow(const void *addr)
 
 static inline const void *asan_shadow_to_mem(const void *shadow_addr)
 {
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	return (void *)((uintptr_t)&_car_region_start + (((uintptr_t)shadow_addr -
 		(uintptr_t)&_asan_shadow) << ASAN_SHADOW_SCALE_SHIFT));
 #elif ENV_RAMSTAGE
@@ -237,7 +237,7 @@ static __always_inline void check_memory_region_inline(unsigned long addr,
 						size_t size, bool write,
 						unsigned long ret_ip)
 {
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	if (((uintptr_t)addr < (uintptr_t)&_car_region_start) ||
 		((uintptr_t)addr > (uintptr_t)&_ebss))
 		return;
@@ -269,7 +269,7 @@ void check_memory_region(unsigned long addr, size_t size, bool write,
 
 uintptr_t __asan_shadow_offset(uintptr_t addr)
 {
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	return (uintptr_t)&_asan_shadow - (((uintptr_t)&_car_region_start) >>
 		ASAN_SHADOW_SCALE_SHIFT);
 #elif ENV_RAMSTAGE
@@ -323,7 +323,7 @@ static void asan_ctors(void)
 
 void asan_init(void)
 {
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	size_t size = (size_t)&_ebss - (size_t)&_car_region_start;
 	asan_unpoison_shadow((void *)&_car_region_start, size);
 #elif ENV_RAMSTAGE

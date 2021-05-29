@@ -9,7 +9,7 @@
 #include <option.h>
 #include <version.h>
 
-#define FIRST_CONSOLE (ENV_BOOTBLOCK || (CONFIG(NO_BOOTBLOCK_CONSOLE) && ENV_ROMSTAGE))
+#define FIRST_CONSOLE (ENV_BOOTBLOCK || (CONFIG(NO_BOOTBLOCK_CONSOLE) && ENV_SEPARATE_ROMSTAGE))
 
 static int console_inited;
 static int console_loglevel;
@@ -53,7 +53,7 @@ void console_init(void)
 	if (CONFIG(DEBUG_CONSOLE_INIT))
 		console_inited = 1;
 
-	if (CONFIG(EARLY_PCI_BRIDGE) && (ENV_BOOTBLOCK || ENV_ROMSTAGE))
+	if (CONFIG(EARLY_PCI_BRIDGE) && (ENV_BOOTBLOCK || ENV_SEPARATE_ROMSTAGE))
 		pci_early_bridge_init();
 
 	console_hw_init();

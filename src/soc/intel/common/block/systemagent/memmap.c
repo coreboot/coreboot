@@ -74,7 +74,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	 * Store the top_of_ram (ramtop) into the CMOS if SOC_INTEL_COMMON_BASECODE_RAMTOP
 	 * config is enabled.
 	 */
-	if (ENV_ROMSTAGE && CONFIG(SOC_INTEL_COMMON_BASECODE_RAMTOP))
+	if (ENV_CREATES_CBMEM && CONFIG(SOC_INTEL_COMMON_BASECODE_RAMTOP))
 		update_ramtop(top_of_ram);
 
 	postcar_frame_add_mtrr(pcf, top_of_ram - 16 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);

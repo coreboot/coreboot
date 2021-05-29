@@ -2,6 +2,7 @@ menu "Console"
 
 config NO_BOOTBLOCK_CONSOLE
 	bool
+	depends on SEPARATE_ROMSTAGE
 
 config BOOTBLOCK_CONSOLE
 	bool "Enable early (bootblock) console output."

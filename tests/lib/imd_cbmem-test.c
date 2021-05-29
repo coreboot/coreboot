@@ -81,7 +81,7 @@ static void test_cbmem_top(void **state)
 {
 	cbmem_top_init_once();
 
-	if (ENV_ROMSTAGE)
+	if (ENV_CREATES_CBMEM)
 		assert_ptr_equal(cbmem_top_chipset(), cbmem_top());
 
 	if (ENV_POSTCAR || ENV_RAMSTAGE)

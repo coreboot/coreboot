@@ -9,6 +9,7 @@
 #include <program_loading.h>
 #include <reset.h>
 #include <rmodule.h>
+#include <romstage_common.h>
 #include <security/vboot/vboot_common.h>
 #include <stage_cache.h>
 #include <symbols.h>
@@ -16,6 +17,13 @@
 
 void run_romstage(void)
 {
+	if (!CONFIG(SEPARATE_ROMSTAGE)) {
+		/* Call romstage instead of loading it as a cbfs file. */
+		timestamp_add_now(TS_ROMSTAGE_START);
+		romstage_main();
+		dead_code();
+	}
+
 	struct prog romstage =
 		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
 

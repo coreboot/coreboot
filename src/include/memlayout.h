@@ -134,7 +134,7 @@
 		REGION(bootblock, addr, sz, 1)
 #endif
 
-#if ENV_ROMSTAGE
+#if ENV_SEPARATE_ROMSTAGE
 	#define ROMSTAGE(addr, sz) \
 		SYMBOL(romstage, addr) \
 		_eromstage = ABSOLUTE(_romstage + sz); \

@@ -5,11 +5,13 @@
 #include <program_loading.h>
 #include <romstage_common.h>
 
+#if CONFIG(SEPARATE_ROMSTAGE)
 void main(void)
 {
 	console_init();
 	romstage_main();
 }
+#endif
 
 void __noreturn romstage_main(void)
 {

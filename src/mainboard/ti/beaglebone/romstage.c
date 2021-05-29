@@ -45,12 +45,14 @@ static struct emif_regs ddr3_beagleblack_emif_reg_data = {
 	.emif_ddr_phy_ctlr_1 = MT41K256M16HA125E_EMIF_READ_LATENCY,
 };
 
+#if CONFIG(SEPARATE_ROMSTAGE)
 void main(void)
 {
 	console_init();
 	printk(BIOS_INFO, "Hello from romstage.\n");
 	romstage_main();
 }
+#endif
 
 void __noreturn romstage_main(void)
 {

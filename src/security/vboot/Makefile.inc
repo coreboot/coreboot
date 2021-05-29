@@ -43,7 +43,9 @@ $(1)-srcs += $$(VBOOT_LIB_$(1))
 endef # vboot-for-stage
 
 $(eval $(call vboot-for-stage,bootblock))
+ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)
 $(eval $(call vboot-for-stage,romstage))
+endif
 $(eval $(call vboot-for-stage,ramstage))
 $(eval $(call vboot-for-stage,postcar))
 
@@ -157,7 +159,11 @@ else # CONFIG_VBOOT_SEPARATE_VERSTAGE
 ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)
 postinclude-hooks += $$(eval bootblock-srcs += $$(verstage-srcs))
 else
+ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)
 postinclude-hooks += $$(eval romstage-srcs += $$(verstage-srcs))
+else
+postinclude-hooks += $$(eval bootblock-srcs += $$(verstage-srcs))
+endif
 endif
 endif # CONFIG_VBOOT_SEPARATE_VERSTAGE
 

@@ -243,6 +243,14 @@ config COMPRESS_BOOTBLOCK
 	  user-selectable. (There's no real point in offering this to the user
 	  anyway... if it works and saves boot time, you would always want it.)
 
+config SEPARATE_ROMSTAGE
+	bool "Build a separate romstage"
+	default y
+	help
+	  Build a separate romstage that is loaded by bootblock. With this
+	  option disabled the romstage sources are linked inside the bootblock
+	  as a single stage.
+
 config INCLUDE_CONFIG_FILE
 	bool "Include the coreboot .config file into the ROM image"
 	# Default value set at the end of the file
@@ -1523,6 +1531,7 @@ config HAVE_VERSTAGE
 
 config HAVE_ROMSTAGE
 	bool
+	depends on SEPARATE_ROMSTAGE
 	default y
 
 config HAVE_RAMSTAGE

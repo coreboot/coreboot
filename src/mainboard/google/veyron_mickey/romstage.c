@@ -57,6 +57,7 @@ static void configure_l2ctlr(void)
 	write_l2ctlr(l2ctlr);
 }
 
+#if CONFIG(SEPARATE_ROMSTAGE)
 void main(void)
 {
 	timestamp_add_now(TS_ROMSTAGE_START);
@@ -66,6 +67,7 @@ void main(void)
 
 	romstage_main();
 }
+#endif
 
 void __noreturn romstage_main(void)
 {

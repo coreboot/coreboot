@@ -11,6 +11,7 @@
 __weak void platform_romstage_main(void) { /* no-op, for bring-up */ }
 __weak void platform_romstage_postram(void) { /* no-op */ }
 
+#if CONFIG(SEPARATE_ROMSTAGE)
 void main(void)
 {
 	timestamp_add_now(TS_ROMSTAGE_START);
@@ -20,6 +21,7 @@ void main(void)
 	exception_init();
 	romstage_main();
 }
+#endif
 
 void __noreturn romstage_main(void)
 {

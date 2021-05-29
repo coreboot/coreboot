@@ -7,8 +7,10 @@
  * items to the TPM
  */
 const verify_item_t bootblock_verify_list[] = {
+#if CONFIG(SEPARATE_ROMSTAGE)
 	{ VERIFY_FILE, ROMSTAGE, { { NULL, CBFS_TYPE_STAGE } },
 		HASH_IDX_ROM_STAGE, MBOOT_PCR_INDEX_0 },
+#endif
 	{ VERIFY_FILE, BOOTBLOCK, { { NULL, CBFS_TYPE_BOOTBLOCK } },
 		HASH_IDX_BOOTBLOCK, MBOOT_PCR_INDEX_0 },
 	{ VERIFY_FILE, FSP, { { NULL, CBFS_TYPE_FSP } }, HASH_IDX_FSP,

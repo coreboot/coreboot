@@ -53,7 +53,7 @@ _start:
 #endif
 
 #if ((ENV_SEPARATE_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \
-	|| (ENV_ROMSTAGE && CONFIG(ROMSTAGE_DEBUG_SPINLOOP)))
+	|| (ENV_SEPARATE_ROMSTAGE && CONFIG(ROMSTAGE_DEBUG_SPINLOOP)))
 
 	/* Wait for a JTAG debugger to break in and set EBX non-zero */
 	xor	%ebx, %ebx

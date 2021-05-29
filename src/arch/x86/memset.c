@@ -14,7 +14,7 @@ void *memset(void *dstpp, int c, size_t len)
 	int d0;
 	unsigned long int dstp = (unsigned long int)dstpp;
 
-#if (ENV_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
+#if (ENV_SEPARATE_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
 		(ENV_RAMSTAGE && CONFIG(ASAN_IN_RAMSTAGE))
 	check_memory_region((unsigned long)dstpp, len, true, _RET_IP_);
 #endif

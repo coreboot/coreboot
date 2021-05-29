@@ -26,7 +26,7 @@ SECTIONS
 	/* Relocated at runtime in cbmem so the address does not matter. */
 	RAMSTAGE(64M, 8M)
 
-#elif ENV_ROMSTAGE
+#elif ENV_SEPARATE_ROMSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, 1M)

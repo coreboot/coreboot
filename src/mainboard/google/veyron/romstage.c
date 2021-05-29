@@ -63,6 +63,7 @@ static void sdmmc_power_off(void)
 	rk808_configure_ldo(5, 0); /* VCC33_SD */
 }
 
+#if CONFIG(SEPARATE_ROMSTAGE)
 void main(void)
 {
 	timestamp_add_now(TS_ROMSTAGE_START);
@@ -72,6 +73,7 @@ void main(void)
 
 	romstage_main();
 }
+#endif
 
 void __noreturn romstage_main(void)
 {

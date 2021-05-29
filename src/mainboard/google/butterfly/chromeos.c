@@ -39,7 +39,7 @@ int get_lid_switch(void)
 	return (ec_mem_read(EC_HW_GPI_STATUS) >> EC_GPI_LID_STAT_BIT) & 1;
 }
 
-/* FIXME: VBOOT reads this in ENV_ROMSTAGE. */
+/* FIXME: VBOOT reads this in ENV_SEPARATE_ROMSTAGE. */
 int get_recovery_mode_switch(void)
 {
 	if (ENV_RAMSTAGE)

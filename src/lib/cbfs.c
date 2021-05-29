@@ -141,16 +141,21 @@ static inline bool cbfs_lzma_enabled(void)
 		return true;
 	if (fspm_env() && CONFIG(FSP_COMPRESS_FSP_M_LZMA))
 		return true;
-	/* We assume here romstage and postcar are never compressed. */
-	if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE)
+
+	/* Payload loader (ramstage) always needs LZMA. */
+	if (ENV_PAYLOAD_LOADER)
+		return true;
+	/* Only other use of LZMA is ramstage compression. */
+	if (!CONFIG(COMPRESS_RAMSTAGE_LZMA))
 		return false;
-	if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
-		return false;
-	if ((ENV_ROMSTAGE || ENV_POSTCAR) && !CONFIG(COMPRESS_RAMSTAGE_LZMA))
-		return false;
-	if (ENV_SMM)
-		return false;
-	return true;
+	/* If there is a postcar, it loads the ramstage. */
+	if (CONFIG(POSTCAR_STAGE))
+		return ENV_POSTCAR;
+	/* If there is no postcar but a separate romstage, it loads the ramstage. */
+	if (CONFIG(SEPARATE_ROMSTAGE))
+		return ENV_SEPARATE_ROMSTAGE;
+	/* Otherwise, the combined bootblock+romstage loads the ramstage. */
+	return ENV_BOOTBLOCK;
 }
 
 static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
@@ -333,7 +338,7 @@ void cbfs_preload(const char *name)
 		dead_code();
 
 	/* We don't want to cross the vboot boundary */
-	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
+	if (ENV_SEPARATE_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		return;
 
 	DEBUG("%s(name='%s')\n", __func__, name);

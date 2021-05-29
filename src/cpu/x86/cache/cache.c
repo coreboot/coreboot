@@ -33,7 +33,7 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 	   to make sure that our code hits dram during romstage. */
 	if (!ENV_CACHE_AS_RAM)
 		return;
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return;
 	if (!CONFIG(POSTCAR_STAGE))
 		return;

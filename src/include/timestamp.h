@@ -11,7 +11,7 @@
  * timestamp_init() needs to be called once in *one* of the ENV_ROMSTAGE_OR_BEFORE
  * stages (bootblock, romstage, verstage, etc). It's up to the chipset/arch
  * to make the call in the earliest stage, otherwise some timestamps will be lost.
- * For x86 ENV_ROMSTAGE call must be made before CAR is torn down.
+ * For x86 ENV_BOOTBLOCK / ENV_SEPARATE_ROMSTAGE call must be made before CAR is torn down.
  */
 void timestamp_init(uint64_t base);
 /*

@@ -8,7 +8,7 @@ void *memcpy(void *dest, const void *src, size_t n)
 {
 	unsigned long d0, d1, d2;
 
-#if (ENV_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
+#if (ENV_SEPARATE_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
 		(ENV_RAMSTAGE && CONFIG(ASAN_IN_RAMSTAGE))
 	check_memory_region((unsigned long)src, n, false, _RET_IP_);
 	check_memory_region((unsigned long)dest, n, true, _RET_IP_);

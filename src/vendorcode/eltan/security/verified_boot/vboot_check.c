@@ -363,7 +363,7 @@ int prog_locate_hook(struct prog *prog)
 	if (ENV_BOOTBLOCK)
 		verified_boot_bootblock_check();
 
-	if (ENV_ROMSTAGE) {
+	if (ENV_RAMINIT) {
 		if (!initialized && ((prog->type == PROG_REFCODE) ||
 		    (prog->type == PROG_POSTCAR))) {
 			verified_boot_early_check();

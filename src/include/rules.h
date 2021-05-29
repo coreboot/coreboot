@@ -22,7 +22,7 @@
 #if defined(__DECOMPRESSOR__)
 #define ENV_DECOMPRESSOR 1
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -34,7 +34,7 @@
 #elif defined(__BOOTBLOCK__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 1
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -46,7 +46,7 @@
 #elif defined(__ROMSTAGE__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 1
+#define ENV_SEPARATE_ROMSTAGE 1
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -58,7 +58,7 @@
 #elif defined(__SMM__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 1
 #define ENV_SEPARATE_VERSTAGE 0
@@ -72,13 +72,13 @@
  * bootblock/romstage, depending on the setting of the VBOOT_SEPARATE_VERSTAGE
  * kconfig option. The ENV_SEPARATE_VERSTAGE macro will only return true for
  * "verstage" code when CONFIG(VBOOT_SEPARATE_VERSTAGE) is true, otherwise that
- * code will have ENV_BOOTBLOCK or ENV_ROMSTAGE set (depending on the
+ * code will have ENV_BOOTBLOCK or ENV_SEPARATE_ROMSTAGE set (depending on the
  * "VBOOT_STARTS_IN_"... kconfig options).
  */
 #elif defined(__VERSTAGE__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 1
@@ -94,7 +94,7 @@
 #elif defined(__RAMSTAGE__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 1
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -106,7 +106,7 @@
 #elif defined(__RMODULE__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -118,7 +118,7 @@
 #elif defined(__POSTCAR__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -130,7 +130,7 @@
 #elif defined(__LIBAGESA__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -146,7 +146,7 @@
  */
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
-#define ENV_ROMSTAGE 0
+#define ENV_SEPARATE_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
 #define ENV_SEPARATE_VERSTAGE 0
@@ -268,7 +268,7 @@
 #endif
 
 #define ENV_ROMSTAGE_OR_BEFORE \
-	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_ROMSTAGE || \
+	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_SEPARATE_ROMSTAGE || \
 	(ENV_SEPARATE_VERSTAGE && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE)))
 
 #if ENV_X86
@@ -299,9 +299,9 @@
 #define ENV_INITIAL_STAGE		ENV_BOOTBLOCK
 #endif
 
-#define ENV_CREATES_CBMEM	ENV_ROMSTAGE
-#define ENV_HAS_CBMEM		(ENV_ROMSTAGE | ENV_POSTCAR | ENV_RAMSTAGE)
-#define ENV_RAMINIT		ENV_ROMSTAGE
+#define ENV_CREATES_CBMEM	(ENV_SEPARATE_ROMSTAGE || (ENV_BOOTBLOCK && !CONFIG(SEPARATE_ROMSTAGE)))
+#define ENV_HAS_CBMEM		(ENV_CREATES_CBMEM || ENV_POSTCAR || ENV_RAMSTAGE)
+#define ENV_RAMINIT		(ENV_SEPARATE_ROMSTAGE || (ENV_BOOTBLOCK && !CONFIG(SEPARATE_ROMSTAGE)))
 
 #if ENV_X86
 #define ENV_HAS_SPINLOCKS		!ENV_ROMSTAGE_OR_BEFORE
@@ -314,7 +314,7 @@
 /* When set <arch/smp/spinlock.h> is included for the spinlock implementation. */
 #define ENV_SUPPORTS_SMP		(CONFIG(SMP) && ENV_HAS_SPINLOCKS)
 
-#if ENV_X86 && CONFIG(COOP_MULTITASKING) && (ENV_RAMSTAGE || ENV_ROMSTAGE)
+#if ENV_X86 && CONFIG(COOP_MULTITASKING) && (ENV_RAMSTAGE || ENV_CREATES_CBMEM)
 /* TODO: Enable in all x86 stages */
 #define ENV_SUPPORTS_COOP         1
 #else

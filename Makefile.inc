@@ -1250,6 +1250,7 @@ ifeq ($(CONFIG_CBFS_VERIFICATION),y)
 	fi
 endif # CONFIG_CBFS_VERIFICATION
 
+ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
 $(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf
 $(CONFIG_CBFS_PREFIX)/romstage-type := stage
@@ -1287,6 +1288,9 @@ endif   # CONFIG_NO_XIP_EARLY_STAGES
 endif   # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 ifeq ($(CONFIG_VBOOT_STARTS_IN_ROMSTAGE),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options += $(TXTIBB)
+endif
+else # CONFIG_SEPARATE_ROMSTAGE
+postinclude-hooks += $$(eval bootblock-srcs += $$(romstage-srcs))
 endif
 
 cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage

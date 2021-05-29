@@ -29,7 +29,7 @@ static void save_secdata(struct vb2_context *ctx)
 
 void vboot_save_data(struct vb2_context *ctx)
 {
-	if (!verification_should_run() && !(ENV_ROMSTAGE && CONFIG(VBOOT_EARLY_EC_SYNC))) {
+	if (!verification_should_run() && !(ENV_RAMINIT && CONFIG(VBOOT_EARLY_EC_SYNC))) {
 		if (ctx->flags
 		    & (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED
 		       | VB2_CONTEXT_SECDATA_KERNEL_CHANGED))

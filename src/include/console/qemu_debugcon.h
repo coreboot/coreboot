@@ -9,7 +9,7 @@ void qemu_debugcon_init(void);
 void qemu_debugcon_tx_byte(unsigned char data);
 
 #if CONFIG(CONSOLE_QEMU_DEBUGCON) && \
-	(ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_POSTCAR || ENV_BOOTBLOCK)
+	(ENV_SEPARATE_ROMSTAGE || ENV_RAMSTAGE || ENV_POSTCAR || ENV_BOOTBLOCK)
 static inline void __qemu_debugcon_init(void)	{ qemu_debugcon_init(); }
 static inline void __qemu_debugcon_tx_byte(u8 data)
 {

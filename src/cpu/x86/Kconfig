@@ -4,7 +4,9 @@ config PARALLEL_CPU_INIT
 	default n
 
 config PARALLEL_MP
-	def_bool n
+	def_bool y
+	depends on !LEGACY_SMP_INIT
+	depends on SMP
 	help
 	 This option uses common MP infrastructure for bringing up APs
 	 in parallel. It additionally provides a more flexible mechanism
@@ -16,6 +18,9 @@ config PARALLEL_MP_AP_WORK
 	help
 	 Allow APs to do other work after initialization instead of going
 	 to sleep.
+
+config LEGACY_SMP_INIT
+	bool
 
 config UDELAY_LAPIC
 	bool

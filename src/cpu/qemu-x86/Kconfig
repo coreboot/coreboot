@@ -15,10 +15,10 @@ choice
 
 config CPU_QEMU_X86_LAPIC_INIT
 	bool "Legacy serial LAPIC init"
+	select LEGACY_SMP_INIT
 
 config CPU_QEMU_X86_PARALLEL_MP
 	bool "Parallel MP init"
-	select PARALLEL_MP
 
 endchoice
 
@@ -33,13 +33,13 @@ config CPU_QEMU_X86_NO_SMM
 
 config CPU_QEMU_X86_ASEG_SMM
 	bool "SMM in ASEG"
-	depends on !PARALLEL_MP
+	depends on CPU_QEMU_X86_LAPIC_INIT
 	select SMM_ASEG
 
 config CPU_QEMU_X86_TSEG_SMM
 	bool "SMM in TSEG"
 	select SMM_TSEG
-	depends on PARALLEL_MP
+	depends on CPU_QEMU_X86_PARALLEL_MP
 
 endchoice
 

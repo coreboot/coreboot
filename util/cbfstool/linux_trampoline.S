@@ -72,7 +72,20 @@ lea 8(%ebx), %esi /* e820 data source */
 mov $(LINUX_PARAM_LOC + E820_OFFSET), %edi
 rep movsl
 xchg %eax, %ecx
-jmp .endScan
+/* e820 and LB_TAG_MEMORY type don't fully match: remap unknown type to 2, reserved memory */
+mov (LINUX_PARAM_LOC + E820_NR_OFFSET), %eax
+mov $(LINUX_PARAM_LOC + E820_OFFSET), %edi
+.test_e820_entry:
+cmp $0, %eax
+je .endScan
+cmp $12, 16(%edi) /* type */
+jng .next_e820_entry
+/* Fixup the type to 2, reserved memory */
+mov $2, 16(%edi)
+.next_e820_entry:
+dec %eax
+add $20, %edi
+jmp .test_e820_entry
 
 .testFramebuffer:
 cmp $CB_TAG_FRAMEBUFFER, (%ebx)

@@ -75,3 +75,8 @@ ifneq ($(V),1)
 endif
 
 include Makefile.inc
+
+$(objutil)/cbfstool/cbfstool.o: $(VBOOT_SOURCE)/firmware/include/vb2_sha.h
+
+$(VBOOT_SOURCE)/firmware/include/vb2_sha.h:
+	cd $(VBOOT_SOURCE) && git submodule update --init .

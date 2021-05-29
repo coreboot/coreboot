@@ -6,9 +6,7 @@
 #include <option.h>
 #include <smp/spinlock.h>
 
-#if CONFIG(PARALLEL_CPU_INIT)
-#error Intel hyper-threading requires serialized CPU init
-#endif
+/* Intel hyper-threading requires serialized CPU init. */
 
 static int first_time = 1;
 static int disable_siblings = !CONFIG(LOGICAL_CPUS);

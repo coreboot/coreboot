@@ -1,8 +1,3 @@
-# TODO These two options look too similar
-config PARALLEL_CPU_INIT
-	bool
-	default n
-
 config PARALLEL_MP
 	def_bool y
 	depends on !LEGACY_SMP_INIT

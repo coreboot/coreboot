@@ -317,6 +317,12 @@ static int start_cpu(struct device *cpu)
  */
 #define DEBUG_HALT_SELF 0
 
+#if DEBUG_HALT_SELF
+#define dprintk(LEVEL, args...) do { printk(LEVEL, ##args); } while (0)
+#else
+#define dprintk(LEVEL, args...) do { } while (0)
+#endif
+
 /**
  * Normally this function is defined in lapic.h as an always inline function
  * that just keeps the CPU in a hlt() loop. This does not work on all CPUs.
@@ -339,47 +345,37 @@ void stop_this_cpu(void)
 				LAPIC_INT_ASSERT | LAPIC_DM_INIT);
 
 	/* wait for the ipi send to finish */
-#if DEBUG_HALT_SELF
-	printk(BIOS_SPEW, "Waiting for send to finish...\n");
-#endif
+	dprintk(BIOS_SPEW, "Waiting for send to finish...\n");
+
 	timeout = 0;
 	do {
-#if DEBUG_HALT_SELF
-		printk(BIOS_SPEW, "+");
-#endif
+		dprintk(BIOS_SPEW, "+");
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
-	if (timeout >= 1000) {
-#if DEBUG_HALT_SELF
-		printk(BIOS_ERR, "timed out\n");
-#endif
-	}
+
+	if (timeout >= 1000)
+		dprintk(BIOS_ERR, "timed out\n");
+
 	mdelay(10);
 
-#if DEBUG_HALT_SELF
-	printk(BIOS_SPEW, "Deasserting INIT.\n");
-#endif
+	dprintk(BIOS_SPEW, "Deasserting INIT.\n");
+
 	/* Deassert the LAPIC INIT */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
-#if DEBUG_HALT_SELF
-	printk(BIOS_SPEW, "Waiting for send to finish...\n");
-#endif
+	dprintk(BIOS_SPEW, "Waiting for send to finish...\n");
+
 	timeout = 0;
 	do {
-#if DEBUG_HALT_SELF
-		printk(BIOS_SPEW, "+");
-#endif
+		dprintk(BIOS_SPEW, "+");
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
-	if (timeout >= 1000) {
-#if DEBUG_HALT_SELF
-		printk(BIOS_ERR, "timed out\n");
-#endif
-	}
+
+	if (timeout >= 1000)
+		dprintk(BIOS_ERR, "timed out\n");
 
 	halt();
 }

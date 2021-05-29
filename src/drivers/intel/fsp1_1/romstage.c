@@ -103,10 +103,6 @@ void cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	/* Load microcode before RAM init */
-	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
-		intel_update_microcode_from_cbfs();
-
 	/* Display parameters */
 	if (!CONFIG(NO_MMCONF_SUPPORT))
 		printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",

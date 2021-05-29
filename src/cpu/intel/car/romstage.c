@@ -7,14 +7,14 @@
 #include <arch/symbols.h>
 #include <commonlib/helpers.h>
 #include <program_loading.h>
-#include <timestamp.h>
+#include <romstage_common.h>
 #include <security/vboot/vboot_common.h>
 
 /* If we do not have a constrained _car_stack region size, use the
    following as a guideline for acceptable stack usage. */
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
-static void romstage_main(void)
+void __noreturn romstage_main(void)
 {
 	int i;
 	const int num_guards = 64;
@@ -54,14 +54,5 @@ static void romstage_main(void)
 
 	prepare_and_run_postcar();
 	/* We do not return here. */
-}
-
-asmlinkage void car_stage_entry(void)
-{
-	timestamp_add_now(TS_ROMSTAGE_START);
-
-	/* Assumes the hardware was set up during the bootblock */
-	console_init();
-
-	romstage_main();
+	die("failed to load postcar\n");
 }

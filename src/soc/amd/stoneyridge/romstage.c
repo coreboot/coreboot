@@ -1,28 +1,29 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/agesawrapper.h>
+#include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/biosram.h>
-#include <device/pci_ops.h>
+#include <amdblocks/psp.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <acpi/acpi.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
-#include <cpu/x86/smm.h>
-#include <cpu/amd/mtrr.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/amd/mtrr.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
-#include <program_loading.h>
-#include <romstage_handoff.h>
+#include <device/pci_ops.h>
 #include <elog.h>
-#include <amdblocks/agesawrapper.h>
-#include <amdblocks/agesawrapper_call.h>
+#include <program_loading.h>
+#include <romstage_common.h>
+#include <romstage_handoff.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <amdblocks/psp.h>
 #include <stdint.h>
 
 #include "chip.h"
@@ -47,16 +48,13 @@ static void bsp_agesa_call(void)
 	set_ap_entry_ptr(agesa_call); /* indicate the path to the AP */
 	agesa_call();
 }
-
-asmlinkage void car_stage_entry(void)
+void __noreturn romstage_main(void)
 {
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
 	int s3_resume = acpi_is_wakeup_s3();
 	int i;
-
-	console_init();
 
 	soc_enable_psp_early();
 	if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
@@ -121,6 +119,7 @@ asmlinkage void car_stage_entry(void)
 
 	post_code(0x44);
 	prepare_and_run_postcar();
+	die("failed to load postcar\n");
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

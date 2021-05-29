@@ -10,17 +10,11 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <program_loading.h>
-#include <timestamp.h>
+#include <romstage_common.h>
 
-asmlinkage void car_stage_entry(void)
+void __noreturn romstage_main(void)
 {
-	timestamp_add_now(TS_ROMSTAGE_START);
-
 	post_code(0x40);
-
-	console_init();
-
-	post_code(0x41);
 
 	/* Snapshot chipset state prior to any FSP call */
 	fill_chipset_state();
@@ -33,4 +27,5 @@ asmlinkage void car_stage_entry(void)
 	memmap_stash_early_dram_usage();
 
 	run_ramstage();
+	die("failed to load ramstage\n");
 }

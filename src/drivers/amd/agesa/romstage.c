@@ -13,6 +13,7 @@
 #include <smp/node.h>
 #include <string.h>
 #include <timestamp.h>
+#include <romstage_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
@@ -31,15 +32,11 @@ static void fill_sysinfo(struct sysinfo *cb)
  */
 static void ap_romstage_main(void);
 
-static void romstage_main(void)
+void __noreturn romstage_main(void)
 {
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
 	int cbmem_initted = 0;
-
-	timestamp_add_now(TS_ROMSTAGE_START);
-
-	console_init();
 
 	printk(BIOS_DEBUG, "APIC %02u: CPU Family_Model = %08x\n",
 	       initial_lapicid(), cpuid_eax(1));
@@ -79,6 +76,7 @@ static void romstage_main(void)
 
 	prepare_and_run_postcar();
 	/* We do not return. */
+	die("failed to load postcar\n");
 }
 
 static void ap_romstage_main(void)
@@ -94,11 +92,6 @@ static void ap_romstage_main(void)
 
 	/* Not reached. */
 	halt();
-}
-
-asmlinkage void car_stage_entry(void)
-{
-	romstage_main();
 }
 
 void *cbmem_top_chipset(void)

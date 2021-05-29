@@ -159,6 +159,7 @@ endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 
 romstage-y += assembly_entry.S
+romstage-y += romstage.c
 romstage-y += boot.c
 romstage-$(CONFIG_DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES) += breakpoint.c
 romstage-y += post.c

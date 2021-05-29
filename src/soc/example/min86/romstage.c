@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
+#include <romstage_common.h>
+#include <halt.h>
 
-asmlinkage void car_stage_entry(void)
+void __noreturn romstage_main(void)
 {
+	/* Needed for __noreturn */
+	halt();
 }

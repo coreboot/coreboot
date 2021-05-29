@@ -17,6 +17,28 @@ config PARALLEL_MP_AP_WORK
 config LEGACY_SMP_INIT
 	bool
 
+choice LAPIC_ACCESS_MODE
+	prompt "APIC operation mode"
+	default XAPIC_ONLY
+
+config XAPIC_ONLY
+	prompt "Set XAPIC mode"
+	bool
+
+config X2APIC_ONLY
+	prompt "Set X2APIC mode"
+	bool
+	depends on PARALLEL_MP
+	depends on !AP_IN_SIPI_WAIT
+
+config X2APIC_RUNTIME
+	prompt "Support both XAPIC and X2APIC"
+	bool
+	depends on PARALLEL_MP
+	depends on !AP_IN_SIPI_WAIT
+
+endchoice
+
 config UDELAY_LAPIC
 	bool
 	default n

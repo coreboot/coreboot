@@ -3,6 +3,10 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 
+#if !CONFIG(XAPIC_ONLY)
+#error "BUG: lapic_write_around() needs to be fixed for X2APIC."
+#endif
+
 void lapic_virtual_wire_mode_init(void)
 {
 	/* this is so interrupts work. This is very limited scope --

@@ -10,6 +10,12 @@
 
 static inline bool is_x2apic_mode(void)
 {
+	if (CONFIG(XAPIC_ONLY))
+		return false;
+
+	if (CONFIG(X2APIC_ONLY))
+		return true;
+
 	msr_t msr;
 	msr = rdmsr(LAPIC_BASE_MSR);
 	return ((msr.lo & LAPIC_BASE_X2APIC_ENABLED) == LAPIC_BASE_X2APIC_ENABLED);

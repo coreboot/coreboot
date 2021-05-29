@@ -4,7 +4,6 @@ subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../microcode
-subdirs-y += ../hyperthreading
 
 bootblock-y += ../car/p4-netburst/cache_as_ram.S
 bootblock-y += ../car/bootblock.c

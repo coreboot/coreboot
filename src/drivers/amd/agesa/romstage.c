@@ -36,22 +36,18 @@ static void romstage_main(void)
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
-	unsigned int initial_apic_id = initial_lapicid();
 	int cbmem_initted = 0;
 
 	fill_sysinfo(cb);
 
-	if (initial_apic_id == 0) {
+	timestamp_add_now(TS_START_ROMSTAGE);
 
-		timestamp_add_now(TS_START_ROMSTAGE);
+	board_BeforeAgesa(cb);
 
-		board_BeforeAgesa(cb);
-
-		console_init();
-	}
+	console_init();
 
 	printk(BIOS_DEBUG, "APIC %02u: CPU Family_Model = %08x\n",
-		initial_apic_id, cpuid_eax(1));
+	       initial_lapicid(), cpuid_eax(1));
 
 	set_ap_entry_ptr(ap_romstage_main);
 

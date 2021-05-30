@@ -90,8 +90,22 @@ struct soc_intel_elkhartlake_config {
 	/* SATA related */
 	uint8_t SataMode;
 	uint8_t SataSalpSupport;
-	uint8_t SataPortsEnable[8];
-	uint8_t SataPortsDevSlp[8];
+	uint8_t SataPortsEnable[CONFIG_MAX_SATA_PORTS];
+	uint8_t SataPortsDevSlp[CONFIG_MAX_SATA_PORTS];
+	/*
+	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
+	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
+	 */
+	uint8_t SataPwrOptimizeDisable;
+	/*
+	 * SATA Port Enable Dito Config.
+	 * Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
+	 */
+	uint8_t SataPortsEnableDitoConfig[CONFIG_MAX_SATA_PORTS];
+	/* SataPortsDmVal is the DITO multiplier. Default is 15. */
+	uint8_t SataPortsDmVal[CONFIG_MAX_SATA_PORTS];
+	/* SataPortsDitoVal is the DEVSLP Idle Timeout, default is 625ms */
+	uint16_t SataPortsDitoVal[CONFIG_MAX_SATA_PORTS];
 
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
@@ -135,6 +149,7 @@ struct soc_intel_elkhartlake_config {
 
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;
+	uint8_t ScsEmmcDdr50Enabled;
 
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;

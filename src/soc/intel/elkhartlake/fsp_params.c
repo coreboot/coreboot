@@ -15,6 +15,13 @@
 #include <soc/soc_chip.h>
 #include <string.h>
 
+/* SATA DEVSLP idle timeout default values */
+#define DEF_DMVAL		15
+#define DEF_DITOVAL_MS		625
+
+/* Native function controls pads termination */
+#define GPIO_TERM_NATIVE	0x1F
+
 /*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
  * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
@@ -229,6 +236,46 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PcieRpLtrMaxSnoopLatency[i] = 0x1003;
 		/* Virtual Channel 1 to Traffic Class mapping */
 		params->PcieRpVc1TcMap[i] = 0x60;
+	}
+
+	/* SATA config */
+	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
+	params->SataEnable = is_dev_enabled(dev);
+	if (params->SataEnable) {
+		params->SataMode = config->SataMode;
+		params->SataSalpSupport = config->SataSalpSupport;
+		params->SataPwrOptEnable = !(config->SataPwrOptimizeDisable);
+
+		for (i = 0; i < CONFIG_MAX_SATA_PORTS; i++) {
+			params->SataPortsEnable[i] = config->SataPortsEnable[i];
+			params->SataPortsDevSlp[i] = config->SataPortsDevSlp[i];
+			if (config->SataPortsEnableDitoConfig[i]) {
+				params->SataPortsDmVal[i] =
+					config->SataPortsDmVal[i] ? : DEF_DMVAL;
+				params->SataPortsDitoVal[i] =
+					config->SataPortsDitoVal[i] ? : DEF_DITOVAL_MS;
+			}
+		}
+	}
+
+	/* SDCard config */
+	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
+	params->ScsSdCardEnabled = is_dev_enabled(dev);
+	if (params->ScsSdCardEnabled) {
+		params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
+		params->SdCardGpioCmdPadTermination = GPIO_TERM_NATIVE;
+		params->SdCardGpioDataPadTermination[0] = GPIO_TERM_NATIVE;
+		params->SdCardGpioDataPadTermination[1] = GPIO_TERM_NATIVE;
+		params->SdCardGpioDataPadTermination[2] = GPIO_TERM_NATIVE;
+		params->SdCardGpioDataPadTermination[3] = GPIO_TERM_NATIVE;
+	}
+
+	/* eMMC config */
+	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
+	params->ScsEmmcEnabled = is_dev_enabled(dev);
+	if (params->ScsEmmcEnabled) {
+		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
+		params->ScsEmmcDdr50Enabled = config->ScsEmmcDdr50Enabled;
 	}
 
 	/* Override/Fill FSP Silicon Param for mainboard */

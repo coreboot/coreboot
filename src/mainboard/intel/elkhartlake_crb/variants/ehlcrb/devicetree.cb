@@ -70,6 +70,18 @@ chip soc/intel/elkhartlake
 	register "PcieClkSrcClkReq[4]" = "0x4"
 	register "PcieClkSrcClkReq[5]" = "0x5"
 
+	# Storage (SATA/SDCARD/EMMC) related UPDs
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"
+	register "SataPortsDevSlp[0]" = "0"
+	register "SataPortsDevSlp[1]" = "1"
+
+	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsEmmcDdr50Enabled" = "1"
+	register "SdCardPowerEnableActiveHigh" = "1"
+
+	# LPSS Serial IO (I2C/UART/GSPI) related UPDs
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,

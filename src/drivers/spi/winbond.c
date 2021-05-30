@@ -205,7 +205,7 @@ static const struct spi_flash_part_id flash_table[] = {
 	{
 		/* W25Q512NW-IM */
 		.id[0]				= 0x8020,
-		.nr_sectors_shift		= 11,
+		.nr_sectors_shift		= 14,
 		.fast_read_dual_output_support	= 1,
 		.fast_read_dual_io_support	= 1,
 		.protection_granularity_shift	= 16,

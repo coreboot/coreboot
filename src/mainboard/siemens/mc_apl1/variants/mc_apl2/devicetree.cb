@@ -47,7 +47,13 @@ chip soc/intel/apollolake
 			.speed = I2C_SPEED_STANDARD,
 			.rise_time_ns = 60,
 			.fall_time_ns = 20,
-			.data_hold_time_ns = 300
+			.data_hold_time_ns = 300,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_hcnt = 0x68,
+				.scl_lcnt = 0xd4,
+				.sda_hold = 0x28
+			},
 		},
 	}"
 

@@ -6,13 +6,15 @@
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <drivers/generic/ioapic/chip.h>
 
 /* Initialize the specified "mc" struct with initial values. */
-void mptable_init(struct mp_config_table *mc, u32 lapic_addr)
+void mptable_init(struct mp_config_table *mc)
 {
 	int i;
+	u32 lapic_addr = cpu_get_lapic_addr();
 
 	memset(mc, 0, sizeof(*mc));
 
@@ -533,7 +535,7 @@ unsigned long __weak write_smp_table(unsigned long addr)
 	v = smp_write_floating_table(addr, 0);
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
-	mptable_init(mc, LOCAL_APIC_ADDR);
+	mptable_init(mc);
 
 	smp_write_processors(mc);
 

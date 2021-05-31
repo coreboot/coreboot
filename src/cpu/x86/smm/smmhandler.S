@@ -126,8 +126,9 @@ untampered_lapic:
 	movw	%ax, %fs
 	movw	%ax, %gs
 
+	/* FIXME: Incompatible with X2APIC_SUPPORT. */
 	/* Get this CPU's LAPIC ID */
-	movl	$(LOCAL_APIC_ADDR | LAPIC_ID), %esi
+	movl	$(LAPIC_DEFAULT_BASE | LAPIC_ID), %esi
 	movl	(%esi), %ecx
 	shr	$24, %ecx
 

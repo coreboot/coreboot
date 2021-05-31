@@ -340,7 +340,7 @@ void amd_initcpuio(void)
 
 	/* Non-posted: range(HPET-LAPIC) or 0xfed00000 through 0xfee00000-1 */
 	base = (HPET_BASE_ADDRESS >> 8) | MMIO_WE | MMIO_RE;
-	limit = (ALIGN_DOWN(LOCAL_APIC_ADDR - 1, 64 * KiB) >> 8) | MMIO_NP;
+	limit = (ALIGN_DOWN(LAPIC_DEFAULT_BASE - 1, 64 * KiB) >> 8) | MMIO_NP;
 	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_LIMIT_LO(0), limit);
 	pci_write_config32(SOC_ADDR_DEV, NB_MMIO_BASE_LO(0), base);
 

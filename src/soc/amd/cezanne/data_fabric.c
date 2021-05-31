@@ -37,7 +37,7 @@ void data_fabric_set_mmio_np(void)
 	int reg;
 	uint32_t base, limit, ctrl;
 	const uint32_t np_bot = HPET_BASE_ADDRESS >> D18F0_MMIO_SHIFT;
-	const uint32_t np_top = (LOCAL_APIC_ADDR - 1) >> D18F0_MMIO_SHIFT;
+	const uint32_t np_top = (LAPIC_DEFAULT_BASE - 1) >> D18F0_MMIO_SHIFT;
 
 	data_fabric_print_mmio_conf();
 

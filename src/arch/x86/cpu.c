@@ -340,8 +340,3 @@ int cpu_index(void)
 	}
 	return -1;
 }
-
-uintptr_t cpu_get_lapic_addr(void)
-{
-	return LOCAL_APIC_ADDR;
-}

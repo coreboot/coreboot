@@ -39,7 +39,7 @@ static void *smp_write_config_table(void *v)
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
-	mptable_init(mc, LOCAL_APIC_ADDR);
+	mptable_init(mc);
 	memcpy(mc->mpc_oem, "AMD     ", 8);
 
 	smp_write_processors(mc);

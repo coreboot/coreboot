@@ -155,7 +155,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	/* Reserve space for the LAPIC.  There's one in every processor, but
 	 * the space only needs to be reserved once, so we do it here. */
 	res = new_resource(dev, 3);
-	res->base = LOCAL_APIC_ADDR;
+	res->base = cpu_get_lapic_addr();
 	res->size = 0x10000UL;
 	res->limit = 0xffffffffUL;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |

@@ -224,7 +224,7 @@ struct mp_exten_compatibility_address_space {
 	 */
 } __packed;
 
-void mptable_init(struct mp_config_table *mc, u32 lapic_addr);
+void mptable_init(struct mp_config_table *mc);
 void *smp_next_mpc_entry(struct mp_config_table *mc);
 void *smp_next_mpe_entry(struct mp_config_table *mc);
 

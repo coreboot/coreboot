@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
@@ -23,6 +24,11 @@ void disable_lapic(void)
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
 	wrmsr(LAPIC_BASE_MSR, msr);
+}
+
+uintptr_t cpu_get_lapic_addr(void)
+{
+	return LAPIC_DEFAULT_BASE;
 }
 
 /* See if I need to initialize the local APIC */

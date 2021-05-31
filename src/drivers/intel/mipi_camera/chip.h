@@ -14,6 +14,14 @@
 #define MAX_GPIO_CONFIGS	4
 #define MAX_PWR_OPS		5
 #define MAX_GUARDED_RESOURCES	10
+#define IMGCLKOUT_0		0
+#define IMGCLKOUT_1		1
+#define IMGCLKOUT_2		2
+#define IMGCLKOUT_3		3
+#define IMGCLKOUT_4		4
+#define IMGCLKOUT_5		5
+#define FREQ_24_MHZ		0
+#define FREQ_19_2_MHZ		1
 
 #define SEQ_OPS_CLK_ENABLE(ind, delay) \
 	{ .type = IMGCLK, .index = (ind), .action = ENABLE, .delay_ms = (delay) }

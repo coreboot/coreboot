@@ -159,7 +159,7 @@ chip soc/amd/picasso
 			end
 		end # SD
 		device ref internal_bridge_a on
-			device pci 0.5 on
+			device ref acp on
 				chip drivers/amd/i2s_machine_dev
 					register "hid" = ""AMDI1015""
 					# DMIC select GPIO for ACP machine device

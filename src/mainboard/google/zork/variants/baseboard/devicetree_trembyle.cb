@@ -258,10 +258,10 @@ chip soc/amd/picasso
 		device ref gpp_bridge_2 on end # SD
 		device ref gpp_bridge_6 on  end # NVME
 		device ref internal_bridge_a on
-			device pci 0.0 on  end # Internal GPU
-			device pci 0.1 on  end # Display HDA
-			device pci 0.2 on  end # Crypto Coprocessor
-			device pci 0.3 on # USB 3.1
+			device ref gfx on end # Internal GPU
+			device ref gfx_hda on end # Display HDA
+			device ref crypto on end # Crypto Coprocessor
+			device ref xhci_0 on # USB 3.1
 				chip drivers/usb/acpi
 					register "desc" = ""Root Hub""
 					register "type" = "UPC_TYPE_HUB"
@@ -330,7 +330,7 @@ chip soc/amd/picasso
 					end
 				end
 			end
-			device pci 0.4 on # USB 3.1
+			device ref xhci_1 on # USB 3.1
 				chip drivers/usb/acpi
 					# The following devices are only enabled on Picasso SKUs
 					register "desc" = ""Root Hub""
@@ -355,7 +355,7 @@ chip soc/amd/picasso
 					end
 				end
 			end
-			device pci 0.5 on
+			device ref acp on
 				chip drivers/amd/i2s_machine_dev
 					register "hid" = ""AMDI5682""
 					# DMIC select GPIO for ACP machine device
@@ -371,8 +371,8 @@ chip soc/amd/picasso
 					device generic 0.0 on end
 				end
 			end # Audio
-			device pci 0.6 off end # HDA
-			device pci 0.7 on  end # non-Sensor Fusion Hub device
+			device ref hda off end # HDA
+			device ref mp2 on end # non-Sensor Fusion Hub device
 		end
 		device ref lpc_bridge on
 			chip ec/google/chromeec

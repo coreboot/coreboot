@@ -143,19 +143,19 @@ chip soc/amd/picasso
 		device ref iommu on end
 		device ref gpp_bridge_2 on end # Bridge to PCIe Ethernet chip
 		device ref internal_bridge_a on
-			device pci 0.0 on  end # Internal GPU
-			device pci 0.1 on  end # Display HDA
-			device pci 0.2 on  end # Crypto Coprocessor
-			device pci 0.3 on  end # USB 3.1
-			device pci 0.4 on  end # USB 3.1
-			device pci 0.5 on  end # Audio
-			device pci 0.6 on  end # HDA
-			device pci 0.7 on  end # non-Sensor Fusion Hub device
+			device ref gfx on  end # Internal GPU
+			device ref gfx_hda on end # Display HDA
+			device ref crypto on end # Crypto Coprocessor
+			device ref xhci_0 on end # USB 3.1
+			device ref xhci_1 on end # USB 3.1
+			device ref acp on end # Audio
+			device ref hda on end # HDA
+			device ref mp2 on  end # non-Sensor Fusion Hub device
 		end
 		device ref internal_bridge_b on
-			device pci 0.0 on  end # AHCI
-			device pci 0.1 off end # integrated Ethernet MAC
-			device pci 0.2 off end # integrated Ethernet MAC
+			device ref sata on end # AHCI
+			device ref xgbe_0 off end # integrated Ethernet MAC
+			device ref xgbe_1 off end # integrated Ethernet MAC
 		end
 		device ref lpc_bridge on
 			chip superio/smsc/sio1036 # optional debug card

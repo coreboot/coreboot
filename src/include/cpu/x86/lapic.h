@@ -40,9 +40,6 @@ static __always_inline int xapic_busy(void)
 	return xapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 }
 
-#define lapic_read_around(x) lapic_read(x)
-#define lapic_write_around(x, y) xapic_write_atomic((x), (y))
-
 static __always_inline uint32_t x2apic_read(unsigned int reg)
 {
 	uint32_t value, index;

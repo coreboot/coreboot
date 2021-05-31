@@ -1,0 +1,65 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1043 0x84ca inherit
+		chip southbridge/intel/bd82x6x
+			register "gen1_dec" = "0x000c0291"
+			device pci 1c.0 on  end		# RP #1: PCIEX16_2 (electrical x4)
+			device pci 1c.1 off end		# RP #2:
+			device pci 1c.2 off end		# RP #3:
+			device pci 1c.3 off end		# RP #4:
+			device pci 1c.4 on  end		# RP #5: AR8161 GbE NIC
+			device pci 1c.5 on  end		# RP #6: ASM1083 PCI Bridge
+			device pci 1c.6 on  end		# RP #7: PCIEX1_1
+			device pci 1c.7 on  end		# RP #8: PCIEX1_2
+
+			device pci 1f.0 on		# LPC bridge
+				chip superio/nuvoton/nct6779d
+					device pnp 2e.1   off end	# Parallel
+					device pnp 2e.2   on		# UART A
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3   off end	# UART B, IR
+					device pnp 2e.5   on		# Keyboard
+						io  0x60 = 0x0060
+						io  0x62 = 0x0064
+						irq 0x70 = 1
+						irq 0x72 = 12
+
+						# KBC 12Mhz/A20 speed/sw KBRST
+						drq 0xf0 = 0x82
+					end
+					device pnp 2e.6   off end	# CIR
+					device pnp 2e.7   off end	# GPIO6-8
+					device pnp 2e.8   off end	# WDT1, GPIO0, GPIO1
+					device pnp 2e.108 on  		# GPIO0
+						drq 0xe0 = 0x7f
+						drq 0xe1 = 0x80
+						drq 0xf0 = 0xfe
+					end
+					device pnp 2e.9   off end	# GPIO8
+					device pnp 2e.109 on  end	# GPIO1
+					device pnp 2e.209 off end	# GPIO2
+					device pnp 2e.309 off end	# GPIO3
+					device pnp 2e.409 on  end	# GPIO4
+					device pnp 2e.509 on  end	# GPIO5
+					device pnp 2e.609 on  end	# GPIO6
+					device pnp 2e.709 off end	# GPIO7
+					device pnp 2e.a   on  end	# ACPI
+					device pnp 2e.b   on		# H/W Monitor, FP LED
+						io  0x60 = 0x0290
+						io  0x62 = 0
+						irq 0x70 = 0
+					end
+					device pnp 2e.d   off end	# WDT1
+					device pnp 2e.e   off end	# CIR Wake-up
+					device pnp 2e.f   off end	# Push-pull/Open-drain
+					device pnp 2e.14  off end	# Port 80 UART
+					device pnp 2e.16  off end	# Deep Sleep
+				end
+			end
+		end
+	end
+end

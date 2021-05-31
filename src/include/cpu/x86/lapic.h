@@ -92,6 +92,25 @@ static __always_inline void lapic_write(unsigned int reg, uint32_t v)
 		xapic_write(reg, v);
 }
 
+static __always_inline void lapic_update32(unsigned int reg, uint32_t mask, uint32_t or)
+{
+	if (is_x2apic_mode()) {
+		uint32_t index;
+		msr_t msr;
+		index = X2APIC_MSR_BASE_ADDRESS + (uint32_t)(reg >> 4);
+		msr = rdmsr(index);
+		msr.lo &= mask;
+		msr.lo |= or;
+		wrmsr(index, msr);
+	} else {
+		uint32_t value;
+		value = xapic_read(reg);
+		value &= mask;
+		value |= or;
+		xapic_write_atomic(reg, value);
+	}
+}
+
 static __always_inline void lapic_wait_icr_idle(void)
 {
 	do { } while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY);

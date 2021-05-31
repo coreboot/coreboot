@@ -18,21 +18,10 @@ static __always_inline void xapic_write(unsigned int reg, uint32_t v)
 	write32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg), v);
 }
 
-static inline void xapic_write_atomic(unsigned long reg, uint32_t v)
-{
-	volatile uint32_t *ptr;
-
-	ptr = (volatile uint32_t *)(LAPIC_DEFAULT_BASE + reg);
-
-	asm volatile ("xchgl %0, %1\n"
-		      : "+r" (v), "+m" (*(ptr))
-		      : : "memory", "cc");
-}
-
 static __always_inline void xapic_send_ipi(uint32_t icrlow, uint32_t apicid)
 {
-	xapic_write_atomic(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-	xapic_write_atomic(LAPIC_ICR, icrlow);
+	xapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+	xapic_write(LAPIC_ICR, icrlow);
 }
 
 static __always_inline int xapic_busy(void)
@@ -114,7 +103,7 @@ static __always_inline void lapic_update32(unsigned int reg, uint32_t mask, uint
 		value = xapic_read(reg);
 		value &= mask;
 		value |= or;
-		xapic_write_atomic(reg, value);
+		xapic_write(reg, value);
 	}
 }
 

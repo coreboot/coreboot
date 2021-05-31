@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpigen.h>
 #include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <assert.h>
 #include <console/console.h>
 #include <console/debug.h>
@@ -19,9 +19,10 @@
 #include <intelpch/lockdown.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/soc_util.h>
 #include <soc/smmrelocate.h>
+#include <soc/soc_util.h>
 #include <soc/util.h>
 
 #include "chip.h"
@@ -103,6 +104,13 @@ static void each_cpu_init(struct device *cpu)
 
 	/* Enable Vmx */
 	set_vmx_and_lock();
+	set_aesni_lock();
+
+	/* The MSRs and CSRS have the same register layout. Use the CSRS bit definitions
+	   Lock Turbo. Did FSP-S set this up??? */
+	msr = rdmsr(MSR_TURBO_ACTIVATION_RATIO);
+	msr.lo |= (TURBO_ACTIVATION_RATIO_LOCK);
+	wrmsr(MSR_TURBO_ACTIVATION_RATIO, msr);
 }
 
 static struct device_operations cpu_dev_ops = {

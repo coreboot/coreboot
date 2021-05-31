@@ -37,7 +37,7 @@ chip soc/amd/picasso
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
-		device pci 1.7 on  end # GPP Bridge 6 - NVME
+		device ref gpp_bridge_6 on end # NVME
 	end # domain
 
 	device mmio 0xfedc4000 on end

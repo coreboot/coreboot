@@ -140,9 +140,9 @@ chip soc/amd/picasso
 
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
-		device pci 0.2 on  end # IOMMU
-		device pci 1.1 on  end # Bridge to PCIe Ethernet chip
-		device pci 8.1 on      # Bridge to Bus A
+		device ref iommu on end
+		device ref gpp_bridge_0 on end # Bridge to PCIe Ethernet chip
+		device ref internal_bridge_a on
 			device pci 0.0 on  end # Internal GPU
 			device pci 0.1 on  end # Display HDA
 			device pci 0.2 on  end # Crypto Coprocessor
@@ -152,12 +152,12 @@ chip soc/amd/picasso
 			device pci 0.6 on  end # HDA
 			device pci 0.7 on  end # non-Sensor Fusion Hub device
 		end
-		device pci 8.2 on      # Bridge to Bus B
+		device ref internal_bridge_b on
 			device pci 0.0 off end # AHCI
 			device pci 0.1 off end # integrated Ethernet MAC
 			device pci 0.2 off end # integrated Ethernet MAC
 		end
-		device pci 14.3 on      # D14F3 bridge
+		device ref lpc_bridge on
 			chip superio/smsc/sio1036 # optional debug card
 			end
 		end

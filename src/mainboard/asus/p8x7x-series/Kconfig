@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_ASUS_P8Z77_SERIES
+config BOARD_ASUS_P8X7X_SERIES
 	bool
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -13,11 +13,11 @@ config BOARD_ASUS_P8Z77_SERIES
 	select SERIRQ_CONTINUOUS_MODE
 	select SOUTHBRIDGE_INTEL_C216
 
-if BOARD_ASUS_P8Z77_SERIES
+if BOARD_ASUS_P8X7X_SERIES
 
 config MAINBOARD_DIR
 	string
-	default "asus/p8z77-series"
+	default "asus/p8x7x-series"
 
 config VARIANT_DIR
 	string

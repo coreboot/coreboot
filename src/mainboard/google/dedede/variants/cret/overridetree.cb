@@ -1,3 +1,12 @@
+fw_config
+	field AUDIO_CODEC_SOURCE 41 43
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_DA7219 1
+		option AUDIO_CODEC_RT5682 2
+		option AUDIO_CODEC_CS42l42 3
+	end
+end
+
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
@@ -202,7 +211,28 @@ chip soc/intel/jasperlake
 				register "adc_1bit_rpt" = "1"
 				register "micbias_lvl" = "2600"
 				register "mic_amp_in_sel" = ""diff""
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_UNPROVISIONED
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_DA7219
+				end
+			end
+			chip drivers/i2c/cs42l42
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H16)"
+				register "ts_inv" = "true"
+				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+				register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+				register "btn_det_init_dbnce" = "100"
+				register "btn_det_event_dbnce" = "10"
+				register "bias_lvls[0]" = "15"
+				register "bias_lvls[1]" = "8"
+				register "bias_lvls[2]" = "4"
+				register "bias_lvls[3]" = "1"
+				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				register "hs_bias_sense_disable" = "true"
+				device i2c 48 on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_CS42l42
+				end
 			end
 		end #I2C 4
 		device pci 1f.3 on

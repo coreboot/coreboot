@@ -41,6 +41,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : AP_I2C_CAM_SCL ==> NC */
 	PAD_NC(GPP_H7, NONE),
+	/* H16 : AP_SUB_IO_L ==> HP_RST_ODL */
+	PAD_CFG_GPO(GPP_H16, 1, PWROK),
 	/* H17 : WWAN_RST_L */
 	PAD_CFG_GPO(GPP_H17, 1, PLTRST),
 	/* G0  : SD_CMD ==> NC */
@@ -67,6 +69,14 @@ static const struct pad_config lte_disable_pads[] = {
 	PAD_NC(GPP_H17, NONE),
 };
 
+static const struct pad_config codec_da7219_pads[] = {
+	PAD_NC(GPP_H16, NONE),
+};
+
+static const struct pad_config codec_cs42l42_pads[] = {
+	PAD_NC(GPP_D18, NONE),
+};
+
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(override_gpio_table);
@@ -77,5 +87,9 @@ static void fw_config_handle(void *unused)
 {
 	if (!fw_config_probe(FW_CONFIG(LTE, LTE_PRESENT)))
 		gpio_configure_pads(lte_disable_pads, ARRAY_SIZE(lte_disable_pads));
+	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC_SOURCE, AUDIO_CODEC_DA7219)))
+		gpio_configure_pads(codec_da7219_pads, ARRAY_SIZE(codec_da7219_pads));
+	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC_SOURCE, AUDIO_CODEC_CS42l42)))
+		gpio_configure_pads(codec_cs42l42_pads, ARRAY_SIZE(codec_cs42l42_pads));
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

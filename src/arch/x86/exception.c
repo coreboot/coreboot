@@ -486,6 +486,7 @@ void x86_exception(struct eregs *info)
 #else /* !CONFIG_GDB_STUB */
 
 	int logical_processor = 0;
+	u32 apic_id = CONFIG(SMP) ? lapicid() : 0;
 
 #if ENV_RAMSTAGE
 	logical_processor = cpu_index();
@@ -505,7 +506,7 @@ void x86_exception(struct eregs *info)
 		"r10: %016llx r11: %016llx\n"
 		"r12: %016llx r13: %016llx\n"
 		"r14: %016llx r15: %016llx\n",
-		logical_processor, (unsigned int)lapicid(),
+		logical_processor, apic_id,
 		info->vector, info->cs, info->rip,
 		info->error_code, info->rflags, read_cr2(),
 		info->rax, info->rbx, info->rcx, info->rdx,
@@ -522,7 +523,7 @@ void x86_exception(struct eregs *info)
 		"Code: %d eflags: %08x cr2: %08x\n"
 		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"
 		"edi: %08x esi: %08x ebp: %08x esp: %08x\n",
-		logical_processor, (unsigned int)lapicid(),
+		logical_processor, apic_id,
 		info->vector, info->cs, info->eip,
 		info->error_code, info->eflags, read_cr2(),
 		info->eax, info->ebx, info->ecx, info->edx,

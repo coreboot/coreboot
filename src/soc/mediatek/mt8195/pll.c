@@ -773,6 +773,24 @@ void mt_pll_raise_cci_freq(u32 freq)
 	clrsetbits32(&mt8195_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
 }
 
+void mt_pll_set_tvd_pll1_freq(u32 freq)
+{
+	/* disable tvdpll frequency output */
+	clrbits32(plls[APMIXED_TVDPLL1].reg, MT8195_PLL_EN);
+
+	/* set tvdpll frequency */
+	pll_set_rate(&plls[APMIXED_TVDPLL1], freq);
+
+	/* enable tvdpll frequency output */
+	setbits32(plls[APMIXED_TVDPLL1].reg, MT8195_PLL_EN);
+	udelay(PLL_EN_DELAY);
+}
+
+void edp_mux_set_sel(u32 sel)
+{
+	mux_set_sel(&muxes[TOP_EDP_SEL], sel);
+}
+
 u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 {
 	u32 output, count, clk_dbg_cfg, clk_misc_cfg_0;

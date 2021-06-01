@@ -56,6 +56,7 @@ ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-y += ../common/pll.c pll.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
 ramstage-y += ../common/sspm.c

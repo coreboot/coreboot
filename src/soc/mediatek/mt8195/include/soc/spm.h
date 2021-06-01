@@ -991,6 +991,12 @@ static const struct power_domain_data disp[] = {
 		.sram_pdn_mask = 0x1 << 8,
 		.sram_ack_mask = 0x1 << 12,
 	},
+	{
+		.pwr_con = &mtk_spm->edp_tx_pwr_con,
+		.pwr_sta_mask = 0x1 << 17,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
 };
 
 static const struct power_domain_data audio[] = {

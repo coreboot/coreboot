@@ -1,0 +1,122 @@
+if BOARD_STARLABS_LABTOP_CML || BOARD_STARLABS_LABTOP_KBL
+
+#
+# LabTop Mk IV CML Board uses the following devices:
+#
+# GigaDevice GD25Q64C (8192KB) SPI NOR flash (KBL)
+# Winbond 25Q128JVSQ (16384KB) SPI NOR flash (CML)
+# Infineon SLB9670VQ SPI TPM2.0 device
+# Realtek ALC256 audio CODEC
+# ITE IT8987 Embedded Controller
+# Analogix ANX7447 crosspoint switch
+#
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384 if BOARD_STARLABS_LABTOP_CML
+	select BOARD_ROMSIZE_KB_8192 if BOARD_STARLABS_LABTOP_KBL
+	select DRIVERS_I2C_HID
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_SMI_HANDLER
+	select HAVE_SPD_IN_CBFS
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+#	select HAVE_IFD_BIN
+#	select HAVE_ME_BIN
+	select MAINBOARD_HAS_LIBGFXINIT if BOARD_STARLABS_LABTOP_KBL
+	select EC_STARLABS_IT8987 if BOARD_STARLABS_LABTOP_CML || BOARD_STARLABS_LABTOP_KBL
+	select EC_STARLABS_IT_BIN if BOARD_STARLABS_LABTOP_CML
+	select SYSTEM_TYPE_LAPTOP
+	select SPI_FLASH_WINBOND if BOARD_STARLABS_LABTOP_CML
+	select SPI_FLASH_GIGADEVICE if BOARD_STARLABS_LABTOP_KBL
+	select DISABLE_ACPI_HIBERNATE
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+
+config MAINBOARD_DIR
+	string
+	default "starlabs/labtop"
+
+config VARIANT_DIR
+	string
+	default "cml" if BOARD_STARLABS_LABTOP_CML
+	default "kbl" if BOARD_STARLABS_LABTOP_KBL
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "LabTop Mk IV" if BOARD_STARLABS_LABTOP_CML
+	default "LabTop Mk III" if BOARD_STARLABS_LABTOP_KBL
+
+config MAINBOARD_FAMILY
+	string
+	default "L4" if BOARD_STARLABS_LABTOP_CML
+	default "L3" if BOARD_STARLABS_LABTOP_KBL
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	string
+	default "LabTop"
+
+config MAX_CPUS
+	int
+	default 8 if BOARD_STARLABS_LABTOP_KBL
+	default 12
+
+#config DRIVER_TPM_SPI_CHIP
+#	int
+#	default 2
+
+config UART_FOR_CONSOLE
+	int
+	default 2
+
+config DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFD_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashregion_0_flashdescriptor.bin"
+
+config ME_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashregion_2_intel_me.bin"
+
+config ME_STATE_BY_CMOS
+	bool
+	default y
+
+config EC_STARLABS_IT_BIN
+	bool
+	default n
+	default y if BOARD_STARLABS_LABTOP_CML
+
+config EC_STARLABS_IT_BIN_PATH
+	string
+	depends on EC_STARLABS_IT_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashregion_8_ec.bin"
+
+config VGA_BIOS_ID
+	string
+	default "8086,9b41" if BOARD_STARLABS_LABTOP_CML
+	default "8086,5917" if BOARD_STARLABS_LABTOP_KBL
+
+config TIANOCORE_BOOTSPLASH_FILE
+	string
+	depends on TIANOCORE_BOOTSPLASH_IMAGE
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
+endif

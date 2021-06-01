@@ -1,0 +1,15 @@
+if VENDOR_STARLABS
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/starlabs/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/starlabs/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Star Labs"
+
+endif # VENDOR_STARLABS

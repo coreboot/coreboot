@@ -30,7 +30,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 {
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
-	if (sku_id == SKU_ID_BOTENFLEX)
+	if (sku_id >= SKU_ID_BOTENFLEX)
 		return "wifi_sar-botenflex.hex";
 
 	return "wifi_sar-boten.hex";

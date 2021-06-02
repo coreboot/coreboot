@@ -105,6 +105,8 @@
 #define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
 
 #define LPC_MISC_CONTROL_BITS		0x78
+#define   LPC_LDRQ1_EN			BIT(3)
+#define   LPC_LDRQ0_EN			BIT(2)
 #define   LPC_NOHOG			BIT(0)
 
 #define LPC_TRUSTED_PLATFORM_MODULE	0x7c

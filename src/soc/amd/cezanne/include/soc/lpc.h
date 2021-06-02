@@ -3,6 +3,12 @@
 #ifndef AMD_CEZANNE_LPC_H
 #define AMD_CEZANNE_LPC_H
 
+/* LPC_MISC_CONTROL_BITS at D14F3x078 */
+/* The definitions of bits 9 and 10 are swapped on Picasso and older compared to Renoir/Cezanne
+   and newer, so we need to keep those in a SoC-specific header file. */
+#define   LPC_LDRQ0_PU_EN		BIT(10)
+#define   LPC_LDRQ0_PD_EN		BIT(9)
+
 #define SPIROM_BASE_ADDRESS_REGISTER	0xa0
 #define   SPI_BASE_ALIGNMENT		BIT(8)
 #define   SPI_BASE_RESERVED		(BIT(5) | BIT(6) | BIT(7))

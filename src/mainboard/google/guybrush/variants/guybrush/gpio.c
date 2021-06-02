@@ -8,8 +8,14 @@
 
 /* This table is used by guybrush variant with board version < 2. */
 static const struct soc_amd_gpio bid1_gpio_table[] = {
+	/* Unused TP183 */
+	PAD_NC(GPIO_31),
 	/* EN_SPKR */
-	PAD_GPO(GPIO_69, LOW),
+	PAD_GPO(GPIO_69, HIGH),
+	/* SD_AUX_RESET_L */
+	PAD_GPO(GPIO_70, HIGH),
+	/* RAM_ID_CHAN_SEL */
+	PAD_GPI(GPIO_74, PULL_NONE),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)

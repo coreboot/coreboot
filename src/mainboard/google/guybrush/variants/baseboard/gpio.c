@@ -64,8 +64,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_29, LOW),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
-	/* SPI_CS3_L */
-	PAD_NF(GPIO_31, SPI_CS3_L, PULL_NONE),
+	/* EN_SPKR */
+	PAD_GPO(GPIO_31, HIGH),
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, HIGH),
 	/* GPIO_33 - GPIO_39: Not available */
@@ -79,13 +79,13 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPI(GPIO_67, PULL_NONE),
 	/* EN_PP3300_TCHSCR */
 	PAD_GPO(GPIO_68, LOW),
-	/* EN_SPKR */
-	PAD_GPO(GPIO_69, HIGH),
 	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_70, HIGH),
+	PAD_GPO(GPIO_69, HIGH),
+	/* Unused TP27  */
+	PAD_NC(GPIO_70),
 	/* GPIO_71 - GPIO_73: Not available */
-	/* RAM_ID_CHAN_SEL */
-	PAD_GPI(GPIO_74, PULL_NONE),
+	/* Unused TP49 */
+	PAD_NC(GPIO_74),
 	/* RAM_ID_2 / DEV_BEEP_LRCLK */
 	PAD_GPI(GPIO_75, PULL_NONE),
 	/* EN_PP3300_CAM */

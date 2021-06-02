@@ -207,6 +207,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
 	m_cfg->TcssItbtPcie3En = is_dev_enabled(dev);
 
+	/* IPU */
+	dev = pcidev_path_on_root(SA_DEVFN_IPU);
+	m_cfg->SaIpuEnable = is_dev_enabled(dev);
+
 	/* VT-d config */
 	m_cfg->VtdBaseAddress[VTD_GFX] = GFXVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[VTD_IPU] = IPUVT_BASE_ADDRESS;

@@ -63,8 +63,6 @@ config TIANOCORE_CBMEM_LOGGING
 	  this option, especially if using a debug (vs release) build.
 	  Selecting this option will increase the payload size in CBFS by ~220KB.
 
-endif
-
 config TIANOCORE_BOOTSPLASH_IMAGE
 	bool "Use a custom bootsplash image"
 	help
@@ -83,6 +81,8 @@ config TIANOCORE_BOOTSPLASH_FILE
 
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
+
+endif
 
 config TIANOCORE_BOOT_TIMEOUT
 	int

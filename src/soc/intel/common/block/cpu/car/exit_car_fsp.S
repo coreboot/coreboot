@@ -18,6 +18,8 @@ chipset_teardown_car:
 
 	/* Set up new stack. */
 	mov	post_car_stack_top, %esp
+	/* Align the stack. */
+	andl	$0xfffffff0, %esp
 
 	/* Call C code */
 	call	main

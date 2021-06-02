@@ -2,9 +2,11 @@
 
 #include <console/console.h>
 #include <cpu/x86/mp.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/amd/amd64_save_state.h>
+#include <cpu/x86/legacy_save_state.h>
 #include <mainboard/emulation/qemu-i440fx/fw_cfg.h>
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
@@ -31,19 +33,47 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here.
  */
+
+__packed union save_state {
+	amd64_smm_state_save_area_t amd64;
+	struct {
+		char _reserved[sizeof(amd64_smm_state_save_area_t)
+			       - sizeof(legacy_smm_state_save_area_t)];
+		legacy_smm_state_save_area_t legacy;
+	};
+};
+
+_Static_assert(sizeof(union save_state) == sizeof(amd64_smm_state_save_area_t),
+	       "Incorrect save state union size");
+
+_Static_assert(offsetof(union save_state, amd64.smm_revision)
+	       == offsetof(union save_state, legacy.smm_revision),
+	       "Incompatible SMM save state revision offset");
+
 static void relocation_handler(int cpu, uintptr_t curr_smbase,
 			       uintptr_t staggered_smbase)
 {
-	/* The em64t101 save state is sufficiently compatible with older
-	   save states with regards of smbase, smm_revision. */
-	amd64_smm_state_save_area_t *save_state;
+	union save_state *save_state =
+		(void *)(curr_smbase + SMM_DEFAULT_SIZE - sizeof(*save_state));
+
 	u32 smbase = staggered_smbase;
 
-	save_state = (void *)(curr_smbase + SMM_DEFAULT_SIZE - sizeof(*save_state));
-	save_state->smbase = smbase;
+	/* The SMM save state revision is always at a compatible offset */
+	const u32 revision = save_state->legacy.smm_revision;
+	switch (revision) {
+	case 0x00020000:
+		save_state->legacy.smbase = smbase;
+		break;
+	case 0x00020064:
+		save_state->amd64.smbase = smbase;
+		break;
+	default:
+		printk(BIOS_ERR, "Unknown SMM revision 0x%x, not relocating SMM\n", revision);
+		return;
+	};
 
 	printk(BIOS_DEBUG, "In relocation handler: cpu %d\n", cpu);
-	printk(BIOS_DEBUG, "SMM revision: 0x%08x\n", save_state->smm_revision);
+	printk(BIOS_DEBUG, "SMM revision: 0x%08x\n", revision);
 	printk(BIOS_DEBUG, "New SMBASE=0x%08x\n", smbase);
 }
 

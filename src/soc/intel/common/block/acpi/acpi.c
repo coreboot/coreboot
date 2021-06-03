@@ -83,7 +83,7 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 	if (is_x2apic_mode())
 		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
-				0xff, 0xd, 1);
+				0xffffffff, 0x5, 1);
 
 	return current;
 }

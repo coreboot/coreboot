@@ -72,8 +72,8 @@ chip northbridge/intel/ironlake
 			end
 
 			device pci 1c.0 on  end	# PCIe Port #1: WWAN mPCIe slot
-			device pci 1c.1 off end	# PCIe Port #2: WLAN mPCIe slot
-			device pci 1c.2 off end	# PCIe Port #3: WUSB mPCIe slot
+			device pci 1c.1 on  end	# PCIe Port #2: WLAN mPCIe slot
+			device pci 1c.2 on  end	# PCIe Port #3: WUSB mPCIe slot
 			device pci 1c.3 on  end	# PCIe Port #4: ExpressCard
 			device pci 1c.4 on	# PCIe Port #5: Ricoh SD & FireWire
 				subsystemid 0x17aa 0x2133

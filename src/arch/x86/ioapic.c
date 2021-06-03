@@ -18,6 +18,15 @@ void io_apic_write(void *ioapic_base, u32 reg, u32 value)
 	write32(ioapic_base + 0x10, value);
 }
 
+static void write_vector(void *ioapic_base, u8 vector, u32 high, u32 low)
+{
+	io_apic_write(ioapic_base, vector * 2 + 0x10, low);
+	io_apic_write(ioapic_base, vector * 2 + 0x11, high);
+
+	printk(BIOS_SPEW, "IOAPIC: vector 0x%02x value 0x%08x 0x%08x\n",
+	       vector, high, low);
+}
+
 static int ioapic_interrupt_count(void *ioapic_base)
 {
 	/* Read the available number of interrupts. */
@@ -42,13 +51,8 @@ static void clear_vectors(void *ioapic_base, u8 first, u8 last)
 	low = INT_DISABLED;
 	high = NONE;
 
-	for (i = first; i <= last; i++) {
-		io_apic_write(ioapic_base, i * 2 + 0x10, low);
-		io_apic_write(ioapic_base, i * 2 + 0x11, high);
-
-		printk(BIOS_SPEW, "IOAPIC: vector 0x%02x value 0x%08x 0x%08x\n",
-		       i, high, low);
-	}
+	for (i = first; i <= last; i++)
+		write_vector(ioapic_base, i, high, low);
 
 	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
 		printk(BIOS_WARNING, "IOAPIC not responding.\n");
@@ -75,15 +79,12 @@ static void route_i8259_irq0(void *ioapic_base)
 	low = INT_ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 	high = bsp_lapicid << (56 - 32);
 
-	io_apic_write(ioapic_base, 0x10, low);
-	io_apic_write(ioapic_base, 0x11, high);
+	write_vector(ioapic_base, 0, high, low);
 
 	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
 		printk(BIOS_WARNING, "IOAPIC not responding.\n");
 		return;
 	}
-
-	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", 0, high, low);
 }
 
 void set_ioapic_id(void *ioapic_base, u8 ioapic_id)

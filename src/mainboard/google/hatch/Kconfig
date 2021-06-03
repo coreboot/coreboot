@@ -137,6 +137,7 @@ config MAINBOARD_PART_NUMBER
 	default "Dooly" if BOARD_GOOGLE_DOOLY
 	default "Ambassador" if BOARD_GOOGLE_AMBASSADOR
 	default "Genesis" if BOARD_GOOGLE_GENESIS
+	default "Scout" if BOARD_GOOGLE_SCOUT
 
 config OVERRIDE_DEVICETREE
 	string
@@ -172,6 +173,7 @@ config VARIANT_DIR
 	default "dooly" if BOARD_GOOGLE_DOOLY
 	default "ambassador" if BOARD_GOOGLE_AMBASSADOR
 	default "genesis" if BOARD_GOOGLE_GENESIS
+	default "scout" if BOARD_GOOGLE_SCOUT
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

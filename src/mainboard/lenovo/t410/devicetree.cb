@@ -71,11 +71,11 @@ chip northbridge/intel/ironlake
 				subsystemid 0x17aa 0x215e
 			end
 
-			device pci 1c.0 on end # PCIe Port #1 (wlan)
-			device pci 1c.1 off end # PCIe Port #2 (wwan)
-			device pci 1c.2 off end # PCIe Port #3 (wusb)
-			device pci 1c.3 on end # PCIe Port #4 (ExpressCard)
-			device pci 1c.4 on
+			device pci 1c.0 on  end	# PCIe Port #1: WWAN mPCIe slot
+			device pci 1c.1 off end	# PCIe Port #2: WLAN mPCIe slot
+			device pci 1c.2 off end	# PCIe Port #3: WUSB mPCIe slot
+			device pci 1c.3 on  end	# PCIe Port #4: ExpressCard
+			device pci 1c.4 on	# PCIe Port #5: Ricoh SD & FireWire
 				subsystemid 0x17aa 0x2133
 				chip drivers/ricoh/rce822
 					register "sdwppol" = "1"
@@ -84,10 +84,10 @@ chip northbridge/intel/ironlake
 						subsystemid 0x17aa 0x2134
 					end
 				end
-			end # PCIe Port #5 (Ricoh SD & FW)
-			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 off end # PCIe Port #7
-			device pci 1c.7 off end # PCIe Port #8 Intel Gigabit Ethernet PHY (not PCIe)
+			end
+			device pci 1c.5 off end	# PCIe Port #6: Intel GbE PHY (not PCIe)
+			device pci 1c.6 off end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
 
 			device pci 1d.0 on # USB2 EHCI
 				subsystemid 0x17aa 0x2163

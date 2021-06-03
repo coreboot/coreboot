@@ -227,6 +227,17 @@
                 "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
+        },
+        {
+            "name": "MT40A512M16TB-062E:R",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
         }
     ]
 }

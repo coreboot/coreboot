@@ -68,7 +68,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoPci,
 		[PchSerialIoIndexI2C3] = PchSerialIoPci,
-		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
@@ -116,9 +116,6 @@ chip soc/intel/alderlake
 		},
 		.i2c[3] = {
 			.early_init = 1,
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[5] = {

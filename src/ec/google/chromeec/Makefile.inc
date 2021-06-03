@@ -13,6 +13,11 @@ smm-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_skuid.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_skuid.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_skuid.c
 
+ifeq ($(CONFIG_GENERATE_SMBIOS_TABLES),y)
+romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_smbios.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_smbios.c
+endif
+
 bootblock-y += ec.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 ramstage-y += ec.c crosec_proto.c vstore.c

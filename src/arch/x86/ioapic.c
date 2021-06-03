@@ -109,11 +109,14 @@ void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 
 }
 
-static void load_vectors(void *ioapic_base)
+void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
+			 bool enable_virtual_wire)
 {
-	int first = 1, last;
+	int first = 0, last;
 
-	if (CONFIG(IOAPIC_INTERRUPTS_ON_FSB)) {
+	set_ioapic_id(ioapic_base, ioapic_id);
+
+	if (irq_on_fsb) {
 		/*
 		 * For the Pentium 4 and above APICs deliver their interrupts
 		 * on the front side bus, enable that.
@@ -121,20 +124,24 @@ static void load_vectors(void *ioapic_base)
 		printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n");
 		io_apic_write(ioapic_base, 0x03,
 			      io_apic_read(ioapic_base, 0x03) | (1 << 0));
-	} else if (CONFIG(IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS)) {
+	} else {
 		printk(BIOS_DEBUG,
 			"IOAPIC: Enabling interrupts on APIC serial bus\n");
 		io_apic_write(ioapic_base, 0x03, 0);
 	}
 
-	route_i8259_irq0(ioapic_base);
+	if (enable_virtual_wire) {
+		route_i8259_irq0(ioapic_base);
+		first = 1;
+	}
 
 	last = ioapic_interrupt_count(ioapic_base) - 1;
 	clear_vectors(ioapic_base, first, last);
 }
 
+
 void setup_ioapic(void *ioapic_base, u8 ioapic_id)
 {
-	set_ioapic_id(ioapic_base, ioapic_id);
-	load_vectors(ioapic_base);
+	setup_ioapic_helper(ioapic_base, ioapic_id,
+		CONFIG(IOAPIC_INTERRUPTS_ON_FSB), true);
 }

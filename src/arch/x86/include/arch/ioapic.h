@@ -9,7 +9,7 @@
 
 #ifndef __ACPI__
 
-#include <stdint.h>
+#include <types.h>
 
 #define ALL		(0xff << 24)
 #define NONE		(0)
@@ -31,6 +31,9 @@ void io_apic_write(void *ioapic_base, u32 reg, u32 value);
 void set_ioapic_id(void *ioapic_base, u8 ioapic_id);
 void setup_ioapic(void *ioapic_base, u8 ioapic_id);
 void clear_ioapic(void *ioapic_base);
+
+void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
+			 bool enable_virtual_wire);
 #endif
 
 #endif

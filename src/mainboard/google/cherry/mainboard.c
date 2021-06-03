@@ -11,6 +11,7 @@
 #include <soc/i2c.h>
 #include <soc/mt6360.h>
 #include <soc/regulator.h>
+#include <soc/spm.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
@@ -123,6 +124,9 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_sdcard();
 	setup_usb_host();
+
+	if (spm_init())
+		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");
 
 	register_reset_to_bl31();
 }

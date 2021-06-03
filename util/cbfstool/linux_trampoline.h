@@ -3,7 +3,7 @@
 /*
  * This file contains #define constants used by both the Linux
  * trampoline C-code and assembly language code.  As such it can only
- * contain preprocessor macros.  Do not inlucde C language
+ * contain preprocessor macros.  Do not include C language
  * declarations in this file.
  */
 

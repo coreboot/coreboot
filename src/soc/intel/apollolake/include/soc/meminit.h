@@ -51,9 +51,9 @@ enum {
 
 /* LPDDR4 module density in bits. */
 enum {
-	LP4_8Gb_DENSITY = 2,
-	LP4_12Gb_DENSITY,
-	LP4_16Gb_DENSITY,
+	LP4_8Gb_DENSITY = 8,
+	LP4_12Gb_DENSITY = 12,
+	LP4_16Gb_DENSITY = 16,
 };
 
 /*
@@ -93,7 +93,7 @@ void meminit_lpddr4(FSP_M_CONFIG *cfg, int speed);
  * to the memory reference code.
  */
 void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
-					int rank_density, int dual_rank,
+					int rank_density_gb, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg);
 
 struct lpddr4_sku {

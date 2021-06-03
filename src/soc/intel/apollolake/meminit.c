@@ -19,24 +19,7 @@ static void accumulate_channel_memory(int density, int dual_rank)
 	/* For this platform LPDDR4 memory is 4 DRAM parts that are x32. 2 of
 	   the parts are composed into a x64 memory channel. Thus there are 2
 	   channels composed of 2 DRAMs. */
-	size_t sz;
-
-	/* Per rank density in Gb */
-	switch (density) {
-	case LP4_8Gb_DENSITY:
-		sz = 8;
-		break;
-	case LP4_12Gb_DENSITY:
-		sz = 12;
-		break;
-	case LP4_16Gb_DENSITY:
-		sz = 16;
-		break;
-	default:
-		printk(BIOS_ERR, "Invalid DRAM density: %d\n", density);
-		sz = 0;
-		break;
-	}
+	size_t sz = density;
 
 	/* Two DRAMs per channel. */
 	sz *= 2;
@@ -289,27 +272,38 @@ static void enable_logical_chan1(FSP_M_CONFIG *cfg,
 }
 
 void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
-					int rank_density, int dual_rank,
+					int rank_density_gb, int dual_rank,
 					const struct lpddr4_swizzle_cfg *scfg)
 {
-	if (rank_density < LP4_8Gb_DENSITY ||
-		rank_density > LP4_16Gb_DENSITY) {
-		printk(BIOS_ERR, "Invalid LPDDR4 density: %d\n", rank_density);
+	int fsp_rank_density;
+
+	switch (rank_density_gb) {
+	case LP4_8Gb_DENSITY:
+		fsp_rank_density = 2;
+		break;
+	case LP4_12Gb_DENSITY:
+		fsp_rank_density = 3;
+		break;
+	case LP4_16Gb_DENSITY:
+		fsp_rank_density = 4;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid LPDDR4 density: %d Gb\n", rank_density_gb);
 		return;
 	}
 
 	switch (logical_chan) {
 	case LP4_LCH0:
-		enable_logical_chan0(cfg, rank_density, dual_rank, scfg);
+		enable_logical_chan0(cfg, fsp_rank_density, dual_rank, scfg);
 		break;
 	case LP4_LCH1:
-		enable_logical_chan1(cfg, rank_density, dual_rank, scfg);
+		enable_logical_chan1(cfg, fsp_rank_density, dual_rank, scfg);
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid logical channel: %d\n", logical_chan);
 		return;
 	}
-	accumulate_channel_memory(rank_density, dual_rank);
+	accumulate_channel_memory(rank_density_gb, dual_rank);
 }
 
 void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
@@ -330,7 +324,7 @@ void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 	meminit_lpddr4(cfg, sku->speed);
 
 	if (sku->ch0_rank_density) {
-		printk(BIOS_INFO, "LPDDR4 Ch0 density = %d\n",
+		printk(BIOS_INFO, "LPDDR4 Ch0 density = %d Gb\n",
 			sku->ch0_rank_density);
 		meminit_lpddr4_enable_channel(cfg, LP4_LCH0,
 						sku->ch0_rank_density,
@@ -339,7 +333,7 @@ void meminit_lpddr4_by_sku(FSP_M_CONFIG *cfg,
 	}
 
 	if (sku->ch1_rank_density) {
-		printk(BIOS_INFO, "LPDDR4 Ch1 density = %d\n",
+		printk(BIOS_INFO, "LPDDR4 Ch1 density = %d Gb\n",
 			sku->ch1_rank_density);
 		meminit_lpddr4_enable_channel(cfg, LP4_LCH1,
 						sku->ch1_rank_density,

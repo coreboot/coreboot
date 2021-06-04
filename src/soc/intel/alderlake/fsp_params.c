@@ -67,22 +67,6 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 		params->SerialIoUartMode[i] = config->SerialIoUartMode[i];
 }
 
-static const pci_devfn_t serial_io_dev[] = {
-	PCH_DEVFN_I2C0,
-	PCH_DEVFN_I2C1,
-	PCH_DEVFN_I2C2,
-	PCH_DEVFN_I2C3,
-	PCH_DEVFN_I2C4,
-	PCH_DEVFN_I2C5,
-	PCH_DEVFN_GSPI0,
-	PCH_DEVFN_GSPI1,
-	PCH_DEVFN_GSPI2,
-	PCH_DEVFN_GSPI3,
-	PCH_DEVFN_UART0,
-	PCH_DEVFN_UART1,
-	PCH_DEVFN_UART2
-};
-
 __weak void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
 	/* Override settings per board. */
@@ -333,11 +317,4 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-/* Return list of SOC LPSS controllers */
-const pci_devfn_t *soc_lpss_controllers_list(size_t *size)
-{
-	*size = ARRAY_SIZE(serial_io_dev);
-	return serial_io_dev;
 }

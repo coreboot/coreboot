@@ -28,21 +28,6 @@ enum {
 	EOP_DXE,
 } EndOfPost;
 
-static const pci_devfn_t serial_io_dev[] = {
-	PCH_DEVFN_I2C0,
-	PCH_DEVFN_I2C1,
-	PCH_DEVFN_I2C2,
-	PCH_DEVFN_I2C3,
-	PCH_DEVFN_I2C4,
-	PCH_DEVFN_I2C5,
-	PCH_DEVFN_GSPI0,
-	PCH_DEVFN_GSPI1,
-	PCH_DEVFN_GSPI2,
-	PCH_DEVFN_UART0,
-	PCH_DEVFN_UART1,
-	PCH_DEVFN_UART2
-};
-
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
 	const struct soc_intel_jasperlake_config *config = config_of_soc();
@@ -265,11 +250,4 @@ int soc_fsp_multi_phase_init_is_enable(void)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-}
-
-/* Return list of SOC LPSS controllers */
-const pci_devfn_t *soc_lpss_controllers_list(size_t *size)
-{
-	*size = ARRAY_SIZE(serial_io_dev);
-	return serial_io_dev;
 }

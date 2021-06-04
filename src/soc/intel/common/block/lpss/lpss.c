@@ -72,21 +72,3 @@ void lpss_set_power_state(pci_devfn_t devfn, enum lpss_pwr_state state)
 	reg8 |= state;
 	pci_s_write_config8(devfn, PME_CTRL_STATUS, reg8);
 }
-
-bool is_dev_lpss(const struct device *dev)
-{
-	static size_t size;
-	static const pci_devfn_t *lpss_devices;
-
-	if (dev->path.type != DEVICE_PATH_PCI)
-		return false;
-
-	if (!lpss_devices)
-		lpss_devices = soc_lpss_controllers_list(&size);
-
-	for (int i = 0; i < size; i++) {
-		if (lpss_devices[i] == dev->path.pci.devfn)
-			return true;
-	}
-	return false;
-}

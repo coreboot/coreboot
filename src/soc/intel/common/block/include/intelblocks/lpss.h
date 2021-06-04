@@ -27,13 +27,4 @@ bool lpss_is_controller_in_reset(uintptr_t base);
 /* Set controller power state to D0 or D3*/
 void lpss_set_power_state(pci_devfn_t devfn, enum lpss_pwr_state state);
 
-/*
- * Handler to get list of LPSS controllers. The SOC is expected to send out a
- * list of pci devfn for all LPSS controllers supported by the SOC.
- */
-const pci_devfn_t *soc_lpss_controllers_list(size_t *size);
-
-/* Check if the device is a LPSS controller */
-bool is_dev_lpss(const struct device *dev);
-
 #endif	/* SOC_INTEL_COMMON_BLOCK_LPSS_H */

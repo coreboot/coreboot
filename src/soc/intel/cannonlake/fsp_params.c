@@ -572,13 +572,6 @@ __weak void mainboard_silicon_init_params(FSPS_UPD *supd)
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
-/* Return list of SOC LPSS controllers */
-const pci_devfn_t *soc_lpss_controllers_list(size_t *size)
-{
-	*size = ARRAY_SIZE(serial_io_dev);
-	return serial_io_dev;
-}
-
 /* Handle FSP logo params */
 void soc_load_logo(FSPS_UPD *supd)
 {

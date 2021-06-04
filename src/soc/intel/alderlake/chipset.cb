@@ -121,6 +121,8 @@ chip soc/intel/alderlake
 		device pci 15.3 alias i2c3 off end
 		device pci 16.0 alias heci1 off end
 		device pci 16.1 alias heci2 off end
+		device pci 16.2 alias ide_r off end
+		device pci 16.3 alias kt off end
 		device pci 16.4 alias heci3 off end
 		device pci 16.5 alias heci4 off end
 		device pci 17.0 alias sata off end

@@ -172,12 +172,6 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 15);	// Lock C-State MSR
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
-	msr = rdmsr(MSR_PMG_IO_CAPTURE_ADDR);
-	msr.lo &= ~0x7ffff;
-	msr.lo |= (PMB0_BASE + 4);	// LVL_2 base address
-	msr.lo |= (2 << 16);		// CST Range: C7 is max C-state
-	wrmsr(MSR_PMG_IO_CAPTURE_ADDR, msr);
-
 	msr = rdmsr(MSR_MISC_PWR_MGMT);
 	msr.lo &= ~(1 << 0);	// Enable P-state HW_ALL coordination
 	wrmsr(MSR_MISC_PWR_MGMT, msr);

@@ -174,21 +174,16 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Graphics
-		device pci 04.0 on  end # DPTF
-		device pci 05.0 on  end # IPU
-		device pci 06.0 off end # PEG60
-		device pci 07.0 on  end # TBT_PCIe0
-		device pci 07.1 on  end # TBT_PCIe1
-		device pci 07.2 on  end # TBT_PCIe2
-		device pci 07.3 on  end # TBT_PCIe3
-		device pci 08.0 off end # GNA
-		device pci 09.0 off end # NPK
-		device pci 0a.0 off end # Crash-log SRAM
-		device pci 0d.0 on  end # USB xHCI
-		device pci 0d.1 off end # USB xDCI (OTG)
-		device pci 0d.2 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref ipu on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tbt_pcie_rp3 on end
+		device ref crashlog off end
+		device ref tcss_xhci on end
+		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp" = "{
 					[0] = {.power_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19),},
@@ -196,39 +191,31 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device pci 0d.3 on  end # TBT DMA1
-		device pci 0e.0 off end # VMD
-		device pci 10.0 off end
-		device pci 10.1 off end
-		device pci 12.0 off end # SensorHUB
-		device pci 12.6 off end # GSPI2
-		device pci 13.0 off end # GSPI3
-		device pci 14.0 on
+		device ref tcss_dma1 on end
+		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						register "desc" = ""Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
-						device usb 2.9 on end
+						device ref usb2_port10 on end
 					end
 				end
 			end
-		end # USB3.1 xHCI
-		device pci 14.1 off end # USB3.1 xDCI
-		device pci 14.2 off end # Shared RAM
-		device pci 14.3 on
+		end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end
 			end
-		end # CNVi: WiFi
-		device pci 15.0 on  end # I2C0
-		device pci 15.1 on  end # I2C1
-		device pci 15.2 on
+		end
+		device ref i2c0 on end
+		device ref i2c1 on end
+		device ref i2c2 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -257,17 +244,11 @@ chip soc/intel/alderlake
 				register "name" = ""MAXL""
 				device i2c 32 on end
 			end
-		end # I2C2
-		device pci 15.3 on  end # I2C3
-		device pci 16.0 on end # HECI1
-		device pci 16.1 off end # HECI2
-		device pci 16.2 off end # CSME
-		device pci 16.3 off end # CSME
-		device pci 16.4 off end # HECI3
-		device pci 16.5 off end # HECI4
-		device pci 17.0 on  end # SATA
-		device pci 19.0 off end # I2C4
-		device pci 19.1 on
+		end
+		device ref i2c3 on end
+		device ref heci1 on end
+		device ref sata on end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -276,46 +257,34 @@ chip soc/intel/alderlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end # I2C5
-		device pci 19.2 off end # UART2
-		device pci 1c.0 off end # RP1
-		device pci 1c.1 off end # RP2
-		device pci 1c.2 off end # RP3
-		device pci 1c.3 off end # RP4
-		device pci 1c.4 on  end # RP5
-		device pci 1c.5 off end # RP6
-		device pci 1c.6 off end # RP7
-		device pci 1c.7 on
+		end
+		device ref pcie_rp5 on end
+		device ref pcie_rp8 on
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H3)"
 				register "srcclk_pin" = "3"
 				device generic 0 on end
 			end
-		end # RP8
-		device pci 1d.0 on  end # RP9
-		device pci 1d.1 off end # RP10
-		device pci 1d.2 off end # RP11
-		device pci 1d.3 off end # RP12
-		device pci 1e.0 on  end # UART0
-		device pci 1e.1 off end # UART1
-		device pci 1e.2 on
+		end
+		device ref pcie_rp9 on end
+		device ref uart0 on end
+		device ref gspi0 on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""google,cr50""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C3_IRQ)"
 				device spi 0 on end
 			end
-		end # GSPI0
-		device pci 1e.3 off end # GSPI1
-		device pci 1f.0 on
+		end
+		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]
 				use conn1 as mux_conn[1]
 				device pnp 0c09.0 on end
 			end
-		end # eSPI
-		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 hidden
+		end
+		device ref p2sb on end
+		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux
@@ -336,10 +305,8 @@ chip soc/intel/alderlake
 					end
 				end
 			end
-		end # PMC
-		device pci 1f.3 on  end # Intel Audio SNDW
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # SPI
-		device pci 1f.6 off end # GbE
+		end
+		device ref hda on end
+		device ref smbus on end
 	end
 end

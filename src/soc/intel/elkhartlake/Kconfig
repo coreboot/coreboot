@@ -62,6 +62,7 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UDK_202005_BINDING
 	select DISPLAY_FSP_VERSION_INFO
+	select HAVE_INTEL_FSP_REPO
 
 config MAX_CPUS
 	int
@@ -188,10 +189,12 @@ config CBFS_SIZE
 	default 0x200000
 
 config FSP_HEADER_PATH
-	default "src/vendorcode/intel/fsp/fsp2_0/elkhartlake/"
+	default "3rdparty/fsp/ElkhartLakeFspBinPkg/Include/"
 
 config FSP_FD_PATH
-	default "3rdparty/fsp/ElkhartLakeFspBinPkg/Fsp.fd"
+	string
+	depends on FSP_USE_REPO
+	default "3rdparty/fsp/ElkhartLakeFspBinPkg/FspBin/FSPRel.bin"
 
 config SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT
 	int "Debug Consent for EHL"

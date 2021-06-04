@@ -56,8 +56,6 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "0x003c0b01"
 			register "gen3_dec" = "0x00fc1601"
 
-			register "c2_latency" = "1"
-
 			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R

@@ -63,7 +63,6 @@ struct southbridge_intel_bd82x6x_config {
 	/* Override PCIe ASPM */
 	uint8_t pcie_aspm[8];
 
-	int c2_latency;
 	int docking_supported;
 
 	uint8_t pcie_hotplug_map[8];

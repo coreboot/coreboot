@@ -56,8 +56,6 @@ chip northbridge/intel/sandybridge
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
 
-			register "c2_latency" = "1"
-
 			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R

@@ -9,6 +9,13 @@
 
 #define GPIO_SD_CD_L	GPIO(91)
 
+#if CONFIG(BOARD_GOOGLE_SENOR) || CONFIG(BOARD_GOOGLE_PIGLIN) || CONFIG(BOARD_GOOGLE_HOGLIN)
+#define USB_HUB_LDO_EN		GPIO(157)
+#else
+/* For Herobrine board and all variants */
+#define USB_HUB_LDO_EN		GPIO(24)
+#endif
+
 #define QCOM_SC7280_SKU1 0x0
 #define QCOM_SC7280_SKU2 0x1
 #define QCOM_SC7280_SKU3 0x2

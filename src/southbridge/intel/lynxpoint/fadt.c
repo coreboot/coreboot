@@ -44,8 +44,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	else
 		fadt->gpe0_blk_len = 2 * 8;
 
-	fadt->p_lvl2_lat = 1;
-	fadt->p_lvl3_lat = 87;
+	/* P_LVLx not used */
+	fadt->p_lvl2_lat = 101;
+	fadt->p_lvl3_lat = 1001;
 	fadt->duty_offset = 0;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;
@@ -55,7 +56,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->flags |= ACPI_FADT_WBINVD |
 		       ACPI_FADT_C1_SUPPORTED |
-		       ACPI_FADT_C2_MP_SUPPORTED |
 		       ACPI_FADT_SLEEP_BUTTON |
 		       ACPI_FADT_SEALED_CASE |
 		       ACPI_FADT_S4_RTC_WAKE |

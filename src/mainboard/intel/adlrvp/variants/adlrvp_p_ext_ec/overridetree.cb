@@ -1,15 +1,15 @@
 chip soc/intel/alderlake
 
 	device domain 0 on
-		device pci 1f.0 on
+		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]
 				use conn1 as mux_conn[1]
 				use conn2 as mux_conn[2]
 				device pnp 0c09.0 on end
 			end
-		end # eSPI
-		device pci 1f.2 hidden
+		end
+		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
 			chip drivers/intel/pmc_mux
@@ -37,6 +37,6 @@ chip soc/intel/alderlake
 					end
 				end
 			end
-		end # PMC
+		end
 	end
 end

@@ -11,7 +11,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	struct device *dev = pcidev_on_root(0x1f, 0);
 	struct southbridge_intel_ibexpeak_config *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
-	int c2_latency;
 
 	fadt->sci_int = 0x9;
 
@@ -32,12 +31,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 16;
-	c2_latency = chip->c2_latency;
-	if (!c2_latency) {
-		c2_latency = 101; /* c2 unsupported */
-	}
-	fadt->p_lvl2_lat = c2_latency;
-	fadt->p_lvl3_lat = 87;
+	/* P_LVLx not used */
+	fadt->p_lvl2_lat = 101;
+	fadt->p_lvl3_lat = 1001;
 	/* P_CNT not supported */
 	fadt->duty_offset = 0;
 	fadt->duty_width = 0;
@@ -53,9 +49,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_PLATFORM_CLOCK;
 	if (chip->docking_supported) {
 		fadt->flags |= ACPI_FADT_DOCKING_SUPPORTED;
-	}
-	if (c2_latency < 100) {
-		fadt->flags |= ACPI_FADT_C2_MP_SUPPORTED;
 	}
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;

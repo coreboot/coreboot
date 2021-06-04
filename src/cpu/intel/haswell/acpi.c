@@ -333,7 +333,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 void generate_cpu_entries(const struct device *device)
 {
-	int coreID, cpuID, pcontrol_blk = get_pmbase(), plen = 6;
+	int coreID, cpuID;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_logical_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
@@ -343,15 +343,9 @@ void generate_cpu_entries(const struct device *device)
 
 	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
 		for (coreID = 1; coreID <= cores_per_package; coreID++) {
-			if (coreID > 1) {
-				pcontrol_blk = 0;
-				plen = 0;
-			}
-
 			/* Generate processor \_SB.CPUx */
 			acpigen_write_processor(
-				(cpuID - 1) * cores_per_package+coreID - 1,
-				pcontrol_blk, plen);
+				(cpuID - 1) * cores_per_package+coreID - 1, 0, 0);
 
 			/* Generate P-state tables */
 			generate_P_state_entries(

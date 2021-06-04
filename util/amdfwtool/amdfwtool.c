@@ -343,11 +343,12 @@ amd_bios_entry amd_bios_table[] = {
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
 	uint32_t rom_size;	/* size of flash device */
+	uint32_t abs_address;	/* produce absolute or relative address */
 	uint32_t current;	/* pointer within flash & proxy buffer */
 } context;
 
 #define RUN_BASE(ctx) (0xFFFFFFFF - (ctx).rom_size + 1)
-#define RUN_OFFSET(ctx, offset) (RUN_BASE(ctx) + (offset))
+#define RUN_OFFSET(ctx, offset) ((ctx).abs_address ? RUN_BASE(ctx) + (offset) : (offset))
 #define RUN_CURRENT(ctx) RUN_OFFSET((ctx), (ctx).current)
 #define BUFF_OFFSET(ctx, offset) ((void *)((ctx).rom + (offset)))
 #define BUFF_CURRENT(ctx) BUFF_OFFSET((ctx), (ctx).current)
@@ -439,6 +440,8 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		dir->header.cookie = cookie;
 		dir->header.num_entries = count;
 		dir->header.additional_info = (table_size / 0x1000) | (1 << 10);
+		if (ctx->abs_address == 0)
+			dir->header.additional_info |= 1 << 29;
 		/* checksum everything that comes after the Checksum field */
 		dir->header.checksum = fletcher32(&dir->header.num_entries,
 					count * sizeof(psp_directory_entry)
@@ -455,6 +458,8 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		bdir->header.cookie = cookie;
 		bdir->header.num_entries = count;
 		bdir->header.additional_info = (table_size / 0x1000) | (1 << 10);
+		if (ctx->abs_address == 0)
+			bdir->header.additional_info |= 1 << 29;
 		/* checksum everything that comes after the Checksum field */
 		bdir->header.checksum = fletcher32(&bdir->header.num_entries,
 					count * sizeof(bios_directory_entry)
@@ -1576,8 +1581,6 @@ int main(int argc, char **argv)
 		romsig_offset = ctx.current = dir_location - rom_base_address;
 	else
 		romsig_offset = ctx.current = AMD_ROMSIG_OFFSET;
-	printf("    AMDFWTOOL  Using firmware directory location of 0x%08x\n",
-			RUN_CURRENT(ctx));
 
 	amd_romsig = BUFF_OFFSET(ctx, romsig_offset);
 	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
@@ -1595,6 +1598,13 @@ int main(int argc, char **argv)
 	} else {
 		fprintf(stderr, "WARNING: No SOC name specified.\n");
 	}
+
+	if (amd_romsig->efs_gen.gen == EFS_SECOND_GEN)
+		ctx.abs_address = 0;
+	else
+		ctx.abs_address = 1;
+	printf("    AMDFWTOOL  Using firmware directory location of %s address: 0x%08x\n",
+			ctx.abs_address == 1 ? "absolute" : "relative", RUN_CURRENT(ctx));
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 

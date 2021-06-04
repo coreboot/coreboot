@@ -1,9 +1,0 @@
-comment "Star Labs LabTop Mk IV"
-
-config BOARD_STARLABS_LABTOP_CML
-	bool "Star Labs LabTop Mk IV (i3-10110u and i7-10710u)"
-	select SOC_INTEL_COMETLAKE_1
-
-config BOARD_STARLABS_LABTOP_KBL
-	bool "Star Labs LabTop Mk IV (i7-8550u)"
-	select SOC_INTEL_KABYLAKE

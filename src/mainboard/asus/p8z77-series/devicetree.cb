@@ -16,7 +16,6 @@ chip northbridge/intel/sandybridge
 		device pci 02.0 on  end		# iGPU
 
 		chip southbridge/intel/bd82x6x
-			register "c2_latency" = "0x0065"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3f"
 			register "spi_lvscc" = "0x2005"

@@ -33,7 +33,6 @@ chip northbridge/intel/sandybridge
 			subsystemid 0x1849 0x0152
 		end
 		chip southbridge/intel/bd82x6x
-			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0241"

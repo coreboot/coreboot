@@ -31,7 +31,6 @@ chip northbridge/intel/sandybridge
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
 
-			register "c2_latency" = "0x0065"
 
 			device pci 14.0 on	# USB 3.0 Controller
 				subsystemid 0x1458 0x5007

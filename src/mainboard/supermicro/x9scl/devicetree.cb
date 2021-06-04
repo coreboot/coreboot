@@ -16,7 +16,6 @@ chip northbridge/intel/sandybridge
 		device pci 02.0 off end # iGPU
 		device pci 06.0 on  end # PEG
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "c2_latency" = "0x0065"
 			register "gen1_dec" = "0x00fc0a01" # NCT6776 SuperIO (0x0a00-0aff)
 			register "gen2_dec" = "0x00fc1641" # WPCM450 SuperIO (0x1600-16ff)
 			register "gen3_dec" = "0x00040ca1" # IPMI KCS (0x0ca0-0ca3)

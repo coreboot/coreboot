@@ -60,8 +60,6 @@ chip northbridge/intel/sandybridge
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
 
-			register "c2_latency" = "101"  # c2 not supported
-
 			device pci 14.0 on end # USB 3.0 Controller
 			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2

@@ -24,7 +24,6 @@ chip northbridge/intel/sandybridge
 			register "alt_gp_smi_en" = "0x0004"
 			register "gpi2_routing" = "1"
 			register "gpi12_routing" = "2"
-			register "c2_latency" = "0x0065"
 			register "gen1_dec" = "0x007c0a01"
 			register "gen2_dec" = "0x007c0901"
 			register "gen3_dec" = "0x003c07e1"

@@ -59,7 +59,6 @@ chip northbridge/intel/sandybridge
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
-			register "c2_latency" = "101"  # c2 not supported
 			register "docking_supported" = "1"
 
 			register "spi_uvscc" = "0x2005"

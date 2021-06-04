@@ -29,7 +29,6 @@ chip northbridge/intel/sandybridge
 		device pci 00.0 on  end	# Host bridge
 
 		chip southbridge/intel/bd82x6x # Intel Cougar or Panther Point PCH
-			register "c2_latency" = "0x0065"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_uvscc" = "0x2005"

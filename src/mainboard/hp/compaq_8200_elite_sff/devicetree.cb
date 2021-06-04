@@ -24,7 +24,6 @@ chip northbridge/intel/sandybridge
 		device pci 02.0 on  end	# Internal graphics VGA controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
 			register "gen1_dec" = "0x00fc0601"
 			register "gen2_dec" = "0x00fc0801"

@@ -53,7 +53,6 @@ chip northbridge/intel/sandybridge
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "1"
-			register "c2_latency" = "101"  # c2 not supported
 
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 

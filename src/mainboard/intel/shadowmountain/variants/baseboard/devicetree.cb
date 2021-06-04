@@ -103,7 +103,7 @@ chip soc/intel/alderlake
 	}"
 
 	register "SerialIoUartMode" = "{
-		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"

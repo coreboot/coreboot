@@ -33,14 +33,14 @@ static enum pirq map_pirq(const struct device *dev, const enum pci_pin pci_pin)
 	/* Slot 24 should not exist and has no D24IR but better be safe here */
 	if (slot < MIN_SLOT || slot > MAX_SLOT || slot == 24) {
 		/* non-PCH devices use 1:1 mapping. */
-		return (enum pirq)(pci_pin - PCI_INT_A);
+		return (enum pirq)pci_pin;
 	}
 
 	reg = pirq_dir_route_reg[slot - MIN_SLOT];
 
 	pirq = (RCBA16(reg) >> shift) & 0x7;
 
-	return (enum pirq)pirq;
+	return (enum pirq)(pirq + PIRQ_A);
 }
 
 void intel_acpi_gen_def_acpi_pirq(const struct device *lpc)
@@ -75,14 +75,17 @@ void intel_acpi_gen_def_acpi_pirq(const struct device *lpc)
 			continue;
 
 		enum pirq pirq = map_pirq(dev, int_pin);
+		if (pirq == PIRQ_INVALID)
+			continue;
+
 		pin_irq_map[map_count].slot = pci_dev;
 		pin_irq_map[map_count].pin = (enum pci_pin)int_pin;
 		pin_irq_map[map_count].pic_pirq = pirq;
 		/* PIRQs are mapped to GSIs starting at 16 */
-		pin_irq_map[map_count].apic_gsi = 16 + (unsigned int)pirq;
-		printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%d\n",
+		pin_irq_map[map_count].apic_gsi = 16 + pirq_idx(pirq);
+		printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%ld\n",
 		       dev_path(dev), int_pin - PCI_INT_A,
-		       pin_irq_map[map_count].pic_pirq);
+		       pirq_idx(pin_irq_map[map_count].pic_pirq));
 		map_count++;
 	}
 

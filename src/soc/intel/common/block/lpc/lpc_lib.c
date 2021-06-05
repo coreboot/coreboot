@@ -293,14 +293,14 @@ void pch_enable_ioapic(void)
 }
 
 static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {
-	[PIRQ_A] = PCH_IRQ11,
-	[PIRQ_B] = PCH_IRQ10,
-	[PIRQ_C] = PCH_IRQ11,
-	[PIRQ_D] = PCH_IRQ11,
-	[PIRQ_E] = PCH_IRQ11,
-	[PIRQ_F] = PCH_IRQ11,
-	[PIRQ_G] = PCH_IRQ11,
-	[PIRQ_H] = PCH_IRQ11,
+	[0] = PCH_IRQ11,	/* PIRQ_A */
+	[1] = PCH_IRQ10,	/* PIRQ_B */
+	[2] = PCH_IRQ11,	/* PIRQ_C */
+	[3] = PCH_IRQ11,	/* PIRQ_D */
+	[4] = PCH_IRQ11,	/* PIRQ_E */
+	[5] = PCH_IRQ11,	/* PIRQ_F */
+	[6] = PCH_IRQ11,	/* PIRQ_G */
+	[7] = PCH_IRQ11,	/* PIRQ_H */
 };
 
 const uint8_t *lpc_get_pic_pirq_routing(size_t *num)

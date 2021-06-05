@@ -3,6 +3,7 @@
 #ifndef INTEL_COMMON_ACPI_PIRQ_GEN_H
 #define INTEL_COMMON_ACPI_PIRQ_GEN_H
 
+#include <assert.h>
 #include <device/device.h>
 
 #define MAX_SLOTS	32
@@ -17,6 +18,7 @@ enum pci_pin {
 };
 
 enum pirq {
+	PIRQ_INVALID,
 	PIRQ_A,
 	PIRQ_B,
 	PIRQ_C,
@@ -25,9 +27,14 @@ enum pirq {
 	PIRQ_F,
 	PIRQ_G,
 	PIRQ_H,
-	PIRQ_COUNT,
-	PIRQ_INVALID = 0xff,
+	PIRQ_COUNT = PIRQ_H,
 };
+
+static inline size_t pirq_idx(enum pirq pirq)
+{
+	assert(pirq > PIRQ_INVALID && pirq <= PIRQ_H);
+	return (size_t)(pirq - PIRQ_A);
+}
 
 /*
  * This struct represents an assignment of slot/pin -> IRQ. Some chipsets may

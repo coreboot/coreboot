@@ -26,19 +26,20 @@ static void gen_pic_route(const struct slot_pin_irq_map *pin_irq_map,
 			  const struct pic_pirq_map *pirq_map)
 {
 	for (unsigned int i = 0; i < map_count; i++) {
-		enum pirq pirq = pin_irq_map[i].pic_pirq;
-		unsigned int pin = pin_irq_map[i].pin - PCI_INT_A;
+		const enum pirq pirq = pin_irq_map[i].pic_pirq;
+		const unsigned int pin = pin_irq_map[i].pin - PCI_INT_A;
 		if (pirq == PIRQ_INVALID)
 			continue;
 
+		const size_t pirq_index = pirq_idx(pirq);
 		if (pirq_map->type == PIRQ_GSI)
 			acpigen_write_PRT_GSI_entry(pin_irq_map[i].slot,
 						    pin,
-						    pirq_map->gsi[pirq]);
+						    pirq_map->gsi[pirq_index]);
 		else
 			acpigen_write_PRT_source_entry(pin_irq_map[i].slot,
 						       pin,
-						       pirq_map->source_path[pirq],
+						       pirq_map->source_path[pirq_index],
 						       0);
 	}
 }

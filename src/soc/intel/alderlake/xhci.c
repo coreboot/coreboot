@@ -15,8 +15,8 @@
 #define PCH_XHCI_USB3_PORT_NUM		4
 
 #define TCSS_XHCI_USB2_PORT_STATUS_REG	0x480
-#define TCSS_XHCI_USB3_PORT_STATUS_REG	0x540
-#define TCSS_XHCI_USB2_PORT_NUM		10
+#define TCSS_XHCI_USB3_PORT_STATUS_REG	0x490
+#define TCSS_XHCI_USB2_PORT_NUM		0
 #define TCSS_XHCI_USB3_PORT_NUM		4
 
 static const struct xhci_usb_info usb_info = {

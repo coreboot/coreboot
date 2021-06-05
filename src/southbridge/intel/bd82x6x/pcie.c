@@ -162,32 +162,7 @@ static void pch_pcie_pm_late(struct device *dev)
 	pci_or_config32(dev, 0xd4, 1 << 1);
 
 	/* Check for a rootport ASPM override */
-	switch (PCI_FUNC(dev->path.pci.devfn)) {
-	case 0:
-		apmc = config->pcie_aspm_f0;
-		break;
-	case 1:
-		apmc = config->pcie_aspm_f1;
-		break;
-	case 2:
-		apmc = config->pcie_aspm_f2;
-		break;
-	case 3:
-		apmc = config->pcie_aspm_f3;
-		break;
-	case 4:
-		apmc = config->pcie_aspm_f4;
-		break;
-	case 5:
-		apmc = config->pcie_aspm_f5;
-		break;
-	case 6:
-		apmc = config->pcie_aspm_f6;
-		break;
-	case 7:
-		apmc = config->pcie_aspm_f7;
-		break;
-	}
+	apmc = config->pcie_aspm[PCI_FUNC(dev->path.pci.devfn)];
 
 	/* Setup the override or get the real ASPM setting */
 	if (apmc) {

@@ -72,7 +72,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.1 on end # PCIe Port #2 (ETH0)
 			device pci 1c.2 on end # PCIe Port #3 (Card Reader)
 				#force ASPM for PCIe bridge to Card Reader
-				register "pcie_aspm_f2" = "0x3"
+				register "pcie_aspm[2]" = "0x3"
 			device pci 1c.3 off end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6

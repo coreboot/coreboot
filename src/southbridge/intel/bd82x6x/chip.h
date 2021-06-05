@@ -61,14 +61,7 @@ struct southbridge_intel_bd82x6x_config {
 	uint8_t pcie_port_coalesce;
 
 	/* Override PCIe ASPM */
-	uint8_t pcie_aspm_f0;
-	uint8_t pcie_aspm_f1;
-	uint8_t pcie_aspm_f2;
-	uint8_t pcie_aspm_f3;
-	uint8_t pcie_aspm_f4;
-	uint8_t pcie_aspm_f5;
-	uint8_t pcie_aspm_f6;
-	uint8_t pcie_aspm_f7;
+	uint8_t pcie_aspm[8];
 
 	int c2_latency;
 	int docking_supported;

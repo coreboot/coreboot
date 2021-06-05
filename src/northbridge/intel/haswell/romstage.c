@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <elog.h>
-#include <cpu/x86/lapic.h>
 #include <romstage_handoff.h>
 #include <security/intel/txt/txt.h>
 #include <security/intel/txt/txt_register.h>
@@ -20,8 +19,6 @@ void __weak mb_late_romstage_setup(void)
 /* The romstage entry point for this platform is not mainboard-specific, hence the name */
 void mainboard_romstage_entry(void)
 {
-	enable_lapic();
-
 	early_pch_init();
 
 	/* Perform some early chipset initialization required

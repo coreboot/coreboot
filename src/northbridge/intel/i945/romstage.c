@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <cf9_reset.h>
-#include <cpu/x86/lapic.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
@@ -29,8 +28,6 @@ void mainboard_romstage_entry(void)
 {
 	int s3resume = 0;
 	u8 spd_map[4] = {};
-
-	enable_lapic();
 
 	mainboard_lpc_decode();
 

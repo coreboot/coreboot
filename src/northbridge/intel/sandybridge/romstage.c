@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <cf9_reset.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/lapic.h>
 #include <romstage_handoff.h>
 #include "sandybridge.h"
 #include <arch/romstage.h>
@@ -53,8 +52,6 @@ void mainboard_romstage_entry(void)
 
 	if (mchbar_read16(SSKPD_HI) == 0xcafe)
 		system_reset();
-
-	enable_lapic();
 
 	/* Init LPC, GPIO, BARs, disable watchdog ... */
 	early_pch_init();

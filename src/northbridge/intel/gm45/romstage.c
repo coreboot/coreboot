@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <acpi/acpi.h>
-#include <cpu/x86/lapic.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
@@ -41,8 +40,6 @@ void mainboard_romstage_entry(void)
 
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();
-
-	enable_lapic();
 
 	/* First, run everything needed for console output. */
 	i82801ix_early_init();

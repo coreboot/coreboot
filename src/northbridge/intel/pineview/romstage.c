@@ -9,7 +9,6 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <arch/romstage.h>
-#include <cpu/x86/lapic.h>
 #include "raminit.h"
 #include "pineview.h"
 
@@ -30,8 +29,6 @@ void mainboard_romstage_entry(void)
 	u8 spd_addrmap[4] = {};
 	int boot_path, cbmem_was_initted;
 	int s3resume = 0;
-
-	enable_lapic();
 
 	/* Do some early chipset init, necessary for RAM init to work */
 	i82801gx_early_init();

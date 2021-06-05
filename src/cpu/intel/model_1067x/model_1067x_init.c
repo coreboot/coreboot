@@ -12,18 +12,6 @@
 
 #include "chip.h"
 
-static void init_timer(void)
-{
-	/* Set the APIC timer to no interrupts and periodic mode */
-	lapic_write(LAPIC_LVTT, (1 << 17) | (1 << 16) | (0 << 12) | (0 << 0));
-
-	/* Set the divider to 1, no divider */
-	lapic_write(LAPIC_TDCR, LAPIC_TDR_DIV_1);
-
-	/* Set the initial counter to 0xffffffff */
-	lapic_write(LAPIC_TMICT, 0xffffffff);
-}
-
 #define MSR_BBL_CR_CTL3		0x11e
 
 static void configure_c_states(const int quad)
@@ -270,9 +258,6 @@ static void model_1067x_init(struct device *cpu)
 
 	/* Enable the local CPU APICs */
 	setup_lapic();
-
-	/* Initialize the APIC timer */
-	init_timer();
 
 	/* Configure C States */
 	configure_c_states(quad);

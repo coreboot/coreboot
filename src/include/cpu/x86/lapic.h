@@ -59,7 +59,7 @@ static __always_inline void x2apic_send_ipi(uint32_t icrlow, uint32_t apicid)
 	wrmsr(X2APIC_MSR_ICR_ADDRESS, icr);
 }
 
-static inline bool is_x2apic_mode(void)
+static __always_inline bool is_x2apic_mode(void)
 {
 	if (CONFIG(XAPIC_ONLY))
 		return false;

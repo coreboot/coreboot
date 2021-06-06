@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/lapic_def.h>
@@ -10,23 +11,52 @@
 
 void enable_lapic(void)
 {
+	uintptr_t apic_base;
+	bool use_x2apic;
 	msr_t msr;
 
 	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.hi &= 0xffffff00;
-	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
-	msr.lo |= LAPIC_DEFAULT_BASE;
-	msr.lo |= LAPIC_BASE_MSR_ENABLE;
-	wrmsr(LAPIC_BASE_MSR, msr);
+	if (!(msr.lo & LAPIC_BASE_MSR_ENABLE)) {
+		msr.hi &= 0xffffff00;
+		msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
+		msr.lo |= LAPIC_DEFAULT_BASE;
+		msr.lo |= LAPIC_BASE_MSR_ENABLE;
+		wrmsr(LAPIC_BASE_MSR, msr);
+		msr = rdmsr(LAPIC_BASE_MSR);
+	}
 
-	printk(BIOS_INFO, "Setting up local APIC 0x%x\n", lapicid());
+	ASSERT(msr.lo & LAPIC_BASE_MSR_ENABLE);
+
+	apic_base = msr.lo & LAPIC_BASE_MSR_ADDR_MASK;
+	ASSERT(apic_base == LAPIC_DEFAULT_BASE);
+
+	if (CONFIG(XAPIC_ONLY)) {
+		use_x2apic = false;
+	} else {
+		use_x2apic = !!(cpu_get_feature_flags_ecx() & CPUID_X2APIC);
+		ASSERT(CONFIG(X2APIC_RUNTIME) || use_x2apic);
+	}
+
+	if (use_x2apic == !!(msr.lo & LAPIC_BASE_MSR_X2APIC_MODE)) {
+		printk(BIOS_INFO, "LAPIC 0x%x in %s mode.\n", lapicid(),
+				  use_x2apic ? "X2APIC" : "XAPIC");
+	} else if (use_x2apic) {
+		msr.lo |= LAPIC_BASE_MSR_X2APIC_MODE;
+		wrmsr(LAPIC_BASE_MSR, msr);
+		msr = rdmsr(LAPIC_BASE_MSR);
+		ASSERT(!!(msr.lo & LAPIC_BASE_MSR_X2APIC_MODE));
+		printk(BIOS_INFO, "LAPIC 0x%x switched to X2APIC mode.\n", lapicid());
+	} else {
+		die("Switching from X2APIC to XAPIC mode is not implemented.");
+	}
+
 }
 
 void disable_lapic(void)
 {
 	msr_t msr;
 	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
+	msr.lo &= ~(LAPIC_BASE_MSR_ENABLE | LAPIC_BASE_MSR_X2APIC_MODE);
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 

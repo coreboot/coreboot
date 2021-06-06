@@ -454,9 +454,6 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 
 	printk(BIOS_DEBUG, "Attempting to start %d APs\n", ap_count);
 
-	int x2apic_mode = is_x2apic_mode();
-	printk(BIOS_DEBUG, "Starting CPUs in %s mode\n", x2apic_mode ? "x2apic" : "xapic");
-
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {

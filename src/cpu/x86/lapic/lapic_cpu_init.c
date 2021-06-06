@@ -506,18 +506,13 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Find the info struct for this CPU */
 	info = cpu_info();
 
-	if (need_lapic_init()) {
-		/* Ensure the local APIC is enabled */
+	/* Ensure the local APIC is enabled */
+	if (is_smp_boot())
 		enable_lapic();
 
-		/* Get the device path of the boot CPU */
-		cpu_path.type           = DEVICE_PATH_APIC;
-		cpu_path.apic.apic_id = lapicid();
-	} else {
-		/* Get the device path of the boot CPU */
-		cpu_path.type = DEVICE_PATH_CPU;
-		cpu_path.cpu.id       = 0;
-	}
+	/* Get the device path of the boot CPU */
+	cpu_path.type = DEVICE_PATH_APIC;
+	cpu_path.apic.apic_id = lapicid();
 
 	/* Find the device structure for the boot CPU */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);

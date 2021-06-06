@@ -6,7 +6,6 @@ config BASE_ASUS_P2B_D
 	def_bool n
 	select SDRAMPWR_4DIMM
 	select HAVE_MP_TABLE
-	select IOAPIC
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y

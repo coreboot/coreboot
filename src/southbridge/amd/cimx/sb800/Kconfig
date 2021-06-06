@@ -3,7 +3,6 @@
 config SOUTHBRIDGE_AMD_CIMX_SB800
 	bool
 	default n
-	select IOAPIC
 	select HAVE_USBDEBUG_OPTIONS
 	select AMD_SB_CIMX
 	select HAVE_CF9_RESET

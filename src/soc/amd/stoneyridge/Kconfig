@@ -19,7 +19,6 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_CF9_RESET
 	select HAVE_SMI_HANDLER
 	select HAVE_USBDEBUG_OPTIONS
-	select IOAPIC
 	select PARALLEL_MP_AP_WORK
 	select RTC
 	select SOC_AMD_PI

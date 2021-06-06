@@ -717,6 +717,7 @@ config PCI_IO_CFG_EXT
 
 config IOAPIC
 	bool
+	default y if SMP
 	default n
 
 config USE_WATCHDOG_ON_BOOT

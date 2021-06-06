@@ -138,17 +138,11 @@ void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb)
 
 void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool enable_virtual_wire)
 {
-	int first = 0, last;
-
 	set_ioapic_id(ioapic_base, ioapic_id);
+	clear_ioapic(ioapic_base);
 
-	if (enable_virtual_wire) {
+	if (enable_virtual_wire)
 		route_i8259_irq0(ioapic_base);
-		first = 1;
-	}
-
-	last = ioapic_interrupt_count(ioapic_base) - 1;
-	clear_vectors(ioapic_base, first, last);
 }
 
 

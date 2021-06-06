@@ -116,25 +116,6 @@ static __always_inline void lapic_wait_icr_idle(void)
 	do { } while (lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY);
 }
 
-static inline void enable_lapic(void)
-{
-	msr_t msr;
-	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.hi &= 0xffffff00;
-	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
-	msr.lo |= LAPIC_DEFAULT_BASE;
-	msr.lo |= LAPIC_BASE_MSR_ENABLE;
-	wrmsr(LAPIC_BASE_MSR, msr);
-}
-
-static inline void disable_lapic(void)
-{
-	msr_t msr;
-	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
-	wrmsr(LAPIC_BASE_MSR, msr);
-}
-
 static __always_inline unsigned int initial_lapicid(void)
 {
 	uint32_t lapicid;
@@ -168,20 +149,8 @@ static __always_inline void stop_this_cpu(void)
 void stop_this_cpu(void);
 #endif
 
-void lapic_virtual_wire_mode_init(void);
-
-/* See if I need to initialize the local APIC */
-static inline int need_lapic_init(void)
-{
-	return CONFIG(SMP) || CONFIG(IOAPIC);
-}
-
-static inline void setup_lapic(void)
-{
-	if (need_lapic_init())
-		lapic_virtual_wire_mode_init();
-	else
-		disable_lapic();
-}
+void enable_lapic(void);
+void disable_lapic(void);
+void setup_lapic(void);
 
 #endif /* CPU_X86_LAPIC_H */

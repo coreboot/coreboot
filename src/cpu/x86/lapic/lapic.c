@@ -1,10 +1,37 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/lapic_def.h>
+#include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <stdint.h>
 
-void lapic_virtual_wire_mode_init(void)
+void enable_lapic(void)
+{
+	msr_t msr;
+	msr = rdmsr(LAPIC_BASE_MSR);
+	msr.hi &= 0xffffff00;
+	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
+	msr.lo |= LAPIC_DEFAULT_BASE;
+	msr.lo |= LAPIC_BASE_MSR_ENABLE;
+	wrmsr(LAPIC_BASE_MSR, msr);
+}
+
+void disable_lapic(void)
+{
+	msr_t msr;
+	msr = rdmsr(LAPIC_BASE_MSR);
+	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
+	wrmsr(LAPIC_BASE_MSR, msr);
+}
+
+/* See if I need to initialize the local APIC */
+static int need_lapic_init(void)
+{
+	return CONFIG(SMP) || CONFIG(IOAPIC);
+}
+
+static void lapic_virtual_wire_mode_init(void)
 {
 	/* this is so interrupts work. This is very limited scope --
 	 * linux will do better later, we hope ...
@@ -39,4 +66,12 @@ void lapic_virtual_wire_mode_init(void)
 
 	printk(BIOS_DEBUG, " apic_id: 0x%x ", lapicid());
 	printk(BIOS_INFO, "done.\n");
+}
+
+void setup_lapic(void)
+{
+	if (need_lapic_init())
+		lapic_virtual_wire_mode_init();
+	else
+		disable_lapic();
 }

@@ -109,6 +109,16 @@ void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 
 }
 
+u8 get_ioapic_id(void *ioapic_base)
+{
+	return (io_apic_read(ioapic_base, 0x00) >> 24) & 0x0f;
+}
+
+u8 get_ioapic_version(void *ioapic_base)
+{
+	return io_apic_read(ioapic_base, 0x01) & 0xff;
+}
+
 void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
 			 bool enable_virtual_wire)
 {

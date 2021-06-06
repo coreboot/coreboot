@@ -54,23 +54,15 @@ static void isa_init(struct device *dev)
 	if (CONFIG(IOAPIC)) {
 		u16 reg16;
 		u8 ioapic_id = 2;
-		volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-		volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
 
 		/* Enable IOAPIC. */
 		reg16 = pci_read_config16(dev, XBCS);
 		reg16 |= (1 << 8); /* APIC Chip Select */
 		pci_write_config16(dev, XBCS, reg16);
 
-		/* Set the IOAPIC ID. */
-		*ioapic_index = 0;
-		*ioapic_data = ioapic_id << 24;
-
-		/* Read back and verify the IOAPIC ID. */
-		*ioapic_index = 0;
-		reg32 = (*ioapic_data >> 24) & 0x0f;
-		printk(BIOS_DEBUG, "IOAPIC ID = %x\n", reg32);
-		if (reg32 != ioapic_id)
+		/* Set and verify the IOAPIC ID. */
+		set_ioapic_id(VIO_APIC_VADDR, ioapic_id);
+		if (ioapic_id != get_ioapic_id(VIO_APIC_VADDR))
 			die("IOAPIC error!\n");
 	}
 }

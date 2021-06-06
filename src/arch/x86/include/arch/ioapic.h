@@ -29,6 +29,8 @@
 u32 io_apic_read(void *ioapic_base, u32 reg);
 void io_apic_write(void *ioapic_base, u32 reg, u32 value);
 void set_ioapic_id(void *ioapic_base, u8 ioapic_id);
+u8 get_ioapic_id(void *ioapic_base);
+u8 get_ioapic_version(void *ioapic_base);
 void setup_ioapic(void *ioapic_base, u8 ioapic_id);
 void clear_ioapic(void *ioapic_base);
 

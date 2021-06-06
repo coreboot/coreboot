@@ -60,11 +60,6 @@ static void clear_vectors(void *ioapic_base, u8 first, u8 last)
 	}
 }
 
-void clear_ioapic(void *ioapic_base)
-{
-	clear_vectors(ioapic_base, 0, ioapic_interrupt_count(ioapic_base) - 1);
-}
-
 static void route_i8259_irq0(void *ioapic_base)
 {
 	u32 bsp_lapicid = lapicid();
@@ -139,6 +134,6 @@ void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb)
 void setup_ioapic(void *ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
-	clear_ioapic(ioapic_base);
+	clear_vectors(ioapic_base, 0, ioapic_interrupt_count(ioapic_base) - 1);
 	route_i8259_irq0(ioapic_base);
 }

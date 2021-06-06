@@ -340,7 +340,6 @@ static void sb800_enable(struct device *dev)
 		break;
 
 	case PCI_DEVFN(0x14, 0): /* 0:14:0 SMBUS */
-		clear_ioapic(VIO_APIC_VADDR);
 		/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
 		setup_ioapic(VIO_APIC_VADDR, CONFIG_MAX_CPUS);
 		break;

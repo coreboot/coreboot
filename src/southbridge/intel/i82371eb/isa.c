@@ -85,13 +85,11 @@ static void sb_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
 		IORESOURCE_RESERVE;
 
-#if CONFIG(IOAPIC)
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
 		IORESOURCE_RESERVE;
-#endif
 }
 
 static const struct device_operations isa_ops = {

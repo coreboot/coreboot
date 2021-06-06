@@ -274,22 +274,16 @@ void lpc_disable_clkrun(void)
 	pci_write_config8(PCH_DEV_LPC, LPC_PCCTL, pcctl & ~LPC_PCCTL_CLKRUN_EN);
 }
 
+/* PCH I/O APIC redirection entries */
+#define PCH_REDIR_ETR 120
+
 /* Enable PCH IOAPIC */
 void pch_enable_ioapic(void)
 {
-	uint32_t reg32;
-	/* PCH-LP has 120 redirection entries */
-	const int redir_entries = 120;
-
 	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read((void *)IO_APIC_ADDR, 0x01);
-
-	reg32 &= ~0x00ff0000;
-	reg32 |= (redir_entries - 1) << 16;
-
-	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
+	ioapic_set_max_vectors(VIO_APIC_VADDR, PCH_REDIR_ETR);
 }
 
 static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {

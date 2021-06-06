@@ -27,20 +27,13 @@ typedef struct southbridge_intel_i82801ix_config config_t;
 
 static void i82801ix_enable_apic(struct device *dev)
 {
-	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-
 	/* Enable IOAPIC. Keep APIC Range Select at zero. */
 	RCBA8(0x31ff) = 0x03;
 	/* We have to read 0x31ff back if bit0 changed. */
 	RCBA8(0x31ff);
 
 	/* Lock maximum redirection entries (MRE), R/WO register. */
-	*ioapic_index	= 0x01;
-	reg32		= *ioapic_data;
-	*ioapic_index	= 0x01;
-	*ioapic_data	= reg32;
+	ioapic_lock_max_vectors(VIO_APIC_VADDR);
 
 	setup_ioapic(VIO_APIC_VADDR, 2); /* ICH7 code uses id 2. */
 }

@@ -34,12 +34,10 @@ typedef struct southbridge_intel_ibexpeak_config config_t;
  */
 static void pch_enable_ioapic(struct device *dev)
 {
-	u32 reg32;
-
 	set_ioapic_id(VIO_APIC_VADDR, 0x01);
+
 	/* affirm full set of redirection table entries ("write once") */
-	reg32 = io_apic_read(VIO_APIC_VADDR, 0x01);
-	io_apic_write(VIO_APIC_VADDR, 0x01, reg32);
+	ioapic_lock_max_vectors(VIO_APIC_VADDR);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)

@@ -10,12 +10,15 @@
 void enable_lapic(void)
 {
 	msr_t msr;
+
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.hi &= 0xffffff00;
 	msr.lo &= ~LAPIC_BASE_MSR_ADDR_MASK;
 	msr.lo |= LAPIC_DEFAULT_BASE;
 	msr.lo |= LAPIC_BASE_MSR_ENABLE;
 	wrmsr(LAPIC_BASE_MSR, msr);
+
+	printk(BIOS_INFO, "Setting up local APIC 0x%x\n", lapicid());
 }
 
 void disable_lapic(void)
@@ -39,19 +42,6 @@ static int need_lapic_init(void)
 
 static void lapic_virtual_wire_mode_init(void)
 {
-	/* this is so interrupts work. This is very limited scope --
-	 * linux will do better later, we hope ...
-	 */
-	/* this is the first way we learned to do it. It fails on real SMP
-	 * stuff. So we have to do things differently ...
-	 * see the Intel mp1.4 spec, page A-3
-	 */
-
-	printk(BIOS_INFO, "Setting up local APIC...\n");
-
-	/* Enable the local APIC */
-	enable_lapic();
-
 	/*
 	 * Set Task Priority to 'accept all'.
 	 */
@@ -70,14 +60,18 @@ static void lapic_virtual_wire_mode_init(void)
 	lapic_update32(LAPIC_LVT1, ~mask, LAPIC_LVT_REMOTE_IRR | LAPIC_SEND_PENDING |
 					  LAPIC_DELIVERY_MODE_NMI);
 
-	printk(BIOS_DEBUG, " apic_id: 0x%x ", lapicid());
-	printk(BIOS_INFO, "done.\n");
 }
 
 void setup_lapic(void)
 {
+	/* Enable the local APIC */
+	if (need_lapic_init())
+		enable_lapic();
+	else if (!CONFIG(UDELAY_LAPIC))
+		disable_lapic();
+
+	/* This programming is for PIC mode i8259 interrupts to be delivered to CPU
+	   while LAPIC is enabled. */
 	if (need_lapic_init())
 		lapic_virtual_wire_mode_init();
-	else
-		disable_lapic();
 }

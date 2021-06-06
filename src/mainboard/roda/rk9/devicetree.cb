@@ -121,7 +121,6 @@ chip northbridge/intel/gm45
 			device pci 1f.0 on # LPC bridge
 				chip drivers/generic/ioapic
 					register "have_isa_interrupts" = "1"
-					register "enable_virtual_wire" = "1"
 					register "base" = "(void *)0xfec00000"
 					device ioapic 2 on end
 				end

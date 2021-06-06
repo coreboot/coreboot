@@ -6,7 +6,6 @@
 typedef struct drivers_generic_ioapic_config {
 	u32 version;
 	u8 apicid;
-	u8 enable_virtual_wire;
 	u8 have_isa_interrupts;
 	void *base;
 } ioapic_config_t;

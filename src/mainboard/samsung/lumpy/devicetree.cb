@@ -107,7 +107,6 @@ chip northbridge/intel/sandybridge
 
 				chip drivers/generic/ioapic
 				     register "have_isa_interrupts" = "1"
-				     register "enable_virtual_wire" = "1"
 				     register "base" = "(void *)0xfec00000"
 				     device ioapic 4 on end
 				end

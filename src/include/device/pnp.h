@@ -13,6 +13,7 @@
 /* Primitive PNP resource manipulation */
 void pnp_write_config(struct device *dev, u8 reg, u8 value);
 u8 pnp_read_config(struct device *dev, u8 reg);
+void pnp_unset_and_set_config(struct device *dev, u8 reg, u8 unset, u8 set);
 void pnp_set_logical_device(struct device *dev);
 void pnp_set_enable(struct device *dev, int enable);
 int pnp_read_enable(struct device *dev);

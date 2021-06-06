@@ -47,6 +47,15 @@ u8 pnp_read_config(struct device *dev, u8 reg)
 	return inb(dev->path.pnp.port + 1);
 }
 
+void pnp_unset_and_set_config(struct device *dev, u8 reg, u8 unset, u8 set)
+{
+	outb(reg, dev->path.pnp.port);
+	u8 value = inb(dev->path.pnp.port + 1);
+	value &= ~unset;
+	value |= set;
+	outb(value, dev->path.pnp.port + 1);
+}
+
 void pnp_set_logical_device(struct device *dev)
 {
 	pnp_write_config(dev, 0x07, dev->path.pnp.device & 0xff);

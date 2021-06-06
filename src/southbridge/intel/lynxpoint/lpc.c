@@ -49,12 +49,6 @@ static void pch_enable_ioapic(struct device *dev)
 		reg32 |= 0x00270000;
 	}
 	io_apic_write(VIO_APIC_VADDR, 0x01, reg32);
-
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)

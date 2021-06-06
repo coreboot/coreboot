@@ -42,12 +42,6 @@ static void pch_enable_ioapic(struct device *dev)
 	reg32 |= (PCH_LP_REDIR_ETR - 1) << 16;
 
 	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
-
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
 }
 
 /* interrupt router lookup for internal devices */

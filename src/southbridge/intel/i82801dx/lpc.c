@@ -50,11 +50,7 @@ static void i82801dx_enable_ioapic(struct device *dev)
 
 	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write(VIO_APIC_VADDR, 0x03, 0x01);
+	ioapic_set_boot_config(VIO_APIC_VADDR, true);
 }
 
 static void i82801dx_enable_serial_irqs(struct device *dev)

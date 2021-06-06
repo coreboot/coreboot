@@ -119,13 +119,8 @@ u8 get_ioapic_version(void *ioapic_base)
 	return io_apic_read(ioapic_base, 0x01) & 0xff;
 }
 
-void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
-			 bool enable_virtual_wire)
+void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb)
 {
-	int first = 0, last;
-
-	set_ioapic_id(ioapic_base, ioapic_id);
-
 	if (irq_on_fsb) {
 		/*
 		 * For the Pentium 4 and above APICs deliver their interrupts
@@ -139,6 +134,13 @@ void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
 			"IOAPIC: Enabling interrupts on APIC serial bus\n");
 		io_apic_write(ioapic_base, 0x03, 0);
 	}
+}
+
+void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool enable_virtual_wire)
+{
+	int first = 0, last;
+
+	set_ioapic_id(ioapic_base, ioapic_id);
 
 	if (enable_virtual_wire) {
 		route_i8259_irq0(ioapic_base);
@@ -152,6 +154,5 @@ void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
 
 void setup_ioapic(void *ioapic_base, u8 ioapic_id)
 {
-	setup_ioapic_helper(ioapic_base, ioapic_id,
-		CONFIG(IOAPIC_INTERRUPTS_ON_FSB), true);
+	setup_ioapic_helper(ioapic_base, ioapic_id, true);
 }

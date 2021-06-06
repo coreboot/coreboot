@@ -13,8 +13,7 @@ static void ioapic_init(struct device *dev)
 	if (!dev->enabled || !config)
 		return;
 
-	setup_ioapic_helper(config->base, config->apicid, config->irq_on_fsb,
-			config->enable_virtual_wire);
+	setup_ioapic_helper(config->base, config->apicid, config->enable_virtual_wire);
 }
 
 static void ioapic_read_resources(struct device *dev)

@@ -290,12 +290,6 @@ void pch_enable_ioapic(void)
 	reg32 |= (redir_entries - 1) << 16;
 
 	io_apic_write((void *)IO_APIC_ADDR, 0x01, reg32);
-
-	/*
-	 * Select Boot Configuration register (0x03) and
-	 * use Processor System Bus (0x01) to deliver interrupts.
-	 */
-	io_apic_write((void *)IO_APIC_ADDR, 0x03, 0x01);
 }
 
 static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {

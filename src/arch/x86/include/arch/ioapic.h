@@ -34,8 +34,8 @@ u8 get_ioapic_version(void *ioapic_base);
 void setup_ioapic(void *ioapic_base, u8 ioapic_id);
 void clear_ioapic(void *ioapic_base);
 
-void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool irq_on_fsb,
-			 bool enable_virtual_wire);
+void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb);
+void setup_ioapic_helper(void *ioapic_base, u8 ioapic_id, bool enable_virtual_wire);
 #endif
 
 #endif

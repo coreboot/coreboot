@@ -23,8 +23,8 @@ static void *smp_write_config_table(void *v)
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);
 
 	/* I/O Ints:          Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x13, ioapic_id, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x18, ioapic_id, 0x13);
+	smp_write_pci_intsrc(mc, mp_INT, 0x0, 0x04, 3, ioapic_id, 0x13);
+	smp_write_pci_intsrc(mc, mp_INT, 0x0, 0x06, 0, ioapic_id, 0x13);
 
 	/* Local Ints:        Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
 	mptable_lintsrc(mc, 0x1);

@@ -1559,12 +1559,6 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 	return lpi_desc->header.length;
 }
 
-/* BERT helpers */
-__weak enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
-{
-	return CB_ERR;
-}
-
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;

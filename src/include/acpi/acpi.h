@@ -1340,7 +1340,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 void acpi_create_lpit(acpi_lpit_t *lpit);
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 
-/* For crashlog. */
+/* chipsets that select ACPI_BERT must implement this function */
 enum cb_err acpi_soc_get_bert_region(void **region, size_t *length);
 
 /* For ACPI S3 support. */

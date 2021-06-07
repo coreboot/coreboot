@@ -50,6 +50,8 @@ static const struct pad_group adl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 96),			/* GPP_S */
 	INTEL_GPP_BASE(GPP_S0, GPP_H0, GPP_H23, 128),			/* GPP_H */
 	INTEL_GPP_BASE(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK, 160),	/* GPP_D */
+	INTEL_GPP(GPP_S0, GPP_CPU_RSVD_1, GPP_CPU_RSVD_24),		/* GPP_CPU_RSVD */
+	INTEL_GPP(GPP_S0, GPP_VGPIO_0, GPP_VGPIO_37),			/* vGPIO */
 };
 
 static const struct vw_entries adl_community1_vw[] = {
@@ -64,8 +66,9 @@ static const struct pad_group adl_community2_groups[] = {
 
 /* This community is not visible to the OS */
 static const struct pad_group adl_community3_groups[] = {
-	INTEL_GPP(GPP_CPU_RSVD_1, GPP_CPU_RSVD_1, GPP_vGPIO_PCIE_83),	/* vGPIO */
+	INTEL_GPP(GPP_CPU_RSVD_25, GPP_CPU_RSVD_25, GPP_vGPIO_PCIE_83),	/* vGPIO_PCIE */
 };
+
 static const struct pad_group adl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 256),			/* GPP_C */
 	INTEL_GPP_BASE(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK, 288),		/* GPP_F */

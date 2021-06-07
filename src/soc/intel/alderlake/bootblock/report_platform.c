@@ -22,9 +22,9 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_ALDERLAKE_P_A0, "Alderlake-P A0" },
-	{ CPUID_ALDERLAKE_P_B0, "Alderlake-P B0" },
-	{ CPUID_ALDERLAKE_M_A0, "Alderlake-M A0" },
+	{ CPUID_ALDERLAKE_A0, "Alderlake Platform" },
+	{ CPUID_ALDERLAKE_A1, "Alderlake Platform" },
+	{ CPUID_ALDERLAKE_A2, "Alderlake Platform" },
 };
 
 static struct {

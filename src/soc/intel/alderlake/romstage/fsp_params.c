@@ -128,8 +128,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->HyperThreading = 1;
 	/* Disable Lock PCU Thermal Management registers */
 	m_cfg->LockPTMregs = 0;
-	/* Channel Hash Mask:0x0001=BIT6 set(Minimal), 0x3FFF=BIT[19:6] set(Maximum) */
-	m_cfg->ChHashMask = 0x30CC;
 	/* Enable SMBus controller */
 	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);
 	m_cfg->SmbusEnable = is_dev_enabled(dev);

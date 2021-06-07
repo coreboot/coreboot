@@ -18,30 +18,30 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
-	smp_write_ioapic(mc, 2, 0x20, VIO_APIC_VADDR);
+	u8 ioapic_id = smp_write_ioapic_from_hw(mc, VIO_APIC_VADDR);
 
 	/* Legacy Interrupts */
-	mptable_add_isa_interrupts(mc, isa_bus, 0x2, 0);
+	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);
 
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, isa_bus, 0x00, MP_APIC_ALL, 0x00);
 	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x00, MP_APIC_ALL, 0x01);
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x01, 0x00, 0x02, 0x10); /* PCIe root 0.01.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x02, 0x00, 0x02, 0x10); /* VGA       0.02.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1b, 0x00, 0x02, 0x11); /* HD Audio  0:1b.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x00, 0x02, 0x14); /* PCIe      0:1c.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x01, 0x02, 0x15); /* PCIe      0:1c.1 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x02, 0x02, 0x16); /* PCIe      0:1c.2 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x03, 0x02, 0x17); /* PCIe      0:1c.3 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x00, 0x02, 0x10); /* USB       0:1d.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x01, 0x02, 0x11); /* USB       0:1d.1 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x02, 0x02, 0x12); /* USB       0:1d.2 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x03, 0x02, 0x13); /* USB       0:1d.3 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x00, 0x02, 0x17); /* LPC       0:1f.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x01, 0x02, 0x10); /* IDE       0:1f.1 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x02, 0x02, 0x10); /* SATA      0:1f.2 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x00, 0x02, 0x10); /* Cardbus   5:00.0 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x01, 0x02, 0x11); /* Firewire  5:00.1 */
-	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x02, 0x02, 0x12); /* SDHC      5:00.2 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x01, 0x00, ioapic_id, 0x10); /* PCIe root 0.01.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x02, 0x00, ioapic_id, 0x10); /* VGA       0.02.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1b, 0x00, ioapic_id, 0x11); /* HD Audio  0:1b.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x00, ioapic_id, 0x14); /* PCIe      0:1c.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x01, ioapic_id, 0x15); /* PCIe      0:1c.1 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x02, ioapic_id, 0x16); /* PCIe      0:1c.2 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1c, 0x03, ioapic_id, 0x17); /* PCIe      0:1c.3 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x00, ioapic_id, 0x10); /* USB       0:1d.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x01, ioapic_id, 0x11); /* USB       0:1d.1 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x02, ioapic_id, 0x12); /* USB       0:1d.2 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1d, 0x03, ioapic_id, 0x13); /* USB       0:1d.3 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x00, ioapic_id, 0x17); /* LPC       0:1f.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x01, ioapic_id, 0x10); /* IDE       0:1f.1 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x00, 0x1f, 0x02, ioapic_id, 0x10); /* SATA      0:1f.2 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x00, ioapic_id, 0x10); /* Cardbus   5:00.0 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x01, ioapic_id, 0x11); /* Firewire  5:00.1 */
+	smp_write_pci_intsrc(mc, mp_INT, 0x05, 0x00, 0x02, ioapic_id, 0x12); /* SDHC      5:00.2 */
 
 	mptable_lintsrc(mc, isa_bus);
 	return mptable_finalize(mc);

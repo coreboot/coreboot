@@ -5,7 +5,7 @@
 
 static void *smp_write_config_table(void *v)
 {
-	int ioapic_id, ioapic_ver, isa_bus;
+	int isa_bus;
 	struct mp_config_table *mc;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -16,16 +16,15 @@ static void *smp_write_config_table(void *v)
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	ioapic_id = 2;
-	ioapic_ver = 0x11; /* External Intel 82093AA IOAPIC. */
-	smp_write_ioapic(mc, ioapic_id, ioapic_ver, VIO_APIC_VADDR);
+	/* External Intel 82093AA IOAPIC. */
+	u8 ioapic_id = smp_write_ioapic_from_hw(mc, VIO_APIC_VADDR);
 
 	/* Legacy Interrupts */
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);
 
 	/* I/O Ints:          Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
-	smp_write_intsrc(mc,  mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  0x0,     0x13, ioapic_id,   0x13);
-	smp_write_intsrc(mc,  mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  0x0,     0x18, ioapic_id,   0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x13, ioapic_id, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x18, ioapic_id, 0x13);
 
 	/* Local Ints:        Type       Trigger                Polarity              Bus ID   IRQ   APIC ID      PIN# */
 	mptable_lintsrc(mc, 0x1);

@@ -10,7 +10,6 @@ static void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	struct device *riser = NULL, *firewire = NULL;
 	int firewire_bus = 0, riser_bus = 0, isa_bus;
-	int ioapic_id;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -38,65 +37,72 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
-	ioapic_id = 2;
-	smp_write_ioapic(mc, ioapic_id, 0x20, VIO_APIC_VADDR);
+	u8 ioapic_id = smp_write_ioapic_from_hw(mc, VIO_APIC_VADDR);
 
 	/* Legacy Interrupts */
 
 	/* I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x1, ioapic_id, 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x3, ioapic_id, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x4, ioapic_id, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,       isa_bus, 0x8, ioapic_id, 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x9, ioapic_id, 0x9);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xa, ioapic_id, 0xa);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xb, ioapic_id, 0xb);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xc, ioapic_id, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xd, ioapic_id, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xe, ioapic_id, 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xf, ioapic_id, 0xf);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x1, ioapic_id, 0x1);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x2);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x3, ioapic_id, 0x3);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x4, ioapic_id, 0x4);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, isa_bus, 0x8, ioapic_id, 0x8);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x9, ioapic_id, 0x9);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xa, ioapic_id, 0xa);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xb, ioapic_id, 0xb);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xc, ioapic_id, 0xc);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xd, ioapic_id, 0xd);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xe, ioapic_id, 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xf, ioapic_id, 0xf);
 
 	/* Builtin devices on Bus 0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x4, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x8, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x7d, ioapic_id, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x74, ioapic_id, 0x17);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x75, ioapic_id, 0x13);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x76, ioapic_id, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x77, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x6c, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x70, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x71, ioapic_id, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x4, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x8, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x7d, ioapic_id, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x74, ioapic_id, 0x17);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x75, ioapic_id, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x76, ioapic_id, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x77, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x6c, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x70, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x71, ioapic_id, 0x11);
 
 	/* Internal PCI bus (Firewire, PCI slot) */
 	if (firewire) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, firewire_bus, 0x0, ioapic_id, 0x10);
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, firewire_bus, 0x4, ioapic_id, 0x14);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, firewire_bus, 0x0, ioapic_id,
+				 0x10);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, firewire_bus, 0x4, ioapic_id,
+				 0x14);
 	}
 
 	if (riser) {
 		/* Old riser card */
 		// riser slot top 5:8.0
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x20, ioapic_id, 0x14);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x20, ioapic_id,
+				 0x14);
 		// riser slot middle 5:9.0
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x24, ioapic_id, 0x15);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x24, ioapic_id,
+				 0x15);
 		// riser slot bottom 5:a.0
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x28, ioapic_id, 0x16);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x28, ioapic_id,
+				 0x16);
 
 		/* New Riser Card */
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x30, ioapic_id, 0x14);
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x34, ioapic_id, 0x15);
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x38, ioapic_id, 0x16);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x30, ioapic_id,
+				 0x14);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x34, ioapic_id,
+				 0x15);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, riser_bus, 0x38, ioapic_id,
+				 0x16);
 	}
 
 	/* PCIe slot */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, 0x0, ioapic_id, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, 0x1, ioapic_id, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x1, 0x0, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x1, 0x1, ioapic_id, 0x11);
 
 	/* Onboard Ethernet */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x0, ioapic_id, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x2, 0x0, ioapic_id, 0x10);
 
 	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	mptable_lintsrc(mc, isa_bus);

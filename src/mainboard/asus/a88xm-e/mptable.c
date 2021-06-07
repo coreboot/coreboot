@@ -29,14 +29,6 @@ static void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	int bus_isa;
 
-	/*
-	 * By the time this function gets called, the IOAPIC registers
-	 * have been written so they can be read to get the correct
-	 * APIC ID and Version
-	 */
-	u8 ioapic_id = (io_apic_read(VIO_APIC_VADDR, 0x00) >> 24);
-	u8 ioapic_ver = (io_apic_read(VIO_APIC_VADDR, 0x01) & 0xFF);
-
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc);
@@ -50,8 +42,12 @@ static void *smp_write_config_table(void *v)
 	bus_isa = 0x02;
 	my_smp_write_bus(mc, bus_isa, "ISA   ");
 
-	/* I/O APICs:   APIC ID Version State   Address */
-	smp_write_ioapic(mc, ioapic_id, ioapic_ver, VIO_APIC_VADDR);
+	/*
+	 * By the time this function gets called, the IOAPIC registers
+	 * have been written so they can be read to get the correct
+	 * APIC ID and Version
+	 */
+	u8 ioapic_id = smp_write_ioapic_from_hw(mc, VIO_APIC_VADDR);
 
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\

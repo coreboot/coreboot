@@ -127,6 +127,11 @@ static void uart_read_resources(struct device *dev)
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
 				IORESOURCE_FIXED;
 	}
+	/* In ACPI mode mark the decoded region as reserved */
+	if (dev->hidden) {
+		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+		res->flags |= IORESOURCE_RESERVE;
+	}
 }
 
 /*

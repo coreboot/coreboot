@@ -397,3 +397,9 @@ bool is_dev_enabled(const struct device *dev)
 		return false;
 	return dev->enabled;
 }
+
+bool is_devfn_enabled(unsigned int devfn)
+{
+	const struct device *dev = pcidev_path_on_root(devfn);
+	return is_dev_enabled(dev);
+}

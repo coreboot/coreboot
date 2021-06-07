@@ -192,6 +192,7 @@ void disable_children(struct bus *bus);
 bool dev_is_active_bridge(struct device *dev);
 void add_more_links(struct device *dev, unsigned int total_links);
 bool is_dev_enabled(const struct device *const dev);
+bool is_devfn_enabled(unsigned int devfn);
 
 /* Option ROM helper functions */
 void run_bios(struct device *dev, unsigned long addr);

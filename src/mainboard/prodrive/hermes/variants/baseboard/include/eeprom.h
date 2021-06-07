@@ -62,6 +62,8 @@ struct __packed eeprom_bmc_settings {
 	uint8_t hsi;
 };
 
+#define HERMES_SERIAL_NUMBER_LENGTH	32
+
 /* The EEPROM on address 0x57 has the following vendor defined layout: */
 struct __packed eeprom_layout {
 	union {
@@ -76,7 +78,9 @@ struct __packed eeprom_layout {
 		uint8_t RawBoardLayout[0x400];
 		struct eeprom_board_layout BoardLayout;
 	};
-	uint8_t BootOrder[0x900];
+	char system_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
+	char board_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
+	uint8_t BootOrder[0x8c0];
 	union {
 		uint8_t RawBoardSetting[0xF8];
 		struct eeprom_board_settings BoardSettings;

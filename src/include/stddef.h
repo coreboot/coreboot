@@ -3,10 +3,7 @@
 
 #include <commonlib/helpers.h>
 
-typedef long ptrdiff_t;
-#ifndef __SIZE_TYPE__
-#define __SIZE_TYPE__ unsigned long
-#endif
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef __SIZE_TYPE__ size_t;
 /* There is a GCC macro for a size_t type, but not
  * for a ssize_t type. Below construct tricks GCC
@@ -16,8 +13,8 @@ typedef __SIZE_TYPE__ size_t;
 typedef __SIZE_TYPE__ ssize_t;
 #undef unsigned
 
-typedef int wchar_t;
-typedef unsigned int wint_t;
+typedef __WCHAR_TYPE__ wchar_t;
+typedef __WINT_TYPE__ wint_t;
 
 #define NULL ((void *)0)
 

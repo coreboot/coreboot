@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/path.h>
 #include <device/pci_ids.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
 #include <arch/cpu.h>
@@ -219,6 +220,14 @@ void smp_write_ioapic(struct mp_config_table *mc,
 	mpc->mpc_flags = MPC_APIC_USABLE;
 	mpc->mpc_apicaddr = apicaddr;
 	smp_add_mpc_entry(mc, sizeof(*mpc));
+}
+
+u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, void *apicaddr)
+{
+	u8 id = get_ioapic_id(apicaddr);
+	u8 ver = get_ioapic_version(apicaddr);
+	smp_write_ioapic(mc, id, ver, apicaddr);
+	return id;
 }
 
 /*

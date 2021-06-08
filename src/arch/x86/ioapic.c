@@ -6,13 +6,13 @@
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
 
-u32 io_apic_read(void *ioapic_base, u32 reg)
+static u32 io_apic_read(void *ioapic_base, u32 reg)
 {
 	write32(ioapic_base, reg);
 	return read32(ioapic_base + 0x10);
 }
 
-void io_apic_write(void *ioapic_base, u32 reg, u32 value)
+static void io_apic_write(void *ioapic_base, u32 reg, u32 value)
 {
 	write32(ioapic_base, reg);
 	write32(ioapic_base + 0x10, value);
@@ -108,7 +108,7 @@ static void route_i8259_irq0(void *ioapic_base)
 	}
 }
 
-void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
+static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 {
 	int i;
 

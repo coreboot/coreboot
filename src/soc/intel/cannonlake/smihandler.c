@@ -19,8 +19,7 @@ void smihandler_soc_at_finalize(void)
 	if (!CONFIG(HECI_DISABLE_USING_SMM))
 		return;
 
-	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_CSE);
-	if (!is_dev_enabled(dev))
+	if (!is_devfn_enabled(PCH_DEVFN_CSE))
 		heci_disable();
 }
 

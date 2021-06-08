@@ -42,10 +42,7 @@ static const pci_devfn_t serial_io_dev[] = {
 
 static uint8_t get_param_value(const config_t *config, uint32_t dev_offset)
 {
-	struct device *dev;
-
-	dev = pcidev_path_on_root(serial_io_dev[dev_offset]);
-	if (!dev || !dev->enabled)
+	if (!is_devfn_enabled(serial_io_dev[dev_offset]))
 		return PCH_SERIAL_IO_INDEX(PchSerialIoDisabled);
 
 	if ((config->SerialIoDevMode[dev_offset] >= PchSerialIoMax) ||
@@ -149,11 +146,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchLockDownRtcMemoryLock = 0;
 
 	/* SATA */
-	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	if (!dev)
-		params->SataEnable = 0;
-	else {
-		params->SataEnable = dev->enabled;
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
+	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataPwrOptEnable = config->satapwroptimize;
 		params->SataSalpSupport = config->SataSalpSupport;
@@ -175,12 +169,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPmSlpS0Vm075VSupport = config->PchPmSlpS0Vm075VSupport;
 
 	/* Lan */
-	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
-	if (!dev)
-		params->PchLanEnable = 0;
-	else {
-		params->PchLanEnable = dev->enabled;
-		if (config->s0ix_enable && params->PchLanEnable) {
+	params->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
+	if (params->PchLanEnable) {
+		if (config->s0ix_enable) {
 			/*
 			 * The VmControl UPDs need to be set as per board
 			 * design to allow voltage margining in S0ix to lower
@@ -324,17 +315,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 #endif
 
 	/* Enable CNVi Wifi if enabled in device tree */
-	dev = pcidev_path_on_root(PCH_DEVFN_CNViWIFI);
 #if CONFIG(SOC_INTEL_COMETLAKE)
-	if (dev)
-		params->CnviMode = dev->enabled;
-	else
-		params->CnviMode = 0;
+	params->CnviMode = is_devfn_enabled(PCH_DEVFN_CNViWIFI);
 #else
-	if (dev)
-		params->PchCnviMode = dev->enabled;
-	else
-		params->PchCnviMode = 0;
+	params->PchCnviMode = is_devfn_enabled(PCH_DEVFN_CNViWIFI);
 #endif
 	/* PCI Express */
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {
@@ -366,11 +350,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	};
 
 	/* eMMC and SD */
-	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
-	if (!dev)
-		params->ScsEmmcEnabled = 0;
-	else {
-		params->ScsEmmcEnabled = dev->enabled;
+	params->ScsEmmcEnabled = is_devfn_enabled(PCH_DEVFN_EMMC);
+	if (params->ScsEmmcEnabled) {
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 		params->PchScsEmmcHs400DllDataValid = config->EmmcHs400DllNeed;
 		if (config->EmmcHs400DllNeed == 1) {
@@ -381,29 +362,19 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		}
 	}
 
-	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
-	if (!dev) {
-		params->ScsSdCardEnabled = 0;
-	} else {
-		params->ScsSdCardEnabled = dev->enabled;
-		params->SdCardPowerEnableActiveHigh =
-			CONFIG(MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE);
+	params->ScsSdCardEnabled = is_devfn_enabled(PCH_DEVFN_SDCARD);
+	if (params->ScsSdCardEnabled) {
+		params->SdCardPowerEnableActiveHigh = CONFIG(MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE);
 #if CONFIG(SOC_INTEL_COMETLAKE)
 		params->ScsSdCardWpPinEnabled = config->ScsSdCardWpPinEnabled;
 #endif
 	}
 
-	dev = pcidev_path_on_root(PCH_DEVFN_UFS);
-	if (!dev)
-		params->ScsUfsEnabled = 0;
-	else
-		params->ScsUfsEnabled = dev->enabled;
+	params->ScsUfsEnabled = is_devfn_enabled(PCH_DEVFN_UFS);
 
-	dev = pcidev_path_on_root(PCH_DEVFN_CSE_3);
-	params->Heci3Enabled = is_dev_enabled(dev);
+	params->Heci3Enabled = is_devfn_enabled(PCH_DEVFN_CSE_3);
 #if !CONFIG(HECI_DISABLE_USING_SMM)
-	dev = pcidev_path_on_root(PCH_DEVFN_CSE);
-	params->Heci1Disabled = !is_dev_enabled(dev);
+	params->Heci1Disabled = !is_devfn_enabled(PCH_DEVFN_CSE);
 #endif
 	params->Device4Enable = config->Device4Enable;
 
@@ -510,11 +481,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->VrPowerDeliveryDesign = config->VrPowerDeliveryDesign;
 #endif
 
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
-		params->PeiGraphicsPeimInit = 1;
-	else
-		params->PeiGraphicsPeimInit = 0;
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	params->PavpEnable = CONFIG(PAVP);
 

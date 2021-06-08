@@ -102,8 +102,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 	params->LidStatus = CONFIG(RUN_FSP_GOP);
 
 	/* Use coreboot MP PPI services if Kconfig is enabled */
@@ -195,8 +194,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
 
 	/* SATA */
-	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	params->SataEnable = is_dev_enabled(dev);
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
 	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
@@ -229,19 +227,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* Enable TCPU for processor thermal control */
-	dev = pcidev_path_on_root(SA_DEVFN_DPTF);
-	params->Device4Enable = is_dev_enabled(dev);
+	params->Device4Enable = is_devfn_enabled(SA_DEVFN_DPTF);
 
 	/* Set TccActivationOffset */
 	params->TccActivationOffset = config->tcc_offset;
 
 	/* LAN */
-	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
-	params->PchLanEnable = is_dev_enabled(dev);
+	params->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
 
 	/* CNVi */
-	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI);
-	params->CnviMode = is_dev_enabled(dev);
+	params->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	params->CnviBtCore = config->CnviBtCore;
 	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
 	/* Assert if CNVi BT is enabled without CNVi being enabled. */
@@ -250,15 +245,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	assert(params->CnviBtCore || !params->CnviBtAudioOffload);
 
 	/* VMD */
-	dev = pcidev_path_on_root(SA_DEVFN_VMD);
-	params->VmdEnable = is_dev_enabled(dev);
+	params->VmdEnable = is_devfn_enabled(SA_DEVFN_VMD);
 
 	/* THC */
-	dev = pcidev_path_on_root(PCH_DEVFN_THC0);
-	params->ThcPort0Assignment = is_dev_enabled(dev) ? THC_0 : THC_NONE;
-
-	dev =  pcidev_path_on_root(PCH_DEVFN_THC1);
-	params->ThcPort1Assignment = is_dev_enabled(dev) ? THC_1 : THC_NONE;
+	params->ThcPort0Assignment = is_devfn_enabled(PCH_DEVFN_THC0) ? THC_0 : THC_NONE;
+	params->ThcPort1Assignment = is_devfn_enabled(PCH_DEVFN_THC1) ? THC_1 : THC_NONE;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);

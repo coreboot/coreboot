@@ -172,11 +172,10 @@ uint32_t soc_read_sci_irq_select(void)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	const struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	const uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	const bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
-	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
+	if (is_devfn_enabled(SA_DEVFN_IGD) && gfxvtbar && gfxvten) {
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
@@ -185,11 +184,10 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	const struct device *const ipu_dev = pcidev_path_on_root(SA_DEVFN_IPU);
 	const uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
 	const bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
 
-	if (is_dev_enabled(ipu_dev) && ipuvtbar && ipuvten) {
+	if (is_devfn_enabled(SA_DEVFN_IPU) && ipuvtbar && ipuvten) {
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, ipuvtbar);
@@ -200,8 +198,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 
 	/* TCSS Thunderbolt root ports */
 	for (unsigned int i = 0; i < MAX_TBT_PCIE_PORT; i++) {
-		const struct device *const tbt_dev = pcidev_path_on_root(SA_DEVFN_TBT(i));
-		if (is_dev_enabled(tbt_dev)) {
+		if (is_devfn_enabled(SA_DEVFN_TBT(i))) {
 			const uint64_t tbtbar = MCHBAR64(TBTxBAR(i)) & VTBAR_MASK;
 			const bool tbten = MCHBAR32(TBTxBAR(i)) & VTBAR_ENABLED;
 			if (tbtbar && tbten) {
@@ -235,7 +232,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	}
 
 	/* Add RMRR entry */
-	if (is_dev_enabled(igfx_dev)) {
+	if (is_devfn_enabled(SA_DEVFN_IGD)) {
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_rmrr(current, 0,
 				sa_get_gsm_base(), sa_get_tolud_base() - 1);

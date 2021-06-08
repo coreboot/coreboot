@@ -67,14 +67,9 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_typ
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	const struct device *dev;
 	unsigned int i;
 
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (!CONFIG(SOC_INTEL_DISABLE_IGD) && is_dev_enabled(dev))
-		m_cfg->InternalGfx = 1;
-	else
-		m_cfg->InternalGfx = 0;
+	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/* If IGD is enabled, set IGD stolen size to 60MB. Otherwise, skip IGD init in FSP */
 	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? IGD_SM_60MB : 0;
@@ -129,14 +124,12 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Disable Lock PCU Thermal Management registers */
 	m_cfg->LockPTMregs = 0;
 	/* Enable SMBus controller */
-	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);
-	m_cfg->SmbusEnable = is_dev_enabled(dev);
+	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ALDERLAKE_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
-	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	m_cfg->PchHdaEnable = is_dev_enabled(dev);
+	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	/*
@@ -175,39 +168,24 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			CONFIG_MAX_CPU_ROOT_PORTS);
 
 	/* ISH */
-	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	m_cfg->PchIshEnable = is_dev_enabled(dev);
+	m_cfg->PchIshEnable = is_devfn_enabled(PCH_DEVFN_ISH);
 
 	/* Tcss USB */
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_XHCI);
-	m_cfg->TcssXhciEn = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_XDCI);
-	m_cfg->TcssXdciEn = is_dev_enabled(dev);
+	m_cfg->TcssXhciEn = is_devfn_enabled(SA_DEVFN_TCSS_XHCI);
+	m_cfg->TcssXdciEn = is_devfn_enabled(SA_DEVFN_TCSS_XDCI);
 
 	/* TCSS DMA */
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA0);
-	m_cfg->TcssDma0En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA1);
-	m_cfg->TcssDma1En = is_dev_enabled(dev);
+	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);
+	m_cfg->TcssDma1En = is_devfn_enabled(SA_DEVFN_TCSS_DMA1);
 
 	/* USB4/TBT */
-	dev = pcidev_path_on_root(SA_DEVFN_TBT0);
-	m_cfg->TcssItbtPcie0En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT1);
-	m_cfg->TcssItbtPcie1En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT2);
-	m_cfg->TcssItbtPcie2En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
-	m_cfg->TcssItbtPcie3En = is_dev_enabled(dev);
+	m_cfg->TcssItbtPcie0En = is_devfn_enabled(SA_DEVFN_TBT0);
+	m_cfg->TcssItbtPcie1En = is_devfn_enabled(SA_DEVFN_TBT1);
+	m_cfg->TcssItbtPcie2En = is_devfn_enabled(SA_DEVFN_TBT2);
+	m_cfg->TcssItbtPcie3En = is_devfn_enabled(SA_DEVFN_TBT3);
 
 	/* IPU */
-	dev = pcidev_path_on_root(SA_DEVFN_IPU);
-	m_cfg->SaIpuEnable = is_dev_enabled(dev);
+	m_cfg->SaIpuEnable = is_devfn_enabled(SA_DEVFN_IPU);
 
 	/* VT-d config */
 	m_cfg->VtdBaseAddress[VTD_GFX] = GFXVT_BASE_ADDRESS;

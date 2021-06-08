@@ -143,7 +143,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	uint64_t defvtbar = MCHBAR64(DEFVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
@@ -151,7 +150,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	unsigned long tmp;
 
 	/* IGD has to be enabled, GFXVTBAR set and enabled. */
-	const bool emit_igd = is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten;
+	const bool emit_igd = is_devfn_enabled(SA_DEVFN_IGD) && gfxvtbar && gfxvten;
 
 	/* First, add DRHD entries */
 	if (emit_igd) {

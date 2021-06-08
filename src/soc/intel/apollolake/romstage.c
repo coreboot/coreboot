@@ -256,12 +256,10 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 
 static void parse_devicetree_setting(FSPM_UPD *m_upd)
 {
-	DEVTREE_CONST struct device *dev = pcidev_path_on_root(PCH_DEVFN_NPK);
-
 #if CONFIG(SOC_INTEL_GEMINILAKE)
-	m_upd->FspmConfig.TraceHubEn = is_dev_enabled(dev);
+	m_upd->FspmConfig.TraceHubEn = is_devfn_enabled(PCH_DEVFN_NPK);
 #else
-	m_upd->FspmConfig.NpkEn = is_dev_enabled(dev);
+	m_upd->FspmConfig.NpkEn = is_devfn_enabled(PCH_DEVFN_NPK);
 #endif
 }
 

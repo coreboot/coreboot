@@ -533,7 +533,6 @@ static void glk_fsp_silicon_init_params_cb(
 {
 #if CONFIG(SOC_INTEL_GEMINILAKE)
 	uint8_t port;
-	struct device *dev;
 
 	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
 		if (!cfg->usb2eye[port].Usb20OverrideEn)
@@ -549,8 +548,7 @@ static void glk_fsp_silicon_init_params_cb(
 			cfg->usb2eye[port].Usb20IUsbTxEmphasisEn;
 	}
 
-	dev = pcidev_path_on_root(SA_GLK_DEVFN_GMM);
-	silconfig->Gmm = is_dev_enabled(dev);
+	silconfig->Gmm = is_devfn_enabled(SA_GLK_DEVFN_GMM);
 
 	/* On Geminilake, we need to override the default FSP PCIe de-emphasis
 	 * settings using the device tree settings. This is because PCIe
@@ -693,8 +691,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Set VTD feature according to devicetree */
 	silconfig->VtdEnable = cfg->enable_vtd;
 
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	silconfig->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+	silconfig->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	silconfig->PavpEnable = CONFIG(PAVP);
 

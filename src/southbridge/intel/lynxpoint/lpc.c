@@ -42,8 +42,7 @@ static void pch_enable_ioapic(struct device *dev)
 	else
 		ioapic_lock_max_vectors(VIO_APIC_VADDR);
 
-	setup_ioapic(VIO_APIC_VADDR, 0x02);
-
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)

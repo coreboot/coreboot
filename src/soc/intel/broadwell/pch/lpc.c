@@ -33,7 +33,7 @@ static void pch_enable_ioapic(struct device *dev)
 	/* PCH-LP has 40 redirection entries */
 	ioapic_set_max_vectors(VIO_APIC_VADDR, 40);
 
-	setup_ioapic(VIO_APIC_VADDR, 0x02);
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void enable_hpet(struct device *dev)

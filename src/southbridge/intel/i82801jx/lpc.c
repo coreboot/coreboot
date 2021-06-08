@@ -36,7 +36,7 @@ static void i82801jx_enable_apic(struct device *dev)
 	/* Lock maximum redirection entries (MRE), R/WO register. */
 	ioapic_lock_max_vectors(VIO_APIC_VADDR);
 
-	setup_ioapic(VIO_APIC_VADDR, 2); /* ICH7 code uses id 2. */
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void i82801jx_enable_serial_irqs(struct device *dev)

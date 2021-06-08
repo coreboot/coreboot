@@ -387,7 +387,7 @@ void pch_enable_ioapic(void)
 	/* affirm full set of redirection table entries ("write once") */
 	ioapic_set_max_vectors(VIO_APIC_VADDR, PCH_REDIR_ETR);
 
-	setup_ioapic((void *)IO_APIC_ADDR, 0x02);
+	register_new_ioapic_gsi0((void *)IO_APIC_ADDR);
 }
 
 static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {

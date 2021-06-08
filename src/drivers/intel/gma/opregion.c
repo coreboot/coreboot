@@ -218,29 +218,26 @@ static enum cb_err locate_vbt_vbios_cbfs(struct region_device *rdev)
 	return locate_vbt_vbios(oprom, rdev);
 }
 
-/* Initialize IGD OpRegion, called from ACPI code and OS drivers */
-enum cb_err intel_gma_init_igd_opregion(void)
+/*
+ * Try to locate VBT in possible locations and return if found.
+ * VBT can be possibly in one of 3 regions:
+ *  1. Stitched directly into CBFS region as VBT
+ *  2. Part of pci8086 option ROM within CBFS
+ *  3. part of VBIOS at location 0xC0000.
+ */
+static enum cb_err find_vbt_location(struct region_device *rdev)
 {
-	igd_opregion_t *opregion;
-	struct region_device rdev;
-	optionrom_vbt_t *vbt = NULL;
-	optionrom_vbt_t *ext_vbt;
-	bool found = false;
-
-	if (acpi_is_wakeup_s3())
-		return intel_gma_restore_opregion();
-
 	/* Search for vbt.bin in CBFS. */
-	if (locate_vbt_cbfs(&rdev) == CB_SUCCESS &&
-	    vbt_validate(&rdev) == CB_SUCCESS) {
-		found = true;
+	if (locate_vbt_cbfs(rdev) == CB_SUCCESS &&
+	    vbt_validate(rdev) == CB_SUCCESS) {
 		printk(BIOS_INFO, "GMA: Found valid VBT in CBFS\n");
+		return CB_SUCCESS;
 	}
 	/* Search for pci8086,XXXX.rom in CBFS. */
-	else if (locate_vbt_vbios_cbfs(&rdev) == CB_SUCCESS &&
-		 vbt_validate(&rdev) == CB_SUCCESS) {
-		found = true;
+	else if (locate_vbt_vbios_cbfs(rdev) == CB_SUCCESS &&
+		 vbt_validate(rdev) == CB_SUCCESS) {
 		printk(BIOS_INFO, "GMA: Found valid VBT in VBIOS\n");
+		return CB_SUCCESS;
 	}
 	/*
 	 * Try to locate Intel VBIOS at 0xc0000. It might have been placed by
@@ -248,16 +245,38 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	 * VBIOS on legacy platforms.
 	 * TODO: Place generated fake VBT in CBMEM and get rid of this.
 	 */
-	else if (locate_vbt_vbios((u8 *)0xc0000, &rdev) == CB_SUCCESS &&
-		 vbt_validate(&rdev) == CB_SUCCESS) {
-		found = true;
+	else if (locate_vbt_vbios((u8 *)0xc0000, rdev) == CB_SUCCESS &&
+		 vbt_validate(rdev) == CB_SUCCESS) {
 		printk(BIOS_INFO, "GMA: Found valid VBT in legacy area\n");
+		return CB_SUCCESS;
 	}
 
-	if (!found) {
-		printk(BIOS_ERR, "GMA: VBT couldn't be found\n");
+	return CB_ERR;
+}
+
+/*
+ * Function to determine if we need to use extended VBT region to pass
+ * VBT pointer. If VBT size > 6 KiB then we need to use extended VBT
+ * region.
+ */
+static inline bool is_ext_vbt_required(igd_opregion_t *opregion, optionrom_vbt_t *vbt)
+{
+	return (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1));
+}
+
+/* Initialize IGD OpRegion, called from ACPI code and OS drivers */
+enum cb_err intel_gma_init_igd_opregion(void)
+{
+	igd_opregion_t *opregion;
+	struct region_device rdev;
+	optionrom_vbt_t *vbt = NULL;
+	optionrom_vbt_t *ext_vbt = NULL;
+
+	if (acpi_is_wakeup_s3())
+		return intel_gma_restore_opregion();
+
+	if (find_vbt_location(&rdev) != CB_SUCCESS)
 		return CB_ERR;
-	}
 
 	vbt = rdev_mmap_full(&rdev);
 	if (!vbt) {
@@ -284,7 +303,7 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild,
 					ARRAY_SIZE(vbt->coreblock_biosbuild));
 	/* Extended VBT support */
-	if (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1)) {
+	if (is_ext_vbt_required(opregion, vbt)) {
 		ext_vbt = cbmem_add(CBMEM_ID_EXT_VBT, vbt->hdr_vbt_size);
 
 		if (ext_vbt == NULL) {

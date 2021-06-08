@@ -5,6 +5,7 @@
 
 /* types.h is supposed to provide the standard headers defined in here: */
 #include <commonlib/bsd/cb_err.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>

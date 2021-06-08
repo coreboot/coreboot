@@ -75,11 +75,13 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Brya" if BOARD_GOOGLE_BRYA0
 	default "Primus" if BOARD_GOOGLE_PRIMUS
+	default "Gimble" if BOARD_GOOGLE_GIMBLE
 
 config VARIANT_DIR
 	string
 	default "brya0" if BOARD_GOOGLE_BRYA0
 	default "primus" if BOARD_GOOGLE_PRIMUS
+	default "gimble" if BOARD_GOOGLE_GIMBLE
 
 config DIMM_SPD_SIZE
 	int

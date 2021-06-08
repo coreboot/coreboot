@@ -280,10 +280,10 @@ void lpc_disable_clkrun(void)
 /* Enable PCH IOAPIC */
 void pch_enable_ioapic(void)
 {
-	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
-
 	/* affirm full set of redirection table entries ("write once") */
 	ioapic_set_max_vectors(VIO_APIC_VADDR, PCH_REDIR_ETR);
+
+	set_ioapic_id((void *)IO_APIC_ADDR, 0x02);
 }
 
 static const uint8_t pch_interrupt_routing[PIRQ_COUNT] = {

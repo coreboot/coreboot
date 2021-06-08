@@ -29,11 +29,11 @@ static void pch_enable_ioapic(struct device *dev)
 	pci_write_config16(dev, LPC_IBDF,
 		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
 
-	set_ioapic_id(VIO_APIC_VADDR, 0x02);
-
 	/* affirm full set of redirection table entries ("write once") */
 	/* PCH-LP has 40 redirection entries */
 	ioapic_set_max_vectors(VIO_APIC_VADDR, 40);
+
+	set_ioapic_id(VIO_APIC_VADDR, 0x02);
 }
 
 static void enable_hpet(struct device *dev)

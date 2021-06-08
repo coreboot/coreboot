@@ -105,7 +105,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 		}
 	} else {
 		/* Default SOC IOAPIC entry */
-		current += acpi_create_madt_ioapic((void *)current, 2, IO_APIC_ADDR, 0);
+		current += acpi_create_madt_ioapic_from_hw((void *)current, IO_APIC_ADDR);
 	}
 
 	return acpi_madt_irq_overrides(current);

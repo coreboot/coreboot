@@ -61,7 +61,7 @@ static void isa_init(struct device *dev)
 		pci_write_config16(dev, XBCS, reg16);
 
 		/* Set and verify the IOAPIC ID. */
-		set_ioapic_id(VIO_APIC_VADDR, ioapic_id);
+		setup_ioapic(VIO_APIC_VADDR, ioapic_id);
 		if (ioapic_id != get_ioapic_id(VIO_APIC_VADDR))
 			die("IOAPIC error!\n");
 	}

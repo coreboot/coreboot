@@ -42,7 +42,7 @@ static void pch_enable_ioapic(struct device *dev)
 	else
 		ioapic_lock_max_vectors(VIO_APIC_VADDR);
 
-	set_ioapic_id(VIO_APIC_VADDR, 0x02);
+	setup_ioapic(VIO_APIC_VADDR, 0x02);
 
 }
 

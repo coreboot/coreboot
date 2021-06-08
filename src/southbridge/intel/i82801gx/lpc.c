@@ -33,7 +33,7 @@
  */
 static void i82801gx_enable_ioapic(struct device *dev)
 {
-	set_ioapic_id(VIO_APIC_VADDR, 0x02);
+	setup_ioapic(VIO_APIC_VADDR, 0x02);
 }
 
 static void i82801gx_enable_serial_irqs(struct device *dev)

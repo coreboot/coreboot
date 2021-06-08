@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -32,9 +33,6 @@ static void p64h2_ioapic_init(struct device *dev)
 	uint32_t memoryBase;
 	int apic_index, apic_id;
 
-	volatile uint32_t *pIndexRegister;    /* io APIC io memory space command address */
-	volatile uint32_t *pWindowRegister;    /* io APIC io memory space data address */
-
 	apic_index = num_p64h2_ioapics;
 	num_p64h2_ioapics++;
 
@@ -59,26 +57,11 @@ static void p64h2_ioapic_init(struct device *dev)
 	// NOTE: this address was assigned during enumeration of the bus
 
 	memoryBase = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	pIndexRegister  = (volatile uint32_t *) memoryBase;
-	pWindowRegister = (volatile uint32_t *)(memoryBase + 0x10);
 
-	printk(BIOS_DEBUG, "IOAPIC %d at %02x:%02x.%01x  MBAR = %p DataAddr = %p\n",
-		apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn),
-		PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
+	set_ioapic_id((void *)memoryBase, apic_id);
 
-	apic_id <<= 24;             // Convert ID to bitmask
-
-	*pIndexRegister = 0;        // Select APIC ID register
-	*pWindowRegister = (*pWindowRegister & ~(0x0f << 24)) | apic_id;   // Set the ID
-
-	if ((*pWindowRegister & (0x0f << 24)) != apic_id)
-		die("%s failed", __func__);
-
-	*pIndexRegister  = 3;   // Select Boot Configuration register
-	*pWindowRegister |= 1;  // Use Processor System Bus to deliver interrupts
-
-	if (!(*pWindowRegister & 1))
-		die("%s failed", __func__);
+	// Use Processor System Bus to deliver interrupts
+	ioapic_set_boot_config((void *)memoryBase, true);
 }
 
 static struct device_operations ioapic_ops = {

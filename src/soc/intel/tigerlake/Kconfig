@@ -77,6 +77,10 @@ config CPU_SPECIFIC_OPTIONS
 	select DISPLAY_FSP_VERSION_INFO
 	select HECI_DISABLE_USING_SMM
 
+config MAX_CPUS
+	int
+	default 8
+
 config DCACHE_RAM_BASE
 	default 0xfef00000
 

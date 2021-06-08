@@ -110,10 +110,6 @@ config MAINBOARD_PART_NUMBER
 	default "Volet" if BOARD_GOOGLE_VOLET
 	default "Chronicler" if BOARD_GOOGLE_CHRONICLER
 
-config MAX_CPUS
-	int
-	default 8
-
 config PCIEXP_HOTPLUG
 	default y
 

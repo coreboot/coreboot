@@ -69,10 +69,6 @@ config MAINBOARD_PART_NUMBER
 	default "Deltan" if BOARD_GOOGLE_DELTAN
 	default "Deltaur" if BOARD_GOOGLE_DELTAUR
 
-config MAX_CPUS
-	int
-	default 8
-
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 23  # GPE0_DW0_23 (GPP_C23)

@@ -56,10 +56,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Intel_tglrvp"
 
-config MAX_CPUS
-	int
-	default 8
-
 config PCIEXP_HOTPLUG
 	default y
 

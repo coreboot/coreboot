@@ -78,8 +78,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	params->PavpEnable = CONFIG(PAVP);
 
@@ -147,8 +146,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* SATA */
-	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	params->SataEnable = is_dev_enabled(dev);
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
 	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
@@ -169,21 +167,18 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ImonOffset[0] = config->ImonOffset;
 
 	/* SDCard related configuration */
-	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
-	params->ScsSdCardEnabled = is_dev_enabled(dev);
+	params->ScsSdCardEnabled = is_devfn_enabled(PCH_DEVFN_SDCARD);
 	if (params->ScsSdCardEnabled)
 		params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
 
 	/* Enable Processor Thermal Control */
-	dev = pcidev_path_on_root(SA_DEVFN_DPTF);
-	params->Device4Enable = is_dev_enabled(dev);
+	params->Device4Enable = is_devfn_enabled(SA_DEVFN_DPTF);
 
 	/* Set TccActivationOffset */
 	params->TccActivationOffset = config->tcc_offset;
 
 	/* eMMC configuration */
-	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
-	params->ScsEmmcEnabled = is_dev_enabled(dev);
+	params->ScsEmmcEnabled = is_devfn_enabled(PCH_DEVFN_EMMC);
 	if (params->ScsEmmcEnabled)
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 
@@ -192,7 +187,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	if (dev) {
 		if (!xdci_can_enable())
 			dev->enabled = 0;
-
 		params->XdciEnable = dev->enabled;
 	} else {
 		params->XdciEnable = 0;

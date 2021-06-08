@@ -9,7 +9,6 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci_ids.h>
-#include <drivers/generic/ioapic/chip.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -509,34 +508,11 @@ void *mptable_finalize(struct mp_config_table *mc)
 	return smp_next_mpe_entry(mc);
 }
 
-static const struct device *find_next_ioapic(unsigned int last_ioapic_id)
-{
-	const struct device *dev;
-	const struct device *result = NULL;
-	unsigned int ioapic_id = MAX_APICS;
-
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->path.type == DEVICE_PATH_IOAPIC &&
-		    dev->path.ioapic.ioapic_id > last_ioapic_id &&
-		    dev->path.ioapic.ioapic_id <= ioapic_id) {
-			result = dev;
-		}
-	}
-	return result;
-}
-
 unsigned long __weak write_smp_table(unsigned long addr)
 {
-	struct drivers_generic_ioapic_config *ioapic_config;
 	struct mp_config_table *mc;
-	int isa_bus, pin, parentpin;
-	const struct device *dev;
-	const struct device *parent;
-	const struct device *oldparent;
+	int isa_bus;
 	void *tmp, *v;
-	int isaioapic = -1, have_fixed_entries;
-	const struct pci_irq_info *pci_irq_info;
-	unsigned int ioapic_id = 0;
 
 	v = smp_write_floating_table(addr, 0);
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -546,99 +522,6 @@ unsigned long __weak write_smp_table(unsigned long addr)
 	smp_write_processors(mc);
 
 	mptable_write_buses(mc, NULL, &isa_bus);
-
-	while ((dev = find_next_ioapic(ioapic_id))) {
-		ioapic_config = dev->chip_info;
-		if (!ioapic_config) {
-			printk(BIOS_ERR, "%s has no config, ignoring\n",
-				dev_path(dev));
-			ioapic_id++;
-			continue;
-		}
-
-		ioapic_id = dev->path.ioapic.ioapic_id;
-		smp_write_ioapic(mc, ioapic_id,
-				     ioapic_config->version,
-				     ioapic_config->base);
-
-		if (ioapic_config->have_isa_interrupts) {
-			if (isaioapic >= 0)
-				printk(BIOS_ERR,
-					"More than one IOAPIC with ISA interrupts?\n");
-			else
-				isaioapic = dev->path.ioapic.ioapic_id;
-		}
-	}
-
-	if (isaioapic >= 0) {
-		/* Legacy Interrupts */
-		printk(BIOS_DEBUG, "Writing ISA IRQs\n");
-		mptable_add_isa_interrupts(mc, isa_bus, isaioapic, 0);
-	}
-
-	for (dev = all_devices; dev; dev = dev->next) {
-
-		if (!is_enabled_pci(dev))
-			continue;
-
-		have_fixed_entries = 0;
-		for (pin = 0; pin < 4; pin++) {
-			if (dev->pci_irq_info[pin].ioapic_dst_id) {
-				printk(BIOS_DEBUG,
-					"fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n",
-						dev_path(dev),
-				       pin + 'A',
-				       dev->pci_irq_info[pin].ioapic_dst_id,
-				       dev->pci_irq_info[pin].ioapic_irq_pin);
-				smp_write_intsrc(mc, mp_INT,
-					 dev->pci_irq_info[pin].ioapic_flags,
-					 dev->bus->secondary,
-					 ((dev->path.pci.devfn & 0xf8) >> 1)
-						| pin,
-					 dev->pci_irq_info[pin].ioapic_dst_id,
-					 dev->pci_irq_info[pin].ioapic_irq_pin);
-				have_fixed_entries = 1;
-			}
-		}
-
-		if (!have_fixed_entries) {
-			pin = (dev->path.pci.devfn & 7) % 4;
-			oldparent = parent = dev;
-			while ((parent = parent->bus->dev)) {
-				parentpin = (oldparent->path.pci.devfn >> 3)
-					+ (oldparent->path.pci.devfn & 7);
-				parentpin += dev->path.pci.devfn & 7;
-				parentpin += dev->path.pci.devfn >> 3;
-				parentpin %= 4;
-
-				pci_irq_info = &parent->pci_irq_info[parentpin];
-				if (pci_irq_info->ioapic_dst_id) {
-					printk(BIOS_DEBUG,
-					       "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
-					       dev_path(dev), pin + 'A',
-					       pci_irq_info->ioapic_dst_id,
-					       pci_irq_info->ioapic_irq_pin);
-					smp_write_intsrc(mc, mp_INT,
-						 pci_irq_info->ioapic_flags,
-						 dev->bus->secondary,
-						 ((dev->path.pci.devfn & 0xf8)
-							>> 1) | pin,
-						 pci_irq_info->ioapic_dst_id,
-						 pci_irq_info->ioapic_irq_pin);
-
-					break;
-				}
-
-				if (parent->path.type == DEVICE_PATH_DOMAIN) {
-					printk(BIOS_WARNING,
-						"no IRQ found for %s\n",
-						dev_path(dev));
-					break;
-				}
-				oldparent = parent;
-			}
-		}
-	}
 
 	mptable_lintsrc(mc, isa_bus);
 	tmp = mptable_finalize(mc);

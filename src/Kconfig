@@ -795,9 +795,9 @@ config ACPI_NHLT
 menu "System tables"
 
 config GENERATE_MP_TABLE
-	prompt "Generate an MP table" if HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
+	prompt "Generate an MP table" if HAVE_MP_TABLE
 	bool
-	default HAVE_MP_TABLE || DRIVERS_GENERIC_IOAPIC
+	default HAVE_MP_TABLE
 	help
 	  Generate an MP table (conforming to the Intel MultiProcessor
 	  specification 1.4) for this board.

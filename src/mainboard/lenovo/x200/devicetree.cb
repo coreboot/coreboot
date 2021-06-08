@@ -33,7 +33,6 @@ chip northbridge/intel/gm45
 		end # host bridge
 		device pci 02.0 on # VGA
 			subsystemid 0x17aa 0x20e4
-			ioapic_irq 2 INTA 0x10
 		end
 		device pci 02.1 on
 			subsystemid 0x17aa 0x20e4
@@ -78,27 +77,21 @@ chip northbridge/intel/gm45
 			device pci 19.0 on end # LAN
 			device pci 1a.0 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1a.1 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTB 0x11
 			end
 			device pci 1a.2 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTC 0x12
 			end
 			device pci 1a.7 on # EHCI
 				subsystemid 0x17aa 0x20f1
-				ioapic_irq 2 INTC 0x12
 			end
 			device pci 1b.0 on # HD Audio
 				subsystemid 0x17aa 0x20f2
-				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1c.0 on # PCIe Port #1
 				subsystemid 0x17aa 0x20f3 # WWAN
-				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1c.1 on
 				subsystemid 0x17aa 0x20f3 # WLAN
@@ -111,31 +104,21 @@ chip northbridge/intel/gm45
 			device pci 1c.5 off end # PCIe Port #6
 			device pci 1d.0 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1d.1 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTB 0x11
 			end
 			device pci 1d.2 on # UHCI
 				subsystemid 0x17aa 0x20f0
-				ioapic_irq 2 INTC 0x12
 			end
 			device pci 1d.7 on # EHCI
 				subsystemid 0x17aa 0x20f1
-				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1e.0 on # PCI
 				subsystemid 0x17aa 0x20f4
 			end
 			device pci 1f.0 on # LPC bridge
 				subsystemid 0x17aa 0x20f5
-
-				chip drivers/generic/ioapic
-					register "have_isa_interrupts" = "1"
-					register "base" = "(void *)0xfec00000"
-					device ioapic 2 on end
-				end
 
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on end # dummy
@@ -180,11 +163,9 @@ chip northbridge/intel/gm45
 			end
 			device pci 1f.2 on # SATA/IDE 1
 				subsystemid 0x17aa 0x20f8
-				ioapic_irq 2 INTB 0x11
 			end
 			device pci 1f.3 on # SMBus
 				subsystemid 0x17aa 0x20f9
-				ioapic_irq 2 INTC 0x12
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end

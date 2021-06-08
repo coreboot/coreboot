@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 # LPC47N207 selected for external LPC card
 # not on board, should be made selectable.
 	select SUPERIO_SMSC_LPC47N207
-	select DRIVERS_GENERIC_IOAPIC
 	select INTEL_INT15
 	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 	select HAVE_SPD_IN_CBFS

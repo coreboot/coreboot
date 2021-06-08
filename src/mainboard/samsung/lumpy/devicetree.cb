@@ -32,10 +32,6 @@ chip northbridge/intel/sandybridge
 	end
 
 	device domain 0 on
-		ioapic_irq 4 INTA 0x10
-		ioapic_irq 4 INTB 0x11
-		ioapic_irq 4 INTC 0x12
-		ioapic_irq 4 INTD 0x13
 		subsystemid 0x1ae0 0xc000 inherit
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on end # vga controller
@@ -61,28 +57,19 @@ chip northbridge/intel/sandybridge
 			device pci 16.2 off end # Management Engine IDE-R
 			device pci 16.3 off end # Management Engine KT
 			device pci 19.0 off end # Intel Gigabit Ethernet
-			device pci 1a.0 on # USB2 EHCI #2
-				ioapic_irq 4 INTA 0x11
-			end
-			device pci 1b.0 on # High Definition Audio
-				ioapic_irq 4 INTA 0x16
-			end
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on end # PCIe Port #1 (WLAN)
 			device pci 1c.1 off end # PCIe Port #2
 			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 on # PCIe Port #4 (LAN)
-			#	ioapic_irq 4 INTA 0x13
-			end
+			device pci 1c.3 on end # PCIe Port #4 (LAN)
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6
 			device pci 1c.6 off end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on # USB2 EHCI #1
-				ioapic_irq 4 INTA 0x13
-			end
+			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
 			device pci 1f.0 on # LPC bridge
-				ioapic_irq 4 INTA 0x10
 				chip superio/smsc/mec1308
 					device pnp 2e.1 on		# PM1
 						io 0x60 = 0xb00
@@ -104,22 +91,12 @@ chip northbridge/intel/sandybridge
 					register "mailbox_port" = "0xa00"
 					device pnp ff.1 off end
 				end
-
-				chip drivers/generic/ioapic
-				     register "have_isa_interrupts" = "1"
-				     register "base" = "(void *)0xfec00000"
-				     device ioapic 4 on end
-				end
 				chip drivers/pc80/tpm
 					device pnp 0c31.0 on end
 				end
 			end
-			device pci 1f.2 on # SATA Controller 1
-				ioapic_irq 4 INTA 0x10
-			end
-			device pci 1f.3 on # SMBus
-				ioapic_irq 4 INTC 0x17
-			end
+			device pci 1f.2 on end # SATA Controller 1
+			device pci 1f.3 on end # SMBus
 			device pci 1f.5 off end # SATA Controller 2
 			device pci 1f.6 on end # Thermal
 		end

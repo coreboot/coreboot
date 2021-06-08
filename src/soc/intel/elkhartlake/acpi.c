@@ -177,11 +177,10 @@ uint32_t soc_read_sci_irq_select(void)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	const struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
-	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
+	if (is_devfn_enabled(SA_DEVFN_IGD) && gfxvtbar && gfxvten) {
 		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);

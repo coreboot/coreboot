@@ -138,8 +138,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/* Display config */
 	params->DdiPortAHpd = config->DdiPortAHpd;
@@ -240,8 +239,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* SATA config */
-	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	params->SataEnable = is_dev_enabled(dev);
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
 	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
@@ -260,8 +258,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* SDCard config */
-	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
-	params->ScsSdCardEnabled = is_dev_enabled(dev);
+	params->ScsSdCardEnabled = is_devfn_enabled(PCH_DEVFN_SDCARD);
 	if (params->ScsSdCardEnabled) {
 		params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
 		params->SdCardGpioCmdPadTermination = GPIO_TERM_NATIVE;
@@ -272,8 +269,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* eMMC config */
-	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
-	params->ScsEmmcEnabled = is_dev_enabled(dev);
+	params->ScsEmmcEnabled = is_devfn_enabled(PCH_DEVFN_EMMC);
 	if (params->ScsEmmcEnabled) {
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 		params->ScsEmmcDdr50Enabled = config->ScsEmmcDdr50Enabled;

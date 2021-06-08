@@ -363,6 +363,19 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
 	/* GPD11: LANPHYC ==> WWAN_CONFIG1 */
 	PAD_CFG_GPI(GPD11, NONE, DEEP),
+
+	/* Virtual GPIO */
+	/* Put unused Cnvi BT UART lines in NC mode since we use USB mode. */
+	PAD_NC(GPP_VGPIO_6, NONE),
+	PAD_NC(GPP_VGPIO_7, NONE),
+	PAD_NC(GPP_VGPIO_8, NONE),
+	PAD_NC(GPP_VGPIO_9, NONE),
+
+	/* Put unused Cnvi UART0 lines in NC mode since we use USB mode. */
+	PAD_NC(GPP_VGPIO_18, NONE),
+	PAD_NC(GPP_VGPIO_19, NONE),
+	PAD_NC(GPP_VGPIO_20, NONE),
+	PAD_NC(GPP_VGPIO_21, NONE),
 };
 
 /* Early pad configuration in bootblock */

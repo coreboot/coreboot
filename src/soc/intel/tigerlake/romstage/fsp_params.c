@@ -20,13 +20,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 {
 	unsigned int i;
 	uint32_t cpu_id, mask = 0;
-	const struct device *dev;
 
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (!CONFIG(SOC_INTEL_DISABLE_IGD) && is_dev_enabled(dev))
-		m_cfg->InternalGfx = 1;
-	else
-		m_cfg->InternalGfx = 0;
+	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/* If IGD is enabled, set IGD stolen size to 60MB. Otherwise, skip IGD init in FSP */
 	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? 0xFE : 0;
@@ -74,8 +69,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		DEBUG_INTERFACE_UART_8250IO : DEBUG_INTERFACE_LPSS_SERIAL_IO;
 
 	/* TraceHub configuration */
-	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
-	if (is_dev_enabled(dev) && config->TraceHubMode) {
+	if (is_devfn_enabled(PCH_DEVFN_TRACEHUB) && config->TraceHubMode) {
 		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
 		m_cfg->PchTraceHubMode = config->TraceHubMode;
 		m_cfg->CpuTraceHubMode = config->TraceHubMode;
@@ -85,8 +79,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SerialIoUartDebugMode = PchSerialIoSkipInit;
 
 	/* ISH */
-	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	m_cfg->PchIshEnable = is_dev_enabled(dev);
+	m_cfg->PchIshEnable = is_devfn_enabled(PCH_DEVFN_ISH);
 
 	/* Skip GPIO configuration from FSP */
 	m_cfg->GpioOverride = 0x1;
@@ -117,24 +110,14 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssXdciEn = config->TcssXdciEn;
 
 	/* TCSS DMA */
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA0);
-	m_cfg->TcssDma0En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TCSS_DMA1);
-	m_cfg->TcssDma1En = is_dev_enabled(dev);
+	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);
+	m_cfg->TcssDma1En = is_devfn_enabled(SA_DEVFN_TCSS_DMA1);
 
 	/* USB4/TBT */
-	dev = pcidev_path_on_root(SA_DEVFN_TBT0);
-	m_cfg->TcssItbtPcie0En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT1);
-	m_cfg->TcssItbtPcie1En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT2);
-	m_cfg->TcssItbtPcie2En = is_dev_enabled(dev);
-
-	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
-	m_cfg->TcssItbtPcie3En = is_dev_enabled(dev);
+	m_cfg->TcssItbtPcie0En = is_devfn_enabled(SA_DEVFN_TBT0);
+	m_cfg->TcssItbtPcie1En = is_devfn_enabled(SA_DEVFN_TBT1);
+	m_cfg->TcssItbtPcie2En = is_devfn_enabled(SA_DEVFN_TBT2);
+	m_cfg->TcssItbtPcie3En = is_devfn_enabled(SA_DEVFN_TBT3);
 
 	/* Hyper Threading */
 	m_cfg->HyperThreading = !config->HyperThreadingDisable;
@@ -149,8 +132,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
-	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	m_cfg->PchHdaEnable = is_dev_enabled(dev);
+	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
@@ -163,8 +145,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 
 	/* IPU configuration */
-	dev = pcidev_path_on_root(SA_DEVFN_IPU);
-	m_cfg->SaIpuEnable = is_dev_enabled(dev);
+	m_cfg->SaIpuEnable = is_devfn_enabled(SA_DEVFN_IPU);
 
 	/* Vt-D config */
 	cpu_id = cpu_get_cpuid();
@@ -210,8 +191,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SkipCpuReplacementCheck = !config->CpuReplacementCheck;
 
 	/* Skip CPU side PCIe enablement in FSP if device is disabled in devicetree */
-	dev = pcidev_path_on_root(SA_DEVFN_CPU_PCIE);
-	m_cfg->CpuPcieRpEnableMask = dev && dev->enabled;
+	m_cfg->CpuPcieRpEnableMask = is_devfn_enabled(SA_DEVFN_CPU_PCIE);
 
 	/* Change TmeEnable UPD value according to INTEL_TME Kconfig */
 	m_cfg->TmeEnable = CONFIG(INTEL_TME);

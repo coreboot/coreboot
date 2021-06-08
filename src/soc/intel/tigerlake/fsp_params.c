@@ -107,8 +107,7 @@ static int get_disable_mask(struct soc_intel_tigerlake_config *config)
 		disable_mask |= LPM_S0i3_3 | LPM_S0i3_4 | LPM_S0i2_2;
 
 	/* If CNVi or ISH is used, S0i3.2/S0i3.3/S0i3.4 cannot be achieved. */
-	if (is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI)) ||
-		is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_ISH)))
+	if (is_devfn_enabled(PCH_DEVFN_CNVI_WIFI) || is_devfn_enabled(PCH_DEVFN_ISH))
 		disable_mask |= LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4;
 
 	return disable_mask;
@@ -156,8 +155,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_dev_enabled(dev);
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/* Use coreboot MP PPI services if Kconfig is enabled */
 	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
@@ -275,8 +273,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
 
 	/* SATA */
-	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
-	params->SataEnable = is_dev_enabled(dev);
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
 	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
@@ -334,12 +331,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->TccActivationOffset = config->tcc_offset;
 
 	/* LAN */
-	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
-	params->PchLanEnable = is_dev_enabled(dev);
+	params->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
 
 	/* CNVi */
-	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI);
-	params->CnviMode = is_dev_enabled(dev);
+	params->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	params->CnviBtCore = config->CnviBtCore;
 	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
 	/* Assert if CNVi BT is enabled without CNVi being enabled. */
@@ -348,15 +343,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	assert(params->CnviBtCore || !params->CnviBtAudioOffload);
 
 	/* VMD */
-	dev = pcidev_path_on_root(SA_DEVFN_VMD);
-	params->VmdEnable = is_dev_enabled(dev);
+	params->VmdEnable = is_devfn_enabled(SA_DEVFN_VMD);
 
 	/* THC */
-	dev = pcidev_path_on_root(PCH_DEVFN_THC0);
-	params->ThcPort0Assignment = is_dev_enabled(dev) ? THC_0 : THC_NONE;
-
-	dev =  pcidev_path_on_root(PCH_DEVFN_THC1);
-	params->ThcPort1Assignment = is_dev_enabled(dev) ? THC_1 : THC_NONE;
+	params->ThcPort0Assignment = is_devfn_enabled(PCH_DEVFN_THC0) ? THC_0 : THC_NONE;
+	params->ThcPort1Assignment = is_devfn_enabled(PCH_DEVFN_THC1) ? THC_1 : THC_NONE;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);

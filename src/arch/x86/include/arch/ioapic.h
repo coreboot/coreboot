@@ -37,6 +37,8 @@ void ioapic_set_max_vectors(void *ioapic_base, int mre_count);
 void ioapic_lock_max_vectors(void *ioapic_base);
 
 void setup_ioapic(void *ioapic_base, u8 ioapic_id);
+void register_new_ioapic(void *ioapic_base);
+void register_new_ioapic_gsi0(void *ioapic_base);
 
 void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb);
 #endif

@@ -178,7 +178,7 @@ static const struct timestamp_id_to_name {
 	{ TS_CBMEM_POST,	"cbmem post" },
 	{ TS_WRITE_TABLES,	"write tables" },
 	{ TS_FINALIZE_CHIPS,	"finalize chips" },
-	{ TS_LOAD_PAYLOAD,	"load payload" },
+	{ TS_LOAD_PAYLOAD,	"starting to load payload" },
 	{ TS_ACPI_WAKE_JUMP,	"ACPI wake jump" },
 	{ TS_SELFBOOT_JUMP,	"selfboot jump" },
 	{ TS_DELAY_START,	"Forced delay start" },

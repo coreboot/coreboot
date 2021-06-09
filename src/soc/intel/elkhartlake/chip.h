@@ -68,6 +68,9 @@ struct soc_intel_elkhartlake_config {
 	/* Memory Thermal Throttling: Enable - Default (0) / Disable (1) */
 	bool MemoryThermalThrottlingDisable;
 
+	/* FuSa (Functional Safety): Disable - Default (0) / Enable (1) */
+	bool FuSaEnable;
+
 	/* System Agent dynamic frequency support.
 	 * When enabled memory will be trained at different frequencies.
 	 * 0:Disabled, 1:FixedPoint0(low), 2:FixedPoint1(mid), 3:FixedPoint2

@@ -344,6 +344,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchFivrVccinAuxOffToHighCurModeVolTranTime = 0x0096;
 	params->FivrSpreadSpectrum = 0xF;
 
+	/* FuSa (Functional Safety) config */
+	if (!config->FuSaEnable) {
+		params->DisplayFusaConfigEnable = 0;
+		params->GraphicFusaConfigEnable = 0;
+		params->OpioFusaConfigEnable = 0;
+		params->PsfFusaConfigEnable = 0;
+	}
+
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);
 }

@@ -304,6 +304,20 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 	/* D3Hot and D3Cold for TCSS */
 	s_cfg->D3HotEnable = !config->TcssD3HotDisable;
 	s_cfg->D3ColdEnable = !config->TcssD3ColdDisable;
+
+	s_cfg->UsbTcPortEn = 0;
+	for (int i = 0; i < MAX_TYPE_C_PORTS; i++) {
+		/* TCSS xHCI --> Root Hub --> Type-C Port */
+		const struct device_path port_path[] = {
+			{.type = DEVICE_PATH_PCI, .pci.devfn = SA_DEVFN_TCSS_XHCI},
+			{.type = DEVICE_PATH_USB, .usb.port_type = 0, .usb.port_id = 0},
+			{.type = DEVICE_PATH_USB, .usb.port_type = 3, .usb.port_id = i} };
+		const struct device *port = find_dev_nested_path(pci_root_bus(), port_path,
+					ARRAY_SIZE(port_path));
+
+		if (is_dev_enabled(port))
+			s_cfg->UsbTcPortEn |= BIT(i);
+	}
 }
 
 static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,

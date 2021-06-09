@@ -242,6 +242,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_ICL,
 		PLATFORM_TGL,
 		PLATFORM_JSL,
+		PLATFORM_EHL,
 		PLATFORM_ADL,
 	};
 	unsigned int i;
@@ -1199,6 +1200,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_SKLKBL:
 	case PLATFORM_TGL:
 	case PLATFORM_JSL:
+	case PLATFORM_EHL:
 	case PLATFORM_ADL:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
@@ -1653,6 +1655,7 @@ static void print_usage(const char *name)
 	       "                                         adl    - Alder Lake\n"
 	       "                                         aplk   - Apollo Lake\n"
 	       "                                         cnl    - Cannon Lake\n"
+	       "                                         ehl    - Elkhart Lake\n"
 	       "                                         glk    - Gemini Lake\n"
 	       "                                         icl    - Ice Lake\n"
 	       "                                         jsl    - Jasper Lake\n"
@@ -1895,12 +1898,14 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_APL;
 			} else if (!strcmp(optarg, "cnl")) {
 				platform = PLATFORM_CNL;
+			} else if (!strcmp(optarg, "ehl")) {
+				platform = PLATFORM_EHL;
 			} else if (!strcmp(optarg, "glk")) {
 				platform = PLATFORM_GLK;
 			} else if (!strcmp(optarg, "icl")) {
 				platform = PLATFORM_ICL;
 			} else if (!strcmp(optarg, "jsl")) {
-                                platform = PLATFORM_JSL;
+				platform = PLATFORM_JSL;
 			} else if (!strcmp(optarg, "sklkbl")) {
 				platform = PLATFORM_SKLKBL;
 			} else if (!strcmp(optarg, "tgl")) {

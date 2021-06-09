@@ -265,13 +265,28 @@ static inline bool is_ext_vbt_required(igd_opregion_t *opregion, optionrom_vbt_t
 	return (vbt->hdr_vbt_size > sizeof(opregion->vbt.gvd1));
 }
 
+/*
+ * Copy extended VBT at the end of opregion and fill rvda and rvds
+ * values correctly for the opregion.
+ */
+static void opregion_add_ext_vbt(igd_opregion_t *opregion, uint8_t *ext_vbt,
+				optionrom_vbt_t *vbt)
+{
+	/* Copy VBT into extended VBT region (at offset 8 KiB) */
+	memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
+
+	/* Fill RVDA value with address of physical pointer */
+	opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
+	opregion->mailbox3.rvds = vbt->hdr_vbt_size;
+}
+
 /* Initialize IGD OpRegion, called from ACPI code and OS drivers */
 enum cb_err intel_gma_init_igd_opregion(void)
 {
 	igd_opregion_t *opregion;
 	struct region_device rdev;
 	optionrom_vbt_t *vbt = NULL;
-	optionrom_vbt_t *ext_vbt = NULL;
+	size_t opregion_size = sizeof(igd_opregion_t);
 
 	if (acpi_is_wakeup_s3())
 		return intel_gma_restore_opregion();
@@ -291,13 +306,16 @@ enum cb_err intel_gma_init_igd_opregion(void)
 		return CB_ERR;
 	}
 
-	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, sizeof(*opregion));
+	if (is_ext_vbt_required(opregion, vbt))
+		opregion_size += vbt->hdr_vbt_size;
+
+	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, opregion_size);
 	if (!opregion) {
 		printk(BIOS_ERR, "GMA: Failed to add IGD OpRegion to CBMEM.\n");
 		return CB_ERR;
 	}
 
-	memset(opregion, 0, sizeof(igd_opregion_t));
+	memset(opregion, 0, opregion_size);
 
 	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
 		sizeof(opregion->header.signature));
@@ -305,18 +323,9 @@ enum cb_err intel_gma_init_igd_opregion(void)
 					ARRAY_SIZE(vbt->coreblock_biosbuild));
 	/* Extended VBT support */
 	if (is_ext_vbt_required(opregion, vbt)) {
-		ext_vbt = cbmem_add(CBMEM_ID_EXT_VBT, vbt->hdr_vbt_size);
-
-		if (ext_vbt == NULL) {
-			printk(BIOS_ERR,
-			       "GMA: Unable to add Ext VBT to cbmem!\n");
-			rdev_munmap(&rdev, vbt);
-			return CB_ERR;
-		}
-
-		memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);
-		opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
-		opregion->mailbox3.rvds = vbt->hdr_vbt_size;
+		/* Place extended VBT just after opregion */
+		uint8_t *ext_vbt = (uint8_t *)opregion + sizeof(*opregion);
+		opregion_add_ext_vbt(opregion, ext_vbt, vbt);
 	} else {
 		/* Raw VBT size which can fit in gvd1 */
 		memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size);

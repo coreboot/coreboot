@@ -10,8 +10,8 @@
 #include <smbios.h>
 #include <stdint.h>
 #include <string.h>
-
 #include "board_id.h"
+#include <fw_config.h>
 
 const char *smbios_system_sku(void)
 {
@@ -30,9 +30,31 @@ static void mainboard_init(void *chip_info)
 		mainboard_ec_init();
 }
 
+#if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC)
+static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
+{
+	struct smbios_type11 *t;
+	char buffer[64];
+
+	t = (struct smbios_type11 *)arg;
+
+	snprintf(buffer, sizeof(buffer), "%s-%s", config->field_name, config->option_name);
+	t->count = smbios_add_string(t->eos, buffer);
+}
+
+static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
+{
+	fw_config_for_each_found(add_fw_config_oem_string, t);
+}
+#endif
+
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
+
+#if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC)
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
+#endif
 }
 
 struct chip_operations mainboard_ops = {

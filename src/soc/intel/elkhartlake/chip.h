@@ -42,6 +42,12 @@ struct ehl_ibecc_config {
 	uint16_t region_mask[MAX_IBECC_REGIONS];
 };
 
+/* TSN GBE Link Speed: 0: 2.5Gbps, 1: 1Gbps */
+enum tsn_gbe_link_speed {
+	Tsn_2_5_Gbps,
+	Tsn_1_Gbps,
+};
+
 struct soc_intel_elkhartlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -156,7 +162,7 @@ struct soc_intel_elkhartlake_config {
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCK_SRC];
 
-/* Enable PCIe Precision Time Measurement for Root Ports (disabled by default) */
+	/* Enable PCIe Precision Time Measurement for Root Ports (disabled by default) */
 	uint8_t PciePtm[CONFIG_MAX_ROOT_PORTS];
 
 	/* Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -400,6 +406,14 @@ struct soc_intel_elkhartlake_config {
 	 * Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s
 	 */
 	u8 PchPmPwrBtnOverridePeriod;
+
+	/* GBE related */
+	/* PCH TSN GBE Link Speed: 0: 2.5Gbps, 1: 1Gbps */
+	enum tsn_gbe_link_speed PchTsnGbeLinkSpeed;
+	/* PCH TSN GBE SGMII Support: Disable (0) / Enable (1) */
+	bool PchTsnGbeSgmiiEnable;
+	/* PCH TSN GBE Multiple Virtual Channel: Disable (0) / Enable (1) */
+	bool PchTsnGbeMultiVcEnable;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

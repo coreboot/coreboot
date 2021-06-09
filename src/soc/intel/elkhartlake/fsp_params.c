@@ -7,6 +7,7 @@
 #include <fsp/util.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <soc/intel/common/vbt.h>
@@ -309,6 +310,40 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->GraphicFusaConfigEnable = 0;
 		params->OpioFusaConfigEnable = 0;
 		params->PsfFusaConfigEnable = 0;
+	}
+
+	/* PCH GBE config */
+	/*
+	 * Due to EHL GBE comes with time sensitive networking (TSN)
+	 * capability integrated, EHL FSP is using PchTsnEnable instead of
+	 * usual PchLanEnable flag for GBE control. Hence, force
+	 * PchLanEnable to disable to avoid it being used in the future.
+	 */
+	params->PchLanEnable = 0x0;
+	params->PchTsnEnable = is_devfn_enabled(PCH_DEVFN_GBE);
+	if (params->PchTsnEnable) {
+		params->PchTsnGbeSgmiiEnable = config->PchTsnGbeSgmiiEnable;
+		params->PchTsnGbeMultiVcEnable = config->PchTsnGbeMultiVcEnable;
+		/*
+		 * Currently EHL TSN GBE only supports link speed with 2 type of
+		 * PCH XTAL frequency: 24 MHz and 38.4 MHz.
+		 * These are the configs setup for PchTsnGbeLinkSpeed FSP-S UPD:
+		 * 0: 24MHz 2.5Gbps, 1: 24MHz 1Gbps, 2: 38.4MHz 2.5Gbps,
+		 * 3: 38.4MHz 1Gbps
+		 */
+		switch (pmc_get_xtal_freq()) {
+		case XTAL_24_MHZ:
+			params->PchTsnGbeLinkSpeed = (!!config->PchTsnGbeLinkSpeed);
+			break;
+		case XTAL_38_4_MHZ:
+			params->PchTsnGbeLinkSpeed = (!!config->PchTsnGbeLinkSpeed) + 0x2;
+			break;
+		case XTAL_19_2_MHZ:
+		default:
+			printk(BIOS_ERR, "XTAL not supported. Disabling PCH TSN GBE.\n");
+			params->PchTsnEnable = 0;
+			devfn_disable(pci_root_bus(), PCH_DEVFN_GBE);
+		}
 	}
 
 	/* Override/Fill FSP Silicon Param for mainboard */

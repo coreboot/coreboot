@@ -121,10 +121,10 @@ func (FieldMacros) DecodeDW0() {
 
 		&field {
 			configmap : map[uint8]string {
-				0: "GpioResetPwrGood",
-				1: "GpioResetDeep",
-				2: "GpioResetNormal",
-				3: "GpioResetResume",
+				0: "GpioResetPwrGood",	// TODO: Has multiple values (to GPP and GPD)
+				1: "GpioHostDeepReset",
+				2: "GpioPlatformReset",
+				3: "GpioResumeReset",
 			},
 			value : dw0.GetResetConfig(),
 		},

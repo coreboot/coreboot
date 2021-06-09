@@ -49,11 +49,14 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	return ctl - 1;
 }
 
-static void parse_devicetree(FSP_S_CONFIG *s_cfg)
+__weak void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	const struct soc_intel_alderlake_config *config;
-	config = config_of_soc();
+	/* Override settings per board. */
+}
 
+static void fill_fsps_lpss_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	for (int i = 0; i < CONFIG_SOC_INTEL_I2C_DEV_MAX; i++)
 		s_cfg->SerialIoI2cMode[i] = config->SerialIoI2cMode[i];
 
@@ -67,24 +70,13 @@ static void parse_devicetree(FSP_S_CONFIG *s_cfg)
 		s_cfg->SerialIoUartMode[i] = config->SerialIoUartMode[i];
 }
 
-__weak void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
+static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
 {
-	/* Override settings per board. */
-}
-
-static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
-		struct soc_intel_alderlake_config *config)
-{
-	int i;
 	const struct microcode *microcode_file;
 	size_t microcode_len;
-	uint32_t enable_mask;
 
-	mainboard_update_soc_chip_config(config);
-
-	/* Parse device tree and enable/disable Serial I/O devices */
-	parse_devicetree(s_cfg);
-
+	/* Locate microcode and pass to FSP-S for 2nd microcode loading */
 	microcode_file = cbfs_map("cpu_microcode_blob.bin", &microcode_len);
 
 	if ((microcode_file != NULL) && (microcode_len != 0)) {
@@ -93,21 +85,25 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->MicrocodeRegionSize = (uint32_t)microcode_len;
 	}
 
+	/* Use coreboot MP PPI services if Kconfig is enabled */
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
+		s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+}
+
+static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Load VBT before devicetree-specific config. */
 	s_cfg->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
 	/* Check if IGD is present and fill Graphics init param accordingly */
 	s_cfg->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 	s_cfg->LidStatus = CONFIG(RUN_FSP_GOP);
+}
 
-	/* Use coreboot MP PPI services if Kconfig is enabled */
-	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
-		s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
-
-	/* D3Hot and D3Cold for TCSS */
-	s_cfg->D3HotEnable = !config->TcssD3HotDisable;
-	s_cfg->D3ColdEnable = !config->TcssD3ColdDisable;
-
+static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	s_cfg->TcssAuxOri = config->TcssAuxOri;
 
 	/* Explicitly clear this field to avoid using defaults */
@@ -120,6 +116,14 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	 */
 	s_cfg->ITbtConnectTopologyTimeoutInMs = 0;
 
+	/* D3Hot and D3Cold for TCSS */
+	s_cfg->D3HotEnable = !config->TcssD3HotDisable;
+	s_cfg->D3ColdEnable = !config->TcssD3ColdDisable;
+}
+
+static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Chipset Lockdown */
 	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
 		s_cfg->PchLockDownGlobalSmi = 0;
@@ -132,7 +136,12 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PchUnlockGpioPads = 0;
 		s_cfg->RtcMemoryLock = 1;
 	}
+}
 
+static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	int i;
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		s_cfg->PortUsb20Enable[i] = config->usb2_ports[i].enable;
@@ -169,17 +178,29 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		if (config->tcss_ports[i].enable)
 			s_cfg->CpuUsb3OverCurrentPin[i] = config->tcss_ports[i].ocpin;
 	}
+}
 
+static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	if (!xdci_can_enable())
 		devfn_disable(pci_root_bus(), PCH_DEVFN_USBOTG);
 	s_cfg->XdciEnable = is_devfn_enabled(PCH_DEVFN_USBOTG);
+}
 
+static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* PCH UART selection for FSP Debug */
 	s_cfg->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 	ASSERT(ARRAY_SIZE(s_cfg->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);
 	s_cfg->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
+}
 
+static void fill_fsps_sata_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* SATA */
 	s_cfg->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
 	if (s_cfg->SataEnable) {
@@ -192,36 +213,46 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	}
 
 	/*
-	 * Power Optimizer for DMI and SATA.
-	 * DmiPwrOptimizeDisable and SataPwrOptimizeDisable is default to 0.
+	 * Power Optimizer for SATA.
+	 * SataPwrOptimizeDisable is default to 0.
 	 * Boards not needing the optimizers explicitly disables them by setting
 	 * these disable variables to 1 in devicetree overrides.
 	 */
-	s_cfg->PchPwrOptEnable = !(config->DmiPwrOptimizeDisable);
 	s_cfg->SataPwrOptEnable = !(config->SataPwrOptimizeDisable);
-
 	/*
 	 *  Enable DEVSLP Idle Timeout settings DmVal and DitoVal.
 	 *  SataPortsDmVal is the DITO multiplier. Default is 15.
 	 *  SataPortsDitoVal is the DEVSLP Idle Timeout (DITO), Default is 625ms.
 	 *  The default values can be changed from devicetree.
 	 */
-	for (i = 0; i < ARRAY_SIZE(config->SataPortsEnableDitoConfig); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(config->SataPortsEnableDitoConfig); i++) {
 		if (config->SataPortsEnableDitoConfig[i]) {
 			s_cfg->SataPortsDmVal[i] = config->SataPortsDmVal[i];
 			s_cfg->SataPortsDitoVal[i] = config->SataPortsDitoVal[i];
 		}
 	}
+}
 
+static void fill_fsps_thermal_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Enable TCPU for processor thermal control */
 	s_cfg->Device4Enable = is_devfn_enabled(SA_DEVFN_DPTF);
 
 	/* Set TccActivationOffset */
 	s_cfg->TccActivationOffset = config->tcc_offset;
+}
 
+static void fill_fsps_lan_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* LAN */
 	s_cfg->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
+}
 
+static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* CNVi */
 	s_cfg->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	s_cfg->CnviBtCore = config->CnviBtCore;
@@ -230,27 +261,51 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	assert(s_cfg->CnviMode || !s_cfg->CnviBtCore);
 	/* Assert if CNVi BT offload is enabled without CNVi BT being enabled. */
 	assert(s_cfg->CnviBtCore || !s_cfg->CnviBtAudioOffload);
+}
 
+static void fill_fsps_vmd_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* VMD */
 	s_cfg->VmdEnable = is_devfn_enabled(SA_DEVFN_VMD);
+}
 
+static void fill_fsps_thc_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* THC */
 	s_cfg->ThcPort0Assignment = is_devfn_enabled(PCH_DEVFN_THC0) ? THC_0 : THC_NONE;
 	s_cfg->ThcPort1Assignment = is_devfn_enabled(PCH_DEVFN_THC1) ? THC_1 : THC_NONE;
+}
 
+static void fill_fsps_tbt_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* USB4/TBT */
-	for (i = 0; i < ARRAY_SIZE(s_cfg->ITbtPcieRootPortEn); i++)
+	for (int i = 0; i < ARRAY_SIZE(s_cfg->ITbtPcieRootPortEn); i++)
 		s_cfg->ITbtPcieRootPortEn[i] = is_devfn_enabled(SA_DEVFN_TBT(i));
+}
 
+static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Legacy 8254 timer support */
 	s_cfg->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
 	s_cfg->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
+}
 
+static void fill_fsps_storage_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	/* Enable Hybrid storage auto detection */
 	s_cfg->HybridStorageMode = config->HybridStorageMode;
+}
 
-	enable_mask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
-	for (i = 0; i < CONFIG_MAX_PCH_ROOT_PORTS; i++) {
+static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	uint32_t enable_mask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
+	for (int i = 0; i < CONFIG_MAX_PCH_ROOT_PORTS; i++) {
 		if (!(enable_mask & BIT(i)))
 			continue;
 		const struct pcie_rp_config *rp_cfg = &config->pch_pcie_rp[i];
@@ -261,7 +316,18 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
 	}
+}
 
+static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	/*
+	 * Power Optimizer for DMI
+	 * DmiPwrOptimizeDisable is default to 0.
+	 * Boards not needing the optimizers explicitly disables them by setting
+	 * these disable variables to 1 in devicetree overrides.
+	 */
+	s_cfg->PchPwrOptEnable = !(config->DmiPwrOptimizeDisable);
 	s_cfg->PmSupport = 1;
 	s_cfg->Hwp = 1;
 	s_cfg->Cx = 1;
@@ -272,6 +338,39 @@ static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 {
 	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
 	s_arch_cfg->EnableMultiPhaseSiliconInit = 1;
+}
+
+static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
+		struct soc_intel_alderlake_config *config)
+{
+	/* Override settings per board if required. */
+	mainboard_update_soc_chip_config(config);
+
+	const void (*fill_fsps_params[])(FSP_S_CONFIG *m_cfg,
+			const struct soc_intel_alderlake_config *config) = {
+		fill_fsps_lpss_params,
+		fill_fsps_cpu_params,
+		fill_fsps_igd_params,
+		fill_fsps_tcss_params,
+		fill_fsps_chipset_lockdown_params,
+		fill_fsps_xhci_params,
+		fill_fsps_xdci_params,
+		fill_fsps_uart_params,
+		fill_fsps_sata_params,
+		fill_fsps_thermal_params,
+		fill_fsps_lan_params,
+		fill_fsps_cnvi_params,
+		fill_fsps_vmd_params,
+		fill_fsps_thc_params,
+		fill_fsps_tbt_params,
+		fill_fsps_8254_params,
+		fill_fsps_storage_params,
+		fill_fsps_pcie_params,
+		fill_fsps_misc_power_params,
+	};
+
+	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)
+		fill_fsps_params[i](s_cfg, config);
 }
 
 /* UPD parameters to be initialized before SiliconInit */

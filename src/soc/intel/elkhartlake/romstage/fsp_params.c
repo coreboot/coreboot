@@ -123,7 +123,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		}
 	}
 	/* PSE (Intel Programmable Services Engine) switch */
-	m_cfg->PchPseEnable = 0;
+	m_cfg->PchPseEnable = CONFIG(PSE_ENABLE) && cbfs_file_exists("pse.bin");
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

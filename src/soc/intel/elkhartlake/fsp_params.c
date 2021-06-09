@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <assert.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <fsp/api.h>
@@ -76,6 +77,70 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PchFivrExtVnnRailSxVoltage = (config->fivr.vnn_sx_mv * 10) / 25;
 	s_cfg->PchFivrExtV1p05RailIccMaximum = config->fivr.v1p05_icc_max_ma;
 	s_cfg->FivrSpreadSpectrum = config->fivr.spread_spectrum;
+}
+
+static void fill_fsps_pse_params(FSP_S_CONFIG *params,
+		const struct soc_intel_elkhartlake_config *config)
+{
+	static char psefwbuf[(CONFIG_PSE_FW_FILE_SIZE_KIB +
+		CONFIG_PSE_CONFIG_BUFFER_SIZE_KIB) * KiB];
+	uint32_t pse_fw_base;
+	size_t psefwsize = cbfs_load("pse.bin", psefwbuf, sizeof(psefwbuf));
+	if (psefwsize > 0) {
+		pse_fw_base = (uintptr_t)&psefwbuf;
+		params->SiipRegionBase = pse_fw_base;
+		params->SiipRegionSize = psefwsize;
+		printk(BIOS_DEBUG, "PSE base: %08x size: %08zx\n", pse_fw_base, psefwsize);
+
+		/* Configure PSE peripherals */
+		FSP_ARRAY_LOAD(params->PchPseDmaEnable, config->PseDmaOwn);
+		FSP_ARRAY_LOAD(params->PchPseDmaSbInterruptEnable, config->PseDmaSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseUartEnable, config->PseUartOwn);
+		FSP_ARRAY_LOAD(params->PchPseUartSbInterruptEnable, config->PseUartSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseHsuartEnable, config->PseHsuartOwn);
+		FSP_ARRAY_LOAD(params->PchPseQepEnable, config->PseQepOwn);
+		FSP_ARRAY_LOAD(params->PchPseQepSbInterruptEnable, config->PseQepSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseI2cEnable, config->PseI2cOwn);
+		FSP_ARRAY_LOAD(params->PchPseI2cSbInterruptEnable, config->PseI2cSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseI2sEnable, config->PseI2sOwn);
+		FSP_ARRAY_LOAD(params->PchPseI2sSbInterruptEnable, config->PseI2sSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseSpiEnable, config->PseSpiOwn);
+		FSP_ARRAY_LOAD(params->PchPseSpiSbInterruptEnable, config->PseSpiSbIntEn);
+		FSP_ARRAY_LOAD(params->PchPseSpiCs0Enable, config->PseSpiCs0Own);
+		FSP_ARRAY_LOAD(params->PchPseSpiCs1Enable, config->PseSpiCs1Own);
+		FSP_ARRAY_LOAD(params->PchPseCanEnable, config->PseCanOwn);
+		FSP_ARRAY_LOAD(params->PchPseCanSbInterruptEnable, config->PseCanSbIntEn);
+		params->PchPsePwmEnable = config->PsePwmOwn;
+		params->PchPsePwmSbInterruptEnable = config->PsePwmSbIntEn;
+		FSP_ARRAY_LOAD(params->PchPsePwmPinEnable, config->PsePwmPinEn);
+		params->PchPseAdcEnable = config->PseAdcOwn;
+		params->PchPseAdcSbInterruptEnable = config->PseAdcSbIntEn;
+		params->PchPseLh2PseSbInterruptEnable = config->PseLh2PseSbIntEn;
+		params->PchPseShellEnabled = config->PseShellEn;
+
+		/*
+		 * As a minimum requirement for PSE initialization, the configuration
+		 * of devices below are required as shown.
+		 * TODO: Help needed to find a better way to handle this part of code
+		 * as the settings from devicetree are overwritten here.
+		 *
+		 * Set the ownership of these devices to PSE. These are hardcoded for now,
+		 * if the PSE should be opened one day (hopefully), this can be handled
+		 * much better.
+		 */
+		params->PchPseDmaEnable[0] = PSE_Owned;
+		params->PchPseUartEnable[2] = PSE_Owned;
+		params->PchPseHsuartEnable[2] = PSE_Owned;
+		params->PchPseI2cEnable[2] = PSE_Owned;
+		params->PchPseTimedGpioEnable[0] = PSE_Owned;
+		params->PchPseTimedGpioEnable[1] = PSE_Owned;
+		/* Disable PSE DMA Sideband Interrupt for DMA 0 */
+		params->PchPseDmaSbInterruptEnable[0] = 0;
+		/* Set the log output to PSE UART 2 */
+		params->PchPseLogOutputChannel = 3;
+	} else {
+		die("PSE enabled but PSE FW not available!\n");
+	}
 }
 
 static void parse_devicetree(FSP_S_CONFIG *params)
@@ -365,6 +430,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			devfn_disable(pci_root_bus(), PCH_DEVFN_GBE);
 		}
 	}
+
+	/* PSE (Intel Programmable Services Engine) config */
+	if (CONFIG(PSE_ENABLE) && cbfs_file_exists("pse.bin"))
+		fill_fsps_pse_params(params, config);
 
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);

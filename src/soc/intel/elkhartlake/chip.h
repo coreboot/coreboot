@@ -49,6 +49,18 @@ enum tsn_gbe_link_speed {
 };
 
 /*
+ * PSE native pins and ownership assignment:-
+ * 0: Disable/pins are not owned by PSE/host
+ * 1: Pins are muxed to PSE IP, the IO is owned by PSE
+ * 2: Pins are muxed to PSE IP, the IO is owned by host
+ */
+enum pse_device_ownership {
+	Device_Disabled,
+	PSE_Owned,
+	Host_Owned,
+};
+
+/*
  * Enable external V1P05 Rail in: BIT0:S0i1/S0i2,
  * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5
  * However, EHL does not support S0i1 and S0i2,
@@ -453,6 +465,46 @@ struct soc_intel_elkhartlake_config {
 	bool PchTsnGbeSgmiiEnable;
 	/* PCH TSN GBE Multiple Virtual Channel: Disable (0) / Enable (1) */
 	bool PchTsnGbeMultiVcEnable;
+
+	/* PSE related */
+	/*
+	 * PSE (Intel Programmable Services Engine) native pins and ownership
+	 * assignment. If the device is configured as 'PSE owned', PSE will have
+	 * full control of specific device and it will be hidden from coreboot
+	 * and OS. If the device is configured as 'Host owned', the device will
+	 * be visible to coreboot and OS as a PCI device, while PSE will still
+	 * do some IP initialization and pin assignment works.
+	 *
+	 * PSE is still required during runtime to ensure any of PSE devices
+	 * works properly.
+	 */
+	enum pse_device_ownership PseDmaOwn[3];
+	enum pse_device_ownership PseUartOwn[6];
+	enum pse_device_ownership PseHsuartOwn[4];
+	enum pse_device_ownership PseQepOwn[4];
+	enum pse_device_ownership PseI2cOwn[8];
+	enum pse_device_ownership PseI2sOwn[2];
+	enum pse_device_ownership PseSpiOwn[4];
+	enum pse_device_ownership PseSpiCs0Own[4];
+	enum pse_device_ownership PseSpiCs1Own[4];
+	enum pse_device_ownership PseCanOwn[2];
+	enum pse_device_ownership PsePwmOwn;
+	enum pse_device_ownership PseAdcOwn;
+	/* PSE devices sideband interrupt: Disable (0) / Enable (1) */
+	bool PseDmaSbIntEn[3];
+	bool PseUartSbIntEn[6];
+	bool PseQepSbIntEn[4];
+	bool PseI2cSbIntEn[8];
+	bool PseI2sSbIntEn[2];
+	bool PseSpiSbIntEn[4];
+	bool PseCanSbIntEn[2];
+	bool PseLh2PseSbIntEn;
+	bool PsePwmSbIntEn;
+	bool PseAdcSbIntEn;
+	/* PSE PWM native function: Disable (0) / Enable (1) */
+	bool PsePwmPinEn[16];
+	/* PSE Console Shell */
+	bool PseShellEn;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

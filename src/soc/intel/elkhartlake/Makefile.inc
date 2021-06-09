@@ -51,5 +51,18 @@ CPPFLAGS_common += -I$(src)/soc/intel/elkhartlake/include
 
 # B0 stepping
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-96-01
+cbfs-files-$(CONFIG_ADD_PSE_IMAGE_TO_CBFS) += pse.bin
+pse.bin-file := $(CONFIG_PSE_IMAGE_FILE)
+pse.bin-type := raw
+pse.bin-compression := lzma
+
+# Add a build time check if the PSE file size fits
+ifeq ($(CONFIG_ADD_PSE_IMAGE_TO_CBFS),y)
+ifeq ($(call int-gt,\
+	$(call file-size,$(CONFIG_PSE_IMAGE_FILE))\
+	$(shell printf "%d" $(call int-shift-left, $(CONFIG_PSE_FW_FILE_SIZE_KIB) 10))), 1)
+$(error PSE binary larger than CONFIG_PSE_FW_FILE_SIZE_KIB.)
+endif
+endif # CONFIG_ADD_PSE_IMAGE_TO_CBFS
 
 endif

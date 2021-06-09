@@ -194,6 +194,44 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/ElkhartLakeFspBinPkg/FspBin/FSPRel.bin"
 
+config PSE_ENABLE
+	bool "Enable PSE ARM controller"
+	help
+	  Enable PSE IP. The PSE describes the integrated programmable
+	  service engine that is designed together with x86 Atom cores
+	  as an Asymmetric Multi-Processing (AMP) system.
+
+config ADD_PSE_IMAGE_TO_CBFS
+	bool "Add PSE Firmware to CBFS"
+	depends on PSE_ENABLE
+	default n
+	help
+	  PSE FW binary is required to use PSE dedicated peripherals from
+	  x86 subsystem. Once PSE is enabled, the FW will be loaded from
+	  CBFS by FSP and executed.
+
+config PSE_IMAGE_FILE
+	string "PSE binary path and filename"
+	depends on ADD_PSE_IMAGE_TO_CBFS
+	help
+	  The path and filename of the PSE binary.
+
+config PSE_FW_FILE_SIZE_KIB
+	hex "Memory buffer (KiB) for PSE FW image"
+	depends on ADD_PSE_IMAGE_TO_CBFS
+	default 0x200
+	help
+	  It is recommended to allocate at least 512 KiB for PSE FW.
+
+config PSE_CONFIG_BUFFER_SIZE_KIB
+	hex "Memory buffer (KiB) for PSE config data"
+	depends on ADD_PSE_IMAGE_TO_CBFS
+	default 0x100
+	help
+	  It is recommended to allocate at least 256 KiB for PSE config
+	  data (FSP will append PSE config data to memory region right
+	  after PSE FW memory region).
+
 config SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT
 	int "Debug Consent for EHL"
 	# USB DBC is more common for developers so make this default to 3 if

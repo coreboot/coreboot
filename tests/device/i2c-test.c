@@ -30,7 +30,7 @@ i2c_ex_devs_t i2c_ex_devs[] = {
 	} },
 };
 
-int __wrap_platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 	int count)
 {
 	int i;
@@ -77,13 +77,13 @@ static void mock_expect_params_platform_i2c_transfer(void)
 		I2C_M_RECV_LEN, I2C_M_NOSTART};
 
 	/* Flags should always be only within supported range */
-	expect_in_set_count(__wrap_platform_i2c_transfer, segments->flags,
+	expect_in_set_count(platform_i2c_transfer, segments->flags,
 		expected_flags, -1);
 
-	expect_not_value_count(__wrap_platform_i2c_transfer, segments->buf,
+	expect_not_value_count(platform_i2c_transfer, segments->buf,
 		NULL, -1);
 
-	expect_in_range_count(__wrap_platform_i2c_transfer, count, 1, INT_MAX,
+	expect_in_range_count(platform_i2c_transfer, count, 1, INT_MAX,
 		-1);
 }
 

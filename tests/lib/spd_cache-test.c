@@ -42,14 +42,14 @@ static int teardown_spd_cache(void **state)
 }
 
 
-int __wrap_fmap_locate_area_as_rdev(const char *name, struct region_device *area)
+int fmap_locate_area_as_rdev(const char *name, struct region_device *area)
 {
 	return rdev_chain(area, &flash_rdev_rw, 0, flash_buffer_size);
 }
 
 /* This test verifies if load_spd_cache() correctly loads spd_cache pointer and size
-   from provided region_device. Memory region device is returned by
-   __wrap_fmap_locate_area_as_rdev() */
+   from provided region_device. Memory region device is returned by our
+   fmap_locate_area_as_rdev() override. */
 static void test_load_spd_cache(void **state)
 {
 	uint8_t *spd_cache;

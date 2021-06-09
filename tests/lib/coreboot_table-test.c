@@ -264,7 +264,7 @@ void cbmem_run_init_hooks(int is_recovery)
 }
 
 extern uintptr_t _cbmem_top_ptr;
-void *__wrap_cbmem_top_chipset(void)
+void *cbmem_top_chipset(void)
 {
 	return (void *)_cbmem_top_ptr;
 }

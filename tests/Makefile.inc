@@ -17,6 +17,7 @@ coverage_dir = coverage_reports
 CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
 
 CMAKE:= cmake
+OBJCOPY?= objcopy
 
 TEST_DEFAULT_CONFIG = $(top)/configs/config.emulation_qemu_x86_i440fx
 TEST_DOTCONFIG = $(testobj)/.config
@@ -114,18 +115,21 @@ $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 
 $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__
+$($(1)-srcobjs): OBJCOPY_FLAGS += $$(foreach mock,$$($(1)-mocks),--globalize-symbol=$$(mock) --weaken-symbol=$$(mock))
 $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	mkdir -p $$(dir $$@)
 	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags)  -MMD \
-		-MT $$@ -c $$< -o $$@
+		-MT $$@ -c $$< -o $$@.orig
+	$(OBJCOPY) $$@.orig $$(OBJCOPY_FLAGS) $$@
 
-$($(1)-bin): TEST_LDFLAGS+= $$(foreach mock,$$($(1)-mocks),-Wl,--wrap=$$(mock))
 $($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
 	$(HOSTCC) $$^ $($(1)-cflags) $$(TEST_LDFLAGS) -o $$@
 
 endef
 
 $(foreach test, $(alltests), \
+	$(eval $(test)-srcobjs:=$(addprefix $(testobj)/$(test)/, \
+		$(patsubst %.c,%.o,$(filter src/%,$($(test)-srcs))))) \
 	$(eval $(test)-objs:=$(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$($(test)-srcs)))))
 $(foreach test, $(alltests), \

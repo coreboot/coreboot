@@ -186,6 +186,8 @@ chip soc/amd/cezanne
 	}"
 
 	device domain 0 on
+		device ref iommu on end
+
 		device ref gpp_bridge_0 on
 			chip drivers/wifi/generic
 				register "wake" = "GEVENT_8"

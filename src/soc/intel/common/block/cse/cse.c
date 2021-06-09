@@ -111,6 +111,9 @@ void heci_init(uintptr_t tempbar)
 
 	/* Enable Bus Master and MMIO Space */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+
+	/* Trigger HECI Reset and make Host ready for communication with CSE */
+	heci_reset();
 }
 
 static uint32_t read_bar(pci_devfn_t dev, uint32_t offset)

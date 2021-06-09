@@ -72,18 +72,14 @@ __weak void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *
 	/* Override settings per board. */
 }
 
-/* UPD parameters to be initialized before SiliconInit */
-void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
+static void soc_silicon_init_params(FSP_S_CONFIG *params,
+		struct soc_intel_alderlake_config *config)
 {
 	int i;
 	const struct microcode *microcode_file;
 	size_t microcode_len;
-	FSP_S_CONFIG *params = &supd->FspsConfig;
-	FSPS_ARCH_UPD *pfsps_arch_upd = &supd->FspsArchUpd;
 	uint32_t enable_mask;
 
-	struct soc_intel_alderlake_config *config;
-	config = config_of_soc();
 	mainboard_update_soc_chip_config(config);
 
 	/* Parse device tree and enable/disable Serial I/O devices */
@@ -173,9 +169,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		if (config->tcss_ports[i].enable)
 			params->CpuUsb3OverCurrentPin[i] = config->tcss_ports[i].ocpin;
 	}
-
-	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
-	pfsps_arch_upd->EnableMultiPhaseSiliconInit = 1;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	if (!xdci_can_enable())
@@ -273,7 +266,25 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Hwp = 1;
 	params->Cx = 1;
 	params->PsOnEnable = 1;
+}
 
+static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
+{
+	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
+	s_arch_cfg->EnableMultiPhaseSiliconInit = 1;
+}
+
+/* UPD parameters to be initialized before SiliconInit */
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
+{
+	struct soc_intel_alderlake_config *config;
+	FSP_S_CONFIG *params = &supd->FspsConfig;
+	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
+
+	config = config_of_soc();
+
+	arch_silicon_init_params(s_arch_cfg);
+	soc_silicon_init_params(params, config);
 	mainboard_silicon_init_params(params);
 }
 

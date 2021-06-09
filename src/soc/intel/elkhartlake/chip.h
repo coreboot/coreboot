@@ -63,6 +63,10 @@ struct soc_intel_elkhartlake_config {
 
 	/* TCC activation offset */
 	uint32_t tcc_offset;
+	uint32_t tcc_offset_clamp;
+
+	/* Memory Thermal Throttling: Enable - Default (0) / Disable (1) */
+	bool MemoryThermalThrottlingDisable;
 
 	/* System Agent dynamic frequency support.
 	 * When enabled memory will be trained at different frequencies.
@@ -366,6 +370,12 @@ struct soc_intel_elkhartlake_config {
 	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	 */
 	uint8_t PchPmPwrCycDur;
+
+	/*
+	 * PCH power button override period.
+	 * Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s
+	 */
+	u8 PchPmPwrBtnOverridePeriod;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

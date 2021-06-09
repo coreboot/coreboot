@@ -22,6 +22,24 @@
 /* Native function controls pads termination */
 #define GPIO_TERM_NATIVE	0x1F
 
+/* PM related values */
+/* Imon offset is defined in 1/1000 increments */
+#define IMON_OFFSET	1
+/* Policy Imon slope is defined in 1/100 increments */
+#define IMON_SLOPE	100
+/* Thermal Design Current current limit in 1/8A units */
+#define TDC_CURRENT_LIMIT_MAX	112
+/* AcLoadline in 1/100 mOhms */
+#define AC_LOADLINE_LANE_0_MAX	112
+#define AC_LOADLINE_LANE_1_MAX	3
+/* DcLoadline in 1/100 mOhms */
+#define DC_LOADLINE_LANE_0_MAX	92
+#define DC_LOADLINE_LANE_1_MAX	3
+/* VR Icc Max limit. 0-255A in 1/4 A units */
+#define ICC_LIMIT_MAX	104
+/* Core Ratio Limit: For overclocking part: LFM to Fused */
+#define CORE_RATIO_LIMIT	0x13
+
 /*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
  * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
@@ -260,6 +278,71 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 		params->ScsEmmcDdr50Enabled = config->ScsEmmcDdr50Enabled;
 	}
+
+	/* Thermal config */
+	dev = pcidev_path_on_root(SA_DEVFN_DPTF);
+	params->Device4Enable = is_dev_enabled(dev);
+	params->ProcHotResponse = 0x0;	//Disable PROCHOT response
+	/* Thermal sensor (TS) target width */
+	params->DmiTS0TW = 3;
+	params->DmiTS1TW = 2;
+	params->DmiTS2TW = 1;
+	/* Enable memory thermal throttling by default */
+	if (!config->MemoryThermalThrottlingDisable) {
+		params->PchMemoryPmsyncEnable[0] = 1;
+		params->PchMemoryPmsyncEnable[1] = 1;
+		params->PchMemoryC0TransmitEnable[0] = 1;
+		params->PchMemoryC0TransmitEnable[1] = 1;
+	}
+
+	/* TccActivationOffset config */
+	params->TccActivationOffset = config->tcc_offset;
+	params->TccOffsetClamp = config->tcc_offset_clamp;
+	params->TccOffsetLock = 0x1;	//lock Tcc Offset register
+
+	/* Power management config */
+	params->ImonSlope[0] = IMON_SLOPE;
+	params->ImonOffset[0] = IMON_OFFSET;
+	params->TdcCurrentLimit[0] = TDC_CURRENT_LIMIT_MAX;
+	params->AcLoadline[0] = AC_LOADLINE_LANE_0_MAX;
+	params->DcLoadline[0] = DC_LOADLINE_LANE_0_MAX;
+	params->AcLoadline[1] = AC_LOADLINE_LANE_1_MAX;
+	params->DcLoadline[1] = DC_LOADLINE_LANE_1_MAX;
+	params->IccMax[0] = ICC_LIMIT_MAX;
+	params->OneCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->TwoCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->ThreeCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->FourCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->FiveCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->SixCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->SevenCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->EightCoreRatioLimit = CORE_RATIO_LIMIT;
+	params->PsysPmax = 0;	//Set max platform power to auto profile
+	params->Custom1TurboActivationRatio = 0;
+	params->Custom2TurboActivationRatio = 0;
+	params->Custom3TurboActivationRatio = 0;
+	params->PchPwrOptEnable = 0x1;	//Enable PCH DMI Power Optimizer
+	params->TStates = 0x0;	//Disable T state
+	params->PkgCStateLimit = 0x7;	//Set C state limit to C9
+	params->FastPkgCRampDisable[0] = 0x1;
+	params->SlowSlewRate[0] = 0x1;
+	params->MaxRatio = 0x8;	//Set max P state ratio
+	params->PchEspiLgmrEnable = 0;
+	params->PchPmPwrBtnOverridePeriod = config->PchPmPwrBtnOverridePeriod;
+	params->PchS0ixAutoDemotion = 0;
+	params->PmcV1p05PhyExtFetControlEn = 0x1;
+	params->PmcV1p05IsExtFetControlEn = 0x1;
+	/* FIVR config */
+	params->PchFivrExtV1p05RailEnabledStates = 0x1E;
+	params->PchFivrExtV1p05RailSupportedVoltageStates = 0x2;
+	params->PchFivrExtVnnRailEnabledStates = 0x1E;
+	params->PchFivrExtVnnRailSupportedVoltageStates = 0xE;
+	params->PchFivrExtVnnRailSxEnabledStates = 0x1C;
+	params->PchFivrVccinAuxLowToHighCurModeVolTranTime = 0x0C;
+	params->PchFivrVccinAuxRetToHighCurModeVolTranTime = 0x36;
+	params->PchFivrVccinAuxRetToLowCurModeVolTranTime = 0x2B;
+	params->PchFivrVccinAuxOffToHighCurModeVolTranTime = 0x0096;
+	params->FivrSpreadSpectrum = 0xF;
 
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);

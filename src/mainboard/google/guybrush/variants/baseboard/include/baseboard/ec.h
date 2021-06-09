@@ -26,12 +26,13 @@
 
 #define MAINBOARD_EC_SMI_EVENTS (EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED))
 
-/* EC can wake from S5 with lid or power button */
+/* EC can wake from S5 with lid, power button or hang detection */
 #define MAINBOARD_EC_S5_WAKE_EVENTS                                                            \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)                                            \
-	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON))
+	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON)                                      \
+	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_HANG_DETECT))
 
-/* EC can wake from S3 with lid, power button or mode change event */
+/* EC can wake from S3 with lid, power button, mode change event, or hang detection */
 #define MAINBOARD_EC_S3_WAKE_EVENTS                                                            \
 	(MAINBOARD_EC_S5_WAKE_EVENTS | EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_CONNECTED)          \
 	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED)                                   \

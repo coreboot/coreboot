@@ -124,11 +124,6 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
-		# This variant has USB4/PCIe on both ports so RP0 must be enabled
-		# in order for hotplug resources to be assigned to Type-C Port C0.
-		device ref tbt_pcie_rp0 on
-			probe DB_USB USB4_GEN3
-		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
@@ -171,12 +166,10 @@ chip soc/intel/tigerlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port A1 (DB)""
+						register "desc" = ""USB2 Type-A Port A1 (MLB)""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(1, 1)"
-						device ref usb2_port2 on
-							probe DB_USB USB4_GEN3
-						end
+						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-C Port C1 (MLB)""
@@ -202,12 +195,10 @@ chip soc/intel/tigerlake
 						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Port A1 (DB)""
+						register "desc" = ""USB3 Type-A Port A1 (MLB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device ref usb3_port2 on
-							probe DB_USB USB4_GEN3
-						end
+						device ref usb3_port2 on end
 					end
 				end
 			end

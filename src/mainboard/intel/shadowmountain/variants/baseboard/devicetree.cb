@@ -118,21 +118,13 @@ chip soc/intel/alderlake
 	register "DdiPortAConfig" = "1"	# eDP
 	register "DdiPortBConfig" = "0"
 
-	register "DdiPortAHpd" = "1"
-	register "DdiPortBHpd" = "1"
-	register "DdiPortCHpd" = "0"
-	register "DdiPort1Hpd" = "1"
-	register "DdiPort2Hpd" = "1"
-	register "DdiPort3Hpd" = "0"
-	register "DdiPort4Hpd" = "0"
-
-	register "DdiPortADdc" = "0"
-	register "DdiPortBDdc" = "1"
-	register "DdiPortCDdc" = "0"
-	register "DdiPort1Ddc" = "0"
-	register "DdiPort2Ddc" = "0"
-	register "DdiPort3Ddc" = "0"
-	register "DdiPort4Ddc" = "0"
+	# Enable Display Port Configuration
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_1] = DDI_ENABLE_HPD,
+		[DDI_PORT_2] = DDI_ENABLE_HPD,
+	}"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

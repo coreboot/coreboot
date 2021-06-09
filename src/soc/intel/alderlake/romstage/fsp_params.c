@@ -68,11 +68,42 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	unsigned int i;
-
+	const struct ddi_port_upds {
+		uint8_t *ddc;
+		uint8_t *hpd;
+	} ddi_port_upds[] = {
+		[DDI_PORT_A] = {&m_cfg->DdiPortADdc, &m_cfg->DdiPortAHpd},
+		[DDI_PORT_B] = {&m_cfg->DdiPortBDdc, &m_cfg->DdiPortBHpd},
+		[DDI_PORT_C] = {&m_cfg->DdiPortCDdc, &m_cfg->DdiPortCHpd},
+		[DDI_PORT_1] = {&m_cfg->DdiPort1Ddc, &m_cfg->DdiPort1Hpd},
+		[DDI_PORT_2] = {&m_cfg->DdiPort2Ddc, &m_cfg->DdiPort2Hpd},
+		[DDI_PORT_3] = {&m_cfg->DdiPort3Ddc, &m_cfg->DdiPort3Hpd},
+		[DDI_PORT_4] = {&m_cfg->DdiPort4Ddc, &m_cfg->DdiPort4Hpd},
+	};
 	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
-
-	/* If IGD is enabled, set IGD stolen size to 60MB. Otherwise, skip IGD init in FSP */
-	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? IGD_SM_60MB : 0;
+	if (m_cfg->InternalGfx) {
+		/* IGD is enabled, set IGD stolen size to 60MB. */
+		m_cfg->IgdDvmt50PreAlloc = IGD_SM_60MB;
+		/* DP port config */
+		m_cfg->DdiPortAConfig = config->DdiPortAConfig;
+		m_cfg->DdiPortBConfig = config->DdiPortBConfig;
+		for  (i = 0; i < ARRAY_SIZE(ddi_port_upds); i++) {
+			*ddi_port_upds[i].ddc = !!(config->ddi_ports_config[i] &
+								DDI_ENABLE_DDC);
+			*ddi_port_upds[i].hpd = !!(config->ddi_ports_config[i] &
+								DDI_ENABLE_HPD);
+		}
+	} else {
+		/* IGD is disabled, skip IGD init in FSP. */
+		m_cfg->IgdDvmt50PreAlloc = 0;
+		/* DP port config */
+		m_cfg->DdiPortAConfig = 0;
+		m_cfg->DdiPortBConfig = 0;
+		for  (i = 0; i < ARRAY_SIZE(ddi_port_upds); i++) {
+			*ddi_port_upds[i].ddc = 0;
+			*ddi_port_upds[i].hpd = 0;
+		}
+	}
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->SaGv = config->SaGv;
@@ -97,24 +128,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->PcdIsaSerialUartBase = ISA_SERIAL_BASE_ADDR_3F8;
 	m_cfg->SerialIoUartDebugMode = PchSerialIoSkipInit;
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
-
-	/* DP port config */
-	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
-	m_cfg->DdiPortBConfig = config->DdiPortBConfig;
-	m_cfg->DdiPortAHpd = config->DdiPortAHpd;
-	m_cfg->DdiPortBHpd = config->DdiPortBHpd;
-	m_cfg->DdiPortCHpd = config->DdiPortCHpd;
-	m_cfg->DdiPort1Hpd = config->DdiPort1Hpd;
-	m_cfg->DdiPort2Hpd = config->DdiPort2Hpd;
-	m_cfg->DdiPort3Hpd = config->DdiPort3Hpd;
-	m_cfg->DdiPort4Hpd = config->DdiPort4Hpd;
-	m_cfg->DdiPortADdc = config->DdiPortADdc;
-	m_cfg->DdiPortBDdc = config->DdiPortBDdc;
-	m_cfg->DdiPortCDdc = config->DdiPortCDdc;
-	m_cfg->DdiPort1Ddc = config->DdiPort1Ddc;
-	m_cfg->DdiPort2Ddc = config->DdiPort2Ddc;
-	m_cfg->DdiPort3Ddc = config->DdiPort3Ddc;
-	m_cfg->DdiPort4Ddc = config->DdiPort4Ddc;
 
 	/* Image clock: disable all clocks for bypassing FSP pin mux */
 	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));

@@ -26,6 +26,23 @@ enum soc_intel_alderlake_power_limits {
 	ADL_POWER_LIMITS_COUNT
 };
 
+/* Types of display ports */
+enum ddi_ports {
+	DDI_PORT_A,
+	DDI_PORT_B,
+	DDI_PORT_C,
+	DDI_PORT_1,
+	DDI_PORT_2,
+	DDI_PORT_3,
+	DDI_PORT_4,
+	DDI_PORT_COUNT,
+};
+
+enum ddi_port_flags {
+	DDI_ENABLE_DDC = 1 << 0,
+	DDI_ENABLE_HPD = 1 << 1,
+};
+
 struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -269,23 +286,8 @@ struct soc_intel_alderlake_config {
 	uint8_t DdiPortAConfig;
 	uint8_t DdiPortBConfig;
 
-	/* Enable(1)/Disable(0) HPD */
-	uint8_t DdiPortAHpd;
-	uint8_t DdiPortBHpd;
-	uint8_t DdiPortCHpd;
-	uint8_t DdiPort1Hpd;
-	uint8_t DdiPort2Hpd;
-	uint8_t DdiPort3Hpd;
-	uint8_t DdiPort4Hpd;
-
-	/* Enable(1)/Disable(0) DDC */
-	uint8_t DdiPortADdc;
-	uint8_t DdiPortBDdc;
-	uint8_t DdiPortCDdc;
-	uint8_t DdiPort1Ddc;
-	uint8_t DdiPort2Ddc;
-	uint8_t DdiPort3Ddc;
-	uint8_t DdiPort4Ddc;
+	/* Enable(1)/Disable(0) HPD/DDC */
+	uint8_t ddi_ports_config[DDI_PORT_COUNT];
 
 	/* Hybrid storage mode enable (1) / disable (0)
 	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode

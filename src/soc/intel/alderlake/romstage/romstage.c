@@ -129,6 +129,9 @@ void mainboard_romstage_entry(void)
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake)
+		cse_fw_sync();
+
 	/*
 	 * Set low maximum temp threshold value used for dynamic thermal sensor
 	 * shutdown consideration.
@@ -140,15 +143,6 @@ void mainboard_romstage_entry(void)
 
 	fsp_memory_init(s3wake);
 	pmc_set_disb();
-	if (!s3wake) {
-		/*
-		 * cse_fw_sync() must be called after DRAM initialization as
-		 * HMRFPO_ENABLE HECI command (which is used by cse_fw_sync())
-		 * is expected to be executed after DRAM initialization.
-		 */
-		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
-			cse_fw_sync();
-
+	if (!s3wake)
 		save_dimm_info();
-	}
 }

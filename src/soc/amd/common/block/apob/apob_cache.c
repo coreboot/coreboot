@@ -10,6 +10,7 @@
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
+#include <timestamp.h>
 
 #define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
 /* PSP requires this value to be 64KiB */
@@ -114,6 +115,8 @@ void soc_update_apob_cache(void)
 	if (get_nv_region(&region) != 0)
 		return;
 
+	timestamp_add_now(TS_AMD_APOB_READ_START);
+
 	apob_rom = get_apob_from_nv_region(&region);
 	if (apob_rom == NULL) {
 		update_needed = true;
@@ -123,8 +126,10 @@ void soc_update_apob_cache(void)
 	} else
 		printk(BIOS_DEBUG, "APOB valid copy is already in flash\n");
 
-	if (!update_needed)
+	if (!update_needed) {
+		timestamp_add_now(TS_AMD_APOB_DONE);
 		return;
+	}
 
 	printk(BIOS_SPEW, "Copy APOB from RAM 0x%p/0x%x to flash 0x%zx/0x%zx\n",
 		apob_src_ram, apob_src_ram->size,
@@ -135,16 +140,22 @@ void soc_update_apob_cache(void)
 		return;
 	}
 
+	timestamp_add_now(TS_AMD_APOB_ERASE_START);
+
 	/* write data to flash region */
 	if (rdev_eraseat(&write_rdev, 0, DEFAULT_MRC_CACHE_SIZE) < 0) {
 		printk(BIOS_ERR, "Error: APOB flash region erase failed\n");
 		return;
 	}
 
+	timestamp_add_now(TS_AMD_APOB_WRITE_START);
+
 	if (rdev_writeat(&write_rdev, apob_src_ram, 0, apob_src_ram->size) < 0) {
 		printk(BIOS_ERR, "Error: APOB flash region update failed\n");
 		return;
 	}
+
+	timestamp_add_now(TS_AMD_APOB_DONE);
 
 	printk(BIOS_INFO, "Updated APOB in flash\n");
 }

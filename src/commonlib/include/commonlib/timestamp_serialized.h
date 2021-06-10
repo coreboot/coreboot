@@ -78,7 +78,7 @@ enum timestamp_id {
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
 
-	/* 900-920 reserved for vendorcode extensions (900-940: AMD AGESA) */
+	/* 900-940 reserved for vendorcode extensions (900-940: AMD) */
 	TS_AGESA_INIT_RESET_START = 900,
 	TS_AGESA_INIT_RESET_DONE = 901,
 	TS_AGESA_INIT_EARLY_START = 902,
@@ -99,6 +99,10 @@ enum timestamp_id {
 	TS_AGESA_S3_LATE_DONE = 917,
 	TS_AGESA_S3_FINAL_START = 918,
 	TS_AGESA_S3_FINAL_DONE = 919,
+	TS_AMD_APOB_READ_START = 920,
+	TS_AMD_APOB_ERASE_START = 921,
+	TS_AMD_APOB_WRITE_START = 922,
+	TS_AMD_APOB_DONE = 923,
 
 	/* 940-950 reserved for vendorcode extensions (940-950: Intel ME) */
 	TS_ME_INFORM_DRAM_WAIT = 940,
@@ -222,7 +226,7 @@ static const struct timestamp_id_to_name {
 	{ TS_KERNEL_DECOMPRESSION, "starting kernel decompression/relocation" },
 	{ TS_START_KERNEL,	"jumping to kernel" },
 
-	/* AMD AGESA related timestamps */
+	/* AMD related timestamps */
 	{ TS_AGESA_INIT_RESET_START,	"calling AmdInitReset" },
 	{ TS_AGESA_INIT_RESET_DONE,	"back from AmdInitReset" },
 	{ TS_AGESA_INIT_EARLY_START,	"calling AmdInitEarly" },
@@ -243,6 +247,10 @@ static const struct timestamp_id_to_name {
 	{ TS_AGESA_S3_LATE_DONE,	"back from AmdS3LateRestore" },
 	{ TS_AGESA_S3_FINAL_START,	"calling AmdS3FinalRestore" },
 	{ TS_AGESA_S3_FINAL_DONE,	"back from AmdS3FinalRestore" },
+	{ TS_AMD_APOB_READ_START,	"starting APOB read" },
+	{ TS_AMD_APOB_ERASE_START,	"starting APOB erase" },
+	{ TS_AMD_APOB_WRITE_START,	"starting APOB write" },
+	{ TS_AMD_APOB_DONE,		"finished APOB" },
 
 	/* Intel ME related timestamps */
 	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},

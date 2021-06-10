@@ -274,10 +274,10 @@ static void bs_call_callbacks(struct boot_state *state,
 			phase->callbacks = bscb->next;
 			bscb->next = NULL;
 
-#if CONFIG(DEBUG_BOOT_STATE)
-			printk(BIOS_DEBUG, "BS: callback (%p) @ %s.\n",
-				bscb, bscb->location);
-#endif
+			if (CONFIG(DEBUG_BOOT_STATE)) {
+				printk(BIOS_DEBUG, "BS: callback (%p) @ %s.\n",
+					bscb, bscb_location(bscb));
+			}
 			bscb->callback(bscb->arg);
 			continue;
 		}

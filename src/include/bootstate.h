@@ -2,6 +2,7 @@
 #ifndef BOOTSTATE_H
 #define BOOTSTATE_H
 
+#include <assert.h>
 #include <string.h>
 #include <stddef.h>
 /* Only declare main() when in ramstage. */
@@ -104,6 +105,15 @@ struct boot_state_callback {
 	const char *location;
 #endif
 };
+
+static inline const char *bscb_location(const struct boot_state_callback *bscb)
+{
+#if CONFIG(DEBUG_BOOT_STATE)
+	return bscb->location;
+#else
+	return dead_code_t(const char *);
+#endif
+}
 
 #if CONFIG(DEBUG_BOOT_STATE)
 #define BOOT_STATE_CALLBACK_LOC __FILE__ ":" STRINGIFY(__LINE__)

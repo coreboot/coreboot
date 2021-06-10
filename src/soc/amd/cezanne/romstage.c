@@ -9,10 +9,14 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 asmlinkage void car_stage_entry(void)
 {
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	post_code(0x40);
+
 	console_init();
 
 	post_code(0x41);

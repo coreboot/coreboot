@@ -178,6 +178,8 @@ void dev_initialize(void);
 void dev_optimize(void);
 void dev_finalize(void);
 void dev_finalize_chips(void);
+/* Function used to override device state */
+void devfn_disable(const struct bus *bus, unsigned int devfn);
 
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);

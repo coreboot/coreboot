@@ -21,6 +21,13 @@
 extern struct device *last_dev;
 /** Linked list of free resources */
 struct resource *free_resources = NULL;
+/* Disable a PCI device based on bus, device and function. */
+void devfn_disable(const struct bus *bus, unsigned int devfn)
+{
+	struct device *dev = pcidev_path_behind(bus, devfn);
+	if (dev)
+		dev->enabled = 0;
+}
 
 /**
  * Initialize all chips of statically known devices.

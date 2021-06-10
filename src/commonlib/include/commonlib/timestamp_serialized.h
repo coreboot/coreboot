@@ -77,6 +77,8 @@ enum timestamp_id {
 	TS_START_COPYVPD = 550,
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
+	TS_START_TPM_ENABLE_UPDATE = 553,
+	TS_END_TPM_ENABLE_UPDATE = 554,
 
 	/* 900-940 reserved for vendorcode extensions (900-940: AMD) */
 	TS_AGESA_INIT_RESET_START = 900,
@@ -204,6 +206,8 @@ static const struct timestamp_id_to_name {
 	{ TS_END_TPMPCR,	"finished TPM PCR extend" },
 	{ TS_START_TPMLOCK,	"starting locking TPM" },
 	{ TS_END_TPMLOCK,	"finished locking TPM" },
+	{ TS_START_TPM_ENABLE_UPDATE, "started TPM enable update" },
+	{ TS_END_TPM_ENABLE_UPDATE, "finished TPM enable update" },
 
 	{ TS_START_COPYVPD,	"starting to load Chrome OS VPD" },
 	{ TS_END_COPYVPD_RO,	"finished loading Chrome OS VPD (RO)" },

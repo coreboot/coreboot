@@ -9,6 +9,7 @@
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <timestamp.h>
 
 #define CR50_RESET_DELAY_MS 1000
 
@@ -89,6 +90,8 @@ static void enable_update(void *unused)
 		return;
 	}
 
+	timestamp_add_now(TS_START_TPM_ENABLE_UPDATE);
+
 	/* Reboot in 1000 ms if necessary. */
 	ret = tlcl_cr50_enable_update(CR50_RESET_DELAY_MS,
 				      &num_restored_headers);
@@ -115,8 +118,10 @@ static void enable_update(void *unused)
 		 * If the Cr50 doesn't requires a reset, continue booting.
 		 */
 		cr50_reset_reqd = cr50_is_reset_needed();
-		if (!cr50_reset_reqd)
+		if (!cr50_reset_reqd) {
+			timestamp_add_now(TS_END_TPM_ENABLE_UPDATE);
 			return;
+		}
 
 		printk(BIOS_INFO, "Waiting for CR50 reset to enable TPM.\n");
 		elog_add_event(ELOG_TYPE_CR50_NEED_RESET);

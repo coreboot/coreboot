@@ -9,9 +9,9 @@ chip soc/intel/jasperlake
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
+	#| I2C1              |                           |
 	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
+	#| I2C3              |                           |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -24,16 +24,10 @@ chip soc/intel/jasperlake
 			.rise_time_ns = 247,
 			.fall_time_ns = 11,
 		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 175,
 			.fall_time_ns = 20,
-		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
@@ -43,7 +37,19 @@ chip soc/intel/jasperlake
 	}"
 
 	# USB Port Configuration
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Not Used
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Not Used
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# UF Camera
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Not Used
+
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+	}"
 
 	register "power_limits_config" = "{
 			.tdp_pl1_override = 6,
@@ -92,7 +98,6 @@ chip soc/intel/jasperlake
 					chip drivers/usb/acpi
 						register "desc" = ""UFCamera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
 						device usb 2.5 on end
 					end
 				end
@@ -117,6 +122,7 @@ chip soc/intel/jasperlake
 				device i2c 0x2c on end
 			end
 		end # I2C 0
+		device pci 15.1 off  end # I2C 1
 		device pci 15.2 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7503""
@@ -154,6 +160,7 @@ chip soc/intel/jasperlake
 				device i2c 10 on end
 			end
 		end # I2C 2
+		device pci 15.3 off  end # I2C 3
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

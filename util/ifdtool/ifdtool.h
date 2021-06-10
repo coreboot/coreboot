@@ -35,9 +35,13 @@ enum ich_chipset {
 	CHIPSET_8_SERIES_WELLSBURG,
 	CHIPSET_9_SERIES_WILDCAT_POINT,
 	CHIPSET_9_SERIES_WILDCAT_POINT_LP,
-	CHIPSET_N_J_SERIES, /* Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx */
+	CHIPSET_N_J_SERIES_APOLLO_LAKE, /* Apollo Lake: N3xxx, J3xxx */
+	CHIPSET_N_J_SERIES_GEMINI_LAKE, /* Gemini Lake: N5xxx, J5xxx, N4xxx, J4xxx */
+	CHIPSET_N_SERIES_JASPER_LAKE, /* Jasper Lake: N6xxx, N51xx, N45xx */
+	CHIPSET_x6000_SERIES_ELKHART_LAKE, /* Elkhart Lake: x6000 */
 	CHIPSET_100_200_SERIES_SUNRISE_POINT, /* 6th-7th gen Core i/o (LP) variants */
-	CHIPSET_300_400_SERIES_CANNON_ICE_POINT, /* 8th-10th gen Core i/o (LP) variants */
+	CHIPSET_300_SERIES_CANNON_POINT, /* 8th-9th gen Core i/o (LP) variants */
+	CHIPSET_400_SERIES_ICE_POINT, /* 10th gen Core i/o (LP) variants */
 	CHIPSET_500_600_SERIES_TIGER_ALDER_POINT, /* 11th-12th gen Core i/o (LP)
 						   * variants onwards */
 	CHIPSET_C620_SERIES_LEWISBURG,

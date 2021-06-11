@@ -38,10 +38,16 @@ static int valid_reloc_amd64(Elf64_Rela *rel)
 
 	type = ELF64_R_TYPE(rel->r_info);
 
-	/* Only these 6 relocations are expected to be found. */
+	/*
+	 * Relocation R_AMD64_32S is not allowed. It can only be safely used in protected mode,
+	 * and when the address pointed to is below 2 GiB in long mode.
+	 * Using it in assembly operations will break compilation with error:
+	 * E: Invalid reloc type: 11
+	 */
+
+	/* Only these 5 relocations are expected to be found. */
 	return (type == R_AMD64_64 ||
 		type == R_AMD64_PC64 ||
-		type == R_AMD64_32S ||
 		type == R_AMD64_32 ||
 		type == R_AMD64_PC32 ||
 	/*
@@ -60,7 +66,6 @@ static int should_emit_amd64(Elf64_Rela *rel)
 
 	/* Only emit absolute relocations */
 	return (type == R_AMD64_64 ||
-		type == R_AMD64_32S ||
 		type == R_AMD64_32);
 }
 
@@ -182,6 +187,10 @@ static int for_each_reloc(struct rmod_context *ctx, struct reloc_filter *f,
 			if (!ctx->ops->valid_type(r)) {
 				ERROR("Invalid reloc type: %u\n",
 				      (unsigned int)ELF64_R_TYPE(r->r_info));
+				if ((ctx->ops->arch == EM_X86_64) &&
+				    (ELF64_R_TYPE(r->r_info) == R_AMD64_32S))
+					ERROR("Illegal use of 32bit sign extended addressing at offset 0x%x\n",
+					      (unsigned int)r->r_offset);
 				return -1;
 			}
 

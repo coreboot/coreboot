@@ -61,9 +61,11 @@ __ap_protected_start:
 #if ENV_X86_64
 	/* entry64.inc preserves ebx. */
 	#include <cpu/x86/64bit/entry64.inc>
-	mov	secondary_stack, %rsp
+	movabs	secondary_stack, %rax
+	mov	%rax, %rsp
 	andl	$0xfffffff0, %esp
-	mov	secondary_cpu_index, %rdi
+	movabs	secondary_cpu_index, %rax
+	mov	%rax, %rdi
 #else
 	/* Set the stack pointer, and flag that we are done */
 	xorl	%eax, %eax

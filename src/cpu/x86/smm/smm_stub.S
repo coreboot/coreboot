@@ -210,7 +210,7 @@ apicid_end:
 
 	mov	%rsp, %rdi	/* *arg */
 
-	movl	c_handler, %eax
+	movabs	c_handler, %eax
 	call	*%rax
 
 	/*

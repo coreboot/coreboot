@@ -220,7 +220,7 @@ load_msr:
 
 	mov	%rsi, %rdi	/* cpu_num */
 
-	movl	c_handler, %eax
+	movabs	c_handler, %eax
 	call	*%rax
 #else
 	/* c_handler(cpu_num), preserve proper stack alignment */

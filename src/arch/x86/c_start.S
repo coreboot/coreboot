@@ -32,8 +32,11 @@ thread_stacks:
 	.globl _start
 _start:
 	cli
+#ifdef __x86_64__
+	movabs	$gdtaddr, %rax
+	lgdt	(%rax)
+#else
 	lgdt	%cs:gdtaddr
-#ifndef __x86_64__
 	ljmp	$RAM_CODE_SEG, $1f
 #endif
 1:	movl	$RAM_DATA_SEG, %eax
@@ -52,11 +55,14 @@ _start:
 	cld
 
 #ifdef	__x86_64__
-	mov	%rdi, _cbmem_top_ptr
+	mov	%rdi, %rax
+	movabs	%rax, _cbmem_top_ptr
+	movabs	$_stack, %rdi
 #else
 	/* The return argument is at 0(%esp), the calling argument at 4(%esp) */
 	movl	4(%esp), %eax
 	movl	%eax, _cbmem_top_ptr
+	leal	_stack, %edi
 #endif
 
 	/** poison the stack. Code should not count on the
@@ -64,7 +70,6 @@ _start:
 	 * recently uncovered a bug in the broadcast SIPI
 	 * code.
 	 */
-	leal	_stack, %edi
 	movl	$_estack, %ecx
 	subl	%edi, %ecx
 	shrl	$2, %ecx   /* it is 32 bit aligned, right? */
@@ -226,7 +231,7 @@ SetCodeSelector:
 	push	%rsp
 	pushfq
 	push	%rcx		# cx is code segment selector from caller
-	mov	$setCodeSelectorLongJump, %rax
+	movabs	$setCodeSelectorLongJump, %rax
 	push	%rax
 
 	# the iret will continue at next instruction, with the new cs value

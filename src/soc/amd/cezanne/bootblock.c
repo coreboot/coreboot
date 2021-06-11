@@ -99,6 +99,13 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	 */
 	base_timestamp /= tsc_freq_mhz();
 
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		boot_with_psp_timestamp(base_timestamp);
+
+	/*
+	 * if VBOOT_STARTS_BEFORE_BOOTBLOCK is not selected or
+	 * previous step did nothing, proceed with normal bootblock main.
+	 */
 	bootblock_main_with_basetime(base_timestamp);
 }
 

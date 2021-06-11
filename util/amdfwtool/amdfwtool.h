@@ -252,8 +252,8 @@ typedef struct _ish_directory_table {
 #define PSP_COOKIE 0x50535024		/* 'PSP$' */
 #define PSPL2_COOKIE 0x324c5024		/* '2LP$' */
 #define PSP2_COOKIE 0x50535032		/* 'PSP2' */
-#define BDT1_COOKIE 0x44484224		/* 'DHB$ */
-#define BDT2_COOKIE 0x324c4224		/* '2LB$ */
+#define BHD_COOKIE 0x44484224		/* 'DHB$ */
+#define BHDL2_COOKIE 0x324c4224		/* '2LB$ */
 
 #define PSP_LVL1 (1 << 0)
 #define PSP_LVL2 (1 << 1)

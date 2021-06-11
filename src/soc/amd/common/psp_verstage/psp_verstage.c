@@ -110,9 +110,9 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
-	if (*bios_dir_in_spi != BDT1_COOKIE) {
+	if (*bios_dir_in_spi != BHD_COOKIE) {
 		printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
-		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
+		return POSTCODE_BHD_COOKIE_MISMATCH_ERROR;
 	}
 
 	/* EFS2 uses relative address and PSP isn't happy with that */

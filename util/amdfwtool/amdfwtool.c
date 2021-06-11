@@ -492,8 +492,8 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 					+ sizeof(dir->header.num_entries)
 					+ sizeof(dir->header.additional_info));
 		break;
-	case BDT1_COOKIE:
-	case BDT2_COOKIE:
+	case BHD_COOKIE:
+	case BHDL2_COOKIE:
 		table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The BIOS table size should be 4K aligned\n");
@@ -1005,7 +1005,7 @@ static void integrate_bios_firmwares(context *ctx,
 	 */
 	if (!cb_config->multi_level)
 		level = BDT_BOTH;
-	else if (cookie == BDT2_COOKIE)
+	else if (cookie == BHDL2_COOKIE)
 		level = BDT_LVL2;
 	else if (biosdir2)
 		level = BDT_LVL1;
@@ -1926,12 +1926,12 @@ int main(int argc, char **argv)
 			biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
 
 			integrate_bios_firmwares(&ctx, biosdir2, NULL,
-						amd_bios_table, BDT2_COOKIE, &cb_config);
+						amd_bios_table, BHDL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab) {
 				if (pspdir2_b != NULL) {
 					biosdir2_b = new_bios_dir(&ctx, cb_config.multi_level);
 					integrate_bios_firmwares(&ctx, biosdir2_b, NULL,
-						amd_bios_table, BDT2_COOKIE, &cb_config);
+						amd_bios_table, BHDL2_COOKIE, &cb_config);
 				}
 				add_psp_firmware_entry(&ctx, pspdir2, biosdir2,
 					AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
@@ -1941,13 +1941,13 @@ int main(int argc, char **argv)
 			} else {
 				biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 				integrate_bios_firmwares(&ctx, biosdir, biosdir2,
-						amd_bios_table, BDT1_COOKIE, &cb_config);
+						amd_bios_table, BHD_COOKIE, &cb_config);
 			}
 		} else {
-			/* flat: BDT1 cookie and no pointer to 2nd table */
+			/* flat: BHD1 cookie and no pointer to 2nd table */
 			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir, NULL,
-						amd_bios_table, BDT1_COOKIE, &cb_config);
+						amd_bios_table, BHD_COOKIE, &cb_config);
 		}
 		switch (soc_id) {
 		case PLATFORM_RENOIR:

@@ -24,7 +24,7 @@ static const struct pad_config gpio_table[] = {
 	/* A10 : I2S2_RXD ==> NC */
 	PAD_NC(GPP_A10, NONE),
 	/* A11 : PMC_I2C_SDA ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A11, 1, DEEP),
+	PAD_CFG_GPO(GPP_A11, 1, PLTRST),
 	/* A12 : SATAXPCIE1 ==> M2_SSD_PEDET */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13 : PMC_I2C_SCL ==> NC */

@@ -8,6 +8,7 @@ config BOARD_SIEMENS_BASEBOARD_MC_EHL
 	select DRIVERS_I2C_RX6110SA
 	select MAINBOARD_HAS_TPM2
 	select MAINBOARD_HAS_LPC_TPM
+	select TPM_MEASURED_BOOT
 
 source "src/mainboard/siemens/mc_ehl/variants/*/Kconfig"
 

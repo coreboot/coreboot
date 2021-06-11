@@ -822,22 +822,23 @@ void show_all_devs_resources(int debug_level, const char *msg)
 	}
 }
 
-void fixed_mem_resource_kb(struct device *dev, unsigned long index,
-			unsigned long basek, unsigned long sizek,
-			unsigned long type)
+const struct resource *fixed_resource_range_idx(struct device *dev, unsigned long index,
+				uint64_t base, uint64_t size, unsigned long flags)
 {
 	struct resource *resource;
-
-	if (!sizek)
-		return;
+	if (!size)
+		return NULL;
 
 	resource = new_resource(dev, index);
-	resource->base = ((resource_t)basek) << 10;
-	resource->size = ((resource_t)sizek) << 10;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-		 IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	resource->base = base;
+	resource->size = size;
+	resource->flags = IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+	resource->flags |= flags;
 
-	resource->flags |= type;
+	printk(BIOS_SPEW, "dev: %s, index: 0x%lx, base: 0x%llx, size: 0x%llx\n",
+	       dev_path(dev), resource->index, resource->base, resource->size);
+
+	return resource;
 }
 
 void fixed_io_resource(struct device *dev, unsigned long index,

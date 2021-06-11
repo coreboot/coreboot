@@ -310,10 +310,41 @@ void pci_domain_scan_bus(struct device *dev);
 void fixed_io_resource(struct device *dev, unsigned long index,
 		unsigned long base, unsigned long size);
 
-void fixed_mem_resource_kb(struct device *dev, unsigned long index,
-		  unsigned long basek, unsigned long sizek, unsigned long type);
-
 void mmconf_resource(struct device *dev, unsigned long index);
+
+/* These are temporary resource constructors to get us through the
+   migration away from open-coding all the IORESOURCE_FLAGS. */
+
+const struct resource *fixed_resource_range_idx(struct device *dev, unsigned long index,
+					    uint64_t base, uint64_t size,
+					    unsigned long flags);
+
+static inline
+const struct resource *fixed_mem_range_flags(struct device *dev, unsigned long index,
+					    uint64_t base, uint64_t size,
+					    unsigned long flags)
+{
+	return fixed_resource_range_idx(dev, index, base, size, IORESOURCE_MEM | flags);
+}
+
+static inline
+const struct resource *fixed_mem_from_to_flags(struct device *dev, unsigned long index,
+					uint64_t base, uint64_t end, unsigned long flags)
+{
+	if (end <= base)
+		return NULL;
+	return fixed_mem_range_flags(dev, index, base, end - base, flags);
+}
+
+/* Compatibility code */
+
+static inline void fixed_mem_resource_kb(struct device *dev, unsigned long index,
+			unsigned long basek, unsigned long sizek,
+			unsigned long flags)
+{
+	fixed_mem_range_flags(dev, index, ((uint64_t)basek) << 10,
+		((uint64_t)sizek) << 10, IORESOURCE_STORED | flags);
+}
 
 /* It is the caller's responsibility to adjust regions such that ram_resource_kb()
  * and mmio_resource_kb() do not overlap.

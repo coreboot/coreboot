@@ -7,6 +7,7 @@
 #include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
+#include <amdblocks/ioapic.h>
 #include <soc/pci_devs.h>
 #include <soc/northbridge.h>
 #include <soc/cpu.h>
@@ -261,9 +262,8 @@ static AGESA_STATUS amd_init_late(AMD_LATE_PARAMS *LateParams)
 
 	const struct device *dev = pcidev_path_on_root(IOMMU_DEVFN);
 	if (dev && dev->enabled) {
-		LateParams->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS
-									+ 1;
-		LateParams->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+		LateParams->GnbLateConfiguration.GnbIoapicId = GNB_IOAPIC_ID;
+		LateParams->GnbLateConfiguration.FchIoapicId = FCH_IOAPIC_ID;
 	}
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);

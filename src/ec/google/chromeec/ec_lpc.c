@@ -465,7 +465,7 @@ u8 google_chromeec_get_event(void)
 {
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
-		return 1;
+		return 0;
 	}
 
 	/* Issue the ACPI query-event command */

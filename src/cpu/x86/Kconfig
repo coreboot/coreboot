@@ -127,6 +127,7 @@ config SMM_MODULE_HEAP_SIZE
 
 config SMM_MODULE_STACK_SIZE
 	hex
+	default 0x800 if ARCH_RAMSTAGE_X86_64
 	default 0x400
 	help
 	  This option determines the size of the stack within the SMM handler

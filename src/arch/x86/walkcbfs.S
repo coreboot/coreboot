@@ -13,6 +13,12 @@
 
 #define CBFS_FILE_STRUCTSIZE (CBFS_FILE_OFFSET + 4)
 
+#if FMAP_SECTION_COREBOOT_START < (0xffffffff - CONFIG_ROM_SIZE + 1)
+#define COREBOOT_CBFS_START (0xffffffff - CONFIG_ROM_SIZE + 1 + FMAP_SECTION_COREBOOT_START)
+#else
+#define COREBOOT_CBFS_START FMAP_SECTION_COREBOOT_START
+#endif
+
 .code32
 .section .init
 .global walkcbfs_asm
@@ -26,7 +32,7 @@
 walkcbfs_asm:
 	cld
 
-	movl $FMAP_SECTION_COREBOOT_START, %ebx
+	movl $COREBOOT_CBFS_START, %ebx
 
 	/* determine filename length */
 	mov $0, %eax

@@ -26,7 +26,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B7  : ISH_12C1_SDA ==> ISH_I2C1_SENSOR_SDA */
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
 	/* B8  : ISH_I2C1_SCL ==> ISH_I2C1_SENSOR_SCL */
@@ -182,7 +182,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B11 : PMCALERT# ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B11, NONE, DEEP),
 	/* B15 : GSPI0_CS0# ==> PCH_GSPI0_H1_TPM_CS_L */

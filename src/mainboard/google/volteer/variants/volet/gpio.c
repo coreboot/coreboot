@@ -25,7 +25,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B3  : CPU_GP2 ==> PEN_DET_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B3, NONE, PLTRST),
 	/* B5  : ISH_I2C0_CVF_SDA */
@@ -234,11 +234,6 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* C8 : UART0 RX */
-	PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
-	/* C9 : UART0 TX */
-	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
-
 	/* A12 : SATAXPCIE1 ==> M2_SSD_PEDET */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13 : PMC_I2C_SCL ==> BT_DISABLE_L */
@@ -248,7 +243,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B11 : PMCALERT# ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_B11, NONE, DEEP),
 	/* B15 : GSPI0_CS0# ==> PCH_GSPI0_H1_TPM_CS_L */
@@ -262,6 +257,10 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* C0  : SMBCLK ==> EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C8 : UART0 RX */
+	PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
+	/* C9 : UART0 TX */
+	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
 	/* C21 : UART2_TXD ==> H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, PLTRST, LEVEL, INVERT),
 	/* C22 : UART2_RTS# ==> PCH_FPMCU_BOOT0 */

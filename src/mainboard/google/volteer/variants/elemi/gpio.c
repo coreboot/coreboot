@@ -25,7 +25,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),
 
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B3  : CPU_GP2 ==> PEN_DET_ODL */
 	PAD_CFG_GPI(GPP_B3, NONE, DEEP),
 	/* B4  : CPU_GP3==> EN_PP3300_EMMC */
@@ -184,7 +184,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* A17 : DDSP_HPDC ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
 	/* B2  : VRALERT# ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_B2, 1, DEEP),
+	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B4  : CPU_GP3==> EN_PP3300_EMMC */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 

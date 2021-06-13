@@ -265,23 +265,6 @@ void show_one_resource(int debug_level, struct device *dev,
 void show_all_devs_resources(int debug_level, const char *msg);
 
 /* Debug macros */
-#if CONFIG(DEBUG_RESOURCES)
-#include <console/console.h>
-#define LOG_MEM_RESOURCE(type, dev, index, base_kb, size_kb) \
-	printk(BIOS_SPEW, "%s:%d res: %s, dev: %s, index: 0x%x, base: 0x%llx, " \
-		"end: 0x%llx, size_kb: 0x%llx\n", \
-		__func__, __LINE__, type, dev_path(dev), index, (base_kb << 10), \
-		(base_kb << 10) + (size_kb << 10) - 1, size_kb)
-
-#define LOG_IO_RESOURCE(type, dev, index, base, size) \
-	printk(BIOS_SPEW, "%s:%d res: %s, dev: %s, index: 0x%x, base: 0x%llx, " \
-		"end: 0x%llx, size: 0x%llx\n", \
-		__func__, __LINE__, type, dev_path(dev), index, base, base + size - 1, size)
-#else /* DEBUG_RESOURCES*/
-#define LOG_MEM_RESOURCE(type, dev, index, base_kb, size_kb)
-#define LOG_IO_RESOURCE(type, dev, index, base, size)
-#endif /* DEBUG_RESOURCES*/
-
 #if CONFIG(DEBUG_FUNC)
 #include <console/console.h>
 #define DEV_FUNC_ENTER(dev) \

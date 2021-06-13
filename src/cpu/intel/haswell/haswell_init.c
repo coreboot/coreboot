@@ -524,6 +524,12 @@ static void configure_mca(void)
 
 	msr = rdmsr(IA32_MCG_CAP);
 	num_banks = msr.lo & 0xff;
+
+	/* Enable all error reporting */
+	msr.lo = msr.hi = ~0;
+	for (i = 0; i < num_banks; i++)
+		wrmsr(IA32_MC0_CTL + (i * 4), msr);
+
 	msr.lo = msr.hi = 0;
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears

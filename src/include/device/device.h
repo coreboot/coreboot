@@ -334,6 +334,62 @@ const struct resource *fixed_mem_from_to_flags(struct device *dev, unsigned long
 }
 
 static inline
+const struct resource *ram_range(struct device *dev, unsigned long index, uint64_t base,
+				      uint64_t size)
+{
+	return fixed_mem_range_flags(dev, index, base, size, IORESOURCE_CACHEABLE | IORESOURCE_STORED);
+}
+
+static inline
+const struct resource *ram_from_to(struct device *dev, unsigned long index, uint64_t base,
+				 uint64_t end)
+{
+	if (end <= base)
+		return NULL;
+	return ram_range(dev, index, base, end - base);
+}
+
+static inline
+const struct resource *reserved_ram_range(struct device *dev, unsigned long index,
+					       uint64_t base, uint64_t size)
+{
+	return fixed_mem_range_flags(dev, index, base, size, IORESOURCE_CACHEABLE |
+				    IORESOURCE_RESERVE | IORESOURCE_STORED);
+}
+
+static inline
+const struct resource *reserved_ram_from_to(struct device *dev, unsigned long index,
+					  uint64_t base, uint64_t end)
+{
+	if (end <= base)
+		return NULL;
+	return reserved_ram_range(dev, index, base, end - base);
+}
+
+static inline
+const struct resource *mmio_range(struct device *dev, unsigned long index, uint64_t base,
+				       uint64_t size)
+{
+	return fixed_mem_range_flags(dev, index, base, size, IORESOURCE_RESERVE | IORESOURCE_STORED);
+}
+
+static inline
+const struct resource *mmio_from_to(struct device *dev, unsigned long index, uint64_t base,
+				  uint64_t end)
+{
+	if (end <= base)
+		return NULL;
+	return mmio_range(dev, index, base, end - base);
+}
+
+const struct resource *lower_ram_end(struct device *dev, unsigned long index, uint64_t end);
+const struct resource *upper_ram_end(struct device *dev, unsigned long index, uint64_t end);
+
+#define bad_ram_range(...)	reserved_ram_range(__VA_ARGS__)
+#define uma_range(...)		mmio_range(__VA_ARGS__)
+#define uma_from_to(...)	mmio_from_to(__VA_ARGS__)
+
+static inline
 const struct resource *fixed_io_range_flags(struct device *dev, unsigned long index,
 			uint16_t base, uint16_t size, unsigned long flags)
 {

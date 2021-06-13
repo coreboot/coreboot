@@ -841,6 +841,21 @@ const struct resource *fixed_resource_range_idx(struct device *dev, unsigned lon
 	return resource;
 }
 
+const struct resource *lower_ram_end(struct device *dev, unsigned long index, uint64_t end)
+{
+	return ram_from_to(dev, index, 0, end);
+}
+
+const struct resource *upper_ram_end(struct device *dev, unsigned long index, uint64_t end)
+{
+	if (end <= 4ull * GiB)
+		return NULL;
+
+	printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (end - 4ull * GiB) / MiB);
+
+	return ram_from_to(dev, index, 4ull * GiB, end);
+}
+
 void mmconf_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource = new_resource(dev, index);

@@ -98,7 +98,14 @@ void acpi_fill_cnvs(void)
 {
 	const struct opregion cnvs_op = OPREGION("CNVS", SYSTEMMEMORY, (uintptr_t)chromeos_acpi,
 						 sizeof(*chromeos_acpi));
+
+	if (!chromeos_acpi)
+		return;
+
 	acpigen_write_scope("\\");
 	acpigen_write_opregion(&cnvs_op);
 	acpigen_pop_len();
+
+	/* Usually this creates OIPG package for GPIOs. */
+	mainboard_chromeos_acpi_generate();
 }

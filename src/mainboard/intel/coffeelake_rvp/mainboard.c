@@ -6,7 +6,6 @@
 #include <nhlt.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(void *chip_info)
 {
@@ -45,7 +44,6 @@ static unsigned long mainboard_write_acpi_tables(const struct device *device,
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

@@ -4,13 +4,7 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <soc/gpio.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
-
-static void mainboard_enable(struct device *dev)
-{
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
-}
 
 static void mainboard_chip_init(void *chip_info)
 {
@@ -26,5 +20,4 @@ static void mainboard_chip_init(void *chip_info)
 
 struct chip_operations mainboard_ops = {
 	.init = mainboard_chip_init,
-	.enable_dev = mainboard_enable,
 };

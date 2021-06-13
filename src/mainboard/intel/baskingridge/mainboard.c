@@ -5,7 +5,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <acpi/acpi.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -18,7 +17,6 @@ void mainboard_suspend_resume(void)
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_EDP, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 

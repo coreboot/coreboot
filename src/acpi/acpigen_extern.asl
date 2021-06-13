@@ -11,7 +11,3 @@
 External (GNVS, OpRegionObj)
 External (DNVS, OpRegionObj)
 #endif
-
-#if CONFIG(CHROMEOS_NVS)
-External (CNVS, OpRegionObj)
-#endif

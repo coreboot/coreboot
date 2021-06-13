@@ -5,7 +5,6 @@
 #include <smbios.h>
 #include <soc/gpio.h>
 #include <variant/gpio.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 /* mainboard silk screen shows DIMM-A and DIMM-B */
@@ -46,12 +45,6 @@ static void mainboard_init(void *chip_info)
 		gpio_configure_pads(gpio_unused, ARRAY_SIZE(gpio_unused));
 }
 
-static void mainboard_enable(struct device *dev)
-{
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
-}
-
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
-	.enable_dev = mainboard_enable,
 };

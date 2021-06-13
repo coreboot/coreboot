@@ -97,4 +97,6 @@ Device (CRHW)
 	}
 }
 
+#include <vendorcode/google/chromeos/acpi/gnvs.asl>
+
 #include "ramoops.asl"

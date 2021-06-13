@@ -14,7 +14,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static unsigned int search(char *p, char *a, unsigned int lengthp,
 			   unsigned int lengtha)
@@ -258,7 +257,6 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = butterfly_onboard_smbios_data;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 

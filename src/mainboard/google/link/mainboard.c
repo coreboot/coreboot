@@ -16,7 +16,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <smbios.h>
 #include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #if CONFIG(VGA_ROM_RUN)
 static int int15_handler(void)
@@ -170,7 +169,6 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = link_onboard_smbios_data;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 #if CONFIG(VGA_ROM_RUN)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

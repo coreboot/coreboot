@@ -4,7 +4,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "onboard.h"
 
@@ -25,7 +24,6 @@ static void mainboard_init(struct device *dev)
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
 struct chip_operations mainboard_ops = {

@@ -33,8 +33,3 @@ void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num)
 
 	acpigen_pop_len();
 }
-
-void chromeos_dsdt_generator(const struct device *dev)
-{
-	mainboard_chromeos_acpi_generate();
-}

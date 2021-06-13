@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include "variant.h"
 
@@ -29,7 +28,6 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_EDP, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 }
 

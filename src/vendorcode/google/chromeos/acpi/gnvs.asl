@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* This is the ChromeOS specific ACPI information needed by
- * the mainboard's chromeos.asl
+ * chromeos.asl
  */
+
+External (CNVS, OpRegionObj)
 
 Field (CNVS, ByteAcc, NoLock, Preserve)
 {

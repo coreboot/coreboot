@@ -24,7 +24,7 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/gnvs.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <version.h>
 
 static boot_state_t bs_pre_device(void *arg);

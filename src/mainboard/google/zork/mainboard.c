@@ -23,7 +23,6 @@
 #include <amdblocks/acpimmio.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <commonlib/helpers.h>
 
 #define METHOD_BACKLIGHT_ENABLE    "\\_SB.BKEN"
@@ -203,7 +202,6 @@ static void mainboard_enable(struct device *dev)
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 
 }

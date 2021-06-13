@@ -6,7 +6,6 @@
 #include <drivers/intel/gma/opregion.h>
 #include <ec/ec.h>
 #include <soc/gpio.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <smbios.h>
 #include <stdint.h>
 #include <string.h>
@@ -57,8 +56,6 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
-
 #if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC)
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 #endif

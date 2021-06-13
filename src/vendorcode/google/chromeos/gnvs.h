@@ -32,6 +32,4 @@ struct chromeos_acpi {
 	u8	pad[298];	// dd6-eff
 } __packed;
 
-void chromeos_init_chromeos_acpi(void);
-
 #endif

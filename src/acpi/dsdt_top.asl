@@ -4,7 +4,6 @@
 
 #if CONFIG(CHROMEOS_NVS)
 /* Chrome OS specific */
-#include <vendorcode/google/chromeos/acpi/gnvs.asl>
 #include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
 

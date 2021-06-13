@@ -8,7 +8,6 @@
 #include <soc/gpio.h>
 #include <soc/int15.h>
 #include <bootstate.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(struct device *dev)
 {
@@ -54,7 +53,6 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 
 	/* Install custom int15 handler for VGA OPROM */
 	if (CONFIG(VGA_ROM_RUN))

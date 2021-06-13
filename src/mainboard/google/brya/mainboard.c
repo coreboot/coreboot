@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <ec/ec.h>
 #include <soc/ramstage.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <fw_config.h>
 
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
@@ -60,7 +59,6 @@ static void mainboard_dev_init(struct device *dev)
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_dev_init;
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 }
 

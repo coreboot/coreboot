@@ -10,7 +10,6 @@
 #include <gpio.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #define BACKLIGHT_GPIO			GPIO_129
 #define WWAN_AUX_RST_GPIO		GPIO_18
@@ -197,7 +196,6 @@ static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 
 	init_tables();

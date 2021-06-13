@@ -932,3 +932,12 @@ const char *dev_path_name(enum device_path_type type)
 		type_name = type_names[type];
 	return type_name;
 }
+
+void log_resource(const char *type, const struct device *dev, const struct resource *res,
+			const char *srcfile, const int line)
+{
+	printk(BIOS_SPEW, "%s:%d res: %s, dev: %s, index: 0x%lx, base: 0x%llx, "
+			  "end: 0x%llx, size_kb: 0x%llx\n",
+			  srcfile, line, type, dev_path(dev), res->index, res->base,
+			  resource_end(res), res->size / KiB);
+}

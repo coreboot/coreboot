@@ -90,6 +90,15 @@ static inline void *res2mmio(const struct resource *res, unsigned long offset,
 	return (void *)(uintptr_t)((res->base + offset) & ~mask);
 }
 
+void log_resource(const char *type, const struct device *dev, const struct resource *res,
+		  const char *srcfile, const int line);
+
+#define LOG_RESOURCE(type, dev, res)						\
+	do {									\
+		if (CONFIG(DEBUG_RESOURCES) && (dev) && (res))			\
+			log_resource(type, (dev), (res), __func__, __LINE__);	\
+	} while (0)
+
 /*
  * Pick largest resource on the bus using the given mask and type.
  * Params:

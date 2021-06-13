@@ -307,9 +307,6 @@ void pci_domain_read_resources(struct device *dev);
 void pci_domain_set_resources(struct device *dev);
 void pci_domain_scan_bus(struct device *dev);
 
-void fixed_io_resource(struct device *dev, unsigned long index,
-		unsigned long base, unsigned long size);
-
 void mmconf_resource(struct device *dev, unsigned long index);
 
 /* These are temporary resource constructors to get us through the
@@ -334,6 +331,29 @@ const struct resource *fixed_mem_from_to_flags(struct device *dev, unsigned long
 	if (end <= base)
 		return NULL;
 	return fixed_mem_range_flags(dev, index, base, end - base, flags);
+}
+
+static inline
+const struct resource *fixed_io_range_flags(struct device *dev, unsigned long index,
+			uint16_t base, uint16_t size, unsigned long flags)
+{
+	return fixed_resource_range_idx(dev, index, base, size, IORESOURCE_IO | flags);
+}
+
+static inline
+const struct resource *fixed_io_from_to_flags(struct device *dev, unsigned long index,
+				      uint16_t base, uint16_t end, unsigned long flags)
+{
+	if (end <= base)
+		return NULL;
+	return fixed_io_range_flags(dev, index, base, end - base, flags);
+}
+
+static inline
+const struct resource *fixed_io_range_reserved(struct device *dev, unsigned long index,
+				      uint16_t base, uint16_t size)
+{
+	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_RESERVE);
 }
 
 /* Compatibility code */
@@ -364,9 +384,6 @@ static inline void fixed_mem_resource_kb(struct device *dev, unsigned long index
 
 #define mmio_resource_kb(dev, idx, basek, sizek) \
 	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_RESERVE)
-
-#define io_resource(dev, idx, base, size) \
-	fixed_io_resource(dev, idx, base, size)
 
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);

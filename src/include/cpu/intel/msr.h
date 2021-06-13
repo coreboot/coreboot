@@ -7,10 +7,6 @@
  * Common MSRs for Intel CPUs
  */
 
-#define MSR_FEATURE_CONFIG	0x13c
-#define  AESNI_DISABLE		(1 << 1)
-#define  AESNI_LOCK		(1 << 0)
-
 #define MSR_PIC_MSG_CONTROL	0x2e
 #define  TPR_UPDATES_DISABLE	(1 << 10)
 
@@ -25,6 +21,10 @@
 #define  B_BOOT_GUARD_SACM_INFO_REVOKED		(1 << 7)
 #define  B_BOOT_GUARD_SACM_INFO_BTG_CAPABILITY	(1ull << 32)
 #define  B_BOOT_GUARD_SACM_INFO_TXT_CAPABILITY	(1ull << 34)
+
+#define MSR_FEATURE_CONFIG	0x13c
+#define  AESNI_DISABLE		(1 << 1)
+#define  AESNI_LOCK		(1 << 0)
 
 #define MSR_PKG_C10_RESIDENCY	0x632
 

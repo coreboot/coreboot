@@ -37,7 +37,7 @@ static void clear_pending_events(void)
 {
 	struct ec_response_get_next_event mkbp_event;
 
-	while (google_chromeec_get_event() != 0)
+	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
 		;
 
 	printk(BIOS_DEBUG, "Clearing pending EC events. Error code EC_RES_UNAVAILABLE(9) is expected.\n");

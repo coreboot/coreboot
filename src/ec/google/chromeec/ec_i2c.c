@@ -239,8 +239,8 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 
 #endif /* CONFIG_EC_GOOGLE_CHROMEEC_I2C_PROTO3 */
 
-u8 google_chromeec_get_event(void)
+enum host_event_code google_chromeec_get_event(void)
 {
 	printk(BIOS_ERR, "%s: Not supported.\n", __func__);
-	return 0;
+	return EC_HOST_EVENT_NONE;
 }

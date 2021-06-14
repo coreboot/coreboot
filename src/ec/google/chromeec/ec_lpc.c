@@ -461,11 +461,11 @@ static int google_chromeec_data_ready(u16 port)
 					    EC_LPC_CMDR_DATA);
 }
 
-u8 google_chromeec_get_event(void)
+enum host_event_code google_chromeec_get_event(void)
 {
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
-		return 0;
+		return EC_HOST_EVENT_NONE;
 	}
 
 	/* Issue the ACPI query-event command */
@@ -473,12 +473,12 @@ u8 google_chromeec_get_event(void)
 
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC QUERY_EVENT!\n");
-		return 0;
+		return EC_HOST_EVENT_NONE;
 	}
 
 	if (google_chromeec_data_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for data ready!\n");
-		return 0;
+		return EC_HOST_EVENT_NONE;
 	}
 
 	/* Event (or 0 if none) is returned directly in the data byte */

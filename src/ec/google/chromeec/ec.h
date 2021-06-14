@@ -19,7 +19,7 @@ uint64_t google_chromeec_get_wake_mask(void);
 int google_chromeec_set_sci_mask(uint64_t mask);
 int google_chromeec_set_smi_mask(uint64_t mask);
 int google_chromeec_set_wake_mask(uint64_t mask);
-uint8_t google_chromeec_get_event(void);
+enum host_event_code google_chromeec_get_event(void);
 
 /* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
 bool google_chromeec_is_uhepi_supported(void);

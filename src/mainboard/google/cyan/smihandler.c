@@ -126,7 +126,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	google_chromeec_set_sci_mask(0);
 
 	/* Clear pending events that may trigger immediate wake */
-	while (google_chromeec_get_event() != 0)
+	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
 		;
 
 	/* Set LPC lines to low power in S3/S5. */
@@ -141,14 +141,14 @@ int mainboard_smi_apmc(uint8_t apmc)
 	case APM_CNT_ACPI_ENABLE:
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */
-		while (google_chromeec_get_event() != 0)
+		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
 			;
 		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		google_chromeec_set_sci_mask(0);
 		/* Clear all pending events */
-		while (google_chromeec_get_event() != 0)
+		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
 			;
 		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
 		break;

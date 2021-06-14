@@ -193,9 +193,6 @@ Device (PDRC)
 	}
 }
 
-/* PCI IRQ assignment */
-#include "pci_irqs.asl"
-
 /* Configurable TDP */
 #include <northbridge/intel/haswell/acpi/ctdp.asl>
 

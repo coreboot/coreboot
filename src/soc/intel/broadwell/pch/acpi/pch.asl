@@ -2,6 +2,9 @@
 
 #include <soc/iomap.h>
 
+/* PCI IRQ assignment */
+#include "pci_irqs.asl"
+
 Scope (\)
 {
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.

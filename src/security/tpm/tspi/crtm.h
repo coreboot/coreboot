@@ -16,24 +16,6 @@
  */
 #define TPM_RUNTIME_DATA_PCR 3
 
-/*
- * Initializes the Core Root of Trust for Measurements
- * in coreboot. The initial code in a chain of trust must measure
- * itself.
- *
- * Summary:
- *  + Measures the FMAP FMAP partition.
- *  + Measures bootblock in CBFS or BOOTBLOCK FMAP partition.
- *  + If vboot starts in romstage, it measures the romstage
- *    in CBFS.
- *  + Measure the verstage if it is compiled as separate
- *    stage.
- *
- * Takes the current vboot context as parameter for s3 checks.
- * returns on success VB2_SUCCESS, else a vboot error.
- */
-uint32_t tspi_init_crtm(void);
-
 /**
  * Measure digests cached in TCPA log entries into PCRs
  */

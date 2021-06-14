@@ -1,17 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "../console/init.c"
+
 #include <console/console.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <tests/test.h>
-
-/* stub */
-static int log_level = 0;
-int get_log_level(void)
-{
-	return log_level;
-}
 
 struct log_combinations_t {
 	int log_lvl;
@@ -45,16 +40,30 @@ struct log_combinations_t {
 static void test_console_log_level(void **state)
 {
 	for (int i = 0; i < ARRAY_SIZE(combinations); i++) {
-		log_level = combinations[i].log_lvl;
+		console_loglevel = combinations[i].log_lvl;
 		assert_int_equal(combinations[i].behavior,
 			console_log_level(combinations[i].msg_lvl));
 	}
 }
 
+static int setup_console_log_level(void **state)
+{
+	console_inited = 1;
+	return 0;
+}
+
+static int teardown_console_log_level(void **state)
+{
+	console_inited = 0;
+	return 0;
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_console_log_level),
+		cmocka_unit_test_setup_teardown(test_console_log_level,
+						setup_console_log_level,
+						teardown_console_log_level),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

@@ -13,8 +13,7 @@
 static int console_inited;
 static int console_loglevel;
 
-int get_log_level(void);
-int get_log_level(void)
+static inline int get_log_level(void)
 {
 	if (console_inited == 0)
 		return -1;

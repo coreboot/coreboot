@@ -37,6 +37,18 @@ config HASWELL_VBOOT_IN_BOOTBLOCK
 	  binary is used meaning a jump is made from RW to the RO region
 	  and back to the RW region after the binary is done.
 
+config USE_BROADWELL_MRC
+	bool "Use Broadwell MRC.bin"
+	depends on !USE_NATIVE_RAMINIT
+	help
+	  Haswell MRC.bin has several limitations: it does not support
+	  Broadwell CPUs nor 9-series PCHs, it does not initialise PEG
+	  ports properly and it can't use more than one SPD file entry
+	  at the same time (which would be useful for memory overclock
+	  when using different DIMMs, without patching SPD EEPROMs). A
+	  workaround for some of these limitations is to use Broadwell
+	  MRC.bin instead.
+
 config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_ROMSTAGE if !HASWELL_VBOOT_IN_BOOTBLOCK

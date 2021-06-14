@@ -52,6 +52,21 @@ void bootblock_early_southbridge_init(void)
 	pch_enable_lpc();
 	mainboard_config_superio();
 
+	/* Broadwell MRC.bin uses HPET, but does not enable it beforehand */
+	if (CONFIG(USE_BROADWELL_MRC)) {
+		/* Set HPET address and enable it */
+		RCBA32_AND_OR(HPTC, ~3, 1 << 7);
+
+		/*
+		 * Reading the register back guarantees that the write is
+		 * done before we use the configured base address below.
+		 */
+		(void)RCBA32(HPTC);
+
+		/* Enable HPET to start counter */
+		setbits32((void *)0xfed00000 + 0x10, 1 << 0);
+	}
+
 	if (CONFIG(SERIALIO_UART_CONSOLE))
 		uart_bootblock_init();
 }

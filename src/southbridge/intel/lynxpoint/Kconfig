@@ -45,6 +45,7 @@ config INTEL_LYNXPOINT_LP
 
 config EHCI_BAR
 	hex
+	default 0xd8000000 if USE_BROADWELL_MRC
 	default 0xe8000000
 
 config SERIRQ_CONTINUOUS_MODE

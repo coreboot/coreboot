@@ -34,9 +34,13 @@ smm-y += pmutil.c usb_ehci.c usb_xhci.c
 bootblock-y += early_pch.c
 romstage-y += early_usb.c early_me.c me_status.c early_pch.c
 romstage-y += pmutil.c
+romstage-y += iobp.c
 
 romstage-$(CONFIG_USE_NATIVE_RAMINIT) += early_pch_native.c early_usb_native.c iobp.c thermal.c
 subdirs-$(CONFIG_USE_NATIVE_RAMINIT) += hsio
+
+romstage-$(CONFIG_USE_BROADWELL_MRC) += early_pch_native.c early_usb_native.c iobp.c thermal.c
+subdirs-$(CONFIG_USE_BROADWELL_MRC) += hsio
 
 ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c

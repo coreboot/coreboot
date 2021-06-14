@@ -24,7 +24,13 @@ romstage-y += early_dmi.c early_pcie.c vcu_mailbox.c
 subdirs-y  += native_raminit
 
 else
+ifeq ($(CONFIG_USE_BROADWELL_MRC),y)
+romstage-y += early_dmi.c early_pcie.c vcu_mailbox.c
+subdirs-y  += broadwell_mrc
+
+else
 subdirs-y  += haswell_mrc
+endif
 endif
 
 endif

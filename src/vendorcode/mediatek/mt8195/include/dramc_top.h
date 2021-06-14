@@ -97,7 +97,7 @@ int get_dram_rank_nr(void);
 int get_dram_mr_cnt(void);
 int get_dram_freq_cnt(void);
 #if !__ETT__
-void get_dram_rank_size(u64 dram_rank_size[]);
+void get_dram_rank_size(u64 dram_rank_size[DRAMC_MAX_RK]);
 void get_dram_freq_step(u32 dram_freq_step[]);
 void set_dram_mr(unsigned int index, unsigned short value);
 unsigned short get_dram_mr(unsigned int index);

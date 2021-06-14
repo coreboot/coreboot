@@ -284,7 +284,7 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 
 static void gma_setup_panel(struct device *dev)
 {
-	config_t *conf = config_of(dev);
+	struct soc_intel_broadwell_config *conf = config_of(dev);
 	const struct i915_gpu_panel_config *panel_cfg = &conf->panel_cfg;
 	u32 reg32;
 
@@ -361,7 +361,7 @@ static void gma_setup_panel(struct device *dev)
 static int igd_get_cdclk_haswell(u32 *const cdsel, int *const inform_pc,
 				 struct device *const dev)
 {
-	const config_t *const conf = config_of(dev);
+	const struct soc_intel_broadwell_config *const conf = config_of(dev);
 	int cdclk = conf->cdclk;
 
 	/* Check for ULX GT1 or GT2 */
@@ -396,7 +396,7 @@ static int igd_get_cdclk_broadwell(u32 *const cdsel, int *const inform_pc,
 				   struct device *const dev)
 {
 	static const u32 cdsel_by_cdclk[] = { 0, 2, 0, 1, 3 };
-	const config_t *const conf = config_of(dev);
+	const struct soc_intel_broadwell_config *const conf = config_of(dev);
 	int cdclk = conf->cdclk;
 
 	/* Check for ULX */

@@ -33,6 +33,4 @@ struct soc_intel_broadwell_config {
 	struct i915_gpu_controller_info gfx;
 };
 
-typedef struct soc_intel_broadwell_config config_t;
-
 #endif

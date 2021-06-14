@@ -63,31 +63,27 @@ struct resource {
 /* Generic resource helper functions */
 struct device;
 struct bus;
-extern void compact_resources(struct device *dev);
-extern struct resource *probe_resource(const struct device *dev,
-				       unsigned int index);
-extern struct resource *new_resource(struct device *dev, unsigned int index);
-extern struct resource *find_resource(const struct device *dev,
-				      unsigned int index);
-extern resource_t resource_end(struct resource *resource);
-extern resource_t resource_max(struct resource *resource);
-extern void report_resource_stored(struct device *dev,
-	struct resource *resource, const char *comment);
+void compact_resources(struct device *dev);
+struct resource *probe_resource(const struct device *dev, unsigned int index);
+struct resource *new_resource(struct device *dev, unsigned int index);
+struct resource *find_resource(const struct device *dev, unsigned int index);
+resource_t resource_end(const struct resource *resource);
+resource_t resource_max(const struct resource *resource);
+void report_resource_stored(struct device *dev, const struct resource *resource,
+			    const char *comment);
 
-typedef void (*resource_search_t)(void *gp, struct device *dev,
-	struct resource *res);
-extern void search_bus_resources(struct bus *bus,
-	unsigned long type_mask, unsigned long type,
-	resource_search_t search, void *gp);
+typedef void (*resource_search_t)(void *gp, struct device *dev, struct resource *res);
 
-extern void search_global_resources(
-	unsigned long type_mask, unsigned long type,
-	resource_search_t search, void *gp);
+void search_bus_resources(struct bus *bus, unsigned long type_mask, unsigned long type,
+			  resource_search_t search, void *gp);
+
+void search_global_resources(unsigned long type_mask, unsigned long type,
+			     resource_search_t search, void *gp);
 
 #define RESOURCE_TYPE_MAX 20
-extern const char *resource_type(struct resource *resource);
+const char *resource_type(const struct resource *resource);
 
-static inline void *res2mmio(struct resource *res, unsigned long offset,
+static inline void *res2mmio(const struct resource *res, unsigned long offset,
 			     unsigned long mask)
 {
 	return (void *)(uintptr_t)((res->base + offset) & ~mask);

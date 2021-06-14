@@ -450,7 +450,7 @@ static resource_t align_down(resource_t val, unsigned long gran)
  * @param resource The resource whose limit is desired.
  * @return The end.
  */
-resource_t resource_end(struct resource *resource)
+resource_t resource_end(const struct resource *resource)
 {
 	resource_t base, end;
 
@@ -476,7 +476,7 @@ resource_t resource_end(struct resource *resource)
  * @param resource The resource whose maximum is desired.
  * @return The maximum.
  */
-resource_t resource_max(struct resource *resource)
+resource_t resource_max(const struct resource *resource)
 {
 	resource_t max;
 
@@ -491,7 +491,7 @@ resource_t resource_max(struct resource *resource)
  * @param resource The resource type to decode.
  * @return TODO.
  */
-const char *resource_type(struct resource *resource)
+const char *resource_type(const struct resource *resource)
 {
 	static char buffer[RESOURCE_TYPE_MAX];
 	snprintf(buffer, sizeof(buffer), "%s%s%s%s",
@@ -513,7 +513,7 @@ const char *resource_type(struct resource *resource)
  * @param resource The resource that was just stored.
  * @param comment TODO
  */
-void report_resource_stored(struct device *dev, struct resource *resource,
+void report_resource_stored(struct device *dev, const struct resource *resource,
 			    const char *comment)
 {
 	char buf[10];

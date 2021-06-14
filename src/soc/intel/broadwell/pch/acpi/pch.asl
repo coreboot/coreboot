@@ -5,6 +5,8 @@
 /* PCI IRQ assignment */
 #include "pci_irqs.asl"
 
+#define DEFAULT_PRW_VALUE	0x6d
+
 Scope (\)
 {
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
@@ -42,7 +44,7 @@ Scope (\)
 }
 
 // High Definition Audio (Azalia) 0:1b.0
-#include "audio.asl"
+#include <southbridge/intel/lynxpoint/acpi/audio.asl>
 
 // ADSP/SST 0:13.0
 #include "adsp.asl"
@@ -51,7 +53,7 @@ Scope (\)
 #include <southbridge/intel/common/acpi/pcie.asl>
 
 // USB EHCI 0:1d.0
-#include "ehci.asl"
+#include <southbridge/intel/lynxpoint/acpi/ehci.asl>
 
 // USB XHCI 0:14.0
 #include "xhci.asl"
@@ -60,7 +62,7 @@ Scope (\)
 #include "lpc.asl"
 
 // SATA 0:1f.2
-#include "sata.asl"
+#include <southbridge/intel/lynxpoint/acpi/sata.asl>
 
 // SMBus 0:1f.3
 #include <southbridge/intel/common/acpi/smbus.asl>

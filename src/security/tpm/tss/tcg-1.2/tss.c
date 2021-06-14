@@ -327,9 +327,8 @@ uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
 
 uint32_t tlcl_set_global_lock(void)
 {
-	uint32_t x;
 	VBDEBUG("TPM: Set global lock\n");
-	return tlcl_write(TPM_NV_INDEX0, (uint8_t *) &x, 0);
+	return tlcl_write(TPM_NV_INDEX0, NULL, 0);
 }
 
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,

@@ -21,6 +21,9 @@ static void haswell_setup_bars(void)
 	pci_write_config32(HOST_BRIDGE, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
 	pci_write_config32(HOST_BRIDGE, DMIBAR + 4, 0);
 
+	mchbar_write32(EDRAMBAR, EDRAM_BASE_ADDRESS | 1);
+	mchbar_write32(GDXCBAR, GDXC_BASE_ADDRESS | 1);
+
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
 	pci_write_config8(HOST_BRIDGE, PAM0, 0x30);
 	pci_write_config8(HOST_BRIDGE, PAM1, 0x33);

@@ -182,6 +182,8 @@ Device (PDRC)
 		Memory32Fixed (ReadWrite, 0xfed20000, 0x00020000) // TXT
 		Memory32Fixed (ReadWrite, 0xfed40000, 0x00005000) // TPM
 		Memory32Fixed (ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
+		Memory32Fixed (ReadWrite, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE)
+		Memory32Fixed (ReadWrite, GDXC_BASE_ADDRESS, GDXC_BASE_SIZE)
 	})
 
 	// Current Resource Settings

@@ -40,7 +40,7 @@ config INTEL_LYNXPOINT_LP
 	bool
 	default n
 	help
-	  Set this option to y for Lynxpont LP (Haswell ULT).
+	  Set this option to y for LynxPoint LP (Haswell ULT).
 
 config EHCI_BAR
 	hex

@@ -16,6 +16,14 @@ Device (XHCI)
 		Offset (0x10),
 		, 16,
 		XMEM, 16, // MEM_BASE
+		Offset (0x40),
+		, 11,
+		SWAI, 1,
+		, 20,
+		Offset (0x44),
+		, 12,
+		SAIP, 2,
+		, 18,
 		Offset (0x74),
 		D0D3, 2,
 		, 6,
@@ -234,6 +242,12 @@ Device (XHCI)
 		CLK2 = 1
 #endif
 
+		// Clear PCI CFG offset 0x40[11]
+		^SWAI = 0
+
+		// Clear PCI CFG offset 0x44[13:12]
+		^SAIP = 0
+
 		Return ()
 	}
 
@@ -289,6 +303,12 @@ Device (XHCI)
 		// Clear MMIO 0x8154[31]
 		CLK2 = 0
 #endif
+
+		// Set PCI CFG offset 0x40[11]
+		^SWAI = 1
+
+		// Set PCI CFG offset 0x44[13:12]
+		^SAIP = 1
 
 		// Put device in D3
 		^D0D3 = 3

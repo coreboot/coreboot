@@ -178,6 +178,10 @@ int tspi_measure_cache_to_pcr(void)
 	enum vb2_hash_algorithm hash_alg;
 	struct tcpa_table *tclt = tcpa_log_init();
 
+	/* This means the table is empty. */
+	if (!tcpa_log_available())
+		return VB2_SUCCESS;
+
 	if (!tclt) {
 		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
 		return VB2_ERROR_UNKNOWN;

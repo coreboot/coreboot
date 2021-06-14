@@ -1,0 +1,68 @@
+config INTEL_LYNXPOINT_LP
+	bool
+	default y if SOC_INTEL_BROADWELL
+
+config PCH_SPECIFIC_OPTIONS
+	def_bool y
+	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
+	select ACPI_SOC_NVS
+	select AZALIA_PLUGIN_SUPPORT
+	select BOOT_DEVICE_SUPPORTS_WRITES
+	select HAVE_EM100PRO_SPI_CONSOLE_SUPPORT
+	select HAVE_POWER_STATE_AFTER_FAILURE
+	select HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
+	select HAVE_SMI_HANDLER
+	select HAVE_USBDEBUG
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select INTEL_LYNXPOINT_LP
+	select IOAPIC
+	select RTC
+	select SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT
+	select SOUTHBRIDGE_INTEL_COMMON_EARLY_SMBUS
+	select SOUTHBRIDGE_INTEL_COMMON_RESET
+	select SOUTHBRIDGE_INTEL_COMMON_RTC
+	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
+	select SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9
+	select SPI_FLASH
+
+config EHCI_BAR
+	hex
+	default 0xd8000000
+
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default y
+	help
+	  If you set this option to y, the serial IRQ machine will be
+	  operated in continuous mode.
+
+config PCIEXP_ASPM
+	bool
+	default y
+
+config PCIEXP_AER
+	bool
+	default y
+
+config PCIEXP_COMMON_CLOCK
+	bool
+	default y
+
+config PCIEXP_CLK_PM
+	bool
+	default y
+
+config PCIEXP_L1_SUB_STATE
+	bool
+	default y
+
+config SERIALIO_UART_CONSOLE
+	bool
+	default n
+	select DRIVERS_UART_8250MEM_32
+	help
+	  Selected by mainboards where SerialIO UARTs can be used to retrieve
+	  coreboot logs. Boards also need to set UART_FOR_CONSOLE accordingly.
+
+config CONSOLE_UART_BASE_ADDRESS
+	default 0xd6000000 if SERIALIO_UART_CONSOLE

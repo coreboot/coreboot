@@ -5,58 +5,14 @@ config SOC_INTEL_BROADWELL
 
 if SOC_INTEL_BROADWELL
 
-config INTEL_LYNXPOINT_LP
-	bool
-	default y if SOC_INTEL_BROADWELL
-
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
-	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
-	select ACPI_SOC_NVS
-	select AZALIA_PLUGIN_SUPPORT
-	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_HASWELL
-	select MRC_SETTINGS_PROTECT
 	select HAVE_DISPLAY_MTRRS
-	select HAVE_SMI_HANDLER
-	select SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT
-	select SOUTHBRIDGE_INTEL_COMMON_EARLY_SMBUS
-	select SOUTHBRIDGE_INTEL_COMMON_RESET
-	select SOUTHBRIDGE_INTEL_COMMON_RTC
-	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
-	select SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9
-	select HAVE_USBDEBUG
-	select IOAPIC
-	select INTEL_LYNXPOINT_LP
-	select REG_SCRIPT
-	select RTC
-	select SPI_FLASH
-	select INTEL_DESCRIPTOR_MODE_CAPABLE
-	select HAVE_EM100PRO_SPI_CONSOLE_SUPPORT
 	select INTEL_GMA_ACPI
-	select HAVE_POWER_STATE_AFTER_FAILURE
-	select HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
-
-config PCIEXP_ASPM
-	bool
-	default y
-
-config PCIEXP_AER
-	bool
-	default y
-
-config PCIEXP_COMMON_CLOCK
-	bool
-	default y
-
-config PCIEXP_CLK_PM
-	bool
-	default y
-
-config PCIEXP_L1_SUB_STATE
-	bool
-	default y
+	select MRC_SETTINGS_PROTECT
+	select REG_SCRIPT
 
 config BROADWELL_VBOOT_IN_BOOTBLOCK
 	depends on VBOOT
@@ -152,28 +108,6 @@ config RO_REGION_ONLY
 
 endif # HAVE_MRC
 
-config SERIALIO_UART_CONSOLE
-	bool
-	default n
-	select DRIVERS_UART_8250MEM_32
-	help
-	  Selected by mainboards where SerialIO UARTs can be used to retrieve
-	  coreboot logs. Boards also need to set UART_FOR_CONSOLE accordingly.
-
-config CONSOLE_UART_BASE_ADDRESS
-	default 0xd6000000 if SERIALIO_UART_CONSOLE
-
-config EHCI_BAR
-	hex
-	default 0xd8000000
-
-config SERIRQ_CONTINUOUS_MODE
-	bool
-	default y
-	help
-	  If you set this option to y, the serial IRQ machine will be
-	  operated in continuous mode.
-
 config HAVE_REFCODE_BLOB
 	depends on ARCH_X86
 	bool "An external reference code blob should be put into cbfs."
@@ -190,5 +124,7 @@ config REFCODE_BLOB_FILE
 	 The path and filename to the file to be added to cbfs.
 
 endif # HAVE_REFCODE_BLOB
+
+source "src/soc/intel/broadwell/pch/Kconfig"
 
 endif

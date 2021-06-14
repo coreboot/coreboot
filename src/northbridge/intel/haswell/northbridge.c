@@ -85,15 +85,13 @@ struct fixed_mmio_descriptor {
 	const char *description;
 };
 
-#define SIZE_KB(x) ((x) * 1024)
 struct fixed_mmio_descriptor mc_fixed_resources[] = {
-	{ MCHBAR,   SIZE_KB(32), get_bar,           "MCHBAR"   },
-	{ DMIBAR,   SIZE_KB(4),  get_bar,           "DMIBAR"   },
-	{ EPBAR,    SIZE_KB(4),  get_bar,           "EPBAR"    },
-	{ GDXCBAR,  SIZE_KB(4),  get_bar_in_mchbar, "GDXCBAR"  },
-	{ EDRAMBAR, SIZE_KB(16), get_bar_in_mchbar, "EDRAMBAR" },
+	{ MCHBAR,   MCH_BASE_SIZE,   get_bar,           "MCHBAR"   },
+	{ DMIBAR,   DMI_BASE_SIZE,   get_bar,           "DMIBAR"   },
+	{ EPBAR,    EP_BASE_SIZE,    get_bar,           "EPBAR"    },
+	{ GDXCBAR,  GDXC_BASE_SIZE,  get_bar_in_mchbar, "GDXCBAR"  },
+	{ EDRAMBAR, EDRAM_BASE_SIZE, get_bar_in_mchbar, "EDRAMBAR" },
 };
-#undef SIZE_KB
 
 /* Add all known fixed MMIO ranges that hang off the host bridge/memory controller device. */
 static void mc_add_fixed_mmio_resources(struct device *dev)

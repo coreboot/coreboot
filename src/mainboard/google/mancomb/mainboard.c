@@ -2,6 +2,7 @@
 
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>

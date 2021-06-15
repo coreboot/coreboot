@@ -5,6 +5,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/acpi.h>

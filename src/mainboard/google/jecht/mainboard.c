@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/device.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "onboard.h"
 

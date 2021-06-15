@@ -2,11 +2,13 @@
 
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <drivers/spi/tpm/tpm.h>
 #include <ec/ec.h>
 #include <security/tpm/tss.h>
 #include <soc/soc_chip.h>
+#include <vb2_api.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_update_soc_chip_config(void)

@@ -25,11 +25,7 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/alderlake/acpi/southbridge.asl>
 		#include <soc/intel/alderlake/acpi/tcss.asl>
-		#include <soc/intel/common/block/acpi/acpi/ipu.asl>
 	}
-
-	/* Camera */
-	#include <acpi/mipi_camera.asl>
 
 #if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Chrome OS Embedded Controller */

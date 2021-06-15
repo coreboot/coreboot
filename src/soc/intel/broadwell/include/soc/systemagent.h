@@ -135,7 +135,4 @@
 /* System Agent identification */
 u8 systemagent_revision(void);
 
-uintptr_t sa_get_tolud_base(void);
-uintptr_t sa_get_gsm_base(void);
-
 #endif

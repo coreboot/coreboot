@@ -124,8 +124,8 @@ static void report_cpu_info(void)
 static void report_mch_info(void)
 {
 	int i;
-	u16 mch_device = pci_read_config16(SA_DEV_ROOT, PCI_DEVICE_ID);
-	u8 mch_revision = pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
+	u16 mch_device = pci_read_config16(HOST_BRIDGE, PCI_DEVICE_ID);
+	u8 mch_revision = pci_read_config8(HOST_BRIDGE, PCI_REVISION_ID);
 	const char *mch_type = "Unknown";
 
 	/* Look for string to match the revision for Broadwell U/Y */

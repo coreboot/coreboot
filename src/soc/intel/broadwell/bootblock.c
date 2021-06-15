@@ -29,6 +29,6 @@ void bootblock_early_northbridge_init(void)
 	 * The PCIEXBAR is assumed to live in the memory mapped IO space under 4GiB.
 	 */
 	const uint32_t reg = CONFIG_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
-	pci_io_write_config32(SA_DEV_ROOT, PCIEXBAR + 4, 0);
-	pci_io_write_config32(SA_DEV_ROOT, PCIEXBAR, reg);
+	pci_io_write_config32(HOST_BRIDGE, PCIEXBAR + 4, 0);
+	pci_io_write_config32(HOST_BRIDGE, PCIEXBAR, reg);
 }

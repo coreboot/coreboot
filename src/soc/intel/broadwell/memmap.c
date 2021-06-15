@@ -19,7 +19,7 @@ static uintptr_t dpr_region_start(void)
 	 * 1 MiB alignment and reports the TOP of the range, the base
 	 * must be calculated from the size in MiB in bits 11:4.
 	 */
-	uintptr_t dpr = pci_read_config32(SA_DEV_ROOT, DPR);
+	uintptr_t dpr = pci_read_config32(HOST_BRIDGE, DPR);
 	uintptr_t tom = ALIGN_DOWN(dpr, 1 * MiB);
 
 	/* Subtract DMA Protected Range size if enabled */
@@ -36,8 +36,8 @@ void *cbmem_top_chipset(void)
 
 void smm_region(uintptr_t *start, size_t *size)
 {
-	uintptr_t tseg = pci_read_config32(SA_DEV_ROOT, TSEG);
-	uintptr_t bgsm = pci_read_config32(SA_DEV_ROOT, BGSM);
+	uintptr_t tseg = pci_read_config32(HOST_BRIDGE, TSEG);
+	uintptr_t bgsm = pci_read_config32(HOST_BRIDGE, BGSM);
 
 	tseg = ALIGN_DOWN(tseg, 1 * MiB);
 	bgsm = ALIGN_DOWN(bgsm, 1 * MiB);

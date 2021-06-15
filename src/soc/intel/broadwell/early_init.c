@@ -11,32 +11,32 @@
 static void broadwell_setup_bars(void)
 {
 	/* Set up all hardcoded northbridge BARs */
-	pci_write_config32(SA_DEV_ROOT, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
-	pci_write_config32(SA_DEV_ROOT, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
-	pci_write_config32(SA_DEV_ROOT, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
+	pci_write_config32(HOST_BRIDGE, MCHBAR, CONFIG_FIXED_MCHBAR_MMIO_BASE | 1);
+	pci_write_config32(HOST_BRIDGE, DMIBAR, CONFIG_FIXED_DMIBAR_MMIO_BASE | 1);
+	pci_write_config32(HOST_BRIDGE, EPBAR,  CONFIG_FIXED_EPBAR_MMIO_BASE  | 1);
 
 	mchbar_write32(EDRAMBAR, EDRAM_BASE_ADDRESS | 1);
 	mchbar_write32(GDXCBAR, GDXC_BASE_ADDRESS | 1);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	pci_write_config8(SA_DEV_ROOT, PAM0, 0x30);
-	pci_write_config8(SA_DEV_ROOT, PAM1, 0x33);
-	pci_write_config8(SA_DEV_ROOT, PAM2, 0x33);
-	pci_write_config8(SA_DEV_ROOT, PAM3, 0x33);
-	pci_write_config8(SA_DEV_ROOT, PAM4, 0x33);
-	pci_write_config8(SA_DEV_ROOT, PAM5, 0x33);
-	pci_write_config8(SA_DEV_ROOT, PAM6, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM0, 0x30);
+	pci_write_config8(HOST_BRIDGE, PAM1, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM2, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM3, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM4, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM5, 0x33);
+	pci_write_config8(HOST_BRIDGE, PAM6, 0x33);
 }
 
 void systemagent_early_init(void)
 {
 	const bool vtd_capable =
-		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
+		!(pci_read_config32(HOST_BRIDGE, CAPID0_A) & VTD_DISABLE);
 
 	broadwell_setup_bars();
 
 	/* Device enable: IGD and Mini-HD */
-	pci_write_config32(SA_DEV_ROOT, DEVEN, DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN);
+	pci_write_config32(HOST_BRIDGE, DEVEN, DEVEN_D0EN | DEVEN_D2EN | DEVEN_D3EN);
 
 	if (vtd_capable) {
 		/* setup BARs: zeroize top 32 bits; set enable bit */

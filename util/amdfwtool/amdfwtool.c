@@ -1597,7 +1597,7 @@ int main(int argc, char **argv)
 	combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
 
 	combo_dir->header.lookup = 1;
-	fill_dir_header(combo_dir, 1, PSP2_COOKIE, NULL);
+	fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
 #endif
 
 	if (have_bios_tables(amd_bios_table)) {

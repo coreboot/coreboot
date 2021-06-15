@@ -26,7 +26,11 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_SD_CD.id, ACTIVE_LOW, -1, "SD card detect"},
 		{GPIO_BEEP_ON.id, ACTIVE_HIGH, -1, "beep enable"},
 		{GPIO_EC_IN_RW.id, ACTIVE_LOW, -1, "EC in RW"},
-		{GPIO_GSC_AP_INT.id, ACTIVE_LOW, -1, "TPM interrupt"},
+		/*
+		 * The GPIO_GSC_AP_INT itself is active low, but the payloads will
+		 * create the IRQ using its eint driver, which is active high.
+		 */
+		{GPIO_GSC_AP_INT.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 		{GPIO_EN_SPK.id, ACTIVE_HIGH, -1, "speaker enable"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

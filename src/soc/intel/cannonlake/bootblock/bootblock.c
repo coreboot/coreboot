@@ -12,38 +12,6 @@
 #include <soc/iomap.h>
 #include <soc/pch.h>
 
-#if CONFIG(FSP_CAR)
-#include <FsptUpd.h>
-
-const FSPT_UPD temp_ram_init_params = {
-	.FspUpdHeader = {
-		.Signature = 0x545F4450554C4643ULL,	/* 'CFLUPD_T' */
-		.Revision = 1,
-		.Reserved = {0},
-	},
-	.FsptCoreUpd = {
-		/*
-		 * It is a requirement for firmware to have Firmware Interface Table
-		 * (FIT), which contains pointers to each microcode update.
-		 * The microcode update is loaded for all logical processors before
-		 * cpu reset vector.
-		 *
-		 * All SoC since Gen-4 has above mechanism in place to load microcode
-		 * even before hitting CPU reset vector. Hence skipping FSP-T loading
-		 * microcode after CPU reset by passing '0' value to
-		 * FSPT_UPD.MicrocodeRegionBase and FSPT_UPD.MicrocodeRegionSize.
-		 *
-		 * Note: CodeRegionSize must be smaller than or equal to 16MiB to not
-		 * overlap with LAPIC or the CAR area at 0xfef00000.
-		 */
-		.MicrocodeRegionBase = 0,
-		.MicrocodeRegionSize = 0,
-		.CodeRegionBase = (uint32_t)0x100000000ULL - CACHE_ROM_SIZE,
-		.CodeRegionSize = (uint32_t)CACHE_ROM_SIZE,
-	},
-};
-#endif
-
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	/* Call lib/bootblock.c main */

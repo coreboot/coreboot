@@ -1,5 +1,6 @@
 config SOC_INTEL_APOLLOLAKE
 	bool
+	select INTEL_CAR_CQOS
 	help
 	  Intel Apollolake support
 
@@ -13,6 +14,7 @@ config SOC_INTEL_GEMINILAKE
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
 	select IDT_IN_EVERY_STAGE
 	select PAGING_IN_CACHE_AS_RAM
+	select INTEL_CAR_NEM
 	help
 	  Intel GLK support
 
@@ -60,6 +62,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
 	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_DSP
@@ -295,40 +298,6 @@ config NHLT_RT5682
 	default n
 	help
 	  Include DSP firmware settings for headset codec.
-
-choice
-	prompt "Cache-as-ram implementation"
-	default CAR_CQOS if !SOC_INTEL_GEMINILAKE
-	default CAR_NEM
-	help
-	  This option allows you to select how cache-as-ram (CAR) is set up.
-
-config CAR_NEM
-	bool "Non-evict mode"
-	select SOC_INTEL_COMMON_BLOCK_CAR
-	select INTEL_CAR_NEM
-	help
-	  Traditionally, CAR is set up by using Non-Evict mode. This method
-	  does not allow CAR and cache to co-exist, because cache fills are
-	  block in NEM mode.
-
-config CAR_CQOS
-	bool "Cache Quality of Service"
-	select SOC_INTEL_COMMON_BLOCK_CAR
-	select INTEL_CAR_CQOS
-	help
-	  Cache Quality of Service allows more fine-grained control of cache
-	  usage. As result, it is possible to set up portion of L2 cache for
-	  CAR and use remainder for actual caching.
-
-config USE_APOLLOLAKE_FSP_CAR
-	bool "Use FSP CAR"
-	select FSP_CAR
-	help
-	  Use FSP APIs to initialize & tear down the Cache-As-Ram.
-
-endchoice
-
 #
 # Each bit in QOS mask controls this many bytes. This is calculated as:
 # (CACHE_WAYS / CACHE_BITS_PER_MASK) * CACHE_LINE_SIZE * CACHE_SETS

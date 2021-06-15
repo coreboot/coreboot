@@ -46,4 +46,8 @@ chip soc/amd/picasso
 
 	device mmio 0xfedc4000 alias i2c_2 off end
 	device mmio 0xfedc5000 alias i2c_3 off end
+	device mmio 0xfedc9000 alias uart_0 off end
+	device mmio 0xfedca000 alias uart_1 off end
+	device mmio 0xfedce000 alias uart_2 off end
+	device mmio 0xfedcf000 alias uart_3 off end
 end

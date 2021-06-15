@@ -395,9 +395,6 @@ chip soc/amd/picasso
 		end
 	end
 
-	device mmio 0xfedc9000 on end # console on UART0
-	device mmio 0xfedca000 off end # UART1
-	device mmio 0xfedce000 off end # UART2
-	device mmio 0xfedcf000 off end # UART3
+	device ref uart_0 on end # console
 
 end	# chip soc/amd/picasso

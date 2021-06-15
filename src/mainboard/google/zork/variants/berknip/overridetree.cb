@@ -158,7 +158,7 @@ chip soc/amd/picasso
 		end
 	end
 
-	device mmio 0xfedca000 on
+	device ref uart_1 on
 		chip drivers/uart/acpi
 			register "name" = ""CRFP""
 			register "desc" = ""Fingerprint Reader""

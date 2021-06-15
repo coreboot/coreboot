@@ -117,6 +117,7 @@
 #define FCH_AOAC_DEV_UART1		12
 #define FCH_AOAC_DEV_AMBA		17
 #define FCH_AOAC_DEV_ESPI		27
+#define FCH_AOAC_DEV_EMMC		28
 
 void fch_pre_init(void);
 void fch_early_init(void);

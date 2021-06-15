@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/aoac.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <soc/acpi.h>
+#include <soc/aoac_defs.h>
 #include <soc/cpu.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
@@ -56,6 +58,10 @@ static void set_mmio_dev_ops(struct device *dev)
 	case APU_UART0_BASE:
 	case APU_UART1_BASE:
 		dev->ops = &cezanne_uart_mmio_ops;
+		break;
+	case APU_EMMC_BASE:
+		if (!dev->enabled)
+			power_off_aoac_device(FCH_AOAC_DEV_EMMC);
 		break;
 	}
 }

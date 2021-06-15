@@ -14,6 +14,8 @@
 #include <device/pci_ops.h>
 #include <device/dram/ddr3.h>
 #include <northbridge/intel/haswell/chip.h>
+#include <northbridge/intel/haswell/haswell.h>
+#include <northbridge/intel/haswell/raminit.h>
 #include <smbios.h>
 #include <spd.h>
 #include <security/vboot/vboot_common.h>
@@ -23,9 +25,7 @@
 #include <timestamp.h>
 #include <types.h>
 
-#include "raminit.h"
 #include "pei_data.h"
-#include "haswell.h"
 
 #define MRC_CACHE_VERSION 1
 

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/amd/common/acpi/aoac.asl>
+#include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio_map.h>
@@ -88,7 +89,7 @@ Device (FUR0)
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(11, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_UART0, 0)
 }
 
 Device (FUR1) {
@@ -120,7 +121,7 @@ Device (FUR1) {
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(12, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_UART1, 0)
 }
 
 Device (I2C0) {
@@ -157,7 +158,7 @@ Device (I2C0) {
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(5, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_I2C0, 0)
 }
 
 Device (I2C1) {
@@ -194,7 +195,7 @@ Device (I2C1) {
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(6, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_I2C1, 0)
 }
 
 Device (I2C2) {
@@ -231,7 +232,7 @@ Device (I2C2) {
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(7, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_I2C2, 0)
 }
 
 Device (I2C3)
@@ -268,7 +269,7 @@ Device (I2C3)
 	}
 
 	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(8, 0)
+	// AOAC_DEVICE(FCH_AOAC_DEV_I2C3, 0)
 }
 
 Device (MISC)

@@ -581,31 +581,38 @@ void pmc_gpe_init(void)
 
 void pmc_set_power_failure_state(const bool target_on)
 {
-	bool on;
-
 	const unsigned int state = get_uint_option("power_on_after_fail",
 					 CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 
+	/*
+	 * On the shutdown path (target_on == false), we only need to
+	 * update the register for MAINBOARD_POWER_STATE_PREVIOUS. For
+	 * all other cases, we don't write the register to avoid clob-
+	 * bering the value set on the boot path. This is necessary,
+	 * for instance, when we can't access the option backend in SMM.
+	 */
+
 	switch (state) {
 	case MAINBOARD_POWER_STATE_OFF:
+		if (!target_on)
+			break;
 		printk(BIOS_INFO, "Set power off after power failure.\n");
-		on = false;
+		pmc_soc_set_afterg3_en(false);
 		break;
 	case MAINBOARD_POWER_STATE_ON:
+		if (!target_on)
+			break;
 		printk(BIOS_INFO, "Set power on after power failure.\n");
-		on = true;
+		pmc_soc_set_afterg3_en(true);
 		break;
 	case MAINBOARD_POWER_STATE_PREVIOUS:
 		printk(BIOS_INFO, "Keep power state after power failure.\n");
-		on = target_on;
+		pmc_soc_set_afterg3_en(target_on);
 		break;
 	default:
 		printk(BIOS_WARNING, "WARNING: Unknown power-failure state: %d\n", state);
-		on = false;
 		break;
 	}
-
-	pmc_soc_set_afterg3_en(on);
 }
 
 /* This function returns the highest assertion duration of the SLP_Sx assertion widths */

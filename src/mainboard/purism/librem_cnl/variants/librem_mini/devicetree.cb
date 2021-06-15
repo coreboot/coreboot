@@ -22,6 +22,16 @@ chip soc/intel/cannonlake
 	# Misc
 	register "AcousticNoiseMitigation" = "1"
 
+	register "FastPkgCRampDisableIa" = "1"
+	register "FastPkgCRampDisableGt" = "1"
+	register "FastPkgCRampDisableSa" = "1"
+	register "FastPkgCRampDisableFivr" = "1"
+
+	register "SlowSlewRateForIa" = "3"	# fast/16
+	register "SlowSlewRateForGt" = "3"	# fast/16
+	register "SlowSlewRateForSa" = "3"	# fast/16
+	register "SlowSlewRateForFivr" = "3"	# fast/16
+
 	# Power
 	register "PchPmSlpS3MinAssert" = "3"	# 50ms
 	register "PchPmSlpS4MinAssert" = "1"	# 1s

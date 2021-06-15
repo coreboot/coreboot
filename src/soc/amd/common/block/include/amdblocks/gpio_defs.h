@@ -208,9 +208,13 @@
 #define PAD_WAKE_ENABLE(__wake)		GPIO_WAKE_ ## __wake
 #define PAD_DEBOUNCE_CONFIG(__deb)	GPIO_DEB_ ## __deb
 
-/* Native function pad configuration */
+/* Native function pad configuration with PAD_PULL */
 #define PAD_NF(pin, func, pull)						\
 	PAD_CFG_STRUCT(pin, pin ## _IOMUX_ ## func, PAD_PULL(pull))
+
+/* Native function pad configuration with PAD_OUTPUT */
+#define PAD_NFO(pin, func, direction)						\
+	PAD_CFG_STRUCT(pin, pin ## _IOMUX_ ## func, PAD_OUTPUT(direction))
 
 /* General purpose input pad configuration */
 #define PAD_GPI(pin, pull)							\

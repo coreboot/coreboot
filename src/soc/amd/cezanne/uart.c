@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/southbridge.h>
 #include <soc/uart.h>

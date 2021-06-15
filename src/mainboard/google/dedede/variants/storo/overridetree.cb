@@ -54,6 +54,15 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # WWAN
+
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,

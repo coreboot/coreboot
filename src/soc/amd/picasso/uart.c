@@ -7,6 +7,7 @@
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/aoac.h>
 #include <amdblocks/uart.h>
+#include <soc/aoac_defs.h>
 #include <soc/southbridge.h>
 #include <soc/gpio.h>
 #include <soc/uart.h>

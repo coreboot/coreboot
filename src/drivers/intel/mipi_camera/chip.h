@@ -117,7 +117,7 @@ struct clk_config {
 };
 
 struct gpio_config {
-	uint8_t gpio_num;
+	uint16_t gpio_num;
 };
 
 struct clock_ctrl_panel {

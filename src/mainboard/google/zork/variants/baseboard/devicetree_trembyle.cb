@@ -428,7 +428,7 @@ chip soc/amd/picasso
 			device generic 0.1 on end
 	end
 
-	device mmio 0xfedc5000 on
+	device ref i2c_3 on
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Cr50 TPM""

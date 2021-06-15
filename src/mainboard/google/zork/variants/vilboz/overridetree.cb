@@ -229,7 +229,7 @@ chip soc/amd/picasso
 		end
 	end # domain
 
-	device mmio 0xfedc4000 on # APU_I2C2_BASE
+	device ref i2c_2 on
 		chip drivers/i2c/hid
 			register "generic.hid" = ""GDIX0000""
 			register "generic.desc" = ""Goodix Touchscreen""

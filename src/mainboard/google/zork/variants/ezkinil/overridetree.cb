@@ -80,7 +80,7 @@ chip soc/amd/picasso
 		subsystemid 0x1022 0x1510 inherit
 	end # domain
 
-	device mmio 0xfedc4000 on
+	device ref i2c_2 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""
 			register "desc" = ""ELAN Touchpad""

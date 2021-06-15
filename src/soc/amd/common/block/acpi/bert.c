@@ -16,7 +16,7 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 		return CB_ERR;
 
 	bert_errors_region(region, length);
-	if (!region) {
+	if (!*region) {
 		printk(BIOS_ERR, "Error: Can't find BERT storage area\n");
 		return CB_ERR;
 	}

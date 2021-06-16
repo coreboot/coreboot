@@ -84,7 +84,13 @@ static const struct pad_config gpio_table[] = {
 #else /* BOARD_GOOGLE_BASEBOARD_DEDEDE_TPM2 */
 	/* Nothing connected on GSPI1 */
 	PAD_NC(GPP_B15, NONE),
-	PAD_NC(GPP_B16, NONE),
+	/*
+	 * B16: AP_CBI_EEPROM_WP_L
+	 *
+	 * We default to 0 to keep the EEPROM protected until we know it is safe to
+	 * deassert the write protect signal.
+	 */
+	PAD_CFG_GPO(GPP_B16, 0, DEEP),
 	PAD_NC(GPP_B17, NONE),
 	PAD_NC(GPP_B18, NONE),
 #endif

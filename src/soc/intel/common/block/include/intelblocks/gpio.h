@@ -121,6 +121,7 @@ struct pad_community {
 	uint16_t	gpi_nmi_sts_reg_0; /* offset to GPI NMI STS Reg 0 */
 	uint16_t	gpi_nmi_en_reg_0; /* offset to GPI NMI EN Reg 0 */
 	uint16_t	pad_cfg_base; /* offset to first PAD_GFG_DW0 Reg */
+	uint16_t	pad_cfg_lock_offset; /* offset to first PADCFGLOCK Reg */
 	uint8_t		gpi_status_offset;  /* specifies offset in struct
 						gpi_status */
 	uint8_t		port;	/* PCR Port ID */
@@ -196,6 +197,38 @@ void gpio_configure_pads_with_override(const struct pad_config *base_cfg,
  * Calculate Address of DW0 register for given GPIO
  */
 void *gpio_dwx_address(const gpio_t pad);
+
+enum gpio_lock_action {
+	GPIO_LOCK_CONFIG = 0x1,
+	GPIO_LOCK_TX	 = 0x2,
+	GPIO_LOCK_FULL	 = GPIO_LOCK_CONFIG | GPIO_LOCK_TX,
+};
+
+/*
+ * Lock a GPIO's configuration.
+ *
+ * The caller may specify if they wish to only lock the pad configuration, only
+ * the TX state, or both.  When the configuration is locked, the following
+ * registers become Read-Only and software writes to these registers have no
+ * effect.
+ *
+ *	Pad Configuration registers,
+ *	GPI_NMI_EN,
+ *	GPI_SMI_EN,
+ *	GPI_GPE_EN
+ *
+ * Note that this is only effective if the pad is owned by the host and this
+ * function may only be called in SMM.
+ *
+ * @param pad: GPIO pad number
+ * @param action: Which register to lock.
+ * @return 0 if successful,
+ * 1 - unsuccessful
+ * 2 - powered down
+ * 3 - multi-cast mixed
+ * -1 - sideband message failed or other error
+ */
+int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action);
 
 /*
  * Returns the pmc_gpe to gpio_gpe mapping table

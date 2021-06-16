@@ -110,7 +110,9 @@ static const struct pad_config gpio_table[] = {
 	/* HPD_1 (E14) and HPD_2 (A18) pins */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
+
+	PAD_NC(GPP_A19, NONE),
+	PAD_NC(GPP_A20, NONE),
 
 	/* GPIO pin for PCIE SRCCLKREQB */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),

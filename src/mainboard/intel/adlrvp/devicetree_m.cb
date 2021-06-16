@@ -86,6 +86,10 @@ chip soc/intel/alderlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
+	# Disable DDI ports HPD
+	register "DdiPort1Hpd" = "0"
+	register "DdiPort2Hpd" = "0"
+
 	# TCSS USB3
 	register "TcssAuxOri" = "0"
 

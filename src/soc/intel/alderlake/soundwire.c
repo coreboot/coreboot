@@ -6,7 +6,6 @@
 #include <device/soundwire.h>
 #include <drivers/intel/soundwire/soundwire.h>
 #include <intelblocks/pmclib.h>
-#include <soc/pmc.h>
 #include <stddef.h>
 #include <string.h>
 

@@ -2,6 +2,7 @@
 
 #include <acpi/acpi_pm.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <bootmode.h>
 #include <device/mmio.h>
 #include <cbmem.h>
@@ -724,4 +725,14 @@ void pmc_set_acpi_mode(void)
 	if (!CONFIG(NO_SMM) && !acpi_is_wakeup_s3()) {
 		apm_control(APM_CNT_ACPI_DISABLE);
 	}
+}
+
+enum pch_pmc_xtal pmc_get_xtal_freq(void)
+{
+	if (!CONFIG(PMC_EPOC))
+		dead_code();
+
+	const uintptr_t pmcbase = soc_read_pmc_base();
+
+	return PCH_EPOC_XTAL_FREQ(read32((uint32_t *)(pmcbase + PCH_PMC_EPOC)));
 }

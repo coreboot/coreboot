@@ -22,13 +22,6 @@
 
 #define PMC_HID		"INTC1026"
 
-enum pch_pmc_xtal pmc_get_xtal_freq(void)
-{
-	uint8_t *const pmcbase = pmc_mmio_regs();
-
-	return PCH_EPOC_XTAL_FREQ(read32(pmcbase + PCH_PMC_EPOC));
-}
-
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)
 {
 	uint32_t reg;

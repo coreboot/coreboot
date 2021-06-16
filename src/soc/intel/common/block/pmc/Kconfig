@@ -19,6 +19,12 @@ config SOC_INTEL_COMMON_BLOCK_PMC_DISCOVERABLE
 	  Select this on platforms where the PMC device is discoverable
 	  when scanning busses.
 
+config PMC_EPOC
+	bool
+	help
+	  Enable this for PMC devices to perform EPOC (CPU Early Power-on
+	  Configuration) related functions.
+
 endif # SOC_INTEL_COMMON_BLOCK_PMC
 
 config PMC_INVALID_READ_AFTER_WRITE

@@ -101,30 +101,6 @@ extern struct device_operations pmc_ops;
 #define   PCH2CPU_TPR_CFG_LOCK		(1 << 31)
 #define   PCH2CPU_TT_EN			(1 << 26)
 
-#define PCH_PMC_EPOC			0x18EC
-#define PCH_EPOC_2LM(__epoc)		((__epoc) & 0x1)
-/* XTAL frequency in bits 21, 20, 17 */
-#define PCH_EPOC_XTAL_FREQ(__epoc)	((((__epoc) >> 19) & 0x6) | ((__epoc) >> 17 & 0x1))
-
-/**
- * enum pch_pmc_xtal - External crystal oscillator frequency.
- * @XTAL_24_MHZ: 24 MHz external crystal.
- * @XTAL_19_2_MHZ: 19.2 MHz external crystal.
- * @XTAL_38_4_MHZ: 38.4 MHz external crystal.
- */
-enum pch_pmc_xtal {
-	XTAL_24_MHZ,
-	XTAL_19_2_MHZ,
-	XTAL_38_4_MHZ,
-};
-
-/**
- * pmc_get_xtal_freq() - Return frequency of external oscillator.
- *
- * Return &enum pch_pmc_xtal corresponding to frequency returned by PMC.
- */
-enum pch_pmc_xtal pmc_get_xtal_freq(void);
-
 #define PCH_PWRM_ACPI_TMR_CTL		0x18FC
 #define  ACPI_TIM_DIS			(1 << 1)
 #define GPIO_GPE_CFG			0x1920

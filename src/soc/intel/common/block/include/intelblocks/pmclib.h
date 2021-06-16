@@ -6,6 +6,28 @@
 #include <device/pci_type.h>
 #include <types.h>
 
+#define PCH_PMC_EPOC			0x18EC
+/* XTAL frequency in bits 21, 20, 17 */
+#define PCH_EPOC_XTAL_FREQ(__epoc)	((((__epoc) >> 19) & 0x6) | ((__epoc) >> 17 & 0x1))
+
+/**
+ * enum pch_pmc_xtal - External crystal oscillator frequency.
+ * @XTAL_24_MHZ: 24 MHz external crystal.
+ * @XTAL_19_2_MHZ: 19.2 MHz external crystal.
+ * @XTAL_38_4_MHZ: 38.4 MHz external crystal.
+ */
+enum pch_pmc_xtal {
+	XTAL_24_MHZ,
+	XTAL_19_2_MHZ,
+	XTAL_38_4_MHZ,
+};
+
+/*
+ * pmc_get_xtal_freq() - Return &enum pch_pmc_xtal corresponding to
+ * frequency of external oscillator.
+ */
+enum pch_pmc_xtal pmc_get_xtal_freq(void);
+
 /* Forward declare the power state struct here */
 struct chipset_power_state;
 

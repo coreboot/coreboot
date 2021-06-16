@@ -7,7 +7,6 @@
 #include <device/pci_def.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
-#include <drivers/intel/gma/gma.h>	/* TODO: for reproducibility purposes only */
 #include <soc/rcba.h>
 #include <soc/serialio.h>
 #include <soc/spi.h>

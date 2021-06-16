@@ -50,6 +50,13 @@ CFLAGS_x86_32	+=
 CFLAGS_x86_64	+= -mcmodel=large -mno-red-zone
 CFLAGS_ppc64	+=
 
+GCC_ADAFLAGS_arm	+=
+GCC_ADAFLAGS_arm64	+= -mgeneral-regs-only
+GCC_ADAFLAGS_riscv	+=
+GCC_ADAFLAGS_x86_32	+=
+GCC_ADAFLAGS_x86_64	+= -mcmodel=large -mno-red-zone
+GCC_ADAFLAGS_ppc64	+=
+
 # Some boards only provide 2K stacks, so storing lots of data there leads to
 # problems. Since C rules don't allow us to statically determine the maximum
 # stack use, we use 1.5K as heuristic, assuming that we typically have lots

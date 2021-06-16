@@ -35,15 +35,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->PcieRpEnableMask = mask;
 
-	_Static_assert(ARRAY_SIZE(m_cfg->PcieClkSrcUsage) >=
-			ARRAY_SIZE(config->PcieClkSrcUsage), "copy buffer overflow!");
-	memcpy(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage,
-			sizeof(config->PcieClkSrcUsage));
-
-	_Static_assert(ARRAY_SIZE(m_cfg->PcieClkSrcClkReq) >=
-			ARRAY_SIZE(config->PcieClkSrcClkReq), "copy buffer overflow!");
-	memcpy(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq,
-			sizeof(config->PcieClkSrcClkReq));
+	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage);
+	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq);
 
 	m_cfg->PrmrrSize = config->PrmrrSize;
 
@@ -104,25 +97,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
 
-	_Static_assert(ARRAY_SIZE(m_cfg->PchHdaSdiEnable) >=
-			ARRAY_SIZE(config->PchHdaSdiEnable), "copy buffer overflow!");
-	memcpy(m_cfg->PchHdaSdiEnable, config->PchHdaSdiEnable,
-		sizeof(config->PchHdaSdiEnable));
-
-	_Static_assert(ARRAY_SIZE(m_cfg->PchHdaAudioLinkDmicEnable) >=
-			ARRAY_SIZE(config->PchHdaAudioLinkDmicEnable), "copy buffer overflow!");
-	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,
-		sizeof(config->PchHdaAudioLinkDmicEnable));
-
-	_Static_assert(ARRAY_SIZE(m_cfg->PchHdaAudioLinkSspEnable) >=
-			ARRAY_SIZE(config->PchHdaAudioLinkSspEnable), "copy buffer overflow!");
-	memcpy(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable,
-		sizeof(config->PchHdaAudioLinkSspEnable));
-
-	_Static_assert(ARRAY_SIZE(m_cfg->PchHdaAudioLinkSndwEnable) >=
-			ARRAY_SIZE(config->PchHdaAudioLinkSndwEnable), "copy buffer overflow!");
-	memcpy(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable,
-		sizeof(config->PchHdaAudioLinkSndwEnable));
+	FSP_ARRAY_LOAD(m_cfg->PchHdaSdiEnable, config->PchHdaSdiEnable);
+	FSP_ARRAY_LOAD(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable);
+	FSP_ARRAY_LOAD(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable);
+	FSP_ARRAY_LOAD(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable);
 
 	/* Skip the CPU replacement check */
 	m_cfg->SkipCpuReplacementCheck = config->SkipCpuReplacementCheck;

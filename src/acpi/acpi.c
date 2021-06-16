@@ -145,7 +145,7 @@ int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
 	return lapic->length;
 }
 
-unsigned long acpi_create_madt_lapics(unsigned long current)
+static unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
 	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0;

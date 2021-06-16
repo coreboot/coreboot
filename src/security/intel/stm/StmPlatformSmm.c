@@ -173,12 +173,15 @@ void stm_setup(uintptr_t mseg, int cpu, int num_cpus, uintptr_t smbase,
 		return;
 	}
 
+	// This code moved here because paralled SMM setup can cause some
+	// processors to get a bad value.
+	addr_calc = mseg - CONFIG_BIOS_RESOURCE_LIST_SIZE;
+	stm_resource_heap = (uint8_t *) addr_calc;
+
 	if (cpu == 0) {
 
 		// need to create the BIOS resource list once
 		// first calculate the location in SMRAM
-		addr_calc = mseg - CONFIG_BIOS_RESOURCE_LIST_SIZE;
-		stm_resource_heap = (uint8_t *) addr_calc;
 		printk(BIOS_DEBUG, "STM: stm_resource_heap located at %p\n",
 				stm_resource_heap);
 		//setup the the list

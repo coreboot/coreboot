@@ -9,6 +9,7 @@ all-$(CONFIG_SC7280_QSPI) += ../common/qspi.c
 all-y += ../common/qupv3_config.c
 all-y += qcom_qup_se.c
 all-y += ../common/qup_se_handler.c
+all-y += ../common/qupv3_i2c.c
 
 ################################################################################
 bootblock-y += bootblock.c

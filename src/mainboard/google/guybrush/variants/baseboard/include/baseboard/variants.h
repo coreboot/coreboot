@@ -4,6 +4,12 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <amdblocks/gpio_banks.h>
+#include <soc/pci_devs.h>
+
+#define WLAN_DEVFN	PCIE_GPP_2_0_DEVFN
+#define SD_DEVFN	PCIE_GPP_2_1_DEVFN
+#define WWAN_DEVFN	PCIE_GPP_2_2_DEVFN
+#define NVME_DEVFN	PCIE_GPP_2_3_DEVFN
 
 /*
  * This function provides base GPIO configuration table. It is typically provided by

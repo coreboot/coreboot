@@ -11,7 +11,7 @@ uint32_t board_id(void)
 	const gpio_t pins[] = {[2] = GPIO(31), [1] = GPIO(93), [0] = GPIO(33)};
 
 	if (id == UNDEFINED_STRAPPING_ID)
-		id = gpio_base2_value(pins, ARRAY_SIZE(pins));
+		id = gpio_binary_first_base3_value(pins, ARRAY_SIZE(pins));
 
 	return id;
 }

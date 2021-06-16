@@ -8,9 +8,9 @@
 #include <lib.h>
 #include <soc/clock.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
-#include <soc/qupv3_i2c.h>
+#include <soc/qupv3_config_common.h>
+#include <soc/qupv3_i2c_common.h>
 #include <stdint.h>
 
 static void i2c_clk_configure(unsigned int bus, enum i2c_speed speed)

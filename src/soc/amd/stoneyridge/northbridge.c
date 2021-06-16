@@ -164,7 +164,7 @@ static void set_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	setup_ioapic((u8 *)IO_APIC2_ADDR, GNB_IOAPIC_ID);
+	register_new_ioapic((u8 *)IO_APIC2_ADDR);
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)

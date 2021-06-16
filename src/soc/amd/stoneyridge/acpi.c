@@ -29,11 +29,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* Write Kern IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			FCH_IOAPIC_ID, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			GNB_IOAPIC_ID, IO_APIC2_ADDR, 24);
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC2_ADDR);
 
 	/* PIT is connected to legacy IRQ 0, but IOAPIC GSI 2 */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,

@@ -38,7 +38,7 @@ static void setup_serirq(void)
 static void fch_ioapic_init(void)
 {
 	fch_enable_ioapic_decode();
-	setup_ioapic(VIO_APIC_VADDR, FCH_IOAPIC_ID);
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void lpc_init(struct device *dev)

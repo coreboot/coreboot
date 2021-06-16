@@ -187,7 +187,7 @@ static void read_resources(struct device *dev)
 
 static void root_complex_init(struct device *dev)
 {
-	setup_ioapic((u8 *)GNB_IO_APIC_ADDR, GNB_IOAPIC_ID);
+	register_new_ioapic((u8 *)GNB_IO_APIC_ADDR);
 }
 
 static void acipgen_dptci(void)

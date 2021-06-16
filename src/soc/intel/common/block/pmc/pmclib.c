@@ -732,7 +732,22 @@ enum pch_pmc_xtal pmc_get_xtal_freq(void)
 	if (!CONFIG(PMC_EPOC))
 		dead_code();
 
-	const uintptr_t pmcbase = soc_read_pmc_base();
+	uint32_t xtal_freq = 0;
+	const uint32_t epoc = read32p(soc_read_pmc_base() + PCH_PMC_EPOC);
 
-	return PCH_EPOC_XTAL_FREQ(read32((uint32_t *)(pmcbase + PCH_PMC_EPOC)));
+	/* XTAL frequency in bits 21, 20, 17 */
+	xtal_freq |= !!(epoc & (1 << 21)) << 2;
+	xtal_freq |= !!(epoc & (1 << 20)) << 1;
+	xtal_freq |= !!(epoc & (1 << 17)) << 0;
+	switch (xtal_freq) {
+	case 0:
+		return XTAL_24_MHZ;
+	case 1:
+		return XTAL_19_2_MHZ;
+	case 2:
+		return XTAL_38_4_MHZ;
+	default:
+		printk(BIOS_ERR, "Unknown EPOC XTAL frequency setting %u\n", xtal_freq);
+		return XTAL_UNKNOWN_FREQ;
+	}
 }

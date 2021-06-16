@@ -24,6 +24,24 @@
 #define MAX_HD_AUDIO_SNDW_LINKS	4
 #define MAX_HD_AUDIO_SSP_LINKS	6
 
+/* Define config parameters for In-Band ECC (IBECC). */
+#define MAX_IBECC_REGIONS	8
+
+enum ibecc_mode {
+	IBECC_PER_REGION,
+	IBECC_NONE,
+	IBECC_ALL
+};
+
+struct ehl_ibecc_config {
+	bool enable;
+	bool parity_en;
+	enum ibecc_mode mode;
+	bool region_enable[MAX_IBECC_REGIONS];
+	uint16_t region_base[MAX_IBECC_REGIONS];
+	uint16_t region_mask[MAX_IBECC_REGIONS];
+};
+
 struct soc_intel_elkhartlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -67,6 +85,9 @@ struct soc_intel_elkhartlake_config {
 
 	/* Memory Thermal Throttling: Enable - Default (0) / Disable (1) */
 	bool MemoryThermalThrottlingDisable;
+
+	/* In-Band ECC (IBECC) configuration */
+	struct ehl_ibecc_config ibecc;
 
 	/* FuSa (Functional Safety): Disable - Default (0) / Enable (1) */
 	bool FuSaEnable;

@@ -39,6 +39,8 @@
 # endif
 #endif
 
+#define CHAR_BIT	8
+
 #define USHRT_MAX	((unsigned short int)~0U)
 #define SHRT_MIN	((short int)(USHRT_MAX & ~(USHRT_MAX >> 1)))
 #define SHRT_MAX	((short int)(USHRT_MAX >> 1))

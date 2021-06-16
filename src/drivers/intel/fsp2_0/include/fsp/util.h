@@ -15,6 +15,13 @@
 
 #define FSP_VER_LEN	30
 
+/* Macro for checking and loading array type configs into array type UPDs */
+#define FSP_ARRAY_LOAD(dst, src) \
+do { \
+	_Static_assert(ARRAY_SIZE(dst) >= ARRAY_SIZE(src), "copy buffer overflow!"); \
+	memcpy(dst, src, sizeof(src)); \
+} while (0)
+
 struct hob_header {
 	uint16_t type;
 	uint16_t length;

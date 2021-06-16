@@ -131,18 +131,6 @@
 #define   DEBUG_PORT_ENABLE		  BIT(18)
 #define   DEBUG_PORT_MASK		(BIT(16) | BIT(17) | BIT(18))
 
-/* FCH AOAC device offsets for AOAC_DEV_D3_CTL/AOAC_DEV_D3_STATE */
-#define FCH_AOAC_DEV_CLK_GEN		0
-#define FCH_AOAC_DEV_I2C0		5
-#define FCH_AOAC_DEV_I2C1		6
-#define FCH_AOAC_DEV_I2C2		7
-#define FCH_AOAC_DEV_I2C3		8
-#define FCH_AOAC_DEV_UART0		11
-#define FCH_AOAC_DEV_UART1		12
-#define FCH_AOAC_DEV_AMBA		17
-#define FCH_AOAC_DEV_USB2		18
-#define FCH_AOAC_DEV_USB3		23
-
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
 #define TOTAL_BITS(a)			(8 * sizeof(a))

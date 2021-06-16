@@ -7,7 +7,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <delay.h>
-#include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/sata.h>
 #include <soc/intel/broadwell/pch/chip.h>

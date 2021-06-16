@@ -7,7 +7,6 @@
 #include <device/pci_ops.h>
 #include <device/mmio.h>
 #include <soc/intel/common/hda_verb.h>
-#include <soc/ramstage.h>
 #include <soc/igd.h>
 
 static const u32 minihd_verb_table[] = {

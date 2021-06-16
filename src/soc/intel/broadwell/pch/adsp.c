@@ -8,7 +8,6 @@
 #include <device/mmio.h>
 #include <soc/adsp.h>
 #include <soc/pch.h>
-#include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>

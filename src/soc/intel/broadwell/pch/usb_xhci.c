@@ -8,7 +8,6 @@
 #include <acpi/acpi.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <soc/ramstage.h>
 #include <soc/xhci.h>
 
 #ifdef __SIMPLE_DEVICE__

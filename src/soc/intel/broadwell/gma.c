@@ -18,7 +18,6 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
 #include <soc/pm.h>
-#include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
 #include <security/vboot/vbnv.h>

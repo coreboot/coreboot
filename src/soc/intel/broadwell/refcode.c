@@ -11,7 +11,7 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>
-#include <soc/ramstage.h>
+#include <soc/refcode.h>
 
 static pei_wrapper_entry_t load_reference_code(void)
 {

@@ -9,7 +9,6 @@
 #include <device/mmio.h>
 #include <soc/intel/common/hda_verb.h>
 #include <soc/pch.h>
-#include <soc/ramstage.h>
 #include <soc/rcba.h>
 
 static void codecs_init(u8 *base, u32 codec_mask)

@@ -8,7 +8,6 @@
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <soc/pch.h>
-#include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/serialio.h>
 #include <soc/intel/broadwell/pch/chip.h>

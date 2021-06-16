@@ -16,7 +16,6 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>
 #include <acpi/acpigen.h>

@@ -12,7 +12,7 @@
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/ramstage.h>
+#include <soc/refcode.h>
 #include <soc/systemagent.h>
 
 u8 systemagent_revision(void)

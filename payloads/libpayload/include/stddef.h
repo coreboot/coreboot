@@ -3,6 +3,13 @@
 
 #include <arch/types.h>
 
+#ifndef __WCHAR_TYPE__
+#define __WCHAR_TYPE__ int
+#endif
+#ifndef __cplusplus
+typedef __WCHAR_TYPE__ wchar_t;
+#endif
+
 #ifndef __SIZE_TYPE__
 #define __SIZE_TYPE__ unsigned long
 #endif

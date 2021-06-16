@@ -27,13 +27,13 @@ void pcr_or8(uint8_t pid, uint16_t offset, uint8_t ordata);
 
 /* SBI command */
 enum {
-	MEM_READ = 0,
-	MEM_WRITE = 1,
-	PCI_CONFIG_READ = 4,
-	PCI_CONFIG_WRITE = 5,
-	PCR_READ = 6,
-	PCR_WRITE = 7,
-	GPIO_LOCK_UNLOCK = 13,
+	MEM_READ = 0x00,
+	MEM_WRITE = 0x01,
+	PCI_CONFIG_READ = 0x04,
+	PCI_CONFIG_WRITE = 0x05,
+	PCR_READ = 0x06,
+	PCR_WRITE = 0x07,
+	GPIO_LOCK_UNLOCK = 0x13,
 };
 
 struct pcr_sbi_msg {

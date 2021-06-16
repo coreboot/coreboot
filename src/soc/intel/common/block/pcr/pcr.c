@@ -330,6 +330,7 @@ int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
 		case MEM_WRITE:
 		case PCI_CONFIG_WRITE:
 		case PCR_WRITE:
+		case GPIO_LOCK_UNLOCK:
 			/*
 			 * 6. Write P2SB PCI offset D4h[31:0] with the
 			 * intended data accordingly

@@ -251,6 +251,7 @@ static enum cb_err find_vbt_location(struct region_device *rdev)
 		return CB_SUCCESS;
 	}
 
+	printk(BIOS_ERR, "GMA: VBT couldn't be found\n");
 	return CB_ERR;
 }
 

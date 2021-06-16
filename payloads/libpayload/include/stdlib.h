@@ -217,8 +217,6 @@ void exit(int status) __attribute__((noreturn));
 #define halt() do { gdb_enter(); halt(); } while (0)
 #endif
 
-/** @} */
-
 void qsort(void *aa, size_t n, size_t es, int (*cmp)(const void *, const void *));
 char *getenv(const char*);
 uint64_t __umoddi3(uint64_t num, uint64_t den);

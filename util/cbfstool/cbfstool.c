@@ -540,15 +540,11 @@ static int do_cbfs_locate(uint32_t *cbfs_addr, size_t metadata_size,
 
 	DEBUG("File size is %zd (0x%zx)\n", data_size, data_size);
 
-	/* Use a page size that can fit the entire file and is no smaller than
-	   optionally provided with -P parameter. */
+	/* Compute required page size */
 	if (param.force_pow2_pagesize) {
-		uint32_t pagesize = 1;
-		while (pagesize < data_size)
-			pagesize <<= 1;
-		while (pagesize < param.pagesize)
-			pagesize <<= 1;
-		param.pagesize = pagesize;
+		param.pagesize = 1;
+		while (param.pagesize < data_size)
+			param.pagesize <<= 1;
 		DEBUG("Page size is %d (0x%x)\n", param.pagesize, param.pagesize);
 	}
 
@@ -1778,7 +1774,6 @@ static struct option long_options[] = {
 	{"name",          required_argument, 0, 'n' },
 	{"offset",        required_argument, 0, 'o' },
 	{"padding",       required_argument, 0, 'p' },
-	{"page-size",     required_argument, 0, 'P' },
 	{"pow2page",      no_argument,       0, 'Q' },
 	{"ucode-region",  required_argument, 0, 'q' },
 	{"size",          required_argument, 0, 's' },
@@ -1914,7 +1909,7 @@ static void usage(char *name)
 			"Add a payload to the ROM\n"
 	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
 	     "        [-c compression] [-b base] [-S section-to-ignore] \\\n"
-	     "        [-a alignment] [-P page-size] [-Q|--pow2page] \\\n"
+	     "        [-a alignment] [-Q|--pow2page] \\\n"
 	     "        [-y|--xip] [--ibb]                                \\\n"
 	     "        [--ext-win-base win-base --ext-win-size win-size]     "
 			"Add a stage to the ROM\n"
@@ -2159,14 +2154,6 @@ int main(int argc, char **argv)
 				param.padding = strtoul(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid pad size '%s'.\n",
-						optarg);
-					return 1;
-				}
-				break;
-			case 'P':
-				param.pagesize = strtoul(optarg, &suffix, 0);
-				if (!*optarg || (suffix && *suffix)) {
-					ERROR("Invalid page size '%s'.\n",
 						optarg);
 					return 1;
 				}

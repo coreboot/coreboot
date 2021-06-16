@@ -7,10 +7,6 @@ fw_config
 		option SD_ABSENT		0
 		option SD_GL9755S		1
 	end
-	field GSC 6 6
-		option H1D			0
-		option H1B			1
-	end
 	field KB_BL 7 7
 		option KB_BL_ABSENT		0
 		option KB_BL_PRESENT		1

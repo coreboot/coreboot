@@ -1,8 +1,10 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2016 Intel Corporation.
+ * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2016-2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +16,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_PM_H_
-#define _SOC_PM_H_
+#ifndef _SOC_FSP_BROADWELL_DE_PM_H_
+#define _SOC_FSP_BROADWELL_DE_PM_H_
 
-#include <stdint.h>
-#include <arch/acpi.h>
+/*
+ * Brings in get_pmbase so that StmPlatformResource.c can build
+ * under 4.11
+ */
 
-struct chipset_power_state {
-	uint32_t prev_sleep_state;
-} __packed;
-
-struct chipset_power_state *get_power_state(void);
-int fill_power_state(void);
-
-/* STM Support */
-uint16_t get_pmbase(void);
-
-#endif /* _SOC_PM_H_ */
+#include <soc/acpi.h>
+#endif

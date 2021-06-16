@@ -177,5 +177,7 @@ void pmc_set_disb(void);
 /* Clear PMCON status bits */
 void pmc_clear_pmcon_sts(void);
 
+/* STM Support */
+uint16_t get_pmbase(void);
 #endif /* !defined(__ACPI__) */
 #endif

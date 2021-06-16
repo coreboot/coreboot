@@ -246,3 +246,9 @@ int vbnv_cmos_failed(void)
 
 	return rtc_failure;
 }
+
+/* STM Support */
+uint16_t get_pmbase(void)
+{
+	return (uint16_t) ACPI_BASE_ADDRESS;
+}

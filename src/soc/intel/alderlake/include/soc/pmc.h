@@ -120,7 +120,7 @@ enum pch_pmc_xtal {
 /**
  * pmc_get_xtal_freq() - Return frequency of external oscillator.
  *
- * Return &enum pch_pmc_xtal corredsponding to frequency returned by PMC.
+ * Return &enum pch_pmc_xtal corresponding to frequency returned by PMC.
  */
 enum pch_pmc_xtal pmc_get_xtal_freq(void);
 

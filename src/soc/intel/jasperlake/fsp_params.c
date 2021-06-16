@@ -35,32 +35,15 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 	/* LPSS controllers configuration */
 
 	/* I2C */
-	_Static_assert(ARRAY_SIZE(params->SerialIoI2cMode) >=
-			ARRAY_SIZE(config->SerialIoI2cMode), "copy buffer overflow!");
-	memcpy(params->SerialIoI2cMode, config->SerialIoI2cMode,
-		sizeof(config->SerialIoI2cMode));
+	FSP_ARRAY_LOAD(params->SerialIoI2cMode, config->SerialIoI2cMode);
 
 	/* GSPI */
-	_Static_assert(ARRAY_SIZE(params->SerialIoSpiMode) >=
-			ARRAY_SIZE(config->SerialIoGSpiMode), "copy buffer overflow!");
-	memcpy(params->SerialIoSpiMode, config->SerialIoGSpiMode,
-		sizeof(config->SerialIoGSpiMode));
-
-	_Static_assert(ARRAY_SIZE(params->SerialIoSpiCsMode) >=
-			ARRAY_SIZE(config->SerialIoGSpiCsMode), "copy buffer overflow!");
-	memcpy(params->SerialIoSpiCsMode, config->SerialIoGSpiCsMode,
-		sizeof(config->SerialIoGSpiCsMode));
-
-	_Static_assert(ARRAY_SIZE(params->SerialIoSpiCsState) >=
-			ARRAY_SIZE(config->SerialIoGSpiCsState), "copy buffer overflow!");
-	memcpy(params->SerialIoSpiCsState, config->SerialIoGSpiCsState,
-		sizeof(config->SerialIoGSpiCsState));
+	FSP_ARRAY_LOAD(params->SerialIoSpiMode, config->SerialIoGSpiMode);
+	FSP_ARRAY_LOAD(params->SerialIoSpiCsMode, config->SerialIoGSpiCsMode);
+	FSP_ARRAY_LOAD(params->SerialIoSpiCsState, config->SerialIoGSpiCsState);
 
 	/* UART */
-	_Static_assert(ARRAY_SIZE(params->SerialIoUartMode) >=
-			ARRAY_SIZE(config->SerialIoUartMode), "copy buffer overflow!");
-	memcpy(params->SerialIoUartMode, config->SerialIoUartMode,
-		sizeof(config->SerialIoUartMode));
+	FSP_ARRAY_LOAD(params->SerialIoUartMode, config->SerialIoUartMode);
 }
 
 /* UPD parameters to be initialized before SiliconInit */
@@ -151,15 +134,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
 
-		_Static_assert(ARRAY_SIZE(params->SataPortsEnable) >=
-				ARRAY_SIZE(config->SataPortsEnable), "copy buffer overflow!");
-		memcpy(params->SataPortsEnable, config->SataPortsEnable,
-				sizeof(params->SataPortsEnable));
-
-		_Static_assert(ARRAY_SIZE(params->SataPortsDevSlp) >=
-				ARRAY_SIZE(config->SataPortsDevSlp), "copy buffer overflow!");
-		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
-				sizeof(params->SataPortsDevSlp));
+		FSP_ARRAY_LOAD(params->SataPortsEnable, config->SataPortsEnable);
+		FSP_ARRAY_LOAD(params->SataPortsDevSlp, config->SataPortsDevSlp);
 	}
 
 	/* VR Configuration */

@@ -441,9 +441,6 @@ int exec(long addr, int argc, char **argv);
  */
 int bcd2dec(int b);
 int dec2bcd(int d);
-int abs(int j);
-long int labs(long int j);
-long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
 void hexdump(const void *memory, size_t length);

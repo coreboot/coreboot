@@ -201,6 +201,15 @@ int rand(void);
 void srand(unsigned int seed);
 /** @} */
 
+/**
+ * @defgroup misc Misc functions
+ * @{
+ */
+int abs(int j);
+long int labs(long int j);
+long long int llabs(long long int j);
+/** @} */
+
 /* Enter remote GDB mode. Will initialize connection if not already up. */
 void gdb_enter(void);
 /* Disconnect existing GDB connection if one exists. */

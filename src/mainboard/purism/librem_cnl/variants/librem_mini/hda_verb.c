@@ -3,16 +3,18 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-	0x10ec0269,	/* Codec Vendor/Device ID: Realtek ALC293 */
-	0x10ec0000,	/* Subsystem ID */
-	11,		/* Number of entries */
+	0x10ec0269,	/* Codec Vendor/Device ID: Realtek ALC269 */
+	0x10ec0269,	/* Subsystem ID */
+	12,		/* Number of entries */
 
-	AZALIA_SUBVENDOR(0, 0x10ec0000),
+	AZALIA_RESET(0x1),
+
+	AZALIA_SUBVENDOR(0, 0x10ec0269),
 	AZALIA_PIN_CFG(0, 0x12, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x14, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x15, 0x02211010), /* Jack analog out */
 	AZALIA_PIN_CFG(0, 0x17, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x18, 0x02a11020), /* Jack analog mic */
+	AZALIA_PIN_CFG(0, 0x18, 0x02a11120), /* Jack analog mic, no presence detect */
 	AZALIA_PIN_CFG(0, 0x19, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0), /* NC */

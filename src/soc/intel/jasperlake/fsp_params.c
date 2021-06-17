@@ -23,9 +23,9 @@
  * 2 - Send in DXE (Not applicable for FSP in API mode)
  */
 enum {
-	EOP_DISABLE,
-	EOP_PEI,
-	EOP_DXE,
+	EOP_DISABLE = 0,
+	EOP_PEI = 1,
+	EOP_DXE = 2,
 } EndOfPost;
 
 static void parse_devicetree(FSP_S_CONFIG *params)
@@ -81,8 +81,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->RtcMemoryLock = 1;
 	}
 
-	/* Enable End of Post in PEI phase */
-	params->EndOfPostMessage = EOP_PEI;
+	/* coreboot will send EOP before loading payload */
+	params->EndOfPostMessage = EOP_DISABLE;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);

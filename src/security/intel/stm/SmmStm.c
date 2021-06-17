@@ -39,8 +39,7 @@
 
 #define STM_PAGE_SHIFT 12
 #define STM_PAGE_MASK 0xFFF
-#define STM_SIZE_TO_PAGES(a)                                                   \
-	(((a) >> STM_PAGE_SHIFT) + (((a)&STM_PAGE_MASK) ? 1 : 0))
+#define STM_SIZE_TO_PAGES(a) (((a) >> STM_PAGE_SHIFT) + (((a)&STM_PAGE_MASK) ? 1 : 0))
 #define STM_PAGES_TO_SIZE(a) ((a) << STM_PAGE_SHIFT)
 
 #define STM_ACCESS_DENIED 15
@@ -137,13 +136,10 @@ static bool handle_single_resource(STM_RSC *resource, STM_RSC *record)
 		resource_hi = resource->mem.base + resource->mem.length;
 		record_lo = record->mem.base;
 		record_hi = record->mem.base + record->mem.length;
-		if (resource->mem.rwx_attributes
-		    != record->mem.rwx_attributes) {
-			if ((resource_lo == record_lo)
-			    && (resource_hi == record_hi)) {
-				record->mem.rwx_attributes =
-					resource->mem.rwx_attributes
-					| record->mem.rwx_attributes;
+		if (resource->mem.rwx_attributes != record->mem.rwx_attributes) {
+			if ((resource_lo == record_lo) && (resource_hi == record_hi)) {
+				record->mem.rwx_attributes = resource->mem.rwx_attributes
+							     | record->mem.rwx_attributes;
 				return true;
 			} else {
 				return false;
@@ -153,39 +149,31 @@ static bool handle_single_resource(STM_RSC *resource, STM_RSC *record)
 	case IO_RANGE:
 	case TRAPPED_IO_RANGE:
 		resource_lo = (uint64_t)resource->io.base;
-		resource_hi = (uint64_t)resource->io.base
-			      + (uint64_t)resource->io.length;
+		resource_hi = (uint64_t)resource->io.base + (uint64_t)resource->io.length;
 		record_lo = (uint64_t)record->io.base;
-		record_hi =
-			(uint64_t)record->io.base + (uint64_t)record->io.length;
+		record_hi = (uint64_t)record->io.base + (uint64_t)record->io.length;
 		break;
 	case PCI_CFG_RANGE:
 		if ((resource->pci_cfg.originating_bus_number
 		     != record->pci_cfg.originating_bus_number)
-		    || (resource->pci_cfg.last_node_index
-			!= record->pci_cfg.last_node_index))
+		    || (resource->pci_cfg.last_node_index != record->pci_cfg.last_node_index))
 			return false;
 
-		if (memcmp(resource->pci_cfg.pci_device_path,
-			   record->pci_cfg.pci_device_path,
+		if (memcmp(resource->pci_cfg.pci_device_path, record->pci_cfg.pci_device_path,
 			   sizeof(STM_PCI_DEVICE_PATH_NODE)
 				   * (resource->pci_cfg.last_node_index + 1))
 		    != 0) {
 			return false;
 		}
 		resource_lo = (uint64_t)resource->pci_cfg.base;
-		resource_hi = (uint64_t)resource->pci_cfg.base
-			      + (uint64_t)resource->pci_cfg.length;
+		resource_hi =
+			(uint64_t)resource->pci_cfg.base + (uint64_t)resource->pci_cfg.length;
 		record_lo = (uint64_t)record->pci_cfg.base;
-		record_hi = (uint64_t)record->pci_cfg.base
-			    + (uint64_t)record->pci_cfg.length;
-		if (resource->pci_cfg.rw_attributes
-		    != record->pci_cfg.rw_attributes) {
-			if ((resource_lo == record_lo)
-			    && (resource_hi == record_hi)) {
-				record->pci_cfg.rw_attributes =
-					resource->pci_cfg.rw_attributes
-					| record->pci_cfg.rw_attributes;
+		record_hi = (uint64_t)record->pci_cfg.base + (uint64_t)record->pci_cfg.length;
+		if (resource->pci_cfg.rw_attributes != record->pci_cfg.rw_attributes) {
+			if ((resource_lo == record_lo) && (resource_hi == record_hi)) {
+				record->pci_cfg.rw_attributes = resource->pci_cfg.rw_attributes
+								| record->pci_cfg.rw_attributes;
 				return true;
 			} else {
 				return false;
@@ -256,8 +244,7 @@ static void add_single_resource(STM_RSC *resource)
 
 		// Go to next record if resource and record types don't match.
 		if (resource->header.rsc_type != record->header.rsc_type) {
-			record = (STM_RSC *)((void *)record
-					     + record->header.length);
+			record = (STM_RSC *)((void *)record + record->header.length);
 			continue;
 		}
 
@@ -268,15 +255,13 @@ static void add_single_resource(STM_RSC *resource)
 	}
 
 	// Add resource to the end of area.
-	memcpy(m_stm_resources_ptr + m_stm_resource_size_used
-		       - sizeof(m_rsc_end_node),
+	memcpy(m_stm_resources_ptr + m_stm_resource_size_used - sizeof(m_rsc_end_node),
 	       resource, resource->header.length);
-	memcpy(m_stm_resources_ptr + m_stm_resource_size_used
-		       - sizeof(m_rsc_end_node) + resource->header.length,
+	memcpy(m_stm_resources_ptr + m_stm_resource_size_used - sizeof(m_rsc_end_node)
+		       + resource->header.length,
 	       &m_rsc_end_node, sizeof(m_rsc_end_node));
 	m_stm_resource_size_used += resource->header.length;
-	m_stm_resource_size_available =
-		m_stm_resource_total_size - m_stm_resource_size_used;
+	m_stm_resource_size_available = m_stm_resource_total_size - m_stm_resource_size_used;
 }
 
 /*
@@ -303,8 +288,7 @@ static void add_resource(STM_RSC *resource_list, uint32_t num_entries)
 		if (resource->header.rsc_type == END_OF_RESOURCES)
 			return;
 		add_single_resource(resource);
-		resource =
-			(STM_RSC *)((void *)resource + resource->header.length);
+		resource = (STM_RSC *)((void *)resource + resource->header.length);
 	}
 }
 
@@ -336,11 +320,8 @@ static bool validate_resource(STM_RSC *resource_list, uint32_t num_entries)
 	resource = resource_list;
 
 	for (index = 0; index < count; index++) {
-		printk(BIOS_DEBUG, "STM: %s (%u) - RscType(%x) length(0x%x)\n",
-			__func__,
-			index,
-			resource->header.rsc_type,
-			resource->header.length);
+		printk(BIOS_DEBUG, "STM: %s (%u) - RscType(%x) length(0x%x)\n", __func__, index,
+		       resource->header.rsc_type, resource->header.length);
 		// Validate resource.
 		switch (resource->header.rsc_type) {
 		case END_OF_RESOURCES:
@@ -360,11 +341,8 @@ static bool validate_resource(STM_RSC *resource_list, uint32_t num_entries)
 
 		case MEM_RANGE:
 		case MMIO_RANGE:
-			printk(BIOS_DEBUG,
-				"STM: %s - MEM (0x%0llx, 0x%0llx)\n",
-				__func__,
-				resource->mem.base,
-				resource->mem.length);
+			printk(BIOS_DEBUG, "STM: %s - MEM (0x%0llx, 0x%0llx)\n", __func__,
+			       resource->mem.base, resource->mem.length);
 
 			if (resource->header.length != sizeof(STM_RSC_MEM_DESC))
 				return false;
@@ -383,34 +361,26 @@ static bool validate_resource(STM_RSC *resource_list, uint32_t num_entries)
 			break;
 
 		case PCI_CFG_RANGE:
-			printk(BIOS_DEBUG,
-			       "STM: %s - PCI (0x%02x, 0x%08x, 0x%02x, 0x%02x)\n",
-			       __func__,
-			       resource->pci_cfg.originating_bus_number,
+			printk(BIOS_DEBUG, "STM: %s - PCI (0x%02x, 0x%08x, 0x%02x, 0x%02x)\n",
+			       __func__, resource->pci_cfg.originating_bus_number,
 			       resource->pci_cfg.last_node_index,
 			       resource->pci_cfg.pci_device_path[0].pci_device,
-			       resource->pci_cfg.pci_device_path[0]
-				       .pci_function);
+			       resource->pci_cfg.pci_device_path[0].pci_function);
 			if (resource->header.length
 			    != sizeof(STM_RSC_PCI_CFG_DESC)
 				       + (sizeof(STM_PCI_DEVICE_PATH_NODE)
 					  * resource->pci_cfg.last_node_index))
 				return false;
-			for (sub_index = 0;
-			     sub_index <= resource->pci_cfg.last_node_index;
+			for (sub_index = 0; sub_index <= resource->pci_cfg.last_node_index;
 			     sub_index++) {
-				if ((resource->pci_cfg
-					     .pci_device_path[sub_index]
-					     .pci_device
+				if ((resource->pci_cfg.pci_device_path[sub_index].pci_device
 				     > 0x1F)
-				    || (resource->pci_cfg
-						.pci_device_path[sub_index]
+				    || (resource->pci_cfg.pci_device_path[sub_index]
 						.pci_function
 					> 7))
 					return false;
 			}
-			if ((resource->pci_cfg.base + resource->pci_cfg.length)
-			    > 0x1000)
+			if ((resource->pci_cfg.base + resource->pci_cfg.length) > 0x1000)
 				return false;
 			break;
 
@@ -420,12 +390,11 @@ static bool validate_resource(STM_RSC *resource_list, uint32_t num_entries)
 			break;
 
 		default:
-			printk(BIOS_DEBUG, "STM: %s - Unknown RscType(%x)\n",
-			       __func__, resource->header.rsc_type);
+			printk(BIOS_DEBUG, "STM: %s - Unknown RscType(%x)\n", __func__,
+			       resource->header.rsc_type);
 			return false;
 		}
-		resource =
-			(STM_RSC *)((void *)resource + resource->header.length);
+		resource = (STM_RSC *)((void *)resource + resource->header.length);
 	}
 	return true;
 }
@@ -462,8 +431,7 @@ static uint32_t get_resource_size(STM_RSC *resource_list, uint32_t num_entries)
 	for (index = 0; index < count; index++) {
 		if (resource->header.rsc_type == END_OF_RESOURCES)
 			break;
-		resource =
-			(STM_RSC *)((void *)resource + resource->header.length);
+		resource = (STM_RSC *)((void *)resource + resource->header.length);
 	}
 	return (uint32_t)((uint32_t)resource - (uint32_t)resource_list);
 }
@@ -490,7 +458,7 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 		return -1; // INVALID_PARAMETER;
 
 	resource_size = get_resource_size(resource_list, num_entries);
-	printk(BIOS_DEBUG, "STM: ResourceSize - 0x%08x\n", (int) resource_size);
+	printk(BIOS_DEBUG, "STM: ResourceSize - 0x%08x\n", (int)resource_size);
 	if (resource_size == 0)
 		return -1; // INVALID_PARAMETER;
 
@@ -501,8 +469,7 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 		m_stm_resource_total_size = CONFIG_BIOS_RESOURCE_LIST_SIZE;
 		memset(m_stm_resources_ptr, 0, CONFIG_BIOS_RESOURCE_LIST_SIZE);
 
-		memcpy(m_stm_resources_ptr, &m_rsc_end_node,
-		       sizeof(m_rsc_end_node));
+		memcpy(m_stm_resources_ptr, &m_rsc_end_node, sizeof(m_rsc_end_node));
 		m_stm_resource_size_used = sizeof(m_rsc_end_node);
 		m_stm_resource_size_available =
 			m_stm_resource_total_size - sizeof(m_rsc_end_node);
@@ -511,7 +478,7 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 	} else {
 		if (m_stm_resource_size_available < resource_size) {
 			printk(BIOS_DEBUG,
-			"STM: ERROR - not enough space for SMM resource list\n");
+			       "STM: ERROR - not enough space for SMM resource list\n");
 			return -1; // OUT_OF_RESOURCES
 		}
 	}
@@ -543,8 +510,7 @@ int32_t delete_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 	// Delete all
 	memcpy(m_stm_resources_ptr, &m_rsc_end_node, sizeof(m_rsc_end_node));
 	m_stm_resource_size_used = sizeof(m_rsc_end_node);
-	m_stm_resource_size_available =
-		m_stm_resource_total_size - sizeof(m_rsc_end_node);
+	m_stm_resource_size_available = m_stm_resource_total_size - sizeof(m_rsc_end_node);
 	return 0; // SUCCESS;
 }
 
@@ -587,8 +553,8 @@ static uint32_t get_vmcs_size(void)
 
 	this_vmcs_size = msr_data64.bits.vmcs_size;
 	stm_support = msr_data64.bits.stm_supported;
-	printk(BIOS_DEBUG, "STM: %s: Size %d StmSupport %d\n", __func__,
-	       this_vmcs_size, stm_support);
+	printk(BIOS_DEBUG, "STM: %s: Size %d StmSupport %d\n", __func__, this_vmcs_size,
+	       stm_support);
 
 	// VMCS require 0x1000 alignment
 	this_vmcs_size = STM_PAGES_TO_SIZE(STM_SIZE_TO_PAGES(this_vmcs_size));
@@ -623,10 +589,9 @@ void stm_gen_4g_pagetable_x64(uint32_t pagetable_base)
 		pde++;
 		pagetable_base += PTP_SIZE;
 
-		for (sub_index = 0; sub_index < SIZE_4KB / sizeof(*pte);
-		     sub_index++) {
-			*pte = (((index << 9) + sub_index) << 21) | IA32_PG_PS
-			       | IA32_PG_RW | IA32_PG_P;
+		for (sub_index = 0; sub_index < SIZE_4KB / sizeof(*pte); sub_index++) {
+			*pte = (((index << 9) + sub_index) << 21) | IA32_PG_PS | IA32_PG_RW
+			       | IA32_PG_P;
 			pte++;
 		}
 	}
@@ -650,30 +615,31 @@ bool stm_check_stm_image(void *stm_image, uint32_t stm_imagesize)
 	stm_header = (STM_HEADER *)stm_image;
 
 	// Get Minimal required Mseg size
-	min_mseg_size = (STM_PAGES_TO_SIZE(STM_SIZE_TO_PAGES(
-				 stm_header->sw_stm_hdr.static_image_size))
-			 + stm_header->sw_stm_hdr.additional_dynamic_memory_size
-			 + (stm_header->sw_stm_hdr.per_proc_dynamic_memory_size
-			    + get_vmcs_size() * 2)
-				   * mp_state.cpu_count);
+	min_mseg_size =
+		(STM_PAGES_TO_SIZE(STM_SIZE_TO_PAGES(stm_header->sw_stm_hdr.static_image_size))
+		 + stm_header->sw_stm_hdr.additional_dynamic_memory_size
+		 + (stm_header->sw_stm_hdr.per_proc_dynamic_memory_size + get_vmcs_size() * 2)
+			   * mp_state.cpu_count);
 	if (min_mseg_size < stm_imagesize)
 		min_mseg_size = stm_imagesize;
 
-	if (stm_header->hw_stm_hdr.cr3_offset
-	    >= stm_header->sw_stm_hdr.static_image_size) {
+	if (stm_header->hw_stm_hdr.cr3_offset >= stm_header->sw_stm_hdr.static_image_size) {
 
 		// We will create page table, just in case that SINIT does not
 		// create it.
-		if (min_mseg_size < stm_header->hw_stm_hdr.cr3_offset
-					    + STM_PAGES_TO_SIZE(6)) {
-			min_mseg_size = stm_header->hw_stm_hdr.cr3_offset
-					+ STM_PAGES_TO_SIZE(6);
+		if (min_mseg_size < stm_header->hw_stm_hdr.cr3_offset + STM_PAGES_TO_SIZE(6)) {
+			min_mseg_size =
+				stm_header->hw_stm_hdr.cr3_offset + STM_PAGES_TO_SIZE(6);
 		}
 	}
 
 	// Check if it exceeds MSEG size
-	if (min_mseg_size > CONFIG_MSEG_SIZE)
+	if (min_mseg_size > CONFIG_MSEG_SIZE) {
+		printk(BIOS_ERR,
+		       "STM: ERROR - Configured MSEG size 0x%x less than required MSEG size 0x%x\n",
+		       CONFIG_MSEG_SIZE, min_mseg_size);
 		return false;
+	}
 
 	return true;
 }

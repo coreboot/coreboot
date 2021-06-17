@@ -70,6 +70,7 @@ static const struct pad_community jsl_communities[TOTAL_GPIO_COMM] = {
 		.last_pad = GPIO_COM0_END,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
+		.pad_cfg_lock_offset = PAD_CFG_LOCK,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
 		.gpi_int_sts_reg_0 = GPI_INT_STS_0,
 		.gpi_int_en_reg_0 = GPI_INT_EN_0,

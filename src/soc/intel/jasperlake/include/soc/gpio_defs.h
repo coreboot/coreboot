@@ -255,5 +255,6 @@
 #define GPI_SMI_STS_0				0x180
 #define GPI_SMI_EN_0				0x1a0
 #define PAD_CFG_BASE				0x600
+#define PAD_CFG_LOCK				0x80
 
 #endif

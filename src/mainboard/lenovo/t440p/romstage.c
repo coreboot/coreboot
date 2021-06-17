@@ -31,10 +31,7 @@ void mb_late_romstage_setup(void)
 
 	if (!enable_peg) {
 		// Hide disabled dGPU device
-		u32 reg32 = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);
-		reg32 &= ~DEVEN_D1F0EN;
-
-		pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
+		pci_and_config32(HOST_BRIDGE, DEVEN, ~DEVEN_D1F0EN);
 	}
 }
 

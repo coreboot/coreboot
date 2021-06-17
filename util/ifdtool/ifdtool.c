@@ -190,6 +190,8 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 			return CHIPSET_ICH10;
 		else if (isl <= 16)
 			return CHIPSET_5_SERIES_IBEX_PEAK;
+		else if (isl == 0x13)
+			return CHIPSET_N_J_SERIES_APOLLO_LAKE;
 		printf("Peculiar firmware descriptor, assuming Ibex Peak compatibility.\n");
 		return CHIPSET_5_SERIES_IBEX_PEAK;
 	} else if (iccriba < 0x31 && (fdb->flmap2 & 0xff) < 0x30) {

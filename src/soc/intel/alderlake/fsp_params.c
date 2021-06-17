@@ -32,6 +32,18 @@
 #define DEF_DMVAL	15
 #define DEF_DITOVAL	625
 
+/*
+ * ME End of Post configuration
+ * 0 - Disable EOP.
+ * 1 - Send in PEI (Applicable for FSP in API mode)
+ * 2 - Send in DXE (Not applicable for FSP in API mode)
+ */
+enum fsp_end_of_post {
+	EOP_DISABLE = 0,
+	EOP_PEI = 1,
+	EOP_DXE = 2,
+};
+
 static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = SA_DEV_SLOT_IGD,
@@ -309,6 +321,9 @@ static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PchUnlockGpioPads = 0;
 		s_cfg->RtcMemoryLock = 1;
 	}
+
+	/* coreboot will send EOP before loading payload */
+	s_cfg->EndOfPostMessage = EOP_DISABLE;
 }
 
 static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
@@ -569,7 +584,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
 
 	config = config_of_soc();
-
 	arch_silicon_init_params(s_arch_cfg);
 	soc_silicon_init_params(s_cfg, config);
 	mainboard_silicon_init_params(s_cfg);

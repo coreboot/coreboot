@@ -4,6 +4,8 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += cse.c
 romstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite.c
 smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HECI_DISABLE_IN_SMM) += disable_heci.c
 
+ramstage-$(CONFIG_SOC_INTEL_CSE_SET_EOP) += cse_eop.c
+
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_UPDATE),y)
 ifneq ($(CONFIG_SOC_INTEL_CSE_RW_FILE),"")
 CSE_LITE_ME_RW = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME))

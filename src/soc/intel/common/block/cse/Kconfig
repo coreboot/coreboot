@@ -70,3 +70,11 @@ config SOC_INTEL_CSE_RW_VERSION
 	 This config contains the Intel CSE RW version of the blob that is provided by
 	 SOC_INTEL_CSE_RW_FILE config and the version must be set in the format
 	 major.minor.hotfix.build (ex: 14.0.40.1209).
+
+config SOC_INTEL_CSE_SET_EOP
+	bool
+	default n
+	help
+	  This config ensures coreboot will send the CSE the End-of-POST message
+	  just prior to loading the payload. This is a security feature so the
+	  CSE will no longer respond to Pre-Boot commands.

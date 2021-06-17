@@ -25,6 +25,9 @@
 /* Get Firmware Version Command Id */
 #define MKHI_GEN_GET_FW_VERSION	0x2
 
+/* Set End-of-POST in CSE */
+#define MKHI_END_OF_POST	0xc
+
 /* Boot partition info and set boot partition info command ids */
 #define MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO	0x1c
 #define MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO	0x1d
@@ -117,6 +120,9 @@ enum csme_failure_reason {
 
 	/* CSE CBFS RW blob layout is not correct */
 	CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR = 11,
+
+	/* Error sending EOP to CSE */
+	CSE_EOP_FAIL = 12,
 };
 
 /* set up device for use in early boot enviroument with temp bar */

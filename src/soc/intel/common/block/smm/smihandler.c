@@ -320,6 +320,13 @@ static void finalize(void)
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
 
+	/*
+	 * HECI is disabled in smihandler_soc_at_finalize() which also locks down the side band
+	 * interface.  Some boards may require this interface in mainboard_smi_finalize(),
+	 * therefore, this call must precede smihandler_soc_at_finalize().
+	 */
+	mainboard_smi_finalize();
+
 	/* Specific SOC SMI handler during ramstage finalize phase */
 	smihandler_soc_at_finalize();
 }

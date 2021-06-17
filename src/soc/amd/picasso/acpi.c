@@ -40,22 +40,22 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
 			GNB_IOAPIC_ID, GNB_IO_APIC_ADDR, IO_APIC_INTERRUPTS);
 
-	/* 0: mean bus 0--->ISA */
-	/* 0: PIC 0 */
-	/* 2: APIC 2 */
-	/* 5 mean: 0101 --> Edge-triggered, Active high */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride(
-		(acpi_madt_irqoverride_t *)current, 0, 9, 9,
-		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+	/* PIT is connected to legacy IRQ 0, but IOAPIC GSI 2 */
+	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
+			MP_BUS_ISA, 0, 2,
+			MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT);
+	/* SCI IRQ type override */
+	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
+			MP_BUS_ISA, 9, 9,
+			MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 
 	current = acpi_fill_madt_irqoverride(current);
 
 	/* create all subtables for processors */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
-			0xff, 5, 1);
-	/* 1: LINT1 connect to NMI */
+			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS,
+			MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+			1 /* 1: LINT1 connect to NMI */);
 
 	return current;
 }

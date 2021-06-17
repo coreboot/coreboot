@@ -4,27 +4,22 @@
 
 const u32 cim_verb_data[] = {
 	0x10ec0256,	/* Codec Vendor/Device ID: Realtek ALC256 */
-	0x1b50580a,	/* Subsystem ID */
-	12,		/* Number of entries */
+	0x10ec0256,	/* Subsystem ID */
+	16,		/* Number of entries */
 
-	AZALIA_SUBVENDOR(0, 0x1b50580a),
+	AZALIA_RESET(0x1),
 
-	/* Widget node 0x01 */
-	0x0017ff00,
-	0x0017ff00,
-	0x0017ff00,
-	0x0017ff00,
-
+	AZALIA_SUBVENDOR(0, 0x10ec0256),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60140), /* Front digital mic */
 	AZALIA_PIN_CFG(0, 0x13, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110), /* Internal speakers */
 	AZALIA_PIN_CFG(0, 0x18, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x19, 0x04a11030), /* Jack analog mic */
+	AZALIA_PIN_CFG(0, 0x19, 0x04a11130), /* Jack analog mic */
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x1d, 0x411111f0), /* NC */
 	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x21, 0x04211020), /* Jack analog out */
+	AZALIA_PIN_CFG(0, 0x21, 0x04211120), /* Jack analog out */
 
 	/* Hidden SW reset */
 	0x0205001a,

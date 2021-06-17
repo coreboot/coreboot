@@ -1,0 +1,8 @@
+CONFIG_VENDOR_OCP=y
+CONFIG_INTEL_TXT_BIOSACM_FILE="3rdparty/intel-sec-tools/testdata/fake_acm/biosacm_cbnt_fake.bin"
+CONFIG_INTEL_TXT_LOGGING=y
+CONFIG_INTEL_CBNT_SUPPORT=y
+# CONFIG_INTEL_CBNT_CBNT_PROV_KM_USE_CFG_FILE is not set
+# CONFIG_INTEL_CBNT_CBNT_PROV_BPM_USE_CFG_FILE is not set
+CONFIG_INTEL_CBNT_KM_PRIV_KEY_FILE="3rdparty/intel-sec-tools/testdata/testkeys/km_priv_key.pem"
+CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE="3rdparty/intel-sec-tools/testdata/testkeys/bpm_priv_key.pem"

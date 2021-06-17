@@ -43,10 +43,10 @@
  * 2 - Send in DXE (Not applicable for FSP in API mode)
  */
 enum {
-	EOP_DISABLE,
-	EOP_PEI,
-	EOP_DXE,
-} EndOfPost;
+	EOP_DISABLE = 0,
+	EOP_PEI = 1,
+	EOP_DXE = 2,
+};
 
 /*
  * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
@@ -403,8 +403,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->RtcMemoryLock = 1;
 	}
 
-	/* Enable End of Post in PEI phase */
-	params->EndOfPostMessage = EOP_PEI;
+	/* coreboot will send EOP before loading payload */
+	params->EndOfPostMessage = EOP_DISABLE;
 
 	/* USB */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {

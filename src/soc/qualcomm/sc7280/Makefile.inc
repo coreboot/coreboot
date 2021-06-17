@@ -9,13 +9,14 @@ all-$(CONFIG_SC7280_QSPI) += ../common/qspi.c
 all-y += ../common/qupv3_config.c
 all-y += qcom_qup_se.c
 all-y += ../common/qup_se_handler.c
+all-y += ../common/qupv3_spi.c
 all-y += ../common/qupv3_i2c.c
+all-y += ../common/qupv3_spi.c
 
 ################################################################################
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
-
 ################################################################################
 romstage-y += cbmem.c
 romstage-y += ../common/qclib.c

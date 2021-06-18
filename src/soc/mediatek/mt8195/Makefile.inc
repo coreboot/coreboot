@@ -51,6 +51,8 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
+ramstage-y += ../common/dpm.c
+ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += dpm_4ch.c
 ramstage-y += dp_intf.c dptx.c dptx_hal.c
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c

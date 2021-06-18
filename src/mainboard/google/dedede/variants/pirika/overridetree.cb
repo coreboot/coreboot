@@ -93,5 +93,13 @@ chip soc/intel/jasperlake
 				end
 			end
 		end
+		device pci 1f.3 on
+			chip drivers/generic/alc1015
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on
+					probe AUDIO_AMP RT1015P_AUTO
+				end
+			end
+		end # Intel HDA
 	end
 end

@@ -681,10 +681,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		apl_fsp_silicon_init_params_cb(cfg, silconfig);
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = pcidev_path_on_root(PCH_DEVFN_XDCI);
 	if (!xdci_can_enable())
-		dev->enabled = 0;
-	silconfig->UsbOtg = dev->enabled;
+		devfn_disable(pci_root_bus(), PCH_DEVFN_XDCI);
+	silconfig->UsbOtg = is_devfn_enabled(PCH_DEVFN_XDCI);
 
 	silconfig->VmxEnable = CONFIG(ENABLE_VMX);
 

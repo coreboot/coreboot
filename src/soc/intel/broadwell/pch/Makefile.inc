@@ -1,6 +1,5 @@
 bootblock-y += bootblock.c
 
-ramstage-y += acpi.c
 ramstage-y += adsp.c
 romstage-y += early_pch.c
 ramstage-$(CONFIG_ELOG) += elog.c

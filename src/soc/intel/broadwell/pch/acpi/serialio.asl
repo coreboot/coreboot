@@ -5,34 +5,27 @@
 // Serial IO Device BAR0 and BAR1 is 4KB
 #define SIO_BAR_LEN 0x1000
 
-// This is defined in SSDT2 which is generated at boot based
-// on whether or not the device is enabled in ACPI mode.
-External (\S0EN)
-External (\S1EN)
-External (\S2EN)
-External (\S3EN)
-External (\S4EN)
-External (\S5EN)
-External (\S6EN)
-External (\S7EN)
+// Put SerialIO device in D0 state
+// Arg0 - Ref to offset 0x84 of device's PCI config space
+Method (LPD0, 1, Serialized)
+{
+	Arg0 = DeRefOf (Arg0) & 0xFFFFFFFC
+	Local0 = DeRefOf (Arg0) // Read back after writing
 
-External (\S0B0)
-External (\S1B0)
-External (\S2B0)
-External (\S3B0)
-External (\S4B0)
-External (\S5B0)
-External (\S6B0)
-External (\S7B0)
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	Local0 &= Ones
+}
 
-External (\S0B1)
-External (\S1B1)
-External (\S2B1)
-External (\S3B1)
-External (\S4B1)
-External (\S5B1)
-External (\S6B1)
-External (\S7B1)
+// Put SerialIO device in D3 state
+// Arg0 - Ref to offset 0x84 of device's PCI config space
+Method (LPD3, 1, Serialized)
+{
+	Arg0 = DeRefOf (Arg0) | 0x3
+	Local0 = DeRefOf (Arg0) // Read back after writing
+
+	// Use Local0 to avoid iasl warning: Method Local is set but never used
+	Local0 &= Ones
+}
 
 // Serial IO Resource Consumption for BAR1
 Device (SIOR)
@@ -203,7 +196,7 @@ Device (I2C0)
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (\S0EN != 0) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -217,6 +210,22 @@ Device (I2C0)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S1B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -263,7 +272,7 @@ Device (I2C1)
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (\S0EN != 0) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -277,6 +286,22 @@ Device (I2C1)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S2B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -323,6 +348,22 @@ Device (SPI0)
 			Return (0xF)
 		}
 	}
+
+	OperationRegion (SPRT, SystemMemory, \S3B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
+	}
 }
 
 Device (SPI1)
@@ -365,7 +406,7 @@ Device (SPI1)
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (\S0EN != 0) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -379,6 +420,22 @@ Device (SPI1)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S4B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -422,7 +479,7 @@ Device (UAR0)
 		}
 
 		// Check if Serial IO DMA Controller is enabled
-		If (\S0EN != 0) {
+		If (\_SB.PCI0.SDMA._STA != 0) {
 			Return (ConcatenateResTemplate (RBUF, DBUF))
 		} Else {
 			Return (RBUF)
@@ -436,6 +493,22 @@ Device (UAR0)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S5B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 
@@ -481,6 +554,22 @@ Device (UAR1)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	OperationRegion (SPRT, SystemMemory, \S6B1 + 0x84, 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (RefOf (SPCS))
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (RefOf (SPCS))
 	}
 }
 

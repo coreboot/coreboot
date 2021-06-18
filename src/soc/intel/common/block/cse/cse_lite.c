@@ -120,29 +120,6 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
-static void cse_log_status_registers(void)
-{
-	printk(BIOS_DEBUG, "cse_lite: CSE status registers: HFSTS1: 0x%x, HFSTS2: 0x%x "
-			"HFSTS3: 0x%x\n", me_read_config32(PCI_ME_HFSTS1),
-			me_read_config32(PCI_ME_HFSTS2), me_read_config32(PCI_ME_HFSTS3));
-}
-
-static void cse_trigger_recovery(uint8_t rec_sub_code)
-{
-	/* Log CSE Firmware Status Registers to help debugging */
-	cse_log_status_registers();
-	if (CONFIG(VBOOT)) {
-		struct vb2_context *ctx = vboot_get_context();
-		if (ctx == NULL)
-			goto failure;
-		vb2api_fail(ctx, VB2_RECOVERY_INTEL_CSE_LITE_SKU, rec_sub_code);
-		vboot_save_data(ctx);
-		vboot_reboot();
-	}
-failure:
-	die("cse_lite: Failed to trigger recovery mode(recovery subcode:%d)\n", rec_sub_code);
-}
-
 static uint8_t cse_get_current_bp(const struct cse_bp_info *cse_bp_info)
 {
 	return cse_bp_info->current_bp;
@@ -748,11 +725,11 @@ void cse_fw_sync(void)
 
 	if (!cse_get_bp_info(&cse_bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
-		cse_trigger_recovery(CSE_COMMUNICATION_ERROR);
+		cse_trigger_vboot_recovery(CSE_COMMUNICATION_ERROR);
 	}
 
 	if (!cse_fix_data_failure_err(&cse_bp_info.bp_info))
-		cse_trigger_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
+		cse_trigger_vboot_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/*
 	 * If SOC_INTEL_CSE_RW_UPDATE is defined , then trigger CSE firmware update. The driver
@@ -762,7 +739,7 @@ void cse_fw_sync(void)
 		uint8_t rv;
 		rv = cse_fw_update(&cse_bp_info.bp_info);
 		if (rv)
-			cse_trigger_recovery(rv);
+			cse_trigger_vboot_recovery(rv);
 	}
 
 	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
@@ -770,6 +747,6 @@ void cse_fw_sync(void)
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");
-		cse_trigger_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
+		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}
 }

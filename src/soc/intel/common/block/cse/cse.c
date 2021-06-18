@@ -9,6 +9,8 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/me.h>
@@ -857,6 +859,24 @@ void print_me_fw_version(void *unused)
 
 fail:
 	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
+}
+
+void cse_trigger_vboot_recovery(enum csme_failure_reason reason)
+{
+	printk(BIOS_DEBUG, "cse: CSE status registers: HFSTS1: 0x%x, HFSTS2: 0x%x "
+	       "HFSTS3: 0x%x\n", me_read_config32(PCI_ME_HFSTS1),
+	       me_read_config32(PCI_ME_HFSTS2), me_read_config32(PCI_ME_HFSTS3));
+
+	if (CONFIG(VBOOT)) {
+		struct vb2_context *ctx = vboot_get_context();
+		if (ctx == NULL)
+			goto failure;
+		vb2api_fail(ctx, VB2_RECOVERY_INTEL_CSE_LITE_SKU, reason);
+		vboot_save_data(ctx);
+		vboot_reboot();
+	}
+failure:
+	die("cse: Failed to trigger recovery mode(recovery subcode:%d)\n", reason);
 }
 
 #if ENV_RAMSTAGE

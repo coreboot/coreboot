@@ -4,7 +4,6 @@
 #define _BROADWELL_PCH_H_
 
 #include <acpi/acpi.h>
-#include <types.h>
 
 /* Haswell ULT Pch (LynxPoint-LP) */
 #define PCH_LPT_LP_SAMPLE	0x9c41
@@ -26,25 +25,6 @@
 #define PCH_PCS			0x84
 #define  PCH_PCS_PS_D3HOT	3
 
-enum pch_acpi_device {
-	PCH_ACPI_SDMA = 0,
-	PCH_ACPI_I2C0,
-	PCH_ACPI_I2C1,
-	PCH_ACPI_GSPI0,
-	PCH_ACPI_GSPI1,
-	PCH_ACPI_UART0,
-	PCH_ACPI_UART1,
-	PCH_ACPI_SDIO,
-	PCH_ACPI_ADSP,
-	NUM_PCH_ACPI_DEVICES,
-};
-
-struct pch_acpi_device_state {
-	bool enable;
-	uint32_t bar0;
-	uint32_t bar1;
-};
-
 u8 pch_revision(void);
 u16 pch_type(void);
 int pch_is_wpt(void);
@@ -52,7 +32,6 @@ int pch_is_wpt_ulx(void);
 u32 pch_read_soft_strap(int id);
 void pch_disable_devfn(struct device *dev);
 
-struct pch_acpi_device_state *get_acpi_device_state(enum pch_acpi_device dev_index);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 void broadwell_pch_finalize(void);

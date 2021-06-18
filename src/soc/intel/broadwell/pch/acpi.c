@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
-#include <assert.h>
+#include <soc/device_nvs.h>
 #include <soc/pch.h>
 #include <types.h>
 #include <version.h>
@@ -54,32 +55,25 @@ static void acpi_write_serialio_psx_methods(const char *const name, const uint32
 	acpigen_pop_len();
 }
 
-static struct pch_acpi_device_state device_state[NUM_PCH_ACPI_DEVICES] = { 0 };
-
-struct pch_acpi_device_state *get_acpi_device_state(enum pch_acpi_device dev_index)
+static void acpi_create_serialio_ssdt_entry(int sio_index, struct device_nvs *dev_nvs)
 {
-	assert(dev_index < ARRAY_SIZE(device_state));
-	return &device_state[dev_index];
-}
-
-static void acpi_create_serialio_ssdt_entry(enum pch_acpi_device dev_index)
-{
-	const struct pch_acpi_device_state *state = get_acpi_device_state(dev_index);
-
-	const char idx = '0' + dev_index;
+	const char idx = '0' + sio_index;
 	const char sxen[5] = { 'S', idx, 'E', 'N', '\0' };
-	acpigen_write_name_byte(sxen, state->enable);
+	acpigen_write_name_byte(sxen, dev_nvs->enable[sio_index]);
 
 	const char sxb0[5] = { 'S', idx, 'B', '0', '\0' };
-	acpigen_write_name_dword(sxb0, state->bar0);
+	acpigen_write_name_dword(sxb0, dev_nvs->bar0[sio_index]);
 
 	const char sxb1[5] = { 'S', idx, 'B', '1', '\0' };
-	acpigen_write_name_dword(sxb1, state->bar1);
+	acpigen_write_name_dword(sxb1, dev_nvs->bar1[sio_index]);
 }
 
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
+	struct device_nvs *dev_nvs = acpi_get_device_nvs();
+	if (!dev_nvs)
+		return;
 
 	/* Fill the SSDT header */
 	memset((void *)ssdt, 0, sizeof(acpi_header_t));
@@ -94,17 +88,17 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 	acpigen_set_current((char *)current);
 
 	/* Fill the SSDT with an entry for each SerialIO device */
-	for (enum pch_acpi_device dev_index = 0; dev_index < NUM_PCH_ACPI_DEVICES; dev_index++)
-		acpi_create_serialio_ssdt_entry(dev_index);
+	for (int id = 0; id < 9; id++)
+		acpi_create_serialio_ssdt_entry(id, dev_nvs);
 
 	acpigen_write_scope("\\_SB.PCI0");
 	{
-		acpi_write_serialio_psx_methods("I2C0", device_state[PCH_ACPI_I2C0].bar1);
-		acpi_write_serialio_psx_methods("I2C1", device_state[PCH_ACPI_I2C1].bar1);
-		acpi_write_serialio_psx_methods("SPI0", device_state[PCH_ACPI_GSPI0].bar1);
-		acpi_write_serialio_psx_methods("SPI1", device_state[PCH_ACPI_GSPI1].bar1);
-		acpi_write_serialio_psx_methods("UAR0", device_state[PCH_ACPI_UART0].bar1);
-		acpi_write_serialio_psx_methods("UAR1", device_state[PCH_ACPI_UART1].bar1);
+		acpi_write_serialio_psx_methods("I2C0", dev_nvs->bar1[SIO_NVS_I2C0]);
+		acpi_write_serialio_psx_methods("I2C1", dev_nvs->bar1[SIO_NVS_I2C1]);
+		acpi_write_serialio_psx_methods("SPI0", dev_nvs->bar1[SIO_NVS_SPI0]);
+		acpi_write_serialio_psx_methods("SPI1", dev_nvs->bar1[SIO_NVS_SPI1]);
+		acpi_write_serialio_psx_methods("UAR0", dev_nvs->bar1[SIO_NVS_UART0]);
+		acpi_write_serialio_psx_methods("UAR1", dev_nvs->bar1[SIO_NVS_UART1]);
 	}
 	acpigen_pop_len();
 

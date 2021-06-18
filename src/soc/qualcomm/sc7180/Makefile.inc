@@ -21,7 +21,7 @@ bootblock-y += bootblock.c
 bootblock-y += mmu.c
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
 ################################################################################
-verstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
+verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
@@ -31,14 +31,14 @@ romstage-y += ../common/mmu.c
 romstage-y += mmu.c
 romstage-y += usb.c
 romstage-y += carve_out.c
-romstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
+romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += carve_out.c
 ramstage-y += aop_load_reset.c
 ramstage-y += usb.c
-ramstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
+ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy_pll.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi.c

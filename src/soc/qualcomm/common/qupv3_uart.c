@@ -5,8 +5,8 @@
 #include <console/uart.h>
 #include <soc/clock.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
+#include <soc/qupv3_config_common.h>
 #include <types.h>
 
 /* COMMON STATUS/CONFIGURATION REGISTERS AND MASKS */
@@ -69,7 +69,7 @@ void uart_init(unsigned int idx)
 
 	baud_rate = get_uart_baudrate();
 
-	/* sc7180 requires 16 clock pulses to sample 1 bit of data */
+	/*requires 16 clock pulses to sample 1 bit of data */
 	uart_freq = baud_rate * 16;
 
 	div = DIV_ROUND_CLOSEST(SRC_XO_HZ, uart_freq);

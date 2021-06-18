@@ -36,6 +36,29 @@ static bool devtree_gfx_hda_dev_enabled(void)
 	return gfx_hda_dev->enabled;
 }
 
+static const struct device_path hda_path[] = {
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = PCIE_ABC_A_DEVFN
+	},
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = HD_AUDIO_DEVFN
+	},
+};
+
+static bool devtree_hda_dev_enabled(void)
+{
+	const struct device *hda_dev;
+
+	hda_dev = find_dev_nested_path(pci_root_bus(), hda_path, ARRAY_SIZE(hda_path));
+
+	if (!hda_dev)
+		return false;
+
+	return hda_dev->enabled;
+}
+
 static const struct device_path sata0_path[] = {
 	{
 		.type = DEVICE_PATH_PCI,
@@ -202,6 +225,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->pspp_policy = config->pspp_policy;
 
 	mcfg->enable_nb_azalia = devtree_gfx_hda_dev_enabled();
+	mcfg->hda_enable = devtree_hda_dev_enabled();
 	mcfg->sata_enable = devtree_sata_dev_enabled();
 
 	if (config->usb_phy_custom)

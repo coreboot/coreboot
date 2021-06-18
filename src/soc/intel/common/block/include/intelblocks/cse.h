@@ -25,6 +25,9 @@
 /* Get Firmware Version Command Id */
 #define MKHI_GEN_GET_FW_VERSION	0x2
 
+/* MEI bus disable command. Must be sent to MEI client endpoint, not MKHI */
+#define MEI_BUS_DISABLE_COMMAND	0xc
+
 /* Set End-of-POST in CSE */
 #define MKHI_END_OF_POST	0xc
 
@@ -219,6 +222,9 @@ int cse_hmrfpo_get_status(void);
 
 /* Fixed Address MEI Header's ME Address field value */
 #define HECI_MKHI_ADDR	0x07
+
+/* Fixed Address MEI Header's ME Address for MEI bus messages */
+#define HECI_MEI_ADDR	0x00
 
 /* HMRFPO Status types */
 /* Host can't access ME region */

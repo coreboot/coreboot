@@ -74,6 +74,7 @@ config SOC_INTEL_CSE_RW_VERSION
 config SOC_INTEL_CSE_SET_EOP
 	bool
 	default n
+	select PMC_IPC_ACPI_INTERFACE
 	help
 	  This config ensures coreboot will send the CSE the End-of-POST message
 	  just prior to loading the payload. This is a security feature so the

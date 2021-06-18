@@ -728,9 +728,6 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 		return cse_trigger_fw_update(cse_bp_info, &source_metadata, &target_rdev);
 	}
 
-	if (!cse_is_rw_bp_status_valid(cse_bp_info))
-		return CSE_LITE_SKU_RW_JUMP_ERROR;
-
 	return 0;
 }
 
@@ -767,6 +764,9 @@ void cse_fw_sync(void)
 		if (rv)
 			cse_trigger_recovery(rv);
 	}
+
+	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
+		cse_trigger_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");

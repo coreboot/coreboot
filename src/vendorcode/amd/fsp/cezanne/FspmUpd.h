@@ -74,7 +74,8 @@ typedef struct __packed {
 	/** Offset 0x041E**/	uint8_t                     enable_nb_azalia;
 	/** Offset 0x041F**/	uint8_t                     audio_io_ctl;
 	/** Offset 0x0420**/	uint8_t                     pdm_mic_selection;
-	/** Offset 0x0421**/	uint8_t                     nbio_reserved[32];
+	/** Offset 0x0421**/	uint8_t                     hda_enable;
+	/** Offset 0x0422**/	uint8_t                     nbio_reserved[31];
 	/** Offset 0x0441**/	uint32_t                    emmc0_mode;
 	/** Offset 0x0445**/	uint16_t                    emmc0_init_khz_preset;
 	/** Offset 0x0447**/	uint8_t                     emmc0_sdr104_hs400_driver_strength;

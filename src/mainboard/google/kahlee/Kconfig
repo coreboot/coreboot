@@ -58,7 +58,12 @@ config VARIANT_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Grunt"
+	default "Aleena" if BOARD_GOOGLE_ALEENA
+	default "Careena" if BOARD_GOOGLE_CAREENA
+	default "Grunt" if BOARD_GOOGLE_GRUNT
+	default "Liara" if BOARD_GOOGLE_LIARA
+	default "Nuwani" if BOARD_GOOGLE_NUWANI
+	default "Treeya" if BOARD_GOOGLE_TREEYA
 
 config DEVICETREE
 	string

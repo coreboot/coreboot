@@ -143,6 +143,11 @@ static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 	info->acpi_gnvs = get_cbmem_addr(ptr);
 }
 
+static void cb_parse_acpi_cnvs(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->acpi_cnvs = get_cbmem_addr(ptr);
+}
+
 static void cb_parse_board_config(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_board_config *const config = (struct cb_board_config *)ptr;
@@ -379,6 +384,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_ACPI_GNVS:
 			cb_parse_acpi_gnvs(ptr, info);
+			break;
+		case CB_TAG_ACPI_CNVS:
+			cb_parse_acpi_cnvs(ptr, info);
 			break;
 		case CB_TAG_BOARD_CONFIG:
 			cb_parse_board_config(ptr, info);

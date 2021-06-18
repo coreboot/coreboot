@@ -83,6 +83,7 @@ enum {
 	LB_TAG_SMMSTOREV2		= 0x0039,
 	LB_TAG_TPM_PPI_HANDOFF		= 0x003a,
 	LB_TAG_BOARD_CONFIG		= 0x0040,
+	LB_TAG_ACPI_CNVS		= 0x0041,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,

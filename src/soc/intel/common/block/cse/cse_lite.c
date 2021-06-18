@@ -38,46 +38,6 @@ enum boot_partition_id {
 	RW = 1
 };
 
-/* CSE recovery sub-error codes */
-enum csme_failure_reason {
-
-	/* No error */
-	CSE_LITE_SKU_NO_ERROR = 0,
-
-	/* Unspecified error */
-	CSE_LITE_SKU_UNSPECIFIED = 1,
-
-	/* CSE fails to boot from RW */
-	CSE_LITE_SKU_RW_JUMP_ERROR = 2,
-
-	/* CSE RW boot partition access error */
-	CSE_LITE_SKU_RW_ACCESS_ERROR = 3,
-
-	/* Fails to set next boot partition as RW */
-	CSE_LITE_SKU_RW_SWITCH_ERROR = 4,
-
-	/* CSE firmware update failure */
-	CSE_LITE_SKU_FW_UPDATE_ERROR = 5,
-
-	/* Fails to communicate with CSE */
-	CSE_LITE_SKU_COMMUNICATION_ERROR = 6,
-
-	/* Fails to wipe CSE runtime data */
-	CSE_LITE_SKU_DATA_WIPE_ERROR = 7,
-
-	/* CSE RW is not found */
-	CSE_LITE_SKU_RW_BLOB_NOT_FOUND = 8,
-
-	/* CSE CBFS RW SHA-256 mismatch with the provided SHA */
-	CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH = 9,
-
-	/* CSE CBFS RW metadata is not found */
-	CSE_LITE_SKU_RW_METADATA_NOT_FOUND = 10,
-
-	/* CSE CBFS RW blob layout is not correct */
-	CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR = 11,
-};
-
 /*
  * Boot partition status.
  * The status is returned in response to MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO cmd.
@@ -687,7 +647,7 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 	if (!cse_write_rw_region(target_rdev, cse_cbfs_rw, cse_blob_sz))
 		return CSE_LITE_SKU_FW_UPDATE_ERROR;
 
-	return CSE_LITE_SKU_NO_ERROR;
+	return CSE_NO_ERROR;
 }
 
 static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
@@ -734,7 +694,7 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 	}
 
 	if (!cse_prep_for_rw_update(cse_bp_info, source_metadata)) {
-		rv = CSE_LITE_SKU_COMMUNICATION_ERROR;
+		rv = CSE_COMMUNICATION_ERROR;
 		goto error_exit;
 	}
 
@@ -791,7 +751,7 @@ void cse_fw_sync(void)
 
 	if (!cse_get_bp_info(&cse_bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
-		cse_trigger_recovery(CSE_LITE_SKU_COMMUNICATION_ERROR);
+		cse_trigger_recovery(CSE_COMMUNICATION_ERROR);
 	}
 
 	if (!cse_fix_data_failure_err(&cse_bp_info.bp_info))

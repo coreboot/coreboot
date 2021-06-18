@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: https://www.asus.com/Desktop/Entertainment/CM6630
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

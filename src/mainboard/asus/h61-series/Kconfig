@@ -24,6 +24,7 @@ config VARIANT_DIR
 	default "p8h61-m_lx"       if BOARD_ASUS_P8H61_M_LX
 	default "p8h61-m_lx3_r2_0" if BOARD_ASUS_P8H61_M_LX3_R2_0
 	default "p8h61-m_pro"      if BOARD_ASUS_P8H61_M_PRO
+	default "p8h61-m_pro_cm6630" if BOARD_ASUS_P8H61_M_PRO_CM6630
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -31,6 +32,7 @@ config MAINBOARD_PART_NUMBER
 	default "P8H61-M LX"       if BOARD_ASUS_P8H61_M_LX
 	default "P8H61-M LX3 R2.0" if BOARD_ASUS_P8H61_M_LX3_R2_0
 	default "P8H61-M PRO"      if BOARD_ASUS_P8H61_M_PRO
+	default "P8H61-M PRO CM6630" if BOARD_ASUS_P8H61_M_PRO_CM6630
 
 config OVERRIDE_DEVICETREE
 	string

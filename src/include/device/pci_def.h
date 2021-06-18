@@ -233,6 +233,10 @@
 #define  PCI_PM_CAP_PME		0x0800	/* PME pin supported */
 #define PCI_PM_CTRL		4	/* PM control and status register */
 #define  PCI_PM_CTRL_STATE_MASK	0x0003	/* Current power state (D0 to D3) */
+#define  PCI_PM_CTRL_POWER_STATE_D0	0x0
+#define  PCI_PM_CTRL_POWER_STATE_D1	0x1
+#define  PCI_PM_CTRL_POWER_STATE_D2	0x2
+#define  PCI_PM_CTRL_POWER_STATE_D3HOT	0x3
 #define  PCI_PM_CTRL_PME_ENABLE	0x0100	/* PME pin enable */
 #define  PCI_PM_CTRL_DATA_SEL_MASK	0x1e00	/* Data select (??) */
 #define  PCI_PM_CTRL_DATA_SCALE_MASK	0x6000	/* Data scale (??) */

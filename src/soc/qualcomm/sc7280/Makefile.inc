@@ -20,15 +20,21 @@ all-y += ../common/qupv3_spi.c
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
+
+################################################################################
+verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
+
 ################################################################################
 romstage-y += cbmem.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
+romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += cbmem.c
+ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 

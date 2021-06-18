@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_DPM_H__
-#define __SOC_MEDIATEK_DPM_H__
+#ifndef __SOC_MEDIATEK_COMMON_DPM_H__
+#define __SOC_MEDIATEK_COMMON_DPM_H__
 
 #include <soc/addressmap.h>
+#include <soc/mcu_common.h>
 #include <stdint.h>
 #include <types.h>
 
@@ -41,9 +42,16 @@ check_member(dpm_regs, status_4, 0x70B0);
 #define DPM_MEM_RATIO_OFFSET	28
 #define DPM_MEM_RATIO_MASK	(0x3 << DPM_MEM_RATIO_OFFSET)
 #define DPM_MEM_RATIO_CFG1	(1 << DPM_MEM_RATIO_OFFSET)
+#define DRAMC_MCU_SRAM_ISOINT_B_LSB		BIT(1)
+#define DRAMC_MCU2_SRAM_ISOINT_B_LSB		BIT(1)
+#define DRAMC_MCU_SRAM_SLEEP_B_LSB		BIT(4)
+#define DRAMC_MCU2_SRAM_SLEEP_B_LSB		BIT(4)
 
 static struct dpm_regs *const mtk_dpm = (void *)DPM_CFG_BASE;
 
+void dpm_reset(struct mtk_mcu *mcu);
 int dpm_init(void);
+int dpm_4ch_para_setting(void);
+int dpm_4ch_init(void);
 
-#endif  /* __SOC_MEDIATEK_MT8192_DPM_H__ */
+#endif  /* __SOC_MEDIATEK_COMMON_DPM_H__ */

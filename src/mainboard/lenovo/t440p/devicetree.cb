@@ -22,10 +22,10 @@ chip northbridge/intel/haswell
 	device domain 0 on
 		subsystemid 0x17aa 0x220e inherit
 
-		device pci 00.0 on end # Host bridge Host bridge
+		device pci 00.0 on end # Host bridge
 		device pci 01.0 on end # PCIe Bridge for discrete graphics
 		device pci 02.0 on end # Internal graphics VGA controller
-		device pci 03.0 on end # Mini-HD audio Audio controller
+		device pci 03.0 on end # Mini-HD audio
 
 		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
 			register "gen1_dec" = "0x007c1601"
@@ -54,7 +54,7 @@ chip northbridge/intel/haswell
 			device pci 1c.6 off end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1f.0 on # LPC bridge PCI-LPC bridge
+			device pci 1f.0 on # LPC bridge
 				chip ec/lenovo/pmh7
 					register "backlight_enable" = "0x01"
 					register "dock_event_enable" = "0x01"

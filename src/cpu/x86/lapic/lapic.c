@@ -47,9 +47,11 @@ static void lapic_virtual_wire_mode_init(void)
 	 */
 	lapic_update32(LAPIC_TASKPRI, ~LAPIC_TPRI_MASK, 0);
 
-	/* Put the local APIC in virtual wire mode */
+	/* Set spurious interrupt vector to 0 and keep LAPIC enabled to
+	   be able to clear LVT register mask bits. */
 	lapic_update32(LAPIC_SPIV, ~LAPIC_VECTOR_MASK, LAPIC_SPIV_ENABLE);
 
+	/* Put the local APIC in virtual wire mode */
 	uint32_t mask = LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER | LAPIC_LVT_REMOTE_IRR |
 			LAPIC_INPUT_POLARITY | LAPIC_SEND_PENDING | LAPIC_LVT_RESERVED_1 |
 			LAPIC_DELIVERY_MODE_MASK;

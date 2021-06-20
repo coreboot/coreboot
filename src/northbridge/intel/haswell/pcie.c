@@ -50,7 +50,7 @@ static void peg_enable(struct device *dev)
 {
 	const struct northbridge_intel_haswell_config *config = config_of(dev);
 
-	const uint8_t func = PCI_FUNC(PCI_BDF(dev));
+	const uint8_t func = PCI_FUNC(dev->path.pci.devfn);
 
 	assert(func < ARRAY_SIZE(config->peg_cfg));
 

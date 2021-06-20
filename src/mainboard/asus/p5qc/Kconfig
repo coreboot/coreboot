@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO || BOARD_ASUS_P5QL_PRO || BOARD_ASUS_P5Q
+if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO || BOARD_ASUS_P5QL_PRO || BOARD_ASUS_P5Q_SE || BOARD_ASUS_P5Q
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -24,6 +24,7 @@ config VARIANT_DIR
 	default "p5qc" if BOARD_ASUS_P5QC
 	default "p5q_pro" if BOARD_ASUS_P5Q_PRO
 	default "p5ql_pro" if BOARD_ASUS_P5QL_PRO
+	default "p5q_se" if BOARD_ASUS_P5Q_SE
 	default "p5q" if BOARD_ASUS_P5Q
 
 config MAINBOARD_PART_NUMBER
@@ -31,6 +32,7 @@ config MAINBOARD_PART_NUMBER
 	default "P5QC" if BOARD_ASUS_P5QC
 	default "P5Q PRO" if BOARD_ASUS_P5Q_PRO
 	default "P5QL PRO" if BOARD_ASUS_P5QL_PRO
+	default "P5Q SE" if BOARD_ASUS_P5Q_SE
 	default "P5Q" if BOARD_ASUS_P5Q
 
 config DEVICETREE
@@ -39,6 +41,7 @@ config DEVICETREE
 
 config GPIO_C
 	string
+	default "variants/p5q_se/gpio.c" if BOARD_ASUS_P5Q_SE
 	default "variants/p5ql_pro/gpio.c" if BOARD_ASUS_P5QL_PRO
 	default "gpio.c"
 
@@ -49,7 +52,7 @@ config GPIO_C
 
 config PAYLOAD_CONFIGFILE
 	string
-	default "" if PAYLOAD_SEABIOS && BOARD_ASUS_P5QL_PRO
+	default "" if PAYLOAD_SEABIOS && (BOARD_ASUS_P5QL_PRO || BOARD_ASUS_P5Q_SE)
 	default "\$(top)/src/mainboard/\$(MAINBOARDDIR)/config_seabios" if PAYLOAD_SEABIOS
 
 endif # BOARD_ASUS_P5Q*

@@ -5,6 +5,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include <stdint.h>
 
 void enable_lapic(void)
@@ -55,7 +56,11 @@ static void lapic_virtual_wire_mode_init(void)
 	uint32_t mask = LAPIC_LVT_MASKED | LAPIC_LVT_LEVEL_TRIGGER | LAPIC_INPUT_POLARITY |
 			LAPIC_DELIVERY_MODE_MASK;
 
-	lapic_update32(LAPIC_LVT0, ~mask, LAPIC_DELIVERY_MODE_EXTINT);
+	if (boot_cpu())
+		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_DELIVERY_MODE_EXTINT);
+	else
+		lapic_update32(LAPIC_LVT0, ~mask, LAPIC_LVT_MASKED |
+						  LAPIC_DELIVERY_MODE_EXTINT);
 
 	lapic_update32(LAPIC_LVT1, ~mask, LAPIC_DELIVERY_MODE_NMI);
 }

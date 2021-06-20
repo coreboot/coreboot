@@ -46,15 +46,28 @@ static const char *pcie_acpi_name(const struct device *dev)
 }
 #endif
 
+static const struct peg_config *get_peg_config(struct device *dev, const uint8_t func)
+{
+	static const struct peg_config default_config = { 0 };
+
+	if (!dev || !dev->chip_info)
+		return &default_config;
+
+	const struct northbridge_intel_haswell_config *config = dev->chip_info;
+
+	if (func >= ARRAY_SIZE(config->peg_cfg)) {
+		printk(BIOS_ERR, "%s: Found PEG function %u, which doesn't exist on Haswell\n",
+		       __func__, func);
+		return &default_config;
+	}
+	return &config->peg_cfg[func];
+}
+
 static void peg_enable(struct device *dev)
 {
-	const struct northbridge_intel_haswell_config *config = config_of(dev);
-
 	const uint8_t func = PCI_FUNC(dev->path.pci.devfn);
 
-	assert(func < ARRAY_SIZE(config->peg_cfg));
-
-	const struct peg_config *peg_cfg = &config->peg_cfg[func];
+	const struct peg_config *peg_cfg = get_peg_config(dev, func);
 
 	const bool slot_implemented = !peg_cfg->is_onboard;
 

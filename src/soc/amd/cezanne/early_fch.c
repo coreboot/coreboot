@@ -32,6 +32,13 @@ static void reset_i2c_peripherals(void)
 	sb_reset_i2c_peripherals(&reset_info);
 }
 
+/* Initialize port80h routing early if needed */
+void configure_port80_routing_early(void)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+		espi_setup();
+}
+
 /* Before console init */
 void fch_pre_init(void)
 {
@@ -69,6 +76,6 @@ void fch_early_init(void)
 	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
 		lpc_disable_spi_rom_sharing();
 
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI) && !CONFIG(NO_EARLY_BOOTBLOCK_POSTCODES))
 		espi_setup();
 }

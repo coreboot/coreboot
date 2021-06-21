@@ -107,7 +107,7 @@ static int cstate_set_non_s0ix[] = {
 
 static int cstate_set_s0ix[] = {
 	C_STATE_C1,
-	C_STATE_C7S_LONG_LAT,
+	C_STATE_C6_LONG_LAT,
 	C_STATE_C10
 };
 

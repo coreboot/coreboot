@@ -50,7 +50,6 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	unsigned int i;
-	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	struct soc_intel_jasperlake_config *config = config_of_soc();
 
@@ -159,14 +158,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
-	if (dev) {
-		if (!xdci_can_enable())
-			dev->enabled = 0;
-		params->XdciEnable = dev->enabled;
-	} else {
-		params->XdciEnable = 0;
-	}
+	if (!xdci_can_enable())
+		devfn_disable(pci_root_bus(), PCH_DEVFN_USBOTG);
+	params->XdciEnable = is_devfn_enabled(PCH_DEVFN_USBOTG);
 
 	/* Provide correct UART number for FSP debug logs */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;

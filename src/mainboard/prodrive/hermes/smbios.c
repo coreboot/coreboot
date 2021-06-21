@@ -2,6 +2,7 @@
 
 #include <smbios.h>
 #include <types.h>
+#include <string.h>
 
 #include "variants/baseboard/include/eeprom.h"
 
@@ -25,4 +26,13 @@ const char *smbios_mainboard_serial_number(void)
 		return serial_no;
 	else
 		return CONFIG_MAINBOARD_SERIAL_NUMBER;
+}
+
+const char *smbios_mainboard_version(void)
+{
+	static char version_str[8] = { 0 };
+
+	snprintf(version_str, sizeof(version_str), "HSI %u", get_bmc_hsi());
+
+	return version_str;
 }

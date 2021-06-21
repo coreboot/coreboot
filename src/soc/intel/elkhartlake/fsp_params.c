@@ -97,7 +97,7 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	unsigned int i;
-	struct device *dev;
+
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	struct soc_intel_elkhartlake_config *config = config_of_soc();
 
@@ -240,8 +240,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* Thermal config */
-	dev = pcidev_path_on_root(SA_DEVFN_DPTF);
-	params->Device4Enable = is_dev_enabled(dev);
+	params->Device4Enable = is_devfn_enabled(SA_DEVFN_DPTF);
 	params->ProcHotResponse = 0x0;	//Disable PROCHOT response
 	/* Thermal sensor (TS) target width */
 	params->DmiTS0TW = 3;

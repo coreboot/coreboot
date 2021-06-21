@@ -36,6 +36,12 @@ chip soc/intel/alderlake
 
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
 
+	# FIVR configurations for brya are disabled since the board doesn't have V1p05 and Vnn
+	# bypass rails implemented.
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

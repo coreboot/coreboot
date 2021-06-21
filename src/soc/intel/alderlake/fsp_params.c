@@ -549,6 +549,45 @@ static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,
 	printk(BIOS_INFO, "IRQ: Using dynamically assigned PCI IO-APIC IRQs\n");
 }
 
+static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	/* PCH FIVR settings override */
+	if (!config->ext_fivr_settings.configure_ext_fivr)
+		return;
+
+	s_cfg->PchFivrExtV1p05RailEnabledStates =
+			config->ext_fivr_settings.v1p05_enable_bitmap;
+
+	s_cfg->PchFivrExtV1p05RailSupportedVoltageStates =
+			config->ext_fivr_settings.v1p05_supported_voltage_bitmap;
+
+	s_cfg->PchFivrExtVnnRailEnabledStates =
+			config->ext_fivr_settings.vnn_enable_bitmap;
+
+	s_cfg->PchFivrExtVnnRailSupportedVoltageStates =
+			config->ext_fivr_settings.vnn_supported_voltage_bitmap;
+
+	s_cfg->PchFivrExtVnnRailSxEnabledStates =
+			config->ext_fivr_settings.vnn_enable_bitmap;
+
+	/* Convert the voltages to increments of 2.5mv */
+	s_cfg->PchFivrExtV1p05RailVoltage =
+			(config->ext_fivr_settings.v1p05_voltage_mv * 10) / 25;
+
+	s_cfg->PchFivrExtVnnRailVoltage =
+			(config->ext_fivr_settings.vnn_voltage_mv * 10) / 25;
+
+	s_cfg->PchFivrExtVnnRailSxVoltage =
+			(config->ext_fivr_settings.vnn_sx_voltage_mv * 10 / 25);
+
+	s_cfg->PchFivrExtV1p05RailIccMaximum =
+			config->ext_fivr_settings.v1p05_icc_max_ma;
+
+	s_cfg->PchFivrExtVnnRailIccMaximum =
+			config->ext_fivr_settings.vnn_icc_max_ma;
+}
+
 static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 {
 	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
@@ -583,6 +622,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_pcie_params,
 		fill_fsps_misc_power_params,
 		fill_fsps_irq_params,
+		fill_fsps_fivr_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

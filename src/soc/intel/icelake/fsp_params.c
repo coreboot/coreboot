@@ -39,7 +39,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 
-	struct device *dev;
 	struct soc_intel_icelake_config *config;
 	config = config_of_soc();
 
@@ -139,10 +138,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 1);
 	if (!xdci_can_enable())
-		dev->enabled = 0;
-	params->XdciEnable = dev->enabled;
+		devfn_disable(pci_root_bus(), PCH_DEVFN_USBOTG);
+	params->XdciEnable = is_devfn_enabled(PCH_DEVFN_USBOTG);
 
 	/* PCI Express */
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {

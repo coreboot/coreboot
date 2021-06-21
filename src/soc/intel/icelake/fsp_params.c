@@ -55,11 +55,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	mainboard_silicon_init_params(params);
 
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
-		params->PeiGraphicsPeimInit = 1;
-	else
-		params->PeiGraphicsPeimInit = 0;
+	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	params->PavpEnable = CONFIG(PAVP);
 
@@ -68,11 +64,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
 	/* SATA */
-	dev = pcidev_on_root(PCH_DEV_SLOT_SATA, 0);
-	if (!dev)
-		params->SataEnable = 0;
-	else {
-		params->SataEnable = dev->enabled;
+	params->SataEnable = is_devfn_enabled(PCH_DEVFN_SATA);
+	if (params->SataEnable) {
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
 		memcpy(params->SataPortsEnable, config->SataPortsEnable,
@@ -82,11 +75,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* Lan */
-	dev = pcidev_on_root(PCH_DEV_SLOT_ESPI, 6);
-	if (!dev)
-		params->PchLanEnable = 0;
-	else
-		params->PchLanEnable = dev->enabled;
+	params->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
 
 	/* Audio */
 	params->PchHdaDspEnable = config->PchHdaDspEnable;
@@ -166,11 +155,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(config->PcieClkSrcClkReq));
 
 	/* eMMC */
-	dev = pcidev_on_root(PCH_DEV_SLOT_STORAGE, 0);
-	if (!dev)
-		params->ScsEmmcEnabled = 0;
-	else {
-		params->ScsEmmcEnabled = dev->enabled;
+	params->ScsEmmcEnabled = is_devfn_enabled(PCH_DEVFN_EMMC);
+	if (params->ScsEmmcEnabled) {
 		params->ScsEmmcHs400Enabled = config->ScsEmmcHs400Enabled;
 		params->EmmcUseCustomDlls = config->EmmcUseCustomDlls;
 		if (config->EmmcUseCustomDlls == 1) {
@@ -190,14 +176,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* SD */
-	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 5);
-	if (!dev)
-		params->ScsSdCardEnabled = 0;
-	else {
-		params->ScsSdCardEnabled = dev->enabled;
-		params->SdCardPowerEnableActiveHigh =
-				config->SdCardPowerEnableActiveHigh;
-	}
+	params->ScsSdCardEnabled = is_devfn_enabled(PCH_DEVFN_SDCARD);
+	params->SdCardPowerEnableActiveHigh = config->SdCardPowerEnableActiveHigh;
 
 	params->Heci3Enabled = config->Heci3Enabled;
 	params->Device4Enable = config->Device4Enable;

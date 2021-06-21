@@ -464,10 +464,12 @@ config NO_EARLY_BOOTBLOCK_POSTCODES
 	def_bool n
 	help
 	  Some chipsets require that the routing for the port 80h POST
-	  code be configured before any POST codes are sent out.
-	  This can be done in the boot block, but there are a couple of
-	  POST codes that go out before the chipset's bootblock initialization
-	  can happen.  This option suppresses those POST codes.
+	  code be configured before any POST codes are sent out.  If this is
+	  not done, the system can hang on the first POST code.  This
+	  initialization can be done in the boot block, but there are a couple
+	  of POST codes that go out before the chipset's C bootblock
+	  initialization can happen.  This option suppresses all postcodes in
+	  the early assembly code.
 
 config HWBASE_DEBUG_CB
 	bool

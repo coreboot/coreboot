@@ -3,7 +3,7 @@
 
 #include <console/post_codes.h>
 
-#if CONFIG(POST_IO)
+#if CONFIG(POST_IO) && !(ENV_BOOTBLOCK && CONFIG(NO_EARLY_BOOTBLOCK_POSTCODES))
 #define post_code(value)        \
 	movb    $value, %al;    \
 	outb    %al, $CONFIG_POST_IO_PORT

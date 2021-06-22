@@ -196,6 +196,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->RampDown = config->RampDown;
 	}
 
+	if (config->disable_external_bypass_vr) {
+		params->PchFivrExtV1p05RailEnabledStates = 0;
+		params->PchFivrExtVnnRailSxEnabledStates = 0;
+		params->PchFivrExtVnnRailEnabledStates = 0;
+	}
+
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);
 }

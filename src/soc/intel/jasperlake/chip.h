@@ -403,6 +403,18 @@ struct soc_intel_jasperlake_config {
 	 */
 	uint8_t RampDown;
 
+	/*
+	 * It controls below soc variables
+	 *
+	 *   PchFivrExtV1p05RailEnabledStates
+	 *   PchFivrExtVnnRailSxEnabledStates
+	 *   PchFivrExtVnnRailEnabledStates
+	 *
+	 * If your platform does not support external vnn power rail please set to 1
+	 * 1: Disabled ; 0: Enabled
+	 */
+	bool disable_external_bypass_vr;
+
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

@@ -700,11 +700,11 @@ static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
 static void dump_fpsba(const fdbar_t *fdb, const fpsba_t *fpsba)
 {
 	unsigned int i;
-	/* SoC Strap Length, aka PSL, aka ISL */
-	unsigned int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
+	/* SoC Straps, aka PSL, aka ISL */
+	unsigned int SS = (fdb->flmap1 >> 24) & 0xff;
 
 	printf("Found PCH Strap Section\n");
-	for (i = 0; i < SSL; i++)
+	for (i = 0; i < SS; i++)
 		printf("PCHSTRP%-3u: 0x%08x\n", i, fpsba->pchstrp[i]);
 
 	if (ifd_version >= IFD_VERSION_2) {
@@ -1362,10 +1362,10 @@ static void set_pchstrap(fpsba_t *fpsba, const fdbar_t *fdb, const int strap,
 		exit(EXIT_FAILURE);
 	}
 
-	/* SoC Strap Length, aka PSL, aka ISL */
-	int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
-	if (strap >= SSL) {
-		fprintf(stderr, "Strap index %d out of range (max: %d)\n", strap, SSL);
+	/* SoC Strap, aka PSL, aka ISL */
+	int SS = (fdb->flmap1 >> 24) & 0xff;
+	if (strap >= SS) {
+		fprintf(stderr, "Strap index %d out of range (max: %d)\n", strap, SS);
 		exit(EXIT_FAILURE);
 	}
 	fpsba->pchstrp[strap] = value;

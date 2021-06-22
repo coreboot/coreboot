@@ -14,6 +14,9 @@ chip soc/intel/fsp_broadwell_de
 			chip drivers/ipmi		# BMC KCS
 				device pnp ca2.0 on end
 				register "bmc_i2c_address" = "0x20"
+				# On cold boot it takes a while for the BMC to start the IPMI service
+				register "wait_for_bmc" = "1"
+				register "bmc_boot_timeout" = "60"
 			end
 		end # LPC Bridge
 		device pci 1f.2 on end # SATA Controller

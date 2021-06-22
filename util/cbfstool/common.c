@@ -168,10 +168,10 @@ void print_supported_architectures(void)
 
 void print_supported_filetypes(void)
 {
-	int i, number = ARRAY_SIZE(filetypes);
+	int i;
 
-	for (i=0; i<number; i++) {
-		printf(" %s%c", filetypes[i].name, (i==(number-1))?'\n':',');
+	for (i=0; filetypes[i].name; i++) {
+		printf(" %s%c", filetypes[i].name, filetypes[i + 1].name ? ',' : '\n');
 		if ((i%8) == 7)
 			printf("\n");
 	}
@@ -180,7 +180,7 @@ void print_supported_filetypes(void)
 uint64_t intfiletype(const char *name)
 {
 	size_t i;
-	for (i = 0; i < (sizeof(filetypes) / sizeof(struct typedesc_t)); i++)
+	for (i = 0; filetypes[i].name; i++)
 		if (strcmp(filetypes[i].name, name) == 0)
 			return filetypes[i].type;
 	return -1;

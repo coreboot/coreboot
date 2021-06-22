@@ -63,6 +63,24 @@ config ARCH_ALL_STAGES_X86
 	bool
 	default y
 
+config HAVE_EXP_X86_64_SUPPORT
+	bool
+	help
+	  Enable experimental support to build and run coreboot in 64-bit mode.
+	  When selecting this option for a new platform, it is highly advisable
+	  to provide a config file for Jenkins to build-test the 64-bit option.
+
+config USE_EXP_X86_64_SUPPORT
+	bool "[EXPERIMENTAL] Run coreboot in long (64-bit) mode"
+	depends on HAVE_EXP_X86_64_SUPPORT
+	select ARCH_ALL_STAGES_X86_64
+	help
+	  When set, most of coreboot runs in long (64-bit) mode instead of the
+	  usual protected flat (32-bit) mode. 64-bit CPUs and OSes can be used
+	  irrespective of whether coreboot runs in 32-bit or 64-bit mode. This
+	  is an experimental option: do not enable unless one wants to test it
+	  and has the means to recover a system when coreboot fails to boot.
+
 config ARCH_X86_64_PGTBL_LOC
 	hex "x86_64 page table location in CBFS"
 	depends on ARCH_BOOTBLOCK_X86_64

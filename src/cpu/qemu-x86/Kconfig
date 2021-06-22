@@ -3,6 +3,7 @@
 config CPU_QEMU_X86
 	bool
 	select ARCH_X86
+	select HAVE_EXP_X86_64_SUPPORT
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
@@ -49,12 +50,4 @@ config MAX_CPUS
 	default 32 if SMM_TSEG
 	default 4
 
-config CPU_QEMU_X86_64
-	bool "Experimental 64bit support"
-	select ARCH_ALL_STAGES_X86_64
-
-config CPU_QEMU_X86_32
-	bool
-	default n if CPU_QEMU_X86_64
-	default y
 endif

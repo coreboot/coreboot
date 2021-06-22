@@ -3,16 +3,11 @@ config CPU_INTEL_MODEL_206AX
 
 if CPU_INTEL_MODEL_206AX
 
-config ARCH_EXP_X86_64
-	bool "Experimental 64bit support"
-	depends on USE_NATIVE_RAMINIT
-	default n
-
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
-	select ARCH_ALL_STAGES_X86_64 if ARCH_EXP_X86_64
 	select ARCH_X86
 	select BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
+	select HAVE_EXP_X86_64_SUPPORT if USE_NATIVE_RAMINIT
 	select MMX
 	select SSE2
 	select UDELAY_TSC

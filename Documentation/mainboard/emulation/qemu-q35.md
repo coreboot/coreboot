@@ -15,7 +15,7 @@ processor supports x86_64 instructions (long mode).
 The qemu-q35 mainboard has been ported to x86_64 and will serve as
 reference platform to enable additional platforms.
 
-To enable the support set the Kconfig option ``CONFIG_CPU_QEMU_X86_64=y``.
+To enable the support set the Kconfig option ``CONFIG_USE_EXP_X86_64_SUPPORT=y``.
 
 ## Installing qemu
 

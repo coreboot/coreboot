@@ -743,7 +743,7 @@ void cse_fw_sync(void)
 	}
 
 	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
-		cse_trigger_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
+		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");

@@ -135,6 +135,7 @@ $(VBOOT_HOSTLIB):
 		CC="$(HOSTCC)" \
 		PKG_CONFIG="true" \
 		V=$(V) \
+		DEBUG= \
 		hostlib
 
 $(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c

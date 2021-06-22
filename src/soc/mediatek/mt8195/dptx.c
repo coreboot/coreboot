@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
-#include <device/mmio.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/dptx.h>
@@ -153,15 +154,9 @@ enum {
 static bool dptx_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 				u32 dpcd_addr, size_t length, u8 *data)
 {
-	u8 retry = 7;
-
-	do {
-		if (dptx_hal_auxwrite_bytes(mtk_dp, cmd,
-					    dpcd_addr, length, data))
-			return true;
-
-		mdelay(1);
-	} while (--retry > 0);
+	if (retry(7, dptx_hal_auxwrite_bytes(mtk_dp, cmd, dpcd_addr, length, data),
+		  mdelay(1)))
+		return true;
 
 	printk(BIOS_ERR, "aux write fail: cmd = %d, addr = %#x, len = %ld\n",
 	       cmd, dpcd_addr, length);
@@ -188,15 +183,9 @@ static bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd,
 static bool dptx_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 			       u32 dpcd_addr, size_t length, u8 *data)
 {
-	u8 retry = 7;
-
-	do {
-		if (dptx_hal_auxread_bytes(mtk_dp, cmd,
-					   dpcd_addr, length, data))
-			return true;
-
-		mdelay(1);
-	} while (--retry > 0);
+	if (retry(7, dptx_hal_auxread_bytes(mtk_dp, cmd, dpcd_addr, length, data),
+		  mdelay(1)))
+		return true;
 
 	printk(BIOS_ERR, "aux read fail: cmd = %d, addr = %#x, len = %ld\n",
 	       cmd, dpcd_addr, length);

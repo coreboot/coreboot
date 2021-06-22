@@ -6,6 +6,9 @@ all-y += ../common/clock.c
 all-y += clock.c
 all-y += ../common/spi.c
 all-$(CONFIG_SC7280_QSPI) += ../common/qspi.c
+all-y += ../common/qupv3_config.c
+all-y += qcom_qup_se.c
+all-y += ../common/qup_se_handler.c
 
 ################################################################################
 bootblock-y += bootblock.c
@@ -62,5 +65,29 @@ $(DCB_CBFS)-file := $(DCB_FILE)
 $(DCB_CBFS)-type := raw
 $(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(DCB_CBFS)
+
+################################################################################
+UART_FW_FILE := $(SC7280_BLOB)/qup_fw/uart_fw.bin
+UART_FW_CBFS := $(CONFIG_CBFS_PREFIX)/uart_fw
+$(UART_FW_CBFS)-file := $(UART_FW_FILE)
+$(UART_FW_CBFS)-type := raw
+$(UART_FW_CBFS)-compression := none
+cbfs-files-y += $(UART_FW_CBFS)
+
+################################################################################
+SPI_FW_FILE := $(SC7280_BLOB)/qup_fw/spi_fw.bin
+SPI_FW_CBFS := $(CONFIG_CBFS_PREFIX)/spi_fw
+$(SPI_FW_CBFS)-file := $(SPI_FW_FILE)
+$(SPI_FW_CBFS)-type := raw
+$(SPI_FW_CBFS)-compression := none
+cbfs-files-y += $(SPI_FW_CBFS)
+
+################################################################################
+I2C_FW_FILE := $(SC7280_BLOB)/qup_fw/i2c_fw.bin
+I2C_FW_CBFS := $(CONFIG_CBFS_PREFIX)/i2c_fw
+$(I2C_FW_CBFS)-file := $(I2C_FW_FILE)
+$(I2C_FW_CBFS)-type := raw
+$(I2C_FW_CBFS)-compression := none
+cbfs-files-y += $(I2C_FW_CBFS)
 
 endif

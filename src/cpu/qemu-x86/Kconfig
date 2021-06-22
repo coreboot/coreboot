@@ -50,4 +50,7 @@ config MAX_CPUS
 	default 32 if SMM_TSEG
 	default 4
 
+config HEAP_SIZE
+	default 0x8000
+
 endif

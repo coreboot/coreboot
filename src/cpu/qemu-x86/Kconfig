@@ -57,5 +57,4 @@ config CPU_QEMU_X86_32
 	bool
 	default n if CPU_QEMU_X86_64
 	default y
-	select ARCH_ALL_STAGES_X86_32
 endif

@@ -70,6 +70,9 @@ config SOC_SPECIFIC_OPTIONS
 	select X86_AMD_FIXED_MTRRS
 	select X86_AMD_INIT_SIPI
 
+config ARCH_ALL_STAGES_X86
+	default n
+
 config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
 	default 5568
 

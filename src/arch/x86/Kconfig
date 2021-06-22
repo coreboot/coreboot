@@ -28,6 +28,7 @@ config ARCH_RAMSTAGE_X86_32
 
 config ARCH_ALL_STAGES_X86_32
 	bool
+	default ARCH_ALL_STAGES_X86 && !ARCH_ALL_STAGES_X86_64
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
@@ -57,6 +58,10 @@ config ARCH_ALL_STAGES_X86_64
 	select ARCH_VERSTAGE_X86_64
 	select ARCH_ROMSTAGE_X86_64
 	select ARCH_RAMSTAGE_X86_64
+
+config ARCH_ALL_STAGES_X86
+	bool
+	default y
 
 config ARCH_X86_64_PGTBL_LOC
 	hex "x86_64 page table location in CBFS"

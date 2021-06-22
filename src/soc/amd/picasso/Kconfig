@@ -69,6 +69,9 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_2017_BINDING
 	select HAVE_CF9_RESET
 
+config ARCH_ALL_STAGES_X86
+	default n
+
 config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
 	default 3200
 

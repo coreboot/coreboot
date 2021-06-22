@@ -226,6 +226,8 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_500_600_SERIES_TIGER_ALDER_POINT;
 	case PLATFORM_ICL:
 		return CHIPSET_400_SERIES_ICE_POINT;
+	case PLATFORM_LBG:
+		return CHIPSET_C620_SERIES_LEWISBURG;
 	default:
 		return CHIPSET_PCH_UNKNOWN;
 	}
@@ -242,6 +244,7 @@ static int is_platform_ifd_2(void)
 	static const int ifd_2_platforms[] = {
 		PLATFORM_GLK,
 		PLATFORM_CNL,
+		PLATFORM_LBG,
 		PLATFORM_ICL,
 		PLATFORM_TGL,
 		PLATFORM_JSL,
@@ -1625,6 +1628,7 @@ static void print_usage(const char *name)
 	       "                                         adl    - Alder Lake\n"
 	       "                                         aplk   - Apollo Lake\n"
 	       "                                         cnl    - Cannon Lake\n"
+	       "                                         lbg    - Lewisburg PCH\n"
 	       "                                         ehl    - Elkhart Lake\n"
 	       "                                         glk    - Gemini Lake\n"
 	       "                                         icl    - Ice Lake\n"
@@ -1868,6 +1872,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_APL;
 			} else if (!strcmp(optarg, "cnl")) {
 				platform = PLATFORM_CNL;
+			} else if (!strcmp(optarg, "lbg")) {
+				platform = PLATFORM_LBG;
 			} else if (!strcmp(optarg, "ehl")) {
 				platform = PLATFORM_EHL;
 			} else if (!strcmp(optarg, "glk")) {

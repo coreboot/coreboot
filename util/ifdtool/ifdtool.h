@@ -50,6 +50,7 @@ enum ich_chipset {
 enum platform {
 	PLATFORM_APL,
 	PLATFORM_CNL,
+	PLATFORM_LBG,
 	PLATFORM_EHL,
 	PLATFORM_GLK,
 	PLATFORM_ICL,

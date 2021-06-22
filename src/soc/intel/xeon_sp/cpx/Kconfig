@@ -91,6 +91,10 @@ config IED_REGION_SIZE
 	hex
 	default 0x400000
 
+config IFD_CHIPSET
+	string
+	default "lbg"
+
 config SOC_INTEL_COMMON_BLOCK_P2SB
 	def_bool y
 

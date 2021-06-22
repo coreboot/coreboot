@@ -1131,7 +1131,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 		 **/
 		*offset = convert_addr_space(param.image_region, *offset);
 
-		ret = parse_elf_to_xip_stage(buffer, &output, offset,
+		ret = parse_elf_to_xip_stage(buffer, &output, *offset,
 					     param.ignore_section,
 					     stageheader);
 	} else {

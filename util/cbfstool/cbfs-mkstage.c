@@ -260,7 +260,7 @@ static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
 }
 
 int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
-			   uint32_t *location, const char *ignore_section,
+			   uint32_t location, const char *ignore_section,
 			   struct cbfs_file_attr_stageheader *stageheader)
 {
 	struct xip_context xipctx;
@@ -310,7 +310,7 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 
 	/* Single loadable segment. The entire segment moves to final
 	 * location from based on virtual address of loadable segment. */
-	adjustment = *location - pelf->phdr->p_vaddr;
+	adjustment = location - pelf->phdr->p_vaddr;
 	DEBUG("Relocation adjustment: %08x\n", adjustment);
 
 	fill_cbfs_stageheader(stageheader,

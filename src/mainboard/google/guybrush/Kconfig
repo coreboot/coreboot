@@ -82,6 +82,10 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config AMDFW_CONFIG_FILE
+	string
+	default "src/mainboard/google/guybrush/variants/baseboard/amdfw.cfg"
+
 config EFS_SPI_READ_MODE
 	int
 	default 0 if EM100 # Normal read mode
